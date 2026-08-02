@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
 import { formatSpeech, type BattlePublic } from "@kshiai/shared";
 import { api } from "../api";
+import { mediaSrc } from "../media";
 
 const AUTO_TURN_DELAY_MS = 1600;
 const OPENING_DELAY_MS = 1200;
@@ -48,14 +49,15 @@ export function BattlePage() {
     if (!id || !battle || battle.status !== "active") return;
     if (paused || error) return;
 
-    const delay = battle.turn === 0 ? OPENING_DELAY_MS : AUTO_TURN_DELAY_MS;
+    const delay = battle.prologuePending
+      ? OPENING_DELAY_MS
+      : AUTO_TURN_DELAY_MS;
     const timer = setTimeout(() => {
       if (cancelledRef.current || advancingRef.current) return;
       advancingRef.current = true;
       setBusy(true);
-      void api
-        .advanceBattle(id)
-        .then(({ battle: next }) => {
+      void advanceWithRetry(id, 2)
+        .then((next) => {
           if (cancelledRef.current) return;
           setBattle(next);
           setError(null);
@@ -71,14 +73,43 @@ export function BattlePage() {
     }, delay);
 
     return () => clearTimeout(timer);
-  }, [id, battle?.status, battle?.turn, paused, error]);
+  }, [
+    id,
+    battle?.status,
+    battle?.turn,
+    battle?.prologuePending,
+    battle?.aftermathPending,
+    battle?.log?.length,
+    paused,
+    error,
+  ]);
+
+  async function advanceWithRetry(
+    battleId: string,
+    retries: number,
+  ): Promise<BattlePublic> {
+    let lastErr: unknown;
+    for (let i = 0; i <= retries; i++) {
+      try {
+        const { battle: next } = await api.advanceBattle(battleId);
+        return next;
+      } catch (err) {
+        lastErr = err;
+        // Brief pause then retry (LLM / tunnel blips)
+        if (i < retries) {
+          await new Promise((r) => setTimeout(r, 1200 * (i + 1)));
+        }
+      }
+    }
+    throw lastErr instanceof Error ? lastErr : new Error("advance_failed");
+  }
 
   async function retryAdvance() {
     if (!id) return;
     setError(null);
     setBusy(true);
     try {
-      const { battle: next } = await api.advanceBattle(id);
+      const next = await advanceWithRetry(id, 2);
       setBattle(next);
     } catch (err) {
       setError(err instanceof Error ? err.message : "failed");
@@ -109,6 +140,17 @@ export function BattlePage() {
 
   const bf = battle.battlefield;
   const finished = battle.status === "finished";
+  const winner =
+    battle.winnerSide === "a"
+      ? battle.sideA
+      : battle.winnerSide === "b"
+        ? battle.sideB
+        : null;
+  const imgA = mediaSrc(battle.sideA.imageUrl, battle.sideA.characterId);
+  const imgB = mediaSrc(battle.sideB.imageUrl, battle.sideB.characterId);
+  const imgWinner = winner
+    ? mediaSrc(winner.imageUrl, winner.characterId)
+    : undefined;
 
   return (
     <>
@@ -120,21 +162,64 @@ export function BattlePage() {
       </div>
 
       <div className="panel">
-        <div className="row" style={{ justifyContent: "space-between" }}>
-          <div>
+        <div className="battle-faces" aria-label="対戦カード">
+          <div className="battle-face">
+            {imgA ? (
+              <img src={imgA} alt={battle.sideA.displayName} />
+            ) : (
+              <div className="battle-face-ph">?</div>
+            )}
             <strong>{battle.sideA.displayName}</strong>
-            <span className="muted"> vs </span>
-            <strong>{battle.sideB.displayName}</strong>
+            <span className="muted">自分</span>
           </div>
+          <div className="battle-faces-vs" aria-hidden>
+            VS
+          </div>
+          <div className="battle-face">
+            {imgB ? (
+              <img src={imgB} alt={battle.sideB.displayName} />
+            ) : (
+              <div className="battle-face-ph">?</div>
+            )}
+            <strong>{battle.sideB.displayName}</strong>
+            <span className="muted">相手</span>
+          </div>
+        </div>
+
+        <div className="row" style={{ justifyContent: "space-between", marginTop: "0.75rem" }}>
           <span className="muted">
             {finished
               ? `${battle.turn} ターン`
-              : `ターン ${battle.turn} / ${battle.turnLimit}`}
+              : battle.prologuePending
+                ? `プロローグ…`
+                : battle.aftermathPending
+                  ? `決着の余波…`
+                  : `ターン ${battle.turn} / ${battle.turnLimit}`}
           </span>
         </div>
+        {battle.prologuePending && !finished ? (
+          <p className="ok" style={{ margin: "0.35rem 0 0" }}>
+            開幕 — 口上と因縁を語ります…
+          </p>
+        ) : null}
+        {battle.aftermathPending && !finished ? (
+          <p className="ok" style={{ margin: "0.35rem 0 0" }}>
+            戦闘不能 — 倒れた者のその後を見届けます…
+          </p>
+        ) : null}
+        {battle.priorMatchSummary ? (
+          <p className="muted prior-match-hint">
+            因縁の種: {battle.priorMatchSummary}
+          </p>
+        ) : null}
         {battle.policySummary ? (
           <p className="muted" style={{ marginBottom: "0.35rem" }}>
             方針: <strong>{battle.policySummary}</strong>
+          </p>
+        ) : null}
+        {battle.narrationStyleName ? (
+          <p className="muted" style={{ marginBottom: "0.35rem" }}>
+            語り: <strong>{battle.narrationStyleName}</strong>
           </p>
         ) : null}
         <p className="muted" style={{ margin: 0 }}>
@@ -174,11 +259,16 @@ export function BattlePage() {
         <div className="log">
           {battle.log.map((block, i) => (
             <div className="log-block" key={`${block.turn}-${i}`}>
-              {block.turn > 0 && (
+              {block.turn > 0 ? (
                 <div className="muted" style={{ fontSize: "0.8rem" }}>
                   — ターン {block.turn} —
                 </div>
-              )}
+              ) : block.narrator[0]?.includes("開幕") ||
+                block.narrator[0]?.includes("プロローグ") ? (
+                <div className="muted" style={{ fontSize: "0.8rem" }}>
+                  — プロローグ —
+                </div>
+              ) : null}
               {block.narrator.map((line, j) => (
                 <p key={j} style={{ margin: "0.25rem 0" }}>
                   {line}
@@ -230,16 +320,53 @@ export function BattlePage() {
       ) : (
         <div className="panel">
           <h2>結果</h2>
-          <p className="ok">
-            {battle.winnerSide === "draw"
-              ? "引き分け"
-              : battle.winnerSide === "a"
-                ? `${battle.sideA.displayName} の勝利`
-                : `${battle.sideB.displayName} の勝利`}
-          </p>
+          {battle.winnerSide === "draw" ? (
+            <div className="battle-winner-row battle-winner-draw">
+              <div className="battle-face battle-face-sm">
+                {imgA ? (
+                  <img src={imgA} alt={battle.sideA.displayName} />
+                ) : (
+                  <div className="battle-face-ph">?</div>
+                )}
+              </div>
+              <div className="battle-face battle-face-sm">
+                {imgB ? (
+                  <img src={imgB} alt={battle.sideB.displayName} />
+                ) : (
+                  <div className="battle-face-ph">?</div>
+                )}
+              </div>
+              <p className="ok" style={{ margin: 0 }}>
+                引き分け
+              </p>
+            </div>
+          ) : winner ? (
+            <div className="battle-winner-row">
+              <div className="battle-face battle-face-winner">
+                {imgWinner ? (
+                  <img src={imgWinner} alt={winner.displayName} />
+                ) : (
+                  <div className="battle-face-ph">?</div>
+                )}
+                <strong>{winner.displayName}</strong>
+                <span className="tag">勝利</span>
+              </div>
+              <p className="ok" style={{ margin: "0.5rem 0 0" }}>
+                {winner.displayName} の勝利
+              </p>
+            </div>
+          ) : (
+            <p className="ok">試合終了</p>
+          )}
           {battle.resultSummary && <p>{battle.resultSummary}</p>}
           <div className="row">
-            <Link className="btn primary" to="/match">
+            <Link
+              className="btn primary"
+              to={`/match?my=${encodeURIComponent(battle.sideA.characterId)}&opp=${encodeURIComponent(battle.sideB.characterId)}`}
+            >
+              再戦セットアップ
+            </Link>
+            <Link className="btn" to="/match">
               別の試合へ
             </Link>
             <Link className="btn" to="/history">

@@ -45,6 +45,8 @@ export type RefereeResult = {
 
 export interface LlmProvider {
   readonly name: string;
+  /** Optional dual-tier model ids for diagnostics. */
+  readonly models?: { engine: string; fast: string };
   generateCharacter(prompt: string): Promise<GenerateCharacterResult>;
   adjustCharacter(
     current: CharacterSheet,
@@ -69,6 +71,29 @@ export interface LlmProvider {
     eventsHint: string;
     battlefield?: BattlefieldInstance | null;
   }): Promise<SituationProposal>;
+  /**
+   * Supervisor: invent a field-driven happening that breaks a stagnant fight.
+   * Keep it coarse; engine applies light mechanical pressure separately.
+   */
+  proposeHappening(input: {
+    scene: string;
+    turn: number;
+    sideAName: string;
+    sideBName: string;
+    stagnationHint: string;
+    battlefield?: BattlefieldInstance | null;
+  }): Promise<{
+    title: string;
+    summary: string;
+    notes: string;
+    coefficients?: Record<string, number>;
+    tags?: string[];
+    envHits?: Array<{
+      target: "a" | "b" | "both";
+      kind: "damage" | "heal" | "disrupt";
+      intensity: "minor" | "moderate";
+    }>;
+  }>;
   narrateTurn(input: {
     turn: number;
     scene: string;
@@ -76,7 +101,53 @@ export interface LlmProvider {
     sideBName: string;
     events: TurnEvent[];
     battlefield?: BattlefieldInstance | null;
+    /** Narration style instruction for this match. */
+    styleInstruction?: string;
+    styleName?: string;
   }): Promise<NarrationResult>;
+  /**
+   * Pre-combat prologue: opening lines, atmosphere, rivalry / fate.
+   * Not a combat turn.
+   */
+  narratePrologue(input: {
+    scene: string;
+    sideAName: string;
+    sideBName: string;
+    sideABlurb?: string;
+    sideBBlurb?: string;
+    sideATraits?: string[];
+    sideBTraits?: string[];
+    policySummary?: string;
+    /** Summary of last finished matchup between these two, if any. */
+    priorMatchSummary?: string;
+    battlefield?: BattlefieldInstance | null;
+    styleInstruction?: string;
+    styleName?: string;
+  }): Promise<NarrationResult>;
+  /**
+   * Extra beat after KO: what becomes of the fallen / how the winner closes.
+   * Not a combat turn — pure aftermath narration.
+   */
+  narrateAftermath(input: {
+    turn: number;
+    scene: string;
+    sideAName: string;
+    sideBName: string;
+    winnerSide: "a" | "b" | "draw" | null;
+    winnerName: string | null;
+    fallenNames: string[];
+    battlefield?: BattlefieldInstance | null;
+    recentNarration?: string[];
+    styleInstruction?: string;
+    styleName?: string;
+  }): Promise<NarrationResult>;
+  /** Draft a custom narration style from free text. */
+  generateNarrationStyle?(prompt: string): Promise<{
+    displayName: string;
+    description: string;
+    instruction: string;
+    tags: string[];
+  }>;
   referee(input: {
     sideAName: string;
     sideBName: string;

@@ -5,11 +5,14 @@ import {
   CreateBattleRequestSchema,
   GenerateBattlefieldRequestSchema,
   GenerateCharacterRequestSchema,
+  GenerateNarrationStyleRequestSchema,
   GeneratePoliciesRequestSchema,
   LoginRequestSchema,
   RegisterRequestSchema,
   SaveBattlefieldFromBattleRequestSchema,
+  UpsertNarrationStyleRequestSchema,
   toPublicCharacter,
+  toPublicNarrationStyle,
   toPublicPreset,
   type BattlefieldPreset,
   type CharacterSheet,
@@ -30,6 +33,7 @@ import { createLlmProvider } from "./llm/index.js";
 import * as charRepo from "./repositories/characters.js";
 import * as battleRepo from "./repositories/battles.js";
 import * as bfRepo from "./repositories/battlefields.js";
+import * as styleRepo from "./repositories/narration-styles.js";
 import {
   advanceTurn,
   generateMatchPolicies,
@@ -54,7 +58,12 @@ export function buildRoutes() {
   const app = new Hono();
 
   app.get("/api/health", (c) =>
-    c.json({ ok: true, llm: llm.name, service: "kshiai" }),
+    c.json({
+      ok: true,
+      llm: llm.name,
+      models: llm.models ?? null,
+      service: "kshiai",
+    }),
   );
 
   // Local media (character portraits etc.)
@@ -212,12 +221,43 @@ export function buildRoutes() {
     return c.json({ ok: true, ratingMatchesVoided: voided });
   });
 
+  authed.get("/characters/:id/image-quota", async (c) => {
+    const user = c.get("user");
+    const sheet = charRepo.getSheet(c.req.param("id"));
+    if (!sheet || sheet.ownerUserId !== user.id) {
+      return c.json({ error: "not_found" }, 404);
+    }
+    const { getImageGenQuota } = await import("./services/image-quota.js");
+    return c.json({ quota: getImageGenQuota(sheet.id) });
+  });
+
   authed.post("/characters/:id/image", async (c) => {
     const user = c.get("user");
     const sheet = charRepo.getSheet(c.req.param("id"));
     if (!sheet || sheet.ownerUserId !== user.id) {
       return c.json({ error: "not_found" }, 404);
     }
+
+    const { getImageGenQuota, recordImageGenEvent, pruneImageGenEvents } =
+      await import("./services/image-quota.js");
+    try {
+      pruneImageGenEvents();
+    } catch {
+      /* non-fatal */
+    }
+
+    const quotaBefore = getImageGenQuota(sheet.id);
+    if (!quotaBefore.allowed) {
+      return c.json(
+        {
+          error: "rate_limited",
+          message: `顔生成の上限です。${quotaBefore.message}`,
+          quota: quotaBefore,
+        },
+        429,
+      );
+    }
+
     // Body may be missing / null / empty — never throw on parse
     let extra: string | undefined;
     try {
@@ -231,10 +271,23 @@ export function buildRoutes() {
     }
 
     try {
-      const { generateAndStoreCharacterPortrait } = await import(
+      const { generateAndStoreCharacterPortrait, logImageEvent } = await import(
         "./services/image-service.js"
       );
+      logImageEvent({
+        phase: "route_hit",
+        characterId: sheet.id,
+        userId: user.id,
+        hasExtra: Boolean(extra),
+        quota: quotaBefore,
+      });
       const result = await generateAndStoreCharacterPortrait(sheet, extra);
+      // Count attempt after we actually hit the image pipeline (ok or soft-fallback)
+      const quota = recordImageGenEvent({
+        userId: user.id,
+        characterId: sheet.id,
+        ok: result.ok,
+      });
       // Always bump updatedAt so public imageUrl ?v= changes (cache bust for iOS)
       const updatedAt = new Date().toISOString();
       const next: CharacterSheet = {
@@ -252,12 +305,33 @@ export function buildRoutes() {
       return c.json({
         character: toPublicCharacter(next),
         note: result.note,
+        ok: result.ok,
+        quota,
       });
     } catch (e) {
       const message = e instanceof Error ? e.message : String(e);
       console.error("[characters/image]", message);
-      // 502 for upstream image API failures (not client param mistakes)
-      return c.json({ error: "image_generation_failed", message }, 502);
+      try {
+        const { logImageEvent } = await import("./services/image-service.js");
+        logImageEvent({
+          phase: "route_error",
+          ok: false,
+          characterId: c.req.param("id"),
+          error: message,
+        });
+      } catch {
+        /* ignore */
+      }
+      // Hard failure still consumes a slot (API may have been billed / attempted)
+      const quota = recordImageGenEvent({
+        userId: user.id,
+        characterId: sheet.id,
+        ok: false,
+      });
+      return c.json(
+        { error: "image_generation_failed", message, quota },
+        502,
+      );
     }
   });
 
@@ -429,9 +503,80 @@ export function buildRoutes() {
     return c.json({ battlefield: toPublicPreset(preset) });
   });
 
+  // —— Narration styles (system presets + user custom) ——
+  authed.get("/narration-styles", (c) => {
+    const user = c.get("user");
+    return c.json({ styles: styleRepo.listNarrationStyles(user.id) });
+  });
+
+  authed.post("/narration-styles", async (c) => {
+    const user = c.get("user");
+    try {
+      const body = UpsertNarrationStyleRequestSchema.parse(await c.req.json());
+      const style = styleRepo.createUserNarrationStyle(user.id, body);
+      return c.json({ style: toPublicNarrationStyle(style) }, 201);
+    } catch (e) {
+      const message = e instanceof Error ? e.message : "invalid";
+      return c.json({ error: "invalid_request", message }, 400);
+    }
+  });
+
+  authed.post("/narration-styles/generate", async (c) => {
+    const user = c.get("user");
+    try {
+      const body = GenerateNarrationStyleRequestSchema.parse(await c.req.json());
+      const draft = llm.generateNarrationStyle
+        ? await llm.generateNarrationStyle(body.prompt)
+        : {
+            displayName: body.prompt.slice(0, 12) || "カスタム",
+            description: body.prompt.slice(0, 80),
+            instruction: `次の雰囲気で語る: ${body.prompt}`,
+            tags: ["custom"],
+          };
+      const style = styleRepo.createUserNarrationStyle(user.id, draft);
+      return c.json({ style: toPublicNarrationStyle(style) }, 201);
+    } catch (e) {
+      const message = e instanceof Error ? e.message : "failed";
+      return c.json({ error: "generate_failed", message }, 400);
+    }
+  });
+
+  authed.patch("/narration-styles/:id", async (c) => {
+    const user = c.get("user");
+    try {
+      const body = UpsertNarrationStyleRequestSchema.partial().parse(
+        await c.req.json(),
+      );
+      const style = styleRepo.updateUserNarrationStyle(
+        c.req.param("id"),
+        user.id,
+        body,
+      );
+      if (!style) return c.json({ error: "not_found" }, 404);
+      return c.json({ style: toPublicNarrationStyle(style) });
+    } catch (e) {
+      const message = e instanceof Error ? e.message : "invalid";
+      return c.json({ error: "invalid_request", message }, 400);
+    }
+  });
+
+  authed.delete("/narration-styles/:id", (c) => {
+    const user = c.get("user");
+    const ok = styleRepo.deleteUserNarrationStyle(c.req.param("id"), user.id);
+    if (!ok) return c.json({ error: "not_found" }, 404);
+    return c.json({ ok: true });
+  });
+
   authed.post("/battles", async (c) => {
     const user = c.get("user");
-    const body = CreateBattleRequestSchema.parse(await c.req.json());
+    let body: ReturnType<typeof CreateBattleRequestSchema.parse>;
+    try {
+      body = CreateBattleRequestSchema.parse(await c.req.json());
+    } catch (e) {
+      const message = e instanceof Error ? e.message : "invalid_body";
+      console.error("[battles] create validation failed", message);
+      return c.json({ error: "invalid_request", message }, 400);
+    }
     try {
       const battle = await startBattle({
         userId: user.id,
@@ -442,12 +587,17 @@ export function buildRoutes() {
         stance: body.stance,
         policies: body.policies,
         selectedPolicyIds: body.selectedPolicyIds,
+        narrationStyleId: body.narrationStyleId,
         llm,
       });
       return c.json({ battle });
     } catch (e) {
       const msg = e instanceof Error ? e.message : "error";
-      return c.json({ error: msg.toLowerCase() }, 400);
+      console.error("[battles] startBattle failed", msg, e);
+      return c.json(
+        { error: msg.toLowerCase(), message: msg },
+        msg.includes("NOT_FOUND") || msg.includes("FORBIDDEN") ? 400 : 500,
+      );
     }
   });
 
@@ -488,28 +638,41 @@ export function buildRoutes() {
     if (meta.side_a_user_id !== user.id) return c.json({ error: "forbidden" }, 403);
     const mine = charRepo.getSheet(meta.side_a_character_id);
     if (!mine) return c.json({ error: "not_found" }, 404);
-    return c.json({ battle: toBattlePublic(state, mine) });
+    const opp = charRepo.getSheet(meta.side_b_character_id);
+    return c.json({ battle: toBattlePublic(state, mine, null, opp) });
   });
 
   /** Advance one turn; actions chosen automatically from stances. */
   authed.post("/battles/:id/advance", async (c) => {
     const user = c.get("user");
+    const battleId = c.req.param("id");
+    const started = Date.now();
+    console.info(`[battles] advance start ${battleId}`);
     try {
       const battle = await advanceTurn({
         userId: user.id,
-        battleId: c.req.param("id"),
+        battleId,
         llm,
       });
+      console.info(
+        `[battles] advance ok ${battleId} turn=${battle.turn} ${Date.now() - started}ms aft=${battle.aftermathPending ? 1 : 0}`,
+      );
       return c.json({ battle });
     } catch (e) {
       const msg = e instanceof Error ? e.message : "error";
+      console.error(
+        `[battles] advance fail ${battleId} ${Date.now() - started}ms`,
+        msg,
+      );
       const code =
         msg === "FORBIDDEN"
           ? 403
           : msg === "BATTLE_NOT_FOUND"
             ? 404
-            : 400;
-      return c.json({ error: msg.toLowerCase() }, code);
+            : msg === "BATTLE_FINISHED"
+              ? 409
+              : 500;
+      return c.json({ error: msg.toLowerCase(), message: msg }, code);
     }
   });
 

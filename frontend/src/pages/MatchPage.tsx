@@ -1,10 +1,11 @@
 import { useCallback, useMemo, useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import type {
   BattlefieldPresetPublic,
   BattlePolicyOption,
   BattlePolicyOptionPublic,
   CharacterPublic,
+  NarrationStylePublic,
 } from "@kshiai/shared";
 import { api } from "../api";
 import { useLocalDraft } from "../hooks/useLocalDraft";
@@ -22,6 +23,7 @@ type MatchDraft = {
   myId: string;
   oppId: string;
   fieldId: string;
+  styleId: string;
   step: 1 | 2;
 };
 
@@ -29,6 +31,7 @@ const DEFAULT_MATCH_DRAFT: MatchDraft = {
   myId: "",
   oppId: "",
   fieldId: "",
+  styleId: "nst_default",
   step: 1,
 };
 
@@ -41,20 +44,23 @@ const DEFAULT_MATCH_DRAFT: MatchDraft = {
  */
 export function MatchPage() {
   const nav = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [draft, setDraft, clearDraft] = useLocalDraft<MatchDraft>(
     "match:setup",
     DEFAULT_MATCH_DRAFT,
   );
-  const { myId, oppId, fieldId, step } = draft;
+  const { myId, oppId, fieldId, styleId, step } = draft;
 
   const setMyId = (id: string) => setDraft((d) => ({ ...d, myId: id }));
   const setOppId = (id: string) => setDraft((d) => ({ ...d, oppId: id }));
   const setFieldId = (id: string) => setDraft((d) => ({ ...d, fieldId: id }));
+  const setStyleId = (id: string) => setDraft((d) => ({ ...d, styleId: id }));
   const setStep = (s: 1 | 2) => setDraft((d) => ({ ...d, step: s }));
 
   const [mine, setMine] = useState<CharacterPublic[]>([]);
   const [candidates, setCandidates] = useState<CharacterPublic[]>([]);
   const [fields, setFields] = useState<BattlefieldPresetPublic[]>([]);
+  const [styles, setStyles] = useState<NarrationStylePublic[]>([]);
 
   const [policyOptions, setPolicyOptions] = useState<BattlePolicyOptionPublic[]>(
     [],
@@ -79,28 +85,67 @@ export function MatchPage() {
 
   useEffect(() => {
     void (async () => {
-      const [c, m, f] = await Promise.all([
+      const [c, m, f, s] = await Promise.all([
         api.candidates(),
         api.listCharacters(),
         api.listBattlefields(),
+        api.listNarrationStyles(),
       ]);
       setCandidates(c.candidates);
       setMine(m.characters);
       setFields(f.battlefields);
-      // Restore draft IDs only if they still exist; otherwise fall back
+      setStyles(s.styles);
+
+      // Deep-link from list/detail: /match?my=…&opp=…&field=…
+      const qMy = searchParams.get("my") ?? "";
+      const qOpp = searchParams.get("opp") ?? "";
+      const qField = searchParams.get("field") ?? "";
+      const qStyle = searchParams.get("style") ?? "";
+      const hasQuery = Boolean(qMy || qOpp || qField || qStyle);
+
+      // Restore draft IDs only if they still exist; query params win when present
       setDraft((d) => {
-        const myOk = d.myId && m.characters.some((x) => x.id === d.myId);
-        const oppOk =
-          d.oppId && c.candidates.some((x) => x.id === d.oppId);
-        const fieldOk =
-          !d.fieldId || f.battlefields.some((x) => x.id === d.fieldId);
+        const pickMy =
+          (qMy && m.characters.some((x) => x.id === qMy) && qMy) ||
+          (d.myId && m.characters.some((x) => x.id === d.myId) && d.myId) ||
+          m.characters[0]?.id ||
+          "";
+        const pickOpp =
+          (qOpp &&
+            c.candidates.some((x) => x.id === qOpp && x.id !== pickMy) &&
+            qOpp) ||
+          (d.oppId &&
+            c.candidates.some((x) => x.id === d.oppId && x.id !== pickMy) &&
+            d.oppId) ||
+          "";
+        const pickField =
+          (qField && f.battlefields.some((x) => x.id === qField) && qField) ||
+          (d.fieldId && f.battlefields.some((x) => x.id === d.fieldId)
+            ? d.fieldId
+            : "") ||
+          "";
+        const pickStyle =
+          (qStyle && s.styles.some((x) => x.id === qStyle) && qStyle) ||
+          (d.styleId && s.styles.some((x) => x.id === d.styleId) && d.styleId) ||
+          s.styles.find((x) => x.id === "nst_default")?.id ||
+          s.styles[0]?.id ||
+          "";
+
+        // Coming from a character card: start on step 1 with that char selected
+        const forceStep1 = Boolean(qMy || qOpp || qField);
         return {
-          myId: myOk ? d.myId : m.characters[0]?.id ?? "",
-          oppId: oppOk ? d.oppId : "",
-          fieldId: fieldOk ? d.fieldId : "",
-          step: myOk && oppOk ? d.step : 1,
+          myId: pickMy,
+          oppId: pickOpp && pickOpp !== pickMy ? pickOpp : "",
+          fieldId: pickField,
+          styleId: pickStyle,
+          step: forceStep1 ? 1 : pickMy && pickOpp ? d.step : 1,
         };
       });
+
+      // Clear query so refresh keeps draft, not sticky deep-link
+      if (hasQuery) {
+        setSearchParams({}, { replace: true });
+      }
     })().catch((e) => setError(String(e)));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -127,6 +172,10 @@ export function MatchPage() {
   const fieldMeta = useMemo(
     () => fields.find((f) => f.id === fieldId) ?? null,
     [fields, fieldId],
+  );
+  const styleMeta = useMemo(
+    () => styles.find((s) => s.id === styleId) ?? null,
+    [styles, styleId],
   );
 
   function invalidatePolicies() {
@@ -272,6 +321,7 @@ export function MatchPage() {
       const { battle } = await api.createBattle(myId, oppId, {
         policies,
         selectedPolicyIds: selected,
+        narrationStyleId: styleId || undefined,
         ...fieldOpts(),
       });
       clearDraft();
@@ -381,6 +431,28 @@ export function MatchPage() {
           </label>
           {fieldMeta && (
             <p className="muted help-text">{fieldMeta.narrativeBlurb}</p>
+          )}
+
+          <label className="field">
+            <span className="field-label">ナレーションスタイル</span>
+            <select
+              value={styleId}
+              onChange={(e) => setStyleId(e.target.value)}
+            >
+              {styles.map((s) => (
+                <option key={s.id} value={s.id}>
+                  {s.isSystem ? "[標準] " : ""}
+                  {s.displayName}
+                </option>
+              ))}
+            </select>
+          </label>
+          {styleMeta && (
+            <p className="muted help-text">
+              {styleMeta.description}
+              {" · "}
+              <Link to="/narration-styles">スタイルを編集・追加</Link>
+            </p>
           )}
 
           <label className="field">

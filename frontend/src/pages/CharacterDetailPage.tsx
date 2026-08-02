@@ -1,11 +1,36 @@
-import { useEffect, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import type { CharacterPublic } from "@kshiai/shared";
-import { api } from "../api";
+import { api, ApiError, type ImageGenQuota } from "../api";
 import { useLocalDraft } from "../hooks/useLocalDraft";
 import { mediaSrc } from "../media";
 
 const CHAT_PLACEHOLDER = "もっと防御寄りにして";
+
+function formatNextAt(iso: string | null | undefined): string | null {
+  if (!iso) return null;
+  try {
+    return new Date(iso).toLocaleString("ja-JP", {
+      month: "numeric",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  } catch {
+    return iso;
+  }
+}
+
+function quotaHint(q: ImageGenQuota | null): string {
+  if (!q) return "";
+  if (q.allowed) {
+    return `顔生成の残り: 1時間 ${q.remainingHour}/${q.limitHour} ・ 本日 ${q.remainingDay}/${q.limitDay}`;
+  }
+  const next = formatNextAt(q.nextAllowedAt);
+  return next
+    ? `顔生成は上限です。次回可能: ${next}`
+    : "顔生成は上限です。しばらく待ってから再度お試しください。";
+}
 
 export function CharacterDetailPage() {
   const { id } = useParams();
@@ -18,6 +43,17 @@ export function CharacterDetailPage() {
   const [assistant, setAssistant] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [imageBusy, setImageBusy] = useState(false);
+  const [quota, setQuota] = useState<ImageGenQuota | null>(null);
+
+  const reloadQuota = useCallback(async (charId: string) => {
+    try {
+      const res = await api.imageQuota(charId);
+      setQuota(res.quota);
+    } catch {
+      /* non-fatal */
+    }
+  }, []);
 
   useEffect(() => {
     if (!id) return;
@@ -27,9 +63,23 @@ export function CharacterDetailPage() {
         const found = characters.find((c) => c.id === id) ?? null;
         setCharacter(found);
         if (!found) setError("not_found");
+        else void reloadQuota(id);
       })
       .catch((e) => setError(String(e)));
-  }, [id]);
+  }, [id, reloadQuota]);
+
+  // Refresh countdown label while waiting for next slot
+  useEffect(() => {
+    if (!quota || quota.allowed || !quota.nextAllowedAt || !id) return;
+    const tick = () => {
+      const t = Date.parse(quota.nextAllowedAt!);
+      if (Number.isFinite(t) && Date.now() >= t) {
+        void reloadQuota(id);
+      }
+    };
+    const idTimer = window.setInterval(tick, 30_000);
+    return () => window.clearInterval(idTimer);
+  }, [quota, id, reloadQuota]);
 
   async function onChat(e: FormEvent) {
     e.preventDefault();
@@ -68,27 +118,55 @@ export function CharacterDetailPage() {
 
   async function onImage() {
     if (!id) return;
-    setBusy(true);
+    if (quota && !quota.allowed) {
+      setError(quotaHint(quota));
+      return;
+    }
+    setImageBusy(true);
     setError(null);
     try {
       const res = await api.generateImage(id);
       setCharacter(res.character);
       setAssistant(res.note ?? "画像を更新しました");
+      if (res.quota) setQuota(res.quota);
+      else void reloadQuota(id);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "failed");
+      if (err instanceof ApiError) {
+        if (err.quota) setQuota(err.quota);
+        setError(err.message);
+      } else {
+        setError(err instanceof Error ? err.message : "failed");
+      }
     } finally {
-      setBusy(false);
+      setImageBusy(false);
     }
   }
 
   if (!character && !error) return <p className="muted">読み込み中…</p>;
   if (!character) return <p className="error">キャラが見つかりません</p>;
 
+  const imageBlocked = Boolean(quota && !quota.allowed);
+  const imageLabel = imageBusy
+    ? "生成中…"
+    : imageBlocked
+      ? "顔生成は上限です"
+      : character.appearance.imageUrl
+        ? "顔を再生成"
+        : "顔を AI 生成";
+
   return (
     <>
       <div className="row" style={{ justifyContent: "space-between" }}>
         <h1>{character.displayName}</h1>
-        <Link to="/characters">← 一覧</Link>
+        <div className="row" style={{ gap: "0.45rem" }}>
+          <Link
+            className="btn primary"
+            to={`/match?my=${encodeURIComponent(character.id)}`}
+          >
+            このキャラで対戦
+          </Link>
+          <Link to="/characters">← 一覧</Link>
+        </div>
       </div>
 
       <div className="panel grid" style={{ gridTemplateColumns: "160px 1fr", gap: "1rem" }}>
@@ -142,8 +220,20 @@ export function CharacterDetailPage() {
             武器: {character.weaponName ?? "—"} / 防具: {character.armorName ?? "—"}
           </p>
           <div className="row">
-            <button className="btn" type="button" disabled={busy} onClick={() => void onImage()}>
-              {busy ? "生成中…" : character.appearance.imageUrl ? "顔を再生成" : "顔を AI 生成"}
+            <Link
+              className="btn primary"
+              to={`/match?my=${encodeURIComponent(character.id)}`}
+            >
+              対戦する
+            </Link>
+            <button
+              className="btn"
+              type="button"
+              disabled={imageBusy || busy || imageBlocked}
+              onClick={() => void onImage()}
+              title={quotaHint(quota)}
+            >
+              {imageLabel}
             </button>
             <button className="btn" type="button" onClick={() => void onCopy()}>
               コピー
@@ -152,6 +242,19 @@ export function CharacterDetailPage() {
               削除
             </button>
           </div>
+          {quota && (
+            <p className={`image-quota-hint${imageBlocked ? " is-blocked" : ""}`}>
+              {quotaHint(quota)}
+              {imageBlocked && quota.nextAllowedAt ? (
+                <>
+                  <br />
+                  <span className="muted">
+                    （制限: 1時間に{quota.limitHour}回 / 1日に{quota.limitDay}回）
+                  </span>
+                </>
+              ) : null}
+            </p>
+          )}
         </div>
       </div>
 
@@ -165,7 +268,7 @@ export function CharacterDetailPage() {
             placeholder={CHAT_PLACEHOLDER}
             rows={3}
           />
-          <button className="btn primary" type="submit" disabled={busy}>
+          <button className="btn primary" type="submit" disabled={busy || imageBusy}>
             送信
           </button>
         </form>

@@ -55,22 +55,26 @@ describe("battle engine", () => {
     assert.ok((next.sideB.parameters.hp ?? 100) < 100);
   });
 
-  it("ends when HP reaches zero", () => {
+  it("defers finish for aftermath after HP reaches zero", () => {
     const state = createBattleState({
       id: "b2",
       sideA: sheet("a", "A"),
       sideB: sheet("b", "B", 1),
       turnLimit: 20,
     });
-    const { state: next } = resolveTurn({
+    const { state: next, events } = resolveTurn({
       state,
       playerAction: { actorSide: "a", kind: "skill", skillId: "slash" },
       sideASkills: sheet("a", "A").skills,
       sideBSkills: sheet("b", "B", 1).skills,
     });
-    assert.equal(next.status, "finished");
+    // Combat does not hard-finish; one extra aftermath beat is pending.
+    assert.equal(next.status, "active");
+    assert.equal(next.aftermathPending, true);
     assert.equal(next.winnerSide, "a");
     assert.equal(next.finishReason, "incapacitated");
+    assert.ok(events.some((e) => e.type === "status"));
+    assert.ok(events.some((e) => e.summary.includes("余波") || e.summary.includes("倒れた")));
   });
 
   it("clamps wild coefficients", () => {

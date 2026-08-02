@@ -12,14 +12,16 @@ export function createLlmProvider(): LlmProvider {
         name: "xai",
         apiKey: config.xai.apiKey,
         baseUrl: config.xai.baseUrl,
-        model: config.xai.model,
+        modelEngine: config.xai.modelEngine,
+        modelFast: config.xai.modelFast,
       });
     case "venice":
       return new OpenAiCompatibleProvider({
         name: "venice",
         apiKey: config.venice.apiKey,
         baseUrl: config.venice.baseUrl,
-        model: config.venice.model,
+        modelEngine: config.venice.modelEngine,
+        modelFast: config.venice.modelFast,
       });
     case "mock":
     default:

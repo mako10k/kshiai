@@ -87,7 +87,15 @@ export function BattlefieldDetailPage() {
     <>
       <div className="row" style={{ justifyContent: "space-between" }}>
         <h1>{field.displayName}</h1>
-        <Link to="/battlefields">← 一覧</Link>
+        <div className="row" style={{ gap: "0.45rem" }}>
+          <Link
+            className="btn primary"
+            to={`/match?field=${encodeURIComponent(field.id)}`}
+          >
+            この戦場で対戦
+          </Link>
+          <Link to="/battlefields">← 一覧</Link>
+        </div>
       </div>
 
       <div className="panel grid" style={{ gap: "1rem" }}>

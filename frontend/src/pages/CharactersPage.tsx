@@ -57,7 +57,12 @@ export function CharactersPage() {
     <>
       <div className="row" style={{ justifyContent: "space-between" }}>
         <h1>キャラ管理</h1>
-        <Link to="/">← メニュー</Link>
+        <div className="row" style={{ gap: "0.45rem" }}>
+          <Link className="btn primary" to="/match">
+            対戦セットアップ
+          </Link>
+          <Link to="/">← メニュー</Link>
+        </div>
       </div>
 
       <div className="panel">
@@ -139,9 +144,14 @@ export function CharactersPage() {
                   </span>
                 ))}
               </div>
-              <Link className="btn" to={`/characters/${c.id}`}>
-                詳細・調整
-              </Link>
+              <div className="row" style={{ marginTop: "0.5rem", gap: "0.4rem" }}>
+                <Link className="btn primary" to={`/match?my=${encodeURIComponent(c.id)}`}>
+                  このキャラで対戦
+                </Link>
+                <Link className="btn" to={`/characters/${c.id}`}>
+                  詳細・調整
+                </Link>
+              </div>
             </div>
           ))}
           {list.length === 0 && <p className="muted">キャラがまだいません。</p>}

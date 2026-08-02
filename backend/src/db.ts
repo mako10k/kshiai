@@ -51,6 +51,31 @@ export function getDb(): Database.Database {
       created_at TEXT NOT NULL,
       updated_at TEXT NOT NULL
     );
+
+    -- Face / portrait generation attempts (rate limit per character)
+    CREATE TABLE IF NOT EXISTS image_gen_events (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id TEXT NOT NULL,
+      character_id TEXT NOT NULL,
+      created_at TEXT NOT NULL,
+      ok INTEGER NOT NULL DEFAULT 0
+    );
+    CREATE INDEX IF NOT EXISTS idx_image_gen_char_time
+      ON image_gen_events (character_id, created_at);
+    CREATE INDEX IF NOT EXISTS idx_image_gen_user_time
+      ON image_gen_events (user_id, created_at);
+
+    -- Narration voice styles (system presets + user custom)
+    CREATE TABLE IF NOT EXISTS narration_styles (
+      id TEXT PRIMARY KEY,
+      owner_user_id TEXT,
+      is_system INTEGER NOT NULL DEFAULT 0,
+      sheet_json TEXT NOT NULL,
+      created_at TEXT NOT NULL,
+      updated_at TEXT NOT NULL
+    );
+    CREATE INDEX IF NOT EXISTS idx_narration_styles_owner
+      ON narration_styles (owner_user_id);
   `);
   return db;
 }

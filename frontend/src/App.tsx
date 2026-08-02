@@ -9,6 +9,7 @@ import { BattlePage } from "./pages/BattlePage";
 import { BattlefieldsPage } from "./pages/BattlefieldsPage";
 import { BattlefieldDetailPage } from "./pages/BattlefieldDetailPage";
 import { HistoryPage } from "./pages/HistoryPage";
+import { NarrationStylesPage } from "./pages/NarrationStylesPage";
 
 function Shell({ children }: { children: React.ReactNode }) {
   const { user, logout } = useAuth();
@@ -97,6 +98,14 @@ export function App() {
           element={
             <RequireAuth>
               <BattlefieldDetailPage />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/narration-styles"
+          element={
+            <RequireAuth>
+              <NarrationStylesPage />
             </RequireAuth>
           }
         />

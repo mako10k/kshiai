@@ -22,6 +22,10 @@ export function MenuPage() {
           <strong>戦場</strong>
           <div className="muted">プリセットの管理</div>
         </Link>
+        <Link to="/narration-styles">
+          <strong>ナレーション</strong>
+          <div className="muted">語り口のプリセット・自作</div>
+        </Link>
       </nav>
     </div>
   );

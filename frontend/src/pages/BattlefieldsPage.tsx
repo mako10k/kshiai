@@ -72,7 +72,12 @@ export function BattlefieldsPage() {
     <>
       <div className="row" style={{ justifyContent: "space-between" }}>
         <h1>戦場管理</h1>
-        <Link to="/">← メニュー</Link>
+        <div className="row" style={{ gap: "0.45rem" }}>
+          <Link className="btn primary" to="/match">
+            対戦セットアップ
+          </Link>
+          <Link to="/">← メニュー</Link>
+        </div>
       </div>
 
       <div className="panel">
@@ -169,9 +174,17 @@ export function BattlefieldsPage() {
                   </span>
                 ))}
               </div>
-              <Link className="btn" to={`/battlefields/${b.id}`}>
-                詳細・調整
-              </Link>
+              <div className="row" style={{ marginTop: "0.5rem", gap: "0.4rem" }}>
+                <Link
+                  className="btn primary"
+                  to={`/match?field=${encodeURIComponent(b.id)}`}
+                >
+                  この戦場で対戦
+                </Link>
+                <Link className="btn" to={`/battlefields/${b.id}`}>
+                  詳細・調整
+                </Link>
+              </div>
             </div>
           ))}
           {list.length === 0 && <p className="muted">プリセットがありません。</p>}

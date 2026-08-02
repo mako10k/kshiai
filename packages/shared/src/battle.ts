@@ -5,6 +5,7 @@ import {
   BattlefieldInstancePublicSchema,
   BattlefieldInstanceSchema,
 } from "./battlefield.js";
+import { NarrationStyleSnapshotSchema } from "./narration-style.js";
 
 export const BattleStatusSchema = z.enum([
   "active",
@@ -49,6 +50,25 @@ export const PolicyBiasSchema = z.enum([
 export type PolicyBias = z.infer<typeof PolicyBiasSchema>;
 
 /**
+ * HP ratio 0–1. LLMs often emit 40/55 as percent — coerce those into 0.4/0.55.
+ */
+const HpRatioSchema = z.preprocess((raw) => {
+  if (raw === null || raw === undefined || raw === "") return undefined;
+  const n = typeof raw === "number" ? raw : Number(raw);
+  if (!Number.isFinite(n)) return undefined;
+  if (n > 1 && n <= 100) return n / 100;
+  if (n > 100) return 1;
+  if (n < 0) return 0;
+  return n;
+}, z.number().min(0).max(1).optional());
+
+const IntPrioritySchema = z.preprocess((raw) => {
+  const n = typeof raw === "number" ? raw : Number(raw);
+  if (!Number.isFinite(n)) return 0;
+  return Math.round(Math.min(1000, Math.max(-1000, n)));
+}, z.number().int());
+
+/**
  * Situation triggers for matching a policy rule at turn time.
  * Ratios are 0–1 (of max HP). Undefined = no constraint.
  */
@@ -57,10 +77,10 @@ export const PolicyTriggersSchema = z.object({
   earlyTurn: z.boolean().optional(),
   /** True only after turn >= mid (4+). */
   lateTurn: z.boolean().optional(),
-  myHpBelow: z.number().min(0).max(1).optional(),
-  myHpAbove: z.number().min(0).max(1).optional(),
-  foeHpBelow: z.number().min(0).max(1).optional(),
-  foeHpAbove: z.number().min(0).max(1).optional(),
+  myHpBelow: HpRatioSchema,
+  myHpAbove: HpRatioSchema,
+  foeHpBelow: HpRatioSchema,
+  foeHpAbove: HpRatioSchema,
   /** Always consider this rule as a soft default fallback. */
   always: z.boolean().optional(),
 });
@@ -79,9 +99,9 @@ export const BattlePolicyOptionSchema = z.object({
   /** What approach to take (user-facing). */
   then: z.string(),
   /** Engine action bias when this rule wins. */
-  bias: PolicyBiasSchema.default("mixed"),
+  bias: PolicyBiasSchema.catch("mixed").default("mixed"),
   /** Higher priority wins among matching rules. */
-  priority: z.number().int().default(0),
+  priority: IntPrioritySchema.default(0),
   triggers: PolicyTriggersSchema.default({}),
   /** Suggested default selection from LLM / heuristics. */
   defaultSelected: z.boolean().default(false),
@@ -166,6 +186,8 @@ export type BattleAction = z.infer<typeof BattleActionSchema>;
 export const CombatantStateSchema = z.object({
   characterId: z.string(),
   displayName: z.string(),
+  /** Portrait URL snapshot for records / UI (no combat params). */
+  imageUrl: z.string().nullable().optional(),
   parameters: ParametersSchema,
   defending: z.boolean().default(false),
   canFight: z.boolean().default(true),
@@ -202,6 +224,16 @@ export const TurnEventSchema = z.object({
 });
 export type TurnEvent = z.infer<typeof TurnEventSchema>;
 
+/** Monotony tracker for environmental happenings (supervisor). */
+export const SupervisorStateSchema = z.object({
+  quietTurns: z.number().int().nonnegative().default(0),
+  turnsSinceHappening: z.number().int().nonnegative().default(0),
+  lastHpA: z.number().nullable().default(null),
+  lastHpB: z.number().nullable().default(null),
+  happenings: z.number().int().nonnegative().default(0),
+});
+export type SupervisorState = z.infer<typeof SupervisorStateSchema>;
+
 export const BattleStateSchema = z.object({
   id: z.string(),
   status: BattleStatusSchema,
@@ -221,6 +253,28 @@ export const BattleStateSchema = z.object({
   situation: SituationSchema,
   /** Concrete battlefield fixed at match start. */
   battlefield: BattlefieldInstanceSchema.optional(),
+  /**
+   * Battle supervisor: injects environmental happenings when the fight stalls.
+   * Optional for older saved battles.
+   */
+  supervisor: SupervisorStateSchema.optional(),
+  /**
+   * Before first combat turn: opening monologue / rivalry prologue.
+   * New battles start true; older saves without the field default false.
+   */
+  prologuePending: z.boolean().optional().default(false),
+  /**
+   * After incapacity KO: stay active for one extra "aftermath" beat
+   * (what becomes of the fallen / winner's closing moment) before finish.
+   */
+  aftermathPending: z.boolean().optional().default(false),
+  /** Narration voice for this match (frozen at start). */
+  narrationStyle: NarrationStyleSnapshotSchema.optional(),
+  /**
+   * Prior finished matchup summary between these two characters (if any),
+   * used for prologue rivalry / 因縁.
+   */
+  priorMatchSummary: z.string().nullable().optional(),
   log: z.array(NarrativeBlockSchema).default([]),
   winnerSide: z.enum(["a", "b", "draw"]).nullable().default(null),
   finishReason: FinishReasonSchema.nullable().default(null),
@@ -265,11 +319,13 @@ export const BattlePublicSchema = z.object({
     characterId: z.string(),
     displayName: z.string(),
     canFight: z.boolean(),
+    imageUrl: z.string().nullable().optional(),
   }),
   sideB: z.object({
     characterId: z.string(),
     displayName: z.string(),
     canFight: z.boolean(),
+    imageUrl: z.string().nullable().optional(),
   }),
   /** Selected case policies (player), user-facing. */
   policies: z.array(BattlePolicyOptionPublicSchema).default([]),
@@ -298,6 +354,14 @@ export const BattlePublicSchema = z.object({
   winnerSide: z.enum(["a", "b", "draw"]).nullable(),
   finishReason: FinishReasonSchema.nullable(),
   resultSummary: z.string().nullable().optional(),
+  /** True while waiting for the post-KO aftermath beat. */
+  aftermathPending: z.boolean().optional().default(false),
+  /** True while waiting for the pre-combat prologue beat. */
+  prologuePending: z.boolean().optional().default(false),
+  /** Display name of the narration style for this match. */
+  narrationStyleName: z.string().optional(),
+  /** Prior rivalry note from last finished matchup (if any). */
+  priorMatchSummary: z.string().nullable().optional(),
 });
 export type BattlePublic = z.infer<typeof BattlePublicSchema>;
 

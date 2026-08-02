@@ -82,8 +82,27 @@ export const CreateBattleRequestSchema = z.object({
     )
     .optional(),
   selectedPolicyIds: z.array(z.string()).optional(),
+  /** Narration style id (system or owned). Omit → default. */
+  narrationStyleId: z.string().optional(),
 });
 export type CreateBattleRequest = z.infer<typeof CreateBattleRequestSchema>;
+
+export const UpsertNarrationStyleRequestSchema = z.object({
+  displayName: z.string().min(1).max(48),
+  description: z.string().max(400).optional(),
+  instruction: z.string().min(1).max(2000),
+  tags: z.array(z.string().max(24)).max(12).optional(),
+});
+export type UpsertNarrationStyleRequest = z.infer<
+  typeof UpsertNarrationStyleRequestSchema
+>;
+
+export const GenerateNarrationStyleRequestSchema = z.object({
+  prompt: z.string().min(1).max(1000),
+});
+export type GenerateNarrationStyleRequest = z.infer<
+  typeof GenerateNarrationStyleRequestSchema
+>;
 
 export const GenerateBattlefieldRequestSchema = z.object({
   prompt: z.string().min(1).max(4000),

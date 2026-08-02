@@ -58,7 +58,20 @@ export const config = {
   xai: {
     apiKey: process.env.XAI_API_KEY ?? "",
     baseUrl: process.env.XAI_BASE_URL ?? "https://api.x.ai/v1",
+    /** @deprecated use modelEngine */
     model: process.env.XAI_MODEL ?? "grok-4.5",
+    /**
+     * Engine tier: character/battlefield generation, policies, referee.
+     * Prefer stronger / more accurate models.
+     */
+    modelEngine:
+      process.env.XAI_MODEL_ENGINE ?? process.env.XAI_MODEL ?? "grok-4.5",
+    /**
+     * Fast tier: turn narration, aftermath, situation color.
+     * Prefer non-reasoning / low-latency models.
+     */
+    modelFast:
+      process.env.XAI_MODEL_FAST ?? "grok-4-fast-non-reasoning",
     imageModel: process.env.XAI_IMAGE_MODEL ?? "grok-imagine-image",
   },
   venice: {
@@ -66,6 +79,12 @@ export const config = {
     apiKey: process.env.VENICE_API_KEY ?? process.env.VENICEAI_API_KEY ?? "",
     baseUrl: process.env.VENICE_BASE_URL ?? "https://api.venice.ai/api/v1",
     model: process.env.VENICE_MODEL ?? "default",
+    modelEngine:
+      process.env.VENICE_MODEL_ENGINE ?? process.env.VENICE_MODEL ?? "default",
+    modelFast:
+      process.env.VENICE_MODEL_FAST ??
+      process.env.VENICE_MODEL ??
+      "default",
   },
   battleTurnLimit: Number(process.env.BATTLE_TURN_LIMIT ?? 20),
 };

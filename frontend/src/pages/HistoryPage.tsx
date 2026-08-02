@@ -103,9 +103,14 @@ export function HistoryPage() {
     <div className="history-page">
       <div className="page-header">
         <h1>試合記録</h1>
-        <Link to="/" className="btn ghost page-header-back">
-          メニュー
-        </Link>
+        <div className="row" style={{ gap: "0.45rem" }}>
+          <Link className="btn primary" to="/match">
+            新しい試合
+          </Link>
+          <Link to="/" className="btn ghost page-header-back">
+            メニュー
+          </Link>
+        </div>
       </div>
 
       <div className="panel history-panel">

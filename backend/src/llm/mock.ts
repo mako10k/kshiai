@@ -271,6 +271,40 @@ export class MockLlmProvider implements LlmProvider {
     };
   }
 
+  async proposeHappening(input: {
+    scene: string;
+    turn: number;
+    sideAName: string;
+    sideBName: string;
+    stagnationHint: string;
+    battlefield?: BattlefieldInstance | null;
+  }): Promise<{
+    title: string;
+    summary: string;
+    notes: string;
+    coefficients?: Record<string, number>;
+    tags?: string[];
+    envHits?: Array<{
+      target: "a" | "b" | "both";
+      kind: "damage" | "heal" | "disrupt";
+      intensity: "minor" | "moderate";
+    }>;
+  }> {
+    const { pickTemplateHappening } = await import("@kshiai/shared");
+    const plan = pickTemplateHappening({
+      battlefield: input.battlefield,
+      turn: input.turn,
+    });
+    return {
+      title: plan.title,
+      summary: plan.summary,
+      notes: plan.notes,
+      coefficients: plan.coefficients,
+      tags: plan.tags,
+      envHits: plan.envHits,
+    };
+  }
+
   async narrateTurn(input: {
     turn: number;
     scene: string;
@@ -278,12 +312,17 @@ export class MockLlmProvider implements LlmProvider {
     sideBName: string;
     events: { summary: string; actorName?: string; skillName?: string; intensity?: string }[];
     battlefield?: BattlefieldInstance | null;
+    styleInstruction?: string;
+    styleName?: string;
   }): Promise<NarrationResult> {
     const place = input.battlefield?.displayName
       ? `${input.scene}（${input.battlefield.displayName}）`
       : input.scene;
+    const styleNote = input.styleName
+      ? `（語り: ${input.styleName}）`
+      : "";
     const narrator = [
-      `第${input.turn}ターン — ${place}。`,
+      `第${input.turn}ターン — ${place}${styleNote}。`,
       ...input.events.map((e) => e.summary),
     ];
     const speeches = [
@@ -301,6 +340,108 @@ export class MockLlmProvider implements LlmProvider {
       },
     ];
     return { turn: input.turn, narrator, speeches };
+  }
+
+  async narratePrologue(input: {
+    scene: string;
+    sideAName: string;
+    sideBName: string;
+    sideABlurb?: string;
+    sideBBlurb?: string;
+    sideATraits?: string[];
+    sideBTraits?: string[];
+    policySummary?: string;
+    priorMatchSummary?: string;
+    battlefield?: BattlefieldInstance | null;
+    styleInstruction?: string;
+    styleName?: string;
+  }): Promise<NarrationResult> {
+    const place = input.battlefield?.displayName ?? input.scene;
+    const styleNote = input.styleName ? `（${input.styleName}）` : "";
+    return {
+      turn: 0,
+      narrator: [
+        `——開幕——${styleNote}`,
+        `${place}に、${input.sideAName} と ${input.sideBName} が向かい合う。`,
+        input.battlefield?.narrativeSetup ||
+          "風が刃を運び、空気が張りつめている。",
+        input.sideABlurb
+          ? `${input.sideAName} — ${input.sideABlurb.slice(0, 80)}`
+          : `${input.sideAName} の気配が場を支配する。`,
+        input.sideBBlurb
+          ? `${input.sideBName} — ${input.sideBBlurb.slice(0, 80)}`
+          : `${input.sideBName} が静かに間合いを測る。`,
+        input.priorMatchSummary
+          ? `因縁 — ${input.priorMatchSummary}`
+          : "今、初めての刃が交わる。",
+        input.policySummary
+          ? `${input.sideAName} の心中に方針が灯る: ${input.policySummary}`
+          : "",
+      ].filter(Boolean),
+      speeches: [
+        {
+          speaker: input.sideAName,
+          text: "……来るなら来い。",
+        },
+        {
+          speaker: input.sideBName,
+          text: "言葉は要らぬ。剣で語ろう。",
+        },
+      ],
+    };
+  }
+
+  async narrateAftermath(input: {
+    turn: number;
+    scene: string;
+    sideAName: string;
+    sideBName: string;
+    winnerSide: "a" | "b" | "draw" | null;
+    winnerName: string | null;
+    fallenNames: string[];
+    battlefield?: BattlefieldInstance | null;
+    recentNarration?: string[];
+    styleInstruction?: string;
+    styleName?: string;
+  }): Promise<NarrationResult> {
+    const place = input.battlefield?.displayName ?? input.scene;
+    const fallen = input.fallenNames.join("と") || "倒れた者";
+    const fieldBit = input.battlefield?.conditions?.[0] || input.battlefield?.terrain;
+    const styleNote = input.styleName ? `（${input.styleName}）` : "";
+    const narrator = [
+      `——決着の余波——${styleNote}`,
+      `${place}に、戦いの熱が静かにほどけていく。`,
+      fieldBit
+        ? `${fieldBit}の気配の中で、${fallen} はもはや刃を取れない。`
+        : `${fallen} は膝を折り、呼吸だけが戦場に残る。`,
+      input.winnerName
+        ? `${input.winnerName} は武器を下ろし、勝者としてその場に立つ。倒れた相手の運命——治療か、見捨てか、あるいは言葉——が、今この瞬間に決まる。`
+        : "両者とも地に伏し、どちらが先に目を開けるのかさえ分からない。",
+      "幕は、そこで静かに下りた。",
+    ];
+    const speeches = input.winnerName
+      ? [
+          {
+            speaker: input.winnerName,
+            text: "…終わりだ。立てるなら、立て。",
+          },
+        ]
+      : [];
+    return { turn: input.turn, narrator, speeches };
+  }
+
+  async generateNarrationStyle(prompt: string): Promise<{
+    displayName: string;
+    description: string;
+    instruction: string;
+    tags: string[];
+  }> {
+    return {
+      displayName: prompt.slice(0, 12) || "カスタム",
+      description: `「${prompt.slice(0, 40)}」風の語り`,
+      instruction: `次の雰囲気・口調で語る: ${prompt}。数値は出さない。`,
+      tags: ["custom", "mock"],
+    };
   }
 
   async generateBattlePolicies(input: {

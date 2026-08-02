@@ -20,46 +20,108 @@ import type {
 import { newId } from "../id.js";
 import { MockLlmProvider } from "./mock.js";
 
+/** engine = accuracy-first; fast = latency-first (narration / color). */
+export type LlmTier = "engine" | "fast";
+
 type ProviderConfig = {
   name: string;
   apiKey: string;
   baseUrl: string;
-  model: string;
+  modelEngine: string;
+  modelFast: string;
+};
+
+type ChatOpts = {
+  tier?: LlmTier;
+  timeoutMs?: number;
+  temperature?: number;
+  label?: string;
 };
 
 /**
  * OpenAI-compatible chat provider (xAI, Venice, etc.).
  * Falls back to mock behavior if the key is missing or the call fails hard.
+ *
+ * Two model tiers:
+ * - engine: structured generation (chars, policies, referee) — slower/stronger
+ * - fast: turn narration / situation color — low latency, non-reasoning preferred
  */
 export class OpenAiCompatibleProvider implements LlmProvider {
   readonly name: string;
+  readonly models: { engine: string; fast: string };
   private client: OpenAI | null;
-  private model: string;
+  private modelEngine: string;
+  private modelFast: string;
   private fallback = new MockLlmProvider();
 
   constructor(cfg: ProviderConfig) {
     this.name = cfg.name;
-    this.model = cfg.model;
+    this.modelEngine = cfg.modelEngine;
+    this.modelFast = cfg.modelFast || cfg.modelEngine;
+    this.models = { engine: this.modelEngine, fast: this.modelFast };
     this.client = cfg.apiKey
-      ? new OpenAI({ apiKey: cfg.apiKey, baseURL: cfg.baseUrl })
+      ? new OpenAI({
+          apiKey: cfg.apiKey,
+          baseURL: cfg.baseUrl,
+          // Default SDK timeout; per-call overrides apply for fast tier
+          timeout: 28_000,
+          maxRetries: 0,
+        })
       : null;
+    console.info(
+      `[llm] ${this.name} ready engine=${this.modelEngine} fast=${this.modelFast}`,
+    );
   }
 
-  private async chatJson(system: string, user: string): Promise<unknown> {
+  private modelFor(tier: LlmTier): string {
+    return tier === "fast" ? this.modelFast : this.modelEngine;
+  }
+
+  private async chatJson(
+    system: string,
+    user: string,
+    opts?: ChatOpts,
+  ): Promise<unknown> {
     if (!this.client) {
       throw new Error("LLM client not configured");
     }
-    const resp = await this.client.chat.completions.create({
-      model: this.model,
-      messages: [
-        { role: "system", content: system },
-        { role: "user", content: user },
-      ],
-      temperature: 0.7,
-      response_format: { type: "json_object" },
-    });
-    const text = resp.choices[0]?.message?.content ?? "{}";
-    return JSON.parse(text) as unknown;
+    const tier: LlmTier = opts?.tier ?? "engine";
+    const model = this.modelFor(tier);
+    const timeoutMs =
+      opts?.timeoutMs ?? (tier === "fast" ? 12_000 : 24_000);
+    const temperature =
+      opts?.temperature ?? (tier === "fast" ? 0.85 : 0.45);
+    const label = opts?.label ?? tier;
+    const started = Date.now();
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
+    try {
+      const resp = await this.client.chat.completions.create(
+        {
+          model,
+          messages: [
+            { role: "system", content: system },
+            { role: "user", content: user },
+          ],
+          temperature,
+          response_format: { type: "json_object" },
+        },
+        { signal: controller.signal, timeout: timeoutMs },
+      );
+      const text = resp.choices[0]?.message?.content ?? "{}";
+      console.info(
+        `[llm] ${this.name}/${label} model=${model} ok ${Date.now() - started}ms`,
+      );
+      return JSON.parse(text) as unknown;
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : String(e);
+      console.warn(
+        `[llm] ${this.name}/${label} model=${model} fail ${Date.now() - started}ms: ${msg.slice(0, 160)}`,
+      );
+      throw e;
+    } finally {
+      clearTimeout(timer);
+    }
   }
 
   async generateCharacter(prompt: string): Promise<GenerateCharacterResult> {
@@ -84,8 +146,12 @@ Return JSON: {
 }
 Parameters should be balanced around hp 80-120, atk/def 8-16.
 appearance.visualPrompt must be a detailed English portrait prompt for image gen:
-face, hair, eyes, outfit, age vibe, no combat stats numbers.`,
+face, hair, eyes, outfit colors, no combat stats numbers.
+CRITICAL for visualPrompt/summary: adult character (20s+), fully clothed modest outfit,
+NO child/teen/schoolgirl, NO torn/slipping clothes, NO exposure, NO sexualization.
+Safe-for-work anime portrait only.`,
         prompt,
+        { tier: "engine", label: "generateCharacter" },
       )) as Record<string, unknown>;
 
       const skillsRaw = Array.isArray(data.skills) ? data.skills : [];
@@ -176,6 +242,7 @@ Do not tell the user exact numbers.`,
           hiddenParameters: current.parameters,
           userMessage,
         }),
+        { tier: "engine", label: "adjustCharacter", temperature: 0.5 },
       )) as Record<string, unknown>;
 
       return {
@@ -214,6 +281,7 @@ Do not tell the user exact numbers.`,
   "baseCoefficients": { [key: string]: number }, "narrativeBlurb": string, "assistantMessage": string }
 Coefficients between 0.25 and 2.5. Do not invent stats for characters.`,
         JSON.stringify(input),
+        { tier: "engine", label: "generateBattlefield" },
       )) as Record<string, unknown>;
       const appearance = (data.appearance as Record<string, string>) ?? {};
       return {
@@ -273,6 +341,7 @@ Do not show numeric coefficients to the user in assistantMessage.`,
           hiddenCoefficients: current.baseCoefficients,
           userMessage,
         }),
+        { tier: "engine", label: "adjustBattlefield", temperature: 0.5 },
       )) as Record<string, unknown>;
       return {
         presetPatch: {
@@ -333,6 +402,7 @@ Coefficients 0.25-2.5. Make terrain/obstacles/conditions specific for THIS match
               }
             : null,
         }),
+        { tier: "engine", label: "concretizeBattlefield" },
       )) as Record<string, unknown>;
       const appearance = (data.appearance as Record<string, string>) ?? {};
       return {
@@ -379,10 +449,117 @@ Coefficients 0.25-2.5. Make terrain/obstacles/conditions specific for THIS match
         `Propose battle situation JSON: { "scene": string, "notes": string, "coefficients": { [key: string]: number }, "tags"?: string[] }.
 Respect the battlefield terrain/obstacles/conditions. Coefficients between 0.25 and 2.5.`,
         JSON.stringify(input),
+        { tier: "fast", label: "proposeSituation", timeoutMs: 8_000 },
       )) as SituationProposal;
       return data;
     } catch {
       return this.fallback.proposeSituation(input);
+    }
+  }
+
+  async proposeHappening(input: {
+    scene: string;
+    turn: number;
+    sideAName: string;
+    sideBName: string;
+    stagnationHint: string;
+    battlefield?: BattlefieldInstance | null;
+  }): Promise<{
+    title: string;
+    summary: string;
+    notes: string;
+    coefficients?: Record<string, number>;
+    tags?: string[];
+    envHits?: Array<{
+      target: "a" | "b" | "both";
+      kind: "damage" | "heal" | "disrupt";
+      intensity: "minor" | "moderate";
+    }>;
+  }> {
+    if (!this.client) return this.fallback.proposeHappening(input);
+    try {
+      const data = (await this.chatJson(
+        `You are a battle SUPERVISOR for a narrative duel. The fight is getting stagnant.
+Inject ONE environmental happening from the battlefield (not a character skill).
+Japanese only. Keep it COARSE and short — no step-by-step tactics, no HP numbers.
+
+Return JSON:
+{
+  "title": string,        // ~6 chars, e.g. 落石, 濃霧, 崩落
+  "summary": string,      // one sentence what happens on the field
+  "notes": string,        // ongoing battlefield mood after this
+  "coefficients": { [key: string]: number }, // 0.25-2.5 keys like damage,spd,wind,water,fire,mag,focus
+  "tags": string[],
+  "envHits": [{ "target": "a"|"b"|"both", "kind": "damage"|"heal"|"disrupt", "intensity": "minor"|"moderate" }]
+}
+Rules:
+- Must feel like the FIELD acting, not a character move.
+- Prefer 0-2 envHits; often "both" with minor disrupt/damage is enough.
+- Do not invent firearms/modern UI; match the scene tone.`,
+        JSON.stringify({
+          scene: input.scene,
+          turn: input.turn,
+          fighters: [input.sideAName, input.sideBName],
+          why: input.stagnationHint,
+          field: input.battlefield
+            ? {
+                name: input.battlefield.displayName,
+                category: input.battlefield.category,
+                terrain: input.battlefield.terrain,
+                obstacles: input.battlefield.obstacles?.slice(0, 4),
+                conditions: input.battlefield.conditions?.slice(0, 4),
+              }
+            : null,
+        }),
+        { tier: "fast", label: "proposeHappening", timeoutMs: 10_000 },
+      )) as {
+        title?: string;
+        summary?: string;
+        notes?: string;
+        coefficients?: Record<string, number>;
+        tags?: string[];
+        envHits?: Array<Record<string, unknown>>;
+      };
+
+      const title = String(data.title ?? "").trim() || "異変";
+      const summary =
+        String(data.summary ?? "").trim() ||
+        "戦場の空気がざわつき、膠着が崩れる。";
+      const notes =
+        String(data.notes ?? "").trim() || "環境の変化が攻防を急かしている。";
+      const envHits = Array.isArray(data.envHits)
+        ? data.envHits
+            .map((h) => {
+              const target = h.target;
+              const kind = h.kind;
+              const intensity = h.intensity;
+              if (target !== "a" && target !== "b" && target !== "both") {
+                return null;
+              }
+              if (kind !== "damage" && kind !== "heal" && kind !== "disrupt") {
+                return null;
+              }
+              if (intensity !== "minor" && intensity !== "moderate") {
+                return null;
+              }
+              return { target, kind, intensity } as const;
+            })
+            .filter((x): x is NonNullable<typeof x> => x != null)
+            .slice(0, 3)
+        : undefined;
+
+      return {
+        title: title.slice(0, 16),
+        summary: summary.slice(0, 80),
+        notes: notes.slice(0, 80),
+        coefficients: data.coefficients,
+        tags: Array.isArray(data.tags)
+          ? data.tags.map(String).slice(0, 6)
+          : undefined,
+        envHits,
+      };
+    } catch {
+      return this.fallback.proposeHappening(input);
     }
   }
 
@@ -393,14 +570,37 @@ Respect the battlefield terrain/obstacles/conditions. Coefficients between 0.25 
     sideBName: string;
     events: { summary: string }[];
     battlefield?: BattlefieldInstance | null;
+    styleInstruction?: string;
+    styleName?: string;
   }): Promise<NarrationResult> {
     if (!this.client) return this.fallback.narrateTurn(input);
     try {
+      const styleBlock = input.styleInstruction?.trim()
+        ? `Narration style「${input.styleName ?? "custom"}」: ${input.styleInstruction.trim()}`
+        : "Narration style: 落ち着いた標準の物語調。";
       const data = (await this.chatJson(
-        `Narrate a turn-based duel in Japanese. Use battlefield flavor (terrain/obstacles) when relevant. JSON:
+        `Narrate a turn-based duel in Japanese.
+${styleBlock}
+Use battlefield flavor (terrain/obstacles) when relevant.
+If events include 【ハプニング】, feature that environmental beat clearly in the narrator lines first.
+JSON:
 { "turn": number, "narrator": string[], "speeches": [{ "speaker": string, "text": string }] }
 Do not mention numeric HP/MP/ATK values. Character lines should be short spoken Japanese without brackets.`,
-        JSON.stringify(input),
+        JSON.stringify({
+          turn: input.turn,
+          scene: input.scene,
+          sideAName: input.sideAName,
+          sideBName: input.sideBName,
+          events: input.events,
+          battlefield: input.battlefield
+            ? {
+                displayName: input.battlefield.displayName,
+                terrain: input.battlefield.terrain,
+                obstacles: input.battlefield.obstacles?.slice(0, 4),
+              }
+            : null,
+        }),
+        { tier: "fast", label: "narrateTurn", timeoutMs: 14_000, temperature: 0.9 },
       )) as NarrationResult;
       return {
         turn: input.turn,
@@ -409,6 +609,146 @@ Do not mention numeric HP/MP/ATK values. Character lines should be short spoken 
       };
     } catch {
       return this.fallback.narrateTurn(input);
+    }
+  }
+
+  async narratePrologue(input: {
+    scene: string;
+    sideAName: string;
+    sideBName: string;
+    sideABlurb?: string;
+    sideBBlurb?: string;
+    sideATraits?: string[];
+    sideBTraits?: string[];
+    policySummary?: string;
+    priorMatchSummary?: string;
+    battlefield?: BattlefieldInstance | null;
+    styleInstruction?: string;
+    styleName?: string;
+  }): Promise<NarrationResult> {
+    if (!this.client) return this.fallback.narratePrologue(input);
+    try {
+      const styleBlock = input.styleInstruction?.trim()
+        ? `Narration style「${input.styleName ?? "custom"}」: ${input.styleInstruction.trim()}`
+        : "Narration style: 落ち着いた標準の物語調。";
+      const rivalryRule = input.priorMatchSummary?.trim()
+        ? `因縁 MUST weave in this prior matchup summary (paraphrase, do not invent a conflicting past): ${input.priorMatchSummary.trim()}`
+        : "因縁: no prior match on record — invent a light plausible fate/rivalry from character blurbs only.";
+      const data = (await this.chatJson(
+        `You write the PROLOGUE of a duel (Japanese), before any combat.
+${styleBlock}
+Include: atmosphere of the field, each fighter's opening presence / monologue vibe, and rivalry or fate (因縁).
+${rivalryRule}
+No combat resolution yet. No numeric stats.
+4–8 narrator lines + 1–3 short spoken lines.
+JSON:
+{ "turn": 0, "narrator": string[], "speeches": [{ "speaker": string, "text": string }] }`,
+        JSON.stringify({
+          scene: input.scene,
+          sideA: {
+            name: input.sideAName,
+            blurb: input.sideABlurb,
+            traits: input.sideATraits,
+          },
+          sideB: {
+            name: input.sideBName,
+            blurb: input.sideBBlurb,
+            traits: input.sideBTraits,
+          },
+          policyHint: input.policySummary,
+          priorMatch: input.priorMatchSummary ?? null,
+          field: input.battlefield
+            ? {
+                name: input.battlefield.displayName,
+                terrain: input.battlefield.terrain,
+                setup: input.battlefield.narrativeSetup,
+                obstacles: input.battlefield.obstacles?.slice(0, 4),
+                conditions: input.battlefield.conditions?.slice(0, 3),
+              }
+            : null,
+        }),
+        {
+          tier: "fast",
+          label: "narratePrologue",
+          timeoutMs: 14_000,
+          temperature: 0.9,
+        },
+      )) as NarrationResult;
+      const narrator = data.narrator?.length
+        ? data.narrator
+        : ["——開幕——", "両者の視線が交わる。"];
+      if (!narrator[0]?.includes("開幕") && !narrator[0]?.includes("プロローグ")) {
+        narrator.unshift("——開幕——");
+      }
+      return {
+        turn: 0,
+        narrator,
+        speeches: data.speeches ?? [],
+      };
+    } catch {
+      return this.fallback.narratePrologue(input);
+    }
+  }
+
+  async narrateAftermath(input: {
+    turn: number;
+    scene: string;
+    sideAName: string;
+    sideBName: string;
+    winnerSide: "a" | "b" | "draw" | null;
+    winnerName: string | null;
+    fallenNames: string[];
+    battlefield?: BattlefieldInstance | null;
+    recentNarration?: string[];
+    styleInstruction?: string;
+    styleName?: string;
+  }): Promise<NarrationResult> {
+    if (!this.client) return this.fallback.narrateAftermath(input);
+    try {
+      const styleBlock = input.styleInstruction?.trim()
+        ? `Narration style「${input.styleName ?? "custom"}」: ${input.styleInstruction.trim()}`
+        : "Narration style: 落ち着いた標準の物語調。";
+      const data = (await this.chatJson(
+        `You write the AFTERMATH of a duel (Japanese), not a new combat turn.
+${styleBlock}
+Someone is already incapacitated. Show what becomes of the fallen and how the winner (if any) closes the scene.
+Use battlefield flavor. Keep it emotional / cinematic but short (3–6 narrator lines).
+Optional 0–2 short spoken lines.
+Do NOT invent a new fight, healing that reverses the win, or numeric stats.
+JSON:
+{ "turn": number, "narrator": string[], "speeches": [{ "speaker": string, "text": string }] }`,
+        JSON.stringify({
+          turn: input.turn,
+          scene: input.scene,
+          fighters: [input.sideAName, input.sideBName],
+          winnerSide: input.winnerSide,
+          winnerName: input.winnerName,
+          fallen: input.fallenNames,
+          field: input.battlefield
+            ? {
+                name: input.battlefield.displayName,
+                terrain: input.battlefield.terrain,
+                conditions: input.battlefield.conditions?.slice(0, 3),
+              }
+            : null,
+          recent: input.recentNarration?.slice(-6),
+        }),
+        {
+          tier: "fast",
+          label: "narrateAftermath",
+          timeoutMs: 14_000,
+          temperature: 0.9,
+        },
+      )) as NarrationResult;
+      return {
+        turn: input.turn,
+        narrator: data.narrator?.length
+          ? data.narrator
+          : ["——決着の余波——", "戦場に余韻だけが残った。"],
+        speeches: data.speeches ?? [],
+      };
+    } catch {
+      return this.fallback.narrateAftermath(input);
     }
   }
 
@@ -453,7 +793,7 @@ Return JSON:
     "triggers": {
       "earlyTurn"?: boolean,
       "lateTurn"?: boolean,
-      "myHpBelow"?: number,
+      "myHpBelow"?: number,   // MUST be 0..1 ratio (e.g. 0.4), NEVER 0-100 percent
       "myHpAbove"?: number,
       "foeHpBelow"?: number,
       "foeHpAbove"?: number,
@@ -463,6 +803,7 @@ Return JSON:
 }
 Rules:
 - Generate 5–6 DISTINCT coarse postures. Keep language plain and vague on purpose.
+- trigger HP fields are fractions 0..1 only (0.35 = 35% HP). Never use 35 or 40 as percent integers.
 - Prefer vibes over tactics: 押し気味 / 守り / 様子見 / 均衡 / 勝負 / 立て直し など.
 - Do NOT write concrete micro-plans (specific skills, named obstacles, exact terrain tricks, HP%, turn numbers, weapon moves).
 - Field/character may lightly color the wording, but stay high-level.
@@ -485,6 +826,7 @@ Rules:
             category: input.field.category,
           },
         }),
+        { tier: "engine", label: "generateBattlePolicies", temperature: 0.55 },
       )) as {
         rationale?: string;
         options?: Array<Record<string, unknown>>;
@@ -495,36 +837,43 @@ Rules:
         return t.length <= max ? t : `${t.slice(0, Math.max(1, max - 1))}…`;
       };
 
+      const clampRatio = (v: unknown): number | undefined => {
+        if (typeof v !== "number" || !Number.isFinite(v)) return undefined;
+        if (v > 1 && v <= 100) return Math.min(1, Math.max(0, v / 100));
+        if (v > 100) return 1;
+        if (v < 0) return 0;
+        return v;
+      };
+      const validBias = new Set([
+        "attack",
+        "defend",
+        "support",
+        "wait",
+        "mixed",
+      ]);
+
       const raw = Array.isArray(data.options) ? data.options : [];
       const options: BattlePolicyOption[] = raw.map((o, i) => {
         const triggers = (o.triggers as Record<string, unknown>) ?? {};
+        const biasRaw = String(o.bias ?? "mixed").toLowerCase();
+        const bias = (
+          validBias.has(biasRaw) ? biasRaw : "mixed"
+        ) as BattlePolicyOption["bias"];
         return {
           id: newId("pol"),
           title: clamp(String(o.title ?? `方針${i + 1}`), 12, `方針${i + 1}`),
           when: clamp(String(o.when ?? "状況が動いたとき"), 28, "状況が動いたとき"),
           then: clamp(String(o.then ?? "柔軟に対応する"), 32, "柔軟に対応する"),
-          bias: (o.bias as BattlePolicyOption["bias"]) ?? "mixed",
-          priority: Number(o.priority ?? 50 - i),
+          bias,
+          priority: Math.round(Number(o.priority ?? 50 - i) || 0),
           defaultSelected: Boolean(o.defaultSelected ?? i < 3),
           triggers: {
             earlyTurn: triggers.earlyTurn ? true : undefined,
             lateTurn: triggers.lateTurn ? true : undefined,
-            myHpBelow:
-              typeof triggers.myHpBelow === "number"
-                ? triggers.myHpBelow
-                : undefined,
-            myHpAbove:
-              typeof triggers.myHpAbove === "number"
-                ? triggers.myHpAbove
-                : undefined,
-            foeHpBelow:
-              typeof triggers.foeHpBelow === "number"
-                ? triggers.foeHpBelow
-                : undefined,
-            foeHpAbove:
-              typeof triggers.foeHpAbove === "number"
-                ? triggers.foeHpAbove
-                : undefined,
+            myHpBelow: clampRatio(triggers.myHpBelow),
+            myHpAbove: clampRatio(triggers.myHpAbove),
+            foeHpBelow: clampRatio(triggers.foeHpBelow),
+            foeHpAbove: clampRatio(triggers.foeHpAbove),
             always: triggers.always ? true : undefined,
           },
         };
@@ -565,10 +914,59 @@ Rules:
         `As a duel referee, return JSON { "winnerSide": "a"|"b"|"draw", "summary": string } in Japanese.
 Prefer the engineWinnerSide unless the narrative strongly suggests otherwise.`,
         JSON.stringify(input),
+        { tier: "engine", label: "referee", temperature: 0.3, timeoutMs: 12_000 },
       )) as RefereeResult;
       return data;
     } catch {
       return this.fallback.referee(input);
+    }
+  }
+
+  async generateNarrationStyle(prompt: string): Promise<{
+    displayName: string;
+    description: string;
+    instruction: string;
+    tags: string[];
+  }> {
+    if (!this.client) {
+      return this.fallback.generateNarrationStyle?.(prompt) ?? {
+        displayName: "カスタム",
+        description: prompt.slice(0, 80),
+        instruction: `次の雰囲気で語る: ${prompt}`,
+        tags: ["custom"],
+      };
+    }
+    try {
+      const data = (await this.chatJson(
+        `Create a battle NARRATION STYLE (Japanese) from the user's free-text request.
+Return JSON:
+{
+  "displayName": string,   // short name ≤12 chars
+  "description": string,   // one-line picker blurb
+  "instruction": string,   // LLM instruction for how to narrate turns (Japanese, 1–4 sentences)
+  "tags": string[]         // 1–4 short tags
+}
+instruction must be style-only (tone, density, POV). No combat rules, no HP numbers.`,
+        prompt,
+        { tier: "fast", label: "generateNarrationStyle", timeoutMs: 12_000 },
+      )) as Record<string, unknown>;
+      return {
+        displayName: String(data.displayName ?? "カスタム").slice(0, 24),
+        description: String(data.description ?? prompt).slice(0, 200),
+        instruction: String(
+          data.instruction ?? `次の雰囲気で語る: ${prompt}`,
+        ).slice(0, 2000),
+        tags: Array.isArray(data.tags)
+          ? data.tags.map(String).slice(0, 6)
+          : [],
+      };
+    } catch {
+      return {
+        displayName: "カスタム",
+        description: prompt.slice(0, 80),
+        instruction: `次の雰囲気で語る: ${prompt}`,
+        tags: ["custom"],
+      };
     }
   }
 }

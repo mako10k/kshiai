@@ -5,8 +5,37 @@ import type {
   BattlePolicyOptionPublic,
   BattlePublic,
   CharacterPublic,
+  NarrationStylePublic,
   UserPublic,
 } from "@kshiai/shared";
+
+export type ImageGenQuota = {
+  allowed: boolean;
+  limitHour: number;
+  limitDay: number;
+  usedHour: number;
+  usedDay: number;
+  remainingHour: number;
+  remainingDay: number;
+  nextAllowedAt: string | null;
+  message: string;
+};
+
+export class ApiError extends Error {
+  status: number;
+  code?: string;
+  quota?: ImageGenQuota;
+  constructor(
+    message: string,
+    opts: { status: number; code?: string; quota?: ImageGenQuota },
+  ) {
+    super(message);
+    this.name = "ApiError";
+    this.status = opts.status;
+    this.code = opts.code;
+    this.quota = opts.quota;
+  }
+}
 
 async function request<T>(
   path: string,
@@ -24,13 +53,18 @@ async function request<T>(
   const data = (await res.json().catch(() => ({}))) as T & {
     error?: string;
     message?: string;
+    quota?: ImageGenQuota;
   };
   if (!res.ok) {
     const msg =
       data.message ||
       data.error ||
       `http_${res.status}`;
-    throw new Error(msg);
+    throw new ApiError(msg, {
+      status: res.status,
+      code: data.error,
+      quota: data.quota,
+    });
   }
   return data;
 }
@@ -71,13 +105,17 @@ export const api = {
   deleteCharacter: (id: string) =>
     request<{ ok: boolean }>(`/api/characters/${id}`, { method: "DELETE" }),
   generateImage: (id: string, extra?: string) =>
-    request<{ character: CharacterPublic; note?: string }>(
-      `/api/characters/${id}/image`,
-      {
-        method: "POST",
-        body: JSON.stringify(extra ? { extra } : {}),
-      },
-    ),
+    request<{
+      character: CharacterPublic;
+      note?: string;
+      ok?: boolean;
+      quota?: ImageGenQuota;
+    }>(`/api/characters/${id}/image`, {
+      method: "POST",
+      body: JSON.stringify(extra ? { extra } : {}),
+    }),
+  imageQuota: (id: string) =>
+    request<{ quota: ImageGenQuota }>(`/api/characters/${id}/image-quota`),
   candidates: (q?: string) =>
     request<{ candidates: CharacterPublic[] }>(
       `/api/match/candidates${q ? `?q=${encodeURIComponent(q)}` : ""}`,
@@ -108,6 +146,40 @@ export const api = {
       method: "POST",
       body: JSON.stringify(body),
     }),
+  listNarrationStyles: () =>
+    request<{ styles: NarrationStylePublic[] }>("/api/narration-styles"),
+  createNarrationStyle: (body: {
+    displayName: string;
+    description?: string;
+    instruction: string;
+    tags?: string[];
+  }) =>
+    request<{ style: NarrationStylePublic }>("/api/narration-styles", {
+      method: "POST",
+      body: JSON.stringify(body),
+    }),
+  generateNarrationStyle: (prompt: string) =>
+    request<{ style: NarrationStylePublic }>("/api/narration-styles/generate", {
+      method: "POST",
+      body: JSON.stringify({ prompt }),
+    }),
+  updateNarrationStyle: (
+    id: string,
+    body: {
+      displayName?: string;
+      description?: string;
+      instruction?: string;
+      tags?: string[];
+    },
+  ) =>
+    request<{ style: NarrationStylePublic }>(`/api/narration-styles/${id}`, {
+      method: "PATCH",
+      body: JSON.stringify(body),
+    }),
+  deleteNarrationStyle: (id: string) =>
+    request<{ ok: boolean }>(`/api/narration-styles/${id}`, {
+      method: "DELETE",
+    }),
   createBattle: (
     myCharacterId: string,
     opponentCharacterId: string,
@@ -117,6 +189,7 @@ export const api = {
       stance?: "aggressive" | "balanced" | "defensive" | "opportunistic";
       policies?: BattlePolicyOption[];
       selectedPolicyIds?: string[];
+      narrationStyleId?: string;
     },
   ) =>
     request<{ battle: BattlePublic }>("/api/battles", {

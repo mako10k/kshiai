@@ -12,6 +12,8 @@ import { clampCoefficient, isCombatantDown } from "./battle.js";
 import type { CharacterSheet, Skill } from "./character.js";
 import type { BattlefieldInstance } from "./battlefield.js";
 import { clampCoefficientMap, mergeCoefficients } from "./battlefield.js";
+import type { NarrationStyleSnapshot } from "./narration-style.js";
+import { defaultNarrationSnapshot } from "./narration-style.js";
 
 function nowIso(): string {
   return new Date().toISOString();
@@ -28,6 +30,7 @@ export function combatantFromSheet(sheet: CharacterSheet): CombatantState {
   return {
     characterId: sheet.id,
     displayName: sheet.displayName,
+    imageUrl: sheet.appearance?.imageUrl ?? null,
     parameters: { ...sheet.parameters },
     defending: false,
     canFight: sheet.combatFlags.canFight,
@@ -48,6 +51,8 @@ export function createBattleState(input: {
   selectedPolicyIdsA?: string[];
   policiesB?: BattlePolicyOption[];
   selectedPolicyIdsB?: string[];
+  narrationStyle?: NarrationStyleSnapshot;
+  priorMatchSummary?: string | null;
 }): BattleState {
   const t = nowIso();
   const bf = input.battlefield;
@@ -90,6 +95,17 @@ export function createBattleState(input: {
       coefficients: baseCoeffs,
       tags,
     },
+    supervisor: {
+      quietTurns: 0,
+      turnsSinceHappening: 0,
+      lastHpA: null,
+      lastHpB: null,
+      happenings: 0,
+    },
+    prologuePending: true,
+    aftermathPending: false,
+    narrationStyle: input.narrationStyle ?? defaultNarrationSnapshot(),
+    priorMatchSummary: input.priorMatchSummary ?? null,
     log: [],
     winnerSide: null,
     finishReason: null,
@@ -354,6 +370,10 @@ function intensityFromDamage(dmg: number): TurnEvent["intensity"] {
  * Resolve one turn. Actions are chosen from stances unless an explicit
  * playerAction override is supplied (tests / legacy).
  * Pure function — no LLM.
+ *
+ * Optional supervisor injections:
+ * - preEvents: environmental happenings before combat
+ * - envHits: light mechanical pressure from the field
  */
 export function resolveTurn(input: {
   state: BattleState;
@@ -362,8 +382,19 @@ export function resolveTurn(input: {
   sideASkills: Skill[];
   sideBSkills: Skill[];
   situationUpdate?: Partial<Situation>;
+  /** Supervisor / environment events applied before combat actions. */
+  preEvents?: TurnEvent[];
+  envHits?: Array<{
+    target: "a" | "b" | "both";
+    kind: "damage" | "heal" | "disrupt";
+    intensity: "minor" | "moderate";
+  }>;
 }): { state: BattleState; events: TurnEvent[] } {
   if (input.state.status !== "active") {
+    return { state: input.state, events: [] };
+  }
+  // Prologue / aftermath are resolved outside the combat engine (LLM beats).
+  if (input.state.prologuePending || input.state.aftermathPending) {
     return { state: input.state, events: [] };
   }
 
@@ -395,6 +426,14 @@ export function resolveTurn(input: {
         summary: `戦場の気配 — ${bits.join(" / ")}`,
       });
     }
+  }
+
+  if (input.preEvents?.length) {
+    events.push(...input.preEvents);
+  }
+
+  if (input.envHits?.length) {
+    applyEnvHits(sideA, sideB, input.envHits, events);
   }
 
   const playerAction =
@@ -451,22 +490,37 @@ export function resolveTurn(input: {
   let status: BattleState["status"] = "active";
   let winnerSide: BattleState["winnerSide"] = null;
   let finishReason: BattleState["finishReason"] = null;
+  let aftermathPending = false;
 
   const aDown = isCombatantDown(sideA);
   const bDown = isCombatantDown(sideB);
 
   if (aDown && bDown) {
-    status = "finished";
+    // Stay active for one epilogue beat before official finish.
     winnerSide = "draw";
     finishReason = "incapacitated";
+    aftermathPending = true;
+    events.push({
+      type: "info",
+      summary:
+        "決着の余波 — 両者とも倒れ、戦場に静けさが落ちる。その先がどうなるかを見届けよう。",
+    });
   } else if (aDown) {
-    status = "finished";
     winnerSide = "b";
     finishReason = "incapacitated";
+    aftermathPending = true;
+    events.push({
+      type: "info",
+      summary: `${sideA.displayName} が倒れた。${sideB.displayName} と戦場が、その後をどう迎えるか——`,
+    });
   } else if (bDown) {
-    status = "finished";
     winnerSide = "a";
     finishReason = "incapacitated";
+    aftermathPending = true;
+    events.push({
+      type: "info",
+      summary: `${sideB.displayName} が倒れた。${sideA.displayName} と戦場が、その後をどう迎えるか——`,
+    });
   } else if (turn >= input.state.turnLimit) {
     status = "finished";
     finishReason = "turn_limit";
@@ -486,6 +540,7 @@ export function resolveTurn(input: {
     status,
     winnerSide,
     finishReason,
+    aftermathPending,
     updatedAt: nowIso(),
   };
 
@@ -495,6 +550,70 @@ export function resolveTurn(input: {
 function combatScore(c: CombatantState): number {
   const p = c.parameters;
   return (p.hp ?? 0) * 2 + (p.mp ?? 0) + (p.stamina ?? 0) + (p.atk ?? 0) + (p.def ?? 0);
+}
+
+function envAmount(intensity: "minor" | "moderate"): number {
+  return intensity === "moderate" ? 14 : 7;
+}
+
+function applyEnvHits(
+  sideA: CombatantState,
+  sideB: CombatantState,
+  hits: Array<{
+    target: "a" | "b" | "both";
+    kind: "damage" | "heal" | "disrupt";
+    intensity: "minor" | "moderate";
+  }>,
+  events: TurnEvent[],
+): void {
+  for (const hit of hits) {
+    const targets: CombatantState[] =
+      hit.target === "both"
+        ? [sideA, sideB]
+        : hit.target === "a"
+          ? [sideA]
+          : [sideB];
+    for (const t of targets) {
+      const amount = envAmount(hit.intensity);
+      if (hit.kind === "heal") {
+        const max = t.parameters.maxHp ?? 100;
+        t.parameters.hp = Math.min(max, (t.parameters.hp ?? 0) + amount);
+        events.push({
+          type: "heal",
+          actorName: t.displayName,
+          targetName: t.displayName,
+          intensity: hit.intensity,
+          summary:
+            hit.intensity === "moderate"
+              ? `${t.displayName} は環境の幸いで息を吹き返した。`
+              : `${t.displayName} はわずかに体勢を立て直した。`,
+        });
+      } else if (hit.kind === "disrupt") {
+        // Soft pressure: small HP chip + stigma in narration
+        t.parameters.hp = Math.max(0, (t.parameters.hp ?? 0) - Math.floor(amount * 0.5));
+        events.push({
+          type: "status",
+          actorName: t.displayName,
+          intensity: hit.intensity,
+          summary:
+            hit.intensity === "moderate"
+              ? `${t.displayName} は大きく体勢を崩した。`
+              : `${t.displayName} の動きが一瞬乱れた。`,
+        });
+      } else {
+        t.parameters.hp = Math.max(0, (t.parameters.hp ?? 0) - amount);
+        events.push({
+          type: "damage",
+          targetName: t.displayName,
+          intensity: hit.intensity,
+          summary:
+            hit.intensity === "moderate"
+              ? `${t.displayName} は環境の衝撃をまともに受けた。`
+              : `${t.displayName} は環境の余波を浴びた。`,
+        });
+      }
+    }
+  }
 }
 
 function applyAction(

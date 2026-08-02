@@ -1,7 +1,14 @@
 import {
   BattlePolicyOptionSchema,
+  advanceSupervisorClock,
   createBattleState,
+  happeningToEvents,
+  happeningToSituationPatch,
+  isQuietTurn,
+  normalizeSupervisor,
+  pickTemplateHappening,
   resolveTurn,
+  shouldInjectHappening,
   stanceLabel,
   summarizeSelectedPolicies,
   toPublicCharacter,
@@ -14,6 +21,9 @@ import {
   type BattlefieldInstance,
   type BattlefieldPreset,
   type CharacterSheet,
+  toNarrationSnapshot,
+  type HappeningPlan,
+  type Situation,
 } from "@kshiai/shared";
 import { config } from "../config.js";
 import { newId } from "../id.js";
@@ -21,16 +31,32 @@ import type { LlmProvider } from "../llm/index.js";
 import * as battleRepo from "../repositories/battles.js";
 import * as bfRepo from "../repositories/battlefields.js";
 import * as charRepo from "../repositories/characters.js";
+import * as styleRepo from "../repositories/narration-styles.js";
 
 export function toBattlePublic(
   state: BattleState,
-  _mySheet: CharacterSheet,
+  mySheet: CharacterSheet,
   resultSummary?: string | null,
+  oppSheet?: CharacterSheet | null,
 ): BattlePublic {
   const selected = new Set(state.selectedPolicyIdsA ?? []);
   const selectedPolicies = (state.policiesA ?? []).filter((p) =>
     selected.has(p.id),
   );
+
+  const imgFor = (
+    combatant: BattleState["sideA"],
+    sheet: CharacterSheet | null | undefined,
+  ) =>
+    combatant.imageUrl ??
+    (sheet && sheet.id === combatant.characterId
+      ? (sheet.appearance?.imageUrl ?? null)
+      : null);
+
+  const sideASheet =
+    mySheet.id === state.sideA.characterId ? mySheet : oppSheet;
+  const sideBSheet =
+    mySheet.id === state.sideB.characterId ? mySheet : oppSheet;
 
   return {
     id: state.id,
@@ -41,11 +67,13 @@ export function toBattlePublic(
       characterId: state.sideA.characterId,
       displayName: state.sideA.displayName,
       canFight: state.sideA.canFight,
+      imageUrl: imgFor(state.sideA, sideASheet),
     },
     sideB: {
       characterId: state.sideB.characterId,
       displayName: state.sideB.displayName,
       canFight: state.sideB.canFight,
+      imageUrl: imgFor(state.sideB, sideBSheet),
     },
     policies: selectedPolicies.map(toPublicPolicyOption),
     policySummary: summarizeSelectedPolicies(
@@ -69,6 +97,10 @@ export function toBattlePublic(
     availableActions: [],
     winnerSide: state.winnerSide,
     finishReason: state.finishReason,
+    aftermathPending: Boolean(state.aftermathPending),
+    prologuePending: Boolean(state.prologuePending),
+    narrationStyleName: state.narrationStyle?.displayName,
+    priorMatchSummary: state.priorMatchSummary ?? null,
     resultSummary: resultSummary ?? null,
   };
 }
@@ -195,12 +227,24 @@ function normalizePolicies(
   raw: unknown[] | undefined,
 ): BattlePolicyOption[] {
   if (!raw?.length) return [];
-  return raw.map((r) =>
-    BattlePolicyOptionSchema.parse({
-      ...(r as object),
-      id: (r as { id?: string }).id ?? newId("pol"),
-    }),
-  );
+  const out: BattlePolicyOption[] = [];
+  for (const r of raw) {
+    try {
+      out.push(
+        BattlePolicyOptionSchema.parse({
+          ...(r as object),
+          id: (r as { id?: string }).id ?? newId("pol"),
+        }),
+      );
+    } catch (e) {
+      // Skip malformed client/LLM policy rows rather than aborting match start
+      console.warn(
+        "[battle] skip bad policy",
+        e instanceof Error ? e.message : e,
+      );
+    }
+  }
+  return out;
 }
 
 export async function startBattle(input: {
@@ -212,6 +256,7 @@ export async function startBattle(input: {
   stance?: BattleStance;
   policies?: unknown[];
   selectedPolicyIds?: string[];
+  narrationStyleId?: string;
   llm: LlmProvider;
 }): Promise<BattlePublic> {
   const mine = charRepo.getSheet(input.myCharacterId);
@@ -279,6 +324,16 @@ export async function startBattle(input: {
     .filter((p) => p.defaultSelected)
     .map((p) => p.id);
 
+  const narrationStyle = styleRepo.resolveNarrationStyleForUser(
+    input.userId,
+    input.narrationStyleId,
+  );
+  const narrationSnap = toNarrationSnapshot(narrationStyle);
+  const priorMatchSummary = battleRepo.findPriorMatchSummary(
+    mine.id,
+    opp.id,
+  );
+
   const id = newId("btl");
   let state = createBattleState({
     id,
@@ -297,51 +352,40 @@ export async function startBattle(input: {
       selectedPolicyIdsB.length > 0
         ? selectedPolicyIdsB
         : policiesB.slice(0, 3).map((p) => p.id),
+    narrationStyle: narrationSnap,
+    priorMatchSummary,
   });
 
-  const sit = await input.llm.proposeSituation({
-    scene: state.situation.scene,
-    turn: 0,
-    eventsHint: "opening",
-    battlefield,
-  });
-  if (sit.scene) state.situation.scene = sit.scene;
-  if (sit.notes) state.situation.notes = sit.notes;
-  if (sit.coefficients) {
-    state.situation.coefficients = {
-      ...state.situation.coefficients,
-      ...sit.coefficients,
-    };
+  // Light scene seed only — full opening monologue is the prologue advance.
+  try {
+    const sit = await withTimeout(
+      input.llm.proposeSituation({
+        scene: state.situation.scene,
+        turn: 0,
+        eventsHint: "opening",
+        battlefield,
+      }),
+      8_000,
+      "openingSituation",
+    );
+    if (sit.scene) state.situation.scene = sit.scene;
+    if (sit.notes) state.situation.notes = sit.notes;
+    if (sit.coefficients) {
+      state.situation.coefficients = {
+        ...state.situation.coefficients,
+        ...sit.coefficients,
+      };
+    }
+  } catch {
+    /* keep concretized battlefield notes */
   }
 
-  const policyLine = summarizeSelectedPolicies(
-    state.policiesA,
-    state.selectedPolicyIdsA,
-  );
-
-  const opening = await input.llm.narrateTurn({
-    turn: 0,
-    scene: state.situation.scene,
-    sideAName: mine.displayName,
-    sideBName: opp.displayName,
-    battlefield,
-    events: [
-      {
-        type: "info",
-        summary: `${mine.displayName} と ${opp.displayName} が、${battlefield.displayName}で対峙する。`,
-      },
-      {
-        type: "situation",
-        summary: battlefield.narrativeSetup,
-      },
-      {
-        type: "info",
-        summary: `${mine.displayName} のケース方針: ${policyLine}`,
-      },
-    ],
-  });
-  state.log = [opening];
-  state.updatedAt = new Date().toISOString();
+  state = {
+    ...state,
+    prologuePending: true,
+    log: [],
+    updatedAt: new Date().toISOString(),
+  };
 
   battleRepo.saveBattle(state, {
     sideAUserId: input.userId,
@@ -349,7 +393,86 @@ export async function startBattle(input: {
     sideBCharacterId: opp.id,
   });
 
-  return toBattlePublic(state, mine);
+  return toBattlePublic(state, mine, null, opp);
+}
+
+async function withTimeout<T>(
+  promise: Promise<T>,
+  ms: number,
+  label: string,
+): Promise<T> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  try {
+    return await Promise.race([
+      promise,
+      new Promise<T>((_, reject) => {
+        timer = setTimeout(
+          () => reject(new Error(`timeout:${label}:${ms}ms`)),
+          ms,
+        );
+      }),
+    ]);
+  } finally {
+    if (timer) clearTimeout(timer);
+  }
+}
+
+function mergeSituationPatches(
+  base: Partial<Situation>,
+  happening: Partial<Situation> | null,
+): Partial<Situation> {
+  if (!happening) return base;
+  return {
+    scene: happening.scene ?? base.scene,
+    notes: happening.notes ?? base.notes,
+    coefficients: {
+      ...(base.coefficients ?? {}),
+      ...(happening.coefficients ?? {}),
+    },
+    tags: [
+      ...new Set([...(base.tags ?? []), ...(happening.tags ?? [])]),
+    ],
+  };
+}
+
+async function buildHappening(input: {
+  llm: LlmProvider;
+  state: BattleState;
+  turn: number;
+  supervisor: ReturnType<typeof normalizeSupervisor>;
+}): Promise<HappeningPlan> {
+  const stagnationHint =
+    input.supervisor.quietTurns >= 2
+      ? "consecutive quiet turns — fight is stalling"
+      : input.supervisor.turnsSinceHappening >= 5
+        ? "long dry spell without environmental pressure"
+        : "mild stall — need a field beat";
+
+  try {
+    const raw = await input.llm.proposeHappening({
+      scene: input.state.situation.scene,
+      turn: input.turn,
+      sideAName: input.state.sideA.displayName,
+      sideBName: input.state.sideB.displayName,
+      stagnationHint,
+      battlefield: input.state.battlefield,
+    });
+    return {
+      id: `hap_llm_${input.turn}`,
+      title: raw.title || "異変",
+      summary: raw.summary || "戦場の空気がざわつく。",
+      notes: raw.notes || "環境が攻防を揺さぶっている。",
+      coefficients: raw.coefficients ?? { damage: 1.1 },
+      tags: raw.tags,
+      envHits: raw.envHits,
+    };
+  } catch (e) {
+    console.warn("[supervisor] proposeHappening failed, using template", e);
+    return pickTemplateHappening({
+      battlefield: input.state.battlefield,
+      turn: input.turn,
+    });
+  }
 }
 
 export async function advanceTurn(input: {
@@ -373,31 +496,156 @@ export async function advanceTurn(input: {
   const opp = charRepo.getSheet(meta.side_b_character_id);
   if (!mine || !opp) throw new Error("CHARACTER_MISSING");
 
-  const situationUpdate = await input.llm.proposeSituation({
+  // --- Pre-combat prologue (口上・因縁) before any engine turn ---
+  if (state.prologuePending) {
+    return runPrologueTurn({
+      state,
+      meta,
+      mine,
+      opp,
+      llm: input.llm,
+    });
+  }
+
+  // --- Extra aftermath beat after KO (do not end the match mid-sentence) ---
+  if (state.aftermathPending) {
+    return runAftermathTurn({
+      state,
+      meta,
+      mine,
+      opp,
+      llm: input.llm,
+    });
+  }
+
+  const upcomingTurn = state.turn + 1;
+  let supervisor = normalizeSupervisor(state.supervisor);
+
+  // --- Supervisor: inject field happenings when the fight stalls ---
+  // Prefer fast templates for happenings so turns never stall on a second LLM call.
+  // (Narration remains the primary LLM step.)
+  let happening: HappeningPlan | null = null;
+  const inject = shouldInjectHappening(
+    supervisor,
+    upcomingTurn,
+    state.turnLimit,
+  );
+  if (inject) {
+    happening = pickTemplateHappening({
+      battlefield: state.battlefield,
+      turn: upcomingTurn,
+    });
+  }
+
+  // Situation: short timeout → mock fallback. Never block the turn.
+  let baseSituation: Partial<Situation> = {
     scene: state.situation.scene,
-    turn: state.turn + 1,
-    eventsHint: `policies:${(state.selectedPolicyIdsA ?? []).join(",")}`,
-    battlefield: state.battlefield,
-  });
+    notes: state.situation.notes,
+    coefficients: {},
+  };
+  try {
+    baseSituation = await withTimeout(
+      input.llm.proposeSituation({
+        scene: state.situation.scene,
+        turn: upcomingTurn,
+        eventsHint: [
+          `policies:${(state.selectedPolicyIdsA ?? []).join(",")}`,
+          inject
+            ? `supervisor:happening:${happening?.title ?? "env"}`
+            : "supervisor:steady",
+        ].join("|"),
+        battlefield: state.battlefield,
+      }),
+      8_000,
+      "proposeSituation",
+    );
+  } catch (e) {
+    console.warn(
+      "[battle] proposeSituation skipped",
+      e instanceof Error ? e.message : e,
+    );
+  }
+
+  const situationUpdate: Partial<Situation> = mergeSituationPatches(
+    baseSituation,
+    happening ? happeningToSituationPatch(happening) : null,
+  );
+
+  const hpBeforeA = state.sideA.parameters.hp ?? 0;
+  const hpBeforeB = state.sideB.parameters.hp ?? 0;
 
   const resolved = resolveTurn({
     state,
     sideASkills: mine.skills,
     sideBSkills: opp.skills,
     situationUpdate,
+    preEvents: happening ? happeningToEvents(happening) : undefined,
+    envHits: happening?.envHits,
   });
   let next = resolved.state;
   const events = resolved.events;
 
-  const narrative = await input.llm.narrateTurn({
-    turn: next.turn,
-    scene: next.situation.scene,
-    sideAName: next.sideA.displayName,
-    sideBName: next.sideB.displayName,
-    battlefield: next.battlefield,
+  const quiet = isQuietTurn({
     events,
+    hpBeforeA,
+    hpBeforeB,
+    hpAfterA: next.sideA.parameters.hp ?? 0,
+    hpAfterB: next.sideB.parameters.hp ?? 0,
+    maxHpA: next.sideA.parameters.maxHp ?? 100,
+    maxHpB: next.sideB.parameters.maxHp ?? 100,
   });
+  supervisor = advanceSupervisorClock(
+    supervisor,
+    quiet,
+    Boolean(happening),
+    next.sideA.parameters.hp ?? 0,
+    next.sideB.parameters.hp ?? 0,
+  );
+  next = { ...next, supervisor };
+
+  let narrative;
+  try {
+    narrative = await withTimeout(
+      input.llm.narrateTurn({
+        turn: next.turn,
+        scene: next.situation.scene,
+        sideAName: next.sideA.displayName,
+        sideBName: next.sideB.displayName,
+        battlefield: next.battlefield,
+        events,
+        styleInstruction: next.narrationStyle?.instruction,
+        styleName: next.narrationStyle?.displayName,
+      }),
+      18_000,
+      "narrateTurn",
+    );
+  } catch (e) {
+    console.warn(
+      "[battle] narrateTurn fallback",
+      e instanceof Error ? e.message : e,
+    );
+    const place = next.battlefield?.displayName ?? next.situation.scene;
+    narrative = {
+      turn: next.turn,
+      narrator: [
+        `第${next.turn}ターン — ${place}。`,
+        ...events.map((ev) => ev.summary),
+      ],
+      speeches: [],
+    };
+  }
   next = { ...next, log: [...next.log, narrative] };
+
+  // KO this turn: combat narrative is done, but official finish waits for aftermath advance.
+  // Do not settle rating yet.
+  if (next.aftermathPending) {
+    battleRepo.saveBattle(next, {
+      sideAUserId: meta.side_a_user_id,
+      sideACharacterId: meta.side_a_character_id,
+      sideBCharacterId: meta.side_b_character_id,
+    });
+    return toBattlePublic(next, mine, null, opp);
+  }
 
   let resultSummary: string | null = null;
   if (next.status === "finished") {
@@ -433,7 +681,199 @@ export async function advanceTurn(input: {
     sideBCharacterId: meta.side_b_character_id,
   });
 
-  return toBattlePublic(next, mine, resultSummary);
+  return toBattlePublic(next, mine, resultSummary, opp);
+}
+
+async function runPrologueTurn(input: {
+  state: BattleState;
+  meta: {
+    side_a_user_id: string;
+    side_a_character_id: string;
+    side_b_character_id: string;
+  };
+  mine: CharacterSheet;
+  opp: CharacterSheet;
+  llm: LlmProvider;
+}): Promise<BattlePublic> {
+  const state = input.state;
+  const policyLine = summarizeSelectedPolicies(
+    state.policiesA,
+    state.selectedPolicyIdsA,
+  );
+
+  let narrative;
+  try {
+    narrative = await withTimeout(
+      input.llm.narratePrologue({
+        scene: state.situation.scene,
+        sideAName: state.sideA.displayName,
+        sideBName: state.sideB.displayName,
+        sideABlurb: input.mine.narrativeBlurb,
+        sideBBlurb: input.opp.narrativeBlurb,
+        sideATraits: input.mine.traits,
+        sideBTraits: input.opp.traits,
+        policySummary: policyLine,
+        priorMatchSummary: state.priorMatchSummary ?? undefined,
+        battlefield: state.battlefield,
+        styleInstruction: state.narrationStyle?.instruction,
+        styleName: state.narrationStyle?.displayName,
+      }),
+      16_000,
+      "narratePrologue",
+    );
+  } catch (e) {
+    console.warn("[battle] narratePrologue failed", e);
+    const place =
+      state.battlefield?.displayName ?? state.situation.scene;
+    narrative = {
+      turn: 0,
+      narrator: [
+        "——開幕——",
+        `${place}で ${state.sideA.displayName} と ${state.sideB.displayName} が対峙する。`,
+        state.battlefield?.narrativeSetup || state.situation.notes || "",
+        state.priorMatchSummary
+          ? `因縁 — ${state.priorMatchSummary}`
+          : "",
+        policyLine ? `${state.sideA.displayName} の方針: ${policyLine}` : "",
+      ].filter(Boolean),
+      speeches: [
+        { speaker: state.sideA.displayName, text: "……始めよう。" },
+        { speaker: state.sideB.displayName, text: "望むところだ。" },
+      ],
+    };
+  }
+
+  if (
+    narrative.narrator[0] &&
+    !narrative.narrator[0].includes("開幕") &&
+    !narrative.narrator[0].includes("プロローグ")
+  ) {
+    narrative = {
+      ...narrative,
+      narrator: ["——開幕——", ...narrative.narrator],
+    };
+  }
+
+  const next: BattleState = {
+    ...state,
+    turn: 0,
+    prologuePending: false,
+    log: [...state.log, narrative],
+    updatedAt: new Date().toISOString(),
+  };
+
+  battleRepo.saveBattle(next, {
+    sideAUserId: input.meta.side_a_user_id,
+    sideACharacterId: input.meta.side_a_character_id,
+    sideBCharacterId: input.meta.side_b_character_id,
+  });
+
+  return toBattlePublic(next, input.mine, null, input.opp);
+}
+
+async function runAftermathTurn(input: {
+  state: BattleState;
+  meta: {
+    side_a_user_id: string;
+    side_a_character_id: string;
+    side_b_character_id: string;
+  };
+  mine: CharacterSheet;
+  opp: CharacterSheet;
+  llm: LlmProvider;
+}): Promise<BattlePublic> {
+  const state = input.state;
+  const fallen: string[] = [];
+  if (!state.sideA.canFight || (state.sideA.parameters.hp ?? 0) <= 0) {
+    fallen.push(state.sideA.displayName);
+  }
+  if (!state.sideB.canFight || (state.sideB.parameters.hp ?? 0) <= 0) {
+    fallen.push(state.sideB.displayName);
+  }
+  const winnerName =
+    state.winnerSide === "a"
+      ? state.sideA.displayName
+      : state.winnerSide === "b"
+        ? state.sideB.displayName
+        : null;
+
+  const aftermathTurn = state.turn; // epilogue shares the KO turn number for log grouping
+  let narrative;
+  try {
+    narrative = await withTimeout(
+      input.llm.narrateAftermath({
+        turn: aftermathTurn,
+        scene: state.situation.scene,
+        sideAName: state.sideA.displayName,
+        sideBName: state.sideB.displayName,
+        winnerSide: state.winnerSide,
+        winnerName,
+        fallenNames: fallen,
+        battlefield: state.battlefield,
+        recentNarration: state.log
+          .slice(-2)
+          .flatMap((b) => b.narrator)
+          .slice(-8),
+        styleInstruction: state.narrationStyle?.instruction,
+        styleName: state.narrationStyle?.displayName,
+      }),
+      18_000,
+      "narrateAftermath",
+    );
+  } catch (e) {
+    console.warn("[battle] narrateAftermath failed", e);
+    narrative = {
+      turn: aftermathTurn,
+      narrator: [
+        "——決着の余波——",
+        fallen.length
+          ? `${fallen.join("と")} は地に伏し、戦いは静かに幕を閉じた。`
+          : "戦場に余韻だけが残った。",
+        winnerName
+          ? `${winnerName} は息を整え、その先の運命を見据える。`
+          : "どちらも立ってはいられない。",
+      ],
+      speeches: [],
+    };
+  }
+
+  // Mark epilogue block for UI (prefix first line if missing)
+  if (
+    narrative.narrator[0] &&
+    !narrative.narrator[0].includes("余波") &&
+    !narrative.narrator[0].includes("エピローグ")
+  ) {
+    narrative = {
+      ...narrative,
+      narrator: ["——決着の余波——", ...narrative.narrator],
+    };
+  }
+
+  let next: BattleState = {
+    ...state,
+    status: "finished",
+    aftermathPending: false,
+    log: [...state.log, narrative],
+    updatedAt: new Date().toISOString(),
+  };
+
+  const resultSummary =
+    state.winnerSide === "draw"
+      ? "相打ち — 両者とも戦闘不能となった。余波の中で勝負は閉じた。"
+      : winnerName
+        ? `${winnerName} の勝利。倒れた者の行く末もまた、この一戦の一部となった。`
+        : "勝負はついた。";
+
+  const { settleBattleRating } = await import("./rating-service.js");
+  next = settleBattleRating(next);
+
+  battleRepo.saveBattle(next, {
+    sideAUserId: input.meta.side_a_user_id,
+    sideACharacterId: input.meta.side_a_character_id,
+    sideBCharacterId: input.meta.side_b_character_id,
+  });
+
+  return toBattlePublic(next, input.mine, resultSummary, input.opp);
 }
 
 export async function performAction(input: {
