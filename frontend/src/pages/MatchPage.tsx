@@ -273,15 +273,12 @@ export function MatchPage() {
     );
   }
 
-  async function pickOpponent(mode: "random" | "auto") {
+  async function pickRandomOpponent() {
     if (!myId) return;
     setBusy(true);
     setError(null);
     try {
-      const { opponent } =
-        mode === "random"
-          ? await api.randomOpponent(myId)
-          : await api.autoOpponent(myId);
+      const { opponent } = await api.randomOpponent(myId);
       setOppId(opponent.id);
       // Opponent change invalidates policies; stay on step 1
       invalidatePolicies();
@@ -507,17 +504,9 @@ export function MatchPage() {
               className="btn"
               type="button"
               disabled={busy || !myId}
-              onClick={() => void pickOpponent("random")}
+              onClick={() => void pickRandomOpponent()}
             >
               相手をランダム選択
-            </button>
-            <button
-              className="btn"
-              type="button"
-              disabled={busy || !myId}
-              onClick={() => void pickOpponent("auto")}
-            >
-              相手を自動選択
             </button>
           </div>
 

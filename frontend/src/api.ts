@@ -173,11 +173,6 @@ export const api = {
       method: "POST",
       body: JSON.stringify({ myCharacterId }),
     }),
-  autoOpponent: (myCharacterId: string) =>
-    request<{ opponent: CharacterPublic }>("/api/match/auto", {
-      method: "POST",
-      body: JSON.stringify({ myCharacterId }),
-    }),
   generatePolicies: (body: {
     myCharacterId: string;
     opponentCharacterId?: string;

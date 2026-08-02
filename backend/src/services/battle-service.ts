@@ -978,10 +978,6 @@ export function pickRandomOpponent(userId: string, myCharacterId: string) {
   return candidates[Math.floor(Math.random() * candidates.length)]!;
 }
 
-export function pickAutoOpponent(userId: string, myCharacterId: string) {
-  return pickRandomOpponent(userId, myCharacterId);
-}
-
 export function instanceToPreset(
   inst: BattlefieldInstance,
   ownerUserId: string,

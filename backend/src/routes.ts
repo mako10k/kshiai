@@ -38,7 +38,6 @@ import {
   advanceTurn,
   generateMatchPolicies,
   instanceToPreset,
-  pickAutoOpponent,
   pickRandomOpponent,
   startBattle,
   toBattlePublic,
@@ -430,19 +429,6 @@ export function buildRoutes() {
       return c.json({ error: "myCharacterId_required" }, 400);
     }
     const opp = pickRandomOpponent(user.id, body.myCharacterId);
-    if (!opp) return c.json({ error: "no_candidates" }, 404);
-    return c.json({ opponent: opp });
-  });
-
-  authed.post("/match/auto", async (c) => {
-    const user = c.get("user");
-    const body = (await c.req.json().catch(() => ({}))) as {
-      myCharacterId?: string;
-    };
-    if (!body.myCharacterId) {
-      return c.json({ error: "myCharacterId_required" }, 400);
-    }
-    const opp = pickAutoOpponent(user.id, body.myCharacterId);
     if (!opp) return c.json({ error: "no_candidates" }, 404);
     return c.json({ opponent: opp });
   });
