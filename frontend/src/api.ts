@@ -72,6 +72,39 @@ async function request<T>(
 export const api = {
   health: () => request<{ ok: boolean; llm: string }>("/api/health"),
   me: () => request<{ user: UserPublic }>("/api/me"),
+  /** Operator balance metrics (aggregates; no combat effect). */
+  balanceSummary: (limit?: number) =>
+    request<{
+      summary: {
+        battles: {
+          total: number;
+          avgCombatTurns: number | null;
+          earlyKoRate: number | null;
+          oneShotSuspectRate: number | null;
+          shortMatchRate: number | null;
+          avgMaxHitRatio: number | null;
+        };
+        sheets: {
+          total: number;
+          avgSharpness: number | null;
+          highSharpnessRate: number | null;
+          inflatedPowerRate: number | null;
+        };
+        recentFlags: Array<{
+          battleId: string;
+          createdAt: string;
+          earlyKo: boolean;
+          oneShotSuspect: boolean;
+          shortMatch: boolean;
+          maxHitRatio: number;
+          combatTurns: number;
+          winnerSide: string | null;
+        }>;
+        logPath: string;
+      };
+    }>(
+      `/api/balance/summary${limit != null ? `?limit=${limit}` : ""}`,
+    ),
   register: (username: string, password: string) =>
     request<{ user: UserPublic }>("/api/auth/register", {
       method: "POST",

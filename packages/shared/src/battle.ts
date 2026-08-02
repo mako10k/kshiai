@@ -275,6 +275,24 @@ export const BattleStateSchema = z.object({
    * used for prologue rivalry / 因縁.
    */
   priorMatchSummary: z.string().nullable().optional(),
+  /**
+   * Engine-internal balance metrics (not exposed on BattlePublic).
+   * Accumulated from HP deltas each combat turn for observability.
+   */
+  balanceTrace: z
+    .object({
+      combatTurns: z.number().int().nonnegative(),
+      totalDamageA: z.number().nonnegative(),
+      totalDamageB: z.number().nonnegative(),
+      maxTurnDamageA: z.number().nonnegative(),
+      maxTurnDamageB: z.number().nonnegative(),
+      maxTurnDamageRatioA: z.number().nonnegative(),
+      maxTurnDamageRatioB: z.number().nonnegative(),
+      hitTurns: z.number().int().nonnegative(),
+      oneShotSuspect: z.boolean(),
+      firstKoCombatTurn: z.number().int().positive().nullable(),
+    })
+    .optional(),
   log: z.array(NarrativeBlockSchema).default([]),
   winnerSide: z.enum(["a", "b", "draw"]).nullable().default(null),
   finishReason: FinishReasonSchema.nullable().default(null),

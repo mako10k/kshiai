@@ -1,5 +1,6 @@
 import {
   BattlePolicyOptionSchema,
+  accumulateBattleBalanceTrace,
   advanceSupervisorClock,
   balanceSkill,
   createBattleState,
@@ -9,6 +10,7 @@ import {
   normalizeSupervisor,
   pickTemplateHappening,
   resolveTurn,
+  sheetCombatProfile,
   shouldInjectHappening,
   stanceLabel,
   summarizeSelectedPolicies,
@@ -27,6 +29,10 @@ import {
   type HappeningPlan,
   type Situation,
 } from "@kshiai/shared";
+import {
+  recordBattleFinished,
+  recordSheetSnapshot,
+} from "./balance-observe.js";
 import { config } from "../config.js";
 import { newId } from "../id.js";
 import type { LlmProvider } from "../llm/index.js";
@@ -620,21 +626,39 @@ export async function advanceTurn(input: {
   let next = resolved.state;
   const events = resolved.events;
 
+  const hpAfterA = next.sideA.parameters.hp ?? 0;
+  const hpAfterB = next.sideB.parameters.hp ?? 0;
+  const maxHpA = next.sideA.parameters.maxHp ?? 100;
+  const maxHpB = next.sideB.parameters.maxHp ?? 100;
+
+  // Observation only — does not alter combat outcomes
+  next = {
+    ...next,
+    balanceTrace: accumulateBattleBalanceTrace(next.balanceTrace, {
+      hpBeforeA,
+      hpBeforeB,
+      hpAfterA,
+      hpAfterB,
+      maxHpA,
+      maxHpB,
+    }),
+  };
+
   const quiet = isQuietTurn({
     events,
     hpBeforeA,
     hpBeforeB,
-    hpAfterA: next.sideA.parameters.hp ?? 0,
-    hpAfterB: next.sideB.parameters.hp ?? 0,
-    maxHpA: next.sideA.parameters.maxHp ?? 100,
-    maxHpB: next.sideB.parameters.maxHp ?? 100,
+    hpAfterA,
+    hpAfterB,
+    maxHpA,
+    maxHpB,
   });
   supervisor = advanceSupervisorClock(
     supervisor,
     quiet,
     Boolean(happening),
-    next.sideA.parameters.hp ?? 0,
-    next.sideB.parameters.hp ?? 0,
+    hpAfterA,
+    hpAfterB,
   );
   next = { ...next, supervisor };
 
@@ -708,6 +732,20 @@ export async function advanceTurn(input: {
     // Elo + W-L (same-owner matches unranked for Elo)
     const { settleBattleRating } = await import("./rating-service.js");
     next = settleBattleRating(next);
+    try {
+      recordBattleFinished({
+        state: next,
+        sameOwner: next.ratingSettlement?.sameOwner,
+        ranked: next.ratingSettlement?.ranked,
+        sideAProfile: sheetCombatProfile(mine),
+        sideBProfile: sheetCombatProfile(opp),
+      });
+    } catch (e) {
+      console.warn(
+        "[balance] recordBattleFinished skipped",
+        e instanceof Error ? e.message : e,
+      );
+    }
   }
 
   battleRepo.saveBattle(next, {
@@ -901,6 +939,20 @@ async function runAftermathTurn(input: {
 
   const { settleBattleRating } = await import("./rating-service.js");
   next = settleBattleRating(next);
+  try {
+    recordBattleFinished({
+      state: next,
+      sameOwner: next.ratingSettlement?.sameOwner,
+      ranked: next.ratingSettlement?.ranked,
+      sideAProfile: sheetCombatProfile(input.mine),
+      sideBProfile: sheetCombatProfile(input.opp),
+    });
+  } catch (e) {
+    console.warn(
+      "[balance] recordBattleFinished skipped",
+      e instanceof Error ? e.message : e,
+    );
+  }
 
   battleRepo.saveBattle(next, {
     sideAUserId: input.meta.side_a_user_id,

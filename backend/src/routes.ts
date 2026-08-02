@@ -43,6 +43,7 @@ import {
   startBattle,
   toBattlePublic,
 } from "./services/battle-service.js";
+import { getBalanceSummary } from "./services/balance-observe.js";
 
 const llm = createLlmProvider();
 
@@ -145,6 +146,17 @@ export function buildRoutes() {
   const authed = new Hono();
   authed.use("*", requireUser);
 
+  /**
+   * Balance observability summary (aggregates only).
+   * Does not affect combat; for operators watching early-KO / one-shot rates.
+   */
+  authed.get("/balance/summary", (c) => {
+    const limit = Number(c.req.query("limit") ?? 20);
+    return c.json({
+      summary: getBalanceSummary(Number.isFinite(limit) ? limit : 20),
+    });
+  });
+
   authed.get("/characters", (c) => {
     const user = c.get("user");
     const q = c.req.query("q");
@@ -197,6 +209,14 @@ export function buildRoutes() {
       ...balanced,
     };
     charRepo.saveSheet(sheet);
+    try {
+      const { recordSheetSnapshot } = await import(
+        "./services/balance-observe.js"
+      );
+      recordSheetSnapshot({ sheet, phase: "generate" });
+    } catch {
+      /* non-fatal */
+    }
     return c.json({
       character: toPublicCharacter(sheet, user.id),
       assistantMessage: gen.assistantMessage,
@@ -239,16 +259,32 @@ export function buildRoutes() {
       updatedAt: new Date().toISOString(),
     };
     charRepo.saveSheet(next);
+    try {
+      const { recordSheetSnapshot } = await import(
+        "./services/balance-observe.js"
+      );
+      recordSheetSnapshot({ sheet: next, phase: "chat" });
+    } catch {
+      /* non-fatal */
+    }
     return c.json({
       character: toPublicCharacter(next, user.id),
       assistantMessage: adj.assistantMessage,
     });
   });
 
-  authed.post("/characters/:id/copy", (c) => {
+  authed.post("/characters/:id/copy", async (c) => {
     const user = c.get("user");
     const copy = charRepo.copyCharacter(c.req.param("id"), user.id);
     if (!copy) return c.json({ error: "not_found" }, 404);
+    try {
+      const { recordSheetSnapshot } = await import(
+        "./services/balance-observe.js"
+      );
+      recordSheetSnapshot({ sheet: copy, phase: "copy" });
+    } catch {
+      /* non-fatal */
+    }
     return c.json({ character: toPublicCharacter(copy, user.id) });
   });
 

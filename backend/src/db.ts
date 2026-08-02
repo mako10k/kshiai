@@ -76,6 +76,20 @@ export function getDb(): Database.Database {
     );
     CREATE INDEX IF NOT EXISTS idx_narration_styles_owner
       ON narration_styles (owner_user_id);
+
+    -- Balance observability (no effect on combat rules)
+    CREATE TABLE IF NOT EXISTS balance_events (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      kind TEXT NOT NULL,
+      created_at TEXT NOT NULL,
+      battle_id TEXT,
+      character_id TEXT,
+      payload_json TEXT NOT NULL
+    );
+    CREATE INDEX IF NOT EXISTS idx_balance_events_kind_time
+      ON balance_events (kind, created_at);
+    CREATE INDEX IF NOT EXISTS idx_balance_events_battle
+      ON balance_events (battle_id);
   `);
   return db;
 }

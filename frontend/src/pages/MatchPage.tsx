@@ -27,14 +27,6 @@ type MatchDraft = {
   step: 1 | 2;
 };
 
-const DEFAULT_MATCH_DRAFT: MatchDraft = {
-  myId: "",
-  oppId: "",
-  fieldId: "",
-  styleId: "nst_default",
-  step: 1,
-};
-
 /**
  * Explicit wizard — no hidden auto-start, no policy regen on every field flick.
  *
@@ -45,16 +37,34 @@ const DEFAULT_MATCH_DRAFT: MatchDraft = {
 export function MatchPage() {
   const nav = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
+  /** Survives match draft clear — last used narration becomes the next default. */
+  const [lastStyleId, setLastStyleId] = useLocalDraft(
+    "match:lastNarrationStyleId",
+    "nst_default",
+  );
+  const defaultMatchDraft = useMemo<MatchDraft>(
+    () => ({
+      myId: "",
+      oppId: "",
+      fieldId: "",
+      styleId: lastStyleId || "nst_default",
+      step: 1,
+    }),
+    [lastStyleId],
+  );
   const [draft, setDraft, clearDraft] = useLocalDraft<MatchDraft>(
     "match:setup",
-    DEFAULT_MATCH_DRAFT,
+    defaultMatchDraft,
   );
   const { myId, oppId, fieldId, styleId, step } = draft;
 
   const setMyId = (id: string) => setDraft((d) => ({ ...d, myId: id }));
   const setOppId = (id: string) => setDraft((d) => ({ ...d, oppId: id }));
   const setFieldId = (id: string) => setDraft((d) => ({ ...d, fieldId: id }));
-  const setStyleId = (id: string) => setDraft((d) => ({ ...d, styleId: id }));
+  const setStyleId = (id: string) => {
+    setLastStyleId(id);
+    setDraft((d) => ({ ...d, styleId: id }));
+  };
   const setStep = (s: 1 | 2) => setDraft((d) => ({ ...d, step: s }));
 
   const [mine, setMine] = useState<CharacterPublic[]>([]);
@@ -127,6 +137,9 @@ export function MatchPage() {
         const pickStyle =
           (qStyle && s.styles.some((x) => x.id === qStyle) && qStyle) ||
           (d.styleId && s.styles.some((x) => x.id === d.styleId) && d.styleId) ||
+          (lastStyleId &&
+            s.styles.some((x) => x.id === lastStyleId) &&
+            lastStyleId) ||
           s.styles.find((x) => x.id === "nst_default")?.id ||
           s.styles[0]?.id ||
           "";
@@ -324,6 +337,8 @@ export function MatchPage() {
         narrationStyleId: styleId || undefined,
         ...fieldOpts(),
       });
+      // Keep narration style for next match; clear only the matchup draft
+      if (styleId) setLastStyleId(styleId);
       clearDraft();
       nav(`/battles/${battle.id}`);
     } catch (err) {
