@@ -1,0 +1,80 @@
+project KSHIAI:
+  version 1
+  title "kshiai scaffold and vertical slice"
+  description |
+    Implementation plan from rewritten requirements through a playable
+    mock-LLM vertical slice, then real provider wiring.
+  as_of 2026-08-02
+  duration_unit day
+  finish SLICE_DONE
+
+resource DEV:
+  title "Developer"
+  capacity 1
+
+milestone NOW:
+  title "Now"
+  state reached
+
+milestone DOCS_READY:
+  title "Requirements design and plan ready"
+
+milestone REPO_READY:
+  title "GitHub repo and monorepo scaffold ready"
+
+milestone AUTH_READY:
+  title "Auth and persistence ready"
+
+milestone CHAR_READY:
+  title "Character flows ready (mock LLM)"
+
+milestone BATTLE_READY:
+  title "Battle engine and UI ready (mock LLM)"
+
+milestone PROVIDER_READY:
+  title "xAI/Venice providers wired"
+
+milestone SLICE_DONE:
+  title "Vertical slice accepted"
+
+task T_DOCS NOW -> DOCS_READY:
+  title "Rewrite requirements, llmthink design, pert plan"
+  duration 1d
+  requires:
+    DEV 1
+
+task T_SCAFFOLD DOCS_READY -> REPO_READY:
+  title "Create monorepo FE/BE/shared, ports, git, gh repo"
+  duration 1d
+  requires:
+    DEV 1
+
+task T_AUTH REPO_READY -> AUTH_READY:
+  title "Implement register login session and SQLite users"
+  duration 1d
+  requires:
+    DEV 1
+
+task T_CHAR AUTH_READY -> CHAR_READY:
+  title "Character CRUD generate chat confirm copy search UI"
+  duration 2d
+  requires:
+    DEV 1
+
+task T_BATTLE CHAR_READY -> BATTLE_READY:
+  title "Matchmaking battle engine narration UI terminal rules"
+  duration 2d
+  requires:
+    DEV 1
+
+task T_PROVIDER BATTLE_READY -> PROVIDER_READY:
+  title "Wire xAI and Venice adapters plus image generation"
+  duration 1d
+  requires:
+    DEV 1
+
+task T_ACCEPT PROVIDER_READY -> SLICE_DONE:
+  title "Run acceptance checklist and fix gaps"
+  duration 1d
+  requires:
+    DEV 1

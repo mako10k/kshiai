@@ -1,0 +1,16 @@
+node_modules/
+dist/
+build/
+coverage/
+*.log
+.env
+.env.local
+.DS_Store
+data/*.db
+data/*.db-*
+backend/data/
+frontend/dist/
+*.tsbuildinfo
+.vite/
+thoughts/
+.llmthink/

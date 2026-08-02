@@ -1,0 +1,131 @@
+domain KshiaiBattleGame:
+  description "Turn-based multi-user LLM battle game with hidden stats and narrative presentation"
+
+problem PR1:
+  |
+    Users want expressive characters and dramatic battles, but exposing raw
+    stats turns the product into a spreadsheet fight instead of a story fight.
+
+evidence EV1:
+  |
+    Requirements forbid showing structured JSON or numeric parameters in normal UI.
+
+evidence EV2:
+  |
+    Players still need fair, reproducible combat outcomes.
+
+decision D1 based_on PR1, EV1, EV2:
+  |
+    Split authority: CharacterSheet and BattleState are server-side truth.
+    Clients receive only public DTOs (blurb, images, narrative log, action choices
+    without numeric payloads). Combat math is deterministic engine code.
+
+problem PR2:
+  |
+    LLM creativity can invent illegal damage, infinite buffs, or skip defeat rules.
+
+evidence EV3:
+  |
+    Requirements assign scene coefficients and narration to the LLM, but turn
+    effects and win checks to the program.
+
+decision D2 based_on PR2, EV3, D1:
+  |
+    Pipeline per turn: optional LLM situation proposal -> schema validate and
+    clamp coefficients -> engine resolves actions and mutates state -> LLM
+    narrates only the committed event list -> engine evaluates terminal conditions.
+    LLM never writes HP directly.
+
+problem PR3:
+  |
+    Character creation from free text must feel conversational while still
+    producing a complete engine sheet.
+
+evidence EV4:
+  |
+    Users adjust via natural language and must never see the raw sheet.
+
+decision D3 based_on PR3, EV4, D1:
+  |
+    Generation session stores draft sheet server-side. Chat returns assistant
+    prose plus optional apply-patch that merges into the draft. Confirm promotes
+    draft to owned Character. Public read APIs strip parameters.
+
+problem PR4:
+  |
+    Multiple users and ownership boundaries must not leak other players' drafts
+    or internal sheets.
+
+evidence EV5:
+  |
+    Multi-login and cross-user matches are required.
+
+decision D4 based_on PR4, EV5:
+  |
+    Auth sessions identify users. Characters are owner-scoped for mutate.
+    Matchmaking exposes only public opponent cards. Battle participants may read
+    narrative state for that battle only.
+
+problem PR5:
+  |
+    Provider choice (xAI vs Venice) and image generation must not hard-wire the
+    app to one HTTP shape.
+
+evidence EV6:
+  |
+    API keys must remain server-side; mock mode is required for offline UI work.
+
+decision D5 based_on PR5, EV6:
+  |
+    Define LlmProvider and ImageProvider interfaces. Config selects xai, venice,
+    or mock. Frontend never holds provider keys.
+
+problem PR6:
+  |
+    Default Vite/Node ports collide on shared dev machines.
+
+evidence EV7:
+  |
+    Requirements mandate non-default free ports.
+
+decision D6 based_on PR6, EV7:
+  |
+    Frontend listens on 5188; API on 3088. Document in README and .env.example.
+
+problem PR7:
+  |
+    Turn-limit endings need judgment without letting LLM override earlier HP defeat.
+
+evidence EV8:
+  |
+    Irreversible incapacity or depleted sustain params end the match immediately.
+
+decision D7 based_on PR7, EV8, D2:
+  |
+    Terminal evaluator runs after every engine resolve. Immediate defeat paths
+    short-circuit. Only when turnLimit is reached with both still fighting does
+    the referee LLM assign winner from narrative-safe summary plus hidden scores
+    available only to the server prompt builder.
+
+problem PR8:
+  |
+    Monorepo FE/BE with shared types must stay simple for scaffold velocity.
+
+decision D8 based_on PR8, D1, D5:
+  |
+    npm workspaces: frontend (Vite React), backend (Hono), packages/shared
+    (zod schemas and DTO types). SQLite for persistence in v1.
+
+problem PR9:
+  |
+    Dialogue presentation rules can regress if left as freeform model text only.
+
+evidence EV9:
+  |
+    Character lines must use Japanese quotation marks and named speakers.
+
+decision D9 based_on PR9, EV9:
+  |
+    Narration response schema separates narrator paragraphs and speech lines
+    {speaker, text}. UI renders speech as 「text」 with speaker label. A light
+    server-side formatter enforces brackets if the model omits them.
