@@ -89,4 +89,86 @@ describe("battle engine", () => {
     });
     assert.equal(next.situation.coefficients.damage, 2.5);
   });
+
+  it("applies battlefield base coefficients at creation", () => {
+    const state = createBattleState({
+      id: "b4",
+      sideA: sheet("a", "A"),
+      sideB: sheet("b", "B"),
+      turnLimit: 20,
+      battlefield: {
+        sourcePresetId: null,
+        displayName: "テスト森",
+        category: "forest",
+        scene: "霧の森",
+        terrain: "ぬかるみ",
+        obstacles: ["倒木"],
+        conditions: ["霧"],
+        coefficients: { damage: 0.9, wind: 1.2 },
+        narrativeSetup: "霧が立ちこめる。",
+      },
+    });
+    assert.equal(state.situation.coefficients.damage, 0.9);
+    assert.equal(state.battlefield?.displayName, "テスト森");
+  });
+
+  it("auto-resolves a turn from stance without player action", () => {
+    const state = createBattleState({
+      id: "b5",
+      sideA: sheet("a", "A"),
+      sideB: sheet("b", "B"),
+      turnLimit: 20,
+      stanceA: "aggressive",
+      stanceB: "defensive",
+    });
+    const { state: next, events } = resolveTurn({
+      state,
+      sideASkills: sheet("a", "A").skills,
+      sideBSkills: sheet("b", "B").skills,
+    });
+    assert.equal(next.turn, 1);
+    assert.ok(events.length > 0);
+    assert.equal(next.stanceA, "aggressive");
+  });
+
+  it("auto-resolves from multi-selected case policies", () => {
+    const state = createBattleState({
+      id: "b6",
+      sideA: sheet("a", "A"),
+      sideB: sheet("b", "B", 30),
+      turnLimit: 20,
+      policiesA: [
+        {
+          id: "p1",
+          title: "追い打ち",
+          when: "相手が揺らいだとき",
+          then: "攻める",
+          bias: "attack",
+          priority: 80,
+          triggers: { foeHpBelow: 0.5 },
+          defaultSelected: true,
+        },
+        {
+          id: "p2",
+          title: "守り",
+          when: "こちらが危ないとき",
+          then: "守る",
+          bias: "defend",
+          priority: 90,
+          triggers: { myHpBelow: 0.3 },
+          defaultSelected: true,
+        },
+      ],
+      selectedPolicyIdsA: ["p1", "p2"],
+      policiesB: [],
+      selectedPolicyIdsB: [],
+    });
+    const { state: next } = resolveTurn({
+      state,
+      sideASkills: sheet("a", "A").skills,
+      sideBSkills: sheet("b", "B", 30).skills,
+    });
+    assert.equal(next.turn, 1);
+    assert.ok((next.sideB.parameters.hp ?? 100) < 30 || next.sideB.defending === false);
+  });
 });

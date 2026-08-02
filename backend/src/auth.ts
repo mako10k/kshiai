@@ -2,6 +2,7 @@ import bcrypt from "bcryptjs";
 import type { Context, Next } from "hono";
 import { getCookie, setCookie, deleteCookie } from "hono/cookie";
 import type { UserPublic } from "@kshiai/shared";
+import { config } from "./config.js";
 import { getDb } from "./db.js";
 import { newId } from "./id.js";
 
@@ -82,17 +83,27 @@ export function userFromToken(token: string | undefined): AuthUser | null {
   return { id: row.id, username: row.username };
 }
 
+function cookieSecureForRequest(c: Context): boolean {
+  const host = c.req.header("x-forwarded-host") || c.req.header("host") || "";
+  const proto = c.req.header("x-forwarded-proto") || "";
+  if (proto === "https") return true;
+  if (host.includes("mk10.org")) return true;
+  if (host.startsWith("127.0.0.1") || host.startsWith("localhost")) return false;
+  return config.cookieSecure;
+}
+
 export function setSessionCookie(c: Context, token: string): void {
   setCookie(c, COOKIE, token, {
     httpOnly: true,
     path: "/",
     sameSite: "Lax",
+    secure: cookieSecureForRequest(c),
     maxAge: SESSION_DAYS * 24 * 60 * 60,
   });
 }
 
 export function clearSessionCookie(c: Context): void {
-  deleteCookie(c, COOKIE, { path: "/" });
+  deleteCookie(c, COOKIE, { path: "/", secure: cookieSecureForRequest(c) });
 }
 
 export function getSessionToken(c: Context): string | undefined {

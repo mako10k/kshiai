@@ -15,8 +15,10 @@
     "build": "npm run build --workspace=@kshiai/shared && npm run build --workspace=backend && npm run build --workspace=frontend",
     "typecheck": "npm run typecheck --workspaces --if-present",
     "test": "npm run test --workspaces --if-present",
-    "lint": "npm run typecheck"
+    "lint": "npm run typecheck",
+    "sync:secdat": "bash scripts/sync-env-from-secdat.sh"
   },
+
   "engines": {
     "node": ">=20"
   },

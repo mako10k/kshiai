@@ -1,0 +1,16 @@
+[Unit]
+Description=cloudflared (kshiai tunnel)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=mako10k
+Group=mako10k
+Environment=HOME=/home/mako10k
+ExecStart=/usr/local/bin/cloudflared tunnel --config /home/mako10k/kshiai/infra/cloudflare/config.yml run kshiai
+Restart=on-failure
+RestartSec=5s
+
+[Install]
+WantedBy=multi-user.target

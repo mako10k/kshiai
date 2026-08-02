@@ -20,6 +20,23 @@
 | DB | SQLite | — |
 | LLM | mock / xAI / Venice | — |
 
+## 公開 URL
+
+- **https://kshiai.mk10.org**（Cloudflare Tunnel → Vite `127.0.0.1:5188`、API は `/api` プロキシ）
+- 手順メモ: [docs/cloudflare_tunnel.md](docs/cloudflare_tunnel.md)
+
+### 常駐（kaix と同系）
+
+| 役割 | 仕組み |
+|------|--------|
+| アプリ | PM2 `ecosystem.config.cjs`（`kshiai-backend` / `kshiai-frontend`）+ `pm2-mako10k.service` |
+| Tunnel | systemd `cloudflared-kshiai.service` |
+
+```bash
+pm2 start ecosystem.config.cjs && pm2 save
+sudo systemctl enable --now cloudflared-kshiai
+```
+
 ## セットアップ
 
 ```bash
@@ -43,8 +60,9 @@ XAI_API_KEY=xai-...
 1. ログイン / 登録  
 2. メインメニュー  
 3. キャラ管理（生成・会話調整・検索・コピー・削除・画像）  
-4. 相手選択（手動 / ランダム / 自動）  
-5. バトル（ナレータ + セリフログ）
+4. 戦場管理（プリセット・地形/障害ヒント・画像・試合からの保存）  
+5. 相手選択（手動 / ランダム / 自動、戦場は未指定＝ランダム）  
+6. バトル（ナレータ + セリフログ + 戦場表示）
 
 ## 開発メモ
 

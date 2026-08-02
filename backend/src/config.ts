@@ -22,6 +22,21 @@ loadEnvFile(path.resolve(process.cwd(), ".env"));
 loadEnvFile(path.resolve(root, ".env"));
 
 
+const defaultCors = [
+  "http://127.0.0.1:5188",
+  "http://localhost:5188",
+  "https://kshiai.mk10.org",
+];
+
+function parseCorsOrigins(): string[] {
+  const raw = process.env.CORS_ORIGIN ?? defaultCors.join(",");
+  const list = raw
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
+  return list.length > 0 ? list : defaultCors;
+}
+
 export const config = {
   host: process.env.HOST ?? "127.0.0.1",
   port: Number(process.env.PORT ?? 3088),
@@ -30,15 +45,25 @@ export const config = {
     process.env.DATABASE_PATH ?? path.join(root, "data/kshiai.db"),
   ),
   sessionSecret: process.env.SESSION_SECRET ?? "dev-secret-change-me",
-  corsOrigin: process.env.CORS_ORIGIN ?? "http://127.0.0.1:5188",
+  /** Comma-separated list supported via CORS_ORIGIN. */
+  corsOrigins: parseCorsOrigins(),
+  /** @deprecated use corsOrigins */
+  corsOrigin: parseCorsOrigins()[0] ?? "http://127.0.0.1:5188",
+  /** Set true behind HTTPS (Cloudflare Tunnel). */
+  cookieSecure:
+    process.env.COOKIE_SECURE === "1" ||
+    process.env.COOKIE_SECURE === "true" ||
+    process.env.NODE_ENV === "production",
   llmProvider: (process.env.LLM_PROVIDER ?? "mock") as "mock" | "xai" | "venice",
   xai: {
     apiKey: process.env.XAI_API_KEY ?? "",
     baseUrl: process.env.XAI_BASE_URL ?? "https://api.x.ai/v1",
     model: process.env.XAI_MODEL ?? "grok-4.5",
+    imageModel: process.env.XAI_IMAGE_MODEL ?? "grok-imagine-image",
   },
   venice: {
-    apiKey: process.env.VENICE_API_KEY ?? "",
+    // secdat key name is VENICEAI_API_KEY; accept both
+    apiKey: process.env.VENICE_API_KEY ?? process.env.VENICEAI_API_KEY ?? "",
     baseUrl: process.env.VENICE_BASE_URL ?? "https://api.venice.ai/api/v1",
     model: process.env.VENICE_MODEL ?? "default",
   },

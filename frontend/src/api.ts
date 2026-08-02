@@ -1,4 +1,8 @@
 import type {
+  BattlefieldPresetPublic,
+  BattleListItem,
+  BattlePolicyOption,
+  BattlePolicyOptionPublic,
   BattlePublic,
   CharacterPublic,
   UserPublic,
@@ -8,17 +12,25 @@ async function request<T>(
   path: string,
   init?: RequestInit,
 ): Promise<T> {
+  const headers = new Headers(init?.headers);
+  if (!headers.has("Content-Type") && init?.body != null) {
+    headers.set("Content-Type", "application/json");
+  }
   const res = await fetch(path, {
-    credentials: "include",
-    headers: {
-      "Content-Type": "application/json",
-      ...(init?.headers ?? {}),
-    },
     ...init,
+    credentials: "include",
+    headers,
   });
-  const data = (await res.json().catch(() => ({}))) as T & { error?: string };
+  const data = (await res.json().catch(() => ({}))) as T & {
+    error?: string;
+    message?: string;
+  };
   if (!res.ok) {
-    throw new Error(data.error ?? `http_${res.status}`);
+    const msg =
+      data.message ||
+      data.error ||
+      `http_${res.status}`;
+    throw new Error(msg);
   }
   return data;
 }
@@ -58,10 +70,13 @@ export const api = {
     }),
   deleteCharacter: (id: string) =>
     request<{ ok: boolean }>(`/api/characters/${id}`, { method: "DELETE" }),
-  generateImage: (id: string) =>
+  generateImage: (id: string, extra?: string) =>
     request<{ character: CharacterPublic; note?: string }>(
       `/api/characters/${id}/image`,
-      { method: "POST" },
+      {
+        method: "POST",
+        body: JSON.stringify(extra ? { extra } : {}),
+      },
     ),
   candidates: (q?: string) =>
     request<{ candidates: CharacterPublic[] }>(
@@ -77,19 +92,99 @@ export const api = {
       method: "POST",
       body: JSON.stringify({ myCharacterId }),
     }),
-  createBattle: (myCharacterId: string, opponentCharacterId: string) =>
+  generatePolicies: (body: {
+    myCharacterId: string;
+    opponentCharacterId?: string;
+    battlefieldMode?: "random" | "preset";
+    battlefieldPresetId?: string;
+  }) =>
+    request<{
+      options: BattlePolicyOptionPublic[];
+      engineOptions: BattlePolicyOption[];
+      defaultSelectedIds: string[];
+      rationale: string;
+      fieldHint: string;
+    }>("/api/match/policies", {
+      method: "POST",
+      body: JSON.stringify(body),
+    }),
+  createBattle: (
+    myCharacterId: string,
+    opponentCharacterId: string,
+    opts?: {
+      battlefieldMode?: "random" | "preset";
+      battlefieldPresetId?: string;
+      stance?: "aggressive" | "balanced" | "defensive" | "opportunistic";
+      policies?: BattlePolicyOption[];
+      selectedPolicyIds?: string[];
+    },
+  ) =>
     request<{ battle: BattlePublic }>("/api/battles", {
       method: "POST",
-      body: JSON.stringify({ myCharacterId, opponentCharacterId }),
+      body: JSON.stringify({
+        myCharacterId,
+        opponentCharacterId,
+        ...opts,
+      }),
     }),
   getBattle: (id: string) =>
     request<{ battle: BattlePublic }>(`/api/battles/${id}`),
-  battleAction: (
-    id: string,
-    action: { kind: "skill" | "defend" | "wait"; skillId?: string },
-  ) =>
-    request<{ battle: BattlePublic }>(`/api/battles/${id}/action`, {
+  listBattles: (opts?: {
+    q?: string;
+    status?: "all" | "active" | "finished";
+    limit?: number;
+    offset?: number;
+  }) => {
+    const sp = new URLSearchParams();
+    if (opts?.q) sp.set("q", opts.q);
+    if (opts?.status) sp.set("status", opts.status);
+    if (opts?.limit != null) sp.set("limit", String(opts.limit));
+    if (opts?.offset != null) sp.set("offset", String(opts.offset));
+    const qs = sp.toString();
+    return request<{ battles: BattleListItem[]; total: number }>(
+      `/api/battles${qs ? `?${qs}` : ""}`,
+    );
+  },
+  deleteBattle: (id: string) =>
+    request<{ ok: boolean }>(`/api/battles/${id}`, { method: "DELETE" }),
+  /** Advance one turn (actions chosen automatically from stance). */
+  advanceBattle: (id: string) =>
+    request<{ battle: BattlePublic }>(`/api/battles/${id}/advance`, {
       method: "POST",
-      body: JSON.stringify(action),
+      body: JSON.stringify({}),
     }),
+  listBattlefields: (q?: string) =>
+    request<{ battlefields: BattlefieldPresetPublic[] }>(
+      `/api/battlefields${q ? `?q=${encodeURIComponent(q)}` : ""}`,
+    ),
+  generateBattlefield: (prompt: string, category?: string) =>
+    request<{ battlefield: BattlefieldPresetPublic; assistantMessage: string }>(
+      "/api/battlefields/generate",
+      { method: "POST", body: JSON.stringify({ prompt, category }) },
+    ),
+  chatBattlefield: (id: string, message: string) =>
+    request<{ battlefield: BattlefieldPresetPublic; assistantMessage: string }>(
+      `/api/battlefields/${id}/chat`,
+      { method: "POST", body: JSON.stringify({ message }) },
+    ),
+  copyBattlefield: (id: string) =>
+    request<{ battlefield: BattlefieldPresetPublic }>(
+      `/api/battlefields/${id}/copy`,
+      { method: "POST" },
+    ),
+  deleteBattlefield: (id: string) =>
+    request<{ ok: boolean }>(`/api/battlefields/${id}`, { method: "DELETE" }),
+  generateBattlefieldImage: (id: string) =>
+    request<{ battlefield: BattlefieldPresetPublic; note?: string }>(
+      `/api/battlefields/${id}/image`,
+      { method: "POST" },
+    ),
+  saveBattlefieldFromBattle: (battleId: string, displayName?: string) =>
+    request<{ battlefield: BattlefieldPresetPublic }>(
+      "/api/battlefields/from-battle",
+      {
+        method: "POST",
+        body: JSON.stringify({ battleId, displayName }),
+      },
+    ),
 };

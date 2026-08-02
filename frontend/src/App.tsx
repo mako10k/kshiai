@@ -6,6 +6,9 @@ import { CharactersPage } from "./pages/CharactersPage";
 import { CharacterDetailPage } from "./pages/CharacterDetailPage";
 import { MatchPage } from "./pages/MatchPage";
 import { BattlePage } from "./pages/BattlePage";
+import { BattlefieldsPage } from "./pages/BattlefieldsPage";
+import { BattlefieldDetailPage } from "./pages/BattlefieldDetailPage";
+import { HistoryPage } from "./pages/HistoryPage";
 
 function Shell({ children }: { children: React.ReactNode }) {
   const { user, logout } = useAuth();
@@ -70,6 +73,30 @@ export function App() {
           element={
             <RequireAuth>
               <MatchPage />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/history"
+          element={
+            <RequireAuth>
+              <HistoryPage />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/battlefields"
+          element={
+            <RequireAuth>
+              <BattlefieldsPage />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/battlefields/:id"
+          element={
+            <RequireAuth>
+              <BattlefieldDetailPage />
             </RequireAuth>
           }
         />

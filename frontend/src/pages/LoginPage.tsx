@@ -29,7 +29,7 @@ export function LoginPage() {
   return (
     <div className="panel" style={{ maxWidth: 420, margin: "2rem auto" }}>
       <h1>kshiai に入る</h1>
-      <p className="muted">ターン制 LLM バトル — 数値は物語の裏側にあります。</p>
+      <p className="muted">物語として進むターン制バトルへようこそ。</p>
       <form className="grid" onSubmit={(e) => void onSubmit(e)}>
         <label>
           ユーザー名

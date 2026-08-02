@@ -1,7 +1,23 @@
 import type { CharacterSheet } from "@kshiai/shared";
-import { CharacterSheetSchema, toPublicCharacter } from "@kshiai/shared";
+import {
+  CharacterSheetSchema,
+  defaultRecord,
+  toPublicCharacter,
+} from "@kshiai/shared";
 import { getDb } from "../db.js";
 import { newId } from "../id.js";
+
+function parseSheet(json: string): CharacterSheet {
+  const raw = CharacterSheetSchema.parse(JSON.parse(json));
+  if (!raw.record) {
+    return { ...raw, record: defaultRecord() };
+  }
+  return raw;
+}
+
+function isActive(sheet: CharacterSheet): boolean {
+  return !sheet.deletedAt;
+}
 
 export function listCharactersForUser(userId: string, q?: string) {
   const db = getDb();
@@ -10,7 +26,9 @@ export function listCharactersForUser(userId: string, q?: string) {
       `SELECT sheet_json FROM characters WHERE owner_user_id = ? ORDER BY updated_at DESC`,
     )
     .all(userId) as { sheet_json: string }[];
-  let sheets = rows.map((r) => CharacterSheetSchema.parse(JSON.parse(r.sheet_json)));
+  let sheets = rows
+    .map((r) => parseSheet(r.sheet_json))
+    .filter(isActive);
   if (q?.trim()) {
     const needle = q.trim().toLowerCase();
     sheets = sheets.filter(
@@ -20,40 +38,65 @@ export function listCharactersForUser(userId: string, q?: string) {
         s.tags.some((t) => t.toLowerCase().includes(needle)),
     );
   }
+  // Higher rating first, then recent
+  sheets.sort((a, b) => {
+    const ra = a.record?.rating ?? 1500;
+    const rb = b.record?.rating ?? 1500;
+    if (rb !== ra) return rb - ra;
+    return b.updatedAt.localeCompare(a.updatedAt);
+  });
   return sheets.map(toPublicCharacter);
+}
+
+/** Hide early mock-test junk (e.g. 「はアキ」) from matchmaking. */
+function isPlayableOpponent(sheet: CharacterSheet): boolean {
+  if (!isActive(sheet)) return false;
+  // Old mock provider tagged these; also drop particle-broken names
+  if (sheet.tags?.includes("mock")) return false;
+  if (/^[はがをにへとでのもや]/.test(sheet.displayName)) return false;
+  return true;
 }
 
 export function listPublicOpponents(excludeUserId: string, q?: string) {
   const db = getDb();
   const rows = db
     .prepare(
-      `SELECT sheet_json FROM characters WHERE owner_user_id != ? ORDER BY updated_at DESC LIMIT 100`,
+      `SELECT sheet_json FROM characters WHERE owner_user_id != ? ORDER BY updated_at DESC LIMIT 200`,
     )
     .all(excludeUserId) as { sheet_json: string }[];
-  let sheets = rows.map((r) => CharacterSheetSchema.parse(JSON.parse(r.sheet_json)));
-  // Include own characters as possible sparring partners too
+  let sheets = rows
+    .map((r) => parseSheet(r.sheet_json))
+    .filter(isPlayableOpponent);
+  // Include own characters as sparring partners
   const own = db
     .prepare(`SELECT sheet_json FROM characters WHERE owner_user_id = ?`)
     .all(excludeUserId) as { sheet_json: string }[];
   sheets = [
     ...sheets,
-    ...own.map((r) => CharacterSheetSchema.parse(JSON.parse(r.sheet_json))),
+    ...own
+      .map((r) => parseSheet(r.sheet_json))
+      .filter(isActive), // own list may still show mock during dev; opponents hide them
   ];
   if (q?.trim()) {
     const needle = q.trim().toLowerCase();
     sheets = sheets.filter((s) => s.displayName.toLowerCase().includes(needle));
   }
-  // de-dupe by id
   const map = new Map(sheets.map((s) => [s.id, s]));
   return [...map.values()].map(toPublicCharacter);
 }
 
 export function getSheet(id: string): CharacterSheet | null {
+  const sheet = getSheetIncludingDeleted(id);
+  if (!sheet || sheet.deletedAt) return null;
+  return sheet;
+}
+
+export function getSheetIncludingDeleted(id: string): CharacterSheet | null {
   const row = getDb()
     .prepare(`SELECT sheet_json FROM characters WHERE id = ?`)
     .get(id) as { sheet_json: string } | undefined;
   if (!row) return null;
-  return CharacterSheetSchema.parse(JSON.parse(row.sheet_json));
+  return parseSheet(row.sheet_json);
 }
 
 export function saveSheet(sheet: CharacterSheet): void {
@@ -61,24 +104,48 @@ export function saveSheet(sheet: CharacterSheet): void {
   const existing = db
     .prepare(`SELECT id FROM characters WHERE id = ?`)
     .get(sheet.id);
-  const json = JSON.stringify(sheet);
+  const withRecord: CharacterSheet = {
+    ...sheet,
+    record: sheet.record ?? defaultRecord(),
+  };
+  const json = JSON.stringify(withRecord);
   if (existing) {
     db.prepare(
       `UPDATE characters SET sheet_json = ?, updated_at = ? WHERE id = ?`,
-    ).run(json, sheet.updatedAt, sheet.id);
+    ).run(json, withRecord.updatedAt, withRecord.id);
   } else {
     db.prepare(
       `INSERT INTO characters (id, owner_user_id, sheet_json, created_at, updated_at)
        VALUES (?, ?, ?, ?, ?)`,
-    ).run(sheet.id, sheet.ownerUserId, json, sheet.createdAt, sheet.updatedAt);
+    ).run(
+      withRecord.id,
+      withRecord.ownerUserId,
+      json,
+      withRecord.createdAt,
+      withRecord.updatedAt,
+    );
   }
 }
 
+/** Soft-delete: hide from lists; rating impact is voided separately. */
+export function softDeleteCharacter(
+  id: string,
+  ownerUserId: string,
+): CharacterSheet | null {
+  const sheet = getSheet(id);
+  if (!sheet || sheet.ownerUserId !== ownerUserId) return null;
+  const next: CharacterSheet = {
+    ...sheet,
+    deletedAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+  saveSheet(next);
+  return next;
+}
+
+/** @deprecated use softDeleteCharacter */
 export function deleteCharacter(id: string, ownerUserId: string): boolean {
-  const r = getDb()
-    .prepare(`DELETE FROM characters WHERE id = ? AND owner_user_id = ?`)
-    .run(id, ownerUserId);
-  return r.changes > 0;
+  return softDeleteCharacter(id, ownerUserId) != null;
 }
 
 export function copyCharacter(
@@ -94,9 +161,12 @@ export function copyCharacter(
     displayName: `${src.displayName} の写し`,
     createdAt: t,
     updatedAt: t,
+    deletedAt: null,
     parameters: { ...src.parameters },
     skills: src.skills.map((s) => ({ ...s, id: newId("sk") })),
     tags: [...src.tags, "copy"],
+    // Fresh rating — no carry-over from original (anti-clone farming)
+    record: defaultRecord(),
   };
   saveSheet(copy);
   return copy;

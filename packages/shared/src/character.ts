@@ -1,4 +1,11 @@
 import { z } from "zod";
+import {
+  DEFAULT_RATING,
+  isProvisional,
+  normalizeRecord,
+  type CharacterRecord,
+} from "./rating.js";
+import { cacheBustMediaUrl } from "./media.js";
 
 /** Internal combat parameters — never sent to normal clients. */
 export const ParamKeySchema = z.enum([
@@ -56,6 +63,15 @@ export const CombatFlagsSchema = z.object({
 });
 export type CombatFlags = z.infer<typeof CombatFlagsSchema>;
 
+export const CharacterRecordSchema = z.object({
+  wins: z.number().int().nonnegative().default(0),
+  losses: z.number().int().nonnegative().default(0),
+  draws: z.number().int().nonnegative().default(0),
+  gamesPlayed: z.number().int().nonnegative().default(0),
+  rating: z.number().default(DEFAULT_RATING),
+  provisional: z.boolean().default(true),
+});
+
 /** Full server-side character sheet. */
 export const CharacterSheetSchema = z.object({
   id: z.string(),
@@ -64,6 +80,8 @@ export const CharacterSheetSchema = z.object({
   tags: z.array(z.string()).default([]),
   createdAt: z.string(),
   updatedAt: z.string(),
+  /** Soft-delete timestamp; excluded from play lists when set. */
+  deletedAt: z.string().nullable().optional(),
   appearance: AppearanceSchema,
   traits: z.array(z.string()).default([]),
   parameters: ParametersSchema,
@@ -72,10 +90,11 @@ export const CharacterSheetSchema = z.object({
   armor: EquipmentSchema.nullable(),
   combatFlags: CombatFlagsSchema,
   narrativeBlurb: z.string(),
+  record: CharacterRecordSchema.optional(),
 });
 export type CharacterSheet = z.infer<typeof CharacterSheetSchema>;
 
-/** Client-safe character card (no parameters). */
+/** Client-safe character card (no combat parameters). */
 export const CharacterPublicSchema = z.object({
   id: z.string(),
   ownerUserId: z.string(),
@@ -92,10 +111,24 @@ export const CharacterPublicSchema = z.object({
   weaponName: z.string().nullable(),
   armorName: z.string().nullable(),
   narrativeBlurb: z.string(),
+  /** Public match record / rating (provisional flagged). */
+  record: z.object({
+    wins: z.number(),
+    losses: z.number(),
+    draws: z.number(),
+    gamesPlayed: z.number(),
+    rating: z.number(),
+    provisional: z.boolean(),
+  }),
 });
 export type CharacterPublic = z.infer<typeof CharacterPublicSchema>;
 
+export function ensureRecord(sheet: CharacterSheet): CharacterRecord {
+  return normalizeRecord(sheet.record);
+}
+
 export function toPublicCharacter(sheet: CharacterSheet): CharacterPublic {
+  const record = ensureRecord(sheet);
   return {
     id: sheet.id,
     ownerUserId: sheet.ownerUserId,
@@ -105,13 +138,24 @@ export function toPublicCharacter(sheet: CharacterSheet): CharacterPublic {
     updatedAt: sheet.updatedAt,
     appearance: {
       summary: sheet.appearance.summary,
-      imageUrl: sheet.appearance.imageUrl ?? null,
+      imageUrl: cacheBustMediaUrl(
+        sheet.appearance.imageUrl ?? null,
+        sheet.updatedAt,
+      ),
     },
     traits: sheet.traits,
     skillNames: sheet.skills.map((s) => s.name),
     weaponName: sheet.weapon?.name ?? null,
     armorName: sheet.armor?.name ?? null,
     narrativeBlurb: sheet.narrativeBlurb,
+    record: {
+      wins: record.wins,
+      losses: record.losses,
+      draws: record.draws,
+      gamesPlayed: record.gamesPlayed,
+      rating: record.rating,
+      provisional: isProvisional(record.gamesPlayed),
+    },
   };
 }
 

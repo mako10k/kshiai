@@ -42,6 +42,15 @@ export function getDb(): Database.Database {
       created_at TEXT NOT NULL,
       updated_at TEXT NOT NULL
     );
+
+    CREATE TABLE IF NOT EXISTS battlefields (
+      id TEXT PRIMARY KEY,
+      owner_user_id TEXT,
+      is_system INTEGER NOT NULL DEFAULT 0,
+      sheet_json TEXT NOT NULL,
+      created_at TEXT NOT NULL,
+      updated_at TEXT NOT NULL
+    );
   `);
   return db;
 }

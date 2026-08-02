@@ -1,4 +1,12 @@
-import type { CharacterSheet, NarrativeBlock, Situation, TurnEvent } from "@kshiai/shared";
+import type {
+  BattlefieldInstance,
+  BattlefieldPreset,
+  BattlePolicyOption,
+  CharacterSheet,
+  NarrativeBlock,
+  Situation,
+  TurnEvent,
+} from "@kshiai/shared";
 
 export type GenerateCharacterResult = {
   sheet: Omit<
@@ -10,6 +18,19 @@ export type GenerateCharacterResult = {
 
 export type AdjustCharacterResult = {
   sheetPatch: Partial<GenerateCharacterResult["sheet"]>;
+  assistantMessage: string;
+};
+
+export type GenerateBattlefieldResult = {
+  preset: Omit<
+    BattlefieldPreset,
+    "id" | "ownerUserId" | "createdAt" | "updatedAt" | "isSystem"
+  >;
+  assistantMessage: string;
+};
+
+export type AdjustBattlefieldResult = {
+  presetPatch: Partial<GenerateBattlefieldResult["preset"]>;
   assistantMessage: string;
 };
 
@@ -29,10 +50,24 @@ export interface LlmProvider {
     current: CharacterSheet,
     userMessage: string,
   ): Promise<AdjustCharacterResult>;
+  generateBattlefieldPreset(input: {
+    prompt: string;
+    category?: BattlefieldPreset["category"];
+  }): Promise<GenerateBattlefieldResult>;
+  adjustBattlefieldPreset(
+    current: BattlefieldPreset,
+    userMessage: string,
+  ): Promise<AdjustBattlefieldResult>;
+  /** Expand a preset (or random theme) into a concrete match field. */
+  concretizeBattlefield(input: {
+    preset: BattlefieldPreset | null;
+    random: boolean;
+  }): Promise<BattlefieldInstance>;
   proposeSituation(input: {
     scene: string;
     turn: number;
     eventsHint: string;
+    battlefield?: BattlefieldInstance | null;
   }): Promise<SituationProposal>;
   narrateTurn(input: {
     turn: number;
@@ -40,6 +75,7 @@ export interface LlmProvider {
     sideAName: string;
     sideBName: string;
     events: TurnEvent[];
+    battlefield?: BattlefieldInstance | null;
   }): Promise<NarrationResult>;
   referee(input: {
     sideAName: string;
@@ -47,5 +83,31 @@ export interface LlmProvider {
     engineWinnerSide: "a" | "b" | "draw" | null;
     logSummaries: string[];
   }): Promise<RefereeResult>;
+  /**
+   * Generate case-based policy options from character traits + field.
+   * Multi-select: defaultSelected marks recommended defaults.
+   */
+  generateBattlePolicies(input: {
+    self: {
+      displayName: string;
+      traits: string[];
+      skillNames: string[];
+      narrativeBlurb: string;
+      weaponName?: string | null;
+    };
+    foe?: {
+      displayName: string;
+      traits: string[];
+      narrativeBlurb: string;
+    } | null;
+    field: {
+      displayName: string;
+      category: string;
+      terrain?: string;
+      obstacles?: string[];
+      conditions?: string[];
+      narrativeBlurb?: string;
+    };
+  }): Promise<{ options: BattlePolicyOption[]; rationale: string }>;
   generateImagePrompt?(appearanceSummary: string, extra?: string): Promise<string>;
 }

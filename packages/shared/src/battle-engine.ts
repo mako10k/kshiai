@@ -1,12 +1,17 @@
 import type {
   BattleAction,
+  BattlePolicyOption,
+  BattleStance,
   BattleState,
   CombatantState,
+  PolicyBias,
   Situation,
   TurnEvent,
 } from "./battle.js";
 import { clampCoefficient, isCombatantDown } from "./battle.js";
 import type { CharacterSheet, Skill } from "./character.js";
+import type { BattlefieldInstance } from "./battlefield.js";
+import { clampCoefficientMap, mergeCoefficients } from "./battlefield.js";
 
 function nowIso(): string {
   return new Date().toISOString();
@@ -36,8 +41,32 @@ export function createBattleState(input: {
   sideB: CharacterSheet;
   turnLimit: number;
   scene?: string;
+  battlefield?: BattlefieldInstance;
+  stanceA?: BattleStance;
+  stanceB?: BattleStance;
+  policiesA?: BattlePolicyOption[];
+  selectedPolicyIdsA?: string[];
+  policiesB?: BattlePolicyOption[];
+  selectedPolicyIdsB?: string[];
 }): BattleState {
   const t = nowIso();
+  const bf = input.battlefield;
+  const baseCoeffs = clampCoefficientMap(bf?.coefficients ?? {});
+  const tags = [
+    ...(bf?.obstacles ?? []),
+    ...(bf?.conditions ?? []),
+    bf?.terrain ?? "",
+  ].filter(Boolean);
+
+  const policiesA = input.policiesA ?? [];
+  const policiesB = input.policiesB ?? [];
+  const selectedPolicyIdsA =
+    input.selectedPolicyIdsA ??
+    policiesA.filter((p) => p.defaultSelected).map((p) => p.id);
+  const selectedPolicyIdsB =
+    input.selectedPolicyIdsB ??
+    policiesB.filter((p) => p.defaultSelected).map((p) => p.id);
+
   return {
     id: input.id,
     status: "active",
@@ -45,10 +74,21 @@ export function createBattleState(input: {
     turnLimit: input.turnLimit,
     sideA: combatantFromSheet(input.sideA),
     sideB: combatantFromSheet(input.sideB),
+    stanceA: input.stanceA,
+    stanceB: input.stanceB,
+    policiesA,
+    selectedPolicyIdsA,
+    policiesB,
+    selectedPolicyIdsB,
+    battlefield: bf,
     situation: {
-      scene: input.scene ?? "黄昏の闘技場",
-      notes: "観客の熱気が立ちこめている。",
-      coefficients: {},
+      scene: bf?.scene ?? input.scene ?? "黄昏の闘技場",
+      notes:
+        bf?.narrativeSetup ??
+        bf?.terrain ??
+        "観客の熱気が立ちこめている。",
+      coefficients: baseCoeffs,
+      tags,
     },
     log: [],
     winnerSide: null,
@@ -58,21 +98,238 @@ export function createBattleState(input: {
   };
 }
 
+function hpRatio(c: CombatantState): number {
+  const max = c.parameters.maxHp ?? 100;
+  const hp = c.parameters.hp ?? 0;
+  return max > 0 ? hp / max : 0;
+}
+
+function usableSkills(skills: Skill[], self: CombatantState): Skill[] {
+  return skills.filter(
+    (s) =>
+      (self.parameters.mp ?? 0) >= s.costMp &&
+      (self.parameters.stamina ?? 0) >= s.costStamina,
+  );
+}
+
+function pickOffensiveSkill(skills: Skill[], self: CombatantState): Skill | undefined {
+  const usable = usableSkills(skills, self).filter(
+    (s) => s.kind === "attack" || s.kind === "magic" || s.kind === "special",
+  );
+  if (usable.length === 0) return usableSkills(skills, self)[0];
+  // Prefer higher power
+  return [...usable].sort((a, b) => b.power - a.power)[0];
+}
+
+function pickSupportSkill(skills: Skill[], self: CombatantState): Skill | undefined {
+  const usable = usableSkills(skills, self).filter(
+    (s) => s.kind === "support" || s.kind === "defend",
+  );
+  return usable[0];
+}
+
+function actionFromBias(
+  bias: PolicyBias,
+  actorSide: "a" | "b",
+  self: CombatantState,
+  skills: Skill[],
+  myHp: number,
+): BattleAction {
+  const offense = pickOffensiveSkill(skills, self);
+  const support = pickSupportSkill(skills, self);
+
+  const attack = (): BattleAction =>
+    offense
+      ? { actorSide, kind: "skill", skillId: offense.id }
+      : { actorSide, kind: "wait" };
+
+  const defend = (): BattleAction =>
+    support && support.kind === "defend"
+      ? { actorSide, kind: "skill", skillId: support.id }
+      : { actorSide, kind: "defend" };
+
+  const healOrDefend = (): BattleAction => {
+    if (myHp < 0.5 && support && support.kind === "support") {
+      return { actorSide, kind: "skill", skillId: support.id };
+    }
+    return defend();
+  };
+
+  switch (bias) {
+    case "attack":
+      return attack();
+    case "defend":
+      return defend();
+    case "support":
+      return support
+        ? { actorSide, kind: "skill", skillId: support.id }
+        : healOrDefend();
+    case "wait":
+      return { actorSide, kind: "wait" };
+    case "mixed":
+    default:
+      if (myHp < 0.35) return healOrDefend();
+      return attack();
+  }
+}
+
+function ruleMatches(
+  rule: BattlePolicyOption,
+  ctx: { turn: number; myHp: number; foeHp: number },
+): boolean {
+  const t = rule.triggers ?? {};
+  if (t.always) return true;
+  if (t.earlyTurn && ctx.turn > 3) return false;
+  if (t.earlyTurn && ctx.turn <= 3) {
+    // earlyTurn alone can match; still check other constraints
+  }
+  if (t.lateTurn && ctx.turn < 4) return false;
+  if (t.myHpBelow !== undefined && !(ctx.myHp < t.myHpBelow)) return false;
+  if (t.myHpAbove !== undefined && !(ctx.myHp > t.myHpAbove)) return false;
+  if (t.foeHpBelow !== undefined && !(ctx.foeHp < t.foeHpBelow)) return false;
+  if (t.foeHpAbove !== undefined && !(ctx.foeHp > t.foeHpAbove)) return false;
+
+  // If only earlyTurn without other numeric triggers, match early turns
+  if (t.earlyTurn && ctx.turn <= 3) return true;
+  if (t.lateTurn && ctx.turn >= 4) return true;
+  if (
+    t.myHpBelow !== undefined ||
+    t.myHpAbove !== undefined ||
+    t.foeHpBelow !== undefined ||
+    t.foeHpAbove !== undefined
+  ) {
+    return true; // already passed constraints above
+  }
+  if (t.always) return true;
+  // No concrete triggers → treat as soft always if selected
+  return Object.keys(t).length === 0;
+}
+
+/**
+ * Choose action from multi-selected case policies (LLM-generated).
+ * Highest priority matching rule wins; fallback to mixed/balanced.
+ */
+export function chooseActionFromPolicies(input: {
+  policies: BattlePolicyOption[];
+  selectedIds: string[];
+  actorSide: "a" | "b";
+  self: CombatantState;
+  foe: CombatantState;
+  skills: Skill[];
+  turn: number;
+  /** Fallback when no policies selected. */
+  legacyStance?: BattleStance;
+}): BattleAction {
+  const myHp = hpRatio(input.self);
+  const foeHp = hpRatio(input.foe);
+  const selected = new Set(input.selectedIds);
+  const active = input.policies.filter((p) => selected.has(p.id));
+
+  const matching = active
+    .filter((p) => ruleMatches(p, { turn: input.turn, myHp, foeHp }))
+    .sort((a, b) => (b.priority ?? 0) - (a.priority ?? 0));
+
+  if (matching.length > 0) {
+    return actionFromBias(
+      matching[0]!.bias ?? "mixed",
+      input.actorSide,
+      input.self,
+      input.skills,
+      myHp,
+    );
+  }
+
+  // Soft fallback: any always rules, then legacy stance
+  const always = active
+    .filter((p) => p.triggers?.always || Object.keys(p.triggers ?? {}).length === 0)
+    .sort((a, b) => (b.priority ?? 0) - (a.priority ?? 0));
+  if (always.length > 0) {
+    return actionFromBias(
+      always[0]!.bias ?? "mixed",
+      input.actorSide,
+      input.self,
+      input.skills,
+      myHp,
+    );
+  }
+
+  return chooseActionFromStance({
+    stance: input.legacyStance ?? "balanced",
+    actorSide: input.actorSide,
+    self: input.self,
+    foe: input.foe,
+    skills: input.skills,
+    turn: input.turn,
+  });
+}
+
+/**
+ * @deprecated Prefer chooseActionFromPolicies.
+ */
+export function chooseActionFromStance(input: {
+  stance: BattleStance;
+  actorSide: "a" | "b";
+  self: CombatantState;
+  foe: CombatantState;
+  skills: Skill[];
+  turn: number;
+}): BattleAction {
+  const { stance, actorSide, self, skills, turn } = input;
+  const myHp = hpRatio(self);
+  const foeHp = hpRatio(input.foe);
+
+  switch (stance) {
+    case "aggressive":
+      return actionFromBias(
+        myHp < 0.2 ? "defend" : "attack",
+        actorSide,
+        self,
+        skills,
+        myHp,
+      );
+    case "defensive":
+      if (myHp < 0.55) return actionFromBias("defend", actorSide, self, skills, myHp);
+      if (foeHp < 0.35 || turn % 3 === 0) {
+        return actionFromBias("attack", actorSide, self, skills, myHp);
+      }
+      return actionFromBias("defend", actorSide, self, skills, myHp);
+    case "opportunistic":
+      if (turn <= 2) return actionFromBias(turn === 1 ? "wait" : "defend", actorSide, self, skills, myHp);
+      if (foeHp < 0.5 || myHp > 0.7) {
+        return actionFromBias("attack", actorSide, self, skills, myHp);
+      }
+      return actionFromBias("mixed", actorSide, self, skills, myHp);
+    case "balanced":
+    default:
+      return actionFromBias("mixed", actorSide, self, skills, myHp);
+  }
+}
+
+export function pickOpponentStance(): BattleStance {
+  const options: BattleStance[] = [
+    "aggressive",
+    "balanced",
+    "defensive",
+    "opportunistic",
+  ];
+  return options[Math.floor(Math.random() * options.length)]!;
+}
+
 export function applySituationCoefficients(
   current: Situation,
   proposed: Partial<Situation> | undefined,
+  battlefieldBase?: Record<string, number>,
 ): Situation {
   if (!proposed) return current;
-  const coefficients: Record<string, number> = { ...current.coefficients };
-  if (proposed.coefficients) {
-    for (const [k, v] of Object.entries(proposed.coefficients)) {
-      coefficients[k] = clampCoefficient(v);
-    }
-  }
+  const merged = mergeCoefficients(
+    { ...(battlefieldBase ?? {}), ...current.coefficients },
+    proposed.coefficients,
+  );
   return {
     scene: proposed.scene?.trim() ? proposed.scene : current.scene,
     notes: proposed.notes ?? current.notes,
-    coefficients,
+    coefficients: merged,
+    tags: proposed.tags ?? current.tags ?? [],
   };
 }
 
@@ -94,12 +351,14 @@ function intensityFromDamage(dmg: number): TurnEvent["intensity"] {
 }
 
 /**
- * Resolve one player action for side A, then a simple AI response for side B.
+ * Resolve one turn. Actions are chosen from stances unless an explicit
+ * playerAction override is supplied (tests / legacy).
  * Pure function — no LLM.
  */
 export function resolveTurn(input: {
   state: BattleState;
-  playerAction: BattleAction;
+  /** Optional override; when omitted, stanceA drives side A. */
+  playerAction?: BattleAction;
   sideASkills: Skill[];
   sideBSkills: Skill[];
   situationUpdate?: Partial<Situation>;
@@ -113,19 +372,59 @@ export function resolveTurn(input: {
   sideA.defending = false;
   sideB.defending = false;
 
-  const situation = applySituationCoefficients(input.state.situation, input.situationUpdate);
+  const bfBase = input.state.battlefield?.coefficients;
+  const situation = applySituationCoefficients(
+    input.state.situation,
+    input.situationUpdate,
+    bfBase,
+  );
   const events: TurnEvent[] = [];
   const turn = input.state.turn + 1;
 
-  // Player (side A)
-  applyAction(sideA, sideB, input.playerAction, input.sideASkills, situation, events);
+  // Battlefield flavor event occasionally when obstacles/conditions matter
+  if (turn === 1 && input.state.battlefield) {
+    const bf = input.state.battlefield;
+    const bits = [
+      bf.terrain,
+      bf.obstacles.slice(0, 2).join("・"),
+      bf.conditions.slice(0, 2).join("・"),
+    ].filter(Boolean);
+    if (bits.length) {
+      events.push({
+        type: "situation",
+        summary: `戦場の気配 — ${bits.join(" / ")}`,
+      });
+    }
+  }
 
-  // AI (side B) if still up
+  const playerAction =
+    input.playerAction ??
+    chooseActionFromPolicies({
+      policies: input.state.policiesA ?? [],
+      selectedIds: input.state.selectedPolicyIdsA ?? [],
+      actorSide: "a",
+      self: sideA,
+      foe: sideB,
+      skills: input.sideASkills,
+      turn,
+      legacyStance: input.state.stanceA ?? "balanced",
+    });
+
+  // Player (side A)
+  applyAction(sideA, sideB, playerAction, input.sideASkills, situation, events);
+
+  // Opponent (side B) from policies / stance if still up
   if (!isCombatantDown(sideB) && !isCombatantDown(sideA)) {
-    const aiSkill = pickAiSkill(input.sideBSkills, sideB);
-    const aiAction: BattleAction = aiSkill
-      ? { actorSide: "b", kind: "skill", skillId: aiSkill.id }
-      : { actorSide: "b", kind: "wait" };
+    const aiAction = chooseActionFromPolicies({
+      policies: input.state.policiesB ?? [],
+      selectedIds: input.state.selectedPolicyIdsB ?? [],
+      actorSide: "b",
+      self: sideB,
+      foe: sideA,
+      skills: input.sideBSkills,
+      turn,
+      legacyStance: input.state.stanceB ?? "balanced",
+    });
     applyAction(sideB, sideA, aiAction, input.sideBSkills, situation, events);
   }
 
@@ -196,14 +495,6 @@ export function resolveTurn(input: {
 function combatScore(c: CombatantState): number {
   const p = c.parameters;
   return (p.hp ?? 0) * 2 + (p.mp ?? 0) + (p.stamina ?? 0) + (p.atk ?? 0) + (p.def ?? 0);
-}
-
-function pickAiSkill(skills: Skill[], self: CombatantState): Skill | undefined {
-  const usable = skills.filter(
-    (s) => (self.parameters.mp ?? 0) >= s.costMp && (self.parameters.stamina ?? 0) >= s.costStamina,
-  );
-  if (usable.length === 0) return undefined;
-  return usable[Math.floor(Math.random() * usable.length)] ?? usable[0];
 }
 
 function applyAction(

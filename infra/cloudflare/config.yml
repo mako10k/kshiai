@@ -1,0 +1,10 @@
+# cloudflared tunnel for kshiai.mk10.org
+tunnel: 4603d799-ed6d-4ed5-86b6-2171137344cc
+credentials-file: /home/mako10k/.cloudflared/4603d799-ed6d-4ed5-86b6-2171137344cc.json
+
+ingress:
+  - hostname: kshiai.mk10.org
+    service: http://127.0.0.1:5188
+    originRequest:
+      httpHostHeader: 127.0.0.1
+  - service: http_status:404
