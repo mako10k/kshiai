@@ -330,7 +330,9 @@ Return JSON: {
 Parameters should be balanced around hp 80-120, atk/def 8-16. Never create unbeatable gods.
 When the request refers to the user's other character, a relative, partner, rival, or someone similar, use search_own_characters and then get_own_character before generating. Preserve the requested relationship while creating meaningful differences.
 BALANCE (mandatory):
-- Every absolute strength (最強武器, 無敵の防御, 必中, 無限魔力, 超幸運…) MUST have an implicit weakness in traits and narrativeBlurb (隙・脆さ・代償・条件付き).
+- Judge from the complete concept and mechanics whether a claimed strength needs a weakness, cost, counter, or condition to keep the character fair.
+- When one is needed, invent a concrete, character-specific tradeoff and express it naturally in the relevant skill/equipment description, traits, and narrativeBlurb. Write the actual prose yourself; never append generic stock warnings.
+- When no narrative tradeoff is needed, do not fabricate a generic weakness merely because one parameter is high.
 - skill power typically 0.8–1.5 (never above 1.8). Strong skills need higher MP/stamina cost.
 - Basic attacks may primarily reduce HP, MP, stamina, a maximum, or a combat stat. Match the character concept.
 - Status changes are temporary: every parameter drifts back toward its original sheet value each turn.
@@ -435,7 +437,7 @@ Use null or [] when the profile does not establish a value. Do not treat a title
 Do not tell the user exact numbers.
 Use the same basicAttack, skill effects, and equipment effects shapes as character generation.
 Status changes are temporary and drift toward original values every turn. Beneficial effects need MP/stamina, a negative self effect, or the consumed action; positive equipment needs a negative tradeoff.
-If the user asks for absolute power, grant flavor but keep an implicit weakness (隙・脆さ・条件付き). Never remove all counters.`,
+Judge from the complete concept and mechanics whether the requested strengths need a weakness, cost, counter, or condition. When needed, write a concrete character-specific tradeoff into the relevant skill/equipment description, traits, and narrativeBlurb. Never append a generic stock warning, and do not fabricate a weakness when none is needed. If the user asks for absolute power, preserve the flavor without removing all counters.`,
         JSON.stringify({
           currentPublic: {
             displayName: current.displayName,

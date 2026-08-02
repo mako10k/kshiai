@@ -25,19 +25,6 @@ const PARAM_SOFT: Record<string, { min: number; max: number; soft: number }> = {
   luck: { min: 4, max: 18, soft: 12 },
 };
 
-const WEAKNESS_TRAITS = [
-  "隙が多い",
-  "打たれ弱い",
-  "集中が切れやすい",
-  "運に頼りがち",
-  "消耗が早い",
-  "近接に脆い",
-  "遠距離に弱い",
-  "精神攻撃に弱い",
-  "足場に左右される",
-  "過信しやすい",
-];
-
 function softClamp(value: number, min: number, max: number, soft: number): number {
   if (!Number.isFinite(value)) return soft;
   let v = value;
@@ -92,7 +79,6 @@ export function balanceSkill(skill: Skill): Skill {
         power > 1.6 ? 10 : effectCost ? 6 : 5,
       ),
       effects,
-      description: `${skill.description || skill.name}（高出力のため使用時に隙が生じる）`,
     };
   }
   return {
@@ -148,50 +134,18 @@ export function balanceEquipment(eq: Equipment | null | undefined): Equipment | 
       { parameter: "stamina", delta: -Math.min(12, Math.max(2, Math.ceil(positive / 3))) },
     ];
   }
-  let desc = eq.description;
-  if (atk >= 5 || mag >= 5) {
-    desc = `${desc || eq.name}（高出力のため扱いに明確な隙が生じる）`;
-  }
-  if (addedTradeoff) {
-    desc = `${desc || eq.name}（付与効果の代償として持久力を消耗する）`;
-  }
   return {
     ...eq,
     atkBonus: atk,
     defBonus: def,
     magBonus: mag,
     effects,
-    description: desc,
   };
 }
 
-function hasMechanicalPeak(input: {
-  parameters: Parameters;
-  skills: Skill[];
-  weapon: Equipment | null;
-  armor: Equipment | null;
-}): boolean {
-  const combatPeak = Math.max(
-    input.parameters.atk ?? 0,
-    input.parameters.def ?? 0,
-    input.parameters.spd ?? 0,
-    input.parameters.mag ?? 0,
-    input.parameters.res ?? 0,
-    input.parameters.focus ?? 0,
-    input.parameters.luck ?? 0,
-  ) >= 16;
-  const skillPeak = input.skills.some((skill) => skill.power >= 1.45);
-  const equipmentPeak = [input.weapon, input.armor].some(
-    (equipment) =>
-      equipment != null &&
-      Math.max(equipment.atkBonus, equipment.defBonus, equipment.magBonus) >= 5,
-  );
-  return combatPeak || skillPeak || equipmentPeak;
-}
-
 /**
- * Post-process a generated / adjusted sheet so absolute strengths
- * always carry implicit costs and soft caps.
+ * Post-process generated / adjusted mechanics with deterministic safety caps.
+ * Narrative tradeoffs are authored by the LLM and must not be rewritten here.
  */
 export function balanceCharacterCombatFields<
   T extends {
@@ -209,22 +163,6 @@ export function balanceCharacterCombatFields<
   const weapon = balanceEquipment(sheet.weapon ?? null);
   const armor = balanceEquipment(sheet.armor ?? null);
   const basicAttack = balanceBasicAttack(sheet.basicAttack);
-  let traits = [...(sheet.traits ?? [])];
-  const addMechanicalWeakness = hasMechanicalPeak({
-    parameters,
-    skills,
-    weapon,
-    armor,
-  });
-  if (addMechanicalWeakness) {
-    const pick =
-      WEAKNESS_TRAITS[Math.floor(Math.random() * WEAKNESS_TRAITS.length)]!;
-    if (!traits.includes(pick)) traits = [...traits.slice(0, 6), pick];
-  }
-  let narrativeBlurb = sheet.narrativeBlurb ?? "";
-  if (narrativeBlurb && addMechanicalWeakness) {
-    narrativeBlurb = `${narrativeBlurb.replace(/。?$/, "。")}ただしその強さには必ず隙があり、戦場の流れ次第では一気に崩れる。`;
-  }
   return {
     ...sheet,
     parameters,
@@ -232,8 +170,6 @@ export function balanceCharacterCombatFields<
     weapon,
     armor,
     basicAttack,
-    traits,
-    narrativeBlurb,
   };
 }
 

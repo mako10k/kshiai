@@ -24,7 +24,7 @@ describe("balance", () => {
     assert.ok((p.def ?? 0) <= 16);
   });
 
-  it("adds weakness when structured combat fields have a mechanical peak", () => {
+  it("caps peaked mechanics without rewriting LLM-authored prose", () => {
     const sheet = balanceCharacterCombatFields({
       parameters: defaultParameters(),
       skills: [
@@ -51,21 +51,10 @@ describe("balance", () => {
     });
     assert.ok((sheet.skills?.[0]?.power ?? 0) <= 1.85);
     assert.ok((sheet.weapon?.atkBonus ?? 0) <= 6);
-    assert.ok(sheet.traits && sheet.traits.length >= 3);
-    assert.match(sheet.narrativeBlurb ?? "", /隙|脆|崩れる/);
-  });
-
-  it("does not infer combat strength from prose keywords", () => {
-    const sheet = balanceCharacterCombatFields({
-      parameters: defaultParameters(),
-      skills: [],
-      weapon: null,
-      armor: null,
-      traits: ["無敵", "最強"],
-      narrativeBlurb: "誰にも負けない戦士。",
-    });
     assert.deepEqual(sheet.traits, ["無敵", "最強"]);
     assert.equal(sheet.narrativeBlurb, "誰にも負けない戦士。");
+    assert.equal(sheet.skills?.[0]?.description, "全てを壊す");
+    assert.equal(sheet.weapon?.description, "最強");
   });
 
   it("caps per-hit damage vs max HP", () => {
@@ -91,6 +80,7 @@ describe("balance", () => {
     });
     assert.ok(skill.costMp > 0 || skill.costStamina > 0);
     assert.equal(skill.effects?.[0]?.delta, 10);
+    assert.equal(skill.description, "攻撃を高める。");
 
     const equipment = balanceEquipment({
         name: "強化剣",
@@ -100,5 +90,6 @@ describe("balance", () => {
         magBonus: 0,
     });
     assert.ok(equipment?.effects?.some((effect) => effect.delta < 0));
+    assert.equal(equipment?.description, "攻撃を高める。");
   });
 });
