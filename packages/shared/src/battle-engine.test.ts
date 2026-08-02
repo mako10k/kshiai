@@ -181,4 +181,148 @@ describe("battle engine", () => {
     assert.equal(next.turn, 1);
     assert.ok((next.sideB.parameters.hp ?? 100) < 30 || next.sideB.defending === false);
   });
+
+  it("falls back to a basic attack when offensive skills are unaffordable", () => {
+    const a = sheet("a", "A");
+    const b = sheet("b", "B");
+    for (const fighter of [a, b]) {
+      fighter.skills[0] = { ...fighter.skills[0]!, costMp: 99 };
+      fighter.parameters.mp = 0;
+      fighter.parameters.stamina = 3;
+    }
+    const attackPolicy = {
+      id: "attack",
+      title: "攻勢",
+      when: "常に",
+      then: "攻める",
+      bias: "attack" as const,
+      priority: 10,
+      triggers: { always: true },
+      defaultSelected: true,
+    };
+    const state = createBattleState({
+      id: "basic",
+      sideA: a,
+      sideB: b,
+      turnLimit: 20,
+      prologuePending: false,
+      policiesA: [attackPolicy],
+      selectedPolicyIdsA: [attackPolicy.id],
+      policiesB: [attackPolicy],
+      selectedPolicyIdsB: [attackPolicy.id],
+    });
+
+    const { state: next, events } = resolveTurn({
+      state,
+      sideASkills: a.skills,
+      sideBSkills: b.skills,
+    });
+
+    assert.equal(events.filter((e) => e.skillName === "通常攻撃").length, 2);
+    assert.equal(next.sideA.parameters.stamina, 0);
+    assert.ok((next.sideA.parameters.hp ?? 100) < 100);
+    assert.ok((next.sideB.parameters.hp ?? 100) < 100);
+  });
+
+  it("rests and restores resources when even a basic attack is exhausted", () => {
+    const a = sheet("a", "A");
+    const b = sheet("b", "B");
+    for (const fighter of [a, b]) {
+      fighter.skills[0] = { ...fighter.skills[0]!, costMp: 99 };
+      fighter.parameters.mp = 0;
+      fighter.parameters.stamina = 0;
+    }
+    const state = createBattleState({
+      id: "rest",
+      sideA: a,
+      sideB: b,
+      turnLimit: 20,
+      prologuePending: false,
+      stanceA: "aggressive",
+      stanceB: "aggressive",
+    });
+
+    const { state: next, events } = resolveTurn({
+      state,
+      sideASkills: a.skills,
+      sideBSkills: b.skills,
+    });
+
+    assert.equal(events.filter((e) => e.type === "rest").length, 2);
+    assert.ok((next.sideA.parameters.mp ?? 0) > 0);
+    assert.ok((next.sideA.parameters.stamina ?? 0) > 0);
+  });
+
+  it("forces both fighters into basic attacks after two passive turns", () => {
+    const a = sheet("a", "A");
+    const b = sheet("b", "B");
+    const waitPolicy = {
+      id: "wait",
+      title: "待機",
+      when: "常に",
+      then: "待つ",
+      bias: "wait" as const,
+      priority: 100,
+      triggers: { always: true },
+      defaultSelected: true,
+    };
+    const state = createBattleState({
+      id: "force",
+      sideA: a,
+      sideB: b,
+      turnLimit: 20,
+      prologuePending: false,
+      policiesA: [waitPolicy],
+      selectedPolicyIdsA: [waitPolicy.id],
+      policiesB: [waitPolicy],
+      selectedPolicyIdsB: [waitPolicy.id],
+    });
+    state.supervisor = {
+      quietTurns: 2,
+      passiveTurns: 2,
+      turnsSinceHappening: 2,
+      lastHpA: 100,
+      lastHpB: 100,
+      happenings: 0,
+    };
+
+    const { events } = resolveTurn({
+      state,
+      sideASkills: a.skills,
+      sideBSkills: b.skills,
+    });
+
+    assert.ok(events.some((e) => e.summary.includes("膠着打破")));
+    assert.equal(events.filter((e) => e.skillName === "通常攻撃").length, 2);
+  });
+
+  it("announces the final turn and explains the turn-limit decision", () => {
+    const a = sheet("a", "A");
+    const b = sheet("b", "B");
+    const state = createBattleState({
+      id: "judgement",
+      sideA: a,
+      sideB: b,
+      turnLimit: 20,
+      prologuePending: false,
+    });
+    state.turn = 18;
+    const penultimate = resolveTurn({
+      state,
+      playerAction: { actorSide: "a", kind: "defend" },
+      sideASkills: a.skills,
+      sideBSkills: b.skills,
+    });
+    assert.ok(penultimate.events.some((e) => e.summary.includes("判定予告")));
+
+    const final = resolveTurn({
+      state: penultimate.state,
+      playerAction: { actorSide: "a", kind: "defend" },
+      sideASkills: a.skills,
+      sideBSkills: b.skills,
+    });
+    assert.equal(final.state.status, "finished");
+    assert.equal(final.state.finishReason, "turn_limit");
+    assert.ok(final.events.some((e) => e.summary.includes("最終判定")));
+  });
 });

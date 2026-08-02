@@ -4,6 +4,7 @@ import {
   advanceSupervisorClock,
   defaultSupervisor,
   isQuietTurn,
+  isPassiveTurn,
   pickTemplateHappening,
   shouldInjectHappening,
 } from "./supervisor.js";
@@ -56,17 +57,34 @@ describe("battle supervisor", () => {
     assert.equal(shouldInjectHappening(sup, 1, 20), false);
 
     // Simulate two quiet turns without happening
-    sup = advanceSupervisorClock(sup, true, false, 100, 100);
-    sup = advanceSupervisorClock(sup, true, false, 100, 100);
+    sup = advanceSupervisorClock(sup, true, true, false, 100, 100);
+    sup = advanceSupervisorClock(sup, true, true, false, 100, 100);
     assert.equal(sup.quietTurns, 2);
+    assert.equal(sup.passiveTurns, 2);
     assert.equal(sup.turnsSinceHappening, 2);
     assert.equal(shouldInjectHappening(sup, 3, 20), true);
 
     // After inject, cooldown
-    sup = advanceSupervisorClock(sup, false, true, 90, 90);
+    sup = advanceSupervisorClock(sup, false, false, true, 90, 90);
     assert.equal(sup.happenings, 1);
     assert.equal(sup.turnsSinceHappening, 0);
     assert.equal(shouldInjectHappening(sup, 4, 20), false);
+  });
+
+  it("distinguishes fighter exchanges from environmental pressure", () => {
+    assert.equal(
+      isPassiveTurn([
+        { type: "wait", actorName: "A", summary: "待機" },
+        { type: "damage", targetName: "B", summary: "落石" },
+      ]),
+      true,
+    );
+    assert.equal(
+      isPassiveTurn([
+        { type: "damage", actorName: "A", targetName: "B", summary: "攻撃" },
+      ]),
+      false,
+    );
   });
 
   it("picks category-aware templates", () => {

@@ -30,6 +30,7 @@ export type HappeningPlan = {
 export function defaultSupervisor(): SupervisorState {
   return {
     quietTurns: 0,
+    passiveTurns: 0,
     turnsSinceHappening: 0,
     lastHpA: null,
     lastHpB: null,
@@ -44,6 +45,10 @@ export function normalizeSupervisor(
   if (!raw) return d;
   return {
     quietTurns: Math.max(0, Number(raw.quietTurns ?? d.quietTurns) || 0),
+    passiveTurns: Math.max(
+      0,
+      Number(raw.passiveTurns ?? d.passiveTurns) || 0,
+    ),
     turnsSinceHappening: Math.max(
       0,
       Number(raw.turnsSinceHappening ?? d.turnsSinceHappening) || 0,
@@ -93,6 +98,15 @@ export function isQuietTurn(input: {
   return false;
 }
 
+/** True when neither fighter produced character-driven damage or healing. */
+export function isPassiveTurn(events: TurnEvent[]): boolean {
+  return !events.some(
+    (event) =>
+      Boolean(event.actorName) &&
+      (event.type === "damage" || event.type === "heal"),
+  );
+}
+
 /**
  * Decide whether to inject a happening before the upcoming turn.
  * Prefer stagnation; also soft-nudge after a long dry spell.
@@ -122,6 +136,7 @@ export function shouldInjectHappening(
 export function advanceSupervisorClock(
   sup: SupervisorState,
   quiet: boolean,
+  passive: boolean,
   injected: boolean,
   hpA: number,
   hpB: number,
@@ -129,6 +144,7 @@ export function advanceSupervisorClock(
   if (injected) {
     return {
       quietTurns: 0,
+      passiveTurns: passive ? sup.passiveTurns + 1 : 0,
       turnsSinceHappening: 0,
       lastHpA: hpA,
       lastHpB: hpB,
@@ -137,6 +153,7 @@ export function advanceSupervisorClock(
   }
   return {
     quietTurns: quiet ? sup.quietTurns + 1 : 0,
+    passiveTurns: passive ? sup.passiveTurns + 1 : 0,
     turnsSinceHappening: sup.turnsSinceHappening + 1,
     lastHpA: hpA,
     lastHpB: hpB,

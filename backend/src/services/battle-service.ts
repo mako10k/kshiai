@@ -6,6 +6,7 @@ import {
   createBattleState,
   happeningToEvents,
   happeningToSituationPatch,
+  isPassiveTurn,
   isQuietTurn,
   normalizeSupervisor,
   pickTemplateHappening,
@@ -656,6 +657,7 @@ export async function advanceTurn(input: {
   supervisor = advanceSupervisorClock(
     supervisor,
     quiet,
+    isPassiveTurn(events),
     Boolean(happening),
     hpAfterA,
     hpAfterB,
@@ -717,6 +719,17 @@ export async function advanceTurn(input: {
       });
       next = { ...next, winnerSide: ref.winnerSide };
       resultSummary = ref.summary;
+      next = {
+        ...next,
+        log: [
+          ...next.log,
+          {
+            turn: next.turn,
+            narrator: ["——判定——", ref.summary],
+            speeches: [],
+          },
+        ],
+      };
     } else {
       const winner =
         next.winnerSide === "a"

@@ -22,6 +22,8 @@ export type FinishReason = z.infer<typeof FinishReasonSchema>;
 
 export const ActionKindSchema = z.enum([
   "skill",
+  "basic_attack",
+  "rest",
   "defend",
   "wait",
 ]);
@@ -209,6 +211,7 @@ export const TurnEventSchema = z.object({
   type: z.enum([
     "damage",
     "heal",
+    "rest",
     "defend",
     "wait",
     "status",
@@ -227,6 +230,8 @@ export type TurnEvent = z.infer<typeof TurnEventSchema>;
 /** Monotony tracker for environmental happenings (supervisor). */
 export const SupervisorStateSchema = z.object({
   quietTurns: z.number().int().nonnegative().default(0),
+  /** Consecutive turns without a character-driven damage/heal exchange. */
+  passiveTurns: z.number().int().nonnegative().default(0),
   turnsSinceHappening: z.number().int().nonnegative().default(0),
   lastHpA: z.number().nullable().default(null),
   lastHpB: z.number().nullable().default(null),

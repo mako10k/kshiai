@@ -100,6 +100,7 @@ export function createBattleState(input: {
     },
     supervisor: {
       quietTurns: 0,
+      passiveTurns: 0,
       turnsSinceHappening: 0,
       lastHpA: null,
       lastHpB: null,
@@ -135,7 +136,7 @@ function pickOffensiveSkill(skills: Skill[], self: CombatantState): Skill | unde
   const usable = usableSkills(skills, self).filter(
     (s) => s.kind === "attack" || s.kind === "magic" || s.kind === "special",
   );
-  if (usable.length === 0) return usableSkills(skills, self)[0];
+  if (usable.length === 0) return undefined;
   // Prefer higher power
   return [...usable].sort((a, b) => b.power - a.power)[0];
 }
@@ -160,7 +161,9 @@ function actionFromBias(
   const attack = (): BattleAction =>
     offense
       ? { actorSide, kind: "skill", skillId: offense.id }
-      : { actorSide, kind: "wait" };
+      : (self.parameters.stamina ?? 0) >= 3
+        ? { actorSide, kind: "basic_attack" }
+        : { actorSide, kind: "rest" };
 
   const defend = (): BattleAction =>
     support && support.kind === "defend"
@@ -439,34 +442,46 @@ export function resolveTurn(input: {
     applyEnvHits(sideA, sideB, input.envHits, events);
   }
 
+  const forceOffense = (input.state.supervisor?.passiveTurns ?? 0) >= 2;
+  if (forceOffense) {
+    events.push({
+      type: "status",
+      summary: "膠着打破 — 両者は間合いを捨て、強制的に打ち合いへ踏み込む。",
+    });
+  }
+
   const playerAction =
     input.playerAction ??
-    chooseActionFromPolicies({
-      policies: input.state.policiesA ?? [],
-      selectedIds: input.state.selectedPolicyIdsA ?? [],
-      actorSide: "a",
-      self: sideA,
-      foe: sideB,
-      skills: input.sideASkills,
-      turn,
-      legacyStance: input.state.stanceA ?? "balanced",
-    });
+    (forceOffense
+      ? { actorSide: "a", kind: "basic_attack" }
+      : chooseActionFromPolicies({
+          policies: input.state.policiesA ?? [],
+          selectedIds: input.state.selectedPolicyIdsA ?? [],
+          actorSide: "a",
+          self: sideA,
+          foe: sideB,
+          skills: input.sideASkills,
+          turn,
+          legacyStance: input.state.stanceA ?? "balanced",
+        }));
 
   // Player (side A)
   applyAction(sideA, sideB, playerAction, input.sideASkills, situation, events);
 
   // Opponent (side B) from policies / stance if still up
   if (!isCombatantDown(sideB) && !isCombatantDown(sideA)) {
-    const aiAction = chooseActionFromPolicies({
-      policies: input.state.policiesB ?? [],
-      selectedIds: input.state.selectedPolicyIdsB ?? [],
-      actorSide: "b",
-      self: sideB,
-      foe: sideA,
-      skills: input.sideBSkills,
-      turn,
-      legacyStance: input.state.stanceB ?? "balanced",
-    });
+    const aiAction: BattleAction = forceOffense
+      ? { actorSide: "b", kind: "basic_attack" }
+      : chooseActionFromPolicies({
+          policies: input.state.policiesB ?? [],
+          selectedIds: input.state.selectedPolicyIdsB ?? [],
+          actorSide: "b",
+          self: sideB,
+          foe: sideA,
+          skills: input.sideBSkills,
+          turn,
+          legacyStance: input.state.stanceB ?? "balanced",
+        });
     applyAction(sideB, sideA, aiAction, input.sideBSkills, situation, events);
   }
 
@@ -532,6 +547,18 @@ export function resolveTurn(input: {
     const scoreB = combatScore(sideB);
     if (scoreA === scoreB) winnerSide = "draw";
     else winnerSide = scoreA > scoreB ? "a" : "b";
+    events.push({
+      type: "info",
+      summary:
+        winnerSide === "draw"
+          ? "規定ターン終了 — 審判は互角と見て、最終判定に入る。"
+          : `規定ターン終了 — 審判は ${winnerSide === "a" ? sideA.displayName : sideB.displayName} 優勢として最終判定に入る。`,
+    });
+  } else if (turn === input.state.turnLimit - 1) {
+    events.push({
+      type: "info",
+      summary: "判定予告 — 次が最終ターン。攻勢、残力、戦場支配が勝敗を分ける。",
+    });
   }
 
   const state: BattleState = {
@@ -627,6 +654,47 @@ function applyAction(
   situation: Situation,
   events: TurnEvent[],
 ): void {
+  if (action.kind === "basic_attack") {
+    const stamina = actor.parameters.stamina ?? 0;
+    actor.parameters.stamina = Math.max(0, stamina - Math.min(3, stamina));
+    applyAttackSkill(
+      actor,
+      target,
+      {
+        id: "basic_attack",
+        name: "通常攻撃",
+        description: "消耗時にも繰り出せる基本攻撃。",
+        costMp: 0,
+        costStamina: 0,
+        power: 0.75,
+        kind: "attack",
+      },
+      situation,
+      events,
+    );
+    return;
+  }
+
+  if (action.kind === "rest") {
+    const maxMp = actor.parameters.maxMp ?? 0;
+    const maxStamina = actor.parameters.maxStamina ?? 0;
+    actor.parameters.mp = Math.min(
+      maxMp,
+      (actor.parameters.mp ?? 0) + Math.max(4, Math.round(maxMp * 0.12)),
+    );
+    actor.parameters.stamina = Math.min(
+      maxStamina,
+      (actor.parameters.stamina ?? 0) +
+        Math.max(6, Math.round(maxStamina * 0.18)),
+    );
+    events.push({
+      type: "rest",
+      actorName: actor.displayName,
+      summary: `${actor.displayName} は一度間合いを切り、呼吸と力を取り戻した。`,
+    });
+    return;
+  }
+
   if (action.kind === "wait") {
     events.push({
       type: "wait",
@@ -695,6 +763,16 @@ function applyAction(
     return;
   }
 
+  applyAttackSkill(actor, target, skill, situation, events);
+}
+
+function applyAttackSkill(
+  actor: CombatantState,
+  target: CombatantState,
+  skill: Skill,
+  situation: Situation,
+  events: TurnEvent[],
+): void {
   const atkStat =
     skill.kind === "magic" ? (actor.parameters.mag ?? 10) : (actor.parameters.atk ?? 10);
   const defStat =

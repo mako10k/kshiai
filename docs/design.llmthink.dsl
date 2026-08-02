@@ -129,3 +129,23 @@ decision D9 based_on PR9, EV9:
     Narration response schema separates narrator paragraphs and speech lines
     {speaker, text}. UI renders speech as 「text」 with speaker label. A light
     server-side formatter enforces brackets if the model omits them.
+
+problem PR10:
+  |
+    Costly skill kits can exhaust MP and stamina early, leaving both automatic
+    fighters waiting while narration repeats until an opaque turn-limit result.
+
+evidence EV10:
+  |
+    A recorded 20-turn match produced character-driven HP movement on only six
+    turns and ended after a long passive sequence.
+
+decision D10 based_on PR10, EV10, D2, D7:
+  |
+    Action selection falls back from an unavailable offensive skill to a cheap
+    basic attack, then to resource-restoring rest. Supervisor state separately
+    counts turns without character-driven damage or healing; after two such
+    turns the engine forces both fighters into basic attacks, regardless of
+    environmental events. The penultimate turn emits a judgment warning, and a
+    dedicated persisted judgment narrative records the referee result at the
+    turn limit.

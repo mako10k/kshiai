@@ -282,7 +282,11 @@ export function BattlePage() {
         <div className="log">
           {battle.log.map((block, i) => (
             <div className="log-block" key={`${block.turn}-${i}`}>
-              {block.turn > 0 ? (
+              {block.narrator[0]?.includes("判定") ? (
+                <div className="muted" style={{ fontSize: "0.8rem" }}>
+                  — 最終判定 —
+                </div>
+              ) : block.turn > 0 ? (
                 <div className="muted" style={{ fontSize: "0.8rem" }}>
                   — ターン {block.turn} —
                 </div>
