@@ -28,6 +28,34 @@ export type ParamKey = z.infer<typeof ParamKeySchema>;
 export const ParametersSchema = z.record(ParamKeySchema, z.number());
 export type Parameters = z.infer<typeof ParametersSchema>;
 
+/** A temporary parameter change; battle state drifts back toward the sheet value. */
+export const ParameterDeltaSchema = z.object({
+  parameter: ParamKeySchema,
+  delta: z.number(),
+});
+export type ParameterDelta = z.infer<typeof ParameterDeltaSchema>;
+
+export const SkillEffectSchema = ParameterDeltaSchema.extend({
+  target: z.enum(["self", "foe"]).default("foe"),
+});
+export type SkillEffect = z.infer<typeof SkillEffectSchema>;
+
+/** Character-specific fallback attack; HP damage is only the default profile. */
+export const BasicAttackProfileSchema = z.object({
+  name: z.string().default("通常攻撃"),
+  description: z.string().default("消耗時にも使える基本攻撃。"),
+  targetParameter: ParamKeySchema.default("hp"),
+  scalingParameter: ParamKeySchema.default("atk"),
+  resistanceParameter: ParamKeySchema.default("def"),
+  power: z.number().default(0.75),
+  element: z.string().optional(),
+});
+export type BasicAttackProfile = z.infer<typeof BasicAttackProfileSchema>;
+
+export function defaultBasicAttack(): BasicAttackProfile {
+  return BasicAttackProfileSchema.parse({});
+}
+
 export const SkillSchema = z.object({
   id: z.string(),
   name: z.string(),
@@ -36,8 +64,12 @@ export const SkillSchema = z.object({
   costStamina: z.number().int().nonnegative().default(0),
   /** Relative power used by the engine (hidden from UI). */
   power: z.number().default(1),
-  kind: z.enum(["attack", "magic", "defend", "support", "special"]).default("attack"),
+  kind: z
+    .enum(["attack", "magic", "defend", "support", "special", "status"])
+    .default("attack"),
   element: z.string().optional(),
+  /** Temporary changes applied after the skill resolves. */
+  effects: z.array(SkillEffectSchema).max(4).optional(),
 });
 export type Skill = z.infer<typeof SkillSchema>;
 
@@ -47,6 +79,8 @@ export const EquipmentSchema = z.object({
   atkBonus: z.number().default(0),
   defBonus: z.number().default(0),
   magBonus: z.number().default(0),
+  /** Battle-start temporary changes. Positive effects require a tradeoff. */
+  effects: z.array(ParameterDeltaSchema).max(4).optional(),
 });
 export type Equipment = z.infer<typeof EquipmentSchema>;
 
@@ -85,6 +119,7 @@ export const CharacterSheetSchema = z.object({
   appearance: AppearanceSchema,
   traits: z.array(z.string()).default([]),
   parameters: ParametersSchema,
+  basicAttack: BasicAttackProfileSchema.optional(),
   skills: z.array(SkillSchema).default([]),
   weapon: EquipmentSchema.nullable(),
   armor: EquipmentSchema.nullable(),
@@ -125,9 +160,14 @@ export const CharacterPublicSchema = z.object({
     imageUrl: z.string().nullable().optional(),
   }),
   traits: z.array(z.string()),
+  basicAttackName: z.string(),
+  basicAttackDescription: z.string(),
   skillNames: z.array(z.string()),
+  skillSummaries: z.array(z.object({ name: z.string(), description: z.string() })),
   weaponName: z.string().nullable(),
+  weaponDescription: z.string().nullable(),
   armorName: z.string().nullable(),
+  armorDescription: z.string().nullable(),
   narrativeBlurb: z.string(),
   /** Public ranked record (other accounts only). Always present. */
   record: RecordPublicSchema,
@@ -183,9 +223,18 @@ export function toPublicCharacter(
       ),
     },
     traits: sheet.traits,
+    basicAttackName: sheet.basicAttack?.name ?? defaultBasicAttack().name,
+    basicAttackDescription:
+      sheet.basicAttack?.description ?? defaultBasicAttack().description,
     skillNames: sheet.skills.map((s) => s.name),
+    skillSummaries: sheet.skills.map((skill) => ({
+      name: skill.name,
+      description: skill.description,
+    })),
     weaponName: sheet.weapon?.name ?? null,
+    weaponDescription: sheet.weapon?.description ?? null,
     armorName: sheet.armor?.name ?? null,
+    armorDescription: sheet.armor?.description ?? null,
     narrativeBlurb: sheet.narrativeBlurb,
     record: toRecordDto(record),
     recordOverall: isOwner

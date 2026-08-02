@@ -149,3 +149,25 @@ decision D10 based_on PR10, EV10, D2, D7:
     environmental events. The penultimate turn emits a judgment warning, and a
     dedicated persisted judgment narrative records the referee result at the
     turn limit.
+
+problem PR11:
+  |
+    A single HP-damage fallback and permanent stat edits cannot express attacks
+    that exhaust, disrupt, or temporarily reshape a fighter without runaway buffs.
+
+evidence EV11:
+  |
+    Character concepts include mental pressure, fatigue, sacrifice, equipment
+    drawbacks, and maximum-resource changes that should matter mechanically.
+
+decision D11 based_on PR11, EV11, D1, D2:
+  |
+    CharacterSheet stores a typed basic-attack profile and bounded parameter
+    deltas on skills and equipment. A basic attack may reduce any parameter and
+    uses explicit scaling and resistance parameters. BattleState snapshots the
+    unequipped sheet parameters as baseParameters; equipment applies temporary
+    opening deltas, and every live parameter moves twenty percent of its remaining
+    gap, at least one point, toward base before each turn after the first. This
+    includes HP, MP, stamina, and their maxima. Reaching zero HP still ends the
+    current turn before restoration can occur. Balancing clamps deltas and adds
+    resource cost to free status skills and a negative tradeoff to positive gear.

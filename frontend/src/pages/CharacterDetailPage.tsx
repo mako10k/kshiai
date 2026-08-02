@@ -295,9 +295,35 @@ export function CharacterDetailPage() {
             ) : null}
           </div>
           <p>
-            特技: {character.skillNames.join(" / ") || "—"}
-            <br />
+            通常攻撃: <strong>{character.basicAttackName}</strong> —{" "}
+            {character.basicAttackDescription}
+          </p>
+          <div>
+            特技:
+            {character.skillSummaries.length > 0 ? (
+              <ul style={{ margin: "0.35rem 0" }}>
+                {character.skillSummaries.map((skill) => (
+                  <li key={skill.name}>
+                    <strong>{skill.name}</strong> — {skill.description}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              " —"
+            )}
+          </div>
+          <p>
             武器: {character.weaponName ?? "—"} / 防具: {character.armorName ?? "—"}
+            {character.weaponDescription || character.armorDescription ? (
+              <>
+                <br />
+                <span className="muted">
+                  {[character.weaponDescription, character.armorDescription]
+                    .filter(Boolean)
+                    .join(" / ")}
+                </span>
+              </>
+            ) : null}
           </p>
           <div className="row">
             {isOwner ? (

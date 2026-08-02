@@ -1,5 +1,12 @@
-import type { CharacterSheet, Equipment, Parameters, Skill } from "./character.js";
-import { defaultParameters } from "./character.js";
+import type {
+  BasicAttackProfile,
+  CharacterSheet,
+  Equipment,
+  ParameterDelta,
+  Parameters,
+  Skill,
+} from "./character.js";
+import { defaultBasicAttack, defaultParameters } from "./character.js";
 
 /** Soft ranges so no sheet can hard-stomp every matchup. */
 const PARAM_SOFT: Record<string, { min: number; max: number; soft: number }> = {
@@ -71,19 +78,55 @@ export function balanceSkill(skill: Skill): Skill {
   if (!Number.isFinite(power)) power = 1;
   // Absolute nuke prevention
   power = Math.min(1.85, Math.max(0.55, power));
+  const effects = (skill.effects ?? []).map(balanceParameterDelta);
+  const effectWeight = effects.reduce((sum, effect) => sum + Math.abs(effect.delta), 0);
+  const effectCost = effectWeight > 0 && skill.costMp === 0 && skill.costStamina === 0;
   if (power > 1.45) {
     // Strong skills cost more
     return {
       ...skill,
       power,
       costMp: Math.max(skill.costMp, power > 1.6 ? 12 : 6),
-      costStamina: Math.max(skill.costStamina, power > 1.6 ? 10 : 5),
+      costStamina: Math.max(
+        skill.costStamina,
+        power > 1.6 ? 10 : effectCost ? 6 : 5,
+      ),
+      effects,
       description: skill.description?.includes("隙")
         ? skill.description
         : `${skill.description || skill.name}（強力なぶん隙を晒しやすい）`,
     };
   }
-  return { ...skill, power };
+  return {
+    ...skill,
+    power,
+    costStamina: effectCost ? Math.max(skill.costStamina, 6) : skill.costStamina,
+    effects,
+  };
+}
+
+export function balanceParameterDelta<T extends ParameterDelta>(effect: T): T {
+  const wide = ["hp", "maxHp", "mp", "maxMp", "stamina", "maxStamina"].includes(
+    effect.parameter,
+  );
+  const limit = wide ? 25 : 10;
+  return {
+    ...effect,
+    delta: Math.max(-limit, Math.min(limit, Math.round(Number(effect.delta) || 0))),
+  };
+}
+
+export function balanceBasicAttack(
+  raw: BasicAttackProfile | null | undefined,
+): BasicAttackProfile {
+  const attack = raw ?? defaultBasicAttack();
+  const targetsMaximum = ["maxHp", "maxMp", "maxStamina"].includes(
+    attack.targetParameter,
+  );
+  return {
+    ...attack,
+    power: Math.min(targetsMaximum ? 0.7 : 1, Math.max(0.55, Number(attack.power) || 0.75)),
+  };
 }
 
 export function balanceEquipment(eq: Equipment | null | undefined): Equipment | null {
@@ -95,13 +138,35 @@ export function balanceEquipment(eq: Equipment | null | undefined): Equipment | 
   // No all-bonus weapon
   if (atk >= 5 && def >= 4) def = 2;
   if (atk >= 5 && mag >= 4) mag = 2;
-  const desc =
+  let effects = (eq.effects ?? []).map(balanceParameterDelta);
+  const positive = Math.max(0, atk) + Math.max(0, def) + Math.max(0, mag) +
+    effects.reduce((sum, effect) => sum + Math.max(0, effect.delta), 0);
+  const hasTradeoff =
+    atk < 0 || def < 0 || mag < 0 || effects.some((effect) => effect.delta < 0);
+  const addedTradeoff = positive > 0 && !hasTradeoff;
+  if (addedTradeoff) {
+    effects = [
+      ...effects.slice(0, 3),
+      { parameter: "stamina", delta: -Math.min(12, Math.max(2, Math.ceil(positive / 3))) },
+    ];
+  }
+  let desc =
     atk >= 5 || mag >= 5
       ? eq.description?.includes("隙") || eq.description?.includes("脆")
         ? eq.description
         : `${eq.description || eq.name}（強力だが扱いに癖があり、隙を突かれやすい）`
       : eq.description;
-  return { ...eq, atkBonus: atk, defBonus: def, magBonus: mag, description: desc };
+  if (addedTradeoff && !/代償|消耗|重|鈍|隙|脆/.test(desc)) {
+    desc = `${desc || eq.name}（力を引き出す代償に持久力を消耗する）`;
+  }
+  return {
+    ...eq,
+    atkBonus: atk,
+    defBonus: def,
+    magBonus: mag,
+    effects,
+    description: desc,
+  };
 }
 
 function needsWeaknessTrait(traits: string[]): boolean {
@@ -124,6 +189,7 @@ export function balanceCharacterCombatFields<
     skills?: Skill[];
     weapon?: Equipment | null;
     armor?: Equipment | null;
+    basicAttack?: BasicAttackProfile;
     traits?: string[];
     narrativeBlurb?: string;
   },
@@ -132,6 +198,7 @@ export function balanceCharacterCombatFields<
   const skills = (sheet.skills ?? []).map(balanceSkill);
   const weapon = balanceEquipment(sheet.weapon ?? null);
   const armor = balanceEquipment(sheet.armor ?? null);
+  const basicAttack = balanceBasicAttack(sheet.basicAttack);
   let traits = [...(sheet.traits ?? [])];
   if (needsWeaknessTrait(traits)) {
     const pick =
@@ -151,6 +218,7 @@ export function balanceCharacterCombatFields<
     skills,
     weapon,
     armor,
+    basicAttack,
     traits,
     narrativeBlurb,
   };

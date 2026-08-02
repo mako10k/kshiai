@@ -238,6 +238,7 @@ export function buildRoutes() {
       parameters: adj.sheetPatch.parameters
         ? { ...sheet.parameters, ...adj.sheetPatch.parameters }
         : sheet.parameters,
+      basicAttack: adj.sheetPatch.basicAttack ?? sheet.basicAttack,
       skills: adj.sheetPatch.skills ?? sheet.skills,
       weapon: adj.sheetPatch.weapon !== undefined ? adj.sheetPatch.weapon : sheet.weapon,
       armor: adj.sheetPatch.armor !== undefined ? adj.sheetPatch.armor : sheet.armor,

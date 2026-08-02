@@ -535,6 +535,9 @@ export async function advanceTurn(input: {
   const mine = charRepo.getSheet(meta.side_a_character_id);
   const opp = charRepo.getSheet(meta.side_b_character_id);
   if (!mine || !opp) throw new Error("CHARACTER_MISSING");
+  // Older active battles did not snapshot restoration targets.
+  state.sideA.baseParameters ??= { ...mine.parameters };
+  state.sideB.baseParameters ??= { ...opp.parameters };
 
   // --- Pre-combat prologue (口上・因縁) before any engine turn ---
   if (state.prologuePending) {
@@ -620,6 +623,8 @@ export async function advanceTurn(input: {
     state,
     sideASkills: safeSkills(mine.skills),
     sideBSkills: safeSkills(opp.skills),
+    sideABasicAttack: mine.basicAttack,
+    sideBBasicAttack: opp.basicAttack,
     situationUpdate,
     preEvents: happening ? happeningToEvents(happening) : undefined,
     envHits: happening?.envHits,

@@ -103,7 +103,9 @@ export function isPassiveTurn(events: TurnEvent[]): boolean {
   return !events.some(
     (event) =>
       Boolean(event.actorName) &&
-      (event.type === "damage" || event.type === "heal"),
+      (event.type === "damage" ||
+        event.type === "heal" ||
+        event.type === "parameter"),
   );
 }
 

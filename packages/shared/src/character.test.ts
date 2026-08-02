@@ -1,0 +1,42 @@
+import { describe, it } from "node:test";
+import assert from "node:assert/strict";
+import {
+  CharacterSheetSchema,
+  defaultParameters,
+  toPublicCharacter,
+} from "./character.js";
+
+describe("character combat extensions", () => {
+  it("keeps legacy character JSON compatible and supplies a public default attack", () => {
+    const sheet = CharacterSheetSchema.parse({
+      id: "legacy",
+      ownerUserId: "u1",
+      displayName: "旧式",
+      tags: [],
+      createdAt: "2026-01-01T00:00:00.000Z",
+      updatedAt: "2026-01-01T00:00:00.000Z",
+      appearance: { summary: "test", visualPrompt: "test" },
+      traits: [],
+      parameters: defaultParameters(),
+      skills: [
+        {
+          id: "old-skill",
+          name: "旧技",
+          description: "従来形式",
+          costMp: 0,
+          costStamina: 1,
+          power: 1,
+          kind: "attack",
+        },
+      ],
+      weapon: null,
+      armor: null,
+      combatFlags: { canFight: true, irreversibleIncapacitated: false },
+      narrativeBlurb: "旧形式のキャラクター。",
+    });
+
+    assert.equal(sheet.basicAttack, undefined);
+    assert.equal(sheet.skills[0]?.effects, undefined);
+    assert.equal(toPublicCharacter(sheet, "u1").basicAttackName, "通常攻撃");
+  });
+});

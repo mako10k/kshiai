@@ -191,6 +191,8 @@ export const CombatantStateSchema = z.object({
   /** Portrait URL snapshot for records / UI (no combat params). */
   imageUrl: z.string().nullable().optional(),
   parameters: ParametersSchema,
+  /** Original sheet values; every live parameter gradually returns here. */
+  baseParameters: ParametersSchema.optional(),
   defending: z.boolean().default(false),
   canFight: z.boolean().default(true),
   irreversibleIncapacitated: z.boolean().default(false),
@@ -212,6 +214,7 @@ export const TurnEventSchema = z.object({
     "damage",
     "heal",
     "rest",
+    "parameter",
     "defend",
     "wait",
     "status",

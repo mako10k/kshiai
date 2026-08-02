@@ -2,7 +2,9 @@ import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import {
   balanceCharacterCombatFields,
+  balanceEquipment,
   balanceParameters,
+  balanceSkill,
   softenCombatDamage,
 } from "./balance.js";
 import { defaultParameters } from "./character.js";
@@ -61,5 +63,29 @@ describe("balance", () => {
     });
     assert.ok(dmg <= 26);
     assert.ok(dmg >= 1);
+  });
+
+  it("adds costs to free status skills and tradeoffs to positive equipment", () => {
+    const skill = balanceSkill({
+      id: "status",
+      name: "強化",
+      description: "攻撃を高める。",
+      costMp: 0,
+      costStamina: 0,
+      power: 1,
+      kind: "status",
+      effects: [{ target: "self", parameter: "atk", delta: 99 }],
+    });
+    assert.ok(skill.costMp > 0 || skill.costStamina > 0);
+    assert.equal(skill.effects?.[0]?.delta, 10);
+
+    const equipment = balanceEquipment({
+        name: "強化剣",
+        description: "攻撃を高める。",
+        atkBonus: 4,
+        defBonus: 0,
+        magBonus: 0,
+    });
+    assert.ok(equipment?.effects?.some((effect) => effect.delta < 0));
   });
 });

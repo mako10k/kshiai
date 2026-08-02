@@ -9,12 +9,25 @@ import type {
   TurnEvent,
 } from "./battle.js";
 import { clampCoefficient, isCombatantDown } from "./battle.js";
-import type { CharacterSheet, Skill } from "./character.js";
+import type {
+  BasicAttackProfile,
+  CharacterSheet,
+  Equipment,
+  ParameterDelta,
+  ParamKey,
+  Parameters,
+  Skill,
+} from "./character.js";
+import { defaultBasicAttack } from "./character.js";
 import type { BattlefieldInstance } from "./battlefield.js";
 import { clampCoefficientMap, mergeCoefficients } from "./battlefield.js";
 import type { NarrationStyleSnapshot } from "./narration-style.js";
 import { defaultNarrationSnapshot } from "./narration-style.js";
-import { softenCombatDamage } from "./balance.js";
+import {
+  balanceBasicAttack,
+  balanceEquipment,
+  softenCombatDamage,
+} from "./balance.js";
 
 function nowIso(): string {
   return new Date().toISOString();
@@ -24,19 +37,40 @@ function cloneCombatant(c: CombatantState): CombatantState {
   return {
     ...c,
     parameters: { ...c.parameters },
+    baseParameters: c.baseParameters ? { ...c.baseParameters } : undefined,
   };
 }
 
 export function combatantFromSheet(sheet: CharacterSheet): CombatantState {
-  return {
+  const combatant: CombatantState = {
     characterId: sheet.id,
     displayName: sheet.displayName,
     imageUrl: sheet.appearance?.imageUrl ?? null,
     parameters: { ...sheet.parameters },
+    baseParameters: { ...sheet.parameters },
     defending: false,
     canFight: sheet.combatFlags.canFight,
     irreversibleIncapacitated: sheet.combatFlags.irreversibleIncapacitated,
   };
+  applyEquipmentStart(combatant, sheet.weapon);
+  applyEquipmentStart(combatant, sheet.armor);
+  clampCurrentToMaximums(combatant.parameters);
+  return combatant;
+}
+
+function applyEquipmentStart(
+  combatant: CombatantState,
+  equipment: Equipment | null | undefined,
+): void {
+  const safeEquipment = balanceEquipment(equipment);
+  if (!safeEquipment) return;
+  const deltas: ParameterDelta[] = [
+    { parameter: "atk", delta: safeEquipment.atkBonus },
+    { parameter: "def", delta: safeEquipment.defBonus },
+    { parameter: "mag", delta: safeEquipment.magBonus },
+    ...(safeEquipment.effects ?? []),
+  ];
+  for (const delta of deltas) applyParameterDelta(combatant, delta);
 }
 
 export function createBattleState(input: {
@@ -124,6 +158,75 @@ function hpRatio(c: CombatantState): number {
   return max > 0 ? hp / max : 0;
 }
 
+const PARAMETER_LABELS: Record<ParamKey, string> = {
+  hp: "生命力",
+  maxHp: "生命力の上限",
+  mp: "魔力",
+  maxMp: "魔力の上限",
+  stamina: "持久力",
+  maxStamina: "持久力の上限",
+  atk: "攻撃力",
+  def: "防御力",
+  spd: "速度",
+  mag: "魔力適性",
+  res: "抵抗力",
+  focus: "集中力",
+  luck: "運勢",
+};
+
+const PARAMETER_KEYS = Object.keys(PARAMETER_LABELS) as ParamKey[];
+function clampCurrentToMaximums(parameters: Parameters): void {
+  parameters.maxHp = Math.max(1, parameters.maxHp ?? 1);
+  parameters.maxMp = Math.max(1, parameters.maxMp ?? 1);
+  parameters.maxStamina = Math.max(1, parameters.maxStamina ?? 1);
+  parameters.hp = Math.max(0, Math.min(parameters.hp ?? 0, parameters.maxHp));
+  parameters.mp = Math.max(0, Math.min(parameters.mp ?? 0, parameters.maxMp));
+  parameters.stamina = Math.max(
+    0,
+    Math.min(parameters.stamina ?? 0, parameters.maxStamina),
+  );
+}
+
+function applyParameterDelta(
+  combatant: CombatantState,
+  effect: ParameterDelta,
+): number {
+  const current = combatant.parameters[effect.parameter] ?? 0;
+  const isMaximum = ["maxHp", "maxMp", "maxStamina"].includes(effect.parameter);
+  const isConsumable = ["hp", "mp", "stamina"].includes(effect.parameter);
+  const floor = isMaximum || !isConsumable ? 1 : 0;
+  const next = Math.max(floor, current + effect.delta);
+  combatant.parameters[effect.parameter] = next;
+  clampCurrentToMaximums(combatant.parameters);
+  return (combatant.parameters[effect.parameter] ?? current) - current;
+}
+
+function restoreTowardBase(combatant: CombatantState): ParamKey[] {
+  const base = combatant.baseParameters;
+  if (!base || (combatant.parameters.hp ?? 0) <= 0) return [];
+  const changed: ParamKey[] = [];
+  const ordered: ParamKey[] = [
+    "maxHp",
+    "maxMp",
+    "maxStamina",
+    ...PARAMETER_KEYS.filter(
+      (key) => key !== "maxHp" && key !== "maxMp" && key !== "maxStamina",
+    ),
+  ];
+  for (const key of ordered) {
+    const current = combatant.parameters[key] ?? 0;
+    const target = base[key] ?? current;
+    const gap = target - current;
+    if (gap === 0) continue;
+    const step = Math.max(1, Math.ceil(Math.abs(gap) * 0.2));
+    combatant.parameters[key] =
+      gap > 0 ? Math.min(target, current + step) : Math.max(target, current - step);
+    changed.push(key);
+  }
+  clampCurrentToMaximums(combatant.parameters);
+  return changed;
+}
+
 function usableSkills(skills: Skill[], self: CombatantState): Skill[] {
   return skills.filter(
     (s) =>
@@ -134,7 +237,14 @@ function usableSkills(skills: Skill[], self: CombatantState): Skill[] {
 
 function pickOffensiveSkill(skills: Skill[], self: CombatantState): Skill | undefined {
   const usable = usableSkills(skills, self).filter(
-    (s) => s.kind === "attack" || s.kind === "magic" || s.kind === "special",
+    (s) =>
+      s.kind === "attack" ||
+      s.kind === "magic" ||
+      s.kind === "special" ||
+      (s.kind === "status" &&
+        (s.effects ?? []).some(
+          (effect) => effect.target === "foe" && effect.delta < 0,
+        )),
   );
   if (usable.length === 0) return undefined;
   // Prefer higher power
@@ -143,7 +253,13 @@ function pickOffensiveSkill(skills: Skill[], self: CombatantState): Skill | unde
 
 function pickSupportSkill(skills: Skill[], self: CombatantState): Skill | undefined {
   const usable = usableSkills(skills, self).filter(
-    (s) => s.kind === "support" || s.kind === "defend",
+    (s) =>
+      s.kind === "support" ||
+      s.kind === "defend" ||
+      (s.kind === "status" &&
+        (s.effects ?? []).some(
+          (effect) => effect.target === "self" && effect.delta > 0,
+        )),
   );
   return usable[0];
 }
@@ -387,6 +503,8 @@ export function resolveTurn(input: {
   playerAction?: BattleAction;
   sideASkills: Skill[];
   sideBSkills: Skill[];
+  sideABasicAttack?: BasicAttackProfile;
+  sideBBasicAttack?: BasicAttackProfile;
   situationUpdate?: Partial<Situation>;
   /** Supervisor / environment events applied before combat actions. */
   preEvents?: TurnEvent[];
@@ -417,6 +535,19 @@ export function resolveTurn(input: {
   );
   const events: TurnEvent[] = [];
   const turn = input.state.turn + 1;
+
+  if (turn > 1) {
+    for (const combatant of [sideA, sideB]) {
+      const restored = restoreTowardBase(combatant);
+      if (restored.length > 0) {
+        events.push({
+          type: "status",
+          actorName: combatant.displayName,
+          summary: `${combatant.displayName} の変化した状態が、本来の調子へ少し戻った。`,
+        });
+      }
+    }
+  }
 
   // Battlefield flavor event occasionally when obstacles/conditions matter
   if (turn === 1 && input.state.battlefield) {
@@ -466,7 +597,15 @@ export function resolveTurn(input: {
         }));
 
   // Player (side A)
-  applyAction(sideA, sideB, playerAction, input.sideASkills, situation, events);
+  applyAction(
+    sideA,
+    sideB,
+    playerAction,
+    input.sideASkills,
+    balanceBasicAttack(input.sideABasicAttack ?? defaultBasicAttack()),
+    situation,
+    events,
+  );
 
   // Opponent (side B) from policies / stance if still up
   if (!isCombatantDown(sideB) && !isCombatantDown(sideA)) {
@@ -482,7 +621,15 @@ export function resolveTurn(input: {
           turn,
           legacyStance: input.state.stanceB ?? "balanced",
         });
-    applyAction(sideB, sideA, aiAction, input.sideBSkills, situation, events);
+    applyAction(
+      sideB,
+      sideA,
+      aiAction,
+      input.sideBSkills,
+      balanceBasicAttack(input.sideBBasicAttack ?? defaultBasicAttack()),
+      situation,
+      events,
+    );
   }
 
   // Incapacity flags
@@ -651,27 +798,14 @@ function applyAction(
   target: CombatantState,
   action: BattleAction,
   skills: Skill[],
+  basicAttack: BasicAttackProfile,
   situation: Situation,
   events: TurnEvent[],
 ): void {
   if (action.kind === "basic_attack") {
     const stamina = actor.parameters.stamina ?? 0;
     actor.parameters.stamina = Math.max(0, stamina - Math.min(3, stamina));
-    applyAttackSkill(
-      actor,
-      target,
-      {
-        id: "basic_attack",
-        name: "通常攻撃",
-        description: "消耗時にも繰り出せる基本攻撃。",
-        costMp: 0,
-        costStamina: 0,
-        power: 0.75,
-        kind: "attack",
-      },
-      situation,
-      events,
-    );
+    applyBasicAttack(actor, target, basicAttack, situation, events);
     return;
   }
 
@@ -739,7 +873,11 @@ function applyAction(
   actor.parameters.mp = mp - skill.costMp;
   actor.parameters.stamina = sta - skill.costStamina;
 
-  if (skill.kind === "defend" || skill.kind === "support") {
+  if (
+    skill.kind === "defend" ||
+    skill.kind === "support" ||
+    skill.kind === "status"
+  ) {
     actor.defending = skill.kind === "defend";
     const heal = Math.round(8 * skill.power * coeff(situation, "heal"));
     if (skill.kind === "support" && heal > 0) {
@@ -752,7 +890,7 @@ function applyAction(
         intensity: intensityFromDamage(heal),
         summary: `${actor.displayName} の ${skill.name} が傷を癒やした。`,
       });
-    } else {
+    } else if (skill.kind === "defend") {
       events.push({
         type: "defend",
         actorName: actor.displayName,
@@ -760,10 +898,84 @@ function applyAction(
         summary: `${actor.displayName} は ${skill.name} で身を守った。`,
       });
     }
+    applySkillEffects(actor, target, skill, events);
     return;
   }
 
   applyAttackSkill(actor, target, skill, situation, events);
+  applySkillEffects(actor, target, skill, events);
+}
+
+function applyBasicAttack(
+  actor: CombatantState,
+  target: CombatantState,
+  profile: BasicAttackProfile,
+  situation: Situation,
+  events: TurnEvent[],
+): void {
+  const attackStat = actor.parameters[profile.scalingParameter] ?? 10;
+  const resistanceStat = target.parameters[profile.resistanceParameter] ?? 10;
+  const rawGap = attackStat - resistanceStat * 0.55;
+  const softGap = Math.sign(rawGap) * Math.pow(Math.abs(rawGap), 0.82);
+  const power = Math.min(1, Math.max(0.55, profile.power));
+  let amount = Math.round(
+    Math.max(2, 6 + softGap) *
+      power *
+      coeff(situation, "damage") *
+      coeff(situation, profile.element ?? "neutral", 1),
+  );
+  const parameter = profile.targetParameter;
+  if (parameter === "hp") {
+    amount = softenCombatDamage({
+      rawDamage: amount,
+      targetMaxHp: target.parameters.maxHp ?? 100,
+      skillPower: power,
+    });
+  } else {
+    const reference = Math.abs(
+      target.baseParameters?.[parameter] ?? target.parameters[parameter] ?? 10,
+    );
+    amount = Math.min(amount, Math.max(2, Math.round(reference * 0.2)));
+  }
+  const actual = applyParameterDelta(target, { parameter, delta: -amount });
+  events.push({
+    type: parameter === "hp" ? "damage" : "parameter",
+    actorName: actor.displayName,
+    targetName: target.displayName,
+    skillName: profile.name,
+    intensity: intensityFromDamage(Math.abs(actual)),
+    summary:
+      parameter === "hp"
+        ? `${actor.displayName} の ${profile.name} が ${target.displayName} を捉えた。`
+        : `${actor.displayName} の ${profile.name} が ${target.displayName} の ${PARAMETER_LABELS[parameter]} を削った。`,
+  });
+}
+
+function applySkillEffects(
+  actor: CombatantState,
+  foe: CombatantState,
+  skill: Skill,
+  events: TurnEvent[],
+): void {
+  for (const effect of skill.effects ?? []) {
+    const recipient = effect.target === "self" ? actor : foe;
+    const actual = applyParameterDelta(recipient, effect);
+    if (actual === 0) continue;
+    const positive = actual > 0;
+    events.push({
+      type:
+        effect.parameter === "hp"
+          ? positive
+            ? "heal"
+            : "damage"
+          : "parameter",
+      actorName: actor.displayName,
+      targetName: recipient.displayName,
+      skillName: skill.name,
+      intensity: intensityFromDamage(Math.abs(actual)),
+      summary: `${actor.displayName} の ${skill.name} が ${recipient.displayName} の ${PARAMETER_LABELS[effect.parameter]}を${positive ? "高めた" : "低下させた"}。`,
+    });
+  }
 }
 
 function applyAttackSkill(

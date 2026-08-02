@@ -1,5 +1,8 @@
 import OpenAI from "openai";
 import {
+  BasicAttackProfileSchema,
+  EquipmentSchema,
+  SkillSchema,
   balanceCharacterCombatFields,
   clampCoefficientMap,
   defaultParameters,
@@ -20,6 +23,26 @@ import type {
 } from "./types.js";
 import { newId } from "../id.js";
 import { MockLlmProvider } from "./mock.js";
+
+function parseGeneratedSkill(raw: unknown) {
+  if (!raw || typeof raw !== "object") return null;
+  const parsed = SkillSchema.safeParse({
+    ...(raw as Record<string, unknown>),
+    id: newId("sk"),
+  });
+  return parsed.success ? parsed.data : null;
+}
+
+function parseGeneratedEquipment(raw: unknown) {
+  if (raw === null) return null;
+  const parsed = EquipmentSchema.safeParse(raw);
+  return parsed.success ? parsed.data : undefined;
+}
+
+function parseGeneratedBasicAttack(raw: unknown) {
+  const parsed = BasicAttackProfileSchema.safeParse(raw);
+  return parsed.success ? parsed.data : undefined;
+}
 
 /** engine = accuracy-first; fast = latency-first (narration / color). */
 export type LlmTier = "engine" | "fast";
@@ -138,10 +161,16 @@ Return JSON: {
   "parameters": { "hp": number, "maxHp": number, "mp": number, "maxMp": number,
     "stamina": number, "maxStamina": number, "atk": number, "def": number,
     "spd": number, "mag": number, "res": number, "focus": number, "luck": number },
+  "basicAttack": { "name": string, "description": string,
+    "targetParameter": "hp"|"mp"|"stamina"|"maxHp"|"maxMp"|"maxStamina"|"atk"|"def"|"spd"|"mag"|"res"|"focus"|"luck",
+    "scalingParameter": same parameter enum, "resistanceParameter": same parameter enum,
+    "power": number, "element"?: string },
   "skills": [{ "name": string, "description": string, "costMp": number, "costStamina": number,
-    "power": number, "kind": "attack"|"magic"|"defend"|"support"|"special", "element"?: string }],
-  "weapon": { "name": string, "description": string } | null,
-  "armor": { "name": string, "description": string } | null,
+    "power": number, "kind": "attack"|"magic"|"defend"|"support"|"special"|"status", "element"?: string,
+    "effects"?: [{ "target": "self"|"foe", "parameter": parameter enum, "delta": number }] }],
+  "weapon": { "name": string, "description": string, "atkBonus"?: number, "defBonus"?: number,
+    "magBonus"?: number, "effects"?: [{ "parameter": parameter enum, "delta": number }] } | null,
+  "armor": same equipment shape | null,
   "narrativeBlurb": string,
   "assistantMessage": string
 }
@@ -149,6 +178,10 @@ Parameters should be balanced around hp 80-120, atk/def 8-16. Never create unbea
 BALANCE (mandatory):
 - Every absolute strength (最強武器, 無敵の防御, 必中, 無限魔力, 超幸運…) MUST have an implicit weakness in traits and narrativeBlurb (隙・脆さ・代償・条件付き).
 - skill power typically 0.8–1.5 (never above 1.8). Strong skills need higher MP/stamina cost.
+- Basic attacks may primarily reduce HP, MP, stamina, a maximum, or a combat stat. Match the character concept.
+- Status changes are temporary: every parameter drifts back toward its original sheet value each turn.
+- Every beneficial status effect needs a cost: MP/stamina, a negative self effect, or spending the action turn.
+- Equipment with a positive effect MUST include a negative parameter tradeoff.
 - weapon/armor bonuses modest; no item that boosts everything.
 - Prefer interesting counters over raw dominance so matches stay two-sided.
 appearance.visualPrompt must be a detailed English portrait prompt for image gen:
@@ -161,22 +194,12 @@ Safe-for-work anime portrait only.`,
       )) as Record<string, unknown>;
 
       const skillsRaw = Array.isArray(data.skills) ? data.skills : [];
-      const skills = skillsRaw.map((s) => {
-        const o = s as Record<string, unknown>;
-        return {
-          id: newId("sk"),
-          name: String(o.name ?? "無名の技"),
-          description: String(o.description ?? ""),
-          costMp: Number(o.costMp ?? 0),
-          costStamina: Number(o.costStamina ?? 0),
-          power: Number(o.power ?? 1),
-          kind: (o.kind as "attack") ?? "attack",
-          element: o.element ? String(o.element) : undefined,
-        };
-      });
+      const skills = skillsRaw
+        .map(parseGeneratedSkill)
+        .filter((skill): skill is NonNullable<typeof skill> => skill != null);
 
-      const weapon = data.weapon as Record<string, unknown> | null;
-      const armor = data.armor as Record<string, unknown> | null;
+      const weapon = parseGeneratedEquipment(data.weapon) ?? null;
+      const armor = parseGeneratedEquipment(data.armor) ?? null;
 
       const rawSheet = {
           displayName: String(data.displayName ?? "挑戦者"),
@@ -192,26 +215,15 @@ Safe-for-work anime portrait only.`,
           parameters: defaultParameters(
             (data.parameters as Record<string, number>) ?? {},
           ),
+          basicAttack: parseGeneratedBasicAttack(data.basicAttack),
           skills: skills.length
             ? skills
             : (await this.fallback.generateCharacter(prompt)).sheet.skills,
           weapon: weapon
-            ? {
-                name: String(weapon.name ?? "武器"),
-                description: String(weapon.description ?? ""),
-                atkBonus: Number(weapon.atkBonus ?? 0),
-                defBonus: Number(weapon.defBonus ?? 0),
-                magBonus: Number(weapon.magBonus ?? 0),
-              }
+            ? weapon
             : null,
           armor: armor
-            ? {
-                name: String(armor.name ?? "防具"),
-                description: String(armor.description ?? ""),
-                atkBonus: Number(armor.atkBonus ?? 0),
-                defBonus: Number(armor.defBonus ?? 0),
-                magBonus: Number(armor.magBonus ?? 0),
-              }
+            ? armor
             : null,
           combatFlags: { canFight: true, irreversibleIncapacitated: false },
           narrativeBlurb: String(data.narrativeBlurb ?? ""),
@@ -236,8 +248,11 @@ Safe-for-work anime portrait only.`,
       const data = (await this.chatJson(
         `Adjust a hidden RPG character sheet from user feedback. Reply JSON:
 { "assistantMessage": string, "displayName"?: string, "narrativeBlurb"?: string,
-  "traits"?: string[], "parameters"?: object }
+  "traits"?: string[], "parameters"?: object, "basicAttack"?: object,
+  "skills"?: array, "weapon"?: object|null, "armor"?: object|null }
 Do not tell the user exact numbers.
+Use the same basicAttack, skill effects, and equipment effects shapes as character generation.
+Status changes are temporary and drift toward original values every turn. Beneficial effects need MP/stamina, a negative self effect, or the consumed action; positive equipment needs a negative tradeoff.
 If the user asks for absolute power, grant flavor but keep an implicit weakness (隙・脆さ・条件付き). Never remove all counters.`,
         JSON.stringify({
           currentPublic: {
@@ -248,6 +263,12 @@ If the user asks for absolute power, grant flavor but keep an implicit weakness 
           },
           // Server-only context for the model:
           hiddenParameters: current.parameters,
+          hiddenCombatOptions: {
+            basicAttack: current.basicAttack,
+            skills: current.skills,
+            weapon: current.weapon,
+            armor: current.armor,
+          },
           userMessage,
         }),
         { tier: "engine", label: "adjustCharacter", temperature: 0.5 },
@@ -267,6 +288,26 @@ If the user asks for absolute power, grant flavor but keep an implicit weakness 
           parameters: data.parameters
             ? { ...current.parameters, ...(data.parameters as object) }
             : current.parameters,
+          basicAttack: data.basicAttack
+            ? (parseGeneratedBasicAttack(data.basicAttack) ?? current.basicAttack)
+            : current.basicAttack,
+          skills: Array.isArray(data.skills)
+            ? data.skills
+                .map(parseGeneratedSkill)
+                .filter((skill): skill is NonNullable<typeof skill> => skill != null)
+            : current.skills,
+          weapon:
+            data.weapon === undefined
+              ? current.weapon
+              : data.weapon === null
+                ? null
+                : (parseGeneratedEquipment(data.weapon) ?? current.weapon),
+          armor:
+            data.armor === undefined
+              ? current.armor
+              : data.armor === null
+                ? null
+                : (parseGeneratedEquipment(data.armor) ?? current.armor),
         },
         assistantMessage: String(data.assistantMessage ?? "調整しました。"),
       };

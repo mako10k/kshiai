@@ -325,4 +325,166 @@ describe("battle engine", () => {
     assert.equal(final.state.finishReason, "turn_limit");
     assert.ok(final.events.some((e) => e.summary.includes("最終判定")));
   });
+
+  it("allows a basic attack to damage stamina instead of HP", () => {
+    const a = sheet("a", "A");
+    const b = sheet("b", "B");
+    const state = createBattleState({
+      id: "typed-basic",
+      sideA: a,
+      sideB: b,
+      turnLimit: 20,
+      prologuePending: false,
+    });
+    const hpBefore = state.sideB.parameters.hp;
+    const staminaBefore = state.sideB.parameters.stamina;
+    const { state: next, events } = resolveTurn({
+      state,
+      playerAction: { actorSide: "a", kind: "basic_attack" },
+      sideASkills: a.skills,
+      sideBSkills: [],
+      sideABasicAttack: {
+        name: "疲労打ち",
+        description: "持久力を削る。",
+        targetParameter: "stamina",
+        scalingParameter: "atk",
+        resistanceParameter: "def",
+        power: 0.75,
+      },
+    });
+    assert.equal(next.sideB.parameters.hp, hpBefore);
+    assert.ok((next.sideB.parameters.stamina ?? 0) < (staminaBefore ?? 0));
+    assert.ok(
+      events.some(
+        (event) => event.type === "parameter" && event.skillName === "疲労打ち",
+      ),
+    );
+  });
+
+  it("applies status skill tradeoffs and reverts them toward base each turn", () => {
+    const a = sheet("a", "A");
+    const b = sheet("b", "B");
+    const statusSkill = {
+      id: "shift",
+      name: "捨て身の威圧",
+      description: "守りを高めながら敵の攻撃力を削る。",
+      costMp: 0,
+      costStamina: 5,
+      power: 1,
+      kind: "status" as const,
+      effects: [
+        { target: "self" as const, parameter: "def" as const, delta: 6 },
+        { target: "self" as const, parameter: "stamina" as const, delta: -4 },
+        { target: "foe" as const, parameter: "atk" as const, delta: -10 },
+      ],
+    };
+    a.skills = [statusSkill];
+    const state = createBattleState({
+      id: "status",
+      sideA: a,
+      sideB: b,
+      turnLimit: 20,
+      prologuePending: false,
+    });
+    const applied = resolveTurn({
+      state,
+      playerAction: { actorSide: "a", kind: "skill", skillId: statusSkill.id },
+      sideASkills: a.skills,
+      sideBSkills: [],
+    });
+    assert.equal(applied.state.sideA.parameters.def, 16);
+    assert.equal(applied.state.sideA.parameters.stamina, 41);
+    assert.equal(applied.state.sideB.parameters.atk, 2);
+
+    const reverted = resolveTurn({
+      state: applied.state,
+      playerAction: { actorSide: "a", kind: "wait" },
+      sideASkills: a.skills,
+      sideBSkills: [],
+    });
+    assert.equal(reverted.state.sideA.parameters.def, 14);
+    assert.equal(reverted.state.sideA.parameters.stamina, 43);
+    assert.equal(reverted.state.sideB.parameters.atk, 4);
+    assert.ok(reverted.events.some((event) => event.summary.includes("本来の調子")));
+  });
+
+  it("restores maximum and current HP toward their original values", () => {
+    const a = sheet("a", "A");
+    const b = sheet("b", "B");
+    const maxHpSkill = {
+      id: "frailty",
+      name: "生命枠侵食",
+      description: "生命力の上限を一時的に削る。",
+      costMp: 10,
+      costStamina: 0,
+      power: 1,
+      kind: "status" as const,
+      effects: [
+        { target: "foe" as const, parameter: "maxHp" as const, delta: -25 },
+      ],
+    };
+    a.skills = [maxHpSkill];
+    const state = createBattleState({
+      id: "max-hp",
+      sideA: a,
+      sideB: b,
+      turnLimit: 20,
+      prologuePending: false,
+    });
+    const applied = resolveTurn({
+      state,
+      playerAction: { actorSide: "a", kind: "skill", skillId: maxHpSkill.id },
+      sideASkills: a.skills,
+      sideBSkills: [],
+    });
+    assert.equal(applied.state.sideB.parameters.maxHp, 75);
+    assert.equal(applied.state.sideB.parameters.hp, 75);
+
+    const reverted = resolveTurn({
+      state: applied.state,
+      playerAction: { actorSide: "a", kind: "wait" },
+      sideASkills: a.skills,
+      sideBSkills: [],
+    });
+    assert.equal(reverted.state.sideB.parameters.maxHp, 80);
+    assert.equal(reverted.state.sideB.parameters.hp, 80);
+  });
+
+  it("applies equipment changes at battle start and lets them decay", () => {
+    const a = sheet("a", "A");
+    const b = sheet("b", "B");
+    a.weapon = {
+      name: "重い剣",
+      description: "威力と引き換えに持久力を奪う。",
+      atkBonus: 2,
+      defBonus: 0,
+      magBonus: 0,
+      effects: [{ parameter: "stamina", delta: -5 }],
+    };
+    const state = createBattleState({
+      id: "equipment",
+      sideA: a,
+      sideB: b,
+      turnLimit: 20,
+      prologuePending: false,
+    });
+    assert.equal(state.sideA.baseParameters?.atk, 12);
+    assert.equal(state.sideA.parameters.atk, 14);
+    assert.equal(state.sideA.parameters.stamina, 45);
+
+    const first = resolveTurn({
+      state,
+      playerAction: { actorSide: "a", kind: "wait" },
+      sideASkills: a.skills,
+      sideBSkills: [],
+    });
+    const second = resolveTurn({
+      state: first.state,
+      playerAction: { actorSide: "a", kind: "wait" },
+      sideASkills: a.skills,
+      sideBSkills: [],
+    });
+    assert.equal(second.state.sideA.parameters.atk, 13);
+    assert.equal(second.state.sideA.parameters.stamina, 46);
+  });
 });

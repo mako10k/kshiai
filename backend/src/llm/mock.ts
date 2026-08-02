@@ -53,6 +53,15 @@ export class MockLlmProvider implements LlmProvider {
       },
       traits: ["不屈", "機知"],
       parameters: defaultParameters(),
+      basicAttack: {
+        name: "崩しの斬撃",
+        description: "傷より先に相手の足運びと持久力を削る斬撃。",
+        targetParameter: "stamina",
+        scalingParameter: "atk",
+        resistanceParameter: "def",
+        power: 0.75,
+        element: "wind",
+      },
       skills: [
         {
           id: newId("sk"),
@@ -72,6 +81,10 @@ export class MockLlmProvider implements LlmProvider {
           costStamina: 0,
           power: 1,
           kind: "defend",
+          effects: [
+            { target: "self", parameter: "def", delta: 4 },
+            { target: "self", parameter: "spd", delta: -2 },
+          ],
         },
         {
           id: newId("sk"),
@@ -89,6 +102,7 @@ export class MockLlmProvider implements LlmProvider {
         atkBonus: 2,
         defBonus: 0,
         magBonus: 0,
+        effects: [{ parameter: "stamina", delta: -2 }],
       },
       armor: {
         name: "皮の胴衣",
@@ -96,6 +110,7 @@ export class MockLlmProvider implements LlmProvider {
         atkBonus: 0,
         defBonus: 2,
         magBonus: 0,
+        effects: [{ parameter: "spd", delta: -1 }],
       },
       combatFlags: { canFight: true, irreversibleIncapacitated: false },
       narrativeBlurb: `${displayName}。${prompt.slice(0, 160)}という印象を周囲に与える挑戦者。`,
