@@ -82,6 +82,12 @@ type ProviderConfig = {
   baseUrl: string;
   modelEngine: string;
   modelFast: string;
+  /** Some reasoning models accept only their default temperature. */
+  supportsTemperature?: boolean;
+  /** Disable when an outer provider router owns fallback behavior. */
+  fallbackOnError?: boolean;
+  /** Slower compatible providers can extend per-operation deadlines. */
+  timeoutMultiplier?: number;
 };
 
 type ChatOpts = {
@@ -106,12 +112,18 @@ export class OpenAiCompatibleProvider implements LlmProvider {
   private modelEngine: string;
   private modelFast: string;
   private fallback = new MockLlmProvider();
+  private supportsTemperature: boolean;
+  private fallbackOnError: boolean;
+  private timeoutMultiplier: number;
 
   constructor(cfg: ProviderConfig) {
     this.name = cfg.name;
     this.modelEngine = cfg.modelEngine;
     this.modelFast = cfg.modelFast || cfg.modelEngine;
     this.models = { engine: this.modelEngine, fast: this.modelFast };
+    this.supportsTemperature = cfg.supportsTemperature ?? true;
+    this.fallbackOnError = cfg.fallbackOnError ?? true;
+    this.timeoutMultiplier = Math.max(0.5, cfg.timeoutMultiplier ?? 1);
     this.client = cfg.apiKey
       ? new OpenAI({
           apiKey: cfg.apiKey,
@@ -130,6 +142,11 @@ export class OpenAiCompatibleProvider implements LlmProvider {
     return tier === "fast" ? this.modelFast : this.modelEngine;
   }
 
+  private fallbackOrThrow<T>(error: unknown, fallback: () => T): T {
+    if (!this.fallbackOnError) throw error;
+    return fallback();
+  }
+
   private async chatJson(
     system: string,
     user: string,
@@ -140,8 +157,10 @@ export class OpenAiCompatibleProvider implements LlmProvider {
     }
     const tier: LlmTier = opts?.tier ?? "engine";
     const model = this.modelFor(tier);
-    const timeoutMs =
-      opts?.timeoutMs ?? (tier === "fast" ? 12_000 : 24_000);
+    const timeoutMs = Math.round(
+      (opts?.timeoutMs ?? (tier === "fast" ? 12_000 : 24_000)) *
+        this.timeoutMultiplier,
+    );
     const temperature =
       opts?.temperature ?? (tier === "fast" ? 0.85 : 0.45);
     const label = opts?.label ?? tier;
@@ -156,7 +175,7 @@ export class OpenAiCompatibleProvider implements LlmProvider {
             { role: "system", content: system },
             { role: "user", content: user },
           ],
-          temperature,
+          ...(this.supportsTemperature ? { temperature } : {}),
           response_format: { type: "json_object" },
         },
         { signal: controller.signal, timeout: timeoutMs },
@@ -217,18 +236,35 @@ export class OpenAiCompatibleProvider implements LlmProvider {
         },
       },
     ];
+    const ownedCharacterIndex = (await referenceTools.search("", 8)).map(
+      (reference) => ({
+        id: reference.id,
+        displayName: reference.displayName,
+        realName: reference.identity.realName,
+        nicknames: reference.identity.nicknames,
+        epithets: reference.identity.epithets,
+        traits: reference.traits.slice(0, 4),
+      }),
+    );
+    const userWithReferences = ownedCharacterIndex.length > 0
+      ? `${user}\n\nOwner-scoped character index (use tools if relevant):\n${JSON.stringify(ownedCharacterIndex)}`
+      : user;
     const messages: ChatCompletionMessageParam[] = [
       { role: "system", content: system },
-      { role: "user", content: user },
+      { role: "user", content: userWithReferences },
     ];
-    const timeoutMs = opts?.timeoutMs ?? 28_000;
+    const timeoutMs = Math.round(
+      (opts?.timeoutMs ?? 28_000) * this.timeoutMultiplier,
+    );
     for (let round = 0; round < 4; round += 1) {
       const response = await this.client.chat.completions.create({
         model: this.modelFor(opts?.tier ?? "engine"),
         messages,
         tools,
         tool_choice: "auto",
-        temperature: opts?.temperature ?? 0.45,
+        ...(this.supportsTemperature
+          ? { temperature: opts?.temperature ?? 0.45 }
+          : {}),
         response_format: { type: "json_object" },
       }, { timeout: timeoutMs });
       const message = response.choices[0]?.message;
@@ -316,6 +352,9 @@ Safe-for-work anime portrait only.`,
       const skills = skillsRaw
         .map(parseGeneratedSkill)
         .filter((skill): skill is NonNullable<typeof skill> => skill != null);
+      if (skills.length === 0 && !this.fallbackOnError) {
+        throw new Error("Character generation returned no valid skills");
+      }
 
       const weapon = parseGeneratedEquipment(data.weapon) ?? null;
       const armor = parseGeneratedEquipment(data.armor) ?? null;
@@ -354,8 +393,8 @@ Safe-for-work anime portrait only.`,
           data.assistantMessage ?? "キャラクターを生成しました。",
         ),
       };
-    } catch {
-      return this.fallback.generateCharacter(input);
+    } catch (error) {
+      return this.fallbackOrThrow(error, () => this.fallback.generateCharacter(input));
     }
   }
 
@@ -376,8 +415,8 @@ Use null or [] when the profile does not establish a value. Do not treat a title
         { tier: "engine", label: "inferCharacterIdentity", temperature: 0.2 },
       );
       return parseGeneratedIdentity(data);
-    } catch {
-      return this.fallback.inferCharacterIdentity(current);
+    } catch (error) {
+      return this.fallbackOrThrow(error, () => this.fallback.inferCharacterIdentity(current));
     }
   }
 
@@ -458,8 +497,8 @@ If the user asks for absolute power, grant flavor but keep an implicit weakness 
         },
         assistantMessage: String(data.assistantMessage ?? "調整しました。"),
       };
-    } catch {
-      return this.fallback.adjustCharacter(current, userMessage);
+    } catch (error) {
+      return this.fallbackOrThrow(error, () => this.fallback.adjustCharacter(current, userMessage));
     }
   }
 
@@ -508,8 +547,8 @@ Coefficients between 0.25 and 2.5. Do not invent stats for characters.`,
           data.assistantMessage ?? "戦場プリセットを生成しました。",
         ),
       };
-    } catch {
-      return this.fallback.generateBattlefieldPreset(input);
+    } catch (error) {
+      return this.fallbackOrThrow(error, () => this.fallback.generateBattlefieldPreset(input));
     }
   }
 
@@ -566,8 +605,8 @@ Do not show numeric coefficients to the user in assistantMessage.`,
         },
         assistantMessage: String(data.assistantMessage ?? "調整しました。"),
       };
-    } catch {
-      return this.fallback.adjustBattlefieldPreset(current, userMessage);
+    } catch (error) {
+      return this.fallbackOrThrow(error, () => this.fallback.adjustBattlefieldPreset(current, userMessage));
     }
   }
 
@@ -628,8 +667,8 @@ Coefficients 0.25-2.5. Make terrain/obstacles/conditions specific for THIS match
           imageUrl: input.preset?.appearance.imageUrl ?? null,
         },
       };
-    } catch {
-      return this.fallback.concretizeBattlefield(input);
+    } catch (error) {
+      return this.fallbackOrThrow(error, () => this.fallback.concretizeBattlefield(input));
     }
   }
 
@@ -648,8 +687,8 @@ Respect the battlefield terrain/obstacles/conditions. Coefficients between 0.25 
         { tier: "fast", label: "proposeSituation", timeoutMs: 8_000 },
       )) as SituationProposal;
       return data;
-    } catch {
-      return this.fallback.proposeSituation(input);
+    } catch (error) {
+      return this.fallbackOrThrow(error, () => this.fallback.proposeSituation(input));
     }
   }
 
@@ -754,8 +793,8 @@ Rules:
           : undefined,
         envHits,
       };
-    } catch {
-      return this.fallback.proposeHappening(input);
+    } catch (error) {
+      return this.fallbackOrThrow(error, () => this.fallback.proposeHappening(input));
     }
   }
 
@@ -803,8 +842,8 @@ Do not mention numeric HP/MP/ATK values. Character lines should be short spoken 
         narrator: data.narrator ?? [],
         speeches: data.speeches ?? [],
       };
-    } catch {
-      return this.fallback.narrateTurn(input);
+    } catch (error) {
+      return this.fallbackOrThrow(error, () => this.fallback.narrateTurn(input));
     }
   }
 
@@ -881,8 +920,8 @@ JSON:
         narrator,
         speeches: data.speeches ?? [],
       };
-    } catch {
-      return this.fallback.narratePrologue(input);
+    } catch (error) {
+      return this.fallbackOrThrow(error, () => this.fallback.narratePrologue(input));
     }
   }
 
@@ -943,8 +982,8 @@ JSON:
           : ["——決着の余波——", "戦場に余韻だけが残った。"],
         speeches: data.speeches ?? [],
       };
-    } catch {
-      return this.fallback.narrateAftermath(input);
+    } catch (error) {
+      return this.fallbackOrThrow(error, () => this.fallback.narrateAftermath(input));
     }
   }
 
@@ -1076,6 +1115,9 @@ Rules:
       });
 
       if (options.length === 0) {
+        if (!this.fallbackOnError) {
+          throw new Error("Policy generation returned no valid options");
+        }
         return this.fallback.generateBattlePolicies(input);
       }
 
@@ -1093,8 +1135,8 @@ Rules:
             "キャラと戦場に合わせてケース別の方針案を生成しました。",
         ),
       };
-    } catch {
-      return this.fallback.generateBattlePolicies(input);
+    } catch (error) {
+      return this.fallbackOrThrow(error, () => this.fallback.generateBattlePolicies(input));
     }
   }
 
@@ -1113,8 +1155,8 @@ Prefer the engineWinnerSide unless the narrative strongly suggests otherwise.`,
         { tier: "engine", label: "referee", temperature: 0.3, timeoutMs: 12_000 },
       )) as RefereeResult;
       return data;
-    } catch {
-      return this.fallback.referee(input);
+    } catch (error) {
+      return this.fallbackOrThrow(error, () => this.fallback.referee(input));
     }
   }
 
@@ -1156,13 +1198,13 @@ instruction must be style-only (tone, density, POV). No combat rules, no HP numb
           ? data.tags.map(String).slice(0, 6)
           : [],
       };
-    } catch {
-      return {
+    } catch (error) {
+      return this.fallbackOrThrow(error, () => ({
         displayName: "カスタム",
         description: prompt.slice(0, 80),
         instruction: `次の雰囲気で語る: ${prompt}`,
         tags: ["custom"],
-      };
+      }));
     }
   }
 }

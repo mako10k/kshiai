@@ -107,4 +107,29 @@ describe("battle supervisor", () => {
     assert.ok(h.summary.length > 0);
     assert.ok(h.coefficients);
   });
+
+  it("does not select mechanics from free-text battlefield wording", () => {
+    const base = {
+      sourcePresetId: null,
+      displayName: "同じ分類の戦場",
+      category: "custom" as const,
+      scene: "scene",
+      terrain: "plain",
+      obstacles: [] as string[],
+      coefficients: {},
+      narrativeSetup: "test",
+    };
+    const a = pickTemplateHappening({
+      battlefield: { ...base, conditions: ["炎と最強の嵐"] },
+      turn: 3,
+      rng: () => 0.2,
+    });
+    const b = pickTemplateHappening({
+      battlefield: { ...base, conditions: ["静かな庭園"] },
+      turn: 3,
+      rng: () => 0.2,
+    });
+    assert.equal(a.title, b.title);
+    assert.deepEqual(a.coefficients, b.coefficients);
+  });
 });

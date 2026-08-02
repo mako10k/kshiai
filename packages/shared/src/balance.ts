@@ -92,9 +92,7 @@ export function balanceSkill(skill: Skill): Skill {
         power > 1.6 ? 10 : effectCost ? 6 : 5,
       ),
       effects,
-      description: skill.description?.includes("隙")
-        ? skill.description
-        : `${skill.description || skill.name}（強力なぶん隙を晒しやすい）`,
+      description: `${skill.description || skill.name}（高出力のため使用時に隙が生じる）`,
     };
   }
   return {
@@ -150,14 +148,12 @@ export function balanceEquipment(eq: Equipment | null | undefined): Equipment | 
       { parameter: "stamina", delta: -Math.min(12, Math.max(2, Math.ceil(positive / 3))) },
     ];
   }
-  let desc =
-    atk >= 5 || mag >= 5
-      ? eq.description?.includes("隙") || eq.description?.includes("脆")
-        ? eq.description
-        : `${eq.description || eq.name}（強力だが扱いに癖があり、隙を突かれやすい）`
-      : eq.description;
-  if (addedTradeoff && !/代償|消耗|重|鈍|隙|脆/.test(desc)) {
-    desc = `${desc || eq.name}（力を引き出す代償に持久力を消耗する）`;
+  let desc = eq.description;
+  if (atk >= 5 || mag >= 5) {
+    desc = `${desc || eq.name}（高出力のため扱いに明確な隙が生じる）`;
+  }
+  if (addedTradeoff) {
+    desc = `${desc || eq.name}（付与効果の代償として持久力を消耗する）`;
   }
   return {
     ...eq,
@@ -169,14 +165,28 @@ export function balanceEquipment(eq: Equipment | null | undefined): Equipment | 
   };
 }
 
-function needsWeaknessTrait(traits: string[]): boolean {
-  const powerWords =
-    /無敵|絶対|最強|無双|不滅|完全|万能|圧倒|必殺|即死|不敗|無敗|神|チート/;
-  const hasPower = traits.some((t) => powerWords.test(t));
-  const hasWeak = traits.some((t) =>
-    /弱|脆|隙|不運|鈍|遅い|脆|消耗|過信|頼り/.test(t),
+function hasMechanicalPeak(input: {
+  parameters: Parameters;
+  skills: Skill[];
+  weapon: Equipment | null;
+  armor: Equipment | null;
+}): boolean {
+  const combatPeak = Math.max(
+    input.parameters.atk ?? 0,
+    input.parameters.def ?? 0,
+    input.parameters.spd ?? 0,
+    input.parameters.mag ?? 0,
+    input.parameters.res ?? 0,
+    input.parameters.focus ?? 0,
+    input.parameters.luck ?? 0,
+  ) >= 16;
+  const skillPeak = input.skills.some((skill) => skill.power >= 1.45);
+  const equipmentPeak = [input.weapon, input.armor].some(
+    (equipment) =>
+      equipment != null &&
+      Math.max(equipment.atkBonus, equipment.defBonus, equipment.magBonus) >= 5,
   );
-  return hasPower || (!hasWeak && traits.length >= 2);
+  return combatPeak || skillPeak || equipmentPeak;
 }
 
 /**
@@ -200,16 +210,19 @@ export function balanceCharacterCombatFields<
   const armor = balanceEquipment(sheet.armor ?? null);
   const basicAttack = balanceBasicAttack(sheet.basicAttack);
   let traits = [...(sheet.traits ?? [])];
-  if (needsWeaknessTrait(traits)) {
+  const addMechanicalWeakness = hasMechanicalPeak({
+    parameters,
+    skills,
+    weapon,
+    armor,
+  });
+  if (addMechanicalWeakness) {
     const pick =
       WEAKNESS_TRAITS[Math.floor(Math.random() * WEAKNESS_TRAITS.length)]!;
     if (!traits.includes(pick)) traits = [...traits.slice(0, 6), pick];
   }
   let narrativeBlurb = sheet.narrativeBlurb ?? "";
-  if (
-    narrativeBlurb &&
-    !/隙|弱点|脆|代償|裏腹|しかし|ただし|一方で/.test(narrativeBlurb)
-  ) {
+  if (narrativeBlurb && addMechanicalWeakness) {
     narrativeBlurb = `${narrativeBlurb.replace(/。?$/, "。")}ただしその強さには必ず隙があり、戦場の流れ次第では一気に崩れる。`;
   }
   return {

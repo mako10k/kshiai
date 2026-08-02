@@ -189,5 +189,44 @@ decision D12 based_on PR12, EV12, D1, D4:
     selfNames, epithets, gender, and age; displayName remains an independent
     public field. Character generation receives search and detail tools whose
     repository callbacks are bound to the authenticated owner id. Reference
-    results contain descriptive profile context but no combat parameters.
+    results contain descriptive profile context but no combat parameters. The
+    server always supplies the same compact owned-character index and tools;
+    the LLM decides their relevance without keyword or regex routing.
     Existing sheets are backfilled once and all later saves persist defaults.
+
+problem PR13:
+  |
+    A single hosted LLM can exhaust credits or hit a rate limit, causing all
+    structured generation to fall directly to repetitive mock content.
+
+evidence EV13:
+  |
+    xAI reached its monthly spending limit while valid OpenAI and VeniceAI
+    credentials remained available.
+
+decision D13 based_on PR13, EV13, D5:
+  |
+    Route every LlmProvider operation through a configurable ordered chain.
+    On quota, credit, spending-limit, or rate-limit errors, mark only that
+    provider unavailable in memory for one hour and immediately try the next.
+    Other failures fall through for the current request without a long cooldown.
+    Mock remains the final provider so user flows still complete offline.
+
+problem PR14:
+  |
+    Keyword and regex checks against free-form character, battlefield, or user
+    prose create hidden semantic rules that disagree with the LLM and are hard
+    to extend across wording and languages.
+
+evidence EV14:
+  |
+    Earlier mock adjustment, balance, and battlefield happening code inferred
+    attack, defense, weather, power, and weakness from Japanese word lists.
+
+decision D14 based_on PR14, EV14, D1, D2:
+  |
+    Semantic interpretation of free-form prose belongs to an LLM structured
+    response. Deterministic code may branch only on validated schema fields,
+    enums, numeric values, ownership, and engine state. Literal matching remains
+    limited to explicit search, safety redaction, protocol/error classification,
+    file validation, and output-format repair; none may select combat mechanics.

@@ -23,33 +23,12 @@ import type {
 } from "./types.js";
 import { newId } from "../id.js";
 
-/** Pull a display name from free text; avoid leftovers like 「はアキ」 from 「名前はアキ」. */
-function extractName(prompt: string): string {
-  const m =
-    prompt.match(/名前は\s*([^\s、。・]+)/) ??
-    prompt.match(/(?:名前|name)\s*[：:=]\s*([^\s、。・]+)/i);
-  let name = (m?.[1] ?? "").trim();
-  if (!name) {
-    const first = prompt.trim().split(/[\s、。]/)[0] ?? "";
-    // Avoid treating the whole "名前は…" clause as the name
-    name = first.replace(/^名前は?/, "").trim();
-  }
-  // Drop leading Japanese particles / junk if a bad capture slipped through
-  name = name.replace(/^[はがをにへとでのもや]+/u, "").trim();
-  if (name.length < 1 || name === "名前") name = "無名の挑戦者";
-  return name.slice(0, 24);
-}
-
 export class MockLlmProvider implements LlmProvider {
   readonly name = "mock";
 
   async generateCharacter(input: GenerateCharacterInput): Promise<GenerateCharacterResult> {
     const prompt = input.prompt;
-    const displayName = extractName(prompt);
-    const references = input.referenceTools && /妹|姉|兄|弟|親|子|彼女|彼氏|妻|夫|似|同じ|関係/.test(prompt)
-      ? await input.referenceTools.search("", 8)
-      : [];
-    const mentioned = references.find((ref) => prompt.includes(ref.displayName));
+    const displayName = prompt.trim().slice(0, 24) || "無名の挑戦者";
     const sheet: GenerateCharacterResult["sheet"] = {
       displayName,
       identity: {
@@ -66,7 +45,7 @@ export class MockLlmProvider implements LlmProvider {
         visualPrompt: `anime character portrait bust, detailed face, ${displayName}, ${prompt.slice(0, 180)}, expressive eyes, soft lighting, single character, no text`,
         imageUrl: null,
       },
-      traits: ["不屈", "機知", ...(mentioned ? [`${mentioned.displayName}との関係を持つ`] : [])],
+      traits: ["不屈", "機知"],
       parameters: defaultParameters(),
       basicAttack: {
         name: "崩しの斬撃",
@@ -128,7 +107,7 @@ export class MockLlmProvider implements LlmProvider {
         effects: [{ parameter: "spd", delta: -1 }],
       },
       combatFlags: { canFight: true, irreversibleIncapacitated: false },
-      narrativeBlurb: `${displayName}。${prompt.slice(0, 160)}という印象を周囲に与える挑戦者。${mentioned ? `${mentioned.displayName}のプロフィールを参照して設計された。` : ""}`,
+      narrativeBlurb: `${displayName}。${prompt.slice(0, 160)}という印象を周囲に与える挑戦者。`,
       record: defaultRecord(),
       deletedAt: null,
     };
@@ -154,37 +133,11 @@ export class MockLlmProvider implements LlmProvider {
     current: CharacterSheet,
     userMessage: string,
   ): Promise<AdjustCharacterResult> {
-    const moreDef =
-      /防御|守り|タフ|硬い/.test(userMessage);
-    const moreAtk = /攻撃|攻め|火力|強く/.test(userMessage);
-    const rename = userMessage.match(/(?:名前を|改名)[「『]?([^」』\s]+)[」』]?/);
-
-    const parameters = { ...current.parameters };
-    if (moreDef) {
-      parameters.def = (parameters.def ?? 10) + 3;
-      parameters.maxHp = (parameters.maxHp ?? 100) + 15;
-      parameters.hp = parameters.maxHp;
-    }
-    if (moreAtk) {
-      parameters.atk = (parameters.atk ?? 12) + 3;
-    }
-
     return {
       sheetPatch: {
-        displayName: rename?.[1] ?? current.displayName,
-        parameters,
         narrativeBlurb: `${current.narrativeBlurb}\n（調整: ${userMessage.slice(0, 80)}）`,
-        traits: moreDef
-          ? [...new Set([...current.traits, "堅牢"])]
-          : moreAtk
-            ? [...new Set([...current.traits, "猛攻"])]
-            : current.traits,
       },
-      assistantMessage: moreDef
-        ? "守り寄りに調整しました。厚みのある戦い方になりそうです。"
-        : moreAtk
-          ? "攻め寄りに調整しました。手数と切れ味が増しています。"
-          : `「${userMessage.slice(0, 40)}」を反映しました。ほかに気になる点はありますか？`,
+      assistantMessage: `モック環境のため、依頼文をプロフィール注記へ反映しました。`,
     };
   }
 
@@ -194,8 +147,7 @@ export class MockLlmProvider implements LlmProvider {
   }): Promise<GenerateBattlefieldResult> {
     const cat = input.category ?? "custom";
     const label = CATEGORY_LABELS[cat] ?? "戦場";
-    const nameMatch = input.prompt.match(/(?:名前は|名[：:])\s*([^\s、。]+)/);
-    const displayName = nameMatch?.[1] ?? `${label}の一角`;
+    const displayName = input.prompt.trim().slice(0, 24) || `${label}の一角`;
     return {
       preset: {
         displayName,
@@ -220,21 +172,8 @@ export class MockLlmProvider implements LlmProvider {
     current: BattlefieldPreset,
     userMessage: string,
   ): Promise<AdjustBattlefieldResult> {
-    const wet = /雨|霧|濡|水/.test(userMessage);
-    const night = /夜|闇|暗い/.test(userMessage);
-    const baseCoefficients = { ...current.baseCoefficients };
-    if (wet) baseCoefficients.water = 1.2;
-    if (night) baseCoefficients.focus = 0.9;
     return {
       presetPatch: {
-        conditionHints: [
-          ...new Set([
-            ...current.conditionHints,
-            ...(wet ? ["雨"] : []),
-            ...(night ? ["夜"] : []),
-          ]),
-        ],
-        baseCoefficients,
         narrativeBlurb: `${current.narrativeBlurb}\n（調整: ${userMessage.slice(0, 80)}）`,
       },
       assistantMessage: `「${userMessage.slice(0, 40)}」を戦場に反映しました。`,
@@ -277,9 +216,6 @@ export class MockLlmProvider implements LlmProvider {
       conditions,
       coefficients: clampCoefficientMap({
         ...preset.baseCoefficients,
-        ...(conditions.some((c) => /雨|霧|濡/.test(c))
-          ? { fire: 0.75, water: 1.15 }
-          : {}),
       }),
       narrativeSetup: `${preset.narrativeBlurb} いまは「${detailTerrain}」が主戦場で、${obstacles.join("・") || "目立った障害はなく"}、${conditions.join("・") || "静かな空気"}が支配している。`,
       appearance: { ...preset.appearance },
@@ -292,9 +228,7 @@ export class MockLlmProvider implements LlmProvider {
     eventsHint: string;
     battlefield?: BattlefieldInstance | null;
   }): Promise<SituationProposal> {
-    const rain =
-      input.turn % 5 === 0 ||
-      (input.battlefield?.conditions ?? []).some((c) => /雨|霧/.test(c));
+    const rain = input.turn % 5 === 0;
     const notes = rain
       ? "にわか雨が戦場を濡らし、足場が危うい。"
       : input.battlefield

@@ -47,12 +47,17 @@ npm run dev:frontend  # http://127.0.0.1:5188
 ```
 
 既定の `LLM_PROVIDER=mock` なら API キーなしで UI フローを通せます。  
-本番相当で xAI を使う場合:
+本番では `LLM_PROVIDER_ORDER` の順に試行します。利用枠／レート上限になった
+プロバイダは既定で1時間スキップし、次へフォールバックします。
 
 ```bash
 # .env
 LLM_PROVIDER=xai
+LLM_PROVIDER_ORDER=xai,openai,venice,mock
+LLM_QUOTA_COOLDOWN_MS=3600000
 XAI_API_KEY=xai-...
+OPENAI_API_KEY=sk-...
+VENICEAI_API_KEY=...
 ```
 
 ## 主要画面

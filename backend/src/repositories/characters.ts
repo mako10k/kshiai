@@ -129,9 +129,8 @@ export function listCharactersForUser(userId: string, q?: string) {
 /** Hide early mock-test junk (e.g. 「はアキ」) from matchmaking. */
 function isPlayableOpponent(sheet: CharacterSheet): boolean {
   if (!isActive(sheet)) return false;
-  // Old mock provider tagged these; also drop particle-broken names
+  // Old mock provider tagged these.
   if (sheet.tags?.includes("mock")) return false;
-  if (/^[はがをにへとでのもや]/.test(sheet.displayName)) return false;
   return true;
 }
 

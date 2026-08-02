@@ -17,6 +17,10 @@ if ! secdat get XAI_API_KEY --stdout >/dev/null 2>&1; then
 fi
 
 XAI="$(secdat get XAI_API_KEY --stdout)"
+OPENAI=""
+if secdat get OPENAI_API_KEY --stdout >/dev/null 2>&1; then
+  OPENAI="$(secdat get OPENAI_API_KEY --stdout)"
+fi
 VENICE=""
 if secdat get VENICEAI_API_KEY --stdout >/dev/null 2>&1; then
   VENICE="$(secdat get VENICEAI_API_KEY --stdout)"
@@ -48,9 +52,17 @@ PY
 }
 
 set_kv LLM_PROVIDER xai "$ENV_FILE"
+set_kv LLM_PROVIDER_ORDER "xai,openai,venice,mock" "$ENV_FILE"
+set_kv LLM_QUOTA_COOLDOWN_MS "3600000" "$ENV_FILE"
 set_kv XAI_API_KEY "$XAI" "$ENV_FILE"
 set_kv XAI_BASE_URL "https://api.x.ai/v1" "$ENV_FILE"
 set_kv XAI_MODEL "grok-4.5" "$ENV_FILE"
+if [[ -n "$OPENAI" ]]; then
+  set_kv OPENAI_API_KEY "$OPENAI" "$ENV_FILE"
+  set_kv OPENAI_BASE_URL "https://api.openai.com/v1" "$ENV_FILE"
+  set_kv OPENAI_MODEL_ENGINE "gpt-4.1" "$ENV_FILE"
+  set_kv OPENAI_MODEL_FAST "gpt-4.1-mini" "$ENV_FILE"
+fi
 if [[ -n "$VENICE" ]]; then
   set_kv VENICE_API_KEY "$VENICE" "$ENV_FILE"
   set_kv VENICEAI_API_KEY "$VENICE" "$ENV_FILE"
@@ -59,6 +71,11 @@ fi
 echo "Updated $ENV_FILE from secdat"
 echo "  LLM_PROVIDER=xai"
 echo "  XAI_API_KEY=*** (len=${#XAI})"
+if [[ -n "$OPENAI" ]]; then
+  echo "  OPENAI_API_KEY=*** (len=${#OPENAI})"
+else
+  echo "  OPENAI_API_KEY=(not found in secdat)"
+fi
 if [[ -n "$VENICE" ]]; then
   echo "  VENICE_API_KEY=*** (len=${#VENICE})"
 else

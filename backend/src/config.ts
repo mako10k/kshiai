@@ -54,7 +54,22 @@ export const config = {
     process.env.COOKIE_SECURE === "1" ||
     process.env.COOKIE_SECURE === "true" ||
     process.env.NODE_ENV === "production",
-  llmProvider: (process.env.LLM_PROVIDER ?? "mock") as "mock" | "xai" | "venice",
+  llmProvider: (process.env.LLM_PROVIDER ?? "mock") as "mock" | "xai" | "openai" | "venice",
+  /** Ordered providers. Legacy LLM_PROVIDER remains the first choice. */
+  llmProviderOrder: (process.env.LLM_PROVIDER_ORDER ??
+    ((process.env.LLM_PROVIDER ?? "mock") === "mock"
+      ? "mock"
+      : `${process.env.LLM_PROVIDER},openai,venice,mock`))
+    .split(",")
+    .map((value) => value.trim().toLowerCase())
+    .filter((value, index, values) =>
+      ["xai", "openai", "venice", "mock"].includes(value) &&
+      values.indexOf(value) === index,
+    ) as Array<"xai" | "openai" | "venice" | "mock">,
+  llmQuotaCooldownMs: Math.max(
+    60_000,
+    Number(process.env.LLM_QUOTA_COOLDOWN_MS ?? 60 * 60 * 1000),
+  ),
   xai: {
     apiKey: process.env.XAI_API_KEY ?? "",
     baseUrl: process.env.XAI_BASE_URL ?? "https://api.x.ai/v1",
@@ -74,17 +89,23 @@ export const config = {
       process.env.XAI_MODEL_FAST ?? "grok-4-fast-non-reasoning",
     imageModel: process.env.XAI_IMAGE_MODEL ?? "grok-imagine-image",
   },
+  openai: {
+    apiKey: process.env.OPENAI_API_KEY ?? "",
+    baseUrl: process.env.OPENAI_BASE_URL ?? "https://api.openai.com/v1",
+    modelEngine: process.env.OPENAI_MODEL_ENGINE ?? "gpt-4.1",
+    modelFast: process.env.OPENAI_MODEL_FAST ?? "gpt-4.1-mini",
+  },
   venice: {
     // secdat key name is VENICEAI_API_KEY; accept both
     apiKey: process.env.VENICE_API_KEY ?? process.env.VENICEAI_API_KEY ?? "",
     baseUrl: process.env.VENICE_BASE_URL ?? "https://api.venice.ai/api/v1",
-    model: process.env.VENICE_MODEL ?? "default",
+    model: process.env.VENICE_MODEL ?? "qwen-3-7-plus",
     modelEngine:
-      process.env.VENICE_MODEL_ENGINE ?? process.env.VENICE_MODEL ?? "default",
+      process.env.VENICE_MODEL_ENGINE ?? process.env.VENICE_MODEL ?? "qwen-3-7-plus",
     modelFast:
       process.env.VENICE_MODEL_FAST ??
       process.env.VENICE_MODEL ??
-      "default",
+      "gemini-3-5-flash-lite",
   },
   battleTurnLimit: Number(process.env.BATTLE_TURN_LIMIT ?? 20),
 };

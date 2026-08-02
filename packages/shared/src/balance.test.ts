@@ -24,7 +24,7 @@ describe("balance", () => {
     assert.ok((p.def ?? 0) <= 16);
   });
 
-  it("adds weakness when power-fantasy traits present", () => {
+  it("adds weakness when structured combat fields have a mechanical peak", () => {
     const sheet = balanceCharacterCombatFields({
       parameters: defaultParameters(),
       skills: [
@@ -53,6 +53,19 @@ describe("balance", () => {
     assert.ok((sheet.weapon?.atkBonus ?? 0) <= 6);
     assert.ok(sheet.traits && sheet.traits.length >= 3);
     assert.match(sheet.narrativeBlurb ?? "", /隙|脆|崩れる/);
+  });
+
+  it("does not infer combat strength from prose keywords", () => {
+    const sheet = balanceCharacterCombatFields({
+      parameters: defaultParameters(),
+      skills: [],
+      weapon: null,
+      armor: null,
+      traits: ["無敵", "最強"],
+      narrativeBlurb: "誰にも負けない戦士。",
+    });
+    assert.deepEqual(sheet.traits, ["無敵", "最強"]);
+    assert.equal(sheet.narrativeBlurb, "誰にも負けない戦士。");
   });
 
   it("caps per-hit damage vs max HP", () => {

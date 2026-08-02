@@ -341,33 +341,8 @@ export function pickTemplateHappening(input: {
     ...(BY_CATEGORY[cat] ?? GENERIC),
     ...GENERIC,
   ];
-  // Lightly prefer templates whose tags overlap field obstacles/conditions
-  const fieldBits = new Set(
-    [
-      ...(input.battlefield?.obstacles ?? []),
-      ...(input.battlefield?.conditions ?? []),
-      input.battlefield?.terrain ?? "",
-    ]
-      .join(" ")
-      .split(/[\s・、,]/)
-      .filter(Boolean),
-  );
-  const scored = pool.map((t) => {
-    const hit = (t.tags ?? []).some((tag) =>
-      [...fieldBits].some((b) => b.includes(tag) || tag.includes(b)),
-    );
-    return { t, score: hit ? 2 : 1 };
-  });
-  const total = scored.reduce((s, x) => s + x.score, 0);
-  let r = rng() * total;
-  let chosen = scored[0]!.t;
-  for (const row of scored) {
-    r -= row.score;
-    if (r <= 0) {
-      chosen = row.t;
-      break;
-    }
-  }
+  // Category is a validated enum; free-text terrain/conditions never route mechanics.
+  const chosen = pool[Math.floor(rng() * pool.length)] ?? GENERIC[0]!;
   // Occasionally moderate escalation on later turns
   const escalated: Template = { ...chosen };
   if (input.turn >= 6 && rng() < 0.35 && escalated.envHits) {
