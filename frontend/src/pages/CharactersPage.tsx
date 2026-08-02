@@ -98,30 +98,38 @@ export function CharactersPage() {
         <div className="grid cards" style={{ marginTop: "1rem" }}>
           {list.map((c) => (
             <div className="card" key={c.id}>
-              {c.appearance.imageUrl ? (
-                <img
-                  key={mediaSrc(c.appearance.imageUrl, c.updatedAt)}
-                  src={mediaSrc(c.appearance.imageUrl, c.updatedAt)}
-                  alt={c.displayName}
-                />
-              ) : (
-                <div
-                  style={{
-                    aspectRatio: 1,
-                    borderRadius: 8,
-                    background: "#0b0e14",
-                    display: "grid",
-                    placeItems: "center",
-                    color: "#5b6780",
-                  }}
-                >
-                  No Image
-                </div>
-              )}
-              <strong>{c.displayName}</strong>
+              <Link
+                to={`/characters/${c.id}`}
+                className="char-card-face"
+                aria-label={`${c.displayName} の詳細`}
+              >
+                {c.appearance.imageUrl ? (
+                  <img
+                    key={mediaSrc(c.appearance.imageUrl, c.updatedAt)}
+                    src={mediaSrc(c.appearance.imageUrl, c.updatedAt)}
+                    alt={c.displayName}
+                  />
+                ) : (
+                  <div
+                    style={{
+                      aspectRatio: 1,
+                      borderRadius: 8,
+                      background: "#0b0e14",
+                      display: "grid",
+                      placeItems: "center",
+                      color: "#5b6780",
+                    }}
+                  >
+                    No Image
+                  </div>
+                )}
+              </Link>
+              <Link to={`/characters/${c.id}`} className="char-card-name">
+                <strong>{c.displayName}</strong>
+              </Link>
               <p className="record-line">
-                <span className="rating">
-                  {Math.round(c.record.rating)}
+                <span className="rating" title="公開（他アカウント対戦のみ）">
+                  公開 {Math.round(c.record.rating)}
                   {c.record.provisional ? (
                     <span className="tag">暫定</span>
                   ) : null}
@@ -134,6 +142,25 @@ export function CharactersPage() {
                     : ""}
                 </span>
               </p>
+              {c.recordOverall ? (
+                <p className="record-line record-overall">
+                  <span className="rating" title="本人のみ見える全試合統計">
+                    全体 {Math.round(c.recordOverall.rating)}
+                    {c.recordOverall.provisional ? (
+                      <span className="tag">暫定</span>
+                    ) : null}
+                  </span>
+                  <span className="muted">
+                    {c.recordOverall.wins}勝 {c.recordOverall.losses}敗
+                    {c.recordOverall.draws
+                      ? ` ${c.recordOverall.draws}分`
+                      : ""}
+                    {c.recordOverall.gamesPlayed
+                      ? `（${c.recordOverall.gamesPlayed}試合）`
+                      : ""}
+                  </span>
+                </p>
+              ) : null}
               <p className="muted" style={{ margin: 0, fontSize: "0.9rem" }}>
                 {c.narrativeBlurb}
               </p>

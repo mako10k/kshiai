@@ -90,9 +90,27 @@ export const CharacterSheetSchema = z.object({
   armor: EquipmentSchema.nullable(),
   combatFlags: CombatFlagsSchema,
   narrativeBlurb: z.string(),
+  /**
+   * Public ranked record: cross-account matches only.
+   * Shown to everyone.
+   */
   record: CharacterRecordSchema.optional(),
+  /**
+   * Overall record including same-account sparring.
+   * Visible only to the character owner.
+   */
+  recordOverall: CharacterRecordSchema.optional(),
 });
 export type CharacterSheet = z.infer<typeof CharacterSheetSchema>;
+
+const RecordPublicSchema = z.object({
+  wins: z.number(),
+  losses: z.number(),
+  draws: z.number(),
+  gamesPlayed: z.number(),
+  rating: z.number(),
+  provisional: z.boolean(),
+});
 
 /** Client-safe character card (no combat parameters). */
 export const CharacterPublicSchema = z.object({
@@ -111,15 +129,13 @@ export const CharacterPublicSchema = z.object({
   weaponName: z.string().nullable(),
   armorName: z.string().nullable(),
   narrativeBlurb: z.string(),
-  /** Public match record / rating (provisional flagged). */
-  record: z.object({
-    wins: z.number(),
-    losses: z.number(),
-    draws: z.number(),
-    gamesPlayed: z.number(),
-    rating: z.number(),
-    provisional: z.boolean(),
-  }),
+  /** Public ranked record (other accounts only). Always present. */
+  record: RecordPublicSchema,
+  /**
+   * Overall record including self-account matches.
+   * Only set when the viewer is the owner.
+   */
+  recordOverall: RecordPublicSchema.optional(),
 });
 export type CharacterPublic = z.infer<typeof CharacterPublicSchema>;
 
@@ -127,8 +143,31 @@ export function ensureRecord(sheet: CharacterSheet): CharacterRecord {
   return normalizeRecord(sheet.record);
 }
 
-export function toPublicCharacter(sheet: CharacterSheet): CharacterPublic {
+export function ensureRecordOverall(sheet: CharacterSheet): CharacterRecord {
+  // Legacy sheets only had `record` (often same-owner heavy) — seed overall from it.
+  return normalizeRecord(sheet.recordOverall ?? sheet.record);
+}
+
+function toRecordDto(record: CharacterRecord) {
+  return {
+    wins: record.wins,
+    losses: record.losses,
+    draws: record.draws,
+    gamesPlayed: record.gamesPlayed,
+    rating: record.rating,
+    provisional: isProvisional(record.gamesPlayed),
+  };
+}
+
+/**
+ * @param viewerUserId When equal to owner, include private overall stats.
+ */
+export function toPublicCharacter(
+  sheet: CharacterSheet,
+  viewerUserId?: string | null,
+): CharacterPublic {
   const record = ensureRecord(sheet);
+  const isOwner = Boolean(viewerUserId && viewerUserId === sheet.ownerUserId);
   return {
     id: sheet.id,
     ownerUserId: sheet.ownerUserId,
@@ -148,14 +187,10 @@ export function toPublicCharacter(sheet: CharacterSheet): CharacterPublic {
     weaponName: sheet.weapon?.name ?? null,
     armorName: sheet.armor?.name ?? null,
     narrativeBlurb: sheet.narrativeBlurb,
-    record: {
-      wins: record.wins,
-      losses: record.losses,
-      draws: record.draws,
-      gamesPlayed: record.gamesPlayed,
-      rating: record.rating,
-      provisional: isProvisional(record.gamesPlayed),
-    },
+    record: toRecordDto(record),
+    recordOverall: isOwner
+      ? toRecordDto(ensureRecordOverall(sheet))
+      : undefined,
   };
 }
 

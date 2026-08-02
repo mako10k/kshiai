@@ -42,11 +42,14 @@ export function applyElo(input: {
   foeRating: number;
   foeProvisional: boolean;
   outcome: RankedOutcome;
+  /** 1 = full K; 0.5 = sparring / same-owner reduced movement */
+  kScale?: number;
 }): { nextRating: number; delta: number } {
   const k = kFactor(input.gamesPlayed, input.foeProvisional);
+  const scale = Math.min(1, Math.max(0.25, input.kScale ?? 1));
   const exp = expectedScore(input.rating, input.foeRating);
   const score = scoreFromOutcome(input.outcome);
-  const delta = Math.round(k * (score - exp));
+  const delta = Math.round(k * scale * (score - exp));
   return {
     nextRating: Math.max(100, input.rating + delta),
     delta,

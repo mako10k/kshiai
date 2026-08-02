@@ -283,7 +283,10 @@ export const BattleStateSchema = z.object({
     .object({
       applied: z.boolean(),
       voided: z.boolean(),
+      /** True when public (cross-account) track was updated. */
       ranked: z.boolean(),
+      sameOwner: z.boolean().optional(),
+      /** @deprecated use overall.sideA — overall track for side A */
       sideA: z.object({
         characterId: z.string(),
         before: z.number(),
@@ -302,6 +305,51 @@ export const BattleStateSchema = z.object({
         provisionalAfter: z.boolean(),
         gamesPlayedBefore: z.number(),
       }),
+      overall: z
+        .object({
+          sideA: z.object({
+            characterId: z.string(),
+            before: z.number(),
+            after: z.number(),
+            delta: z.number(),
+            provisionalBefore: z.boolean(),
+            provisionalAfter: z.boolean(),
+            gamesPlayedBefore: z.number(),
+          }),
+          sideB: z.object({
+            characterId: z.string(),
+            before: z.number(),
+            after: z.number(),
+            delta: z.number(),
+            provisionalBefore: z.boolean(),
+            provisionalAfter: z.boolean(),
+            gamesPlayedBefore: z.number(),
+          }),
+        })
+        .optional(),
+      public: z
+        .object({
+          sideA: z.object({
+            characterId: z.string(),
+            before: z.number(),
+            after: z.number(),
+            delta: z.number(),
+            provisionalBefore: z.boolean(),
+            provisionalAfter: z.boolean(),
+            gamesPlayedBefore: z.number(),
+          }),
+          sideB: z.object({
+            characterId: z.string(),
+            before: z.number(),
+            after: z.number(),
+            delta: z.number(),
+            provisionalBefore: z.boolean(),
+            provisionalAfter: z.boolean(),
+            gamesPlayedBefore: z.number(),
+          }),
+        })
+        .nullable()
+        .optional(),
     })
     .optional(),
   createdAt: z.string(),
@@ -362,6 +410,67 @@ export const BattlePublicSchema = z.object({
   narrationStyleName: z.string().optional(),
   /** Prior rivalry note from last finished matchup (if any). */
   priorMatchSummary: z.string().nullable().optional(),
+  /** Elo settlement for the finished match (shown on results). */
+  ratingSettlement: z
+    .object({
+      applied: z.boolean(),
+      ranked: z.boolean(),
+      sameOwner: z.boolean().optional(),
+      /** Overall (all matches) — only filled for the viewer on their own chars in UI. */
+      overall: z
+        .object({
+          sideA: z.object({
+            before: z.number(),
+            after: z.number(),
+            delta: z.number(),
+            provisionalAfter: z.boolean(),
+          }),
+          sideB: z.object({
+            before: z.number(),
+            after: z.number(),
+            delta: z.number(),
+            provisionalAfter: z.boolean(),
+          }),
+        })
+        .optional(),
+      /** Public ranked track; null when same-owner only. */
+      public: z
+        .object({
+          sideA: z.object({
+            before: z.number(),
+            after: z.number(),
+            delta: z.number(),
+            provisionalAfter: z.boolean(),
+          }),
+          sideB: z.object({
+            before: z.number(),
+            after: z.number(),
+            delta: z.number(),
+            provisionalAfter: z.boolean(),
+          }),
+        })
+        .nullable()
+        .optional(),
+      /** @deprecated alias of overall.sideA for older clients */
+      sideA: z
+        .object({
+          before: z.number(),
+          after: z.number(),
+          delta: z.number(),
+          provisionalAfter: z.boolean(),
+        })
+        .optional(),
+      sideB: z
+        .object({
+          before: z.number(),
+          after: z.number(),
+          delta: z.number(),
+          provisionalAfter: z.boolean(),
+        })
+        .optional(),
+    })
+    .nullable()
+    .optional(),
 });
 export type BattlePublic = z.infer<typeof BattlePublicSchema>;
 
@@ -373,8 +482,13 @@ export const BattleListItemSchema = z.object({
   turnLimit: z.number(),
   sideAName: z.string(),
   sideBName: z.string(),
+  sideACharacterId: z.string().optional(),
+  sideBCharacterId: z.string().optional(),
+  sideAImageUrl: z.string().nullable().optional(),
+  sideBImageUrl: z.string().nullable().optional(),
   scene: z.string(),
   battlefieldName: z.string().nullable().optional(),
+  battlefieldImageUrl: z.string().nullable().optional(),
   winnerSide: z.enum(["a", "b", "draw"]).nullable(),
   /** User-facing result label, not engine codes. */
   resultLabel: z.string().nullable().optional(),

@@ -151,6 +151,10 @@ export function BattlePage() {
   const imgWinner = winner
     ? mediaSrc(winner.imageUrl, winner.characterId)
     : undefined;
+  const fieldImg = mediaSrc(
+    bf?.imageUrl,
+    bf?.displayName ?? battle.scene,
+  );
 
   return (
     <>
@@ -162,27 +166,46 @@ export function BattlePage() {
       </div>
 
       <div className="panel">
-        <div className="battle-faces" aria-label="対戦カード">
-          <div className="battle-face">
-            {imgA ? (
-              <img src={imgA} alt={battle.sideA.displayName} />
-            ) : (
-              <div className="battle-face-ph">?</div>
-            )}
-            <strong>{battle.sideA.displayName}</strong>
-            <span className="muted">自分</span>
-          </div>
-          <div className="battle-faces-vs" aria-hidden>
-            VS
-          </div>
-          <div className="battle-face">
-            {imgB ? (
-              <img src={imgB} alt={battle.sideB.displayName} />
-            ) : (
-              <div className="battle-face-ph">?</div>
-            )}
-            <strong>{battle.sideB.displayName}</strong>
-            <span className="muted">相手</span>
+        <div
+          className={`battle-faces${fieldImg ? " has-field" : ""}`}
+          aria-label="対戦カード"
+          style={
+            fieldImg
+              ? ({ ["--field-bg" as string]: `url(${fieldImg})` } as React.CSSProperties)
+              : undefined
+          }
+        >
+          {fieldImg ? (
+            <div className="battle-faces-field" aria-hidden />
+          ) : null}
+          <div className="battle-faces-inner">
+            <Link
+              className="battle-face battle-face-link"
+              to={`/characters/${battle.sideA.characterId}`}
+            >
+              {imgA ? (
+                <img src={imgA} alt={battle.sideA.displayName} />
+              ) : (
+                <div className="battle-face-ph">?</div>
+              )}
+              <strong>{battle.sideA.displayName}</strong>
+              <span className="muted">自分</span>
+            </Link>
+            <div className="battle-faces-vs" aria-hidden>
+              VS
+            </div>
+            <Link
+              className="battle-face battle-face-link"
+              to={`/characters/${battle.sideB.characterId}`}
+            >
+              {imgB ? (
+                <img src={imgB} alt={battle.sideB.displayName} />
+              ) : (
+                <div className="battle-face-ph">?</div>
+              )}
+              <strong>{battle.sideB.displayName}</strong>
+              <span className="muted">相手</span>
+            </Link>
           </div>
         </div>
 
@@ -322,27 +345,36 @@ export function BattlePage() {
           <h2>結果</h2>
           {battle.winnerSide === "draw" ? (
             <div className="battle-winner-row battle-winner-draw">
-              <div className="battle-face battle-face-sm">
+              <Link
+                className="battle-face battle-face-sm battle-face-link"
+                to={`/characters/${battle.sideA.characterId}`}
+              >
                 {imgA ? (
                   <img src={imgA} alt={battle.sideA.displayName} />
                 ) : (
                   <div className="battle-face-ph">?</div>
                 )}
-              </div>
-              <div className="battle-face battle-face-sm">
+              </Link>
+              <Link
+                className="battle-face battle-face-sm battle-face-link"
+                to={`/characters/${battle.sideB.characterId}`}
+              >
                 {imgB ? (
                   <img src={imgB} alt={battle.sideB.displayName} />
                 ) : (
                   <div className="battle-face-ph">?</div>
                 )}
-              </div>
+              </Link>
               <p className="ok" style={{ margin: 0 }}>
                 引き分け
               </p>
             </div>
           ) : winner ? (
             <div className="battle-winner-row">
-              <div className="battle-face battle-face-winner">
+              <Link
+                className="battle-face battle-face-winner battle-face-link"
+                to={`/characters/${winner.characterId}`}
+              >
                 {imgWinner ? (
                   <img src={imgWinner} alt={winner.displayName} />
                 ) : (
@@ -350,7 +382,7 @@ export function BattlePage() {
                 )}
                 <strong>{winner.displayName}</strong>
                 <span className="tag">勝利</span>
-              </div>
+              </Link>
               <p className="ok" style={{ margin: "0.5rem 0 0" }}>
                 {winner.displayName} の勝利
               </p>
@@ -359,6 +391,93 @@ export function BattlePage() {
             <p className="ok">試合終了</p>
           )}
           {battle.resultSummary && <p>{battle.resultSummary}</p>}
+          {battle.ratingSettlement?.applied ? (
+            <div className="rating-settle muted">
+              {battle.ratingSettlement.overall ? (
+                <>
+                  <p style={{ margin: "0 0 0.35rem" }}>
+                    <strong>全体成績</strong>
+                    <span className="muted">
+                      （自分用・同一アカウント対戦を含む）
+                    </span>
+                  </p>
+                  <p style={{ margin: 0 }}>
+                    {battle.sideA.displayName}:{" "}
+                    <strong>
+                      {Math.round(battle.ratingSettlement.overall.sideA.before)}{" "}
+                      →{" "}
+                      {Math.round(battle.ratingSettlement.overall.sideA.after)}
+                    </strong>{" "}
+                    (
+                    {battle.ratingSettlement.overall.sideA.delta >= 0
+                      ? "+"
+                      : ""}
+                    {battle.ratingSettlement.overall.sideA.delta})
+                    {battle.ratingSettlement.overall.sideA.provisionalAfter ? (
+                      <span className="tag">暫定</span>
+                    ) : null}
+                  </p>
+                  <p style={{ margin: "0.25rem 0 0.55rem" }}>
+                    {battle.sideB.displayName}:{" "}
+                    <strong>
+                      {Math.round(battle.ratingSettlement.overall.sideB.before)}{" "}
+                      →{" "}
+                      {Math.round(battle.ratingSettlement.overall.sideB.after)}
+                    </strong>{" "}
+                    (
+                    {battle.ratingSettlement.overall.sideB.delta >= 0
+                      ? "+"
+                      : ""}
+                    {battle.ratingSettlement.overall.sideB.delta})
+                    {battle.ratingSettlement.overall.sideB.provisionalAfter ? (
+                      <span className="tag">暫定</span>
+                    ) : null}
+                  </p>
+                </>
+              ) : null}
+              {battle.ratingSettlement.public ? (
+                <>
+                  <p style={{ margin: "0 0 0.35rem" }}>
+                    <strong>公開成績</strong>
+                    <span className="muted">（他アカウント対戦・誰でも見える）</span>
+                  </p>
+                  <p style={{ margin: 0 }}>
+                    {battle.sideA.displayName}:{" "}
+                    <strong>
+                      {Math.round(battle.ratingSettlement.public.sideA.before)}{" "}
+                      →{" "}
+                      {Math.round(battle.ratingSettlement.public.sideA.after)}
+                    </strong>{" "}
+                    (
+                    {battle.ratingSettlement.public.sideA.delta >= 0
+                      ? "+"
+                      : ""}
+                    {battle.ratingSettlement.public.sideA.delta})
+                  </p>
+                  <p style={{ margin: "0.25rem 0 0" }}>
+                    {battle.sideB.displayName}:{" "}
+                    <strong>
+                      {Math.round(battle.ratingSettlement.public.sideB.before)}{" "}
+                      →{" "}
+                      {Math.round(battle.ratingSettlement.public.sideB.after)}
+                    </strong>{" "}
+                    (
+                    {battle.ratingSettlement.public.sideB.delta >= 0
+                      ? "+"
+                      : ""}
+                    {battle.ratingSettlement.public.sideB.delta})
+                  </p>
+                </>
+              ) : battle.ratingSettlement.sameOwner ? (
+                <p className="help-text" style={{ margin: "0.35rem 0 0" }}>
+                  同一アカウント同士の対戦のため、公開成績・公開レーティングは動きません。
+                </p>
+              ) : null}
+              <p className="help-text" style={{ margin: "0.45rem 0 0" }}>
+                「暫定」は試合数が少ないあいだの表示です（5試合で確定寄り）。
+              </p>
+            </div>
+          ) : null}
           <div className="row">
             <Link
               className="btn primary"

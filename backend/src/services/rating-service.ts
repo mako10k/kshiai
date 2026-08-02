@@ -1,7 +1,9 @@
 import {
   applyElo,
   ensureRecord,
+  ensureRecordOverall,
   isProvisional,
+  type CharacterRecord,
   type CharacterSheet,
   type BattleState,
   type RankedOutcome,
@@ -18,54 +20,107 @@ function outcomeForSide(
   return "loss";
 }
 
-function bumpRecord(
+type Track = "public" | "overall";
+
+function getTrack(sheet: CharacterSheet, track: Track): CharacterRecord {
+  return track === "public" ? ensureRecord(sheet) : ensureRecordOverall(sheet);
+}
+
+function setTrack(
   sheet: CharacterSheet,
+  track: Track,
+  rec: CharacterRecord,
+): CharacterSheet {
+  if (track === "public") {
+    return { ...sheet, record: rec, updatedAt: new Date().toISOString() };
+  }
+  return { ...sheet, recordOverall: rec, updatedAt: new Date().toISOString() };
+}
+
+function bumpTrack(
+  sheet: CharacterSheet,
+  track: Track,
   outcome: RankedOutcome,
   nextRating: number,
 ): CharacterSheet {
-  const rec = ensureRecord(sheet);
+  const rec = getTrack(sheet, track);
   const wins = rec.wins + (outcome === "win" ? 1 : 0);
   const losses = rec.losses + (outcome === "loss" ? 1 : 0);
   const draws = rec.draws + (outcome === "draw" ? 1 : 0);
   const gamesPlayed = rec.gamesPlayed + 1;
-  return {
-    ...sheet,
-    record: {
-      wins,
-      losses,
-      draws,
-      gamesPlayed,
-      rating: nextRating,
-      provisional: isProvisional(gamesPlayed),
-    },
-    updatedAt: new Date().toISOString(),
-  };
+  return setTrack(sheet, track, {
+    wins,
+    losses,
+    draws,
+    gamesPlayed,
+    rating: nextRating,
+    provisional: isProvisional(gamesPlayed),
+  });
 }
 
-function unbumpRecord(
+function unbumpTrack(
   sheet: CharacterSheet,
+  track: Track,
   outcome: RankedOutcome,
   ratingBefore: number,
   gamesPlayedBefore: number,
 ): CharacterSheet {
-  const rec = ensureRecord(sheet);
+  const rec = getTrack(sheet, track);
+  return setTrack(sheet, track, {
+    wins: Math.max(0, rec.wins - (outcome === "win" ? 1 : 0)),
+    losses: Math.max(0, rec.losses - (outcome === "loss" ? 1 : 0)),
+    draws: Math.max(0, rec.draws - (outcome === "draw" ? 1 : 0)),
+    gamesPlayed: Math.max(0, gamesPlayedBefore),
+    rating: ratingBefore,
+    provisional: isProvisional(gamesPlayedBefore),
+  });
+}
+
+type SideSnap = {
+  characterId: string;
+  before: number;
+  after: number;
+  delta: number;
+  provisionalBefore: boolean;
+  provisionalAfter: boolean;
+  gamesPlayedBefore: number;
+};
+
+function applyEloTrack(
+  sheet: CharacterSheet,
+  foe: CharacterSheet,
+  outcome: RankedOutcome,
+  track: Track,
+  kScale: number,
+): { sheet: CharacterSheet; snap: SideSnap } {
+  const rec = getTrack(sheet, track);
+  const foeRec = getTrack(foe, track);
+  const r = applyElo({
+    rating: rec.rating,
+    gamesPlayed: rec.gamesPlayed,
+    foeRating: foeRec.rating,
+    foeProvisional: foeRec.provisional || isProvisional(foeRec.gamesPlayed),
+    outcome,
+    kScale,
+  });
   return {
-    ...sheet,
-    record: {
-      wins: Math.max(0, rec.wins - (outcome === "win" ? 1 : 0)),
-      losses: Math.max(0, rec.losses - (outcome === "loss" ? 1 : 0)),
-      draws: Math.max(0, rec.draws - (outcome === "draw" ? 1 : 0)),
-      gamesPlayed: Math.max(0, gamesPlayedBefore),
-      rating: ratingBefore,
-      provisional: isProvisional(gamesPlayedBefore),
+    sheet: bumpTrack(sheet, track, outcome, r.nextRating),
+    snap: {
+      characterId: sheet.id,
+      before: rec.rating,
+      after: r.nextRating,
+      delta: r.delta,
+      provisionalBefore: isProvisional(rec.gamesPlayed),
+      provisionalAfter: isProvisional(rec.gamesPlayed + 1),
+      gamesPlayedBefore: rec.gamesPlayed,
     },
-    updatedAt: new Date().toISOString(),
   };
 }
 
 /**
- * Apply ranking after a finished battle.
- * Same-owner matches are not ranked (prevents alt farming on one account).
+ * Dual-track rating after a finished battle:
+ * - overall: every finished match (incl. same-account sparring)
+ * - public: cross-account only (shown to everyone)
  */
 export function settleBattleRating(state: BattleState): BattleState {
   if (state.status !== "finished") return state;
@@ -80,50 +135,27 @@ export function settleBattleRating(state: BattleState): BattleState {
   if (!sheetA || !sheetB) return state;
   if (sheetA.deletedAt || sheetB.deletedAt) return state;
 
-  // Same owner: track W-L for fun? User asked for rating integrity —
-  // still count record but skip Elo inflation between alts.
   const sameOwner = sheetA.ownerUserId === sheetB.ownerUserId;
-  const ranked = !sameOwner;
-
-  const recA = ensureRecord(sheetA);
-  const recB = ensureRecord(sheetB);
   const outcomeA = outcomeForSide(state.winnerSide, "a");
   const outcomeB = outcomeForSide(state.winnerSide, "b");
 
-  let nextA = sheetA;
-  let nextB = sheetB;
-  let deltaA = 0;
-  let deltaB = 0;
-  let afterA = recA.rating;
-  let afterB = recB.rating;
+  // Overall track: always (same-owner at full K for private ladder)
+  const overallA = applyEloTrack(sheetA, sheetB, outcomeA, "overall", 1);
+  const overallB = applyEloTrack(sheetB, sheetA, outcomeB, "overall", 1);
 
-  if (ranked) {
-    const rA = applyElo({
-      rating: recA.rating,
-      gamesPlayed: recA.gamesPlayed,
-      foeRating: recB.rating,
-      foeProvisional: recB.provisional || isProvisional(recB.gamesPlayed),
-      outcome: outcomeA,
-    });
-    const rB = applyElo({
-      rating: recB.rating,
-      gamesPlayed: recB.gamesPlayed,
-      foeRating: recA.rating,
-      foeProvisional: recA.provisional || isProvisional(recA.gamesPlayed),
-      outcome: outcomeB,
-    });
-    deltaA = rA.delta;
-    deltaB = rB.delta;
-    afterA = rA.nextRating;
-    afterB = rB.nextRating;
-    nextA = bumpRecord(sheetA, outcomeA, afterA);
-    nextB = bumpRecord(sheetB, outcomeB, afterB);
-  } else {
-    // Unranked sparring: still count W/L, rating unchanged
-    nextA = bumpRecord(sheetA, outcomeA, recA.rating);
-    nextB = bumpRecord(sheetB, outcomeB, recB.rating);
-    afterA = recA.rating;
-    afterB = recB.rating;
+  let nextA = overallA.sheet;
+  let nextB = overallB.sheet;
+  let publicA: SideSnap | null = null;
+  let publicB: SideSnap | null = null;
+
+  // Public ranked track: only when different owners
+  if (!sameOwner) {
+    const pA = applyEloTrack(nextA, nextB, outcomeA, "public", 1);
+    const pB = applyEloTrack(nextB, nextA, outcomeB, "public", 1);
+    nextA = pA.sheet;
+    nextB = pB.sheet;
+    publicA = pA.snap;
+    publicB = pB.snap;
   }
 
   charRepo.saveSheet(nextA);
@@ -132,25 +164,13 @@ export function settleBattleRating(state: BattleState): BattleState {
   const settlement = {
     applied: true,
     voided: false,
-    ranked,
-    sideA: {
-      characterId: idA,
-      before: recA.rating,
-      after: afterA,
-      delta: deltaA,
-      provisionalBefore: isProvisional(recA.gamesPlayed),
-      provisionalAfter: isProvisional(recA.gamesPlayed + 1),
-      gamesPlayedBefore: recA.gamesPlayed,
-    },
-    sideB: {
-      characterId: idB,
-      before: recB.rating,
-      after: afterB,
-      delta: deltaB,
-      provisionalBefore: isProvisional(recB.gamesPlayed),
-      provisionalAfter: isProvisional(recB.gamesPlayed + 1),
-      gamesPlayedBefore: recB.gamesPlayed,
-    },
+    /** Public track was updated (cross-account). */
+    ranked: !sameOwner,
+    sameOwner,
+    sideA: overallA.snap,
+    sideB: overallB.snap,
+    public: publicA && publicB ? { sideA: publicA, sideB: publicB } : null,
+    overall: { sideA: overallA.snap, sideB: overallB.snap },
   };
 
   return {
@@ -161,7 +181,7 @@ export function settleBattleRating(state: BattleState): BattleState {
 }
 
 /**
- * When a character is soft-deleted, void rating from their ranked matches
+ * When a character is soft-deleted, void rating from their matches
  * so survivors don't keep free Elo from disposable alts.
  */
 export function voidRatingsInvolvingCharacter(characterId: string): number {
@@ -169,8 +189,13 @@ export function voidRatingsInvolvingCharacter(characterId: string): number {
   let voided = 0;
 
   for (const { state, meta } of battles) {
-    const s = state.ratingSettlement;
-    if (!s || !s.applied || s.voided || !s.ranked) continue;
+    const s = state.ratingSettlement as
+      | (NonNullable<BattleState["ratingSettlement"]> & {
+          overall?: { sideA: SideSnap; sideB: SideSnap };
+          public?: { sideA: SideSnap; sideB: SideSnap } | null;
+        })
+      | undefined;
+    if (!s || !s.applied || s.voided) continue;
     if (
       s.sideA.characterId !== characterId &&
       s.sideB.characterId !== characterId
@@ -181,50 +206,33 @@ export function voidRatingsInvolvingCharacter(characterId: string): number {
     const outcomeA = outcomeForSide(state.winnerSide, "a");
     const outcomeB = outcomeForSide(state.winnerSide, "b");
 
-    const sheetA = charRepo.getSheetIncludingDeleted(s.sideA.characterId);
-    const sheetB = charRepo.getSheetIncludingDeleted(s.sideB.characterId);
+    // Prefer dual-track settlement; fall back to legacy single sideA/sideB as overall
+    const overall = s.overall ?? { sideA: s.sideA, sideB: s.sideB };
+    const pub = s.public ?? (s.ranked && !s.sameOwner ? overall : null);
 
-    // Reverse survivor first (the non-deleted side)
-    if (sheetA && s.sideA.characterId !== characterId) {
+    const reverseSide = (
+      snap: SideSnap,
+      outcome: RankedOutcome,
+      track: Track,
+    ) => {
+      const sheet = charRepo.getSheetIncludingDeleted(snap.characterId);
+      if (!sheet) return;
       charRepo.saveSheet(
-        unbumpRecord(
-          sheetA,
-          outcomeA,
-          s.sideA.before,
-          s.sideA.gamesPlayedBefore,
+        unbumpTrack(
+          sheet,
+          track,
+          outcome,
+          snap.before,
+          snap.gamesPlayedBefore,
         ),
       );
-    }
-    if (sheetB && s.sideB.characterId !== characterId) {
-      charRepo.saveSheet(
-        unbumpRecord(
-          sheetB,
-          outcomeB,
-          s.sideB.before,
-          s.sideB.gamesPlayedBefore,
-        ),
-      );
-    }
-    // Deleted character: reset their stored record to pre-match if still present
-    if (sheetA && s.sideA.characterId === characterId) {
-      charRepo.saveSheet(
-        unbumpRecord(
-          sheetA,
-          outcomeA,
-          s.sideA.before,
-          s.sideA.gamesPlayedBefore,
-        ),
-      );
-    }
-    if (sheetB && s.sideB.characterId === characterId) {
-      charRepo.saveSheet(
-        unbumpRecord(
-          sheetB,
-          outcomeB,
-          s.sideB.before,
-          s.sideB.gamesPlayedBefore,
-        ),
-      );
+    };
+
+    reverseSide(overall.sideA, outcomeA, "overall");
+    reverseSide(overall.sideB, outcomeB, "overall");
+    if (pub) {
+      reverseSide(pub.sideA, outcomeA, "public");
+      reverseSide(pub.sideB, outcomeB, "public");
     }
 
     const nextState: BattleState = {

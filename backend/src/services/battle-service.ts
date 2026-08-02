@@ -1,6 +1,7 @@
 import {
   BattlePolicyOptionSchema,
   advanceSupervisorClock,
+  balanceSkill,
   createBattleState,
   happeningToEvents,
   happeningToSituationPatch,
@@ -21,6 +22,7 @@ import {
   type BattlefieldInstance,
   type BattlefieldPreset,
   type CharacterSheet,
+  type Skill,
   toNarrationSnapshot,
   type HappeningPlan,
   type Situation,
@@ -102,6 +104,37 @@ export function toBattlePublic(
     narrationStyleName: state.narrationStyle?.displayName,
     priorMatchSummary: state.priorMatchSummary ?? null,
     resultSummary: resultSummary ?? null,
+    ratingSettlement: (() => {
+      const s = state.ratingSettlement;
+      if (!s?.applied) return null;
+      const overall = s.overall ?? { sideA: s.sideA, sideB: s.sideB };
+      const pub = s.public ?? null;
+      const slim = (x: {
+        before: number;
+        after: number;
+        delta: number;
+        provisionalAfter: boolean;
+      }) => ({
+        before: x.before,
+        after: x.after,
+        delta: x.delta,
+        provisionalAfter: x.provisionalAfter,
+      });
+      return {
+        applied: s.applied,
+        ranked: s.ranked,
+        sameOwner: s.sameOwner,
+        overall: {
+          sideA: slim(overall.sideA),
+          sideB: slim(overall.sideB),
+        },
+        public: pub
+          ? { sideA: slim(pub.sideA), sideB: slim(pub.sideB) }
+          : null,
+        sideA: slim(overall.sideA),
+        sideB: slim(overall.sideB),
+      };
+    })(),
   };
 }
 
@@ -574,10 +607,12 @@ export async function advanceTurn(input: {
   const hpBeforeA = state.sideA.parameters.hp ?? 0;
   const hpBeforeB = state.sideB.parameters.hp ?? 0;
 
+  // Clamp legacy inflated skill.power (LLM sometimes wrote 20–40 as "damage score")
+  const safeSkills = (skills: Skill[]) => skills.map(balanceSkill);
   const resolved = resolveTurn({
     state,
-    sideASkills: mine.skills,
-    sideBSkills: opp.skills,
+    sideASkills: safeSkills(mine.skills),
+    sideBSkills: safeSkills(opp.skills),
     situationUpdate,
     preEvents: happening ? happeningToEvents(happening) : undefined,
     envHits: happening?.envHits,

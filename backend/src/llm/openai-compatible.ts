@@ -1,5 +1,6 @@
 import OpenAI from "openai";
 import {
+  balanceCharacterCombatFields,
   clampCoefficientMap,
   defaultParameters,
   type BattlefieldInstance,
@@ -144,7 +145,12 @@ Return JSON: {
   "narrativeBlurb": string,
   "assistantMessage": string
 }
-Parameters should be balanced around hp 80-120, atk/def 8-16.
+Parameters should be balanced around hp 80-120, atk/def 8-16. Never create unbeatable gods.
+BALANCE (mandatory):
+- Every absolute strength (最強武器, 無敵の防御, 必中, 無限魔力, 超幸運…) MUST have an implicit weakness in traits and narrativeBlurb (隙・脆さ・代償・条件付き).
+- skill power typically 0.8–1.5 (never above 1.8). Strong skills need higher MP/stamina cost.
+- weapon/armor bonuses modest; no item that boosts everything.
+- Prefer interesting counters over raw dominance so matches stay two-sided.
 appearance.visualPrompt must be a detailed English portrait prompt for image gen:
 face, hair, eyes, outfit colors, no combat stats numbers.
 CRITICAL for visualPrompt/summary: adult character (20s+), fully clothed modest outfit,
@@ -172,8 +178,7 @@ Safe-for-work anime portrait only.`,
       const weapon = data.weapon as Record<string, unknown> | null;
       const armor = data.armor as Record<string, unknown> | null;
 
-      return {
-        sheet: {
+      const rawSheet = {
           displayName: String(data.displayName ?? "挑戦者"),
           tags: Array.isArray(data.tags) ? data.tags.map(String) : [],
           appearance: {
@@ -181,7 +186,7 @@ Safe-for-work anime portrait only.`,
             visualPrompt: String(
               (data.appearance as { visualPrompt?: string })?.visualPrompt ?? prompt,
             ),
-            imageUrl: null,
+            imageUrl: null as string | null,
           },
           traits: Array.isArray(data.traits) ? data.traits.map(String) : [],
           parameters: defaultParameters(
@@ -194,23 +199,25 @@ Safe-for-work anime portrait only.`,
             ? {
                 name: String(weapon.name ?? "武器"),
                 description: String(weapon.description ?? ""),
-                atkBonus: 0,
-                defBonus: 0,
-                magBonus: 0,
+                atkBonus: Number(weapon.atkBonus ?? 0),
+                defBonus: Number(weapon.defBonus ?? 0),
+                magBonus: Number(weapon.magBonus ?? 0),
               }
             : null,
           armor: armor
             ? {
                 name: String(armor.name ?? "防具"),
                 description: String(armor.description ?? ""),
-                atkBonus: 0,
-                defBonus: 0,
-                magBonus: 0,
+                atkBonus: Number(armor.atkBonus ?? 0),
+                defBonus: Number(armor.defBonus ?? 0),
+                magBonus: Number(armor.magBonus ?? 0),
               }
             : null,
           combatFlags: { canFight: true, irreversibleIncapacitated: false },
           narrativeBlurb: String(data.narrativeBlurb ?? ""),
-        },
+      };
+      return {
+        sheet: balanceCharacterCombatFields(rawSheet),
         assistantMessage: String(
           data.assistantMessage ?? "キャラクターを生成しました。",
         ),
@@ -230,7 +237,8 @@ Safe-for-work anime portrait only.`,
         `Adjust a hidden RPG character sheet from user feedback. Reply JSON:
 { "assistantMessage": string, "displayName"?: string, "narrativeBlurb"?: string,
   "traits"?: string[], "parameters"?: object }
-Do not tell the user exact numbers.`,
+Do not tell the user exact numbers.
+If the user asks for absolute power, grant flavor but keep an implicit weakness (隙・脆さ・条件付き). Never remove all counters.`,
         JSON.stringify({
           currentPublic: {
             displayName: current.displayName,

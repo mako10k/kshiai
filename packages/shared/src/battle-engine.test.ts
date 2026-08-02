@@ -40,6 +40,7 @@ describe("battle engine", () => {
       sideA: sheet("a", "A"),
       sideB: sheet("b", "B"),
       turnLimit: 20,
+      prologuePending: false,
     });
     const { state: next, events } = resolveTurn({
       state,
@@ -61,6 +62,7 @@ describe("battle engine", () => {
       sideA: sheet("a", "A"),
       sideB: sheet("b", "B", 1),
       turnLimit: 20,
+      prologuePending: false,
     });
     const { state: next, events } = resolveTurn({
       state,
@@ -83,6 +85,7 @@ describe("battle engine", () => {
       sideA: sheet("a", "A"),
       sideB: sheet("b", "B"),
       turnLimit: 20,
+      prologuePending: false,
     });
     const { state: next } = resolveTurn({
       state,
@@ -100,6 +103,7 @@ describe("battle engine", () => {
       sideA: sheet("a", "A"),
       sideB: sheet("b", "B"),
       turnLimit: 20,
+      prologuePending: false,
       battlefield: {
         sourcePresetId: null,
         displayName: "テスト森",
@@ -122,6 +126,7 @@ describe("battle engine", () => {
       sideA: sheet("a", "A"),
       sideB: sheet("b", "B"),
       turnLimit: 20,
+      prologuePending: false,
       stanceA: "aggressive",
       stanceB: "defensive",
     });
@@ -141,6 +146,7 @@ describe("battle engine", () => {
       sideA: sheet("a", "A"),
       sideB: sheet("b", "B", 30),
       turnLimit: 20,
+      prologuePending: false,
       policiesA: [
         {
           id: "p1",

@@ -390,21 +390,32 @@ export function MatchPage() {
 
           {myChar && (
             <div className="matchup-chip">
-              {myChar.appearance.imageUrl ? (
-                <img
-                  key={mediaSrc(myChar.appearance.imageUrl, myChar.updatedAt)}
-                  src={mediaSrc(myChar.appearance.imageUrl, myChar.updatedAt)}
-                  alt=""
-                />
-              ) : (
-                <div className="matchup-chip-ph" />
-              )}
+              <Link
+                to={`/characters/${myChar.id}`}
+                className="matchup-chip-face"
+                aria-label={`${myChar.displayName} の詳細`}
+              >
+                {myChar.appearance.imageUrl ? (
+                  <img
+                    key={mediaSrc(myChar.appearance.imageUrl, myChar.updatedAt)}
+                    src={mediaSrc(myChar.appearance.imageUrl, myChar.updatedAt)}
+                    alt=""
+                  />
+                ) : (
+                  <div className="matchup-chip-ph" />
+                )}
+              </Link>
               <div>
-                <strong>{myChar.displayName}</strong>
+                <Link to={`/characters/${myChar.id}`}>
+                  <strong>{myChar.displayName}</strong>
+                </Link>
                 <p className="muted help-text">
-                  RT {Math.round(myChar.record.rating)}
+                  公開 RT {Math.round(myChar.record.rating)}
                   {myChar.record.provisional ? " 暫定" : ""} ·{" "}
                   {myChar.record.wins}勝{myChar.record.losses}敗
+                  {myChar.recordOverall
+                    ? ` ／ 全体 RT ${Math.round(myChar.recordOverall.rating)} · ${myChar.recordOverall.wins}勝${myChar.recordOverall.losses}敗`
+                    : ""}
                 </p>
               </div>
             </div>
@@ -497,21 +508,32 @@ export function MatchPage() {
 
           {oppChar && (
             <div className="matchup-chip">
-              {oppChar.appearance.imageUrl ? (
-                <img
-                  key={mediaSrc(oppChar.appearance.imageUrl, oppChar.updatedAt)}
-                  src={mediaSrc(oppChar.appearance.imageUrl, oppChar.updatedAt)}
-                  alt=""
-                />
-              ) : (
-                <div className="matchup-chip-ph" />
-              )}
+              <Link
+                to={`/characters/${oppChar.id}`}
+                className="matchup-chip-face"
+                aria-label={`${oppChar.displayName} の詳細`}
+              >
+                {oppChar.appearance.imageUrl ? (
+                  <img
+                    key={mediaSrc(oppChar.appearance.imageUrl, oppChar.updatedAt)}
+                    src={mediaSrc(oppChar.appearance.imageUrl, oppChar.updatedAt)}
+                    alt=""
+                  />
+                ) : (
+                  <div className="matchup-chip-ph" />
+                )}
+              </Link>
               <div>
-                <strong>VS {oppChar.displayName}</strong>
+                <Link to={`/characters/${oppChar.id}`}>
+                  <strong>VS {oppChar.displayName}</strong>
+                </Link>
                 <p className="muted help-text">
-                  RT {Math.round(oppChar.record.rating)}
+                  公開 RT {Math.round(oppChar.record.rating)}
                   {oppChar.record.provisional ? " 暫定" : ""} ·{" "}
                   {oppChar.record.wins}勝{oppChar.record.losses}敗
+                  {oppChar.recordOverall
+                    ? ` ／ 全体 RT ${Math.round(oppChar.recordOverall.rating)} · ${oppChar.recordOverall.wins}勝${oppChar.recordOverall.losses}敗`
+                    : ""}
                 </p>
               </div>
             </div>

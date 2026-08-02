@@ -145,6 +145,38 @@ export function toPublicPreset(p: BattlefieldPreset): BattlefieldPresetPublic {
   };
 }
 
+/** Static art for system categories under frontend/public/battlefields/. */
+export function battlefieldCategoryImageUrl(
+  category: string | undefined | null,
+): string | null {
+  switch (category) {
+    case "forest":
+      return "/battlefields/forest.jpg";
+    case "arena":
+      return "/battlefields/arena.jpg";
+    case "sea":
+      return "/battlefields/sea.jpg";
+    case "urban":
+      return "/battlefields/urban.jpg";
+    case "school":
+      return "/battlefields/school.jpg";
+    default:
+      return null;
+  }
+}
+
+export function resolveBattlefieldImageUrl(
+  inst: Pick<BattlefieldInstance, "category" | "appearance" | "narrativeSetup">,
+): string | null {
+  const raw =
+    inst.appearance?.imageUrl ??
+    battlefieldCategoryImageUrl(inst.category);
+  return cacheBustMediaUrl(
+    raw,
+    inst.narrativeSetup?.slice(0, 24) || Date.now(),
+  );
+}
+
 export function toPublicInstance(inst: BattlefieldInstance): BattlefieldInstancePublic {
   return {
     sourcePresetId: inst.sourcePresetId,
@@ -156,11 +188,7 @@ export function toPublicInstance(inst: BattlefieldInstance): BattlefieldInstance
     obstacles: inst.obstacles,
     conditions: inst.conditions,
     narrativeSetup: inst.narrativeSetup,
-    imageUrl: cacheBustMediaUrl(
-      inst.appearance?.imageUrl ?? null,
-      // instance has no updatedAt — use scene seed-ish fields or now
-      inst.narrativeSetup?.slice(0, 24) || Date.now(),
-    ),
+    imageUrl: resolveBattlefieldImageUrl(inst),
   };
 }
 

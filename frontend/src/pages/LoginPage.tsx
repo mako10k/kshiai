@@ -28,8 +28,8 @@ export function LoginPage() {
 
   return (
     <div className="panel" style={{ maxWidth: 420, margin: "2rem auto" }}>
-      <h1>kshiai に入る</h1>
-      <p className="muted">物語として進むターン制バトルへようこそ。</p>
+      <h1>AI闘技場 に入る</h1>
+      <p className="muted">AIが紡ぐ物語バトルへようこそ。</p>
       <form className="grid" onSubmit={(e) => void onSubmit(e)}>
         <label>
           ユーザー名

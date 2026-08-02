@@ -17,7 +17,7 @@ function Shell({ children }: { children: React.ReactNode }) {
     <div className="app">
       <header className="topbar">
         <Link to="/" className="brand">
-          kshiai
+          AI闘技場
         </Link>
         {user && (
           <div className="topbar-right">

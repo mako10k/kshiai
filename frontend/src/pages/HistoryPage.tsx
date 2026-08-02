@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import type { BattleListItem } from "@kshiai/shared";
 import { api } from "../api";
 import { useLocalDraft } from "../hooks/useLocalDraft";
+import { mediaSrc } from "../media";
 
 type StatusFilter = "all" | "active" | "finished";
 
@@ -158,50 +159,120 @@ export function HistoryPage() {
         {error && <p className="error">{error}</p>}
 
         <div className="history-list">
-          {items.map((b) => (
-            <article
-              key={b.id}
-              className={`history-card${b.canResume ? " is-active" : ""}`}
-            >
-              <button
-                type="button"
-                className="history-card-main"
-                onClick={() => openBattle(b)}
+          {items.map((b) => {
+            const fieldBg = mediaSrc(
+              b.battlefieldImageUrl,
+              b.battlefieldName ?? b.id,
+            );
+            const faceA = mediaSrc(b.sideAImageUrl, b.sideAName);
+            const faceB = mediaSrc(b.sideBImageUrl, b.sideBName);
+            return (
+              <article
+                key={b.id}
+                className={`history-card${b.canResume ? " is-active" : ""}${fieldBg ? " has-field" : ""}`}
+                style={
+                  fieldBg
+                    ? ({
+                        ["--field-bg" as string]: `url(${fieldBg})`,
+                      } as React.CSSProperties)
+                    : undefined
+                }
               >
-                <div className="history-card-top">
-                  <strong className="history-vs">
-                    {b.sideAName}
-                    <span className="muted"> vs </span>
-                    {b.sideBName}
-                  </strong>
-                  <span className={`status-pill${b.canResume ? " live" : ""}`}>
-                    {b.canResume ? "進行中" : (b.resultLabel ?? "終了")}
-                  </span>
+                {fieldBg ? (
+                  <div className="history-card-field" aria-hidden />
+                ) : null}
+                <div className="history-card-main">
+                  <div className="history-card-top">
+                    <div className="history-vs-row">
+                      {b.sideACharacterId ? (
+                        <Link
+                          to={`/characters/${b.sideACharacterId}`}
+                          className="history-mini-face"
+                          aria-label={`${b.sideAName} の詳細`}
+                        >
+                          {faceA ? (
+                            <img src={faceA} alt="" />
+                          ) : (
+                            <span className="history-mini-face-ph" />
+                          )}
+                        </Link>
+                      ) : (
+                        <span className="history-mini-face" aria-hidden>
+                          {faceA ? (
+                            <img src={faceA} alt="" />
+                          ) : (
+                            <span className="history-mini-face-ph" />
+                          )}
+                        </span>
+                      )}
+                      <button
+                        type="button"
+                        className="history-vs-btn"
+                        onClick={() => openBattle(b)}
+                      >
+                        <strong className="history-vs">
+                          {b.sideAName}
+                          <span className="muted"> vs </span>
+                          {b.sideBName}
+                        </strong>
+                      </button>
+                      {b.sideBCharacterId ? (
+                        <Link
+                          to={`/characters/${b.sideBCharacterId}`}
+                          className="history-mini-face"
+                          aria-label={`${b.sideBName} の詳細`}
+                        >
+                          {faceB ? (
+                            <img src={faceB} alt="" />
+                          ) : (
+                            <span className="history-mini-face-ph" />
+                          )}
+                        </Link>
+                      ) : (
+                        <span className="history-mini-face" aria-hidden>
+                          {faceB ? (
+                            <img src={faceB} alt="" />
+                          ) : (
+                            <span className="history-mini-face-ph" />
+                          )}
+                        </span>
+                      )}
+                    </div>
+                    <span className={`status-pill${b.canResume ? " live" : ""}`}>
+                      {b.canResume ? "進行中" : (b.resultLabel ?? "終了")}
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    className="history-card-open"
+                    onClick={() => openBattle(b)}
+                  >
+                    <p className="history-meta muted">
+                      {b.battlefieldName || b.scene}
+                      {b.canResume
+                        ? ` · ターン ${b.turn}/${b.turnLimit}`
+                        : b.turn > 0
+                          ? ` · ${b.turn} ターン`
+                          : ""}
+                    </p>
+                    <p className="history-when muted">{formatWhen(b.updatedAt)}</p>
+                    <span className="history-cta">
+                      {b.canResume ? "続きから再開 →" : "記録を見る →"}
+                    </span>
+                  </button>
                 </div>
-                <p className="history-meta muted">
-                  {b.battlefieldName || b.scene}
-                  {b.canResume
-                    ? ` · ターン ${b.turn}/${b.turnLimit}`
-                    : b.turn > 0
-                      ? ` · ${b.turn} ターン`
-                      : ""}
-                </p>
-                <p className="history-when muted">{formatWhen(b.updatedAt)}</p>
-                <span className="history-cta">
-                  {b.canResume ? "続きから再開 →" : "記録を見る →"}
-                </span>
-              </button>
-              <button
-                type="button"
-                className="btn ghost history-delete"
-                disabled={busyId === b.id}
-                onClick={() => void removeBattle(b.id)}
-                aria-label="削除"
-              >
-                削除
-              </button>
-            </article>
-          ))}
+                <button
+                  type="button"
+                  className="btn ghost history-delete"
+                  disabled={busyId === b.id}
+                  onClick={() => void removeBattle(b.id)}
+                  aria-label="削除"
+                >
+                  削除
+                </button>
+              </article>
+            );
+          })}
         </div>
 
         {!loading && items.length === 0 && (

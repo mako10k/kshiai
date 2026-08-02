@@ -88,6 +88,21 @@ export const api = {
     request<{ characters: CharacterPublic[] }>(
       `/api/characters${q ? `?q=${encodeURIComponent(q)}` : ""}`,
     ),
+  getCharacter: (id: string) =>
+    request<{ character: CharacterPublic; isOwner: boolean }>(
+      `/api/characters/${id}`,
+    ),
+  listCharacterBattles: (
+    id: string,
+    opts?: { limit?: number },
+  ) => {
+    const sp = new URLSearchParams();
+    if (opts?.limit != null) sp.set("limit", String(opts.limit));
+    const qs = sp.toString();
+    return request<{ battles: BattleListItem[]; total: number }>(
+      `/api/characters/${id}/battles${qs ? `?${qs}` : ""}`,
+    );
+  },
   generateCharacter: (prompt: string) =>
     request<{ character: CharacterPublic; assistantMessage: string }>(
       "/api/characters/generate",

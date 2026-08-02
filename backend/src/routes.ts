@@ -151,12 +151,42 @@ export function buildRoutes() {
     return c.json({ characters: charRepo.listCharactersForUser(user.id, q) });
   });
 
+  /** Public character profile (any authenticated user). */
+  authed.get("/characters/:id", (c) => {
+    const user = c.get("user");
+    const sheet = charRepo.getSheet(c.req.param("id"));
+    if (!sheet) return c.json({ error: "not_found" }, 404);
+    return c.json({
+      character: toPublicCharacter(sheet, user.id),
+      isOwner: sheet.ownerUserId === user.id,
+    });
+  });
+
+  /** Per-character battle history. */
+  authed.get("/characters/:id/battles", (c) => {
+    const user = c.get("user");
+    const id = c.req.param("id");
+    const sheet = charRepo.getSheet(id);
+    if (!sheet) return c.json({ error: "not_found" }, 404);
+    const limit = Number(c.req.query("limit") ?? 50);
+    const result = battleRepo.listBattleItemsForCharacter({
+      characterId: id,
+      viewerUserId: user.id,
+      characterOwnerUserId: sheet.ownerUserId,
+      limit: Number.isFinite(limit) ? limit : 50,
+    });
+    return c.json(result);
+  });
+
   authed.post("/characters/generate", async (c) => {
     const user = c.get("user");
     const body = GenerateCharacterRequestSchema.parse(await c.req.json());
     const gen = await llm.generateCharacter(body.prompt);
     const t = new Date().toISOString();
-    const { defaultRecord } = await import("@kshiai/shared");
+    const { balanceCharacterCombatFields, defaultRecord } = await import(
+      "@kshiai/shared"
+    );
+    const balanced = balanceCharacterCombatFields(gen.sheet);
     const sheet: CharacterSheet = {
       id: newId("chr"),
       ownerUserId: user.id,
@@ -164,11 +194,11 @@ export function buildRoutes() {
       updatedAt: t,
       deletedAt: null,
       record: defaultRecord(),
-      ...gen.sheet,
+      ...balanced,
     };
     charRepo.saveSheet(sheet);
     return c.json({
-      character: toPublicCharacter(sheet),
+      character: toPublicCharacter(sheet, user.id),
       assistantMessage: gen.assistantMessage,
     });
   });
@@ -182,21 +212,35 @@ export function buildRoutes() {
       return c.json({ error: "not_found" }, 404);
     }
     const adj = await llm.adjustCharacter(sheet, body.message);
-    const next: CharacterSheet = {
+    const { balanceCharacterCombatFields } = await import("@kshiai/shared");
+    const merged = {
       ...sheet,
       ...adj.sheetPatch,
       parameters: adj.sheetPatch.parameters
         ? { ...sheet.parameters, ...adj.sheetPatch.parameters }
         : sheet.parameters,
       skills: adj.sheetPatch.skills ?? sheet.skills,
+      weapon: adj.sheetPatch.weapon !== undefined ? adj.sheetPatch.weapon : sheet.weapon,
+      armor: adj.sheetPatch.armor !== undefined ? adj.sheetPatch.armor : sheet.armor,
+      traits: adj.sheetPatch.traits ?? sheet.traits,
+      narrativeBlurb: adj.sheetPatch.narrativeBlurb ?? sheet.narrativeBlurb,
       appearance: adj.sheetPatch.appearance
         ? { ...sheet.appearance, ...adj.sheetPatch.appearance }
         : sheet.appearance,
+    };
+    const next: CharacterSheet = {
+      ...balanceCharacterCombatFields(merged),
+      id: sheet.id,
+      ownerUserId: sheet.ownerUserId,
+      createdAt: sheet.createdAt,
+      record: sheet.record,
+      recordOverall: sheet.recordOverall,
+      deletedAt: sheet.deletedAt,
       updatedAt: new Date().toISOString(),
     };
     charRepo.saveSheet(next);
     return c.json({
-      character: toPublicCharacter(next),
+      character: toPublicCharacter(next, user.id),
       assistantMessage: adj.assistantMessage,
     });
   });
@@ -205,7 +249,7 @@ export function buildRoutes() {
     const user = c.get("user");
     const copy = charRepo.copyCharacter(c.req.param("id"), user.id);
     if (!copy) return c.json({ error: "not_found" }, 404);
-    return c.json({ character: toPublicCharacter(copy) });
+    return c.json({ character: toPublicCharacter(copy, user.id) });
   });
 
   authed.delete("/characters/:id", async (c) => {
@@ -303,7 +347,7 @@ export function buildRoutes() {
       };
       charRepo.saveSheet(next);
       return c.json({
-        character: toPublicCharacter(next),
+        character: toPublicCharacter(next, user.id),
         note: result.note,
         ok: result.ok,
         quota,

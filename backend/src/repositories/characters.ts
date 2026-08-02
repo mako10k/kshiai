@@ -38,14 +38,15 @@ export function listCharactersForUser(userId: string, q?: string) {
         s.tags.some((t) => t.toLowerCase().includes(needle)),
     );
   }
-  // Higher rating first, then recent
+  // Sort by public ranked rating, then overall for owner list
   sheets.sort((a, b) => {
-    const ra = a.record?.rating ?? 1500;
-    const rb = b.record?.rating ?? 1500;
+    const ra = a.record?.rating ?? a.recordOverall?.rating ?? 1500;
+    const rb = b.record?.rating ?? b.recordOverall?.rating ?? 1500;
     if (rb !== ra) return rb - ra;
     return b.updatedAt.localeCompare(a.updatedAt);
   });
-  return sheets.map(toPublicCharacter);
+  // Owner always sees private overall stats
+  return sheets.map((s) => toPublicCharacter(s, userId));
 }
 
 /** Hide early mock-test junk (e.g. 「はアキ」) from matchmaking. */
@@ -82,7 +83,8 @@ export function listPublicOpponents(excludeUserId: string, q?: string) {
     sheets = sheets.filter((s) => s.displayName.toLowerCase().includes(needle));
   }
   const map = new Map(sheets.map((s) => [s.id, s]));
-  return [...map.values()].map(toPublicCharacter);
+  // Viewer is excludeUserId: own chars get overall; others public-only
+  return [...map.values()].map((s) => toPublicCharacter(s, excludeUserId));
 }
 
 export function getSheet(id: string): CharacterSheet | null {
@@ -167,6 +169,7 @@ export function copyCharacter(
     tags: [...src.tags, "copy"],
     // Fresh rating — no carry-over from original (anti-clone farming)
     record: defaultRecord(),
+    recordOverall: defaultRecord(),
   };
   saveSheet(copy);
   return copy;

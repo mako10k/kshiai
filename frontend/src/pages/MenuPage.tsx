@@ -4,7 +4,9 @@ export function MenuPage() {
   return (
     <div className="panel">
       <h1>メインメニュー</h1>
-      <p className="muted">キャラを整え、戦場を選び、物語として試合を進める。</p>
+      <p className="muted">
+        AI闘技場 — キャラを整え、戦場を選び、物語として試合を進める。
+      </p>
       <nav className="menu-links" style={{ marginTop: "1rem" }}>
         <Link to="/match">
           <strong>新しい試合</strong>

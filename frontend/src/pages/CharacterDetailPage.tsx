@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import type { CharacterPublic } from "@kshiai/shared";
+import type { BattleListItem, CharacterPublic } from "@kshiai/shared";
 import { api, ApiError, type ImageGenQuota } from "../api";
 import { useLocalDraft } from "../hooks/useLocalDraft";
 import { mediaSrc } from "../media";
@@ -12,6 +12,19 @@ function formatNextAt(iso: string | null | undefined): string | null {
   try {
     return new Date(iso).toLocaleString("ja-JP", {
       month: "numeric",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  } catch {
+    return iso;
+  }
+}
+
+function formatWhen(iso: string): string {
+  try {
+    return new Date(iso).toLocaleString("ja-JP", {
+      month: "short",
       day: "numeric",
       hour: "2-digit",
       minute: "2-digit",
@@ -36,6 +49,10 @@ export function CharacterDetailPage() {
   const { id } = useParams();
   const nav = useNavigate();
   const [character, setCharacter] = useState<CharacterPublic | null>(null);
+  const [isOwner, setIsOwner] = useState(false);
+  const [history, setHistory] = useState<BattleListItem[]>([]);
+  const [historyTotal, setHistoryTotal] = useState(0);
+  const [historyLoading, setHistoryLoading] = useState(true);
   const [chat, setChat, clearChat] = useLocalDraft(
     `characters:chat:${id ?? "unknown"}`,
     "",
@@ -51,22 +68,44 @@ export function CharacterDetailPage() {
       const res = await api.imageQuota(charId);
       setQuota(res.quota);
     } catch {
-      /* non-fatal */
+      /* non-fatal — quota only for owners */
+    }
+  }, []);
+
+  const reloadHistory = useCallback(async (charId: string) => {
+    setHistoryLoading(true);
+    try {
+      const res = await api.listCharacterBattles(charId, { limit: 40 });
+      setHistory(res.battles);
+      setHistoryTotal(res.total);
+    } catch {
+      setHistory([]);
+      setHistoryTotal(0);
+    } finally {
+      setHistoryLoading(false);
     }
   }, []);
 
   useEffect(() => {
     if (!id) return;
+    setError(null);
     void api
-      .listCharacters()
-      .then(({ characters }) => {
-        const found = characters.find((c) => c.id === id) ?? null;
-        setCharacter(found);
-        if (!found) setError("not_found");
-        else void reloadQuota(id);
+      .getCharacter(id)
+      .then(({ character: c, isOwner: owner }) => {
+        setCharacter(c);
+        setIsOwner(owner);
+        if (owner) void reloadQuota(id);
+        void reloadHistory(id);
       })
-      .catch((e) => setError(String(e)));
-  }, [id, reloadQuota]);
+      .catch((e) => {
+        setCharacter(null);
+        setError(
+          e instanceof ApiError && e.status === 404
+            ? "not_found"
+            : String(e instanceof Error ? e.message : e),
+        );
+      });
+  }, [id, reloadQuota, reloadHistory]);
 
   // Refresh countdown label while waiting for next slot
   useEffect(() => {
@@ -83,7 +122,7 @@ export function CharacterDetailPage() {
 
   async function onChat(e: FormEvent) {
     e.preventDefault();
-    if (!id) return;
+    if (!id || !isOwner) return;
     const text = chat.trim();
     if (!text) {
       setError("調整内容を入力してください");
@@ -110,14 +149,14 @@ export function CharacterDetailPage() {
   }
 
   async function onDelete() {
-    if (!id) return;
+    if (!id || !isOwner) return;
     if (!confirm("削除しますか？")) return;
     await api.deleteCharacter(id);
     nav("/characters");
   }
 
   async function onImage() {
-    if (!id) return;
+    if (!id || !isOwner) return;
     if (quota && !quota.allowed) {
       setError(quotaHint(quota));
       return;
@@ -142,6 +181,14 @@ export function CharacterDetailPage() {
     }
   }
 
+  function openBattle(b: BattleListItem) {
+    if (b.canResume) {
+      nav(`/battles/${b.id}?resume=1`);
+    } else {
+      nav(`/battles/${b.id}?view=1`);
+    }
+  }
+
   if (!character && !error) return <p className="muted">読み込み中…</p>;
   if (!character) return <p className="error">キャラが見つかりません</p>;
 
@@ -159,12 +206,21 @@ export function CharacterDetailPage() {
       <div className="row" style={{ justifyContent: "space-between" }}>
         <h1>{character.displayName}</h1>
         <div className="row" style={{ gap: "0.45rem" }}>
-          <Link
-            className="btn primary"
-            to={`/match?my=${encodeURIComponent(character.id)}`}
-          >
-            このキャラで対戦
-          </Link>
+          {isOwner ? (
+            <Link
+              className="btn primary"
+              to={`/match?my=${encodeURIComponent(character.id)}`}
+            >
+              このキャラで対戦
+            </Link>
+          ) : (
+            <Link
+              className="btn primary"
+              to={`/match?opp=${encodeURIComponent(character.id)}`}
+            >
+              このキャラと対戦
+            </Link>
+          )}
           <Link to="/characters">← 一覧</Link>
         </div>
       </div>
@@ -195,54 +251,95 @@ export function CharacterDetailPage() {
         <div>
           <p>{character.narrativeBlurb}</p>
           <p className="muted">{character.appearance.summary}</p>
-          <p className="record-line">
-            <span className="rating">
-              レーティング {Math.round(character.record.rating)}
-              {character.record.provisional ? (
-                <span className="tag">暫定</span>
-              ) : (
-                <span className="tag">確定寄り</span>
-              )}
-            </span>
-            <br />
-            <span className="muted">
-              成績 {character.record.wins}勝 {character.record.losses}敗
-              {character.record.draws ? ` ${character.record.draws}分` : ""}
-              ／ {character.record.gamesPlayed} 試合
-              {character.record.provisional
-                ? "（しばらくは変動が大きく、暫定扱い）"
-                : ""}
-            </span>
-          </p>
+          <div className="record-block">
+            <p className="record-line" style={{ marginBottom: "0.35rem" }}>
+              <strong>公開成績</strong>
+              <span className="muted">（他アカウントとの対戦のみ・誰でも見える）</span>
+              <br />
+              <span className="rating">
+                RT {Math.round(character.record.rating)}
+                {character.record.provisional ? (
+                  <span className="tag">暫定</span>
+                ) : (
+                  <span className="tag">確定寄り</span>
+                )}
+              </span>{" "}
+              <span className="muted">
+                {character.record.wins}勝 {character.record.losses}敗
+                {character.record.draws ? ` ${character.record.draws}分` : ""}
+                ／ {character.record.gamesPlayed} 試合
+              </span>
+            </p>
+            {character.recordOverall ? (
+              <p className="record-line record-overall">
+                <strong>全体成績</strong>
+                <span className="muted">（自分のキャラ同士を含む・本人のみ）</span>
+                <br />
+                <span className="rating">
+                  RT {Math.round(character.recordOverall.rating)}
+                  {character.recordOverall.provisional ? (
+                    <span className="tag">暫定</span>
+                  ) : (
+                    <span className="tag">確定寄り</span>
+                  )}
+                </span>{" "}
+                <span className="muted">
+                  {character.recordOverall.wins}勝{" "}
+                  {character.recordOverall.losses}敗
+                  {character.recordOverall.draws
+                    ? ` ${character.recordOverall.draws}分`
+                    : ""}
+                  ／ {character.recordOverall.gamesPlayed} 試合
+                </span>
+              </p>
+            ) : null}
+          </div>
           <p>
             特技: {character.skillNames.join(" / ") || "—"}
             <br />
             武器: {character.weaponName ?? "—"} / 防具: {character.armorName ?? "—"}
           </p>
           <div className="row">
-            <Link
-              className="btn primary"
-              to={`/match?my=${encodeURIComponent(character.id)}`}
-            >
-              対戦する
-            </Link>
-            <button
-              className="btn"
-              type="button"
-              disabled={imageBusy || busy || imageBlocked}
-              onClick={() => void onImage()}
-              title={quotaHint(quota)}
-            >
-              {imageLabel}
-            </button>
+            {isOwner ? (
+              <Link
+                className="btn primary"
+                to={`/match?my=${encodeURIComponent(character.id)}`}
+              >
+                対戦する
+              </Link>
+            ) : (
+              <Link
+                className="btn primary"
+                to={`/match?opp=${encodeURIComponent(character.id)}`}
+              >
+                相手にする
+              </Link>
+            )}
+            {isOwner && (
+              <button
+                className="btn"
+                type="button"
+                disabled={imageBusy || busy || imageBlocked}
+                onClick={() => void onImage()}
+                title={quotaHint(quota)}
+              >
+                {imageLabel}
+              </button>
+            )}
             <button className="btn" type="button" onClick={() => void onCopy()}>
               コピー
             </button>
-            <button className="btn danger" type="button" onClick={() => void onDelete()}>
-              削除
-            </button>
+            {isOwner && (
+              <button
+                className="btn danger"
+                type="button"
+                onClick={() => void onDelete()}
+              >
+                削除
+              </button>
+            )}
           </div>
-          {quota && (
+          {isOwner && quota && (
             <p className={`image-quota-hint${imageBlocked ? " is-blocked" : ""}`}>
               {quotaHint(quota)}
               {imageBlocked && quota.nextAllowedAt ? (
@@ -258,22 +355,122 @@ export function CharacterDetailPage() {
         </div>
       </div>
 
+      {isOwner && (
+        <div className="panel">
+          <h2>会話で微調整</h2>
+          <p className="muted">印象や戦い方の雰囲気を言葉で伝えてください。</p>
+          <form className="grid" onSubmit={(e) => void onChat(e)}>
+            <textarea
+              value={chat}
+              onChange={(e) => setChat(e.target.value)}
+              placeholder={CHAT_PLACEHOLDER}
+              rows={3}
+            />
+            <button className="btn primary" type="submit" disabled={busy || imageBusy}>
+              送信
+            </button>
+          </form>
+          {assistant && <p className="ok">{assistant}</p>}
+          {error && error !== "not_found" && <p className="error">{error}</p>}
+        </div>
+      )}
+
+      {!isOwner && error && error !== "not_found" && (
+        <p className="error">{error}</p>
+      )}
+
       <div className="panel">
-        <h2>会話で微調整</h2>
-        <p className="muted">印象や戦い方の雰囲気を言葉で伝えてください。</p>
-        <form className="grid" onSubmit={(e) => void onChat(e)}>
-          <textarea
-            value={chat}
-            onChange={(e) => setChat(e.target.value)}
-            placeholder={CHAT_PLACEHOLDER}
-            rows={3}
-          />
-          <button className="btn primary" type="submit" disabled={busy || imageBusy}>
-            送信
-          </button>
-        </form>
-        {assistant && <p className="ok">{assistant}</p>}
-        {error && <p className="error">{error}</p>}
+        <h2>このキャラの対戦履歴</h2>
+        <p className="muted help-text">
+          {historyLoading
+            ? "読み込み中…"
+            : historyTotal === 0
+              ? "まだ試合がありません"
+              : `${historyTotal} 件`}
+        </p>
+        <div className="history-list char-history-list">
+          {history.map((b) => {
+            const fieldBg = mediaSrc(
+              b.battlefieldImageUrl,
+              b.battlefieldName ?? b.id,
+            );
+            const faceA = mediaSrc(b.sideAImageUrl, b.sideAName);
+            const faceB = mediaSrc(b.sideBImageUrl, b.sideBName);
+            const focusA = b.sideACharacterId === id;
+            const focusB = b.sideBCharacterId === id;
+            return (
+              <article
+                key={b.id}
+                className={`history-card${b.canResume ? " is-active" : ""}${fieldBg ? " has-field" : ""}`}
+                style={
+                  fieldBg
+                    ? ({
+                        ["--field-bg" as string]: `url(${fieldBg})`,
+                      } as React.CSSProperties)
+                    : undefined
+                }
+              >
+                {fieldBg ? (
+                  <div className="history-card-field" aria-hidden />
+                ) : null}
+                <button
+                  type="button"
+                  className="history-card-main"
+                  onClick={() => openBattle(b)}
+                >
+                  <div className="history-card-top">
+                    <div className="history-vs-row">
+                      <span
+                        className={`history-mini-face${focusA ? " is-focus" : ""}`}
+                        aria-hidden
+                      >
+                        {faceA ? (
+                          <img src={faceA} alt="" />
+                        ) : (
+                          <span className="history-mini-face-ph" />
+                        )}
+                      </span>
+                      <strong className="history-vs">
+                        <span className={focusA ? "char-history-self" : undefined}>
+                          {b.sideAName}
+                        </span>
+                        <span className="muted"> vs </span>
+                        <span className={focusB ? "char-history-self" : undefined}>
+                          {b.sideBName}
+                        </span>
+                      </strong>
+                      <span
+                        className={`history-mini-face${focusB ? " is-focus" : ""}`}
+                        aria-hidden
+                      >
+                        {faceB ? (
+                          <img src={faceB} alt="" />
+                        ) : (
+                          <span className="history-mini-face-ph" />
+                        )}
+                      </span>
+                    </div>
+                    <span className={`status-pill${b.canResume ? " live" : ""}`}>
+                      {b.canResume ? "進行中" : (b.resultLabel ?? "終了")}
+                    </span>
+                  </div>
+                  <p className="history-meta muted">
+                    {b.battlefieldName || b.scene}
+                    {b.canResume
+                      ? ` · ターン ${b.turn}/${b.turnLimit}`
+                      : b.turn > 0
+                        ? ` · ${b.turn} ターン`
+                        : ""}
+                  </p>
+                  <p className="history-when muted">{formatWhen(b.updatedAt)}</p>
+                  <span className="history-cta">
+                    {b.canResume ? "続きから再開 →" : "記録を見る →"}
+                  </span>
+                </button>
+              </article>
+            );
+          })}
+        </div>
       </div>
     </>
   );

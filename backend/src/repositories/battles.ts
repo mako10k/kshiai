@@ -1,5 +1,9 @@
 import type { BattleListItem, BattleState } from "@kshiai/shared";
-import { BattleStateSchema, battleResultLabel } from "@kshiai/shared";
+import {
+  BattleStateSchema,
+  battleResultLabel,
+  resolveBattlefieldImageUrl,
+} from "@kshiai/shared";
 import { getDb } from "../db.js";
 
 export function saveBattle(
@@ -121,8 +125,15 @@ function toListItem(state: BattleState): BattleListItem {
     turnLimit: state.turnLimit,
     sideAName,
     sideBName,
+    sideACharacterId: state.sideA.characterId,
+    sideBCharacterId: state.sideB.characterId,
+    sideAImageUrl: state.sideA.imageUrl ?? null,
+    sideBImageUrl: state.sideB.imageUrl ?? null,
     scene: state.situation.scene,
     battlefieldName: state.battlefield?.displayName ?? null,
+    battlefieldImageUrl: state.battlefield
+      ? resolveBattlefieldImageUrl(state.battlefield)
+      : null,
     winnerSide: state.winnerSide,
     resultLabel: battleResultLabel(
       state.status,
@@ -218,7 +229,8 @@ export function listBattlesInvolvingCharacter(characterId: string): Array<{
     .prepare(
       `SELECT state_json, side_a_user_id, side_a_character_id, side_b_character_id
        FROM battles
-       WHERE side_a_character_id = ? OR side_b_character_id = ?`,
+       WHERE side_a_character_id = ? OR side_b_character_id = ?
+       ORDER BY updated_at DESC`,
     )
     .all(characterId, characterId) as Array<{
     state_json: string;
@@ -243,6 +255,31 @@ export function listBattlesInvolvingCharacter(characterId: string): Array<{
       return [];
     }
   });
+}
+
+/**
+ * Battle history rows for a single character.
+ * Visible if the viewer owns the character, or started a match involving them.
+ */
+export function listBattleItemsForCharacter(input: {
+  characterId: string;
+  viewerUserId: string;
+  characterOwnerUserId: string;
+  limit?: number;
+}): { battles: BattleListItem[]; total: number } {
+  const limit = Math.min(Math.max(input.limit ?? 50, 1), 100);
+  const isOwner = input.viewerUserId === input.characterOwnerUserId;
+  const rows = listBattlesInvolvingCharacter(input.characterId);
+  const filtered = rows.filter(
+    (r) => isOwner || r.meta.side_a_user_id === input.viewerUserId,
+  );
+  // Newest first (repo query already ORDER BY updated_at DESC)
+  const items = filtered.map((r) => toListItem(r.state));
+  items.sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
+  return {
+    battles: items.slice(0, limit),
+    total: items.length,
+  };
 }
 
 /**

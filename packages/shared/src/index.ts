@@ -8,3 +8,4 @@ export * from "./battle-engine.js";
 export * from "./media.js";
 export * from "./supervisor.js";
 export * from "./narration-style.js";
+export * from "./balance.js";

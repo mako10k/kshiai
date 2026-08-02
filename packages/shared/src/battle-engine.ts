@@ -14,6 +14,7 @@ import type { BattlefieldInstance } from "./battlefield.js";
 import { clampCoefficientMap, mergeCoefficients } from "./battlefield.js";
 import type { NarrationStyleSnapshot } from "./narration-style.js";
 import { defaultNarrationSnapshot } from "./narration-style.js";
+import { softenCombatDamage } from "./balance.js";
 
 function nowIso(): string {
   return new Date().toISOString();
@@ -53,6 +54,8 @@ export function createBattleState(input: {
   selectedPolicyIdsB?: string[];
   narrationStyle?: NarrationStyleSnapshot;
   priorMatchSummary?: string | null;
+  /** Defaults true for real matches; tests pass false to run combat immediately. */
+  prologuePending?: boolean;
 }): BattleState {
   const t = nowIso();
   const bf = input.battlefield;
@@ -102,7 +105,7 @@ export function createBattleState(input: {
       lastHpB: null,
       happenings: 0,
     },
-    prologuePending: true,
+    prologuePending: input.prologuePending ?? true,
     aftermathPending: false,
     narrationStyle: input.narrationStyle ?? defaultNarrationSnapshot(),
     priorMatchSummary: input.priorMatchSummary ?? null,
@@ -692,13 +695,29 @@ function applyAction(
     return;
   }
 
-  const atkStat = skill.kind === "magic" ? (actor.parameters.mag ?? 10) : (actor.parameters.atk ?? 10);
-  const defStat = skill.kind === "magic" ? (target.parameters.res ?? 10) : (target.parameters.def ?? 10);
-  const wAtk = 0; // equipment already baked into sheet params for scaffold
-  const base = Math.max(1, atkStat + wAtk - defStat * 0.5);
-  let dmg = Math.round(base * skill.power * coeff(situation, "damage") * coeff(situation, skill.element ?? "neutral", 1));
-  if (target.defending) dmg = Math.round(dmg * 0.5);
-  dmg = Math.max(1, dmg);
+  const atkStat =
+    skill.kind === "magic" ? (actor.parameters.mag ?? 10) : (actor.parameters.atk ?? 10);
+  const defStat =
+    skill.kind === "magic" ? (target.parameters.res ?? 10) : (target.parameters.def ?? 10);
+  // Soft gap: absolute stat edges don't delete the underdog
+  const rawGap = atkStat - defStat * 0.55;
+  const softGap =
+    Math.sign(rawGap) *
+    Math.pow(Math.abs(rawGap), 0.82) *
+    (rawGap >= 0 ? 1 : 1);
+  const power = Math.min(1.85, Math.max(0.55, skill.power));
+  let dmg = Math.round(
+    Math.max(2, 6 + softGap) *
+      power *
+      coeff(situation, "damage") *
+      coeff(situation, skill.element ?? "neutral", 1),
+  );
+  if (target.defending) dmg = Math.round(dmg * 0.55);
+  dmg = softenCombatDamage({
+    rawDamage: dmg,
+    targetMaxHp: target.parameters.maxHp ?? 100,
+    skillPower: power,
+  });
 
   target.parameters.hp = Math.max(0, (target.parameters.hp ?? 0) - dmg);
   events.push({
