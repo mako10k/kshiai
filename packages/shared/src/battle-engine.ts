@@ -210,7 +210,11 @@ function restoreTowardBase(combatant: CombatantState): ParamKey[] {
     "maxMp",
     "maxStamina",
     ...PARAMETER_KEYS.filter(
-      (key) => key !== "maxHp" && key !== "maxMp" && key !== "maxStamina",
+      (key) =>
+        key !== "hp" &&
+        key !== "maxHp" &&
+        key !== "maxMp" &&
+        key !== "maxStamina",
     ),
   ];
   for (const key of ordered) {

@@ -408,7 +408,7 @@ describe("battle engine", () => {
     assert.ok(reverted.events.some((event) => event.summary.includes("本来の調子")));
   });
 
-  it("restores maximum and current HP toward their original values", () => {
+  it("restores maximum HP without restoring lost current HP", () => {
     const a = sheet("a", "A");
     const b = sheet("b", "B");
     const maxHpSkill = {
@@ -447,7 +447,7 @@ describe("battle engine", () => {
       sideBSkills: [],
     });
     assert.equal(reverted.state.sideB.parameters.maxHp, 80);
-    assert.equal(reverted.state.sideB.parameters.hp, 80);
+    assert.equal(reverted.state.sideB.parameters.hp, 75);
   });
 
   it("applies equipment changes at battle start and lets them decay", () => {

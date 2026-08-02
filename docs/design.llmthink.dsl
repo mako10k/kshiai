@@ -168,6 +168,6 @@ decision D11 based_on PR11, EV11, D1, D2:
     unequipped sheet parameters as baseParameters; equipment applies temporary
     opening deltas, and every live parameter moves twenty percent of its remaining
     gap, at least one point, toward base before each turn after the first. This
-    includes HP, MP, stamina, and their maxima. Reaching zero HP still ends the
-    current turn before restoration can occur. Balancing clamps deltas and adds
+    includes MP, stamina, and all maxima, but excludes current HP so accumulated
+    damage still drives the match to a finish. Balancing clamps deltas and adds
     resource cost to free status skills and a negative tradeoff to positive gear.
