@@ -3,10 +3,34 @@ import type {
   BattlefieldPreset,
   BattlePolicyOption,
   CharacterSheet,
+  CharacterIdentity,
   NarrativeBlock,
   Situation,
   TurnEvent,
 } from "@kshiai/shared";
+
+export type CharacterReference = {
+  id: string;
+  displayName: string;
+  identity: CharacterIdentity;
+  appearanceSummary: string;
+  traits: string[];
+  narrativeBlurb: string;
+  skillNames: string[];
+  weaponName: string | null;
+  armorName: string | null;
+};
+
+/** Owner-bound callbacks. Implementations must enforce scope before returning data. */
+export type CharacterReferenceTools = {
+  search(query: string, limit?: number): Promise<CharacterReference[]>;
+  get(characterId: string): Promise<CharacterReference | null>;
+};
+
+export type GenerateCharacterInput = {
+  prompt: string;
+  referenceTools?: CharacterReferenceTools;
+};
 
 export type GenerateCharacterResult = {
   sheet: Omit<
@@ -47,7 +71,8 @@ export interface LlmProvider {
   readonly name: string;
   /** Optional dual-tier model ids for diagnostics. */
   readonly models?: { engine: string; fast: string };
-  generateCharacter(prompt: string): Promise<GenerateCharacterResult>;
+  generateCharacter(input: GenerateCharacterInput): Promise<GenerateCharacterResult>;
+  inferCharacterIdentity(current: CharacterSheet): Promise<CharacterIdentity>;
   adjustCharacter(
     current: CharacterSheet,
     userMessage: string,

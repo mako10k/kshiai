@@ -3,14 +3,16 @@ import {
   CharacterSheetSchema,
   defaultRecord,
   ensureCharacterCombatProperties,
+  ensureCharacterIdentityProperties,
   toPublicCharacter,
 } from "@kshiai/shared";
+import type { CharacterReference } from "../llm/types.js";
 import { getDb } from "../db.js";
 import { newId } from "../id.js";
 
 function parseSheet(json: string): CharacterSheet {
-  const raw = ensureCharacterCombatProperties(
-    CharacterSheetSchema.parse(JSON.parse(json)),
+  const raw = ensureCharacterIdentityProperties(
+    ensureCharacterCombatProperties(CharacterSheetSchema.parse(JSON.parse(json))),
   );
   if (!raw.record) {
     return { ...raw, record: defaultRecord() };
@@ -18,20 +20,92 @@ function parseSheet(json: string): CharacterSheet {
   return raw;
 }
 
+function toReference(sheet: CharacterSheet): CharacterReference {
+  const hydrated = ensureCharacterIdentityProperties(sheet);
+  return {
+    id: hydrated.id,
+    displayName: hydrated.displayName,
+    identity: hydrated.identity!,
+    appearanceSummary: hydrated.appearance.summary,
+    traits: hydrated.traits,
+    narrativeBlurb: hydrated.narrativeBlurb,
+    skillNames: hydrated.skills.map((skill) => skill.name),
+    weaponName: hydrated.weapon?.name ?? null,
+    armorName: hydrated.armor?.name ?? null,
+  };
+}
+
+/** Search only characters owned by userId; safe to expose to generation tools. */
+export function searchOwnedCharacterReferences(
+  userId: string,
+  query: string,
+  limit = 8,
+): CharacterReference[] {
+  const needle = query.trim().toLowerCase();
+  return listOwnedSheets(userId)
+    .filter(isActive)
+    .filter((sheet) => {
+      if (!needle) return true;
+      const identity = ensureCharacterIdentityProperties(sheet).identity!;
+      return [
+        sheet.displayName,
+        sheet.narrativeBlurb,
+        ...sheet.tags,
+        ...sheet.traits,
+        identity.realName ?? "",
+        ...identity.nicknames,
+        ...identity.selfNames,
+        ...identity.epithets,
+      ].some((value) => value.toLowerCase().includes(needle));
+    })
+    .slice(0, Math.max(1, Math.min(20, limit)))
+    .map(toReference);
+}
+
+/** Fetch a generation reference only when it belongs to userId. */
+export function getOwnedCharacterReference(
+  userId: string,
+  characterId: string,
+): CharacterReference | null {
+  const sheet = getSheet(characterId);
+  return sheet?.ownerUserId === userId ? toReference(sheet) : null;
+}
+
+/** Internal migration support; never returned by an API route. */
+export function listAllSheetsIncludingDeleted(): CharacterSheet[] {
+  const rows = getDb()
+    .prepare(`SELECT sheet_json FROM characters ORDER BY updated_at ASC`)
+    .all() as { sheet_json: string }[];
+  return rows.map((row) => parseSheet(row.sheet_json));
+}
+
+export function listSheetsMissingIdentity(): CharacterSheet[] {
+  const rows = getDb()
+    .prepare(`SELECT sheet_json FROM characters ORDER BY updated_at ASC`)
+    .all() as { sheet_json: string }[];
+  return rows
+    .filter((row) => {
+      const value = JSON.parse(row.sheet_json) as Record<string, unknown>;
+      return value.identity === undefined || value.identity === null;
+    })
+    .map((row) => parseSheet(row.sheet_json));
+}
+
+function listOwnedSheets(userId: string): CharacterSheet[] {
+  const rows = getDb()
+    .prepare(
+      `SELECT sheet_json FROM characters WHERE owner_user_id = ? ORDER BY updated_at DESC`,
+    )
+    .all(userId) as { sheet_json: string }[];
+  return rows.map((row) => parseSheet(row.sheet_json));
+}
+
 function isActive(sheet: CharacterSheet): boolean {
   return !sheet.deletedAt;
 }
 
 export function listCharactersForUser(userId: string, q?: string) {
-  const db = getDb();
-  const rows = db
-    .prepare(
-      `SELECT sheet_json FROM characters WHERE owner_user_id = ? ORDER BY updated_at DESC`,
-    )
-    .all(userId) as { sheet_json: string }[];
-  let sheets = rows
-    .map((r) => parseSheet(r.sheet_json))
-    .filter(isActive);
+  let sheets = listOwnedSheets(userId).filter(isActive);
   if (q?.trim()) {
     const needle = q.trim().toLowerCase();
     sheets = sheets.filter(
@@ -110,7 +184,9 @@ export function saveSheet(sheet: CharacterSheet): void {
     .prepare(`SELECT id FROM characters WHERE id = ?`)
     .get(sheet.id);
   const withRecord: CharacterSheet = {
-    ...sheet,
+    ...ensureCharacterIdentityProperties(
+      ensureCharacterCombatProperties(sheet),
+    ),
     record: sheet.record ?? defaultRecord(),
   };
   const json = JSON.stringify(withRecord);

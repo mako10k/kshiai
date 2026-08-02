@@ -99,7 +99,9 @@
 | F-CHR-02 | 構造化シートの必須カテゴリ: 特徴、外見イメージ記述、パラメータ、特技、武器、防具、戦闘維持関連フラグ | Must |
 | F-CHR-02a | キャラクターは固有の通常攻撃プロファイルを持ち、HP以外のMP・スタミナ・最大値・戦闘能力を主対象にできる | Must |
 | F-CHR-02b | 特技と装備は一時的なパラメータ変更を持てる。利益には消費資源、自己弱体化、または行動ターンの代償を伴わせる | Must |
+| F-CHR-02c | 表示名とは別に、本名・通用名・一人称名・二つ名・性別・年齢を内部プロフィールとして保持する。性別・年齢は通常UIへの明示を必須としない | Must |
 | F-CHR-03 | 新規作成は「自然文プロンプト → LLM 構造化生成」 | Must |
+| F-CHR-03a | キャラ生成LLMは、認証ユーザー本人が所有する他キャラのみを検索・詳細参照でき、血縁・関係性・類似点を生成へ反映できる | Must |
 | F-CHR-04 | 生成後、ユーザーは会話で微調整できる（例: 「もっと防御寄りに」「剣を大剣に」） | Must |
 | F-CHR-05 | **生の構造化データ（JSON 等）をユーザー向け UI に出さない** | Must |
 | F-CHR-06 | 代わりに LLM/テンプレが会話・要約文で特徴を伝える | Must |
@@ -115,6 +117,7 @@
 ```text
 CharacterSheet
   id, ownerUserId, displayName, tags[], createdAt, updatedAt
+  identity: { realName?, nicknames[], selfNames[], epithets[], gender?, age? }
   appearance: { summary, visualPrompt, imageUrl? }
   traits: string[]                 # 性格・背景の短いラベル
   parameters: Record<ParamKey, number>  # 内部数値。UI 非表示

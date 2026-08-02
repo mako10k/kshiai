@@ -192,7 +192,15 @@ export function buildRoutes() {
   authed.post("/characters/generate", async (c) => {
     const user = c.get("user");
     const body = GenerateCharacterRequestSchema.parse(await c.req.json());
-    const gen = await llm.generateCharacter(body.prompt);
+    const gen = await llm.generateCharacter({
+      prompt: body.prompt,
+      referenceTools: {
+        search: async (query, limit) =>
+          charRepo.searchOwnedCharacterReferences(user.id, query, limit),
+        get: async (characterId) =>
+          charRepo.getOwnedCharacterReference(user.id, characterId),
+      },
+    });
     const t = new Date().toISOString();
     const { balanceCharacterCombatFields, defaultRecord } = await import(
       "@kshiai/shared"

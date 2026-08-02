@@ -199,6 +199,18 @@ export function CharacterDetailPage() {
   const skillSummaries = Array.isArray(character.skillSummaries)
     ? character.skillSummaries
     : (character.skillNames ?? []).map((name) => ({ name, description: "" }));
+  const names = character.names ?? {
+    realName: null,
+    nicknames: [],
+    selfNames: [],
+    epithets: [],
+  };
+  const nameRows = [
+    names.realName ? ["本名", names.realName] : null,
+    names.nicknames.length ? ["通用名・あだ名", names.nicknames.join("、")] : null,
+    names.selfNames.length ? ["一人称名", names.selfNames.join("、")] : null,
+    names.epithets.length ? ["二つ名", names.epithets.join("、")] : null,
+  ].filter((row): row is string[] => row != null);
 
   const imageBlocked = Boolean(quota && !quota.allowed);
   const imageLabel = imageBusy
@@ -258,6 +270,16 @@ export function CharacterDetailPage() {
         )}
         <div>
           <p>{character.narrativeBlurb}</p>
+          {nameRows.length > 0 ? (
+            <dl className="profile-names">
+              {nameRows.map(([label, value]) => (
+                <div key={label} className="row" style={{ gap: "0.5rem" }}>
+                  <dt className="muted">{label}</dt>
+                  <dd style={{ margin: 0 }}>{value}</dd>
+                </div>
+              ))}
+            </dl>
+          ) : null}
           <p className="muted">{character.appearance.summary}</p>
           <div className="record-block">
             <p className="record-line" style={{ marginBottom: "0.35rem" }}>

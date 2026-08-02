@@ -8,12 +8,14 @@ import {
   type BattlefieldPreset,
   type BattlePolicyOption,
   type CharacterSheet,
+  type CharacterIdentity,
 } from "@kshiai/shared";
 import type {
   AdjustBattlefieldResult,
   AdjustCharacterResult,
   GenerateBattlefieldResult,
   GenerateCharacterResult,
+  GenerateCharacterInput,
   LlmProvider,
   NarrationResult,
   RefereeResult,
@@ -41,17 +43,30 @@ function extractName(prompt: string): string {
 export class MockLlmProvider implements LlmProvider {
   readonly name = "mock";
 
-  async generateCharacter(prompt: string): Promise<GenerateCharacterResult> {
+  async generateCharacter(input: GenerateCharacterInput): Promise<GenerateCharacterResult> {
+    const prompt = input.prompt;
     const displayName = extractName(prompt);
+    const references = input.referenceTools && /妹|姉|兄|弟|親|子|彼女|彼氏|妻|夫|似|同じ|関係/.test(prompt)
+      ? await input.referenceTools.search("", 8)
+      : [];
+    const mentioned = references.find((ref) => prompt.includes(ref.displayName));
     const sheet: GenerateCharacterResult["sheet"] = {
       displayName,
+      identity: {
+        realName: displayName === "無名の挑戦者" ? null : displayName,
+        nicknames: [],
+        selfNames: [],
+        epithets: [],
+        gender: null,
+        age: null,
+      },
       tags: ["mock", "generated"],
       appearance: {
         summary: `${displayName} — ${prompt.slice(0, 120)}`,
         visualPrompt: `anime character portrait bust, detailed face, ${displayName}, ${prompt.slice(0, 180)}, expressive eyes, soft lighting, single character, no text`,
         imageUrl: null,
       },
-      traits: ["不屈", "機知"],
+      traits: ["不屈", "機知", ...(mentioned ? [`${mentioned.displayName}との関係を持つ`] : [])],
       parameters: defaultParameters(),
       basicAttack: {
         name: "崩しの斬撃",
@@ -113,7 +128,7 @@ export class MockLlmProvider implements LlmProvider {
         effects: [{ parameter: "spd", delta: -1 }],
       },
       combatFlags: { canFight: true, irreversibleIncapacitated: false },
-      narrativeBlurb: `${displayName}。${prompt.slice(0, 160)}という印象を周囲に与える挑戦者。`,
+      narrativeBlurb: `${displayName}。${prompt.slice(0, 160)}という印象を周囲に与える挑戦者。${mentioned ? `${mentioned.displayName}のプロフィールを参照して設計された。` : ""}`,
       record: defaultRecord(),
       deletedAt: null,
     };
@@ -121,6 +136,17 @@ export class MockLlmProvider implements LlmProvider {
     return {
       sheet,
       assistantMessage: `了解しました。${displayName} として整えました。数値の詳細はお見せしませんが、素早さと一撃の切れ味に振っています。さらに変えたい点があれば自然文でどうぞ。`,
+    };
+  }
+
+  async inferCharacterIdentity(current: CharacterSheet): Promise<CharacterIdentity> {
+    return {
+      realName: null,
+      nicknames: [current.displayName],
+      selfNames: [],
+      epithets: [],
+      gender: null,
+      age: null,
     };
   }
 

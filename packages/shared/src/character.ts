@@ -106,11 +106,34 @@ export const CharacterRecordSchema = z.object({
   provisional: z.boolean().default(true),
 });
 
+/** Private identity/profile context used by character-generation LLMs. */
+export const CharacterIdentitySchema = z.object({
+  /** Legal or birth name. Keep null when the source does not establish one. */
+  realName: z.string().min(1).nullable().default(null),
+  /** Nicknames and commonly used names. */
+  nicknames: z.array(z.string().min(1)).default([]),
+  /** Names/pronouns the character uses to refer to themself. */
+  selfNames: z.array(z.string().min(1)).default([]),
+  /** Titles, aliases, and epithets. */
+  epithets: z.array(z.string().min(1)).default([]),
+  /** Free-form so fictional identities and unknown values remain representable. */
+  gender: z.string().min(1).nullable().default(null),
+  /** Free-form for apparent ages, ranges, and non-human lifespans. */
+  age: z.string().min(1).nullable().default(null),
+});
+export type CharacterIdentity = z.infer<typeof CharacterIdentitySchema>;
+
+export function defaultCharacterIdentity(): CharacterIdentity {
+  return CharacterIdentitySchema.parse({});
+}
+
 /** Full server-side character sheet. */
 export const CharacterSheetSchema = z.object({
   id: z.string(),
   ownerUserId: z.string(),
   displayName: z.string().min(1),
+  /** Separate from the public display name and omitted from public DTOs. */
+  identity: CharacterIdentitySchema.optional(),
   tags: z.array(z.string()).default([]),
   createdAt: z.string(),
   updatedAt: z.string(),
@@ -156,6 +179,16 @@ export function ensureCharacterCombatProperties(
   };
 }
 
+/** Fill private profile fields introduced after a character was saved. */
+export function ensureCharacterIdentityProperties(
+  sheet: CharacterSheet,
+): CharacterSheet {
+  return {
+    ...sheet,
+    identity: CharacterIdentitySchema.parse(sheet.identity ?? {}),
+  };
+}
+
 const RecordPublicSchema = z.object({
   wins: z.number(),
   losses: z.number(),
@@ -170,6 +203,13 @@ export const CharacterPublicSchema = z.object({
   id: z.string(),
   ownerUserId: z.string(),
   displayName: z.string(),
+  /** Public name classifications; gender and age remain private. */
+  names: z.object({
+    realName: z.string().nullable(),
+    nicknames: z.array(z.string()),
+    selfNames: z.array(z.string()),
+    epithets: z.array(z.string()),
+  }),
   tags: z.array(z.string()),
   createdAt: z.string(),
   updatedAt: z.string(),
@@ -224,13 +264,21 @@ export function toPublicCharacter(
   sheet: CharacterSheet,
   viewerUserId?: string | null,
 ): CharacterPublic {
-  sheet = ensureCharacterCombatProperties(sheet);
+  sheet = ensureCharacterIdentityProperties(
+    ensureCharacterCombatProperties(sheet),
+  );
   const record = ensureRecord(sheet);
   const isOwner = Boolean(viewerUserId && viewerUserId === sheet.ownerUserId);
   return {
     id: sheet.id,
     ownerUserId: sheet.ownerUserId,
     displayName: sheet.displayName,
+    names: {
+      realName: sheet.identity?.realName ?? null,
+      nicknames: sheet.identity?.nicknames ?? [],
+      selfNames: sheet.identity?.selfNames ?? [],
+      epithets: sheet.identity?.epithets ?? [],
+    },
     tags: sheet.tags,
     createdAt: sheet.createdAt,
     updatedAt: sheet.updatedAt,

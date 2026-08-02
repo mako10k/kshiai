@@ -1,6 +1,11 @@
 import OpenAI from "openai";
+import type {
+  ChatCompletionMessageParam,
+  ChatCompletionTool,
+} from "openai/resources/chat/completions";
 import {
   BasicAttackProfileSchema,
+  CharacterIdentitySchema,
   EquipmentSchema,
   SkillSchema,
   balanceCharacterCombatFields,
@@ -10,12 +15,15 @@ import {
   type BattlefieldPreset,
   type BattlePolicyOption,
   type CharacterSheet,
+  type CharacterIdentity,
 } from "@kshiai/shared";
 import type {
   AdjustBattlefieldResult,
   AdjustCharacterResult,
   GenerateBattlefieldResult,
   GenerateCharacterResult,
+  GenerateCharacterInput,
+  CharacterReferenceTools,
   LlmProvider,
   NarrationResult,
   RefereeResult,
@@ -42,6 +50,27 @@ function parseGeneratedEquipment(raw: unknown) {
 function parseGeneratedBasicAttack(raw: unknown) {
   const parsed = BasicAttackProfileSchema.safeParse(raw);
   return parsed.success ? parsed.data : undefined;
+}
+
+function parseGeneratedIdentity(raw: unknown): CharacterIdentity {
+  const source = raw && typeof raw === "object"
+    ? raw as Record<string, unknown>
+    : {};
+  const strings = (value: unknown) =>
+    Array.isArray(value) ? value.map(String).map((item) => item.trim()).filter(Boolean) : [];
+  const nullableString = (value: unknown) =>
+    value === null || value === undefined || String(value).trim() === ""
+      ? null
+      : String(value).trim();
+  const parsed = CharacterIdentitySchema.safeParse({
+    realName: nullableString(source.realName),
+    nicknames: strings(source.nicknames),
+    selfNames: strings(source.selfNames),
+    epithets: strings(source.epithets),
+    gender: nullableString(source.gender),
+    age: nullableString(source.age),
+  });
+  return parsed.success ? parsed.data : CharacterIdentitySchema.parse({});
 }
 
 /** engine = accuracy-first; fast = latency-first (narration / color). */
@@ -148,13 +177,101 @@ export class OpenAiCompatibleProvider implements LlmProvider {
     }
   }
 
-  async generateCharacter(prompt: string): Promise<GenerateCharacterResult> {
-    if (!this.client) return this.fallback.generateCharacter(prompt);
+  private async chatJsonWithCharacterTools(
+    system: string,
+    user: string,
+    referenceTools: CharacterReferenceTools | undefined,
+    opts?: ChatOpts,
+  ): Promise<unknown> {
+    if (!referenceTools) return this.chatJson(system, user, opts);
+    if (!this.client) throw new Error("LLM client not configured");
+
+    const tools: ChatCompletionTool[] = [
+      {
+        type: "function",
+        function: {
+          name: "search_own_characters",
+          description: "Search characters owned by the current user. Use this before creating a relative, partner, rival, or lookalike.",
+          parameters: {
+            type: "object",
+            properties: {
+              query: { type: "string", description: "Name, alias, trait, or relationship clue. Empty lists all owned characters." },
+              limit: { type: "integer", minimum: 1, maximum: 8 },
+            },
+            required: ["query"],
+            additionalProperties: false,
+          },
+        },
+      },
+      {
+        type: "function",
+        function: {
+          name: "get_own_character",
+          description: "Get an owned character's private profile after finding its id. Other users' characters are inaccessible.",
+          parameters: {
+            type: "object",
+            properties: { characterId: { type: "string" } },
+            required: ["characterId"],
+            additionalProperties: false,
+          },
+        },
+      },
+    ];
+    const messages: ChatCompletionMessageParam[] = [
+      { role: "system", content: system },
+      { role: "user", content: user },
+    ];
+    const timeoutMs = opts?.timeoutMs ?? 28_000;
+    for (let round = 0; round < 4; round += 1) {
+      const response = await this.client.chat.completions.create({
+        model: this.modelFor(opts?.tier ?? "engine"),
+        messages,
+        tools,
+        tool_choice: "auto",
+        temperature: opts?.temperature ?? 0.45,
+        response_format: { type: "json_object" },
+      }, { timeout: timeoutMs });
+      const message = response.choices[0]?.message;
+      if (!message) throw new Error("LLM returned no message");
+      const calls = (message.tool_calls ?? []).filter((call) => call.type === "function");
+      if (calls.length === 0) return JSON.parse(message.content ?? "{}");
+      messages.push({
+        role: "assistant",
+        content: message.content,
+        tool_calls: calls,
+      });
+      for (const call of calls) {
+        let args: Record<string, unknown> = {};
+        try {
+          args = JSON.parse(call.function.arguments) as Record<string, unknown>;
+        } catch {
+          // Invalid arguments produce an empty result, never a broader query.
+        }
+        const result = call.function.name === "search_own_characters"
+          ? await referenceTools.search(String(args.query ?? ""), Number(args.limit ?? 8))
+          : call.function.name === "get_own_character"
+            ? await referenceTools.get(String(args.characterId ?? ""))
+            : null;
+        messages.push({
+          role: "tool",
+          tool_call_id: call.id,
+          content: JSON.stringify(result),
+        });
+      }
+    }
+    throw new Error("Character reference tool round limit exceeded");
+  }
+
+  async generateCharacter(input: GenerateCharacterInput): Promise<GenerateCharacterResult> {
+    const { prompt, referenceTools } = input;
+    if (!this.client) return this.fallback.generateCharacter(input);
     try {
-      const data = (await this.chatJson(
+      const data = (await this.chatJsonWithCharacterTools(
         `You create RPG character sheets as JSON. Never include advice to show raw numbers to players.
 Return JSON: {
   "displayName": string,
+  "identity": { "realName": string|null, "nicknames": string[], "selfNames": string[],
+    "epithets": string[], "gender": string|null, "age": string|null },
   "tags": string[],
   "appearance": { "summary": string, "visualPrompt": string },
   "traits": string[],
@@ -175,6 +292,7 @@ Return JSON: {
   "assistantMessage": string
 }
 Parameters should be balanced around hp 80-120, atk/def 8-16. Never create unbeatable gods.
+When the request refers to the user's other character, a relative, partner, rival, or someone similar, use search_own_characters and then get_own_character before generating. Preserve the requested relationship while creating meaningful differences.
 BALANCE (mandatory):
 - Every absolute strength (最強武器, 無敵の防御, 必中, 無限魔力, 超幸運…) MUST have an implicit weakness in traits and narrativeBlurb (隙・脆さ・代償・条件付き).
 - skill power typically 0.8–1.5 (never above 1.8). Strong skills need higher MP/stamina cost.
@@ -190,6 +308,7 @@ CRITICAL for visualPrompt/summary: adult character (20s+), fully clothed modest 
 NO child/teen/schoolgirl, NO torn/slipping clothes, NO exposure, NO sexualization.
 Safe-for-work anime portrait only.`,
         prompt,
+        referenceTools,
         { tier: "engine", label: "generateCharacter" },
       )) as Record<string, unknown>;
 
@@ -203,6 +322,7 @@ Safe-for-work anime portrait only.`,
 
       const rawSheet = {
           displayName: String(data.displayName ?? "挑戦者"),
+          identity: parseGeneratedIdentity(data.identity),
           tags: Array.isArray(data.tags) ? data.tags.map(String) : [],
           appearance: {
             summary: String((data.appearance as { summary?: string })?.summary ?? prompt.slice(0, 100)),
@@ -218,7 +338,7 @@ Safe-for-work anime portrait only.`,
           basicAttack: parseGeneratedBasicAttack(data.basicAttack),
           skills: skills.length
             ? skills
-            : (await this.fallback.generateCharacter(prompt)).sheet.skills,
+            : (await this.fallback.generateCharacter(input)).sheet.skills,
           weapon: weapon
             ? weapon
             : null,
@@ -235,7 +355,29 @@ Safe-for-work anime portrait only.`,
         ),
       };
     } catch {
-      return this.fallback.generateCharacter(prompt);
+      return this.fallback.generateCharacter(input);
+    }
+  }
+
+  async inferCharacterIdentity(current: CharacterSheet): Promise<CharacterIdentity> {
+    if (!this.client) return this.fallback.inferCharacterIdentity(current);
+    try {
+      const data = await this.chatJson(
+        `Infer private identity metadata for an existing fictional character. Return JSON only:
+{ "realName": string|null, "nicknames": string[], "selfNames": string[], "epithets": string[],
+  "gender": string|null, "age": string|null }
+Use null or [] when the profile does not establish a value. Do not treat a title or display label as a legal name. Do not invent precision unsupported by the text.`,
+        JSON.stringify({
+          displayName: current.displayName,
+          appearance: current.appearance.summary,
+          traits: current.traits,
+          narrativeBlurb: current.narrativeBlurb,
+        }),
+        { tier: "engine", label: "inferCharacterIdentity", temperature: 0.2 },
+      );
+      return parseGeneratedIdentity(data);
+    } catch {
+      return this.fallback.inferCharacterIdentity(current);
     }
   }
 
@@ -247,7 +389,8 @@ Safe-for-work anime portrait only.`,
     try {
       const data = (await this.chatJson(
         `Adjust a hidden RPG character sheet from user feedback. Reply JSON:
-{ "assistantMessage": string, "displayName"?: string, "narrativeBlurb"?: string,
+{ "assistantMessage": string, "displayName"?: string, "identity"?: { "realName": string|null,
+  "nicknames": string[], "selfNames": string[], "epithets": string[], "gender": string|null, "age": string|null }, "narrativeBlurb"?: string,
   "traits"?: string[], "parameters"?: object, "basicAttack"?: object,
   "skills"?: array, "weapon"?: object|null, "armor"?: object|null }
 Do not tell the user exact numbers.
@@ -261,6 +404,7 @@ If the user asks for absolute power, grant flavor but keep an implicit weakness 
             narrativeBlurb: current.narrativeBlurb,
             skillNames: current.skills.map((s) => s.name),
           },
+          privateIdentity: current.identity,
           // Server-only context for the model:
           hiddenParameters: current.parameters,
           hiddenCombatOptions: {
@@ -279,6 +423,9 @@ If the user asks for absolute power, grant flavor but keep an implicit weakness 
           displayName: data.displayName
             ? String(data.displayName)
             : current.displayName,
+          identity: data.identity
+            ? parseGeneratedIdentity(data.identity)
+            : current.identity,
           narrativeBlurb: data.narrativeBlurb
             ? String(data.narrativeBlurb)
             : current.narrativeBlurb,

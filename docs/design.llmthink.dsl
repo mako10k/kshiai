@@ -171,3 +171,23 @@ decision D11 based_on PR11, EV11, D1, D2:
     includes MP, stamina, and all maxima, but excludes current HP so accumulated
     damage still drives the match to a finish. Balancing clamps deltas and adds
     resource cost to free status skills and a negative tradeoff to positive gear.
+
+problem PR12:
+  |
+    A single display name cannot distinguish legal names, common names,
+    self-reference, and epithets, while relationship-based generation needs
+    context from a user's existing characters without crossing account boundaries.
+
+evidence EV12:
+  |
+    Users want to create relatives and similar-but-distinct characters from an
+    existing owned profile, while age and gender remain optional UI details.
+
+decision D12 based_on PR12, EV12, D1, D4:
+  |
+    CharacterSheet stores a private identity object with realName, nicknames,
+    selfNames, epithets, gender, and age; displayName remains an independent
+    public field. Character generation receives search and detail tools whose
+    repository callbacks are bound to the authenticated owner id. Reference
+    results contain descriptive profile context but no combat parameters.
+    Existing sheets are backfilled once and all later saves persist defaults.
