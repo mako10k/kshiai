@@ -192,6 +192,14 @@ export function CharacterDetailPage() {
   if (!character && !error) return <p className="muted">読み込み中…</p>;
   if (!character) return <p className="error">キャラが見つかりません</p>;
 
+  // Tolerate a rolling deployment where the frontend sees an older DTO once.
+  const basicAttackName = character.basicAttackName || "通常攻撃";
+  const basicAttackDescription =
+    character.basicAttackDescription || "消耗時にも使える基本攻撃。";
+  const skillSummaries = Array.isArray(character.skillSummaries)
+    ? character.skillSummaries
+    : (character.skillNames ?? []).map((name) => ({ name, description: "" }));
+
   const imageBlocked = Boolean(quota && !quota.allowed);
   const imageLabel = imageBusy
     ? "生成中…"
@@ -295,14 +303,13 @@ export function CharacterDetailPage() {
             ) : null}
           </div>
           <p>
-            通常攻撃: <strong>{character.basicAttackName}</strong> —{" "}
-            {character.basicAttackDescription}
+            通常攻撃: <strong>{basicAttackName}</strong> — {basicAttackDescription}
           </p>
           <div>
             特技:
-            {character.skillSummaries.length > 0 ? (
+            {skillSummaries.length > 0 ? (
               <ul style={{ margin: "0.35rem 0" }}>
-                {character.skillSummaries.map((skill) => (
+                {skillSummaries.map((skill) => (
                   <li key={skill.name}>
                     <strong>{skill.name}</strong> — {skill.description}
                   </li>

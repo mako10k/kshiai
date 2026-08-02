@@ -2,13 +2,16 @@ import type { CharacterSheet } from "@kshiai/shared";
 import {
   CharacterSheetSchema,
   defaultRecord,
+  ensureCharacterCombatProperties,
   toPublicCharacter,
 } from "@kshiai/shared";
 import { getDb } from "../db.js";
 import { newId } from "../id.js";
 
 function parseSheet(json: string): CharacterSheet {
-  const raw = CharacterSheetSchema.parse(JSON.parse(json));
+  const raw = ensureCharacterCombatProperties(
+    CharacterSheetSchema.parse(JSON.parse(json)),
+  );
   if (!raw.record) {
     return { ...raw, record: defaultRecord() };
   }

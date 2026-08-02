@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import {
   CharacterSheetSchema,
   defaultParameters,
+  ensureCharacterCombatProperties,
   toPublicCharacter,
 } from "./character.js";
 
@@ -37,6 +38,11 @@ describe("character combat extensions", () => {
 
     assert.equal(sheet.basicAttack, undefined);
     assert.equal(sheet.skills[0]?.effects, undefined);
-    assert.equal(toPublicCharacter(sheet, "u1").basicAttackName, "通常攻撃");
+    const hydrated = ensureCharacterCombatProperties(sheet);
+    assert.equal(hydrated.basicAttack?.name, "通常攻撃");
+    assert.deepEqual(hydrated.skills[0]?.effects, []);
+    const publicSheet = toPublicCharacter(sheet, "u1");
+    assert.equal(publicSheet.basicAttackName, "通常攻撃");
+    assert.equal(publicSheet.skillSummaries[0]?.name, "旧技");
   });
 });

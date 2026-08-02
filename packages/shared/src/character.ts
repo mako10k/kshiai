@@ -138,6 +138,24 @@ export const CharacterSheetSchema = z.object({
 });
 export type CharacterSheet = z.infer<typeof CharacterSheetSchema>;
 
+/** Fill combat fields introduced after a character was originally saved. */
+export function ensureCharacterCombatProperties(
+  sheet: CharacterSheet,
+): CharacterSheet {
+  const equipment = (value: Equipment | null): Equipment | null =>
+    value ? { ...value, effects: value.effects ?? [] } : null;
+  return {
+    ...sheet,
+    basicAttack: sheet.basicAttack ?? defaultBasicAttack(),
+    skills: sheet.skills.map((skill) => ({
+      ...skill,
+      effects: skill.effects ?? [],
+    })),
+    weapon: equipment(sheet.weapon),
+    armor: equipment(sheet.armor),
+  };
+}
+
 const RecordPublicSchema = z.object({
   wins: z.number(),
   losses: z.number(),
@@ -206,6 +224,7 @@ export function toPublicCharacter(
   sheet: CharacterSheet,
   viewerUserId?: string | null,
 ): CharacterPublic {
+  sheet = ensureCharacterCombatProperties(sheet);
   const record = ensureRecord(sheet);
   const isOwner = Boolean(viewerUserId && viewerUserId === sheet.ownerUserId);
   return {
