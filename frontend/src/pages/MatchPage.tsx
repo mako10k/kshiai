@@ -9,6 +9,12 @@ import type {
 } from "@kshiai/shared";
 import { api } from "../api";
 import { useLocalDraft } from "../hooks/useLocalDraft";
+import {
+  matchesSelectionSearch,
+  recordMatchSelectionUsage,
+  sortByRecentUsage,
+  type MatchSelectionUsage,
+} from "../match-selection-preferences";
 import { mediaSrc } from "../media";
 
 type PolicyBundle = {
@@ -56,7 +62,23 @@ export function MatchPage() {
     "match:setup",
     defaultMatchDraft,
   );
+  const [selectionUsage, setSelectionUsage] =
+    useLocalDraft<MatchSelectionUsage>("match:selectionUsage", {});
   const { myId, oppId, fieldId, styleId, step } = draft;
+
+  const [myQuery, setMyQuery] = useState("");
+  const [oppQuery, setOppQuery] = useState("");
+  const [fieldQuery, setFieldQuery] = useState("");
+  const [styleQuery, setStyleQuery] = useState("");
+
+  const rememberSelections = useCallback(
+    (selections: Parameters<typeof recordMatchSelectionUsage>[1]) => {
+      setSelectionUsage((usage) =>
+        recordMatchSelectionUsage(usage, selections),
+      );
+    },
+    [setSelectionUsage],
+  );
 
   const setMyId = (id: string) => setDraft((d) => ({ ...d, myId: id }));
   const setOppId = (id: string) => setDraft((d) => ({ ...d, oppId: id }));
@@ -205,6 +227,74 @@ export function MatchPage() {
     () => styles.find((s) => s.id === styleId) ?? null,
     [styles, styleId],
   );
+  const visibleMine = useMemo(
+    () =>
+      sortByRecentUsage(mine, "mine", selectionUsage).filter(
+        (character) =>
+          character.id === myId ||
+          matchesSelectionSearch(myQuery, [
+            character.displayName,
+            character.names.realName,
+            ...character.names.nicknames,
+            ...character.names.epithets,
+            ...character.tags,
+            ...character.traits,
+            character.narrativeBlurb,
+          ]),
+      ),
+    [mine, myId, myQuery, selectionUsage],
+  );
+  const visibleOpponents = useMemo(
+    () =>
+      sortByRecentUsage(
+        candidates.filter((character) => character.id !== myId),
+        "opponent",
+        selectionUsage,
+      ).filter(
+        (character) =>
+          character.id === oppId ||
+          matchesSelectionSearch(oppQuery, [
+            character.displayName,
+            character.names.realName,
+            ...character.names.nicknames,
+            ...character.names.epithets,
+            ...character.tags,
+            ...character.traits,
+            character.narrativeBlurb,
+          ]),
+      ),
+    [candidates, myId, oppId, oppQuery, selectionUsage],
+  );
+  const visibleFields = useMemo(
+    () =>
+      sortByRecentUsage(fields, "battlefield", selectionUsage).filter(
+        (field) =>
+          field.id === fieldId ||
+          matchesSelectionSearch(fieldQuery, [
+            field.displayName,
+            field.categoryLabel,
+            ...field.tags,
+            ...field.terrainHints,
+            ...field.obstacleHints,
+            ...field.conditionHints,
+            field.narrativeBlurb,
+          ]),
+      ),
+    [fieldId, fieldQuery, fields, selectionUsage],
+  );
+  const visibleStyles = useMemo(
+    () =>
+      sortByRecentUsage(styles, "narrationStyle", selectionUsage).filter(
+        (style) =>
+          style.id === styleId ||
+          matchesSelectionSearch(styleQuery, [
+            style.displayName,
+            style.description,
+            ...style.tags,
+          ]),
+      ),
+    [selectionUsage, styleId, styleQuery, styles],
+  );
 
   function invalidatePolicies() {
     setPolicyOptions([]);
@@ -295,6 +385,7 @@ export function MatchPage() {
     try {
       const { opponent } = await api.randomOpponent(myId);
       setOppId(opponent.id);
+      rememberSelections({ opponent: opponent.id });
       // Opponent change invalidates policies; stay on step 1
       invalidatePolicies();
       if (step !== 1) setStep(1);
@@ -342,6 +433,12 @@ export function MatchPage() {
         selectedPolicyIds: selected,
         narrationStyleId: styleId || undefined,
         ...fieldOpts(),
+      });
+      rememberSelections({
+        mine: myId,
+        opponent: oppId,
+        battlefield: fieldId,
+        narrationStyle: styleId,
       });
       // Keep narration style for next match; clear only the matchup draft
       if (styleId) setLastStyleId(styleId);
@@ -391,17 +488,26 @@ export function MatchPage() {
 
           <label className="field">
             <span className="field-label">自分のキャラ</span>
+            <input
+              type="search"
+              value={myQuery}
+              onChange={(e) => setMyQuery(e.target.value)}
+              placeholder="名前・タグ・特徴で検索"
+              aria-label="自分のキャラを検索"
+            />
             <select
               value={myId}
               onChange={(e) => {
-                setMyId(e.target.value);
+                const id = e.target.value;
+                setMyId(id);
+                rememberSelections({ mine: id });
                 setOppId("");
                 invalidatePolicies();
                 setStep(1);
               }}
             >
               <option value="">選択…</option>
-              {mine.map((c) => (
+              {visibleMine.map((c) => (
                 <option key={c.id} value={c.id}>
                   {c.displayName}
                 </option>
@@ -444,16 +550,25 @@ export function MatchPage() {
 
           <label className="field">
             <span className="field-label">戦場（任意）</span>
+            <input
+              type="search"
+              value={fieldQuery}
+              onChange={(e) => setFieldQuery(e.target.value)}
+              placeholder="名前・カテゴリ・タグで検索"
+              aria-label="戦場を検索"
+            />
             <select
               value={fieldId}
               onChange={(e) => {
-                setFieldId(e.target.value);
+                const id = e.target.value;
+                setFieldId(id);
+                rememberSelections({ battlefield: id });
                 // Field affects policies → mark stale, stay on step 1
                 invalidatePolicies();
               }}
             >
               <option value="">未指定（開始時にランダム具体化）</option>
-              {fields.map((b) => (
+              {visibleFields.map((b) => (
                 <option key={b.id} value={b.id}>
                   {b.isSystem ? "[標準] " : ""}
                   {b.displayName}
@@ -467,11 +582,22 @@ export function MatchPage() {
 
           <label className="field">
             <span className="field-label">ナレーションスタイル</span>
+            <input
+              type="search"
+              value={styleQuery}
+              onChange={(e) => setStyleQuery(e.target.value)}
+              placeholder="名前・説明・タグで検索"
+              aria-label="ナレーションスタイルを検索"
+            />
             <select
               value={styleId}
-              onChange={(e) => setStyleId(e.target.value)}
+              onChange={(e) => {
+                const id = e.target.value;
+                setStyleId(id);
+                rememberSelections({ narrationStyle: id });
+              }}
             >
-              {styles.map((s) => (
+              {visibleStyles.map((s) => (
                 <option key={s.id} value={s.id}>
                   {s.isSystem ? "[標準] " : ""}
                   {s.displayName}
@@ -489,22 +615,30 @@ export function MatchPage() {
 
           <label className="field">
             <span className="field-label">相手</span>
+            <input
+              type="search"
+              value={oppQuery}
+              onChange={(e) => setOppQuery(e.target.value)}
+              placeholder="名前・タグ・特徴で検索"
+              aria-label="対戦相手を検索"
+              disabled={!myId}
+            />
             <select
               value={oppId}
               onChange={(e) => {
-                setOppId(e.target.value);
+                const id = e.target.value;
+                setOppId(id);
+                rememberSelections({ opponent: id });
                 invalidatePolicies();
               }}
               disabled={!myId}
             >
               <option value="">相手を選ぶ…</option>
-              {candidates
-                .filter((c) => c.id !== myId)
-                .map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.displayName}
-                  </option>
-                ))}
+              {visibleOpponents.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.displayName}
+                </option>
+              ))}
             </select>
           </label>
 
