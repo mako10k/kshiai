@@ -167,11 +167,14 @@ jobs:
           BACKEND_URL: ${{ steps.backend.outputs.url }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           RELEASE_TAG: ${{ inputs.tag }}
+          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.SUPABASE_PUBLISHABLE_KEY }}
+          VITE_SUPABASE_URL: ${{ env.SUPABASE_URL }}
           WRANGLER_OUTPUT_FILE_PATH: ${{ runner.temp }}/wrangler-output.jsonl
         run: |
           set -euo pipefail
           npm run build --workspace=@kshiai/shared
           npm run build --workspace=frontend
+          node scripts/verify-frontend-auth-build.mjs frontend/dist
           npx wrangler whoami --json > "$RUNNER_TEMP/cloudflare-whoami.json"
           # shellcheck disable=SC2016
           cloudflare_account_id="$(node -e '

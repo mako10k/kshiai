@@ -92,11 +92,12 @@ service or smoke jobs. CI/CD adds these resources:
 - `kshiai-supabase-secret-key` for disposable auth-smoke users;
 - `kshiai-supabase-publishable-key` for auth-smoke sign-in.
 
-The `staging` and `production` environments each hold
-`CLOUDFLARE_API_TOKEN`, copied from the dedicated limited Worker token in
-`secdat`. There is no repository-wide copy. Only jobs attached to the matching
-tag-restricted environment can read it. Never print or pass secret values as
-command-line variables.
+The `staging` and `production` environments each hold `CLOUDFLARE_API_TOKEN`,
+copied from the dedicated limited Worker token in `secdat`. Staging also holds
+`SUPABASE_PUBLISHABLE_KEY` so Vite can embed the public browser credential in
+the immutable frontend build. There are no repository-wide copies. Only jobs
+attached to the matching tag-restricted environment can read them. Never print
+or pass secret values as command-line variables.
 
 The Worker keeps `workers.dev` disabled but explicitly enables version preview
 URLs. Preview URLs are public and exist only to validate an undeployed version;
@@ -111,7 +112,9 @@ disabled URL and the production `workers.dev` endpoint remains disabled.
 Smoke tests use the immutable version preview URL recorded by Wrangler, not the
 optional human-readable preview alias.
 The staging workflow builds `@kshiai/shared` before the frontend so workspace
-type exports exist when the immutable Worker version is compiled.
+type exports exist when the immutable Worker version is compiled. It passes the
+production Supabase URL and publishable key into Vite, then scans the built
+JavaScript for both exact values and fails before upload if either is absent.
 
 CI has been exercised on GitHub-hosted Linux runners, including the container
 and Worker scans. The tag-restricted OIDC exchange and cloud promotion are not

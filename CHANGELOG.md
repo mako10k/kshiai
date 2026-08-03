@@ -5,6 +5,22 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 
 ## [Unreleased]
 
+## [0.1.10] - 2026-08-04
+
+### Fixed
+
+- Restores Google OAuth and browser email authentication by supplying the
+  production Supabase URL and publishable key to the immutable Vite build.
+- Fails staging before Worker upload when the built frontend does not contain
+  both required Supabase values.
+
+### Operations
+
+- `v0.1.9` fixed authenticated battle SSE and remains the active release, but
+  its GitHub-hosted frontend build did not receive the ignored local `.env`.
+  Browser Supabase authentication was therefore unavailable. This release is a
+  forward fix so the battle SSE repair is retained.
+
 ## [0.1.9] - 2026-08-04
 
 ### Fixed
