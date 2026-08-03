@@ -13,6 +13,8 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
   production Supabase URL and publishable key to the immutable Vite build.
 - Fails staging before Worker upload when the built frontend does not contain
   both required Supabase values.
+- Updates Hono and overrides the transitive Undici version to releases that
+  address newly published request-processing and cache-disclosure advisories.
 
 ### Operations
 
