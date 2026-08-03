@@ -223,5 +223,4 @@ export interface LlmProvider {
       narrativeBlurb?: string;
     };
   }): Promise<{ options: BattlePolicyOption[]; rationale: string }>;
-  generateImagePrompt?(appearanceSummary: string, extra?: string): Promise<string>;
 }

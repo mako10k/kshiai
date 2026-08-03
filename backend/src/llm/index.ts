@@ -38,12 +38,15 @@ export function createLlmProvider(): LlmProvider {
         timeoutMultiplier: 1.75,
       })] : [];
       case "mock":
+        return config.allowMockProvider ? [new MockLlmProvider()] : [];
       default:
-        return [new MockLlmProvider()];
+        return [];
     }
   });
-  if (!providers.some((provider) => provider.name === "mock")) {
-    providers.push(new MockLlmProvider());
+  if (providers.length === 0) {
+    throw new Error(
+      "No usable LLM provider is configured. Set provider credentials, or explicitly select mock outside production.",
+    );
   }
   return createFallbackLlmProvider(providers, config.llmQuotaCooldownMs);
 }

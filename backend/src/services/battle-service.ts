@@ -676,7 +676,7 @@ export async function advanceTurn(input: {
     });
   }
 
-  // Situation: short timeout → mock fallback. Never block the turn.
+  // Situation: short timeout preserves the current scene. Never block the turn.
   let baseSituation: Partial<Situation> = {
     scene: state.situation.scene,
     notes: state.situation.notes,

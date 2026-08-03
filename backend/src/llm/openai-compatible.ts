@@ -100,7 +100,8 @@ type ChatOpts = {
 
 /**
  * OpenAI-compatible chat provider (xAI, Venice, etc.).
- * Falls back to mock behavior if the key is missing or the call fails hard.
+ * Optional mock fallback exists only for explicitly constructed development
+ * providers. The application factory disables it for real provider chains.
  *
  * Two model tiers:
  * - engine: structured generation (chars, policies, referee) — slower/stronger
@@ -123,7 +124,7 @@ export class OpenAiCompatibleProvider implements LlmProvider {
     this.modelFast = cfg.modelFast || cfg.modelEngine;
     this.models = { engine: this.modelEngine, fast: this.modelFast };
     this.supportsTemperature = cfg.supportsTemperature ?? true;
-    this.fallbackOnError = cfg.fallbackOnError ?? true;
+    this.fallbackOnError = cfg.fallbackOnError ?? false;
     this.timeoutMultiplier = Math.max(0.5, cfg.timeoutMultiplier ?? 1);
     this.client = cfg.apiKey
       ? new OpenAI({

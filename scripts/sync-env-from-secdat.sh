@@ -52,11 +52,14 @@ PY
 }
 
 set_kv LLM_PROVIDER xai "$ENV_FILE"
-set_kv LLM_PROVIDER_ORDER "xai,openai,venice,mock" "$ENV_FILE"
+set_kv LLM_PROVIDER_ORDER "xai,openai,venice" "$ENV_FILE"
+set_kv ALLOW_MOCK_FALLBACK "false" "$ENV_FILE"
 set_kv LLM_QUOTA_COOLDOWN_MS "3600000" "$ENV_FILE"
+set_kv IMAGE_PROVIDER_ORDER "xai,venice" "$ENV_FILE"
 set_kv XAI_API_KEY "$XAI" "$ENV_FILE"
 set_kv XAI_BASE_URL "https://api.x.ai/v1" "$ENV_FILE"
 set_kv XAI_MODEL "grok-4.5" "$ENV_FILE"
+set_kv XAI_IMAGE_MODEL "grok-imagine-image" "$ENV_FILE"
 if [[ -n "$OPENAI" ]]; then
   set_kv OPENAI_API_KEY "$OPENAI" "$ENV_FILE"
   set_kv OPENAI_BASE_URL "https://api.openai.com/v1" "$ENV_FILE"

@@ -37,6 +37,25 @@ function parseCorsOrigins(): string[] {
   return list.length > 0 ? list : defaultCors;
 }
 
+function parseBoolean(value: string | undefined): boolean {
+  return value === "1" || value?.toLowerCase() === "true";
+}
+
+const llmProvider = (process.env.LLM_PROVIDER ?? "mock") as
+  | "mock"
+  | "xai"
+  | "openai"
+  | "venice";
+
+export function isMockProviderAllowed(input: {
+  nodeEnv: string | undefined;
+  primaryProvider: string;
+  allowMockFallback: boolean;
+}): boolean {
+  return input.nodeEnv !== "production" &&
+    (input.primaryProvider === "mock" || input.allowMockFallback);
+}
+
 export const config = {
   host: process.env.HOST ?? "127.0.0.1",
   port: Number(process.env.PORT ?? 3088),
@@ -54,18 +73,29 @@ export const config = {
     process.env.COOKIE_SECURE === "1" ||
     process.env.COOKIE_SECURE === "true" ||
     process.env.NODE_ENV === "production",
-  llmProvider: (process.env.LLM_PROVIDER ?? "mock") as "mock" | "xai" | "openai" | "venice",
+  llmProvider,
+  allowMockProvider: isMockProviderAllowed({
+    nodeEnv: process.env.NODE_ENV,
+    primaryProvider: llmProvider,
+    allowMockFallback: parseBoolean(process.env.ALLOW_MOCK_FALLBACK),
+  }),
   /** Ordered providers. Legacy LLM_PROVIDER remains the first choice. */
   llmProviderOrder: (process.env.LLM_PROVIDER_ORDER ??
-    ((process.env.LLM_PROVIDER ?? "mock") === "mock"
+    (llmProvider === "mock"
       ? "mock"
-      : `${process.env.LLM_PROVIDER},openai,venice,mock`))
+      : `${llmProvider},openai,venice`))
     .split(",")
     .map((value) => value.trim().toLowerCase())
     .filter((value, index, values) =>
       ["xai", "openai", "venice", "mock"].includes(value) &&
       values.indexOf(value) === index,
     ) as Array<"xai" | "openai" | "venice" | "mock">,
+  imageProviderOrder: (process.env.IMAGE_PROVIDER_ORDER ?? "xai,venice")
+    .split(",")
+    .map((value) => value.trim().toLowerCase())
+    .filter((value, index, values) =>
+      ["xai", "venice"].includes(value) && values.indexOf(value) === index,
+    ) as Array<"xai" | "venice">,
   llmQuotaCooldownMs: Math.max(
     60_000,
     Number(process.env.LLM_QUOTA_COOLDOWN_MS ?? 60 * 60 * 1000),
@@ -106,6 +136,7 @@ export const config = {
       process.env.VENICE_MODEL_FAST ??
       process.env.VENICE_MODEL ??
       "gemini-3-5-flash-lite",
+    imageModel: process.env.VENICE_IMAGE_MODEL ?? "",
   },
   battleTurnLimit: Number(process.env.BATTLE_TURN_LIMIT ?? 20),
 };

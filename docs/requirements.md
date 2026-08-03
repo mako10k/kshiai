@@ -325,6 +325,7 @@ CharacterSheet
 | POST | `/api/characters/:id/copy` | コピー |
 | DELETE | `/api/characters/:id` | 削除 |
 | POST | `/api/characters/:id/image` | 画像生成 |
+| POST | `/api/battlefields/:id/image` | 戦場画像生成 |
 | GET | `/api/match/candidates` | 相手候補 |
 | POST | `/api/match/random` | ランダム相手 |
 | POST | `/api/battles` | バトル開始 |

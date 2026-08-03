@@ -545,18 +545,40 @@ export function buildRoutes() {
     if (!preset || preset.isSystem || preset.ownerUserId !== user.id) {
       return c.json({ error: "not_found" }, 404);
     }
-    const seed = encodeURIComponent(preset.displayName);
-    const imageUrl = `https://api.dicebear.com/9.x/shapes/svg?seed=${seed}`;
-    const next: BattlefieldPreset = {
-      ...preset,
-      appearance: { ...preset.appearance, imageUrl },
-      updatedAt: new Date().toISOString(),
-    };
-    bfRepo.savePreset(next);
-    return c.json({
-      battlefield: toPublicPreset(next),
-      note: "Scaffold placeholder image. Wire xAI/Venice image API next.",
-    });
+    let extra: string | undefined;
+    try {
+      const raw = await c.req.json();
+      if (raw && typeof raw === "object" && !Array.isArray(raw)) {
+        const value = (raw as { extra?: unknown }).extra;
+        if (typeof value === "string" && value.trim()) extra = value.trim();
+      }
+    } catch {
+      // An empty body is valid.
+    }
+    try {
+      const { generateAndStoreBattlefieldImage } = await import(
+        "./services/image-service.js"
+      );
+      const result = await generateAndStoreBattlefieldImage(preset, extra);
+      const next: BattlefieldPreset = {
+        ...preset,
+        appearance: { ...preset.appearance, imageUrl: result.url },
+        updatedAt: new Date().toISOString(),
+      };
+      bfRepo.savePreset(next);
+      return c.json({
+        battlefield: toPublicPreset(next),
+        note: result.note,
+        ok: true,
+      });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      console.error("[battlefields/image]", message);
+      return c.json(
+        { error: "image_generation_failed", message },
+        502,
+      );
+    }
   });
 
   authed.post("/battlefields/from-battle", async (c) => {

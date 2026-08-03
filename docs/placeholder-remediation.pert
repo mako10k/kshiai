@@ -13,23 +13,23 @@ milestone START:
 
 milestone DESIGN_READY:
   title "Provider and fallback design accepted"
-  state planned
+  state reached
 
 milestone IMAGE_PROVIDER_READY:
   title "Image provider core ready"
-  state planned
+  state reached
 
 milestone BATTLEFIELD_IMAGE_READY:
   title "Battlefield image generation ready"
-  state planned
+  state reached
 
 milestone FALLBACK_BOUNDARY_READY:
   title "Mock fallback boundary ready"
-  state planned
+  state reached
 
 milestone REMEDIATION_DONE:
   title "Placeholder remediation accepted"
-  state planned
+  state reached
 
 resource DEV:
   title "Developer"
@@ -45,24 +45,28 @@ task T_DESIGN START -> DESIGN_READY:
 task T_IMAGE_CORE DESIGN_READY -> IMAGE_PROVIDER_READY:
   title "Implement provider-neutral image generation core"
   duration 1d
+  status done
   requires:
     DEV 1
 
 task T_BATTLEFIELD_IMAGE IMAGE_PROVIDER_READY -> BATTLEFIELD_IMAGE_READY:
   title "Replace battlefield placeholder with generated media"
   duration 1d
+  status done
   requires:
     DEV 1
 
 task T_FALLBACK_BOUNDARY BATTLEFIELD_IMAGE_READY -> FALLBACK_BOUNDARY_READY:
   title "Prevent implicit persisted mock LLM output"
   duration 1d
+  status done
   requires:
     DEV 1
 
 task T_ACCEPT FALLBACK_BOUNDARY_READY -> REMEDIATION_DONE:
   title "Audit placeholders and run acceptance checks"
   duration 1d
+  status done
   requires:
     DEV 1
 
@@ -78,5 +82,65 @@ work_event WE-3522e7f11a903baae936daebbd1bebcd387cb1dd53a9382cfc37f92c96a600e8:
   task T_DESIGN
   kind finish
   occurred_at 2026-08-03T11:00:00+09:00
+  active_time 1h
+  effort 1ph
+
+work_event WE-d28c1a7bcf8a043a62c3e539e330d4b54f4a97ad622fb0b4d63f41ec72654b08:
+  model 1
+  task T_IMAGE_CORE
+  kind start
+  occurred_at 2026-08-03T11:05:00+09:00
+  planned_value 1d
+
+work_event WE-5641658aae7633e62e6a640b355d684bd2f1a25c4011b36aace7ccf6f5c6a1a6:
+  model 1
+  task T_IMAGE_CORE
+  kind finish
+  occurred_at 2026-08-03T12:05:00+09:00
+  active_time 1h
+  effort 1ph
+
+work_event WE-d815383e7ce558edbfa760f4a73833773a47748d728a2225ec29acb36e481e7e:
+  model 1
+  task T_BATTLEFIELD_IMAGE
+  kind start
+  occurred_at 2026-08-03T12:10:00+09:00
+  planned_value 1d
+
+work_event WE-9d721b8029945b67f5265cabaf128b1b90262d90a22574edfec65f688de5378e:
+  model 1
+  task T_BATTLEFIELD_IMAGE
+  kind finish
+  occurred_at 2026-08-03T13:10:00+09:00
+  active_time 1h
+  effort 1ph
+
+work_event WE-4c0798239882ef758156fc457eeba749a95e48303f890a845e71bf14a3fd9d79:
+  model 1
+  task T_FALLBACK_BOUNDARY
+  kind start
+  occurred_at 2026-08-03T13:15:00+09:00
+  planned_value 1d
+
+work_event WE-5f2a8382a82d708d0db5ac3d8b1015ed1d3a1aa6578099a4b1f39a5a82d2e4df:
+  model 1
+  task T_FALLBACK_BOUNDARY
+  kind finish
+  occurred_at 2026-08-03T14:15:00+09:00
+  active_time 1h
+  effort 1ph
+
+work_event WE-0122aa5cc29eba23371fd7e2179ef37656f0d0e16ddffcb341e75a9c8f940f4b:
+  model 1
+  task T_ACCEPT
+  kind start
+  occurred_at 2026-08-03T14:20:00+09:00
+  planned_value 1d
+
+work_event WE-5c8f537bba336ac8a6f4c5dc9f8eeb68b699dcc904b081e624222a68abecad44:
+  model 1
+  task T_ACCEPT
+  kind finish
+  occurred_at 2026-08-03T15:20:00+09:00
   active_time 1h
   effort 1ph
