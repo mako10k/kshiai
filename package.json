@@ -1,7 +1,7 @@
 {
   "name": "kshiai",
   "private": true,
-  "version": "0.1.8",
+  "version": "0.1.9",
   "description": "Turn-based multi-user LLM battle game",
   "workspaces": [
     "packages/*",
