@@ -73,6 +73,9 @@ short-lived GitHub OIDC token, exchange it through the
 restricts tokens to `mako10k/kshiai` release tags. The deploy account can start
 Cloud Build, read Artifact Registry metadata, administer Cloud Run, and act as
 the existing Cloud Run runtime account; it cannot read application secrets.
+Its access to Cloud Build source is limited to the dedicated
+`gs://kshiai_cloudbuild` bucket through `roles/storage.legacyBucketWriter`; it
+has no project-wide storage writer role.
 
 The runtime account reads only the Secret Manager resources attached to the
 service or smoke jobs. CI/CD adds these resources:

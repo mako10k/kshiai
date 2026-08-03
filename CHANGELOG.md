@@ -5,6 +5,19 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 
 ## [Unreleased]
 
+## [0.1.2] - 2026-08-03
+
+### Fixed
+
+- Carries forward the authenticated battle SSE fix from `v0.1.1`, whose
+  staging run stopped before creating release artifacts because the GitHub
+  deployment identity could not upload Cloud Build source.
+
+### Operations
+
+- Granted the deployment identity bucket-scoped writer access to the dedicated
+  `kshiai_cloudbuild` source bucket. No project-wide storage role was added.
+
 ## [0.1.1] - 2026-08-03
 
 ### Fixed
@@ -21,6 +34,8 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
   secret, or migration impact.
 - Roll back by restoring the previously active Cloudflare Worker version. The
   Cloud Run revision and PostgreSQL schema do not need to be rolled back.
+- The staging workflow failed before building or deploying artifacts. This tag
+  was not retried or moved and is superseded by `v0.1.2`.
 
 ### Added
 
