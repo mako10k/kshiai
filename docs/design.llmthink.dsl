@@ -210,7 +210,9 @@ decision D13 based_on PR13, EV13, D5:
     On quota, credit, spending-limit, or rate-limit errors, mark only that
     provider unavailable in memory for one hour and immediately try the next.
     Other failures fall through for the current request without a long cooldown.
-    Mock remains the final provider so user flows still complete offline.
+    Mock is available only when explicitly selected for development or tests;
+    it is never appended implicitly to a real-provider chain. If no configured
+    provider is usable, fail explicitly instead of persisting fixed mock prose.
 
 problem PR14:
   |
@@ -263,3 +265,27 @@ decision D16 based_on PR16, D1, D2, D9, D12:
     events and agent-owned lines but writes only narrator prose. Agent state and
     turn records remain absent from public battle DTOs; step-by-step reasoning is
     neither requested nor stored.
+
+problem PR17:
+  |
+    Battlefield image generation stores a deterministic avatar URL instead of
+    creating field art, while character generation is hard-wired to xAI and
+    persists a remote placeholder when generation fails.
+
+evidence EV17:
+  |
+    Character and battlefield images have the same lifecycle: construct a
+    domain prompt, call a server-side image model, save returned bytes, then
+    update the owned record only after the file is durable.
+
+decision D17 based_on PR17, EV17, D5:
+  |
+    ImageProvider is independent from LlmProvider and exposes provider name plus
+    one generate request returning encoded image bytes or a downloadable URL.
+    A provider-neutral image service owns prompt construction, retries, download,
+    diagnostics, and atomic record-facing success. Character portraits use a
+    square prompt; battlefield art uses a landscape prompt synthesized from the
+    preset appearance, terrain, obstacles, conditions, and narrative summary.
+    Routes update imageUrl only after local media is saved. Missing providers,
+    moderation failures, and transport failures return an explicit error and
+    preserve the previous record; remote placeholder URLs are never persisted.

@@ -1,6 +1,6 @@
 # Existing .pert plans should normally be maintained through perttool commands; direct DSL editing bypasses goal/DAG owner-confirmation checks.
 project KSHIAI_PLACEHOLDER_REMEDIATION:
-  version 1
+  version 5
   title "Replace production placeholder paths"
   description "Replace persisted battlefield placeholder imagery, establish a provider-neutral image boundary, and prevent implicit mock LLM content from reaching production-visible state."
   as_of 2026-08-03
@@ -38,6 +38,7 @@ resource DEV:
 task T_DESIGN START -> DESIGN_READY:
   title "Design image provider and explicit fallback boundary"
   duration 1d
+  status done
   requires:
     DEV 1
 
@@ -64,3 +65,18 @@ task T_ACCEPT FALLBACK_BOUNDARY_READY -> REMEDIATION_DONE:
   duration 1d
   requires:
     DEV 1
+
+work_event WE-41ad825a0fe90a6486d10817c577b4f926d8f5e52c54997db56f69c36e976f93:
+  model 1
+  task T_DESIGN
+  kind start
+  occurred_at 2026-08-03T10:00:00+09:00
+  planned_value 1d
+
+work_event WE-3522e7f11a903baae936daebbd1bebcd387cb1dd53a9382cfc37f92c96a600e8:
+  model 1
+  task T_DESIGN
+  kind finish
+  occurred_at 2026-08-03T11:00:00+09:00
+  active_time 1h
+  effort 1ph
