@@ -83,6 +83,7 @@ jobs:
           gcloud builds submit . \
             --project="$GCP_PROJECT" \
             --region="$GCP_REGION" \
+            --gcs-source-staging-dir=gs://kshiai_cloudbuild/source \
             --config=infra/cloudbuild.backend.yaml \
             --substitutions="_IMAGE=$image_tag"
           digest="$(gcloud artifacts docker images describe "$image_tag" \

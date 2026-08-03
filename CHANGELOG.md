@@ -5,6 +5,14 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 
 ## [Unreleased]
 
+## [0.1.3] - 2026-08-03
+
+### Fixed
+
+- Carries forward the authenticated battle SSE fix and explicitly stages Cloud
+  Build source in the dedicated `gs://kshiai_cloudbuild/source` path, avoiding
+  the project-wide bucket-list permission required by implicit bucket lookup.
+
 ## [0.1.2] - 2026-08-03
 
 ### Fixed
@@ -17,6 +25,9 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 
 - Granted the deployment identity bucket-scoped writer access to the dedicated
   `kshiai_cloudbuild` source bucket. No project-wide storage role was added.
+- The staging workflow still failed before artifact creation because implicit
+  default-bucket lookup required project-wide bucket listing. The immutable tag
+  was retained and superseded by `v0.1.3`.
 
 ## [0.1.1] - 2026-08-03
 
