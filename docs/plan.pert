@@ -63,6 +63,7 @@ milestone AUTH_V2_READY:
 
 milestone DEPLOY_PLAN_READY:
   title "Cloud runtime target and cutover plan ready"
+  state reached
 
 milestone DEPLOYABLE_READY:
   title "Backend container and frontend deployment artifacts ready"
@@ -156,6 +157,7 @@ task T_AUTH_V2 DISTRIBUTED_READY -> AUTH_V2_READY:
 task T_DEPLOY_PLAN AUTH_V2_READY -> DEPLOY_PLAN_READY:
   title "Select the cloud runtime and define cost rollback and cutover"
   duration 1d
+  status done
   requires:
     DEV 1
 

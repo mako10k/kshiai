@@ -12,6 +12,7 @@
 
 PostgreSQL 移行: [docs/postgres_migration.md](docs/postgres_migration.md)
 旧アカウント移管: [docs/legacy_account_migration.md](docs/legacy_account_migration.md)
+クラウド実行環境: [docs/cloud_runtime.md](docs/cloud_runtime.md)
 
 ## 技術構成
 
