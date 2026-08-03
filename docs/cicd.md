@@ -86,6 +86,12 @@ they do not add a Supabase browser redirect and must not be used as a permanent
 application URL. `ORIGIN_SHARED_SECRET` remains a required encrypted Worker
 binding and is inherited by uploaded versions.
 
+CI has been exercised on GitHub-hosted Linux runners, including the container
+and Worker scans. The tag-restricted OIDC exchange and cloud promotion are not
+invoked until the first versioned release; the first `Stage release` run is the
+live acceptance of that identity and deployment path and must not be promoted
+if any configured identity, IAM, secret, or smoke check fails.
+
 ## Preparing a release
 
 Update all four package versions and the matching `package-lock.json` entries,
