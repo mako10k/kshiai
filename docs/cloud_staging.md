@@ -17,7 +17,7 @@ The first cloud staging deployment was created on 2026-08-03.
 | Initial Cloud Run revision | `kshiai-api-00001-b6d` |
 | Cloud Run origin | `https://kshiai-api-crpgn6evfa-an.a.run.app` |
 | Cloudflare Worker | `kshiai-web` |
-| Workers.dev staging URL | `https://kshiai-web.mako10k.workers.dev` |
+| Workers.dev staging URL | `https://kshiai-web.mako10k.workers.dev` (disabled at cutover) |
 | Worker code version | `460b4d94-5741-4b95-8566-a669912cb6e9` |
 | Worker version after secret binding | `f3a8ef15-82f2-465a-9eb6-88cbc31feb6a` |
 
@@ -70,16 +70,15 @@ The following checks passed against the deployed staging stack:
   checks. The synthetic SSE check intentionally produced one
   `BATTLE_NOT_FOUND` stream error for its reserved nonexistent battle ID.
 
-Supabase Auth allows the staging callback
-`https://kshiai-web.mako10k.workers.dev/auth/callback` in addition to the
-production and local callbacks. The production Auth site URL remains
-`https://kshiai.mk10.org`.
+Supabase Auth temporarily allowed the Workers.dev callback for browser
+acceptance. The callback was removed when Workers.dev was disabled at cutover.
+The production Auth site URL remains `https://kshiai.mk10.org`.
 
 Google OIDC login through the Workers.dev URL was accepted in a browser on
 2026-08-03. A read-only ownership audit confirmed that the linked
 `mako10k@mk10.org` application user retained 22 characters, four custom
-battlefields, two narration styles, and 46 battles. Production DNS and the
-existing Cloudflare Tunnel are unchanged.
+battlefields, two narration styles, and 46 battles. Production cutover evidence
+is recorded in `docs/cloud_cutover.md`.
 
 The dependency audit still reports a Windows-only path traversal advisory in
 `@hono/node-server` 1.x and an RSC-mode advisory in React Router. The deployed
@@ -107,8 +106,7 @@ Cloudflare token into `CLOUDFLARE_API_TOKEN`. Set `ORIGIN_SHARED_SECRET` with
 
 ## Rollback
 
-Staging currently has no production hostname, so rollback is simply removal or
-disablement of the Workers.dev deployment. Do not change the existing
-`kshiai.mk10.org` Tunnel route during staging. For a backend-only rollback,
-route Cloud Run traffic to the recorded known-good revision or redeploy the
-recorded image digest.
+The production Worker Route supersedes this staging state. Use
+`docs/cloud_cutover.md` for the active rollback procedure. For a backend-only
+rollback, route Cloud Run traffic to the recorded known-good revision or
+redeploy the recorded image digest.

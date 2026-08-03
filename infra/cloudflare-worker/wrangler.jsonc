@@ -6,6 +6,12 @@
   "vars": {
     "BACKEND_ORIGIN": "https://kshiai-api-crpgn6evfa-an.a.run.app"
   },
+  "routes": [
+    {
+      "pattern": "kshiai.mk10.org/*",
+      "zone_name": "mk10.org"
+    }
+  ],
   "assets": {
     "directory": "../../frontend/dist",
     "binding": "ASSETS",

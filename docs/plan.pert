@@ -179,6 +179,7 @@ task T_DEPLOY_STAGING DEPLOYABLE_READY -> CLOUD_STAGING_READY:
 task T_DEPLOY_CUTOVER CLOUD_STAGING_READY -> RUNTIME_MIGRATED:
   title "Switch production traffic verify rollback and retire local runtime"
   duration 1d
+  status done
   requires:
     DEV 1
 

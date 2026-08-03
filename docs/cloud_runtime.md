@@ -113,24 +113,25 @@ in `docs/cloud_staging.md`.
 ## Cutover and rollback
 
 Before cutover, record the active Cloud Run revision, Worker version, current
-Tunnel ID/configuration, and Cloudflare DNS route. Keep local PM2 and
-`cloudflared-kshiai.service` running but do not direct production traffic to two
-origins simultaneously.
+Tunnel ID/configuration, and Cloudflare route. Keep local PM2 and
+`cloudflared-kshiai.service` running until the Worker route is accepted.
 
-Cutover changes only Cloudflare routing. PostgreSQL, Supabase Auth, and R2 are
-already shared, so no data copy occurs during the switch. Validate `/api/health`,
-login, character/media reads, one reversible API write, and a streamed battle
-turn immediately after the change.
+Cutover changes only Cloudflare routing. The proxied Tunnel DNS record remains
+in place while the `kshiai.mk10.org/*` Worker Route takes precedence, giving a
+small rollback surface without copying data. PostgreSQL, Supabase Auth, and R2
+are shared across both runtimes.
 
-Rollback restores the prior Tunnel DNS route and disables the Worker production
-route. It does not roll back PostgreSQL. If a cloud revision is faulty while the
-Worker path is otherwise healthy, route the Cloud Run service to the last known
-good revision instead. Retain the local runtime for at least 72 hours after
-acceptance, then stop PM2 and the local tunnel without deleting their configs.
+Rollback starts the two local PM2 applications and then removes the production
+Worker Route, allowing the unchanged Tunnel record to serve traffic again. It
+does not roll back PostgreSQL. If a cloud revision is faulty while the Worker
+path is otherwise healthy, route Cloud Run to the last known-good revision.
+The local PM2 applications were stopped after acceptance at the operator's
+request; their configuration and the Tunnel service remain available.
 
 ## Provisioning prerequisite
 
-Cloudflare API access is already available through `secdat` as `T2_API_TOKEN`.
+Cloudflare Worker API access is available through `secdat` as
+`CLOUDFLARE_WORKERS_API_TOKEN`.
 Cloud Run provisioning still requires a Google Cloud project with billing
 enabled and an authenticated deployment identity. Required APIs include Cloud
 Run, Artifact Registry, Cloud Build, and Secret Manager. Set a billing budget

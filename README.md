@@ -13,6 +13,7 @@
 PostgreSQL 移行: [docs/postgres_migration.md](docs/postgres_migration.md)
 旧アカウント移管: [docs/legacy_account_migration.md](docs/legacy_account_migration.md)
 クラウド実行環境: [docs/cloud_runtime.md](docs/cloud_runtime.md)
+本番切替記録: [docs/cloud_cutover.md](docs/cloud_cutover.md)
 
 ## 技術構成
 
@@ -26,19 +27,22 @@ PostgreSQL 移行: [docs/postgres_migration.md](docs/postgres_migration.md)
 
 ## 公開 URL
 
-- **https://kshiai.mk10.org**（Cloudflare Tunnel → Vite `127.0.0.1:5188`、API は `/api` プロキシ）
-- 手順メモ: [docs/cloudflare_tunnel.md](docs/cloudflare_tunnel.md)
+- **https://kshiai.mk10.org**（Cloudflare Worker静的配信 → `/api` はCloud Runへストリーミングプロキシ）
+- 旧Tunnel手順・ロールバック: [docs/cloudflare_tunnel.md](docs/cloudflare_tunnel.md)
 
-### 常駐（kaix と同系）
+### 本番常駐
 
 | 役割 | 仕組み |
 |------|--------|
-| アプリ | PM2 `ecosystem.config.cjs`（`kshiai-backend` / `kshiai-frontend`）+ `pm2-mako10k.service` |
-| Tunnel | systemd `cloudflared-kshiai.service` |
+| Frontend / edge proxy | Cloudflare Worker `kshiai-web` |
+| Backend | Cloud Run `kshiai-api`（東京、0〜3インスタンス） |
+| 旧ローカルアプリ | PM2 `kshiai-backend` / `kshiai-frontend` は停止済み |
+| ロールバックTunnel | systemd `cloudflared-kshiai.service`（設定保持） |
 
 ```bash
-pm2 start ecosystem.config.cjs && pm2 save
-sudo systemctl enable --now cloudflared-kshiai
+gcloud run services describe kshiai-api --project=kshiai --region=asia-northeast1
+CLOUDFLARE_API_TOKEN="$(secdat get CLOUDFLARE_WORKERS_API_TOKEN --stdout)" \
+  npx wrangler deployments list --config infra/cloudflare-worker/wrangler.jsonc
 ```
 
 ## セットアップ

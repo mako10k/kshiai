@@ -10,6 +10,16 @@ export interface WorkerEnvironment {
 
 type Fetcher = (request: Request) => Promise<Response>;
 
+function markRuntime(response: Response): Response {
+  const headers = new Headers(response.headers);
+  headers.set("X-Kshiai-Runtime", "cloudflare-worker");
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
+  });
+}
+
 function backendUrl(origin: string, requestUrl: string): URL | null {
   try {
     const target = new URL(origin);
@@ -31,22 +41,22 @@ export async function handleRequest(
 ): Promise<Response> {
   const incoming = new URL(request.url);
   if (incoming.pathname !== "/api" && !incoming.pathname.startsWith("/api/")) {
-    return env.ASSETS.fetch(request);
+    return markRuntime(await env.ASSETS.fetch(request));
   }
 
   const target = env.BACKEND_ORIGIN && backendUrl(env.BACKEND_ORIGIN, request.url);
   if (!target || !env.ORIGIN_SHARED_SECRET) {
-    return Response.json(
+    return markRuntime(Response.json(
       { error: "backend_not_configured" },
       { status: 503, headers: { "Cache-Control": "no-store" } },
-    );
+    ));
   }
 
   const upstreamRequest = new Request(target, request);
   upstreamRequest.headers.set("x-kshiai-origin", env.ORIGIN_SHARED_SECRET);
   upstreamRequest.headers.set("x-forwarded-host", incoming.host);
   upstreamRequest.headers.set("x-forwarded-proto", incoming.protocol.replace(":", ""));
-  return fetcher(upstreamRequest);
+  return markRuntime(await fetcher(upstreamRequest));
 }
 
 export default {

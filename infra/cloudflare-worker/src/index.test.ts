@@ -23,6 +23,7 @@ describe("Cloudflare frontend worker", () => {
       async () => new Response("unexpected"),
     );
     assert.equal(await response.text(), "asset");
+    assert.equal(response.headers.get("x-kshiai-runtime"), "cloudflare-worker");
   });
 
   it("proxies API method, body, query, and protected origin headers", async () => {
@@ -40,6 +41,7 @@ describe("Cloudflare frontend worker", () => {
       },
     );
     assert.equal(response.headers.get("content-type"), "text/event-stream");
+    assert.equal(response.headers.get("x-kshiai-runtime"), "cloudflare-worker");
     assert.equal(upstream?.url, "https://backend.example.run.app/api/battles/one?stream=1");
     assert.equal(upstream?.method, "POST");
     assert.equal(upstream?.headers.get("x-kshiai-origin"), "shared-secret");
@@ -54,5 +56,6 @@ describe("Cloudflare frontend worker", () => {
     );
     assert.equal(response.status, 503);
     assert.equal(response.headers.get("cache-control"), "no-store");
+    assert.equal(response.headers.get("x-kshiai-runtime"), "cloudflare-worker");
   });
 });
