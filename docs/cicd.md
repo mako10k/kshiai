@@ -103,6 +103,11 @@ URLs. Preview URLs are public and exist only to validate an undeployed version;
 they do not add a Supabase browser redirect and must not be used as a permanent
 application URL. `ORIGIN_SHARED_SECRET` remains a required encrypted Worker
 binding and is inherited by uploaded versions.
+Before uploading a version, staging resolves the single Cloudflare account
+authorized by its dedicated token and idempotently applies the Worker subdomain
+setting `{ enabled: false, previews_enabled: true }`. It verifies the returned
+state before proceeding, so preview smoke tests cannot silently target a
+disabled URL and the production `workers.dev` endpoint remains disabled.
 The staging workflow builds `@kshiai/shared` before the frontend so workspace
 type exports exist when the immutable Worker version is compiled.
 
