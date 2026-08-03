@@ -10,6 +10,7 @@ import type {
   NarrationStylePublic,
   UserPublic,
 } from "@kshiai/shared";
+import { authenticatedFetch } from "./authenticated-fetch";
 import { supabase } from "./supabase";
 
 export type ImageGenQuota = {
@@ -45,20 +46,13 @@ async function request<T>(
   init?: RequestInit,
 ): Promise<T> {
   const headers = new Headers(init?.headers);
-  if (supabase && !headers.has("Authorization")) {
-    const { data } = await supabase.auth.getSession();
-    if (data.session?.access_token) {
-      headers.set("Authorization", `Bearer ${data.session.access_token}`);
-    }
-  }
   if (!headers.has("Content-Type") && init?.body != null) {
     headers.set("Content-Type", "application/json");
   }
-  const res = await fetch(path, {
+  const res = await authenticatedFetch(path, {
     ...init,
-    credentials: "include",
     headers,
-  });
+  }, currentAccessToken);
   const data = (await res.json().catch(() => ({}))) as T & {
     error?: string;
     message?: string;
@@ -76,6 +70,12 @@ async function request<T>(
     });
   }
   return data;
+}
+
+async function currentAccessToken(): Promise<string | undefined> {
+  if (!supabase) return undefined;
+  const { data } = await supabase.auth.getSession();
+  return data.session?.access_token;
 }
 
 export const api = {
@@ -314,9 +314,8 @@ export const api = {
       signal?: AbortSignal;
     },
   ): Promise<BattlePublic> => {
-    const res = await fetch(`/api/battles/${id}/advance/stream`, {
+    const res = await authenticatedFetch(`/api/battles/${id}/advance/stream`, {
       method: "POST",
-      credentials: "include",
       headers: {
         Accept: "text/event-stream",
         "Content-Type": "application/json",
@@ -324,7 +323,7 @@ export const api = {
       },
       body: "{}",
       signal: opts?.signal,
-    });
+    }, currentAccessToken);
     if (!res.ok) {
       const data = (await res.json().catch(() => ({}))) as {
         error?: string;
