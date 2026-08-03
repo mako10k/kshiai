@@ -36,12 +36,19 @@ release tag with known-good revision/version IDs and type
 `ROLLBACK <cloud-run-revision>`. The production concurrency group prevents it
 from overlapping another promotion or rollback.
 
-## GitHub Free limitation
+## GitHub protection
 
-This is a private repository on GitHub Free. GitHub's API rejects branch
-protection, and private-repository environments, environment secrets, and
-required reviewers are unavailable on this plan. The workflows therefore
-protect the deployment path with all of these gates:
+This is a public repository with branch protection enabled on `main`. Every
+change must arrive through a pull request with an up-to-date branch and pass
+the stable `validate`, `security`, `backend-image`, and `worker` checks. The
+rule applies to administrators, requires linear history and resolved review
+conversations, and disallows force pushes and branch deletion. A second-person
+approval is not required while the repository has one maintainer.
+Only squash merges are enabled, merged branches are deleted automatically, and
+GitHub secret scanning, push protection, Dependabot alerts, and automated
+security updates are enabled for the public repository.
+
+The workflows retain defense-in-depth gates in addition to branch protection:
 
 - only `mako10k`, the repository owner, may dispatch release workflows;
 - staging and production promotion are separate manual workflow runs;
@@ -50,13 +57,12 @@ protect the deployment path with all of these gates:
   `backend-image`, and `worker` check runs;
 - Google Workload Identity Federation accepts only this repository's `v*`
   tag refs;
-- production workflows are serialized and require a typed confirmation.
+- production workflows are serialized and require a typed confirmation;
+- `staging` and `production` accept deployments only from `v*` tags;
+- `production` requires approval by the repository owner before a job starts.
 
-This cannot prevent the owner from directly pushing to `main`. If the account
-is upgraded to GitHub Pro or the repository becomes public, immediately enable
-branch protection with the four check names, disallow force pushes/deletion,
-and put promotion in a protected `production` environment. Do not remove the
-workflow's commit and artifact checks when doing so.
+The environment approval is an additional explicit action; the typed workflow
+confirmation and exact-commit/artifact checks remain mandatory.
 
 ## Cloud identities and secrets
 
@@ -75,10 +81,11 @@ service or smoke jobs. CI/CD adds these resources:
 - `kshiai-supabase-secret-key` for disposable auth-smoke users;
 - `kshiai-supabase-publishable-key` for auth-smoke sign-in.
 
-GitHub has one repository secret, `CLOUDFLARE_API_TOKEN`, copied from the
-dedicated limited Worker token in `secdat`. GitHub Free cannot scope it to a
-private production environment, so only the tag-guarded release workflows
-reference it. Never print or pass secret values as command-line variables.
+The `staging` and `production` environments each hold
+`CLOUDFLARE_API_TOKEN`, copied from the dedicated limited Worker token in
+`secdat`. There is no repository-wide copy. Only jobs attached to the matching
+tag-restricted environment can read it. Never print or pass secret values as
+command-line variables.
 
 The Worker keeps `workers.dev` disabled but explicitly enables version preview
 URLs. Preview URLs are public and exist only to validate an undeployed version;

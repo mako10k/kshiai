@@ -7,6 +7,9 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 
 ### Added
 
+- Public repository governance with protected `main`, tag-restricted release
+  environments, environment-scoped Cloudflare deployment credentials, secret
+  push protection, and Dependabot security updates.
 - Release governance covering versioning, required checks, immutable artifact
   promotion, database compatibility, rollback, and emergency releases.
 - GitHub Actions validation, staged release and owner-confirmed production

@@ -7,9 +7,8 @@ and the Cloudflare Worker frontend/proxy as one product.
 The repository currently has no historical release tags and all npm workspaces
 are at `0.1.0`. This policy therefore starts with the first release created
 after its adoption; it does not invent releases for older commits. The policy
-is effective immediately. Automated enforcement and protected deployment
-environments are delivered by `T_CICD`; until then, releases are manual and
-must record the same evidence described here.
+is effective immediately. CI enforcement and protected deployment environments
+are active and releases must record the evidence described here.
 
 ## Versioning and tags
 
@@ -39,33 +38,24 @@ must record the same evidence described here.
 fix. Every change after CI/CD enforcement is enabled goes through a pull
 request and is squash-merged so that each merged PR is one auditable change.
 
-The repository owner is the release owner. A second-person approval is not
-required while this is a single-maintainer private repository, but all required
-checks are mandatory. Production deployment requires an explicit owner
-approval separate from merging the release PR. If another maintainer is added,
-changes to authentication, billing, data migration, secrets, or deployment
-must also receive approval from a code owner for that area.
+The repository owner is the release owner. A second-person pull-request
+approval is not required while this is a single-maintainer public repository,
+but all required checks are mandatory. Production deployment requires approval
+through the protected `production` environment, separate from merging the
+release PR, as well as the workflow's typed confirmation. If another maintainer
+is added, changes to authentication, billing, data migration, secrets, or
+deployment must also receive approval from a code owner for that area.
 
-Until branch protection is enabled by `T_CICD`, the release owner must verify
-the checks locally and preserve their output in the release record. Once
-enabled, direct pushes to `main`, force pushes, branch deletion, and bypassing
-required checks are prohibited.
-
-The repository is currently private on GitHub Free. That plan does not provide
-branch protection or deployment environments for private repositories. Until
-GitHub Pro is enabled or the repository becomes public, the release workflows
-compensate by allowing only the repository owner to dispatch from an annotated
-release tag, querying the GitHub API for all four successful checks on that
-exact commit, restricting Google OIDC to release tags, and separating staging
-from the owner-confirmed promotion workflow. This protects the production
-deployment path, but it cannot prevent an owner from pushing directly to
-`main`. Configure branch protection and protected environments immediately if
-the plan changes.
+Branch protection applies to administrators. Direct pushes to `main`, force
+pushes, branch deletion, unresolved review conversations, and bypassing the
+four required checks are prohibited. `staging` and `production` deployments
+accept only `v*` tags. The workflows additionally verify the four successful
+checks on the exact tagged commit and Google OIDC accepts only release tags.
 
 ## Required checks
 
-`T_CICD` must expose these stable required-check names so branch protection can
-refer to them without depending on matrix job suffixes:
+CI exposes these stable required-check names so branch protection can refer to
+them without depending on matrix job suffixes:
 
 | Check | Required evidence |
 | --- | --- |
