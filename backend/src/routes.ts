@@ -292,6 +292,8 @@ export function buildRoutes() {
       appearance: adj.sheetPatch.appearance
         ? { ...sheet.appearance, ...adj.sheetPatch.appearance }
         : sheet.appearance,
+      // Owner coaching memo is never rewritten by free-form chat.
+      improvementMemo: sheet.improvementMemo,
     };
     const next: CharacterSheet = {
       ...balanceCharacterCombatFields(merged),
@@ -301,6 +303,7 @@ export function buildRoutes() {
       record: sheet.record,
       recordOverall: sheet.recordOverall,
       deletedAt: sheet.deletedAt,
+      improvementMemo: sheet.improvementMemo,
       updatedAt: new Date().toISOString(),
     };
     charRepo.saveSheet(next);
@@ -316,6 +319,79 @@ export function buildRoutes() {
       character: toPublicCharacter(next, user.id),
       assistantMessage: adj.assistantMessage,
     });
+  });
+
+  /** Owner-only improvement memo + analysis eligibility. */
+  authed.get("/characters/:id/improvement", async (c) => {
+    const user = c.get("user");
+    const id = c.req.param("id");
+    const sheet = charRepo.getSheet(id);
+    if (!sheet || sheet.ownerUserId !== user.id) {
+      return c.json({ error: "not_found" }, 404);
+    }
+    const {
+      getCharacterImprovementPublic,
+    } = await import("./services/character-improvement.js");
+    return c.json(getCharacterImprovementPublic(sheet));
+  });
+
+  /**
+   * Analyze recent battles via LLM tools and register strengths/improvements.
+   * Gated: first after 5 finished battles, then every 10 battles.
+   */
+  authed.post("/characters/:id/improvement/analyze", async (c) => {
+    const user = c.get("user");
+    const id = c.req.param("id");
+    const sheet = charRepo.getSheet(id);
+    if (!sheet || sheet.ownerUserId !== user.id) {
+      return c.json({ error: "not_found" }, 404);
+    }
+    try {
+      const { analyzeCharacterImprovement } = await import(
+        "./services/character-improvement.js"
+      );
+      const result = await analyzeCharacterImprovement({ sheet, llm });
+      return c.json({
+        ...result.public,
+        assistantMessage: result.assistantMessage,
+      });
+    } catch (err) {
+      const code =
+        err && typeof err === "object" && "code" in err
+          ? String((err as { code?: string }).code)
+          : "analyze_failed";
+      const message = err instanceof Error ? err.message : "analyze_failed";
+      const status =
+        code === "analysis_not_allowed" || code === "no_battles" ? 400 : 500;
+      return c.json({ error: code, message }, status);
+    }
+  });
+
+  /**
+   * Build a chat revision prompt from the memo (fills the adjust conversation box).
+   */
+  authed.post("/characters/:id/improvement/prompt", async (c) => {
+    const user = c.get("user");
+    const id = c.req.param("id");
+    const sheet = charRepo.getSheet(id);
+    if (!sheet || sheet.ownerUserId !== user.id) {
+      return c.json({ error: "not_found" }, 404);
+    }
+    try {
+      const { generateCharacterImprovementPrompt } = await import(
+        "./services/character-improvement.js"
+      );
+      const result = await generateCharacterImprovementPrompt({ sheet, llm });
+      return c.json(result);
+    } catch (err) {
+      const code =
+        err && typeof err === "object" && "code" in err
+          ? String((err as { code?: string }).code)
+          : "prompt_failed";
+      const message = err instanceof Error ? err.message : "prompt_failed";
+      const status = code === "memo_empty" ? 400 : 500;
+      return c.json({ error: code, message }, status);
+    }
   });
 
   authed.post("/characters/:id/copy", async (c) => {

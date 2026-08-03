@@ -269,6 +269,8 @@ export function copyCharacter(
     // Fresh rating — no carry-over from original (anti-clone farming)
     record: defaultRecord(),
     recordOverall: defaultRecord(),
+    // Coaching memo is battle-history bound; start empty on copy.
+    improvementMemo: undefined,
   };
   saveSheet(copy);
   return copy;

@@ -28,9 +28,14 @@ import {
 import type {
   AdjustBattlefieldResult,
   AdjustCharacterResult,
+  AnalyzeCharacterImprovementInput,
+  AnalyzeCharacterImprovementResult,
+  BattleHistoryTools,
   GenerateBattlefieldResult,
   GenerateCharacterResult,
   GenerateCharacterInput,
+  GenerateImprovementPromptInput,
+  GenerateImprovementPromptResult,
   CharacterReferenceTools,
   LlmProvider,
   NarrationResult,
@@ -386,6 +391,116 @@ export class OpenAiCompatibleProvider implements LlmProvider {
       }
     }
     throw new Error("Character reference tool round limit exceeded");
+  }
+
+  private async chatJsonWithBattleHistoryTools(
+    system: string,
+    user: string,
+    battleTools: BattleHistoryTools,
+    opts?: ChatOpts,
+  ): Promise<unknown> {
+    if (!this.client) throw new Error("LLM client not configured");
+
+    const tools: ChatCompletionTool[] = [
+      {
+        type: "function",
+        function: {
+          name: "search_character_battles",
+          description:
+            "Search this character's finished battles. Use empty query for recent matches. Filter by opponent name, result (win/loss/draw), battlefield, or skill name.",
+          parameters: {
+            type: "object",
+            properties: {
+              query: {
+                type: "string",
+                description:
+                  "Opponent, result keyword, field name, or skill. Empty = recent battles.",
+              },
+              limit: { type: "integer", minimum: 1, maximum: 20 },
+            },
+            required: ["query"],
+            additionalProperties: false,
+          },
+        },
+      },
+      {
+        type: "function",
+        function: {
+          name: "get_character_battle",
+          description:
+            "Get a narrative-safe detail of one battle by id (events, policies, narration excerpts). No raw combat parameters.",
+          parameters: {
+            type: "object",
+            properties: { battleId: { type: "string" } },
+            required: ["battleId"],
+            additionalProperties: false,
+          },
+        },
+      },
+    ];
+
+    const recentIndex = await battleTools.search("", 8);
+    const userWithIndex =
+      recentIndex.length > 0
+        ? `${user}\n\nRecent finished battles index (use tools for detail):\n${JSON.stringify(recentIndex)}`
+        : user;
+
+    const messages: ChatCompletionMessageParam[] = [
+      { role: "system", content: system },
+      { role: "user", content: userWithIndex },
+    ];
+    const timeoutMs = Math.round(
+      (opts?.timeoutMs ?? 36_000) * this.timeoutMultiplier,
+    );
+    for (let round = 0; round < 5; round += 1) {
+      const response = await this.client.chat.completions.create(
+        {
+          model: this.modelFor(opts?.tier ?? "engine"),
+          messages,
+          tools,
+          tool_choice: "auto",
+          ...(this.supportsTemperature
+            ? { temperature: opts?.temperature ?? 0.4 }
+            : {}),
+          response_format: { type: "json_object" },
+        },
+        { timeout: timeoutMs },
+      );
+      const message = response.choices[0]?.message;
+      if (!message) throw new Error("LLM returned no message");
+      const calls = (message.tool_calls ?? []).filter(
+        (call) => call.type === "function",
+      );
+      if (calls.length === 0) return JSON.parse(message.content ?? "{}");
+      messages.push({
+        role: "assistant",
+        content: message.content,
+        tool_calls: calls,
+      });
+      for (const call of calls) {
+        let args: Record<string, unknown> = {};
+        try {
+          args = JSON.parse(call.function.arguments) as Record<string, unknown>;
+        } catch {
+          // Invalid arguments produce an empty/null tool result.
+        }
+        const result =
+          call.function.name === "search_character_battles"
+            ? await battleTools.search(
+                String(args.query ?? ""),
+                Number(args.limit ?? 12),
+              )
+            : call.function.name === "get_character_battle"
+              ? await battleTools.get(String(args.battleId ?? ""))
+              : null;
+        messages.push({
+          role: "tool",
+          tool_call_id: call.id,
+          content: JSON.stringify(result),
+        });
+      }
+    }
+    throw new Error("Battle history tool round limit exceeded");
   }
 
   async generateCharacter(input: GenerateCharacterInput): Promise<GenerateCharacterResult> {
@@ -1509,6 +1624,135 @@ Prefer the engineWinnerSide unless the narrative strongly suggests otherwise.`,
       return data;
     } catch (error) {
       return this.fallbackOrThrow(error, () => this.fallback.referee(input));
+    }
+  }
+
+  async analyzeCharacterImprovement(
+    input: AnalyzeCharacterImprovementInput,
+  ): Promise<AnalyzeCharacterImprovementResult> {
+    if (!this.client) {
+      return this.fallback.analyzeCharacterImprovement(input);
+    }
+    try {
+      const data = (await this.chatJsonWithBattleHistoryTools(
+        `You are a coaching analyst for a fictional character in a turn-based game.
+Use search_character_battles and get_character_battle to inspect recent results before concluding.
+Return Japanese JSON only:
+{
+  "strengths": string[],       // 3–6 concrete good points observed in battles
+  "improvements": string[],    // 3–6 safe improvement targets
+  "summary": string,           // 2–4 sentence overall read
+  "assistantMessage": string   // short owner-facing confirmation
+}
+HARD RULES:
+- Preserve the character's concept, personality, appearance, genre, and identity. Never recommend rewriting who they are.
+- Strengths: things to KEEP and amplify (playstyle, skill usage, timing, presence).
+- Improvements: only practical fight habits that do NOT change core traits or concept (pacing, resource timing, opening caution, closing out wins, field adaptation).
+- Do NOT invent absolute power buffs, new identities, personality flips, or genre changes.
+- Do NOT mention raw numeric stats (HP/ATK/etc.) or ask the user to edit JSON.
+- Prefer evidence from tool results (wins/losses, skills used, event highlights, narration).
+- If previous memo exists, update it with newer evidence rather than ignoring it.`,
+        JSON.stringify({
+          character: input.character,
+          previousMemo: input.previousMemo,
+          finishedBattles: input.finishedBattles,
+        }),
+        input.battleTools,
+        {
+          tier: "engine",
+          label: "analyzeCharacterImprovement",
+          temperature: 0.35,
+          timeoutMs: 40_000,
+        },
+      )) as Record<string, unknown>;
+
+      const list = (value: unknown) =>
+        Array.isArray(value)
+          ? value
+              .map(String)
+              .map((s) => s.trim())
+              .filter(Boolean)
+              .slice(0, 12)
+          : [];
+
+      const strengths = list(data.strengths);
+      const improvements = list(data.improvements);
+      if (strengths.length === 0 && improvements.length === 0) {
+        throw new Error("Improvement analysis returned empty notes");
+      }
+      return {
+        strengths:
+          strengths.length > 0
+            ? strengths
+            : ["キャラらしさが戦績に表れている"],
+        improvements:
+          improvements.length > 0
+            ? improvements
+            : ["戦い方のタイミングを少し整える余地がある"],
+        summary: String(data.summary ?? "直近の戦績を踏まえた分析です。").slice(
+          0,
+          800,
+        ),
+        assistantMessage: String(
+          data.assistantMessage ?? "良い点と改善点をメモに登録しました。",
+        ),
+      };
+    } catch (error) {
+      return this.fallbackOrThrow(error, () =>
+        this.fallback.analyzeCharacterImprovement(input),
+      );
+    }
+  }
+
+  async generateImprovementPrompt(
+    input: GenerateImprovementPromptInput,
+  ): Promise<GenerateImprovementPromptResult> {
+    if (!this.client) {
+      return this.fallback.generateImprovementPrompt(input);
+    }
+    try {
+      const data = (await this.chatJson(
+        `You write a Japanese user message for the character adjustment chat.
+The message will be sent as-is to an adjustCharacter LLM. Return JSON:
+{ "prompt": string, "assistantMessage": string }
+
+HARD RULES for "prompt":
+- Write as the player's instruction (自然文), 3–8 sentences, Japanese.
+- Explicitly say: do NOT change concept, personality core, appearance, names, or genre.
+- Amplify listed strengths; only fix improvements that do not break character identity.
+- Prefer tactical/habitual tweaks (timing, skill usage feel, resource pacing, conditional play) over power creep.
+- Do not request raw numbers, JSON, or absolute invincibility.
+- Keep flavor consistent with the character snapshot.
+assistantMessage is a short UI confirmation for the owner.`,
+        JSON.stringify({
+          character: input.character,
+          memo: {
+            strengths: input.memo.strengths,
+            improvements: input.memo.improvements,
+            summary: input.memo.summary,
+          },
+        }),
+        {
+          tier: "fast",
+          label: "generateImprovementPrompt",
+          temperature: 0.4,
+          timeoutMs: 16_000,
+        },
+      )) as Record<string, unknown>;
+
+      const prompt = String(data.prompt ?? "").trim();
+      if (!prompt) throw new Error("Empty improvement prompt");
+      return {
+        prompt: prompt.slice(0, 4000),
+        assistantMessage: String(
+          data.assistantMessage ??
+            "会話での修正欄に改善プロンプトを入れました。",
+        ),
+      };
+    } catch (error) {
+      return this.fallbackOrThrow(error, () =>
+        this.fallback.generateImprovementPrompt(input),
+      );
     }
   }
 

@@ -1,6 +1,10 @@
 import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import type { BattleListItem, CharacterPublic } from "@kshiai/shared";
+import type {
+  BattleListItem,
+  CharacterImprovementPublic,
+  CharacterPublic,
+} from "@kshiai/shared";
 import { api, ApiError, type ImageGenQuota } from "../api";
 import { useLocalDraft } from "../hooks/useLocalDraft";
 import { mediaSrc } from "../media";
@@ -62,6 +66,9 @@ export function CharacterDetailPage() {
   const [busy, setBusy] = useState(false);
   const [imageBusy, setImageBusy] = useState(false);
   const [quota, setQuota] = useState<ImageGenQuota | null>(null);
+  const [improvement, setImprovement] =
+    useState<CharacterImprovementPublic | null>(null);
+  const [improvementBusy, setImprovementBusy] = useState(false);
 
   const reloadQuota = useCallback(async (charId: string) => {
     try {
@@ -86,6 +93,35 @@ export function CharacterDetailPage() {
     }
   }, []);
 
+  const reloadImprovement = useCallback(async (charId: string) => {
+    try {
+      const res = await api.getCharacterImprovement(charId);
+      setImprovement(res);
+    } catch {
+      // Keep UI usable offline from analysis; eligibility will re-fetch later.
+      setImprovement({
+        memo: {
+          strengths: [],
+          improvements: [],
+          summary: "",
+          lastAnalyzedAt: null,
+          lastAnalyzedBattleCount: 0,
+          analysisCount: 0,
+        },
+        eligibility: {
+          finishedBattles: 0,
+          canAnalyze: false,
+          battlesUntilNext: 5,
+          reason: "改善メモを取得できませんでした。再読み込みしてください。",
+          lastAnalyzedAt: null,
+          lastAnalyzedBattleCount: 0,
+          analysisCount: 0,
+          nextAnalyzeAtBattleCount: 5,
+        },
+      });
+    }
+  }, []);
+
   useEffect(() => {
     if (!id) return;
     setError(null);
@@ -94,7 +130,12 @@ export function CharacterDetailPage() {
       .then(({ character: c, isOwner: owner }) => {
         setCharacter(c);
         setIsOwner(owner);
-        if (owner) void reloadQuota(id);
+        if (owner) {
+          void reloadQuota(id);
+          void reloadImprovement(id);
+        } else {
+          setImprovement(null);
+        }
         void reloadHistory(id);
       })
       .catch((e) => {
@@ -105,7 +146,7 @@ export function CharacterDetailPage() {
             : String(e instanceof Error ? e.message : e),
         );
       });
-  }, [id, reloadQuota, reloadHistory]);
+  }, [id, reloadQuota, reloadHistory, reloadImprovement]);
 
   // Refresh countdown label while waiting for next slot
   useEffect(() => {
@@ -178,6 +219,45 @@ export function CharacterDetailPage() {
       }
     } finally {
       setImageBusy(false);
+    }
+  }
+
+  async function onAnalyzeImprovement() {
+    if (!id || !isOwner) return;
+    setImprovementBusy(true);
+    setError(null);
+    try {
+      const res = await api.analyzeCharacterImprovement(id);
+      setImprovement({
+        memo: res.memo,
+        eligibility: res.eligibility,
+      });
+      setAssistant(res.assistantMessage);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "分析に失敗しました");
+    } finally {
+      setImprovementBusy(false);
+    }
+  }
+
+  async function onGenerateImprovementPrompt() {
+    if (!id || !isOwner) return;
+    setImprovementBusy(true);
+    setError(null);
+    try {
+      const res = await api.generateCharacterImprovementPrompt(id);
+      setChat(res.prompt);
+      setAssistant(res.assistantMessage);
+      // Scroll chat panel into view for the filled revision prompt.
+      document
+        .getElementById("character-chat-panel")
+        ?.scrollIntoView({ behavior: "smooth", block: "start" });
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "プロンプト生成に失敗しました",
+      );
+    } finally {
+      setImprovementBusy(false);
     }
   }
 
@@ -414,17 +494,130 @@ export function CharacterDetailPage() {
       </div>
 
       {isOwner && (
-        <div className="panel">
+        <div className="panel improvement-panel">
+          <h2>改善提案（戦績コーチ）</h2>
+          <p className="muted help-text">
+            直近の終了試合から良い点・改善点を分析してメモに残します。
+            特徴やコンセプトは壊さず、良い点を伸ばし、キャラらしさに影響しない部分だけ整える前提です。
+            分析は初回 5 戦後、以後 10 戦ごとに実行できます。
+          </p>
+
+          {improvement ? (
+            <>
+              <p className="muted improvement-meta">
+                終了試合 {improvement.eligibility.finishedBattles} 戦
+                {improvement.memo.analysisCount > 0
+                  ? ` · 分析 ${improvement.memo.analysisCount} 回`
+                  : " · 未分析"}
+                {improvement.memo.lastAnalyzedAt
+                  ? ` · 最終分析 ${formatWhen(improvement.memo.lastAnalyzedAt)}`
+                  : ""}
+              </p>
+
+              <div className="improvement-memo grid" style={{ gap: "0.75rem" }}>
+                <div className="improvement-col">
+                  <h3 className="improvement-heading">良い点</h3>
+                  {improvement.memo.strengths.length > 0 ? (
+                    <ul className="improvement-list">
+                      {improvement.memo.strengths.map((item) => (
+                        <li key={item}>{item}</li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="muted">まだ登録がありません</p>
+                  )}
+                </div>
+                <div className="improvement-col">
+                  <h3 className="improvement-heading">改善点</h3>
+                  {improvement.memo.improvements.length > 0 ? (
+                    <ul className="improvement-list">
+                      {improvement.memo.improvements.map((item) => (
+                        <li key={item}>{item}</li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="muted">まだ登録がありません</p>
+                  )}
+                </div>
+              </div>
+
+              {improvement.memo.summary ? (
+                <p className="improvement-summary">{improvement.memo.summary}</p>
+              ) : null}
+
+              <div className="row" style={{ gap: "0.5rem", flexWrap: "wrap" }}>
+                <button
+                  className="btn primary"
+                  type="button"
+                  disabled={
+                    improvementBusy ||
+                    busy ||
+                    imageBusy ||
+                    !improvement.eligibility.canAnalyze
+                  }
+                  onClick={() => void onAnalyzeImprovement()}
+                  title={
+                    improvement.eligibility.reason ??
+                    "戦績を分析してメモに登録"
+                  }
+                >
+                  {improvementBusy
+                    ? "処理中…"
+                    : improvement.memo.analysisCount > 0
+                      ? "戦績を再分析して登録"
+                      : "戦績を分析して登録"}
+                </button>
+                <button
+                  className="btn"
+                  type="button"
+                  disabled={
+                    improvementBusy ||
+                    busy ||
+                    imageBusy ||
+                    (improvement.memo.strengths.length === 0 &&
+                      improvement.memo.improvements.length === 0)
+                  }
+                  onClick={() => void onGenerateImprovementPrompt()}
+                  title="会話での修正欄に改善プロンプトを入れます"
+                >
+                  改善プロンプトを生成
+                </button>
+              </div>
+              {!improvement.eligibility.canAnalyze &&
+              improvement.eligibility.reason ? (
+                <p className="muted improvement-gate">
+                  {improvement.eligibility.reason}
+                </p>
+              ) : (
+                <p className="muted improvement-gate">
+                  分析可能です。LLM が戦績ツールで試合を参照してメモを更新します。
+                </p>
+              )}
+            </>
+          ) : (
+            <p className="muted">改善メモを読み込み中…</p>
+          )}
+        </div>
+      )}
+
+      {isOwner && (
+        <div className="panel" id="character-chat-panel">
           <h2>会話で微調整</h2>
-          <p className="muted">印象や戦い方の雰囲気を言葉で伝えてください。</p>
+          <p className="muted">
+            印象や戦い方の雰囲気を言葉で伝えてください。改善プロンプト生成を使うと、ここに案が入ります。
+          </p>
           <form className="grid" onSubmit={(e) => void onChat(e)}>
             <textarea
               value={chat}
               onChange={(e) => setChat(e.target.value)}
               placeholder={CHAT_PLACEHOLDER}
-              rows={3}
+              rows={chat.trim().length > 80 ? 6 : 3}
             />
-            <button className="btn primary" type="submit" disabled={busy || imageBusy}>
+            <button
+              className="btn primary"
+              type="submit"
+              disabled={busy || imageBusy || improvementBusy}
+            >
               送信
             </button>
           </form>

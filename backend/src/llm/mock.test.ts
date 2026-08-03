@@ -90,6 +90,73 @@ describe("mock LLM natural-language handling", () => {
     assert.equal(generated.sheet.displayName, "テストキャラ 2");
   });
 
+  it("analyzes battles via tools and builds a concept-safe improvement prompt", async () => {
+    const provider = new MockLlmProvider();
+    const analysis = await provider.analyzeCharacterImprovement({
+      character: {
+        displayName: "アオイ",
+        traits: ["慎重", "観察眼"],
+        narrativeBlurb: "観察してから動く挑戦者。",
+        skillNames: ["先手のひらめき"],
+        basicAttackName: "自分らしい働きかけ",
+        weaponName: null,
+        armorName: null,
+      },
+      previousMemo: {
+        strengths: [],
+        improvements: [],
+        summary: "",
+        lastAnalyzedAt: null,
+        lastAnalyzedBattleCount: 0,
+        analysisCount: 0,
+      },
+      finishedBattles: 5,
+      battleTools: {
+        search: async () => [
+          {
+            battleId: "bat_1",
+            result: "win",
+            resultLabel: "アオイ の勝ち",
+            opponentName: "カゲ",
+            turn: 6,
+            turnLimit: 20,
+            battlefieldName: "練習場",
+            scene: "練習場",
+            finishReason: "incapacitated",
+            updatedAt: "2026-08-02T00:00:00.000Z",
+            skillMentions: ["先手のひらめき"],
+            eventHighlights: ["T1: 先手"],
+          },
+        ],
+        get: async () => null,
+      },
+    });
+    assert.ok(analysis.strengths.length > 0);
+    assert.ok(analysis.improvements.length > 0);
+
+    const prompt = await provider.generateImprovementPrompt({
+      character: {
+        displayName: "アオイ",
+        traits: ["慎重", "観察眼"],
+        narrativeBlurb: "観察してから動く挑戦者。",
+        skillNames: ["先手のひらめき"],
+        basicAttackName: "自分らしい働きかけ",
+        weaponName: null,
+        armorName: null,
+      },
+      memo: {
+        strengths: analysis.strengths,
+        improvements: analysis.improvements,
+        summary: analysis.summary,
+        lastAnalyzedAt: "2026-08-02T00:00:00.000Z",
+        lastAnalyzedBattleCount: 5,
+        analysisCount: 1,
+      },
+    });
+    assert.match(prompt.prompt, /コンセプト|特徴/);
+    assert.ok(prompt.prompt.length > 20);
+  });
+
   it("returns three genre-neutral two-choice policy perspectives", async () => {
     const provider = new MockLlmProvider();
     const result = await provider.generateBattlePolicies({

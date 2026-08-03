@@ -1,4 +1,5 @@
 export * from "./character.js";
+export * from "./character-improvement.js";
 export * from "./rating.js";
 export * from "./battle.js";
 export * from "./battlefield.js";

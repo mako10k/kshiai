@@ -2,6 +2,7 @@ import type {
   BattlefieldInstance,
   BattlefieldPreset,
   BattlePolicyOption,
+  CharacterImprovementMemo,
   CharacterSheet,
   CharacterIdentity,
   CharacterAgentState,
@@ -31,6 +32,68 @@ export type CharacterReference = {
 export type CharacterReferenceTools = {
   search(query: string, limit?: number): Promise<CharacterReference[]>;
   get(characterId: string): Promise<CharacterReference | null>;
+};
+
+/** Narrative-safe battle history for improvement analysis (no raw combat params). */
+export type BattleHistorySearchHit = {
+  battleId: string;
+  result: "win" | "loss" | "draw" | "active" | "unknown";
+  resultLabel: string | null;
+  opponentName: string;
+  turn: number;
+  turnLimit: number;
+  battlefieldName: string | null;
+  scene: string;
+  finishReason: string | null;
+  updatedAt: string;
+  skillMentions: string[];
+  eventHighlights: string[];
+};
+
+export type BattleHistoryDetail = BattleHistorySearchHit & {
+  policySummary: string | null;
+  narrationExcerpts: string[];
+  turnEventSummaries: string[];
+};
+
+/** Character-scoped battle history tools for coaching analysis. */
+export type BattleHistoryTools = {
+  search(query: string, limit?: number): Promise<BattleHistorySearchHit[]>;
+  get(battleId: string): Promise<BattleHistoryDetail | null>;
+};
+
+export type CharacterConceptSnapshot = {
+  displayName: string;
+  traits: string[];
+  narrativeBlurb: string;
+  skillNames: string[];
+  basicAttackName: string;
+  weaponName: string | null;
+  armorName: string | null;
+};
+
+export type AnalyzeCharacterImprovementInput = {
+  character: CharacterConceptSnapshot;
+  previousMemo: CharacterImprovementMemo;
+  finishedBattles: number;
+  battleTools: BattleHistoryTools;
+};
+
+export type AnalyzeCharacterImprovementResult = {
+  strengths: string[];
+  improvements: string[];
+  summary: string;
+  assistantMessage: string;
+};
+
+export type GenerateImprovementPromptInput = {
+  character: CharacterConceptSnapshot;
+  memo: CharacterImprovementMemo;
+};
+
+export type GenerateImprovementPromptResult = {
+  prompt: string;
+  assistantMessage: string;
 };
 
 export type GenerateCharacterInput = {
@@ -267,4 +330,18 @@ export interface LlmProvider {
       narrativeBlurb?: string;
     };
   }): Promise<{ options: BattlePolicyOption[]; rationale: string }>;
+  /**
+   * Analyze recent battle history via tools and produce owner memo notes.
+   * Must preserve character concept; no raw parameter advice for players.
+   */
+  analyzeCharacterImprovement(
+    input: AnalyzeCharacterImprovementInput,
+  ): Promise<AnalyzeCharacterImprovementResult>;
+  /**
+   * Turn memo notes into a user chat message for adjustCharacter.
+   * Amplify strengths; only improve non-concept-breaking weaknesses.
+   */
+  generateImprovementPrompt(
+    input: GenerateImprovementPromptInput,
+  ): Promise<GenerateImprovementPromptResult>;
 }

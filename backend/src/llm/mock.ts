@@ -13,9 +13,13 @@ import {
 import type {
   AdjustBattlefieldResult,
   AdjustCharacterResult,
+  AnalyzeCharacterImprovementInput,
+  AnalyzeCharacterImprovementResult,
   GenerateBattlefieldResult,
   GenerateCharacterResult,
   GenerateCharacterInput,
+  GenerateImprovementPromptInput,
+  GenerateImprovementPromptResult,
   LlmProvider,
   NarrationResult,
   RefereeResult,
@@ -619,6 +623,55 @@ export class MockLlmProvider implements LlmProvider {
       summary: name
         ? `審判は ${name} の勝利を宣告した。攻防の積み重ねがわずかに上回った。`
         : "審判は引き分けと宣告した。互いの働きかけが拮抗した末の結果である。",
+    };
+  }
+
+  async analyzeCharacterImprovement(
+    input: AnalyzeCharacterImprovementInput,
+  ): Promise<AnalyzeCharacterImprovementResult> {
+    const recent = await input.battleTools.search("", 8);
+    const wins = recent.filter((b) => b.result === "win").length;
+    const losses = recent.filter((b) => b.result === "loss").length;
+    const skills = [
+      ...new Set(recent.flatMap((b) => b.skillMentions)),
+    ].slice(0, 3);
+    const strengths = [
+      skills.length
+        ? `${skills[0]} を軸にした展開が目立つ`
+        : `${input.character.displayName} らしい戦い方が保たれている`,
+      wins >= losses
+        ? "直近は優位な試合が多い"
+        : "不利な状況でも最後まで立ち回れている",
+    ];
+    const improvements = [
+      losses > wins
+        ? "終盤のペース配分をもう少し意識する"
+        : "序盤の観察を少し厚くして無駄打ちを減らす",
+      "得意な働きかけのタイミングを明確にする",
+    ];
+    return {
+      strengths,
+      improvements,
+      summary: `直近 ${recent.length} 戦（勝${wins}/負${losses}）を踏まえたモック分析です。特徴は維持したまま微調整向けのメモです。`,
+      assistantMessage: "戦績から良い点と改善点をメモに登録しました。",
+    };
+  }
+
+  async generateImprovementPrompt(
+    input: GenerateImprovementPromptInput,
+  ): Promise<GenerateImprovementPromptResult> {
+    const strengths = input.memo.strengths.slice(0, 4).join("、") || "現状の持ち味";
+    const improvements =
+      input.memo.improvements.slice(0, 4).join("、") || "細かな立ち回りの精度";
+    const prompt = [
+      `${input.character.displayName} のコンセプト・性格・見た目・世界観は変えず、特徴を壊さない範囲で微調整してください。`,
+      `伸ばしたい良い点: ${strengths}。`,
+      `キャラらしさに影響しない範囲で改善したい点: ${improvements}。`,
+      "能力の大幅強化やジャンルの書き換えは不要です。戦い方の癖や技の使いどころ、消耗の仕方など実務的な部分だけ整えてください。",
+    ].join("");
+    return {
+      prompt,
+      assistantMessage: "会話での修正欄に使える改善プロンプトを用意しました。",
     };
   }
 }

@@ -5,6 +5,7 @@ import type {
   BattlePolicyOption,
   BattlePolicyOptionPublic,
   BattlePublic,
+  CharacterImprovementPublic,
   CharacterPublic,
   NarrationStylePublic,
   UserPublic,
@@ -146,6 +147,17 @@ export const api = {
     request<{ character: CharacterPublic; assistantMessage: string }>(
       `/api/characters/${id}/chat`,
       { method: "POST", body: JSON.stringify({ message }) },
+    ),
+  getCharacterImprovement: (id: string) =>
+    request<CharacterImprovementPublic>(`/api/characters/${id}/improvement`),
+  analyzeCharacterImprovement: (id: string) =>
+    request<
+      CharacterImprovementPublic & { assistantMessage: string }
+    >(`/api/characters/${id}/improvement/analyze`, { method: "POST" }),
+  generateCharacterImprovementPrompt: (id: string) =>
+    request<{ prompt: string; assistantMessage: string }>(
+      `/api/characters/${id}/improvement/prompt`,
+      { method: "POST" },
     ),
   copyCharacter: (id: string) =>
     request<{ character: CharacterPublic }>(`/api/characters/${id}/copy`, {

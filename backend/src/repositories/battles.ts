@@ -282,6 +282,187 @@ export function listBattleItemsForCharacter(input: {
   };
 }
 
+/** Narrative-safe battle summary for improvement analysis tools (no raw params). */
+export type CharacterBattleSearchHit = {
+  battleId: string;
+  result: "win" | "loss" | "draw" | "active" | "unknown";
+  resultLabel: string | null;
+  opponentName: string;
+  turn: number;
+  turnLimit: number;
+  battlefieldName: string | null;
+  scene: string;
+  finishReason: string | null;
+  updatedAt: string;
+  skillMentions: string[];
+  eventHighlights: string[];
+};
+
+export type CharacterBattleDetail = CharacterBattleSearchHit & {
+  policySummary: string | null;
+  narrationExcerpts: string[];
+  turnEventSummaries: string[];
+};
+
+function perspectiveResult(
+  state: BattleState,
+  characterId: string,
+): CharacterBattleSearchHit["result"] {
+  if (state.status !== "finished") return "active";
+  if (state.winnerSide === "draw") return "draw";
+  const onA = state.sideA.characterId === characterId;
+  const onB = state.sideB.characterId === characterId;
+  if (!onA && !onB) return "unknown";
+  if (state.winnerSide === "a") return onA ? "win" : "loss";
+  if (state.winnerSide === "b") return onB ? "win" : "loss";
+  return "unknown";
+}
+
+function skillMentionsFromState(state: BattleState, characterName: string): string[] {
+  const names = new Set<string>();
+  for (const rec of state.turnRecords ?? []) {
+    for (const ev of rec.events ?? []) {
+      if (ev.skillName && (!ev.actorName || ev.actorName === characterName)) {
+        names.add(ev.skillName);
+      }
+    }
+  }
+  for (const block of state.log ?? []) {
+    for (const line of block.narrator ?? []) {
+      // Narration may name skills; keep short unique snippets only via events above.
+      void line;
+    }
+  }
+  return [...names].slice(0, 12);
+}
+
+function eventHighlights(state: BattleState, characterName: string): string[] {
+  const out: string[] = [];
+  for (const rec of state.turnRecords ?? []) {
+    for (const ev of rec.events ?? []) {
+      if (!ev.summary) continue;
+      const involves =
+        ev.actorName === characterName ||
+        ev.targetName === characterName ||
+        !ev.actorName;
+      if (!involves) continue;
+      out.push(`T${rec.turn}: ${ev.summary}`.slice(0, 160));
+      if (out.length >= 8) return out;
+    }
+  }
+  return out;
+}
+
+function toSearchHit(
+  state: BattleState,
+  characterId: string,
+): CharacterBattleSearchHit {
+  const onA = state.sideA.characterId === characterId;
+  const selfName = onA ? state.sideA.displayName : state.sideB.displayName;
+  const opponentName = onA ? state.sideB.displayName : state.sideA.displayName;
+  const result = perspectiveResult(state, characterId);
+  return {
+    battleId: state.id,
+    result,
+    resultLabel: battleResultLabel(
+      state.status,
+      state.winnerSide,
+      state.sideA.displayName,
+      state.sideB.displayName,
+      state.finishReason,
+    ),
+    opponentName,
+    turn: state.turn,
+    turnLimit: state.turnLimit,
+    battlefieldName: state.battlefield?.displayName ?? null,
+    scene: state.situation.scene,
+    finishReason: state.finishReason,
+    updatedAt: state.updatedAt,
+    skillMentions: skillMentionsFromState(state, selfName),
+    eventHighlights: eventHighlights(state, selfName),
+  };
+}
+
+/** Finished battles only, for analysis gating and tools. */
+export function countFinishedBattlesForCharacter(characterId: string): number {
+  return listBattlesInvolvingCharacter(characterId).filter(
+    (r) => r.state.status === "finished",
+  ).length;
+}
+
+/**
+ * Search a character's battle history for LLM tools / coaching analysis.
+ * Query matches opponent, field, result label, scene, and battle id.
+ */
+export function searchCharacterBattleHistory(input: {
+  characterId: string;
+  query?: string;
+  limit?: number;
+  finishedOnly?: boolean;
+}): CharacterBattleSearchHit[] {
+  const limit = Math.min(Math.max(input.limit ?? 12, 1), 30);
+  const finishedOnly = input.finishedOnly !== false;
+  const needle = input.query?.trim().toLowerCase() ?? "";
+  const rows = listBattlesInvolvingCharacter(input.characterId);
+  const hits: CharacterBattleSearchHit[] = [];
+  for (const r of rows) {
+    if (finishedOnly && r.state.status !== "finished") continue;
+    const hit = toSearchHit(r.state, input.characterId);
+    if (needle) {
+      const hay = [
+        hit.opponentName,
+        hit.result,
+        hit.resultLabel ?? "",
+        hit.battlefieldName ?? "",
+        hit.scene,
+        hit.finishReason ?? "",
+        hit.battleId,
+        ...hit.skillMentions,
+      ]
+        .join(" ")
+        .toLowerCase();
+      if (!hay.includes(needle)) continue;
+    }
+    hits.push(hit);
+    if (hits.length >= limit) break;
+  }
+  return hits;
+}
+
+/** Detail payload for get_character_battle tool (narrative-safe). */
+export function getCharacterBattleDetail(
+  characterId: string,
+  battleId: string,
+): CharacterBattleDetail | null {
+  const rows = listBattlesInvolvingCharacter(characterId);
+  const row = rows.find((r) => r.state.id === battleId);
+  if (!row) return null;
+  const state = row.state;
+  const hit = toSearchHit(state, characterId);
+  const onA = state.sideA.characterId === characterId;
+  const policies = onA ? state.policiesA : state.policiesB;
+  const selected = new Set(onA ? state.selectedPolicyIdsA : state.selectedPolicyIdsB);
+  const policyTitles = policies
+    .filter((p) => selected.has(p.id))
+    .map((p) => p.title);
+  const narrationExcerpts = (state.log ?? [])
+    .flatMap((block) => block.narrator ?? [])
+    .filter((line) => line && !line.startsWith("——"))
+    .slice(-10)
+    .map((line) => line.slice(0, 200));
+  const turnEventSummaries = (state.turnRecords ?? [])
+    .flatMap((rec) =>
+      (rec.events ?? []).map((ev) => `T${rec.turn}: ${ev.summary}`.slice(0, 180)),
+    )
+    .slice(-16);
+  return {
+    ...hit,
+    policySummary: policyTitles.length ? policyTitles.join(" / ") : null,
+    narrationExcerpts,
+    turnEventSummaries,
+  };
+}
+
 /**
  * Latest finished matchup between two characters (either seating).
  * Used for prologue rivalry (因縁).

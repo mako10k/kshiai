@@ -6,6 +6,10 @@ import {
   type CharacterRecord,
 } from "./rating.js";
 import { cacheBustMediaUrl } from "./media.js";
+import {
+  CharacterImprovementMemoSchema,
+  type CharacterImprovementMemo,
+} from "./character-improvement.js";
 
 /** Internal combat parameters — never sent to normal clients. */
 export const ParamKeySchema = z.enum([
@@ -158,8 +162,14 @@ export const CharacterSheetSchema = z.object({
    * Visible only to the character owner.
    */
   recordOverall: CharacterRecordSchema.optional(),
+  /**
+   * Owner-only coaching memo from battle-history analysis.
+   * Never included in public character DTOs.
+   */
+  improvementMemo: CharacterImprovementMemoSchema.optional(),
 });
 export type CharacterSheet = z.infer<typeof CharacterSheetSchema>;
+export type { CharacterImprovementMemo };
 
 /** Fill combat fields introduced after a character was originally saved. */
 export function ensureCharacterCombatProperties(
