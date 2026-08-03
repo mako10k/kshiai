@@ -42,6 +42,7 @@ COPY --from=build --chown=node:node /app/backend/dist backend/dist
 COPY --chown=node:node backend/migrations backend/migrations
 COPY --from=build --chown=node:node /app/packages/shared/dist packages/shared/dist
 COPY --chown=node:node infra/supabase-ca-2021.crt infra/supabase-ca-2021.crt
+RUN rm -rf /usr/local/lib/node_modules/npm /usr/local/bin/npm /usr/local/bin/npx
 
 USER node
 EXPOSE 8080
