@@ -10,6 +10,7 @@ import type {
   NarrationStylePublic,
   UserPublic,
 } from "@kshiai/shared";
+import { supabase } from "./supabase";
 
 export type ImageGenQuota = {
   allowed: boolean;
@@ -44,6 +45,12 @@ async function request<T>(
   init?: RequestInit,
 ): Promise<T> {
   const headers = new Headers(init?.headers);
+  if (supabase && !headers.has("Authorization")) {
+    const { data } = await supabase.auth.getSession();
+    if (data.session?.access_token) {
+      headers.set("Authorization", `Bearer ${data.session.access_token}`);
+    }
+  }
   if (!headers.has("Content-Type") && init?.body != null) {
     headers.set("Content-Type", "application/json");
   }

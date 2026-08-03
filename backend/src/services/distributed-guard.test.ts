@@ -5,7 +5,8 @@ import { join } from "node:path";
 import { after, before, describe, it } from "node:test";
 
 const temporaryDirectory = mkdtempSync(join(tmpdir(), "kshiai-distributed-test-"));
-delete process.env.DATABASE_URL;
+process.env.DATABASE_URL = "";
+process.env.AUTH_PROVIDER = "legacy";
 process.env.DATABASE_PATH = join(temporaryDirectory, "distributed.db");
 
 const guard = await import("./distributed-guard.js");

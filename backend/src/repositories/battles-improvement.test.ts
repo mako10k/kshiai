@@ -5,6 +5,8 @@ import { join } from "node:path";
 import { describe, it } from "node:test";
 
 const tempDir = mkdtempSync(join(tmpdir(), "kshiai-battle-improve-"));
+process.env.DATABASE_URL = "";
+process.env.AUTH_PROVIDER = "legacy";
 process.env.DATABASE_PATH = join(tempDir, "test.db");
 
 const { saveBattle, searchCharacterBattleHistory, countFinishedBattlesForCharacter, getCharacterBattleDetail } =

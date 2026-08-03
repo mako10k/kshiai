@@ -10,6 +10,8 @@ import { BattlefieldsPage } from "./pages/BattlefieldsPage";
 import { BattlefieldDetailPage } from "./pages/BattlefieldDetailPage";
 import { HistoryPage } from "./pages/HistoryPage";
 import { NarrationStylesPage } from "./pages/NarrationStylesPage";
+import { AuthCallbackPage } from "./pages/AuthCallbackPage";
+import { ResetPasswordPage } from "./pages/ResetPasswordPage";
 
 function Shell({ children }: { children: React.ReactNode }) {
   const { user, logout } = useAuth();
@@ -45,6 +47,8 @@ export function App() {
     <Shell>
       <Routes>
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/auth/callback" element={<AuthCallbackPage />} />
+        <Route path="/reset-password" element={<ResetPasswordPage />} />
         <Route
           path="/"
           element={

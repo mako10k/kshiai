@@ -5,7 +5,8 @@ import { join } from "node:path";
 import { after, describe, it } from "node:test";
 
 const temporaryDirectory = mkdtempSync(join(tmpdir(), "kshiai-auth-test-"));
-delete process.env.DATABASE_URL;
+process.env.DATABASE_URL = "";
+process.env.AUTH_PROVIDER = "legacy";
 process.env.DATABASE_PATH = join(temporaryDirectory, "auth.db");
 
 const auth = await import("./auth.js");
@@ -26,6 +27,21 @@ describe("asynchronous authentication persistence", () => {
     assert.equal((await auth.userFromToken(token))?.id, user.id);
     await auth.destroySession(token);
     assert.equal(await auth.userFromToken(token), null);
+  });
+
+  it("maps a Supabase identity to one stable application user", async () => {
+    const identity = {
+      subject: "c98a95c8-61bb-41e7-b2e2-c54a058c518d",
+      email: "fighter@example.test",
+      displayName: "闘士",
+    };
+    const [first, second] = await Promise.all([
+      auth.ensureSupabaseUser(identity),
+      auth.ensureSupabaseUser(identity),
+    ]);
+    assert.equal(first.id, second.id);
+    assert.equal(first.username, second.username);
+    assert.match(first.username, /^闘士-/);
   });
 
   it("maps unique username violations to the stable domain error", async () => {

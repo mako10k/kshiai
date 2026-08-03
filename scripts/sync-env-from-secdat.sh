@@ -76,6 +76,7 @@ DEPLOYMENT_KEYS=(
   SUPABASE_PROJECT_REF
   SUPABASE_PUBLISHABLE_KEY
   SUPABASE_SECRET_KEY
+  SUPABASE_JWKS_URL
   DATABASE_URL
   DIRECT_URL
   R2_ACCOUNT_ID
@@ -92,6 +93,14 @@ for key in "${DEPLOYMENT_KEYS[@]}"; do
     SYNCED_DEPLOYMENT_KEYS+=("$key")
   fi
 done
+
+if secdat get SUPABASE_URL --stdout >/dev/null 2>&1 &&
+   secdat get SUPABASE_PUBLISHABLE_KEY --stdout >/dev/null 2>&1; then
+  set_kv VITE_SUPABASE_URL "$(secdat get SUPABASE_URL --stdout)" "$ENV_FILE"
+  set_kv VITE_SUPABASE_PUBLISHABLE_KEY \
+    "$(secdat get SUPABASE_PUBLISHABLE_KEY --stdout)" "$ENV_FILE"
+  set_kv AUTH_PROVIDER supabase "$ENV_FILE"
+fi
 
 R2_READY=true
 for key in R2_ACCOUNT_ID R2_ACCESS_KEY_ID R2_SECRET_ACCESS_KEY R2_BUCKET R2_PUBLIC_BASE_URL; do

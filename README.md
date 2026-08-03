@@ -74,6 +74,9 @@ VENICE_IMAGE_MODEL=...
 マイグレーション、複数インスタンス時の挙動は
 [`docs/distributed_runtime.md`](docs/distributed_runtime.md) を参照してください。
 
+本番認証はSupabase Authを使い、確認済みメールとGoogleログインに対応します。
+設定と検証手順は [`docs/supabase_auth.md`](docs/supabase_auth.md) を参照してください。
+
 ## 主要画面
 
 1. ログイン / 登録  

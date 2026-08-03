@@ -58,6 +58,7 @@ milestone DISTRIBUTED_READY:
 
 milestone AUTH_V2_READY:
   title "Verified email and Google authentication ready"
+  state reached
 
 milestone BILLING_READY:
   title "Stripe subscription and usage entitlements ready"
@@ -135,6 +136,7 @@ task T_DISTRIBUTED PG_RUNTIME_READY -> DISTRIBUTED_READY:
 task T_AUTH_V2 DISTRIBUTED_READY -> AUTH_V2_READY:
   title "Integrate Supabase email verification and Google OIDC"
   duration 2d
+  status done
   requires:
     DEV 1
 

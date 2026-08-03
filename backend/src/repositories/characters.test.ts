@@ -6,6 +6,8 @@ import { join } from "node:path";
 import { defaultParameters, defaultRecord, type CharacterSheet } from "@kshiai/shared";
 
 const tempDir = mkdtempSync(join(tmpdir(), "kshiai-character-test-"));
+process.env.DATABASE_URL = "";
+process.env.AUTH_PROVIDER = "legacy";
 process.env.DATABASE_PATH = join(tempDir, "test.db");
 const repo = await import("./characters.js");
 const { getDb } = await import("../db.js");

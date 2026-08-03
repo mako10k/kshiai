@@ -1,4 +1,5 @@
 import bcrypt from "bcryptjs";
+import { createRemoteJWKSet, jwtVerify, type JWTPayload } from "jose";
 import type { Context, Next } from "hono";
 import { getCookie, setCookie, deleteCookie } from "hono/cookie";
 import type { UserPublic } from "@kshiai/shared";
@@ -8,8 +9,109 @@ import { newId } from "./id.js";
 
 const COOKIE = "kshiai_session";
 const SESSION_DAYS = 14;
+let supabaseJwks: ReturnType<typeof createRemoteJWKSet> | null = null;
 
 export type AuthUser = UserPublic;
+
+export type SupabaseIdentity = {
+  subject: string;
+  email: string | null;
+  displayName: string | null;
+};
+
+function identityFromClaims(payload: JWTPayload): SupabaseIdentity | null {
+  if (typeof payload.sub !== "string" || payload.role !== "authenticated") {
+    return null;
+  }
+  const metadata = payload.user_metadata;
+  const displayName = metadata && typeof metadata === "object"
+    ? ["full_name", "name", "user_name"]
+      .map((key) => (metadata as Record<string, unknown>)[key])
+      .find((value): value is string => typeof value === "string" && value.trim().length > 0) ?? null
+    : null;
+  return {
+    subject: payload.sub,
+    email: typeof payload.email === "string" ? payload.email : null,
+    displayName,
+  };
+}
+
+function usernameForIdentity(identity: SupabaseIdentity, attempt: number): string {
+  const emailName = identity.email?.split("@")[0] ?? "";
+  const raw = identity.displayName?.trim() || emailName.trim() || "player";
+  const normalized = raw.replace(/[\u0000-\u001f\u007f]/g, "").slice(0, 23) || "player";
+  const suffix = identity.subject.replaceAll("-", "").slice(0, 6);
+  return attempt === 0
+    ? `${normalized}-${suffix}`.slice(0, 32)
+    : `${normalized.slice(0, 20)}-${suffix}-${attempt}`.slice(0, 32);
+}
+
+export async function ensureSupabaseUser(
+  identity: SupabaseIdentity,
+): Promise<AuthUser> {
+  const existing = await query<{ id: string; username: string }>(
+    `SELECT id, username FROM users WHERE auth_user_id = $1`,
+    [identity.subject],
+  );
+  if (existing.rows[0]) return existing.rows[0];
+
+  for (let attempt = 0; attempt < 5; attempt += 1) {
+    const user = {
+      id: newId("usr"),
+      username: usernameForIdentity(identity, attempt),
+    };
+    try {
+      await query(
+        `INSERT INTO users
+          (id, username, password_hash, auth_user_id, email, created_at)
+         VALUES ($1, $2, $3, $4, $5, $6)`,
+        [
+          user.id,
+          user.username,
+          "!supabase-auth",
+          identity.subject,
+          identity.email,
+          new Date().toISOString(),
+        ],
+      );
+      return user;
+    } catch (error) {
+      const afterConflict = await query<{ id: string; username: string }>(
+        `SELECT id, username FROM users WHERE auth_user_id = $1`,
+        [identity.subject],
+      );
+      if (afterConflict.rows[0]) return afterConflict.rows[0];
+      const code = (error as { code?: string }).code;
+      const message = error instanceof Error ? error.message : String(error);
+      if (code !== "23505" && !message.includes("UNIQUE")) throw error;
+    }
+  }
+  throw new Error("SUPABASE_USER_MAPPING_FAILED");
+}
+
+export async function userFromSupabaseAccessToken(
+  token: string | undefined,
+): Promise<AuthUser | null> {
+  if (!token || !config.supabaseJwksUrl || !config.supabaseUrl) return null;
+  try {
+    supabaseJwks ??= createRemoteJWKSet(new URL(config.supabaseJwksUrl));
+    const { payload } = await jwtVerify(token, supabaseJwks, {
+      algorithms: ["ES256"],
+      issuer: `${config.supabaseUrl}/auth/v1`,
+      audience: "authenticated",
+    });
+    const identity = identityFromClaims(payload);
+    return identity ? ensureSupabaseUser(identity) : null;
+  } catch (error) {
+    console.warn(
+      "[auth] Supabase access token rejected",
+      error instanceof Error
+        ? (error as Error & { code?: string }).code ?? error.name
+        : "invalid_token",
+    );
+    return null;
+  }
+}
 
 export async function registerUser(
   username: string,
@@ -118,8 +220,21 @@ export function getSessionToken(c: Context): string | undefined {
   return getCookie(c, COOKIE);
 }
 
+function getBearerToken(c: Context): string | undefined {
+  const authorization = c.req.header("authorization") ?? "";
+  const match = authorization.match(/^Bearer\s+([^\s]+)$/i);
+  return match?.[1];
+}
+
+export async function userFromRequest(c: Context): Promise<AuthUser | null> {
+  if (config.authProvider === "supabase") {
+    return userFromSupabaseAccessToken(getBearerToken(c));
+  }
+  return userFromToken(getSessionToken(c));
+}
+
 export async function requireUser(c: Context, next: Next) {
-  const user = await userFromToken(getSessionToken(c));
+  const user = await userFromRequest(c);
   if (!user) {
     return c.json({ error: "unauthorized" }, 401);
   }

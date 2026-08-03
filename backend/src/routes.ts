@@ -28,7 +28,7 @@ import {
   registerUser,
   requireUser,
   setSessionCookie,
-  userFromToken,
+  userFromRequest,
   verifyLogin,
   destroySession,
 } from "./auth.js";
@@ -49,6 +49,7 @@ import {
 import { getBalanceSummary } from "./services/balance-observe.js";
 import { findCharacterNameConflict } from "./character-name-uniqueness.js";
 import { databaseKind, query } from "./db.js";
+import { config } from "./config.js";
 import {
   abandonIdempotentRequest,
   beginIdempotentRequest,
@@ -79,6 +80,7 @@ export function buildRoutes() {
     return c.json({
       ok: true,
       llm: llm.name,
+      auth: config.authProvider,
       models: llm.models ?? null,
       service: "kshiai",
       database: databaseKind(),
@@ -125,6 +127,9 @@ export function buildRoutes() {
   });
 
   app.post("/api/auth/register", async (c) => {
+    if (config.authProvider !== "legacy") {
+      return c.json({ error: "supabase_auth_required" }, 410);
+    }
     const body = RegisterRequestSchema.parse(await c.req.json());
     try {
       const user = await registerUser(body.username, body.password);
@@ -140,6 +145,9 @@ export function buildRoutes() {
   });
 
   app.post("/api/auth/login", async (c) => {
+    if (config.authProvider !== "legacy") {
+      return c.json({ error: "supabase_auth_required" }, 410);
+    }
     const body = LoginRequestSchema.parse(await c.req.json());
     const user = await verifyLogin(body.username, body.password);
     if (!user) return c.json({ error: "invalid_credentials" }, 401);
@@ -156,7 +164,7 @@ export function buildRoutes() {
   });
 
   app.get("/api/me", async (c) => {
-    const user = await userFromToken(getSessionToken(c));
+    const user = await userFromRequest(c);
     if (!user) return c.json({ error: "unauthorized" }, 401);
     return c.json({ user });
   });

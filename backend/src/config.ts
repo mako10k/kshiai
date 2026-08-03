@@ -58,6 +58,20 @@ const databaseUrl = process.env.DATABASE_URL?.trim() || null;
 if (process.env.NODE_ENV === "production" && !databaseUrl) {
   throw new Error("DATABASE_URL is required when NODE_ENV=production");
 }
+const supabaseUrl = process.env.SUPABASE_URL?.trim().replace(/\/$/, "") ?? "";
+const supabaseJwksUrl = process.env.SUPABASE_JWKS_URL?.trim() ||
+  (supabaseUrl ? `${supabaseUrl}/auth/v1/.well-known/jwks.json` : "");
+const authProvider = process.env.AUTH_PROVIDER?.trim().toLowerCase() ||
+  (supabaseUrl ? "supabase" : "legacy");
+if (authProvider !== "legacy" && authProvider !== "supabase") {
+  throw new Error("AUTH_PROVIDER must be legacy or supabase");
+}
+if (authProvider === "supabase" && (!supabaseUrl || !supabaseJwksUrl)) {
+  throw new Error("SUPABASE_URL and SUPABASE_JWKS_URL are required for Supabase Auth");
+}
+if (process.env.NODE_ENV === "production" && authProvider !== "supabase") {
+  throw new Error("AUTH_PROVIDER=supabase is required when NODE_ENV=production");
+}
 
 const r2 = {
   accountId: process.env.R2_ACCOUNT_ID?.trim() ?? "",
@@ -98,6 +112,9 @@ export const config = {
   databaseUrl,
   databaseSchema: parseDatabaseSchema(process.env.DATABASE_SCHEMA),
   databasePoolMax: Math.max(1, Number(process.env.DATABASE_POOL_MAX ?? 10)),
+  authProvider: authProvider as "legacy" | "supabase",
+  supabaseUrl,
+  supabaseJwksUrl,
   mediaStorage: mediaStorage as "local" | "r2",
   r2,
   sessionSecret: process.env.SESSION_SECRET ?? "dev-secret-change-me",

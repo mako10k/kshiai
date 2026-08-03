@@ -42,6 +42,8 @@ export function getDb(): SqliteDatabase.Database {
       id TEXT PRIMARY KEY,
       username TEXT NOT NULL UNIQUE,
       password_hash TEXT NOT NULL,
+      auth_user_id TEXT UNIQUE,
+      email TEXT,
       created_at TEXT NOT NULL
     );
     CREATE TABLE IF NOT EXISTS sessions (
@@ -130,6 +132,19 @@ export function getDb(): SqliteDatabase.Database {
       ON balance_events (kind, created_at);
     CREATE INDEX IF NOT EXISTS idx_balance_events_battle
       ON balance_events (battle_id);
+  `);
+  const userColumns = sqlite.pragma("table_info(users)") as Array<{ name: string }>;
+  const userColumnNames = new Set(userColumns.map((column) => column.name));
+  if (!userColumnNames.has("auth_user_id")) {
+    sqlite.exec("ALTER TABLE users ADD COLUMN auth_user_id TEXT");
+  }
+  if (!userColumnNames.has("email")) {
+    sqlite.exec("ALTER TABLE users ADD COLUMN email TEXT");
+  }
+  sqlite.exec(`
+    CREATE UNIQUE INDEX IF NOT EXISTS idx_users_auth_user_id
+      ON users (auth_user_id) WHERE auth_user_id IS NOT NULL;
+    CREATE INDEX IF NOT EXISTS idx_users_email ON users (email);
   `);
   return sqlite;
 }

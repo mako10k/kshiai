@@ -28,7 +28,7 @@
 - リアルタイム同時操作（同一ターン内の同時入力競争）
 - 課金・課金アイテム・ガチャ経済
 - 3D / 高度な物理シミュレーション
-- 外部 SNS 連携ログイン（初期はローカル認証）
+- Appleなど、Google以外の外部ログイン（後続対応）
 - 完全自動プレイ専用の eSports ランキング
 
 ---
@@ -90,6 +90,10 @@
 | F-AUTH-03 | キャラ・バトルは所有者権限で分離する | Must |
 | F-AUTH-04 | 対戦は「自分のキャラ vs 他ユーザーのキャラ（または自分の別キャラ）」を許可 | Must |
 | F-AUTH-05 | パスワードはハッシュ保存（平文禁止） | Must |
+| F-AUTH-06 | Supabase Authでメール確認済みユーザーだけがメール／パスワードでログインできる | Must |
+| F-AUTH-07 | Google OAuthで登録・ログインできる | Must |
+| F-AUTH-08 | バックエンドはSupabase access tokenを公開JWKSで検証し、`iss`・`aud`・`role`・有効期限を確認する | Must |
+| F-AUTH-09 | Supabase Auth IDとアプリ内ユーザーIDを一意に対応付け、既存の所有権IDを維持する | Must |
 
 ### 4.2 キャラクター
 
@@ -326,9 +330,8 @@ CharacterSheet
 
 | Method | Path | 概要 |
 |--------|------|------|
-| POST | `/api/auth/register` | 登録 |
-| POST | `/api/auth/login` | ログイン |
-| POST | `/api/auth/logout` | ログアウト |
+| Supabase Auth | `/auth/v1/*` | メール登録・確認、Google OAuth、ログイン、ログアウト、パスワード再設定 |
+| GET | `/api/me` | Bearer JWTを検証し、対応するアプリ内ユーザーを返す |
 | GET | `/api/me` | 自分 |
 | GET | `/api/characters` | 自分のキャラ一覧（公開 DTO） |
 | POST | `/api/characters/generate` | 自然文から生成セッション開始 |
