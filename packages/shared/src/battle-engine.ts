@@ -610,6 +610,43 @@ function intensityFromDamage(dmg: number): TurnEvent["intensity"] {
   return "minor";
 }
 
+/** Abstract HP-hit prose: finishing blows are explicitly marked for narration. */
+function hitSummary(input: {
+  actorName: string;
+  skillName: string;
+  targetName: string;
+  intensity?: TurnEvent["intensity"];
+  finishing: boolean;
+}): string {
+  const { actorName, skillName, targetName, intensity, finishing } = input;
+  if (finishing) {
+    return `${actorName} の ${skillName} が ${targetName} をとどめとして捉えた——それが決め手となった。`;
+  }
+  switch (intensity) {
+    case "critical":
+      return `${actorName} の ${skillName} が ${targetName} を大きく揺るがした。`;
+    case "heavy":
+      return `${actorName} の ${skillName} が ${targetName} を強く捉えた。`;
+    case "minor":
+      return `${actorName} の ${skillName} が ${targetName} に軽く触れた。`;
+    default:
+      return `${actorName} の ${skillName} が ${targetName} を捉えた。`;
+  }
+}
+
+function applyHpDamage(
+  target: CombatantState,
+  amount: number,
+): { actual: number; finishing: boolean } {
+  const before = target.parameters.hp ?? 0;
+  const after = Math.max(0, before - Math.max(0, amount));
+  target.parameters.hp = after;
+  return {
+    actual: before - after,
+    finishing: before > 0 && after <= 0,
+  };
+}
+
 /**
  * Resolve one turn. Actions are chosen from stances unless an explicit
  * playerAction override is supplied (tests / legacy).
@@ -889,24 +926,26 @@ function applyEnvHits(
         });
       } else if (hit.kind === "disrupt") {
         // Soft pressure: small HP chip + stigma in narration
-        t.parameters.hp = Math.max(0, (t.parameters.hp ?? 0) - Math.floor(amount * 0.5));
+        const chip = applyHpDamage(t, Math.floor(amount * 0.5));
         events.push({
           type: "status",
           actorName: t.displayName,
           intensity: hit.intensity,
-          summary:
-            hit.intensity === "moderate"
+          summary: chip.finishing
+            ? `${t.displayName} は場の圧力にとどめを刺され、決戦を続けられなくなった。`
+            : hit.intensity === "moderate"
               ? `${t.displayName} は大きく体勢を崩した。`
               : `${t.displayName} の動きが一瞬乱れた。`,
         });
       } else {
-        t.parameters.hp = Math.max(0, (t.parameters.hp ?? 0) - amount);
+        const env = applyHpDamage(t, amount);
         events.push({
           type: "damage",
           targetName: t.displayName,
           intensity: hit.intensity,
-          summary:
-            hit.intensity === "moderate"
+          summary: env.finishing
+            ? `${t.displayName} は環境の変化にとどめを刺された——それが決め手となった。`
+            : hit.intensity === "moderate"
               ? `${t.displayName} は環境の変化に大きく揺さぶられた。`
               : `${t.displayName} は環境の余波を浴びた。`,
         });
@@ -1060,15 +1099,26 @@ function applyBasicAttack(
     amount = Math.min(amount, Math.max(2, Math.round(reference * 0.2)));
   }
   const actual = applyParameterDelta(target, { parameter, delta: -amount });
+  const intensity = intensityFromDamage(Math.abs(actual));
+  const finishing =
+    parameter === "hp" &&
+    actual < 0 &&
+    (target.parameters.hp ?? 0) <= 0;
   events.push({
     type: parameter === "hp" ? "damage" : "parameter",
     actorName: actor.displayName,
     targetName: target.displayName,
     skillName: profile.name,
-    intensity: intensityFromDamage(Math.abs(actual)),
+    intensity,
     summary:
       parameter === "hp"
-        ? `${actor.displayName} の ${profile.name} が ${target.displayName} を捉えた。`
+        ? hitSummary({
+            actorName: actor.displayName,
+            skillName: profile.name,
+            targetName: target.displayName,
+            intensity,
+            finishing,
+          })
         : `${actor.displayName} の ${profile.name} が ${target.displayName} の ${PARAMETER_LABELS[parameter]} を削った。`,
   });
 }
@@ -1084,6 +1134,11 @@ function applySkillEffects(
     const actual = applyParameterDelta(recipient, effect);
     if (actual === 0) continue;
     const positive = actual > 0;
+    const finishing =
+      effect.parameter === "hp" &&
+      !positive &&
+      (recipient.parameters.hp ?? 0) <= 0;
+    const label = PARAMETER_LABELS[effect.parameter];
     events.push({
       type:
         effect.parameter === "hp"
@@ -1095,7 +1150,9 @@ function applySkillEffects(
       targetName: recipient.displayName,
       skillName: skill.name,
       intensity: intensityFromDamage(Math.abs(actual)),
-      summary: `${actor.displayName} の ${skill.name} が ${recipient.displayName} の ${PARAMETER_LABELS[effect.parameter]}を${positive ? "高めた" : "低下させた"}。`,
+      summary: finishing
+        ? `${actor.displayName} の ${skill.name} が ${recipient.displayName} の ${label}をとどめとして低下させた——それが決め手となった。`
+        : `${actor.displayName} の ${skill.name} が ${recipient.displayName} の ${label}を${positive ? "高めた" : "低下させた"}。`,
     });
   }
 }
@@ -1131,13 +1188,20 @@ function applyAttackSkill(
     skillPower: power,
   });
 
-  target.parameters.hp = Math.max(0, (target.parameters.hp ?? 0) - dmg);
+  const { actual, finishing } = applyHpDamage(target, dmg);
+  const intensity = intensityFromDamage(actual);
   events.push({
     type: "damage",
     actorName: actor.displayName,
     targetName: target.displayName,
     skillName: skill.name,
-    intensity: intensityFromDamage(dmg),
-    summary: `${actor.displayName} の ${skill.name} が ${target.displayName} を捉えた。`,
+    intensity,
+    summary: hitSummary({
+      actorName: actor.displayName,
+      skillName: skill.name,
+      targetName: target.displayName,
+      intensity,
+      finishing,
+    }),
   });
 }

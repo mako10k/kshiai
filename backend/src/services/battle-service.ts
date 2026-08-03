@@ -465,6 +465,44 @@ async function withTimeout<T>(
   }
 }
 
+/**
+ * Retry a timed operation a few times. Each attempt gets a fresh timeout so a
+ * slow primary provider can fail and a routed secondary (or a second try) still
+ * has budget — unlike a single outer race that expires mid-failover.
+ */
+async function withTimeoutAttempts<T>(
+  factory: () => Promise<T>,
+  opts: {
+    timeoutMs: number;
+    attempts: number;
+    label: string;
+    gapMs?: number;
+  },
+): Promise<T> {
+  const attempts = Math.max(1, opts.attempts);
+  let lastError: unknown;
+  for (let i = 0; i < attempts; i += 1) {
+    try {
+      return await withTimeout(factory(), opts.timeoutMs, opts.label);
+    } catch (error) {
+      lastError = error;
+      const msg = error instanceof Error ? error.message : String(error);
+      console.warn(
+        `[battle] ${opts.label} attempt ${i + 1}/${attempts} failed: ${msg.slice(0, 160)}`,
+      );
+      if (i + 1 < attempts) {
+        const gap = opts.gapMs ?? 350;
+        if (gap > 0) {
+          await new Promise((resolve) => setTimeout(resolve, gap));
+        }
+      }
+    }
+  }
+  throw lastError instanceof Error
+    ? lastError
+    : new Error(String(lastError ?? `${opts.label} failed`));
+}
+
 function initialAgentState(sheet: CharacterSheet): CharacterAgentState {
   return {
     privateMemory: "",
@@ -779,20 +817,28 @@ export async function advanceTurn(input: {
 
   let narrative;
   try {
-    narrative = await withTimeout(
-      input.llm.narrateTurn({
-        turn: next.turn,
-        scene: next.situation.scene,
-        sideAName: next.sideA.displayName,
-        sideBName: next.sideB.displayName,
-        battlefield: next.battlefield,
-        events,
-        agentSpeeches: agentTurn.speeches,
-        styleInstruction: next.narrationStyle?.instruction,
-        styleName: next.narrationStyle?.displayName,
-      }),
-      18_000,
-      "narrateTurn",
+    // Per-attempt budget must cover primary abort (~14–16s) + router failover to
+    // the next provider. A single 18s race was expiring mid-failover and dumping
+    // raw engine events. Retry once after a full failed attempt.
+    narrative = await withTimeoutAttempts(
+      () =>
+        input.llm.narrateTurn({
+          turn: next.turn,
+          scene: next.situation.scene,
+          sideAName: next.sideA.displayName,
+          sideBName: next.sideB.displayName,
+          battlefield: next.battlefield,
+          events,
+          agentSpeeches: agentTurn.speeches,
+          styleInstruction: next.narrationStyle?.instruction,
+          styleName: next.narrationStyle?.displayName,
+        }),
+      {
+        timeoutMs: 32_000,
+        attempts: 2,
+        label: "narrateTurn",
+        gapMs: 400,
+      },
     );
   } catch (e) {
     console.warn(
@@ -800,11 +846,16 @@ export async function advanceTurn(input: {
       e instanceof Error ? e.message : e,
     );
     const place = next.battlefield?.displayName ?? next.situation.scene;
+    // Prefer finishing-blow lines first so mechanical fallback still names the KO.
+    const ordered = [
+      ...events.filter((ev) => /とどめ|決め手/.test(ev.summary)),
+      ...events.filter((ev) => !/とどめ|決め手/.test(ev.summary)),
+    ];
     narrative = {
       turn: next.turn,
       narrator: [
         `第${next.turn}ターン — ${place}。`,
-        ...events.map((ev) => ev.summary),
+        ...ordered.map((ev) => ev.summary),
       ],
       speeches: agentTurn.speeches,
     };

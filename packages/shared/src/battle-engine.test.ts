@@ -114,6 +114,26 @@ describe("battle engine", () => {
     assert.ok((next.sideB.parameters.hp ?? 100) < 100);
   });
 
+  it("emphasizes finishing blows instead of a bare hit line", () => {
+    const state = createBattleState({
+      id: "finish-blow",
+      sideA: sheet("a", "A"),
+      sideB: sheet("b", "B", 1),
+      turnLimit: 20,
+      prologuePending: false,
+    });
+    const { events } = resolveTurn({
+      state,
+      playerAction: { actorSide: "a", kind: "skill", skillId: "slash" },
+      sideASkills: sheet("a", "A").skills,
+      sideBSkills: sheet("b", "B", 1).skills,
+    });
+    const damage = events.find((e) => e.type === "damage");
+    assert.ok(damage, "expected a damage event");
+    assert.match(damage!.summary, /とどめ|決め手/);
+    assert.equal(/\d{2,}/.test(damage!.summary), false);
+  });
+
   it("defers finish for aftermath after HP reaches zero", () => {
     const state = createBattleState({
       id: "b2",

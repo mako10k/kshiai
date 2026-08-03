@@ -902,6 +902,7 @@ speech is one short Japanese utterance without brackets, or null when silence fi
 ${styleBlock}
 Use battlefield flavor (terrain/obstacles) when relevant.
 If a situation event describes a sudden field change, weave that change naturally into the narrator lines without adding a category label.
+If any event marks a finishing blow (とどめ / 決め手 / 戦闘不能), center the turn on that decisive action: name the skill or force and make clear it is what ends the exchange. Do not bury the KO under secondary buffs, recovery, or ambient status lines.
 JSON: { "turn": number, "narrator": string[] }
 Do not mention numeric HP/MP/ATK values. Character dialogue is supplied by separate character agents; do not create, quote, or rewrite dialogue.`,
         JSON.stringify({
@@ -919,7 +920,9 @@ Do not mention numeric HP/MP/ATK values. Character dialogue is supplied by separ
               }
             : null,
         }),
-        { tier: "fast", label: "narrateTurn", timeoutMs: 14_000, temperature: 0.9 },
+        // Slightly above historical 14s abort so a single provider can finish
+        // under load; outer battle-service budget covers multi-provider failover.
+        { tier: "fast", label: "narrateTurn", timeoutMs: 16_000, temperature: 0.9 },
       )) as { turn?: number; narrator?: string[] };
       return {
         turn: input.turn,
