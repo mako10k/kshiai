@@ -5,6 +5,14 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 
 ## [Unreleased]
 
+## [0.1.6] - 2026-08-04
+
+### Fixed
+
+- Carries forward the authenticated battle SSE fix and waits for asynchronous
+  Cloud Build completion by polling build status, eliminating all dependency
+  on default logs bucket access.
+
 ## [0.1.5] - 2026-08-04
 
 ### Fixed
@@ -12,6 +20,9 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 - Carries forward the authenticated battle SSE fix and suppresses Cloud Build
   log streaming in the staging workflow, avoiding an unnecessary project-wide
   Viewer grant while still waiting for the immutable image build result.
+- The image build succeeded, but this Cloud SDK still attempted a final logs
+  bucket check. The artifact was not promoted; the tag was retained and
+  superseded by `v0.1.6`.
 
 ## [0.1.4] - 2026-08-03
 

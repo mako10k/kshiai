@@ -80,13 +80,31 @@ jobs:
         run: |
           set -euo pipefail
           image_tag="$IMAGE_REPOSITORY:$GITHUB_SHA"
-          gcloud builds submit . \
+          build_id="$(gcloud builds submit . \
             --project="$GCP_PROJECT" \
             --region="$GCP_REGION" \
             --gcs-source-staging-dir=gs://kshiai_cloudbuild/source \
-            --suppress-logs \
+            --async \
+            --format='value(id)' \
             --config=infra/cloudbuild.backend.yaml \
-            --substitutions="_IMAGE=$image_tag"
+            --substitutions="_IMAGE=$image_tag")"
+          test -n "$build_id"
+          status=""
+          for _attempt in {1..180}; do
+            status="$(gcloud builds describe "$build_id" \
+              --project="$GCP_PROJECT" \
+              --region="$GCP_REGION" \
+              --format='value(status)')"
+            case "$status" in
+              SUCCESS) break ;;
+              FAILURE|INTERNAL_ERROR|TIMEOUT|CANCELLED|EXPIRED)
+                echo "Cloud Build $build_id ended with $status" >&2
+                exit 1
+                ;;
+            esac
+            sleep 5
+          done
+          test "$status" = "SUCCESS"
           digest="$(gcloud artifacts docker images describe "$image_tag" \
             --project="$GCP_PROJECT" \
             --format='value(image_summary.digest)')"
