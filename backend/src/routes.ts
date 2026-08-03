@@ -43,6 +43,7 @@ import {
   toBattlePublic,
 } from "./services/battle-service.js";
 import { getBalanceSummary } from "./services/balance-observe.js";
+import { findCharacterNameConflict } from "./character-name-uniqueness.js";
 
 const llm = createLlmProvider();
 
@@ -192,15 +193,51 @@ export function buildRoutes() {
   authed.post("/characters/generate", async (c) => {
     const user = c.get("user");
     const body = GenerateCharacterRequestSchema.parse(await c.req.json());
-    const gen = await llm.generateCharacter({
-      prompt: body.prompt,
-      referenceTools: {
-        search: async (query, limit) =>
-          charRepo.searchOwnedCharacterReferences(user.id, query, limit),
-        get: async (characterId) =>
-          charRepo.getOwnedCharacterReference(user.id, characterId),
-      },
-    });
+    const referenceTools = {
+      search: async (query: string, limit?: number) =>
+        charRepo.searchOwnedCharacterReferences(user.id, query, limit),
+      get: async (characterId: string) =>
+        charRepo.getOwnedCharacterReference(user.id, characterId),
+    };
+    const rejectedNames: string[] = [];
+    let gen: Awaited<ReturnType<typeof llm.generateCharacter>> | null = null;
+    for (let attempt = 0; attempt < 3; attempt += 1) {
+      const promptReservedNames =
+        charRepo.listOwnedCharacterReservedNames(user.id);
+      const candidate = await llm.generateCharacter({
+        prompt: body.prompt,
+        referenceTools,
+        reservedNames: promptReservedNames,
+        rejectedNames,
+      });
+      // Refresh after the LLM call so concurrent generation cannot slip a
+      // duplicate between the initial name snapshot and this synchronous save.
+      const currentReservedNames =
+        charRepo.listOwnedCharacterReservedNames(user.id);
+      const conflict = findCharacterNameConflict(
+        [candidate.sheet.displayName, candidate.sheet.identity?.realName],
+        currentReservedNames,
+      );
+      if (!conflict) {
+        gen = candidate;
+        break;
+      }
+      rejectedNames.push(
+        candidate.sheet.displayName,
+        ...(candidate.sheet.identity?.realName
+          ? [candidate.sheet.identity.realName]
+          : []),
+      );
+    }
+    if (!gen) {
+      return c.json(
+        {
+          error: "duplicate_character_name",
+          message: "既存キャラクターと異なる名前を生成できませんでした。もう一度お試しください。",
+        },
+        409,
+      );
+    }
     const t = new Date().toISOString();
     const { balanceCharacterCombatFields, defaultRecord } = await import(
       "@kshiai/shared"

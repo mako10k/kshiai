@@ -59,4 +59,15 @@ describe("owner-scoped character generation references", () => {
     assert.equal(repo.getOwnedCharacterReference("user-a", "char-b"), null);
     assert.equal(repo.getOwnedCharacterReference("user-a", "char-a")?.identity.realName, "楓 本名");
   });
+
+  it("lists all active identifying names for owner-scoped uniqueness checks", () => {
+    assert.deepEqual(repo.listOwnedCharacterReservedNames("user-a"), [
+      "楓",
+      "楓 本名",
+    ]);
+    assert.deepEqual(repo.listOwnedCharacterReservedNames("user-b"), [
+      "比堂",
+      "比堂 本名",
+    ]);
+  });
 });

@@ -33,6 +33,10 @@ export type CharacterReferenceTools = {
 export type GenerateCharacterInput = {
   prompt: string;
   referenceTools?: CharacterReferenceTools;
+  /** Existing owner-scoped names that must not be reused by a new character. */
+  reservedNames?: string[];
+  /** Names rejected by the caller during this generation request. */
+  rejectedNames?: string[];
 };
 
 export type GenerateCharacterResult = {

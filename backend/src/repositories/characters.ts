@@ -7,6 +7,7 @@ import {
   toPublicCharacter,
 } from "@kshiai/shared";
 import type { CharacterReference } from "../llm/types.js";
+import { normalizeCharacterName } from "../character-name-uniqueness.js";
 import { getDb } from "../db.js";
 import { newId } from "../id.js";
 
@@ -102,6 +103,26 @@ function listOwnedSheets(userId: string): CharacterSheet[] {
 
 function isActive(sheet: CharacterSheet): boolean {
   return !sheet.deletedAt;
+}
+
+/** All owner-scoped identifying names, used to prevent accidental reuse. */
+export function listOwnedCharacterReservedNames(userId: string): string[] {
+  const unique = new Map<string, string>();
+  for (const sheet of listOwnedSheets(userId).filter(isActive)) {
+    const identity = ensureCharacterIdentityProperties(sheet).identity!;
+    const names = [
+      sheet.displayName,
+      identity.realName,
+      ...identity.nicknames,
+      ...identity.epithets,
+    ];
+    for (const name of names) {
+      if (!name) continue;
+      const normalized = normalizeCharacterName(name);
+      if (normalized && !unique.has(normalized)) unique.set(normalized, name);
+    }
+  }
+  return [...unique.values()];
 }
 
 export function listCharactersForUser(userId: string, q?: string) {

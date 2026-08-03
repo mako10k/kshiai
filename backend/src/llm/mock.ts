@@ -22,13 +22,17 @@ import type {
   SituationProposal,
 } from "./types.js";
 import { newId } from "../id.js";
+import { makeUniqueCharacterName } from "../character-name-uniqueness.js";
 
 export class MockLlmProvider implements LlmProvider {
   readonly name = "mock";
 
   async generateCharacter(input: GenerateCharacterInput): Promise<GenerateCharacterResult> {
     const prompt = input.prompt;
-    const displayName = prompt.trim().slice(0, 24) || "無名の挑戦者";
+    const displayName = makeUniqueCharacterName(
+      prompt.trim().slice(0, 24) || "無名の挑戦者",
+      [...(input.reservedNames ?? []), ...(input.rejectedNames ?? [])],
+    );
     const sheet: GenerateCharacterResult["sheet"] = {
       displayName,
       identity: {

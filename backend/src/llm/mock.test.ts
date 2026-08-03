@@ -81,6 +81,15 @@ describe("mock LLM natural-language handling", () => {
     assert.equal(adjusted.sheetPatch.displayName, undefined);
   });
 
+  it("does not reuse an owner-scoped reserved name", async () => {
+    const provider = new MockLlmProvider();
+    const generated = await provider.generateCharacter({
+      prompt: "テストキャラ",
+      reservedNames: ["テストキャラ"],
+    });
+    assert.equal(generated.sheet.displayName, "テストキャラ 2");
+  });
+
   it("returns three genre-neutral two-choice policy perspectives", async () => {
     const provider = new MockLlmProvider();
     const result = await provider.generateBattlePolicies({
