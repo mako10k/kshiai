@@ -41,36 +41,36 @@ export class MockLlmProvider implements LlmProvider {
       },
       tags: ["mock", "generated"],
       appearance: {
-        summary: `${displayName}の外見詳細は、モック環境ではまだ生成されていない。`,
+        summary: `${displayName}らしさが伝わる、依頼内容に沿った外見。`,
         visualPrompt: `anime character portrait bust, detailed face, ${displayName}, ${prompt.slice(0, 180)}, expressive eyes, soft lighting, single character, no text`,
         imageUrl: null,
       },
       traits: ["不屈", "機知"],
       parameters: defaultParameters(),
       basicAttack: {
-        name: "崩しの斬撃",
-        description: "傷より先に相手の足運びと持久力を削る斬撃。",
+        name: "自分らしい働きかけ",
+        description: "得意なやり方で相手の集中と持久力を揺さぶる。",
         targetParameter: "stamina",
         scalingParameter: "atk",
         resistanceParameter: "def",
         power: 0.75,
-        element: "wind",
+        element: "personal",
       },
       skills: [
         {
           id: newId("sk"),
-          name: "疾風の一撃",
-          description: "素早い斬撃で間合いを詰める",
+          name: "先手のひらめき",
+          description: "自分らしい発想で場の流れを引き寄せる",
           costMp: 0,
           costStamina: 8,
           power: 1.3,
           kind: "attack",
-          element: "wind",
+          element: "personal",
         },
         {
           id: newId("sk"),
-          name: "守護の構え",
-          description: "守りを固めて反撃の隙を窺う",
+          name: "ペース調整",
+          description: "無理をせず、自分の調子を整える",
           costMp: 5,
           costStamina: 0,
           power: 1,
@@ -82,25 +82,18 @@ export class MockLlmProvider implements LlmProvider {
         },
         {
           id: newId("sk"),
-          name: "回復の灯",
-          description: "微かな光で傷を癒やす",
+          name: "気分転換",
+          description: "気持ちを切り替えて状態を持ち直す",
           costMp: 10,
           costStamina: 0,
           power: 1.1,
           kind: "support",
         },
       ],
-      weapon: {
-        name: "旅人の刃",
-        description: "使い込まれた片手剣",
-        atkBonus: 2,
-        defBonus: 0,
-        magBonus: 0,
-        effects: [{ parameter: "stamina", delta: -2 }],
-      },
+      weapon: null,
       armor: {
-        name: "皮の胴衣",
-        description: "軽い防護",
+        name: "いつもの装い",
+        description: "そのキャラクターが落ち着ける装い",
         atkBonus: 0,
         defBonus: 2,
         magBonus: 0,
@@ -114,7 +107,7 @@ export class MockLlmProvider implements LlmProvider {
 
     return {
       sheet,
-      assistantMessage: `了解しました。${displayName} として整えました。数値の詳細はお見せしませんが、素早さと一撃の切れ味に振っています。さらに変えたい点があれば自然文でどうぞ。`,
+      assistantMessage: `了解しました。${displayName} として整えました。対決の方法は元の依頼のジャンルに合わせています。さらに変えたい点があれば自然文でどうぞ。`,
     };
   }
 
@@ -233,7 +226,7 @@ export class MockLlmProvider implements LlmProvider {
       ? "にわか雨が戦場を濡らし、足場が危うい。"
       : input.battlefield
         ? `${input.battlefield.terrain}の気配が攻防を揺さぶる。`
-        : "風が刃を運び、空気が張りつめている。";
+        : "場の空気が揺れ、互いの集中に変化をもたらす。";
     return {
       scene: input.scene,
       notes,
@@ -287,12 +280,12 @@ export class MockLlmProvider implements LlmProvider {
       `${input.cognition.scene}で相手の出方を見ている。`;
     const speech = input.cognition.turn === 0
       ? `${selfReference}は、${input.foeName}と向き合おう。`
-      : `${selfReference}は、まだ退かない。`;
+      : `${selfReference}は、まだ続けられる。`;
     return {
       state: {
         ...input.previous,
         privateMemory: event.slice(0, 1200),
-        currentGoal: `${input.foeName}との戦いを続ける`,
+        currentGoal: `${input.foeName}との対決を自分らしく続ける`,
         emotion: input.cognition.ownCondition === "critical" ? "緊張" : "集中",
         observations: [
           ...input.previous.observations.slice(-6),
@@ -352,30 +345,21 @@ export class MockLlmProvider implements LlmProvider {
         `——開幕——${styleNote}`,
         `${place}に、${input.sideAName} と ${input.sideBName} が向かい合う。`,
         input.battlefield?.narrativeSetup ||
-          "風が刃を運び、空気が張りつめている。",
+          "場の空気が、二人の存在に応じてゆっくり変わっていく。",
         input.sideABlurb
           ? `${input.sideAName} — ${input.sideABlurb.slice(0, 80)}`
           : `${input.sideAName} の気配が場を支配する。`,
         input.sideBBlurb
           ? `${input.sideBName} — ${input.sideBBlurb.slice(0, 80)}`
-          : `${input.sideBName} が静かに間合いを測る。`,
+          : `${input.sideBName} が相手の出方を静かに見つめる。`,
         input.priorMatchSummary
           ? `因縁 — ${input.priorMatchSummary}`
-          : "今、初めての刃が交わる。",
+          : "今、二人の初めての対決が始まる。",
         input.policySummary
           ? `${input.sideAName} の心中に方針が灯る: ${input.policySummary}`
           : "",
       ].filter(Boolean),
-      speeches: [
-        {
-          speaker: input.sideAName,
-          text: "……来るなら来い。",
-        },
-        {
-          speaker: input.sideBName,
-          text: "言葉は要らぬ。剣で語ろう。",
-        },
-      ],
+      speeches: [],
     };
   }
 
@@ -393,29 +377,21 @@ export class MockLlmProvider implements LlmProvider {
     styleName?: string;
   }): Promise<NarrationResult> {
     const place = input.battlefield?.displayName ?? input.scene;
-    const fallen = input.fallenNames.join("と") || "倒れた者";
+    const fallen = input.fallenNames.join("と") || "続行できなくなった者";
     const fieldBit = input.battlefield?.conditions?.[0] || input.battlefield?.terrain;
     const styleNote = input.styleName ? `（${input.styleName}）` : "";
     const narrator = [
       `——決着の余波——${styleNote}`,
-      `${place}に、戦いの熱が静かにほどけていく。`,
+      `${place}に、対決の余韻が静かにほどけていく。`,
       fieldBit
-        ? `${fieldBit}の気配の中で、${fallen} はもはや刃を取れない。`
-        : `${fallen} は膝を折り、呼吸だけが戦場に残る。`,
+        ? `${fieldBit}の気配の中で、${fallen} はもう対決を続けられない。`
+        : `${fallen} は力を使い果たし、その場で動きを止める。`,
       input.winnerName
-        ? `${input.winnerName} は武器を下ろし、勝者としてその場に立つ。倒れた相手の運命——治療か、見捨てか、あるいは言葉——が、今この瞬間に決まる。`
-        : "両者とも地に伏し、どちらが先に目を開けるのかさえ分からない。",
+        ? `${input.winnerName} は自分のやり方で対決を締めくくり、勝者としてその場に残る。`
+        : "両者とも力を使い果たし、結果は引き分けとなった。",
       "幕は、そこで静かに下りた。",
     ];
-    const speeches = input.winnerName
-      ? [
-          {
-            speaker: input.winnerName,
-            text: "…終わりだ。立てるなら、立て。",
-          },
-        ]
-      : [];
-    return { turn: input.turn, narrator, speeches };
+    return { turn: input.turn, narrator, speeches: [] };
   }
 
   async generateNarrationStyle(prompt: string): Promise<{
@@ -456,66 +432,78 @@ export class MockLlmProvider implements LlmProvider {
   }): Promise<{ options: BattlePolicyOption[]; rationale: string }> {
     const traits = input.self.traits.join("・") || "柔軟";
 
-    // Coarse postures only — short enough to fit mobile policy cards.
+    // Three genre-neutral perspectives, each with two exclusive choices.
     const options: BattlePolicyOption[] = [
       {
         id: newId("pol"),
-        title: "様子見",
-        when: "試合の出だし",
-        then: "無理せず流れを読む",
-        bias: "wait",
-        priority: 40,
+        perspectiveId: "initiative",
+        perspectiveTitle: "働きかけ方",
+        title: "自分から動く",
+        when: "流れが定まる前",
+        then: "先に展開を作る",
+        bias: "attack",
+        priority: 55,
         triggers: { earlyTurn: true },
         defaultSelected: true,
       },
       {
         id: newId("pol"),
-        title: "押し気味",
-        when: "相手が揺らいだとき",
-        then: "機を見て攻める",
-        bias: "attack",
-        priority: 80,
-        triggers: { foeHpBelow: 0.55 },
-        defaultSelected: true,
-      },
-      {
-        id: newId("pol"),
-        title: "守り",
-        when: "こちらが苦しいとき",
-        then: "耐えて立て直す",
-        bias: "defend",
-        priority: 90,
-        triggers: { myHpBelow: 0.4 },
-        defaultSelected: true,
-      },
-      {
-        id: newId("pol"),
-        title: "均衡",
-        when: "膠着したとき",
-        then: "攻守を混ぜる",
-        bias: "mixed",
-        priority: 20,
-        triggers: { always: true },
-        defaultSelected: true,
-      },
-      {
-        id: newId("pol"),
-        title: "勝負",
-        when: "決着を急ぐ局面",
-        then: "攻勢に振る",
-        bias: "attack",
+        perspectiveId: "initiative",
+        perspectiveTitle: "働きかけ方",
+        title: "相手を観察",
+        when: "流れが定まる前",
+        then: "反応を見てから動く",
+        bias: "wait",
         priority: 50,
+        triggers: { earlyTurn: true },
+        defaultSelected: false,
+      },
+      {
+        id: newId("pol"),
+        perspectiveId: "risk",
+        perspectiveTitle: "リスクの取り方",
+        title: "大胆に変える",
+        when: "流れが停滞したとき",
+        then: "変化を大きくする",
+        bias: "attack",
+        priority: 65,
+        triggers: { lateTurn: true },
+        defaultSelected: true,
+      },
+      {
+        id: newId("pol"),
+        perspectiveId: "risk",
+        perspectiveTitle: "リスクの取り方",
+        title: "慎重に保つ",
+        when: "流れが停滞したとき",
+        then: "崩さず機会を待つ",
+        bias: "defend",
+        priority: 60,
         triggers: { lateTurn: true },
         defaultSelected: false,
       },
       {
         id: newId("pol"),
-        title: "立て直し",
-        when: "一息つけるとき",
-        then: "守り寄りに振る",
+        perspectiveId: "resources",
+        perspectiveTitle: "力の配分",
+        title: "早めに使う",
+        when: "余力があるとき",
+        then: "得意な力を活かす",
         bias: "support",
-        priority: 60,
-        triggers: { myHpBelow: 0.6, myHpAbove: 0.2 },
+        priority: 45,
+        triggers: { myHpAbove: 0.55 },
+        defaultSelected: true,
+      },
+      {
+        id: newId("pol"),
+        perspectiveId: "resources",
+        perspectiveTitle: "力の配分",
+        title: "後半へ温存",
+        when: "余力があるとき",
+        then: "消耗を抑えて進める",
+        bias: "mixed",
+        priority: 40,
+        triggers: { myHpAbove: 0.55 },
         defaultSelected: false,
       },
     ];
@@ -543,7 +531,7 @@ export class MockLlmProvider implements LlmProvider {
       winnerSide,
       summary: name
         ? `審判は ${name} の勝利を宣告した。攻防の積み重ねがわずかに上回った。`
-        : "審判は引き分けと宣告した。互角の攻防が続いた末の決着である。",
+        : "審判は引き分けと宣告した。互いの働きかけが拮抗した末の結果である。",
     };
   }
 }

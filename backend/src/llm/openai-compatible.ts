@@ -305,7 +305,7 @@ export class OpenAiCompatibleProvider implements LlmProvider {
     if (!this.client) return this.fallback.generateCharacter(input);
     try {
       const data = (await this.chatJsonWithCharacterTools(
-        `You create RPG character sheets as JSON. Never include advice to show raw numbers to players.
+        `You create character sheets for broad fictional confrontations as JSON. A confrontation may be swordplay, gunplay, science fiction, hacking, psychic or social pressure, debate, performance, slapstick, or a gentle cute contest. Never force a physical-fantasy interpretation. Never include advice to show raw numbers to players.
 Return JSON: {
   "displayName": string,
   "identity": { "realName": string|null, "nicknames": string[], "selfNames": string[],
@@ -342,6 +342,9 @@ BALANCE (mandatory):
 - When no narrative tradeoff is needed, do not fabricate a generic weakness merely because one parameter is high.
 - skill power typically 0.8–1.5 (never above 1.8). Strong skills need higher MP/stamina cost.
 - Basic attacks may primarily reduce HP, MP, stamina, a maximum, or a combat stat. Match the character concept.
+- basicAttack means the character's repeatable baseline interaction, not necessarily a weapon strike. It may be a shot, signal, argument, spell, prank, song, negotiation move, psychic pressure, or other concept-appropriate action.
+- weapon and armor are optional functional slots: they may hold firearms, tools, devices, vehicles, companions, costumes, social advantages, mental disciplines, or null. Name and describe them in-world; never turn every concept into a sword fighter.
+- Skills and narration-facing descriptions must preserve the requested genre and conflict mode, including nonviolent or abstract contests.
 - Status changes are temporary: every parameter drifts back toward its original sheet value each turn.
 - Every beneficial status effect needs a cost: MP/stamina, a negative self effect, or spending the action turn.
 - Equipment with a positive effect MUST include a negative parameter tradeoff.
@@ -421,7 +424,7 @@ Use null or [] when the profile does not establish a value. Do not treat a title
           traits: current.traits,
           narrativeBlurb: current.narrativeBlurb,
         }),
-        { tier: "engine", label: "inferCharacterIdentity", temperature: 0.2 },
+        { tier: "fast", label: "inferCharacterIdentity", temperature: 0.2 },
       );
       return parseGeneratedIdentity(data);
     } catch (error) {
@@ -436,7 +439,7 @@ Use null or [] when the profile does not establish a value. Do not treat a title
     if (!this.client) return this.fallback.adjustCharacter(current, userMessage);
     try {
       const data = (await this.chatJson(
-        `Adjust a hidden RPG character sheet from user feedback. Reply JSON:
+        `Adjust a hidden character sheet for broad fictional confrontations from user feedback. The confrontation may be physical, ranged, technological, psychic, social, comedic, cute, or otherwise abstract; preserve its genre instead of converting it to sword combat. Reply JSON:
 { "assistantMessage": string, "displayName"?: string, "identity"?: { "realName": string|null,
   "nicknames": string[], "selfNames": string[], "epithets": string[], "gender": string|null, "age": string|null }, "narrativeBlurb"?: string,
   "traits"?: string[], "parameters"?: object, "basicAttack"?: object,
@@ -526,7 +529,7 @@ Judge from the complete concept and mechanics whether the requested strengths ne
   "baseCoefficients": { [key: string]: number }, "narrativeBlurb": string, "assistantMessage": string }
 Coefficients between 0.25 and 2.5. Do not invent stats for characters.`,
         JSON.stringify(input),
-        { tier: "engine", label: "generateBattlefield" },
+        { tier: "fast", label: "generateBattlefield" },
       )) as Record<string, unknown>;
       const appearance = (data.appearance as Record<string, string>) ?? {};
       return {
@@ -586,7 +589,7 @@ Do not show numeric coefficients to the user in assistantMessage.`,
           hiddenCoefficients: current.baseCoefficients,
           userMessage,
         }),
-        { tier: "engine", label: "adjustBattlefield", temperature: 0.5 },
+        { tier: "fast", label: "adjustBattlefield", temperature: 0.5 },
       )) as Record<string, unknown>;
       return {
         presetPatch: {
@@ -647,7 +650,7 @@ Coefficients 0.25-2.5. Make terrain/obstacles/conditions specific for THIS match
               }
             : null,
         }),
-        { tier: "engine", label: "concretizeBattlefield" },
+        { tier: "fast", label: "concretizeBattlefield" },
       )) as Record<string, unknown>;
       const appearance = (data.appearance as Record<string, string>) ?? {};
       return {
@@ -724,7 +727,7 @@ Respect the battlefield terrain/obstacles/conditions. Coefficients between 0.25 
     if (!this.client) return this.fallback.proposeHappening(input);
     try {
       const data = (await this.chatJson(
-        `You are a battle SUPERVISOR for a narrative duel. The fight is getting stagnant.
+        `You supervise a broad fictional confrontation that is becoming stagnant. It may be physical, technological, psychic, social, comedic, cute, or abstract; preserve its established genre.
 Inject ONE environmental happening from the battlefield (not a character skill).
 Japanese only. Keep it COARSE and short — no step-by-step tactics, no HP numbers.
 
@@ -812,9 +815,9 @@ Rules:
     if (!this.client) return this.fallback.advanceCharacterAgent(input);
     try {
       const data = (await this.chatJson(
-        `You maintain one fictional character's private continuity during a duel.
+        `You maintain one fictional character's private continuity during a confrontation. It may be physical, ranged, technological, psychic, social, comedic, cute, or abstract. Preserve the character's own way of acting and never introduce swords, wounds, or martial language unless supplied by the profile or events.
 You see only this character's profile, their previous compact state, and engine-authored cognition.
-Update conclusions and disposition; never invent combat results or numeric changes.
+Update conclusions and disposition; never invent confrontation results or numeric changes.
 Do not output chain-of-thought or step-by-step reasoning. privateMemory is a concise continuity summary only.
 Keep selfReference stable when already established. Any spoken line must consistently use that self-reference and the character's established speechStyle.
 Return JSON only:
@@ -876,7 +879,7 @@ speech is one short Japanese utterance without brackets, or null when silence fi
         ? `Narration style「${input.styleName ?? "custom"}」: ${input.styleInstruction.trim()}`
         : "Narration style: 落ち着いた標準の物語調。";
       const data = (await this.chatJson(
-        `Narrate a turn-based duel in Japanese.
+        `Narrate a turn-based fictional confrontation in Japanese. It may be physical, ranged, technological, psychic, social, comedic, cute, or abstract. Follow the supplied characters and events; never add swordplay, bodily injury, grimness, or martial framing unless the inputs establish them.
 ${styleBlock}
 Use battlefield flavor (terrain/obstacles) when relevant.
 If events include 【ハプニング】, feature that environmental beat clearly in the narrator lines first.
@@ -932,9 +935,9 @@ Do not mention numeric HP/MP/ATK values. Character dialogue is supplied by separ
         ? `因縁 MUST weave in this prior matchup summary (paraphrase, do not invent a conflicting past): ${input.priorMatchSummary.trim()}`
         : "因縁: no prior match on record — invent a light plausible fate/rivalry from character blurbs only.";
       const data = (await this.chatJson(
-        `You write the PROLOGUE of a duel (Japanese), before any combat.
+        `You write the PROLOGUE of a fictional confrontation (Japanese), before any actions resolve. It may be physical, ranged, technological, psychic, social, comedic, cute, or abstract. Match the supplied genre; never add weapons, injury, hostility, or grim tension unless the inputs establish them.
 ${styleBlock}
-Include: atmosphere of the field, each fighter's opening presence / monologue vibe, and rivalry or fate (因縁).
+Include: atmosphere of the field, each participant's opening presence / monologue vibe, and rivalry or fate (因縁).
 ${rivalryRule}
 No combat resolution yet. No numeric stats. Dialogue is owned by separate character agents; do not create or quote dialogue.
 4–8 narrator lines.
@@ -1005,7 +1008,7 @@ JSON: { "turn": 0, "narrator": string[] }`,
         ? `Narration style「${input.styleName ?? "custom"}」: ${input.styleInstruction.trim()}`
         : "Narration style: 落ち着いた標準の物語調。";
       const data = (await this.chatJson(
-        `You write the AFTERMATH of a duel (Japanese), not a new combat turn.
+        `You write the AFTERMATH of a fictional confrontation (Japanese), not a new turn. Match the supplied genre, including nonviolent, social, comedic, cute, technological, or psychic contests. Describe inability to continue in a concept-appropriate way; never assume wounds, weapons, death, or grimness.
 ${styleBlock}
 Someone is already incapacitated. Show what becomes of the fallen and how the winner (if any) closes the scene.
 Use battlefield flavor. Keep it emotional / cinematic but short (3–6 narrator lines).
@@ -1072,16 +1075,18 @@ JSON: { "turn": number, "narrator": string[] }`,
     if (!this.client) return this.fallback.generateBattlePolicies(input);
     try {
       const data = (await this.chatJson(
-        `You design COARSE high-level battle postures for a narrative duel (Japanese UI cards).
-These are rough player intentions, NOT detailed tactics or step-by-step plans.
+        `You design COARSE high-level approaches for a fictional confrontation (Japanese UI cards).
+It may be physical, ranged, technological, psychic, social, comedic, cute, or abstract. Preserve the supplied genre and never assume sword combat. These are rough player intentions, NOT detailed tactics or step-by-step plans.
 
 Return JSON:
 {
   "rationale": string,  // one short sentence
   "options": [{
-    "title": string,   // short label, max ~8 Japanese chars (e.g. 押し気味, 守り, 様子見)
-    "when": string,    // abstract situation only, max ~18 chars (e.g. 劣勢のとき, 序盤)
-    "then": string,    // rough approach only, max ~20 chars (e.g. 無理せず耐える, 機を見て攻める)
+    "perspectiveId": string,    // stable ASCII id shared by exactly two options
+    "perspectiveTitle": string, // short Japanese viewpoint name
+    "title": string,   // short choice label, max ~10 Japanese chars
+    "when": string,    // abstract situation only, max ~18 chars
+    "then": string,    // rough approach only, max ~20 chars
     "bias": "attack"|"defend"|"support"|"wait"|"mixed",
     "priority": number, // 0-100
     "defaultSelected": boolean,
@@ -1097,12 +1102,14 @@ Return JSON:
   }]
 }
 Rules:
-- Generate 5–6 DISTINCT coarse postures. Keep language plain and vague on purpose.
+- Generate exactly 3 distinct perspectives and exactly 2 contrasting choices for each perspective (6 options total).
+- Good perspectives are genre-neutral questions such as initiative, risk, tempo, openness, or resource use. Adapt them to the supplied character without assuming violence.
+- The UI adds a third "お任せ" choice itself, so do not generate an unspecified option.
 - trigger HP fields are fractions 0..1 only (0.35 = 35% HP). Never use 35 or 40 as percent integers.
-- Prefer vibes over tactics: 押し気味 / 守り / 様子見 / 均衡 / 勝負 / 立て直し など.
-- Do NOT write concrete micro-plans (specific skills, named obstacles, exact terrain tricks, HP%, turn numbers, weapon moves).
+- Prefer broad intentions over combat jargon: 自分から動く / 相手を観察 / 大胆 / 慎重 / 集中 / 温存 など.
+- Do NOT write concrete micro-plans (specific skills, named obstacles, exact terrain tricks, HP%, turn numbers, or action sequences).
 - Field/character may lightly color the wording, but stay high-level.
-- Multi-select kit: mark 3–4 defaultSelected true.
+- Mark exactly one option in each perspective defaultSelected for autonomous opponents; the user may still choose お任せ.
 - Keep title/when/then SHORT so they fit a mobile card.`,
         JSON.stringify({
           self: {
@@ -1121,7 +1128,7 @@ Rules:
             category: input.field.category,
           },
         }),
-        { tier: "engine", label: "generateBattlePolicies", temperature: 0.55 },
+        { tier: "fast", label: "generateBattlePolicies", temperature: 0.55 },
       )) as {
         rationale?: string;
         options?: Array<Record<string, unknown>>;
@@ -1156,6 +1163,16 @@ Rules:
         ) as BattlePolicyOption["bias"];
         return {
           id: newId("pol"),
+          perspectiveId: clamp(
+            String(o.perspectiveId ?? `view-${Math.floor(i / 2) + 1}`),
+            24,
+            `view-${Math.floor(i / 2) + 1}`,
+          ),
+          perspectiveTitle: clamp(
+            String(o.perspectiveTitle ?? `観点${Math.floor(i / 2) + 1}`),
+            12,
+            `観点${Math.floor(i / 2) + 1}`,
+          ),
           title: clamp(String(o.title ?? `方針${i + 1}`), 12, `方針${i + 1}`),
           when: clamp(String(o.when ?? "状況が動いたとき"), 28, "状況が動いたとき"),
           then: clamp(String(o.then ?? "柔軟に対応する"), 32, "柔軟に対応する"),
@@ -1174,22 +1191,34 @@ Rules:
         };
       });
 
-      if (options.length === 0) {
+      const grouped = new Map<string, BattlePolicyOption[]>();
+      for (const option of options) {
+        const group = grouped.get(option.perspectiveId) ?? [];
+        if (group.length < 2) group.push(option);
+        grouped.set(option.perspectiveId, group);
+      }
+      const normalized = [...grouped.values()]
+        .filter((group) => group.length === 2)
+        .slice(0, 3)
+        .flat();
+
+      if (normalized.length !== 6) {
         if (!this.fallbackOnError) {
-          throw new Error("Policy generation returned no valid options");
+          throw new Error("Policy generation must return three two-choice perspectives");
         }
         return this.fallback.generateBattlePolicies(input);
       }
 
-      // Ensure at least one default
-      if (!options.some((o) => o.defaultSelected)) {
-        options.slice(0, 3).forEach((o) => {
-          o.defaultSelected = true;
+      // Autonomous opponents get exactly one suggested choice per perspective.
+      for (const group of grouped.values()) {
+        const selected = group.find((option) => option.defaultSelected) ?? group[0];
+        group.forEach((option) => {
+          option.defaultSelected = option === selected;
         });
       }
 
       return {
-        options,
+        options: normalized,
         rationale: String(
           data.rationale ??
             "キャラと戦場に合わせてケース別の方針案を生成しました。",
@@ -1209,7 +1238,7 @@ Rules:
     if (!this.client) return this.fallback.referee(input);
     try {
       const data = (await this.chatJson(
-        `As a duel referee, return JSON { "winnerSide": "a"|"b"|"draw", "summary": string } in Japanese.
+        `As the referee of a broad fictional confrontation, return JSON { "winnerSide": "a"|"b"|"draw", "summary": string } in Japanese. Match the established genre and judge effectiveness without assuming physical violence.
 Prefer the engineWinnerSide unless the narrative strongly suggests otherwise.`,
         JSON.stringify(input),
         { tier: "engine", label: "referee", temperature: 0.3, timeoutMs: 12_000 },

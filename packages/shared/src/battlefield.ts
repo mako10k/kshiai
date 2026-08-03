@@ -242,7 +242,7 @@ export const SYSTEM_PRESET_SEEDS: Array<
     obstacleHints: ["壊れた柱", "落ちた盾"],
     conditionHints: ["歓声", "まばゆい陽光"],
     baseCoefficients: { damage: 1.05, focus: 1.1, luck: 1.05 },
-    narrativeBlurb: "正々堂々の決戦場。観客の視線が戦士を奮い立たせる。",
+    narrativeBlurb: "正面から向き合うための舞台。観客の視線が両者を奮い立たせる。",
   },
   {
     displayName: "荒れ狂う海辺",

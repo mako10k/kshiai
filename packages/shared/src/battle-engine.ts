@@ -220,11 +220,11 @@ export function createBattleState(input: {
     selectedPolicyIdsB,
     battlefield: bf,
     situation: {
-      scene: bf?.scene ?? input.scene ?? "黄昏の闘技場",
+      scene: bf?.scene ?? input.scene ?? "対決の舞台",
       notes:
         bf?.narrativeSetup ??
         bf?.terrain ??
-        "観客の熱気が立ちこめている。",
+        "互いの存在が場の空気を少しずつ変えている。",
       coefficients: baseCoeffs,
       tags,
     },
@@ -789,7 +789,7 @@ export function resolveTurn(input: {
     events.push({
       type: "info",
       summary:
-        "決着の余波 — 両者とも倒れ、戦場に静けさが落ちる。その先がどうなるかを見届けよう。",
+        "決着の余波 — 両者とも続行できなくなり、場に静けさが落ちる。その先を見届けよう。",
     });
   } else if (aDown) {
     winnerSide = "b";
@@ -797,7 +797,7 @@ export function resolveTurn(input: {
     aftermathPending = true;
     events.push({
       type: "info",
-      summary: `${sideA.displayName} が倒れた。${sideB.displayName} と戦場が、その後をどう迎えるか——`,
+      summary: `${sideA.displayName} は対決を続けられなくなった。${sideB.displayName} とこの場が、その後をどう迎えるか——`,
     });
   } else if (bDown) {
     winnerSide = "a";
@@ -805,7 +805,7 @@ export function resolveTurn(input: {
     aftermathPending = true;
     events.push({
       type: "info",
-      summary: `${sideB.displayName} が倒れた。${sideA.displayName} と戦場が、その後をどう迎えるか——`,
+      summary: `${sideB.displayName} は対決を続けられなくなった。${sideA.displayName} とこの場が、その後をどう迎えるか——`,
     });
   } else if (turn >= input.state.turnLimit) {
     status = "finished";
@@ -825,7 +825,7 @@ export function resolveTurn(input: {
   } else if (turn === input.state.turnLimit - 1) {
     events.push({
       type: "info",
-      summary: "判定予告 — 次が最終ターン。攻勢、残力、戦場支配が勝敗を分ける。",
+      summary: "判定予告 — 次が最終ターン。働きかけの有効性、残力、場への影響が勝敗を分ける。",
     });
   }
 
@@ -906,7 +906,7 @@ function applyEnvHits(
           intensity: hit.intensity,
           summary:
             hit.intensity === "moderate"
-              ? `${t.displayName} は環境の衝撃をまともに受けた。`
+              ? `${t.displayName} は環境の変化に大きく揺さぶられた。`
               : `${t.displayName} は環境の余波を浴びた。`,
         });
       }
@@ -964,7 +964,7 @@ function applyAction(
     events.push({
       type: "defend",
       actorName: actor.displayName,
-      summary: `${actor.displayName} は守りを固めた。`,
+      summary: `${actor.displayName} は自分の態勢を整えた。`,
     });
     return;
   }
@@ -1009,7 +1009,7 @@ function applyAction(
         actorName: actor.displayName,
         skillName: skill.name,
         intensity: intensityFromDamage(heal),
-        summary: `${actor.displayName} の ${skill.name} が傷を癒やした。`,
+        summary: `${actor.displayName} の ${skill.name} が状態を持ち直した。`,
       });
     } else if (skill.kind === "defend") {
       events.push({

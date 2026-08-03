@@ -31,7 +31,7 @@ type MatchDraft = {
  * Explicit wizard — no hidden auto-start, no policy regen on every field flick.
  *
  * Step 1: pick my char / field / opponent (random only fills opponent)
- * Step 2: generate policies once (user-triggered), multi-select
+ * Step 2: generate perspectives once; each is choice A / choice B / unspecified
  * Step 3: confirm & start
  */
 export function MatchPage() {
@@ -92,6 +92,21 @@ export function MatchPage() {
   const currentKey = keyOf(myId, oppId, fieldId);
   const matchupReady = Boolean(myId && oppId);
   const policiesFresh = policyKey === currentKey && engineOptions.length > 0;
+  const policyGroups = useMemo(() => {
+    const groups = new Map<
+      string,
+      { title: string; options: BattlePolicyOptionPublic[] }
+    >();
+    for (const option of policyOptions) {
+      const group = groups.get(option.perspectiveId) ?? {
+        title: option.perspectiveTitle,
+        options: [],
+      };
+      group.options.push(option);
+      groups.set(option.perspectiveId, group);
+    }
+    return [...groups.entries()].map(([id, group]) => ({ id, ...group }));
+  }, [policyOptions]);
 
   useEffect(() => {
     void (async () => {
@@ -219,7 +234,7 @@ export function MatchPage() {
   function applyBundle(bundle: PolicyBundle) {
     setPolicyOptions(bundle.options);
     setEngineOptions(bundle.engineOptions);
-    setSelectedIds(bundle.defaultSelectedIds);
+    setSelectedIds([]);
     setRationale(bundle.rationale);
     setFieldHint(bundle.fieldHint);
     setPolicyKey(currentKey);
@@ -261,16 +276,16 @@ export function MatchPage() {
     }
   }
 
-  function togglePolicy(id: string) {
-    setSelectedIds((prev) =>
-      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
+  function setPerspectiveChoice(perspectiveId: string, id: string | null) {
+    const groupIds = new Set(
+      policyOptions
+        .filter((option) => option.perspectiveId === perspectiveId)
+        .map((option) => option.id),
     );
-  }
-
-  function selectDefaults() {
-    setSelectedIds(
-      policyOptions.filter((o) => o.defaultSelected).map((o) => o.id),
-    );
+    setSelectedIds((previous) => [
+      ...previous.filter((selected) => !groupIds.has(selected)),
+      ...(id ? [id] : []),
+    ]);
   }
 
   async function pickRandomOpponent() {
@@ -304,7 +319,7 @@ export function MatchPage() {
         const bundle = await generatePolicies();
         applyBundle(bundle);
         policies = bundle.engineOptions;
-        selected = bundle.defaultSelectedIds;
+        selected = [];
       } catch (err) {
         setError(err instanceof Error ? err.message : "failed");
         setPolicyBusy(false);
@@ -314,12 +329,6 @@ export function MatchPage() {
       }
     }
 
-    if (selected.length === 0) {
-      selected = policies.filter((p) => p.defaultSelected).map((p) => p.id);
-    }
-    if (selected.length === 0 && policies.length > 0) {
-      selected = [policies[0]!.id];
-    }
     if (policies.length === 0) {
       setError("方針がありません。再提案してください。");
       return;
@@ -563,13 +572,13 @@ export function MatchPage() {
             <h2 className="setup-section-title">ケース方針</h2>
             {policiesFresh && (
               <span className="policy-count">
-                {selectedIds.length}/{policyOptions.length} 選択
+                {selectedIds.length}/{policyGroups.length} 観点指定
               </span>
             )}
           </div>
 
           <p className="muted help-text">
-            ざっくりした戦い方を複数選べます（例: 劣勢なら守り、機があれば押す）。細部は試合中に任せます。
+            観点ごとに二つの案から選べます。決めない観点は「お任せ」にすると、キャラクター自身が状況に合わせます。
           </p>
 
           {policyBusy && <div className="empty-hint">方針を生成中…</div>}
@@ -594,43 +603,66 @@ export function MatchPage() {
               type="button"
               className="btn ghost"
               disabled={policyOptions.length === 0}
-              onClick={selectDefaults}
+              onClick={() => setSelectedIds([])}
             >
-              推奨に戻す
+              すべてお任せ
             </button>
           </div>
 
-          <div className="policy-list" role="group" aria-label="ケース方針">
-            {policyOptions.map((opt) => {
-              const checked = selectedIds.includes(opt.id);
+          <div className="policy-list" aria-label="対決方針の観点">
+            {policyGroups.map((group) => {
+              const selected = group.options.find((option) =>
+                selectedIds.includes(option.id),
+              );
               return (
-                <button
-                  key={opt.id}
-                  type="button"
-                  className={`policy-card${checked ? " is-on" : ""}`}
-                  aria-pressed={checked}
-                  onClick={() => togglePolicy(opt.id)}
-                >
-                  <span className="policy-card-check" aria-hidden>
-                    {checked ? "✓" : ""}
-                  </span>
-                  <span className="policy-card-body">
-                    <span className="policy-card-title">
-                      {opt.title}
-                      {opt.defaultSelected ? (
-                        <span className="tag">推奨</span>
-                      ) : null}
-                    </span>
-                    <span className="policy-card-when">
-                      <span className="policy-k">いつ</span>
-                      <span className="policy-card-text">{opt.when}</span>
-                    </span>
-                    <span className="policy-card-then">
-                      <span className="policy-k">方針</span>
-                      <span className="policy-card-text">{opt.then}</span>
-                    </span>
-                  </span>
-                </button>
+                <fieldset className="policy-perspective" key={group.id}>
+                  <legend>{group.title}</legend>
+                  <div className="policy-perspective-choices">
+                    {group.options.map((opt) => {
+                      const checked = selected?.id === opt.id;
+                      return (
+                        <button
+                          key={opt.id}
+                          type="button"
+                          className={`policy-card${checked ? " is-on" : ""}`}
+                          aria-pressed={checked}
+                          onClick={() => setPerspectiveChoice(group.id, opt.id)}
+                        >
+                          <span className="policy-card-check" aria-hidden>
+                            {checked ? "✓" : ""}
+                          </span>
+                          <span className="policy-card-body">
+                            <span className="policy-card-title">{opt.title}</span>
+                            <span className="policy-card-when">
+                              <span className="policy-k">いつ</span>
+                              <span className="policy-card-text">{opt.when}</span>
+                            </span>
+                            <span className="policy-card-then">
+                              <span className="policy-k">方針</span>
+                              <span className="policy-card-text">{opt.then}</span>
+                            </span>
+                          </span>
+                        </button>
+                      );
+                    })}
+                    <button
+                      type="button"
+                      className={`policy-card policy-card-unspecified${selected ? "" : " is-on"}`}
+                      aria-pressed={!selected}
+                      onClick={() => setPerspectiveChoice(group.id, null)}
+                    >
+                      <span className="policy-card-check" aria-hidden>
+                        {selected ? "" : "✓"}
+                      </span>
+                      <span className="policy-card-body">
+                        <span className="policy-card-title">お任せ</span>
+                        <span className="policy-card-text">
+                          キャラクター自身が状況に合わせる
+                        </span>
+                      </span>
+                    </button>
+                  </div>
+                </fieldset>
               );
             })}
           </div>
@@ -671,8 +703,7 @@ export function MatchPage() {
               busy ||
               policyBusy ||
               !matchupReady ||
-              (!policiesFresh && policyOptions.length === 0) ||
-              (policiesFresh && selectedIds.length === 0)
+              (!policiesFresh && policyOptions.length === 0)
             }
             onClick={() => void startBattle()}
           >
@@ -680,7 +711,11 @@ export function MatchPage() {
               ? "開始中…"
               : policyBusy
                 ? "方針準備中…"
-                : `試合開始${selectedIds.length ? `（方針 ${selectedIds.length}）` : ""}`}
+                : `試合開始${
+                    selectedIds.length
+                      ? `（${selectedIds.length}観点を指定）`
+                      : "（お任せ）"
+                  }`}
           </button>
         )}
       </div>

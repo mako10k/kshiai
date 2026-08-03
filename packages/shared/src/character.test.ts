@@ -41,7 +41,7 @@ describe("character combat extensions", () => {
     assert.equal(sheet.identity, undefined);
     assert.equal(sheet.skills[0]?.effects, undefined);
     const hydrated = ensureCharacterCombatProperties(sheet);
-    assert.equal(hydrated.basicAttack?.name, "通常攻撃");
+    assert.equal(hydrated.basicAttack?.name, "基本アクション");
     assert.deepEqual(hydrated.skills[0]?.effects, []);
     assert.deepEqual(ensureCharacterIdentityProperties(sheet).identity, {
       realName: null,
@@ -52,7 +52,7 @@ describe("character combat extensions", () => {
       age: null,
     });
     const publicSheet = toPublicCharacter(sheet, "u1");
-    assert.equal(publicSheet.basicAttackName, "通常攻撃");
+    assert.equal(publicSheet.basicAttackName, "基本アクション");
     assert.deepEqual(publicSheet.names, {
       realName: null,
       nicknames: [],

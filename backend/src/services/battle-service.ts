@@ -17,6 +17,7 @@ import {
   shouldInjectHappening,
   stanceLabel,
   summarizeSelectedPolicies,
+  selectPolicyIdsByPerspective,
   toPublicCharacter,
   toPublicInstance,
   toPublicPolicyOption,
@@ -342,11 +343,12 @@ export async function startBattle(input: {
   }
 
   const selectedPolicyIdsA =
-    input.selectedPolicyIds && input.selectedPolicyIds.length > 0
-      ? input.selectedPolicyIds.filter((id) =>
-          policiesA.some((p) => p.id === id),
-        )
-      : policiesA.filter((p) => p.defaultSelected).map((p) => p.id);
+    input.selectedPolicyIds !== undefined
+      ? selectPolicyIdsByPerspective(policiesA, input.selectedPolicyIds)
+      : selectPolicyIdsByPerspective(
+          policiesA,
+          policiesA.filter((p) => p.defaultSelected).map((p) => p.id),
+        );
 
   // Opponent policies: always LLM-generated with defaults auto-selected
   const genB = await input.llm.generateBattlePolicies({
@@ -366,9 +368,10 @@ export async function startBattle(input: {
     },
   });
   const policiesB = genB.options;
-  const selectedPolicyIdsB = policiesB
-    .filter((p) => p.defaultSelected)
-    .map((p) => p.id);
+  const selectedPolicyIdsB = selectPolicyIdsByPerspective(
+    policiesB,
+    policiesB.filter((p) => p.defaultSelected).map((p) => p.id),
+  );
 
   const narrationStyle = styleRepo.resolveNarrationStyleForUser(
     input.userId,
@@ -389,15 +392,15 @@ export async function startBattle(input: {
     battlefield,
     stanceA: input.stance,
     policiesA,
-    selectedPolicyIdsA:
-      selectedPolicyIdsA.length > 0
-        ? selectedPolicyIdsA
-        : policiesA.slice(0, 3).map((p) => p.id),
+    selectedPolicyIdsA,
     policiesB,
     selectedPolicyIdsB:
       selectedPolicyIdsB.length > 0
         ? selectedPolicyIdsB
-        : policiesB.slice(0, 3).map((p) => p.id),
+        : selectPolicyIdsByPerspective(
+            policiesB,
+            policiesB.map((policy) => policy.id),
+          ),
     narrationStyle: narrationSnap,
     priorMatchSummary,
   });

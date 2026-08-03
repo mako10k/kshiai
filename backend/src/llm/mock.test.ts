@@ -80,4 +80,31 @@ describe("mock LLM natural-language handling", () => {
     assert.equal(adjusted.sheetPatch.traits, undefined);
     assert.equal(adjusted.sheetPatch.displayName, undefined);
   });
+
+  it("returns three genre-neutral two-choice policy perspectives", async () => {
+    const provider = new MockLlmProvider();
+    const result = await provider.generateBattlePolicies({
+      self: {
+        displayName: "おしゃべりロボ",
+        traits: ["ゆるい", "機械"],
+        skillNames: ["なぞなぞ通信"],
+        narrativeBlurb: "会話で相手の調子を崩すロボット。",
+      },
+      foe: null,
+      field: { displayName: "宇宙カフェ", category: "custom" },
+    });
+    const groups = new Map<string, number>();
+    for (const option of result.options) {
+      groups.set(
+        option.perspectiveId,
+        (groups.get(option.perspectiveId) ?? 0) + 1,
+      );
+    }
+    assert.equal(groups.size, 3);
+    assert.deepEqual([...groups.values()], [2, 2, 2]);
+    assert.doesNotMatch(
+      result.options.map((option) => `${option.title}${option.then}`).join(""),
+      /剣|斬|刃/,
+    );
+  });
 });

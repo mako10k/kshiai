@@ -289,3 +289,23 @@ decision D17 based_on PR17, EV17, D5:
     Routes update imageUrl only after local media is saved. Missing providers,
     moderation failures, and transport failures return an explicit error and
     preserve the previous record; remote placeholder URLs are never persisted.
+
+problem PR18:
+  |
+    Sword-centric defaults and unconstrained policy checkboxes pull gun, science
+    fiction, psychic, social, comedic, and gentle character concepts back into
+    a physical fantasy duel. Some coarse structured tasks also use the slower
+    engine model without requiring its extra accuracy.
+
+decision D18 based_on PR18, D1, D2, D13, D16:
+  |
+    Prompts and fallback prose describe a genre-neutral fictional confrontation
+    and may use physical, ranged, technological, psychic, social, comedic, cute,
+    or abstract actions only when supported by character and event context.
+    Policy generation returns three perspectives with exactly two contrasting
+    choices each. The UI adds an explicit unspecified choice per perspective;
+    the server accepts an empty selection and enforces at most one choice per
+    perspective. Character generation and adjustment plus final refereeing use
+    the engine model. Identity extraction, battlefield generation/adjustment/
+    concretization, policy generation, agents, situation, and narration use the
+    fast model because schemas and deterministic validation bound their output.

@@ -180,8 +180,8 @@ const GENERIC: Template[] = [
   },
   {
     title: "突風",
-    summary: "突風が戦場を横切り、間合いが一気に詰まる。",
-    notes: "強い風が刃と姿勢を揺らしている。",
+    summary: "突風が場を横切り、対決の流れが一気に変わる。",
+    notes: "強い風が動きと集中を揺らしている。",
     coefficients: { wind: 1.35, damage: 1.05 },
     tags: ["突風"],
   },
@@ -223,7 +223,7 @@ const BY_CATEGORY: Record<string, Template[]> = {
     {
       title: "観客の熱狂",
       summary: "観客の怒号が場を揺らし、決着を急かす。",
-      notes: "熱狂が攻勢を煽っている。",
+      notes: "熱狂が両者の働きかけを勢いづけている。",
       coefficients: { damage: 1.2, def: 0.95 },
       tags: ["観客"],
     },
@@ -247,8 +247,8 @@ const BY_CATEGORY: Record<string, Template[]> = {
     },
     {
       title: "潮風",
-      summary: "塩を含んだ風が刃を冷やし、息を整える隙を生む。",
-      notes: "潮風が戦場の空気を一変させた。",
+      summary: "塩を含んだ風が熱を冷まし、調子を整える間を生む。",
+      notes: "潮風が場の空気を一変させた。",
       coefficients: { water: 1.15, heal: 1.1 },
       tags: ["潮風"],
     },
@@ -268,7 +268,7 @@ const BY_CATEGORY: Record<string, Template[]> = {
     {
       title: "警報",
       summary: "遠くで警報が鳴り、焦燥が広がる。",
-      notes: "時間がない空気が戦場を支配する。",
+      notes: "時間がない空気がその場を支配する。",
       coefficients: { damage: 1.1, focus: 0.9 },
       tags: ["警報"],
     },
@@ -277,7 +277,7 @@ const BY_CATEGORY: Record<string, Template[]> = {
     {
       title: "チャイム",
       summary: "校内放送が流れ、妙な緊張が走る。",
-      notes: "日常の音が戦場の空気を歪める。",
+      notes: "日常の音が対決の空気を歪める。",
       coefficients: { focus: 0.9, damage: 1.05 },
       tags: ["チャイム"],
     },
@@ -301,7 +301,7 @@ const BY_CATEGORY: Record<string, Template[]> = {
     },
     {
       title: "山風",
-      summary: "稜線の風が刃を煽り、体勢が揺らぐ。",
+      summary: "稜線の風が動きを乱し、体勢が揺らぐ。",
       notes: "強い山風が攻防を乱す。",
       coefficients: { wind: 1.4, damage: 1.05 },
       tags: ["山風"],
@@ -406,7 +406,7 @@ export function envHitSummary(
       : `${displayName} の動きが一瞬乱れた。`;
   }
   return intensity === "moderate"
-    ? `${displayName} は環境の衝撃をまともに受けた。`
+    ? `${displayName} は環境の変化に大きく揺さぶられた。`
     : `${displayName} は環境の余波を浴びた。`;
 }
 

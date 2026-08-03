@@ -42,8 +42,8 @@ export type SkillEffect = z.infer<typeof SkillEffectSchema>;
 
 /** Character-specific fallback attack; HP damage is only the default profile. */
 export const BasicAttackProfileSchema = z.object({
-  name: z.string().default("通常攻撃"),
-  description: z.string().default("消耗時にも使える基本攻撃。"),
+  name: z.string().default("基本アクション"),
+  description: z.string().default("消耗時にも使える、そのキャラクターらしい基本行動。"),
   targetParameter: ParamKeySchema.default("hp"),
   scalingParameter: ParamKeySchema.default("atk"),
   resistanceParameter: ParamKeySchema.default("def"),

@@ -134,7 +134,11 @@ describe("battle engine", () => {
     assert.equal(next.winnerSide, "a");
     assert.equal(next.finishReason, "incapacitated");
     assert.ok(events.some((e) => e.type === "status"));
-    assert.ok(events.some((e) => e.summary.includes("余波") || e.summary.includes("倒れた")));
+    assert.ok(
+      events.some(
+        (e) => e.summary.includes("余波") || e.summary.includes("続けられ"),
+      ),
+    );
   });
 
   it("clamps wild coefficients", () => {
@@ -208,6 +212,8 @@ describe("battle engine", () => {
       policiesA: [
         {
           id: "p1",
+          perspectiveId: "pressure",
+          perspectiveTitle: "働きかけ方",
           title: "追い打ち",
           when: "相手が揺らいだとき",
           then: "攻める",
@@ -218,6 +224,8 @@ describe("battle engine", () => {
         },
         {
           id: "p2",
+          perspectiveId: "recovery",
+          perspectiveTitle: "立て直し方",
           title: "守り",
           when: "こちらが危ないとき",
           then: "守る",
@@ -250,6 +258,8 @@ describe("battle engine", () => {
     }
     const attackPolicy = {
       id: "attack",
+      perspectiveId: "initiative",
+      perspectiveTitle: "働きかけ方",
       title: "攻勢",
       when: "常に",
       then: "攻める",
@@ -276,7 +286,7 @@ describe("battle engine", () => {
       sideBSkills: b.skills,
     });
 
-    assert.equal(events.filter((e) => e.skillName === "通常攻撃").length, 2);
+    assert.equal(events.filter((e) => e.skillName === "基本アクション").length, 2);
     assert.equal(next.sideA.parameters.stamina, 0);
     assert.ok((next.sideA.parameters.hp ?? 100) < 100);
     assert.ok((next.sideB.parameters.hp ?? 100) < 100);
@@ -316,6 +326,8 @@ describe("battle engine", () => {
     const b = sheet("b", "B");
     const waitPolicy = {
       id: "wait",
+      perspectiveId: "initiative",
+      perspectiveTitle: "働きかけ方",
       title: "待機",
       when: "常に",
       then: "待つ",
@@ -351,7 +363,7 @@ describe("battle engine", () => {
     });
 
     assert.ok(events.some((e) => e.summary.includes("膠着打破")));
-    assert.equal(events.filter((e) => e.skillName === "通常攻撃").length, 2);
+    assert.equal(events.filter((e) => e.skillName === "基本アクション").length, 2);
   });
 
   it("announces the final turn and explains the turn-limit decision", () => {

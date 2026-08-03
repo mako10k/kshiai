@@ -5,7 +5,7 @@ import { api, ApiError, type ImageGenQuota } from "../api";
 import { useLocalDraft } from "../hooks/useLocalDraft";
 import { mediaSrc } from "../media";
 
-const CHAT_PLACEHOLDER = "もっと防御寄りにして";
+const CHAT_PLACEHOLDER = "もっと慎重で、相手を観察するタイプにして";
 
 function formatNextAt(iso: string | null | undefined): string | null {
   if (!iso) return null;
@@ -193,9 +193,10 @@ export function CharacterDetailPage() {
   if (!character) return <p className="error">キャラが見つかりません</p>;
 
   // Tolerate a rolling deployment where the frontend sees an older DTO once.
-  const basicAttackName = character.basicAttackName || "通常攻撃";
+  const basicAttackName = character.basicAttackName || "基本アクション";
   const basicAttackDescription =
-    character.basicAttackDescription || "消耗時にも使える基本攻撃。";
+    character.basicAttackDescription ||
+    "消耗時にも使える、そのキャラクターらしい基本行動。";
   const skillSummaries = Array.isArray(character.skillSummaries)
     ? character.skillSummaries
     : (character.skillNames ?? []).map((name) => ({ name, description: "" }));

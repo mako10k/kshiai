@@ -112,7 +112,8 @@ export const config = {
     modelEngine:
       process.env.XAI_MODEL_ENGINE ?? process.env.XAI_MODEL ?? "grok-4.5",
     /**
-     * Fast tier: turn narration, aftermath, situation color.
+     * Fast tier: narration, agent continuity, identity extraction,
+     * battlefield drafting/concretization, and coarse policy choices.
      * Prefer non-reasoning / low-latency models.
      */
     modelFast:

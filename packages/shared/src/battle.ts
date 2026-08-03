@@ -94,6 +94,9 @@ export type PolicyTriggers = z.infer<typeof PolicyTriggersSchema>;
  */
 export const BattlePolicyOptionSchema = z.object({
   id: z.string(),
+  /** Groups two mutually-exclusive choices under one user-facing perspective. */
+  perspectiveId: z.string().default("general"),
+  perspectiveTitle: z.string().default("全体方針"),
   /** Short card title. */
   title: z.string(),
   /** When this case applies (user-facing). */
@@ -112,6 +115,8 @@ export type BattlePolicyOption = z.infer<typeof BattlePolicyOptionSchema>;
 
 export const BattlePolicyOptionPublicSchema = BattlePolicyOptionSchema.pick({
   id: true,
+  perspectiveId: true,
+  perspectiveTitle: true,
   title: true,
   when: true,
   then: true,
@@ -126,6 +131,8 @@ export function toPublicPolicyOption(
 ): BattlePolicyOptionPublic {
   return {
     id: o.id,
+    perspectiveId: o.perspectiveId,
+    perspectiveTitle: o.perspectiveTitle,
     title: o.title,
     when: o.when,
     then: o.then,
@@ -141,23 +148,23 @@ export const BATTLE_STANCE_OPTIONS: Array<{
 }> = [
   {
     id: "aggressive",
-    label: "積極的に攻撃",
-    description: "手数が多く、攻めを優先する。",
+    label: "積極的に働きかける",
+    description: "自分から展開を動かすことを優先する。",
   },
   {
     id: "balanced",
-    label: "攻守の均衡",
-    description: "状況に応じて攻撃と守りを切り替える。",
+    label: "柔軟に対応する",
+    description: "状況に応じて働きかけ方を切り替える。",
   },
   {
     id: "defensive",
-    label: "防御主体でチャンスを狙う",
-    description: "守りを固めつつ隙を突く。",
+    label: "慎重に機会を待つ",
+    description: "自分の状態を保ちながら好機を待つ。",
   },
   {
     id: "opportunistic",
-    label: "様子を見て隙を突く",
-    description: "序盤様子見、崩れた瞬間に畳みかける。",
+    label: "変化を見て動く",
+    description: "序盤は観察し、状況が変わったら応じる。",
   },
 ];
 
@@ -170,11 +177,26 @@ export function summarizeSelectedPolicies(
   options: BattlePolicyOption[] | undefined,
   selectedIds: string[] | undefined,
 ): string {
-  if (!options?.length) return "方針未設定";
+  if (!options?.length) return "お任せ";
   const ids = new Set(selectedIds ?? []);
   const picked = options.filter((o) => ids.has(o.id));
-  if (picked.length === 0) return "方針未設定";
+  if (picked.length === 0) return "お任せ";
   return picked.map((o) => o.title).join(" / ");
+}
+
+/** Keep only the first selected choice for each policy perspective. */
+export function selectPolicyIdsByPerspective(
+  options: BattlePolicyOption[],
+  selectedIds: string[],
+): string[] {
+  const selected = new Set(selectedIds);
+  const seenPerspectives = new Set<string>();
+  return options.flatMap((option) => {
+    if (!selected.has(option.id)) return [];
+    if (seenPerspectives.has(option.perspectiveId)) return [];
+    seenPerspectives.add(option.perspectiveId);
+    return [option.id];
+  });
 }
 
 export const BattleActionSchema = z.object({
