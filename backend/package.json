@@ -15,6 +15,7 @@
     "smoke:postgres-runtime": "tsx src/scripts/postgres-runtime-smoke.ts"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1101.0",
     "@hono/node-server": "^1.14.4",
     "@kshiai/shared": "*",
     "bcryptjs": "^3.0.2",

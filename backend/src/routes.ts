@@ -49,6 +49,12 @@ import {
 import { getBalanceSummary } from "./services/balance-observe.js";
 import { findCharacterNameConflict } from "./character-name-uniqueness.js";
 import { databaseKind, query } from "./db.js";
+import {
+  abandonIdempotentRequest,
+  beginIdempotentRequest,
+  completeIdempotentRequest,
+  requestDigest,
+} from "./services/distributed-guard.js";
 
 const llm = createLlmProvider();
 
@@ -58,6 +64,11 @@ function cacheControlForMedia(version: string | undefined): string {
     return "public, max-age=31536000, immutable";
   }
   return "public, max-age=60, must-revalidate";
+}
+
+function readIdempotencyKey(value: string | undefined): string | null {
+  const key = value?.trim() ?? "";
+  return /^[a-zA-Z0-9][a-zA-Z0-9._:-]{7,127}$/.test(key) ? key : null;
 }
 
 export function buildRoutes() {
@@ -865,6 +876,25 @@ export function buildRoutes() {
       console.error("[battles] create validation failed", message);
       return c.json({ error: "invalid_request", message }, 400);
     }
+    const idempotencyKey = readIdempotencyKey(c.req.header("Idempotency-Key"));
+    if (!idempotencyKey) {
+      return c.json({ error: "idempotency_key_required" }, 400);
+    }
+    const scope = "battle-create";
+    const idempotency = await beginIdempotentRequest({
+      userId: user.id,
+      scope,
+      key: idempotencyKey,
+      requestHash: requestDigest(body),
+    });
+    if (idempotency.kind === "conflict") {
+      return c.json({ error: "idempotency_key_conflict" }, 409);
+    }
+    if (idempotency.kind === "processing") {
+      return c.json({ error: "request_in_progress" }, 409);
+    }
+    if (idempotency.kind === "replay") return c.json(idempotency.response);
+    let operationCompleted = false;
     try {
       const battle = await startBattle({
         userId: user.id,
@@ -878,8 +908,25 @@ export function buildRoutes() {
         narrationStyleId: body.narrationStyleId,
         llm,
       });
-      return c.json({ battle });
+      operationCompleted = true;
+      const response = { battle };
+      await completeIdempotentRequest({
+        userId: user.id,
+        scope,
+        key: idempotencyKey,
+        ownerId: idempotency.ownerId,
+        response,
+      });
+      return c.json(response);
     } catch (e) {
+      if (!operationCompleted) {
+        await abandonIdempotentRequest({
+          userId: user.id,
+          scope,
+          key: idempotencyKey,
+          ownerId: idempotency.ownerId,
+        });
+      }
       const msg = e instanceof Error ? e.message : "error";
       console.error("[battles] startBattle failed", msg, e);
       return c.json(
@@ -935,18 +982,54 @@ export function buildRoutes() {
     const user = c.get("user");
     const battleId = c.req.param("id");
     const started = Date.now();
+    const idempotencyKey = readIdempotencyKey(c.req.header("Idempotency-Key"));
+    if (!idempotencyKey) {
+      return c.json({ error: "idempotency_key_required" }, 400);
+    }
+    const scope = `battle-advance:${battleId}`;
+    const idempotency = await beginIdempotentRequest({
+      userId: user.id,
+      scope,
+      key: idempotencyKey,
+      requestHash: requestDigest({ battleId }),
+    });
+    if (idempotency.kind === "conflict") {
+      return c.json({ error: "idempotency_key_conflict" }, 409);
+    }
+    if (idempotency.kind === "processing") {
+      return c.json({ error: "request_in_progress" }, 409);
+    }
+    if (idempotency.kind === "replay") return c.json(idempotency.response);
     console.info(`[battles] advance start ${battleId}`);
+    let operationCompleted = false;
     try {
       const battle = await advanceTurn({
         userId: user.id,
         battleId,
         llm,
       });
+      operationCompleted = true;
       console.info(
         `[battles] advance ok ${battleId} turn=${battle.turn} ${Date.now() - started}ms aft=${battle.aftermathPending ? 1 : 0}`,
       );
-      return c.json({ battle });
+      const response = { battle };
+      await completeIdempotentRequest({
+        userId: user.id,
+        scope,
+        key: idempotencyKey,
+        ownerId: idempotency.ownerId,
+        response,
+      });
+      return c.json(response);
     } catch (e) {
+      if (!operationCompleted) {
+        await abandonIdempotentRequest({
+          userId: user.id,
+          scope,
+          key: idempotencyKey,
+          ownerId: idempotency.ownerId,
+        });
+      }
       const msg = e instanceof Error ? e.message : "error";
       console.error(
         `[battles] advance fail ${battleId} ${Date.now() - started}ms`,
@@ -959,6 +1042,8 @@ export function buildRoutes() {
             ? 404
             : msg === "BATTLE_FINISHED"
               ? 409
+              : msg === "BATTLE_BUSY"
+                ? 409
               : 500;
       return c.json({ error: msg.toLowerCase(), message: msg }, code);
     }
@@ -976,12 +1061,42 @@ export function buildRoutes() {
     const user = c.get("user");
     const battleId = c.req.param("id");
     const started = Date.now();
+    const idempotencyKey = readIdempotencyKey(c.req.header("Idempotency-Key"));
+    if (!idempotencyKey) {
+      return c.json({ error: "idempotency_key_required" }, 400);
+    }
+    const scope = `battle-advance:${battleId}`;
+    const idempotency = await beginIdempotentRequest({
+      userId: user.id,
+      scope,
+      key: idempotencyKey,
+      requestHash: requestDigest({ battleId }),
+    });
+    if (idempotency.kind === "conflict") {
+      return c.json({ error: "idempotency_key_conflict" }, 409);
+    }
+    if (idempotency.kind === "processing") {
+      return c.json({ error: "request_in_progress" }, 409);
+    }
+    if (idempotency.kind === "replay") {
+      const replay = idempotency.response as { battle?: unknown };
+      return new Response(
+        `data: ${JSON.stringify({ type: "done", battle: replay.battle })}\n\n`,
+        {
+          headers: {
+            "Content-Type": "text/event-stream",
+            "Cache-Control": "no-cache, no-transform",
+          },
+        },
+      );
+    }
     console.info(`[battles] advance stream start ${battleId}`);
 
     const encoder = new TextEncoder();
     const stream = new ReadableStream<Uint8Array>({
       async start(controller) {
         let closed = false;
+        let operationCompleted = false;
         const write = (chunk: string) => {
           if (closed) return;
           try {
@@ -1005,11 +1120,27 @@ export function buildRoutes() {
             llm,
             onProgress: (event) => send(event),
           });
+          operationCompleted = true;
+          await completeIdempotentRequest({
+            userId: user.id,
+            scope,
+            key: idempotencyKey,
+            ownerId: idempotency.ownerId,
+            response: { battle },
+          });
           send({ type: "done", battle });
           console.info(
             `[battles] advance stream ok ${battleId} turn=${battle.turn} ${Date.now() - started}ms aft=${battle.aftermathPending ? 1 : 0}`,
           );
         } catch (e) {
+          if (!operationCompleted) {
+            await abandonIdempotentRequest({
+              userId: user.id,
+              scope,
+              key: idempotencyKey,
+              ownerId: idempotency.ownerId,
+            });
+          }
           const msg = e instanceof Error ? e.message : "error";
           console.error(
             `[battles] advance stream fail ${battleId} ${Date.now() - started}ms`,
@@ -1042,21 +1173,60 @@ export function buildRoutes() {
   /** Legacy alias — same as advance (per-turn skill pick is removed). */
   authed.post("/battles/:id/action", async (c) => {
     const user = c.get("user");
+    const battleId = c.req.param("id");
+    const idempotencyKey = readIdempotencyKey(c.req.header("Idempotency-Key"));
+    if (!idempotencyKey) {
+      return c.json({ error: "idempotency_key_required" }, 400);
+    }
+    const scope = `battle-advance:${battleId}`;
+    const idempotency = await beginIdempotentRequest({
+      userId: user.id,
+      scope,
+      key: idempotencyKey,
+      requestHash: requestDigest({ battleId }),
+    });
+    if (idempotency.kind === "conflict") {
+      return c.json({ error: "idempotency_key_conflict" }, 409);
+    }
+    if (idempotency.kind === "processing") {
+      return c.json({ error: "request_in_progress" }, 409);
+    }
+    if (idempotency.kind === "replay") return c.json(idempotency.response);
+    let operationCompleted = false;
     try {
       const battle = await advanceTurn({
         userId: user.id,
-        battleId: c.req.param("id"),
+        battleId,
         llm,
       });
-      return c.json({ battle });
+      operationCompleted = true;
+      const response = { battle };
+      await completeIdempotentRequest({
+        userId: user.id,
+        scope,
+        key: idempotencyKey,
+        ownerId: idempotency.ownerId,
+        response,
+      });
+      return c.json(response);
     } catch (e) {
+      if (!operationCompleted) {
+        await abandonIdempotentRequest({
+          userId: user.id,
+          scope,
+          key: idempotencyKey,
+          ownerId: idempotency.ownerId,
+        });
+      }
       const msg = e instanceof Error ? e.message : "error";
       const code =
         msg === "FORBIDDEN"
           ? 403
           : msg === "BATTLE_NOT_FOUND"
             ? 404
-            : 400;
+            : msg === "BATTLE_BUSY" || msg === "BATTLE_FINISHED"
+              ? 409
+              : 400;
       return c.json({ error: msg.toLowerCase() }, code);
     }
   });

@@ -150,6 +150,7 @@ async function main(): Promise<void> {
     const narrationStyles = await import("../repositories/narration-styles.js");
     const imageQuota = await import("../services/image-quota.js");
     const balance = await import("../services/balance-observe.js");
+    const distributed = await import("../services/distributed-guard.js");
 
     await db.initializeDatabase();
     const user = await auth.registerUser("runtime_smoke", "runtime-smoke-password");
@@ -177,6 +178,34 @@ async function main(): Promise<void> {
     if ((await battles.getBattle(state.id))?.id !== state.id) {
       throw new Error("Battle repository smoke failed");
     }
+    const leaseNow = new Date();
+    const [leaseA, leaseB] = await Promise.all([
+      distributed.acquireBattleLease(state.id, "runtime-a", leaseNow),
+      distributed.acquireBattleLease(state.id, "runtime-b", leaseNow),
+    ]);
+    if (Number(leaseA) + Number(leaseB) !== 1) {
+      throw new Error("Distributed battle lease smoke failed");
+    }
+    await distributed.releaseBattleLease(
+      state.id,
+      leaseA ? "runtime-a" : "runtime-b",
+    );
+    const idempotency = await distributed.beginIdempotentRequest({
+      userId: user.id,
+      scope: `battle-advance:${state.id}`,
+      key: "runtime-smoke-key",
+      requestHash: distributed.requestDigest({ battleId: state.id }),
+    });
+    if (idempotency.kind !== "started") {
+      throw new Error("Distributed idempotency smoke failed");
+    }
+    await distributed.completeIdempotentRequest({
+      userId: user.id,
+      scope: `battle-advance:${state.id}`,
+      key: "runtime-smoke-key",
+      ownerId: idempotency.ownerId,
+      response: { ok: true },
+    });
 
     if ((await battlefields.listPresets({ userId: user.id })).length === 0) {
       throw new Error("Battlefield seed smoke failed");

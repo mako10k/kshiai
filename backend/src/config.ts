@@ -59,6 +59,26 @@ if (process.env.NODE_ENV === "production" && !databaseUrl) {
   throw new Error("DATABASE_URL is required when NODE_ENV=production");
 }
 
+const r2 = {
+  accountId: process.env.R2_ACCOUNT_ID?.trim() ?? "",
+  accessKeyId: process.env.R2_ACCESS_KEY_ID?.trim() ?? "",
+  secretAccessKey: process.env.R2_SECRET_ACCESS_KEY?.trim() ?? "",
+  bucket: process.env.R2_BUCKET?.trim() ?? "",
+  publicBaseUrl: (process.env.R2_PUBLIC_BASE_URL?.trim() ?? "").replace(/\/$/, ""),
+};
+const r2Configured = Object.values(r2).every(Boolean);
+const mediaStorage = process.env.MEDIA_STORAGE?.trim().toLowerCase() ||
+  (r2Configured ? "r2" : "local");
+if (mediaStorage !== "local" && mediaStorage !== "r2") {
+  throw new Error("MEDIA_STORAGE must be local or r2");
+}
+if (mediaStorage === "r2" && !r2Configured) {
+  throw new Error("All R2_* settings are required when MEDIA_STORAGE=r2");
+}
+if (process.env.NODE_ENV === "production" && mediaStorage !== "r2") {
+  throw new Error("MEDIA_STORAGE=r2 is required when NODE_ENV=production");
+}
+
 export function isMockProviderAllowed(input: {
   nodeEnv: string | undefined;
   primaryProvider: string;
@@ -78,6 +98,8 @@ export const config = {
   databaseUrl,
   databaseSchema: parseDatabaseSchema(process.env.DATABASE_SCHEMA),
   databasePoolMax: Math.max(1, Number(process.env.DATABASE_POOL_MAX ?? 10)),
+  mediaStorage: mediaStorage as "local" | "r2",
+  r2,
   sessionSecret: process.env.SESSION_SECRET ?? "dev-secret-change-me",
   /** Comma-separated list supported via CORS_ORIGIN. */
   corsOrigins: parseCorsOrigins(),

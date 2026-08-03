@@ -57,6 +57,7 @@ import * as battleRepo from "../repositories/battles.js";
 import * as bfRepo from "../repositories/battlefields.js";
 import * as charRepo from "../repositories/characters.js";
 import * as styleRepo from "../repositories/narration-styles.js";
+import { withBattleLease } from "./distributed-guard.js";
 
 export function toBattlePublic(
   state: BattleState,
@@ -748,7 +749,7 @@ async function buildHappening(input: {
   }
 }
 
-export async function advanceTurn(input: {
+async function advanceTurnWithLease(input: {
   userId: string;
   battleId: string;
   llm: LlmProvider;
@@ -1420,6 +1421,19 @@ async function runAftermathTurn(input: {
   // The winner card already states the mechanical result. The aftermath log is
   // LLM-authored, so do not append a second fixed-prose result summary here.
   return toBattlePublic(next, input.mine, null, input.opp);
+}
+
+export async function advanceTurn(input: {
+  userId: string;
+  battleId: string;
+  llm: LlmProvider;
+  /** Optional progressive updates (SSE). */
+  onProgress?: (event: BattleAdvanceStreamEvent) => void;
+}): Promise<BattlePublic> {
+  const meta = await battleRepo.getBattleMeta(input.battleId);
+  if (!meta) throw new Error("BATTLE_NOT_FOUND");
+  if (meta.side_a_user_id !== input.userId) throw new Error("FORBIDDEN");
+  return withBattleLease(input.battleId, () => advanceTurnWithLease(input));
 }
 
 export async function performAction(input: {

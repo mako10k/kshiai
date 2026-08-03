@@ -2,7 +2,9 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import type { BattlefieldPreset, CharacterSheet } from "@kshiai/shared";
+import { config } from "../config.js";
 import { createImageProvider, type ImageProvider } from "../image/index.js";
+import { putR2Image, type MediaKind } from "./r2-storage.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const mediaRoot = path.resolve(__dirname, "../../data/media");
@@ -97,12 +99,14 @@ export function logImageEvent(
   event: Record<string, unknown>,
 ): void {
   try {
-    fs.mkdirSync(logDir, { recursive: true });
     const line = JSON.stringify({
       ts: new Date().toISOString(),
       ...event,
     });
-    fs.appendFileSync(imageLogPath, line + "\n", "utf8");
+    if (process.env.NODE_ENV !== "production") {
+      fs.mkdirSync(logDir, { recursive: true });
+      fs.appendFileSync(imageLogPath, line + "\n", "utf8");
+    }
     // Mirror short line to PM2 logs
     const level = event.ok === false || event.phase === "error" ? "error" : "info";
     const assetId = event.assetId ?? event.characterId ?? "?";
@@ -271,12 +275,9 @@ async function generateWithProvider(
   }
 }
 
-async function downloadToFile(
+async function downloadImage(
   sourceUrl: string,
-  destPath: string,
-  assetId: string,
-): Promise<void> {
-  const tempPath = `${destPath}.tmp-${process.pid}-${Date.now()}`;
+): Promise<Buffer> {
   let buffer: Buffer;
   if (sourceUrl.startsWith("data:")) {
     const b64 = sourceUrl.split(",")[1] ?? "";
@@ -287,6 +288,31 @@ async function downloadToFile(
     buffer = Buffer.from(await res.arrayBuffer());
   }
   if (buffer.length < 100) throw new Error("download_too_small");
+  return buffer;
+}
+
+async function persistImage(
+  sourceUrl: string,
+  kind: MediaKind,
+  id: string,
+): Promise<string> {
+  const buffer = await downloadImage(sourceUrl);
+  if (config.mediaStorage === "r2") {
+    const url = await putR2Image({ kind, id, body: buffer });
+    logImageEvent({
+      phase: "saved",
+      ok: true,
+      assetId: id,
+      bytes: buffer.length,
+      source: sourceUrl.startsWith("data:") ? "b64" : "url",
+      dest: url,
+      storage: "r2",
+    });
+    return url;
+  }
+
+  const destPath = absoluteMediaFile(kind, id, "primary");
+  const tempPath = `${destPath}.tmp-${process.pid}-${Date.now()}`;
   try {
     fs.writeFileSync(tempPath, buffer);
     fs.renameSync(tempPath, destPath);
@@ -296,11 +322,13 @@ async function downloadToFile(
   logImageEvent({
     phase: "saved",
     ok: true,
-    assetId,
+    assetId: id,
     bytes: buffer.length,
     source: sourceUrl.startsWith("data:") ? "b64" : "url",
     dest: path.basename(destPath),
+    storage: "local",
   });
+  return publicMediaPath(kind, id, "primary");
 }
 
 function isModerationError(msg: string): boolean {
@@ -308,7 +336,7 @@ function isModerationError(msg: string): boolean {
 }
 
 /**
- * Generate a character portrait, persist under data/media, return public URL path.
+ * Generate a character portrait, persist to configured shared storage, and return its URL.
  * On moderation rejection, retries once with a ultra-safe fallback prompt.
  */
 export async function generateAndStoreCharacterPortrait(
@@ -316,7 +344,6 @@ export async function generateAndStoreCharacterPortrait(
   extra?: string,
   provider: ImageProvider = createImageProvider(),
 ): Promise<ImageGenResult> {
-  const dest = absoluteMediaFile("characters", sheet.id, "primary");
   const primary = buildCharacterPortraitPrompt(sheet, extra);
   const fallback = safeFallbackPrompt(asciiNameHint(sheet.displayName ?? "hero"));
 
@@ -330,7 +357,9 @@ export async function generateAndStoreCharacterPortrait(
   });
 
   // Archive the portrait currently shown so the owner can toggle back.
-  const previousUrl = archiveActiveCharacterPortrait(sheet);
+  const previousUrl = config.mediaStorage === "r2"
+    ? sheet.appearance.imageUrl ?? null
+    : archiveActiveCharacterPortrait(sheet);
 
   const attempts: Array<{ tag: string; prompt: string }> = [
     { tag: "sanitized", prompt: primary },
@@ -354,8 +383,7 @@ export async function generateAndStoreCharacterPortrait(
         },
         provider,
       );
-      await downloadToFile(remote, dest, sheet.id);
-      const url = publicMediaPath("characters", sheet.id, "primary");
+      const url = await persistImage(remote, "characters", sheet.id);
       logImageEvent({
         phase: "done",
         ok: true,
@@ -438,10 +466,9 @@ export async function generateAndStoreBattlefieldImage(
     { assetId: preset.id, attempt: 1, tag: "battlefield" },
     provider,
   );
-  const dest = absoluteMediaFile("battlefields", preset.id, "primary");
-  await downloadToFile(remote, dest, preset.id);
+  const url = await persistImage(remote, "battlefields", preset.id);
   return {
-    url: publicMediaPath("battlefields", preset.id, "primary"),
+    url,
     previousUrl: null,
     note: "戦場画像を生成しました。",
     ok: true,

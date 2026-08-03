@@ -54,6 +54,7 @@ milestone PG_RUNTIME_READY:
 
 milestone DISTRIBUTED_READY:
   title "Stateless multi-instance backend and shared media ready"
+  state reached
 
 milestone AUTH_V2_READY:
   title "Verified email and Google authentication ready"
@@ -127,6 +128,7 @@ task T_PG_RUNTIME PG_SCHEMA_READY -> PG_RUNTIME_READY:
 task T_DISTRIBUTED PG_RUNTIME_READY -> DISTRIBUTED_READY:
   title "Add battle leases, idempotency, R2 media, and multi-instance tests"
   duration 3d
+  status done
   requires:
     DEV 1
 

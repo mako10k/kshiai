@@ -262,6 +262,7 @@ export const api = {
   ) =>
     request<{ battle: BattlePublic }>("/api/battles", {
       method: "POST",
+      headers: { "Idempotency-Key": crypto.randomUUID() },
       body: JSON.stringify({
         myCharacterId,
         opponentCharacterId,
@@ -292,6 +293,7 @@ export const api = {
   advanceBattle: (id: string) =>
     request<{ battle: BattlePublic }>(`/api/battles/${id}/advance`, {
       method: "POST",
+      headers: { "Idempotency-Key": crypto.randomUUID() },
       body: JSON.stringify({}),
     }),
   /**
@@ -311,6 +313,7 @@ export const api = {
       headers: {
         Accept: "text/event-stream",
         "Content-Type": "application/json",
+        "Idempotency-Key": crypto.randomUUID(),
       },
       body: "{}",
       signal: opts?.signal,

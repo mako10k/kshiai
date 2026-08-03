@@ -66,6 +66,29 @@ export function getDb(): SqliteDatabase.Database {
       created_at TEXT NOT NULL,
       updated_at TEXT NOT NULL
     );
+    CREATE TABLE IF NOT EXISTS battle_leases (
+      battle_id TEXT PRIMARY KEY REFERENCES battles(id) ON DELETE CASCADE,
+      owner_id TEXT NOT NULL,
+      acquired_at TEXT NOT NULL,
+      expires_at TEXT NOT NULL
+    );
+    CREATE INDEX IF NOT EXISTS idx_battle_leases_expires
+      ON battle_leases (expires_at);
+    CREATE TABLE IF NOT EXISTS idempotency_keys (
+      user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      scope TEXT NOT NULL,
+      key TEXT NOT NULL,
+      request_hash TEXT NOT NULL,
+      status TEXT NOT NULL CHECK (status IN ('processing', 'completed')),
+      owner_id TEXT NOT NULL,
+      response_json TEXT,
+      created_at TEXT NOT NULL,
+      updated_at TEXT NOT NULL,
+      expires_at TEXT NOT NULL,
+      PRIMARY KEY (user_id, scope, key)
+    );
+    CREATE INDEX IF NOT EXISTS idx_idempotency_keys_expires
+      ON idempotency_keys (expires_at);
     CREATE TABLE IF NOT EXISTS battlefields (
       id TEXT PRIMARY KEY,
       owner_user_id TEXT,
@@ -148,7 +171,8 @@ function sqliteConnection(): DatabaseConnection {
     async query<Row extends DatabaseRow>(sql: string, parameters: unknown[] = []) {
       const statement = sqliteStatement(sql, parameters);
       const prepared = getDb().prepare(statement.sql);
-      if (/^\s*(SELECT|PRAGMA|WITH)\b/i.test(statement.sql)) {
+      if (/^\s*(SELECT|PRAGMA|WITH)\b/i.test(statement.sql) ||
+          /\bRETURNING\b/i.test(statement.sql)) {
         const rows = prepared.all(...statement.parameters) as Row[];
         return { rows, rowCount: rows.length };
       }

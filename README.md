@@ -70,6 +70,10 @@ VENICEAI_API_KEY=...
 VENICE_IMAGE_MODEL=...
 ```
 
+本番では PostgreSQL と共有 R2 メディア設定も必須です。必要な環境変数、
+マイグレーション、複数インスタンス時の挙動は
+[`docs/distributed_runtime.md`](docs/distributed_runtime.md) を参照してください。
+
 ## 主要画面
 
 1. ログイン / 登録  
