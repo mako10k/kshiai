@@ -5,6 +5,14 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 
 ## [Unreleased]
 
+## [0.1.5] - 2026-08-04
+
+### Fixed
+
+- Carries forward the authenticated battle SSE fix and suppresses Cloud Build
+  log streaming in the staging workflow, avoiding an unnecessary project-wide
+  Viewer grant while still waiting for the immutable image build result.
+
 ## [0.1.4] - 2026-08-03
 
 ### Fixed
@@ -12,6 +20,9 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 - Carries forward the authenticated battle SSE fix after granting the release
   identity permission to act as the default Cloud Build execution service
   account. The grant is scoped to that service account.
+- Cloud Build and image publication succeeded, but the staging workflow stopped
+  while attempting to stream the default logs bucket. The artifact was not
+  promoted; the immutable tag was retained and superseded by `v0.1.5`.
 
 ## [0.1.3] - 2026-08-03
 

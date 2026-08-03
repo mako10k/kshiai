@@ -81,6 +81,9 @@ does not require project-wide bucket listing for implicit bucket discovery.
 The deploy identity has `roles/iam.serviceAccountUser` only on the default
 Cloud Build execution account and the existing Cloud Run runtime account; it
 does not have project-wide service-account impersonation.
+The workflow uses `gcloud builds submit --suppress-logs`: GitHub Actions waits
+for the build result without requiring project-wide Viewer access to stream
+the default Cloud Build logs bucket.
 
 The runtime account reads only the Secret Manager resources attached to the
 service or smoke jobs. CI/CD adds these resources:
