@@ -608,6 +608,19 @@ export function MatchPage() {
           {styleMeta && (
             <p className="muted help-text">
               {styleMeta.description}
+              {styleMeta.perspective
+                ? ` · 視点: ${
+                    (
+                      {
+                        self: "一人称（自分）",
+                        foe: "相手",
+                        external: "三人称限定",
+                        omniscient: "全知",
+                        fluid: "可変",
+                      } as Record<string, string>
+                    )[styleMeta.perspective] ?? styleMeta.perspective
+                  }`
+                : ""}
               {" · "}
               <Link to="/narration-styles">スタイルを編集・追加</Link>
             </p>

@@ -6,7 +6,10 @@ import type {
   CharacterIdentity,
   CharacterAgentState,
   CharacterCognition,
+  InnerDigest,
   NarrativeBlock,
+  NarrationFocus,
+  NarrationPerspective,
   SpeechLine,
   Situation,
   TurnEvent,
@@ -146,14 +149,33 @@ export interface LlmProvider {
     previous: CharacterAgentState;
     cognition: CharacterCognition;
   }): Promise<{ state: CharacterAgentState; speech: string }>;
+  /**
+   * Fluid perspective only: pick turn focus from thin summary digests.
+   * Must not receive detail digests.
+   */
+  chooseNarrationFocus?(input: {
+    turn: number;
+    scene: string;
+    sideAName: string;
+    sideBName: string;
+    events: TurnEvent[];
+    summaryA: InnerDigest;
+    summaryB: InnerDigest;
+  }): Promise<{ focus: NarrationFocus }>;
   narrateTurn(input: {
     turn: number;
     scene: string;
     sideAName: string;
     sideBName: string;
     events: TurnEvent[];
-    /** Character-owned lines; narrator must not rewrite them. */
+    /**
+     * @deprecated Public dialogue is narrator-authored. Kept for fallback only.
+     */
     agentSpeeches?: SpeechLine[];
+    /** Already filtered digests for the resolved focus (may be empty). */
+    innerDigests?: InnerDigest[];
+    focus?: NarrationFocus;
+    perspective?: NarrationPerspective;
     battlefield?: BattlefieldInstance | null;
     /** Narration style instruction for this match. */
     styleInstruction?: string;
@@ -176,6 +198,9 @@ export interface LlmProvider {
     policySummary?: string;
     /** Summary of last finished matchup between these two, if any. */
     priorMatchSummary?: string;
+    innerDigests?: InnerDigest[];
+    focus?: NarrationFocus;
+    perspective?: NarrationPerspective;
     battlefield?: BattlefieldInstance | null;
     styleInstruction?: string;
     styleName?: string;
@@ -195,6 +220,9 @@ export interface LlmProvider {
     fallenNames: string[];
     battlefield?: BattlefieldInstance | null;
     recentNarration?: string[];
+    innerDigests?: InnerDigest[];
+    focus?: NarrationFocus;
+    perspective?: NarrationPerspective;
     styleInstruction?: string;
     styleName?: string;
     onProgress?: (progress: NarrationStreamProgress) => void;
@@ -205,6 +233,7 @@ export interface LlmProvider {
     description: string;
     instruction: string;
     tags: string[];
+    perspective?: NarrationPerspective;
   }>;
   referee(input: {
     sideAName: string;

@@ -91,6 +91,9 @@ export const UpsertNarrationStyleRequestSchema = z.object({
   displayName: z.string().min(1).max(48),
   description: z.string().max(400).optional(),
   instruction: z.string().min(1).max(2000),
+  perspective: z
+    .enum(["self", "foe", "external", "omniscient", "fluid"])
+    .optional(),
   tags: z.array(z.string().max(24)).max(12).optional(),
 });
 export type UpsertNarrationStyleRequest = z.infer<

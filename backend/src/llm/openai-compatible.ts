@@ -14,11 +14,16 @@ import {
   defaultParameters,
   coerceCharacterSpeech,
   extractStreamingNarrator,
+  focusInstruction,
+  parseNarrationFocus,
   type BattlefieldInstance,
   type BattlefieldPreset,
   type BattlePolicyOption,
   type CharacterSheet,
   type CharacterIdentity,
+  type InnerDigest,
+  type NarrationFocus,
+  type NarrationPerspective,
 } from "@kshiai/shared";
 import type {
   AdjustBattlefieldResult,
@@ -931,10 +936,10 @@ Return JSON only:
   },
   "speech": string
 }
-speech is ALWAYS required (never null/empty). One short Japanese line:
-- Dialogue without 「」 brackets when they speak, OR
-- A quiet reaction for taciturn characters, e.g. "…", "……", "（ただ佇んでいる）", "（ジーっと${input.foeName}を見ている）", "（小さく息をのむ）".
-Prefer spoken words when natural; prefer parenthetical/ellipsis reactions when the character would stay silent — but always output some visible reaction.`,
+speech is a PRIVATE reaction sample for continuity only (never shown directly as public dialogue). ALWAYS required (never null/empty). One short Japanese line:
+- Dialogue without 「」 brackets, OR
+- A quiet reaction: "…", "（ただ佇んでいる）", "（ジーっと${input.foeName}を見ている）".
+Public on-screen lines are written later by the narrator from digests + events.`,
         JSON.stringify(input),
         {
           tier: "fast",
@@ -970,6 +975,49 @@ Prefer spoken words when natural; prefer parenthetical/ellipsis reactions when t
     }
   }
 
+  async chooseNarrationFocus(input: {
+    turn: number;
+    scene: string;
+    sideAName: string;
+    sideBName: string;
+    events: { summary: string }[];
+    summaryA: InnerDigest;
+    summaryB: InnerDigest;
+  }): Promise<{ focus: NarrationFocus }> {
+    if (!this.client) return this.fallback.chooseNarrationFocus?.(input) ?? { focus: "external" };
+    try {
+      const data = (await this.chatJson(
+        `You choose the narrative camera focus for one turn of a fictional confrontation.
+You only see thin SUMMARY digests (emotion/goal/condition) — not private secrets.
+Pick ONE focus:
+- "self": emphasize side A (${input.sideAName})
+- "foe": emphasize side B (${input.sideBName})
+- "external": pure exterior, no interior
+- "both": both interiors matter this turn
+Prefer variety over always "both". Prefer the side that acted hardest or was hit hardest when clear from events.
+JSON only: { "focus": "self"|"foe"|"external"|"both" }`,
+        JSON.stringify({
+          turn: input.turn,
+          scene: input.scene,
+          events: input.events.map((e) => e.summary).slice(0, 12),
+          summaryA: input.summaryA,
+          summaryB: input.summaryB,
+        }),
+        {
+          tier: "fast",
+          label: "chooseNarrationFocus",
+          timeoutMs: 8_000,
+          temperature: 0.4,
+        },
+      )) as { focus?: string };
+      return {
+        focus: parseNarrationFocus(data.focus) ?? "external",
+      };
+    } catch (error) {
+      return this.fallbackOrThrow(error, () => ({ focus: "external" as const }));
+    }
+  }
+
   async narrateTurn(input: {
     turn: number;
     scene: string;
@@ -977,6 +1025,9 @@ Prefer spoken words when natural; prefer parenthetical/ellipsis reactions when t
     sideBName: string;
     events: { summary: string }[];
     agentSpeeches?: Array<{ speaker: string; text: string }>;
+    innerDigests?: InnerDigest[];
+    focus?: NarrationFocus;
+    perspective?: NarrationPerspective;
     battlefield?: BattlefieldInstance | null;
     styleInstruction?: string;
     styleName?: string;
@@ -987,21 +1038,30 @@ Prefer spoken words when natural; prefer parenthetical/ellipsis reactions when t
       const styleBlock = input.styleInstruction?.trim()
         ? `Narration style「${input.styleName ?? "custom"}」: ${input.styleInstruction.trim()}`
         : "Narration style: 落ち着いた標準の物語調。";
+      const focus = input.focus ?? "external";
+      const focusBlock = focusInstruction(focus);
       const data = (await this.chatJson(
         `Narrate a turn-based fictional confrontation in Japanese. It may be physical, ranged, technological, psychic, social, comedic, cute, or abstract. Follow the supplied characters and events; never add swordplay, bodily injury, grimness, or martial framing unless the inputs establish them.
 ${styleBlock}
+${focusBlock}
+Perspective gate overrides style instruction: never reveal inner life that is not present in innerDigests.
 Use battlefield flavor (terrain/obstacles) when relevant.
 If a situation event describes a sudden field change, weave that change naturally into the narrator lines without adding a category label.
-If any event marks a finishing blow (とどめ / 決め手 / 戦闘不能), center the turn on that decisive action: name the skill or force and make clear it is what ends the exchange. Do not bury the KO under secondary buffs, recovery, or ambient status lines.
-JSON: { "turn": number, "narrator": string[] }
-Do not mention numeric HP/MP/ATK values. Character dialogue is supplied by separate character agents; do not create, quote, or rewrite dialogue.`,
+If any event marks a finishing blow (とどめ / 決め手 / 戦闘不能), center the turn on that decisive action.
+YOU write public character lines in speeches (not a separate agent). Include BOTH characters each turn:
+- spoken short line without 「」, OR quiet reaction "…", "（佇んでいる）", etc.
+speaker MUST be exactly "${input.sideAName}" or "${input.sideBName}".
+JSON: { "turn": number, "focus": "${focus}", "narrator": string[], "speeches": [ { "speaker": string, "text": string } ] }
+Do not mention numeric HP/MP/ATK values.`,
         JSON.stringify({
           turn: input.turn,
           scene: input.scene,
           sideAName: input.sideAName,
           sideBName: input.sideBName,
+          focus,
+          perspective: input.perspective ?? null,
           events: input.events,
-          agentSpeeches: input.agentSpeeches,
+          innerDigests: input.innerDigests ?? [],
           battlefield: input.battlefield
             ? {
                 displayName: input.battlefield.displayName,
@@ -1010,8 +1070,6 @@ Do not mention numeric HP/MP/ATK values. Character dialogue is supplied by separ
               }
             : null,
         }),
-        // Slightly above historical 14s abort so a single provider can finish
-        // under load; outer battle-service budget covers multi-provider failover.
         {
           tier: "fast",
           label: "narrateTurn",
@@ -1019,17 +1077,64 @@ Do not mention numeric HP/MP/ATK values. Character dialogue is supplied by separ
           temperature: 0.9,
           onText: this.narrationProgressSink(input.onProgress),
         },
-      )) as { turn?: number; narrator?: string[] };
+      )) as {
+        turn?: number;
+        narrator?: string[];
+        speeches?: Array<{ speaker?: string; text?: string }>;
+      };
       const narrator = data.narrator ?? [];
       input.onProgress?.({ lines: narrator, draft: null });
+      const speeches = this.normalizeNarratorSpeeches(
+        data.speeches,
+        input.sideAName,
+        input.sideBName,
+        input.agentSpeeches,
+      );
       return {
         turn: input.turn,
         narrator,
-        speeches: input.agentSpeeches ?? [],
+        speeches,
       };
     } catch (error) {
       return this.fallbackOrThrow(error, () => this.fallback.narrateTurn(input));
     }
+  }
+
+  private normalizeNarratorSpeeches(
+    raw: Array<{ speaker?: string; text?: string }> | undefined,
+    sideAName: string,
+    sideBName: string,
+    fallback?: Array<{ speaker: string; text: string }>,
+  ): Array<{ speaker: string; text: string }> {
+    const allowed = new Set([sideAName, sideBName]);
+    const out: Array<{ speaker: string; text: string }> = [];
+    for (const row of raw ?? []) {
+      const speaker = String(row.speaker ?? "").trim();
+      if (!allowed.has(speaker)) continue;
+      const text = coerceCharacterSpeech(row.text, {
+        foeName: speaker === sideAName ? sideBName : sideAName,
+      });
+      out.push({ speaker, text });
+    }
+    // Ensure both sides appear once when model omits one.
+    for (const name of [sideAName, sideBName]) {
+      if (!out.some((s) => s.speaker === name)) {
+        const fb = fallback?.find((s) => s.speaker === name)?.text;
+        out.push({
+          speaker: name,
+          text: coerceCharacterSpeech(fb, {
+            foeName: name === sideAName ? sideBName : sideAName,
+          }),
+        });
+      }
+    }
+    // Prefer A then B order for stable UI.
+    out.sort((a, b) => {
+      if (a.speaker === sideAName && b.speaker !== sideAName) return -1;
+      if (b.speaker === sideAName && a.speaker !== sideAName) return 1;
+      return 0;
+    });
+    return out;
   }
 
   async narratePrologue(input: {
@@ -1042,6 +1147,9 @@ Do not mention numeric HP/MP/ATK values. Character dialogue is supplied by separ
     sideBTraits?: string[];
     policySummary?: string;
     priorMatchSummary?: string;
+    innerDigests?: InnerDigest[];
+    focus?: NarrationFocus;
+    perspective?: NarrationPerspective;
     battlefield?: BattlefieldInstance | null;
     styleInstruction?: string;
     styleName?: string;
@@ -1052,17 +1160,20 @@ Do not mention numeric HP/MP/ATK values. Character dialogue is supplied by separ
       const styleBlock = input.styleInstruction?.trim()
         ? `Narration style「${input.styleName ?? "custom"}」: ${input.styleInstruction.trim()}`
         : "Narration style: 落ち着いた標準の物語調。";
+      const focus = input.focus ?? "external";
       const rivalryRule = input.priorMatchSummary?.trim()
         ? `因縁 MUST weave in this prior matchup summary (paraphrase, do not invent a conflicting past): ${input.priorMatchSummary.trim()}`
         : "因縁: no prior match on record — invent a light plausible fate/rivalry from character blurbs only.";
       const data = (await this.chatJson(
         `You write the PROLOGUE of a fictional confrontation (Japanese), before any actions resolve. It may be physical, ranged, technological, psychic, social, comedic, cute, or abstract. Match the supplied genre; never add weapons, injury, hostility, or grim tension unless the inputs establish them.
 ${styleBlock}
-Include: atmosphere of the field, each participant's opening presence / monologue vibe, and rivalry or fate (因縁).
+${focusInstruction(focus)}
+Include: atmosphere of the field, each participant's opening presence, and rivalry or fate (因縁).
 ${rivalryRule}
-No combat resolution yet. No numeric stats. Dialogue is owned by separate character agents; do not create or quote dialogue.
+No combat resolution yet. No numeric stats.
+YOU author speeches for both characters (speaker exact names). Quiet reactions allowed.
 4–8 narrator lines.
-JSON: { "turn": 0, "narrator": string[] }`,
+JSON: { "turn": 0, "narrator": string[], "speeches": [ { "speaker": string, "text": string } ] }`,
         JSON.stringify({
           scene: input.scene,
           sideA: {
@@ -1077,6 +1188,8 @@ JSON: { "turn": 0, "narrator": string[] }`,
           },
           policyHint: input.policySummary,
           priorMatch: input.priorMatchSummary ?? null,
+          focus,
+          innerDigests: input.innerDigests ?? [],
           field: input.battlefield
             ? {
                 name: input.battlefield.displayName,
@@ -1094,7 +1207,11 @@ JSON: { "turn": 0, "narrator": string[] }`,
           temperature: 0.9,
           onText: this.narrationProgressSink(input.onProgress),
         },
-      )) as { turn?: number; narrator?: string[] };
+      )) as {
+        turn?: number;
+        narrator?: string[];
+        speeches?: Array<{ speaker?: string; text?: string }>;
+      };
       const narrator = data.narrator?.length
         ? data.narrator
         : ["——開幕——", "両者の視線が交わる。"];
@@ -1105,7 +1222,11 @@ JSON: { "turn": 0, "narrator": string[] }`,
       return {
         turn: 0,
         narrator,
-        speeches: [],
+        speeches: this.normalizeNarratorSpeeches(
+          data.speeches,
+          input.sideAName,
+          input.sideBName,
+        ),
       };
     } catch (error) {
       return this.fallbackOrThrow(error, () => this.fallback.narratePrologue(input));
@@ -1122,6 +1243,9 @@ JSON: { "turn": 0, "narrator": string[] }`,
     fallenNames: string[];
     battlefield?: BattlefieldInstance | null;
     recentNarration?: string[];
+    innerDigests?: InnerDigest[];
+    focus?: NarrationFocus;
+    perspective?: NarrationPerspective;
     styleInstruction?: string;
     styleName?: string;
     onProgress?: (progress: NarrationStreamProgress) => void;
@@ -1131,14 +1255,16 @@ JSON: { "turn": 0, "narrator": string[] }`,
       const styleBlock = input.styleInstruction?.trim()
         ? `Narration style「${input.styleName ?? "custom"}」: ${input.styleInstruction.trim()}`
         : "Narration style: 落ち着いた標準の物語調。";
+      const focus = input.focus ?? "external";
       const data = (await this.chatJson(
         `You write the AFTERMATH of a fictional confrontation (Japanese), not a new turn. Match the supplied genre, including nonviolent, social, comedic, cute, technological, or psychic contests. Describe inability to continue in a concept-appropriate way; never assume wounds, weapons, death, or grimness.
 ${styleBlock}
+${focusInstruction(focus)}
 Someone is already incapacitated. Show what becomes of the fallen and how the winner (if any) closes the scene.
 Use battlefield flavor. Keep it emotional / cinematic but short (3–6 narrator lines).
-Do not create or quote dialogue; character lines are owned by separate character agents.
+Optional short speeches for either side (quiet reactions OK). speaker exact names only.
 Do NOT invent a new fight, healing that reverses the win, or numeric stats.
-JSON: { "turn": number, "narrator": string[] }`,
+JSON: { "turn": number, "narrator": string[], "speeches": [ { "speaker": string, "text": string } ] }`,
         JSON.stringify({
           turn: input.turn,
           scene: input.scene,
@@ -1146,6 +1272,8 @@ JSON: { "turn": number, "narrator": string[] }`,
           winnerSide: input.winnerSide,
           winnerName: input.winnerName,
           fallen: input.fallenNames,
+          focus,
+          innerDigests: input.innerDigests ?? [],
           field: input.battlefield
             ? {
                 name: input.battlefield.displayName,
@@ -1162,7 +1290,11 @@ JSON: { "turn": number, "narrator": string[] }`,
           onText: this.narrationProgressSink(input.onProgress),
           temperature: 0.9,
         },
-      )) as { turn?: number; narrator?: string[] };
+      )) as {
+        turn?: number;
+        narrator?: string[];
+        speeches?: Array<{ speaker?: string; text?: string }>;
+      };
       const narrator = data.narrator?.length
         ? data.narrator
         : ["——決着の余波——", "戦場に余韻だけが残った。"];
@@ -1170,7 +1302,11 @@ JSON: { "turn": number, "narrator": string[] }`,
       return {
         turn: input.turn,
         narrator,
-        speeches: [],
+        speeches: this.normalizeNarratorSpeeches(
+          data.speeches,
+          input.sideAName,
+          input.sideBName,
+        ),
       };
     } catch (error) {
       return this.fallbackOrThrow(error, () => this.fallback.narrateAftermath(input));
@@ -1381,6 +1517,7 @@ Prefer the engineWinnerSide unless the narrative strongly suggests otherwise.`,
     description: string;
     instruction: string;
     tags: string[];
+    perspective?: NarrationPerspective;
   }> {
     if (!this.client) {
       return this.fallback.generateNarrationStyle?.(prompt) ?? {
@@ -1388,6 +1525,7 @@ Prefer the engineWinnerSide unless the narrative strongly suggests otherwise.`,
         description: prompt.slice(0, 80),
         instruction: `次の雰囲気で語る: ${prompt}`,
         tags: ["custom"],
+        perspective: "external",
       };
     }
     try {
@@ -1398,12 +1536,21 @@ Return JSON:
   "displayName": string,   // short name ≤12 chars
   "description": string,   // one-line picker blurb
   "instruction": string,   // LLM instruction for how to narrate turns (Japanese, 1–4 sentences)
-  "tags": string[]         // 1–4 short tags
+  "tags": string[],        // 1–4 short tags
+  "perspective": "self"|"foe"|"external"|"omniscient"|"fluid"
 }
-instruction must be style-only (tone, density, POV). No combat rules, no HP numbers.`,
+instruction is tone/density only. perspective is information rights:
+self=player inner only, foe=opponent inner only, external=no inners, omniscient=both, fluid=choose per turn.
+Default perspective external unless the user clearly wants subjective/omniscient/shifting camera.`,
         prompt,
         { tier: "fast", label: "generateNarrationStyle", timeoutMs: 12_000 },
       )) as Record<string, unknown>;
+      const pRaw = String(data.perspective ?? "external");
+      const perspective = (
+        ["self", "foe", "external", "omniscient", "fluid"] as const
+      ).includes(pRaw as NarrationPerspective)
+        ? (pRaw as NarrationPerspective)
+        : "external";
       return {
         displayName: String(data.displayName ?? "カスタム").slice(0, 24),
         description: String(data.description ?? prompt).slice(0, 200),
@@ -1413,6 +1560,7 @@ instruction must be style-only (tone, density, POV). No combat rules, no HP numb
         tags: Array.isArray(data.tags)
           ? data.tags.map(String).slice(0, 6)
           : [],
+        perspective,
       };
     } catch (error) {
       return this.fallbackOrThrow(error, () => ({
@@ -1420,6 +1568,7 @@ instruction must be style-only (tone, density, POV). No combat rules, no HP numb
         description: prompt.slice(0, 80),
         instruction: `次の雰囲気で語る: ${prompt}`,
         tags: ["custom"],
+        perspective: "external" as const,
       }));
     }
   }

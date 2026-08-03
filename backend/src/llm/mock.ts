@@ -329,6 +329,21 @@ export class MockLlmProvider implements LlmProvider {
     }
   }
 
+  async chooseNarrationFocus(input: {
+    turn: number;
+    scene: string;
+    sideAName: string;
+    sideBName: string;
+    events: { summary: string }[];
+    summaryA: { emotion?: string; condition?: string };
+    summaryB: { emotion?: string; condition?: string };
+  }): Promise<{ focus: "self" | "foe" | "external" | "both" }> {
+    if (input.summaryA.condition === "critical") return { focus: "self" };
+    if (input.summaryB.condition === "critical") return { focus: "foe" };
+    if (input.turn % 3 === 0) return { focus: "both" };
+    return { focus: input.turn % 2 === 0 ? "self" : "foe" };
+  }
+
   async narrateTurn(input: {
     turn: number;
     scene: string;
@@ -336,6 +351,9 @@ export class MockLlmProvider implements LlmProvider {
     sideBName: string;
     events: { summary: string; actorName?: string; skillName?: string; intensity?: string }[];
     agentSpeeches?: Array<{ speaker: string; text: string }>;
+    innerDigests?: Array<{ displayName: string; emotion?: string }>;
+    focus?: string;
+    perspective?: string;
     battlefield?: BattlefieldInstance | null;
     styleInstruction?: string;
     styleName?: string;
@@ -347,12 +365,24 @@ export class MockLlmProvider implements LlmProvider {
     const styleNote = input.styleName
       ? `（語り: ${input.styleName}）`
       : "";
+    const focusNote = input.focus ? `［焦点: ${input.focus}］` : "";
+    const digestNote = (input.innerDigests ?? [])
+      .map((d) => `${d.displayName}の気配（${d.emotion ?? "不明"}）`)
+      .filter(Boolean);
     const narrator = [
-      `第${input.turn}ターン — ${place}${styleNote}。`,
+      `第${input.turn}ターン — ${place}${styleNote}${focusNote}。`,
+      ...digestNote,
       ...input.events.map((e) => e.summary),
     ];
     await this.emitNarratorProgress(narrator, input.onProgress);
-    return { turn: input.turn, narrator, speeches: input.agentSpeeches ?? [] };
+    const speeches =
+      input.agentSpeeches && input.agentSpeeches.length > 0
+        ? input.agentSpeeches
+        : [
+            { speaker: input.sideAName, text: "……行く。" },
+            { speaker: input.sideBName, text: "…" },
+          ];
+    return { turn: input.turn, narrator, speeches };
   }
 
   async narratePrologue(input: {
@@ -394,7 +424,10 @@ export class MockLlmProvider implements LlmProvider {
     return {
       turn: 0,
       narrator,
-      speeches: [],
+      speeches: [
+        { speaker: input.sideAName, text: "……始めよう。" },
+        { speaker: input.sideBName, text: "…" },
+      ],
     };
   }
 
@@ -428,7 +461,16 @@ export class MockLlmProvider implements LlmProvider {
       "幕は、そこで静かに下りた。",
     ];
     await this.emitNarratorProgress(narrator, input.onProgress);
-    return { turn: input.turn, narrator, speeches: [] };
+    return {
+      turn: input.turn,
+      narrator,
+      speeches: input.winnerName
+        ? [{ speaker: input.winnerName, text: "……終わりだ。" }]
+        : [
+            { speaker: input.sideAName, text: "…" },
+            { speaker: input.sideBName, text: "…" },
+          ],
+    };
   }
 
   async generateNarrationStyle(prompt: string): Promise<{
@@ -436,12 +478,20 @@ export class MockLlmProvider implements LlmProvider {
     description: string;
     instruction: string;
     tags: string[];
+    perspective?: "self" | "foe" | "external" | "omniscient" | "fluid";
   }> {
     return {
       displayName: prompt.slice(0, 12) || "カスタム",
       description: `「${prompt.slice(0, 40)}」風の語り`,
       instruction: `次の雰囲気・口調で語る: ${prompt}。数値は出さない。`,
       tags: ["custom", "mock"],
+      perspective: /全知|群像/.test(prompt)
+        ? "omniscient"
+        : /主観|一人称/.test(prompt)
+          ? "self"
+          : /可変|カメラ/.test(prompt)
+            ? "fluid"
+            : "external",
     };
   }
 

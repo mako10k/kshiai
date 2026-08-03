@@ -8,6 +8,7 @@ export * from "./battle-stream.js";
 export * from "./battle-engine.js";
 export * from "./media.js";
 export * from "./supervisor.js";
+export * from "./narration-perspective.js";
 export * from "./narration-style.js";
 export * from "./balance.js";
 export * from "./balance-observe.js";

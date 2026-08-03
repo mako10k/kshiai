@@ -1,8 +1,20 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { Link } from "react-router-dom";
-import type { NarrationStylePublic } from "@kshiai/shared";
+import {
+  perspectiveLabel,
+  type NarrationPerspective,
+  type NarrationStylePublic,
+} from "@kshiai/shared";
 import { api } from "../api";
 import { useLocalDraft } from "../hooks/useLocalDraft";
+
+const PERSPECTIVE_OPTIONS: { value: NarrationPerspective; label: string }[] = [
+  { value: "external", label: "三人称限定（内心なし）" },
+  { value: "self", label: "一人称（自分側の内心）" },
+  { value: "foe", label: "相手視点（相手の内心）" },
+  { value: "omniscient", label: "全知（両方）" },
+  { value: "fluid", label: "可変視点（ターンごとに焦点）" },
+];
 
 const GEN_PLACEHOLDER =
   "昭和のラジオ実況みたいに熱く、でも下品にならない感じで";
@@ -17,6 +29,7 @@ export function NarrationStylesPage() {
     displayName: "",
     description: "",
     instruction: "",
+    perspective: "external" as NarrationPerspective,
   });
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -65,9 +78,15 @@ export function NarrationStylesPage() {
         displayName: manual.displayName.trim(),
         description: manual.description.trim() || undefined,
         instruction: manual.instruction.trim(),
+        perspective: manual.perspective,
       });
       setMessage(`「${res.style.displayName}」を保存しました`);
-      setManual({ displayName: "", description: "", instruction: "" });
+      setManual({
+        displayName: "",
+        description: "",
+        instruction: "",
+        perspective: "external",
+      });
       await reload();
     } catch (err) {
       setError(err instanceof Error ? err.message : "failed");
@@ -95,7 +114,7 @@ export function NarrationStylesPage() {
       </div>
 
       <p className="muted">
-        試合の語り口です。標準プリセットに加え、自分用を作れます。試合開始時に選択します。
+        試合の語り口と<strong>視点</strong>（内心をナレに渡す範囲）です。標準プリセットに加え、自分用を作れます。試合開始時に選択します。
       </p>
 
       <div className="panel">
@@ -143,9 +162,27 @@ export function NarrationStylesPage() {
               onChange={(e) =>
                 setManual((m) => ({ ...m, instruction: e.target.value }))
               }
-              placeholder="LLM に渡すスタイル指示（口調・密度・視点など）"
+              placeholder="LLM に渡すスタイル指示（口調・密度など）。内心の権限は下の視点で制御"
               rows={4}
             />
+          </label>
+          <label className="field">
+            <span className="field-label">視点（情報範囲）</span>
+            <select
+              value={manual.perspective}
+              onChange={(e) =>
+                setManual((m) => ({
+                  ...m,
+                  perspective: e.target.value as NarrationPerspective,
+                }))
+              }
+            >
+              {PERSPECTIVE_OPTIONS.map((o) => (
+                <option key={o.value} value={o.value}>
+                  {o.label}
+                </option>
+              ))}
+            </select>
           </label>
           <button className="btn primary" type="submit" disabled={busy}>
             保存
@@ -170,6 +207,9 @@ export function NarrationStylesPage() {
               </strong>
               <p className="muted" style={{ margin: "0.35rem 0" }}>
                 {s.description || "—"}
+                <span className="tag" style={{ marginLeft: 6 }}>
+                  {perspectiveLabel(s.perspective)}
+                </span>
               </p>
               <p style={{ margin: 0, fontSize: "0.85rem", lineHeight: 1.45 }}>
                 {s.instruction}

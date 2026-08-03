@@ -25,6 +25,7 @@ import {
   type BattleStance,
   type BattleState,
   type CharacterAgentState,
+  type CharacterCognition,
   type BattlefieldInstance,
   type BattlefieldPreset,
   type CharacterSheet,
@@ -35,6 +36,14 @@ import {
   type HappeningPlan,
   type Situation,
   type BattleAdvanceStreamEvent,
+  type InnerDigest,
+  type NarrationFocus,
+  type NarrationPerspective,
+  agentsUsefulForPerspective,
+  buildInnerDigest,
+  lockedFocusFromPerspective,
+  needsFocusChoice,
+  selectDigestsForFocus,
   defaultCharacterIdentity,
 } from "@kshiai/shared";
 import {
@@ -584,7 +593,7 @@ async function advanceCharacterAgents(input: {
     agentStateChangeA: buildCharacterAgentStateChange(previousA, agentA.state),
     agentStateChangeB: buildCharacterAgentStateChange(previousB, agentB.state),
   };
-  // Speech is always non-empty (dialogue or stage reaction); never omit a side.
+  // Private reaction samples only (not public UI lines — narrator authors speeches).
   const speeches: SpeechLine[] = [
     { speaker: input.mine.displayName, text: agentA.speech },
     { speaker: input.opp.displayName, text: agentB.speech },
@@ -600,6 +609,84 @@ async function advanceCharacterAgents(input: {
       ].slice(-50),
     },
     speeches,
+  };
+}
+
+async function resolveNarrationFocusAndDigests(input: {
+  llm: LlmProvider;
+  perspective: NarrationPerspective;
+  turn: number;
+  scene: string;
+  sideAName: string;
+  sideBName: string;
+  events: TurnEvent[];
+  agentStateA: CharacterAgentState | null | undefined;
+  agentStateB: CharacterAgentState | null | undefined;
+  cognitionA: CharacterCognition | null | undefined;
+  cognitionB: CharacterCognition | null | undefined;
+}): Promise<{ focus: NarrationFocus; digests: InnerDigest[] }> {
+  const summaryA = buildInnerDigest({
+    side: "a",
+    displayName: input.sideAName,
+    agent: input.agentStateA,
+    cognition: input.cognitionA,
+    level: "summary",
+  });
+  const summaryB = buildInnerDigest({
+    side: "b",
+    displayName: input.sideBName,
+    agent: input.agentStateB,
+    cognition: input.cognitionB,
+    level: "summary",
+  });
+  const detailA = buildInnerDigest({
+    side: "a",
+    displayName: input.sideAName,
+    agent: input.agentStateA,
+    cognition: input.cognitionA,
+    level: "detail",
+  });
+  const detailB = buildInnerDigest({
+    side: "b",
+    displayName: input.sideBName,
+    agent: input.agentStateB,
+    cognition: input.cognitionB,
+    level: "detail",
+  });
+
+  let focus = lockedFocusFromPerspective(input.perspective);
+  if (focus == null || needsFocusChoice(input.perspective)) {
+    try {
+      if (input.llm.chooseNarrationFocus) {
+        const chosen = await withTimeout(
+          input.llm.chooseNarrationFocus({
+            turn: input.turn,
+            scene: input.scene,
+            sideAName: input.sideAName,
+            sideBName: input.sideBName,
+            events: input.events,
+            summaryA,
+            summaryB,
+          }),
+          10_000,
+          "chooseNarrationFocus",
+        );
+        focus = chosen.focus;
+      } else {
+        focus = "external";
+      }
+    } catch (e) {
+      console.warn(
+        "[battle] chooseNarrationFocus failed",
+        e instanceof Error ? e.message : e,
+      );
+      focus = "external";
+    }
+  }
+
+  return {
+    focus,
+    digests: selectDigestsForFocus({ focus, detailA, detailB }),
   };
 }
 
@@ -831,19 +918,55 @@ export async function advanceTurn(input: {
   );
   next = { ...next, supervisor };
 
-  emit({ type: "phase", phase: "agents" });
-  const agentTurn = await advanceCharacterAgents({
-    llm: input.llm,
-    before: state,
-    after: next,
-    mine,
-    opp,
-    events,
-  });
-  next = agentTurn.state;
-  if (agentTurn.speeches.length > 0) {
-    emit({ type: "speeches", speeches: agentTurn.speeches });
+  const perspective: NarrationPerspective =
+    next.narrationStyle?.perspective ?? "external";
+  let privateReactions: SpeechLine[] = [];
+  let cognitionA: CharacterCognition | undefined;
+  let cognitionB: CharacterCognition | undefined;
+
+  if (agentsUsefulForPerspective(perspective)) {
+    emit({ type: "phase", phase: "agents" });
+    const agentTurn = await advanceCharacterAgents({
+      llm: input.llm,
+      before: state,
+      after: next,
+      mine,
+      opp,
+      events,
+    });
+    next = agentTurn.state;
+    privateReactions = agentTurn.speeches;
+    const rec = (next.turnRecords ?? [])[(next.turnRecords ?? []).length - 1];
+    cognitionA = rec?.cognitionA;
+    cognitionB = rec?.cognitionB;
+  } else {
+    // External: skip agents for latency; still store engine cognition.
+    const turnRecord = buildBattleTurnRecord({
+      before: state,
+      after: next,
+      events,
+    });
+    next = {
+      ...next,
+      turnRecords: [...(next.turnRecords ?? []), turnRecord].slice(-50),
+    };
+    cognitionA = turnRecord.cognitionA;
+    cognitionB = turnRecord.cognitionB;
   }
+
+  const { focus, digests } = await resolveNarrationFocusAndDigests({
+    llm: input.llm,
+    perspective,
+    turn: next.turn,
+    scene: next.situation.scene,
+    sideAName: next.sideA.displayName,
+    sideBName: next.sideB.displayName,
+    events,
+    agentStateA: next.agentStateA,
+    agentStateB: next.agentStateB,
+    cognitionA,
+    cognitionB,
+  });
 
   emit({ type: "phase", phase: "narrating" });
   let narrative;
@@ -860,7 +983,10 @@ export async function advanceTurn(input: {
           sideBName: next.sideB.displayName,
           battlefield: next.battlefield,
           events,
-          agentSpeeches: agentTurn.speeches,
+          agentSpeeches: privateReactions,
+          innerDigests: digests,
+          focus,
+          perspective,
           styleInstruction: next.narrationStyle?.instruction,
           styleName: next.narrationStyle?.displayName,
           onProgress: (progress) => {
@@ -896,7 +1022,13 @@ export async function advanceTurn(input: {
         `第${next.turn}ターン — ${place}。`,
         ...ordered.map((ev) => ev.summary),
       ],
-      speeches: agentTurn.speeches,
+      speeches:
+        privateReactions.length > 0
+          ? privateReactions
+          : [
+              { speaker: next.sideA.displayName, text: "…" },
+              { speaker: next.sideB.displayName, text: "…" },
+            ],
     };
     emit({
       type: "narrator",
@@ -904,6 +1036,9 @@ export async function advanceTurn(input: {
       draft: null,
       turn: next.turn,
     });
+  }
+  if (narrative.speeches?.length) {
+    emit({ type: "speeches", speeches: narrative.speeches });
   }
   next = { ...next, log: [...next.log, narrative] };
   emit({ type: "phase", phase: "finalizing" });
@@ -999,22 +1134,40 @@ async function runPrologueTurn(input: {
     state.policiesA,
     state.selectedPolicyIdsA,
   );
-  emit({ type: "phase", phase: "agents" });
-  const prologueAgents = await advanceCharacterAgents({
-    llm: input.llm,
-    before: state,
-    after: state,
-    mine: input.mine,
-    opp: input.opp,
-    events: [{
+  const perspective: NarrationPerspective =
+    state.narrationStyle?.perspective ?? "external";
+  const openEvents: TurnEvent[] = [
+    {
       type: "situation",
       summary: `${state.situation.scene}で両者が対峙した。`,
-    }],
-  });
-  state = prologueAgents.state;
-  if (prologueAgents.speeches.length > 0) {
-    emit({ type: "speeches", speeches: prologueAgents.speeches });
+    },
+  ];
+  if (agentsUsefulForPerspective(perspective)) {
+    emit({ type: "phase", phase: "agents" });
+    const prologueAgents = await advanceCharacterAgents({
+      llm: input.llm,
+      before: state,
+      after: state,
+      mine: input.mine,
+      opp: input.opp,
+      events: openEvents,
+    });
+    state = prologueAgents.state;
   }
+  const rec = (state.turnRecords ?? [])[(state.turnRecords ?? []).length - 1];
+  const { focus, digests } = await resolveNarrationFocusAndDigests({
+    llm: input.llm,
+    perspective,
+    turn: 0,
+    scene: state.situation.scene,
+    sideAName: state.sideA.displayName,
+    sideBName: state.sideB.displayName,
+    events: openEvents,
+    agentStateA: state.agentStateA,
+    agentStateB: state.agentStateB,
+    cognitionA: rec?.cognitionA,
+    cognitionB: rec?.cognitionB,
+  });
 
   emit({ type: "phase", phase: "narrating" });
   let narrative;
@@ -1031,6 +1184,9 @@ async function runPrologueTurn(input: {
         policySummary: policyLine,
         priorMatchSummary: state.priorMatchSummary ?? undefined,
         battlefield: state.battlefield,
+        innerDigests: digests,
+        focus,
+        perspective,
         styleInstruction: state.narrationStyle?.instruction,
         styleName: state.narrationStyle?.displayName,
         onProgress: (progress) => {
@@ -1062,7 +1218,7 @@ async function runPrologueTurn(input: {
       ].filter(Boolean),
       speeches: [
         { speaker: state.sideA.displayName, text: "……始めよう。" },
-        { speaker: state.sideB.displayName, text: "望むところだ。" },
+        { speaker: state.sideB.displayName, text: "…" },
       ],
     };
     emit({
@@ -1073,7 +1229,9 @@ async function runPrologueTurn(input: {
     });
   }
 
-  narrative = { ...narrative, speeches: prologueAgents.speeches };
+  if (narrative.speeches?.length) {
+    emit({ type: "speeches", speeches: narrative.speeches });
+  }
   emit({ type: "phase", phase: "finalizing" });
 
   if (
@@ -1133,6 +1291,22 @@ async function runAftermathTurn(input: {
         : null;
 
   const aftermathTurn = state.turn; // epilogue shares the KO turn number for log grouping
+  const perspective: NarrationPerspective =
+    state.narrationStyle?.perspective ?? "external";
+  const rec = (state.turnRecords ?? [])[(state.turnRecords ?? []).length - 1];
+  const { focus, digests } = await resolveNarrationFocusAndDigests({
+    llm: input.llm,
+    perspective,
+    turn: aftermathTurn,
+    scene: state.situation.scene,
+    sideAName: state.sideA.displayName,
+    sideBName: state.sideB.displayName,
+    events: rec?.events ?? [],
+    agentStateA: state.agentStateA,
+    agentStateB: state.agentStateB,
+    cognitionA: rec?.cognitionA,
+    cognitionB: rec?.cognitionB,
+  });
   emit({ type: "phase", phase: "narrating" });
   let narrative;
   try {
@@ -1150,6 +1324,9 @@ async function runAftermathTurn(input: {
           .slice(-2)
           .flatMap((b) => b.narrator)
           .slice(-8),
+        innerDigests: digests,
+        focus,
+        perspective,
         styleInstruction: state.narrationStyle?.instruction,
         styleName: state.narrationStyle?.displayName,
         onProgress: (progress) => {
@@ -1177,7 +1354,12 @@ async function runAftermathTurn(input: {
           ? `${winnerName} は息を整え、その先の運命を見据える。`
           : "どちらも立ってはいられない。",
       ],
-      speeches: [],
+      speeches: winnerName
+        ? [{ speaker: winnerName, text: "……。" }]
+        : [
+            { speaker: state.sideA.displayName, text: "…" },
+            { speaker: state.sideB.displayName, text: "…" },
+          ],
     };
     emit({
       type: "narrator",
@@ -1187,7 +1369,9 @@ async function runAftermathTurn(input: {
     });
   }
 
-  narrative = { ...narrative, speeches: [] };
+  if (narrative.speeches?.length) {
+    emit({ type: "speeches", speeches: narrative.speeches });
+  }
   emit({ type: "phase", phase: "finalizing" });
 
   // Mark epilogue block for UI (prefix first line if missing)

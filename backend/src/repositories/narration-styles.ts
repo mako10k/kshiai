@@ -15,24 +15,39 @@ export function ensureSystemNarrationStyles(): void {
   if (seeded) return;
   const db = getDb();
   const now = new Date().toISOString();
-  const insert = db.prepare(
-    `INSERT OR IGNORE INTO narration_styles
-      (id, owner_user_id, is_system, sheet_json, created_at, updated_at)
-     VALUES (?, NULL, 1, ?, ?, ?)`,
-  );
   for (const seed of SYSTEM_NARRATION_STYLE_SEEDS) {
+    const existing = db
+      .prepare(`SELECT sheet_json, created_at FROM narration_styles WHERE id = ?`)
+      .get(seed.id) as { sheet_json: string; created_at: string } | undefined;
+    const createdAt = existing?.created_at ?? now;
     const full: NarrationStyle = {
       ...seed,
-      createdAt: now,
+      perspective: seed.perspective ?? "external",
+      createdAt,
       updatedAt: now,
     };
-    insert.run(seed.id, JSON.stringify(full), now, now);
+    if (existing) {
+      db.prepare(
+        `UPDATE narration_styles
+         SET sheet_json = ?, updated_at = ?, is_system = 1, owner_user_id = NULL
+         WHERE id = ?`,
+      ).run(JSON.stringify(full), now, seed.id);
+    } else {
+      db.prepare(
+        `INSERT INTO narration_styles
+          (id, owner_user_id, is_system, sheet_json, created_at, updated_at)
+         VALUES (?, NULL, 1, ?, ?, ?)`,
+      ).run(seed.id, JSON.stringify(full), createdAt, now);
+    }
   }
   seeded = true;
 }
 
 function parse(json: string): NarrationStyle {
-  return NarrationStyleSchema.parse(JSON.parse(json));
+  const raw = JSON.parse(json) as Record<string, unknown>;
+  // Legacy rows may omit perspective.
+  if (raw.perspective == null) raw.perspective = "external";
+  return NarrationStyleSchema.parse(raw);
 }
 
 export function listNarrationStyles(userId: string): NarrationStylePublic[] {
@@ -116,6 +131,7 @@ export function createUserNarrationStyle(
     description?: string;
     instruction: string;
     tags?: string[];
+    perspective?: NarrationStyle["perspective"];
   },
 ): NarrationStyle {
   const t = new Date().toISOString();
@@ -126,6 +142,7 @@ export function createUserNarrationStyle(
     displayName: input.displayName.trim(),
     description: (input.description ?? "").trim(),
     instruction: input.instruction.trim(),
+    perspective: input.perspective ?? "external",
     tags: input.tags ?? [],
     createdAt: t,
     updatedAt: t,
@@ -142,6 +159,7 @@ export function updateUserNarrationStyle(
     description?: string;
     instruction?: string;
     tags?: string[];
+    perspective?: NarrationStyle["perspective"];
   },
 ): NarrationStyle | null {
   const cur = getNarrationStyle(id);
@@ -154,6 +172,7 @@ export function updateUserNarrationStyle(
         ? input.description.trim()
         : cur.description,
     instruction: input.instruction?.trim() || cur.instruction,
+    perspective: input.perspective ?? cur.perspective ?? "external",
     tags: input.tags ?? cur.tags,
     updatedAt: new Date().toISOString(),
   };

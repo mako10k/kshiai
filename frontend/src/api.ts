@@ -196,6 +196,7 @@ export const api = {
     displayName: string;
     description?: string;
     instruction: string;
+    perspective?: string;
     tags?: string[];
   }) =>
     request<{ style: NarrationStylePublic }>("/api/narration-styles", {
@@ -213,6 +214,7 @@ export const api = {
       displayName?: string;
       description?: string;
       instruction?: string;
+      perspective?: string;
       tags?: string[];
     },
   ) =>
