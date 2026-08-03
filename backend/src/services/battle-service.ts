@@ -1073,13 +1073,6 @@ async function runAftermathTurn(input: {
     updatedAt: new Date().toISOString(),
   };
 
-  const resultSummary =
-    state.winnerSide === "draw"
-      ? "相打ち — 両者とも戦闘不能となった。余波の中で勝負は閉じた。"
-      : winnerName
-        ? `${winnerName} の勝利。倒れた者の行く末もまた、この一戦の一部となった。`
-        : "勝負はついた。";
-
   const { settleBattleRating } = await import("./rating-service.js");
   next = settleBattleRating(next);
   try {
@@ -1103,7 +1096,9 @@ async function runAftermathTurn(input: {
     sideBCharacterId: input.meta.side_b_character_id,
   });
 
-  return toBattlePublic(next, input.mine, resultSummary, input.opp);
+  // The winner card already states the mechanical result. The aftermath log is
+  // LLM-authored, so do not append a second fixed-prose result summary here.
+  return toBattlePublic(next, input.mine, null, input.opp);
 }
 
 export async function performAction(input: {
