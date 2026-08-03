@@ -15,6 +15,7 @@ PostgreSQL 移行: [docs/postgres_migration.md](docs/postgres_migration.md)
 クラウド実行環境: [docs/cloud_runtime.md](docs/cloud_runtime.md)
 本番切替記録: [docs/cloud_cutover.md](docs/cloud_cutover.md)
 リリース規約: [docs/release_process.md](docs/release_process.md)
+CI/CD運用: [docs/cicd.md](docs/cicd.md)
 変更履歴: [CHANGELOG.md](CHANGELOG.md)
 
 ## 技術構成

@@ -51,6 +51,17 @@ the checks locally and preserve their output in the release record. Once
 enabled, direct pushes to `main`, force pushes, branch deletion, and bypassing
 required checks are prohibited.
 
+The repository is currently private on GitHub Free. That plan does not provide
+branch protection or deployment environments for private repositories. Until
+GitHub Pro is enabled or the repository becomes public, the release workflows
+compensate by allowing only the repository owner to dispatch from an annotated
+release tag, querying the GitHub API for all four successful checks on that
+exact commit, restricting Google OIDC to release tags, and separating staging
+from the owner-confirmed promotion workflow. This protects the production
+deployment path, but it cannot prevent an owner from pushing directly to
+`main`. Configure branch protection and protected environments immediately if
+the plan changes.
+
 ## Required checks
 
 `T_CICD` must expose these stable required-check names so branch protection can
@@ -117,15 +128,18 @@ production.
    relevant changelog entries into a dated version section.
 2. Pass `validate`, `security`, `backend-image`, and `worker` on the exact
    release commit.
-3. Create the annotated release-candidate or stable tag from that commit.
+3. Create and push the annotated release-candidate or stable tag from that
+   commit, then dispatch `Stage release` from that tag.
 4. Publish immutable artifacts and deploy them to staging without production
-   traffic.
+   traffic. Preserve the staging workflow's digest, revision, and Worker
+   version evidence.
 5. Apply pending migrations, then verify health, PostgreSQL, Supabase email and
    Google authentication, migrated ownership, R2 media, and an SSE battle
    stream. Verify that direct Cloud Run requests remain protected.
-6. Record the rollback targets and obtain explicit production approval.
-7. Promote the same backend digest and Worker version to production. Do not
-   allow concurrent production deployments.
+6. Record the rollback targets. After reviewing the staging evidence, dispatch
+   `Promote release` from the same tag and type its explicit confirmation.
+7. Promote the exact recorded Cloud Run revision and Worker version to
+   production. Do not allow concurrent production deployments.
 8. Repeat the production smoke checks and inspect Cloud Run and Worker errors.
    Publish the GitHub Release only after acceptance. A failed deployment keeps
    the tag but is marked failed; the correction gets a new version.

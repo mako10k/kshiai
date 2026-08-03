@@ -15,3 +15,4 @@ frontend/dist/
 .vite/
 thoughts/
 .llmthink/
+gha-creds-*.json
