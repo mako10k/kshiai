@@ -5,6 +5,14 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 
 ## [Unreleased]
 
+## [0.1.4] - 2026-08-03
+
+### Fixed
+
+- Carries forward the authenticated battle SSE fix after granting the release
+  identity permission to act as the default Cloud Build execution service
+  account. The grant is scoped to that service account.
+
 ## [0.1.3] - 2026-08-03
 
 ### Fixed
@@ -12,6 +20,9 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 - Carries forward the authenticated battle SSE fix and explicitly stages Cloud
   Build source in the dedicated `gs://kshiai_cloudbuild/source` path, avoiding
   the project-wide bucket-list permission required by implicit bucket lookup.
+- The staging workflow uploaded source successfully, then stopped before build
+  execution because the release identity could not act as the default Cloud
+  Build service account. The tag was retained and superseded by `v0.1.4`.
 
 ## [0.1.2] - 2026-08-03
 

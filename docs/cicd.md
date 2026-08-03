@@ -78,6 +78,9 @@ Its access to Cloud Build source is limited to the dedicated
 has no project-wide storage writer role. The staging workflow passes
 `--gcs-source-staging-dir=gs://kshiai_cloudbuild/source` explicitly so the CLI
 does not require project-wide bucket listing for implicit bucket discovery.
+The deploy identity has `roles/iam.serviceAccountUser` only on the default
+Cloud Build execution account and the existing Cloud Run runtime account; it
+does not have project-wide service-account impersonation.
 
 The runtime account reads only the Secret Manager resources attached to the
 service or smoke jobs. CI/CD adds these resources:
