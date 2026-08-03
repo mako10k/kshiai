@@ -78,6 +78,33 @@ value as a Worker secret. The Cloud Run generated origin URL is non-secret.
 7. Move `kshiai.mk10.org` from the Tunnel route to the Worker only after all
    checks pass.
 
+## Deployment artifacts
+
+- `backend/Dockerfile` builds only the shared and backend workspaces and runs
+  the compiled API as an unprivileged user on port 8080.
+- `.dockerignore` excludes credentials, databases, generated media, build
+  output, and repository metadata from the Docker context.
+- `infra/cloudflare-worker/` contains the SPA asset binding and fail-closed
+  `/api` proxy. The proxy overwrites any client-supplied origin header and
+  forwards the response body without reading or buffering it.
+- `ORIGIN_SHARED_SECRET` enables constant-time origin-header verification in
+  the backend. It remains optional for local development and the rollback
+  runtime, and is required on Cloud Run.
+
+Validate the artifacts locally before every deployment:
+
+```bash
+npm run build
+npm run typecheck
+npm test
+npm run build:worker
+docker build -f backend/Dockerfile -t kshiai-backend:local .
+```
+
+`build:worker` is a Wrangler dry run; it does not deploy or alter Cloudflare.
+The Docker build can instead be performed by Cloud Build when no local Docker
+daemon is available.
+
 ## Cutover and rollback
 
 Before cutover, record the active Cloud Run revision, Worker version, current

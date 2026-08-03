@@ -67,6 +67,7 @@ milestone DEPLOY_PLAN_READY:
 
 milestone DEPLOYABLE_READY:
   title "Backend container and frontend deployment artifacts ready"
+  state reached
 
 milestone CLOUD_STAGING_READY:
   title "Cloud runtime validated before production cutover"
@@ -164,6 +165,7 @@ task T_DEPLOY_PLAN AUTH_V2_READY -> DEPLOY_PLAN_READY:
 task T_DEPLOY_ARTIFACTS DEPLOY_PLAN_READY -> DEPLOYABLE_READY:
   title "Containerize the backend and prepare static frontend deployment"
   duration 2d
+  status done
   requires:
     DEV 1
 

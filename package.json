@@ -13,12 +13,14 @@
     "dev:backend": "npm run dev --workspace=backend",
     "dev:frontend": "npm run dev --workspace=frontend",
     "build": "npm run build --workspace=@kshiai/shared && npm run build --workspace=backend && npm run build --workspace=frontend",
-    "typecheck": "npm run typecheck --workspaces --if-present",
-    "test": "npm run test --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present && npm run typecheck:deployment",
+    "typecheck:deployment": "tsc -p infra/cloudflare-worker/tsconfig.json",
+    "test": "npm run test --workspaces --if-present && npm run test:deployment",
+    "test:deployment": "node --import tsx --test infra/cloudflare-worker/src/**/*.test.ts",
+    "build:worker": "npm run build --workspace=frontend && wrangler deploy --config infra/cloudflare-worker/wrangler.jsonc --dry-run",
     "lint": "npm run typecheck",
     "sync:secdat": "bash scripts/sync-env-from-secdat.sh"
   },
-
   "engines": {
     "node": ">=20"
   },
@@ -26,5 +28,8 @@
     "better-sqlite3@11.10.0": true,
     "esbuild@0.28.1": true,
     "esbuild@0.25.12": true
+  },
+  "devDependencies": {
+    "wrangler": "^4.118.0"
   }
 }

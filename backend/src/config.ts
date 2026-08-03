@@ -127,6 +127,7 @@ export const config = {
     process.env.COOKIE_SECURE === "1" ||
     process.env.COOKIE_SECURE === "true" ||
     process.env.NODE_ENV === "production",
+  originSharedSecret: process.env.ORIGIN_SHARED_SECRET?.trim() ?? "",
   llmProvider,
   allowMockProvider: isMockProviderAllowed({
     nodeEnv: process.env.NODE_ENV,

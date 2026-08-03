@@ -6,12 +6,25 @@ import { databaseKind, initializeDatabase } from "./db.js";
 import { ensureSystemPresets } from "./repositories/battlefields.js";
 import { ensureSystemNarrationStyles } from "./repositories/narration-styles.js";
 import { buildRoutes } from "./routes.js";
+import {
+  ORIGIN_VERIFICATION_HEADER,
+  verifyOriginSecret,
+} from "./origin-verification.js";
 
 // Ensure DB is ready + system battlefield presets
 await initializeDatabase();
 await Promise.all([ensureSystemPresets(), ensureSystemNarrationStyles()]);
 
 const app = new Hono();
+app.use("/api/*", async (c, next) => {
+  if (!verifyOriginSecret(
+    config.originSharedSecret,
+    c.req.header(ORIGIN_VERIFICATION_HEADER),
+  )) {
+    return c.json({ error: "not_found" }, 404);
+  }
+  await next();
+});
 app.use(
   "*",
   cors({
