@@ -1,0 +1,99 @@
+name: Roll back production
+
+on:
+  workflow_dispatch:
+    inputs:
+      cloud_run_revision:
+        description: Known-good Cloud Run revision
+        required: true
+        type: string
+      worker_version:
+        description: Known-good Worker version ID
+        required: true
+        type: string
+      confirmation:
+        description: Type ROLLBACK followed by the revision name
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: production
+  cancel-in-progress: false
+
+env:
+  GCP_PROJECT: kshiai
+  GCP_REGION: asia-northeast1
+  CLOUD_RUN_SERVICE: kshiai-api
+  WORKER_NAME: kshiai-web
+  WRANGLER_CONFIG: infra/cloudflare-worker/wrangler.jsonc
+  PRODUCTION_URL: https://kshiai.mk10.org
+
+jobs:
+  rollback:
+    name: rollback-production
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Validate owner approval and inputs
+        env:
+          CONFIRMATION: ${{ inputs.confirmation }}
+          REVISION: ${{ inputs.cloud_run_revision }}
+          WORKER_VERSION: ${{ inputs.worker_version }}
+        run: |
+          set -euo pipefail
+          test "$GITHUB_ACTOR" = "$GITHUB_REPOSITORY_OWNER"
+          test "$CONFIRMATION" = "ROLLBACK $REVISION"
+          [[ "$GITHUB_REF" =~ ^refs/tags/v[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?$ ]]
+          [[ "$REVISION" =~ ^kshiai-api-[a-z0-9-]+$ ]]
+          [[ "$WORKER_VERSION" =~ ^[0-9a-f-]{36}$ ]]
+
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - run: npm ci
+
+      - uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3
+        with:
+          project_id: ${{ env.GCP_PROJECT }}
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GCP_DEPLOY_SERVICE_ACCOUNT }}
+
+      - uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db # v3
+
+      - name: Restore known-good versions
+        env:
+          REVISION: ${{ inputs.cloud_run_revision }}
+          WORKER_VERSION: ${{ inputs.worker_version }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          gcloud run revisions describe "$REVISION" \
+            --project="$GCP_PROJECT" \
+            --region="$GCP_REGION" >/dev/null
+          npx wrangler versions view "$WORKER_VERSION" \
+            --config "$WRANGLER_CONFIG" \
+            --json >/dev/null
+          gcloud run services update-traffic "$CLOUD_RUN_SERVICE" \
+            --project="$GCP_PROJECT" \
+            --region="$GCP_REGION" \
+            --to-revisions="$REVISION=100" \
+            --quiet
+          npx wrangler rollback "$WORKER_VERSION" \
+            --config "$WRANGLER_CONFIG" \
+            --message "Owner-approved rollback by $GITHUB_ACTOR" \
+            --yes
+
+      - name: Verify rollback
+        run: |
+          direct_url="$(gcloud run services describe "$CLOUD_RUN_SERVICE" \
+            --project="$GCP_PROJECT" \
+            --region="$GCP_REGION" \
+            --format='value(status.url)')"
+          node scripts/smoke-deployment.mjs "$PRODUCTION_URL" "$direct_url"

@@ -9,3 +9,5 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 
 - Release governance covering versioning, required checks, immutable artifact
   promotion, database compatibility, rollback, and emergency releases.
+- GitHub Actions validation, staged release and owner-confirmed production
+  promotion, keyless Google Cloud deployment, smoke testing, and rollback.

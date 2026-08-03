@@ -1,0 +1,262 @@
+name: Stage release
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Annotated release tag; dispatch this workflow from the same tag
+        required: true
+        type: string
+
+permissions:
+  checks: read
+  contents: read
+  id-token: write
+
+concurrency:
+  group: release-staging
+  cancel-in-progress: false
+
+env:
+  GCP_PROJECT: kshiai
+  GCP_REGION: asia-northeast1
+  CLOUD_RUN_SERVICE: kshiai-api
+  MIGRATION_JOB: kshiai-migrate
+  AUTH_SMOKE_JOB: kshiai-auth-smoke
+  R2_SMOKE_JOB: kshiai-r2-smoke
+  IMAGE_REPOSITORY: asia-northeast1-docker.pkg.dev/kshiai/kshiai/backend
+  WORKER_NAME: kshiai-web
+  WORKERS_SUBDOMAIN: mako10k
+  WRANGLER_CONFIG: infra/cloudflare-worker/wrangler.jsonc
+  SUPABASE_URL: https://cvrbhpkfqkpqdegxfrlq.supabase.co
+  SUPABASE_JWKS_URL: https://cvrbhpkfqkpqdegxfrlq.supabase.co/auth/v1/.well-known/jwks.json
+
+jobs:
+  stage:
+    name: stage-release
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Validate dispatch authority
+        env:
+          RELEASE_TAG: ${{ inputs.tag }}
+        run: |
+          set -euo pipefail
+          test "$GITHUB_ACTOR" = "$GITHUB_REPOSITORY_OWNER"
+          test "$GITHUB_REF" = "refs/tags/$RELEASE_TAG"
+          [[ "$RELEASE_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?$ ]]
+
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ inputs.tag }}
+          fetch-depth: 0
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - run: npm ci
+
+      - name: Verify release tag and required checks
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ inputs.tag }}
+        run: |
+          node scripts/verify-release.mjs "$RELEASE_TAG"
+          node scripts/verify-required-checks.mjs
+
+      - uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3
+        with:
+          project_id: ${{ env.GCP_PROJECT }}
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GCP_DEPLOY_SERVICE_ACCOUNT }}
+
+      - uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db # v3
+
+      - name: Build immutable backend image
+        id: image
+        run: |
+          set -euo pipefail
+          image_tag="$IMAGE_REPOSITORY:$GITHUB_SHA"
+          gcloud builds submit . \
+            --project="$GCP_PROJECT" \
+            --region="$GCP_REGION" \
+            --config=infra/cloudbuild.backend.yaml \
+            --substitutions="_IMAGE=$image_tag"
+          digest="$(gcloud artifacts docker images describe "$image_tag" \
+            --project="$GCP_PROJECT" \
+            --format='value(image_summary.digest)')"
+          test -n "$digest"
+          echo "ref=$IMAGE_REPOSITORY@$digest" >> "$GITHUB_OUTPUT"
+          echo "digest=$digest" >> "$GITHUB_OUTPUT"
+
+      - name: Deploy tagged Cloud Run revision without traffic
+        id: backend
+        env:
+          IMAGE_REF: ${{ steps.image.outputs.ref }}
+          RELEASE_TAG: ${{ inputs.tag }}
+        run: |
+          set -euo pipefail
+          alias="release-${RELEASE_TAG//./-}"
+          gcloud run deploy "$CLOUD_RUN_SERVICE" \
+            --project="$GCP_PROJECT" \
+            --region="$GCP_REGION" \
+            --image="$IMAGE_REF" \
+            --no-traffic \
+            --tag="$alias" \
+            --quiet
+          gcloud run services describe "$CLOUD_RUN_SERVICE" \
+            --project="$GCP_PROJECT" \
+            --region="$GCP_REGION" \
+            --format=json > "$RUNNER_TEMP/service.json"
+          # shellcheck disable=SC2016
+          ALIAS="$alias" node -e '
+            const fs = require("fs");
+            const service = JSON.parse(fs.readFileSync(process.argv[1], "utf8"));
+            const traffic = service.status.traffic.find((entry) => entry.tag === process.env.ALIAS);
+            if (!traffic?.url || !traffic?.revisionName) throw new Error("Tagged revision was not found");
+            fs.appendFileSync(process.env.GITHUB_OUTPUT, `url=${traffic.url}\nrevision=${traffic.revisionName}\n`);
+          ' "$RUNNER_TEMP/service.json"
+
+      - name: Apply forward-only migrations
+        env:
+          IMAGE_REF: ${{ steps.image.outputs.ref }}
+        run: |
+          set -euo pipefail
+          gcloud run jobs deploy "$MIGRATION_JOB" \
+            --project="$GCP_PROJECT" \
+            --region="$GCP_REGION" \
+            --image="$IMAGE_REF" \
+            --service-account=kshiai-cloud-run@kshiai.iam.gserviceaccount.com \
+            --set-secrets=DIRECT_URL=kshiai-direct-url:latest \
+            --command=node \
+            --args=backend/dist/scripts/postgres-migrations.js,--apply \
+            --max-retries=0 \
+            --task-timeout=10m \
+            --quiet
+          gcloud run jobs execute "$MIGRATION_JOB" \
+            --project="$GCP_PROJECT" \
+            --region="$GCP_REGION" \
+            --wait
+
+      - name: Build and upload immutable Worker version
+        id: worker
+        env:
+          BACKEND_URL: ${{ steps.backend.outputs.url }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          RELEASE_TAG: ${{ inputs.tag }}
+          WRANGLER_OUTPUT_FILE_PATH: ${{ runner.temp }}/wrangler-output.jsonl
+        run: |
+          set -euo pipefail
+          npm run build --workspace=frontend
+          alias="release-${RELEASE_TAG//./-}"
+          npx wrangler versions upload \
+            --config "$WRANGLER_CONFIG" \
+            --tag "$RELEASE_TAG" \
+            --message "Release $RELEASE_TAG from $GITHUB_SHA" \
+            --preview-alias "$alias" \
+            --var "BACKEND_ORIGIN:$BACKEND_URL" \
+            --strict
+          # shellcheck disable=SC2016
+          node -e '
+            const fs = require("fs");
+            const events = fs.readFileSync(process.env.WRANGLER_OUTPUT_FILE_PATH, "utf8")
+              .trim().split("\n").map(JSON.parse);
+            const upload = events.findLast((event) => event.type === "version-upload");
+            if (!upload?.version_id) throw new Error("Wrangler did not record a version ID");
+            fs.appendFileSync(process.env.GITHUB_OUTPUT, `version=${upload.version_id}\n`);
+          '
+          echo "preview_url=https://$alias-$WORKER_NAME.$WORKERS_SUBDOMAIN.workers.dev" >> "$GITHUB_OUTPUT"
+
+      - name: Smoke staging edge and protected origin
+        env:
+          BACKEND_URL: ${{ steps.backend.outputs.url }}
+          PREVIEW_URL: ${{ steps.worker.outputs.preview_url }}
+        run: node scripts/smoke-deployment.mjs "$PREVIEW_URL" "$BACKEND_URL"
+
+      - name: Verify email auth mapping and SSE through staging
+        env:
+          IMAGE_REF: ${{ steps.image.outputs.ref }}
+          PREVIEW_URL: ${{ steps.worker.outputs.preview_url }}
+        run: |
+          set -euo pipefail
+          gcloud run jobs deploy "$AUTH_SMOKE_JOB" \
+            --project="$GCP_PROJECT" \
+            --region="$GCP_REGION" \
+            --image="$IMAGE_REF" \
+            --service-account=kshiai-cloud-run@kshiai.iam.gserviceaccount.com \
+            --set-env-vars="NODE_ENV=test,AUTH_PROVIDER=supabase,MEDIA_STORAGE=local,SUPABASE_URL=$SUPABASE_URL,SUPABASE_JWKS_URL=$SUPABASE_JWKS_URL,AUTH_SMOKE_API_URL=$PREVIEW_URL,AUTH_SMOKE_SSE=1" \
+            --set-secrets="DATABASE_URL=kshiai-database-url:latest,SUPABASE_SECRET_KEY=kshiai-supabase-secret-key:latest,SUPABASE_PUBLISHABLE_KEY=kshiai-supabase-publishable-key:latest" \
+            --command=node \
+            --args=backend/dist/scripts/supabase-auth-smoke.js \
+            --max-retries=0 \
+            --task-timeout=10m \
+            --quiet
+          gcloud run jobs execute "$AUTH_SMOKE_JOB" \
+            --project="$GCP_PROJECT" \
+            --region="$GCP_REGION" \
+            --wait
+
+      - name: Read public R2 service configuration
+        run: |
+          set -euo pipefail
+          gcloud run services describe "$CLOUD_RUN_SERVICE" \
+            --project="$GCP_PROJECT" \
+            --region="$GCP_REGION" \
+            --format=json > "$RUNNER_TEMP/service-r2.json"
+          # shellcheck disable=SC2016
+          node -e '
+            const fs = require("fs");
+            const service = require(process.argv[1]);
+            const env = Object.fromEntries(service.spec.template.spec.containers[0].env
+              .filter((entry) => entry.value !== undefined)
+              .map((entry) => [entry.name, entry.value]));
+            for (const name of ["R2_ACCOUNT_ID", "R2_BUCKET", "R2_PUBLIC_BASE_URL"]) {
+              if (!env[name]) throw new Error(`Missing service variable ${name}`);
+              fs.appendFileSync(process.env.GITHUB_ENV, `${name}<<KSHIAI_VALUE\n${env[name]}\nKSHIAI_VALUE\n`);
+            }
+          ' "$RUNNER_TEMP/service-r2.json"
+
+      - name: Verify R2 credentials, listing, and public media
+        env:
+          IMAGE_REF: ${{ steps.image.outputs.ref }}
+        run: |
+          set -euo pipefail
+          gcloud run jobs deploy "$R2_SMOKE_JOB" \
+            --project="$GCP_PROJECT" \
+            --region="$GCP_REGION" \
+            --image="$IMAGE_REF" \
+            --service-account=kshiai-cloud-run@kshiai.iam.gserviceaccount.com \
+            --set-env-vars="R2_ACCOUNT_ID=$R2_ACCOUNT_ID,R2_BUCKET=$R2_BUCKET,R2_PUBLIC_BASE_URL=$R2_PUBLIC_BASE_URL" \
+            --set-secrets="R2_ACCESS_KEY_ID=kshiai-r2-access-key-id:latest,R2_SECRET_ACCESS_KEY=kshiai-r2-secret-access-key:latest" \
+            --command=node \
+            --args=backend/dist/scripts/r2-smoke.js \
+            --max-retries=0 \
+            --task-timeout=5m \
+            --quiet
+          gcloud run jobs execute "$R2_SMOKE_JOB" \
+            --project="$GCP_PROJECT" \
+            --region="$GCP_REGION" \
+            --wait
+
+      - name: Write staging evidence
+        env:
+          IMAGE_DIGEST: ${{ steps.image.outputs.digest }}
+          RELEASE_TAG: ${{ inputs.tag }}
+          REVISION: ${{ steps.backend.outputs.revision }}
+          WORKER_VERSION: ${{ steps.worker.outputs.version }}
+          PREVIEW_URL: ${{ steps.worker.outputs.preview_url }}
+        run: |
+          {
+            echo "## Release staging passed"
+            echo
+            echo "- Tag: \`$RELEASE_TAG\`"
+            echo "- Commit: \`$GITHUB_SHA\`"
+            echo "- Backend digest: \`$IMAGE_DIGEST\`"
+            echo "- Cloud Run revision: \`$REVISION\`"
+            echo "- Worker version: \`$WORKER_VERSION\`"
+            echo "- Preview: $PREVIEW_URL"
+            echo
+            echo "Dispatch **Promote release** from \`$RELEASE_TAG\` with the revision and Worker version above."
+          } >> "$GITHUB_STEP_SUMMARY"

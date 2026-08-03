@@ -1,0 +1,216 @@
+name: Promote release
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Staged annotated release tag; dispatch this workflow from the same tag
+        required: true
+        type: string
+      cloud_run_revision:
+        description: Cloud Run revision from the successful staging run
+        required: true
+        type: string
+      worker_version:
+        description: Worker version ID from the successful staging run
+        required: true
+        type: string
+      confirmation:
+        description: Type DEPLOY followed by a space and the release tag
+        required: true
+        type: string
+
+permissions:
+  checks: read
+  contents: write
+  id-token: write
+
+concurrency:
+  group: production
+  cancel-in-progress: false
+
+env:
+  GCP_PROJECT: kshiai
+  GCP_REGION: asia-northeast1
+  CLOUD_RUN_SERVICE: kshiai-api
+  AUTH_SMOKE_JOB: kshiai-auth-smoke
+  WORKER_NAME: kshiai-web
+  WRANGLER_CONFIG: infra/cloudflare-worker/wrangler.jsonc
+  PRODUCTION_URL: https://kshiai.mk10.org
+
+jobs:
+  promote:
+    name: promote-release
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+    steps:
+      - name: Validate owner approval
+        env:
+          CONFIRMATION: ${{ inputs.confirmation }}
+          RELEASE_TAG: ${{ inputs.tag }}
+        run: |
+          set -euo pipefail
+          test "$GITHUB_ACTOR" = "$GITHUB_REPOSITORY_OWNER"
+          test "$GITHUB_REF" = "refs/tags/$RELEASE_TAG"
+          test "$CONFIRMATION" = "DEPLOY $RELEASE_TAG"
+          [[ "$RELEASE_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?$ ]]
+
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ inputs.tag }}
+          fetch-depth: 0
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - run: npm ci
+
+      - name: Revalidate release evidence
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ inputs.tag }}
+        run: |
+          node scripts/verify-release.mjs "$RELEASE_TAG"
+          node scripts/verify-required-checks.mjs
+
+      - uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3
+        with:
+          project_id: ${{ env.GCP_PROJECT }}
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GCP_DEPLOY_SERVICE_ACCOUNT }}
+
+      - uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db # v3
+
+      - name: Verify staged immutable artifacts
+        env:
+          RELEASE_TAG: ${{ inputs.tag }}
+          REVISION: ${{ inputs.cloud_run_revision }}
+          WORKER_VERSION: ${{ inputs.worker_version }}
+        run: |
+          set -euo pipefail
+          [[ "$REVISION" =~ ^kshiai-api-[a-z0-9-]+$ ]]
+          [[ "$WORKER_VERSION" =~ ^[0-9a-f-]{36}$ ]]
+          image="$(gcloud run revisions describe "$REVISION" \
+            --project="$GCP_PROJECT" \
+            --region="$GCP_REGION" \
+            --format='value(spec.containers[0].image)')"
+          test -n "$image"
+          versions="$(npx wrangler versions list --config "$WRANGLER_CONFIG" --json)"
+          WORKER_VERSIONS="$versions" node -e '
+            const versions = JSON.parse(process.env.WORKER_VERSIONS);
+            const version = versions.find((entry) => entry.id === process.env.WORKER_VERSION);
+            if (!version) throw new Error("Staged Worker version is not deployable");
+            const tag = version.annotations?.["workers/tag"];
+            if (tag && tag !== process.env.RELEASE_TAG) throw new Error("Worker tag mismatch");
+          '
+          echo "Verified backend image $image and Worker version $WORKER_VERSION"
+
+      - name: Record rollback targets
+        id: previous
+        run: |
+          set -euo pipefail
+          revision="$(gcloud run services describe "$CLOUD_RUN_SERVICE" \
+            --project="$GCP_PROJECT" \
+            --region="$GCP_REGION" \
+            --format='value(status.traffic[0].revisionName)')"
+          npx wrangler deployments status --config "$WRANGLER_CONFIG" --json > "$RUNNER_TEMP/deployment.json"
+          worker="$(node -e '
+            const deployment = require(process.argv[1]);
+            const active = deployment.versions.find((entry) => entry.percentage === 100);
+            if (!active) throw new Error("No single active Worker version");
+            process.stdout.write(active.version_id);
+          ' "$RUNNER_TEMP/deployment.json")"
+          echo "revision=$revision" >> "$GITHUB_OUTPUT"
+          echo "worker=$worker" >> "$GITHUB_OUTPUT"
+
+      - name: Promote backend revision
+        id: promote_backend
+        env:
+          REVISION: ${{ inputs.cloud_run_revision }}
+        run: |
+          gcloud run services update-traffic "$CLOUD_RUN_SERVICE" \
+            --project="$GCP_PROJECT" \
+            --region="$GCP_REGION" \
+            --to-revisions="$REVISION=100" \
+            --quiet
+
+      - name: Promote Worker version
+        id: promote_worker
+        env:
+          WORKER_VERSION: ${{ inputs.worker_version }}
+        run: |
+          npx wrangler versions deploy "$WORKER_VERSION@100%" \
+            --config "$WRANGLER_CONFIG" \
+            --message "Promote ${{ inputs.tag }}" \
+            --yes
+
+      - name: Smoke production
+        run: |
+          direct_url="$(gcloud run services describe "$CLOUD_RUN_SERVICE" \
+            --project="$GCP_PROJECT" \
+            --region="$GCP_REGION" \
+            --format='value(status.url)')"
+          node scripts/smoke-deployment.mjs "$PRODUCTION_URL" "$direct_url"
+          gcloud run jobs update "$AUTH_SMOKE_JOB" \
+            --project="$GCP_PROJECT" \
+            --region="$GCP_REGION" \
+            --update-env-vars="AUTH_SMOKE_API_URL=$PRODUCTION_URL" \
+            --quiet
+          gcloud run jobs execute "$AUTH_SMOKE_JOB" \
+            --project="$GCP_PROJECT" \
+            --region="$GCP_REGION" \
+            --wait
+
+      - name: Roll back failed promotion
+        if: failure() && steps.promote_backend.outcome == 'success'
+        env:
+          PREVIOUS_REVISION: ${{ steps.previous.outputs.revision }}
+          PREVIOUS_WORKER: ${{ steps.previous.outputs.worker }}
+        run: |
+          set +e
+          gcloud run services update-traffic "$CLOUD_RUN_SERVICE" \
+            --project="$GCP_PROJECT" \
+            --region="$GCP_REGION" \
+            --to-revisions="$PREVIOUS_REVISION=100" \
+            --quiet
+          if test "${{ steps.promote_worker.outcome }}" = "success"; then
+            npx wrangler rollback "$PREVIOUS_WORKER" \
+              --config "$WRANGLER_CONFIG" \
+              --message "Automatic rollback after failed ${{ inputs.tag }} smoke" \
+              --yes
+          fi
+
+      - name: Publish release and evidence
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ inputs.tag }}
+          REVISION: ${{ inputs.cloud_run_revision }}
+          WORKER_VERSION: ${{ inputs.worker_version }}
+        run: |
+          image="$(gcloud run revisions describe "$REVISION" \
+            --project="$GCP_PROJECT" \
+            --region="$GCP_REGION" \
+            --format='value(spec.containers[0].image)')"
+          {
+            echo "Production promotion completed."
+            echo
+            echo "- Commit: \`$GITHUB_SHA\`"
+            echo "- Backend image: \`$image\`"
+            echo "- Cloud Run revision: \`$REVISION\`"
+            echo "- Worker version: \`$WORKER_VERSION\`"
+            echo "- Workflow: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+          } > "$RUNNER_TEMP/release-evidence.md"
+          prerelease=()
+          if [[ "$RELEASE_TAG" == *-rc.* ]]; then prerelease=(--prerelease); fi
+          notes="$(cat "$RUNNER_TEMP/release-evidence.md")"
+          gh release create "$RELEASE_TAG" \
+            --verify-tag \
+            --title "$RELEASE_TAG" \
+            --generate-notes \
+            --notes "$notes" \
+            "${prerelease[@]}"
+          cat "$RUNNER_TEMP/release-evidence.md" >> "$GITHUB_STEP_SUMMARY"

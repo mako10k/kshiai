@@ -39,6 +39,7 @@ COPY --from=dependencies --chown=node:node /app/node_modules node_modules
 COPY --from=dependencies --chown=node:node /app/backend/package.json backend/package.json
 COPY --from=dependencies --chown=node:node /app/packages/shared/package.json packages/shared/package.json
 COPY --from=build --chown=node:node /app/backend/dist backend/dist
+COPY --chown=node:node backend/migrations backend/migrations
 COPY --from=build --chown=node:node /app/packages/shared/dist packages/shared/dist
 COPY --chown=node:node infra/supabase-ca-2021.crt infra/supabase-ca-2021.crt
 

@@ -209,6 +209,7 @@ task T_CICD RELEASE_RULES_READY -> CICD_READY:
   title "Implement CI validation and controlled cloud deployment"
   description "Add GitHub Actions for build typecheck tests audits container and Worker checks plus protected deployment environments keyless identity immutable promotion smoke tests and rollback"
   duration 2d
+  status active
   requires:
     DEV 1
 
@@ -224,3 +225,10 @@ work_event WE-a1325480f00cc8ab6faf2614a5298d19f00a3ff5d0c1e52af7ec6de948f62655:
   task T_RELEASE_RULES
   kind finish
   occurred_at 2026-08-03T20:48:36+09:00
+
+work_event WE-5b907360668ac932ba48485ad0252e24d704fb47b160c6db2b09f62f8fc4380d:
+  model 1
+  task T_CICD
+  kind start
+  occurred_at 2026-08-03T20:50:43+09:00
+  planned_value 2d

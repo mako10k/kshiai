@@ -3,6 +3,11 @@
   "name": "kshiai-web",
   "main": "src/index.ts",
   "compatibility_date": "2026-08-03",
+  "workers_dev": false,
+  "preview_urls": true,
+  "secrets": {
+    "required": ["ORIGIN_SHARED_SECRET"]
+  },
   "vars": {
     "BACKEND_ORIGIN": "https://kshiai-api-crpgn6evfa-an.a.run.app"
   },
