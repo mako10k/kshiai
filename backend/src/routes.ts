@@ -813,6 +813,10 @@ export function buildRoutes() {
   /**
    * Stream one advance as SSE (`text/event-stream`).
    * Events: phase | narrator | speeches | done | error (see BattleAdvanceStreamEvent).
+   *
+   * Cloudflare Tunnel buffers proxied responses unless Content-Type is
+   * text/event-stream. Keep-alive comments also avoid Proxy Write Timeout (30s)
+   * during long LLM gaps (agents / narrator).
    */
   authed.post("/battles/:id/advance/stream", async (c) => {
     const user = c.get("user");
@@ -823,11 +827,23 @@ export function buildRoutes() {
     const encoder = new TextEncoder();
     const stream = new ReadableStream<Uint8Array>({
       async start(controller) {
-        const send = (payload: unknown) => {
-          controller.enqueue(
-            encoder.encode(`data: ${JSON.stringify(payload)}\n\n`),
-          );
+        let closed = false;
+        const write = (chunk: string) => {
+          if (closed) return;
+          try {
+            controller.enqueue(encoder.encode(chunk));
+          } catch {
+            closed = true;
+          }
         };
+        const send = (payload: unknown) => {
+          write(`data: ${JSON.stringify(payload)}\n\n`);
+        };
+        // Immediate first byte + periodic comments: cloudflared/CF edge stay live.
+        write(`: stream-open\n\n`);
+        const keepAlive = setInterval(() => {
+          write(`: ka ${Date.now() - started}\n\n`);
+        }, 12_000);
         try {
           const battle = await advanceTurn({
             userId: user.id,
@@ -847,14 +863,21 @@ export function buildRoutes() {
           );
           send({ type: "error", message: msg });
         } finally {
-          controller.close();
+          clearInterval(keepAlive);
+          closed = true;
+          try {
+            controller.close();
+          } catch {
+            /* already closed */
+          }
         }
       },
     });
 
     return new Response(stream, {
       headers: {
-        "Content-Type": "text/event-stream; charset=utf-8",
+        // Exact media type required for cloudflared to disable response buffering.
+        "Content-Type": "text/event-stream",
         "Cache-Control": "no-cache, no-transform",
         Connection: "keep-alive",
         "X-Accel-Buffering": "no",
