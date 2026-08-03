@@ -37,6 +37,7 @@ jobs:
     name: rollback-production
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    environment: production
     steps:
       - name: Validate owner approval and inputs
         env:

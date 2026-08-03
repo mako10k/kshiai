@@ -36,6 +36,7 @@ jobs:
     name: stage-release
     runs-on: ubuntu-latest
     timeout-minutes: 45
+    environment: staging
     steps:
       - name: Validate dispatch authority
         env:
