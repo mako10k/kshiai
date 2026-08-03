@@ -5,6 +5,13 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 
 ## [Unreleased]
 
+## [0.1.7] - 2026-08-04
+
+### Fixed
+
+- Carries forward the authenticated battle SSE fix and builds the shared
+  workspace before the frontend during immutable Worker staging.
+
 ## [0.1.6] - 2026-08-04
 
 ### Fixed
@@ -12,6 +19,9 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 - Carries forward the authenticated battle SSE fix and waits for asynchronous
   Cloud Build completion by polling build status, eliminating all dependency
   on default logs bucket access.
+- Backend image, no-traffic revision, and migrations succeeded, then Worker
+  staging stopped because shared output had not been built first. No artifact
+  was promoted; the tag was retained and superseded by `v0.1.7`.
 
 ## [0.1.5] - 2026-08-04
 
