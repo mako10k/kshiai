@@ -172,6 +172,7 @@ task T_DEPLOY_ARTIFACTS DEPLOY_PLAN_READY -> DEPLOYABLE_READY:
 task T_DEPLOY_STAGING DEPLOYABLE_READY -> CLOUD_STAGING_READY:
   title "Provision secrets deploy and validate auth SSE PostgreSQL R2 and scaling"
   duration 2d
+  status done
   requires:
     DEV 1
 

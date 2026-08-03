@@ -3,6 +3,9 @@
   "name": "kshiai-web",
   "main": "src/index.ts",
   "compatibility_date": "2026-08-03",
+  "vars": {
+    "BACKEND_ORIGIN": "https://kshiai-api-crpgn6evfa-an.a.run.app"
+  },
   "assets": {
     "directory": "../../frontend/dist",
     "binding": "ASSETS",

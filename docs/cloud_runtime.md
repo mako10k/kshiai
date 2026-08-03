@@ -82,6 +82,8 @@ value as a Worker secret. The Cloud Run generated origin URL is non-secret.
 
 - `backend/Dockerfile` builds only the shared and backend workspaces and runs
   the compiled API as an unprivileged user on port 8080.
+- `infra/cloudbuild.backend.yaml` builds that Dockerfile in Cloud Build and
+  publishes the resulting image to Artifact Registry.
 - `.dockerignore` excludes credentials, databases, generated media, build
   output, and repository metadata from the Docker context.
 - `infra/cloudflare-worker/` contains the SPA asset binding and fail-closed
@@ -104,6 +106,9 @@ docker build -f backend/Dockerfile -t kshiai-backend:local .
 `build:worker` is a Wrangler dry run; it does not deploy or alter Cloudflare.
 The Docker build can instead be performed by Cloud Build when no local Docker
 daemon is available.
+
+The current staging resource identifiers and validation evidence are recorded
+in `docs/cloud_staging.md`.
 
 ## Cutover and rollback
 
