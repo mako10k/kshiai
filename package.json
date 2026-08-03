@@ -1,7 +1,7 @@
 {
   "name": "kshiai",
   "private": true,
-  "version": "0.1.9",
+  "version": "0.1.10",
   "description": "Turn-based multi-user LLM battle game",
   "workspaces": [
     "packages/*",
@@ -28,6 +28,9 @@
     "better-sqlite3@11.10.0": true,
     "esbuild@0.28.1": true,
     "esbuild@0.25.12": true
+  },
+  "overrides": {
+    "undici": "7.29.0"
   },
   "devDependencies": {
     "wrangler": "^4.118.0"
