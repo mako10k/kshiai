@@ -75,7 +75,7 @@ function insertEvent(input: {
 
 export function recordSheetSnapshot(input: {
   sheet: CharacterSheet;
-  phase: "generate" | "chat" | "rebalance" | "copy";
+  phase: "generate" | "chat" | "rebalance" | "copy" | "restore";
 }): SheetCombatProfile {
   const profile = sheetCombatProfile({
     parameters: input.sheet.parameters,

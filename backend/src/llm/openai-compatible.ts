@@ -11,6 +11,7 @@ import {
   SkillSchema,
   balanceCharacterCombatFields,
   clampCoefficientMap,
+  coalesceNonEmptyList,
   defaultParameters,
   coerceCharacterSpeech,
   extractStreamingNarrator,
@@ -540,6 +541,12 @@ Return JSON: {
   "narrativeBlurb": string,
   "assistantMessage": string
 }
+LANGUAGE (mandatory):
+- Match the language of the user's prompt for all player-facing prose.
+- If the prompt is primarily Japanese, write displayName, identity names, tags, traits, narrativeBlurb, skill/basicAttack/equipment names and descriptions, appearance.summary, and assistantMessage in Japanese.
+- If the prompt is primarily English, write those fields in English.
+- Do not silently translate a Japanese request into English labels or flavor text (and vice versa).
+- appearance.visualPrompt remains detailed English for image generation only.
 Parameters should be balanced around hp 80-120, atk/def 8-16. Never create unbeatable gods.
 When the request refers to the user's other character, a relative, partner, rival, or someone similar, use search_own_characters and then get_own_character before generating. Preserve the requested relationship while creating meaningful differences.
 NAME UNIQUENESS (mandatory):
@@ -663,6 +670,16 @@ Use null or [] when the profile does not establish a value. Do not treat a title
   "skills"?: array, "weapon"?: object|null, "armor"?: object|null }
 Do not tell the user exact numbers.
 Use the same basicAttack, skill effects, and equipment effects shapes as character generation.
+LANGUAGE (mandatory):
+- Match the language of the userMessage for any fields you rewrite. Prefer consistency with the existing character's dominant language when the user message is short or mixed.
+- If the user writes Japanese, keep/rewritten displayName, narrativeBlurb, traits, skill/equipment/basicAttack names and descriptions, and assistantMessage in Japanese. Do not switch Japanese profiles into English.
+- If the user writes English, keep those fields in English.
+- Do not translate the whole profile into another language unless the user explicitly asks for a translation.
+SKILLS RULE (mandatory):
+- Omit the "skills" field entirely when not changing the skill kit.
+- Never return an empty skills array. Empty skills wipe the character and are forbidden.
+- When adjusting skills, return the FULL updated kit (all skills the character should keep), each with name, description, costs, power, and kind.
+- Preserve existing skill names and identity unless the user explicitly renames or replaces them.
 Status changes are temporary and drift toward original values every turn. Beneficial effects need MP/stamina, a negative self effect, or the consumed action; positive equipment needs a negative tradeoff.
 Keep the profile synthesized: narrativeBlurb is a cohesive public introduction, traits are short labels, and skill/equipment descriptions contain only their local facts. Never copy or paraphrase the same fact into multiple fields.
 Judge from the complete concept and mechanics whether the requested strengths need a weakness, cost, counter, or condition. When needed, invent one concrete character-specific tradeoff and put each fact in exactly one canonical field: local mechanics in the relevant description, personality facts in traits, and only the cohesive overview in narrativeBlurb. Synthesize rather than append; never repeat or paraphrase the same weakness across fields. Never append a generic stock warning, and do not fabricate a weakness when none is needed. If the user asks for absolute power, preserve the flavor without removing all counters.`,
@@ -687,6 +704,20 @@ Judge from the complete concept and mechanics whether the requested strengths ne
         { tier: "engine", label: "adjustCharacter", temperature: 0.5 },
       )) as Record<string, unknown>;
 
+      const parsedSkills = Array.isArray(data.skills)
+        ? data.skills
+            .map(parseGeneratedSkill)
+            .filter((skill): skill is NonNullable<typeof skill> => skill != null)
+        : undefined;
+      // Empty/invalid skill arrays must never wipe an existing kit.
+      // (LLM sometimes returns [] or unparsable stubs on partial adjustments.)
+      const nextSkills = coalesceNonEmptyList(parsedSkills, current.skills);
+
+      const parsedTraits = Array.isArray(data.traits)
+        ? data.traits.map(String).map((t) => t.trim()).filter(Boolean)
+        : undefined;
+      const nextTraits = coalesceNonEmptyList(parsedTraits, current.traits);
+
       return {
         sheetPatch: {
           displayName: data.displayName
@@ -698,20 +729,14 @@ Judge from the complete concept and mechanics whether the requested strengths ne
           narrativeBlurb: data.narrativeBlurb
             ? String(data.narrativeBlurb)
             : current.narrativeBlurb,
-          traits: Array.isArray(data.traits)
-            ? data.traits.map(String)
-            : current.traits,
+          traits: nextTraits,
           parameters: data.parameters
             ? { ...current.parameters, ...(data.parameters as object) }
             : current.parameters,
           basicAttack: data.basicAttack
             ? (parseGeneratedBasicAttack(data.basicAttack) ?? current.basicAttack)
             : current.basicAttack,
-          skills: Array.isArray(data.skills)
-            ? data.skills
-                .map(parseGeneratedSkill)
-                .filter((skill): skill is NonNullable<typeof skill> => skill != null)
-            : current.skills,
+          skills: nextSkills,
           weapon:
             data.weapon === undefined
               ? current.weapon
@@ -1637,13 +1662,15 @@ Prefer the engineWinnerSide unless the narrative strongly suggests otherwise.`,
       const data = (await this.chatJsonWithBattleHistoryTools(
         `You are a coaching analyst for a fictional character in a turn-based game.
 Use search_character_battles and get_character_battle to inspect recent results before concluding.
-Return Japanese JSON only:
+Return JSON:
 {
   "strengths": string[],       // 3–6 concrete good points observed in battles
   "improvements": string[],    // 3–6 safe improvement targets
   "summary": string,           // 2–4 sentence overall read
   "assistantMessage": string   // short owner-facing confirmation
 }
+LANGUAGE (mandatory):
+- Write strengths, improvements, summary, and assistantMessage in the same language as the character's player-facing prose (displayName / narrativeBlurb / skill names). If those are Japanese, output Japanese; if English, output English. Do not force English notes onto a Japanese character.
 HARD RULES:
 - Preserve the character's concept, personality, appearance, genre, and identity. Never recommend rewriting who they are.
 - Strengths: things to KEEP and amplify (playstyle, skill usage, timing, presence).
@@ -1712,17 +1739,22 @@ HARD RULES:
     }
     try {
       const data = (await this.chatJson(
-        `You write a Japanese user message for the character adjustment chat.
+        `You write a user message for the character adjustment chat.
 The message will be sent as-is to an adjustCharacter LLM. Return JSON:
 { "prompt": string, "assistantMessage": string }
 
+LANGUAGE (mandatory):
+- Write "prompt" and "assistantMessage" in the same language as the character's player-facing prose and memo notes (Japanese character → Japanese prompt; English character → English prompt).
+- Never switch a Japanese profile into an English revision request unless the memo itself is English.
+
 HARD RULES for "prompt":
-- Write as the player's instruction (自然文), 3–8 sentences, Japanese.
+- Write as the player's instruction in natural prose, 3–8 sentences.
 - Explicitly say: do NOT change concept, personality core, appearance, names, or genre.
 - Amplify listed strengths; only fix improvements that do not break character identity.
 - Prefer tactical/habitual tweaks (timing, skill usage feel, resource pacing, conditional play) over power creep.
 - Do not request raw numbers, JSON, or absolute invincibility.
 - Keep flavor consistent with the character snapshot.
+- Remind the adjuster to keep player-facing text in that same language.
 assistantMessage is a short UI confirmation for the owner.`,
         JSON.stringify({
           character: input.character,

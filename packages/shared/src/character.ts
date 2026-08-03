@@ -60,6 +60,17 @@ export function defaultBasicAttack(): BasicAttackProfile {
   return BasicAttackProfileSchema.parse({});
 }
 
+/**
+ * Prefer a non-empty patch list; otherwise keep the current list.
+ * Prevents LLM partial updates from wiping skills/traits with `[]`.
+ */
+export function coalesceNonEmptyList<T>(
+  patch: T[] | null | undefined,
+  current: T[],
+): T[] {
+  return Array.isArray(patch) && patch.length > 0 ? patch : current;
+}
+
 export const SkillSchema = z.object({
   id: z.string(),
   name: z.string(),
@@ -131,6 +142,31 @@ export function defaultCharacterIdentity(): CharacterIdentity {
   return CharacterIdentitySchema.parse({});
 }
 
+/**
+ * Owner-only one-step undo buffer for chat / improvement adjustments.
+ * Stores mutable profile fields only (not records, ids, or memos).
+ */
+export const CharacterRevisionSnapshotSchema = z.object({
+  savedAt: z.string(),
+  /** Short Japanese UI label, e.g. 会話調整前. */
+  label: z.string().max(40).default("調整前"),
+  displayName: z.string().min(1),
+  identity: CharacterIdentitySchema.optional(),
+  tags: z.array(z.string()).default([]),
+  appearance: AppearanceSchema,
+  traits: z.array(z.string()).default([]),
+  parameters: ParametersSchema,
+  basicAttack: BasicAttackProfileSchema.optional(),
+  skills: z.array(SkillSchema).default([]),
+  weapon: EquipmentSchema.nullable(),
+  armor: EquipmentSchema.nullable(),
+  combatFlags: CombatFlagsSchema,
+  narrativeBlurb: z.string(),
+});
+export type CharacterRevisionSnapshot = z.infer<
+  typeof CharacterRevisionSnapshotSchema
+>;
+
 /** Full server-side character sheet. */
 export const CharacterSheetSchema = z.object({
   id: z.string(),
@@ -167,9 +203,85 @@ export const CharacterSheetSchema = z.object({
    * Never included in public character DTOs.
    */
   improvementMemo: CharacterImprovementMemoSchema.optional(),
+  /**
+   * Last pre-adjustment profile snapshot for one-step restore.
+   * Owner-only; not exposed on public combat DTOs beyond restore flags.
+   */
+  revisionSnapshot: CharacterRevisionSnapshotSchema.optional().nullable(),
 });
 export type CharacterSheet = z.infer<typeof CharacterSheetSchema>;
 export type { CharacterImprovementMemo };
+
+/** Capture mutable profile fields before a chat/improvement apply. */
+export function captureRevisionSnapshot(
+  sheet: CharacterSheet,
+  label = "調整前",
+): CharacterRevisionSnapshot {
+  const hydrated = ensureCharacterCombatProperties(
+    ensureCharacterIdentityProperties(sheet),
+  );
+  return CharacterRevisionSnapshotSchema.parse({
+    savedAt: new Date().toISOString(),
+    label,
+    displayName: hydrated.displayName,
+    identity: hydrated.identity,
+    tags: [...hydrated.tags],
+    appearance: { ...hydrated.appearance },
+    traits: [...hydrated.traits],
+    parameters: { ...hydrated.parameters },
+    basicAttack: hydrated.basicAttack
+      ? { ...hydrated.basicAttack }
+      : undefined,
+    skills: hydrated.skills.map((skill) => ({
+      ...skill,
+      effects: skill.effects ? skill.effects.map((e) => ({ ...e })) : [],
+    })),
+    weapon: hydrated.weapon
+      ? {
+          ...hydrated.weapon,
+          effects: hydrated.weapon.effects
+            ? hydrated.weapon.effects.map((e) => ({ ...e }))
+            : [],
+        }
+      : null,
+    armor: hydrated.armor
+      ? {
+          ...hydrated.armor,
+          effects: hydrated.armor.effects
+            ? hydrated.armor.effects.map((e) => ({ ...e }))
+            : [],
+        }
+      : null,
+    combatFlags: { ...hydrated.combatFlags },
+    narrativeBlurb: hydrated.narrativeBlurb,
+  });
+}
+
+/** Apply a revision snapshot; clears the undo buffer. */
+export function restoreRevisionSnapshot(
+  sheet: CharacterSheet,
+  snapshot: CharacterRevisionSnapshot,
+): CharacterSheet {
+  return ensureCharacterCombatProperties(
+    ensureCharacterIdentityProperties({
+      ...sheet,
+      displayName: snapshot.displayName,
+      identity: snapshot.identity,
+      tags: snapshot.tags,
+      appearance: snapshot.appearance,
+      traits: snapshot.traits,
+      parameters: snapshot.parameters,
+      basicAttack: snapshot.basicAttack,
+      skills: snapshot.skills,
+      weapon: snapshot.weapon,
+      armor: snapshot.armor,
+      combatFlags: snapshot.combatFlags,
+      narrativeBlurb: snapshot.narrativeBlurb,
+      revisionSnapshot: null,
+      updatedAt: new Date().toISOString(),
+    }),
+  );
+}
 
 /** Fill combat fields introduced after a character was originally saved. */
 export function ensureCharacterCombatProperties(
@@ -244,6 +356,14 @@ export const CharacterPublicSchema = z.object({
    * Only set when the viewer is the owner.
    */
   recordOverall: RecordPublicSchema.optional(),
+  /**
+   * Owner-only: one-step undo is available after a chat/improvement apply.
+   */
+  canRestoreRevision: z.boolean().optional(),
+  /** Owner-only ISO timestamp of the saved pre-adjust snapshot. */
+  revisionSavedAt: z.string().nullable().optional(),
+  /** Owner-only short label for the undo button. */
+  revisionLabel: z.string().nullable().optional(),
 });
 export type CharacterPublic = z.infer<typeof CharacterPublicSchema>;
 
@@ -316,6 +436,15 @@ export function toPublicCharacter(
     record: toRecordDto(record),
     recordOverall: isOwner
       ? toRecordDto(ensureRecordOverall(sheet))
+      : undefined,
+    canRestoreRevision: isOwner
+      ? Boolean(sheet.revisionSnapshot)
+      : undefined,
+    revisionSavedAt: isOwner
+      ? (sheet.revisionSnapshot?.savedAt ?? null)
+      : undefined,
+    revisionLabel: isOwner
+      ? (sheet.revisionSnapshot?.label ?? null)
       : undefined,
   };
 }

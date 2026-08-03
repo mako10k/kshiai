@@ -148,6 +148,11 @@ export const api = {
       `/api/characters/${id}/chat`,
       { method: "POST", body: JSON.stringify({ message }) },
     ),
+  restoreCharacterRevision: (id: string) =>
+    request<{ character: CharacterPublic; assistantMessage: string }>(
+      `/api/characters/${id}/restore-revision`,
+      { method: "POST" },
+    ),
   getCharacterImprovement: (id: string) =>
     request<CharacterImprovementPublic>(`/api/characters/${id}/improvement`),
   analyzeCharacterImprovement: (id: string) =>

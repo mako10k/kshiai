@@ -2,11 +2,79 @@ import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import {
   CharacterSheetSchema,
+  captureRevisionSnapshot,
+  coalesceNonEmptyList,
   defaultParameters,
   ensureCharacterCombatProperties,
   ensureCharacterIdentityProperties,
+  restoreRevisionSnapshot,
   toPublicCharacter,
 } from "./character.js";
+
+describe("coalesceNonEmptyList", () => {
+  it("keeps current when patch is empty, null, or undefined", () => {
+    const current = [{ id: "a" }, { id: "b" }];
+    assert.deepEqual(coalesceNonEmptyList([], current), current);
+    assert.deepEqual(coalesceNonEmptyList(null, current), current);
+    assert.deepEqual(coalesceNonEmptyList(undefined, current), current);
+  });
+
+  it("uses a non-empty patch", () => {
+    const current = [{ id: "a" }];
+    const patch = [{ id: "x" }, { id: "y" }];
+    assert.deepEqual(coalesceNonEmptyList(patch, current), patch);
+  });
+});
+
+describe("revision snapshot restore", () => {
+  it("restores mutable fields and clears the undo buffer", () => {
+    const base = CharacterSheetSchema.parse({
+      id: "chr_1",
+      ownerUserId: "u1",
+      displayName: "みき",
+      tags: ["unlucky"],
+      createdAt: "2026-01-01T00:00:00.000Z",
+      updatedAt: "2026-01-01T00:00:00.000Z",
+      appearance: { summary: "和装", visualPrompt: "anime portrait" },
+      traits: ["不運"],
+      parameters: defaultParameters(),
+      skills: [
+        {
+          id: "sk1",
+          name: "つまずき突き",
+          description: "転ぶ勢いの一撃",
+          costMp: 0,
+          costStamina: 8,
+          power: 1.2,
+          kind: "attack",
+        },
+      ],
+      weapon: null,
+      armor: null,
+      combatFlags: { canFight: true, irreversibleIncapacitated: false },
+      narrativeBlurb: "不運な女の子。",
+    });
+    const snap = captureRevisionSnapshot(base, "会話調整前");
+    const damaged = {
+      ...base,
+      displayName: "Miki",
+      traits: ["unlucky"],
+      skills: [],
+      narrativeBlurb: "An unlucky girl.",
+      revisionSnapshot: snap,
+      updatedAt: "2026-02-01T00:00:00.000Z",
+    };
+    const restored = restoreRevisionSnapshot(damaged, snap);
+    assert.equal(restored.displayName, "みき");
+    assert.equal(restored.skills.length, 1);
+    assert.equal(restored.skills[0]?.name, "つまずき突き");
+    assert.equal(restored.narrativeBlurb, "不運な女の子。");
+    assert.equal(restored.revisionSnapshot, null);
+    const pub = toPublicCharacter(damaged, "u1");
+    assert.equal(pub.canRestoreRevision, true);
+    assert.equal(toPublicCharacter(restored, "u1").canRestoreRevision, false);
+  });
+});
 
 describe("character combat extensions", () => {
   it("keeps legacy character JSON compatible and supplies a public default attack", () => {

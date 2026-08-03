@@ -174,10 +174,34 @@ export function CharacterDetailPage() {
     try {
       const res = await api.chatCharacter(id, text);
       setCharacter(res.character);
-      setAssistant(res.assistantMessage);
+      setAssistant(
+        `${res.assistantMessage}（気に入らなければ「調整前に戻す」で直前の内容に戻せます）`,
+      );
       clearChat();
     } catch (err) {
       setError(err instanceof Error ? err.message : "failed");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function onRestoreRevision() {
+    if (!id || !isOwner) return;
+    if (
+      !confirm(
+        "直前の会話調整の前の内容に戻します。いまの調整結果は失われます。よろしいですか？",
+      )
+    ) {
+      return;
+    }
+    setBusy(true);
+    setError(null);
+    try {
+      const res = await api.restoreCharacterRevision(id);
+      setCharacter(res.character);
+      setAssistant(res.assistantMessage);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "復元に失敗しました");
     } finally {
       setBusy(false);
     }
@@ -500,6 +524,7 @@ export function CharacterDetailPage() {
             直近の終了試合から良い点・改善点を分析してメモに残します。
             特徴やコンセプトは壊さず、良い点を伸ばし、キャラらしさに影響しない部分だけ整える前提です。
             分析は初回 5 戦後、以後 10 戦ごとに実行できます。
+            「改善プロンプトを生成」は下の修正欄に文案を入れるだけで、送信するまでキャラには適用されません。
           </p>
 
           {improvement ? (
@@ -605,6 +630,7 @@ export function CharacterDetailPage() {
           <h2>会話で微調整</h2>
           <p className="muted">
             印象や戦い方の雰囲気を言葉で伝えてください。改善プロンプト生成を使うと、ここに案が入ります。
+            送信したときだけシートに反映され、直前の内容は「調整前に戻す」で取り消せます。
           </p>
           <form className="grid" onSubmit={(e) => void onChat(e)}>
             <textarea
@@ -613,14 +639,45 @@ export function CharacterDetailPage() {
               placeholder={CHAT_PLACEHOLDER}
               rows={chat.trim().length > 80 ? 6 : 3}
             />
-            <button
-              className="btn primary"
-              type="submit"
-              disabled={busy || imageBusy || improvementBusy}
-            >
-              送信
-            </button>
+            <div className="row" style={{ gap: "0.5rem", flexWrap: "wrap" }}>
+              <button
+                className="btn primary"
+                type="submit"
+                disabled={busy || imageBusy || improvementBusy}
+              >
+                送信して適用
+              </button>
+              <button
+                className="btn"
+                type="button"
+                disabled={
+                  busy ||
+                  imageBusy ||
+                  improvementBusy ||
+                  !character.canRestoreRevision
+                }
+                onClick={() => void onRestoreRevision()}
+                title={
+                  character.canRestoreRevision
+                    ? character.revisionSavedAt
+                      ? `${character.revisionLabel ?? "調整前"}（${formatWhen(character.revisionSavedAt)}）に戻す`
+                      : "直前の調整前に戻す"
+                    : "まだ戻せる調整履歴がありません"
+                }
+              >
+                {character.revisionLabel
+                  ? `${character.revisionLabel}に戻す`
+                  : "調整前に戻す"}
+              </button>
+            </div>
           </form>
+          {character.canRestoreRevision && character.revisionSavedAt ? (
+            <p className="muted improvement-gate">
+              保存済み: {character.revisionLabel ?? "調整前"}（
+              {formatWhen(character.revisionSavedAt)}
+              ）。次の送信で上書きされます。
+            </p>
+          ) : null}
           {assistant && <p className="ok">{assistant}</p>}
           {error && error !== "not_found" && <p className="error">{error}</p>}
         </div>

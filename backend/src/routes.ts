@@ -11,6 +11,9 @@ import {
   RegisterRequestSchema,
   SaveBattlefieldFromBattleRequestSchema,
   UpsertNarrationStyleRequestSchema,
+  captureRevisionSnapshot,
+  coalesceNonEmptyList,
+  restoreRevisionSnapshot,
   toPublicCharacter,
   toPublicNarrationStyle,
   toPublicPreset,
@@ -277,6 +280,11 @@ export function buildRoutes() {
     }
     const adj = await llm.adjustCharacter(sheet, body.message);
     const { balanceCharacterCombatFields } = await import("@kshiai/shared");
+    // Snapshot BEFORE apply so the owner can undo this adjustment.
+    const revisionSnapshot = captureRevisionSnapshot(sheet, "会話調整前");
+    // Defense in depth: never let a chat adjustment erase skills/traits with [].
+    const nextSkills = coalesceNonEmptyList(adj.sheetPatch.skills, sheet.skills);
+    const nextTraits = coalesceNonEmptyList(adj.sheetPatch.traits, sheet.traits);
     const merged = {
       ...sheet,
       ...adj.sheetPatch,
@@ -284,16 +292,17 @@ export function buildRoutes() {
         ? { ...sheet.parameters, ...adj.sheetPatch.parameters }
         : sheet.parameters,
       basicAttack: adj.sheetPatch.basicAttack ?? sheet.basicAttack,
-      skills: adj.sheetPatch.skills ?? sheet.skills,
+      skills: nextSkills,
       weapon: adj.sheetPatch.weapon !== undefined ? adj.sheetPatch.weapon : sheet.weapon,
       armor: adj.sheetPatch.armor !== undefined ? adj.sheetPatch.armor : sheet.armor,
-      traits: adj.sheetPatch.traits ?? sheet.traits,
+      traits: nextTraits,
       narrativeBlurb: adj.sheetPatch.narrativeBlurb ?? sheet.narrativeBlurb,
       appearance: adj.sheetPatch.appearance
         ? { ...sheet.appearance, ...adj.sheetPatch.appearance }
         : sheet.appearance,
       // Owner coaching memo is never rewritten by free-form chat.
       improvementMemo: sheet.improvementMemo,
+      revisionSnapshot,
     };
     const next: CharacterSheet = {
       ...balanceCharacterCombatFields(merged),
@@ -304,6 +313,7 @@ export function buildRoutes() {
       recordOverall: sheet.recordOverall,
       deletedAt: sheet.deletedAt,
       improvementMemo: sheet.improvementMemo,
+      revisionSnapshot,
       updatedAt: new Date().toISOString(),
     };
     charRepo.saveSheet(next);
@@ -318,6 +328,39 @@ export function buildRoutes() {
     return c.json({
       character: toPublicCharacter(next, user.id),
       assistantMessage: adj.assistantMessage,
+    });
+  });
+
+  /** Restore the last pre-chat / pre-improvement profile snapshot (one step). */
+  authed.post("/characters/:id/restore-revision", async (c) => {
+    const user = c.get("user");
+    const id = c.req.param("id");
+    const sheet = charRepo.getSheet(id);
+    if (!sheet || sheet.ownerUserId !== user.id) {
+      return c.json({ error: "not_found" }, 404);
+    }
+    if (!sheet.revisionSnapshot) {
+      return c.json(
+        {
+          error: "no_revision",
+          message: "戻せる調整前スナップショットがありません。",
+        },
+        400,
+      );
+    }
+    const restored = restoreRevisionSnapshot(sheet, sheet.revisionSnapshot);
+    charRepo.saveSheet(restored);
+    try {
+      const { recordSheetSnapshot } = await import(
+        "./services/balance-observe.js"
+      );
+      recordSheetSnapshot({ sheet: restored, phase: "restore" });
+    } catch {
+      /* non-fatal */
+    }
+    return c.json({
+      character: toPublicCharacter(restored, user.id),
+      assistantMessage: "直前の調整前の内容に戻しました。",
     });
   });
 

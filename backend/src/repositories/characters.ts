@@ -271,6 +271,8 @@ export function copyCharacter(
     recordOverall: defaultRecord(),
     // Coaching memo is battle-history bound; start empty on copy.
     improvementMemo: undefined,
+    // Undo buffer is character-instance specific.
+    revisionSnapshot: null,
   };
   saveSheet(copy);
   return copy;
