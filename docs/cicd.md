@@ -75,7 +75,9 @@ Cloud Build, read Artifact Registry metadata, administer Cloud Run, and act as
 the existing Cloud Run runtime account; it cannot read application secrets.
 Its access to Cloud Build source is limited to the dedicated
 `gs://kshiai_cloudbuild` bucket through `roles/storage.legacyBucketWriter`; it
-has no project-wide storage writer role.
+has no project-wide storage writer role. The staging workflow passes
+`--gcs-source-staging-dir=gs://kshiai_cloudbuild/source` explicitly so the CLI
+does not require project-wide bucket listing for implicit bucket discovery.
 
 The runtime account reads only the Secret Manager resources attached to the
 service or smoke jobs. CI/CD adds these resources:
