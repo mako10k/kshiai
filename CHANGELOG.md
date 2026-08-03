@@ -5,6 +5,21 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 
 ## [Unreleased]
 
+## [0.1.8] - 2026-08-04
+
+### Fixed
+
+- Carries forward the authenticated battle SSE fix and explicitly enables
+  Cloudflare version preview URLs while keeping the production `workers.dev`
+  endpoint disabled.
+
+### Operations
+
+- `v0.1.7` completed the backend build, no-traffic revision, migrations, and
+  immutable Worker upload, then failed closed when the disabled preview URL
+  returned HTTP 404. No artifact was promoted; the tag was retained and
+  superseded by `v0.1.8`.
+
 ## [0.1.7] - 2026-08-04
 
 ### Fixed
