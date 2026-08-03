@@ -1,9 +1,10 @@
 project KSHIAI:
   version 1
-  title "kshiai scalable persistence, authentication, and billing"
+  title "kshiai scalable persistence, authentication, deployment, and billing"
   description |
     Completed vertical slice followed by PostgreSQL migration, stateless
-    multi-instance operation, Supabase Auth, and Stripe billing.
+    multi-instance operation, Supabase Auth, cloud runtime migration, and
+    Stripe billing.
   as_of 2026-08-03
   duration_unit day
   finish BILLING_READY
@@ -59,6 +60,18 @@ milestone DISTRIBUTED_READY:
 milestone AUTH_V2_READY:
   title "Verified email and Google authentication ready"
   state reached
+
+milestone DEPLOY_PLAN_READY:
+  title "Cloud runtime target and cutover plan ready"
+
+milestone DEPLOYABLE_READY:
+  title "Backend container and frontend deployment artifacts ready"
+
+milestone CLOUD_STAGING_READY:
+  title "Cloud runtime validated before production cutover"
+
+milestone RUNTIME_MIGRATED:
+  title "Production traffic running on the cloud runtime"
 
 milestone BILLING_READY:
   title "Stripe subscription and usage entitlements ready"
@@ -140,7 +153,31 @@ task T_AUTH_V2 DISTRIBUTED_READY -> AUTH_V2_READY:
   requires:
     DEV 1
 
-task T_BILLING AUTH_V2_READY -> BILLING_READY:
+task T_DEPLOY_PLAN AUTH_V2_READY -> DEPLOY_PLAN_READY:
+  title "Select the cloud runtime and define cost rollback and cutover"
+  duration 1d
+  requires:
+    DEV 1
+
+task T_DEPLOY_ARTIFACTS DEPLOY_PLAN_READY -> DEPLOYABLE_READY:
+  title "Containerize the backend and prepare static frontend deployment"
+  duration 2d
+  requires:
+    DEV 1
+
+task T_DEPLOY_STAGING DEPLOYABLE_READY -> CLOUD_STAGING_READY:
+  title "Provision secrets deploy and validate auth SSE PostgreSQL R2 and scaling"
+  duration 2d
+  requires:
+    DEV 1
+
+task T_DEPLOY_CUTOVER CLOUD_STAGING_READY -> RUNTIME_MIGRATED:
+  title "Switch production traffic verify rollback and retire local runtime"
+  duration 1d
+  requires:
+    DEV 1
+
+task T_BILLING RUNTIME_MIGRATED -> BILLING_READY:
   title "Add Stripe subscriptions, webhooks, metering, and entitlements"
   duration 3d
   requires:
