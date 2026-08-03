@@ -246,6 +246,23 @@ export function CharacterDetailPage() {
     }
   }
 
+  async function onToggleImage() {
+    if (!id || !isOwner) return;
+    setImageBusy(true);
+    setError(null);
+    try {
+      const res = await api.toggleCharacterImage(id);
+      setCharacter(res.character);
+      setAssistant(res.assistantMessage);
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "画像の切り替えに失敗しました",
+      );
+    } finally {
+      setImageBusy(false);
+    }
+  }
+
   async function onAnalyzeImprovement() {
     if (!id || !isOwner) return;
     setImprovementBusy(true);
@@ -351,28 +368,65 @@ export function CharacterDetailPage() {
       </div>
 
       <div className="panel grid" style={{ gridTemplateColumns: "160px 1fr", gap: "1rem" }}>
-        {character.appearance.imageUrl ? (
-          <img
-            key={mediaSrc(character.appearance.imageUrl, character.updatedAt)}
-            src={mediaSrc(character.appearance.imageUrl, character.updatedAt)}
-            alt={character.displayName}
-            style={{ width: 160, borderRadius: 12 }}
-          />
-        ) : (
-          <div
-            style={{
-              width: 160,
-              height: 160,
-              borderRadius: 12,
-              background: "#0b0e14",
-              display: "grid",
-              placeItems: "center",
-              color: "#5b6780",
-            }}
-          >
-            No Image
-          </div>
-        )}
+        <div className="portrait-column">
+          {character.appearance.imageUrl ? (
+            <img
+              key={mediaSrc(character.appearance.imageUrl, character.updatedAt)}
+              src={mediaSrc(character.appearance.imageUrl, character.updatedAt)}
+              alt={character.displayName}
+              className="portrait-main"
+            />
+          ) : (
+            <div className="portrait-placeholder">No Image</div>
+          )}
+          {isOwner && character.canToggleImage && character.appearance.previousImageUrl ? (
+            <div className="portrait-toggle-panel">
+              <p className="muted portrait-toggle-label">顔画像の切替（プレビュー）</p>
+              <div className="portrait-toggle-row">
+                <button
+                  type="button"
+                  className="portrait-option is-active"
+                  disabled={imageBusy || busy}
+                  title="いま使っている顔"
+                >
+                  <img
+                    src={mediaSrc(
+                      character.appearance.imageUrl,
+                      character.updatedAt,
+                    )}
+                    alt="現在の顔"
+                  />
+                  <span>現在</span>
+                </button>
+                <button
+                  type="button"
+                  className="portrait-option"
+                  disabled={imageBusy || busy}
+                  onClick={() => void onToggleImage()}
+                  title="直前の顔に切り替える"
+                >
+                  <img
+                    src={mediaSrc(
+                      character.appearance.previousImageUrl,
+                      `${character.updatedAt}:prev`,
+                    )}
+                    alt="直前の顔"
+                  />
+                  <span>直前</span>
+                </button>
+              </div>
+              <button
+                type="button"
+                className="btn"
+                style={{ width: "100%", marginTop: "0.4rem" }}
+                disabled={imageBusy || busy}
+                onClick={() => void onToggleImage()}
+              >
+                現在 ⇔ 直前を切替
+              </button>
+            </div>
+          ) : null}
+        </div>
         <div>
           <p>{character.narrativeBlurb}</p>
           {nameRows.length > 0 ? (

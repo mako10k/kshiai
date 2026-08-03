@@ -102,7 +102,13 @@ export type Equipment = z.infer<typeof EquipmentSchema>;
 export const AppearanceSchema = z.object({
   summary: z.string(),
   visualPrompt: z.string(),
+  /** Currently selected portrait (public). */
   imageUrl: z.string().nullable().optional(),
+  /**
+   * Previous portrait after a re-generation (owner toggle / undo).
+   * Not required for battle; optional on legacy sheets.
+   */
+  previousImageUrl: z.string().nullable().optional(),
 });
 export type Appearance = z.infer<typeof AppearanceSchema>;
 
@@ -338,6 +344,11 @@ export const CharacterPublicSchema = z.object({
   appearance: z.object({
     summary: z.string(),
     imageUrl: z.string().nullable().optional(),
+    /**
+     * Owner-only: previous portrait for side-by-side preview / toggle.
+     * Omitted for non-owners.
+     */
+    previousImageUrl: z.string().nullable().optional(),
   }),
   traits: z.array(z.string()),
   basicAttackName: z.string(),
@@ -364,6 +375,8 @@ export const CharacterPublicSchema = z.object({
   revisionSavedAt: z.string().nullable().optional(),
   /** Owner-only short label for the undo button. */
   revisionLabel: z.string().nullable().optional(),
+  /** Owner-only: can toggle between current and previous portrait. */
+  canToggleImage: z.boolean().optional(),
 });
 export type CharacterPublic = z.infer<typeof CharacterPublicSchema>;
 
@@ -418,6 +431,13 @@ export function toPublicCharacter(
         sheet.appearance.imageUrl ?? null,
         sheet.updatedAt,
       ),
+      previousImageUrl: isOwner
+        ? cacheBustMediaUrl(
+            sheet.appearance.previousImageUrl ?? null,
+            // Separate bust key so primary/previous don't share a stale cache.
+            `${sheet.updatedAt}:prev`,
+          )
+        : undefined,
     },
     traits: sheet.traits,
     basicAttackName: sheet.basicAttack?.name ?? defaultBasicAttack().name,
@@ -446,6 +466,32 @@ export function toPublicCharacter(
     revisionLabel: isOwner
       ? (sheet.revisionSnapshot?.label ?? null)
       : undefined,
+    canToggleImage: isOwner
+      ? Boolean(
+          sheet.appearance.imageUrl && sheet.appearance.previousImageUrl,
+        )
+      : undefined,
+  };
+}
+
+/**
+ * Swap the active portrait with the previous one (toggle).
+ * Returns null when either side is missing.
+ */
+export function toggleCharacterPortrait(
+  sheet: CharacterSheet,
+): CharacterSheet | null {
+  const current = sheet.appearance.imageUrl ?? null;
+  const previous = sheet.appearance.previousImageUrl ?? null;
+  if (!current || !previous) return null;
+  return {
+    ...sheet,
+    appearance: {
+      ...sheet.appearance,
+      imageUrl: previous,
+      previousImageUrl: current,
+    },
+    updatedAt: new Date().toISOString(),
   };
 }
 

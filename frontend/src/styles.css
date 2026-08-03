@@ -303,6 +303,87 @@ textarea::placeholder {
   color: #f0b429;
 }
 
+.portrait-column {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  width: 160px;
+}
+
+.portrait-main {
+  width: 160px;
+  height: 160px;
+  object-fit: cover;
+  border-radius: 12px;
+  background: #0b0e14;
+}
+
+.portrait-placeholder {
+  width: 160px;
+  height: 160px;
+  border-radius: 12px;
+  background: #0b0e14;
+  display: grid;
+  place-items: center;
+  color: #5b6780;
+}
+
+.portrait-toggle-panel {
+  padding: 0.45rem;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.portrait-toggle-label {
+  margin: 0 0 0.35rem;
+  font-size: 0.75rem;
+  line-height: 1.3;
+}
+
+.portrait-toggle-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.35rem;
+}
+
+.portrait-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.25rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 0.72rem;
+}
+
+.portrait-option img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: 6px;
+  background: #0b0e14;
+}
+
+.portrait-option.is-active {
+  border-color: var(--accent);
+  color: var(--text);
+  box-shadow: 0 0 0 1px rgba(122, 162, 255, 0.35);
+}
+
+.portrait-option:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.portrait-option:not(.is-active):hover:not(:disabled) {
+  border-color: var(--accent-2);
+}
+
 .improvement-panel .improvement-heading {
   margin: 0 0 0.35rem;
   font-size: 0.95rem;

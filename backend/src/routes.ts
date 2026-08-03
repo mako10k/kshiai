@@ -14,6 +14,7 @@ import {
   captureRevisionSnapshot,
   coalesceNonEmptyList,
   restoreRevisionSnapshot,
+  toggleCharacterPortrait,
   toPublicCharacter,
   toPublicNarrationStyle,
   toPublicPreset,
@@ -475,6 +476,34 @@ export function buildRoutes() {
     return c.json({ quota: getImageGenQuota(sheet.id) });
   });
 
+  /**
+   * Toggle active portrait with the archived previous one (preview swap).
+   * Does not consume image-gen quota.
+   */
+  authed.post("/characters/:id/image/toggle", async (c) => {
+    const user = c.get("user");
+    const id = c.req.param("id");
+    const sheet = charRepo.getSheet(id);
+    if (!sheet || sheet.ownerUserId !== user.id) {
+      return c.json({ error: "not_found" }, 404);
+    }
+    const toggled = toggleCharacterPortrait(sheet);
+    if (!toggled) {
+      return c.json(
+        {
+          error: "no_previous_image",
+          message: "切り替える直前の顔画像がありません。",
+        },
+        400,
+      );
+    }
+    charRepo.saveSheet(toggled);
+    return c.json({
+      character: toPublicCharacter(toggled, user.id),
+      assistantMessage: "顔画像を切り替えました。",
+    });
+  });
+
   authed.post("/characters/:id/image", async (c) => {
     const user = c.get("user");
     const sheet = charRepo.getSheet(c.req.param("id"));
@@ -539,6 +568,9 @@ export function buildRoutes() {
         appearance: {
           ...sheet.appearance,
           imageUrl: result.url,
+          // Keep archived previous when re-gen; otherwise preserve existing slot.
+          previousImageUrl:
+            result.previousUrl ?? sheet.appearance.previousImageUrl ?? null,
           visualPrompt:
             sheet.appearance.visualPrompt?.trim() ||
             `${sheet.displayName}, ${sheet.appearance.summary || "anime portrait"}`,

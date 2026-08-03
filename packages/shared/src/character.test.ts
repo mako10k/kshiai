@@ -8,6 +8,7 @@ import {
   ensureCharacterCombatProperties,
   ensureCharacterIdentityProperties,
   restoreRevisionSnapshot,
+  toggleCharacterPortrait,
   toPublicCharacter,
 } from "./character.js";
 
@@ -23,6 +24,46 @@ describe("coalesceNonEmptyList", () => {
     const current = [{ id: "a" }];
     const patch = [{ id: "x" }, { id: "y" }];
     assert.deepEqual(coalesceNonEmptyList(patch, current), patch);
+  });
+});
+
+describe("portrait toggle", () => {
+  it("swaps current and previous image urls", () => {
+    const sheet = CharacterSheetSchema.parse({
+      id: "chr_1",
+      ownerUserId: "u1",
+      displayName: "みき",
+      tags: [],
+      createdAt: "2026-01-01T00:00:00.000Z",
+      updatedAt: "2026-01-01T00:00:00.000Z",
+      appearance: {
+        summary: "和装",
+        visualPrompt: "anime portrait",
+        imageUrl: "/api/media/characters/chr_1.jpg",
+        previousImageUrl: "/api/media/characters/chr_1.prev.jpg",
+      },
+      traits: [],
+      parameters: defaultParameters(),
+      skills: [],
+      weapon: null,
+      armor: null,
+      combatFlags: { canFight: true, irreversibleIncapacitated: false },
+      narrativeBlurb: "test",
+    });
+    const toggled = toggleCharacterPortrait(sheet);
+    assert.ok(toggled);
+    assert.equal(
+      toggled!.appearance.imageUrl,
+      "/api/media/characters/chr_1.prev.jpg",
+    );
+    assert.equal(
+      toggled!.appearance.previousImageUrl,
+      "/api/media/characters/chr_1.jpg",
+    );
+    const pub = toPublicCharacter(sheet, "u1");
+    assert.equal(pub.canToggleImage, true);
+    assert.ok(pub.appearance.previousImageUrl);
+    assert.equal(toPublicCharacter(sheet, "other").canToggleImage, undefined);
   });
 });
 

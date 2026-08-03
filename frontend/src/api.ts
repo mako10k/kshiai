@@ -180,6 +180,11 @@ export const api = {
       method: "POST",
       body: JSON.stringify(extra ? { extra } : {}),
     }),
+  toggleCharacterImage: (id: string) =>
+    request<{ character: CharacterPublic; assistantMessage: string }>(
+      `/api/characters/${id}/image/toggle`,
+      { method: "POST" },
+    ),
   imageQuota: (id: string) =>
     request<{ quota: ImageGenQuota }>(`/api/characters/${id}/image-quota`),
   candidates: (q?: string) =>

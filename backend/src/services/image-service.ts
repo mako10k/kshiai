@@ -18,15 +18,78 @@ export function mediaDir(...parts: string[]): string {
 export function publicMediaPath(
   kind: "characters" | "battlefields",
   id: string,
+  variant: "primary" | "previous" = "primary",
 ): string {
-  return `/api/media/${kind}/${id}.jpg`;
+  const file = variant === "previous" ? `${id}.prev.jpg` : `${id}.jpg`;
+  return `/api/media/${kind}/${file}`;
 }
 
 export function absoluteMediaFile(
   kind: "characters" | "battlefields",
   id: string,
+  variant: "primary" | "previous" = "primary",
 ): string {
-  return path.join(mediaDir(kind), `${id}.jpg`);
+  const file = variant === "previous" ? `${id}.prev.jpg` : `${id}.jpg`;
+  return path.join(mediaDir(kind), file);
+}
+
+/**
+ * Resolve a stored /api/media/... URL to an absolute file path under media root.
+ */
+export function absolutePathFromPublicMediaUrl(
+  url: string | null | undefined,
+): string | null {
+  if (!url) return null;
+  try {
+    const pathname = new URL(url, "http://local.invalid").pathname;
+    const m = pathname.match(
+      /^\/api\/media\/(characters|battlefields)\/([a-zA-Z0-9_.-]+\.jpe?g)$/i,
+    );
+    if (!m) return null;
+    const kind = m[1] as "characters" | "battlefields";
+    const file = m[2]!;
+    const full = path.join(mediaDir(kind), file);
+    if (!full.startsWith(mediaDir(kind))) return null;
+    return full;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Copy the currently active portrait to the previous slot before a re-gen.
+ * Returns the public URL of the archived previous image, or null if nothing to archive.
+ */
+export function archiveActiveCharacterPortrait(
+  sheet: CharacterSheet,
+): string | null {
+  const activeUrl = sheet.appearance.imageUrl ?? null;
+  const activePath =
+    absolutePathFromPublicMediaUrl(activeUrl) ??
+    absoluteMediaFile("characters", sheet.id, "primary");
+  if (!fs.existsSync(activePath)) return null;
+
+  const prevPath = absoluteMediaFile("characters", sheet.id, "previous");
+  // Avoid no-op copy when already writing over the same file later.
+  try {
+    fs.copyFileSync(activePath, prevPath);
+  } catch (e) {
+    logImageEvent({
+      phase: "archive_failed",
+      ok: false,
+      characterId: sheet.id,
+      error: e instanceof Error ? e.message : String(e),
+    });
+    return null;
+  }
+  const previousUrl = publicMediaPath("characters", sheet.id, "previous");
+  logImageEvent({
+    phase: "archived_previous",
+    ok: true,
+    characterId: sheet.id,
+    previousUrl,
+  });
+  return previousUrl;
 }
 
 /** Append one JSON line for image-gen diagnostics (no API keys). */
@@ -155,7 +218,13 @@ function safeFallbackPrompt(nameHint: string): string {
   ].join(". ");
 }
 
-type ImageGenResult = { url: string; note: string; ok: boolean };
+type ImageGenResult = {
+  url: string;
+  /** Public URL of the archived previous portrait, if any. */
+  previousUrl: string | null;
+  note: string;
+  ok: boolean;
+};
 
 async function generateWithProvider(
   prompt: string,
@@ -247,7 +316,7 @@ export async function generateAndStoreCharacterPortrait(
   extra?: string,
   provider: ImageProvider = createImageProvider(),
 ): Promise<ImageGenResult> {
-  const dest = absoluteMediaFile("characters", sheet.id);
+  const dest = absoluteMediaFile("characters", sheet.id, "primary");
   const primary = buildCharacterPortraitPrompt(sheet, extra);
   const fallback = safeFallbackPrompt(asciiNameHint(sheet.displayName ?? "hero"));
 
@@ -259,6 +328,9 @@ export async function generateAndStoreCharacterPortrait(
     hasVisual: Boolean(sheet.appearance?.visualPrompt?.trim()),
     hasSummary: Boolean(sheet.appearance?.summary?.trim()),
   });
+
+  // Archive the portrait currently shown so the owner can toggle back.
+  const previousUrl = archiveActiveCharacterPortrait(sheet);
 
   const attempts: Array<{ tag: string; prompt: string }> = [
     { tag: "sanitized", prompt: primary },
@@ -283,7 +355,7 @@ export async function generateAndStoreCharacterPortrait(
         provider,
       );
       await downloadToFile(remote, dest, sheet.id);
-      const url = publicMediaPath("characters", sheet.id);
+      const url = publicMediaPath("characters", sheet.id, "primary");
       logImageEvent({
         phase: "done",
         ok: true,
@@ -291,13 +363,19 @@ export async function generateAndStoreCharacterPortrait(
         tag: a.tag,
         attempt: i + 1,
         message: "portrait_saved",
+        previousUrl,
       });
       return {
         url,
+        previousUrl,
         note:
           a.tag === "safe_fallback"
-            ? "顔画像を生成しました（安全寄りの再試行プロンプト）。"
-            : "顔画像を生成しました。",
+            ? previousUrl
+              ? "顔画像を生成しました（安全寄りの再試行）。直前の画像は切り替えで戻せます。"
+              : "顔画像を生成しました（安全寄りの再試行プロンプト）。"
+            : previousUrl
+              ? "顔画像を生成しました。直前の画像はプレビュー切替で戻せます。"
+              : "顔画像を生成しました。",
         ok: true,
       };
     } catch (e) {
@@ -360,10 +438,11 @@ export async function generateAndStoreBattlefieldImage(
     { assetId: preset.id, attempt: 1, tag: "battlefield" },
     provider,
   );
-  const dest = absoluteMediaFile("battlefields", preset.id);
+  const dest = absoluteMediaFile("battlefields", preset.id, "primary");
   await downloadToFile(remote, dest, preset.id);
   return {
-    url: publicMediaPath("battlefields", preset.id),
+    url: publicMediaPath("battlefields", preset.id, "primary"),
+    previousUrl: null,
     note: "戦場画像を生成しました。",
     ok: true,
   };
