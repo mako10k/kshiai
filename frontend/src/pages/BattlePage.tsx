@@ -9,15 +9,24 @@ import {
 import { api } from "../api";
 import { mediaSrc } from "../media";
 
-const AUTO_TURN_DELAY_MS = 1600;
-const OPENING_DELAY_MS = 1200;
+/** Gap before requesting the next turn (does not wait for speech animation). */
+const AUTO_TURN_DELAY_MS = 900;
+const OPENING_DELAY_MS = 1000;
+/** Stagger each public speech line after ground text is committed. */
+const SPEECH_REVEAL_MS = 780;
 
 type StreamDraft = {
   phase: BattleAdvancePhase | null;
   turn: number;
   lines: string[];
   draft: string | null;
-  speeches: SpeechLine[];
+};
+
+/** Progressive reveal of the latest log block's speeches (does not block advance). */
+type SpeechReveal = {
+  key: string;
+  visible: number;
+  total: number;
 };
 
 const PHASE_LABEL: Record<BattleAdvancePhase, string> = {
@@ -38,16 +47,43 @@ export function BattlePage() {
   const [busy, setBusy] = useState(false);
   const [saveMsg, setSaveMsg] = useState<string | null>(null);
   const [streamDraft, setStreamDraft] = useState<StreamDraft | null>(null);
+  const [speechReveal, setSpeechReveal] = useState<SpeechReveal | null>(null);
   /** Resume opens paused so the player can catch up on the log. */
   const [paused, setPaused] = useState(isResume || isViewOnly);
   const logEnd = useRef<HTMLDivElement>(null);
   const advancingRef = useRef(false);
   const cancelledRef = useRef(false);
+  /** First battle payload shows all speeches; later log growth animates. */
+  const skipSpeechAnimRef = useRef(true);
+  const speechTimersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
+
+  function clearSpeechTimers() {
+    for (const t of speechTimersRef.current) clearTimeout(t);
+    speechTimersRef.current = [];
+  }
+
+  function startSpeechReveal(key: string, total: number) {
+    clearSpeechTimers();
+    if (total <= 0) {
+      setSpeechReveal(null);
+      return;
+    }
+    setSpeechReveal({ key, visible: 0, total });
+    for (let n = 1; n <= total; n += 1) {
+      const timer = setTimeout(() => {
+        if (cancelledRef.current) return;
+        setSpeechReveal({ key, visible: n, total });
+      }, n * SPEECH_REVEAL_MS);
+      speechTimersRef.current.push(timer);
+    }
+  }
 
   useEffect(() => {
     cancelledRef.current = false;
+    skipSpeechAnimRef.current = true;
     return () => {
       cancelledRef.current = true;
+      clearSpeechTimers();
     };
   }, [id]);
 
@@ -62,9 +98,33 @@ export function BattlePage() {
       .catch((e) => setError(String(e)));
   }, [id]);
 
+  // Stagger speeches on the newest log block; next turn may already be resolving.
+  useEffect(() => {
+    if (!battle?.log.length) return;
+    const last = battle.log[battle.log.length - 1]!;
+    const key = `${battle.log.length}:${last.turn}:${last.speeches.length}`;
+    if (skipSpeechAnimRef.current) {
+      skipSpeechAnimRef.current = false;
+      setSpeechReveal(null);
+      return;
+    }
+    startSpeechReveal(key, last.speeches.length);
+    return () => clearSpeechTimers();
+  }, [
+    battle?.log.length,
+    battle?.turn,
+    battle?.prologuePending,
+    battle?.aftermathPending,
+  ]);
+
   useEffect(() => {
     logEnd.current?.scrollIntoView({ behavior: "smooth" });
-  }, [battle?.log, streamDraft?.lines.length, streamDraft?.draft]);
+  }, [
+    battle?.log,
+    streamDraft?.lines.length,
+    streamDraft?.draft,
+    speechReveal?.visible,
+  ]);
 
   useEffect(() => {
     if (!id || !battle || battle.status !== "active") return;
@@ -82,7 +142,6 @@ export function BattlePage() {
         turn: battle.prologuePending ? 0 : battle.turn + 1,
         lines: [],
         draft: null,
-        speeches: [],
       });
       void advanceWithRetry(id, 2)
         .then((next) => {
@@ -134,7 +193,6 @@ export function BattlePage() {
                       turn: 0,
                       lines: [],
                       draft: null,
-                      speeches: [],
                     },
               );
             } else if (event.type === "narrator") {
@@ -143,21 +201,9 @@ export function BattlePage() {
                 turn: event.turn ?? prev?.turn ?? 0,
                 lines: event.lines,
                 draft: event.draft ?? null,
-                speeches: prev?.speeches ?? [],
               }));
-            } else if (event.type === "speeches") {
-              setStreamDraft((prev) =>
-                prev
-                  ? { ...prev, speeches: event.speeches }
-                  : {
-                      phase: "agents",
-                      turn: 0,
-                      lines: [],
-                      draft: null,
-                      speeches: event.speeches,
-                    },
-              );
             }
+            // Speeches: ignore bulk SSE dump — reveal slowly after log commit.
           },
         });
       } catch (err) {
@@ -185,7 +231,6 @@ export function BattlePage() {
       turn: battle?.prologuePending ? 0 : (battle?.turn ?? 0) + 1,
       lines: [],
       draft: null,
-      speeches: [],
     });
     try {
       const next = await advanceWithRetry(id, 2);
@@ -196,6 +241,19 @@ export function BattlePage() {
       setBusy(false);
       setStreamDraft(null);
     }
+  }
+
+  function speechesVisibleForBlock(
+    blockIndex: number,
+    speeches: SpeechLine[],
+  ): SpeechLine[] {
+    if (!battle) return speeches;
+    const lastIndex = battle.log.length - 1;
+    if (blockIndex !== lastIndex || !speechReveal) return speeches;
+    const last = battle.log[lastIndex]!;
+    const key = `${battle.log.length}:${last.turn}:${last.speeches.length}`;
+    if (speechReveal.key !== key) return speeches;
+    return speeches.slice(0, speechReveal.visible);
   }
 
   async function saveField() {
@@ -376,14 +434,17 @@ export function BattlePage() {
                   — プロローグ —
                 </div>
               ) : null}
-              {/* Narrator owns speeches and finishes them last — ground text then lines. */}
               {block.narrator.map((line, j) => (
                 <p key={j} style={{ margin: "0.25rem 0" }}>
                   {line}
                 </p>
               ))}
-              {block.speeches.map((s, j) => (
-                <p key={`s-${j}`} className="speaker" style={{ margin: "0.25rem 0" }}>
+              {speechesVisibleForBlock(i, block.speeches).map((s, j) => (
+                <p
+                  key={`s-${j}`}
+                  className="speaker speech-enter"
+                  style={{ margin: "0.25rem 0" }}
+                >
                   {formatSpeech(s)}
                 </p>
               ))}
@@ -392,7 +453,6 @@ export function BattlePage() {
           {streamDraft &&
             (streamDraft.lines.length > 0 ||
               streamDraft.draft ||
-              streamDraft.speeches.length > 0 ||
               streamDraft.phase) && (
               <div className="log-block log-block-streaming" aria-live="polite">
                 {streamDraft.turn > 0 ? (
@@ -400,21 +460,18 @@ export function BattlePage() {
                     — ターン {streamDraft.turn}（生成中）—
                   </div>
                 ) : streamDraft.phase === "narrating" ||
-                  streamDraft.lines.length > 0 ||
-                  streamDraft.speeches.length > 0 ? (
+                  streamDraft.lines.length > 0 ? (
                   <div className="muted" style={{ fontSize: "0.8rem" }}>
                     — プロローグ（生成中）—
                   </div>
                 ) : null}
                 {streamDraft.phase &&
                 streamDraft.lines.length === 0 &&
-                !streamDraft.draft &&
-                streamDraft.speeches.length === 0 ? (
+                !streamDraft.draft ? (
                   <p className="muted" style={{ margin: "0.25rem 0" }}>
                     {PHASE_LABEL[streamDraft.phase]}
                   </p>
                 ) : null}
-                {/* Stream ground text first; speeches append below when the JSON completes. */}
                 {streamDraft.lines.map((line, j) => (
                   <p key={`st-${j}`} style={{ margin: "0.25rem 0" }}>
                     {line}
@@ -428,15 +485,6 @@ export function BattlePage() {
                     </span>
                   </p>
                 ) : null}
-                {streamDraft.speeches.map((s, j) => (
-                  <p
-                    key={`ss-${j}`}
-                    className="speaker"
-                    style={{ margin: "0.25rem 0" }}
-                  >
-                    {formatSpeech(s)}
-                  </p>
-                ))}
               </div>
             )}
           <div ref={logEnd} />
