@@ -103,6 +103,8 @@ URLs. Preview URLs are public and exist only to validate an undeployed version;
 they do not add a Supabase browser redirect and must not be used as a permanent
 application URL. `ORIGIN_SHARED_SECRET` remains a required encrypted Worker
 binding and is inherited by uploaded versions.
+The staging workflow builds `@kshiai/shared` before the frontend so workspace
+type exports exist when the immutable Worker version is compiled.
 
 CI has been exercised on GitHub-hosted Linux runners, including the container
 and Worker scans. The tag-restricted OIDC exchange and cloud promotion are not

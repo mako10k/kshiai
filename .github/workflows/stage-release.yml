@@ -170,6 +170,7 @@ jobs:
           WRANGLER_OUTPUT_FILE_PATH: ${{ runner.temp }}/wrangler-output.jsonl
         run: |
           set -euo pipefail
+          npm run build --workspace=@kshiai/shared
           npm run build --workspace=frontend
           alias="release-${RELEASE_TAG//./-}"
           npx wrangler versions upload \
