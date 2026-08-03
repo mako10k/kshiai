@@ -376,15 +376,15 @@ export function BattlePage() {
                   — プロローグ —
                 </div>
               ) : null}
-              {/* Speeches first (agent phase completes before narration), then story. */}
-              {block.speeches.map((s, j) => (
-                <p key={`s-${j}`} className="speaker" style={{ margin: "0.25rem 0" }}>
-                  {formatSpeech(s)}
-                </p>
-              ))}
+              {/* Narrator owns speeches and finishes them last — ground text then lines. */}
               {block.narrator.map((line, j) => (
                 <p key={j} style={{ margin: "0.25rem 0" }}>
                   {line}
+                </p>
+              ))}
+              {block.speeches.map((s, j) => (
+                <p key={`s-${j}`} className="speaker" style={{ margin: "0.25rem 0" }}>
+                  {formatSpeech(s)}
                 </p>
               ))}
             </div>
@@ -406,40 +406,15 @@ export function BattlePage() {
                     — プロローグ（生成中）—
                   </div>
                 ) : null}
-                {/*
-                  Agents finish before narrateTurn. Show lines first so the live
-                  narrator stream grows underneath instead of inserting above.
-                */}
-                {streamDraft.speeches.map((s, j) => (
-                  <p
-                    key={`ss-${j}`}
-                    className="speaker"
-                    style={{ margin: "0.25rem 0" }}
-                  >
-                    {formatSpeech(s)}
-                  </p>
-                ))}
                 {streamDraft.phase &&
-                streamDraft.speeches.length === 0 &&
                 streamDraft.lines.length === 0 &&
-                !streamDraft.draft ? (
+                !streamDraft.draft &&
+                streamDraft.speeches.length === 0 ? (
                   <p className="muted" style={{ margin: "0.25rem 0" }}>
                     {PHASE_LABEL[streamDraft.phase]}
                   </p>
                 ) : null}
-                {streamDraft.speeches.length > 0 &&
-                streamDraft.lines.length === 0 &&
-                !streamDraft.draft &&
-                (streamDraft.phase === "narrating" ||
-                  streamDraft.phase === "agents" ||
-                  streamDraft.phase === "finalizing") ? (
-                  <p className="muted" style={{ margin: "0.35rem 0 0.15rem" }}>
-                    {streamDraft.phase === "narrating" ||
-                    streamDraft.phase === "finalizing"
-                      ? PHASE_LABEL.narrating
-                      : PHASE_LABEL.agents}
-                  </p>
-                ) : null}
+                {/* Stream ground text first; speeches append below when the JSON completes. */}
                 {streamDraft.lines.map((line, j) => (
                   <p key={`st-${j}`} style={{ margin: "0.25rem 0" }}>
                     {line}
@@ -453,6 +428,15 @@ export function BattlePage() {
                     </span>
                   </p>
                 ) : null}
+                {streamDraft.speeches.map((s, j) => (
+                  <p
+                    key={`ss-${j}`}
+                    className="speaker"
+                    style={{ margin: "0.25rem 0" }}
+                  >
+                    {formatSpeech(s)}
+                  </p>
+                ))}
               </div>
             )}
           <div ref={logEnd} />
