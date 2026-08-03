@@ -71,6 +71,39 @@ if [[ -n "$VENICE" ]]; then
   set_kv VENICEAI_API_KEY "$VENICE" "$ENV_FILE"
 fi
 
+DEPLOYMENT_KEYS=(
+  SUPABASE_URL
+  SUPABASE_PROJECT_REF
+  SUPABASE_PUBLISHABLE_KEY
+  SUPABASE_SECRET_KEY
+  DATABASE_URL
+  DIRECT_URL
+  R2_ACCOUNT_ID
+  R2_ACCESS_KEY_ID
+  R2_SECRET_ACCESS_KEY
+  R2_BUCKET
+  R2_PUBLIC_BASE_URL
+)
+SYNCED_DEPLOYMENT_KEYS=()
+for key in "${DEPLOYMENT_KEYS[@]}"; do
+  if secdat get "$key" --stdout >/dev/null 2>&1; then
+    value="$(secdat get "$key" --stdout)"
+    set_kv "$key" "$value" "$ENV_FILE"
+    SYNCED_DEPLOYMENT_KEYS+=("$key")
+  fi
+done
+
+R2_READY=true
+for key in R2_ACCOUNT_ID R2_ACCESS_KEY_ID R2_SECRET_ACCESS_KEY R2_BUCKET R2_PUBLIC_BASE_URL; do
+  if ! secdat get "$key" --stdout >/dev/null 2>&1; then
+    R2_READY=false
+    break
+  fi
+done
+if [[ "$R2_READY" == true ]]; then
+  set_kv MEDIA_STORAGE r2 "$ENV_FILE"
+fi
+
 echo "Updated $ENV_FILE from secdat"
 echo "  LLM_PROVIDER=xai"
 echo "  XAI_API_KEY=*** (len=${#XAI})"
@@ -83,4 +116,12 @@ if [[ -n "$VENICE" ]]; then
   echo "  VENICE_API_KEY=*** (len=${#VENICE})"
 else
   echo "  VENICE_API_KEY=(not found in secdat)"
+fi
+if [[ ${#SYNCED_DEPLOYMENT_KEYS[@]} -gt 0 ]]; then
+  echo "  deployment keys synced: ${SYNCED_DEPLOYMENT_KEYS[*]}"
+fi
+if [[ "$R2_READY" == true ]]; then
+  echo "  MEDIA_STORAGE=r2"
+else
+  echo "  MEDIA_STORAGE unchanged (R2 key set incomplete)"
 fi
