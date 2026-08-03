@@ -810,6 +810,58 @@ export function buildRoutes() {
     }
   });
 
+  /**
+   * Stream one advance as SSE (`text/event-stream`).
+   * Events: phase | narrator | speeches | done | error (see BattleAdvanceStreamEvent).
+   */
+  authed.post("/battles/:id/advance/stream", async (c) => {
+    const user = c.get("user");
+    const battleId = c.req.param("id");
+    const started = Date.now();
+    console.info(`[battles] advance stream start ${battleId}`);
+
+    const encoder = new TextEncoder();
+    const stream = new ReadableStream<Uint8Array>({
+      async start(controller) {
+        const send = (payload: unknown) => {
+          controller.enqueue(
+            encoder.encode(`data: ${JSON.stringify(payload)}\n\n`),
+          );
+        };
+        try {
+          const battle = await advanceTurn({
+            userId: user.id,
+            battleId,
+            llm,
+            onProgress: (event) => send(event),
+          });
+          send({ type: "done", battle });
+          console.info(
+            `[battles] advance stream ok ${battleId} turn=${battle.turn} ${Date.now() - started}ms aft=${battle.aftermathPending ? 1 : 0}`,
+          );
+        } catch (e) {
+          const msg = e instanceof Error ? e.message : "error";
+          console.error(
+            `[battles] advance stream fail ${battleId} ${Date.now() - started}ms`,
+            msg,
+          );
+          send({ type: "error", message: msg });
+        } finally {
+          controller.close();
+        }
+      },
+    });
+
+    return new Response(stream, {
+      headers: {
+        "Content-Type": "text/event-stream; charset=utf-8",
+        "Cache-Control": "no-cache, no-transform",
+        Connection: "keep-alive",
+        "X-Accel-Buffering": "no",
+      },
+    });
+  });
+
   /** Legacy alias — same as advance (per-turn skill pick is removed). */
   authed.post("/battles/:id/action", async (c) => {
     const user = c.get("user");

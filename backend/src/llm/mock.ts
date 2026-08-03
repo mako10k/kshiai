@@ -308,6 +308,19 @@ export class MockLlmProvider implements LlmProvider {
     };
   }
 
+  private async emitNarratorProgress(
+    lines: string[],
+    onProgress?: (progress: { lines: string[]; draft?: string | null }) => void,
+  ): Promise<void> {
+    if (!onProgress) return;
+    const acc: string[] = [];
+    for (const line of lines) {
+      acc.push(line);
+      onProgress({ lines: [...acc], draft: null });
+      await new Promise((r) => setTimeout(r, 12));
+    }
+  }
+
   async narrateTurn(input: {
     turn: number;
     scene: string;
@@ -318,6 +331,7 @@ export class MockLlmProvider implements LlmProvider {
     battlefield?: BattlefieldInstance | null;
     styleInstruction?: string;
     styleName?: string;
+    onProgress?: (progress: { lines: string[]; draft?: string | null }) => void;
   }): Promise<NarrationResult> {
     const place = input.battlefield?.displayName
       ? `${input.scene}（${input.battlefield.displayName}）`
@@ -329,6 +343,7 @@ export class MockLlmProvider implements LlmProvider {
       `第${input.turn}ターン — ${place}${styleNote}。`,
       ...input.events.map((e) => e.summary),
     ];
+    await this.emitNarratorProgress(narrator, input.onProgress);
     return { turn: input.turn, narrator, speeches: input.agentSpeeches ?? [] };
   }
 
@@ -345,29 +360,32 @@ export class MockLlmProvider implements LlmProvider {
     battlefield?: BattlefieldInstance | null;
     styleInstruction?: string;
     styleName?: string;
+    onProgress?: (progress: { lines: string[]; draft?: string | null }) => void;
   }): Promise<NarrationResult> {
     const place = input.battlefield?.displayName ?? input.scene;
     const styleNote = input.styleName ? `（${input.styleName}）` : "";
+    const narrator = [
+      `——開幕——${styleNote}`,
+      `${place}に、${input.sideAName} と ${input.sideBName} が向かい合う。`,
+      input.battlefield?.narrativeSetup ||
+        "場の空気が、二人の存在に応じてゆっくり変わっていく。",
+      input.sideABlurb
+        ? `${input.sideAName} — ${input.sideABlurb.slice(0, 80)}`
+        : `${input.sideAName} の気配が場を支配する。`,
+      input.sideBBlurb
+        ? `${input.sideBName} — ${input.sideBBlurb.slice(0, 80)}`
+        : `${input.sideBName} が相手の出方を静かに見つめる。`,
+      input.priorMatchSummary
+        ? `因縁 — ${input.priorMatchSummary}`
+        : "今、二人の初めての対決が始まる。",
+      input.policySummary
+        ? `${input.sideAName} の心中に方針が灯る: ${input.policySummary}`
+        : "",
+    ].filter(Boolean);
+    await this.emitNarratorProgress(narrator, input.onProgress);
     return {
       turn: 0,
-      narrator: [
-        `——開幕——${styleNote}`,
-        `${place}に、${input.sideAName} と ${input.sideBName} が向かい合う。`,
-        input.battlefield?.narrativeSetup ||
-          "場の空気が、二人の存在に応じてゆっくり変わっていく。",
-        input.sideABlurb
-          ? `${input.sideAName} — ${input.sideABlurb.slice(0, 80)}`
-          : `${input.sideAName} の気配が場を支配する。`,
-        input.sideBBlurb
-          ? `${input.sideBName} — ${input.sideBBlurb.slice(0, 80)}`
-          : `${input.sideBName} が相手の出方を静かに見つめる。`,
-        input.priorMatchSummary
-          ? `因縁 — ${input.priorMatchSummary}`
-          : "今、二人の初めての対決が始まる。",
-        input.policySummary
-          ? `${input.sideAName} の心中に方針が灯る: ${input.policySummary}`
-          : "",
-      ].filter(Boolean),
+      narrator,
       speeches: [],
     };
   }
@@ -384,6 +402,7 @@ export class MockLlmProvider implements LlmProvider {
     recentNarration?: string[];
     styleInstruction?: string;
     styleName?: string;
+    onProgress?: (progress: { lines: string[]; draft?: string | null }) => void;
   }): Promise<NarrationResult> {
     const place = input.battlefield?.displayName ?? input.scene;
     const fallen = input.fallenNames.join("と") || "続行できなくなった者";
@@ -400,6 +419,7 @@ export class MockLlmProvider implements LlmProvider {
         : "両者とも力を使い果たし、結果は引き分けとなった。",
       "幕は、そこで静かに下りた。",
     ];
+    await this.emitNarratorProgress(narrator, input.onProgress);
     return { turn: input.turn, narrator, speeches: [] };
   }
 

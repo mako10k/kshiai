@@ -1,11 +1,31 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
-import { formatSpeech, type BattlePublic } from "@kshiai/shared";
+import {
+  formatSpeech,
+  type BattleAdvancePhase,
+  type BattlePublic,
+  type SpeechLine,
+} from "@kshiai/shared";
 import { api } from "../api";
 import { mediaSrc } from "../media";
 
 const AUTO_TURN_DELAY_MS = 1600;
 const OPENING_DELAY_MS = 1200;
+
+type StreamDraft = {
+  phase: BattleAdvancePhase | null;
+  turn: number;
+  lines: string[];
+  draft: string | null;
+  speeches: SpeechLine[];
+};
+
+const PHASE_LABEL: Record<BattleAdvancePhase, string> = {
+  resolving: "局面を解決しています…",
+  agents: "キャラの反応を紡いでいます…",
+  narrating: "語りを生成しています…",
+  finalizing: "記録しています…",
+};
 
 export function BattlePage() {
   const { id } = useParams();
@@ -17,6 +37,7 @@ export function BattlePage() {
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [saveMsg, setSaveMsg] = useState<string | null>(null);
+  const [streamDraft, setStreamDraft] = useState<StreamDraft | null>(null);
   /** Resume opens paused so the player can catch up on the log. */
   const [paused, setPaused] = useState(isResume || isViewOnly);
   const logEnd = useRef<HTMLDivElement>(null);
@@ -43,7 +64,7 @@ export function BattlePage() {
 
   useEffect(() => {
     logEnd.current?.scrollIntoView({ behavior: "smooth" });
-  }, [battle?.log]);
+  }, [battle?.log, streamDraft?.lines.length, streamDraft?.draft]);
 
   useEffect(() => {
     if (!id || !battle || battle.status !== "active") return;
@@ -56,6 +77,13 @@ export function BattlePage() {
       if (cancelledRef.current || advancingRef.current) return;
       advancingRef.current = true;
       setBusy(true);
+      setStreamDraft({
+        phase: "resolving",
+        turn: battle.prologuePending ? 0 : battle.turn + 1,
+        lines: [],
+        draft: null,
+        speeches: [],
+      });
       void advanceWithRetry(id, 2)
         .then((next) => {
           if (cancelledRef.current) return;
@@ -68,7 +96,10 @@ export function BattlePage() {
         })
         .finally(() => {
           advancingRef.current = false;
-          if (!cancelledRef.current) setBusy(false);
+          if (!cancelledRef.current) {
+            setBusy(false);
+            setStreamDraft(null);
+          }
         });
     }, delay);
 
@@ -91,12 +122,53 @@ export function BattlePage() {
     let lastErr: unknown;
     for (let i = 0; i <= retries; i++) {
       try {
-        const { battle: next } = await api.advanceBattle(battleId);
-        return next;
+        return await api.advanceBattleStream(battleId, {
+          onEvent: (event) => {
+            if (cancelledRef.current) return;
+            if (event.type === "phase") {
+              setStreamDraft((prev) =>
+                prev
+                  ? { ...prev, phase: event.phase }
+                  : {
+                      phase: event.phase,
+                      turn: 0,
+                      lines: [],
+                      draft: null,
+                      speeches: [],
+                    },
+              );
+            } else if (event.type === "narrator") {
+              setStreamDraft((prev) => ({
+                phase: prev?.phase ?? "narrating",
+                turn: event.turn ?? prev?.turn ?? 0,
+                lines: event.lines,
+                draft: event.draft ?? null,
+                speeches: prev?.speeches ?? [],
+              }));
+            } else if (event.type === "speeches") {
+              setStreamDraft((prev) =>
+                prev
+                  ? { ...prev, speeches: event.speeches }
+                  : {
+                      phase: "agents",
+                      turn: 0,
+                      lines: [],
+                      draft: null,
+                      speeches: event.speeches,
+                    },
+              );
+            }
+          },
+        });
       } catch (err) {
         lastErr = err;
         // Brief pause then retry (LLM / tunnel blips)
         if (i < retries) {
+          setStreamDraft((prev) =>
+            prev
+              ? { ...prev, lines: [], draft: null, phase: "resolving" }
+              : null,
+          );
           await new Promise((r) => setTimeout(r, 1200 * (i + 1)));
         }
       }
@@ -108,6 +180,13 @@ export function BattlePage() {
     if (!id) return;
     setError(null);
     setBusy(true);
+    setStreamDraft({
+      phase: "resolving",
+      turn: battle?.prologuePending ? 0 : (battle?.turn ?? 0) + 1,
+      lines: [],
+      draft: null,
+      speeches: [],
+    });
     try {
       const next = await advanceWithRetry(id, 2);
       setBattle(next);
@@ -115,6 +194,7 @@ export function BattlePage() {
       setError(err instanceof Error ? err.message : "failed");
     } finally {
       setBusy(false);
+      setStreamDraft(null);
     }
   }
 
@@ -308,6 +388,53 @@ export function BattlePage() {
               ))}
             </div>
           ))}
+          {streamDraft &&
+            (streamDraft.lines.length > 0 ||
+              streamDraft.draft ||
+              streamDraft.speeches.length > 0 ||
+              streamDraft.phase) && (
+              <div className="log-block log-block-streaming" aria-live="polite">
+                {streamDraft.turn > 0 ? (
+                  <div className="muted" style={{ fontSize: "0.8rem" }}>
+                    — ターン {streamDraft.turn}（生成中）—
+                  </div>
+                ) : streamDraft.phase === "narrating" ||
+                  streamDraft.lines.length > 0 ? (
+                  <div className="muted" style={{ fontSize: "0.8rem" }}>
+                    — プロローグ（生成中）—
+                  </div>
+                ) : null}
+                {streamDraft.lines.map((line, j) => (
+                  <p key={`st-${j}`} style={{ margin: "0.25rem 0" }}>
+                    {line}
+                  </p>
+                ))}
+                {streamDraft.draft ? (
+                  <p className="stream-draft" style={{ margin: "0.25rem 0" }}>
+                    {streamDraft.draft}
+                    <span className="stream-caret" aria-hidden>
+                      ▍
+                    </span>
+                  </p>
+                ) : null}
+                {streamDraft.speeches.map((s, j) => (
+                  <p
+                    key={`ss-${j}`}
+                    className="speaker"
+                    style={{ margin: "0.25rem 0" }}
+                  >
+                    {formatSpeech(s)}
+                  </p>
+                ))}
+                {streamDraft.phase &&
+                streamDraft.lines.length === 0 &&
+                !streamDraft.draft ? (
+                  <p className="muted" style={{ margin: "0.25rem 0" }}>
+                    {PHASE_LABEL[streamDraft.phase]}
+                  </p>
+                ) : null}
+              </div>
+            )}
           <div ref={logEnd} />
         </div>
       </div>
@@ -319,7 +446,13 @@ export function BattlePage() {
             <p className="muted">続きから開きました。準備ができたら再開してください。</p>
           )}
           <div className="row">
-            {busy && !paused && <span className="muted">進めています…</span>}
+            {busy && !paused && (
+              <span className="muted">
+                {streamDraft?.phase
+                  ? PHASE_LABEL[streamDraft.phase]
+                  : "進めています…"}
+              </span>
+            )}
             {!busy && !paused && !error && <span className="ok">自動進行中</span>}
             {paused && <span className="muted">一時停止中</span>}
             <button

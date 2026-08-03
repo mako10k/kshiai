@@ -1,5 +1,6 @@
 import type {
   BattlefieldPresetPublic,
+  BattleAdvanceStreamEvent,
   BattleListItem,
   BattlePolicyOption,
   BattlePolicyOptionPublic,
@@ -269,6 +270,94 @@ export const api = {
       method: "POST",
       body: JSON.stringify({}),
     }),
+  /**
+   * Stream one advance via SSE. Invokes onEvent for phase/narrator progress;
+   * resolves with the final battle from the `done` event.
+   */
+  advanceBattleStream: async (
+    id: string,
+    opts?: {
+      onEvent?: (event: BattleAdvanceStreamEvent) => void;
+      signal?: AbortSignal;
+    },
+  ): Promise<BattlePublic> => {
+    const res = await fetch(`/api/battles/${id}/advance/stream`, {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        Accept: "text/event-stream",
+        "Content-Type": "application/json",
+      },
+      body: "{}",
+      signal: opts?.signal,
+    });
+    if (!res.ok) {
+      const data = (await res.json().catch(() => ({}))) as {
+        error?: string;
+        message?: string;
+      };
+      throw new ApiError(data.message || data.error || `http_${res.status}`, {
+        status: res.status,
+        code: data.error,
+      });
+    }
+    if (!res.body) {
+      throw new ApiError("stream_unavailable", { status: 500 });
+    }
+
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = "";
+    let finalBattle: BattlePublic | null = null;
+    let streamError: string | null = null;
+
+    const handleDataLine = (raw: string) => {
+      const trimmed = raw.trim();
+      if (!trimmed || trimmed.startsWith(":")) return;
+      let event: BattleAdvanceStreamEvent;
+      try {
+        event = JSON.parse(trimmed) as BattleAdvanceStreamEvent;
+      } catch {
+        return;
+      }
+      opts?.onEvent?.(event);
+      if (event.type === "done") finalBattle = event.battle;
+      if (event.type === "error") streamError = event.message;
+    };
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buffer += decoder.decode(value, { stream: true });
+      // SSE frames are separated by blank lines
+      let sep: number;
+      while ((sep = buffer.indexOf("\n\n")) >= 0) {
+        const frame = buffer.slice(0, sep);
+        buffer = buffer.slice(sep + 2);
+        for (const line of frame.split("\n")) {
+          if (line.startsWith("data:")) {
+            handleDataLine(line.slice(5).trimStart());
+          }
+        }
+      }
+    }
+    // Trailing frame without final blank line
+    if (buffer.trim()) {
+      for (const line of buffer.split("\n")) {
+        if (line.startsWith("data:")) {
+          handleDataLine(line.slice(5).trimStart());
+        }
+      }
+    }
+
+    if (streamError) {
+      throw new ApiError(streamError, { status: 500, code: streamError });
+    }
+    if (!finalBattle) {
+      throw new ApiError("stream_incomplete", { status: 500 });
+    }
+    return finalBattle;
+  },
   listBattlefields: (q?: string) =>
     request<{ battlefields: BattlefieldPresetPublic[] }>(
       `/api/battlefields${q ? `?q=${encodeURIComponent(q)}` : ""}`,

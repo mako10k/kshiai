@@ -34,6 +34,7 @@ import {
   toNarrationSnapshot,
   type HappeningPlan,
   type Situation,
+  type BattleAdvanceStreamEvent,
   defaultCharacterIdentity,
 } from "@kshiai/shared";
 import {
@@ -655,7 +656,19 @@ export async function advanceTurn(input: {
   userId: string;
   battleId: string;
   llm: LlmProvider;
+  /** Optional progressive updates (SSE). */
+  onProgress?: (event: BattleAdvanceStreamEvent) => void;
 }): Promise<BattlePublic> {
+  const emit = (event: BattleAdvanceStreamEvent) => {
+    try {
+      input.onProgress?.(event);
+    } catch (e) {
+      console.warn(
+        "[battle] onProgress listener error",
+        e instanceof Error ? e.message : e,
+      );
+    }
+  };
   const meta = battleRepo.getBattleMeta(input.battleId);
   const state = battleRepo.getBattle(input.battleId);
   if (!meta || !state) throw new Error("BATTLE_NOT_FOUND");
@@ -683,6 +696,7 @@ export async function advanceTurn(input: {
       mine,
       opp,
       llm: input.llm,
+      emit,
     });
   }
 
@@ -694,8 +708,11 @@ export async function advanceTurn(input: {
       mine,
       opp,
       llm: input.llm,
+      emit,
     });
   }
+
+  emit({ type: "phase", phase: "resolving" });
 
   const upcomingTurn = state.turn + 1;
   let supervisor = normalizeSupervisor(state.supervisor);
@@ -805,6 +822,7 @@ export async function advanceTurn(input: {
   );
   next = { ...next, supervisor };
 
+  emit({ type: "phase", phase: "agents" });
   const agentTurn = await advanceCharacterAgents({
     llm: input.llm,
     before: state,
@@ -814,7 +832,11 @@ export async function advanceTurn(input: {
     events,
   });
   next = agentTurn.state;
+  if (agentTurn.speeches.length > 0) {
+    emit({ type: "speeches", speeches: agentTurn.speeches });
+  }
 
+  emit({ type: "phase", phase: "narrating" });
   let narrative;
   try {
     // Per-attempt budget must cover primary abort (~14–16s) + router failover to
@@ -832,6 +854,14 @@ export async function advanceTurn(input: {
           agentSpeeches: agentTurn.speeches,
           styleInstruction: next.narrationStyle?.instruction,
           styleName: next.narrationStyle?.displayName,
+          onProgress: (progress) => {
+            emit({
+              type: "narrator",
+              lines: progress.lines,
+              draft: progress.draft ?? null,
+              turn: next.turn,
+            });
+          },
         }),
       {
         timeoutMs: 32_000,
@@ -859,8 +889,15 @@ export async function advanceTurn(input: {
       ],
       speeches: agentTurn.speeches,
     };
+    emit({
+      type: "narrator",
+      lines: narrative.narrator,
+      draft: null,
+      turn: next.turn,
+    });
   }
   next = { ...next, log: [...next.log, narrative] };
+  emit({ type: "phase", phase: "finalizing" });
 
   // KO this turn: combat narrative is done, but official finish waits for aftermath advance.
   // Do not settle rating yet.
@@ -945,12 +982,15 @@ async function runPrologueTurn(input: {
   mine: CharacterSheet;
   opp: CharacterSheet;
   llm: LlmProvider;
+  emit?: (event: BattleAdvanceStreamEvent) => void;
 }): Promise<BattlePublic> {
+  const emit = input.emit ?? (() => undefined);
   let state = input.state;
   const policyLine = summarizeSelectedPolicies(
     state.policiesA,
     state.selectedPolicyIdsA,
   );
+  emit({ type: "phase", phase: "agents" });
   const prologueAgents = await advanceCharacterAgents({
     llm: input.llm,
     before: state,
@@ -963,7 +1003,11 @@ async function runPrologueTurn(input: {
     }],
   });
   state = prologueAgents.state;
+  if (prologueAgents.speeches.length > 0) {
+    emit({ type: "speeches", speeches: prologueAgents.speeches });
+  }
 
+  emit({ type: "phase", phase: "narrating" });
   let narrative;
   try {
     narrative = await withTimeout(
@@ -980,6 +1024,14 @@ async function runPrologueTurn(input: {
         battlefield: state.battlefield,
         styleInstruction: state.narrationStyle?.instruction,
         styleName: state.narrationStyle?.displayName,
+        onProgress: (progress) => {
+          emit({
+            type: "narrator",
+            lines: progress.lines,
+            draft: progress.draft ?? null,
+            turn: 0,
+          });
+        },
       }),
       16_000,
       "narratePrologue",
@@ -1004,9 +1056,16 @@ async function runPrologueTurn(input: {
         { speaker: state.sideB.displayName, text: "望むところだ。" },
       ],
     };
+    emit({
+      type: "narrator",
+      lines: narrative.narrator,
+      draft: null,
+      turn: 0,
+    });
   }
 
   narrative = { ...narrative, speeches: prologueAgents.speeches };
+  emit({ type: "phase", phase: "finalizing" });
 
   if (
     narrative.narrator[0] &&
@@ -1046,7 +1105,9 @@ async function runAftermathTurn(input: {
   mine: CharacterSheet;
   opp: CharacterSheet;
   llm: LlmProvider;
+  emit?: (event: BattleAdvanceStreamEvent) => void;
 }): Promise<BattlePublic> {
+  const emit = input.emit ?? (() => undefined);
   const state = input.state;
   const fallen: string[] = [];
   if (!state.sideA.canFight || (state.sideA.parameters.hp ?? 0) <= 0) {
@@ -1063,6 +1124,7 @@ async function runAftermathTurn(input: {
         : null;
 
   const aftermathTurn = state.turn; // epilogue shares the KO turn number for log grouping
+  emit({ type: "phase", phase: "narrating" });
   let narrative;
   try {
     narrative = await withTimeout(
@@ -1081,6 +1143,14 @@ async function runAftermathTurn(input: {
           .slice(-8),
         styleInstruction: state.narrationStyle?.instruction,
         styleName: state.narrationStyle?.displayName,
+        onProgress: (progress) => {
+          emit({
+            type: "narrator",
+            lines: progress.lines,
+            draft: progress.draft ?? null,
+            turn: aftermathTurn,
+          });
+        },
       }),
       18_000,
       "narrateAftermath",
@@ -1100,9 +1170,16 @@ async function runAftermathTurn(input: {
       ],
       speeches: [],
     };
+    emit({
+      type: "narrator",
+      lines: narrative.narrator,
+      draft: null,
+      turn: aftermathTurn,
+    });
   }
 
   narrative = { ...narrative, speeches: [] };
+  emit({ type: "phase", phase: "finalizing" });
 
   // Mark epilogue block for UI (prefix first line if missing)
   if (

@@ -341,6 +341,28 @@ textarea::placeholder {
   font-weight: 600;
 }
 
+.log-block-streaming {
+  border-left-color: var(--accent);
+  opacity: 0.92;
+}
+
+.stream-draft {
+  color: var(--text);
+}
+
+.stream-caret {
+  display: inline-block;
+  margin-left: 1px;
+  color: var(--accent);
+  animation: stream-caret-blink 1s step-end infinite;
+}
+
+@keyframes stream-caret-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
 .error {
   color: var(--danger);
 }

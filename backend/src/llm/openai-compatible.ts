@@ -12,6 +12,7 @@ import {
   balanceCharacterCombatFields,
   clampCoefficientMap,
   defaultParameters,
+  extractStreamingNarrator,
   type BattlefieldInstance,
   type BattlefieldPreset,
   type BattlePolicyOption,
@@ -27,6 +28,7 @@ import type {
   CharacterReferenceTools,
   LlmProvider,
   NarrationResult,
+  NarrationStreamProgress,
   RefereeResult,
   SituationProposal,
 } from "./types.js";
@@ -96,6 +98,8 @@ type ChatOpts = {
   timeoutMs?: number;
   temperature?: number;
   label?: string;
+  /** Invoked with the cumulative assistant text while tokens stream in. */
+  onText?: (fullText: string) => void;
 };
 
 /**
@@ -157,6 +161,9 @@ export class OpenAiCompatibleProvider implements LlmProvider {
     if (!this.client) {
       throw new Error("LLM client not configured");
     }
+    if (opts?.onText) {
+      return this.chatJsonStream(system, user, opts);
+    }
     const tier: LlmTier = opts?.tier ?? "engine";
     const model = this.modelFor(tier);
     const timeoutMs = Math.round(
@@ -183,6 +190,7 @@ export class OpenAiCompatibleProvider implements LlmProvider {
         { signal: controller.signal, timeout: timeoutMs },
       );
       const text = resp.choices[0]?.message?.content ?? "{}";
+      opts?.onText?.(text);
       console.info(
         `[llm] ${this.name}/${label} model=${model} ok ${Date.now() - started}ms`,
       );
@@ -196,6 +204,80 @@ export class OpenAiCompatibleProvider implements LlmProvider {
     } finally {
       clearTimeout(timer);
     }
+  }
+
+  /** Stream a JSON object completion; `onText` receives cumulative content. */
+  private async chatJsonStream(
+    system: string,
+    user: string,
+    opts: ChatOpts,
+  ): Promise<unknown> {
+    if (!this.client) {
+      throw new Error("LLM client not configured");
+    }
+    const tier: LlmTier = opts.tier ?? "engine";
+    const model = this.modelFor(tier);
+    const timeoutMs = Math.round(
+      (opts.timeoutMs ?? (tier === "fast" ? 12_000 : 24_000)) *
+        this.timeoutMultiplier,
+    );
+    const temperature =
+      opts.temperature ?? (tier === "fast" ? 0.85 : 0.45);
+    const label = opts.label ?? tier;
+    const started = Date.now();
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
+    try {
+      const stream = await this.client.chat.completions.create(
+        {
+          model,
+          messages: [
+            { role: "system", content: system },
+            { role: "user", content: user },
+          ],
+          ...(this.supportsTemperature ? { temperature } : {}),
+          response_format: { type: "json_object" },
+          stream: true,
+        },
+        { signal: controller.signal, timeout: timeoutMs },
+      );
+      let full = "";
+      for await (const chunk of stream) {
+        const delta = chunk.choices[0]?.delta?.content ?? "";
+        if (!delta) continue;
+        full += delta;
+        opts.onText?.(full);
+      }
+      if (!full.trim()) {
+        throw new Error("empty stream completion");
+      }
+      console.info(
+        `[llm] ${this.name}/${label} model=${model} ok stream ${Date.now() - started}ms`,
+      );
+      return JSON.parse(full) as unknown;
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : String(e);
+      console.warn(
+        `[llm] ${this.name}/${label} model=${model} fail stream ${Date.now() - started}ms: ${msg.slice(0, 160)}`,
+      );
+      throw e;
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+
+  private narrationProgressSink(
+    onProgress?: (progress: NarrationStreamProgress) => void,
+  ): ((fullText: string) => void) | undefined {
+    if (!onProgress) return undefined;
+    let lastKey = "";
+    return (fullText: string) => {
+      const { lines, draft } = extractStreamingNarrator(fullText);
+      const key = `${lines.length}|${lines[lines.length - 1] ?? ""}|${draft ?? ""}`;
+      if (key === lastKey) return;
+      lastKey = key;
+      onProgress({ lines, draft });
+    };
   }
 
   private async chatJsonWithCharacterTools(
@@ -891,6 +973,7 @@ speech is one short Japanese utterance without brackets, or null when silence fi
     battlefield?: BattlefieldInstance | null;
     styleInstruction?: string;
     styleName?: string;
+    onProgress?: (progress: NarrationStreamProgress) => void;
   }): Promise<NarrationResult> {
     if (!this.client) return this.fallback.narrateTurn(input);
     try {
@@ -922,11 +1005,19 @@ Do not mention numeric HP/MP/ATK values. Character dialogue is supplied by separ
         }),
         // Slightly above historical 14s abort so a single provider can finish
         // under load; outer battle-service budget covers multi-provider failover.
-        { tier: "fast", label: "narrateTurn", timeoutMs: 16_000, temperature: 0.9 },
+        {
+          tier: "fast",
+          label: "narrateTurn",
+          timeoutMs: 16_000,
+          temperature: 0.9,
+          onText: this.narrationProgressSink(input.onProgress),
+        },
       )) as { turn?: number; narrator?: string[] };
+      const narrator = data.narrator ?? [];
+      input.onProgress?.({ lines: narrator, draft: null });
       return {
         turn: input.turn,
-        narrator: data.narrator ?? [],
+        narrator,
         speeches: input.agentSpeeches ?? [],
       };
     } catch (error) {
@@ -947,6 +1038,7 @@ Do not mention numeric HP/MP/ATK values. Character dialogue is supplied by separ
     battlefield?: BattlefieldInstance | null;
     styleInstruction?: string;
     styleName?: string;
+    onProgress?: (progress: NarrationStreamProgress) => void;
   }): Promise<NarrationResult> {
     if (!this.client) return this.fallback.narratePrologue(input);
     try {
@@ -993,6 +1085,7 @@ JSON: { "turn": 0, "narrator": string[] }`,
           label: "narratePrologue",
           timeoutMs: 14_000,
           temperature: 0.9,
+          onText: this.narrationProgressSink(input.onProgress),
         },
       )) as { turn?: number; narrator?: string[] };
       const narrator = data.narrator?.length
@@ -1001,6 +1094,7 @@ JSON: { "turn": 0, "narrator": string[] }`,
       if (!narrator[0]?.includes("開幕") && !narrator[0]?.includes("プロローグ")) {
         narrator.unshift("——開幕——");
       }
+      input.onProgress?.({ lines: narrator, draft: null });
       return {
         turn: 0,
         narrator,
@@ -1023,6 +1117,7 @@ JSON: { "turn": 0, "narrator": string[] }`,
     recentNarration?: string[];
     styleInstruction?: string;
     styleName?: string;
+    onProgress?: (progress: NarrationStreamProgress) => void;
   }): Promise<NarrationResult> {
     if (!this.client) return this.fallback.narrateAftermath(input);
     try {
@@ -1057,14 +1152,17 @@ JSON: { "turn": number, "narrator": string[] }`,
           tier: "fast",
           label: "narrateAftermath",
           timeoutMs: 14_000,
+          onText: this.narrationProgressSink(input.onProgress),
           temperature: 0.9,
         },
       )) as { turn?: number; narrator?: string[] };
+      const narrator = data.narrator?.length
+        ? data.narrator
+        : ["——決着の余波——", "戦場に余韻だけが残った。"];
+      input.onProgress?.({ lines: narrator, draft: null });
       return {
         turn: input.turn,
-        narrator: data.narrator?.length
-          ? data.narrator
-          : ["——決着の余波——", "戦場に余韻だけが残った。"],
+        narrator,
         speeches: [],
       };
     } catch (error) {

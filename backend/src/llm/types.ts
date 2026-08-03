@@ -69,6 +69,12 @@ export type SituationProposal = Partial<Situation>;
 
 export type NarrationResult = NarrativeBlock;
 
+/** Progressive narrator extraction while a chat completion is streaming. */
+export type NarrationStreamProgress = {
+  lines: string[];
+  draft?: string | null;
+};
+
 export type RefereeResult = {
   winnerSide: "a" | "b" | "draw";
   summary: string;
@@ -152,6 +158,8 @@ export interface LlmProvider {
     /** Narration style instruction for this match. */
     styleInstruction?: string;
     styleName?: string;
+    /** When set, providers stream tokens and report partial narrator lines. */
+    onProgress?: (progress: NarrationStreamProgress) => void;
   }): Promise<NarrationResult>;
   /**
    * Pre-combat prologue: opening lines, atmosphere, rivalry / fate.
@@ -171,6 +179,7 @@ export interface LlmProvider {
     battlefield?: BattlefieldInstance | null;
     styleInstruction?: string;
     styleName?: string;
+    onProgress?: (progress: NarrationStreamProgress) => void;
   }): Promise<NarrationResult>;
   /**
    * Extra beat after KO: what becomes of the fallen / how the winner closes.
@@ -188,6 +197,7 @@ export interface LlmProvider {
     recentNarration?: string[];
     styleInstruction?: string;
     styleName?: string;
+    onProgress?: (progress: NarrationStreamProgress) => void;
   }): Promise<NarrationResult>;
   /** Draft a custom narration style from free text. */
   generateNarrationStyle?(prompt: string): Promise<{
