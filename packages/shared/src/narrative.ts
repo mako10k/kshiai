@@ -13,9 +13,40 @@ export const NarrativeBlockSchema = z.object({
 });
 export type NarrativeBlock = z.infer<typeof NarrativeBlockSchema>;
 
-/** Ensure character lines use Japanese quotation marks. */
+/**
+ * True for non-dialogue reactions (ellipsis, parenthetical stage direction).
+ * These are shown without 「」 so quiet characters can still "react".
+ */
+export function isStageReaction(text: string): boolean {
+  const body = text.replace(/^「/, "").replace(/」$/, "").trim();
+  if (!body) return true;
+  if (/^…+$/.test(body) || /^\.+$/.test(body) || /^・+$/.test(body)) return true;
+  if (/^（[^）]*）$/.test(body)) return true;
+  if (/^\([^)]*\)$/.test(body)) return true;
+  return false;
+}
+
+/** Normalize agent speech: never empty; silent types become a minimal reaction. */
+export function coerceCharacterSpeech(
+  raw: string | null | undefined,
+  opts?: { foeName?: string },
+): string {
+  const body = String(raw ?? "")
+    .replace(/^「/, "")
+    .replace(/」$/, "")
+    .trim();
+  if (body) return body;
+  const foe = opts?.foeName?.trim();
+  if (foe) return `（${foe}を見ている）`;
+  return "…";
+}
+
+/** Format a character line: dialogue gets 「」, stage reactions do not. */
 export function formatSpeech(line: SpeechLine): string {
-  const body = line.text.replace(/^「/, "").replace(/」$/, "");
+  const body = coerceCharacterSpeech(line.text);
+  if (isStageReaction(body)) {
+    return `【${line.speaker}】${body}`;
+  }
   return `【${line.speaker}】「${body}」`;
 }
 

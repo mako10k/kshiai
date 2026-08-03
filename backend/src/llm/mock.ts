@@ -287,9 +287,17 @@ export class MockLlmProvider implements LlmProvider {
       input.previous.selfReference ?? input.character.identity.selfNames[0] ?? "私";
     const event = input.cognition.observedEvents.at(-1)?.summary ??
       `${input.cognition.scene}で相手の出方を見ている。`;
-    const speech = input.cognition.turn === 0
-      ? `${selfReference}は、${input.foeName}と向き合おう。`
-      : `${selfReference}は、まだ続けられる。`;
+    // Quiet traits get stage reactions; others speak briefly (speech never null).
+    const quiet = input.character.traits.some((t) =>
+      /無口|寡黙|無言|冷静|クール/.test(t),
+    );
+    const speech = quiet
+      ? input.cognition.turn === 0
+        ? `（${input.foeName}を見据えている）`
+        : "…"
+      : input.cognition.turn === 0
+        ? `${selfReference}は、${input.foeName}と向き合おう。`
+        : `${selfReference}は、まだ続けられる。`;
     return {
       state: {
         ...input.previous,

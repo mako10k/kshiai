@@ -12,6 +12,7 @@ import {
   balanceCharacterCombatFields,
   clampCoefficientMap,
   defaultParameters,
+  coerceCharacterSpeech,
   extractStreamingNarrator,
   type BattlefieldInstance,
   type BattlefieldPreset,
@@ -928,9 +929,12 @@ Return JSON only:
     "beliefs": string[], "observations": string[], "speechStyle": string,
     "selfReference": string|null, "lastSpeech": string|null
   },
-  "speech": string|null
+  "speech": string
 }
-speech is one short Japanese utterance without brackets, or null when silence fits.`,
+speech is ALWAYS required (never null/empty). One short Japanese line:
+- Dialogue without 「」 brackets when they speak, OR
+- A quiet reaction for taciturn characters, e.g. "…", "……", "（ただ佇んでいる）", "（ジーっと${input.foeName}を見ている）", "（小さく息をのむ）".
+Prefer spoken words when natural; prefer parenthetical/ellipsis reactions when the character would stay silent — but always output some visible reaction.`,
         JSON.stringify(input),
         {
           tier: "fast",
@@ -948,13 +952,16 @@ speech is one short Japanese utterance without brackets, or null when silence fi
           ((data.state as { selfReference?: unknown } | undefined)?.selfReference ?? null),
       });
       if (!parsed.success) throw new Error("Character agent returned invalid state");
-      const speech = data.speech === null || data.speech === undefined
-        ? null
-        : String(data.speech).replace(/^「/, "").replace(/」$/, "").trim() || null;
+      const speech = coerceCharacterSpeech(
+        data.speech === null || data.speech === undefined
+          ? null
+          : String(data.speech),
+        { foeName: input.foeName },
+      );
       return {
         state: {
           ...parsed.data,
-          lastSpeech: speech ?? parsed.data.lastSpeech,
+          lastSpeech: speech,
         },
         speech,
       };

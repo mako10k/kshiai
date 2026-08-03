@@ -145,7 +145,7 @@ export interface LlmProvider {
     foeName: string;
     previous: CharacterAgentState;
     cognition: CharacterCognition;
-  }): Promise<{ state: CharacterAgentState; speech: string | null }>;
+  }): Promise<{ state: CharacterAgentState; speech: string }>;
   narrateTurn(input: {
     turn: number;
     scene: string;

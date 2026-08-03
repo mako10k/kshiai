@@ -569,7 +569,14 @@ async function advanceCharacterAgents(input: {
       "[battle] character agents skipped",
       error instanceof Error ? error.message : error,
     );
-    return { state: stateWithRecord, speeches: [] };
+    // Still surface a minimal reaction so neither side goes fully blank.
+    return {
+      state: stateWithRecord,
+      speeches: [
+        { speaker: input.mine.displayName, text: "…" },
+        { speaker: input.opp.displayName, text: "…" },
+      ],
+    };
   }
   const [agentA, agentB] = agents;
   const completedRecord = {
@@ -577,9 +584,11 @@ async function advanceCharacterAgents(input: {
     agentStateChangeA: buildCharacterAgentStateChange(previousA, agentA.state),
     agentStateChangeB: buildCharacterAgentStateChange(previousB, agentB.state),
   };
-  const speeches: SpeechLine[] = [];
-  if (agentA.speech) speeches.push({ speaker: input.mine.displayName, text: agentA.speech });
-  if (agentB.speech) speeches.push({ speaker: input.opp.displayName, text: agentB.speech });
+  // Speech is always non-empty (dialogue or stage reaction); never omit a side.
+  const speeches: SpeechLine[] = [
+    { speaker: input.mine.displayName, text: agentA.speech },
+    { speaker: input.opp.displayName, text: agentB.speech },
+  ];
   return {
     state: {
       ...input.after,
