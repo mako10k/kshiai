@@ -1,30 +1,55 @@
 import fs from "node:fs";
 import path from "node:path";
-import Database from "better-sqlite3";
+import SqliteDatabase from "better-sqlite3";
+import { Pool, type PoolClient } from "pg";
 import { config } from "./config.js";
+import { createPostgresConfig } from "./postgres-config.js";
 
-let db: Database.Database | null = null;
+export type DatabaseRow = Record<string, unknown>;
 
-export function getDb(): Database.Database {
-  if (db) return db;
+export type DatabaseResult<Row extends DatabaseRow> = {
+  rows: Row[];
+  rowCount: number;
+};
+
+export type DatabaseConnection = {
+  query<Row extends DatabaseRow>(
+    sql: string,
+    parameters?: unknown[],
+  ): Promise<DatabaseResult<Row>>;
+};
+
+let sqlite: SqliteDatabase.Database | null = null;
+let postgres: Pool | null = null;
+const configuredPostgresClients = new WeakSet<PoolClient>();
+let sqliteTransactionQueue: Promise<void> = Promise.resolve();
+
+export function databaseKind(): "postgres" | "sqlite" {
+  return config.databaseUrl ? "postgres" : "sqlite";
+}
+
+export function getDb(): SqliteDatabase.Database {
+  if (databaseKind() !== "sqlite") {
+    throw new Error("Synchronous SQLite access is unavailable in PostgreSQL mode");
+  }
+  if (sqlite) return sqlite;
   fs.mkdirSync(path.dirname(config.databasePath), { recursive: true });
-  db = new Database(config.databasePath);
-  db.pragma("journal_mode = WAL");
-  db.exec(`
+  sqlite = new SqliteDatabase(config.databasePath);
+  sqlite.pragma("foreign_keys = ON");
+  sqlite.pragma("journal_mode = WAL");
+  sqlite.exec(`
     CREATE TABLE IF NOT EXISTS users (
       id TEXT PRIMARY KEY,
       username TEXT NOT NULL UNIQUE,
       password_hash TEXT NOT NULL,
       created_at TEXT NOT NULL
     );
-
     CREATE TABLE IF NOT EXISTS sessions (
       token TEXT PRIMARY KEY,
       user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
       created_at TEXT NOT NULL,
       expires_at TEXT NOT NULL
     );
-
     CREATE TABLE IF NOT EXISTS characters (
       id TEXT PRIMARY KEY,
       owner_user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -32,7 +57,6 @@ export function getDb(): Database.Database {
       created_at TEXT NOT NULL,
       updated_at TEXT NOT NULL
     );
-
     CREATE TABLE IF NOT EXISTS battles (
       id TEXT PRIMARY KEY,
       state_json TEXT NOT NULL,
@@ -42,7 +66,6 @@ export function getDb(): Database.Database {
       created_at TEXT NOT NULL,
       updated_at TEXT NOT NULL
     );
-
     CREATE TABLE IF NOT EXISTS battlefields (
       id TEXT PRIMARY KEY,
       owner_user_id TEXT,
@@ -51,8 +74,6 @@ export function getDb(): Database.Database {
       created_at TEXT NOT NULL,
       updated_at TEXT NOT NULL
     );
-
-    -- Face / portrait generation attempts (rate limit per character)
     CREATE TABLE IF NOT EXISTS image_gen_events (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       user_id TEXT NOT NULL,
@@ -64,8 +85,6 @@ export function getDb(): Database.Database {
       ON image_gen_events (character_id, created_at);
     CREATE INDEX IF NOT EXISTS idx_image_gen_user_time
       ON image_gen_events (user_id, created_at);
-
-    -- Narration voice styles (system presets + user custom)
     CREATE TABLE IF NOT EXISTS narration_styles (
       id TEXT PRIMARY KEY,
       owner_user_id TEXT,
@@ -76,8 +95,6 @@ export function getDb(): Database.Database {
     );
     CREATE INDEX IF NOT EXISTS idx_narration_styles_owner
       ON narration_styles (owner_user_id);
-
-    -- Balance observability (no effect on combat rules)
     CREATE TABLE IF NOT EXISTS balance_events (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       kind TEXT NOT NULL,
@@ -91,5 +108,150 @@ export function getDb(): Database.Database {
     CREATE INDEX IF NOT EXISTS idx_balance_events_battle
       ON balance_events (battle_id);
   `);
-  return db;
+  return sqlite;
+}
+
+function getPostgresPool(): Pool {
+  if (!config.databaseUrl) throw new Error("DATABASE_URL is required");
+  if (!postgres) {
+    postgres = new Pool({
+      ...createPostgresConfig(config.databaseUrl),
+      max: config.databasePoolMax,
+      idleTimeoutMillis: 30_000,
+      connectionTimeoutMillis: 10_000,
+    });
+  }
+  return postgres;
+}
+
+async function configurePostgresClient(client: PoolClient): Promise<void> {
+  if (configuredPostgresClients.has(client)) return;
+  await client.query(`SET search_path TO "${config.databaseSchema}"`);
+  configuredPostgresClients.add(client);
+}
+
+function sqliteStatement(
+  sql: string,
+  parameters: unknown[],
+): { sql: string; parameters: unknown[] } {
+  const ordered: unknown[] = [];
+  const rewritten = sql.replace(/\$(\d+)/g, (_, rawIndex: string) => {
+    const value = parameters[Number(rawIndex) - 1];
+    ordered.push(typeof value === "boolean" ? (value ? 1 : 0) : value);
+    return "?";
+  });
+  return { sql: rewritten, parameters: ordered };
+}
+
+function sqliteConnection(): DatabaseConnection {
+  return {
+    async query<Row extends DatabaseRow>(sql: string, parameters: unknown[] = []) {
+      const statement = sqliteStatement(sql, parameters);
+      const prepared = getDb().prepare(statement.sql);
+      if (/^\s*(SELECT|PRAGMA|WITH)\b/i.test(statement.sql)) {
+        const rows = prepared.all(...statement.parameters) as Row[];
+        return { rows, rowCount: rows.length };
+      }
+      const result = prepared.run(...statement.parameters);
+      return { rows: [], rowCount: result.changes };
+    },
+  };
+}
+
+function postgresConnection(client?: PoolClient): DatabaseConnection {
+  if (!client) {
+    return {
+      async query<Row extends DatabaseRow>(sql: string, parameters: unknown[] = []) {
+        const acquired = await getPostgresPool().connect();
+        try {
+          await configurePostgresClient(acquired);
+          const result = await acquired.query<Row>(sql, parameters);
+          return { rows: result.rows, rowCount: result.rowCount ?? 0 };
+        } finally {
+          acquired.release();
+        }
+      },
+    };
+  }
+  return {
+    async query<Row extends DatabaseRow>(sql: string, parameters: unknown[] = []) {
+      const result = await client.query<Row>(sql, parameters);
+      return { rows: result.rows, rowCount: result.rowCount ?? 0 };
+    },
+  };
+}
+
+export async function query<Row extends DatabaseRow>(
+  sql: string,
+  parameters: unknown[] = [],
+): Promise<DatabaseResult<Row>> {
+  const connection = databaseKind() === "postgres"
+    ? postgresConnection()
+    : sqliteConnection();
+  return connection.query<Row>(sql, parameters);
+}
+
+export async function withTransaction<T>(
+  callback: (connection: DatabaseConnection) => Promise<T>,
+): Promise<T> {
+  if (databaseKind() === "sqlite") {
+    const previous = sqliteTransactionQueue;
+    let releaseTransaction!: () => void;
+    sqliteTransactionQueue = new Promise<void>((resolve) => {
+      releaseTransaction = resolve;
+    });
+    await previous;
+    const database = getDb();
+    try {
+      database.exec("BEGIN IMMEDIATE");
+      const result = await callback(sqliteConnection());
+      database.exec("COMMIT");
+      return result;
+    } catch (error) {
+      if (database.inTransaction) database.exec("ROLLBACK");
+      throw error;
+    } finally {
+      releaseTransaction();
+    }
+  }
+  const client = await getPostgresPool().connect();
+  try {
+    await configurePostgresClient(client);
+    await client.query("BEGIN");
+    const result = await callback(postgresConnection(client));
+    await client.query("COMMIT");
+    return result;
+  } catch (error) {
+    await client.query("ROLLBACK").catch(() => undefined);
+    throw error;
+  } finally {
+    client.release();
+  }
+}
+
+export async function initializeDatabase(): Promise<void> {
+  if (databaseKind() === "sqlite") {
+    getDb();
+    return;
+  }
+  const result = await query<{ schema: string }>(
+    `SELECT current_schema() AS schema`,
+  );
+  if (result.rows[0]?.schema !== config.databaseSchema) {
+    throw new Error(
+      `PostgreSQL search_path mismatch: expected ${config.databaseSchema}`,
+    );
+  }
+}
+
+export async function closeDatabase(): Promise<void> {
+  if (postgres) {
+    const pool = postgres;
+    postgres = null;
+    await pool.end();
+  }
+  if (sqlite) {
+    sqlite.close();
+    sqlite = null;
+  }
 }

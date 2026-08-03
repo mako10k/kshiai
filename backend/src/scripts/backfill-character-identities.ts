@@ -5,7 +5,7 @@ import {
 } from "../repositories/characters.js";
 
 const apply = process.argv.includes("--apply");
-const sheets = listSheetsMissingIdentity();
+const sheets = await listSheetsMissingIdentity();
 console.info(`[identity-backfill] ${sheets.length} character(s) need an identity profile`);
 
 if (!apply) {
@@ -17,7 +17,7 @@ const llm = createLlmProvider();
 let updated = 0;
 for (const sheet of sheets) {
   const identity = await llm.inferCharacterIdentity(sheet);
-  saveSheet({
+  await saveSheet({
     ...sheet,
     identity,
     updatedAt: new Date().toISOString(),

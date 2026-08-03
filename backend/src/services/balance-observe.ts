@@ -13,7 +13,7 @@ import {
   type CharacterSheet,
   type SheetCombatProfile,
 } from "@kshiai/shared";
-import { getDb } from "../db.js";
+import { databaseKind, query } from "../db.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const logDir = path.resolve(__dirname, "../../data/logs");
@@ -21,24 +21,8 @@ const balanceLogPath = path.join(logDir, "balance.jsonl");
 
 export type BalanceEventKind = "battle_finished" | "sheet_snapshot";
 
-function ensureTable(): void {
-  getDb().exec(`
-    CREATE TABLE IF NOT EXISTS balance_events (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      kind TEXT NOT NULL,
-      created_at TEXT NOT NULL,
-      battle_id TEXT,
-      character_id TEXT,
-      payload_json TEXT NOT NULL
-    );
-    CREATE INDEX IF NOT EXISTS idx_balance_events_kind_time
-      ON balance_events (kind, created_at);
-    CREATE INDEX IF NOT EXISTS idx_balance_events_battle
-      ON balance_events (battle_id);
-  `);
-}
-
 function appendJsonl(row: Record<string, unknown>): void {
+  if (databaseKind() === "postgres") return;
   try {
     fs.mkdirSync(logDir, { recursive: true });
     fs.appendFileSync(
@@ -51,32 +35,31 @@ function appendJsonl(row: Record<string, unknown>): void {
   }
 }
 
-function insertEvent(input: {
+async function insertEvent(input: {
   kind: BalanceEventKind;
   createdAt: string;
   battleId?: string | null;
   characterId?: string | null;
   payload: Record<string, unknown>;
-}): void {
-  ensureTable();
-  getDb()
-    .prepare(
-      `INSERT INTO balance_events (kind, created_at, battle_id, character_id, payload_json)
-       VALUES (?, ?, ?, ?, ?)`,
-    )
-    .run(
+}): Promise<void> {
+  await query(
+    `INSERT INTO balance_events
+      (kind, created_at, battle_id, character_id, payload_json)
+     VALUES ($1, $2, $3, $4, $5)`,
+    [
       input.kind,
       input.createdAt,
       input.battleId ?? null,
       input.characterId ?? null,
       JSON.stringify(input.payload),
-    );
+    ],
+  );
 }
 
-export function recordSheetSnapshot(input: {
+export async function recordSheetSnapshot(input: {
   sheet: CharacterSheet;
   phase: "generate" | "chat" | "rebalance" | "copy" | "restore";
-}): SheetCombatProfile {
+}): Promise<SheetCombatProfile> {
   const profile = sheetCombatProfile({
     parameters: input.sheet.parameters,
     skills: input.sheet.skills,
@@ -96,7 +79,7 @@ export function recordSheetSnapshot(input: {
     traits: (input.sheet.traits ?? []).slice(0, 8),
   };
   try {
-    insertEvent({
+    await insertEvent({
       kind: "sheet_snapshot",
       createdAt,
       characterId: input.sheet.id,
@@ -114,24 +97,23 @@ export function recordSheetSnapshot(input: {
   return profile;
 }
 
-export function recordBattleFinished(input: {
+export async function recordBattleFinished(input: {
   state: BattleState;
   sameOwner?: boolean;
   ranked?: boolean;
   sideAProfile?: SheetCombatProfile | null;
   sideBProfile?: SheetCombatProfile | null;
-}): void {
+}): Promise<void> {
   const state = input.state;
   if (state.status !== "finished") return;
 
   // Dedupe: one row per battle
-  ensureTable();
-  const existing = getDb()
-    .prepare(
-      `SELECT id FROM balance_events WHERE kind = 'battle_finished' AND battle_id = ? LIMIT 1`,
-    )
-    .get(state.id) as { id: number } | undefined;
-  if (existing) return;
+  const existing = await query<{ id: number | string }>(
+    `SELECT id FROM balance_events
+     WHERE kind = 'battle_finished' AND battle_id = $1 LIMIT 1`,
+    [state.id],
+  );
+  if (existing.rows[0]) return;
 
   const trace: BattleBalanceTrace =
     state.balanceTrace ?? emptyBattleBalanceTrace();
@@ -178,7 +160,7 @@ export function recordBattleFinished(input: {
   };
 
   try {
-    insertEvent({
+    await insertEvent({
       kind: "battle_finished",
       createdAt,
       battleId: state.id,
@@ -231,17 +213,18 @@ export type BalanceSummary = {
   logPath: string;
 };
 
-export function getBalanceSummary(limitRecent = 20): BalanceSummary {
-  ensureTable();
-  const db = getDb();
-  const battleRows = db
-    .prepare(
-      `SELECT created_at, battle_id, payload_json FROM balance_events
-       WHERE kind = 'battle_finished'
-       ORDER BY id DESC
-       LIMIT 500`,
-    )
-    .all() as Array<{ created_at: string; battle_id: string; payload_json: string }>;
+export async function getBalanceSummary(limitRecent = 20): Promise<BalanceSummary> {
+  const battleResult = await query<{
+    created_at: string | Date;
+    battle_id: string;
+    payload_json: unknown;
+  }>(
+    `SELECT created_at, battle_id, payload_json FROM balance_events
+     WHERE kind = 'battle_finished'
+     ORDER BY id DESC
+     LIMIT 500`,
+  );
+  const battleRows = battleResult.rows;
 
   let sumTurns = 0;
   let early = 0;
@@ -263,7 +246,9 @@ export function getBalanceSummary(limitRecent = 20): BalanceSummary {
       };
     };
     try {
-      p = JSON.parse(row.payload_json);
+      p = (typeof row.payload_json === "string"
+        ? JSON.parse(row.payload_json)
+        : row.payload_json) as typeof p;
     } catch {
       continue;
     }
@@ -278,7 +263,9 @@ export function getBalanceSummary(limitRecent = 20): BalanceSummary {
     if (recentFlags.length < limitRecent) {
       recentFlags.push({
         battleId: row.battle_id,
-        createdAt: row.created_at,
+        createdAt: row.created_at instanceof Date
+          ? row.created_at.toISOString()
+          : row.created_at,
         earlyKo: Boolean(f.earlyKo),
         oneShotSuspect: Boolean(f.oneShotSuspect),
         shortMatch: Boolean(f.shortMatch),
@@ -289,14 +276,13 @@ export function getBalanceSummary(limitRecent = 20): BalanceSummary {
     }
   }
 
-  const sheetRows = db
-    .prepare(
-      `SELECT payload_json FROM balance_events
-       WHERE kind = 'sheet_snapshot'
-       ORDER BY id DESC
-       LIMIT 300`,
-    )
-    .all() as Array<{ payload_json: string }>;
+  const sheetResult = await query<{ payload_json: unknown }>(
+    `SELECT payload_json FROM balance_events
+     WHERE kind = 'sheet_snapshot'
+     ORDER BY id DESC
+     LIMIT 300`,
+  );
+  const sheetRows = sheetResult.rows;
 
   let sn = 0;
   let sumSharp = 0;
@@ -304,7 +290,9 @@ export function getBalanceSummary(limitRecent = 20): BalanceSummary {
   let inflated = 0;
   for (const row of sheetRows) {
     try {
-      const p = JSON.parse(row.payload_json) as {
+      const p = (typeof row.payload_json === "string"
+        ? JSON.parse(row.payload_json)
+        : row.payload_json) as {
         profile?: SheetCombatProfile;
       };
       const prof = p.profile;

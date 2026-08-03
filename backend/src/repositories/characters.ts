@@ -8,12 +8,13 @@ import {
 } from "@kshiai/shared";
 import type { CharacterReference } from "../llm/types.js";
 import { normalizeCharacterName } from "../character-name-uniqueness.js";
-import { getDb } from "../db.js";
+import { query } from "../db.js";
 import { newId } from "../id.js";
 
-function parseSheet(json: string): CharacterSheet {
+function parseSheet(json: unknown): CharacterSheet {
+  const value = typeof json === "string" ? JSON.parse(json) : json;
   const raw = ensureCharacterIdentityProperties(
-    ensureCharacterCombatProperties(CharacterSheetSchema.parse(JSON.parse(json))),
+    ensureCharacterCombatProperties(CharacterSheetSchema.parse(value)),
   );
   if (!raw.record) {
     return { ...raw, record: defaultRecord() };
@@ -41,9 +42,9 @@ export function searchOwnedCharacterReferences(
   userId: string,
   query: string,
   limit = 8,
-): CharacterReference[] {
+): Promise<CharacterReference[]> {
   const needle = query.trim().toLowerCase();
-  return listOwnedSheets(userId)
+  return listOwnedSheets(userId).then((sheets) => sheets
     .filter(isActive)
     .filter((sheet) => {
       if (!needle) return true;
@@ -60,44 +61,45 @@ export function searchOwnedCharacterReferences(
       ].some((value) => value.toLowerCase().includes(needle));
     })
     .slice(0, Math.max(1, Math.min(20, limit)))
-    .map(toReference);
+    .map(toReference));
 }
 
 /** Fetch a generation reference only when it belongs to userId. */
-export function getOwnedCharacterReference(
+export async function getOwnedCharacterReference(
   userId: string,
   characterId: string,
-): CharacterReference | null {
-  const sheet = getSheet(characterId);
+): Promise<CharacterReference | null> {
+  const sheet = await getSheet(characterId);
   return sheet?.ownerUserId === userId ? toReference(sheet) : null;
 }
 
 /** Internal migration support; never returned by an API route. */
-export function listAllSheetsIncludingDeleted(): CharacterSheet[] {
-  const rows = getDb()
-    .prepare(`SELECT sheet_json FROM characters ORDER BY updated_at ASC`)
-    .all() as { sheet_json: string }[];
+export async function listAllSheetsIncludingDeleted(): Promise<CharacterSheet[]> {
+  const { rows } = await query<{ sheet_json: unknown }>(
+    `SELECT sheet_json FROM characters ORDER BY updated_at ASC`,
+  );
   return rows.map((row) => parseSheet(row.sheet_json));
 }
 
-export function listSheetsMissingIdentity(): CharacterSheet[] {
-  const rows = getDb()
-    .prepare(`SELECT sheet_json FROM characters ORDER BY updated_at ASC`)
-    .all() as { sheet_json: string }[];
+export async function listSheetsMissingIdentity(): Promise<CharacterSheet[]> {
+  const { rows } = await query<{ sheet_json: unknown }>(
+    `SELECT sheet_json FROM characters ORDER BY updated_at ASC`,
+  );
   return rows
     .filter((row) => {
-      const value = JSON.parse(row.sheet_json) as Record<string, unknown>;
+      const value = (typeof row.sheet_json === "string"
+        ? JSON.parse(row.sheet_json)
+        : row.sheet_json) as Record<string, unknown>;
       return value.identity === undefined || value.identity === null;
     })
     .map((row) => parseSheet(row.sheet_json));
 }
 
-function listOwnedSheets(userId: string): CharacterSheet[] {
-  const rows = getDb()
-    .prepare(
-      `SELECT sheet_json FROM characters WHERE owner_user_id = ? ORDER BY updated_at DESC`,
-    )
-    .all(userId) as { sheet_json: string }[];
+async function listOwnedSheets(userId: string): Promise<CharacterSheet[]> {
+  const { rows } = await query<{ sheet_json: unknown }>(
+    `SELECT sheet_json FROM characters WHERE owner_user_id = $1 ORDER BY updated_at DESC`,
+    [userId],
+  );
   return rows.map((row) => parseSheet(row.sheet_json));
 }
 
@@ -106,9 +108,9 @@ function isActive(sheet: CharacterSheet): boolean {
 }
 
 /** All owner-scoped identifying names, used to prevent accidental reuse. */
-export function listOwnedCharacterReservedNames(userId: string): string[] {
+export async function listOwnedCharacterReservedNames(userId: string): Promise<string[]> {
   const unique = new Map<string, string>();
-  for (const sheet of listOwnedSheets(userId).filter(isActive)) {
+  for (const sheet of (await listOwnedSheets(userId)).filter(isActive)) {
     const identity = ensureCharacterIdentityProperties(sheet).identity!;
     const names = [
       sheet.displayName,
@@ -125,8 +127,8 @@ export function listOwnedCharacterReservedNames(userId: string): string[] {
   return [...unique.values()];
 }
 
-export function listCharactersForUser(userId: string, q?: string) {
-  let sheets = listOwnedSheets(userId).filter(isActive);
+export async function listCharactersForUser(userId: string, q?: string) {
+  let sheets = (await listOwnedSheets(userId)).filter(isActive);
   if (q?.trim()) {
     const needle = q.trim().toLowerCase();
     sheets = sheets.filter(
@@ -155,20 +157,19 @@ function isPlayableOpponent(sheet: CharacterSheet): boolean {
   return true;
 }
 
-export function listPublicOpponents(excludeUserId: string, q?: string) {
-  const db = getDb();
-  const rows = db
-    .prepare(
-      `SELECT sheet_json FROM characters WHERE owner_user_id != ? ORDER BY updated_at DESC LIMIT 200`,
-    )
-    .all(excludeUserId) as { sheet_json: string }[];
+export async function listPublicOpponents(excludeUserId: string, q?: string) {
+  const { rows } = await query<{ sheet_json: unknown }>(
+    `SELECT sheet_json FROM characters WHERE owner_user_id != $1 ORDER BY updated_at DESC LIMIT 200`,
+    [excludeUserId],
+  );
   let sheets = rows
     .map((r) => parseSheet(r.sheet_json))
     .filter(isPlayableOpponent);
   // Include own characters as sparring partners
-  const own = db
-    .prepare(`SELECT sheet_json FROM characters WHERE owner_user_id = ?`)
-    .all(excludeUserId) as { sheet_json: string }[];
+  const { rows: own } = await query<{ sheet_json: unknown }>(
+    `SELECT sheet_json FROM characters WHERE owner_user_id = $1`,
+    [excludeUserId],
+  );
   sheets = [
     ...sheets,
     ...own
@@ -184,25 +185,23 @@ export function listPublicOpponents(excludeUserId: string, q?: string) {
   return [...map.values()].map((s) => toPublicCharacter(s, excludeUserId));
 }
 
-export function getSheet(id: string): CharacterSheet | null {
-  const sheet = getSheetIncludingDeleted(id);
+export async function getSheet(id: string): Promise<CharacterSheet | null> {
+  const sheet = await getSheetIncludingDeleted(id);
   if (!sheet || sheet.deletedAt) return null;
   return sheet;
 }
 
-export function getSheetIncludingDeleted(id: string): CharacterSheet | null {
-  const row = getDb()
-    .prepare(`SELECT sheet_json FROM characters WHERE id = ?`)
-    .get(id) as { sheet_json: string } | undefined;
+export async function getSheetIncludingDeleted(id: string): Promise<CharacterSheet | null> {
+  const { rows } = await query<{ sheet_json: unknown }>(
+    `SELECT sheet_json FROM characters WHERE id = $1`,
+    [id],
+  );
+  const row = rows[0];
   if (!row) return null;
   return parseSheet(row.sheet_json);
 }
 
-export function saveSheet(sheet: CharacterSheet): void {
-  const db = getDb();
-  const existing = db
-    .prepare(`SELECT id FROM characters WHERE id = ?`)
-    .get(sheet.id);
+export async function saveSheet(sheet: CharacterSheet): Promise<void> {
   const withRecord: CharacterSheet = {
     ...ensureCharacterIdentityProperties(
       ensureCharacterCombatProperties(sheet),
@@ -210,50 +209,49 @@ export function saveSheet(sheet: CharacterSheet): void {
     record: sheet.record ?? defaultRecord(),
   };
   const json = JSON.stringify(withRecord);
-  if (existing) {
-    db.prepare(
-      `UPDATE characters SET sheet_json = ?, updated_at = ? WHERE id = ?`,
-    ).run(json, withRecord.updatedAt, withRecord.id);
-  } else {
-    db.prepare(
-      `INSERT INTO characters (id, owner_user_id, sheet_json, created_at, updated_at)
-       VALUES (?, ?, ?, ?, ?)`,
-    ).run(
+  await query(
+    `INSERT INTO characters (id, owner_user_id, sheet_json, created_at, updated_at)
+     VALUES ($1, $2, $3, $4, $5)
+     ON CONFLICT (id) DO UPDATE
+       SET owner_user_id = EXCLUDED.owner_user_id,
+           sheet_json = EXCLUDED.sheet_json,
+           updated_at = EXCLUDED.updated_at`,
+    [
       withRecord.id,
       withRecord.ownerUserId,
       json,
       withRecord.createdAt,
       withRecord.updatedAt,
-    );
-  }
+    ],
+  );
 }
 
 /** Soft-delete: hide from lists; rating impact is voided separately. */
-export function softDeleteCharacter(
+export async function softDeleteCharacter(
   id: string,
   ownerUserId: string,
-): CharacterSheet | null {
-  const sheet = getSheet(id);
+): Promise<CharacterSheet | null> {
+  const sheet = await getSheet(id);
   if (!sheet || sheet.ownerUserId !== ownerUserId) return null;
   const next: CharacterSheet = {
     ...sheet,
     deletedAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };
-  saveSheet(next);
+  await saveSheet(next);
   return next;
 }
 
 /** @deprecated use softDeleteCharacter */
-export function deleteCharacter(id: string, ownerUserId: string): boolean {
-  return softDeleteCharacter(id, ownerUserId) != null;
+export async function deleteCharacter(id: string, ownerUserId: string): Promise<boolean> {
+  return (await softDeleteCharacter(id, ownerUserId)) != null;
 }
 
-export function copyCharacter(
+export async function copyCharacter(
   id: string,
   ownerUserId: string,
-): CharacterSheet | null {
-  const src = getSheet(id);
+): Promise<CharacterSheet | null> {
+  const src = await getSheet(id);
   if (!src || src.ownerUserId !== ownerUserId) return null;
   const t = new Date().toISOString();
   const copy: CharacterSheet = {
@@ -274,6 +272,6 @@ export function copyCharacter(
     // Undo buffer is character-instance specific.
     revisionSnapshot: null,
   };
-  saveSheet(copy);
+  await saveSheet(copy);
   return copy;
 }

@@ -171,7 +171,7 @@ async function resolveBattlefieldInstance(input: {
     input.battlefieldMode ?? (input.battlefieldPresetId ? "preset" : "random");
 
   if (mode === "preset" && input.battlefieldPresetId) {
-    const preset = bfRepo.getPreset(input.battlefieldPresetId);
+    const preset = await bfRepo.getPreset(input.battlefieldPresetId);
     if (!preset) throw new Error("BATTLEFIELD_NOT_FOUND");
     if (!preset.isSystem && preset.ownerUserId !== input.userId) {
       throw new Error("BATTLEFIELD_FORBIDDEN");
@@ -179,7 +179,7 @@ async function resolveBattlefieldInstance(input: {
     return input.llm.concretizeBattlefield({ preset, random: false });
   }
 
-  const seed = bfRepo.pickRandomSystemPreset();
+  const seed = await bfRepo.pickRandomSystemPreset();
   return input.llm.concretizeBattlefield({
     preset: seed,
     random: true,
@@ -236,21 +236,21 @@ export async function generateMatchPolicies(input: {
   rationale: string;
   fieldHint: string;
 }> {
-  const mine = charRepo.getSheet(input.myCharacterId);
+  const mine = await charRepo.getSheet(input.myCharacterId);
   if (!mine || mine.ownerUserId !== input.userId) {
     throw new Error("MY_CHARACTER_NOT_FOUND");
   }
   const foe = input.opponentCharacterId
-    ? charRepo.getSheet(input.opponentCharacterId)
+    ? await charRepo.getSheet(input.opponentCharacterId)
     : null;
 
   let fieldPreset: BattlefieldPreset | null = null;
   if (input.battlefieldMode === "preset" && input.battlefieldPresetId) {
-    fieldPreset = bfRepo.getPreset(input.battlefieldPresetId);
+    fieldPreset = await bfRepo.getPreset(input.battlefieldPresetId);
   } else if (input.battlefieldPresetId) {
-    fieldPreset = bfRepo.getPreset(input.battlefieldPresetId);
+    fieldPreset = await bfRepo.getPreset(input.battlefieldPresetId);
   } else {
-    fieldPreset = bfRepo.pickRandomSystemPreset();
+    fieldPreset = await bfRepo.pickRandomSystemPreset();
   }
 
   const field = fieldHintFromPreset(fieldPreset);
@@ -315,8 +315,8 @@ export async function startBattle(input: {
   narrationStyleId?: string;
   llm: LlmProvider;
 }): Promise<BattlePublic> {
-  const mine = charRepo.getSheet(input.myCharacterId);
-  const opp = charRepo.getSheet(input.opponentCharacterId);
+  const mine = await charRepo.getSheet(input.myCharacterId);
+  const opp = await charRepo.getSheet(input.opponentCharacterId);
   if (!mine || mine.ownerUserId !== input.userId) {
     throw new Error("MY_CHARACTER_NOT_FOUND");
   }
@@ -382,12 +382,12 @@ export async function startBattle(input: {
     policiesB.filter((p) => p.defaultSelected).map((p) => p.id),
   );
 
-  const narrationStyle = styleRepo.resolveNarrationStyleForUser(
+  const narrationStyle = await styleRepo.resolveNarrationStyleForUser(
     input.userId,
     input.narrationStyleId,
   );
   const narrationSnap = toNarrationSnapshot(narrationStyle);
-  const priorMatchSummary = battleRepo.findPriorMatchSummary(
+  const priorMatchSummary = await battleRepo.findPriorMatchSummary(
     mine.id,
     opp.id,
   );
@@ -445,7 +445,7 @@ export async function startBattle(input: {
     updatedAt: new Date().toISOString(),
   };
 
-  battleRepo.saveBattle(state, {
+  await battleRepo.saveBattle(state, {
     sideAUserId: input.userId,
     sideACharacterId: mine.id,
     sideBCharacterId: opp.id,
@@ -765,8 +765,8 @@ export async function advanceTurn(input: {
       );
     }
   };
-  const meta = battleRepo.getBattleMeta(input.battleId);
-  const state = battleRepo.getBattle(input.battleId);
+  const meta = await battleRepo.getBattleMeta(input.battleId);
+  const state = await battleRepo.getBattle(input.battleId);
   if (!meta || !state) throw new Error("BATTLE_NOT_FOUND");
   if (meta.side_a_user_id !== input.userId) throw new Error("FORBIDDEN");
   if (state.status !== "active") throw new Error("BATTLE_FINISHED");
@@ -777,8 +777,8 @@ export async function advanceTurn(input: {
   if (!state.policiesB) state.policiesB = [];
   if (!state.selectedPolicyIdsB) state.selectedPolicyIdsB = [];
 
-  const mine = charRepo.getSheet(meta.side_a_character_id);
-  const opp = charRepo.getSheet(meta.side_b_character_id);
+  const mine = await charRepo.getSheet(meta.side_a_character_id);
+  const opp = await charRepo.getSheet(meta.side_b_character_id);
   if (!mine || !opp) throw new Error("CHARACTER_MISSING");
   // Older active battles did not snapshot restoration targets.
   state.sideA.baseParameters ??= { ...mine.parameters };
@@ -1046,7 +1046,7 @@ export async function advanceTurn(input: {
   // KO this turn: combat narrative is done, but official finish waits for aftermath advance.
   // Do not settle rating yet.
   if (next.aftermathPending) {
-    battleRepo.saveBattle(next, {
+    await battleRepo.saveBattle(next, {
       sideAUserId: meta.side_a_user_id,
       sideACharacterId: meta.side_a_character_id,
       sideBCharacterId: meta.side_b_character_id,
@@ -1090,9 +1090,9 @@ export async function advanceTurn(input: {
 
     // Elo + W-L (same-owner matches unranked for Elo)
     const { settleBattleRating } = await import("./rating-service.js");
-    next = settleBattleRating(next);
+    next = await settleBattleRating(next);
     try {
-      recordBattleFinished({
+      await recordBattleFinished({
         state: next,
         sameOwner: next.ratingSettlement?.sameOwner,
         ranked: next.ratingSettlement?.ranked,
@@ -1107,7 +1107,7 @@ export async function advanceTurn(input: {
     }
   }
 
-  battleRepo.saveBattle(next, {
+  await battleRepo.saveBattle(next, {
     sideAUserId: meta.side_a_user_id,
     sideACharacterId: meta.side_a_character_id,
     sideBCharacterId: meta.side_b_character_id,
@@ -1253,7 +1253,7 @@ async function runPrologueTurn(input: {
     updatedAt: new Date().toISOString(),
   };
 
-  battleRepo.saveBattle(next, {
+  await battleRepo.saveBattle(next, {
     sideAUserId: input.meta.side_a_user_id,
     sideACharacterId: input.meta.side_a_character_id,
     sideBCharacterId: input.meta.side_b_character_id,
@@ -1395,9 +1395,9 @@ async function runAftermathTurn(input: {
   };
 
   const { settleBattleRating } = await import("./rating-service.js");
-  next = settleBattleRating(next);
+  next = await settleBattleRating(next);
   try {
-    recordBattleFinished({
+    await recordBattleFinished({
       state: next,
       sameOwner: next.ratingSettlement?.sameOwner,
       ranked: next.ratingSettlement?.ranked,
@@ -1411,7 +1411,7 @@ async function runAftermathTurn(input: {
     );
   }
 
-  battleRepo.saveBattle(next, {
+  await battleRepo.saveBattle(next, {
     sideAUserId: input.meta.side_a_user_id,
     sideACharacterId: input.meta.side_a_character_id,
     sideBCharacterId: input.meta.side_b_character_id,
@@ -1430,8 +1430,8 @@ export async function performAction(input: {
   return advanceTurn(input);
 }
 
-export function pickRandomOpponent(userId: string, myCharacterId: string) {
-  const all = charRepo.listPublicOpponents(userId);
+export async function pickRandomOpponent(userId: string, myCharacterId: string) {
+  const all = await charRepo.listPublicOpponents(userId);
   const candidates = all.filter((c) => c.id !== myCharacterId);
   if (candidates.length === 0) return null;
   return candidates[Math.floor(Math.random() * candidates.length)]!;

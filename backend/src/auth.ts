@@ -3,7 +3,7 @@ import type { Context, Next } from "hono";
 import { getCookie, setCookie, deleteCookie } from "hono/cookie";
 import type { UserPublic } from "@kshiai/shared";
 import { config } from "./config.js";
-import { getDb } from "./db.js";
+import { query } from "./db.js";
 import { newId } from "./id.js";
 
 const COOKIE = "kshiai_session";
@@ -15,17 +15,18 @@ export async function registerUser(
   username: string,
   password: string,
 ): Promise<AuthUser> {
-  const db = getDb();
   const id = newId("usr");
   const password_hash = await bcrypt.hash(password, 10);
   const created_at = new Date().toISOString();
   try {
-    db.prepare(
-      `INSERT INTO users (id, username, password_hash, created_at) VALUES (?, ?, ?, ?)`,
-    ).run(id, username, password_hash, created_at);
+    await query(
+      `INSERT INTO users (id, username, password_hash, created_at)
+       VALUES ($1, $2, $3, $4)`,
+      [id, username, password_hash, created_at],
+    );
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
-    if (msg.includes("UNIQUE")) {
+    if (msg.includes("UNIQUE") || (e as { code?: string }).code === "23505") {
       throw new Error("USERNAME_TAKEN");
     }
     throw e;
@@ -37,47 +38,54 @@ export async function verifyLogin(
   username: string,
   password: string,
 ): Promise<AuthUser | null> {
-  const db = getDb();
-  const row = db
-    .prepare(`SELECT id, username, password_hash FROM users WHERE username = ?`)
-    .get(username) as
-    | { id: string; username: string; password_hash: string }
-    | undefined;
+  const result = await query<{
+    id: string;
+    username: string;
+    password_hash: string;
+  }>(
+    `SELECT id, username, password_hash FROM users WHERE username = $1`,
+    [username],
+  );
+  const row = result.rows[0];
   if (!row) return null;
   const ok = await bcrypt.compare(password, row.password_hash);
   if (!ok) return null;
   return { id: row.id, username: row.username };
 }
 
-export function createSession(userId: string): string {
-  const db = getDb();
+export async function createSession(userId: string): Promise<string> {
   const token = newId("ses");
   const created_at = new Date().toISOString();
   const expires = new Date();
   expires.setDate(expires.getDate() + SESSION_DAYS);
-  db.prepare(
-    `INSERT INTO sessions (token, user_id, created_at, expires_at) VALUES (?, ?, ?, ?)`,
-  ).run(token, userId, created_at, expires.toISOString());
+  await query(
+    `INSERT INTO sessions (token, user_id, created_at, expires_at)
+     VALUES ($1, $2, $3, $4)`,
+    [token, userId, created_at, expires.toISOString()],
+  );
   return token;
 }
 
-export function destroySession(token: string): void {
-  getDb().prepare(`DELETE FROM sessions WHERE token = ?`).run(token);
+export async function destroySession(token: string): Promise<void> {
+  await query(`DELETE FROM sessions WHERE token = $1`, [token]);
 }
 
-export function userFromToken(token: string | undefined): AuthUser | null {
+export async function userFromToken(token: string | undefined): Promise<AuthUser | null> {
   if (!token) return null;
-  const db = getDb();
-  const row = db
-    .prepare(
-      `SELECT u.id, u.username, s.expires_at
-       FROM sessions s JOIN users u ON u.id = s.user_id
-       WHERE s.token = ?`,
-    )
-    .get(token) as { id: string; username: string; expires_at: string } | undefined;
+  const result = await query<{
+    id: string;
+    username: string;
+    expires_at: string | Date;
+  }>(
+    `SELECT u.id, u.username, s.expires_at
+     FROM sessions s JOIN users u ON u.id = s.user_id
+     WHERE s.token = $1`,
+    [token],
+  );
+  const row = result.rows[0];
   if (!row) return null;
   if (new Date(row.expires_at).getTime() < Date.now()) {
-    destroySession(token);
+    await destroySession(token);
     return null;
   }
   return { id: row.id, username: row.username };
@@ -111,7 +119,7 @@ export function getSessionToken(c: Context): string | undefined {
 }
 
 export async function requireUser(c: Context, next: Next) {
-  const user = userFromToken(getSessionToken(c));
+  const user = await userFromToken(getSessionToken(c));
   if (!user) {
     return c.json({ error: "unauthorized" }, 401);
   }

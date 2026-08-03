@@ -122,7 +122,7 @@ function applyEloTrack(
  * - overall: every finished match (incl. same-account sparring)
  * - public: cross-account only (shown to everyone)
  */
-export function settleBattleRating(state: BattleState): BattleState {
+export async function settleBattleRating(state: BattleState): Promise<BattleState> {
   if (state.status !== "finished") return state;
   if (state.ratingSettlement?.applied && !state.ratingSettlement.voided) {
     return state;
@@ -130,8 +130,8 @@ export function settleBattleRating(state: BattleState): BattleState {
 
   const idA = state.sideA.characterId;
   const idB = state.sideB.characterId;
-  const sheetA = charRepo.getSheet(idA);
-  const sheetB = charRepo.getSheet(idB);
+  const sheetA = await charRepo.getSheet(idA);
+  const sheetB = await charRepo.getSheet(idB);
   if (!sheetA || !sheetB) return state;
   if (sheetA.deletedAt || sheetB.deletedAt) return state;
 
@@ -158,8 +158,8 @@ export function settleBattleRating(state: BattleState): BattleState {
     publicB = pB.snap;
   }
 
-  charRepo.saveSheet(nextA);
-  charRepo.saveSheet(nextB);
+  await charRepo.saveSheet(nextA);
+  await charRepo.saveSheet(nextB);
 
   const settlement = {
     applied: true,
@@ -184,8 +184,8 @@ export function settleBattleRating(state: BattleState): BattleState {
  * When a character is soft-deleted, void rating from their matches
  * so survivors don't keep free Elo from disposable alts.
  */
-export function voidRatingsInvolvingCharacter(characterId: string): number {
-  const battles = battleRepo.listBattlesInvolvingCharacter(characterId);
+export async function voidRatingsInvolvingCharacter(characterId: string): Promise<number> {
+  const battles = await battleRepo.listBattlesInvolvingCharacter(characterId);
   let voided = 0;
 
   for (const { state, meta } of battles) {
@@ -210,14 +210,14 @@ export function voidRatingsInvolvingCharacter(characterId: string): number {
     const overall = s.overall ?? { sideA: s.sideA, sideB: s.sideB };
     const pub = s.public ?? (s.ranked && !s.sameOwner ? overall : null);
 
-    const reverseSide = (
+    const reverseSide = async (
       snap: SideSnap,
       outcome: RankedOutcome,
       track: Track,
     ) => {
-      const sheet = charRepo.getSheetIncludingDeleted(snap.characterId);
+      const sheet = await charRepo.getSheetIncludingDeleted(snap.characterId);
       if (!sheet) return;
-      charRepo.saveSheet(
+      await charRepo.saveSheet(
         unbumpTrack(
           sheet,
           track,
@@ -228,11 +228,11 @@ export function voidRatingsInvolvingCharacter(characterId: string): number {
       );
     };
 
-    reverseSide(overall.sideA, outcomeA, "overall");
-    reverseSide(overall.sideB, outcomeB, "overall");
+    await reverseSide(overall.sideA, outcomeA, "overall");
+    await reverseSide(overall.sideB, outcomeB, "overall");
     if (pub) {
-      reverseSide(pub.sideA, outcomeA, "public");
-      reverseSide(pub.sideB, outcomeB, "public");
+      await reverseSide(pub.sideA, outcomeA, "public");
+      await reverseSide(pub.sideB, outcomeB, "public");
     }
 
     const nextState: BattleState = {
@@ -240,7 +240,7 @@ export function voidRatingsInvolvingCharacter(characterId: string): number {
       ratingSettlement: { ...s, applied: false, voided: true },
       updatedAt: new Date().toISOString(),
     };
-    battleRepo.saveBattle(nextState, {
+    await battleRepo.saveBattle(nextState, {
       sideAUserId: meta.side_a_user_id,
       sideACharacterId: meta.side_a_character_id,
       sideBCharacterId: meta.side_b_character_id,

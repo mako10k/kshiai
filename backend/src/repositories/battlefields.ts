@@ -4,22 +4,28 @@ import {
   toPublicPreset,
   type BattlefieldPreset,
 } from "@kshiai/shared";
-import { getDb } from "../db.js";
+import { query, withTransaction } from "../db.js";
 import { newId } from "../id.js";
 
-export function ensureSystemPresets(): void {
-  const db = getDb();
-  const row = db
-    .prepare(`SELECT COUNT(*) AS c FROM battlefields WHERE is_system = 1`)
-    .get() as { c: number };
+let seedPromise: Promise<void> | null = null;
 
-  if (row.c === 0) {
+export function ensureSystemPresets(): Promise<void> {
+  seedPromise ??= seedSystemPresets().catch((error) => {
+    seedPromise = null;
+    throw error;
+  });
+  return seedPromise;
+}
+
+async function seedSystemPresets(): Promise<void> {
+  const count = await query<{ c: number | string }>(
+    `SELECT COUNT(*) AS c FROM battlefields WHERE is_system = TRUE`,
+  );
+  const row = count.rows[0];
+
+  if (Number(row?.c ?? 0) === 0) {
     const t = new Date().toISOString();
-    const insert = db.prepare(
-      `INSERT INTO battlefields (id, owner_user_id, is_system, sheet_json, created_at, updated_at)
-       VALUES (?, NULL, 1, ?, ?, ?)`,
-    );
-    const tx = db.transaction(() => {
+    await withTransaction(async (connection) => {
       for (const seed of SYSTEM_PRESET_SEEDS) {
         const preset: BattlefieldPreset = {
           ...seed,
@@ -30,10 +36,15 @@ export function ensureSystemPresets(): void {
           updatedAt: t,
           baseCoefficients: seed.baseCoefficients ?? {},
         };
-        insert.run(preset.id, JSON.stringify(preset), t, t);
+        await connection.query(
+          `INSERT INTO battlefields
+            (id, owner_user_id, is_system, sheet_json, created_at, updated_at)
+           VALUES ($1, NULL, TRUE, $2, $3, $4)
+           ON CONFLICT (id) DO NOTHING`,
+          [preset.id, JSON.stringify(preset), t, t],
+        );
       }
     });
-    tx();
     return;
   }
 
@@ -41,14 +52,13 @@ export function ensureSystemPresets(): void {
   const byCategory = new Map(
     SYSTEM_PRESET_SEEDS.map((s) => [s.category, s] as const),
   );
-  const rows = db
-    .prepare(`SELECT id, sheet_json FROM battlefields WHERE is_system = 1`)
-    .all() as { id: string; sheet_json: string }[];
-  const update = db.prepare(
-    `UPDATE battlefields SET sheet_json = ?, updated_at = ? WHERE id = ?`,
+  const { rows } = await query<{ id: string; sheet_json: unknown }>(
+    `SELECT id, sheet_json FROM battlefields WHERE is_system = TRUE`,
   );
   for (const r of rows) {
-    const preset = BattlefieldPresetSchema.parse(JSON.parse(r.sheet_json));
+    const preset = BattlefieldPresetSchema.parse(
+      typeof r.sheet_json === "string" ? JSON.parse(r.sheet_json) : r.sheet_json,
+    );
     const seed = byCategory.get(preset.category);
     if (!seed?.appearance.imageUrl) continue;
     if (preset.appearance.imageUrl === seed.appearance.imageUrl) continue;
@@ -65,29 +75,32 @@ export function ensureSystemPresets(): void {
         },
         updatedAt: new Date().toISOString(),
       };
-      update.run(JSON.stringify(next), next.updatedAt, r.id);
+      await query(
+        `UPDATE battlefields SET sheet_json = $1, updated_at = $2 WHERE id = $3`,
+        [JSON.stringify(next), next.updatedAt, r.id],
+      );
     }
   }
 }
 
-function parse(row: { sheet_json: string }): BattlefieldPreset {
-  return BattlefieldPresetSchema.parse(JSON.parse(row.sheet_json));
+function parse(row: { sheet_json: unknown }): BattlefieldPreset {
+  return BattlefieldPresetSchema.parse(
+    typeof row.sheet_json === "string" ? JSON.parse(row.sheet_json) : row.sheet_json,
+  );
 }
 
-export function listPresets(opts: {
+export async function listPresets(opts: {
   userId: string;
   q?: string;
   includeSystem?: boolean;
-}): ReturnType<typeof toPublicPreset>[] {
-  ensureSystemPresets();
-  const db = getDb();
-  const rows = db
-    .prepare(
-      `SELECT sheet_json FROM battlefields
-       WHERE is_system = 1 OR owner_user_id = ?
-       ORDER BY is_system DESC, updated_at DESC`,
-    )
-    .all(opts.userId) as { sheet_json: string }[];
+}): Promise<ReturnType<typeof toPublicPreset>[]> {
+  await ensureSystemPresets();
+  const { rows } = await query<{ sheet_json: unknown }>(
+    `SELECT sheet_json FROM battlefields
+     WHERE is_system = TRUE OR owner_user_id = $1
+     ORDER BY is_system DESC, updated_at DESC`,
+    [opts.userId],
+  );
 
   let presets = rows.map(parse);
   if (opts.includeSystem === false) {
@@ -106,61 +119,53 @@ export function listPresets(opts: {
   return presets.map(toPublicPreset);
 }
 
-export function getPreset(id: string): BattlefieldPreset | null {
-  ensureSystemPresets();
-  const row = getDb()
-    .prepare(`SELECT sheet_json FROM battlefields WHERE id = ?`)
-    .get(id) as { sheet_json: string } | undefined;
+export async function getPreset(id: string): Promise<BattlefieldPreset | null> {
+  await ensureSystemPresets();
+  const { rows } = await query<{ sheet_json: unknown }>(
+    `SELECT sheet_json FROM battlefields WHERE id = $1`,
+    [id],
+  );
+  const row = rows[0];
   if (!row) return null;
   return parse(row);
 }
 
-export function savePreset(preset: BattlefieldPreset): void {
-  const db = getDb();
-  const existing = db
-    .prepare(`SELECT id FROM battlefields WHERE id = ?`)
-    .get(preset.id);
+export async function savePreset(preset: BattlefieldPreset): Promise<void> {
   const json = JSON.stringify(preset);
-  if (existing) {
-    db.prepare(
-      `UPDATE battlefields SET sheet_json = ?, updated_at = ?, owner_user_id = ?, is_system = ?
-       WHERE id = ?`,
-    ).run(
-      json,
-      preset.updatedAt,
-      preset.ownerUserId,
-      preset.isSystem ? 1 : 0,
-      preset.id,
-    );
-  } else {
-    db.prepare(
-      `INSERT INTO battlefields (id, owner_user_id, is_system, sheet_json, created_at, updated_at)
-       VALUES (?, ?, ?, ?, ?, ?)`,
-    ).run(
+  await query(
+    `INSERT INTO battlefields
+      (id, owner_user_id, is_system, sheet_json, created_at, updated_at)
+     VALUES ($1, $2, $3, $4, $5, $6)
+     ON CONFLICT (id) DO UPDATE
+       SET owner_user_id = EXCLUDED.owner_user_id,
+           is_system = EXCLUDED.is_system,
+           sheet_json = EXCLUDED.sheet_json,
+           updated_at = EXCLUDED.updated_at`,
+    [
       preset.id,
       preset.ownerUserId,
-      preset.isSystem ? 1 : 0,
+      preset.isSystem,
       json,
       preset.createdAt,
       preset.updatedAt,
-    );
-  }
+    ],
+  );
 }
 
-export function deletePreset(id: string, ownerUserId: string): boolean {
-  const r = getDb()
-    .prepare(
-      `DELETE FROM battlefields WHERE id = ? AND owner_user_id = ? AND is_system = 0`,
-    )
-    .run(id, ownerUserId);
-  return r.changes > 0;
+export async function deletePreset(id: string, ownerUserId: string): Promise<boolean> {
+  const result = await query(
+    `DELETE FROM battlefields
+     WHERE id = $1 AND owner_user_id = $2 AND is_system = FALSE`,
+    [id, ownerUserId],
+  );
+  return result.rowCount > 0;
 }
 
-export function copyPreset(
+export async function copyPreset(
   id: string,
   ownerUserId: string,
-): BattlefieldPreset | null {
-  const src = getPreset(id);
+): Promise<BattlefieldPreset | null> {
+  const src = await getPreset(id);
   if (!src) return null;
   // system or own
   if (!src.isSystem && src.ownerUserId !== ownerUserId) return null;
@@ -179,15 +184,15 @@ export function copyPreset(
     obstacleHints: [...src.obstacleHints],
     conditionHints: [...src.conditionHints],
   };
-  savePreset(copy);
+  await savePreset(copy);
   return copy;
 }
 
-export function pickRandomSystemPreset(): BattlefieldPreset | null {
-  ensureSystemPresets();
-  const rows = getDb()
-    .prepare(`SELECT sheet_json FROM battlefields WHERE is_system = 1`)
-    .all() as { sheet_json: string }[];
+export async function pickRandomSystemPreset(): Promise<BattlefieldPreset | null> {
+  await ensureSystemPresets();
+  const { rows } = await query<{ sheet_json: unknown }>(
+    `SELECT sheet_json FROM battlefields WHERE is_system = TRUE`,
+  );
   if (rows.length === 0) return null;
   return parse(rows[Math.floor(Math.random() * rows.length)]!);
 }

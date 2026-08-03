@@ -37,11 +37,11 @@ export function buildBattleHistoryTools(
   };
 }
 
-export function getCharacterImprovementPublic(
+export async function getCharacterImprovementPublic(
   sheet: CharacterSheet,
-): CharacterImprovementPublic {
+): Promise<CharacterImprovementPublic> {
   const memo = ensureImprovementMemo(sheet.improvementMemo);
-  const finishedBattles = battleRepo.countFinishedBattlesForCharacter(sheet.id);
+  const finishedBattles = await battleRepo.countFinishedBattlesForCharacter(sheet.id);
   return {
     memo,
     eligibility: getImprovementAnalysisEligibility(finishedBattles, memo),
@@ -57,7 +57,7 @@ export async function analyzeCharacterImprovement(input: {
   assistantMessage: string;
 }> {
   const { sheet, llm } = input;
-  const finishedBattles = battleRepo.countFinishedBattlesForCharacter(sheet.id);
+  const finishedBattles = await battleRepo.countFinishedBattlesForCharacter(sheet.id);
   const currentMemo = ensureImprovementMemo(sheet.improvementMemo);
   const eligibility = getImprovementAnalysisEligibility(
     finishedBattles,
@@ -105,11 +105,11 @@ export async function analyzeCharacterImprovement(input: {
     improvementMemo: nextMemo,
     updatedAt: new Date().toISOString(),
   };
-  charRepo.saveSheet(nextSheet);
+  await charRepo.saveSheet(nextSheet);
 
   return {
     sheet: nextSheet,
-    public: getCharacterImprovementPublic(nextSheet),
+    public: await getCharacterImprovementPublic(nextSheet),
     assistantMessage: analysis.assistantMessage,
   };
 }

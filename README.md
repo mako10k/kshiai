@@ -10,6 +10,8 @@
 設計 (llmthink): [docs/design.llmthink.dsl](docs/design.llmthink.dsl)  
 実装計画 (perttool): [docs/plan.pert](docs/plan.pert)
 
+PostgreSQL 移行: [docs/postgres_migration.md](docs/postgres_migration.md)
+
 ## 技術構成
 
 | 層 | 技術 | ポート |
@@ -17,7 +19,7 @@
 | Frontend | Vite + React + TypeScript | **5188** |
 | Backend | Hono + TypeScript | **3088** |
 | Shared | zod スキーマ / DTO | — |
-| DB | SQLite | — |
+| DB | SQLite（現行）→ PostgreSQL / Supabase（移行中） | — |
 | LLM | mock / xAI / Venice | — |
 
 ## 公開 URL

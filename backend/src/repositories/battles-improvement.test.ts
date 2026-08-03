@@ -120,8 +120,8 @@ describe("character battle history tools", () => {
   const characterId = "chr_self";
   const opponentId = "chr_opp";
 
-  it("indexes finished battles and supports search/detail", () => {
-    saveBattle(
+  it("indexes finished battles and supports search/detail", async () => {
+    await saveBattle(
       makeFinishedBattle({
         id: "bat_1",
         characterId,
@@ -137,7 +137,7 @@ describe("character battle history tools", () => {
         sideBCharacterId: opponentId,
       },
     );
-    saveBattle(
+    await saveBattle(
       makeFinishedBattle({
         id: "bat_2",
         characterId,
@@ -154,13 +154,13 @@ describe("character battle history tools", () => {
       },
     );
 
-    assert.equal(countFinishedBattlesForCharacter(characterId), 2);
+    assert.equal(await countFinishedBattlesForCharacter(characterId), 2);
 
-    const all = searchCharacterBattleHistory({ characterId, query: "" });
+    const all = await searchCharacterBattleHistory({ characterId, query: "" });
     assert.equal(all.length, 2);
     assert.equal(all[0]?.result === "win" || all[0]?.result === "loss", true);
 
-    const byOpp = searchCharacterBattleHistory({
+    const byOpp = await searchCharacterBattleHistory({
       characterId,
       query: "ヒカリ",
     });
@@ -168,7 +168,7 @@ describe("character battle history tools", () => {
     assert.equal(byOpp[0]?.opponentName, "ヒカリ");
     assert.equal(byOpp[0]?.result, "loss");
 
-    const detail = getCharacterBattleDetail(characterId, "bat_1");
+    const detail = await getCharacterBattleDetail(characterId, "bat_1");
     assert.ok(detail);
     assert.equal(detail!.result, "win");
     assert.ok(detail!.skillMentions.includes("先手のひらめき"));

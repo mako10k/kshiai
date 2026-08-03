@@ -2,13 +2,14 @@ import { serve } from "@hono/node-server";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { config } from "./config.js";
-import { getDb } from "./db.js";
+import { databaseKind, initializeDatabase } from "./db.js";
 import { ensureSystemPresets } from "./repositories/battlefields.js";
+import { ensureSystemNarrationStyles } from "./repositories/narration-styles.js";
 import { buildRoutes } from "./routes.js";
 
 // Ensure DB is ready + system battlefield presets
-getDb();
-ensureSystemPresets();
+await initializeDatabase();
+await Promise.all([ensureSystemPresets(), ensureSystemNarrationStyles()]);
 
 const app = new Hono();
 app.use(
@@ -32,7 +33,7 @@ app.onError((err, c) => {
 });
 
 console.log(
-  `kshiai API listening on http://${config.host}:${config.port} (llm=${config.llmProvider})`,
+  `kshiai API listening on http://${config.host}:${config.port} (llm=${config.llmProvider}, db=${databaseKind()})`,
 );
 
 serve({

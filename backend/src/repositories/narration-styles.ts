@@ -6,83 +6,93 @@ import {
   type NarrationStyle,
   type NarrationStylePublic,
 } from "@kshiai/shared";
-import { getDb } from "../db.js";
+import { query, withTransaction } from "../db.js";
 import { newId } from "../id.js";
 
-let seeded = false;
+let seedPromise: Promise<void> | null = null;
 
-export function ensureSystemNarrationStyles(): void {
-  if (seeded) return;
-  const db = getDb();
-  const now = new Date().toISOString();
-  for (const seed of SYSTEM_NARRATION_STYLE_SEEDS) {
-    const existing = db
-      .prepare(`SELECT sheet_json, created_at FROM narration_styles WHERE id = ?`)
-      .get(seed.id) as { sheet_json: string; created_at: string } | undefined;
-    const createdAt = existing?.created_at ?? now;
-    const full: NarrationStyle = {
-      ...seed,
-      perspective: seed.perspective ?? "external",
-      createdAt,
-      updatedAt: now,
-    };
-    if (existing) {
-      db.prepare(
-        `UPDATE narration_styles
-         SET sheet_json = ?, updated_at = ?, is_system = 1, owner_user_id = NULL
-         WHERE id = ?`,
-      ).run(JSON.stringify(full), now, seed.id);
-    } else {
-      db.prepare(
-        `INSERT INTO narration_styles
-          (id, owner_user_id, is_system, sheet_json, created_at, updated_at)
-         VALUES (?, NULL, 1, ?, ?, ?)`,
-      ).run(seed.id, JSON.stringify(full), createdAt, now);
-    }
-  }
-  seeded = true;
+export function ensureSystemNarrationStyles(): Promise<void> {
+  seedPromise ??= seedSystemNarrationStyles().catch((error) => {
+    seedPromise = null;
+    throw error;
+  });
+  return seedPromise;
 }
 
-function parse(json: string): NarrationStyle {
-  const raw = JSON.parse(json) as Record<string, unknown>;
+async function seedSystemNarrationStyles(): Promise<void> {
+  const now = new Date().toISOString();
+  await withTransaction(async (connection) => {
+    for (const seed of SYSTEM_NARRATION_STYLE_SEEDS) {
+      const existing = await connection.query<{ created_at: string | Date }>(
+        `SELECT created_at FROM narration_styles WHERE id = $1`,
+        [seed.id],
+      );
+      const rawCreatedAt = existing.rows[0]?.created_at;
+      const createdAt = rawCreatedAt instanceof Date
+        ? rawCreatedAt.toISOString()
+        : rawCreatedAt ?? now;
+      const full: NarrationStyle = {
+        ...seed,
+        perspective: seed.perspective ?? "external",
+        createdAt,
+        updatedAt: now,
+      };
+      await connection.query(
+        `INSERT INTO narration_styles
+          (id, owner_user_id, is_system, sheet_json, created_at, updated_at)
+         VALUES ($1, NULL, TRUE, $2, $3, $4)
+         ON CONFLICT (id) DO UPDATE
+           SET owner_user_id = NULL,
+               is_system = TRUE,
+               sheet_json = EXCLUDED.sheet_json,
+               updated_at = EXCLUDED.updated_at`,
+        [seed.id, JSON.stringify(full), createdAt, now],
+      );
+    }
+  });
+}
+
+function parse(json: unknown): NarrationStyle {
+  const raw = (typeof json === "string" ? JSON.parse(json) : json) as Record<string, unknown>;
   // Legacy rows may omit perspective.
   if (raw.perspective == null) raw.perspective = "external";
   return NarrationStyleSchema.parse(raw);
 }
 
-export function listNarrationStyles(userId: string): NarrationStylePublic[] {
-  ensureSystemNarrationStyles();
-  const rows = getDb()
-    .prepare(
-      `SELECT sheet_json FROM narration_styles
-       WHERE is_system = 1 OR owner_user_id = ?
-       ORDER BY is_system DESC, updated_at DESC`,
-    )
-    .all(userId) as { sheet_json: string }[];
+export async function listNarrationStyles(userId: string): Promise<NarrationStylePublic[]> {
+  await ensureSystemNarrationStyles();
+  const { rows } = await query<{ sheet_json: unknown }>(
+    `SELECT sheet_json FROM narration_styles
+     WHERE is_system = TRUE OR owner_user_id = $1
+     ORDER BY is_system DESC, updated_at DESC`,
+    [userId],
+  );
   return rows.map((r) => toPublicNarrationStyle(parse(r.sheet_json)));
 }
 
-export function getNarrationStyle(id: string): NarrationStyle | null {
-  ensureSystemNarrationStyles();
-  const row = getDb()
-    .prepare(`SELECT sheet_json FROM narration_styles WHERE id = ?`)
-    .get(id) as { sheet_json: string } | undefined;
+export async function getNarrationStyle(id: string): Promise<NarrationStyle | null> {
+  await ensureSystemNarrationStyles();
+  const { rows } = await query<{ sheet_json: unknown }>(
+    `SELECT sheet_json FROM narration_styles WHERE id = $1`,
+    [id],
+  );
+  const row = rows[0];
   if (!row) return null;
   return parse(row.sheet_json);
 }
 
 /** Resolve for a match: system or owned by user; else default. */
-export function resolveNarrationStyleForUser(
+export async function resolveNarrationStyleForUser(
   userId: string,
   styleId?: string | null,
-): NarrationStyle {
-  ensureSystemNarrationStyles();
+): Promise<NarrationStyle> {
+  await ensureSystemNarrationStyles();
   if (styleId) {
-    const s = getNarrationStyle(styleId);
+    const s = await getNarrationStyle(styleId);
     if (s && (s.isSystem || s.ownerUserId === userId)) return s;
   }
   return (
-    getNarrationStyle(DEFAULT_NARRATION_STYLE_ID) ?? {
+    (await getNarrationStyle(DEFAULT_NARRATION_STYLE_ID)) ?? {
       ...SYSTEM_NARRATION_STYLE_SEEDS[0]!,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
@@ -90,41 +100,22 @@ export function resolveNarrationStyleForUser(
   );
 }
 
-export function saveNarrationStyle(style: NarrationStyle): void {
-  const db = getDb();
+export async function saveNarrationStyle(style: NarrationStyle): Promise<void> {
   const json = JSON.stringify(style);
-  const existing = db
-    .prepare(`SELECT id FROM narration_styles WHERE id = ?`)
-    .get(style.id);
-  if (existing) {
-    db.prepare(
-      `UPDATE narration_styles
-       SET sheet_json = ?, updated_at = ?, owner_user_id = ?, is_system = ?
-       WHERE id = ?`,
-    ).run(
-      json,
-      style.updatedAt,
-      style.ownerUserId,
-      style.isSystem ? 1 : 0,
-      style.id,
-    );
-  } else {
-    db.prepare(
-      `INSERT INTO narration_styles
-        (id, owner_user_id, is_system, sheet_json, created_at, updated_at)
-       VALUES (?, ?, ?, ?, ?, ?)`,
-    ).run(
-      style.id,
-      style.ownerUserId,
-      style.isSystem ? 1 : 0,
-      json,
-      style.createdAt,
-      style.updatedAt,
-    );
-  }
+  await query(
+    `INSERT INTO narration_styles
+      (id, owner_user_id, is_system, sheet_json, created_at, updated_at)
+     VALUES ($1, $2, $3, $4, $5, $6)
+     ON CONFLICT (id) DO UPDATE
+       SET owner_user_id = EXCLUDED.owner_user_id,
+           is_system = EXCLUDED.is_system,
+           sheet_json = EXCLUDED.sheet_json,
+           updated_at = EXCLUDED.updated_at`,
+    [style.id, style.ownerUserId, style.isSystem, json, style.createdAt, style.updatedAt],
+  );
 }
 
-export function createUserNarrationStyle(
+export async function createUserNarrationStyle(
   userId: string,
   input: {
     displayName: string;
@@ -133,7 +124,7 @@ export function createUserNarrationStyle(
     tags?: string[];
     perspective?: NarrationStyle["perspective"];
   },
-): NarrationStyle {
+): Promise<NarrationStyle> {
   const t = new Date().toISOString();
   const style: NarrationStyle = {
     id: newId("nst"),
@@ -147,11 +138,11 @@ export function createUserNarrationStyle(
     createdAt: t,
     updatedAt: t,
   };
-  saveNarrationStyle(style);
+  await saveNarrationStyle(style);
   return style;
 }
 
-export function updateUserNarrationStyle(
+export async function updateUserNarrationStyle(
   id: string,
   userId: string,
   input: {
@@ -161,8 +152,8 @@ export function updateUserNarrationStyle(
     tags?: string[];
     perspective?: NarrationStyle["perspective"];
   },
-): NarrationStyle | null {
-  const cur = getNarrationStyle(id);
+): Promise<NarrationStyle | null> {
+  const cur = await getNarrationStyle(id);
   if (!cur || cur.isSystem || cur.ownerUserId !== userId) return null;
   const next: NarrationStyle = {
     ...cur,
@@ -176,16 +167,16 @@ export function updateUserNarrationStyle(
     tags: input.tags ?? cur.tags,
     updatedAt: new Date().toISOString(),
   };
-  saveNarrationStyle(next);
+  await saveNarrationStyle(next);
   return next;
 }
 
-export function deleteUserNarrationStyle(
+export async function deleteUserNarrationStyle(
   id: string,
   userId: string,
-): boolean {
-  const cur = getNarrationStyle(id);
+): Promise<boolean> {
+  const cur = await getNarrationStyle(id);
   if (!cur || cur.isSystem || cur.ownerUserId !== userId) return false;
-  getDb().prepare(`DELETE FROM narration_styles WHERE id = ?`).run(id);
+  await query(`DELETE FROM narration_styles WHERE id = $1`, [id]);
   return true;
 }

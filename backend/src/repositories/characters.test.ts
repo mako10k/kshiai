@@ -42,30 +42,30 @@ function sheet(id: string, ownerUserId: string, displayName: string): CharacterS
 }
 
 describe("owner-scoped character generation references", () => {
-  it("never returns another user's character from search or direct lookup", () => {
+  it("never returns another user's character from search or direct lookup", async () => {
     const db = getDb();
     const insertUser = db.prepare(
       `INSERT INTO users (id, username, password_hash, created_at) VALUES (?, ?, 'x', ?)`,
     );
     insertUser.run("user-a", "alice", "2026-08-02T00:00:00.000Z");
     insertUser.run("user-b", "bob", "2026-08-02T00:00:00.000Z");
-    repo.saveSheet(sheet("char-a", "user-a", "楓"));
-    repo.saveSheet(sheet("char-b", "user-b", "比堂"));
+    await repo.saveSheet(sheet("char-a", "user-a", "楓"));
+    await repo.saveSheet(sheet("char-b", "user-b", "比堂"));
 
     assert.deepEqual(
-      repo.searchOwnedCharacterReferences("user-a", "").map((item) => item.id),
+      (await repo.searchOwnedCharacterReferences("user-a", "")).map((item) => item.id),
       ["char-a"],
     );
-    assert.equal(repo.getOwnedCharacterReference("user-a", "char-b"), null);
-    assert.equal(repo.getOwnedCharacterReference("user-a", "char-a")?.identity.realName, "楓 本名");
+    assert.equal(await repo.getOwnedCharacterReference("user-a", "char-b"), null);
+    assert.equal((await repo.getOwnedCharacterReference("user-a", "char-a"))?.identity.realName, "楓 本名");
   });
 
-  it("lists all active identifying names for owner-scoped uniqueness checks", () => {
-    assert.deepEqual(repo.listOwnedCharacterReservedNames("user-a"), [
+  it("lists all active identifying names for owner-scoped uniqueness checks", async () => {
+    assert.deepEqual(await repo.listOwnedCharacterReservedNames("user-a"), [
       "楓",
       "楓 本名",
     ]);
-    assert.deepEqual(repo.listOwnedCharacterReservedNames("user-b"), [
+    assert.deepEqual(await repo.listOwnedCharacterReservedNames("user-b"), [
       "比堂",
       "比堂 本名",
     ]);

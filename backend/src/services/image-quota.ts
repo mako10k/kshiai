@@ -1,4 +1,4 @@
-import { getDb } from "../db.js";
+import { query } from "../db.js";
 
 /** Per-character portrait generation limits. */
 export const IMAGE_GEN_LIMIT_HOUR = 2;
@@ -25,15 +25,16 @@ function parseIsoMs(iso: string): number {
   return Number.isFinite(t) ? t : 0;
 }
 
-function listEventsSince(characterId: string, sinceIso: string): string[] {
-  const rows = getDb()
-    .prepare(
-      `SELECT created_at FROM image_gen_events
-       WHERE character_id = ? AND created_at >= ?
-       ORDER BY created_at ASC`,
-    )
-    .all(characterId, sinceIso) as { created_at: string }[];
-  return rows.map((r) => r.created_at);
+async function listEventsSince(characterId: string, sinceIso: string): Promise<string[]> {
+  const { rows } = await query<{ created_at: string | Date }>(
+    `SELECT created_at FROM image_gen_events
+     WHERE character_id = $1 AND created_at >= $2
+     ORDER BY created_at ASC`,
+    [characterId, sinceIso],
+  );
+  return rows.map((r) => r.created_at instanceof Date
+    ? r.created_at.toISOString()
+    : r.created_at);
 }
 
 function formatNextMessage(nextAllowedAt: string | null, allowed: boolean): string {
@@ -60,13 +61,15 @@ function formatNextMessage(nextAllowedAt: string | null, allowed: boolean): stri
 /**
  * Rolling windows: 2 / hour, 3 / day, per character.
  */
-export function getImageGenQuota(characterId: string, now = new Date()): ImageGenQuota {
+export async function getImageGenQuota(characterId: string, now = new Date()): Promise<ImageGenQuota> {
   const nowMs = now.getTime();
   const hourSince = new Date(nowMs - HOUR_MS).toISOString();
   const daySince = new Date(nowMs - DAY_MS).toISOString();
 
-  const hourEvents = listEventsSince(characterId, hourSince);
-  const dayEvents = listEventsSince(characterId, daySince);
+  const [hourEvents, dayEvents] = await Promise.all([
+    listEventsSince(characterId, hourSince),
+    listEventsSince(characterId, daySince),
+  ]);
 
   const usedHour = hourEvents.length;
   const usedDay = dayEvents.length;
@@ -115,26 +118,23 @@ export function getImageGenQuota(characterId: string, now = new Date()): ImageGe
   };
 }
 
-export function recordImageGenEvent(input: {
+export async function recordImageGenEvent(input: {
   userId: string;
   characterId: string;
   ok: boolean;
   at?: Date;
-}): ImageGenQuota {
+}): Promise<ImageGenQuota> {
   const createdAt = (input.at ?? new Date()).toISOString();
-  getDb()
-    .prepare(
-      `INSERT INTO image_gen_events (user_id, character_id, created_at, ok)
-       VALUES (?, ?, ?, ?)`,
-    )
-    .run(input.userId, input.characterId, createdAt, input.ok ? 1 : 0);
+  await query(
+    `INSERT INTO image_gen_events (user_id, character_id, created_at, ok)
+     VALUES ($1, $2, $3, $4)`,
+    [input.userId, input.characterId, createdAt, input.ok],
+  );
   return getImageGenQuota(input.characterId);
 }
 
 /** Best-effort prune of old rows (keep ~7 days). */
-export function pruneImageGenEvents(olderThanDays = 7): void {
+export async function pruneImageGenEvents(olderThanDays = 7): Promise<void> {
   const cutoff = new Date(Date.now() - olderThanDays * DAY_MS).toISOString();
-  getDb()
-    .prepare(`DELETE FROM image_gen_events WHERE created_at < ?`)
-    .run(cutoff);
+  await query(`DELETE FROM image_gen_events WHERE created_at < $1`, [cutoff]);
 }

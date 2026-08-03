@@ -4,29 +4,25 @@ import {
   battleResultLabel,
   resolveBattlefieldImageUrl,
 } from "@kshiai/shared";
-import { getDb } from "../db.js";
+import { query } from "../db.js";
 
-export function saveBattle(
+export async function saveBattle(
   state: BattleState,
   meta: {
     sideAUserId: string;
     sideACharacterId: string;
     sideBCharacterId: string;
   },
-): void {
-  const db = getDb();
-  const existing = db.prepare(`SELECT id FROM battles WHERE id = ?`).get(state.id);
+): Promise<void> {
   const json = JSON.stringify(state);
-  if (existing) {
-    db.prepare(
-      `UPDATE battles SET state_json = ?, updated_at = ? WHERE id = ?`,
-    ).run(json, state.updatedAt, state.id);
-  } else {
-    db.prepare(
-      `INSERT INTO battles
-        (id, state_json, side_a_user_id, side_a_character_id, side_b_character_id, created_at, updated_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?)`,
-    ).run(
+  await query(
+    `INSERT INTO battles
+      (id, state_json, side_a_user_id, side_a_character_id, side_b_character_id, created_at, updated_at)
+     VALUES ($1, $2, $3, $4, $5, $6, $7)
+     ON CONFLICT (id) DO UPDATE
+       SET state_json = EXCLUDED.state_json,
+           updated_at = EXCLUDED.updated_at`,
+    [
       state.id,
       json,
       meta.sideAUserId,
@@ -34,12 +30,12 @@ export function saveBattle(
       meta.sideBCharacterId,
       state.createdAt,
       state.updatedAt,
-    );
-  }
+    ],
+  );
 }
 
-function parseBattleState(rawJson: string, idHint = "?"): BattleState {
-  const raw = JSON.parse(rawJson) as unknown;
+function parseBattleState(rawJson: unknown, idHint = "?"): BattleState {
+  const raw = typeof rawJson === "string" ? JSON.parse(rawJson) : rawJson;
   const parsed = BattleStateSchema.safeParse(raw);
   if (parsed.success) return parsed.data;
   console.warn(
@@ -51,10 +47,12 @@ function parseBattleState(rawJson: string, idHint = "?"): BattleState {
   return BattleStateSchema.parse(fixed);
 }
 
-export function getBattle(id: string): BattleState | null {
-  const row = getDb()
-    .prepare(`SELECT state_json FROM battles WHERE id = ?`)
-    .get(id) as { state_json: string } | undefined;
+export async function getBattle(id: string): Promise<BattleState | null> {
+  const { rows } = await query<{ state_json: unknown }>(
+    `SELECT state_json FROM battles WHERE id = $1`,
+    [id],
+  );
+  const row = rows[0];
   if (!row) return null;
   try {
     return parseBattleState(row.state_json, id);
@@ -101,18 +99,17 @@ function sanitizeBattleStateJson(raw: unknown): unknown {
   return state;
 }
 
-export function getBattleMeta(id: string) {
-  return getDb()
-    .prepare(
-      `SELECT side_a_user_id, side_a_character_id, side_b_character_id FROM battles WHERE id = ?`,
-    )
-    .get(id) as
-    | {
+export async function getBattleMeta(id: string) {
+  const { rows } = await query<{
         side_a_user_id: string;
         side_a_character_id: string;
         side_b_character_id: string;
-      }
-    | undefined;
+      }>(
+    `SELECT side_a_user_id, side_a_character_id, side_b_character_id
+       FROM battles WHERE id = $1`,
+    [id],
+  );
+  return rows[0];
 }
 
 function toListItem(state: BattleState): BattleListItem {
@@ -148,26 +145,24 @@ function toListItem(state: BattleState): BattleListItem {
   };
 }
 
-export function listBattlesForUser(input: {
+export async function listBattlesForUser(input: {
   userId: string;
   q?: string;
   status?: "active" | "finished" | "all";
   limit?: number;
   offset?: number;
-}): { battles: BattleListItem[]; total: number } {
-  const db = getDb();
+}): Promise<{ battles: BattleListItem[]; total: number }> {
   const status = input.status ?? "all";
   const limit = Math.min(Math.max(input.limit ?? 50, 1), 100);
   const offset = Math.max(input.offset ?? 0, 0);
 
-  const rows = db
-    .prepare(
-      `SELECT state_json FROM battles
-       WHERE side_a_user_id = ?
-       ORDER BY updated_at DESC
-       LIMIT 500`,
-    )
-    .all(input.userId) as { state_json: string }[];
+  const { rows } = await query<{ state_json: unknown }>(
+    `SELECT state_json FROM battles
+     WHERE side_a_user_id = $1
+     ORDER BY updated_at DESC
+     LIMIT 500`,
+    [input.userId],
+  );
 
   let items: BattleListItem[] = [];
   for (const r of rows) {
@@ -208,36 +203,35 @@ export function listBattlesForUser(input: {
   };
 }
 
-export function deleteBattle(id: string, userId: string): boolean {
-  const r = getDb()
-    .prepare(`DELETE FROM battles WHERE id = ? AND side_a_user_id = ?`)
-    .run(id, userId);
-  return r.changes > 0;
+export async function deleteBattle(id: string, userId: string): Promise<boolean> {
+  const result = await query(
+    `DELETE FROM battles WHERE id = $1 AND side_a_user_id = $2`,
+    [id, userId],
+  );
+  return result.rowCount > 0;
 }
 
 /** All battles where character appears as side A or B. */
-export function listBattlesInvolvingCharacter(characterId: string): Array<{
+export async function listBattlesInvolvingCharacter(characterId: string): Promise<Array<{
   state: BattleState;
   meta: {
     side_a_user_id: string;
     side_a_character_id: string;
     side_b_character_id: string;
   };
-}> {
-  const db = getDb();
-  const rows = db
-    .prepare(
-      `SELECT state_json, side_a_user_id, side_a_character_id, side_b_character_id
-       FROM battles
-       WHERE side_a_character_id = ? OR side_b_character_id = ?
-       ORDER BY updated_at DESC`,
-    )
-    .all(characterId, characterId) as Array<{
-    state_json: string;
+}>> {
+  const { rows } = await query<{
+    state_json: unknown;
     side_a_user_id: string;
     side_a_character_id: string;
     side_b_character_id: string;
-  }>;
+  }>(
+    `SELECT state_json, side_a_user_id, side_a_character_id, side_b_character_id
+     FROM battles
+     WHERE side_a_character_id = $1 OR side_b_character_id = $1
+     ORDER BY updated_at DESC`,
+    [characterId],
+  );
 
   return rows.flatMap((r) => {
     try {
@@ -261,15 +255,15 @@ export function listBattlesInvolvingCharacter(characterId: string): Array<{
  * Battle history rows for a single character.
  * Visible if the viewer owns the character, or started a match involving them.
  */
-export function listBattleItemsForCharacter(input: {
+export async function listBattleItemsForCharacter(input: {
   characterId: string;
   viewerUserId: string;
   characterOwnerUserId: string;
   limit?: number;
-}): { battles: BattleListItem[]; total: number } {
+}): Promise<{ battles: BattleListItem[]; total: number }> {
   const limit = Math.min(Math.max(input.limit ?? 50, 1), 100);
   const isOwner = input.viewerUserId === input.characterOwnerUserId;
-  const rows = listBattlesInvolvingCharacter(input.characterId);
+  const rows = await listBattlesInvolvingCharacter(input.characterId);
   const filtered = rows.filter(
     (r) => isOwner || r.meta.side_a_user_id === input.viewerUserId,
   );
@@ -384,8 +378,8 @@ function toSearchHit(
 }
 
 /** Finished battles only, for analysis gating and tools. */
-export function countFinishedBattlesForCharacter(characterId: string): number {
-  return listBattlesInvolvingCharacter(characterId).filter(
+export async function countFinishedBattlesForCharacter(characterId: string): Promise<number> {
+  return (await listBattlesInvolvingCharacter(characterId)).filter(
     (r) => r.state.status === "finished",
   ).length;
 }
@@ -394,16 +388,16 @@ export function countFinishedBattlesForCharacter(characterId: string): number {
  * Search a character's battle history for LLM tools / coaching analysis.
  * Query matches opponent, field, result label, scene, and battle id.
  */
-export function searchCharacterBattleHistory(input: {
+export async function searchCharacterBattleHistory(input: {
   characterId: string;
   query?: string;
   limit?: number;
   finishedOnly?: boolean;
-}): CharacterBattleSearchHit[] {
+}): Promise<CharacterBattleSearchHit[]> {
   const limit = Math.min(Math.max(input.limit ?? 12, 1), 30);
   const finishedOnly = input.finishedOnly !== false;
   const needle = input.query?.trim().toLowerCase() ?? "";
-  const rows = listBattlesInvolvingCharacter(input.characterId);
+  const rows = await listBattlesInvolvingCharacter(input.characterId);
   const hits: CharacterBattleSearchHit[] = [];
   for (const r of rows) {
     if (finishedOnly && r.state.status !== "finished") continue;
@@ -430,11 +424,11 @@ export function searchCharacterBattleHistory(input: {
 }
 
 /** Detail payload for get_character_battle tool (narrative-safe). */
-export function getCharacterBattleDetail(
+export async function getCharacterBattleDetail(
   characterId: string,
   battleId: string,
-): CharacterBattleDetail | null {
-  const rows = listBattlesInvolvingCharacter(characterId);
+): Promise<CharacterBattleDetail | null> {
+  const rows = await listBattlesInvolvingCharacter(characterId);
   const row = rows.find((r) => r.state.id === battleId);
   if (!row) return null;
   const state = row.state;
@@ -467,27 +461,25 @@ export function getCharacterBattleDetail(
  * Latest finished matchup between two characters (either seating).
  * Used for prologue rivalry (因縁).
  */
-export function findPriorMatchSummary(
+export async function findPriorMatchSummary(
   characterIdA: string,
   characterIdB: string,
   excludeBattleId?: string,
-): string | null {
-  const db = getDb();
-  const rows = db
-    .prepare(
-      `SELECT id, state_json, updated_at FROM battles
-       WHERE (
-         (side_a_character_id = ? AND side_b_character_id = ?)
-         OR (side_a_character_id = ? AND side_b_character_id = ?)
-       )
-       ORDER BY updated_at DESC
-       LIMIT 12`,
-    )
-    .all(characterIdA, characterIdB, characterIdB, characterIdA) as Array<{
+): Promise<string | null> {
+  const { rows } = await query<{
     id: string;
-    state_json: string;
-    updated_at: string;
-  }>;
+    state_json: unknown;
+    updated_at: string | Date;
+  }>(
+    `SELECT id, state_json, updated_at FROM battles
+     WHERE (
+       (side_a_character_id = $1 AND side_b_character_id = $2)
+       OR (side_a_character_id = $2 AND side_b_character_id = $1)
+     )
+     ORDER BY updated_at DESC
+     LIMIT 12`,
+    [characterIdA, characterIdB],
+  );
 
   for (const row of rows) {
     if (excludeBattleId && row.id === excludeBattleId) continue;

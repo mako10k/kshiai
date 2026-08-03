@@ -1,12 +1,12 @@
 project KSHIAI:
   version 1
-  title "kshiai scaffold and vertical slice"
+  title "kshiai scalable persistence, authentication, and billing"
   description |
-    Implementation plan from rewritten requirements through a playable
-    mock-LLM vertical slice, then real provider wiring.
-  as_of 2026-08-02
+    Completed vertical slice followed by PostgreSQL migration, stateless
+    multi-instance operation, Supabase Auth, and Stripe billing.
+  as_of 2026-08-03
   duration_unit day
-  finish SLICE_DONE
+  finish BILLING_READY
 
 resource DEV:
   title "Developer"
@@ -18,63 +18,126 @@ milestone NOW:
 
 milestone DOCS_READY:
   title "Requirements design and plan ready"
+  state reached
 
 milestone REPO_READY:
   title "GitHub repo and monorepo scaffold ready"
+  state reached
 
 milestone AUTH_READY:
   title "Auth and persistence ready"
+  state reached
 
 milestone CHAR_READY:
   title "Character flows ready (mock LLM)"
+  state reached
 
 milestone BATTLE_READY:
   title "Battle engine and UI ready (mock LLM)"
+  state reached
 
 milestone PROVIDER_READY:
   title "xAI/Venice providers wired"
+  state reached
 
 milestone SLICE_DONE:
   title "Vertical slice accepted"
+  state reached
+
+milestone PG_SCHEMA_READY:
+  title "PostgreSQL schema and verified SQLite migration ready"
+  state reached
+
+milestone PG_RUNTIME_READY:
+  title "Backend repositories running on PostgreSQL"
+  state reached
+
+milestone DISTRIBUTED_READY:
+  title "Stateless multi-instance backend and shared media ready"
+
+milestone AUTH_V2_READY:
+  title "Verified email and Google authentication ready"
+
+milestone BILLING_READY:
+  title "Stripe subscription and usage entitlements ready"
 
 task T_DOCS NOW -> DOCS_READY:
   title "Rewrite requirements, llmthink design, pert plan"
   duration 1d
+  status done
   requires:
     DEV 1
 
 task T_SCAFFOLD DOCS_READY -> REPO_READY:
   title "Create monorepo FE/BE/shared, ports, git, gh repo"
   duration 1d
+  status done
   requires:
     DEV 1
 
 task T_AUTH REPO_READY -> AUTH_READY:
   title "Implement register login session and SQLite users"
   duration 1d
+  status done
   requires:
     DEV 1
 
 task T_CHAR AUTH_READY -> CHAR_READY:
   title "Character CRUD generate chat confirm copy search UI"
   duration 2d
+  status done
   requires:
     DEV 1
 
 task T_BATTLE CHAR_READY -> BATTLE_READY:
   title "Matchmaking battle engine narration UI terminal rules"
   duration 2d
+  status done
   requires:
     DEV 1
 
 task T_PROVIDER BATTLE_READY -> PROVIDER_READY:
   title "Wire xAI and Venice adapters plus image generation"
   duration 1d
+  status done
   requires:
     DEV 1
 
 task T_ACCEPT PROVIDER_READY -> SLICE_DONE:
   title "Run acceptance checklist and fix gaps"
   duration 1d
+  status done
+  requires:
+    DEV 1
+
+task T_PG_SCHEMA SLICE_DONE -> PG_SCHEMA_READY:
+  title "Create PostgreSQL migrations and verify SQLite import"
+  duration 2d
+  status done
+  requires:
+    DEV 1
+
+task T_PG_RUNTIME PG_SCHEMA_READY -> PG_RUNTIME_READY:
+  title "Convert repositories to asynchronous PostgreSQL runtime"
+  duration 3d
+  status done
+  requires:
+    DEV 1
+
+task T_DISTRIBUTED PG_RUNTIME_READY -> DISTRIBUTED_READY:
+  title "Add battle leases, idempotency, R2 media, and multi-instance tests"
+  duration 3d
+  requires:
+    DEV 1
+
+task T_AUTH_V2 DISTRIBUTED_READY -> AUTH_V2_READY:
+  title "Integrate Supabase email verification and Google OIDC"
+  duration 2d
+  requires:
+    DEV 1
+
+task T_BILLING AUTH_V2_READY -> BILLING_READY:
+  title "Add Stripe subscriptions, webhooks, metering, and entitlements"
+  duration 3d
   requires:
     DEV 1

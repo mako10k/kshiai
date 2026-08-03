@@ -48,6 +48,7 @@ import {
 } from "./services/battle-service.js";
 import { getBalanceSummary } from "./services/balance-observe.js";
 import { findCharacterNameConflict } from "./character-name-uniqueness.js";
+import { databaseKind, query } from "./db.js";
 
 const llm = createLlmProvider();
 
@@ -62,14 +63,16 @@ function cacheControlForMedia(version: string | undefined): string {
 export function buildRoutes() {
   const app = new Hono();
 
-  app.get("/api/health", (c) =>
-    c.json({
+  app.get("/api/health", async (c) => {
+    await query(`SELECT 1 AS ready`);
+    return c.json({
       ok: true,
       llm: llm.name,
       models: llm.models ?? null,
       service: "kshiai",
-    }),
-  );
+      database: databaseKind(),
+    });
+  });
 
   // Local media (character portraits etc.)
   // Cache-bust with ?v=<updatedAt> from public DTOs; versioned URLs may be cached long.
@@ -114,7 +117,7 @@ export function buildRoutes() {
     const body = RegisterRequestSchema.parse(await c.req.json());
     try {
       const user = await registerUser(body.username, body.password);
-      const token = createSession(user.id);
+      const token = await createSession(user.id);
       setSessionCookie(c, token);
       return c.json({ user });
     } catch (e) {
@@ -129,20 +132,20 @@ export function buildRoutes() {
     const body = LoginRequestSchema.parse(await c.req.json());
     const user = await verifyLogin(body.username, body.password);
     if (!user) return c.json({ error: "invalid_credentials" }, 401);
-    const token = createSession(user.id);
+    const token = await createSession(user.id);
     setSessionCookie(c, token);
     return c.json({ user });
   });
 
   app.post("/api/auth/logout", async (c) => {
     const token = getSessionToken(c);
-    if (token) destroySession(token);
+    if (token) await destroySession(token);
     clearSessionCookie(c);
     return c.json({ ok: true });
   });
 
-  app.get("/api/me", (c) => {
-    const user = userFromToken(getSessionToken(c));
+  app.get("/api/me", async (c) => {
+    const user = await userFromToken(getSessionToken(c));
     if (!user) return c.json({ error: "unauthorized" }, 401);
     return c.json({ user });
   });
@@ -154,23 +157,23 @@ export function buildRoutes() {
    * Balance observability summary (aggregates only).
    * Does not affect combat; for operators watching early-KO / one-shot rates.
    */
-  authed.get("/balance/summary", (c) => {
+  authed.get("/balance/summary", async (c) => {
     const limit = Number(c.req.query("limit") ?? 20);
     return c.json({
-      summary: getBalanceSummary(Number.isFinite(limit) ? limit : 20),
+      summary: await getBalanceSummary(Number.isFinite(limit) ? limit : 20),
     });
   });
 
-  authed.get("/characters", (c) => {
+  authed.get("/characters", async (c) => {
     const user = c.get("user");
     const q = c.req.query("q");
-    return c.json({ characters: charRepo.listCharactersForUser(user.id, q) });
+    return c.json({ characters: await charRepo.listCharactersForUser(user.id, q) });
   });
 
   /** Public character profile (any authenticated user). */
-  authed.get("/characters/:id", (c) => {
+  authed.get("/characters/:id", async (c) => {
     const user = c.get("user");
-    const sheet = charRepo.getSheet(c.req.param("id"));
+    const sheet = await charRepo.getSheet(c.req.param("id"));
     if (!sheet) return c.json({ error: "not_found" }, 404);
     return c.json({
       character: toPublicCharacter(sheet, user.id),
@@ -179,13 +182,13 @@ export function buildRoutes() {
   });
 
   /** Per-character battle history. */
-  authed.get("/characters/:id/battles", (c) => {
+  authed.get("/characters/:id/battles", async (c) => {
     const user = c.get("user");
     const id = c.req.param("id");
-    const sheet = charRepo.getSheet(id);
+    const sheet = await charRepo.getSheet(id);
     if (!sheet) return c.json({ error: "not_found" }, 404);
     const limit = Number(c.req.query("limit") ?? 50);
-    const result = battleRepo.listBattleItemsForCharacter({
+    const result = await battleRepo.listBattleItemsForCharacter({
       characterId: id,
       viewerUserId: user.id,
       characterOwnerUserId: sheet.ownerUserId,
@@ -207,7 +210,7 @@ export function buildRoutes() {
     let gen: Awaited<ReturnType<typeof llm.generateCharacter>> | null = null;
     for (let attempt = 0; attempt < 3; attempt += 1) {
       const promptReservedNames =
-        charRepo.listOwnedCharacterReservedNames(user.id);
+        await charRepo.listOwnedCharacterReservedNames(user.id);
       const candidate = await llm.generateCharacter({
         prompt: body.prompt,
         referenceTools,
@@ -217,7 +220,7 @@ export function buildRoutes() {
       // Refresh after the LLM call so concurrent generation cannot slip a
       // duplicate between the initial name snapshot and this synchronous save.
       const currentReservedNames =
-        charRepo.listOwnedCharacterReservedNames(user.id);
+        await charRepo.listOwnedCharacterReservedNames(user.id);
       const conflict = findCharacterNameConflict(
         [candidate.sheet.displayName, candidate.sheet.identity?.realName],
         currentReservedNames,
@@ -256,12 +259,12 @@ export function buildRoutes() {
       record: defaultRecord(),
       ...balanced,
     };
-    charRepo.saveSheet(sheet);
+    await charRepo.saveSheet(sheet);
     try {
       const { recordSheetSnapshot } = await import(
         "./services/balance-observe.js"
       );
-      recordSheetSnapshot({ sheet, phase: "generate" });
+      await recordSheetSnapshot({ sheet, phase: "generate" });
     } catch {
       /* non-fatal */
     }
@@ -275,7 +278,7 @@ export function buildRoutes() {
     const user = c.get("user");
     const id = c.req.param("id");
     const body = CharacterChatRequestSchema.parse(await c.req.json());
-    const sheet = charRepo.getSheet(id);
+    const sheet = await charRepo.getSheet(id);
     if (!sheet || sheet.ownerUserId !== user.id) {
       return c.json({ error: "not_found" }, 404);
     }
@@ -317,12 +320,12 @@ export function buildRoutes() {
       revisionSnapshot,
       updatedAt: new Date().toISOString(),
     };
-    charRepo.saveSheet(next);
+    await charRepo.saveSheet(next);
     try {
       const { recordSheetSnapshot } = await import(
         "./services/balance-observe.js"
       );
-      recordSheetSnapshot({ sheet: next, phase: "chat" });
+      await recordSheetSnapshot({ sheet: next, phase: "chat" });
     } catch {
       /* non-fatal */
     }
@@ -336,7 +339,7 @@ export function buildRoutes() {
   authed.post("/characters/:id/restore-revision", async (c) => {
     const user = c.get("user");
     const id = c.req.param("id");
-    const sheet = charRepo.getSheet(id);
+    const sheet = await charRepo.getSheet(id);
     if (!sheet || sheet.ownerUserId !== user.id) {
       return c.json({ error: "not_found" }, 404);
     }
@@ -350,12 +353,12 @@ export function buildRoutes() {
       );
     }
     const restored = restoreRevisionSnapshot(sheet, sheet.revisionSnapshot);
-    charRepo.saveSheet(restored);
+    await charRepo.saveSheet(restored);
     try {
       const { recordSheetSnapshot } = await import(
         "./services/balance-observe.js"
       );
-      recordSheetSnapshot({ sheet: restored, phase: "restore" });
+      await recordSheetSnapshot({ sheet: restored, phase: "restore" });
     } catch {
       /* non-fatal */
     }
@@ -369,14 +372,14 @@ export function buildRoutes() {
   authed.get("/characters/:id/improvement", async (c) => {
     const user = c.get("user");
     const id = c.req.param("id");
-    const sheet = charRepo.getSheet(id);
+    const sheet = await charRepo.getSheet(id);
     if (!sheet || sheet.ownerUserId !== user.id) {
       return c.json({ error: "not_found" }, 404);
     }
     const {
       getCharacterImprovementPublic,
     } = await import("./services/character-improvement.js");
-    return c.json(getCharacterImprovementPublic(sheet));
+    return c.json(await getCharacterImprovementPublic(sheet));
   });
 
   /**
@@ -386,7 +389,7 @@ export function buildRoutes() {
   authed.post("/characters/:id/improvement/analyze", async (c) => {
     const user = c.get("user");
     const id = c.req.param("id");
-    const sheet = charRepo.getSheet(id);
+    const sheet = await charRepo.getSheet(id);
     if (!sheet || sheet.ownerUserId !== user.id) {
       return c.json({ error: "not_found" }, 404);
     }
@@ -417,7 +420,7 @@ export function buildRoutes() {
   authed.post("/characters/:id/improvement/prompt", async (c) => {
     const user = c.get("user");
     const id = c.req.param("id");
-    const sheet = charRepo.getSheet(id);
+    const sheet = await charRepo.getSheet(id);
     if (!sheet || sheet.ownerUserId !== user.id) {
       return c.json({ error: "not_found" }, 404);
     }
@@ -440,13 +443,13 @@ export function buildRoutes() {
 
   authed.post("/characters/:id/copy", async (c) => {
     const user = c.get("user");
-    const copy = charRepo.copyCharacter(c.req.param("id"), user.id);
+    const copy = await charRepo.copyCharacter(c.req.param("id"), user.id);
     if (!copy) return c.json({ error: "not_found" }, 404);
     try {
       const { recordSheetSnapshot } = await import(
         "./services/balance-observe.js"
       );
-      recordSheetSnapshot({ sheet: copy, phase: "copy" });
+      await recordSheetSnapshot({ sheet: copy, phase: "copy" });
     } catch {
       /* non-fatal */
     }
@@ -456,24 +459,24 @@ export function buildRoutes() {
   authed.delete("/characters/:id", async (c) => {
     const user = c.get("user");
     const id = c.req.param("id");
-    const sheet = charRepo.softDeleteCharacter(id, user.id);
+    const sheet = await charRepo.softDeleteCharacter(id, user.id);
     if (!sheet) return c.json({ error: "not_found" }, 404);
     // Void Elo gained/lost against this character so deletes can't farm rating
     const { voidRatingsInvolvingCharacter } = await import(
       "./services/rating-service.js"
     );
-    const voided = voidRatingsInvolvingCharacter(id);
+    const voided = await voidRatingsInvolvingCharacter(id);
     return c.json({ ok: true, ratingMatchesVoided: voided });
   });
 
   authed.get("/characters/:id/image-quota", async (c) => {
     const user = c.get("user");
-    const sheet = charRepo.getSheet(c.req.param("id"));
+    const sheet = await charRepo.getSheet(c.req.param("id"));
     if (!sheet || sheet.ownerUserId !== user.id) {
       return c.json({ error: "not_found" }, 404);
     }
     const { getImageGenQuota } = await import("./services/image-quota.js");
-    return c.json({ quota: getImageGenQuota(sheet.id) });
+    return c.json({ quota: await getImageGenQuota(sheet.id) });
   });
 
   /**
@@ -483,7 +486,7 @@ export function buildRoutes() {
   authed.post("/characters/:id/image/toggle", async (c) => {
     const user = c.get("user");
     const id = c.req.param("id");
-    const sheet = charRepo.getSheet(id);
+    const sheet = await charRepo.getSheet(id);
     if (!sheet || sheet.ownerUserId !== user.id) {
       return c.json({ error: "not_found" }, 404);
     }
@@ -497,7 +500,7 @@ export function buildRoutes() {
         400,
       );
     }
-    charRepo.saveSheet(toggled);
+    await charRepo.saveSheet(toggled);
     return c.json({
       character: toPublicCharacter(toggled, user.id),
       assistantMessage: "顔画像を切り替えました。",
@@ -506,7 +509,7 @@ export function buildRoutes() {
 
   authed.post("/characters/:id/image", async (c) => {
     const user = c.get("user");
-    const sheet = charRepo.getSheet(c.req.param("id"));
+    const sheet = await charRepo.getSheet(c.req.param("id"));
     if (!sheet || sheet.ownerUserId !== user.id) {
       return c.json({ error: "not_found" }, 404);
     }
@@ -514,12 +517,12 @@ export function buildRoutes() {
     const { getImageGenQuota, recordImageGenEvent, pruneImageGenEvents } =
       await import("./services/image-quota.js");
     try {
-      pruneImageGenEvents();
+      await pruneImageGenEvents();
     } catch {
       /* non-fatal */
     }
 
-    const quotaBefore = getImageGenQuota(sheet.id);
+    const quotaBefore = await getImageGenQuota(sheet.id);
     if (!quotaBefore.allowed) {
       return c.json(
         {
@@ -556,7 +559,7 @@ export function buildRoutes() {
       });
       const result = await generateAndStoreCharacterPortrait(sheet, extra);
       // Count attempt after we actually hit the image pipeline (ok or soft-fallback)
-      const quota = recordImageGenEvent({
+      const quota = await recordImageGenEvent({
         userId: user.id,
         characterId: sheet.id,
         ok: result.ok,
@@ -577,7 +580,7 @@ export function buildRoutes() {
         },
         updatedAt,
       };
-      charRepo.saveSheet(next);
+      await charRepo.saveSheet(next);
       return c.json({
         character: toPublicCharacter(next, user.id),
         note: result.note,
@@ -599,7 +602,7 @@ export function buildRoutes() {
         /* ignore */
       }
       // Hard failure still consumes a slot (API may have been billed / attempted)
-      const quota = recordImageGenEvent({
+      const quota = await recordImageGenEvent({
         userId: user.id,
         characterId: sheet.id,
         ok: false,
@@ -611,10 +614,10 @@ export function buildRoutes() {
     }
   });
 
-  authed.get("/match/candidates", (c) => {
+  authed.get("/match/candidates", async (c) => {
     const user = c.get("user");
     const q = c.req.query("q");
-    return c.json({ candidates: charRepo.listPublicOpponents(user.id, q) });
+    return c.json({ candidates: await charRepo.listPublicOpponents(user.id, q) });
   });
 
   authed.post("/match/random", async (c) => {
@@ -625,7 +628,7 @@ export function buildRoutes() {
     if (!body.myCharacterId) {
       return c.json({ error: "myCharacterId_required" }, 400);
     }
-    const opp = pickRandomOpponent(user.id, body.myCharacterId);
+    const opp = await pickRandomOpponent(user.id, body.myCharacterId);
     if (!opp) return c.json({ error: "no_candidates" }, 404);
     return c.json({ opponent: opp });
   });
@@ -657,10 +660,10 @@ export function buildRoutes() {
   });
 
   // —— Battlefields ——
-  authed.get("/battlefields", (c) => {
+  authed.get("/battlefields", async (c) => {
     const user = c.get("user");
     const q = c.req.query("q");
-    return c.json({ battlefields: bfRepo.listPresets({ userId: user.id, q }) });
+    return c.json({ battlefields: await bfRepo.listPresets({ userId: user.id, q }) });
   });
 
   authed.post("/battlefields/generate", async (c) => {
@@ -679,7 +682,7 @@ export function buildRoutes() {
       updatedAt: t,
       ...gen.preset,
     };
-    bfRepo.savePreset(preset);
+    await bfRepo.savePreset(preset);
     return c.json({
       battlefield: toPublicPreset(preset),
       assistantMessage: gen.assistantMessage,
@@ -690,7 +693,7 @@ export function buildRoutes() {
     const user = c.get("user");
     const id = c.req.param("id");
     const body = BattlefieldChatRequestSchema.parse(await c.req.json());
-    const preset = bfRepo.getPreset(id);
+    const preset = await bfRepo.getPreset(id);
     if (!preset || preset.isSystem || preset.ownerUserId !== user.id) {
       return c.json({ error: "not_found" }, 404);
     }
@@ -706,30 +709,30 @@ export function buildRoutes() {
         : preset.appearance,
       updatedAt: new Date().toISOString(),
     };
-    bfRepo.savePreset(next);
+    await bfRepo.savePreset(next);
     return c.json({
       battlefield: toPublicPreset(next),
       assistantMessage: adj.assistantMessage,
     });
   });
 
-  authed.post("/battlefields/:id/copy", (c) => {
+  authed.post("/battlefields/:id/copy", async (c) => {
     const user = c.get("user");
-    const copy = bfRepo.copyPreset(c.req.param("id"), user.id);
+    const copy = await bfRepo.copyPreset(c.req.param("id"), user.id);
     if (!copy) return c.json({ error: "not_found" }, 404);
     return c.json({ battlefield: toPublicPreset(copy) });
   });
 
-  authed.delete("/battlefields/:id", (c) => {
+  authed.delete("/battlefields/:id", async (c) => {
     const user = c.get("user");
-    const ok = bfRepo.deletePreset(c.req.param("id"), user.id);
+    const ok = await bfRepo.deletePreset(c.req.param("id"), user.id);
     if (!ok) return c.json({ error: "not_found" }, 404);
     return c.json({ ok: true });
   });
 
   authed.post("/battlefields/:id/image", async (c) => {
     const user = c.get("user");
-    const preset = bfRepo.getPreset(c.req.param("id"));
+    const preset = await bfRepo.getPreset(c.req.param("id"));
     if (!preset || preset.isSystem || preset.ownerUserId !== user.id) {
       return c.json({ error: "not_found" }, 404);
     }
@@ -753,7 +756,7 @@ export function buildRoutes() {
         appearance: { ...preset.appearance, imageUrl: result.url },
         updatedAt: new Date().toISOString(),
       };
-      bfRepo.savePreset(next);
+      await bfRepo.savePreset(next);
       return c.json({
         battlefield: toPublicPreset(next),
         note: result.note,
@@ -772,8 +775,8 @@ export function buildRoutes() {
   authed.post("/battlefields/from-battle", async (c) => {
     const user = c.get("user");
     const body = SaveBattlefieldFromBattleRequestSchema.parse(await c.req.json());
-    const meta = battleRepo.getBattleMeta(body.battleId);
-    const state = battleRepo.getBattle(body.battleId);
+    const meta = await battleRepo.getBattleMeta(body.battleId);
+    const state = await battleRepo.getBattle(body.battleId);
     if (!meta || !state) return c.json({ error: "not_found" }, 404);
     if (meta.side_a_user_id !== user.id) return c.json({ error: "forbidden" }, 403);
     if (!state.battlefield) {
@@ -784,21 +787,21 @@ export function buildRoutes() {
       user.id,
       body.displayName,
     );
-    bfRepo.savePreset(preset);
+    await bfRepo.savePreset(preset);
     return c.json({ battlefield: toPublicPreset(preset) });
   });
 
   // —— Narration styles (system presets + user custom) ——
-  authed.get("/narration-styles", (c) => {
+  authed.get("/narration-styles", async (c) => {
     const user = c.get("user");
-    return c.json({ styles: styleRepo.listNarrationStyles(user.id) });
+    return c.json({ styles: await styleRepo.listNarrationStyles(user.id) });
   });
 
   authed.post("/narration-styles", async (c) => {
     const user = c.get("user");
     try {
       const body = UpsertNarrationStyleRequestSchema.parse(await c.req.json());
-      const style = styleRepo.createUserNarrationStyle(user.id, body);
+      const style = await styleRepo.createUserNarrationStyle(user.id, body);
       return c.json({ style: toPublicNarrationStyle(style) }, 201);
     } catch (e) {
       const message = e instanceof Error ? e.message : "invalid";
@@ -818,7 +821,7 @@ export function buildRoutes() {
             instruction: `次の雰囲気で語る: ${body.prompt}`,
             tags: ["custom"],
           };
-      const style = styleRepo.createUserNarrationStyle(user.id, draft);
+      const style = await styleRepo.createUserNarrationStyle(user.id, draft);
       return c.json({ style: toPublicNarrationStyle(style) }, 201);
     } catch (e) {
       const message = e instanceof Error ? e.message : "failed";
@@ -832,7 +835,7 @@ export function buildRoutes() {
       const body = UpsertNarrationStyleRequestSchema.partial().parse(
         await c.req.json(),
       );
-      const style = styleRepo.updateUserNarrationStyle(
+      const style = await styleRepo.updateUserNarrationStyle(
         c.req.param("id"),
         user.id,
         body,
@@ -845,9 +848,9 @@ export function buildRoutes() {
     }
   });
 
-  authed.delete("/narration-styles/:id", (c) => {
+  authed.delete("/narration-styles/:id", async (c) => {
     const user = c.get("user");
-    const ok = styleRepo.deleteUserNarrationStyle(c.req.param("id"), user.id);
+    const ok = await styleRepo.deleteUserNarrationStyle(c.req.param("id"), user.id);
     if (!ok) return c.json({ error: "not_found" }, 404);
     return c.json({ ok: true });
   });
@@ -887,7 +890,7 @@ export function buildRoutes() {
   });
 
   /** Battle history (search + status filter). Must be before /battles/:id */
-  authed.get("/battles", (c) => {
+  authed.get("/battles", async (c) => {
     const user = c.get("user");
     const q = c.req.query("q") ?? undefined;
     const statusRaw = c.req.query("status") ?? "all";
@@ -897,7 +900,7 @@ export function buildRoutes() {
         : "all";
     const limit = Number(c.req.query("limit") ?? 50);
     const offset = Number(c.req.query("offset") ?? 0);
-    const result = battleRepo.listBattlesForUser({
+    const result = await battleRepo.listBattlesForUser({
       userId: user.id,
       q,
       status,
@@ -907,23 +910,23 @@ export function buildRoutes() {
     return c.json(result);
   });
 
-  authed.delete("/battles/:id", (c) => {
+  authed.delete("/battles/:id", async (c) => {
     const user = c.get("user");
-    const ok = battleRepo.deleteBattle(c.req.param("id"), user.id);
+    const ok = await battleRepo.deleteBattle(c.req.param("id"), user.id);
     if (!ok) return c.json({ error: "not_found" }, 404);
     return c.json({ ok: true });
   });
 
-  authed.get("/battles/:id", (c) => {
+  authed.get("/battles/:id", async (c) => {
     const user = c.get("user");
     const id = c.req.param("id");
-    const meta = battleRepo.getBattleMeta(id);
-    const state = battleRepo.getBattle(id);
+    const meta = await battleRepo.getBattleMeta(id);
+    const state = await battleRepo.getBattle(id);
     if (!meta || !state) return c.json({ error: "not_found" }, 404);
     if (meta.side_a_user_id !== user.id) return c.json({ error: "forbidden" }, 403);
-    const mine = charRepo.getSheet(meta.side_a_character_id);
+    const mine = await charRepo.getSheet(meta.side_a_character_id);
     if (!mine) return c.json({ error: "not_found" }, 404);
-    const opp = charRepo.getSheet(meta.side_b_character_id);
+    const opp = await charRepo.getSheet(meta.side_b_character_id);
     return c.json({ battle: toBattlePublic(state, mine, null, opp) });
   });
 

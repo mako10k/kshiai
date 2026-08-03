@@ -281,6 +281,9 @@ CharacterSheet
 | NFR-06 | ログに API キー・パスワードを出さない |
 | NFR-07 | 日本語 UI を既定とする |
 | NFR-08 | 精度が勝敗やキャラクターシートの整合性へ直結しない抽出・戦場具体化・方針生成・物語生成は fast モデルを使い、engine モデルはキャラクター生成／調整と最終審判へ限定する | Must |
+| NFR-09 | 本番バックエンドはローカル永続状態を持たず、複数インスタンスをロードバランサー配下で実行できる | Must |
+| NFR-10 | 課金・利用枠・バトル進行は PostgreSQL のトランザクション、冪等キー、期限付きリースで二重処理を防ぐ | Must |
+| NFR-11 | 生成画像は共有オブジェクトストレージへ保存し、任意のバックエンドインスタンスから同じURLで参照できる | Must |
 
 ---
 
@@ -291,10 +294,11 @@ CharacterSheet
 | Monorepo | npm workspaces | 単純・追加ツール最小 |
 | Frontend | Vite + React + TypeScript | 要件の Vite、SPA 画面遷移に十分 |
 | Backend | Hono + Node + TypeScript | 軽量、OpenAPI しやすい |
-| DB | SQLite (better-sqlite3) | ローカル開発容易。後で Postgres 置換可 |
-| Auth | セッション Cookie または JWT（httpOnly） | マルチユーザー最小 |
+| DB | PostgreSQL 17 (Supabase 東京) | 共有永続状態、トランザクション、複数バックエンド対応。SQLite は移行元とローカル開発に限定 |
+| Auth | Supabase Auth + backend JWT 検証 | メール確認、OIDC、複数インスタンスで共有できる認証基盤 |
 | LLM | xAI (OpenAI 互換) 既定 / Venice 代替 | 要件どおり |
 | 画像 | OpenAI 互換 ImageProvider（xAI / 設定済み Venice） | キャラ・戦場画像生成 |
+| 画像保存 | Cloudflare R2 | ローカルディスク依存を除去し、複数インスタンスで共有 |
 | 設計記録 | llmthink DSL | 要件 (13) |
 | 実装計画 | perttool | 要件 (13) |
 

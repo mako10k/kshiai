@@ -41,11 +41,23 @@ function parseBoolean(value: string | undefined): boolean {
   return value === "1" || value?.toLowerCase() === "true";
 }
 
+function parseDatabaseSchema(value: string | undefined): string {
+  const schema = value?.trim() || "public";
+  if (!/^[a-z_][a-z0-9_]*$/.test(schema)) {
+    throw new Error("DATABASE_SCHEMA must be a safe PostgreSQL identifier");
+  }
+  return schema;
+}
+
 const llmProvider = (process.env.LLM_PROVIDER ?? "mock") as
   | "mock"
   | "xai"
   | "openai"
   | "venice";
+const databaseUrl = process.env.DATABASE_URL?.trim() || null;
+if (process.env.NODE_ENV === "production" && !databaseUrl) {
+  throw new Error("DATABASE_URL is required when NODE_ENV=production");
+}
 
 export function isMockProviderAllowed(input: {
   nodeEnv: string | undefined;
@@ -63,6 +75,9 @@ export const config = {
     process.cwd(),
     process.env.DATABASE_PATH ?? path.join(root, "data/kshiai.db"),
   ),
+  databaseUrl,
+  databaseSchema: parseDatabaseSchema(process.env.DATABASE_SCHEMA),
+  databasePoolMax: Math.max(1, Number(process.env.DATABASE_POOL_MAX ?? 10)),
   sessionSecret: process.env.SESSION_SECRET ?? "dev-secret-change-me",
   /** Comma-separated list supported via CORS_ORIGIN. */
   corsOrigins: parseCorsOrigins(),
