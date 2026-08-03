@@ -11,6 +11,7 @@
 実装計画 (perttool): [docs/plan.pert](docs/plan.pert)
 
 PostgreSQL 移行: [docs/postgres_migration.md](docs/postgres_migration.md)
+旧アカウント移管: [docs/legacy_account_migration.md](docs/legacy_account_migration.md)
 
 ## 技術構成
 
@@ -19,7 +20,7 @@ PostgreSQL 移行: [docs/postgres_migration.md](docs/postgres_migration.md)
 | Frontend | Vite + React + TypeScript | **5188** |
 | Backend | Hono + TypeScript | **3088** |
 | Shared | zod スキーマ / DTO | — |
-| DB | SQLite（現行）→ PostgreSQL / Supabase（移行中） | — |
+| DB | PostgreSQL / Supabase（本番）、SQLite（ローカル開発） | — |
 | LLM | mock / xAI / Venice | — |
 
 ## 公開 URL

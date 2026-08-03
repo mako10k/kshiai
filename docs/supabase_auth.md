@@ -55,8 +55,9 @@ the application user ID, so authorization remains stable.
 
 Legacy username/password rows are not automatically linked by email. The old
 system never verified email ownership, so automatic linking could transfer an
-existing account to an unrelated verified address. A deliberate operator-led
-linking workflow can be added if legacy production users need migration.
+existing account to an unrelated verified address. Use the deliberate,
+operator-led procedure in [legacy_account_migration.md](legacy_account_migration.md)
+after the target user has completed a verified Supabase login.
 
 ## Validation
 

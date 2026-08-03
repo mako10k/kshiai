@@ -66,6 +66,11 @@ export async function getBattle(id: string): Promise<BattleState | null> {
 function sanitizeBattleStateJson(raw: unknown): unknown {
   if (!raw || typeof raw !== "object") return raw;
   const state = { ...(raw as Record<string, unknown>) };
+  if (state.battlefield && typeof state.battlefield === "object") {
+    const battlefield = { ...(state.battlefield as Record<string, unknown>) };
+    if (battlefield.category === "カスタム") battlefield.category = "custom";
+    state.battlefield = battlefield;
+  }
   for (const key of ["policiesA", "policiesB"] as const) {
     const list = state[key];
     if (!Array.isArray(list)) continue;
