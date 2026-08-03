@@ -1,0 +1,66 @@
+# Existing .pert plans should normally be maintained through perttool commands; direct DSL editing bypasses goal/DAG owner-confirmation checks.
+project KSHIAI_PLACEHOLDER_REMEDIATION:
+  version 1
+  title "Replace production placeholder paths"
+  description "Replace persisted battlefield placeholder imagery, establish a provider-neutral image boundary, and prevent implicit mock LLM content from reaching production-visible state."
+  as_of 2026-08-03
+  duration_unit day
+  finish REMEDIATION_DONE
+
+milestone START:
+  title "Placeholder audit complete"
+  state reached
+
+milestone DESIGN_READY:
+  title "Provider and fallback design accepted"
+  state planned
+
+milestone IMAGE_PROVIDER_READY:
+  title "Image provider core ready"
+  state planned
+
+milestone BATTLEFIELD_IMAGE_READY:
+  title "Battlefield image generation ready"
+  state planned
+
+milestone FALLBACK_BOUNDARY_READY:
+  title "Mock fallback boundary ready"
+  state planned
+
+milestone REMEDIATION_DONE:
+  title "Placeholder remediation accepted"
+  state planned
+
+resource DEV:
+  title "Developer"
+  capacity 1
+
+task T_DESIGN START -> DESIGN_READY:
+  title "Design image provider and explicit fallback boundary"
+  duration 1d
+  requires:
+    DEV 1
+
+task T_IMAGE_CORE DESIGN_READY -> IMAGE_PROVIDER_READY:
+  title "Implement provider-neutral image generation core"
+  duration 1d
+  requires:
+    DEV 1
+
+task T_BATTLEFIELD_IMAGE IMAGE_PROVIDER_READY -> BATTLEFIELD_IMAGE_READY:
+  title "Replace battlefield placeholder with generated media"
+  duration 1d
+  requires:
+    DEV 1
+
+task T_FALLBACK_BOUNDARY BATTLEFIELD_IMAGE_READY -> FALLBACK_BOUNDARY_READY:
+  title "Prevent implicit persisted mock LLM output"
+  duration 1d
+  requires:
+    DEV 1
+
+task T_ACCEPT FALLBACK_BOUNDARY_READY -> REMEDIATION_DONE:
+  title "Audit placeholders and run acceptance checks"
+  duration 1d
+  requires:
+    DEV 1
