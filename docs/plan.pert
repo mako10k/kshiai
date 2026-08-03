@@ -1,5 +1,5 @@
 project KSHIAI:
-  version 1
+  version 5
   title "kshiai scalable persistence, authentication, deployment, and billing"
   description |
     Completed vertical slice followed by PostgreSQL migration, stateless
@@ -201,6 +201,7 @@ task T_RELEASE_RULES RUNTIME_MIGRATED -> RELEASE_RULES_READY:
   title "Define versioning release approval and rollback rules"
   description "Document SemVer branch and tag policy required checks approvals changelog artifact provenance staged promotion rollback secret rotation and emergency releases"
   duration 1d
+  status done
   requires:
     DEV 1
 
@@ -210,3 +211,16 @@ task T_CICD RELEASE_RULES_READY -> CICD_READY:
   duration 2d
   requires:
     DEV 1
+
+work_event WE-c7091dd061776688a2144da41e8b413c34b95941594aeae00bd8ad82a7275a87:
+  model 1
+  task T_RELEASE_RULES
+  kind start
+  occurred_at 2026-08-03T20:46:39+09:00
+  planned_value 1d
+
+work_event WE-a1325480f00cc8ab6faf2614a5298d19f00a3ff5d0c1e52af7ec6de948f62655:
+  model 1
+  task T_RELEASE_RULES
+  kind finish
+  occurred_at 2026-08-03T20:48:36+09:00
