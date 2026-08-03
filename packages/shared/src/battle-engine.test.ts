@@ -1,6 +1,11 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { createBattleState, resolveTurn } from "./battle-engine.js";
+import {
+  buildBattleTurnRecord,
+  buildCharacterAgentStateChange,
+  createBattleState,
+  resolveTurn,
+} from "./battle-engine.js";
 import { defaultParameters, type CharacterSheet } from "./character.js";
 
 function sheet(id: string, name: string, hp = 100): CharacterSheet {
@@ -34,6 +39,59 @@ function sheet(id: string, name: string, hp = 100): CharacterSheet {
 }
 
 describe("battle engine", () => {
+  it("creates private agent continuity and perspective-aware turn records", () => {
+    const a = sheet("a", "A");
+    const b = sheet("b", "B");
+    a.identity = {
+      realName: null,
+      nicknames: [],
+      selfNames: ["わたくし"],
+      epithets: [],
+      gender: null,
+      age: null,
+    };
+    const state = createBattleState({
+      id: "agent-state",
+      sideA: a,
+      sideB: b,
+      turnLimit: 20,
+      prologuePending: false,
+    });
+    assert.equal(state.agentStateA?.selfReference, "わたくし");
+    assert.deepEqual(state.turnRecords, []);
+
+    const resolved = resolveTurn({
+      state,
+      playerAction: { actorSide: "a", kind: "skill", skillId: "slash" },
+      sideASkills: a.skills,
+      sideBSkills: b.skills,
+    });
+    const record = buildBattleTurnRecord({
+      before: state,
+      after: resolved.state,
+      events: resolved.events,
+    });
+    assert.equal(record.turn, 1);
+    assert.ok((record.sideBChange.parameterChanges.hp ?? 0) < 0);
+    assert.deepEqual(
+      record.cognitionA.observedEvents,
+      record.cognitionB.observedEvents,
+    );
+    assert.equal(record.cognitionA.foeCondition, record.cognitionB.ownCondition);
+    const agentChange = buildCharacterAgentStateChange(
+      state.agentStateA!,
+      {
+        ...state.agentStateA!,
+        currentGoal: "相手の構えを崩す",
+        emotion: "警戒",
+        observations: ["相手は消耗している"],
+      },
+    );
+    assert.equal(agentChange.goalAfter, "相手の構えを崩す");
+    assert.equal(agentChange.emotionAfter, "警戒");
+    assert.deepEqual(agentChange.observationsAdded, ["相手は消耗している"]);
+  });
+
   it("applies damage without exposing raw numbers in events", () => {
     const state = createBattleState({
       id: "b1",

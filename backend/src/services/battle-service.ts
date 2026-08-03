@@ -3,6 +3,8 @@ import {
   accumulateBattleBalanceTrace,
   advanceSupervisorClock,
   balanceSkill,
+  buildBattleTurnRecord,
+  buildCharacterAgentStateChange,
   createBattleState,
   happeningToEvents,
   happeningToSituationPatch,
@@ -22,13 +24,17 @@ import {
   type BattlePublic,
   type BattleStance,
   type BattleState,
+  type CharacterAgentState,
   type BattlefieldInstance,
   type BattlefieldPreset,
   type CharacterSheet,
+  type SpeechLine,
+  type TurnEvent,
   type Skill,
   toNarrationSnapshot,
   type HappeningPlan,
   type Situation,
+  defaultCharacterIdentity,
 } from "@kshiai/shared";
 import {
   recordBattleFinished,
@@ -457,6 +463,96 @@ async function withTimeout<T>(
   }
 }
 
+function initialAgentState(sheet: CharacterSheet): CharacterAgentState {
+  return {
+    privateMemory: "",
+    currentGoal: "",
+    emotion: "平静",
+    beliefs: [],
+    observations: [],
+    speechStyle: "",
+    selfReference: sheet.identity?.selfNames[0] ?? null,
+    lastSpeech: null,
+  };
+}
+
+async function advanceCharacterAgents(input: {
+  llm: LlmProvider;
+  before: BattleState;
+  after: BattleState;
+  mine: CharacterSheet;
+  opp: CharacterSheet;
+  events: TurnEvent[];
+}): Promise<{ state: BattleState; speeches: SpeechLine[] }> {
+  const record = buildBattleTurnRecord(input);
+  const cognitionA = record.cognitionA;
+  const cognitionB = record.cognitionB;
+  const identityA = input.mine.identity ?? defaultCharacterIdentity();
+  const identityB = input.opp.identity ?? defaultCharacterIdentity();
+  const previousA = input.after.agentStateA ?? initialAgentState(input.mine);
+  const previousB = input.after.agentStateB ?? initialAgentState(input.opp);
+  const stateWithRecord: BattleState = {
+    ...input.after,
+    turnRecords: [...(input.after.turnRecords ?? []), record].slice(-50),
+  };
+  let agents;
+  try {
+    agents = await withTimeout(Promise.all([
+      input.llm.advanceCharacterAgent({
+        character: {
+          displayName: input.mine.displayName,
+          identity: identityA,
+          traits: input.mine.traits,
+          narrativeBlurb: input.mine.narrativeBlurb,
+          skillNames: input.mine.skills.map((skill) => skill.name),
+        },
+        foeName: input.opp.displayName,
+        previous: previousA,
+        cognition: cognitionA,
+      }),
+      input.llm.advanceCharacterAgent({
+        character: {
+          displayName: input.opp.displayName,
+          identity: identityB,
+          traits: input.opp.traits,
+          narrativeBlurb: input.opp.narrativeBlurb,
+          skillNames: input.opp.skills.map((skill) => skill.name),
+        },
+        foeName: input.mine.displayName,
+        previous: previousB,
+        cognition: cognitionB,
+      }),
+    ]), 18_000, "advanceCharacterAgents");
+  } catch (error) {
+    console.warn(
+      "[battle] character agents skipped",
+      error instanceof Error ? error.message : error,
+    );
+    return { state: stateWithRecord, speeches: [] };
+  }
+  const [agentA, agentB] = agents;
+  const completedRecord = {
+    ...record,
+    agentStateChangeA: buildCharacterAgentStateChange(previousA, agentA.state),
+    agentStateChangeB: buildCharacterAgentStateChange(previousB, agentB.state),
+  };
+  const speeches: SpeechLine[] = [];
+  if (agentA.speech) speeches.push({ speaker: input.mine.displayName, text: agentA.speech });
+  if (agentB.speech) speeches.push({ speaker: input.opp.displayName, text: agentB.speech });
+  return {
+    state: {
+      ...input.after,
+      agentStateA: agentA.state,
+      agentStateB: agentB.state,
+      turnRecords: [
+        ...(input.after.turnRecords ?? []),
+        completedRecord,
+      ].slice(-50),
+    },
+    speeches,
+  };
+}
+
 function mergeSituationPatches(
   base: Partial<Situation>,
   happening: Partial<Situation> | null,
@@ -669,6 +765,16 @@ export async function advanceTurn(input: {
   );
   next = { ...next, supervisor };
 
+  const agentTurn = await advanceCharacterAgents({
+    llm: input.llm,
+    before: state,
+    after: next,
+    mine,
+    opp,
+    events,
+  });
+  next = agentTurn.state;
+
   let narrative;
   try {
     narrative = await withTimeout(
@@ -679,6 +785,7 @@ export async function advanceTurn(input: {
         sideBName: next.sideB.displayName,
         battlefield: next.battlefield,
         events,
+        agentSpeeches: agentTurn.speeches,
         styleInstruction: next.narrationStyle?.instruction,
         styleName: next.narrationStyle?.displayName,
       }),
@@ -697,7 +804,7 @@ export async function advanceTurn(input: {
         `第${next.turn}ターン — ${place}。`,
         ...events.map((ev) => ev.summary),
       ],
-      speeches: [],
+      speeches: agentTurn.speeches,
     };
   }
   next = { ...next, log: [...next.log, narrative] };
@@ -786,11 +893,23 @@ async function runPrologueTurn(input: {
   opp: CharacterSheet;
   llm: LlmProvider;
 }): Promise<BattlePublic> {
-  const state = input.state;
+  let state = input.state;
   const policyLine = summarizeSelectedPolicies(
     state.policiesA,
     state.selectedPolicyIdsA,
   );
+  const prologueAgents = await advanceCharacterAgents({
+    llm: input.llm,
+    before: state,
+    after: state,
+    mine: input.mine,
+    opp: input.opp,
+    events: [{
+      type: "situation",
+      summary: `${state.situation.scene}で両者が対峙した。`,
+    }],
+  });
+  state = prologueAgents.state;
 
   let narrative;
   try {
@@ -833,6 +952,8 @@ async function runPrologueTurn(input: {
       ],
     };
   }
+
+  narrative = { ...narrative, speeches: prologueAgents.speeches };
 
   if (
     narrative.narrator[0] &&
@@ -927,6 +1048,8 @@ async function runAftermathTurn(input: {
       speeches: [],
     };
   }
+
+  narrative = { ...narrative, speeches: [] };
 
   // Mark epilogue block for UI (prefix first line if missing)
   if (

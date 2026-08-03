@@ -280,7 +280,9 @@ export function CharacterDetailPage() {
               ))}
             </dl>
           ) : null}
-          <p className="muted">{character.appearance.summary}</p>
+          <p className="muted">
+            <strong>外見:</strong> {character.appearance.summary}
+          </p>
           <div className="record-block">
             <p className="record-line" style={{ marginBottom: "0.35rem" }}>
               <strong>公開成績</strong>

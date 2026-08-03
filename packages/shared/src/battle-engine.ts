@@ -3,6 +3,9 @@ import type {
   BattlePolicyOption,
   BattleStance,
   BattleState,
+  BattleTurnRecord,
+  CharacterAgentState,
+  CharacterAgentStateChange,
   CombatantState,
   PolicyBias,
   Situation,
@@ -38,6 +41,99 @@ function cloneCombatant(c: CombatantState): CombatantState {
     ...c,
     parameters: { ...c.parameters },
     baseParameters: c.baseParameters ? { ...c.baseParameters } : undefined,
+  };
+}
+
+function perceivedCondition(combatant: CombatantState) {
+  if (!combatant.canFight || (combatant.parameters.hp ?? 0) <= 0) {
+    return "incapacitated" as const;
+  }
+  const maxHp = Math.max(1, combatant.parameters.maxHp ?? 100);
+  const ratio = (combatant.parameters.hp ?? 0) / maxHp;
+  if (ratio <= 0.25) return "critical" as const;
+  if (ratio <= 0.6) return "strained" as const;
+  return "steady" as const;
+}
+
+function parameterChanges(before: CombatantState, after: CombatantState) {
+  const changes: Partial<Record<ParamKey, number>> = {};
+  for (const key of Object.keys(after.parameters) as ParamKey[]) {
+    const delta = (after.parameters[key] ?? 0) - (before.parameters[key] ?? 0);
+    if (delta !== 0) changes[key] = delta;
+  }
+  return changes;
+}
+
+/** Build the persisted, perspective-aware facts after deterministic resolution. */
+export function buildBattleTurnRecord(input: {
+  before: BattleState;
+  after: BattleState;
+  events: TurnEvent[];
+}): BattleTurnRecord {
+  const changeA = parameterChanges(input.before.sideA, input.after.sideA);
+  const changeB = parameterChanges(input.before.sideB, input.after.sideB);
+  const base = {
+    turn: input.after.turn,
+    scene: input.after.situation.scene,
+    observedEvents: input.events,
+  };
+  return {
+    turn: input.after.turn,
+    events: input.events,
+    sideAChange: {
+      parameterChanges: changeA,
+      defendingBefore: input.before.sideA.defending,
+      defendingAfter: input.after.sideA.defending,
+      canFightBefore: input.before.sideA.canFight,
+      canFightAfter: input.after.sideA.canFight,
+    },
+    sideBChange: {
+      parameterChanges: changeB,
+      defendingBefore: input.before.sideB.defending,
+      defendingAfter: input.after.sideB.defending,
+      canFightBefore: input.before.sideB.canFight,
+      canFightAfter: input.after.sideB.canFight,
+    },
+    cognitionA: {
+      ...base,
+      ownCondition: perceivedCondition(input.after.sideA),
+      foeCondition: perceivedCondition(input.after.sideB),
+      parameterChanges: changeA,
+    },
+    cognitionB: {
+      ...base,
+      ownCondition: perceivedCondition(input.after.sideB),
+      foeCondition: perceivedCondition(input.after.sideA),
+      parameterChanges: changeB,
+    },
+    agentStateChangeA: null,
+    agentStateChangeB: null,
+  };
+}
+
+/** Detect structured private-state changes without interpreting free-form prose. */
+export function buildCharacterAgentStateChange(
+  before: CharacterAgentState,
+  after: CharacterAgentState,
+): CharacterAgentStateChange {
+  const beforeBeliefs = new Set(before.beliefs);
+  const afterBeliefs = new Set(after.beliefs);
+  const beforeObservations = new Set(before.observations);
+  return {
+    goalBefore: before.currentGoal,
+    goalAfter: after.currentGoal,
+    emotionBefore: before.emotion,
+    emotionAfter: after.emotion,
+    beliefsAdded: after.beliefs.filter((item) => !beforeBeliefs.has(item)),
+    beliefsRemoved: before.beliefs.filter((item) => !afterBeliefs.has(item)),
+    observationsAdded: after.observations.filter(
+      (item) => !beforeObservations.has(item),
+    ),
+    speechStyleBefore: before.speechStyle,
+    speechStyleAfter: after.speechStyle,
+    selfReferenceBefore: before.selfReference,
+    selfReferenceAfter: after.selfReference,
+    lastSpeech: after.lastSpeech,
   };
 }
 
@@ -144,6 +240,27 @@ export function createBattleState(input: {
     aftermathPending: false,
     narrationStyle: input.narrationStyle ?? defaultNarrationSnapshot(),
     priorMatchSummary: input.priorMatchSummary ?? null,
+    agentStateA: {
+      privateMemory: "",
+      currentGoal: "",
+      emotion: "平静",
+      beliefs: [],
+      observations: [],
+      speechStyle: "",
+      selfReference: input.sideA.identity?.selfNames[0] ?? null,
+      lastSpeech: null,
+    },
+    agentStateB: {
+      privateMemory: "",
+      currentGoal: "",
+      emotion: "平静",
+      beliefs: [],
+      observations: [],
+      speechStyle: "",
+      selfReference: input.sideB.identity?.selfNames[0] ?? null,
+      lastSpeech: null,
+    },
+    turnRecords: [],
     log: [],
     winnerSide: null,
     finishReason: null,

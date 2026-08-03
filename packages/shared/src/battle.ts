@@ -230,6 +230,81 @@ export const TurnEventSchema = z.object({
 });
 export type TurnEvent = z.infer<typeof TurnEventSchema>;
 
+/** Qualitative condition visible to one character after engine resolution. */
+export const PerceivedConditionSchema = z.enum([
+  "steady",
+  "strained",
+  "critical",
+  "incapacitated",
+]);
+export type PerceivedCondition = z.infer<typeof PerceivedConditionSchema>;
+
+/** Engine-authored observation injected into one isolated character agent. */
+export const CharacterCognitionSchema = z.object({
+  turn: z.number().int().nonnegative(),
+  scene: z.string(),
+  ownCondition: PerceivedConditionSchema,
+  foeCondition: PerceivedConditionSchema,
+  parameterChanges: z.record(ParamKeySchema, z.number()).default({}),
+  observedEvents: z.array(TurnEventSchema).default([]),
+});
+export type CharacterCognition = z.infer<typeof CharacterCognitionSchema>;
+
+/**
+ * Compact private continuity for a character agent. It stores conclusions and
+ * disposition, not a model's step-by-step reasoning.
+ */
+export const CharacterAgentStateSchema = z.object({
+  privateMemory: z.string().max(1200).default(""),
+  currentGoal: z.string().max(240).default(""),
+  emotion: z.string().max(120).default("平静"),
+  beliefs: z.array(z.string().max(240)).max(8).default([]),
+  observations: z.array(z.string().max(240)).max(8).default([]),
+  speechStyle: z.string().max(240).default(""),
+  selfReference: z.string().max(40).nullable().default(null),
+  lastSpeech: z.string().max(400).nullable().default(null),
+});
+export type CharacterAgentState = z.infer<typeof CharacterAgentStateSchema>;
+
+export const CombatantStateChangeSchema = z.object({
+  parameterChanges: z.record(ParamKeySchema, z.number()).default({}),
+  defendingBefore: z.boolean(),
+  defendingAfter: z.boolean(),
+  canFightBefore: z.boolean(),
+  canFightAfter: z.boolean(),
+});
+
+export const CharacterAgentStateChangeSchema = z.object({
+  goalBefore: z.string(),
+  goalAfter: z.string(),
+  emotionBefore: z.string(),
+  emotionAfter: z.string(),
+  beliefsAdded: z.array(z.string()).default([]),
+  beliefsRemoved: z.array(z.string()).default([]),
+  observationsAdded: z.array(z.string()).default([]),
+  speechStyleBefore: z.string(),
+  speechStyleAfter: z.string(),
+  selfReferenceBefore: z.string().nullable(),
+  selfReferenceAfter: z.string().nullable(),
+  lastSpeech: z.string().nullable(),
+});
+export type CharacterAgentStateChange = z.infer<
+  typeof CharacterAgentStateChangeSchema
+>;
+
+/** Persisted engine facts for audit and agent cognition reconstruction. */
+export const BattleTurnRecordSchema = z.object({
+  turn: z.number().int().nonnegative(),
+  events: z.array(TurnEventSchema).default([]),
+  sideAChange: CombatantStateChangeSchema,
+  sideBChange: CombatantStateChangeSchema,
+  cognitionA: CharacterCognitionSchema,
+  cognitionB: CharacterCognitionSchema,
+  agentStateChangeA: CharacterAgentStateChangeSchema.nullable().default(null),
+  agentStateChangeB: CharacterAgentStateChangeSchema.nullable().default(null),
+});
+export type BattleTurnRecord = z.infer<typeof BattleTurnRecordSchema>;
+
 /** Monotony tracker for environmental happenings (supervisor). */
 export const SupervisorStateSchema = z.object({
   quietTurns: z.number().int().nonnegative().default(0),
@@ -283,6 +358,11 @@ export const BattleStateSchema = z.object({
    * used for prologue rivalry / 因縁.
    */
   priorMatchSummary: z.string().nullable().optional(),
+  /** Isolated, private character-agent continuity. Never exposed publicly. */
+  agentStateA: CharacterAgentStateSchema.optional(),
+  agentStateB: CharacterAgentStateSchema.optional(),
+  /** Structured engine transitions; narrative log is presentation only. */
+  turnRecords: z.array(BattleTurnRecordSchema).default([]),
   /**
    * Engine-internal balance metrics (not exposed on BattlePublic).
    * Accumulated from HP deltas each combat turn for observability.

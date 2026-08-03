@@ -230,3 +230,36 @@ decision D14 based_on PR14, EV14, D1, D2:
     enums, numeric values, ownership, and engine state. Literal matching remains
     limited to explicit search, safety redaction, protocol/error classification,
     file validation, and output-format repair; none may select combat mechanics.
+
+problem PR15:
+  |
+    Character generation can repeat the same balance caveat across traits,
+    public blurbs, and skill or equipment descriptions, making profiles read as
+    several prompt fragments appended together.
+
+decision D15 based_on PR15, D3, D14:
+  |
+    Character generation and adjustment produce one synthesized profile. Each
+    fact has one canonical home: visible details in appearance.summary, local
+    mechanics in the relevant description, short personality facts in traits,
+    and a cohesive identity/background overview in narrativeBlurb.
+    The LLM must not repeat or paraphrase the same tradeoff across those fields;
+    deterministic balancing never edits prose.
+
+problem PR16:
+  |
+    A stateless narrator that writes dialogue for both fighters forgets
+    non-parameter state and can drift away from a character's first-person voice.
+
+decision D16 based_on PR16, D1, D2, D9, D12:
+  |
+    Each battle owns two isolated private character-agent states containing only
+    compact continuity conclusions, goal, emotion, beliefs, observations,
+    speech style, self-reference, and last speech. After deterministic resolution,
+    the shared engine persists structured before/after changes and constructs a
+    perspective-aware cognition snapshot for each character. Each agent receives
+    only its own profile, previous private state, opponent name, and that snapshot,
+    then updates its state and authors its own line. The narrator receives committed
+    events and agent-owned lines but writes only narrator prose. Agent state and
+    turn records remain absent from public battle DTOs; step-by-step reasoning is
+    neither requested nor stored.

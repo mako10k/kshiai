@@ -41,7 +41,7 @@ export class MockLlmProvider implements LlmProvider {
       },
       tags: ["mock", "generated"],
       appearance: {
-        summary: `${displayName} — ${prompt.slice(0, 120)}`,
+        summary: `${displayName}の外見詳細は、モック環境ではまだ生成されていない。`,
         visualPrompt: `anime character portrait bust, detailed face, ${displayName}, ${prompt.slice(0, 180)}, expressive eyes, soft lighting, single character, no text`,
         imageUrl: null,
       },
@@ -107,7 +107,7 @@ export class MockLlmProvider implements LlmProvider {
         effects: [{ parameter: "spd", delta: -1 }],
       },
       combatFlags: { canFight: true, irreversibleIncapacitated: false },
-      narrativeBlurb: `${displayName}。${prompt.slice(0, 160)}という印象を周囲に与える挑戦者。`,
+      narrativeBlurb: `${prompt.slice(0, 160)}という依頼をもとに作られた、${displayName}という挑戦者。`,
       record: defaultRecord(),
       deletedAt: null,
     };
@@ -280,12 +280,39 @@ export class MockLlmProvider implements LlmProvider {
     };
   }
 
+  async advanceCharacterAgent(input: Parameters<LlmProvider["advanceCharacterAgent"]>[0]) {
+    const selfReference =
+      input.previous.selfReference ?? input.character.identity.selfNames[0] ?? "私";
+    const event = input.cognition.observedEvents.at(-1)?.summary ??
+      `${input.cognition.scene}で相手の出方を見ている。`;
+    const speech = input.cognition.turn === 0
+      ? `${selfReference}は、${input.foeName}と向き合おう。`
+      : `${selfReference}は、まだ退かない。`;
+    return {
+      state: {
+        ...input.previous,
+        privateMemory: event.slice(0, 1200),
+        currentGoal: `${input.foeName}との戦いを続ける`,
+        emotion: input.cognition.ownCondition === "critical" ? "緊張" : "集中",
+        observations: [
+          ...input.previous.observations.slice(-6),
+          event.slice(0, 240),
+        ],
+        speechStyle: input.previous.speechStyle || "簡潔に話す",
+        selfReference,
+        lastSpeech: speech,
+      },
+      speech,
+    };
+  }
+
   async narrateTurn(input: {
     turn: number;
     scene: string;
     sideAName: string;
     sideBName: string;
     events: { summary: string; actorName?: string; skillName?: string; intensity?: string }[];
+    agentSpeeches?: Array<{ speaker: string; text: string }>;
     battlefield?: BattlefieldInstance | null;
     styleInstruction?: string;
     styleName?: string;
@@ -300,21 +327,7 @@ export class MockLlmProvider implements LlmProvider {
       `第${input.turn}ターン — ${place}${styleNote}。`,
       ...input.events.map((e) => e.summary),
     ];
-    const speeches = [
-      {
-        speaker: input.sideAName,
-        text: input.events[0]?.skillName
-          ? `${input.events[0].skillName}、くらえ！`
-          : "まだ終わらん…！",
-      },
-      {
-        speaker: input.sideBName,
-        text: input.battlefield?.obstacles[0]
-          ? `${input.battlefield.obstacles[0]}を盾に…こちらからだ！`
-          : "その程度か…ならばこちらからだ！",
-      },
-    ];
-    return { turn: input.turn, narrator, speeches };
+    return { turn: input.turn, narrator, speeches: input.agentSpeeches ?? [] };
   }
 
   async narratePrologue(input: {

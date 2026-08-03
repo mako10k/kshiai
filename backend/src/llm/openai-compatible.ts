@@ -5,6 +5,7 @@ import type {
 } from "openai/resources/chat/completions";
 import {
   BasicAttackProfileSchema,
+  CharacterAgentStateSchema,
   CharacterIdentitySchema,
   EquipmentSchema,
   SkillSchema,
@@ -329,9 +330,14 @@ Return JSON: {
 }
 Parameters should be balanced around hp 80-120, atk/def 8-16. Never create unbeatable gods.
 When the request refers to the user's other character, a relative, partner, rival, or someone similar, use search_own_characters and then get_own_character before generating. Preserve the requested relationship while creating meaningful differences.
+PROFILE FIELD OWNERSHIP (mandatory):
+- appearance.summary describes visible appearance only (face, hair, clothing, colors, silhouette). It must not repeat biography, personality, powers, weaknesses, or narrativeBlurb.
+- traits are short labels, not sentences or fragments copied from narrativeBlurb.
+- narrativeBlurb is a natural 2–4 sentence public introduction covering identity, background, and personality. Do not list or restate visual details, skill descriptions, equipment descriptions, or trait labels.
 BALANCE (mandatory):
 - Judge from the complete concept and mechanics whether a claimed strength needs a weakness, cost, counter, or condition to keep the character fair.
-- When one is needed, invent a concrete, character-specific tradeoff and express it naturally in the relevant skill/equipment description, traits, and narrativeBlurb. Write the actual prose yourself; never append generic stock warnings.
+- When one is needed, invent one concrete, character-specific tradeoff and place each fact in exactly one canonical field: local mechanics in the relevant skill/equipment description, short personality facts in traits, and only the cohesive public overview in narrativeBlurb.
+- Synthesize the profile as one coherent result. Never repeat or paraphrase the same weakness across traits, narrativeBlurb, and skill/equipment descriptions. Write the actual prose yourself; never append generic stock warnings.
 - When no narrative tradeoff is needed, do not fabricate a generic weakness merely because one parameter is high.
 - skill power typically 0.8–1.5 (never above 1.8). Strong skills need higher MP/stamina cost.
 - Basic attacks may primarily reduce HP, MP, stamina, a maximum, or a combat stat. Match the character concept.
@@ -437,7 +443,8 @@ Use null or [] when the profile does not establish a value. Do not treat a title
 Do not tell the user exact numbers.
 Use the same basicAttack, skill effects, and equipment effects shapes as character generation.
 Status changes are temporary and drift toward original values every turn. Beneficial effects need MP/stamina, a negative self effect, or the consumed action; positive equipment needs a negative tradeoff.
-Judge from the complete concept and mechanics whether the requested strengths need a weakness, cost, counter, or condition. When needed, write a concrete character-specific tradeoff into the relevant skill/equipment description, traits, and narrativeBlurb. Never append a generic stock warning, and do not fabricate a weakness when none is needed. If the user asks for absolute power, preserve the flavor without removing all counters.`,
+Keep the profile synthesized: narrativeBlurb is a cohesive public introduction, traits are short labels, and skill/equipment descriptions contain only their local facts. Never copy or paraphrase the same fact into multiple fields.
+Judge from the complete concept and mechanics whether the requested strengths need a weakness, cost, counter, or condition. When needed, invent one concrete character-specific tradeoff and put each fact in exactly one canonical field: local mechanics in the relevant description, personality facts in traits, and only the cohesive overview in narrativeBlurb. Synthesize rather than append; never repeat or paraphrase the same weakness across fields. Never append a generic stock warning, and do not fabricate a weakness when none is needed. If the user asks for absolute power, preserve the flavor without removing all counters.`,
         JSON.stringify({
           currentPublic: {
             displayName: current.displayName,
@@ -800,12 +807,64 @@ Rules:
     }
   }
 
+  async advanceCharacterAgent(input: Parameters<LlmProvider["advanceCharacterAgent"]>[0]) {
+    if (!this.client) return this.fallback.advanceCharacterAgent(input);
+    try {
+      const data = (await this.chatJson(
+        `You maintain one fictional character's private continuity during a duel.
+You see only this character's profile, their previous compact state, and engine-authored cognition.
+Update conclusions and disposition; never invent combat results or numeric changes.
+Do not output chain-of-thought or step-by-step reasoning. privateMemory is a concise continuity summary only.
+Keep selfReference stable when already established. Any spoken line must consistently use that self-reference and the character's established speechStyle.
+Return JSON only:
+{
+  "state": {
+    "privateMemory": string, "currentGoal": string, "emotion": string,
+    "beliefs": string[], "observations": string[], "speechStyle": string,
+    "selfReference": string|null, "lastSpeech": string|null
+  },
+  "speech": string|null
+}
+speech is one short Japanese utterance without brackets, or null when silence fits.`,
+        JSON.stringify(input),
+        {
+          tier: "fast",
+          label: "advanceCharacterAgent",
+          timeoutMs: 14_000,
+          temperature: 0.65,
+        },
+      )) as Record<string, unknown>;
+      const previous = input.previous;
+      const parsed = CharacterAgentStateSchema.safeParse({
+        ...previous,
+        ...(data.state && typeof data.state === "object" ? data.state : {}),
+        selfReference:
+          previous.selfReference ??
+          ((data.state as { selfReference?: unknown } | undefined)?.selfReference ?? null),
+      });
+      if (!parsed.success) throw new Error("Character agent returned invalid state");
+      const speech = data.speech === null || data.speech === undefined
+        ? null
+        : String(data.speech).replace(/^「/, "").replace(/」$/, "").trim() || null;
+      return {
+        state: {
+          ...parsed.data,
+          lastSpeech: speech ?? parsed.data.lastSpeech,
+        },
+        speech,
+      };
+    } catch (error) {
+      return this.fallbackOrThrow(error, () => this.fallback.advanceCharacterAgent(input));
+    }
+  }
+
   async narrateTurn(input: {
     turn: number;
     scene: string;
     sideAName: string;
     sideBName: string;
     events: { summary: string }[];
+    agentSpeeches?: Array<{ speaker: string; text: string }>;
     battlefield?: BattlefieldInstance | null;
     styleInstruction?: string;
     styleName?: string;
@@ -820,15 +879,15 @@ Rules:
 ${styleBlock}
 Use battlefield flavor (terrain/obstacles) when relevant.
 If events include 【ハプニング】, feature that environmental beat clearly in the narrator lines first.
-JSON:
-{ "turn": number, "narrator": string[], "speeches": [{ "speaker": string, "text": string }] }
-Do not mention numeric HP/MP/ATK values. Character lines should be short spoken Japanese without brackets.`,
+JSON: { "turn": number, "narrator": string[] }
+Do not mention numeric HP/MP/ATK values. Character dialogue is supplied by separate character agents; do not create, quote, or rewrite dialogue.`,
         JSON.stringify({
           turn: input.turn,
           scene: input.scene,
           sideAName: input.sideAName,
           sideBName: input.sideBName,
           events: input.events,
+          agentSpeeches: input.agentSpeeches,
           battlefield: input.battlefield
             ? {
                 displayName: input.battlefield.displayName,
@@ -838,11 +897,11 @@ Do not mention numeric HP/MP/ATK values. Character lines should be short spoken 
             : null,
         }),
         { tier: "fast", label: "narrateTurn", timeoutMs: 14_000, temperature: 0.9 },
-      )) as NarrationResult;
+      )) as { turn?: number; narrator?: string[] };
       return {
         turn: input.turn,
         narrator: data.narrator ?? [],
-        speeches: data.speeches ?? [],
+        speeches: input.agentSpeeches ?? [],
       };
     } catch (error) {
       return this.fallbackOrThrow(error, () => this.fallback.narrateTurn(input));
@@ -876,10 +935,9 @@ Do not mention numeric HP/MP/ATK values. Character lines should be short spoken 
 ${styleBlock}
 Include: atmosphere of the field, each fighter's opening presence / monologue vibe, and rivalry or fate (因縁).
 ${rivalryRule}
-No combat resolution yet. No numeric stats.
-4–8 narrator lines + 1–3 short spoken lines.
-JSON:
-{ "turn": 0, "narrator": string[], "speeches": [{ "speaker": string, "text": string }] }`,
+No combat resolution yet. No numeric stats. Dialogue is owned by separate character agents; do not create or quote dialogue.
+4–8 narrator lines.
+JSON: { "turn": 0, "narrator": string[] }`,
         JSON.stringify({
           scene: input.scene,
           sideA: {
@@ -910,7 +968,7 @@ JSON:
           timeoutMs: 14_000,
           temperature: 0.9,
         },
-      )) as NarrationResult;
+      )) as { turn?: number; narrator?: string[] };
       const narrator = data.narrator?.length
         ? data.narrator
         : ["——開幕——", "両者の視線が交わる。"];
@@ -920,7 +978,7 @@ JSON:
       return {
         turn: 0,
         narrator,
-        speeches: data.speeches ?? [],
+        speeches: [],
       };
     } catch (error) {
       return this.fallbackOrThrow(error, () => this.fallback.narratePrologue(input));
@@ -950,10 +1008,9 @@ JSON:
 ${styleBlock}
 Someone is already incapacitated. Show what becomes of the fallen and how the winner (if any) closes the scene.
 Use battlefield flavor. Keep it emotional / cinematic but short (3–6 narrator lines).
-Optional 0–2 short spoken lines.
+Do not create or quote dialogue; character lines are owned by separate character agents.
 Do NOT invent a new fight, healing that reverses the win, or numeric stats.
-JSON:
-{ "turn": number, "narrator": string[], "speeches": [{ "speaker": string, "text": string }] }`,
+JSON: { "turn": number, "narrator": string[] }`,
         JSON.stringify({
           turn: input.turn,
           scene: input.scene,
@@ -976,13 +1033,13 @@ JSON:
           timeoutMs: 14_000,
           temperature: 0.9,
         },
-      )) as NarrationResult;
+      )) as { turn?: number; narrator?: string[] };
       return {
         turn: input.turn,
         narrator: data.narrator?.length
           ? data.narrator
           : ["——決着の余波——", "戦場に余韻だけが残った。"],
-        speeches: data.speeches ?? [],
+        speeches: [],
       };
     } catch (error) {
       return this.fallbackOrThrow(error, () => this.fallback.narrateAftermath(input));

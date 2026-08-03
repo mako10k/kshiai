@@ -4,7 +4,10 @@ import type {
   BattlePolicyOption,
   CharacterSheet,
   CharacterIdentity,
+  CharacterAgentState,
+  CharacterCognition,
   NarrativeBlock,
+  SpeechLine,
   Situation,
   TurnEvent,
 } from "@kshiai/shared";
@@ -119,12 +122,27 @@ export interface LlmProvider {
       intensity: "minor" | "moderate";
     }>;
   }>;
+  /** Advance one character in isolation from engine-authored cognition. */
+  advanceCharacterAgent(input: {
+    character: {
+      displayName: string;
+      identity: CharacterIdentity;
+      traits: string[];
+      narrativeBlurb: string;
+      skillNames: string[];
+    };
+    foeName: string;
+    previous: CharacterAgentState;
+    cognition: CharacterCognition;
+  }): Promise<{ state: CharacterAgentState; speech: string | null }>;
   narrateTurn(input: {
     turn: number;
     scene: string;
     sideAName: string;
     sideBName: string;
     events: TurnEvent[];
+    /** Character-owned lines; narrator must not rewrite them. */
+    agentSpeeches?: SpeechLine[];
     battlefield?: BattlefieldInstance | null;
     /** Narration style instruction for this match. */
     styleInstruction?: string;
