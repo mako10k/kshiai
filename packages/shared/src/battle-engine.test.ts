@@ -354,6 +354,7 @@ describe("battle engine", () => {
       lastHpA: 100,
       lastHpB: 100,
       happenings: 0,
+      recentHappenings: [],
     };
 
     const { events } = resolveTurn({

@@ -235,6 +235,7 @@ export function createBattleState(input: {
       lastHpA: null,
       lastHpB: null,
       happenings: 0,
+      recentHappenings: [],
     },
     prologuePending: input.prologuePending ?? true,
     aftermathPending: false,

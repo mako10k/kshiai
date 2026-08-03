@@ -1,26 +1,19 @@
-import type { BattlefieldInstance } from "./battlefield.js";
 import type { Situation, SupervisorState, TurnEvent } from "./battle.js";
 import { clampCoefficient } from "./battle.js";
-import { clampCoefficientMap } from "./battlefield.js";
 
 export type HappeningIntensity = "minor" | "moderate";
 
 export type HappeningEnvHit = {
-  target: "a" | "b" | "both";
+  target: "both";
   kind: "damage" | "heal" | "disrupt";
   intensity: HappeningIntensity;
 };
 
-/**
- * A supervisor-injected environmental beat.
- * Mechanical enough to break stalemates; narrative stays high-level.
- */
+/** A generated, battlefield-grounded change that can break a stalemate. */
 export type HappeningPlan = {
   id: string;
   title: string;
-  /** User-facing event line (no raw stats). */
   summary: string;
-  /** Updates situation.notes. */
   notes: string;
   coefficients: Record<string, number>;
   tags?: string[];
@@ -35,23 +28,21 @@ export function defaultSupervisor(): SupervisorState {
     lastHpA: null,
     lastHpB: null,
     happenings: 0,
+    recentHappenings: [],
   };
 }
 
 export function normalizeSupervisor(
   raw: Partial<SupervisorState> | null | undefined,
 ): SupervisorState {
-  const d = defaultSupervisor();
-  if (!raw) return d;
+  const defaults = defaultSupervisor();
+  if (!raw) return defaults;
   return {
-    quietTurns: Math.max(0, Number(raw.quietTurns ?? d.quietTurns) || 0),
-    passiveTurns: Math.max(
-      0,
-      Number(raw.passiveTurns ?? d.passiveTurns) || 0,
-    ),
+    quietTurns: Math.max(0, Number(raw.quietTurns ?? 0) || 0),
+    passiveTurns: Math.max(0, Number(raw.passiveTurns ?? 0) || 0),
     turnsSinceHappening: Math.max(
       0,
-      Number(raw.turnsSinceHappening ?? d.turnsSinceHappening) || 0,
+      Number(raw.turnsSinceHappening ?? 0) || 0,
     ),
     lastHpA:
       typeof raw.lastHpA === "number" && Number.isFinite(raw.lastHpA)
@@ -61,11 +52,20 @@ export function normalizeSupervisor(
       typeof raw.lastHpB === "number" && Number.isFinite(raw.lastHpB)
         ? raw.lastHpB
         : null,
-    happenings: Math.max(0, Number(raw.happenings ?? d.happenings) || 0),
+    happenings: Math.max(0, Number(raw.happenings ?? 0) || 0),
+    recentHappenings: Array.isArray(raw.recentHappenings)
+      ? raw.recentHappenings
+          .filter((item) => item && item.title && item.summary)
+          .map((item) => ({
+            title: String(item.title).slice(0, 40),
+            summary: String(item.summary).slice(0, 160),
+          }))
+          .slice(-5)
+      : defaults.recentHappenings,
   };
 }
 
-/** True when the last resolved turn barely moved the fight. */
+/** True when the last resolved turn barely changed either side's condition. */
 export function isQuietTurn(input: {
   events: TurnEvent[];
   hpBeforeA: number;
@@ -80,25 +80,29 @@ export function isQuietTurn(input: {
     Math.abs(input.hpBeforeA - input.hpAfterA) +
     Math.abs(input.hpBeforeB - input.hpAfterB);
   const swungRatio = swung / totalMax;
-
-  const damageEvents = input.events.filter((e) => e.type === "damage");
+  const damageEvents = input.events.filter((event) => event.type === "damage");
   const heavyHit = damageEvents.some(
-    (e) => e.intensity === "heavy" || e.intensity === "critical",
+    (event) =>
+      event.intensity === "heavy" || event.intensity === "critical",
   );
   const waitDefendOnly =
     input.events.length > 0 &&
     input.events
-      .filter((e) => e.type !== "situation" && e.type !== "info")
-      .every((e) => e.type === "wait" || e.type === "defend" || e.type === "status");
+      .filter((event) => event.type !== "situation" && event.type !== "info")
+      .every(
+        (event) =>
+          event.type === "wait" ||
+          event.type === "defend" ||
+          event.type === "status",
+      );
 
-  // Quiet if little HP movement and no heavy hits, or pure stall actions
   if (waitDefendOnly && swungRatio < 0.08) return true;
   if (swungRatio < 0.06 && !heavyHit) return true;
   if (damageEvents.length === 0 && swungRatio < 0.1) return true;
   return false;
 }
 
-/** True when neither fighter produced character-driven damage or healing. */
+/** True when neither participant produced a condition-changing event. */
 export function isPassiveTurn(events: TurnEvent[]): boolean {
   return !events.some(
     (event) =>
@@ -109,283 +113,74 @@ export function isPassiveTurn(events: TurnEvent[]): boolean {
   );
 }
 
-/**
- * Decide whether to inject a happening before the upcoming turn.
- * Prefer stagnation; also soft-nudge after a long dry spell.
- */
+/** Inject only after two resolved quiet turns, never merely because time passed. */
 export function shouldInjectHappening(
-  sup: SupervisorState,
+  supervisor: SupervisorState,
   upcomingTurn: number,
   turnLimit: number,
 ): boolean {
-  // Not on the absolute first action turn (opening narration already exists)
-  if (upcomingTurn <= 1) return false;
-  // Cooldown: at least 2 turns between happenings
-  if (sup.turnsSinceHappening < 2) return false;
-  // Cap density
-  const maxHappenings = Math.max(2, Math.floor(turnLimit / 4));
-  if (sup.happenings >= maxHappenings) return false;
-
-  // Clear stagnation
-  if (sup.quietTurns >= 2 && sup.turnsSinceHappening >= 2) return true;
-  // Mild stall
-  if (sup.quietTurns >= 1 && sup.turnsSinceHappening >= 3) return true;
-  // Long dry spell even if some chip damage (keeps midgame lively)
-  if (sup.turnsSinceHappening >= 5 && upcomingTurn >= 4) return true;
-  return false;
+  if (upcomingTurn <= 2) return false;
+  if (supervisor.quietTurns < 2) return false;
+  if (supervisor.turnsSinceHappening < 2) return false;
+  const maxHappenings = Math.max(1, Math.floor(turnLimit / 4));
+  return supervisor.happenings < maxHappenings;
 }
 
 export function advanceSupervisorClock(
-  sup: SupervisorState,
+  supervisor: SupervisorState,
   quiet: boolean,
   passive: boolean,
-  injected: boolean,
+  happening: Pick<HappeningPlan, "title" | "summary"> | null,
   hpA: number,
   hpB: number,
 ): SupervisorState {
-  if (injected) {
+  if (happening) {
     return {
       quietTurns: 0,
-      passiveTurns: passive ? sup.passiveTurns + 1 : 0,
+      passiveTurns: passive ? supervisor.passiveTurns + 1 : 0,
       turnsSinceHappening: 0,
       lastHpA: hpA,
       lastHpB: hpB,
-      happenings: sup.happenings + 1,
+      happenings: supervisor.happenings + 1,
+      recentHappenings: [
+        ...supervisor.recentHappenings,
+        { title: happening.title, summary: happening.summary },
+      ].slice(-5),
     };
   }
   return {
-    quietTurns: quiet ? sup.quietTurns + 1 : 0,
-    passiveTurns: passive ? sup.passiveTurns + 1 : 0,
-    turnsSinceHappening: sup.turnsSinceHappening + 1,
+    quietTurns: quiet ? supervisor.quietTurns + 1 : 0,
+    passiveTurns: passive ? supervisor.passiveTurns + 1 : 0,
+    turnsSinceHappening: supervisor.turnsSinceHappening + 1,
     lastHpA: hpA,
     lastHpB: hpB,
-    happenings: sup.happenings,
+    happenings: supervisor.happenings,
+    recentHappenings: supervisor.recentHappenings,
   };
 }
 
-function pick<T>(arr: T[], rng: () => number): T {
-  return arr[Math.floor(rng() * arr.length) % arr.length]!;
-}
-
-type Template = Omit<HappeningPlan, "id">;
-
-const GENERIC: Template[] = [
-  {
-    title: "地響き",
-    summary: "足元が鳴り、両者が一瞬バランスを崩す。",
-    notes: "地盤が不安定で、攻防のリズムが乱れている。",
-    coefficients: { damage: 1.1, spd: 0.9 },
-    tags: ["地響き"],
-    envHits: [{ target: "both", kind: "disrupt", intensity: "minor" }],
-  },
-  {
-    title: "突風",
-    summary: "突風が場を横切り、対決の流れが一気に変わる。",
-    notes: "強い風が動きと集中を揺らしている。",
-    coefficients: { wind: 1.35, damage: 1.05 },
-    tags: ["突風"],
-  },
-  {
-    title: "影の揺らぎ",
-    summary: "見えない気配が立ちこめ、双方の息が荒くなる。",
-    notes: "不穏な気配が集中を削る。",
-    coefficients: { focus: 0.85, damage: 1.05 },
-    tags: ["気配"],
-  },
-];
-
-const BY_CATEGORY: Record<string, Template[]> = {
-  forest: [
-    {
-      title: "折れ枝",
-      summary: "頭上の枝が折れ、木屑が舞い散る。",
-      notes: "森の枝葉が視界と足場を邪魔している。",
-      coefficients: { damage: 0.95, spd: 0.9 },
-      tags: ["枝"],
-      envHits: [{ target: "both", kind: "damage", intensity: "minor" }],
-    },
-    {
-      title: "獣の遠吠え",
-      summary: "森の奥で獣が吠え、緊張が一気に高まる。",
-      notes: "外敵の気配に双方が神経をとがらせている。",
-      coefficients: { damage: 1.15, focus: 0.9 },
-      tags: ["獣"],
-    },
-    {
-      title: "濃霧",
-      summary: "霧が一気に濃くなり、姿がぼやける。",
-      notes: "濃い霧が狙いを難しくしている。",
-      coefficients: { damage: 0.9, mag: 1.1 },
-      tags: ["霧"],
-    },
-  ],
-  arena: [
-    {
-      title: "観客の熱狂",
-      summary: "観客の怒号が場を揺らし、決着を急かす。",
-      notes: "熱狂が両者の働きかけを勢いづけている。",
-      coefficients: { damage: 1.2, def: 0.95 },
-      tags: ["観客"],
-    },
-    {
-      title: "床のひび",
-      summary: "闘技場の床が軋み、足元が危うい。",
-      notes: "ひび割れた床が立ち回りを制限する。",
-      coefficients: { spd: 0.85, damage: 1.05 },
-      tags: ["床"],
-      envHits: [{ target: "both", kind: "disrupt", intensity: "minor" }],
-    },
-  ],
-  sea: [
-    {
-      title: "大波",
-      summary: "大波が甲板を洗い、両者が踏ん張る。",
-      notes: "波しぶきで足場が滑りやすい。",
-      coefficients: { water: 1.3, fire: 0.7, spd: 0.85 },
-      tags: ["波"],
-      envHits: [{ target: "both", kind: "damage", intensity: "minor" }],
-    },
-    {
-      title: "潮風",
-      summary: "塩を含んだ風が熱を冷まし、調子を整える間を生む。",
-      notes: "潮風が場の空気を一変させた。",
-      coefficients: { water: 1.15, heal: 1.1 },
-      tags: ["潮風"],
-    },
-  ],
-  urban: [
-    {
-      title: "崩落",
-      summary: "頭上の破片が落ち、街路がざわつく。",
-      notes: "崩落の危険が攻防を急かす。",
-      coefficients: { damage: 1.15, def: 0.9 },
-      tags: ["崩落"],
-      envHits: [
-        { target: "a", kind: "damage", intensity: "minor" },
-        { target: "b", kind: "damage", intensity: "minor" },
-      ],
-    },
-    {
-      title: "警報",
-      summary: "遠くで警報が鳴り、焦燥が広がる。",
-      notes: "時間がない空気がその場を支配する。",
-      coefficients: { damage: 1.1, focus: 0.9 },
-      tags: ["警報"],
-    },
-  ],
-  school: [
-    {
-      title: "チャイム",
-      summary: "校内放送が流れ、妙な緊張が走る。",
-      notes: "日常の音が対決の空気を歪める。",
-      coefficients: { focus: 0.9, damage: 1.05 },
-      tags: ["チャイム"],
-    },
-    {
-      title: "滑る床",
-      summary: "濡れた廊下で足を取られそうになる。",
-      notes: "滑りやすい床が動きを鈍らせる。",
-      coefficients: { spd: 0.85, damage: 1.0 },
-      tags: ["床"],
-      envHits: [{ target: "both", kind: "disrupt", intensity: "minor" }],
-    },
-  ],
-  mountain: [
-    {
-      title: "落石",
-      summary: "崖上から小石が転がり落ちる。",
-      notes: "落石の気配が間合いを狭める。",
-      coefficients: { damage: 1.1, spd: 0.9 },
-      tags: ["落石"],
-      envHits: [{ target: "both", kind: "damage", intensity: "minor" }],
-    },
-    {
-      title: "山風",
-      summary: "稜線の風が動きを乱し、体勢が揺らぐ。",
-      notes: "強い山風が攻防を乱す。",
-      coefficients: { wind: 1.4, damage: 1.05 },
-      tags: ["山風"],
-    },
-  ],
-  ruins: [
-    {
-      title: "崩落音",
-      summary: "廃墟の奥で崩落が響き、砂塵が舞う。",
-      notes: "砂塵で視界が悪い。",
-      coefficients: { damage: 0.95, focus: 0.85 },
-      tags: ["砂塵"],
-    },
-    {
-      title: "古代の気配",
-      summary: "古い力の残滓が肌を刺すように高まる。",
-      notes: "魔力じみた気配が技の精度を揺らす。",
-      coefficients: { mag: 1.25, res: 0.9 },
-      tags: ["古代"],
-      envHits: [{ target: "both", kind: "disrupt", intensity: "minor" }],
-    },
-  ],
-  custom: GENERIC,
-};
-
-/**
- * Deterministic-enough template pick from battlefield category / tags.
- */
-export function pickTemplateHappening(input: {
-  battlefield?: BattlefieldInstance | null;
-  turn: number;
-  rng?: () => number;
-}): HappeningPlan {
-  const rng = input.rng ?? Math.random;
-  const cat = input.battlefield?.category ?? "custom";
-  const pool = [
-    ...(BY_CATEGORY[cat] ?? GENERIC),
-    ...GENERIC,
-  ];
-  // Category is a validated enum; free-text terrain/conditions never route mechanics.
-  const chosen = pool[Math.floor(rng() * pool.length)] ?? GENERIC[0]!;
-  // Occasionally moderate escalation on later turns
-  const escalated: Template = { ...chosen };
-  if (input.turn >= 6 && rng() < 0.35 && escalated.envHits) {
-    escalated.envHits = escalated.envHits.map((h) => ({
-      ...h,
-      intensity: "moderate" as const,
-    }));
-    escalated.coefficients = clampCoefficientMap({
-      ...escalated.coefficients,
-      damage: (escalated.coefficients.damage ?? 1) * 1.1,
-    });
-  }
-
-  return {
-    id: `hap_t${input.turn}_${Math.floor(rng() * 1e6)}`,
-    ...escalated,
-    coefficients: clampCoefficientMap(escalated.coefficients),
-  };
-}
-
-/** Merge happening into a situation proposal patch. */
 export function happeningToSituationPatch(
-  h: HappeningPlan,
+  happening: HappeningPlan,
 ): Partial<Situation> {
   return {
-    notes: h.notes,
+    notes: happening.notes,
     coefficients: Object.fromEntries(
-      Object.entries(h.coefficients).map(([k, v]) => [k, clampCoefficient(v)]),
+      Object.entries(happening.coefficients).map(([key, value]) => [
+        key,
+        clampCoefficient(value),
+      ]),
     ),
-    tags: h.tags,
+    tags: happening.tags,
   };
 }
 
-export function happeningToEvents(h: HappeningPlan): TurnEvent[] {
-  return [
-    {
-      type: "situation",
-      summary: `【ハプニング】${h.title} — ${h.summary}`,
-    },
-  ];
+export function happeningToEvents(happening: HappeningPlan): TurnEvent[] {
+  return [{
+    type: "situation",
+    summary: `${happening.title} — ${happening.summary}`,
+  }];
 }
 
-/** Map intensity to abstract engine damage (hidden numbers). */
 export function envHitAmount(intensity: HappeningIntensity): number {
   return intensity === "moderate" ? 14 : 7;
 }
@@ -397,18 +192,15 @@ export function envHitSummary(
 ): string {
   if (kind === "heal") {
     return intensity === "moderate"
-      ? `${displayName} は環境の幸いで息を吹き返した。`
-      : `${displayName} はわずかに体勢を立て直した。`;
+      ? `${displayName} は環境の後押しで大きく持ち直した。`
+      : `${displayName} はわずかに調子を整えた。`;
   }
   if (kind === "disrupt") {
     return intensity === "moderate"
-      ? `${displayName} は大きく体勢を崩した。`
+      ? `${displayName} は環境の変化に大きく調子を乱された。`
       : `${displayName} の動きが一瞬乱れた。`;
   }
   return intensity === "moderate"
     ? `${displayName} は環境の変化に大きく揺さぶられた。`
-    : `${displayName} は環境の余波を浴びた。`;
+    : `${displayName} は環境の余波を受けた。`;
 }
-
-// silence unused pick if tree-shaken oddly
-void pick;

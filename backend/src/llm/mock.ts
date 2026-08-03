@@ -245,6 +245,7 @@ export class MockLlmProvider implements LlmProvider {
     sideAName: string;
     sideBName: string;
     stagnationHint: string;
+    previousHappenings: Array<{ title: string; summary: string }>;
     battlefield?: BattlefieldInstance | null;
   }): Promise<{
     title: string;
@@ -253,23 +254,27 @@ export class MockLlmProvider implements LlmProvider {
     coefficients?: Record<string, number>;
     tags?: string[];
     envHits?: Array<{
-      target: "a" | "b" | "both";
+      target: "both";
       kind: "damage" | "heal" | "disrupt";
       intensity: "minor" | "moderate";
     }>;
   }> {
-    const { pickTemplateHappening } = await import("@kshiai/shared");
-    const plan = pickTemplateHappening({
-      battlefield: input.battlefield,
-      turn: input.turn,
-    });
+    const fieldDetails = [
+      input.battlefield?.terrain,
+      ...(input.battlefield?.obstacles ?? []),
+      ...(input.battlefield?.conditions ?? []),
+    ].filter((value): value is string => Boolean(value));
+    const detail = fieldDetails[
+      (input.turn + input.previousHappenings.length) %
+        Math.max(1, fieldDetails.length)
+    ] ?? input.battlefield?.displayName ?? input.scene;
     return {
-      title: plan.title,
-      summary: plan.summary,
-      notes: plan.notes,
-      coefficients: plan.coefficients,
-      tags: plan.tags,
-      envHits: plan.envHits,
+      title: `${detail.slice(0, 12)}の変化`,
+      summary: `${detail}の様子が変わり、両者が新しい流れへ対応する。`,
+      notes: `${detail}の変化は、どちらにも同じ条件と機会を与えている。`,
+      coefficients: { damage: 1.05, focus: 0.9 },
+      tags: [detail.slice(0, 16)],
+      envHits: [{ target: "both", kind: "disrupt", intensity: "minor" }],
     };
   }
 

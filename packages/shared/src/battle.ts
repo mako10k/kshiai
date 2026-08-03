@@ -336,6 +336,10 @@ export const SupervisorStateSchema = z.object({
   lastHpA: z.number().nullable().default(null),
   lastHpB: z.number().nullable().default(null),
   happenings: z.number().int().nonnegative().default(0),
+  recentHappenings: z.array(z.object({
+    title: z.string(),
+    summary: z.string(),
+  })).default([]),
 });
 export type SupervisorState = z.infer<typeof SupervisorStateSchema>;
 

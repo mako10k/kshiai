@@ -11,7 +11,6 @@ import {
   isPassiveTurn,
   isQuietTurn,
   normalizeSupervisor,
-  pickTemplateHappening,
   resolveTurn,
   sheetCombatProfile,
   shouldInjectHappening,
@@ -579,13 +578,8 @@ async function buildHappening(input: {
   state: BattleState;
   turn: number;
   supervisor: ReturnType<typeof normalizeSupervisor>;
-}): Promise<HappeningPlan> {
-  const stagnationHint =
-    input.supervisor.quietTurns >= 2
-      ? "consecutive quiet turns — fight is stalling"
-      : input.supervisor.turnsSinceHappening >= 5
-        ? "long dry spell without environmental pressure"
-        : "mild stall — need a field beat";
+}): Promise<HappeningPlan | null> {
+  const stagnationHint = `${input.supervisor.quietTurns} consecutive quiet turns with little condition change`;
 
   try {
     const raw = await input.llm.proposeHappening({
@@ -594,23 +588,28 @@ async function buildHappening(input: {
       sideAName: input.state.sideA.displayName,
       sideBName: input.state.sideB.displayName,
       stagnationHint,
+      previousHappenings: input.supervisor.recentHappenings,
       battlefield: input.state.battlefield,
     });
+    const removeCategoryLabel = (value: string) =>
+      value
+        .replaceAll("【ハプニング】", "")
+        .replaceAll("ハプニング", "")
+        .trim();
     return {
       id: `hap_llm_${input.turn}`,
-      title: raw.title || "異変",
-      summary: raw.summary || "戦場の空気がざわつく。",
-      notes: raw.notes || "環境が攻防を揺さぶっている。",
+      title: removeCategoryLabel(raw.title) || "場の変化",
+      summary:
+        removeCategoryLabel(raw.summary) || "場の条件が変わり、膠着が崩れる。",
+      notes:
+        removeCategoryLabel(raw.notes) || "環境の変化が両者へ影響している。",
       coefficients: raw.coefficients ?? { damage: 1.1 },
-      tags: raw.tags,
-      envHits: raw.envHits,
+      tags: raw.tags?.filter((tag) => !tag.includes("ハプニング")),
+      envHits: raw.envHits?.filter((hit) => hit.target === "both"),
     };
   } catch (e) {
-    console.warn("[supervisor] proposeHappening failed, using template", e);
-    return pickTemplateHappening({
-      battlefield: input.state.battlefield,
-      turn: input.turn,
-    });
+    console.warn("[supervisor] generated field change skipped", e);
+    return null;
   }
 }
 
@@ -663,9 +662,7 @@ export async function advanceTurn(input: {
   const upcomingTurn = state.turn + 1;
   let supervisor = normalizeSupervisor(state.supervisor);
 
-  // --- Supervisor: inject field happenings when the fight stalls ---
-  // Prefer fast templates for happenings so turns never stall on a second LLM call.
-  // (Narration remains the primary LLM step.)
+  // Generate a novel field change only after the resolved turns show stagnation.
   let happening: HappeningPlan | null = null;
   const inject = shouldInjectHappening(
     supervisor,
@@ -673,9 +670,11 @@ export async function advanceTurn(input: {
     state.turnLimit,
   );
   if (inject) {
-    happening = pickTemplateHappening({
-      battlefield: state.battlefield,
+    happening = await buildHappening({
+      llm: input.llm,
+      state,
       turn: upcomingTurn,
+      supervisor,
     });
   }
 
@@ -692,8 +691,8 @@ export async function advanceTurn(input: {
         turn: upcomingTurn,
         eventsHint: [
           `policies:${(state.selectedPolicyIdsA ?? []).join(",")}`,
-          inject
-            ? `supervisor:happening:${happening?.title ?? "env"}`
+          happening
+            ? `supervisor:field_shift:${happening?.title ?? "env"}`
             : "supervisor:steady",
         ].join("|"),
         battlefield: state.battlefield,
@@ -762,7 +761,7 @@ export async function advanceTurn(input: {
     supervisor,
     quiet,
     isPassiveTurn(events),
-    Boolean(happening),
+    happening,
     hpAfterA,
     hpAfterB,
   );

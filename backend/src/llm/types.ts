@@ -109,6 +109,7 @@ export interface LlmProvider {
     sideAName: string;
     sideBName: string;
     stagnationHint: string;
+    previousHappenings: Array<{ title: string; summary: string }>;
     battlefield?: BattlefieldInstance | null;
   }): Promise<{
     title: string;
@@ -117,7 +118,7 @@ export interface LlmProvider {
     coefficients?: Record<string, number>;
     tags?: string[];
     envHits?: Array<{
-      target: "a" | "b" | "both";
+      target: "both";
       kind: "damage" | "heal" | "disrupt";
       intensity: "minor" | "moderate";
     }>;

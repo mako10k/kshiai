@@ -309,3 +309,22 @@ decision D18 based_on PR18, D1, D2, D13, D16:
     the engine model. Identity extraction, battlefield generation/adjustment/
     concretization, policy generation, agents, situation, and narration use the
     fast model because schemas and deterministic validation bound their output.
+
+problem PR19:
+  |
+    Environmental changes can appear without a detected stalemate, are selected
+    from a fixed category template library, and expose an internal happening
+    label in user-facing narration.
+
+decision D19 based_on PR19, D2, D14, D18:
+  |
+    The supervisor becomes eligible only after two consecutive resolved quiet
+    turns and never from elapsed turns alone. On eligibility it asks the fast LLM
+    for one field-grounded change, supplying scene, terrain, obstacles,
+    conditions, setup, and the last five generated changes. The prompt requires
+    a materially different cause/effect and a symmetric constraint, opportunity,
+    or pressure; validation discards any direct effect not targeting both sides.
+    Generated changes are stored in compact supervisor history. If generation
+    fails, no change is injected and no template fallback runs. Public situation
+    events contain only the in-world title and description; internal category
+    labels are removed before persistence and narration.

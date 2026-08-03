@@ -694,8 +694,9 @@ Coefficients 0.25-2.5. Make terrain/obstacles/conditions specific for THIS match
     if (!this.client) return this.fallback.proposeSituation(input);
     try {
       const data = (await this.chatJson(
-        `Propose battle situation JSON: { "scene": string, "notes": string, "coefficients": { [key: string]: number }, "tags"?: string[] }.
-Respect the battlefield terrain/obstacles/conditions. Coefficients between 0.25 and 2.5.`,
+        `Propose the current confrontation situation JSON: { "scene": string, "notes": string, "coefficients": { [key: string]: number }, "tags"?: string[] }.
+Respect the battlefield terrain/obstacles/conditions. Coefficients between 0.25 and 2.5.
+Do not invent a sudden environmental event or dramatic field change here. A separate supervisor may request one only after measured stagnation. Keep ordinary turns as a continuation of established conditions.`,
         JSON.stringify(input),
         { tier: "fast", label: "proposeSituation", timeoutMs: 8_000 },
       )) as SituationProposal;
@@ -711,6 +712,7 @@ Respect the battlefield terrain/obstacles/conditions. Coefficients between 0.25 
     sideAName: string;
     sideBName: string;
     stagnationHint: string;
+    previousHappenings: Array<{ title: string; summary: string }>;
     battlefield?: BattlefieldInstance | null;
   }): Promise<{
     title: string;
@@ -719,7 +721,7 @@ Respect the battlefield terrain/obstacles/conditions. Coefficients between 0.25 
     coefficients?: Record<string, number>;
     tags?: string[];
     envHits?: Array<{
-      target: "a" | "b" | "both";
+      target: "both";
       kind: "damage" | "heal" | "disrupt";
       intensity: "minor" | "moderate";
     }>;
@@ -728,8 +730,8 @@ Respect the battlefield terrain/obstacles/conditions. Coefficients between 0.25 
     try {
       const data = (await this.chatJson(
         `You supervise a broad fictional confrontation that is becoming stagnant. It may be physical, technological, psychic, social, comedic, cute, or abstract; preserve its established genre.
-Inject ONE environmental happening from the battlefield (not a character skill).
-Japanese only. Keep it COARSE and short — no step-by-step tactics, no HP numbers.
+Generate ONE natural field change that breaks the detected stagnation (not a character skill).
+Japanese only. Keep it concise — no step-by-step tactics, no HP numbers. Do not call it ハプニング in title, summary, notes, or tags.
 
 Return JSON:
 {
@@ -738,17 +740,21 @@ Return JSON:
   "notes": string,        // ongoing battlefield mood after this
   "coefficients": { [key: string]: number }, // 0.25-2.5 keys like damage,spd,wind,water,fire,mag,focus
   "tags": string[],
-  "envHits": [{ "target": "a"|"b"|"both", "kind": "damage"|"heal"|"disrupt", "intensity": "minor"|"moderate" }]
+  "envHits": [{ "target": "both", "kind": "damage"|"heal"|"disrupt", "intensity": "minor"|"moderate" }]
 }
 Rules:
-- Must feel like the FIELD acting, not a character move.
-- Prefer 0-2 envHits; often "both" with minor disrupt/damage is enough.
-- Do not invent firearms/modern UI; match the scene tone.`,
+- Derive it naturally from the supplied battlefield name, scene, terrain, obstacles, conditions, and setup. Do not introduce an unrelated stock disaster.
+- It must materially change the flow through a temporary shared constraint, opportunity, or pressure.
+- It must differ in cause and effect from every previousHappening. Avoid a repetitive escalation pattern.
+- Never make one participant the sole beneficiary or victim. Effects must apply to both, or create a symmetric tradeoff/opportunity both can use.
+- Prefer no direct envHit; when needed, use only target "both" with minor or moderate intensity.
+- Match the established genre and tone, including nonviolent, social, comedic, cute, technological, or psychic confrontations.`,
         JSON.stringify({
           scene: input.scene,
           turn: input.turn,
           fighters: [input.sideAName, input.sideBName],
           why: input.stagnationHint,
+          previousHappenings: input.previousHappenings,
           field: input.battlefield
             ? {
                 name: input.battlefield.displayName,
@@ -756,6 +762,7 @@ Rules:
                 terrain: input.battlefield.terrain,
                 obstacles: input.battlefield.obstacles?.slice(0, 4),
                 conditions: input.battlefield.conditions?.slice(0, 4),
+                setup: input.battlefield.narrativeSetup,
               }
             : null,
         }),
@@ -781,9 +788,7 @@ Rules:
               const target = h.target;
               const kind = h.kind;
               const intensity = h.intensity;
-              if (target !== "a" && target !== "b" && target !== "both") {
-                return null;
-              }
+              if (target !== "both") return null;
               if (kind !== "damage" && kind !== "heal" && kind !== "disrupt") {
                 return null;
               }
@@ -882,7 +887,7 @@ speech is one short Japanese utterance without brackets, or null when silence fi
         `Narrate a turn-based fictional confrontation in Japanese. It may be physical, ranged, technological, psychic, social, comedic, cute, or abstract. Follow the supplied characters and events; never add swordplay, bodily injury, grimness, or martial framing unless the inputs establish them.
 ${styleBlock}
 Use battlefield flavor (terrain/obstacles) when relevant.
-If events include 【ハプニング】, feature that environmental beat clearly in the narrator lines first.
+If a situation event describes a sudden field change, weave that change naturally into the narrator lines without adding a category label.
 JSON: { "turn": number, "narrator": string[] }
 Do not mention numeric HP/MP/ATK values. Character dialogue is supplied by separate character agents; do not create, quote, or rewrite dialogue.`,
         JSON.stringify({
