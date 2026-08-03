@@ -108,6 +108,8 @@ authorized by its dedicated token and idempotently applies the Worker subdomain
 setting `{ enabled: false, previews_enabled: true }`. It verifies the returned
 state before proceeding, so preview smoke tests cannot silently target a
 disabled URL and the production `workers.dev` endpoint remains disabled.
+Smoke tests use the immutable version preview URL recorded by Wrangler, not the
+optional human-readable preview alias.
 The staging workflow builds `@kshiai/shared` before the frontend so workspace
 type exports exist when the immutable Worker version is compiled.
 

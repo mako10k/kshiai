@@ -5,6 +5,21 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 
 ## [Unreleased]
 
+## [0.1.9] - 2026-08-04
+
+### Fixed
+
+- Carries forward the authenticated battle SSE fix and uses Cloudflare's
+  immutable version preview URL for staging smoke tests instead of the preview
+  alias.
+
+### Operations
+
+- `v0.1.8` successfully enabled version previews and uploaded working backend
+  and Worker artifacts, then failed closed because only the optional preview
+  alias returned HTTP 404. The immutable version URL returned HTTP 200. No
+  artifact was promoted; the tag was retained and superseded by `v0.1.9`.
+
 ## [0.1.8] - 2026-08-04
 
 ### Fixed

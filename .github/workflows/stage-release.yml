@@ -213,9 +213,15 @@ jobs:
               .trim().split("\n").map(JSON.parse);
             const upload = events.findLast((event) => event.type === "version-upload");
             if (!upload?.version_id) throw new Error("Wrangler did not record a version ID");
-            fs.appendFileSync(process.env.GITHUB_OUTPUT, `version=${upload.version_id}\n`);
+            const previewUrl = new URL(upload.preview_url);
+            if (previewUrl.protocol !== "https:" || !previewUrl.hostname.endsWith(".workers.dev")) {
+              throw new Error("Wrangler did not record a valid version preview URL");
+            }
+            fs.appendFileSync(
+              process.env.GITHUB_OUTPUT,
+              `version=${upload.version_id}\npreview_url=${previewUrl.href}\n`,
+            );
           '
-          echo "preview_url=https://$alias-$WORKER_NAME.$WORKERS_SUBDOMAIN.workers.dev" >> "$GITHUB_OUTPUT"
 
       - name: Smoke staging edge and protected origin
         env:
