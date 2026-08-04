@@ -1,6 +1,6 @@
 # Observer-relative battle perception
 
-Status: schemas and prompt strategy complete; runtime integration not started
+Status: evidence integration complete; qualitative thresholding is next
 Last updated: 2026-08-04
 Architecture decisions: `D23` through `D27` in [`design.llmthink.dsl`](design.llmthink.dsl)
 Implementation plan: [`battle-perception.pert`](battle-perception.pert)
@@ -17,9 +17,16 @@ Schema output. OpenAI remains fallback and is not a substitute for a failed XAI
 prompt evaluation. See
 [`perception-prompt-evaluation.md`](perception-prompt-evaluation.md).
 
-Next slice: `T_EVIDENCE` integrates mechanical qualitative evidence and the
-independently validated combined sensory section only for an exact reviewed
-provider/model decision.
+Completed slice: `T_EVIDENCE` records exact server-only mechanical changes at
+deterministic resolution boundaries, grounds them in committed action, event,
+and semantic character references, and passes only structured qualitative cues
+to the reviewed XAI combined prompt. The world patch and sensory section are
+validated independently in both directions. Provider failure discards new
+sensory evidence while leaving deterministic mechanical evidence available.
+
+Next slice: `T_QUALITATIVE_CUES` replaces the bounded event-intensity cue
+projection with complete absolute and target-relative thresholds, reserve bands,
+and explicit no-effect, immunity, incapacity, and overkill handling.
 
 ## 1. Purpose
 
@@ -113,6 +120,13 @@ such as a dull impact sound, smoke, a smell, vibration, or an oppressive change
 in atmosphere. It cannot change magnitude, mechanics, identity knowledge, or
 action legality. Every entity or event reference must resolve against committed
 state before evidence is accepted.
+
+The current runtime stores exact `beforeValue`, `afterValue`, and `delta` only in
+the transient server-side evidence set. The reviewed v10 XAI payload receives no
+raw values. Until `T_QUALITATIVE_CUES`, it emits only cues that can be derived
+from a structured target event with an engine-authored intensity; unsupported
+resource-cost or relative-magnitude claims are omitted rather than inferred
+from event prose.
 
 ## 4. Character perception frame
 
@@ -281,7 +295,7 @@ does not add an LLM retry.
 ## 8. Failure and compatibility
 
 - Semantic patch invalid: reject the patch atomically; independently valid engine
-  evidence remains usable.
+  and sensory evidence remains usable.
 - Sensory evidence invalid or provider unavailable: discard that evidence as a
   unit; do not fabricate replacement sensory facts.
 - Projection failure: emit a minimal frame with explicit self, engine cues, and

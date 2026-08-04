@@ -6,6 +6,7 @@ import type {
 import {
   BasicAttackProfileSchema,
   BattlefieldSemanticSeedSchema,
+  PerceptionEvidenceSetSchema,
   TurnSemanticPatchSchema,
   CharacterAgentStateSchema,
   CharacterActionIntentSchema,
@@ -52,10 +53,13 @@ import type {
 import { newId } from "../id.js";
 import { MockLlmProvider } from "./mock.js";
 import {
+  COMBINED_PERCEPTION_RESPONSE_FORMAT,
+  COMBINED_PERCEPTION_SYSTEM_PROMPT,
   WORLD_PERCEPTION_RESPONSE_FORMAT,
   WORLD_RECONCILIATION_SYSTEM_PROMPT,
   type PerceptionPromptResponseFormat,
 } from "./perception-prompt-strategy.js";
+import { reviewedPerceptionTopology } from "./perception-topology.js";
 
 function parseGeneratedSkill(raw: unknown) {
   if (!raw || typeof raw !== "object") return null;
@@ -975,23 +979,32 @@ Do not invent a sudden environmental event or dramatic field change here. A sepa
   ): ReturnType<LlmProvider["reconcileTurnSemanticState"]> {
     if (!this.client) return this.fallback.reconcileTurnSemanticState(input);
     try {
+      const reviewedTopology = reviewedPerceptionTopology(
+        this.name,
+        this.models.fast,
+      );
+      const combined = reviewedTopology?.topology === "combined";
       const data = (await this.chatJson(
-        WORLD_RECONCILIATION_SYSTEM_PROMPT,
+        combined
+          ? COMBINED_PERCEPTION_SYSTEM_PROMPT
+          : WORLD_RECONCILIATION_SYSTEM_PROMPT,
         JSON.stringify(input),
         {
           tier: "fast",
           label: "reconcileTurnSemanticState",
           timeoutMs: 14_000,
           temperature: 0.35,
-          responseFormat: this.name === "xai"
-            ? WORLD_PERCEPTION_RESPONSE_FORMAT
-            : undefined,
+          responseFormat: combined
+            ? COMBINED_PERCEPTION_RESPONSE_FORMAT
+            : this.name === "xai"
+              ? WORLD_PERCEPTION_RESPONSE_FORMAT
+              : undefined,
         },
       )) as Record<string, unknown>;
       const rawPatch = data.patch && typeof data.patch === "object"
         ? data.patch as Record<string, unknown>
         : {};
-      const patch = TurnSemanticPatchSchema.parse({
+      const patch = TurnSemanticPatchSchema.safeParse({
         ...rawPatch,
         baseRevision: input.before.revision,
         turn: input.turn,
@@ -1000,8 +1013,12 @@ Do not invent a sudden environmental event or dramatic field change here. A sepa
       const rawSituation = data.nextSituation && typeof data.nextSituation === "object"
         ? data.nextSituation as Record<string, unknown>
         : null;
+      const sensory = combined
+        ? PerceptionEvidenceSetSchema.safeParse(data.sensoryEvidence)
+        : null;
       return {
-        patch,
+        patch: patch.success ? patch.data : null,
+        worldPatchStatus: patch.success ? "valid" : "rejected",
         nextSituation: rawSituation
           ? {
               notes: rawSituation.notes == null
@@ -1018,6 +1035,12 @@ Do not invent a sudden environmental event or dramatic field change here. A sepa
                 : undefined,
             }
           : undefined,
+        sensoryEvidence: sensory?.success ? sensory.data : [],
+        sensoryEvidenceStatus: sensory === null
+          ? "unavailable"
+          : sensory.success
+            ? "valid"
+            : "rejected",
       };
     } catch (error) {
       return this.fallbackOrThrow(

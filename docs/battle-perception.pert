@@ -105,6 +105,7 @@ task T_EVIDENCE PROMPT_STRATEGY_READY -> EVIDENCE_READY:
     world patch. Add provider, validation, and failure tests without prose-pattern
     mechanics.
   duration 2d
+  status done
   requires:
     DEV 1
 

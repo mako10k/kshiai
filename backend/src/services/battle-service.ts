@@ -33,6 +33,8 @@ import {
   type BattlefieldInstance,
   type BattlefieldPreset,
   type CharacterSheet,
+  type CommittedMechanicalEvidence,
+  type PerceptionEvidence,
   type TurnEvent,
   type TurnSemanticPatch,
   type Skill,
@@ -62,6 +64,12 @@ import { config } from "../config.js";
 import { newId } from "../id.js";
 import type { LlmProvider } from "../llm/index.js";
 import type { NarrationActionBeat } from "../llm/types.js";
+import {
+  buildPromptMechanicalEvidence,
+  validateCommittedMechanicalEvidence,
+  validateSensoryEvidence,
+  type EvidenceValidationStatus,
+} from "../llm/perception-evidence.js";
 import * as battleRepo from "../repositories/battles.js";
 import * as bfRepo from "../repositories/battlefields.js";
 import * as charRepo from "../repositories/characters.js";
@@ -700,17 +708,51 @@ export async function reconcileSemanticState(input: {
   opp: CharacterSheet;
   actions: ResolvedBattleAction[];
   events: TurnEvent[];
+  mechanicalEvidence: CommittedMechanicalEvidence[];
   environmentBeatDue?: boolean;
   dramaPhase?: "opening" | "rising" | "climax";
 }): Promise<{
   state: BattleState;
   patch: TurnSemanticPatch | null;
   status: "applied" | "rejected" | "skipped";
+  mechanicalEvidence: CommittedMechanicalEvidence[];
+  mechanicalEvidenceStatus: EvidenceValidationStatus;
+  sensoryEvidence: PerceptionEvidence[];
+  sensoryEvidenceStatus: EvidenceValidationStatus;
 }> {
   const semanticBefore = input.stateBeforeTurn.semanticState;
   if (!semanticBefore) {
-    return { state: input.resolvedState, patch: null, status: "skipped" };
+    return {
+      state: input.resolvedState,
+      patch: null,
+      status: "skipped",
+      mechanicalEvidence: [],
+      mechanicalEvidenceStatus: "unavailable",
+      sensoryEvidence: [],
+      sensoryEvidenceStatus: "unavailable",
+    };
   }
+  const mechanical = validateCommittedMechanicalEvidence({
+    raw: input.mechanicalEvidence,
+    turn: input.resolvedState.turn,
+    before: semanticBefore,
+    actions: input.actions,
+    events: input.events,
+  });
+  if (mechanical.status === "rejected") {
+    console.warn(
+      "[battle] committed mechanical evidence rejected",
+      mechanical.issues.join("; "),
+    );
+  }
+  const evidenceResult = (
+    sensory: ReturnType<typeof validateSensoryEvidence>,
+  ) => ({
+    mechanicalEvidence: mechanical.evidence,
+    mechanicalEvidenceStatus: mechanical.status,
+    sensoryEvidence: sensory.evidence,
+    sensoryEvidenceStatus: sensory.status,
+  });
   const commitObservationState = (
     after: typeof semanticBefore,
     status: "applied" | "rejected" | "skipped",
@@ -784,10 +826,35 @@ export async function reconcileSemanticState(input: {
         },
         environmentBeatDue: input.environmentBeatDue,
         dramaPhase: input.dramaPhase,
+        mechanicalEvidence: buildPromptMechanicalEvidence({
+          evidence: mechanical.evidence,
+          events: input.events,
+        }),
       }),
       16_000,
       "reconcileTurnSemanticState",
     );
+    const sensory = validateSensoryEvidence({
+      raw: proposed.sensoryEvidence,
+      before: semanticBefore,
+      events: input.events,
+      providerStatus: proposed.sensoryEvidenceStatus,
+    });
+    if (sensory.status === "rejected") {
+      console.warn(
+        "[battle] sensory evidence rejected",
+        sensory.issues.join("; "),
+      );
+    }
+    if (proposed.worldPatchStatus === "rejected" || proposed.patch === null) {
+      console.warn("[battle] semantic patch section rejected");
+      return {
+        state: commitObservationState(semanticBefore, "rejected", null),
+        patch: null,
+        status: "rejected",
+        ...evidenceResult(sensory),
+      };
+    }
     const applied = applyTurnSemanticPatch({
       state: semanticBefore,
       patch: proposed.patch,
@@ -804,6 +871,7 @@ export async function reconcileSemanticState(input: {
         state: commitObservationState(semanticBefore, "rejected", proposed.patch),
         patch: proposed.patch,
         status: "rejected",
+        ...evidenceResult(sensory),
       };
     }
     const situation = applySituationCoefficients(
@@ -821,6 +889,7 @@ export async function reconcileSemanticState(input: {
       },
       patch: proposed.patch,
       status: "applied",
+      ...evidenceResult(sensory),
     };
   } catch (error) {
     console.warn(
@@ -831,6 +900,11 @@ export async function reconcileSemanticState(input: {
       state: commitObservationState(semanticBefore, "skipped", null),
       patch: null,
       status: "skipped",
+      ...evidenceResult({
+        status: "unavailable",
+        evidence: [],
+        issues: [],
+      }),
     };
   }
 }
@@ -1233,6 +1307,7 @@ async function advanceTurnWithLease(input: {
     opp,
     actions: resolved.actions,
     events,
+    mechanicalEvidence: resolved.mechanicalEvidence,
     environmentBeatDue,
     dramaPhase,
   });

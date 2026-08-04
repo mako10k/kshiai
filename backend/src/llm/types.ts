@@ -19,7 +19,11 @@ import type {
   ResolvedBattleAction,
   SemanticObservationState,
   FinisherWindow,
+  PerceptionEvidence,
 } from "@kshiai/shared";
+import type {
+  PerceptionPromptInput,
+} from "./perception-prompt-strategy.js";
 
 export type CharacterReference = {
   id: string;
@@ -234,9 +238,14 @@ export interface LlmProvider {
     /** Request a non-mechanical location/object/environment change when plausible. */
     environmentBeatDue?: boolean;
     dramaPhase?: "opening" | "rising" | "climax";
+    /** Qualitative, committed mechanics only. Raw parameter values are forbidden. */
+    mechanicalEvidence: PerceptionPromptInput["mechanicalEvidence"];
   }): Promise<{
-    patch: TurnSemanticPatch;
+    patch: TurnSemanticPatch | null;
+    worldPatchStatus?: "valid" | "rejected";
     nextSituation?: Partial<Situation>;
+    sensoryEvidence?: PerceptionEvidence[];
+    sensoryEvidenceStatus?: "valid" | "rejected" | "unavailable";
   }>;
   /**
    * Supervisor: invent a field-driven happening that breaks a stagnant fight.

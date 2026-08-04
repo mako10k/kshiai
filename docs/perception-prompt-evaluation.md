@@ -99,5 +99,8 @@ authoritative and removed the split call dependency; both then passed. If that
 combined attribution regression returns in provider integration tests, the
 reviewed response is XAI parallel split, not provider substitution.
 
-Runtime semantic reconciliation remains world-only until `T_EVIDENCE` wires the
-reviewed XAI combined sensory section and its independent validation.
+Runtime semantic reconciliation now uses this exact reviewed XAI combined prompt
+and response schema. World and sensory sections are parsed and grounded
+independently: either section may be rejected while the other remains usable.
+OpenAI remains the ordered operational fallback and is not treated as current-v10
+XAI prompt evidence.

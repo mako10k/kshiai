@@ -293,6 +293,9 @@ export class MockLlmProvider implements LlmProvider {
             ]
           : [],
       },
+      worldPatchStatus: "valid",
+      sensoryEvidence: [],
+      sensoryEvidenceStatus: "valid",
     });
   }
 

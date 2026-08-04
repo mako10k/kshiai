@@ -3,6 +3,7 @@ import { ParamKeySchema } from "./character.js";
 import { SemanticIdSchema } from "./semantic-state.js";
 
 export const PERCEPTION_LIMITS = {
+  maxMechanicalEvidencePerTurn: 64,
   maxEvidencePerTurn: 32,
   maxBasisEventIds: 16,
   maxPerceptsPerFrame: 32,
@@ -141,6 +142,72 @@ export const PerceptionEvidenceSetSchema = z
     "duplicate perception evidence id",
   );
 export type PerceptionEvidenceSet = z.infer<typeof PerceptionEvidenceSetSchema>;
+
+/**
+ * Exact, server-only mechanics committed by the deterministic turn resolver.
+ * Raw values must be projected to qualitative cues before any LLM call.
+ */
+export const CommittedMechanicalEvidenceSchema = z.object({
+  evidenceId: SemanticIdSchema,
+  turn: z.number().int().nonnegative(),
+  sourceActionId: SemanticIdSchema.nullable(),
+  basisEventIds: z
+    .array(SemanticIdSchema)
+    .max(PERCEPTION_LIMITS.maxBasisEventIds),
+  actorSide: BattleSideSchema.nullable(),
+  target: z.object({
+    side: BattleSideSchema,
+    entityId: SemanticIdSchema,
+  }).strict(),
+  parameterKey: ParamKeySchema,
+  beforeValue: z.number().finite(),
+  afterValue: z.number().finite(),
+  delta: z.number().finite(),
+}).strict().superRefine((evidence, ctx) => {
+  if (evidence.sourceActionId === null && evidence.basisEventIds.length === 0) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["basisEventIds"],
+      message: "mechanical evidence must reference an action or event",
+    });
+  }
+  if (evidence.target.entityId !== `character.${evidence.target.side}`) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["target", "entityId"],
+      message: "mechanical evidence target must match its committed character side",
+    });
+  }
+  if (evidence.delta === 0) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["delta"],
+      message: "mechanical evidence must describe a committed change",
+    });
+  }
+  const expectedDelta = evidence.afterValue - evidence.beforeValue;
+  if (Math.abs(expectedDelta - evidence.delta) > 1e-9) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["delta"],
+      message: "mechanical evidence delta must equal afterValue - beforeValue",
+    });
+  }
+});
+export type CommittedMechanicalEvidence = z.infer<
+  typeof CommittedMechanicalEvidenceSchema
+>;
+
+export const CommittedMechanicalEvidenceSetSchema = z
+  .array(CommittedMechanicalEvidenceSchema)
+  .max(PERCEPTION_LIMITS.maxMechanicalEvidencePerTurn)
+  .refine(
+    (evidence) => unique(evidence.map((item) => item.evidenceId)),
+    "duplicate committed mechanical evidence id",
+  );
+export type CommittedMechanicalEvidenceSet = z.infer<
+  typeof CommittedMechanicalEvidenceSetSchema
+>;
 
 export const MagnitudeBandSchema = z.enum([
   "none",
@@ -702,7 +769,7 @@ export type NarrationPerceptionView = z.infer<
   typeof NarrationPerceptionViewSchema
 >;
 
-function parameterClassFor(
+export function parameterClassFor(
   parameterKey: z.infer<typeof ParamKeySchema>,
 ): ParameterClass {
   if (parameterKey === "hp" || parameterKey === "maxHp") return "vitality";

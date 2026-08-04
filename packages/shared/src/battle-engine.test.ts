@@ -303,7 +303,7 @@ describe("battle engine", () => {
       turnLimit: 20,
       prologuePending: false,
     });
-    const { state: next, events, actions } = resolveTurn({
+    const { state: next, events, actions, mechanicalEvidence } = resolveTurn({
       state,
       playerAction: { actorSide: "a", kind: "skill", skillId: "slash" },
       sideASkills: state.sideA ? sheet("a", "A").skills : [],
@@ -315,6 +315,53 @@ describe("battle engine", () => {
       assert.equal(/\d{2,}/.test(e.summary), false, `event should not leak numbers: ${e.summary}`);
     }
     assert.ok((next.sideB.parameters.hp ?? 100) < 100);
+    const hpEvidence = mechanicalEvidence.find((item) =>
+      item.sourceActionId === actions[0]?.id &&
+      item.target.side === "b" &&
+      item.parameterKey === "hp"
+    );
+    assert.ok(hpEvidence);
+    assert.equal(hpEvidence.target.entityId, "character.b");
+    assert.equal(
+      hpEvidence.delta,
+      (next.sideB.parameters.hp ?? 0) - (state.sideB.parameters.hp ?? 0),
+    );
+    assert.ok(
+      hpEvidence.basisEventIds.every((eventId) =>
+        events.some((event) => event.id === eventId)
+      ),
+    );
+  });
+
+  it("grounds environment mechanics in targeted committed events", () => {
+    const state = createBattleState({
+      id: "environment-evidence",
+      sideA: sheet("a", "A"),
+      sideB: sheet("b", "B"),
+      turnLimit: 20,
+      prologuePending: false,
+    });
+    const resolved = resolveTurn({
+      state,
+      playerAction: { actorSide: "a", kind: "wait" },
+      sideASkills: [],
+      sideBSkills: [],
+      envHits: [{ target: "both", kind: "damage", intensity: "minor" }],
+    });
+    const environmentDamage = resolved.mechanicalEvidence.filter((item) =>
+      item.sourceActionId === null && item.parameterKey === "hp"
+    );
+    assert.deepEqual(
+      environmentDamage.map((item) => item.target.side).sort(),
+      ["a", "b"],
+    );
+    for (const item of environmentDamage) {
+      assert.equal(item.basisEventIds.length, 1);
+      const event = resolved.events.find(
+        (candidate) => candidate.id === item.basisEventIds[0],
+      );
+      assert.deepEqual(event?.targetSides, [item.target.side]);
+    }
   });
 
   it("emphasizes finishing blows instead of a bare hit line", () => {

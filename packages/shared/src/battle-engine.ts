@@ -39,6 +39,10 @@ import {
   balanceEquipment,
   softenCombatDamage,
 } from "./balance.js";
+import {
+  CommittedMechanicalEvidenceSetSchema,
+  type CommittedMechanicalEvidence,
+} from "./perception.js";
 
 function nowIso(): string {
   return new Date().toISOString();
@@ -70,6 +74,82 @@ function parameterChanges(before: CombatantState, after: CombatantState) {
     if (delta !== 0) changes[key] = delta;
   }
   return changes;
+}
+
+type MechanicalResolutionSpan = {
+  sourceActionId: string | null;
+  actorSide: "a" | "b" | null;
+  beforeA: Parameters;
+  beforeB: Parameters;
+  afterA: Parameters;
+  afterB: Parameters;
+  eventStart: number;
+  eventEnd: number;
+};
+
+function parametersSnapshot(combatant: CombatantState): Parameters {
+  return { ...combatant.parameters };
+}
+
+function mechanicalResolutionSpan(input: {
+  sourceActionId?: string | null;
+  actorSide?: "a" | "b" | null;
+  beforeA: Parameters;
+  beforeB: Parameters;
+  sideA: CombatantState;
+  sideB: CombatantState;
+  eventStart: number;
+  eventEnd: number;
+}): MechanicalResolutionSpan {
+  return {
+    sourceActionId: input.sourceActionId ?? null,
+    actorSide: input.actorSide ?? null,
+    beforeA: input.beforeA,
+    beforeB: input.beforeB,
+    afterA: parametersSnapshot(input.sideA),
+    afterB: parametersSnapshot(input.sideB),
+    eventStart: input.eventStart,
+    eventEnd: input.eventEnd,
+  };
+}
+
+function committedMechanicalEvidence(input: {
+  turn: number;
+  spans: MechanicalResolutionSpan[];
+  events: TurnEvent[];
+}): CommittedMechanicalEvidence[] {
+  const evidence: CommittedMechanicalEvidence[] = [];
+  for (const span of input.spans) {
+    const basisEventIds = input.events
+      .slice(span.eventStart, span.eventEnd)
+      .flatMap((event) => event.id ? [event.id] : []);
+    for (const side of ["a", "b"] as const) {
+      const before = side === "a" ? span.beforeA : span.beforeB;
+      const after = side === "a" ? span.afterA : span.afterB;
+      for (const parameterKey of PARAMETER_KEYS) {
+        const beforeValue = before[parameterKey] ?? 0;
+        const afterValue = after[parameterKey] ?? 0;
+        const delta = afterValue - beforeValue;
+        if (delta === 0) continue;
+        evidence.push({
+          evidenceId: `turn-${input.turn}-mechanical-${evidence.length + 1}`,
+          turn: input.turn,
+          sourceActionId: span.sourceActionId,
+          basisEventIds,
+          actorSide: span.actorSide,
+          target: {
+            side,
+            entityId: `character.${side}`,
+          },
+          parameterKey,
+          beforeValue,
+          afterValue,
+          delta,
+        });
+      }
+    }
+  }
+  return CommittedMechanicalEvidenceSetSchema.parse(evidence);
 }
 
 /** Build the persisted, perspective-aware facts after deterministic resolution. */
@@ -813,13 +893,24 @@ export function resolveTurn(input: {
   state: BattleState;
   events: TurnEvent[];
   actions: ResolvedBattleAction[];
+  mechanicalEvidence: CommittedMechanicalEvidence[];
 } {
   if (input.state.status !== "active") {
-    return { state: input.state, events: [], actions: [] };
+    return {
+      state: input.state,
+      events: [],
+      actions: [],
+      mechanicalEvidence: [],
+    };
   }
   // Prologue / aftermath are resolved outside the combat engine (LLM beats).
   if (input.state.prologuePending || input.state.aftermathPending) {
-    return { state: input.state, events: [], actions: [] };
+    return {
+      state: input.state,
+      events: [],
+      actions: [],
+      mechanicalEvidence: [],
+    };
   }
 
   let sideA = cloneCombatant(input.state.sideA);
@@ -834,6 +925,7 @@ export function resolveTurn(input: {
     bfBase,
   );
   const events: TurnEvent[] = [];
+  const mechanicalSpans: MechanicalResolutionSpan[] = [];
   const turn = input.state.turn + 1;
   let finisherA = normalizeFinisher(input.state.finisherA, input.sideASkills);
   let finisherB = normalizeFinisher(input.state.finisherB, input.sideBSkills);
@@ -843,6 +935,9 @@ export function resolveTurn(input: {
       [sideA, "a"],
       [sideB, "b"],
     ] as const) {
+      const beforeA = parametersSnapshot(sideA);
+      const beforeB = parametersSnapshot(sideB);
+      const eventStart = events.length;
       const restored = restoreTowardBase(combatant);
       if (restored.length > 0) {
         events.push({
@@ -852,6 +947,14 @@ export function resolveTurn(input: {
           targetSides: [actorSide],
           summary: `${combatant.displayName} の変化した状態が、本来の調子へ少し戻った。`,
         });
+        mechanicalSpans.push(mechanicalResolutionSpan({
+          beforeA,
+          beforeB,
+          sideA,
+          sideB,
+          eventStart,
+          eventEnd: events.length,
+        }));
       }
     }
   }
@@ -877,7 +980,7 @@ export function resolveTurn(input: {
   }
 
   if (input.envHits?.length) {
-    applyEnvHits(sideA, sideB, input.envHits, events);
+    applyEnvHits(sideA, sideB, input.envHits, events, mechanicalSpans);
   }
 
   const forceOffense = (input.state.supervisor?.passiveTurns ?? 0) >= 2;
@@ -950,6 +1053,8 @@ export function resolveTurn(input: {
 
   // Player (side A)
   const actionAEventStart = events.length;
+  const actionABeforeA = parametersSnapshot(sideA);
+  const actionABeforeB = parametersSnapshot(sideB);
   const usedFinisherA = applyAction(
     sideA,
     sideB,
@@ -976,6 +1081,16 @@ export function resolveTurn(input: {
     actorName: sideA.displayName,
     targetName: sideB.displayName,
   });
+  mechanicalSpans.push(mechanicalResolutionSpan({
+    sourceActionId: actionAId,
+    actorSide: "a",
+    beforeA: actionABeforeA,
+    beforeB: actionABeforeB,
+    sideA,
+    sideB,
+    eventStart: actionAEventStart,
+    eventEnd: events.length,
+  }));
 
   // Opponent (side B) from policies / stance if still up
   if (!isCombatantDown(sideB) && !isCombatantDown(sideA)) {
@@ -985,6 +1100,8 @@ export function resolveTurn(input: {
       skippedReason: null,
     };
     const actionBEventStart = events.length;
+    const actionBBeforeA = parametersSnapshot(sideA);
+    const actionBBeforeB = parametersSnapshot(sideB);
     const usedFinisherB = applyAction(
       sideB,
       sideA,
@@ -1011,6 +1128,16 @@ export function resolveTurn(input: {
       actorName: sideB.displayName,
       targetName: sideA.displayName,
     });
+    mechanicalSpans.push(mechanicalResolutionSpan({
+      sourceActionId: actionBId,
+      actorSide: "b",
+      beforeA: actionBBeforeA,
+      beforeB: actionBBeforeB,
+      sideA,
+      sideB,
+      eventStart: actionBEventStart,
+      eventEnd: events.length,
+    }));
   }
 
   // Incapacity flags
@@ -1114,7 +1241,16 @@ export function resolveTurn(input: {
     ...event,
     id: event.id ?? `turn-${turn}-event-${index + 1}`,
   }));
-  return { state, events: finalizedEvents, actions };
+  return {
+    state,
+    events: finalizedEvents,
+    actions,
+    mechanicalEvidence: committedMechanicalEvidence({
+      turn,
+      spans: mechanicalSpans,
+      events: finalizedEvents,
+    }),
+  };
 }
 
 function tagActionEvents(
@@ -1267,6 +1403,7 @@ function applyEnvHits(
     intensity: "minor" | "moderate";
   }>,
   events: TurnEvent[],
+  mechanicalSpans: MechanicalResolutionSpan[],
 ): void {
   for (const hit of hits) {
     const targets: CombatantState[] =
@@ -1276,6 +1413,10 @@ function applyEnvHits(
           ? [sideA]
           : [sideB];
     for (const t of targets) {
+      const beforeA = parametersSnapshot(sideA);
+      const beforeB = parametersSnapshot(sideB);
+      const eventStart = events.length;
+      const targetSide = t === sideA ? "a" : "b";
       const amount = envAmount(hit.intensity);
       if (hit.kind === "heal") {
         const max = t.parameters.maxHp ?? 100;
@@ -1284,6 +1425,7 @@ function applyEnvHits(
           type: "heal",
           actorName: t.displayName,
           targetName: t.displayName,
+          targetSides: [targetSide],
           intensity: hit.intensity,
           summary:
             hit.intensity === "moderate"
@@ -1296,6 +1438,8 @@ function applyEnvHits(
         events.push({
           type: "status",
           actorName: t.displayName,
+          targetName: t.displayName,
+          targetSides: [targetSide],
           intensity: hit.intensity,
           summary: chip.finishing
             ? `${t.displayName} は場の圧力にとどめを刺され、決戦を続けられなくなった。`
@@ -1308,6 +1452,7 @@ function applyEnvHits(
         events.push({
           type: "damage",
           targetName: t.displayName,
+          targetSides: [targetSide],
           intensity: hit.intensity,
           summary: env.finishing
             ? `${t.displayName} は環境の変化にとどめを刺された——それが決め手となった。`
@@ -1316,6 +1461,14 @@ function applyEnvHits(
               : `${t.displayName} は環境の余波を浴びた。`,
         });
       }
+      mechanicalSpans.push(mechanicalResolutionSpan({
+        beforeA,
+        beforeB,
+        sideA,
+        sideB,
+        eventStart,
+        eventEnd: events.length,
+      }));
     }
   }
 }

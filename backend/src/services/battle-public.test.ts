@@ -3,6 +3,7 @@ import { describe, it } from "node:test";
 import {
   createBattleState,
   defaultParameters,
+  resolveTurn,
   type CharacterSheet,
 } from "@kshiai/shared";
 import { MockLlmProvider } from "../llm/mock.js";
@@ -160,6 +161,7 @@ describe("public battle semantic projection", () => {
       opp: sideB,
       actions: [],
       events: [],
+      mechanicalEvidence: [],
     });
     assert.equal(result.status, "rejected");
     assert.equal(result.state.semanticState, state.semanticState);
@@ -179,17 +181,28 @@ describe("public battle semantic projection", () => {
     llm.reconcileTurnSemanticState = async () => {
       throw new Error("provider unavailable");
     };
+    const resolved = resolveTurn({
+      state,
+      playerAction: { actorSide: "a", kind: "basic_attack" },
+      sideASkills: [],
+      sideBSkills: [],
+    });
     const result = await reconcileSemanticState({
       llm,
       stateBeforeTurn: state,
-      resolvedState: state,
+      resolvedState: resolved.state,
       mine: sideA,
       opp: sideB,
-      actions: [],
-      events: [],
+      actions: resolved.actions,
+      events: resolved.events,
+      mechanicalEvidence: resolved.mechanicalEvidence,
     });
     assert.equal(result.status, "skipped");
     assert.equal(result.state.semanticState, state.semanticState);
+    assert.equal(result.mechanicalEvidenceStatus, "valid");
+    assert.ok(result.mechanicalEvidence.length > 0);
+    assert.equal(result.sensoryEvidenceStatus, "unavailable");
+    assert.deepEqual(result.sensoryEvidence, []);
   });
 
   it("keeps only the latest transition and side-specific observations", async () => {
@@ -232,6 +245,7 @@ describe("public battle semantic projection", () => {
       opp: sideB,
       actions: [],
       events: [],
+      mechanicalEvidence: [],
     });
     assert.equal(result.status, "applied");
     assert.equal(result.state.latestSemanticTransition?.toRevision, 1);
