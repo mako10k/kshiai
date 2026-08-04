@@ -33,7 +33,7 @@ import {
   buildSemanticObservationState,
   createBattleSemanticState,
 } from "./semantic-state.js";
-import { normalizeDramaState } from "./drama.js";
+import { normalizeDramaState, parseActionSignature } from "./drama.js";
 import {
   balanceBasicAttack,
   balanceEquipment,
@@ -751,26 +751,50 @@ function normalizeFinisher(
   return selectFinisherSkill(skills);
 }
 
+function rankOffensiveSkills(skills: Skill[], self: CombatantState): Skill[] {
+  // Static policy fallback never spends the one-use finisher. Only a validated
+  // character reservation (or explicit player action) may select `special`.
+  return usableSkills(skills, self)
+    .filter(
+      (s) =>
+        s.kind === "attack" ||
+        s.kind === "magic" ||
+        (s.kind === "status" &&
+          (s.effects ?? []).some(
+            (effect) => effect.target === "foe" && effect.delta < 0,
+          )),
+    )
+    .sort((a, b) => b.power - a.power || a.id.localeCompare(b.id));
+}
+
 function pickOffensiveSkill(
   skills: Skill[],
   self: CombatantState,
+  options?: { avoidSkillId?: string | null; turn?: number },
 ): Skill | undefined {
-  // Static policy fallback never spends the one-use finisher. Only a validated
-  // character reservation (or explicit player action) may select `special`.
-  const usable = usableSkills(skills, self).filter(
-    (s) =>
-      s.kind === "attack" ||
-      s.kind === "magic" ||
-      (s.kind === "status" &&
-        (s.effects ?? []).some(
-          (effect) => effect.target === "foe" && effect.delta < 0,
-        )),
-  );
-  if (usable.length === 0) return undefined;
-  return [...usable].sort((a, b) => b.power - a.power)[0];
+  const ranked = rankOffensiveSkills(skills, self);
+  if (ranked.length === 0) return undefined;
+  if (options?.avoidSkillId && ranked.length > 1) {
+    const alternates = ranked.filter((skill) => skill.id !== options.avoidSkillId);
+    if (alternates.length > 0) {
+      const index = Math.abs(options.turn ?? 0) % alternates.length;
+      return alternates[index];
+    }
+  }
+  if ((options?.turn ?? 0) > 0 && ranked.length > 1) {
+    // Rotate among the top two strongest options so policy fallback is not
+    // locked to a single strongest skill every turn.
+    const top = ranked.slice(0, Math.min(2, ranked.length));
+    return top[Math.abs(options!.turn!) % top.length];
+  }
+  return ranked[0];
 }
 
-function pickSupportSkill(skills: Skill[], self: CombatantState): Skill | undefined {
+function pickSupportSkill(
+  skills: Skill[],
+  self: CombatantState,
+  options?: { avoidSkillId?: string | null; turn?: number },
+): Skill | undefined {
   const usable = usableSkills(skills, self).filter(
     (s) =>
       s.kind === "support" ||
@@ -780,7 +804,14 @@ function pickSupportSkill(skills: Skill[], self: CombatantState): Skill | undefi
           (effect) => effect.target === "self" && effect.delta > 0,
         )),
   );
-  return usable[0];
+  if (usable.length === 0) return undefined;
+  if (options?.avoidSkillId && usable.length > 1) {
+    const alternates = usable.filter((skill) => skill.id !== options.avoidSkillId);
+    if (alternates.length > 0) {
+      return alternates[Math.abs(options.turn ?? 0) % alternates.length];
+    }
+  }
+  return usable[Math.abs(options?.turn ?? 0) % usable.length];
 }
 
 function actionFromBias(
@@ -789,10 +820,11 @@ function actionFromBias(
   self: CombatantState,
   skills: Skill[],
   myHp: number,
-  _turn: number,
+  turn: number,
+  avoidSkillId?: string | null,
 ): BattleAction {
-  const offense = pickOffensiveSkill(skills, self);
-  const support = pickSupportSkill(skills, self);
+  const offense = pickOffensiveSkill(skills, self, { avoidSkillId, turn });
+  const support = pickSupportSkill(skills, self, { avoidSkillId, turn });
 
   const attack = (): BattleAction =>
     offense
@@ -831,6 +863,10 @@ function actionFromBias(
     case "mixed":
     default:
       if (myHp < 0.35) return healOrDefend();
+      // When mixed and already low on vitality, keep pressure with cadence:
+      // occasionally step, rest, or basic attack so every turn is not one skill.
+      if (myHp > 0.55 && turn % 5 === 0) return { actorSide, kind: "wait" };
+      if (myHp > 0.45 && turn % 4 === 3) return defend();
       return attack();
   }
 }
@@ -919,25 +955,56 @@ export function chooseActionFromPolicies(input: {
   turn: number;
   /** Fallback when no policies selected. */
   legacyStance?: BattleStance;
+  /** When set, prefer a different skill/kind than the last repeated action. */
+  avoidSkillId?: string | null;
+  avoidKind?: string | null;
+  /** repeatedAction count from drama; >=2 enables stronger variety. */
+  actionRepeatCount?: number;
 }): BattleAction {
   const myHp = hpRatio(input.self);
   const foeHp = hpRatio(input.foe);
   const selected = new Set(input.selectedIds);
   const active = input.policies.filter((p) => selected.has(p.id));
+  const avoidSkillId = input.actionRepeatCount && input.actionRepeatCount >= 2
+    ? input.avoidSkillId
+    : null;
+  const forceOffWait = input.avoidKind === "wait" &&
+    (input.actionRepeatCount ?? 0) >= 2;
 
   const matching = active
     .filter((p) => ruleMatches(p, { turn: input.turn, myHp, foeHp }))
     .sort((a, b) => (b.priority ?? 0) - (a.priority ?? 0));
 
-  if (matching.length > 0) {
-    return actionFromBias(
-      matching[0]!.bias ?? "mixed",
+  const pick = (bias: PolicyBias): BattleAction => {
+    let action = actionFromBias(
+      forceOffWait && bias === "wait" ? "mixed" : bias,
       input.actorSide,
       input.self,
       input.skills,
       myHp,
       input.turn,
+      avoidSkillId,
     );
+    // Never answer a multi-wait streak with another wait when offense exists.
+    if (
+      forceOffWait &&
+      action.kind === "wait"
+    ) {
+      action = actionFromBias(
+        "attack",
+        input.actorSide,
+        input.self,
+        input.skills,
+        myHp,
+        input.turn,
+        avoidSkillId,
+      );
+    }
+    return action;
+  };
+
+  if (matching.length > 0) {
+    return pick(matching[0]!.bias ?? "mixed");
   }
 
   // Soft fallback: any always rules, then legacy stance
@@ -945,14 +1012,7 @@ export function chooseActionFromPolicies(input: {
     .filter((p) => p.triggers?.always || Object.keys(p.triggers ?? {}).length === 0)
     .sort((a, b) => (b.priority ?? 0) - (a.priority ?? 0));
   if (always.length > 0) {
-    return actionFromBias(
-      always[0]!.bias ?? "mixed",
-      input.actorSide,
-      input.self,
-      input.skills,
-      myHp,
-      input.turn,
-    );
+    return pick(always[0]!.bias ?? "mixed");
   }
 
   return chooseActionFromStance({
@@ -1053,6 +1113,17 @@ function intensityFromDamage(dmg: number): TurnEvent["intensity"] {
   return "minor";
 }
 
+/** Stable 0..n-1 pick from action/skill text so templates vary without RNG. */
+function varietyIndex(seed: string, modulo: number): number {
+  if (modulo <= 1) return 0;
+  let hash = 2166136261;
+  for (let i = 0; i < seed.length; i += 1) {
+    hash ^= seed.charCodeAt(i);
+    hash = Math.imul(hash, 16777619);
+  }
+  return Math.abs(hash) % modulo;
+}
+
 /** Abstract HP-hit prose: finishing blows are explicitly marked for narration. */
 function hitSummary(input: {
   actorName: string;
@@ -1060,21 +1131,43 @@ function hitSummary(input: {
   targetName: string;
   intensity?: TurnEvent["intensity"];
   finishing: boolean;
+  varietySeed?: string;
 }): string {
   const { actorName, skillName, targetName, intensity, finishing } = input;
+  const seed = input.varietySeed ??
+    `${actorName}|${skillName}|${targetName}|${intensity ?? "moderate"}`;
   if (finishing) {
-    return `${actorName} の ${skillName} が ${targetName} をとどめとして捉えた——それが決め手となった。`;
+    const templates = [
+      `${actorName} の ${skillName} が ${targetName} をとどめとして捉えた——それが決め手となった。`,
+      `${actorName} は ${skillName} をとどめの一手に変え、${targetName} の勢いを断ち切った。`,
+      `${skillName} が ${targetName} の継戦を許さず、${actorName} が決め手を決めた。`,
+    ];
+    return templates[varietyIndex(seed, templates.length)]!;
   }
-  switch (intensity) {
-    case "critical":
-      return `${actorName} の ${skillName} が ${targetName} を大きく揺るがした。`;
-    case "heavy":
-      return `${actorName} の ${skillName} が ${targetName} を強く捉えた。`;
-    case "minor":
-      return `${actorName} の ${skillName} が ${targetName} に軽く触れた。`;
-    default:
-      return `${actorName} の ${skillName} が ${targetName} を捉えた。`;
-  }
+  const byIntensity: Record<string, string[]> = {
+    critical: [
+      `${actorName} の ${skillName} が ${targetName} を大きく揺るがした。`,
+      `${skillName} が場の空気を割り、${targetName} の体勢が崩れる。`,
+      `${actorName} は間を詰めて ${skillName} を通し、${targetName} を大きく揺さぶった。`,
+    ],
+    heavy: [
+      `${actorName} の ${skillName} が ${targetName} を強く捉えた。`,
+      `${targetName} は ${skillName} の勢いをまともに受け、一歩押し返される。`,
+      `${actorName} の ${skillName} が角度を変え、${targetName} の守りを抉った。`,
+    ],
+    moderate: [
+      `${actorName} の ${skillName} が ${targetName} を捉えた。`,
+      `${actorName} は ${skillName} で流れを作り、${targetName} に応答を迫る。`,
+      `${skillName} が交差し、${targetName} の間合いがわずかに乱れる。`,
+    ],
+    minor: [
+      `${actorName} の ${skillName} が ${targetName} に軽く触れた。`,
+      `${actorName} は ${skillName} で探りを入れ、${targetName} の反応を見る。`,
+      `${skillName} が掠め、${targetName} は小さく体をさばいた。`,
+    ],
+  };
+  const templates = byIntensity[intensity ?? "moderate"] ?? byIntensity.moderate!;
+  return templates[varietyIndex(seed, templates.length)]!;
 }
 
 function applyHpDamage(
@@ -1222,6 +1315,12 @@ export function resolveTurn(input: {
     });
   }
 
+  const drama = normalizeDramaState(input.state.dramaState);
+  const avoidA = parseActionSignature(drama.lastActionSignatureA);
+  const avoidB = parseActionSignature(drama.lastActionSignatureB);
+  const varietyA = drama.repeatedActionA >= 2;
+  const varietyB = drama.repeatedActionB >= 2;
+
   const plannedActionA = actionFromCharacterIntent({
     intent: input.state.plannedActionA,
     actorSide: "a",
@@ -1239,8 +1338,18 @@ export function resolveTurn(input: {
     turn,
   });
 
-  const playerAction = input.playerAction ?? plannedActionA ??
-    (forceOffense
+  const intentMatchesAvoid = (
+    action: BattleAction | undefined,
+    avoid: ReturnType<typeof parseActionSignature>,
+    requireVariety: boolean,
+  ): boolean => {
+    if (!requireVariety || !action || !avoid) return false;
+    if (avoid.skillId) return action.kind === "skill" && action.skillId === avoid.skillId;
+    return action.kind === avoid.kind;
+  };
+
+  const policyA = () =>
+    forceOffense
       ? { actorSide: "a" as const, kind: "basic_attack" as const }
       : chooseActionFromPolicies({
           policies: input.state.policiesA ?? [],
@@ -1251,20 +1360,36 @@ export function resolveTurn(input: {
           skills: input.sideASkills,
           turn,
           legacyStance: input.state.stanceA ?? "balanced",
-        }));
+          avoidSkillId: varietyA ? avoidA?.skillId : null,
+          avoidKind: varietyA ? avoidA?.kind : null,
+          actionRepeatCount: drama.repeatedActionA,
+        });
+  const policyB = () =>
+    forceOffense
+      ? { actorSide: "b" as const, kind: "basic_attack" as const }
+      : chooseActionFromPolicies({
+          policies: input.state.policiesB ?? [],
+          selectedIds: input.state.selectedPolicyIdsB ?? [],
+          actorSide: "b",
+          self: sideB,
+          foe: sideA,
+          skills: input.sideBSkills,
+          turn,
+          legacyStance: input.state.stanceB ?? "balanced",
+          avoidSkillId: varietyB ? avoidB?.skillId : null,
+          avoidKind: varietyB ? avoidB?.kind : null,
+          actionRepeatCount: drama.repeatedActionB,
+        });
 
-  const aiAction: BattleAction = plannedActionB ?? (forceOffense
-    ? { actorSide: "b", kind: "basic_attack" }
-    : chooseActionFromPolicies({
-        policies: input.state.policiesB ?? [],
-        selectedIds: input.state.selectedPolicyIdsB ?? [],
-        actorSide: "b",
-        self: sideB,
-        foe: sideA,
-        skills: input.sideBSkills,
-        turn,
-        legacyStance: input.state.stanceB ?? "balanced",
-      }));
+  const playerAction = input.playerAction ??
+    (intentMatchesAvoid(plannedActionA, avoidA, varietyA)
+      ? policyA()
+      : plannedActionA ?? policyA());
+
+  const aiAction: BattleAction =
+    intentMatchesAvoid(plannedActionB, avoidB, varietyB)
+      ? policyB()
+      : plannedActionB ?? policyB();
   const actionAId = `turn-${turn}-action-a`;
   const actionBId = `turn-${turn}-action-b`;
   const actions: ResolvedBattleAction[] = [

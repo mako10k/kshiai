@@ -37,6 +37,63 @@ export function actionSignature(
   return `${action.kind}:${action.skillId ?? "-"}:${action.executed ? "1" : "0"}`;
 }
 
+/** Parse a drama action signature into kind/skill for variety avoidance. */
+export function parseActionSignature(signature: string | null | undefined): {
+  kind: string;
+  skillId: string | null;
+} | null {
+  if (!signature) return null;
+  const [kind, skillId] = signature.split(":");
+  if (!kind) return null;
+  return {
+    kind,
+    skillId: !skillId || skillId === "-" ? null : skillId,
+  };
+}
+
+/**
+ * Human-readable progression cue for the narrator. Derived only from drama
+ * continuity already on the battle — no new LLM call.
+ */
+export function dramaProgressionHint(input: {
+  phase: DramaPhase;
+  turn: number;
+  turnLimit: number;
+  repeatedActionA: number;
+  repeatedActionB: number;
+  lastActionSignatureA: string | null;
+  lastActionSignatureB: string | null;
+  recentBeatFingerprints: string[];
+  turnsSinceLocationChange: number;
+}): string {
+  const sameExchange =
+    input.recentBeatFingerprints.length >= 2 &&
+    input.recentBeatFingerprints.every(
+      (fp) => fp === input.recentBeatFingerprints[0],
+    );
+  const aWait = input.lastActionSignatureA?.startsWith("wait:") ?? false;
+  const bWait = input.lastActionSignatureB?.startsWith("wait:") ?? false;
+  // Prefer one-sided pressure when only one side is waiting — that is the
+  // production monotony pattern (attacker loops while defender waits).
+  if ((aWait && !bWait) || (bWait && !aWait)) {
+    return "one_sided_pressure";
+  }
+  if (sameExchange && (input.repeatedActionA >= 2 || input.repeatedActionB >= 2)) {
+    return "break_stalemate";
+  }
+  if (input.repeatedActionA >= 2 || input.repeatedActionB >= 2) {
+    return "escalate_repeated_action";
+  }
+  if (input.turnsSinceLocationChange >= 4) {
+    return "shift_space_or_leverage";
+  }
+  if (input.phase === "climax" || input.turn >= Math.max(3, input.turnLimit - 3)) {
+    return "force_commitment";
+  }
+  if (input.phase === "opening") return "establish_and_probe";
+  return "change_leverage";
+}
+
 function latestSpeech(
   block: NarrativeBlock,
   speaker: string,

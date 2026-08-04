@@ -1196,6 +1196,8 @@ speech is a PRIVATE reaction sample for continuity only (never shown directly as
 - Dialogue without 「」 brackets, OR
 - A quiet reaction: "…", "（ただ佇んでいる）", "（${counterpartLabel}の気配をうかがう）".
 nextAction plans the NEXT turn. Choose exactly one entry from decision.availableActions. For a skill, copy its skillId exactly. A finisher has one use for the entire battle: set useFinisher=true only for the finisher candidate when it is unlocked and remainingUses is 1. Consider own/foe condition, turns remaining, currentMultiplier, turnsUntilMax, and the risk of waiting; do not always fire at unlock.
+When decision.varietyPressure is "prefer_change", avoid decision.lastAction if another availableActions entry exists.
+When decision.varietyPressure is "require_change", nextAction MUST differ from decision.lastAction (kind and skillId) whenever another availableActions entry exists. Do not spam wait or the same skill every turn.
 Public on-screen lines are written later by the narrator from digests + events.`,
         JSON.stringify(input),
         {
@@ -1230,6 +1232,26 @@ Public on-screen lines are written later by the narrator from digests + events.`
       );
       if (!allowed) {
         throw new Error("Character agent selected an unavailable next action");
+      }
+      const last = input.decision.lastAction;
+      const sameAsLast = Boolean(
+        last &&
+        nextAction.data.kind === last.kind &&
+        (nextAction.data.skillId ?? null) === (last.skillId ?? null),
+      );
+      const hasAlternative = input.decision.availableActions.some((action) =>
+        !(
+          last &&
+          action.kind === last.kind &&
+          (action.skillId ?? null) === (last.skillId ?? null)
+        )
+      );
+      if (
+        input.decision.varietyPressure === "require_change" &&
+        sameAsLast &&
+        hasAlternative
+      ) {
+        throw new Error("Character agent repeated last action under require_change");
       }
       return {
         state: {
@@ -1327,15 +1349,27 @@ ${focusBlock}
 ${NARRATION_IDENTIFIER_RULES}
 Perspective gate overrides style instruction: never reveal inner life that is not present in innerDigests.
 For self or opponent mode, the embedded frame is the complete observation boundary. Preserve unidentified contacts, missing attribution, inaccessible subjects, and qualitative-only effect or reserve cues. Do not reconstruct facts omitted from view.
-Use view.battlefield flavor when available.
-Build 2–4 non-empty narrator lines around view.actionBeats and view.events: initiation, movement/contact, then committed consequence. Make the physical, social, technological, psychic, comedic, or abstract action itself clear instead of merely restating condition results.
-Do not repeat or closely paraphrase recentNarration or either character's recentSpeeches. When an action signature is repeating, vary approach, movement, rhythm, and reaction without inventing a different mechanical result.
-Respect drama.phase: opening establishes positioning, rising changes leverage, climax makes commitment and consequence feel decisive.
+Use view.battlefield flavor sparingly — scenery is seasoning, not the meal.
+Build 2–4 non-empty narrator lines around view.actionBeats and view.events: lead with this turn's action, then contact/pressure, then a committed consequence that changes who holds advantage.
+This turn MUST ADVANCE the confrontation relative to recentNarration. Do not write another soft restatement of the same exchange.
+Obey drama.progressionHint:
+- establish_and_probe: first contact and reading the opponent
+- change_leverage: someone gains or loses ground
+- escalate_repeated_action: same action is repeating — escalate intensity, show adaptation, or a clear miss/hit shift (do not invent a different skill)
+- break_stalemate: the loop is stuck — force a break, answer, or cost of hesitation
+- one_sided_pressure: one side waits — show pressure, initiative, or the price of waiting
+- shift_space_or_leverage: move the fight's center (position, prop, attention, social heat) without inventing unstated mechanics
+- force_commitment: late/climax — irreversible-feeling choice or decisive push within the established genre
+Do not open with pure ambient scenery if recentNarration already did. Prefer opening on an actor's move.
+Require one clear qualitative sentence about who gained or lost ground this turn (no numbers).
+Do not repeat or closely paraphrase recentNarration or either character's recentSpeeches.
 When drama.environmentBeatDue is true, incorporate only an environment change already present in view. Do not invent mechanical damage or bonuses.
 If view marks a finishing blow (とどめ / 決め手 / 戦闘不能), center the turn on that decisive action.
-YOU write public character lines in speeches (not a separate agent). Include exactly the currently permitted speaker labels: ${JSON.stringify(requiredSpeakers)}.
-- spoken short line without 「」, OR quiet reaction "…", "（佇んでいる）", etc.
-Do not add a speech or reaction for an inaccessible counterpart. speaker MUST be one of the permitted labels exactly.
+YOU write public character lines in speeches (not a separate agent).
+Permitted speaker labels only: ${JSON.stringify(requiredSpeakers)}.
+Prefer fresh, character-specific spoken lines. Do not reuse or closely paraphrase recentSpeeches.
+If a character has nothing new to say this turn, omit that speaker entirely — do not invent stock stage directions such as "言葉を飲み" or "次の変化へ意識を向ける".
+Do not add a speech for an inaccessible counterpart. speaker MUST be one of the permitted labels exactly.
 JSON: { "turn": number, "focus": "${focus}", "narrator": string[], "speeches": [ { "speaker": string, "text": string } ] }
 Do not mention numeric HP/MP/ATK values.`,
         JSON.stringify({
@@ -1387,24 +1421,20 @@ Do not mention numeric HP/MP/ATK values.`,
   ): Array<{ speaker: string; text: string }> {
     const allowed = new Set(requiredSpeakers);
     const out: Array<{ speaker: string; text: string }> = [];
+    const seenSpeakers = new Set<string>();
     for (const row of raw ?? []) {
       const speaker = String(row.speaker ?? "").trim();
-      if (!allowed.has(speaker)) continue;
-      const text = coerceCharacterSpeech(row.text, {
-        foeName: speaker === sideAName ? sideBName : sideAName,
-      });
-      out.push({ speaker, text });
-    }
-    // Ensure both sides appear once when model omits one.
-    for (const name of requiredSpeakers) {
-      if (!out.some((s) => s.speaker === name)) {
-        out.push({
-          speaker: name,
-          text: coerceCharacterSpeech(undefined, {
-            foeName: name === sideAName ? sideBName : sideAName,
-          }),
-        });
-      }
+      if (!allowed.has(speaker) || seenSpeakers.has(speaker)) continue;
+      // Keep only non-empty text the narrator actually produced.
+      // Do not synthesize stock stage directions for missing speakers —
+      // public lines must remain narrator-authored.
+      const body = String(row.text ?? "")
+        .replace(/^「/, "")
+        .replace(/」$/, "")
+        .trim();
+      if (!body) continue;
+      seenSpeakers.add(speaker);
+      out.push({ speaker, text: body });
     }
     // Prefer A then B order for stable UI.
     out.sort((a, b) => {

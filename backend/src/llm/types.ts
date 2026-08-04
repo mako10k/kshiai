@@ -57,6 +57,20 @@ export type CharacterActionDecisionContext = {
     finisherCandidate?: boolean;
   }>;
   finisher: FinisherWindow | null;
+  /** Last executed/planned action for this side (for variety pressure). */
+  lastAction?: {
+    kind: CharacterActionIntent["kind"];
+    skillId?: string;
+    name?: string;
+  } | null;
+  /** How many consecutive turns this side repeated lastAction. */
+  actionRepeatCount?: number;
+  /**
+   * none: free choice.
+   * prefer_change: avoid repeating lastAction when alternatives exist.
+   * require_change: nextAction must differ from lastAction when alternatives exist.
+   */
+  varietyPressure?: "none" | "prefer_change" | "require_change";
 };
 
 export type CharacterCounterpartKnowledge = {
@@ -315,9 +329,18 @@ export interface LlmProvider {
     recentSpeeches?: Array<{ speaker: string; text: string }>;
     drama?: {
       phase: "opening" | "rising" | "climax";
+      turn: number;
+      turnLimit: number;
       repeatedActionA: number;
       repeatedActionB: number;
+      lastActionSignatureA?: string | null;
+      lastActionSignatureB?: string | null;
+      recentBeatFingerprints?: string[];
+      turnsSinceLocationChange?: number;
+      turnsSinceEnvironmentBeat?: number;
       environmentBeatDue: boolean;
+      /** Server-derived progression cue: escalate, break stalemate, etc. */
+      progressionHint?: string;
     };
     /** Already filtered digests for the resolved focus (may be empty). */
     innerDigests?: InnerDigest[];

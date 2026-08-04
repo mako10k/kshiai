@@ -56,7 +56,9 @@ import {
   defaultBasicAttack,
   advanceDramaState,
   dramaPhaseForTurn,
+  dramaProgressionHint,
   normalizeDramaState,
+  parseActionSignature,
   quantizeCommittedMechanicalEvidence,
   projectObserverPerception,
   type QuantizedMechanicalEvidence,
@@ -65,6 +67,7 @@ import {
   buildNarrationIdentifierCatalog,
   buildNarrationPerceptionView,
   buildNarrationTurnView,
+  composeNarratorTurn,
   narrationParticipantLabels,
   perceivedCondition,
   repairNarrationIdentifierText,
@@ -585,6 +588,45 @@ function buildCharacterDecisionContext(input: {
       skill.id === window.skillId,
     );
   });
+  const drama = normalizeDramaState(input.state.dramaState);
+  const signature = input.side === "a"
+    ? drama.lastActionSignatureA
+    : drama.lastActionSignatureB;
+  const actionRepeatCount = input.side === "a"
+    ? drama.repeatedActionA
+    : drama.repeatedActionB;
+  const parsed = parseActionSignature(signature);
+  const lastSkill = parsed?.skillId
+    ? input.sheet.skills.find((skill) => skill.id === parsed.skillId)
+    : null;
+  const lastAction = parsed
+    ? {
+        kind: parsed.kind as
+          | "skill"
+          | "basic_attack"
+          | "defend"
+          | "rest"
+          | "wait",
+        ...(parsed.skillId ? { skillId: parsed.skillId } : {}),
+        ...(lastSkill?.name
+          ? { name: lastSkill.name }
+          : parsed.kind === "basic_attack"
+            ? { name: input.sheet.basicAttack?.name ?? "基本アクション" }
+            : parsed.kind === "wait"
+              ? { name: "様子を見る" }
+              : parsed.kind === "defend"
+                ? { name: "防御" }
+                : parsed.kind === "rest"
+                  ? { name: "休息" }
+                  : {}),
+      }
+    : null;
+  const varietyPressure =
+    actionRepeatCount >= 3
+      ? "require_change" as const
+      : actionRepeatCount >= 2
+        ? "prefer_change" as const
+        : "none" as const;
   return {
     nextTurn,
     turnsRemaining: Math.max(0, input.state.turnLimit - nextTurn + 1),
@@ -607,6 +649,9 @@ function buildCharacterDecisionContext(input: {
       })),
     ],
     finisher: window,
+    lastAction,
+    actionRepeatCount,
+    varietyPressure,
   };
 }
 
@@ -1281,28 +1326,28 @@ function narrationIdentifierCatalog(input: {
   });
 }
 
+/**
+ * Drop exact speech repeats. Do not invent replacement lines server-side —
+ * public dialogue must come from the narrator (or be omitted), never from
+ * stock stage-direction templates.
+ */
 function replaceRepeatedPublicSpeeches(input: {
   narrative: { speeches: Array<{ speaker: string; text: string }> };
   recentSpeeches: Array<{ speaker: string; text: string }>;
   turn: number;
 }) {
-  const previous = new Map(
-    input.recentSpeeches.map((line) => [
-      `${line.speaker}:${normalizePublicText(line.text)}`,
-      true,
-    ]),
+  const previous = new Set(
+    input.recentSpeeches.map((line) =>
+      `${line.speaker}:${normalizePublicText(line.text)}`
+    ),
   );
-  return input.narrative.speeches.map((line, index) => {
-    const duplicate = previous.has(
-      `${line.speaker}:${normalizePublicText(line.text)}`,
-    );
-    if (!duplicate || !normalizePublicText(line.text)) return line;
-    return {
-      ...line,
-      text: (input.turn + index) % 2 === 0
-        ? "（言葉を飲み、動きで応じる）"
-        : "（次の変化へ意識を向ける）",
-    };
+  const seenThisTurn = new Set<string>();
+  return input.narrative.speeches.filter((line) => {
+    const key = `${line.speaker}:${normalizePublicText(line.text)}`;
+    if (!normalizePublicText(line.text)) return false;
+    if (previous.has(key) || seenThisTurn.has(key)) return false;
+    seenThisTurn.add(key);
+    return true;
   });
 }
 
@@ -1641,9 +1686,27 @@ async function advanceTurnWithLease(input: {
           recentSpeeches,
           drama: {
             phase: dramaPhase,
+            turn: next.turn,
+            turnLimit: next.turnLimit,
             repeatedActionA: dramaBefore.repeatedActionA,
             repeatedActionB: dramaBefore.repeatedActionB,
+            lastActionSignatureA: dramaBefore.lastActionSignatureA,
+            lastActionSignatureB: dramaBefore.lastActionSignatureB,
+            recentBeatFingerprints: dramaBefore.recentBeatFingerprints,
+            turnsSinceLocationChange: dramaBefore.turnsSinceLocationChange,
+            turnsSinceEnvironmentBeat: dramaBefore.turnsSinceEnvironmentBeat,
             environmentBeatDue: environmentBeatCommitted,
+            progressionHint: dramaProgressionHint({
+              phase: dramaPhase,
+              turn: next.turn,
+              turnLimit: next.turnLimit,
+              repeatedActionA: dramaBefore.repeatedActionA,
+              repeatedActionB: dramaBefore.repeatedActionB,
+              lastActionSignatureA: dramaBefore.lastActionSignatureA,
+              lastActionSignatureB: dramaBefore.lastActionSignatureB,
+              recentBeatFingerprints: dramaBefore.recentBeatFingerprints,
+              turnsSinceLocationChange: dramaBefore.turnsSinceLocationChange,
+            }),
           },
           innerDigests: digests,
           styleInstruction: next.narrationStyle?.instruction,
@@ -1677,28 +1740,42 @@ async function advanceTurnWithLease(input: {
       "[battle] narrateTurn fallback",
       e instanceof Error ? e.message : e,
     );
-    const place = narrationView?.battlefield?.displayName ??
-      narrationView?.scene ?? next.situation.scene;
-    const fallbackFacts = narrationView
-      ? [
-          ...narrationView.actionBeats.flatMap((beat) => [
-            `${beat.actorLabel} は ${beat.actionName} を起こした。`,
-            ...beat.outcomes,
-          ]),
-          ...narrationView.events.map((event) => event.summary),
-        ]
-      : [];
-    narrative = {
-      turn: next.turn,
-      narrator: [
-        `第${next.turn}ターン — ${place}。`,
-        ...fallbackFacts,
-      ],
-      speeches: permittedSpeakerLabels.map((speaker) => ({
-        speaker,
-        text: "…",
-      })),
+    // Public log must stay narrator-shaped. Never dump engine event.summary or
+    // raw action outcomes into the user-visible log.
+    const fallbackDrama = {
+      phase: dramaPhase,
+      repeatedActionA: dramaBefore.repeatedActionA,
+      repeatedActionB: dramaBefore.repeatedActionB,
+      environmentBeatDue: environmentBeatCommitted,
+      progressionHint: dramaProgressionHint({
+        phase: dramaPhase,
+        turn: next.turn,
+        turnLimit: next.turnLimit,
+        repeatedActionA: dramaBefore.repeatedActionA,
+        repeatedActionB: dramaBefore.repeatedActionB,
+        lastActionSignatureA: dramaBefore.lastActionSignatureA,
+        lastActionSignatureB: dramaBefore.lastActionSignatureB,
+        recentBeatFingerprints: dramaBefore.recentBeatFingerprints,
+        turnsSinceLocationChange: dramaBefore.turnsSinceLocationChange,
+      }),
     };
+    narrative = narrationView
+      ? composeNarratorTurn({
+          view: narrationView,
+          drama: fallbackDrama,
+          recentNarration,
+        })
+      : {
+          turn: next.turn,
+          narrator: [
+            `${next.situation.scene}で、対峙が続く。`,
+            "語りは途切れたが、場の緊張だけが残る。",
+          ],
+          speeches: permittedSpeakerLabels.map((speaker) => ({
+            speaker,
+            text: "…",
+          })),
+        };
     emit({
       type: "narrator",
       lines: narrative.narrator.map((line) =>
@@ -1719,14 +1796,35 @@ async function advanceTurnWithLease(input: {
       return normalized && !recentNarrationFingerprints.has(normalized);
     })
     .slice(0, 4);
-  if (narrative.narrator.length < 2) {
+  if (narrative.narrator.length < 2 && narrationView) {
+    // Pad only through the narrator composer — never with engine telemetry.
+    const composed = composeNarratorTurn({
+      view: narrationView,
+      drama: {
+        phase: dramaPhase,
+        repeatedActionA: dramaBefore.repeatedActionA,
+        repeatedActionB: dramaBefore.repeatedActionB,
+        environmentBeatDue: environmentBeatCommitted,
+        progressionHint: dramaProgressionHint({
+          phase: dramaPhase,
+          turn: next.turn,
+          turnLimit: next.turnLimit,
+          repeatedActionA: dramaBefore.repeatedActionA,
+          repeatedActionB: dramaBefore.repeatedActionB,
+          lastActionSignatureA: dramaBefore.lastActionSignatureA,
+          lastActionSignatureB: dramaBefore.lastActionSignatureB,
+          recentBeatFingerprints: dramaBefore.recentBeatFingerprints,
+          turnsSinceLocationChange: dramaBefore.turnsSinceLocationChange,
+        }),
+      },
+      recentNarration,
+    });
     narrative.narrator = [
       ...narrative.narrator,
-      ...(narrationView?.actionBeats ?? []).flatMap((beat) => [
-        `${beat.actorLabel} は ${beat.actionName} を起こした。`,
-        ...beat.outcomes,
-      ]),
-    ].filter((line, index, lines) => lines.indexOf(line) === index).slice(0, 4);
+      ...composed.narrator,
+    ]
+      .filter((line, index, lines) => lines.indexOf(line) === index)
+      .slice(0, 4);
   }
   narrative.speeches = replaceRepeatedPublicSpeeches({
     narrative,
