@@ -39,6 +39,27 @@ describe("public battle semantic projection", () => {
       turnLimit: 20,
       prologuePending: false,
     });
+    state.perceptionRegistryA = {
+      schemaVersion: 1,
+      observerSide: "a",
+      nextContactSequence: 2,
+      contacts: [{
+        contactId: "contact.a.1",
+        currentAccess: "trace",
+        identityKnowledge: "unknown",
+        identifiedRef: null,
+        perceivedAs: "暗がりの人影",
+        salience: "prominent",
+        lastObservedTurn: 0,
+        sourceSet: [{ kind: "entity", entityId: "hidden.enemy.1" }],
+      }],
+    };
+    state.perceptionRegistryB = {
+      schemaVersion: 1,
+      observerSide: "b",
+      nextContactSequence: 1,
+      contacts: [],
+    };
     const publicState = toBattlePublic(state, sideA, null, sideB);
     assert.equal(
       publicState.semanticState?.snapshot.entities["character.a"]?.label,
@@ -48,6 +69,8 @@ describe("public battle semantic projection", () => {
     assert.equal(json.includes("privateMemory"), false);
     assert.equal(json.includes("parameters"), false);
     assert.equal(json.includes("coefficients"), false);
+    assert.equal(json.includes("perceptionRegistry"), false);
+    assert.equal(json.includes("hidden.enemy.1"), false);
   });
 
   it("centers settled ratings independently for each visible track", () => {

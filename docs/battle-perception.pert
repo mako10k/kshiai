@@ -24,6 +24,7 @@ milestone DESIGN_READY:
 
 milestone SCHEMA_READY:
   title "Perception frame and private contact-ledger schemas ready"
+  state reached
 
 milestone PROMPT_STRATEGY_READY:
   title "Combined or split perception prompt topology selected from evidence"
@@ -74,6 +75,7 @@ task T_SCHEMA DESIGN_READY -> SCHEMA_READY:
     character-frame and ephemeral narration-view schemas. Keep unknown canonical
     source mappings out of character-facing DTOs. Add schema and boundary tests.
   duration 2d
+  status done
   requires:
     DEV 1
 

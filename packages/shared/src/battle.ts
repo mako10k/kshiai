@@ -12,6 +12,12 @@ import {
   TurnSemanticPatchSchema,
 } from "./semantic-state.js";
 import { DramaStateSchema } from "./drama.js";
+import {
+  CharacterPerceptionFrameASchema,
+  CharacterPerceptionFrameBSchema,
+  ObserverContactRegistryASchema,
+  ObserverContactRegistryBSchema,
+} from "./perception.js";
 
 export const BattleStatusSchema = z.enum([
   "active",
@@ -440,6 +446,12 @@ export const BattleStateSchema = z.object({
   observationStateA: SemanticObservationStateSchema.optional(),
   observationStateB: SemanticObservationStateSchema.optional(),
   observationStatePublic: SemanticObservationStateSchema.optional(),
+  /** Latest bounded observer-relative frame for each isolated character agent. */
+  perceptionFrameA: CharacterPerceptionFrameASchema.optional(),
+  perceptionFrameB: CharacterPerceptionFrameBSchema.optional(),
+  /** Server-private current contact continuity; never copied to BattlePublic. */
+  perceptionRegistryA: ObserverContactRegistryASchema.optional(),
+  perceptionRegistryB: ObserverContactRegistryBSchema.optional(),
   /** Only the most recent semantic transition is retained. */
   latestSemanticTransition: z.object({
     turn: z.number().int().nonnegative(),
@@ -576,6 +588,18 @@ export const BattleStateSchema = z.object({
         code: z.ZodIssueCode.custom,
         path: [field, "snapshot", "revision"],
         message: "observation revision must match semantic state",
+      });
+    }
+  }
+  for (const [field, frame] of [
+    ["perceptionFrameA", state.perceptionFrameA],
+    ["perceptionFrameB", state.perceptionFrameB],
+  ] as const) {
+    if (frame && frame.revision !== revision) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: [field, "revision"],
+        message: "perception frame revision must match semantic state",
       });
     }
   }

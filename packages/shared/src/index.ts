@@ -12,6 +12,7 @@ export * from "./supervisor.js";
 export * from "./narration-perspective.js";
 export * from "./narration-style.js";
 export * from "./semantic-state.js";
+export * from "./perception.js";
 export * from "./balance.js";
 export * from "./balance-observe.js";
 export * from "./drama.js";

@@ -1,9 +1,13 @@
 # Observer-relative battle perception
 
-Status: designed, implementation not started
+Status: shared schemas complete; runtime integration not started
 Last updated: 2026-08-04
 Architecture decisions: `D23` through `D27` in [`design.llmthink.dsl`](design.llmthink.dsl)
 Implementation plan: [`battle-perception.pert`](battle-perception.pert)
+
+Implemented slice: `T_SCHEMA` defines strict shared contracts and boundary tests
+for server-only evidence, character frames, bounded private contact registries,
+qualitative effect/reserve cues, and ephemeral narration views.
 
 ## 1. Purpose
 
