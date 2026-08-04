@@ -1,6 +1,6 @@
 # Observer-relative battle perception
 
-Status: shared schemas complete; runtime integration not started
+Status: schemas and prompt strategy complete; runtime integration not started
 Last updated: 2026-08-04
 Architecture decisions: `D23` through `D27` in [`design.llmthink.dsl`](design.llmthink.dsl)
 Implementation plan: [`battle-perception.pert`](battle-perception.pert)
@@ -8,6 +8,16 @@ Implementation plan: [`battle-perception.pert`](battle-perception.pert)
 Implemented slice: `T_SCHEMA` defines strict shared contracts and boundary tests
 for server-only evidence, character frames, bounded private contact registries,
 qualitative effect/reserve cues, and ephemeral narration views.
+
+Completed slice: `T_PROMPT_STRATEGY` has a versioned fixture matrix, independent
+world/sensory scoring, billed-call evaluation CLI, and exact provider/model
+decision registry. `mock/mock-v1` and `openai/gpt-4.1-mini` are reviewed as
+combined. Evaluated XAI models remain unqualified, so they receive no inferred
+topology. See [`perception-prompt-evaluation.md`](perception-prompt-evaluation.md).
+
+Next slice: `T_EVIDENCE` integrates mechanical qualitative evidence and the
+independently validated combined sensory section only for an exact reviewed
+provider/model decision.
 
 ## 1. Purpose
 

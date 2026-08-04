@@ -1,5 +1,5 @@
 project KSHIAI_BATTLE_PERCEPTION:
-  version 2
+  version 5
   title "Observer-relative battle perception and qualitative self feedback"
   description |
     Extend the accepted semantic world with explicit self anchoring,
@@ -28,6 +28,7 @@ milestone SCHEMA_READY:
 
 milestone PROMPT_STRATEGY_READY:
   title "Combined or split perception prompt topology selected from evidence"
+  state reached
 
 milestone EVIDENCE_READY:
   title "Mechanical and semantic perception evidence contracts ready"
@@ -88,6 +89,7 @@ task T_PROMPT_STRATEGY SCHEMA_READY -> PROMPT_STRATEGY_READY:
     latency, and token cost. Record the accepted topology per provider and model;
     do not introduce per-turn adaptive repair calls.
   duration 2d
+  status done
   requires:
     DEV 1
 
@@ -181,3 +183,16 @@ task T_ACCEPT COMPATIBILITY_READY -> PERCEPTION_ACCEPTED:
   duration 1d
   requires:
     DEV 1
+
+work_event WE-f96aec252fab865d8adfdf0ead086ff9c57975b3aa61d31a807b32c0272c9c10:
+  model 1
+  task T_PROMPT_STRATEGY
+  kind start
+  occurred_at 2026-08-04T17:56:22+09:00
+  planned_value 2d
+
+work_event WE-2d318cb7e1e679e632f5fcdf72f3bdc6caca387df4b06a053b1b94ca4358227c:
+  model 1
+  task T_PROMPT_STRATEGY
+  kind finish
+  occurred_at 2026-08-04T18:28:19+09:00

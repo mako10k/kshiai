@@ -51,6 +51,7 @@ import type {
 } from "./types.js";
 import { newId } from "../id.js";
 import { MockLlmProvider } from "./mock.js";
+import { WORLD_RECONCILIATION_SYSTEM_PROMPT } from "./perception-prompt-strategy.js";
 
 function parseGeneratedSkill(raw: unknown) {
   if (!raw || typeof raw !== "object") return null;
@@ -970,32 +971,7 @@ Do not invent a sudden environmental event or dramatic field change here. A sepa
     if (!this.client) return this.fallback.reconcileTurnSemanticState(input);
     try {
       const data = (await this.chatJson(
-        `Reconcile one already-resolved fictional confrontation turn into observable semantic-state changes.
-The deterministic engine has already committed actions, events, resource changes, incapacity, and winner state. Never invent or alter those mechanics.
-Return JSON only:
-{
-  "patch": {
-    "operations": [
-      { "op": "add"|"replace"|"remove", "path": JSON_POINTER, "value"?: JSON_VALUE }
-    ]
-  },
-  "nextSituation"?: {
-    "notes"?: string,
-    "tags"?: string[],
-    "coefficients"?: { [allowed_key: string]: number }
-  }
-}
-Patch only /scene/summary, /scene/facts leaves, or /entities entries and their label/location/active/facts/visibleTo.
-Use existing entity ids and fact keys whenever possible. Create a stable ASCII entity id only for a newly created persistent object or effect.
-Picking something up changes its location to {"type":"held","side":"a"|"b"}; do not delete it.
-Broken, consumed, destroyed, or removed entities remain tombstoned through active/location/facts. Create debris or other persistent results as entities when materially relevant.
-Character-visible changes belong under /entities/character.a/facts or /entities/character.b/facts. Never write private thoughts.
-Entities are visible to both sides by default. Set optional visibleTo to ["a"] or ["b"] only when the entity as a whole is not observable by the other side; the deterministic engine performs projection from this field and never infers visibility from prose. Required character entities always remain visible to both.
-Do not patch schemaVersion, revision, createdTurn, updatedTurn, combat parameters, action legality, winner state, or private agent state.
-If no durable observable change occurred, return an empty operations array.
-When environmentBeatDue is true, prefer one grounded, non-mechanical durable change when plausible: movement to a different established area, displacement or use of an existing object, weather/crowd/terrain evolution, or a new persistent byproduct. Keep it symmetrical in opportunity and never fabricate damage, healing, or a combat bonus. When false, only record changes directly supported by committed actions/events.
-Match dramaPhase: opening establishes positions, rising changes leverage or surroundings, climax favors irreversible commitment and visible consequence without overriding mechanics.
-nextSituation coefficients affect only the following turn and must remain between 0.25 and 2.5.`,
+        WORLD_RECONCILIATION_SYSTEM_PROMPT,
         JSON.stringify(input),
         {
           tier: "fast",

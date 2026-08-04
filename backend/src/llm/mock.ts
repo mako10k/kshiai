@@ -33,6 +33,7 @@ import { makeUniqueCharacterName } from "../character-name-uniqueness.js";
 
 export class MockLlmProvider implements LlmProvider {
   readonly name = "mock";
+  readonly models = { engine: "mock-v1", fast: "mock-v1" };
 
   async generateCharacter(input: GenerateCharacterInput): Promise<GenerateCharacterResult> {
     const prompt = input.prompt;
