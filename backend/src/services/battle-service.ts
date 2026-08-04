@@ -1282,28 +1282,28 @@ function narrationIdentifierCatalog(input: {
   });
 }
 
+/**
+ * Drop exact speech repeats. Do not invent replacement lines server-side —
+ * public dialogue must come from the narrator (or be omitted), never from
+ * stock stage-direction templates.
+ */
 function replaceRepeatedPublicSpeeches(input: {
   narrative: { speeches: Array<{ speaker: string; text: string }> };
   recentSpeeches: Array<{ speaker: string; text: string }>;
   turn: number;
 }) {
-  const previous = new Map(
-    input.recentSpeeches.map((line) => [
-      `${line.speaker}:${normalizePublicText(line.text)}`,
-      true,
-    ]),
+  const previous = new Set(
+    input.recentSpeeches.map((line) =>
+      `${line.speaker}:${normalizePublicText(line.text)}`
+    ),
   );
-  return input.narrative.speeches.map((line, index) => {
-    const duplicate = previous.has(
-      `${line.speaker}:${normalizePublicText(line.text)}`,
-    );
-    if (!duplicate || !normalizePublicText(line.text)) return line;
-    return {
-      ...line,
-      text: (input.turn + index) % 2 === 0
-        ? "（言葉を飲み、動きで応じる）"
-        : "（次の変化へ意識を向ける）",
-    };
+  const seenThisTurn = new Set<string>();
+  return input.narrative.speeches.filter((line) => {
+    const key = `${line.speaker}:${normalizePublicText(line.text)}`;
+    if (!normalizePublicText(line.text)) return false;
+    if (previous.has(key) || seenThisTurn.has(key)) return false;
+    seenThisTurn.add(key);
+    return true;
   });
 }
 

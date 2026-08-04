@@ -1333,9 +1333,11 @@ Do not repeat or closely paraphrase recentNarration or either character's recent
 Respect drama.phase: opening establishes positioning, rising changes leverage, climax makes commitment and consequence feel decisive.
 When drama.environmentBeatDue is true, incorporate only an environment change already present in view. Do not invent mechanical damage or bonuses.
 If view marks a finishing blow (とどめ / 決め手 / 戦闘不能), center the turn on that decisive action.
-YOU write public character lines in speeches (not a separate agent). Include exactly the currently permitted speaker labels: ${JSON.stringify(requiredSpeakers)}.
-- spoken short line without 「」, OR quiet reaction "…", "（佇んでいる）", etc.
-Do not add a speech or reaction for an inaccessible counterpart. speaker MUST be one of the permitted labels exactly.
+YOU write public character lines in speeches (not a separate agent).
+Permitted speaker labels only: ${JSON.stringify(requiredSpeakers)}.
+Prefer fresh, character-specific spoken lines. Do not reuse or closely paraphrase recentSpeeches.
+If a character has nothing new to say this turn, omit that speaker entirely — do not invent stock stage directions such as "言葉を飲み" or "次の変化へ意識を向ける".
+Do not add a speech for an inaccessible counterpart. speaker MUST be one of the permitted labels exactly.
 JSON: { "turn": number, "focus": "${focus}", "narrator": string[], "speeches": [ { "speaker": string, "text": string } ] }
 Do not mention numeric HP/MP/ATK values.`,
         JSON.stringify({
@@ -1387,24 +1389,20 @@ Do not mention numeric HP/MP/ATK values.`,
   ): Array<{ speaker: string; text: string }> {
     const allowed = new Set(requiredSpeakers);
     const out: Array<{ speaker: string; text: string }> = [];
+    const seenSpeakers = new Set<string>();
     for (const row of raw ?? []) {
       const speaker = String(row.speaker ?? "").trim();
-      if (!allowed.has(speaker)) continue;
-      const text = coerceCharacterSpeech(row.text, {
-        foeName: speaker === sideAName ? sideBName : sideAName,
-      });
-      out.push({ speaker, text });
-    }
-    // Ensure both sides appear once when model omits one.
-    for (const name of requiredSpeakers) {
-      if (!out.some((s) => s.speaker === name)) {
-        out.push({
-          speaker: name,
-          text: coerceCharacterSpeech(undefined, {
-            foeName: name === sideAName ? sideBName : sideAName,
-          }),
-        });
-      }
+      if (!allowed.has(speaker) || seenSpeakers.has(speaker)) continue;
+      // Keep only non-empty text the narrator actually produced.
+      // Do not synthesize stock stage directions for missing speakers —
+      // public lines must remain narrator-authored.
+      const body = String(row.text ?? "")
+        .replace(/^「/, "")
+        .replace(/」$/, "")
+        .trim();
+      if (!body) continue;
+      seenSpeakers.add(speaker);
+      out.push({ speaker, text: body });
     }
     // Prefer A then B order for stable UI.
     out.sort((a, b) => {

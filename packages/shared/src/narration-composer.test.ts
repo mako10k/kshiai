@@ -87,7 +87,8 @@ describe("composeNarratorTurn", () => {
       false,
     );
     assert.ok(composed.narrator.some((line) => line.includes("斬撃")));
-    assert.ok(composed.speeches.length >= 1);
+    // Last-resort composition omits speeches rather than inventing stock lines.
+    assert.deepEqual(composed.speeches, []);
     const joined = composed.narrator.join("\n");
     assert.equal(joined.includes("アオ の 斬撃 が クロ を捉えた。"), false);
   });

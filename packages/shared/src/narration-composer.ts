@@ -91,34 +91,15 @@ export function composeNarratorTurn(input: {
     );
   }
 
-  const speeches = permittedSpeakers(view).map((speaker, index) => ({
-    speaker,
-    text: index === 0
-      ? (phase === "climax" ? "ここで決める。" : "まだ、動ける。")
-      : (phase === "climax" ? "終わらせない。" : "その流れは読んだ。"),
-  }));
+  // Last-resort path may omit speeches rather than invent repeating stock lines.
+  // Public dialogue should prefer silence over server-authored filler.
+  const speeches: Array<{ speaker: string; text: string }> = [];
 
   return {
     turn: view.turn,
     narrator,
     speeches,
   };
-}
-
-function permittedSpeakers(view: NarrationTurnView): string[] {
-  const a = view.participantLabels.a;
-  const b = view.participantLabels.b;
-  if (view.perception.mode === "self") {
-    return view.perception.frame.counterpart.currentAccess === "none"
-      ? [a]
-      : [a, b];
-  }
-  if (view.perception.mode === "opponent") {
-    return view.perception.frame.counterpart.currentAccess === "none"
-      ? [b]
-      : [a, b];
-  }
-  return [a, b];
 }
 
 function cleanDescription(description: string): string {
