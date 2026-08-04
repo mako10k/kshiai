@@ -528,8 +528,9 @@ decision D25 based_on PR25, EV25, D2, D13, D14, D20, D23, D24:
     then derives the matching narration view and performs the existing narrator
     call. No narrator or agent may mutate evidence.
     Before selecting this combined topology for a provider/model, fixtures compare
-    it with two separated prompts: one world-reconciliation call followed by one
-    sensory-evidence call over committed state. Compare schema-valid rate, world-
+    it with two separated prompts run in parallel from the same committed actions,
+    events, pre-turn world, and engine evidence. Neither separated call consumes
+    the other LLM response. Compare schema-valid rate, world-
     patch correctness, sensory coverage, attribution errors, identity leakage,
     latency, and token cost. If either structured responsibility falls below its
     accepted quality floor, use the separated topology despite its extra call.
@@ -538,6 +539,10 @@ decision D25 based_on PR25, EV25, D2, D13, D14, D20, D23, D24:
     The two response sections remain independently validatable in either topology,
     so invalid sensory evidence cannot roll back a valid world patch and a failed
     sensory call falls back to engine evidence without another attempt.
+    This topology evaluation never selects or promotes a provider. XAI remains the
+    primary provider and OpenAI remains its configured operational fallback. A
+    failed XAI prompt evaluation is a blocking diagnosis for this slice, not
+    authority to satisfy the local quality gate with the fallback provider.
 
 problem PR26:
   |

@@ -11,6 +11,7 @@ import {
 
 export type ReviewedPerceptionTopologyDecision = {
   provider: string;
+  providerRole: "primary" | "fallback" | "development";
   model: string;
   topology: PerceptionPromptTopology;
   fixtureVersion: string;
@@ -22,6 +23,11 @@ export type ReviewedPerceptionTopologyDecision = {
   evidence: string;
 };
 
+export const PERCEPTION_PROVIDER_ROLES = {
+  primary: "xai",
+  fallback: "openai",
+} as const;
+
 const mockReferenceEvaluation = buildMockReferenceEvaluation();
 
 /**
@@ -31,6 +37,7 @@ const mockReferenceEvaluation = buildMockReferenceEvaluation();
 export const REVIEWED_PERCEPTION_TOPOLOGIES:
   readonly ReviewedPerceptionTopologyDecision[] = [{
     provider: "mock",
+    providerRole: "development",
     model: "mock-v1",
     topology: "combined",
     fixtureVersion: PERCEPTION_PROMPT_FIXTURE_VERSION,
@@ -41,7 +48,50 @@ export const REVIEWED_PERCEPTION_TOPOLOGIES:
     reason: "combined_meets_quality_floor",
     evidence: "deterministic-reference-fixtures",
   }, {
+    provider: "xai",
+    providerRole: "primary",
+    model: "grok-4-fast-non-reasoning",
+    topology: "combined",
+    fixtureVersion: "perception-prompts-v10",
+    reviewedAt: "2026-08-04T09:59:07.656Z",
+    sampleCountPerTopology: 9,
+    combined: {
+      fixtureVersion: "perception-prompts-v10",
+      topology: "combined",
+      sampleCount: 9,
+      worldSchemaValidRate: 1,
+      sensorySchemaValidRate: 1,
+      worldPatchCorrectness: 1,
+      sensoryCoverage: 1,
+      attributionErrorRate: 0,
+      identityLeakageRate: 0,
+      meanLatencyMs: 3431.8888888888887,
+      p95LatencyMs: 4750,
+      measuredTokenSamples: 9,
+      meanTotalTokens: 3928.1111111111113,
+      totalTokens: 35353,
+    },
+    split: {
+      fixtureVersion: "perception-prompts-v10",
+      topology: "split",
+      sampleCount: 9,
+      worldSchemaValidRate: 1,
+      sensorySchemaValidRate: 1,
+      worldPatchCorrectness: 1,
+      sensoryCoverage: 1,
+      attributionErrorRate: 0,
+      identityLeakageRate: 0,
+      meanLatencyMs: 4040.3333333333335,
+      p95LatencyMs: 5542,
+      measuredTokenSamples: 9,
+      meanTotalTokens: 5851.222222222223,
+      totalTokens: 52661,
+    },
+    reason: "combined_meets_quality_floor",
+    evidence: "docs/evidence/perception-xai-grok-4-fast-non-reasoning-v10.json sha256:739eb515c822abc5f9f720f12a2745f4774f42faaba8f0b235277b83540cd0e1",
+  }, {
     provider: "openai",
+    providerRole: "fallback",
     model: "gpt-4.1-mini",
     topology: "combined",
     fixtureVersion: "perception-prompts-v8",

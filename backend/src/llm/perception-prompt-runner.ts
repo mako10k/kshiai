@@ -1,12 +1,11 @@
 import {
-  TurnSemanticPatchSchema,
-  applyTurnSemanticPatch,
-} from "@kshiai/shared";
-import {
+  COMBINED_PERCEPTION_RESPONSE_FORMAT,
   COMBINED_PERCEPTION_SYSTEM_PROMPT,
   PERCEPTION_PROMPT_FIXTURE_VERSION,
   PERCEPTION_PROMPT_FIXTURES,
+  SENSORY_PERCEPTION_RESPONSE_FORMAT,
   SENSORY_EVIDENCE_SYSTEM_PROMPT,
+  WORLD_PERCEPTION_RESPONSE_FORMAT,
   WORLD_RECONCILIATION_SYSTEM_PROMPT,
   aggregatePerceptionPromptScores,
   promptUserPayload,
@@ -17,6 +16,7 @@ import {
   type PerceptionPromptAggregate,
   type PerceptionPromptCandidate,
   type PerceptionPromptRecommendation,
+  type PerceptionPromptResponseFormat,
   type PerceptionPromptSampleScore,
   type PerceptionPromptTopology,
   type PromptCallMeasurement,
@@ -32,6 +32,7 @@ export type PerceptionPromptEvaluationClient = {
     system: string;
     user: string;
     label: string;
+    responseFormat: PerceptionPromptResponseFormat;
   }): Promise<JsonPromptCompletion>;
 };
 
@@ -135,6 +136,7 @@ async function runCandidate(input: {
       system: COMBINED_PERCEPTION_SYSTEM_PROMPT,
       user: promptUserPayload(input.fixture.input),
       label: `${labelBase}/combined`,
+      responseFormat: COMBINED_PERCEPTION_RESPONSE_FORMAT,
       onError: (message) => input.onError("combined", message),
     });
     return {
@@ -145,49 +147,31 @@ async function runCandidate(input: {
     };
   }
 
-  const world = await safeComplete({
-    client: input.client,
-    system: WORLD_RECONCILIATION_SYSTEM_PROMPT,
-    user: worldPromptUserPayload(input.fixture.input),
-    label: `${labelBase}/world`,
-    onError: (message) => input.onError("world", message),
-  });
-  const rawWorld = asRecord(world.data);
-  const patch = TurnSemanticPatchSchema.safeParse({
-    ...asRecord(rawWorld.patch),
-    baseRevision: input.fixture.input.before.revision,
-    turn: input.fixture.input.turn,
-    sourceEventIds: input.fixture.input.events.flatMap((event) =>
-      event.id ? [event.id] : []
-    ),
-  });
-  const applied = patch.success
-    ? applyTurnSemanticPatch({
-        state: input.fixture.input.before,
-        patch: patch.data,
-        turn: input.fixture.input.turn,
-        allowedSourceEventIds: new Set(
-          input.fixture.input.events.flatMap((event) => event.id ? [event.id] : []),
-        ),
-      })
-    : null;
-  const committedState = applied?.ok
-    ? applied.state
-    : input.fixture.input.before;
-  const sensory = await safeComplete({
-    client: input.client,
-    system: SENSORY_EVIDENCE_SYSTEM_PROMPT,
-    user: sensoryPromptUserPayload({
-      turn: input.fixture.input.turn,
-      committedState,
-      actions: input.fixture.input.actions,
-      events: input.fixture.input.events,
-      characters: input.fixture.input.characters,
-      mechanicalEvidence: input.fixture.input.mechanicalEvidence,
+  const [world, sensory] = await Promise.all([
+    safeComplete({
+      client: input.client,
+      system: WORLD_RECONCILIATION_SYSTEM_PROMPT,
+      user: worldPromptUserPayload(input.fixture.input),
+      label: `${labelBase}/world`,
+      responseFormat: WORLD_PERCEPTION_RESPONSE_FORMAT,
+      onError: (message) => input.onError("world", message),
     }),
-    label: `${labelBase}/sensory`,
-    onError: (message) => input.onError("sensory", message),
-  });
+    safeComplete({
+      client: input.client,
+      system: SENSORY_EVIDENCE_SYSTEM_PROMPT,
+      user: sensoryPromptUserPayload({
+        turn: input.fixture.input.turn,
+        worldBefore: input.fixture.input.before,
+        actions: input.fixture.input.actions,
+        events: input.fixture.input.events,
+        characters: input.fixture.input.characters,
+        mechanicalEvidence: input.fixture.input.mechanicalEvidence,
+      }),
+      label: `${labelBase}/sensory`,
+      responseFormat: SENSORY_PERCEPTION_RESPONSE_FORMAT,
+      onError: (message) => input.onError("sensory", message),
+    }),
+  ]);
   return {
     fixtureId: input.fixture.id,
     topology: "split",
@@ -202,6 +186,7 @@ async function safeComplete(input: {
   system: string;
   user: string;
   label: string;
+  responseFormat: PerceptionPromptResponseFormat;
   onError: (message: string) => void;
 }): Promise<JsonPromptCompletion> {
   const started = Date.now();
@@ -210,6 +195,7 @@ async function safeComplete(input: {
       system: input.system,
       user: input.user,
       label: input.label,
+      responseFormat: input.responseFormat,
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
@@ -224,10 +210,4 @@ async function safeComplete(input: {
       },
     };
   }
-}
-
-function asRecord(value: unknown): Record<string, unknown> {
-  return value && typeof value === "object" && !Array.isArray(value)
-    ? value as Record<string, unknown>
-    : {};
 }

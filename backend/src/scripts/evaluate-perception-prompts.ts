@@ -42,7 +42,7 @@ async function main(): Promise<void> {
           { role: "user", content: input.user },
         ],
         temperature: 0.35,
-        response_format: { type: "json_object" },
+        response_format: input.responseFormat,
       });
       const content = response.choices[0]?.message?.content ?? "{}";
       return {

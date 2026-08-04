@@ -1,5 +1,5 @@
 project KSHIAI_BATTLE_PERCEPTION:
-  version 5
+  version 6
   title "Observer-relative battle perception and qualitative self feedback"
   description |
     Extend the accepted semantic world with explicit self anchoring,
@@ -27,7 +27,7 @@ milestone SCHEMA_READY:
   state reached
 
 milestone PROMPT_STRATEGY_READY:
-  title "Combined or split perception prompt topology selected from evidence"
+  title "XAI primary combined or parallel split topology selected from evidence"
   state reached
 
 milestone EVIDENCE_READY:
@@ -83,11 +83,13 @@ task T_SCHEMA DESIGN_READY -> SCHEMA_READY:
 task T_PROMPT_STRATEGY SCHEMA_READY -> PROMPT_STRATEGY_READY:
   title "Evaluate combined versus separated world and sensory prompts"
   description |
-    Build fixed provider and model fixtures for one combined reconciler response
-    and for separate world-patch and sensory-evidence prompts. Measure schema-valid
-    rate, patch correctness, sensory coverage, attribution and identity errors,
-    latency, and token cost. Record the accepted topology per provider and model;
-    do not introduce per-turn adaptive repair calls.
+    Build fixed XAI model fixtures for one combined reconciler response and for
+    parallel independent world-patch and sensory-evidence prompts. Use native
+    strict structured output then measure schema-valid rate patch correctness
+    sensory coverage attribution and identity errors latency and token cost.
+    Record the accepted topology within the XAI primary provider. Provider
+    selection is out of scope and OpenAI fallback evidence cannot satisfy an XAI
+    failure. Do not introduce LLM-to-LLM dependency or adaptive repair calls.
   duration 2d
   status done
   requires:
@@ -97,7 +99,7 @@ task T_EVIDENCE PROMPT_STRATEGY_READY -> EVIDENCE_READY:
   title "Produce validated mechanical and semantic perception evidence"
   description |
     Derive authoritative mechanical evidence after resolution and extend the
-    selected prompt topology with a separately validated sensory-evidence
+    selected XAI prompt topology with a separately validated sensory-evidence
     section or call. Ground every source and target in committed action, event,
     and semantic references; reject invalid evidence independently from a valid
     world patch. Add provider, validation, and failure tests without prose-pattern

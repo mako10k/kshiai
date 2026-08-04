@@ -5,7 +5,9 @@ import {
   PerceptionEvidenceSetSchema,
 } from "@kshiai/shared";
 import {
+  COMBINED_PERCEPTION_RESPONSE_FORMAT,
   COMBINED_PERCEPTION_SYSTEM_PROMPT,
+  PERCEPTION_PROMPT_FIXTURE_VERSION,
   PERCEPTION_PROMPT_FIXTURES,
   SENSORY_EVIDENCE_SYSTEM_PROMPT,
   WORLD_RECONCILIATION_SYSTEM_PROMPT,
@@ -18,6 +20,7 @@ import {
   type PerceptionPromptAggregate,
 } from "./perception-prompt-strategy.js";
 import {
+  PERCEPTION_PROVIDER_ROLES,
   REVIEWED_PERCEPTION_TOPOLOGIES,
   reviewedPerceptionTopology,
 } from "./perception-topology.js";
@@ -45,6 +48,20 @@ describe("perception prompt strategy", () => {
     const fixtureInput = PERCEPTION_PROMPT_FIXTURES[0]!.input;
     assert.match(promptUserPayload(fixtureInput), /mechanicalEvidence/);
     assert.doesNotMatch(worldPromptUserPayload(fixtureInput), /mechanicalEvidence/);
+  });
+
+  it("constrains combined XAI output without a repair call", () => {
+    assert.equal(PERCEPTION_PROMPT_FIXTURE_VERSION, "perception-prompts-v10");
+    assert.equal(COMBINED_PERCEPTION_RESPONSE_FORMAT.type, "json_schema");
+    assert.equal(COMBINED_PERCEPTION_RESPONSE_FORMAT.json_schema.strict, true);
+    const definitions = COMBINED_PERCEPTION_RESPONSE_FORMAT.json_schema.schema
+      .$defs as Record<string, {
+        properties?: Record<string, { enum?: string[] }>;
+      }>;
+    const access = definitions.perceptionAccess?.properties;
+    assert.ok(access);
+    assert.deepEqual(access.direction?.enum?.includes("contact"), false);
+    assert.deepEqual(access.distance?.enum?.includes("contact"), true);
   });
 
   it("scores deterministic reference outputs perfectly for both topologies", () => {
@@ -159,18 +176,33 @@ describe("perception prompt strategy", () => {
   });
 
   it("requires an exact reviewed provider and model pair", () => {
-    assert.equal(REVIEWED_PERCEPTION_TOPOLOGIES.length, 2);
+    assert.deepEqual(PERCEPTION_PROVIDER_ROLES, {
+      primary: "xai",
+      fallback: "openai",
+    });
+    assert.equal(REVIEWED_PERCEPTION_TOPOLOGIES.length, 3);
     assert.equal(reviewedPerceptionTopology("mock", "mock-v1")?.topology, "combined");
-    const openai = reviewedPerceptionTopology("openai", "gpt-4.1-mini");
-    assert.equal(openai?.topology, "combined");
-    assert.equal(openai?.combined.worldPatchCorrectness, 1);
-    assert.equal(openai?.split.sensorySchemaValidRate, 8 / 9);
+    const xai = reviewedPerceptionTopology(
+      "xai",
+      "grok-4-fast-non-reasoning",
+    );
+    assert.equal(xai?.providerRole, "primary");
+    assert.equal(xai?.topology, "combined");
+    assert.equal(xai?.combined.worldPatchCorrectness, 1);
+    assert.equal(xai?.combined.sensorySchemaValidRate, 1);
+    const historicalOpenAi = REVIEWED_PERCEPTION_TOPOLOGIES.find(
+      (decision) => decision.provider === "openai",
+    );
+    assert.equal(historicalOpenAi?.providerRole, "fallback");
+    assert.equal(reviewedPerceptionTopology("openai", "gpt-4.1-mini"), null);
     assert.equal(reviewedPerceptionTopology("mock", "mock-v2"), null);
-    assert.equal(reviewedPerceptionTopology("openai", "gpt-4.1"), null);
+    assert.equal(reviewedPerceptionTopology("xai", "grok-4.5"), null);
   });
 
-  it("runs the fixed combined and split matrices without adaptive retries", async () => {
+  it("runs fixed combined and parallel split matrices without adaptive retries", async () => {
     let calls = 0;
+    let activeSplitCalls = 0;
+    let maximumParallelSplitCalls = 0;
     const report = await evaluatePerceptionPromptTopologies({
       provider: "fixture-provider",
       model: "fixture-model",
@@ -179,6 +211,18 @@ describe("perception prompt strategy", () => {
       client: {
         async completeJson(input) {
           calls += 1;
+          assert.equal(input.responseFormat.type, "json_schema");
+          assert.equal(input.responseFormat.json_schema.strict, true);
+          const isSplit = input.label.includes("/split/");
+          if (isSplit) {
+            activeSplitCalls += 1;
+            maximumParallelSplitCalls = Math.max(
+              maximumParallelSplitCalls,
+              activeSplitCalls,
+            );
+            await new Promise<void>((resolve) => setImmediate(resolve));
+            activeSplitCalls -= 1;
+          }
           const fixture = PERCEPTION_PROMPT_FIXTURES.find((item) =>
             input.label.includes(`/${item.id}/`)
           );
@@ -214,7 +258,8 @@ describe("perception prompt strategy", () => {
     assert.equal(report.combined.sampleCount, 9);
     assert.equal(report.split.sampleCount, 9);
     assert.equal(report.combined.meanLatencyMs, 5);
-    assert.equal(report.split.meanLatencyMs, 10);
+    assert.equal(report.split.meanLatencyMs, 5);
+    assert.equal(maximumParallelSplitCalls, 2);
     assert.equal(report.recommendation.topology, "combined");
     assert.deepEqual(report.callErrors, []);
     assert.equal(report.evaluatedAt, "2026-08-04T00:00:00.000Z");
@@ -225,7 +270,7 @@ function perfectAggregate(
   topology: "combined" | "split",
 ): PerceptionPromptAggregate {
   return {
-    fixtureVersion: "perception-prompts-v8",
+    fixtureVersion: PERCEPTION_PROMPT_FIXTURE_VERSION,
     topology,
     sampleCount: 9,
     worldSchemaValidRate: 1,

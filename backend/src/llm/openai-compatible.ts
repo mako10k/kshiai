@@ -51,7 +51,11 @@ import type {
 } from "./types.js";
 import { newId } from "../id.js";
 import { MockLlmProvider } from "./mock.js";
-import { WORLD_RECONCILIATION_SYSTEM_PROMPT } from "./perception-prompt-strategy.js";
+import {
+  WORLD_PERCEPTION_RESPONSE_FORMAT,
+  WORLD_RECONCILIATION_SYSTEM_PROMPT,
+  type PerceptionPromptResponseFormat,
+} from "./perception-prompt-strategy.js";
 
 function parseGeneratedSkill(raw: unknown) {
   if (!raw || typeof raw !== "object") return null;
@@ -116,6 +120,7 @@ type ChatOpts = {
   timeoutMs?: number;
   temperature?: number;
   label?: string;
+  responseFormat?: PerceptionPromptResponseFormat;
   /** Invoked with the cumulative assistant text while tokens stream in. */
   onText?: (fullText: string) => void;
 };
@@ -203,7 +208,7 @@ export class OpenAiCompatibleProvider implements LlmProvider {
             { role: "user", content: user },
           ],
           ...(this.supportsTemperature ? { temperature } : {}),
-          response_format: { type: "json_object" },
+          response_format: opts?.responseFormat ?? { type: "json_object" },
         },
         { signal: controller.signal, timeout: timeoutMs },
       );
@@ -978,6 +983,9 @@ Do not invent a sudden environmental event or dramatic field change here. A sepa
           label: "reconcileTurnSemanticState",
           timeoutMs: 14_000,
           temperature: 0.35,
+          responseFormat: this.name === "xai"
+            ? WORLD_PERCEPTION_RESPONSE_FORMAT
+            : undefined,
         },
       )) as Record<string, unknown>;
       const rawPatch = data.patch && typeof data.patch === "object"

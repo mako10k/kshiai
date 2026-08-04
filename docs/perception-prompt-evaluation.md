@@ -1,18 +1,33 @@
 # Perception prompt topology evaluation
 
-Status: v8 evaluation complete; reviewed and unqualified models recorded
-Fixture version: `perception-prompts-v8`
+Status: XAI primary topology reviewed; OpenAI remains fallback
+Fixture version: `perception-prompts-v10`
 Last updated: 2026-08-04
 
-## Purpose
+## Purpose and authority boundary
 
 Choose whether semantic world reconciliation and non-mechanical sensory evidence
-share one LLM call or use two responsibility-specific calls. This is a reviewed
-provider/model decision, not a per-turn runtime heuristic.
+share one call or use two responsibility-specific calls **within an already
+selected provider/model**. This evaluation never selects, promotes, or reorders
+providers. XAI is the primary provider and OpenAI is its operational fallback.
+An XAI evaluation failure blocks this perception slice for diagnosis; it does
+not authorize promotion of the fallback.
 
-The preferred topology remains `combined` when it meets every quality floor. A
-`split` topology is accepted only when combined fails a quality floor and split
-passes all floors. If neither passes, no topology is selected.
+The preferred XAI topology is `combined` when it meets every quality floor. If
+combined loses structured or semantic accuracy and split passes all floors, XAI
+uses split. The selection is reviewed configuration, not a per-turn retry.
+
+## XAI structured-output boundary
+
+The evaluator and XAI semantic reconciler use XAI's native strict JSON Schema
+response format. Direction and distance enums are constrained at generation
+time, so values such as `contact` cannot be placed in `direction`. This adds no
+repair call. The parsed result still passes the shared Zod schemas and semantic
+patch validator before use.
+
+XAI documents `response_format.type = "json_schema"` as the mechanism for
+schema-conforming structured output:
+<https://docs.x.ai/developers/model-capabilities/text/structured-outputs>.
 
 ## Fixed matrix
 
@@ -23,9 +38,10 @@ The versioned matrix contains three cases:
 3. a visible persistent object pickup requiring a correct world patch.
 
 Each topology is evaluated three times per fixture. This yields nine combined
-samples and nine split samples. Split has two sequential calls per sample, so a
-full provider/model evaluation makes 27 billed calls. There is no retry or
-adaptive repair call.
+samples and nine split samples. Split has two independent calls per sample:
+world and sensory receive the same committed actions/events and the pre-turn
+world, and run in parallel. Neither consumes the other LLM response. A complete
+evaluation therefore makes 27 billed calls, with no retry or adaptive repair.
 
 ## Metrics and floors
 
@@ -38,50 +54,50 @@ adaptive repair call.
 | Attribution error rate | `<= 0.02` |
 | Identity leakage rate | `0` |
 
-Latency p95/mean and token totals/means are recorded but cannot override a
-quality failure. Combined response sections are scored independently, so invalid
-sensory evidence does not make a valid world patch invalid.
+Latency p95/mean and token totals/means cannot override a quality failure.
+Combined response sections are scored independently, so invalid sensory
+evidence does not make a valid world patch invalid.
 
-## Running an evaluation
+## Running an XAI evaluation
 
 The command requires an explicit provider and `--execute` acknowledgement:
 
 ```bash
 npm run eval:perception-prompts --workspace=backend -- \
-  --provider openai \
-  --model gpt-4.1-mini \
+  --provider xai \
+  --model grok-4-fast-non-reasoning \
   --repetitions 3 \
-  --output docs/evidence/perception-openai-gpt-4.1-mini.json \
+  --output docs/evidence/perception-xai-grok-4-fast-non-reasoning-v10.json \
   --execute
 ```
 
-The output file is created with exclusive-create semantics and is never used to
-rewrite configuration automatically. Review the report, then add an exact
-provider/model entry to `REVIEWED_PERCEPTION_TOPOLOGIES` in code. Unknown model
-revisions do not inherit a decision from another model or provider.
+The output file is created exclusively and never rewrites configuration. An
+exact provider/model decision is added only after review. Unknown revisions do
+not inherit another model's decision.
 
 ## Current reviewed decisions
 
-| Provider | Model | Topology | Evidence |
-|---|---|---|---|
-| `mock` | `mock-v1` | `combined` | 9 deterministic reference samples per topology; all quality metrics pass |
-| `openai` | `gpt-4.1-mini` | `combined` | v8: combined 9/9 passes every quality floor; split schema, world, and coverage each `0.8889` |
+| Role | Provider | Model | Current topology | Evidence |
+|---|---|---|---|---|
+| Primary | `xai` | `grok-4-fast-non-reasoning` | `combined` | v10 combined and parallel split both passed 9/9; combined uses fewer calls and tokens |
+| Fallback | `openai` | `gpt-4.1-mini` | historical v8 `combined` | retained as fallback evidence; not a current-v10 XAI substitute |
+| Development | `mock` | `mock-v1` | `combined` | deterministic reference samples pass |
 
-The checked-in OpenAI report is
-[`evidence/perception-openai-gpt-4.1-mini-v8.json`](evidence/perception-openai-gpt-4.1-mini-v8.json)
+The accepted XAI report is
+[`evidence/perception-xai-grok-4-fast-non-reasoning-v10.json`](evidence/perception-xai-grok-4-fast-non-reasoning-v10.json)
 with SHA-256
-`c6212fb333ee44fced7cd6f6f6236495286d3c1df695b84e9f33516aa1decb05`.
-Combined averaged `6112.89 ms` and `2351.22` tokens; split averaged
-`10565.78 ms` and `2983.11` tokens.
+`739eb515c822abc5f9f720f12a2745f4774f42faaba8f0b235277b83540cd0e1`.
+Both topologies achieved schema validity, patch correctness, sensory coverage,
+attribution accuracy, and identity containment of `1.0`. Combined averaged
+`3431.89 ms`, p95 `4750 ms`, and `3928.11` tokens. Parallel split averaged
+`4040.33 ms`, p95 `5542 ms`, and `5851.22` tokens.
 
-`xai/grok-4-fast-non-reasoning` and `xai/grok-4.5` remain unreviewed: the fast
-model's formal v8 run left combined sensory schema/coverage at `0.7778`; split
-reached `0.8889` but also exceeded the attribution-error floor at `0.03125`.
-The engine model repeatedly exceeded the 30-second diagnostic timeout. The XAI
-v8 report is
-[`evidence/perception-xai-grok-4-fast-non-reasoning-v8.json`](evidence/perception-xai-grok-4-fast-non-reasoning-v8.json)
-with SHA-256
-`bc2536024338a851d3243f8595ea8257eefcc01c7fae5c8cb5a097e14b7e336f`.
-Unknown or failed models do not inherit the OpenAI decision. Runtime semantic
-reconciliation remains world-only until `T_EVIDENCE` integrates the exact
-reviewed entry.
+The preceding v9 run is retained as regression evidence. Strict schemas removed
+all structural failures, but combined under-attributed the clearly visible
+pickup in two samples while split passed. The v10 prompt made committed events
+authoritative and removed the split call dependency; both then passed. If that
+combined attribution regression returns in provider integration tests, the
+reviewed response is XAI parallel split, not provider substitution.
+
+Runtime semantic reconciliation remains world-only until `T_EVIDENCE` wires the
+reviewed XAI combined sensory section and its independent validation.

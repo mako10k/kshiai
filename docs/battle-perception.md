@@ -11,9 +11,11 @@ qualitative effect/reserve cues, and ephemeral narration views.
 
 Completed slice: `T_PROMPT_STRATEGY` has a versioned fixture matrix, independent
 world/sensory scoring, billed-call evaluation CLI, and exact provider/model
-decision registry. `mock/mock-v1` and `openai/gpt-4.1-mini` are reviewed as
-combined. Evaluated XAI models remain unqualified, so they receive no inferred
-topology. See [`perception-prompt-evaluation.md`](perception-prompt-evaluation.md).
+decision registry. XAI remains the primary provider and
+`xai/grok-4-fast-non-reasoning` is reviewed as combined using native strict JSON
+Schema output. OpenAI remains fallback and is not a substitute for a failed XAI
+prompt evaluation. See
+[`perception-prompt-evaluation.md`](perception-prompt-evaluation.md).
 
 Next slice: `T_EVIDENCE` integrates mechanical qualitative evidence and the
 independently validated combined sensory section only for an exact reviewed
@@ -66,13 +68,18 @@ One prompt must not retain multiple responsibilities merely to save a call.
 Provider/model fixtures compare the combined response with:
 
 1. a world-reconciliation prompt producing only `worldPatch`;
-2. a sensory prompt receiving committed post-patch state, stable events, and
-   qualitative engine evidence, producing only `sensoryEvidence`.
+2. a sensory prompt receiving the same committed actions/events, pre-turn world,
+   and qualitative engine evidence, producing only `sensoryEvidence`.
+
+The two calls run in parallel and neither receives the other LLM response. Split
+therefore separates responsibilities without adding an LLM-to-LLM iteration.
 
 The release configuration selects the split topology when combined mode lowers
 the accepted schema-valid rate, world-patch correctness, sensory coverage, or
 attribution/privacy accuracy. The choice is fixed per reviewed provider/model
 configuration. Runtime does not silently add a second call as a repair retry.
+Topology evaluation is scoped inside the configured provider; it cannot promote
+OpenAI from fallback to primary. An unresolved XAI failure blocks this slice.
 
 ## 3. Evidence contract
 

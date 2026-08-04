@@ -8,7 +8,7 @@ import {
   type TurnSemanticPatch,
 } from "@kshiai/shared";
 
-export const PERCEPTION_PROMPT_FIXTURE_VERSION = "perception-prompts-v8";
+export const PERCEPTION_PROMPT_FIXTURE_VERSION = "perception-prompts-v10";
 
 export const PERCEPTION_PROMPT_QUALITY_FLOORS = {
   minimumSamples: 9,
@@ -21,6 +21,15 @@ export const PERCEPTION_PROMPT_QUALITY_FLOORS = {
 } as const;
 
 export type PerceptionPromptTopology = "combined" | "split";
+
+export type PerceptionPromptResponseFormat = {
+  type: "json_schema";
+  json_schema: {
+    name: string;
+    strict: true;
+    schema: Record<string, unknown>;
+  };
+};
 
 export type PerceptionPromptInput = {
   turn: number;
@@ -169,10 +178,10 @@ Return JSON only:
       { "op": "add"|"replace"|"remove", "path": JSON_POINTER, "value"?: JSON_VALUE }
     ]
   },
-  "nextSituation"?: {
-    "notes"?: string,
-    "tags"?: string[],
-    "coefficients"?: { [allowed_key: string]: number }
+  "nextSituation": null | {
+    "notes": string,
+    "tags": string[],
+    "coefficients": { [allowed_key: string]: number }
   }
 }
 Patch only /scene/summary, /scene/facts leaves, or /entities entries and their label/location/active/facts/visibleTo.
@@ -209,6 +218,8 @@ Return JSON only:
   }]
 }
 ACCESS is {"currentAccess":"none"|"trace"|"coarse"|"clear","identityKnowledge":"unknown"|"suspected"|"identified","perceivedAs":string,"direction":"unknown"|"front"|"front_right"|"right"|"back_right"|"back"|"back_left"|"left"|"front_left"|"above"|"below"|"around","distance":"unknown"|"contact"|"near"|"mid"|"far","occurrenceCertainty":"unknown"|"possible"|"probable"|"certain","attributionCertainty":"unknown"|"possible"|"probable"|"certain"}.
+direction and distance are independent. contact is a distance value only and must never appear in direction.
+worldBefore is the committed semantic snapshot before this turn. Treat actions and events as the authoritative committed turn; never wait for or depend on another LLM response.
 Emit at most 32 entries. Use separate entries for distinct modalities or phenomena.
 The source field is server-only grounding. A side with unknown identity must not receive the source id, canonical label, or character name in phenomenon or perceivedAs.
 Each ACCESS object describes perception of that exact source. When a character or object is the perceived subject, use an entity source even when a committed event caused the sensation. Use an event source only when the event itself, rather than one participating entity, is the perceived subject. Use ambient when no entity source is established.
@@ -231,6 +242,48 @@ In the same response, independently add the sensoryEvidence array defined below.
 
 ${SENSORY_EVIDENCE_SYSTEM_PROMPT.replace("Return JSON only:", "Add this field to the same JSON object:")}`;
 
+export const WORLD_PERCEPTION_RESPONSE_FORMAT = perceptionResponseFormat(
+  "kshiai_world_perception_v10",
+  {
+    patch: { $ref: "#/$defs/patch" },
+    nextSituation: {
+      anyOf: [
+        { $ref: "#/$defs/nextSituation" },
+        { type: "null" },
+      ],
+    },
+  },
+);
+
+export const SENSORY_PERCEPTION_RESPONSE_FORMAT = perceptionResponseFormat(
+  "kshiai_sensory_perception_v10",
+  {
+    sensoryEvidence: {
+      type: "array",
+      maxItems: 32,
+      items: { $ref: "#/$defs/sensoryEvidence" },
+    },
+  },
+);
+
+export const COMBINED_PERCEPTION_RESPONSE_FORMAT = perceptionResponseFormat(
+  "kshiai_combined_perception_v10",
+  {
+    patch: { $ref: "#/$defs/patch" },
+    nextSituation: {
+      anyOf: [
+        { $ref: "#/$defs/nextSituation" },
+        { type: "null" },
+      ],
+    },
+    sensoryEvidence: {
+      type: "array",
+      maxItems: 32,
+      items: { $ref: "#/$defs/sensoryEvidence" },
+    },
+  },
+);
+
 export const PERCEPTION_PROMPT_FIXTURES: readonly PerceptionPromptFixture[] = [
   darkImpactFixture(),
   ambientFootstepsFixture(),
@@ -248,7 +301,7 @@ export function worldPromptUserPayload(input: PerceptionPromptInput): string {
 
 export function sensoryPromptUserPayload(input: {
   turn: number;
-  committedState: BattleSemanticState;
+  worldBefore: BattleSemanticState;
   actions: ResolvedBattleAction[];
   events: TurnEvent[];
   characters: PerceptionPromptInput["characters"];
@@ -301,10 +354,12 @@ export function scorePerceptionPromptCandidate(input: {
     attributionChecks: sensoryScore.attributionChecks,
     identityLeakages: sensoryScore.identityLeakages,
     identityLeakageChecks: sensoryScore.identityLeakageChecks,
-    latencyMs: input.candidate.calls.reduce(
-      (total, call) => total + call.latencyMs,
-      0,
-    ),
+    latencyMs: input.candidate.topology === "split"
+      ? Math.max(...input.candidate.calls.map((call) => call.latencyMs))
+      : input.candidate.calls.reduce(
+          (total, call) => total + call.latencyMs,
+          0,
+        ),
     totalTokens: hasAllTokenMeasurements
       ? tokenValues.reduce((total, value) => total + value, 0)
       : null,
@@ -876,6 +931,262 @@ function stableJson(value: unknown): string {
     return `{${entries.join(",")}}`;
   }
   return JSON.stringify(value);
+}
+
+function perceptionResponseFormat(
+  name: string,
+  properties: Record<string, unknown>,
+): PerceptionPromptResponseFormat {
+  return {
+    type: "json_schema",
+    json_schema: {
+      name,
+      strict: true,
+      schema: {
+        type: "object",
+        properties,
+        required: Object.keys(properties),
+        additionalProperties: false,
+        $defs: perceptionJsonSchemaDefinitions(),
+      },
+    },
+  };
+}
+
+function perceptionJsonSchemaDefinitions(): Record<string, unknown> {
+  const definitions: Record<string, unknown> = {};
+  const scalarVariants = (): Array<Record<string, unknown>> => [{
+    type: "string",
+    maxLength: 2000,
+  }, {
+    type: "number",
+  }, {
+    type: "boolean",
+  }, {
+    type: "null",
+  }];
+  definitions.semanticValue0 = { anyOf: scalarVariants() };
+  for (let depth = 1; depth <= 6; depth += 1) {
+    definitions[`semanticValue${depth}`] = {
+      anyOf: [
+        ...scalarVariants(),
+        {
+          type: "array",
+          maxItems: 64,
+          items: { $ref: `#/$defs/semanticValue${depth - 1}` },
+        },
+        {
+          type: "object",
+          additionalProperties: {
+            $ref: `#/$defs/semanticValue${depth - 1}`,
+          },
+        },
+      ],
+    };
+  }
+
+  const semanticId = {
+    type: "string",
+    minLength: 1,
+    maxLength: 80,
+    pattern: "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+  };
+  const access = {
+    type: "object",
+    properties: {
+      currentAccess: {
+        type: "string",
+        enum: ["none", "trace", "coarse", "clear"],
+      },
+      identityKnowledge: {
+        type: "string",
+        enum: ["unknown", "suspected", "identified"],
+      },
+      perceivedAs: {
+        type: "string",
+        minLength: 1,
+        maxLength: 240,
+      },
+      direction: {
+        type: "string",
+        enum: [
+          "unknown",
+          "front",
+          "front_right",
+          "right",
+          "back_right",
+          "back",
+          "back_left",
+          "left",
+          "front_left",
+          "above",
+          "below",
+          "around",
+        ],
+      },
+      distance: {
+        type: "string",
+        enum: ["unknown", "contact", "near", "mid", "far"],
+      },
+      occurrenceCertainty: {
+        type: "string",
+        enum: ["unknown", "possible", "probable", "certain"],
+      },
+      attributionCertainty: {
+        type: "string",
+        enum: ["unknown", "possible", "probable", "certain"],
+      },
+    },
+    required: [
+      "currentAccess",
+      "identityKnowledge",
+      "perceivedAs",
+      "direction",
+      "distance",
+      "occurrenceCertainty",
+      "attributionCertainty",
+    ],
+    additionalProperties: false,
+  };
+  definitions.perceptionAccess = access;
+  definitions.perceptionSource = {
+    anyOf: [{
+      type: "object",
+      properties: {
+        kind: { type: "string", const: "entity" },
+        entityId: semanticId,
+      },
+      required: ["kind", "entityId"],
+      additionalProperties: false,
+    }, {
+      type: "object",
+      properties: {
+        kind: { type: "string", const: "event" },
+        eventId: semanticId,
+      },
+      required: ["kind", "eventId"],
+      additionalProperties: false,
+    }, {
+      type: "object",
+      properties: {
+        kind: { type: "string", const: "ambient" },
+      },
+      required: ["kind"],
+      additionalProperties: false,
+    }],
+  };
+  definitions.sensoryEvidence = {
+    type: "object",
+    properties: {
+      evidenceId: semanticId,
+      basisEventIds: {
+        type: "array",
+        maxItems: 16,
+        items: semanticId,
+      },
+      modality: {
+        type: "string",
+        enum: [
+          "vision",
+          "sound",
+          "smell",
+          "touch",
+          "proprioception",
+          "atmosphere",
+          "other",
+        ],
+      },
+      phenomenon: {
+        type: "string",
+        minLength: 1,
+        maxLength: 400,
+      },
+      source: { $ref: "#/$defs/perceptionSource" },
+      accessBySide: {
+        type: "object",
+        properties: {
+          a: { $ref: "#/$defs/perceptionAccess" },
+          b: { $ref: "#/$defs/perceptionAccess" },
+        },
+        required: ["a", "b"],
+        additionalProperties: false,
+      },
+      publicAccess: { $ref: "#/$defs/perceptionAccess" },
+    },
+    required: [
+      "evidenceId",
+      "basisEventIds",
+      "modality",
+      "phenomenon",
+      "source",
+      "accessBySide",
+      "publicAccess",
+    ],
+    additionalProperties: false,
+  };
+  definitions.semanticOperation = {
+    anyOf: [{
+      type: "object",
+      properties: {
+        op: { type: "string", const: "add" },
+        path: { type: "string", minLength: 1, maxLength: 500 },
+        value: { $ref: "#/$defs/semanticValue6" },
+      },
+      required: ["op", "path", "value"],
+      additionalProperties: false,
+    }, {
+      type: "object",
+      properties: {
+        op: { type: "string", const: "replace" },
+        path: { type: "string", minLength: 1, maxLength: 500 },
+        value: { $ref: "#/$defs/semanticValue6" },
+      },
+      required: ["op", "path", "value"],
+      additionalProperties: false,
+    }, {
+      type: "object",
+      properties: {
+        op: { type: "string", const: "remove" },
+        path: { type: "string", minLength: 1, maxLength: 500 },
+      },
+      required: ["op", "path"],
+      additionalProperties: false,
+    }],
+  };
+  definitions.patch = {
+    type: "object",
+    properties: {
+      operations: {
+        type: "array",
+        maxItems: 24,
+        items: { $ref: "#/$defs/semanticOperation" },
+      },
+    },
+    required: ["operations"],
+    additionalProperties: false,
+  };
+  definitions.nextSituation = {
+    type: "object",
+    properties: {
+      notes: { type: "string", maxLength: 1000 },
+      tags: {
+        type: "array",
+        maxItems: 16,
+        items: { type: "string", maxLength: 120 },
+      },
+      coefficients: {
+        type: "object",
+        additionalProperties: {
+          type: "number",
+          minimum: 0.25,
+          maximum: 2.5,
+        },
+      },
+    },
+    required: ["notes", "tags", "coefficients"],
+    additionalProperties: false,
+  };
+  return definitions;
 }
 
 function mean(values: readonly number[]): number {
