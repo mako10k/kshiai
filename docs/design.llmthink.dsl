@@ -394,3 +394,25 @@ decision D21 based_on PR21, D1, D2, D14, D19, D20:
     finishing skill multiplier rises from 1x to 2x and deterministic critical
     opportunity rises from zero to forty percent. Deterministic code still owns
     action legality, multipliers, damage caps, and outcomes.
+
+problem PR22:
+  |
+    Merely prioritizing every special skill after turn ten makes the same move
+    repeat while resources remain. Characters cannot judge whether to spend or
+    hold a finisher because they do not receive unlock timing, current growth,
+    remaining uses, or available actions, and their private update does not plan
+    the next action.
+
+decision D22 based_on PR22, D1, D2, D20, D21:
+  |
+    Battle start deterministically fixes one finisher per side: the strongest
+    explicit special, otherwise the strongest existing attack or magic skill.
+    It never invents a new skill. The finisher has one use per battle; global
+    post-turn-ten critical pressure remains separate. Every character agent,
+    regardless of narration perspective, receives a bounded structured window
+    for the next turn with qualitative conditions, available actions, unlock
+    countdown, current and maximum multiplier, turns to maximum, critical
+    opportunity, and remaining uses. Its validated structured response reserves
+    one next-turn action without an extra LLM call. Deterministic code consumes
+    the reservation once, validates skill identity, resources, unlock, and use
+    count, and falls back to selected battle policies on invalid or failed plans.

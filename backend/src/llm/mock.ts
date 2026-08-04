@@ -350,6 +350,25 @@ export class MockLlmProvider implements LlmProvider {
       : input.cognition.turn === 0
         ? `${selfReference}は、${input.foeName}と向き合おう。`
         : `${selfReference}は、まだ続けられる。`;
+    const shouldUseFinisher = Boolean(
+      input.decision.finisher?.unlocked &&
+      input.decision.finisher.remainingUses === 1 &&
+      (input.decision.foeCondition === "critical" ||
+        input.decision.ownCondition === "critical" ||
+        input.decision.finisher.turnsUntilMax === 0 ||
+        input.decision.turnsRemaining <= 2),
+    );
+    const finisherAction = shouldUseFinisher
+      ? input.decision.availableActions.find((action) =>
+          action.kind === "skill" && action.finisherCandidate
+        )
+      : undefined;
+    const preferred = finisherAction ??
+      input.decision.availableActions.find((action) =>
+        action.kind === "skill" && !action.finisherCandidate
+      ) ??
+      input.decision.availableActions.find((action) => action.kind === "basic_attack") ??
+      input.decision.availableActions[0]!;
     return {
       state: {
         ...input.previous,
@@ -365,6 +384,11 @@ export class MockLlmProvider implements LlmProvider {
         lastSpeech: speech,
       },
       speech,
+      nextAction: {
+        kind: preferred.kind,
+        ...(preferred.skillId ? { skillId: preferred.skillId } : {}),
+        ...(finisherAction ? { useFinisher: true } : {}),
+      },
     };
   }
 

@@ -6,7 +6,9 @@ import type {
   BattleTurnRecord,
   CharacterAgentState,
   CharacterAgentStateChange,
+  CharacterActionIntent,
   CombatantState,
+  FinisherState,
   PolicyBias,
   ResolvedBattleAction,
   Situation,
@@ -303,6 +305,8 @@ export function createBattleState(input: {
       selfReference: input.sideB.identity?.selfNames[0] ?? null,
       lastSpeech: null,
     },
+    finisherA: selectFinisherSkill(input.sideA.skills),
+    finisherB: selectFinisherSkill(input.sideB.skills),
     turnRecords: [],
     log: [],
     winnerSide: null,
@@ -399,14 +403,57 @@ function usableSkills(skills: Skill[], self: CombatantState): Skill[] {
   );
 }
 
+function isOffensiveSkill(skill: Skill): boolean {
+  return skill.kind === "attack" ||
+    skill.kind === "magic" ||
+    skill.kind === "special" ||
+    (skill.kind === "status" &&
+      (skill.effects ?? []).some(
+        (effect) => effect.target === "foe" && effect.delta < 0,
+      ));
+}
+
+/** Pick one stable finisher without inventing a new skill for legacy sheets. */
+export function selectFinisherSkill(skills: Skill[]): FinisherState | undefined {
+  const ranked = skills
+    .filter((skill) =>
+      skill.kind === "attack" || skill.kind === "magic" || skill.kind === "special"
+    )
+    .sort((a, b) => {
+      if (a.kind === "special" && b.kind !== "special") return -1;
+      if (b.kind === "special" && a.kind !== "special") return 1;
+      return b.power - a.power || a.id.localeCompare(b.id);
+    });
+  const selected = ranked[0];
+  if (!selected) return undefined;
+  return {
+    skillId: selected.id,
+    skillName: selected.name,
+    source: selected.kind === "special" ? "explicit" : "derived",
+    used: false,
+    usedTurn: null,
+  };
+}
+
+function normalizeFinisher(
+  current: FinisherState | undefined,
+  skills: Skill[],
+): FinisherState | undefined {
+  if (current && skills.some((skill) => skill.id === current.skillId)) {
+    return current;
+  }
+  return selectFinisherSkill(skills);
+}
+
 function pickOffensiveSkill(
   skills: Skill[],
   self: CombatantState,
-  turn: number,
 ): Skill | undefined {
+  // Static policy fallback never spends the one-use finisher. Only a validated
+  // character reservation (or explicit player action) may select `special`.
   const usable = usableSkills(skills, self).filter(
     (s) =>
-      (s.kind === "special" ? turn >= 10 : s.kind === "attack") ||
+      s.kind === "attack" ||
       s.kind === "magic" ||
       (s.kind === "status" &&
         (s.effects ?? []).some(
@@ -414,14 +461,7 @@ function pickOffensiveSkill(
         )),
   );
   if (usable.length === 0) return undefined;
-  // From turn 10 onward, a usable special is an unlocked finishing option.
-  return [...usable].sort((a, b) => {
-    if (turn >= 10 && a.kind !== b.kind) {
-      if (a.kind === "special") return -1;
-      if (b.kind === "special") return 1;
-    }
-    return b.power - a.power;
-  })[0];
+  return [...usable].sort((a, b) => b.power - a.power)[0];
 }
 
 function pickSupportSkill(skills: Skill[], self: CombatantState): Skill | undefined {
@@ -443,14 +483,18 @@ function actionFromBias(
   self: CombatantState,
   skills: Skill[],
   myHp: number,
-  turn: number,
+  _turn: number,
 ): BattleAction {
-  const offense = pickOffensiveSkill(skills, self, turn);
+  const offense = pickOffensiveSkill(skills, self);
   const support = pickSupportSkill(skills, self);
 
   const attack = (): BattleAction =>
     offense
-      ? { actorSide, kind: "skill", skillId: offense.id }
+      ? {
+          actorSide,
+          kind: "skill",
+          skillId: offense.id,
+        }
       : (self.parameters.stamina ?? 0) >= 3
         ? { actorSide, kind: "basic_attack" }
         : { actorSide, kind: "rest" };
@@ -483,6 +527,44 @@ function actionFromBias(
       if (myHp < 0.35) return healOrDefend();
       return attack();
   }
+}
+
+function actionFromCharacterIntent(input: {
+  intent?: CharacterActionIntent;
+  actorSide: "a" | "b";
+  self: CombatantState;
+  skills: Skill[];
+  finisher?: FinisherState;
+  turn: number;
+}): BattleAction | undefined {
+  const intent = input.intent;
+  if (!intent) return undefined;
+  if (intent.kind !== "skill") {
+    if (intent.useFinisher || intent.skillId) return undefined;
+    return { actorSide: input.actorSide, kind: intent.kind };
+  }
+  const skill = input.skills.find((candidate) => candidate.id === intent.skillId);
+  if (!skill) return undefined;
+  if (
+    (input.self.parameters.mp ?? 0) < skill.costMp ||
+    (input.self.parameters.stamina ?? 0) < skill.costStamina
+  ) {
+    return undefined;
+  }
+  const finisherReady = Boolean(
+    input.finisher &&
+    !input.finisher.used &&
+    input.turn >= 10 &&
+    skill.id === input.finisher.skillId,
+  );
+  if (skill.kind === "special" && !finisherReady) return undefined;
+  if (intent.useFinisher && !finisherReady) return undefined;
+  return {
+    actorSide: input.actorSide,
+    kind: "skill",
+    skillId: skill.id,
+    useFinisher: skill.kind === "special" || intent.useFinisher === true,
+  };
 }
 
 function ruleMatches(
@@ -753,6 +835,8 @@ export function resolveTurn(input: {
   );
   const events: TurnEvent[] = [];
   const turn = input.state.turn + 1;
+  let finisherA = normalizeFinisher(input.state.finisherA, input.sideASkills);
+  let finisherB = normalizeFinisher(input.state.finisherB, input.sideBSkills);
 
   if (turn > 1) {
     for (const [combatant, actorSide] of [
@@ -804,10 +888,26 @@ export function resolveTurn(input: {
     });
   }
 
-  const playerAction =
-    input.playerAction ??
+  const plannedActionA = actionFromCharacterIntent({
+    intent: input.state.plannedActionA,
+    actorSide: "a",
+    self: sideA,
+    skills: input.sideASkills,
+    finisher: finisherA,
+    turn,
+  });
+  const plannedActionB = actionFromCharacterIntent({
+    intent: input.state.plannedActionB,
+    actorSide: "b",
+    self: sideB,
+    skills: input.sideBSkills,
+    finisher: finisherB,
+    turn,
+  });
+
+  const playerAction = input.playerAction ?? plannedActionA ??
     (forceOffense
-      ? { actorSide: "a", kind: "basic_attack" }
+      ? { actorSide: "a" as const, kind: "basic_attack" as const }
       : chooseActionFromPolicies({
           policies: input.state.policiesA ?? [],
           selectedIds: input.state.selectedPolicyIdsA ?? [],
@@ -819,7 +919,7 @@ export function resolveTurn(input: {
           legacyStance: input.state.stanceA ?? "balanced",
         }));
 
-  const aiAction: BattleAction = forceOffense
+  const aiAction: BattleAction = plannedActionB ?? (forceOffense
     ? { actorSide: "b", kind: "basic_attack" }
     : chooseActionFromPolicies({
         policies: input.state.policiesB ?? [],
@@ -830,7 +930,7 @@ export function resolveTurn(input: {
         skills: input.sideBSkills,
         turn,
         legacyStance: input.state.stanceB ?? "balanced",
-      });
+      }));
   const actionAId = `turn-${turn}-action-a`;
   const actionBId = `turn-${turn}-action-b`;
   const actions: ResolvedBattleAction[] = [
@@ -850,7 +950,7 @@ export function resolveTurn(input: {
 
   // Player (side A)
   const actionAEventStart = events.length;
-  applyAction(
+  const usedFinisherA = applyAction(
     sideA,
     sideB,
     playerAction,
@@ -864,7 +964,11 @@ export function resolveTurn(input: {
       turnLimit: input.state.turnLimit,
       actorSide: "a",
     },
+    finisherA,
   );
+  if (usedFinisherA && finisherA) {
+    finisherA = { ...finisherA, used: true, usedTurn: turn };
+  }
   tagActionEvents(events, actionAEventStart, {
     actionId: actionAId,
     actorSide: "a",
@@ -881,7 +985,7 @@ export function resolveTurn(input: {
       skippedReason: null,
     };
     const actionBEventStart = events.length;
-    applyAction(
+    const usedFinisherB = applyAction(
       sideB,
       sideA,
       aiAction,
@@ -895,7 +999,11 @@ export function resolveTurn(input: {
         turnLimit: input.state.turnLimit,
         actorSide: "b",
       },
+      finisherB,
     );
+    if (usedFinisherB && finisherB) {
+      finisherB = { ...finisherB, used: true, usedTurn: turn };
+    }
     tagActionEvents(events, actionBEventStart, {
       actionId: actionBId,
       actorSide: "b",
@@ -995,6 +1103,10 @@ export function resolveTurn(input: {
     winnerSide,
     finishReason,
     aftermathPending,
+    finisherA,
+    finisherB,
+    plannedActionA: undefined,
+    plannedActionB: undefined,
     updatedAt: nowIso(),
   };
 
@@ -1074,6 +1186,47 @@ export function decisivePressure(input: DecisiveContext): {
     progress,
     criticalChance: progress * 0.4,
     specialMultiplier: 1 + progress,
+  };
+}
+
+export type FinisherWindow = {
+  skillId: string;
+  skillName: string;
+  source: "explicit" | "derived";
+  unlocked: boolean;
+  turnsUntilUnlock: number;
+  remainingUses: 0 | 1;
+  currentMultiplier: number;
+  maxMultiplier: 2;
+  criticalChance: number;
+  turnsUntilMax: number;
+};
+
+/** Compact, character-visible facts for deciding whether to spend the finisher. */
+export function buildFinisherWindow(input: {
+  finisher?: FinisherState;
+  turn: number;
+  turnLimit: number;
+}): FinisherWindow | null {
+  if (!input.finisher) return null;
+  const pressure = decisivePressure({
+    battleId: "window",
+    turn: input.turn,
+    turnLimit: input.turnLimit,
+    actorSide: "a",
+  });
+  const maximumTurn = Math.max(11, Math.min(20, input.turnLimit));
+  return {
+    skillId: input.finisher.skillId,
+    skillName: input.finisher.skillName,
+    source: input.finisher.source,
+    unlocked: input.turn >= 10,
+    turnsUntilUnlock: Math.max(0, 10 - input.turn),
+    remainingUses: input.finisher.used ? 0 : 1,
+    currentMultiplier: pressure.specialMultiplier,
+    maxMultiplier: 2,
+    criticalChance: pressure.criticalChance,
+    turnsUntilMax: Math.max(0, maximumTurn - input.turn),
   };
 }
 
@@ -1176,12 +1329,13 @@ function applyAction(
   situation: Situation,
   events: TurnEvent[],
   decisive: DecisiveContext,
-): void {
+  finisher?: FinisherState,
+): boolean {
   if (action.kind === "basic_attack") {
     const stamina = actor.parameters.stamina ?? 0;
     actor.parameters.stamina = Math.max(0, stamina - Math.min(3, stamina));
     applyBasicAttack(actor, target, basicAttack, situation, events, decisive);
-    return;
+    return false;
   }
 
   if (action.kind === "rest") {
@@ -1201,7 +1355,7 @@ function applyAction(
       actorName: actor.displayName,
       summary: `${actor.displayName} は一度間合いを切り、呼吸と力を取り戻した。`,
     });
-    return;
+    return false;
   }
 
   if (action.kind === "wait") {
@@ -1210,7 +1364,7 @@ function applyAction(
       actorName: actor.displayName,
       summary: `${actor.displayName} は様子をうかがった。`,
     });
-    return;
+    return false;
   }
 
   if (action.kind === "defend") {
@@ -1220,7 +1374,7 @@ function applyAction(
       actorName: actor.displayName,
       summary: `${actor.displayName} は自分の態勢を整えた。`,
     });
-    return;
+    return false;
   }
 
   const skill = findSkill(skills, action.skillId);
@@ -1230,16 +1384,21 @@ function applyAction(
       actorName: actor.displayName,
       summary: `${actor.displayName} は技を繰り出せなかった。`,
     });
-    return;
+    return false;
   }
-  if (skill.kind === "special" && decisive.turn < 10) {
+  if (
+    skill.kind === "special" &&
+    (decisive.turn < 10 || finisher?.used || skill.id !== finisher?.skillId)
+  ) {
     events.push({
       type: "info",
       actorName: actor.displayName,
       skillName: skill.name,
-      summary: `${actor.displayName} は ${skill.name} の機を待った。`,
+      summary: finisher?.used
+        ? `${actor.displayName} は、すでに放った ${skill.name} を再び使うことはできなかった。`
+        : `${actor.displayName} は ${skill.name} の機を待った。`,
     });
-    return;
+    return false;
   }
 
   const mp = actor.parameters.mp ?? 0;
@@ -1251,7 +1410,7 @@ function applyAction(
       skillName: skill.name,
       summary: `${actor.displayName} は力及ばず ${skill.name} を使えなかった。`,
     });
-    return;
+    return false;
   }
 
   actor.parameters.mp = mp - skill.costMp;
@@ -1283,11 +1442,35 @@ function applyAction(
       });
     }
     applySkillEffects(actor, target, skill, events);
-    return;
+    return false;
   }
 
-  applyAttackSkill(actor, target, skill, situation, events, decisive);
+  const activateFinisher = Boolean(
+    finisher &&
+    !finisher.used &&
+    decisive.turn >= 10 &&
+    skill.id === finisher.skillId &&
+    (skill.kind === "special" || action.useFinisher === true),
+  );
+  if (activateFinisher) {
+    events.push({
+      type: "status",
+      actorName: actor.displayName,
+      skillName: skill.name,
+      summary: `${actor.displayName} は勝負を決めるため、${skill.name} に蓄えたすべてを注いだ。`,
+    });
+  }
+  applyAttackSkill(
+    actor,
+    target,
+    skill,
+    situation,
+    events,
+    decisive,
+    activateFinisher,
+  );
   applySkillEffects(actor, target, skill, events);
+  return activateFinisher;
 }
 
 function applyBasicAttack(
@@ -1399,6 +1582,7 @@ function applyAttackSkill(
   situation: Situation,
   events: TurnEvent[],
   decisive: DecisiveContext,
+  activateFinisher: boolean,
 ): void {
   const atkStat =
     skill.kind === "magic" ? (actor.parameters.mag ?? 10) : (actor.parameters.atk ?? 10);
@@ -1426,9 +1610,7 @@ function applyAttackSkill(
   const pressure = applyDecisivePressure({
     amount: dmg,
     targetMaxHp: target.parameters.maxHp ?? 100,
-    // The chosen offensive skill becomes the character's finishing technique
-    // after turn 10 even when a legacy sheet has no explicit `special` kind.
-    special: skill.kind === "special" || decisive.turn >= 10,
+    special: activateFinisher,
     context: decisive,
   });
   dmg = pressure.amount;

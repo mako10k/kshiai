@@ -73,9 +73,9 @@ resolved action -> scene change -> character perception -> private reaction
 `TurnEvent` is presentation-oriented and identifies actors and targets mainly by
 display name. Actions are not retained as first-class turn records. Situation
 proposals occur before resolution, so they cannot authoritatively describe the
-current action's consequences. Under an external narration perspective,
-character-agent advancement is currently skipped, which also skips private
-continuity updates.
+current action's consequences. Character-agent advancement must therefore run
+for external narration too; narration perspective changes presentation, not
+whether private continuity and next-turn intent advance.
 
 ## 5. Design principles
 
@@ -378,7 +378,9 @@ turn records. The next normal save persists the seed.
 6. Server builds A/B cognition from committed mechanics plus the post-patch
    A/B observable snapshot and latest observation diff. Projection uses only
    structured visibility, ownership, locations, and committed state.
-7. A/B character agents advance in parallel from their own private state.
+7. A/B character agents advance in parallel from their own private state and
+   reserve one validated next-turn action from their own structured finisher
+   window and available-action list.
 8. Server derives compact action beats from resolved actions, selected policy
    fields, skill/basic-action descriptions, and committed event outcomes.
 9. Narrator receives those beats, the last two public turn blocks, the permitted

@@ -7,6 +7,7 @@ import type {
   CharacterSheet,
   CharacterIdentity,
   CharacterAgentState,
+  CharacterActionIntent,
   CharacterCognition,
   InnerDigest,
   NarrativeBlock,
@@ -17,6 +18,7 @@ import type {
   TurnSemanticPatch,
   ResolvedBattleAction,
   SemanticObservationState,
+  FinisherWindow,
 } from "@kshiai/shared";
 
 export type CharacterReference = {
@@ -35,6 +37,23 @@ export type CharacterReference = {
 export type CharacterReferenceTools = {
   search(query: string, limit?: number): Promise<CharacterReference[]>;
   get(characterId: string): Promise<CharacterReference | null>;
+};
+
+export type CharacterActionDecisionContext = {
+  nextTurn: number;
+  turnsRemaining: number;
+  ownCondition: CharacterCognition["ownCondition"];
+  foeCondition: CharacterCognition["foeCondition"];
+  availableActions: Array<{
+    kind: CharacterActionIntent["kind"];
+    skillId?: string;
+    name: string;
+    skillKind?: "attack" | "magic" | "defend" | "support" | "special" | "status";
+    costMp?: number;
+    costStamina?: number;
+    finisherCandidate?: boolean;
+  }>;
+  finisher: FinisherWindow | null;
 };
 
 /** Narrative-safe battle history for improvement analysis (no raw combat params). */
@@ -256,7 +275,12 @@ export interface LlmProvider {
     previous: CharacterAgentState;
     cognition: CharacterCognition;
     observation: SemanticObservationState;
-  }): Promise<{ state: CharacterAgentState; speech: string }>;
+    decision: CharacterActionDecisionContext;
+  }): Promise<{
+    state: CharacterAgentState;
+    speech: string;
+    nextAction: CharacterActionIntent;
+  }>;
   /**
    * Fluid perspective only: pick turn focus from thin summary digests.
    * Must not receive detail digests.

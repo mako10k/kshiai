@@ -205,10 +205,16 @@ export function selectPolicyIdsByPerspective(
   });
 }
 
-export const BattleActionSchema = z.object({
-  actorSide: z.enum(["a", "b"]),
+export const CharacterActionIntentSchema = z.object({
   kind: ActionKindSchema,
   skillId: z.string().optional(),
+  /** Activate the one-use finisher attached to this skill when legal. */
+  useFinisher: z.boolean().optional(),
+});
+export type CharacterActionIntent = z.infer<typeof CharacterActionIntentSchema>;
+
+export const BattleActionSchema = CharacterActionIntentSchema.extend({
+  actorSide: z.enum(["a", "b"]),
 });
 export type BattleAction = z.infer<typeof BattleActionSchema>;
 
@@ -223,6 +229,16 @@ export const ResolvedBattleActionSchema = BattleActionSchema.extend({
 export type ResolvedBattleAction = z.infer<
   typeof ResolvedBattleActionSchema
 >;
+
+/** Stable, one-use finishing technique selected when the battle starts. */
+export const FinisherStateSchema = z.object({
+  skillId: z.string(),
+  skillName: z.string(),
+  source: z.enum(["explicit", "derived"]),
+  used: z.boolean().default(false),
+  usedTurn: z.number().int().positive().nullable().default(null),
+});
+export type FinisherState = z.infer<typeof FinisherStateSchema>;
 
 /** Engine-internal combatant (hidden). */
 export const CombatantStateSchema = z.object({
@@ -410,6 +426,12 @@ export const BattleStateSchema = z.object({
   /** Isolated, private character-agent continuity. Never exposed publicly. */
   agentStateA: CharacterAgentStateSchema.optional(),
   agentStateB: CharacterAgentStateSchema.optional(),
+  /** Stable one-use finishers; missing legacy values are derived by the engine. */
+  finisherA: FinisherStateSchema.optional(),
+  finisherB: FinisherStateSchema.optional(),
+  /** Character-authored intent for the next turn; consumed once by the engine. */
+  plannedActionA: CharacterActionIntentSchema.optional(),
+  plannedActionB: CharacterActionIntentSchema.optional(),
   /** Structured engine transitions; narrative log is presentation only. */
   turnRecords: z.array(BattleTurnRecordSchema).default([]),
   /** Mutable observable world overlay; optional while legacy battles exist. */

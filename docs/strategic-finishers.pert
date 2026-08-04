@@ -1,0 +1,53 @@
+project KSHIAI_STRATEGIC_FINISHERS:
+  version 1
+  title "Strategic one-use finishers"
+  description |
+    Make finishers character-selected, one-use, and deterministically validated
+    without adding full history or another per-turn LLM call.
+  as_of 2026-08-04
+  duration_unit day
+  finish FINISHERS_READY
+
+resource DEV:
+  title "Developer"
+  capacity 1
+
+milestone DESIGN_READY:
+  title "Finisher contract accepted"
+  state reached
+
+milestone ENGINE_READY:
+  title "One-use engine validation ready"
+  state reached
+
+milestone AGENT_READY:
+  title "Character planning ready"
+  state reached
+
+milestone FINISHERS_READY:
+  title "Strategic finishers validated"
+  state reached
+
+task T_ENGINE DESIGN_READY -> ENGINE_READY:
+  title "Fix and validate one finisher per side"
+  description "Prefer explicit special, derive from an existing attack otherwise, consume once, and retain global critical pressure"
+  duration 1d
+  status done
+  requires:
+    DEV 1
+
+task T_AGENT ENGINE_READY -> AGENT_READY:
+  title "Plan the next action from a bounded finisher window"
+  description "Advance both agents for every perspective, return one structured reservation, and fall back to policies when invalid"
+  duration 1d
+  status done
+  requires:
+    DEV 1
+
+task T_VALIDATE AGENT_READY -> FINISHERS_READY:
+  title "Validate compatibility and strategy"
+  description "Test explicit, derived, pre-unlock, one-use, failed-plan, type, build, and design gates"
+  duration 1d
+  status done
+  requires:
+    DEV 1

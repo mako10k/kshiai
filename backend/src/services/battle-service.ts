@@ -6,6 +6,7 @@ import {
   applyTurnSemanticPatch,
   balanceSkill,
   buildBattleTurnRecord,
+  buildFinisherWindow,
   buildSemanticObservationState,
   createBattleState,
   happeningToEvents,
@@ -42,12 +43,12 @@ import {
   type InnerDigest,
   type NarrationFocus,
   type NarrationPerspective,
-  agentsUsefulForPerspective,
   buildInnerDigest,
   lockedFocusFromPerspective,
   needsFocusChoice,
   selectDigestsForFocus,
   defaultCharacterIdentity,
+  defaultBasicAttack,
   advanceDramaState,
   dramaPhaseForTurn,
   normalizeDramaState,
@@ -511,6 +512,59 @@ function initialAgentState(sheet: CharacterSheet): CharacterAgentState {
   };
 }
 
+function buildCharacterDecisionContext(input: {
+  state: BattleState;
+  sheet: CharacterSheet;
+  side: "a" | "b";
+  cognition: CharacterCognition;
+}) {
+  const self = input.side === "a" ? input.state.sideA : input.state.sideB;
+  const finisher = input.side === "a"
+    ? input.state.finisherA
+    : input.state.finisherB;
+  const nextTurn = input.state.turn + 1;
+  const window = buildFinisherWindow({
+    finisher,
+    turn: nextTurn,
+    turnLimit: input.state.turnLimit,
+  });
+  const affordableSkills = input.sheet.skills.filter((skill) => {
+    if ((self.parameters.mp ?? 0) < skill.costMp) return false;
+    if ((self.parameters.stamina ?? 0) < skill.costStamina) return false;
+    if (skill.kind !== "special") return true;
+    return Boolean(
+      window?.unlocked &&
+      window.remainingUses > 0 &&
+      skill.id === window.skillId,
+    );
+  });
+  return {
+    nextTurn,
+    turnsRemaining: Math.max(0, input.state.turnLimit - nextTurn + 1),
+    ownCondition: input.cognition.ownCondition,
+    foeCondition: input.cognition.foeCondition,
+    availableActions: [
+      {
+        kind: "basic_attack" as const,
+        name: input.sheet.basicAttack?.name ?? defaultBasicAttack().name,
+      },
+      { kind: "defend" as const, name: "防御" },
+      { kind: "rest" as const, name: "休息" },
+      { kind: "wait" as const, name: "様子を見る" },
+      ...affordableSkills.map((skill) => ({
+        kind: "skill" as const,
+        skillId: skill.id,
+        name: skill.name,
+        skillKind: skill.kind,
+        costMp: skill.costMp,
+        costStamina: skill.costStamina,
+        finisherCandidate: skill.id === window?.skillId,
+      })),
+    ],
+    finisher: window,
+  };
+}
+
 async function advanceCharacterAgents(input: {
   llm: LlmProvider;
   before: BattleState;
@@ -551,6 +605,12 @@ async function advanceCharacterAgents(input: {
         previous: previousA,
         cognition: cognitionA,
         observation: input.after.observationStateA!,
+        decision: buildCharacterDecisionContext({
+          state: input.after,
+          sheet: input.mine,
+          side: "a",
+          cognition: cognitionA,
+        }),
       }),
       input.llm.advanceCharacterAgent({
         character: {
@@ -564,6 +624,12 @@ async function advanceCharacterAgents(input: {
         previous: previousB,
         cognition: cognitionB,
         observation: input.after.observationStateB!,
+        decision: buildCharacterDecisionContext({
+          state: input.after,
+          sheet: input.opp,
+          side: "b",
+          cognition: cognitionB,
+        }),
       }),
     ]), 18_000, "advanceCharacterAgents");
   } catch (error) {
@@ -590,6 +656,8 @@ async function advanceCharacterAgents(input: {
       ...input.after,
       agentStateA: agentA?.state ?? previousA,
       agentStateB: agentB?.state ?? previousB,
+      plannedActionA: agentA?.nextAction,
+      plannedActionB: agentB?.nextAction,
       turnRecords: [
         ...(input.after.turnRecords ?? []),
         record,
@@ -1153,36 +1221,19 @@ async function advanceTurnWithLease(input: {
     next.narrationStyle?.perspective ?? "external";
   let cognitionA: CharacterCognition | undefined;
   let cognitionB: CharacterCognition | undefined;
-
-  if (agentsUsefulForPerspective(perspective)) {
-    const agentTurn = await advanceCharacterAgents({
-      llm: input.llm,
-      before: state,
-      after: next,
-      mine,
-      opp,
-      events,
-      actions: resolved.actions,
-    });
-    next = agentTurn.state;
-    const rec = (next.turnRecords ?? [])[(next.turnRecords ?? []).length - 1];
-    cognitionA = rec?.cognitionA;
-    cognitionB = rec?.cognitionB;
-  } else {
-    // External: skip agents for latency; still store engine cognition.
-    const turnRecord = buildBattleTurnRecord({
-      before: state,
-      after: next,
-      events,
-      actions: resolved.actions,
-    });
-    next = {
-      ...next,
-      turnRecords: [...(next.turnRecords ?? []), turnRecord].slice(-50),
-    };
-    cognitionA = turnRecord.cognitionA;
-    cognitionB = turnRecord.cognitionB;
-  }
+  const agentTurn = await advanceCharacterAgents({
+    llm: input.llm,
+    before: state,
+    after: next,
+    mine,
+    opp,
+    events,
+    actions: resolved.actions,
+  });
+  next = agentTurn.state;
+  const rec = (next.turnRecords ?? [])[(next.turnRecords ?? []).length - 1];
+  cognitionA = rec?.cognitionA;
+  cognitionB = rec?.cognitionB;
 
   const { focus, digests } = await resolveNarrationFocusAndDigests({
     llm: input.llm,
@@ -1442,19 +1493,17 @@ async function runPrologueTurn(input: {
       summary: `${state.situation.scene}で両者が対峙した。`,
     },
   ];
-  if (agentsUsefulForPerspective(perspective)) {
-    emit({ type: "phase", phase: "agents" });
-    const prologueAgents = await advanceCharacterAgents({
-      llm: input.llm,
-      before: state,
-      after: state,
-      mine: input.mine,
-      opp: input.opp,
-      events: openEvents,
-      actions: [],
-    });
-    state = prologueAgents.state;
-  }
+  emit({ type: "phase", phase: "agents" });
+  const prologueAgents = await advanceCharacterAgents({
+    llm: input.llm,
+    before: state,
+    after: state,
+    mine: input.mine,
+    opp: input.opp,
+    events: openEvents,
+    actions: [],
+  });
+  state = prologueAgents.state;
   const rec = (state.turnRecords ?? [])[(state.turnRecords ?? []).length - 1];
   const { focus, digests } = await resolveNarrationFocusAndDigests({
     llm: input.llm,

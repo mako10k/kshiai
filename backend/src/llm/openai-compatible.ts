@@ -8,6 +8,7 @@ import {
   BattlefieldSemanticSeedSchema,
   TurnSemanticPatchSchema,
   CharacterAgentStateSchema,
+  CharacterActionIntentSchema,
   CharacterIdentitySchema,
   EquipmentSchema,
   SkillSchema,
@@ -1168,11 +1169,17 @@ Return JSON only:
     "beliefs": string[], "observations": string[], "speechStyle": string,
     "selfReference": string|null, "lastSpeech": string|null
   },
-  "speech": string
+  "speech": string,
+  "nextAction": {
+    "kind": "skill"|"basic_attack"|"defend"|"rest"|"wait",
+    "skillId"?: string,
+    "useFinisher"?: boolean
+  }
 }
 speech is a PRIVATE reaction sample for continuity only (never shown directly as public dialogue). ALWAYS required (never null/empty). One short Japanese line:
 - Dialogue without 「」 brackets, OR
 - A quiet reaction: "…", "（ただ佇んでいる）", "（ジーっと${input.foeName}を見ている）".
+nextAction plans the NEXT turn. Choose exactly one entry from decision.availableActions. For a skill, copy its skillId exactly. A finisher has one use for the entire battle: set useFinisher=true only for the finisher candidate when it is unlocked and remainingUses is 1. Consider own/foe condition, turns remaining, currentMultiplier, turnsUntilMax, and the risk of waiting; do not always fire at unlock.
 Public on-screen lines are written later by the narrator from digests + events.`,
         JSON.stringify(input),
         {
@@ -1197,12 +1204,24 @@ Public on-screen lines are written later by the narrator from digests + events.`
           : String(data.speech),
         { foeName: input.foeName },
       );
+      const nextAction = CharacterActionIntentSchema.safeParse(data.nextAction);
+      if (!nextAction.success) {
+        throw new Error("Character agent returned an invalid next action");
+      }
+      const allowed = input.decision.availableActions.some((action) =>
+        action.kind === nextAction.data.kind &&
+        action.skillId === nextAction.data.skillId
+      );
+      if (!allowed) {
+        throw new Error("Character agent selected an unavailable next action");
+      }
       return {
         state: {
           ...parsed.data,
           lastSpeech: speech,
         },
         speech,
+        nextAction: nextAction.data,
       };
     } catch (error) {
       return this.fallbackOrThrow(error, () => this.fallback.advanceCharacterAgent(input));
