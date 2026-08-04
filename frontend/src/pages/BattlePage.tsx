@@ -413,6 +413,34 @@ export function BattlePage() {
             {saveMsg && <p className="ok">{saveMsg}</p>}
           </div>
         )}
+        {battle.semanticState ? (
+          <details style={{ marginTop: "0.75rem" }}>
+            <summary>
+              現在の戦場状態（更新 {battle.semanticState.snapshot.revision}）
+            </summary>
+            <p className="muted" style={{ margin: "0.5rem 0" }}>
+              {battle.semanticState.snapshot.scene.summary}
+            </p>
+            <div className="row" style={{ alignItems: "flex-start" }}>
+              {Object.entries(battle.semanticState.snapshot.entities)
+                .filter(([id, entity]) =>
+                  id !== "character.a" && id !== "character.b" && entity.active,
+                )
+                .map(([id, entity]) => (
+                  <span className="tag" key={id} title={id}>
+                    {entity.label}
+                    {entity.location.type === "held"
+                      ? `（${entity.location.side === "a" ? battle.sideA.displayName : battle.sideB.displayName}が所持）`
+                      : entity.location.type === "scene"
+                        ? `（${entity.location.area}）`
+                        : entity.location.type === "attached"
+                          ? "（付着）"
+                          : "（消失）"}
+                  </span>
+                ))}
+            </div>
+          </details>
+        ) : null}
       </div>
 
       <div className="panel">

@@ -8,6 +8,7 @@ import type {
   CharacterAgentStateChange,
   CombatantState,
   PolicyBias,
+  ResolvedBattleAction,
   Situation,
   TurnEvent,
 } from "./battle.js";
@@ -26,6 +27,10 @@ import type { BattlefieldInstance } from "./battlefield.js";
 import { clampCoefficientMap, mergeCoefficients } from "./battlefield.js";
 import type { NarrationStyleSnapshot } from "./narration-style.js";
 import { defaultNarrationSnapshot } from "./narration-style.js";
+import {
+  buildSemanticObservationState,
+  createBattleSemanticState,
+} from "./semantic-state.js";
 import {
   balanceBasicAttack,
   balanceEquipment,
@@ -69,6 +74,7 @@ export function buildBattleTurnRecord(input: {
   before: BattleState;
   after: BattleState;
   events: TurnEvent[];
+  actions?: ResolvedBattleAction[];
 }): BattleTurnRecord {
   const changeA = parameterChanges(input.before.sideA, input.after.sideA);
   const changeB = parameterChanges(input.before.sideB, input.after.sideB);
@@ -79,6 +85,7 @@ export function buildBattleTurnRecord(input: {
   };
   return {
     turn: input.after.turn,
+    actions: input.actions ?? [],
     events: input.events,
     sideAChange: {
       parameterChanges: changeA,
@@ -106,8 +113,6 @@ export function buildBattleTurnRecord(input: {
       foeCondition: perceivedCondition(input.after.sideA),
       parameterChanges: changeB,
     },
-    agentStateChangeA: null,
-    agentStateChangeB: null,
   };
 }
 
@@ -204,6 +209,25 @@ export function createBattleState(input: {
   const selectedPolicyIdsB =
     input.selectedPolicyIdsB ??
     policiesB.filter((p) => p.defaultSelected).map((p) => p.id);
+  const semanticState = createBattleSemanticState({
+    scene: bf?.scene ?? input.scene ?? "対決の舞台",
+    notes:
+      bf?.narrativeSetup ??
+      bf?.terrain ??
+      "互いの存在が場の空気を少しずつ変えている。",
+    terrain: bf?.terrain,
+    obstacles: bf?.obstacles,
+    conditions: bf?.conditions,
+    seed: bf?.semanticSeed,
+    sideA: {
+      displayName: input.sideA.displayName,
+      appearanceSummary: input.sideA.appearance.summary,
+    },
+    sideB: {
+      displayName: input.sideB.displayName,
+      appearanceSummary: input.sideB.appearance.summary,
+    },
+  });
 
   return {
     id: input.id,
@@ -228,6 +252,22 @@ export function createBattleState(input: {
       coefficients: baseCoeffs,
       tags,
     },
+    semanticState,
+    observationStateA: buildSemanticObservationState({
+      before: semanticState,
+      after: semanticState,
+      observer: "a",
+    }),
+    observationStateB: buildSemanticObservationState({
+      before: semanticState,
+      after: semanticState,
+      observer: "b",
+    }),
+    observationStatePublic: buildSemanticObservationState({
+      before: semanticState,
+      after: semanticState,
+      observer: "public",
+    }),
     supervisor: {
       quietTurns: 0,
       passiveTurns: 0,
@@ -672,13 +712,17 @@ export function resolveTurn(input: {
     kind: "damage" | "heal" | "disrupt";
     intensity: "minor" | "moderate";
   }>;
-}): { state: BattleState; events: TurnEvent[] } {
+}): {
+  state: BattleState;
+  events: TurnEvent[];
+  actions: ResolvedBattleAction[];
+} {
   if (input.state.status !== "active") {
-    return { state: input.state, events: [] };
+    return { state: input.state, events: [], actions: [] };
   }
   // Prologue / aftermath are resolved outside the combat engine (LLM beats).
   if (input.state.prologuePending || input.state.aftermathPending) {
-    return { state: input.state, events: [] };
+    return { state: input.state, events: [], actions: [] };
   }
 
   let sideA = cloneCombatant(input.state.sideA);
@@ -696,12 +740,17 @@ export function resolveTurn(input: {
   const turn = input.state.turn + 1;
 
   if (turn > 1) {
-    for (const combatant of [sideA, sideB]) {
+    for (const [combatant, actorSide] of [
+      [sideA, "a"],
+      [sideB, "b"],
+    ] as const) {
       const restored = restoreTowardBase(combatant);
       if (restored.length > 0) {
         events.push({
           type: "status",
           actorName: combatant.displayName,
+          actorSide,
+          targetSides: [actorSide],
           summary: `${combatant.displayName} の変化した状態が、本来の調子へ少し戻った。`,
         });
       }
@@ -755,7 +804,37 @@ export function resolveTurn(input: {
           legacyStance: input.state.stanceA ?? "balanced",
         }));
 
+  const aiAction: BattleAction = forceOffense
+    ? { actorSide: "b", kind: "basic_attack" }
+    : chooseActionFromPolicies({
+        policies: input.state.policiesB ?? [],
+        selectedIds: input.state.selectedPolicyIdsB ?? [],
+        actorSide: "b",
+        self: sideB,
+        foe: sideA,
+        skills: input.sideBSkills,
+        turn,
+        legacyStance: input.state.stanceB ?? "balanced",
+      });
+  const actionAId = `turn-${turn}-action-a`;
+  const actionBId = `turn-${turn}-action-b`;
+  const actions: ResolvedBattleAction[] = [
+    {
+      ...playerAction,
+      id: actionAId,
+      executed: true,
+      skippedReason: null,
+    },
+    {
+      ...aiAction,
+      id: actionBId,
+      executed: false,
+      skippedReason: "incapacitated_before_action",
+    },
+  ];
+
   // Player (side A)
+  const actionAEventStart = events.length;
   applyAction(
     sideA,
     sideB,
@@ -765,21 +844,22 @@ export function resolveTurn(input: {
     situation,
     events,
   );
+  tagActionEvents(events, actionAEventStart, {
+    actionId: actionAId,
+    actorSide: "a",
+    targetSide: "b",
+    actorName: sideA.displayName,
+    targetName: sideB.displayName,
+  });
 
   // Opponent (side B) from policies / stance if still up
   if (!isCombatantDown(sideB) && !isCombatantDown(sideA)) {
-    const aiAction: BattleAction = forceOffense
-      ? { actorSide: "b", kind: "basic_attack" }
-      : chooseActionFromPolicies({
-          policies: input.state.policiesB ?? [],
-          selectedIds: input.state.selectedPolicyIdsB ?? [],
-          actorSide: "b",
-          self: sideB,
-          foe: sideA,
-          skills: input.sideBSkills,
-          turn,
-          legacyStance: input.state.stanceB ?? "balanced",
-        });
+    actions[1] = {
+      ...actions[1]!,
+      executed: true,
+      skippedReason: null,
+    };
+    const actionBEventStart = events.length;
     applyAction(
       sideB,
       sideA,
@@ -789,6 +869,13 @@ export function resolveTurn(input: {
       situation,
       events,
     );
+    tagActionEvents(events, actionBEventStart, {
+      actionId: actionBId,
+      actorSide: "b",
+      targetSide: "a",
+      actorName: sideB.displayName,
+      targetName: sideA.displayName,
+    });
   }
 
   // Incapacity flags
@@ -798,6 +885,8 @@ export function resolveTurn(input: {
     events.push({
       type: "status",
       actorName: sideA.displayName,
+      actorSide: "a",
+      targetSides: ["a"],
       summary: `${sideA.displayName} は戦闘不能に陥った。`,
     });
   }
@@ -807,6 +896,8 @@ export function resolveTurn(input: {
     events.push({
       type: "status",
       actorName: sideB.displayName,
+      actorSide: "b",
+      targetSides: ["b"],
       summary: `${sideB.displayName} は戦闘不能に陥った。`,
     });
   }
@@ -880,7 +971,33 @@ export function resolveTurn(input: {
     updatedAt: nowIso(),
   };
 
-  return { state, events };
+  const finalizedEvents = events.map((event, index) => ({
+    ...event,
+    id: event.id ?? `turn-${turn}-event-${index + 1}`,
+  }));
+  return { state, events: finalizedEvents, actions };
+}
+
+function tagActionEvents(
+  events: TurnEvent[],
+  startIndex: number,
+  input: {
+    actionId: string;
+    actorSide: "a" | "b";
+    targetSide: "a" | "b";
+    actorName: string;
+    targetName: string;
+  },
+): void {
+  for (const event of events.slice(startIndex)) {
+    event.sourceActionId = input.actionId;
+    event.actorSide ??= input.actorSide;
+    if (event.targetName === input.targetName) {
+      event.targetSides ??= [input.targetSide];
+    } else if (event.targetName === input.actorName || !event.targetName) {
+      event.targetSides ??= [input.actorSide];
+    }
+  }
 }
 
 function combatScore(c: CombatantState): number {

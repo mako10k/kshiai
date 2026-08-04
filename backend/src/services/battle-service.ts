@@ -2,9 +2,11 @@ import {
   BattlePolicyOptionSchema,
   accumulateBattleBalanceTrace,
   advanceSupervisorClock,
+  applySituationCoefficients,
+  applyTurnSemanticPatch,
   balanceSkill,
   buildBattleTurnRecord,
-  buildCharacterAgentStateChange,
+  buildSemanticObservationState,
   createBattleState,
   happeningToEvents,
   happeningToSituationPatch,
@@ -24,13 +26,14 @@ import {
   type BattlePublic,
   type BattleStance,
   type BattleState,
+  type ResolvedBattleAction,
   type CharacterAgentState,
   type CharacterCognition,
   type BattlefieldInstance,
   type BattlefieldPreset,
   type CharacterSheet,
-  type SpeechLine,
   type TurnEvent,
+  type TurnSemanticPatch,
   type Skill,
   toNarrationSnapshot,
   type HappeningPlan,
@@ -119,6 +122,7 @@ export function toBattlePublic(
     battlefield: state.battlefield
       ? toPublicInstance(state.battlefield)
       : null,
+    semanticState: state.observationStatePublic ?? null,
     log: state.log,
     availableActions: [],
     winnerSide: state.winnerSide,
@@ -415,30 +419,6 @@ export async function startBattle(input: {
     priorMatchSummary,
   });
 
-  // Light scene seed only — full opening monologue is the prologue advance.
-  try {
-    const sit = await withTimeout(
-      input.llm.proposeSituation({
-        scene: state.situation.scene,
-        turn: 0,
-        eventsHint: "opening",
-        battlefield,
-      }),
-      8_000,
-      "openingSituation",
-    );
-    if (sit.scene) state.situation.scene = sit.scene;
-    if (sit.notes) state.situation.notes = sit.notes;
-    if (sit.coefficients) {
-      state.situation.coefficients = {
-        ...state.situation.coefficients,
-        ...sit.coefficients,
-      };
-    }
-  } catch {
-    /* keep concretized battlefield notes */
-  }
-
   state = {
     ...state,
     prologuePending: true,
@@ -534,8 +514,14 @@ async function advanceCharacterAgents(input: {
   mine: CharacterSheet;
   opp: CharacterSheet;
   events: TurnEvent[];
-}): Promise<{ state: BattleState; speeches: SpeechLine[] }> {
-  const record = buildBattleTurnRecord(input);
+  actions: ResolvedBattleAction[];
+}): Promise<{ state: BattleState }> {
+  const record = buildBattleTurnRecord({
+    before: input.before,
+    after: input.after,
+    events: input.events,
+    actions: input.actions,
+  });
   const cognitionA = record.cognitionA;
   const cognitionB = record.cognitionB;
   const identityA = input.mine.identity ?? defaultCharacterIdentity();
@@ -548,7 +534,7 @@ async function advanceCharacterAgents(input: {
   };
   let agents;
   try {
-    agents = await withTimeout(Promise.all([
+    agents = await withTimeout(Promise.allSettled([
       input.llm.advanceCharacterAgent({
         character: {
           displayName: input.mine.displayName,
@@ -560,6 +546,7 @@ async function advanceCharacterAgents(input: {
         foeName: input.opp.displayName,
         previous: previousA,
         cognition: cognitionA,
+        observation: input.after.observationStateA!,
       }),
       input.llm.advanceCharacterAgent({
         character: {
@@ -572,6 +559,7 @@ async function advanceCharacterAgents(input: {
         foeName: input.mine.displayName,
         previous: previousB,
         cognition: cognitionB,
+        observation: input.after.observationStateB!,
       }),
     ]), 18_000, "advanceCharacterAgents");
   } catch (error) {
@@ -582,35 +570,167 @@ async function advanceCharacterAgents(input: {
     // Still surface a minimal reaction so neither side goes fully blank.
     return {
       state: stateWithRecord,
-      speeches: [
-        { speaker: input.mine.displayName, text: "…" },
-        { speaker: input.opp.displayName, text: "…" },
-      ],
     };
   }
-  const [agentA, agentB] = agents;
-  const completedRecord = {
-    ...record,
-    agentStateChangeA: buildCharacterAgentStateChange(previousA, agentA.state),
-    agentStateChangeB: buildCharacterAgentStateChange(previousB, agentB.state),
-  };
-  // Private reaction samples only (not public UI lines — narrator authors speeches).
-  const speeches: SpeechLine[] = [
-    { speaker: input.mine.displayName, text: agentA.speech },
-    { speaker: input.opp.displayName, text: agentB.speech },
-  ];
+  const [resultA, resultB] = agents;
+  const agentA = resultA.status === "fulfilled" ? resultA.value : null;
+  const agentB = resultB.status === "fulfilled" ? resultB.value : null;
+  if (resultA.status === "rejected") {
+    console.warn("[battle] side A character agent retained previous state", resultA.reason);
+  }
+  if (resultB.status === "rejected") {
+    console.warn("[battle] side B character agent retained previous state", resultB.reason);
+  }
   return {
     state: {
       ...input.after,
-      agentStateA: agentA.state,
-      agentStateB: agentB.state,
+      agentStateA: agentA?.state ?? previousA,
+      agentStateB: agentB?.state ?? previousB,
       turnRecords: [
         ...(input.after.turnRecords ?? []),
-        completedRecord,
+        record,
       ].slice(-50),
     },
-    speeches,
   };
+}
+
+export async function reconcileSemanticState(input: {
+  llm: LlmProvider;
+  stateBeforeTurn: BattleState;
+  resolvedState: BattleState;
+  mine: CharacterSheet;
+  opp: CharacterSheet;
+  actions: ResolvedBattleAction[];
+  events: TurnEvent[];
+}): Promise<{
+  state: BattleState;
+  patch: TurnSemanticPatch | null;
+  status: "applied" | "rejected" | "skipped";
+}> {
+  const semanticBefore = input.stateBeforeTurn.semanticState;
+  if (!semanticBefore) {
+    return { state: input.resolvedState, patch: null, status: "skipped" };
+  }
+  const commitObservationState = (
+    after: typeof semanticBefore,
+    status: "applied" | "rejected" | "skipped",
+    patch: TurnSemanticPatch | null,
+  ): BattleState => ({
+    ...input.resolvedState,
+    semanticState: after,
+    observationStateA: buildSemanticObservationState({
+      before: semanticBefore,
+      after,
+      observer: "a",
+      previousSnapshot: input.stateBeforeTurn.observationStateA?.snapshot,
+    }),
+    observationStateB: buildSemanticObservationState({
+      before: semanticBefore,
+      after,
+      observer: "b",
+      previousSnapshot: input.stateBeforeTurn.observationStateB?.snapshot,
+    }),
+    observationStatePublic: buildSemanticObservationState({
+      before: semanticBefore,
+      after,
+      observer: "public",
+      previousSnapshot: input.stateBeforeTurn.observationStatePublic?.snapshot,
+    }),
+    latestSemanticTransition: {
+      turn: input.resolvedState.turn,
+      status,
+      fromRevision: semanticBefore.revision,
+      toRevision: after.revision,
+      patch,
+    },
+  });
+  try {
+    const proposed = await withTimeout(
+      input.llm.reconcileTurnSemanticState({
+        turn: input.resolvedState.turn,
+        before: semanticBefore,
+        actions: input.actions,
+        events: input.events,
+        battlefield: input.resolvedState.battlefield,
+        characters: {
+          a: {
+            displayName: input.mine.displayName,
+            appearanceSummary: input.mine.appearance.summary,
+            traits: input.mine.traits,
+            basicAttack: {
+              name: input.mine.basicAttack?.name ?? "基本アクション",
+              description: input.mine.basicAttack?.description ?? "そのキャラクターらしい基本行動。",
+            },
+            skills: input.mine.skills.map(({ id, name, description }) => ({
+              id,
+              name,
+              description,
+            })),
+          },
+          b: {
+            displayName: input.opp.displayName,
+            appearanceSummary: input.opp.appearance.summary,
+            traits: input.opp.traits,
+            basicAttack: {
+              name: input.opp.basicAttack?.name ?? "基本アクション",
+              description: input.opp.basicAttack?.description ?? "そのキャラクターらしい基本行動。",
+            },
+            skills: input.opp.skills.map(({ id, name, description }) => ({
+              id,
+              name,
+              description,
+            })),
+          },
+        },
+      }),
+      16_000,
+      "reconcileTurnSemanticState",
+    );
+    const applied = applyTurnSemanticPatch({
+      state: semanticBefore,
+      patch: proposed.patch,
+      turn: input.resolvedState.turn,
+      allowedSourceEventIds: new Set(
+        input.events.flatMap((event) => event.id ? [event.id] : []),
+      ),
+    });
+    if (!applied.ok) {
+      console.warn(
+        `[battle] semantic patch rejected ${applied.error.code}: ${applied.error.message}`,
+      );
+      return {
+        state: commitObservationState(semanticBefore, "rejected", proposed.patch),
+        patch: proposed.patch,
+        status: "rejected",
+      };
+    }
+    const situation = applySituationCoefficients(
+      input.resolvedState.situation,
+      {
+        ...proposed.nextSituation,
+        scene: applied.state.scene.summary || input.resolvedState.situation.scene,
+      },
+      input.resolvedState.battlefield?.coefficients,
+    );
+    return {
+      state: {
+        ...commitObservationState(applied.state, "applied", proposed.patch),
+        situation,
+      },
+      patch: proposed.patch,
+      status: "applied",
+    };
+  } catch (error) {
+    console.warn(
+      "[battle] semantic reconciliation skipped",
+      error instanceof Error ? error.message : error,
+    );
+    return {
+      state: commitObservationState(semanticBefore, "skipped", null),
+      patch: null,
+      status: "skipped",
+    };
+  }
 }
 
 async function resolveNarrationFocusAndDigests(input: {
@@ -830,34 +950,13 @@ async function advanceTurnWithLease(input: {
     });
   }
 
-  // Situation: short timeout preserves the current scene. Never block the turn.
-  let baseSituation: Partial<Situation> = {
+  // Ordinary scene continuity is reconciled from committed turn effects below.
+  // Only a supervisor-approved anti-stall happening may affect this turn.
+  const baseSituation: Partial<Situation> = {
     scene: state.situation.scene,
     notes: state.situation.notes,
     coefficients: {},
   };
-  try {
-    baseSituation = await withTimeout(
-      input.llm.proposeSituation({
-        scene: state.situation.scene,
-        turn: upcomingTurn,
-        eventsHint: [
-          `policies:${(state.selectedPolicyIdsA ?? []).join(",")}`,
-          happening
-            ? `supervisor:field_shift:${happening?.title ?? "env"}`
-            : "supervisor:steady",
-        ].join("|"),
-        battlefield: state.battlefield,
-      }),
-      8_000,
-      "proposeSituation",
-    );
-  } catch (e) {
-    console.warn(
-      "[battle] proposeSituation skipped",
-      e instanceof Error ? e.message : e,
-    );
-  }
 
   const situationUpdate: Partial<Situation> = mergeSituationPatches(
     baseSituation,
@@ -919,14 +1018,24 @@ async function advanceTurnWithLease(input: {
   );
   next = { ...next, supervisor };
 
+  emit({ type: "phase", phase: "agents" });
+  const semanticTurn = await reconcileSemanticState({
+    llm: input.llm,
+    stateBeforeTurn: state,
+    resolvedState: next,
+    mine,
+    opp,
+    actions: resolved.actions,
+    events,
+  });
+  next = semanticTurn.state;
+
   const perspective: NarrationPerspective =
     next.narrationStyle?.perspective ?? "external";
-  let privateReactions: SpeechLine[] = [];
   let cognitionA: CharacterCognition | undefined;
   let cognitionB: CharacterCognition | undefined;
 
   if (agentsUsefulForPerspective(perspective)) {
-    emit({ type: "phase", phase: "agents" });
     const agentTurn = await advanceCharacterAgents({
       llm: input.llm,
       before: state,
@@ -934,9 +1043,9 @@ async function advanceTurnWithLease(input: {
       mine,
       opp,
       events,
+      actions: resolved.actions,
     });
     next = agentTurn.state;
-    privateReactions = agentTurn.speeches;
     const rec = (next.turnRecords ?? [])[(next.turnRecords ?? []).length - 1];
     cognitionA = rec?.cognitionA;
     cognitionB = rec?.cognitionB;
@@ -946,6 +1055,7 @@ async function advanceTurnWithLease(input: {
       before: state,
       after: next,
       events,
+      actions: resolved.actions,
     });
     next = {
       ...next,
@@ -983,8 +1093,8 @@ async function advanceTurnWithLease(input: {
           sideAName: next.sideA.displayName,
           sideBName: next.sideB.displayName,
           battlefield: next.battlefield,
+          semanticObservation: next.observationStatePublic ?? null,
           events,
-          agentSpeeches: privateReactions,
           innerDigests: digests,
           focus,
           perspective,
@@ -1012,24 +1122,16 @@ async function advanceTurnWithLease(input: {
       e instanceof Error ? e.message : e,
     );
     const place = next.battlefield?.displayName ?? next.situation.scene;
-    // Prefer finishing-blow lines first so mechanical fallback still names the KO.
-    const ordered = [
-      ...events.filter((ev) => /とどめ|決め手/.test(ev.summary)),
-      ...events.filter((ev) => !/とどめ|決め手/.test(ev.summary)),
-    ];
     narrative = {
       turn: next.turn,
       narrator: [
         `第${next.turn}ターン — ${place}。`,
-        ...ordered.map((ev) => ev.summary),
+        ...events.map((ev) => ev.summary),
       ],
-      speeches:
-        privateReactions.length > 0
-          ? privateReactions
-          : [
-              { speaker: next.sideA.displayName, text: "…" },
-              { speaker: next.sideB.displayName, text: "…" },
-            ],
+      speeches: [
+        { speaker: next.sideA.displayName, text: "…" },
+        { speaker: next.sideB.displayName, text: "…" },
+      ],
     };
     emit({
       type: "narrator",
@@ -1152,6 +1254,7 @@ async function runPrologueTurn(input: {
       mine: input.mine,
       opp: input.opp,
       events: openEvents,
+      actions: [],
     });
     state = prologueAgents.state;
   }

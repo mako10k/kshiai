@@ -9,7 +9,7 @@ process.env.DATABASE_URL = "";
 process.env.AUTH_PROVIDER = "legacy";
 process.env.DATABASE_PATH = join(tempDir, "test.db");
 
-const { saveBattle, searchCharacterBattleHistory, countFinishedBattlesForCharacter, getCharacterBattleDetail } =
+const { saveBattle, getBattle, searchCharacterBattleHistory, countFinishedBattlesForCharacter, getCharacterBattleDetail } =
   await import("./battles.js");
 const { defaultParameters } = await import("@kshiai/shared");
 import type { BattleState } from "@kshiai/shared";
@@ -60,6 +60,7 @@ function makeFinishedBattle(input: {
     turnRecords: [
       {
         turn: 1,
+        actions: [],
         events: [
           {
             type: "damage",
@@ -100,8 +101,6 @@ function makeFinishedBattle(input: {
           parameterChanges: {},
           observedEvents: [],
         },
-        agentStateChangeA: null,
-        agentStateChangeB: null,
       },
     ],
     log: [
@@ -175,5 +174,11 @@ describe("character battle history tools", () => {
     assert.equal(detail!.result, "win");
     assert.ok(detail!.skillMentions.includes("先手のひらめき"));
     assert.ok(detail!.narrationExcerpts.length >= 1);
+    const legacyLoaded = await getBattle("bat_1");
+    assert.equal(legacyLoaded?.semanticState?.revision, 0);
+    assert.equal(
+      legacyLoaded?.semanticState?.entities["character.a"]?.label,
+      "アオイ",
+    );
   });
 });

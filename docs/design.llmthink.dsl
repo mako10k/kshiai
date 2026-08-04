@@ -258,13 +258,15 @@ decision D16 based_on PR16, D1, D2, D9, D12:
     Each battle owns two isolated private character-agent states containing only
     compact continuity conclusions, goal, emotion, beliefs, observations,
     speech style, self-reference, and last speech. After deterministic resolution,
-    the shared engine persists structured before/after changes and constructs a
-    perspective-aware cognition snapshot for each character. Each agent receives
-    only its own profile, previous private state, opponent name, and that snapshot,
-    then updates its state and authors its own line. The narrator receives committed
-    events and agent-owned lines but writes only narrator prose. Agent state and
-    turn records remain absent from public battle DTOs; step-by-step reasoning is
-    neither requested nor stored.
+    the shared engine constructs a compact mechanical cognition plus the latest
+    side-specific observable snapshot and its immediately preceding diff. Each
+    agent receives only its own profile, previous private state, opponent name,
+    cognition, current observation, and latest observation diff,
+    then updates its state and returns a private reaction sample for continuity.
+    The narrator receives committed events plus only the inner digests allowed by
+    the selected narration perspective, then authors public narration and speech
+    lines. Agent state and turn records remain absent from public battle DTOs;
+    step-by-step reasoning is neither requested nor stored.
 
 problem PR17:
   |
@@ -328,3 +330,41 @@ decision D19 based_on PR19, D2, D14, D18:
     fails, no change is injected and no template fallback runs. Public situation
     events contain only the in-world title and description; internal category
     labels are removed before persistence and narration.
+
+problem PR20:
+  |
+    A turn can narrate that an object was picked up, a window was irreversibly
+    broken, fragments were created, or a character's visible condition changed,
+    while the next turn still receives the original battlefield strings. The
+    missing observable state also weakens the causal chain from resolved action
+    through perception to private character continuity.
+
+evidence EV20:
+  |
+    BattlefieldInstance freezes terrain, obstacles, and conditions at match
+    start; Situation stores only prose, tags, and coefficients; BattleTurnRecord
+    has no stable action IDs or semantic patches; and external narration can skip
+    character-agent advancement. Complete BattleState snapshots are already
+    persisted as JSON, so a compatible structured overlay needs no first-version
+    table migration.
+
+decision D20 based_on PR20, EV20, D1, D2, D14, D16, D19:
+  |
+    Each battle owns a versioned semantic snapshot with a strict outer envelope,
+    stable keyed entities, symmetric observable character entities, and shallow
+    flexible facts. Battlefield concretization creates the initial snapshot;
+    existing battles receive a deterministic revision-zero seed from already
+    structured fields. After deterministic action resolution, a fast LLM may
+    propose JSON Pointer operations grounded in stable action and event IDs.
+    Server code validates revision, paths, references, size, and protected
+    namespaces, then applies the complete patch atomically or not at all.
+    Mechanical state and private agent state are never patchable. Each character
+    receives a side-filtered current observation plus only its latest diff from
+    the committed post-patch world and advances in parallel regardless of narrator
+    perspective. Entity visibility is structured (`visibleTo`) and deterministic
+    projection never interprets prose. The narrator renders the current public
+    observation plus latest diff without mutation authority. The battle persists
+    only the latest canonical snapshot, latest transition, and latest A/B/public
+    observations; older subjective continuity belongs in bounded character-agent
+    memory rather than duplicated turn history. Semantic wording never selects
+    mechanics.

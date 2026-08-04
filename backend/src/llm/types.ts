@@ -2,6 +2,7 @@ import type {
   BattlefieldInstance,
   BattlefieldPreset,
   BattlePolicyOption,
+  BattleSemanticState,
   CharacterImprovementMemo,
   CharacterSheet,
   CharacterIdentity,
@@ -11,9 +12,11 @@ import type {
   NarrativeBlock,
   NarrationFocus,
   NarrationPerspective,
-  SpeechLine,
   Situation,
   TurnEvent,
+  TurnSemanticPatch,
+  ResolvedBattleAction,
+  SemanticObservationState,
 } from "@kshiai/shared";
 
 export type CharacterReference = {
@@ -175,6 +178,33 @@ export interface LlmProvider {
     eventsHint: string;
     battlefield?: BattlefieldInstance | null;
   }): Promise<SituationProposal>;
+  /** Interpret committed turn facts into a proposed observable-world patch. */
+  reconcileTurnSemanticState(input: {
+    turn: number;
+    before: BattleSemanticState;
+    actions: ResolvedBattleAction[];
+    events: TurnEvent[];
+    battlefield?: BattlefieldInstance | null;
+    characters: {
+      a: {
+        displayName: string;
+        appearanceSummary: string;
+        traits: string[];
+        basicAttack: { name: string; description: string };
+        skills: Array<{ id: string; name: string; description: string }>;
+      };
+      b: {
+        displayName: string;
+        appearanceSummary: string;
+        traits: string[];
+        basicAttack: { name: string; description: string };
+        skills: Array<{ id: string; name: string; description: string }>;
+      };
+    };
+  }): Promise<{
+    patch: TurnSemanticPatch;
+    nextSituation?: Partial<Situation>;
+  }>;
   /**
    * Supervisor: invent a field-driven happening that breaks a stagnant fight.
    * Keep it coarse; engine applies light mechanical pressure separately.
@@ -211,6 +241,7 @@ export interface LlmProvider {
     foeName: string;
     previous: CharacterAgentState;
     cognition: CharacterCognition;
+    observation: SemanticObservationState;
   }): Promise<{ state: CharacterAgentState; speech: string }>;
   /**
    * Fluid perspective only: pick turn focus from thin summary digests.
@@ -231,15 +262,13 @@ export interface LlmProvider {
     sideAName: string;
     sideBName: string;
     events: TurnEvent[];
-    /**
-     * @deprecated Public dialogue is narrator-authored. Kept for fallback only.
-     */
-    agentSpeeches?: SpeechLine[];
     /** Already filtered digests for the resolved focus (may be empty). */
     innerDigests?: InnerDigest[];
     focus?: NarrationFocus;
     perspective?: NarrationPerspective;
     battlefield?: BattlefieldInstance | null;
+    /** Committed observable world after reconciliation. Narration cannot mutate it. */
+    semanticObservation?: SemanticObservationState | null;
     /** Narration style instruction for this match. */
     styleInstruction?: string;
     styleName?: string;
