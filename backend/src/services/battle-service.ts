@@ -61,6 +61,11 @@ import {
   projectObserverPerception,
   type QuantizedMechanicalEvidence,
   type ServerOnlyReserveCue,
+  type NarrationControlReference,
+  buildNarrationIdentifierCatalog,
+  buildNarrationPerceptionView,
+  repairNarrationIdentifierText,
+  repairNarrativeBlockIdentifiers,
 } from "@kshiai/shared";
 import {
   recordBattleFinished,
@@ -1192,6 +1197,70 @@ function normalizePublicText(value: string): string {
   return value.normalize("NFKC").replace(/[\s「」『』（）()、。！？!?…・]/g, "");
 }
 
+function narrationIdentifierCatalog(input: {
+  state: BattleState;
+  perspective: NarrationPerspective;
+  focus: NarrationFocus;
+}) {
+  const { state } = input;
+  const view =
+    state.semanticState &&
+    state.observationStatePublic &&
+    state.perceptionFrameA &&
+    state.perceptionFrameB
+      ? buildNarrationPerceptionView({
+          perspective: input.perspective,
+          focus: input.focus,
+          sideALabel: state.sideA.displayName,
+          sideBLabel: state.sideB.displayName,
+          frameA: state.perceptionFrameA,
+          frameB: state.perceptionFrameB,
+          semanticState: state.semanticState,
+          publicObservation: state.observationStatePublic,
+        })
+      : undefined;
+  return buildNarrationIdentifierCatalog({
+    perspective: input.perspective,
+    focus: input.focus,
+    sideALabel: state.sideA.displayName,
+    sideBLabel: state.sideB.displayName,
+    semanticState: state.semanticState,
+    publicObservation: state.observationStatePublic,
+    frameA: state.perceptionFrameA,
+    frameB: state.perceptionFrameB,
+    registryA: state.perceptionRegistryA,
+    registryB: state.perceptionRegistryB,
+    view,
+  });
+}
+
+function narrationTurnControlReferences(input: {
+  events: TurnEvent[];
+  actionBeats: NarrationActionBeat[];
+}): NarrationControlReference[] {
+  const references = new Map<string, NarrationControlReference>();
+  for (const beat of input.actionBeats) {
+    references.set(beat.actionId, {
+      controlId: beat.actionId,
+      renderLabel: beat.actionName.trim().slice(0, 240) || "行動",
+      relation: beat.actorSide === "a" ? "self" : "opponent",
+    });
+  }
+  for (const event of input.events) {
+    if (!event.id || references.has(event.id)) continue;
+    references.set(event.id, {
+      controlId: event.id,
+      renderLabel: event.summary.trim().slice(0, 240) || "出来事",
+      relation: event.actorSide === "a"
+        ? "self"
+        : event.actorSide === "b"
+          ? "opponent"
+          : "environment",
+    });
+  }
+  return [...references.values()];
+}
+
 function replaceRepeatedPublicSpeeches(input: {
   narrative: { speeches: Array<{ speaker: string; text: string }> };
   recentSpeeches: Array<{ speaker: string; text: string }>;
@@ -1465,7 +1534,6 @@ async function advanceTurnWithLease(input: {
     cognitionA,
     cognitionB,
   });
-
   emit({ type: "phase", phase: "narrating" });
   const recentBlocks = state.log.slice(-2);
   const recentNarration = recentBlocks.flatMap((block) => block.narrator).slice(-4);
@@ -1477,6 +1545,14 @@ async function advanceTurnWithLease(input: {
     opp,
     state: next,
   });
+  const identifierCatalog = [
+    ...narrationIdentifierCatalog({
+      state: next,
+      perspective,
+      focus,
+    }),
+    ...narrationTurnControlReferences({ events, actionBeats }),
+  ];
   let narrative;
   try {
     // Per-attempt budget must cover primary abort (~14–16s) + router failover to
@@ -1509,8 +1585,15 @@ async function advanceTurnWithLease(input: {
           onProgress: (progress) => {
             emit({
               type: "narrator",
-              lines: progress.lines,
-              draft: progress.draft ?? null,
+              lines: progress.lines.map((line) =>
+                repairNarrationIdentifierText(line, identifierCatalog)
+              ),
+              draft: progress.draft
+                ? repairNarrationIdentifierText(
+                    progress.draft,
+                    identifierCatalog,
+                  )
+                : null,
               turn: next.turn,
             });
           },
@@ -1541,11 +1624,14 @@ async function advanceTurnWithLease(input: {
     };
     emit({
       type: "narrator",
-      lines: narrative.narrator,
+      lines: narrative.narrator.map((line) =>
+        repairNarrationIdentifierText(line, identifierCatalog)
+      ),
       draft: null,
       turn: next.turn,
     });
   }
+  narrative = repairNarrativeBlockIdentifiers(narrative, identifierCatalog);
   const recentNarrationFingerprints = new Set(
     recentNarration.map(normalizePublicText).filter(Boolean),
   );
@@ -1570,6 +1656,7 @@ async function advanceTurnWithLease(input: {
     recentSpeeches,
     turn: next.turn,
   });
+  narrative = repairNarrativeBlockIdentifiers(narrative, identifierCatalog);
   if (narrative.speeches?.length) {
     emit({ type: "speeches", speeches: narrative.speeches });
   }
@@ -1735,6 +1822,11 @@ async function runPrologueTurn(input: {
     cognitionA: rec?.cognitionA,
     cognitionB: rec?.cognitionB,
   });
+  const identifierCatalog = narrationIdentifierCatalog({
+    state,
+    perspective,
+    focus,
+  });
 
   emit({ type: "phase", phase: "narrating" });
   let narrative;
@@ -1759,8 +1851,12 @@ async function runPrologueTurn(input: {
         onProgress: (progress) => {
           emit({
             type: "narrator",
-            lines: progress.lines,
-            draft: progress.draft ?? null,
+            lines: progress.lines.map((line) =>
+              repairNarrationIdentifierText(line, identifierCatalog)
+            ),
+            draft: progress.draft
+              ? repairNarrationIdentifierText(progress.draft, identifierCatalog)
+              : null,
             turn: 0,
           });
         },
@@ -1790,11 +1886,15 @@ async function runPrologueTurn(input: {
     };
     emit({
       type: "narrator",
-      lines: narrative.narrator,
+      lines: narrative.narrator.map((line) =>
+        repairNarrationIdentifierText(line, identifierCatalog)
+      ),
       draft: null,
       turn: 0,
     });
   }
+
+  narrative = repairNarrativeBlockIdentifiers(narrative, identifierCatalog);
 
   if (narrative.speeches?.length) {
     emit({ type: "speeches", speeches: narrative.speeches });
@@ -1874,6 +1974,11 @@ async function runAftermathTurn(input: {
     cognitionA: rec?.cognitionA,
     cognitionB: rec?.cognitionB,
   });
+  const identifierCatalog = narrationIdentifierCatalog({
+    state,
+    perspective,
+    focus,
+  });
   emit({ type: "phase", phase: "narrating" });
   let narrative;
   try {
@@ -1899,8 +2004,12 @@ async function runAftermathTurn(input: {
         onProgress: (progress) => {
           emit({
             type: "narrator",
-            lines: progress.lines,
-            draft: progress.draft ?? null,
+            lines: progress.lines.map((line) =>
+              repairNarrationIdentifierText(line, identifierCatalog)
+            ),
+            draft: progress.draft
+              ? repairNarrationIdentifierText(progress.draft, identifierCatalog)
+              : null,
             turn: aftermathTurn,
           });
         },
@@ -1930,11 +2039,15 @@ async function runAftermathTurn(input: {
     };
     emit({
       type: "narrator",
-      lines: narrative.narrator,
+      lines: narrative.narrator.map((line) =>
+        repairNarrationIdentifierText(line, identifierCatalog)
+      ),
       draft: null,
       turn: aftermathTurn,
     });
   }
+
+  narrative = repairNarrativeBlockIdentifiers(narrative, identifierCatalog);
 
   if (narrative.speeches?.length) {
     emit({ type: "speeches", speeches: narrative.speeches });

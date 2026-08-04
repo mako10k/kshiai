@@ -12,7 +12,7 @@ export const PERCEPTION_LIMITS = {
   maxReserveCuesPerFrame: 12,
   maxContactRegistryEntries: 64,
   maxSourceRefsPerContact: 8,
-  maxNarrationReferences: 64,
+  maxNarrationReferences: 128,
   maxFrameBytes: 48 * 1024,
   maxRegistryBytes: 64 * 1024,
 } as const;
@@ -836,6 +836,7 @@ const CharacterNarrationPerceptionViewSchema = z.object({
   schemaVersion: z.literal(1),
   mode: z.enum(["self", "opponent"]),
   viewpointSide: BattleSideSchema,
+  viewpointSubject: z.enum(["self", "opponent"]),
   resolvedFromFluid: z.boolean().default(false),
   frame: CharacterPerceptionFrameSchema,
   references: z
@@ -877,6 +878,24 @@ export const NarrationPerceptionViewSchema = z.discriminatedUnion("mode", [
       code: z.ZodIssueCode.custom,
       path: ["frame", "observer", "side"],
       message: "character narration frame must match the viewpoint side",
+    });
+  }
+  if (view.mode === "self" && (
+    view.viewpointSide !== "a" || view.viewpointSubject !== "self"
+  )) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["viewpointSubject"],
+      message: "self narration must explicitly use side A as self",
+    });
+  }
+  if (view.mode === "opponent" && (
+    view.viewpointSide !== "b" || view.viewpointSubject !== "opponent"
+  )) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["viewpointSubject"],
+      message: "opponent narration must explicitly use side B as opponent",
     });
   }
 });

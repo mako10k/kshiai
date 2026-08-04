@@ -15,6 +15,7 @@ export * from "./semantic-state.js";
 export * from "./perception.js";
 export * from "./perception-quantization.js";
 export * from "./perception-projection.js";
+export * from "./narration-perception.js";
 export * from "./balance.js";
 export * from "./balance-observe.js";
 export * from "./drama.js";

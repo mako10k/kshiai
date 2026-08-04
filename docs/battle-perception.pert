@@ -147,6 +147,7 @@ task T_NARRATION_VIEWS PROJECTION_READY -> NARRATION_VIEWS_READY:
     deterministic exact ID-to-label replacement for paragraphs and speeches.
     Test the complete perspective matrix and leakage repair.
   duration 2d
+  status done
   requires:
     DEV 1
 

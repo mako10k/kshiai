@@ -61,6 +61,10 @@ import {
 } from "./perception-prompt-strategy.js";
 import { reviewedPerceptionTopology } from "./perception-topology.js";
 
+const NARRATION_IDENTIFIER_RULES = `Identifier containment is mandatory. Values used as IDs, controlId, perceptId, contact IDs, entity keys, action IDs, event IDs, or JSON paths are non-linguistic control metadata.
+NEVER copy, quote, speak, parenthesize, or use any such identifier as a name in narrator lines, speaker fields, or speech text. Use the matching renderLabel or supplied human display name only.
+If a subjective view marks a subject unknown, suspected, unperceived, or unidentifiable, preserve that uncertainty and never infer the hidden identity from another input field.`;
+
 function parseGeneratedSkill(raw: unknown) {
   if (!raw || typeof raw !== "object") return null;
   const parsed = SkillSchema.safeParse({
@@ -1313,6 +1317,7 @@ JSON only: { "focus": "self"|"foe"|"external"|"both" }`,
         `Narrate a turn-based fictional confrontation in Japanese. It may be physical, ranged, technological, psychic, social, comedic, cute, or abstract. Follow the supplied characters and events; never add swordplay, bodily injury, grimness, or martial framing unless the inputs establish them.
 ${styleBlock}
 ${focusBlock}
+${NARRATION_IDENTIFIER_RULES}
 Perspective gate overrides style instruction: never reveal inner life that is not present in innerDigests.
 Use battlefield flavor (terrain/obstacles) when relevant.
 Build 2–4 non-empty narrator lines around the supplied actionBeats: initiation, movement/contact, then committed consequence. Make the physical, social, technological, psychic, comedic, or abstract action itself clear instead of merely restating damage or condition results.
@@ -1447,6 +1452,7 @@ Do not mention numeric HP/MP/ATK values.`,
         `You write the PROLOGUE of a fictional confrontation (Japanese), before any actions resolve. It may be physical, ranged, technological, psychic, social, comedic, cute, or abstract. Match the supplied genre; never add weapons, injury, hostility, or grim tension unless the inputs establish them.
 ${styleBlock}
 ${focusInstruction(focus)}
+${NARRATION_IDENTIFIER_RULES}
 Include: atmosphere of the field, each participant's opening presence, and rivalry or fate (因縁).
 ${rivalryRule}
 No combat resolution yet. No numeric stats.
@@ -1539,6 +1545,7 @@ JSON: { "turn": 0, "narrator": string[], "speeches": [ { "speaker": string, "tex
         `You write the AFTERMATH of a fictional confrontation (Japanese), not a new turn. Match the supplied genre, including nonviolent, social, comedic, cute, technological, or psychic contests. Describe inability to continue in a concept-appropriate way; never assume wounds, weapons, death, or grimness.
 ${styleBlock}
 ${focusInstruction(focus)}
+${NARRATION_IDENTIFIER_RULES}
 Someone is already incapacitated. Show what becomes of the fallen and how the winner (if any) closes the scene.
 Use battlefield flavor. Keep it emotional / cinematic but short (3–6 narrator lines).
 Optional short speeches for either side (quiet reactions OK). speaker exact names only.
