@@ -30,7 +30,7 @@ Out of scope for 0.5.0:
 | 3 | `T_ACCEPT`: acceptance matrix, typecheck, test, build, PERT | done |
 | 4 | Rewrite WIP history into focused non-WIP commits | done |
 | 5 | Feature PR into `main` | done ([#19](https://github.com/mako10k/kshiai/pull/19)) |
-| 6 | `release/0.5.0`: version bump, CHANGELOG, tag, stage, promote | pending |
+| 6 | `release/0.5.0`: version bump, CHANGELOG, tag, stage, promote | in progress |
 
 ## Acceptance checklist (`T_ACCEPT`)
 

@@ -5,6 +5,8 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-08-04
+
 ### Added
 
 - Adds observer-relative battle perception frames with qualitative absolute and
@@ -15,6 +17,8 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 - Gives each character agent only its frozen self-labelled perception frame,
   validated next actions, and counterpart name/condition only when the frame
   supports that knowledge.
+- Shows matchup-scoped win rate and predicted win rate on opponent selection,
+  and improves battle log auto-scroll hold when the player scrolls manually.
 
 ### Changed
 
@@ -22,6 +26,7 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
   full canonical event and world payload for character-limited perspectives.
 - Character agents no longer receive unconditional foe names, shared semantic
   observations, or canonical cognition as action authority.
+- Centers settled rating display independently for public and overall tracks.
 
 ### Operations
 
