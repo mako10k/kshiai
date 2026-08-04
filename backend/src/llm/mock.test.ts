@@ -1,6 +1,9 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import {
+  buildMinimalObserverPerception,
+  buildNarrationPerceptionView,
+  buildNarrationTurnView,
   buildSemanticObservationState,
   createBattleSemanticState,
 } from "@kshiai/shared";
@@ -14,6 +17,27 @@ describe("mock LLM natural-language handling", () => {
       sideA: { displayName: "姫騎士" },
       sideB: { displayName: "挑戦者" },
     });
+    const observation = buildSemanticObservationState({
+      before: semanticState,
+      after: semanticState,
+      observer: "public",
+    });
+    const frameA = buildMinimalObserverPerception({
+      observerSide: "a",
+      turn: 1,
+      semanticState,
+      quantizedMechanicalEvidence: [],
+      reserveEvidence: [],
+      legacyCounterpartIdentified: true,
+    }).frame;
+    const frameB = buildMinimalObserverPerception({
+      observerSide: "b",
+      turn: 1,
+      semanticState,
+      quantizedMechanicalEvidence: [],
+      reserveEvidence: [],
+      legacyCounterpartIdentified: true,
+    }).frame;
     const agentInput: Parameters<MockLlmProvider["advanceCharacterAgent"]>[0] = {
       character: {
         displayName: "姫騎士",
@@ -29,7 +53,6 @@ describe("mock LLM natural-language handling", () => {
         narrativeBlurb: "礼節を重んじる騎士。",
         skillNames: ["斬撃"],
       },
-      foeName: "挑戦者",
       previous: {
         privateMemory: "",
         currentGoal: "",
@@ -40,24 +63,14 @@ describe("mock LLM natural-language handling", () => {
         selfReference: "わたくし",
         lastSpeech: null,
       },
-      cognition: {
-        turn: 1,
-        scene: "闘技場",
-        ownCondition: "steady",
-        foeCondition: "strained",
-        parameterChanges: {},
-        observedEvents: [],
+      perception: frameA,
+      counterpart: {
+        displayName: "挑戦者",
+        condition: "strained",
       },
-      observation: buildSemanticObservationState({
-        before: semanticState,
-        after: semanticState,
-        observer: "a",
-      }),
       decision: {
         nextTurn: 2,
         turnsRemaining: 19,
-        ownCondition: "steady",
-        foeCondition: "strained",
         availableActions: [
           { kind: "basic_attack", name: "基本攻撃" },
         ],
@@ -71,16 +84,11 @@ describe("mock LLM natural-language handling", () => {
 
     const finisherResult = await provider.advanceCharacterAgent({
       ...agentInput,
-      cognition: {
-        ...agentInput.cognition,
-        turn: 19,
-        foeCondition: "critical",
-      },
+      perception: { ...agentInput.perception, turn: 19 },
+      counterpart: { displayName: "挑戦者", condition: "critical" },
       decision: {
         nextTurn: 20,
         turnsRemaining: 1,
-        ownCondition: "steady",
-        foeCondition: "critical",
         availableActions: [
           { kind: "basic_attack", name: "基本攻撃" },
           {
@@ -113,16 +121,74 @@ describe("mock LLM natural-language handling", () => {
       useFinisher: true,
     });
 
+    const perceptionView = buildNarrationPerceptionView({
+      perspective: "external",
+      focus: "external",
+      sideALabel: "姫騎士",
+      sideBLabel: "挑戦者",
+      frameA,
+      frameB,
+      semanticState,
+      publicObservation: observation,
+    });
     const narration = await provider.narrateTurn({
-      turn: 1,
-      scene: "闘技場",
-      sideAName: "姫騎士",
-      sideBName: "挑戦者",
-      events: [],
+      view: buildNarrationTurnView({
+        turn: 1,
+        scene: "闘技場",
+        perspective: "external",
+        focus: "external",
+        sideALabel: "姫騎士",
+        sideBLabel: "挑戦者",
+        perception: perceptionView,
+        semanticState,
+        publicObservation: observation,
+        frameA,
+        frameB,
+        events: [],
+        actionBeats: [],
+      }),
     });
     assert.deepEqual(narration.speeches, [
       { speaker: "姫騎士", text: "次は逃さない。" },
       { speaker: "挑戦者", text: "まだ終わらない。" },
+    ]);
+
+    const unknownFrameA = buildMinimalObserverPerception({
+      observerSide: "a",
+      turn: 1,
+      semanticState,
+      quantizedMechanicalEvidence: [],
+      reserveEvidence: [],
+    }).frame;
+    const selfView = buildNarrationPerceptionView({
+      perspective: "self",
+      focus: "self",
+      sideALabel: "姫騎士",
+      sideBLabel: "挑戦者",
+      frameA: unknownFrameA,
+      frameB,
+      semanticState,
+      publicObservation: observation,
+    });
+    const subjective = await provider.narrateTurn({
+      view: buildNarrationTurnView({
+        turn: 1,
+        scene: "闘技場",
+        perspective: "self",
+        focus: "self",
+        sideALabel: "姫騎士",
+        sideBLabel: "挑戦者",
+        perception: selfView,
+        semanticState,
+        publicObservation: observation,
+        frameA: unknownFrameA,
+        frameB,
+        events: [],
+        actionBeats: [],
+      }),
+    });
+    assert.deepEqual(subjective.speeches, [
+      { speaker: "姫騎士", text: "次は逃さない。" },
     ]);
   });
 

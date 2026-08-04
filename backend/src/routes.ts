@@ -15,7 +15,6 @@ import {
   coalesceNonEmptyList,
   restoreRevisionSnapshot,
   toggleCharacterPortrait,
-  toPublicCharacter,
   toPublicNarrationStyle,
   toPublicPreset,
   type BattlefieldPreset,
@@ -47,7 +46,7 @@ import {
   pickRandomOpponent,
   pickAutoMatchedOpponent,
   startBattle,
-  toBattlePublic,
+  toBattlePublicForViewer,
 } from "./services/battle-service.js";
 import { getBalanceSummary } from "./services/balance-observe.js";
 import { findCharacterNameConflict } from "./character-name-uniqueness.js";
@@ -198,7 +197,7 @@ export function buildRoutes() {
     const sheet = await charRepo.getSheet(c.req.param("id"));
     if (!sheet) return c.json({ error: "not_found" }, 404);
     return c.json({
-      character: toPublicCharacter(sheet, user.id),
+      character: await charRepo.toPublicCharacterForViewer(sheet, user.id),
       isOwner: sheet.ownerUserId === user.id,
     });
   });
@@ -293,7 +292,7 @@ export function buildRoutes() {
     return c.json({
       draft: {
         id: draftId,
-        character: toPublicCharacter(sheet, user.id),
+        character: await charRepo.toPublicCharacterForViewer(sheet, user.id),
         assistantMessage: gen.assistantMessage,
       },
     });
@@ -344,7 +343,7 @@ export function buildRoutes() {
     return c.json({
       draft: {
         id: draft.id,
-        character: toPublicCharacter(sheet, user.id),
+        character: await charRepo.toPublicCharacterForViewer(sheet, user.id),
         assistantMessage: adj.assistantMessage,
       },
     });
@@ -357,7 +356,10 @@ export function buildRoutes() {
       draft: draft
         ? {
             id: draft.id,
-            character: toPublicCharacter(draft.sheet, user.id),
+            character: await charRepo.toPublicCharacterForViewer(
+              draft.sheet,
+              user.id,
+            ),
             assistantMessage: draft.assistantMessage,
           }
         : null,
@@ -393,7 +395,10 @@ export function buildRoutes() {
       /* non-fatal */
     }
     return c.json({
-      character: toPublicCharacter(draft.sheet, user.id),
+      character: await charRepo.toPublicCharacterForViewer(
+        draft.sheet,
+        user.id,
+      ),
       assistantMessage: "キャラクターを確定して保存しました。",
     });
   });
@@ -465,7 +470,7 @@ export function buildRoutes() {
       /* non-fatal */
     }
     return c.json({
-      character: toPublicCharacter(next, user.id),
+      character: await charRepo.toPublicCharacterForViewer(next, user.id),
       assistantMessage: adj.assistantMessage,
     });
   });
@@ -498,7 +503,7 @@ export function buildRoutes() {
       /* non-fatal */
     }
     return c.json({
-      character: toPublicCharacter(restored, user.id),
+      character: await charRepo.toPublicCharacterForViewer(restored, user.id),
       assistantMessage: "直前の調整前の内容に戻しました。",
     });
   });
@@ -588,7 +593,9 @@ export function buildRoutes() {
     } catch {
       /* non-fatal */
     }
-    return c.json({ character: toPublicCharacter(copy, user.id) });
+    return c.json({
+      character: await charRepo.toPublicCharacterForViewer(copy, user.id),
+    });
   });
 
   authed.delete("/characters/:id", async (c) => {
@@ -596,12 +603,7 @@ export function buildRoutes() {
     const id = c.req.param("id");
     const sheet = await charRepo.softDeleteCharacter(id, user.id);
     if (!sheet) return c.json({ error: "not_found" }, 404);
-    // Void Elo gained/lost against this character so deletes can't farm rating
-    const { voidRatingsInvolvingCharacter } = await import(
-      "./services/rating-service.js"
-    );
-    const voided = await voidRatingsInvolvingCharacter(id);
-    return c.json({ ok: true, ratingMatchesVoided: voided });
+    return c.json({ ok: true });
   });
 
   authed.get("/characters/:id/image-quota", async (c) => {
@@ -637,7 +639,7 @@ export function buildRoutes() {
     }
     await charRepo.saveSheet(toggled);
     return c.json({
-      character: toPublicCharacter(toggled, user.id),
+      character: await charRepo.toPublicCharacterForViewer(toggled, user.id),
       assistantMessage: "顔画像を切り替えました。",
     });
   });
@@ -717,7 +719,7 @@ export function buildRoutes() {
       };
       await charRepo.saveSheet(next);
       return c.json({
-        character: toPublicCharacter(next, user.id),
+        character: await charRepo.toPublicCharacterForViewer(next, user.id),
         note: result.note,
         ok: result.ok,
         quota,
@@ -1114,7 +1116,9 @@ export function buildRoutes() {
     const mine = await charRepo.getSheet(meta.side_a_character_id);
     if (!mine) return c.json({ error: "not_found" }, 404);
     const opp = await charRepo.getSheet(meta.side_b_character_id);
-    return c.json({ battle: toBattlePublic(state, mine, null, opp) });
+    return c.json({
+      battle: await toBattlePublicForViewer(state, mine, null, opp),
+    });
   });
 
   /** Advance one turn; actions chosen automatically from stances. */

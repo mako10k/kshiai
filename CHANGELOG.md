@@ -5,6 +5,34 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 
 ## [Unreleased]
 
+### Added
+
+- Adds observer-relative battle perception frames with qualitative absolute and
+  target-relative effect bands plus self reserve cues, without exposing raw
+  combat totals or thresholds.
+- Adds multi-modal sensory evidence, anonymous observer-local contacts, and
+  perspective-specific narration views with deterministic identifier redaction.
+- Gives each character agent only its frozen self-labelled perception frame,
+  validated next actions, and counterpart name/condition only when the frame
+  supports that knowledge.
+
+### Changed
+
+- Normal-turn narration is driven by a derived perception view instead of the
+  full canonical event and world payload for character-limited perspectives.
+- Character agents no longer receive unconditional foe names, shared semantic
+  observations, or canonical cognition as action authority.
+
+### Operations
+
+- No database migration. Existing battle JSON gains optional perception frame
+  and private registry fields; older application revisions ignore them.
+- Active legacy battles without perception data seed empty registries and mark
+  the setup counterpart as identified so ongoing matches do not lose known names.
+- Provider or projection failure keeps engine-authored cues and previous contact
+  continuity; invalid sensory evidence is discarded without fabricating facts.
+- Prologue and aftermath narrator contracts are unchanged in this release.
+
 ## [0.4.0] - 2026-08-04
 
 ### Added

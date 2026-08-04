@@ -1,0 +1,248 @@
+{
+  "schemaVersion": 1,
+  "fixtureVersion": "perception-prompts-v2",
+  "provider": "xai",
+  "model": "grok-4-fast-non-reasoning",
+  "repetitions": 1,
+  "evaluatedAt": "2026-08-04T09:01:45.748Z",
+  "combined": {
+    "fixtureVersion": "perception-prompts-v2",
+    "topology": "combined",
+    "sampleCount": 3,
+    "worldSchemaValidRate": 1,
+    "sensorySchemaValidRate": 1,
+    "worldPatchCorrectness": 1,
+    "sensoryCoverage": 0.6666666666666666,
+    "attributionErrorRate": 0.75,
+    "identityLeakageRate": 0,
+    "meanLatencyMs": 2920,
+    "p95LatencyMs": 5625,
+    "measuredTokenSamples": 3,
+    "meanTotalTokens": 1889.6666666666667,
+    "totalTokens": 5669
+  },
+  "split": {
+    "fixtureVersion": "perception-prompts-v2",
+    "topology": "split",
+    "sampleCount": 3,
+    "worldSchemaValidRate": 1,
+    "sensorySchemaValidRate": 1,
+    "worldPatchCorrectness": 0.8333333333333334,
+    "sensoryCoverage": 0.6666666666666666,
+    "attributionErrorRate": 0.75,
+    "identityLeakageRate": 0,
+    "meanLatencyMs": 3632.3333333333335,
+    "p95LatencyMs": 5096,
+    "measuredTokenSamples": 3,
+    "meanTotalTokens": 2494.6666666666665,
+    "totalTokens": 7484
+  },
+  "recommendation": {
+    "topology": null,
+    "reason": "insufficient_samples",
+    "combinedFailures": [
+      "sensory_coverage",
+      "attribution_error_rate"
+    ],
+    "splitFailures": [
+      "world_patch_correctness",
+      "sensory_coverage",
+      "attribution_error_rate"
+    ]
+  },
+  "combinedSamples": [
+    {
+      "fixtureId": "dark-unidentified-impact",
+      "topology": "combined",
+      "worldSchemaValid": true,
+      "sensorySchemaValid": true,
+      "worldPatchCorrectness": 1,
+      "sensoryCoverage": 1,
+      "attributionErrors": 4,
+      "attributionChecks": 4,
+      "identityLeakages": 0,
+      "identityLeakageChecks": 0,
+      "latencyMs": 5625,
+      "totalTokens": 2128,
+      "observedWorldOperations": [],
+      "observedSensoryCues": [
+        {
+          "modality": "sound",
+          "sourceKind": "event",
+          "accessA": "clear",
+          "identityA": "identified",
+          "accessB": "clear",
+          "identityB": "suspected"
+        },
+        {
+          "modality": "touch",
+          "sourceKind": "event",
+          "accessA": "clear",
+          "identityA": "identified",
+          "accessB": "none",
+          "identityB": "unknown"
+        }
+      ],
+      "worldSchemaIssues": [],
+      "sensorySchemaIssues": []
+    },
+    {
+      "fixtureId": "ambient-source-less-footsteps",
+      "topology": "combined",
+      "worldSchemaValid": true,
+      "sensorySchemaValid": true,
+      "worldPatchCorrectness": 1,
+      "sensoryCoverage": 0,
+      "attributionErrors": 0,
+      "attributionChecks": 0,
+      "identityLeakages": 0,
+      "identityLeakageChecks": 0,
+      "latencyMs": 694,
+      "totalTokens": 1592,
+      "observedWorldOperations": [],
+      "observedSensoryCues": [],
+      "worldSchemaIssues": [],
+      "sensorySchemaIssues": []
+    },
+    {
+      "fixtureId": "visible-persistent-pickup",
+      "topology": "combined",
+      "worldSchemaValid": true,
+      "sensorySchemaValid": true,
+      "worldPatchCorrectness": 1,
+      "sensoryCoverage": 1,
+      "attributionErrors": 2,
+      "attributionChecks": 4,
+      "identityLeakages": 0,
+      "identityLeakageChecks": 0,
+      "latencyMs": 2441,
+      "totalTokens": 1949,
+      "observedWorldOperations": [
+        {
+          "op": "replace",
+          "path": "/entities/iron_pipe.1/location"
+        }
+      ],
+      "observedSensoryCues": [
+        {
+          "modality": "sound",
+          "sourceKind": "entity",
+          "accessA": "clear",
+          "identityA": "identified",
+          "accessB": "coarse",
+          "identityB": "suspected"
+        }
+      ],
+      "worldSchemaIssues": [],
+      "sensorySchemaIssues": []
+    }
+  ],
+  "splitSamples": [
+    {
+      "fixtureId": "dark-unidentified-impact",
+      "topology": "split",
+      "worldSchemaValid": true,
+      "sensorySchemaValid": true,
+      "worldPatchCorrectness": 1,
+      "sensoryCoverage": 1,
+      "attributionErrors": 4,
+      "attributionChecks": 4,
+      "identityLeakages": 0,
+      "identityLeakageChecks": 0,
+      "latencyMs": 5096,
+      "totalTokens": 2830,
+      "observedWorldOperations": [],
+      "observedSensoryCues": [
+        {
+          "modality": "sound",
+          "sourceKind": "event",
+          "accessA": "clear",
+          "identityA": "identified",
+          "accessB": "clear",
+          "identityB": "suspected"
+        },
+        {
+          "modality": "touch",
+          "sourceKind": "event",
+          "accessA": "clear",
+          "identityA": "identified",
+          "accessB": "none",
+          "identityB": "unknown"
+        },
+        {
+          "modality": "atmosphere",
+          "sourceKind": "ambient",
+          "accessA": "clear",
+          "identityA": "identified",
+          "accessB": "clear",
+          "identityB": "identified"
+        }
+      ],
+      "worldSchemaIssues": [],
+      "sensorySchemaIssues": []
+    },
+    {
+      "fixtureId": "ambient-source-less-footsteps",
+      "topology": "split",
+      "worldSchemaValid": true,
+      "sensorySchemaValid": true,
+      "worldPatchCorrectness": 1,
+      "sensoryCoverage": 1,
+      "attributionErrors": 2,
+      "attributionChecks": 4,
+      "identityLeakages": 0,
+      "identityLeakageChecks": 4,
+      "latencyMs": 4075,
+      "totalTokens": 2434,
+      "observedWorldOperations": [],
+      "observedSensoryCues": [
+        {
+          "modality": "vision",
+          "sourceKind": "ambient",
+          "accessA": "clear",
+          "identityA": "identified",
+          "accessB": "clear",
+          "identityB": "identified"
+        },
+        {
+          "modality": "sound",
+          "sourceKind": "ambient",
+          "accessA": "coarse",
+          "identityA": "unknown",
+          "accessB": "coarse",
+          "identityB": "unknown"
+        }
+      ],
+      "worldSchemaIssues": [],
+      "sensorySchemaIssues": []
+    },
+    {
+      "fixtureId": "visible-persistent-pickup",
+      "topology": "split",
+      "worldSchemaValid": true,
+      "sensorySchemaValid": true,
+      "worldPatchCorrectness": 0.5,
+      "sensoryCoverage": 0,
+      "attributionErrors": 0,
+      "attributionChecks": 0,
+      "identityLeakages": 0,
+      "identityLeakageChecks": 0,
+      "latencyMs": 1726,
+      "totalTokens": 2220,
+      "observedWorldOperations": [
+        {
+          "op": "replace",
+          "path": "/scene/summary"
+        },
+        {
+          "op": "replace",
+          "path": "/entities/iron_pipe.1/location"
+        }
+      ],
+      "observedSensoryCues": [],
+      "worldSchemaIssues": [],
+      "sensorySchemaIssues": []
+    }
+  ],
+  "callErrors": []
+}

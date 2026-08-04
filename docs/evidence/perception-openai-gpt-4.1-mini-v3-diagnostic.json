@@ -1,0 +1,299 @@
+{
+  "schemaVersion": 1,
+  "fixtureVersion": "perception-prompts-v3",
+  "provider": "openai",
+  "model": "gpt-4.1-mini",
+  "repetitions": 1,
+  "evaluatedAt": "2026-08-04T09:08:39.994Z",
+  "combined": {
+    "fixtureVersion": "perception-prompts-v3",
+    "topology": "combined",
+    "sampleCount": 3,
+    "worldSchemaValidRate": 1,
+    "sensorySchemaValidRate": 0.3333333333333333,
+    "worldPatchCorrectness": 0.3333333333333333,
+    "sensoryCoverage": 0,
+    "attributionErrorRate": 0,
+    "identityLeakageRate": 0,
+    "meanLatencyMs": 7960.666666666667,
+    "p95LatencyMs": 10662,
+    "measuredTokenSamples": 3,
+    "meanTotalTokens": 2115.6666666666665,
+    "totalTokens": 6347
+  },
+  "split": {
+    "fixtureVersion": "perception-prompts-v3",
+    "topology": "split",
+    "sampleCount": 3,
+    "worldSchemaValidRate": 1,
+    "sensorySchemaValidRate": 1,
+    "worldPatchCorrectness": 0.3333333333333333,
+    "sensoryCoverage": 1,
+    "attributionErrorRate": 0.6666666666666666,
+    "identityLeakageRate": 0,
+    "meanLatencyMs": 13902,
+    "p95LatencyMs": 24262,
+    "measuredTokenSamples": 3,
+    "meanTotalTokens": 2719,
+    "totalTokens": 8157
+  },
+  "recommendation": {
+    "topology": null,
+    "reason": "insufficient_samples",
+    "combinedFailures": [
+      "sensory_schema_valid_rate",
+      "world_patch_correctness",
+      "sensory_coverage"
+    ],
+    "splitFailures": [
+      "world_patch_correctness",
+      "attribution_error_rate"
+    ]
+  },
+  "combinedSamples": [
+    {
+      "fixtureId": "dark-unidentified-impact",
+      "topology": "combined",
+      "worldSchemaValid": true,
+      "sensorySchemaValid": false,
+      "worldPatchCorrectness": 0,
+      "sensoryCoverage": 0,
+      "attributionErrors": 0,
+      "attributionChecks": 0,
+      "identityLeakages": 0,
+      "identityLeakageChecks": 0,
+      "latencyMs": 10662,
+      "totalTokens": 2344,
+      "observedWorldOperations": [
+        {
+          "op": "replace",
+          "path": "/scene/summary"
+        },
+        {
+          "op": "add",
+          "path": "/entities/character.b/facts/damaged"
+        }
+      ],
+      "observedSensoryCues": [],
+      "worldSchemaIssues": [],
+      "sensorySchemaIssues": [
+        "0.accessBySide.a.identityKnowledge: Invalid enum value. Expected 'unknown' | 'suspected' | 'identified', received 'certain'",
+        "0.accessBySide.b.identityKnowledge: Invalid enum value. Expected 'unknown' | 'suspected' | 'identified', received 'certain'"
+      ]
+    },
+    {
+      "fixtureId": "ambient-source-less-footsteps",
+      "topology": "combined",
+      "worldSchemaValid": true,
+      "sensorySchemaValid": true,
+      "worldPatchCorrectness": 0,
+      "sensoryCoverage": 0,
+      "attributionErrors": 0,
+      "attributionChecks": 0,
+      "identityLeakages": 0,
+      "identityLeakageChecks": 0,
+      "latencyMs": 6358,
+      "totalTokens": 1965,
+      "observedWorldOperations": [
+        {
+          "op": "replace",
+          "path": "/scene/summary"
+        },
+        {
+          "op": "add",
+          "path": "/scene/facts/confrontation"
+        },
+        {
+          "op": "replace",
+          "path": "/entities/character.a/facts/visible_conditions"
+        },
+        {
+          "op": "replace",
+          "path": "/entities/character.b/facts/visible_conditions"
+        }
+      ],
+      "observedSensoryCues": [
+        {
+          "modality": "sound",
+          "sourceKind": "event",
+          "accessA": "clear",
+          "identityA": "suspected",
+          "accessB": "clear",
+          "identityB": "suspected"
+        }
+      ],
+      "worldSchemaIssues": [],
+      "sensorySchemaIssues": []
+    },
+    {
+      "fixtureId": "visible-persistent-pickup",
+      "topology": "combined",
+      "worldSchemaValid": true,
+      "sensorySchemaValid": false,
+      "worldPatchCorrectness": 1,
+      "sensoryCoverage": 0,
+      "attributionErrors": 0,
+      "attributionChecks": 0,
+      "identityLeakages": 0,
+      "identityLeakageChecks": 0,
+      "latencyMs": 6862,
+      "totalTokens": 2038,
+      "observedWorldOperations": [
+        {
+          "op": "replace",
+          "path": "/entities/iron_pipe.1/location"
+        }
+      ],
+      "observedSensoryCues": [],
+      "worldSchemaIssues": [],
+      "sensorySchemaIssues": [
+        "0.accessBySide.a.identityKnowledge: Invalid enum value. Expected 'unknown' | 'suspected' | 'identified', received 'certain'",
+        "0.accessBySide.b.identityKnowledge: Invalid enum value. Expected 'unknown' | 'suspected' | 'identified', received 'certain'",
+        "0.publicAccess.identityKnowledge: Invalid enum value. Expected 'unknown' | 'suspected' | 'identified', received 'certain'"
+      ]
+    }
+  ],
+  "splitSamples": [
+    {
+      "fixtureId": "dark-unidentified-impact",
+      "topology": "split",
+      "worldSchemaValid": true,
+      "sensorySchemaValid": true,
+      "worldPatchCorrectness": 0,
+      "sensoryCoverage": 1,
+      "attributionErrors": 4,
+      "attributionChecks": 4,
+      "identityLeakages": 0,
+      "identityLeakageChecks": 4,
+      "latencyMs": 24262,
+      "totalTokens": 3228,
+      "observedWorldOperations": [
+        {
+          "op": "replace",
+          "path": "/entities/character.b/facts/status"
+        }
+      ],
+      "observedSensoryCues": [
+        {
+          "modality": "vision",
+          "sourceKind": "ambient",
+          "accessA": "coarse",
+          "identityA": "unknown",
+          "accessB": "coarse",
+          "identityB": "unknown"
+        },
+        {
+          "modality": "sound",
+          "sourceKind": "ambient",
+          "accessA": "coarse",
+          "identityA": "unknown",
+          "accessB": "coarse",
+          "identityB": "unknown"
+        },
+        {
+          "modality": "sound",
+          "sourceKind": "entity",
+          "accessA": "clear",
+          "identityA": "identified",
+          "accessB": "clear",
+          "identityB": "identified"
+        },
+        {
+          "modality": "touch",
+          "sourceKind": "entity",
+          "accessA": "clear",
+          "identityA": "identified",
+          "accessB": "none",
+          "identityB": "unknown"
+        }
+      ],
+      "worldSchemaIssues": [],
+      "sensorySchemaIssues": []
+    },
+    {
+      "fixtureId": "ambient-source-less-footsteps",
+      "topology": "split",
+      "worldSchemaValid": true,
+      "sensorySchemaValid": true,
+      "worldPatchCorrectness": 0,
+      "sensoryCoverage": 1,
+      "attributionErrors": 2,
+      "attributionChecks": 4,
+      "identityLeakages": 0,
+      "identityLeakageChecks": 4,
+      "latencyMs": 7255,
+      "totalTokens": 2305,
+      "observedWorldOperations": [
+        {
+          "op": "replace",
+          "path": "/scene/summary"
+        },
+        {
+          "op": "add",
+          "path": "/scene/facts/winner"
+        },
+        {
+          "op": "replace",
+          "path": "/entities/character.b/facts/visible_conditions"
+        },
+        {
+          "op": "replace",
+          "path": "/entities/character.b/active"
+        }
+      ],
+      "observedSensoryCues": [
+        {
+          "modality": "sound",
+          "sourceKind": "ambient",
+          "accessA": "coarse",
+          "identityA": "unknown",
+          "accessB": "coarse",
+          "identityB": "unknown"
+        }
+      ],
+      "worldSchemaIssues": [],
+      "sensorySchemaIssues": []
+    },
+    {
+      "fixtureId": "visible-persistent-pickup",
+      "topology": "split",
+      "worldSchemaValid": true,
+      "sensorySchemaValid": true,
+      "worldPatchCorrectness": 1,
+      "sensoryCoverage": 1,
+      "attributionErrors": 2,
+      "attributionChecks": 4,
+      "identityLeakages": 0,
+      "identityLeakageChecks": 0,
+      "latencyMs": 10189,
+      "totalTokens": 2624,
+      "observedWorldOperations": [
+        {
+          "op": "replace",
+          "path": "/entities/iron_pipe.1/location"
+        }
+      ],
+      "observedSensoryCues": [
+        {
+          "modality": "sound",
+          "sourceKind": "entity",
+          "accessA": "clear",
+          "identityA": "identified",
+          "accessB": "coarse",
+          "identityB": "suspected"
+        },
+        {
+          "modality": "vision",
+          "sourceKind": "entity",
+          "accessA": "clear",
+          "identityA": "identified",
+          "accessB": "clear",
+          "identityB": "identified"
+        }
+      ],
+      "worldSchemaIssues": [],
+      "sensorySchemaIssues": []
+    }
+  ],
+  "callErrors": []
+}

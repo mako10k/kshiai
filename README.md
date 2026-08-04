@@ -12,7 +12,11 @@
 
 戦闘中の構造化状態設計: [docs/battle-semantic-state.md](docs/battle-semantic-state.md)
 
+キャラ別知覚・自己フィードバック設計: [docs/battle-perception.md](docs/battle-perception.md)
+
 同修正計画 (perttool): [docs/battle-semantic-state.pert](docs/battle-semantic-state.pert)
+
+キャラ別知覚・自己フィードバック修正計画 (perttool): [docs/battle-perception.pert](docs/battle-perception.pert)
 
 PostgreSQL 移行: [docs/postgres_migration.md](docs/postgres_migration.md)
 旧アカウント移管: [docs/legacy_account_migration.md](docs/legacy_account_migration.md)

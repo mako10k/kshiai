@@ -2,9 +2,13 @@ import type { CharacterSheet } from "@kshiai/shared";
 import {
   CharacterSheetSchema,
   defaultRecord,
+  ensureRecord,
+  ensureRecordOverall,
   ensureCharacterCombatProperties,
   ensureCharacterIdentityProperties,
+  summarizeRatingPopulation,
   toPublicCharacter,
+  type RatingDisplayContext,
 } from "@kshiai/shared";
 import type { CharacterReference } from "../llm/types.js";
 import { normalizeCharacterName } from "../character-name-uniqueness.js";
@@ -81,6 +85,28 @@ export async function listAllSheetsIncludingDeleted(): Promise<CharacterSheet[]>
   return rows.map((row) => parseSheet(row.sheet_json));
 }
 
+/** Population totals used only to center visible ratings on 1500. */
+export async function getRatingDisplayContext(): Promise<RatingDisplayContext> {
+  const active = (await listAllSheetsIncludingDeleted()).filter(isActive);
+  return {
+    public: summarizeRatingPopulation(
+      active.map((sheet) => ensureRecord(sheet).rating),
+    ),
+    overall: summarizeRatingPopulation(
+      active.map((sheet) => ensureRecordOverall(sheet).rating),
+    ),
+  };
+}
+
+export async function toPublicCharacterForViewer(
+  sheet: CharacterSheet,
+  viewerUserId?: string | null,
+  ratingDisplay?: RatingDisplayContext,
+) {
+  const display = ratingDisplay ?? (await getRatingDisplayContext());
+  return toPublicCharacter(sheet, viewerUserId, display);
+}
+
 export async function listSheetsMissingIdentity(): Promise<CharacterSheet[]> {
   const { rows } = await query<{ sheet_json: unknown }>(
     `SELECT sheet_json FROM characters ORDER BY updated_at ASC`,
@@ -145,8 +171,9 @@ export async function listCharactersForUser(userId: string, q?: string) {
     if (rb !== ra) return rb - ra;
     return b.updatedAt.localeCompare(a.updatedAt);
   });
+  const ratingDisplay = await getRatingDisplayContext();
   // Owner always sees private overall stats
-  return sheets.map((s) => toPublicCharacter(s, userId));
+  return sheets.map((s) => toPublicCharacter(s, userId, ratingDisplay));
 }
 
 /** Hide early mock-test junk (e.g. 「はアキ」) from matchmaking. */
@@ -163,8 +190,11 @@ export async function listPublicOpponents(excludeUserId: string, q?: string) {
     const needle = q.trim().toLowerCase();
     sheets = sheets.filter((s) => s.displayName.toLowerCase().includes(needle));
   }
+  const ratingDisplay = await getRatingDisplayContext();
   // Viewer is excludeUserId: own chars get overall; others public-only
-  return sheets.map((s) => toPublicCharacter(s, excludeUserId));
+  return sheets.map((s) =>
+    toPublicCharacter(s, excludeUserId, ratingDisplay),
+  );
 }
 
 /** Engine-only sheets available as opponents; never expose directly from routes. */
@@ -234,7 +264,7 @@ export async function saveSheet(sheet: CharacterSheet): Promise<void> {
   );
 }
 
-/** Soft-delete: hide from lists; rating impact is voided separately. */
+/** Soft-delete: hide from lists without modifying any battle ratings. */
 export async function softDeleteCharacter(
   id: string,
   ownerUserId: string,

@@ -33,6 +33,7 @@ import { makeUniqueCharacterName } from "../character-name-uniqueness.js";
 
 export class MockLlmProvider implements LlmProvider {
   readonly name = "mock";
+  readonly models = { engine: "mock-v1", fast: "mock-v1" };
 
   async generateCharacter(input: GenerateCharacterInput): Promise<GenerateCharacterResult> {
     const prompt = input.prompt;
@@ -292,6 +293,9 @@ export class MockLlmProvider implements LlmProvider {
             ]
           : [],
       },
+      worldPatchStatus: "valid",
+      sensoryEvidence: [],
+      sensoryEvidenceStatus: "valid",
     });
   }
 
@@ -337,24 +341,34 @@ export class MockLlmProvider implements LlmProvider {
   async advanceCharacterAgent(input: Parameters<LlmProvider["advanceCharacterAgent"]>[0]) {
     const selfReference =
       input.previous.selfReference ?? input.character.identity.selfNames[0] ?? "私";
-    const event = input.cognition.observedEvents.at(-1)?.summary ??
-      `${input.cognition.scene}で相手の出方を見ている。`;
+    const counterpartLabel = input.counterpart?.displayName ??
+      input.perception.counterpart.perceivedAs;
+    const event = [
+      input.perception.self,
+      input.perception.counterpart,
+      ...input.perception.others,
+    ].flatMap((slot) => slot.percepts).at(-1)?.phenomenon ??
+      `${counterpartLabel}の気配をうかがっている。`;
     // Quiet traits get stage reactions; others speak briefly (speech never null).
     const quiet = input.character.traits.some((t) =>
       /無口|寡黙|無言|冷静|クール/.test(t),
     );
     const speech = quiet
-      ? input.cognition.turn === 0
-        ? `（${input.foeName}を見据えている）`
+      ? input.perception.turn === 0
+        ? `（${counterpartLabel}の気配をうかがっている）`
         : "…"
-      : input.cognition.turn === 0
-        ? `${selfReference}は、${input.foeName}と向き合おう。`
+      : input.perception.turn === 0
+        ? `${selfReference}は、${counterpartLabel}と向き合おう。`
         : `${selfReference}は、まだ続けられる。`;
+    const ownReserveCritical = input.perception.reserveCues.some((cue) =>
+      cue.subject.kind === "self" &&
+      (cue.relativeBand === "critical" || cue.relativeBand === "empty")
+    );
     const shouldUseFinisher = Boolean(
       input.decision.finisher?.unlocked &&
       input.decision.finisher.remainingUses === 1 &&
-      (input.decision.foeCondition === "critical" ||
-        input.decision.ownCondition === "critical" ||
+      (input.counterpart?.condition === "critical" ||
+        ownReserveCritical ||
         input.decision.finisher.turnsUntilMax === 0 ||
         input.decision.turnsRemaining <= 2),
     );
@@ -373,8 +387,8 @@ export class MockLlmProvider implements LlmProvider {
       state: {
         ...input.previous,
         privateMemory: event.slice(0, 1200),
-        currentGoal: `${input.foeName}との対決を自分らしく続ける`,
-        emotion: input.cognition.ownCondition === "critical" ? "緊張" : "集中",
+        currentGoal: `${counterpartLabel}との対決を自分らしく続ける`,
+        emotion: ownReserveCritical ? "緊張" : "集中",
         observations: [
           ...input.previous.observations.slice(-6),
           event.slice(0, 240),
@@ -420,50 +434,29 @@ export class MockLlmProvider implements LlmProvider {
     return { focus: input.turn % 2 === 0 ? "self" : "foe" };
   }
 
-  async narrateTurn(input: {
-    turn: number;
-    scene: string;
-    sideAName: string;
-    sideBName: string;
-    events: { summary: string; actorName?: string; skillName?: string; intensity?: string }[];
-    actionBeats?: Array<{
-      actorName: string;
-      actionName: string;
-      description: string;
-      outcomes: string[];
-    }>;
-    recentNarration?: string[];
-    recentSpeeches?: Array<{ speaker: string; text: string }>;
-    drama?: { environmentBeatDue: boolean; phase: string };
-    innerDigests?: Array<{ displayName: string; emotion?: string }>;
-    focus?: string;
-    perspective?: string;
-    battlefield?: BattlefieldInstance | null;
-    semanticObservation?: SemanticObservationState | null;
-    styleInstruction?: string;
-    styleName?: string;
-    onProgress?: (progress: { lines: string[]; draft?: string | null }) => void;
-  }): Promise<NarrationResult> {
-    const place = input.battlefield?.displayName
-      ? `${input.scene}（${input.battlefield.displayName}）`
-      : input.scene;
+  async narrateTurn(
+    input: Parameters<LlmProvider["narrateTurn"]>[0],
+  ): Promise<NarrationResult> {
+    const place = input.view.battlefield?.displayName
+      ? `${input.view.scene}（${input.view.battlefield.displayName}）`
+      : input.view.scene;
     const styleNote = input.styleName
       ? `（語り: ${input.styleName}）`
       : "";
-    const focusNote = input.focus ? `［焦点: ${input.focus}］` : "";
+    const focusNote = `［焦点: ${input.view.perception.mode}］`;
     const digestNote = (input.innerDigests ?? [])
       .map((d) => `${d.displayName}の気配（${d.emotion ?? "不明"}）`)
       .filter(Boolean);
     const narrator = [
-      `第${input.turn}ターン — ${place}${styleNote}${focusNote}。`,
+      `第${input.view.turn}ターン — ${place}${styleNote}${focusNote}。`,
       ...digestNote,
-      ...(input.actionBeats ?? []).flatMap((beat) => [
-        `${beat.actorName} は ${beat.actionName} を起こす。${beat.description}`,
+      ...input.view.actionBeats.flatMap((beat) => [
+        `${beat.actorLabel} は ${beat.actionName} を起こす。${beat.description}`,
         ...beat.outcomes,
       ]),
-      ...((input.actionBeats?.length ?? 0) > 0
+      ...(input.view.actionBeats.length > 0
         ? []
-        : input.events.map((e) => e.summary)),
+        : input.view.events.map((event) => event.summary)),
       ...(input.drama?.environmentBeatDue
         ? ["両者の動きに押され、戦場の位置関係も新しく組み替わる。"]
         : []),
@@ -471,15 +464,21 @@ export class MockLlmProvider implements LlmProvider {
     await this.emitNarratorProgress(narrator, input.onProgress);
     const speeches = [
       {
-        speaker: input.sideAName,
-        text: input.turn % 2 === 0 ? "ここから変える。" : "次は逃さない。",
+        speaker: input.view.participantLabels.a,
+        text: input.view.turn % 2 === 0 ? "ここから変える。" : "次は逃さない。",
+        visible: input.view.perception.mode !== "opponent" ||
+          input.view.perception.frame.counterpart.currentAccess !== "none",
       },
       {
-        speaker: input.sideBName,
-        text: input.turn % 3 === 0 ? "その流れは読んだ。" : "まだ終わらない。",
+        speaker: input.view.participantLabels.b,
+        text: input.view.turn % 3 === 0 ? "その流れは読んだ。" : "まだ終わらない。",
+        visible: input.view.perception.mode !== "self" ||
+          input.view.perception.frame.counterpart.currentAccess !== "none",
       },
-    ];
-    return { turn: input.turn, narrator, speeches };
+    ].filter((speech) => speech.visible).map(({ visible: _visible, ...speech }) =>
+      speech
+    );
+    return { turn: input.view.turn, narrator, speeches };
   }
 
   async narratePrologue(input: {

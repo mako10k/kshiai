@@ -1,5 +1,6 @@
 import { z } from "zod";
 import type { CharacterAgentState, CharacterCognition } from "./battle.js";
+import type { CharacterPerceptionFrame } from "./perception.js";
 
 /**
  * Match-level narrator camera / information rights (on NarrationStyle).
@@ -89,6 +90,7 @@ export function buildInnerDigest(input: {
   displayName: string;
   agent: CharacterAgentState | null | undefined;
   cognition: CharacterCognition | null | undefined;
+  perception?: CharacterPerceptionFrame | null;
   level: InnerDigestLevel;
 }): InnerDigest {
   const agent = input.agent;
@@ -100,7 +102,12 @@ export function buildInnerDigest(input: {
     emotion: agent?.emotion?.trim() || undefined,
     goal: agent?.currentGoal?.trim()?.slice(0, 120) || undefined,
     condition: cog?.ownCondition,
-    foeCondition: cog?.foeCondition,
+    foeCondition:
+      input.perception?.counterpart.identityKnowledge === "identified" &&
+      (input.perception.counterpart.currentAccess === "coarse" ||
+        input.perception.counterpart.currentAccess === "clear")
+        ? cog?.foeCondition
+        : undefined,
   };
   if (input.level === "summary") {
     return base;

@@ -3,6 +3,12 @@
 Status: implemented and locally accepted
 Last updated: 2026-08-04
 Implementation plan: [`docs/battle-semantic-state.pert`](battle-semantic-state.pert)
+Observer-relative follow-up: [`docs/battle-perception.md`](battle-perception.md)
+
+The implemented A/B/public semantic snapshots remain canonical world
+projections. The planned follow-up wraps them in character perception frames;
+required character roots may then be represented as currently unperceived or
+unidentified rather than being disclosed to an agent as known identity.
 
 ## 1. Purpose
 

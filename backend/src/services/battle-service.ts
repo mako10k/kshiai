@@ -7,20 +7,22 @@ import {
   balanceSkill,
   buildBattleTurnRecord,
   buildFinisherWindow,
+  buildMinimalObserverPerception,
   buildSemanticObservationState,
+  buildServerOnlyReserveCues,
   createBattleState,
   happeningToEvents,
   happeningToSituationPatch,
   isPassiveTurn,
   isQuietTurn,
   normalizeSupervisor,
+  ratingForDisplay,
   resolveTurn,
   sheetCombatProfile,
   shouldInjectHappening,
   stanceLabel,
   summarizeSelectedPolicies,
   selectPolicyIdsByPerspective,
-  toPublicCharacter,
   toPublicInstance,
   toPublicPolicyOption,
   type BattlePolicyOption,
@@ -33,6 +35,8 @@ import {
   type BattlefieldInstance,
   type BattlefieldPreset,
   type CharacterSheet,
+  type CommittedMechanicalEvidence,
+  type PerceptionEvidence,
   type TurnEvent,
   type TurnSemanticPatch,
   type Skill,
@@ -43,6 +47,7 @@ import {
   type InnerDigest,
   type NarrationFocus,
   type NarrationPerspective,
+  type RatingDisplayContext,
   buildInnerDigest,
   lockedFocusFromPerspective,
   needsFocusChoice,
@@ -52,6 +57,18 @@ import {
   advanceDramaState,
   dramaPhaseForTurn,
   normalizeDramaState,
+  quantizeCommittedMechanicalEvidence,
+  projectObserverPerception,
+  type QuantizedMechanicalEvidence,
+  type ServerOnlyReserveCue,
+  type NarrationPerceptionView,
+  buildNarrationIdentifierCatalog,
+  buildNarrationPerceptionView,
+  buildNarrationTurnView,
+  narrationParticipantLabels,
+  perceivedCondition,
+  repairNarrationIdentifierText,
+  repairNarrativeBlockIdentifiers,
 } from "@kshiai/shared";
 import {
   recordBattleFinished,
@@ -61,6 +78,12 @@ import { config } from "../config.js";
 import { newId } from "../id.js";
 import type { LlmProvider } from "../llm/index.js";
 import type { NarrationActionBeat } from "../llm/types.js";
+import {
+  buildPromptMechanicalEvidence,
+  validateCommittedMechanicalEvidence,
+  validateSensoryEvidence,
+  type EvidenceValidationStatus,
+} from "../llm/perception-evidence.js";
 import * as battleRepo from "../repositories/battles.js";
 import * as bfRepo from "../repositories/battlefields.js";
 import * as charRepo from "../repositories/characters.js";
@@ -72,6 +95,7 @@ export function toBattlePublic(
   mySheet: CharacterSheet,
   resultSummary?: string | null,
   oppSheet?: CharacterSheet | null,
+  ratingDisplay?: RatingDisplayContext,
 ): BattlePublic {
   const selected = new Set(state.selectedPolicyIdsA ?? []);
   const selectedPolicies = (state.policiesA ?? []).filter((p) =>
@@ -142,14 +166,17 @@ export function toBattlePublic(
       if (!s?.applied) return null;
       const overall = s.overall ?? { sideA: s.sideA, sideB: s.sideB };
       const pub = s.public ?? null;
-      const slim = (x: {
-        before: number;
-        after: number;
-        delta: number;
-        provisionalAfter: boolean;
-      }) => ({
-        before: x.before,
-        after: x.after,
+      const slim = (
+        x: {
+          before: number;
+          after: number;
+          delta: number;
+          provisionalAfter: boolean;
+        },
+        population: RatingDisplayContext["public"] | undefined,
+      ) => ({
+        before: ratingForDisplay(x.before, population),
+        after: ratingForDisplay(x.after, population),
         delta: x.delta,
         provisionalAfter: x.provisionalAfter,
       });
@@ -158,17 +185,38 @@ export function toBattlePublic(
         ranked: s.ranked,
         sameOwner: s.sameOwner,
         overall: {
-          sideA: slim(overall.sideA),
-          sideB: slim(overall.sideB),
+          sideA: slim(overall.sideA, ratingDisplay?.overall),
+          sideB: slim(overall.sideB, ratingDisplay?.overall),
         },
         public: pub
-          ? { sideA: slim(pub.sideA), sideB: slim(pub.sideB) }
+          ? {
+              sideA: slim(pub.sideA, ratingDisplay?.public),
+              sideB: slim(pub.sideB, ratingDisplay?.public),
+            }
           : null,
-        sideA: slim(overall.sideA),
-        sideB: slim(overall.sideB),
+        sideA: slim(overall.sideA, ratingDisplay?.overall),
+        sideB: slim(overall.sideB, ratingDisplay?.overall),
       };
     })(),
   };
+}
+
+export async function toBattlePublicForViewer(
+  state: BattleState,
+  mySheet: CharacterSheet,
+  resultSummary?: string | null,
+  oppSheet?: CharacterSheet | null,
+): Promise<BattlePublic> {
+  const ratingDisplay = state.ratingSettlement?.applied
+    ? await charRepo.getRatingDisplayContext()
+    : undefined;
+  return toBattlePublic(
+    state,
+    mySheet,
+    resultSummary,
+    oppSheet,
+    ratingDisplay,
+  );
 }
 
 async function resolveBattlefieldInstance(input: {
@@ -437,7 +485,7 @@ export async function startBattle(input: {
     sideBCharacterId: opp.id,
   });
 
-  return toBattlePublic(state, mine, null, opp);
+  return toBattlePublicForViewer(state, mine, null, opp);
 }
 
 async function withTimeout<T>(
@@ -516,7 +564,6 @@ function buildCharacterDecisionContext(input: {
   state: BattleState;
   sheet: CharacterSheet;
   side: "a" | "b";
-  cognition: CharacterCognition;
 }) {
   const self = input.side === "a" ? input.state.sideA : input.state.sideB;
   const finisher = input.side === "a"
@@ -541,8 +588,6 @@ function buildCharacterDecisionContext(input: {
   return {
     nextTurn,
     turnsRemaining: Math.max(0, input.state.turnLimit - nextTurn + 1),
-    ownCondition: input.cognition.ownCondition,
-    foeCondition: input.cognition.foeCondition,
     availableActions: [
       {
         kind: "basic_attack" as const,
@@ -565,6 +610,60 @@ function buildCharacterDecisionContext(input: {
   };
 }
 
+function deepFreezeConsumerInput<T>(value: T): T {
+  if (value && typeof value === "object" && !Object.isFrozen(value)) {
+    Object.freeze(value);
+    for (const child of Object.values(value)) {
+      deepFreezeConsumerInput(child);
+    }
+  }
+  return value;
+}
+
+/** Build one isolated character-agent input from that side's frozen frame. */
+export function buildCharacterAgentConsumerInput(input: {
+  state: BattleState;
+  sheet: CharacterSheet;
+  side: "a" | "b";
+  previous: CharacterAgentState;
+}): Parameters<LlmProvider["advanceCharacterAgent"]>[0] | null {
+  const frame = input.side === "a"
+    ? input.state.perceptionFrameA
+    : input.state.perceptionFrameB;
+  if (!frame || frame.observer.side !== input.side) return null;
+  const counterpart = input.side === "a"
+    ? input.state.sideB
+    : input.state.sideA;
+  const counterpartKnowledge = frame.counterpart.identityKnowledge === "identified"
+    ? {
+        displayName: counterpart.displayName,
+        ...(
+          frame.counterpart.currentAccess === "coarse" ||
+          frame.counterpart.currentAccess === "clear"
+            ? { condition: perceivedCondition(counterpart) }
+            : {}
+        ),
+      }
+    : undefined;
+  return {
+    character: {
+      displayName: input.sheet.displayName,
+      identity: input.sheet.identity ?? defaultCharacterIdentity(),
+      traits: input.sheet.traits,
+      narrativeBlurb: input.sheet.narrativeBlurb,
+      skillNames: input.sheet.skills.map((skill) => skill.name),
+    },
+    previous: structuredClone(input.previous),
+    perception: deepFreezeConsumerInput(structuredClone(frame)),
+    ...(counterpartKnowledge ? { counterpart: counterpartKnowledge } : {}),
+    decision: buildCharacterDecisionContext({
+      state: input.state,
+      sheet: input.sheet,
+      side: input.side,
+    }),
+  };
+}
+
 async function advanceCharacterAgents(input: {
   llm: LlmProvider;
   before: BattleState;
@@ -580,57 +679,33 @@ async function advanceCharacterAgents(input: {
     events: input.events,
     actions: input.actions,
   });
-  const cognitionA = record.cognitionA;
-  const cognitionB = record.cognitionB;
-  const identityA = input.mine.identity ?? defaultCharacterIdentity();
-  const identityB = input.opp.identity ?? defaultCharacterIdentity();
   const previousA = input.after.agentStateA ?? initialAgentState(input.mine);
   const previousB = input.after.agentStateB ?? initialAgentState(input.opp);
   const stateWithRecord: BattleState = {
     ...input.after,
     turnRecords: [...(input.after.turnRecords ?? []), record].slice(-50),
   };
+  const inputA = buildCharacterAgentConsumerInput({
+    state: input.after,
+    sheet: input.mine,
+    side: "a",
+    previous: previousA,
+  });
+  const inputB = buildCharacterAgentConsumerInput({
+    state: input.after,
+    sheet: input.opp,
+    side: "b",
+    previous: previousB,
+  });
+  if (!inputA || !inputB) {
+    console.warn("[battle] character agents skipped: perception frame unavailable");
+    return { state: stateWithRecord };
+  }
   let agents;
   try {
     agents = await withTimeout(Promise.allSettled([
-      input.llm.advanceCharacterAgent({
-        character: {
-          displayName: input.mine.displayName,
-          identity: identityA,
-          traits: input.mine.traits,
-          narrativeBlurb: input.mine.narrativeBlurb,
-          skillNames: input.mine.skills.map((skill) => skill.name),
-        },
-        foeName: input.opp.displayName,
-        previous: previousA,
-        cognition: cognitionA,
-        observation: input.after.observationStateA!,
-        decision: buildCharacterDecisionContext({
-          state: input.after,
-          sheet: input.mine,
-          side: "a",
-          cognition: cognitionA,
-        }),
-      }),
-      input.llm.advanceCharacterAgent({
-        character: {
-          displayName: input.opp.displayName,
-          identity: identityB,
-          traits: input.opp.traits,
-          narrativeBlurb: input.opp.narrativeBlurb,
-          skillNames: input.opp.skills.map((skill) => skill.name),
-        },
-        foeName: input.mine.displayName,
-        previous: previousB,
-        cognition: cognitionB,
-        observation: input.after.observationStateB!,
-        decision: buildCharacterDecisionContext({
-          state: input.after,
-          sheet: input.opp,
-          side: "b",
-          cognition: cognitionB,
-        }),
-      }),
+      input.llm.advanceCharacterAgent(inputA),
+      input.llm.advanceCharacterAgent(inputB),
     ]), 18_000, "advanceCharacterAgents");
   } catch (error) {
     console.warn(
@@ -674,22 +749,151 @@ export async function reconcileSemanticState(input: {
   opp: CharacterSheet;
   actions: ResolvedBattleAction[];
   events: TurnEvent[];
+  mechanicalEvidence: CommittedMechanicalEvidence[];
   environmentBeatDue?: boolean;
   dramaPhase?: "opening" | "rising" | "climax";
 }): Promise<{
   state: BattleState;
   patch: TurnSemanticPatch | null;
   status: "applied" | "rejected" | "skipped";
+  mechanicalEvidence: CommittedMechanicalEvidence[];
+  mechanicalEvidenceStatus: EvidenceValidationStatus;
+  sensoryEvidence: PerceptionEvidence[];
+  sensoryEvidenceStatus: EvidenceValidationStatus;
+  quantizedMechanicalEvidence: QuantizedMechanicalEvidence[];
+  reserveEvidenceA: ServerOnlyReserveCue[];
+  reserveEvidenceB: ServerOnlyReserveCue[];
 }> {
+  const reserveEvidenceA = buildServerOnlyReserveCues({
+    side: "a",
+    parameters: input.resolvedState.sideA.parameters,
+    baseParameters: input.resolvedState.sideA.baseParameters,
+  });
+  const reserveEvidenceB = buildServerOnlyReserveCues({
+    side: "b",
+    parameters: input.resolvedState.sideB.parameters,
+    baseParameters: input.resolvedState.sideB.baseParameters,
+  });
   const semanticBefore = input.stateBeforeTurn.semanticState;
   if (!semanticBefore) {
-    return { state: input.resolvedState, patch: null, status: "skipped" };
+    return {
+      state: input.resolvedState,
+      patch: null,
+      status: "skipped",
+      mechanicalEvidence: [],
+      mechanicalEvidenceStatus: "unavailable",
+      sensoryEvidence: [],
+      sensoryEvidenceStatus: "unavailable",
+      quantizedMechanicalEvidence: [],
+      reserveEvidenceA,
+      reserveEvidenceB,
+    };
   }
+  const mechanical = validateCommittedMechanicalEvidence({
+    raw: input.mechanicalEvidence,
+    turn: input.resolvedState.turn,
+    before: semanticBefore,
+    actions: input.actions,
+    events: input.events,
+  });
+  if (mechanical.status === "rejected") {
+    console.warn(
+      "[battle] committed mechanical evidence rejected",
+      mechanical.issues.join("; "),
+    );
+  }
+  const quantizedMechanicalEvidence = quantizeCommittedMechanicalEvidence(
+    mechanical.evidence,
+  );
+  const evidenceResult = (
+    sensory: ReturnType<typeof validateSensoryEvidence>,
+  ) => ({
+    mechanicalEvidence: mechanical.evidence,
+    mechanicalEvidenceStatus: mechanical.status,
+    sensoryEvidence: sensory.evidence,
+    sensoryEvidenceStatus: sensory.status,
+    quantizedMechanicalEvidence,
+    reserveEvidenceA,
+    reserveEvidenceB,
+  });
+  const projectPerceptionState = (
+    state: BattleState,
+    sensoryEvidence: PerceptionEvidence[],
+  ): BattleState => {
+    const semanticState = state.semanticState!;
+    const projectionBase = {
+      turn: state.turn,
+      semanticState,
+      quantizedMechanicalEvidence,
+    };
+    try {
+      const projectedA = projectObserverPerception({
+        ...projectionBase,
+        observerSide: "a",
+        events: input.events,
+        reserveEvidence: reserveEvidenceA,
+        sensoryEvidence,
+        previousFrame: input.stateBeforeTurn.perceptionFrameA,
+        previousRegistry: input.stateBeforeTurn.perceptionRegistryA,
+        legacyCounterpartIdentified:
+          input.stateBeforeTurn.perceptionRegistryA === undefined,
+      });
+      const projectedB = projectObserverPerception({
+        ...projectionBase,
+        observerSide: "b",
+        events: input.events,
+        reserveEvidence: reserveEvidenceB,
+        sensoryEvidence,
+        previousFrame: input.stateBeforeTurn.perceptionFrameB,
+        previousRegistry: input.stateBeforeTurn.perceptionRegistryB,
+        legacyCounterpartIdentified:
+          input.stateBeforeTurn.perceptionRegistryB === undefined,
+      });
+      return {
+        ...state,
+        perceptionFrameA: projectedA.frame,
+        perceptionFrameB: projectedB.frame,
+        perceptionRegistryA: projectedA.registry,
+        perceptionRegistryB: projectedB.registry,
+      };
+    } catch (error) {
+      console.warn(
+        "[battle] observer perception projection fell back to engine cues",
+        error instanceof Error ? error.message : error,
+      );
+      const projectedA = buildMinimalObserverPerception({
+        ...projectionBase,
+        observerSide: "a",
+        reserveEvidence: reserveEvidenceA,
+        previousFrame: input.stateBeforeTurn.perceptionFrameA,
+        previousRegistry: input.stateBeforeTurn.perceptionRegistryA,
+        legacyCounterpartIdentified:
+          input.stateBeforeTurn.perceptionRegistryA === undefined,
+      });
+      const projectedB = buildMinimalObserverPerception({
+        ...projectionBase,
+        observerSide: "b",
+        reserveEvidence: reserveEvidenceB,
+        previousFrame: input.stateBeforeTurn.perceptionFrameB,
+        previousRegistry: input.stateBeforeTurn.perceptionRegistryB,
+        legacyCounterpartIdentified:
+          input.stateBeforeTurn.perceptionRegistryB === undefined,
+      });
+      return {
+        ...state,
+        perceptionFrameA: projectedA.frame,
+        perceptionFrameB: projectedB.frame,
+        perceptionRegistryA: projectedA.registry,
+        perceptionRegistryB: projectedB.registry,
+      };
+    }
+  };
   const commitObservationState = (
     after: typeof semanticBefore,
     status: "applied" | "rejected" | "skipped",
     patch: TurnSemanticPatch | null,
-  ): BattleState => ({
+    sensoryEvidence: PerceptionEvidence[],
+  ): BattleState => projectPerceptionState({
     ...input.resolvedState,
     semanticState: after,
     observationStateA: buildSemanticObservationState({
@@ -717,7 +921,7 @@ export async function reconcileSemanticState(input: {
       toRevision: after.revision,
       patch,
     },
-  });
+  }, sensoryEvidence);
   try {
     const proposed = await withTimeout(
       input.llm.reconcileTurnSemanticState({
@@ -758,10 +962,40 @@ export async function reconcileSemanticState(input: {
         },
         environmentBeatDue: input.environmentBeatDue,
         dramaPhase: input.dramaPhase,
+        mechanicalEvidence: buildPromptMechanicalEvidence({
+          evidence: quantizedMechanicalEvidence,
+          events: input.events,
+        }),
       }),
       16_000,
       "reconcileTurnSemanticState",
     );
+    const sensory = validateSensoryEvidence({
+      raw: proposed.sensoryEvidence,
+      before: semanticBefore,
+      events: input.events,
+      providerStatus: proposed.sensoryEvidenceStatus,
+    });
+    if (sensory.status === "rejected") {
+      console.warn(
+        "[battle] sensory evidence rejected",
+        sensory.issues.join("; "),
+      );
+    }
+    if (proposed.worldPatchStatus === "rejected" || proposed.patch === null) {
+      console.warn("[battle] semantic patch section rejected");
+      return {
+        state: commitObservationState(
+          semanticBefore,
+          "rejected",
+          null,
+          sensory.evidence,
+        ),
+        patch: null,
+        status: "rejected",
+        ...evidenceResult(sensory),
+      };
+    }
     const applied = applyTurnSemanticPatch({
       state: semanticBefore,
       patch: proposed.patch,
@@ -775,9 +1009,15 @@ export async function reconcileSemanticState(input: {
         `[battle] semantic patch rejected ${applied.error.code}: ${applied.error.message}`,
       );
       return {
-        state: commitObservationState(semanticBefore, "rejected", proposed.patch),
+        state: commitObservationState(
+          semanticBefore,
+          "rejected",
+          proposed.patch,
+          sensory.evidence,
+        ),
         patch: proposed.patch,
         status: "rejected",
+        ...evidenceResult(sensory),
       };
     }
     const situation = applySituationCoefficients(
@@ -790,11 +1030,17 @@ export async function reconcileSemanticState(input: {
     );
     return {
       state: {
-        ...commitObservationState(applied.state, "applied", proposed.patch),
+        ...commitObservationState(
+          applied.state,
+          "applied",
+          proposed.patch,
+          sensory.evidence,
+        ),
         situation,
       },
       patch: proposed.patch,
       status: "applied",
+      ...evidenceResult(sensory),
     };
   } catch (error) {
     console.warn(
@@ -802,9 +1048,14 @@ export async function reconcileSemanticState(input: {
       error instanceof Error ? error.message : error,
     );
     return {
-      state: commitObservationState(semanticBefore, "skipped", null),
+      state: commitObservationState(semanticBefore, "skipped", null, []),
       patch: null,
       status: "skipped",
+      ...evidenceResult({
+        status: "unavailable",
+        evidence: [],
+        issues: [],
+      }),
     };
   }
 }
@@ -821,12 +1072,15 @@ async function resolveNarrationFocusAndDigests(input: {
   agentStateB: CharacterAgentState | null | undefined;
   cognitionA: CharacterCognition | null | undefined;
   cognitionB: CharacterCognition | null | undefined;
+  perceptionFrameA: BattleState["perceptionFrameA"];
+  perceptionFrameB: BattleState["perceptionFrameB"];
 }): Promise<{ focus: NarrationFocus; digests: InnerDigest[] }> {
   const summaryA = buildInnerDigest({
     side: "a",
     displayName: input.sideAName,
     agent: input.agentStateA,
     cognition: input.cognitionA,
+    perception: input.perceptionFrameA,
     level: "summary",
   });
   const summaryB = buildInnerDigest({
@@ -834,6 +1088,7 @@ async function resolveNarrationFocusAndDigests(input: {
     displayName: input.sideBName,
     agent: input.agentStateB,
     cognition: input.cognitionB,
+    perception: input.perceptionFrameB,
     level: "summary",
   });
   const detailA = buildInnerDigest({
@@ -841,6 +1096,7 @@ async function resolveNarrationFocusAndDigests(input: {
     displayName: input.sideAName,
     agent: input.agentStateA,
     cognition: input.cognitionA,
+    perception: input.perceptionFrameA,
     level: "detail",
   });
   const detailB = buildInnerDigest({
@@ -848,6 +1104,7 @@ async function resolveNarrationFocusAndDigests(input: {
     displayName: input.sideBName,
     agent: input.agentStateB,
     cognition: input.cognitionB,
+    perception: input.perceptionFrameB,
     level: "detail",
   });
 
@@ -974,6 +1231,54 @@ function semanticChangeKinds(patch: TurnSemanticPatch | null): {
 
 function normalizePublicText(value: string): string {
   return value.normalize("NFKC").replace(/[\s「」『』（）()、。！？!?…・]/g, "");
+}
+
+function narrationPerceptionViewForState(input: {
+  state: BattleState;
+  perspective: NarrationPerspective;
+  focus: NarrationFocus;
+}): NarrationPerceptionView | null {
+  const { state } = input;
+  return state.semanticState &&
+    state.observationStatePublic &&
+    state.perceptionFrameA &&
+    state.perceptionFrameB
+      ? buildNarrationPerceptionView({
+          perspective: input.perspective,
+          focus: input.focus,
+          sideALabel: state.sideA.displayName,
+          sideBLabel: state.sideB.displayName,
+          frameA: state.perceptionFrameA,
+          frameB: state.perceptionFrameB,
+          semanticState: state.semanticState,
+          publicObservation: state.observationStatePublic,
+        })
+      : null;
+}
+
+function narrationIdentifierCatalog(input: {
+  state: BattleState;
+  perspective: NarrationPerspective;
+  focus: NarrationFocus;
+  view?: NarrationPerceptionView | null;
+}) {
+  const { state } = input;
+  const view = input.view === undefined
+    ? narrationPerceptionViewForState(input)
+    : input.view;
+  return buildNarrationIdentifierCatalog({
+    perspective: input.perspective,
+    focus: input.focus,
+    sideALabel: state.sideA.displayName,
+    sideBLabel: state.sideB.displayName,
+    semanticState: state.semanticState,
+    publicObservation: state.observationStatePublic,
+    frameA: state.perceptionFrameA,
+    frameB: state.perceptionFrameB,
+    registryA: state.perceptionRegistryA,
+    registryB: state.perceptionRegistryB,
+    view: view ?? undefined,
+  });
 }
 
 function replaceRepeatedPublicSpeeches(input: {
@@ -1207,6 +1512,7 @@ async function advanceTurnWithLease(input: {
     opp,
     actions: resolved.actions,
     events,
+    mechanicalEvidence: resolved.mechanicalEvidence,
     environmentBeatDue,
     dramaPhase,
   });
@@ -1247,8 +1553,9 @@ async function advanceTurnWithLease(input: {
     agentStateB: next.agentStateB,
     cognitionA,
     cognitionB,
+    perceptionFrameA: next.perceptionFrameA,
+    perceptionFrameB: next.perceptionFrameB,
   });
-
   emit({ type: "phase", phase: "narrating" });
   const recentBlocks = state.log.slice(-2);
   const recentNarration = recentBlocks.flatMap((block) => block.narrator).slice(-4);
@@ -1260,22 +1567,76 @@ async function advanceTurnWithLease(input: {
     opp,
     state: next,
   });
+  const perceptionView = narrationPerceptionViewForState({
+    state: next,
+    perspective,
+    focus,
+  });
+  const narrationView =
+    perceptionView &&
+    next.semanticState &&
+    next.observationStatePublic &&
+    next.perceptionFrameA &&
+    next.perceptionFrameB
+      ? buildNarrationTurnView({
+          turn: next.turn,
+          scene: next.situation.scene,
+          perspective,
+          focus,
+          sideALabel: next.sideA.displayName,
+          sideBLabel: next.sideB.displayName,
+          perception: perceptionView,
+          semanticState: next.semanticState,
+          publicObservation: next.observationStatePublic,
+          frameA: next.perceptionFrameA,
+          frameB: next.perceptionFrameB,
+          registryA: next.perceptionRegistryA,
+          registryB: next.perceptionRegistryB,
+          events,
+          actionBeats,
+          battlefield: next.battlefield,
+        })
+      : null;
+  const participantLabels = perceptionView
+    ? narrationParticipantLabels(perceptionView)
+    : perspective === "self" || (perspective === "fluid" && focus === "self")
+      ? { a: next.sideA.displayName, b: "知覚できない相手" }
+      : perspective === "foe" || (perspective === "fluid" && focus === "foe")
+        ? { a: "知覚できない相手", b: next.sideB.displayName }
+        : { a: next.sideA.displayName, b: next.sideB.displayName };
+  const permittedSpeakerLabels = perceptionView?.mode === "self"
+    ? [
+        participantLabels.a,
+        ...(perceptionView.frame.counterpart.currentAccess === "none"
+          ? []
+          : [participantLabels.b]),
+      ]
+    : perceptionView?.mode === "opponent"
+      ? [
+          ...(perceptionView.frame.counterpart.currentAccess === "none"
+            ? []
+            : [participantLabels.a]),
+          participantLabels.b,
+        ]
+      : [participantLabels.a, participantLabels.b];
+  const identifierCatalog = narrationIdentifierCatalog({
+    state: next,
+    perspective,
+    focus,
+    view: perceptionView,
+  });
   let narrative;
   try {
     // Per-attempt budget must cover primary abort (~14–16s) + router failover to
     // the next provider. A single 18s race was expiring mid-failover and dumping
     // raw engine events. Retry once after a full failed attempt.
     narrative = await withTimeoutAttempts(
-      () =>
-        input.llm.narrateTurn({
-          turn: next.turn,
-          scene: next.situation.scene,
-          sideAName: next.sideA.displayName,
-          sideBName: next.sideB.displayName,
-          battlefield: next.battlefield,
-          semanticObservation: next.observationStatePublic ?? null,
-          events,
-          actionBeats,
+      () => {
+        if (!narrationView) {
+          throw new Error("narration perception view unavailable");
+        }
+        return input.llm.narrateTurn({
+          view: narrationView,
           recentNarration,
           recentSpeeches,
           drama: {
@@ -1285,19 +1646,25 @@ async function advanceTurnWithLease(input: {
             environmentBeatDue: environmentBeatCommitted,
           },
           innerDigests: digests,
-          focus,
-          perspective,
           styleInstruction: next.narrationStyle?.instruction,
           styleName: next.narrationStyle?.displayName,
           onProgress: (progress) => {
             emit({
               type: "narrator",
-              lines: progress.lines,
-              draft: progress.draft ?? null,
+              lines: progress.lines.map((line) =>
+                repairNarrationIdentifierText(line, identifierCatalog)
+              ),
+              draft: progress.draft
+                ? repairNarrationIdentifierText(
+                    progress.draft,
+                    identifierCatalog,
+                  )
+                : null,
               turn: next.turn,
             });
           },
-        }),
+        });
+      },
       {
         timeoutMs: 32_000,
         attempts: 2,
@@ -1310,25 +1677,38 @@ async function advanceTurnWithLease(input: {
       "[battle] narrateTurn fallback",
       e instanceof Error ? e.message : e,
     );
-    const place = next.battlefield?.displayName ?? next.situation.scene;
+    const place = narrationView?.battlefield?.displayName ??
+      narrationView?.scene ?? next.situation.scene;
+    const fallbackFacts = narrationView
+      ? [
+          ...narrationView.actionBeats.flatMap((beat) => [
+            `${beat.actorLabel} は ${beat.actionName} を起こした。`,
+            ...beat.outcomes,
+          ]),
+          ...narrationView.events.map((event) => event.summary),
+        ]
+      : [];
     narrative = {
       turn: next.turn,
       narrator: [
         `第${next.turn}ターン — ${place}。`,
-        ...events.map((ev) => ev.summary),
+        ...fallbackFacts,
       ],
-      speeches: [
-        { speaker: next.sideA.displayName, text: "…" },
-        { speaker: next.sideB.displayName, text: "…" },
-      ],
+      speeches: permittedSpeakerLabels.map((speaker) => ({
+        speaker,
+        text: "…",
+      })),
     };
     emit({
       type: "narrator",
-      lines: narrative.narrator,
+      lines: narrative.narrator.map((line) =>
+        repairNarrationIdentifierText(line, identifierCatalog)
+      ),
       draft: null,
       turn: next.turn,
     });
   }
+  narrative = repairNarrativeBlockIdentifiers(narrative, identifierCatalog);
   const recentNarrationFingerprints = new Set(
     recentNarration.map(normalizePublicText).filter(Boolean),
   );
@@ -1342,8 +1722,8 @@ async function advanceTurnWithLease(input: {
   if (narrative.narrator.length < 2) {
     narrative.narrator = [
       ...narrative.narrator,
-      ...actionBeats.flatMap((beat) => [
-        `${beat.actorName} は ${beat.actionName} を起こした。`,
+      ...(narrationView?.actionBeats ?? []).flatMap((beat) => [
+        `${beat.actorLabel} は ${beat.actionName} を起こした。`,
         ...beat.outcomes,
       ]),
     ].filter((line, index, lines) => lines.indexOf(line) === index).slice(0, 4);
@@ -1353,6 +1733,7 @@ async function advanceTurnWithLease(input: {
     recentSpeeches,
     turn: next.turn,
   });
+  narrative = repairNarrativeBlockIdentifiers(narrative, identifierCatalog);
   if (narrative.speeches?.length) {
     emit({ type: "speeches", speeches: narrative.speeches });
   }
@@ -1364,7 +1745,7 @@ async function advanceTurnWithLease(input: {
           lastSpeech:
             [...narrative.speeches]
               .reverse()
-              .find((line) => line.speaker === next.sideA.displayName)?.text ??
+              .find((line) => line.speaker === participantLabels.a)?.text ??
             next.agentStateA.lastSpeech,
         }
       : next.agentStateA,
@@ -1374,7 +1755,7 @@ async function advanceTurnWithLease(input: {
           lastSpeech:
             [...narrative.speeches]
               .reverse()
-              .find((line) => line.speaker === next.sideB.displayName)?.text ??
+              .find((line) => line.speaker === participantLabels.b)?.text ??
             next.agentStateB.lastSpeech,
         }
       : next.agentStateB,
@@ -1402,7 +1783,7 @@ async function advanceTurnWithLease(input: {
       sideACharacterId: meta.side_a_character_id,
       sideBCharacterId: meta.side_b_character_id,
     });
-    return toBattlePublic(next, mine, null, opp);
+    return toBattlePublicForViewer(next, mine, null, opp);
   }
 
   let resultSummary: string | null = null;
@@ -1464,7 +1845,7 @@ async function advanceTurnWithLease(input: {
     sideBCharacterId: meta.side_b_character_id,
   });
 
-  return toBattlePublic(next, mine, resultSummary, opp);
+  return toBattlePublicForViewer(next, mine, resultSummary, opp);
 }
 
 async function runPrologueTurn(input: {
@@ -1517,6 +1898,13 @@ async function runPrologueTurn(input: {
     agentStateB: state.agentStateB,
     cognitionA: rec?.cognitionA,
     cognitionB: rec?.cognitionB,
+    perceptionFrameA: state.perceptionFrameA,
+    perceptionFrameB: state.perceptionFrameB,
+  });
+  const identifierCatalog = narrationIdentifierCatalog({
+    state,
+    perspective,
+    focus,
   });
 
   emit({ type: "phase", phase: "narrating" });
@@ -1542,8 +1930,12 @@ async function runPrologueTurn(input: {
         onProgress: (progress) => {
           emit({
             type: "narrator",
-            lines: progress.lines,
-            draft: progress.draft ?? null,
+            lines: progress.lines.map((line) =>
+              repairNarrationIdentifierText(line, identifierCatalog)
+            ),
+            draft: progress.draft
+              ? repairNarrationIdentifierText(progress.draft, identifierCatalog)
+              : null,
             turn: 0,
           });
         },
@@ -1573,11 +1965,15 @@ async function runPrologueTurn(input: {
     };
     emit({
       type: "narrator",
-      lines: narrative.narrator,
+      lines: narrative.narrator.map((line) =>
+        repairNarrationIdentifierText(line, identifierCatalog)
+      ),
       draft: null,
       turn: 0,
     });
   }
+
+  narrative = repairNarrativeBlockIdentifiers(narrative, identifierCatalog);
 
   if (narrative.speeches?.length) {
     emit({ type: "speeches", speeches: narrative.speeches });
@@ -1609,7 +2005,7 @@ async function runPrologueTurn(input: {
     sideBCharacterId: input.meta.side_b_character_id,
   });
 
-  return toBattlePublic(next, input.mine, null, input.opp);
+  return toBattlePublicForViewer(next, input.mine, null, input.opp);
 }
 
 async function runAftermathTurn(input: {
@@ -1656,6 +2052,13 @@ async function runAftermathTurn(input: {
     agentStateB: state.agentStateB,
     cognitionA: rec?.cognitionA,
     cognitionB: rec?.cognitionB,
+    perceptionFrameA: state.perceptionFrameA,
+    perceptionFrameB: state.perceptionFrameB,
+  });
+  const identifierCatalog = narrationIdentifierCatalog({
+    state,
+    perspective,
+    focus,
   });
   emit({ type: "phase", phase: "narrating" });
   let narrative;
@@ -1682,8 +2085,12 @@ async function runAftermathTurn(input: {
         onProgress: (progress) => {
           emit({
             type: "narrator",
-            lines: progress.lines,
-            draft: progress.draft ?? null,
+            lines: progress.lines.map((line) =>
+              repairNarrationIdentifierText(line, identifierCatalog)
+            ),
+            draft: progress.draft
+              ? repairNarrationIdentifierText(progress.draft, identifierCatalog)
+              : null,
             turn: aftermathTurn,
           });
         },
@@ -1713,11 +2120,15 @@ async function runAftermathTurn(input: {
     };
     emit({
       type: "narrator",
-      lines: narrative.narrator,
+      lines: narrative.narrator.map((line) =>
+        repairNarrationIdentifierText(line, identifierCatalog)
+      ),
       draft: null,
       turn: aftermathTurn,
     });
   }
+
+  narrative = repairNarrativeBlockIdentifiers(narrative, identifierCatalog);
 
   if (narrative.speeches?.length) {
     emit({ type: "speeches", speeches: narrative.speeches });
@@ -1769,7 +2180,7 @@ async function runAftermathTurn(input: {
 
   // The winner card already states the mechanical result. The aftermath log is
   // LLM-authored, so do not append a second fixed-prose result summary here.
-  return toBattlePublic(next, input.mine, null, input.opp);
+  return toBattlePublicForViewer(next, input.mine, null, input.opp);
 }
 
 export async function advanceTurn(input: {
@@ -1829,7 +2240,7 @@ export async function pickAutoMatchedOpponent(
     const delta = distance(a) - distance(b);
     return delta !== 0 ? delta : a.id.localeCompare(b.id);
   });
-  return toPublicCharacter(candidates[0]!, userId);
+  return charRepo.toPublicCharacterForViewer(candidates[0]!, userId);
 }
 
 export function instanceToPreset(
@@ -1859,5 +2270,3 @@ export function instanceToPreset(
     narrativeBlurb: inst.narrativeSetup || inst.scene,
   };
 }
-
-export { toPublicCharacter };

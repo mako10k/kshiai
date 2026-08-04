@@ -1,0 +1,259 @@
+{
+  "schemaVersion": 1,
+  "fixtureVersion": "perception-prompts-v3",
+  "provider": "xai",
+  "model": "grok-4.5",
+  "repetitions": 1,
+  "evaluatedAt": "2026-08-04T09:07:21.427Z",
+  "combined": {
+    "fixtureVersion": "perception-prompts-v3",
+    "topology": "combined",
+    "sampleCount": 3,
+    "worldSchemaValidRate": 0.3333333333333333,
+    "sensorySchemaValidRate": 0.3333333333333333,
+    "worldPatchCorrectness": 0.3333333333333333,
+    "sensoryCoverage": 0.3333333333333333,
+    "attributionErrorRate": 0.5,
+    "identityLeakageRate": 0,
+    "meanLatencyMs": 27174.333333333332,
+    "p95LatencyMs": 30021,
+    "measuredTokenSamples": 1,
+    "meanTotalTokens": 3114,
+    "totalTokens": 3114
+  },
+  "split": {
+    "fixtureVersion": "perception-prompts-v3",
+    "topology": "split",
+    "sampleCount": 3,
+    "worldSchemaValidRate": 1,
+    "sensorySchemaValidRate": 0,
+    "worldPatchCorrectness": 0.16666666666666666,
+    "sensoryCoverage": 0,
+    "attributionErrorRate": 0,
+    "identityLeakageRate": 0,
+    "meanLatencyMs": 48259.666666666664,
+    "p95LatencyMs": 55060,
+    "measuredTokenSamples": 0,
+    "meanTotalTokens": null,
+    "totalTokens": null
+  },
+  "recommendation": {
+    "topology": null,
+    "reason": "insufficient_samples",
+    "combinedFailures": [
+      "world_schema_valid_rate",
+      "sensory_schema_valid_rate",
+      "world_patch_correctness",
+      "sensory_coverage",
+      "attribution_error_rate"
+    ],
+    "splitFailures": [
+      "sensory_schema_valid_rate",
+      "world_patch_correctness",
+      "sensory_coverage"
+    ]
+  },
+  "combinedSamples": [
+    {
+      "fixtureId": "dark-unidentified-impact",
+      "topology": "combined",
+      "worldSchemaValid": false,
+      "sensorySchemaValid": false,
+      "worldPatchCorrectness": 0,
+      "sensoryCoverage": 0,
+      "attributionErrors": 0,
+      "attributionChecks": 0,
+      "identityLeakages": 0,
+      "identityLeakageChecks": 0,
+      "latencyMs": 30021,
+      "totalTokens": null,
+      "observedWorldOperations": [],
+      "observedSensoryCues": [],
+      "worldSchemaIssues": [
+        "operations: Required"
+      ],
+      "sensorySchemaIssues": [
+        "<root>: Required"
+      ]
+    },
+    {
+      "fixtureId": "ambient-source-less-footsteps",
+      "topology": "combined",
+      "worldSchemaValid": true,
+      "sensorySchemaValid": true,
+      "worldPatchCorrectness": 1,
+      "sensoryCoverage": 1,
+      "attributionErrors": 2,
+      "attributionChecks": 4,
+      "identityLeakages": 0,
+      "identityLeakageChecks": 4,
+      "latencyMs": 21500,
+      "totalTokens": 3114,
+      "observedWorldOperations": [],
+      "observedSensoryCues": [
+        {
+          "modality": "sound",
+          "sourceKind": "ambient",
+          "accessA": "clear",
+          "identityA": "unknown",
+          "accessB": "clear",
+          "identityB": "unknown"
+        }
+      ],
+      "worldSchemaIssues": [],
+      "sensorySchemaIssues": []
+    },
+    {
+      "fixtureId": "visible-persistent-pickup",
+      "topology": "combined",
+      "worldSchemaValid": false,
+      "sensorySchemaValid": false,
+      "worldPatchCorrectness": 0,
+      "sensoryCoverage": 0,
+      "attributionErrors": 0,
+      "attributionChecks": 0,
+      "identityLeakages": 0,
+      "identityLeakageChecks": 0,
+      "latencyMs": 30002,
+      "totalTokens": null,
+      "observedWorldOperations": [],
+      "observedSensoryCues": [],
+      "worldSchemaIssues": [
+        "operations: Required"
+      ],
+      "sensorySchemaIssues": [
+        "<root>: Required"
+      ]
+    }
+  ],
+  "splitSamples": [
+    {
+      "fixtureId": "dark-unidentified-impact",
+      "topology": "split",
+      "worldSchemaValid": true,
+      "sensorySchemaValid": false,
+      "worldPatchCorrectness": 0,
+      "sensoryCoverage": 0,
+      "attributionErrors": 0,
+      "attributionChecks": 0,
+      "identityLeakages": 0,
+      "identityLeakageChecks": 0,
+      "latencyMs": 55060,
+      "totalTokens": null,
+      "observedWorldOperations": [
+        {
+          "op": "replace",
+          "path": "/scene/summary"
+        },
+        {
+          "op": "add",
+          "path": "/scene/facts/recent_impact"
+        },
+        {
+          "op": "add",
+          "path": "/entities/character.b/facts/visible_conditions/struck"
+        }
+      ],
+      "observedSensoryCues": [],
+      "worldSchemaIssues": [],
+      "sensorySchemaIssues": [
+        "<root>: Required"
+      ]
+    },
+    {
+      "fixtureId": "ambient-source-less-footsteps",
+      "topology": "split",
+      "worldSchemaValid": true,
+      "sensorySchemaValid": false,
+      "worldPatchCorrectness": 0,
+      "sensoryCoverage": 0,
+      "attributionErrors": 0,
+      "attributionChecks": 0,
+      "identityLeakages": 0,
+      "identityLeakageChecks": 0,
+      "latencyMs": 47890,
+      "totalTokens": null,
+      "observedWorldOperations": [
+        {
+          "op": "replace",
+          "path": "/scene/summary"
+        },
+        {
+          "op": "replace",
+          "path": "/scene/facts/distant_activity"
+        }
+      ],
+      "observedSensoryCues": [],
+      "worldSchemaIssues": [],
+      "sensorySchemaIssues": [
+        "<root>: Required"
+      ]
+    },
+    {
+      "fixtureId": "visible-persistent-pickup",
+      "topology": "split",
+      "worldSchemaValid": true,
+      "sensorySchemaValid": false,
+      "worldPatchCorrectness": 0.5,
+      "sensoryCoverage": 0,
+      "attributionErrors": 0,
+      "attributionChecks": 0,
+      "identityLeakages": 0,
+      "identityLeakageChecks": 0,
+      "latencyMs": 41829,
+      "totalTokens": null,
+      "observedWorldOperations": [
+        {
+          "op": "replace",
+          "path": "/scene/summary"
+        },
+        {
+          "op": "replace",
+          "path": "/entities/iron_pipe.1/location"
+        }
+      ],
+      "observedSensoryCues": [],
+      "worldSchemaIssues": [],
+      "sensorySchemaIssues": [
+        "<root>: Required"
+      ]
+    }
+  ],
+  "callErrors": [
+    {
+      "topology": "combined",
+      "fixtureId": "dark-unidentified-impact",
+      "repetition": 1,
+      "stage": "combined",
+      "message": "Request timed out."
+    },
+    {
+      "topology": "combined",
+      "fixtureId": "visible-persistent-pickup",
+      "repetition": 1,
+      "stage": "combined",
+      "message": "Request timed out."
+    },
+    {
+      "topology": "split",
+      "fixtureId": "dark-unidentified-impact",
+      "repetition": 1,
+      "stage": "sensory",
+      "message": "Request timed out."
+    },
+    {
+      "topology": "split",
+      "fixtureId": "ambient-source-less-footsteps",
+      "repetition": 1,
+      "stage": "sensory",
+      "message": "Request timed out."
+    },
+    {
+      "topology": "split",
+      "fixtureId": "visible-persistent-pickup",
+      "repetition": 1,
+      "stage": "sensory",
+      "message": "Request timed out."
+    }
+  ]
+}

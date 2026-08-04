@@ -8,18 +8,23 @@ import type {
   CharacterIdentity,
   CharacterAgentState,
   CharacterActionIntent,
-  CharacterCognition,
+  CharacterPerceptionFrame,
   InnerDigest,
   NarrativeBlock,
   NarrationFocus,
   NarrationPerspective,
+  NarrationTurnView,
+  PerceivedCondition,
   Situation,
   TurnEvent,
   TurnSemanticPatch,
   ResolvedBattleAction,
-  SemanticObservationState,
   FinisherWindow,
+  PerceptionEvidence,
 } from "@kshiai/shared";
+import type {
+  PerceptionPromptInput,
+} from "./perception-prompt-strategy.js";
 
 export type CharacterReference = {
   id: string;
@@ -42,8 +47,6 @@ export type CharacterReferenceTools = {
 export type CharacterActionDecisionContext = {
   nextTurn: number;
   turnsRemaining: number;
-  ownCondition: CharacterCognition["ownCondition"];
-  foeCondition: CharacterCognition["foeCondition"];
   availableActions: Array<{
     kind: CharacterActionIntent["kind"];
     skillId?: string;
@@ -54,6 +57,12 @@ export type CharacterActionDecisionContext = {
     finisherCandidate?: boolean;
   }>;
   finisher: FinisherWindow | null;
+};
+
+export type CharacterCounterpartKnowledge = {
+  displayName: string;
+  /** Current coarse condition is omitted when the counterpart is not accessible. */
+  condition?: PerceivedCondition;
 };
 
 /** Narrative-safe battle history for improvement analysis (no raw combat params). */
@@ -234,9 +243,14 @@ export interface LlmProvider {
     /** Request a non-mechanical location/object/environment change when plausible. */
     environmentBeatDue?: boolean;
     dramaPhase?: "opening" | "rising" | "climax";
+    /** Qualitative, committed mechanics only. Raw parameter values are forbidden. */
+    mechanicalEvidence: PerceptionPromptInput["mechanicalEvidence"];
   }): Promise<{
-    patch: TurnSemanticPatch;
+    patch: TurnSemanticPatch | null;
+    worldPatchStatus?: "valid" | "rejected";
     nextSituation?: Partial<Situation>;
+    sensoryEvidence?: PerceptionEvidence[];
+    sensoryEvidenceStatus?: "valid" | "rejected" | "unavailable";
   }>;
   /**
    * Supervisor: invent a field-driven happening that breaks a stagnant fight.
@@ -262,7 +276,7 @@ export interface LlmProvider {
       intensity: "minor" | "moderate";
     }>;
   }>;
-  /** Advance one character in isolation from engine-authored cognition. */
+  /** Advance one character from its frozen observer-relative frame only. */
   advanceCharacterAgent(input: {
     character: {
       displayName: string;
@@ -271,10 +285,10 @@ export interface LlmProvider {
       narrativeBlurb: string;
       skillNames: string[];
     };
-    foeName: string;
     previous: CharacterAgentState;
-    cognition: CharacterCognition;
-    observation: SemanticObservationState;
+    perception: CharacterPerceptionFrame;
+    /** Present only when this frame identifies the counterpart. */
+    counterpart?: CharacterCounterpartKnowledge;
     decision: CharacterActionDecisionContext;
   }): Promise<{
     state: CharacterAgentState;
@@ -295,12 +309,8 @@ export interface LlmProvider {
     summaryB: InnerDigest;
   }): Promise<{ focus: NarrationFocus }>;
   narrateTurn(input: {
-    turn: number;
-    scene: string;
-    sideAName: string;
-    sideBName: string;
-    events: TurnEvent[];
-    actionBeats?: NarrationActionBeat[];
+    /** Sole world/event source, already derived for the resolved perspective. */
+    view: NarrationTurnView;
     recentNarration?: string[];
     recentSpeeches?: Array<{ speaker: string; text: string }>;
     drama?: {
@@ -311,11 +321,6 @@ export interface LlmProvider {
     };
     /** Already filtered digests for the resolved focus (may be empty). */
     innerDigests?: InnerDigest[];
-    focus?: NarrationFocus;
-    perspective?: NarrationPerspective;
-    battlefield?: BattlefieldInstance | null;
-    /** Committed observable world after reconciliation. Narration cannot mutate it. */
-    semanticObservation?: SemanticObservationState | null;
     /** Narration style instruction for this match. */
     styleInstruction?: string;
     styleName?: string;

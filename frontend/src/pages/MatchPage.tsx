@@ -7,8 +7,14 @@ import type {
   CharacterPublic,
   NarrationStylePublic,
 } from "@kshiai/shared";
+import { formatRatingForDisplay } from "@kshiai/shared";
 import { api } from "../api";
 import { useLocalDraft } from "../hooks/useLocalDraft";
+import {
+  formatMatchRecord,
+  formatWinRate,
+  matchupStats,
+} from "../match-rating";
 import {
   matchesSelectionSearch,
   recordMatchSelectionUsage,
@@ -218,6 +224,10 @@ export function MatchPage() {
   const oppChar = useMemo(
     () => candidates.find((c) => c.id === oppId) ?? null,
     [candidates, oppId],
+  );
+  const opponentStats = useMemo(
+    () => (myChar && oppChar ? matchupStats(oppChar, myChar) : null),
+    [myChar, oppChar],
   );
   const fieldMeta = useMemo(
     () => fields.find((f) => f.id === fieldId) ?? null,
@@ -554,11 +564,11 @@ export function MatchPage() {
                   <strong>{myChar.displayName}</strong>
                 </Link>
                 <p className="muted help-text">
-                  公開 RT {Math.round(myChar.record.rating)}
+                  公開 RT {formatRatingForDisplay(myChar.record.rating)}
                   {myChar.record.provisional ? " 暫定" : ""} ·{" "}
                   {myChar.record.wins}勝{myChar.record.losses}敗
                   {myChar.recordOverall
-                    ? ` ／ 全体 RT ${Math.round(myChar.recordOverall.rating)} · ${myChar.recordOverall.wins}勝${myChar.recordOverall.losses}敗`
+                    ? ` ／ 全体 RT ${formatRatingForDisplay(myChar.recordOverall.rating)} · ${myChar.recordOverall.wins}勝${myChar.recordOverall.losses}敗`
                     : ""}
                 </p>
               </div>
@@ -664,13 +674,23 @@ export function MatchPage() {
               disabled={!myId}
             >
               <option value="">相手を選ぶ…</option>
-              {visibleOpponents.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.displayName}
-                </option>
-              ))}
+              {visibleOpponents.map((c) => {
+                const stats = myChar ? matchupStats(c, myChar) : null;
+                return (
+                  <option key={c.id} value={c.id}>
+                    {stats
+                      ? `${c.displayName} · ${stats.recordScope} ${formatMatchRecord(stats.record)} · 実績勝率 ${formatWinRate(stats.actualWinRate)} · 対あなた予想 ${formatWinRate(stats.predictedWinRate)}`
+                      : c.displayName}
+                  </option>
+                );
+              })}
             </select>
           </label>
+          {myChar ? (
+            <p className="muted help-text" style={{ marginTop: "-0.35rem" }}>
+              実績勝率は勝ち1・引き分け0.5として算出。予想勝率は選択中の自キャラとのレーティング差から算出します。
+            </p>
+          ) : null}
 
           <div className="btn-stack">
             <button
@@ -713,13 +733,19 @@ export function MatchPage() {
                   <strong>VS {oppChar.displayName}</strong>
                 </Link>
                 <p className="muted help-text">
-                  公開 RT {Math.round(oppChar.record.rating)}
-                  {oppChar.record.provisional ? " 暫定" : ""} ·{" "}
-                  {oppChar.record.wins}勝{oppChar.record.losses}敗
+                  公開 RT {formatRatingForDisplay(oppChar.record.rating)}
+                  {oppChar.record.provisional ? " 暫定" : ""}
                   {oppChar.recordOverall
-                    ? ` ／ 全体 RT ${Math.round(oppChar.recordOverall.rating)} · ${oppChar.recordOverall.wins}勝${oppChar.recordOverall.losses}敗`
+                    ? ` ／ 全体 RT ${formatRatingForDisplay(oppChar.recordOverall.rating)}`
                     : ""}
                 </p>
+                {opponentStats ? (
+                  <p className="muted help-text">
+                    個別戦績（{opponentStats.recordScope}） {formatMatchRecord(opponentStats.record)}
+                    {" · "}実績勝率 {formatWinRate(opponentStats.actualWinRate)}
+                    {" · "}対あなた予想勝率 {formatWinRate(opponentStats.predictedWinRate)}
+                  </p>
+                ) : null}
               </div>
             </div>
           )}

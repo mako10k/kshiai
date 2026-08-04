@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "fixtureVersion": "perception-prompts-v1",
+  "provider": "xai",
+  "model": "grok-4-fast-non-reasoning",
+  "repetitions": 3,
+  "evaluatedAt": "2026-08-04T08:58:21.765Z",
+  "combined": {
+    "fixtureVersion": "perception-prompts-v1",
+    "topology": "combined",
+    "sampleCount": 9,
+    "worldSchemaValidRate": 1,
+    "sensorySchemaValidRate": 0.8888888888888888,
+    "worldPatchCorrectness": 0.9444444444444444,
+    "sensoryCoverage": 0,
+    "attributionErrorRate": 0,
+    "identityLeakageRate": 0,
+    "meanLatencyMs": 1902.2222222222222,
+    "p95LatencyMs": 3506,
+    "measuredTokenSamples": 9,
+    "meanTotalTokens": 1764.111111111111,
+    "totalTokens": 15877
+  },
+  "split": {
+    "fixtureVersion": "perception-prompts-v1",
+    "topology": "split",
+    "sampleCount": 9,
+    "worldSchemaValidRate": 1,
+    "sensorySchemaValidRate": 1,
+    "worldPatchCorrectness": 0.787037037037037,
+    "sensoryCoverage": 0,
+    "attributionErrorRate": 0,
+    "identityLeakageRate": 0,
+    "meanLatencyMs": 2025.6666666666667,
+    "p95LatencyMs": 3139,
+    "measuredTokenSamples": 9,
+    "meanTotalTokens": 2117.222222222222,
+    "totalTokens": 19055
+  },
+  "recommendation": {
+    "topology": null,
+    "reason": "no_topology_meets_quality_floor",
+    "combinedFailures": [
+      "sensory_schema_valid_rate",
+      "world_patch_correctness",
+      "sensory_coverage"
+    ],
+    "splitFailures": [
+      "world_patch_correctness",
+      "sensory_coverage"
+    ]
+  },
+  "callErrors": []
+}
