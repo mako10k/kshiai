@@ -487,7 +487,7 @@ export const BattleStateSchema = z.object({
   log: z.array(NarrativeBlockSchema).default([]),
   winnerSide: z.enum(["a", "b", "draw"]).nullable().default(null),
   finishReason: FinishReasonSchema.nullable().default(null),
-  /** Elo settlement for this match (may be voided if a character is deleted). */
+  /** Elo settlement for this match. Legacy data may contain voided settlements. */
   ratingSettlement: z
     .object({
       applied: z.boolean(),

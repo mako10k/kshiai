@@ -3,7 +3,9 @@ import {
   DEFAULT_RATING,
   isProvisional,
   normalizeRecord,
+  ratingForDisplay,
   type CharacterRecord,
+  type RatingDisplayContext,
 } from "./rating.js";
 import { cacheBustMediaUrl } from "./media.js";
 import {
@@ -389,13 +391,16 @@ export function ensureRecordOverall(sheet: CharacterSheet): CharacterRecord {
   return normalizeRecord(sheet.recordOverall ?? sheet.record);
 }
 
-function toRecordDto(record: CharacterRecord) {
+function toRecordDto(
+  record: CharacterRecord,
+  population?: RatingDisplayContext["public"],
+) {
   return {
     wins: record.wins,
     losses: record.losses,
     draws: record.draws,
     gamesPlayed: record.gamesPlayed,
-    rating: record.rating,
+    rating: ratingForDisplay(record.rating, population),
     provisional: isProvisional(record.gamesPlayed),
   };
 }
@@ -406,6 +411,7 @@ function toRecordDto(record: CharacterRecord) {
 export function toPublicCharacter(
   sheet: CharacterSheet,
   viewerUserId?: string | null,
+  ratingDisplay?: RatingDisplayContext,
 ): CharacterPublic {
   sheet = ensureCharacterIdentityProperties(
     ensureCharacterCombatProperties(sheet),
@@ -453,9 +459,9 @@ export function toPublicCharacter(
     armorName: sheet.armor?.name ?? null,
     armorDescription: sheet.armor?.description ?? null,
     narrativeBlurb: sheet.narrativeBlurb,
-    record: toRecordDto(record),
+    record: toRecordDto(record, ratingDisplay?.public),
     recordOverall: isOwner
-      ? toRecordDto(ensureRecordOverall(sheet))
+      ? toRecordDto(ensureRecordOverall(sheet), ratingDisplay?.overall)
       : undefined,
     canRestoreRevision: isOwner
       ? Boolean(sheet.revisionSnapshot)

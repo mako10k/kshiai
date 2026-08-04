@@ -5,6 +5,7 @@ import type {
   CharacterImprovementPublic,
   CharacterPublic,
 } from "@kshiai/shared";
+import { formatRatingForDisplay } from "@kshiai/shared";
 import { api, ApiError, type ImageGenQuota } from "../api";
 import { useLocalDraft } from "../hooks/useLocalDraft";
 import { mediaSrc } from "../media";
@@ -448,7 +449,7 @@ export function CharacterDetailPage() {
               <span className="muted">（他アカウントとの対戦のみ・誰でも見える）</span>
               <br />
               <span className="rating">
-                RT {Math.round(character.record.rating)}
+                RT {formatRatingForDisplay(character.record.rating)}
                 {character.record.provisional ? (
                   <span className="tag">暫定</span>
                 ) : (
@@ -467,7 +468,7 @@ export function CharacterDetailPage() {
                 <span className="muted">（自分のキャラ同士を含む・本人のみ）</span>
                 <br />
                 <span className="rating">
-                  RT {Math.round(character.recordOverall.rating)}
+                  RT {formatRatingForDisplay(character.recordOverall.rating)}
                   {character.recordOverall.provisional ? (
                     <span className="tag">暫定</span>
                   ) : (

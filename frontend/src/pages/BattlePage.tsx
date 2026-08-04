@@ -1,12 +1,17 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
 import {
+  formatRatingForDisplay,
   formatSpeech,
   type BattleAdvancePhase,
   type BattlePublic,
   type SpeechLine,
 } from "@kshiai/shared";
 import { api } from "../api";
+import {
+  extendManualScrollHold,
+  hasReachedLatestPosition,
+} from "../battle-scroll";
 import { mediaSrc } from "../media";
 
 /** Gap before requesting the next turn (does not wait for speech animation). */
@@ -48,18 +53,115 @@ export function BattlePage() {
   const [saveMsg, setSaveMsg] = useState<string | null>(null);
   const [streamDraft, setStreamDraft] = useState<StreamDraft | null>(null);
   const [speechReveal, setSpeechReveal] = useState<SpeechReveal | null>(null);
+  const [autoScrollHeld, setAutoScrollHeld] = useState(false);
   /** Resume opens paused so the player can catch up on the log. */
   const [paused, setPaused] = useState(isResume || isViewOnly);
   const logEnd = useRef<HTMLDivElement>(null);
+  const autoScrollEligibleRef = useRef(false);
+  const autoScrollHeldRef = useRef(false);
+  const autoScrollHoldUntilRef = useRef(0);
+  const autoScrollHoldTimerRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
+  const programmaticScrollRef = useRef(false);
+  const programmaticScrollTimerRef = useRef<ReturnType<
+    typeof setTimeout
+  > | null>(null);
+  const manualScrollFrameRef = useRef<number | null>(null);
   const advancingRef = useRef(false);
   const cancelledRef = useRef(false);
   /** First battle payload shows all speeches; later log growth animates. */
   const skipSpeechAnimRef = useRef(true);
   const speechTimersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
+  autoScrollEligibleRef.current = Boolean(
+    battle?.status === "active" && !isViewOnly,
+  );
 
   function clearSpeechTimers() {
     for (const t of speechTimersRef.current) clearTimeout(t);
     speechTimersRef.current = [];
+  }
+
+  function setAutoScrollHold(held: boolean) {
+    if (autoScrollHeldRef.current === held) return;
+    autoScrollHeldRef.current = held;
+    setAutoScrollHeld(held);
+  }
+
+  function clearAutoScrollHoldTimer() {
+    if (autoScrollHoldTimerRef.current) {
+      clearTimeout(autoScrollHoldTimerRef.current);
+      autoScrollHoldTimerRef.current = null;
+    }
+  }
+
+  function clearProgrammaticScrollTimer() {
+    if (programmaticScrollTimerRef.current) {
+      clearTimeout(programmaticScrollTimerRef.current);
+      programmaticScrollTimerRef.current = null;
+    }
+  }
+
+  function latestPositionReached(): boolean {
+    const marker = logEnd.current;
+    if (!marker || typeof window === "undefined") return true;
+    return hasReachedLatestPosition({
+      latestTop: marker.getBoundingClientRect().top,
+      viewportHeight: window.innerHeight,
+    });
+  }
+
+  function releaseAutoScrollHold() {
+    autoScrollHoldUntilRef.current = 0;
+    clearAutoScrollHoldTimer();
+    if (autoScrollHeldRef.current) setAutoScrollHold(false);
+  }
+
+  function finishProgrammaticScrollSoon(delay = 1200) {
+    clearProgrammaticScrollTimer();
+    programmaticScrollTimerRef.current = setTimeout(() => {
+      programmaticScrollRef.current = false;
+      programmaticScrollTimerRef.current = null;
+    }, delay);
+  }
+
+  function scrollToLatest() {
+    releaseAutoScrollHold();
+    programmaticScrollRef.current = true;
+    logEnd.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+    finishProgrammaticScrollSoon();
+  }
+
+  function scheduleAutoScrollResume() {
+    clearAutoScrollHoldTimer();
+    const remaining = Math.max(
+      0,
+      autoScrollHoldUntilRef.current - Date.now(),
+    );
+    autoScrollHoldTimerRef.current = setTimeout(() => {
+      autoScrollHoldTimerRef.current = null;
+      if (Date.now() < autoScrollHoldUntilRef.current) {
+        scheduleAutoScrollResume();
+        return;
+      }
+      scrollToLatest();
+    }, remaining);
+  }
+
+  function holdAutoScrollForManualPosition() {
+    if (!autoScrollEligibleRef.current) {
+      releaseAutoScrollHold();
+      return;
+    }
+    if (latestPositionReached()) {
+      releaseAutoScrollHold();
+      return;
+    }
+    programmaticScrollRef.current = false;
+    clearProgrammaticScrollTimer();
+    autoScrollHoldUntilRef.current = extendManualScrollHold(Date.now());
+    setAutoScrollHold(true);
+    scheduleAutoScrollResume();
   }
 
   function startSpeechReveal(key: string, total: number) {
@@ -81,9 +183,87 @@ export function BattlePage() {
   useEffect(() => {
     cancelledRef.current = false;
     skipSpeechAnimRef.current = true;
+    releaseAutoScrollHold();
+    programmaticScrollRef.current = false;
     return () => {
       cancelledRef.current = true;
       clearSpeechTimers();
+      clearAutoScrollHoldTimer();
+      clearProgrammaticScrollTimer();
+      if (manualScrollFrameRef.current != null) {
+        cancelAnimationFrame(manualScrollFrameRef.current);
+        manualScrollFrameRef.current = null;
+      }
+    };
+  }, [id]);
+
+  useEffect(() => {
+    const onManualScrollIntent = () => {
+      programmaticScrollRef.current = false;
+      clearProgrammaticScrollTimer();
+      if (manualScrollFrameRef.current != null) {
+        cancelAnimationFrame(manualScrollFrameRef.current);
+      }
+      manualScrollFrameRef.current = requestAnimationFrame(() => {
+        manualScrollFrameRef.current = null;
+        holdAutoScrollForManualPosition();
+      });
+    };
+    const onKeyDown = (event: KeyboardEvent) => {
+      const target = event.target as HTMLElement | null;
+      if (
+        target?.isContentEditable ||
+        target?.tagName === "INPUT" ||
+        target?.tagName === "TEXTAREA" ||
+        target?.tagName === "SELECT"
+      ) {
+        return;
+      }
+      if (
+        [
+          "ArrowUp",
+          "ArrowDown",
+          "PageUp",
+          "PageDown",
+          "Home",
+          "End",
+          " ",
+        ].includes(event.key)
+      ) {
+        onManualScrollIntent();
+      }
+    };
+    const onPointerDown = (event: PointerEvent) => {
+      if (event.clientX >= document.documentElement.clientWidth - 24) {
+        programmaticScrollRef.current = false;
+        clearProgrammaticScrollTimer();
+      }
+    };
+    const onScroll = () => {
+      if (latestPositionReached()) {
+        releaseAutoScrollHold();
+        return;
+      }
+      if (programmaticScrollRef.current) {
+        finishProgrammaticScrollSoon(250);
+        return;
+      }
+      holdAutoScrollForManualPosition();
+    };
+
+    window.addEventListener("wheel", onManualScrollIntent, { passive: true });
+    window.addEventListener("touchmove", onManualScrollIntent, {
+      passive: true,
+    });
+    window.addEventListener("keydown", onKeyDown);
+    window.addEventListener("pointerdown", onPointerDown, { passive: true });
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("wheel", onManualScrollIntent);
+      window.removeEventListener("touchmove", onManualScrollIntent);
+      window.removeEventListener("keydown", onKeyDown);
+      window.removeEventListener("pointerdown", onPointerDown);
+      window.removeEventListener("scroll", onScroll);
     };
   }, [id]);
 
@@ -118,7 +298,11 @@ export function BattlePage() {
   ]);
 
   useEffect(() => {
-    logEnd.current?.scrollIntoView({ behavior: "smooth" });
+    if (battle?.status !== "active" || isViewOnly) releaseAutoScrollHold();
+  }, [battle?.status, isViewOnly]);
+
+  useEffect(() => {
+    if (!autoScrollHeldRef.current) scrollToLatest();
   }, [
     battle?.log,
     streamDraft?.lines.length,
@@ -621,9 +805,13 @@ export function BattlePage() {
                   <p style={{ margin: 0 }}>
                     {battle.sideA.displayName}:{" "}
                     <strong>
-                      {Math.round(battle.ratingSettlement.overall.sideA.before)}{" "}
+                      {formatRatingForDisplay(
+                        battle.ratingSettlement.overall.sideA.before,
+                      )}{" "}
                       →{" "}
-                      {Math.round(battle.ratingSettlement.overall.sideA.after)}
+                      {formatRatingForDisplay(
+                        battle.ratingSettlement.overall.sideA.after,
+                      )}
                     </strong>{" "}
                     (
                     {battle.ratingSettlement.overall.sideA.delta >= 0
@@ -637,9 +825,13 @@ export function BattlePage() {
                   <p style={{ margin: "0.25rem 0 0.55rem" }}>
                     {battle.sideB.displayName}:{" "}
                     <strong>
-                      {Math.round(battle.ratingSettlement.overall.sideB.before)}{" "}
+                      {formatRatingForDisplay(
+                        battle.ratingSettlement.overall.sideB.before,
+                      )}{" "}
                       →{" "}
-                      {Math.round(battle.ratingSettlement.overall.sideB.after)}
+                      {formatRatingForDisplay(
+                        battle.ratingSettlement.overall.sideB.after,
+                      )}
                     </strong>{" "}
                     (
                     {battle.ratingSettlement.overall.sideB.delta >= 0
@@ -661,9 +853,13 @@ export function BattlePage() {
                   <p style={{ margin: 0 }}>
                     {battle.sideA.displayName}:{" "}
                     <strong>
-                      {Math.round(battle.ratingSettlement.public.sideA.before)}{" "}
+                      {formatRatingForDisplay(
+                        battle.ratingSettlement.public.sideA.before,
+                      )}{" "}
                       →{" "}
-                      {Math.round(battle.ratingSettlement.public.sideA.after)}
+                      {formatRatingForDisplay(
+                        battle.ratingSettlement.public.sideA.after,
+                      )}
                     </strong>{" "}
                     (
                     {battle.ratingSettlement.public.sideA.delta >= 0
@@ -674,9 +870,13 @@ export function BattlePage() {
                   <p style={{ margin: "0.25rem 0 0" }}>
                     {battle.sideB.displayName}:{" "}
                     <strong>
-                      {Math.round(battle.ratingSettlement.public.sideB.before)}{" "}
+                      {formatRatingForDisplay(
+                        battle.ratingSettlement.public.sideB.before,
+                      )}{" "}
                       →{" "}
-                      {Math.round(battle.ratingSettlement.public.sideB.after)}
+                      {formatRatingForDisplay(
+                        battle.ratingSettlement.public.sideB.after,
+                      )}
                     </strong>{" "}
                     (
                     {battle.ratingSettlement.public.sideB.delta >= 0
@@ -691,7 +891,7 @@ export function BattlePage() {
                 </p>
               ) : null}
               <p className="help-text" style={{ margin: "0.45rem 0 0" }}>
-                「暫定」は試合数が少ないあいだの表示です（5試合で確定寄り）。
+                「暫定」は試合数が少ないあいだの表示ラベルです。K値は一律20です。
               </p>
             </div>
           ) : null}
@@ -724,6 +924,17 @@ export function BattlePage() {
       )}
 
       {error && <p className="error">{error}</p>}
+
+      {autoScrollHeld ? (
+        <button
+          className="btn primary battle-scroll-latest"
+          type="button"
+          onClick={scrollToLatest}
+          title="最新位置へ戻って自動スクロールを再開"
+        >
+          最新へ戻る ↓
+        </button>
+      ) : null}
     </>
   );
 }

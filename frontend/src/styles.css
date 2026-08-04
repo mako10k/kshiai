@@ -944,6 +944,15 @@ textarea::placeholder {
   line-height: 1.45;
 }
 
+.battle-scroll-latest {
+  position: fixed;
+  right: max(1rem, env(safe-area-inset-right));
+  bottom: calc(1rem + var(--safe-bottom));
+  z-index: 50;
+  border-radius: 999px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+}
+
 .record-block {
   margin: 0.5rem 0 0.75rem;
 }

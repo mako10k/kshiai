@@ -14,13 +14,13 @@ import {
   isPassiveTurn,
   isQuietTurn,
   normalizeSupervisor,
+  ratingForDisplay,
   resolveTurn,
   sheetCombatProfile,
   shouldInjectHappening,
   stanceLabel,
   summarizeSelectedPolicies,
   selectPolicyIdsByPerspective,
-  toPublicCharacter,
   toPublicInstance,
   toPublicPolicyOption,
   type BattlePolicyOption,
@@ -43,6 +43,7 @@ import {
   type InnerDigest,
   type NarrationFocus,
   type NarrationPerspective,
+  type RatingDisplayContext,
   buildInnerDigest,
   lockedFocusFromPerspective,
   needsFocusChoice,
@@ -72,6 +73,7 @@ export function toBattlePublic(
   mySheet: CharacterSheet,
   resultSummary?: string | null,
   oppSheet?: CharacterSheet | null,
+  ratingDisplay?: RatingDisplayContext,
 ): BattlePublic {
   const selected = new Set(state.selectedPolicyIdsA ?? []);
   const selectedPolicies = (state.policiesA ?? []).filter((p) =>
@@ -142,14 +144,17 @@ export function toBattlePublic(
       if (!s?.applied) return null;
       const overall = s.overall ?? { sideA: s.sideA, sideB: s.sideB };
       const pub = s.public ?? null;
-      const slim = (x: {
-        before: number;
-        after: number;
-        delta: number;
-        provisionalAfter: boolean;
-      }) => ({
-        before: x.before,
-        after: x.after,
+      const slim = (
+        x: {
+          before: number;
+          after: number;
+          delta: number;
+          provisionalAfter: boolean;
+        },
+        population: RatingDisplayContext["public"] | undefined,
+      ) => ({
+        before: ratingForDisplay(x.before, population),
+        after: ratingForDisplay(x.after, population),
         delta: x.delta,
         provisionalAfter: x.provisionalAfter,
       });
@@ -158,17 +163,38 @@ export function toBattlePublic(
         ranked: s.ranked,
         sameOwner: s.sameOwner,
         overall: {
-          sideA: slim(overall.sideA),
-          sideB: slim(overall.sideB),
+          sideA: slim(overall.sideA, ratingDisplay?.overall),
+          sideB: slim(overall.sideB, ratingDisplay?.overall),
         },
         public: pub
-          ? { sideA: slim(pub.sideA), sideB: slim(pub.sideB) }
+          ? {
+              sideA: slim(pub.sideA, ratingDisplay?.public),
+              sideB: slim(pub.sideB, ratingDisplay?.public),
+            }
           : null,
-        sideA: slim(overall.sideA),
-        sideB: slim(overall.sideB),
+        sideA: slim(overall.sideA, ratingDisplay?.overall),
+        sideB: slim(overall.sideB, ratingDisplay?.overall),
       };
     })(),
   };
+}
+
+export async function toBattlePublicForViewer(
+  state: BattleState,
+  mySheet: CharacterSheet,
+  resultSummary?: string | null,
+  oppSheet?: CharacterSheet | null,
+): Promise<BattlePublic> {
+  const ratingDisplay = state.ratingSettlement?.applied
+    ? await charRepo.getRatingDisplayContext()
+    : undefined;
+  return toBattlePublic(
+    state,
+    mySheet,
+    resultSummary,
+    oppSheet,
+    ratingDisplay,
+  );
 }
 
 async function resolveBattlefieldInstance(input: {
@@ -437,7 +463,7 @@ export async function startBattle(input: {
     sideBCharacterId: opp.id,
   });
 
-  return toBattlePublic(state, mine, null, opp);
+  return toBattlePublicForViewer(state, mine, null, opp);
 }
 
 async function withTimeout<T>(
@@ -1402,7 +1428,7 @@ async function advanceTurnWithLease(input: {
       sideACharacterId: meta.side_a_character_id,
       sideBCharacterId: meta.side_b_character_id,
     });
-    return toBattlePublic(next, mine, null, opp);
+    return toBattlePublicForViewer(next, mine, null, opp);
   }
 
   let resultSummary: string | null = null;
@@ -1464,7 +1490,7 @@ async function advanceTurnWithLease(input: {
     sideBCharacterId: meta.side_b_character_id,
   });
 
-  return toBattlePublic(next, mine, resultSummary, opp);
+  return toBattlePublicForViewer(next, mine, resultSummary, opp);
 }
 
 async function runPrologueTurn(input: {
@@ -1609,7 +1635,7 @@ async function runPrologueTurn(input: {
     sideBCharacterId: input.meta.side_b_character_id,
   });
 
-  return toBattlePublic(next, input.mine, null, input.opp);
+  return toBattlePublicForViewer(next, input.mine, null, input.opp);
 }
 
 async function runAftermathTurn(input: {
@@ -1769,7 +1795,7 @@ async function runAftermathTurn(input: {
 
   // The winner card already states the mechanical result. The aftermath log is
   // LLM-authored, so do not append a second fixed-prose result summary here.
-  return toBattlePublic(next, input.mine, null, input.opp);
+  return toBattlePublicForViewer(next, input.mine, null, input.opp);
 }
 
 export async function advanceTurn(input: {
@@ -1829,7 +1855,7 @@ export async function pickAutoMatchedOpponent(
     const delta = distance(a) - distance(b);
     return delta !== 0 ? delta : a.id.localeCompare(b.id);
   });
-  return toPublicCharacter(candidates[0]!, userId);
+  return charRepo.toPublicCharacterForViewer(candidates[0]!, userId);
 }
 
 export function instanceToPreset(
@@ -1859,5 +1885,3 @@ export function instanceToPreset(
     narrativeBlurb: inst.narrativeSetup || inst.scene,
   };
 }
-
-export { toPublicCharacter };

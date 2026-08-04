@@ -1,16 +1,15 @@
-/**
- * Elo-like rating with provisional period.
- * Provisional until a character has enough completed ranked games;
- * deletion of an opponent voids rating applied from those matches.
- */
+/** Elo-like rating. Provisional status is a display label only. */
 
 export const DEFAULT_RATING = 1500;
 /** Games before rating is considered settled (not provisional). */
 export const PROVISIONAL_GAMES = 5;
-export const K_PROVISIONAL = 40;
-export const K_SETTLED = 20;
-/** Smaller K when facing a still-provisional opponent. */
-export const K_VS_PROVISIONAL = 16;
+export const RATING_K = 20;
+/** @deprecated K is always RATING_K, regardless of provisional status. */
+export const K_PROVISIONAL = RATING_K;
+/** @deprecated Use RATING_K. */
+export const K_SETTLED = RATING_K;
+/** @deprecated K is always RATING_K, regardless of the opponent's status. */
+export const K_VS_PROVISIONAL = RATING_K;
 
 export type RankedOutcome = "win" | "loss" | "draw";
 
@@ -18,11 +17,11 @@ export function isProvisional(gamesPlayed: number): boolean {
   return gamesPlayed < PROVISIONAL_GAMES;
 }
 
-export function kFactor(selfGames: number, foeProvisional: boolean): number {
-  if (foeProvisional && selfGames >= PROVISIONAL_GAMES) {
-    return K_VS_PROVISIONAL;
-  }
-  return isProvisional(selfGames) ? K_PROVISIONAL : K_SETTLED;
+export function kFactor(
+  _selfGames: number,
+  _foeProvisional: boolean,
+): number {
+  return RATING_K;
 }
 
 /** Expected score for A against B (0–1). */
@@ -42,18 +41,49 @@ export function applyElo(input: {
   foeRating: number;
   foeProvisional: boolean;
   outcome: RankedOutcome;
-  /** 1 = full K; 0.5 = sparring / same-owner reduced movement */
-  kScale?: number;
 }): { nextRating: number; delta: number } {
   const k = kFactor(input.gamesPlayed, input.foeProvisional);
-  const scale = Math.min(1, Math.max(0.25, input.kScale ?? 1));
   const exp = expectedScore(input.rating, input.foeRating);
   const score = scoreFromOutcome(input.outcome);
-  const delta = Math.round(k * scale * (score - exp));
+  const delta = Math.round(k * (score - exp));
   return {
-    nextRating: Math.max(100, input.rating + delta),
+    nextRating: input.rating + delta,
     delta,
   };
+}
+
+export type RatingPopulation = {
+  ratingTotal: number;
+  characterCount: number;
+};
+
+export type RatingDisplayContext = {
+  public: RatingPopulation;
+  overall: RatingPopulation;
+};
+
+export function summarizeRatingPopulation(
+  ratings: readonly number[],
+): RatingPopulation {
+  return {
+    ratingTotal: ratings.reduce((total, rating) => total + rating, 0),
+    characterCount: ratings.length,
+  };
+}
+
+/** Shift the active population mean to DEFAULT_RATING for display only. */
+export function ratingForDisplay(
+  rating: number,
+  population?: RatingPopulation,
+): number {
+  if (!population || population.characterCount <= 0) return rating;
+  const average = population.ratingTotal / population.characterCount;
+  return DEFAULT_RATING + (rating - average);
+}
+
+/** Round visible ratings and conceal exact values below 100. */
+export function formatRatingForDisplay(rating: number): string {
+  return rating < 100 ? "100未満" : String(Math.round(rating));
 }
 
 export type CharacterRecord = {
@@ -65,6 +95,14 @@ export type CharacterRecord = {
   /** True until gamesPlayed reaches PROVISIONAL_GAMES. */
   provisional: boolean;
 };
+
+/** Actual score rate, using the same win=1/draw=0.5/loss=0 scale as Elo. */
+export function actualWinRate(
+  record: Pick<CharacterRecord, "wins" | "draws" | "gamesPlayed">,
+): number | null {
+  if (record.gamesPlayed <= 0) return null;
+  return (record.wins + record.draws * 0.5) / record.gamesPlayed;
+}
 
 export function defaultRecord(): CharacterRecord {
   return {
@@ -93,7 +131,7 @@ export function normalizeRecord(
     losses: Math.max(0, partial.losses ?? 0),
     draws: Math.max(0, partial.draws ?? 0),
     gamesPlayed,
-    rating: Math.max(100, rating),
+    rating,
     provisional:
       partial.provisional !== undefined
         ? partial.provisional
@@ -118,7 +156,7 @@ export type BattleRatingSide = {
 export type BattleRatingSettlement = {
   /** Currently counting toward ratings. */
   applied: boolean;
-  /** Voided (e.g. character deleted) — deltas reversed. */
+  /** Legacy settlement state; character deletion no longer voids ratings. */
   voided: boolean;
   ranked: boolean;
   sideA: BattleRatingSide;

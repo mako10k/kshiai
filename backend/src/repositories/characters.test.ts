@@ -115,4 +115,37 @@ describe("owner-scoped character generation references", () => {
     const matched = await pickAutoMatchedOpponent("user-a", "char-a");
     assert.equal(matched?.id, "char-b");
   });
+
+  it("centers active character ratings without compensating for deletion", async () => {
+    const before = await repo.getRatingDisplayContext();
+    assert.deepEqual(before.public, {
+      ratingTotal: 5100,
+      characterCount: 3,
+    });
+
+    const charABefore = await repo.getSheet("char-a");
+    assert.ok(charABefore);
+    const deleted = await repo.softDeleteCharacter("char-far", "user-b");
+    assert.ok(deleted);
+
+    const after = await repo.getRatingDisplayContext();
+    assert.deepEqual(after.public, {
+      ratingTotal: 3000,
+      characterCount: 2,
+    });
+    assert.equal((await repo.getSheet("char-a"))?.record?.rating, 1500);
+
+    const active = await Promise.all([
+      repo.toPublicCharacterForViewer(charABefore!, "user-a", after),
+      repo.toPublicCharacterForViewer(
+        (await repo.getSheet("char-b"))!,
+        "user-a",
+        after,
+      ),
+    ]);
+    const visibleAverage =
+      active.reduce((total, character) => total + character.record.rating, 0) /
+      active.length;
+    assert.equal(visibleAverage, 1500);
+  });
 });

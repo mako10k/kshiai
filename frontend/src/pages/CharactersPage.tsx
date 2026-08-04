@@ -1,6 +1,9 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { Link } from "react-router-dom";
-import type { CharacterPublic } from "@kshiai/shared";
+import {
+  formatRatingForDisplay,
+  type CharacterPublic,
+} from "@kshiai/shared";
 import { api } from "../api";
 import { useLocalDraft } from "../hooks/useLocalDraft";
 import { mediaSrc } from "../media";
@@ -239,7 +242,7 @@ export function CharactersPage() {
               </Link>
               <p className="record-line">
                 <span className="rating" title="公開（他アカウント対戦のみ）">
-                  公開 {Math.round(c.record.rating)}
+                  公開 {formatRatingForDisplay(c.record.rating)}
                   {c.record.provisional ? (
                     <span className="tag">暫定</span>
                   ) : null}
@@ -255,7 +258,7 @@ export function CharactersPage() {
               {c.recordOverall ? (
                 <p className="record-line record-overall">
                   <span className="rating" title="本人のみ見える全試合統計">
-                    全体 {Math.round(c.recordOverall.rating)}
+                    全体 {formatRatingForDisplay(c.recordOverall.rating)}
                     {c.recordOverall.provisional ? (
                       <span className="tag">暫定</span>
                     ) : null}

@@ -50,6 +50,66 @@ describe("public battle semantic projection", () => {
     assert.equal(json.includes("coefficients"), false);
   });
 
+  it("centers settled ratings independently for each visible track", () => {
+    const sideA = sheet("a", "A");
+    const sideB = sheet("b", "B");
+    const state = createBattleState({
+      id: "rating-display",
+      sideA,
+      sideB,
+      turnLimit: 20,
+      prologuePending: false,
+    });
+    const snapA = {
+      characterId: "a",
+      before: 1400,
+      after: 1410,
+      delta: 10,
+      provisionalBefore: true,
+      provisionalAfter: true,
+      gamesPlayedBefore: 0,
+    };
+    const snapB = {
+      characterId: "b",
+      before: 1400,
+      after: 1390,
+      delta: -10,
+      provisionalBefore: true,
+      provisionalAfter: true,
+      gamesPlayedBefore: 0,
+    };
+    const publicState = toBattlePublic(
+      {
+        ...state,
+        status: "finished",
+        ratingSettlement: {
+          applied: true,
+          voided: false,
+          ranked: true,
+          sameOwner: false,
+          sideA: snapA,
+          sideB: snapB,
+          overall: {
+            sideA: { ...snapA, before: 1500, after: 1510 },
+            sideB: { ...snapB, before: 1500, after: 1490 },
+          },
+          public: { sideA: snapA, sideB: snapB },
+        },
+      },
+      sideA,
+      null,
+      sideB,
+      {
+        public: { ratingTotal: 2800, characterCount: 2 },
+        overall: { ratingTotal: 3200, characterCount: 2 },
+      },
+    );
+    assert.equal(publicState.ratingSettlement?.public?.sideA.before, 1500);
+    assert.equal(publicState.ratingSettlement?.public?.sideA.after, 1510);
+    assert.equal(publicState.ratingSettlement?.overall?.sideA.before, 1400);
+    assert.equal(publicState.ratingSettlement?.overall?.sideA.after, 1410);
+  });
+
   it("keeps the committed state when a provider patch is invalid", async () => {
     const sideA = sheet("a", "A");
     const sideB = sheet("b", "B");
