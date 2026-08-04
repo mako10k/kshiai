@@ -5,6 +5,35 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-08-04
+
+### Added
+
+- Adds bounded, structured battle-world state for persistent scene facts,
+  characters, objects, terrain, effects, locations, visibility, and lifecycle.
+- Adds side A, side B, and public current observations with only the exact latest
+  diff, allowing each character agent to update its private inner state from
+  what that character can observe.
+- Adds atomic JSON Pointer-style semantic patches with revision, turn, causal
+  event, tombstone, attachment, size, depth, and protected-mechanics validation.
+- Adds an operator CLI for inspecting, diffing, and revision-guarded patching of
+  the current battle state, plus a public battle-state panel.
+
+### Changed
+
+- Resolves deterministic mechanics first, reconciles their durable observable
+  consequences second, advances both isolated character agents third, and lets
+  narration render only the committed public observation last.
+- Seeds structured state for new battlefields and deterministically adapts
+  legacy battles without adding a database migration or retaining full state
+  history.
+
+### Operations
+
+- No database, authentication, billing, provider-secret, or callback changes are
+  required. Existing JSON battle records remain readable, and older application
+  revisions ignore the new optional fields if an application rollback is needed.
+
 ## [0.1.10] - 2026-08-04
 
 ### Fixed
