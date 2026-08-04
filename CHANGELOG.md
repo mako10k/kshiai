@@ -5,6 +5,24 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 
 ## [Unreleased]
 
+## [0.5.1] - 2026-08-04
+
+### Fixed
+
+- Stops post-processing from replacing public battle speeches with server-authored
+  stock stage directions when the narrator repeats a line; duplicates are dropped
+  instead so dialogue stays narrator-authored.
+- Breaks multi-turn action loops (especially repeated skills and wait streaks) by
+  applying drama-based variety pressure on policy fallback and character agents.
+- Requires narrator turns to advance leverage using a progression hint, so ambient
+  restatement of the same exchange is discouraged in favor of action-led prose.
+
+### Operations
+
+- No database migration, environment, authentication, or billing change.
+- Compatible with 0.5.0 battle JSON; older revisions ignore new decision fields
+  that are only used at runtime.
+
 ## [0.5.0] - 2026-08-04
 
 ### Added
