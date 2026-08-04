@@ -14,7 +14,7 @@ describe("mock LLM natural-language handling", () => {
       sideA: { displayName: "姫騎士" },
       sideB: { displayName: "挑戦者" },
     });
-    const result = await provider.advanceCharacterAgent({
+    const agentInput: Parameters<MockLlmProvider["advanceCharacterAgent"]>[0] = {
       character: {
         displayName: "姫騎士",
         identity: {
@@ -53,9 +53,65 @@ describe("mock LLM natural-language handling", () => {
         after: semanticState,
         observer: "a",
       }),
-    });
+      decision: {
+        nextTurn: 2,
+        turnsRemaining: 19,
+        ownCondition: "steady",
+        foeCondition: "strained",
+        availableActions: [
+          { kind: "basic_attack", name: "基本攻撃" },
+        ],
+        finisher: null,
+      },
+    };
+    const result = await provider.advanceCharacterAgent(agentInput);
     assert.equal(result.state.selfReference, "わたくし");
     assert.match(result.speech ?? "", /わたくし/);
+    assert.deepEqual(result.nextAction, { kind: "basic_attack" });
+
+    const finisherResult = await provider.advanceCharacterAgent({
+      ...agentInput,
+      cognition: {
+        ...agentInput.cognition,
+        turn: 19,
+        foeCondition: "critical",
+      },
+      decision: {
+        nextTurn: 20,
+        turnsRemaining: 1,
+        ownCondition: "steady",
+        foeCondition: "critical",
+        availableActions: [
+          { kind: "basic_attack", name: "基本攻撃" },
+          {
+            kind: "skill",
+            skillId: "slash",
+            name: "斬撃",
+            skillKind: "attack",
+            costMp: 0,
+            costStamina: 5,
+            finisherCandidate: true,
+          },
+        ],
+        finisher: {
+          skillId: "slash",
+          skillName: "斬撃",
+          source: "derived",
+          unlocked: true,
+          turnsUntilUnlock: 0,
+          remainingUses: 1,
+          currentMultiplier: 2,
+          maxMultiplier: 2,
+          criticalChance: 0.4,
+          turnsUntilMax: 0,
+        },
+      },
+    });
+    assert.deepEqual(finisherResult.nextAction, {
+      kind: "skill",
+      skillId: "slash",
+      useFinisher: true,
+    });
 
     const narration = await provider.narrateTurn({
       turn: 1,

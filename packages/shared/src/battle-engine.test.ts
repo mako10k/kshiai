@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import {
   buildBattleTurnRecord,
   buildCharacterAgentStateChange,
+  buildFinisherWindow,
   createBattleState,
   decisivePressure,
   resolveTurn,
@@ -93,12 +94,31 @@ describe("battle engine", () => {
     });
     assert.equal(turnNine.actions[0]?.skillId, "regular");
 
+    turnNine.state.plannedActionA = {
+      kind: "skill",
+      skillId: "ultimate",
+      useFinisher: true,
+    };
     const turnTen = resolveTurn({
       state: turnNine.state,
       sideASkills: a.skills,
       sideBSkills: [],
     });
     assert.equal(turnTen.actions[0]?.skillId, "ultimate");
+    assert.equal(turnTen.actions[0]?.useFinisher, true);
+    assert.deepEqual(turnTen.state.finisherA, {
+      skillId: "ultimate",
+      skillName: "必殺技",
+      source: "explicit",
+      used: true,
+      usedTurn: 10,
+    });
+    const turnEleven = resolveTurn({
+      state: turnTen.state,
+      sideASkills: a.skills,
+      sideBSkills: [],
+    });
+    assert.equal(turnEleven.actions[0]?.skillId, "regular");
     assert.deepEqual(
       decisivePressure({ battleId: "x", turn: 10, turnLimit: 20, actorSide: "a" }),
       { progress: 0, criticalChance: 0, specialMultiplier: 1 },
@@ -106,6 +126,82 @@ describe("battle engine", () => {
     assert.deepEqual(
       decisivePressure({ battleId: "x", turn: 20, turnLimit: 20, actorSide: "a" }),
       { progress: 1, criticalChance: 0.4, specialMultiplier: 2 },
+    );
+    assert.deepEqual(
+      buildFinisherWindow({
+        finisher: beforeUnlock.finisherA,
+        turn: 10,
+        turnLimit: 20,
+      }),
+      {
+        skillId: "ultimate",
+        skillName: "必殺技",
+        source: "explicit",
+        unlocked: true,
+        turnsUntilUnlock: 0,
+        remainingUses: 1,
+        currentMultiplier: 1,
+        maxMultiplier: 2,
+        criticalChance: 0,
+        turnsUntilMax: 10,
+      },
+    );
+  });
+
+  it("lets a character spend one derived finisher and rejects repeat activation", () => {
+    const a = sheet("a", "A", 200);
+    const b = sheet("b", "B", 200);
+    const state = createBattleState({
+      id: "derived-finisher",
+      sideA: a,
+      sideB: b,
+      turnLimit: 20,
+      prologuePending: false,
+    });
+    state.turn = 8;
+    state.plannedActionA = {
+      kind: "skill",
+      skillId: "slash",
+      useFinisher: true,
+    };
+    const beforeUnlock = resolveTurn({
+      state,
+      sideASkills: a.skills,
+      sideBSkills: [],
+    });
+    assert.notEqual(beforeUnlock.actions[0]?.useFinisher, true);
+    assert.equal(beforeUnlock.state.finisherA?.used, false);
+
+    beforeUnlock.state.plannedActionA = {
+      kind: "skill",
+      skillId: "slash",
+      useFinisher: true,
+    };
+    const first = resolveTurn({
+      state: beforeUnlock.state,
+      sideASkills: a.skills,
+      sideBSkills: [],
+    });
+    assert.equal(first.actions[0]?.useFinisher, true);
+    assert.equal(first.state.finisherA?.used, true);
+    assert.equal(first.state.finisherA?.usedTurn, 10);
+    assert.ok(first.events.some((event) => event.summary.includes("蓄えたすべて")));
+
+    first.state.plannedActionA = {
+      kind: "skill",
+      skillId: "slash",
+      useFinisher: true,
+    };
+    const repeated = resolveTurn({
+      state: first.state,
+      sideASkills: a.skills,
+      sideBSkills: [],
+    });
+    assert.notEqual(repeated.actions[0]?.useFinisher, true);
+    assert.equal(repeated.state.finisherA?.usedTurn, 10);
+    assert.equal(
+      repeated.events.some((event) => event.summary.includes("蓄えたすべて")),
+      false,
     );
   });
   it("creates private agent continuity and perspective-aware turn records", () => {
