@@ -28,9 +28,9 @@ Out of scope for 0.5.0:
 | 1 | Finish `T_CONSUMERS` review decisions and wiring tests | done |
 | 2 | Finish `T_COMPAT` legacy seed, failure, non-leakage | done |
 | 3 | `T_ACCEPT`: acceptance matrix, typecheck, test, build, PERT | done |
-| 4 | Rewrite WIP history into focused non-WIP commits | pending |
-| 5 | `release/0.5.0`: version bump, CHANGELOG, PR | pending |
-| 6 | Required checks + staging smoke + production promote | pending |
+| 4 | Rewrite WIP history into focused non-WIP commits | done |
+| 5 | Feature PR into `main` | done ([#19](https://github.com/mako10k/kshiai/pull/19)) |
+| 6 | `release/0.5.0`: version bump, CHANGELOG, tag, stage, promote | pending |
 
 ## Acceptance checklist (`T_ACCEPT`)
 
