@@ -5,6 +5,38 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-08-04
+
+### Added
+
+- Adds automatic opponent matching based on public rating and internal combat
+  profile, with deterministic tie-breaking.
+- Adds server-backed character drafts with preview, conversational adjustment,
+  confirmation, discard, and draft restoration before a character is saved.
+- Adds narration-style editing to the existing style management screen.
+- Adds bounded drama state, action-focused narration beats, durable semantic
+  environment changes, and recent-prose repetition controls without retaining
+  full battle history.
+- Unlocks finishing attacks after turn 10 and gradually raises critical and
+  finishing pressure to its maximum at turn 20.
+
+### Changed
+
+- Character generation now returns a draft instead of immediately persisting a
+  playable character; clients must explicitly confirm the draft.
+- Balance-summary access now fails closed unless the authenticated user is
+  listed in `ADMIN_USER_IDS` or `ADMIN_EMAILS`.
+
+### Operations
+
+- Applies forward-only migration `0006_character_drafts.sql`, which only adds
+  the draft table and remains compatible with the previous application revision.
+- Configure an administrator allowlist only when balance-summary access is
+  required. No billing or provider-secret changes are included.
+- Application rollback may leave the added draft table in place; the previous
+  revision ignores it. Drafts created through this release are not playable
+  characters until confirmed.
+
 ## [0.2.0] - 2026-08-04
 
 ### Added
