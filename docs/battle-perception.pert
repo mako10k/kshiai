@@ -1,0 +1,181 @@
+project KSHIAI_BATTLE_PERCEPTION:
+  version 2
+  title "Observer-relative battle perception and qualitative self feedback"
+  description |
+    Extend the accepted semantic world with explicit self anchoring,
+    deterministic qualitative effect and strain cues, multi-modal perception,
+    and anonymous observer-local contacts without exposing hidden mechanics or
+    canonical source identity.
+  as_of 2026-08-04
+  duration_unit day
+  finish PERCEPTION_ACCEPTED
+
+resource DEV:
+  title "Developer"
+  capacity 1
+
+milestone CURRENT_BEHAVIOR:
+  title "Existing semantic observation and cognition behavior assessed"
+  state reached
+
+milestone DESIGN_READY:
+  title "Observer-relative perception decisions and boundaries ready"
+  state reached
+
+milestone SCHEMA_READY:
+  title "Perception frame and private contact-ledger schemas ready"
+
+milestone PROMPT_STRATEGY_READY:
+  title "Combined or split perception prompt topology selected from evidence"
+
+milestone EVIDENCE_READY:
+  title "Mechanical and semantic perception evidence contracts ready"
+
+milestone QUALITATIVE_CUES_READY:
+  title "Deterministic effect and strain cues ready"
+
+milestone PROJECTION_READY:
+  title "Side-specific multi-modal projection and anonymous contacts ready"
+
+milestone NARRATION_VIEWS_READY:
+  title "Perspective-specific narration views and ID containment ready"
+
+milestone CONSUMERS_READY:
+  title "Character agents and narration consume bounded perception frames"
+
+milestone COMPATIBILITY_READY:
+  title "Compatibility privacy failure and bounded-state behavior verified"
+
+milestone PERCEPTION_ACCEPTED:
+  title "Observer-relative battle perception accepted"
+
+task T_DESIGN CURRENT_BEHAVIOR -> DESIGN_READY:
+  title "Specify qualitative self cognition and observer-relative perception"
+  description |
+    Record llmthink decisions that preserve canonical world truth while
+    separating explicit self perception, identified entities, unknown contacts,
+    ambient phenomena, and private interpretation. Define the no-extra-call
+    preferred pipeline, accuracy-gated split topology, absolute and relative
+    bands, required counterpart slots, contact lifecycle, narration views,
+    non-leakage, and provider-failure boundaries before implementation.
+  duration 1d
+  status done
+  requires:
+    DEV 1
+
+task T_SCHEMA DESIGN_READY -> SCHEMA_READY:
+  title "Define perception frames cues references and bounded private ledgers"
+  description |
+    Add shared schemas for observer and self references, sensory modalities,
+    phenomena, direction, distance, salience, occurrence and attribution
+    certainty, identified subjects, anonymous observer-local contacts,
+    qualitative absolute and relative effect and reserve cues, required self and
+    counterpart slots, and bounded current contact continuity. Define separate
+    character-frame and ephemeral narration-view schemas. Keep unknown canonical
+    source mappings out of character-facing DTOs. Add schema and boundary tests.
+  duration 2d
+  requires:
+    DEV 1
+
+task T_PROMPT_STRATEGY SCHEMA_READY -> PROMPT_STRATEGY_READY:
+  title "Evaluate combined versus separated world and sensory prompts"
+  description |
+    Build fixed provider and model fixtures for one combined reconciler response
+    and for separate world-patch and sensory-evidence prompts. Measure schema-valid
+    rate, patch correctness, sensory coverage, attribution and identity errors,
+    latency, and token cost. Record the accepted topology per provider and model;
+    do not introduce per-turn adaptive repair calls.
+  duration 2d
+  requires:
+    DEV 1
+
+task T_EVIDENCE PROMPT_STRATEGY_READY -> EVIDENCE_READY:
+  title "Produce validated mechanical and semantic perception evidence"
+  description |
+    Derive authoritative mechanical evidence after resolution and extend the
+    selected prompt topology with a separately validated sensory-evidence
+    section or call. Ground every source and target in committed action, event,
+    and semantic references; reject invalid evidence independently from a valid
+    world patch. Add provider, validation, and failure tests without prose-pattern
+    mechanics.
+  duration 2d
+  requires:
+    DEV 1
+
+task T_QUALITATIVE_CUES EVIDENCE_READY -> QUALITATIVE_CUES_READY:
+  title "Derive deterministic hand-feel impact and exertion bands"
+  description |
+    Calculate delivered and received post-mitigation changes on independent
+    absolute and target-relative axes plus current vitality stamina and focus
+    reserve bands. Cover loss gain no-effect immunity incapacity overkill
+    simultaneous multi-target and environment outcomes. Keep thresholds and raw
+    ratios server-only and add monotonic boundary and A/B metamorphic tests.
+  duration 2d
+  requires:
+    DEV 1
+
+task T_PROJECT QUALITATIVE_CUES_READY -> PROJECTION_READY:
+  title "Project perceived events modalities and contacts per observer"
+  description |
+    In one deterministic stage combine committed event evidence qualitative cues
+    and validated sensory evidence into frozen A and B frames. Always emit self
+    and counterpart slots with independent current access and identity knowledge.
+    Support multi-modal identified contact and ambient subjects update bounded
+    server-private registries issue non-reused IDs split ambiguous groups only
+    prospectively and redact unknown canonical identity and exact hidden location.
+    Add projection lifecycle capacity and side-swap tests.
+  duration 3d
+  requires:
+    DEV 1
+
+task T_NARRATION_VIEWS PROJECTION_READY -> NARRATION_VIEWS_READY:
+  title "Build narration views and contain identifiers by perspective"
+  description |
+    Derive first-person opponent-limited omniscient external and fluid-focus views
+    without another LLM call. Mark the viewpoint subject explicitly include all
+    IDs only for omniscient input omit IDs for external input and attach safe
+    render labels to every reference. Add strong narrator prompt constraints and
+    deterministic exact ID-to-label replacement for paragraphs and speeches.
+    Test the complete perspective matrix and leakage repair.
+  duration 2d
+  requires:
+    DEV 1
+
+task T_CONSUMERS NARRATION_VIEWS_READY -> CONSUMERS_READY:
+  title "Integrate frozen perception frames with agents and narration"
+  description |
+    Give each character only its explicit self-labelled frame, previous private
+    continuity, and validated available actions; counterpart name and condition
+    are present only when identified. Update provider contracts prompts mocks and
+    fallbacks for the selected combined or split topology. Feed the existing
+    narrator call only its derived view and preserve uncertainty without granting
+    any consumer mutation authority. Add service-level wiring tests for A and B.
+  duration 2d
+  requires:
+    DEV 1
+
+task T_COMPAT CONSUMERS_READY -> COMPATIBILITY_READY:
+  title "Verify legacy fallback privacy failure and size behavior"
+  description |
+    Seed active legacy counterparts as identified from setup, preserve previous
+    agent state and registry on provider or projection failure, emit a minimal
+    engine-authored self frame, bound contact and perception retention, prevent
+    unknown identity through snapshots diffs logs prompts DTOs and tooling, and
+    verify that ledgers freeze serially before parallel A and B advancement.
+  duration 2d
+  requires:
+    DEV 1
+
+task T_ACCEPT COMPATIBILITY_READY -> PERCEPTION_ACCEPTED:
+  title "Accept self feedback anonymous perception and non-leakage scenarios"
+  description |
+    Accept combined or split prompt evidence, absolute and relative hit and
+    fatigue feedback, required not-perceived and unidentified counterpart slots,
+    source-less footsteps, partial multi-modal identification, contact split and
+    eviction, prospective reveal, ambiguous effects, every narration perspective,
+    provider and projection failure, and absence of hidden totals, hidden identity,
+    exact hidden positions, unconditional foe knowledge, and user-visible IDs.
+    Run llmthink and PERT audits plus test typecheck and build.
+  duration 1d
+  requires:
+    DEV 1
