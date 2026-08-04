@@ -5,6 +5,40 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-08-04
+
+### Added
+
+- Fixes one finishing technique per character at battle start, preferring an
+  explicit special skill and otherwise reusing the strongest existing attack or
+  magic skill without inventing a new ability.
+- Gives each isolated character agent a bounded next-turn decision containing
+  available actions, qualitative conditions, remaining turns, unlock timing,
+  current and maximum finisher multiplier, critical opportunity, and the single
+  remaining use.
+- Stores one validated next-turn action reservation per side and falls back to
+  selected battle policies when a reservation is unavailable or invalid.
+
+### Changed
+
+- Finishers can be activated once per battle by a character reservation or an
+  explicit player action. Static policy fallback never spends them automatically.
+- Keeps the general post-turn-ten critical-pressure curve separate from the
+  one-use finisher multiplier: normal at turn 10 and maximal at turn 20.
+- Advances both private character agents for every narration perspective so an
+  external narrator no longer suppresses inner continuity or action planning.
+
+### Operations
+
+- No database migration, environment, authentication, billing, or public DTO
+  change is required. Existing battle JSON derives missing finisher state
+  deterministically when its next turn resolves.
+- External-perspective battles now make the same two parallel fast-model
+  character-agent requests as internal perspectives. The next-action decision is
+  included in those existing agent updates and does not add a separate request.
+- Application rollback remains compatible with the optional battle-state fields;
+  the prior revision ignores them.
+
 ## [0.3.0] - 2026-08-04
 
 ### Added
