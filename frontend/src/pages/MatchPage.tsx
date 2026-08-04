@@ -396,6 +396,23 @@ export function MatchPage() {
     }
   }
 
+  async function pickAutoOpponent() {
+    if (!myId) return;
+    setBusy(true);
+    setError(null);
+    try {
+      const { opponent } = await api.autoOpponent(myId);
+      setOppId(opponent.id);
+      rememberSelections({ opponent: opponent.id });
+      invalidatePolicies();
+      if (step !== 1) setStep(1);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "failed");
+    } finally {
+      setBusy(false);
+    }
+  }
+
   async function startBattle() {
     if (!myId || !oppId) {
       setError("対戦カードが未完成です");
@@ -656,6 +673,14 @@ export function MatchPage() {
           </label>
 
           <div className="btn-stack">
+            <button
+              className="btn primary"
+              type="button"
+              disabled={busy || !myId}
+              onClick={() => void pickAutoOpponent()}
+            >
+              同程度の相手を自動選択
+            </button>
             <button
               className="btn"
               type="button"

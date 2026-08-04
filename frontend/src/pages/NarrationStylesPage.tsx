@@ -34,6 +34,7 @@ export function NarrationStylesPage() {
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
 
   async function reload() {
     const { styles } = await api.listNarrationStyles();
@@ -74,13 +75,21 @@ export function NarrationStylesPage() {
     setBusy(true);
     setError(null);
     try {
-      const res = await api.createNarrationStyle({
+      const payload = {
         displayName: manual.displayName.trim(),
         description: manual.description.trim() || undefined,
         instruction: manual.instruction.trim(),
         perspective: manual.perspective,
-      });
-      setMessage(`「${res.style.displayName}」を保存しました`);
+      };
+      const res = editingId
+        ? await api.updateNarrationStyle(editingId, payload)
+        : await api.createNarrationStyle(payload);
+      setMessage(
+        editingId
+          ? `「${res.style.displayName}」を更新しました`
+          : `「${res.style.displayName}」を保存しました`,
+      );
+      setEditingId(null);
       setManual({
         displayName: "",
         description: "",
@@ -93,6 +102,28 @@ export function NarrationStylesPage() {
     } finally {
       setBusy(false);
     }
+  }
+
+  function startEdit(style: NarrationStylePublic) {
+    setEditingId(style.id);
+    setManual({
+      displayName: style.displayName,
+      description: style.description,
+      instruction: style.instruction,
+      perspective: style.perspective,
+    });
+    setMessage(null);
+    setError(null);
+  }
+
+  function cancelEdit() {
+    setEditingId(null);
+    setManual({
+      displayName: "",
+      description: "",
+      instruction: "",
+      perspective: "external",
+    });
   }
 
   async function onDelete(id: string, name: string) {
@@ -133,7 +164,7 @@ export function NarrationStylesPage() {
       </div>
 
       <div className="panel">
-        <h2>手入力で作成</h2>
+        <h2>{editingId ? "スタイルを編集" : "手入力で作成"}</h2>
         <form className="grid" onSubmit={(e) => void onManual(e)}>
           <label className="field">
             <span className="field-label">名前</span>
@@ -184,9 +215,16 @@ export function NarrationStylesPage() {
               ))}
             </select>
           </label>
-          <button className="btn primary" type="submit" disabled={busy}>
-            保存
-          </button>
+          <div className="row">
+            <button className="btn primary" type="submit" disabled={busy}>
+              {editingId ? "変更を保存" : "保存"}
+            </button>
+            {editingId && (
+              <button className="btn" type="button" disabled={busy} onClick={cancelEdit}>
+                キャンセル
+              </button>
+            )}
+          </div>
         </form>
         {message && <p className="ok">{message}</p>}
         {error && <p className="error">{error}</p>}
@@ -223,6 +261,13 @@ export function NarrationStylesPage() {
               </div>
               {!s.isSystem && (
                 <div className="row" style={{ marginTop: "0.65rem" }}>
+                  <button
+                    className="btn"
+                    type="button"
+                    onClick={() => startEdit(s)}
+                  >
+                    編集
+                  </button>
                   <button
                     className="btn danger"
                     type="button"

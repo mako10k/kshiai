@@ -31,6 +31,7 @@ import {
   buildSemanticObservationState,
   createBattleSemanticState,
 } from "./semantic-state.js";
+import { normalizeDramaState } from "./drama.js";
 import {
   balanceBasicAttack,
   balanceEquipment,
@@ -277,6 +278,7 @@ export function createBattleState(input: {
       happenings: 0,
       recentHappenings: [],
     },
+    dramaState: normalizeDramaState(null),
     prologuePending: input.prologuePending ?? true,
     aftermathPending: false,
     narrationStyle: input.narrationStyle ?? defaultNarrationSnapshot(),
@@ -397,20 +399,29 @@ function usableSkills(skills: Skill[], self: CombatantState): Skill[] {
   );
 }
 
-function pickOffensiveSkill(skills: Skill[], self: CombatantState): Skill | undefined {
+function pickOffensiveSkill(
+  skills: Skill[],
+  self: CombatantState,
+  turn: number,
+): Skill | undefined {
   const usable = usableSkills(skills, self).filter(
     (s) =>
-      s.kind === "attack" ||
+      (s.kind === "special" ? turn >= 10 : s.kind === "attack") ||
       s.kind === "magic" ||
-      s.kind === "special" ||
       (s.kind === "status" &&
         (s.effects ?? []).some(
           (effect) => effect.target === "foe" && effect.delta < 0,
         )),
   );
   if (usable.length === 0) return undefined;
-  // Prefer higher power
-  return [...usable].sort((a, b) => b.power - a.power)[0];
+  // From turn 10 onward, a usable special is an unlocked finishing option.
+  return [...usable].sort((a, b) => {
+    if (turn >= 10 && a.kind !== b.kind) {
+      if (a.kind === "special") return -1;
+      if (b.kind === "special") return 1;
+    }
+    return b.power - a.power;
+  })[0];
 }
 
 function pickSupportSkill(skills: Skill[], self: CombatantState): Skill | undefined {
@@ -432,8 +443,9 @@ function actionFromBias(
   self: CombatantState,
   skills: Skill[],
   myHp: number,
+  turn: number,
 ): BattleAction {
-  const offense = pickOffensiveSkill(skills, self);
+  const offense = pickOffensiveSkill(skills, self, turn);
   const support = pickSupportSkill(skills, self);
 
   const attack = (): BattleAction =>
@@ -536,6 +548,7 @@ export function chooseActionFromPolicies(input: {
       input.self,
       input.skills,
       myHp,
+      input.turn,
     );
   }
 
@@ -550,6 +563,7 @@ export function chooseActionFromPolicies(input: {
       input.self,
       input.skills,
       myHp,
+      input.turn,
     );
   }
 
@@ -586,22 +600,23 @@ export function chooseActionFromStance(input: {
         self,
         skills,
         myHp,
+        turn,
       );
     case "defensive":
-      if (myHp < 0.55) return actionFromBias("defend", actorSide, self, skills, myHp);
+      if (myHp < 0.55) return actionFromBias("defend", actorSide, self, skills, myHp, turn);
       if (foeHp < 0.35 || turn % 3 === 0) {
-        return actionFromBias("attack", actorSide, self, skills, myHp);
+        return actionFromBias("attack", actorSide, self, skills, myHp, turn);
       }
-      return actionFromBias("defend", actorSide, self, skills, myHp);
+      return actionFromBias("defend", actorSide, self, skills, myHp, turn);
     case "opportunistic":
-      if (turn <= 2) return actionFromBias(turn === 1 ? "wait" : "defend", actorSide, self, skills, myHp);
+      if (turn <= 2) return actionFromBias(turn === 1 ? "wait" : "defend", actorSide, self, skills, myHp, turn);
       if (foeHp < 0.5 || myHp > 0.7) {
-        return actionFromBias("attack", actorSide, self, skills, myHp);
+        return actionFromBias("attack", actorSide, self, skills, myHp, turn);
       }
-      return actionFromBias("mixed", actorSide, self, skills, myHp);
+      return actionFromBias("mixed", actorSide, self, skills, myHp, turn);
     case "balanced":
     default:
-      return actionFromBias("mixed", actorSide, self, skills, myHp);
+      return actionFromBias("mixed", actorSide, self, skills, myHp, turn);
   }
 }
 
@@ -843,6 +858,12 @@ export function resolveTurn(input: {
     balanceBasicAttack(input.sideABasicAttack ?? defaultBasicAttack()),
     situation,
     events,
+    {
+      battleId: input.state.id,
+      turn,
+      turnLimit: input.state.turnLimit,
+      actorSide: "a",
+    },
   );
   tagActionEvents(events, actionAEventStart, {
     actionId: actionAId,
@@ -868,6 +889,12 @@ export function resolveTurn(input: {
       balanceBasicAttack(input.sideBBasicAttack ?? defaultBasicAttack()),
       situation,
       events,
+      {
+        battleId: input.state.id,
+        turn,
+        turnLimit: input.state.turnLimit,
+        actorSide: "b",
+      },
     );
     tagActionEvents(events, actionBEventStart, {
       actionId: actionBId,
@@ -1009,6 +1036,75 @@ function envAmount(intensity: "minor" | "moderate"): number {
   return intensity === "moderate" ? 14 : 7;
 }
 
+type DecisiveContext = {
+  battleId: string;
+  turn: number;
+  turnLimit: number;
+  actorSide: "a" | "b";
+};
+
+function deterministicRoll(key: string): number {
+  let hash = 2166136261;
+  for (let index = 0; index < key.length; index += 1) {
+    hash ^= key.charCodeAt(index);
+    hash = Math.imul(hash, 16777619);
+  }
+  return (hash >>> 0) / 0x1_0000_0000;
+}
+
+/**
+ * From turn 10, finishing pressure rises without changing earlier balance.
+ * At turn 10 the multiplier/chance are unchanged; at turn 20 (or a shorter
+ * configured limit) specials reach 2x and deterministic critical chance 40%.
+ */
+export function decisivePressure(input: DecisiveContext): {
+  progress: number;
+  criticalChance: number;
+  specialMultiplier: number;
+} {
+  if (input.turn <= 10) {
+    return { progress: 0, criticalChance: 0, specialMultiplier: 1 };
+  }
+  const maximumTurn = Math.max(11, Math.min(20, input.turnLimit));
+  const progress = Math.min(
+    1,
+    Math.max(0, (input.turn - 10) / (maximumTurn - 10)),
+  );
+  return {
+    progress,
+    criticalChance: progress * 0.4,
+    specialMultiplier: 1 + progress,
+  };
+}
+
+function applyDecisivePressure(input: {
+  amount: number;
+  targetMaxHp: number;
+  special: boolean;
+  context: DecisiveContext;
+}): { amount: number; critical: boolean } {
+  const pressure = decisivePressure(input.context);
+  const critical = pressure.criticalChance > 0 && deterministicRoll(
+    `${input.context.battleId}:${input.context.turn}:${input.context.actorSide}`,
+  ) < pressure.criticalChance;
+  const multiplier =
+    (input.special ? pressure.specialMultiplier : 1) *
+    (critical ? 1.5 : 1);
+  const maximumRatio = 0.26 *
+    (input.special ? pressure.specialMultiplier : 1) *
+    (critical ? 1.5 : 1);
+  return {
+    amount: Math.max(
+      1,
+      Math.min(
+        Math.round(input.targetMaxHp * maximumRatio),
+        Math.round(input.amount * multiplier),
+      ),
+    ),
+    critical,
+  };
+}
+
 function applyEnvHits(
   sideA: CombatantState,
   sideB: CombatantState,
@@ -1079,11 +1175,12 @@ function applyAction(
   basicAttack: BasicAttackProfile,
   situation: Situation,
   events: TurnEvent[],
+  decisive: DecisiveContext,
 ): void {
   if (action.kind === "basic_attack") {
     const stamina = actor.parameters.stamina ?? 0;
     actor.parameters.stamina = Math.max(0, stamina - Math.min(3, stamina));
-    applyBasicAttack(actor, target, basicAttack, situation, events);
+    applyBasicAttack(actor, target, basicAttack, situation, events, decisive);
     return;
   }
 
@@ -1135,6 +1232,15 @@ function applyAction(
     });
     return;
   }
+  if (skill.kind === "special" && decisive.turn < 10) {
+    events.push({
+      type: "info",
+      actorName: actor.displayName,
+      skillName: skill.name,
+      summary: `${actor.displayName} は ${skill.name} の機を待った。`,
+    });
+    return;
+  }
 
   const mp = actor.parameters.mp ?? 0;
   const sta = actor.parameters.stamina ?? 0;
@@ -1180,7 +1286,7 @@ function applyAction(
     return;
   }
 
-  applyAttackSkill(actor, target, skill, situation, events);
+  applyAttackSkill(actor, target, skill, situation, events, decisive);
   applySkillEffects(actor, target, skill, events);
 }
 
@@ -1190,6 +1296,7 @@ function applyBasicAttack(
   profile: BasicAttackProfile,
   situation: Situation,
   events: TurnEvent[],
+  decisive: DecisiveContext,
 ): void {
   const attackStat = actor.parameters[profile.scalingParameter] ?? 10;
   const resistanceStat = target.parameters[profile.resistanceParameter] ?? 10;
@@ -1203,12 +1310,21 @@ function applyBasicAttack(
       coeff(situation, profile.element ?? "neutral", 1),
   );
   const parameter = profile.targetParameter;
+  let critical = false;
   if (parameter === "hp") {
     amount = softenCombatDamage({
       rawDamage: amount,
       targetMaxHp: target.parameters.maxHp ?? 100,
       skillPower: power,
     });
+    const pressure = applyDecisivePressure({
+      amount,
+      targetMaxHp: target.parameters.maxHp ?? 100,
+      special: false,
+      context: decisive,
+    });
+    amount = pressure.amount;
+    critical = pressure.critical;
   } else {
     const reference = Math.abs(
       target.baseParameters?.[parameter] ?? target.parameters[parameter] ?? 10,
@@ -1216,7 +1332,9 @@ function applyBasicAttack(
     amount = Math.min(amount, Math.max(2, Math.round(reference * 0.2)));
   }
   const actual = applyParameterDelta(target, { parameter, delta: -amount });
-  const intensity = intensityFromDamage(Math.abs(actual));
+  const intensity = parameter === "hp" && critical
+    ? "critical"
+    : intensityFromDamage(Math.abs(actual));
   const finishing =
     parameter === "hp" &&
     actual < 0 &&
@@ -1280,6 +1398,7 @@ function applyAttackSkill(
   skill: Skill,
   situation: Situation,
   events: TurnEvent[],
+  decisive: DecisiveContext,
 ): void {
   const atkStat =
     skill.kind === "magic" ? (actor.parameters.mag ?? 10) : (actor.parameters.atk ?? 10);
@@ -1304,9 +1423,18 @@ function applyAttackSkill(
     targetMaxHp: target.parameters.maxHp ?? 100,
     skillPower: power,
   });
+  const pressure = applyDecisivePressure({
+    amount: dmg,
+    targetMaxHp: target.parameters.maxHp ?? 100,
+    // The chosen offensive skill becomes the character's finishing technique
+    // after turn 10 even when a legacy sheet has no explicit `special` kind.
+    special: skill.kind === "special" || decisive.turn >= 10,
+    context: decisive,
+  });
+  dmg = pressure.amount;
 
   const { actual, finishing } = applyHpDamage(target, dmg);
-  const intensity = intensityFromDamage(actual);
+  const intensity = pressure.critical ? "critical" : intensityFromDamage(actual);
   events.push({
     type: "damage",
     actorName: actor.displayName,

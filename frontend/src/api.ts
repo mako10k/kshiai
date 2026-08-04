@@ -146,10 +146,44 @@ export const api = {
     );
   },
   generateCharacter: (prompt: string) =>
-    request<{ character: CharacterPublic; assistantMessage: string }>(
+    request<{
+      draft: {
+        id: string;
+        character: CharacterPublic;
+        assistantMessage: string;
+      };
+    }>(
       "/api/characters/generate",
       { method: "POST", body: JSON.stringify({ prompt }) },
     ),
+  chatCharacterDraft: (id: string, message: string) =>
+    request<{
+      draft: {
+        id: string;
+        character: CharacterPublic;
+        assistantMessage: string;
+      };
+    }>(`/api/character-drafts/${id}/chat`, {
+      method: "POST",
+      body: JSON.stringify({ message }),
+    }),
+  latestCharacterDraft: () =>
+    request<{
+      draft: {
+        id: string;
+        character: CharacterPublic;
+        assistantMessage: string;
+      } | null;
+    }>("/api/character-drafts/latest"),
+  confirmCharacterDraft: (id: string) =>
+    request<{ character: CharacterPublic; assistantMessage: string }>(
+      `/api/characters/${id}/confirm`,
+      { method: "POST" },
+    ),
+  discardCharacterDraft: (id: string) =>
+    request<{ ok: boolean }>(`/api/character-drafts/${id}`, {
+      method: "DELETE",
+    }),
   chatCharacter: (id: string, message: string) =>
     request<{ character: CharacterPublic; assistantMessage: string }>(
       `/api/characters/${id}/chat`,
@@ -200,6 +234,11 @@ export const api = {
     ),
   randomOpponent: (myCharacterId: string) =>
     request<{ opponent: CharacterPublic }>("/api/match/random", {
+      method: "POST",
+      body: JSON.stringify({ myCharacterId }),
+    }),
+  autoOpponent: (myCharacterId: string) =>
+    request<{ opponent: CharacterPublic }>("/api/match/auto", {
       method: "POST",
       body: JSON.stringify({ myCharacterId }),
     }),

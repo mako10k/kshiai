@@ -11,6 +11,7 @@ import {
   SemanticObservationStateSchema,
   TurnSemanticPatchSchema,
 } from "./semantic-state.js";
+import { DramaStateSchema } from "./drama.js";
 
 export const BattleStatusSchema = z.enum([
   "active",
@@ -387,6 +388,8 @@ export const BattleStateSchema = z.object({
    * Optional for older saved battles.
    */
   supervisor: SupervisorStateSchema.optional(),
+  /** Bounded continuity for variety and pacing; never stores full prose history. */
+  dramaState: DramaStateSchema.optional(),
   /**
    * Before first combat turn: opening monologue / rivalry prologue.
    * New battles start true; older saves without the field default false.

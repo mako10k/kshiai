@@ -992,6 +992,8 @@ Character-visible changes belong under /entities/character.a/facts or /entities/
 Entities are visible to both sides by default. Set optional visibleTo to ["a"] or ["b"] only when the entity as a whole is not observable by the other side; the deterministic engine performs projection from this field and never infers visibility from prose. Required character entities always remain visible to both.
 Do not patch schemaVersion, revision, createdTurn, updatedTurn, combat parameters, action legality, winner state, or private agent state.
 If no durable observable change occurred, return an empty operations array.
+When environmentBeatDue is true, prefer one grounded, non-mechanical durable change when plausible: movement to a different established area, displacement or use of an existing object, weather/crowd/terrain evolution, or a new persistent byproduct. Keep it symmetrical in opportunity and never fabricate damage, healing, or a combat bonus. When false, only record changes directly supported by committed actions/events.
+Match dramaPhase: opening establishes positions, rising changes leverage or surroundings, climax favors irreversible commitment and visible consequence without overriding mechanics.
 nextSituation coefficients affect only the following turn and must remain between 0.25 and 2.5.`,
         JSON.stringify(input),
         {
@@ -1256,6 +1258,15 @@ JSON only: { "focus": "self"|"foe"|"external"|"both" }`,
     sideAName: string;
     sideBName: string;
     events: { summary: string }[];
+    actionBeats?: import("./types.js").NarrationActionBeat[];
+    recentNarration?: string[];
+    recentSpeeches?: Array<{ speaker: string; text: string }>;
+    drama?: {
+      phase: "opening" | "rising" | "climax";
+      repeatedActionA: number;
+      repeatedActionB: number;
+      environmentBeatDue: boolean;
+    };
     innerDigests?: InnerDigest[];
     focus?: NarrationFocus;
     perspective?: NarrationPerspective;
@@ -1278,6 +1289,10 @@ ${styleBlock}
 ${focusBlock}
 Perspective gate overrides style instruction: never reveal inner life that is not present in innerDigests.
 Use battlefield flavor (terrain/obstacles) when relevant.
+Build 2–4 non-empty narrator lines around the supplied actionBeats: initiation, movement/contact, then committed consequence. Make the physical, social, technological, psychic, comedic, or abstract action itself clear instead of merely restating damage or condition results.
+Do not repeat or closely paraphrase recentNarration or either character's recentSpeeches. When an action signature is repeating, vary approach, movement, rhythm, and reaction without inventing a different mechanical result.
+Respect drama.phase: opening establishes positioning, rising changes leverage, climax makes commitment and consequence feel decisive.
+When drama.environmentBeatDue is true, incorporate a plausible location, object, terrain, weather, or crowd change grounded in semanticObservation/battlefield. It may change observable semantics but must not invent mechanical damage or bonuses.
 Treat semanticObservation as the committed public observation after this turn. Use latestDiff to emphasize changes. Do not restore removed objects, undo breakage, or contradict entity locations. Narration cannot mutate it.
 If a situation event describes a sudden field change, weave that change naturally into the narrator lines without adding a category label.
 If any event marks a finishing blow (とどめ / 決め手 / 戦闘不能), center the turn on that decisive action.
@@ -1294,6 +1309,10 @@ Do not mention numeric HP/MP/ATK values.`,
           focus,
           perspective: input.perspective ?? null,
           events: input.events,
+          actionBeats: input.actionBeats ?? [],
+          recentNarration: input.recentNarration?.slice(-4) ?? [],
+          recentSpeeches: input.recentSpeeches?.slice(-4) ?? [],
+          drama: input.drama ?? null,
           innerDigests: input.innerDigests ?? [],
           semanticObservation: input.semanticObservation ?? null,
           battlefield: input.battlefield
@@ -1316,7 +1335,10 @@ Do not mention numeric HP/MP/ATK values.`,
         narrator?: string[];
         speeches?: Array<{ speaker?: string; text?: string }>;
       };
-      const narrator = data.narrator ?? [];
+      const narrator = (data.narrator ?? [])
+        .map((line) => String(line).trim())
+        .filter(Boolean)
+        .slice(0, 4);
       input.onProgress?.({ lines: narrator, draft: null });
       const speeches = this.normalizeNarratorSpeeches(
         data.speeches,

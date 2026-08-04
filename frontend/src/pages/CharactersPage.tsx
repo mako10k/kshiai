@@ -15,6 +15,12 @@ export function CharactersPage() {
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [draft, setDraft] = useState<{
+    id: string;
+    character: CharacterPublic;
+    assistantMessage: string;
+  } | null>(null);
+  const [draftMessage, setDraftMessage] = useState("");
 
   async function reload(query?: string) {
     const { characters } = await api.listCharacters(query);
@@ -23,6 +29,9 @@ export function CharactersPage() {
 
   useEffect(() => {
     void reload(q || undefined).catch((e) => setError(String(e)));
+    void api.latestCharacterDraft()
+      .then((result) => setDraft(result.draft))
+      .catch((e) => setError(String(e)));
     // initial load with restored search only
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -43,9 +52,56 @@ export function CharactersPage() {
     setError(null);
     try {
       const res = await api.generateCharacter(text);
-      setMessage(res.assistantMessage);
+      setDraft(res.draft);
+      setMessage("内容を確認し、必要なら会話で調整してから確定してください。");
       clearPrompt();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "failed");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function onDraftChat(e: FormEvent) {
+    e.preventDefault();
+    if (!draft || !draftMessage.trim()) return;
+    setBusy(true);
+    setError(null);
+    try {
+      const res = await api.chatCharacterDraft(draft.id, draftMessage.trim());
+      setDraft(res.draft);
+      setDraftMessage("");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "failed");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function confirmDraft() {
+    if (!draft) return;
+    setBusy(true);
+    setError(null);
+    try {
+      const res = await api.confirmCharacterDraft(draft.id);
+      setDraft(null);
+      setMessage(res.assistantMessage);
       await reload(q);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "failed");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function discardDraft() {
+    if (!draft) return;
+    setBusy(true);
+    setError(null);
+    try {
+      await api.discardCharacterDraft(draft.id);
+      setDraft(null);
+      setMessage("下書きを破棄しました。");
     } catch (err) {
       setError(err instanceof Error ? err.message : "failed");
     } finally {
@@ -82,6 +138,60 @@ export function CharactersPage() {
         {message && <p className="ok">{message}</p>}
         {error && <p className="error">{error}</p>}
       </div>
+
+      {draft && (
+        <div className="panel">
+          <h2>生成内容を確認</h2>
+          <div className="card" style={{ padding: "1rem" }}>
+            <strong>{draft.character.displayName}</strong>
+            <p>{draft.character.narrativeBlurb}</p>
+            <p className="muted">{draft.character.appearance.summary}</p>
+            <p>
+              <strong>{draft.character.basicAttackName}</strong> — {draft.character.basicAttackDescription}
+            </p>
+            {draft.character.skillSummaries.map((skill) => (
+              <p key={skill.name} style={{ margin: "0.35rem 0" }}>
+                <strong>{skill.name}</strong> — {skill.description}
+              </p>
+            ))}
+            {(draft.character.weaponName || draft.character.armorName) && (
+              <p className="muted">
+                {[draft.character.weaponName, draft.character.armorName]
+                  .filter(Boolean)
+                  .join(" / ")}
+              </p>
+            )}
+            <div>
+              {draft.character.tags.map((tag) => (
+                <span className="tag" key={tag}>{tag}</span>
+              ))}
+            </div>
+            <p className="muted" style={{ marginBottom: 0 }}>
+              {draft.assistantMessage}
+            </p>
+          </div>
+          <form className="grid" onSubmit={(e) => void onDraftChat(e)}>
+            <textarea
+              value={draftMessage}
+              onChange={(e) => setDraftMessage(e.target.value)}
+              placeholder="例: もっと防御寄りに。髪色を暗い赤に。"
+              rows={3}
+              disabled={busy}
+            />
+            <button className="btn" type="submit" disabled={busy || !draftMessage.trim()}>
+              会話で調整
+            </button>
+          </form>
+          <div className="row" style={{ marginTop: "0.75rem" }}>
+            <button className="btn primary" type="button" disabled={busy} onClick={() => void confirmDraft()}>
+              この内容で確定
+            </button>
+            <button className="btn danger" type="button" disabled={busy} onClick={() => void discardDraft()}>
+              下書きを破棄
+            </button>
+          </div>
+        </div>
+      )}
 
       <div className="panel">
         <form className="row" onSubmit={(e) => void onSearch(e)}>

@@ -65,8 +65,8 @@ describe("mock LLM natural-language handling", () => {
       events: [],
     });
     assert.deepEqual(narration.speeches, [
-      { speaker: "姫騎士", text: "……行く。" },
-      { speaker: "挑戦者", text: "…" },
+      { speaker: "姫騎士", text: "次は逃さない。" },
+      { speaker: "挑戦者", text: "まだ終わらない。" },
     ]);
   });
 
