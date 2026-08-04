@@ -368,3 +368,29 @@ decision D20 based_on PR20, EV20, D1, D2, D14, D16, D19:
     observations; older subjective continuity belongs in bounded character-agent
     memory rather than duplicated turn history. Semantic wording never selects
     mechanics.
+
+problem PR21:
+  |
+    Result-only narration makes actions feel thin, recent public dialogue is not
+    fed into normal turns, and HP-only stagnation detection misses repeated
+    skills, unchanged locations, and mechanically active but monotonous turns.
+    At the same time, safe per-hit caps can extend a flat exchange to the turn
+    limit without a rising climax.
+
+decision D21 based_on PR21, D1, D2, D14, D19, D20:
+  |
+    The server derives compact action beats only from resolved structured
+    actions, character skill/basic-action descriptions, selected policy fields,
+    and committed event outcomes. The narrator receives those beats, the last
+    two public turn blocks, the committed semantic observation, and a bounded
+    DramaState containing only action signatures, repetition counters,
+    location/environment cadence, public last speech, and phase. It must render
+    initiation, movement or contact, and consequence while avoiding recent
+    wording. Exact repeated public speech is replaced by a nonverbal reaction.
+    A semantic-only environment beat may be requested after repeated actions or
+    prolonged unchanged location; mechanical environment effects remain behind
+    D19's measured-stagnation and symmetric-target gate. Special skills remain
+    unavailable before turn ten. From turn ten to turn twenty, the selected
+    finishing skill multiplier rises from 1x to 2x and deterministic critical
+    opportunity rises from zero to forty percent. Deterministic code still owns
+    action legality, multipliers, damage caps, and outcomes.

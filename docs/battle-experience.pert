@@ -1,0 +1,53 @@
+project KSHIAI_BATTLE_EXPERIENCE:
+  version 5
+  title "kshiai battle discovery and dramatic pacing"
+  description |
+    Close incomplete user flows and improve action-forward, varied battle
+    narration without moving deterministic combat authority into prose logic.
+  as_of 2026-08-04
+  duration_unit day
+  finish EXPERIENCE_READY
+
+resource DEV:
+  title "Developer"
+  capacity 1
+
+milestone AUDIT_READY:
+  title "Audit and product decisions accepted"
+  state reached
+
+milestone FLOWS_READY:
+  title "Match, character review, style edit, and admin boundaries ready"
+  state reached
+
+milestone NARRATIVE_READY:
+  title "Action beats, continuity, environment cadence, and finish pressure ready"
+  state reached
+
+milestone EXPERIENCE_READY:
+  title "Battle experience changes validated"
+  state reached
+
+task T_FLOWS AUDIT_READY -> FLOWS_READY:
+  title "Complete discovery and administration flows"
+  description "Add power-aware auto matching, draft review and confirm, narration style editing, and administrator-only balance observability"
+  duration 1d
+  status done
+  requires:
+    DEV 1
+
+task T_NARRATIVE FLOWS_READY -> NARRATIVE_READY:
+  title "Strengthen action narration and dramatic pacing"
+  description "Pass structured action beats and recent public prose, track bounded drama continuity, schedule semantic environment beats, and increase deterministic finish pressure after turn ten"
+  duration 1d
+  status done
+  requires:
+    DEV 1
+
+task T_VALIDATE NARRATIVE_READY -> EXPERIENCE_READY:
+  title "Validate requirements and regression behavior"
+  description "Run PERT checks, tests, typecheck, build, and review public DTO and authorization boundaries"
+  duration 1d
+  status done
+  requires:
+    DEV 1

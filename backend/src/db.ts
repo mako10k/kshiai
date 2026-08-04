@@ -59,6 +59,16 @@ export function getDb(): SqliteDatabase.Database {
       created_at TEXT NOT NULL,
       updated_at TEXT NOT NULL
     );
+    CREATE TABLE IF NOT EXISTS character_drafts (
+      id TEXT PRIMARY KEY,
+      owner_user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      sheet_json TEXT NOT NULL,
+      assistant_message TEXT NOT NULL,
+      created_at TEXT NOT NULL,
+      updated_at TEXT NOT NULL
+    );
+    CREATE INDEX IF NOT EXISTS idx_character_drafts_owner_updated
+      ON character_drafts (owner_user_id, updated_at DESC);
     CREATE TABLE IF NOT EXISTS battles (
       id TEXT PRIMARY KEY,
       state_json TEXT NOT NULL,

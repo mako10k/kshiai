@@ -113,6 +113,14 @@ export const config = {
   databaseSchema: parseDatabaseSchema(process.env.DATABASE_SCHEMA),
   databasePoolMax: Math.max(1, Number(process.env.DATABASE_POOL_MAX ?? 10)),
   authProvider: authProvider as "legacy" | "supabase",
+  adminUserIds: (process.env.ADMIN_USER_IDS ?? "")
+    .split(",")
+    .map((value) => value.trim())
+    .filter(Boolean),
+  adminEmails: (process.env.ADMIN_EMAILS ?? "")
+    .split(",")
+    .map((value) => value.trim().toLowerCase())
+    .filter(Boolean),
   supabaseUrl,
   supabaseJwksUrl,
   mediaStorage: mediaStorage as "local" | "r2",

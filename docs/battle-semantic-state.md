@@ -379,10 +379,13 @@ turn records. The next normal save persists the seed.
    A/B observable snapshot and latest observation diff. Projection uses only
    structured visibility, ownership, locations, and committed state.
 7. A/B character agents advance in parallel from their own private state.
-8. Narrator receives committed events, the permitted inner digests, and the
-   final observable snapshot; it produces presentation only.
-9. Persist the latest canonical snapshot, latest transition, latest A/B/public
-   observations, current private agent states, and ordinary mechanical turn record.
+8. Server derives compact action beats from resolved actions, selected policy
+   fields, skill/basic-action descriptions, and committed event outcomes.
+9. Narrator receives those beats, the last two public turn blocks, the permitted
+   inner digests, and the final observable snapshot; it produces presentation only.
+10. Persist the latest canonical snapshot, latest transition, latest A/B/public
+    observations, bounded DramaState, current private agent states, and ordinary
+    mechanical turn record.
 ```
 
 Character-agent advancement runs for every narration perspective. Perspective
@@ -408,6 +411,13 @@ type LatestSemanticTransition = {
 only a current filtered snapshot and its latest diff. Longer subjective history
 is retained only when a character agent chooses to summarize it in bounded
 memory or beliefs. Full semantic replay is deliberately not supported.
+
+`DramaState` is also bounded and contains no full prose history. It retains only
+the last action signature per side, consecutive repetition counts, turns since a
+location/environment beat, a three-entry structured beat fingerprint window,
+the last public speech per side, and the current opening/rising/climax phase.
+It can request a non-mechanical semantic environment beat; only the separate
+anti-stall supervisor may propose symmetric mechanical environment effects.
 
 ## 12. Query and maintenance model
 

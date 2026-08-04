@@ -50,4 +50,25 @@ describe("asynchronous authentication persistence", () => {
       /USERNAME_TAKEN/,
     );
   });
+
+  it("fails closed unless an administrator id or email is allow-listed", () => {
+    assert.equal(
+      auth.adminIdentityMatches({
+        userId: "u1",
+        email: "admin@example.test",
+        allowedUserIds: [],
+        allowedEmails: [],
+      }),
+      false,
+    );
+    assert.equal(
+      auth.adminIdentityMatches({
+        userId: "u1",
+        email: "ADMIN@example.test",
+        allowedUserIds: [],
+        allowedEmails: ["admin@example.test"],
+      }),
+      true,
+    );
+  });
 });

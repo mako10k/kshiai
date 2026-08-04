@@ -48,6 +48,9 @@ import {
   needsFocusChoice,
   selectDigestsForFocus,
   defaultCharacterIdentity,
+  advanceDramaState,
+  dramaPhaseForTurn,
+  normalizeDramaState,
 } from "@kshiai/shared";
 import {
   recordBattleFinished,
@@ -56,6 +59,7 @@ import {
 import { config } from "../config.js";
 import { newId } from "../id.js";
 import type { LlmProvider } from "../llm/index.js";
+import type { NarrationActionBeat } from "../llm/types.js";
 import * as battleRepo from "../repositories/battles.js";
 import * as bfRepo from "../repositories/battlefields.js";
 import * as charRepo from "../repositories/characters.js";
@@ -602,6 +606,8 @@ export async function reconcileSemanticState(input: {
   opp: CharacterSheet;
   actions: ResolvedBattleAction[];
   events: TurnEvent[];
+  environmentBeatDue?: boolean;
+  dramaPhase?: "opening" | "rising" | "climax";
 }): Promise<{
   state: BattleState;
   patch: TurnSemanticPatch | null;
@@ -682,6 +688,8 @@ export async function reconcileSemanticState(input: {
             })),
           },
         },
+        environmentBeatDue: input.environmentBeatDue,
+        dramaPhase: input.dramaPhase,
       }),
       16_000,
       "reconcileTurnSemanticState",
@@ -829,6 +837,102 @@ function mergeSituationPatches(
   };
 }
 
+function buildNarrationActionBeats(input: {
+  actions: ResolvedBattleAction[];
+  events: TurnEvent[];
+  mine: CharacterSheet;
+  opp: CharacterSheet;
+  state: BattleState;
+}): NarrationActionBeat[] {
+  return input.actions.map((action) => {
+    const sheet = action.actorSide === "a" ? input.mine : input.opp;
+    const skill = action.skillId
+      ? sheet.skills.find((candidate) => candidate.id === action.skillId)
+      : null;
+    const actionName = skill?.name ?? (
+      action.kind === "basic_attack"
+        ? sheet.basicAttack?.name ?? "基本アクション"
+        : action.kind === "defend"
+          ? "態勢を整える"
+          : action.kind === "rest"
+            ? "力を取り戻す"
+            : action.kind === "wait"
+              ? "機をうかがう"
+              : "行動"
+    );
+    const description = skill?.description ?? (
+      action.kind === "basic_attack"
+        ? sheet.basicAttack?.description ?? "そのキャラクターらしい基本行動。"
+        : actionName
+    );
+    const policies = action.actorSide === "a"
+      ? input.state.policiesA
+      : input.state.policiesB;
+    const selectedIds = action.actorSide === "a"
+      ? input.state.selectedPolicyIdsA
+      : input.state.selectedPolicyIdsB;
+    return {
+      actionId: action.id,
+      actorSide: action.actorSide,
+      actorName: sheet.displayName,
+      actionKind: action.kind,
+      actionName,
+      description,
+      intent: summarizeSelectedPolicies(policies, selectedIds),
+      outcomes: input.events
+        .filter((event) => event.sourceActionId === action.id)
+        .map((event) => event.summary)
+        .slice(0, 4),
+    };
+  });
+}
+
+function semanticChangeKinds(patch: TurnSemanticPatch | null): {
+  locationChanged: boolean;
+  environmentChanged: boolean;
+} {
+  const paths = patch?.operations.map((operation) => operation.path) ?? [];
+  return {
+    locationChanged: paths.some((path) => path.includes("/location")),
+    environmentChanged: paths.some(
+      (path) =>
+        path.startsWith("/scene/") ||
+        (path.startsWith("/entities/") &&
+          !path.startsWith("/entities/character.a/") &&
+          !path.startsWith("/entities/character.b/")),
+    ),
+  };
+}
+
+function normalizePublicText(value: string): string {
+  return value.normalize("NFKC").replace(/[\s「」『』（）()、。！？!?…・]/g, "");
+}
+
+function replaceRepeatedPublicSpeeches(input: {
+  narrative: { speeches: Array<{ speaker: string; text: string }> };
+  recentSpeeches: Array<{ speaker: string; text: string }>;
+  turn: number;
+}) {
+  const previous = new Map(
+    input.recentSpeeches.map((line) => [
+      `${line.speaker}:${normalizePublicText(line.text)}`,
+      true,
+    ]),
+  );
+  return input.narrative.speeches.map((line, index) => {
+    const duplicate = previous.has(
+      `${line.speaker}:${normalizePublicText(line.text)}`,
+    );
+    if (!duplicate || !normalizePublicText(line.text)) return line;
+    return {
+      ...line,
+      text: (input.turn + index) % 2 === 0
+        ? "（言葉を飲み、動きで応じる）"
+        : "（次の変化へ意識を向ける）",
+    };
+  });
+}
+
 async function buildHappening(input: {
   llm: LlmProvider;
   state: BattleState;
@@ -933,6 +1037,14 @@ async function advanceTurnWithLease(input: {
 
   const upcomingTurn = state.turn + 1;
   let supervisor = normalizeSupervisor(state.supervisor);
+  const dramaBefore = normalizeDramaState(state.dramaState);
+  const dramaPhase = dramaPhaseForTurn(upcomingTurn, state.turnLimit);
+  const environmentBeatDue =
+    upcomingTurn > 1 &&
+    (dramaBefore.turnsSinceEnvironmentBeat >= 2 ||
+      dramaBefore.turnsSinceLocationChange >= 3 ||
+      dramaBefore.repeatedActionA >= 2 ||
+      dramaBefore.repeatedActionB >= 2);
 
   // Generate a novel field change only after the resolved turns show stagnation.
   let happening: HappeningPlan | null = null;
@@ -1027,8 +1139,15 @@ async function advanceTurnWithLease(input: {
     opp,
     actions: resolved.actions,
     events,
+    environmentBeatDue,
+    dramaPhase,
   });
   next = semanticTurn.state;
+  const semanticChanges = semanticChangeKinds(
+    semanticTurn.status === "applied" ? semanticTurn.patch : null,
+  );
+  const environmentBeatCommitted =
+    semanticChanges.locationChanged || semanticChanges.environmentChanged;
 
   const perspective: NarrationPerspective =
     next.narrationStyle?.perspective ?? "external";
@@ -1080,6 +1199,16 @@ async function advanceTurnWithLease(input: {
   });
 
   emit({ type: "phase", phase: "narrating" });
+  const recentBlocks = state.log.slice(-2);
+  const recentNarration = recentBlocks.flatMap((block) => block.narrator).slice(-4);
+  const recentSpeeches = recentBlocks.flatMap((block) => block.speeches).slice(-4);
+  const actionBeats = buildNarrationActionBeats({
+    actions: resolved.actions,
+    events,
+    mine,
+    opp,
+    state: next,
+  });
   let narrative;
   try {
     // Per-attempt budget must cover primary abort (~14–16s) + router failover to
@@ -1095,6 +1224,15 @@ async function advanceTurnWithLease(input: {
           battlefield: next.battlefield,
           semanticObservation: next.observationStatePublic ?? null,
           events,
+          actionBeats,
+          recentNarration,
+          recentSpeeches,
+          drama: {
+            phase: dramaPhase,
+            repeatedActionA: dramaBefore.repeatedActionA,
+            repeatedActionB: dramaBefore.repeatedActionB,
+            environmentBeatDue: environmentBeatCommitted,
+          },
           innerDigests: digests,
           focus,
           perspective,
@@ -1140,10 +1278,69 @@ async function advanceTurnWithLease(input: {
       turn: next.turn,
     });
   }
+  const recentNarrationFingerprints = new Set(
+    recentNarration.map(normalizePublicText).filter(Boolean),
+  );
+  narrative.narrator = narrative.narrator
+    .map((line) => line.trim())
+    .filter((line) => {
+      const normalized = normalizePublicText(line);
+      return normalized && !recentNarrationFingerprints.has(normalized);
+    })
+    .slice(0, 4);
+  if (narrative.narrator.length < 2) {
+    narrative.narrator = [
+      ...narrative.narrator,
+      ...actionBeats.flatMap((beat) => [
+        `${beat.actorName} は ${beat.actionName} を起こした。`,
+        ...beat.outcomes,
+      ]),
+    ].filter((line, index, lines) => lines.indexOf(line) === index).slice(0, 4);
+  }
+  narrative.speeches = replaceRepeatedPublicSpeeches({
+    narrative,
+    recentSpeeches,
+    turn: next.turn,
+  });
   if (narrative.speeches?.length) {
     emit({ type: "speeches", speeches: narrative.speeches });
   }
-  next = { ...next, log: [...next.log, narrative] };
+  next = {
+    ...next,
+    agentStateA: next.agentStateA
+      ? {
+          ...next.agentStateA,
+          lastSpeech:
+            [...narrative.speeches]
+              .reverse()
+              .find((line) => line.speaker === next.sideA.displayName)?.text ??
+            next.agentStateA.lastSpeech,
+        }
+      : next.agentStateA,
+    agentStateB: next.agentStateB
+      ? {
+          ...next.agentStateB,
+          lastSpeech:
+            [...narrative.speeches]
+              .reverse()
+              .find((line) => line.speaker === next.sideB.displayName)?.text ??
+            next.agentStateB.lastSpeech,
+        }
+      : next.agentStateB,
+    dramaState: advanceDramaState({
+      previous: dramaBefore,
+      turn: next.turn,
+      turnLimit: next.turnLimit,
+      actions: resolved.actions,
+      narrative,
+      sideAName: next.sideA.displayName,
+      sideBName: next.sideB.displayName,
+      locationChanged: semanticChanges.locationChanged,
+      environmentBeatOccurred:
+        Boolean(happening) || semanticChanges.environmentChanged,
+    }),
+    log: [...next.log, narrative],
+  };
   emit({ type: "phase", phase: "finalizing" });
 
   // KO this turn: combat narrative is done, but official finish waits for aftermath advance.
@@ -1552,6 +1749,38 @@ export async function pickRandomOpponent(userId: string, myCharacterId: string) 
   const candidates = all.filter((c) => c.id !== myCharacterId);
   if (candidates.length === 0) return null;
   return candidates[Math.floor(Math.random() * candidates.length)]!;
+}
+
+/** Pick the nearest opponent by public rating and a hidden coarse combat profile. */
+export async function pickAutoMatchedOpponent(
+  userId: string,
+  myCharacterId: string,
+) {
+  const mine = await charRepo.getSheet(myCharacterId);
+  if (!mine || mine.ownerUserId !== userId) return null;
+  const candidates = (await charRepo.listPlayableOpponentSheets(userId))
+    .filter((sheet) => sheet.id !== myCharacterId);
+  if (candidates.length === 0) return null;
+
+  const { ensureRecord, sheetCombatProfile } = await import("@kshiai/shared");
+  const myRating = ensureRecord(mine).rating;
+  const myProfile = sheetCombatProfile(mine);
+  const distance = (candidate: CharacterSheet) => {
+    const profile = sheetCombatProfile(candidate);
+    const ratingDistance = Math.abs(ensureRecord(candidate).rating - myRating) / 20;
+    const profileDistance =
+      Math.abs(profile.offense - myProfile.offense) * 1.4 +
+      Math.abs(profile.defense - myProfile.defense) * 1.2 +
+      Math.abs(profile.maxHp - myProfile.maxHp) / 8 +
+      Math.abs(profile.maxSkillPower - myProfile.maxSkillPower) * 8 +
+      Math.abs(profile.sharpness - myProfile.sharpness) / 5;
+    return ratingDistance + profileDistance;
+  };
+  candidates.sort((a, b) => {
+    const delta = distance(a) - distance(b);
+    return delta !== 0 ? delta : a.id.localeCompare(b.id);
+  });
+  return toPublicCharacter(candidates[0]!, userId);
 }
 
 export function instanceToPreset(

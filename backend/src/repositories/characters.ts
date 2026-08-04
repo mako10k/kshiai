@@ -158,6 +158,19 @@ function isPlayableOpponent(sheet: CharacterSheet): boolean {
 }
 
 export async function listPublicOpponents(excludeUserId: string, q?: string) {
+  let sheets = await listPlayableOpponentSheets(excludeUserId);
+  if (q?.trim()) {
+    const needle = q.trim().toLowerCase();
+    sheets = sheets.filter((s) => s.displayName.toLowerCase().includes(needle));
+  }
+  // Viewer is excludeUserId: own chars get overall; others public-only
+  return sheets.map((s) => toPublicCharacter(s, excludeUserId));
+}
+
+/** Engine-only sheets available as opponents; never expose directly from routes. */
+export async function listPlayableOpponentSheets(
+  excludeUserId: string,
+): Promise<CharacterSheet[]> {
   const { rows } = await query<{ sheet_json: unknown }>(
     `SELECT sheet_json FROM characters WHERE owner_user_id != $1 ORDER BY updated_at DESC LIMIT 200`,
     [excludeUserId],
@@ -176,13 +189,8 @@ export async function listPublicOpponents(excludeUserId: string, q?: string) {
       .map((r) => parseSheet(r.sheet_json))
       .filter(isActive), // own list may still show mock during dev; opponents hide them
   ];
-  if (q?.trim()) {
-    const needle = q.trim().toLowerCase();
-    sheets = sheets.filter((s) => s.displayName.toLowerCase().includes(needle));
-  }
   const map = new Map(sheets.map((s) => [s.id, s]));
-  // Viewer is excludeUserId: own chars get overall; others public-only
-  return [...map.values()].map((s) => toPublicCharacter(s, excludeUserId));
+  return [...map.values()];
 }
 
 export async function getSheet(id: string): Promise<CharacterSheet | null> {

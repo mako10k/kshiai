@@ -4,6 +4,7 @@ import {
   buildBattleTurnRecord,
   buildCharacterAgentStateChange,
   createBattleState,
+  decisivePressure,
   resolveTurn,
 } from "./battle-engine.js";
 import { defaultParameters, type CharacterSheet } from "./character.js";
@@ -40,6 +41,73 @@ function sheet(id: string, name: string, hp = 100): CharacterSheet {
 }
 
 describe("battle engine", () => {
+  it("unlocks special skills on turn 10 and scales finish pressure to turn 20", () => {
+    const a = sheet("a", "A", 200);
+    const b = sheet("b", "B", 200);
+    a.skills = [
+      {
+        id: "regular",
+        name: "通常技",
+        description: "通常の技。",
+        costMp: 0,
+        costStamina: 0,
+        power: 1,
+        kind: "attack",
+      },
+      {
+        id: "ultimate",
+        name: "必殺技",
+        description: "決着を狙う技。",
+        costMp: 0,
+        costStamina: 0,
+        power: 1.2,
+        kind: "special",
+      },
+    ];
+    const policy = {
+      id: "attack",
+      perspectiveId: "tempo",
+      perspectiveTitle: "流れ",
+      title: "攻める",
+      when: "常に",
+      then: "攻める",
+      bias: "attack" as const,
+      priority: 10,
+      triggers: { always: true },
+      defaultSelected: true,
+    };
+    const beforeUnlock = createBattleState({
+      id: "special-before",
+      sideA: a,
+      sideB: b,
+      turnLimit: 20,
+      prologuePending: false,
+      policiesA: [policy],
+      selectedPolicyIdsA: [policy.id],
+    });
+    beforeUnlock.turn = 8;
+    const turnNine = resolveTurn({
+      state: beforeUnlock,
+      sideASkills: a.skills,
+      sideBSkills: [],
+    });
+    assert.equal(turnNine.actions[0]?.skillId, "regular");
+
+    const turnTen = resolveTurn({
+      state: turnNine.state,
+      sideASkills: a.skills,
+      sideBSkills: [],
+    });
+    assert.equal(turnTen.actions[0]?.skillId, "ultimate");
+    assert.deepEqual(
+      decisivePressure({ battleId: "x", turn: 10, turnLimit: 20, actorSide: "a" }),
+      { progress: 0, criticalChance: 0, specialMultiplier: 1 },
+    );
+    assert.deepEqual(
+      decisivePressure({ battleId: "x", turn: 20, turnLimit: 20, actorSide: "a" }),
+      { progress: 1, criticalChance: 0.4, specialMultiplier: 2 },
+    );
+  });
   it("creates private agent continuity and perspective-aware turn records", () => {
     const a = sheet("a", "A");
     const b = sheet("b", "B");

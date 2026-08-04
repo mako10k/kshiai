@@ -270,12 +270,27 @@ export class MockLlmProvider implements LlmProvider {
   async reconcileTurnSemanticState(
     input: Parameters<LlmProvider["reconcileTurnSemanticState"]>[0],
   ): ReturnType<LlmProvider["reconcileTurnSemanticState"]> {
+    const areaA = input.battlefield?.obstacles?.[0] ?? input.battlefield?.terrain ?? "戦場の一角";
+    const areaB = input.battlefield?.obstacles?.[1] ?? input.battlefield?.terrain ?? "対面する一角";
     return Promise.resolve({
       patch: {
         baseRevision: input.before.revision,
         turn: input.turn,
         sourceEventIds: input.events.flatMap((event) => event.id ? [event.id] : []),
-        operations: [],
+        operations: input.environmentBeatDue
+          ? [
+              {
+                op: "replace" as const,
+                path: "/entities/character.a/location",
+                value: { type: "scene", area: areaA },
+              },
+              {
+                op: "replace" as const,
+                path: "/entities/character.b/location",
+                value: { type: "scene", area: areaB },
+              },
+            ]
+          : [],
       },
     });
   }
@@ -387,6 +402,15 @@ export class MockLlmProvider implements LlmProvider {
     sideAName: string;
     sideBName: string;
     events: { summary: string; actorName?: string; skillName?: string; intensity?: string }[];
+    actionBeats?: Array<{
+      actorName: string;
+      actionName: string;
+      description: string;
+      outcomes: string[];
+    }>;
+    recentNarration?: string[];
+    recentSpeeches?: Array<{ speaker: string; text: string }>;
+    drama?: { environmentBeatDue: boolean; phase: string };
     innerDigests?: Array<{ displayName: string; emotion?: string }>;
     focus?: string;
     perspective?: string;
@@ -409,12 +433,27 @@ export class MockLlmProvider implements LlmProvider {
     const narrator = [
       `第${input.turn}ターン — ${place}${styleNote}${focusNote}。`,
       ...digestNote,
-      ...input.events.map((e) => e.summary),
+      ...(input.actionBeats ?? []).flatMap((beat) => [
+        `${beat.actorName} は ${beat.actionName} を起こす。${beat.description}`,
+        ...beat.outcomes,
+      ]),
+      ...((input.actionBeats?.length ?? 0) > 0
+        ? []
+        : input.events.map((e) => e.summary)),
+      ...(input.drama?.environmentBeatDue
+        ? ["両者の動きに押され、戦場の位置関係も新しく組み替わる。"]
+        : []),
     ];
     await this.emitNarratorProgress(narrator, input.onProgress);
     const speeches = [
-      { speaker: input.sideAName, text: "……行く。" },
-      { speaker: input.sideBName, text: "…" },
+      {
+        speaker: input.sideAName,
+        text: input.turn % 2 === 0 ? "ここから変える。" : "次は逃さない。",
+      },
+      {
+        speaker: input.sideBName,
+        text: input.turn % 3 === 0 ? "その流れは読んだ。" : "まだ終わらない。",
+      },
     ];
     return { turn: input.turn, narrator, speeches };
   }

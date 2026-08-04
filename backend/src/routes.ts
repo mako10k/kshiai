@@ -26,6 +26,7 @@ import {
   createSession,
   getSessionToken,
   registerUser,
+  requireAdmin,
   requireUser,
   setSessionCookie,
   userFromRequest,
@@ -35,6 +36,7 @@ import {
 import { newId } from "./id.js";
 import { createLlmProvider } from "./llm/index.js";
 import * as charRepo from "./repositories/characters.js";
+import * as draftRepo from "./repositories/character-drafts.js";
 import * as battleRepo from "./repositories/battles.js";
 import * as bfRepo from "./repositories/battlefields.js";
 import * as styleRepo from "./repositories/narration-styles.js";
@@ -43,6 +45,7 @@ import {
   generateMatchPolicies,
   instanceToPreset,
   pickRandomOpponent,
+  pickAutoMatchedOpponent,
   startBattle,
   toBattlePublic,
 } from "./services/battle-service.js";
@@ -176,7 +179,7 @@ export function buildRoutes() {
    * Balance observability summary (aggregates only).
    * Does not affect combat; for operators watching early-KO / one-shot rates.
    */
-  authed.get("/balance/summary", async (c) => {
+  authed.get("/balance/summary", requireAdmin, async (c) => {
     const limit = Number(c.req.query("limit") ?? 20);
     return c.json({
       summary: await getBalanceSummary(Number.isFinite(limit) ? limit : 20),
@@ -278,19 +281,132 @@ export function buildRoutes() {
       record: defaultRecord(),
       ...balanced,
     };
-    await charRepo.saveSheet(sheet);
+    const draftId = newId("draft");
+    await draftRepo.saveCharacterDraft({
+      id: draftId,
+      ownerUserId: user.id,
+      sheet,
+      assistantMessage: gen.assistantMessage,
+      createdAt: t,
+      updatedAt: t,
+    });
+    return c.json({
+      draft: {
+        id: draftId,
+        character: toPublicCharacter(sheet, user.id),
+        assistantMessage: gen.assistantMessage,
+      },
+    });
+  });
+
+  authed.post("/character-drafts/:id/chat", async (c) => {
+    const user = c.get("user");
+    const body = CharacterChatRequestSchema.parse(await c.req.json());
+    const draft = await draftRepo.getCharacterDraft(c.req.param("id"), user.id);
+    if (!draft) return c.json({ error: "not_found" }, 404);
+
+    const adj = await llm.adjustCharacter(draft.sheet, body.message);
+    const { balanceCharacterCombatFields } = await import("@kshiai/shared");
+    const nextSkills = coalesceNonEmptyList(
+      adj.sheetPatch.skills,
+      draft.sheet.skills,
+    );
+    const nextTraits = coalesceNonEmptyList(
+      adj.sheetPatch.traits,
+      draft.sheet.traits,
+    );
+    const updatedAt = new Date().toISOString();
+    const sheet = balanceCharacterCombatFields({
+      ...draft.sheet,
+      ...adj.sheetPatch,
+      parameters: adj.sheetPatch.parameters
+        ? { ...draft.sheet.parameters, ...adj.sheetPatch.parameters }
+        : draft.sheet.parameters,
+      basicAttack: adj.sheetPatch.basicAttack ?? draft.sheet.basicAttack,
+      skills: nextSkills,
+      traits: nextTraits,
+      weapon:
+        adj.sheetPatch.weapon !== undefined
+          ? adj.sheetPatch.weapon
+          : draft.sheet.weapon,
+      armor:
+        adj.sheetPatch.armor !== undefined
+          ? adj.sheetPatch.armor
+          : draft.sheet.armor,
+      updatedAt,
+    });
+    await draftRepo.saveCharacterDraft({
+      ...draft,
+      sheet,
+      assistantMessage: adj.assistantMessage,
+      updatedAt,
+    });
+    return c.json({
+      draft: {
+        id: draft.id,
+        character: toPublicCharacter(sheet, user.id),
+        assistantMessage: adj.assistantMessage,
+      },
+    });
+  });
+
+  authed.get("/character-drafts/latest", async (c) => {
+    const user = c.get("user");
+    const draft = await draftRepo.getLatestCharacterDraft(user.id);
+    return c.json({
+      draft: draft
+        ? {
+            id: draft.id,
+            character: toPublicCharacter(draft.sheet, user.id),
+            assistantMessage: draft.assistantMessage,
+          }
+        : null,
+    });
+  });
+
+  authed.post("/characters/:id/confirm", async (c) => {
+    const user = c.get("user");
+    const draft = await draftRepo.getCharacterDraft(c.req.param("id"), user.id);
+    if (!draft) return c.json({ error: "not_found" }, 404);
+    const reservedNames = await charRepo.listOwnedCharacterReservedNames(user.id);
+    const conflict = findCharacterNameConflict(
+      [draft.sheet.displayName, draft.sheet.identity?.realName],
+      reservedNames,
+    );
+    if (conflict) {
+      return c.json(
+        {
+          error: "duplicate_character_name",
+          message: `「${conflict.candidate}」は既存の「${conflict.reservedName}」と重複しています。下書きを調整してください。`,
+        },
+        409,
+      );
+    }
+    await charRepo.saveSheet(draft.sheet);
+    await draftRepo.deleteCharacterDraft(draft.id, user.id);
     try {
       const { recordSheetSnapshot } = await import(
         "./services/balance-observe.js"
       );
-      await recordSheetSnapshot({ sheet, phase: "generate" });
+      await recordSheetSnapshot({ sheet: draft.sheet, phase: "generate" });
     } catch {
       /* non-fatal */
     }
     return c.json({
-      character: toPublicCharacter(sheet, user.id),
-      assistantMessage: gen.assistantMessage,
+      character: toPublicCharacter(draft.sheet, user.id),
+      assistantMessage: "キャラクターを確定して保存しました。",
     });
+  });
+
+  authed.delete("/character-drafts/:id", async (c) => {
+    const user = c.get("user");
+    const deleted = await draftRepo.deleteCharacterDraft(
+      c.req.param("id"),
+      user.id,
+    );
+    return deleted
+      ? c.json({ ok: true })
+      : c.json({ error: "not_found" }, 404);
   });
 
   authed.post("/characters/:id/chat", async (c) => {
@@ -650,6 +766,22 @@ export function buildRoutes() {
     const opp = await pickRandomOpponent(user.id, body.myCharacterId);
     if (!opp) return c.json({ error: "no_candidates" }, 404);
     return c.json({ opponent: opp });
+  });
+
+  authed.post("/match/auto", async (c) => {
+    const user = c.get("user");
+    const body = (await c.req.json().catch(() => ({}))) as {
+      myCharacterId?: string;
+    };
+    if (!body.myCharacterId) {
+      return c.json({ error: "myCharacterId_required" }, 400);
+    }
+    const opponent = await pickAutoMatchedOpponent(
+      user.id,
+      body.myCharacterId,
+    );
+    if (!opponent) return c.json({ error: "no_candidates" }, 404);
+    return c.json({ opponent });
   });
 
   /** LLM case-policies for multi-select at match start. */

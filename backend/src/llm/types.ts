@@ -116,6 +116,17 @@ export type GenerateCharacterResult = {
   assistantMessage: string;
 };
 
+export type NarrationActionBeat = {
+  actionId: string;
+  actorSide: "a" | "b";
+  actorName: string;
+  actionKind: ResolvedBattleAction["kind"];
+  actionName: string;
+  description: string;
+  intent: string;
+  outcomes: string[];
+};
+
 export type AdjustCharacterResult = {
   sheetPatch: Partial<GenerateCharacterResult["sheet"]>;
   assistantMessage: string;
@@ -201,6 +212,9 @@ export interface LlmProvider {
         skills: Array<{ id: string; name: string; description: string }>;
       };
     };
+    /** Request a non-mechanical location/object/environment change when plausible. */
+    environmentBeatDue?: boolean;
+    dramaPhase?: "opening" | "rising" | "climax";
   }): Promise<{
     patch: TurnSemanticPatch;
     nextSituation?: Partial<Situation>;
@@ -262,6 +276,15 @@ export interface LlmProvider {
     sideAName: string;
     sideBName: string;
     events: TurnEvent[];
+    actionBeats?: NarrationActionBeat[];
+    recentNarration?: string[];
+    recentSpeeches?: Array<{ speaker: string; text: string }>;
+    drama?: {
+      phase: "opening" | "rising" | "climax";
+      repeatedActionA: number;
+      repeatedActionB: number;
+      environmentBeatDue: boolean;
+    };
     /** Already filtered digests for the resolved focus (may be empty). */
     innerDigests?: InnerDigest[];
     focus?: NarrationFocus;
