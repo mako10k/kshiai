@@ -2,6 +2,8 @@ import type { BattleListItem, BattleState } from "@kshiai/shared";
 import {
   BattleStateSchema,
   battleResultLabel,
+  buildSemanticObservationState,
+  createBattleSemanticState,
   resolveBattlefieldImageUrl,
 } from "@kshiai/shared";
 import { query } from "../db.js";
@@ -37,14 +39,46 @@ export async function saveBattle(
 function parseBattleState(rawJson: unknown, idHint = "?"): BattleState {
   const raw = typeof rawJson === "string" ? JSON.parse(rawJson) : rawJson;
   const parsed = BattleStateSchema.safeParse(raw);
-  if (parsed.success) return parsed.data;
+  if (parsed.success) return ensureSemanticState(parsed.data);
   console.warn(
     "[battles] schema soft-repair",
     idHint,
     parsed.error.issues.slice(0, 3),
   );
   const fixed = sanitizeBattleStateJson(raw);
-  return BattleStateSchema.parse(fixed);
+  return ensureSemanticState(BattleStateSchema.parse(fixed));
+}
+
+function ensureSemanticState(state: BattleState): BattleState {
+  const semanticState = state.semanticState ?? createBattleSemanticState({
+    scene: state.situation.scene,
+    notes: state.situation.notes,
+    terrain: state.battlefield?.terrain,
+    obstacles: state.battlefield?.obstacles,
+    conditions: state.battlefield?.conditions,
+    seed: state.battlefield?.semanticSeed,
+    sideA: { displayName: state.sideA.displayName },
+    sideB: { displayName: state.sideB.displayName },
+  });
+  return {
+    ...state,
+    semanticState,
+    observationStateA: state.observationStateA ?? buildSemanticObservationState({
+      before: semanticState,
+      after: semanticState,
+      observer: "a",
+    }),
+    observationStateB: state.observationStateB ?? buildSemanticObservationState({
+      before: semanticState,
+      after: semanticState,
+      observer: "b",
+    }),
+    observationStatePublic: state.observationStatePublic ?? buildSemanticObservationState({
+      before: semanticState,
+      after: semanticState,
+      observer: "public",
+    }),
+  };
 }
 
 export async function getBattle(id: string): Promise<BattleState | null> {

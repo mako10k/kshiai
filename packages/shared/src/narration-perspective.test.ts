@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import {
   buildInnerDigest,
+  agentsUsefulForPerspective,
   lockedFocusFromPerspective,
   needsFocusChoice,
   selectDigestsForFocus,
@@ -39,6 +40,7 @@ describe("narration perspective digests", () => {
     assert.equal(lockedFocusFromPerspective("fluid"), null);
     assert.equal(needsFocusChoice("fluid"), true);
     assert.equal(needsFocusChoice("self"), false);
+    assert.equal(agentsUsefulForPerspective("external"), true);
   });
 
   it("summary digests omit private detail", () => {

@@ -7,6 +7,7 @@ import {
   resolveTurn,
 } from "./battle-engine.js";
 import { defaultParameters, type CharacterSheet } from "./character.js";
+import { BattleStateSchema } from "./battle.js";
 
 function sheet(id: string, name: string, hp = 100): CharacterSheet {
   const t = new Date().toISOString();
@@ -59,6 +60,8 @@ describe("battle engine", () => {
     });
     assert.equal(state.agentStateA?.selfReference, "わたくし");
     assert.deepEqual(state.turnRecords, []);
+    assert.equal(state.semanticState?.revision, 0);
+    assert.equal(state.semanticState?.entities["character.a"]?.label, "A");
 
     const resolved = resolveTurn({
       state,
@@ -70,6 +73,7 @@ describe("battle engine", () => {
       before: state,
       after: resolved.state,
       events: resolved.events,
+      actions: resolved.actions,
     });
     assert.equal(record.turn, 1);
     assert.ok((record.sideBChange.parameterChanges.hp ?? 0) < 0);
@@ -78,6 +82,41 @@ describe("battle engine", () => {
       record.cognitionB.observedEvents,
     );
     assert.equal(record.cognitionA.foeCondition, record.cognitionB.ownCondition);
+    assert.deepEqual(record.actions.map((action) => action.id), [
+      "turn-1-action-a",
+      "turn-1-action-b",
+    ]);
+    assert.ok(resolved.events.every((event) => Boolean(event.id)));
+    assert.equal(state.observationStateA?.snapshot.revision, 0);
+    assert.equal(
+      state.observationStateA?.snapshot.entities["character.a"]?.label,
+      "A",
+    );
+    assert.equal(
+      state.observationStateB?.snapshot.entities["character.b"]?.label,
+      "B",
+    );
+    assert.equal("semanticObservation" in record.cognitionA, false);
+    const legacyRecord = {
+      ...record,
+      semanticPatch: { baseRevision: 0, turn: 1, operations: [] },
+      cognitionA: {
+        ...record.cognitionA,
+        semanticObservation: state.semanticState,
+      },
+      agentStateChangeA: { privateMemory: "duplicated history" },
+    };
+    const reparsed = BattleStateSchema.parse({
+      ...resolved.state,
+      turnRecords: [legacyRecord],
+    });
+    const reparsedRecord = reparsed.turnRecords[0] as unknown as Record<string, unknown>;
+    assert.equal("semanticPatch" in reparsedRecord, false);
+    assert.equal("agentStateChangeA" in reparsedRecord, false);
+    assert.equal(
+      "semanticObservation" in reparsed.turnRecords[0]!.cognitionA,
+      false,
+    );
     const agentChange = buildCharacterAgentStateChange(
       state.agentStateA!,
       {
@@ -100,7 +139,7 @@ describe("battle engine", () => {
       turnLimit: 20,
       prologuePending: false,
     });
-    const { state: next, events } = resolveTurn({
+    const { state: next, events, actions } = resolveTurn({
       state,
       playerAction: { actorSide: "a", kind: "skill", skillId: "slash" },
       sideASkills: state.sideA ? sheet("a", "A").skills : [],
@@ -142,7 +181,7 @@ describe("battle engine", () => {
       turnLimit: 20,
       prologuePending: false,
     });
-    const { state: next, events } = resolveTurn({
+    const { state: next, events, actions } = resolveTurn({
       state,
       playerAction: { actorSide: "a", kind: "skill", skillId: "slash" },
       sideASkills: sheet("a", "A").skills,
@@ -154,6 +193,9 @@ describe("battle engine", () => {
     assert.equal(next.winnerSide, "a");
     assert.equal(next.finishReason, "incapacitated");
     assert.ok(events.some((e) => e.type === "status"));
+    assert.equal(actions[0]?.executed, true);
+    assert.equal(actions[1]?.executed, false);
+    assert.equal(actions[1]?.skippedReason, "incapacitated_before_action");
     assert.ok(
       events.some(
         (e) => e.summary.includes("余波") || e.summary.includes("続けられ"),

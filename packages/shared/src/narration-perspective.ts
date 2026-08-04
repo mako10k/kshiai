@@ -77,11 +77,11 @@ export function needsFocusChoice(perspective: NarrationPerspective): boolean {
   return perspective === "fluid";
 }
 
-/** Whether agents should still run (for digests). External can skip for latency. */
+/** Character continuity always advances; perspective only gates narrator access. */
 export function agentsUsefulForPerspective(
-  perspective: NarrationPerspective,
+  _perspective: NarrationPerspective,
 ): boolean {
-  return perspective !== "external";
+  return true;
 }
 
 export function buildInnerDigest(input: {

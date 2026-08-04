@@ -5,6 +5,8 @@ import type {
 } from "openai/resources/chat/completions";
 import {
   BasicAttackProfileSchema,
+  BattlefieldSemanticSeedSchema,
+  TurnSemanticPatchSchema,
   CharacterAgentStateSchema,
   CharacterIdentitySchema,
   EquipmentSchema,
@@ -19,6 +21,8 @@ import {
   parseNarrationFocus,
   type BattlefieldInstance,
   type BattlefieldPreset,
+  type BattleSemanticState,
+  type SemanticObservationState,
   type BattlePolicyOption,
   type CharacterSheet,
   type CharacterIdentity,
@@ -875,8 +879,17 @@ Do not show numeric coefficients to the user in assistantMessage.`,
         `Concretize a match battlefield in Japanese. JSON:
 { "displayName": string, "category": string, "scene": string, "terrain": string,
   "obstacles": string[], "conditions": string[], "coefficients": { [k: string]: number },
-  "narrativeSetup": string, "appearance": { "summary": string, "visualPrompt": string } }
-Coefficients 0.25-2.5. Make terrain/obstacles/conditions specific for THIS match, not just the template.`,
+  "narrativeSetup": string, "appearance": { "summary": string, "visualPrompt": string },
+  "semanticSeed": {
+    "sceneFacts": { [snake_case_key: string]: JSON value },
+    "entities": { [stable_id: string]: {
+      "kind": "object"|"terrain"|"effect"|"other", "label": string,
+      "location": { "type": "scene", "area": string },
+      "active": boolean, "facts": { [snake_case_key: string]: JSON value }
+    } }
+  } }
+Coefficients 0.25-2.5. Make terrain/obstacles/conditions specific for THIS match, not just the template.
+Create semanticSeed entities only for interactable things that can be picked up, moved, broken, consumed, used as cover, or revisited. Use stable ASCII ids without slashes. Put ambient facts such as weather, visibility, and floor condition in sceneFacts.`,
         JSON.stringify({
           random: input.random,
           preset: input.preset
@@ -895,6 +908,7 @@ Coefficients 0.25-2.5. Make terrain/obstacles/conditions specific for THIS match
         { tier: "fast", label: "concretizeBattlefield" },
       )) as Record<string, unknown>;
       const appearance = (data.appearance as Record<string, string>) ?? {};
+      const semanticSeed = BattlefieldSemanticSeedSchema.safeParse(data.semanticSeed);
       return {
         sourcePresetId:
           input.preset && !input.random ? input.preset.id : null,
@@ -914,6 +928,7 @@ Coefficients 0.25-2.5. Make terrain/obstacles/conditions specific for THIS match
           ...((data.coefficients as Record<string, number>) ?? {}),
         }),
         narrativeSetup: String(data.narrativeSetup ?? ""),
+        semanticSeed: semanticSeed.success ? semanticSeed.data : undefined,
         appearance: {
           summary: String(appearance.summary ?? input.preset?.appearance.summary ?? ""),
           visualPrompt: String(
@@ -945,6 +960,83 @@ Do not invent a sudden environmental event or dramatic field change here. A sepa
       return data;
     } catch (error) {
       return this.fallbackOrThrow(error, () => this.fallback.proposeSituation(input));
+    }
+  }
+
+  async reconcileTurnSemanticState(
+    input: Parameters<LlmProvider["reconcileTurnSemanticState"]>[0],
+  ): ReturnType<LlmProvider["reconcileTurnSemanticState"]> {
+    if (!this.client) return this.fallback.reconcileTurnSemanticState(input);
+    try {
+      const data = (await this.chatJson(
+        `Reconcile one already-resolved fictional confrontation turn into observable semantic-state changes.
+The deterministic engine has already committed actions, events, resource changes, incapacity, and winner state. Never invent or alter those mechanics.
+Return JSON only:
+{
+  "patch": {
+    "operations": [
+      { "op": "add"|"replace"|"remove", "path": JSON_POINTER, "value"?: JSON_VALUE }
+    ]
+  },
+  "nextSituation"?: {
+    "notes"?: string,
+    "tags"?: string[],
+    "coefficients"?: { [allowed_key: string]: number }
+  }
+}
+Patch only /scene/summary, /scene/facts leaves, or /entities entries and their label/location/active/facts/visibleTo.
+Use existing entity ids and fact keys whenever possible. Create a stable ASCII entity id only for a newly created persistent object or effect.
+Picking something up changes its location to {"type":"held","side":"a"|"b"}; do not delete it.
+Broken, consumed, destroyed, or removed entities remain tombstoned through active/location/facts. Create debris or other persistent results as entities when materially relevant.
+Character-visible changes belong under /entities/character.a/facts or /entities/character.b/facts. Never write private thoughts.
+Entities are visible to both sides by default. Set optional visibleTo to ["a"] or ["b"] only when the entity as a whole is not observable by the other side; the deterministic engine performs projection from this field and never infers visibility from prose. Required character entities always remain visible to both.
+Do not patch schemaVersion, revision, createdTurn, updatedTurn, combat parameters, action legality, winner state, or private agent state.
+If no durable observable change occurred, return an empty operations array.
+nextSituation coefficients affect only the following turn and must remain between 0.25 and 2.5.`,
+        JSON.stringify(input),
+        {
+          tier: "fast",
+          label: "reconcileTurnSemanticState",
+          timeoutMs: 14_000,
+          temperature: 0.35,
+        },
+      )) as Record<string, unknown>;
+      const rawPatch = data.patch && typeof data.patch === "object"
+        ? data.patch as Record<string, unknown>
+        : {};
+      const patch = TurnSemanticPatchSchema.parse({
+        ...rawPatch,
+        baseRevision: input.before.revision,
+        turn: input.turn,
+        sourceEventIds: input.events.flatMap((event) => event.id ? [event.id] : []),
+      });
+      const rawSituation = data.nextSituation && typeof data.nextSituation === "object"
+        ? data.nextSituation as Record<string, unknown>
+        : null;
+      return {
+        patch,
+        nextSituation: rawSituation
+          ? {
+              notes: rawSituation.notes == null
+                ? undefined
+                : String(rawSituation.notes).slice(0, 1000),
+              tags: Array.isArray(rawSituation.tags)
+                ? rawSituation.tags.map(String).slice(0, 16)
+                : undefined,
+              coefficients: rawSituation.coefficients &&
+                  typeof rawSituation.coefficients === "object"
+                ? clampCoefficientMap(
+                    rawSituation.coefficients as Record<string, number>,
+                  )
+                : undefined,
+            }
+          : undefined,
+      };
+    } catch (error) {
+      return this.fallbackOrThrow(
+        error,
+        () => this.fallback.reconcileTurnSemanticState(input),
+      );
     }
   }
 
@@ -1063,7 +1155,7 @@ Rules:
     try {
       const data = (await this.chatJson(
         `You maintain one fictional character's private continuity during a confrontation. It may be physical, ranged, technological, psychic, social, comedic, cute, or abstract. Preserve the character's own way of acting and never introduce swords, wounds, or martial language unless supplied by the profile or events.
-You see only this character's profile, their previous compact state, and engine-authored cognition.
+You see only this character's profile, previous compact state, engine-authored cognition, and that character's current observable snapshot plus latest observable diff.
 Update conclusions and disposition; never invent confrontation results or numeric changes.
 Do not output chain-of-thought or step-by-step reasoning. privateMemory is a concise continuity summary only.
 Keep selfReference stable when already established. Any spoken line must consistently use that self-reference and the character's established speechStyle.
@@ -1164,11 +1256,11 @@ JSON only: { "focus": "self"|"foe"|"external"|"both" }`,
     sideAName: string;
     sideBName: string;
     events: { summary: string }[];
-    agentSpeeches?: Array<{ speaker: string; text: string }>;
     innerDigests?: InnerDigest[];
     focus?: NarrationFocus;
     perspective?: NarrationPerspective;
     battlefield?: BattlefieldInstance | null;
+    semanticObservation?: SemanticObservationState | null;
     styleInstruction?: string;
     styleName?: string;
     onProgress?: (progress: NarrationStreamProgress) => void;
@@ -1186,6 +1278,7 @@ ${styleBlock}
 ${focusBlock}
 Perspective gate overrides style instruction: never reveal inner life that is not present in innerDigests.
 Use battlefield flavor (terrain/obstacles) when relevant.
+Treat semanticObservation as the committed public observation after this turn. Use latestDiff to emphasize changes. Do not restore removed objects, undo breakage, or contradict entity locations. Narration cannot mutate it.
 If a situation event describes a sudden field change, weave that change naturally into the narrator lines without adding a category label.
 If any event marks a finishing blow (とどめ / 決め手 / 戦闘不能), center the turn on that decisive action.
 YOU write public character lines in speeches (not a separate agent). Include BOTH characters each turn:
@@ -1202,6 +1295,7 @@ Do not mention numeric HP/MP/ATK values.`,
           perspective: input.perspective ?? null,
           events: input.events,
           innerDigests: input.innerDigests ?? [],
+          semanticObservation: input.semanticObservation ?? null,
           battlefield: input.battlefield
             ? {
                 displayName: input.battlefield.displayName,
@@ -1228,7 +1322,6 @@ Do not mention numeric HP/MP/ATK values.`,
         data.speeches,
         input.sideAName,
         input.sideBName,
-        input.agentSpeeches,
       );
       return {
         turn: input.turn,
@@ -1244,7 +1337,6 @@ Do not mention numeric HP/MP/ATK values.`,
     raw: Array<{ speaker?: string; text?: string }> | undefined,
     sideAName: string,
     sideBName: string,
-    fallback?: Array<{ speaker: string; text: string }>,
   ): Array<{ speaker: string; text: string }> {
     const allowed = new Set([sideAName, sideBName]);
     const out: Array<{ speaker: string; text: string }> = [];
@@ -1259,10 +1351,9 @@ Do not mention numeric HP/MP/ATK values.`,
     // Ensure both sides appear once when model omits one.
     for (const name of [sideAName, sideBName]) {
       if (!out.some((s) => s.speaker === name)) {
-        const fb = fallback?.find((s) => s.speaker === name)?.text;
         out.push({
           speaker: name,
-          text: coerceCharacterSpeech(fb, {
+          text: coerceCharacterSpeech(undefined, {
             foeName: name === sideAName ? sideBName : sideAName,
           }),
         });

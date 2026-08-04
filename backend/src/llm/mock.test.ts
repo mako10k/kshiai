@@ -1,10 +1,19 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
+import {
+  buildSemanticObservationState,
+  createBattleSemanticState,
+} from "@kshiai/shared";
 import { MockLlmProvider } from "./mock.js";
 
 describe("mock LLM natural-language handling", () => {
   it("keeps self-reference in isolated character-agent continuity", async () => {
     const provider = new MockLlmProvider();
+    const semanticState = createBattleSemanticState({
+      scene: "闘技場",
+      sideA: { displayName: "姫騎士" },
+      sideB: { displayName: "挑戦者" },
+    });
     const result = await provider.advanceCharacterAgent({
       character: {
         displayName: "姫騎士",
@@ -39,6 +48,11 @@ describe("mock LLM natural-language handling", () => {
         parameterChanges: {},
         observedEvents: [],
       },
+      observation: buildSemanticObservationState({
+        before: semanticState,
+        after: semanticState,
+        observer: "a",
+      }),
     });
     assert.equal(result.state.selfReference, "わたくし");
     assert.match(result.speech ?? "", /わたくし/);
@@ -49,10 +63,10 @@ describe("mock LLM natural-language handling", () => {
       sideAName: "姫騎士",
       sideBName: "挑戦者",
       events: [],
-      agentSpeeches: [{ speaker: "姫騎士", text: result.speech ?? "" }],
     });
     assert.deepEqual(narration.speeches, [
-      { speaker: "姫騎士", text: result.speech ?? "" },
+      { speaker: "姫騎士", text: "……行く。" },
+      { speaker: "挑戦者", text: "…" },
     ]);
   });
 

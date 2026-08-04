@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { cacheBustMediaUrl } from "./media.js";
+import { BattlefieldSemanticSeedSchema } from "./semantic-state.js";
 
 const COEFF_MIN = 0.25;
 const COEFF_MAX = 2.5;
@@ -102,6 +103,8 @@ export const BattlefieldInstanceSchema = z.object({
   /** Hidden engine multipliers. */
   coefficients: z.record(z.string(), z.number()).default({}),
   narrativeSetup: z.string(),
+  /** Structured, immutable seed for the match's mutable semantic state. */
+  semanticSeed: BattlefieldSemanticSeedSchema.optional(),
   appearance: BattlefieldAppearanceSchema.optional(),
 });
 export type BattlefieldInstance = z.infer<typeof BattlefieldInstanceSchema>;

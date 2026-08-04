@@ -1,11 +1,14 @@
 import {
   CATEGORY_LABELS,
   SYSTEM_PRESET_SEEDS,
+  BattlefieldSemanticSeedSchema,
   clampCoefficientMap,
   defaultParameters,
   defaultRecord,
   type BattlefieldInstance,
   type BattlefieldPreset,
+  type BattleSemanticState,
+  type SemanticObservationState,
   type BattlePolicyOption,
   type CharacterSheet,
   type CharacterIdentity,
@@ -207,6 +210,22 @@ export class MockLlmProvider implements LlmProvider {
       ...(Math.random() > 0.5 ? ["風向きが不安定"] : []),
     ];
     const scene = `${preset.displayName}・${detailTerrain}`;
+    const semanticSeed = BattlefieldSemanticSeedSchema.parse({
+      sceneFacts: {
+        terrain: detailTerrain,
+        conditions,
+      },
+      entities: Object.fromEntries(obstacles.map((label, index) => [
+        `obstacle.${index + 1}`,
+        {
+          kind: "object",
+          label,
+          location: { type: "scene", area: scene },
+          active: true,
+          facts: { source: "battlefield_obstacle" },
+        },
+      ])),
+    });
     return {
       sourcePresetId: input.preset && !input.random ? input.preset.id : null,
       displayName: preset.displayName,
@@ -219,6 +238,7 @@ export class MockLlmProvider implements LlmProvider {
         ...preset.baseCoefficients,
       }),
       narrativeSetup: `${preset.narrativeBlurb} いまは「${detailTerrain}」が主戦場で、${obstacles.join("・") || "目立った障害はなく"}、${conditions.join("・") || "静かな空気"}が支配している。`,
+      semanticSeed,
       appearance: { ...preset.appearance },
     };
   }
@@ -245,6 +265,19 @@ export class MockLlmProvider implements LlmProvider {
         ? [...input.battlefield.obstacles, ...input.battlefield.conditions]
         : [],
     };
+  }
+
+  async reconcileTurnSemanticState(
+    input: Parameters<LlmProvider["reconcileTurnSemanticState"]>[0],
+  ): ReturnType<LlmProvider["reconcileTurnSemanticState"]> {
+    return Promise.resolve({
+      patch: {
+        baseRevision: input.before.revision,
+        turn: input.turn,
+        sourceEventIds: input.events.flatMap((event) => event.id ? [event.id] : []),
+        operations: [],
+      },
+    });
   }
 
   async proposeHappening(input: {
@@ -354,11 +387,11 @@ export class MockLlmProvider implements LlmProvider {
     sideAName: string;
     sideBName: string;
     events: { summary: string; actorName?: string; skillName?: string; intensity?: string }[];
-    agentSpeeches?: Array<{ speaker: string; text: string }>;
     innerDigests?: Array<{ displayName: string; emotion?: string }>;
     focus?: string;
     perspective?: string;
     battlefield?: BattlefieldInstance | null;
+    semanticObservation?: SemanticObservationState | null;
     styleInstruction?: string;
     styleName?: string;
     onProgress?: (progress: { lines: string[]; draft?: string | null }) => void;
@@ -379,13 +412,10 @@ export class MockLlmProvider implements LlmProvider {
       ...input.events.map((e) => e.summary),
     ];
     await this.emitNarratorProgress(narrator, input.onProgress);
-    const speeches =
-      input.agentSpeeches && input.agentSpeeches.length > 0
-        ? input.agentSpeeches
-        : [
-            { speaker: input.sideAName, text: "……行く。" },
-            { speaker: input.sideBName, text: "…" },
-          ];
+    const speeches = [
+      { speaker: input.sideAName, text: "……行く。" },
+      { speaker: input.sideBName, text: "…" },
+    ];
     return { turn: input.turn, narrator, speeches };
   }
 

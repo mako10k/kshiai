@@ -6,6 +6,11 @@ import {
   BattlefieldInstanceSchema,
 } from "./battlefield.js";
 import { NarrationStyleSnapshotSchema } from "./narration-style.js";
+import {
+  BattleSemanticStateSchema,
+  SemanticObservationStateSchema,
+  TurnSemanticPatchSchema,
+} from "./semantic-state.js";
 
 export const BattleStatusSchema = z.enum([
   "active",
@@ -206,6 +211,18 @@ export const BattleActionSchema = z.object({
 });
 export type BattleAction = z.infer<typeof BattleActionSchema>;
 
+export const ResolvedBattleActionSchema = BattleActionSchema.extend({
+  id: z.string().min(1),
+  executed: z.boolean(),
+  skippedReason: z
+    .enum(["incapacitated_before_action", "battle_inactive"])
+    .nullable()
+    .default(null),
+});
+export type ResolvedBattleAction = z.infer<
+  typeof ResolvedBattleActionSchema
+>;
+
 /** Engine-internal combatant (hidden). */
 export const CombatantStateSchema = z.object({
   characterId: z.string(),
@@ -232,6 +249,7 @@ export const SituationSchema = z.object({
 export type Situation = z.infer<typeof SituationSchema>;
 
 export const TurnEventSchema = z.object({
+  id: z.string().min(1).optional(),
   type: z.enum([
     "damage",
     "heal",
@@ -244,7 +262,10 @@ export const TurnEventSchema = z.object({
     "info",
   ]),
   actorName: z.string().optional(),
+  actorSide: z.enum(["a", "b"]).optional(),
   targetName: z.string().optional(),
+  targetSides: z.array(z.enum(["a", "b"])).max(2).optional(),
+  sourceActionId: z.string().min(1).optional(),
   skillName: z.string().optional(),
   /** Abstract magnitude label for narration, not raw stats. */
   intensity: z.enum(["minor", "moderate", "heavy", "critical"]).optional(),
@@ -317,13 +338,12 @@ export type CharacterAgentStateChange = z.infer<
 /** Persisted engine facts for audit and agent cognition reconstruction. */
 export const BattleTurnRecordSchema = z.object({
   turn: z.number().int().nonnegative(),
+  actions: z.array(ResolvedBattleActionSchema).default([]),
   events: z.array(TurnEventSchema).default([]),
   sideAChange: CombatantStateChangeSchema,
   sideBChange: CombatantStateChangeSchema,
   cognitionA: CharacterCognitionSchema,
   cognitionB: CharacterCognitionSchema,
-  agentStateChangeA: CharacterAgentStateChangeSchema.nullable().default(null),
-  agentStateChangeB: CharacterAgentStateChangeSchema.nullable().default(null),
 });
 export type BattleTurnRecord = z.infer<typeof BattleTurnRecordSchema>;
 
@@ -389,6 +409,38 @@ export const BattleStateSchema = z.object({
   agentStateB: CharacterAgentStateSchema.optional(),
   /** Structured engine transitions; narrative log is presentation only. */
   turnRecords: z.array(BattleTurnRecordSchema).default([]),
+  /** Mutable observable world overlay; optional while legacy battles exist. */
+  semanticState: BattleSemanticStateSchema.optional(),
+  /** Latest side-specific observation only; never copied into turn history. */
+  observationStateA: SemanticObservationStateSchema.optional(),
+  observationStateB: SemanticObservationStateSchema.optional(),
+  observationStatePublic: SemanticObservationStateSchema.optional(),
+  /** Only the most recent semantic transition is retained. */
+  latestSemanticTransition: z.object({
+    turn: z.number().int().nonnegative(),
+    status: z.enum(["applied", "rejected", "skipped"]),
+    fromRevision: z.number().int().nonnegative(),
+    toRevision: z.number().int().nonnegative(),
+    patch: TurnSemanticPatchSchema.nullable(),
+  }).superRefine((transition, ctx) => {
+    if (transition.fromRevision > transition.toRevision) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["fromRevision"],
+        message: "semantic transition revision order is invalid",
+      });
+    }
+    if (
+      transition.patch &&
+      transition.patch.baseRevision !== transition.fromRevision
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["patch", "baseRevision"],
+        message: "semantic transition patch revision mismatch",
+      });
+    }
+  }).optional(),
   /**
    * Engine-internal balance metrics (not exposed on BattlePublic).
    * Accumulated from HP deltas each combat turn for observability.
@@ -486,6 +538,32 @@ export const BattleStateSchema = z.object({
     .optional(),
   createdAt: z.string(),
   updatedAt: z.string(),
+}).superRefine((state, ctx) => {
+  const revision = state.semanticState?.revision;
+  if (revision === undefined) return;
+  for (const [field, observation] of [
+    ["observationStateA", state.observationStateA],
+    ["observationStateB", state.observationStateB],
+    ["observationStatePublic", state.observationStatePublic],
+  ] as const) {
+    if (observation && observation.snapshot.revision !== revision) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: [field, "snapshot", "revision"],
+        message: "observation revision must match semantic state",
+      });
+    }
+  }
+  if (
+    state.latestSemanticTransition &&
+    state.latestSemanticTransition.toRevision !== revision
+  ) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["latestSemanticTransition", "toRevision"],
+      message: "latest semantic transition must match semantic state",
+    });
+  }
 });
 export type BattleState = z.infer<typeof BattleStateSchema>;
 
@@ -520,6 +598,8 @@ export const BattlePublicSchema = z.object({
   scene: z.string(),
   situationNotes: z.string(),
   battlefield: BattlefieldInstancePublicSchema.nullable().optional(),
+  /** Observable structured world only; excludes mechanics and private agents. */
+  semanticState: SemanticObservationStateSchema.nullable().optional(),
   log: z.array(NarrativeBlockSchema),
   /** @deprecated Per-turn choices are automatic; kept empty for compatibility. */
   availableActions: z

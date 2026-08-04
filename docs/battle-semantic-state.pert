@@ -1,0 +1,203 @@
+# New plan created for the battle semantic-state change. Maintain it through perttool after initial validation.
+project KSHIAI_BATTLE_SEMANTIC_STATE:
+  version 5
+  title "Persist structured battle world and character continuity"
+  description "Introduce a loosely typed semantic world snapshot, validated JSON Pointer patches, post-resolution character cognition, and auditable turn continuity without weakening deterministic combat authority."
+  as_of 2026-08-04
+  duration_unit day
+  finish SEMANTIC_STATE_ACCEPTED
+
+resource DEV:
+  title "Developer"
+  capacity 1
+
+milestone CURRENT_BEHAVIOR:
+  title "Current battle-state gaps assessed"
+  state reached
+
+milestone DESIGN_READY:
+  title "Semantic-state design and acceptance criteria ready"
+  state reached
+
+milestone MODEL_READY:
+  title "Shared semantic schema and atomic patch engine ready"
+  state reached
+
+milestone INITIALIZATION_READY:
+  title "New and legacy battles have semantic initial state"
+  state reached
+
+milestone RECONCILIATION_READY:
+  title "Resolved turns produce validated semantic patches"
+  state reached
+
+milestone CONTINUITY_READY:
+  title "Character cognition and narration consume committed state"
+  state reached
+
+milestone OPERATIONS_READY:
+  title "Public projection and guarded maintenance tooling ready"
+  state reached
+
+milestone COMPATIBILITY_READY:
+  title "Migration, failure, privacy, and concurrency behavior verified"
+  state reached
+
+milestone SEMANTIC_STATE_ACCEPTED:
+  title "Structured battle continuity accepted"
+  state reached
+
+task T_DESIGN CURRENT_BEHAVIOR -> DESIGN_READY:
+  title "Document semantic state authority patch protocol pipeline and acceptance criteria"
+  description "Create the detailed design, update parent requirements and architectural decisions, and validate the implementation DAG."
+  duration 1d
+  status done
+  requires:
+    DEV 1
+
+task T_MODEL DESIGN_READY -> MODEL_READY:
+  title "Add semantic schemas stable IDs patch validation and atomic apply"
+  description "Define BattleSemanticState and TurnSemanticPatch, implement JSON Pointer validation and diff helpers, protect mechanical and private namespaces, and cover stale revisions tombstones limits and atomic rejection."
+  duration 2d
+  status done
+  requires:
+    DEV 1
+
+task T_INITIALIZE MODEL_READY -> INITIALIZATION_READY:
+  title "Generate structured initial worlds and seed legacy battles"
+  description "Extend battlefield concretization, inject symmetric character entities, preserve narrative summaries, and deterministically create revision-zero state for existing battles without LLM migration."
+  duration 2d
+  status done
+  requires:
+    DEV 1
+
+task T_RECONCILE INITIALIZATION_READY -> RECONCILIATION_READY:
+  title "Record actions and reconcile post-resolution semantic effects"
+  description "Give actions and events stable IDs, replace pre-resolution free-form situation mutation with structured post-resolution reconciliation, validate and apply patches atomically, and retain bounded next-turn coefficient proposals."
+  duration 3d
+  status done
+  requires:
+    DEV 1
+
+task T_CONTINUITY RECONCILIATION_READY -> CONTINUITY_READY:
+  title "Build post-patch cognition and advance both private agents"
+  description "Derive current A/B/public observations from structured visibility and committed state, retain only each latest snapshot plus latest diff, update A and B in parallel for every narration perspective, and keep older subjective continuity only in bounded agent memory."
+  duration 2d
+  status done
+  requires:
+    DEV 1
+
+task T_OPERATIONS CONTINUITY_READY -> OPERATIONS_READY:
+  title "Expose safe observable state and guarded query patch tooling"
+  description "Expose the bounded current public observation plus latest diff and guarded inspect diff expected-revision patch tooling without exposing side-private entities parameters coefficients private agent facts or historical snapshots."
+  duration 2d
+  status done
+  requires:
+    DEV 1
+
+task T_COMPAT OPERATIONS_READY -> COMPATIBILITY_READY:
+  title "Verify compatibility failure privacy concurrency and cost boundaries"
+  description "Verify legacy seed and observation reconstruction provider failures invalid patches narration failures lease concurrency side-specific privacy snapshot size token bounds and that turn history does not duplicate semantic or private-agent state."
+  duration 2d
+  status done
+  requires:
+    DEV 1
+
+task T_ACCEPT COMPATIBILITY_READY -> SEMANTIC_STATE_ACCEPTED:
+  title "Run semantic continuity acceptance scenarios and full repository checks"
+  description "Verify pickup drop breakage debris persistence visible character changes A/B swap symmetry post-impact inner updates non-resurrection and no prose-pattern mechanics, then run build typecheck and tests."
+  duration 1d
+  status done
+  requires:
+    DEV 1
+
+work_event WE-T-MODEL-START-20260804:
+  model 1
+  task T_MODEL
+  kind start
+  occurred_at 2026-08-04T10:39:42+09:00
+  planned_value 2d
+
+work_event WE-T-MODEL-FINISH-20260804:
+  model 1
+  task T_MODEL
+  kind finish
+  occurred_at 2026-08-04T10:44:53+09:00
+
+work_event WE-T-INITIALIZE-START-20260804:
+  model 1
+  task T_INITIALIZE
+  kind start
+  occurred_at 2026-08-04T10:45:49+09:00
+  planned_value 2d
+
+work_event WE-T-INITIALIZE-FINISH-20260804:
+  model 1
+  task T_INITIALIZE
+  kind finish
+  occurred_at 2026-08-04T10:49:34+09:00
+
+work_event WE-T-RECONCILE-START-20260804:
+  model 1
+  task T_RECONCILE
+  kind start
+  occurred_at 2026-08-04T10:49:50+09:00
+  planned_value 3d
+
+work_event WE-T-RECONCILE-FINISH-20260804:
+  model 1
+  task T_RECONCILE
+  kind finish
+  occurred_at 2026-08-04T11:25:00+09:00
+
+work_event WE-T-CONTINUITY-START-20260804:
+  model 1
+  task T_CONTINUITY
+  kind start
+  occurred_at 2026-08-04T11:26:00+09:00
+  planned_value 2d
+
+work_event WE-T-CONTINUITY-FINISH-20260804:
+  model 1
+  task T_CONTINUITY
+  kind finish
+  occurred_at 2026-08-04T11:45:00+09:00
+
+work_event WE-T-OPERATIONS-START-20260804:
+  model 1
+  task T_OPERATIONS
+  kind start
+  occurred_at 2026-08-04T11:46:00+09:00
+  planned_value 2d
+
+work_event WE-T-OPERATIONS-FINISH-20260804:
+  model 1
+  task T_OPERATIONS
+  kind finish
+  occurred_at 2026-08-04T11:55:00+09:00
+
+work_event WE-T-COMPAT-START-20260804:
+  model 1
+  task T_COMPAT
+  kind start
+  occurred_at 2026-08-04T11:56:00+09:00
+  planned_value 2d
+
+work_event WE-T-COMPAT-FINISH-20260804:
+  model 1
+  task T_COMPAT
+  kind finish
+  occurred_at 2026-08-04T12:10:00+09:00
+
+work_event WE-T-ACCEPT-START-20260804:
+  model 1
+  task T_ACCEPT
+  kind start
+  occurred_at 2026-08-04T12:11:00+09:00
+  planned_value 1d
+
+work_event WE-T-ACCEPT-FINISH-20260804:
+  model 1
+  task T_ACCEPT
+  kind finish
+  occurred_at 2026-08-04T12:20:00+09:00

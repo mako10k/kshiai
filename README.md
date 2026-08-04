@@ -10,6 +10,10 @@
 設計 (llmthink): [docs/design.llmthink.dsl](docs/design.llmthink.dsl)  
 実装計画 (perttool): [docs/plan.pert](docs/plan.pert)
 
+戦闘中の構造化状態設計: [docs/battle-semantic-state.md](docs/battle-semantic-state.md)
+
+同修正計画 (perttool): [docs/battle-semantic-state.pert](docs/battle-semantic-state.pert)
+
 PostgreSQL 移行: [docs/postgres_migration.md](docs/postgres_migration.md)
 旧アカウント移管: [docs/legacy_account_migration.md](docs/legacy_account_migration.md)
 クラウド実行環境: [docs/cloud_runtime.md](docs/cloud_runtime.md)
