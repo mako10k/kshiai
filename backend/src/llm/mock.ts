@@ -378,12 +378,30 @@ export class MockLlmProvider implements LlmProvider {
           action.kind === "skill" && action.finisherCandidate
         )
       : undefined;
-    const preferred = finisherAction ??
-      input.decision.availableActions.find((action) =>
-        action.kind === "skill" && !action.finisherCandidate
-      ) ??
-      input.decision.availableActions.find((action) => action.kind === "basic_attack") ??
-      input.decision.availableActions[0]!;
+    const last = input.decision.lastAction;
+    const differsFromLast = (
+      action: { kind: string; skillId?: string },
+    ) =>
+      !(
+        last &&
+        action.kind === last.kind &&
+        (action.skillId ?? null) === (last.skillId ?? null)
+      );
+    const mustChange =
+      input.decision.varietyPressure === "require_change" ||
+      input.decision.varietyPressure === "prefer_change";
+    const candidates = input.decision.availableActions.filter((action) =>
+      mustChange ? differsFromLast(action) : true
+    );
+    const pool = candidates.length > 0
+      ? candidates
+      : input.decision.availableActions;
+    const preferred = finisherAction && differsFromLast(finisherAction)
+      ? finisherAction
+      : pool.find((action) => action.kind === "skill" && !action.finisherCandidate) ??
+        pool.find((action) => action.kind === "basic_attack") ??
+        pool.find((action) => action.kind !== "wait") ??
+        pool[0]!;
     return {
       state: {
         ...input.previous,
@@ -402,7 +420,9 @@ export class MockLlmProvider implements LlmProvider {
       nextAction: {
         kind: preferred.kind,
         ...(preferred.skillId ? { skillId: preferred.skillId } : {}),
-        ...(finisherAction ? { useFinisher: true } : {}),
+        ...(finisherAction && preferred.finisherCandidate
+          ? { useFinisher: true }
+          : {}),
       },
     };
   }

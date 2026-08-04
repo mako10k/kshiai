@@ -56,7 +56,9 @@ import {
   defaultBasicAttack,
   advanceDramaState,
   dramaPhaseForTurn,
+  dramaProgressionHint,
   normalizeDramaState,
+  parseActionSignature,
   quantizeCommittedMechanicalEvidence,
   projectObserverPerception,
   type QuantizedMechanicalEvidence,
@@ -586,6 +588,45 @@ function buildCharacterDecisionContext(input: {
       skill.id === window.skillId,
     );
   });
+  const drama = normalizeDramaState(input.state.dramaState);
+  const signature = input.side === "a"
+    ? drama.lastActionSignatureA
+    : drama.lastActionSignatureB;
+  const actionRepeatCount = input.side === "a"
+    ? drama.repeatedActionA
+    : drama.repeatedActionB;
+  const parsed = parseActionSignature(signature);
+  const lastSkill = parsed?.skillId
+    ? input.sheet.skills.find((skill) => skill.id === parsed.skillId)
+    : null;
+  const lastAction = parsed
+    ? {
+        kind: parsed.kind as
+          | "skill"
+          | "basic_attack"
+          | "defend"
+          | "rest"
+          | "wait",
+        ...(parsed.skillId ? { skillId: parsed.skillId } : {}),
+        ...(lastSkill?.name
+          ? { name: lastSkill.name }
+          : parsed.kind === "basic_attack"
+            ? { name: input.sheet.basicAttack?.name ?? "基本アクション" }
+            : parsed.kind === "wait"
+              ? { name: "様子を見る" }
+              : parsed.kind === "defend"
+                ? { name: "防御" }
+                : parsed.kind === "rest"
+                  ? { name: "休息" }
+                  : {}),
+      }
+    : null;
+  const varietyPressure =
+    actionRepeatCount >= 3
+      ? "require_change" as const
+      : actionRepeatCount >= 2
+        ? "prefer_change" as const
+        : "none" as const;
   return {
     nextTurn,
     turnsRemaining: Math.max(0, input.state.turnLimit - nextTurn + 1),
@@ -608,6 +649,9 @@ function buildCharacterDecisionContext(input: {
       })),
     ],
     finisher: window,
+    lastAction,
+    actionRepeatCount,
+    varietyPressure,
   };
 }
 
@@ -1642,9 +1686,27 @@ async function advanceTurnWithLease(input: {
           recentSpeeches,
           drama: {
             phase: dramaPhase,
+            turn: next.turn,
+            turnLimit: next.turnLimit,
             repeatedActionA: dramaBefore.repeatedActionA,
             repeatedActionB: dramaBefore.repeatedActionB,
+            lastActionSignatureA: dramaBefore.lastActionSignatureA,
+            lastActionSignatureB: dramaBefore.lastActionSignatureB,
+            recentBeatFingerprints: dramaBefore.recentBeatFingerprints,
+            turnsSinceLocationChange: dramaBefore.turnsSinceLocationChange,
+            turnsSinceEnvironmentBeat: dramaBefore.turnsSinceEnvironmentBeat,
             environmentBeatDue: environmentBeatCommitted,
+            progressionHint: dramaProgressionHint({
+              phase: dramaPhase,
+              turn: next.turn,
+              turnLimit: next.turnLimit,
+              repeatedActionA: dramaBefore.repeatedActionA,
+              repeatedActionB: dramaBefore.repeatedActionB,
+              lastActionSignatureA: dramaBefore.lastActionSignatureA,
+              lastActionSignatureB: dramaBefore.lastActionSignatureB,
+              recentBeatFingerprints: dramaBefore.recentBeatFingerprints,
+              turnsSinceLocationChange: dramaBefore.turnsSinceLocationChange,
+            }),
           },
           innerDigests: digests,
           styleInstruction: next.narrationStyle?.instruction,
@@ -1680,15 +1742,27 @@ async function advanceTurnWithLease(input: {
     );
     // Public log must stay narrator-shaped. Never dump engine event.summary or
     // raw action outcomes into the user-visible log.
+    const fallbackDrama = {
+      phase: dramaPhase,
+      repeatedActionA: dramaBefore.repeatedActionA,
+      repeatedActionB: dramaBefore.repeatedActionB,
+      environmentBeatDue: environmentBeatCommitted,
+      progressionHint: dramaProgressionHint({
+        phase: dramaPhase,
+        turn: next.turn,
+        turnLimit: next.turnLimit,
+        repeatedActionA: dramaBefore.repeatedActionA,
+        repeatedActionB: dramaBefore.repeatedActionB,
+        lastActionSignatureA: dramaBefore.lastActionSignatureA,
+        lastActionSignatureB: dramaBefore.lastActionSignatureB,
+        recentBeatFingerprints: dramaBefore.recentBeatFingerprints,
+        turnsSinceLocationChange: dramaBefore.turnsSinceLocationChange,
+      }),
+    };
     narrative = narrationView
       ? composeNarratorTurn({
           view: narrationView,
-          drama: {
-            phase: dramaPhase,
-            repeatedActionA: dramaBefore.repeatedActionA,
-            repeatedActionB: dramaBefore.repeatedActionB,
-            environmentBeatDue: environmentBeatCommitted,
-          },
+          drama: fallbackDrama,
           recentNarration,
         })
       : {
@@ -1731,6 +1805,17 @@ async function advanceTurnWithLease(input: {
         repeatedActionA: dramaBefore.repeatedActionA,
         repeatedActionB: dramaBefore.repeatedActionB,
         environmentBeatDue: environmentBeatCommitted,
+        progressionHint: dramaProgressionHint({
+          phase: dramaPhase,
+          turn: next.turn,
+          turnLimit: next.turnLimit,
+          repeatedActionA: dramaBefore.repeatedActionA,
+          repeatedActionB: dramaBefore.repeatedActionB,
+          lastActionSignatureA: dramaBefore.lastActionSignatureA,
+          lastActionSignatureB: dramaBefore.lastActionSignatureB,
+          recentBeatFingerprints: dramaBefore.recentBeatFingerprints,
+          turnsSinceLocationChange: dramaBefore.turnsSinceLocationChange,
+        }),
       },
       recentNarration,
     });

@@ -33,7 +33,7 @@ import {
   buildSemanticObservationState,
   createBattleSemanticState,
 } from "./semantic-state.js";
-import { normalizeDramaState } from "./drama.js";
+import { normalizeDramaState, parseActionSignature } from "./drama.js";
 import {
   balanceBasicAttack,
   balanceEquipment,
@@ -955,25 +955,56 @@ export function chooseActionFromPolicies(input: {
   turn: number;
   /** Fallback when no policies selected. */
   legacyStance?: BattleStance;
+  /** When set, prefer a different skill/kind than the last repeated action. */
+  avoidSkillId?: string | null;
+  avoidKind?: string | null;
+  /** repeatedAction count from drama; >=2 enables stronger variety. */
+  actionRepeatCount?: number;
 }): BattleAction {
   const myHp = hpRatio(input.self);
   const foeHp = hpRatio(input.foe);
   const selected = new Set(input.selectedIds);
   const active = input.policies.filter((p) => selected.has(p.id));
+  const avoidSkillId = input.actionRepeatCount && input.actionRepeatCount >= 2
+    ? input.avoidSkillId
+    : null;
+  const forceOffWait = input.avoidKind === "wait" &&
+    (input.actionRepeatCount ?? 0) >= 2;
 
   const matching = active
     .filter((p) => ruleMatches(p, { turn: input.turn, myHp, foeHp }))
     .sort((a, b) => (b.priority ?? 0) - (a.priority ?? 0));
 
-  if (matching.length > 0) {
-    return actionFromBias(
-      matching[0]!.bias ?? "mixed",
+  const pick = (bias: PolicyBias): BattleAction => {
+    let action = actionFromBias(
+      forceOffWait && bias === "wait" ? "mixed" : bias,
       input.actorSide,
       input.self,
       input.skills,
       myHp,
       input.turn,
+      avoidSkillId,
     );
+    // Never answer a multi-wait streak with another wait when offense exists.
+    if (
+      forceOffWait &&
+      action.kind === "wait"
+    ) {
+      action = actionFromBias(
+        "attack",
+        input.actorSide,
+        input.self,
+        input.skills,
+        myHp,
+        input.turn,
+        avoidSkillId,
+      );
+    }
+    return action;
+  };
+
+  if (matching.length > 0) {
+    return pick(matching[0]!.bias ?? "mixed");
   }
 
   // Soft fallback: any always rules, then legacy stance
@@ -981,14 +1012,7 @@ export function chooseActionFromPolicies(input: {
     .filter((p) => p.triggers?.always || Object.keys(p.triggers ?? {}).length === 0)
     .sort((a, b) => (b.priority ?? 0) - (a.priority ?? 0));
   if (always.length > 0) {
-    return actionFromBias(
-      always[0]!.bias ?? "mixed",
-      input.actorSide,
-      input.self,
-      input.skills,
-      myHp,
-      input.turn,
-    );
+    return pick(always[0]!.bias ?? "mixed");
   }
 
   return chooseActionFromStance({
@@ -1291,6 +1315,12 @@ export function resolveTurn(input: {
     });
   }
 
+  const drama = normalizeDramaState(input.state.dramaState);
+  const avoidA = parseActionSignature(drama.lastActionSignatureA);
+  const avoidB = parseActionSignature(drama.lastActionSignatureB);
+  const varietyA = drama.repeatedActionA >= 2;
+  const varietyB = drama.repeatedActionB >= 2;
+
   const plannedActionA = actionFromCharacterIntent({
     intent: input.state.plannedActionA,
     actorSide: "a",
@@ -1308,8 +1338,18 @@ export function resolveTurn(input: {
     turn,
   });
 
-  const playerAction = input.playerAction ?? plannedActionA ??
-    (forceOffense
+  const intentMatchesAvoid = (
+    action: BattleAction | undefined,
+    avoid: ReturnType<typeof parseActionSignature>,
+    requireVariety: boolean,
+  ): boolean => {
+    if (!requireVariety || !action || !avoid) return false;
+    if (avoid.skillId) return action.kind === "skill" && action.skillId === avoid.skillId;
+    return action.kind === avoid.kind;
+  };
+
+  const policyA = () =>
+    forceOffense
       ? { actorSide: "a" as const, kind: "basic_attack" as const }
       : chooseActionFromPolicies({
           policies: input.state.policiesA ?? [],
@@ -1320,20 +1360,36 @@ export function resolveTurn(input: {
           skills: input.sideASkills,
           turn,
           legacyStance: input.state.stanceA ?? "balanced",
-        }));
+          avoidSkillId: varietyA ? avoidA?.skillId : null,
+          avoidKind: varietyA ? avoidA?.kind : null,
+          actionRepeatCount: drama.repeatedActionA,
+        });
+  const policyB = () =>
+    forceOffense
+      ? { actorSide: "b" as const, kind: "basic_attack" as const }
+      : chooseActionFromPolicies({
+          policies: input.state.policiesB ?? [],
+          selectedIds: input.state.selectedPolicyIdsB ?? [],
+          actorSide: "b",
+          self: sideB,
+          foe: sideA,
+          skills: input.sideBSkills,
+          turn,
+          legacyStance: input.state.stanceB ?? "balanced",
+          avoidSkillId: varietyB ? avoidB?.skillId : null,
+          avoidKind: varietyB ? avoidB?.kind : null,
+          actionRepeatCount: drama.repeatedActionB,
+        });
 
-  const aiAction: BattleAction = plannedActionB ?? (forceOffense
-    ? { actorSide: "b", kind: "basic_attack" }
-    : chooseActionFromPolicies({
-        policies: input.state.policiesB ?? [],
-        selectedIds: input.state.selectedPolicyIdsB ?? [],
-        actorSide: "b",
-        self: sideB,
-        foe: sideA,
-        skills: input.sideBSkills,
-        turn,
-        legacyStance: input.state.stanceB ?? "balanced",
-      }));
+  const playerAction = input.playerAction ??
+    (intentMatchesAvoid(plannedActionA, avoidA, varietyA)
+      ? policyA()
+      : plannedActionA ?? policyA());
+
+  const aiAction: BattleAction =
+    intentMatchesAvoid(plannedActionB, avoidB, varietyB)
+      ? policyB()
+      : plannedActionB ?? policyB();
   const actionAId = `turn-${turn}-action-a`;
   const actionBId = `turn-${turn}-action-b`;
   const actions: ResolvedBattleAction[] = [

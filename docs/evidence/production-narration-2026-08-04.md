@@ -51,3 +51,36 @@ Secondary: `normalizeNarratorSpeeches` filled missing speakers with
 2. Do not synthesize missing speaker lines after the narrator call.
 3. Keep last-resort narrator composition for full-turn failure (defense in depth);
    evidence shows it is rare in production right now.
+
+## Turn-to-turn monotony (follow-up evidence)
+
+Same three finished battles show **mechanical loops that the narrator then softens**:
+
+### `btl_8bc3c467…` (metro / social)
+
+- B: `wait` almost every turn (16×).
+- A: alternates two skills; event summaries are the same block each time
+  (`ワードローブサボタージュ` ×36, `様子をうかがった`).
+- Narrator: ambient train props + soft finger gesture + soft reaction every turn.
+- `balance.maxTurnDamageRatio* ≈ 0.03`, `turnsSinceLocationChange: 20`.
+
+### `btl_a60df154…` (hotel room)
+
+- A: single skill streak **15** (`環境操作` then `誘惑の視線`).
+- B: same luck skill every turn (`幸せよ来い…！` ×57 event hits).
+- Narrator: neon/bed/sweat/mirror loop; little leverage change sentence-to-sentence.
+- `drama.repeatedActionA: 15`, fingerprints identical three deep.
+
+### `btl_47b6911c…` (arena, soft characters)
+
+- A: `守ってあげたいオーラ` streak **10**; B: `wait`.
+- Narrator: sand + soft aura + “様子をうかがう” every turn; not fight-like.
+- Even climax phase still reads as gentle stalemate.
+
+### Interpretation
+
+Monotony is not only stock speech. **Same action signatures + soft status events**
+give the (working) narrator the same beat recipe every turn. Fix requires:
+
+1. Engine/policy/agent variety pressure after repeated actions (especially wait).
+2. Narrator `progressionHint` so 地の文 must advance leverage, not restate ambience.

@@ -11,6 +11,7 @@ type DramaHint = {
   environmentBeatDue?: boolean;
   repeatedActionA?: number;
   repeatedActionB?: number;
+  progressionHint?: string;
 };
 
 /**
@@ -32,46 +33,45 @@ export function composeNarratorTurn(input: {
   const beats = view.actionBeats.slice(0, 2);
   const phase = input.drama?.phase ?? "rising";
 
-  const phaseLead =
-    phase === "opening"
-      ? `${place}で、互いの位置と気配がまだ定まらない。`
+  const hint = input.drama?.progressionHint ?? "change_leverage";
+  const lead =
+    beats[0]
+      ? `${beats[0].actorLabel} が ${beats[0].actionName} を仕掛ける。${cleanDescription(beats[0].description)}`.trim()
       : phase === "climax"
-        ? `${place}の空気が張り詰め、一手が決着へ傾く。`
-        : `${place}で、流れが静かに押し合う。`;
+        ? `${place}で、決着の気配が濃くなる。`
+        : `${place}で、対峙の重心が動く。`;
 
-  const actionLines = beats.map((beat, index) => {
+  const actionLines = beats.slice(1).map((beat) => {
     const foe = beat.actorLabel === a ? b : a;
     const detail = cleanDescription(beat.description);
-    if (index === 0) {
-      return detail
-        ? `${beat.actorLabel} が ${beat.actionName} を仕掛ける。${detail}`
-        : `${beat.actorLabel} が ${beat.actionName} を仕掛ける。`;
-    }
     return detail
       ? `${beat.actorLabel} は ${beat.actionName} で応じ、${foe} との間合いが動く。${detail}`
       : `${beat.actorLabel} は ${beat.actionName} で応じる。`;
   });
 
-  const consequence = narrativeConsequence(view, a, b);
+  const consequence = narrativeConsequence(view, a, b, hint);
   const environment =
     input.drama?.environmentBeatDue
-      ? "足元の景色や障害の位置も、二人の動きに合わせて組み替わる。"
+      ? "場の配置が変わり、次の一手の条件が書き換わる。"
       : null;
-  const repetition =
-    (input.drama?.repeatedActionA ?? 0) >= 2 ||
-    (input.drama?.repeatedActionB ?? 0) >= 2
-      ? "同じ手の繰り返しに見えるが、角度と間がわずかに違う。"
-      : null;
+  const progression =
+    hint === "escalate_repeated_action" || hint === "break_stalemate"
+      ? "同じ型の押し合いを破り、主導権の所在がはっきり傾く。"
+      : hint === "one_sided_pressure"
+        ? "一方が動かない分、仕掛ける側の圧が場を占有する。"
+        : hint === "force_commitment"
+          ? "後戻りしにくい一手が選ばれ、決着への距離が縮まる。"
+          : null;
 
   const recent = new Set(
     (input.recentNarration ?? []).map(normalizeForDedup).filter(Boolean),
   );
   const narrator = [
-    phaseLead,
+    lead,
     ...actionLines,
     consequence,
     environment,
-    repetition,
+    progression,
   ]
     .filter((line): line is string => Boolean(line && line.trim()))
     .map((line) => line.trim())
@@ -113,27 +113,31 @@ function narrativeConsequence(
   view: NarrationTurnView,
   sideA: string,
   sideB: string,
+  hint: string,
 ): string | null {
   const joined = [
     ...view.actionBeats.flatMap((beat) => beat.outcomes),
     ...view.events.map((event) => event.summary),
   ].join(" ");
   if (/とどめ|決め手|戦闘不能/.test(joined)) {
-    return "その一撃が場を決定づけ、一方の継戦を断ち切る。";
+    return "その一手が場を決定づけ、一方の継戦を断ち切る。";
   }
   if (/守|防御|構え|防御を/.test(joined)) {
-    return "守りが噛み合い、勢いがいったんしぼむ。";
+    return `${sideB} の守りが通った分、${sideA} の攻めがいったんしぼむ。`;
   }
   if (/回復|持ち直|休息|呼吸/.test(joined)) {
-    return "短く間を取り、呼吸と力が戻る。";
+    return "短く間を取り、次の押し込みへ向けて呼吸が戻る。";
+  }
+  if (hint === "one_sided_pressure" && view.actionBeats.length === 1) {
+    return `${view.actionBeats[0]!.actorLabel} が主導を握り、相手は出遅れを払う。`;
   }
   if (view.actionBeats.length >= 2) {
-    return `${sideA} と ${sideB} の手が交差し、場の重心がわずかに傾く。`;
+    return `${sideA} と ${sideB} の手が交差し、主導権が一方へ寄る。`;
   }
   if (view.actionBeats.length === 1) {
-    return "反応が遅れ、次の一手を選ぶ隙が生まれる。";
+    return `${view.actionBeats[0]!.actorLabel} が半歩分の地を取り、次の間合いが変わる。`;
   }
-  return "まだ決着の気配は薄く、双方が相手の出方を計る。";
+  return "双方が探り合い、わずかに有利不利が入れ替わる。";
 }
 
 function normalizeForDedup(value: string): string {
