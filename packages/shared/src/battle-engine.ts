@@ -487,6 +487,18 @@ export function createBattleState(input: {
       after: semanticState,
       observer: "public",
     }),
+    perceptionRegistryA: {
+      schemaVersion: 1,
+      observerSide: "a",
+      nextContactSequence: 1,
+      contacts: [],
+    },
+    perceptionRegistryB: {
+      schemaVersion: 1,
+      observerSide: "b",
+      nextContactSequence: 1,
+      contacts: [],
+    },
     supervisor: {
       quietTurns: 0,
       passiveTurns: 0,

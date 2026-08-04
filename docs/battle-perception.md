@@ -1,6 +1,6 @@
 # Observer-relative battle perception
 
-Status: qualitative cue integration complete; observer projection is next
+Status: observer projection complete; narration views are next
 Last updated: 2026-08-04
 Architecture decisions: `D23` through `D27` in [`design.llmthink.dsl`](design.llmthink.dsl)
 Implementation plan: [`battle-perception.pert`](battle-perception.pert)
@@ -30,8 +30,17 @@ event prose or LLM inference. It distinguishes no effect, immunity, incapacity,
 and overkill; preserves simultaneous and environmental causes; and derives
 server-only self reserve cues for HP, MP, stamina, and focus.
 
-Next slice: `T_PROJECT` projects committed events, quantized changes, reserve
-cues, and validated sensory evidence into frozen observer-relative A/B frames.
+Completed slice: `T_PROJECT` deterministically projects committed events,
+quantized changes, self reserve cues, and validated sensory evidence into frozen
+observer-relative A/B frames. It coalesces modalities by server-only source,
+coalesces currently indistinguishable sources into bounded group contacts,
+maintains monotonic contact registries, splits newly distinguished sources
+prospectively, and preserves unknown identity and location boundaries. Frame
+percept IDs are observer-local opaque hashes; unknown source labels, control IDs,
+and exact hidden locations are deterministically removed from observer text.
+
+Next slice: `T_NARRATION_VIEWS` derives perspective-specific narrator inputs and
+enforces deterministic identifier containment.
 
 ## 1. Purpose
 
@@ -277,9 +286,12 @@ Each observer has a server-private current registry:
 
 Current access may rise or fall independently from identity knowledge. Once an
 identity is established it is not erased merely because the source moves into
-darkness. A suspicion is not an identity. One canonical source is coalesced
-across modalities. Indistinguishable sources may occupy one group contact; later
-evidence can split it into new contacts without rewriting past observations.
+darkness. That retained identity does not automatically attribute a currently
+unknown sound or impact to the known subject: the new cue remains an anonymous
+contact unless current evidence supports the attribution. A suspicion is not an
+identity. One canonical source is coalesced across modalities. Indistinguishable
+sources may occupy one group contact; later evidence can split it into new
+contacts without rewriting past observations.
 
 When full, the registry evicts the oldest low-salience lost unknown contact.
 Identified current knowledge is preferred over unknown lost contacts. If no safe

@@ -219,6 +219,117 @@ describe("public battle semantic projection", () => {
     );
     assert.equal(result.sensoryEvidenceStatus, "unavailable");
     assert.deepEqual(result.sensoryEvidence, []);
+    assert.equal(result.state.perceptionFrameA?.self.currentAccess, "clear");
+    assert.equal(result.state.perceptionFrameB?.self.currentAccess, "clear");
+    assert.equal(
+      result.state.perceptionFrameA?.counterpart.identityKnowledge,
+      "unknown",
+    );
+    assert.ok(
+      (result.state.perceptionFrameA?.qualitativeChanges.length ?? 0) > 0,
+    );
+    assert.equal(result.state.perceptionFrameA?.reserveCues.length, 4);
+    assert.equal(result.state.perceptionFrameB?.reserveCues.length, 4);
+    assert.deepEqual(result.state.perceptionRegistryA?.contacts, []);
+    assert.deepEqual(result.state.perceptionRegistryB?.contacts, []);
+  });
+
+  it("freezes side-specific frames and keeps unknown source ids registry-private", async () => {
+    const sideA = sheet("a", "A");
+    const sideB = sheet("b", "B");
+    const state = createBattleState({
+      id: "projected-perception",
+      sideA,
+      sideB,
+      turnLimit: 20,
+      prologuePending: false,
+    });
+    const resolved = resolveTurn({
+      state,
+      playerAction: { actorSide: "a", kind: "basic_attack" },
+      sideASkills: [],
+      sideBSkills: [],
+    });
+    const basisEvent = resolved.events.find((event) =>
+      event.id && event.targetSides?.includes("b")
+    );
+    assert.ok(basisEvent?.id);
+    const llm = new MockLlmProvider();
+    llm.reconcileTurnSemanticState = async (input) => ({
+      patch: {
+        baseRevision: input.before.revision,
+        turn: input.turn,
+        sourceEventIds: input.events.flatMap((event) => event.id ? [event.id] : []),
+        operations: [],
+      },
+      worldPatchStatus: "valid",
+      sensoryEvidenceStatus: "valid",
+      sensoryEvidence: [{
+        evidenceId: "evidence.hidden.impact",
+        basisEventIds: [basisEvent.id!],
+        modality: "sound",
+        phenomenon: "暗がりから鈍い衝突音が響く",
+        source: { kind: "entity", entityId: "character.b" },
+        accessBySide: {
+          a: {
+            currentAccess: "trace",
+            identityKnowledge: "unknown",
+            perceivedAs: "正体不明の衝突音",
+            direction: "front",
+            distance: "mid",
+            occurrenceCertainty: "certain",
+            attributionCertainty: "unknown",
+          },
+          b: {
+            currentAccess: "clear",
+            identityKnowledge: "identified",
+            perceivedAs: "自分自身への衝撃",
+            direction: "front",
+            distance: "contact",
+            occurrenceCertainty: "certain",
+            attributionCertainty: "certain",
+          },
+        },
+        publicAccess: {
+          currentAccess: "trace",
+          identityKnowledge: "unknown",
+          perceivedAs: "鈍い衝突音",
+          direction: "unknown",
+          distance: "mid",
+          occurrenceCertainty: "certain",
+          attributionCertainty: "unknown",
+        },
+      }],
+    });
+    const result = await reconcileSemanticState({
+      llm,
+      stateBeforeTurn: state,
+      resolvedState: resolved.state,
+      mine: sideA,
+      opp: sideB,
+      actions: resolved.actions,
+      events: resolved.events,
+      mechanicalEvidence: resolved.mechanicalEvidence,
+    });
+
+    assert.equal(result.status, "applied");
+    assert.equal(result.state.perceptionFrameA?.counterpart.currentAccess, "none");
+    assert.equal(
+      result.state.perceptionFrameA?.others[0]?.subject.kind,
+      "contact",
+    );
+    assert.equal(result.state.perceptionRegistryA?.contacts.length, 1);
+    assert.equal(result.state.perceptionFrameB?.self.percepts.length, 1);
+    assert.equal(Object.isFrozen(result.state.perceptionFrameA), true);
+    assert.equal(
+      JSON.stringify(result.state.perceptionFrameA).includes("character.b"),
+      false,
+    );
+    const publicJson = JSON.stringify(
+      toBattlePublic(result.state, sideA, null, sideB),
+    );
+    assert.equal(publicJson.includes("perceptionFrame"), false);
+    assert.equal(publicJson.includes("perceptionRegistry"), false);
   });
 
   it("keeps only the latest transition and side-specific observations", async () => {

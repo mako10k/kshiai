@@ -7,6 +7,7 @@ import {
   balanceSkill,
   buildBattleTurnRecord,
   buildFinisherWindow,
+  buildMinimalObserverPerception,
   buildSemanticObservationState,
   buildServerOnlyReserveCues,
   createBattleState,
@@ -57,6 +58,7 @@ import {
   dramaPhaseForTurn,
   normalizeDramaState,
   quantizeCommittedMechanicalEvidence,
+  projectObserverPerception,
   type QuantizedMechanicalEvidence,
   type ServerOnlyReserveCue,
 } from "@kshiai/shared";
@@ -779,11 +781,84 @@ export async function reconcileSemanticState(input: {
     reserveEvidenceA,
     reserveEvidenceB,
   });
+  const projectPerceptionState = (
+    state: BattleState,
+    sensoryEvidence: PerceptionEvidence[],
+  ): BattleState => {
+    const semanticState = state.semanticState!;
+    const projectionBase = {
+      turn: state.turn,
+      semanticState,
+      quantizedMechanicalEvidence,
+    };
+    try {
+      const projectedA = projectObserverPerception({
+        ...projectionBase,
+        observerSide: "a",
+        events: input.events,
+        reserveEvidence: reserveEvidenceA,
+        sensoryEvidence,
+        previousFrame: input.stateBeforeTurn.perceptionFrameA,
+        previousRegistry: input.stateBeforeTurn.perceptionRegistryA,
+        legacyCounterpartIdentified:
+          input.stateBeforeTurn.perceptionRegistryA === undefined,
+      });
+      const projectedB = projectObserverPerception({
+        ...projectionBase,
+        observerSide: "b",
+        events: input.events,
+        reserveEvidence: reserveEvidenceB,
+        sensoryEvidence,
+        previousFrame: input.stateBeforeTurn.perceptionFrameB,
+        previousRegistry: input.stateBeforeTurn.perceptionRegistryB,
+        legacyCounterpartIdentified:
+          input.stateBeforeTurn.perceptionRegistryB === undefined,
+      });
+      return {
+        ...state,
+        perceptionFrameA: projectedA.frame,
+        perceptionFrameB: projectedB.frame,
+        perceptionRegistryA: projectedA.registry,
+        perceptionRegistryB: projectedB.registry,
+      };
+    } catch (error) {
+      console.warn(
+        "[battle] observer perception projection fell back to engine cues",
+        error instanceof Error ? error.message : error,
+      );
+      const projectedA = buildMinimalObserverPerception({
+        ...projectionBase,
+        observerSide: "a",
+        reserveEvidence: reserveEvidenceA,
+        previousFrame: input.stateBeforeTurn.perceptionFrameA,
+        previousRegistry: input.stateBeforeTurn.perceptionRegistryA,
+        legacyCounterpartIdentified:
+          input.stateBeforeTurn.perceptionRegistryA === undefined,
+      });
+      const projectedB = buildMinimalObserverPerception({
+        ...projectionBase,
+        observerSide: "b",
+        reserveEvidence: reserveEvidenceB,
+        previousFrame: input.stateBeforeTurn.perceptionFrameB,
+        previousRegistry: input.stateBeforeTurn.perceptionRegistryB,
+        legacyCounterpartIdentified:
+          input.stateBeforeTurn.perceptionRegistryB === undefined,
+      });
+      return {
+        ...state,
+        perceptionFrameA: projectedA.frame,
+        perceptionFrameB: projectedB.frame,
+        perceptionRegistryA: projectedA.registry,
+        perceptionRegistryB: projectedB.registry,
+      };
+    }
+  };
   const commitObservationState = (
     after: typeof semanticBefore,
     status: "applied" | "rejected" | "skipped",
     patch: TurnSemanticPatch | null,
-  ): BattleState => ({
+    sensoryEvidence: PerceptionEvidence[],
+  ): BattleState => projectPerceptionState({
     ...input.resolvedState,
     semanticState: after,
     observationStateA: buildSemanticObservationState({
@@ -811,7 +886,7 @@ export async function reconcileSemanticState(input: {
       toRevision: after.revision,
       patch,
     },
-  });
+  }, sensoryEvidence);
   try {
     const proposed = await withTimeout(
       input.llm.reconcileTurnSemanticState({
@@ -875,7 +950,12 @@ export async function reconcileSemanticState(input: {
     if (proposed.worldPatchStatus === "rejected" || proposed.patch === null) {
       console.warn("[battle] semantic patch section rejected");
       return {
-        state: commitObservationState(semanticBefore, "rejected", null),
+        state: commitObservationState(
+          semanticBefore,
+          "rejected",
+          null,
+          sensory.evidence,
+        ),
         patch: null,
         status: "rejected",
         ...evidenceResult(sensory),
@@ -894,7 +974,12 @@ export async function reconcileSemanticState(input: {
         `[battle] semantic patch rejected ${applied.error.code}: ${applied.error.message}`,
       );
       return {
-        state: commitObservationState(semanticBefore, "rejected", proposed.patch),
+        state: commitObservationState(
+          semanticBefore,
+          "rejected",
+          proposed.patch,
+          sensory.evidence,
+        ),
         patch: proposed.patch,
         status: "rejected",
         ...evidenceResult(sensory),
@@ -910,7 +995,12 @@ export async function reconcileSemanticState(input: {
     );
     return {
       state: {
-        ...commitObservationState(applied.state, "applied", proposed.patch),
+        ...commitObservationState(
+          applied.state,
+          "applied",
+          proposed.patch,
+          sensory.evidence,
+        ),
         situation,
       },
       patch: proposed.patch,
@@ -923,7 +1013,7 @@ export async function reconcileSemanticState(input: {
       error instanceof Error ? error.message : error,
     );
     return {
-      state: commitObservationState(semanticBefore, "skipped", null),
+      state: commitObservationState(semanticBefore, "skipped", null, []),
       patch: null,
       status: "skipped",
       ...evidenceResult({

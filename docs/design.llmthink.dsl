@@ -604,6 +604,13 @@ decision D27 based_on PR27, D4, D14, D16, D23, D24, D25:
     indistinguishable multiple sources may use one group contact and split into new
     contacts when committed evidence distinguishes them. Identification is
     prospective; access may decrease, but prior established identity is not erased.
+    Retained identity never upgrades current attribution: a cue marked currently
+    unknown remains an anonymous contact even when its canonical source was
+    identified previously. Percept salience is the deterministic maximum of
+    current access, committed event intensity, and matching qualitative outcome;
+    exact mechanics and hidden location never cross into a frame. Percept IDs are
+    deterministic observer-local opaque hashes, while unknown source labels,
+    control IDs, and exact hidden locations are replaced before frame validation.
     On capacity pressure, the oldest low-salience lost unknown contacts are evicted;
     an untracked low-salience cue remains ambient rather than reusing an ID.
     Semantic or sensory-provider failure creates no new non-mechanical evidence.

@@ -133,6 +133,7 @@ task T_PROJECT QUALITATIVE_CUES_READY -> PROJECTION_READY:
     prospectively and redact unknown canonical identity and exact hidden location.
     Add projection lifecycle capacity and side-swap tests.
   duration 3d
+  status done
   requires:
     DEV 1
 
