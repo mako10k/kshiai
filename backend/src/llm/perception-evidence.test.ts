@@ -4,6 +4,7 @@ import type {
   CommittedMechanicalEvidence,
   TurnEvent,
 } from "@kshiai/shared";
+import { quantizeCommittedMechanicalEvidence } from "@kshiai/shared";
 import {
   buildPromptMechanicalEvidence,
   validateCommittedMechanicalEvidence,
@@ -21,9 +22,12 @@ describe("perception evidence boundaries", () => {
     actorSide: "a",
     target: { side: "b", entityId: "character.b" },
     parameterKey: "hp",
+    attemptedDelta: -30,
     beforeValue: 80,
     afterValue: 50,
     delta: -30,
+    relativeReferenceBeforeValue: 100,
+    relativeReferenceAfterValue: 100,
   };
 
   it("accepts mechanics only when action, event, and semantic targets are committed", () => {
@@ -58,11 +62,11 @@ describe("perception evidence boundaries", () => {
       summary: "意味解析に使ってはいけない任意の文章",
     }));
     const original = buildPromptMechanicalEvidence({
-      evidence: [committed],
+      evidence: quantizeCommittedMechanicalEvidence([committed]),
       events: fixture.input.events,
     });
     const rewritten = buildPromptMechanicalEvidence({
-      evidence: [committed],
+      evidence: quantizeCommittedMechanicalEvidence([committed]),
       events: changedProse,
     });
     assert.deepEqual(rewritten, original);
@@ -74,7 +78,7 @@ describe("perception evidence boundaries", () => {
       parameterClass: "vitality",
       direction: "loss",
       absoluteBand: "heavy",
-      relativeBand: "not_applicable",
+      relativeBand: "heavy",
       outcome: "effective",
       handFeelRequired: true,
     }]);
@@ -94,11 +98,11 @@ describe("perception evidence boundaries", () => {
       summary: "文章から増減方向を推測してはならない",
     };
     const cues = buildPromptMechanicalEvidence({
-      evidence: [{
+      evidence: quantizeCommittedMechanicalEvidence([{
         ...committed,
         basisEventIds: ["event.parameter.1"],
         parameterKey: "stamina",
-      }],
+      }]),
       events: [ambiguousEvent],
     });
     assert.deepEqual(cues, []);

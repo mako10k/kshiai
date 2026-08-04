@@ -160,9 +160,12 @@ export const CommittedMechanicalEvidenceSchema = z.object({
     entityId: SemanticIdSchema,
   }).strict(),
   parameterKey: ParamKeySchema,
+  attemptedDelta: z.number().finite(),
   beforeValue: z.number().finite(),
   afterValue: z.number().finite(),
   delta: z.number().finite(),
+  relativeReferenceBeforeValue: z.number().finite().nonnegative(),
+  relativeReferenceAfterValue: z.number().finite().nonnegative(),
 }).strict().superRefine((evidence, ctx) => {
   if (evidence.sourceActionId === null && evidence.basisEventIds.length === 0) {
     ctx.addIssue({
@@ -178,11 +181,11 @@ export const CommittedMechanicalEvidenceSchema = z.object({
       message: "mechanical evidence target must match its committed character side",
     });
   }
-  if (evidence.delta === 0) {
+  if (evidence.attemptedDelta === 0 && evidence.delta === 0) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
-      path: ["delta"],
-      message: "mechanical evidence must describe a committed change",
+      path: ["attemptedDelta"],
+      message: "mechanical evidence must describe an attempted or committed change",
     });
   }
   const expectedDelta = evidence.afterValue - evidence.beforeValue;
@@ -191,6 +194,27 @@ export const CommittedMechanicalEvidenceSchema = z.object({
       code: z.ZodIssueCode.custom,
       path: ["delta"],
       message: "mechanical evidence delta must equal afterValue - beforeValue",
+    });
+  }
+  if (
+    evidence.delta !== 0 &&
+    evidence.attemptedDelta !== 0 &&
+    Math.sign(evidence.delta) !== Math.sign(evidence.attemptedDelta)
+  ) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["delta"],
+      message: "mechanical evidence cannot reverse the attempted direction",
+    });
+  }
+  if (
+    evidence.attemptedDelta !== 0 &&
+    Math.abs(evidence.delta) - Math.abs(evidence.attemptedDelta) > 1e-9
+  ) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["delta"],
+      message: "mechanical evidence cannot exceed the attempted magnitude",
     });
   }
 });
@@ -237,6 +261,74 @@ export const ParameterClassSchema = z.enum([
 ]);
 export type ParameterClass = z.infer<typeof ParameterClassSchema>;
 
+const qualitativeMechanicalChangeShape = {
+  parameterKey: ParamKeySchema,
+  parameterClass: ParameterClassSchema,
+  direction: z.enum(["loss", "gain", "unchanged"]),
+  absoluteBand: MagnitudeBandSchema,
+  relativeBand: z.union([
+    MagnitudeBandSchema,
+    z.literal("not_applicable"),
+  ]),
+  outcome: z.enum([
+    "none",
+    "effective",
+    "immune",
+    "incapacitated",
+    "overkill",
+  ]),
+} as const;
+
+export const QualitativeMechanicalChangeSchema = z
+  .object(qualitativeMechanicalChangeShape)
+  .strict()
+  .superRefine(validateQualitativeMechanicalChange);
+export type QualitativeMechanicalChange = z.infer<
+  typeof QualitativeMechanicalChangeSchema
+>;
+
+/** Raw-free server evidence retained until observer-relative projection. */
+export const QuantizedMechanicalEvidenceSchema = z.object({
+  evidenceId: SemanticIdSchema,
+  turn: z.number().int().nonnegative(),
+  sourceActionId: SemanticIdSchema.nullable(),
+  basisEventIds: z
+    .array(SemanticIdSchema)
+    .max(PERCEPTION_LIMITS.maxBasisEventIds),
+  actorSide: BattleSideSchema.nullable(),
+  target: z.object({
+    side: BattleSideSchema,
+    entityId: SemanticIdSchema,
+  }).strict(),
+  change: QualitativeMechanicalChangeSchema,
+}).strict().superRefine((evidence, ctx) => {
+  if (evidence.sourceActionId === null && evidence.basisEventIds.length === 0) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["basisEventIds"],
+      message: "quantized evidence must reference an action or event",
+    });
+  }
+  if (evidence.target.entityId !== `character.${evidence.target.side}`) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["target", "entityId"],
+      message: "quantized evidence target must match its character side",
+    });
+  }
+});
+export type QuantizedMechanicalEvidence = z.infer<
+  typeof QuantizedMechanicalEvidenceSchema
+>;
+
+export const QuantizedMechanicalEvidenceSetSchema = z
+  .array(QuantizedMechanicalEvidenceSchema)
+  .max(PERCEPTION_LIMITS.maxMechanicalEvidencePerTurn)
+  .refine(
+    (evidence) => unique(evidence.map((item) => item.evidenceId)),
+    "duplicate quantized mechanical evidence id",
+  );
+
 export const PerceivedSourceKnowledgeSchema = z.enum([
   "self",
   "identified",
@@ -259,24 +351,23 @@ export type PerceivedTargetKnowledge = z.infer<
 >;
 
 export const QuantizedChangeSchema = z.object({
-  parameterKey: ParamKeySchema,
-  parameterClass: ParameterClassSchema,
-  direction: z.enum(["loss", "gain", "unchanged"]),
-  absoluteBand: MagnitudeBandSchema,
-  relativeBand: z.union([
-    MagnitudeBandSchema,
-    z.literal("not_applicable"),
-  ]),
+  ...qualitativeMechanicalChangeShape,
   sourceKnowledge: PerceivedSourceKnowledgeSchema,
   targetKnowledge: PerceivedTargetKnowledgeSchema,
-  outcome: z.enum([
-    "none",
-    "effective",
-    "immune",
-    "incapacitated",
-    "overkill",
-  ]),
-}).strict().superRefine((change, ctx) => {
+}).strict().superRefine(validateQualitativeMechanicalChange);
+export type QuantizedChange = z.infer<typeof QuantizedChangeSchema>;
+
+function validateQualitativeMechanicalChange(
+  change: {
+    parameterKey: z.infer<typeof ParamKeySchema>;
+    parameterClass: ParameterClass;
+    direction: "loss" | "gain" | "unchanged";
+    absoluteBand: MagnitudeBand;
+    relativeBand: MagnitudeBand | "not_applicable";
+    outcome: "none" | "effective" | "immune" | "incapacitated" | "overkill";
+  },
+  ctx: z.RefinementCtx,
+): void {
   const expectedClass = parameterClassFor(change.parameterKey);
   if (change.parameterClass !== expectedClass) {
     ctx.addIssue({
@@ -325,8 +416,7 @@ export const QuantizedChangeSchema = z.object({
       message: "a changed value must use an effective terminal outcome",
     });
   }
-});
-export type QuantizedChange = z.infer<typeof QuantizedChangeSchema>;
+}
 
 export const ObserverContactIdSchema = z
   .string()
@@ -398,8 +488,33 @@ export const PerceptionSlotSchema = z.object({
 });
 export type PerceptionSlot = z.infer<typeof PerceptionSlotSchema>;
 
-export const ReserveParameterKeySchema = z.enum(["hp", "mp", "stamina"]);
+export const ReserveParameterKeySchema = z.enum([
+  "hp",
+  "mp",
+  "stamina",
+  "focus",
+]);
 export type ReserveParameterKey = z.infer<typeof ReserveParameterKeySchema>;
+
+/** Raw-free server reserve for deterministic self projection. */
+export const ServerOnlyReserveCueSchema = z.object({
+  side: BattleSideSchema,
+  targetEntityId: SemanticIdSchema,
+  parameterKey: ReserveParameterKeySchema,
+  absoluteBand: ReserveBandSchema,
+  relativeBand: ReserveBandSchema,
+}).strict().superRefine((cue, ctx) => {
+  if (cue.targetEntityId !== `character.${cue.side}`) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["targetEntityId"],
+      message: "reserve target must match its character side",
+    });
+  }
+});
+export type ServerOnlyReserveCue = z.infer<
+  typeof ServerOnlyReserveCueSchema
+>;
 
 export const ResourceReserveCueSchema = z.object({
   subject: PerceivedSubjectSchema,

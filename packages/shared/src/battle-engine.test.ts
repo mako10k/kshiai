@@ -10,6 +10,7 @@ import {
 } from "./battle-engine.js";
 import { defaultParameters, type CharacterSheet } from "./character.js";
 import { BattleStateSchema } from "./battle.js";
+import { quantizeCommittedMechanicalEvidence } from "./perception-quantization.js";
 
 function sheet(id: string, name: string, hp = 100): CharacterSheet {
   const t = new Date().toISOString();
@@ -355,6 +356,10 @@ describe("battle engine", () => {
       environmentDamage.map((item) => item.target.side).sort(),
       ["a", "b"],
     );
+    assert.ok(
+      quantizeCommittedMechanicalEvidence(environmentDamage)
+        .every((item) => item.change.outcome === "effective"),
+    );
     for (const item of environmentDamage) {
       assert.equal(item.basisEventIds.length, 1);
       const event = resolved.events.find(
@@ -365,23 +370,34 @@ describe("battle engine", () => {
   });
 
   it("emphasizes finishing blows instead of a bare hit line", () => {
+    const target = sheet("b", "B");
     const state = createBattleState({
       id: "finish-blow",
       sideA: sheet("a", "A"),
-      sideB: sheet("b", "B", 1),
+      sideB: target,
       turnLimit: 20,
       prologuePending: false,
     });
-    const { events } = resolveTurn({
+    state.sideB.parameters.hp = 1;
+    const { events, mechanicalEvidence } = resolveTurn({
       state,
       playerAction: { actorSide: "a", kind: "skill", skillId: "slash" },
       sideASkills: sheet("a", "A").skills,
-      sideBSkills: sheet("b", "B", 1).skills,
+      sideBSkills: target.skills,
     });
     const damage = events.find((e) => e.type === "damage");
     assert.ok(damage, "expected a damage event");
     assert.match(damage!.summary, /とどめ|決め手/);
     assert.equal(/\d{2,}/.test(damage!.summary), false);
+    const hpEvidence = mechanicalEvidence.find((item) =>
+      item.target.side === "b" && item.parameterKey === "hp"
+    );
+    assert.ok(hpEvidence);
+    assert.ok(Math.abs(hpEvidence.attemptedDelta) > Math.abs(hpEvidence.delta));
+    assert.equal(
+      quantizeCommittedMechanicalEvidence([hpEvidence])[0]!.change.outcome,
+      "overkill",
+    );
   });
 
   it("defers finish for aftermath after HP reaches zero", () => {
@@ -705,6 +721,75 @@ describe("battle engine", () => {
     );
   });
 
+  it("records an ineffective offensive attempt without inventing a change", () => {
+    const a = sheet("a", "A");
+    const b = sheet("b", "B");
+    const state = createBattleState({
+      id: "no-effect",
+      sideA: a,
+      sideB: b,
+      turnLimit: 20,
+      prologuePending: false,
+    });
+    state.sideB.parameters.stamina = 0;
+    const resolved = resolveTurn({
+      state,
+      playerAction: { actorSide: "a", kind: "basic_attack" },
+      sideASkills: a.skills,
+      sideBSkills: [],
+      sideABasicAttack: {
+        name: "疲労打ち",
+        description: "持久力を削る。",
+        targetParameter: "stamina",
+        scalingParameter: "atk",
+        resistanceParameter: "def",
+        power: 0.75,
+      },
+    });
+    const attempt = resolved.mechanicalEvidence.find((item) =>
+      item.sourceActionId === "turn-1-action-a" &&
+      item.target.side === "b" &&
+      item.parameterKey === "stamina"
+    );
+    assert.ok(attempt);
+    assert.ok(attempt.attemptedDelta < 0);
+    assert.equal(attempt.delta, 0);
+    assert.equal(
+      quantizeCommittedMechanicalEvidence([attempt])[0]!.change.outcome,
+      "immune",
+    );
+  });
+
+  it("records capped recovery as no effect for each resource", () => {
+    const a = sheet("a", "A");
+    const b = sheet("b", "B");
+    const state = createBattleState({
+      id: "capped-recovery",
+      sideA: a,
+      sideB: b,
+      turnLimit: 20,
+      prologuePending: false,
+    });
+    const resolved = resolveTurn({
+      state,
+      playerAction: { actorSide: "a", kind: "rest" },
+      sideASkills: a.skills,
+      sideBSkills: [],
+    });
+    const recovery = resolved.mechanicalEvidence.filter((item) =>
+      item.sourceActionId === "turn-1-action-a" &&
+      item.target.side === "a" &&
+      (item.parameterKey === "mp" || item.parameterKey === "stamina")
+    );
+    assert.equal(recovery.length, 2);
+    assert.ok(recovery.every((item) => item.attemptedDelta > 0));
+    assert.ok(recovery.every((item) => item.delta === 0));
+    assert.ok(
+      quantizeCommittedMechanicalEvidence(recovery)
+        .every((item) => item.change.outcome === "none"),
+    );
+  });
+
   it("applies status skill tradeoffs and reverts them toward base each turn", () => {
     const a = sheet("a", "A");
     const b = sheet("b", "B");
@@ -739,6 +824,18 @@ describe("battle engine", () => {
     assert.equal(applied.state.sideA.parameters.def, 16);
     assert.equal(applied.state.sideA.parameters.stamina, 41);
     assert.equal(applied.state.sideB.parameters.atk, 2);
+    const actionEvidence = applied.mechanicalEvidence.filter((item) =>
+      item.sourceActionId === "turn-1-action-a"
+    );
+    assert.ok(actionEvidence.some((item) => item.target.side === "a"));
+    assert.ok(actionEvidence.some((item) => item.target.side === "b"));
+    assert.ok(
+      actionEvidence.every((item) =>
+        item.basisEventIds.every((eventId) =>
+          applied.events.some((event) => event.id === eventId)
+        )
+      ),
+    );
 
     const reverted = resolveTurn({
       state: applied.state,

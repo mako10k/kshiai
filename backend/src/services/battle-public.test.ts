@@ -201,6 +201,22 @@ describe("public battle semantic projection", () => {
     assert.equal(result.state.semanticState, state.semanticState);
     assert.equal(result.mechanicalEvidenceStatus, "valid");
     assert.ok(result.mechanicalEvidence.length > 0);
+    assert.equal(
+      result.quantizedMechanicalEvidence.length,
+      result.mechanicalEvidence.length,
+    );
+    assert.equal(
+      JSON.stringify(result.quantizedMechanicalEvidence).includes("beforeValue"),
+      false,
+    );
+    assert.deepEqual(
+      result.reserveEvidenceA.map((cue) => cue.parameterKey),
+      ["hp", "mp", "stamina", "focus"],
+    );
+    assert.deepEqual(
+      result.reserveEvidenceB.map((cue) => cue.parameterKey),
+      ["hp", "mp", "stamina", "focus"],
+    );
     assert.equal(result.sensoryEvidenceStatus, "unavailable");
     assert.deepEqual(result.sensoryEvidence, []);
   });

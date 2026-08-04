@@ -1,6 +1,6 @@
 # Observer-relative battle perception
 
-Status: evidence integration complete; qualitative thresholding is next
+Status: qualitative cue integration complete; observer projection is next
 Last updated: 2026-08-04
 Architecture decisions: `D23` through `D27` in [`design.llmthink.dsl`](design.llmthink.dsl)
 Implementation plan: [`battle-perception.pert`](battle-perception.pert)
@@ -24,9 +24,14 @@ to the reviewed XAI combined prompt. The world patch and sensory section are
 validated independently in both directions. Provider failure discards new
 sensory evidence while leaving deterministic mechanical evidence available.
 
-Next slice: `T_QUALITATIVE_CUES` replaces the bounded event-intensity cue
-projection with complete absolute and target-relative thresholds, reserve bands,
-and explicit no-effect, immunity, incapacity, and overkill handling.
+Completed slice: `T_QUALITATIVE_CUES` records attempted and effective deltas
+separately, then derives complete absolute and target-relative bands without
+event prose or LLM inference. It distinguishes no effect, immunity, incapacity,
+and overkill; preserves simultaneous and environmental causes; and derives
+server-only self reserve cues for HP, MP, stamina, and focus.
+
+Next slice: `T_PROJECT` projects committed events, quantized changes, reserve
+cues, and validated sensory evidence into frozen observer-relative A/B frames.
 
 ## 1. Purpose
 
@@ -121,12 +126,13 @@ in atmosphere. It cannot change magnitude, mechanics, identity knowledge, or
 action legality. Every entity or event reference must resolve against committed
 state before evidence is accepted.
 
-The current runtime stores exact `beforeValue`, `afterValue`, and `delta` only in
-the transient server-side evidence set. The reviewed v10 XAI payload receives no
-raw values. Until `T_QUALITATIVE_CUES`, it emits only cues that can be derived
-from a structured target event with an engine-authored intensity; unsupported
-resource-cost or relative-magnitude claims are omitted rather than inferred
-from event prose.
+The current runtime stores exact `attemptedDelta`, `beforeValue`, `afterValue`,
+effective `delta`, and relative references only in the transient server-side
+evidence set. The reviewed v10 XAI payload receives only the quantized bands and
+outcome. A cue is attached to XAI input only when a committed event structurally
+matches its target, parameter, and direction. Pure costs without such an event
+remain deterministic projection evidence instead of being attributed through
+event prose.
 
 ## 4. Character perception frame
 
@@ -231,7 +237,9 @@ centers:
 
 Relative denominators use applicable maxima and
 remain stable across same-turn maximum changes by taking the greater of before
-and after. Ratios, references, and thresholds are never placed in LLM inputs or
+and after. HP, MP, and stamina use their paired maximum; maximum parameters and
+non-resource stats use the greater magnitude of that target parameter before and
+after. Ratios, references, and thresholds are never placed in LLM inputs or
 public DTOs.
 
 Current self reserve is separate from turn change:
@@ -250,6 +258,12 @@ light fraction of whatever was struck”, or “the exertion was light in absolu
 terms but consumed a major fraction of my remaining stamina”. Opponent reserve
 is never derived from hidden mechanics for that observer; it appears only when
 validated sensory evidence supports a qualitative inference.
+
+Reserve absolute bands compare the remaining value with the same fixed
+parameter reference. Relative HP, MP, and stamina reserves use their paired
+maximum; relative focus reserve uses the character's battle-start base focus.
+Both sides are computed server-side, but projection may give a character only
+its own exact reserve cues.
 
 ## 6. Contacts and identification
 

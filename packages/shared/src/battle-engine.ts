@@ -83,9 +83,29 @@ type MechanicalResolutionSpan = {
   beforeB: Parameters;
   afterA: Parameters;
   afterB: Parameters;
+  attempts: MechanicalAttempt[];
   eventStart: number;
   eventEnd: number;
 };
+
+type MechanicalAttempt = {
+  targetSide: "a" | "b";
+  parameterKey: ParamKey;
+  attemptedDelta: number;
+  beforeValue: number;
+  afterValue: number;
+  delta: number;
+  relativeReferenceBeforeValue: number;
+  relativeReferenceAfterValue: number;
+};
+
+type MechanicalAttemptRecorder = (
+  target: CombatantState,
+  parameterKey: ParamKey,
+  attemptedDelta: number,
+  before: Parameters,
+  after: Parameters,
+) => void;
 
 function parametersSnapshot(combatant: CombatantState): Parameters {
   return { ...combatant.parameters };
@@ -98,6 +118,7 @@ function mechanicalResolutionSpan(input: {
   beforeB: Parameters;
   sideA: CombatantState;
   sideB: CombatantState;
+  attempts?: MechanicalAttempt[];
   eventStart: number;
   eventEnd: number;
 }): MechanicalResolutionSpan {
@@ -108,9 +129,89 @@ function mechanicalResolutionSpan(input: {
     beforeB: input.beforeB,
     afterA: parametersSnapshot(input.sideA),
     afterB: parametersSnapshot(input.sideB),
+    attempts: input.attempts ?? [],
     eventStart: input.eventStart,
     eventEnd: input.eventEnd,
   };
+}
+
+function relativeReferenceValue(
+  parameters: Parameters,
+  parameterKey: ParamKey,
+): number {
+  switch (parameterKey) {
+    case "hp":
+      return Math.max(0, parameters.maxHp ?? 0);
+    case "mp":
+      return Math.max(0, parameters.maxMp ?? 0);
+    case "stamina":
+      return Math.max(0, parameters.maxStamina ?? 0);
+    default:
+      return Math.abs(parameters[parameterKey] ?? 0);
+  }
+}
+
+function createMechanicalAttemptRecorder(
+  sideA: CombatantState,
+  sideB: CombatantState,
+  attempts: MechanicalAttempt[],
+): MechanicalAttemptRecorder {
+  return (target, parameterKey, attemptedDelta, before, after) => {
+    const targetSide = target === sideA ? "a" : target === sideB ? "b" : null;
+    if (targetSide === null) {
+      throw new Error("mechanical attempt target is outside the resolved battle");
+    }
+    const record = (
+      key: ParamKey,
+      requested: number,
+      beforeValue: number,
+      afterValue: number,
+    ) => {
+      const delta = afterValue - beforeValue;
+      if (requested === 0 && delta === 0) return;
+      attempts.push({
+        targetSide,
+        parameterKey: key,
+        attemptedDelta: requested,
+        beforeValue,
+        afterValue,
+        delta,
+        relativeReferenceBeforeValue: relativeReferenceValue(before, key),
+        relativeReferenceAfterValue: relativeReferenceValue(after, key),
+      });
+    };
+    record(
+      parameterKey,
+      attemptedDelta,
+      before[parameterKey] ?? 0,
+      after[parameterKey] ?? 0,
+    );
+    for (const key of PARAMETER_KEYS) {
+      if (key === parameterKey) continue;
+      const beforeValue = before[key] ?? 0;
+      const afterValue = after[key] ?? 0;
+      if (beforeValue !== afterValue) {
+        record(key, afterValue - beforeValue, beforeValue, afterValue);
+      }
+    }
+  };
+}
+
+function applyTrackedParameterDelta(
+  combatant: CombatantState,
+  effect: ParameterDelta,
+  record: MechanicalAttemptRecorder,
+): number {
+  const before = parametersSnapshot(combatant);
+  const actual = applyParameterDelta(combatant, effect);
+  record(
+    combatant,
+    effect.parameter,
+    effect.delta,
+    before,
+    parametersSnapshot(combatant),
+  );
+  return actual;
 }
 
 function committedMechanicalEvidence(input: {
@@ -123,28 +224,63 @@ function committedMechanicalEvidence(input: {
     const basisEventIds = input.events
       .slice(span.eventStart, span.eventEnd)
       .flatMap((event) => event.id ? [event.id] : []);
+    const append = (item: Omit<
+      CommittedMechanicalEvidence,
+      | "evidenceId"
+      | "turn"
+      | "sourceActionId"
+      | "basisEventIds"
+      | "actorSide"
+    >) => {
+      evidence.push({
+        evidenceId: `turn-${input.turn}-mechanical-${evidence.length + 1}`,
+        turn: input.turn,
+        sourceActionId: span.sourceActionId,
+        basisEventIds,
+        actorSide: span.actorSide,
+        ...item,
+      });
+    };
+    const accounted = new Map<string, number>();
+    for (const attempt of span.attempts) {
+      append({
+        target: {
+          side: attempt.targetSide,
+          entityId: `character.${attempt.targetSide}`,
+        },
+        parameterKey: attempt.parameterKey,
+        attemptedDelta: attempt.attemptedDelta,
+        beforeValue: attempt.beforeValue,
+        afterValue: attempt.afterValue,
+        delta: attempt.delta,
+        relativeReferenceBeforeValue: attempt.relativeReferenceBeforeValue,
+        relativeReferenceAfterValue: attempt.relativeReferenceAfterValue,
+      });
+      const key = `${attempt.targetSide}:${attempt.parameterKey}`;
+      accounted.set(key, (accounted.get(key) ?? 0) + attempt.delta);
+    }
     for (const side of ["a", "b"] as const) {
       const before = side === "a" ? span.beforeA : span.beforeB;
       const after = side === "a" ? span.afterA : span.afterB;
       for (const parameterKey of PARAMETER_KEYS) {
         const beforeValue = before[parameterKey] ?? 0;
         const afterValue = after[parameterKey] ?? 0;
-        const delta = afterValue - beforeValue;
+        const delta = afterValue - beforeValue -
+          (accounted.get(`${side}:${parameterKey}`) ?? 0);
         if (delta === 0) continue;
-        evidence.push({
-          evidenceId: `turn-${input.turn}-mechanical-${evidence.length + 1}`,
-          turn: input.turn,
-          sourceActionId: span.sourceActionId,
-          basisEventIds,
-          actorSide: span.actorSide,
+        append({
           target: {
             side,
             entityId: `character.${side}`,
           },
           parameterKey,
-          beforeValue,
+          attemptedDelta: delta,
+          beforeValue: beforeValue +
+            (accounted.get(`${side}:${parameterKey}`) ?? 0),
           afterValue,
           delta,
+          relativeReferenceBeforeValue: relativeReferenceValue(before, parameterKey),
+          relativeReferenceAfterValue: relativeReferenceValue(after, parameterKey),
         });
       }
     }
@@ -854,12 +990,17 @@ function hitSummary(input: {
 function applyHpDamage(
   target: CombatantState,
   amount: number,
+  recordMechanicalAttempt: MechanicalAttemptRecorder,
 ): { actual: number; finishing: boolean } {
   const before = target.parameters.hp ?? 0;
-  const after = Math.max(0, before - Math.max(0, amount));
-  target.parameters.hp = after;
+  const delta = applyTrackedParameterDelta(
+    target,
+    { parameter: "hp", delta: -Math.max(0, amount) },
+    recordMechanicalAttempt,
+  );
+  const after = target.parameters.hp ?? 0;
   return {
-    actual: before - after,
+    actual: -delta,
     finishing: before > 0 && after <= 0,
   };
 }
@@ -1055,6 +1196,7 @@ export function resolveTurn(input: {
   const actionAEventStart = events.length;
   const actionABeforeA = parametersSnapshot(sideA);
   const actionABeforeB = parametersSnapshot(sideB);
+  const actionAAttempts: MechanicalAttempt[] = [];
   const usedFinisherA = applyAction(
     sideA,
     sideB,
@@ -1063,6 +1205,7 @@ export function resolveTurn(input: {
     balanceBasicAttack(input.sideABasicAttack ?? defaultBasicAttack()),
     situation,
     events,
+    createMechanicalAttemptRecorder(sideA, sideB, actionAAttempts),
     {
       battleId: input.state.id,
       turn,
@@ -1088,6 +1231,7 @@ export function resolveTurn(input: {
     beforeB: actionABeforeB,
     sideA,
     sideB,
+    attempts: actionAAttempts,
     eventStart: actionAEventStart,
     eventEnd: events.length,
   }));
@@ -1102,6 +1246,7 @@ export function resolveTurn(input: {
     const actionBEventStart = events.length;
     const actionBBeforeA = parametersSnapshot(sideA);
     const actionBBeforeB = parametersSnapshot(sideB);
+    const actionBAttempts: MechanicalAttempt[] = [];
     const usedFinisherB = applyAction(
       sideB,
       sideA,
@@ -1110,6 +1255,7 @@ export function resolveTurn(input: {
       balanceBasicAttack(input.sideBBasicAttack ?? defaultBasicAttack()),
       situation,
       events,
+      createMechanicalAttemptRecorder(sideA, sideB, actionBAttempts),
       {
         battleId: input.state.id,
         turn,
@@ -1135,6 +1281,7 @@ export function resolveTurn(input: {
       beforeB: actionBBeforeB,
       sideA,
       sideB,
+      attempts: actionBAttempts,
       eventStart: actionBEventStart,
       eventEnd: events.length,
     }));
@@ -1417,15 +1564,22 @@ function applyEnvHits(
       const beforeB = parametersSnapshot(sideB);
       const eventStart = events.length;
       const targetSide = t === sideA ? "a" : "b";
+      const attempts: MechanicalAttempt[] = [];
+      const record = createMechanicalAttemptRecorder(sideA, sideB, attempts);
       const amount = envAmount(hit.intensity);
       if (hit.kind === "heal") {
-        const max = t.parameters.maxHp ?? 100;
-        t.parameters.hp = Math.min(max, (t.parameters.hp ?? 0) + amount);
+        applyTrackedParameterDelta(
+          t,
+          { parameter: "hp", delta: amount },
+          record,
+        );
         events.push({
           type: "heal",
           actorName: t.displayName,
           targetName: t.displayName,
           targetSides: [targetSide],
+          parameterKey: "hp",
+          parameterDirection: "gain",
           intensity: hit.intensity,
           summary:
             hit.intensity === "moderate"
@@ -1434,12 +1588,14 @@ function applyEnvHits(
         });
       } else if (hit.kind === "disrupt") {
         // Soft pressure: small HP chip + stigma in narration
-        const chip = applyHpDamage(t, Math.floor(amount * 0.5));
+        const chip = applyHpDamage(t, Math.floor(amount * 0.5), record);
         events.push({
           type: "status",
           actorName: t.displayName,
           targetName: t.displayName,
           targetSides: [targetSide],
+          parameterKey: "hp",
+          parameterDirection: "loss",
           intensity: hit.intensity,
           summary: chip.finishing
             ? `${t.displayName} は場の圧力にとどめを刺され、決戦を続けられなくなった。`
@@ -1448,11 +1604,13 @@ function applyEnvHits(
               : `${t.displayName} の動きが一瞬乱れた。`,
         });
       } else {
-        const env = applyHpDamage(t, amount);
+        const env = applyHpDamage(t, amount, record);
         events.push({
           type: "damage",
           targetName: t.displayName,
           targetSides: [targetSide],
+          parameterKey: "hp",
+          parameterDirection: "loss",
           intensity: hit.intensity,
           summary: env.finishing
             ? `${t.displayName} は環境の変化にとどめを刺された——それが決め手となった。`
@@ -1466,6 +1624,7 @@ function applyEnvHits(
         beforeB,
         sideA,
         sideB,
+        attempts,
         eventStart,
         eventEnd: events.length,
       }));
@@ -1481,27 +1640,47 @@ function applyAction(
   basicAttack: BasicAttackProfile,
   situation: Situation,
   events: TurnEvent[],
+  recordMechanicalAttempt: MechanicalAttemptRecorder,
   decisive: DecisiveContext,
   finisher?: FinisherState,
 ): boolean {
   if (action.kind === "basic_attack") {
     const stamina = actor.parameters.stamina ?? 0;
-    actor.parameters.stamina = Math.max(0, stamina - Math.min(3, stamina));
-    applyBasicAttack(actor, target, basicAttack, situation, events, decisive);
+    applyTrackedParameterDelta(
+      actor,
+      { parameter: "stamina", delta: -Math.min(3, stamina) },
+      recordMechanicalAttempt,
+    );
+    applyBasicAttack(
+      actor,
+      target,
+      basicAttack,
+      situation,
+      events,
+      recordMechanicalAttempt,
+      decisive,
+    );
     return false;
   }
 
   if (action.kind === "rest") {
     const maxMp = actor.parameters.maxMp ?? 0;
     const maxStamina = actor.parameters.maxStamina ?? 0;
-    actor.parameters.mp = Math.min(
-      maxMp,
-      (actor.parameters.mp ?? 0) + Math.max(4, Math.round(maxMp * 0.12)),
+    applyTrackedParameterDelta(
+      actor,
+      {
+        parameter: "mp",
+        delta: Math.max(4, Math.round(maxMp * 0.12)),
+      },
+      recordMechanicalAttempt,
     );
-    actor.parameters.stamina = Math.min(
-      maxStamina,
-      (actor.parameters.stamina ?? 0) +
-        Math.max(6, Math.round(maxStamina * 0.18)),
+    applyTrackedParameterDelta(
+      actor,
+      {
+        parameter: "stamina",
+        delta: Math.max(6, Math.round(maxStamina * 0.18)),
+      },
+      recordMechanicalAttempt,
     );
     events.push({
       type: "rest",
@@ -1566,8 +1745,16 @@ function applyAction(
     return false;
   }
 
-  actor.parameters.mp = mp - skill.costMp;
-  actor.parameters.stamina = sta - skill.costStamina;
+  applyTrackedParameterDelta(
+    actor,
+    { parameter: "mp", delta: -skill.costMp },
+    recordMechanicalAttempt,
+  );
+  applyTrackedParameterDelta(
+    actor,
+    { parameter: "stamina", delta: -skill.costStamina },
+    recordMechanicalAttempt,
+  );
 
   if (
     skill.kind === "defend" ||
@@ -1577,12 +1764,17 @@ function applyAction(
     actor.defending = skill.kind === "defend";
     const heal = Math.round(8 * skill.power * coeff(situation, "heal"));
     if (skill.kind === "support" && heal > 0) {
-      const maxHp = actor.parameters.maxHp ?? 100;
-      actor.parameters.hp = Math.min(maxHp, (actor.parameters.hp ?? 0) + heal);
+      applyTrackedParameterDelta(
+        actor,
+        { parameter: "hp", delta: heal },
+        recordMechanicalAttempt,
+      );
       events.push({
         type: "heal",
         actorName: actor.displayName,
         skillName: skill.name,
+        parameterKey: "hp",
+        parameterDirection: "gain",
         intensity: intensityFromDamage(heal),
         summary: `${actor.displayName} の ${skill.name} が状態を持ち直した。`,
       });
@@ -1594,7 +1786,13 @@ function applyAction(
         summary: `${actor.displayName} は ${skill.name} で身を守った。`,
       });
     }
-    applySkillEffects(actor, target, skill, events);
+    applySkillEffects(
+      actor,
+      target,
+      skill,
+      events,
+      recordMechanicalAttempt,
+    );
     return false;
   }
 
@@ -1619,10 +1817,17 @@ function applyAction(
     skill,
     situation,
     events,
+    recordMechanicalAttempt,
     decisive,
     activateFinisher,
   );
-  applySkillEffects(actor, target, skill, events);
+  applySkillEffects(
+    actor,
+    target,
+    skill,
+    events,
+    recordMechanicalAttempt,
+  );
   return activateFinisher;
 }
 
@@ -1632,6 +1837,7 @@ function applyBasicAttack(
   profile: BasicAttackProfile,
   situation: Situation,
   events: TurnEvent[],
+  recordMechanicalAttempt: MechanicalAttemptRecorder,
   decisive: DecisiveContext,
 ): void {
   const attackStat = actor.parameters[profile.scalingParameter] ?? 10;
@@ -1667,7 +1873,11 @@ function applyBasicAttack(
     );
     amount = Math.min(amount, Math.max(2, Math.round(reference * 0.2)));
   }
-  const actual = applyParameterDelta(target, { parameter, delta: -amount });
+  const actual = applyTrackedParameterDelta(
+    target,
+    { parameter, delta: -amount },
+    recordMechanicalAttempt,
+  );
   const intensity = parameter === "hp" && critical
     ? "critical"
     : intensityFromDamage(Math.abs(actual));
@@ -1680,6 +1890,8 @@ function applyBasicAttack(
     actorName: actor.displayName,
     targetName: target.displayName,
     skillName: profile.name,
+    parameterKey: parameter,
+    parameterDirection: "loss",
     intensity,
     summary:
       parameter === "hp"
@@ -1699,10 +1911,15 @@ function applySkillEffects(
   foe: CombatantState,
   skill: Skill,
   events: TurnEvent[],
+  recordMechanicalAttempt: MechanicalAttemptRecorder,
 ): void {
   for (const effect of skill.effects ?? []) {
     const recipient = effect.target === "self" ? actor : foe;
-    const actual = applyParameterDelta(recipient, effect);
+    const actual = applyTrackedParameterDelta(
+      recipient,
+      effect,
+      recordMechanicalAttempt,
+    );
     if (actual === 0) continue;
     const positive = actual > 0;
     const finishing =
@@ -1720,6 +1937,8 @@ function applySkillEffects(
       actorName: actor.displayName,
       targetName: recipient.displayName,
       skillName: skill.name,
+      parameterKey: effect.parameter,
+      parameterDirection: actual > 0 ? "gain" : "loss",
       intensity: intensityFromDamage(Math.abs(actual)),
       summary: finishing
         ? `${actor.displayName} の ${skill.name} が ${recipient.displayName} の ${label}をとどめとして低下させた——それが決め手となった。`
@@ -1734,6 +1953,7 @@ function applyAttackSkill(
   skill: Skill,
   situation: Situation,
   events: TurnEvent[],
+  recordMechanicalAttempt: MechanicalAttemptRecorder,
   decisive: DecisiveContext,
   activateFinisher: boolean,
 ): void {
@@ -1768,13 +1988,19 @@ function applyAttackSkill(
   });
   dmg = pressure.amount;
 
-  const { actual, finishing } = applyHpDamage(target, dmg);
+  const { actual, finishing } = applyHpDamage(
+    target,
+    dmg,
+    recordMechanicalAttempt,
+  );
   const intensity = pressure.critical ? "critical" : intensityFromDamage(actual);
   events.push({
     type: "damage",
     actorName: actor.displayName,
     targetName: target.displayName,
     skillName: skill.name,
+    parameterKey: "hp",
+    parameterDirection: "loss",
     intensity,
     summary: hitSummary({
       actorName: actor.displayName,

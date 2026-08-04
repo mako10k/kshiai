@@ -118,6 +118,7 @@ task T_QUALITATIVE_CUES EVIDENCE_READY -> QUALITATIVE_CUES_READY:
     simultaneous multi-target and environment outcomes. Keep thresholds and raw
     ratios server-only and add monotonic boundary and A/B metamorphic tests.
   duration 2d
+  status done
   requires:
     DEV 1
 

@@ -8,6 +8,7 @@ import {
   buildBattleTurnRecord,
   buildFinisherWindow,
   buildSemanticObservationState,
+  buildServerOnlyReserveCues,
   createBattleState,
   happeningToEvents,
   happeningToSituationPatch,
@@ -55,6 +56,9 @@ import {
   advanceDramaState,
   dramaPhaseForTurn,
   normalizeDramaState,
+  quantizeCommittedMechanicalEvidence,
+  type QuantizedMechanicalEvidence,
+  type ServerOnlyReserveCue,
 } from "@kshiai/shared";
 import {
   recordBattleFinished,
@@ -719,7 +723,20 @@ export async function reconcileSemanticState(input: {
   mechanicalEvidenceStatus: EvidenceValidationStatus;
   sensoryEvidence: PerceptionEvidence[];
   sensoryEvidenceStatus: EvidenceValidationStatus;
+  quantizedMechanicalEvidence: QuantizedMechanicalEvidence[];
+  reserveEvidenceA: ServerOnlyReserveCue[];
+  reserveEvidenceB: ServerOnlyReserveCue[];
 }> {
+  const reserveEvidenceA = buildServerOnlyReserveCues({
+    side: "a",
+    parameters: input.resolvedState.sideA.parameters,
+    baseParameters: input.resolvedState.sideA.baseParameters,
+  });
+  const reserveEvidenceB = buildServerOnlyReserveCues({
+    side: "b",
+    parameters: input.resolvedState.sideB.parameters,
+    baseParameters: input.resolvedState.sideB.baseParameters,
+  });
   const semanticBefore = input.stateBeforeTurn.semanticState;
   if (!semanticBefore) {
     return {
@@ -730,6 +747,9 @@ export async function reconcileSemanticState(input: {
       mechanicalEvidenceStatus: "unavailable",
       sensoryEvidence: [],
       sensoryEvidenceStatus: "unavailable",
+      quantizedMechanicalEvidence: [],
+      reserveEvidenceA,
+      reserveEvidenceB,
     };
   }
   const mechanical = validateCommittedMechanicalEvidence({
@@ -745,6 +765,9 @@ export async function reconcileSemanticState(input: {
       mechanical.issues.join("; "),
     );
   }
+  const quantizedMechanicalEvidence = quantizeCommittedMechanicalEvidence(
+    mechanical.evidence,
+  );
   const evidenceResult = (
     sensory: ReturnType<typeof validateSensoryEvidence>,
   ) => ({
@@ -752,6 +775,9 @@ export async function reconcileSemanticState(input: {
     mechanicalEvidenceStatus: mechanical.status,
     sensoryEvidence: sensory.evidence,
     sensoryEvidenceStatus: sensory.status,
+    quantizedMechanicalEvidence,
+    reserveEvidenceA,
+    reserveEvidenceB,
   });
   const commitObservationState = (
     after: typeof semanticBefore,
@@ -827,7 +853,7 @@ export async function reconcileSemanticState(input: {
         environmentBeatDue: input.environmentBeatDue,
         dramaPhase: input.dramaPhase,
         mechanicalEvidence: buildPromptMechanicalEvidence({
-          evidence: mechanical.evidence,
+          evidence: quantizedMechanicalEvidence,
           events: input.events,
         }),
       }),

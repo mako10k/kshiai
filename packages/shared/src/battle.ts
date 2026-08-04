@@ -290,6 +290,9 @@ export const TurnEventSchema = z.object({
   targetSides: z.array(z.enum(["a", "b"])).max(2).optional(),
   sourceActionId: z.string().min(1).optional(),
   skillName: z.string().optional(),
+  /** Structured mechanical attribution; never infer these fields from summary. */
+  parameterKey: ParamKeySchema.optional(),
+  parameterDirection: z.enum(["loss", "gain"]).optional(),
   /** Abstract magnitude label for narration, not raw stats. */
   intensity: z.enum(["minor", "moderate", "heavy", "critical"]).optional(),
   summary: z.string(),

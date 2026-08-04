@@ -560,13 +560,18 @@ decision D26 based_on PR26, D1, D2, D11, D23, D25:
     (the initial balance soft centers: hp/maxHp 110, mp/maxMp 45,
     stamina/maxStamina 50, atk 14, def/spd/mag/res 13, focus/luck 12);
     relative magnitude is abs(delta) divided by max(1, the applicable maximum
-    before the change, the applicable maximum after the change). Both ratios use
+    before the change, the applicable maximum after the change). HP, MP, and
+    stamina use their paired maximum; maximum parameters and other stats use the
+    greater magnitude of that target parameter before and after. Both ratios use
     the same initial bands: none=0, trace<=0.03, light<=0.08, solid<=0.18,
     heavy<=0.35, and extreme>0.35. Threshold constants and ratios never enter an
     LLM or public response. HP-like loss, healing, stamina expenditure or recovery,
     and MP/focus expenditure or recovery remain distinct parameter classes.
-    Current self reserve is separately banded from committed after-state ratio as
+    Current self reserve is separately banded on absolute and relative axes as
     empty=0, critical<=0.15, low<=0.35, taxed<=0.60, ready<=0.85, and full>0.85.
+    Absolute reserve uses the fixed parameter reference. Relative HP, MP, and
+    stamina use their paired maximum, while focus uses the battle-start base
+    focus because it has no separate maximum parameter.
     Character frames may include both absolute and relative ordinal bands for
     direct proprioception and justified hand-feel, but an external target receives
     no reserve band unless perception evidence supports it. No-effect, immunity,

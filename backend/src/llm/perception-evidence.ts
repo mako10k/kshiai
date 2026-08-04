@@ -1,10 +1,10 @@
 import {
   CommittedMechanicalEvidenceSetSchema,
   PerceptionEvidenceSetSchema,
-  parameterClassFor,
   type BattleSemanticState,
   type CommittedMechanicalEvidence,
   type PerceptionEvidence,
+  type QuantizedMechanicalEvidence,
   type ResolvedBattleAction,
   type TurnEvent,
 } from "@kshiai/shared";
@@ -66,12 +66,11 @@ export function validateCommittedMechanicalEvidence(input: {
 }
 
 /**
- * Project only structured, event-intensity-backed cues for the reviewed v10
- * prompt. Full absolute/relative thresholding is intentionally owned by
- * T_QUALITATIVE_CUES; raw values never cross this boundary.
+ * Project only quantized cues with a structurally matching committed event to
+ * the reviewed v10 prompt. Raw values never cross this boundary.
  */
 export function buildPromptMechanicalEvidence(input: {
-  evidence: CommittedMechanicalEvidence[];
+  evidence: QuantizedMechanicalEvidence[];
   events: TurnEvent[];
 }): PerceptionPromptInput["mechanicalEvidence"] {
   const eventById = new Map(
@@ -81,37 +80,34 @@ export function buildPromptMechanicalEvidence(input: {
     const event = item.basisEventIds
       .map((eventId) => eventById.get(eventId))
       .find((candidate) =>
-        candidate?.intensity !== undefined &&
+        candidate !== undefined &&
         candidate.targetSides?.includes(item.target.side) &&
-        eventMechanicsMatch(candidate, item.parameterKey, item.delta)
+        eventMechanicsMatch(candidate, item.change)
       );
-    if (!event?.id || !event.intensity) return [];
-    const parameterClass = parameterClassFor(item.parameterKey);
-    const direction = item.delta < 0 ? "loss" as const : "gain" as const;
+    if (!event?.id) return [];
+    const { change } = item;
     const impact =
-      direction === "loss" &&
-      parameterClass === "vitality" &&
+      event.type === "damage" &&
       item.actorSide !== null &&
       item.actorSide !== item.target.side;
     return [{
       eventId: event.id,
-      kind: impact
-        ? "impact" as const
-        : direction === "gain"
-          ? "recovery" as const
-          : item.actorSide === item.target.side
-            ? "exertion" as const
-            : "impact" as const,
+      kind: change.outcome === "none" || change.outcome === "immune"
+        ? "no_effect" as const
+        : impact
+          ? "impact" as const
+          : change.direction === "gain"
+            ? "recovery" as const
+            : item.actorSide === item.target.side
+              ? "exertion" as const
+              : "impact" as const,
       actorSide: item.actorSide,
       targetSides: [item.target.side],
-      parameterClass,
-      direction,
-      absoluteBand: absoluteBandFor(event.intensity),
-      relativeBand: "not_applicable" as const,
-      outcome:
-        item.parameterKey === "hp" && item.afterValue <= 0
-          ? "incapacitated" as const
-          : "effective" as const,
+      parameterClass: change.parameterClass,
+      direction: change.direction,
+      absoluteBand: change.absoluteBand,
+      relativeBand: change.relativeBand,
+      outcome: change.outcome,
       handFeelRequired: impact,
     }];
   });
@@ -168,27 +164,24 @@ export function validateSensoryEvidence(input: {
 
 function eventMechanicsMatch(
   event: TurnEvent,
-  parameterKey: CommittedMechanicalEvidence["parameterKey"],
-  delta: number,
+  change: QuantizedMechanicalEvidence["change"],
 ): boolean {
-  if (parameterKey !== "hp") return false;
-  if (delta < 0) return event.type === "damage";
-  return event.type === "heal" || event.type === "rest";
-}
-
-function absoluteBandFor(
-  intensity: NonNullable<TurnEvent["intensity"]>,
-): "light" | "solid" | "heavy" | "extreme" {
-  switch (intensity) {
-    case "minor":
-      return "light";
-    case "moderate":
-      return "solid";
-    case "heavy":
-      return "heavy";
-    case "critical":
-      return "extreme";
+  if (event.parameterKey) {
+    if (event.parameterKey !== change.parameterKey) return false;
+    return change.direction === "unchanged" ||
+      event.parameterDirection === change.direction;
   }
+  if (change.parameterKey === "hp") {
+    if (event.type === "damage") {
+      return change.direction === "loss" || change.direction === "unchanged";
+    }
+    if (event.type === "heal") {
+      return change.direction === "gain" || change.direction === "unchanged";
+    }
+  }
+  return event.type === "rest" &&
+    change.direction === "gain" &&
+    (change.parameterKey === "mp" || change.parameterKey === "stamina");
 }
 
 function rejected<T>(issues: string[]): EvidenceValidationResult<T> {
