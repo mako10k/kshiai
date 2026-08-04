@@ -3,6 +3,7 @@ import {
   SYSTEM_PRESET_SEEDS,
   BattlefieldSemanticSeedSchema,
   clampCoefficientMap,
+  composeNarratorTurn,
   defaultParameters,
   defaultRecord,
   type BattlefieldInstance,
@@ -437,48 +438,15 @@ export class MockLlmProvider implements LlmProvider {
   async narrateTurn(
     input: Parameters<LlmProvider["narrateTurn"]>[0],
   ): Promise<NarrationResult> {
-    const place = input.view.battlefield?.displayName
-      ? `${input.view.scene}（${input.view.battlefield.displayName}）`
-      : input.view.scene;
-    const styleNote = input.styleName
-      ? `（語り: ${input.styleName}）`
-      : "";
-    const focusNote = `［焦点: ${input.view.perception.mode}］`;
-    const digestNote = (input.innerDigests ?? [])
-      .map((d) => `${d.displayName}の気配（${d.emotion ?? "不明"}）`)
-      .filter(Boolean);
-    const narrator = [
-      `第${input.view.turn}ターン — ${place}${styleNote}${focusNote}。`,
-      ...digestNote,
-      ...input.view.actionBeats.flatMap((beat) => [
-        `${beat.actorLabel} は ${beat.actionName} を起こす。${beat.description}`,
-        ...beat.outcomes,
-      ]),
-      ...(input.view.actionBeats.length > 0
-        ? []
-        : input.view.events.map((event) => event.summary)),
-      ...(input.drama?.environmentBeatDue
-        ? ["両者の動きに押され、戦場の位置関係も新しく組み替わる。"]
-        : []),
-    ];
-    await this.emitNarratorProgress(narrator, input.onProgress);
-    const speeches = [
-      {
-        speaker: input.view.participantLabels.a,
-        text: input.view.turn % 2 === 0 ? "ここから変える。" : "次は逃さない。",
-        visible: input.view.perception.mode !== "opponent" ||
-          input.view.perception.frame.counterpart.currentAccess !== "none",
-      },
-      {
-        speaker: input.view.participantLabels.b,
-        text: input.view.turn % 3 === 0 ? "その流れは読んだ。" : "まだ終わらない。",
-        visible: input.view.perception.mode !== "self" ||
-          input.view.perception.frame.counterpart.currentAccess !== "none",
-      },
-    ].filter((speech) => speech.visible).map(({ visible: _visible, ...speech }) =>
-      speech
-    );
-    return { turn: input.view.turn, narrator, speeches };
+    // Public log must stay narrator-shaped. Never dump engine event.summary or
+    // raw action outcomes; compose prose through the shared narrator boundary.
+    const composed = composeNarratorTurn({
+      view: input.view,
+      drama: input.drama,
+      recentNarration: input.recentNarration,
+    });
+    await this.emitNarratorProgress(composed.narrator, input.onProgress);
+    return composed;
   }
 
   async narratePrologue(input: {
