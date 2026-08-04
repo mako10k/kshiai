@@ -43,6 +43,8 @@ import {
   CommittedMechanicalEvidenceSetSchema,
   type CommittedMechanicalEvidence,
 } from "./perception.js";
+import { buildServerOnlyReserveCues } from "./perception-quantization.js";
+import { buildMinimalObserverPerception } from "./perception-projection.js";
 
 function nowIso(): string {
   return new Date().toISOString();
@@ -56,7 +58,7 @@ function cloneCombatant(c: CombatantState): CombatantState {
   };
 }
 
-function perceivedCondition(combatant: CombatantState) {
+export function perceivedCondition(combatant: CombatantState) {
   if (!combatant.canFight || (combatant.parameters.hp ?? 0) <= 0) {
     return "incapacitated" as const;
   }
@@ -447,14 +449,48 @@ export function createBattleState(input: {
       appearanceSummary: input.sideB.appearance.summary,
     },
   });
+  const sideA = combatantFromSheet(input.sideA);
+  const sideB = combatantFromSheet(input.sideB);
+  const perceptionRegistryA = {
+    schemaVersion: 1 as const,
+    observerSide: "a" as const,
+    nextContactSequence: 1,
+    contacts: [],
+  };
+  const perceptionRegistryB = {
+    schemaVersion: 1 as const,
+    observerSide: "b" as const,
+    nextContactSequence: 1,
+    contacts: [],
+  };
+  const initialProjection = (observerSide: "a" | "b") =>
+    buildMinimalObserverPerception({
+      observerSide,
+      turn: 0,
+      semanticState,
+      quantizedMechanicalEvidence: [],
+      reserveEvidence: buildServerOnlyReserveCues({
+        side: observerSide,
+        parameters: observerSide === "a" ? sideA.parameters : sideB.parameters,
+        baseParameters: observerSide === "a"
+          ? sideA.baseParameters
+          : sideB.baseParameters,
+      }),
+      previousRegistry: observerSide === "a"
+        ? perceptionRegistryA
+        : perceptionRegistryB,
+      legacyCounterpartIdentified: false,
+    });
+  const projectedA = initialProjection("a");
+  const projectedB = initialProjection("b");
 
   return {
     id: input.id,
     status: "active",
     turn: 0,
     turnLimit: input.turnLimit,
-    sideA: combatantFromSheet(input.sideA),
-    sideB: combatantFromSheet(input.sideB),
+    sideA,
+    sideB,
     stanceA: input.stanceA,
     stanceB: input.stanceB,
     policiesA,
@@ -487,18 +523,10 @@ export function createBattleState(input: {
       after: semanticState,
       observer: "public",
     }),
-    perceptionRegistryA: {
-      schemaVersion: 1,
-      observerSide: "a",
-      nextContactSequence: 1,
-      contacts: [],
-    },
-    perceptionRegistryB: {
-      schemaVersion: 1,
-      observerSide: "b",
-      nextContactSequence: 1,
-      contacts: [],
-    },
+    perceptionFrameA: projectedA.frame,
+    perceptionFrameB: projectedB.frame,
+    perceptionRegistryA: projectedA.registry,
+    perceptionRegistryB: projectedB.registry,
     supervisor: {
       quietTurns: 0,
       passiveTurns: 0,
@@ -541,6 +569,56 @@ export function createBattleState(input: {
     finishReason: null,
     createdAt: t,
     updatedAt: t,
+  };
+}
+
+/**
+ * Seed observer perception for battles created before this layer existed.
+ * Active legacy battles keep counterpart identity known from setup; new battles
+ * already carry frames with unknown identity and must not call this path.
+ */
+export function ensureBattlePerceptionState(state: BattleState): BattleState {
+  if (
+    state.perceptionFrameA &&
+    state.perceptionFrameB &&
+    state.perceptionRegistryA &&
+    state.perceptionRegistryB
+  ) {
+    return state;
+  }
+  const semanticState = state.semanticState;
+  if (!semanticState) return state;
+
+  const seedSide = (observerSide: "a" | "b") => {
+    const combatant = observerSide === "a" ? state.sideA : state.sideB;
+    return buildMinimalObserverPerception({
+      observerSide,
+      turn: state.turn,
+      semanticState,
+      quantizedMechanicalEvidence: [],
+      reserveEvidence: buildServerOnlyReserveCues({
+        side: observerSide,
+        parameters: combatant.parameters,
+        baseParameters: combatant.baseParameters,
+      }),
+      previousFrame: observerSide === "a"
+        ? state.perceptionFrameA
+        : state.perceptionFrameB,
+      previousRegistry: observerSide === "a"
+        ? state.perceptionRegistryA
+        : state.perceptionRegistryB,
+      // Missing perception means a pre-perception battle still in flight.
+      legacyCounterpartIdentified: true,
+    });
+  };
+  const projectedA = seedSide("a");
+  const projectedB = seedSide("b");
+  return {
+    ...state,
+    perceptionFrameA: projectedA.frame,
+    perceptionFrameB: projectedB.frame,
+    perceptionRegistryA: projectedA.registry,
+    perceptionRegistryB: projectedB.registry,
   };
 }
 

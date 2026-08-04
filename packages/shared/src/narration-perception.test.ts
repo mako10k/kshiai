@@ -11,6 +11,7 @@ import type {
 import {
   buildNarrationIdentifierCatalog,
   buildNarrationPerceptionView,
+  buildNarrationTurnView,
   repairNarrativeBlockIdentifiers,
 } from "./narration-perception.js";
 import type {
@@ -262,5 +263,85 @@ describe("narration perception views", () => {
     assert.equal(repaired.speeches[0]?.speaker, "アオ");
     assert.match(repaired.narrator[0]!, /知覚できない/);
     assert.match(repaired.narrator[0]!, /暗がりから聞こえる足音/);
+  });
+
+  it("derives A and B narrator inputs without crossing their observation boundary", () => {
+    const actionBeats = [
+      {
+        actionId: "action.a.4",
+        actorSide: "a" as const,
+        actorName: "アオ",
+        actionName: "探る一撃",
+        description: "アオがクロのいる暗がりへ踏み込む",
+        outcomes: ["character.bへ重い変化"],
+      },
+      {
+        actionId: "action.b.4",
+        actorSide: "b" as const,
+        actorName: "クロ",
+        actionName: "影の応答",
+        description: "クロがrelic.hiddenの近くから応じる",
+        outcomes: ["アオが反応した"],
+      },
+    ];
+    const events = [{
+      id: "event.hidden.4",
+      type: "info" as const,
+      summary: "クロがrelic.hiddenからアオを狙った",
+    }];
+    const selfPerception = buildNarrationPerceptionView(
+      projectionInput("self", "self"),
+    );
+    const self = buildNarrationTurnView({
+      ...projectionInput("self", "self"),
+      turn: 4,
+      scene: "暗い広間",
+      perception: selfPerception,
+      events,
+      actionBeats,
+    });
+    assert.equal(self.actionBeats.length, 1);
+    assert.equal(Object.isFrozen(self), true);
+    assert.equal(self.perception.mode, "self");
+    if (self.perception.mode === "self") {
+      assert.equal(Object.isFrozen(self.perception.frame), true);
+    }
+    assert.equal(self.actionBeats[0]?.actorLabel, "アオ");
+    assert.equal(self.participantLabels.b, "知覚できない");
+    assert.equal(JSON.stringify(self).includes("character.b"), false);
+    assert.equal(JSON.stringify(self).includes("relic.hidden"), false);
+    assert.equal(JSON.stringify(self).includes("クロ"), false);
+
+    const opponentPerception = buildNarrationPerceptionView(
+      projectionInput("foe", "foe"),
+    );
+    const opponent = buildNarrationTurnView({
+      ...projectionInput("foe", "foe"),
+      turn: 4,
+      scene: "暗い広間",
+      perception: opponentPerception,
+      events,
+      actionBeats,
+    });
+    assert.equal(opponent.actionBeats.length, 1);
+    assert.equal(opponent.actionBeats[0]?.actorLabel, "クロ");
+    assert.equal(opponent.participantLabels.a, "知覚できない");
+    assert.equal(JSON.stringify(opponent).includes("character.a"), false);
+
+    const externalPerception = buildNarrationPerceptionView(
+      projectionInput("external", "external"),
+    );
+    const external = buildNarrationTurnView({
+      ...projectionInput("external", "external"),
+      turn: 4,
+      scene: "暗い広間",
+      perception: externalPerception,
+      events,
+      actionBeats,
+    });
+    assert.equal(external.actionBeats.length, 2);
+    assert.equal(JSON.stringify(external).includes("character."), false);
+    assert.equal(JSON.stringify(external).includes("relic.hidden"), false);
+    assert.equal(JSON.stringify(external).includes("event.hidden.4"), false);
   });
 });

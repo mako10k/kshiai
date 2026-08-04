@@ -1,9 +1,10 @@
 # Observer-relative battle perception
 
-Status: observer projection complete; narration views are next
+Status: accepted; prepare release 0.5.0
 Last updated: 2026-08-04
 Architecture decisions: `D23` through `D27` in [`design.llmthink.dsl`](design.llmthink.dsl)
 Implementation plan: [`battle-perception.pert`](battle-perception.pert)
+Handoff checkpoint: [`handoff-battle-perception-consumers-2026-08-04.md`](handoff-battle-perception-consumers-2026-08-04.md)
 
 Implemented slice: `T_SCHEMA` defines strict shared contracts and boundary tests
 for server-only evidence, character frames, bounded private contact registries,
@@ -39,8 +40,25 @@ prospectively, and preserves unknown identity and location boundaries. Frame
 percept IDs are observer-local opaque hashes; unknown source labels, control IDs,
 and exact hidden locations are deterministically removed from observer text.
 
-Next slice: `T_NARRATION_VIEWS` derives perspective-specific narrator inputs and
-enforces deterministic identifier containment.
+Completed slice: `T_NARRATION_VIEWS` derives perspective-specific narrator inputs
+and enforces deterministic identifier containment with exact ID-to-label repair.
+
+Completed slice: `T_CONSUMERS` wires frozen A/B frames into character agents and
+the normal-turn narrator. Character agents receive only self-labelled frames,
+validated actions, and optional counterpart knowledge gated by identity and
+current access. Normal `narrateTurn` consumes a derived `NarrationTurnView`.
+Prologue and aftermath keep their specialized contracts and are not claimed as
+migrated. `NarrationTurnView` remains a TypeScript/frozen ephemeral boundary
+rather than a Zod DTO because it is never deserialized from clients or storage.
+
+Completed slice: `T_COMPAT` seeds active legacy battles with empty registries and
+setup-identified counterparts, preserves registries on projection fallback and
+mechanical cues on provider failure, bounds contact retention, freezes frames
+before parallel A/B agent calls, and keeps frames/registries out of public DTOs,
+SSE battle payloads, and the operator semantic-state CLI.
+
+Next slice: `T_ACCEPT` runs the acceptance matrix, full validation, and release
+preparation for the next minor version.
 
 ## 1. Purpose
 

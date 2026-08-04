@@ -332,6 +332,112 @@ describe("public battle semantic projection", () => {
     assert.equal(publicJson.includes("perceptionRegistry"), false);
   });
 
+  it("preserves previous registries when projection falls back to engine cues", async () => {
+    const sideA = sheet("a", "A");
+    const sideB = sheet("b", "B");
+    const state = createBattleState({
+      id: "projection-fallback",
+      sideA,
+      sideB,
+      turnLimit: 20,
+      prologuePending: false,
+    });
+    const priorContact = {
+      contactId: "contact.a.1",
+      currentAccess: "trace" as const,
+      identityKnowledge: "unknown" as const,
+      identifiedRef: null,
+      perceivedAs: "遠方の気配",
+      salience: "noticeable" as const,
+      lastObservedTurn: 0,
+      sourceSet: [{ kind: "event" as const, eventId: "event.prior" }],
+    };
+    state.perceptionRegistryA = {
+      schemaVersion: 1,
+      observerSide: "a",
+      nextContactSequence: 2,
+      contacts: [priorContact],
+    };
+    const resolved = resolveTurn({
+      state,
+      playerAction: { actorSide: "a", kind: "basic_attack" },
+      sideASkills: [],
+      sideBSkills: [],
+    });
+    const llm = new MockLlmProvider();
+    llm.reconcileTurnSemanticState = async (input) => ({
+      patch: {
+        baseRevision: input.before.revision,
+        turn: input.turn,
+        sourceEventIds: [],
+        operations: [],
+      },
+      worldPatchStatus: "valid",
+      // Force sensory validation failure so projection still uses engine cues.
+      sensoryEvidenceStatus: "valid",
+      sensoryEvidence: [{
+        evidenceId: "evidence.bad",
+        basisEventIds: ["missing.event"],
+        modality: "sound",
+        phenomenon: "無効な証拠",
+        source: { kind: "ambient" },
+        accessBySide: {
+          a: {
+            currentAccess: "trace",
+            identityKnowledge: "unknown",
+            perceivedAs: "無効",
+            direction: "unknown",
+            distance: "mid",
+            occurrenceCertainty: "certain",
+            attributionCertainty: "unknown",
+          },
+          b: {
+            currentAccess: "none",
+            identityKnowledge: "unknown",
+            perceivedAs: "知覚できない",
+            direction: "unknown",
+            distance: "unknown",
+            occurrenceCertainty: "unknown",
+            attributionCertainty: "unknown",
+          },
+        },
+        publicAccess: {
+          currentAccess: "none",
+          identityKnowledge: "unknown",
+          perceivedAs: "知覚できない",
+          direction: "unknown",
+          distance: "unknown",
+          occurrenceCertainty: "unknown",
+          attributionCertainty: "unknown",
+        },
+      }],
+    });
+    const result = await reconcileSemanticState({
+      llm,
+      stateBeforeTurn: state,
+      resolvedState: resolved.state,
+      mine: sideA,
+      opp: sideB,
+      actions: resolved.actions,
+      events: resolved.events,
+      mechanicalEvidence: resolved.mechanicalEvidence,
+    });
+    assert.equal(result.sensoryEvidenceStatus, "rejected");
+    assert.deepEqual(result.sensoryEvidence, []);
+    assert.equal(result.state.perceptionFrameA?.self.currentAccess, "clear");
+    assert.ok(
+      (result.state.perceptionFrameA?.qualitativeChanges.length ?? 0) >= 0,
+    );
+    assert.equal(
+      result.state.perceptionRegistryA?.contacts[0]?.contactId,
+      "contact.a.1",
+    );
+    assert.equal(
+      JSON.stringify(result.state.perceptionFrameA).includes("sourceSet"),
+      false,
+    );
+  });
+
   it("keeps only the latest transition and side-specific observations", async () => {
     const sideA = sheet("a", "A");
     const sideB = sheet("b", "B");

@@ -8,6 +8,7 @@ import {
   selectDigestsForFocus,
 } from "./narration-perspective.js";
 import type { CharacterAgentState, CharacterCognition } from "./battle.js";
+import type { CharacterPerceptionFrame } from "./perception.js";
 
 const agent = (over: Partial<CharacterAgentState> = {}): CharacterAgentState => ({
   privateMemory: "秘密の計画",
@@ -29,6 +30,39 @@ const cog = (over: Partial<CharacterCognition> = {}): CharacterCognition => ({
   parameterChanges: {},
   observedEvents: [],
   ...over,
+});
+
+const perception = (
+  currentAccess: CharacterPerceptionFrame["counterpart"]["currentAccess"],
+  identityKnowledge: CharacterPerceptionFrame["counterpart"]["identityKnowledge"],
+): CharacterPerceptionFrame => ({
+  schemaVersion: 1,
+  observer: { side: "a", self: "self" },
+  turn: 3,
+  revision: 1,
+  self: {
+    subject: { kind: "self" },
+    currentAccess: "clear",
+    identityKnowledge: "identified",
+    perceivedAs: "自分自身",
+    percepts: [],
+  },
+  counterpart: {
+    subject: { kind: "counterpart" },
+    currentAccess,
+    identityKnowledge,
+    perceivedAs: identityKnowledge === "identified" ? "楓" : "判別できない",
+    percepts: [],
+  },
+  others: [],
+  qualitativeChanges: [],
+  reserveCues: [],
+  latestDiff: {
+    fromRevision: 1,
+    toRevision: 1,
+    addedOrUpdatedPerceptIds: [],
+    removedPerceptIds: [],
+  },
 });
 
 describe("narration perspective digests", () => {
@@ -54,6 +88,28 @@ describe("narration perspective digests", () => {
     assert.equal(d.emotion, "警戒");
     assert.equal(d.privateHint, undefined);
     assert.equal(d.beliefs, undefined);
+    assert.equal(d.foeCondition, undefined);
+  });
+
+  it("includes counterpart condition only when identity and current access allow it", () => {
+    const identified = buildInnerDigest({
+      side: "a",
+      displayName: "まこと",
+      agent: agent(),
+      cognition: cog({ foeCondition: "critical" }),
+      perception: perception("coarse", "identified"),
+      level: "summary",
+    });
+    const outOfView = buildInnerDigest({
+      side: "a",
+      displayName: "まこと",
+      agent: agent(),
+      cognition: cog({ foeCondition: "critical" }),
+      perception: perception("none", "identified"),
+      level: "summary",
+    });
+    assert.equal(identified.foeCondition, "critical");
+    assert.equal(outOfView.foeCondition, undefined);
   });
 
   it("strips disallowed detail after focus", () => {

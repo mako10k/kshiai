@@ -1166,11 +1166,16 @@ Rules:
 
   async advanceCharacterAgent(input: Parameters<LlmProvider["advanceCharacterAgent"]>[0]) {
     if (!this.client) return this.fallback.advanceCharacterAgent(input);
+    const counterpartLabel = input.counterpart?.displayName ??
+      input.perception.counterpart.perceivedAs;
     try {
       const data = (await this.chatJson(
         `You maintain one fictional character's private continuity during a confrontation. It may be physical, ranged, technological, psychic, social, comedic, cute, or abstract. Preserve the character's own way of acting and never introduce swords, wounds, or martial language unless supplied by the profile or events.
-You see only this character's profile, previous compact state, engine-authored cognition, and that character's current observable snapshot plus latest observable diff.
-Update conclusions and disposition; never invent confrontation results or numeric changes.
+You see only this character's profile, previous compact state, validated available actions, and one immutable observer-relative perception frame whose observer.self is explicitly "self".
+The perception frame is authoritative. Preserve currentAccess, identityKnowledge, occurrence certainty, attribution certainty, qualitative magnitude, and reserve bands. Never infer a canonical identity, exact location, or current condition behind an unknown, suspected, inaccessible, contact, or ambient subject.
+counterpart is present only when identityKnowledge is identified. Its condition is absent unless current access supports it; never reconstruct a missing name or condition from control IDs or other fields.
+All IDs, contact IDs, percept IDs, skillId, and JSON keys are non-linguistic control metadata. Copy skillId only into nextAction when selecting that validated action; never place an ID into privateMemory, goals, beliefs, observations, speechStyle, selfReference, lastSpeech, or speech.
+Update conclusions and disposition; never invent confrontation results, mutate the frame, or invent numeric changes.
 Do not output chain-of-thought or step-by-step reasoning. privateMemory is a concise continuity summary only.
 Keep selfReference stable when already established. Any spoken line must consistently use that self-reference and the character's established speechStyle.
 Return JSON only:
@@ -1189,7 +1194,7 @@ Return JSON only:
 }
 speech is a PRIVATE reaction sample for continuity only (never shown directly as public dialogue). ALWAYS required (never null/empty). One short Japanese line:
 - Dialogue without 「」 brackets, OR
-- A quiet reaction: "…", "（ただ佇んでいる）", "（ジーっと${input.foeName}を見ている）".
+- A quiet reaction: "…", "（ただ佇んでいる）", "（${counterpartLabel}の気配をうかがう）".
 nextAction plans the NEXT turn. Choose exactly one entry from decision.availableActions. For a skill, copy its skillId exactly. A finisher has one use for the entire battle: set useFinisher=true only for the finisher candidate when it is unlocked and remainingUses is 1. Consider own/foe condition, turns remaining, currentMultiplier, turnsUntilMax, and the risk of waiting; do not always fire at unlock.
 Public on-screen lines are written later by the narrator from digests + events.`,
         JSON.stringify(input),
@@ -1213,7 +1218,7 @@ Public on-screen lines are written later by the narrator from digests + events.`
         data.speech === null || data.speech === undefined
           ? null
           : String(data.speech),
-        { foeName: input.foeName },
+        { foeName: counterpartLabel },
       );
       const nextAction = CharacterActionIntentSchema.safeParse(data.nextAction);
       if (!nextAction.success) {
@@ -1282,77 +1287,64 @@ JSON only: { "focus": "self"|"foe"|"external"|"both" }`,
     }
   }
 
-  async narrateTurn(input: {
-    turn: number;
-    scene: string;
-    sideAName: string;
-    sideBName: string;
-    events: { summary: string }[];
-    actionBeats?: import("./types.js").NarrationActionBeat[];
-    recentNarration?: string[];
-    recentSpeeches?: Array<{ speaker: string; text: string }>;
-    drama?: {
-      phase: "opening" | "rising" | "climax";
-      repeatedActionA: number;
-      repeatedActionB: number;
-      environmentBeatDue: boolean;
-    };
-    innerDigests?: InnerDigest[];
-    focus?: NarrationFocus;
-    perspective?: NarrationPerspective;
-    battlefield?: BattlefieldInstance | null;
-    semanticObservation?: SemanticObservationState | null;
-    styleInstruction?: string;
-    styleName?: string;
-    onProgress?: (progress: NarrationStreamProgress) => void;
-  }): Promise<NarrationResult> {
+  async narrateTurn(
+    input: Parameters<LlmProvider["narrateTurn"]>[0],
+  ): Promise<NarrationResult> {
     if (!this.client) return this.fallback.narrateTurn(input);
     try {
       const styleBlock = input.styleInstruction?.trim()
         ? `Narration style「${input.styleName ?? "custom"}」: ${input.styleInstruction.trim()}`
         : "Narration style: 落ち着いた標準の物語調。";
-      const focus = input.focus ?? "external";
+      const focus: NarrationFocus = input.view.perception.mode === "self"
+        ? "self"
+        : input.view.perception.mode === "opponent"
+          ? "foe"
+          : input.view.perception.mode === "omniscient"
+            ? "both"
+            : "external";
       const focusBlock = focusInstruction(focus);
+      const sideAName = input.view.participantLabels.a;
+      const sideBName = input.view.participantLabels.b;
+      const requiredSpeakers = input.view.perception.mode === "self"
+        ? [
+            sideAName,
+            ...(input.view.perception.frame.counterpart.currentAccess === "none"
+              ? []
+              : [sideBName]),
+          ]
+        : input.view.perception.mode === "opponent"
+          ? [
+              ...(input.view.perception.frame.counterpart.currentAccess === "none"
+                ? []
+                : [sideAName]),
+              sideBName,
+            ]
+          : [sideAName, sideBName];
       const data = (await this.chatJson(
-        `Narrate a turn-based fictional confrontation in Japanese. It may be physical, ranged, technological, psychic, social, comedic, cute, or abstract. Follow the supplied characters and events; never add swordplay, bodily injury, grimness, or martial framing unless the inputs establish them.
+        `Narrate a turn-based fictional confrontation in Japanese. The supplied view is the sole authoritative source for world state, events, action beats, perception, and participant labels. It is immutable and may be physical, ranged, technological, psychic, social, comedic, cute, or abstract. Never add swordplay, bodily injury, grimness, or martial framing unless the view establishes them.
 ${styleBlock}
 ${focusBlock}
 ${NARRATION_IDENTIFIER_RULES}
 Perspective gate overrides style instruction: never reveal inner life that is not present in innerDigests.
-Use battlefield flavor (terrain/obstacles) when relevant.
-Build 2–4 non-empty narrator lines around the supplied actionBeats: initiation, movement/contact, then committed consequence. Make the physical, social, technological, psychic, comedic, or abstract action itself clear instead of merely restating damage or condition results.
+For self or opponent mode, the embedded frame is the complete observation boundary. Preserve unidentified contacts, missing attribution, inaccessible subjects, and qualitative-only effect or reserve cues. Do not reconstruct facts omitted from view.
+Use view.battlefield flavor when available.
+Build 2–4 non-empty narrator lines around view.actionBeats and view.events: initiation, movement/contact, then committed consequence. Make the physical, social, technological, psychic, comedic, or abstract action itself clear instead of merely restating condition results.
 Do not repeat or closely paraphrase recentNarration or either character's recentSpeeches. When an action signature is repeating, vary approach, movement, rhythm, and reaction without inventing a different mechanical result.
 Respect drama.phase: opening establishes positioning, rising changes leverage, climax makes commitment and consequence feel decisive.
-When drama.environmentBeatDue is true, incorporate a plausible location, object, terrain, weather, or crowd change grounded in semanticObservation/battlefield. It may change observable semantics but must not invent mechanical damage or bonuses.
-Treat semanticObservation as the committed public observation after this turn. Use latestDiff to emphasize changes. Do not restore removed objects, undo breakage, or contradict entity locations. Narration cannot mutate it.
-If a situation event describes a sudden field change, weave that change naturally into the narrator lines without adding a category label.
-If any event marks a finishing blow (とどめ / 決め手 / 戦闘不能), center the turn on that decisive action.
-YOU write public character lines in speeches (not a separate agent). Include BOTH characters each turn:
+When drama.environmentBeatDue is true, incorporate only an environment change already present in view. Do not invent mechanical damage or bonuses.
+If view marks a finishing blow (とどめ / 決め手 / 戦闘不能), center the turn on that decisive action.
+YOU write public character lines in speeches (not a separate agent). Include exactly the currently permitted speaker labels: ${JSON.stringify(requiredSpeakers)}.
 - spoken short line without 「」, OR quiet reaction "…", "（佇んでいる）", etc.
-speaker MUST be exactly "${input.sideAName}" or "${input.sideBName}".
+Do not add a speech or reaction for an inaccessible counterpart. speaker MUST be one of the permitted labels exactly.
 JSON: { "turn": number, "focus": "${focus}", "narrator": string[], "speeches": [ { "speaker": string, "text": string } ] }
 Do not mention numeric HP/MP/ATK values.`,
         JSON.stringify({
-          turn: input.turn,
-          scene: input.scene,
-          sideAName: input.sideAName,
-          sideBName: input.sideBName,
+          view: input.view,
           focus,
-          perspective: input.perspective ?? null,
-          events: input.events,
-          actionBeats: input.actionBeats ?? [],
           recentNarration: input.recentNarration?.slice(-4) ?? [],
           recentSpeeches: input.recentSpeeches?.slice(-4) ?? [],
           drama: input.drama ?? null,
           innerDigests: input.innerDigests ?? [],
-          semanticObservation: input.semanticObservation ?? null,
-          battlefield: input.battlefield
-            ? {
-                displayName: input.battlefield.displayName,
-                terrain: input.battlefield.terrain,
-                obstacles: input.battlefield.obstacles?.slice(0, 4),
-              }
-            : null,
         }),
         {
           tier: "fast",
@@ -1373,11 +1365,12 @@ Do not mention numeric HP/MP/ATK values.`,
       input.onProgress?.({ lines: narrator, draft: null });
       const speeches = this.normalizeNarratorSpeeches(
         data.speeches,
-        input.sideAName,
-        input.sideBName,
+        sideAName,
+        sideBName,
+        requiredSpeakers,
       );
       return {
-        turn: input.turn,
+        turn: input.view.turn,
         narrator,
         speeches,
       };
@@ -1390,8 +1383,9 @@ Do not mention numeric HP/MP/ATK values.`,
     raw: Array<{ speaker?: string; text?: string }> | undefined,
     sideAName: string,
     sideBName: string,
+    requiredSpeakers: string[] = [sideAName, sideBName],
   ): Array<{ speaker: string; text: string }> {
-    const allowed = new Set([sideAName, sideBName]);
+    const allowed = new Set(requiredSpeakers);
     const out: Array<{ speaker: string; text: string }> = [];
     for (const row of raw ?? []) {
       const speaker = String(row.speaker ?? "").trim();
@@ -1402,7 +1396,7 @@ Do not mention numeric HP/MP/ATK values.`,
       out.push({ speaker, text });
     }
     // Ensure both sides appear once when model omits one.
-    for (const name of [sideAName, sideBName]) {
+    for (const name of requiredSpeakers) {
       if (!out.some((s) => s.speaker === name)) {
         out.push({
           speaker: name,

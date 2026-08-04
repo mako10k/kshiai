@@ -6,6 +6,7 @@ import {
   buildFinisherWindow,
   createBattleState,
   decisivePressure,
+  ensureBattlePerceptionState,
   resolveTurn,
 } from "./battle-engine.js";
 import { defaultParameters, type CharacterSheet } from "./character.js";
@@ -927,5 +928,50 @@ describe("battle engine", () => {
     });
     assert.equal(second.state.sideA.parameters.atk, 13);
     assert.equal(second.state.sideA.parameters.stamina, 46);
+  });
+
+  it("initializes new battles with unknown counterpart identity", () => {
+    const state = createBattleState({
+      id: "new-perception",
+      sideA: sheet("a", "アオ"),
+      sideB: sheet("b", "クロ"),
+      turnLimit: 20,
+      prologuePending: false,
+    });
+    assert.equal(state.perceptionFrameA?.counterpart.identityKnowledge, "unknown");
+    assert.equal(state.perceptionFrameB?.counterpart.identityKnowledge, "unknown");
+    assert.deepEqual(state.perceptionRegistryA?.contacts, []);
+    assert.equal(
+      ensureBattlePerceptionState(state).perceptionFrameA,
+      state.perceptionFrameA,
+    );
+  });
+
+  it("seeds active legacy battles with identified counterpart knowledge", () => {
+    const base = createBattleState({
+      id: "legacy-perception",
+      sideA: sheet("a", "アオ"),
+      sideB: sheet("b", "クロ"),
+      turnLimit: 20,
+      prologuePending: false,
+    });
+    const legacy = {
+      ...base,
+      perceptionFrameA: undefined,
+      perceptionFrameB: undefined,
+      perceptionRegistryA: undefined,
+      perceptionRegistryB: undefined,
+    };
+    const seeded = ensureBattlePerceptionState(legacy);
+    assert.equal(seeded.perceptionFrameA?.counterpart.identityKnowledge, "identified");
+    assert.equal(seeded.perceptionFrameB?.counterpart.identityKnowledge, "identified");
+    assert.equal(seeded.perceptionFrameA?.counterpart.currentAccess, "none");
+    assert.equal(seeded.perceptionFrameA?.self.currentAccess, "clear");
+    assert.equal(seeded.perceptionFrameA?.observer.self, "self");
+    assert.deepEqual(seeded.perceptionRegistryA?.contacts, []);
+    assert.equal(
+      seeded.perceptionFrameA?.revision,
+      seeded.semanticState?.revision,
+    );
   });
 });

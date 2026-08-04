@@ -1,4 +1,6 @@
 import type { NarrativeBlock } from "./narrative.js";
+import type { TurnEvent } from "./battle.js";
+import type { BattlefieldInstance } from "./battlefield.js";
 import type {
   BattleSemanticEntity,
   BattleSemanticState,
@@ -137,6 +139,7 @@ function frameReferences(input: {
   viewpointSubject: "self" | "opponent";
   viewpointLabel: string;
   counterpartControlId: "self" | "opponent";
+  counterpartLabel: string;
 }): NarrationControlReference[] {
   const references = new Map<string, NarrationControlReference>();
   addControlReference(references, {
@@ -152,7 +155,7 @@ function frameReferences(input: {
     controlId: input.counterpartControlId,
     renderLabel: safeLabel(
       input.counterpartControlId,
-      input.frame.counterpart.perceivedAs,
+      input.counterpartLabel,
       "知覚できない相手",
     ),
     relation: "opponent",
@@ -275,6 +278,9 @@ export function buildNarrationPerceptionView(
         viewpointSubject: "self",
         viewpointLabel: input.sideALabel,
         counterpartControlId: "opponent",
+        counterpartLabel: input.frameA.counterpart.identityKnowledge === "identified"
+          ? input.sideBLabel
+          : input.frameA.counterpart.perceivedAs,
       }),
     });
   }
@@ -291,6 +297,9 @@ export function buildNarrationPerceptionView(
         viewpointSubject: "opponent",
         viewpointLabel: input.sideBLabel,
         counterpartControlId: "self",
+        counterpartLabel: input.frameB.counterpart.identityKnowledge === "identified"
+          ? input.sideALabel
+          : input.frameB.counterpart.perceivedAs,
       }),
     });
   }
@@ -470,4 +479,215 @@ export function repairNarrativeBlockIdentifiers(
       text: repairNarrationIdentifierText(speech.text, catalog),
     })),
   };
+}
+
+export type NarrationTurnSourceActionBeat = {
+  actionId: string;
+  actorSide: BattleSide;
+  actorName: string;
+  actionName: string;
+  description: string;
+  outcomes: string[];
+};
+
+export type NarrationTurnViewActionBeat = {
+  actorLabel: string;
+  actionName: string;
+  description: string;
+  outcomes: string[];
+};
+
+/** Complete, ephemeral input boundary for the existing narrator call. */
+export type NarrationTurnView = {
+  schemaVersion: 1;
+  turn: number;
+  scene: string;
+  perception: NarrationPerceptionView;
+  participantLabels: {
+    a: string;
+    b: string;
+  };
+  events: Array<{ summary: string }>;
+  actionBeats: NarrationTurnViewActionBeat[];
+  battlefield: {
+    displayName: string;
+    terrain?: string;
+    obstacles: string[];
+  } | null;
+};
+
+export type NarrationTurnViewInput = {
+  turn: number;
+  scene: string;
+  perspective: NarrationPerspective;
+  focus: NarrationFocus;
+  sideALabel: string;
+  sideBLabel: string;
+  perception: NarrationPerceptionView;
+  semanticState: BattleSemanticState;
+  publicObservation: SemanticObservationState;
+  frameA: CharacterPerceptionFrame;
+  frameB: CharacterPerceptionFrame;
+  registryA?: ObserverContactRegistry;
+  registryB?: ObserverContactRegistry;
+  events: readonly TurnEvent[];
+  actionBeats: readonly NarrationTurnSourceActionBeat[];
+  battlefield?: BattlefieldInstance | null;
+};
+
+function controlLabel(
+  view: NarrationPerceptionView,
+  controlId: string,
+): string | null {
+  if (view.mode === "external") return null;
+  return view.references.find((reference) =>
+    reference.controlId === controlId
+  )?.renderLabel ?? null;
+}
+
+/** Resolve public speaker labels from the selected view, never canonical IDs. */
+export function narrationParticipantLabels(
+  view: NarrationPerceptionView,
+): { a: string; b: string } {
+  if (view.mode === "self" || view.mode === "opponent") {
+    return {
+      a: controlLabel(view, "self") ?? "自分側の人物",
+      b: controlLabel(view, "opponent") ?? "相手側の人物",
+    };
+  }
+  if (view.mode === "omniscient") {
+    return {
+      a: controlLabel(view, "character.a") ?? "一方の人物",
+      b: controlLabel(view, "character.b") ?? "もう一方の人物",
+    };
+  }
+  return {
+    a: view.references.find((reference) => reference.relation === "self")
+      ?.renderLabel ?? "一方の人物",
+    b: view.references.find((reference) => reference.relation === "opponent")
+      ?.renderLabel ?? "もう一方の人物",
+  };
+}
+
+function sanitizeNarrationSourceText(input: {
+  text: string;
+  source: NarrationTurnViewInput;
+  catalog: readonly NarrationControlReference[];
+  participants: { a: string; b: string };
+}): string {
+  let safe = repairNarrationIdentifierText(input.text, input.catalog);
+  const replacements = new Map<string, string>([
+    [input.source.sideALabel, input.participants.a],
+    [input.source.sideBLabel, input.participants.b],
+  ]);
+  const labelById = new Map(
+    input.catalog.map((reference) => [
+      reference.controlId,
+      reference.renderLabel,
+    ]),
+  );
+  for (const [entityId, entity] of Object.entries(
+    input.source.semanticState.entities,
+  )) {
+    const replacement = labelById.get(entityId);
+    if (replacement) replacements.set(entity.label, replacement);
+  }
+  for (const [token, replacement] of [...replacements].sort(
+    ([a], [b]) => b.length - a.length,
+  )) {
+    if (!token || token === replacement) continue;
+    safe = safe.replaceAll(token, replacement);
+  }
+  return safe;
+}
+
+function characterPerceptEvents(
+  frame: CharacterPerceptionFrame,
+): Array<{ summary: string }> {
+  const seen = new Set<string>();
+  return [frame.self, frame.counterpart, ...frame.others].flatMap((slot) =>
+    slot.percepts.flatMap((percept) => {
+      const summary = percept.phenomenon.trim();
+      if (!summary || seen.has(summary)) return [];
+      seen.add(summary);
+      return [{ summary }];
+    })
+  );
+}
+
+function deepFreezeNarrationView<T>(value: T): T {
+  if (value && typeof value === "object" && !Object.isFrozen(value)) {
+    Object.freeze(value);
+    for (const child of Object.values(value)) deepFreezeNarrationView(child);
+  }
+  return value;
+}
+
+/**
+ * Build the narrator's sole world/event input. Character-limited modes receive
+ * only their own action descriptions plus their frozen perceived phenomena.
+ */
+export function buildNarrationTurnView(
+  input: NarrationTurnViewInput,
+): NarrationTurnView {
+  const participants = narrationParticipantLabels(input.perception);
+  const catalog = buildNarrationIdentifierCatalog({
+    perspective: input.perspective,
+    focus: input.focus,
+    sideALabel: input.sideALabel,
+    sideBLabel: input.sideBLabel,
+    semanticState: input.semanticState,
+    publicObservation: input.publicObservation,
+    frameA: input.frameA,
+    frameB: input.frameB,
+    registryA: input.registryA,
+    registryB: input.registryB,
+    view: input.perception,
+  });
+  const sanitize = (text: string) => sanitizeNarrationSourceText({
+    text,
+    source: input,
+    catalog,
+    participants,
+  });
+  const characterSide = input.perception.mode === "self"
+    ? "a"
+    : input.perception.mode === "opponent"
+      ? "b"
+      : null;
+  const frame = characterSide === "a"
+    ? input.frameA
+    : characterSide === "b"
+      ? input.frameB
+      : null;
+  const actionBeats = input.actionBeats
+    .filter((beat) => characterSide === null || beat.actorSide === characterSide)
+    .map((beat) => ({
+      actorLabel: participants[beat.actorSide],
+      actionName: sanitize(beat.actionName),
+      description: sanitize(beat.description),
+      outcomes: characterSide === null
+        ? beat.outcomes.map(sanitize)
+        : [],
+    }));
+  return deepFreezeNarrationView(structuredClone({
+    schemaVersion: 1,
+    turn: input.turn,
+    scene: sanitize(input.scene),
+    perception: input.perception,
+    participantLabels: participants,
+    events: frame
+      ? characterPerceptEvents(frame)
+      : input.events.map((event) => ({ summary: sanitize(event.summary) })),
+    actionBeats,
+    battlefield: frame || !input.battlefield
+      ? null
+      : {
+          displayName: sanitize(input.battlefield.displayName),
+          ...(input.battlefield.terrain
+            ? { terrain: sanitize(input.battlefield.terrain) }
+            : {}),
+          obstacles: (input.battlefield.obstacles ?? []).slice(0, 4).map(sanitize),
+        },
+  }));
 }

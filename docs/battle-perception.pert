@@ -32,24 +32,31 @@ milestone PROMPT_STRATEGY_READY:
 
 milestone EVIDENCE_READY:
   title "Mechanical and semantic perception evidence contracts ready"
+  state reached
 
 milestone QUALITATIVE_CUES_READY:
   title "Deterministic effect and strain cues ready"
+  state reached
 
 milestone PROJECTION_READY:
   title "Side-specific multi-modal projection and anonymous contacts ready"
+  state reached
 
 milestone NARRATION_VIEWS_READY:
   title "Perspective-specific narration views and ID containment ready"
+  state reached
 
 milestone CONSUMERS_READY:
   title "Character agents and narration consume bounded perception frames"
+  state reached
 
 milestone COMPATIBILITY_READY:
   title "Compatibility privacy failure and bounded-state behavior verified"
+  state reached
 
 milestone PERCEPTION_ACCEPTED:
   title "Observer-relative battle perception accepted"
+  state reached
 
 task T_DESIGN CURRENT_BEHAVIOR -> DESIGN_READY:
   title "Specify qualitative self cognition and observer-relative perception"
@@ -161,6 +168,7 @@ task T_CONSUMERS NARRATION_VIEWS_READY -> CONSUMERS_READY:
     narrator call only its derived view and preserve uncertainty without granting
     any consumer mutation authority. Add service-level wiring tests for A and B.
   duration 2d
+  status done
   requires:
     DEV 1
 
@@ -173,6 +181,7 @@ task T_COMPAT CONSUMERS_READY -> COMPATIBILITY_READY:
     unknown identity through snapshots diffs logs prompts DTOs and tooling, and
     verify that ledgers freeze serially before parallel A and B advancement.
   duration 2d
+  status done
   requires:
     DEV 1
 
@@ -187,6 +196,7 @@ task T_ACCEPT COMPATIBILITY_READY -> PERCEPTION_ACCEPTED:
     exact hidden positions, unconditional foe knowledge, and user-visible IDs.
     Run llmthink and PERT audits plus test typecheck and build.
   duration 1d
+  status done
   requires:
     DEV 1
 
