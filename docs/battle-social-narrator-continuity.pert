@@ -1,0 +1,129 @@
+# Battle-scoped social and narrator continuity implementation plan.
+project KSHIAI_BATTLE_SOCIAL_NARRATOR_CONTINUITY:
+  version 1
+  title "Stabilize battle identity speech labels and narrator perspective continuity"
+  description |
+    Build immutable encounter and social context at battle start, keep canonical
+    speaker identity separate from narrator display labels, update A and B
+    narrator continuity every turn, and expose only bounded perspective-allowed
+    interior conclusions. Preserve deterministic compatibility for saved battles.
+  as_of 2026-08-05
+  duration_unit day
+  finish ACCEPTED
+
+resource DEV:
+  title "Developer"
+  capacity 1
+
+milestone BASELINE:
+  title "Origin HEAD baseline and requirements reviewed"
+  state reached
+
+milestone CONTRACT_READY:
+  title "Encounter and continuity contracts fixed"
+  state reached
+
+milestone ENCOUNTER_READY:
+  title "Initial encounter and recognition ready"
+  state reached
+
+milestone SPEECH_READY:
+  title "Validated narrator speaker labels ready"
+  state reached
+
+milestone CONTINUITY_READY:
+  title "Parallel A and B narrator continuity ready"
+  state reached
+
+milestone INTERIOR_READY:
+  title "Bounded structured interior state ready"
+  state reached
+
+milestone COMPATIBLE:
+  title "Legacy saved battles compatible"
+  state reached
+
+milestone ACCEPTED:
+  title "Implementation accepted locally"
+  state reached
+
+task T_CONTRACT BASELINE -> CONTRACT_READY:
+  title "Record authority and persistence contracts"
+  description |
+    Record the setup, canonical speaker, observer belief, reader presentation,
+    narrator continuity, interior-state, and compatibility boundaries in the
+    requirements, architecture decisions, DFD, and data table.
+  duration 1d
+  status done
+  requires:
+    DEV 1
+
+task T_ENCOUNTER CONTRACT_READY -> ENCOUNTER_READY:
+  title "Construct immutable battle encounter context"
+  description |
+    Let the setup provider propose collision-free short labels and asymmetric
+    relationship terms from profiles, field, and prior-match context. Validate
+    and freeze them server-side, seed ordinary selected matches as mutually
+    identified, and use deterministic defaults on failure or legacy reads.
+  duration 2d
+  status done
+  requires:
+    DEV 1
+
+task T_SPEECH ENCOUNTER_READY -> SPEECH_READY:
+  title "Separate canonical speakers from display labels"
+  description |
+    Preserve server-owned source Side and actual speech. Give the narrator a
+    finite server-derived display-label candidate set based on attribution and
+    stable battle labels; accept only an exact candidate and otherwise fall back.
+  duration 2d
+  status done
+  requires:
+    DEV 1
+
+task T_CONTINUITY SPEECH_READY -> CONTINUITY_READY:
+  title "Update narrator A and B continuity in parallel"
+  description |
+    Persist reader, A-view, and B-view bounded presentation continuity. Refresh
+    both view states every phase and turn independent of the currently selected
+    focus; focus controls rendering only and never character knowledge.
+  duration 2d
+  status done
+  requires:
+    DEV 1
+
+task T_INTERIOR CONTINUITY_READY -> INTERIOR_READY:
+  title "Add bounded structured interior conclusions"
+  description |
+    Store primary and concealed emotion, unspoken intent, concern, counterpart
+    attitude, confidence, and relationship tension without chain-of-thought.
+    Provide only perspective-permitted digests and require usable inner beats in
+    subjective or omniscient narration.
+  duration 2d
+  status done
+  requires:
+    DEV 1
+
+task T_COMPAT INTERIOR_READY -> COMPATIBLE:
+  title "Migrate legacy reads deterministically"
+  description |
+    Synthesize missing encounter, continuity, and interior fields from existing
+    stable names, perception frames, and agent state without using public prose.
+    Preserve old narrative blocks and private/public boundaries.
+  duration 1d
+  status done
+  requires:
+    DEV 1
+
+task T_ACCEPT COMPATIBLE -> ACCEPTED:
+  title "Run local acceptance checks"
+  description |
+    Cover initial recognition, name collisions, relationship terms, transformed
+    and uncertain speech attribution, variable-focus continuity, A/B swapping,
+    inner-digest filtering, provider failure, and legacy reads. Run tests,
+    typecheck, build, llmthink audit, and PERT checks. Push, PR, release, and
+    branch or stash cleanup remain separate approval gates.
+  duration 1d
+  status done
+  requires:
+    DEV 1

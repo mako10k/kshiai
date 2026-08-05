@@ -100,6 +100,12 @@ describe("character-authored public speech", () => {
       JSON.stringify(result.state.turnRecords).includes("公開用の偽台詞"),
       false,
     );
+    assert.equal(result.state.narratorContinuity?.a.turn, 1);
+    assert.equal(result.state.narratorContinuity?.b.turn, 1);
+    assert.notEqual(
+      result.state.narratorContinuity?.a.viewpointSide,
+      result.state.narratorContinuity?.b.viewpointSide,
+    );
   });
 
   it("uses initial perception for prologue decisions and reaction-only aftermath", async () => {
@@ -124,6 +130,8 @@ describe("character-authored public speech", () => {
     assert.equal(prologueInput.perception.turn, 0);
     assert.notEqual(prologueInput.perception.counterpart.currentAccess, "none");
     assert.ok(prologueInput.decision);
+    assert.equal(prologueInput.social?.counterpartAddress, "クロ");
+    assert.equal(prologueInput.social?.selfReference, "私");
 
     opening.turn = 1;
     opening.prologuePending = false;
@@ -333,6 +341,46 @@ describe("character-authored public speech", () => {
         afterNarratorLine: 1,
       },
     ]);
+  });
+
+  it("accepts only server-enumerated narrator speaker labels", () => {
+    const source = {
+      side: "a" as const,
+      speaker: "明良",
+      text: "まだ終わらない。",
+      displayLabel: "明良かもしれない声",
+      allowedDisplayLabels: [
+        "明良かもしれない声",
+        "明良と思われる声の主",
+      ],
+    };
+    const accepted = finalizeCharacterSpeeches({
+      narrative: {
+        turn: 1,
+        narrator: ["声が響く。"],
+        speeches: [{
+          sourceSide: "a",
+          speaker: "明良と思われる声の主",
+          text: source.text,
+        }],
+      },
+      sources: [source],
+    });
+    assert.equal(accepted[0]?.speaker, "明良と思われる声の主");
+
+    const rejected = finalizeCharacterSpeeches({
+      narrative: {
+        turn: 1,
+        narrator: ["声が響く。"],
+        speeches: [{
+          sourceSide: "a",
+          speaker: "ナレータが創作した別人",
+          text: source.text,
+        }],
+      },
+      sources: [source],
+    });
+    assert.equal(rejected[0]?.speaker, "明良かもしれない声");
   });
 
   it("does not allow narration to invent speech without a character source", () => {

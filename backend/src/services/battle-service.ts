@@ -8,6 +8,9 @@ import {
   applyTurnSemanticPatch,
   balanceSkill,
   buildBattleTurnRecord,
+  buildBattleEncounterContext,
+  updateBattleNarratorContinuity,
+  selectNarratorContinuityForFocus,
   buildFinisherWindow,
   buildObserverSafeAvailableActions,
   buildMinimalObserverPerception,
@@ -36,6 +39,7 @@ import {
   type BattleStance,
   type BattleState,
   type BattleAdjudication,
+  type BattleEncounterProposal,
   type BattleTurnRecord,
   type ResolvedBattleAction,
   type CharacterAgentState,
@@ -476,6 +480,46 @@ export async function startBattle(input: {
     mine.id,
     opp.id,
   );
+  let encounterProposal: BattleEncounterProposal | null = null;
+  try {
+    encounterProposal = await withTimeout(input.llm.prepareBattleEncounter({
+      sideA: {
+        displayName: mine.displayName,
+        nicknames: mine.identity?.nicknames ?? [],
+        selfNames: mine.identity?.selfNames ?? [],
+        epithets: mine.identity?.epithets ?? [],
+        traits: mine.traits,
+        narrativeBlurb: mine.narrativeBlurb,
+      },
+      sideB: {
+        displayName: opp.displayName,
+        nicknames: opp.identity?.nicknames ?? [],
+        selfNames: opp.identity?.selfNames ?? [],
+        epithets: opp.identity?.epithets ?? [],
+        traits: opp.traits,
+        narrativeBlurb: opp.narrativeBlurb,
+      },
+      field: {
+        displayName: battlefield.displayName,
+        scene: battlefield.scene,
+        terrain: battlefield.terrain,
+        conditions: battlefield.conditions,
+        narrativeSetup: battlefield.narrativeSetup,
+      },
+      priorMatchSummary,
+    }), 12_000, "prepareBattleEncounter");
+  } catch (error) {
+    console.warn(
+      "[battle] encounter proposal unavailable; using deterministic context",
+      error instanceof Error ? error.message : error,
+    );
+  }
+  const encounterContext = buildBattleEncounterContext({
+    sideA: mine,
+    sideB: opp,
+    priorMatchSummary,
+    proposal: encounterProposal,
+  });
 
   const id = newId("btl");
   let state = createBattleState({
@@ -497,6 +541,7 @@ export async function startBattle(input: {
           ),
     narrationStyle: narrationSnap,
     priorMatchSummary,
+    encounterContext,
   });
 
   state = {
@@ -574,7 +619,10 @@ async function withTimeoutAttempts<T>(
     : new Error(String(lastError ?? `${opts.label} failed`));
 }
 
-function initialAgentState(sheet: CharacterSheet): CharacterAgentState {
+function initialAgentState(
+  sheet: CharacterSheet,
+  selfReference = sheet.identity?.selfNames[0] ?? null,
+): CharacterAgentState {
   return {
     privateMemory: "",
     currentGoal: "",
@@ -582,20 +630,64 @@ function initialAgentState(sheet: CharacterSheet): CharacterAgentState {
     beliefs: [],
     observations: [],
     speechStyle: "",
-    selfReference: sheet.identity?.selfNames[0] ?? null,
+    selfReference,
     lastSpeech: null,
+    interior: {
+      primaryEmotion: "平静",
+      concealedEmotion: null,
+      unspokenIntent: "",
+      currentConcern: "",
+      attitudeTowardCounterpart: "対峙している",
+      confidence: "steady",
+      relationshipTension: "",
+    },
   };
 }
 
 function groundCharacterAgentState(
   sheet: CharacterSheet,
   state: CharacterAgentState,
+  preferredSelfReference?: string | null,
 ): CharacterAgentState {
+  const canonical = canonicalSelfReference(buildCharacterSelfProfileAnchor(sheet));
+  const permitted = sheet.identity?.selfNames ?? [];
+  const selfReference = preferredSelfReference && permitted.includes(preferredSelfReference)
+    ? preferredSelfReference
+    : canonical;
   return {
     ...state,
-    selfReference: canonicalSelfReference(
-      buildCharacterSelfProfileAnchor(sheet),
-    ),
+    selfReference,
+    interior: state.interior ?? {
+      primaryEmotion: state.emotion || "平静",
+      concealedEmotion: null,
+      unspokenIntent: "",
+      currentConcern: state.currentGoal,
+      attitudeTowardCounterpart: "対峙している",
+      confidence: "steady",
+      relationshipTension: "",
+    },
+  };
+}
+
+function refreshNarratorContinuity(state: BattleState): BattleState {
+  if (
+    !state.encounterContext ||
+    !state.perceptionFrameA ||
+    !state.perceptionFrameB
+  ) {
+    return state;
+  }
+  return {
+    ...state,
+    narratorContinuity: updateBattleNarratorContinuity({
+      turn: state.turn,
+      encounter: state.encounterContext,
+      frameA: state.perceptionFrameA,
+      frameB: state.perceptionFrameB,
+      agentStateA: state.agentStateA,
+      agentStateB: state.agentStateB,
+      previous: state.narratorContinuity,
+    }),
   };
 }
 
@@ -738,6 +830,20 @@ export function buildCharacterAgentConsumerInput(input: {
       }
     : undefined;
   const character = buildCharacterSelfProfileAnchor(input.sheet);
+  const social = input.state.encounterContext?.social[input.side];
+  const socialForCurrentPerception = social
+    ? counterpartKnowledge
+      ? social
+      : {
+          ...social,
+          relationshipLabel: "現在知覚している対象との関係は未確認",
+          counterpartAddress: frame.counterpart.perceivedAs.slice(0, 40),
+        }
+    : undefined;
+  const permittedSelfReference = social?.selfReference &&
+      character.identity.selfNames.includes(social.selfReference)
+    ? social.selfReference
+    : canonicalSelfReference(character);
   const phase = input.phase ?? "turn";
   const decision = phase === "aftermath"
     ? undefined
@@ -752,9 +858,12 @@ export function buildCharacterAgentConsumerInput(input: {
     character,
     previous: structuredClone({
       ...input.previous,
-      selfReference: canonicalSelfReference(character),
+      selfReference: permittedSelfReference,
     }),
     perception: deepFreezeConsumerInput(structuredClone(frame)),
+    ...(socialForCurrentPerception
+      ? { social: deepFreezeConsumerInput(structuredClone(socialForCurrentPerception)) }
+      : {}),
     ...(counterpartKnowledge ? { counterpart: counterpartKnowledge } : {}),
     ...(decision ? { decision } : {}),
   };
@@ -788,11 +897,19 @@ export async function advanceCharacterAgents(input: {
   });
   const previousA = groundCharacterAgentState(
     input.mine,
-    input.after.agentStateA ?? initialAgentState(input.mine),
+    input.after.agentStateA ?? initialAgentState(
+      input.mine,
+      input.after.encounterContext?.social.a.selfReference,
+    ),
+    input.after.encounterContext?.social.a.selfReference,
   );
   const previousB = groundCharacterAgentState(
     input.opp,
-    input.after.agentStateB ?? initialAgentState(input.opp),
+    input.after.agentStateB ?? initialAgentState(
+      input.opp,
+      input.after.encounterContext?.social.b.selfReference,
+    ),
+    input.after.encounterContext?.social.b.selfReference,
   );
   const stateWithRecord: BattleState = {
     ...input.after,
@@ -819,7 +936,7 @@ export async function advanceCharacterAgents(input: {
   });
   if (!inputA && !inputB) {
     console.warn("[battle] character agents skipped: no observer-safe action available");
-    return { state: stateWithRecord, characterSpeeches: [] };
+    return { state: refreshNarratorContinuity(stateWithRecord), characterSpeeches: [] };
   }
   let agents;
   try {
@@ -834,7 +951,7 @@ export async function advanceCharacterAgents(input: {
     );
     // A failed agent has no authoritative new utterance; retain prior state.
     return {
-      state: stateWithRecord,
+      state: refreshNarratorContinuity(stateWithRecord),
       characterSpeeches: [],
     };
   }
@@ -853,6 +970,7 @@ export async function advanceCharacterAgents(input: {
     side: "a",
     speaker: input.after.sideA.displayName,
     profile: inputA?.character ?? buildCharacterSelfProfileAnchor(input.mine),
+    preferredSelfReference: input.after.encounterContext?.social.a.selfReference,
     decision: inputA?.decision,
   });
   const acceptedB = acceptCharacterAgentResult({
@@ -861,6 +979,7 @@ export async function advanceCharacterAgents(input: {
     side: "b",
     speaker: input.after.sideB.displayName,
     profile: inputB?.character ?? buildCharacterSelfProfileAnchor(input.opp),
+    preferredSelfReference: input.after.encounterContext?.social.b.selfReference,
     decision: inputB?.decision,
   });
   const candidateSpeeches = [
@@ -981,13 +1100,13 @@ export async function advanceCharacterAgents(input: {
         actions: input.actions,
       });
   return {
-    state: {
+    state: refreshNarratorContinuity({
       ...stateAfterUtterances,
       turnRecords: [
         ...previousRecords,
         record,
       ].slice(-50),
-    },
+    }),
     characterSpeeches,
   };
 }
@@ -1007,9 +1126,14 @@ export function acceptCharacterAgentResult(input: {
   side: "a" | "b";
   speaker: string;
   profile: Parameters<LlmProvider["advanceCharacterAgent"]>[0]["character"];
+  preferredSelfReference?: string | null;
   decision?: Parameters<LlmProvider["advanceCharacterAgent"]>[0]["decision"];
 }) {
-  const selfReference = canonicalSelfReference(input.profile);
+  const selfReference = input.preferredSelfReference !== undefined &&
+      (input.preferredSelfReference === null ||
+        input.profile.identity.selfNames.includes(input.preferredSelfReference))
+    ? input.preferredSelfReference
+    : canonicalSelfReference(input.profile);
   if (!input.result) {
     return {
       state: {
@@ -1841,6 +1965,11 @@ function normalizePublicText(value: string): string {
   return value.normalize("NFKC").replace(/[\s「」『』（）()、。！？!?…・]/g, "");
 }
 
+function battleNarratorLabel(state: BattleState, side: "a" | "b"): string {
+  return state.encounterContext?.participants[side].battleLabel ??
+    (side === "a" ? state.sideA.displayName : state.sideB.displayName);
+}
+
 function narrationPerceptionViewForState(input: {
   state: BattleState;
   perspective: NarrationPerspective;
@@ -1854,8 +1983,8 @@ function narrationPerceptionViewForState(input: {
       ? buildNarrationPerceptionView({
           perspective: input.perspective,
           focus: input.focus,
-          sideALabel: state.sideA.displayName,
-          sideBLabel: state.sideB.displayName,
+          sideALabel: battleNarratorLabel(state, "a"),
+          sideBLabel: battleNarratorLabel(state, "b"),
           frameA: state.perceptionFrameA,
           frameB: state.perceptionFrameB,
           semanticState: state.semanticState,
@@ -1877,8 +2006,8 @@ function narrationIdentifierCatalog(input: {
   return buildNarrationIdentifierCatalog({
     perspective: input.perspective,
     focus: input.focus,
-    sideALabel: state.sideA.displayName,
-    sideBLabel: state.sideB.displayName,
+    sideALabel: battleNarratorLabel(state, "a"),
+    sideBLabel: battleNarratorLabel(state, "b"),
     semanticState: state.semanticState,
     publicObservation: state.observationStatePublic,
     frameA: state.perceptionFrameA,
@@ -1910,14 +2039,58 @@ export function finalizeCharacterSpeeches(input: {
     const placement = Number.isInteger(candidate?.afterNarratorLine)
       ? candidate!.afterNarratorLine!
       : fallbackPlacement;
+    const fallbackSpeaker = source.displayLabel ?? source.speaker;
+    const allowedSpeakers = new Set(
+      source.allowedDisplayLabels?.length
+        ? source.allowedDisplayLabels
+        : [fallbackSpeaker],
+    );
     return {
       sourceSide: source.side,
-      speaker: source.speaker,
+      speaker: candidate?.speaker && allowedSpeakers.has(candidate.speaker)
+        ? candidate.speaker
+        : fallbackSpeaker,
       text: factsPreserved ? proposedText : source.text,
       afterNarratorLine: Math.max(
         -1,
         Math.min(placement, input.narrative.narrator.length - 1),
       ),
+    };
+  });
+}
+
+function speakerDisplayLabelOptions(input: {
+  stableLabel: string;
+  attribution?: "unknown" | "possible" | "probable" | "certain";
+  identityKnown?: boolean;
+}): { displayLabel: string; allowedDisplayLabels: string[] } {
+  const certainty = input.attribution ?? "certain";
+  const options = certainty === "certain"
+    ? [input.stableLabel]
+    : certainty === "probable"
+      ? [
+          `${input.stableLabel}と思われる声の主`,
+          `${input.stableLabel}らしい声`,
+        ]
+      : certainty === "possible" || input.identityKnown
+        ? [
+            `${input.stableLabel}かもしれない声`,
+            `${input.stableLabel}と思われる声の主`,
+          ]
+        : ["正体不明の声の主"];
+  return { displayLabel: options[0]!, allowedDisplayLabels: options };
+}
+
+function certainBattleSpeechLabels(
+  state: BattleState,
+  sources: readonly CharacterSpeechSource[],
+): CharacterSpeechSource[] {
+  return sources.map((source) => {
+    const stableLabel = state.encounterContext?.participants[source.side]
+      .battleLabel ?? source.speaker;
+    return {
+      ...source,
+      ...speakerDisplayLabelOptions({ stableLabel, attribution: "certain" }),
     };
   });
 }
@@ -2201,8 +2374,8 @@ async function advanceTurnWithLease(input: {
           scene: next.situation.scene,
           perspective,
           focus,
-          sideALabel: next.sideA.displayName,
-          sideBLabel: next.sideB.displayName,
+          sideALabel: battleNarratorLabel(next, "a"),
+          sideBLabel: battleNarratorLabel(next, "b"),
           profileAnchorA: buildNarratorRenderingProfileAnchor({
             sheet: mine,
             side: "a",
@@ -2221,15 +2394,19 @@ async function advanceTurnWithLease(input: {
           events,
           actionBeats,
           battlefield: next.battlefield,
+          narratorContinuity: next.narratorContinuity,
         })
       : null;
   const participantLabels = perceptionView
     ? narrationParticipantLabels(perceptionView)
     : perspective === "self" || (perspective === "fluid" && focus === "self")
-      ? { a: next.sideA.displayName, b: "知覚できない相手" }
+      ? { a: battleNarratorLabel(next, "a"), b: "知覚できない相手" }
       : perspective === "foe" || (perspective === "fluid" && focus === "foe")
-        ? { a: "知覚できない相手", b: next.sideB.displayName }
-        : { a: next.sideA.displayName, b: next.sideB.displayName };
+        ? { a: "知覚できない相手", b: battleNarratorLabel(next, "b") }
+        : {
+            a: battleNarratorLabel(next, "a"),
+            b: battleNarratorLabel(next, "b"),
+          };
   const utteranceEvidence = buildUtterancePerceptionEvidence({
     events: rec?.events ?? [],
     worldState: next.worldState,
@@ -2264,11 +2441,20 @@ async function advanceTurnWithLease(input: {
     .filter((speech) => permittedSpeechSides.includes(speech.side))
     .map((speech) => ({
       ...speech,
-      speaker: perceptionView?.mode === "self" && speech.side === "b"
-        ? expressionAccess("a", "b")?.perceivedAs ?? participantLabels.b
-        : perceptionView?.mode === "opponent" && speech.side === "a"
-          ? expressionAccess("b", "a")?.perceivedAs ?? participantLabels.a
-          : participantLabels[speech.side],
+      ...(() => {
+        const access = perceptionView?.mode === "self" && speech.side === "b"
+          ? expressionAccess("a", "b")
+          : perceptionView?.mode === "opponent" && speech.side === "a"
+            ? expressionAccess("b", "a")
+            : undefined;
+        const stableLabel = next.encounterContext?.participants[speech.side]
+          .battleLabel ?? participantLabels[speech.side];
+        return speakerDisplayLabelOptions({
+          stableLabel,
+          attribution: access?.attributionCertainty ?? "certain",
+          identityKnown: access?.identityKnowledge === "identified",
+        });
+      })(),
     }));
   const identifierCatalog = narrationIdentifierCatalog({
     state: next,
@@ -2276,7 +2462,7 @@ async function advanceTurnWithLease(input: {
     focus,
     view: perceptionView,
   });
-  let narrative;
+  let narrative: NarrativeBlock;
   try {
     // Per-attempt budget must cover primary abort (~14–16s) + router failover to
     // the next provider. A single 18s race was expiring mid-failover and dumping
@@ -2633,7 +2819,10 @@ async function runPrologueTurn(input: {
     phase: "prologue",
   });
   state = prologueAgents.state;
-  const characterSpeeches = prologueAgents.characterSpeeches;
+  const characterSpeeches = certainBattleSpeechLabels(
+    state,
+    prologueAgents.characterSpeeches,
+  );
   const rec = (state.turnRecords ?? [])[(state.turnRecords ?? []).length - 1];
   const { focus, digests } = await resolveNarrationFocusAndDigests({
     llm: input.llm,
@@ -2663,13 +2852,13 @@ async function runPrologueTurn(input: {
   });
 
   emit({ type: "phase", phase: "narrating" });
-  let narrative;
+  let narrative: NarrativeBlock;
   try {
     narrative = await withTimeout(
       input.llm.narratePrologue({
         scene: state.situation.scene,
-        sideAName: state.sideA.displayName,
-        sideBName: state.sideB.displayName,
+        sideAName: battleNarratorLabel(state, "a"),
+        sideBName: battleNarratorLabel(state, "b"),
         sideABlurb: profileAnchors.a
           ? input.mine.narrativeBlurb
           : undefined,
@@ -2686,6 +2875,12 @@ async function runPrologueTurn(input: {
         profileAnchors,
         focus,
         perspective,
+        narratorContinuity: state.narratorContinuity
+          ? selectNarratorContinuityForFocus({
+              continuity: state.narratorContinuity,
+              focus,
+            })
+          : null,
         styleInstruction: state.narrationStyle?.instruction,
         styleName: state.narrationStyle?.displayName,
         onProgress: (progress) => {
@@ -2712,12 +2907,14 @@ async function runPrologueTurn(input: {
       turn: 0,
       narrator: [
         "——開幕——",
-        `${place}で ${state.sideA.displayName} と ${state.sideB.displayName} が対峙する。`,
+        state.encounterContext?.openingSummary ??
+          `${place}で ${state.sideA.displayName} と ${state.sideB.displayName} が対峙する。`,
+        ...(state.narratorContinuity?.reader.disclosedTerms ?? []),
         state.battlefield?.narrativeSetup || state.situation.notes || "",
         state.priorMatchSummary
           ? `因縁 — ${state.priorMatchSummary}`
           : "",
-        policyLine ? `${state.sideA.displayName} の方針: ${policyLine}` : "",
+        policyLine ? `${battleNarratorLabel(state, "a")} の方針: ${policyLine}` : "",
       ].filter(Boolean),
       speeches: characterSpeeches,
     };
@@ -2740,6 +2937,20 @@ async function runPrologueTurn(input: {
     narrative = {
       ...narrative,
       narrator: ["——開幕——", ...narrative.narrator],
+    };
+  }
+  const missingDisclosures = (state.narratorContinuity?.reader.disclosedTerms ?? [])
+    .filter((term) => !narrative.narrator.some((line) =>
+      normalizePublicText(line).includes(normalizePublicText(term))
+    ));
+  if (missingDisclosures.length > 0) {
+    narrative = {
+      ...narrative,
+      narrator: [
+        narrative.narrator[0] ?? "——開幕——",
+        ...missingDisclosures,
+        ...narrative.narrator.slice(1),
+      ],
     };
   }
   narrative.speeches = finalizeCharacterSpeeches({
@@ -2797,7 +3008,10 @@ async function runAftermathTurn(input: {
     replaceLastRecord: Boolean(terminalRecord),
   });
   state = aftermathAgents.state;
-  const characterSpeeches = aftermathAgents.characterSpeeches;
+  const characterSpeeches = certainBattleSpeechLabels(
+    state,
+    aftermathAgents.characterSpeeches,
+  );
   const fallen: string[] = [];
   if (!state.sideA.canFight || (state.sideA.parameters.hp ?? 0) <= 0) {
     fallen.push(state.sideA.displayName);
@@ -2843,8 +3057,8 @@ async function runAftermathTurn(input: {
       input.llm.narrateAftermath({
         turn: aftermathTurn,
         scene: state.situation.scene,
-        sideAName: state.sideA.displayName,
-        sideBName: state.sideB.displayName,
+        sideAName: battleNarratorLabel(state, "a"),
+        sideBName: battleNarratorLabel(state, "b"),
         winnerSide: state.winnerSide,
         winnerName,
         fallenNames: fallen,
@@ -2863,6 +3077,12 @@ async function runAftermathTurn(input: {
         }),
         focus,
         perspective,
+        narratorContinuity: state.narratorContinuity
+          ? selectNarratorContinuityForFocus({
+              continuity: state.narratorContinuity,
+              focus,
+            })
+          : null,
         styleInstruction: state.narrationStyle?.instruction,
         styleName: state.narrationStyle?.displayName,
         onProgress: (progress) => {

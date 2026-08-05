@@ -19,6 +19,15 @@ const agent = (over: Partial<CharacterAgentState> = {}): CharacterAgentState => 
   speechStyle: "短く",
   selfReference: "私",
   lastSpeech: "…",
+  interior: {
+    primaryEmotion: "警戒",
+    concealedEmotion: "焦り",
+    unspokenIntent: "間合いを誘導する",
+    currentConcern: "足場の波",
+    attitudeTowardCounterpart: "好敵手として見る",
+    confidence: "steady",
+    relationshipTension: "互いに譲らない",
+  },
   ...over,
 });
 
@@ -135,6 +144,9 @@ describe("narration perspective digests", () => {
     assert.equal(onlyA.length, 1);
     assert.equal(onlyA[0]?.displayName, "まこと");
     assert.ok(onlyA[0]?.privateHint?.includes("秘密"));
+    assert.equal(detailA.primaryEmotion, "警戒");
+    assert.equal(detailA.concealedEmotion, "焦り");
+    assert.equal(detailA.unspokenIntent, "間合いを誘導する");
 
     const none = selectDigestsForFocus({
       focus: "external",

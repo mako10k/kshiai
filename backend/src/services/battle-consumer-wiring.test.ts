@@ -85,10 +85,14 @@ describe("battle perception consumer wiring", () => {
       assert.equal(input.decision.availableActions.length > 0, true);
       for (const action of input.decision.availableActions) {
         assert.equal(action.target.kind === "self" || action.target.kind === "counterpart", true);
-        assert.doesNotMatch(
-          action.target.perceivedAs,
-          input === inputA ? /クロ/ : /アオ/,
-        );
+        if (action.target.kind === "counterpart") {
+          assert.match(
+            action.target.perceivedAs,
+            input === inputA ? /クロ/ : /アオ/,
+          );
+        } else {
+          assert.equal(action.target.perceivedAs, "自分");
+        }
       }
     }
   });
@@ -214,6 +218,8 @@ describe("battle perception consumer wiring", () => {
         identityKnowledge: "unknown",
         currentAccess: "none",
         perceivedAs: "判別できない気配",
+        percepts: [],
+        apparentIdentity: undefined,
       },
     };
     const unknown = buildCharacterAgentConsumerInput({

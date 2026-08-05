@@ -25,6 +25,11 @@ import {
   type NarratorRenderingProfileAnchor,
   type NarratorRenderingProfileAnchors,
 } from "./profile-grounding.js";
+import {
+  selectNarratorContinuityForFocus,
+  type BattleNarratorContinuity,
+  type NarratorContinuityView,
+} from "./battle-social.js";
 
 export type NarrationPerceptionProjectionInput = {
   perspective: NarrationPerspective;
@@ -538,6 +543,8 @@ export type NarrationTurnView = {
   };
   /** Presentation-only constraints selected for this narrator perspective. */
   profileAnchors: NarratorRenderingProfileAnchors;
+  /** Bounded display continuity; never a source of character cognition. */
+  continuity: NarratorContinuityView | null;
   events: Array<{ summary: string }>;
   actionBeats: NarrationTurnViewActionBeat[];
   battlefield: {
@@ -566,6 +573,7 @@ export type NarrationTurnViewInput = {
   events: readonly TurnEvent[];
   actionBeats: readonly NarrationTurnSourceActionBeat[];
   battlefield?: BattlefieldInstance | null;
+  narratorContinuity?: BattleNarratorContinuity | null;
 };
 
 function controlLabel(
@@ -714,6 +722,12 @@ export function buildNarrationTurnView(
       sideA: input.profileAnchorA,
       sideB: input.profileAnchorB,
     }),
+    continuity: input.narratorContinuity
+      ? selectNarratorContinuityForFocus({
+          continuity: input.narratorContinuity,
+          focus: input.focus,
+        })
+      : null,
     events: frame
       ? characterPerceptEvents(frame)
       : input.events.map((event) => ({ summary: sanitize(event.summary) })),

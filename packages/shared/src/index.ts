@@ -2,6 +2,7 @@ export * from "./character.js";
 export * from "./character-improvement.js";
 export * from "./rating.js";
 export * from "./battle.js";
+export * from "./battle-social.js";
 export * from "./battlefield.js";
 export * from "./api.js";
 export * from "./narrative.js";

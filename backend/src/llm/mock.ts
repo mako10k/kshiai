@@ -12,6 +12,7 @@ import {
   type BattleSemanticState,
   type SemanticObservationState,
   type BattlePolicyOption,
+  type BattleEncounterProposal,
   type CharacterSheet,
   type CharacterIdentity,
 } from "@kshiai/shared";
@@ -175,6 +176,58 @@ export class MockLlmProvider implements LlmProvider {
         narrativeBlurb: `${current.narrativeBlurb}\n（調整: ${userMessage.slice(0, 80)}）`,
       },
       assistantMessage: `モック環境のため、依頼文をプロフィール注記へ反映しました。`,
+    };
+  }
+
+  async prepareBattleEncounter(input: {
+    sideA: {
+      displayName: string;
+      nicknames: string[];
+      selfNames: string[];
+      epithets: string[];
+      traits: string[];
+      narrativeBlurb: string;
+    };
+    sideB: {
+      displayName: string;
+      nicknames: string[];
+      selfNames: string[];
+      epithets: string[];
+      traits: string[];
+      narrativeBlurb: string;
+    };
+    field: {
+      displayName: string;
+      scene: string;
+      terrain?: string;
+      conditions: string[];
+      narrativeSetup: string;
+    };
+    priorMatchSummary?: string | null;
+  }): Promise<BattleEncounterProposal> {
+    const labelA = input.sideA.nicknames[0] ?? input.sideA.displayName;
+    const labelB = input.sideB.nicknames[0] ?? input.sideB.displayName;
+    const relationship = input.priorMatchSummary
+      ? "以前の対戦を知る相手"
+      : "今回対峙する相手";
+    return {
+      participants: {
+        a: { battleLabel: labelA },
+        b: { battleLabel: labelB },
+      },
+      social: {
+        a: {
+          relationshipLabel: relationship,
+          counterpartAddress: labelB,
+          selfReference: input.sideA.selfNames[0] ?? null,
+        },
+        b: {
+          relationshipLabel: relationship,
+          counterpartAddress: labelA,
+          selfReference: input.sideB.selfNames[0] ?? null,
+        },
+      },
+      openingSummary: `${input.field.displayName}で、${labelA}と${labelB}が互いを認識して対峙する。`,
     };
   }
 
@@ -371,7 +424,8 @@ export class MockLlmProvider implements LlmProvider {
   }
 
   async advanceCharacterAgent(input: Parameters<LlmProvider["advanceCharacterAgent"]>[0]) {
-    const selfReference = canonicalSelfReference(input.character);
+    const selfReference = input.social?.selfReference ??
+      canonicalSelfReference(input.character);
     const counterpartLabel = input.counterpart?.displayName ??
       input.perception.counterpart.perceivedAs;
     const event = [
@@ -414,6 +468,15 @@ export class MockLlmProvider implements LlmProvider {
           speechStyle: input.previous.speechStyle || "簡潔に話す",
           selfReference,
           lastSpeech: aftermathSpeech,
+          interior: {
+            primaryEmotion: "余韻",
+            concealedEmotion: null,
+            unspokenIntent: "",
+            currentConcern: "確定した結末をどう受け止めるか",
+            attitudeTowardCounterpart: input.social?.relationshipLabel ?? "対峙していた相手",
+            confidence: "steady" as const,
+            relationshipTension: "対決後の余韻",
+          },
         },
         speech: aftermathSpeech,
       };
@@ -472,6 +535,15 @@ export class MockLlmProvider implements LlmProvider {
         speechStyle: input.previous.speechStyle || "簡潔に話す",
         selfReference,
         lastSpeech: speech,
+        interior: {
+          primaryEmotion: ownReserveCritical ? "緊張" : "集中",
+          concealedEmotion: ownReserveCritical ? "焦り" : null,
+          unspokenIntent: `${counterpartLabel}との対決を自分らしく続ける`,
+          currentConcern: ownReserveCritical ? "自分の余力" : "相手の次の動き",
+          attitudeTowardCounterpart: input.social?.relationshipLabel ?? "対峙している",
+          confidence: ownReserveCritical ? "low" as const : "steady" as const,
+          relationshipTension: input.social?.relationshipLabel ?? "対決の緊張",
+        },
       },
       speech,
       nextAction: {
@@ -525,7 +597,7 @@ export class MockLlmProvider implements LlmProvider {
     await this.emitNarratorProgress(composed.narrator, input.onProgress);
     const speeches = (input.characterSpeeches ?? []).map((speech, index) => ({
       sourceSide: speech.side,
-      speaker: speech.speaker,
+      speaker: speech.displayLabel ?? speech.speaker,
       text: speech.text,
       afterNarratorLine: composed.narrator.length <= 0
         ? -1
@@ -543,6 +615,7 @@ export class MockLlmProvider implements LlmProvider {
     const styleNote = input.styleName ? `（${input.styleName}）` : "";
     const narrator = [
       `——開幕——${styleNote}`,
+      ...(input.narratorContinuity?.reader.disclosedTerms ?? []),
       `${place}に、${input.sideAName} と ${input.sideBName} が向かい合う。`,
       input.battlefield?.narrativeSetup ||
         "場の空気が、両者の存在に応じてゆっくり変わっていく。",
@@ -565,7 +638,7 @@ export class MockLlmProvider implements LlmProvider {
       narrator,
       speeches: (input.characterSpeeches ?? []).map((speech, index) => ({
         sourceSide: speech.side,
-        speaker: speech.speaker,
+        speaker: speech.displayLabel ?? speech.speaker,
         text: speech.text,
         afterNarratorLine: narrator.length <= 0
           ? -1
@@ -595,7 +668,7 @@ export class MockLlmProvider implements LlmProvider {
       after,
       speeches: (input.characterSpeeches ?? []).map((speech, index) => ({
         sourceSide: speech.side,
-        speaker: speech.speaker,
+        speaker: speech.displayLabel ?? speech.speaker,
         text: speech.text,
         afterNarratorLine: index === 0 ? 1 : before.length + after.length + 1,
       })),

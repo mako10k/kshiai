@@ -55,6 +55,12 @@ import {
   buildBattleTemporalPlan,
   type BattleTemporalSide,
 } from "./battle-temporal-rules.js";
+import {
+  buildBattleEncounterContext,
+  buildLegacyBattleEncounterContext,
+  type BattleEncounterContext,
+  updateBattleNarratorContinuity,
+} from "./battle-social.js";
 
 function nowIso(): string {
   return new Date().toISOString();
@@ -434,6 +440,7 @@ export function createBattleState(input: {
   selectedPolicyIdsB?: string[];
   narrationStyle?: NarrationStyleSnapshot;
   priorMatchSummary?: string | null;
+  encounterContext?: BattleEncounterContext;
   /** Defaults true for real matches; tests pass false to run combat immediately. */
   prologuePending?: boolean;
 }): BattleState {
@@ -475,6 +482,11 @@ export function createBattleState(input: {
   });
   const sideA = combatantFromSheet(input.sideA);
   const sideB = combatantFromSheet(input.sideB);
+  const encounterContext = input.encounterContext ?? buildBattleEncounterContext({
+    sideA: input.sideA,
+    sideB: input.sideB,
+    priorMatchSummary: input.priorMatchSummary,
+  });
   const worldState = createBattleWorldState({ semanticState });
   const perceptionRegistryA = {
     schemaVersion: 1 as const,
@@ -505,10 +517,58 @@ export function createBattleState(input: {
       previousRegistry: observerSide === "a"
         ? perceptionRegistryA
         : perceptionRegistryB,
-      legacyCounterpartIdentified: false,
+      legacyCounterpartIdentified:
+        encounterContext.social[observerSide].initialIdentityKnowledge ===
+          "identified",
     });
   const projectedA = initialProjection("a");
   const projectedB = initialProjection("b");
+  const agentStateA: CharacterAgentState = {
+    privateMemory: "",
+    currentGoal: "",
+    emotion: "平静",
+    beliefs: [],
+    observations: [],
+    speechStyle: "",
+    selfReference: encounterContext.social.a.selfReference,
+    lastSpeech: null,
+    interior: {
+      primaryEmotion: "平静",
+      concealedEmotion: null,
+      unspokenIntent: "",
+      currentConcern: "",
+      attitudeTowardCounterpart: encounterContext.social.a.relationshipLabel,
+      confidence: "steady",
+      relationshipTension: "",
+    },
+  };
+  const agentStateB: CharacterAgentState = {
+    privateMemory: "",
+    currentGoal: "",
+    emotion: "平静",
+    beliefs: [],
+    observations: [],
+    speechStyle: "",
+    selfReference: encounterContext.social.b.selfReference,
+    lastSpeech: null,
+    interior: {
+      primaryEmotion: "平静",
+      concealedEmotion: null,
+      unspokenIntent: "",
+      currentConcern: "",
+      attitudeTowardCounterpart: encounterContext.social.b.relationshipLabel,
+      confidence: "steady",
+      relationshipTension: "",
+    },
+  };
+  const narratorContinuity = updateBattleNarratorContinuity({
+    turn: 0,
+    encounter: encounterContext,
+    frameA: projectedA.frame,
+    frameB: projectedB.frame,
+    agentStateA,
+    agentStateB,
+  });
 
   return {
     id: input.id,
@@ -569,26 +629,10 @@ export function createBattleState(input: {
     aftermathPending: false,
     narrationStyle: input.narrationStyle ?? defaultNarrationSnapshot(),
     priorMatchSummary: input.priorMatchSummary ?? null,
-    agentStateA: {
-      privateMemory: "",
-      currentGoal: "",
-      emotion: "平静",
-      beliefs: [],
-      observations: [],
-      speechStyle: "",
-      selfReference: input.sideA.identity?.selfNames[0] ?? null,
-      lastSpeech: null,
-    },
-    agentStateB: {
-      privateMemory: "",
-      currentGoal: "",
-      emotion: "平静",
-      beliefs: [],
-      observations: [],
-      speechStyle: "",
-      selfReference: input.sideB.identity?.selfNames[0] ?? null,
-      lastSpeech: null,
-    },
+    encounterContext,
+    narratorContinuity,
+    agentStateA,
+    agentStateB,
     finisherA: selectFinisherSkill(input.sideA.skills),
     finisherB: selectFinisherSkill(input.sideB.skills),
     turnRecords: [],
@@ -603,7 +647,7 @@ export function createBattleState(input: {
 /**
  * Seed observer perception for battles created before this layer existed.
  * Active legacy battles keep counterpart identity known from setup; new battles
- * already carry frames with unknown identity and must not call this path.
+ * already carry encounter-derived frames and must not call this path.
  */
 export function ensureBattlePerceptionState(state: BattleState): BattleState {
   if (
@@ -668,20 +712,118 @@ export function ensureBattleWorldState(state: BattleState): BattleState {
 export function ensureBattleCompatibilityState(state: BattleState): BattleState {
   const withWorld = ensureBattleWorldState(state);
   const withPerception = ensureBattlePerceptionState(withWorld);
-  if (withPerception.pipelineAuthorityVersion === 1) {
+  if (
+    withPerception.pipelineAuthorityVersion === 1 &&
+    withPerception.encounterContext &&
+    withPerception.narratorContinuity &&
+    withPerception.agentStateA?.interior &&
+    withPerception.agentStateB?.interior
+  ) {
     return withPerception;
   }
+  const encounterContext = withPerception.encounterContext ??
+    buildLegacyBattleEncounterContext({
+      sideAName: withPerception.sideA.displayName,
+      sideBName: withPerception.sideB.displayName,
+      selfReferenceA: withPerception.agentStateA?.selfReference,
+      selfReferenceB: withPerception.agentStateB?.selfReference,
+      priorMatchSummary: withPerception.priorMatchSummary,
+    });
+  const agentStateA = withPerception.agentStateA
+    ? {
+        ...withPerception.agentStateA,
+        ...(withPerception.pipelineAuthorityVersion === 1
+          ? {}
+          : { lastSpeech: null }),
+        interior: withPerception.agentStateA.interior ?? {
+          primaryEmotion: withPerception.agentStateA.emotion || "平静",
+          concealedEmotion: null,
+          unspokenIntent: "",
+          currentConcern: withPerception.agentStateA.currentGoal,
+          attitudeTowardCounterpart: encounterContext.social.a.relationshipLabel,
+          confidence: "steady" as const,
+          relationshipTension: "",
+        },
+      }
+    : {
+        privateMemory: "",
+        currentGoal: "",
+        emotion: "平静",
+        beliefs: [],
+        observations: [],
+        speechStyle: "",
+        selfReference: encounterContext.social.a.selfReference,
+        lastSpeech: null,
+        interior: {
+          primaryEmotion: "平静",
+          concealedEmotion: null,
+          unspokenIntent: "",
+          currentConcern: "",
+          attitudeTowardCounterpart: encounterContext.social.a.relationshipLabel,
+          confidence: "steady" as const,
+          relationshipTension: "",
+        },
+      };
+  const agentStateB = withPerception.agentStateB
+    ? {
+        ...withPerception.agentStateB,
+        ...(withPerception.pipelineAuthorityVersion === 1
+          ? {}
+          : { lastSpeech: null }),
+        interior: withPerception.agentStateB.interior ?? {
+          primaryEmotion: withPerception.agentStateB.emotion || "平静",
+          concealedEmotion: null,
+          unspokenIntent: "",
+          currentConcern: withPerception.agentStateB.currentGoal,
+          attitudeTowardCounterpart: encounterContext.social.b.relationshipLabel,
+          confidence: "steady" as const,
+          relationshipTension: "",
+        },
+      }
+    : {
+        privateMemory: "",
+        currentGoal: "",
+        emotion: "平静",
+        beliefs: [],
+        observations: [],
+        speechStyle: "",
+        selfReference: encounterContext.social.b.selfReference,
+        lastSpeech: null,
+        interior: {
+          primaryEmotion: "平静",
+          concealedEmotion: null,
+          unspokenIntent: "",
+          currentConcern: "",
+          attitudeTowardCounterpart: encounterContext.social.b.relationshipLabel,
+          confidence: "steady" as const,
+          relationshipTension: "",
+        },
+      };
+  const narratorContinuity = withPerception.narratorContinuity ?? (
+    withPerception.perceptionFrameA && withPerception.perceptionFrameB
+      ? updateBattleNarratorContinuity({
+          turn: withPerception.turn,
+          encounter: encounterContext,
+          frameA: withPerception.perceptionFrameA,
+          frameB: withPerception.perceptionFrameB,
+          agentStateA,
+          agentStateB,
+        })
+      : undefined
+  );
   return {
     ...withPerception,
     pipelineAuthorityVersion: 1,
-    agentStateA: withPerception.agentStateA
-      ? { ...withPerception.agentStateA, lastSpeech: null }
+    encounterContext,
+    narratorContinuity,
+    agentStateA,
+    agentStateB,
+    plannedActionA: withPerception.pipelineAuthorityVersion === 1
+      ? withPerception.plannedActionA
       : undefined,
-    agentStateB: withPerception.agentStateB
-      ? { ...withPerception.agentStateB, lastSpeech: null }
+    plannedActionB: withPerception.pipelineAuthorityVersion === 1
+      ? withPerception.plannedActionB
       : undefined,
-    plannedActionA: undefined,
-    plannedActionB: undefined,
     turnRecords: (withPerception.turnRecords ?? []).slice(-50),
   };
 }

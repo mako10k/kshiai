@@ -16,6 +16,7 @@ import type {
   NarrationPerspective,
   NarrationTurnView,
   NarratorRenderingProfileAnchors,
+  NarratorContinuityView,
   PerceivedCondition,
   Situation,
   TurnEvent,
@@ -25,6 +26,8 @@ import type {
   PerceptionEvidence,
   ObserverSafeAvailableAction,
   BattleAdjudicationReasonFact,
+  BattleEncounterProposal,
+  BattleSocialView,
   ParamKey,
 } from "@kshiai/shared";
 import type {
@@ -79,8 +82,13 @@ export type CharacterCounterpartKnowledge = {
 /** Character-authored speech supplied to narration as immutable source material. */
 export type CharacterSpeechSource = Readonly<{
   side: "a" | "b";
+  /** Canonical character name; never authored by the narrator. */
   speaker: string;
   text: string;
+  /** Server-selected fallback for the current presentation view. */
+  displayLabel?: string;
+  /** Exact finite labels the narrator may choose for this source Side. */
+  allowedDisplayLabels?: readonly string[];
 }>;
 
 /** Narrative-safe battle history for improvement analysis (no raw combat params). */
@@ -288,6 +296,33 @@ export interface LlmProvider {
     eventsHint: string;
     battlefield?: BattlefieldInstance | null;
   }): Promise<SituationProposal>;
+  /** Propose battle-scoped presentation/social terms; server validates and freezes them. */
+  prepareBattleEncounter(input: {
+    sideA: {
+      displayName: string;
+      nicknames: string[];
+      selfNames: string[];
+      epithets: string[];
+      traits: string[];
+      narrativeBlurb: string;
+    };
+    sideB: {
+      displayName: string;
+      nicknames: string[];
+      selfNames: string[];
+      epithets: string[];
+      traits: string[];
+      narrativeBlurb: string;
+    };
+    field: {
+      displayName: string;
+      scene: string;
+      terrain?: string;
+      conditions: string[];
+      narrativeSetup: string;
+    };
+    priorMatchSummary?: string | null;
+  }): Promise<BattleEncounterProposal>;
   /** Interpret committed turn facts into a proposed observable-world patch. */
   reconcileTurnSemanticState(input: {
     turn: number;
@@ -353,6 +388,8 @@ export interface LlmProvider {
     character: CharacterSelfProfileAnchor;
     previous: CharacterAgentState;
     perception: CharacterPerceptionFrame;
+    /** Frozen asymmetric relationship terms for this battle. */
+    social?: BattleSocialView;
     /** Present only when this frame identifies the counterpart. */
     counterpart?: CharacterCounterpartKnowledge;
     /** Omitted in aftermath, where the character plans no new combat turn. */
@@ -426,6 +463,7 @@ export interface LlmProvider {
     profileAnchors: NarratorRenderingProfileAnchors;
     focus?: NarrationFocus;
     perspective?: NarrationPerspective;
+    narratorContinuity?: NarratorContinuityView | null;
     battlefield?: BattlefieldInstance | null;
     styleInstruction?: string;
     styleName?: string;
@@ -451,6 +489,7 @@ export interface LlmProvider {
     profileAnchors: NarratorRenderingProfileAnchors;
     focus?: NarrationFocus;
     perspective?: NarrationPerspective;
+    narratorContinuity?: NarratorContinuityView | null;
     styleInstruction?: string;
     styleName?: string;
     onProgress?: (progress: NarrationStreamProgress) => void;

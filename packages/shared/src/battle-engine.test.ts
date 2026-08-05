@@ -934,7 +934,7 @@ describe("battle engine", () => {
     assert.equal(second.state.sideA.parameters.stamina, 46);
   });
 
-  it("initializes new battles with unknown counterpart identity", () => {
+  it("initializes selected new battles with identified counterpart identity", () => {
     const state = createBattleState({
       id: "new-perception",
       sideA: sheet("a", "アオ"),
@@ -942,8 +942,8 @@ describe("battle engine", () => {
       turnLimit: 20,
       prologuePending: false,
     });
-    assert.equal(state.perceptionFrameA?.counterpart.identityKnowledge, "unknown");
-    assert.equal(state.perceptionFrameB?.counterpart.identityKnowledge, "unknown");
+    assert.equal(state.perceptionFrameA?.counterpart.identityKnowledge, "identified");
+    assert.equal(state.perceptionFrameB?.counterpart.identityKnowledge, "identified");
     assert.deepEqual(state.perceptionRegistryA?.contacts, []);
     assert.equal(state.worldState?.pairRelations[0]?.distance, "near");
     assert.equal(state.worldState?.pairRelations[0]?.sight, "clear");
