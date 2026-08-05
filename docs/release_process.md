@@ -4,11 +4,9 @@ This document is the source of truth for versioning and releasing kshiai. The
 rules apply to application code, database migrations, the Cloud Run backend,
 and the Cloudflare Worker frontend/proxy as one product.
 
-The repository currently has no historical release tags and all npm workspaces
-are at `0.1.0`. This policy therefore starts with the first release created
-after its adoption; it does not invent releases for older commits. The policy
-is effective immediately. CI enforcement and protected deployment environments
-are active and releases must record the evidence described here.
+CI enforcement and protected deployment environments are active. Historical
+release tags are retained as immutable evidence, and every new release must
+record the evidence described here.
 
 ## Versioning and tags
 

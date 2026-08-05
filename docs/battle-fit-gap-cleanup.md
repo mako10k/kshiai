@@ -26,10 +26,16 @@ exact `origin/main`へ合わせ、削除可能と証明済みのlocal branchだ�
 
 ## 完了時readback
 
-release PR後に次を追記して確認する。
+- feature PR #24は4必須check成功後にmergeされ、squash SHAは
+  `45684d3674c4261277fd0d0c158f945f7ce6e410`。
+- `origin/main` とlocal `main` は同じ `45684d3674c4261277fd0d0c158f945f7ce6e410`。
+- local `feature/battle-fit-gap-20260805@4759789` と
+  `wip/perception-consumers-20260804@cf8e534` を削除した。両commitは保持stashの
+  基底から到達可能で、再利用済み成果はPR #19とPR #24に存在する。
+- remote feature branchはPR merge時のrepository設定により削除済み。
+- 二つのstashは出所付きで保持した。削除していない。
+- linked worktreeは1件だけでorphanなし。release作業はcleanな
+  `release/0.6.0` をexact `origin/main`から作成して引き継ぐ。
 
-- merged feature PR番号とsquash SHA
-- merged release PR番号とrelease commit SHA
-- `origin/main`、local `main`、tagのSHA
-- 削除したlocal branchと保持したstash
-- worktree clean / orphanなし
+release PR、tag、staging、productionのSHA・artifact readbackは、この整理タスクでは
+先取りせず、後続のrelease記録へ分離する。
