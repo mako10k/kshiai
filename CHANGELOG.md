@@ -5,6 +5,43 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 
 ## [Unreleased]
 
+## [0.6.1] - 2026-08-05
+
+### Added
+
+- Adds one battle-scoped encounter context for short display names,
+  relationships, mutual forms of address, and bounded inner-state digests.
+- Adds perspective-local narrator recognition updates to the existing narrator
+  response so identified people remain associated with stable scene subjects
+  across turns and viewpoint changes without another LLM request.
+
+### Fixed
+
+- Stops a narrator from degrading an already identified combatant to a generic
+  unknown voice merely because current visual or auditory access is weaker,
+  while still allowing explicit disguise, illusion, disappearance, or broken
+  subject continuity to change the apparent identity.
+- Separates canonical character speech ownership from narrator display labels.
+  The narrator may choose context-appropriate labels and render scene-grounded
+  third-party speech; only structural invalidity and control-identifier leakage
+  are repaired instead of restricting labels to a server allowlist.
+- Keeps A-side, B-side, and reader narrator cognition independent and updates
+  both character viewpoints even when another narration viewpoint is selected.
+
+### Security and privacy
+
+- Keeps narrator recognition state presentation-only and prevents it from
+  becoming character memory, mechanics input, canonical speech, or public DTO
+  metadata. External-reader subject references remain opaque.
+
+### Operations
+
+- No database schema migration is required. Encounter and narrator continuity
+  fields are optional battle-state JSON, and legacy battles derive bounded
+  defaults without converting historical public prose into cognition.
+- No environment, authentication, billing, provider-order, infrastructure, or
+  deployment-topology change is included.
+
 ## [0.6.0] - 2026-08-05
 
 ### Added
