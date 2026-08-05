@@ -22,6 +22,7 @@ import {
   ObserverContactRegistryASchema,
   ObserverContactRegistryBSchema,
 } from "./perception.js";
+import { BattleTemporalPlanSchema } from "./battle-temporal-rules.js";
 
 export const BattleStatusSchema = z.enum([
   "active",
@@ -424,6 +425,7 @@ export type CharacterAgentStateChange = z.infer<
 /** Persisted engine facts for audit and agent cognition reconstruction. */
 export const BattleTurnRecordSchema = z.object({
   turn: z.number().int().nonnegative(),
+  temporalResolution: BattleTemporalPlanSchema.optional(),
   actions: z.array(ResolvedBattleActionSchema).default([]),
   events: z.array(TurnEventSchema).default([]),
   sideAChange: CombatantStateChangeSchema,
@@ -569,6 +571,8 @@ export const BattleStateSchema = z.object({
       });
     }
   }).optional(),
+  /** Latest server-owned action ordering receipt; never exposed publicly. */
+  latestTemporalResolution: BattleTemporalPlanSchema.optional(),
   /**
    * Engine-internal balance metrics (not exposed on BattlePublic).
    * Accumulated from HP deltas each combat turn for observability.

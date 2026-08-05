@@ -194,6 +194,7 @@ task T_TIMELINE CAUSALITY_READY -> TIMELINE_READY:
     incapacity. Add A and B swap metamorphic tests for equal and unequal speed
     mutual effects interruption movement and shared object conflicts.
   duration 3d
+  status done
   requires:
     DEV 1
 
@@ -364,3 +365,16 @@ work_event WE-626bbd449891e5c4a7d4e4dd52c8733846a24b365cf15b0f4dcd82ba9f11c50a:
   task T_CAUSALITY
   kind finish
   occurred_at 2026-08-05T13:04:58+09:00
+
+work_event WE-737aaf3865ca592ce13e2b2c1b0ab9b028ae9cfddb2fd172f226d9c80bb54c23:
+  model 1
+  task T_TIMELINE
+  kind start
+  occurred_at 2026-08-05T13:07:18+09:00
+  planned_value 3d
+
+work_event WE-5fc98eed-3f77-4e7e-9669-7a9de505b3d2:
+  model 1
+  task T_TIMELINE
+  kind finish
+  occurred_at 2026-08-05T13:15:26+09:00

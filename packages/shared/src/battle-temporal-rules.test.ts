@@ -3,6 +3,7 @@ import { describe, it } from "node:test";
 import {
   BATTLE_TEMPORAL_RULESET,
   buildBattleTemporalPlan,
+  resolveBattleTemporalExclusiveClaims,
 } from "./battle-temporal-rules.js";
 
 describe("buildBattleTemporalPlan", () => {
@@ -89,5 +90,32 @@ describe("buildBattleTemporalPlan", () => {
     assert.equal(BATTLE_TEMPORAL_RULESET.mutualIncapacitation, "draw");
     assert.equal(BATTLE_TEMPORAL_RULESET.exclusiveConflict, "contested");
     assert.equal(BATTLE_TEMPORAL_RULESET.sameBucketDefense, "applies");
+  });
+});
+
+describe("resolveBattleTemporalExclusiveClaims", () => {
+  it("contests same-bucket movement and object claims without side priority", () => {
+    const original = resolveBattleTemporalExclusiveClaims([
+      { side: "a", resourceId: "area.high-ground", operation: "move" },
+      { side: "b", resourceId: "area.high-ground", operation: "move" },
+      { side: "a", resourceId: "object.key", operation: "take" },
+      { side: "b", resourceId: "object.key", operation: "take" },
+    ]);
+    assert.ok(original.every((claim) => claim.outcome === "contested"));
+
+    const swapped = resolveBattleTemporalExclusiveClaims(
+      [...original].reverse().map(({ outcome: _outcome, ...claim }) => ({
+        ...claim,
+        side: claim.side === "a" ? "b" as const : "a" as const,
+      })),
+    );
+    assert.ok(swapped.every((claim) => claim.outcome === "contested"));
+  });
+
+  it("commits independent exclusive claims", () => {
+    assert.deepEqual(resolveBattleTemporalExclusiveClaims([
+      { side: "a", resourceId: "object.key", operation: "take" },
+      { side: "b", resourceId: "area.exit", operation: "move" },
+    ]).map((claim) => claim.outcome), ["committed", "committed"]);
   });
 });

@@ -1,3 +1,5 @@
+import { z } from "zod";
+
 export type BattleTemporalSide = "a" | "b";
 
 export const BATTLE_TEMPORAL_RULESET = Object.freeze({
@@ -13,19 +15,36 @@ export const BATTLE_TEMPORAL_RULESET = Object.freeze({
   orderingRandomness: "forbidden",
 } as const);
 
-export type BattleTemporalBucket = {
-  index: number;
-  actorSides: BattleTemporalSide[];
-  initiativeScore: number;
-  simultaneous: boolean;
-  readsFrom: "turn_start" | "previous_bucket_commit";
-  commitMode: "atomic" | "sequential";
+export const BattleTemporalSideSchema = z.enum(["a", "b"]);
+
+export const BattleTemporalBucketSchema = z.object({
+  index: z.number().int().nonnegative(),
+  actorSides: z.array(BattleTemporalSideSchema).min(1).max(2),
+  initiativeScore: z.number().int(),
+  simultaneous: z.boolean(),
+  readsFrom: z.enum(["turn_start", "previous_bucket_commit"]),
+  commitMode: z.enum(["atomic", "sequential"]),
+}).strict();
+export type BattleTemporalBucket = z.infer<typeof BattleTemporalBucketSchema>;
+
+export const BattleTemporalPlanSchema = z.object({
+  rulesetId: z.literal(BATTLE_TEMPORAL_RULESET.id),
+  initiativeScores: z.object({
+    a: z.number().int(),
+    b: z.number().int(),
+  }).strict(),
+  buckets: z.array(BattleTemporalBucketSchema).min(1).max(2),
+}).strict();
+export type BattleTemporalPlan = z.infer<typeof BattleTemporalPlanSchema>;
+
+export type BattleTemporalExclusiveClaim = {
+  side: BattleTemporalSide;
+  resourceId: string;
+  operation: "move" | "take";
 };
 
-export type BattleTemporalPlan = {
-  rulesetId: typeof BATTLE_TEMPORAL_RULESET.id;
-  initiativeScores: Record<BattleTemporalSide, number>;
-  buckets: BattleTemporalBucket[];
+export type BattleTemporalExclusiveOutcome = BattleTemporalExclusiveClaim & {
+  outcome: "committed" | "contested";
 };
 
 function normalizeInitiativeScore(value: number): number {
@@ -57,7 +76,7 @@ export function buildBattleTemporalPlan(input: {
     Math.abs(difference) <=
       BATTLE_TEMPORAL_RULESET.simultaneousInitiativeDelta
   ) {
-    return {
+    return BattleTemporalPlanSchema.parse({
       rulesetId: BATTLE_TEMPORAL_RULESET.id,
       initiativeScores,
       buckets: [{
@@ -68,12 +87,12 @@ export function buildBattleTemporalPlan(input: {
         readsFrom: "turn_start",
         commitMode: "atomic",
       }],
-    };
+    });
   }
 
   const faster: BattleTemporalSide = difference > 0 ? "a" : "b";
   const slower: BattleTemporalSide = faster === "a" ? "b" : "a";
-  return {
+  return BattleTemporalPlanSchema.parse({
     rulesetId: BATTLE_TEMPORAL_RULESET.id,
     initiativeScores,
     buckets: [
@@ -94,5 +113,26 @@ export function buildBattleTemporalPlan(input: {
         commitMode: "sequential",
       },
     ],
-  };
+  });
+}
+
+/**
+ * Resolves same-bucket exclusive movement/object claims without using the side
+ * label or input order as a tie-break. Different resources remain independent.
+ */
+export function resolveBattleTemporalExclusiveClaims(
+  claims: BattleTemporalExclusiveClaim[],
+): BattleTemporalExclusiveOutcome[] {
+  const claimantsByResource = new Map<string, Set<BattleTemporalSide>>();
+  for (const claim of claims) {
+    const claimants = claimantsByResource.get(claim.resourceId) ?? new Set();
+    claimants.add(claim.side);
+    claimantsByResource.set(claim.resourceId, claimants);
+  }
+  return claims.map((claim) => ({
+    ...claim,
+    outcome: claimantsByResource.get(claim.resourceId)!.size > 1
+      ? "contested"
+      : "committed",
+  }));
 }

@@ -17,9 +17,11 @@
 - 将来状態補正を追加する場合も、正準なターン開始状態からサーバーが算出し、
   ナレータ文、公開台詞、非公開の相手パラメータを入力にしない。
 
-`packages/shared/src/battle-temporal-rules.ts` はこの決定の実行可能な規則境界で
-あり、現在の `resolveTurn` への組み込みと効果の原子的mergeは `T_TIMELINE` で
-行う。それまでは、現行エンジンに Side A 先行の Gap が残る。
+`packages/shared/src/battle-temporal-rules.ts` はこの決定の実行可能な規則境界で、
+`resolveTurn` は同じ規則からバケットを構築する。採用した規則ID、正規化済み
+initiative、読み取り元、commit方式は `latestTemporalResolution` と各ターン記録へ
+保存する。Side A / Side B の格納順は公開・永続化の安定順であり、機械的優先順
+ではない。
 
 ## 2. バケット処理
 
@@ -73,3 +75,9 @@ tie-breakにしてはならない。
 - 排他的な移動先と物体取得の `contested`。
 - 全fixtureの A/B 入替えmetamorphic test。
 - narrator style、公開文章順、LLM応答順を変えても機械結果が不変。
+
+実装時の回帰fixtureは `battle-temporal-rules.test.ts` と
+`battle-engine.test.ts` に置く。同時相討ち、同一バケット防御、回復と被ダメージ、
+相互状態効果、速度先行による後続skip、移動先・共有物体の競合、等速・非等速の
+A/B入替え、および narration style 非依存を自動検証する。`resolveTurn` は LLM を
+呼ばないため、公開文章順と provider 応答順は時間解決入力に存在しない。

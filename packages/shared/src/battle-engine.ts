@@ -51,6 +51,10 @@ import {
 } from "./perception-projection.js";
 import { revalidateCharacterAction } from "./action-feasibility.js";
 import { applyBattleCausalCoefficients } from "./battle-causality.js";
+import {
+  buildBattleTemporalPlan,
+  type BattleTemporalSide,
+} from "./battle-temporal-rules.js";
 
 function nowIso(): string {
   return new Date().toISOString();
@@ -312,6 +316,9 @@ export function buildBattleTurnRecord(input: {
   };
   return {
     turn: input.after.turn,
+    ...(input.after.latestTemporalResolution
+      ? { temporalResolution: input.after.latestTemporalResolution }
+      : {}),
     actions: input.actions ?? [],
     events: input.events,
     sideAChange: {
@@ -710,6 +717,43 @@ function applyParameterDelta(
   combatant.parameters[effect.parameter] = next;
   clampCurrentToMaximums(combatant.parameters);
   return (combatant.parameters[effect.parameter] ?? current) - current;
+}
+
+/** Merge same-snapshot action proposals, then apply parameter bounds once. */
+function applyAtomicMechanicalAttempts(
+  sideA: CombatantState,
+  sideB: CombatantState,
+  attempts: MechanicalAttempt[],
+): void {
+  const totals = new Map<string, number>();
+  for (const attempt of attempts) {
+    const key = `${attempt.targetSide}:${attempt.parameterKey}`;
+    totals.set(key, (totals.get(key) ?? 0) + attempt.attemptedDelta);
+  }
+  const orderedKeys: ParamKey[] = [
+    "maxHp",
+    "maxMp",
+    "maxStamina",
+    ...PARAMETER_KEYS.filter((key) =>
+      key !== "maxHp" && key !== "maxMp" && key !== "maxStamina"
+    ),
+  ];
+  for (const side of ["a", "b"] as const) {
+    const combatant = side === "a" ? sideA : sideB;
+    for (const parameterKey of orderedKeys) {
+      const delta = totals.get(`${side}:${parameterKey}`) ?? 0;
+      if (delta === 0) continue;
+      const current = combatant.parameters[parameterKey] ?? 0;
+      const consumable = parameterKey === "hp" ||
+        parameterKey === "mp" ||
+        parameterKey === "stamina";
+      combatant.parameters[parameterKey] = Math.max(
+        consumable ? 0 : 1,
+        current + delta,
+      );
+    }
+    clampCurrentToMaximums(combatant.parameters);
+  }
 }
 
 function restoreTowardBase(combatant: CombatantState): ParamKey[] {
@@ -1392,25 +1436,42 @@ export function resolveTurn(input: {
         : policyB();
   const actionAId = `turn-${turn}-action-a`;
   const actionBId = `turn-${turn}-action-b`;
-  const revalidatedA = revalidateCharacterAction({
-    actorSide: "a",
-    requested: intentFromBattleAction(requestedActionA),
-    actor: sideA,
-    skills: input.sideASkills,
-    basicAttack: balanceBasicAttack(input.sideABasicAttack ?? defaultBasicAttack()),
-    finisher: finisherA,
-    turn,
-    worldState: input.state.worldState,
-    perception: input.state.perceptionFrameA,
+  const requestedActions = {
+    a: requestedActionA,
+    b: requestedActionB,
+  } as const;
+  const actionIds = { a: actionAId, b: actionBId } as const;
+  const causalSituations = {
+    a: applyBattleCausalCoefficients({
+      situation,
+      worldState: input.state.worldState,
+      actorSide: "a",
+      targetSide: "b",
+    }),
+    b: applyBattleCausalCoefficients({
+      situation,
+      worldState: input.state.worldState,
+      actorSide: "b",
+      targetSide: "a",
+    }),
+  } as const;
+  const temporalResolution = buildBattleTemporalPlan({
+    effectiveSpeedA: (sideA.parameters.spd ?? 0) *
+      coeff(causalSituations.a, "spd"),
+    effectiveSpeedB: (sideB.parameters.spd ?? 0) *
+      coeff(causalSituations.b, "spd"),
   });
-  const effectiveActionA = revalidatedA.action;
   const actions: ResolvedBattleAction[] = [
     {
-      ...(effectiveActionA ?? requestedActionA),
+      ...requestedActionA,
       id: actionAId,
-      executed: effectiveActionA !== null,
-      skippedReason: effectiveActionA ? null : "action_infeasible",
-      resolution: revalidatedA.resolution,
+      executed: false,
+      skippedReason: "incapacitated_before_action",
+      resolution: {
+        requested: intentFromBattleAction(requestedActionA),
+        outcome: "failed",
+        reason: "actor_unavailable",
+      },
     },
     {
       ...requestedActionB,
@@ -1425,141 +1486,228 @@ export function resolveTurn(input: {
     },
   ];
 
-  // Player (side A)
-  const actionAEventStart = events.length;
-  const actionABeforeA = parametersSnapshot(sideA);
-  const actionABeforeB = parametersSnapshot(sideB);
-  const actionAAttempts: MechanicalAttempt[] = [];
-  const usedFinisherA = effectiveActionA
-    ? applyAction(
-        sideA,
-        sideB,
-        effectiveActionA,
-        input.sideASkills,
-        balanceBasicAttack(input.sideABasicAttack ?? defaultBasicAttack()),
-        applyBattleCausalCoefficients({
-          situation,
-          worldState: input.state.worldState,
-          actorSide: "a",
-          targetSide: "b",
-        }),
-        events,
-        createMechanicalAttemptRecorder(sideA, sideB, actionAAttempts),
-        {
-          battleId: input.state.id,
-          turn,
-          turnLimit: input.state.turnLimit,
-          actorSide: "a",
-        },
-        finisherA,
-      )
-    : false;
-  if (!effectiveActionA) {
-    events.push({
-      type: "info",
-      actorName: sideA.displayName,
-      actorSide: "a",
-      summary: `${sideA.displayName} は意図した行動を成立させられなかった。`,
-    });
-  }
-  if (usedFinisherA && finisherA) {
-    finisherA = { ...finisherA, used: true, usedTurn: turn };
-  }
-  tagActionEvents(events, actionAEventStart, {
-    actionId: actionAId,
-    actorSide: "a",
-    targetSide: "b",
-    actorName: sideA.displayName,
-    targetName: sideB.displayName,
-  });
-  mechanicalSpans.push(mechanicalResolutionSpan({
-    sourceActionId: actionAId,
-    actorSide: "a",
-    beforeA: actionABeforeA,
-    beforeB: actionABeforeB,
-    sideA,
-    sideB,
-    attempts: actionAAttempts,
-    eventStart: actionAEventStart,
-    eventEnd: events.length,
-  }));
-
-  // Opponent (side B) from policies / stance if still up
-  if (!isCombatantDown(sideB) && !isCombatantDown(sideA)) {
-    const revalidatedB = revalidateCharacterAction({
-      actorSide: "b",
-      requested: intentFromBattleAction(requestedActionB),
-      actor: sideB,
-      skills: input.sideBSkills,
-      basicAttack: balanceBasicAttack(input.sideBBasicAttack ?? defaultBasicAttack()),
-      finisher: finisherB,
-      turn,
-      worldState: input.state.worldState,
-      perception: input.state.perceptionFrameB,
-    });
-    const effectiveActionB = revalidatedB.action;
-    actions[1] = {
-      ...(effectiveActionB ?? requestedActionB),
-      id: actionBId,
-      executed: effectiveActionB !== null,
-      skippedReason: effectiveActionB ? null : "action_infeasible",
-      resolution: revalidatedB.resolution,
-    };
-    const actionBEventStart = events.length;
-    const actionBBeforeA = parametersSnapshot(sideA);
-    const actionBBeforeB = parametersSnapshot(sideB);
-    const actionBAttempts: MechanicalAttempt[] = [];
-    const usedFinisherB = effectiveActionB
-      ? applyAction(
-          sideB,
-          sideA,
-          effectiveActionB,
-          input.sideBSkills,
-          balanceBasicAttack(input.sideBBasicAttack ?? defaultBasicAttack()),
-          applyBattleCausalCoefficients({
-            situation,
-            worldState: input.state.worldState,
-            actorSide: "b",
-            targetSide: "a",
-          }),
-          events,
-          createMechanicalAttemptRecorder(sideA, sideB, actionBAttempts),
-          {
-            battleId: input.state.id,
-            turn,
-            turnLimit: input.state.turnLimit,
-            actorSide: "b",
-          },
-          finisherB,
-        )
-      : false;
-    if (!effectiveActionB) {
-      events.push({
-        type: "info",
-        actorName: sideB.displayName,
-        actorSide: "b",
-        summary: `${sideB.displayName} は意図した行動を成立させられなかった。`,
-      });
+  const sideIndex = (side: BattleTemporalSide) => side === "a" ? 0 : 1;
+  const skillsFor = (side: BattleTemporalSide) =>
+    side === "a" ? input.sideASkills : input.sideBSkills;
+  const basicAttackFor = (side: BattleTemporalSide) =>
+    balanceBasicAttack(
+      side === "a"
+        ? input.sideABasicAttack ?? defaultBasicAttack()
+        : input.sideBBasicAttack ?? defaultBasicAttack(),
+    );
+  const finisherFor = (side: BattleTemporalSide) =>
+    side === "a" ? finisherA : finisherB;
+  const perceptionFor = (side: BattleTemporalSide) =>
+    side === "a"
+      ? input.state.perceptionFrameA
+      : input.state.perceptionFrameB;
+  const updateFinisher = (side: BattleTemporalSide, used: boolean) => {
+    if (!used) return;
+    if (side === "a" && finisherA) {
+      finisherA = { ...finisherA, used: true, usedTurn: turn };
     }
-    if (usedFinisherB && finisherB) {
+    if (side === "b" && finisherB) {
       finisherB = { ...finisherB, used: true, usedTurn: turn };
     }
-    tagActionEvents(events, actionBEventStart, {
-      actionId: actionBId,
-      actorSide: "b",
-      targetSide: "a",
-      actorName: sideB.displayName,
-      targetName: sideA.displayName,
+  };
+  const revalidate = (
+    side: BattleTemporalSide,
+    currentA: CombatantState,
+    currentB: CombatantState,
+  ) => revalidateCharacterAction({
+    actorSide: side,
+    requested: intentFromBattleAction(requestedActions[side]),
+    actor: side === "a" ? currentA : currentB,
+    skills: skillsFor(side),
+    basicAttack: basicAttackFor(side),
+    finisher: finisherFor(side),
+    turn,
+    worldState: input.state.worldState,
+    perception: perceptionFor(side),
+  });
+  const setResolvedAction = (
+    side: BattleTemporalSide,
+    result: ReturnType<typeof revalidateCharacterAction>,
+  ) => {
+    const effective = result.action;
+    actions[sideIndex(side)] = {
+      ...(effective ?? requestedActions[side]),
+      id: actionIds[side],
+      executed: effective !== null,
+      skippedReason: effective ? null : "action_infeasible",
+      resolution: result.resolution,
+    };
+  };
+  const executeAction = (inputAction: {
+    side: BattleTemporalSide;
+    effectiveAction: BattleAction | null;
+    currentA: CombatantState;
+    currentB: CombatantState;
+    targetEvents: TurnEvent[];
+    attempts: MechanicalAttempt[];
+  }): boolean => {
+    const actor = inputAction.side === "a"
+      ? inputAction.currentA
+      : inputAction.currentB;
+    const target = inputAction.side === "a"
+      ? inputAction.currentB
+      : inputAction.currentA;
+    if (!inputAction.effectiveAction) {
+      inputAction.targetEvents.push({
+        type: "info",
+        actorName: actor.displayName,
+        actorSide: inputAction.side,
+        summary: `${actor.displayName} は意図した行動を成立させられなかった。`,
+      });
+      return false;
+    }
+    return applyAction(
+      actor,
+      target,
+      inputAction.effectiveAction,
+      skillsFor(inputAction.side),
+      basicAttackFor(inputAction.side),
+      causalSituations[inputAction.side],
+      inputAction.targetEvents,
+      createMechanicalAttemptRecorder(
+        inputAction.currentA,
+        inputAction.currentB,
+        inputAction.attempts,
+      ),
+      {
+        battleId: input.state.id,
+        turn,
+        turnLimit: input.state.turnLimit,
+        actorSide: inputAction.side,
+      },
+      finisherFor(inputAction.side),
+    );
+  };
+  const tagFor = (
+    targetEvents: TurnEvent[],
+    side: BattleTemporalSide,
+    currentA: CombatantState,
+    currentB: CombatantState,
+  ) => {
+    const actor = side === "a" ? currentA : currentB;
+    const target = side === "a" ? currentB : currentA;
+    tagActionEvents(targetEvents, 0, {
+      actionId: actionIds[side],
+      actorSide: side,
+      targetSide: side === "a" ? "b" : "a",
+      actorName: actor.displayName,
+      targetName: target.displayName,
     });
+  };
+
+  for (const bucket of temporalResolution.buckets) {
+    if (bucket.simultaneous) {
+      const bucketStartA = cloneCombatant(sideA);
+      const bucketStartB = cloneCombatant(sideB);
+      const proposals: Array<{
+        side: BattleTemporalSide;
+        sideA: CombatantState;
+        sideB: CombatantState;
+        attempts: MechanicalAttempt[];
+        events: TurnEvent[];
+        usedFinisher: boolean;
+      }> = [];
+      const effectiveBySide: Partial<Record<BattleTemporalSide, BattleAction>> = {};
+      if (!isCombatantDown(bucketStartA) && !isCombatantDown(bucketStartB)) {
+        for (const side of bucket.actorSides) {
+          const result = revalidate(side, bucketStartA, bucketStartB);
+          setResolvedAction(side, result);
+          if (result.action) effectiveBySide[side] = result.action;
+        }
+      }
+      const defends = (side: BattleTemporalSide): boolean => {
+        const action = effectiveBySide[side];
+        if (!action) return false;
+        if (action.kind === "defend") return true;
+        return action.kind === "skill" &&
+          skillsFor(side).find((skill) => skill.id === action.skillId)?.kind === "defend";
+      };
+      for (const side of bucket.actorSides) {
+        if (!effectiveBySide[side] && actions[sideIndex(side)].skippedReason !== "action_infeasible") {
+          continue;
+        }
+        const proposalA = cloneCombatant(bucketStartA);
+        const proposalB = cloneCombatant(bucketStartB);
+        proposalA.defending = defends("a");
+        proposalB.defending = defends("b");
+        const proposalEvents: TurnEvent[] = [];
+        const attempts: MechanicalAttempt[] = [];
+        const usedFinisher = executeAction({
+          side,
+          effectiveAction: effectiveBySide[side] ?? null,
+          currentA: proposalA,
+          currentB: proposalB,
+          targetEvents: proposalEvents,
+          attempts,
+        });
+        tagFor(proposalEvents, side, proposalA, proposalB);
+        proposals.push({
+          side,
+          sideA: proposalA,
+          sideB: proposalB,
+          attempts,
+          events: proposalEvents,
+          usedFinisher,
+        });
+      }
+      sideA = cloneCombatant(bucketStartA);
+      sideB = cloneCombatant(bucketStartB);
+      sideA.defending = defends("a");
+      sideB.defending = defends("b");
+      applyAtomicMechanicalAttempts(sideA, sideB, proposals.flatMap((item) => item.attempts));
+      for (const proposal of proposals) {
+        const eventStart = events.length;
+        events.push(...proposal.events);
+        mechanicalSpans.push(mechanicalResolutionSpan({
+          sourceActionId: actionIds[proposal.side],
+          actorSide: proposal.side,
+          beforeA: parametersSnapshot(bucketStartA),
+          beforeB: parametersSnapshot(bucketStartB),
+          sideA: proposal.sideA,
+          sideB: proposal.sideB,
+          attempts: proposal.attempts,
+          eventStart,
+          eventEnd: events.length,
+        }));
+        updateFinisher(proposal.side, proposal.usedFinisher);
+      }
+      continue;
+    }
+
+    const side = bucket.actorSides[0]!;
+    if (isCombatantDown(sideA) || isCombatantDown(sideB)) continue;
+    const result = revalidate(side, sideA, sideB);
+    setResolvedAction(side, result);
+    const eventStart = events.length;
+    const beforeA = parametersSnapshot(sideA);
+    const beforeB = parametersSnapshot(sideB);
+    const actionEvents: TurnEvent[] = [];
+    const attempts: MechanicalAttempt[] = [];
+    const usedFinisher = executeAction({
+      side,
+      effectiveAction: result.action,
+      currentA: sideA,
+      currentB: sideB,
+      targetEvents: actionEvents,
+      attempts,
+    });
+    tagFor(actionEvents, side, sideA, sideB);
+    events.push(...actionEvents);
+    updateFinisher(side, usedFinisher);
     mechanicalSpans.push(mechanicalResolutionSpan({
-      sourceActionId: actionBId,
-      actorSide: "b",
-      beforeA: actionBBeforeA,
-      beforeB: actionBBeforeB,
+      sourceActionId: actionIds[side],
+      actorSide: side,
+      beforeA,
+      beforeB,
       sideA,
       sideB,
-      attempts: actionBAttempts,
-      eventStart: actionBEventStart,
+      attempts,
+      eventStart,
       eventEnd: events.length,
     }));
   }
@@ -1656,6 +1804,7 @@ export function resolveTurn(input: {
     aftermathPending,
     finisherA,
     finisherB,
+    latestTemporalResolution: temporalResolution,
     plannedActionA: undefined,
     plannedActionB: undefined,
     updatedAt: nowIso(),
@@ -2131,6 +2280,7 @@ function applyBasicAttack(
   const parameter = profile.targetParameter;
   let critical = false;
   if (parameter === "hp") {
+    if (target.defending) amount = Math.round(amount * 0.55);
     amount = softenCombatDamage({
       rawDamage: amount,
       targetMaxHp: target.parameters.maxHp ?? 100,

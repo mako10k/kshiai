@@ -423,8 +423,10 @@ describe("battle engine", () => {
     assert.equal(next.finishReason, "incapacitated");
     assert.ok(events.some((e) => e.type === "status"));
     assert.equal(actions[0]?.executed, true);
-    assert.equal(actions[1]?.executed, false);
-    assert.equal(actions[1]?.skippedReason, "incapacitated_before_action");
+    // Equal initiative reads the same bucket-start snapshot, so B's already
+    // committed intent is preserved even though A's hit is terminal.
+    assert.equal(actions[1]?.executed, true);
+    assert.equal(actions[1]?.skippedReason, null);
     assert.ok(
       events.some(
         (e) => e.summary.includes("余波") || e.summary.includes("続けられ"),
@@ -1041,5 +1043,276 @@ describe("battle engine", () => {
       reason: "out_of_range",
     });
     assert.equal(resolved.actions[0]?.skippedReason, null);
+  });
+
+  it("atomically preserves equal-speed mutual incapacitation", () => {
+    const a = sheet("a", "アオ");
+    const b = sheet("b", "クロ");
+    const state = createBattleState({
+      id: "simultaneous-mutual-ko",
+      sideA: a,
+      sideB: b,
+      turnLimit: 20,
+      prologuePending: false,
+    });
+    state.sideA.parameters.hp = 1;
+    state.sideB.parameters.hp = 1;
+    state.sideA.parameters.spd = 12;
+    state.sideB.parameters.spd = 12;
+    state.plannedActionA = { kind: "basic_attack" };
+    state.plannedActionB = { kind: "basic_attack" };
+
+    const resolved = resolveTurn({
+      state,
+      sideASkills: a.skills,
+      sideBSkills: b.skills,
+    });
+    assert.deepEqual(resolved.state.latestTemporalResolution?.buckets[0]?.actorSides, [
+      "a",
+      "b",
+    ]);
+    assert.equal(resolved.state.latestTemporalResolution?.buckets[0]?.commitMode, "atomic");
+    assert.deepEqual(resolved.actions.map((action) => action.executed), [true, true]);
+    assert.equal(resolved.state.sideA.parameters.hp, 0);
+    assert.equal(resolved.state.sideB.parameters.hp, 0);
+    assert.equal(resolved.state.winnerSide, "draw");
+    assert.equal(resolved.state.aftermathPending, true);
+
+    const record = buildBattleTurnRecord({
+      before: state,
+      after: resolved.state,
+      events: resolved.events,
+      actions: resolved.actions,
+    });
+    assert.equal(record.temporalResolution?.rulesetId, "initiative-window-v1");
+  });
+
+  it("lets the faster side interrupt and revalidates the slower bucket", () => {
+    const a = sheet("a", "遅い側");
+    const b = sheet("b", "速い側");
+    const state = createBattleState({
+      id: "speed-interruption",
+      sideA: a,
+      sideB: b,
+      turnLimit: 20,
+      prologuePending: false,
+    });
+    state.sideA.parameters.hp = 1;
+    state.sideA.parameters.spd = 5;
+    state.sideB.parameters.spd = 20;
+    state.plannedActionA = { kind: "basic_attack" };
+    state.plannedActionB = { kind: "basic_attack" };
+
+    const resolved = resolveTurn({
+      state,
+      sideASkills: a.skills,
+      sideBSkills: b.skills,
+    });
+    assert.deepEqual(
+      resolved.state.latestTemporalResolution?.buckets.map((bucket) => bucket.actorSides),
+      [["b"], ["a"]],
+    );
+    assert.equal(resolved.actions[1]?.executed, true);
+    assert.equal(resolved.actions[0]?.executed, false);
+    assert.equal(resolved.actions[0]?.skippedReason, "incapacitated_before_action");
+    assert.equal(resolved.state.winnerSide, "b");
+  });
+
+  it("applies same-bucket defense before either attack is evaluated", () => {
+    const run = (defend: boolean) => {
+      const a = sheet("a", "攻撃側");
+      const b = sheet("b", "防御側");
+      const state = createBattleState({
+        id: defend ? "same-bucket-defense" : "same-bucket-wait",
+        sideA: a,
+        sideB: b,
+        turnLimit: 20,
+        prologuePending: false,
+      });
+      state.sideA.parameters.spd = 10;
+      state.sideB.parameters.spd = 11;
+      state.plannedActionA = { kind: "basic_attack" };
+      state.plannedActionB = { kind: defend ? "defend" : "wait" };
+      return resolveTurn({
+        state,
+        sideASkills: a.skills,
+        sideBSkills: b.skills,
+      });
+    };
+    const defended = run(true);
+    const undefended = run(false);
+    const defendedDamage = 100 - (defended.state.sideB.parameters.hp ?? 0);
+    const undefendedDamage = 100 - (undefended.state.sideB.parameters.hp ?? 0);
+    assert.ok(defendedDamage < undefendedDamage);
+    assert.equal(defended.state.sideB.defending, true);
+  });
+
+  it("keeps mechanics invariant when simultaneous side labels are swapped", () => {
+    const run = (swapped: boolean) => {
+      const first = sheet(swapped ? "b" : "a", "第一");
+      const second = sheet(swapped ? "a" : "b", "第二");
+      const state = createBattleState({
+        id: "side-swap-simultaneous",
+        sideA: swapped ? second : first,
+        sideB: swapped ? first : second,
+        turnLimit: 20,
+        prologuePending: false,
+      });
+      state.sideA.parameters.spd = 10;
+      state.sideB.parameters.spd = 10;
+      state.plannedActionA = { kind: "basic_attack" };
+      state.plannedActionB = { kind: "basic_attack" };
+      const before = {
+        first: swapped ? state.sideB.parameters.hp! : state.sideA.parameters.hp!,
+        second: swapped ? state.sideA.parameters.hp! : state.sideB.parameters.hp!,
+      };
+      const result = resolveTurn({
+        state,
+        sideASkills: state.sideA.characterId === first.id ? first.skills : second.skills,
+        sideBSkills: state.sideB.characterId === second.id ? second.skills : first.skills,
+      });
+      return {
+        firstDamage: before.first - (swapped
+          ? result.state.sideB.parameters.hp!
+          : result.state.sideA.parameters.hp!),
+        secondDamage: before.second - (swapped
+          ? result.state.sideA.parameters.hp!
+          : result.state.sideB.parameters.hp!),
+      };
+    };
+    assert.deepEqual(run(false), run(true));
+  });
+
+  it("keeps faster-side interruption invariant when side labels are swapped", () => {
+    const run = (fastSide: "a" | "b") => {
+      const a = sheet("fighter-a", "A");
+      const b = sheet("fighter-b", "B");
+      const state = createBattleState({
+        id: `unequal-swap-${fastSide}`,
+        sideA: a,
+        sideB: b,
+        turnLimit: 20,
+        prologuePending: false,
+      });
+      state.sideA.parameters.hp = fastSide === "a" ? 100 : 1;
+      state.sideB.parameters.hp = fastSide === "b" ? 100 : 1;
+      state.sideA.parameters.spd = fastSide === "a" ? 20 : 5;
+      state.sideB.parameters.spd = fastSide === "b" ? 20 : 5;
+      state.plannedActionA = { kind: "basic_attack" };
+      state.plannedActionB = { kind: "basic_attack" };
+      const result = resolveTurn({
+        state,
+        sideASkills: a.skills,
+        sideBSkills: b.skills,
+      });
+      return {
+        winnerIsFast: result.state.winnerSide === fastSide,
+        fastExecuted: result.actions[fastSide === "a" ? 0 : 1]?.executed,
+        slowSkipped: result.actions[fastSide === "a" ? 1 : 0]?.skippedReason,
+      };
+    };
+    assert.deepEqual(run("a"), run("b"));
+  });
+
+  it("merges same-snapshot healing, damage, and mutual effects additively", () => {
+    const a = sheet("a", "回復側");
+    const b = sheet("b", "攻撃側");
+    a.skills = [{
+      id: "recover",
+      name: "回復",
+      description: "自分を回復する。",
+      costMp: 0,
+      costStamina: 0,
+      power: 1,
+      kind: "support",
+    }];
+    b.skills = [{
+      id: "interfere",
+      name: "相互干渉",
+      description: "互いの速度に影響する。",
+      costMp: 0,
+      costStamina: 0,
+      power: 1,
+      kind: "status",
+      effects: [{ target: "foe", parameter: "spd", delta: -4 }],
+    }];
+    const state = createBattleState({
+      id: "atomic-heal-damage",
+      sideA: a,
+      sideB: b,
+      turnLimit: 20,
+      prologuePending: false,
+    });
+    state.sideA.parameters.hp = 50;
+    state.sideA.parameters.spd = 10;
+    state.sideB.parameters.spd = 10;
+    state.plannedActionA = { kind: "skill", skillId: "recover" };
+    state.plannedActionB = { kind: "basic_attack" };
+    const result = resolveTurn({
+      state,
+      sideASkills: a.skills,
+      sideBSkills: b.skills,
+    });
+    const committedHpDelta = result.mechanicalEvidence
+      .filter((item) => item.target.side === "a" && item.parameterKey === "hp")
+      .reduce((sum, item) => sum + item.delta, 0);
+    assert.equal(
+      result.state.sideA.parameters.hp! - state.sideA.parameters.hp!,
+      committedHpDelta,
+    );
+
+    const mutual = createBattleState({
+      id: "atomic-mutual-effects",
+      sideA: { ...a, skills: b.skills },
+      sideB: b,
+      turnLimit: 20,
+      prologuePending: false,
+    });
+    mutual.sideA.parameters.spd = 10;
+    mutual.sideB.parameters.spd = 10;
+    mutual.plannedActionA = { kind: "skill", skillId: "interfere" };
+    mutual.plannedActionB = { kind: "skill", skillId: "interfere" };
+    const mutualResult = resolveTurn({
+      state: mutual,
+      sideASkills: b.skills,
+      sideBSkills: b.skills,
+    });
+    assert.equal(mutualResult.state.sideA.parameters.spd, 6);
+    assert.equal(mutualResult.state.sideB.parameters.spd, 6);
+    assert.deepEqual(mutualResult.actions.map((action) => action.executed), [true, true]);
+  });
+
+  it("does not feed narration style into temporal or mechanical resolution", () => {
+    const run = (instruction: string) => {
+      const a = sheet("a", "A");
+      const b = sheet("b", "B");
+      const state = createBattleState({
+        id: "narration-independent-timing",
+        sideA: a,
+        sideB: b,
+        turnLimit: 20,
+        prologuePending: false,
+      });
+      state.narrationStyle = {
+        id: instruction,
+        displayName: instruction,
+        instruction,
+        perspective: "external",
+      };
+      state.plannedActionA = { kind: "basic_attack" };
+      state.plannedActionB = { kind: "basic_attack" };
+      const result = resolveTurn({
+        state,
+        sideASkills: a.skills,
+        sideBSkills: b.skills,
+      });
+      return {
+        a: result.state.sideA.parameters,
+        b: result.state.sideB.parameters,
+        actions: result.actions,
+        temporal: result.state.latestTemporalResolution,
+      };
+    };
+    assert.deepEqual(run("静かに語る"), run("激しく語る"));
   });
 });
