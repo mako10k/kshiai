@@ -3,6 +3,10 @@ import { z } from "zod";
 export const SpeechLineSchema = z.object({
   speaker: z.string(),
   text: z.string(),
+  /** Character-side source authority. Omitted for legacy narrative blocks. */
+  sourceSide: z.enum(["a", "b"]).optional(),
+  /** Place after this zero-based narrator line; -1 means before the first line. */
+  afterNarratorLine: z.number().int().min(-1).optional(),
 });
 export type SpeechLine = z.infer<typeof SpeechLineSchema>;
 
@@ -51,12 +55,48 @@ export function formatSpeech(line: SpeechLine): string {
 }
 
 export function formatNarrativeBlock(block: NarrativeBlock): string[] {
-  const lines: string[] = [];
-  for (const n of block.narrator) {
-    lines.push(n);
+  return narrativeEntries(block).map((entry) =>
+    entry.kind === "narrator" ? entry.text : formatSpeech(entry.speech)
+  );
+}
+
+export type NarrativeEntry =
+  | { kind: "narrator"; text: string; narratorLine: number }
+  | { kind: "speech"; speech: SpeechLine; speechLine: number };
+
+/**
+ * Interleave character speech at narrator-selected boundaries. Legacy speech
+ * without placement remains after all narrator lines.
+ */
+export function narrativeEntries(block: NarrativeBlock): NarrativeEntry[] {
+  const placed = new Map<number, Array<{ speech: SpeechLine; index: number }>>();
+  const legacy: Array<{ speech: SpeechLine; index: number }> = [];
+  block.speeches.forEach((speech, index) => {
+    if (speech.afterNarratorLine === undefined) {
+      legacy.push({ speech, index });
+      return;
+    }
+    const boundary = Math.max(
+      -1,
+      Math.min(speech.afterNarratorLine, block.narrator.length - 1),
+    );
+    placed.set(boundary, [
+      ...(placed.get(boundary) ?? []),
+      { speech, index },
+    ]);
+  });
+  const entries: NarrativeEntry[] = [];
+  for (const item of placed.get(-1) ?? []) {
+    entries.push({ kind: "speech", speech: item.speech, speechLine: item.index });
   }
-  for (const s of block.speeches) {
-    lines.push(formatSpeech(s));
+  block.narrator.forEach((text, narratorLine) => {
+    entries.push({ kind: "narrator", text, narratorLine });
+    for (const item of placed.get(narratorLine) ?? []) {
+      entries.push({ kind: "speech", speech: item.speech, speechLine: item.index });
+    }
+  });
+  for (const item of legacy) {
+    entries.push({ kind: "speech", speech: item.speech, speechLine: item.index });
   }
-  return lines;
+  return entries;
 }

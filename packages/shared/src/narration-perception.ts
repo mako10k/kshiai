@@ -20,6 +20,11 @@ import type {
   NarrationFocus,
   NarrationPerspective,
 } from "./narration-perspective.js";
+import {
+  selectNarratorRenderingProfileAnchors,
+  type NarratorRenderingProfileAnchor,
+  type NarratorRenderingProfileAnchors,
+} from "./profile-grounding.js";
 
 export type NarrationPerceptionProjectionInput = {
   perspective: NarrationPerspective;
@@ -278,9 +283,10 @@ export function buildNarrationPerceptionView(
         viewpointSubject: "self",
         viewpointLabel: input.sideALabel,
         counterpartControlId: "opponent",
-        counterpartLabel: input.frameA.counterpart.identityKnowledge === "identified"
-          ? input.sideBLabel
-          : input.frameA.counterpart.perceivedAs,
+        counterpartLabel: counterpartRenderLabel(
+          input.frameA.counterpart,
+          input.sideBLabel,
+        ),
       }),
     });
   }
@@ -297,9 +303,10 @@ export function buildNarrationPerceptionView(
         viewpointSubject: "opponent",
         viewpointLabel: input.sideBLabel,
         counterpartControlId: "self",
-        counterpartLabel: input.frameB.counterpart.identityKnowledge === "identified"
-          ? input.sideALabel
-          : input.frameB.counterpart.perceivedAs,
+        counterpartLabel: counterpartRenderLabel(
+          input.frameB.counterpart,
+          input.sideALabel,
+        ),
       }),
     });
   }
@@ -319,6 +326,22 @@ export function buildNarrationPerceptionView(
     resolvedFromFluid: resolved.resolvedFromFluid,
     references: externalReferences(input),
   });
+}
+
+function counterpartRenderLabel(
+  slot: CharacterPerceptionFrame["counterpart"],
+  canonicalLabel: string,
+): string {
+  const apparent = slot.apparentIdentity;
+  if (
+    slot.currentAccess !== "none" &&
+    apparent &&
+    apparent.continuity !== "same_entity"
+  ) {
+    return apparent.identity ?? apparent.form;
+  }
+  if (slot.identityKnowledge === "identified") return canonicalLabel;
+  return apparent?.identity ?? slot.perceivedAs;
 }
 
 function registryLabelForEntity(
@@ -361,7 +384,12 @@ function characterLimitedCanonicalLabel(input: {
     return input.viewpointSide === "a" ? input.sideALabel : input.sideBLabel;
   }
   if (input.entityId === counterpartId) {
-    return input.frame?.counterpart.perceivedAs ?? "知覚できない相手";
+    const canonicalLabel = input.viewpointSide === "a"
+      ? input.sideBLabel
+      : input.sideALabel;
+    return input.frame
+      ? counterpartRenderLabel(input.frame.counterpart, canonicalLabel)
+      : "知覚できない相手";
   }
   return identifiedSlotLabel(input.frame, input.entityId) ??
     registryLabelForEntity(input.registry, input.entityId) ??
@@ -475,6 +503,7 @@ export function repairNarrativeBlockIdentifiers(
       repairNarrationIdentifierText(line, catalog)
     ),
     speeches: block.speeches.map((speech) => ({
+      ...speech,
       speaker: repairNarrationIdentifierText(speech.speaker, catalog),
       text: repairNarrationIdentifierText(speech.text, catalog),
     })),
@@ -507,6 +536,8 @@ export type NarrationTurnView = {
     a: string;
     b: string;
   };
+  /** Presentation-only constraints selected for this narrator perspective. */
+  profileAnchors: NarratorRenderingProfileAnchors;
   events: Array<{ summary: string }>;
   actionBeats: NarrationTurnViewActionBeat[];
   battlefield: {
@@ -523,6 +554,8 @@ export type NarrationTurnViewInput = {
   focus: NarrationFocus;
   sideALabel: string;
   sideBLabel: string;
+  profileAnchorA: NarratorRenderingProfileAnchor;
+  profileAnchorB: NarratorRenderingProfileAnchor;
   perception: NarrationPerceptionView;
   semanticState: BattleSemanticState;
   publicObservation: SemanticObservationState;
@@ -676,6 +709,11 @@ export function buildNarrationTurnView(
     scene: sanitize(input.scene),
     perception: input.perception,
     participantLabels: participants,
+    profileAnchors: selectNarratorRenderingProfileAnchors({
+      mode: input.perception.mode,
+      sideA: input.profileAnchorA,
+      sideB: input.profileAnchorB,
+    }),
     events: frame
       ? characterPerceptEvents(frame)
       : input.events.map((event) => ({ summary: sanitize(event.summary) })),

@@ -6,6 +6,7 @@ import type {
   CharacterImprovementMemo,
   CharacterSheet,
   CharacterIdentity,
+  CharacterSelfProfileAnchor,
   CharacterAgentState,
   CharacterActionIntent,
   CharacterPerceptionFrame,
@@ -14,6 +15,7 @@ import type {
   NarrationFocus,
   NarrationPerspective,
   NarrationTurnView,
+  NarratorRenderingProfileAnchors,
   PerceivedCondition,
   Situation,
   TurnEvent,
@@ -21,6 +23,9 @@ import type {
   ResolvedBattleAction,
   FinisherWindow,
   PerceptionEvidence,
+  ObserverSafeAvailableAction,
+  BattleAdjudicationReasonFact,
+  ParamKey,
 } from "@kshiai/shared";
 import type {
   PerceptionPromptInput,
@@ -47,15 +52,7 @@ export type CharacterReferenceTools = {
 export type CharacterActionDecisionContext = {
   nextTurn: number;
   turnsRemaining: number;
-  availableActions: Array<{
-    kind: CharacterActionIntent["kind"];
-    skillId?: string;
-    name: string;
-    skillKind?: "attack" | "magic" | "defend" | "support" | "special" | "status";
-    costMp?: number;
-    costStamina?: number;
-    finisherCandidate?: boolean;
-  }>;
+  availableActions: ObserverSafeAvailableAction[];
   finisher: FinisherWindow | null;
   /** Last executed/planned action for this side (for variety pressure). */
   lastAction?: {
@@ -78,6 +75,13 @@ export type CharacterCounterpartKnowledge = {
   /** Current coarse condition is omitted when the counterpart is not accessible. */
   condition?: PerceivedCondition;
 };
+
+/** Character-authored speech supplied to narration as immutable source material. */
+export type CharacterSpeechSource = Readonly<{
+  side: "a" | "b";
+  speaker: string;
+  text: string;
+}>;
 
 /** Narrative-safe battle history for improvement analysis (no raw combat params). */
 export type BattleHistorySearchHit = {
@@ -199,7 +203,60 @@ export type NarrationStreamProgress = {
 
 export type RefereeResult = {
   winnerSide: "a" | "b" | "draw";
-  summary: string;
+  /** Raw fact-based rationale. Public narration is produced in a later call. */
+  reason: string;
+  reasonFacts?: BattleAdjudicationReasonFact[];
+};
+
+export type JudgmentNarrationResult = {
+  /** Presentation-only framing placed before the immutable verdict line. */
+  before: string[];
+  /** Presentation-only closing placed after the immutable verdict line. */
+  after: string[];
+};
+
+export type AftermathNarrationResult = JudgmentNarrationResult & {
+  /** Placement proposals for already-committed character-authored reactions. */
+  speeches: NonNullable<NarrationResult["speeches"]>;
+};
+
+/** Bounded committed facts for turn-limit review; never derived from narration. */
+export type RefereeTurnFact = {
+  turn: number;
+  actions: Array<{
+    actorSide: "a" | "b";
+    kind: CharacterActionIntent["kind"];
+    executed: boolean;
+    skippedReason: string | null;
+    resolutionReason: string | null;
+  }>;
+  effects: Array<{
+    type: Exclude<TurnEvent["type"], "utterance">;
+    actorSide: "a" | "b" | null;
+    targetSides: Array<"a" | "b">;
+    parameterKey: ParamKey | null;
+    parameterDirection: "loss" | "gain" | null;
+    intensity: "minor" | "moderate" | "heavy" | "critical" | null;
+  }>;
+  stateChanges: {
+    a: { canFightBefore: boolean; canFightAfter: boolean };
+    b: { canFightBefore: boolean; canFightAfter: boolean };
+  };
+  worldImpact: {
+    status: "applied" | "rejected" | "skipped";
+    operationKinds: string[];
+  } | null;
+};
+
+export type RefereeFinalState = {
+  a: {
+    condition: PerceivedCondition;
+    reserves: Record<"hp" | "mp" | "stamina", "empty" | "low" | "available" | "ample">;
+  };
+  b: {
+    condition: PerceivedCondition;
+    reserves: Record<"hp" | "mp" | "stamina", "empty" | "low" | "available" | "ample">;
+  };
 };
 
 export interface LlmProvider {
@@ -292,22 +349,18 @@ export interface LlmProvider {
   }>;
   /** Advance one character from its frozen observer-relative frame only. */
   advanceCharacterAgent(input: {
-    character: {
-      displayName: string;
-      identity: CharacterIdentity;
-      traits: string[];
-      narrativeBlurb: string;
-      skillNames: string[];
-    };
+    phase: "prologue" | "turn" | "aftermath";
+    character: CharacterSelfProfileAnchor;
     previous: CharacterAgentState;
     perception: CharacterPerceptionFrame;
     /** Present only when this frame identifies the counterpart. */
     counterpart?: CharacterCounterpartKnowledge;
-    decision: CharacterActionDecisionContext;
+    /** Omitted in aftermath, where the character plans no new combat turn. */
+    decision?: CharacterActionDecisionContext;
   }): Promise<{
     state: CharacterAgentState;
     speech: string;
-    nextAction: CharacterActionIntent;
+    nextAction?: CharacterActionIntent;
   }>;
   /**
    * Fluid perspective only: pick turn focus from thin summary digests.
@@ -344,6 +397,8 @@ export interface LlmProvider {
     };
     /** Already filtered digests for the resolved focus (may be empty). */
     innerDigests?: InnerDigest[];
+    /** Character-authored lines. Narration may place and surface-style, not invent. */
+    characterSpeeches?: readonly CharacterSpeechSource[];
     /** Narration style instruction for this match. */
     styleInstruction?: string;
     styleName?: string;
@@ -366,6 +421,9 @@ export interface LlmProvider {
     /** Summary of last finished matchup between these two, if any. */
     priorMatchSummary?: string;
     innerDigests?: InnerDigest[];
+    characterSpeeches?: readonly CharacterSpeechSource[];
+    /** Rendering-only identity constraints, filtered for the resolved focus. */
+    profileAnchors: NarratorRenderingProfileAnchors;
     focus?: NarrationFocus;
     perspective?: NarrationPerspective;
     battlefield?: BattlefieldInstance | null;
@@ -388,12 +446,31 @@ export interface LlmProvider {
     battlefield?: BattlefieldInstance | null;
     recentNarration?: string[];
     innerDigests?: InnerDigest[];
+    characterSpeeches?: readonly CharacterSpeechSource[];
+    /** Rendering-only identity constraints, filtered for the resolved focus. */
+    profileAnchors: NarratorRenderingProfileAnchors;
     focus?: NarrationFocus;
     perspective?: NarrationPerspective;
     styleInstruction?: string;
     styleName?: string;
     onProgress?: (progress: NarrationStreamProgress) => void;
-  }): Promise<NarrationResult>;
+  }): Promise<AftermathNarrationResult>;
+  /**
+   * Render an already-decided turn-limit judgment for the user. This call may
+   * use public prose for continuity but has no result mutation authority.
+   */
+  narrateJudgment(input: {
+    turn: number;
+    scene: string;
+    sideAName: string;
+    sideBName: string;
+    winnerSide: "a" | "b" | "draw";
+    winnerName: string | null;
+    adjudicationReason: string;
+    recentPublicNarration: string[];
+    styleInstruction?: string;
+    styleName?: string;
+  }): Promise<JudgmentNarrationResult>;
   /** Draft a custom narration style from free text. */
   generateNarrationStyle?(prompt: string): Promise<{
     displayName: string;
@@ -406,7 +483,9 @@ export interface LlmProvider {
     sideAName: string;
     sideBName: string;
     engineWinnerSide: "a" | "b" | "draw" | null;
-    logSummaries: string[];
+    /** Committed engine records only; public narration is deliberately absent. */
+    turnFacts: RefereeTurnFact[];
+    finalState: RefereeFinalState;
   }): Promise<RefereeResult>;
   /**
    * Generate case-based policy options from character traits + field.

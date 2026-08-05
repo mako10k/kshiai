@@ -71,6 +71,7 @@ describe("public battle semantic projection", () => {
     assert.equal(json.includes("parameters"), false);
     assert.equal(json.includes("coefficients"), false);
     assert.equal(json.includes("perceptionRegistry"), false);
+    assert.equal(json.includes("worldState"), false);
     assert.equal(json.includes("hidden.enemy.1"), false);
   });
 
@@ -165,6 +166,58 @@ describe("public battle semantic projection", () => {
     });
     assert.equal(result.status, "rejected");
     assert.equal(result.state.semanticState, state.semanticState);
+  });
+
+  it("commits structured semantic location changes through the world boundary", async () => {
+    const sideA = sheet("a", "A");
+    const sideB = sheet("b", "B");
+    const state = createBattleState({
+      id: "semantic-world-causality",
+      sideA,
+      sideB,
+      turnLimit: 20,
+      prologuePending: false,
+    });
+    const llm = new MockLlmProvider();
+    llm.reconcileTurnSemanticState = async (input) => ({
+      patch: {
+        baseRevision: input.before.revision,
+        turn: input.turn,
+        sourceEventIds: [],
+        operations: [{
+          op: "replace",
+          path: "/entities/character.b/location",
+          value: { type: "scene", area: "隣の回廊" },
+        }],
+      },
+      worldPatchStatus: "valid",
+      sensoryEvidence: [],
+      sensoryEvidenceStatus: "valid",
+    });
+
+    const result = await reconcileSemanticState({
+      llm,
+      stateBeforeTurn: state,
+      resolvedState: state,
+      mine: sideA,
+      opp: sideB,
+      actions: [],
+      events: [],
+      mechanicalEvidence: [],
+    });
+
+    assert.equal(result.status, "applied");
+    assert.equal(result.state.worldState?.revision, 1);
+    assert.equal(result.state.latestWorldTransition?.status, "applied");
+    assert.equal(result.state.latestWorldTransition?.fromRevision, 0);
+    assert.equal(result.state.latestWorldTransition?.toRevision, 1);
+    assert.equal(
+      result.state.worldState?.pairRelations[0]?.distance,
+      "separate_area",
+    );
+    const publicState = toBattlePublic(result.state, sideA, null, sideB);
+    assert.equal("worldState" in publicState, false);
+    assert.equal("latestWorldTransition" in publicState, false);
   });
 
   it("skips semantic mutation when the provider fails", async () => {
@@ -313,7 +366,11 @@ describe("public battle semantic projection", () => {
     });
 
     assert.equal(result.status, "applied");
-    assert.equal(result.state.perceptionFrameA?.counterpart.currentAccess, "none");
+    assert.equal(result.state.perceptionFrameA?.counterpart.currentAccess, "clear");
+    assert.equal(
+      result.state.perceptionFrameA?.counterpart.identityKnowledge,
+      "unknown",
+    );
     assert.equal(
       result.state.perceptionFrameA?.others[0]?.subject.kind,
       "contact",
@@ -432,6 +489,11 @@ describe("public battle semantic projection", () => {
       result.state.perceptionRegistryA?.contacts[0]?.contactId,
       "contact.a.1",
     );
+    assert.equal(
+      result.state.perceptionFrameA?.counterpart.currentAccess,
+      "clear",
+    );
+    assert.equal(result.state.perceptionFrameA?.others[0]?.currentAccess, "trace");
     assert.equal(
       JSON.stringify(result.state.perceptionFrameA).includes("sourceSet"),
       false,

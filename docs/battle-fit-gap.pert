@@ -1,0 +1,444 @@
+project KSHIAI_BATTLE_FIT_GAP:
+  version 6
+  title "Close v0.5.1 battle pipeline Fit and Gap findings"
+  description |
+    Implement the accepted battle-fit-gap backlog while keeping canonical world
+    state character cognition actual speech public rendering narration and
+    result authority separate. Use origin HEAD v0.5.1 at commit 206a1b0 as the
+    analysis and integration baseline. Merge the narrator boundary first, then
+    close perception action causality timing and compatibility gaps. After
+    acceptance, safely classify and clean obsolete integration artifacts.
+  as_of 2026-08-05
+  duration_unit day
+  finish REPOSITORY_CLEAN
+
+resource DEV:
+  title "Developer"
+  capacity 1
+
+milestone FIT_GAP_REVIEWED:
+  title "Fit and Gap requirements and backlog recorded"
+  state reached
+
+milestone NARRATOR_READY:
+  title "Character-authored speech and presentation-only narration ready"
+
+milestone RULES_READY:
+  title "Timing and adjudication decisions accepted"
+
+milestone WORLD_MODEL_READY:
+  title "Coarse canonical world and state model ready"
+
+milestone PROFILE_GROUNDED:
+  title "Character self profile and narrator identity grounding ready"
+
+milestone PERCEPTION_BASE_READY:
+  title "Initial and continuous perception ready"
+
+milestone PERCEPTION_READY:
+  title "Apparent identity and speech perception ready"
+
+milestone ACTIONS_READY:
+  title "Observer-safe feasible actions and revalidation ready"
+
+milestone CAUSALITY_READY:
+  title "World interference and conscious or unconscious effects ready"
+
+milestone TIMELINE_READY:
+  title "Side-neutral temporal resolution ready"
+
+milestone RESULT_READY:
+  title "Canonical result adjudication ready"
+
+milestone PHASES_READY:
+  title "Prologue normal turn and aftermath contracts aligned"
+
+milestone COMPATIBILITY_READY:
+  title "Legacy battle compatibility ready"
+
+milestone GAP_ACCEPTED:
+  title "Battle pipeline gaps accepted"
+
+milestone REPOSITORY_CLEAN:
+  title "Repository branches and workspaces safely cleaned"
+
+task T_NARRATOR FIT_GAP_REVIEWED -> NARRATOR_READY:
+  title "Make narration presentation-only and source public speech from characters"
+  description |
+    Close BL-001 BL-010 and BL-011 for narration. Amend the requirements and
+    role boundary so isolated character agents own actual speech. Pass only
+    accepted character speech to the narrator, allow placement and
+    punctuation-only surface styling, reject invention or factual and intent
+    changes, and fall back to the exact source line. Preserve source side and
+    speaker, interleave speech at narrator-selected boundaries, support legacy
+    narrative blocks, and never write public rendering back into private agent
+    state. Remove public narrator prose from turn-limit referee input, replace it
+    with bounded committed turn facts, then use a separate narrator call with the
+    immutable raw judgment and recent public prose to frame a server-rendered
+    canonical verdict line. Leave full result-factor coverage to T_ADJUDICATION.
+    Apply the same no-invention rule to normal turns prologue and aftermath. Add
+    contract provider service and UI-order regression tests plus a narrator-style
+    non-feedback check.
+  duration 2d
+  status done
+  requires:
+    DEV 1
+
+task T_RULES NARRATOR_READY -> RULES_READY:
+  title "Accept side-neutral timing and canonical result rules"
+  description |
+    Close BL-002 and BL-003. Decide full simultaneity speed ordering or
+    initiative buckets and record initiative inputs ties mutual incapacity
+    interruption defense movement object conflicts and seeded randomness.
+    Preserve the accepted two-stage turn-limit boundary: an independent semantic
+    adjudicator decides from canonical facts, then the narrator presents the
+    immutable judgment using public prose only as style continuity. Record this
+    decision and update remaining conflicting requirements.
+  duration 1d
+  status done
+  requires:
+    DEV 1
+
+task T_WORLD_MODEL RULES_READY -> WORLD_MODEL_READY:
+  title "Define a coarse canonical position state and relation model"
+  description |
+    Close BL-020 without implementing exact coordinate physics. Add bounded
+    structured relative distance presence exposure occlusion orientation
+    sensory physical and mental states plus held worn attached and usable object
+    relations. Define server-owned transitions and invariants shared by
+    perception feasible actions causal effects and temporal resolution.
+  duration 3d
+  status done
+  requires:
+    DEV 1
+
+task T_PROFILE_GROUNDING WORLD_MODEL_READY -> PROFILE_GROUNDED:
+  title "Ground character self identity separately from narrator rendering"
+  description |
+    Close BL-012. Preserve the reported gender and self-profile drift as an
+    unresolved provenance question because the example predates the narrator
+    boundary and role-specific outputs are unavailable. Give each character
+    agent a frozen complete own-profile anchor and state that canonical profile
+    facts override contradictory private continuity while null facts remain
+    unknown. Give prologue normal-turn and aftermath narrators a separate
+    rendering-only identity anchor sufficient to avoid misgendering without
+    writing it into cognition or leaking counterpart-private facts through a
+    character-limited view. Add independent fixtures for character output and
+    narrator output including explicit gender null gender multiple self names
+    and nonhuman or appearance-atypical profiles.
+  duration 2d
+  status done
+  requires:
+    DEV 1
+
+task T_PERCEPTION_BASE PROFILE_GROUNDED -> PERCEPTION_BASE_READY:
+  title "Build realistic initial perception and explicit access continuity"
+  description |
+    Close BL-021 and BL-022. Derive initial A and B frames from setup and the
+    coarse world so an ordinarily exposed counterpart is accessible without
+    leaking unestablished identity. Retain current access when no new evidence
+    arrives and lower it only through committed hiding disappearance occlusion
+    absence or observer impairment transitions. Keep identity memory independent
+    from current access and cover provider and projection failures.
+  duration 3d
+  status done
+  requires:
+    DEV 1
+
+task T_PERCEPTION_APPARENT PERCEPTION_BASE_READY -> PERCEPTION_READY:
+  title "Represent apparent identity and project actual speech per observer"
+  description |
+    Close BL-023 and BL-024. Separate canonical identity from perceived form
+    suspected identity confidence and private belief for transformation disguise
+    illusion and hallucination. Commit character-authored utterances as world
+    events and project heard partial misunderstood unattributed or unheard speech
+    through distance occlusion noise hearing consciousness and language state.
+    Never use the public rendered line as a character observation.
+  duration 3d
+  status done
+  requires:
+    DEV 1
+
+task T_ACTIONS PERCEPTION_READY -> ACTIONS_READY:
+  title "Compute observer-safe feasible actions and revalidate intentions"
+  description |
+    Close BL-030 and BL-031. Compute available actions from canonical resources
+    position state targets objects and scene constraints while exposing only
+    observer-safe labels and choices to each character. Revalidate chosen intent
+    after temporal conflicts and commit failure partial execution or an
+    epistemically safe fallback without reading hidden opponent totals.
+  duration 3d
+  status done
+  requires:
+    DEV 1
+
+task T_CAUSALITY ACTIONS_READY -> CAUSALITY_READY:
+  title "Connect world objects states and effects to causal mechanics"
+  description |
+    Close BL-040 and BL-041. Make scene entities relations and effects constrain
+    targets feasibility coefficients and state transitions through structured
+    rules. Apply unperceived causes to canonical outcomes without revealing them
+    and project only consequences that the observer can notice. Cover object and
+    character interference plus conscious and unconscious influence fixtures.
+  duration 3d
+  status done
+  requires:
+    DEV 1
+
+task T_TIMELINE CAUSALITY_READY -> TIMELINE_READY:
+  title "Implement and prove the accepted fair temporal resolver"
+  description |
+    Close BL-050 and BL-051. Implement the accepted initiative and simultaneity
+    rules without fixed Side A priority, use one turn-start snapshot for each
+    simultaneous bucket, merge conflicts atomically, and preserve valid mutual
+    incapacity. Add A and B swap metamorphic tests for equal and unequal speed
+    mutual effects interruption movement and shared object conflicts.
+  duration 3d
+  status done
+  requires:
+    DEV 1
+
+task T_ADJUDICATION TIMELINE_READY -> RESULT_READY:
+  title "Derive turn-limit results from canonical records"
+  description |
+    Close BL-060. Remove public narration and rendered speech from result input.
+    Complete the accepted independent semantic adjudication contract over
+    committed actions effects state transitions and world impact, followed by a
+    presentation-only narrator call that may see recent public narration. Prove
+    that narration style provider timeout paraphrase and empty public prose
+    cannot change winner finish reason rating input or canonical reason facts.
+  duration 2d
+  status done
+  requires:
+    DEV 1
+
+task T_PHASES RESULT_READY -> PHASES_READY:
+  title "Align prologue normal turn and aftermath authority contracts"
+  description |
+    Close BL-070. Apply the same actual-speech cognition perception narration
+    and no-feedback boundaries to setup normal turns terminal turns and
+    aftermath. Ensure the first character decision consumes initial perception
+    and that no specialized narrator call invents speech or canonical outcomes.
+  duration 2d
+  status done
+  requires:
+    DEV 1
+
+task T_COMPAT PHASES_READY -> COMPATIBILITY_READY:
+  title "Migrate legacy battle perception and speech continuity safely"
+  description |
+    Close BL-080. Define deterministic reads and next-save migration for legacy
+    identification access lastSpeech narrative blocks and missing world state.
+    Preserve historical display while preventing old public rendering from
+    becoming new private cognition. Verify bounded retention privacy failure and
+    rollback-safe database compatibility.
+  duration 2d
+  status done
+  requires:
+    DEV 1
+
+task T_ACCEPT COMPATIBILITY_READY -> GAP_ACCEPTED:
+  title "Accept gap closure across mock XAI and fallback paths"
+  description |
+    Close BL-090. Run fixed setup perception speech world-action unconscious
+    influence side-swap mutual-incapacity narration-independence and legacy
+    fixtures. Review all prompts DTOs logs and persistence for hidden identity
+    totals locations private state control IDs and narrator feedback. Obtain live
+    XAI primary evidence then run tests typecheck build llmthink review and PERT
+    checks before marking the project complete.
+  duration 2d
+  status done
+  requires:
+    DEV 1
+
+task T_CLEANUP GAP_ACCEPTED -> REPOSITORY_CLEAN:
+  title "Safely clean obsolete branches stashes and worktrees"
+  description |
+    Inventory local and remote branches stashes and linked worktrees after final
+    acceptance. For each candidate prove its commits and reusable file changes
+    are integrated or explicitly preserved and verify the published destination
+    SHA before deletion. Present any ambiguous or unmerged target for explicit
+    confirmation; never delete it by age name or apparent similarity alone.
+    Remove only confirmed obsolete artifacts, prune stale references without
+    touching active work, and finish with the intended main branch and every
+    retained worktree clean. Record what was removed and what WIP was retained.
+  duration 1d
+  status active
+  requires:
+    DEV 1
+
+work_event WE-61482dcf104b8eb79d56f1ac22d4e79f69ae5f4bc20705490989da60a8dcae29:
+  model 1
+  task T_NARRATOR
+  kind start
+  occurred_at 2026-08-05T10:14:24+09:00
+  planned_value 2d
+
+work_event WE-2e7bae30926f60ca7937367218ba03ccd1103e280bb40cbd91f65abf9f0ff8e3:
+  model 1
+  task T_NARRATOR
+  kind finish
+  occurred_at 2026-08-05T10:16:01+09:00
+
+work_event WE-31472e973966ff91fd0b7a26d0407102533f28a143a8e619e1f811950ce58199:
+  model 1
+  task T_RULES
+  kind start
+  occurred_at 2026-08-05T10:17:06+09:00
+  planned_value 1d
+
+work_event WE-22e9026bb66acf2b1e9d733ba2ad39d987a122b93b2acb73c2c427d9261b6c6b:
+  model 1
+  task T_RULES
+  kind finish
+  occurred_at 2026-08-05T10:20:47+09:00
+
+work_event WE-5384c5e3c9723a35ea026faf7c7141687df9eabf4502717f256b541f1ce9c3d5:
+  model 1
+  task T_WORLD_MODEL
+  kind start
+  occurred_at 2026-08-05T10:26:45+09:00
+  planned_value 3d
+
+work_event WE-83e7805d78197baa6a2ae682efefe1de7963fab2d986ab4e33a86c2e809b97c9:
+  model 1
+  task T_WORLD_MODEL
+  kind finish
+  occurred_at 2026-08-05T10:40:48+09:00
+
+work_event WE-89d42a059a98445e0fa735d3c3447553035b6d3217957211a1a13dd82a413546:
+  model 1
+  task T_PROFILE_GROUNDING
+  kind start
+  occurred_at 2026-08-05T10:54:22+09:00
+  planned_value 2d
+
+work_event WE-54c2df2d477d8d6b6fa77a12226768fd86ca2dee9a4ed0dd3ac03422b26089bc:
+  model 1
+  task T_PROFILE_GROUNDING
+  kind finish
+  occurred_at 2026-08-05T11:07:18+09:00
+
+work_event WE-8b6ad39b8ddb541465d3e671036a9aaa5e66cc3b14b5d8d7f893331a137e54bd:
+  model 1
+  task T_PERCEPTION_BASE
+  kind start
+  occurred_at 2026-08-05T11:16:03+09:00
+  planned_value 3d
+
+work_event WE-a6db3e5544c042af4c212645ff4a37f3d11e2724d0f2eb24082ebd7de399fcdf:
+  model 1
+  task T_PERCEPTION_BASE
+  kind finish
+  occurred_at 2026-08-05T11:26:50+09:00
+
+work_event WE-08b336e7b0ed97ccb842ed8cf033c0224af755573fa29444b3f6774ce0d0cbe3:
+  model 1
+  task T_PERCEPTION_APPARENT
+  kind start
+  occurred_at 2026-08-05T11:36:32+09:00
+  planned_value 3d
+
+work_event WE-06feb23e9b3bcc29141efcce39deda99fce7b521c96289134ab6f41d8193f2cd:
+  model 1
+  task T_PERCEPTION_APPARENT
+  kind finish
+  occurred_at 2026-08-05T11:57:16+09:00
+
+work_event WE-1bca0c4493c045237f49d44e2ed1dd622717a6568137dded9e0cd6037e86a7d0:
+  model 1
+  task T_ACTIONS
+  kind start
+  occurred_at 2026-08-05T12:07:01+09:00
+  planned_value 3d
+
+work_event WE-ba8d7c8f80ceea7730694d9778cac7583e5d9f9c38a154e60f3cfe81dbe0f1ca:
+  model 1
+  task T_ACTIONS
+  kind finish
+  occurred_at 2026-08-05T12:24:59+09:00
+
+work_event WE-ec8a0e2b4966917bac9d0b7cbbf69e9796185deeb66ff7f56711fdd9748127cc:
+  model 1
+  task T_CAUSALITY
+  kind start
+  occurred_at 2026-08-05T12:32:50+09:00
+  planned_value 3d
+
+work_event WE-626bbd449891e5c4a7d4e4dd52c8733846a24b365cf15b0f4dcd82ba9f11c50a:
+  model 1
+  task T_CAUSALITY
+  kind finish
+  occurred_at 2026-08-05T13:04:58+09:00
+
+work_event WE-737aaf3865ca592ce13e2b2c1b0ab9b028ae9cfddb2fd172f226d9c80bb54c23:
+  model 1
+  task T_TIMELINE
+  kind start
+  occurred_at 2026-08-05T13:07:18+09:00
+  planned_value 3d
+
+work_event WE-5fc98eed-3f77-4e7e-9669-7a9de505b3d2:
+  model 1
+  task T_TIMELINE
+  kind finish
+  occurred_at 2026-08-05T13:15:26+09:00
+
+work_event WE-f306e306-46ce-4775-8961-8bc032acac8b:
+  model 1
+  task T_ADJUDICATION
+  kind start
+  occurred_at 2026-08-05T13:21:26+09:00
+  planned_value 2d
+
+work_event WE-74cab5c8-4803-4ac5-b671-de161bb0e48e:
+  model 1
+  task T_ADJUDICATION
+  kind finish
+  occurred_at 2026-08-05T13:22:09+09:00
+
+work_event WE-623ce369-5a2c-44c5-9661-7d7dd213521a:
+  model 1
+  task T_PHASES
+  kind start
+  occurred_at 2026-08-05T13:22:32+09:00
+  planned_value 2d
+
+work_event WE-d8ccf5b4-5ec3-4458-8c9b-cfc31f795a5f:
+  model 1
+  task T_PHASES
+  kind finish
+  occurred_at 2026-08-05T13:30:08+09:00
+
+work_event WE-fb9b9e6f-c82a-4c25-8597-56fbcd8b1963:
+  model 1
+  task T_COMPAT
+  kind start
+  occurred_at 2026-08-05T13:30:32+09:00
+  planned_value 2d
+
+work_event WE-854974b5-8892-43e5-bf56-eb59ab17bc66:
+  model 1
+  task T_COMPAT
+  kind finish
+  occurred_at 2026-08-05T13:35:09+09:00
+
+work_event WE-6f7fbd34-79a7-45cc-a78d-a039d26d2ebc:
+  model 1
+  task T_ACCEPT
+  kind start
+  occurred_at 2026-08-05T13:35:37+09:00
+  planned_value 2d
+
+work_event WE-5ed65357-ffc5-432f-8d5b-da5f1c0d3f50:
+  model 1
+  task T_ACCEPT
+  kind finish
+  occurred_at 2026-08-05T13:40:16+09:00
+
+work_event WE-fc6dbdb4-ad60-4d56-a3e4-d92ef2bc63f4:
+  model 1
+  task T_CLEANUP
+  kind start
+  occurred_at 2026-08-05T13:40:41+09:00
+  planned_value 1d

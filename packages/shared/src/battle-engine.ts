@@ -33,6 +33,7 @@ import {
   buildSemanticObservationState,
   createBattleSemanticState,
 } from "./semantic-state.js";
+import { createBattleWorldState } from "./battle-world.js";
 import { normalizeDramaState, parseActionSignature } from "./drama.js";
 import {
   balanceBasicAttack,
@@ -44,7 +45,16 @@ import {
   type CommittedMechanicalEvidence,
 } from "./perception.js";
 import { buildServerOnlyReserveCues } from "./perception-quantization.js";
-import { buildMinimalObserverPerception } from "./perception-projection.js";
+import {
+  buildInitialObserverPerception,
+  buildMinimalObserverPerception,
+} from "./perception-projection.js";
+import { revalidateCharacterAction } from "./action-feasibility.js";
+import { applyBattleCausalCoefficients } from "./battle-causality.js";
+import {
+  buildBattleTemporalPlan,
+  type BattleTemporalSide,
+} from "./battle-temporal-rules.js";
 
 function nowIso(): string {
   return new Date().toISOString();
@@ -306,6 +316,20 @@ export function buildBattleTurnRecord(input: {
   };
   return {
     turn: input.after.turn,
+    ...(input.after.latestTemporalResolution
+      ? { temporalResolution: input.after.latestTemporalResolution }
+      : {}),
+    ...(input.after.latestWorldTransition?.turn === input.after.turn
+      ? {
+          worldImpact: {
+            status: input.after.latestWorldTransition.status,
+            operationKinds:
+              input.after.latestWorldTransition.transition?.operations.map(
+                (operation) => operation.op,
+              ) ?? [],
+          },
+        }
+      : {}),
     actions: input.actions ?? [],
     events: input.events,
     sideAChange: {
@@ -451,6 +475,7 @@ export function createBattleState(input: {
   });
   const sideA = combatantFromSheet(input.sideA);
   const sideB = combatantFromSheet(input.sideB);
+  const worldState = createBattleWorldState({ semanticState });
   const perceptionRegistryA = {
     schemaVersion: 1 as const,
     observerSide: "a" as const,
@@ -464,10 +489,11 @@ export function createBattleState(input: {
     contacts: [],
   };
   const initialProjection = (observerSide: "a" | "b") =>
-    buildMinimalObserverPerception({
+    buildInitialObserverPerception({
       observerSide,
       turn: 0,
       semanticState,
+      worldState,
       quantizedMechanicalEvidence: [],
       reserveEvidence: buildServerOnlyReserveCues({
         side: observerSide,
@@ -486,6 +512,7 @@ export function createBattleState(input: {
 
   return {
     id: input.id,
+    pipelineAuthorityVersion: 1,
     status: "active",
     turn: 0,
     turnLimit: input.turnLimit,
@@ -508,6 +535,7 @@ export function createBattleState(input: {
       tags,
     },
     semanticState,
+    worldState,
     observationStateA: buildSemanticObservationState({
       before: semanticState,
       after: semanticState,
@@ -595,6 +623,7 @@ export function ensureBattlePerceptionState(state: BattleState): BattleState {
       observerSide,
       turn: state.turn,
       semanticState,
+      worldState: state.worldState,
       quantizedMechanicalEvidence: [],
       reserveEvidence: buildServerOnlyReserveCues({
         side: observerSide,
@@ -622,10 +651,67 @@ export function ensureBattlePerceptionState(state: BattleState): BattleState {
   };
 }
 
+/** Deterministically supplies the server-owned coarse world for legacy battles. */
+export function ensureBattleWorldState(state: BattleState): BattleState {
+  if (state.worldState || !state.semanticState) return state;
+  return {
+    ...state,
+    worldState: createBattleWorldState({ semanticState: state.semanticState }),
+  };
+}
+
+/**
+ * Deterministic next-save migration for battles created before role boundaries.
+ * Historical public log remains display-only. Unknown-provenance lastSpeech and
+ * any action planned from it are discarded instead of entering new cognition.
+ */
+export function ensureBattleCompatibilityState(state: BattleState): BattleState {
+  const withWorld = ensureBattleWorldState(state);
+  const withPerception = ensureBattlePerceptionState(withWorld);
+  if (withPerception.pipelineAuthorityVersion === 1) {
+    return withPerception;
+  }
+  return {
+    ...withPerception,
+    pipelineAuthorityVersion: 1,
+    agentStateA: withPerception.agentStateA
+      ? { ...withPerception.agentStateA, lastSpeech: null }
+      : undefined,
+    agentStateB: withPerception.agentStateB
+      ? { ...withPerception.agentStateB, lastSpeech: null }
+      : undefined,
+    plannedActionA: undefined,
+    plannedActionB: undefined,
+    turnRecords: (withPerception.turnRecords ?? []).slice(-50),
+  };
+}
+
 function hpRatio(c: CombatantState): number {
   const max = c.parameters.maxHp ?? 100;
   const hp = c.parameters.hp ?? 0;
   return max > 0 ? hp / max : 0;
+}
+
+function observerSafeFoeHpRatio(
+  frame: BattleState["perceptionFrameA"] | BattleState["perceptionFrameB"],
+  foe: CombatantState,
+): number {
+  if (!frame || !["coarse", "clear"].includes(frame.counterpart.currentAccess)) {
+    return 0.7;
+  }
+  const condition = perceivedCondition(foe);
+  if (condition === "incapacitated") return 0;
+  if (condition === "critical") return 0.15;
+  if (condition === "strained") return 0.45;
+  return 0.8;
+}
+
+function intentFromBattleAction(action: BattleAction): CharacterActionIntent {
+  return {
+    kind: action.kind,
+    ...(action.skillId ? { skillId: action.skillId } : {}),
+    ...(action.useFinisher ? { useFinisher: true } : {}),
+  };
 }
 
 const PARAMETER_LABELS: Record<ParamKey, string> = {
@@ -669,6 +755,43 @@ function applyParameterDelta(
   combatant.parameters[effect.parameter] = next;
   clampCurrentToMaximums(combatant.parameters);
   return (combatant.parameters[effect.parameter] ?? current) - current;
+}
+
+/** Merge same-snapshot action proposals, then apply parameter bounds once. */
+function applyAtomicMechanicalAttempts(
+  sideA: CombatantState,
+  sideB: CombatantState,
+  attempts: MechanicalAttempt[],
+): void {
+  const totals = new Map<string, number>();
+  for (const attempt of attempts) {
+    const key = `${attempt.targetSide}:${attempt.parameterKey}`;
+    totals.set(key, (totals.get(key) ?? 0) + attempt.attemptedDelta);
+  }
+  const orderedKeys: ParamKey[] = [
+    "maxHp",
+    "maxMp",
+    "maxStamina",
+    ...PARAMETER_KEYS.filter((key) =>
+      key !== "maxHp" && key !== "maxMp" && key !== "maxStamina"
+    ),
+  ];
+  for (const side of ["a", "b"] as const) {
+    const combatant = side === "a" ? sideA : sideB;
+    for (const parameterKey of orderedKeys) {
+      const delta = totals.get(`${side}:${parameterKey}`) ?? 0;
+      if (delta === 0) continue;
+      const current = combatant.parameters[parameterKey] ?? 0;
+      const consumable = parameterKey === "hp" ||
+        parameterKey === "mp" ||
+        parameterKey === "stamina";
+      combatant.parameters[parameterKey] = Math.max(
+        consumable ? 0 : 1,
+        current + delta,
+      );
+    }
+    clampCurrentToMaximums(combatant.parameters);
+  }
 }
 
 function restoreTowardBase(combatant: CombatantState): ParamKey[] {
@@ -871,44 +994,6 @@ function actionFromBias(
   }
 }
 
-function actionFromCharacterIntent(input: {
-  intent?: CharacterActionIntent;
-  actorSide: "a" | "b";
-  self: CombatantState;
-  skills: Skill[];
-  finisher?: FinisherState;
-  turn: number;
-}): BattleAction | undefined {
-  const intent = input.intent;
-  if (!intent) return undefined;
-  if (intent.kind !== "skill") {
-    if (intent.useFinisher || intent.skillId) return undefined;
-    return { actorSide: input.actorSide, kind: intent.kind };
-  }
-  const skill = input.skills.find((candidate) => candidate.id === intent.skillId);
-  if (!skill) return undefined;
-  if (
-    (input.self.parameters.mp ?? 0) < skill.costMp ||
-    (input.self.parameters.stamina ?? 0) < skill.costStamina
-  ) {
-    return undefined;
-  }
-  const finisherReady = Boolean(
-    input.finisher &&
-    !input.finisher.used &&
-    input.turn >= 10 &&
-    skill.id === input.finisher.skillId,
-  );
-  if (skill.kind === "special" && !finisherReady) return undefined;
-  if (intent.useFinisher && !finisherReady) return undefined;
-  return {
-    actorSide: input.actorSide,
-    kind: "skill",
-    skillId: skill.id,
-    useFinisher: skill.kind === "special" || intent.useFinisher === true,
-  };
-}
-
 function ruleMatches(
   rule: BattlePolicyOption,
   ctx: { turn: number; myHp: number; foeHp: number },
@@ -960,9 +1045,11 @@ export function chooseActionFromPolicies(input: {
   avoidKind?: string | null;
   /** repeatedAction count from drama; >=2 enables stronger variety. */
   actionRepeatCount?: number;
+  /** Observer-safe coarse estimate; omit only for legacy direct callers. */
+  foeHpRatio?: number;
 }): BattleAction {
   const myHp = hpRatio(input.self);
-  const foeHp = hpRatio(input.foe);
+  const foeHp = input.foeHpRatio ?? hpRatio(input.foe);
   const selected = new Set(input.selectedIds);
   const active = input.policies.filter((p) => selected.has(p.id));
   const avoidSkillId = input.actionRepeatCount && input.actionRepeatCount >= 2
@@ -1022,6 +1109,7 @@ export function chooseActionFromPolicies(input: {
     foe: input.foe,
     skills: input.skills,
     turn: input.turn,
+    foeHpRatio: foeHp,
   });
 }
 
@@ -1035,10 +1123,12 @@ export function chooseActionFromStance(input: {
   foe: CombatantState;
   skills: Skill[];
   turn: number;
+  /** Observer-safe coarse estimate; omit only for legacy direct callers. */
+  foeHpRatio?: number;
 }): BattleAction {
   const { stance, actorSide, self, skills, turn } = input;
   const myHp = hpRatio(self);
-  const foeHp = hpRatio(input.foe);
+  const foeHp = input.foeHpRatio ?? hpRatio(input.foe);
 
   switch (stance) {
     case "aggressive":
@@ -1321,25 +1411,11 @@ export function resolveTurn(input: {
   const varietyA = drama.repeatedActionA >= 2;
   const varietyB = drama.repeatedActionB >= 2;
 
-  const plannedActionA = actionFromCharacterIntent({
-    intent: input.state.plannedActionA,
-    actorSide: "a",
-    self: sideA,
-    skills: input.sideASkills,
-    finisher: finisherA,
-    turn,
-  });
-  const plannedActionB = actionFromCharacterIntent({
-    intent: input.state.plannedActionB,
-    actorSide: "b",
-    self: sideB,
-    skills: input.sideBSkills,
-    finisher: finisherB,
-    turn,
-  });
+  const plannedActionA = input.state.plannedActionA;
+  const plannedActionB = input.state.plannedActionB;
 
   const intentMatchesAvoid = (
-    action: BattleAction | undefined,
+    action: CharacterActionIntent | undefined,
     avoid: ReturnType<typeof parseActionSignature>,
     requireVariety: boolean,
   ): boolean => {
@@ -1363,6 +1439,7 @@ export function resolveTurn(input: {
           avoidSkillId: varietyA ? avoidA?.skillId : null,
           avoidKind: varietyA ? avoidA?.kind : null,
           actionRepeatCount: drama.repeatedActionA,
+          foeHpRatio: observerSafeFoeHpRatio(input.state.perceptionFrameA, sideB),
         });
   const policyB = () =>
     forceOffense
@@ -1379,125 +1456,296 @@ export function resolveTurn(input: {
           avoidSkillId: varietyB ? avoidB?.skillId : null,
           avoidKind: varietyB ? avoidB?.kind : null,
           actionRepeatCount: drama.repeatedActionB,
+          foeHpRatio: observerSafeFoeHpRatio(input.state.perceptionFrameB, sideA),
         });
 
-  const playerAction = input.playerAction ??
+  const requestedActionA = input.playerAction ??
     (intentMatchesAvoid(plannedActionA, avoidA, varietyA)
       ? policyA()
-      : plannedActionA ?? policyA());
+      : plannedActionA
+        ? { actorSide: "a" as const, ...plannedActionA }
+        : policyA());
 
-  const aiAction: BattleAction =
+  const requestedActionB: BattleAction =
     intentMatchesAvoid(plannedActionB, avoidB, varietyB)
       ? policyB()
-      : plannedActionB ?? policyB();
+      : plannedActionB
+        ? { actorSide: "b", ...plannedActionB }
+        : policyB();
   const actionAId = `turn-${turn}-action-a`;
   const actionBId = `turn-${turn}-action-b`;
+  const requestedActions = {
+    a: requestedActionA,
+    b: requestedActionB,
+  } as const;
+  const actionIds = { a: actionAId, b: actionBId } as const;
+  const causalSituations = {
+    a: applyBattleCausalCoefficients({
+      situation,
+      worldState: input.state.worldState,
+      actorSide: "a",
+      targetSide: "b",
+    }),
+    b: applyBattleCausalCoefficients({
+      situation,
+      worldState: input.state.worldState,
+      actorSide: "b",
+      targetSide: "a",
+    }),
+  } as const;
+  const temporalResolution = buildBattleTemporalPlan({
+    effectiveSpeedA: (sideA.parameters.spd ?? 0) *
+      coeff(causalSituations.a, "spd"),
+    effectiveSpeedB: (sideB.parameters.spd ?? 0) *
+      coeff(causalSituations.b, "spd"),
+  });
   const actions: ResolvedBattleAction[] = [
     {
-      ...playerAction,
+      ...requestedActionA,
       id: actionAId,
-      executed: true,
-      skippedReason: null,
+      executed: false,
+      skippedReason: "incapacitated_before_action",
+      resolution: {
+        requested: intentFromBattleAction(requestedActionA),
+        outcome: "failed",
+        reason: "actor_unavailable",
+      },
     },
     {
-      ...aiAction,
+      ...requestedActionB,
       id: actionBId,
       executed: false,
       skippedReason: "incapacitated_before_action",
+      resolution: {
+        requested: intentFromBattleAction(requestedActionB),
+        outcome: "failed",
+        reason: "actor_unavailable",
+      },
     },
   ];
 
-  // Player (side A)
-  const actionAEventStart = events.length;
-  const actionABeforeA = parametersSnapshot(sideA);
-  const actionABeforeB = parametersSnapshot(sideB);
-  const actionAAttempts: MechanicalAttempt[] = [];
-  const usedFinisherA = applyAction(
-    sideA,
-    sideB,
-    playerAction,
-    input.sideASkills,
-    balanceBasicAttack(input.sideABasicAttack ?? defaultBasicAttack()),
-    situation,
-    events,
-    createMechanicalAttemptRecorder(sideA, sideB, actionAAttempts),
-    {
-      battleId: input.state.id,
-      turn,
-      turnLimit: input.state.turnLimit,
-      actorSide: "a",
-    },
-    finisherA,
-  );
-  if (usedFinisherA && finisherA) {
-    finisherA = { ...finisherA, used: true, usedTurn: turn };
-  }
-  tagActionEvents(events, actionAEventStart, {
-    actionId: actionAId,
-    actorSide: "a",
-    targetSide: "b",
-    actorName: sideA.displayName,
-    targetName: sideB.displayName,
+  const sideIndex = (side: BattleTemporalSide) => side === "a" ? 0 : 1;
+  const skillsFor = (side: BattleTemporalSide) =>
+    side === "a" ? input.sideASkills : input.sideBSkills;
+  const basicAttackFor = (side: BattleTemporalSide) =>
+    balanceBasicAttack(
+      side === "a"
+        ? input.sideABasicAttack ?? defaultBasicAttack()
+        : input.sideBBasicAttack ?? defaultBasicAttack(),
+    );
+  const finisherFor = (side: BattleTemporalSide) =>
+    side === "a" ? finisherA : finisherB;
+  const perceptionFor = (side: BattleTemporalSide) =>
+    side === "a"
+      ? input.state.perceptionFrameA
+      : input.state.perceptionFrameB;
+  const updateFinisher = (side: BattleTemporalSide, used: boolean) => {
+    if (!used) return;
+    if (side === "a" && finisherA) {
+      finisherA = { ...finisherA, used: true, usedTurn: turn };
+    }
+    if (side === "b" && finisherB) {
+      finisherB = { ...finisherB, used: true, usedTurn: turn };
+    }
+  };
+  const revalidate = (
+    side: BattleTemporalSide,
+    currentA: CombatantState,
+    currentB: CombatantState,
+  ) => revalidateCharacterAction({
+    actorSide: side,
+    requested: intentFromBattleAction(requestedActions[side]),
+    actor: side === "a" ? currentA : currentB,
+    skills: skillsFor(side),
+    basicAttack: basicAttackFor(side),
+    finisher: finisherFor(side),
+    turn,
+    worldState: input.state.worldState,
+    perception: perceptionFor(side),
   });
-  mechanicalSpans.push(mechanicalResolutionSpan({
-    sourceActionId: actionAId,
-    actorSide: "a",
-    beforeA: actionABeforeA,
-    beforeB: actionABeforeB,
-    sideA,
-    sideB,
-    attempts: actionAAttempts,
-    eventStart: actionAEventStart,
-    eventEnd: events.length,
-  }));
-
-  // Opponent (side B) from policies / stance if still up
-  if (!isCombatantDown(sideB) && !isCombatantDown(sideA)) {
-    actions[1] = {
-      ...actions[1]!,
-      executed: true,
-      skippedReason: null,
+  const setResolvedAction = (
+    side: BattleTemporalSide,
+    result: ReturnType<typeof revalidateCharacterAction>,
+  ) => {
+    const effective = result.action;
+    actions[sideIndex(side)] = {
+      ...(effective ?? requestedActions[side]),
+      id: actionIds[side],
+      executed: effective !== null,
+      skippedReason: effective ? null : "action_infeasible",
+      resolution: result.resolution,
     };
-    const actionBEventStart = events.length;
-    const actionBBeforeA = parametersSnapshot(sideA);
-    const actionBBeforeB = parametersSnapshot(sideB);
-    const actionBAttempts: MechanicalAttempt[] = [];
-    const usedFinisherB = applyAction(
-      sideB,
-      sideA,
-      aiAction,
-      input.sideBSkills,
-      balanceBasicAttack(input.sideBBasicAttack ?? defaultBasicAttack()),
-      situation,
-      events,
-      createMechanicalAttemptRecorder(sideA, sideB, actionBAttempts),
+  };
+  const executeAction = (inputAction: {
+    side: BattleTemporalSide;
+    effectiveAction: BattleAction | null;
+    currentA: CombatantState;
+    currentB: CombatantState;
+    targetEvents: TurnEvent[];
+    attempts: MechanicalAttempt[];
+  }): boolean => {
+    const actor = inputAction.side === "a"
+      ? inputAction.currentA
+      : inputAction.currentB;
+    const target = inputAction.side === "a"
+      ? inputAction.currentB
+      : inputAction.currentA;
+    if (!inputAction.effectiveAction) {
+      inputAction.targetEvents.push({
+        type: "info",
+        actorName: actor.displayName,
+        actorSide: inputAction.side,
+        summary: `${actor.displayName} は意図した行動を成立させられなかった。`,
+      });
+      return false;
+    }
+    return applyAction(
+      actor,
+      target,
+      inputAction.effectiveAction,
+      skillsFor(inputAction.side),
+      basicAttackFor(inputAction.side),
+      causalSituations[inputAction.side],
+      inputAction.targetEvents,
+      createMechanicalAttemptRecorder(
+        inputAction.currentA,
+        inputAction.currentB,
+        inputAction.attempts,
+      ),
       {
         battleId: input.state.id,
         turn,
         turnLimit: input.state.turnLimit,
-        actorSide: "b",
+        actorSide: inputAction.side,
       },
-      finisherB,
+      finisherFor(inputAction.side),
     );
-    if (usedFinisherB && finisherB) {
-      finisherB = { ...finisherB, used: true, usedTurn: turn };
-    }
-    tagActionEvents(events, actionBEventStart, {
-      actionId: actionBId,
-      actorSide: "b",
-      targetSide: "a",
-      actorName: sideB.displayName,
-      targetName: sideA.displayName,
+  };
+  const tagFor = (
+    targetEvents: TurnEvent[],
+    side: BattleTemporalSide,
+    currentA: CombatantState,
+    currentB: CombatantState,
+  ) => {
+    const actor = side === "a" ? currentA : currentB;
+    const target = side === "a" ? currentB : currentA;
+    tagActionEvents(targetEvents, 0, {
+      actionId: actionIds[side],
+      actorSide: side,
+      targetSide: side === "a" ? "b" : "a",
+      actorName: actor.displayName,
+      targetName: target.displayName,
     });
+  };
+
+  for (const bucket of temporalResolution.buckets) {
+    if (bucket.simultaneous) {
+      const bucketStartA = cloneCombatant(sideA);
+      const bucketStartB = cloneCombatant(sideB);
+      const proposals: Array<{
+        side: BattleTemporalSide;
+        sideA: CombatantState;
+        sideB: CombatantState;
+        attempts: MechanicalAttempt[];
+        events: TurnEvent[];
+        usedFinisher: boolean;
+      }> = [];
+      const effectiveBySide: Partial<Record<BattleTemporalSide, BattleAction>> = {};
+      if (!isCombatantDown(bucketStartA) && !isCombatantDown(bucketStartB)) {
+        for (const side of bucket.actorSides) {
+          const result = revalidate(side, bucketStartA, bucketStartB);
+          setResolvedAction(side, result);
+          if (result.action) effectiveBySide[side] = result.action;
+        }
+      }
+      const defends = (side: BattleTemporalSide): boolean => {
+        const action = effectiveBySide[side];
+        if (!action) return false;
+        if (action.kind === "defend") return true;
+        return action.kind === "skill" &&
+          skillsFor(side).find((skill) => skill.id === action.skillId)?.kind === "defend";
+      };
+      for (const side of bucket.actorSides) {
+        if (!effectiveBySide[side] && actions[sideIndex(side)].skippedReason !== "action_infeasible") {
+          continue;
+        }
+        const proposalA = cloneCombatant(bucketStartA);
+        const proposalB = cloneCombatant(bucketStartB);
+        proposalA.defending = defends("a");
+        proposalB.defending = defends("b");
+        const proposalEvents: TurnEvent[] = [];
+        const attempts: MechanicalAttempt[] = [];
+        const usedFinisher = executeAction({
+          side,
+          effectiveAction: effectiveBySide[side] ?? null,
+          currentA: proposalA,
+          currentB: proposalB,
+          targetEvents: proposalEvents,
+          attempts,
+        });
+        tagFor(proposalEvents, side, proposalA, proposalB);
+        proposals.push({
+          side,
+          sideA: proposalA,
+          sideB: proposalB,
+          attempts,
+          events: proposalEvents,
+          usedFinisher,
+        });
+      }
+      sideA = cloneCombatant(bucketStartA);
+      sideB = cloneCombatant(bucketStartB);
+      sideA.defending = defends("a");
+      sideB.defending = defends("b");
+      applyAtomicMechanicalAttempts(sideA, sideB, proposals.flatMap((item) => item.attempts));
+      for (const proposal of proposals) {
+        const eventStart = events.length;
+        events.push(...proposal.events);
+        mechanicalSpans.push(mechanicalResolutionSpan({
+          sourceActionId: actionIds[proposal.side],
+          actorSide: proposal.side,
+          beforeA: parametersSnapshot(bucketStartA),
+          beforeB: parametersSnapshot(bucketStartB),
+          sideA: proposal.sideA,
+          sideB: proposal.sideB,
+          attempts: proposal.attempts,
+          eventStart,
+          eventEnd: events.length,
+        }));
+        updateFinisher(proposal.side, proposal.usedFinisher);
+      }
+      continue;
+    }
+
+    const side = bucket.actorSides[0]!;
+    if (isCombatantDown(sideA) || isCombatantDown(sideB)) continue;
+    const result = revalidate(side, sideA, sideB);
+    setResolvedAction(side, result);
+    const eventStart = events.length;
+    const beforeA = parametersSnapshot(sideA);
+    const beforeB = parametersSnapshot(sideB);
+    const actionEvents: TurnEvent[] = [];
+    const attempts: MechanicalAttempt[] = [];
+    const usedFinisher = executeAction({
+      side,
+      effectiveAction: result.action,
+      currentA: sideA,
+      currentB: sideB,
+      targetEvents: actionEvents,
+      attempts,
+    });
+    tagFor(actionEvents, side, sideA, sideB);
+    events.push(...actionEvents);
+    updateFinisher(side, usedFinisher);
     mechanicalSpans.push(mechanicalResolutionSpan({
-      sourceActionId: actionBId,
-      actorSide: "b",
-      beforeA: actionBBeforeA,
-      beforeB: actionBBeforeB,
+      sourceActionId: actionIds[side],
+      actorSide: side,
+      beforeA,
+      beforeB,
       sideA,
       sideB,
-      attempts: actionBAttempts,
-      eventStart: actionBEventStart,
+      attempts,
+      eventStart,
       eventEnd: events.length,
     }));
   }
@@ -1594,6 +1842,7 @@ export function resolveTurn(input: {
     aftermathPending,
     finisherA,
     finisherB,
+    latestTemporalResolution: temporalResolution,
     plannedActionA: undefined,
     plannedActionB: undefined,
     updatedAt: nowIso(),
@@ -2069,6 +2318,7 @@ function applyBasicAttack(
   const parameter = profile.targetParameter;
   let critical = false;
   if (parameter === "hp") {
+    if (target.defending) amount = Math.round(amount * 0.55);
     amount = softenCombatDamage({
       rawDamage: amount,
       targetMaxHp: target.parameters.maxHp ?? 100,

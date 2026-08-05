@@ -2,7 +2,7 @@
 
 Status: XAI primary topology reviewed; OpenAI remains fallback
 Fixture version: `perception-prompts-v10`
-Last updated: 2026-08-04
+Last updated: 2026-08-05
 
 ## Purpose and authority boundary
 
@@ -91,6 +91,17 @@ Both topologies achieved schema validity, patch correctness, sensory coverage,
 attribution accuracy, and identity containment of `1.0`. Combined averaged
 `3431.89 ms`, p95 `4750 ms`, and `3928.11` tokens. Parallel split averaged
 `4040.33 ms`, p95 `5542 ms`, and `5851.22` tokens.
+
+The battle Fit/Gap release gate repeated the same fixed v10 matrix on 2026-08-05.
+The fresh primary-provider report is
+[`evidence/perception-xai-grok-4-fast-non-reasoning-v10-20260805-fit-gap.json`](evidence/perception-xai-grok-4-fast-non-reasoning-v10-20260805-fit-gap.json)
+with SHA-256
+`b42c572fbb926f08f5e86e10c2c48fb8130a5a755127d74d5a4d921981d07052`.
+All nine combined and nine split samples again passed every quality floor with
+zero call errors. Combined averaged `6632.11 ms`, p95 `9861 ms`, and `4464.89`
+tokens; parallel split averaged `5995.89 ms`, p95 `8109 ms`, and `6480.67`
+tokens. Because both passed and combined uses one call with fewer tokens, the
+reviewed XAI topology remains `combined`.
 
 The preceding v9 run is retained as regression evidence. Strict schemas removed
 all structural failures, but combined under-attributed the clearly visible

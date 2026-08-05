@@ -18,6 +18,27 @@ import type {
   NarrationFocus,
   NarrationPerspective,
 } from "./narration-perspective.js";
+import type { NarratorRenderingProfileAnchor } from "./profile-grounding.js";
+
+const profileAnchorA: NarratorRenderingProfileAnchor = {
+  schemaVersion: 1,
+  side: "a",
+  displayName: "アオ",
+  selfNames: ["私"],
+  gender: "女性",
+  age: null,
+  appearanceSummary: "青い影",
+};
+
+const profileAnchorB: NarratorRenderingProfileAnchor = {
+  schemaVersion: 1,
+  side: "b",
+  displayName: "クロ",
+  selfNames: [],
+  gender: null,
+  age: null,
+  appearanceSummary: "黒い影",
+};
 
 function frame(side: "a" | "b"): CharacterPerceptionFrame {
   return {
@@ -144,6 +165,8 @@ function projectionInput(
     focus,
     sideALabel: "アオ",
     sideBLabel: "クロ",
+    profileAnchorA,
+    profileAnchorB,
     frameA: frame("a"),
     frameB: frame("b"),
     semanticState,
@@ -179,6 +202,31 @@ describe("narration perception views", () => {
       )?.renderLabel,
       "クロ",
     );
+  });
+
+  it("uses an unlinked apparent identity instead of the canonical name", () => {
+    const input = projectionInput("self", "self");
+    input.frameA.counterpart = {
+      ...input.frameA.counterpart,
+      currentAccess: "clear",
+      identityKnowledge: "identified",
+      perceivedAs: "白狼",
+      apparentIdentity: {
+        form: "白い狼の姿",
+        identity: "白狼",
+        confidence: "probable",
+        continuity: "unlinked",
+      },
+    };
+    const view = buildNarrationPerceptionView(input);
+    assert.equal(view.mode, "self");
+    if (view.mode !== "self") assert.fail("expected self narration view");
+    assert.equal(
+      view.references.find((reference) => reference.controlId === "opponent")
+        ?.renderLabel,
+      "白狼",
+    );
+    assert.equal(JSON.stringify(view).includes("クロ"), false);
   });
 
   it("supplies every canonical ID only to omniscient narration", () => {
@@ -307,6 +355,8 @@ describe("narration perception views", () => {
       assert.equal(Object.isFrozen(self.perception.frame), true);
     }
     assert.equal(self.actionBeats[0]?.actorLabel, "アオ");
+    assert.deepEqual(Object.keys(self.profileAnchors), ["a"]);
+    assert.equal(self.profileAnchors.a?.gender, "女性");
     assert.equal(self.participantLabels.b, "知覚できない");
     assert.equal(JSON.stringify(self).includes("character.b"), false);
     assert.equal(JSON.stringify(self).includes("relic.hidden"), false);
@@ -324,6 +374,8 @@ describe("narration perception views", () => {
       actionBeats,
     });
     assert.equal(opponent.actionBeats.length, 1);
+    assert.deepEqual(Object.keys(opponent.profileAnchors), ["b"]);
+    assert.equal(opponent.profileAnchors.b?.gender, null);
     assert.equal(opponent.actionBeats[0]?.actorLabel, "クロ");
     assert.equal(opponent.participantLabels.a, "知覚できない");
     assert.equal(JSON.stringify(opponent).includes("character.a"), false);
@@ -340,6 +392,7 @@ describe("narration perception views", () => {
       actionBeats,
     });
     assert.equal(external.actionBeats.length, 2);
+    assert.deepEqual(Object.keys(external.profileAnchors).sort(), ["a", "b"]);
     assert.equal(JSON.stringify(external).includes("character."), false);
     assert.equal(JSON.stringify(external).includes("relic.hidden"), false);
     assert.equal(JSON.stringify(external).includes("event.hidden.4"), false);

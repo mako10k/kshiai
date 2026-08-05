@@ -39,19 +39,25 @@ describe("mock LLM natural-language handling", () => {
       legacyCounterpartIdentified: true,
     }).frame;
     const agentInput: Parameters<MockLlmProvider["advanceCharacterAgent"]>[0] = {
+      phase: "turn",
       character: {
+        schemaVersion: 1,
         displayName: "姫騎士",
         identity: {
           realName: null,
           nicknames: [],
           selfNames: ["わたくし"],
           epithets: [],
-          gender: null,
+          gender: "女性",
           age: null,
         },
+        tags: [],
+        appearanceSummary: "礼装をまとった騎士",
         traits: ["誇り高い"],
         narrativeBlurb: "礼節を重んじる騎士。",
-        skillNames: ["斬撃"],
+        basicAction: { name: "基本攻撃", description: "踏み込んで攻める。" },
+        skills: [{ name: "斬撃", description: "鋭く切り込む。" }],
+        equipment: { weapon: null, armor: null },
       },
       previous: {
         privateMemory: "",
@@ -72,7 +78,11 @@ describe("mock LLM natural-language handling", () => {
         nextTurn: 2,
         turnsRemaining: 19,
         availableActions: [
-          { kind: "basic_attack", name: "基本攻撃" },
+          {
+            kind: "basic_attack",
+            name: "基本攻撃",
+            target: { kind: "counterpart", perceivedAs: "挑戦者" },
+          },
         ],
         finisher: null,
       },
@@ -82,6 +92,28 @@ describe("mock LLM natural-language handling", () => {
     assert.match(result.speech ?? "", /わたくし/);
     assert.deepEqual(result.nextAction, { kind: "basic_attack" });
 
+    const corrected = await provider.advanceCharacterAgent({
+      ...agentInput,
+      previous: { ...agentInput.previous, selfReference: "俺" },
+    });
+    assert.equal(corrected.state.selfReference, "わたくし");
+    assert.match(corrected.speech, /わたくし/);
+
+    const unknownSelfName = await provider.advanceCharacterAgent({
+      ...agentInput,
+      character: {
+        ...agentInput.character,
+        identity: {
+          ...agentInput.character.identity,
+          selfNames: [],
+          gender: null,
+        },
+      },
+      previous: { ...agentInput.previous, selfReference: "私" },
+    });
+    assert.equal(unknownSelfName.state.selfReference, null);
+    assert.doesNotMatch(unknownSelfName.speech, /私|俺|僕|わたくし/);
+
     const finisherResult = await provider.advanceCharacterAgent({
       ...agentInput,
       perception: { ...agentInput.perception, turn: 19 },
@@ -90,7 +122,11 @@ describe("mock LLM natural-language handling", () => {
         nextTurn: 20,
         turnsRemaining: 1,
         availableActions: [
-          { kind: "basic_attack", name: "基本攻撃" },
+          {
+            kind: "basic_attack",
+            name: "基本攻撃",
+            target: { kind: "counterpart", perceivedAs: "挑戦者" },
+          },
           {
             kind: "skill",
             skillId: "slash",
@@ -99,6 +135,7 @@ describe("mock LLM natural-language handling", () => {
             costMp: 0,
             costStamina: 5,
             finisherCandidate: true,
+            target: { kind: "counterpart", perceivedAs: "挑戦者" },
           },
         ],
         finisher: {
@@ -139,6 +176,24 @@ describe("mock LLM natural-language handling", () => {
         focus: "external",
         sideALabel: "姫騎士",
         sideBLabel: "挑戦者",
+        profileAnchorA: {
+          schemaVersion: 1,
+          side: "a",
+          displayName: "姫騎士",
+          selfNames: ["わたくし"],
+          gender: null,
+          age: null,
+          appearanceSummary: "礼装をまとった騎士",
+        },
+        profileAnchorB: {
+          schemaVersion: 1,
+          side: "b",
+          displayName: "挑戦者",
+          selfNames: [],
+          gender: null,
+          age: null,
+          appearanceSummary: "挑戦者の姿",
+        },
         perception: perceptionView,
         semanticState,
         publicObservation: observation,
@@ -147,14 +202,27 @@ describe("mock LLM natural-language handling", () => {
         events: [],
         actionBeats: [],
       }),
+      characterSpeeches: [
+        { side: "a", speaker: "姫騎士", text: result.speech },
+        { side: "b", speaker: "挑戦者", text: "まだ終わらない。" },
+      ],
     });
     assert.ok(narration.narrator.length >= 2);
     assert.equal(
       narration.narrator.some((line) => /を起こす|を捉えた|を起こした/.test(line)),
       false,
     );
-    // Last-resort mock may omit speeches rather than invent stock lines.
-    assert.equal(Array.isArray(narration.speeches), true);
+    assert.deepEqual(
+      narration.speeches.map(({ speaker, text, sourceSide }) => ({
+        speaker,
+        text,
+        sourceSide,
+      })),
+      [
+        { speaker: "姫騎士", text: result.speech, sourceSide: "a" },
+        { speaker: "挑戦者", text: "まだ終わらない。", sourceSide: "b" },
+      ],
+    );
 
     const unknownFrameA = buildMinimalObserverPerception({
       observerSide: "a",
@@ -181,6 +249,24 @@ describe("mock LLM natural-language handling", () => {
         focus: "self",
         sideALabel: "姫騎士",
         sideBLabel: "挑戦者",
+        profileAnchorA: {
+          schemaVersion: 1,
+          side: "a",
+          displayName: "姫騎士",
+          selfNames: ["わたくし"],
+          gender: null,
+          age: null,
+          appearanceSummary: "礼装をまとった騎士",
+        },
+        profileAnchorB: {
+          schemaVersion: 1,
+          side: "b",
+          displayName: "挑戦者",
+          selfNames: [],
+          gender: null,
+          age: null,
+          appearanceSummary: "挑戦者の姿",
+        },
         perception: selfView,
         semanticState,
         publicObservation: observation,
@@ -189,6 +275,9 @@ describe("mock LLM natural-language handling", () => {
         events: [],
         actionBeats: [],
       }),
+      characterSpeeches: [
+        { side: "a", speaker: "姫騎士", text: result.speech },
+      ],
     });
     assert.equal(
       subjective.narrator.some((line) => /を起こす|を捉えた|を起こした/.test(line)),
@@ -198,6 +287,71 @@ describe("mock LLM natural-language handling", () => {
       subjective.speeches.some((line) => line.speaker === "挑戦者"),
       false,
     );
+    assert.deepEqual(
+      subjective.speeches.map(({ speaker, text, sourceSide }) => ({
+        speaker,
+        text,
+        sourceSide,
+      })),
+      [{ speaker: "姫騎士", text: result.speech, sourceSide: "a" }],
+    );
+  });
+
+  it("renders explicit and unknown identity profiles without inventing gender", async () => {
+    const provider = new MockLlmProvider();
+    const profileAnchors = {
+      a: {
+        schemaVersion: 1 as const,
+        side: "a" as const,
+        displayName: "鈴鳴り",
+        selfNames: ["わたし", "鈴鳴り"],
+        gender: "女性",
+        age: null,
+        appearanceSummary: "光の輪だけが浮かぶ非人型の精霊",
+      },
+      b: {
+        schemaVersion: 1 as const,
+        side: "b" as const,
+        displayName: "無名の光",
+        selfNames: [],
+        gender: null,
+        age: null,
+        appearanceSummary: "輪郭を固定しない光",
+      },
+    };
+    const prologue = await provider.narratePrologue({
+      scene: "共鳴室",
+      sideAName: "鈴鳴り",
+      sideBName: "無名の光",
+      sideABlurb: "人型を取らない音の精霊。",
+      sideBBlurb: "輪郭を固定しない発光体。",
+      characterSpeeches: [],
+      profileAnchors,
+      focus: "external",
+      perspective: "external",
+    });
+    const aftermath = await provider.narrateAftermath({
+      turn: 3,
+      scene: "共鳴室",
+      sideAName: "鈴鳴り",
+      sideBName: "無名の光",
+      winnerSide: "a",
+      winnerName: "鈴鳴り",
+      fallenNames: ["無名の光"],
+      characterSpeeches: [],
+      profileAnchors,
+      focus: "external",
+      perspective: "external",
+    });
+
+    const rendered = [
+      ...prologue.narrator,
+      ...aftermath.before,
+      ...aftermath.after,
+    ].join("\n");
+    assert.match(rendered, /鈴鳴り/);
+    assert.match(rendered, /無名の光/);
+    assert.doesNotMatch(rendered, /彼女|彼氏|男性|少年|少女/);
   });
 
   it("does not change structured combat fields from keyword matches", async () => {
