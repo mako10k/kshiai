@@ -1,0 +1,139 @@
+project KSHIAI_FREE_ACTION_OBJECTIVES:
+  version 1
+  title "Value-driven free actions and lazy object promotion"
+  description |
+    Add profile-grounded priorities, observer-safe tactical cognition, open
+    natural-language free actions, and lazy promotion of latent scene objects.
+    Keep mechanical authority in deterministic validation and reuse the normal
+    attack, skill, and defend paths for improvised offensive or defensive use.
+  as_of 2026-08-05
+  duration_unit day
+  finish FREE_ACTION_ACCEPTED
+
+resource DEV:
+  title "Developer"
+  capacity 1
+
+milestone DESIGN_RECORDED:
+  title "Requirements and authority boundaries recorded"
+  state reached
+
+milestone MVP_VERTICAL_SLICE:
+  title "Free-action promotion and value-planning vertical slice verified"
+  state reached
+
+task T_MVP_VERTICAL_SLICE DESIGN_RECORDED -> MVP_VERTICAL_SLICE:
+  title "Implement and verify the first bounded free-action vertical slice"
+  description |
+    Add free_action as one turn, one optional batched adjudication call,
+    canonical-root promotion, observer-local misidentification, append-only
+    concretization, bounded character/object world changes, held-object attack
+    and defense effects, and profile value priorities. Verify no-root
+    hallucination rejection, near/far direct manipulation, promotion-only
+    failure, stable identity concretization, effect bounds, and call budget.
+    This slice commits free-action world changes after numeric turn resolution;
+    same-turn sequential effects, contested promotion-once, penalties, complete
+    replay, and persistent ActivePlan remain on the full acceptance path.
+  duration 1d
+  requires:
+    DEV 1
+  status done
+
+milestone CONTRACTS_READY:
+  title "Values cognition intent registry and receipt contracts ready"
+
+milestone DISCOVERY_READY:
+  title "Observer-safe tactical needs affordances and opportunities ready"
+
+milestone ADJUDICATION_READY:
+  title "Generic free-action adjudication and promotion validation ready"
+
+milestone RESOLUTION_READY:
+  title "Temporal resolution penalties and instrument effects ready"
+
+milestone CONSUMERS_READY:
+  title "Agents perception narration persistence and legacy paths ready"
+
+milestone FREE_ACTION_ACCEPTED:
+  title "Value-driven free actions accepted"
+
+task T_CONTRACTS MVP_VERTICAL_SLICE -> CONTRACTS_READY:
+  title "Define values tactical cognition free-action and promotion contracts"
+  description |
+    Add shared schemas for DecisionProfile, ActivePlan, TacticalNeedFrame,
+    observer-local latent affordances, OpportunityChain, FreeActionIntent,
+    adjudication proposals, promotion registry entries, causal envelopes, and
+    bounded receipts. Add free_action to the existing action union without
+    enumerating natural-language verbs. Version persisted snapshots and define
+    conservative legacy defaults and schema tests.
+  duration 2d
+  requires:
+    DEV 1
+
+task T_DISCOVERY CONTRACTS_READY -> DISCOVERY_READY:
+  title "Derive tactical needs and discover latent object opportunities"
+  description |
+    Deterministically derive qualitative survival offense defense control
+    resource and time needs from observer-permitted evidence. Extend battle
+    setup and the existing semantic reconciliation topology to propose latent
+    affordances in the same response, bind them to canonical roots, deduplicate
+    them in a bounded registry, and project only perceived or self-known uses.
+    Derive one-to-three-turn opportunity chains from free-action prerequisites
+    to existing standard actions without promising success or leaking raw and
+    hidden mechanics.
+  duration 3d
+  requires:
+    DEV 1
+
+task T_ADJUDICATE DISCOVERY_READY -> ADJUDICATION_READY:
+  title "Validate generic free actions and lazy promotions"
+  description |
+    Add one optional server-only batched adjudication call when either side
+    reserves free_action. Validate proposal evidence, actor authority, reach,
+    capability, protected fields, bounded state deltas, provenance, stable
+    identity, conflict, revision, and event binding. Evaluate promotion and
+    manipulation separately on a hypothetical snapshot, then atomically commit
+    only an engine-approved transition. Cover provider failure without repair
+    loops or per-object calls.
+  duration 4d
+  requires:
+    DEV 1
+
+task T_RESOLVE ADJUDICATION_READY -> RESOLUTION_READY:
+  title "Resolve free actions and improvised object effects"
+  description |
+    Integrate free actions into normal initiative buckets with sequential
+    revalidation, simultaneous contested claims, partial outcomes, and bounded
+    engine-selected failure penalties. Route direct improvised damage through
+    basic_attack or skill and defensive benefit through defend or defensive
+    skill using validated instrument references and server-clamped causal
+    channels. Add atomicity, temporal, upper-bound, and metamorphic tests.
+  duration 4d
+  requires:
+    DEV 1
+
+task T_CONSUMERS RESOLUTION_READY -> CONSUMERS_READY:
+  title "Integrate value planning perception narration and persistence"
+  description |
+    Feed frozen values, tactical needs, latent affordance projections, and
+    opportunity chains to both character agents in their existing parallel
+    calls. Persist bounded plans, proposals, promotion identities, operations,
+    penalties, and receipts for deterministic replay. Expose only committed
+    observer-permitted consequences to perception and narration. Update mocks,
+    provider contracts, snapshots, limits, and conservative legacy behavior.
+  duration 3d
+  requires:
+    DEV 1
+
+task T_ACCEPT CONSUMERS_READY -> FREE_ACTION_ACCEPTED:
+  title "Accept value-driven planning and open free actions"
+  description |
+    Accept compassion-over-victory, urgent defense, insufficient-offense setup,
+    clothing removal, object pickup, failed reach, successful promotion with
+    failed manipulation, simultaneous object contention, improvised attack and
+    cover, hallucinated-object rejection, provider outage, replay, call-budget,
+    privacy, and bounded-state scenarios. Run unit tests, typecheck, build,
+    llmthink audit, and PERT checks.
+  duration 2d
+  requires:
+    DEV 1

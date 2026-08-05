@@ -3,6 +3,7 @@ import type {
   BattlefieldPreset,
   BattlePolicyOption,
   BattleSemanticState,
+  BattleSceneStateFact,
   CharacterImprovementMemo,
   CharacterSheet,
   CharacterIdentity,
@@ -35,6 +36,12 @@ import type {
   IdentityKnowledge,
   PerceptionCertainty,
   ParamKey,
+  DecisionProfile,
+  TacticalNeedFrame,
+  LatentAffordanceProjection,
+  OpportunityChain,
+  FreeActionCanonicalRoot,
+  FreeActionAdjudicationBatch,
 } from "@kshiai/shared";
 import type {
   PerceptionPromptInput,
@@ -77,6 +84,10 @@ export type CharacterActionDecisionContext = {
    * require_change: nextAction must differ from lastAction when alternatives exist.
    */
   varietyPressure?: "none" | "prefer_change" | "require_change";
+  decisionProfile?: DecisionProfile;
+  tacticalNeed?: TacticalNeedFrame;
+  affordances?: LatentAffordanceProjection[];
+  opportunityChains?: OpportunityChain[];
 };
 
 export type CharacterCounterpartKnowledge = {
@@ -350,6 +361,21 @@ export interface LlmProvider {
     };
     priorMatchSummary?: string | null;
   }): Promise<BattleEncounterProposal>;
+  /** Interpret both sides' open attempts in one server-only call. */
+  adjudicateFreeActions(input: {
+    turn: number;
+    scene: string;
+    actors: {
+      a: { displayName: string; capabilityEvidence: string[] };
+      b: { displayName: string; capabilityEvidence: string[] };
+    };
+    intents: Array<{
+      actorSide: "a" | "b";
+      intent: CharacterActionIntent;
+      perceivedAffordances: LatentAffordanceProjection[];
+    }>;
+    canonicalRoots: FreeActionCanonicalRoot[];
+  }): Promise<FreeActionAdjudicationBatch>;
   /** Interpret committed turn facts into a proposed observable-world patch. */
   reconcileTurnSemanticState(input: {
     turn: number;
@@ -488,6 +514,8 @@ export interface LlmProvider {
     characterSpeeches?: readonly CharacterSpeechSource[];
     /** Rendering-only identity constraints, filtered for the resolved focus. */
     profileAnchors: NarratorRenderingProfileAnchors;
+    /** Current ID-free object placements visible to this narration focus. */
+    sceneStateFacts?: readonly BattleSceneStateFact[];
     focus?: NarrationFocus;
     perspective?: NarrationPerspective;
     narratorContinuity?: NarratorContinuityView | null;
@@ -515,6 +543,8 @@ export interface LlmProvider {
     characterSpeeches?: readonly CharacterSpeechSource[];
     /** Rendering-only identity constraints, filtered for the resolved focus. */
     profileAnchors: NarratorRenderingProfileAnchors;
+    /** Current ID-free object placements visible to this narration focus. */
+    sceneStateFacts?: readonly BattleSceneStateFact[];
     focus?: NarrationFocus;
     perspective?: NarrationPerspective;
     narratorContinuity?: NarratorContinuityView | null;

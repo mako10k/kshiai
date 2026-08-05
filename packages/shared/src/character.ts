@@ -12,6 +12,7 @@ import {
   CharacterImprovementMemoSchema,
   type CharacterImprovementMemo,
 } from "./character-improvement.js";
+import { DecisionProfileSchema } from "./free-action.js";
 
 /** Internal combat parameters — never sent to normal clients. */
 export const ParamKeySchema = z.enum([
@@ -203,6 +204,7 @@ export const CharacterRevisionSnapshotSchema = z.object({
   weapon: EquipmentSchema.nullable(),
   armor: EquipmentSchema.nullable(),
   combatFlags: CombatFlagsSchema,
+  decisionProfile: DecisionProfileSchema.optional(),
   narrativeBlurb: z.string(),
 });
 export type CharacterRevisionSnapshot = z.infer<
@@ -229,6 +231,8 @@ export const CharacterSheetSchema = z.object({
   weapon: EquipmentSchema.nullable(),
   armor: EquipmentSchema.nullable(),
   combatFlags: CombatFlagsSchema,
+  /** Optional battle decision priorities; omitted legacy profiles use defaults. */
+  decisionProfile: DecisionProfileSchema.optional(),
   narrativeBlurb: z.string(),
   /**
    * Public ranked record: cross-account matches only.
@@ -295,6 +299,9 @@ export function captureRevisionSnapshot(
         }
       : null,
     combatFlags: { ...hydrated.combatFlags },
+    decisionProfile: hydrated.decisionProfile
+      ? structuredClone(hydrated.decisionProfile)
+      : undefined,
     narrativeBlurb: hydrated.narrativeBlurb,
   });
 }
@@ -318,6 +325,7 @@ export function restoreRevisionSnapshot(
       weapon: snapshot.weapon,
       armor: snapshot.armor,
       combatFlags: snapshot.combatFlags,
+      decisionProfile: snapshot.decisionProfile,
       narrativeBlurb: snapshot.narrativeBlurb,
       revisionSnapshot: null,
       updatedAt: new Date().toISOString(),

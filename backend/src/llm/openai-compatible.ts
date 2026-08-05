@@ -12,6 +12,8 @@ import {
   CharacterAgentStateSchema,
   CharacterActionIntentSchema,
   CharacterIdentitySchema,
+  DecisionProfileSchema,
+  FreeActionAdjudicationBatchSchema,
   EquipmentSchema,
   SkillSchema,
   balanceCharacterCombatFields,
@@ -75,9 +77,10 @@ NEVER copy, quote, speak, parenthesize, or use any such identifier as a name in 
 If a subjective view marks a subject unknown, suspected, unperceived, or unidentifiable, preserve that uncertainty and never infer the hidden identity from another input field.`;
 
 const NARRATION_PROFILE_RULES = `profileAnchors are presentation-only canonical wording constraints, not observations, actions, events, or permission to reveal private profile facts.
-Never contradict a non-null gender, age, self-name, display name, or appearance in an available anchor. Do not announce or explain any fact merely because it appears in an anchor.
+Never contradict a non-null gender, age, self-name, display name, or appearance in an available anchor. currentStateOverrides, when present, override only the conflicting present-tense appearance/equipment detail in that same anchor; the immutable base profile remains historical/identity context. Do not announce or explain any fact merely because it appears in an anchor.
+sceneStateFacts are engine-derived current object placements, not background flavor or permission to invent an action. Preserve them when describing those objects, and never restore an object to its original place merely because a base profile or battlefield description says otherwise.
 When an anchor is absent, or gender/age/selfNames is null or empty, use the supplied participant label or neutral Japanese wording. Never infer gender, age, anatomy, species, pronouns, or a legal identity from names, style, role, traits, speech, or appearance.
-Never write profileAnchors into a character's cognition, memory, world state, effects, or result.`;
+Never write profileAnchors or sceneStateFacts into a character's cognition, memory, world state, effects, or result.`;
 
 const NARRATION_CONTINUITY_RULES = `Narrator continuity is bounded presentation memory, not new world evidence and never character cognition. Current view/perception remains authoritative for present access and attribution. Reader-known labels must not become character knowledge, and remembered identity must not make a currently uncertain voice certain.
 When an existing recognition has continuity same_entity, keep recognizing that subject as recognizedAs even if current access becomes weak or absent. Do not reset it to an unknown person or voice merely because a turn changed, the viewpoint changed, or only the voice is currently available. possibly_same_entity may lower attribution wording while retaining the remembered identity; unlinked means the currently perceived form is not established as that remembered subject.
@@ -330,6 +333,82 @@ Rules:
       return this.fallbackOrThrow(
         error,
         () => this.fallback.prepareBattleEncounter(input),
+      );
+    }
+  }
+
+  async adjudicateFreeActions(
+    input: Parameters<LlmProvider["adjudicateFreeActions"]>[0],
+  ): ReturnType<LlmProvider["adjudicateFreeActions"]> {
+    if (!this.client) return this.fallback.adjudicateFreeActions(input);
+    try {
+      const data = await this.chatJson(
+        `Interpret up to two fictional free-action attempts against server-only canonical roots.
+Return JSON only:
+{
+  "proposals": [{
+    "actorSide": "a"|"b",
+    "outcome": "possible"|"impossible"|"contested",
+    "interpretation": string,
+    "subject"?: {
+      "rootRef": string,
+      "candidateKey": string,
+      "canonicalLabel": string|null,
+      "description": string,
+      "portable": boolean,
+      "usable": boolean,
+      "knownOpenAspects": string[],
+      "causalEnvelope": {
+        "damage"?: "none"|"minor"|"moderate",
+        "defense"?: "none"|"minor"|"moderate",
+        "reach"?: "none"|"minor"|"moderate",
+        "control"?: "none"|"minor"|"moderate",
+        "mobility"?: "none"|"minor"|"moderate",
+        "vision"?: "none"|"minor"|"moderate",
+        "hearing"?: "none"|"minor"|"moderate",
+        "cover"?: "none"|"minor"|"moderate"
+      }
+    },
+    "changes": [{
+      "target": "subject"|"actor"|"counterpart",
+      "path": string,
+      "value": any
+    }],
+    "successSummary": string,
+    "failureSummary": string
+  }]
+}
+Rules:
+- Character intent is observer belief and may be mistaken. Canonical roots are the only world facts.
+- actors.capabilityEvidence is the only special-capability authority. Ordinary bodily actions remain possible, but reject superhuman reach, force, speed, transformation, or equipment use that it does not support.
+- Bind by physical target continuity, not by trusting the noun in intent.description.
+- If the perceived stone is canonically a ball, bind to that root and preserve its canonicalLabel.
+- If no canonical root supports the subject, return impossible with no subject and no changes. Never create an object from the claim alone.
+- rootKind=character anchors an existing person, never an object promotion. For a plausible grab, use /actorState/restraint with partially_restrained; do not put a character in held/worn placement.
+- canonicalAccessByActor is server-only distance. Contact manipulation may use contact or near when one ordinary step is plausible; far, separate_area, and out_of_scene attempts are impossible unless capabilityEvidence explicitly supports that reach.
+- canonicalLabel must exactly copy a non-null root canonicalLabel. For a null profile-appearance root, infer only an ordinary item directly supported by its description; otherwise keep null.
+- Allowed generic paths are /placement, /actorState/restraint, /actorState/posture, /exposure, and /objectState/cover. Use existing world enum-shaped values.
+- Use /placement held by character.<side> for a successful pickup. A failed reach has no success change.
+- Free actions never change HP, MP, parameters, canFight, identity, consciousness, agency, history, or winner.
+- causalEnvelope is qualitative planning input, not damage authority; improvised objects may be at most moderate.
+- Return exactly one proposal for each supplied intent and do not expose canonical facts in successSummary when the actor would not perceive them.`,
+        JSON.stringify(input),
+        {
+          tier: "fast",
+          label: "adjudicateFreeActions",
+          timeoutMs: 14_000,
+          temperature: 0.25,
+        },
+      );
+      const parsed = FreeActionAdjudicationBatchSchema.safeParse(data);
+      if (!parsed.success) {
+        throw new Error("Free-action adjudicator returned an invalid batch");
+      }
+      return parsed.data;
+    } catch (error) {
+      return this.fallbackOrThrow(
+        error,
+        () => this.fallback.adjudicateFreeActions(input),
       );
     }
   }
@@ -658,6 +737,11 @@ Return JSON: {
   "weapon": { "name": string, "description": string, "atkBonus"?: number, "defBonus"?: number,
     "magBonus"?: number, "effects"?: [{ "parameter": parameter enum, "delta": number }] } | null,
   "armor": same equipment shape | null,
+  "decisionProfile"?: {
+    "defaultObjective": { "id": "victory", "statement": string, "priority": number },
+    "principles": [{ "id": string, "statement": string, "priority": number,
+      "force": "preference"|"commitment"|"constraint" }]
+  },
   "narrativeBlurb": string,
   "assistantMessage": string
 }
@@ -689,6 +773,7 @@ BALANCE (mandatory):
 - basicAttack means the character's repeatable baseline interaction, not necessarily a weapon strike. It may be a shot, signal, argument, spell, prank, song, negotiation move, psychic pressure, or other concept-appropriate action.
 - Give every generated basicAttack and skill explicit coarse constraints matching how it actually works. Use requiresSpeech only when producing speech is necessary, requiresSight only for visually aimed actions, and requiresUsableHeldObject only when a held/worn usable object is indispensable. Do not infer these constraints later from prose.
 - weapon and armor are optional functional slots: they may hold firearms, tools, devices, vehicles, companions, costumes, social advantages, mental disciplines, or null. Name and describe them in-world; never turn every concept into a sword fighter.
+- decisionProfile is private action-selection guidance. Victory is the default objective. Add principles only when the requested concept establishes a competing priority, commitment, or constraint; higher priorities may override victory. Keep statements natural-language and do not expose the numeric priorities in assistantMessage.
 - Skills and narration-facing descriptions must preserve the requested genre and conflict mode, including nonviolent or abstract contests.
 - Status changes are temporary: every parameter drifts back toward its original sheet value each turn.
 - Every beneficial status effect needs a cost: MP/stamina, a negative self effect, or spending the action turn.
@@ -715,6 +800,9 @@ Safe-for-work anime portrait only.`,
 
       const weapon = parseGeneratedEquipment(data.weapon) ?? null;
       const armor = parseGeneratedEquipment(data.armor) ?? null;
+      const decisionProfile = DecisionProfileSchema.safeParse(
+        data.decisionProfile,
+      );
 
       const rawSheet = {
           displayName: String(data.displayName ?? "挑戦者"),
@@ -741,6 +829,9 @@ Safe-for-work anime portrait only.`,
           armor: armor
             ? armor
             : null,
+          ...(decisionProfile.success
+            ? { decisionProfile: decisionProfile.data }
+            : {}),
           combatFlags: { canFight: true, irreversibleIncapacitated: false },
           narrativeBlurb: String(data.narrativeBlurb ?? ""),
       };
@@ -788,7 +879,10 @@ Use null or [] when the profile does not establish a value. Do not treat a title
 { "assistantMessage": string, "displayName"?: string, "identity"?: { "realName": string|null,
   "nicknames": string[], "selfNames": string[], "epithets": string[], "gender": string|null, "age": string|null }, "narrativeBlurb"?: string,
   "traits"?: string[], "parameters"?: object, "basicAttack"?: object,
-  "skills"?: array, "weapon"?: object|null, "armor"?: object|null }
+  "skills"?: array, "weapon"?: object|null, "armor"?: object|null,
+  "decisionProfile"?: { "defaultObjective": { "id": "victory", "statement": string,
+    "priority": number }, "principles": [{ "id": string, "statement": string,
+    "priority": number, "force": "preference"|"commitment"|"constraint" }] } }
 Do not tell the user exact numbers.
 Use the same basicAttack, skill effects, and equipment effects shapes as character generation.
 LANGUAGE (mandatory):
@@ -796,6 +890,9 @@ LANGUAGE (mandatory):
 - If the user writes Japanese, keep/rewritten displayName, narrativeBlurb, traits, skill/equipment/basicAttack names and descriptions, and assistantMessage in Japanese. Do not switch Japanese profiles into English.
 - If the user writes English, keep those fields in English.
 - Do not translate the whole profile into another language unless the user explicitly asks for a translation.
+DECISION PRIORITY RULE (mandatory):
+- Return decisionProfile only when the user explicitly asks to change what the character prioritizes, avoids, commits to, or values during a confrontation.
+- Victory remains defaultObjective. A higher-priority commitment/constraint may override it, for example valuing compassion over winning. Preserve unrelated existing principles and do not reveal numeric priorities to the user.
 SKILLS RULE (mandatory):
 - Omit the "skills" field entirely when not changing the skill kit.
 - Never return an empty skills array. Empty skills wipe the character and are forbidden.
@@ -820,6 +917,7 @@ Judge from the complete concept and mechanics whether the requested strengths ne
             weapon: current.weapon,
             armor: current.armor,
           },
+          currentDecisionProfile: current.decisionProfile ?? null,
           userMessage,
         }),
         { tier: "engine", label: "adjustCharacter", temperature: 0.5 },
@@ -838,6 +936,9 @@ Judge from the complete concept and mechanics whether the requested strengths ne
         ? data.traits.map(String).map((t) => t.trim()).filter(Boolean)
         : undefined;
       const nextTraits = coalesceNonEmptyList(parsedTraits, current.traits);
+      const parsedDecisionProfile = data.decisionProfile === undefined
+        ? null
+        : DecisionProfileSchema.safeParse(data.decisionProfile);
 
       return {
         sheetPatch: {
@@ -870,6 +971,9 @@ Judge from the complete concept and mechanics whether the requested strengths ne
               : data.armor === null
                 ? null
                 : (parseGeneratedEquipment(data.armor) ?? current.armor),
+          ...(parsedDecisionProfile?.success
+            ? { decisionProfile: parsedDecisionProfile.data }
+            : {}),
         },
         assistantMessage: String(data.assistantMessage ?? "調整しました。"),
       };
@@ -1272,14 +1376,17 @@ Rules:
       input.perception.counterpart.perceivedAs;
     try {
       const decisionRule = input.decision
-        ? `nextAction plans the NEXT turn. Choose exactly one entry from decision.availableActions. For a skill, copy its skillId exactly. A finisher has one use for the entire battle: set useFinisher=true only for the finisher candidate when it is unlocked and remainingUses is 1. Consider own/foe condition, turns remaining, currentMultiplier, turnsUntilMax, and the risk of waiting; do not always fire at unlock.
+        ? `nextAction plans the NEXT turn. Choose exactly one entry from decision.availableActions. For a skill, copy its skillId exactly. A finisher has one use for the entire battle: set useFinisher=true only for the finisher candidate when it is unlocked and remainingUses is 1. Consider decisionProfile, tacticalNeed, observer-safe affordances, opportunityChains, turns remaining, currentMultiplier, turnsUntilMax, and the risk of waiting; do not always fire at unlock.
+decisionProfile.defaultObjective is the default, not an absolute command. Compare priorities: a higher-priority commitment or constraint may override victory, while a preference guides choices without making impossible actions legal. Choose an action that advances the highest currently relevant principle as well as the tactical situation.
+For free_action, write an open natural-language attempt in description, optional desiredOutcome, and copy at least one subjectRef supplied by decision.affordances. Use the self or counterpart affordance for direct bodily/social actions. Copy opportunityId when following one opportunity chain. The attempt is not a success claim.
+For basic_attack, skill, or defend, copy instrumentRef only from a zero-setup opportunityChain continuation for that same action kind. Expected causal potential is qualitative and never guarantees success.
 When decision.varietyPressure is "prefer_change", avoid decision.lastAction if another availableActions entry exists.
 When decision.varietyPressure is "require_change", nextAction MUST differ from decision.lastAction (kind and skillId) whenever another availableActions entry exists. Do not spam wait or the same skill every turn.`
         : "This is the aftermath reaction phase. The result is already canonical. Omit nextAction, do not plan another turn, and do not reverse or reconsider the result.";
       const data = (await this.chatJson(
         `You maintain one fictional character's private continuity during a confrontation. It may be physical, ranged, technological, psychic, social, comedic, cute, or abstract. Preserve the character's own way of acting and never introduce swords, wounds, or martial language unless supplied by the profile or events.
 You see only this character's frozen canonical own-profile anchor, previous compact state, validated available actions, and one immutable observer-relative perception frame whose observer.self is explicitly "self".
-The character profile is authoritative over contradictory previous continuity or generated prose. Preserve every established non-null identity, gender, age, self-name, appearance, trait, capability, and equipment fact. Null or empty profile fields remain unknown: never fill them from stereotypes, displayName, previous state, counterpart, narration style, or perception.
+The character profile is authoritative over contradictory previous continuity or generated prose. Preserve every established non-null identity, gender, age, self-name, appearance, trait, capability, and equipment fact. character.currentStateOverrides, when present, are canonical current self-state and override only a conflicting present-tense appearance/equipment detail; they never rewrite the immutable profile or prove anything about an unperceived external subject. Null or empty profile fields remain unknown: never fill them from stereotypes, displayName, previous state, counterpart, narration style, or perception.
 The perception frame is authoritative. Preserve currentAccess, identityKnowledge, occurrence certainty, attribution certainty, qualitative magnitude, and reserve bands. Never infer a canonical identity, exact location, or current condition behind an unknown, suspected, inaccessible, contact, or ambient subject.
 counterpart is present only when identityKnowledge is identified. Its condition is absent unless current access supports it; never reconstruct a missing name or condition from control IDs or other fields.
 All IDs, contact IDs, percept IDs, skillId, and JSON keys are non-linguistic control metadata. Copy skillId only into nextAction when selecting that validated action; never place an ID into privateMemory, goals, beliefs, observations, speechStyle, selfReference, lastSpeech, or speech.
@@ -1302,9 +1409,14 @@ Return JSON only:
   },
   "speech": string,
   "nextAction"?: {
-    "kind": "skill"|"basic_attack"|"defend"|"rest"|"wait",
+    "kind": "skill"|"basic_attack"|"defend"|"rest"|"wait"|"free_action",
     "skillId"?: string,
-    "useFinisher"?: boolean
+    "useFinisher"?: boolean,
+    "description"?: string,
+    "desiredOutcome"?: string,
+    "subjectRefs"?: string[],
+    "instrumentRef"?: string,
+    "opportunityId"?: string
   }
 }
 speech is this character's ACTUAL utterance or stage reaction after observing the committed turn. It is authoritative source material for later public placement and is also stored as this character's own lastSpeech. ALWAYS required (never null/empty). One short Japanese line:
@@ -1349,6 +1461,34 @@ The narrator may later choose this line's display position and punctuation, but 
         : undefined;
       if (nextAction?.success && !allowed) {
         throw new Error("Character agent selected an unavailable next action");
+      }
+      const affordanceRefs = new Set(
+        input.decision?.affordances?.map((affordance) => affordance.ref) ?? [],
+      );
+      if (
+        nextAction?.success &&
+        nextAction.data.kind === "free_action" &&
+        (!(nextAction.data.subjectRefs ?? []).every((ref) =>
+          affordanceRefs.has(ref)
+        ) ||
+          (nextAction.data.opportunityId &&
+            !input.decision?.opportunityChains?.some((chain) =>
+              chain.id === nextAction.data.opportunityId
+            )))
+      ) {
+        throw new Error("Character agent selected an ungrounded free action");
+      }
+      if (
+        nextAction?.success &&
+        nextAction.data.instrumentRef &&
+        (!affordanceRefs.has(nextAction.data.instrumentRef) ||
+          !input.decision?.opportunityChains?.some((chain) =>
+            chain.setupTurns === 0 &&
+            chain.continuation.actionKind === nextAction.data.kind &&
+            chain.continuation.instrumentRef === nextAction.data.instrumentRef
+          ))
+      ) {
+        throw new Error("Character agent selected an unavailable instrument");
       }
       if (
         nextAction?.success &&
@@ -1666,6 +1806,7 @@ JSON: { "turn": 0, "narrator": string[], "speeches": [ { "sourceSide": "a"|"b"|n
           priorMatch: input.priorMatchSummary ?? null,
           focus,
           profileAnchors: input.profileAnchors,
+          sceneStateFacts: input.sceneStateFacts ?? [],
           innerDigests: input.innerDigests ?? [],
           narratorContinuity: input.narratorContinuity ?? null,
           recognitionSubjects: input.recognitionSubjects ?? [],
@@ -1754,6 +1895,7 @@ JSON: { "before": string[], "after": string[], "speeches": [ { "sourceSide": "a"
           fallen: input.fallenNames,
           focus,
           profileAnchors: input.profileAnchors,
+          sceneStateFacts: input.sceneStateFacts ?? [],
           innerDigests: input.innerDigests ?? [],
           narratorContinuity: input.narratorContinuity ?? null,
           recognitionSubjects: input.recognitionSubjects ?? [],

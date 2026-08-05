@@ -24,6 +24,7 @@ export type ObserverSafeAvailableAction = {
   kind: CharacterActionIntent["kind"];
   skillId?: string;
   name: string;
+  description?: string;
   skillKind?: Skill["kind"];
   costMp?: number;
   costStamina?: number;
@@ -95,6 +96,15 @@ function inferredConstraints(
       reach: "same_area",
       requiresSight: false,
       mobility: ["attack", "special"].includes(skill.kind) ? "limited" : "none",
+      requiresSpeech: false,
+      requiresUsableHeldObject: false,
+    };
+  }
+  if (intent.kind === "free_action") {
+    return {
+      reach: "same_area",
+      requiresSight: false,
+      mobility: "limited",
       requiresSpeech: false,
       requiresUsableHeldObject: false,
     };
@@ -230,6 +240,29 @@ export function assessCharacterActionFeasibility(input: {
   if (input.intent.kind !== "skill" && (input.intent.skillId || input.intent.useFinisher)) {
     return { feasible: false, reason: "invalid_intent" };
   }
+  if (input.intent.instrumentRef) {
+    const actorId = characterId(input.actorSide);
+    const instrument = input.worldState
+      ? Object.entries(input.worldState.entities).find(([id, entity]) =>
+          id === input.intent.instrumentRef?.replace(/^entity:/, "") ||
+          entity.objectProfile?.observerRefs[input.actorSide] ===
+            input.intent.instrumentRef
+        )
+      : null;
+    const entity = instrument?.[1];
+    const controlled = entity && (
+      (entity.placement.type === "held" && entity.placement.holderId === actorId) ||
+      (entity.placement.type === "worn" && entity.placement.wearerId === actorId)
+    );
+    if (
+      !controlled ||
+      !entity?.active ||
+      entity.presence !== "present" ||
+      !entity.objectState?.usable
+    ) {
+      return { feasible: false, reason: "required_object_unavailable" };
+    }
+  }
   const skill = actionSkill(input.intent, input.skills);
   if (input.intent.kind === "skill" && !skill) {
     return { feasible: false, reason: "skill_unavailable" };
@@ -299,6 +332,14 @@ export function buildObserverSafeAvailableActions(input: {
     { intent: { kind: "defend" }, option: { kind: "defend", name: "防御" } },
     { intent: { kind: "rest" }, option: { kind: "rest", name: "休息" } },
     { intent: { kind: "wait" }, option: { kind: "wait", name: "様子を見る" } },
+    {
+      intent: { kind: "free_action", description: "場面へ現実的に働きかける" },
+      option: {
+        kind: "free_action",
+        name: "自由行動",
+        description: "知覚している相手や物、場面へ自然文で働きかける。",
+      },
+    },
     ...input.sheet.skills.map((skill) => ({
       intent: { kind: "skill" as const, skillId: skill.id },
       option: {

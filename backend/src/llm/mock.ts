@@ -171,9 +171,30 @@ export class MockLlmProvider implements LlmProvider {
     current: CharacterSheet,
     userMessage: string,
   ): Promise<AdjustCharacterResult> {
+    const changesDecisionPriority =
+      /優先|最優先|勝負より|勝利より|人情|傷つけたく|守りたい|救いたい/.test(
+        userMessage,
+      );
     return {
       sheetPatch: {
         narrativeBlurb: `${current.narrativeBlurb}\n（調整: ${userMessage.slice(0, 80)}）`,
+        ...(changesDecisionPriority
+          ? {
+              decisionProfile: {
+                defaultObjective: {
+                  id: "victory" as const,
+                  statement: "この対戦に勝つ",
+                  priority: 70,
+                },
+                principles: [{
+                  id: "user.priority.1",
+                  statement: userMessage.slice(0, 240),
+                  priority: 90,
+                  force: "commitment" as const,
+                }],
+              },
+            }
+          : {}),
       },
       assistantMessage: `モック環境のため、依頼文をプロフィール注記へ反映しました。`,
     };
@@ -228,6 +249,72 @@ export class MockLlmProvider implements LlmProvider {
         },
       },
       openingSummary: `${input.field.displayName}で、${labelA}と${labelB}が互いを認識して対峙する。`,
+    };
+  }
+
+  async adjudicateFreeActions(
+    input: Parameters<LlmProvider["adjudicateFreeActions"]>[0],
+  ): ReturnType<LlmProvider["adjudicateFreeActions"]> {
+    return {
+      proposals: input.intents.map(({ actorSide, intent, perceivedAffordances }) => {
+        const requestedRef = intent.subjectRefs?.[0] ?? null;
+        const root = requestedRef
+          ? input.canonicalRoots.find((candidate) => candidate.ref === requestedRef)
+          : null;
+        const perceived = requestedRef
+          ? perceivedAffordances.find((candidate) => candidate.ref === requestedRef)
+          : null;
+        if (!root) {
+          return {
+            actorSide,
+            outcome: "impossible" as const,
+            interpretation: intent.description ?? "対象へ働きかける",
+            changes: [],
+            successSummary: `${intent.description ?? "試み"}が成立した。`,
+            failureSummary: "認識していた対象は、現実の対象へ結び付かなかった。",
+          };
+        }
+        const isCharacter = root.rootKind === "character";
+        const distance = root.canonicalAccessByActor?.[actorSide];
+        const outOfReach = ["far", "separate_area", "out_of_scene"].includes(
+          distance ?? "out_of_scene",
+        );
+        return {
+          actorSide,
+          outcome: outOfReach ? "impossible" as const : "possible" as const,
+          interpretation: intent.description ?? `${perceived?.perceivedAs ?? "対象"}を扱う`,
+          subject: {
+            rootRef: root.ref,
+            candidateKey: root.ref.replace(/[^a-zA-Z0-9._-]/g, "-").slice(0, 80),
+            canonicalLabel: root.canonicalLabel,
+            description: root.description,
+            portable: !isCharacter,
+            usable: !isCharacter,
+            knownOpenAspects: root.canonicalLabel ? [] : ["identity"],
+            causalEnvelope:
+              perceived?.possibleUses[0]?.expectedCausalPotential ?? {},
+          },
+          changes: outOfReach
+            ? []
+            : isCharacter
+            ? [{
+                target: "subject" as const,
+                path: "/actorState/restraint",
+                value: "partially_restrained",
+              }]
+            : [{
+                target: "subject" as const,
+                path: "/placement",
+                value: { type: "held", holderId: `character.${actorSide}` },
+              }],
+          successSummary: isCharacter
+            ? `${perceived?.perceivedAs ?? "相手"}へ現実的な範囲で働きかけた。`
+            : `${perceived?.perceivedAs ?? root.canonicalLabel ?? "対象"}を手に取った。`,
+          failureSummary: outOfReach
+            ? `${perceived?.perceivedAs ?? "対象"}へ手を伸ばしたが、距離があり届かなかった。`
+            : `${perceived?.perceivedAs ?? "対象"}へ手を伸ばしたが、扱えなかった。`,
+        };
+      }),
     };
   }
 
@@ -516,7 +603,41 @@ export class MockLlmProvider implements LlmProvider {
     const pool = candidates.length > 0
       ? candidates
       : input.decision.availableActions;
-    const preferred = finisherAction && differsFromLast(finisherAction)
+    const urgentDefense = ["high", "critical"].includes(
+      input.decision.tacticalNeed?.unprotectedIncomingRisk ?? "unknown",
+    );
+    const readyDefense = input.decision.opportunityChains?.find((chain) =>
+      chain.setupTurns === 0 && chain.continuation.actionKind === "defend"
+    );
+    const setupAttack = input.decision.tacticalNeed?.offenseAdequacy === "insufficient" &&
+        input.decision.tacticalNeed?.timePressure !== "critical"
+      ? input.decision.opportunityChains?.find((chain) =>
+          chain.setupTurns > 0 && chain.continuation.actionKind === "basic_attack"
+        )
+      : undefined;
+    const readyAttack = input.decision.opportunityChains?.find((chain) =>
+      chain.setupTurns === 0 && chain.continuation.actionKind === "basic_attack"
+    );
+    const freeOption = pool.find((action) => action.kind === "free_action");
+    const defendOption = pool.find((action) => action.kind === "defend");
+    const decisionProfile = input.decision.decisionProfile;
+    const overridingPrinciple = decisionProfile?.principles
+      .filter((principle) =>
+        principle.force !== "preference" &&
+        principle.priority > decisionProfile.defaultObjective.priority
+      )
+      .sort((left, right) => right.priority - left.priority)[0];
+    const humaneOverride = overridingPrinciple &&
+      /人情|慈悲|助け|救|守|傷つけ|殺さ|勝負より|勝利より/.test(
+        overridingPrinciple.statement,
+      );
+    const preferred = humaneOverride && defendOption
+      ? defendOption
+      : urgentDefense && defendOption
+      ? defendOption
+      : setupAttack && freeOption
+        ? freeOption
+        : finisherAction && differsFromLast(finisherAction)
       ? finisherAction
       : pool.find((action) => action.kind === "skill" && !action.finisherCandidate) ??
         pool.find((action) => action.kind === "basic_attack") ??
@@ -526,7 +647,8 @@ export class MockLlmProvider implements LlmProvider {
       state: {
         ...input.previous,
         privateMemory: event.slice(0, 1200),
-        currentGoal: `${counterpartLabel}との対決を自分らしく続ける`,
+        currentGoal: overridingPrinciple?.statement ??
+          `${counterpartLabel}との対決を自分らしく続ける`,
         emotion: ownReserveCritical ? "緊張" : "集中",
         observations: [
           ...input.previous.observations.slice(-6),
@@ -546,13 +668,27 @@ export class MockLlmProvider implements LlmProvider {
         },
       },
       speech,
-      nextAction: {
-        kind: preferred.kind,
-        ...(preferred.skillId ? { skillId: preferred.skillId } : {}),
-        ...(finisherAction && preferred.finisherCandidate
-          ? { useFinisher: true }
-          : {}),
-      },
+      nextAction: setupAttack && preferred.kind === "free_action"
+        ? {
+            kind: "free_action" as const,
+            description: setupAttack.prerequisites[0]?.description ??
+              "使えそうな物を準備する",
+            desiredOutcome: setupAttack.expectedProgress,
+            subjectRefs: setupAttack.prerequisites.map((item) => item.subjectRef),
+            opportunityId: setupAttack.id,
+          }
+        : {
+            kind: preferred.kind,
+            ...(preferred.skillId ? { skillId: preferred.skillId } : {}),
+            ...(finisherAction && preferred.finisherCandidate
+              ? { useFinisher: true }
+              : {}),
+            ...(urgentDefense && readyDefense && preferred.kind === "defend"
+              ? { instrumentRef: readyDefense.continuation.instrumentRef }
+              : !urgentDefense && readyAttack && preferred.kind === "basic_attack"
+                ? { instrumentRef: readyAttack.continuation.instrumentRef }
+                : {}),
+          },
     };
   }
 

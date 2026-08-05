@@ -100,7 +100,7 @@ describe("observer-safe action feasibility", () => {
     assert.equal(far.some((action) => action.kind === "basic_attack"), false);
     assert.deepEqual(
       far.map((action) => action.kind).sort(),
-      ["defend", "rest", "wait"],
+      ["defend", "free_action", "rest", "wait"],
     );
   });
 

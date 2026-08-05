@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import {
+  applyBattleWorldTransition,
   createBattleState,
   buildCharacterSelfProfileAnchor,
   defaultParameters,
@@ -10,6 +11,7 @@ import {
 import {
   buildCharacterAgentConsumerInput,
   buildNarratorProfileAnchors,
+  buildNarratorSceneStateFacts,
 } from "./battle-service.js";
 
 function sheet(id: string, displayName: string): CharacterSheet {
@@ -198,6 +200,108 @@ describe("battle perception consumer wiring", () => {
     assert.equal(foe.b?.gender, null);
     assert.deepEqual(Object.keys(external).sort(), ["a", "b"]);
     assert.equal(Object.isFrozen(external), true);
+  });
+
+  it("wires canonical profile and scene projections without mutating the sheet", () => {
+    const sideA = sheet("a", "帽子屋");
+    sideA.appearance.summary = "赤い帽子をかぶっている";
+    const sideB = sheet("b", "観客");
+    const state = createBattleState({
+      id: "profile-state-overlay",
+      sideA,
+      sideB,
+      turnLimit: 20,
+      prologuePending: false,
+    });
+    assert.ok(state.worldState);
+    const moved = applyBattleWorldTransition({
+      state: state.worldState,
+      turn: 1,
+      transition: {
+        baseRevision: state.worldState.revision,
+        turn: 1,
+        operations: [{
+          op: "add_entity",
+          entityId: "object.free.a.hat",
+          entity: {
+            kind: "object",
+            active: true,
+            presence: "present",
+            placement: { type: "scene", areaId: "area.1" },
+            exposure: "exposed",
+            actorState: null,
+            objectState: {
+              portable: true,
+              usable: true,
+              exclusiveUse: true,
+              usableBy: [],
+              cover: "none",
+              blocksMovement: false,
+              visionEffect: "none",
+              hearingEffect: "none",
+              mobilityEffect: "none",
+            },
+            objectProfile: {
+              canonicalLabel: "赤い帽子",
+              description: "帽子屋の赤い帽子。",
+              sourceRef: "profile:a:appearance",
+              candidateKey: "red-hat",
+              provenance: "profile_appearance",
+              knownOpenAspects: [],
+              observerRefs: { a: "profile:a:appearance" },
+              observerLabels: { a: "赤い帽子" },
+              concretizations: [],
+            },
+          },
+        }],
+      },
+    });
+    assert.equal(moved.ok, true);
+    if (!moved.ok) return;
+    const after = { ...state, worldState: moved.state };
+
+    const characterInput = buildCharacterAgentConsumerInput({
+      state: after,
+      sheet: sideA,
+      counterpartSheet: sideB,
+      side: "a",
+      previous,
+    });
+    const narratorAnchors = buildNarratorProfileAnchors({
+      state: after,
+      mine: sideA,
+      opp: sideB,
+      perspective: "external",
+      focus: "external",
+    });
+    const externalScene = buildNarratorSceneStateFacts({
+      state: after,
+      mine: sideA,
+      opp: sideB,
+      perspective: "external",
+      focus: "external",
+    });
+    const unawareScene = buildNarratorSceneStateFacts({
+      state: after,
+      mine: sideA,
+      opp: sideB,
+      perspective: "fluid",
+      focus: "foe",
+    });
+
+    assert.ok(characterInput);
+    assert.equal(characterInput.character.appearanceSummary, "赤い帽子をかぶっている");
+    assert.match(
+      characterInput.character.currentStateOverrides?.[0]?.statement ?? "",
+      /身につけていない/,
+    );
+    assert.match(
+      narratorAnchors.a?.currentStateOverrides?.[0]?.statement ?? "",
+      /にある/,
+    );
+    assert.match(externalScene[0]?.statement ?? "", /赤い帽子.*にある/);
+    assert.deepEqual(unawareScene, []);
+    assert.equal(sideA.appearance.summary, "赤い帽子をかぶっている");
   });
 
   it("reveals counterpart name and condition only at the frame's knowledge level", () => {

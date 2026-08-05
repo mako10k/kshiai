@@ -680,3 +680,115 @@ decision D28 based_on PR28, EV28, D1, D2, D16, D23, D24, D27:
     Only perspective-permitted digests reach narration, and no chain-of-thought
     is requested, stored, or exposed. Legacy reads synthesize these new records
     deterministically from private structured state, never from public prose.
+
+problem PR29:
+  |
+    The closed action catalog lets characters attack, defend, rest, wait, or use
+    predefined skills, but it cannot express ordinary attempts such as grabbing
+    a counterpart, taking off clothing, picking up a scene object, changing
+    posture, or preparing an improvised tool. Pre-registering every garment and
+    loose prop as a canonical object is not scalable. Treating natural-language
+    claims as committed facts would instead let an agent conjure objects, exceed
+    its profile, bypass damage rules, or rewrite the world. A victory-only action
+    preference would also make non-damaging control, preparation, compassion,
+    and relationship-preserving behavior irrational even when they define the
+    character.
+
+evidence EV29:
+  |
+    Character agents already reserve one next-turn action in parallel from a
+    frozen observer-relative frame, retain a bounded current goal, and receive a
+    canonical self-profile anchor. BattleState already separates semanticState
+    from server-owned worldState, provides atomic event-bound world operations,
+    represents placement, distance, restraint, posture, exposure, held, worn,
+    and attached entities, and revalidates later initiative buckets. The missing
+    boundaries are a profile-grounded value hierarchy, an open natural-language
+    attempt schema, a server-only generic adjudication proposal, lazy promotion
+    provenance, and bounded causal use of improvised objects.
+
+decision D29 based_on PR29, EV29, D1, D2, D16, D22, D24, D25, D26, D28:
+  |
+    Add a battle-scoped DecisionProfile whose server-supplied default objective
+    is to win the confrontation. Preserve that objective but let the canonical
+    character profile assign open natural-language principles priorities and the
+    minimal preference, commitment, or constraint force, so compassion, safety,
+    promises, self-expression, or other unenumerated values may outrank victory.
+    Character generation and adjustment propose this profile without another
+    per-turn call. At each existing character-agent call, provide the frozen
+    values, selected policies, observer-safe perception and affordances, and a
+    bounded prior plan. The agent returns only a one-to-three-turn objective,
+    approach, reconsideration conditions, referenced principle IDs, one reserved
+    action, and an actual utterance; no chain-of-thought or success fact is stored.
+    Invalid provider output falls back through mechanically enforceable profile
+    constraints and otherwise to conservative self-contained actions.
+
+    Values alone do not make setup actions discoverable. Before each character
+    call, deterministically derive an observer-safe TacticalNeedFrame from the
+    actor's own reserve, perceived recent impacts, perceived consequences of its
+    own actions, and remaining time. Express survival pressure, unprotected
+    incoming risk, offense and defense adequacy, control, resource, and time need
+    only as qualitative bands, using unknown when observer evidence is absent;
+    never expose exact opponent health, hidden skills, or server-only forecasts.
+    Battle setup and the existing semantic reconciliation response may also
+    propose latent affordance candidates, but the server must bind them to
+    canonical profile, battlefield, semantic, or committed-event roots and keep
+    a bounded registry without promoting them. Project only perceived or
+    self-known candidates to each side, with open natural-language preparations,
+    compatible existing action kinds, and a qualitative non-authoritative causal
+    potential. From those projections derive short OpportunityChains that connect
+    free-action prerequisites to a later standard action and validated instrument
+    reference, including setup turns, expected progress, and risks. The agent may
+    compare these chains with immediate actions under its values and tactical
+    need, but every step is revalidated and no projection guarantees success.
+
+    Add free_action as one full-turn action carrying an open natural-language
+    attempt, desired outcome, and observer-safe subject or instrument references.
+    Do not enumerate verbs such as grab, remove, open, or throw. If either side
+    reserves a free action, make at most one batched server-only adjudication call
+    for both sides before temporal resolution. It may propose evidence bindings,
+    lazy entity promotions, generic semantic and world operations, possible and
+    failure branches, and qualitative causal envelopes. It cannot commit facts,
+    select hidden information for a character, determine damage or victory, or
+    trigger per-target calls or unbounded retries. Deterministic validation checks
+    actor authority, reach, capability grounding, protected fields, bounded state
+    deltas, conflict, revision, and committed-event binding, and the engine owns
+    accepted, partial, failed, or contested resolution.
+
+    Permit lazy promotion only when a proposed object binds to canonical profile
+    appearance or equipment, battlefield state, an existing semantic entity or
+    validated fact, a committed event, a conservative ordinary scene affordance,
+    or an object created by a successful committed operation. Never promote from
+    the free-action claim itself, narrator prose, presentation-only speech,
+    private belief, hallucination, or misidentification. Keep a bounded stable
+    promotion registry so equivalent references and simultaneous claims bind to
+    one object. Logically evaluate promotion before operation on a hypothetical
+    snapshot, then atomically commit the validated promotion plus either the
+    successful operation or a bounded engine-selected failure penalty. A
+    pre-existing latent object remains canonical at its original placement when
+    manipulation fails; an operation-created derivative does not exist when its
+    creator operation fails; transition validation failure commits neither.
+
+    A free action may alter bounded placement, pair relation, restraint, posture,
+    exposure, cover, mobility, object, or area state and thereby influence later
+    feasibility and causal coefficients, but it cannot directly change combat
+    parameters, canFight, identity, history, winner, or other protected authority.
+    Object acquisition, wearing, positioning, and preparation may be free actions.
+    Direct damage with a held object must return through basic_attack or skill with
+    a validated instrument reference, and defensive use through defend or a
+    defensive skill. Keep open semantic affordances separate from the finite
+    engine causal channels and server-clamped effect envelope, so an ordinary
+    stone or board can offer bounded offense, defense, reach, control, mobility,
+    vision, hearing, or cover utility without becoming an invented special item.
+    Free actions share normal initiative buckets: sequential actions revalidate
+    after prior commits, simultaneous exclusive claims become contested, and
+    same-bucket effects do not retroactively cancel each other. Persist bounded
+    decision, promotion, operation, penalty, and event receipts for deterministic
+    replay; expose only observer-permitted committed consequences. Keep the
+    persisted character profile and base battlefield prose immutable when a
+    promoted profile item moves. Instead, derive a battle-time profile override
+    and an ID-free current scene fact from the same canonical world entity and
+    placement. The profile override wins only for present-tense rendering and
+    disappears when the item returns to its baseline placement. External or
+    omniscient narration may use canonical labels; character-limited projections
+    use only that observer's label and omit unobserved objects, preserving cases
+    where belief says stone while canonical identity is a ball.
