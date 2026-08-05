@@ -5,6 +5,52 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 
 ## [Unreleased]
 
+## [0.7.0] - 2026-08-05
+
+### Added
+
+- Adds profile-grounded battle priorities so characters still seek victory by
+  default while commitments such as compassion, safety, or promises may guide
+  action selection when their configured priority is higher.
+- Adds `free_action` as a full-turn natural-language attempt for ordinary
+  interactions such as grabbing, removing clothing, picking up props, changing
+  posture, or preparing an improvised tool.
+- Adds lazy canonical object promotion and append-only concretization for
+  profile appearance, equipment, battlefield, semantic, and committed-event
+  roots without requiring every garment or loose prop to be pre-registered.
+- Adds observer-safe tactical-need, latent-affordance, and opportunity-chain
+  inputs so characters can prepare bounded offensive, defensive, control, or
+  scene advantages over multiple turns.
+- Adds battle-time profile overrides and ID-free scene-state facts derived from
+  the same canonical world placement, keeping removed or relocated profile
+  items consistent in character and narrator context.
+
+### Changed
+
+- Lets validated held or worn objects supply bounded qualitative instrument
+  effects to later basic attacks, skills, or defense without letting free
+  actions directly write damage, resources, incapacity, or victory.
+- Calls one batched server-side free-action adjudicator only on turns where at
+  least one character reserved a free action; ordinary turns add no LLM call.
+
+### Security and privacy
+
+- Keeps character intent and observer-local labels separate from canonical
+  world facts. Hallucinated objects are not promoted, and a character may keep
+  believing an object is a stone while the server binds the real ball.
+- Filters current scene facts by narration perspective and never exposes
+  canonical object IDs or an unobserved object's canonical identity to a
+  character-limited narrator.
+
+### Operations
+
+- No database schema migration, backfill, environment, authentication, billing,
+  provider-order, secret, infrastructure, or deployment-topology change is
+  required.
+- New action, decision-profile, world-object, receipt, and presentation fields
+  remain optional in persisted battle or character JSON. The prior revision
+  ignores them on rollback; active battles derive bounded legacy defaults.
+
 ## [0.6.1] - 2026-08-05
 
 ### Added
