@@ -48,6 +48,7 @@ function evidence(input: {
   modality?: PerceptionEvidence["modality"];
   eventId?: string;
   phenomenon?: string;
+  revokesSubjectAccess?: boolean;
 }): PerceptionEvidence {
   return {
     evidenceId: input.id,
@@ -55,6 +56,9 @@ function evidence(input: {
     modality: input.modality ?? "sound",
     phenomenon: input.phenomenon ?? "何かが動く気配を感じる",
     source: input.source,
+    ...(input.revokesSubjectAccess
+      ? { revokesSubjectAccess: true }
+      : {}),
     accessBySide: {
       a: input.a,
       b: input.b ?? access("none", "unknown", "知覚できない"),
@@ -182,6 +186,108 @@ describe("observer perception projection", () => {
     );
   });
 
+  it("separates canonical identity from witnessed and unwitnessed apparent forms", () => {
+    const state = semanticState();
+    state.entities["character.b"]!.facts.baseline_appearance = "黒い外套の人影";
+    state.entities["character.b"]!.facts.appearance_changes = {
+      current_form: "白い狼の姿",
+      apparent_identity: "白狼",
+      witnessed_by: ["a"],
+      confidence: "certain",
+    };
+    const worldState = createBattleWorldState({ semanticState: state });
+    const witnessed = buildInitialObserverPerception({
+      observerSide: "a",
+      turn: 1,
+      semanticState: state,
+      worldState,
+      quantizedMechanicalEvidence: [],
+      reserveEvidence: [],
+      legacyCounterpartIdentified: true,
+    });
+    assert.equal(state.entities["character.b"]?.label, "秘匿名ベータ");
+    assert.equal(witnessed.frame.counterpart.identityKnowledge, "identified");
+    assert.deepEqual(witnessed.frame.counterpart.apparentIdentity, {
+      form: "白い狼の姿",
+      identity: "白狼",
+      confidence: "certain",
+      continuity: "same_entity",
+    });
+
+    state.entities["character.b"]!.facts.appearance_changes = {
+      current_form: "白い狼の姿",
+      apparent_identity: "白狼",
+      witnessed_by: ["b"],
+      confidence: "probable",
+    };
+    const unwitnessed = buildInitialObserverPerception({
+      observerSide: "a",
+      turn: 1,
+      semanticState: state,
+      worldState,
+      quantizedMechanicalEvidence: [],
+      reserveEvidence: [],
+      legacyCounterpartIdentified: true,
+    });
+    assert.equal(unwitnessed.frame.counterpart.identityKnowledge, "identified");
+    assert.equal(
+      unwitnessed.frame.counterpart.apparentIdentity?.continuity,
+      "unlinked",
+    );
+    assert.equal(unwitnessed.frame.counterpart.apparentIdentity?.identity, "白狼");
+  });
+
+  it("keeps hallucinated identity observer-local without creating a canonical entity", () => {
+    const state = semanticState();
+    const hallucination = evidence({
+      id: "evidence.hallucination.a",
+      source: { kind: "ambient" },
+      eventId: "event.mental.effect",
+      a: {
+        ...access("clear", "suspected", "白い亡霊"),
+        apparentIdentity: {
+          form: "霧の中に立つ白い人影",
+          identity: "失われた王",
+          confidence: "probable",
+          continuity: "unlinked",
+        },
+      },
+      b: access("none", "unknown", "知覚できない"),
+      modality: "vision",
+      phenomenon: "霧の中に白い人影が立っているように見える",
+    });
+    const committedEvent = {
+      id: "event.mental.effect",
+      type: "status" as const,
+      summary: "観測者側に認知作用が確定した。",
+    };
+    const projectedA = projectObserverPerception({
+      observerSide: "a",
+      turn: 2,
+      semanticState: state,
+      events: [committedEvent],
+      quantizedMechanicalEvidence: [],
+      reserveEvidence: [],
+      sensoryEvidence: [hallucination],
+    });
+    const projectedB = projectObserverPerception({
+      observerSide: "b",
+      turn: 2,
+      semanticState: state,
+      events: [committedEvent],
+      quantizedMechanicalEvidence: [],
+      reserveEvidence: [],
+      sensoryEvidence: [hallucination],
+    });
+    assert.equal(Object.keys(state.entities).length, 2);
+    assert.equal(projectedA.frame.others[0]?.subject.kind, "ambient");
+    assert.equal(
+      projectedA.frame.others[0]?.apparentIdentity?.identity,
+      "失われた王",
+    );
+    assert.equal(projectedB.frame.others.length, 0);
+  });
+
   it("lowers access from structured hiding occlusion absence and observer impairment", () => {
     const state = semanticState();
     const baseWorld = createBattleWorldState({ semanticState: state });
@@ -306,6 +412,7 @@ describe("observer perception projection", () => {
       source: { kind: "entity", entityId: "character.b" },
       a: access("none", "identified", "見失った"),
       eventId,
+      revokesSubjectAccess: true,
     });
     const uncommitted = projectObserverPerception({
       observerSide: "a",
@@ -501,6 +608,7 @@ describe("observer perception projection", () => {
         source: { kind: "entity", entityId: "character.b" },
         a: access("none", "unknown", "知覚できない"),
         eventId: "event.loss",
+        revokesSubjectAccess: true,
       })],
     });
     assert.equal(

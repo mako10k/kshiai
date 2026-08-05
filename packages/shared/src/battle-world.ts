@@ -78,6 +78,10 @@ export const WorldActorStateSchema = z.object({
   posture: z.enum(["standing", "crouched", "prone", "airborne", "other"]),
   vision: z.enum(["normal", "impaired", "blocked", "absent"]),
   hearing: z.enum(["normal", "impaired", "blocked", "absent"]),
+  /** Missing legacy values are interpreted as normal speech capability. */
+  speech: z.enum(["normal", "impaired", "blocked", "absent"]).optional(),
+  /** Coarse comprehension of the battle's shared spoken language. */
+  languageUnderstanding: z.enum(["fluent", "partial", "none"]).optional(),
   mentalClarity: z.enum(["clear", "confused", "delirious"]),
   agency: z.enum(["self_directed", "compelled", "uncontrolled"]),
 }).strict();
@@ -608,6 +612,8 @@ function defaultActorState(): WorldActorState {
     posture: "standing",
     vision: "normal",
     hearing: "normal",
+    speech: "normal",
+    languageUnderstanding: "fluent",
     mentalClarity: "clear",
     agency: "self_directed",
   };

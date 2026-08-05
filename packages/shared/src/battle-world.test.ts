@@ -51,6 +51,8 @@ describe("server-owned battle world", () => {
       posture: "standing",
       vision: "normal",
       hearing: "normal",
+      speech: "normal",
+      languageUnderstanding: "fluent",
       mentalClarity: "clear",
       agency: "self_directed",
     });

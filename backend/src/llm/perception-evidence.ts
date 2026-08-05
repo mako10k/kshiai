@@ -156,6 +156,21 @@ export function validateSensoryEvidence(input: {
     ) {
       issues.push(`${item.evidenceId}: source entity is not in the committed world`);
     }
+    if (item.revokesSubjectAccess === true) {
+      if (item.basisEventIds.length === 0 || item.source.kind === "ambient") {
+        issues.push(
+          `${item.evidenceId}: subject access revocation requires a committed non-ambient source`,
+        );
+      }
+      if (
+        item.accessBySide.a.currentAccess !== "none" &&
+        item.accessBySide.b.currentAccess !== "none"
+      ) {
+        issues.push(
+          `${item.evidenceId}: subject access revocation requires a side with no access`,
+        );
+      }
+    }
   }
   return issues.length > 0
     ? rejected(issues)

@@ -2,21 +2,29 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import {
   buildCharacterSelfProfileAnchor,
+  createBattleState,
   defaultParameters,
   type CharacterSheet,
 } from "@kshiai/shared";
 import {
   acceptCharacterAgentResult,
+  advanceCharacterAgents,
   buildJudgmentNarrativeBlock,
   buildRefereeTurnFacts,
   finalizeCharacterSpeeches,
+  reconcileSemanticState,
 } from "./battle-service.js";
+import { MockLlmProvider } from "../llm/mock.js";
 
-function profile(selfNames: string[]) {
-  const sheet: CharacterSheet = {
-    id: "a",
+function sheet(
+  id: string,
+  displayName: string,
+  selfNames: string[] = [],
+): CharacterSheet {
+  return {
+    id,
     ownerUserId: "owner",
-    displayName: "A",
+    displayName,
     identity: {
       realName: null,
       nicknames: [],
@@ -28,19 +36,155 @@ function profile(selfNames: string[]) {
     tags: [],
     createdAt: "2026-08-05T00:00:00.000Z",
     updatedAt: "2026-08-05T00:00:00.000Z",
-    appearance: { summary: "Aの姿", visualPrompt: "test" },
+    appearance: { summary: `${displayName}の姿`, visualPrompt: "test" },
     traits: [],
     parameters: defaultParameters(),
     skills: [],
     weapon: null,
     armor: null,
     combatFlags: { canFight: true, irreversibleIncapacitated: false },
-    narrativeBlurb: "Aの物語。",
+    narrativeBlurb: `${displayName}の物語。`,
   };
-  return buildCharacterSelfProfileAnchor(sheet);
+}
+
+function profile(selfNames: string[]) {
+  return buildCharacterSelfProfileAnchor(sheet("a", "A", selfNames));
 }
 
 describe("character-authored public speech", () => {
+  it("commits accepted character speech before narration and projects it to each frame", async () => {
+    const sideA = sheet("a", "アオ", ["私"]);
+    const sideB = sheet("b", "クロ", ["俺"]);
+    const before = createBattleState({
+      id: "utterance-wiring",
+      sideA,
+      sideB,
+      turnLimit: 20,
+      prologuePending: false,
+    });
+    const result = await advanceCharacterAgents({
+      llm: new MockLlmProvider(),
+      before,
+      after: { ...before, turn: 1 },
+      mine: sideA,
+      opp: sideB,
+      events: [{ id: "event.wait", type: "wait", summary: "両者が間合いを測った。" }],
+      actions: [],
+    });
+    const utterances = result.state.turnRecords.at(-1)?.events.filter(
+      (event) => event.type === "utterance",
+    ) ?? [];
+    assert.equal(utterances.length, 2);
+    assert.deepEqual(
+      utterances.map((event) => event.utterance?.text),
+      result.characterSpeeches.map((speech) => speech.text),
+    );
+    assert.equal(
+      result.state.perceptionFrameA?.counterpart.percepts.some((percept) =>
+        percept.modality === "sound"
+      ),
+      true,
+    );
+    assert.equal(
+      result.state.perceptionFrameB?.counterpart.percepts.some((percept) =>
+        percept.modality === "sound"
+      ),
+      true,
+    );
+    assert.equal(
+      JSON.stringify(result.state.turnRecords).includes("公開用の偽台詞"),
+      false,
+    );
+  });
+
+  it("does not publish or remember an agent line that the world blocks", async () => {
+    const sideA = sheet("a", "アオ", ["私"]);
+    const sideB = sheet("b", "クロ", ["俺"]);
+    const before = createBattleState({
+      id: "utterance-blocked",
+      sideA,
+      sideB,
+      turnLimit: 20,
+      prologuePending: false,
+    });
+    before.worldState!.entities["character.a"]!.actorState!.speech = "blocked";
+    const result = await advanceCharacterAgents({
+      llm: new MockLlmProvider(),
+      before,
+      after: { ...before, turn: 1 },
+      mine: sideA,
+      opp: sideB,
+      events: [],
+      actions: [],
+    });
+    assert.deepEqual(
+      result.characterSpeeches.map((speech) => speech.side),
+      ["b"],
+    );
+    assert.equal(result.state.agentStateA?.lastSpeech, null);
+    assert.equal(
+      result.state.turnRecords.at(-1)?.events.some((event) =>
+        event.type === "utterance" && event.actorSide === "a"
+      ),
+      false,
+    );
+  });
+
+  it("carries committed utterances into the next agent perception without a provider", async () => {
+    const sideA = sheet("a", "アオ", ["私"]);
+    const sideB = sheet("b", "クロ", ["俺"]);
+    const before = createBattleState({
+      id: "utterance-next-perception",
+      sideA,
+      sideB,
+      turnLimit: 20,
+      prologuePending: false,
+    });
+    const first = await advanceCharacterAgents({
+      llm: new MockLlmProvider(),
+      before,
+      after: { ...before, turn: 1 },
+      mine: sideA,
+      opp: sideB,
+      events: [],
+      actions: [],
+    });
+    const actualA = first.characterSpeeches.find((speech) => speech.side === "a")
+      ?.text;
+    assert.ok(actualA);
+    const unavailable = new MockLlmProvider();
+    unavailable.reconcileTurnSemanticState = async () => {
+      throw new Error("provider unavailable");
+    };
+    const next = await reconcileSemanticState({
+      llm: unavailable,
+      stateBeforeTurn: {
+        ...first.state,
+        log: [{
+          turn: 1,
+          narrator: ["公開ナレータによる文章。"],
+          speeches: [{
+            sourceSide: "a",
+            speaker: "アオ",
+            text: "公開用の偽台詞",
+          }],
+        }],
+      },
+      resolvedState: { ...first.state, turn: 2 },
+      mine: sideA,
+      opp: sideB,
+      actions: [],
+      events: [],
+      mechanicalEvidence: [],
+    });
+    const heardByB = next.state.perceptionFrameB?.counterpart.percepts.find(
+      (percept) => percept.modality === "sound",
+    )?.phenomenon;
+    assert.match(heardByB ?? "", new RegExp(actualA));
+    assert.doesNotMatch(heardByB ?? "", /公開用の偽台詞|公開ナレータ/);
+    assert.equal(next.status, "skipped");
+  });
+
   it("keeps character facts authoritative while accepting placement and punctuation", () => {
     const speeches = finalizeCharacterSpeeches({
       narrative: {

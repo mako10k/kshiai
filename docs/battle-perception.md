@@ -57,6 +57,13 @@ mechanical cues on provider failure, bounds contact retention, freezes frames
 before parallel A/B agent calls, and keeps frames/registries out of public DTOs,
 SSE battle payloads, and the operator semantic-state CLI.
 
+Completed v0.5.1 Fit/Gap slice: `T_PERCEPTION_BASE` derives initial and continuing
+counterpart access from the server-owned coarse world, and
+`T_PERCEPTION_APPARENT` separates canonical identity from observer-local apparent
+form/belief. Character-authored expressions are now committed as utterance events
+before narration and projected through physical hearing, noise, consciousness,
+and language understanding. Public rendering never enters that projection.
+
 Next slice: `T_ACCEPT` runs the acceptance matrix, full validation, and release
 preparation for the next minor version.
 
@@ -95,10 +102,12 @@ This path adds no LLM call to the current normal turn.
 5. The server normalizes engine and LLM evidence, updates both private contact
    registries serially under the battle lease, and freezes A/B frames.
 6. Existing A/B character-agent calls run in parallel with their own frames.
-7. The existing fluid-focus call runs only when the configured narration style
+7. The server validates each character-authored expression, commits physically
+   possible output as an utterance event, and projects it separately for A/B.
+8. The existing fluid-focus call runs only when the configured narration style
    already requires it.
-8. The server derives a narration view from the resolved perspective/focus.
-9. The existing narrator call produces public prose and placement for immutable
+9. The server derives a narration view from the resolved perspective/focus.
+10. The existing narrator call produces public prose and placement for immutable
    character-authored speech. The server rejects invented or changed speech and
    a deterministic exact-ID replacement pass guarantees that known internal IDs
    do not reach the user. Public rendering is not fed back into either frame.
@@ -313,6 +322,11 @@ identity. One canonical source is coalesced across modalities. Indistinguishable
 sources may occupy one group contact; later evidence can split it into new
 contacts without rewriting past observations.
 
+`apparentIdentity` is an observer-local belief containing visible form, claimed
+identity, confidence, and continuity with a remembered entity. It never changes
+the canonical entity label. Unwitnessed transformations can remain unlinked;
+hallucinations remain ambient/contact phenomena rather than canonical entities.
+
 When full, the registry evicts the oldest low-salience lost unknown contact.
 Identified current knowledge is preferred over unknown lost contacts. If no safe
 entry can be allocated, the cue remains an untracked ambient perception rather
@@ -344,8 +358,9 @@ does not add an LLM retry.
   and sensory evidence remains usable.
 - Sensory evidence invalid or provider unavailable: discard that evidence as a
   unit; do not fabricate replacement sensory facts.
-- Projection failure: emit a minimal frame with explicit self, engine cues, and
-  counterpart `currentAccess=none`; keep the previous registry unchanged.
+- Projection failure: emit a minimal frame with explicit self and engine cues,
+  re-derive counterpart access from `worldState`, and otherwise retain prior
+  access and registry without inventing percept text.
 - Character-agent failure: retain prior private state and use the existing action
   fallback.
 - Narrator failure: use existing committed-event fallback and run ID replacement

@@ -155,6 +155,7 @@ task T_PERCEPTION_APPARENT PERCEPTION_BASE_READY -> PERCEPTION_READY:
     through distance occlusion noise hearing consciousness and language state.
     Never use the public rendered line as a character observation.
   duration 3d
+  status done
   requires:
     DEV 1
 
@@ -322,3 +323,16 @@ work_event WE-a6db3e5544c042af4c212645ff4a37f3d11e2724d0f2eb24082ebd7de399fcdf:
   task T_PERCEPTION_BASE
   kind finish
   occurred_at 2026-08-05T11:26:50+09:00
+
+work_event WE-08b336e7b0ed97ccb842ed8cf033c0224af755573fa29444b3f6774ce0d0cbe3:
+  model 1
+  task T_PERCEPTION_APPARENT
+  kind start
+  occurred_at 2026-08-05T11:36:32+09:00
+  planned_value 3d
+
+work_event WE-06feb23e9b3bcc29141efcce39deda99fce7b521c96289134ab6f41d8193f2cd:
+  model 1
+  task T_PERCEPTION_APPARENT
+  kind finish
+  occurred_at 2026-08-05T11:57:16+09:00

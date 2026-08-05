@@ -189,6 +189,7 @@ Use existing entity ids and fact keys whenever possible. Create a stable ASCII e
 Picking something up changes its location to {"type":"held","side":"a"|"b"}; do not delete it.
 Broken, consumed, destroyed, or removed entities remain tombstoned through active/location/facts. Create debris or other persistent results as entities when materially relevant.
 Character-visible changes belong under /entities/character.a/facts or /entities/character.b/facts. Never write private thoughts.
+When a committed event durably changes a character's visible form, keep canonical label and identity unchanged. Patch appearance_changes leaves only: current_form or current_form_by_side, apparent_identity or apparent_identity_by_side, witnessed_by, confidence or confidence_by_side, and continuity or continuity_by_side. continuity is same_entity, possibly_same_entity, or unlinked. A hallucination is observer-local sensory evidence, never a canonical entity or canonical identity change.
 Entities are visible to both sides by default. Set optional visibleTo to ["a"] or ["b"] only when the entity as a whole is not observable by the other side; the deterministic engine performs projection from this field and never infers visibility from prose. Required character entities always remain visible to both.
 Do not patch schemaVersion, revision, createdTurn, updatedTurn, combat parameters, action legality, winner state, or private agent state.
 If no durable observable change occurred, return an empty operations array.
@@ -210,6 +211,7 @@ Return JSON only:
     "modality": "vision"|"sound"|"smell"|"touch"|"proprioception"|"atmosphere"|"other",
     "phenomenon": "what is sensed without hidden numbers or unsupported identity",
     "source": {"kind":"entity","entityId":"existing.id"}|{"kind":"event","eventId":"committed.id"}|{"kind":"ambient"},
+    "revokesSubjectAccess"?: boolean,
     "accessBySide": {
       "a": ACCESS,
       "b": ACCESS
@@ -217,7 +219,7 @@ Return JSON only:
     "publicAccess": ACCESS
   }]
 }
-ACCESS is {"currentAccess":"none"|"trace"|"coarse"|"clear","identityKnowledge":"unknown"|"suspected"|"identified","perceivedAs":string,"direction":"unknown"|"front"|"front_right"|"right"|"back_right"|"back"|"back_left"|"left"|"front_left"|"above"|"below"|"around","distance":"unknown"|"contact"|"near"|"mid"|"far","occurrenceCertainty":"unknown"|"possible"|"probable"|"certain","attributionCertainty":"unknown"|"possible"|"probable"|"certain"}.
+ACCESS is {"currentAccess":"none"|"trace"|"coarse"|"clear","identityKnowledge":"unknown"|"suspected"|"identified","perceivedAs":string,"perceivedPhenomenon"?:string,"apparentIdentity"?:APPEARANCE,"direction":"unknown"|"front"|"front_right"|"right"|"back_right"|"back"|"back_left"|"left"|"front_left"|"above"|"below"|"around","distance":"unknown"|"contact"|"near"|"mid"|"far","occurrenceCertainty":"unknown"|"possible"|"probable"|"certain","attributionCertainty":"unknown"|"possible"|"probable"|"certain"}. APPEARANCE is {"form":string,"identity":string|null,"confidence":"unknown"|"possible"|"probable"|"certain","continuity":"same_entity"|"possibly_same_entity"|"unlinked"} and is an observer-local belief, never canonical identity.
 direction and distance are independent. contact is a distance value only and must never appear in direction.
 worldBefore is the committed semantic snapshot before this turn. Treat actions and events as the authoritative committed turn; never wait for or depend on another LLM response.
 Emit at most 32 entries. Use separate entries for distinct modalities or phenomena.
@@ -227,6 +229,8 @@ For touch or proprioception in an actor's body, hand, or held tool, the perceive
 Do not mark a source identified merely because its canonical name appears in server input. Identity knowledge must follow the stated lighting, occlusion, and sensory evidence for each side.
 identityKnowledge is only unknown, suspected, or identified. Never put certainty words such as certain in that field; occurrence and attribution certainty have their own fields.
 Current access and identity knowledge are independent. A known subject may be temporarily inaccessible; a clearly heard impact may still have unknown attribution.
+Use revokesSubjectAccess=true only when a committed event establishes all-modality loss of the subject itself, such as disappearance or leaving the scene. Never use it merely because one sound was unheard or one visual cue was occluded.
+For transformation or disguise, put the observed form, claimed identity, confidence, and continuity belief in apparentIdentity without changing canonical identityKnowledge. A hallucinated person remains ambient or an observer-local contact and must not become a canonical entity.
 Self sensation uses proprioception or touch and identified knowledge for that side. Source-less sound, smell, or atmosphere may use ambient.
 Every ACCESS object must have a non-empty perceivedAs. Use a literal descriptor such as 知覚できない when currentAccess is none.
 For an executed impact event, include touch or proprioception hand-feel for the actor when physically plausible; sound alone does not communicate impact feedback.
@@ -547,7 +551,14 @@ function scoreSensoryEvidence(
 
   for (const evidence of actual) {
     for (const side of ["a", "b"] as const) {
-      const text = `${evidence.phenomenon}\n${evidence.accessBySide[side].perceivedAs}`
+      const access = evidence.accessBySide[side];
+      const text = [
+        evidence.phenomenon,
+        access.perceivedAs,
+        access.perceivedPhenomenon ?? "",
+        access.apparentIdentity?.form ?? "",
+        access.apparentIdentity?.identity ?? "",
+      ].join("\n")
         .toLocaleLowerCase("ja");
       for (const term of fixture.forbiddenIdentityTermsBySide[side]) {
         identityLeakageChecks += 1;
@@ -991,6 +1002,28 @@ function perceptionJsonSchemaDefinitions(): Record<string, unknown> {
     maxLength: 80,
     pattern: "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
   };
+  definitions.apparentIdentity = {
+    type: "object",
+    properties: {
+      form: { type: "string", minLength: 1, maxLength: 400 },
+      identity: {
+        anyOf: [
+          { type: "string", minLength: 1, maxLength: 240 },
+          { type: "null" },
+        ],
+      },
+      confidence: {
+        type: "string",
+        enum: ["unknown", "possible", "probable", "certain"],
+      },
+      continuity: {
+        type: "string",
+        enum: ["same_entity", "possibly_same_entity", "unlinked"],
+      },
+    },
+    required: ["form", "identity", "confidence", "continuity"],
+    additionalProperties: false,
+  };
   const access = {
     type: "object",
     properties: {
@@ -1007,6 +1040,12 @@ function perceptionJsonSchemaDefinitions(): Record<string, unknown> {
         minLength: 1,
         maxLength: 240,
       },
+      perceivedPhenomenon: {
+        type: "string",
+        minLength: 1,
+        maxLength: 400,
+      },
+      apparentIdentity: { $ref: "#/$defs/apparentIdentity" },
       direction: {
         type: "string",
         enum: [
@@ -1102,6 +1141,7 @@ function perceptionJsonSchemaDefinitions(): Record<string, unknown> {
         maxLength: 400,
       },
       source: { $ref: "#/$defs/perceptionSource" },
+      revokesSubjectAccess: { type: "boolean" },
       accessBySide: {
         type: "object",
         properties: {

@@ -49,10 +49,12 @@ speech into character continuity, perception, action selection, battle mechanics
 turn-limit adjudication, or rating. Historical narrative blocks without source
 metadata remain display-compatible but are not new character cognition.
 
-Presentation filtering is not in-world speech perception. When utterance
-perception is implemented, character observations must be derived from the actual
-utterance event through hearing, distance, occlusion, consciousness, and language
-state, never from the public rendered line.
+Presentation filtering is not in-world speech perception. Character observations
+are derived from the committed actual utterance event through hearing, distance,
+occlusion, noise, consciousness, and language state, never from the public
+rendered line. In character-limited narration, another side's public speech is
+included only when that utterance or visible reaction is accessible in the
+selected observer's projection.
 
 Turn-limit judgment uses a separate two-stage path. The adjudicator first returns
 a raw winner and fact-based reason from committed turn facts without public prose.

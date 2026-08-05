@@ -284,6 +284,7 @@ export const TurnEventSchema = z.object({
     "status",
     "situation",
     "info",
+    "utterance",
   ]),
   actorName: z.string().optional(),
   actorSide: z.enum(["a", "b"]).optional(),
@@ -296,7 +297,31 @@ export const TurnEventSchema = z.object({
   parameterDirection: z.enum(["loss", "gain"]).optional(),
   /** Abstract magnitude label for narration, not raw stats. */
   intensity: z.enum(["minor", "moderate", "heavy", "critical"]).optional(),
+  /** Character-authored expression committed before any public rendering. */
+  utterance: z.object({
+    text: z.string().min(1).max(400),
+    delivery: z.enum(["spoken", "visible_reaction"]),
+    volume: z.enum(["quiet", "normal", "loud"]),
+    articulation: z.enum(["clear", "impaired"]),
+    language: z.string().min(1).max(40),
+  }).strict().optional(),
   summary: z.string(),
+}).superRefine((event, ctx) => {
+  if (event.type === "utterance") {
+    if (!event.id || !event.actorSide || !event.utterance) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["utterance"],
+        message: "utterance events require id, actorSide, and utterance payload",
+      });
+    }
+  } else if (event.utterance !== undefined) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["utterance"],
+      message: "only utterance events may carry an utterance payload",
+    });
+  }
 });
 export type TurnEvent = z.infer<typeof TurnEventSchema>;
 

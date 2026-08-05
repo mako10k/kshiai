@@ -283,9 +283,10 @@ export function buildNarrationPerceptionView(
         viewpointSubject: "self",
         viewpointLabel: input.sideALabel,
         counterpartControlId: "opponent",
-        counterpartLabel: input.frameA.counterpart.identityKnowledge === "identified"
-          ? input.sideBLabel
-          : input.frameA.counterpart.perceivedAs,
+        counterpartLabel: counterpartRenderLabel(
+          input.frameA.counterpart,
+          input.sideBLabel,
+        ),
       }),
     });
   }
@@ -302,9 +303,10 @@ export function buildNarrationPerceptionView(
         viewpointSubject: "opponent",
         viewpointLabel: input.sideBLabel,
         counterpartControlId: "self",
-        counterpartLabel: input.frameB.counterpart.identityKnowledge === "identified"
-          ? input.sideALabel
-          : input.frameB.counterpart.perceivedAs,
+        counterpartLabel: counterpartRenderLabel(
+          input.frameB.counterpart,
+          input.sideALabel,
+        ),
       }),
     });
   }
@@ -324,6 +326,22 @@ export function buildNarrationPerceptionView(
     resolvedFromFluid: resolved.resolvedFromFluid,
     references: externalReferences(input),
   });
+}
+
+function counterpartRenderLabel(
+  slot: CharacterPerceptionFrame["counterpart"],
+  canonicalLabel: string,
+): string {
+  const apparent = slot.apparentIdentity;
+  if (
+    slot.currentAccess !== "none" &&
+    apparent &&
+    apparent.continuity !== "same_entity"
+  ) {
+    return apparent.identity ?? apparent.form;
+  }
+  if (slot.identityKnowledge === "identified") return canonicalLabel;
+  return apparent?.identity ?? slot.perceivedAs;
 }
 
 function registryLabelForEntity(
@@ -366,7 +384,12 @@ function characterLimitedCanonicalLabel(input: {
     return input.viewpointSide === "a" ? input.sideALabel : input.sideBLabel;
   }
   if (input.entityId === counterpartId) {
-    return input.frame?.counterpart.perceivedAs ?? "知覚できない相手";
+    const canonicalLabel = input.viewpointSide === "a"
+      ? input.sideBLabel
+      : input.sideALabel;
+    return input.frame
+      ? counterpartRenderLabel(input.frame.counterpart, canonicalLabel)
+      : "知覚できない相手";
   }
   return identifiedSlotLabel(input.frame, input.entityId) ??
     registryLabelForEntity(input.registry, input.entityId) ??

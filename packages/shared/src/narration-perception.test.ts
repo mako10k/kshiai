@@ -204,6 +204,31 @@ describe("narration perception views", () => {
     );
   });
 
+  it("uses an unlinked apparent identity instead of the canonical name", () => {
+    const input = projectionInput("self", "self");
+    input.frameA.counterpart = {
+      ...input.frameA.counterpart,
+      currentAccess: "clear",
+      identityKnowledge: "identified",
+      perceivedAs: "白狼",
+      apparentIdentity: {
+        form: "白い狼の姿",
+        identity: "白狼",
+        confidence: "probable",
+        continuity: "unlinked",
+      },
+    };
+    const view = buildNarrationPerceptionView(input);
+    assert.equal(view.mode, "self");
+    if (view.mode !== "self") assert.fail("expected self narration view");
+    assert.equal(
+      view.references.find((reference) => reference.controlId === "opponent")
+        ?.renderLabel,
+      "白狼",
+    );
+    assert.equal(JSON.stringify(view).includes("クロ"), false);
+  });
+
   it("supplies every canonical ID only to omniscient narration", () => {
     const omniscient = buildNarrationPerceptionView(
       projectionInput("omniscient", "both"),

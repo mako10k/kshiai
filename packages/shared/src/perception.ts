@@ -54,6 +54,21 @@ export const PerceptionCertaintySchema = z.enum([
 ]);
 export type PerceptionCertainty = z.infer<typeof PerceptionCertaintySchema>;
 
+/** Observer-local appearance and identity belief; never canonical identity. */
+export const ApparentIdentityBeliefSchema = z.object({
+  form: z.string().min(1).max(400),
+  identity: z.string().min(1).max(240).nullable(),
+  confidence: PerceptionCertaintySchema,
+  continuity: z.enum([
+    "same_entity",
+    "possibly_same_entity",
+    "unlinked",
+  ]),
+}).strict();
+export type ApparentIdentityBelief = z.infer<
+  typeof ApparentIdentityBeliefSchema
+>;
+
 export const PerceptionDirectionSchema = z.enum([
   "unknown",
   "front",
@@ -91,6 +106,9 @@ export const PerceptionAccessSchema = z.object({
   currentAccess: CurrentAccessSchema,
   identityKnowledge: IdentityKnowledgeSchema,
   perceivedAs: z.string().min(1).max(240),
+  /** Observer-specific sensory rendering; omitted when the shared wording is safe. */
+  perceivedPhenomenon: z.string().min(1).max(400).optional(),
+  apparentIdentity: ApparentIdentityBeliefSchema.optional(),
   direction: PerceptionDirectionSchema.default("unknown"),
   distance: PerceptionDistanceSchema.default("unknown"),
   occurrenceCertainty: PerceptionCertaintySchema,
@@ -126,6 +144,8 @@ export const PerceptionEvidenceSchema = z.object({
   modality: SensoryModalitySchema,
   phenomenon: z.string().min(1).max(400),
   source: ServerOnlyPerceptionSourceRefSchema,
+  /** Explicit all-modality subject loss, not merely an unheard/unseen cue. */
+  revokesSubjectAccess: z.boolean().optional(),
   accessBySide: z.object({
     a: PerceptionAccessSchema,
     b: PerceptionAccessSchema,
@@ -456,6 +476,7 @@ export const PerceptionSlotSchema = z.object({
   currentAccess: CurrentAccessSchema,
   identityKnowledge: IdentityKnowledgeSchema,
   perceivedAs: z.string().min(1).max(240),
+  apparentIdentity: ApparentIdentityBeliefSchema.optional(),
   percepts: z.array(PerceptSchema).max(PERCEPTION_LIMITS.maxPerceptsPerFrame),
 }).strict().superRefine((slot, ctx) => {
   if (
@@ -705,6 +726,7 @@ export const ObserverContactRegistryEntrySchema = z.object({
   identityKnowledge: IdentityKnowledgeSchema,
   identifiedRef: SemanticIdSchema.nullable().default(null),
   perceivedAs: z.string().min(1).max(240),
+  apparentIdentity: ApparentIdentityBeliefSchema.optional(),
   salience: PerceptionSalienceSchema,
   lastObservedTurn: z.number().int().nonnegative(),
   sourceSet: z

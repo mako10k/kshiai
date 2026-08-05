@@ -8,6 +8,8 @@ import {
   buildBattleTurnRecord,
   buildFinisherWindow,
   buildMinimalObserverPerception,
+  buildCommittedUtteranceEvents,
+  buildUtterancePerceptionEvidence,
   buildSemanticObservationState,
   buildServerOnlyReserveCues,
   createBattleState,
@@ -727,7 +729,9 @@ export function buildCharacterAgentConsumerInput(input: {
   const counterpart = input.side === "a"
     ? input.state.sideB
     : input.state.sideA;
-  const counterpartKnowledge = frame.counterpart.identityKnowledge === "identified"
+  const counterpartKnowledge = frame.counterpart.identityKnowledge === "identified" &&
+      (!frame.counterpart.apparentIdentity ||
+        frame.counterpart.apparentIdentity.continuity === "same_entity")
     ? {
         displayName: counterpart.displayName,
         ...(
@@ -755,7 +759,7 @@ export function buildCharacterAgentConsumerInput(input: {
   };
 }
 
-async function advanceCharacterAgents(input: {
+export async function advanceCharacterAgents(input: {
   llm: LlmProvider;
   before: BattleState;
   after: BattleState;
@@ -763,8 +767,10 @@ async function advanceCharacterAgents(input: {
   opp: CharacterSheet;
   events: TurnEvent[];
   actions: ResolvedBattleAction[];
+  sensoryEvidence?: PerceptionEvidence[];
+  quantizedMechanicalEvidence?: QuantizedMechanicalEvidence[];
 }): Promise<{ state: BattleState; characterSpeeches: CharacterSpeechSource[] }> {
-  const record = buildBattleTurnRecord({
+  const recordWithoutUtterances = buildBattleTurnRecord({
     before: input.before,
     after: input.after,
     events: input.events,
@@ -782,7 +788,10 @@ async function advanceCharacterAgents(input: {
     ...input.after,
     agentStateA: previousA,
     agentStateB: previousB,
-    turnRecords: [...(input.after.turnRecords ?? []), record].slice(-50),
+    turnRecords: [
+      ...(input.after.turnRecords ?? []),
+      recordWithoutUtterances,
+    ].slice(-50),
   };
   const inputA = buildCharacterAgentConsumerInput({
     state: input.after,
@@ -840,26 +849,118 @@ async function advanceCharacterAgents(input: {
     speaker: input.after.sideB.displayName,
     profile: inputB.character,
   });
+  const candidateSpeeches = [
+    ...(acceptedA.speech ? [acceptedA.speech] : []),
+    ...(acceptedB.speech ? [acceptedB.speech] : []),
+  ];
+  const utteranceEvents = buildCommittedUtteranceEvents({
+    turn: input.after.turn,
+    worldState: input.after.worldState,
+    sources: candidateSpeeches.map((speech) => ({
+      ...speech,
+      delivery: isStageReaction(speech.text)
+        ? "visible_reaction" as const
+        : "spoken" as const,
+    })),
+  });
+  const committedSpeechSides = new Set(
+    utteranceEvents.flatMap((event) => event.actorSide ? [event.actorSide] : []),
+  );
+  const characterSpeeches = candidateSpeeches.filter((speech) =>
+    committedSpeechSides.has(speech.side)
+  );
+  const eventsWithUtterances = [...input.events, ...utteranceEvents];
+  const speechEvidence = buildUtterancePerceptionEvidence({
+    events: utteranceEvents,
+    worldState: input.after.worldState,
+    previousFrameA: input.after.perceptionFrameA,
+    previousFrameB: input.after.perceptionFrameB,
+  });
+  let stateAfterUtterances: BattleState = {
+    ...input.after,
+    agentStateA: {
+      ...acceptedA.state,
+      lastSpeech: committedSpeechSides.has("a")
+        ? acceptedA.state.lastSpeech
+        : previousA.lastSpeech,
+    },
+    agentStateB: {
+      ...acceptedB.state,
+      lastSpeech: committedSpeechSides.has("b")
+        ? acceptedB.state.lastSpeech
+        : previousB.lastSpeech,
+    },
+    plannedActionA: acceptedA.nextAction,
+    plannedActionB: acceptedB.nextAction,
+  };
+  if (stateAfterUtterances.semanticState) {
+    try {
+      const projectionBase = {
+        turn: stateAfterUtterances.turn,
+        semanticState: stateAfterUtterances.semanticState,
+        worldState: stateAfterUtterances.worldState,
+        events: eventsWithUtterances,
+        quantizedMechanicalEvidence: input.quantizedMechanicalEvidence ?? [],
+        sensoryEvidence: [
+          ...(input.sensoryEvidence ?? []),
+          ...speechEvidence,
+        ],
+      };
+      const projectedA = projectObserverPerception({
+        ...projectionBase,
+        observerSide: "a",
+        reserveEvidence: buildServerOnlyReserveCues({
+          side: "a",
+          parameters: stateAfterUtterances.sideA.parameters,
+          baseParameters: stateAfterUtterances.sideA.baseParameters,
+        }),
+        previousFrame: input.before.perceptionFrameA,
+        previousRegistry: input.before.perceptionRegistryA,
+        legacyCounterpartIdentified:
+          input.before.perceptionRegistryA === undefined,
+      });
+      const projectedB = projectObserverPerception({
+        ...projectionBase,
+        observerSide: "b",
+        reserveEvidence: buildServerOnlyReserveCues({
+          side: "b",
+          parameters: stateAfterUtterances.sideB.parameters,
+          baseParameters: stateAfterUtterances.sideB.baseParameters,
+        }),
+        previousFrame: input.before.perceptionFrameB,
+        previousRegistry: input.before.perceptionRegistryB,
+        legacyCounterpartIdentified:
+          input.before.perceptionRegistryB === undefined,
+      });
+      stateAfterUtterances = {
+        ...stateAfterUtterances,
+        perceptionFrameA: projectedA.frame,
+        perceptionFrameB: projectedB.frame,
+        perceptionRegistryA: projectedA.registry,
+        perceptionRegistryB: projectedB.registry,
+      };
+    } catch (error) {
+      console.warn(
+        "[battle] committed utterance projection retained prior frame",
+        error instanceof Error ? error.message : error,
+      );
+    }
+  }
+  const record = buildBattleTurnRecord({
+    before: input.before,
+    after: stateAfterUtterances,
+    events: eventsWithUtterances,
+    actions: input.actions,
+  });
   return {
     state: {
-      ...input.after,
-      agentStateA: acceptedA.state,
-      agentStateB: acceptedB.state,
-      plannedActionA: acceptedA.nextAction,
-      plannedActionB: acceptedB.nextAction,
+      ...stateAfterUtterances,
       turnRecords: [
         ...(input.after.turnRecords ?? []),
         record,
       ].slice(-50),
     },
-    characterSpeeches: [
-      ...(acceptedA.speech
-        ? [acceptedA.speech]
-        : []),
-      ...(acceptedB.speech
-        ? [acceptedB.speech]
-        : []),
-    ],
+    characterSpeeches,
   };
 }
 
@@ -1008,6 +1109,16 @@ export async function reconcileSemanticState(input: {
       reserveEvidenceB,
     };
   }
+  const previousUtteranceEvents = (
+    input.stateBeforeTurn.turnRecords.at(-1)?.events ?? []
+  ).filter((event) => event.type === "utterance" && event.utterance);
+  const carriedUtteranceEvidence = buildUtterancePerceptionEvidence({
+    events: previousUtteranceEvents,
+    worldState: input.stateBeforeTurn.worldState,
+    previousFrameA: input.stateBeforeTurn.perceptionFrameA,
+    previousFrameB: input.stateBeforeTurn.perceptionFrameB,
+  });
+  const perceptionEvents = [...input.events, ...previousUtteranceEvents];
   const mechanical = validateCommittedMechanicalEvidence({
     raw: input.mechanicalEvidence,
     turn: input.resolvedState.turn,
@@ -1040,6 +1151,10 @@ export async function reconcileSemanticState(input: {
     sensoryEvidence: PerceptionEvidence[],
   ): BattleState => {
     const semanticState = state.semanticState!;
+    const projectionSensoryEvidence = [
+      ...sensoryEvidence,
+      ...carriedUtteranceEvidence,
+    ];
     const projectionBase = {
       turn: state.turn,
       semanticState,
@@ -1050,9 +1165,9 @@ export async function reconcileSemanticState(input: {
       const projectedA = projectObserverPerception({
         ...projectionBase,
         observerSide: "a",
-        events: input.events,
+        events: perceptionEvents,
         reserveEvidence: reserveEvidenceA,
-        sensoryEvidence,
+        sensoryEvidence: projectionSensoryEvidence,
         previousFrame: input.stateBeforeTurn.perceptionFrameA,
         previousRegistry: input.stateBeforeTurn.perceptionRegistryA,
         legacyCounterpartIdentified:
@@ -1061,9 +1176,9 @@ export async function reconcileSemanticState(input: {
       const projectedB = projectObserverPerception({
         ...projectionBase,
         observerSide: "b",
-        events: input.events,
+        events: perceptionEvents,
         reserveEvidence: reserveEvidenceB,
-        sensoryEvidence,
+        sensoryEvidence: projectionSensoryEvidence,
         previousFrame: input.stateBeforeTurn.perceptionFrameB,
         previousRegistry: input.stateBeforeTurn.perceptionRegistryB,
         legacyCounterpartIdentified:
@@ -1763,6 +1878,8 @@ async function advanceTurnWithLease(input: {
     opp,
     events,
     actions: resolved.actions,
+    sensoryEvidence: semanticTurn.sensoryEvidence,
+    quantizedMechanicalEvidence: semanticTurn.quantizedMechanicalEvidence,
   });
   next = agentTurn.state;
   const rec = (next.turnRecords ?? [])[(next.turnRecords ?? []).length - 1];
@@ -1840,16 +1957,31 @@ async function advanceTurnWithLease(input: {
       : perspective === "foe" || (perspective === "fluid" && focus === "foe")
         ? { a: "知覚できない相手", b: next.sideB.displayName }
         : { a: next.sideA.displayName, b: next.sideB.displayName };
+  const utteranceEvidence = buildUtterancePerceptionEvidence({
+    events: rec?.events ?? [],
+    worldState: next.worldState,
+    previousFrameA: next.perceptionFrameA,
+    previousFrameB: next.perceptionFrameB,
+  });
+  const expressionAccess = (
+    observerSide: "a" | "b",
+    speakerSide: "a" | "b",
+  ) => utteranceEvidence.find((evidence) =>
+    evidence.source.kind === "entity" &&
+    evidence.source.entityId === `character.${speakerSide}`
+  )?.accessBySide[observerSide];
   const permittedSpeechSides: Array<"a" | "b"> = perceptionView?.mode === "self"
     ? [
         "a",
-        ...(perceptionView.frame.counterpart.currentAccess === "none"
+        ...(expressionAccess("a", "b")?.currentAccess === "none" ||
+            !expressionAccess("a", "b")
           ? []
           : ["b" as const]),
       ]
     : perceptionView?.mode === "opponent"
       ? [
-          ...(perceptionView.frame.counterpart.currentAccess === "none"
+          ...(expressionAccess("b", "a")?.currentAccess === "none" ||
+              !expressionAccess("b", "a")
             ? []
             : ["a" as const]),
           "b",
@@ -1859,7 +1991,11 @@ async function advanceTurnWithLease(input: {
     .filter((speech) => permittedSpeechSides.includes(speech.side))
     .map((speech) => ({
       ...speech,
-      speaker: participantLabels[speech.side],
+      speaker: perceptionView?.mode === "self" && speech.side === "b"
+        ? expressionAccess("a", "b")?.perceivedAs ?? participantLabels.b
+        : perceptionView?.mode === "opponent" && speech.side === "a"
+          ? expressionAccess("b", "a")?.perceivedAs ?? participantLabels.a
+          : participantLabels[speech.side],
     }));
   const identifierCatalog = narrationIdentifierCatalog({
     state: next,

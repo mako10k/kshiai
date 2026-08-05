@@ -218,6 +218,36 @@ describe("battle perception consumer wiring", () => {
     assert.equal(unknown.counterpart, undefined);
     assert.equal(JSON.stringify(unknown).includes("クロ"), false);
 
+    const transformedState = structuredClone(state);
+    transformedState.perceptionFrameA = {
+      ...transformedState.perceptionFrameA!,
+      counterpart: {
+        ...transformedState.perceptionFrameA!.counterpart,
+        identityKnowledge: "identified",
+        currentAccess: "clear",
+        perceivedAs: "白狼",
+        apparentIdentity: {
+          form: "白い狼の姿",
+          identity: "白狼",
+          confidence: "probable",
+          continuity: "unlinked",
+        },
+      },
+    };
+    const transformed = buildCharacterAgentConsumerInput({
+      state: transformedState,
+      sheet: sideA,
+      side: "a",
+      previous,
+    });
+    assert.ok(transformed);
+    assert.equal(transformed.counterpart, undefined);
+    assert.equal(
+      transformed.perception.counterpart.apparentIdentity?.identity,
+      "白狼",
+    );
+    assert.equal(JSON.stringify(transformed).includes("クロ"), false);
+
     const knownState = structuredClone(state);
     knownState.perceptionFrameA = {
       ...knownState.perceptionFrameA!,

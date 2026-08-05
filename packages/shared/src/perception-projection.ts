@@ -1,5 +1,9 @@
 import type { TurnEvent } from "./battle.js";
-import type { BattleSemanticState } from "./semantic-state.js";
+import type {
+  BattleSemanticEntity,
+  BattleSemanticState,
+  SemanticValue,
+} from "./semantic-state.js";
 import {
   readBattleWorldPair,
   type BattleWorldState,
@@ -12,6 +16,7 @@ import {
   ObserverContactRegistryASchema,
   ObserverContactRegistryBSchema,
   PERCEPTION_LIMITS,
+  type ApparentIdentityBelief,
   type BattleSide,
   type CharacterPerceptionFrame,
   type ContactSourceRef,
@@ -48,6 +53,7 @@ type SourceGroup = {
   access: CurrentAccess;
   identity: IdentityKnowledge;
   perceivedAs: string;
+  apparentIdentity?: ApparentIdentityBelief;
   salience: PerceptionSalience;
 };
 
@@ -118,6 +124,7 @@ export function projectObserverPerception(
         committedEventIds.has(eventId)
       );
       return access.currentAccess === "none" && committed &&
+          evidence.revokesSubjectAccess === true &&
           evidence.source.kind !== "ambient"
         ? [contactSourceKey(evidence.source)]
         : [];
@@ -244,6 +251,9 @@ export function projectObserverPerception(
         identityKnowledge: identity,
         identifiedRef: null,
         perceivedAs: group.perceivedAs,
+        ...(group.apparentIdentity
+          ? { apparentIdentity: structuredClone(group.apparentIdentity) }
+          : {}),
         salience: group.salience,
         lastObservedTurn: input.turn,
         sourceSet: group.sourceSet,
@@ -258,6 +268,9 @@ export function projectObserverPerception(
       );
       entry.identifiedRef = null;
       entry.perceivedAs = group.perceivedAs;
+      entry.apparentIdentity = group.apparentIdentity
+        ? structuredClone(group.apparentIdentity)
+        : entry.apparentIdentity;
       entry.salience = group.salience;
       entry.lastObservedTurn = input.turn;
     }
@@ -297,6 +310,7 @@ export function projectObserverPerception(
     worldState: input.worldState,
     identity: counterpartIdentity,
     label: input.semanticState.entities[counterpartEntityId]?.label ?? "相手",
+    semanticEntity: input.semanticState.entities[counterpartEntityId],
   });
   const counterpart = buildCounterpartSlot({
     observations: directCounterpart,
@@ -365,6 +379,7 @@ export function buildMinimalObserverPerception(
     worldState: input.worldState,
     identity,
     label: input.semanticState.entities[counterpartEntityId]?.label ?? "相手",
+    semanticEntity: input.semanticState.entities[counterpartEntityId],
   });
   const counterpart = buildCounterpartSlot({
     observations: [],
@@ -433,11 +448,11 @@ function observationFor(
       modality: evidence.modality,
       phenomenon: observerSafeText(
         input,
-      evidence,
-      access,
-      evidence.phenomenon,
-      "何かの気配を感じる",
-      400,
+        evidence,
+        access,
+        access.perceivedPhenomenon ?? evidence.phenomenon,
+        "何かの気配を感じる",
+        400,
       ),
       direction: access.direction,
       distance: access.distance,
@@ -531,6 +546,9 @@ function groupBySource(observations: EvidenceObservation[]): SourceGroup[] {
         "unknown" as IdentityKnowledge,
       ),
       perceivedAs: best.access.perceivedAs,
+      ...(best.access.apparentIdentity
+        ? { apparentIdentity: structuredClone(best.access.apparentIdentity) }
+        : {}),
       salience: observations.reduce(
         (value, item) => strongestSalience(value, item.percept.salience),
         "background" as PerceptionSalience,
@@ -572,6 +590,9 @@ function coalesceAmbiguousGroups(groups: SourceGroup[]): SourceGroup[] {
       existing.access = strongestAccess(existing.access, group.access);
       existing.identity = "unknown";
       existing.perceivedAs = best.access.perceivedAs;
+      existing.apparentIdentity = best.access.apparentIdentity
+        ? structuredClone(best.access.apparentIdentity)
+        : existing.apparentIdentity;
       existing.salience = strongestSalience(existing.salience, group.salience);
       continue;
     }
@@ -643,6 +664,9 @@ function updateMatchedRegistry(
     ? identifiedRef ?? entry.identifiedRef
     : null;
   entry.perceivedAs = group.perceivedAs;
+  entry.apparentIdentity = group.apparentIdentity
+    ? structuredClone(group.apparentIdentity)
+    : entry.apparentIdentity;
   entry.salience = group.salience;
   entry.lastObservedTurn = turn;
   if (entry.identityKnowledge === "identified") {
@@ -675,6 +699,43 @@ function observerSafeAccess(
       "正体不明の存在",
       240,
     ),
+    ...(access.perceivedPhenomenon
+      ? {
+          perceivedPhenomenon: observerSafeText(
+            input,
+            evidence,
+            access,
+            access.perceivedPhenomenon,
+            "何かを感じる",
+            400,
+          ),
+        }
+      : {}),
+    ...(access.apparentIdentity
+      ? {
+          apparentIdentity: {
+            ...access.apparentIdentity,
+            form: observerSafeText(
+              input,
+              evidence,
+              access,
+              access.apparentIdentity.form,
+              "判別しにくい姿",
+              400,
+            ),
+            identity: access.apparentIdentity.identity === null
+              ? null
+              : observerSafeText(
+                  input,
+                  evidence,
+                  access,
+                  access.apparentIdentity.identity,
+                  "正体不明",
+                  240,
+                ),
+          },
+        }
+      : {}),
   };
 }
 
@@ -786,6 +847,104 @@ function accessAfterPenalty(penalty: number): CurrentAccess {
   return "trace";
 }
 
+function semanticRecord(
+  value: SemanticValue | undefined,
+): Record<string, SemanticValue> | null {
+  return value !== null && typeof value === "object" && !Array.isArray(value)
+    ? value
+    : null;
+}
+
+function semanticSideString(
+  record: Record<string, SemanticValue> | null,
+  key: string,
+  side: BattleSide,
+): string | null {
+  const sideValues = semanticRecord(record?.[`${key}_by_side`]);
+  const value = sideValues?.[side] ?? record?.[key];
+  return typeof value === "string" && value.trim()
+    ? value.trim()
+    : null;
+}
+
+function semanticApparentIdentity(input: {
+  observerSide: BattleSide;
+  entity: BattleSemanticEntity | undefined;
+  identity: IdentityKnowledge;
+  label: string;
+  currentAccess: CurrentAccess;
+}): ApparentIdentityBelief | undefined {
+  if (!input.entity || input.currentAccess === "none") return undefined;
+  const baseline = typeof input.entity.facts.baseline_appearance === "string"
+    ? input.entity.facts.baseline_appearance.trim()
+    : "";
+  const changes = semanticRecord(input.entity.facts.appearance_changes);
+  const changedForm = semanticSideString(
+    changes,
+    "current_form",
+    input.observerSide,
+  );
+  const form = input.currentAccess === "trace"
+    ? "相手らしい輪郭"
+    : changedForm || baseline || "現在見えている相手の姿";
+  const claimedIdentity = semanticSideString(
+    changes,
+    "apparent_identity",
+    input.observerSide,
+  );
+  const witnessValue = changes?.witnessed_by;
+  const witnessed = Array.isArray(witnessValue) &&
+    witnessValue.includes(input.observerSide);
+  const explicitContinuity = semanticSideString(
+    changes,
+    "continuity",
+    input.observerSide,
+  );
+  const formChanged = Boolean(changedForm && changedForm !== baseline);
+  const continuity = explicitContinuity === "same_entity" ||
+      explicitContinuity === "possibly_same_entity" ||
+      explicitContinuity === "unlinked"
+    ? explicitContinuity
+    : !formChanged
+      ? "same_entity" as const
+      : witnessed
+        ? "same_entity" as const
+        : "unlinked" as const;
+  const explicitConfidence = semanticSideString(
+    changes,
+    "confidence",
+    input.observerSide,
+  );
+  const confidence = explicitConfidence === "unknown" ||
+      explicitConfidence === "possible" ||
+      explicitConfidence === "probable" ||
+      explicitConfidence === "certain"
+    ? explicitConfidence
+    : input.currentAccess === "clear"
+      ? "certain" as const
+      : input.currentAccess === "coarse"
+        ? "probable" as const
+        : "possible" as const;
+  return {
+    form: (
+      input.identity === "identified"
+        ? form
+        : form.replaceAll(input.label, "相手")
+    ).slice(0, 400),
+    identity: (
+      input.identity !== "identified" && claimedIdentity === input.label
+        ? null
+        : claimedIdentity
+    ) ?? (
+      input.identity === "identified" && continuity === "same_entity"
+        ? input.label
+        : null
+    ),
+    confidence,
+    continuity,
+  };
+}
+
 /**
  * Deterministic visual baseline from the server-owned coarse world. It reveals
  * presence and approximate position, never an identity not already established.
@@ -795,6 +954,7 @@ function buildWorldCounterpartSlot(input: {
   worldState: BattleWorldState | undefined;
   identity: IdentityKnowledge;
   label: string;
+  semanticEntity?: BattleSemanticEntity;
 }): PerceptionSlot | null {
   if (!input.worldState) return null;
   const counterpartSide = otherSide(input.observerSide);
@@ -836,13 +996,23 @@ function buildWorldCounterpartSlot(input: {
   }
 
   const currentAccess = accessAfterPenalty(penalty);
-  const perceivedAs = input.identity === "identified"
-    ? input.label
-    : currentAccess === "clear"
-      ? "同じ場に対峙する相手"
-      : currentAccess === "coarse"
-        ? "同じ場にいる相手の姿"
-        : "同じ場にいる相手らしい存在";
+  const apparentIdentity = semanticApparentIdentity({
+    observerSide: input.observerSide,
+    entity: input.semanticEntity,
+    identity: input.identity,
+    label: input.label,
+    currentAccess,
+  });
+  const perceivedAs = apparentIdentity &&
+      apparentIdentity.continuity !== "same_entity"
+    ? apparentIdentity.identity ?? apparentIdentity.form
+    : input.identity === "identified"
+      ? input.label
+      : currentAccess === "clear"
+        ? "同じ場に対峙する相手"
+        : currentAccess === "coarse"
+          ? "同じ場にいる相手の姿"
+          : "同じ場にいる相手らしい存在";
   const phenomenon = currentAccess === "clear"
     ? "同じ場に対峙する相手の姿と位置を明瞭に捉えている"
     : currentAccess === "coarse"
@@ -853,6 +1023,7 @@ function buildWorldCounterpartSlot(input: {
     currentAccess,
     identityKnowledge: input.identity,
     perceivedAs,
+    ...(apparentIdentity ? { apparentIdentity } : {}),
     percepts: [{
       perceptId: `percept.${input.observerSide}.world.counterpart`,
       modality: "vision",
@@ -886,6 +1057,9 @@ function buildCounterpartSlot(input: {
   const best = [...observations].sort(compareObservations)[0];
   const useFallbackLabel = input.fallback &&
     ACCESS_RANK[input.fallback.currentAccess] > ACCESS_RANK[observedAccess];
+  const apparentIdentity = useFallbackLabel
+    ? input.fallback?.apparentIdentity
+    : best?.access.apparentIdentity ?? input.fallback?.apparentIdentity;
   const percepts = [
     ...(input.fallback?.percepts ?? []),
     ...observations.map(({ percept }) => percept),
@@ -906,6 +1080,9 @@ function buildCounterpartSlot(input: {
           ? "相手らしい存在を知っているが、現在は判別できない"
           : "知覚できない"
     ),
+    ...(apparentIdentity
+      ? { apparentIdentity: structuredClone(apparentIdentity) }
+      : {}),
     percepts,
   };
 }
@@ -933,6 +1110,9 @@ function buildOtherSlots(input: {
       ),
       identityKnowledge: "identified",
       perceivedAs: best.access.perceivedAs,
+      ...(best.access.apparentIdentity
+        ? { apparentIdentity: structuredClone(best.access.apparentIdentity) }
+        : {}),
       percepts: ordered.map(({ percept }) => percept),
     });
   }
@@ -958,6 +1138,9 @@ function buildOtherSlots(input: {
       perceivedAs: entry.currentAccess === "none"
         ? boundedLabel(lostLabel)
         : entry.perceivedAs,
+      ...(entry.apparentIdentity
+        ? { apparentIdentity: structuredClone(entry.apparentIdentity) }
+        : {}),
       percepts,
     });
   }
@@ -978,6 +1161,9 @@ function buildOtherSlots(input: {
       ),
       identityKnowledge: identity === "identified" ? "suspected" : identity,
       perceivedAs: best.access.perceivedAs,
+      ...(best.access.apparentIdentity
+        ? { apparentIdentity: structuredClone(best.access.apparentIdentity) }
+        : {}),
       percepts: observations.map(({ percept }) => percept),
     });
   }

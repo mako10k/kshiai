@@ -104,21 +104,46 @@ setupで確立していない `identityKnowledge` は `unknown` のままにす�
 - `worldState` がない互換経路では、providerが新しい根拠を返さないだけで直前accessを
   消さない。
 - 検証済みsensory evidenceはworld由来baselineを補強できる。
-- worldと異なる明示的喪失は、`currentAccess = none` が確定event IDへ結び付く場合だけ
-  採用する。自然文の「隠れた」等は判定に使わない。
+- worldと異なる明示的喪失は、`currentAccess = none` と
+  `revokesSubjectAccess = true` が確定event IDへ結び付く場合だけ採用する。
+  単に音が聞こえない、視覚cueが遮られた等の単一modality不成立は相手全体を
+  消さない。自然文の「隠れた」等は判定に使わない。
 - projection fallbackでは新しい知覚内容を作らず、world由来counterpart accessと
   直前registry accessをperceptなしで保持する。
-- 視線が通るだけでは音の発生を推測しない。実発話や聴覚投影は
-  `T_PERCEPTION_APPARENT` の責務とする。
+- 視線が通るだけでは音の発生を推測しない。
+
+### 6.1 見かけ上のidentity
+
+`apparentIdentity` はobserver-localなbeliefであり、`form`、推定`identity`、
+`confidence`、正準実体との`continuity`を持つ。正準entityのlabelやidentityは
+変更しない。`appearance_changes.witnessed_by` にobserverが含まれる変化は
+`same_entity`、未目撃の姿変化は既定で`unlinked`とする。providerが返す幻覚は
+ambientまたはcontactとして当該observerにだけ投影し、正準entityを作らない。
+キャラ入力と限定視点ナレーションは`unlinked`または`possibly_same_entity`から
+正準相手名を復元しない。
+
+### 6.2 実発話の投影
+
+キャラエージェントの出力は、ナレータ呼出し前に次の順で処理する。
+
+1. 発話者のpresence、意識、`actorState.speech`を検証する。
+2. 成立した発話または可視反応だけを`TurnEvent.type = utterance`へ確定する。
+3. spoken eventはpairのdistance/sound、場面noise、音量・明瞭度、観測者のhearing、
+   意識、mentalClarity、languageUnderstandingからobserver別accessと聞き取り内容を
+   決定する。
+4. 可視反応は視覚accessで投影する。聞こえない発話は相手の視覚accessを消さない。
+5. eventはturn recordへ保存し、次のキャラ判断で一度消費できるよう次回projectionへ
+   引き継ぐ。公開セリフやナレータ文はこの経路へ入れない。
 
 ## 7. 後続タスクとの境界
 
 - `T_PERCEPTION_BASE`: 完了。`worldState`から初期accessと明示的な知覚喪失を投影する。
-- `T_PERCEPTION_APPARENT`: 変身・幻覚・発話をobserver別の見かけへ投影する。
+- `T_PERCEPTION_APPARENT`: 完了。変身・幻覚・発話をobserver別の見かけへ投影する。
 - `T_ACTIONS`: world制約からobserver-safeな行動候補を作り、実行直前に再検証する。
 - `T_CAUSALITY`: 物体能力や自覚/無自覚の効果からworld transitionを生成する。
 - `T_TIMELINE`: 各initiative bucketが読むworld snapshotとcommit後stateを統一する。
 
 `T_WORLD_MODEL` ではモデル・初期化・原子的遷移境界までを実装し、
 `T_PERCEPTION_BASE` で初期frame、通常projection、provider失敗、projection fallback、
-旧state補完へ同じaccess規則を接続した。行動可能性や因果更新は後続タスクで扱う。
+旧state補完へ同じaccess規則を接続し、`T_PERCEPTION_APPARENT`で見かけbeliefと
+実発話eventを接続した。行動可能性や因果更新は後続タスクで扱う。
