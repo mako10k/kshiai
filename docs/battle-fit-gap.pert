@@ -263,6 +263,7 @@ task T_CLEANUP GAP_ACCEPTED -> REPOSITORY_CLEAN:
     touching active work, and finish with the intended main branch and every
     retained worktree clean. Record what was removed and what WIP was retained.
   duration 1d
+  status active
   requires:
     DEV 1
 
@@ -434,3 +435,10 @@ work_event WE-5ed65357-ffc5-432f-8d5b-da5f1c0d3f50:
   task T_ACCEPT
   kind finish
   occurred_at 2026-08-05T13:40:16+09:00
+
+work_event WE-fc6dbdb4-ad60-4d56-a3e4-d92ef2bc63f4:
+  model 1
+  task T_CLEANUP
+  kind start
+  occurred_at 2026-08-05T13:40:41+09:00
+  planned_value 1d
