@@ -5,6 +5,8 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 
 ## [Unreleased]
 
+## [0.7.1] - 2026-08-06
+
 ### Added
 
 - Skills enter a power-based cooldown of 1–9 turns after a successful use, so
@@ -20,7 +22,8 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 ### Operations
 
 - No database migration. Existing battles start with empty skill cooldown maps
-  and acquire them as skills are used.
+  and acquire them as skills are used. Optional `skillLastUsedTurn` on combatant
+  JSON is ignored by the prior revision on rollback.
 
 ## [0.7.0] - 2026-08-05
 
