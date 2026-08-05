@@ -66,3 +66,10 @@ Only then may the narrator receive that immutable judgment together with recent
 user-facing narration to add stylistic framing. The recent narration never flows
 back into adjudication, the server inserts the canonical verdict line itself,
 and rating settlement reads the already-persisted canonical winner.
+
+The same authority applies at phase boundaries. Prologue character agents read
+the initial turn-0 perception before choosing the first action. After a terminal
+turn, an aftermath character phase may author a reaction but receives no action
+decision and cannot schedule another turn. The aftermath narrator returns only
+before/after framing and placement proposals; the server inserts the canonical
+outcome line and drops framing that attempts to state or reverse the result.

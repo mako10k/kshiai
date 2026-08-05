@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import {
   buildCharacterSelfProfileAnchor,
+  buildBattleTurnRecord,
   createBattleState,
   defaultParameters,
   type CharacterSheet,
@@ -9,7 +10,9 @@ import {
 import {
   acceptCharacterAgentResult,
   advanceCharacterAgents,
+  buildAftermathNarrativeBlock,
   buildBattleAdjudication,
+  buildCharacterAgentConsumerInput,
   buildJudgmentNarrativeBlock,
   buildRefereeFinalState,
   buildRefereeTurnFacts,
@@ -97,6 +100,76 @@ describe("character-authored public speech", () => {
       JSON.stringify(result.state.turnRecords).includes("公開用の偽台詞"),
       false,
     );
+  });
+
+  it("uses initial perception for prologue decisions and reaction-only aftermath", async () => {
+    const sideA = sheet("a", "アオ", ["私"]);
+    const sideB = sheet("b", "クロ", ["俺"]);
+    const opening = createBattleState({
+      id: "phase-alignment",
+      sideA,
+      sideB,
+      turnLimit: 20,
+      prologuePending: true,
+    });
+    const prologueInput = buildCharacterAgentConsumerInput({
+      state: opening,
+      sheet: sideA,
+      side: "a",
+      previous: opening.agentStateA!,
+      phase: "prologue",
+    });
+    assert.ok(prologueInput);
+    assert.equal(prologueInput.phase, "prologue");
+    assert.equal(prologueInput.perception.turn, 0);
+    assert.notEqual(prologueInput.perception.counterpart.currentAccess, "none");
+    assert.ok(prologueInput.decision);
+
+    opening.turn = 1;
+    opening.prologuePending = false;
+    opening.aftermathPending = true;
+    opening.winnerSide = "a";
+    opening.finishReason = "incapacitated";
+    opening.sideB.parameters.hp = 0;
+    opening.sideB.canFight = false;
+    opening.plannedActionA = { kind: "basic_attack" };
+    opening.plannedActionB = { kind: "wait" };
+    const terminalRecord = buildBattleTurnRecord({
+      before: opening,
+      after: opening,
+      events: [{ id: "event.terminal", type: "status", summary: "決着した。" }],
+      actions: [],
+    });
+    opening.turnRecords = [terminalRecord];
+    const aftermathInput = buildCharacterAgentConsumerInput({
+      state: opening,
+      sheet: sideB,
+      side: "b",
+      previous: opening.agentStateB!,
+      phase: "aftermath",
+    });
+    assert.ok(aftermathInput);
+    assert.equal(aftermathInput.phase, "aftermath");
+    assert.equal(aftermathInput.decision, undefined);
+
+    const aftermath = await advanceCharacterAgents({
+      llm: new MockLlmProvider(),
+      before: opening,
+      after: opening,
+      mine: sideA,
+      opp: sideB,
+      events: terminalRecord.events,
+      actions: terminalRecord.actions,
+      phase: "aftermath",
+      replaceLastRecord: true,
+    });
+    assert.equal(aftermath.state.turnRecords.length, 1);
+    assert.equal(aftermath.state.plannedActionA, undefined);
+    assert.equal(aftermath.state.plannedActionB, undefined);
+    assert.ok(aftermath.characterSpeeches.length > 0);
+    assert.ok(aftermath.state.turnRecords[0]?.events.some((event) =>
+      event.id?.includes(".aftermath.")
+    ));
   });
 
   it("does not publish or remember an agent line that the world blocks", async () => {
@@ -574,5 +647,40 @@ describe("character-authored public speech", () => {
     assert.equal(dramatic.narrator.includes(verdict), true);
     assert.deepEqual(quiet.speeches, []);
     assert.deepEqual(dramatic.speeches, []);
+  });
+
+  it("inserts one immutable aftermath result and rejects invented outcomes or speech", () => {
+    const source = { side: "a" as const, speaker: "A", text: "終わった。" };
+    const quiet = buildAftermathNarrativeBlock({
+      turn: 7,
+      winnerName: "A",
+      fallenNames: ["B"],
+      characterSpeeches: [source],
+      presentation: {
+        before: ["夜の風が静まる。", "Bが勝者として立つ。"],
+        after: ["余韻が残る。", "Bが復活した。"],
+        speeches: [{
+          sourceSide: "a",
+          speaker: "A",
+          text: "終わった!",
+          afterNarratorLine: 1,
+        }, {
+          sourceSide: "b",
+          speaker: "B",
+          text: "私の勝ちだ。",
+          afterNarratorLine: 1,
+        }],
+      },
+    });
+    assert.ok(quiet.narrator.includes(
+      "B は対決を続けられない。結果は A の勝利として確定した。",
+    ));
+    assert.doesNotMatch(quiet.narrator.join(" "), /Bが勝者|復活/);
+    assert.deepEqual(quiet.speeches, [{
+      sourceSide: "a",
+      speaker: "A",
+      text: "終わった!",
+      afterNarratorLine: 1,
+    }]);
   });
 });

@@ -81,6 +81,7 @@ describe("battle perception consumer wiring", () => {
       assert.equal("foeName" in input, false);
       assert.equal("cognition" in input, false);
       assert.equal("observation" in input, false);
+      assert.ok(input.decision);
       assert.equal(input.decision.availableActions.length > 0, true);
       for (const action of input.decision.availableActions) {
         assert.equal(action.target.kind === "self" || action.target.kind === "counterpart", true);

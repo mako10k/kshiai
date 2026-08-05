@@ -395,6 +395,29 @@ export class MockLlmProvider implements LlmProvider {
         : selfReference
           ? `${selfReference}は、まだ続けられる。`
           : "まだ続けられる。";
+    if (!input.decision) {
+      const aftermathSpeech = quiet
+        ? "…"
+        : selfReference
+          ? `${selfReference}は、この結末を受け止めよう。`
+          : "この結末を受け止めよう。";
+      return {
+        state: {
+          ...input.previous,
+          privateMemory: event.slice(0, 1200),
+          currentGoal: "確定した結末を受け止める",
+          emotion: "余韻",
+          observations: [
+            ...input.previous.observations.slice(-6),
+            event.slice(0, 240),
+          ],
+          speechStyle: input.previous.speechStyle || "簡潔に話す",
+          selfReference,
+          lastSpeech: aftermathSpeech,
+        },
+        speech: aftermathSpeech,
+      };
+    }
     const ownReserveCritical = input.perception.reserveCues.some((cue) =>
       cue.subject.kind === "self" &&
       (cue.relativeBand === "critical" || cue.relativeBand === "empty")
@@ -555,35 +578,26 @@ export class MockLlmProvider implements LlmProvider {
 
   async narrateAftermath(
     input: Parameters<LlmProvider["narrateAftermath"]>[0],
-  ): Promise<NarrationResult> {
+  ): ReturnType<LlmProvider["narrateAftermath"]> {
     const place = input.battlefield?.displayName ?? input.scene;
-    const fallen = input.fallenNames.join("と") || "続行できなくなった者";
     const fieldBit = input.battlefield?.conditions?.[0] || input.battlefield?.terrain;
     const styleNote = input.styleName ? `（${input.styleName}）` : "";
-    const narrator = [
-      `——決着の余波——${styleNote}`,
+    const before = [
       `${place}に、対決の余韻が静かにほどけていく。`,
       fieldBit
-        ? `${fieldBit}の気配の中で、${fallen} はもう対決を続けられない。`
-        : `${fallen} は力を使い果たし、その場で動きを止める。`,
-      input.winnerName
-        ? `${input.winnerName} は自分のやり方で対決を締めくくり、勝者としてその場に残る。`
-        : "両者とも力を使い果たし、結果は引き分けとなった。",
-      "幕は、そこで静かに下りた。",
+        ? `${fieldBit}の気配が、静かに場へ残っている。`
+        : `場の空気がゆっくり静まっていく。`,
     ];
-    await this.emitNarratorProgress(narrator, input.onProgress);
+    const after = [`幕は、そこで静かに下りた。${styleNote}`];
+    await this.emitNarratorProgress([...before, ...after], input.onProgress);
     return {
-      turn: input.turn,
-      narrator,
+      before,
+      after,
       speeches: (input.characterSpeeches ?? []).map((speech, index) => ({
         sourceSide: speech.side,
         speaker: speech.speaker,
         text: speech.text,
-        afterNarratorLine: narrator.length <= 0
-          ? -1
-          : index === 0
-            ? Math.max(0, Math.floor(narrator.length / 2) - 1)
-            : narrator.length - 1,
+        afterNarratorLine: index === 0 ? 1 : before.length + after.length + 1,
       })),
     };
   }

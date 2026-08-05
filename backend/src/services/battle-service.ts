@@ -97,6 +97,7 @@ import { config } from "../config.js";
 import { newId } from "../id.js";
 import type { LlmProvider } from "../llm/index.js";
 import type {
+  AftermathNarrationResult,
   CharacterSpeechSource,
   JudgmentNarrationResult,
   NarrationActionBeat,
@@ -714,6 +715,7 @@ export function buildCharacterAgentConsumerInput(input: {
   sheet: CharacterSheet;
   side: "a" | "b";
   previous: CharacterAgentState;
+  phase?: "prologue" | "turn" | "aftermath";
 }): Parameters<LlmProvider["advanceCharacterAgent"]>[0] | null {
   const frame = input.side === "a"
     ? input.state.perceptionFrameA
@@ -736,13 +738,17 @@ export function buildCharacterAgentConsumerInput(input: {
       }
     : undefined;
   const character = buildCharacterSelfProfileAnchor(input.sheet);
-  const decision = buildCharacterDecisionContext({
-    state: input.state,
-    sheet: input.sheet,
-    side: input.side,
-  });
-  if (decision.availableActions.length === 0) return null;
+  const phase = input.phase ?? "turn";
+  const decision = phase === "aftermath"
+    ? undefined
+    : buildCharacterDecisionContext({
+        state: input.state,
+        sheet: input.sheet,
+        side: input.side,
+      });
+  if (decision && decision.availableActions.length === 0) return null;
   return {
+    phase,
     character,
     previous: structuredClone({
       ...input.previous,
@@ -750,7 +756,7 @@ export function buildCharacterAgentConsumerInput(input: {
     }),
     perception: deepFreezeConsumerInput(structuredClone(frame)),
     ...(counterpartKnowledge ? { counterpart: counterpartKnowledge } : {}),
-    decision,
+    ...(decision ? { decision } : {}),
   };
 }
 
@@ -764,8 +770,17 @@ export async function advanceCharacterAgents(input: {
   actions: ResolvedBattleAction[];
   sensoryEvidence?: PerceptionEvidence[];
   quantizedMechanicalEvidence?: QuantizedMechanicalEvidence[];
+  phase?: "prologue" | "turn" | "aftermath";
+  /** Attach reaction-only utterances to the existing terminal turn record. */
+  replaceLastRecord?: boolean;
 }): Promise<{ state: BattleState; characterSpeeches: CharacterSpeechSource[] }> {
-  const recordWithoutUtterances = buildBattleTurnRecord({
+  const previousRecords = input.replaceLastRecord
+    ? (input.after.turnRecords ?? []).slice(0, -1)
+    : input.after.turnRecords ?? [];
+  const existingRecord = input.replaceLastRecord
+    ? (input.after.turnRecords ?? []).at(-1)
+    : undefined;
+  const recordWithoutUtterances = existingRecord ?? buildBattleTurnRecord({
     before: input.before,
     after: input.after,
     events: input.events,
@@ -784,7 +799,7 @@ export async function advanceCharacterAgents(input: {
     agentStateA: previousA,
     agentStateB: previousB,
     turnRecords: [
-      ...(input.after.turnRecords ?? []),
+      ...previousRecords,
       recordWithoutUtterances,
     ].slice(-50),
   };
@@ -793,12 +808,14 @@ export async function advanceCharacterAgents(input: {
     sheet: input.mine,
     side: "a",
     previous: previousA,
+    phase: input.phase,
   });
   const inputB = buildCharacterAgentConsumerInput({
     state: input.after,
     sheet: input.opp,
     side: "b",
     previous: previousB,
+    phase: input.phase,
   });
   if (!inputA && !inputB) {
     console.warn("[battle] character agents skipped: no observer-safe action available");
@@ -853,6 +870,7 @@ export async function advanceCharacterAgents(input: {
   const utteranceEvents = buildCommittedUtteranceEvents({
     turn: input.after.turn,
     worldState: input.after.worldState,
+    ...(input.phase === "aftermath" ? { scope: "aftermath" as const } : {}),
     sources: candidateSpeeches.map((speech) => ({
       ...speech,
       delivery: isStageReaction(speech.text)
@@ -887,8 +905,8 @@ export async function advanceCharacterAgents(input: {
         ? acceptedB.state.lastSpeech
         : previousB.lastSpeech,
     },
-    plannedActionA: acceptedA.nextAction,
-    plannedActionB: acceptedB.nextAction,
+    plannedActionA: input.phase === "aftermath" ? undefined : acceptedA.nextAction,
+    plannedActionB: input.phase === "aftermath" ? undefined : acceptedB.nextAction,
   };
   if (stateAfterUtterances.semanticState) {
     try {
@@ -943,17 +961,30 @@ export async function advanceCharacterAgents(input: {
       );
     }
   }
-  const record = buildBattleTurnRecord({
-    before: input.before,
-    after: stateAfterUtterances,
-    events: eventsWithUtterances,
-    actions: input.actions,
-  });
+  const record = existingRecord
+    ? {
+        ...existingRecord,
+        events: eventsWithUtterances,
+        cognitionA: {
+          ...existingRecord.cognitionA,
+          observedEvents: eventsWithUtterances,
+        },
+        cognitionB: {
+          ...existingRecord.cognitionB,
+          observedEvents: eventsWithUtterances,
+        },
+      }
+    : buildBattleTurnRecord({
+        before: input.before,
+        after: stateAfterUtterances,
+        events: eventsWithUtterances,
+        actions: input.actions,
+      });
   return {
     state: {
       ...stateAfterUtterances,
       turnRecords: [
-        ...(input.after.turnRecords ?? []),
+        ...previousRecords,
         record,
       ].slice(-50),
     },
@@ -991,17 +1022,17 @@ export function acceptCharacterAgentResult(input: {
   }
   const text = coerceCharacterSpeech(input.result.speech);
   const listed = input.decision?.availableActions.find((action) =>
-    action.kind === input.result?.nextAction.kind &&
-    action.skillId === input.result?.nextAction.skillId
+    action.kind === input.result?.nextAction?.kind &&
+    action.skillId === input.result?.nextAction?.skillId
   );
-  const finisherAllowed = !input.result.nextAction.useFinisher || Boolean(
+  const finisherAllowed = !input.result.nextAction?.useFinisher || Boolean(
     listed?.finisherCandidate &&
     input.decision?.finisher?.unlocked &&
     input.decision.finisher.remainingUses > 0,
   );
-  const nextAction = input.decision && (!listed || !finisherAllowed)
-    ? undefined
-    : input.result.nextAction;
+  const nextAction = input.decision && listed && finisherAllowed
+    ? input.result.nextAction
+    : undefined;
   return {
     state: {
       ...input.result.state,
@@ -1156,6 +1187,59 @@ export function buildJudgmentNarrativeBlock(input: {
     ],
     speeches: [],
   };
+}
+
+/** Insert the immutable terminal outcome between presentation-only framing. */
+export function buildAftermathNarrativeBlock(input: {
+  turn: number;
+  winnerName: string | null;
+  fallenNames: string[];
+  presentation?: AftermathNarrationResult;
+  characterSpeeches?: readonly CharacterSpeechSource[];
+}): NarrativeBlock {
+  const fallen = input.fallenNames.length > 0
+    ? input.fallenNames.join("と")
+    : "続行できなくなった者";
+  const outcome = input.winnerName
+    ? `${fallen} は対決を続けられない。結果は ${input.winnerName} の勝利として確定した。`
+    : `${fallen} は対決を続けられない。結果は引き分けとして確定した。`;
+  const forbidden = [
+    input.winnerName,
+    ...input.fallenNames,
+    "勝",
+    "負",
+    "引き分け",
+    "戦闘不能",
+    "続けられ",
+    "回復",
+    "復活",
+    "winner",
+    "loser",
+    "recover",
+  ].filter((value): value is string => Boolean(value));
+  const framing = (lines: readonly string[] | undefined) => (lines ?? [])
+    .map((line) => line.trim())
+    .filter((line) =>
+      Boolean(line) && !forbidden.some((token) =>
+        line.toLocaleLowerCase().includes(token.toLocaleLowerCase())
+      )
+    )
+    .slice(0, 3);
+  const block: NarrativeBlock = {
+    turn: input.turn,
+    narrator: [
+      "——決着の余波——",
+      ...framing(input.presentation?.before),
+      outcome,
+      ...framing(input.presentation?.after),
+    ],
+    speeches: input.presentation?.speeches ?? [],
+  };
+  block.speeches = finalizeCharacterSpeeches({
+    narrative: block,
+    sources: input.characterSpeeches ?? [],
+  });
+  return block;
 }
 
 export async function reconcileSemanticState(input: {
@@ -2546,6 +2630,7 @@ async function runPrologueTurn(input: {
     opp: input.opp,
     events: openEvents,
     actions: [],
+    phase: "prologue",
   });
   state = prologueAgents.state;
   const characterSpeeches = prologueAgents.characterSpeeches;
@@ -2697,7 +2782,22 @@ async function runAftermathTurn(input: {
   emit?: (event: BattleAdvanceStreamEvent) => void;
 }): Promise<BattlePublic> {
   const emit = input.emit ?? (() => undefined);
-  const state = input.state;
+  let state = input.state;
+  const terminalRecord = (state.turnRecords ?? []).at(-1);
+  emit({ type: "phase", phase: "agents" });
+  const aftermathAgents = await advanceCharacterAgents({
+    llm: input.llm,
+    before: state,
+    after: state,
+    mine: input.mine,
+    opp: input.opp,
+    events: terminalRecord?.events ?? [],
+    actions: terminalRecord?.actions ?? [],
+    phase: "aftermath",
+    replaceLastRecord: Boolean(terminalRecord),
+  });
+  state = aftermathAgents.state;
+  const characterSpeeches = aftermathAgents.characterSpeeches;
   const fallen: string[] = [];
   if (!state.sideA.canFight || (state.sideA.parameters.hp ?? 0) <= 0) {
     fallen.push(state.sideA.displayName);
@@ -2737,9 +2837,9 @@ async function runAftermathTurn(input: {
     focus,
   });
   emit({ type: "phase", phase: "narrating" });
-  let narrative;
+  let presentation: AftermathNarrationResult | undefined;
   try {
-    narrative = await withTimeout(
+    presentation = await withTimeout(
       input.llm.narrateAftermath({
         turn: aftermathTurn,
         scene: state.situation.scene,
@@ -2754,7 +2854,7 @@ async function runAftermathTurn(input: {
           .flatMap((b) => b.narrator)
           .slice(-8),
         innerDigests: digests,
-        characterSpeeches: [],
+        characterSpeeches,
         profileAnchors: buildNarratorProfileAnchors({
           mine: input.mine,
           opp: input.opp,
@@ -2783,45 +2883,41 @@ async function runAftermathTurn(input: {
     );
   } catch (e) {
     console.warn("[battle] narrateAftermath failed", e);
-    narrative = {
-      turn: aftermathTurn,
-      narrator: [
-        "——決着の余波——",
-        fallen.length
-          ? `${fallen.join("と")} は地に伏し、戦いは静かに幕を閉じた。`
-          : "戦場に余韻だけが残った。",
-        winnerName
-          ? `${winnerName} は息を整え、その先の運命を見据える。`
-          : "どちらも立ってはいられない。",
-      ],
-      speeches: [],
+    presentation = {
+      before: ["場には、対決の余韻だけが静かに残った。"],
+      after: ["幕は、そこで静かに下りた。"],
+      speeches: characterSpeeches.map((speech, index) => ({
+        sourceSide: speech.side,
+        speaker: speech.speaker,
+        text: speech.text,
+        afterNarratorLine: index === 0 ? 1 : 2,
+      })),
     };
-    emit({
-      type: "narrator",
-      lines: narrative.narrator.map((line) =>
-        repairNarrationIdentifierText(line, identifierCatalog)
-      ),
-      draft: null,
-      turn: aftermathTurn,
-    });
   }
 
-  narrative = repairNarrativeBlockIdentifiers(narrative, identifierCatalog);
-  // Mark epilogue block for UI (prefix first line if missing)
-  if (
-    narrative.narrator[0] &&
-    !narrative.narrator[0].includes("余波") &&
-    !narrative.narrator[0].includes("エピローグ")
-  ) {
-    narrative = {
-      ...narrative,
-      narrator: ["——決着の余波——", ...narrative.narrator],
-    };
-  }
+  let narrative = repairNarrativeBlockIdentifiers(
+    buildAftermathNarrativeBlock({
+      turn: aftermathTurn,
+      winnerName,
+      fallenNames: fallen,
+      presentation,
+      characterSpeeches,
+    }),
+    identifierCatalog,
+  );
   narrative.speeches = finalizeCharacterSpeeches({
     narrative,
-    sources: [],
+    sources: characterSpeeches,
   });
+  emit({
+    type: "narrator",
+    lines: narrative.narrator,
+    draft: null,
+    turn: aftermathTurn,
+  });
+  if (narrative.speeches.length) {
+    emit({ type: "speeches", speeches: narrative.speeches });
+  }
 
   emit({ type: "phase", phase: "finalizing" });
 

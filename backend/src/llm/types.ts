@@ -215,6 +215,11 @@ export type JudgmentNarrationResult = {
   after: string[];
 };
 
+export type AftermathNarrationResult = JudgmentNarrationResult & {
+  /** Placement proposals for already-committed character-authored reactions. */
+  speeches: NonNullable<NarrationResult["speeches"]>;
+};
+
 /** Bounded committed facts for turn-limit review; never derived from narration. */
 export type RefereeTurnFact = {
   turn: number;
@@ -344,16 +349,18 @@ export interface LlmProvider {
   }>;
   /** Advance one character from its frozen observer-relative frame only. */
   advanceCharacterAgent(input: {
+    phase: "prologue" | "turn" | "aftermath";
     character: CharacterSelfProfileAnchor;
     previous: CharacterAgentState;
     perception: CharacterPerceptionFrame;
     /** Present only when this frame identifies the counterpart. */
     counterpart?: CharacterCounterpartKnowledge;
-    decision: CharacterActionDecisionContext;
+    /** Omitted in aftermath, where the character plans no new combat turn. */
+    decision?: CharacterActionDecisionContext;
   }): Promise<{
     state: CharacterAgentState;
     speech: string;
-    nextAction: CharacterActionIntent;
+    nextAction?: CharacterActionIntent;
   }>;
   /**
    * Fluid perspective only: pick turn focus from thin summary digests.
@@ -447,7 +454,7 @@ export interface LlmProvider {
     styleInstruction?: string;
     styleName?: string;
     onProgress?: (progress: NarrationStreamProgress) => void;
-  }): Promise<NarrationResult>;
+  }): Promise<AftermathNarrationResult>;
   /**
    * Render an already-decided turn-limit judgment for the user. This call may
    * use public prose for continuity but has no result mutation authority.

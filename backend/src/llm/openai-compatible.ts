@@ -37,6 +37,7 @@ import {
 import type {
   AdjustBattlefieldResult,
   AdjustCharacterResult,
+  AftermathNarrationResult,
   AnalyzeCharacterImprovementInput,
   AnalyzeCharacterImprovementResult,
   BattleHistoryTools,
@@ -1188,6 +1189,11 @@ Rules:
     const counterpartLabel = input.counterpart?.displayName ??
       input.perception.counterpart.perceivedAs;
     try {
+      const decisionRule = input.decision
+        ? `nextAction plans the NEXT turn. Choose exactly one entry from decision.availableActions. For a skill, copy its skillId exactly. A finisher has one use for the entire battle: set useFinisher=true only for the finisher candidate when it is unlocked and remainingUses is 1. Consider own/foe condition, turns remaining, currentMultiplier, turnsUntilMax, and the risk of waiting; do not always fire at unlock.
+When decision.varietyPressure is "prefer_change", avoid decision.lastAction if another availableActions entry exists.
+When decision.varietyPressure is "require_change", nextAction MUST differ from decision.lastAction (kind and skillId) whenever another availableActions entry exists. Do not spam wait or the same skill every turn.`
+        : "This is the aftermath reaction phase. The result is already canonical. Omit nextAction, do not plan another turn, and do not reverse or reconsider the result.";
       const data = (await this.chatJson(
         `You maintain one fictional character's private continuity during a confrontation. It may be physical, ranged, technological, psychic, social, comedic, cute, or abstract. Preserve the character's own way of acting and never introduce swords, wounds, or martial language unless supplied by the profile or events.
 You see only this character's frozen canonical own-profile anchor, previous compact state, validated available actions, and one immutable observer-relative perception frame whose observer.self is explicitly "self".
@@ -1206,7 +1212,7 @@ Return JSON only:
     "selfReference": string|null, "lastSpeech": string|null
   },
   "speech": string,
-  "nextAction": {
+  "nextAction"?: {
     "kind": "skill"|"basic_attack"|"defend"|"rest"|"wait",
     "skillId"?: string,
     "useFinisher"?: boolean
@@ -1215,9 +1221,7 @@ Return JSON only:
 speech is this character's ACTUAL utterance or stage reaction after observing the committed turn. It is authoritative source material for later public placement and is also stored as this character's own lastSpeech. ALWAYS required (never null/empty). One short Japanese line:
 - Dialogue without 「」 brackets, OR
 - A quiet reaction: "…", "（ただ佇んでいる）", "（${counterpartLabel}の気配をうかがう）".
-nextAction plans the NEXT turn. Choose exactly one entry from decision.availableActions. For a skill, copy its skillId exactly. A finisher has one use for the entire battle: set useFinisher=true only for the finisher candidate when it is unlocked and remainingUses is 1. Consider own/foe condition, turns remaining, currentMultiplier, turnsUntilMax, and the risk of waiting; do not always fire at unlock.
-When decision.varietyPressure is "prefer_change", avoid decision.lastAction if another availableActions entry exists.
-When decision.varietyPressure is "require_change", nextAction MUST differ from decision.lastAction (kind and skillId) whenever another availableActions entry exists. Do not spam wait or the same skill every turn.
+${decisionRule}
 The narrator may later choose this line's display position and punctuation, but may not invent or change its words, facts, intent, speaker, or dialogue/stage-reaction kind. Narrator output is never written back into this private state.`,
         JSON.stringify(input),
         {
@@ -1241,34 +1245,40 @@ The narrator may later choose this line's display position and punctuation, but 
           : String(data.speech),
         { foeName: counterpartLabel },
       );
-      const nextAction = CharacterActionIntentSchema.safeParse(data.nextAction);
-      if (!nextAction.success) {
+      const nextAction = input.decision
+        ? CharacterActionIntentSchema.safeParse(data.nextAction)
+        : null;
+      if (nextAction && !nextAction.success) {
         throw new Error("Character agent returned an invalid next action");
       }
-      const allowed = input.decision.availableActions.find((action) =>
-        action.kind === nextAction.data.kind &&
-        action.skillId === nextAction.data.skillId
-      );
-      if (!allowed) {
+      const allowed = nextAction?.success
+        ? input.decision?.availableActions.find((action) =>
+            action.kind === nextAction.data.kind &&
+            action.skillId === nextAction.data.skillId
+          )
+        : undefined;
+      if (nextAction?.success && !allowed) {
         throw new Error("Character agent selected an unavailable next action");
       }
       if (
+        nextAction?.success &&
         nextAction.data.useFinisher &&
         !(
-          allowed.finisherCandidate &&
-          input.decision.finisher?.unlocked &&
+          allowed?.finisherCandidate &&
+          input.decision?.finisher?.unlocked &&
           input.decision.finisher.remainingUses > 0
         )
       ) {
         throw new Error("Character agent selected an unavailable finisher");
       }
-      const last = input.decision.lastAction;
+      const last = input.decision?.lastAction;
       const sameAsLast = Boolean(
         last &&
+        nextAction?.success &&
         nextAction.data.kind === last.kind &&
         (nextAction.data.skillId ?? null) === (last.skillId ?? null),
       );
-      const hasAlternative = input.decision.availableActions.some((action) =>
+      const hasAlternative = input.decision?.availableActions.some((action) =>
         !(
           last &&
           action.kind === last.kind &&
@@ -1276,7 +1286,7 @@ The narrator may later choose this line's display position and punctuation, but 
         )
       );
       if (
-        input.decision.varietyPressure === "require_change" &&
+        input.decision?.varietyPressure === "require_change" &&
         sameAsLast &&
         hasAlternative
       ) {
@@ -1288,7 +1298,7 @@ The narrator may later choose this line's display position and punctuation, but 
           lastSpeech: speech,
         },
         speech,
-        nextAction: nextAction.data,
+        ...(nextAction?.success ? { nextAction: nextAction.data } : {}),
       };
     } catch (error) {
       return this.fallbackOrThrow(error, () => this.fallback.advanceCharacterAgent(input));
@@ -1581,7 +1591,7 @@ JSON: { "turn": 0, "narrator": string[], "speeches": [ { "sourceSide": "a"|"b", 
 
   async narrateAftermath(
     input: Parameters<LlmProvider["narrateAftermath"]>[0],
-  ): Promise<NarrationResult> {
+  ): Promise<AftermathNarrationResult> {
     if (!this.client) return this.fallback.narrateAftermath(input);
     try {
       const styleBlock = input.styleInstruction?.trim()
@@ -1589,16 +1599,15 @@ JSON: { "turn": 0, "narrator": string[], "speeches": [ { "sourceSide": "a"|"b", 
         : "Narration style: 落ち着いた標準の物語調。";
       const focus = input.focus ?? "external";
       const data = (await this.chatJson(
-        `You write the AFTERMATH of a fictional confrontation (Japanese), not a new turn. Match the supplied genre, including nonviolent, social, comedic, cute, technological, or psychic contests. Describe inability to continue in a concept-appropriate way; never assume wounds, weapons, death, or grimness.
+        `You frame the AFTERMATH of a fictional confrontation (Japanese), not a new turn. Match the supplied genre, including nonviolent, social, comedic, cute, technological, or psychic contests. Describe atmosphere only; never assume wounds, weapons, death, or grimness.
 ${styleBlock}
 ${focusInstruction(focus)}
 ${NARRATION_IDENTIFIER_RULES}
 ${NARRATION_PROFILE_RULES}
-Someone is already incapacitated. Show what becomes of the fallen and how the winner (if any) closes the scene.
-Use battlefield flavor. Keep it emotional / cinematic but short (3–6 narrator lines).
+The server owns the already-decided outcome and will insert one immutable canonical result line between before and after. Do not state, restate, reinterpret, contradict, reverse, or add winner, loser, draw, incapacitation, recovery, or result claims. Use battlefield flavor and keep the framing short.
 Only characterSpeeches may become public speech. Return each supplied line exactly once with its sourceSide and speaker; do not invent aftermath dialogue. You may change punctuation or typographic surface only when words, facts, intent, and dialogue/stage-reaction distinction remain unchanged. Choose afterNarratorLine for placement.
-Do NOT invent a new fight, healing that reverses the win, or numeric stats.
-JSON: { "turn": number, "narrator": string[], "speeches": [ { "sourceSide": "a"|"b", "speaker": string, "text": string, "afterNarratorLine": number } ] }`,
+Do NOT invent a new fight, healing, or numeric stats.
+JSON: { "before": string[], "after": string[], "speeches": [ { "sourceSide": "a"|"b", "speaker": string, "text": string, "afterNarratorLine": number } ] }`,
         JSON.stringify({
           turn: input.turn,
           scene: input.scene,
@@ -1623,12 +1632,11 @@ JSON: { "turn": number, "narrator": string[], "speeches": [ { "sourceSide": "a"|
           tier: "fast",
           label: "narrateAftermath",
           timeoutMs: 14_000,
-          onText: this.narrationProgressSink(input.onProgress),
           temperature: 0.9,
         },
       )) as {
-        turn?: number;
-        narrator?: string[];
+        before?: string[];
+        after?: string[];
         speeches?: Array<{
           sourceSide?: "a" | "b";
           speaker?: string;
@@ -1636,17 +1644,19 @@ JSON: { "turn": number, "narrator": string[], "speeches": [ { "sourceSide": "a"|
           afterNarratorLine?: number;
         }>;
       };
-      const narrator = data.narrator?.length
-        ? data.narrator
-        : ["——決着の余波——", "戦場に余韻だけが残った。"];
-      input.onProgress?.({ lines: narrator, draft: null });
+      const lines = (value: unknown) => Array.isArray(value)
+        ? value.map(String).map((line) => line.trim()).filter(Boolean).slice(0, 3)
+        : [];
+      const before = lines(data.before);
+      const after = lines(data.after);
+      input.onProgress?.({ lines: [...before, ...after], draft: null });
       return {
-        turn: input.turn,
-        narrator,
+        before,
+        after,
         speeches: this.normalizeNarratorSpeeches(
           data.speeches,
           input.characterSpeeches ?? [],
-          narrator.length,
+          before.length + after.length + 2,
         ),
       };
     } catch (error) {

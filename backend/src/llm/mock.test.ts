@@ -39,6 +39,7 @@ describe("mock LLM natural-language handling", () => {
       legacyCounterpartIdentified: true,
     }).frame;
     const agentInput: Parameters<MockLlmProvider["advanceCharacterAgent"]>[0] = {
+      phase: "turn",
       character: {
         schemaVersion: 1,
         displayName: "姫騎士",
@@ -343,7 +344,11 @@ describe("mock LLM natural-language handling", () => {
       perspective: "external",
     });
 
-    const rendered = [...prologue.narrator, ...aftermath.narrator].join("\n");
+    const rendered = [
+      ...prologue.narrator,
+      ...aftermath.before,
+      ...aftermath.after,
+    ].join("\n");
     assert.match(rendered, /鈴鳴り/);
     assert.match(rendered, /無名の光/);
     assert.doesNotMatch(rendered, /彼女|彼氏|男性|少年|少女/);

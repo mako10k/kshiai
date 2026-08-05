@@ -34,6 +34,7 @@ export function buildCommittedUtteranceEvents(input: {
   turn: number;
   sources: readonly CharacterExpressionSource[];
   worldState?: BattleWorldState;
+  scope?: "aftermath";
 }): TurnEvent[] {
   return [...input.sources]
     .sort((a, b) => a.side.localeCompare(b.side))
@@ -61,7 +62,9 @@ export function buildCommittedUtteranceEvents(input: {
         ? "impaired" as const
         : "clear" as const;
       return [{
-        id: `event.utterance.${input.turn}.${source.side}`,
+        id: input.scope
+          ? `event.utterance.${input.turn}.${input.scope}.${source.side}`
+          : `event.utterance.${input.turn}.${source.side}`,
         type: "utterance" as const,
         actorName: source.speaker,
         actorSide: source.side,
