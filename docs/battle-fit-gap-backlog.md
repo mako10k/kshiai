@@ -288,6 +288,19 @@ flowchart LR
 - 検証できない加工は破棄し、実発話の原文へ戻す。
 - `publicSpeech` は `actualSpeech` やキャラ私的状態を更新しない。
 
+### BL-020 粗い正準世界モデル
+
+- 機械判断用の `worldState` と、LLM提案を受ける可観測な
+  `semanticState` を分離する。
+- area、存在、露出、相対距離、視線・音、向き、身体・感覚・精神、
+  held/worn/attached、物体の使用・干渉能力を有限値で表す。
+- pairは安定IDで正規化するが、その格納順をSide優先順位にしない。
+- world transitionは確定eventへ結び付けて原子的に適用し、参照欠落、循環、
+  不在と距離の矛盾を失敗時に部分適用しない。
+- 初期化と旧状態の補完は構造化semantic locationだけから決定論的に行い、
+  場面名やナレーションの自然文から暗さ・遮蔽・可否を推測しない。
+- 詳細は [`battle-world-model.md`](battle-world-model.md) を参照する。
+
 ### BL-003 / BL-060 上限裁定
 
 - 入力は、正準な行動、確定効果、状態遷移、戦場への確定影響だけにする。

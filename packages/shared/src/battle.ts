@@ -11,6 +11,7 @@ import {
   SemanticObservationStateSchema,
   TurnSemanticPatchSchema,
 } from "./semantic-state.js";
+import { BattleWorldStateSchema } from "./battle-world.js";
 import { DramaStateSchema } from "./drama.js";
 import {
   CharacterPerceptionFrameASchema,
@@ -445,6 +446,8 @@ export const BattleStateSchema = z.object({
   turnRecords: z.array(BattleTurnRecordSchema).default([]),
   /** Mutable observable world overlay; optional while legacy battles exist. */
   semanticState: BattleSemanticStateSchema.optional(),
+  /** Server-owned coarse mechanical world; never exposed without projection. */
+  worldState: BattleWorldStateSchema.optional(),
   /** Latest side-specific observation only; never copied into turn history. */
   observationStateA: SemanticObservationStateSchema.optional(),
   observationStateB: SemanticObservationStateSchema.optional(),

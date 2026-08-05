@@ -33,6 +33,7 @@ import {
   buildSemanticObservationState,
   createBattleSemanticState,
 } from "./semantic-state.js";
+import { createBattleWorldState } from "./battle-world.js";
 import { normalizeDramaState, parseActionSignature } from "./drama.js";
 import {
   balanceBasicAttack,
@@ -451,6 +452,7 @@ export function createBattleState(input: {
   });
   const sideA = combatantFromSheet(input.sideA);
   const sideB = combatantFromSheet(input.sideB);
+  const worldState = createBattleWorldState({ semanticState });
   const perceptionRegistryA = {
     schemaVersion: 1 as const,
     observerSide: "a" as const,
@@ -508,6 +510,7 @@ export function createBattleState(input: {
       tags,
     },
     semanticState,
+    worldState,
     observationStateA: buildSemanticObservationState({
       before: semanticState,
       after: semanticState,
@@ -619,6 +622,15 @@ export function ensureBattlePerceptionState(state: BattleState): BattleState {
     perceptionFrameB: projectedB.frame,
     perceptionRegistryA: projectedA.registry,
     perceptionRegistryB: projectedB.registry,
+  };
+}
+
+/** Deterministically supplies the server-owned coarse world for legacy battles. */
+export function ensureBattleWorldState(state: BattleState): BattleState {
+  if (state.worldState || !state.semanticState) return state;
+  return {
+    ...state,
+    worldState: createBattleWorldState({ semanticState: state.semanticState }),
   };
 }
 

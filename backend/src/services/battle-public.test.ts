@@ -71,6 +71,7 @@ describe("public battle semantic projection", () => {
     assert.equal(json.includes("parameters"), false);
     assert.equal(json.includes("coefficients"), false);
     assert.equal(json.includes("perceptionRegistry"), false);
+    assert.equal(json.includes("worldState"), false);
     assert.equal(json.includes("hidden.enemy.1"), false);
   });
 

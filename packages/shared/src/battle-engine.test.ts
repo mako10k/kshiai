@@ -7,6 +7,7 @@ import {
   createBattleState,
   decisivePressure,
   ensureBattlePerceptionState,
+  ensureBattleWorldState,
   resolveTurn,
 } from "./battle-engine.js";
 import { defaultParameters, type CharacterSheet } from "./character.js";
@@ -941,6 +942,8 @@ describe("battle engine", () => {
     assert.equal(state.perceptionFrameA?.counterpart.identityKnowledge, "unknown");
     assert.equal(state.perceptionFrameB?.counterpart.identityKnowledge, "unknown");
     assert.deepEqual(state.perceptionRegistryA?.contacts, []);
+    assert.equal(state.worldState?.pairRelations[0]?.distance, "near");
+    assert.equal(state.worldState?.pairRelations[0]?.sight, "clear");
     assert.equal(
       ensureBattlePerceptionState(state).perceptionFrameA,
       state.perceptionFrameA,
@@ -972,6 +975,25 @@ describe("battle engine", () => {
     assert.equal(
       seeded.perceptionFrameA?.revision,
       seeded.semanticState?.revision,
+    );
+  });
+
+  it("deterministically supplies a coarse world to legacy battles", () => {
+    const base = createBattleState({
+      id: "legacy-world",
+      sideA: sheet("a", "アオ"),
+      sideB: sheet("b", "クロ"),
+      turnLimit: 20,
+      prologuePending: false,
+    });
+    const legacy = { ...base, worldState: undefined };
+    const seeded = ensureBattleWorldState(legacy);
+
+    assert.equal(seeded.worldState?.revision, 0);
+    assert.equal(seeded.worldState?.pairRelations[0]?.distance, "near");
+    assert.equal(
+      ensureBattleWorldState(seeded).worldState,
+      seeded.worldState,
     );
   });
 });

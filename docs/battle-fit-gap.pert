@@ -1,15 +1,16 @@
 project KSHIAI_BATTLE_FIT_GAP:
-  version 5
+  version 6
   title "Close v0.5.1 battle pipeline Fit and Gap findings"
   description |
     Implement the accepted battle-fit-gap backlog while keeping canonical world
     state character cognition actual speech public rendering narration and
     result authority separate. Use origin HEAD v0.5.1 at commit 206a1b0 as the
     analysis and integration baseline. Merge the narrator boundary first, then
-    close perception action causality timing and compatibility gaps.
+    close perception action causality timing and compatibility gaps. After
+    acceptance, safely classify and clean obsolete integration artifacts.
   as_of 2026-08-05
   duration_unit day
-  finish GAP_ACCEPTED
+  finish REPOSITORY_CLEAN
 
 resource DEV:
   title "Developer"
@@ -54,6 +55,9 @@ milestone COMPATIBILITY_READY:
 
 milestone GAP_ACCEPTED:
   title "Battle pipeline gaps accepted"
+
+milestone REPOSITORY_CLEAN:
+  title "Repository branches and workspaces safely cleaned"
 
 task T_NARRATOR FIT_GAP_REVIEWED -> NARRATOR_READY:
   title "Make narration presentation-only and source public speech from characters"
@@ -101,6 +105,7 @@ task T_WORLD_MODEL RULES_READY -> WORLD_MODEL_READY:
     relations. Define server-owned transitions and invariants shared by
     perception feasible actions causal effects and temporal resolution.
   duration 3d
+  status done
   requires:
     DEV 1
 
@@ -215,6 +220,21 @@ task T_ACCEPT COMPATIBILITY_READY -> GAP_ACCEPTED:
   requires:
     DEV 1
 
+task T_CLEANUP GAP_ACCEPTED -> REPOSITORY_CLEAN:
+  title "Safely clean obsolete branches stashes and worktrees"
+  description |
+    Inventory local and remote branches stashes and linked worktrees after final
+    acceptance. For each candidate prove its commits and reusable file changes
+    are integrated or explicitly preserved and verify the published destination
+    SHA before deletion. Present any ambiguous or unmerged target for explicit
+    confirmation; never delete it by age name or apparent similarity alone.
+    Remove only confirmed obsolete artifacts, prune stale references without
+    touching active work, and finish with the intended main branch and every
+    retained worktree clean. Record what was removed and what WIP was retained.
+  duration 1d
+  requires:
+    DEV 1
+
 work_event WE-61482dcf104b8eb79d56f1ac22d4e79f69ae5f4bc20705490989da60a8dcae29:
   model 1
   task T_NARRATOR
@@ -240,3 +260,16 @@ work_event WE-22e9026bb66acf2b1e9d733ba2ad39d987a122b93b2acb73c2c427d9261b6c6b:
   task T_RULES
   kind finish
   occurred_at 2026-08-05T10:20:47+09:00
+
+work_event WE-5384c5e3c9723a35ea026faf7c7141687df9eabf4502717f256b541f1ce9c3d5:
+  model 1
+  task T_WORLD_MODEL
+  kind start
+  occurred_at 2026-08-05T10:26:45+09:00
+  planned_value 3d
+
+work_event WE-83e7805d78197baa6a2ae682efefe1de7963fab2d986ab4e33a86c2e809b97c9:
+  model 1
+  task T_WORLD_MODEL
+  kind finish
+  occurred_at 2026-08-05T10:40:48+09:00
