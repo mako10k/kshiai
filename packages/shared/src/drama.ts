@@ -52,8 +52,9 @@ export function parseActionSignature(signature: string | null | undefined): {
 }
 
 /**
- * Human-readable progression cue for the narrator. Derived only from drama
- * continuity already on the battle — no new LLM call.
+ * Optional progression cue for the narrator when the fight is stuck.
+ * Returns null on ordinary turns so narration is not forced into a form-
+ * evaluation template every turn.
  */
 export function dramaProgressionHint(input: {
   phase: DramaPhase;
@@ -65,7 +66,7 @@ export function dramaProgressionHint(input: {
   lastActionSignatureB: string | null;
   recentBeatFingerprints: string[];
   turnsSinceLocationChange: number;
-}): string {
+}): string | null {
   const sameExchange =
     input.recentBeatFingerprints.length >= 2 &&
     input.recentBeatFingerprints.every(
@@ -75,23 +76,25 @@ export function dramaProgressionHint(input: {
   const bWait = input.lastActionSignatureB?.startsWith("wait:") ?? false;
   // Prefer one-sided pressure when only one side is waiting — that is the
   // production monotony pattern (attacker loops while defender waits).
-  if ((aWait && !bWait) || (bWait && !aWait)) {
+  if (
+    ((aWait && !bWait) || (bWait && !aWait)) &&
+    (input.repeatedActionA >= 2 || input.repeatedActionB >= 2)
+  ) {
     return "one_sided_pressure";
   }
   if (sameExchange && (input.repeatedActionA >= 2 || input.repeatedActionB >= 2)) {
     return "break_stalemate";
   }
-  if (input.repeatedActionA >= 2 || input.repeatedActionB >= 2) {
+  if (input.repeatedActionA >= 3 || input.repeatedActionB >= 3) {
     return "escalate_repeated_action";
   }
-  if (input.turnsSinceLocationChange >= 4) {
-    return "shift_space_or_leverage";
-  }
-  if (input.phase === "climax" || input.turn >= Math.max(3, input.turnLimit - 3)) {
+  if (
+    input.phase === "climax" ||
+    input.turn >= Math.max(3, input.turnLimit - 2)
+  ) {
     return "force_commitment";
   }
-  if (input.phase === "opening") return "establish_and_probe";
-  return "change_leverage";
+  return null;
 }
 
 function latestSpeech(

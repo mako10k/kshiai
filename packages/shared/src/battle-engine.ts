@@ -40,6 +40,11 @@ import {
 } from "./battle-world.js";
 import { normalizeDramaState, parseActionSignature } from "./drama.js";
 import {
+  isSkillOnCooldown,
+  markSkillUsed,
+  skillCooldownTurns,
+} from "./skill-cooldown.js";
+import {
   balanceBasicAttack,
   balanceEquipment,
   softenCombatDamage,
@@ -75,7 +80,24 @@ function cloneCombatant(c: CombatantState): CombatantState {
     ...c,
     parameters: { ...c.parameters },
     baseParameters: c.baseParameters ? { ...c.baseParameters } : undefined,
+    skillLastUsedTurn: c.skillLastUsedTurn
+      ? { ...c.skillLastUsedTurn }
+      : undefined,
   };
+}
+
+function mergeSkillLastUsedTurn(
+  base: CombatantState,
+  proposals: readonly CombatantState[],
+): void {
+  let merged = base.skillLastUsedTurn
+    ? { ...base.skillLastUsedTurn }
+    : undefined;
+  for (const proposal of proposals) {
+    if (!proposal.skillLastUsedTurn) continue;
+    merged = { ...(merged ?? {}), ...proposal.skillLastUsedTurn };
+  }
+  if (merged) base.skillLastUsedTurn = merged;
 }
 
 export function perceivedCondition(combatant: CombatantState) {
@@ -1026,11 +1048,21 @@ function restoreTowardBase(combatant: CombatantState): ParamKey[] {
   return changed;
 }
 
-function usableSkills(skills: Skill[], self: CombatantState): Skill[] {
+function usableSkills(
+  skills: Skill[],
+  self: CombatantState,
+  turn = 0,
+): Skill[] {
   return skills.filter(
     (s) =>
       (self.parameters.mp ?? 0) >= s.costMp &&
-      (self.parameters.stamina ?? 0) >= s.costStamina,
+      (self.parameters.stamina ?? 0) >= s.costStamina &&
+      !isSkillOnCooldown({
+        skillId: s.id,
+        power: s.power,
+        currentTurn: turn,
+        lastUsedTurnBySkill: self.skillLastUsedTurn,
+      }),
   );
 }
 
@@ -1076,10 +1108,14 @@ function normalizeFinisher(
   return selectFinisherSkill(skills);
 }
 
-function rankOffensiveSkills(skills: Skill[], self: CombatantState): Skill[] {
+function rankOffensiveSkills(
+  skills: Skill[],
+  self: CombatantState,
+  turn = 0,
+): Skill[] {
   // Static policy fallback never spends the one-use finisher. Only a validated
   // character reservation (or explicit player action) may select `special`.
-  return usableSkills(skills, self)
+  return usableSkills(skills, self, turn)
     .filter(
       (s) =>
         s.kind === "attack" ||
@@ -1097,7 +1133,7 @@ function pickOffensiveSkill(
   self: CombatantState,
   options?: { avoidSkillId?: string | null; turn?: number },
 ): Skill | undefined {
-  const ranked = rankOffensiveSkills(skills, self);
+  const ranked = rankOffensiveSkills(skills, self, options?.turn ?? 0);
   if (ranked.length === 0) return undefined;
   if (options?.avoidSkillId && ranked.length > 1) {
     const alternates = ranked.filter((skill) => skill.id !== options.avoidSkillId);
@@ -1120,7 +1156,7 @@ function pickSupportSkill(
   self: CombatantState,
   options?: { avoidSkillId?: string | null; turn?: number },
 ): Skill | undefined {
-  const usable = usableSkills(skills, self).filter(
+  const usable = usableSkills(skills, self, options?.turn ?? 0).filter(
     (s) =>
       s.kind === "support" ||
       s.kind === "defend" ||
@@ -1937,6 +1973,10 @@ export function resolveTurn(input: {
       sideA.defending = defends("a");
       sideB.defending = defends("b");
       applyAtomicMechanicalAttempts(sideA, sideB, proposals.flatMap((item) => item.attempts));
+      // Cooldown stamps live on combatants, not parameter attempts — merge from
+      // each simultaneous proposal after the shared mechanical apply.
+      mergeSkillLastUsedTurn(sideA, proposals.map((item) => item.sideA));
+      mergeSkillLastUsedTurn(sideB, proposals.map((item) => item.sideB));
       for (const proposal of proposals) {
         const eventStart = events.length;
         events.push(...proposal.events);
@@ -2469,6 +2509,23 @@ function applyAction(
     });
     return false;
   }
+  if (
+    isSkillOnCooldown({
+      skillId: skill.id,
+      power: skill.power,
+      currentTurn: decisive.turn,
+      lastUsedTurnBySkill: actor.skillLastUsedTurn,
+    })
+  ) {
+    const cd = skillCooldownTurns(skill.power);
+    events.push({
+      type: "info",
+      actorName: actor.displayName,
+      skillName: skill.name,
+      summary: `${actor.displayName} は ${skill.name} の余韻が残り、${cd}ターン級の間合いを待たねばならなかった。`,
+    });
+    return false;
+  }
 
   applyTrackedParameterDelta(
     actor,
@@ -2479,6 +2536,11 @@ function applyAction(
     actor,
     { parameter: "stamina", delta: -skill.costStamina },
     recordMechanicalAttempt,
+  );
+  actor.skillLastUsedTurn = markSkillUsed(
+    actor.skillLastUsedTurn,
+    skill.id,
+    decisive.turn,
   );
 
   if (

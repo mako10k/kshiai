@@ -19,6 +19,11 @@ import {
   type WorldDistance,
 } from "./battle-world.js";
 import { deriveBattleActorCausality } from "./battle-causality.js";
+import {
+  isSkillOnCooldown,
+  skillCooldownRemaining,
+  skillCooldownTurns,
+} from "./skill-cooldown.js";
 
 export type ObserverSafeAvailableAction = {
   kind: CharacterActionIntent["kind"];
@@ -29,6 +34,10 @@ export type ObserverSafeAvailableAction = {
   costMp?: number;
   costStamina?: number;
   finisherCandidate?: boolean;
+  /** Present on skills: full cooldown length derived from power (1–9). */
+  cooldownTurns?: number;
+  /** Turns until this skill is usable again (0 = ready). */
+  cooldownRemaining?: number;
   target: {
     kind: "self" | "counterpart";
     perceivedAs: string;
@@ -274,6 +283,16 @@ export function assessCharacterActionFeasibility(input: {
     ) {
       return { feasible: false, reason: "insufficient_resource" };
     }
+    if (
+      isSkillOnCooldown({
+        skillId: skill.id,
+        power: skill.power,
+        currentTurn: input.turn,
+        lastUsedTurnBySkill: input.actor.skillLastUsedTurn,
+      })
+    ) {
+      return { feasible: false, reason: "skill_on_cooldown" };
+    }
     const finisherReady = Boolean(
       input.finisher &&
       !input.finisher.used &&
@@ -350,6 +369,13 @@ export function buildObserverSafeAvailableActions(input: {
         costMp: skill.costMp,
         costStamina: skill.costStamina,
         finisherCandidate: skill.id === input.finisher?.skillId,
+        cooldownTurns: skillCooldownTurns(skill.power),
+        cooldownRemaining: skillCooldownRemaining({
+          skillId: skill.id,
+          power: skill.power,
+          currentTurn: input.turn,
+          lastUsedTurnBySkill: input.actor.skillLastUsedTurn,
+        }),
       },
     })),
   ];

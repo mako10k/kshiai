@@ -17,7 +17,7 @@ describe("drama progression", () => {
     });
   });
 
-  it("flags repeated exchanges and one-sided waits", () => {
+  it("flags stuck loops only, not ordinary turns", () => {
     assert.equal(
       dramaProgressionHint({
         phase: "rising",
@@ -49,6 +49,20 @@ describe("drama progression", () => {
         turnsSinceLocationChange: 1,
       }),
       "one_sided_pressure",
+    );
+    assert.equal(
+      dramaProgressionHint({
+        phase: "rising",
+        turn: 4,
+        turnLimit: 20,
+        repeatedActionA: 1,
+        repeatedActionB: 1,
+        lastActionSignatureA: "skill:a:1",
+        lastActionSignatureB: "skill:b:1",
+        recentBeatFingerprints: ["skill:a:1|skill:b:1|still"],
+        turnsSinceLocationChange: 1,
+      }),
+      null,
     );
   });
 });
