@@ -5,6 +5,63 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-08-05
+
+### Added
+
+- Adds a server-owned coarse battle world for position, relative distance,
+  presence, exposure, occlusion, orientation, sensory and mental state, and
+  held, worn, attached, or usable object relations.
+- Adds realistic initial and continuous observer perception, apparent identity
+  for transformations and illusions, and per-observer hearing of committed
+  character speech.
+- Adds observer-safe feasible action choices, execution-time revalidation, and
+  structured causal effects from characters, scenes, objects, and conscious or
+  unconscious state.
+- Adds side-neutral initiative windows: near-equal actions resolve atomically
+  from one snapshot, faster actions commit first, and slower actions are then
+  revalidated. Mutual incapacity remains a valid draw.
+- Adds persisted canonical turn-limit adjudication from committed facts and
+  qualitative reserves, followed by a separate presentation-only verdict.
+
+### Changed
+
+- Makes isolated character agents the authority for actual speech. Narrators
+  may place or punctuate accepted lines but cannot invent speech, alter facts or
+  intent, feed public rendering back into cognition, or influence mechanics.
+- Grounds each character in a frozen complete own-profile anchor and limits
+  action selection to that character's private continuity, current perception,
+  and server-approved world constraints.
+- Applies the same speech, perception, outcome, and no-feedback boundaries to
+  prologue, normal turns, terminal turns, and reaction-only aftermath.
+- Replaces fixed Side A processing priority with explicit simultaneous and
+  ordered temporal buckets, including side-swap invariance for conflicts.
+
+### Security and privacy
+
+- Keeps raw combat totals, hidden canonical locations, counterpart-private
+  state, contact source mappings, and control identifiers outside character and
+  public DTOs; narrator identifiers are repaired to permitted display labels.
+- Removes public narration, rendered speech, and event prose from winner
+  selection so narration style or provider phrasing cannot alter the result or
+  rating input.
+
+### Operations
+
+- No database schema migration is required. New world, perception, temporal,
+  adjudication, and authority-marker fields remain optional in battle state JSON.
+- Legacy battles are adapted deterministically on read and persisted on the
+  next normal save. Historical display remains intact; unknown-provenance
+  `lastSpeech` and actions planned from it are discarded rather than becoming
+  new private cognition.
+- Application rollback remains compatible because prior revisions ignore the
+  optional JSON fields. If an old revision resaves a battle, a later 0.6.0
+  process safely repeats the deterministic authority migration.
+- XAI remains the primary perception provider with the reviewed combined
+  topology; OpenAI remains the operational fallback. No provider, environment,
+  authentication, billing configuration, or deployment topology changes are
+  included.
+
 ## [0.5.1] - 2026-08-04
 
 ### Fixed
