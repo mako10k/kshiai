@@ -20,14 +20,18 @@ Release the completed skill-cooldown and narrator-obligation slice:
 - [x] Feature PR #31 passed `validate`, `security`, `backend-image`, and `worker`.
 - [x] Feature changes passed repository tests and typecheck locally before merge.
 - [x] Feature squash-merged into `main`.
-- [ ] Release PR versions every workspace and lockfile as `0.7.1`, adds dated
+- [x] Release PR #32 versions every workspace and lockfile as `0.7.1`, adds dated
   changelog notes, and passes the four required checks.
-- [ ] Annotated `v0.7.1` resolves to the exact merged release commit.
-- [ ] `Stage release` succeeds and records immutable backend revision and Worker
-  version evidence.
-- [ ] The protected `production` environment is approved separately.
-- [ ] `Promote release` promotes the exact staged artifacts, passes smoke, and
+- [x] Annotated `v0.7.1` resolves to the exact merged release commit
+  (`8def778c38c7a02fb75a251e7584c3a8d3e029ab`).
+- [x] `Stage release` succeeds and records immutable backend revision and Worker
+  version evidence (`kshiai-api-00027-bix`,
+  `2bd4e22c-3682-481a-b682-31a83f3a8bb2`).
+- [x] The protected `production` environment is approved separately.
+- [x] `Promote release` promotes the exact staged artifacts, passes smoke, and
   publishes the GitHub Release.
+- [x] Post-promote health and live `skillLastUsedTurn` write path verified; see
+  [`evidence/production-0.7.1-post-promote-2026-08-06.md`](evidence/production-0.7.1-post-promote-2026-08-06.md).
 
 ## Operational boundary
 
