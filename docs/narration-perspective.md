@@ -57,7 +57,12 @@ included only when that utterance or visible reaction is accessible in the
 selected observer's projection.
 
 Turn-limit judgment uses a separate two-stage path. The adjudicator first returns
-a raw winner and fact-based reason from committed turn facts without public prose.
+a raw winner and fact-based reason from committed actions, structured effects,
+state changes, world-operation kinds, and coarse final reserve bands without
+public prose, event summaries, or rendered speech. The server validates and
+persists that result as `adjudication` before any presentation call. A failed
+adjudicator uses the engine result as a deterministic fallback.
 Only then may the narrator receive that immutable judgment together with recent
 user-facing narration to add stylistic framing. The recent narration never flows
-back into adjudication, and the server inserts the canonical verdict line itself.
+back into adjudication, the server inserts the canonical verdict line itself,
+and rating settlement reads the already-persisted canonical winner.

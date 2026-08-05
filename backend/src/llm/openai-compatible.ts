@@ -1887,22 +1887,49 @@ JSON: { "before": string[], "after": string[] }. Each array has at most 2 short 
     sideBName: string;
     engineWinnerSide: "a" | "b" | "draw" | null;
     turnFacts: RefereeTurnFact[];
+    finalState: import("./types.js").RefereeFinalState;
   }): Promise<RefereeResult> {
     if (!this.client) return this.fallback.referee(input);
     try {
       const data = (await this.chatJson(
-        `As a turn-limit adjudicator for a broad fictional confrontation, return raw JSON { "winnerSide": "a"|"b"|"draw", "reason": string } in Japanese. Match the established genre and judge effectiveness without assuming physical violence.
-turnFacts contains bounded committed engine actions and events. No narrator prose or public rendered speech is present. Use only turnFacts and prefer engineWinnerSide unless those canonical facts clearly require another result. reason is a concise fact-based rationale, not public narration.`,
+        `As a turn-limit adjudicator for a broad fictional confrontation, return raw JSON { "winnerSide": "a"|"b"|"draw", "reason": string, "reasonFacts": [{ "factor": "committed_actions"|"mechanical_effects"|"remaining_capacity"|"world_impact"|"overall_effectiveness", "favoredSide": "a"|"b"|"draw", "statement": string }] } in Japanese. Match the established genre and judge effectiveness without assuming physical violence.
+turnFacts and finalState contain bounded committed engine structure. No narrator prose, event summary, or public rendered speech is present. Use only those canonical facts and prefer engineWinnerSide unless the facts clearly require another result. reason and reasonFacts are concise fact-based rationales, not public narration.`,
         JSON.stringify(input),
         { tier: "engine", label: "referee", temperature: 0.3, timeoutMs: 12_000 },
-      )) as { winnerSide?: unknown; reason?: unknown };
+      )) as { winnerSide?: unknown; reason?: unknown; reasonFacts?: unknown };
       const winnerSide = data.winnerSide === "a" ||
           data.winnerSide === "b" || data.winnerSide === "draw"
         ? data.winnerSide
         : input.engineWinnerSide ?? "draw";
       const reason = String(data.reason ?? "").trim() ||
         "確定した行動と影響を総合して判定した。";
-      return { winnerSide, reason };
+      const factors = new Set([
+        "committed_actions",
+        "mechanical_effects",
+        "remaining_capacity",
+        "world_impact",
+        "overall_effectiveness",
+      ]);
+      const reasonFacts = Array.isArray(data.reasonFacts)
+        ? data.reasonFacts.flatMap((value) => {
+            if (!value || typeof value !== "object") return [];
+            const item = value as Record<string, unknown>;
+            const factor = String(item.factor ?? "");
+            const favoredSide = item.favoredSide;
+            const statement = String(item.statement ?? "").trim();
+            if (
+              !factors.has(factor) ||
+              (favoredSide !== "a" && favoredSide !== "b" && favoredSide !== "draw") ||
+              !statement
+            ) return [];
+            return [{
+              factor: factor as NonNullable<RefereeResult["reasonFacts"]>[number]["factor"],
+              favoredSide: favoredSide as "a" | "b" | "draw",
+              statement: statement.slice(0, 240),
+            }];
+          }).slice(0, 6)
+        : [];
+      return { winnerSide, reason, reasonFacts };
     } catch (error) {
       return this.fallbackOrThrow(error, () => this.fallback.referee(input));
     }

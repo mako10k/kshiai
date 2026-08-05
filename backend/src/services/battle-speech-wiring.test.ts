@@ -9,7 +9,9 @@ import {
 import {
   acceptCharacterAgentResult,
   advanceCharacterAgents,
+  buildBattleAdjudication,
   buildJudgmentNarrativeBlock,
+  buildRefereeFinalState,
   buildRefereeTurnFacts,
   finalizeCharacterSpeeches,
   reconcileSemanticState,
@@ -426,10 +428,45 @@ describe("character-authored public speech", () => {
       }],
       events: [{
         id: "turn-3-event-1",
-        type: "info",
+        type: "damage",
+        actorSide: "a",
+        targetSides: ["b"],
+        parameterKey: "hp",
+        parameterDirection: "loss",
+        intensity: "moderate",
         summary: "確定した出来事",
+      }, {
+        id: "turn-3-event-2",
+        type: "utterance",
+        actorSide: "a",
+        utterance: {
+          text: "裁定へ渡してはいけない台詞",
+          delivery: "spoken",
+          volume: "normal",
+          articulation: "clear",
+          language: "ja",
+        },
+        summary: "Aが話した。",
       }],
-    } as Parameters<typeof buildRefereeTurnFacts>[0][number]]);
+      sideAChange: {
+        parameterChanges: {},
+        defendingBefore: false,
+        defendingAfter: false,
+        canFightBefore: true,
+        canFightAfter: true,
+      },
+      sideBChange: {
+        parameterChanges: { hp: -8 },
+        defendingBefore: false,
+        defendingAfter: false,
+        canFightBefore: true,
+        canFightAfter: true,
+      },
+      worldImpact: {
+        status: "applied",
+        operationKinds: ["set_pair_relation"],
+      },
+    } as unknown as Parameters<typeof buildRefereeTurnFacts>[0][number]]);
 
     assert.deepEqual(facts, [{
       turn: 3,
@@ -438,11 +475,74 @@ describe("character-authored public speech", () => {
         kind: "wait",
         executed: true,
         skippedReason: null,
+        resolutionReason: null,
       }],
-      eventSummaries: ["確定した出来事"],
+      effects: [{
+        type: "damage",
+        actorSide: "a",
+        targetSides: ["b"],
+        parameterKey: "hp",
+        parameterDirection: "loss",
+        intensity: "moderate",
+      }],
+      stateChanges: {
+        a: { canFightBefore: true, canFightAfter: true },
+        b: { canFightBefore: true, canFightAfter: true },
+      },
+      worldImpact: {
+        status: "applied",
+        operationKinds: ["set_pair_relation"],
+      },
     }]);
     assert.equal("narrator" in facts[0]!, false);
     assert.equal("speeches" in facts[0]!, false);
+    assert.doesNotMatch(JSON.stringify(facts), /確定した出来事|裁定へ渡してはいけない台詞/);
+  });
+
+  it("persists one canonical adjudication independent of presentation inputs", () => {
+    const state = createBattleState({
+      id: "adjudication-state",
+      sideA: sheet("a", "A"),
+      sideB: sheet("b", "B"),
+      turnLimit: 20,
+      prologuePending: false,
+    });
+    state.turn = 20;
+    const finalState = buildRefereeFinalState(state);
+    assert.deepEqual(finalState.a.reserves, {
+      hp: "ample",
+      mp: "ample",
+      stamina: "ample",
+    });
+    assert.doesNotMatch(JSON.stringify(finalState), /100|50/);
+
+    const result = {
+      winnerSide: "b" as const,
+      reason: "確定した世界への働きかけが上回った。",
+      reasonFacts: [{
+        factor: "world_impact" as const,
+        favoredSide: "b" as const,
+        statement: "B側の働きかけが場に残った。",
+      }],
+    };
+    const adjudication = buildBattleAdjudication({
+      turn: 20,
+      engineWinnerSide: "a",
+      turnFacts: [],
+      result,
+    });
+    assert.equal(adjudication.winnerSide, "b");
+    assert.equal(adjudication.engineFallbackSide, "a");
+    assert.equal(adjudication.source, "semantic_adjudicator");
+    assert.deepEqual(adjudication.reasonFacts, result.reasonFacts);
+
+    const fallback = buildBattleAdjudication({
+      turn: 20,
+      engineWinnerSide: "a",
+      turnFacts: [],
+    });
+    assert.equal(fallback.winnerSide, "a");
+    assert.equal(fallback.source, "deterministic_fallback");
   });
 
   it("keeps the raw judgment immutable across narration styles", () => {

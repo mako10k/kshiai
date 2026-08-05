@@ -1,5 +1,6 @@
 import {
   BattlePolicyOptionSchema,
+  BattleAdjudicationSchema,
   accumulateBattleBalanceTrace,
   advanceSupervisorClock,
   applyBattleWorldTransition,
@@ -34,6 +35,7 @@ import {
   type BattlePublic,
   type BattleStance,
   type BattleState,
+  type BattleAdjudication,
   type BattleTurnRecord,
   type ResolvedBattleAction,
   type CharacterAgentState,
@@ -98,6 +100,8 @@ import type {
   CharacterSpeechSource,
   JudgmentNarrationResult,
   NarrationActionBeat,
+  RefereeFinalState,
+  RefereeResult,
   RefereeTurnFact,
 } from "../llm/types.js";
 import {
@@ -1024,9 +1028,96 @@ export function buildRefereeTurnFacts(
       kind: action.kind,
       executed: action.executed,
       skippedReason: action.skippedReason,
+      resolutionReason: action.resolution?.reason ?? null,
     })),
-    eventSummaries: record.events.map((event) => event.summary),
+    effects: record.events.flatMap((event) => event.type === "utterance"
+      ? []
+      : [{
+          type: event.type,
+          actorSide: event.actorSide ?? null,
+          targetSides: event.targetSides ?? [],
+          parameterKey: event.parameterKey ?? null,
+          parameterDirection: event.parameterDirection ?? null,
+          intensity: event.intensity ?? null,
+        }]),
+    stateChanges: {
+      a: {
+        canFightBefore: record.sideAChange.canFightBefore,
+        canFightAfter: record.sideAChange.canFightAfter,
+      },
+      b: {
+        canFightBefore: record.sideBChange.canFightBefore,
+        canFightAfter: record.sideBChange.canFightAfter,
+      },
+    },
+    worldImpact: record.worldImpact ?? null,
   }));
+}
+
+function reserveBand(current: number, maximum: number): "empty" | "low" | "available" | "ample" {
+  if (current <= 0) return "empty";
+  const ratio = current / Math.max(1, maximum);
+  if (ratio <= 0.25) return "low";
+  if (ratio <= 0.6) return "available";
+  return "ample";
+}
+
+/** Final canonical condition supplied to adjudication without raw totals. */
+export function buildRefereeFinalState(state: BattleState): RefereeFinalState {
+  const side = (combatant: BattleState["sideA"]): RefereeFinalState["a"] => ({
+    condition: perceivedCondition(combatant),
+    reserves: {
+      hp: reserveBand(combatant.parameters.hp ?? 0, combatant.parameters.maxHp ?? 1),
+      mp: reserveBand(combatant.parameters.mp ?? 0, combatant.parameters.maxMp ?? 1),
+      stamina: reserveBand(
+        combatant.parameters.stamina ?? 0,
+        combatant.parameters.maxStamina ?? 1,
+      ),
+    },
+  });
+  return { a: side(state.sideA), b: side(state.sideB) };
+}
+
+/** Normalize one raw semantic judgment into the persisted result authority. */
+export function buildBattleAdjudication(input: {
+  turn: number;
+  engineWinnerSide: "a" | "b" | "draw" | null;
+  turnFacts: readonly RefereeTurnFact[];
+  result?: RefereeResult;
+}): BattleAdjudication {
+  const engineFallbackSide = input.engineWinnerSide ?? "draw";
+  const winnerSide = input.result?.winnerSide === "a" ||
+      input.result?.winnerSide === "b" || input.result?.winnerSide === "draw"
+    ? input.result.winnerSide
+    : engineFallbackSide;
+  const reason = input.result?.reason.trim().slice(0, 600) ||
+    "確定した行動、影響、残力を総合して判定した。";
+  const parsedFacts = (input.result?.reasonFacts ?? []).flatMap((fact) => {
+    const parsed = BattleAdjudicationSchema.shape.reasonFacts.element.safeParse(fact);
+    return parsed.success ? [parsed.data] : [];
+  }).slice(0, 6);
+  const turns = input.turnFacts.map((fact) => fact.turn);
+  return BattleAdjudicationSchema.parse({
+    schemaVersion: 1,
+    turn: input.turn,
+    winnerSide,
+    reason,
+    reasonFacts: parsedFacts.length > 0
+      ? parsedFacts
+      : [{
+          factor: "overall_effectiveness",
+          favoredSide: winnerSide,
+          statement: reason.slice(0, 240),
+        }],
+    source: input.result
+      ? "semantic_adjudicator"
+      : "deterministic_fallback",
+    engineFallbackSide,
+    inputTurnRange: {
+      from: turns.length > 0 ? Math.min(...turns) : input.turn,
+      to: turns.length > 0 ? Math.max(...turns) : input.turn,
+    },
+  });
 }
 
 /**
@@ -2299,15 +2390,40 @@ async function advanceTurnWithLease(input: {
   let resultSummary: string | null = null;
   if (next.status === "finished") {
     if (next.finishReason === "turn_limit") {
-      const ref = await input.llm.referee({
-        sideAName: next.sideA.displayName,
-        sideBName: next.sideB.displayName,
+      const turnFacts = buildRefereeTurnFacts(next.turnRecords ?? []);
+      let refereeResult: RefereeResult | undefined;
+      try {
+        refereeResult = await withTimeout(
+          input.llm.referee({
+            sideAName: next.sideA.displayName,
+            sideBName: next.sideB.displayName,
+            engineWinnerSide: next.winnerSide,
+            turnFacts,
+            finalState: buildRefereeFinalState(next),
+          }),
+          12_000,
+          "referee",
+        );
+      } catch (error) {
+        console.warn(
+          "[battle] semantic adjudication failed; using deterministic fallback",
+          error instanceof Error ? error.message : error,
+        );
+      }
+      const adjudication = buildBattleAdjudication({
+        turn: next.turn,
         engineWinnerSide: next.winnerSide,
-        turnFacts: buildRefereeTurnFacts(next.turnRecords ?? []),
+        turnFacts,
+        result: refereeResult,
       });
-      const winnerName = ref.winnerSide === "a"
+      next = {
+        ...next,
+        winnerSide: adjudication.winnerSide,
+        adjudication,
+      };
+      const winnerName = adjudication.winnerSide === "a"
         ? next.sideA.displayName
-        : ref.winnerSide === "b"
+        : adjudication.winnerSide === "b"
           ? next.sideB.displayName
           : null;
       let judgmentPresentation: JudgmentNarrationResult | undefined;
@@ -2318,9 +2434,9 @@ async function advanceTurnWithLease(input: {
             scene: next.situation.scene,
             sideAName: next.sideA.displayName,
             sideBName: next.sideB.displayName,
-            winnerSide: ref.winnerSide,
+            winnerSide: adjudication.winnerSide,
             winnerName,
-            adjudicationReason: ref.reason,
+            adjudicationReason: adjudication.reason,
             recentPublicNarration: next.log
               .slice(-2)
               .flatMap((block) => block.narrator)
@@ -2337,14 +2453,13 @@ async function advanceTurnWithLease(input: {
           error instanceof Error ? error.message : error,
         );
       }
-      next = { ...next, winnerSide: ref.winnerSide };
       const judgmentBlock = repairNarrativeBlockIdentifiers(
         buildJudgmentNarrativeBlock({
           turn: next.turn,
           sideAName: next.sideA.displayName,
           sideBName: next.sideB.displayName,
-          winnerSide: ref.winnerSide,
-          adjudicationReason: ref.reason,
+          winnerSide: adjudication.winnerSide,
+          adjudicationReason: adjudication.reason,
           presentation: judgmentPresentation,
         }),
         identifierCatalog,

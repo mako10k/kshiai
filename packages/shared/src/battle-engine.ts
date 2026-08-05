@@ -319,6 +319,17 @@ export function buildBattleTurnRecord(input: {
     ...(input.after.latestTemporalResolution
       ? { temporalResolution: input.after.latestTemporalResolution }
       : {}),
+    ...(input.after.latestWorldTransition?.turn === input.after.turn
+      ? {
+          worldImpact: {
+            status: input.after.latestWorldTransition.status,
+            operationKinds:
+              input.after.latestWorldTransition.transition?.operations.map(
+                (operation) => operation.op,
+              ) ?? [],
+          },
+        }
+      : {}),
     actions: input.actions ?? [],
     events: input.events,
     sideAChange: {

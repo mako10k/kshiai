@@ -740,6 +740,7 @@ export class MockLlmProvider implements LlmProvider {
     sideBName: string;
     engineWinnerSide: "a" | "b" | "draw" | null;
     turnFacts: RefereeTurnFact[];
+    finalState: import("./types.js").RefereeFinalState;
   }): Promise<RefereeResult> {
     const winnerSide = input.engineWinnerSide ?? "draw";
     const name =
@@ -753,6 +754,13 @@ export class MockLlmProvider implements LlmProvider {
       reason: name
         ? `${name}の確定した働きかけが、全体としてわずかに上回った。`
         : "双方の確定した働きかけが、全体として拮抗していた。",
+      reasonFacts: [{
+        factor: "overall_effectiveness",
+        favoredSide: winnerSide,
+        statement: name
+          ? `${name}側の確定した効果と残力が優勢だった。`
+          : "双方の確定した効果と残力が拮抗した。",
+      }],
     };
   }
 

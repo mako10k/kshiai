@@ -422,10 +422,61 @@ export type CharacterAgentStateChange = z.infer<
   typeof CharacterAgentStateChangeSchema
 >;
 
+export const BattleTurnWorldImpactSchema = z.object({
+  status: z.enum(["applied", "rejected", "skipped"]),
+  operationKinds: z.array(z.enum([
+    "add_area",
+    "add_entity",
+    "set_entity_active",
+    "set_placement",
+    "set_exposure",
+    "set_actor_state",
+    "set_object_state",
+    "set_area_state",
+    "set_pair_relation",
+    "remove_pair_relation",
+  ])).max(24),
+}).strict();
+export type BattleTurnWorldImpact = z.infer<
+  typeof BattleTurnWorldImpactSchema
+>;
+
+export const BattleAdjudicationReasonFactSchema = z.object({
+  factor: z.enum([
+    "committed_actions",
+    "mechanical_effects",
+    "remaining_capacity",
+    "world_impact",
+    "overall_effectiveness",
+  ]),
+  favoredSide: z.enum(["a", "b", "draw"]),
+  statement: z.string().min(1).max(240),
+}).strict();
+export type BattleAdjudicationReasonFact = z.infer<
+  typeof BattleAdjudicationReasonFactSchema
+>;
+
+/** Immutable raw turn-limit result decided before presentation narration. */
+export const BattleAdjudicationSchema = z.object({
+  schemaVersion: z.literal(1),
+  turn: z.number().int().positive(),
+  winnerSide: z.enum(["a", "b", "draw"]),
+  reason: z.string().min(1).max(600),
+  reasonFacts: z.array(BattleAdjudicationReasonFactSchema).min(1).max(6),
+  source: z.enum(["semantic_adjudicator", "deterministic_fallback"]),
+  engineFallbackSide: z.enum(["a", "b", "draw"]),
+  inputTurnRange: z.object({
+    from: z.number().int().nonnegative(),
+    to: z.number().int().nonnegative(),
+  }).strict(),
+}).strict();
+export type BattleAdjudication = z.infer<typeof BattleAdjudicationSchema>;
+
 /** Persisted engine facts for audit and agent cognition reconstruction. */
 export const BattleTurnRecordSchema = z.object({
   turn: z.number().int().nonnegative(),
   temporalResolution: BattleTemporalPlanSchema.optional(),
+  worldImpact: BattleTurnWorldImpactSchema.optional(),
   actions: z.array(ResolvedBattleActionSchema).default([]),
   events: z.array(TurnEventSchema).default([]),
   sideAChange: CombatantStateChangeSchema,
@@ -594,6 +645,8 @@ export const BattleStateSchema = z.object({
   log: z.array(NarrativeBlockSchema).default([]),
   winnerSide: z.enum(["a", "b", "draw"]).nullable().default(null),
   finishReason: FinishReasonSchema.nullable().default(null),
+  /** Raw result authority for turn-limit finishes; presentation is in log. */
+  adjudication: BattleAdjudicationSchema.optional(),
   /** Elo settlement for this match. Legacy data may contain voided settlements. */
   ratingSettlement: z
     .object({
@@ -671,6 +724,32 @@ export const BattleStateSchema = z.object({
   createdAt: z.string(),
   updatedAt: z.string(),
 }).superRefine((state, ctx) => {
+  if (state.adjudication) {
+    if (
+      state.status !== "finished" ||
+      state.finishReason !== "turn_limit"
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["adjudication"],
+        message: "adjudication is valid only for a finished turn-limit battle",
+      });
+    }
+    if (state.adjudication.turn !== state.turn) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["adjudication", "turn"],
+        message: "adjudication turn must match battle turn",
+      });
+    }
+    if (state.adjudication.winnerSide !== state.winnerSide) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["adjudication", "winnerSide"],
+        message: "adjudication winner must match canonical battle winner",
+      });
+    }
+  }
   const revision = state.semanticState?.revision;
   if (revision === undefined) return;
   for (const [field, observation] of [

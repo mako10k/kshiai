@@ -24,6 +24,8 @@ import type {
   FinisherWindow,
   PerceptionEvidence,
   ObserverSafeAvailableAction,
+  BattleAdjudicationReasonFact,
+  ParamKey,
 } from "@kshiai/shared";
 import type {
   PerceptionPromptInput,
@@ -203,6 +205,7 @@ export type RefereeResult = {
   winnerSide: "a" | "b" | "draw";
   /** Raw fact-based rationale. Public narration is produced in a later call. */
   reason: string;
+  reasonFacts?: BattleAdjudicationReasonFact[];
 };
 
 export type JudgmentNarrationResult = {
@@ -220,8 +223,35 @@ export type RefereeTurnFact = {
     kind: CharacterActionIntent["kind"];
     executed: boolean;
     skippedReason: string | null;
+    resolutionReason: string | null;
   }>;
-  eventSummaries: string[];
+  effects: Array<{
+    type: Exclude<TurnEvent["type"], "utterance">;
+    actorSide: "a" | "b" | null;
+    targetSides: Array<"a" | "b">;
+    parameterKey: ParamKey | null;
+    parameterDirection: "loss" | "gain" | null;
+    intensity: "minor" | "moderate" | "heavy" | "critical" | null;
+  }>;
+  stateChanges: {
+    a: { canFightBefore: boolean; canFightAfter: boolean };
+    b: { canFightBefore: boolean; canFightAfter: boolean };
+  };
+  worldImpact: {
+    status: "applied" | "rejected" | "skipped";
+    operationKinds: string[];
+  } | null;
+};
+
+export type RefereeFinalState = {
+  a: {
+    condition: PerceivedCondition;
+    reserves: Record<"hp" | "mp" | "stamina", "empty" | "low" | "available" | "ample">;
+  };
+  b: {
+    condition: PerceivedCondition;
+    reserves: Record<"hp" | "mp" | "stamina", "empty" | "low" | "available" | "ample">;
+  };
 };
 
 export interface LlmProvider {
@@ -448,6 +478,7 @@ export interface LlmProvider {
     engineWinnerSide: "a" | "b" | "draw" | null;
     /** Committed engine records only; public narration is deliberately absent. */
     turnFacts: RefereeTurnFact[];
+    finalState: RefereeFinalState;
   }): Promise<RefereeResult>;
   /**
    * Generate case-based policy options from character traits + field.
