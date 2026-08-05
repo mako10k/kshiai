@@ -1043,6 +1043,7 @@ export async function reconcileSemanticState(input: {
     const projectionBase = {
       turn: state.turn,
       semanticState,
+      worldState: state.worldState,
       quantizedMechanicalEvidence,
     };
     try {

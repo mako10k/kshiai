@@ -257,7 +257,7 @@ describe("battle perception consumer wiring", () => {
     });
   });
 
-  it("gives legacy-seeded consumers the setup counterpart name without condition", () => {
+  it("gives legacy-seeded consumers the visible setup counterpart", () => {
     const sideA = sheet("a", "アオ");
     const sideB = sheet("b", "クロ");
     const base = createBattleState({
@@ -281,9 +281,12 @@ describe("battle perception consumer wiring", () => {
       previous,
     });
     assert.ok(inputA);
-    assert.deepEqual(inputA.counterpart, { displayName: "クロ" });
+    assert.deepEqual(inputA.counterpart, {
+      displayName: "クロ",
+      condition: "steady",
+    });
     assert.equal(inputA.perception.counterpart.identityKnowledge, "identified");
-    assert.equal(inputA.perception.counterpart.currentAccess, "none");
+    assert.equal(inputA.perception.counterpart.currentAccess, "clear");
     assert.equal(Object.isFrozen(inputA.perception), true);
   });
 });

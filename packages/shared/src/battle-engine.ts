@@ -45,7 +45,10 @@ import {
   type CommittedMechanicalEvidence,
 } from "./perception.js";
 import { buildServerOnlyReserveCues } from "./perception-quantization.js";
-import { buildMinimalObserverPerception } from "./perception-projection.js";
+import {
+  buildInitialObserverPerception,
+  buildMinimalObserverPerception,
+} from "./perception-projection.js";
 
 function nowIso(): string {
   return new Date().toISOString();
@@ -466,10 +469,11 @@ export function createBattleState(input: {
     contacts: [],
   };
   const initialProjection = (observerSide: "a" | "b") =>
-    buildMinimalObserverPerception({
+    buildInitialObserverPerception({
       observerSide,
       turn: 0,
       semanticState,
+      worldState,
       quantizedMechanicalEvidence: [],
       reserveEvidence: buildServerOnlyReserveCues({
         side: observerSide,
@@ -598,6 +602,7 @@ export function ensureBattlePerceptionState(state: BattleState): BattleState {
       observerSide,
       turn: state.turn,
       semanticState,
+      worldState: state.worldState,
       quantizedMechanicalEvidence: [],
       reserveEvidence: buildServerOnlyReserveCues({
         side: observerSide,

@@ -2,6 +2,10 @@ import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import { createBattleSemanticState } from "./semantic-state.js";
 import {
+  applyBattleWorldTransition,
+  createBattleWorldState,
+} from "./battle-world.js";
+import {
   PERCEPTION_LIMITS,
   type BattleSide,
   type ObserverContactRegistry,
@@ -11,6 +15,7 @@ import {
   type ServerOnlyReserveCue,
 } from "./perception.js";
 import {
+  buildInitialObserverPerception,
   buildMinimalObserverPerception,
   projectObserverPerception,
 } from "./perception-projection.js";
@@ -125,6 +130,213 @@ function emptyRegistry(side: BattleSide): ObserverContactRegistry {
 }
 
 describe("observer perception projection", () => {
+  it("starts with visible counterpart presence and retains it without new evidence", () => {
+    const state = semanticState();
+    const worldState = createBattleWorldState({ semanticState: state });
+    const initial = buildInitialObserverPerception({
+      observerSide: "a",
+      turn: 0,
+      semanticState: state,
+      worldState,
+      quantizedMechanicalEvidence: [],
+      reserveEvidence: [],
+    });
+
+    assert.equal(initial.frame.counterpart.currentAccess, "clear");
+    assert.equal(initial.frame.counterpart.identityKnowledge, "unknown");
+    assert.equal(initial.frame.counterpart.percepts[0]?.modality, "vision");
+    assert.equal(initial.frame.counterpart.percepts[0]?.distance, "near");
+    assert.equal(
+      JSON.stringify(initial.frame.counterpart).includes("秘匿名ベータ"),
+      false,
+    );
+
+    const retained = projectObserverPerception({
+      observerSide: "a",
+      turn: 1,
+      semanticState: state,
+      worldState,
+      events: [],
+      quantizedMechanicalEvidence: [],
+      reserveEvidence: [],
+      sensoryEvidence: [],
+      previousFrame: initial.frame,
+      previousRegistry: initial.registry,
+    });
+    assert.equal(retained.frame.counterpart.currentAccess, "clear");
+    assert.equal(retained.frame.counterpart.identityKnowledge, "unknown");
+
+    const opposite = buildInitialObserverPerception({
+      observerSide: "b",
+      turn: 0,
+      semanticState: state,
+      worldState,
+      quantizedMechanicalEvidence: [],
+      reserveEvidence: [],
+    });
+    assert.equal(opposite.frame.counterpart.currentAccess, "clear");
+    assert.equal(opposite.frame.counterpart.identityKnowledge, "unknown");
+    assert.equal(
+      JSON.stringify(opposite.frame.counterpart).includes("観測者アルファ"),
+      false,
+    );
+  });
+
+  it("lowers access from structured hiding occlusion absence and observer impairment", () => {
+    const state = semanticState();
+    const baseWorld = createBattleWorldState({ semanticState: state });
+    const project = (worldState: typeof baseWorld) =>
+      buildInitialObserverPerception({
+        observerSide: "a",
+        turn: 1,
+        semanticState: state,
+        worldState,
+        quantizedMechanicalEvidence: [],
+        reserveEvidence: [],
+      }).frame.counterpart.currentAccess;
+    const transition = (candidate: unknown) => {
+      const result = applyBattleWorldTransition({
+        state: baseWorld,
+        transition: candidate,
+        turn: 1,
+      });
+      assert.equal(result.ok, true);
+      return result.state;
+    };
+
+    assert.equal(project(baseWorld), "clear");
+    assert.equal(project(transition({
+      baseRevision: 0,
+      turn: 1,
+      sourceEventIds: ["event.close"],
+      operations: [{
+        op: "set_pair_relation",
+        entityAId: "character.a",
+        entityBId: "character.b",
+        distance: "contact",
+        sight: "clear",
+        sound: "clear",
+        orientationA: "facing",
+        orientationB: "facing",
+      }],
+    })), "clear");
+    assert.equal(project(transition({
+      baseRevision: 0,
+      turn: 1,
+      sourceEventIds: ["event.conceal"],
+      operations: [{
+        op: "set_exposure",
+        entityId: "character.b",
+        exposure: "partially_concealed",
+      }],
+    })), "coarse");
+    assert.equal(project(transition({
+      baseRevision: 0,
+      turn: 1,
+      sourceEventIds: ["event.hide"],
+      operations: [{
+        op: "set_exposure",
+        entityId: "character.b",
+        exposure: "hidden",
+      }],
+    })), "none");
+    assert.equal(project(transition({
+      baseRevision: 0,
+      turn: 1,
+      sourceEventIds: ["event.occlude"],
+      operations: [{
+        op: "set_pair_relation",
+        entityAId: "character.a",
+        entityBId: "character.b",
+        distance: "near",
+        sight: "blocked",
+        sound: "clear",
+        orientationA: "facing",
+        orientationB: "facing",
+      }],
+    })), "none");
+    assert.equal(project(transition({
+      baseRevision: 0,
+      turn: 1,
+      sourceEventIds: ["event.blind"],
+      operations: [{
+        op: "set_actor_state",
+        entityId: "character.a",
+        changes: { vision: "blocked" },
+      }],
+    })), "none");
+    assert.equal(project(transition({
+      baseRevision: 0,
+      turn: 1,
+      sourceEventIds: ["event.leave"],
+      operations: [
+        {
+          op: "set_placement",
+          entityId: "character.b",
+          placement: { type: "absent" },
+        },
+        {
+          op: "set_pair_relation",
+          entityAId: "character.a",
+          entityBId: "character.b",
+          distance: "out_of_scene",
+          sight: "blocked",
+          sound: "blocked",
+          orientationA: "indeterminate",
+          orientationB: "indeterminate",
+        },
+      ],
+    })), "none");
+  });
+
+  it("accepts only committed explicit loss evidence as a non-world access drop", () => {
+    const state = semanticState();
+    const worldState = createBattleWorldState({ semanticState: state });
+    const initial = buildInitialObserverPerception({
+      observerSide: "a",
+      turn: 0,
+      semanticState: state,
+      worldState,
+      quantizedMechanicalEvidence: [],
+      reserveEvidence: [],
+      legacyCounterpartIdentified: true,
+    });
+    const lossEvidence = (eventId: string) => evidence({
+      id: `evidence.loss.${eventId}`,
+      source: { kind: "entity", entityId: "character.b" },
+      a: access("none", "identified", "見失った"),
+      eventId,
+    });
+    const uncommitted = projectObserverPerception({
+      observerSide: "a",
+      turn: 1,
+      semanticState: state,
+      worldState,
+      events: [],
+      quantizedMechanicalEvidence: [],
+      reserveEvidence: [],
+      previousFrame: initial.frame,
+      previousRegistry: initial.registry,
+      sensoryEvidence: [lossEvidence("event.missing")],
+    });
+    const committed = projectObserverPerception({
+      observerSide: "a",
+      turn: 1,
+      semanticState: state,
+      worldState,
+      events: [{ id: "event.hide", type: "info", summary: "確定した変化" }],
+      quantizedMechanicalEvidence: [],
+      reserveEvidence: [],
+      previousFrame: initial.frame,
+      previousRegistry: initial.registry,
+      sensoryEvidence: [lossEvidence("event.hide")],
+    });
+
+    assert.equal(uncommitted.frame.counterpart.currentAccess, "clear");
+    assert.equal(committed.frame.counterpart.currentAccess, "none");
+    assert.equal(committed.frame.counterpart.identityKnowledge, "identified");
+  });
+
   it("separates self, an unknown counterpart contact, ambient cues, and raw-free mechanics", () => {
     const projected = projectObserverPerception({
       observerSide: "a",
@@ -272,8 +484,30 @@ describe("observer perception projection", () => {
       previousRegistry: second.registry,
       sensoryEvidence: [],
     });
-    assert.equal(lost.registry.contacts[0]?.currentAccess, "none");
-    assert.equal(lost.frame.others[0]?.currentAccess, "none");
+    assert.equal(lost.registry.contacts[0]?.currentAccess, "coarse");
+    assert.equal(lost.frame.others[0]?.currentAccess, "coarse");
+
+    const explicitlyLost = projectObserverPerception({
+      observerSide: "a",
+      turn: 3,
+      semanticState: state,
+      events: [{ id: "event.loss", type: "info", summary: "確定した喪失" }],
+      quantizedMechanicalEvidence: [],
+      reserveEvidence: [],
+      previousFrame: second.frame,
+      previousRegistry: second.registry,
+      sensoryEvidence: [evidence({
+        id: "evidence.explicit.loss",
+        source: { kind: "entity", entityId: "character.b" },
+        a: access("none", "unknown", "知覚できない"),
+        eventId: "event.loss",
+      })],
+    });
+    assert.equal(
+      explicitlyLost.registry.contacts[0]?.currentAccess,
+      "none",
+    );
+    assert.equal(explicitlyLost.frame.others[0]?.currentAccess, "none");
 
     const identified = projectObserverPerception({
       observerSide: "a",
@@ -316,7 +550,7 @@ describe("observer perception projection", () => {
       })],
     });
     assert.equal(obscuredAgain.frame.counterpart.identityKnowledge, "identified");
-    assert.equal(obscuredAgain.frame.counterpart.currentAccess, "none");
+    assert.equal(obscuredAgain.frame.counterpart.currentAccess, "clear");
     assert.equal(
       obscuredAgain.frame.others.find((slot) => slot.subject.kind === "contact")
         ?.subject.kind,
@@ -339,7 +573,7 @@ describe("observer perception projection", () => {
       identifiedButLost.frame.counterpart.identityKnowledge,
       "identified",
     );
-    assert.equal(identifiedButLost.frame.counterpart.currentAccess, "none");
+    assert.equal(identifiedButLost.frame.counterpart.currentAccess, "clear");
   });
 
   it("splits an ambiguous group only into newly numbered future contacts", () => {
@@ -399,7 +633,7 @@ describe("observer perception projection", () => {
         entry.currentAccess,
       ]),
       [
-        ["contact.a.1", "none"],
+        ["contact.a.1", "coarse"],
         ["contact.a.2", "clear"],
         ["contact.a.3", "clear"],
       ],
@@ -570,10 +804,25 @@ describe("observer perception projection", () => {
       previousRegistry: previous.registry,
     });
     assert.deepEqual(fallback.registry, previous.registry);
-    assert.deepEqual(fallback.frame.others, []);
+    assert.equal(fallback.frame.others[0]?.currentAccess, "trace");
+    assert.deepEqual(fallback.frame.others[0]?.percepts, []);
     assert.equal(fallback.frame.qualitativeChanges[0]?.sourceKnowledge, "ambient");
     assert.equal(fallback.frame.qualitativeChanges[0]?.targetKnowledge, "self");
     assert.equal(fallback.frame.reserveCues.length, 4);
+
+    const worldState = createBattleWorldState({ semanticState: state });
+    const worldFallback = buildMinimalObserverPerception({
+      observerSide: "a",
+      turn: 2,
+      semanticState: state,
+      worldState,
+      quantizedMechanicalEvidence: [],
+      reserveEvidence: [],
+      previousFrame: previous.frame,
+      previousRegistry: previous.registry,
+    });
+    assert.equal(worldFallback.frame.counterpart.currentAccess, "clear");
+    assert.equal(worldFallback.frame.others[0]?.currentAccess, "trace");
 
     const legacy = projectObserverPerception({
       observerSide: "a",

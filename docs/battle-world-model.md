@@ -79,13 +79,46 @@ pair relationを変更できる。
 異なる、未確定eventを参照する場合は、入力stateを同一参照のまま返して一切
 commitしない。ナレーション等の未知フィールドはstrict schemaで拒否する。
 
-## 6. 後続タスクとの境界
+## 6. 知覚投影への接続
 
-- `T_PERCEPTION_BASE`: `worldState`から初期accessと明示的な知覚喪失を投影する。
+`T_PERCEPTION_BASE` で、A/B各observerの `counterpart.currentAccess` を
+`worldState` から決定論的に導出する経路を接続した。表示名や正体は導出せず、
+setupで確立していない `identityKnowledge` は `unknown` のままにする。
+
+| world条件 | access |
+|---|---|
+| present、exposed、contact/near、sight clear、観測者がalert・vision normal | `clear` |
+| partial sight/concealment、medium/far、away、vision impaired、dazed/confused、dimのうち1段階 | `coarse` |
+| 上記の劣化が複数、またはdark | `trace` |
+| absent/out of scene/separate area、hidden/invisible、sight blocked、観測者がunconscious/incapacitatedまたはvision blocked/absent | `none` |
+
+知覚accessと識別知識は独立して扱う。一度識別した相手が遮蔽された場合は
+`currentAccess = none` になっても `identityKnowledge = identified` を保持する。
+逆に、通常の近距離対峙では `currentAccess = clear` でも、根拠がなければ名前や
+正体を開示しない。
+
+継続規則は次の通り。
+
+- `worldState` があれば各ターンで現在条件を再評価し、構造化された遮蔽・不在・
+  感覚阻害等だけでaccessを下げる。
+- `worldState` がない互換経路では、providerが新しい根拠を返さないだけで直前accessを
+  消さない。
+- 検証済みsensory evidenceはworld由来baselineを補強できる。
+- worldと異なる明示的喪失は、`currentAccess = none` が確定event IDへ結び付く場合だけ
+  採用する。自然文の「隠れた」等は判定に使わない。
+- projection fallbackでは新しい知覚内容を作らず、world由来counterpart accessと
+  直前registry accessをperceptなしで保持する。
+- 視線が通るだけでは音の発生を推測しない。実発話や聴覚投影は
+  `T_PERCEPTION_APPARENT` の責務とする。
+
+## 7. 後続タスクとの境界
+
+- `T_PERCEPTION_BASE`: 完了。`worldState`から初期accessと明示的な知覚喪失を投影する。
 - `T_PERCEPTION_APPARENT`: 変身・幻覚・発話をobserver別の見かけへ投影する。
 - `T_ACTIONS`: world制約からobserver-safeな行動候補を作り、実行直前に再検証する。
 - `T_CAUSALITY`: 物体能力や自覚/無自覚の効果からworld transitionを生成する。
 - `T_TIMELINE`: 各initiative bucketが読むworld snapshotとcommit後stateを統一する。
 
-このタスクではモデル・初期化・原子的遷移境界までを実装し、知覚や既存
-`resolveTurn`への消費者接続は各後続タスクで行う。
+`T_WORLD_MODEL` ではモデル・初期化・原子的遷移境界までを実装し、
+`T_PERCEPTION_BASE` で初期frame、通常projection、provider失敗、projection fallback、
+旧state補完へ同じaccess規則を接続した。行動可能性や因果更新は後続タスクで扱う。

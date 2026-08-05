@@ -141,6 +141,7 @@ task T_PERCEPTION_BASE PROFILE_GROUNDED -> PERCEPTION_BASE_READY:
     absence or observer impairment transitions. Keep identity memory independent
     from current access and cover provider and projection failures.
   duration 3d
+  status done
   requires:
     DEV 1
 
@@ -308,3 +309,16 @@ work_event WE-54c2df2d477d8d6b6fa77a12226768fd86ca2dee9a4ed0dd3ac03422b26089bc:
   task T_PROFILE_GROUNDING
   kind finish
   occurred_at 2026-08-05T11:07:18+09:00
+
+work_event WE-8b6ad39b8ddb541465d3e671036a9aaa5e66cc3b14b5d8d7f893331a137e54bd:
+  model 1
+  task T_PERCEPTION_BASE
+  kind start
+  occurred_at 2026-08-05T11:16:03+09:00
+  planned_value 3d
+
+work_event WE-a6db3e5544c042af4c212645ff4a37f3d11e2724d0f2eb24082ebd7de399fcdf:
+  model 1
+  task T_PERCEPTION_BASE
+  kind finish
+  occurred_at 2026-08-05T11:26:50+09:00

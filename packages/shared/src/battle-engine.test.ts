@@ -968,7 +968,7 @@ describe("battle engine", () => {
     const seeded = ensureBattlePerceptionState(legacy);
     assert.equal(seeded.perceptionFrameA?.counterpart.identityKnowledge, "identified");
     assert.equal(seeded.perceptionFrameB?.counterpart.identityKnowledge, "identified");
-    assert.equal(seeded.perceptionFrameA?.counterpart.currentAccess, "none");
+    assert.equal(seeded.perceptionFrameA?.counterpart.currentAccess, "clear");
     assert.equal(seeded.perceptionFrameA?.self.currentAccess, "clear");
     assert.equal(seeded.perceptionFrameA?.observer.self, "self");
     assert.deepEqual(seeded.perceptionRegistryA?.contacts, []);

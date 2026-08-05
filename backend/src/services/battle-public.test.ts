@@ -314,7 +314,11 @@ describe("public battle semantic projection", () => {
     });
 
     assert.equal(result.status, "applied");
-    assert.equal(result.state.perceptionFrameA?.counterpart.currentAccess, "none");
+    assert.equal(result.state.perceptionFrameA?.counterpart.currentAccess, "clear");
+    assert.equal(
+      result.state.perceptionFrameA?.counterpart.identityKnowledge,
+      "unknown",
+    );
     assert.equal(
       result.state.perceptionFrameA?.others[0]?.subject.kind,
       "contact",
@@ -433,6 +437,11 @@ describe("public battle semantic projection", () => {
       result.state.perceptionRegistryA?.contacts[0]?.contactId,
       "contact.a.1",
     );
+    assert.equal(
+      result.state.perceptionFrameA?.counterpart.currentAccess,
+      "clear",
+    );
+    assert.equal(result.state.perceptionFrameA?.others[0]?.currentAccess, "trace");
     assert.equal(
       JSON.stringify(result.state.perceptionFrameA).includes("sourceSet"),
       false,

@@ -1,6 +1,12 @@
 import type { TurnEvent } from "./battle.js";
 import type { BattleSemanticState } from "./semantic-state.js";
 import {
+  readBattleWorldPair,
+  type BattleWorldState,
+  type WorldDistance,
+  type WorldOrientation,
+} from "./battle-world.js";
+import {
   CharacterPerceptionFrameASchema,
   CharacterPerceptionFrameBSchema,
   ObserverContactRegistryASchema,
@@ -20,6 +26,8 @@ import {
   type PerceptionSalience,
   type PerceptionSlot,
   type Percept,
+  type PerceptionDirection,
+  type PerceptionDistance,
   type QuantizedChange,
   type QuantizedMechanicalEvidence,
   type ResourceReserveCue,
@@ -47,6 +55,8 @@ export type ObserverPerceptionProjectionInput = {
   observerSide: BattleSide;
   turn: number;
   semanticState: BattleSemanticState;
+  /** Server-owned physical baseline. Omitted only by legacy/direct callers. */
+  worldState?: BattleWorldState;
   events: readonly TurnEvent[];
   quantizedMechanicalEvidence: readonly QuantizedMechanicalEvidence[];
   reserveEvidence: readonly ServerOnlyReserveCue[];
@@ -96,9 +106,33 @@ export function projectObserverPerception(
   const contacts: ObserverContactRegistryEntry[] = previousRegistry.contacts
     .map((entry) => ({
       ...entry,
-      currentAccess: "none" as const,
       sourceSet: entry.sourceSet.map((source) => ({ ...source })),
     }));
+  const committedEventIds = new Set(
+    input.events.flatMap((event) => event.id ? [event.id] : []),
+  );
+  const explicitLossSourceKeys = new Set(
+    input.sensoryEvidence.flatMap((evidence) => {
+      const access = evidence.accessBySide[input.observerSide];
+      const committed = evidence.basisEventIds.some((eventId) =>
+        committedEventIds.has(eventId)
+      );
+      return access.currentAccess === "none" && committed &&
+          evidence.source.kind !== "ambient"
+        ? [contactSourceKey(evidence.source)]
+        : [];
+    }),
+  );
+  for (const entry of contacts) {
+    if (
+      entry.sourceSet.length > 0 &&
+      entry.sourceSet.every((source) =>
+        explicitLossSourceKeys.has(contactSourceKey(source))
+      )
+    ) {
+      entry.currentAccess = "none";
+    }
+  }
   let nextContactSequence = previousRegistry.nextContactSequence;
   const accessible = input.sensoryEvidence
     .map((evidence) => observationFor(input, evidence))
@@ -246,11 +280,34 @@ export function projectObserverPerception(
     previousCounterpartIdentity,
     directCounterpartIdentity,
   );
+  const counterpartEntityId = `character.${counterpartSide}`;
+  const hasAccessibleCounterpartEvidence = input.sensoryEvidence.some(
+    (evidence) =>
+      evidence.source.kind === "entity" &&
+      evidence.source.entityId === counterpartEntityId &&
+      evidence.accessBySide[input.observerSide].currentAccess !== "none",
+  );
+  const explicitCounterpartLoss = !hasAccessibleCounterpartEvidence &&
+    explicitLossSourceKeys.has(contactSourceKey({
+      kind: "entity",
+      entityId: counterpartEntityId,
+    }));
+  const worldBaseline = buildWorldCounterpartSlot({
+    observerSide: input.observerSide,
+    worldState: input.worldState,
+    identity: counterpartIdentity,
+    label: input.semanticState.entities[counterpartEntityId]?.label ?? "相手",
+  });
   const counterpart = buildCounterpartSlot({
     observations: directCounterpart,
     identity: counterpartIdentity,
-    label: input.semanticState.entities[`character.${counterpartSide}`]?.label ??
-      "相手",
+    label: input.semanticState.entities[counterpartEntityId]?.label ?? "相手",
+    fallback: explicitCounterpartLoss
+      ? inaccessibleCounterpartSlot(
+          counterpartIdentity,
+          input.semanticState.entities[counterpartEntityId]?.label ?? "相手",
+        )
+      : worldBaseline ?? continuitySlot(input.previousFrame?.counterpart),
   });
   const otherSlots = buildOtherSlots({
     observerSide: input.observerSide,
@@ -302,11 +359,26 @@ export function buildMinimalObserverPerception(
     input.previousFrame?.counterpart.identityKnowledge ?? "unknown",
     input.legacyCounterpartIdentified ? "identified" : "unknown",
   );
+  const counterpartEntityId = `character.${counterpartSide}`;
+  const worldBaseline = buildWorldCounterpartSlot({
+    observerSide: input.observerSide,
+    worldState: input.worldState,
+    identity,
+    label: input.semanticState.entities[counterpartEntityId]?.label ?? "相手",
+  });
   const counterpart = buildCounterpartSlot({
     observations: [],
     identity,
-    label: input.semanticState.entities[`character.${counterpartSide}`]?.label ??
-      "相手",
+    label: input.semanticState.entities[counterpartEntityId]?.label ?? "相手",
+    fallback: worldBaseline ?? continuitySlot(input.previousFrame?.counterpart),
+  });
+  const otherSlots = buildOtherSlots({
+    observerSide: input.observerSide,
+    counterpartSide,
+    registry,
+    contactObservations: new Map(),
+    directOthers: new Map(),
+    ambientObservations: [],
   });
   const frame = frameSchema(input.observerSide).parse({
     schemaVersion: 1,
@@ -315,7 +387,7 @@ export function buildMinimalObserverPerception(
     revision: input.semanticState.revision,
     self,
     counterpart,
-    others: [],
+    others: otherSlots,
     qualitativeChanges: projectQualitativeChanges({
       observerSide: input.observerSide,
       counterpart,
@@ -330,10 +402,17 @@ export function buildMinimalObserverPerception(
     latestDiff: perceptionDiff(
       input.previousFrame,
       input.semanticState.revision,
-      [self, counterpart],
+      [self, counterpart, ...otherSlots],
     ),
   });
   return { frame: deepFreeze(frame), registry };
+}
+
+/** Initial setup projection uses the same world-grounded rules as later turns. */
+export function buildInitialObserverPerception(
+  input: Omit<ObserverPerceptionProjectionInput, "sensoryEvidence" | "events">,
+): ObserverPerceptionProjection {
+  return buildMinimalObserverPerception(input);
 }
 
 function observationFor(
@@ -655,31 +734,179 @@ function buildSelfSlot(observations: EvidenceObservation[]): PerceptionSlot {
   };
 }
 
+function continuitySlot(
+  previous: PerceptionSlot | undefined,
+): PerceptionSlot | undefined {
+  return previous
+    ? {
+        ...structuredClone(previous),
+        percepts: [],
+      }
+    : undefined;
+}
+
+function inaccessibleCounterpartSlot(
+  identity: IdentityKnowledge,
+  label: string,
+): PerceptionSlot {
+  return {
+    subject: { kind: "counterpart" },
+    currentAccess: "none",
+    identityKnowledge: identity,
+    perceivedAs: identity === "identified"
+      ? `${label}だと知っているが、現在は知覚できない`
+      : identity === "suspected"
+        ? "相手らしい存在を知っているが、現在は判別できない"
+        : "知覚できない",
+    percepts: [],
+  };
+}
+
+function worldDistanceToPerception(
+  distance: WorldDistance,
+): PerceptionDistance {
+  if (distance === "contact") return "contact";
+  if (distance === "near") return "near";
+  if (distance === "medium") return "mid";
+  if (distance === "far") return "far";
+  return "unknown";
+}
+
+function orientationDirection(
+  orientation: WorldOrientation,
+): PerceptionDirection {
+  if (orientation === "facing") return "front";
+  if (orientation === "away") return "back";
+  return "unknown";
+}
+
+function accessAfterPenalty(penalty: number): CurrentAccess {
+  if (penalty <= 0) return "clear";
+  if (penalty === 1) return "coarse";
+  return "trace";
+}
+
+/**
+ * Deterministic visual baseline from the server-owned coarse world. It reveals
+ * presence and approximate position, never an identity not already established.
+ */
+function buildWorldCounterpartSlot(input: {
+  observerSide: BattleSide;
+  worldState: BattleWorldState | undefined;
+  identity: IdentityKnowledge;
+  label: string;
+}): PerceptionSlot | null {
+  if (!input.worldState) return null;
+  const counterpartSide = otherSide(input.observerSide);
+  const observerId = `character.${input.observerSide}`;
+  const counterpartId = `character.${counterpartSide}`;
+  const observer = input.worldState.entities[observerId];
+  const counterpart = input.worldState.entities[counterpartId];
+  const pair = readBattleWorldPair(input.worldState, observerId, counterpartId);
+  if (!observer || !counterpart || !pair) {
+    return inaccessibleCounterpartSlot(input.identity, input.label);
+  }
+  const observerState = observer.actorState;
+  const unavailable = !observer.active || observer.presence === "absent" ||
+    !counterpart.active || counterpart.presence === "absent" ||
+    pair.distance === "separate_area" || pair.distance === "out_of_scene" ||
+    pair.sight === "blocked" || counterpart.exposure === "hidden" ||
+    counterpart.exposure === "invisible" || !observerState ||
+    observerState.consciousness === "unconscious" ||
+    observerState.consciousness === "incapacitated" ||
+    observerState.vision === "blocked" || observerState.vision === "absent";
+  if (unavailable) {
+    return inaccessibleCounterpartSlot(input.identity, input.label);
+  }
+
+  let penalty = 0;
+  if (pair.sight === "partial") penalty += 1;
+  if (counterpart.exposure === "partially_concealed") penalty += 1;
+  if (pair.distance === "medium" || pair.distance === "far") penalty += 1;
+  if (pair.orientationA === "away") penalty += 1;
+  if (observerState.vision === "impaired") penalty += 1;
+  if (observerState.consciousness === "dazed") penalty += 1;
+  if (observerState.mentalClarity === "confused") penalty += 1;
+  if (observerState.mentalClarity === "delirious") penalty += 2;
+  if (observer.placement.type === "scene") {
+    const illumination = input.worldState.areas[observer.placement.areaId]
+      ?.illumination;
+    if (illumination === "dim") penalty += 1;
+    if (illumination === "dark") penalty += 2;
+  }
+
+  const currentAccess = accessAfterPenalty(penalty);
+  const perceivedAs = input.identity === "identified"
+    ? input.label
+    : currentAccess === "clear"
+      ? "同じ場に対峙する相手"
+      : currentAccess === "coarse"
+        ? "同じ場にいる相手の姿"
+        : "同じ場にいる相手らしい存在";
+  const phenomenon = currentAccess === "clear"
+    ? "同じ場に対峙する相手の姿と位置を明瞭に捉えている"
+    : currentAccess === "coarse"
+      ? "同じ場にいる相手の姿と概略位置を捉えている"
+      : "同じ場にいる相手らしい存在をかすかに捉えている";
+  return {
+    subject: { kind: "counterpart" },
+    currentAccess,
+    identityKnowledge: input.identity,
+    perceivedAs,
+    percepts: [{
+      perceptId: `percept.${input.observerSide}.world.counterpart`,
+      modality: "vision",
+      phenomenon,
+      direction: orientationDirection(pair.orientationA),
+      distance: worldDistanceToPerception(pair.distance),
+      salience: currentAccess === "clear" ? "prominent" : "noticeable",
+      occurrenceCertainty: "certain",
+      attributionCertainty: "certain",
+    }],
+  };
+}
+
 function buildCounterpartSlot(input: {
   observations: EvidenceObservation[];
   identity: IdentityKnowledge;
   label: string;
+  fallback?: PerceptionSlot;
 }): PerceptionSlot {
   const observations = [...input.observations].sort((a, b) =>
     a.evidence.evidenceId.localeCompare(b.evidence.evidenceId)
   );
-  const access = observations.reduce(
+  const observedAccess = observations.reduce(
     (value, item) => strongestAccess(value, item.access.currentAccess),
     "none" as CurrentAccess,
   );
+  const access = strongestAccess(
+    observedAccess,
+    input.fallback?.currentAccess ?? "none",
+  );
   const best = [...observations].sort(compareObservations)[0];
+  const useFallbackLabel = input.fallback &&
+    ACCESS_RANK[input.fallback.currentAccess] > ACCESS_RANK[observedAccess];
+  const percepts = [
+    ...(input.fallback?.percepts ?? []),
+    ...observations.map(({ percept }) => percept),
+  ].filter((percept, index, all) =>
+    all.findIndex((candidate) => candidate.perceptId === percept.perceptId) ===
+      index
+  );
   return {
     subject: { kind: "counterpart" },
     currentAccess: access,
     identityKnowledge: input.identity,
-    perceivedAs: best?.access.perceivedAs ?? (
+    perceivedAs: useFallbackLabel
+      ? input.fallback!.perceivedAs
+      : best?.access.perceivedAs ?? input.fallback?.perceivedAs ?? (
       input.identity === "identified"
         ? `${input.label}だと知っているが、現在は知覚できない`
         : input.identity === "suspected"
           ? "相手らしい存在を知っているが、現在は判別できない"
           : "知覚できない"
     ),
-    percepts: observations.map(({ percept }) => percept),
+    percepts,
   };
 }
 
