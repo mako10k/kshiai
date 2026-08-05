@@ -222,8 +222,8 @@ CharacterSheet
 | F-BTL-41 | BattleStateは、厳密座標を使わず、area、存在、露出、相対距離、視線・音の遮蔽、向き、意識・移動・拘束・姿勢、視覚・聴覚、精神明瞭度・agency、held/worn/attached、使用可否・排他性・遮蔽作用を有限値で表すサーバー所有の粗いworldStateを持つ | Must |
 | F-BTL-42 | worldStateの変更はbase revision、turn、確定event ID、構造化operationを持つ原子的transitionだけで行う。参照欠落、配置循環、不在と距離の矛盾、未確定event、古いrevisionを拒否し、失敗時は部分適用しない。pair格納順は安定IDで正規化するが、Sideの処理優先順位には使わない | Must |
 | F-BTL-43 | worldStateを知覚・行動可否・因果効果・時間解決の機械的正準入力とし、LLM提案を受けるsemanticStateと分離する。自然文、公開セリフ、ナレータ文はworldStateを直接変更できず、意味的提案を機械状態へ反映する場合は確定eventに結び付けてサーバーが別途検証する | Must |
-| F-BTL-44 | 各キャラエージェントには、そのキャラ自身の正準プロフィールから作る凍結済み・機械パラメータ非搭載の自己プロフィールanchorを渡す。表示名、identity、外見、traits、設定、基本行動、技能、装備の確定値は過去のprivate continuityやprovider補完より優先し、未設定値は未知のままにする。一人称は対峙コンテキストが`identity.selfNames`内から選んだ関係別候補を優先し、なければ先頭をサーバーが正準化し、配列が空なら新規に推測しない | Must |
-| F-BTL-45 | 通常ターン、プロローグ、決着後のナレータには、キャラ自己プロフィールとは別の表示専用profile anchorを視点に応じて渡す。anchorは人物像と呼称の矛盾回避だけに使い、anchorだけを根拠とした属性の公開、キャラ認知・記憶・worldState・効果・勝敗への書戻しを禁止する。キャラ限定視点では相手anchorを渡さず、anchor欠落または性別等が未設定なら表示名か中立表現を使って推測しない | Must |
+| F-BTL-44 | 各キャラエージェントには、そのキャラ自身の正準プロフィールから作る凍結済み・機械パラメータ非搭載の自己プロフィールanchorを渡す。表示名、identity、外見、traits、設定、基本行動、技能、装備の確定値は過去のprivate continuityやprovider補完より優先し、未設定値は未知のままにする。profile由来objectが戦闘中に着脱・移動した場合は、永続CharacterSheetを変更せず、正準worldStateからbattle-timeの`currentStateOverrides`を導出して現在描写だけを上書きし、元配置へ戻ればoverrideを除去する。一人称は対峙コンテキストが`identity.selfNames`内から選んだ関係別候補を優先し、なければ先頭をサーバーが正準化し、配列が空なら新規に推測しない | Must |
+| F-BTL-45 | 通常ターン、プロローグ、決着後のナレータには、キャラ自己プロフィールとは別の表示専用profile anchorを視点に応じて渡す。さらに、正準worldState上の昇格・具体化object配置をID非公開の自然文`sceneStateFacts`へ投影し、profile側の現在overrideと同じ正準entityから「本人は未着用」と「物は場面内」の両面を供給する。外部・全知視点は正準label、キャラ限定視点はobserver-local labelだけを使い、未観測objectを含めない。anchorとscene factは人物像・呼称・現在配置の矛盾回避だけに使い、それだけを根拠とした属性の公開、キャラ認知・記憶・worldState・効果・勝敗への書戻しを禁止する。キャラ限定視点では相手anchorを渡さず、anchor欠落または性別等が未設定なら表示名か中立表現を使って推測しない | Must |
 | F-BTL-46 | 初期および各ターンのcounterpart accessは正準worldStateの存在・露出・相対距離・視線・向き・場面照明・観測者の意識・視覚・精神明瞭度からサーバーが決定する。選択済みの通常対戦は互いを識別済みで開始し、匿名・偽装等が明示された場合だけ正体を自動識別せず存在と概略位置のみを認知可能にする。provider無応答だけでは直前accessを低下させず、低下はworldState上の隠密・不可視・遮蔽・不在・距離離脱・観測者阻害、または確定eventに結び付いた明示的な知覚喪失だけで行い、識別知識はcurrent accessと独立して保持する | Must |
 | F-BTL-47 | 正準identityとobserver-localな見かけを分離し、各知覚slotは観測された姿、推定identity、確信度、正準実体との継続beliefを保持できるようにする。変身・偽装を目撃した側と未目撃側は別beliefを持ち、幻覚は正準entityへ昇格させず該当observerだけの現象またはcontactにする。キャラ限定ナレーションとキャラ入力はunlinkedな見かけから正準名を復元しない | Must |
 | F-BTL-48 | キャラが生成した実発話・可視反応は、発話能力・意識状態をサーバーが検証してから正準utterance eventとしてturn recordへ保存する。対キャラ知覚はevent原文だけから、距離、音の遮蔽、騒音、音量、明瞭度、聴覚、意識、精神明瞭度、言語理解を使ってfull・partial・意味不明・話者未帰属・非知覚をSide別に投影する。公開レンダリングとナレータ文はevent生成および知覚投影の入力にしない | Must |
@@ -236,22 +236,43 @@ CharacterSheet
 | F-BTL-55 | BattleStateは読者用とA視点用とB視点用の有界なナレータ継続状態を分離して保持する。A/B状態は現在の選択視点にかかわらず毎ターン両方更新し、fluid focusは今回公開するviewだけを選ぶ。読者が知る正式名・公開済み情報、各キャラのidentity memory、現在accessを相互に昇格・逆流させない | Must |
 | F-BTL-56 | キャラの非公開継続状態は、主感情、隠した感情、未発話の意図、現在の懸念、相手への態度、確信度、関係性の緊張を有界な構造化結論として保持できる。逐語的な思考過程は要求・保存せず、ナレータへは現在視点で許可されたdigestだけを渡し、主観・全知視点では利用可能な内面beatを描写へ反映し、外部視点では観測可能な表出だけに限定する | Must |
 | F-BTL-57 | ナレータ継続状態は、視点ごとに安定した対象参照、戦闘内で認識した呼び名、identity knowledge、`same_entity`・`possibly_same_entity`・`unlinked`の同一性を有界に保持する。`identified + same_entity`の対象は一時的な遮蔽、声だけの知覚、ターン変更、表示視点切替だけで未知へ戻さない。ナレータLLMは既存の通常・プロローグ・余波呼び出しと同じ応答内で認識差分を提案し、サーバーは現在view内の安定対象だけをナレータ専用状態へ保存する。追加LLM呼び出し、公開文からの逆算、キャラ認知・正準event・worldStateへの書戻しを行わない | Must |
+| F-BTL-58 | 各キャラはサーバー既定の「この対戦に勝つ」をbattle-scopedな既定目的として持つ。正準プロフィールは、自然文の価値principle、0〜100の優先度、`preference`・`commitment`・`constraint`の最小区分により、人情、安全、約束、自己表現等を勝利より優先できる。価値内容自体はenum化せず、既定目的の優先度は変更できるが削除せず、公式勝敗・終了条件・レーティングを変更しない | Must |
+| F-BTL-59 | キャラAgentは既定目的、凍結価値、選択policy、私的継続状態、observer別frame、利用可能な標準行動とscene affordanceから、1〜3ターンの有界な目的・方針・再考条件と次の1行動を同じ既存呼び出し内で更新する。逐語的思考過程や確定成功の主張を保存せず、provider失敗時は機械検証可能なconstraintを守り、解釈不能な場合は自己完結した保守的fallbackを使う | Must |
+| F-BTL-60 | `free_action`は自然文の試み、望む結果、observer-safeな対象・道具参照を持ち、通常ターンの1行動を消費する。行動動詞の大規模enumは作らず、失敗・競合・部分成立後に別の攻撃や防御を追加実行しない。free actionはHP・MP・能力値・戦闘不能・勝敗を直接変更せず、配置、距離、拘束、姿勢、露出、遮蔽、物体・場面状態等を介して後続行動へ影響できる | Must |
+| F-BTL-61 | どちらかが`free_action`を予約したターンでは、server-only調停LLMをA/Bまとめて最大1回呼び、自然文intentを根拠参照、promotion候補、汎用world/semantic operation候補、成功・失敗候補、定性的causal envelopeへ解釈させる。調停LLMは提案だけを行い、サーバーはactor authority、到達可能性、能力根拠、保護field、変更量、競合、revision、event bindingを検証し、エンジンが最終結果を確定する。対象・operationごとの追加呼び出しや無制限retryを行わない | Must |
+| F-BTL-62 | 操作対象が未正準の場合、サーバーは正準appearance・equipment、battlefield、既存semantic entity・検証済みfact、確定event、または正準場面から導出できる低価値の通常物体へbindingできるときだけ、安定candidate keyで正準objectへの遅延昇格を許す。free action本文、公開ナレーション、表示専用発話、private belief、幻覚・誤認だけを存在根拠にせず、同じ潜在objectを重複昇格しない | Must |
+| F-BTL-63 | 遅延昇格と対象操作は論理的に分けて判定し、promotion後の仮snapshotで操作・競合・失敗penaltyを評価したうえで一つの検証済みtransitionとしてcommitする。既に存在した潜在objectは昇格成功・操作失敗でも元配置で残し、成功操作によって初めて生じる派生物は元操作失敗時に生成しない。transition検証自体の失敗時はpromotionを含め部分適用しない | Must |
+| F-BTL-64 | 汎用自由行動validatorは自然文キーワードではなく、提案された前後状態差と正準因果contextを検証する。free actionからHP・MP・能力値、canFight、winner、identity、過去event、private cognitionを変更できず、完全な意識喪失・agency剥奪・entity消滅等の決定的変更は専用mechanicsなしに拒否する。相手への拘束・移動阻害等は有界な段階変更と競合解決を要求する | Must |
+| F-BTL-65 | 昇格objectは自由記述affordanceと、エンジンが読む検証済みcausal envelopeを分離する。取得・着用・配置・準備はfree actionで行えるが、保持物による直接damageは`basic_attack`または`skill`、防御効果は`defend`または防御skillへ検証済み`instrumentRef`を付けて解決する。damage、defense、reach、control、mobility、vision、hearing、cover等の有限チャネルと上限はサーバーが決め、即席物体をLLM提案だけで特殊武器・防具・回復物へ変えない | Must |
+| F-BTL-66 | 自由行動は通常actionと同じinitiative bucketで解決する。順次bucketは先行commit後に再検証し、同時bucketは同じ開始snapshotから評価する。同じ潜在objectのpromotionは一度に正規化し、排他的取得は`contested`とし、一方の同時結果で他方を遡及取消ししない | Must |
+| F-BTL-67 | free action失敗penaltyは調停LLMが自由に確定せず、検証済み失敗候補からエンジンが選択する。初期範囲は姿勢、露出、距離、保持物の落下、一時的移動阻害等のworldState操作とし、数値resource penaltyは専用ルールなしに追加しない。provider全失敗時は確定可能な構造化操作以外を`adjudication_unavailable`として状態変更なしで消費し、成功事実やobjectを補完しない | Must |
+| F-BTL-68 | turn recordは自然文intent、active objective、参照したprinciple ID、promotion結果、`accepted`・`partial`・`failed`・`contested`、有限理由、確定event ID、world operation種別、penalty種別を有界receiptとして保存する。chain-of-thought、未認知の正準対象、調停用server-only根拠を公開せず、保存済みintent・proposal・receiptからLLM再呼び出しなしでreplayできる | Must |
+| F-BTL-69 | サーバーは自己reserve、直近に知覚できた被影響、自分の行動による知覚可能な結果、残りturn等の正準情報から、survival pressure、直近と同程度の影響を再び無防備で受けた場合のrisk、offense/defense adequacy、control/resource/time pressureを定性的な`TacticalNeedFrame`としてSide別に導出する。相手の次行動を予知せず、正確なHP・能力・未認知skill等を入力せず、observer根拠がない項目は`unknown`とする | Must |
+| F-BTL-70 | battle setupおよび既存semantic reconciliationは同じ応答内で、正準profile、battlefield、semantic entity、確定eventへbinding可能な潜在affordance候補を提案できる。サーバーは候補を有界registryへ保存し、各Sideには知覚・自己知識の範囲で、observer-local参照、自然文の準備方法、互換性のある既存action kind、定性的causal potentialだけを投影する。この投影はobjectの存在、promotion、操作成功、mechanical effectを確定せず、他Sideだけの観測やprivate正準情報を漏らさない | Must |
+| F-BTL-71 | サーバーは`TacticalNeedFrame`とlatent affordanceから、自然文free-action前提、後続の既存action kindと`instrumentRef`、準備turn数、定性的な期待進展・因果potential・riskを結ぶ1〜3turnのobserver-safeな`OpportunityChain`を導出する。Agentは価値profileと戦術的必要性に照らしてchainまたは即時行動を選べるが、成功は保証せず、各段階を実行時snapshotで再検証する | Must |
+
+F-BTL-58〜71は完全受け入れ時の規範要件である。2026-08-05時点のvertical sliceで
+実装済みの境界と、同一ターン内の順次反映・失敗penalty・完全replay等の残作業は
+[`battle-free-action-objectives.md`](battle-free-action-objectives.md#11-2026-08-05-vertical-slice実装状況)
+を正とする。
 
 #### 4.4.1 ターン・パイプライン（論理）
 
 ```text
-1. エンジン: 同じターン開始snapshotに対して双方の行動可能性と意図を凍結し、安定した行動IDとイニシアチブバケットを記録
-2. エンジン: worldStateからarea・キャラ・object/effect干渉を有効状態と係数へ導出してバケットごとに行動を再検証する。同時バケットは同一開始snapshotから効果を計算して原子的にmergeし、順次バケットは直前commit後状態から解決して終了条件・機械状態を確定
-3. サーバー: 確定前後状態から機械的な知覚根拠と絶対・相対bandを生成
-4. セマンティック調停LLM: 選択済みprompt構成に従い、JSON Pointer世界差分と独立検証可能な非機械的知覚根拠を同一応答または分離応答で提案
-5. サーバー: semantic世界差分と知覚根拠を独立検証し、location・active・entity追加だけを構造化world transitionへ変換してsemantic/worldを原子的に適用
-6. サーバー: 正準worldStateからA/Bの初期・継続accessを決め、確定イベント・検証済み知覚根拠で補強または明示的喪失を反映してcontact registryを更新し、self/counterpartを含むA/B知覚frameを凍結
-7. キャラLLM（各キャラ独立・並列）: 自分の凍結済み正準プロフィールanchor、知覚frame、現在対象と結び付けられる範囲の関係性情報、非公開継続状態から内面・次行動・実発話を更新。関係別一人称は`identity.selfNames`内へサーバーが再固定する
-8. サーバー: 発話・反応の物理的成立を検証し、成立したキャラ出力だけを正準utterance eventへ確定して、実発話からobserver別の聴覚・視覚知覚を更新する
-9. サーバー: A/B双方の知覚frameと非公開状態の構造化結論から、A視点用・B視点用ナレータ継続状態を現在選択視点にかかわらず両方更新する。以前に`identified + same_entity`となった安定対象の戦闘内認識名は現在accessと分離して引き継ぎ、読者用公開継続状態とは混同しない
-10. サーバー: 語り視点または既存fluid focusに対応する一時的ナレーションview、該当するナレータ継続状態、その視点で安定参照できる認識対象、その視点に許可された表示専用profile anchor、実発話ごとのobserver-localな表示コンテキストを生成し、正準話者名を除いてナレータへ渡す
-11. ナレータLLM: 許可されたview・表示専用profile anchor・内面digest・表示継続状態・採用済み実発話から、人物像に矛盾しない地の文、実発話の配置、視点上の認知・誤認知を反映した自由な話者ラベル、事実不変な表層加工と構造化された人物同定差分を同一応答で生成する。場面状態が存在と能動性を支える第三者・場面entityについては、表示専用の発話・反応を追加できる
-12. サーバー: 人物同定差分は現在view内の安定対象参照だけをナレータ専用継続状態へ保存し、`same_entity`の既知名を一時的知覚低下だけでは置換しない。A/Bの実発話について追加・欠落・source Side不一致・事実変更を正準値へ戻し、制御IDと形式だけを修復する。表示ラベルの内容は再判定せず、source Sideを持たない場面由来発話を公開レンダリングとして保持する。実発話をキャラの継続状態とturn record、公開レンダリングをログに分離して、最新状態・frame・current registry・A/Bナレータ継続状態・短いDramaStateを保存する
+1. サーバー: 前ターンに予約されたA/B意図を凍結し、価値profile・計画参照と安定action IDを記録する。標準行動だけなら次へ進み、free actionがあれば両Sideを一つのserver-only調停要求へまとめる
+2. 自由行動調停LLM（条件付き最大1回）: 自然文intentを正準根拠へbindingし、promotion、汎用operation、成功・失敗、定性的causal envelopeを提案する。結果を確定せず、privateな正準情報をキャラへ返さない
+3. サーバー: 調停提案をactor authority、到達可能性、能力、保護field、効果上限、promotion provenance、重複、revision、event bindingで検証し、同じターン開始snapshotに対して双方の実行候補とイニシアチブバケットを固定する
+4. エンジン: worldStateからarea・キャラ・object/effect干渉を有効状態と係数へ導出してバケットごとに行動を再検証する。同時bucketは同一開始snapshotからpromotion・operation・penalty候補を原子的にmergeし、順次bucketは直前commit後状態から解決して終了条件・機械状態を確定する
+5. サーバー: 確定前後状態、promotion/action receiptから機械的な知覚根拠と絶対・相対bandを生成する
+6. セマンティック調停LLM: 選択済みprompt構成に従い、確定済み自由行動を含むJSON Pointer世界差分、独立検証可能な非機械的知覚根拠、正準根拠へbinding可能なlatent affordance候補を同一応答または分離応答で提案する
+7. サーバー: semantic世界差分と知覚根拠を独立検証し、正準free-action transitionと競合しないlocation・active・entity追加だけを構造化world transitionへ変換してsemantic/worldを原子的に適用する。latent候補は正準根拠、重複、observer access、因果上限を検証して有界registryへ保存するが、この時点では正準objectへ昇格しない
+8. サーバー: 正準worldStateからA/Bの初期・継続accessを決め、確定event・検証済み知覚根拠で補強または明示的喪失を反映してcontact registryを更新する。自己reserveと知覚済み因果から`TacticalNeedFrame`を、latent registryからSide別affordance投影と短い`OpportunityChain`を導出し、self/counterpartを含むA/B知覚frameを凍結する
+9. キャラLLM（各キャラ独立・並列）: 自分の凍結済み正準プロフィールanchorと正準worldStateから導出したbattle-timeの自己状態override、価値profile、現在plan、知覚frame、関係性情報、`TacticalNeedFrame`、利用可能な標準行動、observer-safeなlatent affordanceと`OpportunityChain`から、有界な目的・計画結論、次の1行動、実発話を更新する。結果を先取りせず、関係別一人称は`identity.selfNames`内へサーバーが再固定する
+10. サーバー: 発話・反応の物理的成立を検証し、成立したキャラ出力だけを正準utterance eventへ確定して、実発話からobserver別の聴覚・視覚知覚を更新する
+11. サーバー: A/B双方の知覚frameと非公開状態の構造化結論から、A視点用・B視点用ナレータ継続状態を現在選択視点にかかわらず両方更新する。以前に`identified + same_entity`となった安定対象の戦闘内認識名は現在accessと分離して引き継ぎ、読者用公開継続状態とは混同しない
+12. サーバー: 語り視点または既存fluid focusに対応する一時的ナレーションview、該当するナレータ継続状態、その視点で安定参照できる認識対象、その視点に許可された表示専用profile anchorとbattle-time override、同じworld object配置から導出したID非公開のscene state fact、実発話ごとのobserver-localな表示コンテキストを生成し、正準話者名を除いてナレータへ渡す
+13. ナレータLLM: 許可されたview・表示専用profile anchor・内面digest・表示継続状態・採用済み実発話・確定済みfree-action receiptから、人物像に矛盾しない地の文、実発話の配置、視点上の認知・誤認知を反映した自由な話者ラベル、事実不変な表層加工と構造化された人物同定差分を同一応答で生成する。場面状態が存在と能動性を支える第三者・場面entityについては、表示専用の発話・反応を追加できる
+14. サーバー: 人物同定差分は現在view内の安定対象参照だけをナレータ専用継続状態へ保存し、`same_entity`の既知名を一時的知覚低下だけでは置換しない。A/Bの実発話について追加・欠落・source Side不一致・事実変更を正準値へ戻し、制御IDと形式だけを修復する。表示ラベルの内容は再判定せず、source Sideを持たない場面由来発話を公開レンダリングとして保持する。実発話、目的・計画結論、free-action receipt、公開レンダリングを分離して、最新状態・frame・current registry・promotion registry・A/Bナレータ継続状態・短いDramaStateを保存する
 ```
 
 ### 4.5 LLM 役割分担
@@ -267,7 +288,8 @@ CharacterSheet
 | キャラ調整器 | 現行シート + ユーザー発話 | パッチ JSON + 会話応答 | 数値をユーザー文に裸出しする（「HP が 42」等） |
 | 状況監督 | バトル状態要約（数値はサーバー側のみ） | シーン/状況更新、係数提案 | エンジン未検証の即時数値確定 |
 | ナレータ | 確定ターン結果 + 語り視点別ナレーションview + 視点で絞った表示専用profile anchor + 該当する表示専用ナレータ継続状態と安定参照可能な認識対象 + 許可された内面digest + 正準話者名を除いた採用済み実発話とobserver-localな表示コンテキスト + IDごとの表示ラベル。上限判定時は確定済み裁定 + 直近の公開ナレーション | profileと矛盾しない地の文 + 実発話の配置・視点上の認知や誤認知を反映した自由な話者ラベル・事実不変な表層レンダリング + 同一応答内のナレータ専用人物同定差分 + 場面状態が存在と能動性を支える第三者・場面entityの表示専用発話。上限判定時は裁定を不変のまま囲むユーザー向け表現 | anchorだけを根拠にした属性公開、未設定属性の推測、A/B実発話の新規生成・欠落、正準話者Side・事実・意図・肯否・対象・発話種別の変更、安定対象参照なしの人物同定保存、場面状態が支えない第三者・object能動性の創作、裁定勝者・理由の変更、キャラ状態への書戻し、状態変更、生パラメータ表の読み上げ、許可されない内面の参照、制御IDの文章出力 |
-| キャラエージェント（各キャラ独立） | 自分の凍結済み正準プロフィールanchor + 非公開継続状態 + self/counterpart明示の最新知覚frame + 現在対象と結び付けられる範囲の凍結済み関係・呼称 + 使用可能行動 | プロフィールと整合する更新済み有界な非公開結論状態 + 次行動 + 実発話または反応 | 自己プロフィール確定値との矛盾や未設定値の推測、戦闘効果の確定、未識別対象の正体推定を事実化、公開表示位置・地の文の決定、逐語的思考過程の保存・公開、他キャラ専用観測の直接参照 |
+| 自由行動調停LLM | 凍結済みA/B free-action intent + server-only正準world/semantic snapshot + actor能力anchor + promotion根拠候補 | 根拠binding + promotion候補 + 汎用operation候補 + 成功・失敗候補 + 定性的causal envelope | 成否・damage・勝敗の確定、未根拠objectの具現化、自然文からの直接commit、private正準情報のキャラ・公開表示への漏えい、対象ごとの追加呼出し |
+| キャラエージェント（各キャラ独立） | 自分の凍結済み正準プロフィールanchor + battle-scoped価値profile + 有界plan + 非公開継続状態 + self/counterpart明示の最新知覚frame + 現在対象と結び付けられる範囲の凍結済み関係・呼称 + `TacticalNeedFrame` + 使用可能標準行動 + observer-safe latent affordance + `OpportunityChain` | プロフィールと整合する更新済み有界な非公開結論状態 + 目的・計画結論 + 次の標準行動または自然文free action + 実発話または反応 | 自己プロフィール確定値との矛盾や未設定値の推測、戦闘効果・free-action成功の確定、未識別対象の正体推定を事実化、公開表示位置・地の文の決定、逐語的思考過程の保存・公開、他キャラ専用観測の直接参照 |
 | 審判（上限時） | 確定済み行動・イベントから作る有界な正準ターン事実 + エンジン仮判定（公開ナレータ文・公開レンダリングを含めない） | 勝者 + 事実ベースの生の理由 | エンジン終了条件の上書き（上限時のみ権限）、公開表現を勝敗根拠にすること、ユーザー向けの語り口を決めること |
 | 画像生成 | visualPrompt + 追加指示 | 画像 URL / バイナリ保存 | キーのフロント露出 |
 
@@ -427,6 +449,8 @@ CharacterSheet
 | キャラ別知覚・自己フィードバック修正計画 | `docs/battle-perception.pert` | perttool |
 | 戦闘内呼称・ナレータ継続状態 詳細設計 | `docs/battle-social-narrator-continuity.md` | Markdown + llmthink決定 |
 | 戦闘内呼称・ナレータ継続状態 実装計画 | `docs/battle-social-narrator-continuity.pert` | perttool |
+| 価値駆動自由行動・遅延object昇格 詳細設計 | `docs/battle-free-action-objectives.md` | Markdown + llmthink決定 |
+| 価値駆動自由行動・遅延object昇格 実装計画 | `docs/battle-free-action-objectives.pert` | perttool |
 
 設計変更は llmthink の decision を更新し、タスク境界は perttool の DAG で管理する。
 
@@ -463,6 +487,8 @@ CharacterSheet
 | 1.11 | 2026-08-05 | 戦闘開始時の対峙・関係性コンテキスト、正準話者と表示話者ラベルの分離、A/B視点別ナレータ継続状態、構造化内面結論を追加 |
 | 1.12 | 2026-08-05 | 話者ラベルの有限候補制限を撤廃し、語り視点に射影済みの情報を唯一の内容境界として自由な構造化ラベルと場面根拠の第三者発話を許可 |
 | 1.13 | 2026-08-05 | 追加LLM呼び出しなしで視点別ナレータ人物同定を同一応答から更新し、`identified + same_entity`の戦闘内認識名を一時的知覚低下から保護 |
+| 1.14 | 2026-08-05 | プロフィール由来の価値優先順位と有界な行動計画、戦術的必要性・潜在affordance・複数turnの機会認知、自然文free action、汎用LLM調停、遅延object昇格、即席物体の検証済み攻防利用を追加 |
+| 1.15 | 2026-08-05 | profile由来objectの戦闘中状態を永続profileへ書き戻さず、正準worldStateから現在profile overrideと視点別scene state factを二重投影する規則を追加 |
 
 ---
 

@@ -70,6 +70,8 @@ import {
   buildCharacterSelfProfileAnchor,
   buildNarratorRenderingProfileAnchor,
   canonicalSelfReference,
+  deriveBattleProfileStateOverrides,
+  deriveBattleSceneStateFacts,
   narratorProfileAccessMode,
   selectNarratorRenderingProfileAnchors,
   advanceDramaState,
@@ -125,6 +127,15 @@ import * as bfRepo from "../repositories/battlefields.js";
 import * as charRepo from "../repositories/characters.js";
 import * as styleRepo from "../repositories/narration-styles.js";
 import { withBattleLease } from "./distributed-guard.js";
+import {
+  buildFreeActionCanonicalRoots,
+  buildLatentAffordances,
+  buildOpportunityChains,
+  buildTacticalNeedFrame,
+  commitFreeActionAdjudications,
+  decisionProfileForSheet,
+  prepareFreeActionsForTurn,
+} from "./free-action-service.js";
 
 export function toBattlePublic(
   state: BattleState,
@@ -741,6 +752,7 @@ export function buildNarratorProfileAnchors(input: {
   opp: CharacterSheet;
   perspective: NarrationPerspective;
   focus: NarrationFocus;
+  state?: BattleState;
 }) {
   return selectNarratorRenderingProfileAnchors({
     mode: narratorProfileAccessMode({
@@ -750,17 +762,52 @@ export function buildNarratorProfileAnchors(input: {
     sideA: buildNarratorRenderingProfileAnchor({
       sheet: input.mine,
       side: "a",
+      currentStateOverrides: deriveBattleProfileStateOverrides({
+        worldState: input.state?.worldState,
+        side: "a",
+      }),
     }),
     sideB: buildNarratorRenderingProfileAnchor({
       sheet: input.opp,
       side: "b",
+      currentStateOverrides: deriveBattleProfileStateOverrides({
+        worldState: input.state?.worldState,
+        side: "b",
+      }),
     }),
+  });
+}
+
+export function buildNarratorSceneStateFacts(input: {
+  state: BattleState;
+  mine: CharacterSheet;
+  opp: CharacterSheet;
+  perspective: NarrationPerspective;
+  focus: NarrationFocus;
+}) {
+  const mode = narratorProfileAccessMode({
+    perspective: input.perspective,
+    focus: input.focus,
+  });
+  const observerSide = mode === "self"
+    ? "a" as const
+    : mode === "opponent"
+      ? "b" as const
+      : undefined;
+  return deriveBattleSceneStateFacts({
+    worldState: input.state.worldState,
+    ...(observerSide ? { observerSide } : {}),
+    participantLabels: {
+      a: input.mine.displayName,
+      b: input.opp.displayName,
+    },
   });
 }
 
 function buildCharacterDecisionContext(input: {
   state: BattleState;
   sheet: CharacterSheet;
+  counterpartSheet?: CharacterSheet;
   side: "a" | "b";
 }) {
   const self = input.side === "a" ? input.state.sideA : input.state.sideB;
@@ -815,24 +862,50 @@ function buildCharacterDecisionContext(input: {
       : actionRepeatCount >= 2
         ? "prefer_change" as const
         : "none" as const;
+  if (!perception) return null;
+  const roots = buildFreeActionCanonicalRoots({
+    state: input.state,
+    mine: input.side === "a"
+      ? input.sheet
+      : input.counterpartSheet ?? input.sheet,
+    opp: input.side === "a"
+      ? input.counterpartSheet ?? input.sheet
+      : input.sheet,
+  });
+  const affordances = buildLatentAffordances({
+    state: input.state,
+    mine: input.side === "a"
+      ? input.sheet
+      : input.counterpartSheet ?? input.sheet,
+    opp: input.side === "a"
+      ? input.counterpartSheet ?? input.sheet
+      : input.sheet,
+    side: input.side,
+    roots,
+  });
   return {
     nextTurn,
     turnsRemaining: Math.max(0, input.state.turnLimit - nextTurn + 1),
-    availableActions: perception
-      ? buildObserverSafeAvailableActions({
-          actorSide: input.side,
-          actor: self,
-          sheet: input.sheet,
-          finisher,
-          turn: nextTurn,
-          worldState: input.state.worldState,
-          perception,
-        })
-      : [],
+    availableActions: buildObserverSafeAvailableActions({
+      actorSide: input.side,
+      actor: self,
+      sheet: input.sheet,
+      finisher,
+      turn: nextTurn,
+      worldState: input.state.worldState,
+      perception,
+    }),
     finisher: window,
     lastAction,
     actionRepeatCount,
     varietyPressure,
+    decisionProfile: decisionProfileForSheet(input.sheet),
+    tacticalNeed: buildTacticalNeedFrame({
+      frame: perception,
+      turnsRemaining: Math.max(0, input.state.turnLimit - nextTurn + 1),
+    }),
+    affordances,
+    opportunityChains: buildOpportunityChains(affordances),
   };
 }
 
@@ -850,6 +923,7 @@ function deepFreezeConsumerInput<T>(value: T): T {
 export function buildCharacterAgentConsumerInput(input: {
   state: BattleState;
   sheet: CharacterSheet;
+  counterpartSheet?: CharacterSheet;
   side: "a" | "b";
   previous: CharacterAgentState;
   phase?: "prologue" | "turn" | "aftermath";
@@ -874,7 +948,13 @@ export function buildCharacterAgentConsumerInput(input: {
         ),
       }
     : undefined;
-  const character = buildCharacterSelfProfileAnchor(input.sheet);
+  const character = buildCharacterSelfProfileAnchor(
+    input.sheet,
+    deriveBattleProfileStateOverrides({
+      worldState: input.state.worldState,
+      side: input.side,
+    }),
+  );
   const social = input.state.encounterContext?.social[input.side];
   const socialForCurrentPerception = social
     ? counterpartKnowledge
@@ -895,6 +975,7 @@ export function buildCharacterAgentConsumerInput(input: {
     : buildCharacterDecisionContext({
         state: input.state,
         sheet: input.sheet,
+        counterpartSheet: input.counterpartSheet,
         side: input.side,
       });
   if (decision && decision.availableActions.length === 0) return null;
@@ -968,6 +1049,7 @@ export async function advanceCharacterAgents(input: {
   const inputA = buildCharacterAgentConsumerInput({
     state: input.after,
     sheet: input.mine,
+    counterpartSheet: input.opp,
     side: "a",
     previous: previousA,
     phase: input.phase,
@@ -975,6 +1057,7 @@ export async function advanceCharacterAgents(input: {
   const inputB = buildCharacterAgentConsumerInput({
     state: input.after,
     sheet: input.opp,
+    counterpartSheet: input.mine,
     side: "b",
     previous: previousB,
     phase: input.phase,
@@ -1014,7 +1097,13 @@ export async function advanceCharacterAgents(input: {
     previous: previousA,
     side: "a",
     speaker: input.after.sideA.displayName,
-    profile: inputA?.character ?? buildCharacterSelfProfileAnchor(input.mine),
+    profile: inputA?.character ?? buildCharacterSelfProfileAnchor(
+      input.mine,
+      deriveBattleProfileStateOverrides({
+        worldState: input.after.worldState,
+        side: "a",
+      }),
+    ),
     preferredSelfReference: input.after.encounterContext?.social.a.selfReference,
     decision: inputA?.decision,
   });
@@ -1023,7 +1112,13 @@ export async function advanceCharacterAgents(input: {
     previous: previousB,
     side: "b",
     speaker: input.after.sideB.displayName,
-    profile: inputB?.character ?? buildCharacterSelfProfileAnchor(input.opp),
+    profile: inputB?.character ?? buildCharacterSelfProfileAnchor(
+      input.opp,
+      deriveBattleProfileStateOverrides({
+        worldState: input.after.worldState,
+        side: "b",
+      }),
+    ),
     preferredSelfReference: input.after.encounterContext?.social.b.selfReference,
     decision: inputB?.decision,
   });
@@ -1199,7 +1294,30 @@ export function acceptCharacterAgentResult(input: {
     input.decision?.finisher?.unlocked &&
     input.decision.finisher.remainingUses > 0,
   );
-  const nextAction = input.decision && listed && finisherAllowed
+  const allowedAffordanceRefs = new Set(
+    input.decision?.affordances?.map((affordance) => affordance.ref) ?? [],
+  );
+  const freeActionGrounded = input.result.nextAction?.kind !== "free_action" || Boolean(
+    input.result.nextAction.description &&
+    (input.result.nextAction.subjectRefs?.length ?? 0) > 0 &&
+    (input.result.nextAction.subjectRefs ?? []).every((ref) =>
+      allowedAffordanceRefs.has(ref)
+    ) &&
+    (!input.result.nextAction.opportunityId ||
+      input.decision?.opportunityChains?.some((chain) =>
+        chain.id === input.result?.nextAction?.opportunityId
+      ))
+  );
+  const instrumentGrounded = !input.result.nextAction?.instrumentRef || Boolean(
+    allowedAffordanceRefs.has(input.result.nextAction.instrumentRef) &&
+    input.decision?.opportunityChains?.some((chain) =>
+      chain.continuation.actionKind === input.result?.nextAction?.kind &&
+      chain.continuation.instrumentRef === input.result?.nextAction?.instrumentRef &&
+      chain.setupTurns === 0
+    )
+  );
+  const nextAction = input.decision && listed && finisherAllowed &&
+      freeActionGrounded && instrumentGrounded
     ? input.result.nextAction
     : undefined;
   return {
@@ -2380,9 +2498,16 @@ async function advanceTurnWithLease(input: {
   const hpBeforeA = state.sideA.parameters.hp ?? 0;
   const hpBeforeB = state.sideB.parameters.hp ?? 0;
 
+  const freeActionPreparation = await prepareFreeActionsForTurn({
+    llm: input.llm,
+    state,
+    mine,
+    opp,
+  });
+
   // Clamp legacy inflated skill.power (LLM sometimes wrote 20–40 as "damage score")
   const safeSkills = (skills: Skill[]) => skills.map(balanceSkill);
-  const resolved = resolveTurn({
+  const engineResolved = resolveTurn({
     state,
     sideASkills: safeSkills(mine.skills),
     sideBSkills: safeSkills(opp.skills),
@@ -2392,6 +2517,19 @@ async function advanceTurnWithLease(input: {
     preEvents: happening ? happeningToEvents(happening) : undefined,
     envHits: happening?.envHits,
   });
+  const committedFreeActions = commitFreeActionAdjudications({
+    beforeState: state,
+    resolvedState: engineResolved.state,
+    actions: engineResolved.actions,
+    events: engineResolved.events,
+    preparation: freeActionPreparation,
+  });
+  const resolved = {
+    ...engineResolved,
+    state: committedFreeActions.state,
+    actions: committedFreeActions.actions,
+    events: committedFreeActions.events,
+  };
   let next = resolved.state;
   const events = resolved.events;
 
@@ -2519,10 +2657,25 @@ async function advanceTurnWithLease(input: {
           profileAnchorA: buildNarratorRenderingProfileAnchor({
             sheet: mine,
             side: "a",
+            currentStateOverrides: deriveBattleProfileStateOverrides({
+              worldState: next.worldState,
+              side: "a",
+            }),
           }),
           profileAnchorB: buildNarratorRenderingProfileAnchor({
             sheet: opp,
             side: "b",
+            currentStateOverrides: deriveBattleProfileStateOverrides({
+              worldState: next.worldState,
+              side: "b",
+            }),
+          }),
+          sceneStateFacts: buildNarratorSceneStateFacts({
+            state: next,
+            mine,
+            opp,
+            perspective,
+            focus,
           }),
           perception: perceptionView,
           semanticState: next.semanticState,
@@ -2968,6 +3121,7 @@ async function runPrologueTurn(input: {
     opp: input.opp,
     perspective,
     focus,
+    state,
   });
 
   emit({ type: "phase", phase: "narrating" });
@@ -2992,6 +3146,13 @@ async function runPrologueTurn(input: {
         innerDigests: digests,
         characterSpeeches,
         profileAnchors,
+        sceneStateFacts: buildNarratorSceneStateFacts({
+          state,
+          mine: input.mine,
+          opp: input.opp,
+          perspective,
+          focus,
+        }),
         focus,
         perspective,
         narratorContinuity: state.narratorContinuity
@@ -3230,6 +3391,14 @@ async function runAftermathTurn(input: {
         innerDigests: digests,
         characterSpeeches,
         profileAnchors: buildNarratorProfileAnchors({
+          mine: input.mine,
+          opp: input.opp,
+          perspective,
+          focus,
+          state,
+        }),
+        sceneStateFacts: buildNarratorSceneStateFacts({
+          state,
           mine: input.mine,
           opp: input.opp,
           perspective,

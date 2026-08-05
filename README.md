@@ -18,6 +18,10 @@
 
 キャラ別知覚・自己フィードバック修正計画 (perttool): [docs/battle-perception.pert](docs/battle-perception.pert)
 
+価値駆動の自由行動・遅延object昇格設計: [docs/battle-free-action-objectives.md](docs/battle-free-action-objectives.md)
+
+同実装計画 (perttool): [docs/battle-free-action-objectives.pert](docs/battle-free-action-objectives.pert)
+
 PostgreSQL 移行: [docs/postgres_migration.md](docs/postgres_migration.md)
 旧アカウント移管: [docs/legacy_account_migration.md](docs/legacy_account_migration.md)
 クラウド実行環境: [docs/cloud_runtime.md](docs/cloud_runtime.md)

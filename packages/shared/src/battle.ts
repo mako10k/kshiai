@@ -15,6 +15,7 @@ import {
   BattleWorldStateSchema,
   BattleWorldTransitionSchema,
 } from "./battle-world.js";
+import { FreeActionResolutionReceiptSchema } from "./free-action.js";
 import { DramaStateSchema } from "./drama.js";
 import {
   CharacterPerceptionFrameASchema,
@@ -47,6 +48,7 @@ export const ActionKindSchema = z.enum([
   "rest",
   "defend",
   "wait",
+  "free_action",
 ]);
 export type ActionKind = z.infer<typeof ActionKindSchema>;
 
@@ -220,17 +222,87 @@ export function selectPolicyIdsByPerspective(
   });
 }
 
-export const CharacterActionIntentSchema = z.object({
+const CharacterActionIntentObjectSchema = z.object({
   kind: ActionKindSchema,
   skillId: z.string().optional(),
   /** Activate the one-use finisher attached to this skill when legal. */
   useFinisher: z.boolean().optional(),
-});
+  /** Natural-language attempt. It never asserts that the action succeeded. */
+  description: z.string().min(1).max(600).optional(),
+  desiredOutcome: z.string().min(1).max(400).optional(),
+  subjectRefs: z.array(z.string().min(1).max(120)).max(4).optional(),
+  /** Observer-local reference to a held/worn object used by a standard action. */
+  instrumentRef: z.string().min(1).max(120).optional(),
+  /** Optional control reference for a projected multi-turn opportunity. */
+  opportunityId: z.string().min(1).max(120).optional(),
+}).strict();
+
+type CharacterActionIntentObject = z.infer<
+  typeof CharacterActionIntentObjectSchema
+>;
+
+function validateCharacterActionIntent(
+  intent: CharacterActionIntentObject,
+  ctx: z.RefinementCtx,
+): void {
+  if (intent.kind === "free_action") {
+    if (!intent.description) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["description"],
+        message: "free actions require a natural-language description",
+      });
+    }
+    if (!intent.subjectRefs?.length) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["subjectRefs"],
+        message: "free actions require at least one observer-safe subject reference",
+      });
+    }
+    if (intent.skillId || intent.useFinisher || intent.instrumentRef) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: [],
+        message: "free actions cannot carry skill, finisher, or instrument authority",
+      });
+    }
+    return;
+  }
+  if (
+    intent.description ||
+    intent.desiredOutcome ||
+    intent.subjectRefs ||
+    intent.opportunityId
+  ) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: [],
+      message: "only free actions may carry open attempt fields",
+    });
+  }
+  if (
+    intent.instrumentRef &&
+    !["basic_attack", "skill", "defend"].includes(intent.kind)
+  ) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["instrumentRef"],
+      message: "this action kind cannot use an instrument",
+    });
+  }
+}
+
+export const CharacterActionIntentSchema = CharacterActionIntentObjectSchema
+  .superRefine(validateCharacterActionIntent);
 export type CharacterActionIntent = z.infer<typeof CharacterActionIntentSchema>;
 
-export const BattleActionSchema = CharacterActionIntentSchema.extend({
+const BattleActionObjectSchema = CharacterActionIntentObjectSchema.extend({
   actorSide: z.enum(["a", "b"]),
 });
+
+export const BattleActionSchema = BattleActionObjectSchema
+  .superRefine(validateCharacterActionIntent);
 export type BattleAction = z.infer<typeof BattleActionSchema>;
 
 export const ActionResolutionReasonSchema = z.enum([
@@ -247,6 +319,10 @@ export const ActionResolutionReasonSchema = z.enum([
   "target_unlocalized",
   "out_of_range",
   "line_of_sight_blocked",
+  "free_action_unavailable",
+  "free_action_impossible",
+  "free_action_contested",
+  "free_action_rejected",
 ]);
 export type ActionResolutionReason = z.infer<
   typeof ActionResolutionReasonSchema
@@ -259,7 +335,7 @@ export const ActionResolutionSchema = z.object({
 }).strict();
 export type ActionResolution = z.infer<typeof ActionResolutionSchema>;
 
-export const ResolvedBattleActionSchema = BattleActionSchema.extend({
+export const ResolvedBattleActionSchema = BattleActionObjectSchema.extend({
   id: z.string().min(1),
   executed: z.boolean(),
   skippedReason: z
@@ -271,7 +347,7 @@ export const ResolvedBattleActionSchema = BattleActionSchema.extend({
     .nullable()
     .default(null),
   resolution: ActionResolutionSchema.optional(),
-});
+}).superRefine(validateCharacterActionIntent);
 export type ResolvedBattleAction = z.infer<
   typeof ResolvedBattleActionSchema
 >;
@@ -324,6 +400,7 @@ export const TurnEventSchema = z.object({
     "situation",
     "info",
     "utterance",
+    "free_action",
   ]),
   actorName: z.string().optional(),
   actorSide: z.enum(["a", "b"]).optional(),
@@ -448,6 +525,7 @@ export const BattleTurnWorldImpactSchema = z.object({
     "set_area_state",
     "set_pair_relation",
     "remove_pair_relation",
+    "concretize_object",
   ])).max(24),
 }).strict();
 export type BattleTurnWorldImpact = z.infer<
@@ -491,6 +569,11 @@ export const BattleTurnRecordSchema = z.object({
   temporalResolution: BattleTemporalPlanSchema.optional(),
   worldImpact: BattleTurnWorldImpactSchema.optional(),
   actions: z.array(ResolvedBattleActionSchema).default([]),
+  freeActionReceipts: z
+    .array(FreeActionResolutionReceiptSchema)
+    .max(2)
+    .default([])
+    .optional(),
   events: z.array(TurnEventSchema).default([]),
   sideAChange: CombatantStateChangeSchema,
   sideBChange: CombatantStateChangeSchema,
@@ -641,6 +724,11 @@ export const BattleStateSchema = z.object({
       });
     }
   }).optional(),
+  /** Latest free-action outcomes; copied into the matching turn record only. */
+  latestFreeActionReceipts: z
+    .array(FreeActionResolutionReceiptSchema)
+    .max(2)
+    .optional(),
   /** Latest server-owned action ordering receipt; never exposed publicly. */
   latestTemporalResolution: BattleTemporalPlanSchema.optional(),
   /**

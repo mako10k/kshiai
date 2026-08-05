@@ -463,4 +463,107 @@ describe("server-owned battle world", () => {
       type: "absent",
     });
   });
+
+  it("promotes an observer-labeled object and concretizes it without changing identity", () => {
+    const promoted = applyBattleWorldTransition({
+      state: world(),
+      turn: 1,
+      transition: {
+        baseRevision: 0,
+        turn: 1,
+        operations: [{
+          op: "add_entity",
+          entityId: "object.free.a.ball",
+          entity: {
+            kind: "object",
+            active: true,
+            presence: "present",
+            placement: { type: "scene", areaId: "area.1" },
+            exposure: "exposed",
+            actorState: null,
+            objectState: objectState({
+              usable: true,
+              causalEnvelope: { damage: "minor" },
+            }),
+            objectProfile: {
+              canonicalLabel: null,
+              description: "丸く見えるが、材質と用途はまだ未確定。",
+              sourceRef: "battlefield:round-object",
+              candidateKey: "round-object",
+              provenance: "battlefield",
+              knownOpenAspects: ["identity", "material"],
+              observerRefs: { a: "percept.a.loose.1" },
+              observerLabels: { a: "石" },
+              concretizations: [],
+            },
+          },
+        }],
+      },
+    });
+    assert.equal(promoted.ok, true);
+    if (!promoted.ok) return;
+    assert.equal(
+      promoted.state.entities["object.free.a.ball"]?.objectProfile
+        ?.observerLabels.a,
+      "石",
+    );
+
+    const concretized = applyBattleWorldTransition({
+      state: promoted.state,
+      turn: 2,
+      transition: {
+        baseRevision: promoted.state.revision,
+        turn: 2,
+        operations: [{
+          op: "concretize_object",
+          entityId: "object.free.a.ball",
+          canonicalLabel: "ボール",
+          statement: "手触りと弾力からボールだと確定した。",
+          resolvedAspects: ["identity"],
+          remainingOpenAspects: ["material"],
+          evidenceRefs: ["event:touch-ball"],
+        }],
+      },
+    });
+    assert.equal(concretized.ok, true);
+    if (!concretized.ok) return;
+    assert.equal(
+      concretized.state.entities["object.free.a.ball"]?.objectProfile
+        ?.canonicalLabel,
+      "ボール",
+    );
+    assert.equal(
+      concretized.state.entities["object.free.a.ball"]?.objectProfile
+        ?.observerLabels.a,
+      "石",
+    );
+    assert.equal(
+      Object.keys(concretized.state.entities).filter((id) =>
+        id === "object.free.a.ball"
+      ).length,
+      1,
+    );
+
+    const relabeled = applyBattleWorldTransition({
+      state: concretized.state,
+      turn: 3,
+      transition: {
+        baseRevision: concretized.state.revision,
+        turn: 3,
+        operations: [{
+          op: "concretize_object",
+          entityId: "object.free.a.ball",
+          canonicalLabel: "石",
+          statement: "思い込みだけで石へ置き換えようとした。",
+          resolvedAspects: ["identity"],
+          remainingOpenAspects: [],
+          evidenceRefs: [],
+        }],
+      },
+    });
+    assert.equal(relabeled.ok, false);
+    if (!relabeled.ok) {
+      assert.equal(relabeled.error.code, "protected_entity");
+    }
+  });
 });

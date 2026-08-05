@@ -33,7 +33,11 @@ import {
   buildSemanticObservationState,
   createBattleSemanticState,
 } from "./semantic-state.js";
-import { createBattleWorldState } from "./battle-world.js";
+import {
+  createBattleWorldState,
+  type BattleWorldState,
+  type WorldCausalBand,
+} from "./battle-world.js";
 import { normalizeDramaState, parseActionSignature } from "./drama.js";
 import {
   balanceBasicAttack,
@@ -337,6 +341,7 @@ export function buildBattleTurnRecord(input: {
         }
       : {}),
     actions: input.actions ?? [],
+    freeActionReceipts: input.after.latestFreeActionReceipts ?? [],
     events: input.events,
     sideAChange: {
       parameterChanges: changeA,
@@ -853,7 +858,62 @@ function intentFromBattleAction(action: BattleAction): CharacterActionIntent {
     kind: action.kind,
     ...(action.skillId ? { skillId: action.skillId } : {}),
     ...(action.useFinisher ? { useFinisher: true } : {}),
+    ...(action.description ? { description: action.description } : {}),
+    ...(action.desiredOutcome ? { desiredOutcome: action.desiredOutcome } : {}),
+    ...(action.subjectRefs ? { subjectRefs: action.subjectRefs } : {}),
+    ...(action.instrumentRef ? { instrumentRef: action.instrumentRef } : {}),
+    ...(action.opportunityId ? { opportunityId: action.opportunityId } : {}),
   };
+}
+
+const INSTRUMENT_MULTIPLIER: Record<WorldCausalBand, number> = {
+  none: 1,
+  minor: 1.1,
+  moderate: 1.2,
+};
+
+function instrumentEntity(input: {
+  worldState?: BattleWorldState;
+  actorSide: "a" | "b";
+  instrumentRef?: string;
+}) {
+  if (!input.worldState || !input.instrumentRef) return null;
+  const directId = input.instrumentRef.startsWith("entity:")
+    ? input.instrumentRef.slice("entity:".length)
+    : null;
+  const entry = Object.entries(input.worldState.entities).find(([id, entity]) =>
+    id === directId || entity.objectProfile?.observerRefs[input.actorSide] ===
+      input.instrumentRef
+  );
+  if (!entry) return null;
+  const [entityId, entity] = entry;
+  const actorId = `character.${input.actorSide}`;
+  const controlled =
+    (entity.placement.type === "held" && entity.placement.holderId === actorId) ||
+    (entity.placement.type === "worn" && entity.placement.wearerId === actorId);
+  if (
+    !controlled ||
+    !entity.active ||
+    entity.presence !== "present" ||
+    !entity.objectState?.usable
+  ) {
+    return null;
+  }
+  return { entityId, entity };
+}
+
+function instrumentBand(input: {
+  worldState?: BattleWorldState;
+  actorSide: "a" | "b";
+  action?: BattleAction | null;
+  channel: "damage" | "defense";
+}): WorldCausalBand {
+  const entity = instrumentEntity({
+    worldState: input.worldState,
+    actorSide: input.actorSide,
+    instrumentRef: input.action?.instrumentRef,
+  });
+  return entity?.entity.objectState?.causalEnvelope?.[input.channel] ?? "none";
 }
 
 const PARAMETER_LABELS: Record<ParamKey, string> = {
@@ -1635,6 +1695,10 @@ export function resolveTurn(input: {
       targetSide: "a",
     }),
   } as const;
+  const defensiveInstrumentMultipliers: Record<BattleTemporalSide, number> = {
+    a: 1,
+    b: 1,
+  };
   const temporalResolution = buildBattleTemporalPlan({
     effectiveSpeedA: (sideA.parameters.spd ?? 0) *
       coeff(causalSituations.a, "spd"),
@@ -1741,13 +1805,32 @@ export function resolveTurn(input: {
       });
       return false;
     }
+    const damageBand = instrumentBand({
+      worldState: input.state.worldState,
+      actorSide: inputAction.side,
+      action: inputAction.effectiveAction,
+      channel: "damage",
+    });
+    const targetSide = inputAction.side === "a" ? "b" : "a";
+    const baseSituation = causalSituations[inputAction.side];
+    const actionSituation: Situation = {
+      ...baseSituation,
+      coefficients: {
+        ...baseSituation.coefficients,
+        damage: clampCoefficient(
+          (baseSituation.coefficients.damage ?? 1) *
+            INSTRUMENT_MULTIPLIER[damageBand] *
+            defensiveInstrumentMultipliers[targetSide],
+        ),
+      },
+    };
     return applyAction(
       actor,
       target,
       inputAction.effectiveAction,
       skillsFor(inputAction.side),
       basicAttackFor(inputAction.side),
-      causalSituations[inputAction.side],
+      actionSituation,
       inputAction.targetEvents,
       createMechanicalAttemptRecorder(
         inputAction.currentA,
@@ -1808,6 +1891,20 @@ export function resolveTurn(input: {
           skillsFor(side).find((skill) => skill.id === action.skillId)?.kind === "defend";
       };
       for (const side of bucket.actorSides) {
+        if (!defends(side)) continue;
+        const band = instrumentBand({
+          worldState: input.state.worldState,
+          actorSide: side,
+          action: effectiveBySide[side],
+          channel: "defense",
+        });
+        defensiveInstrumentMultipliers[side] = band === "moderate"
+          ? 0.82
+          : band === "minor"
+            ? 0.9
+            : 1;
+      }
+      for (const side of bucket.actorSides) {
         if (!effectiveBySide[side] && actions[sideIndex(side)].skippedReason !== "action_infeasible") {
           continue;
         }
@@ -1863,6 +1960,19 @@ export function resolveTurn(input: {
     if (isCombatantDown(sideA) || isCombatantDown(sideB)) continue;
     const result = revalidate(side, sideA, sideB);
     setResolvedAction(side, result);
+    if (result.action?.kind === "defend") {
+      const band = instrumentBand({
+        worldState: input.state.worldState,
+        actorSide: side,
+        action: result.action,
+        channel: "defense",
+      });
+      defensiveInstrumentMultipliers[side] = band === "moderate"
+        ? 0.82
+        : band === "minor"
+          ? 0.9
+          : 1;
+    }
     const eventStart = events.length;
     const beforeA = parametersSnapshot(sideA);
     const beforeB = parametersSnapshot(sideB);
@@ -2250,6 +2360,15 @@ function applyAction(
   decisive: DecisiveContext,
   finisher?: FinisherState,
 ): boolean {
+  if (action.kind === "free_action") {
+    events.push({
+      type: "free_action",
+      actorName: actor.displayName,
+      summary: `${actor.displayName} は「${action.description ?? "自由な試み"}」を実行しようとした。`,
+    });
+    return false;
+  }
+
   if (action.kind === "basic_attack") {
     const stamina = actor.parameters.stamina ?? 0;
     applyTrackedParameterDelta(

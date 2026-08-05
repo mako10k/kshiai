@@ -2,9 +2,16 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { defaultParameters, type CharacterSheet } from "./character.js";
 import {
+  applyBattleWorldTransition,
+  createBattleWorldState,
+  deriveBattleSceneStateFacts,
+} from "./battle-world.js";
+import { createBattleSemanticState } from "./semantic-state.js";
+import {
   buildCharacterSelfProfileAnchor,
   buildNarratorRenderingProfileAnchor,
   canonicalSelfReference,
+  deriveBattleProfileStateOverrides,
   selectNarratorRenderingProfileAnchors,
 } from "./profile-grounding.js";
 
@@ -145,5 +152,131 @@ describe("profile grounding", () => {
     assert.deepEqual(Object.keys(foe), ["b"]);
     assert.deepEqual(Object.keys(external).sort(), ["a", "b"]);
     assert.equal(Object.isFrozen(self), true);
+  });
+
+  it("projects a removed profile item into both current profile and scene state", () => {
+    const character = sheet({
+      id: "a",
+      displayName: "帽子屋",
+      gender: null,
+      selfNames: ["私"],
+      appearance: "赤い帽子をかぶった帽子屋",
+    });
+    const base = createBattleWorldState({
+      semanticState: createBattleSemanticState({
+        scene: "石造りの訓練場",
+        sideA: { displayName: "帽子屋" },
+        sideB: { displayName: "観客" },
+      }),
+    });
+    const moved = applyBattleWorldTransition({
+      state: base,
+      turn: 1,
+      transition: {
+        baseRevision: 0,
+        turn: 1,
+        operations: [{
+          op: "add_entity",
+          entityId: "object.free.a.hat",
+          entity: {
+            kind: "object",
+            active: true,
+            presence: "present",
+            placement: { type: "scene", areaId: "area.1" },
+            exposure: "exposed",
+            actorState: null,
+            objectState: {
+              portable: true,
+              usable: true,
+              exclusiveUse: true,
+              usableBy: [],
+              cover: "none",
+              blocksMovement: false,
+              visionEffect: "none",
+              hearingEffect: "none",
+              mobilityEffect: "none",
+            },
+            objectProfile: {
+              canonicalLabel: "赤い帽子",
+              description: "帽子屋がかぶっていた赤い帽子。",
+              sourceRef: "profile:a:appearance",
+              candidateKey: "red-hat",
+              provenance: "profile_appearance",
+              knownOpenAspects: [],
+              observerRefs: { a: "profile:a:appearance" },
+              observerLabels: { a: "赤い帽子" },
+              concretizations: [],
+            },
+          },
+        }],
+      },
+    });
+    assert.equal(moved.ok, true);
+    if (!moved.ok) return;
+
+    const overrides = deriveBattleProfileStateOverrides({
+      worldState: moved.state,
+      side: "a",
+    });
+    const ownAnchor = buildCharacterSelfProfileAnchor(character, overrides);
+    const narratorAnchor = buildNarratorRenderingProfileAnchor({
+      sheet: character,
+      side: "a",
+      currentStateOverrides: overrides,
+    });
+    const externalFacts = deriveBattleSceneStateFacts({
+      worldState: moved.state,
+      participantLabels: { a: "帽子屋", b: "観客" },
+    });
+    const ownFacts = deriveBattleSceneStateFacts({
+      worldState: moved.state,
+      observerSide: "a",
+    });
+    const unawareCounterpartFacts = deriveBattleSceneStateFacts({
+      worldState: moved.state,
+      observerSide: "b",
+    });
+
+    assert.equal(character.appearance.summary, "赤い帽子をかぶった帽子屋");
+    assert.equal(ownAnchor.appearanceSummary, "赤い帽子をかぶった帽子屋");
+    assert.deepEqual(ownAnchor.currentStateOverrides, overrides);
+    assert.deepEqual(narratorAnchor.currentStateOverrides, overrides);
+    assert.equal(overrides[0]?.profileField, "appearance");
+    assert.match(overrides[0]?.statement ?? "", /訓練場にある/);
+    assert.match(overrides[0]?.statement ?? "", /身につけていない/);
+    assert.match(externalFacts[0]?.statement ?? "", /赤い帽子.*訓練場にある/);
+    assert.match(ownFacts[0]?.statement ?? "", /赤い帽子.*訓練場にある/);
+    assert.deepEqual(unawareCounterpartFacts, []);
+
+    const restored = applyBattleWorldTransition({
+      state: moved.state,
+      turn: 2,
+      transition: {
+        baseRevision: moved.state.revision,
+        turn: 2,
+        operations: [{
+          op: "set_placement",
+          entityId: "object.free.a.hat",
+          placement: {
+            type: "worn",
+            wearerId: "character.a",
+            slot: "head",
+          },
+        }],
+      },
+    });
+    assert.equal(restored.ok, true);
+    if (!restored.ok) return;
+    assert.deepEqual(deriveBattleProfileStateOverrides({
+      worldState: restored.state,
+      side: "a",
+    }), []);
+    assert.match(
+      deriveBattleSceneStateFacts({
+        worldState: restored.state,
+        observerSide: "a",
+      })[0]?.statement ?? "",
+      /自分が身につけている/,
+    );
   });
 });

@@ -92,6 +92,39 @@ describe("mock LLM natural-language handling", () => {
     assert.match(result.speech ?? "", /わたくし/);
     assert.deepEqual(result.nextAction, { kind: "basic_attack" });
 
+    const humane = await provider.advanceCharacterAgent({
+      ...agentInput,
+      decision: {
+        ...agentInput.decision!,
+        availableActions: [
+          ...agentInput.decision!.availableActions,
+          {
+            kind: "defend",
+            name: "防御",
+            target: { kind: "self", perceivedAs: "自分" },
+          },
+        ],
+        decisionProfile: {
+          defaultObjective: {
+            id: "victory",
+            statement: "この対戦に勝つ",
+            priority: 70,
+          },
+          principles: [{
+            id: "compassion",
+            statement: "勝負より人情を優先し、相手を傷つけない",
+            priority: 95,
+            force: "commitment",
+          }],
+        },
+      },
+    });
+    assert.deepEqual(humane.nextAction, { kind: "defend" });
+    assert.equal(
+      humane.state.currentGoal,
+      "勝負より人情を優先し、相手を傷つけない",
+    );
+
     const corrected = await provider.advanceCharacterAgent({
       ...agentInput,
       previous: { ...agentInput.previous, selfReference: "俺" },
@@ -377,6 +410,30 @@ describe("mock LLM natural-language handling", () => {
     assert.equal(adjusted.sheetPatch.parameters, undefined);
     assert.equal(adjusted.sheetPatch.traits, undefined);
     assert.equal(adjusted.sheetPatch.displayName, undefined);
+  });
+
+  it("stores an explicitly requested humane priority in the private decision profile", async () => {
+    const provider = new MockLlmProvider();
+    const generated = await provider.generateCharacter({ prompt: "テストキャラ" });
+    const current = {
+      ...generated.sheet,
+      id: "char-values",
+      ownerUserId: "user-test",
+      createdAt: "2026-08-05T00:00:00.000Z",
+      updatedAt: "2026-08-05T00:00:00.000Z",
+    };
+    const adjusted = await provider.adjustCharacter(
+      current,
+      "勝負より人情を優先し、相手を傷つけないでほしい",
+    );
+    assert.equal(
+      adjusted.sheetPatch.decisionProfile?.principles[0]?.force,
+      "commitment",
+    );
+    assert.ok(
+      adjusted.sheetPatch.decisionProfile!.principles[0]!.priority >
+        adjusted.sheetPatch.decisionProfile!.defaultObjective.priority,
+    );
   });
 
   it("does not reuse an owner-scoped reserved name", async () => {

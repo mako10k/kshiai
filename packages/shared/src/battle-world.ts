@@ -87,6 +87,66 @@ export const WorldActorStateSchema = z.object({
 }).strict();
 export type WorldActorState = z.infer<typeof WorldActorStateSchema>;
 
+/** Small engine-owned envelope for improvised object effects. */
+export const WorldCausalBandSchema = z.enum(["none", "minor", "moderate"]);
+export type WorldCausalBand = z.infer<typeof WorldCausalBandSchema>;
+
+export const WorldCausalEnvelopeSchema = z.object({
+  damage: WorldCausalBandSchema.optional(),
+  defense: WorldCausalBandSchema.optional(),
+  reach: WorldCausalBandSchema.optional(),
+  control: WorldCausalBandSchema.optional(),
+  mobility: WorldCausalBandSchema.optional(),
+  vision: WorldCausalBandSchema.optional(),
+  hearing: WorldCausalBandSchema.optional(),
+  cover: WorldCausalBandSchema.optional(),
+}).strict();
+export type WorldCausalEnvelope = z.infer<typeof WorldCausalEnvelopeSchema>;
+
+export const WorldObjectConcretizationRecordSchema = z.object({
+  turn: z.number().int().nonnegative(),
+  statement: z.string().min(1).max(400),
+  resolvedAspects: z.array(z.string().min(1).max(80)).max(8).default([]),
+  evidenceRefs: z.array(SemanticIdSchema).max(8).default([]),
+}).strict();
+export type WorldObjectConcretizationRecord = z.infer<
+  typeof WorldObjectConcretizationRecordSchema
+>;
+
+/**
+ * Canonical identity remains server-owned. Observer-local labels live in
+ * perception/affordance projections and may disagree with canonicalLabel.
+ */
+export const WorldObjectProfileSchema = z.object({
+  canonicalLabel: z.string().min(1).max(120).nullable(),
+  description: z.string().min(1).max(600),
+  sourceRef: z.string().min(1).max(160),
+  candidateKey: z.string().min(1).max(80),
+  provenance: z.enum([
+    "profile_appearance",
+    "profile_equipment",
+    "battlefield",
+    "semantic_entity",
+    "committed_event",
+    "operation_result",
+  ]),
+  knownOpenAspects: z.array(z.string().min(1).max(80)).max(8).default([]),
+  observerRefs: z.object({
+    a: z.string().min(1).max(120).optional(),
+    b: z.string().min(1).max(120).optional(),
+  }).strict().default({}),
+  /** Cached observer belief labels; never mechanical or canonical authority. */
+  observerLabels: z.object({
+    a: z.string().min(1).max(240).optional(),
+    b: z.string().min(1).max(240).optional(),
+  }).strict().default({}),
+  concretizations: z
+    .array(WorldObjectConcretizationRecordSchema)
+    .max(8)
+    .default([]),
+}).strict();
+export type WorldObjectProfile = z.infer<typeof WorldObjectProfileSchema>;
+
 export const WorldObjectStateSchema = z.object({
   portable: z.boolean(),
   usable: z.boolean(),
@@ -100,6 +160,7 @@ export const WorldObjectStateSchema = z.object({
   visionEffect: z.enum(["none", "impair", "block"]),
   hearingEffect: z.enum(["none", "impair", "block"]),
   mobilityEffect: z.enum(["none", "hinder", "immobilize"]),
+  causalEnvelope: WorldCausalEnvelopeSchema.optional(),
 }).strict();
 export type WorldObjectState = z.infer<typeof WorldObjectStateSchema>;
 
@@ -120,6 +181,7 @@ export const BattleWorldEntitySchema = z.object({
   exposure: WorldExposureSchema,
   actorState: WorldActorStateSchema.nullable(),
   objectState: WorldObjectStateSchema.nullable(),
+  objectProfile: WorldObjectProfileSchema.optional(),
   createdTurn: z.number().int().nonnegative(),
   updatedTurn: z.number().int().nonnegative(),
 }).strict();
@@ -214,7 +276,7 @@ function validateWorldReferences(
       });
     }
     if (entity.kind === "character") {
-      if (!entity.actorState || entity.objectState) {
+      if (!entity.actorState || entity.objectState || entity.objectProfile) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           path: ["entities", id],
@@ -434,6 +496,95 @@ export const BattleWorldStateSchema = z.object({
 });
 export type BattleWorldState = z.infer<typeof BattleWorldStateSchema>;
 
+/** Observer-safe, ID-free rendering of a canonical object placement. */
+export const BattleSceneStateFactSchema = z.object({
+  itemLabel: z.string().min(1).max(120),
+  statement: z.string().min(1).max(400),
+}).strict();
+export type BattleSceneStateFact = z.infer<typeof BattleSceneStateFactSchema>;
+
+function sceneFactActorLabel(input: {
+  actorSide: "a" | "b" | null;
+  observerSide?: "a" | "b";
+  participantLabels?: Partial<Record<"a" | "b", string>>;
+}): string {
+  if (!input.actorSide) return "別の対象";
+  if (input.observerSide) {
+    return input.actorSide === input.observerSide ? "自分" : "相手";
+  }
+  return input.participantLabels?.[input.actorSide] ??
+    (input.actorSide === "a" ? "A側の人物" : "B側の人物");
+}
+
+function placementActorSide(
+  entityId: string,
+): "a" | "b" | null {
+  return entityId === "character.a"
+    ? "a"
+    : entityId === "character.b"
+      ? "b"
+      : null;
+}
+
+/**
+ * Project promoted/concretized world objects into bounded natural-language
+ * scene facts. An observer-limited projection uses that observer's cached
+ * belief label and omits objects never exposed to that observer.
+ */
+export function deriveBattleSceneStateFacts(input: {
+  worldState?: BattleWorldState | null;
+  observerSide?: "a" | "b";
+  participantLabels?: Partial<Record<"a" | "b", string>>;
+}): BattleSceneStateFact[] {
+  if (!input.worldState) return [];
+  return Object.entries(input.worldState.entities)
+    .flatMap(([entityId, entity]) => {
+      const profile = entity.objectProfile;
+      if (!profile) return [];
+      const observerLabel = input.observerSide
+        ? profile.observerLabels[input.observerSide]
+        : undefined;
+      if (input.observerSide && !observerLabel) return [];
+      const itemLabel = (
+        observerLabel ??
+        profile.canonicalLabel ??
+        profile.description.split(/[。\n]/u)[0] ??
+        "場面内の物"
+      ).trim().slice(0, 120) || "場面内の物";
+      let statement: string;
+      if (entity.placement.type === "scene") {
+        const area = input.worldState!.areas[entity.placement.areaId]?.label ??
+          "場面内";
+        statement = `${itemLabel}は${area}にある。`;
+      } else if (entity.placement.type === "held") {
+        const holder = sceneFactActorLabel({
+          actorSide: placementActorSide(entity.placement.holderId),
+          observerSide: input.observerSide,
+          participantLabels: input.participantLabels,
+        });
+        statement = `${itemLabel}は${holder}が手に持っている。`;
+      } else if (entity.placement.type === "worn") {
+        const wearer = sceneFactActorLabel({
+          actorSide: placementActorSide(entity.placement.wearerId),
+          observerSide: input.observerSide,
+          participantLabels: input.participantLabels,
+        });
+        statement = `${itemLabel}は${wearer}が身につけている。`;
+      } else if (entity.placement.type === "attached") {
+        statement = `${itemLabel}は別の対象に取り付けられている。`;
+      } else {
+        statement = `${itemLabel}は現在この場にない。`;
+      }
+      return [{
+        entityId,
+        value: BattleSceneStateFactSchema.parse({ itemLabel, statement }),
+      }];
+    })
+    .sort((a, b) => a.entityId.localeCompare(b.entityId))
+    .slice(0, 24)
+    .map((entry) => entry.value);
+}
+
 export type BattleWorldPairView = {
   entityAId: string;
   entityBId: string;
@@ -519,6 +670,15 @@ const SetWorldObjectStateOperationSchema = z.object({
   entityId: SemanticIdSchema,
   changes: WorldObjectStateChangeSchema,
 }).strict();
+const ConcretizeWorldObjectOperationSchema = z.object({
+  op: z.literal("concretize_object"),
+  entityId: SemanticIdSchema,
+  canonicalLabel: z.string().min(1).max(120).optional(),
+  statement: z.string().min(1).max(400),
+  resolvedAspects: z.array(z.string().min(1).max(80)).max(8).default([]),
+  remainingOpenAspects: z.array(z.string().min(1).max(80)).max(8),
+  evidenceRefs: z.array(SemanticIdSchema).max(8).default([]),
+}).strict();
 const SetWorldAreaStateOperationSchema = z.object({
   op: z.literal("set_area_state"),
   areaId: SemanticIdSchema,
@@ -548,6 +708,7 @@ export const BattleWorldOperationSchema = z.discriminatedUnion("op", [
   SetWorldExposureOperationSchema,
   SetWorldActorStateOperationSchema,
   SetWorldObjectStateOperationSchema,
+  ConcretizeWorldObjectOperationSchema,
   SetWorldAreaStateOperationSchema,
   SetWorldPairRelationOperationSchema,
   RemoveWorldPairRelationOperationSchema,
@@ -1103,6 +1264,47 @@ export function applyBattleWorldTransition(input: {
         );
       }
       Object.assign(area, cloneJson(operation.changes));
+      continue;
+    }
+    if (operation.op === "concretize_object") {
+      const entity = touchWorldEntity(
+        candidate,
+        operation.entityId,
+        input.turn,
+      );
+      if (!entity?.objectState || !entity.objectProfile) {
+        return transitionFailure(
+          input.state,
+          "missing_target",
+          `world object ${operation.entityId} is not concretizable`,
+          operationIndex,
+        );
+      }
+      if (
+        operation.canonicalLabel &&
+        entity.objectProfile.canonicalLabel &&
+        operation.canonicalLabel !== entity.objectProfile.canonicalLabel
+      ) {
+        return transitionFailure(
+          input.state,
+          "protected_entity",
+          "concretization cannot replace an established canonical label",
+          operationIndex,
+        );
+      }
+      entity.objectProfile.canonicalLabel ??= operation.canonicalLabel ?? null;
+      entity.objectProfile.knownOpenAspects = [
+        ...new Set(operation.remainingOpenAspects),
+      ];
+      entity.objectProfile.concretizations = [
+        ...entity.objectProfile.concretizations,
+        {
+          turn: input.turn,
+          statement: operation.statement,
+          resolvedAspects: [...new Set(operation.resolvedAspects)],
+          evidenceRefs: [...new Set(operation.evidenceRefs)],
+        },
+      ].slice(-8);
       continue;
     }
     if (operation.op === "set_pair_relation") {

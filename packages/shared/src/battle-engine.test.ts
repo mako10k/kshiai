@@ -14,6 +14,7 @@ import {
 import { defaultParameters, type CharacterSheet } from "./character.js";
 import { BattleStateSchema, type BattleState } from "./battle.js";
 import { quantizeCommittedMechanicalEvidence } from "./perception-quantization.js";
+import { applyBattleWorldTransition } from "./battle-world.js";
 
 function sheet(id: string, name: string, hp = 100): CharacterSheet {
   const t = new Date().toISOString();
@@ -1363,5 +1364,115 @@ describe("battle engine", () => {
       };
     };
     assert.deepEqual(run("静かに語る"), run("激しく語る"));
+  });
+
+  it("applies bounded held-object benefits to later attacks and defenses", () => {
+    const makeState = (id: string, instrumentRef?: string) => {
+      const a = sheet("a", "A", 300);
+      const b = sheet("b", "B", 300);
+      a.parameters.atk = 100;
+      b.parameters.def = 10;
+      const state = createBattleState({
+        id,
+        sideA: a,
+        sideB: b,
+        turnLimit: 20,
+        prologuePending: false,
+      });
+      const added = applyBattleWorldTransition({
+        state: state.worldState!,
+        turn: 0,
+        transition: {
+          baseRevision: state.worldState!.revision,
+          turn: 0,
+          operations: [{
+            op: "add_entity",
+            entityId: "object.free.a.tool",
+            entity: {
+              kind: "object",
+              active: true,
+              presence: "present",
+              placement: { type: "held", holderId: "character.a" },
+              exposure: "exposed",
+              actorState: null,
+              objectState: {
+                portable: true,
+                usable: true,
+                exclusiveUse: true,
+                usableBy: [],
+                cover: "none",
+                blocksMovement: false,
+                visionEffect: "none",
+                hearingEffect: "none",
+                mobilityEffect: "none",
+                causalEnvelope: { damage: "moderate", defense: "moderate" },
+              },
+              objectProfile: {
+                canonicalLabel: "ボール",
+                description: "手に持てる硬めのボール。",
+                sourceRef: "battlefield:ball",
+                candidateKey: "ball",
+                provenance: "battlefield",
+                knownOpenAspects: [],
+                observerRefs: { a: "percept.a.ball" },
+                observerLabels: { a: "石のような物" },
+                concretizations: [],
+              },
+            },
+          }],
+        },
+      });
+      assert.equal(added.ok, true);
+      if (added.ok) state.worldState = added.state;
+      state.plannedActionA = {
+        kind: "basic_attack",
+        ...(instrumentRef ? { instrumentRef } : {}),
+      };
+      state.plannedActionB = { kind: "wait" };
+      return { state, a, b };
+    };
+
+    const baselineInput = makeState("instrument-attack", undefined);
+    const equippedInput = makeState("instrument-attack", "percept.a.ball");
+    const baseline = resolveTurn({
+      state: baselineInput.state,
+      sideASkills: baselineInput.a.skills,
+      sideBSkills: baselineInput.b.skills,
+    });
+    const equipped = resolveTurn({
+      state: equippedInput.state,
+      sideASkills: equippedInput.a.skills,
+      sideBSkills: equippedInput.b.skills,
+    });
+    assert.ok(
+      equipped.state.sideB.parameters.hp! < baseline.state.sideB.parameters.hp!,
+      "a moderate damage instrument should improve the same deterministic attack",
+    );
+
+    const defendRun = (instrumentRef?: string) => {
+      const input = makeState("instrument-defense", undefined);
+      input.state.plannedActionA = { kind: "basic_attack" };
+      input.state.plannedActionB = {
+        kind: "defend",
+        ...(instrumentRef ? { instrumentRef } : {}),
+      };
+      if (instrumentRef) {
+        const entity = input.state.worldState!.entities["object.free.a.tool"]!;
+        entity.placement = { type: "held", holderId: "character.b" };
+        entity.objectProfile!.observerRefs = { b: instrumentRef };
+      }
+      return resolveTurn({
+        state: input.state,
+        sideASkills: input.a.skills,
+        sideBSkills: input.b.skills,
+      });
+    };
+    const unassistedDefense = defendRun();
+    const assistedDefense = defendRun("percept.b.ball");
+    assert.ok(
+      assistedDefense.state.sideB.parameters.hp! >
+        unassistedDefense.state.sideB.parameters.hp!,
+      "a moderate defense instrument should reduce the same deterministic hit",
+    );
   });
 });

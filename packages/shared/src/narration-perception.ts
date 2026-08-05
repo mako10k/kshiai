@@ -1,6 +1,7 @@
 import type { NarrativeBlock } from "./narrative.js";
 import type { TurnEvent } from "./battle.js";
 import type { BattlefieldInstance } from "./battlefield.js";
+import type { BattleSceneStateFact } from "./battle-world.js";
 import type {
   BattleSemanticEntity,
   BattleSemanticState,
@@ -640,6 +641,8 @@ export type NarrationTurnView = {
   };
   /** Presentation-only constraints selected for this narrator perspective. */
   profileAnchors: NarratorRenderingProfileAnchors;
+  /** ID-free current object placements derived from canonical world state. */
+  sceneStateFacts: BattleSceneStateFact[];
   /** Bounded display continuity; never a source of character cognition. */
   continuity: NarratorContinuityView | null;
   /** Stable subjects whose narrator-only recognition may be updated in this call. */
@@ -662,6 +665,7 @@ export type NarrationTurnViewInput = {
   sideBLabel: string;
   profileAnchorA: NarratorRenderingProfileAnchor;
   profileAnchorB: NarratorRenderingProfileAnchor;
+  sceneStateFacts?: readonly BattleSceneStateFact[];
   perception: NarrationPerceptionView;
   semanticState: BattleSemanticState;
   publicObservation: SemanticObservationState;
@@ -821,6 +825,10 @@ export function buildNarrationTurnView(
       sideA: input.profileAnchorA,
       sideB: input.profileAnchorB,
     }),
+    sceneStateFacts: input.sceneStateFacts?.map((fact) => ({
+      itemLabel: sanitize(fact.itemLabel),
+      statement: sanitize(fact.statement),
+    })) ?? [],
     continuity: input.narratorContinuity
       ? selectNarratorContinuityForFocus({
           continuity: input.narratorContinuity,
