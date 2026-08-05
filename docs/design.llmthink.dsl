@@ -651,17 +651,30 @@ decision D28 based_on PR28, EV28, D1, D2, D16, D23, D24, D27:
     disguise, disappearance, transformation, or hallucination fact says
     otherwise. Formal display names remain authoritative and a differing short
     label is disclosed in the prologue.
-    Canonical utterances retain server-owned source Side and character-authored
-    text. The server derives a finite display-label candidate set from that Side,
-    the immutable battle label, and current attribution certainty. The narrator
-    may choose an exact candidate while placing or fact-preservingly styling the
-    line; any other label falls back without altering canonical speech or
-    character belief.
+    Canonical A/B utterances retain server-owned source Side and
+    character-authored text. The resolved narrator perspective is the content
+    boundary: adapters omit canonical speaker names and provide only the
+    perspective-projected view, observer-local attribution/appearance and social
+    rendering context. The narrator freely composes the structured speaker label;
+    the server does not compare its wording with a finite candidate set. It still
+    restores canonical Side/text on mismatch and prevents presentation data from
+    altering canonical speech or character belief. When the supplied scene state
+    supports a third-party or scene entity's presence and agency, the narrator may
+    add a source-Side-less presentation speech/reaction. Such rendering never
+    becomes a canonical event, world change, or character perception input.
     Persist bounded reader, A-view, and B-view NarratorContinuity records. Update
     both character-view records after every phase and turn regardless of the
     selected or fluid focus; focus selects only the rendered view. Reader-known
     labels never upgrade character identity, and remembered identity never
-    upgrades current sensory attribution. Extend each private agent state with
+    upgrades current sensory attribution. Store bounded narrator-only recognition
+    bindings from a stable view subject reference to recognized battle wording,
+    identity knowledge, and same/possible/unlinked continuity. An identified
+    same-entity binding survives temporary occlusion, voice-only access, turn
+    changes, and rendered-focus changes. The existing narrator call may return
+    recognition updates beside prose and speeches; the server accepts only
+    subjects present in that call's view and persists them without another LLM
+    call or feedback into public prose, character cognition, events, or world
+    state. Extend each private agent state with
     bounded conclusions for primary and concealed emotion, unspoken intent,
     current concern, counterpart attitude, confidence, and relationship tension.
     Only perspective-permitted digests reach narration, and no chain-of-thought

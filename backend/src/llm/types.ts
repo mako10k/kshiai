@@ -17,6 +17,8 @@ import type {
   NarrationTurnView,
   NarratorRenderingProfileAnchors,
   NarratorContinuityView,
+  NarratorRecognitionSubject,
+  NarratorRecognitionUpdate,
   PerceivedCondition,
   Situation,
   TurnEvent,
@@ -28,6 +30,10 @@ import type {
   BattleAdjudicationReasonFact,
   BattleEncounterProposal,
   BattleSocialView,
+  ApparentIdentityBelief,
+  CurrentAccess,
+  IdentityKnowledge,
+  PerceptionCertainty,
   ParamKey,
 } from "@kshiai/shared";
 import type {
@@ -80,15 +86,31 @@ export type CharacterCounterpartKnowledge = {
 };
 
 /** Character-authored speech supplied to narration as immutable source material. */
+export type CharacterSpeechDisplayContext = Readonly<{
+  /** Resolved narration mode for this public rendering. */
+  mode: "self" | "opponent" | "external" | "omniscient";
+  /** View-safe participant wording; it may be an apparent form, not identity. */
+  perceivedAs: string;
+  /** Utterance-specific attribution wording from the selected observer. */
+  utterancePerceivedAs: string;
+  currentAccess: CurrentAccess;
+  identityKnowledge: IdentityKnowledge;
+  attributionCertainty: PerceptionCertainty;
+  /** Observer-local appearance/identity belief, never canonical identity. */
+  apparentIdentity?: ApparentIdentityBelief;
+  /** How the selected character viewpoint addresses this counterpart. */
+  relationshipAddress?: string;
+}>;
+
 export type CharacterSpeechSource = Readonly<{
   side: "a" | "b";
-  /** Canonical character name; never authored by the narrator. */
+  /** Canonical server-only character name; adapters must not expose it as view evidence. */
   speaker: string;
   text: string;
   /** Server-selected fallback for the current presentation view. */
   displayLabel?: string;
-  /** Exact finite labels the narrator may choose for this source Side. */
-  allowedDisplayLabels?: readonly string[];
+  /** View-safe facts from which the narrator may freely word a display label. */
+  displayContext?: CharacterSpeechDisplayContext;
 }>;
 
 /** Narrative-safe battle history for improvement analysis (no raw combat params). */
@@ -201,7 +223,10 @@ export type AdjustBattlefieldResult = {
 
 export type SituationProposal = Partial<Situation>;
 
-export type NarrationResult = NarrativeBlock;
+export type NarrationResult = NarrativeBlock & {
+  /** Narrator-only cognition produced by the same narration call. */
+  recognitionUpdates?: NarratorRecognitionUpdate[];
+};
 
 /** Progressive narrator extraction while a chat completion is streaming. */
 export type NarrationStreamProgress = {
@@ -224,8 +249,10 @@ export type JudgmentNarrationResult = {
 };
 
 export type AftermathNarrationResult = JudgmentNarrationResult & {
-  /** Placement proposals for already-committed character-authored reactions. */
+  /** Committed A/B reactions plus optional scene-grounded third-party rendering. */
   speeches: NonNullable<NarrationResult["speeches"]>;
+  /** Narrator-only cognition produced by the same narration call. */
+  recognitionUpdates?: NarratorRecognitionUpdate[];
 };
 
 /** Bounded committed facts for turn-limit review; never derived from narration. */
@@ -464,6 +491,7 @@ export interface LlmProvider {
     focus?: NarrationFocus;
     perspective?: NarrationPerspective;
     narratorContinuity?: NarratorContinuityView | null;
+    recognitionSubjects?: readonly NarratorRecognitionSubject[];
     battlefield?: BattlefieldInstance | null;
     styleInstruction?: string;
     styleName?: string;
@@ -490,6 +518,7 @@ export interface LlmProvider {
     focus?: NarrationFocus;
     perspective?: NarrationPerspective;
     narratorContinuity?: NarratorContinuityView | null;
+    recognitionSubjects?: readonly NarratorRecognitionSubject[];
     styleInstruction?: string;
     styleName?: string;
     onProgress?: (progress: NarrationStreamProgress) => void;

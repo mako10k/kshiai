@@ -1,5 +1,26 @@
 import { z } from "zod";
 
+export const SPEAKER_DISPLAY_LABEL_MAX_LENGTH = 120;
+
+/**
+ * Accept narrator-authored presentation wording without turning it into a
+ * canonical identity. Only transport/format failures fall back.
+ */
+export function coerceSpeakerDisplayLabel(
+  value: unknown,
+  fallback: string,
+): string {
+  if (typeof value !== "string") return fallback;
+  const normalized = value
+    .replace(/[\u0000-\u001f\u007f]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+  if (!normalized || [...normalized].length > SPEAKER_DISPLAY_LABEL_MAX_LENGTH) {
+    return fallback;
+  }
+  return normalized;
+}
+
 export const SpeechLineSchema = z.object({
   speaker: z.string(),
   text: z.string(),

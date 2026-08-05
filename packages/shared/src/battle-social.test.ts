@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import {
+  applyBattleNarratorRecognitionUpdates,
   buildBattleEncounterContext,
   buildLegacyBattleEncounterContext,
   createBattleState,
@@ -102,6 +103,63 @@ describe("battle encounter and narrator continuity", () => {
     assert.match(continuity.a.unresolvedThreads.join(" "), /間合い/);
     assert.doesNotMatch(continuity.b.unresolvedThreads.join(" "), /間合い/);
     assert.match(continuity.b.unresolvedThreads.join(" "), /先手/);
+  });
+
+  it("keeps an identified battle label while subject continuity remains intact", () => {
+    const state = createBattleState({
+      id: "recognition-continuity",
+      sideA: sheet("a", "明良", [], ["僕"]),
+      sideB: sheet("b", "晶", [], ["私"]),
+      turnLimit: 20,
+    });
+    const initial = state.narratorContinuity!;
+    assert.equal(
+      initial.a.recognitions.find((item) => item.subjectRef === "opponent")
+        ?.recognizedAs,
+      "晶",
+    );
+
+    const attemptedReset = applyBattleNarratorRecognitionUpdates({
+      continuity: initial,
+      target: "a",
+      turn: 1,
+      allowedSubjectRefs: ["opponent"],
+      updates: [{
+        subjectRef: "opponent",
+        recognizedAs: "正体不明の声の主",
+        identityKnowledge: "suspected",
+        continuity: "same_entity",
+      }],
+    });
+    const retained = attemptedReset.a.recognitions.find((item) =>
+      item.subjectRef === "opponent"
+    );
+    assert.equal(retained?.recognizedAs, "晶");
+    assert.equal(retained?.identityKnowledge, "identified");
+
+    const frameA = structuredClone(state.perceptionFrameA!);
+    frameA.turn = 2;
+    frameA.counterpart.currentAccess = "none";
+    frameA.counterpart.identityKnowledge = "unknown";
+    frameA.counterpart.perceivedAs = "現在は判別できない声";
+    frameA.counterpart.percepts = [];
+    const refreshed = updateBattleNarratorContinuity({
+      turn: 2,
+      encounter: state.encounterContext!,
+      frameA,
+      frameB: state.perceptionFrameB!,
+      previous: attemptedReset,
+    });
+    assert.equal(
+      refreshed.a.recognitions.find((item) => item.subjectRef === "opponent")
+        ?.recognizedAs,
+      "晶",
+    );
+    assert.equal(
+      refreshed.a.recognitions.find((item) => item.subjectRef === "opponent")
+        ?.identityKnowledge,
+      "identified",
+    );
   });
 
   it("builds deterministic legacy context without public prose", () => {

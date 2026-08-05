@@ -7,6 +7,41 @@ import {
   type CharacterPerceptionFrame,
 } from "./perception.js";
 
+export const NarratorRecognitionContinuitySchema = z.enum([
+  "same_entity",
+  "possibly_same_entity",
+  "unlinked",
+]);
+export type NarratorRecognitionContinuity = z.infer<
+  typeof NarratorRecognitionContinuitySchema
+>;
+
+export const NarratorRecognitionUpdateSchema = z.object({
+  subjectRef: z.string().min(1).max(160),
+  recognizedAs: z.string().min(1).max(120),
+  identityKnowledge: IdentityKnowledgeSchema,
+  continuity: NarratorRecognitionContinuitySchema,
+}).strict();
+export type NarratorRecognitionUpdate = z.infer<
+  typeof NarratorRecognitionUpdateSchema
+>;
+
+export const NarratorRecognitionSchema = NarratorRecognitionUpdateSchema.extend({
+  lastConfirmedTurn: z.number().int().nonnegative(),
+}).strict();
+export type NarratorRecognition = z.infer<typeof NarratorRecognitionSchema>;
+
+export const NarratorRecognitionSubjectSchema = z.object({
+  subjectRef: z.string().min(1).max(160),
+  perceivedAs: z.string().min(1).max(240),
+  relation: z.enum(["self", "opponent", "other", "contact", "environment"]),
+  identityKnowledge: IdentityKnowledgeSchema,
+  continuity: NarratorRecognitionContinuitySchema,
+}).strict();
+export type NarratorRecognitionSubject = z.infer<
+  typeof NarratorRecognitionSubjectSchema
+>;
+
 export const BattleParticipantReferenceSchema = z.object({
   officialDisplayName: z.string().min(1),
   battleLabel: z.string().min(1).max(40),
@@ -287,6 +322,7 @@ export const NarratorReaderContinuitySchema = z.object({
     b: z.string().min(1).max(40),
   }).strict(),
   disclosedTerms: z.array(z.string().min(1).max(120)).max(12).default([]),
+  recognitions: z.array(NarratorRecognitionSchema).max(16).default([]),
 }).strict();
 
 export const NarratorPerspectiveContinuitySchema = z.object({
@@ -304,6 +340,7 @@ export const NarratorPerspectiveContinuitySchema = z.object({
   unresolvedThreads: z.array(z.string().min(1).max(240)).max(6).default([]),
   lastInteriorBeat: z.string().min(1).max(400).nullable().default(null),
   recentPresentationTerms: z.array(z.string().min(1).max(120)).max(8).default([]),
+  recognitions: z.array(NarratorRecognitionSchema).max(16).default([]),
 }).strict();
 export type NarratorPerspectiveContinuity = z.infer<
   typeof NarratorPerspectiveContinuitySchema
@@ -392,6 +429,48 @@ function perspectiveContinuity(input: {
   const participant = input.encounter.participants[input.side];
   const social = input.encounter.social[input.side];
   const stableCounterpart = input.encounter.participants[social.counterpartSide];
+  const selfSubjectRef = input.side === "a" ? "self" : "opponent";
+  const counterpartSubjectRef = input.side === "a" ? "opponent" : "self";
+  const previousRecognitions = input.previous?.recognitions ?? [];
+  const previousCounterpart = previousRecognitions.find((recognition) =>
+    recognition.subjectRef === counterpartSubjectRef
+  );
+  const apparentContinuity = input.frame.counterpart.apparentIdentity?.continuity;
+  const counterpartContinuity = apparentContinuity ??
+    (input.frame.counterpart.identityKnowledge === "identified"
+      ? "same_entity"
+      : previousCounterpart?.continuity ?? "possibly_same_entity");
+  const rememberedIdentity = previousCounterpart?.identityKnowledge ===
+      "identified" &&
+    previousCounterpart.continuity === "same_entity" &&
+    counterpartContinuity !== "unlinked";
+  const narratorIdentityKnowledge = rememberedIdentity
+    ? "identified" as const
+    : input.frame.counterpart.identityKnowledge;
+  const counterpartConfirmed = narratorIdentityKnowledge === "identified" &&
+    counterpartContinuity === "same_entity";
+  const baselineRecognitions: NarratorRecognition[] = [{
+    subjectRef: selfSubjectRef,
+    recognizedAs: participant.battleLabel,
+    identityKnowledge: "identified",
+    continuity: "same_entity",
+    lastConfirmedTurn: input.turn,
+  }, {
+    subjectRef: counterpartSubjectRef,
+    recognizedAs: counterpartConfirmed
+      ? stableCounterpart.battleLabel
+      : previousCounterpart?.recognizedAs ?? input.frame.counterpart.perceivedAs,
+    identityKnowledge: narratorIdentityKnowledge,
+    continuity: counterpartContinuity,
+    lastConfirmedTurn: counterpartConfirmed &&
+        input.frame.counterpart.currentAccess !== "none"
+      ? input.turn
+      : previousCounterpart?.lastConfirmedTurn ?? input.turn,
+  }];
+  const recognitions = mergeNarratorRecognitions(
+    previousRecognitions,
+    baselineRecognitions,
+  );
   const percepts = [
     ...input.frame.counterpart.percepts,
     ...input.frame.others.flatMap((slot) => slot.percepts),
@@ -425,7 +504,75 @@ function perspectiveContinuity(input: {
       input.frame.counterpart.perceivedAs,
       social.counterpartAddress,
     ], 8),
+    recognitions,
   });
+}
+
+function mergeNarratorRecognitions(
+  previous: readonly NarratorRecognition[],
+  incoming: readonly NarratorRecognition[],
+): NarratorRecognition[] {
+  const merged = new Map<string, NarratorRecognition>();
+  for (const recognition of previous) {
+    merged.set(recognition.subjectRef, structuredClone(recognition));
+  }
+  for (const recognition of incoming) {
+    merged.set(recognition.subjectRef, structuredClone(recognition));
+  }
+  return [...merged.values()].slice(-16);
+}
+
+export function applyBattleNarratorRecognitionUpdates(input: {
+  continuity: BattleNarratorContinuity;
+  target: "reader" | "a" | "b";
+  turn: number;
+  allowedSubjectRefs: readonly string[];
+  updates: readonly NarratorRecognitionUpdate[];
+}): BattleNarratorContinuity {
+  const allowed = new Set(input.allowedSubjectRefs);
+  const current = input.target === "reader"
+    ? input.continuity.reader.recognitions
+    : input.continuity[input.target].recognitions;
+  const merged = new Map(
+    current.map((recognition) => [
+      recognition.subjectRef,
+      structuredClone(recognition),
+    ]),
+  );
+  for (const update of input.updates.slice(0, 16)) {
+    const parsed = NarratorRecognitionUpdateSchema.safeParse(update);
+    if (!parsed.success || !allowed.has(parsed.data.subjectRef)) continue;
+    const previous = merged.get(parsed.data.subjectRef);
+    const preserveKnownIdentity = previous?.identityKnowledge === "identified" &&
+      previous.continuity === "same_entity" &&
+      parsed.data.continuity !== "unlinked";
+    const identityKnowledge = preserveKnownIdentity
+      ? "identified" as const
+      : parsed.data.identityKnowledge;
+    const recognizedAs = preserveKnownIdentity
+      ? previous.recognizedAs
+      : parsed.data.recognizedAs;
+    merged.set(parsed.data.subjectRef, {
+      ...parsed.data,
+      recognizedAs,
+      identityKnowledge,
+      lastConfirmedTurn: identityKnowledge === "identified" &&
+          parsed.data.continuity === "same_entity"
+        ? input.turn
+        : previous?.lastConfirmedTurn ?? input.turn,
+    });
+  }
+  const recognitions = [...merged.values()].slice(-16);
+  const next = input.target === "reader"
+    ? {
+        ...input.continuity,
+        reader: { ...input.continuity.reader, recognitions },
+      }
+    : {
+        ...input.continuity,
+        [input.target]: { ...input.continuity[input.target], recognitions },
+      };
+  return BattleNarratorContinuitySchema.parse(next);
 }
 
 /** Refresh both subjective narrator records regardless of the rendered focus. */
@@ -458,6 +605,22 @@ export function updateBattleNarratorContinuity(input: {
         b: input.encounter.participants.b.battleLabel,
       },
       disclosedTerms,
+      recognitions: mergeNarratorRecognitions(
+        input.previous?.reader.recognitions ?? [],
+        [{
+          subjectRef: "character.a",
+          recognizedAs: input.encounter.participants.a.battleLabel,
+          identityKnowledge: "identified",
+          continuity: "same_entity",
+          lastConfirmedTurn: input.turn,
+        }, {
+          subjectRef: "character.b",
+          recognizedAs: input.encounter.participants.b.battleLabel,
+          identityKnowledge: "identified",
+          continuity: "same_entity",
+          lastConfirmedTurn: input.turn,
+        }],
+      ),
     },
     a: perspectiveContinuity({
       side: "a",

@@ -3,6 +3,7 @@ import { describe, it } from "node:test";
 import {
   buildCharacterSelfProfileAnchor,
   buildBattleTurnRecord,
+  buildNarrationPerceptionView,
   createBattleState,
   defaultParameters,
   type CharacterSheet,
@@ -10,10 +11,12 @@ import {
 import {
   acceptCharacterAgentResult,
   advanceCharacterAgents,
+  applyNarratorRecognitionResult,
   buildAftermathNarrativeBlock,
   buildBattleAdjudication,
   buildCharacterAgentConsumerInput,
   buildJudgmentNarrativeBlock,
+  buildNarratorCharacterSpeeches,
   buildRefereeFinalState,
   buildRefereeTurnFacts,
   finalizeCharacterSpeeches,
@@ -57,6 +60,56 @@ function profile(selfNames: string[]) {
 }
 
 describe("character-authored public speech", () => {
+  it("persists narrator recognition only for subjects in the selected view", () => {
+    const sideA = sheet("a", "アオ", ["私"]);
+    const sideB = sheet("b", "クロ", ["俺"]);
+    const state = createBattleState({
+      id: "narrator-recognition-wiring",
+      sideA,
+      sideB,
+      turnLimit: 20,
+      prologuePending: false,
+    });
+    const view = buildNarrationPerceptionView({
+      perspective: "self",
+      focus: "self",
+      sideALabel: "アオ",
+      sideBLabel: "クロ",
+      frameA: state.perceptionFrameA!,
+      frameB: state.perceptionFrameB!,
+      semanticState: state.semanticState!,
+      publicObservation: state.observationStatePublic!,
+    });
+    const updated = applyNarratorRecognitionResult({
+      state,
+      view,
+      turn: 1,
+      updates: [{
+        subjectRef: "opponent",
+        recognizedAs: "正体不明の声の主",
+        identityKnowledge: "suspected",
+        continuity: "same_entity",
+      }, {
+        subjectRef: "not-in-view",
+        recognizedAs: "場外の人物",
+        identityKnowledge: "identified",
+        continuity: "same_entity",
+      }],
+    });
+    assert.equal(
+      updated.narratorContinuity?.a.recognitions.find((item) =>
+        item.subjectRef === "opponent"
+      )?.recognizedAs,
+      "クロ",
+    );
+    assert.equal(
+      updated.narratorContinuity?.a.recognitions.some((item) =>
+        item.subjectRef === "not-in-view"
+      ),
+      false,
+    );
+  });
+
   it("commits accepted character speech before narration and projects it to each frame", async () => {
     const sideA = sheet("a", "アオ", ["私"]);
     const sideB = sheet("b", "クロ", ["俺"]);
@@ -106,6 +159,17 @@ describe("character-authored public speech", () => {
       result.state.narratorContinuity?.a.viewpointSide,
       result.state.narratorContinuity?.b.viewpointSide,
     );
+    const narratorSpeeches = buildNarratorCharacterSpeeches({
+      state: result.state,
+      sources: result.characterSpeeches,
+      events: result.state.turnRecords.at(-1)?.events ?? [],
+      perspective: "self",
+      focus: "self",
+    });
+    const perceivedB = narratorSpeeches.find((speech) => speech.side === "b");
+    assert.equal(perceivedB?.displayContext?.mode, "self");
+    assert.equal(perceivedB?.displayContext?.identityKnowledge, "identified");
+    assert.equal(perceivedB?.displayContext?.relationshipAddress, "クロ");
   });
 
   it("uses initial perception for prologue decisions and reaction-only aftermath", async () => {
@@ -318,7 +382,6 @@ describe("character-authored public speech", () => {
             text: "まだ、終わらない！",
             afterNarratorLine: 1,
           },
-          { speaker: "ナレータ", text: "追加の台詞" },
         ],
       },
       sources: [
@@ -343,16 +406,12 @@ describe("character-authored public speech", () => {
     ]);
   });
 
-  it("accepts only server-enumerated narrator speaker labels", () => {
+  it("accepts narrator-authored display labels without changing canonical speech", () => {
     const source = {
       side: "a" as const,
       speaker: "明良",
       text: "まだ終わらない。",
       displayLabel: "明良かもしれない声",
-      allowedDisplayLabels: [
-        "明良かもしれない声",
-        "明良と思われる声の主",
-      ],
     };
     const accepted = finalizeCharacterSpeeches({
       narrative: {
@@ -360,40 +419,48 @@ describe("character-authored public speech", () => {
         narrator: ["声が響く。"],
         speeches: [{
           sourceSide: "a",
-          speaker: "明良と思われる声の主",
+          speaker: "白狼の姿をした声の主",
           text: source.text,
         }],
       },
       sources: [source],
     });
-    assert.equal(accepted[0]?.speaker, "明良と思われる声の主");
+    assert.equal(accepted[0]?.speaker, "白狼の姿をした声の主");
 
-    const rejected = finalizeCharacterSpeeches({
+    const fallback = finalizeCharacterSpeeches({
       narrative: {
         turn: 1,
         narrator: ["声が響く。"],
         speeches: [{
           sourceSide: "a",
-          speaker: "ナレータが創作した別人",
+          speaker: "\n\t",
           text: source.text,
         }],
       },
       sources: [source],
     });
-    assert.equal(rejected[0]?.speaker, "明良かもしれない声");
+    assert.equal(fallback[0]?.speaker, "明良かもしれない声");
   });
 
-  it("does not allow narration to invent speech without a character source", () => {
+  it("keeps scene-grounded third-party speech without treating it as canonical A/B speech", () => {
     assert.deepEqual(
       finalizeCharacterSpeeches({
         narrative: {
           turn: 2,
           narrator: ["余韻が残る。"],
-          speeches: [{ speaker: "A", text: "勝った。" }],
+          speeches: [{
+            speaker: "観客席の審判",
+            text: "そこまで。",
+            afterNarratorLine: 0,
+          }],
         },
         sources: [],
       }),
-      [],
+      [{
+        speaker: "観客席の審判",
+        text: "そこまで。",
+        afterNarratorLine: 0,
+      }],
     );
   });
 

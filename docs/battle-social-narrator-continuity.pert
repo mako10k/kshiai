@@ -1,7 +1,7 @@
 # Battle-scoped social and narrator continuity implementation plan.
 project KSHIAI_BATTLE_SOCIAL_NARRATOR_CONTINUITY:
-  version 1
-  title "Stabilize battle identity speech labels and narrator perspective continuity"
+  version 3
+  title "Stabilize battle identity, perspective-owned speech rendering, and narrator recognition continuity"
   description |
     Build immutable encounter and social context at battle start, keep canonical
     speaker identity separate from narrator display labels, update A and B
@@ -9,7 +9,7 @@ project KSHIAI_BATTLE_SOCIAL_NARRATOR_CONTINUITY:
     interior conclusions. Preserve deterministic compatibility for saved battles.
   as_of 2026-08-05
   duration_unit day
-  finish ACCEPTED
+  finish RECOGNITION_READY
 
 resource DEV:
   title "Developer"
@@ -28,7 +28,7 @@ milestone ENCOUNTER_READY:
   state reached
 
 milestone SPEECH_READY:
-  title "Validated narrator speaker labels ready"
+  title "Canonical and rendered speech boundary ready"
   state reached
 
 milestone CONTINUITY_READY:
@@ -71,11 +71,8 @@ task T_ENCOUNTER CONTRACT_READY -> ENCOUNTER_READY:
     DEV 1
 
 task T_SPEECH ENCOUNTER_READY -> SPEECH_READY:
-  title "Separate canonical speakers from display labels"
-  description |
-    Preserve server-owned source Side and actual speech. Give the narrator a
-    finite server-derived display-label candidate set based on attribution and
-    stable battle labels; accept only an exact candidate and otherwise fall back.
+  title "Separate canonical speech from narrator rendering"
+  description "Preserve server-owned source Side and actual A/B speech while omitting canonical speaker names from subjective narrator input. Let the narrator freely compose structured speaker labels from the resolved perspective and observer-local rendering context; do not enforce a finite label candidate set."
   duration 2d
   status done
   requires:
@@ -123,6 +120,30 @@ task T_ACCEPT COMPATIBLE -> ACCEPTED:
     inner-digest filtering, provider failure, and legacy reads. Run tests,
     typecheck, build, llmthink audit, and PERT checks. Push, PR, release, and
     branch or stash cleanup remain separate approval gates.
+  duration 1d
+  status done
+  requires:
+    DEV 1
+
+milestone RENDERING_READY:
+  title "Perspective-owned narrator rendering corrected"
+  state reached
+
+task T_FREE_LABEL ACCEPTED -> RENDERING_READY:
+  title "Remove label allowlist and retain scene speakers"
+  description "Treat the resolved narrator perspective as the content boundary. Omit canonical speaker names from subjective inputs, accept freely rendered labels without semantic post-filtering, retain source-Side-less third-party or scene-entity speech supported by scene state, and keep all presentation data out of canonical events and character cognition."
+  duration 1d
+  status done
+  requires:
+    DEV 1
+
+milestone RECOGNITION_READY:
+  title "Narrator identity continuity ready"
+  state reached
+
+task T_RECOGNITION RENDERING_READY -> RECOGNITION_READY:
+  title "Persist same-call narrator identity recognition"
+  description "Store bounded view-owned subject recognition, preserve identified same-entity battle labels across temporary access loss, accept recognition updates in the existing narrator response, and keep them out of public logs, character cognition, canonical events, and world state."
   duration 1d
   status done
   requires:

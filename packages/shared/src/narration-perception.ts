@@ -29,6 +29,7 @@ import {
   selectNarratorContinuityForFocus,
   type BattleNarratorContinuity,
   type NarratorContinuityView,
+  type NarratorRecognitionSubject,
 } from "./battle-social.js";
 
 export type NarrationPerceptionProjectionInput = {
@@ -104,6 +105,19 @@ function safeLabel(
 ): string {
   const label = candidate?.trim() || fallback;
   return label === controlId || label.includes(controlId) ? fallback : label;
+}
+
+function opaqueReaderSubjectRef(entityId: string): string {
+  let first = 0x811c9dc5;
+  let second = 0x9e3779b9;
+  for (const character of entityId) {
+    const code = character.codePointAt(0) ?? 0;
+    first = Math.imul(first ^ code, 0x01000193);
+    second = Math.imul(second ^ code, 0x85ebca6b);
+  }
+  return `reader.${(first >>> 0).toString(16).padStart(8, "0")}${
+    (second >>> 0).toString(16).padStart(8, "0")
+  }`;
 }
 
 function entityRelation(
@@ -246,10 +260,10 @@ function externalReferences(input: {
   sideALabel: string;
   sideBLabel: string;
 }): Array<{
+  subjectRef: string;
   renderLabel: string;
   relation: NarrationReferenceRelation;
 }> {
-  const seen = new Set<string>();
   return Object.entries(input.publicObservation.snapshot.entities).flatMap(
     ([entityId, entity]) => {
       const renderLabel = safeLabel(
@@ -262,10 +276,11 @@ function externalReferences(input: {
         genericEntityLabel(entity),
       );
       const relation = entityRelation(entityId, entity);
-      const key = `${relation}\u0000${renderLabel}`;
-      if (seen.has(key)) return [];
-      seen.add(key);
-      return [{ renderLabel, relation }];
+      return [{
+        subjectRef: opaqueReaderSubjectRef(entityId),
+        renderLabel,
+        relation,
+      }];
     },
   );
 }
@@ -331,6 +346,88 @@ export function buildNarrationPerceptionView(
     resolvedFromFluid: resolved.resolvedFromFluid,
     references: externalReferences(input),
   });
+}
+
+/** Stable, view-owned subjects that the existing narrator call may recognize. */
+export function narratorRecognitionSubjects(
+  view: NarrationPerceptionView,
+): NarratorRecognitionSubject[] {
+  if (view.mode === "external") {
+    return view.references.flatMap((reference) =>
+      reference.subjectRef
+        ? [{
+            subjectRef: reference.subjectRef,
+            perceivedAs: reference.renderLabel,
+            relation: reference.relation,
+            identityKnowledge: "identified" as const,
+            continuity: "same_entity" as const,
+          }]
+        : []
+    ).slice(0, 16);
+  }
+  if (view.mode === "omniscient") {
+    return view.references.map((reference) => ({
+      subjectRef: reference.controlId,
+      perceivedAs: reference.renderLabel,
+      relation: reference.relation,
+      identityKnowledge: "identified",
+      continuity: "same_entity",
+    }));
+  }
+  const referenceById = new Map(
+    view.references.map((reference) => [reference.controlId, reference]),
+  );
+  const counterpartRef = view.mode === "self" ? "opponent" : "self";
+  const selfRef = view.mode === "self" ? "self" : "opponent";
+  const subjects: NarratorRecognitionSubject[] = [];
+  const push = (subject: NarratorRecognitionSubject) => {
+    if (!subjects.some((candidate) => candidate.subjectRef === subject.subjectRef)) {
+      subjects.push(subject);
+    }
+  };
+  const selfReference = referenceById.get(selfRef);
+  if (selfReference) {
+    push({
+      subjectRef: selfRef,
+      perceivedAs: selfReference.renderLabel,
+      relation: "self",
+      identityKnowledge: "identified",
+      continuity: "same_entity",
+    });
+  }
+  const counterpartReference = referenceById.get(counterpartRef);
+  if (counterpartReference) {
+    push({
+      subjectRef: counterpartRef,
+      perceivedAs: counterpartReference.renderLabel,
+      relation: "opponent",
+      identityKnowledge: view.frame.counterpart.identityKnowledge,
+      continuity: view.frame.counterpart.apparentIdentity?.continuity ??
+        (view.frame.counterpart.identityKnowledge === "identified"
+          ? "same_entity"
+          : "possibly_same_entity"),
+    });
+  }
+  for (const slot of view.frame.others) {
+    if (slot.subject.kind === "identified") {
+      push({
+        subjectRef: slot.subject.perceptionRef,
+        perceivedAs: slot.perceivedAs,
+        relation: "other",
+        identityKnowledge: "identified",
+        continuity: slot.apparentIdentity?.continuity ?? "same_entity",
+      });
+    } else if (slot.subject.kind === "contact") {
+      push({
+        subjectRef: slot.subject.contactId,
+        perceivedAs: slot.perceivedAs,
+        relation: "contact",
+        identityKnowledge: slot.identityKnowledge,
+        continuity: slot.apparentIdentity?.continuity ?? "possibly_same_entity",
+      });
+    }
+  }
+  return subjects.slice(0, 16);
 }
 
 function counterpartRenderLabel(
@@ -545,6 +642,8 @@ export type NarrationTurnView = {
   profileAnchors: NarratorRenderingProfileAnchors;
   /** Bounded display continuity; never a source of character cognition. */
   continuity: NarratorContinuityView | null;
+  /** Stable subjects whose narrator-only recognition may be updated in this call. */
+  recognitionSubjects: NarratorRecognitionSubject[];
   events: Array<{ summary: string }>;
   actionBeats: NarrationTurnViewActionBeat[];
   battlefield: {
@@ -728,6 +827,7 @@ export function buildNarrationTurnView(
           focus: input.focus,
         })
       : null,
+    recognitionSubjects: narratorRecognitionSubjects(input.perception),
     events: frame
       ? characterPerceptEvents(frame)
       : input.events.map((event) => ({ summary: sanitize(event.summary) })),
