@@ -23,6 +23,7 @@ import type {
   ResolvedBattleAction,
   FinisherWindow,
   PerceptionEvidence,
+  ObserverSafeAvailableAction,
 } from "@kshiai/shared";
 import type {
   PerceptionPromptInput,
@@ -49,15 +50,7 @@ export type CharacterReferenceTools = {
 export type CharacterActionDecisionContext = {
   nextTurn: number;
   turnsRemaining: number;
-  availableActions: Array<{
-    kind: CharacterActionIntent["kind"];
-    skillId?: string;
-    name: string;
-    skillKind?: "attack" | "magic" | "defend" | "support" | "special" | "status";
-    costMp?: number;
-    costStamina?: number;
-    finisherCandidate?: boolean;
-  }>;
+  availableActions: ObserverSafeAvailableAction[];
   finisher: FinisherWindow | null;
   /** Last executed/planned action for this side (for variety pressure). */
   lastAction?: {

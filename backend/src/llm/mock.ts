@@ -71,6 +71,13 @@ export class MockLlmProvider implements LlmProvider {
         resistanceParameter: "def",
         power: 0.75,
         element: "personal",
+        constraints: {
+          reach: "same_area",
+          requiresSight: false,
+          mobility: "limited",
+          requiresSpeech: false,
+          requiresUsableHeldObject: false,
+        },
       },
       skills: [
         {
@@ -82,6 +89,13 @@ export class MockLlmProvider implements LlmProvider {
           power: 1.3,
           kind: "attack",
           element: "personal",
+          constraints: {
+            reach: "same_area",
+            requiresSight: false,
+            mobility: "limited",
+            requiresSpeech: false,
+            requiresUsableHeldObject: false,
+          },
         },
         {
           id: newId("sk"),
@@ -95,6 +109,13 @@ export class MockLlmProvider implements LlmProvider {
             { target: "self", parameter: "def", delta: 4 },
             { target: "self", parameter: "spd", delta: -2 },
           ],
+          constraints: {
+            reach: "same_area",
+            requiresSight: false,
+            mobility: "none",
+            requiresSpeech: false,
+            requiresUsableHeldObject: false,
+          },
         },
         {
           id: newId("sk"),
@@ -104,6 +125,13 @@ export class MockLlmProvider implements LlmProvider {
           costStamina: 0,
           power: 1.1,
           kind: "support",
+          constraints: {
+            reach: "same_area",
+            requiresSight: false,
+            mobility: "none",
+            requiresSpeech: false,
+            requiresUsableHeldObject: false,
+          },
         },
       ],
       weapon: null,

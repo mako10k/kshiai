@@ -135,15 +135,40 @@ ambientまたはcontactとして当該observerにだけ投影し、正準entity�
 5. eventはturn recordへ保存し、次のキャラ判断で一度消費できるよう次回projectionへ
    引き継ぐ。公開セリフやナレータ文はこの経路へ入れない。
 
-## 7. 後続タスクとの境界
+## 7. 行動可能性への接続
+
+`action-feasibility.ts` は、キャラ固有の基本行動・skill制約とworldStateを同じ有限値で
+評価する。候補生成時はcounterpartを`perceptionFrame.counterpart.perceivedAs`でだけ
+表し、正準character ID、相手名、object ID、未認知位置を出力しない。
+
+評価対象はpresence、canFight、意識、agency、mobility、restraint、area movement、
+speech、保持・装着中objectのusable/usableBy、counterpart access、pair distance、
+必要時のsightである。legacy actionの制約欠落時はsame-areaの後方互換baselineを使い、
+新規生成ではactionごとにreach・視線・移動・発話・保持物要件を構造化する。
+
+実行直前には同じ関数で再検証し、`ResolvedBattleAction.resolution`へ次を保存する。
+
+| outcome | 意味 |
+|---|---|
+| `accepted` | 選択どおり成立 |
+| `partial` | 本体は成立するが、使用不能になった必殺強化等を除いて成立 |
+| `substituted` | 選択は不成立だが、自己資源だけで選べる休息・防御・待機へ代替 |
+| `failed` | actor自身が行動不能で代替も成立しない |
+
+ポリシーfallbackが相手状態を必要とする場合も、正確なHP比ではなくaccessが許す
+coarse conditionだけを固定代表値へ変換する。ナレータ文と公開セリフは候補・代替・
+再検証のどの入力にもならない。
+
+## 8. 後続タスクとの境界
 
 - `T_PERCEPTION_BASE`: 完了。`worldState`から初期accessと明示的な知覚喪失を投影する。
 - `T_PERCEPTION_APPARENT`: 完了。変身・幻覚・発話をobserver別の見かけへ投影する。
-- `T_ACTIONS`: world制約からobserver-safeな行動候補を作り、実行直前に再検証する。
+- `T_ACTIONS`: 完了。world制約からobserver-safeな行動候補を作り、実行直前に再検証する。
 - `T_CAUSALITY`: 物体能力や自覚/無自覚の効果からworld transitionを生成する。
 - `T_TIMELINE`: 各initiative bucketが読むworld snapshotとcommit後stateを統一する。
 
 `T_WORLD_MODEL` ではモデル・初期化・原子的遷移境界までを実装し、
 `T_PERCEPTION_BASE` で初期frame、通常projection、provider失敗、projection fallback、
 旧state補完へ同じaccess規則を接続し、`T_PERCEPTION_APPARENT`で見かけbeliefと
-実発話eventを接続した。行動可能性や因果更新は後続タスクで扱う。
+実発話eventを接続し、`T_ACTIONS`で行動候補と再検証へ接続した。物体による効果量や
+world transitionの因果更新、公平なinitiative bucket処理は後続タスクで扱う。

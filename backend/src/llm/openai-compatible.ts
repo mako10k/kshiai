@@ -564,10 +564,14 @@ Return JSON: {
   "basicAttack": { "name": string, "description": string,
     "targetParameter": "hp"|"mp"|"stamina"|"maxHp"|"maxMp"|"maxStamina"|"atk"|"def"|"spd"|"mag"|"res"|"focus"|"luck",
     "scalingParameter": same parameter enum, "resistanceParameter": same parameter enum,
-    "power": number, "element"?: string },
+    "power": number, "element"?: string,
+    "constraints"?: { "reach": "contact"|"near"|"medium"|"far"|"same_area",
+      "requiresSight": boolean, "mobility": "none"|"limited"|"full",
+      "requiresSpeech": boolean, "requiresUsableHeldObject": boolean } },
   "skills": [{ "name": string, "description": string, "costMp": number, "costStamina": number,
     "power": number, "kind": "attack"|"magic"|"defend"|"support"|"special"|"status", "element"?: string,
-    "effects"?: [{ "target": "self"|"foe", "parameter": parameter enum, "delta": number }] }],
+    "effects"?: [{ "target": "self"|"foe", "parameter": parameter enum, "delta": number }],
+    "constraints"?: same constraints shape as basicAttack }],
   "weapon": { "name": string, "description": string, "atkBonus"?: number, "defBonus"?: number,
     "magBonus"?: number, "effects"?: [{ "parameter": parameter enum, "delta": number }] } | null,
   "armor": same equipment shape | null,
@@ -600,6 +604,7 @@ BALANCE (mandatory):
 - skill power typically 0.8–1.5 (never above 1.8). Strong skills need higher MP/stamina cost.
 - Basic attacks may primarily reduce HP, MP, stamina, a maximum, or a combat stat. Match the character concept.
 - basicAttack means the character's repeatable baseline interaction, not necessarily a weapon strike. It may be a shot, signal, argument, spell, prank, song, negotiation move, psychic pressure, or other concept-appropriate action.
+- Give every generated basicAttack and skill explicit coarse constraints matching how it actually works. Use requiresSpeech only when producing speech is necessary, requiresSight only for visually aimed actions, and requiresUsableHeldObject only when a held/worn usable object is indispensable. Do not infer these constraints later from prose.
 - weapon and armor are optional functional slots: they may hold firearms, tools, devices, vehicles, companions, costumes, social advantages, mental disciplines, or null. Name and describe them in-world; never turn every concept into a sword fighter.
 - Skills and narration-facing descriptions must preserve the requested genre and conflict mode, including nonviolent or abstract contests.
 - Status changes are temporary: every parameter drifts back toward its original sheet value each turn.
@@ -1240,12 +1245,22 @@ The narrator may later choose this line's display position and punctuation, but 
       if (!nextAction.success) {
         throw new Error("Character agent returned an invalid next action");
       }
-      const allowed = input.decision.availableActions.some((action) =>
+      const allowed = input.decision.availableActions.find((action) =>
         action.kind === nextAction.data.kind &&
         action.skillId === nextAction.data.skillId
       );
       if (!allowed) {
         throw new Error("Character agent selected an unavailable next action");
+      }
+      if (
+        nextAction.data.useFinisher &&
+        !(
+          allowed.finisherCandidate &&
+          input.decision.finisher?.unlocked &&
+          input.decision.finisher.remainingUses > 0
+        )
+      ) {
+        throw new Error("Character agent selected an unavailable finisher");
       }
       const last = input.decision.lastAction;
       const sameAsLast = Boolean(

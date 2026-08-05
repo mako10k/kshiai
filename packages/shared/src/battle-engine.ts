@@ -49,6 +49,7 @@ import {
   buildInitialObserverPerception,
   buildMinimalObserverPerception,
 } from "./perception-projection.js";
+import { revalidateCharacterAction } from "./action-feasibility.js";
 
 function nowIso(): string {
   return new Date().toISOString();
@@ -645,6 +646,28 @@ function hpRatio(c: CombatantState): number {
   return max > 0 ? hp / max : 0;
 }
 
+function observerSafeFoeHpRatio(
+  frame: BattleState["perceptionFrameA"] | BattleState["perceptionFrameB"],
+  foe: CombatantState,
+): number {
+  if (!frame || !["coarse", "clear"].includes(frame.counterpart.currentAccess)) {
+    return 0.7;
+  }
+  const condition = perceivedCondition(foe);
+  if (condition === "incapacitated") return 0;
+  if (condition === "critical") return 0.15;
+  if (condition === "strained") return 0.45;
+  return 0.8;
+}
+
+function intentFromBattleAction(action: BattleAction): CharacterActionIntent {
+  return {
+    kind: action.kind,
+    ...(action.skillId ? { skillId: action.skillId } : {}),
+    ...(action.useFinisher ? { useFinisher: true } : {}),
+  };
+}
+
 const PARAMETER_LABELS: Record<ParamKey, string> = {
   hp: "生命力",
   maxHp: "生命力の上限",
@@ -888,44 +911,6 @@ function actionFromBias(
   }
 }
 
-function actionFromCharacterIntent(input: {
-  intent?: CharacterActionIntent;
-  actorSide: "a" | "b";
-  self: CombatantState;
-  skills: Skill[];
-  finisher?: FinisherState;
-  turn: number;
-}): BattleAction | undefined {
-  const intent = input.intent;
-  if (!intent) return undefined;
-  if (intent.kind !== "skill") {
-    if (intent.useFinisher || intent.skillId) return undefined;
-    return { actorSide: input.actorSide, kind: intent.kind };
-  }
-  const skill = input.skills.find((candidate) => candidate.id === intent.skillId);
-  if (!skill) return undefined;
-  if (
-    (input.self.parameters.mp ?? 0) < skill.costMp ||
-    (input.self.parameters.stamina ?? 0) < skill.costStamina
-  ) {
-    return undefined;
-  }
-  const finisherReady = Boolean(
-    input.finisher &&
-    !input.finisher.used &&
-    input.turn >= 10 &&
-    skill.id === input.finisher.skillId,
-  );
-  if (skill.kind === "special" && !finisherReady) return undefined;
-  if (intent.useFinisher && !finisherReady) return undefined;
-  return {
-    actorSide: input.actorSide,
-    kind: "skill",
-    skillId: skill.id,
-    useFinisher: skill.kind === "special" || intent.useFinisher === true,
-  };
-}
-
 function ruleMatches(
   rule: BattlePolicyOption,
   ctx: { turn: number; myHp: number; foeHp: number },
@@ -977,9 +962,11 @@ export function chooseActionFromPolicies(input: {
   avoidKind?: string | null;
   /** repeatedAction count from drama; >=2 enables stronger variety. */
   actionRepeatCount?: number;
+  /** Observer-safe coarse estimate; omit only for legacy direct callers. */
+  foeHpRatio?: number;
 }): BattleAction {
   const myHp = hpRatio(input.self);
-  const foeHp = hpRatio(input.foe);
+  const foeHp = input.foeHpRatio ?? hpRatio(input.foe);
   const selected = new Set(input.selectedIds);
   const active = input.policies.filter((p) => selected.has(p.id));
   const avoidSkillId = input.actionRepeatCount && input.actionRepeatCount >= 2
@@ -1039,6 +1026,7 @@ export function chooseActionFromPolicies(input: {
     foe: input.foe,
     skills: input.skills,
     turn: input.turn,
+    foeHpRatio: foeHp,
   });
 }
 
@@ -1052,10 +1040,12 @@ export function chooseActionFromStance(input: {
   foe: CombatantState;
   skills: Skill[];
   turn: number;
+  /** Observer-safe coarse estimate; omit only for legacy direct callers. */
+  foeHpRatio?: number;
 }): BattleAction {
   const { stance, actorSide, self, skills, turn } = input;
   const myHp = hpRatio(self);
-  const foeHp = hpRatio(input.foe);
+  const foeHp = input.foeHpRatio ?? hpRatio(input.foe);
 
   switch (stance) {
     case "aggressive":
@@ -1338,25 +1328,11 @@ export function resolveTurn(input: {
   const varietyA = drama.repeatedActionA >= 2;
   const varietyB = drama.repeatedActionB >= 2;
 
-  const plannedActionA = actionFromCharacterIntent({
-    intent: input.state.plannedActionA,
-    actorSide: "a",
-    self: sideA,
-    skills: input.sideASkills,
-    finisher: finisherA,
-    turn,
-  });
-  const plannedActionB = actionFromCharacterIntent({
-    intent: input.state.plannedActionB,
-    actorSide: "b",
-    self: sideB,
-    skills: input.sideBSkills,
-    finisher: finisherB,
-    turn,
-  });
+  const plannedActionA = input.state.plannedActionA;
+  const plannedActionB = input.state.plannedActionB;
 
   const intentMatchesAvoid = (
-    action: BattleAction | undefined,
+    action: CharacterActionIntent | undefined,
     avoid: ReturnType<typeof parseActionSignature>,
     requireVariety: boolean,
   ): boolean => {
@@ -1380,6 +1356,7 @@ export function resolveTurn(input: {
           avoidSkillId: varietyA ? avoidA?.skillId : null,
           avoidKind: varietyA ? avoidA?.kind : null,
           actionRepeatCount: drama.repeatedActionA,
+          foeHpRatio: observerSafeFoeHpRatio(input.state.perceptionFrameA, sideB),
         });
   const policyB = () =>
     forceOffense
@@ -1396,31 +1373,54 @@ export function resolveTurn(input: {
           avoidSkillId: varietyB ? avoidB?.skillId : null,
           avoidKind: varietyB ? avoidB?.kind : null,
           actionRepeatCount: drama.repeatedActionB,
+          foeHpRatio: observerSafeFoeHpRatio(input.state.perceptionFrameB, sideA),
         });
 
-  const playerAction = input.playerAction ??
+  const requestedActionA = input.playerAction ??
     (intentMatchesAvoid(plannedActionA, avoidA, varietyA)
       ? policyA()
-      : plannedActionA ?? policyA());
+      : plannedActionA
+        ? { actorSide: "a" as const, ...plannedActionA }
+        : policyA());
 
-  const aiAction: BattleAction =
+  const requestedActionB: BattleAction =
     intentMatchesAvoid(plannedActionB, avoidB, varietyB)
       ? policyB()
-      : plannedActionB ?? policyB();
+      : plannedActionB
+        ? { actorSide: "b", ...plannedActionB }
+        : policyB();
   const actionAId = `turn-${turn}-action-a`;
   const actionBId = `turn-${turn}-action-b`;
+  const revalidatedA = revalidateCharacterAction({
+    actorSide: "a",
+    requested: intentFromBattleAction(requestedActionA),
+    actor: sideA,
+    skills: input.sideASkills,
+    basicAttack: balanceBasicAttack(input.sideABasicAttack ?? defaultBasicAttack()),
+    finisher: finisherA,
+    turn,
+    worldState: input.state.worldState,
+    perception: input.state.perceptionFrameA,
+  });
+  const effectiveActionA = revalidatedA.action;
   const actions: ResolvedBattleAction[] = [
     {
-      ...playerAction,
+      ...(effectiveActionA ?? requestedActionA),
       id: actionAId,
-      executed: true,
-      skippedReason: null,
+      executed: effectiveActionA !== null,
+      skippedReason: effectiveActionA ? null : "action_infeasible",
+      resolution: revalidatedA.resolution,
     },
     {
-      ...aiAction,
+      ...requestedActionB,
       id: actionBId,
       executed: false,
       skippedReason: "incapacitated_before_action",
+      resolution: {
+        requested: intentFromBattleAction(requestedActionB),
+        outcome: "failed",
+        reason: "actor_unavailable",
+      },
     },
   ];
 
@@ -1429,23 +1429,33 @@ export function resolveTurn(input: {
   const actionABeforeA = parametersSnapshot(sideA);
   const actionABeforeB = parametersSnapshot(sideB);
   const actionAAttempts: MechanicalAttempt[] = [];
-  const usedFinisherA = applyAction(
-    sideA,
-    sideB,
-    playerAction,
-    input.sideASkills,
-    balanceBasicAttack(input.sideABasicAttack ?? defaultBasicAttack()),
-    situation,
-    events,
-    createMechanicalAttemptRecorder(sideA, sideB, actionAAttempts),
-    {
-      battleId: input.state.id,
-      turn,
-      turnLimit: input.state.turnLimit,
+  const usedFinisherA = effectiveActionA
+    ? applyAction(
+        sideA,
+        sideB,
+        effectiveActionA,
+        input.sideASkills,
+        balanceBasicAttack(input.sideABasicAttack ?? defaultBasicAttack()),
+        situation,
+        events,
+        createMechanicalAttemptRecorder(sideA, sideB, actionAAttempts),
+        {
+          battleId: input.state.id,
+          turn,
+          turnLimit: input.state.turnLimit,
+          actorSide: "a",
+        },
+        finisherA,
+      )
+    : false;
+  if (!effectiveActionA) {
+    events.push({
+      type: "info",
+      actorName: sideA.displayName,
       actorSide: "a",
-    },
-    finisherA,
-  );
+      summary: `${sideA.displayName} は意図した行動を成立させられなかった。`,
+    });
+  }
   if (usedFinisherA && finisherA) {
     finisherA = { ...finisherA, used: true, usedTurn: turn };
   }
@@ -1470,32 +1480,56 @@ export function resolveTurn(input: {
 
   // Opponent (side B) from policies / stance if still up
   if (!isCombatantDown(sideB) && !isCombatantDown(sideA)) {
+    const revalidatedB = revalidateCharacterAction({
+      actorSide: "b",
+      requested: intentFromBattleAction(requestedActionB),
+      actor: sideB,
+      skills: input.sideBSkills,
+      basicAttack: balanceBasicAttack(input.sideBBasicAttack ?? defaultBasicAttack()),
+      finisher: finisherB,
+      turn,
+      worldState: input.state.worldState,
+      perception: input.state.perceptionFrameB,
+    });
+    const effectiveActionB = revalidatedB.action;
     actions[1] = {
-      ...actions[1]!,
-      executed: true,
-      skippedReason: null,
+      ...(effectiveActionB ?? requestedActionB),
+      id: actionBId,
+      executed: effectiveActionB !== null,
+      skippedReason: effectiveActionB ? null : "action_infeasible",
+      resolution: revalidatedB.resolution,
     };
     const actionBEventStart = events.length;
     const actionBBeforeA = parametersSnapshot(sideA);
     const actionBBeforeB = parametersSnapshot(sideB);
     const actionBAttempts: MechanicalAttempt[] = [];
-    const usedFinisherB = applyAction(
-      sideB,
-      sideA,
-      aiAction,
-      input.sideBSkills,
-      balanceBasicAttack(input.sideBBasicAttack ?? defaultBasicAttack()),
-      situation,
-      events,
-      createMechanicalAttemptRecorder(sideA, sideB, actionBAttempts),
-      {
-        battleId: input.state.id,
-        turn,
-        turnLimit: input.state.turnLimit,
+    const usedFinisherB = effectiveActionB
+      ? applyAction(
+          sideB,
+          sideA,
+          effectiveActionB,
+          input.sideBSkills,
+          balanceBasicAttack(input.sideBBasicAttack ?? defaultBasicAttack()),
+          situation,
+          events,
+          createMechanicalAttemptRecorder(sideA, sideB, actionBAttempts),
+          {
+            battleId: input.state.id,
+            turn,
+            turnLimit: input.state.turnLimit,
+            actorSide: "b",
+          },
+          finisherB,
+        )
+      : false;
+    if (!effectiveActionB) {
+      events.push({
+        type: "info",
+        actorName: sideB.displayName,
         actorSide: "b",
-      },
-      finisherB,
-    );
+        summary: `${sideB.displayName} は意図した行動を成立させられなかった。`,
+      });
+    }
     if (usedFinisherB && finisherB) {
       finisherB = { ...finisherB, used: true, usedTurn: turn };
     }

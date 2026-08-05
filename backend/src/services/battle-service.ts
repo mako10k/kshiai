@@ -7,6 +7,7 @@ import {
   balanceSkill,
   buildBattleTurnRecord,
   buildFinisherWindow,
+  buildObserverSafeAvailableActions,
   buildMinimalObserverPerception,
   buildCommittedUtteranceEvents,
   buildUtterancePerceptionEvidence,
@@ -619,6 +620,9 @@ function buildCharacterDecisionContext(input: {
   side: "a" | "b";
 }) {
   const self = input.side === "a" ? input.state.sideA : input.state.sideB;
+  const perception = input.side === "a"
+    ? input.state.perceptionFrameA
+    : input.state.perceptionFrameB;
   const finisher = input.side === "a"
     ? input.state.finisherA
     : input.state.finisherB;
@@ -627,16 +631,6 @@ function buildCharacterDecisionContext(input: {
     finisher,
     turn: nextTurn,
     turnLimit: input.state.turnLimit,
-  });
-  const affordableSkills = input.sheet.skills.filter((skill) => {
-    if ((self.parameters.mp ?? 0) < skill.costMp) return false;
-    if ((self.parameters.stamina ?? 0) < skill.costStamina) return false;
-    if (skill.kind !== "special") return true;
-    return Boolean(
-      window?.unlocked &&
-      window.remainingUses > 0 &&
-      skill.id === window.skillId,
-    );
   });
   const drama = normalizeDramaState(input.state.dramaState);
   const signature = input.side === "a"
@@ -680,24 +674,17 @@ function buildCharacterDecisionContext(input: {
   return {
     nextTurn,
     turnsRemaining: Math.max(0, input.state.turnLimit - nextTurn + 1),
-    availableActions: [
-      {
-        kind: "basic_attack" as const,
-        name: input.sheet.basicAttack?.name ?? defaultBasicAttack().name,
-      },
-      { kind: "defend" as const, name: "防御" },
-      { kind: "rest" as const, name: "休息" },
-      { kind: "wait" as const, name: "様子を見る" },
-      ...affordableSkills.map((skill) => ({
-        kind: "skill" as const,
-        skillId: skill.id,
-        name: skill.name,
-        skillKind: skill.kind,
-        costMp: skill.costMp,
-        costStamina: skill.costStamina,
-        finisherCandidate: skill.id === window?.skillId,
-      })),
-    ],
+    availableActions: perception
+      ? buildObserverSafeAvailableActions({
+          actorSide: input.side,
+          actor: self,
+          sheet: input.sheet,
+          finisher,
+          turn: nextTurn,
+          worldState: input.state.worldState,
+          perception,
+        })
+      : [],
     finisher: window,
     lastAction,
     actionRepeatCount,
@@ -743,6 +730,12 @@ export function buildCharacterAgentConsumerInput(input: {
       }
     : undefined;
   const character = buildCharacterSelfProfileAnchor(input.sheet);
+  const decision = buildCharacterDecisionContext({
+    state: input.state,
+    sheet: input.sheet,
+    side: input.side,
+  });
+  if (decision.availableActions.length === 0) return null;
   return {
     character,
     previous: structuredClone({
@@ -751,11 +744,7 @@ export function buildCharacterAgentConsumerInput(input: {
     }),
     perception: deepFreezeConsumerInput(structuredClone(frame)),
     ...(counterpartKnowledge ? { counterpart: counterpartKnowledge } : {}),
-    decision: buildCharacterDecisionContext({
-      state: input.state,
-      sheet: input.sheet,
-      side: input.side,
-    }),
+    decision,
   };
 }
 
@@ -805,15 +794,15 @@ export async function advanceCharacterAgents(input: {
     side: "b",
     previous: previousB,
   });
-  if (!inputA || !inputB) {
-    console.warn("[battle] character agents skipped: perception frame unavailable");
+  if (!inputA && !inputB) {
+    console.warn("[battle] character agents skipped: no observer-safe action available");
     return { state: stateWithRecord, characterSpeeches: [] };
   }
   let agents;
   try {
     agents = await withTimeout(Promise.allSettled([
-      input.llm.advanceCharacterAgent(inputA),
-      input.llm.advanceCharacterAgent(inputB),
+      inputA ? input.llm.advanceCharacterAgent(inputA) : Promise.resolve(null),
+      inputB ? input.llm.advanceCharacterAgent(inputB) : Promise.resolve(null),
     ]), 18_000, "advanceCharacterAgents");
   } catch (error) {
     console.warn(
@@ -840,14 +829,16 @@ export async function advanceCharacterAgents(input: {
     previous: previousA,
     side: "a",
     speaker: input.after.sideA.displayName,
-    profile: inputA.character,
+    profile: inputA?.character ?? buildCharacterSelfProfileAnchor(input.mine),
+    decision: inputA?.decision,
   });
   const acceptedB = acceptCharacterAgentResult({
     result: agentB,
     previous: previousB,
     side: "b",
     speaker: input.after.sideB.displayName,
-    profile: inputB.character,
+    profile: inputB?.character ?? buildCharacterSelfProfileAnchor(input.opp),
+    decision: inputB?.decision,
   });
   const candidateSpeeches = [
     ...(acceptedA.speech ? [acceptedA.speech] : []),
@@ -979,6 +970,7 @@ export function acceptCharacterAgentResult(input: {
   side: "a" | "b";
   speaker: string;
   profile: Parameters<LlmProvider["advanceCharacterAgent"]>[0]["character"];
+  decision?: Parameters<LlmProvider["advanceCharacterAgent"]>[0]["decision"];
 }) {
   const selfReference = canonicalSelfReference(input.profile);
   if (!input.result) {
@@ -992,13 +984,25 @@ export function acceptCharacterAgentResult(input: {
     };
   }
   const text = coerceCharacterSpeech(input.result.speech);
+  const listed = input.decision?.availableActions.find((action) =>
+    action.kind === input.result?.nextAction.kind &&
+    action.skillId === input.result?.nextAction.skillId
+  );
+  const finisherAllowed = !input.result.nextAction.useFinisher || Boolean(
+    listed?.finisherCandidate &&
+    input.decision?.finisher?.unlocked &&
+    input.decision.finisher.remainingUses > 0,
+  );
+  const nextAction = input.decision && (!listed || !finisherAllowed)
+    ? undefined
+    : input.result.nextAction;
   return {
     state: {
       ...input.result.state,
       selfReference,
       lastSpeech: text,
     },
-    nextAction: input.result.nextAction,
+    nextAction,
     speech: {
       side: input.side,
       speaker: input.speaker,

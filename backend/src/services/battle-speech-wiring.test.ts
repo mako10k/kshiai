@@ -130,6 +130,38 @@ describe("character-authored public speech", () => {
     );
   });
 
+  it("continues the eligible side when the other side has no self-directed action", async () => {
+    const sideA = sheet("a", "アオ", ["私"]);
+    const sideB = sheet("b", "クロ", ["俺"]);
+    const before = createBattleState({
+      id: "one-side-actionable",
+      sideA,
+      sideB,
+      turnLimit: 20,
+      prologuePending: false,
+    });
+    before.worldState!.entities["character.b"]!.actorState!.agency = "uncontrolled";
+    const provider = new MockLlmProvider();
+    const calls: string[] = [];
+    const original = provider.advanceCharacterAgent.bind(provider);
+    provider.advanceCharacterAgent = async (input) => {
+      calls.push(input.perception.observer.side);
+      return original(input);
+    };
+    const result = await advanceCharacterAgents({
+      llm: provider,
+      before,
+      after: { ...before, turn: 1 },
+      mine: sideA,
+      opp: sideB,
+      events: [],
+      actions: [],
+    });
+    assert.deepEqual(calls, ["a"]);
+    assert.deepEqual(result.characterSpeeches.map((speech) => speech.side), ["a"]);
+    assert.equal(result.state.plannedActionB, undefined);
+  });
+
   it("carries committed utterances into the next agent perception without a provider", async () => {
     const sideA = sheet("a", "アオ", ["私"]);
     const sideB = sheet("b", "クロ", ["俺"]);
@@ -286,6 +318,42 @@ describe("character-authored public speech", () => {
     assert.equal(accepted.state.selfReference, "私");
     assert.equal(publicSpeeches[0]?.text, "まだ決着ではない。");
     assert.equal(accepted.state.lastSpeech, "まだ決着ではない。");
+  });
+
+  it("accepts actual speech but rejects an action outside the server list", () => {
+    const previous = {
+      privateMemory: "",
+      currentGoal: "",
+      emotion: "平静",
+      beliefs: [],
+      observations: [],
+      speechStyle: "",
+      selfReference: "私",
+      lastSpeech: null,
+    };
+    const accepted = acceptCharacterAgentResult({
+      side: "a",
+      speaker: "A",
+      previous,
+      profile: profile(["私"]),
+      decision: {
+        nextTurn: 2,
+        turnsRemaining: 19,
+        availableActions: [{
+          kind: "wait",
+          name: "様子を見る",
+          target: { kind: "self", perceivedAs: "自分" },
+        }],
+        finisher: null,
+      },
+      result: {
+        state: previous,
+        speech: "ここで待つ。",
+        nextAction: { kind: "skill", skillId: "hidden-skill" },
+      },
+    });
+    assert.equal(accepted.speech?.text, "ここで待つ。");
+    assert.equal(accepted.nextAction, undefined);
   });
 
   it("overrides contradictory continuity with canonical self names", () => {

@@ -225,13 +225,44 @@ export const BattleActionSchema = CharacterActionIntentSchema.extend({
 });
 export type BattleAction = z.infer<typeof BattleActionSchema>;
 
+export const ActionResolutionReasonSchema = z.enum([
+  "invalid_intent",
+  "actor_unavailable",
+  "agency_blocked",
+  "movement_blocked",
+  "speech_blocked",
+  "required_object_unavailable",
+  "skill_unavailable",
+  "insufficient_resource",
+  "finisher_unavailable",
+  "target_unavailable",
+  "target_unlocalized",
+  "out_of_range",
+  "line_of_sight_blocked",
+]);
+export type ActionResolutionReason = z.infer<
+  typeof ActionResolutionReasonSchema
+>;
+
+export const ActionResolutionSchema = z.object({
+  requested: CharacterActionIntentSchema,
+  outcome: z.enum(["accepted", "partial", "substituted", "failed"]),
+  reason: ActionResolutionReasonSchema.nullable(),
+}).strict();
+export type ActionResolution = z.infer<typeof ActionResolutionSchema>;
+
 export const ResolvedBattleActionSchema = BattleActionSchema.extend({
   id: z.string().min(1),
   executed: z.boolean(),
   skippedReason: z
-    .enum(["incapacitated_before_action", "battle_inactive"])
+    .enum([
+      "incapacitated_before_action",
+      "battle_inactive",
+      "action_infeasible",
+    ])
     .nullable()
     .default(null),
+  resolution: ActionResolutionSchema.optional(),
 });
 export type ResolvedBattleAction = z.infer<
   typeof ResolvedBattleActionSchema

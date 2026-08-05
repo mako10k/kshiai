@@ -996,4 +996,50 @@ describe("battle engine", () => {
       seeded.worldState,
     );
   });
+
+  it("records canonical revalidation and an observer-safe substitute", () => {
+    const a = sheet("a", "アオ");
+    const b = sheet("b", "クロ");
+    a.basicAttack = {
+      name: "近接の働きかけ",
+      description: "近い相手だけに届く。",
+      targetParameter: "hp",
+      scalingParameter: "atk",
+      resistanceParameter: "def",
+      power: 0.75,
+      constraints: {
+        reach: "near",
+        requiresSight: false,
+        mobility: "limited",
+        requiresSpeech: false,
+        requiresUsableHeldObject: false,
+      },
+    };
+    const state = createBattleState({
+      id: "action-revalidation",
+      sideA: a,
+      sideB: b,
+      turnLimit: 20,
+      prologuePending: false,
+    });
+    state.worldState!.pairRelations[0]!.distance = "far";
+    state.plannedActionA = { kind: "basic_attack" };
+    state.plannedActionB = { kind: "wait" };
+
+    const resolved = resolveTurn({
+      state,
+      sideASkills: a.skills,
+      sideBSkills: b.skills,
+      sideABasicAttack: a.basicAttack,
+      sideBBasicAttack: b.basicAttack,
+    });
+    assert.equal(resolved.actions[0]?.kind, "defend");
+    assert.equal(resolved.actions[0]?.executed, true);
+    assert.deepEqual(resolved.actions[0]?.resolution, {
+      requested: { kind: "basic_attack" },
+      outcome: "substituted",
+      reason: "out_of_range",
+    });
+    assert.equal(resolved.actions[0]?.skippedReason, null);
+  });
 });

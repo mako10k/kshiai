@@ -46,6 +46,36 @@ export const SkillEffectSchema = ParameterDeltaSchema.extend({
 });
 export type SkillEffect = z.infer<typeof SkillEffectSchema>;
 
+/** Coarse, server-evaluated requirements for one character-authored action. */
+export const ActionReachSchema = z.enum([
+  "contact",
+  "near",
+  "medium",
+  "far",
+  "same_area",
+]);
+export type ActionReach = z.infer<typeof ActionReachSchema>;
+
+export const ActionMobilityRequirementSchema = z.enum([
+  "none",
+  "limited",
+  "full",
+]);
+export type ActionMobilityRequirement = z.infer<
+  typeof ActionMobilityRequirementSchema
+>;
+
+export const ActionFeasibilityConstraintsSchema = z.object({
+  reach: ActionReachSchema.default("same_area"),
+  requiresSight: z.boolean().default(false),
+  mobility: ActionMobilityRequirementSchema.default("limited"),
+  requiresSpeech: z.boolean().default(false),
+  requiresUsableHeldObject: z.boolean().default(false),
+}).strict();
+export type ActionFeasibilityConstraints = z.infer<
+  typeof ActionFeasibilityConstraintsSchema
+>;
+
 /** Character-specific fallback attack; HP damage is only the default profile. */
 export const BasicAttackProfileSchema = z.object({
   name: z.string().default("基本アクション"),
@@ -55,6 +85,8 @@ export const BasicAttackProfileSchema = z.object({
   resistanceParameter: ParamKeySchema.default("def"),
   power: z.number().default(0.75),
   element: z.string().optional(),
+  /** Missing legacy values use a permissive same-area baseline. */
+  constraints: ActionFeasibilityConstraintsSchema.optional(),
 });
 export type BasicAttackProfile = z.infer<typeof BasicAttackProfileSchema>;
 
@@ -87,6 +119,8 @@ export const SkillSchema = z.object({
   element: z.string().optional(),
   /** Temporary changes applied after the skill resolves. */
   effects: z.array(SkillEffectSchema).max(4).optional(),
+  /** Missing legacy values are inferred conservatively from skill kind/effects. */
+  constraints: ActionFeasibilityConstraintsSchema.optional(),
 });
 export type Skill = z.infer<typeof SkillSchema>;
 

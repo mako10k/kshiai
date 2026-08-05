@@ -168,6 +168,7 @@ task T_ACTIONS PERCEPTION_READY -> ACTIONS_READY:
     after temporal conflicts and commit failure partial execution or an
     epistemically safe fallback without reading hidden opponent totals.
   duration 3d
+  status done
   requires:
     DEV 1
 
@@ -336,3 +337,16 @@ work_event WE-06feb23e9b3bcc29141efcce39deda99fce7b521c96289134ab6f41d8193f2cd:
   task T_PERCEPTION_APPARENT
   kind finish
   occurred_at 2026-08-05T11:57:16+09:00
+
+work_event WE-1bca0c4493c045237f49d44e2ed1dd622717a6568137dded9e0cd6037e86a7d0:
+  model 1
+  task T_ACTIONS
+  kind start
+  occurred_at 2026-08-05T12:07:01+09:00
+  planned_value 3d
+
+work_event WE-ba8d7c8f80ceea7730694d9778cac7583e5d9f9c38a154e60f3cfe81dbe0f1ca:
+  model 1
+  task T_ACTIONS
+  kind finish
+  occurred_at 2026-08-05T12:24:59+09:00

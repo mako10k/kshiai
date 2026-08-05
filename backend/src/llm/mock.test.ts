@@ -77,7 +77,11 @@ describe("mock LLM natural-language handling", () => {
         nextTurn: 2,
         turnsRemaining: 19,
         availableActions: [
-          { kind: "basic_attack", name: "基本攻撃" },
+          {
+            kind: "basic_attack",
+            name: "基本攻撃",
+            target: { kind: "counterpart", perceivedAs: "挑戦者" },
+          },
         ],
         finisher: null,
       },
@@ -117,7 +121,11 @@ describe("mock LLM natural-language handling", () => {
         nextTurn: 20,
         turnsRemaining: 1,
         availableActions: [
-          { kind: "basic_attack", name: "基本攻撃" },
+          {
+            kind: "basic_attack",
+            name: "基本攻撃",
+            target: { kind: "counterpart", perceivedAs: "挑戦者" },
+          },
           {
             kind: "skill",
             skillId: "slash",
@@ -126,6 +134,7 @@ describe("mock LLM natural-language handling", () => {
             costMp: 0,
             costStamina: 5,
             finisherCandidate: true,
+            target: { kind: "counterpart", perceivedAs: "挑戦者" },
           },
         ],
         finisher: {

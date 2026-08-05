@@ -227,6 +227,8 @@ CharacterSheet
 | F-BTL-46 | 初期および各ターンのcounterpart accessは正準worldStateの存在・露出・相対距離・視線・向き・場面照明・観測者の意識・視覚・精神明瞭度からサーバーが決定する。通常の近接対峙では正体を自動識別せず存在と概略位置を認知可能にし、provider無応答だけでは直前accessを低下させない。低下はworldState上の隠密・不可視・遮蔽・不在・距離離脱・観測者阻害、または確定eventに結び付いた明示的な知覚喪失だけで行い、識別知識はcurrent accessと独立して保持する | Must |
 | F-BTL-47 | 正準identityとobserver-localな見かけを分離し、各知覚slotは観測された姿、推定identity、確信度、正準実体との継続beliefを保持できるようにする。変身・偽装を目撃した側と未目撃側は別beliefを持ち、幻覚は正準entityへ昇格させず該当observerだけの現象またはcontactにする。キャラ限定ナレーションとキャラ入力はunlinkedな見かけから正準名を復元しない | Must |
 | F-BTL-48 | キャラが生成した実発話・可視反応は、発話能力・意識状態をサーバーが検証してから正準utterance eventとしてturn recordへ保存する。対キャラ知覚はevent原文だけから、距離、音の遮蔽、騒音、音量、明瞭度、聴覚、意識、精神明瞭度、言語理解を使ってfull・partial・意味不明・話者未帰属・非知覚をSide別に投影する。公開レンダリングとナレータ文はevent生成および知覚投影の入力にしない | Must |
+| F-BTL-49 | キャラへ渡す使用可能行動は、自己資源だけでなく正準worldStateのpresence、意識、agency、移動・拘束、場面移動制約、対象との距離・視線、発話能力、保持中オブジェクトの使用可否と、observer別frameの対象accessからサーバーが算出する。候補は自己情報、skill ID、observer-localな対象ラベルだけを含み、未認知の正準名・entity ID・位置を漏らさない | Must |
+| F-BTL-50 | 選択済み意図は実行時の正準状態で再検証し、結果をaccepted、partial、substituted、failedと有限の理由でturn recordへ保存する。代替は休息・防御・待機等の自己完結行動から決定し、相手の正確なHP・資源・非公開状態を選択に使わない。providerが候補外行動を返した場合は実発話とは独立に行動だけを拒否する | Must |
 
 #### 4.4.1 ターン・パイプライン（論理）
 
@@ -446,6 +448,7 @@ CharacterSheet
 | 1.6 | 2026-08-05 | キャラ自身の正準プロフィールanchorと、視点制限されたナレータ表示専用anchorを分離し、未設定属性の推測禁止を追加 |
 | 1.7 | 2026-08-05 | 正準worldStateによる現実的な初期認知、access継続、明示的喪失、provider・projection失敗時の保持規則を追加 |
 | 1.8 | 2026-08-05 | 正準identityと見かけbeliefを分離し、キャラ起点の実発話eventを物理・聴覚・言語条件からobserver別知覚へ投影する規則を追加 |
+| 1.9 | 2026-08-05 | worldStateとobserver別frameからの実行可能行動候補、正準再検証、部分成立・自己完結代替・理由付き失敗を追加 |
 
 ---
 
