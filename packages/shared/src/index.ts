@@ -28,3 +28,4 @@ export * from "./narration-composer.js";
 export * from "./balance.js";
 export * from "./balance-observe.js";
 export * from "./drama.js";
+export * from "./skill-cooldown.js";

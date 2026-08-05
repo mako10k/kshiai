@@ -92,12 +92,14 @@ describe("battle engine", () => {
       selectedPolicyIdsA: [policy.id],
     });
     beforeUnlock.turn = 8;
+    // Wait until unlock so regular is not put on cooldown before the finisher turn.
     const turnNine = resolveTurn({
       state: beforeUnlock,
+      playerAction: { actorSide: "a", kind: "wait" },
       sideASkills: a.skills,
       sideBSkills: [],
     });
-    assert.equal(turnNine.actions[0]?.skillId, "regular");
+    assert.equal(turnNine.actions[0]?.kind, "wait");
 
     turnNine.state.plannedActionA = {
       kind: "skill",
@@ -118,6 +120,7 @@ describe("battle engine", () => {
       used: true,
       usedTurn: 10,
     });
+    // Ultimate is on cooldown after use; policy falls back to regular.
     const turnEleven = resolveTurn({
       state: turnTen.state,
       sideASkills: a.skills,
@@ -164,13 +167,10 @@ describe("battle engine", () => {
       prologuePending: false,
     });
     state.turn = 8;
-    state.plannedActionA = {
-      kind: "skill",
-      skillId: "slash",
-      useFinisher: true,
-    };
+    // Do not spend slash before unlock — cooldown would block the finisher turn.
     const beforeUnlock = resolveTurn({
       state,
+      playerAction: { actorSide: "a", kind: "wait" },
       sideASkills: a.skills,
       sideBSkills: [],
     });
@@ -202,6 +202,7 @@ describe("battle engine", () => {
       sideASkills: a.skills,
       sideBSkills: [],
     });
+    // Finisher already spent; slash is also on cooldown so the request is substituted.
     assert.notEqual(repeated.actions[0]?.useFinisher, true);
     assert.equal(repeated.state.finisherA?.usedTurn, 10);
     assert.equal(
@@ -371,6 +372,60 @@ describe("battle engine", () => {
       );
       assert.deepEqual(event?.targetSides, [item.target.side]);
     }
+  });
+
+  it("puts used skills on power-based cooldown so they cannot be spammed next turn", () => {
+    const a = sheet("a", "A");
+    a.skills = [{
+      id: "heavy",
+      name: "大技",
+      description: "強い技",
+      costMp: 0,
+      costStamina: 0,
+      power: 2,
+      kind: "attack",
+    }];
+    const state = createBattleState({
+      id: "skill-cd",
+      sideA: a,
+      sideB: sheet("b", "B"),
+      turnLimit: 20,
+      prologuePending: false,
+    });
+    const first = resolveTurn({
+      state,
+      playerAction: { actorSide: "a", kind: "skill", skillId: "heavy" },
+      sideASkills: a.skills,
+      sideBSkills: sheet("b", "B").skills,
+    });
+    assert.equal(first.state.sideA.skillLastUsedTurn?.heavy, 1);
+    assert.equal(first.actions[0]?.skillId, "heavy");
+    assert.equal(first.actions[0]?.resolution?.outcome, "accepted");
+    assert.ok(
+      first.events.some((event) =>
+        event.type === "damage" || event.skillName === "大技"
+      ),
+    );
+    const second = resolveTurn({
+      state: first.state,
+      playerAction: { actorSide: "a", kind: "skill", skillId: "heavy" },
+      sideASkills: a.skills,
+      sideBSkills: sheet("b", "B").skills,
+    });
+    // Feasibility layer substitutes before execution; reason is skill_on_cooldown.
+    assert.equal(second.actions[0]?.resolution?.reason, "skill_on_cooldown");
+    assert.notEqual(second.actions[0]?.skillId, "heavy");
+    // Battle start has empty last-used map (no pre-battle cooldown wait).
+    assert.equal(
+      createBattleState({
+        id: "cd-start",
+        sideA: a,
+        sideB: sheet("b", "B"),
+        turnLimit: 20,
+        prologuePending: false,
+      }).sideA.skillLastUsedTurn,
+      undefined,
+    );
   });
 
   it("emphasizes finishing blows instead of a bare hit line", () => {

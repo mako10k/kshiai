@@ -313,6 +313,7 @@ export const ActionResolutionReasonSchema = z.enum([
   "speech_blocked",
   "required_object_unavailable",
   "skill_unavailable",
+  "skill_on_cooldown",
   "insufficient_resource",
   "finisher_unavailable",
   "target_unavailable",
@@ -374,6 +375,11 @@ export const CombatantStateSchema = z.object({
   defending: z.boolean().default(false),
   canFight: z.boolean().default(true),
   irreversibleIncapacitated: z.boolean().default(false),
+  /**
+   * skillId → battle turn the skill was last successfully used.
+   * Combined with skill power → 1–9 turn cooldown (see skill-cooldown.ts).
+   */
+  skillLastUsedTurn: z.record(z.string(), z.number().int().nonnegative()).optional(),
 });
 export type CombatantState = z.infer<typeof CombatantStateSchema>;
 

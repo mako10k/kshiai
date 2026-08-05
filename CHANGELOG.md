@@ -5,6 +5,23 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 
 ## [Unreleased]
 
+### Added
+
+- Skills enter a power-based cooldown of 1–9 turns after a successful use, so
+  stronger techniques cannot be repeated every turn. Cooldown state is stored on
+  the combatant and filtered from character-agent available actions.
+
+### Changed
+
+- Softens narrator obligations: ordinary turns prioritize concrete action and
+  outcome description, and no longer require a form-evaluation sentence every
+  turn. Progression hints apply only when the fight is stuck or late.
+
+### Operations
+
+- No database migration. Existing battles start with empty skill cooldown maps
+  and acquire them as skills are used.
+
 ## [0.7.0] - 2026-08-05
 
 ### Added

@@ -1381,7 +1381,8 @@ decisionProfile.defaultObjective is the default, not an absolute command. Compar
 For free_action, write an open natural-language attempt in description, optional desiredOutcome, and copy at least one subjectRef supplied by decision.affordances. Use the self or counterpart affordance for direct bodily/social actions. Copy opportunityId when following one opportunity chain. The attempt is not a success claim.
 For basic_attack, skill, or defend, copy instrumentRef only from a zero-setup opportunityChain continuation for that same action kind. Expected causal potential is qualitative and never guarantees success.
 When decision.varietyPressure is "prefer_change", avoid decision.lastAction if another availableActions entry exists.
-When decision.varietyPressure is "require_change", nextAction MUST differ from decision.lastAction (kind and skillId) whenever another availableActions entry exists. Do not spam wait or the same skill every turn.`
+When decision.varietyPressure is "require_change", nextAction MUST differ from decision.lastAction (kind and skillId) whenever another availableActions entry exists. Do not spam wait or the same skill every turn.
+Skills appear in availableActions only when currently legal. Missing skills are on cooldown or otherwise unavailable — never invent them. Prefer a ready skill, basic_attack, defend, rest, wait, or free_action instead.`
         : "This is the aftermath reaction phase. The result is already canonical. Omit nextAction, do not plan another turn, and do not reverse or reconsider the result.";
       const data = (await this.chatJson(
         `You maintain one fictional character's private continuity during a confrontation. It may be physical, ranged, technological, psychic, social, comedic, cute, or abstract. Preserve the character's own way of acting and never introduce swords, wounds, or martial language unless supplied by the profile or events.
@@ -1622,18 +1623,10 @@ ${NARRATOR_RECOGNITION_RULES}
 Perspective gate overrides style instruction: never reveal inner life that is not present in innerDigests.
 For self or opponent mode, the embedded frame is the complete observation boundary. Preserve unidentified contacts, missing attribution, inaccessible subjects, and qualitative-only effect or reserve cues. Do not reconstruct facts omitted from view.
 Use view.battlefield flavor sparingly — scenery is seasoning, not the meal.
-Build 2–4 non-empty narrator lines around view.actionBeats and view.events: lead with this turn's action, then contact/pressure, then a committed consequence that changes who holds advantage.
-This turn MUST ADVANCE the confrontation relative to recentNarration. Do not write another soft restatement of the same exchange.
-Obey drama.progressionHint:
-- establish_and_probe: first contact and reading the opponent
-- change_leverage: someone gains or loses ground
-- escalate_repeated_action: same action is repeating — escalate intensity, show adaptation, or a clear miss/hit shift (do not invent a different skill)
-- break_stalemate: the loop is stuck — force a break, answer, or cost of hesitation
-- one_sided_pressure: one side waits — show pressure, initiative, or the price of waiting
-- shift_space_or_leverage: move the fight's center (position, prop, attention, social heat) without inventing unstated mechanics
-- force_commitment: late/climax — irreversible-feeling choice or decisive push within the established genre
-Do not open with pure ambient scenery if recentNarration already did. Prefer opening on an actor's move.
-Require one clear qualitative sentence about who gained or lost ground this turn (no numbers).
+Build 2–4 non-empty narrator lines around view.actionBeats and view.events: lead with this turn's concrete action (what was attempted and what visibly happened), then contact or reaction, then a committed consequence grounded in those events.
+Do not invent a soft "who is winning" scoreboard line every turn. Only mention a shift in advantage when the supplied events or action beats clearly support a real change (position, hold, failure, recovery, or decisive contact).
+When drama.progressionHint is present, treat it as optional guidance for stuck loops (e.g. repeated actions or one-sided waiting), not as a mandatory form-evaluation template.
+Prefer opening on an actor's move rather than pure ambient scenery when recentNarration already set the scene.
 Do not repeat or closely paraphrase recentNarration or either character's recentSpeeches.
 When drama.environmentBeatDue is true, incorporate only an environment change already present in view. Do not invent mechanical damage or bonuses.
 If view marks a finishing blow (とどめ / 決め手 / 戦闘不能), center the turn on that decisive action.

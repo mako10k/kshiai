@@ -2741,7 +2741,7 @@ async function advanceTurnWithLease(input: {
               lastActionSignatureB: dramaBefore.lastActionSignatureB,
               recentBeatFingerprints: dramaBefore.recentBeatFingerprints,
               turnsSinceLocationChange: dramaBefore.turnsSinceLocationChange,
-            }),
+            }) ?? undefined,
           },
           innerDigests: digests,
           characterSpeeches,
@@ -2793,7 +2793,7 @@ async function advanceTurnWithLease(input: {
         lastActionSignatureB: dramaBefore.lastActionSignatureB,
         recentBeatFingerprints: dramaBefore.recentBeatFingerprints,
         turnsSinceLocationChange: dramaBefore.turnsSinceLocationChange,
-      }),
+      }) ?? undefined,
     };
     const fallbackNarrative = narrationView
       ? composeNarratorTurn({
@@ -2868,7 +2868,7 @@ async function advanceTurnWithLease(input: {
           lastActionSignatureB: dramaBefore.lastActionSignatureB,
           recentBeatFingerprints: dramaBefore.recentBeatFingerprints,
           turnsSinceLocationChange: dramaBefore.turnsSinceLocationChange,
-        }),
+        }) ?? undefined,
       },
       recentNarration,
     });
