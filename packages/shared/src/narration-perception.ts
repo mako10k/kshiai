@@ -475,6 +475,7 @@ export function repairNarrativeBlockIdentifiers(
       repairNarrationIdentifierText(line, catalog)
     ),
     speeches: block.speeches.map((speech) => ({
+      ...speech,
       speaker: repairNarrationIdentifierText(speech.speaker, catalog),
       text: repairNarrationIdentifierText(speech.text, catalog),
     })),

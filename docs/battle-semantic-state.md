@@ -384,13 +384,16 @@ turn records. The next normal save persists the seed.
 6. Server builds A/B cognition from committed mechanics plus the post-patch
    A/B observable snapshot and latest observation diff. Projection uses only
    structured visibility, ownership, locations, and committed state.
-7. A/B character agents advance in parallel from their own private state and
-   reserve one validated next-turn action from their own structured finisher
-   window and available-action list.
+7. A/B character agents advance in parallel from their own private state,
+   produce their actual utterance or reaction, and reserve one validated
+   next-turn action from their own structured finisher window and
+   available-action list.
 8. Server derives compact action beats from resolved actions, selected policy
    fields, skill/basic-action descriptions, and committed event outcomes.
 9. Narrator receives those beats, the last two public turn blocks, the permitted
-   inner digests, and the final observable snapshot; it produces presentation only.
+   inner digests, the final observable snapshot, and immutable character-authored
+   speech sources. It produces ground text, speech placement, and validated
+   fact-preserving surface rendering only.
 10. Persist the latest canonical snapshot, latest transition, latest A/B/public
     observations, bounded DramaState, current private agent states, and ordinary
     mechanical turn record.

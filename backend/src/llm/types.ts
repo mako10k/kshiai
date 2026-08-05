@@ -79,6 +79,13 @@ export type CharacterCounterpartKnowledge = {
   condition?: PerceivedCondition;
 };
 
+/** Character-authored speech supplied to narration as immutable source material. */
+export type CharacterSpeechSource = Readonly<{
+  side: "a" | "b";
+  speaker: string;
+  text: string;
+}>;
+
 /** Narrative-safe battle history for improvement analysis (no raw combat params). */
 export type BattleHistorySearchHit = {
   battleId: string;
@@ -199,7 +206,27 @@ export type NarrationStreamProgress = {
 
 export type RefereeResult = {
   winnerSide: "a" | "b" | "draw";
-  summary: string;
+  /** Raw fact-based rationale. Public narration is produced in a later call. */
+  reason: string;
+};
+
+export type JudgmentNarrationResult = {
+  /** Presentation-only framing placed before the immutable verdict line. */
+  before: string[];
+  /** Presentation-only closing placed after the immutable verdict line. */
+  after: string[];
+};
+
+/** Bounded committed facts for turn-limit review; never derived from narration. */
+export type RefereeTurnFact = {
+  turn: number;
+  actions: Array<{
+    actorSide: "a" | "b";
+    kind: CharacterActionIntent["kind"];
+    executed: boolean;
+    skippedReason: string | null;
+  }>;
+  eventSummaries: string[];
 };
 
 export interface LlmProvider {
@@ -344,6 +371,8 @@ export interface LlmProvider {
     };
     /** Already filtered digests for the resolved focus (may be empty). */
     innerDigests?: InnerDigest[];
+    /** Character-authored lines. Narration may place and surface-style, not invent. */
+    characterSpeeches?: readonly CharacterSpeechSource[];
     /** Narration style instruction for this match. */
     styleInstruction?: string;
     styleName?: string;
@@ -366,6 +395,7 @@ export interface LlmProvider {
     /** Summary of last finished matchup between these two, if any. */
     priorMatchSummary?: string;
     innerDigests?: InnerDigest[];
+    characterSpeeches?: readonly CharacterSpeechSource[];
     focus?: NarrationFocus;
     perspective?: NarrationPerspective;
     battlefield?: BattlefieldInstance | null;
@@ -388,12 +418,29 @@ export interface LlmProvider {
     battlefield?: BattlefieldInstance | null;
     recentNarration?: string[];
     innerDigests?: InnerDigest[];
+    characterSpeeches?: readonly CharacterSpeechSource[];
     focus?: NarrationFocus;
     perspective?: NarrationPerspective;
     styleInstruction?: string;
     styleName?: string;
     onProgress?: (progress: NarrationStreamProgress) => void;
   }): Promise<NarrationResult>;
+  /**
+   * Render an already-decided turn-limit judgment for the user. This call may
+   * use public prose for continuity but has no result mutation authority.
+   */
+  narrateJudgment(input: {
+    turn: number;
+    scene: string;
+    sideAName: string;
+    sideBName: string;
+    winnerSide: "a" | "b" | "draw";
+    winnerName: string | null;
+    adjudicationReason: string;
+    recentPublicNarration: string[];
+    styleInstruction?: string;
+    styleName?: string;
+  }): Promise<JudgmentNarrationResult>;
   /** Draft a custom narration style from free text. */
   generateNarrationStyle?(prompt: string): Promise<{
     displayName: string;
@@ -406,7 +453,8 @@ export interface LlmProvider {
     sideAName: string;
     sideBName: string;
     engineWinnerSide: "a" | "b" | "draw" | null;
-    logSummaries: string[];
+    /** Committed engine records only; public narration is deliberately absent. */
+    turnFacts: RefereeTurnFact[];
   }): Promise<RefereeResult>;
   /**
    * Generate case-based policy options from character traits + field.

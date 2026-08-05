@@ -29,6 +29,7 @@ import {
   type BattlePublic,
   type BattleStance,
   type BattleState,
+  type BattleTurnRecord,
   type ResolvedBattleAction,
   type CharacterAgentState,
   type CharacterCognition,
@@ -72,6 +73,10 @@ import {
   perceivedCondition,
   repairNarrationIdentifierText,
   repairNarrativeBlockIdentifiers,
+  coerceCharacterSpeech,
+  isStageReaction,
+  type NarrativeBlock,
+  type SpeechLine,
 } from "@kshiai/shared";
 import {
   recordBattleFinished,
@@ -80,7 +85,12 @@ import {
 import { config } from "../config.js";
 import { newId } from "../id.js";
 import type { LlmProvider } from "../llm/index.js";
-import type { NarrationActionBeat } from "../llm/types.js";
+import type {
+  CharacterSpeechSource,
+  JudgmentNarrationResult,
+  NarrationActionBeat,
+  RefereeTurnFact,
+} from "../llm/types.js";
 import {
   buildPromptMechanicalEvidence,
   validateCommittedMechanicalEvidence,
@@ -717,7 +727,7 @@ async function advanceCharacterAgents(input: {
   opp: CharacterSheet;
   events: TurnEvent[];
   actions: ResolvedBattleAction[];
-}): Promise<{ state: BattleState }> {
+}): Promise<{ state: BattleState; characterSpeeches: CharacterSpeechSource[] }> {
   const record = buildBattleTurnRecord({
     before: input.before,
     after: input.after,
@@ -744,7 +754,7 @@ async function advanceCharacterAgents(input: {
   });
   if (!inputA || !inputB) {
     console.warn("[battle] character agents skipped: perception frame unavailable");
-    return { state: stateWithRecord };
+    return { state: stateWithRecord, characterSpeeches: [] };
   }
   let agents;
   try {
@@ -757,9 +767,10 @@ async function advanceCharacterAgents(input: {
       "[battle] character agents skipped",
       error instanceof Error ? error.message : error,
     );
-    // Still surface a minimal reaction so neither side goes fully blank.
+    // A failed agent has no authoritative new utterance; retain prior state.
     return {
       state: stateWithRecord,
+      characterSpeeches: [],
     };
   }
   const [resultA, resultB] = agents;
@@ -771,18 +782,129 @@ async function advanceCharacterAgents(input: {
   if (resultB.status === "rejected") {
     console.warn("[battle] side B character agent retained previous state", resultB.reason);
   }
+  const acceptedA = acceptCharacterAgentResult({
+    result: agentA,
+    previous: previousA,
+    side: "a",
+    speaker: input.after.sideA.displayName,
+  });
+  const acceptedB = acceptCharacterAgentResult({
+    result: agentB,
+    previous: previousB,
+    side: "b",
+    speaker: input.after.sideB.displayName,
+  });
   return {
     state: {
       ...input.after,
-      agentStateA: agentA?.state ?? previousA,
-      agentStateB: agentB?.state ?? previousB,
-      plannedActionA: agentA?.nextAction,
-      plannedActionB: agentB?.nextAction,
+      agentStateA: acceptedA.state,
+      agentStateB: acceptedB.state,
+      plannedActionA: acceptedA.nextAction,
+      plannedActionB: acceptedB.nextAction,
       turnRecords: [
         ...(input.after.turnRecords ?? []),
         record,
       ].slice(-50),
     },
+    characterSpeeches: [
+      ...(acceptedA.speech
+        ? [acceptedA.speech]
+        : []),
+      ...(acceptedB.speech
+        ? [acceptedB.speech]
+        : []),
+    ],
+  };
+}
+
+type CharacterAgentAdvanceResult = Awaited<
+  ReturnType<LlmProvider["advanceCharacterAgent"]>
+>;
+
+/**
+ * Accept one agent result as the authority for actual speech. Provider state
+ * cannot substitute a different lastSpeech, and later public rendering never
+ * passes through this boundary.
+ */
+export function acceptCharacterAgentResult(input: {
+  result: CharacterAgentAdvanceResult | null;
+  previous: CharacterAgentState;
+  side: "a" | "b";
+  speaker: string;
+}) {
+  if (!input.result) {
+    return {
+      state: input.previous,
+      nextAction: undefined,
+      speech: null,
+    };
+  }
+  const text = coerceCharacterSpeech(input.result.speech);
+  return {
+    state: {
+      ...input.result.state,
+      lastSpeech: text,
+    },
+    nextAction: input.result.nextAction,
+    speech: {
+      side: input.side,
+      speaker: input.speaker,
+      text,
+    } satisfies CharacterSpeechSource,
+  };
+}
+
+/** Build bounded canonical adjudication input without any public prose. */
+export function buildRefereeTurnFacts(
+  records: readonly BattleTurnRecord[],
+): RefereeTurnFact[] {
+  return records.slice(-12).map((record) => ({
+    turn: record.turn,
+    actions: record.actions.map((action) => ({
+      actorSide: action.actorSide,
+      kind: action.kind,
+      executed: action.executed,
+      skippedReason: action.skippedReason,
+    })),
+    eventSummaries: record.events.map((event) => event.summary),
+  }));
+}
+
+/**
+ * Keep the adjudicator's verdict immutable while allowing the narrator to add
+ * presentation-only framing based on the public story so far.
+ */
+export function buildJudgmentNarrativeBlock(input: {
+  turn: number;
+  sideAName: string;
+  sideBName: string;
+  winnerSide: "a" | "b" | "draw";
+  adjudicationReason: string;
+  presentation?: JudgmentNarrationResult;
+}): NarrativeBlock {
+  const winnerName = input.winnerSide === "a"
+    ? input.sideAName
+    : input.winnerSide === "b"
+      ? input.sideBName
+      : null;
+  const reason = input.adjudicationReason.trim() ||
+    "確定した行動と影響を総合して判定した。";
+  const verdict = winnerName
+    ? `判定は ${winnerName} の勝利。${reason}`
+    : `判定は引き分け。${reason}`;
+  const framing = (lines: readonly string[] | undefined) => (lines ?? [])
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .slice(0, 2);
+  return {
+    turn: input.turn,
+    narrator: [
+      "——判定——",
+      ...framing(input.presentation?.before),
+      verdict,
+      ...framing(input.presentation?.after),
+    ],
+    speeches: [],
   };
 }
 
@@ -1326,28 +1448,36 @@ function narrationIdentifierCatalog(input: {
   });
 }
 
-/**
- * Drop exact speech repeats. Do not invent replacement lines server-side —
- * public dialogue must come from the narrator (or be omitted), never from
- * stock stage-direction templates.
- */
-function replaceRepeatedPublicSpeeches(input: {
-  narrative: { speeches: Array<{ speaker: string; text: string }> };
-  recentSpeeches: Array<{ speaker: string; text: string }>;
-  turn: number;
-}) {
-  const previous = new Set(
-    input.recentSpeeches.map((line) =>
-      `${line.speaker}:${normalizePublicText(line.text)}`
-    ),
-  );
-  const seenThisTurn = new Set<string>();
-  return input.narrative.speeches.filter((line) => {
-    const key = `${line.speaker}:${normalizePublicText(line.text)}`;
-    if (!normalizePublicText(line.text)) return false;
-    if (previous.has(key) || seenThisTurn.has(key)) return false;
-    seenThisTurn.add(key);
-    return true;
+export function finalizeCharacterSpeeches(input: {
+  narrative: NarrativeBlock;
+  sources: readonly CharacterSpeechSource[];
+}): SpeechLine[] {
+  return input.sources.map((source, index) => {
+    const candidate = input.narrative.speeches.find((line) =>
+      line.sourceSide === source.side ||
+      (line.sourceSide === undefined && line.speaker === source.speaker)
+    );
+    const proposedText = candidate?.text?.trim() ?? "";
+    const factsPreserved = normalizePublicText(proposedText) ===
+        normalizePublicText(source.text) &&
+      isStageReaction(proposedText) === isStageReaction(source.text);
+    const fallbackPlacement = input.narrative.narrator.length <= 0
+      ? -1
+      : index === 0
+        ? Math.max(0, Math.floor(input.narrative.narrator.length / 2) - 1)
+        : input.narrative.narrator.length - 1;
+    const placement = Number.isInteger(candidate?.afterNarratorLine)
+      ? candidate!.afterNarratorLine!
+      : fallbackPlacement;
+    return {
+      sourceSide: source.side,
+      speaker: source.speaker,
+      text: factsPreserved ? proposedText : source.text,
+      afterNarratorLine: Math.max(
+        -1,
+        Math.min(placement, input.narrative.narrator.length - 1),
+      ),
+    };
   });
 }
 
@@ -1649,21 +1779,27 @@ async function advanceTurnWithLease(input: {
       : perspective === "foe" || (perspective === "fluid" && focus === "foe")
         ? { a: "知覚できない相手", b: next.sideB.displayName }
         : { a: next.sideA.displayName, b: next.sideB.displayName };
-  const permittedSpeakerLabels = perceptionView?.mode === "self"
+  const permittedSpeechSides: Array<"a" | "b"> = perceptionView?.mode === "self"
     ? [
-        participantLabels.a,
+        "a",
         ...(perceptionView.frame.counterpart.currentAccess === "none"
           ? []
-          : [participantLabels.b]),
+          : ["b" as const]),
       ]
     : perceptionView?.mode === "opponent"
       ? [
           ...(perceptionView.frame.counterpart.currentAccess === "none"
             ? []
-            : [participantLabels.a]),
-          participantLabels.b,
+            : ["a" as const]),
+          "b",
         ]
-      : [participantLabels.a, participantLabels.b];
+      : ["a", "b"];
+  const characterSpeeches = agentTurn.characterSpeeches
+    .filter((speech) => permittedSpeechSides.includes(speech.side))
+    .map((speech) => ({
+      ...speech,
+      speaker: participantLabels[speech.side],
+    }));
   const identifierCatalog = narrationIdentifierCatalog({
     state: next,
     perspective,
@@ -1709,6 +1845,7 @@ async function advanceTurnWithLease(input: {
             }),
           },
           innerDigests: digests,
+          characterSpeeches,
           styleInstruction: next.narrationStyle?.instruction,
           styleName: next.narrationStyle?.displayName,
           onProgress: (progress) => {
@@ -1759,7 +1896,7 @@ async function advanceTurnWithLease(input: {
         turnsSinceLocationChange: dramaBefore.turnsSinceLocationChange,
       }),
     };
-    narrative = narrationView
+    const fallbackNarrative = narrationView
       ? composeNarratorTurn({
           view: narrationView,
           drama: fallbackDrama,
@@ -1771,11 +1908,12 @@ async function advanceTurnWithLease(input: {
             `${next.situation.scene}で、対峙が続く。`,
             "語りは途切れたが、場の緊張だけが残る。",
           ],
-          speeches: permittedSpeakerLabels.map((speaker) => ({
-            speaker,
-            text: "…",
-          })),
+          speeches: [],
         };
+    narrative = {
+      ...fallbackNarrative,
+      speeches: characterSpeeches,
+    };
     emit({
       type: "narrator",
       lines: narrative.narrator.map((line) =>
@@ -1826,10 +1964,9 @@ async function advanceTurnWithLease(input: {
       .filter((line, index, lines) => lines.indexOf(line) === index)
       .slice(0, 4);
   }
-  narrative.speeches = replaceRepeatedPublicSpeeches({
+  narrative.speeches = finalizeCharacterSpeeches({
     narrative,
-    recentSpeeches,
-    turn: next.turn,
+    sources: characterSpeeches,
   });
   narrative = repairNarrativeBlockIdentifiers(narrative, identifierCatalog);
   if (narrative.speeches?.length) {
@@ -1837,26 +1974,6 @@ async function advanceTurnWithLease(input: {
   }
   next = {
     ...next,
-    agentStateA: next.agentStateA
-      ? {
-          ...next.agentStateA,
-          lastSpeech:
-            [...narrative.speeches]
-              .reverse()
-              .find((line) => line.speaker === participantLabels.a)?.text ??
-            next.agentStateA.lastSpeech,
-        }
-      : next.agentStateA,
-    agentStateB: next.agentStateB
-      ? {
-          ...next.agentStateB,
-          lastSpeech:
-            [...narrative.speeches]
-              .reverse()
-              .find((line) => line.speaker === participantLabels.b)?.text ??
-            next.agentStateB.lastSpeech,
-        }
-      : next.agentStateB,
     dramaState: advanceDramaState({
       previous: dramaBefore,
       turn: next.turn,
@@ -1891,20 +2008,58 @@ async function advanceTurnWithLease(input: {
         sideAName: next.sideA.displayName,
         sideBName: next.sideB.displayName,
         engineWinnerSide: next.winnerSide,
-        logSummaries: next.log.flatMap((b) => b.narrator).slice(-12),
+        turnFacts: buildRefereeTurnFacts(next.turnRecords ?? []),
       });
+      const winnerName = ref.winnerSide === "a"
+        ? next.sideA.displayName
+        : ref.winnerSide === "b"
+          ? next.sideB.displayName
+          : null;
+      let judgmentPresentation: JudgmentNarrationResult | undefined;
+      try {
+        judgmentPresentation = await withTimeout(
+          input.llm.narrateJudgment({
+            turn: next.turn,
+            scene: next.situation.scene,
+            sideAName: next.sideA.displayName,
+            sideBName: next.sideB.displayName,
+            winnerSide: ref.winnerSide,
+            winnerName,
+            adjudicationReason: ref.reason,
+            recentPublicNarration: next.log
+              .slice(-2)
+              .flatMap((block) => block.narrator)
+              .slice(-8),
+            styleInstruction: next.narrationStyle?.instruction,
+            styleName: next.narrationStyle?.displayName,
+          }),
+          12_000,
+          "narrateJudgment",
+        );
+      } catch (error) {
+        console.warn(
+          "[battle] narrateJudgment failed",
+          error instanceof Error ? error.message : error,
+        );
+      }
       next = { ...next, winnerSide: ref.winnerSide };
-      resultSummary = ref.summary;
+      const judgmentBlock = repairNarrativeBlockIdentifiers(
+        buildJudgmentNarrativeBlock({
+          turn: next.turn,
+          sideAName: next.sideA.displayName,
+          sideBName: next.sideB.displayName,
+          winnerSide: ref.winnerSide,
+          adjudicationReason: ref.reason,
+          presentation: judgmentPresentation,
+        }),
+        identifierCatalog,
+      );
+      resultSummary = judgmentBlock.narrator
+        .filter((line) => line !== "——判定——")
+        .join(" ");
       next = {
         ...next,
-        log: [
-          ...next.log,
-          {
-            turn: next.turn,
-            narrator: ["——判定——", ref.summary],
-            speeches: [],
-          },
-        ],
+        log: [...next.log, judgmentBlock],
       };
     } else {
       const winner =
@@ -1983,6 +2138,7 @@ async function runPrologueTurn(input: {
     actions: [],
   });
   state = prologueAgents.state;
+  const characterSpeeches = prologueAgents.characterSpeeches;
   const rec = (state.turnRecords ?? [])[(state.turnRecords ?? []).length - 1];
   const { focus, digests } = await resolveNarrationFocusAndDigests({
     llm: input.llm,
@@ -2021,6 +2177,7 @@ async function runPrologueTurn(input: {
         priorMatchSummary: state.priorMatchSummary ?? undefined,
         battlefield: state.battlefield,
         innerDigests: digests,
+        characterSpeeches,
         focus,
         perspective,
         styleInstruction: state.narrationStyle?.instruction,
@@ -2056,10 +2213,7 @@ async function runPrologueTurn(input: {
           : "",
         policyLine ? `${state.sideA.displayName} の方針: ${policyLine}` : "",
       ].filter(Boolean),
-      speeches: [
-        { speaker: state.sideA.displayName, text: "……始めよう。" },
-        { speaker: state.sideB.displayName, text: "…" },
-      ],
+      speeches: characterSpeeches,
     };
     emit({
       type: "narrator",
@@ -2072,12 +2226,6 @@ async function runPrologueTurn(input: {
   }
 
   narrative = repairNarrativeBlockIdentifiers(narrative, identifierCatalog);
-
-  if (narrative.speeches?.length) {
-    emit({ type: "speeches", speeches: narrative.speeches });
-  }
-  emit({ type: "phase", phase: "finalizing" });
-
   if (
     narrative.narrator[0] &&
     !narrative.narrator[0].includes("開幕") &&
@@ -2088,6 +2236,15 @@ async function runPrologueTurn(input: {
       narrator: ["——開幕——", ...narrative.narrator],
     };
   }
+  narrative.speeches = finalizeCharacterSpeeches({
+    narrative,
+    sources: characterSpeeches,
+  });
+
+  if (narrative.speeches.length) {
+    emit({ type: "speeches", speeches: narrative.speeches });
+  }
+  emit({ type: "phase", phase: "finalizing" });
 
   const next: BattleState = {
     ...state,
@@ -2176,6 +2333,7 @@ async function runAftermathTurn(input: {
           .flatMap((b) => b.narrator)
           .slice(-8),
         innerDigests: digests,
+        characterSpeeches: [],
         focus,
         perspective,
         styleInstruction: state.narrationStyle?.instruction,
@@ -2209,12 +2367,7 @@ async function runAftermathTurn(input: {
           ? `${winnerName} は息を整え、その先の運命を見据える。`
           : "どちらも立ってはいられない。",
       ],
-      speeches: winnerName
-        ? [{ speaker: winnerName, text: "……。" }]
-        : [
-            { speaker: state.sideA.displayName, text: "…" },
-            { speaker: state.sideB.displayName, text: "…" },
-          ],
+      speeches: [],
     };
     emit({
       type: "narrator",
@@ -2227,12 +2380,6 @@ async function runAftermathTurn(input: {
   }
 
   narrative = repairNarrativeBlockIdentifiers(narrative, identifierCatalog);
-
-  if (narrative.speeches?.length) {
-    emit({ type: "speeches", speeches: narrative.speeches });
-  }
-  emit({ type: "phase", phase: "finalizing" });
-
   // Mark epilogue block for UI (prefix first line if missing)
   if (
     narrative.narrator[0] &&
@@ -2244,6 +2391,12 @@ async function runAftermathTurn(input: {
       narrator: ["——決着の余波——", ...narrative.narrator],
     };
   }
+  narrative.speeches = finalizeCharacterSpeeches({
+    narrative,
+    sources: [],
+  });
+
+  emit({ type: "phase", phase: "finalizing" });
 
   let next: BattleState = {
     ...state,

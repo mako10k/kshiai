@@ -20,6 +20,7 @@ import {
   coerceCharacterSpeech,
   extractStreamingNarrator,
   focusInstruction,
+  isStageReaction,
   parseNarrationFocus,
   type BattlefieldInstance,
   type BattlefieldPreset,
@@ -43,7 +44,10 @@ import type {
   GenerateCharacterInput,
   GenerateImprovementPromptInput,
   GenerateImprovementPromptResult,
+  JudgmentNarrationResult,
   CharacterReferenceTools,
+  CharacterSpeechSource,
+  RefereeTurnFact,
   LlmProvider,
   NarrationResult,
   NarrationStreamProgress,
@@ -64,6 +68,10 @@ import { reviewedPerceptionTopology } from "./perception-topology.js";
 const NARRATION_IDENTIFIER_RULES = `Identifier containment is mandatory. Values used as IDs, controlId, perceptId, contact IDs, entity keys, action IDs, event IDs, or JSON paths are non-linguistic control metadata.
 NEVER copy, quote, speak, parenthesize, or use any such identifier as a name in narrator lines, speaker fields, or speech text. Use the matching renderLabel or supplied human display name only.
 If a subjective view marks a subject unknown, suspected, unperceived, or unidentifiable, preserve that uncertainty and never infer the hidden identity from another input field.`;
+
+function normalizedSpeechFacts(value: string): string {
+  return value.normalize("NFKC").replace(/[\s「」『』（）()、。！？!?…・]/g, "");
+}
 
 function parseGeneratedSkill(raw: unknown) {
   if (!raw || typeof raw !== "object") return null;
@@ -1192,13 +1200,13 @@ Return JSON only:
     "useFinisher"?: boolean
   }
 }
-speech is a PRIVATE reaction sample for continuity only (never shown directly as public dialogue). ALWAYS required (never null/empty). One short Japanese line:
+speech is this character's ACTUAL utterance or stage reaction after observing the committed turn. It is authoritative source material for later public placement and is also stored as this character's own lastSpeech. ALWAYS required (never null/empty). One short Japanese line:
 - Dialogue without 「」 brackets, OR
 - A quiet reaction: "…", "（ただ佇んでいる）", "（${counterpartLabel}の気配をうかがう）".
 nextAction plans the NEXT turn. Choose exactly one entry from decision.availableActions. For a skill, copy its skillId exactly. A finisher has one use for the entire battle: set useFinisher=true only for the finisher candidate when it is unlocked and remainingUses is 1. Consider own/foe condition, turns remaining, currentMultiplier, turnsUntilMax, and the risk of waiting; do not always fire at unlock.
 When decision.varietyPressure is "prefer_change", avoid decision.lastAction if another availableActions entry exists.
 When decision.varietyPressure is "require_change", nextAction MUST differ from decision.lastAction (kind and skillId) whenever another availableActions entry exists. Do not spam wait or the same skill every turn.
-Public on-screen lines are written later by the narrator from digests + events.`,
+The narrator may later choose this line's display position and punctuation, but may not invent or change its words, facts, intent, speaker, or dialogue/stage-reaction kind. Narrator output is never written back into this private state.`,
         JSON.stringify(input),
         {
           tier: "fast",
@@ -1365,12 +1373,9 @@ Require one clear qualitative sentence about who gained or lost ground this turn
 Do not repeat or closely paraphrase recentNarration or either character's recentSpeeches.
 When drama.environmentBeatDue is true, incorporate only an environment change already present in view. Do not invent mechanical damage or bonuses.
 If view marks a finishing blow (とどめ / 決め手 / 戦闘不能), center the turn on that decisive action.
-YOU write public character lines in speeches (not a separate agent).
-Permitted speaker labels only: ${JSON.stringify(requiredSpeakers)}.
-Prefer fresh, character-specific spoken lines. Do not reuse or closely paraphrase recentSpeeches.
-If a character has nothing new to say this turn, omit that speaker entirely — do not invent stock stage directions such as "言葉を飲み" or "次の変化へ意識を向ける".
-Do not add a speech for an inaccessible counterpart. speaker MUST be one of the permitted labels exactly.
-JSON: { "turn": number, "focus": "${focus}", "narrator": string[], "speeches": [ { "speaker": string, "text": string } ] }
+characterSpeeches were already authored by isolated character agents from their own cognition and perception. Do not invent an additional line, speaker, claim, action, outcome, target, or attitude. Return every supplied line exactly once with the same sourceSide and speaker. You may change punctuation or typographic surface only when the words, factual content, intent, and stage-reaction/dialogue distinction remain unchanged. Choose afterNarratorLine (-1 before the first line, otherwise a zero-based narrator-line index) to place each speech naturally among the narrator lines.
+Do not add a speech or reaction for an inaccessible counterpart; characterSpeeches is already filtered to the permitted speakers: ${JSON.stringify(requiredSpeakers)}.
+JSON: { "turn": number, "focus": "${focus}", "narrator": string[], "speeches": [ { "sourceSide": "a"|"b", "speaker": string, "text": string, "afterNarratorLine": number } ] }
 Do not mention numeric HP/MP/ATK values.`,
         JSON.stringify({
           view: input.view,
@@ -1379,6 +1384,7 @@ Do not mention numeric HP/MP/ATK values.`,
           recentSpeeches: input.recentSpeeches?.slice(-4) ?? [],
           drama: input.drama ?? null,
           innerDigests: input.innerDigests ?? [],
+          characterSpeeches: input.characterSpeeches ?? [],
         }),
         {
           tier: "fast",
@@ -1390,7 +1396,12 @@ Do not mention numeric HP/MP/ATK values.`,
       )) as {
         turn?: number;
         narrator?: string[];
-        speeches?: Array<{ speaker?: string; text?: string }>;
+        speeches?: Array<{
+          sourceSide?: "a" | "b";
+          speaker?: string;
+          text?: string;
+          afterNarratorLine?: number;
+        }>;
       };
       const narrator = (data.narrator ?? [])
         .map((line) => String(line).trim())
@@ -1399,9 +1410,8 @@ Do not mention numeric HP/MP/ATK values.`,
       input.onProgress?.({ lines: narrator, draft: null });
       const speeches = this.normalizeNarratorSpeeches(
         data.speeches,
-        sideAName,
-        sideBName,
-        requiredSpeakers,
+        input.characterSpeeches ?? [],
+        narrator.length,
       );
       return {
         turn: input.view.turn,
@@ -1414,35 +1424,47 @@ Do not mention numeric HP/MP/ATK values.`,
   }
 
   private normalizeNarratorSpeeches(
-    raw: Array<{ speaker?: string; text?: string }> | undefined,
-    sideAName: string,
-    sideBName: string,
-    requiredSpeakers: string[] = [sideAName, sideBName],
-  ): Array<{ speaker: string; text: string }> {
-    const allowed = new Set(requiredSpeakers);
-    const out: Array<{ speaker: string; text: string }> = [];
-    const seenSpeakers = new Set<string>();
-    for (const row of raw ?? []) {
-      const speaker = String(row.speaker ?? "").trim();
-      if (!allowed.has(speaker) || seenSpeakers.has(speaker)) continue;
-      // Keep only non-empty text the narrator actually produced.
-      // Do not synthesize stock stage directions for missing speakers —
-      // public lines must remain narrator-authored.
-      const body = String(row.text ?? "")
-        .replace(/^「/, "")
-        .replace(/」$/, "")
-        .trim();
-      if (!body) continue;
-      seenSpeakers.add(speaker);
-      out.push({ speaker, text: body });
-    }
-    // Prefer A then B order for stable UI.
-    out.sort((a, b) => {
-      if (a.speaker === sideAName && b.speaker !== sideAName) return -1;
-      if (b.speaker === sideAName && a.speaker !== sideAName) return 1;
-      return 0;
+    raw: Array<{
+      sourceSide?: "a" | "b";
+      speaker?: string;
+      text?: string;
+      afterNarratorLine?: number;
+    }> | undefined,
+    sources: readonly CharacterSpeechSource[],
+    narratorLineCount: number,
+  ): Array<{
+    speaker: string;
+    text: string;
+    sourceSide: "a" | "b";
+    afterNarratorLine: number;
+  }> {
+    return sources.map((source, index) => {
+      const candidate = (raw ?? []).find((row) =>
+        row.sourceSide === source.side ||
+        (row.sourceSide === undefined && row.speaker === source.speaker)
+      );
+      const proposed = coerceCharacterSpeech(candidate?.text);
+      const factsPreserved = normalizedSpeechFacts(proposed) ===
+          normalizedSpeechFacts(source.text) &&
+        isStageReaction(proposed) === isStageReaction(source.text);
+      const fallbackPlacement = narratorLineCount <= 0
+        ? -1
+        : index === 0
+          ? Math.max(0, Math.floor(narratorLineCount / 2) - 1)
+          : narratorLineCount - 1;
+      const requestedPlacement = Number.isInteger(candidate?.afterNarratorLine)
+        ? candidate!.afterNarratorLine!
+        : fallbackPlacement;
+      return {
+        speaker: source.speaker,
+        text: factsPreserved ? proposed : source.text,
+        sourceSide: source.side,
+        afterNarratorLine: Math.max(
+          -1,
+          Math.min(requestedPlacement, narratorLineCount - 1),
+        ),
+      };
     });
-    return out;
   }
 
   async narratePrologue(input: {
@@ -1456,6 +1478,7 @@ Do not mention numeric HP/MP/ATK values.`,
     policySummary?: string;
     priorMatchSummary?: string;
     innerDigests?: InnerDigest[];
+    characterSpeeches?: readonly CharacterSpeechSource[];
     focus?: NarrationFocus;
     perspective?: NarrationPerspective;
     battlefield?: BattlefieldInstance | null;
@@ -1480,9 +1503,9 @@ ${NARRATION_IDENTIFIER_RULES}
 Include: atmosphere of the field, each participant's opening presence, and rivalry or fate (因縁).
 ${rivalryRule}
 No combat resolution yet. No numeric stats.
-YOU author speeches for both characters (speaker exact names). Quiet reactions allowed.
+characterSpeeches were authored by the character agents before narration. Return each supplied line exactly once, keep its sourceSide and speaker, and do not invent another line. You may change punctuation or typographic surface only when words, facts, intent, and the dialogue/stage-reaction distinction remain unchanged. Choose afterNarratorLine to place each line among the narration.
 4–8 narrator lines.
-JSON: { "turn": 0, "narrator": string[], "speeches": [ { "speaker": string, "text": string } ] }`,
+JSON: { "turn": 0, "narrator": string[], "speeches": [ { "sourceSide": "a"|"b", "speaker": string, "text": string, "afterNarratorLine": number } ] }`,
         JSON.stringify({
           scene: input.scene,
           sideA: {
@@ -1499,6 +1522,7 @@ JSON: { "turn": 0, "narrator": string[], "speeches": [ { "speaker": string, "tex
           priorMatch: input.priorMatchSummary ?? null,
           focus,
           innerDigests: input.innerDigests ?? [],
+          characterSpeeches: input.characterSpeeches ?? [],
           field: input.battlefield
             ? {
                 name: input.battlefield.displayName,
@@ -1519,7 +1543,12 @@ JSON: { "turn": 0, "narrator": string[], "speeches": [ { "speaker": string, "tex
       )) as {
         turn?: number;
         narrator?: string[];
-        speeches?: Array<{ speaker?: string; text?: string }>;
+        speeches?: Array<{
+          sourceSide?: "a" | "b";
+          speaker?: string;
+          text?: string;
+          afterNarratorLine?: number;
+        }>;
       };
       const narrator = data.narrator?.length
         ? data.narrator
@@ -1533,8 +1562,8 @@ JSON: { "turn": 0, "narrator": string[], "speeches": [ { "speaker": string, "tex
         narrator,
         speeches: this.normalizeNarratorSpeeches(
           data.speeches,
-          input.sideAName,
-          input.sideBName,
+          input.characterSpeeches ?? [],
+          narrator.length,
         ),
       };
     } catch (error) {
@@ -1553,6 +1582,7 @@ JSON: { "turn": 0, "narrator": string[], "speeches": [ { "speaker": string, "tex
     battlefield?: BattlefieldInstance | null;
     recentNarration?: string[];
     innerDigests?: InnerDigest[];
+    characterSpeeches?: readonly CharacterSpeechSource[];
     focus?: NarrationFocus;
     perspective?: NarrationPerspective;
     styleInstruction?: string;
@@ -1572,9 +1602,9 @@ ${focusInstruction(focus)}
 ${NARRATION_IDENTIFIER_RULES}
 Someone is already incapacitated. Show what becomes of the fallen and how the winner (if any) closes the scene.
 Use battlefield flavor. Keep it emotional / cinematic but short (3–6 narrator lines).
-Optional short speeches for either side (quiet reactions OK). speaker exact names only.
+Only characterSpeeches may become public speech. Return each supplied line exactly once with its sourceSide and speaker; do not invent aftermath dialogue. You may change punctuation or typographic surface only when words, facts, intent, and dialogue/stage-reaction distinction remain unchanged. Choose afterNarratorLine for placement.
 Do NOT invent a new fight, healing that reverses the win, or numeric stats.
-JSON: { "turn": number, "narrator": string[], "speeches": [ { "speaker": string, "text": string } ] }`,
+JSON: { "turn": number, "narrator": string[], "speeches": [ { "sourceSide": "a"|"b", "speaker": string, "text": string, "afterNarratorLine": number } ] }`,
         JSON.stringify({
           turn: input.turn,
           scene: input.scene,
@@ -1584,6 +1614,7 @@ JSON: { "turn": number, "narrator": string[], "speeches": [ { "speaker": string,
           fallen: input.fallenNames,
           focus,
           innerDigests: input.innerDigests ?? [],
+          characterSpeeches: input.characterSpeeches ?? [],
           field: input.battlefield
             ? {
                 name: input.battlefield.displayName,
@@ -1603,7 +1634,12 @@ JSON: { "turn": number, "narrator": string[], "speeches": [ { "speaker": string,
       )) as {
         turn?: number;
         narrator?: string[];
-        speeches?: Array<{ speaker?: string; text?: string }>;
+        speeches?: Array<{
+          sourceSide?: "a" | "b";
+          speaker?: string;
+          text?: string;
+          afterNarratorLine?: number;
+        }>;
       };
       const narrator = data.narrator?.length
         ? data.narrator
@@ -1614,8 +1650,8 @@ JSON: { "turn": number, "narrator": string[], "speeches": [ { "speaker": string,
         narrator,
         speeches: this.normalizeNarratorSpeeches(
           data.speeches,
-          input.sideAName,
-          input.sideBName,
+          input.characterSpeeches ?? [],
+          narrator.length,
         ),
       };
     } catch (error) {
@@ -1802,21 +1838,76 @@ Rules:
     }
   }
 
+  async narrateJudgment(
+    input: Parameters<LlmProvider["narrateJudgment"]>[0],
+  ): Promise<JudgmentNarrationResult> {
+    if (!this.client) return this.fallback.narrateJudgment(input);
+    try {
+      const styleBlock = input.styleInstruction?.trim()
+        ? `Narration style「${input.styleName ?? "custom"}」: ${input.styleInstruction.trim()}`
+        : "Narration style: 落ち着いた標準の物語調。";
+      const data = (await this.chatJson(
+        `Frame an already-decided turn-limit judgment for the user in Japanese.
+${styleBlock}
+The adjudicator has exclusive authority over winnerSide and adjudicationReason. Recent public narration is context for tone and continuity only. Do not reconsider, contradict, paraphrase, or restate the winner, loser, draw, reason, actions, or outcomes. Do not add character speech. Return only optional atmospheric framing that can surround an immutable server-rendered verdict line.
+JSON: { "before": string[], "after": string[] }. Each array has at most 2 short lines.`,
+        JSON.stringify({
+          turn: input.turn,
+          scene: input.scene,
+          participants: {
+            a: input.sideAName,
+            b: input.sideBName,
+          },
+          judgment: {
+            winnerSide: input.winnerSide,
+            winnerName: input.winnerName,
+            reason: input.adjudicationReason,
+          },
+          recentPublicNarration: input.recentPublicNarration.slice(-8),
+        }),
+        {
+          tier: "fast",
+          label: "narrateJudgment",
+          temperature: 0.7,
+          timeoutMs: 10_000,
+        },
+      )) as { before?: unknown; after?: unknown };
+      const lines = (value: unknown) => Array.isArray(value)
+        ? value.map(String).map((line) => line.trim()).filter(Boolean).slice(0, 2)
+        : [];
+      return {
+        before: lines(data.before),
+        after: lines(data.after),
+      };
+    } catch (error) {
+      return this.fallbackOrThrow(
+        error,
+        () => this.fallback.narrateJudgment(input),
+      );
+    }
+  }
+
   async referee(input: {
     sideAName: string;
     sideBName: string;
     engineWinnerSide: "a" | "b" | "draw" | null;
-    logSummaries: string[];
+    turnFacts: RefereeTurnFact[];
   }): Promise<RefereeResult> {
     if (!this.client) return this.fallback.referee(input);
     try {
       const data = (await this.chatJson(
-        `As the referee of a broad fictional confrontation, return JSON { "winnerSide": "a"|"b"|"draw", "summary": string } in Japanese. Match the established genre and judge effectiveness without assuming physical violence.
-Prefer the engineWinnerSide unless the narrative strongly suggests otherwise.`,
+        `As a turn-limit adjudicator for a broad fictional confrontation, return raw JSON { "winnerSide": "a"|"b"|"draw", "reason": string } in Japanese. Match the established genre and judge effectiveness without assuming physical violence.
+turnFacts contains bounded committed engine actions and events. No narrator prose or public rendered speech is present. Use only turnFacts and prefer engineWinnerSide unless those canonical facts clearly require another result. reason is a concise fact-based rationale, not public narration.`,
         JSON.stringify(input),
         { tier: "engine", label: "referee", temperature: 0.3, timeoutMs: 12_000 },
-      )) as RefereeResult;
-      return data;
+      )) as { winnerSide?: unknown; reason?: unknown };
+      const winnerSide = data.winnerSide === "a" ||
+          data.winnerSide === "b" || data.winnerSide === "draw"
+        ? data.winnerSide
+        : input.engineWinnerSide ?? "draw";
+      const reason = String(data.reason ?? "").trim() ||
+        "確定した行動と影響を総合して判定した。";
+      return { winnerSide, reason };
     } catch (error) {
       return this.fallbackOrThrow(error, () => this.fallback.referee(input));
     }

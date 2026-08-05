@@ -24,9 +24,12 @@ import type {
   GenerateCharacterInput,
   GenerateImprovementPromptInput,
   GenerateImprovementPromptResult,
+  CharacterSpeechSource,
+  JudgmentNarrationResult,
   LlmProvider,
   NarrationResult,
   RefereeResult,
+  RefereeTurnFact,
   SituationProposal,
 } from "./types.js";
 import { newId } from "../id.js";
@@ -466,7 +469,17 @@ export class MockLlmProvider implements LlmProvider {
       recentNarration: input.recentNarration,
     });
     await this.emitNarratorProgress(composed.narrator, input.onProgress);
-    return composed;
+    const speeches = (input.characterSpeeches ?? []).map((speech, index) => ({
+      sourceSide: speech.side,
+      speaker: speech.speaker,
+      text: speech.text,
+      afterNarratorLine: composed.narrator.length <= 0
+        ? -1
+        : index === 0
+          ? Math.max(0, Math.floor(composed.narrator.length / 2) - 1)
+          : composed.narrator.length - 1,
+    }));
+    return { ...composed, speeches };
   }
 
   async narratePrologue(input: {
@@ -480,6 +493,7 @@ export class MockLlmProvider implements LlmProvider {
     policySummary?: string;
     priorMatchSummary?: string;
     battlefield?: BattlefieldInstance | null;
+    characterSpeeches?: readonly CharacterSpeechSource[];
     styleInstruction?: string;
     styleName?: string;
     onProgress?: (progress: { lines: string[]; draft?: string | null }) => void;
@@ -508,10 +522,16 @@ export class MockLlmProvider implements LlmProvider {
     return {
       turn: 0,
       narrator,
-      speeches: [
-        { speaker: input.sideAName, text: "……始めよう。" },
-        { speaker: input.sideBName, text: "…" },
-      ],
+      speeches: (input.characterSpeeches ?? []).map((speech, index) => ({
+        sourceSide: speech.side,
+        speaker: speech.speaker,
+        text: speech.text,
+        afterNarratorLine: narrator.length <= 0
+          ? -1
+          : index === 0
+            ? Math.max(0, Math.floor(narrator.length / 2) - 1)
+            : narrator.length - 1,
+      })),
     };
   }
 
@@ -525,6 +545,7 @@ export class MockLlmProvider implements LlmProvider {
     fallenNames: string[];
     battlefield?: BattlefieldInstance | null;
     recentNarration?: string[];
+    characterSpeeches?: readonly CharacterSpeechSource[];
     styleInstruction?: string;
     styleName?: string;
     onProgress?: (progress: { lines: string[]; draft?: string | null }) => void;
@@ -548,12 +569,35 @@ export class MockLlmProvider implements LlmProvider {
     return {
       turn: input.turn,
       narrator,
-      speeches: input.winnerName
-        ? [{ speaker: input.winnerName, text: "……終わりだ。" }]
-        : [
-            { speaker: input.sideAName, text: "…" },
-            { speaker: input.sideBName, text: "…" },
-          ],
+      speeches: (input.characterSpeeches ?? []).map((speech, index) => ({
+        sourceSide: speech.side,
+        speaker: speech.speaker,
+        text: speech.text,
+        afterNarratorLine: narrator.length <= 0
+          ? -1
+          : index === 0
+            ? Math.max(0, Math.floor(narrator.length / 2) - 1)
+            : narrator.length - 1,
+      })),
+    };
+  }
+
+  async narrateJudgment(input: {
+    turn: number;
+    scene: string;
+    sideAName: string;
+    sideBName: string;
+    winnerSide: "a" | "b" | "draw";
+    winnerName: string | null;
+    adjudicationReason: string;
+    recentPublicNarration: string[];
+    styleInstruction?: string;
+    styleName?: string;
+  }): Promise<JudgmentNarrationResult> {
+    void input;
+    return {
+      before: ["積み重ねられた働きかけを前に、場は判定を待つ静けさに包まれた。"],
+      after: ["その宣告を受け、対決の余韻がゆっくりと場へ広がっていく。"],
     };
   }
 
@@ -689,7 +733,7 @@ export class MockLlmProvider implements LlmProvider {
     sideAName: string;
     sideBName: string;
     engineWinnerSide: "a" | "b" | "draw" | null;
-    logSummaries: string[];
+    turnFacts: RefereeTurnFact[];
   }): Promise<RefereeResult> {
     const winnerSide = input.engineWinnerSide ?? "draw";
     const name =
@@ -700,9 +744,9 @@ export class MockLlmProvider implements LlmProvider {
           : null;
     return {
       winnerSide,
-      summary: name
-        ? `審判は ${name} の勝利を宣告した。攻防の積み重ねがわずかに上回った。`
-        : "審判は引き分けと宣告した。互いの働きかけが拮抗した末の結果である。",
+      reason: name
+        ? `${name}の確定した働きかけが、全体としてわずかに上回った。`
+        : "双方の確定した働きかけが、全体として拮抗していた。",
     };
   }
 

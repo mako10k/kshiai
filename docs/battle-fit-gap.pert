@@ -1,0 +1,228 @@
+project KSHIAI_BATTLE_FIT_GAP:
+  version 5
+  title "Close v0.5.1 battle pipeline Fit and Gap findings"
+  description |
+    Implement the accepted battle-fit-gap backlog while keeping canonical world
+    state character cognition actual speech public rendering narration and
+    result authority separate. Use origin HEAD v0.5.1 at commit 206a1b0 as the
+    analysis and integration baseline. Merge the narrator boundary first, then
+    close perception action causality timing and compatibility gaps.
+  as_of 2026-08-05
+  duration_unit day
+  finish GAP_ACCEPTED
+
+resource DEV:
+  title "Developer"
+  capacity 1
+
+milestone FIT_GAP_REVIEWED:
+  title "Fit and Gap requirements and backlog recorded"
+  state reached
+
+milestone NARRATOR_READY:
+  title "Character-authored speech and presentation-only narration ready"
+
+milestone RULES_READY:
+  title "Timing and adjudication decisions accepted"
+
+milestone WORLD_MODEL_READY:
+  title "Coarse canonical world and state model ready"
+
+milestone PERCEPTION_BASE_READY:
+  title "Initial and continuous perception ready"
+
+milestone PERCEPTION_READY:
+  title "Apparent identity and speech perception ready"
+
+milestone ACTIONS_READY:
+  title "Observer-safe feasible actions and revalidation ready"
+
+milestone CAUSALITY_READY:
+  title "World interference and conscious or unconscious effects ready"
+
+milestone TIMELINE_READY:
+  title "Side-neutral temporal resolution ready"
+
+milestone RESULT_READY:
+  title "Canonical result adjudication ready"
+
+milestone PHASES_READY:
+  title "Prologue normal turn and aftermath contracts aligned"
+
+milestone COMPATIBILITY_READY:
+  title "Legacy battle compatibility ready"
+
+milestone GAP_ACCEPTED:
+  title "Battle pipeline gaps accepted"
+
+task T_NARRATOR FIT_GAP_REVIEWED -> NARRATOR_READY:
+  title "Make narration presentation-only and source public speech from characters"
+  description |
+    Close BL-001 BL-010 and BL-011 for narration. Amend the requirements and
+    role boundary so isolated character agents own actual speech. Pass only
+    accepted character speech to the narrator, allow placement and
+    punctuation-only surface styling, reject invention or factual and intent
+    changes, and fall back to the exact source line. Preserve source side and
+    speaker, interleave speech at narrator-selected boundaries, support legacy
+    narrative blocks, and never write public rendering back into private agent
+    state. Remove public narrator prose from turn-limit referee input, replace it
+    with bounded committed turn facts, then use a separate narrator call with the
+    immutable raw judgment and recent public prose to frame a server-rendered
+    canonical verdict line. Leave full result-factor coverage to T_ADJUDICATION.
+    Apply the same no-invention rule to normal turns prologue and aftermath. Add
+    contract provider service and UI-order regression tests plus a narrator-style
+    non-feedback check.
+  duration 2d
+  status done
+  requires:
+    DEV 1
+
+task T_RULES NARRATOR_READY -> RULES_READY:
+  title "Accept side-neutral timing and canonical result rules"
+  description |
+    Close BL-002 and BL-003. Decide full simultaneity speed ordering or
+    initiative buckets and record initiative inputs ties mutual incapacity
+    interruption defense movement object conflicts and seeded randomness.
+    Preserve the accepted two-stage turn-limit boundary: an independent semantic
+    adjudicator decides from canonical facts, then the narrator presents the
+    immutable judgment using public prose only as style continuity. Record this
+    decision and update remaining conflicting requirements.
+  duration 1d
+  requires:
+    DEV 1
+
+task T_WORLD_MODEL RULES_READY -> WORLD_MODEL_READY:
+  title "Define a coarse canonical position state and relation model"
+  description |
+    Close BL-020 without implementing exact coordinate physics. Add bounded
+    structured relative distance presence exposure occlusion orientation
+    sensory physical and mental states plus held worn attached and usable object
+    relations. Define server-owned transitions and invariants shared by
+    perception feasible actions causal effects and temporal resolution.
+  duration 3d
+  requires:
+    DEV 1
+
+task T_PERCEPTION_BASE WORLD_MODEL_READY -> PERCEPTION_BASE_READY:
+  title "Build realistic initial perception and explicit access continuity"
+  description |
+    Close BL-021 and BL-022. Derive initial A and B frames from setup and the
+    coarse world so an ordinarily exposed counterpart is accessible without
+    leaking unestablished identity. Retain current access when no new evidence
+    arrives and lower it only through committed hiding disappearance occlusion
+    absence or observer impairment transitions. Keep identity memory independent
+    from current access and cover provider and projection failures.
+  duration 3d
+  requires:
+    DEV 1
+
+task T_PERCEPTION_APPARENT PERCEPTION_BASE_READY -> PERCEPTION_READY:
+  title "Represent apparent identity and project actual speech per observer"
+  description |
+    Close BL-023 and BL-024. Separate canonical identity from perceived form
+    suspected identity confidence and private belief for transformation disguise
+    illusion and hallucination. Commit character-authored utterances as world
+    events and project heard partial misunderstood unattributed or unheard speech
+    through distance occlusion noise hearing consciousness and language state.
+    Never use the public rendered line as a character observation.
+  duration 3d
+  requires:
+    DEV 1
+
+task T_ACTIONS PERCEPTION_READY -> ACTIONS_READY:
+  title "Compute observer-safe feasible actions and revalidate intentions"
+  description |
+    Close BL-030 and BL-031. Compute available actions from canonical resources
+    position state targets objects and scene constraints while exposing only
+    observer-safe labels and choices to each character. Revalidate chosen intent
+    after temporal conflicts and commit failure partial execution or an
+    epistemically safe fallback without reading hidden opponent totals.
+  duration 3d
+  requires:
+    DEV 1
+
+task T_CAUSALITY ACTIONS_READY -> CAUSALITY_READY:
+  title "Connect world objects states and effects to causal mechanics"
+  description |
+    Close BL-040 and BL-041. Make scene entities relations and effects constrain
+    targets feasibility coefficients and state transitions through structured
+    rules. Apply unperceived causes to canonical outcomes without revealing them
+    and project only consequences that the observer can notice. Cover object and
+    character interference plus conscious and unconscious influence fixtures.
+  duration 3d
+  requires:
+    DEV 1
+
+task T_TIMELINE CAUSALITY_READY -> TIMELINE_READY:
+  title "Implement and prove the accepted fair temporal resolver"
+  description |
+    Close BL-050 and BL-051. Implement the accepted initiative and simultaneity
+    rules without fixed Side A priority, use one turn-start snapshot for each
+    simultaneous bucket, merge conflicts atomically, and preserve valid mutual
+    incapacity. Add A and B swap metamorphic tests for equal and unequal speed
+    mutual effects interruption movement and shared object conflicts.
+  duration 3d
+  requires:
+    DEV 1
+
+task T_ADJUDICATION TIMELINE_READY -> RESULT_READY:
+  title "Derive turn-limit results from canonical records"
+  description |
+    Close BL-060. Remove public narration and rendered speech from result input.
+    Complete the accepted independent semantic adjudication contract over
+    committed actions effects state transitions and world impact, followed by a
+    presentation-only narrator call that may see recent public narration. Prove
+    that narration style provider timeout paraphrase and empty public prose
+    cannot change winner finish reason rating input or canonical reason facts.
+  duration 2d
+  requires:
+    DEV 1
+
+task T_PHASES RESULT_READY -> PHASES_READY:
+  title "Align prologue normal turn and aftermath authority contracts"
+  description |
+    Close BL-070. Apply the same actual-speech cognition perception narration
+    and no-feedback boundaries to setup normal turns terminal turns and
+    aftermath. Ensure the first character decision consumes initial perception
+    and that no specialized narrator call invents speech or canonical outcomes.
+  duration 2d
+  requires:
+    DEV 1
+
+task T_COMPAT PHASES_READY -> COMPATIBILITY_READY:
+  title "Migrate legacy battle perception and speech continuity safely"
+  description |
+    Close BL-080. Define deterministic reads and next-save migration for legacy
+    identification access lastSpeech narrative blocks and missing world state.
+    Preserve historical display while preventing old public rendering from
+    becoming new private cognition. Verify bounded retention privacy failure and
+    rollback-safe database compatibility.
+  duration 2d
+  requires:
+    DEV 1
+
+task T_ACCEPT COMPATIBILITY_READY -> GAP_ACCEPTED:
+  title "Accept gap closure across mock XAI and fallback paths"
+  description |
+    Close BL-090. Run fixed setup perception speech world-action unconscious
+    influence side-swap mutual-incapacity narration-independence and legacy
+    fixtures. Review all prompts DTOs logs and persistence for hidden identity
+    totals locations private state control IDs and narrator feedback. Obtain live
+    XAI primary evidence then run tests typecheck build llmthink review and PERT
+    checks before marking the project complete.
+  duration 2d
+  requires:
+    DEV 1
+
+work_event WE-61482dcf104b8eb79d56f1ac22d4e79f69ae5f4bc20705490989da60a8dcae29:
+  model 1
+  task T_NARRATOR
+  kind start
+  occurred_at 2026-08-05T10:14:24+09:00
+  planned_value 2d
+
+work_event WE-2e7bae30926f60ca7937367218ba03ccd1103e280bb40cbd91f65abf9f0ff8e3:
+  model 1
+  task T_NARRATOR
+  kind finish
+  occurred_at 2026-08-05T10:16:01+09:00

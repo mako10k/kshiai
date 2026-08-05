@@ -147,14 +147,27 @@ describe("mock LLM natural-language handling", () => {
         events: [],
         actionBeats: [],
       }),
+      characterSpeeches: [
+        { side: "a", speaker: "姫騎士", text: result.speech },
+        { side: "b", speaker: "挑戦者", text: "まだ終わらない。" },
+      ],
     });
     assert.ok(narration.narrator.length >= 2);
     assert.equal(
       narration.narrator.some((line) => /を起こす|を捉えた|を起こした/.test(line)),
       false,
     );
-    // Last-resort mock may omit speeches rather than invent stock lines.
-    assert.equal(Array.isArray(narration.speeches), true);
+    assert.deepEqual(
+      narration.speeches.map(({ speaker, text, sourceSide }) => ({
+        speaker,
+        text,
+        sourceSide,
+      })),
+      [
+        { speaker: "姫騎士", text: result.speech, sourceSide: "a" },
+        { speaker: "挑戦者", text: "まだ終わらない。", sourceSide: "b" },
+      ],
+    );
 
     const unknownFrameA = buildMinimalObserverPerception({
       observerSide: "a",
@@ -189,6 +202,9 @@ describe("mock LLM natural-language handling", () => {
         events: [],
         actionBeats: [],
       }),
+      characterSpeeches: [
+        { side: "a", speaker: "姫騎士", text: result.speech },
+      ],
     });
     assert.equal(
       subjective.narrator.some((line) => /を起こす|を捉えた|を起こした/.test(line)),
@@ -197,6 +213,14 @@ describe("mock LLM natural-language handling", () => {
     assert.equal(
       subjective.speeches.some((line) => line.speaker === "挑戦者"),
       false,
+    );
+    assert.deepEqual(
+      subjective.speeches.map(({ speaker, text, sourceSide }) => ({
+        speaker,
+        text,
+        sourceSide,
+      })),
+      [{ speaker: "姫騎士", text: result.speech, sourceSide: "a" }],
     );
   });
 

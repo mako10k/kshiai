@@ -3,6 +3,7 @@ import { Link, useParams, useSearchParams } from "react-router-dom";
 import {
   formatRatingForDisplay,
   formatSpeech,
+  narrativeEntries,
   type BattleAdvancePhase,
   type BattlePublic,
   type SpeechLine,
@@ -646,20 +647,27 @@ export function BattlePage() {
                   — プロローグ —
                 </div>
               ) : null}
-              {block.narrator.map((line, j) => (
-                <p key={j} style={{ margin: "0.25rem 0" }}>
-                  {line}
-                </p>
-              ))}
-              {speechesVisibleForBlock(i, block.speeches).map((s, j) => (
-                <p
-                  key={`s-${j}`}
-                  className="speaker speech-enter"
-                  style={{ margin: "0.25rem 0" }}
-                >
-                  {formatSpeech(s)}
-                </p>
-              ))}
+              {narrativeEntries({
+                ...block,
+                speeches: speechesVisibleForBlock(i, block.speeches),
+              }).map((entry) =>
+                entry.kind === "narrator" ? (
+                  <p
+                    key={`n-${entry.narratorLine}`}
+                    style={{ margin: "0.25rem 0" }}
+                  >
+                    {entry.text}
+                  </p>
+                ) : (
+                  <p
+                    key={`s-${entry.speechLine}`}
+                    className="speaker speech-enter"
+                    style={{ margin: "0.25rem 0" }}
+                  >
+                    {formatSpeech(entry.speech)}
+                  </p>
+                )
+              )}
             </div>
           ))}
           {streamDraft &&

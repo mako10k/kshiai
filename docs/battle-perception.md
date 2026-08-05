@@ -71,9 +71,9 @@ interpretation, and public narration remain separate authorities.
 canonical mechanics + canonical semantic world
                   -> validated perception evidence
                   -> A/B character perception frames
-                  -> private character interpretation and next action
+                  -> private character interpretation, actual speech, and next action
                   -> perspective-specific narration view
-                  -> public prose with ID redaction
+                  -> public prose and placed speech rendering with ID redaction
 ```
 
 ## 2. Turn pipeline and LLM topology
@@ -98,8 +98,10 @@ This path adds no LLM call to the current normal turn.
 7. The existing fluid-focus call runs only when the configured narration style
    already requires it.
 8. The server derives a narration view from the resolved perspective/focus.
-9. The existing narrator call produces public prose. A deterministic exact-ID
-   replacement pass guarantees that known internal IDs do not reach the user.
+9. The existing narrator call produces public prose and placement for immutable
+   character-authored speech. The server rejects invented or changed speech and
+   a deterministic exact-ID replacement pass guarantees that known internal IDs
+   do not reach the user. Public rendering is not fed back into either frame.
 
 ### 2.2 Accuracy-gated split topology
 
