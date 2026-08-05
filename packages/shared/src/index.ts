@@ -7,6 +7,7 @@ export * from "./api.js";
 export * from "./narrative.js";
 export * from "./battle-stream.js";
 export * from "./battle-engine.js";
+export * from "./battle-temporal-rules.js";
 export * from "./media.js";
 export * from "./supervisor.js";
 export * from "./narration-perspective.js";

@@ -88,6 +88,7 @@ task T_RULES NARRATOR_READY -> RULES_READY:
     immutable judgment using public prose only as style continuity. Record this
     decision and update remaining conflicting requirements.
   duration 1d
+  status done
   requires:
     DEV 1
 
@@ -226,3 +227,16 @@ work_event WE-2e7bae30926f60ca7937367218ba03ccd1103e280bb40cbd91f65abf9f0ff8e3:
   task T_NARRATOR
   kind finish
   occurred_at 2026-08-05T10:16:01+09:00
+
+work_event WE-31472e973966ff91fd0b7a26d0407102533f28a143a8e619e1f811950ce58199:
+  model 1
+  task T_RULES
+  kind start
+  occurred_at 2026-08-05T10:17:06+09:00
+  planned_value 1d
+
+work_event WE-22e9026bb66acf2b1e9d733ba2ad39d987a122b93b2acb73c2c427d9261b6c6b:
+  model 1
+  task T_RULES
+  kind finish
+  occurred_at 2026-08-05T10:20:47+09:00
