@@ -6,12 +6,13 @@ import {
   buildFinisherWindow,
   createBattleState,
   decisivePressure,
+  ensureBattleCompatibilityState,
   ensureBattlePerceptionState,
   ensureBattleWorldState,
   resolveTurn,
 } from "./battle-engine.js";
 import { defaultParameters, type CharacterSheet } from "./character.js";
-import { BattleStateSchema } from "./battle.js";
+import { BattleStateSchema, type BattleState } from "./battle.js";
 import { quantizeCommittedMechanicalEvidence } from "./perception-quantization.js";
 
 function sheet(id: string, name: string, hp = 100): CharacterSheet {
@@ -997,6 +998,54 @@ describe("battle engine", () => {
       ensureBattleWorldState(seeded).worldState,
       seeded.worldState,
     );
+  });
+
+  it("migrates legacy authority without turning public prose into cognition", () => {
+    const base = createBattleState({
+      id: "legacy-authority",
+      sideA: sheet("a", "アオ"),
+      sideB: sheet("b", "クロ"),
+      turnLimit: 20,
+      prologuePending: false,
+    });
+    const record = buildBattleTurnRecord({
+      before: base,
+      after: base,
+      events: [],
+      actions: [],
+    });
+    const legacy: BattleState = {
+      ...base,
+      pipelineAuthorityVersion: undefined,
+      worldState: undefined,
+      perceptionFrameA: undefined,
+      perceptionFrameB: undefined,
+      perceptionRegistryA: undefined,
+      perceptionRegistryB: undefined,
+      agentStateA: { ...base.agentStateA!, lastSpeech: "ナレータ由来か不明の台詞" },
+      agentStateB: { ...base.agentStateB!, lastSpeech: "公開表示から戻った可能性" },
+      plannedActionA: { kind: "basic_attack" },
+      plannedActionB: { kind: "wait" },
+      turnRecords: Array.from({ length: 55 }, () => structuredClone(record)),
+      log: [{
+        turn: 0,
+        narrator: ["歴史的な公開表示はそのまま残す。"],
+        speeches: [{ speaker: "アオ", text: "古い表示台詞" }],
+      }],
+    };
+    const migrated = ensureBattleCompatibilityState(legacy);
+
+    assert.equal(migrated.pipelineAuthorityVersion, 1);
+    assert.equal(migrated.agentStateA?.lastSpeech, null);
+    assert.equal(migrated.agentStateB?.lastSpeech, null);
+    assert.equal(migrated.plannedActionA, undefined);
+    assert.equal(migrated.plannedActionB, undefined);
+    assert.equal(migrated.turnRecords.length, 50);
+    assert.deepEqual(migrated.log, legacy.log);
+    assert.equal(migrated.worldState?.pairRelations[0]?.distance, "near");
+    assert.equal(migrated.perceptionFrameA?.counterpart.identityKnowledge, "identified");
+    assert.equal(migrated.perceptionFrameA?.counterpart.currentAccess, "clear");
+    assert.equal(ensureBattleCompatibilityState(migrated), migrated);
   });
 
   it("records canonical revalidation and an observer-safe substitute", () => {

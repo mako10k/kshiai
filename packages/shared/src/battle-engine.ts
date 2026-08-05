@@ -512,6 +512,7 @@ export function createBattleState(input: {
 
   return {
     id: input.id,
+    pipelineAuthorityVersion: 1,
     status: "active",
     turn: 0,
     turnLimit: input.turnLimit,
@@ -656,6 +657,32 @@ export function ensureBattleWorldState(state: BattleState): BattleState {
   return {
     ...state,
     worldState: createBattleWorldState({ semanticState: state.semanticState }),
+  };
+}
+
+/**
+ * Deterministic next-save migration for battles created before role boundaries.
+ * Historical public log remains display-only. Unknown-provenance lastSpeech and
+ * any action planned from it are discarded instead of entering new cognition.
+ */
+export function ensureBattleCompatibilityState(state: BattleState): BattleState {
+  const withWorld = ensureBattleWorldState(state);
+  const withPerception = ensureBattlePerceptionState(withWorld);
+  if (withPerception.pipelineAuthorityVersion === 1) {
+    return withPerception;
+  }
+  return {
+    ...withPerception,
+    pipelineAuthorityVersion: 1,
+    agentStateA: withPerception.agentStateA
+      ? { ...withPerception.agentStateA, lastSpeech: null }
+      : undefined,
+    agentStateB: withPerception.agentStateB
+      ? { ...withPerception.agentStateB, lastSpeech: null }
+      : undefined,
+    plannedActionA: undefined,
+    plannedActionB: undefined,
+    turnRecords: (withPerception.turnRecords ?? []).slice(-50),
   };
 }
 

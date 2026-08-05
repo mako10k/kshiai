@@ -175,6 +175,7 @@ describe("character battle history tools", () => {
     assert.ok(detail!.skillMentions.includes("先手のひらめき"));
     assert.ok(detail!.narrationExcerpts.length >= 1);
     const legacyLoaded = await getBattle("bat_1");
+    assert.equal(legacyLoaded?.pipelineAuthorityVersion, 1);
     assert.equal(legacyLoaded?.semanticState?.revision, 0);
     assert.equal(legacyLoaded?.worldState?.revision, 0);
     assert.equal(legacyLoaded?.worldState?.pairRelations[0]?.distance, "near");

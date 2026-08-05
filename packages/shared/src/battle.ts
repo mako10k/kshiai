@@ -504,6 +504,8 @@ export type SupervisorState = z.infer<typeof SupervisorStateSchema>;
 
 export const BattleStateSchema = z.object({
   id: z.string(),
+  /** Present after narrator/speech/perception authority migration. */
+  pipelineAuthorityVersion: z.literal(1).optional(),
   status: BattleStatusSchema,
   turn: z.number().int().nonnegative(),
   turnLimit: z.number().int().positive(),

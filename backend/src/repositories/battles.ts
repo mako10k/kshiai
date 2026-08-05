@@ -4,8 +4,7 @@ import {
   battleResultLabel,
   buildSemanticObservationState,
   createBattleSemanticState,
-  ensureBattlePerceptionState,
-  ensureBattleWorldState,
+  ensureBattleCompatibilityState,
   resolveBattlefieldImageUrl,
 } from "@kshiai/shared";
 import { query } from "../db.js";
@@ -81,7 +80,7 @@ function ensureSemanticState(state: BattleState): BattleState {
       observer: "public",
     }),
   };
-  return ensureBattlePerceptionState(ensureBattleWorldState(withSemantic));
+  return ensureBattleCompatibilityState(withSemantic);
 }
 
 export async function getBattle(id: string): Promise<BattleState | null> {
