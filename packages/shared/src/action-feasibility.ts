@@ -18,6 +18,7 @@ import {
   type BattleWorldState,
   type WorldDistance,
 } from "./battle-world.js";
+import { deriveBattleActorCausality } from "./battle-causality.js";
 
 export type ObserverSafeAvailableAction = {
   kind: CharacterActionIntent["kind"];
@@ -121,7 +122,10 @@ function actorWorldFailure(input: {
   if (!entity?.active || entity.presence !== "present" || !entity.actorState) {
     return "actor_unavailable";
   }
-  const actorState = entity.actorState;
+  const actorState = deriveBattleActorCausality({
+    worldState: input.worldState,
+    actorSide: input.actorSide,
+  }).effectiveActorState ?? entity.actorState;
   if (["unconscious", "incapacitated"].includes(actorState.consciousness)) {
     return "actor_unavailable";
   }
@@ -194,7 +198,10 @@ function targetWorldFailure(input: {
     }
   }
   if (input.constraints.requiresSight) {
-    const actorState = actor?.actorState;
+    const actorState = deriveBattleActorCausality({
+      worldState: input.worldState,
+      actorSide: input.actorSide,
+    }).effectiveActorState ?? actor?.actorState;
     if (
       pair.sight === "blocked" ||
       ["blocked", "absent"].includes(actorState?.vision ?? "blocked") ||

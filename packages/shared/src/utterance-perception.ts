@@ -5,6 +5,7 @@ import {
   type WorldDistance,
   type WorldOrientation,
 } from "./battle-world.js";
+import { deriveBattleActorCausality } from "./battle-causality.js";
 import {
   type BattleSide,
   type CharacterPerceptionFrame,
@@ -38,7 +39,10 @@ export function buildCommittedUtteranceEvents(input: {
     .sort((a, b) => a.side.localeCompare(b.side))
     .flatMap((source) => {
       const actor = input.worldState?.entities[`character.${source.side}`];
-      const actorState = actor?.actorState;
+      const actorState = deriveBattleActorCausality({
+        worldState: input.worldState,
+        actorSide: source.side,
+      }).effectiveActorState ?? actor?.actorState;
       const responsive = !input.worldState || Boolean(
         actor?.active &&
         actor.presence === "present" &&
@@ -188,7 +192,10 @@ function spokenAccess(input: {
   const speakerId = `character.${input.actorSide}`;
   const observer = input.worldState?.entities[observerId];
   const speaker = input.worldState?.entities[speakerId];
-  const observerState = observer?.actorState;
+  const observerState = deriveBattleActorCausality({
+    worldState: input.worldState,
+    actorSide: input.observerSide,
+  }).effectiveActorState ?? observer?.actorState;
   const pair = input.worldState
     ? readBattleWorldPair(input.worldState, observerId, speakerId)
     : null;
@@ -205,7 +212,7 @@ function spokenAccess(input: {
     pair?.distance === "out_of_scene"
   );
   let currentAccess: CurrentAccess = unavailable ? "none" : "clear";
-  if (!unavailable && input.worldState && pair && observerState) {
+  if (!unavailable && input.worldState && observer && pair && observerState) {
     let penalty = 0;
     if (pair.sound === "partial") penalty += 1;
     if (pair.distance === "medium") penalty += 1;

@@ -48,5 +48,5 @@ self actionは相手情報を必要としない。
 選択自体が不成立でもactorが行動可能なら、相手状態を読まない休息・防御・待機から
 `substituted`を選ぶ。actor自身が不在・無意識・非self-directedなら`failed`とする。
 
-このタスクでは物体や場面が生む効果量・world transitionは決定しない。それらは
-`T_CAUSALITY`、複数bucket間での再検証時点と同時mergeは`T_TIMELINE`が担当する。
+物体や場面が生む効果量・world transitionは`T_CAUSALITY`で接続済みである。複数bucket間での
+再検証時点と同時mergeは`T_TIMELINE`が担当する。

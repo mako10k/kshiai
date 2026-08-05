@@ -184,6 +184,36 @@ describe("committed utterance perception", () => {
       ),
       false,
     );
+
+    const muffledWorld = structuredClone(state.worldState);
+    muffledWorld.entities["effect.hidden-muffle"] = {
+      kind: "effect",
+      active: true,
+      presence: "present",
+      placement: { type: "attached", anchorId: "character.b" },
+      exposure: "hidden",
+      actorState: null,
+      objectState: {
+        portable: false,
+        usable: false,
+        exclusiveUse: false,
+        usableBy: [],
+        cover: "none",
+        blocksMovement: false,
+        visionEffect: "none",
+        hearingEffect: "block",
+        mobilityEffect: "none",
+      },
+      createdTurn: 0,
+      updatedTurn: 0,
+    };
+    const muffled = buildUtterancePerceptionEvidence({
+      events,
+      worldState: muffledWorld,
+      previousFrameB: state.initialB.frame,
+    });
+    assert.equal(muffled[0]?.accessBySide.b.currentAccess, "none");
+    assert.doesNotMatch(JSON.stringify(muffled), /effect\.hidden-muffle/);
   });
 
   it("rejects physically impossible expressions and stays symmetric by side", () => {

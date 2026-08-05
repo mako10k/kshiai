@@ -181,6 +181,7 @@ task T_CAUSALITY ACTIONS_READY -> CAUSALITY_READY:
     and project only consequences that the observer can notice. Cover object and
     character interference plus conscious and unconscious influence fixtures.
   duration 3d
+  status done
   requires:
     DEV 1
 
@@ -350,3 +351,16 @@ work_event WE-ba8d7c8f80ceea7730694d9778cac7583e5d9f9c38a154e60f3cfe81dbe0f1ca:
   task T_ACTIONS
   kind finish
   occurred_at 2026-08-05T12:24:59+09:00
+
+work_event WE-ec8a0e2b4966917bac9d0b7cbbf69e9796185deeb66ff7f56711fdd9748127cc:
+  model 1
+  task T_CAUSALITY
+  kind start
+  occurred_at 2026-08-05T12:32:50+09:00
+  planned_value 3d
+
+work_event WE-626bbd449891e5c4a7d4e4dd52c8733846a24b365cf15b0f4dcd82ba9f11c50a:
+  model 1
+  task T_CAUSALITY
+  kind finish
+  occurred_at 2026-08-05T13:04:58+09:00

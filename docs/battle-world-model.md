@@ -1,8 +1,8 @@
 # バトル用の粗い正準世界モデル
 
 作成日: 2026-08-05
-対象: `BL-020`, `T_WORLD_MODEL`
-実装: `packages/shared/src/battle-world.ts`
+対象: `BL-020`, `BL-040`, `BL-041`, `T_WORLD_MODEL`, `T_CAUSALITY`
+実装: `packages/shared/src/battle-world.ts`, `packages/shared/src/battle-causality.ts`
 
 ## 1. 責務境界
 
@@ -159,16 +159,29 @@ speech、保持・装着中objectのusable/usableBy、counterpart access、pair 
 coarse conditionだけを固定代表値へ変換する。ナレータ文と公開セリフは候補・代替・
 再検証のどの入力にもならない。
 
-## 8. 後続タスクとの境界
+## 8. 因果効果への接続
+
+`T_CAUSALITY`で、actor自身、所属area、held/worn/attachedのobject/effect、同一areaの
+terrain/effectを一つの決定的因果contextへ合成した。有効な視覚・聴覚・移動状態は
+行動候補と実行直前再検証へ、coverとactor状態・空間状態は与ダメージ・回復・実効速度の
+Side別係数へ反映する。原因entity IDはserver-only receiptに留め、確定結果だけを既存の
+mechanical evidenceとobserver projectionへ渡す。
+
+検証済みsemantic patchのlocation、active、entity追加は、自然文factsを読まずに
+`BattleWorldTransition`へ変換する。semantic適用、world変換、world検証のどこかが失敗すれば
+両stateを部分commitしない。詳細は`docs/battle-causality.md`を参照する。
+
+## 9. 後続タスクとの境界
 
 - `T_PERCEPTION_BASE`: 完了。`worldState`から初期accessと明示的な知覚喪失を投影する。
 - `T_PERCEPTION_APPARENT`: 完了。変身・幻覚・発話をobserver別の見かけへ投影する。
 - `T_ACTIONS`: 完了。world制約からobserver-safeな行動候補を作り、実行直前に再検証する。
-- `T_CAUSALITY`: 物体能力や自覚/無自覚の効果からworld transitionを生成する。
+- `T_CAUSALITY`: 完了。構造化干渉を有効状態・係数・world transitionへ接続し、未認知原因を非開示にする。
 - `T_TIMELINE`: 各initiative bucketが読むworld snapshotとcommit後stateを統一する。
 
 `T_WORLD_MODEL` ではモデル・初期化・原子的遷移境界までを実装し、
 `T_PERCEPTION_BASE` で初期frame、通常projection、provider失敗、projection fallback、
 旧state補完へ同じaccess規則を接続し、`T_PERCEPTION_APPARENT`で見かけbeliefと
-実発話eventを接続し、`T_ACTIONS`で行動候補と再検証へ接続した。物体による効果量や
-world transitionの因果更新、公平なinitiative bucket処理は後続タスクで扱う。
+実発話eventを接続し、`T_ACTIONS`で行動候補と再検証へ、`T_CAUSALITY`で物体・場面・
+状態の効果量とsemantic由来world transitionへ接続した。公平なinitiative bucket処理は
+`T_TIMELINE`で扱う。

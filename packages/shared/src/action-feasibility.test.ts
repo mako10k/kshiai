@@ -166,6 +166,56 @@ describe("observer-safe action feasibility", () => {
     assert.doesNotMatch(JSON.stringify(after), /object\.private-tool|character\.a/);
   });
 
+  it("revalidates against an unperceived attached movement effect", () => {
+    const { sideA, state } = setup();
+    const world = structuredClone(state.worldState!);
+    world.entities["effect.hidden-bind"] = {
+      kind: "effect",
+      active: true,
+      presence: "present",
+      placement: { type: "attached", anchorId: "character.a" },
+      exposure: "hidden",
+      actorState: null,
+      objectState: {
+        portable: false,
+        usable: false,
+        exclusiveUse: false,
+        usableBy: [],
+        cover: "none",
+        blocksMovement: false,
+        visionEffect: "none",
+        hearingEffect: "none",
+        mobilityEffect: "immobilize",
+      },
+      createdTurn: 0,
+      updatedTurn: 0,
+    };
+    const actions = buildObserverSafeAvailableActions({
+      actorSide: "a",
+      actor: state.sideA,
+      sheet: sideA,
+      turn: 1,
+      worldState: world,
+      perception: state.perceptionFrameA!,
+    });
+    assert.equal(actions.some((action) => action.kind === "basic_attack"), false);
+    assert.doesNotMatch(JSON.stringify(actions), /effect\.hidden-bind/);
+
+    const revalidated = revalidateCharacterAction({
+      actorSide: "a",
+      requested: { kind: "basic_attack" },
+      actor: state.sideA,
+      skills: [],
+      basicAttack: sideA.basicAttack!,
+      turn: 1,
+      worldState: world,
+      perception: state.perceptionFrameA,
+    });
+    assert.equal(revalidated.action?.kind, "defend");
+    assert.equal(revalidated.resolution.outcome, "substituted");
+    assert.equal(revalidated.resolution.reason, "movement_blocked");
+  });
+
   it("substitutes, partially downgrades, or fails with canonical reasons", () => {
     const { sideA, state } = setup();
     const costly = {

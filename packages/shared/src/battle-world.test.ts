@@ -5,11 +5,15 @@ import {
   BattleWorldTransitionSchema,
   applyBattleWorldTransition,
   createBattleWorldState,
+  deriveBattleWorldTransitionFromSemanticState,
   readBattleWorldPair,
   type BattleWorldState,
   type WorldObjectState,
 } from "./battle-world.js";
-import { createBattleSemanticState } from "./semantic-state.js";
+import {
+  applyTurnSemanticPatch,
+  createBattleSemanticState,
+} from "./semantic-state.js";
 
 function world(): BattleWorldState {
   return createBattleWorldState({
@@ -341,6 +345,97 @@ describe("server-owned battle world", () => {
     assert.equal(state.pairRelations[0]?.distance, "separate_area");
     assert.equal(state.pairRelations[0]?.sight, "blocked");
     assert.equal(state.pairRelations[0]?.sound, "partial");
+  });
+
+  it("derives an atomic world transition from structured semantic changes", () => {
+    const semantic = createBattleSemanticState({
+      scene: "複数区画の遺跡",
+      obstacles: ["携行できる盾"],
+      sideA: { displayName: "A" },
+      sideB: { displayName: "B" },
+    });
+    const before = createBattleWorldState({ semanticState: semantic });
+    const patched = applyTurnSemanticPatch({
+      state: semantic,
+      turn: 1,
+      allowedSourceEventIds: new Set(["turn-1-move"]),
+      patch: {
+        baseRevision: semantic.revision,
+        turn: 1,
+        sourceEventIds: ["turn-1-move"],
+        operations: [
+          {
+            op: "replace",
+            path: "/entities/character.b/location",
+            value: { type: "scene", area: "隣の回廊" },
+          },
+          {
+            op: "replace",
+            path: "/entities/obstacle.1/location",
+            value: { type: "held", side: "a" },
+          },
+          {
+            op: "add",
+            path: "/entities/effect.smoke",
+            value: {
+              kind: "effect",
+              label: "煙",
+              location: { type: "scene", area: "隣の回廊" },
+              active: true,
+              createdTurn: 0,
+              updatedTurn: 0,
+              facts: { narration_is_not_mechanics: "ignored" },
+              visibleTo: ["b"],
+            },
+          },
+        ],
+      },
+    });
+    assert.equal(patched.ok, true);
+    if (!patched.ok) return;
+
+    const derived = deriveBattleWorldTransitionFromSemanticState({
+      worldState: before,
+      semanticState: patched.state,
+      turn: 1,
+      sourceEventIds: ["turn-1-move"],
+    });
+    assert.equal(derived.ok, true);
+    if (!derived.ok) return;
+    assert.doesNotMatch(
+      JSON.stringify(derived.transition),
+      /narration_is_not_mechanics|ignored/,
+    );
+
+    const applied = applyBattleWorldTransition({
+      state: before,
+      transition: derived.transition,
+      turn: 1,
+      allowedSourceEventIds: new Set(["turn-1-move"]),
+    });
+    assert.equal(applied.ok, true);
+    if (!applied.ok) return;
+    assert.equal(applied.state.revision, 1);
+    assert.equal(
+      applied.state.entities["obstacle.1"]?.objectState?.portable,
+      true,
+    );
+    assert.deepEqual(applied.state.entities["obstacle.1"]?.placement, {
+      type: "held",
+      holderId: "character.a",
+    });
+    assert.equal(
+      applied.state.entities["effect.smoke"]?.objectState !== null,
+      true,
+    );
+    assert.equal(
+      readBattleWorldPair(
+        applied.state,
+        "character.a",
+        "character.b",
+      )?.distance,
+      "separate_area",
+    );
   });
 
   it("loads legacy dependents of absent semantic parents as absent", () => {

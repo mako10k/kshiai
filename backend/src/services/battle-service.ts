@@ -2,6 +2,7 @@ import {
   BattlePolicyOptionSchema,
   accumulateBattleBalanceTrace,
   advanceSupervisorClock,
+  applyBattleWorldTransition,
   applySituationCoefficients,
   applyTurnSemanticPatch,
   balanceSkill,
@@ -14,6 +15,7 @@ import {
   buildSemanticObservationState,
   buildServerOnlyReserveCues,
   createBattleState,
+  deriveBattleWorldTransitionFromSemanticState,
   happeningToEvents,
   happeningToSituationPatch,
   isPassiveTurn,
@@ -1232,9 +1234,18 @@ export async function reconcileSemanticState(input: {
     status: "applied" | "rejected" | "skipped",
     patch: TurnSemanticPatch | null,
     sensoryEvidence: PerceptionEvidence[],
+    worldState = input.resolvedState.worldState,
+    latestWorldTransition: BattleState["latestWorldTransition"] = {
+      turn: input.resolvedState.turn,
+      status: "skipped",
+      fromRevision: input.resolvedState.worldState?.revision ?? 0,
+      toRevision: input.resolvedState.worldState?.revision ?? 0,
+      transition: null,
+    },
   ): BattleState => projectPerceptionState({
     ...input.resolvedState,
     semanticState: after,
+    worldState,
     observationStateA: buildSemanticObservationState({
       before: semanticBefore,
       after,
@@ -1260,6 +1271,7 @@ export async function reconcileSemanticState(input: {
       toRevision: after.revision,
       patch,
     },
+    latestWorldTransition,
   }, sensoryEvidence);
   try {
     const proposed = await withTimeout(
@@ -1359,6 +1371,86 @@ export async function reconcileSemanticState(input: {
         ...evidenceResult(sensory),
       };
     }
+    let committedWorldState = input.resolvedState.worldState;
+    let latestWorldTransition: BattleState["latestWorldTransition"] = {
+      turn: input.resolvedState.turn,
+      status: "skipped",
+      fromRevision: committedWorldState?.revision ?? 0,
+      toRevision: committedWorldState?.revision ?? 0,
+      transition: null,
+    };
+    if (committedWorldState) {
+      const derivedWorld = deriveBattleWorldTransitionFromSemanticState({
+        worldState: committedWorldState,
+        semanticState: applied.state,
+        turn: input.resolvedState.turn,
+        sourceEventIds: proposed.patch.sourceEventIds,
+      });
+      if (!derivedWorld.ok) {
+        console.warn(
+          `[battle] derived world transition rejected: ${derivedWorld.error}`,
+        );
+        return {
+          state: commitObservationState(
+            semanticBefore,
+            "rejected",
+            proposed.patch,
+            sensory.evidence,
+            committedWorldState,
+            {
+              turn: input.resolvedState.turn,
+              status: "rejected",
+              fromRevision: committedWorldState.revision,
+              toRevision: committedWorldState.revision,
+              transition: null,
+            },
+          ),
+          patch: proposed.patch,
+          status: "rejected",
+          ...evidenceResult(sensory),
+        };
+      }
+      const appliedWorld = applyBattleWorldTransition({
+        state: committedWorldState,
+        transition: derivedWorld.transition,
+        turn: input.resolvedState.turn,
+        allowedSourceEventIds: new Set(
+          input.events.flatMap((event) => event.id ? [event.id] : []),
+        ),
+      });
+      if (!appliedWorld.ok) {
+        console.warn(
+          `[battle] world transition rejected ${appliedWorld.error.code}: ${appliedWorld.error.message}`,
+        );
+        return {
+          state: commitObservationState(
+            semanticBefore,
+            "rejected",
+            proposed.patch,
+            sensory.evidence,
+            committedWorldState,
+            {
+              turn: input.resolvedState.turn,
+              status: "rejected",
+              fromRevision: committedWorldState.revision,
+              toRevision: committedWorldState.revision,
+              transition: derivedWorld.transition,
+            },
+          ),
+          patch: proposed.patch,
+          status: "rejected",
+          ...evidenceResult(sensory),
+        };
+      }
+      committedWorldState = appliedWorld.state;
+      latestWorldTransition = {
+        turn: input.resolvedState.turn,
+        status: "applied",
+        fromRevision: derivedWorld.transition.baseRevision,
+        toRevision: committedWorldState.revision,
+        transition: derivedWorld.transition,
+      };
+    }
     const situation = applySituationCoefficients(
       input.resolvedState.situation,
       {
@@ -1374,6 +1466,8 @@ export async function reconcileSemanticState(input: {
           "applied",
           proposed.patch,
           sensory.evidence,
+          committedWorldState,
+          latestWorldTransition,
         ),
         situation,
       },

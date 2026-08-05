@@ -229,15 +229,17 @@ CharacterSheet
 | F-BTL-48 | キャラが生成した実発話・可視反応は、発話能力・意識状態をサーバーが検証してから正準utterance eventとしてturn recordへ保存する。対キャラ知覚はevent原文だけから、距離、音の遮蔽、騒音、音量、明瞭度、聴覚、意識、精神明瞭度、言語理解を使ってfull・partial・意味不明・話者未帰属・非知覚をSide別に投影する。公開レンダリングとナレータ文はevent生成および知覚投影の入力にしない | Must |
 | F-BTL-49 | キャラへ渡す使用可能行動は、自己資源だけでなく正準worldStateのpresence、意識、agency、移動・拘束、場面移動制約、対象との距離・視線、発話能力、保持中オブジェクトの使用可否と、observer別frameの対象accessからサーバーが算出する。候補は自己情報、skill ID、observer-localな対象ラベルだけを含み、未認知の正準名・entity ID・位置を漏らさない | Must |
 | F-BTL-50 | 選択済み意図は実行時の正準状態で再検証し、結果をaccepted、partial、substituted、failedと有限の理由でturn recordへ保存する。代替は休息・防御・待機等の自己完結行動から決定し、相手の正確なHP・資源・非公開状態を選択に使わない。providerが候補外行動を返した場合は実発話とは独立に行動だけを拒否する | Must |
+| F-BTL-51 | サーバーはarea状態、キャラ自身の意識・移動・拘束・姿勢・感覚・精神・agencyと、held/worn/attachedまたはareaに作用するobject・terrain・effectの有限属性から有効actor状態、遮蔽、効果量係数を決定的に導出する。これを対象集合・行動可否・実行時再検証・正準効果へ適用し、自然文、semantic facts、公開セリフ、ナレータ文を機械判定へ使わない | Must |
+| F-BTL-52 | 未認知の原因も正準worldState上の制約・係数として作用するが、そのsource IDと非公開属性はサーバー内の因果receiptに留める。キャラframeにはobserverが知覚できる確定結果だけを投影し、原因の帰属は別途検証済みsensory evidenceが許す範囲に限定する。検証済みsemantic location・active・entity追加は確定eventに結び付いた原子的world transitionへ変換し、変換またはworld検証失敗時はsemantic/worldを部分commitしない | Must |
 
 #### 4.4.1 ターン・パイプライン（論理）
 
 ```text
 1. エンジン: 同じターン開始snapshotに対して双方の行動可能性と意図を凍結し、安定した行動IDとイニシアチブバケットを記録
-2. エンジン: バケットごとに行動を再検証する。同時バケットは同一開始snapshotから効果を計算して原子的にmergeし、順次バケットは直前commit後状態から解決して終了条件・機械状態を確定
+2. エンジン: worldStateからarea・キャラ・object/effect干渉を有効状態と係数へ導出してバケットごとに行動を再検証する。同時バケットは同一開始snapshotから効果を計算して原子的にmergeし、順次バケットは直前commit後状態から解決して終了条件・機械状態を確定
 3. サーバー: 確定前後状態から機械的な知覚根拠と絶対・相対bandを生成
 4. セマンティック調停LLM: 選択済みprompt構成に従い、JSON Pointer世界差分と独立検証可能な非機械的知覚根拠を同一応答または分離応答で提案
-5. サーバー: 世界差分と知覚根拠を独立検証し、世界差分を原子的に適用
+5. サーバー: semantic世界差分と知覚根拠を独立検証し、location・active・entity追加だけを構造化world transitionへ変換してsemantic/worldを原子的に適用
 6. サーバー: 正準worldStateからA/Bの初期・継続accessを決め、確定イベント・検証済み知覚根拠で補強または明示的喪失を反映してcontact registryを更新し、self/counterpartを含むA/B知覚frameを凍結
 7. キャラLLM（各キャラ独立・並列）: 自分の凍結済み正準プロフィールanchor、知覚frame、非公開継続状態から内面・次行動・実発話を更新。正準一人称はサーバーが再固定する
 8. サーバー: 発話・反応の物理的成立を検証し、成立したキャラ出力だけを正準utterance eventへ確定して、実発話からobserver別の聴覚・視覚知覚を更新する
@@ -449,6 +451,7 @@ CharacterSheet
 | 1.7 | 2026-08-05 | 正準worldStateによる現実的な初期認知、access継続、明示的喪失、provider・projection失敗時の保持規則を追加 |
 | 1.8 | 2026-08-05 | 正準identityと見かけbeliefを分離し、キャラ起点の実発話eventを物理・聴覚・言語条件からobserver別知覚へ投影する規則を追加 |
 | 1.9 | 2026-08-05 | worldStateとobserver別frameからの実行可能行動候補、正準再検証、部分成立・自己完結代替・理由付き失敗を追加 |
+| 1.10 | 2026-08-05 | area・キャラ・object/effectの構造化因果を有効状態・係数・world transitionへ接続し、未認知原因と認知可能な結果の投影を分離 |
 
 ---
 

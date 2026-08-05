@@ -10,6 +10,7 @@ import {
   type WorldDistance,
   type WorldOrientation,
 } from "./battle-world.js";
+import { deriveBattleActorCausality } from "./battle-causality.js";
 import {
   CharacterPerceptionFrameASchema,
   CharacterPerceptionFrameBSchema,
@@ -966,7 +967,10 @@ function buildWorldCounterpartSlot(input: {
   if (!observer || !counterpart || !pair) {
     return inaccessibleCounterpartSlot(input.identity, input.label);
   }
-  const observerState = observer.actorState;
+  const observerState = deriveBattleActorCausality({
+    worldState: input.worldState,
+    actorSide: input.observerSide,
+  }).effectiveActorState ?? observer.actorState;
   const unavailable = !observer.active || observer.presence === "absent" ||
     !counterpart.active || counterpart.presence === "absent" ||
     pair.distance === "separate_area" || pair.distance === "out_of_scene" ||

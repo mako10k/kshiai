@@ -50,6 +50,7 @@ import {
   buildMinimalObserverPerception,
 } from "./perception-projection.js";
 import { revalidateCharacterAction } from "./action-feasibility.js";
+import { applyBattleCausalCoefficients } from "./battle-causality.js";
 
 function nowIso(): string {
   return new Date().toISOString();
@@ -1436,7 +1437,12 @@ export function resolveTurn(input: {
         effectiveActionA,
         input.sideASkills,
         balanceBasicAttack(input.sideABasicAttack ?? defaultBasicAttack()),
-        situation,
+        applyBattleCausalCoefficients({
+          situation,
+          worldState: input.state.worldState,
+          actorSide: "a",
+          targetSide: "b",
+        }),
         events,
         createMechanicalAttemptRecorder(sideA, sideB, actionAAttempts),
         {
@@ -1510,7 +1516,12 @@ export function resolveTurn(input: {
           effectiveActionB,
           input.sideBSkills,
           balanceBasicAttack(input.sideBBasicAttack ?? defaultBasicAttack()),
-          situation,
+          applyBattleCausalCoefficients({
+            situation,
+            worldState: input.state.worldState,
+            actorSide: "b",
+            targetSide: "a",
+          }),
           events,
           createMechanicalAttemptRecorder(sideA, sideB, actionBAttempts),
           {

@@ -623,9 +623,7 @@ function defaultObjectState(input: {
   kind: BattleSemanticEntity["kind"];
   portable: boolean;
 }): WorldObjectState | null {
-  if (input.kind === "character" || (input.kind === "effect" && !input.portable)) {
-    return null;
-  }
+  if (input.kind === "character") return null;
   return {
     portable: input.portable,
     usable: false,
@@ -769,6 +767,225 @@ export function createBattleWorldState(input: {
       updatedTurn: 0,
     }],
   });
+}
+
+export type DeriveBattleWorldTransitionResult =
+  | { ok: true; transition: BattleWorldTransition }
+  | { ok: false; error: string };
+
+function placementEquals(a: WorldPlacement, b: WorldPlacement): boolean {
+  return JSON.stringify(a) === JSON.stringify(b);
+}
+
+/**
+ * Converts only structured semantic presence/location changes into a mechanical
+ * world transition. Semantic facts and prose are intentionally ignored.
+ */
+export function deriveBattleWorldTransitionFromSemanticState(input: {
+  worldState: BattleWorldState;
+  semanticState: BattleSemanticState;
+  turn: number;
+  sourceEventIds: string[];
+}): DeriveBattleWorldTransitionResult {
+  const operations: BattleWorldOperation[] = [];
+  const areaLabels = new Map(
+    Object.entries(input.worldState.areas).map(([id, area]) => [area.label, id]),
+  );
+  let nextAreaSequence = 1;
+  const areaIdFor = (label: string): string | null => {
+    const bounded = boundedAreaLabel(label);
+    const current = areaLabels.get(bounded);
+    if (current) return current;
+    if (areaLabels.size >= BATTLE_WORLD_LIMITS.maxAreas) return null;
+    let areaId = `area.turn-${input.turn}.${nextAreaSequence}`;
+    while (input.worldState.areas[areaId] || [...areaLabels.values()].includes(areaId)) {
+      nextAreaSequence += 1;
+      areaId = `area.turn-${input.turn}.${nextAreaSequence}`;
+    }
+    nextAreaSequence += 1;
+    areaLabels.set(bounded, areaId);
+    operations.push({
+      op: "add_area",
+      areaId,
+      area: {
+        label: bounded,
+        illumination: "normal",
+        noise: "normal",
+        space: "open",
+        movement: "open",
+      },
+    });
+    return areaId;
+  };
+
+  for (const entity of Object.values(input.semanticState.entities)) {
+    if (entity.active && entity.location.type === "scene") {
+      if (!areaIdFor(entity.location.area)) {
+        return { ok: false, error: "world area limit prevents semantic synchronization" };
+      }
+    }
+  }
+
+  const desiredPlacement = new Map<string, WorldPlacement>();
+  const resolvePlacement = (entityId: string, seen = new Set<string>()): WorldPlacement => {
+    const cached = desiredPlacement.get(entityId);
+    if (cached) return cached;
+    const semantic = input.semanticState.entities[entityId];
+    if (!semantic || !semantic.active || seen.has(entityId)) {
+      return { type: "absent" };
+    }
+    const nextSeen = new Set(seen).add(entityId);
+    let placement: WorldPlacement;
+    if (semantic.location.type === "scene") {
+      const areaId = areaIdFor(semantic.location.area);
+      placement = areaId
+        ? { type: "scene", areaId }
+        : { type: "absent" };
+    } else if (semantic.location.type === "held") {
+      placement = {
+        type: "held",
+        holderId: `character.${semantic.location.side}`,
+      };
+    } else if (semantic.location.type === "attached") {
+      const parentPlacement = resolvePlacement(
+        semantic.location.entityId,
+        nextSeen,
+      );
+      placement = parentPlacement.type === "absent"
+        ? { type: "absent" }
+        : { type: "attached", anchorId: semantic.location.entityId };
+    } else {
+      placement = { type: "absent" };
+    }
+    desiredPlacement.set(entityId, placement);
+    return placement;
+  };
+  for (const id of Object.keys(input.semanticState.entities)) resolvePlacement(id);
+
+  const placementDepth = (entityId: string): number => {
+    let depth = 0;
+    let cursor = input.semanticState.entities[entityId];
+    const seen = new Set<string>();
+    while (cursor?.location.type === "attached" && !seen.has(cursor.location.entityId)) {
+      seen.add(cursor.location.entityId);
+      depth += 1;
+      cursor = input.semanticState.entities[cursor.location.entityId];
+    }
+    return depth;
+  };
+  const orderedEntities = Object.entries(input.semanticState.entities).sort(
+    ([idA], [idB]) => placementDepth(idA) - placementDepth(idB) || idA.localeCompare(idB),
+  );
+
+  for (const [entityId, semantic] of orderedEntities) {
+    const current = input.worldState.entities[entityId];
+    const placement = desiredPlacement.get(entityId) ?? { type: "absent" as const };
+    if (!current) {
+      const portable = placement.type === "held" || placement.type === "worn";
+      operations.push({
+        op: "add_entity",
+        entityId,
+        entity: {
+          kind: semantic.kind,
+          active: semantic.active,
+          presence: semantic.active && placement.type !== "absent"
+            ? "present"
+            : "absent",
+          placement: semantic.active ? placement : { type: "absent" },
+          exposure: "exposed",
+          actorState: semantic.kind === "character" ? defaultActorState() : null,
+          objectState: defaultObjectState({ kind: semantic.kind, portable }),
+        },
+      });
+      continue;
+    }
+    if (current.kind !== semantic.kind) {
+      return { ok: false, error: `world entity kind mismatch for ${entityId}` };
+    }
+    if (!current.active && semantic.active) {
+      return { ok: false, error: `inactive world tombstone ${entityId} cannot reactivate` };
+    }
+    if (!semantic.active) continue;
+    if (
+      (placement.type === "held" || placement.type === "worn") &&
+      current.objectState &&
+      !current.objectState.portable
+    ) {
+      operations.push({
+        op: "set_object_state",
+        entityId,
+        changes: { portable: true },
+      });
+    }
+    if (!placementEquals(current.placement, placement)) {
+      operations.push({ op: "set_placement", entityId, placement });
+    }
+  }
+
+  for (const [entityId, semantic] of orderedEntities.reverse()) {
+    const current = input.worldState.entities[entityId];
+    if (current?.active && !semantic.active) {
+      operations.push({ op: "set_entity_active", entityId, active: false });
+    }
+  }
+
+  const pair = readBattleWorldPair(
+    input.worldState,
+    "character.a",
+    "character.b",
+  );
+  const placementA = desiredPlacement.get("character.a");
+  const placementB = desiredPlacement.get("character.b");
+  if (pair && placementA && placementB) {
+    const bothPresent = placementA.type !== "absent" && placementB.type !== "absent";
+    const sameArea = bothPresent &&
+      placementA.type === "scene" &&
+      placementB.type === "scene" &&
+      placementA.areaId === placementB.areaId;
+    const desired = {
+      distance: !bothPresent
+        ? "out_of_scene" as const
+        : sameArea
+          ? "near" as const
+          : "separate_area" as const,
+      sight: !bothPresent || !sameArea ? "blocked" as const : "clear" as const,
+      sound: !bothPresent
+        ? "blocked" as const
+        : sameArea
+          ? "clear" as const
+          : "partial" as const,
+      orientationA: bothPresent ? "facing" as const : "indeterminate" as const,
+      orientationB: bothPresent ? "facing" as const : "indeterminate" as const,
+    };
+    if (
+      pair.distance !== desired.distance ||
+      pair.sight !== desired.sight ||
+      pair.sound !== desired.sound ||
+      pair.orientationA !== desired.orientationA ||
+      pair.orientationB !== desired.orientationB
+    ) {
+      operations.push({
+        op: "set_pair_relation",
+        entityAId: "character.a",
+        entityBId: "character.b",
+        ...desired,
+      });
+    }
+  }
+
+  const parsed = BattleWorldTransitionSchema.safeParse({
+    baseRevision: input.worldState.revision,
+    turn: input.turn,
+    sourceEventIds: [...new Set(input.sourceEventIds)].sort(),
+    operations,
+  });
+  if (!parsed.success) {
+    return {
+      ok: false,
+      error: parsed.error.issues[0]?.message ?? "invalid derived world transition",
+    };
+  }
+  return { ok: true, transition: parsed.data };
 }
 
 function transitionFailure(

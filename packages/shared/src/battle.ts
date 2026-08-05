@@ -11,7 +11,10 @@ import {
   SemanticObservationStateSchema,
   TurnSemanticPatchSchema,
 } from "./semantic-state.js";
-import { BattleWorldStateSchema } from "./battle-world.js";
+import {
+  BattleWorldStateSchema,
+  BattleWorldTransitionSchema,
+} from "./battle-world.js";
 import { DramaStateSchema } from "./drama.js";
 import {
   CharacterPerceptionFrameASchema,
@@ -537,6 +540,32 @@ export const BattleStateSchema = z.object({
         code: z.ZodIssueCode.custom,
         path: ["patch", "baseRevision"],
         message: "semantic transition patch revision mismatch",
+      });
+    }
+  }).optional(),
+  /** Latest server-owned mechanical world transition; never exposed publicly. */
+  latestWorldTransition: z.object({
+    turn: z.number().int().nonnegative(),
+    status: z.enum(["applied", "rejected", "skipped"]),
+    fromRevision: z.number().int().nonnegative(),
+    toRevision: z.number().int().nonnegative(),
+    transition: BattleWorldTransitionSchema.nullable(),
+  }).superRefine((worldTransition, ctx) => {
+    if (worldTransition.fromRevision > worldTransition.toRevision) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["fromRevision"],
+        message: "world transition revision order is invalid",
+      });
+    }
+    if (
+      worldTransition.transition &&
+      worldTransition.transition.baseRevision !== worldTransition.fromRevision
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["transition", "baseRevision"],
+        message: "world transition base revision mismatch",
       });
     }
   }).optional(),
