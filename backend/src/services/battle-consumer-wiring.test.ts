@@ -2,11 +2,15 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import {
   createBattleState,
+  buildCharacterSelfProfileAnchor,
   defaultParameters,
   ensureBattlePerceptionState,
   type CharacterSheet,
 } from "@kshiai/shared";
-import { buildCharacterAgentConsumerInput } from "./battle-service.js";
+import {
+  buildCharacterAgentConsumerInput,
+  buildNarratorProfileAnchors,
+} from "./battle-service.js";
 
 function sheet(id: string, displayName: string): CharacterSheet {
   const now = "2026-08-04T00:00:00.000Z";
@@ -79,6 +83,109 @@ describe("battle perception consumer wiring", () => {
       assert.equal("observation" in input, false);
       assert.equal(input.decision.availableActions.length > 0, true);
     }
+  });
+
+  it("grounds each agent in a frozen complete own profile", () => {
+    const sideA = sheet("a", "アオ");
+    sideA.identity = {
+      realName: null,
+      nicknames: [],
+      selfNames: ["わたし", "アオ"],
+      epithets: [],
+      gender: "女性",
+      age: null,
+    };
+    sideA.tags = ["精霊"];
+    sideA.appearance.summary = "人型ではない青い光";
+    sideA.basicAttack = {
+      name: "光波",
+      description: "光を波として放つ。",
+      targetParameter: "hp",
+      scalingParameter: "mag",
+      resistanceParameter: "res",
+      power: 1,
+    };
+    const sideB = sheet("b", "クロ");
+    sideB.identity = {
+      realName: "秘密の名",
+      nicknames: [],
+      selfNames: ["俺"],
+      epithets: [],
+      gender: "男性",
+      age: null,
+    };
+    const state = createBattleState({
+      id: "profile-consumer",
+      sideA,
+      sideB,
+      turnLimit: 20,
+      prologuePending: false,
+    });
+    const inputA = buildCharacterAgentConsumerInput({
+      state,
+      sheet: sideA,
+      side: "a",
+      previous: { ...previous, selfReference: "俺" },
+    });
+
+    assert.ok(inputA);
+    assert.equal(inputA.character.identity.gender, "女性");
+    assert.deepEqual(inputA.character.identity.selfNames, ["わたし", "アオ"]);
+    assert.equal(inputA.character.appearanceSummary, "人型ではない青い光");
+    assert.equal(inputA.character.basicAction.name, "光波");
+    assert.equal(inputA.previous.selfReference, "わたし");
+    assert.equal(Object.isFrozen(inputA.character), true);
+    assert.equal(Object.isFrozen(inputA.character.identity), true);
+    assert.equal("parameters" in inputA.character, false);
+    assert.equal(JSON.stringify(inputA.character).includes("秘密の名"), false);
+    assert.deepEqual(inputA.character, buildCharacterSelfProfileAnchor(sideA));
+  });
+
+  it("filters prologue and aftermath rendering anchors by narration focus", () => {
+    const sideA = sheet("a", "アオ");
+    sideA.identity = {
+      realName: null,
+      nicknames: [],
+      selfNames: ["わたし", "アオ"],
+      epithets: [],
+      gender: "女性",
+      age: null,
+    };
+    const sideB = sheet("b", "クロ");
+    sideB.identity = {
+      realName: null,
+      nicknames: [],
+      selfNames: [],
+      epithets: [],
+      gender: null,
+      age: null,
+    };
+
+    const self = buildNarratorProfileAnchors({
+      mine: sideA,
+      opp: sideB,
+      perspective: "self",
+      focus: "self",
+    });
+    const foe = buildNarratorProfileAnchors({
+      mine: sideA,
+      opp: sideB,
+      perspective: "fluid",
+      focus: "foe",
+    });
+    const external = buildNarratorProfileAnchors({
+      mine: sideA,
+      opp: sideB,
+      perspective: "external",
+      focus: "external",
+    });
+
+    assert.deepEqual(Object.keys(self), ["a"]);
+    assert.equal(self.a?.gender, "女性");
+    assert.deepEqual(Object.keys(foe), ["b"]);
+    assert.equal(foe.b?.gender, null);
+    assert.deepEqual(Object.keys(external).sort(), ["a", "b"]);
+    assert.equal(Object.isFrozen(external), true);
   });
 
   it("reveals counterpart name and condition only at the frame's knowledge level", () => {

@@ -4,6 +4,7 @@ import {
   BattlefieldSemanticSeedSchema,
   clampCoefficientMap,
   composeNarratorTurn,
+  canonicalSelfReference,
   defaultParameters,
   defaultRecord,
   type BattlefieldInstance,
@@ -24,7 +25,6 @@ import type {
   GenerateCharacterInput,
   GenerateImprovementPromptInput,
   GenerateImprovementPromptResult,
-  CharacterSpeechSource,
   JudgmentNarrationResult,
   LlmProvider,
   NarrationResult,
@@ -343,8 +343,7 @@ export class MockLlmProvider implements LlmProvider {
   }
 
   async advanceCharacterAgent(input: Parameters<LlmProvider["advanceCharacterAgent"]>[0]) {
-    const selfReference =
-      input.previous.selfReference ?? input.character.identity.selfNames[0] ?? "私";
+    const selfReference = canonicalSelfReference(input.character);
     const counterpartLabel = input.counterpart?.displayName ??
       input.perception.counterpart.perceivedAs;
     const event = [
@@ -362,8 +361,12 @@ export class MockLlmProvider implements LlmProvider {
         ? `（${counterpartLabel}の気配をうかがっている）`
         : "…"
       : input.perception.turn === 0
-        ? `${selfReference}は、${counterpartLabel}と向き合おう。`
-        : `${selfReference}は、まだ続けられる。`;
+        ? selfReference
+          ? `${selfReference}は、${counterpartLabel}と向き合おう。`
+          : `${counterpartLabel}と向き合おう。`
+        : selfReference
+          ? `${selfReference}は、まだ続けられる。`
+          : "まだ続けられる。";
     const ownReserveCritical = input.perception.reserveCues.some((cue) =>
       cue.subject.kind === "self" &&
       (cue.relativeBand === "critical" || cue.relativeBand === "empty")
@@ -482,29 +485,16 @@ export class MockLlmProvider implements LlmProvider {
     return { ...composed, speeches };
   }
 
-  async narratePrologue(input: {
-    scene: string;
-    sideAName: string;
-    sideBName: string;
-    sideABlurb?: string;
-    sideBBlurb?: string;
-    sideATraits?: string[];
-    sideBTraits?: string[];
-    policySummary?: string;
-    priorMatchSummary?: string;
-    battlefield?: BattlefieldInstance | null;
-    characterSpeeches?: readonly CharacterSpeechSource[];
-    styleInstruction?: string;
-    styleName?: string;
-    onProgress?: (progress: { lines: string[]; draft?: string | null }) => void;
-  }): Promise<NarrationResult> {
+  async narratePrologue(
+    input: Parameters<LlmProvider["narratePrologue"]>[0],
+  ): Promise<NarrationResult> {
     const place = input.battlefield?.displayName ?? input.scene;
     const styleNote = input.styleName ? `（${input.styleName}）` : "";
     const narrator = [
       `——開幕——${styleNote}`,
       `${place}に、${input.sideAName} と ${input.sideBName} が向かい合う。`,
       input.battlefield?.narrativeSetup ||
-        "場の空気が、二人の存在に応じてゆっくり変わっていく。",
+        "場の空気が、両者の存在に応じてゆっくり変わっていく。",
       input.sideABlurb
         ? `${input.sideAName} — ${input.sideABlurb.slice(0, 80)}`
         : `${input.sideAName} の気配が場を支配する。`,
@@ -513,7 +503,7 @@ export class MockLlmProvider implements LlmProvider {
         : `${input.sideBName} が相手の出方を静かに見つめる。`,
       input.priorMatchSummary
         ? `因縁 — ${input.priorMatchSummary}`
-        : "今、二人の初めての対決が始まる。",
+        : "今、両者の初めての対決が始まる。",
       input.policySummary
         ? `${input.sideAName} の心中に方針が灯る: ${input.policySummary}`
         : "",
@@ -535,21 +525,9 @@ export class MockLlmProvider implements LlmProvider {
     };
   }
 
-  async narrateAftermath(input: {
-    turn: number;
-    scene: string;
-    sideAName: string;
-    sideBName: string;
-    winnerSide: "a" | "b" | "draw" | null;
-    winnerName: string | null;
-    fallenNames: string[];
-    battlefield?: BattlefieldInstance | null;
-    recentNarration?: string[];
-    characterSpeeches?: readonly CharacterSpeechSource[];
-    styleInstruction?: string;
-    styleName?: string;
-    onProgress?: (progress: { lines: string[]; draft?: string | null }) => void;
-  }): Promise<NarrationResult> {
+  async narrateAftermath(
+    input: Parameters<LlmProvider["narrateAftermath"]>[0],
+  ): Promise<NarrationResult> {
     const place = input.battlefield?.displayName ?? input.scene;
     const fallen = input.fallenNames.join("と") || "続行できなくなった者";
     const fieldBit = input.battlefield?.conditions?.[0] || input.battlefield?.terrain;

@@ -29,6 +29,9 @@ milestone RULES_READY:
 milestone WORLD_MODEL_READY:
   title "Coarse canonical world and state model ready"
 
+milestone PROFILE_GROUNDED:
+  title "Character self profile and narrator identity grounding ready"
+
 milestone PERCEPTION_BASE_READY:
   title "Initial and continuous perception ready"
 
@@ -109,7 +112,26 @@ task T_WORLD_MODEL RULES_READY -> WORLD_MODEL_READY:
   requires:
     DEV 1
 
-task T_PERCEPTION_BASE WORLD_MODEL_READY -> PERCEPTION_BASE_READY:
+task T_PROFILE_GROUNDING WORLD_MODEL_READY -> PROFILE_GROUNDED:
+  title "Ground character self identity separately from narrator rendering"
+  description |
+    Close BL-012. Preserve the reported gender and self-profile drift as an
+    unresolved provenance question because the example predates the narrator
+    boundary and role-specific outputs are unavailable. Give each character
+    agent a frozen complete own-profile anchor and state that canonical profile
+    facts override contradictory private continuity while null facts remain
+    unknown. Give prologue normal-turn and aftermath narrators a separate
+    rendering-only identity anchor sufficient to avoid misgendering without
+    writing it into cognition or leaking counterpart-private facts through a
+    character-limited view. Add independent fixtures for character output and
+    narrator output including explicit gender null gender multiple self names
+    and nonhuman or appearance-atypical profiles.
+  duration 2d
+  status done
+  requires:
+    DEV 1
+
+task T_PERCEPTION_BASE PROFILE_GROUNDED -> PERCEPTION_BASE_READY:
   title "Build realistic initial perception and explicit access continuity"
   description |
     Close BL-021 and BL-022. Derive initial A and B frames from setup and the
@@ -273,3 +295,16 @@ work_event WE-83e7805d78197baa6a2ae682efefe1de7963fab2d986ab4e33a86c2e809b97c9:
   task T_WORLD_MODEL
   kind finish
   occurred_at 2026-08-05T10:40:48+09:00
+
+work_event WE-89d42a059a98445e0fa735d3c3447553035b6d3217957211a1a13dd82a413546:
+  model 1
+  task T_PROFILE_GROUNDING
+  kind start
+  occurred_at 2026-08-05T10:54:22+09:00
+  planned_value 2d
+
+work_event WE-54c2df2d477d8d6b6fa77a12226768fd86ca2dee9a4ed0dd3ac03422b26089bc:
+  model 1
+  task T_PROFILE_GROUNDING
+  kind finish
+  occurred_at 2026-08-05T11:07:18+09:00

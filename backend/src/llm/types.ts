@@ -6,6 +6,7 @@ import type {
   CharacterImprovementMemo,
   CharacterSheet,
   CharacterIdentity,
+  CharacterSelfProfileAnchor,
   CharacterAgentState,
   CharacterActionIntent,
   CharacterPerceptionFrame,
@@ -14,6 +15,7 @@ import type {
   NarrationFocus,
   NarrationPerspective,
   NarrationTurnView,
+  NarratorRenderingProfileAnchors,
   PerceivedCondition,
   Situation,
   TurnEvent,
@@ -319,13 +321,7 @@ export interface LlmProvider {
   }>;
   /** Advance one character from its frozen observer-relative frame only. */
   advanceCharacterAgent(input: {
-    character: {
-      displayName: string;
-      identity: CharacterIdentity;
-      traits: string[];
-      narrativeBlurb: string;
-      skillNames: string[];
-    };
+    character: CharacterSelfProfileAnchor;
     previous: CharacterAgentState;
     perception: CharacterPerceptionFrame;
     /** Present only when this frame identifies the counterpart. */
@@ -396,6 +392,8 @@ export interface LlmProvider {
     priorMatchSummary?: string;
     innerDigests?: InnerDigest[];
     characterSpeeches?: readonly CharacterSpeechSource[];
+    /** Rendering-only identity constraints, filtered for the resolved focus. */
+    profileAnchors: NarratorRenderingProfileAnchors;
     focus?: NarrationFocus;
     perspective?: NarrationPerspective;
     battlefield?: BattlefieldInstance | null;
@@ -419,6 +417,8 @@ export interface LlmProvider {
     recentNarration?: string[];
     innerDigests?: InnerDigest[];
     characterSpeeches?: readonly CharacterSpeechSource[];
+    /** Rendering-only identity constraints, filtered for the resolved focus. */
+    profileAnchors: NarratorRenderingProfileAnchors;
     focus?: NarrationFocus;
     perspective?: NarrationPerspective;
     styleInstruction?: string;

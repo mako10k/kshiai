@@ -1,11 +1,44 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import {
+  buildCharacterSelfProfileAnchor,
+  defaultParameters,
+  type CharacterSheet,
+} from "@kshiai/shared";
+import {
   acceptCharacterAgentResult,
   buildJudgmentNarrativeBlock,
   buildRefereeTurnFacts,
   finalizeCharacterSpeeches,
 } from "./battle-service.js";
+
+function profile(selfNames: string[]) {
+  const sheet: CharacterSheet = {
+    id: "a",
+    ownerUserId: "owner",
+    displayName: "A",
+    identity: {
+      realName: null,
+      nicknames: [],
+      selfNames,
+      epithets: [],
+      gender: null,
+      age: null,
+    },
+    tags: [],
+    createdAt: "2026-08-05T00:00:00.000Z",
+    updatedAt: "2026-08-05T00:00:00.000Z",
+    appearance: { summary: "Aの姿", visualPrompt: "test" },
+    traits: [],
+    parameters: defaultParameters(),
+    skills: [],
+    weapon: null,
+    armor: null,
+    combatFlags: { canFight: true, irreversibleIncapacitated: false },
+    narrativeBlurb: "Aの物語。",
+  };
+  return buildCharacterSelfProfileAnchor(sheet);
+}
 
 describe("character-authored public speech", () => {
   it("keeps character facts authoritative while accepting placement and punctuation", () => {
@@ -80,6 +113,7 @@ describe("character-authored public speech", () => {
       side: "a",
       speaker: "A",
       previous,
+      profile: profile(["私"]),
       result: {
         state: {
           ...previous,
@@ -105,8 +139,43 @@ describe("character-authored public speech", () => {
     });
 
     assert.equal(accepted.state.lastSpeech, "まだ決着ではない。");
+    assert.equal(accepted.state.selfReference, "私");
     assert.equal(publicSpeeches[0]?.text, "まだ決着ではない。");
     assert.equal(accepted.state.lastSpeech, "まだ決着ではない。");
+  });
+
+  it("overrides contradictory continuity with canonical self names", () => {
+    const previous = {
+      privateMemory: "",
+      currentGoal: "",
+      emotion: "平静",
+      beliefs: [],
+      observations: [],
+      speechStyle: "",
+      selfReference: "俺",
+      lastSpeech: null,
+    };
+    const accepted = acceptCharacterAgentResult({
+      side: "a",
+      speaker: "A",
+      previous,
+      profile: profile(["わたし", "A"]),
+      result: {
+        state: { ...previous, selfReference: "僕" },
+        speech: "まだ続けられる。",
+        nextAction: { kind: "wait" },
+      },
+    });
+    const missing = acceptCharacterAgentResult({
+      side: "a",
+      speaker: "A",
+      previous,
+      profile: profile([]),
+      result: null,
+    });
+
+    assert.equal(accepted.state.selfReference, "わたし");
+    assert.equal(missing.state.selfReference, null);
   });
 
   it("bounds invalid or out-of-range narrator placement", () => {

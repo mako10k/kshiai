@@ -20,6 +20,11 @@ import type {
   NarrationFocus,
   NarrationPerspective,
 } from "./narration-perspective.js";
+import {
+  selectNarratorRenderingProfileAnchors,
+  type NarratorRenderingProfileAnchor,
+  type NarratorRenderingProfileAnchors,
+} from "./profile-grounding.js";
 
 export type NarrationPerceptionProjectionInput = {
   perspective: NarrationPerspective;
@@ -508,6 +513,8 @@ export type NarrationTurnView = {
     a: string;
     b: string;
   };
+  /** Presentation-only constraints selected for this narrator perspective. */
+  profileAnchors: NarratorRenderingProfileAnchors;
   events: Array<{ summary: string }>;
   actionBeats: NarrationTurnViewActionBeat[];
   battlefield: {
@@ -524,6 +531,8 @@ export type NarrationTurnViewInput = {
   focus: NarrationFocus;
   sideALabel: string;
   sideBLabel: string;
+  profileAnchorA: NarratorRenderingProfileAnchor;
+  profileAnchorB: NarratorRenderingProfileAnchor;
   perception: NarrationPerceptionView;
   semanticState: BattleSemanticState;
   publicObservation: SemanticObservationState;
@@ -677,6 +686,11 @@ export function buildNarrationTurnView(
     scene: sanitize(input.scene),
     perception: input.perception,
     participantLabels: participants,
+    profileAnchors: selectNarratorRenderingProfileAnchors({
+      mode: input.perception.mode,
+      sideA: input.profileAnchorA,
+      sideB: input.profileAnchorB,
+    }),
     events: frame
       ? characterPerceptEvents(frame)
       : input.events.map((event) => ({ summary: sanitize(event.summary) })),

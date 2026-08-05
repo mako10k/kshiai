@@ -53,8 +53,12 @@ import {
   lockedFocusFromPerspective,
   needsFocusChoice,
   selectDigestsForFocus,
-  defaultCharacterIdentity,
   defaultBasicAttack,
+  buildCharacterSelfProfileAnchor,
+  buildNarratorRenderingProfileAnchor,
+  canonicalSelfReference,
+  narratorProfileAccessMode,
+  selectNarratorRenderingProfileAnchors,
   advanceDramaState,
   dramaPhaseForTurn,
   dramaProgressionHint,
@@ -573,6 +577,40 @@ function initialAgentState(sheet: CharacterSheet): CharacterAgentState {
   };
 }
 
+function groundCharacterAgentState(
+  sheet: CharacterSheet,
+  state: CharacterAgentState,
+): CharacterAgentState {
+  return {
+    ...state,
+    selfReference: canonicalSelfReference(
+      buildCharacterSelfProfileAnchor(sheet),
+    ),
+  };
+}
+
+export function buildNarratorProfileAnchors(input: {
+  mine: CharacterSheet;
+  opp: CharacterSheet;
+  perspective: NarrationPerspective;
+  focus: NarrationFocus;
+}) {
+  return selectNarratorRenderingProfileAnchors({
+    mode: narratorProfileAccessMode({
+      perspective: input.perspective,
+      focus: input.focus,
+    }),
+    sideA: buildNarratorRenderingProfileAnchor({
+      sheet: input.mine,
+      side: "a",
+    }),
+    sideB: buildNarratorRenderingProfileAnchor({
+      sheet: input.opp,
+      side: "b",
+    }),
+  });
+}
+
 function buildCharacterDecisionContext(input: {
   state: BattleState;
   sheet: CharacterSheet;
@@ -700,15 +738,13 @@ export function buildCharacterAgentConsumerInput(input: {
         ),
       }
     : undefined;
+  const character = buildCharacterSelfProfileAnchor(input.sheet);
   return {
-    character: {
-      displayName: input.sheet.displayName,
-      identity: input.sheet.identity ?? defaultCharacterIdentity(),
-      traits: input.sheet.traits,
-      narrativeBlurb: input.sheet.narrativeBlurb,
-      skillNames: input.sheet.skills.map((skill) => skill.name),
-    },
-    previous: structuredClone(input.previous),
+    character,
+    previous: structuredClone({
+      ...input.previous,
+      selfReference: canonicalSelfReference(character),
+    }),
     perception: deepFreezeConsumerInput(structuredClone(frame)),
     ...(counterpartKnowledge ? { counterpart: counterpartKnowledge } : {}),
     decision: buildCharacterDecisionContext({
@@ -734,10 +770,18 @@ async function advanceCharacterAgents(input: {
     events: input.events,
     actions: input.actions,
   });
-  const previousA = input.after.agentStateA ?? initialAgentState(input.mine);
-  const previousB = input.after.agentStateB ?? initialAgentState(input.opp);
+  const previousA = groundCharacterAgentState(
+    input.mine,
+    input.after.agentStateA ?? initialAgentState(input.mine),
+  );
+  const previousB = groundCharacterAgentState(
+    input.opp,
+    input.after.agentStateB ?? initialAgentState(input.opp),
+  );
   const stateWithRecord: BattleState = {
     ...input.after,
+    agentStateA: previousA,
+    agentStateB: previousB,
     turnRecords: [...(input.after.turnRecords ?? []), record].slice(-50),
   };
   const inputA = buildCharacterAgentConsumerInput({
@@ -787,12 +831,14 @@ async function advanceCharacterAgents(input: {
     previous: previousA,
     side: "a",
     speaker: input.after.sideA.displayName,
+    profile: inputA.character,
   });
   const acceptedB = acceptCharacterAgentResult({
     result: agentB,
     previous: previousB,
     side: "b",
     speaker: input.after.sideB.displayName,
+    profile: inputB.character,
   });
   return {
     state: {
@@ -831,10 +877,15 @@ export function acceptCharacterAgentResult(input: {
   previous: CharacterAgentState;
   side: "a" | "b";
   speaker: string;
+  profile: Parameters<LlmProvider["advanceCharacterAgent"]>[0]["character"];
 }) {
+  const selfReference = canonicalSelfReference(input.profile);
   if (!input.result) {
     return {
-      state: input.previous,
+      state: {
+        ...input.previous,
+        selfReference,
+      },
       nextAction: undefined,
       speech: null,
     };
@@ -843,6 +894,7 @@ export function acceptCharacterAgentResult(input: {
   return {
     state: {
       ...input.result.state,
+      selfReference,
       lastSpeech: text,
     },
     nextAction: input.result.nextAction,
@@ -1760,6 +1812,14 @@ async function advanceTurnWithLease(input: {
           focus,
           sideALabel: next.sideA.displayName,
           sideBLabel: next.sideB.displayName,
+          profileAnchorA: buildNarratorRenderingProfileAnchor({
+            sheet: mine,
+            side: "a",
+          }),
+          profileAnchorB: buildNarratorRenderingProfileAnchor({
+            sheet: opp,
+            side: "b",
+          }),
           perception: perceptionView,
           semanticState: next.semanticState,
           publicObservation: next.observationStatePublic,
@@ -2160,6 +2220,12 @@ async function runPrologueTurn(input: {
     perspective,
     focus,
   });
+  const profileAnchors = buildNarratorProfileAnchors({
+    mine: input.mine,
+    opp: input.opp,
+    perspective,
+    focus,
+  });
 
   emit({ type: "phase", phase: "narrating" });
   let narrative;
@@ -2169,15 +2235,20 @@ async function runPrologueTurn(input: {
         scene: state.situation.scene,
         sideAName: state.sideA.displayName,
         sideBName: state.sideB.displayName,
-        sideABlurb: input.mine.narrativeBlurb,
-        sideBBlurb: input.opp.narrativeBlurb,
-        sideATraits: input.mine.traits,
-        sideBTraits: input.opp.traits,
+        sideABlurb: profileAnchors.a
+          ? input.mine.narrativeBlurb
+          : undefined,
+        sideBBlurb: profileAnchors.b
+          ? input.opp.narrativeBlurb
+          : undefined,
+        sideATraits: profileAnchors.a ? input.mine.traits : undefined,
+        sideBTraits: profileAnchors.b ? input.opp.traits : undefined,
         policySummary: policyLine,
         priorMatchSummary: state.priorMatchSummary ?? undefined,
         battlefield: state.battlefield,
         innerDigests: digests,
         characterSpeeches,
+        profileAnchors,
         focus,
         perspective,
         styleInstruction: state.narrationStyle?.instruction,
@@ -2334,6 +2405,12 @@ async function runAftermathTurn(input: {
           .slice(-8),
         innerDigests: digests,
         characterSpeeches: [],
+        profileAnchors: buildNarratorProfileAnchors({
+          mine: input.mine,
+          opp: input.opp,
+          perspective,
+          focus,
+        }),
         focus,
         perspective,
         styleInstruction: state.narrationStyle?.instruction,

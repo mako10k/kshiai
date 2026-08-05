@@ -18,6 +18,7 @@ import {
   coalesceNonEmptyList,
   defaultParameters,
   coerceCharacterSpeech,
+  canonicalSelfReference,
   extractStreamingNarrator,
   focusInstruction,
   isStageReaction,
@@ -68,6 +69,11 @@ import { reviewedPerceptionTopology } from "./perception-topology.js";
 const NARRATION_IDENTIFIER_RULES = `Identifier containment is mandatory. Values used as IDs, controlId, perceptId, contact IDs, entity keys, action IDs, event IDs, or JSON paths are non-linguistic control metadata.
 NEVER copy, quote, speak, parenthesize, or use any such identifier as a name in narrator lines, speaker fields, or speech text. Use the matching renderLabel or supplied human display name only.
 If a subjective view marks a subject unknown, suspected, unperceived, or unidentifiable, preserve that uncertainty and never infer the hidden identity from another input field.`;
+
+const NARRATION_PROFILE_RULES = `profileAnchors are presentation-only canonical wording constraints, not observations, actions, events, or permission to reveal private profile facts.
+Never contradict a non-null gender, age, self-name, display name, or appearance in an available anchor. Do not announce or explain any fact merely because it appears in an anchor.
+When an anchor is absent, or gender/age/selfNames is null or empty, use the supplied participant label or neutral Japanese wording. Never infer gender, age, anatomy, species, pronouns, or a legal identity from names, style, role, traits, speech, or appearance.
+Never write profileAnchors into a character's cognition, memory, world state, effects, or result.`;
 
 function normalizedSpeechFacts(value: string): string {
   return value.normalize("NFKC").replace(/[\s「」『』（）()、。！？!?…・]/g, "");
@@ -1179,13 +1185,14 @@ Rules:
     try {
       const data = (await this.chatJson(
         `You maintain one fictional character's private continuity during a confrontation. It may be physical, ranged, technological, psychic, social, comedic, cute, or abstract. Preserve the character's own way of acting and never introduce swords, wounds, or martial language unless supplied by the profile or events.
-You see only this character's profile, previous compact state, validated available actions, and one immutable observer-relative perception frame whose observer.self is explicitly "self".
+You see only this character's frozen canonical own-profile anchor, previous compact state, validated available actions, and one immutable observer-relative perception frame whose observer.self is explicitly "self".
+The character profile is authoritative over contradictory previous continuity or generated prose. Preserve every established non-null identity, gender, age, self-name, appearance, trait, capability, and equipment fact. Null or empty profile fields remain unknown: never fill them from stereotypes, displayName, previous state, counterpart, narration style, or perception.
 The perception frame is authoritative. Preserve currentAccess, identityKnowledge, occurrence certainty, attribution certainty, qualitative magnitude, and reserve bands. Never infer a canonical identity, exact location, or current condition behind an unknown, suspected, inaccessible, contact, or ambient subject.
 counterpart is present only when identityKnowledge is identified. Its condition is absent unless current access supports it; never reconstruct a missing name or condition from control IDs or other fields.
 All IDs, contact IDs, percept IDs, skillId, and JSON keys are non-linguistic control metadata. Copy skillId only into nextAction when selecting that validated action; never place an ID into privateMemory, goals, beliefs, observations, speechStyle, selfReference, lastSpeech, or speech.
 Update conclusions and disposition; never invent confrontation results, mutate the frame, or invent numeric changes.
 Do not output chain-of-thought or step-by-step reasoning. privateMemory is a concise continuity summary only.
-Keep selfReference stable when already established. Any spoken line must consistently use that self-reference and the character's established speechStyle.
+selfReference MUST equal character.identity.selfNames[0] when present, even if previous state disagrees. When selfNames is empty, selfReference MUST be null and speech must avoid inventing a first-person name or pronoun. Any spoken line must consistently use the canonical self-reference and the character's established speechStyle.
 Return JSON only:
 {
   "state": {
@@ -1216,12 +1223,11 @@ The narrator may later choose this line's display position and punctuation, but 
         },
       )) as Record<string, unknown>;
       const previous = input.previous;
+      const selfReference = canonicalSelfReference(input.character);
       const parsed = CharacterAgentStateSchema.safeParse({
         ...previous,
         ...(data.state && typeof data.state === "object" ? data.state : {}),
-        selfReference:
-          previous.selfReference ??
-          ((data.state as { selfReference?: unknown } | undefined)?.selfReference ?? null),
+        selfReference,
       });
       if (!parsed.success) throw new Error("Character agent returned invalid state");
       const speech = coerceCharacterSpeech(
@@ -1355,6 +1361,7 @@ JSON only: { "focus": "self"|"foe"|"external"|"both" }`,
 ${styleBlock}
 ${focusBlock}
 ${NARRATION_IDENTIFIER_RULES}
+${NARRATION_PROFILE_RULES}
 Perspective gate overrides style instruction: never reveal inner life that is not present in innerDigests.
 For self or opponent mode, the embedded frame is the complete observation boundary. Preserve unidentified contacts, missing attribution, inaccessible subjects, and qualitative-only effect or reserve cues. Do not reconstruct facts omitted from view.
 Use view.battlefield flavor sparingly — scenery is seasoning, not the meal.
@@ -1467,25 +1474,9 @@ Do not mention numeric HP/MP/ATK values.`,
     });
   }
 
-  async narratePrologue(input: {
-    scene: string;
-    sideAName: string;
-    sideBName: string;
-    sideABlurb?: string;
-    sideBBlurb?: string;
-    sideATraits?: string[];
-    sideBTraits?: string[];
-    policySummary?: string;
-    priorMatchSummary?: string;
-    innerDigests?: InnerDigest[];
-    characterSpeeches?: readonly CharacterSpeechSource[];
-    focus?: NarrationFocus;
-    perspective?: NarrationPerspective;
-    battlefield?: BattlefieldInstance | null;
-    styleInstruction?: string;
-    styleName?: string;
-    onProgress?: (progress: NarrationStreamProgress) => void;
-  }): Promise<NarrationResult> {
+  async narratePrologue(
+    input: Parameters<LlmProvider["narratePrologue"]>[0],
+  ): Promise<NarrationResult> {
     if (!this.client) return this.fallback.narratePrologue(input);
     try {
       const styleBlock = input.styleInstruction?.trim()
@@ -1500,6 +1491,7 @@ Do not mention numeric HP/MP/ATK values.`,
 ${styleBlock}
 ${focusInstruction(focus)}
 ${NARRATION_IDENTIFIER_RULES}
+${NARRATION_PROFILE_RULES}
 Include: atmosphere of the field, each participant's opening presence, and rivalry or fate (因縁).
 ${rivalryRule}
 No combat resolution yet. No numeric stats.
@@ -1521,6 +1513,7 @@ JSON: { "turn": 0, "narrator": string[], "speeches": [ { "sourceSide": "a"|"b", 
           policyHint: input.policySummary,
           priorMatch: input.priorMatchSummary ?? null,
           focus,
+          profileAnchors: input.profileAnchors,
           innerDigests: input.innerDigests ?? [],
           characterSpeeches: input.characterSpeeches ?? [],
           field: input.battlefield
@@ -1571,24 +1564,9 @@ JSON: { "turn": 0, "narrator": string[], "speeches": [ { "sourceSide": "a"|"b", 
     }
   }
 
-  async narrateAftermath(input: {
-    turn: number;
-    scene: string;
-    sideAName: string;
-    sideBName: string;
-    winnerSide: "a" | "b" | "draw" | null;
-    winnerName: string | null;
-    fallenNames: string[];
-    battlefield?: BattlefieldInstance | null;
-    recentNarration?: string[];
-    innerDigests?: InnerDigest[];
-    characterSpeeches?: readonly CharacterSpeechSource[];
-    focus?: NarrationFocus;
-    perspective?: NarrationPerspective;
-    styleInstruction?: string;
-    styleName?: string;
-    onProgress?: (progress: NarrationStreamProgress) => void;
-  }): Promise<NarrationResult> {
+  async narrateAftermath(
+    input: Parameters<LlmProvider["narrateAftermath"]>[0],
+  ): Promise<NarrationResult> {
     if (!this.client) return this.fallback.narrateAftermath(input);
     try {
       const styleBlock = input.styleInstruction?.trim()
@@ -1600,6 +1578,7 @@ JSON: { "turn": 0, "narrator": string[], "speeches": [ { "sourceSide": "a"|"b", 
 ${styleBlock}
 ${focusInstruction(focus)}
 ${NARRATION_IDENTIFIER_RULES}
+${NARRATION_PROFILE_RULES}
 Someone is already incapacitated. Show what becomes of the fallen and how the winner (if any) closes the scene.
 Use battlefield flavor. Keep it emotional / cinematic but short (3–6 narrator lines).
 Only characterSpeeches may become public speech. Return each supplied line exactly once with its sourceSide and speaker; do not invent aftermath dialogue. You may change punctuation or typographic surface only when words, facts, intent, and dialogue/stage-reaction distinction remain unchanged. Choose afterNarratorLine for placement.
@@ -1613,6 +1592,7 @@ JSON: { "turn": number, "narrator": string[], "speeches": [ { "sourceSide": "a"|
           winnerName: input.winnerName,
           fallen: input.fallenNames,
           focus,
+          profileAnchors: input.profileAnchors,
           innerDigests: input.innerDigests ?? [],
           characterSpeeches: input.characterSpeeches ?? [],
           field: input.battlefield
