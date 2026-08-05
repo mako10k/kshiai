@@ -7,6 +7,7 @@ import {
   BasicAttackProfileSchema,
   BattlefieldSemanticSeedSchema,
   PerceptionEvidenceSetSchema,
+  NarratorRecognitionUpdateSchema,
   TurnSemanticPatchSchema,
   CharacterAgentStateSchema,
   CharacterActionIntentSchema,
@@ -18,6 +19,7 @@ import {
   coalesceNonEmptyList,
   defaultParameters,
   coerceCharacterSpeech,
+  coerceSpeakerDisplayLabel,
   canonicalSelfReference,
   extractStreamingNarrator,
   focusInstruction,
@@ -33,6 +35,7 @@ import {
   type InnerDigest,
   type NarrationFocus,
   type NarrationPerspective,
+  type NarratorRecognitionUpdate,
 } from "@kshiai/shared";
 import type {
   AdjustBattlefieldResult,
@@ -76,8 +79,50 @@ Never contradict a non-null gender, age, self-name, display name, or appearance 
 When an anchor is absent, or gender/age/selfNames is null or empty, use the supplied participant label or neutral Japanese wording. Never infer gender, age, anatomy, species, pronouns, or a legal identity from names, style, role, traits, speech, or appearance.
 Never write profileAnchors into a character's cognition, memory, world state, effects, or result.`;
 
+const NARRATION_CONTINUITY_RULES = `Narrator continuity is bounded presentation memory, not new world evidence and never character cognition. Current view/perception remains authoritative for present access and attribution. Reader-known labels must not become character knowledge, and remembered identity must not make a currently uncertain voice certain.
+When an existing recognition has continuity same_entity, keep recognizing that subject as recognizedAs even if current access becomes weak or absent. Do not reset it to an unknown person or voice merely because a turn changed, the viewpoint changed, or only the voice is currently available. possibly_same_entity may lower attribution wording while retaining the remembered identity; unlinked means the currently perceived form is not established as that remembered subject.
+When focus permits innerDigests and a non-empty interior conclusion is supplied, weave at least one concise inner beat into the prose without exposing chain-of-thought. External focus must remain observable-only.`;
+
+const NARRATOR_RECOGNITION_RULES = `recognitionUpdates are narrator-only cognition returned in this same narration response; they never change character cognition, canonical events, world state, or battle mechanics.
+Each subjectRef must exactly match one recognitionSubjects subjectRef supplied to this call. Never place subjectRef in prose or a speaker label. Emit an update only when the current view supports recognizing, questioning, or unlinking that subject. Omission preserves the prior recognition. same_entity preserves an already identified recognizedAs; temporary occlusion, weak audio, turn changes, and viewpoint switches alone are not identity changes.`;
+
 function normalizedSpeechFacts(value: string): string {
   return value.normalize("NFKC").replace(/[\s「」『』（）()、。！？!?…・]/g, "");
+}
+
+/** Canonical speaker names stay server-side; narration receives only view-safe rendering data. */
+function narratorVisibleCharacterSpeeches(
+  sources: readonly CharacterSpeechSource[],
+) {
+  return sources.map((source) => ({
+    sourceSide: source.side,
+    text: source.text,
+    displayLabel: source.displayLabel ?? "発話者",
+    displayContext: source.displayContext ?? null,
+  }));
+}
+
+function normalizeNarratorRecognitionUpdates(
+  raw: unknown,
+): NarratorRecognitionUpdate[] {
+  if (!Array.isArray(raw)) return [];
+  const updates = new Map<string, NarratorRecognitionUpdate>();
+  for (const candidate of raw.slice(0, 16)) {
+    if (!candidate || typeof candidate !== "object") continue;
+    const row = candidate as Record<string, unknown>;
+    const subjectRef = typeof row.subjectRef === "string"
+      ? row.subjectRef.trim().slice(0, 160)
+      : "";
+    const recognizedAs = coerceSpeakerDisplayLabel(row.recognizedAs, "");
+    const parsed = NarratorRecognitionUpdateSchema.safeParse({
+      subjectRef,
+      recognizedAs,
+      identityKnowledge: row.identityKnowledge,
+      continuity: row.continuity,
+    });
+    if (parsed.success) updates.set(parsed.data.subjectRef, parsed.data);
+  }
+  return [...updates.values()];
 }
 
 function parseGeneratedSkill(raw: unknown) {
@@ -249,6 +294,43 @@ export class OpenAiCompatibleProvider implements LlmProvider {
       throw e;
     } finally {
       clearTimeout(timer);
+    }
+  }
+
+  async prepareBattleEncounter(
+    input: Parameters<LlmProvider["prepareBattleEncounter"]>[0],
+  ): ReturnType<LlmProvider["prepareBattleEncounter"]> {
+    if (!this.client) return this.fallback.prepareBattleEncounter(input);
+    try {
+      const data = await this.chatJson(
+        `Prepare immutable presentation and relationship terms for one fictional confrontation.
+Return JSON only:
+{
+  "participants": {
+    "a": { "battleLabel": string },
+    "b": { "battleLabel": string }
+  },
+  "social": {
+    "a": { "relationshipLabel": string, "counterpartAddress": string, "selfReference": string|null },
+    "b": { "relationshipLabel": string, "counterpartAddress": string, "selfReference": string|null }
+  },
+  "openingSummary": string
+}
+Rules:
+- battleLabel is a short unique name used only in this battle; prefer an established nickname or display name.
+- relationship and address are asymmetric and may reflect supplied profile or prior-match facts, but must not invent kinship, romance, history, gender, or identity.
+- selfReference must be exactly one supplied selfNames value or null.
+- openingSummary is factual, short Japanese prose grounded only in supplied characters, field, and prior match.
+- Do not decide mechanics, perception access, disguise, transformation, winner, actions, or speech.`,
+        JSON.stringify(input),
+        { tier: "fast", label: "prepareBattleEncounter", temperature: 0.35 },
+      );
+      return data as Awaited<ReturnType<LlmProvider["prepareBattleEncounter"]>>;
+    } catch (error) {
+      return this.fallbackOrThrow(
+        error,
+        () => this.fallback.prepareBattleEncounter(input),
+      );
     }
   }
 
@@ -1203,13 +1285,20 @@ counterpart is present only when identityKnowledge is identified. Its condition 
 All IDs, contact IDs, percept IDs, skillId, and JSON keys are non-linguistic control metadata. Copy skillId only into nextAction when selecting that validated action; never place an ID into privateMemory, goals, beliefs, observations, speechStyle, selfReference, lastSpeech, or speech.
 Update conclusions and disposition; never invent confrontation results, mutate the frame, or invent numeric changes.
 Do not output chain-of-thought or step-by-step reasoning. privateMemory is a concise continuity summary only.
-selfReference MUST equal character.identity.selfNames[0] when present, even if previous state disagrees. When selfNames is empty, selfReference MUST be null and speech must avoid inventing a first-person name or pronoun. Any spoken line must consistently use the canonical self-reference and the character's established speechStyle.
+selfReference MUST equal social.selfReference when supplied and non-null; otherwise it MUST equal character.identity.selfNames[0] when present. When both are unavailable, selfReference MUST be null and speech must avoid inventing a first-person name or pronoun. social is frozen relationship context, not permission to invent history or current perception. Any spoken line must consistently use the selected self-reference and the character's established speechStyle.
 Return JSON only:
 {
   "state": {
     "privateMemory": string, "currentGoal": string, "emotion": string,
     "beliefs": string[], "observations": string[], "speechStyle": string,
-    "selfReference": string|null, "lastSpeech": string|null
+    "selfReference": string|null, "lastSpeech": string|null,
+    "interior": {
+      "primaryEmotion": string, "concealedEmotion": string|null,
+      "unspokenIntent": string, "currentConcern": string,
+      "attitudeTowardCounterpart": string,
+      "confidence": "low"|"steady"|"high",
+      "relationshipTension": string
+    }
   },
   "speech": string,
   "nextAction"?: {
@@ -1232,7 +1321,8 @@ The narrator may later choose this line's display position and punctuation, but 
         },
       )) as Record<string, unknown>;
       const previous = input.previous;
-      const selfReference = canonicalSelfReference(input.character);
+      const selfReference = input.social?.selfReference ??
+        canonicalSelfReference(input.character);
       const parsed = CharacterAgentStateSchema.safeParse({
         ...previous,
         ...(data.state && typeof data.state === "object" ? data.state : {}),
@@ -1387,6 +1477,8 @@ ${styleBlock}
 ${focusBlock}
 ${NARRATION_IDENTIFIER_RULES}
 ${NARRATION_PROFILE_RULES}
+${NARRATION_CONTINUITY_RULES}
+${NARRATOR_RECOGNITION_RULES}
 Perspective gate overrides style instruction: never reveal inner life that is not present in innerDigests.
 For self or opponent mode, the embedded frame is the complete observation boundary. Preserve unidentified contacts, missing attribution, inaccessible subjects, and qualitative-only effect or reserve cues. Do not reconstruct facts omitted from view.
 Use view.battlefield flavor sparingly — scenery is seasoning, not the meal.
@@ -1405,9 +1497,10 @@ Require one clear qualitative sentence about who gained or lost ground this turn
 Do not repeat or closely paraphrase recentNarration or either character's recentSpeeches.
 When drama.environmentBeatDue is true, incorporate only an environment change already present in view. Do not invent mechanical damage or bonuses.
 If view marks a finishing blow (とどめ / 決め手 / 戦闘不能), center the turn on that decisive action.
-characterSpeeches were already authored by isolated character agents from their own cognition and perception. Do not invent an additional line, speaker, claim, action, outcome, target, or attitude. Return every supplied line exactly once with the same sourceSide and speaker. You may change punctuation or typographic surface only when the words, factual content, intent, and stage-reaction/dialogue distinction remain unchanged. Choose afterNarratorLine (-1 before the first line, otherwise a zero-based narrator-line index) to place each speech naturally among the narrator lines.
+characterSpeeches were already authored by isolated character agents from their own cognition and perception. Return every supplied line exactly once with the same sourceSide. For each supplied line, freely write a natural speaker display label from the current view, its displayContext, and narratorContinuity; displayLabel is only a fallback. Preserve the viewpoint's uncertainty or misidentification. Do not reconstruct a canonical identity omitted from these presentation inputs. This label is rendering only. You may change punctuation or typographic surface only when the words, factual content, intent, and stage-reaction/dialogue distinction remain unchanged. Choose afterNarratorLine (-1 before the first line, otherwise a zero-based narrator-line index) to place each speech naturally among the narrator lines.
+You MAY add a speech or visible/audible reaction for a third-party or scene entity when the supplied view and scene state support that entity's presence and agency. For such a scene-authored line, set sourceSide to null. Do not use this permission to add another line for side A or B, or to invent an unsupported person, object agency, action, outcome, or private fact.
 Do not add a speech or reaction for an inaccessible counterpart; characterSpeeches is already filtered to the permitted speakers: ${JSON.stringify(requiredSpeakers)}.
-JSON: { "turn": number, "focus": "${focus}", "narrator": string[], "speeches": [ { "sourceSide": "a"|"b", "speaker": string, "text": string, "afterNarratorLine": number } ] }
+JSON: { "turn": number, "focus": "${focus}", "narrator": string[], "speeches": [ { "sourceSide": "a"|"b"|null, "speaker": string, "text": string, "afterNarratorLine": number } ], "recognitionUpdates": [ { "subjectRef": string, "recognizedAs": string, "identityKnowledge": "unknown"|"suspected"|"identified", "continuity": "same_entity"|"possibly_same_entity"|"unlinked" } ] }
 Do not mention numeric HP/MP/ATK values.`,
         JSON.stringify({
           view: input.view,
@@ -1416,7 +1509,9 @@ Do not mention numeric HP/MP/ATK values.`,
           recentSpeeches: input.recentSpeeches?.slice(-4) ?? [],
           drama: input.drama ?? null,
           innerDigests: input.innerDigests ?? [],
-          characterSpeeches: input.characterSpeeches ?? [],
+          characterSpeeches: narratorVisibleCharacterSpeeches(
+            input.characterSpeeches ?? [],
+          ),
         }),
         {
           tier: "fast",
@@ -1429,11 +1524,12 @@ Do not mention numeric HP/MP/ATK values.`,
         turn?: number;
         narrator?: string[];
         speeches?: Array<{
-          sourceSide?: "a" | "b";
+          sourceSide?: "a" | "b" | null;
           speaker?: string;
           text?: string;
           afterNarratorLine?: number;
         }>;
+        recognitionUpdates?: unknown;
       };
       const narrator = (data.narrator ?? [])
         .map((line) => String(line).trim())
@@ -1449,6 +1545,9 @@ Do not mention numeric HP/MP/ATK values.`,
         turn: input.view.turn,
         narrator,
         speeches,
+        recognitionUpdates: normalizeNarratorRecognitionUpdates(
+          data.recognitionUpdates,
+        ),
       };
     } catch (error) {
       return this.fallbackOrThrow(error, () => this.fallback.narrateTurn(input));
@@ -1457,7 +1556,7 @@ Do not mention numeric HP/MP/ATK values.`,
 
   private normalizeNarratorSpeeches(
     raw: Array<{
-      sourceSide?: "a" | "b";
+      sourceSide?: "a" | "b" | null;
       speaker?: string;
       text?: string;
       afterNarratorLine?: number;
@@ -1467,13 +1566,12 @@ Do not mention numeric HP/MP/ATK values.`,
   ): Array<{
     speaker: string;
     text: string;
-    sourceSide: "a" | "b";
+    sourceSide?: "a" | "b";
     afterNarratorLine: number;
   }> {
-    return sources.map((source, index) => {
+    const committed = sources.map((source, index) => {
       const candidate = (raw ?? []).find((row) =>
-        row.sourceSide === source.side ||
-        (row.sourceSide === undefined && row.speaker === source.speaker)
+        row.sourceSide === source.side
       );
       const proposed = coerceCharacterSpeech(candidate?.text);
       const factsPreserved = normalizedSpeechFacts(proposed) ===
@@ -1488,7 +1586,10 @@ Do not mention numeric HP/MP/ATK values.`,
         ? candidate!.afterNarratorLine!
         : fallbackPlacement;
       return {
-        speaker: source.speaker,
+        speaker: coerceSpeakerDisplayLabel(
+          candidate?.speaker,
+          source.displayLabel ?? source.speaker,
+        ),
         text: factsPreserved ? proposed : source.text,
         sourceSide: source.side,
         afterNarratorLine: Math.max(
@@ -1497,6 +1598,29 @@ Do not mention numeric HP/MP/ATK values.`,
         ),
       };
     });
+    const sceneSpeeches = (raw ?? []).flatMap((candidate, index) => {
+      if (candidate.sourceSide !== null) return [];
+      const speaker = coerceSpeakerDisplayLabel(candidate.speaker, "");
+      const speechText = typeof candidate.text === "string"
+        ? candidate.text.trim().slice(0, 400)
+        : "";
+      if (!speaker || !speechText) return [];
+      const fallbackPlacement = narratorLineCount <= 0
+        ? -1
+        : Math.min(index, narratorLineCount - 1);
+      const requestedPlacement = Number.isInteger(candidate.afterNarratorLine)
+        ? candidate.afterNarratorLine!
+        : fallbackPlacement;
+      return [{
+        speaker,
+        text: speechText,
+        afterNarratorLine: Math.max(
+          -1,
+          Math.min(requestedPlacement, narratorLineCount - 1),
+        ),
+      }];
+    }).slice(0, 4);
+    return [...committed, ...sceneSpeeches];
   }
 
   async narratePrologue(
@@ -1517,12 +1641,15 @@ ${styleBlock}
 ${focusInstruction(focus)}
 ${NARRATION_IDENTIFIER_RULES}
 ${NARRATION_PROFILE_RULES}
+${NARRATION_CONTINUITY_RULES}
+${NARRATOR_RECOGNITION_RULES}
 Include: atmosphere of the field, each participant's opening presence, and rivalry or fate (因縁).
+Every narratorContinuity.reader.disclosedTerms entry is an already-approved battle setup declaration. Include each entry exactly once, including a battleLabel-to-formal-name disclosure when they differ.
 ${rivalryRule}
 No combat resolution yet. No numeric stats.
-characterSpeeches were authored by the character agents before narration. Return each supplied line exactly once, keep its sourceSide and speaker, and do not invent another line. You may change punctuation or typographic surface only when words, facts, intent, and the dialogue/stage-reaction distinction remain unchanged. Choose afterNarratorLine to place each line among the narration.
+characterSpeeches were authored by the character agents before narration. Return each supplied line exactly once with its sourceSide and freely render its speaker label from displayContext and narratorContinuity; displayLabel is only a fallback. Preserve viewpoint uncertainty and do not reconstruct omitted canonical identity. You may change punctuation or typographic surface only when words, facts, intent, and the dialogue/stage-reaction distinction remain unchanged. Choose afterNarratorLine to place each line among the narration. You may additionally create a sourceSide-null speech or reaction only for a third-party or scene entity whose presence and agency are supported by the supplied scene/field; never add another line for side A or B.
 4–8 narrator lines.
-JSON: { "turn": 0, "narrator": string[], "speeches": [ { "sourceSide": "a"|"b", "speaker": string, "text": string, "afterNarratorLine": number } ] }`,
+JSON: { "turn": 0, "narrator": string[], "speeches": [ { "sourceSide": "a"|"b"|null, "speaker": string, "text": string, "afterNarratorLine": number } ], "recognitionUpdates": [ { "subjectRef": string, "recognizedAs": string, "identityKnowledge": "unknown"|"suspected"|"identified", "continuity": "same_entity"|"possibly_same_entity"|"unlinked" } ] }`,
         JSON.stringify({
           scene: input.scene,
           sideA: {
@@ -1540,7 +1667,11 @@ JSON: { "turn": 0, "narrator": string[], "speeches": [ { "sourceSide": "a"|"b", 
           focus,
           profileAnchors: input.profileAnchors,
           innerDigests: input.innerDigests ?? [],
-          characterSpeeches: input.characterSpeeches ?? [],
+          narratorContinuity: input.narratorContinuity ?? null,
+          recognitionSubjects: input.recognitionSubjects ?? [],
+          characterSpeeches: narratorVisibleCharacterSpeeches(
+            input.characterSpeeches ?? [],
+          ),
           field: input.battlefield
             ? {
                 name: input.battlefield.displayName,
@@ -1562,11 +1693,12 @@ JSON: { "turn": 0, "narrator": string[], "speeches": [ { "sourceSide": "a"|"b", 
         turn?: number;
         narrator?: string[];
         speeches?: Array<{
-          sourceSide?: "a" | "b";
+          sourceSide?: "a" | "b" | null;
           speaker?: string;
           text?: string;
           afterNarratorLine?: number;
         }>;
+        recognitionUpdates?: unknown;
       };
       const narrator = data.narrator?.length
         ? data.narrator
@@ -1582,6 +1714,9 @@ JSON: { "turn": 0, "narrator": string[], "speeches": [ { "sourceSide": "a"|"b", 
           data.speeches,
           input.characterSpeeches ?? [],
           narrator.length,
+        ),
+        recognitionUpdates: normalizeNarratorRecognitionUpdates(
+          data.recognitionUpdates,
         ),
       };
     } catch (error) {
@@ -1604,10 +1739,12 @@ ${styleBlock}
 ${focusInstruction(focus)}
 ${NARRATION_IDENTIFIER_RULES}
 ${NARRATION_PROFILE_RULES}
+${NARRATION_CONTINUITY_RULES}
+${NARRATOR_RECOGNITION_RULES}
 The server owns the already-decided outcome and will insert one immutable canonical result line between before and after. Do not state, restate, reinterpret, contradict, reverse, or add winner, loser, draw, incapacitation, recovery, or result claims. Use battlefield flavor and keep the framing short.
-Only characterSpeeches may become public speech. Return each supplied line exactly once with its sourceSide and speaker; do not invent aftermath dialogue. You may change punctuation or typographic surface only when words, facts, intent, and dialogue/stage-reaction distinction remain unchanged. Choose afterNarratorLine for placement.
+Return each supplied characterSpeech exactly once with its sourceSide. Freely render its speaker label from displayContext and narratorContinuity; displayLabel is only a fallback. Preserve viewpoint uncertainty and do not reconstruct omitted canonical identity. You may change punctuation or typographic surface only when words, facts, intent, and dialogue/stage-reaction distinction remain unchanged. Choose afterNarratorLine for placement. A sourceSide-null third-party or scene-entity reaction is allowed only when its presence and agency remain supported by the supplied aftermath scene; never add dialogue for side A or B.
 Do NOT invent a new fight, healing, or numeric stats.
-JSON: { "before": string[], "after": string[], "speeches": [ { "sourceSide": "a"|"b", "speaker": string, "text": string, "afterNarratorLine": number } ] }`,
+JSON: { "before": string[], "after": string[], "speeches": [ { "sourceSide": "a"|"b"|null, "speaker": string, "text": string, "afterNarratorLine": number } ], "recognitionUpdates": [ { "subjectRef": string, "recognizedAs": string, "identityKnowledge": "unknown"|"suspected"|"identified", "continuity": "same_entity"|"possibly_same_entity"|"unlinked" } ] }`,
         JSON.stringify({
           turn: input.turn,
           scene: input.scene,
@@ -1618,7 +1755,11 @@ JSON: { "before": string[], "after": string[], "speeches": [ { "sourceSide": "a"
           focus,
           profileAnchors: input.profileAnchors,
           innerDigests: input.innerDigests ?? [],
-          characterSpeeches: input.characterSpeeches ?? [],
+          narratorContinuity: input.narratorContinuity ?? null,
+          recognitionSubjects: input.recognitionSubjects ?? [],
+          characterSpeeches: narratorVisibleCharacterSpeeches(
+            input.characterSpeeches ?? [],
+          ),
           field: input.battlefield
             ? {
                 name: input.battlefield.displayName,
@@ -1638,11 +1779,12 @@ JSON: { "before": string[], "after": string[], "speeches": [ { "sourceSide": "a"
         before?: string[];
         after?: string[];
         speeches?: Array<{
-          sourceSide?: "a" | "b";
+          sourceSide?: "a" | "b" | null;
           speaker?: string;
           text?: string;
           afterNarratorLine?: number;
         }>;
+        recognitionUpdates?: unknown;
       };
       const lines = (value: unknown) => Array.isArray(value)
         ? value.map(String).map((line) => line.trim()).filter(Boolean).slice(0, 3)
@@ -1657,6 +1799,9 @@ JSON: { "before": string[], "after": string[], "speeches": [ { "sourceSide": "a"
           data.speeches,
           input.characterSpeeches ?? [],
           before.length + after.length + 2,
+        ),
+        recognitionUpdates: normalizeNarratorRecognitionUpdates(
+          data.recognitionUpdates,
         ),
       };
     } catch (error) {

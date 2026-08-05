@@ -847,6 +847,8 @@ export type NarrationControlReference = z.infer<
 >;
 
 export const ExternalNarrationReferenceSchema = z.object({
+  /** Opaque narrator-only continuity key; never a canonical entity ID. */
+  subjectRef: z.string().min(1).max(160).optional(),
   renderLabel: z.string().min(1).max(240),
   relation: NarrationReferenceRelationSchema,
 }).strict();

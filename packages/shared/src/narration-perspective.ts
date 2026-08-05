@@ -46,6 +46,13 @@ export const InnerDigestSchema = z.object({
   privateHint: z.string().optional(),
   speechStyle: z.string().optional(),
   selfReference: z.string().nullable().optional(),
+  primaryEmotion: z.string().optional(),
+  concealedEmotion: z.string().nullable().optional(),
+  unspokenIntent: z.string().optional(),
+  currentConcern: z.string().optional(),
+  attitudeTowardCounterpart: z.string().optional(),
+  confidence: z.enum(["low", "steady", "high"]).optional(),
+  relationshipTension: z.string().optional(),
 });
 export type InnerDigest = z.infer<typeof InnerDigestSchema>;
 
@@ -119,6 +126,15 @@ export function buildInnerDigest(input: {
     privateHint: (agent?.privateMemory ?? "").trim().slice(0, 280) || undefined,
     speechStyle: agent?.speechStyle?.trim() || undefined,
     selfReference: agent?.selfReference ?? null,
+    primaryEmotion: agent?.interior?.primaryEmotion?.trim() || undefined,
+    concealedEmotion: agent?.interior?.concealedEmotion?.trim() || null,
+    unspokenIntent: agent?.interior?.unspokenIntent?.trim() || undefined,
+    currentConcern: agent?.interior?.currentConcern?.trim() || undefined,
+    attitudeTowardCounterpart:
+      agent?.interior?.attitudeTowardCounterpart?.trim() || undefined,
+    confidence: agent?.interior?.confidence,
+    relationshipTension:
+      agent?.interior?.relationshipTension?.trim() || undefined,
   };
 }
 

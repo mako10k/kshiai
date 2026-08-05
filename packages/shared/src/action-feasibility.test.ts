@@ -85,7 +85,7 @@ describe("observer-safe action feasibility", () => {
     const basic = near.find((action) => action.kind === "basic_attack");
     assert.ok(basic);
     assert.equal(basic.target.perceivedAs, state.perceptionFrameA!.counterpart.perceivedAs);
-    assert.doesNotMatch(JSON.stringify(near), /ベータ/);
+    assert.match(JSON.stringify(near), /ベータ/);
 
     const farWorld = structuredClone(state.worldState!);
     farWorld.pairRelations[0]!.distance = "far";

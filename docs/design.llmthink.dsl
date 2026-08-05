@@ -623,3 +623,60 @@ decision D27 based_on PR27, D4, D14, D16, D23, D24, D25:
     prose; after the single narrator call, an exact server-owned ID-to-label map
     replaces any leaked known ID in narrator paragraphs and speeches without an
     LLM retry.
+
+problem PR28:
+  |
+    A selected opponent can remain an unidentified generic voice across turns,
+    public speech labels can inherit narrator wording instead of stable battle
+    identity, and fluid perspective has no independent A-view and B-view
+    presentation continuity. Compact character state also gives the narrator too
+    little bounded interior material for a consistent subjective account.
+
+evidence EV28:
+  |
+    New battles currently seed counterpart identity as unknown even though the
+    matchup names are selected, generic utterance labels can replace an equally
+    clear visual counterpart label, and narrator inputs are rebuilt from a short
+    public history window for only the selected turn focus.
+
+decision D28 based_on PR28, EV28, D1, D2, D16, D23, D24, D27:
+  |
+    At battle creation, build and persist one immutable EncounterContext from the
+    battlefield, frozen character profiles, and prior-match context. A setup LLM
+    may propose short collision-free battle labels, asymmetric relationship
+    descriptions, counterpart addresses, permitted self-references, and an
+    opening summary. The server validates length, uniqueness, and profile-backed
+    self-reference, then falls back deterministically. A normal explicitly
+    selected matchup starts mutually identified unless an explicit anonymous,
+    disguise, disappearance, transformation, or hallucination fact says
+    otherwise. Formal display names remain authoritative and a differing short
+    label is disclosed in the prologue.
+    Canonical A/B utterances retain server-owned source Side and
+    character-authored text. The resolved narrator perspective is the content
+    boundary: adapters omit canonical speaker names and provide only the
+    perspective-projected view, observer-local attribution/appearance and social
+    rendering context. The narrator freely composes the structured speaker label;
+    the server does not compare its wording with a finite candidate set. It still
+    restores canonical Side/text on mismatch and prevents presentation data from
+    altering canonical speech or character belief. When the supplied scene state
+    supports a third-party or scene entity's presence and agency, the narrator may
+    add a source-Side-less presentation speech/reaction. Such rendering never
+    becomes a canonical event, world change, or character perception input.
+    Persist bounded reader, A-view, and B-view NarratorContinuity records. Update
+    both character-view records after every phase and turn regardless of the
+    selected or fluid focus; focus selects only the rendered view. Reader-known
+    labels never upgrade character identity, and remembered identity never
+    upgrades current sensory attribution. Store bounded narrator-only recognition
+    bindings from a stable view subject reference to recognized battle wording,
+    identity knowledge, and same/possible/unlinked continuity. An identified
+    same-entity binding survives temporary occlusion, voice-only access, turn
+    changes, and rendered-focus changes. The existing narrator call may return
+    recognition updates beside prose and speeches; the server accepts only
+    subjects present in that call's view and persists them without another LLM
+    call or feedback into public prose, character cognition, events, or world
+    state. Extend each private agent state with
+    bounded conclusions for primary and concealed emotion, unspoken intent,
+    current concern, counterpart attitude, confidence, and relationship tension.
+    Only perspective-permitted digests reach narration, and no chain-of-thought
+    is requested, stored, or exposed. Legacy reads synthesize these new records
+    deterministically from private structured state, never from public prose.

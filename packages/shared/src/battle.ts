@@ -23,6 +23,10 @@ import {
   ObserverContactRegistryBSchema,
 } from "./perception.js";
 import { BattleTemporalPlanSchema } from "./battle-temporal-rules.js";
+import {
+  BattleEncounterContextSchema,
+  BattleNarratorContinuitySchema,
+} from "./battle-social.js";
 
 export const BattleStatusSchema = z.enum([
   "active",
@@ -393,6 +397,15 @@ export const CharacterAgentStateSchema = z.object({
   speechStyle: z.string().max(240).default(""),
   selfReference: z.string().max(40).nullable().default(null),
   lastSpeech: z.string().max(400).nullable().default(null),
+  interior: z.object({
+    primaryEmotion: z.string().max(120).default("平静"),
+    concealedEmotion: z.string().max(160).nullable().default(null),
+    unspokenIntent: z.string().max(240).default(""),
+    currentConcern: z.string().max(240).default(""),
+    attitudeTowardCounterpart: z.string().max(160).default("対峙している"),
+    confidence: z.enum(["low", "steady", "high"]).default("steady"),
+    relationshipTension: z.string().max(160).default(""),
+  }).optional(),
 });
 export type CharacterAgentState = z.infer<typeof CharacterAgentStateSchema>;
 
@@ -547,6 +560,10 @@ export const BattleStateSchema = z.object({
    * used for prologue rivalry / 因縁.
    */
   priorMatchSummary: z.string().nullable().optional(),
+  /** Immutable battle-scoped names, relationships, and initial recognition. */
+  encounterContext: BattleEncounterContextSchema.optional(),
+  /** Reader plus A/B presentation continuity; never character cognition. */
+  narratorContinuity: BattleNarratorContinuitySchema.optional(),
   /** Isolated, private character-agent continuity. Never exposed publicly. */
   agentStateA: CharacterAgentStateSchema.optional(),
   agentStateB: CharacterAgentStateSchema.optional(),

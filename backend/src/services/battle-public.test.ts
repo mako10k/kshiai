@@ -71,6 +71,8 @@ describe("public battle semantic projection", () => {
     assert.equal(json.includes("parameters"), false);
     assert.equal(json.includes("coefficients"), false);
     assert.equal(json.includes("perceptionRegistry"), false);
+    assert.equal(json.includes("narratorContinuity"), false);
+    assert.equal(json.includes("encounterContext"), false);
     assert.equal(json.includes("worldState"), false);
     assert.equal(json.includes("hidden.enemy.1"), false);
   });
@@ -276,7 +278,7 @@ describe("public battle semantic projection", () => {
     assert.equal(result.state.perceptionFrameB?.self.currentAccess, "clear");
     assert.equal(
       result.state.perceptionFrameA?.counterpart.identityKnowledge,
-      "unknown",
+      "identified",
     );
     assert.ok(
       (result.state.perceptionFrameA?.qualitativeChanges.length ?? 0) > 0,
@@ -369,7 +371,7 @@ describe("public battle semantic projection", () => {
     assert.equal(result.state.perceptionFrameA?.counterpart.currentAccess, "clear");
     assert.equal(
       result.state.perceptionFrameA?.counterpart.identityKnowledge,
-      "unknown",
+      "identified",
     );
     assert.equal(
       result.state.perceptionFrameA?.others[0]?.subject.kind,

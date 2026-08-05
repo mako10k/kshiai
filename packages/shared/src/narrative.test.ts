@@ -2,12 +2,22 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import {
   coerceCharacterSpeech,
+  coerceSpeakerDisplayLabel,
   formatNarrativeBlock,
   formatSpeech,
   isStageReaction,
 } from "./narrative.js";
 
 describe("character speech reactions", () => {
+  it("accepts free narrator display labels and rejects only invalid formatting", () => {
+    assert.equal(
+      coerceSpeakerDisplayLabel("  白狼の姿をした声の主  ", "明良"),
+      "白狼の姿をした声の主",
+    );
+    assert.equal(coerceSpeakerDisplayLabel("\n\t", "明良"), "明良");
+    assert.equal(coerceSpeakerDisplayLabel("声".repeat(121), "明良"), "明良");
+  });
+
   it("never returns empty speech; falls back to watching or ellipsis", () => {
     assert.equal(coerceCharacterSpeech(null, { foeName: "楓" }), "（楓を見ている）");
     assert.equal(coerceCharacterSpeech("  ", { foeName: "楓" }), "（楓を見ている）");

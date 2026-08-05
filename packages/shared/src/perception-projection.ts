@@ -1059,8 +1059,17 @@ function buildCounterpartSlot(input: {
     input.fallback?.currentAccess ?? "none",
   );
   const best = [...observations].sort(compareObservations)[0];
-  const useFallbackLabel = input.fallback &&
-    ACCESS_RANK[input.fallback.currentAccess] > ACCESS_RANK[observedAccess];
+  // A same-strength sound cue must not replace a coherent visual/entity label
+  // with a generic "unknown voice" label. An apparent-identity observation is
+  // the exception because disguise/transformation genuinely changes the form.
+  const useFallbackLabel = input.fallback && (
+    ACCESS_RANK[input.fallback.currentAccess] > ACCESS_RANK[observedAccess] ||
+    (
+      ACCESS_RANK[input.fallback.currentAccess] === ACCESS_RANK[observedAccess] &&
+      !best?.access.apparentIdentity &&
+      input.fallback.apparentIdentity?.continuity !== "unlinked"
+    )
+  );
   const apparentIdentity = useFallbackLabel
     ? input.fallback?.apparentIdentity
     : best?.access.apparentIdentity ?? input.fallback?.apparentIdentity;

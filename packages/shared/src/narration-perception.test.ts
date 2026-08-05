@@ -12,6 +12,7 @@ import {
   buildNarrationIdentifierCatalog,
   buildNarrationPerceptionView,
   buildNarrationTurnView,
+  narratorRecognitionSubjects,
   repairNarrativeBlockIdentifiers,
 } from "./narration-perception.js";
 import type {
@@ -204,6 +205,19 @@ describe("narration perception views", () => {
     );
   });
 
+  it("offers only stable view subjects for narrator recognition updates", () => {
+    const view = buildNarrationPerceptionView(projectionInput("self", "self"));
+    const subjects = narratorRecognitionSubjects(view);
+    assert.deepEqual(
+      subjects.map((subject) => subject.subjectRef).sort(),
+      ["contact.a.1", "opponent", "self"],
+    );
+    assert.equal(
+      subjects.some((subject) => subject.subjectRef.startsWith("percept.")),
+      false,
+    );
+  });
+
   it("uses an unlinked apparent identity instead of the canonical name", () => {
     const input = projectionInput("self", "self");
     input.frameA.counterpart = {
@@ -251,9 +265,20 @@ describe("narration perception views", () => {
       external.references.some((reference) => "controlId" in reference),
       false,
     );
+    assert.equal(
+      external.references.every((reference) =>
+        reference.subjectRef?.startsWith("reader.")
+      ),
+      true,
+    );
     assert.equal(JSON.stringify(external).includes("relic.hidden"), false);
     assert.deepEqual(
       external.references.map((reference) => reference.renderLabel).sort(),
+      ["アオ", "クロ"],
+    );
+    assert.deepEqual(
+      narratorRecognitionSubjects(external).map((subject) => subject.perceivedAs)
+        .sort(),
       ["アオ", "クロ"],
     );
   });
