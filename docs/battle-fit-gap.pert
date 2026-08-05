@@ -247,6 +247,7 @@ task T_ACCEPT COMPATIBILITY_READY -> GAP_ACCEPTED:
     XAI primary evidence then run tests typecheck build llmthink review and PERT
     checks before marking the project complete.
   duration 2d
+  status done
   requires:
     DEV 1
 
@@ -420,3 +421,16 @@ work_event WE-854974b5-8892-43e5-bf56-eb59ab17bc66:
   task T_COMPAT
   kind finish
   occurred_at 2026-08-05T13:35:09+09:00
+
+work_event WE-6f7fbd34-79a7-45cc-a78d-a039d26d2ebc:
+  model 1
+  task T_ACCEPT
+  kind start
+  occurred_at 2026-08-05T13:35:37+09:00
+  planned_value 2d
+
+work_event WE-5ed65357-ffc5-432f-8d5b-da5f1c0d3f50:
+  model 1
+  task T_ACCEPT
+  kind finish
+  occurred_at 2026-08-05T13:40:16+09:00
