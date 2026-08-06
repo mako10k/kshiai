@@ -1,0 +1,101 @@
+{
+  "schemaVersion": 1,
+  "fixtureVersion": "battle-pipeline-projection-eval-v1",
+  "frozenAt": "2026-08-06T00:00:00.000Z",
+  "baseline": {
+    "corpusPath": "docs/evidence/battle-pipeline-poc-corpus-v1.json",
+    "corpusSha256": "c467fd9d3e76f4a72d09efe171ee36181ed468d9c883482436312ae77f9b9740",
+    "reportPath": "docs/evidence/battle-pipeline-poc-baseline-2026-08-06.json",
+    "reportSha256": "1617cc68535ace9af570a826cee8a916075f81ee3200c4c03b51c8f76bf90e1b"
+  },
+  "repetitions": 20,
+  "projectionLimits": "adapter_defaults",
+  "byteComparison": {
+    "fullInput": "serialized BattleState fixture",
+    "projectedInput": "serialized CanonicalReadResult.value",
+    "formula": "1 - sum(projectedInputBytes) / sum(fullInputBytes)",
+    "note": "This is a bounded-context proxy. It does not prove that every omitted byte was irrelevant."
+  },
+  "thresholds": {
+    "identityLeakageCount": 0,
+    "observerIsolationViolationCount": 0,
+    "baselineOutcomeMismatchCount": 0,
+    "decisiveFactRecallMinimum": 0.98,
+    "irrelevantFactByteReductionMinimum": 0.3,
+    "p95ProjectionLatencyMsMaximum": 25
+  },
+  "fixtures": [
+    {
+      "id": "ordinary_adjudication",
+      "runner": "ordinary_adjudication",
+      "sliceKind": "adjudication",
+      "purpose": "Resolve an ordinary same-area proposal from current mechanical and world facts.",
+      "expectedDecisiveClaims": [
+        { "kind": "fact", "subjectRef": "character.a", "predicate": "parameter.hp", "value": 100 },
+        { "kind": "fact", "subjectRef": "character.b", "predicate": "parameter.hp", "value": 100 },
+        { "kind": "fact", "subjectRef": "character.a", "predicate": "relation.distance", "objectRef": "character.b", "value": "near" },
+        { "kind": "fact", "subjectRef": "character.a", "predicate": "actor.mobility", "value": "mobile" },
+        { "kind": "interaction", "interactionKind": "rule_dependency" }
+      ]
+    },
+    {
+      "id": "remote_targeting",
+      "runner": "remote_targeting",
+      "sliceKind": "adjudication",
+      "purpose": "Reject or refine a proposal whose target is in a separate canonical area.",
+      "expectedDecisiveClaims": [
+        { "kind": "fact", "subjectRef": "character.b", "predicate": "located_in", "objectRef": "area.remote" },
+        { "kind": "fact", "subjectRef": "character.a", "predicate": "relation.distance", "objectRef": "character.b", "value": "separate_area" },
+        { "kind": "fact", "subjectRef": "character.b", "predicate": "actor.mobility", "value": "mobile" },
+        { "kind": "interaction", "interactionKind": "remote_targeting" }
+      ]
+    },
+    {
+      "id": "support_propagation",
+      "runner": "support_propagation",
+      "sliceKind": "consistency",
+      "purpose": "Follow held-object control, attachment support, and a cover dependency.",
+      "expectedDecisiveClaims": [
+        { "kind": "fact", "subjectRef": "object.tool", "predicate": "held_by", "objectRef": "character.a" },
+        { "kind": "fact", "subjectRef": "terrain.support", "predicate": "attached_to", "objectRef": "object.tool" },
+        { "kind": "fact", "subjectRef": "object.tool", "predicate": "object.cover", "value": "partial" },
+        { "kind": "interaction", "interactionKind": "ownership_control" },
+        { "kind": "interaction", "interactionKind": "support" },
+        { "kind": "interaction", "interactionKind": "causal_dependency" }
+      ]
+    },
+    {
+      "id": "committed_communication",
+      "runner": "committed_communication",
+      "sliceKind": "consistency",
+      "purpose": "Retain a committed utterance and its action attribution in the recent causal window.",
+      "expectedDecisiveClaims": [
+        { "kind": "fact", "subjectRef": "character.a", "predicate": "event.utterance", "objectRef": "character.b" },
+        { "kind": "interaction", "interactionKind": "communication" },
+        { "kind": "causal_link", "sourceRef": "turn-1-action-a", "relation": "created" }
+      ]
+    },
+    {
+      "id": "active_world_process",
+      "runner": "active_world_process",
+      "sliceKind": "adjudication",
+      "purpose": "Include an active effect that can propagate to actors in the same world area.",
+      "expectedDecisiveClaims": [
+        { "kind": "fact", "subjectRef": "effect.smoke", "predicate": "entity.kind", "value": "effect" },
+        { "kind": "fact", "subjectRef": "effect.smoke", "predicate": "located_in", "objectRef": "area.1" },
+        { "kind": "process", "processRef": "effect.smoke" },
+        { "kind": "interaction", "interactionKind": "process_propagation" }
+      ]
+    },
+    {
+      "id": "observer_identity_isolation",
+      "runner": "observer_identity_isolation",
+      "sliceKind": "observation",
+      "purpose": "Expose an identified observer-local subject without exposing its canonical source or the other agent's private state.",
+      "expectedDecisiveClaims": [
+        { "kind": "observer_subject", "localRef": "subject.1", "role": "other", "identityKnowledge": "identified", "currentAccess": "clear" },
+        { "kind": "interaction", "interactionKind": "identity_dependency" }
+      ]
+    }
+  ]
+}

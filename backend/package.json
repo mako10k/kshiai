@@ -10,6 +10,7 @@
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "node --import tsx --test src/*.test.ts src/**/*.test.ts",
     "eval:battle-pipeline-baseline": "tsx src/scripts/evaluate-battle-pipeline-baseline.ts",
+    "eval:battle-pipeline-projection": "tsx src/scripts/evaluate-battle-projection-poc.ts",
     "eval:perception-prompts": "tsx src/scripts/evaluate-perception-prompts.ts",
     "battle-state": "tsx src/scripts/battle-semantic-state.ts",
     "migrate:character-identities": "tsx src/scripts/backfill-character-identities.ts",
