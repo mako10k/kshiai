@@ -1,0 +1,79 @@
+# Existing .pert plans should normally be maintained through perttool commands; direct DSL editing bypasses goal/DAG owner-confirmation checks.
+project KSHIAI_BATTLE_PIPELINE_CONFLICT_APPLICABILITY:
+  version 6
+  title "Conflict-handling applicability PoC"
+  description "Test whether conflict and unknown handling applicability can be separated from fallback capability in the local integrated shadow PoC. Freeze a versioned additive receipt, deterministic counterexamples, seven pre-registered classifications, three applicable strata, strict legacy parity, unchanged hard boundaries, and a 140-run decision. This plan does not authorize historical evidence rewrites, legacy field reinterpretation, runtime wiring, canonical writes, external LLM or XAI calls, persistence, release, or deployment."
+  as_of 2026-08-06
+  duration_unit point
+  velocity 453p/128d
+  finish APPLICABILITY_REPLAY_DECIDED
+  goal_owner user
+  dag_owner user
+  plan_assurance_model 1
+  plan_assurance_hash_model 1
+
+milestone REVISE_DECISION_ACCEPTED:
+  title "Corrective replay revise decision accepted"
+  state reached
+
+resource DEV:
+  title "Developer"
+  capacity 1
+
+milestone APPLICABILITY_PROTOCOL_FIXED:
+  title "Conflict-handling applicability protocol fixed"
+  state reached
+
+milestone APPLICABILITY_RECEIPT_BUILT:
+  title "Versioned applicability receipt built"
+
+milestone APPLICABILITY_REPLAY_DECIDED:
+  title "Applicability replay evaluated and decided"
+
+task T_APPLICABILITY_PROTOCOL REVISE_DECISION_ACCEPTED -> APPLICABILITY_PROTOCOL_FIXED:
+  title "Freeze conflict-handling applicability semantics"
+  description "Separate fallback capability, observed applicability triggers, handling evidence, and not-needed disposition. Register seven expected classifications, exactly three applicable strata, counterexamples, metrics, stop conditions, frozen lineage, and the XAI non-use rule before implementation."
+  duration 1p
+  status done
+  requires:
+    DEV 1
+
+task T_APPLICABILITY_RECEIPT APPLICABILITY_PROTOCOL_FIXED -> APPLICABILITY_RECEIPT_BUILT:
+  title "Build the versioned applicability receipt"
+  description "Add a deterministic v2 envelope and counterexample tests without changing the legacy receipt or authoritative behavior. Record capability, trigger, handling, disposition, stable refs, and a legacy projection that removes only the new envelope."
+  duration 1p
+  requires:
+    DEV 1
+
+task T_APPLICABILITY_REPLAY_DECISION APPLICABILITY_RECEIPT_BUILT -> APPLICABILITY_REPLAY_DECIDED:
+  title "Evaluate and decide the applicability replay"
+  description "Replay seven corrective-v2 strata twenty times. Require exact classification and disposition, three applicable strata, handled over required equal to one, seven-of-seven legacy parity and battle behavior, deterministic stability, hard boundaries, and a supported revise unsupported or indeterminate decision."
+  duration 1p
+  requires:
+    DEV 1
+
+plan_seal T_APPLICABILITY_PROTOCOL:
+  accepted_contract sha256:770c5387ac511bd7daa2e84973b9376d6f9be31967f8bad71e9585c6c755b11a
+  accepted_basis sha256:f0d1125fce69d8e4d9729f8439237f382028f0d89f47bbeb758be06a808ab669
+  reason "Accept the corrective replay revise decision, frozen applicability semantics, seven registered classifications, strict metrics, stop conditions, and three-task bounded PoC"
+
+plan_seal T_APPLICABILITY_RECEIPT:
+  accepted_contract sha256:06805407f94722d30e22319a96e451515780380c9d4f20643a42fa0590e84608
+  accepted_basis sha256:8bf9c13bed9dbaf7c98a6a634979762d53301a17b60553d4171229722905a408
+  accepted_inputs:
+    T_APPLICABILITY_PROTOCOL both sha256:f0d1125fce69d8e4d9729f8439237f382028f0d89f47bbeb758be06a808ab669
+  reason "Accept the corrective replay revise decision, frozen applicability semantics, seven registered classifications, strict metrics, stop conditions, and three-task bounded PoC"
+
+plan_seal T_APPLICABILITY_REPLAY_DECISION:
+  accepted_contract sha256:29608f614e47946a3a5044efc10dda04a57e5ad18e6b9c6f8bb0ec25679cf1ef
+  accepted_basis sha256:37b0f984f8673872605bfa0d66eb099166816557e6e4ca8333de89399360da4c
+  accepted_inputs:
+    T_APPLICABILITY_RECEIPT both sha256:8bf9c13bed9dbaf7c98a6a634979762d53301a17b60553d4171229722905a408
+  reason "Accept the corrective replay revise decision, frozen applicability semantics, seven registered classifications, strict metrics, stop conditions, and three-task bounded PoC"
+
+task_outcome OUT_T_APPLICABILITY_PROTOCOL:
+  model 1
+  task T_APPLICABILITY_PROTOCOL
+  against_basis sha256:f0d1125fce69d8e4d9729f8439237f382028f0d89f47bbeb758be06a808ab669
+  status conformant
+  reason "Accept separated capability, applicability, evidence and disposition semantics, seven fixed classifications, exactly three applicable strata, counterexamples, strict metrics, lineage, and stop conditions"
