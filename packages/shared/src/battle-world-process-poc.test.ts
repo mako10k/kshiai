@@ -101,6 +101,13 @@ describe("shadow active world-process PoC", () => {
     assert.ok(result.receipts.every((receipt) =>
       receipt.patch?.causalLinks.some((link) => link.relation === "triggered")
     ));
+    assert.ok(result.receipts.every((receipt) =>
+      receipt.patch?.retractions.every((factRef) =>
+        receipt.patch?.causalLinks.some((link) =>
+          link.targetFactRef === factRef && link.relation === "ended"
+        )
+      )
+    ));
     assert.equal(result.externalLlmCalls, 0);
     assert.equal(result.canonicalCommitPerformed, false);
     assert.deepEqual(projection, original);

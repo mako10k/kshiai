@@ -19,6 +19,7 @@ export * from "./battle-world-process-poc.js";
 export * from "./battle-canonical-patch.js";
 export * from "./battle-consistency-issue.js";
 export * from "./battle-read-coherence.js";
+export * from "./battle-integrated-shadow-turn.js";
 export * from "./free-action.js";
 export * from "./profile-grounding.js";
 export * from "./media.js";

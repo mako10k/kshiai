@@ -36,6 +36,7 @@ milestone TRANSCRIPT_BASELINE_FROZEN:
 
 milestone INTEGRATED_RECEIPT_BUILT:
   title "Shared-only integrated shadow-turn receipt built"
+  state reached
 
 milestone INTEGRATED_RECEIPT_EVALUATED:
   title "Integrated receipt effectiveness and failure modes evaluated"
@@ -76,6 +77,7 @@ task T_INTEGRATED_RECEIPT_POC TRANSCRIPT_BASELINE_FROZEN -> INTEGRATED_RECEIPT_B
     schema-validated receipt. Preserve sourceMutated false
     authoritativeOutcomeChanged false and canonicalCommitPerformed false.
   duration 3p
+  status done
   requires:
     DEV 1
 
@@ -148,3 +150,10 @@ task_outcome OUT_T_TRANSCRIPT_BASELINE:
   against_basis sha256:3b2e712e6bccbb2806cc089b77fef75bebd7c17fbc074439191998676f1e8c47
   status conformant
   reason "Accept the frozen seven-strata transcript corpus and clean-tree authoritative baseline"
+
+task_outcome OUT_T_INTEGRATED_RECEIPT_POC:
+  model 1
+  task T_INTEGRATED_RECEIPT_POC
+  against_basis sha256:402e6f7268fcdbf251500a1883b77bfb654088fac345d684068f1b26aab99bef
+  status conformant
+  reason "Accept the shared-only integrated receipt and seven-transcript authority-bound regression evidence"

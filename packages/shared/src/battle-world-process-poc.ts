@@ -255,7 +255,11 @@ function buildPatch(input: {
         sourceRef: effect.causalSourceRef,
         targetFactRef: assertion.id,
         relation: effect.priorFactRef ? "modified" as const : "created" as const,
-      }, ...input.proposal.triggerFactRefs.map((triggerRef) => ({
+      }, ...(effect.priorFactRef ? [{
+        sourceRef: effect.causalSourceRef,
+        targetFactRef: effect.priorFactRef,
+        relation: "ended" as const,
+      }] : []), ...input.proposal.triggerFactRefs.map((triggerRef) => ({
         sourceRef: triggerRef,
         targetFactRef: assertion.id,
         relation: "triggered" as const,
