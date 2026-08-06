@@ -1,0 +1,222 @@
+# Existing .pert plans should normally be maintained through perttool commands; direct DSL editing bypasses goal/DAG owner-confirmation checks.
+project KSHIAI_BATTLE_PIPELINE_PRODUCTION_ROLLOUT:
+  version 6
+  title "Battle-pipeline production staged rollout"
+  description "Progressively adopt the battle-pipeline source-authoring and conflict-handling path from disabled code through staging, production shadow cohorts, explicit effect authority, guarded effect canaries, and full production acceptance. Every stage is fail-closed for evidence and fail-open to the existing battle path. This plan never authorizes raw prose or identity telemetry, unbounded retention, implicit traffic expansion, nondeterministic mechanical writes, or bypass of the repository release and rollback process."
+  as_of 2026-08-06
+  duration_unit point
+  velocity 453p/128d
+  finish ROLLOUT_ACCEPTED
+  goal_owner user
+  dag_owner user
+  plan_assurance_model 1
+  plan_assurance_hash_model 1
+  target_duration 19p
+
+milestone POC_CLOSED:
+  title "Exploratory PoC phase closed"
+  state reached
+
+resource DEV:
+  title "Developer"
+  capacity 1
+
+resource OWNER:
+  title "Release and product owner"
+  capacity 1
+
+milestone ROLLOUT_CONTRACT_FIXED:
+  title "Production rollout contract and stop policy fixed"
+
+milestone DISABLED_RELEASE_READY:
+  title "Production-safe disabled release ready"
+
+milestone STAGING_ACCEPTED:
+  title "Staging shadow acceptance complete"
+
+milestone PRODUCTION_BASELINE_ACCEPTED:
+  title "Production disabled baseline accepted"
+
+milestone SHADOW_ONE_PERCENT_ACCEPTED:
+  title "One-percent production shadow accepted"
+
+milestone SHADOW_TEN_PERCENT_ACCEPTED:
+  title "Ten-percent production shadow accepted"
+
+milestone SHADOW_FULL_ACCEPTED:
+  title "Full production shadow accepted"
+
+milestone EFFECT_AUTHORITY_DECIDED:
+  title "Effectful production authority explicitly decided"
+
+milestone EFFECT_CANARY_ACCEPTED:
+  title "Effectful guarded canary accepted"
+
+milestone EFFECT_FULL_ACCEPTED:
+  title "Effectful full rollout accepted"
+
+milestone ROLLOUT_ACCEPTED:
+  title "Production rollout closed with evidence"
+
+task T_FREEZE_ROLLOUT_CONTRACT POC_CLOSED -> ROLLOUT_CONTRACT_FIXED:
+  title "Freeze production rollout, privacy, SLO, and rollback contracts"
+  description "Define the five owner-stage runtime hook points, versioned feature configuration, deterministic cohorting, aggregate-only telemetry allow-list, retention, dashboards, success thresholds, stop conditions, kill switch, owners, rollback targets, and evidence receipt. Preserve the boundary that LLMs may author semantics while deterministic validated code alone selects and persists mechanics."
+  duration 2p
+  requires:
+    DEV 1
+  owner "codex"
+
+task T_BUILD_DISABLED_RELEASE ROLLOUT_CONTRACT_FIXED -> DISABLED_RELEASE_READY:
+  title "Build production wiring disabled by default"
+  description "Wire all five source-authoring owners into the ordinary runtime behind one versioned server-side mode set to off. Keep artifacts in memory, emit only allowed aggregate counters, ignore shadow returns, add bounded timeouts and circuit breaker behavior, retain exact legacy fallback, and add unit integration load privacy and rollback tests. No raw prose identity source bundle or per-turn hash may be durably logged."
+  duration 3p
+  requires:
+    DEV 1
+  owner "codex"
+
+task T_ACCEPT_STAGING_SHADOW DISABLED_RELEASE_READY -> STAGING_ACCEPTED:
+  title "Stage immutable artifacts and accept shadow behavior"
+  description "Use the tagged build-once release flow to deploy a no-traffic Cloud Run revision and Worker preview, enable shadow only in staging, exercise synthetic and disposable authenticated battles, inject observer and telemetry failures, verify exact legacy result parity and zero extra domain writes, then record image revision Worker version migration and rollback evidence."
+  duration 2p
+  requires:
+    DEV 1
+  owner "codex"
+
+task T_ACCEPT_PRODUCTION_BASELINE STAGING_ACCEPTED -> PRODUCTION_BASELINE_ACCEPTED:
+  title "Promote with feature off and establish production baseline"
+  description "Promote the exact staged artifacts with mode off through the protected production workflow. Soak at least twenty-four hours and record battle success rate backend error rate p50 and p95 turn latency provider calls and domain writes. Verify the kill switch and known-good Cloud Run and Worker rollback targets before any shadow traffic."
+  duration 1p
+  requires:
+    DEV 1
+  owner "codex"
+
+task T_ACCEPT_SHADOW_ONE_PERCENT PRODUCTION_BASELINE_ACCEPTED -> SHADOW_ONE_PERCENT_ACCEPTED:
+  title "Run one-percent production shadow canary"
+  description "Enable deterministic one-percent eligible-turn shadowing without user-visible or persistent mechanical effects. Hold at least twenty-four hours and one hundred eligible turns; if volume is insufficient remain at one percent. Require zero parity divergence, zero extra domain writes, zero privacy violations, observer errors below one percent, and p95 turn latency regression no greater than ten percent or twenty milliseconds, whichever is stricter."
+  duration 2p
+  requires:
+    DEV 1
+  owner "codex"
+
+task T_ACCEPT_SHADOW_TEN_PERCENT SHADOW_ONE_PERCENT_ACCEPTED -> SHADOW_TEN_PERCENT_ACCEPTED:
+  title "Expand production shadow to ten percent"
+  description "Expand only by reviewed configuration receipt to ten percent. Hold at least forty-eight hours and five hundred eligible turns with the same hard parity write privacy and latency gates, plus no material increase in backend errors provider calls or circuit-breaker trips. Any gate breach returns immediately to off and opens an incident record."
+  duration 1p
+  requires:
+    DEV 1
+  owner "codex"
+
+task T_ACCEPT_SHADOW_FULL SHADOW_TEN_PERCENT_ACCEPTED -> SHADOW_FULL_ACCEPTED:
+  title "Expand production shadow through fifty to one hundred percent"
+  description "Advance through fifty percent and one hundred percent as separate recorded configuration changes. Hold each for at least seventy-two hours; require all prior hard gates, bounded telemetry cardinality and cost, and at least one successful kill-switch drill. Full shadow acceptance authorizes observation only and does not authorize mechanical effects."
+  duration 2p
+  requires:
+    DEV 1
+  owner "codex"
+
+task T_DECIDE_EFFECT_AUTHORITY SHADOW_FULL_ACCEPTED -> EFFECT_AUTHORITY_DECIDED:
+  title "Decide whether production effects may begin"
+  description "Review the complete shadow receipt and explicitly choose approve revise defer or reject. Approval must name the eligible low-risk decision class, mechanical validator, fallback behavior, cohort ceiling, monitoring window, rollback operator, and non-claims. Without an explicit conformant owner outcome all effectful tasks remain blocked and shadow mode stays non-authoritative."
+  duration 1p
+  requires:
+    OWNER 1
+  owner "user"
+
+task T_ACCEPT_EFFECT_CANARY EFFECT_AUTHORITY_DECIDED -> EFFECT_CANARY_ACCEPTED:
+  title "Run guarded effectful canaries"
+  description "After explicit approval enable only the named low-risk class for an owner cohort then one percent of eligible turns. Deterministic validators remain authoritative, incomplete ambiguous contested timeout or error cases use the legacy path, and no LLM prose directly selects mechanics. Hold each canary at least forty-eight hours and stop on any unauthorized write, invariant breach, material battle-error regression, or rollback failure."
+  duration 2p
+  requires:
+    DEV 1
+  owner "codex"
+
+task T_ACCEPT_EFFECT_FULL EFFECT_CANARY_ACCEPTED -> EFFECT_FULL_ACCEPTED:
+  title "Ramp guarded effects through ten, fifty, and one hundred percent"
+  description "Advance through ten fifty and one hundred percent with separate receipts and minimum seventy-two-hour soaks. Preserve the approved eligibility ceiling, compare product and reliability metrics with the disabled baseline, retain immediate off switch and artifact rollback, and require owner review before each expansion. Database schema contraction is excluded from this rollout."
+  duration 2p
+  requires:
+    DEV 1
+  owner "codex"
+
+task T_CLOSE_ROLLOUT EFFECT_FULL_ACCEPTED -> ROLLOUT_ACCEPTED:
+  title "Close rollout and freeze operating evidence"
+  description "Record the accepted release and configuration receipts, stage metrics, incidents, residual risks, support and rollback runbooks, telemetry retention deletion, and the final enabled scope. Remove temporary canary controls only after a later compatible release and keep the global off switch. Open separate plans for scope expansion, model changes, persistence changes, or classifier retraining."
+  duration 1p
+  requires:
+    OWNER 1
+  owner "user"
+
+plan_seal T_ACCEPT_EFFECT_CANARY:
+  accepted_contract sha256:6de95380c34cf7354de9ffee0ac0e48ed35ec0d0be674f8ef4e8dc642146a841
+  accepted_basis sha256:e8403c1efea669b1c3e5fcb45bed02915849013d9c94643cee084f1df3fed7b2
+  accepted_inputs:
+    T_DECIDE_EFFECT_AUTHORITY both sha256:4a206415b90e6f7a99dde883cb51ba7099b63c97e65aed5861cbc23bf05d3816
+  reason "Accept the user-directed production staged-rollout baseline after closing the exploratory PoC phase."
+
+plan_seal T_ACCEPT_EFFECT_FULL:
+  accepted_contract sha256:e51d3e9afc5b2c481db0fc8839409ba8c8f0a3b14fcd07b9d8b74dad90dd5bad
+  accepted_basis sha256:ce516e8dbc21dec8ca14b28f2411654be5edb59eb775f191625c2a86d45a6845
+  accepted_inputs:
+    T_ACCEPT_EFFECT_CANARY both sha256:e8403c1efea669b1c3e5fcb45bed02915849013d9c94643cee084f1df3fed7b2
+  reason "Accept the user-directed production staged-rollout baseline after closing the exploratory PoC phase."
+
+plan_seal T_ACCEPT_PRODUCTION_BASELINE:
+  accepted_contract sha256:57abf8adea1ced90d60a48d2f2e51f6e9fa79770389b630765cbc499230abfde
+  accepted_basis sha256:c79a83c86f434289ddfc9dbd59b9152150e8b05d1932b4ee240d8cd9fd1b54d2
+  accepted_inputs:
+    T_ACCEPT_STAGING_SHADOW both sha256:013a280adbcf488d6c4c88877342ad8634b08246b4880e3a7f017cb4389e458c
+  reason "Accept the user-directed production staged-rollout baseline after closing the exploratory PoC phase."
+
+plan_seal T_ACCEPT_SHADOW_FULL:
+  accepted_contract sha256:d734aa56100a23ec84f95f60ebff54af004d0b8472398cfcbfc9e06c4c05db6d
+  accepted_basis sha256:9c9e0db297671ce52e66c7aea439da6788bd922b2c2d76693b17d10d19420036
+  accepted_inputs:
+    T_ACCEPT_SHADOW_TEN_PERCENT both sha256:e5bcdf0def09cf07f91fb642df43c1b18253f6434269ba8f9000274fdcab9ccc
+  reason "Accept the user-directed production staged-rollout baseline after closing the exploratory PoC phase."
+
+plan_seal T_ACCEPT_SHADOW_ONE_PERCENT:
+  accepted_contract sha256:c81f1fbf08d0c4f1135ac4af46d0656df195a2658e2aad0ccec4770a78e853ff
+  accepted_basis sha256:c59705fabebc543c11cd1f051b89dfef3f277c3a8fb41fcf3e16401d13599e9b
+  accepted_inputs:
+    T_ACCEPT_PRODUCTION_BASELINE both sha256:c79a83c86f434289ddfc9dbd59b9152150e8b05d1932b4ee240d8cd9fd1b54d2
+  reason "Accept the user-directed production staged-rollout baseline after closing the exploratory PoC phase."
+
+plan_seal T_ACCEPT_SHADOW_TEN_PERCENT:
+  accepted_contract sha256:d9de60ea26ed3ada0cd311b919a5adb07f5c9b5e878eeaf2ee1e94577834e006
+  accepted_basis sha256:e5bcdf0def09cf07f91fb642df43c1b18253f6434269ba8f9000274fdcab9ccc
+  accepted_inputs:
+    T_ACCEPT_SHADOW_ONE_PERCENT both sha256:c59705fabebc543c11cd1f051b89dfef3f277c3a8fb41fcf3e16401d13599e9b
+  reason "Accept the user-directed production staged-rollout baseline after closing the exploratory PoC phase."
+
+plan_seal T_ACCEPT_STAGING_SHADOW:
+  accepted_contract sha256:07af1e9d016667d843f260e1210be3e17db39aea6b91512d7b920ac65d7e53a0
+  accepted_basis sha256:013a280adbcf488d6c4c88877342ad8634b08246b4880e3a7f017cb4389e458c
+  accepted_inputs:
+    T_BUILD_DISABLED_RELEASE both sha256:0f59ac1e2acee48b0d28416a5edf3c08a7e6cb1816d9592f8fce23e6d1124b36
+  reason "Accept the user-directed production staged-rollout baseline after closing the exploratory PoC phase."
+
+plan_seal T_BUILD_DISABLED_RELEASE:
+  accepted_contract sha256:69c6b5e40d1fed15b452a134e0033e2322c0f46e681d51fc35e90e8b3ccb63c7
+  accepted_basis sha256:0f59ac1e2acee48b0d28416a5edf3c08a7e6cb1816d9592f8fce23e6d1124b36
+  accepted_inputs:
+    T_FREEZE_ROLLOUT_CONTRACT both sha256:303d0c340d7fb5c2463ab1d9a0251f10e374685e83891a6ce4536af21d29ad8c
+  reason "Accept the user-directed production staged-rollout baseline after closing the exploratory PoC phase."
+
+plan_seal T_CLOSE_ROLLOUT:
+  accepted_contract sha256:7053115111a5ce4bbe892b3781845883521bc4b08f5b2d7129c641b950b668e9
+  accepted_basis sha256:488c199912675cb21e1e68cd6be049d4ecd159319bc01ba155f3b8fe60c781b3
+  accepted_inputs:
+    T_ACCEPT_EFFECT_FULL both sha256:ce516e8dbc21dec8ca14b28f2411654be5edb59eb775f191625c2a86d45a6845
+  reason "Accept the user-directed production staged-rollout baseline after closing the exploratory PoC phase."
+
+plan_seal T_DECIDE_EFFECT_AUTHORITY:
+  accepted_contract sha256:56256157d07c4d6c15a024a83f1551641dd9fd25be87f4ad2b7b3590430e9c0c
+  accepted_basis sha256:4a206415b90e6f7a99dde883cb51ba7099b63c97e65aed5861cbc23bf05d3816
+  accepted_inputs:
+    T_ACCEPT_SHADOW_FULL both sha256:9c9e0db297671ce52e66c7aea439da6788bd922b2c2d76693b17d10d19420036
+  reason "Accept the user-directed production staged-rollout baseline after closing the exploratory PoC phase."
+
+plan_seal T_FREEZE_ROLLOUT_CONTRACT:
+  accepted_contract sha256:d3995a4bf088d8731a83175bef757581d08e9cf6e7aaa1e6f2785ccd6c3b9283
+  accepted_basis sha256:303d0c340d7fb5c2463ab1d9a0251f10e374685e83891a6ce4536af21d29ad8c
+  reason "Accept the user-directed production staged-rollout baseline after closing the exploratory PoC phase."
