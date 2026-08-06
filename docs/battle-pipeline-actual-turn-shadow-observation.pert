@@ -96,6 +96,7 @@ milestone INPUT_DERIVATION_POC_READY:
 
 milestone INPUT_DERIVATION_EVALUATED:
   title "Applicability input derivability evaluated"
+  state reached
 
 milestone CAPTURE_AUTHORITY_REVIEWED:
   title "Actual-turn capture authority reviewed after derivability PoC"
@@ -120,6 +121,7 @@ task T_INPUT_DERIVATION_EVAL INPUT_DERIVATION_POC_READY -> INPUT_DERIVATION_EVAL
   title "Evaluate applicability input derivability"
   description "Evaluate at least fifteen preregistered cases spanning all five required input areas plus missing and ambiguous controls. Require complete provenance for every emitted field, zero inferred fields, rejection of every missing required source, identical output over twenty replays, unchanged input digests, and record supported revise unsupported or indeterminate without treating classifier output as oracle truth."
   duration 2p
+  status done
   requires:
     DEV 1
 
@@ -233,3 +235,10 @@ task_outcome OUT_T_INPUT_DERIVATION_POC:
   against_basis sha256:b4f91727f36616acb1068d96982a4bbd1af052079df23b6112a186a8c244835b
   status conformant
   reason "Pure shared probe sha256:44485e3f69df8246a8cd0cd7a1b848ba05a8b86cffb1f23ed6064a00e07aac63 and synthetic corpus sha256:8a3f826f3aa44b9d72673373a62dac42b130f3722ed9e352ac28fa92dc4a1344 implement all five explicit artifact sources. Nine targeted tests cover the fixed twenty cases, exact mapping, complete provenance, zero inference, missing and ambiguous rejection, cross-reference failure, unchanged inputs, and one output digest per case over twenty replays. All 389 repository tests, typecheck, and build pass; runtime hooks DB network providers external LLM XAI canonical writes persistence release and deployment remain absent, and no effectiveness label is claimed before T_INPUT_DERIVATION_EVAL."
+
+task_outcome OUT_T_INPUT_DERIVATION_EVAL:
+  model 1
+  task T_INPUT_DERIVATION_EVAL
+  against_basis sha256:ea911164385e8dad85163467e01f5d1a21e2fe27386294d6602fe10edb2ede4e
+  status conformant
+  reason "Registered evidence docs/evidence/battle-pipeline-actual-turn-input-derivability-evaluation-2026-08-06.json sha256:950312d2ca7493ec0cfb73727bbb324462a2553140d87e3b51252a9279c6ca73 with content digest 7027cb4f88287a75501b03eb507e7dfb60c6fc61bc37423895088fd3a1801cac evaluates twenty fixed cases over four hundred runs. All transformation gates pass with 800/800 provenance, zero inferred fields, complete missing and ambiguous rejection, zero proxy use, dangling acceptance, input change, runtime import, external calls, or domain writes. Ordinary-runtime authoritative availability remains 0/5, so the fixed rubric records revise without invoking the classifier as oracle. All 391 repository tests, typecheck, and build pass; capture and runtime source authoring remain unauthorized."
