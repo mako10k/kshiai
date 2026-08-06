@@ -21,6 +21,7 @@ export * from "./battle-consistency-issue.js";
 export * from "./battle-read-coherence.js";
 export * from "./battle-integrated-shadow-turn.js";
 export * from "./battle-conflict-handling-applicability.js";
+export * from "./battle-actual-turn-shadow-observation.js";
 export * from "./free-action.js";
 export * from "./profile-grounding.js";
 export * from "./media.js";

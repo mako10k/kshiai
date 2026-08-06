@@ -98,3 +98,10 @@ After protocol completion, the remaining 8p forecast is approximately
 `2.260d`. These are capacity forecasts only. They do not authorize a runtime
 hook, DB or network access, an external LLM or XAI call, raw user-data capture,
 canonical or persistence writes, classifier changes, release, or deployment.
+
+The 2p offline-observer task is now complete, but it has no independently
+recorded person-day actual. The provisional velocity therefore remains
+`453p/128d`. The next 1p capture-authority decision is forecast at `0.283d`,
+and the remaining 6p plan is forecast at approximately `1.695d`. Completion of
+the offline observer is implementation evidence only; it does not authorize
+or demonstrate actual-turn capture.

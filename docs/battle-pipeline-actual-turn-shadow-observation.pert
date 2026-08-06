@@ -22,6 +22,7 @@ milestone OBSERVATION_PROTOCOL_FIXED:
 
 milestone OFFLINE_OBSERVER_READY:
   title "Offline read-only observer and source sufficiency audit ready"
+  state reached
 
 milestone CAPTURE_AUTHORITY_DECIDED:
   title "Exact actual-turn capture authority decided"
@@ -51,6 +52,7 @@ task T_OFFLINE_OBSERVER OBSERVATION_PROTOCOL_FIXED -> OFFLINE_OBSERVER_READY:
   title "Build the offline read-only observation adapter"
   description "Add a strict versioned envelope and local-file-only adapter that validates explicit inputs, hashes source bytes before and after, reports persisted-record field insufficiency without inference, redacts direct identity and prose, and has no DB network provider external LLM XAI canonical persistence or runtime imports."
   duration 2p
+  status done
   requires:
     DEV 1
 
@@ -128,3 +130,10 @@ task_outcome OUT_T_OBSERVATION_PROTOCOL:
   against_basis sha256:996c695d42c8c0529df3e64777fe7967dd892266a0b20b2dea0610ebb9e18641
   status conformant
   reason "The protocol records persisted-turn insufficiency, rejects prose-based inference, fixes a server-only privacy-safe envelope, local-file-only adapter boundary, sample and effectiveness gates, descriptive-only claims, and a separate capture-authority decision before runtime or data access."
+
+task_outcome OUT_T_OFFLINE_OBSERVER:
+  model 1
+  task T_OFFLINE_OBSERVER
+  against_basis sha256:015ab0efc9eaa791f1417519472a977ce9e021196c81a87089d7671b2a441227
+  status conformant
+  reason "A strict versioned privacy-safe envelope and explicit local-file-only observer were implemented. Seven targeted tests verify opaque refs, identical source digests, no private output, persisted-record insufficient_source without inference, dangling-ref reporting, mutation fail-closed behavior, and no DB network provider LLM XAI or runtime-service dependency. All 380 repository tests, typecheck, and build pass; actual capture remains untested and unauthorized."
