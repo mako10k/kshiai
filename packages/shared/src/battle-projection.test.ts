@@ -6,6 +6,9 @@ import {
   ConsistencySliceSchema,
   ObservationSliceSchema,
   createCanonicalReadResultSchema,
+  expandAdjudicationFacts,
+  expandConsistencyCausalLinks,
+  expandConsistencyFacts,
 } from "./battle-projection.js";
 import {
   buildBattleTurnRecord,
@@ -248,7 +251,10 @@ describe("BattleState Projection PoC", () => {
       assert.equal(kinds.has(kind), true, `missing ${kind}`);
     }
     assert.ok(result.value.scope.processRefs.includes("effect.smoke"));
-    assert.ok(result.value.facts.some((fact) =>
+    assert.equal(result.value.schemaVersion, 2);
+    assert.equal("factRefs" in result.value.scope, false);
+    assert.equal("ruleRefs" in result.value.scope, false);
+    assert.ok(expandAdjudicationFacts(result.value).some((fact) =>
       fact.subjectRef === "object.tool" && fact.predicate === "held_by"
     ));
   });
@@ -277,8 +283,8 @@ describe("BattleState Projection PoC", () => {
       });
 
     assert.ok(result.value.scope.entityRefs.length <= 3);
-    assert.ok(result.value.facts.length <= 4);
-    assert.ok(result.value.scope.ruleRefs.length <= 1);
+    assert.ok(expandAdjudicationFacts(result.value).length <= 4);
+    assert.ok(result.value.applicableRuleRefs.length <= 1);
     assert.ok(Buffer.byteLength(JSON.stringify(result.value), "utf8") <= 4096);
     assert.equal(result.value.scope.truncated, true);
     assert.ok(result.value.scope.omitted.entities > 0);
@@ -309,9 +315,11 @@ describe("BattleState Projection PoC", () => {
     createCanonicalReadResultSchema(ConsistencySliceSchema).parse(result);
     assert.equal(result.consistency.level, "unchecked");
     assert.deepEqual(result.value.issues, []);
-    assert.ok(result.value.facts.some((fact) => fact.source === "event"));
-    assert.ok(result.value.causalLinks.every((link) =>
-      result.value.scope.factRefs.includes(link.targetFactRef)
+    const facts = expandConsistencyFacts(result.value);
+    const factRefs = new Set(facts.map((fact) => fact.id));
+    assert.ok(facts.some((fact) => fact.source === "event"));
+    assert.ok(expandConsistencyCausalLinks(result.value).every((link) =>
+      factRefs.has(link.targetFactRef)
     ));
   });
 

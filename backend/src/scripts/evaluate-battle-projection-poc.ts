@@ -14,6 +14,9 @@ import {
   buildBattleTurnRecord,
   createBattleState,
   defaultParameters,
+  expandAdjudicationFacts,
+  expandConsistencyCausalLinks,
+  expandConsistencyFacts,
   resolveTurn,
   type AdjudicationSlice,
   type BattleState,
@@ -585,7 +588,10 @@ function validateFixtureFile(raw: unknown): FixtureFile {
 }
 
 function factsOf(value: ProjectionValue) {
-  return "facts" in value ? value.facts : [];
+  if ("subjects" in value) return [];
+  return "proposalRefs" in value
+    ? expandAdjudicationFacts(value)
+    : expandConsistencyFacts(value);
 }
 
 function interactionsOf(value: ProjectionValue): InteractionKind[] {
@@ -613,10 +619,11 @@ function expectationMatches(
       value.scope.processRefs.includes(expectation.processRef);
   }
   if (expectation.kind === "causal_link") {
-    return "causalLinks" in value && value.causalLinks.some((link) =>
-      link.sourceRef === expectation.sourceRef &&
-      link.relation === expectation.relation
-    );
+    return "causalLinks" in value &&
+      expandConsistencyCausalLinks(value).some((link) =>
+        link.sourceRef === expectation.sourceRef &&
+        link.relation === expectation.relation
+      );
   }
   return "subjects" in value && value.subjects.some((subject) =>
     subject.localRef === expectation.localRef &&
@@ -643,16 +650,16 @@ function limitViolationCount(value: ProjectionValue): number {
   let violations = serializedBytes(value) > BATTLE_PROJECTION_DEFAULT_LIMITS.maxBytes
     ? 1
     : 0;
-  if ("facts" in value &&
-    value.facts.length > BATTLE_PROJECTION_DEFAULT_LIMITS.maxFacts) {
+  if (!("subjects" in value) &&
+    factsOf(value).length > BATTLE_PROJECTION_DEFAULT_LIMITS.maxFacts) {
     violations += 1;
   }
   if ("entityRefs" in value.scope &&
     value.scope.entityRefs.length > BATTLE_PROJECTION_DEFAULT_LIMITS.maxEntities) {
     violations += 1;
   }
-  if ("ruleRefs" in value.scope &&
-    value.scope.ruleRefs.length > BATTLE_PROJECTION_DEFAULT_LIMITS.maxRules) {
+  if ("applicableRuleRefs" in value &&
+    value.applicableRuleRefs.length > BATTLE_PROJECTION_DEFAULT_LIMITS.maxRules) {
     violations += 1;
   }
   return violations;

@@ -36,9 +36,12 @@ describe("battle projection PoC evaluator", () => {
     assert.equal(report.aggregate.hardInvariantsPass, true);
     assert.equal(report.aggregate.decisiveFactRecall, 1);
     assert.equal(report.aggregate.decisiveFactRecallPass, true);
-    assert.equal(report.aggregate.irrelevantFactByteReduction, 0.047069);
-    assert.equal(report.aggregate.irrelevantFactByteReductionPass, false);
+    assert.ok(
+      report.aggregate.irrelevantFactByteReduction >=
+        report.thresholds.irrelevantFactByteReductionMinimum,
+    );
+    assert.equal(report.aggregate.irrelevantFactByteReductionPass, true);
     assert.ok(report.aggregate.p95ProjectionLatencyMs >= 0);
-    assert.equal(report.decision.label, "revise");
+    assert.equal(report.decision.label, "supported");
   });
 });

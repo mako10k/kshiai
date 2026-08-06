@@ -252,13 +252,63 @@ export type AdjudicationSliceRequest = z.infer<
   typeof AdjudicationSliceRequestSchema
 >;
 
+export const ServerInteractionScopeSchema = InteractionScopeSchema.omit({
+  factRefs: true,
+  ruleRefs: true,
+});
+export type ServerInteractionScope = z.infer<
+  typeof ServerInteractionScopeSchema
+>;
+
+const CompactPredicateSchema = z.string().min(1).max(120);
+
+export const AdjudicationClaimRowSchema = z.union([
+  z.tuple([
+    CompactPredicateSchema,
+    CanonicalRefSchema.nullable(),
+  ]),
+  z.tuple([
+    CompactPredicateSchema,
+    CanonicalRefSchema.nullable(),
+    z.unknown(),
+  ]),
+]);
+export type AdjudicationClaimRow = z.infer<
+  typeof AdjudicationClaimRowSchema
+>;
+
+export const AdjudicationFactGroupSchema = z.object({
+  subjectRef: CanonicalRefSchema,
+  claims: z.array(AdjudicationClaimRowSchema)
+    .min(1)
+    .max(BATTLE_PROJECTION_HARD_LIMITS.maxFacts),
+}).strict();
+export type AdjudicationFactGroup = z.infer<
+  typeof AdjudicationFactGroupSchema
+>;
+
+const AdjudicationFactGroupsSchema = z.array(AdjudicationFactGroupSchema)
+  .max(BATTLE_PROJECTION_HARD_LIMITS.maxFacts)
+  .superRefine((groups, ctx) => {
+    const count = groups.reduce((sum, group) => sum + group.claims.length, 0);
+    if (count > BATTLE_PROJECTION_HARD_LIMITS.maxFacts) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.too_big,
+        maximum: BATTLE_PROJECTION_HARD_LIMITS.maxFacts,
+        inclusive: true,
+        type: "array",
+        path: [],
+        message: "adjudication fact count exceeds projection hard limit",
+      });
+    }
+  });
+
 export const AdjudicationSliceSchema = z.object({
-  schemaVersion: z.literal(1),
+  schemaVersion: z.literal(2),
   proposalRefs: z.array(ProposalRefSchema).min(1).max(16),
   temporalWindow: TemporalWindowSchema,
-  scope: InteractionScopeSchema,
-  facts: z.array(CanonicalProjectionFactSchema)
-    .max(BATTLE_PROJECTION_HARD_LIMITS.maxFacts),
+  scope: ServerInteractionScopeSchema,
+  factGroups: AdjudicationFactGroupsSchema,
   applicableRuleRefs: z.array(RuleRefSchema)
     .max(BATTLE_PROJECTION_HARD_LIMITS.maxRules),
   relatedIssueRefs: z.array(IssueRefSchema).max(64),
@@ -303,13 +353,74 @@ export type ConsistencyIssueView = z.infer<
   typeof ConsistencyIssueViewSchema
 >;
 
-export const ConsistencySliceSchema = z.object({
-  schemaVersion: z.literal(1),
-  purpose: ProjectionPurposeSchema,
-  scope: InteractionScopeSchema,
-  facts: z.array(CanonicalProjectionFactSchema)
+const ProjectionSourceSchema = z.enum([
+  "mechanical",
+  "world",
+  "semantic",
+  "temporal",
+  "event",
+]);
+
+export const ConsistencyFactRowSchema = z.union([
+  z.tuple([
+    FactRefSchema,
+    CompactPredicateSchema,
+    CanonicalRefSchema.nullable(),
+    z.number().int().nonnegative(),
+    z.number().int().nonnegative().nullable(),
+    ProjectionSourceSchema,
+  ]),
+  z.tuple([
+    FactRefSchema,
+    CompactPredicateSchema,
+    CanonicalRefSchema.nullable(),
+    z.number().int().nonnegative(),
+    z.number().int().nonnegative().nullable(),
+    ProjectionSourceSchema,
+    z.unknown(),
+  ]),
+]);
+export type ConsistencyFactRow = z.infer<typeof ConsistencyFactRowSchema>;
+
+export const ConsistencyFactGroupSchema = z.object({
+  subjectRef: CanonicalRefSchema,
+  facts: z.array(ConsistencyFactRowSchema)
+    .min(1)
     .max(BATTLE_PROJECTION_HARD_LIMITS.maxFacts),
-  causalLinks: z.array(ProjectionCausalLinkSchema)
+}).strict();
+export type ConsistencyFactGroup = z.infer<
+  typeof ConsistencyFactGroupSchema
+>;
+
+const ConsistencyFactGroupsSchema = z.array(ConsistencyFactGroupSchema)
+  .max(BATTLE_PROJECTION_HARD_LIMITS.maxFacts)
+  .superRefine((groups, ctx) => {
+    const count = groups.reduce((sum, group) => sum + group.facts.length, 0);
+    if (count > BATTLE_PROJECTION_HARD_LIMITS.maxFacts) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.too_big,
+        maximum: BATTLE_PROJECTION_HARD_LIMITS.maxFacts,
+        inclusive: true,
+        type: "array",
+        path: [],
+        message: "consistency fact count exceeds projection hard limit",
+      });
+    }
+  });
+
+export const CompactCausalLinkSchema = z.tuple([
+  CanonicalRefSchema,
+  FactRefSchema,
+  z.enum(["created", "ended", "modified", "triggered"]),
+]);
+export type CompactCausalLink = z.infer<typeof CompactCausalLinkSchema>;
+
+export const ConsistencySliceSchema = z.object({
+  schemaVersion: z.literal(2),
+  purpose: ProjectionPurposeSchema,
+  scope: ServerInteractionScopeSchema,
+  factGroups: ConsistencyFactGroupsSchema,
+  causalLinks: z.array(CompactCausalLinkSchema)
     .max(BATTLE_PROJECTION_HARD_LIMITS.maxFacts),
   issues: z.array(ConsistencyIssueViewSchema).max(64),
   applicableRuleRefs: z.array(RuleRefSchema)
@@ -993,20 +1104,218 @@ function boundedFacts(input: {
   };
 }
 
+const CONTAINER_PREDICATES = new Set([
+  "located_in",
+  "held_by",
+  "worn_by",
+  "attached_to",
+]);
+
+const INVERSE_DEPENDENCY_PREDICATES = new Set([
+  "held_by",
+  "worn_by",
+  "attached_to",
+]);
+
+function purposeRelevantFacts(input: {
+  facts: CanonicalProjectionFact[];
+  scope: InteractionScope;
+}): CanonicalProjectionFact[] {
+  const relevantRefs = new Set([
+    ...input.scope.anchorRefs,
+    ...input.scope.processRefs,
+  ]);
+
+  let expanded = true;
+  while (expanded) {
+    expanded = false;
+    for (const fact of input.facts) {
+      if (!fact.objectRef) continue;
+      if (
+        relevantRefs.has(fact.subjectRef) &&
+        CONTAINER_PREDICATES.has(fact.predicate) &&
+        !relevantRefs.has(fact.objectRef)
+      ) {
+        relevantRefs.add(fact.objectRef);
+        expanded = true;
+      }
+      if (
+        relevantRefs.has(fact.objectRef) &&
+        INVERSE_DEPENDENCY_PREDICATES.has(fact.predicate) &&
+        !relevantRefs.has(fact.subjectRef)
+      ) {
+        relevantRefs.add(fact.subjectRef);
+        expanded = true;
+      }
+    }
+  }
+
+  return input.facts.filter((fact) =>
+    fact.subjectRef === "battle.scene" ||
+    relevantRefs.has(fact.subjectRef) ||
+    (fact.objectRef !== undefined && relevantRefs.has(fact.objectRef))
+  );
+}
+
+function adjudicationClaimKey(fact: CanonicalProjectionFact): string {
+  return JSON.stringify([
+    fact.subjectRef,
+    fact.predicate,
+    fact.objectRef ?? null,
+    Object.prototype.hasOwnProperty.call(fact, "value")
+      ? ["present", fact.value]
+      : ["absent"],
+  ]);
+}
+
+function adjudicationFactGroups(
+  facts: CanonicalProjectionFact[],
+): AdjudicationFactGroup[] {
+  const groups = new Map<string, AdjudicationClaimRow[]>();
+  const seen = new Set<string>();
+  for (const fact of facts) {
+    const key = adjudicationClaimKey(fact);
+    if (seen.has(key)) continue;
+    seen.add(key);
+    const group = groups.get(fact.subjectRef) ?? [];
+    group.push(Object.prototype.hasOwnProperty.call(fact, "value")
+      ? [fact.predicate, fact.objectRef ?? null, clone(fact.value)]
+      : [fact.predicate, fact.objectRef ?? null]);
+    groups.set(fact.subjectRef, group);
+  }
+  return [...groups].map(([subjectRef, claims]) => ({ subjectRef, claims }));
+}
+
+function deduplicatedAdjudicationFacts(
+  facts: CanonicalProjectionFact[],
+): CanonicalProjectionFact[] {
+  const seen = new Set<string>();
+  return facts.filter((fact) => {
+    const key = adjudicationClaimKey(fact);
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
+function consistencyFactGroups(
+  facts: CanonicalProjectionFact[],
+): ConsistencyFactGroup[] {
+  const groups = new Map<string, ConsistencyFactRow[]>();
+  for (const fact of facts) {
+    const group = groups.get(fact.subjectRef) ?? [];
+    const core: ConsistencyFactRow = [
+      fact.id,
+      fact.predicate,
+      fact.objectRef ?? null,
+      fact.validFromTurn,
+      fact.validToTurn ?? null,
+      fact.source,
+    ];
+    group.push(Object.prototype.hasOwnProperty.call(fact, "value")
+      ? [...core, clone(fact.value)]
+      : core);
+    groups.set(fact.subjectRef, group);
+  }
+  return [...groups].map(([subjectRef, groupedFacts]) => ({
+    subjectRef,
+    facts: groupedFacts,
+  }));
+}
+
+function serverInteractionScope(scope: InteractionScope): ServerInteractionScope {
+  const { factRefs: _factRefs, ruleRefs: _ruleRefs, ...serverScope } = scope;
+  return ServerInteractionScopeSchema.parse(serverScope);
+}
+
+function adjudicationFactCount(slice: AdjudicationSlice): number {
+  return slice.factGroups.reduce(
+    (sum, group) => sum + group.claims.length,
+    0,
+  );
+}
+
+function consistencyFactCount(slice: ConsistencySlice): number {
+  return slice.factGroups.reduce(
+    (sum, group) => sum + group.facts.length,
+    0,
+  );
+}
+
+function popAdjudicationFact(slice: AdjudicationSlice): void {
+  const group = slice.factGroups.at(-1);
+  if (!group) return;
+  group.claims.pop();
+  if (group.claims.length === 0) slice.factGroups.pop();
+}
+
+function popConsistencyFact(slice: ConsistencySlice): string | null {
+  const group = slice.factGroups.at(-1);
+  if (!group) return null;
+  const removed = group.facts.pop();
+  if (group.facts.length === 0) slice.factGroups.pop();
+  return removed?.[0] ?? null;
+}
+
+export type ServerProjectionFactView = {
+  id?: string;
+  subjectRef: string;
+  predicate: string;
+  objectRef?: string;
+  value?: unknown;
+  validFromTurn?: number;
+  validToTurn?: number;
+  source?: CanonicalProjectionFact["source"];
+};
+
+export function expandAdjudicationFacts(
+  slice: AdjudicationSlice,
+): ServerProjectionFactView[] {
+  return slice.factGroups.flatMap((group) => group.claims.map((claim) => ({
+    subjectRef: group.subjectRef,
+    predicate: claim[0],
+    ...(claim[1] === null ? {} : { objectRef: claim[1] }),
+    ...(claim.length === 2 ? {} : { value: clone(claim[2]) }),
+  })));
+}
+
+export function expandConsistencyFacts(
+  slice: ConsistencySlice,
+): CanonicalProjectionFact[] {
+  return slice.factGroups.flatMap((group) => group.facts.map((fact) => ({
+    id: fact[0],
+    subjectRef: group.subjectRef,
+    predicate: fact[1],
+    ...(fact[2] === null ? {} : { objectRef: fact[2] }),
+    validFromTurn: fact[3],
+    ...(fact[4] === null ? {} : { validToTurn: fact[4] }),
+    source: fact[5],
+    ...(fact.length === 6 ? {} : { value: clone(fact[6]) }),
+  })));
+}
+
+export function expandConsistencyCausalLinks(
+  slice: ConsistencySlice,
+): ProjectionCausalLink[] {
+  return slice.causalLinks.map((link) => ({
+    sourceRef: link[0],
+    targetFactRef: link[1],
+    relation: link[2],
+  }));
+}
+
 function trimAdjudicationToBytes(
   slice: AdjudicationSlice,
   maxBytes: number,
 ): AdjudicationSlice {
   const value = clone(slice);
-  while (utf8Bytes(value) > maxBytes && value.facts.length > 0) {
-    value.facts.pop();
+  while (utf8Bytes(value) > maxBytes && adjudicationFactCount(value) > 0) {
+    popAdjudicationFact(value);
     value.scope.omitted.facts += 1;
     value.scope.truncated = true;
   }
-  value.scope.factRefs = value.facts.map((fact) => fact.id);
-  while (utf8Bytes(value) > maxBytes && value.scope.ruleRefs.length > 1) {
-    value.scope.ruleRefs.pop();
-    value.applicableRuleRefs = [...value.scope.ruleRefs];
+  while (utf8Bytes(value) > maxBytes && value.applicableRuleRefs.length > 1) {
+    value.applicableRuleRefs.pop();
     value.scope.omitted.rules += 1;
     value.scope.truncated = true;
   }
@@ -1025,18 +1334,16 @@ function trimConsistencyToBytes(
     value.causalLinks.pop();
     value.scope.truncated = true;
   }
-  while (utf8Bytes(value) > maxBytes && value.facts.length > 0) {
-    const removed = value.facts.pop()!;
+  while (utf8Bytes(value) > maxBytes && consistencyFactCount(value) > 0) {
+    const removedFactRef = popConsistencyFact(value);
     value.causalLinks = value.causalLinks.filter((link) =>
-      link.targetFactRef !== removed.id
+      link[1] !== removedFactRef
     );
     value.scope.omitted.facts += 1;
     value.scope.truncated = true;
   }
-  value.scope.factRefs = value.facts.map((fact) => fact.id);
-  while (utf8Bytes(value) > maxBytes && value.scope.ruleRefs.length > 1) {
-    value.scope.ruleRefs.pop();
-    value.applicableRuleRefs = [...value.scope.ruleRefs];
+  while (utf8Bytes(value) > maxBytes && value.applicableRuleRefs.length > 1) {
+    value.applicableRuleRefs.pop();
     value.scope.omitted.rules += 1;
     value.scope.truncated = true;
   }
@@ -1198,13 +1505,19 @@ export class BattleStateProjectionAdapter implements CanonicalProjectionService 
       omittedHistoryTurns: history.omitted,
     });
     const collection = collectFacts(this.#state, history.selected);
-    const bounded = boundedFacts({ facts: collection.facts, scope, limits });
+    const bounded = boundedFacts({
+      facts: deduplicatedAdjudicationFacts(
+        purposeRelevantFacts({ facts: collection.facts, scope }),
+      ),
+      scope,
+      limits,
+    });
     const value = AdjudicationSliceSchema.parse({
-      schemaVersion: 1,
+      schemaVersion: 2,
       proposalRefs: request.proposalRefs,
       temporalWindow: request.temporalWindow,
-      scope: bounded.scope,
-      facts: bounded.facts,
+      scope: serverInteractionScope(bounded.scope),
+      factGroups: adjudicationFactGroups(bounded.facts),
       applicableRuleRefs: bounded.scope.ruleRefs,
       relatedIssueRefs: [],
     });
@@ -1230,16 +1543,25 @@ export class BattleStateProjectionAdapter implements CanonicalProjectionService 
       omittedHistoryTurns: history.omitted,
     });
     const collection = collectFacts(this.#state, history.selected);
-    const bounded = boundedFacts({ facts: collection.facts, scope, limits });
+    const bounded = boundedFacts({
+      facts: purposeRelevantFacts({ facts: collection.facts, scope }),
+      scope,
+      limits,
+    });
     const factRefs = new Set(bounded.facts.map((fact) => fact.id));
     const value = ConsistencySliceSchema.parse({
-      schemaVersion: 1,
+      schemaVersion: 2,
       purpose: request.purpose,
-      scope: bounded.scope,
-      facts: bounded.facts,
+      scope: serverInteractionScope(bounded.scope),
+      factGroups: consistencyFactGroups(bounded.facts),
       causalLinks: collection.causalLinks
         .filter((link) => factRefs.has(link.targetFactRef))
-        .slice(0, limits.maxFacts),
+        .slice(0, limits.maxFacts)
+        .map((link) => [
+          link.sourceRef,
+          link.targetFactRef,
+          link.relation,
+        ]),
       issues: [],
       applicableRuleRefs: bounded.scope.ruleRefs,
     });

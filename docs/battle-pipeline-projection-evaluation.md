@@ -105,9 +105,12 @@ is the explicit revision loop added in plan version 3:
 2. `T_PROJECTION_REVISION_EVAL` (1p) repeats the frozen fixture, 20-repetition
    protocol, and thresholds without weakening them.
 
-This plan change does not start implementation. `T_PATCH_POC` now depends on
-`PROJECTION_REVISION_EVALUATED` and may be unblocked only if the revision result
-is `supported`; any other verdict requires another explicit replan.
+The revision prototype is recorded in
+`docs/battle-pipeline-projection-revision-poc.md`. Its implementation smoke
+check is not the formal re-evaluation. `T_PATCH_POC` remains dependent on
+`PROJECTION_REVISION_EVALUATED` and may be unblocked only if the 20-repetition
+revision result is `supported`; any other verdict requires another explicit
+replan.
 
 ## Validation commands
 

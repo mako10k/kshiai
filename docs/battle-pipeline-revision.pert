@@ -46,6 +46,7 @@ milestone PROJECTION_EVALUATED:
 
 milestone PROJECTION_REVISION_POC_BUILT:
   title "Server-side projection revision prototype built"
+  state reached
 
 milestone PROJECTION_REVISION_EVALUATED:
   title "Projection revision evaluated against the frozen protocol"
@@ -160,7 +161,7 @@ task T_PROJECTION_REVISION_POC PROJECTION_EVALUATED -> PROJECTION_REVISION_POC_B
     relation active-process and recent-causal recall. Do not alter the frozen
     fixture decision rubric or thresholds, and do not start canonical patches.
   duration 2p
-  status planned
+  status done
   requires:
     DEV 1
 
