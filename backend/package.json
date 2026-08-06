@@ -15,6 +15,7 @@
     "eval:battle-pipeline-read": "tsx src/scripts/evaluate-battle-read-coherence-poc.ts",
     "eval:battle-pipeline-projection": "tsx src/scripts/evaluate-battle-projection-poc.ts",
     "eval:battle-pipeline-graph": "tsx src/scripts/evaluate-battle-canonical-graph-poc.ts",
+    "eval:battle-pipeline-adaptive": "tsx src/scripts/evaluate-battle-adaptive-adjudication-poc.ts",
     "eval:perception-prompts": "tsx src/scripts/evaluate-perception-prompts.ts",
     "battle-state": "tsx src/scripts/battle-semantic-state.ts",
     "migrate:character-identities": "tsx src/scripts/backfill-character-identities.ts",

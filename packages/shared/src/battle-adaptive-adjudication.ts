@@ -11,7 +11,7 @@ export const ADAPTIVE_ADJUDICATION_POC_LIMITS = {
   maxWorldExpansions: 4,
 } as const;
 
-export const AdaptiveClaimStrengthSchema = z.enum([
+const AdaptiveClaimStrengthSchema = z.enum([
   "known",
   "intermediate",
   "weak",

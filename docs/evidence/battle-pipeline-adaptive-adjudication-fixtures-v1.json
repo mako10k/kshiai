@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 1,
+  "fixtureVersion": "battle-pipeline-adaptive-adjudication-eval-v1",
+  "frozenAt": "2026-08-06T00:00:00.000Z",
+  "deterministicRepetitions": 20,
+  "blindComparisonsPerScenario": 4,
+  "thresholds": {
+    "fastPathOutcomeParityMinimum": 1,
+    "expansionTriggerPrecisionMinimum": 0.8,
+    "expansionTriggerRecallMinimum": 0.8,
+    "partialPrefixCorrectnessMinimum": 1,
+    "causalTraceCompletenessMinimum": 0.98,
+    "knownFactContradictionReductionMinimum": 0.3,
+    "unsupportedAssertionReductionMinimum": 0.3,
+    "budgetDegradationCorrectnessMinimum": 1,
+    "blindPlausibilityPreferenceRateMinimum": 0.6,
+    "blindExplanationScoreDeltaMinimum": 0.25,
+    "blindJudgmentCoverageMinimum": 0.9,
+    "blindOrderConsistencyMinimum": 0.75,
+    "p95ShadowLatencyMsMaximum": 25,
+    "adaptiveSourceLinesMaximum": 1200,
+    "adaptiveExportedDeclarationsMaximum": 40,
+    "ordinaryTurnLlmCallsMaximum": 3,
+    "expandedTurnAdditionalLlmCallsMaximum": 2
+  },
+  "scenarios": [
+    {
+      "id": "fast_path_parity",
+      "runner": "fast_path_parity",
+      "hypothesis": "An ordinary defined attack remains byte-equivalent to the existing control result and does not expand.",
+      "blindReview": false,
+      "expectedExpandedProposalRefs": []
+    },
+    {
+      "id": "coarse_bounded_resolution",
+      "runner": "coarse_bounded_resolution",
+      "hypothesis": "A bounded free action resolves coarsely without manufacturing intermediate steps.",
+      "blindReview": false,
+      "expectedExpandedProposalRefs": []
+    },
+    {
+      "id": "partial_prefix_cost",
+      "runner": "partial_prefix_cost",
+      "hypothesis": "A failed grip retains the completed approach and its exposure cost but not later effects or costs.",
+      "blindReview": true,
+      "expectedExpandedProposalRefs": ["proposal.partial-prefix"]
+    },
+    {
+      "id": "simultaneous_exclusive_claim",
+      "runner": "simultaneous_exclusive_claim",
+      "hypothesis": "Same-window claims to one object stop both plans at the contested step without side priority.",
+      "blindReview": true,
+      "expectedExpandedProposalRefs": ["proposal.claim.a", "proposal.claim.b"]
+    },
+    {
+      "id": "unknown_world_refinement",
+      "runner": "unknown_world_refinement",
+      "hypothesis": "An unknown support state may be refined from bounded world evidence without rewriting a known fact.",
+      "blindReview": true,
+      "expectedExpandedProposalRefs": ["proposal.world-refine"]
+    },
+    {
+      "id": "invented_tactic_rejection",
+      "runner": "invented_tactic_rejection",
+      "hypothesis": "A character plan cannot activate an object outside its interaction scope and degrades to unknown.",
+      "blindReview": true,
+      "expectedExpandedProposalRefs": ["proposal.invented"]
+    },
+    {
+      "id": "budget_degradation",
+      "runner": "budget_degradation",
+      "hypothesis": "When planning expansion is unavailable, the result uses the strongest non-conflicting intermediate fallback.",
+      "blindReview": true,
+      "expectedExpandedProposalRefs": ["proposal.budget"]
+    }
+  ]
+}
