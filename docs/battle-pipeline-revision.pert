@@ -17,7 +17,7 @@ project KSHIAI_BATTLE_PIPELINE_REVISION_POC:
     provider-order changes release deployment or legacy cleanup.
   as_of 2026-08-06
   duration_unit point
-  velocity 9p/4d
+  velocity 21p/8d
   finish POC_EVIDENCE_REVIEWED
 
 resource DEV:
@@ -74,6 +74,13 @@ milestone READ_COHERENCE_POC_BUILT:
 
 milestone READ_COHERENCE_EVALUATED:
   title "Read-time coherence and repair effectiveness evaluated"
+  state reached
+
+milestone READ_COHERENCE_REVISION_POC_BUILT:
+  title "Causal-order selection guard revision built"
+
+milestone READ_COHERENCE_REVISION_EVALUATED:
+  title "Read-coherence causal-order revision evaluated"
 
 milestone GRAPH_POC_BUILT:
   title "In-memory canonical graph view prototype built over BattleState"
@@ -266,11 +273,37 @@ task T_READ_EVAL READ_COHERENCE_POC_BUILT -> READ_COHERENCE_EVALUATED:
     supported revise unsupported or indeterminate; an apparently coherent but
     causally weaker result counts as harm rather than success.
   duration 1p
-  status active
+  status done
   requires:
     DEV 1
 
-task T_GRAPH_POC READ_COHERENCE_EVALUATED -> GRAPH_POC_BUILT:
+task T_READ_REVISION_POC READ_COHERENCE_EVALUATED -> READ_COHERENCE_REVISION_POC_BUILT:
+  title "Put causal strength before bare recency in select repair"
+  description |
+    Revise only the select ranking and guard exposed by the frozen recency trap.
+    Prefer stronger causal relations before validFrom recency and reject select
+    when the causal and authority order remains incomparable. Preserve all
+    shadow-only scope history authority fallback and limit boundaries. Do not
+    change the frozen fixture rubric or start graph work.
+  duration 1p
+  status blocked
+  blocked_reason "Requires explicit authorization after the read-coherence revise result"
+  requires:
+    DEV 1
+
+task T_READ_REVISION_EVAL READ_COHERENCE_REVISION_POC_BUILT -> READ_COHERENCE_REVISION_EVALUATED:
+  title "Re-evaluate causal-order selection with the unchanged protocol"
+  description |
+    Re-run the frozen seven-scenario 20-repetition protocol. Require zero hard
+    invariant failures correct selection of 1.0 zero causal regressions and all
+    existing detection reduction fallback loop latency and limit thresholds.
+    Record supported revise unsupported or indeterminate. Do not proceed to the
+    graph PoC automatically unless the result is supported.
+  duration 1p
+  requires:
+    DEV 1
+
+task T_GRAPH_POC READ_COHERENCE_REVISION_EVALUATED -> GRAPH_POC_BUILT:
   title "Prototype an in-memory canonical graph view over legacy BattleState"
   description |
     Build indexed entity fact temporal causal world-process issue and rule
@@ -281,7 +314,7 @@ task T_GRAPH_POC READ_COHERENCE_EVALUATED -> GRAPH_POC_BUILT:
     remove existing fields.
   duration 2p
   status blocked
-  blocked_reason "Unblock only after read-coherence evidence supports continuation; otherwise replan"
+  blocked_reason "Unblock only after revised read-coherence evidence supports continuation; otherwise replan"
   requires:
     DEV 1
 

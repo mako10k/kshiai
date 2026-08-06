@@ -9,7 +9,13 @@
 - Forecast velocity: 2.25p/day
 - Forecast duration: approximately 0.89 day
 - Authority: shadow-only; no canonical commit, persistence, or runtime wiring
-- Evaluation: pending (`T_READ_EVAL` remains separate)
+- Evaluation: `revise` under the frozen protocol (`T_READ_EVAL` completed)
+
+The bounded result is recorded in
+[Battle Pipeline Read Coherence PoC Evaluation](battle-pipeline-read-coherence-evaluation.md).
+The shadow boundaries held, but `select` preferred bare recency over stronger
+causal evidence in the frozen recency trap. The contract therefore requires a
+limited causal-order revision before later phases can continue.
 
 This prototype tests whether a complete purpose-specific Consistency Slice can
 be checked cheaply and, when explicitly enabled, preview a bounded repair as an
