@@ -1,0 +1,330 @@
+project KSHIAI_BATTLE_PIPELINE_REVISION_POC:
+  version 2
+  title "Evidence-driven PoC for the purpose-scoped canonical battle pipeline"
+  description |
+    Evaluate the interventions proposed by
+    docs/battle-pipeline-revised-design.md without assuming that the final battle
+    result is objectively correct. Freeze a baseline and evaluation protocol,
+    build the minimum reversible prototype for each intervention, compare it
+    against the baseline, and record supported revise unsupported or
+    indeterminate. Hard invariants such as authority privacy atomicity and schema
+    validity remain pass or fail requirements; outcome plausibility coherence
+    causal traceability and efficiency are proxy evidence rather than proof.
+    The DAG is a candidate sequence only. Each later PoC entry task is initially
+    blocked as a decision lock. A supported evaluation permits an explicit
+    unblock; revise unsupported or indeterminate requires an explicit replan.
+    No milestone in this PoC authorizes production persistence migration
+    provider-order changes release deployment or legacy cleanup.
+  as_of 2026-08-06
+  duration_unit point
+  velocity 1p/1d
+  finish POC_EVIDENCE_REVIEWED
+
+resource DEV:
+  title "Developer"
+  capacity 1
+
+milestone CURRENT_PIPELINE:
+  title "Existing battle pipeline available as the comparison subject"
+  state reached
+
+milestone DESIGN_FIXED:
+  title "Revised battle-pipeline hypotheses and authority boundaries fixed"
+  state reached
+
+milestone BASELINE_READY:
+  title "Frozen scenarios metrics thresholds and current-pipeline baseline ready"
+  state reached
+
+milestone PROJECTION_POC_BUILT:
+  title "Purpose-specific projection prototype built behind a PoC boundary"
+
+milestone PROJECTION_EVALUATED:
+  title "Projection effectiveness and failure modes evaluated"
+
+milestone PATCH_POC_BUILT:
+  title "Bounded canonical-patch prototype built in shadow mode"
+
+milestone PATCH_EVALUATED:
+  title "Canonical-patch effectiveness and failure modes evaluated"
+
+milestone ISSUES_POC_BUILT:
+  title "Consistency-issue lifecycle prototype built without canonical mutation authority"
+
+milestone ISSUES_EVALUATED:
+  title "Consistency-issue effectiveness and failure modes evaluated"
+
+milestone READ_COHERENCE_POC_BUILT:
+  title "Purpose-scoped read and bounded-repair prototype built"
+
+milestone READ_COHERENCE_EVALUATED:
+  title "Read-time coherence and repair effectiveness evaluated"
+
+milestone GRAPH_POC_BUILT:
+  title "In-memory canonical graph view prototype built over BattleState"
+
+milestone GRAPH_EVALUATED:
+  title "Canonical graph projection value and migration risk evaluated"
+
+milestone ADAPTIVE_POC_BUILT:
+  title "Fast coarse and selective-expansion adjudication prototype built"
+
+milestone ADAPTIVE_EVALUATED:
+  title "Adaptive adjudication quality and cost effectiveness evaluated"
+
+milestone WORLD_PROCESS_POC_BUILT:
+  title "Rule-based active world-process prototype built in the shared timeline"
+
+milestone WORLD_PROCESS_EVALUATED:
+  title "World-process integration effectiveness and failure modes evaluated"
+
+milestone POC_EVIDENCE_REVIEWED:
+  title "PoC evidence limitations and next decisions recorded"
+
+task T_DESIGN CURRENT_PIPELINE -> DESIGN_FIXED:
+  title "Freeze revised pipeline principles contracts and PoC authority boundary"
+  description |
+    Record the design hypotheses and preserve the existing BattleState
+    perception narration timing provider and release authority boundaries.
+    State explicitly that canonical commit is adoption rather than a proof of
+    global consistency and that the PoC cannot prove an objectively correct
+    final battle result.
+  duration 1p
+  status done
+  requires:
+    DEV 1
+
+task T_BASELINE DESIGN_FIXED -> BASELINE_READY:
+  title "Pre-register the PoC corpus metrics thresholds and baseline"
+  description |
+    Freeze representative ordinary ambiguous contradictory remote-interaction
+    simultaneous irreversible world-process legacy and provider-failure
+    scenarios before inspecting prototype output. Record current-pipeline
+    outputs repeated-run variance LLM calls tokens latency state size slice size
+    known-fact contradictions unsupported claims causal gaps and human-rubric
+    plausibility. Separate hard invariants from proxy quality measures. Define
+    sample counts reviewer blinding comparison method minimum material effect
+    thresholds stop conditions and the supported revise unsupported and
+    indeterminate decision rubric. Hash or otherwise freeze fixtures and scoring
+    inputs so later phases cannot silently move the baseline.
+  duration 2p
+  status done
+  requires:
+    DEV 1
+
+task T_PROJECTION_POC BASELINE_READY -> PROJECTION_POC_BUILT:
+  title "Prototype bounded purpose-specific slices over current BattleState"
+  description |
+    Implement the minimum InteractionScope ObservationSlice AdjudicationSlice
+    ConsistencySlice and CanonicalReadResult adapters needed by the frozen
+    scenarios. Keep the prototype read-only and do not change battle outcomes.
+    Include physical remote causal support communication identity and
+    world-process traversal, observer-local references, and configurable fact
+    entity rule byte and history limits.
+  duration 2p
+  requires:
+    DEV 1
+
+task T_PROJECTION_EVAL PROJECTION_POC_BUILT -> PROJECTION_EVALUATED:
+  title "Measure projection relevance reduction leakage and missed dependencies"
+  description |
+    Compare each slice with the frozen baseline and seeded ground-truth
+    interaction fixtures. Measure decisive-fact recall irrelevant-fact reduction
+    prompt bytes and token estimate latency bound compliance A/B isolation
+    canonical-ID leakage and unchanged baseline outcomes. Probe false negatives
+    with remote targeting support propagation communication and identity
+    mutations. Record supported revise unsupported or indeterminate with failure
+    examples and uncertainty. Do not proceed automatically unless the evidence
+    supports a useful bounded projection contract.
+  duration 1p
+  requires:
+    DEV 1
+
+task T_PATCH_POC PROJECTION_EVALUATED -> PATCH_POC_BUILT:
+  title "Prototype authority-preserving canonical patches in shadow mode"
+  description |
+    Add minimal CanonicalFact provenance validity CausalLink assertion
+    retraction touched-reference and patch-audit contracts. Convert selected
+    existing mechanical semantic free-action and world transitions without
+    making the patch path authoritative. Run schema reference direct-conflict
+    forbidden-state retraction causal revision and size checks while preserving
+    existing subsystem authority and atomic commit behavior.
+  duration 2p
+  status blocked
+  blocked_reason "Unblock only after projection evidence supports continuation; otherwise replan"
+  requires:
+    DEV 1
+
+task T_PATCH_EVAL PATCH_POC_BUILT -> PATCH_EVALUATED:
+  title "Measure patch parity audit yield scope reduction and false rejection"
+  description |
+    Shadow-compare reconstructed post-state touched references and causal sources
+    with the existing authoritative result. Measure conversion parity invalid
+    patch detection seeded-defect recall false rejection audit scope size and
+    unexplained state changes. Confirm that no converted patch can cross
+    mechanical semantic perception narration or private-state authority. Record
+    supported revise unsupported or indeterminate and stop for unexplained
+    parity drift or authority regression.
+  duration 1p
+  requires:
+    DEV 1
+
+task T_ISSUES_POC PATCH_EVALUATED -> ISSUES_POC_BUILT:
+  title "Prototype consistency issue registration and purpose blocking"
+  description |
+    Implement the minimum strict issue alert and audit-result contracts plus
+    deterministic registration deduplication defer and resolve operations.
+    Store the prototype in a reversible PoC envelope. LLM alerts may propose an
+    issue but may not alter canonical state. Keep no_issue_found scoped and
+    indeterminate distinct from success.
+  duration 1p
+  status blocked
+  blocked_reason "Unblock only after patch evidence supports continuation; otherwise replan"
+  requires:
+    DEV 1
+
+task T_ISSUES_EVAL ISSUES_POC_BUILT -> ISSUES_EVALUATED:
+  title "Measure issue detection actionability noise and lifecycle correctness"
+  description |
+    Seed direct subtle unrelated duplicate stale deferred and newly discovered
+    conflicts. Measure detection recall false positive rate deduplication
+    stability purpose-blocking classification lifecycle traceability storage
+    growth and operator-review burden. Verify that unrelated issues do not block
+    a usable purpose slice and that nondeferred state is never labeled globally
+    coherent. Record supported revise unsupported or indeterminate.
+  duration 1p
+  requires:
+    DEV 1
+
+task T_READ_POC ISSUES_EVALUATED -> READ_COHERENCE_POC_BUILT:
+  title "Prototype local read checks and bounded repair strategies"
+  description |
+    Run cheap checks over complete purpose slices and return exact checked facts
+    and unresolved issues. Prototype select reinterpret intermediate-state
+    weaken-claim and reset-unknown repair behind a nonproduction flag. Emit
+    repairs as ordinary RepairRef patches, preserve causal and authority order,
+    rebuild the slice, and cap attempts calls and touched facts.
+  duration 2p
+  status blocked
+  blocked_reason "Unblock only after issue-lifecycle evidence supports continuation; otherwise replan"
+  requires:
+    DEV 1
+
+task T_READ_EVAL READ_COHERENCE_POC_BUILT -> READ_COHERENCE_EVALUATED:
+  title "Measure local coherence gain repair harm and graceful degradation"
+  description |
+    Compare conflict visibility before and after the PoC on frozen and adversarial
+    cases. Measure blocking-conflict reduction successful coherent reads
+    incorrect fact selection causal regression unnecessary repair unknown
+    fallback rate extra LLM calls latency and repeated-repair loops. Require no
+    mutation outside the checked scope and no rewrite of public history. Record
+    supported revise unsupported or indeterminate; an apparently coherent but
+    causally weaker result counts as harm rather than success.
+  duration 1p
+  requires:
+    DEV 1
+
+task T_GRAPH_POC READ_COHERENCE_EVALUATED -> GRAPH_POC_BUILT:
+  title "Prototype an in-memory canonical graph view over legacy BattleState"
+  description |
+    Build indexed entity fact temporal causal world-process issue and rule
+    access over the current JSON without changing persistence authority. Exercise
+    projection and patch reads through the graph adapter, keep deterministic
+    legacy reconstruction, and add a disposable persistence-envelope experiment
+    only if restart measurement requires it. Do not backfill production data or
+    remove existing fields.
+  duration 2p
+  status blocked
+  blocked_reason "Unblock only after read-coherence evidence supports continuation; otherwise replan"
+  requires:
+    DEV 1
+
+task T_GRAPH_EVAL GRAPH_POC_BUILT -> GRAPH_EVALUATED:
+  title "Measure graph query value parity complexity and migration risk"
+  description |
+    Compare graph and direct-adapter projections for fact equality order
+    independence and committed-outcome parity. Measure scope-query latency
+    memory serialized growth index maintenance reconstruction and restart cost
+    implementation complexity and rollback behavior. Identify which graph
+    components provide material value and which should remain derived views.
+    Record supported revise unsupported or indeterminate without treating faster
+    queries alone as proof that independent persistence is warranted.
+  duration 2p
+  requires:
+    DEV 1
+
+task T_ADAPTIVE_POC GRAPH_EVALUATED -> ADAPTIVE_POC_BUILT:
+  title "Prototype fast coarse and selectively expanded adjudication"
+  description |
+    Route only frozen PoC scenarios through deterministic Level 0 bounded Level 1
+    and explicitly triggered Level 2 paths. Keep existing resolution as control.
+    Expand plans from the character observation psychology experience and intent
+    without adjudicator-invented tactics. Refine unknown facts without replacing
+    known facts, execute the longest valid prefix, derive costs from completed
+    execution, enforce per-purpose budgets, and degrade unsupported detail toward
+    intermediate weak or unknown states.
+  duration 3p
+  status blocked
+  blocked_reason "Unblock only after graph evidence supports continuation; otherwise replan"
+  requires:
+    DEV 1
+
+task T_ADAPTIVE_EVAL ADAPTIVE_POC_BUILT -> ADAPTIVE_EVALUATED:
+  title "Measure adjudication plausibility detail value cost and regression"
+  description |
+    Use repeated runs and blinded pairwise rubric review because no objective
+    final-result oracle exists. Measure preference and explanation scores
+    known-fact contradiction unsupported assertion causal trace completeness
+    expansion trigger precision and recall partial-prefix correctness fast-path
+    outcome parity calls tokens latency and budget degradation. Report hard
+    invariant failures separately from proxy quality improvements. Record
+    supported revise unsupported or indeterminate and retain raw scenario-level
+    evidence for later review.
+  duration 2p
+  requires:
+    DEV 1
+
+task T_WORLD_POC ADAPTIVE_EVALUATED -> WORLD_PROCESS_POC_BUILT:
+  title "Prototype active world proposals in the shared temporal window"
+  description |
+    Implement rule-based examples for fire collapse fall spread and support loss
+    with source trigger effect and timing references. Place them beside character
+    proposals in the existing side-neutral temporal resolver and route results
+    through the PoC execution patch and projection path. Use semantic expansion
+    only for a frozen ambiguous fixture and keep the feature disabled outside the
+    PoC harness.
+  duration 2p
+  status blocked
+  blocked_reason "Unblock only after adaptive-adjudication evidence supports continuation; otherwise replan"
+  requires:
+    DEV 1
+
+task T_WORLD_EVAL WORLD_PROCESS_POC_BUILT -> WORLD_PROCESS_EVALUATED:
+  title "Measure environmental continuity interaction quality cost and side neutrality"
+  description |
+    Measure expected process progression trigger and propagation coverage
+    character-process conflict handling causal completeness human-rubric
+    plausibility A/B swap symmetry same-bucket atomicity terminal behavior extra
+    calls latency and unsupported environmental inventions. Compare with the
+    no-active-process baseline and record supported revise unsupported or
+    indeterminate.
+  duration 1p
+  requires:
+    DEV 1
+
+task T_SYNTHESIS WORLD_PROCESS_EVALUATED -> POC_EVIDENCE_REVIEWED:
+  title "Synthesize intervention evidence limitations and next decisions"
+  description |
+    Publish a matrix for every intervention containing hypothesis prototype
+    scope baseline metrics observed effect uncertainty failure modes hard
+    invariant result decision and recommended next experiment. Separate local
+    improvements from interaction effects and identify measurements invalidated
+    by earlier revisions. Conclude only whether each intervention is supported
+    for further engineering revised rejected or still indeterminate. Do not claim
+    objective battle correctness global consistency production readiness or
+    release acceptance. Run focused harness tests full repository regression
+    checks static privacy and authority audits and PERT validation, while keeping
+    any implementation migration release and production plan separately gated.
+  duration 2p
+  requires:
+    DEV 1

@@ -1,0 +1,2187 @@
+{
+  "schemaVersion": 1,
+  "corpusVersion": "battle-pipeline-poc-baseline-v1",
+  "generatedAt": "2026-08-06T00:47:48.876Z",
+  "mode": "local_current_pipeline",
+  "provenance": {
+    "gitHead": "4c7ea5ccec31814a5fa38f1b9ea616ca50e764fe",
+    "workingTreeDirty": true,
+    "nodeVersion": "v25.1.0",
+    "corpusPath": "docs/evidence/battle-pipeline-poc-corpus-v1.json",
+    "corpusSha256": "c467fd9d3e76f4a72d09efe171ee36181ed468d9c883482436312ae77f9b9740",
+    "evaluatorPath": "backend/src/scripts/evaluate-battle-pipeline-baseline.ts",
+    "evaluatorSha256": "de9ac6f8bc87618e859a2cf87d5f39d8620bff6f414febc622dfbb73fec3fdab"
+  },
+  "execution": {
+    "externalLlmCallsMade": 0,
+    "localRepetitions": 20,
+    "localScenarioCount": 9,
+    "existingEvidenceCount": 1,
+    "automatedTestReferenceCount": 2,
+    "futureBlindReviewCount": 1
+  },
+  "currentCallTopology": {
+    "ordinaryFixedFocus": {
+      "semanticWorldAndSensory": 1,
+      "characterA": 1,
+      "characterB": 1,
+      "narrator": 1,
+      "minimumTotalCalls": 4
+    },
+    "conditionalAdditions": {
+      "fluidNarrationFocus": 1,
+      "freeActionAdjudication": 1,
+      "turnLimitAdjudicationAndPresentation": 2,
+      "semanticRetry": 0
+    },
+    "note": "Counts are contract topology, not a live per-turn trace. Timeouts and skipped phases may reduce completed calls."
+  },
+  "localScenarios": [
+    {
+      "id": "ordinary_attack",
+      "category": "ordinary",
+      "hypothesis": "The current fast mechanical path commits schema-valid actions, events, and causal evidence without raw-number narration leakage.",
+      "repetitions": 20,
+      "distinctOutcomeDigests": 1,
+      "stableAcrossRepetitions": true,
+      "outcomeDigest": "acd17326374e62cd431a2f1b72e1dd360fc43522af3a3f78eb95a5b6716becb4",
+      "latencyMs": {
+        "mean": 6.686,
+        "p95": 16.328,
+        "minimum": 2.136,
+        "maximum": 30.517
+      },
+      "sizeBytes": {
+        "stateBeforeBytes": 13049,
+        "stateAfterBytes": 13197,
+        "worldStateBytes": 1220,
+        "perceptionBytes": 2829,
+        "eventsBytes": 508,
+        "actionsBytes": 379,
+        "mechanicalEvidenceBytes": 671,
+        "projectionBytes": null
+      },
+      "checks": [
+        {
+          "id": "battle_state_schema_valid",
+          "category": "schema",
+          "passCount": 20,
+          "failCount": 0,
+          "details": [
+            "BattleStateSchema accepts the post-resolution state"
+          ]
+        },
+        {
+          "id": "causal_references_resolve",
+          "category": "causality",
+          "passCount": 20,
+          "failCount": 0,
+          "details": [
+            "missing action or event references: 0"
+          ]
+        },
+        {
+          "id": "event_ids_unique",
+          "category": "causality",
+          "passCount": 20,
+          "failCount": 0,
+          "details": [
+            "every committed event has one unique ID"
+          ]
+        },
+        {
+          "id": "ordinary_damage_has_structured_evidence",
+          "category": "causality",
+          "passCount": 20,
+          "failCount": 0,
+          "details": [
+            "Side A damage is linked to its committed action"
+          ]
+        },
+        {
+          "id": "ordinary_requested_action_accepted",
+          "category": "coherence",
+          "passCount": 20,
+          "failCount": 0,
+          "details": [
+            "Side A's in-range slash is accepted and executed"
+          ]
+        },
+        {
+          "id": "public_event_summaries_hide_raw_numbers",
+          "category": "privacy",
+          "passCount": 20,
+          "failCount": 0,
+          "details": [
+            "event summaries contain no multi-digit raw totals"
+          ]
+        }
+      ],
+      "counts": {
+        "unsupportedStructuredClaims": 0,
+        "causalReferenceGaps": 0,
+        "authorityViolations": 0,
+        "privacyLeaks": 0,
+        "atomicityFailures": 0,
+        "sideSwapMismatches": 0,
+        "llmCalls": 0
+      },
+      "baselineOutcome": {
+        "turn": 1,
+        "status": "active",
+        "winnerSide": null,
+        "finishReason": null,
+        "aftermathPending": false,
+        "sideA": {
+          "characterId": "fighter-a",
+          "parameters": {
+            "hp": 100,
+            "maxHp": 100,
+            "mp": 40,
+            "maxMp": 40,
+            "stamina": 45,
+            "maxStamina": 50,
+            "atk": 12,
+            "def": 10,
+            "spd": 10,
+            "mag": 10,
+            "res": 10,
+            "focus": 10,
+            "luck": 10
+          },
+          "defending": false,
+          "canFight": true
+        },
+        "sideB": {
+          "characterId": "fighter-b",
+          "parameters": {
+            "hp": 87,
+            "maxHp": 100,
+            "mp": 40,
+            "maxMp": 40,
+            "stamina": 50,
+            "maxStamina": 50,
+            "atk": 12,
+            "def": 10,
+            "spd": 10,
+            "mag": 10,
+            "res": 10,
+            "focus": 10,
+            "luck": 10
+          },
+          "defending": false,
+          "canFight": true
+        },
+        "actions": [
+          {
+            "id": "turn-1-action-a",
+            "actorSide": "a",
+            "kind": "skill",
+            "skillId": "slash",
+            "executed": true,
+            "skippedReason": null,
+            "resolution": {
+              "requested": {
+                "kind": "skill",
+                "skillId": "slash"
+              },
+              "outcome": "accepted",
+              "reason": null
+            }
+          },
+          {
+            "id": "turn-1-action-b",
+            "actorSide": "b",
+            "kind": "wait",
+            "skillId": null,
+            "executed": true,
+            "skippedReason": null,
+            "resolution": {
+              "requested": {
+                "kind": "wait"
+              },
+              "outcome": "accepted",
+              "reason": null
+            }
+          }
+        ],
+        "events": [
+          {
+            "id": "turn-1-event-1",
+            "type": "damage",
+            "actorSide": "a",
+            "targetSides": [
+              "b"
+            ],
+            "sourceActionId": "turn-1-action-a",
+            "parameterKey": "hp",
+            "parameterDirection": "loss",
+            "intensity": "moderate",
+            "summary": "斬撃 が交差し、クロ の間合いがわずかに乱れる。"
+          },
+          {
+            "id": "turn-1-event-2",
+            "type": "wait",
+            "actorSide": "b",
+            "targetSides": [
+              "b"
+            ],
+            "sourceActionId": "turn-1-action-b",
+            "parameterKey": null,
+            "parameterDirection": null,
+            "intensity": null,
+            "summary": "クロ は様子をうかがった。"
+          }
+        ],
+        "mechanicalEvidence": [
+          {
+            "evidenceId": "turn-1-mechanical-1",
+            "sourceActionId": "turn-1-action-a",
+            "actorSide": "a",
+            "target": {
+              "side": "a",
+              "entityId": "character.a"
+            },
+            "parameterKey": "stamina",
+            "attemptedDelta": -5,
+            "delta": -5,
+            "basisEventIds": [
+              "turn-1-event-1"
+            ]
+          },
+          {
+            "evidenceId": "turn-1-mechanical-2",
+            "sourceActionId": "turn-1-action-a",
+            "actorSide": "a",
+            "target": {
+              "side": "b",
+              "entityId": "character.b"
+            },
+            "parameterKey": "hp",
+            "attemptedDelta": -13,
+            "delta": -13,
+            "basisEventIds": [
+              "turn-1-event-1"
+            ]
+          }
+        ],
+        "temporalResolution": {
+          "rulesetId": "initiative-window-v1",
+          "initiativeScores": {
+            "a": 10,
+            "b": 10
+          },
+          "buckets": [
+            {
+              "index": 0,
+              "actorSides": [
+                "a",
+                "b"
+              ],
+              "initiativeScore": 10,
+              "simultaneous": true,
+              "readsFrom": "turn_start",
+              "commitMode": "atomic"
+            }
+          ]
+        },
+        "worldRevision": 0,
+        "perceptionAccess": {
+          "a": "clear",
+          "b": "clear"
+        }
+      }
+    },
+    {
+      "id": "remote_out_of_range",
+      "category": "remote_interaction",
+      "hypothesis": "A same-area attack cannot silently reach a counterpart moved to another canonical area.",
+      "repetitions": 20,
+      "distinctOutcomeDigests": 1,
+      "stableAcrossRepetitions": true,
+      "outcomeDigest": "667e01afcc85a375e88dab9775a6ff6a1fb9db9b7dd428ce9ef80186bb9703f1",
+      "latencyMs": {
+        "mean": 2.499,
+        "p95": 3.741,
+        "minimum": 1.974,
+        "maximum": 3.899
+      },
+      "sizeBytes": {
+        "stateBeforeBytes": 13181,
+        "stateAfterBytes": 13340,
+        "worldStateBytes": 1365,
+        "perceptionBytes": 2829,
+        "eventsBytes": 366,
+        "actionsBytes": 364,
+        "mechanicalEvidenceBytes": 2,
+        "projectionBytes": null
+      },
+      "checks": [
+        {
+          "id": "battle_state_schema_valid",
+          "category": "schema",
+          "passCount": 20,
+          "failCount": 0,
+          "details": [
+            "BattleStateSchema accepts the post-resolution state"
+          ]
+        },
+        {
+          "id": "causal_references_resolve",
+          "category": "causality",
+          "passCount": 20,
+          "failCount": 0,
+          "details": [
+            "missing action or event references: 0"
+          ]
+        },
+        {
+          "id": "event_ids_unique",
+          "category": "causality",
+          "passCount": 20,
+          "failCount": 0,
+          "details": [
+            "every committed event has one unique ID"
+          ]
+        },
+        {
+          "id": "no_remote_damage_from_rejected_action",
+          "category": "causality",
+          "passCount": 20,
+          "failCount": 0,
+          "details": [
+            "the rejected requested attack creates no target damage"
+          ]
+        },
+        {
+          "id": "out_of_range_action_not_executed_as_requested",
+          "category": "coherence",
+          "passCount": 20,
+          "failCount": 0,
+          "details": [
+            "the requested basic attack is substituted because the target is in another area"
+          ]
+        },
+        {
+          "id": "public_event_summaries_hide_raw_numbers",
+          "category": "privacy",
+          "passCount": 20,
+          "failCount": 0,
+          "details": [
+            "event summaries contain no multi-digit raw totals"
+          ]
+        }
+      ],
+      "counts": {
+        "unsupportedStructuredClaims": 0,
+        "causalReferenceGaps": 0,
+        "authorityViolations": 0,
+        "privacyLeaks": 0,
+        "atomicityFailures": 0,
+        "sideSwapMismatches": 0,
+        "llmCalls": 0
+      },
+      "baselineOutcome": {
+        "turn": 1,
+        "status": "active",
+        "winnerSide": null,
+        "finishReason": null,
+        "aftermathPending": false,
+        "sideA": {
+          "characterId": "fighter-a",
+          "parameters": {
+            "hp": 100,
+            "maxHp": 100,
+            "mp": 40,
+            "maxMp": 40,
+            "stamina": 50,
+            "maxStamina": 50,
+            "atk": 12,
+            "def": 10,
+            "spd": 10,
+            "mag": 10,
+            "res": 10,
+            "focus": 10,
+            "luck": 10
+          },
+          "defending": true,
+          "canFight": true
+        },
+        "sideB": {
+          "characterId": "fighter-b",
+          "parameters": {
+            "hp": 100,
+            "maxHp": 100,
+            "mp": 40,
+            "maxMp": 40,
+            "stamina": 50,
+            "maxStamina": 50,
+            "atk": 12,
+            "def": 10,
+            "spd": 10,
+            "mag": 10,
+            "res": 10,
+            "focus": 10,
+            "luck": 10
+          },
+          "defending": false,
+          "canFight": true
+        },
+        "actions": [
+          {
+            "id": "turn-1-action-a",
+            "actorSide": "a",
+            "kind": "defend",
+            "skillId": null,
+            "executed": true,
+            "skippedReason": null,
+            "resolution": {
+              "requested": {
+                "kind": "basic_attack"
+              },
+              "outcome": "substituted",
+              "reason": "out_of_range"
+            }
+          },
+          {
+            "id": "turn-1-action-b",
+            "actorSide": "b",
+            "kind": "wait",
+            "skillId": null,
+            "executed": true,
+            "skippedReason": null,
+            "resolution": {
+              "requested": {
+                "kind": "wait"
+              },
+              "outcome": "accepted",
+              "reason": null
+            }
+          }
+        ],
+        "events": [
+          {
+            "id": "turn-1-event-1",
+            "type": "defend",
+            "actorSide": "a",
+            "targetSides": [
+              "a"
+            ],
+            "sourceActionId": "turn-1-action-a",
+            "parameterKey": null,
+            "parameterDirection": null,
+            "intensity": null,
+            "summary": "アオ は自分の態勢を整えた。"
+          },
+          {
+            "id": "turn-1-event-2",
+            "type": "wait",
+            "actorSide": "b",
+            "targetSides": [
+              "b"
+            ],
+            "sourceActionId": "turn-1-action-b",
+            "parameterKey": null,
+            "parameterDirection": null,
+            "intensity": null,
+            "summary": "クロ は様子をうかがった。"
+          }
+        ],
+        "mechanicalEvidence": [],
+        "temporalResolution": {
+          "rulesetId": "initiative-window-v1",
+          "initiativeScores": {
+            "a": 10,
+            "b": 10
+          },
+          "buckets": [
+            {
+              "index": 0,
+              "actorSides": [
+                "a",
+                "b"
+              ],
+              "initiativeScore": 10,
+              "simultaneous": true,
+              "readsFrom": "turn_start",
+              "commitMode": "atomic"
+            }
+          ]
+        },
+        "worldRevision": 1,
+        "perceptionAccess": {
+          "a": "clear",
+          "b": "clear"
+        }
+      }
+    },
+    {
+      "id": "simultaneous_mutual_ko",
+      "category": "simultaneous",
+      "hypothesis": "Equal-initiative terminal actions read one snapshot and preserve mutual incapacity.",
+      "repetitions": 20,
+      "distinctOutcomeDigests": 1,
+      "stableAcrossRepetitions": true,
+      "outcomeDigest": "ebc4a6aefff6a21e5e0fff8d36c26ccadfe2ccf1ebabf58ecb37b603d5ad9cfd",
+      "latencyMs": {
+        "mean": 2.369,
+        "p95": 2.992,
+        "minimum": 1.805,
+        "maximum": 3.259
+      },
+      "sizeBytes": {
+        "stateBeforeBytes": 13039,
+        "stateAfterBytes": 13203,
+        "worldStateBytes": 1220,
+        "perceptionBytes": 2837,
+        "eventsBytes": 1211,
+        "actionsBytes": 373,
+        "mechanicalEvidenceBytes": 1323,
+        "projectionBytes": null
+      },
+      "checks": [
+        {
+          "id": "battle_state_schema_valid",
+          "category": "schema",
+          "passCount": 20,
+          "failCount": 0,
+          "details": [
+            "BattleStateSchema accepts the post-resolution state"
+          ]
+        },
+        {
+          "id": "both_actions_execute",
+          "category": "temporal",
+          "passCount": 20,
+          "failCount": 0,
+          "details": [
+            "both actions in the equal-initiative bucket execute"
+          ]
+        },
+        {
+          "id": "causal_references_resolve",
+          "category": "causality",
+          "passCount": 20,
+          "failCount": 0,
+          "details": [
+            "missing action or event references: 0"
+          ]
+        },
+        {
+          "id": "event_ids_unique",
+          "category": "causality",
+          "passCount": 20,
+          "failCount": 0,
+          "details": [
+            "every committed event has one unique ID"
+          ]
+        },
+        {
+          "id": "public_event_summaries_hide_raw_numbers",
+          "category": "privacy",
+          "passCount": 20,
+          "failCount": 0,
+          "details": [
+            "event summaries contain no multi-digit raw totals"
+          ]
+        },
+        {
+          "id": "same_bucket_atomicity",
+          "category": "atomicity",
+          "passCount": 20,
+          "failCount": 0,
+          "details": [
+            "both terminal changes survive the atomic bucket merge"
+          ]
+        },
+        {
+          "id": "winner_is_draw",
+          "category": "temporal",
+          "passCount": 20,
+          "failCount": 0,
+          "details": [
+            "mutual incapacity produces a draw"
+          ]
+        }
+      ],
+      "counts": {
+        "unsupportedStructuredClaims": 0,
+        "causalReferenceGaps": 0,
+        "authorityViolations": 0,
+        "privacyLeaks": 0,
+        "atomicityFailures": 0,
+        "sideSwapMismatches": 0,
+        "llmCalls": 0
+      },
+      "baselineOutcome": {
+        "turn": 1,
+        "status": "active",
+        "winnerSide": "draw",
+        "finishReason": "incapacitated",
+        "aftermathPending": true,
+        "sideA": {
+          "characterId": "fighter-a",
+          "parameters": {
+            "hp": 0,
+            "maxHp": 1,
+            "mp": 40,
+            "maxMp": 40,
+            "stamina": 47,
+            "maxStamina": 50,
+            "atk": 12,
+            "def": 10,
+            "spd": 10,
+            "mag": 10,
+            "res": 10,
+            "focus": 10,
+            "luck": 10
+          },
+          "defending": false,
+          "canFight": false
+        },
+        "sideB": {
+          "characterId": "fighter-b",
+          "parameters": {
+            "hp": 0,
+            "maxHp": 1,
+            "mp": 40,
+            "maxMp": 40,
+            "stamina": 47,
+            "maxStamina": 50,
+            "atk": 12,
+            "def": 10,
+            "spd": 10,
+            "mag": 10,
+            "res": 10,
+            "focus": 10,
+            "luck": 10
+          },
+          "defending": false,
+          "canFight": false
+        },
+        "actions": [
+          {
+            "id": "turn-1-action-a",
+            "actorSide": "a",
+            "kind": "basic_attack",
+            "skillId": null,
+            "executed": true,
+            "skippedReason": null,
+            "resolution": {
+              "requested": {
+                "kind": "basic_attack"
+              },
+              "outcome": "accepted",
+              "reason": null
+            }
+          },
+          {
+            "id": "turn-1-action-b",
+            "actorSide": "b",
+            "kind": "basic_attack",
+            "skillId": null,
+            "executed": true,
+            "skippedReason": null,
+            "resolution": {
+              "requested": {
+                "kind": "basic_attack"
+              },
+              "outcome": "accepted",
+              "reason": null
+            }
+          }
+        ],
+        "events": [
+          {
+            "id": "turn-1-event-1",
+            "type": "damage",
+            "actorSide": "a",
+            "targetSides": [
+              "b"
+            ],
+            "sourceActionId": "turn-1-action-a",
+            "parameterKey": "hp",
+            "parameterDirection": "loss",
+            "intensity": "minor",
+            "summary": "基本アクション が クロ の継戦を許さず、アオ が決め手を決めた。"
+          },
+          {
+            "id": "turn-1-event-2",
+            "type": "damage",
+            "actorSide": "b",
+            "targetSides": [
+              "a"
+            ],
+            "sourceActionId": "turn-1-action-b",
+            "parameterKey": "hp",
+            "parameterDirection": "loss",
+            "intensity": "minor",
+            "summary": "クロ の 基本アクション が アオ をとどめとして捉えた——それが決め手となった。"
+          },
+          {
+            "id": "turn-1-event-3",
+            "type": "status",
+            "actorSide": "a",
+            "targetSides": [
+              "a"
+            ],
+            "sourceActionId": null,
+            "parameterKey": null,
+            "parameterDirection": null,
+            "intensity": null,
+            "summary": "アオ は戦闘不能に陥った。"
+          },
+          {
+            "id": "turn-1-event-4",
+            "type": "status",
+            "actorSide": "b",
+            "targetSides": [
+              "b"
+            ],
+            "sourceActionId": null,
+            "parameterKey": null,
+            "parameterDirection": null,
+            "intensity": null,
+            "summary": "クロ は戦闘不能に陥った。"
+          },
+          {
+            "id": "turn-1-event-5",
+            "type": "info",
+            "actorSide": null,
+            "targetSides": [],
+            "sourceActionId": null,
+            "parameterKey": null,
+            "parameterDirection": null,
+            "intensity": null,
+            "summary": "決着の余波 — 両者とも続行できなくなり、場に静けさが落ちる。その先を見届けよう。"
+          }
+        ],
+        "mechanicalEvidence": [
+          {
+            "evidenceId": "turn-1-mechanical-1",
+            "sourceActionId": "turn-1-action-a",
+            "actorSide": "a",
+            "target": {
+              "side": "a",
+              "entityId": "character.a"
+            },
+            "parameterKey": "stamina",
+            "attemptedDelta": -3,
+            "delta": -3,
+            "basisEventIds": [
+              "turn-1-event-1"
+            ]
+          },
+          {
+            "evidenceId": "turn-1-mechanical-2",
+            "sourceActionId": "turn-1-action-a",
+            "actorSide": "a",
+            "target": {
+              "side": "b",
+              "entityId": "character.b"
+            },
+            "parameterKey": "hp",
+            "attemptedDelta": -1,
+            "delta": -1,
+            "basisEventIds": [
+              "turn-1-event-1"
+            ]
+          },
+          {
+            "evidenceId": "turn-1-mechanical-3",
+            "sourceActionId": "turn-1-action-b",
+            "actorSide": "b",
+            "target": {
+              "side": "b",
+              "entityId": "character.b"
+            },
+            "parameterKey": "stamina",
+            "attemptedDelta": -3,
+            "delta": -3,
+            "basisEventIds": [
+              "turn-1-event-2"
+            ]
+          },
+          {
+            "evidenceId": "turn-1-mechanical-4",
+            "sourceActionId": "turn-1-action-b",
+            "actorSide": "b",
+            "target": {
+              "side": "a",
+              "entityId": "character.a"
+            },
+            "parameterKey": "hp",
+            "attemptedDelta": -1,
+            "delta": -1,
+            "basisEventIds": [
+              "turn-1-event-2"
+            ]
+          }
+        ],
+        "temporalResolution": {
+          "rulesetId": "initiative-window-v1",
+          "initiativeScores": {
+            "a": 10,
+            "b": 10
+          },
+          "buckets": [
+            {
+              "index": 0,
+              "actorSides": [
+                "a",
+                "b"
+              ],
+              "initiativeScore": 10,
+              "simultaneous": true,
+              "readsFrom": "turn_start",
+              "commitMode": "atomic"
+            }
+          ]
+        },
+        "worldRevision": 0,
+        "perceptionAccess": {
+          "a": "clear",
+          "b": "clear"
+        }
+      }
+    },
+    {
+      "id": "faster_interruption",
+      "category": "temporal",
+      "hypothesis": "A faster terminal action interrupts and revalidates the slower action.",
+      "repetitions": 20,
+      "distinctOutcomeDigests": 1,
+      "stableAcrossRepetitions": true,
+      "outcomeDigest": "4d8abc92611b4717c7c3be040427c075ecac6a7b40aa3cee0300a3899c46e391",
+      "latencyMs": {
+        "mean": 2.116,
+        "p95": 2.893,
+        "minimum": 1.723,
+        "maximum": 3.495
+      },
+      "sizeBytes": {
+        "stateBeforeBytes": 13202,
+        "stateAfterBytes": 13498,
+        "worldStateBytes": 1220,
+        "perceptionBytes": 2851,
+        "eventsBytes": 695,
+        "actionsBytes": 412,
+        "mechanicalEvidenceBytes": 662,
+        "projectionBytes": null
+      },
+      "checks": [
+        {
+          "id": "battle_state_schema_valid",
+          "category": "schema",
+          "passCount": 20,
+          "failCount": 0,
+          "details": [
+            "BattleStateSchema accepts the post-resolution state"
+          ]
+        },
+        {
+          "id": "causal_references_resolve",
+          "category": "causality",
+          "passCount": 20,
+          "failCount": 0,
+          "details": [
+            "missing action or event references: 0"
+          ]
+        },
+        {
+          "id": "event_ids_unique",
+          "category": "causality",
+          "passCount": 20,
+          "failCount": 0,
+          "details": [
+            "every committed event has one unique ID"
+          ]
+        },
+        {
+          "id": "faster_action_executes",
+          "category": "temporal",
+          "passCount": 20,
+          "failCount": 0,
+          "details": [
+            "the faster side acts in the first bucket"
+          ]
+        },
+        {
+          "id": "public_event_summaries_hide_raw_numbers",
+          "category": "privacy",
+          "passCount": 20,
+          "failCount": 0,
+          "details": [
+            "event summaries contain no multi-digit raw totals"
+          ]
+        },
+        {
+          "id": "slower_action_skipped_after_incapacity",
+          "category": "temporal",
+          "passCount": 20,
+          "failCount": 0,
+          "details": [
+            "the slower action is revalidated and skipped"
+          ]
+        },
+        {
+          "id": "winner_is_faster_side",
+          "category": "temporal",
+          "passCount": 20,
+          "failCount": 0,
+          "details": [
+            "the faster terminal action determines the winner"
+          ]
+        }
+      ],
+      "counts": {
+        "unsupportedStructuredClaims": 0,
+        "causalReferenceGaps": 0,
+        "authorityViolations": 0,
+        "privacyLeaks": 0,
+        "atomicityFailures": 0,
+        "sideSwapMismatches": 0,
+        "llmCalls": 0
+      },
+      "baselineOutcome": {
+        "turn": 1,
+        "status": "active",
+        "winnerSide": "b",
+        "finishReason": "incapacitated",
+        "aftermathPending": true,
+        "sideA": {
+          "characterId": "fighter-a",
+          "parameters": {
+            "hp": 0,
+            "maxHp": 1,
+            "mp": 40,
+            "maxMp": 40,
+            "stamina": 50,
+            "maxStamina": 50,
+            "atk": 12,
+            "def": 10,
+            "spd": 5,
+            "mag": 10,
+            "res": 10,
+            "focus": 10,
+            "luck": 10
+          },
+          "defending": false,
+          "canFight": false
+        },
+        "sideB": {
+          "characterId": "fighter-b",
+          "parameters": {
+            "hp": 100,
+            "maxHp": 100,
+            "mp": 40,
+            "maxMp": 40,
+            "stamina": 47,
+            "maxStamina": 50,
+            "atk": 12,
+            "def": 10,
+            "spd": 20,
+            "mag": 10,
+            "res": 10,
+            "focus": 10,
+            "luck": 10
+          },
+          "defending": false,
+          "canFight": true
+        },
+        "actions": [
+          {
+            "id": "turn-1-action-a",
+            "actorSide": "a",
+            "kind": "basic_attack",
+            "skillId": null,
+            "executed": false,
+            "skippedReason": "incapacitated_before_action",
+            "resolution": {
+              "requested": {
+                "kind": "basic_attack"
+              },
+              "outcome": "failed",
+              "reason": "actor_unavailable"
+            }
+          },
+          {
+            "id": "turn-1-action-b",
+            "actorSide": "b",
+            "kind": "basic_attack",
+            "skillId": null,
+            "executed": true,
+            "skippedReason": null,
+            "resolution": {
+              "requested": {
+                "kind": "basic_attack"
+              },
+              "outcome": "accepted",
+              "reason": null
+            }
+          }
+        ],
+        "events": [
+          {
+            "id": "turn-1-event-1",
+            "type": "damage",
+            "actorSide": "b",
+            "targetSides": [
+              "a"
+            ],
+            "sourceActionId": "turn-1-action-b",
+            "parameterKey": "hp",
+            "parameterDirection": "loss",
+            "intensity": "minor",
+            "summary": "基本アクション が 遅い側 の継戦を許さず、速い側 が決め手を決めた。"
+          },
+          {
+            "id": "turn-1-event-2",
+            "type": "status",
+            "actorSide": "a",
+            "targetSides": [
+              "a"
+            ],
+            "sourceActionId": null,
+            "parameterKey": null,
+            "parameterDirection": null,
+            "intensity": null,
+            "summary": "遅い側 は戦闘不能に陥った。"
+          },
+          {
+            "id": "turn-1-event-3",
+            "type": "info",
+            "actorSide": null,
+            "targetSides": [],
+            "sourceActionId": null,
+            "parameterKey": null,
+            "parameterDirection": null,
+            "intensity": null,
+            "summary": "遅い側 は対決を続けられなくなった。速い側 とこの場が、その後をどう迎えるか——"
+          }
+        ],
+        "mechanicalEvidence": [
+          {
+            "evidenceId": "turn-1-mechanical-1",
+            "sourceActionId": "turn-1-action-b",
+            "actorSide": "b",
+            "target": {
+              "side": "b",
+              "entityId": "character.b"
+            },
+            "parameterKey": "stamina",
+            "attemptedDelta": -3,
+            "delta": -3,
+            "basisEventIds": [
+              "turn-1-event-1"
+            ]
+          },
+          {
+            "evidenceId": "turn-1-mechanical-2",
+            "sourceActionId": "turn-1-action-b",
+            "actorSide": "b",
+            "target": {
+              "side": "a",
+              "entityId": "character.a"
+            },
+            "parameterKey": "hp",
+            "attemptedDelta": -1,
+            "delta": -1,
+            "basisEventIds": [
+              "turn-1-event-1"
+            ]
+          }
+        ],
+        "temporalResolution": {
+          "rulesetId": "initiative-window-v1",
+          "initiativeScores": {
+            "a": 5,
+            "b": 20
+          },
+          "buckets": [
+            {
+              "index": 0,
+              "actorSides": [
+                "b"
+              ],
+              "initiativeScore": 20,
+              "simultaneous": false,
+              "readsFrom": "turn_start",
+              "commitMode": "sequential"
+            },
+            {
+              "index": 1,
+              "actorSides": [
+                "a"
+              ],
+              "initiativeScore": 5,
+              "simultaneous": false,
+              "readsFrom": "previous_bucket_commit",
+              "commitMode": "sequential"
+            }
+          ]
+        },
+        "worldRevision": 0,
+        "perceptionAccess": {
+          "a": "clear",
+          "b": "clear"
+        }
+      }
+    },
+    {
+      "id": "environment_hit_both",
+      "category": "world_effect",
+      "hypothesis": "A current engine-authored environment effect is attributed to committed target-specific events.",
+      "repetitions": 20,
+      "distinctOutcomeDigests": 1,
+      "stableAcrossRepetitions": true,
+      "outcomeDigest": "2c0196b7823e3c1535afe4a731821db4980772cd3b65b010f5e0545f028e5f25",
+      "latencyMs": {
+        "mean": 2.641,
+        "p95": 4.354,
+        "minimum": 1.657,
+        "maximum": 4.919
+      },
+      "sizeBytes": {
+        "stateBeforeBytes": 13033,
+        "stateAfterBytes": 13199,
+        "worldStateBytes": 1220,
+        "perceptionBytes": 2829,
+        "eventsBytes": 767,
+        "actionsBytes": 341,
+        "mechanicalEvidenceBytes": 643,
+        "projectionBytes": null
+      },
+      "checks": [
+        {
+          "id": "battle_state_schema_valid",
+          "category": "schema",
+          "passCount": 20,
+          "failCount": 0,
+          "details": [
+            "BattleStateSchema accepts the post-resolution state"
+          ]
+        },
+        {
+          "id": "both_targets_have_basis_events",
+          "category": "causality",
+          "passCount": 20,
+          "failCount": 0,
+          "details": [
+            "each target-specific effect has one committed basis event"
+          ]
+        },
+        {
+          "id": "causal_references_resolve",
+          "category": "causality",
+          "passCount": 20,
+          "failCount": 0,
+          "details": [
+            "missing action or event references: 0"
+          ]
+        },
+        {
+          "id": "environment_evidence_has_no_character_action_source",
+          "category": "authority",
+          "passCount": 20,
+          "failCount": 0,
+          "details": [
+            "environment damage is not attributed to a character action"
+          ]
+        },
+        {
+          "id": "event_ids_unique",
+          "category": "causality",
+          "passCount": 20,
+          "failCount": 0,
+          "details": [
+            "every committed event has one unique ID"
+          ]
+        },
+        {
+          "id": "public_event_summaries_hide_raw_numbers",
+          "category": "privacy",
+          "passCount": 20,
+          "failCount": 0,
+          "details": [
+            "event summaries contain no multi-digit raw totals"
+          ]
+        }
+      ],
+      "counts": {
+        "unsupportedStructuredClaims": 0,
+        "causalReferenceGaps": 0,
+        "authorityViolations": 0,
+        "privacyLeaks": 0,
+        "atomicityFailures": 0,
+        "sideSwapMismatches": 0,
+        "llmCalls": 0
+      },
+      "baselineOutcome": {
+        "turn": 1,
+        "status": "active",
+        "winnerSide": null,
+        "finishReason": null,
+        "aftermathPending": false,
+        "sideA": {
+          "characterId": "fighter-a",
+          "parameters": {
+            "hp": 93,
+            "maxHp": 100,
+            "mp": 40,
+            "maxMp": 40,
+            "stamina": 50,
+            "maxStamina": 50,
+            "atk": 12,
+            "def": 10,
+            "spd": 10,
+            "mag": 10,
+            "res": 10,
+            "focus": 10,
+            "luck": 10
+          },
+          "defending": false,
+          "canFight": true
+        },
+        "sideB": {
+          "characterId": "fighter-b",
+          "parameters": {
+            "hp": 93,
+            "maxHp": 100,
+            "mp": 40,
+            "maxMp": 40,
+            "stamina": 50,
+            "maxStamina": 50,
+            "atk": 12,
+            "def": 10,
+            "spd": 10,
+            "mag": 10,
+            "res": 10,
+            "focus": 10,
+            "luck": 10
+          },
+          "defending": false,
+          "canFight": true
+        },
+        "actions": [
+          {
+            "id": "turn-1-action-a",
+            "actorSide": "a",
+            "kind": "wait",
+            "skillId": null,
+            "executed": true,
+            "skippedReason": null,
+            "resolution": {
+              "requested": {
+                "kind": "wait"
+              },
+              "outcome": "accepted",
+              "reason": null
+            }
+          },
+          {
+            "id": "turn-1-action-b",
+            "actorSide": "b",
+            "kind": "wait",
+            "skillId": null,
+            "executed": true,
+            "skippedReason": null,
+            "resolution": {
+              "requested": {
+                "kind": "wait"
+              },
+              "outcome": "accepted",
+              "reason": null
+            }
+          }
+        ],
+        "events": [
+          {
+            "id": "turn-1-event-1",
+            "type": "damage",
+            "actorSide": null,
+            "targetSides": [
+              "a"
+            ],
+            "sourceActionId": null,
+            "parameterKey": "hp",
+            "parameterDirection": "loss",
+            "intensity": "minor",
+            "summary": "アオ は環境の余波を浴びた。"
+          },
+          {
+            "id": "turn-1-event-2",
+            "type": "damage",
+            "actorSide": null,
+            "targetSides": [
+              "b"
+            ],
+            "sourceActionId": null,
+            "parameterKey": "hp",
+            "parameterDirection": "loss",
+            "intensity": "minor",
+            "summary": "クロ は環境の余波を浴びた。"
+          },
+          {
+            "id": "turn-1-event-3",
+            "type": "wait",
+            "actorSide": "a",
+            "targetSides": [
+              "a"
+            ],
+            "sourceActionId": "turn-1-action-a",
+            "parameterKey": null,
+            "parameterDirection": null,
+            "intensity": null,
+            "summary": "アオ は様子をうかがった。"
+          },
+          {
+            "id": "turn-1-event-4",
+            "type": "wait",
+            "actorSide": "b",
+            "targetSides": [
+              "b"
+            ],
+            "sourceActionId": "turn-1-action-b",
+            "parameterKey": null,
+            "parameterDirection": null,
+            "intensity": null,
+            "summary": "クロ は様子をうかがった。"
+          }
+        ],
+        "mechanicalEvidence": [
+          {
+            "evidenceId": "turn-1-mechanical-1",
+            "sourceActionId": null,
+            "actorSide": null,
+            "target": {
+              "side": "a",
+              "entityId": "character.a"
+            },
+            "parameterKey": "hp",
+            "attemptedDelta": -7,
+            "delta": -7,
+            "basisEventIds": [
+              "turn-1-event-1"
+            ]
+          },
+          {
+            "evidenceId": "turn-1-mechanical-2",
+            "sourceActionId": null,
+            "actorSide": null,
+            "target": {
+              "side": "b",
+              "entityId": "character.b"
+            },
+            "parameterKey": "hp",
+            "attemptedDelta": -7,
+            "delta": -7,
+            "basisEventIds": [
+              "turn-1-event-2"
+            ]
+          }
+        ],
+        "temporalResolution": {
+          "rulesetId": "initiative-window-v1",
+          "initiativeScores": {
+            "a": 10,
+            "b": 10
+          },
+          "buckets": [
+            {
+              "index": 0,
+              "actorSides": [
+                "a",
+                "b"
+              ],
+              "initiativeScore": 10,
+              "simultaneous": true,
+              "readsFrom": "turn_start",
+              "commitMode": "atomic"
+            }
+          ]
+        },
+        "worldRevision": 0,
+        "perceptionAccess": {
+          "a": "clear",
+          "b": "clear"
+        }
+      }
+    },
+    {
+      "id": "invalid_world_transition_atomic",
+      "category": "contradiction",
+      "hypothesis": "An internally invalid world transition is rejected without a partial commit.",
+      "repetitions": 20,
+      "distinctOutcomeDigests": 1,
+      "stableAcrossRepetitions": true,
+      "outcomeDigest": "341edf9d55f42c6e61db2baa03a959c939b8af961853405eb1e3d3f4758c4e70",
+      "latencyMs": {
+        "mean": 2.245,
+        "p95": 3.635,
+        "minimum": 1.3,
+        "maximum": 5.132
+      },
+      "sizeBytes": {
+        "stateBeforeBytes": 12974,
+        "stateAfterBytes": 12974,
+        "worldStateBytes": 1220,
+        "perceptionBytes": 2829,
+        "eventsBytes": 2,
+        "actionsBytes": 2,
+        "mechanicalEvidenceBytes": 2,
+        "projectionBytes": null
+      },
+      "checks": [
+        {
+          "id": "no_partial_area_or_placement_commit",
+          "category": "atomicity",
+          "passCount": 20,
+          "failCount": 0,
+          "details": [
+            "the add-area prefix is not partially committed"
+          ]
+        },
+        {
+          "id": "transition_rejected",
+          "category": "schema",
+          "passCount": 20,
+          "failCount": 0,
+          "details": [
+            "invalid_state"
+          ]
+        },
+        {
+          "id": "world_revision_unchanged",
+          "category": "atomicity",
+          "passCount": 20,
+          "failCount": 0,
+          "details": [
+            "a rejected transition does not advance the revision"
+          ]
+        }
+      ],
+      "counts": {
+        "unsupportedStructuredClaims": 0,
+        "causalReferenceGaps": 0,
+        "authorityViolations": 0,
+        "privacyLeaks": 0,
+        "atomicityFailures": 0,
+        "sideSwapMismatches": 0,
+        "llmCalls": 0
+      },
+      "baselineOutcome": {
+        "accepted": false,
+        "errorCode": "invalid_state",
+        "revisionBefore": 0,
+        "revisionAfter": 0,
+        "stateReferenceRetained": true
+      }
+    },
+    {
+      "id": "legacy_compatibility",
+      "category": "legacy",
+      "hypothesis": "Legacy state reconstruction is deterministic and discards unknown-provenance speech from private cognition.",
+      "repetitions": 20,
+      "distinctOutcomeDigests": 1,
+      "stableAcrossRepetitions": true,
+      "outcomeDigest": "1ac5f1139b481cb7a750ac06783ac7bb801bf317249bc5ce55d16f6f8f5a31c2",
+      "latencyMs": {
+        "mean": 2.578,
+        "p95": 3.422,
+        "minimum": 1.878,
+        "maximum": 4.235
+      },
+      "sizeBytes": {
+        "stateBeforeBytes": 6163,
+        "stateAfterBytes": 12962,
+        "worldStateBytes": 1220,
+        "perceptionBytes": 2829,
+        "eventsBytes": 2,
+        "actionsBytes": 2,
+        "mechanicalEvidenceBytes": 2,
+        "projectionBytes": null
+      },
+      "checks": [
+        {
+          "id": "battle_state_schema_valid",
+          "category": "schema",
+          "passCount": 20,
+          "failCount": 0,
+          "details": [
+            "the reconstructed state passes BattleStateSchema"
+          ]
+        },
+        {
+          "id": "legacy_unknown_speech_discarded",
+          "category": "authority",
+          "passCount": 20,
+          "failCount": 0,
+          "details": [
+            "unknown-provenance speech does not enter private continuity"
+          ]
+        },
+        {
+          "id": "world_and_perception_reconstructed",
+          "category": "coherence",
+          "passCount": 20,
+          "failCount": 0,
+          "details": [
+            "legacy state receives deterministic world and observer frames"
+          ]
+        }
+      ],
+      "counts": {
+        "unsupportedStructuredClaims": 0,
+        "causalReferenceGaps": 0,
+        "authorityViolations": 0,
+        "privacyLeaks": 0,
+        "atomicityFailures": 0,
+        "sideSwapMismatches": 0,
+        "llmCalls": 0
+      },
+      "baselineOutcome": {
+        "pipelineAuthorityVersion": 1,
+        "worldRevision": 0,
+        "perceptionObservers": [
+          "a",
+          "b"
+        ],
+        "lastSpeechA": null,
+        "lastSpeechB": null
+      }
+    },
+    {
+      "id": "narration_style_independence",
+      "category": "authority",
+      "hypothesis": "Narration style cannot change mechanical or temporal resolution.",
+      "repetitions": 20,
+      "distinctOutcomeDigests": 1,
+      "stableAcrossRepetitions": true,
+      "outcomeDigest": "e561b1dc662159dc00bed777e79a97e5ca790c118d0c469f636b1e71dcac8757",
+      "latencyMs": {
+        "mean": 3.696,
+        "p95": 4.937,
+        "minimum": 3.088,
+        "maximum": 5.053
+      },
+      "sizeBytes": {
+        "stateBeforeBytes": 12836,
+        "stateAfterBytes": 12986,
+        "worldStateBytes": 1220,
+        "perceptionBytes": 2829,
+        "eventsBytes": 682,
+        "actionsBytes": 373,
+        "mechanicalEvidenceBytes": 1337,
+        "projectionBytes": null
+      },
+      "checks": [
+        {
+          "id": "authority_violation_count_zero",
+          "category": "authority",
+          "passCount": 20,
+          "failCount": 0,
+          "details": [
+            "presentation has no mechanical mutation authority"
+          ]
+        },
+        {
+          "id": "battle_state_schema_valid",
+          "category": "schema",
+          "passCount": 20,
+          "failCount": 0,
+          "details": [
+            "BattleStateSchema accepts the post-resolution state"
+          ]
+        },
+        {
+          "id": "causal_references_resolve",
+          "category": "causality",
+          "passCount": 20,
+          "failCount": 0,
+          "details": [
+            "missing action or event references: 0"
+          ]
+        },
+        {
+          "id": "event_ids_unique",
+          "category": "causality",
+          "passCount": 20,
+          "failCount": 0,
+          "details": [
+            "every committed event has one unique ID"
+          ]
+        },
+        {
+          "id": "mechanical_outcome_equal",
+          "category": "authority",
+          "passCount": 20,
+          "failCount": 0,
+          "details": [
+            "mechanics are identical for opposing narration instructions"
+          ]
+        },
+        {
+          "id": "public_event_summaries_hide_raw_numbers",
+          "category": "privacy",
+          "passCount": 20,
+          "failCount": 0,
+          "details": [
+            "event summaries contain no multi-digit raw totals"
+          ]
+        },
+        {
+          "id": "temporal_plan_equal",
+          "category": "temporal",
+          "passCount": 20,
+          "failCount": 0,
+          "details": [
+            "temporal resolution does not consume narration style"
+          ]
+        }
+      ],
+      "counts": {
+        "unsupportedStructuredClaims": 0,
+        "causalReferenceGaps": 0,
+        "authorityViolations": 0,
+        "privacyLeaks": 0,
+        "atomicityFailures": 0,
+        "sideSwapMismatches": 0,
+        "llmCalls": 0
+      },
+      "baselineOutcome": {
+        "quiet": {
+          "sideA": {
+            "hp": 92,
+            "maxHp": 100,
+            "mp": 40,
+            "maxMp": 40,
+            "stamina": 47,
+            "maxStamina": 50,
+            "atk": 12,
+            "def": 10,
+            "spd": 10,
+            "mag": 10,
+            "res": 10,
+            "focus": 10,
+            "luck": 10
+          },
+          "sideB": {
+            "hp": 92,
+            "maxHp": 100,
+            "mp": 40,
+            "maxMp": 40,
+            "stamina": 47,
+            "maxStamina": 50,
+            "atk": 12,
+            "def": 10,
+            "spd": 10,
+            "mag": 10,
+            "res": 10,
+            "focus": 10,
+            "luck": 10
+          },
+          "actions": [
+            {
+              "actorSide": "a",
+              "kind": "basic_attack",
+              "id": "turn-1-action-a",
+              "executed": true,
+              "skippedReason": null,
+              "resolution": {
+                "requested": {
+                  "kind": "basic_attack"
+                },
+                "outcome": "accepted",
+                "reason": null
+              }
+            },
+            {
+              "actorSide": "b",
+              "kind": "basic_attack",
+              "id": "turn-1-action-b",
+              "executed": true,
+              "skippedReason": null,
+              "resolution": {
+                "requested": {
+                  "kind": "basic_attack"
+                },
+                "outcome": "accepted",
+                "reason": null
+              }
+            }
+          ],
+          "evidence": [
+            {
+              "evidenceId": "turn-1-mechanical-1",
+              "turn": 1,
+              "sourceActionId": "turn-1-action-a",
+              "basisEventIds": [
+                "turn-1-event-1"
+              ],
+              "actorSide": "a",
+              "target": {
+                "side": "a",
+                "entityId": "character.a"
+              },
+              "parameterKey": "stamina",
+              "attemptedDelta": -3,
+              "beforeValue": 50,
+              "afterValue": 47,
+              "delta": -3,
+              "relativeReferenceBeforeValue": 50,
+              "relativeReferenceAfterValue": 50
+            },
+            {
+              "evidenceId": "turn-1-mechanical-2",
+              "turn": 1,
+              "sourceActionId": "turn-1-action-a",
+              "basisEventIds": [
+                "turn-1-event-1"
+              ],
+              "actorSide": "a",
+              "target": {
+                "side": "b",
+                "entityId": "character.b"
+              },
+              "parameterKey": "hp",
+              "attemptedDelta": -8,
+              "beforeValue": 100,
+              "afterValue": 92,
+              "delta": -8,
+              "relativeReferenceBeforeValue": 100,
+              "relativeReferenceAfterValue": 100
+            },
+            {
+              "evidenceId": "turn-1-mechanical-3",
+              "turn": 1,
+              "sourceActionId": "turn-1-action-b",
+              "basisEventIds": [
+                "turn-1-event-2"
+              ],
+              "actorSide": "b",
+              "target": {
+                "side": "b",
+                "entityId": "character.b"
+              },
+              "parameterKey": "stamina",
+              "attemptedDelta": -3,
+              "beforeValue": 50,
+              "afterValue": 47,
+              "delta": -3,
+              "relativeReferenceBeforeValue": 50,
+              "relativeReferenceAfterValue": 50
+            },
+            {
+              "evidenceId": "turn-1-mechanical-4",
+              "turn": 1,
+              "sourceActionId": "turn-1-action-b",
+              "basisEventIds": [
+                "turn-1-event-2"
+              ],
+              "actorSide": "b",
+              "target": {
+                "side": "a",
+                "entityId": "character.a"
+              },
+              "parameterKey": "hp",
+              "attemptedDelta": -8,
+              "beforeValue": 100,
+              "afterValue": 92,
+              "delta": -8,
+              "relativeReferenceBeforeValue": 100,
+              "relativeReferenceAfterValue": 100
+            }
+          ],
+          "temporal": {
+            "rulesetId": "initiative-window-v1",
+            "initiativeScores": {
+              "a": 10,
+              "b": 10
+            },
+            "buckets": [
+              {
+                "index": 0,
+                "actorSides": [
+                  "a",
+                  "b"
+                ],
+                "initiativeScore": 10,
+                "simultaneous": true,
+                "readsFrom": "turn_start",
+                "commitMode": "atomic"
+              }
+            ]
+          },
+          "winnerSide": null
+        },
+        "intense": {
+          "sideA": {
+            "hp": 92,
+            "maxHp": 100,
+            "mp": 40,
+            "maxMp": 40,
+            "stamina": 47,
+            "maxStamina": 50,
+            "atk": 12,
+            "def": 10,
+            "spd": 10,
+            "mag": 10,
+            "res": 10,
+            "focus": 10,
+            "luck": 10
+          },
+          "sideB": {
+            "hp": 92,
+            "maxHp": 100,
+            "mp": 40,
+            "maxMp": 40,
+            "stamina": 47,
+            "maxStamina": 50,
+            "atk": 12,
+            "def": 10,
+            "spd": 10,
+            "mag": 10,
+            "res": 10,
+            "focus": 10,
+            "luck": 10
+          },
+          "actions": [
+            {
+              "actorSide": "a",
+              "kind": "basic_attack",
+              "id": "turn-1-action-a",
+              "executed": true,
+              "skippedReason": null,
+              "resolution": {
+                "requested": {
+                  "kind": "basic_attack"
+                },
+                "outcome": "accepted",
+                "reason": null
+              }
+            },
+            {
+              "actorSide": "b",
+              "kind": "basic_attack",
+              "id": "turn-1-action-b",
+              "executed": true,
+              "skippedReason": null,
+              "resolution": {
+                "requested": {
+                  "kind": "basic_attack"
+                },
+                "outcome": "accepted",
+                "reason": null
+              }
+            }
+          ],
+          "evidence": [
+            {
+              "evidenceId": "turn-1-mechanical-1",
+              "turn": 1,
+              "sourceActionId": "turn-1-action-a",
+              "basisEventIds": [
+                "turn-1-event-1"
+              ],
+              "actorSide": "a",
+              "target": {
+                "side": "a",
+                "entityId": "character.a"
+              },
+              "parameterKey": "stamina",
+              "attemptedDelta": -3,
+              "beforeValue": 50,
+              "afterValue": 47,
+              "delta": -3,
+              "relativeReferenceBeforeValue": 50,
+              "relativeReferenceAfterValue": 50
+            },
+            {
+              "evidenceId": "turn-1-mechanical-2",
+              "turn": 1,
+              "sourceActionId": "turn-1-action-a",
+              "basisEventIds": [
+                "turn-1-event-1"
+              ],
+              "actorSide": "a",
+              "target": {
+                "side": "b",
+                "entityId": "character.b"
+              },
+              "parameterKey": "hp",
+              "attemptedDelta": -8,
+              "beforeValue": 100,
+              "afterValue": 92,
+              "delta": -8,
+              "relativeReferenceBeforeValue": 100,
+              "relativeReferenceAfterValue": 100
+            },
+            {
+              "evidenceId": "turn-1-mechanical-3",
+              "turn": 1,
+              "sourceActionId": "turn-1-action-b",
+              "basisEventIds": [
+                "turn-1-event-2"
+              ],
+              "actorSide": "b",
+              "target": {
+                "side": "b",
+                "entityId": "character.b"
+              },
+              "parameterKey": "stamina",
+              "attemptedDelta": -3,
+              "beforeValue": 50,
+              "afterValue": 47,
+              "delta": -3,
+              "relativeReferenceBeforeValue": 50,
+              "relativeReferenceAfterValue": 50
+            },
+            {
+              "evidenceId": "turn-1-mechanical-4",
+              "turn": 1,
+              "sourceActionId": "turn-1-action-b",
+              "basisEventIds": [
+                "turn-1-event-2"
+              ],
+              "actorSide": "b",
+              "target": {
+                "side": "a",
+                "entityId": "character.a"
+              },
+              "parameterKey": "hp",
+              "attemptedDelta": -8,
+              "beforeValue": 100,
+              "afterValue": 92,
+              "delta": -8,
+              "relativeReferenceBeforeValue": 100,
+              "relativeReferenceAfterValue": 100
+            }
+          ],
+          "temporal": {
+            "rulesetId": "initiative-window-v1",
+            "initiativeScores": {
+              "a": 10,
+              "b": 10
+            },
+            "buckets": [
+              {
+                "index": 0,
+                "actorSides": [
+                  "a",
+                  "b"
+                ],
+                "initiativeScore": 10,
+                "simultaneous": true,
+                "readsFrom": "turn_start",
+                "commitMode": "atomic"
+              }
+            ]
+          },
+          "winnerSide": null
+        },
+        "equal": true
+      }
+    },
+    {
+      "id": "side_swap_symmetry",
+      "category": "side_neutrality",
+      "hypothesis": "Swapping logical combatants between Side A and Side B does not change simultaneous mechanical outcomes.",
+      "repetitions": 20,
+      "distinctOutcomeDigests": 1,
+      "stableAcrossRepetitions": true,
+      "outcomeDigest": "c9577f8c081401949ab1f79f9a8ecb4cdedb626feacb6ea22c5df2361a6cf658",
+      "latencyMs": {
+        "mean": 3.69,
+        "p95": 4.866,
+        "minimum": 2.997,
+        "maximum": 5.053
+      },
+      "sizeBytes": {
+        "stateBeforeBytes": 13061,
+        "stateAfterBytes": 13211,
+        "worldStateBytes": 1220,
+        "perceptionBytes": 2829,
+        "eventsBytes": 693,
+        "actionsBytes": 373,
+        "mechanicalEvidenceBytes": 1341,
+        "projectionBytes": null
+      },
+      "checks": [
+        {
+          "id": "battle_state_schema_valid",
+          "category": "schema",
+          "passCount": 20,
+          "failCount": 0,
+          "details": [
+            "BattleStateSchema accepts the post-resolution state"
+          ]
+        },
+        {
+          "id": "causal_references_resolve",
+          "category": "causality",
+          "passCount": 20,
+          "failCount": 0,
+          "details": [
+            "missing action or event references: 0"
+          ]
+        },
+        {
+          "id": "event_ids_unique",
+          "category": "causality",
+          "passCount": 20,
+          "failCount": 0,
+          "details": [
+            "every committed event has one unique ID"
+          ]
+        },
+        {
+          "id": "public_event_summaries_hide_raw_numbers",
+          "category": "privacy",
+          "passCount": 20,
+          "failCount": 0,
+          "details": [
+            "event summaries contain no multi-digit raw totals"
+          ]
+        },
+        {
+          "id": "side_swap_damage_equal",
+          "category": "side_neutrality",
+          "passCount": 20,
+          "failCount": 0,
+          "details": [
+            "logical combatants receive the same damage after swapping side labels"
+          ]
+        },
+        {
+          "id": "side_swap_execution_equal",
+          "category": "side_neutrality",
+          "passCount": 20,
+          "failCount": 0,
+          "details": [
+            "logical combatants keep the same execution status"
+          ]
+        },
+        {
+          "id": "side_swap_mismatch_count_zero",
+          "category": "side_neutrality",
+          "passCount": 20,
+          "failCount": 0,
+          "details": [
+            "normalized logical outcomes are equal"
+          ]
+        }
+      ],
+      "counts": {
+        "unsupportedStructuredClaims": 0,
+        "causalReferenceGaps": 0,
+        "authorityViolations": 0,
+        "privacyLeaks": 0,
+        "atomicityFailures": 0,
+        "sideSwapMismatches": 0,
+        "llmCalls": 0
+      },
+      "baselineOutcome": {
+        "normal": {
+          "firstDamage": 11,
+          "secondDamage": 12,
+          "firstExecuted": true,
+          "secondExecuted": true
+        },
+        "swapped": {
+          "firstDamage": 11,
+          "secondDamage": 12,
+          "firstExecuted": true,
+          "secondExecuted": true
+        },
+        "equal": true
+      }
+    }
+  ],
+  "existingEvidence": [
+    {
+      "id": "combined_perception_primary",
+      "path": "docs/evidence/perception-xai-grok-4-fast-non-reasoning-v10-20260805-fit-gap.json",
+      "expectedSha256": "b42c572fbb926f08f5e86e10c2c48fb8130a5a755127d74d5a4d921981d07052",
+      "actualSha256": "b42c572fbb926f08f5e86e10c2c48fb8130a5a755127d74d5a4d921981d07052",
+      "hashMatches": true,
+      "summary": {
+        "schemaVersion": 1,
+        "fixtureVersion": "perception-prompts-v10",
+        "provider": "xai",
+        "model": "grok-4-fast-non-reasoning",
+        "repetitions": 3,
+        "evaluatedAt": "2026-08-05T04:38:08.486Z",
+        "combined": {
+          "fixtureVersion": "perception-prompts-v10",
+          "topology": "combined",
+          "sampleCount": 9,
+          "worldSchemaValidRate": 1,
+          "sensorySchemaValidRate": 1,
+          "worldPatchCorrectness": 1,
+          "sensoryCoverage": 1,
+          "attributionErrorRate": 0,
+          "identityLeakageRate": 0,
+          "meanLatencyMs": 6632.111111111111,
+          "p95LatencyMs": 9861,
+          "measuredTokenSamples": 9,
+          "meanTotalTokens": 4464.888888888889,
+          "totalTokens": 40184
+        },
+        "recommendation": {
+          "topology": "combined",
+          "reason": "combined_meets_quality_floor",
+          "combinedFailures": [],
+          "splitFailures": []
+        },
+        "callErrorCount": 0
+      }
+    }
+  ],
+  "automatedTestReferences": [
+    {
+      "id": "provider_failure_fallback",
+      "command": "node --import tsx --test backend/src/llm/fallback.test.ts backend/src/services/battle-consumer-wiring.test.ts",
+      "status": "not_run_by_harness"
+    },
+    {
+      "id": "ambiguous_free_action_concretization",
+      "command": "node --import tsx --test backend/src/services/free-action-service.test.ts packages/shared/src/battle-causality.test.ts",
+      "status": "not_run_by_harness"
+    }
+  ],
+  "humanQualityBaseline": {
+    "status": "unmeasured",
+    "reason": "No intervention output exists yet for a blinded pairwise comparison; historical narration is context, not a current human score.",
+    "historicalReferences": [
+      "docs/evidence/production-0.7.1-post-promote-2026-08-06.md"
+    ],
+    "rubricPrompts": [
+      "Which output better follows the known world facts and rules?",
+      "Which output makes action, effect, and failure cost easier to understand?",
+      "Which output introduces fewer unsupported facts?",
+      "Which output better preserves uncertainty where the state is unknown?"
+    ]
+  },
+  "aggregate": {
+    "hardCheckPassCount": 1040,
+    "hardCheckFailCount": 0,
+    "schemaValidityRate": 1,
+    "authorityViolationCount": 0,
+    "privacyLeakCount": 0,
+    "atomicityFailureCount": 0,
+    "causalReferenceGapCount": 0,
+    "sideSwapMismatchCount": 0,
+    "unsupportedStructuredClaimCount": 0,
+    "allLocalOutcomesStable": true,
+    "existingEvidenceHashesMatch": true
+  },
+  "limitations": [
+    "The local harness measures deterministic structured mechanics, not end-to-end public narration.",
+    "Local latency is machine-specific and is only a comparison baseline on the same environment.",
+    "projectionBytes is null until the projection PoC introduces the new slice boundary.",
+    "The referenced XAI evidence is historical committed evidence and was not refreshed by this no-billing run.",
+    "Human plausibility is intentionally unmeasured until baseline and PoC outputs can be blindly paired.",
+    "Passing hard invariants and proxy thresholds cannot prove an objectively correct final battle result."
+  ]
+}

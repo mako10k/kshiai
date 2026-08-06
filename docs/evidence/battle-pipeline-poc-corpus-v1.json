@@ -1,0 +1,360 @@
+{
+  "schemaVersion": 1,
+  "corpusVersion": "battle-pipeline-poc-baseline-v1",
+  "frozenAt": "2026-08-06T00:00:00.000Z",
+  "purpose": "Compare each revised battle-pipeline intervention against the same current-pipeline evidence without claiming an objectively correct battle result.",
+  "repetitions": {
+    "localDeterministic": 20,
+    "liveLlmMinimum": 3,
+    "blindHumanComparisonsPerIntervention": 20
+  },
+  "decisionLabels": [
+    "supported",
+    "revise",
+    "unsupported",
+    "indeterminate"
+  ],
+  "hardInvariantPolicy": {
+    "description": "A genuine authority, privacy, atomicity, schema, or side-neutrality failure cannot be traded for a proxy quality gain.",
+    "requiredPassRate": 1,
+    "failureDecision": "unsupported"
+  },
+  "decisionRubric": {
+    "supported": "All applicable hard invariants pass, the pre-registered primary proxy reaches its minimum material effect, and no cost ceiling is exceeded.",
+    "revise": "The direction is useful but a localized defect, missed threshold, or cost excess has a bounded corrective hypothesis.",
+    "unsupported": "A genuine hard invariant fails, the primary proxy materially worsens, or the intervention has no useful effect at its declared scope.",
+    "indeterminate": "Evidence is missing, underpowered, internally conflicting, or cannot separate the intervention effect from measurement noise."
+  },
+  "globalMetrics": {
+    "hard": [
+      "schemaValidityRate",
+      "authorityViolationCount",
+      "privacyLeakCount",
+      "atomicityFailureCount",
+      "causalReferenceGapCount",
+      "sideSwapMismatchCount"
+    ],
+    "proxy": [
+      "knownFactContradictionCount",
+      "unsupportedStructuredClaimCount",
+      "causalTraceCompleteness",
+      "blindPlausibilityPreferenceRate",
+      "explanationRubricScore"
+    ],
+    "cost": [
+      "llmCallsPerTurn",
+      "inputTokensPerTurn",
+      "outputTokensPerTurn",
+      "latencyMs",
+      "serializedStateBytes",
+      "projectionBytes"
+    ]
+  },
+  "interventionThresholds": {
+    "projection": {
+      "hard": {
+        "identityLeakageCount": 0,
+        "observerIsolationViolationCount": 0,
+        "baselineOutcomeMismatchCount": 0
+      },
+      "proxy": {
+        "decisiveFactRecallMinimum": 0.98,
+        "irrelevantFactByteReductionMinimum": 0.3
+      },
+      "cost": {
+        "p95ProjectionLatencyMsMaximum": 25
+      }
+    },
+    "canonicalPatch": {
+      "hard": {
+        "authoritativeStateParityRate": 1,
+        "crossAuthorityMutationCount": 0,
+        "atomicityFailureCount": 0
+      },
+      "proxy": {
+        "seededDefectRecallMinimum": 0.9,
+        "falseRejectionRateMaximum": 0.02,
+        "causalTraceCompletenessMinimum": 0.98
+      }
+    },
+    "consistencyIssues": {
+      "hard": {
+        "globalCoherenceOverclaimCount": 0,
+        "unrelatedPurposeBlockCount": 0
+      },
+      "proxy": {
+        "seededConflictRecallMinimum": 0.9,
+        "falsePositiveRateMaximum": 0.05,
+        "deduplicationStabilityRateMinimum": 0.99
+      }
+    },
+    "readCoherence": {
+      "hard": {
+        "outOfScopeMutationCount": 0,
+        "causalRegressionCount": 0,
+        "publicHistoryRewriteCount": 0
+      },
+      "proxy": {
+        "blockingConflictReductionMinimum": 0.5,
+        "repairLoopRateMaximum": 0.01
+      },
+      "cost": {
+        "additionalLlmCallsP95Maximum": 1
+      }
+    },
+    "canonicalGraph": {
+      "hard": {
+        "adapterProjectionParityRate": 1,
+        "committedOutcomeParityRate": 1,
+        "rollbackFailureCount": 0
+      },
+      "proxy": {
+        "scopedReadLatencyRegressionMaximum": 0.2,
+        "serializedStateGrowthMaximum": 0.5
+      }
+    },
+    "adaptiveAdjudication": {
+      "hard": {
+        "fastPathOutcomeMismatchCount": 0,
+        "adjudicatorInventedTacticCount": 0,
+        "processDerivedCostViolationCount": 0
+      },
+      "proxy": {
+        "blindPlausibilityPreferenceRateMinimum": 0.6,
+        "knownFactContradictionReductionMinimum": 0.3,
+        "expansionTriggerPrecisionMinimum": 0.8,
+        "expansionTriggerRecallMinimum": 0.8
+      },
+      "cost": {
+        "ordinaryTurnLlmCallsMaximum": 3,
+        "expandedTurnAdditionalLlmCallsP95Maximum": 2
+      }
+    },
+    "worldProcess": {
+      "hard": {
+        "sideSwapMismatchCount": 0,
+        "sameBucketAtomicityFailureCount": 0,
+        "unsupportedEnvironmentalInventionCount": 0
+      },
+      "proxy": {
+        "expectedProgressionCoverageMinimum": 0.9,
+        "blindPlausibilityPreferenceRateMinimum": 0.6,
+        "causalTraceCompletenessMinimum": 0.98
+      }
+    }
+  },
+  "currentCallTopology": {
+    "ordinaryFixedFocus": {
+      "semanticWorldAndSensory": 1,
+      "characterA": 1,
+      "characterB": 1,
+      "narrator": 1,
+      "minimumTotalCalls": 4
+    },
+    "conditionalAdditions": {
+      "fluidNarrationFocus": 1,
+      "freeActionAdjudication": 1,
+      "turnLimitAdjudicationAndPresentation": 2,
+      "semanticRetry": 0
+    },
+    "note": "Counts are contract topology, not a live per-turn trace. Timeouts and skipped phases may reduce completed calls."
+  },
+  "scenarios": [
+    {
+      "id": "ordinary_attack",
+      "category": "ordinary",
+      "executionMode": "local_harness",
+      "runner": "ordinary_attack",
+      "hypothesis": "The current fast mechanical path commits schema-valid actions, events, and causal evidence without raw-number narration leakage.",
+      "hardInvariants": [
+        "battle_state_schema_valid",
+        "event_ids_unique",
+        "causal_references_resolve",
+        "public_event_summaries_hide_raw_numbers"
+      ],
+      "humanRubricPrompts": [
+        "Does the structured outcome follow from the selected actions?",
+        "Does the outcome avoid unsupported state changes?"
+      ]
+    },
+    {
+      "id": "remote_out_of_range",
+      "category": "remote_interaction",
+      "executionMode": "local_harness",
+      "runner": "remote_out_of_range",
+      "hypothesis": "A same-area attack cannot silently reach a counterpart moved to another canonical area.",
+      "hardInvariants": [
+        "out_of_range_action_not_executed_as_requested",
+        "no_remote_damage_from_rejected_action",
+        "battle_state_schema_valid"
+      ],
+      "humanRubricPrompts": [
+        "Is the fallback credible given the known distance?",
+        "Is hidden target information avoided?"
+      ]
+    },
+    {
+      "id": "simultaneous_mutual_ko",
+      "category": "simultaneous",
+      "executionMode": "local_harness",
+      "runner": "simultaneous_mutual_ko",
+      "hypothesis": "Equal-initiative terminal actions read one snapshot and preserve mutual incapacity.",
+      "hardInvariants": [
+        "both_actions_execute",
+        "winner_is_draw",
+        "same_bucket_atomicity"
+      ],
+      "humanRubricPrompts": [
+        "Is mutual incapacity consistent with the simultaneous timing rule?"
+      ]
+    },
+    {
+      "id": "faster_interruption",
+      "category": "temporal",
+      "executionMode": "local_harness",
+      "runner": "faster_interruption",
+      "hypothesis": "A faster terminal action interrupts and revalidates the slower action.",
+      "hardInvariants": [
+        "faster_action_executes",
+        "slower_action_skipped_after_incapacity",
+        "winner_is_faster_side"
+      ],
+      "humanRubricPrompts": [
+        "Is the interruption causally explained by the accepted temporal rule?"
+      ]
+    },
+    {
+      "id": "environment_hit_both",
+      "category": "world_effect",
+      "executionMode": "local_harness",
+      "runner": "environment_hit_both",
+      "hypothesis": "A current engine-authored environment effect is attributed to committed target-specific events.",
+      "hardInvariants": [
+        "environment_evidence_has_no_character_action_source",
+        "both_targets_have_basis_events",
+        "causal_references_resolve"
+      ],
+      "humanRubricPrompts": [
+        "Can each environmental effect be traced to an observable event?"
+      ]
+    },
+    {
+      "id": "invalid_world_transition_atomic",
+      "category": "contradiction",
+      "executionMode": "local_harness",
+      "runner": "invalid_world_transition_atomic",
+      "hypothesis": "An internally invalid world transition is rejected without a partial commit.",
+      "hardInvariants": [
+        "transition_rejected",
+        "world_revision_unchanged",
+        "no_partial_area_or_placement_commit"
+      ],
+      "humanRubricPrompts": [
+        "Does rejection preserve the last official state without inventing a repair?"
+      ]
+    },
+    {
+      "id": "legacy_compatibility",
+      "category": "legacy",
+      "executionMode": "local_harness",
+      "runner": "legacy_compatibility",
+      "hypothesis": "Legacy state reconstruction is deterministic and discards unknown-provenance speech from private cognition.",
+      "hardInvariants": [
+        "world_and_perception_reconstructed",
+        "legacy_unknown_speech_discarded",
+        "battle_state_schema_valid"
+      ],
+      "humanRubricPrompts": [
+        "Does reconstruction avoid interpreting historical public prose as canonical fact?"
+      ]
+    },
+    {
+      "id": "narration_style_independence",
+      "category": "authority",
+      "executionMode": "local_harness",
+      "runner": "narration_style_independence",
+      "hypothesis": "Narration style cannot change mechanical or temporal resolution.",
+      "hardInvariants": [
+        "mechanical_outcome_equal",
+        "temporal_plan_equal",
+        "authority_violation_count_zero"
+      ],
+      "humanRubricPrompts": [
+        "Does presentation remain downstream of the official result?"
+      ]
+    },
+    {
+      "id": "side_swap_symmetry",
+      "category": "side_neutrality",
+      "executionMode": "local_harness",
+      "runner": "side_swap_symmetry",
+      "hypothesis": "Swapping logical combatants between Side A and Side B does not change simultaneous mechanical outcomes.",
+      "hardInvariants": [
+        "side_swap_damage_equal",
+        "side_swap_execution_equal",
+        "side_swap_mismatch_count_zero"
+      ],
+      "humanRubricPrompts": [
+        "Would the result remain equally defensible if the side labels were exchanged?"
+      ]
+    },
+    {
+      "id": "combined_perception_primary",
+      "category": "live_llm_reference",
+      "executionMode": "existing_evidence",
+      "evidencePath": "docs/evidence/perception-xai-grok-4-fast-non-reasoning-v10-20260805-fit-gap.json",
+      "expectedSha256": "b42c572fbb926f08f5e86e10c2c48fb8130a5a755127d74d5a4d921981d07052",
+      "hypothesis": "The current combined XAI perception topology satisfies its frozen v10 schema, correctness, coverage, attribution, and identity floors.",
+      "hardInvariants": [
+        "primary_provider_is_xai",
+        "identity_leakage_rate_zero",
+        "call_errors_zero"
+      ],
+      "humanRubricPrompts": []
+    },
+    {
+      "id": "provider_failure_fallback",
+      "category": "provider_failure",
+      "executionMode": "automated_test_reference",
+      "testCommand": "node --import tsx --test backend/src/llm/fallback.test.ts backend/src/services/battle-consumer-wiring.test.ts",
+      "hypothesis": "Provider or projection failure preserves bounded engine-authored state and observer isolation.",
+      "hardInvariants": [
+        "fallback_order_unchanged",
+        "observer_isolation_preserved",
+        "no_public_prose_feedback"
+      ],
+      "humanRubricPrompts": []
+    },
+    {
+      "id": "ambiguous_free_action_concretization",
+      "category": "ambiguity",
+      "executionMode": "automated_test_reference",
+      "testCommand": "node --import tsx --test backend/src/services/free-action-service.test.ts packages/shared/src/battle-causality.test.ts",
+      "hypothesis": "Current free-action concretization remains bounded by observed affordances, authority, and atomic world transitions.",
+      "hardInvariants": [
+        "unobserved_subject_rejected",
+        "concretization_bounded",
+        "atomic_commit_preserved"
+      ],
+      "humanRubricPrompts": [
+        "Does concretization resolve only details necessary for the attempted interaction?"
+      ]
+    },
+    {
+      "id": "narrative_plausibility",
+      "category": "human_quality",
+      "executionMode": "future_blind_review",
+      "historicalReferencePath": "docs/evidence/production-0.7.1-post-promote-2026-08-06.md",
+      "hypothesis": "A later intervention produces a more causally progressive and less contradictory account than the frozen current-pipeline output.",
+      "hardInvariants": [
+        "canonical_result_unchanged_by_review"
+      ],
+      "humanRubricPrompts": [
+        "Which output better follows the known world facts and rules?",
+        "Which output makes action, effect, and failure cost easier to understand?",
+        "Which output introduces fewer unsupported facts?",
+        "Which output better preserves uncertainty where the state is unknown?"
+      ]
+    }
+  ]
+}
