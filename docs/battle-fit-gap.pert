@@ -22,45 +22,59 @@ milestone FIT_GAP_REVIEWED:
 
 milestone NARRATOR_READY:
   title "Character-authored speech and presentation-only narration ready"
+  state reached
 
 milestone RULES_READY:
   title "Timing and adjudication decisions accepted"
+  state reached
 
 milestone WORLD_MODEL_READY:
   title "Coarse canonical world and state model ready"
+  state reached
 
 milestone PROFILE_GROUNDED:
   title "Character self profile and narrator identity grounding ready"
+  state reached
 
 milestone PERCEPTION_BASE_READY:
   title "Initial and continuous perception ready"
+  state reached
 
 milestone PERCEPTION_READY:
   title "Apparent identity and speech perception ready"
+  state reached
 
 milestone ACTIONS_READY:
   title "Observer-safe feasible actions and revalidation ready"
+  state reached
 
 milestone CAUSALITY_READY:
   title "World interference and conscious or unconscious effects ready"
+  state reached
 
 milestone TIMELINE_READY:
   title "Side-neutral temporal resolution ready"
+  state reached
 
 milestone RESULT_READY:
   title "Canonical result adjudication ready"
+  state reached
 
 milestone PHASES_READY:
   title "Prologue normal turn and aftermath contracts aligned"
+  state reached
 
 milestone COMPATIBILITY_READY:
   title "Legacy battle compatibility ready"
+  state reached
 
 milestone GAP_ACCEPTED:
   title "Battle pipeline gaps accepted"
+  state reached
 
 milestone REPOSITORY_CLEAN:
   title "Repository branches and workspaces safely cleaned"
+  state reached
 
 task T_NARRATOR FIT_GAP_REVIEWED -> NARRATOR_READY:
   title "Make narration presentation-only and source public speech from characters"
