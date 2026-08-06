@@ -232,6 +232,7 @@ const TranscriptReportSchema = TranscriptReportWithoutIntegritySchema.extend({
     contentDigest: DigestSchema,
   }).strict(),
 }).strict();
+export const IntegratedShadowTranscriptReportSchema = TranscriptReportSchema;
 export type IntegratedShadowTranscriptReport = z.infer<
   typeof TranscriptReportSchema
 >;

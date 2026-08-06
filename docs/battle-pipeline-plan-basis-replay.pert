@@ -26,6 +26,7 @@ milestone REVISION_PROTOCOL_FIXED:
 
 milestone VERSIONED_REPLAY_BUILT:
   title "Versioned plan-basis corrective replay built"
+  state reached
 
 milestone CORRECTIVE_REPLAY_DECIDED:
   title "Corrective replay evaluated under the unchanged rubric"
@@ -42,6 +43,7 @@ task T_VERSIONED_CORRECTIVE_REPLAY REVISION_PROTOCOL_FIXED -> VERSIONED_REPLAY_B
   title "Build the versioned plan-basis corrective replay"
   description "Create a versioned v2 corpus or delta and repeatable replay that changes only interrupted step basis wiring. Report v1 and v2 digests and the field-level delta, keep six control strata semantically identical, and add no external LLM runtime persistence or canonical write."
   duration 1p
+  status done
   requires:
     DEV 1
 
@@ -77,3 +79,10 @@ task_outcome OUT_T_REVISION_PROTOCOL:
   against_basis sha256:c43002b14e53614bf8a5b0799e78c8a6e1aaa969ee091c465a2030e1ea9463b3
   status conformant
   reason "Accept the immutable parent, exact two-ref delta, unchanged rubric, control parity, and stop conditions"
+
+task_outcome OUT_T_VERSIONED_CORRECTIVE_REPLAY:
+  model 1
+  task T_VERSIONED_CORRECTIVE_REPLAY
+  against_basis sha256:3fb9c4b5681e016c3fec64305b8125ced2383381419ae860854750c5f23637cc
+  status conformant
+  reason "Accept exact two-ref derivation, four-field diff, six-of-six normalized control parity, expected interrupted prefix, and zero authority changes"

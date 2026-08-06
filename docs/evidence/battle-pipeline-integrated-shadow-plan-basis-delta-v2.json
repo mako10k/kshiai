@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "mode": "integrated_shadow_plan_basis_delta",
+  "deltaVersion": "battle-pipeline-integrated-shadow-plan-basis-delta-v2",
+  "parent": {
+    "path": "docs/evidence/battle-pipeline-integrated-shadow-transcript-baseline-2026-08-06.json",
+    "fixtureVersion": "battle-pipeline-integrated-shadow-transcripts-v1",
+    "fileSha256": "1b9c9e3b502b9e32bc96e5848ab5228f9f0d1c44ab4310a7b21dd268c6ed689a",
+    "contentDigest": "bd047d71f4bee6736aa645a5fea690cede67b1c147654630c4f8ad63b7abd882"
+  },
+  "targetFixtureVersion": "battle-pipeline-integrated-shadow-transcripts-v2",
+  "operations": [
+    {
+      "operation": "append_basis_ref",
+      "scenarioId": "interrupted_expanded_action",
+      "proposalRef": "proposal.interrupted.a",
+      "stepId": "step.interrupted.approach",
+      "basisCategory": "psychology",
+      "expectedBefore": [
+        "observation:proposal.interrupted.a"
+      ],
+      "addedRef": "psychology:character.a",
+      "expectedAfter": [
+        "observation:proposal.interrupted.a",
+        "psychology:character.a"
+      ]
+    },
+    {
+      "operation": "append_basis_ref",
+      "scenarioId": "interrupted_expanded_action",
+      "proposalRef": "proposal.interrupted.a",
+      "stepId": "step.interrupted.strike",
+      "basisCategory": "experience",
+      "expectedBefore": [
+        "observation:proposal.interrupted.a"
+      ],
+      "addedRef": "experience:character.a",
+      "expectedAfter": [
+        "observation:proposal.interrupted.a",
+        "experience:character.a"
+      ]
+    }
+  ],
+  "unchangedScenarioIds": [
+    "ordinary_fast_action",
+    "remote_rejection",
+    "simultaneous_terminal_action",
+    "active_world_process",
+    "blocking_local_conflict",
+    "exhausted_budget"
+  ],
+  "provenance": {
+    "protocolPath": "docs/battle-pipeline-plan-basis-replay-protocol.md",
+    "fixedAt": "2026-08-06T00:00:00.000Z",
+    "constructionMethod": "strict_in_memory_derivation",
+    "externalLlmCallsMade": 0,
+    "canonicalCommitCount": 0
+  },
+  "integrity": {
+    "algorithm": "sha256",
+    "basis": "canonical delta excluding integrity",
+    "contentDigest": "d0ed7056cdb7cd450a9c9c53ca34f376e99f811b202d84ecaf04fe2d8cf4f27a"
+  }
+}

@@ -1,0 +1,158 @@
+{
+  "schemaVersion": 1,
+  "mode": "integrated_shadow_plan_basis_replay_construction",
+  "builtAt": "2026-08-06T00:00:00.000Z",
+  "parent": {
+    "path": "docs/evidence/battle-pipeline-integrated-shadow-transcript-baseline-2026-08-06.json",
+    "fixtureVersion": "battle-pipeline-integrated-shadow-transcripts-v1",
+    "fileSha256": "1b9c9e3b502b9e32bc96e5848ab5228f9f0d1c44ab4310a7b21dd268c6ed689a",
+    "contentDigest": "bd047d71f4bee6736aa645a5fea690cede67b1c147654630c4f8ad63b7abd882"
+  },
+  "delta": {
+    "path": "docs/evidence/battle-pipeline-integrated-shadow-plan-basis-delta-v2.json",
+    "deltaVersion": "battle-pipeline-integrated-shadow-plan-basis-delta-v2",
+    "fileSha256": "ada23e26a34ac5081a5a73c814e46d06c7203ec807fc0069469475a0f684d69e",
+    "contentDigest": "d0ed7056cdb7cd450a9c9c53ca34f376e99f811b202d84ecaf04fe2d8cf4f27a"
+  },
+  "target": {
+    "fixtureVersion": "battle-pipeline-integrated-shadow-transcripts-v2",
+    "contentDigest": "dc1e0810c917bdb9605d8e1921d95b183e4e41d8b182810c6ba10ef1a715036d",
+    "persisted": false
+  },
+  "fieldDifferences": [
+    {
+      "path": "/fixtureVersion",
+      "before": "battle-pipeline-integrated-shadow-transcripts-v1",
+      "after": "battle-pipeline-integrated-shadow-transcripts-v2"
+    },
+    {
+      "path": "/integrity/contentDigest",
+      "before": "bd047d71f4bee6736aa645a5fea690cede67b1c147654630c4f8ad63b7abd882",
+      "after": "dc1e0810c917bdb9605d8e1921d95b183e4e41d8b182810c6ba10ef1a715036d"
+    },
+    {
+      "path": "/scenarios/3/characterInputs/cases/0/characterPlan/steps/0/basisRefs/1",
+      "before": null,
+      "after": "psychology:character.a"
+    },
+    {
+      "path": "/scenarios/3/characterInputs/cases/0/characterPlan/steps/1/basisRefs/1",
+      "before": null,
+      "after": "experience:character.a"
+    }
+  ],
+  "unexpectedFieldDifferenceCount": 0,
+  "controlComparisons": [
+    {
+      "scenarioId": "ordinary_fast_action",
+      "parentInputDigest": "4b1cfbadcdc31a2aca694a0aec9710f8ec5422ebe9058f86334cf25c5a814238",
+      "targetInputDigest": "4b1cfbadcdc31a2aca694a0aec9710f8ec5422ebe9058f86334cf25c5a814238",
+      "inputIdentical": true,
+      "parentNormalizedReceiptDigest": "d7a3dbc35863a1da4cd02f1aec24f9e90f1e67ae12acdb55e69960d1ae0fa292",
+      "targetNormalizedReceiptDigest": "d7a3dbc35863a1da4cd02f1aec24f9e90f1e67ae12acdb55e69960d1ae0fa292",
+      "normalizedReceiptIdentical": true
+    },
+    {
+      "scenarioId": "remote_rejection",
+      "parentInputDigest": "b709c720ed9445dffddef8560596021ec7221b3d2f40dfa602ed815aa542213e",
+      "targetInputDigest": "b709c720ed9445dffddef8560596021ec7221b3d2f40dfa602ed815aa542213e",
+      "inputIdentical": true,
+      "parentNormalizedReceiptDigest": "35f611d0cf48f53703a41bfb81c8839b44c19c2084217008e133433d32ab97a8",
+      "targetNormalizedReceiptDigest": "35f611d0cf48f53703a41bfb81c8839b44c19c2084217008e133433d32ab97a8",
+      "normalizedReceiptIdentical": true
+    },
+    {
+      "scenarioId": "simultaneous_terminal_action",
+      "parentInputDigest": "f392f16c554c6f22b833f2a1bb1f3ca1e19e7c7f69b406d5dd1565303f83285f",
+      "targetInputDigest": "f392f16c554c6f22b833f2a1bb1f3ca1e19e7c7f69b406d5dd1565303f83285f",
+      "inputIdentical": true,
+      "parentNormalizedReceiptDigest": "3036c81e2d71e56979d2dc34007310a40729493537bf4f94ab077c06436083ea",
+      "targetNormalizedReceiptDigest": "3036c81e2d71e56979d2dc34007310a40729493537bf4f94ab077c06436083ea",
+      "normalizedReceiptIdentical": true
+    },
+    {
+      "scenarioId": "active_world_process",
+      "parentInputDigest": "14af4bd4dc577f2f6d40751bc59223ae2041c187df0ffbcc1852fd29f1eb5813",
+      "targetInputDigest": "14af4bd4dc577f2f6d40751bc59223ae2041c187df0ffbcc1852fd29f1eb5813",
+      "inputIdentical": true,
+      "parentNormalizedReceiptDigest": "01eac70d4447de1c1571b91946fc0ef1c113bb7ae64cc6144ad521eb21d2e57c",
+      "targetNormalizedReceiptDigest": "01eac70d4447de1c1571b91946fc0ef1c113bb7ae64cc6144ad521eb21d2e57c",
+      "normalizedReceiptIdentical": true
+    },
+    {
+      "scenarioId": "blocking_local_conflict",
+      "parentInputDigest": "50ef892e60d4610a56203c1f8a724706e6be5d5b253a744b06aae7cd9ef780d4",
+      "targetInputDigest": "50ef892e60d4610a56203c1f8a724706e6be5d5b253a744b06aae7cd9ef780d4",
+      "inputIdentical": true,
+      "parentNormalizedReceiptDigest": "6b18809db6c36dfefb1097e6c0dac31eea2b63d56f60e6bb8b8920ee1acf6a1d",
+      "targetNormalizedReceiptDigest": "6b18809db6c36dfefb1097e6c0dac31eea2b63d56f60e6bb8b8920ee1acf6a1d",
+      "normalizedReceiptIdentical": true
+    },
+    {
+      "scenarioId": "exhausted_budget",
+      "parentInputDigest": "2bdee1b0a7da1caabf5f3cff45eff57d8e11a7932f925babed456786b111054b",
+      "targetInputDigest": "2bdee1b0a7da1caabf5f3cff45eff57d8e11a7932f925babed456786b111054b",
+      "inputIdentical": true,
+      "parentNormalizedReceiptDigest": "6aedc6783dc0835bffe567bf99d5e02128cbec77cdc84dba71caa2d1696d25b5",
+      "targetNormalizedReceiptDigest": "6aedc6783dc0835bffe567bf99d5e02128cbec77cdc84dba71caa2d1696d25b5",
+      "normalizedReceiptIdentical": true
+    }
+  ],
+  "interruptedReplay": {
+    "parentReceiptDigest": "1470cfefa1953866d4159dcd78cd0d18308fcd095415591bbde3c0ff0103dbb7",
+    "targetReceiptDigest": "86dbb59851854cf9e86bced45a32be34bb5f6c189a65b0a1c113a475270f2f58",
+    "adaptiveStatus": "executed",
+    "resolution": "expanded",
+    "outcome": "partial",
+    "completedSteps": [
+      "step.interrupted.approach"
+    ],
+    "failedStep": "step.interrupted.strike",
+    "failureReason": "precondition_failed",
+    "effectIds": [
+      "effect.interrupted.approached"
+    ],
+    "costIds": [
+      "cost.interrupted.exposure"
+    ],
+    "fallbackFactPresent": false,
+    "patchCount": 1,
+    "assertedFactIds": [
+      "input-fact.interrupted.approached"
+    ],
+    "retractionCount": 0,
+    "allPatchAuditsNoIssueFound": true,
+    "strikeEffectPresent": false,
+    "causalCreatedLinkPresent": true,
+    "passed": true
+  },
+  "execution": {
+    "scenarioCount": 7,
+    "constructionReplayRuns": 14,
+    "deterministicRepetitions": 1,
+    "externalLlmCallsMade": 0,
+    "canonicalCommitCount": 0,
+    "authoritativeOutcomeChangeCount": 0,
+    "sourceMutationCount": 0
+  },
+  "assertions": {
+    "parentIntegrityValid": true,
+    "deltaIntegrityValid": true,
+    "exactTwoOperationContract": true,
+    "derivedIntegrityValid": true,
+    "unchangedControlInputs": true,
+    "normalizedControlReceiptParity": true,
+    "registeredInterruptedBehavior": true
+  },
+  "limitations": [
+    "This construction replay runs each frozen scenario once and is not the registered 20-repetition evaluation.",
+    "The two added refs establish structural category coverage, not semantic psychology or experience grounding.",
+    "The derived v2 transcript remains in memory and is not a replacement for the immutable v1 artifact.",
+    "No runtime, BattleState, canonical storage, database, provider, release, or deployment change is authorized."
+  ],
+  "integrity": {
+    "algorithm": "sha256",
+    "basis": "canonical report excluding integrity",
+    "contentDigest": "d8cc9adb301ad49b2a89b47dcd6cb14a4174c91536b7efaee532acd27e535f7c"
+  }
+}
