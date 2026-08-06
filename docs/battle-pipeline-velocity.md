@@ -21,9 +21,9 @@ as independently observed multi-day throughput.
 
 | Scope | Points | Forecast at 2.5p/day | Qualification |
 |---|---:|---:|---|
-| `T_ISSUES_POC` | 1p | 0.4 day | next intervention; currently decision-locked |
-| `T_ISSUES_EVAL` | 1p | 0.4 day | separate frozen evaluation |
-| Remaining after Patch evaluation | 19p | 7.6 days | conditional on all later decision locks opening |
+| `T_ISSUES_POC` | 1p | 0.4 day | completed implementation estimate |
+| `T_ISSUES_EVAL` | 1p | 0.4 day | next separate evaluation; not started |
+| Remaining after Issues PoC | 18p | 7.2 days | conditional on all later decision locks opening |
 
 Velocity changes calendar forecasts, not point estimates or evidence gates. A
 faster implementation does not lower evaluation thresholds, automatically

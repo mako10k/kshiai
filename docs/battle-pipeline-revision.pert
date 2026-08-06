@@ -62,6 +62,7 @@ milestone PATCH_EVALUATED:
 
 milestone ISSUES_POC_BUILT:
   title "Consistency-issue lifecycle prototype built without canonical mutation authority"
+  state reached
 
 milestone ISSUES_EVALUATED:
   title "Consistency-issue effectiveness and failure modes evaluated"
@@ -221,8 +222,7 @@ task T_ISSUES_POC PATCH_EVALUATED -> ISSUES_POC_BUILT:
     issue but may not alter canonical state. Keep no_issue_found scoped and
     indeterminate distinct from success.
   duration 1p
-  status blocked
-  blocked_reason "Unblock only after patch evidence supports continuation; otherwise replan"
+  status done
   requires:
     DEV 1
 

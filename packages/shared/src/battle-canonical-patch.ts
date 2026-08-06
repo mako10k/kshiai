@@ -182,7 +182,7 @@ export type ShadowPatchConversionResult = z.infer<
   typeof ShadowPatchConversionResultSchema
 >;
 
-const PatchAuditIssueCodeSchema = z.enum([
+export const PatchAuditIssueCodeSchema = z.enum([
   "invalid_schema",
   "patch_too_large",
   "unknown_entity_reference",
