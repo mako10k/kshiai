@@ -1,5 +1,5 @@
 project KSHIAI_BATTLE_PIPELINE_REVISION_POC:
-  version 5
+  version 6
   title "Evidence-driven PoC for the purpose-scoped canonical battle pipeline"
   description |
     Evaluate the interventions proposed by
@@ -17,7 +17,7 @@ project KSHIAI_BATTLE_PIPELINE_REVISION_POC:
     provider-order changes release deployment or legacy cleanup.
   as_of 2026-08-06
   duration_unit point
-  velocity 2p/1d
+  velocity 5p/2d
   finish POC_EVIDENCE_REVIEWED
 
 resource DEV:
@@ -58,6 +58,7 @@ milestone PATCH_POC_BUILT:
 
 milestone PATCH_EVALUATED:
   title "Canonical-patch effectiveness and failure modes evaluated"
+  state reached
 
 milestone ISSUES_POC_BUILT:
   title "Consistency-issue lifecycle prototype built without canonical mutation authority"
@@ -207,7 +208,7 @@ task T_PATCH_EVAL PATCH_POC_BUILT -> PATCH_EVALUATED:
     supported revise unsupported or indeterminate and stop for unexplained
     parity drift or authority regression.
   duration 1p
-  status active
+  status done
   requires:
     DEV 1
 

@@ -1,0 +1,444 @@
+{
+  "schemaVersion": 1,
+  "fixtureVersion": "battle-pipeline-patch-eval-v1",
+  "generatedAt": "2026-08-06T03:13:09.719Z",
+  "mode": "canonical_patch_poc_evaluation",
+  "provenance": {
+    "gitHead": "d7a3b66e1bc1fa33be8503dd2568c9e022b57295",
+    "workingTreeDirty": false,
+    "nodeVersion": "v25.1.0",
+    "fixturePath": "docs/evidence/battle-pipeline-patch-fixtures-v1.json",
+    "fixtureSha256": "39530b6691e32f112cb90354f08f4a1ac2f4ebb86d302d9511c4932928806b29",
+    "evaluatorPath": "backend/src/scripts/evaluate-battle-canonical-patch-poc.ts",
+    "evaluatorSha256": "2899c393c63199cb0cddc9f45766d45966d6e6f89afe7a93d627d799e5fd01fc",
+    "patchSourcePath": "packages/shared/src/battle-canonical-patch.ts",
+    "patchSourceSha256": "45dc676e8d3f9c00b14c88bf4dba7483b87b47d6cf40557466931edd5221cabf"
+  },
+  "execution": {
+    "repetitionsPerCase": 20,
+    "conversionFixtureCount": 6,
+    "conversionAttempts": 120,
+    "defectSeedCount": 11,
+    "defectAudits": 220,
+    "externalLlmCallsMade": 0,
+    "xaiUsed": false,
+    "xaiReason": "Every scored claim, authority owner, and seeded defect is explicit structured ground truth; XAI would add a second judgment path rather than resolve semantic ambiguity."
+  },
+  "thresholds": {
+    "conversionClassificationAccuracyMinimum": 1,
+    "reconstructedPostStateParityMinimum": 1,
+    "causalSourceParityMinimum": 1,
+    "seededDefectRecallMinimum": 1,
+    "falseRejectionCountMaximum": 0,
+    "unexplainedStateChangeCountMaximum": 0,
+    "authorityRegressionCountMaximum": 0,
+    "sourceMutationCountMaximum": 0,
+    "schemaFailureCountMaximum": 0,
+    "patchLimitViolationCountMaximum": 0,
+    "auditScopeByteReductionMinimum": 0.3
+  },
+  "fixtures": [
+    {
+      "id": "mechanical_parameter_change",
+      "expectedStatus": "converted",
+      "repetitions": 20,
+      "classificationMatches": 20,
+      "classificationAccuracy": 1,
+      "expectedClaimCount": 80,
+      "matchedAssertionCount": 80,
+      "assertionParity": 1,
+      "expectedRetractionCount": 80,
+      "matchedRetractionCount": 80,
+      "retractionParity": 1,
+      "reconstructedPostStateMatches": 20,
+      "reconstructedPostStateParity": 1,
+      "expectedCausalLinkCount": 160,
+      "matchedCausalLinkCount": 160,
+      "causalSourceParity": 1,
+      "falseRejectionCount": 0,
+      "unexplainedStateChangeCount": 0,
+      "authorityRegressionCount": 0,
+      "sourceMutationCount": 0,
+      "schemaFailureCount": 0,
+      "patchLimitViolationCount": 0,
+      "fullAuthorityInputBytes": 28289,
+      "boundedAuditInputBytes": 3316,
+      "auditScopeByteReduction": 0.882781,
+      "conversionLatencyMs": {
+        "mean": 3.386786,
+        "p95": 11.894081,
+        "minimum": 0.593007,
+        "maximum": 15.642509
+      }
+    },
+    {
+      "id": "semantic_visible_condition",
+      "expectedStatus": "converted",
+      "repetitions": 20,
+      "classificationMatches": 20,
+      "classificationAccuracy": 1,
+      "expectedClaimCount": 20,
+      "matchedAssertionCount": 20,
+      "assertionParity": 1,
+      "expectedRetractionCount": 20,
+      "matchedRetractionCount": 20,
+      "retractionParity": 1,
+      "reconstructedPostStateMatches": 20,
+      "reconstructedPostStateParity": 1,
+      "expectedCausalLinkCount": 40,
+      "matchedCausalLinkCount": 40,
+      "causalSourceParity": 1,
+      "falseRejectionCount": 0,
+      "unexplainedStateChangeCount": 0,
+      "authorityRegressionCount": 0,
+      "sourceMutationCount": 0,
+      "schemaFailureCount": 0,
+      "patchLimitViolationCount": 0,
+      "fullAuthorityInputBytes": 1946,
+      "boundedAuditInputBytes": 1113,
+      "auditScopeByteReduction": 0.428058,
+      "conversionLatencyMs": {
+        "mean": 1.901856,
+        "p95": 4.266618,
+        "minimum": 0.311714,
+        "maximum": 7.725098
+      }
+    },
+    {
+      "id": "world_placement_and_pair",
+      "expectedStatus": "converted",
+      "repetitions": 20,
+      "classificationMatches": 20,
+      "classificationAccuracy": 1,
+      "expectedClaimCount": 120,
+      "matchedAssertionCount": 120,
+      "assertionParity": 1,
+      "expectedRetractionCount": 120,
+      "matchedRetractionCount": 120,
+      "retractionParity": 1,
+      "reconstructedPostStateMatches": 20,
+      "reconstructedPostStateParity": 1,
+      "expectedCausalLinkCount": 240,
+      "matchedCausalLinkCount": 240,
+      "causalSourceParity": 1,
+      "falseRejectionCount": 0,
+      "unexplainedStateChangeCount": 0,
+      "authorityRegressionCount": 0,
+      "sourceMutationCount": 0,
+      "schemaFailureCount": 0,
+      "patchLimitViolationCount": 0,
+      "fullAuthorityInputBytes": 4961,
+      "boundedAuditInputBytes": 5283,
+      "auditScopeByteReduction": -0.064906,
+      "conversionLatencyMs": {
+        "mean": 3.31587,
+        "p95": 8.582834,
+        "minimum": 0.856493,
+        "maximum": 9.720483
+      }
+    },
+    {
+      "id": "accepted_free_action",
+      "expectedStatus": "converted",
+      "repetitions": 20,
+      "classificationMatches": 20,
+      "classificationAccuracy": 1,
+      "expectedClaimCount": 20,
+      "matchedAssertionCount": 20,
+      "assertionParity": 1,
+      "expectedRetractionCount": 20,
+      "matchedRetractionCount": 20,
+      "retractionParity": 1,
+      "reconstructedPostStateMatches": 20,
+      "reconstructedPostStateParity": 1,
+      "expectedCausalLinkCount": 40,
+      "matchedCausalLinkCount": 40,
+      "causalSourceParity": 1,
+      "falseRejectionCount": 0,
+      "unexplainedStateChangeCount": 0,
+      "authorityRegressionCount": 0,
+      "sourceMutationCount": 0,
+      "schemaFailureCount": 0,
+      "patchLimitViolationCount": 0,
+      "fullAuthorityInputBytes": 3269,
+      "boundedAuditInputBytes": 1108,
+      "auditScopeByteReduction": 0.661058,
+      "conversionLatencyMs": {
+        "mean": 0.754482,
+        "p95": 0.968196,
+        "minimum": 0.241624,
+        "maximum": 3.274801
+      }
+    },
+    {
+      "id": "missing_prior_fact",
+      "expectedStatus": "indeterminate",
+      "repetitions": 20,
+      "classificationMatches": 20,
+      "classificationAccuracy": 1,
+      "expectedClaimCount": 0,
+      "matchedAssertionCount": 0,
+      "assertionParity": 0,
+      "expectedRetractionCount": 0,
+      "matchedRetractionCount": 0,
+      "retractionParity": 0,
+      "reconstructedPostStateMatches": 0,
+      "reconstructedPostStateParity": 0,
+      "expectedCausalLinkCount": 0,
+      "matchedCausalLinkCount": 0,
+      "causalSourceParity": 0,
+      "falseRejectionCount": 0,
+      "unexplainedStateChangeCount": 0,
+      "authorityRegressionCount": 0,
+      "sourceMutationCount": 0,
+      "schemaFailureCount": 0,
+      "patchLimitViolationCount": 0,
+      "fullAuthorityInputBytes": 0,
+      "boundedAuditInputBytes": 0,
+      "auditScopeByteReduction": 0,
+      "conversionLatencyMs": {
+        "mean": 0.555003,
+        "p95": 0.842932,
+        "minimum": 0.147785,
+        "maximum": 5.15708
+      }
+    },
+    {
+      "id": "new_world_identity",
+      "expectedStatus": "indeterminate",
+      "repetitions": 20,
+      "classificationMatches": 20,
+      "classificationAccuracy": 1,
+      "expectedClaimCount": 0,
+      "matchedAssertionCount": 0,
+      "assertionParity": 0,
+      "expectedRetractionCount": 0,
+      "matchedRetractionCount": 0,
+      "retractionParity": 0,
+      "reconstructedPostStateMatches": 0,
+      "reconstructedPostStateParity": 0,
+      "expectedCausalLinkCount": 0,
+      "matchedCausalLinkCount": 0,
+      "causalSourceParity": 0,
+      "falseRejectionCount": 0,
+      "unexplainedStateChangeCount": 0,
+      "authorityRegressionCount": 0,
+      "sourceMutationCount": 0,
+      "schemaFailureCount": 0,
+      "patchLimitViolationCount": 0,
+      "fullAuthorityInputBytes": 0,
+      "boundedAuditInputBytes": 0,
+      "auditScopeByteReduction": 0,
+      "conversionLatencyMs": {
+        "mean": 0.153521,
+        "p95": 0.329565,
+        "minimum": 0.02095,
+        "maximum": 0.76093
+      }
+    }
+  ],
+  "defectSeeds": [
+    {
+      "id": "invalid_schema",
+      "mutation": "invalid_schema",
+      "expectedIssueCode": "invalid_schema",
+      "expectedVerdict": "issue_found",
+      "repetitions": 20,
+      "detections": 20,
+      "recall": 1,
+      "observedIssueCodes": [
+        "invalid_schema"
+      ],
+      "observedVerdicts": [
+        "issue_found"
+      ]
+    },
+    {
+      "id": "oversized_patch",
+      "mutation": "patch_too_large",
+      "expectedIssueCode": "patch_too_large",
+      "expectedVerdict": "issue_found",
+      "repetitions": 20,
+      "detections": 20,
+      "recall": 1,
+      "observedIssueCodes": [
+        "patch_too_large"
+      ],
+      "observedVerdicts": [
+        "issue_found"
+      ]
+    },
+    {
+      "id": "unknown_reference",
+      "mutation": "unknown_entity_reference",
+      "expectedIssueCode": "unknown_entity_reference",
+      "expectedVerdict": "issue_found",
+      "repetitions": 20,
+      "detections": 20,
+      "recall": 1,
+      "observedIssueCodes": [
+        "unknown_entity_reference"
+      ],
+      "observedVerdicts": [
+        "issue_found"
+      ]
+    },
+    {
+      "id": "missing_retraction_target",
+      "mutation": "missing_retraction",
+      "expectedIssueCode": "missing_retraction",
+      "expectedVerdict": "issue_found",
+      "repetitions": 20,
+      "detections": 20,
+      "recall": 1,
+      "observedIssueCodes": [
+        "missing_retraction"
+      ],
+      "observedVerdicts": [
+        "issue_found"
+      ]
+    },
+    {
+      "id": "unretracted_conflict",
+      "mutation": "direct_conflict",
+      "expectedIssueCode": "direct_conflict",
+      "expectedVerdict": "issue_found",
+      "repetitions": 20,
+      "detections": 20,
+      "recall": 1,
+      "observedIssueCodes": [
+        "direct_conflict"
+      ],
+      "observedVerdicts": [
+        "issue_found"
+      ]
+    },
+    {
+      "id": "negative_parameter",
+      "mutation": "forbidden_state",
+      "expectedIssueCode": "forbidden_state",
+      "expectedVerdict": "issue_found",
+      "repetitions": 20,
+      "detections": 20,
+      "recall": 1,
+      "observedIssueCodes": [
+        "forbidden_state"
+      ],
+      "observedVerdicts": [
+        "issue_found"
+      ]
+    },
+    {
+      "id": "missing_cause",
+      "mutation": "missing_causal_link",
+      "expectedIssueCode": "missing_causal_link",
+      "expectedVerdict": "issue_found",
+      "repetitions": 20,
+      "detections": 20,
+      "recall": 1,
+      "observedIssueCodes": [
+        "missing_causal_link"
+      ],
+      "observedVerdicts": [
+        "issue_found"
+      ]
+    },
+    {
+      "id": "invalid_causal_relation",
+      "mutation": "invalid_causal_target",
+      "expectedIssueCode": "invalid_causal_target",
+      "expectedVerdict": "issue_found",
+      "repetitions": 20,
+      "detections": 20,
+      "recall": 1,
+      "observedIssueCodes": [
+        "invalid_causal_target"
+      ],
+      "observedVerdicts": [
+        "issue_found"
+      ]
+    },
+    {
+      "id": "missing_touched_subject",
+      "mutation": "incomplete_touched_refs",
+      "expectedIssueCode": "incomplete_touched_refs",
+      "expectedVerdict": "issue_found",
+      "repetitions": 20,
+      "detections": 20,
+      "recall": 1,
+      "observedIssueCodes": [
+        "incomplete_touched_refs"
+      ],
+      "observedVerdicts": [
+        "issue_found"
+      ]
+    },
+    {
+      "id": "crossed_authority",
+      "mutation": "authority_mismatch",
+      "expectedIssueCode": "authority_mismatch",
+      "expectedVerdict": "issue_found",
+      "repetitions": 20,
+      "detections": 20,
+      "recall": 1,
+      "observedIssueCodes": [
+        "authority_mismatch"
+      ],
+      "observedVerdicts": [
+        "issue_found"
+      ]
+    },
+    {
+      "id": "explicitly_incomplete_context",
+      "mutation": "incomplete_context",
+      "expectedIssueCode": "incomplete_context",
+      "expectedVerdict": "indeterminate",
+      "repetitions": 20,
+      "detections": 20,
+      "recall": 1,
+      "observedIssueCodes": [
+        "incomplete_context"
+      ],
+      "observedVerdicts": [
+        "indeterminate"
+      ]
+    }
+  ],
+  "staticAuthorityCheck": {
+    "runtimeIntegrationFileRefs": [],
+    "exportedCommitFunctionCount": 0
+  },
+  "aggregate": {
+    "conversionClassificationAccuracy": 1,
+    "reconstructedPostStateParity": 1,
+    "causalSourceParity": 1,
+    "seededDefectRecall": 1,
+    "falseRejectionCount": 0,
+    "unexplainedStateChangeCount": 0,
+    "authorityRegressionCount": 0,
+    "sourceMutationCount": 0,
+    "schemaFailureCount": 0,
+    "patchLimitViolationCount": 0,
+    "auditScopeByteReduction": 0.718705,
+    "hardInvariantsPass": true,
+    "seededDefectRecallPass": true,
+    "falseRejectionPass": true,
+    "auditScopeByteReductionPass": true
+  },
+  "decision": {
+    "label": "supported",
+    "reasons": [
+      "Every frozen hard invariant and effectiveness proxy passed."
+    ],
+    "boundedRevisionHypotheses": []
+  },
+  "limitations": [
+    "Parity covers only the selected mechanical, semantic, world, and accepted free-action transitions in the frozen corpus.",
+    "Seeded-defect recall measures explicit implemented issue categories, not every implicit cross-object contradiction.",
+    "Scope reduction is a serialized-byte proxy and does not prove that every omitted fact is irrelevant.",
+    "Static authority scanning checks tracked TypeScript references and exported commit functions; it is not a whole-program capability proof.",
+    "The evaluator does not persist or commit a shadow patch and does not execute a live battle-service path.",
+    "No XAI call was needed because the evaluated outputs are structured rather than semantic or narrative judgments.",
+    "A supported result would not guarantee a globally consistent or objectively correct final battle result."
+  ]
+}

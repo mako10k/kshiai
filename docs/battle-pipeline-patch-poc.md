@@ -9,7 +9,7 @@
 - Forecast velocity: 2p/day
 - Forecast duration: 1 day
 - Authority: shadow-only; no canonical commit or battle-service wiring
-- Evaluation: in progress (`T_PATCH_EVAL` remains separate)
+- Evaluation: supported by the frozen Patch evaluation
 
 This prototype tests whether selected authoritative results can be represented
 as bounded canonical fact assertions, retractions, and causal links without
@@ -81,6 +81,11 @@ These are construction and static-audit checks, not effectiveness evidence.
 `T_PATCH_EVAL` must separately measure parity, defect recall, false rejection,
 scope size, unexplained changes, and authority regressions before later tasks
 can be unblocked.
+
+The completed evaluation is recorded in
+`battle-pipeline-patch-evaluation.md`. Its bounded result is `supported`, with
+one retained limitation: the world placement-plus-pair fixture expanded the
+serialized audit scope by 6.49% even though weighted scope fell by 71.87%.
 
 ## Limitations
 
