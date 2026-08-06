@@ -30,6 +30,7 @@ milestone VERSIONED_REPLAY_BUILT:
 
 milestone CORRECTIVE_REPLAY_DECIDED:
   title "Corrective replay evaluated under the unchanged rubric"
+  state reached
 
 task T_REVISION_PROTOCOL DECISION_LOCK_ACCEPTED -> REVISION_PROTOCOL_FIXED:
   title "Freeze the plan-basis revision protocol and v2 delta contract"
@@ -51,6 +52,7 @@ task T_REPLAY_EVAL_DECISION VERSIONED_REPLAY_BUILT -> CORRECTIVE_REPLAY_DECIDED:
   title "Evaluate and decide the corrective replay"
   description "Run seven strata twenty times under the unchanged rubric. Require all hard invariants and proxies, behavior seven of seven, longest prefix and execution-derived effect and cost, and unchanged controls. Record supported revise unsupported or indeterminate and do not authorize runtime integration."
   duration 1p
+  status done
   requires:
     DEV 1
 
@@ -86,3 +88,10 @@ task_outcome OUT_T_VERSIONED_CORRECTIVE_REPLAY:
   against_basis sha256:3fb9c4b5681e016c3fec64305b8125ced2383381419ae860854750c5f23637cc
   status conformant
   reason "Accept exact two-ref derivation, four-field diff, six-of-six normalized control parity, expected interrupted prefix, and zero authority changes"
+
+task_outcome OUT_T_REPLAY_EVAL_DECISION:
+  model 1
+  task T_REPLAY_EVAL_DECISION
+  against_basis sha256:5888f200c92230697a4481c06170458e796000bf45309f1fab4200560b7664c1
+  status conformant
+  reason "Accept the unchanged-rubric 140-run revise decision, seven-of-seven behavior, six-of-six control parity, hard-boundary pass, and explicit proxy shortfall"

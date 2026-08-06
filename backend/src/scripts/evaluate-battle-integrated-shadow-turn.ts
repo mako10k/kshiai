@@ -238,6 +238,8 @@ const EvaluationReportSchema = EvaluationReportWithoutIntegritySchema.extend({
     contentDigest: DigestSchema,
   }).strict(),
 }).strict();
+export const IntegratedShadowTurnEvaluationReportSchema =
+  EvaluationReportSchema;
 export type IntegratedShadowTurnEvaluationReport = z.infer<
   typeof EvaluationReportSchema
 >;
@@ -505,15 +507,27 @@ export function verifyIntegratedShadowEvaluationContentDigest(
 
 export async function evaluateBattleIntegratedShadowTurn(input: {
   transcriptPath?: string;
+  transcriptReport?: unknown;
+  transcriptPathLabel?: string;
   repetitions?: number;
   now?: () => Date;
   clock?: () => number;
 } = {}): Promise<IntegratedShadowTurnEvaluationReport> {
-  const transcriptPath = path.resolve(
-    input.transcriptPath ?? defaultTranscriptPath,
-  );
-  const transcriptText = await fs.readFile(transcriptPath, "utf8");
-  const rawTranscript = JSON.parse(transcriptText) as Record<string, unknown>;
+  if (input.transcriptPath && input.transcriptReport !== undefined) {
+    throw new Error("transcriptPath and transcriptReport are mutually exclusive");
+  }
+  const transcriptPath = input.transcriptReport === undefined
+    ? path.resolve(input.transcriptPath ?? defaultTranscriptPath)
+    : null;
+  const transcriptText = input.transcriptReport === undefined
+    ? await fs.readFile(transcriptPath!, "utf8")
+    : `${JSON.stringify(input.transcriptReport, null, 2)}\n`;
+  const rawTranscript = input.transcriptReport === undefined
+    ? JSON.parse(transcriptText) as Record<string, unknown>
+    : structuredClone(input.transcriptReport) as Record<string, unknown>;
+  const transcriptPathForReport = transcriptPath
+    ? path.relative(repositoryRoot, transcriptPath)
+    : input.transcriptPathLabel ?? "in-memory:integrated-shadow-transcript";
   const transcript = TranscriptReportSchema.parse(rawTranscript);
   if (transcriptContentDigest(rawTranscript) !== transcript.integrity.contentDigest) {
     throw new Error("frozen transcript content digest mismatch");
@@ -722,7 +736,7 @@ export async function evaluateBattleIntegratedShadowTurn(input: {
       architecture: process.arch,
       evaluatorPath: path.relative(repositoryRoot, evaluatorPath),
       evaluatorSha256: sha256(evaluatorText),
-      transcriptPath: path.relative(repositoryRoot, transcriptPath),
+      transcriptPath: transcriptPathForReport,
       transcriptSha256: sha256(transcriptText),
       transcriptContentDigest: transcript.integrity.contentDigest,
       protocolPath: path.relative(repositoryRoot, protocolPath),

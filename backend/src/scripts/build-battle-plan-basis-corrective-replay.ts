@@ -293,6 +293,10 @@ function digest(value: unknown): string {
   return sha256(canonicalJson(value));
 }
 
+export function planBasisReplayDigest(value: unknown): string {
+  return digest(value);
+}
+
 function sameValue(left: unknown, right: unknown): boolean {
   return canonicalJson(left) === canonicalJson(right);
 }
@@ -342,6 +346,10 @@ function normalizeFixtureVersion(value: unknown): unknown {
     );
   }
   return value;
+}
+
+export function normalizedPlanBasisReceiptDigest(value: unknown): string {
+  return digest(normalizeFixtureVersion(value));
 }
 
 function integratedInput(

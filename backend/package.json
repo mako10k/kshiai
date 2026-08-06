@@ -20,6 +20,7 @@
     "eval:battle-pipeline-shadow-transcripts": "tsx src/scripts/capture-battle-integrated-shadow-transcripts.ts",
     "eval:battle-pipeline-shadow-receipt": "tsx src/scripts/evaluate-battle-integrated-shadow-turn.ts",
     "build:battle-pipeline-plan-basis-replay": "tsx src/scripts/build-battle-plan-basis-corrective-replay.ts",
+    "eval:battle-pipeline-plan-basis-replay": "tsx src/scripts/evaluate-battle-plan-basis-corrective-replay.ts",
     "eval:perception-prompts": "tsx src/scripts/evaluate-perception-prompts.ts",
     "battle-state": "tsx src/scripts/battle-semantic-state.ts",
     "migrate:character-identities": "tsx src/scripts/backfill-character-identities.ts",
