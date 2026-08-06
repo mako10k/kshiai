@@ -1,0 +1,269 @@
+{
+  "schemaVersion": 1,
+  "fixtureVersion": "battle-pipeline-projection-eval-v1",
+  "generatedAt": "2026-08-06T02:32:05.901Z",
+  "mode": "projection_poc_evaluation",
+  "provenance": {
+    "gitHead": "55600341a32734885c2684ea0564e11190fd1a60",
+    "workingTreeDirty": false,
+    "nodeVersion": "v25.1.0",
+    "fixturePath": "docs/evidence/battle-pipeline-projection-fixtures-v1.json",
+    "fixtureSha256": "bfe35ba94be209296f82e288c02fc68fbaf95589faca99e8450fd3695b898775",
+    "corpusPath": "docs/evidence/battle-pipeline-poc-corpus-v1.json",
+    "corpusExpectedSha256": "c467fd9d3e76f4a72d09efe171ee36181ed468d9c883482436312ae77f9b9740",
+    "corpusActualSha256": "c467fd9d3e76f4a72d09efe171ee36181ed468d9c883482436312ae77f9b9740",
+    "baselineReportPath": "docs/evidence/battle-pipeline-poc-baseline-2026-08-06.json",
+    "baselineExpectedSha256": "1617cc68535ace9af570a826cee8a916075f81ee3200c4c03b51c8f76bf90e1b",
+    "baselineActualSha256": "1617cc68535ace9af570a826cee8a916075f81ee3200c4c03b51c8f76bf90e1b",
+    "evaluatorPath": "backend/src/scripts/evaluate-battle-projection-poc.ts",
+    "evaluatorSha256": "9bae447717699adee778fda8d37bbe36ec69332a953a2437fa2b864be7f83bf4",
+    "projectionSourcePath": "packages/shared/src/battle-projection.ts",
+    "projectionSourceSha256": "47b96068f948704221b18054fa3fb6eccbdcf6f536ce6d232456e3bee156e6a4"
+  },
+  "execution": {
+    "repetitionsPerFixture": 20,
+    "fixtureCount": 6,
+    "projectionReads": 120,
+    "externalLlmCallsMade": 0,
+    "xaiUsed": false,
+    "xaiReason": "The frozen projection thresholds are fully measurable from explicit structured ground truth; an LLM judgment would add noise rather than resolve an unmeasured semantic output.",
+    "projectionLimits": {
+      "maxEntities": 32,
+      "maxFacts": 96,
+      "maxRules": 12,
+      "maxBytes": 32768,
+      "maxHistoryTurns": 4
+    }
+  },
+  "thresholds": {
+    "identityLeakageCount": 0,
+    "observerIsolationViolationCount": 0,
+    "baselineOutcomeMismatchCount": 0,
+    "decisiveFactRecallMinimum": 0.98,
+    "irrelevantFactByteReductionMinimum": 0.3,
+    "p95ProjectionLatencyMsMaximum": 25
+  },
+  "baselineOutcomeComparison": {
+    "scenarioCount": 9,
+    "mismatchCount": 0,
+    "mismatchedScenarioIds": []
+  },
+  "fixtures": [
+    {
+      "id": "ordinary_adjudication",
+      "sliceKind": "adjudication",
+      "purpose": "Resolve an ordinary same-area proposal from current mechanical and world facts.",
+      "repetitions": 20,
+      "expectedDecisiveClaimCount": 100,
+      "matchedDecisiveClaimCount": 100,
+      "decisiveFactRecall": 1,
+      "missedDecisiveClaims": [],
+      "fullInputBytes": 12788,
+      "projectionBytes": {
+        "mean": 3638,
+        "minimum": 3638,
+        "maximum": 3638
+      },
+      "byteReductionRate": 0.715515,
+      "latencyMs": {
+        "mean": 1.520178,
+        "p95": 2.559793,
+        "minimum": 0.901067,
+        "maximum": 6.97709
+      },
+      "hardFailures": {
+        "schema": 0,
+        "sourceMutation": 0,
+        "identityLeakage": 0,
+        "observerIsolation": 0,
+        "limitViolation": 0,
+        "outcomeMismatch": 0
+      }
+    },
+    {
+      "id": "remote_targeting",
+      "sliceKind": "adjudication",
+      "purpose": "Reject or refine a proposal whose target is in a separate canonical area.",
+      "repetitions": 20,
+      "expectedDecisiveClaimCount": 80,
+      "matchedDecisiveClaimCount": 80,
+      "decisiveFactRecall": 1,
+      "missedDecisiveClaims": [],
+      "fullInputBytes": 12913,
+      "projectionBytes": {
+        "mean": 3846,
+        "minimum": 3846,
+        "maximum": 3846
+      },
+      "byteReductionRate": 0.702161,
+      "latencyMs": {
+        "mean": 1.799761,
+        "p95": 3.801152,
+        "minimum": 0.843274,
+        "maximum": 4.485019
+      },
+      "hardFailures": {
+        "schema": 0,
+        "sourceMutation": 0,
+        "identityLeakage": 0,
+        "observerIsolation": 0,
+        "limitViolation": 0,
+        "outcomeMismatch": 0
+      }
+    },
+    {
+      "id": "support_propagation",
+      "sliceKind": "consistency",
+      "purpose": "Follow held-object control, attachment support, and a cover dependency.",
+      "repetitions": 20,
+      "expectedDecisiveClaimCount": 120,
+      "matchedDecisiveClaimCount": 120,
+      "decisiveFactRecall": 1,
+      "missedDecisiveClaims": [],
+      "fullInputBytes": 13555,
+      "projectionBytes": {
+        "mean": 6423,
+        "minimum": 6423,
+        "maximum": 6423
+      },
+      "byteReductionRate": 0.526153,
+      "latencyMs": {
+        "mean": 1.299798,
+        "p95": 2.652334,
+        "minimum": 0.948583,
+        "maximum": 3.560925
+      },
+      "hardFailures": {
+        "schema": 0,
+        "sourceMutation": 0,
+        "identityLeakage": 0,
+        "observerIsolation": 0,
+        "limitViolation": 0,
+        "outcomeMismatch": 0
+      }
+    },
+    {
+      "id": "committed_communication",
+      "sliceKind": "consistency",
+      "purpose": "Retain a committed utterance and its action attribution in the recent causal window.",
+      "repetitions": 20,
+      "expectedDecisiveClaimCount": 60,
+      "matchedDecisiveClaimCount": 60,
+      "decisiveFactRecall": 1,
+      "missedDecisiveClaims": [],
+      "fullInputBytes": 16826,
+      "projectionBytes": {
+        "mean": 7716,
+        "minimum": 7716,
+        "maximum": 7716
+      },
+      "byteReductionRate": 0.541424,
+      "latencyMs": {
+        "mean": 1.303239,
+        "p95": 1.668513,
+        "minimum": 0.992012,
+        "maximum": 4.047872
+      },
+      "hardFailures": {
+        "schema": 0,
+        "sourceMutation": 0,
+        "identityLeakage": 0,
+        "observerIsolation": 0,
+        "limitViolation": 0,
+        "outcomeMismatch": 0
+      }
+    },
+    {
+      "id": "active_world_process",
+      "sliceKind": "adjudication",
+      "purpose": "Include an active effect that can propagate to actors in the same world area.",
+      "repetitions": 20,
+      "expectedDecisiveClaimCount": 80,
+      "matchedDecisiveClaimCount": 80,
+      "decisiveFactRecall": 1,
+      "missedDecisiveClaims": [],
+      "fullInputBytes": 12990,
+      "projectionBytes": {
+        "mean": 3882,
+        "minimum": 3882,
+        "maximum": 3882
+      },
+      "byteReductionRate": 0.701155,
+      "latencyMs": {
+        "mean": 1.072743,
+        "p95": 1.028387,
+        "minimum": 0.818661,
+        "maximum": 3.920017
+      },
+      "hardFailures": {
+        "schema": 0,
+        "sourceMutation": 0,
+        "identityLeakage": 0,
+        "observerIsolation": 0,
+        "limitViolation": 0,
+        "outcomeMismatch": 0
+      }
+    },
+    {
+      "id": "observer_identity_isolation",
+      "sliceKind": "observation",
+      "purpose": "Expose an identified observer-local subject without exposing its canonical source or the other agent's private state.",
+      "repetitions": 20,
+      "expectedDecisiveClaimCount": 40,
+      "matchedDecisiveClaimCount": 40,
+      "decisiveFactRecall": 1,
+      "missedDecisiveClaims": [],
+      "fullInputBytes": 13233,
+      "projectionBytes": {
+        "mean": 2231,
+        "minimum": 2231,
+        "maximum": 2231
+      },
+      "byteReductionRate": 0.831406,
+      "latencyMs": {
+        "mean": 0.44688,
+        "p95": 0.543244,
+        "minimum": 0.315047,
+        "maximum": 1.450827
+      },
+      "hardFailures": {
+        "schema": 0,
+        "sourceMutation": 0,
+        "identityLeakage": 0,
+        "observerIsolation": 0,
+        "limitViolation": 0,
+        "outcomeMismatch": 0
+      }
+    }
+  ],
+  "aggregate": {
+    "schemaFailureCount": 0,
+    "sourceMutationCount": 0,
+    "identityLeakageCount": 0,
+    "observerIsolationViolationCount": 0,
+    "limitViolationCount": 0,
+    "baselineOutcomeMismatchCount": 0,
+    "decisiveFactRecall": 1,
+    "irrelevantFactByteReduction": 0.66301,
+    "p95ProjectionLatencyMs": 2.652334,
+    "hardInvariantsPass": true,
+    "decisiveFactRecallPass": true,
+    "irrelevantFactByteReductionPass": true,
+    "projectionLatencyPass": true
+  },
+  "decision": {
+    "label": "supported",
+    "reasons": [
+      "Every hard invariant, primary proxy, and cost ceiling passed."
+    ],
+    "boundedRevisionHypotheses": []
+  },
+  "limitations": [
+    "Decisive-fact recall is measured against explicit seeded claims, not every implicit dependency in arbitrary prose.",
+    "Byte reduction compares a slice with serialized BattleState and is a context-size proxy, not proof that every omitted byte is irrelevant.",
+    "Projection latency is machine-specific and is meaningful only against the frozen local ceiling on this environment.",
+    "The PoC is read-only and not wired into live LLM prompts, so this evaluation does not measure end-to-end narrative plausibility.",
+    "No XAI call was needed because this intervention produces structured slices rather than competing semantic or narrative outputs.",
+    "A supported proxy result would not prove an objectively correct final battle result."
+  ]
+}

@@ -107,10 +107,12 @@ is the explicit revision loop added in plan version 3:
 
 The revision prototype is recorded in
 `docs/battle-pipeline-projection-revision-poc.md`. Its implementation smoke
-check is not the formal re-evaluation. `T_PATCH_POC` remains dependent on
-`PROJECTION_REVISION_EVALUATED` and may be unblocked only if the 20-repetition
-revision result is `supported`; any other verdict requires another explicit
-replan.
+check was not the formal re-evaluation. The subsequent unchanged-protocol
+evaluation is recorded in
+`docs/battle-pipeline-projection-revision-evaluation.md` with decision
+`supported`. `T_PATCH_POC` remains explicitly blocked until separately
+authorized; the supported result satisfies its evidence prerequisite but does
+not itself start the next intervention.
 
 ## Validation commands
 

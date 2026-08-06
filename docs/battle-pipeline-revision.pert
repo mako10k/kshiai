@@ -50,6 +50,7 @@ milestone PROJECTION_REVISION_POC_BUILT:
 
 milestone PROJECTION_REVISION_EVALUATED:
   title "Projection revision evaluated against the frozen protocol"
+  state reached
 
 milestone PATCH_POC_BUILT:
   title "Bounded canonical-patch prototype built in shadow mode"
@@ -176,7 +177,7 @@ task T_PROJECTION_REVISION_EVAL PROJECTION_REVISION_POC_BUILT -> PROJECTION_REVI
     cannot offset a deterministic metric failure. Do not proceed automatically
     unless the result is supported.
   duration 1p
-  status planned
+  status done
   requires:
     DEV 1
 
@@ -191,7 +192,7 @@ task T_PATCH_POC PROJECTION_REVISION_EVALUATED -> PATCH_POC_BUILT:
     existing subsystem authority and atomic commit behavior.
   duration 2p
   status blocked
-  blocked_reason "Unblock only after T_PROJECTION_REVISION_EVAL records supported; otherwise replan"
+  blocked_reason "Projection revision is supported; await explicit authorization to start the next PoC"
   requires:
     DEV 1
 
