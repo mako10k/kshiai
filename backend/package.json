@@ -18,6 +18,7 @@
     "eval:battle-pipeline-adaptive": "tsx src/scripts/evaluate-battle-adaptive-adjudication-poc.ts",
     "eval:battle-pipeline-world": "tsx src/scripts/evaluate-battle-world-process-poc.ts",
     "eval:battle-pipeline-shadow-transcripts": "tsx src/scripts/capture-battle-integrated-shadow-transcripts.ts",
+    "eval:battle-pipeline-shadow-receipt": "tsx src/scripts/evaluate-battle-integrated-shadow-turn.ts",
     "eval:perception-prompts": "tsx src/scripts/evaluate-perception-prompts.ts",
     "battle-state": "tsx src/scripts/battle-semantic-state.ts",
     "migrate:character-identities": "tsx src/scripts/backfill-character-identities.ts",
