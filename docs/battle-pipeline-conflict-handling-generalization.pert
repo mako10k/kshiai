@@ -1,0 +1,79 @@
+# Existing .pert plans should normally be maintained through perttool commands; direct DSL editing bypasses goal/DAG owner-confirmation checks.
+project KSHIAI_BATTLE_PIPELINE_CONFLICT_HANDLING_GENERALIZATION:
+  version 6
+  title "Conflict-handling held-out generalization PoC"
+  description "Test whether the supported conflict-handling applicability classifier retains its structural effect outside the previous seven strata. Freeze thirty held-out envelopes, eight missing cases, six multi-trigger interference cases, six integration controls, hard boundaries, and a 720-run decision. This plan does not authorize classifier changes during evaluation, historical evidence rewrites, runtime wiring, canonical writes, external LLM or XAI calls, persistence, release, or deployment."
+  as_of 2026-08-06
+  duration_unit point
+  velocity 453p/128d
+  finish HELD_OUT_REPLAY_DECIDED
+  goal_owner user
+  dag_owner user
+  plan_assurance_model 1
+  plan_assurance_hash_model 1
+
+milestone APPLICABILITY_SUPPORTED:
+  title "Applicability contract supported"
+  state reached
+
+milestone HELD_OUT_PROTOCOL_FIXED:
+  title "Held-out generalization protocol fixed"
+  state reached
+
+milestone HELD_OUT_CORPUS_FROZEN:
+  title "Held-out classifier corpus frozen"
+
+milestone HELD_OUT_REPLAY_DECIDED:
+  title "Held-out generalization replay evaluated and decided"
+
+resource DEV:
+  title "Developer"
+  capacity 1
+
+task T_HELD_OUT_PROTOCOL APPLICABILITY_SUPPORTED -> HELD_OUT_PROTOCOL_FIXED:
+  title "Freeze held-out generalization semantics"
+  description "Freeze lineage, oracle separation, thirty pre-registered classifier envelopes including eight missing and six multi-trigger cases, six integration extraction controls, exact distributions, hard boundaries, metrics, XAI non-use, and decision stop conditions before corpus implementation."
+  duration 1p
+  status done
+  requires:
+    DEV 1
+
+task T_HELD_OUT_CORPUS HELD_OUT_PROTOCOL_FIXED -> HELD_OUT_CORPUS_FROZEN:
+  title "Build the held-out classifier corpus"
+  description "Encode the thirty literal input and expected-output envelopes without importing the classifier, construct six frozen integration transforms, verify exact registered distributions and frozen lineage, and add fail-closed corpus tests."
+  duration 2p
+  requires:
+    DEV 1
+
+task T_HELD_OUT_REPLAY_DECISION HELD_OUT_CORPUS_FROZEN -> HELD_OUT_REPLAY_DECIDED:
+  title "Evaluate and decide the held-out replay"
+  description "Run thirty classifier cases and six integration controls twenty times each for 720 runs. Require exact labels, trigger recall, no-trigger specificity, missing recall, handled and disposition accuracy, distributions, integration and legacy parity, deterministic stability, latency budgets, hard boundaries, and a supported revise unsupported or indeterminate decision."
+  duration 1p
+  requires:
+    DEV 1
+
+plan_seal T_HELD_OUT_CORPUS:
+  accepted_contract sha256:33016babe863f241a0684213b740831a11f651b00f1139aa0753b60dc75297d3
+  accepted_basis sha256:f47bd29dd68aad780eef5c3d64e205470bc2dfff92d0f672dcd115f7d45746cd
+  accepted_inputs:
+    T_HELD_OUT_PROTOCOL both sha256:8559a87f3450c5f6e5dba64fc8b0fc9a74712730ff22c27e05805153338265b3
+  reason "Accept the applicability decision lineage, fixed thirty-case oracle matrix, six integration controls, strict effectiveness metrics, stop conditions, four-point estimate, and runtime non-authorization boundary"
+
+plan_seal T_HELD_OUT_PROTOCOL:
+  accepted_contract sha256:28d970b6e4934d29613adc859d9de34fc67c9e0d24af9b9d8118192b2013fb81
+  accepted_basis sha256:8559a87f3450c5f6e5dba64fc8b0fc9a74712730ff22c27e05805153338265b3
+  reason "Accept the applicability decision lineage, fixed thirty-case oracle matrix, six integration controls, strict effectiveness metrics, stop conditions, four-point estimate, and runtime non-authorization boundary"
+
+plan_seal T_HELD_OUT_REPLAY_DECISION:
+  accepted_contract sha256:a740eac7fd27bcc9850d8719dc1dfe2ed83089085a96f3f2b4082ea29a5fa329
+  accepted_basis sha256:e158e9e9aa89e3dead54d6706a37676494c2e74cd192716008becb1b5d4bc423
+  accepted_inputs:
+    T_HELD_OUT_CORPUS both sha256:f47bd29dd68aad780eef5c3d64e205470bc2dfff92d0f672dcd115f7d45746cd
+  reason "Accept the applicability decision lineage, fixed thirty-case oracle matrix, six integration controls, strict effectiveness metrics, stop conditions, four-point estimate, and runtime non-authorization boundary"
+
+task_outcome OUT_T_HELD_OUT_PROTOCOL:
+  model 1
+  task T_HELD_OUT_PROTOCOL
+  against_basis sha256:8559a87f3450c5f6e5dba64fc8b0fc9a74712730ff22c27e05805153338265b3
+  status conformant
+  reason "Accept frozen lineage, oracle separation, thirty exact held-out cases with eight missing and six multi-trigger cases, six integration controls, fixed distributions, strict metrics, stop conditions, four-point estimate, and external LLM XAI runtime non-use boundaries"

@@ -24,7 +24,7 @@ throughput.
 |---|---:|---:|---|
 | Completed World Process cycle | 3p | 1 observed day | supported for the frozen shadow mechanism |
 | Completed `T_SYNTHESIS` | 2p | 0.57 day forecast, completion recorded separately | evidence synthesis; excluded from cycle velocity |
-| Remaining planned PoC work | 0p | 0 days | no recommended task remains in this plan |
+| Remaining planned PoC work in that plan | 0p | 0 days | no recommended task remains in that plan |
 
 Velocity changes calendar forecasts, not point estimates or evidence gates. A
 faster implementation does not lower evaluation thresholds, automatically
@@ -53,3 +53,23 @@ The decision record permits only a separately planned 3p versioned plan-basis
 corrective replay. At the retained velocity its forecast is approximately
 `0.848d`. This forecast does not authorize that plan, runtime wiring,
 persistence, release, or deployment.
+
+## Conflict-handling held-out generalization update
+
+The additive applicability contract subsequently passed its fixed 3p cycle,
+but that work still has no independently recorded person-day actual. The
+provisional velocity therefore remains `453p/128d` (`3.5390625p/day`).
+
+The separately bounded held-out generalization PoC is estimated at 4p:
+
+| Task | Points | Forecast at 3.5390625p/day |
+|---|---:|---:|
+| Freeze held-out protocol | 1p | 0.283d |
+| Build the literal corpus and integration controls | 2p | 0.565d |
+| Run and decide the 720-run replay | 1p | 0.283d |
+| Total | 4p | 1.130d |
+
+After protocol completion, the remaining 3p forecast is approximately
+`0.848d`. These values are planning forecasts, not elapsed-time actuals or
+authority to change the classifier, connect runtime services, persist state,
+release, or deploy.
