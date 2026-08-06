@@ -1,0 +1,79 @@
+# Existing .pert plans should normally be maintained through perttool commands; direct DSL editing bypasses goal/DAG owner-confirmation checks.
+project KSHIAI_BATTLE_PIPELINE_PLAN_BASIS_REPLAY:
+  version 6
+  title "Versioned plan-basis corrective replay"
+  description "Run only a versioned correction of the interrupted action plan-basis wiring identified by the integrated shadow evaluation. Preserve the v1 artifact and six unaffected strata, freeze the delta and unchanged thresholds before construction, then replay seven strata twenty times and decide under the same rubric. This plan does not authorize validator relaxation, runtime wiring, canonical commit, database provider release or deployment changes, or claims of semantic psychology grounding and objective battle correctness."
+  as_of 2026-08-06
+  duration_unit point
+  velocity 453p/128d
+  finish CORRECTIVE_REPLAY_DECIDED
+  goal_owner user
+  dag_owner user
+  plan_assurance_model 1
+  plan_assurance_hash_model 1
+
+milestone DECISION_LOCK_ACCEPTED:
+  title "Integrated revise decision lock accepted"
+  state reached
+
+resource DEV:
+  title "Developer"
+  capacity 1
+
+milestone REVISION_PROTOCOL_FIXED:
+  title "Corrective replay protocol and v2 delta contract fixed"
+  state reached
+
+milestone VERSIONED_REPLAY_BUILT:
+  title "Versioned plan-basis corrective replay built"
+
+milestone CORRECTIVE_REPLAY_DECIDED:
+  title "Corrective replay evaluated under the unchanged rubric"
+
+task T_REVISION_PROTOCOL DECISION_LOCK_ACCEPTED -> REVISION_PROTOCOL_FIXED:
+  title "Freeze the plan-basis revision protocol and v2 delta contract"
+  description "Freeze the only permitted v2 field delta, immutable v1 comparison, the same seven strata and twenty repetitions, unchanged thresholds and rubric, semantic non-claims, stop conditions, and XAI non-use rule before creating any v2 artifact. Require explicit mapping of the existing observation psychology and experience refs without adding steps effects costs facts or authoritative changes."
+  duration 1p
+  status done
+  requires:
+    DEV 1
+
+task T_VERSIONED_CORRECTIVE_REPLAY REVISION_PROTOCOL_FIXED -> VERSIONED_REPLAY_BUILT:
+  title "Build the versioned plan-basis corrective replay"
+  description "Create a versioned v2 corpus or delta and repeatable replay that changes only interrupted step basis wiring. Report v1 and v2 digests and the field-level delta, keep six control strata semantically identical, and add no external LLM runtime persistence or canonical write."
+  duration 1p
+  requires:
+    DEV 1
+
+task T_REPLAY_EVAL_DECISION VERSIONED_REPLAY_BUILT -> CORRECTIVE_REPLAY_DECIDED:
+  title "Evaluate and decide the corrective replay"
+  description "Run seven strata twenty times under the unchanged rubric. Require all hard invariants and proxies, behavior seven of seven, longest prefix and execution-derived effect and cost, and unchanged controls. Record supported revise unsupported or indeterminate and do not authorize runtime integration."
+  duration 1p
+  requires:
+    DEV 1
+
+plan_seal T_REPLAY_EVAL_DECISION:
+  accepted_contract sha256:ae5d3ae69f16a2462ec17c10cc2fd7ddde499fb1053c3688c8068794c930f936
+  accepted_basis sha256:5888f200c92230697a4481c06170458e796000bf45309f1fab4200560b7664c1
+  accepted_inputs:
+    T_VERSIONED_CORRECTIVE_REPLAY both sha256:3fb9c4b5681e016c3fec64305b8125ced2383381419ae860854750c5f23637cc
+  reason "Accept the integrated revise decision lock, immutable v1 evidence, bounded v2 delta, unchanged rubric, and three-task corrective replay"
+
+plan_seal T_REVISION_PROTOCOL:
+  accepted_contract sha256:62c23c837f17a026fb6cd350edaa802b39dc79e077145c147b2b0487f9720340
+  accepted_basis sha256:c43002b14e53614bf8a5b0799e78c8a6e1aaa969ee091c465a2030e1ea9463b3
+  reason "Accept the integrated revise decision lock, immutable v1 evidence, bounded v2 delta, unchanged rubric, and three-task corrective replay"
+
+plan_seal T_VERSIONED_CORRECTIVE_REPLAY:
+  accepted_contract sha256:84e471e1e302fef7d80b99a270a0f855fafb56f6fdb353a041ccae345832d259
+  accepted_basis sha256:3fb9c4b5681e016c3fec64305b8125ced2383381419ae860854750c5f23637cc
+  accepted_inputs:
+    T_REVISION_PROTOCOL both sha256:c43002b14e53614bf8a5b0799e78c8a6e1aaa969ee091c465a2030e1ea9463b3
+  reason "Accept the integrated revise decision lock, immutable v1 evidence, bounded v2 delta, unchanged rubric, and three-task corrective replay"
+
+task_outcome OUT_T_REVISION_PROTOCOL:
+  model 1
+  task T_REVISION_PROTOCOL
+  against_basis sha256:c43002b14e53614bf8a5b0799e78c8a6e1aaa969ee091c465a2030e1ea9463b3
+  status conformant
+  reason "Accept the immutable parent, exact two-ref delta, unchanged rubric, control parity, and stop conditions"
