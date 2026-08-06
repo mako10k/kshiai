@@ -44,6 +44,7 @@ milestone INTEGRATED_RECEIPT_EVALUATED:
 
 milestone SHADOW_DECISION_RECORDED:
   title "Integrated shadow-turn limitations and next gate recorded"
+  state reached
 
 task T_SHADOW_PROTOCOL PRIOR_POC_SYNTHESIZED -> SHADOW_PROTOCOL_FIXED:
   title "Freeze the integrated shadow-turn evaluation protocol"
@@ -103,6 +104,7 @@ task T_SHADOW_DECISION INTEGRATED_RECEIPT_EVALUATED -> SHADOW_DECISION_RECORDED:
     engineering experiment is justified. Keep runtime persistence provider
     release deployment and objective battle correctness separately gated.
   duration 1p
+  status done
   requires:
     DEV 1
 
@@ -166,3 +168,10 @@ task_outcome OUT_T_INTEGRATED_RECEIPT_EVAL:
   against_basis sha256:57401172e9c94e8799876f67336490706bd57f9d5ace2591793371ce46c30e2c
   status conformant
   reason "Accept the fixed 140-run evidence and bounded revise decision without changing thresholds"
+
+task_outcome OUT_T_SHADOW_DECISION:
+  model 1
+  task T_SHADOW_DECISION
+  against_basis sha256:a0c8a876ec0094d26a038f45dbdd95c00fd5cae8eafff3ccbe38dd1cabf91c8f
+  status conformant
+  reason "Accept the revise decision lock and separately gated versioned corrective replay"

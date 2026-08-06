@@ -40,3 +40,16 @@ persistence changes, release, or deployment.
 Keep the current velocity until a comparable bounded implementation/evaluation
 cycle is observed; do not treat synthesis completion as an equivalent
 throughput sample.
+
+## Integrated shadow decision update
+
+The 9p integrated shadow plan reached its final decision milestone on
+2026-08-06, but no independent person-day actual was recorded for that cycle.
+The shared calendar date is not sufficient evidence that 9p was completed in
+one workday, so the provisional velocity remains `453p/128d` rather than being
+recalibrated from repository timestamps.
+
+The decision record permits only a separately planned 3p versioned plan-basis
+corrective replay. At the retained velocity its forecast is approximately
+`0.848d`. This forecast does not authorize that plan, runtime wiring,
+persistence, release, or deployment.
