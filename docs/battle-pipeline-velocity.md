@@ -23,19 +23,20 @@ throughput.
 | Scope | Points | Forecast at 3.5390625p/day | Qualification |
 |---|---:|---:|---|
 | Completed World Process cycle | 3p | 1 observed day | supported for the frozen shadow mechanism |
-| `T_SYNTHESIS` | 2p | 0.57 day | next separately authorized evidence synthesis |
-| Remaining after World Process evaluation | 2p | 0.57 day | one conditional task |
+| Completed `T_SYNTHESIS` | 2p | 0.57 day forecast, completion recorded separately | evidence synthesis; excluded from cycle velocity |
+| Remaining planned PoC work | 0p | 0 days | no recommended task remains in this plan |
 
 Velocity changes calendar forecasts, not point estimates or evidence gates. A
 faster implementation does not lower evaluation thresholds, automatically
 unblock later tasks, or authorize runtime/persistence changes.
 
-World Process construction and evaluation now form the latest completed cycle.
-Its supported result changes the forecast but does not itself authorize or
-start synthesis.
+World Process construction and evaluation remain the latest comparable bounded
+cycle. Synthesis completion closes the current PoC evidence plan but does not
+authorize the recommended integrated shadow-turn experiment, runtime changes,
+persistence changes, release, or deployment.
 
 ## Next recalibration
 
-The remaining task is synthesis rather than another PoC/evaluation pair. Keep
-the current velocity until a comparable bounded cycle is observed; do not
-treat synthesis completion as an equivalent throughput sample.
+Keep the current velocity until a comparable bounded implementation/evaluation
+cycle is observed; do not treat synthesis completion as an equivalent
+throughput sample.

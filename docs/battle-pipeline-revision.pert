@@ -112,6 +112,7 @@ milestone WORLD_PROCESS_EVALUATED:
 
 milestone POC_EVIDENCE_REVIEWED:
   title "PoC evidence limitations and next decisions recorded"
+  state reached
 
 task T_DESIGN CURRENT_PIPELINE -> DESIGN_FIXED:
   title "Freeze revised pipeline principles contracts and PoC authority boundary"
@@ -415,6 +416,7 @@ task T_SYNTHESIS WORLD_PROCESS_EVALUATED -> POC_EVIDENCE_REVIEWED:
     checks static privacy and authority audits and PERT validation, while keeping
     any implementation migration release and production plan separately gated.
   duration 2p
+  status done
   requires:
     DEV 1
 
@@ -702,3 +704,10 @@ task_outcome OUT_T_WORLD_EVAL:
   against_basis sha256:2d54d4c0be2865478c4fe9c459b14078f65ea23cba9e1911aef0b3e96c260ba1
   status conformant
   reason "Accept the frozen supported world-process evaluation evidence"
+
+task_outcome OUT_T_SYNTHESIS:
+  model 1
+  task T_SYNTHESIS
+  against_basis sha256:be67072cf88f6d49276856be0a8c7c2094a207cc663ecf9d3bd2a95c4c4a180b
+  status conformant
+  reason "Accept the bounded PoC evidence synthesis and validation receipt"
