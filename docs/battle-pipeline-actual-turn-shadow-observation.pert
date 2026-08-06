@@ -92,6 +92,7 @@ milestone INPUT_DERIVATION_PROTOCOL_FIXED:
 
 milestone INPUT_DERIVATION_POC_READY:
   title "Offline applicability input derivation PoC ready"
+  state reached
 
 milestone INPUT_DERIVATION_EVALUATED:
   title "Applicability input derivability evaluated"
@@ -111,6 +112,7 @@ task T_INPUT_DERIVATION_POC INPUT_DERIVATION_PROTOCOL_FIXED -> INPUT_DERIVATION_
   title "Build offline applicability input derivation PoC"
   description "Build a pure offline derivability probe over explicit local fixtures and runtime-shaped values. It must emit source provenance for every required field, never infer from events prose cognition speech or narration, reject missing or ambiguous sources, preserve input bytes, and leave battle and runtime services untouched."
   duration 2p
+  status done
   requires:
     DEV 1
 
@@ -224,3 +226,10 @@ task_outcome OUT_T_INPUT_DERIVATION_PROTOCOL:
   against_basis sha256:a29da895b52290f4d8bf2594c634c936a761a6a81d580f307d19320639bf8c52
   status conformant
   reason "Protocol docs/battle-pipeline-actual-turn-input-derivability-protocol.md sha256:9ce6e1f62e7051ba8420e7ebb5aa2ee9591cece002700c4c990eeb2471f2f69b freezes the five-field authoritative source map, twenty preregistered fixtures, hard effectiveness metrics, fail-closed rules, ordinary-runtime availability 0/5, and exclusions for runtime hooks DB network provider LLM XAI canonical writes persistence release and deployment."
+
+task_outcome OUT_T_INPUT_DERIVATION_POC:
+  model 1
+  task T_INPUT_DERIVATION_POC
+  against_basis sha256:b4f91727f36616acb1068d96982a4bbd1af052079df23b6112a186a8c244835b
+  status conformant
+  reason "Pure shared probe sha256:44485e3f69df8246a8cd0cd7a1b848ba05a8b86cffb1f23ed6064a00e07aac63 and synthetic corpus sha256:8a3f826f3aa44b9d72673373a62dac42b130f3722ed9e352ac28fa92dc4a1344 implement all five explicit artifact sources. Nine targeted tests cover the fixed twenty cases, exact mapping, complete provenance, zero inference, missing and ambiguous rejection, cross-reference failure, unchanged inputs, and one output digest per case over twenty replays. All 389 repository tests, typecheck, and build pass; runtime hooks DB network providers external LLM XAI canonical writes persistence release and deployment remain absent, and no effectiveness label is claimed before T_INPUT_DERIVATION_EVAL."
