@@ -38,6 +38,7 @@ milestone BASELINE_READY:
 
 milestone PROJECTION_POC_BUILT:
   title "Purpose-specific projection prototype built behind a PoC boundary"
+  state reached
 
 milestone PROJECTION_EVALUATED:
   title "Projection effectiveness and failure modes evaluated"
@@ -122,6 +123,7 @@ task T_PROJECTION_POC BASELINE_READY -> PROJECTION_POC_BUILT:
     world-process traversal, observer-local references, and configurable fact
     entity rule byte and history limits.
   duration 2p
+  status done
   requires:
     DEV 1
 
