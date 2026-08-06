@@ -236,6 +236,7 @@ task T_ISSUES_EVAL ISSUES_POC_BUILT -> ISSUES_EVALUATED:
     a usable purpose slice and that nondeferred state is never labeled globally
     coherent. Record supported revise unsupported or indeterminate.
   duration 1p
+  status active
   requires:
     DEV 1
 

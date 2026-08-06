@@ -1,0 +1,105 @@
+{
+  "schemaVersion": 1,
+  "fixtureVersion": "battle-pipeline-consistency-issue-eval-v1",
+  "frozenAt": "2026-08-06T00:00:00.000Z",
+  "repetitions": 20,
+  "thresholds": {
+    "issueDetectionRecallMinimum": 1,
+    "falsePositiveRateMaximum": 0,
+    "deduplicationRecallMinimum": 1,
+    "distinctIssuePreservationMinimum": 1,
+    "staleReplayNoOpAccuracyMinimum": 1,
+    "purposeBlockingAccuracyMinimum": 1,
+    "lifecycleTraceabilityMinimum": 1,
+    "actionableIssueRateMinimum": 1,
+    "storageBytesPerUniqueIssueMaximum": 4096,
+    "operatorReviewInflationMaximum": 1,
+    "sourceMutationCountMaximum": 0,
+    "authorityRegressionCountMaximum": 0,
+    "globalCoherenceClaimCountMaximum": 0
+  },
+  "scenarios": [
+    {
+      "id": "mixed_alert_lifecycle",
+      "runner": "mixed_alert_lifecycle",
+      "expectedIssueObservations": 5,
+      "expectedFalsePositiveInputs": 0,
+      "expectedDuplicateObservations": 1,
+      "expectedDistinctObservations": 4,
+      "expectedStaleReplays": 1,
+      "expectedFinalUnresolvedReviewItems": 3,
+      "expectedLifecycleKinds": [
+        "registered",
+        "deduplicated",
+        "registered",
+        "registered",
+        "deferred",
+        "resolved",
+        "registered"
+      ],
+      "expectedFinalBlocks": {
+        "character_decision": [],
+        "character_reaction": [],
+        "speech": [],
+        "adjudication": ["issue.000002", "issue.000004"],
+        "world_process": ["issue.000003"],
+        "perception": [],
+        "narration": [],
+        "patch_audit": []
+      }
+    },
+    {
+      "id": "audit_boundaries_and_ref_less_findings",
+      "runner": "audit_boundaries_and_ref_less_findings",
+      "expectedIssueObservations": 4,
+      "expectedFalsePositiveInputs": 2,
+      "expectedDuplicateObservations": 1,
+      "expectedDistinctObservations": 3,
+      "expectedStaleReplays": 1,
+      "expectedFinalUnresolvedReviewItems": 3,
+      "expectedLifecycleKinds": [
+        "registered",
+        "deduplicated",
+        "registered",
+        "registered"
+      ],
+      "expectedFinalBlocks": {
+        "character_decision": [],
+        "character_reaction": [],
+        "speech": [],
+        "adjudication": ["issue.000001"],
+        "world_process": [],
+        "perception": [],
+        "narration": [],
+        "patch_audit": ["issue.000001", "issue.000002", "issue.000003"]
+      }
+    },
+    {
+      "id": "purpose_isolation_and_stale_status",
+      "runner": "purpose_isolation_and_stale_status",
+      "expectedIssueObservations": 3,
+      "expectedFalsePositiveInputs": 0,
+      "expectedDuplicateObservations": 0,
+      "expectedDistinctObservations": 3,
+      "expectedStaleReplays": 0,
+      "expectedFinalUnresolvedReviewItems": 2,
+      "expectedLifecycleKinds": [
+        "registered",
+        "registered",
+        "registered",
+        "deferred",
+        "resolved"
+      ],
+      "expectedFinalBlocks": {
+        "character_decision": [],
+        "character_reaction": [],
+        "speech": [],
+        "adjudication": [],
+        "world_process": ["issue.000003"],
+        "perception": [],
+        "narration": ["issue.000002"],
+        "patch_audit": []
+      }
+    }
+  ]
+}

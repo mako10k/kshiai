@@ -9,7 +9,7 @@
 - Forecast velocity: 2.5p/day
 - Forecast duration: 0.4 day
 - Authority: shadow-only; no canonical mutation or persistence wiring
-- Evaluation: pending (`T_ISSUES_EVAL` remains separate)
+- Evaluation: in progress (`T_ISSUES_EVAL` remains separate)
 
 This prototype tests whether known consistency problems can be registered,
 deduplicated, deferred, resolved, and classified by purpose without treating
