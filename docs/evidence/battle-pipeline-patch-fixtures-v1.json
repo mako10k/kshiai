@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "fixtureVersion": "battle-pipeline-patch-eval-v1",
+  "frozenAt": "2026-08-06T00:00:00.000Z",
+  "repetitions": 20,
+  "byteComparison": {
+    "fullInput": "serialized authoritative before state, after state, accepted result, and current impacted facts",
+    "auditInput": "serialized shadow patch and bounded audit context",
+    "formula": "1 - sum(auditInputBytes) / sum(fullInputBytes)",
+    "note": "This is an audit-scope proxy, not proof that every omitted fact is irrelevant."
+  },
+  "thresholds": {
+    "conversionClassificationAccuracyMinimum": 1,
+    "reconstructedPostStateParityMinimum": 1,
+    "causalSourceParityMinimum": 1,
+    "seededDefectRecallMinimum": 1,
+    "falseRejectionCountMaximum": 0,
+    "unexplainedStateChangeCountMaximum": 0,
+    "authorityRegressionCountMaximum": 0,
+    "sourceMutationCountMaximum": 0,
+    "schemaFailureCountMaximum": 0,
+    "patchLimitViolationCountMaximum": 0,
+    "auditScopeByteReductionMinimum": 0.3
+  },
+  "fixtures": [
+    {
+      "id": "mechanical_parameter_change",
+      "runner": "mechanical_parameter_change",
+      "expectedStatus": "converted"
+    },
+    {
+      "id": "semantic_visible_condition",
+      "runner": "semantic_visible_condition",
+      "expectedStatus": "converted"
+    },
+    {
+      "id": "world_placement_and_pair",
+      "runner": "world_placement_and_pair",
+      "expectedStatus": "converted"
+    },
+    {
+      "id": "accepted_free_action",
+      "runner": "accepted_free_action",
+      "expectedStatus": "converted"
+    },
+    {
+      "id": "missing_prior_fact",
+      "runner": "missing_prior_fact",
+      "expectedStatus": "indeterminate"
+    },
+    {
+      "id": "new_world_identity",
+      "runner": "new_world_identity",
+      "expectedStatus": "indeterminate"
+    }
+  ],
+  "defectSeeds": [
+    { "id": "invalid_schema", "mutation": "invalid_schema", "expectedIssueCode": "invalid_schema", "expectedVerdict": "issue_found" },
+    { "id": "oversized_patch", "mutation": "patch_too_large", "expectedIssueCode": "patch_too_large", "expectedVerdict": "issue_found" },
+    { "id": "unknown_reference", "mutation": "unknown_entity_reference", "expectedIssueCode": "unknown_entity_reference", "expectedVerdict": "issue_found" },
+    { "id": "missing_retraction_target", "mutation": "missing_retraction", "expectedIssueCode": "missing_retraction", "expectedVerdict": "issue_found" },
+    { "id": "unretracted_conflict", "mutation": "direct_conflict", "expectedIssueCode": "direct_conflict", "expectedVerdict": "issue_found" },
+    { "id": "negative_parameter", "mutation": "forbidden_state", "expectedIssueCode": "forbidden_state", "expectedVerdict": "issue_found" },
+    { "id": "missing_cause", "mutation": "missing_causal_link", "expectedIssueCode": "missing_causal_link", "expectedVerdict": "issue_found" },
+    { "id": "invalid_causal_relation", "mutation": "invalid_causal_target", "expectedIssueCode": "invalid_causal_target", "expectedVerdict": "issue_found" },
+    { "id": "missing_touched_subject", "mutation": "incomplete_touched_refs", "expectedIssueCode": "incomplete_touched_refs", "expectedVerdict": "issue_found" },
+    { "id": "crossed_authority", "mutation": "authority_mismatch", "expectedIssueCode": "authority_mismatch", "expectedVerdict": "issue_found" },
+    { "id": "explicitly_incomplete_context", "mutation": "incomplete_context", "expectedIssueCode": "incomplete_context", "expectedVerdict": "indeterminate" }
+  ]
+}

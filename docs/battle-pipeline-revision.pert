@@ -1,5 +1,5 @@
 project KSHIAI_BATTLE_PIPELINE_REVISION_POC:
-  version 4
+  version 5
   title "Evidence-driven PoC for the purpose-scoped canonical battle pipeline"
   description |
     Evaluate the interventions proposed by
@@ -207,6 +207,7 @@ task T_PATCH_EVAL PATCH_POC_BUILT -> PATCH_EVALUATED:
     supported revise unsupported or indeterminate and stop for unexplained
     parity drift or authority regression.
   duration 1p
+  status active
   requires:
     DEV 1
 

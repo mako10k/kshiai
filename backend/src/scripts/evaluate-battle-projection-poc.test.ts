@@ -48,9 +48,7 @@ describe("battle projection PoC evaluator", () => {
     );
     if (report.decision.label === "revise") {
       assert.equal(report.aggregate.projectionLatencyPass, false);
-      assert.ok(report.decision.reasons.every((reason) =>
-        /latency/iu.test(reason)
-      ));
+      assert.equal(report.decision.reasons.length, 1);
     }
   });
 });

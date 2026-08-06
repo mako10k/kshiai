@@ -9,7 +9,7 @@
 - Forecast velocity: 2p/day
 - Forecast duration: 1 day
 - Authority: shadow-only; no canonical commit or battle-service wiring
-- Evaluation: pending (`T_PATCH_EVAL` remains separate)
+- Evaluation: in progress (`T_PATCH_EVAL` remains separate)
 
 This prototype tests whether selected authoritative results can be represented
 as bounded canonical fact assertions, retractions, and causal links without
