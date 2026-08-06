@@ -152,6 +152,13 @@ type FixtureAggregate = {
   };
 };
 
+type FixtureMeasurement = {
+  report: FixtureAggregate;
+  latencySamples: number[];
+  fullInputBytesTotal: number;
+  projectionBytesTotal: number;
+};
+
 export type ProjectionEvaluationReport = {
   schemaVersion: 1;
   fixtureVersion: string;
@@ -674,7 +681,7 @@ function normalizedTurnOutcome(state: BattleState): unknown {
 function aggregateFixture(input: {
   fixture: ProjectionFixture;
   repetitions: number;
-}): FixtureAggregate {
+}): FixtureMeasurement {
   const latencies: number[] = [];
   const projectionSizes: number[] = [];
   const missed = new Map<string, DecisiveExpectation>();
@@ -754,32 +761,37 @@ function aggregateFixture(input: {
     0,
   );
   return {
-    id: input.fixture.id,
-    sliceKind: input.fixture.sliceKind,
-    purpose: input.fixture.purpose,
-    repetitions: input.repetitions,
-    expectedDecisiveClaimCount: expectedTotal,
-    matchedDecisiveClaimCount,
-    decisiveFactRecall: expectedTotal === 0
-      ? 0
-      : round(matchedDecisiveClaimCount / expectedTotal),
-    missedDecisiveClaims: [...missed.values()],
-    fullInputBytes: Math.round(fullInputBytes / input.repetitions),
-    projectionBytes: {
-      mean: round(mean(projectionSizes)),
-      minimum: Math.min(...projectionSizes),
-      maximum: Math.max(...projectionSizes),
+    report: {
+      id: input.fixture.id,
+      sliceKind: input.fixture.sliceKind,
+      purpose: input.fixture.purpose,
+      repetitions: input.repetitions,
+      expectedDecisiveClaimCount: expectedTotal,
+      matchedDecisiveClaimCount,
+      decisiveFactRecall: expectedTotal === 0
+        ? 0
+        : round(matchedDecisiveClaimCount / expectedTotal),
+      missedDecisiveClaims: [...missed.values()],
+      fullInputBytes: Math.round(fullInputBytes / input.repetitions),
+      projectionBytes: {
+        mean: round(mean(projectionSizes)),
+        minimum: Math.min(...projectionSizes),
+        maximum: Math.max(...projectionSizes),
+      },
+      byteReductionRate: fullInputBytes === 0
+        ? 0
+        : round(1 - totalProjectionBytes / fullInputBytes),
+      latencyMs: {
+        mean: round(mean(latencies)),
+        p95: round(percentile(latencies, 95)),
+        minimum: round(Math.min(...latencies)),
+        maximum: round(Math.max(...latencies)),
+      },
+      hardFailures,
     },
-    byteReductionRate: fullInputBytes === 0
-      ? 0
-      : round(1 - totalProjectionBytes / fullInputBytes),
-    latencyMs: {
-      mean: round(mean(latencies)),
-      p95: round(percentile(latencies, 95)),
-      minimum: round(Math.min(...latencies)),
-      maximum: round(Math.max(...latencies)),
-    },
-    hardFailures,
+    latencySamples: latencies,
+    fullInputBytesTotal: fullInputBytes,
+    projectionBytesTotal: totalProjectionBytes,
   };
 }
 
@@ -879,14 +891,15 @@ export async function evaluateBattleProjectionPoc(input: {
     .filter((scenario) => frozenDigests.get(scenario.id) !== scenario.outcomeDigest)
     .map((scenario) => scenario.id);
 
-  const aggregates = fixture.fixtures.map((projectionFixture) =>
+  const measurements = fixture.fixtures.map((projectionFixture) =>
     aggregateFixture({
       fixture: projectionFixture,
       repetitions,
     })
   );
-  const allLatencies = aggregates.flatMap((aggregate) =>
-    Array.from({ length: aggregate.repetitions }, () => aggregate.latencyMs.p95)
+  const aggregates = measurements.map((measurement) => measurement.report);
+  const allLatencies = measurements.flatMap((measurement) =>
+    measurement.latencySamples
   );
   const expectedClaims = aggregates.reduce(
     (sum, aggregate) => sum + aggregate.expectedDecisiveClaimCount,
@@ -896,12 +909,12 @@ export async function evaluateBattleProjectionPoc(input: {
     (sum, aggregate) => sum + aggregate.matchedDecisiveClaimCount,
     0,
   );
-  const fullBytes = aggregates.reduce(
-    (sum, aggregate) => sum + aggregate.fullInputBytes * aggregate.repetitions,
+  const fullBytes = measurements.reduce(
+    (sum, measurement) => sum + measurement.fullInputBytesTotal,
     0,
   );
-  const projectionBytes = aggregates.reduce(
-    (sum, aggregate) => sum + aggregate.projectionBytes.mean * aggregate.repetitions,
+  const projectionBytes = measurements.reduce(
+    (sum, measurement) => sum + measurement.projectionBytesTotal,
     0,
   );
   const countHard = (key: keyof FixtureAggregate["hardFailures"]) =>
