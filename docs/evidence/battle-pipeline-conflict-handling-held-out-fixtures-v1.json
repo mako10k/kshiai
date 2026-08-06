@@ -1,0 +1,1364 @@
+{
+  "schemaVersion": 1,
+  "mode": "conflict_handling_held_out_corpus",
+  "fixtureVersion": "battle-pipeline-conflict-handling-held-out-v1",
+  "builtAt": "2026-08-06T10:43:41.662Z",
+  "provenance": {
+    "protocol": {
+      "path": "docs/battle-pipeline-conflict-handling-generalization-protocol.md",
+      "fileSha256": "11778eff2ded466a676d2ed0faa79181235e24c54e5480464adbdded0859519f"
+    },
+    "builder": {
+      "path": "backend/src/scripts/build-battle-conflict-handling-held-out-corpus.ts",
+      "fileSha256": "a416c6fd2dd2507e8756d263a34039d646465d127b50a33c65a2d07e8c2dddf3"
+    },
+    "frozenLineage": [
+      {
+        "path": "docs/battle-pipeline-conflict-handling-generalization-protocol.md",
+        "fileSha256": "11778eff2ded466a676d2ed0faa79181235e24c54e5480464adbdded0859519f"
+      },
+      {
+        "path": "docs/battle-pipeline-conflict-handling-applicability-decision.md",
+        "fileSha256": "7cd27aac40a43a32db7258411624260d119ee435bb76f4c499ed0b98dc25fac5"
+      },
+      {
+        "path": "docs/evidence/battle-pipeline-conflict-handling-applicability-evaluation-2026-08-06.json",
+        "fileSha256": "facb46a9034a2c1cb81d1e7367d931c9f23e6e39ffb7b5826db90f0da58ed3fc"
+      },
+      {
+        "path": "packages/shared/src/battle-conflict-handling-applicability.ts",
+        "fileSha256": "f8561c8cda612d75ee5d6af592a1547d7cfbf5ad8d565c72baab75cd729b7905"
+      },
+      {
+        "path": "backend/src/scripts/evaluate-battle-conflict-handling-applicability.ts",
+        "fileSha256": "278a4386d779472f4e671ef3d5508e3ee19405fadbffad2ed6e76610b4e34134"
+      },
+      {
+        "path": "backend/src/scripts/build-battle-conflict-handling-applicability-receipts.ts",
+        "fileSha256": "8b9c2a8f663f59c1c801011c761368e85f630c50870323f60921d03a6566cf4e"
+      }
+    ],
+    "parentEvaluationContentDigest": "9618c8153f3b7d169749b78d2f708aef66e662da381bd8d727df29968588449f"
+  },
+  "oracle": {
+    "mode": "literal_pre_registered_expected",
+    "expectedDerivedFromClassifierOutput": false,
+    "classifierInvokedDuringConstruction": false,
+    "enricherInvokedDuringConstruction": false
+  },
+  "cases": [
+    {
+      "caseId": "N01",
+      "family": "no_trigger",
+      "input": {
+        "allowedFallbacks": [],
+        "proposals": [],
+        "adaptive": {
+          "status": "skipped"
+        },
+        "reads": [],
+        "issues": []
+      },
+      "expected": {
+        "triggerKinds": [],
+        "applicability": "not_applicable",
+        "handling": "not_applicable",
+        "availability": "unavailable",
+        "disposition": "unavailable"
+      }
+    },
+    {
+      "caseId": "N02",
+      "family": "no_trigger",
+      "input": {
+        "allowedFallbacks": [
+          "unknown"
+        ],
+        "proposals": [],
+        "adaptive": {
+          "status": "skipped"
+        },
+        "reads": [],
+        "issues": []
+      },
+      "expected": {
+        "triggerKinds": [],
+        "applicability": "not_applicable",
+        "handling": "not_applicable",
+        "availability": "available",
+        "disposition": "not_needed"
+      }
+    },
+    {
+      "caseId": "N03",
+      "family": "no_trigger",
+      "input": {
+        "allowedFallbacks": [
+          "intermediate",
+          "unknown"
+        ],
+        "proposals": [
+          {
+            "proposalRef": "proposal.N03",
+            "actionKind": "custom"
+          }
+        ],
+        "adaptive": {
+          "status": "executed",
+          "contestedClaimRefs": [],
+          "receipts": [
+            {
+              "proposalRef": "proposal.N03",
+              "resolution": "expanded",
+              "outcome": "partial",
+              "failureReason": "precondition_failed"
+            }
+          ]
+        },
+        "reads": [],
+        "issues": []
+      },
+      "expected": {
+        "triggerKinds": [],
+        "applicability": "not_applicable",
+        "handling": "not_applicable",
+        "availability": "available",
+        "disposition": "not_needed"
+      }
+    },
+    {
+      "caseId": "N04",
+      "family": "no_trigger",
+      "input": {
+        "allowedFallbacks": [
+          "defense"
+        ],
+        "proposals": [
+          {
+            "proposalRef": "proposal.N04",
+            "actionKind": "custom"
+          }
+        ],
+        "adaptive": {
+          "status": "executed",
+          "contestedClaimRefs": [],
+          "receipts": [
+            {
+              "proposalRef": "proposal.N04",
+              "resolution": "fast",
+              "outcome": "completed"
+            }
+          ]
+        },
+        "reads": [],
+        "issues": []
+      },
+      "expected": {
+        "triggerKinds": [],
+        "applicability": "not_applicable",
+        "handling": "not_applicable",
+        "availability": "available",
+        "disposition": "not_needed"
+      }
+    },
+    {
+      "caseId": "S01",
+      "family": "selected_fallback",
+      "input": {
+        "allowedFallbacks": [
+          "defense"
+        ],
+        "proposals": [
+          {
+            "proposalRef": "proposal.S01.defense",
+            "actionKind": "defense"
+          }
+        ],
+        "adaptive": {
+          "status": "executed",
+          "contestedClaimRefs": [],
+          "receipts": [
+            {
+              "proposalRef": "proposal.S01.defense",
+              "resolution": "fast",
+              "outcome": "completed"
+            }
+          ]
+        },
+        "reads": [],
+        "issues": []
+      },
+      "expected": {
+        "triggerKinds": [
+          "selected_fallback_proposal"
+        ],
+        "applicability": "required",
+        "handling": "handled",
+        "availability": "available",
+        "disposition": "used"
+      }
+    },
+    {
+      "caseId": "S02",
+      "family": "selected_fallback",
+      "input": {
+        "allowedFallbacks": [
+          "defense",
+          "intermediate"
+        ],
+        "proposals": [
+          {
+            "proposalRef": "proposal.S02.defense",
+            "actionKind": "defense"
+          }
+        ],
+        "adaptive": {
+          "status": "executed",
+          "contestedClaimRefs": [],
+          "receipts": [
+            {
+              "proposalRef": "proposal.S02.defense",
+              "resolution": "fast",
+              "outcome": "completed"
+            }
+          ]
+        },
+        "reads": [],
+        "issues": []
+      },
+      "expected": {
+        "triggerKinds": [
+          "selected_fallback_proposal"
+        ],
+        "applicability": "required",
+        "handling": "handled",
+        "availability": "available",
+        "disposition": "used"
+      }
+    },
+    {
+      "caseId": "S03",
+      "family": "selected_fallback",
+      "input": {
+        "allowedFallbacks": [
+          "defense",
+          "weak"
+        ],
+        "proposals": [
+          {
+            "proposalRef": "proposal.S03.defense",
+            "actionKind": "defense"
+          }
+        ],
+        "adaptive": {
+          "status": "executed",
+          "contestedClaimRefs": [],
+          "receipts": [
+            {
+              "proposalRef": "proposal.S03.defense",
+              "resolution": "fast",
+              "outcome": "completed"
+            }
+          ]
+        },
+        "reads": [],
+        "issues": []
+      },
+      "expected": {
+        "triggerKinds": [
+          "selected_fallback_proposal"
+        ],
+        "applicability": "required",
+        "handling": "handled",
+        "availability": "available",
+        "disposition": "used"
+      }
+    },
+    {
+      "caseId": "S04",
+      "family": "selected_fallback",
+      "input": {
+        "allowedFallbacks": [
+          "defense",
+          "unknown"
+        ],
+        "proposals": [
+          {
+            "proposalRef": "proposal.S04.defense",
+            "actionKind": "defense"
+          }
+        ],
+        "adaptive": {
+          "status": "executed",
+          "contestedClaimRefs": [],
+          "receipts": [
+            {
+              "proposalRef": "proposal.S04.defense",
+              "resolution": "fast",
+              "outcome": "completed"
+            }
+          ]
+        },
+        "reads": [],
+        "issues": []
+      },
+      "expected": {
+        "triggerKinds": [
+          "selected_fallback_proposal"
+        ],
+        "applicability": "required",
+        "handling": "handled",
+        "availability": "available",
+        "disposition": "used"
+      }
+    },
+    {
+      "caseId": "C01",
+      "family": "contested_claim",
+      "input": {
+        "allowedFallbacks": [],
+        "proposals": [
+          {
+            "proposalRef": "proposal.C01",
+            "actionKind": "custom"
+          }
+        ],
+        "adaptive": {
+          "status": "executed",
+          "contestedClaimRefs": [
+            "claim.C01"
+          ],
+          "receipts": [
+            {
+              "proposalRef": "proposal.C01",
+              "resolution": "expanded",
+              "outcome": "attempted_failed",
+              "failureReason": "simultaneous_conflict"
+            }
+          ]
+        },
+        "reads": [],
+        "issues": []
+      },
+      "expected": {
+        "triggerKinds": [
+          "contested_claim"
+        ],
+        "applicability": "required",
+        "handling": "missing",
+        "availability": "unavailable",
+        "disposition": "unavailable"
+      }
+    },
+    {
+      "caseId": "C02",
+      "family": "contested_claim",
+      "input": {
+        "allowedFallbacks": [
+          "unknown"
+        ],
+        "proposals": [
+          {
+            "proposalRef": "proposal.C02",
+            "actionKind": "custom"
+          }
+        ],
+        "adaptive": {
+          "status": "executed",
+          "contestedClaimRefs": [
+            "claim.C02"
+          ],
+          "receipts": [
+            {
+              "proposalRef": "proposal.C02",
+              "resolution": "expanded",
+              "outcome": "attempted_failed",
+              "failureReason": "simultaneous_conflict"
+            }
+          ]
+        },
+        "reads": [],
+        "issues": []
+      },
+      "expected": {
+        "triggerKinds": [
+          "contested_claim"
+        ],
+        "applicability": "required",
+        "handling": "missing",
+        "availability": "available",
+        "disposition": "available_unhandled"
+      }
+    },
+    {
+      "caseId": "C03",
+      "family": "contested_claim",
+      "input": {
+        "allowedFallbacks": [
+          "unknown"
+        ],
+        "proposals": [
+          {
+            "proposalRef": "proposal.C03",
+            "actionKind": "custom"
+          }
+        ],
+        "adaptive": {
+          "status": "executed",
+          "contestedClaimRefs": [
+            "claim.C03"
+          ],
+          "receipts": [
+            {
+              "proposalRef": "proposal.C03",
+              "resolution": "expanded",
+              "outcome": "attempted_failed",
+              "failureReason": "simultaneous_conflict",
+              "fallbackFact": {
+                "factRef": "fact.C03.unknown",
+                "strength": "unknown"
+              }
+            }
+          ]
+        },
+        "reads": [],
+        "issues": []
+      },
+      "expected": {
+        "triggerKinds": [
+          "contested_claim"
+        ],
+        "applicability": "required",
+        "handling": "handled",
+        "availability": "available",
+        "disposition": "used"
+      }
+    },
+    {
+      "caseId": "C04",
+      "family": "contested_claim",
+      "input": {
+        "allowedFallbacks": [
+          "weak"
+        ],
+        "proposals": [
+          {
+            "proposalRef": "proposal.C04",
+            "actionKind": "custom"
+          }
+        ],
+        "adaptive": {
+          "status": "executed",
+          "contestedClaimRefs": [
+            "claim.C04"
+          ],
+          "receipts": [
+            {
+              "proposalRef": "proposal.C04",
+              "resolution": "expanded",
+              "outcome": "attempted_failed",
+              "failureReason": "simultaneous_conflict",
+              "fallbackFact": {
+                "factRef": "fact.C04.weak",
+                "strength": "weak"
+              }
+            }
+          ]
+        },
+        "reads": [],
+        "issues": []
+      },
+      "expected": {
+        "triggerKinds": [
+          "contested_claim"
+        ],
+        "applicability": "required",
+        "handling": "handled",
+        "availability": "available",
+        "disposition": "used"
+      }
+    },
+    {
+      "caseId": "R01",
+      "family": "conflicted_read",
+      "input": {
+        "allowedFallbacks": [],
+        "proposals": [],
+        "adaptive": {
+          "status": "skipped"
+        },
+        "reads": [
+          {
+            "sliceRef": "slice.R01",
+            "consistencyLevel": "conflicted",
+            "blockingIssueRefs": []
+          }
+        ],
+        "issues": []
+      },
+      "expected": {
+        "triggerKinds": [
+          "conflicted_read"
+        ],
+        "applicability": "required",
+        "handling": "handled",
+        "availability": "unavailable",
+        "disposition": "unavailable"
+      }
+    },
+    {
+      "caseId": "R02",
+      "family": "conflicted_read",
+      "input": {
+        "allowedFallbacks": [
+          "unknown"
+        ],
+        "proposals": [],
+        "adaptive": {
+          "status": "skipped"
+        },
+        "reads": [
+          {
+            "sliceRef": "slice.R02",
+            "consistencyLevel": "conflicted",
+            "blockingIssueRefs": []
+          }
+        ],
+        "issues": []
+      },
+      "expected": {
+        "triggerKinds": [
+          "conflicted_read"
+        ],
+        "applicability": "required",
+        "handling": "handled",
+        "availability": "available",
+        "disposition": "available_unhandled"
+      }
+    },
+    {
+      "caseId": "R03",
+      "family": "conflicted_read",
+      "input": {
+        "allowedFallbacks": [
+          "unknown"
+        ],
+        "proposals": [],
+        "adaptive": {
+          "status": "skipped"
+        },
+        "reads": [
+          {
+            "sliceRef": "slice.R03",
+            "consistencyLevel": "conflicted",
+            "blockingIssueRefs": [
+              "issue.R03"
+            ]
+          }
+        ],
+        "issues": [
+          {
+            "issueRef": "issue.R03",
+            "status": "open"
+          }
+        ]
+      },
+      "expected": {
+        "triggerKinds": [
+          "conflicted_read"
+        ],
+        "applicability": "required",
+        "handling": "handled",
+        "availability": "available",
+        "disposition": "available_unhandled"
+      }
+    },
+    {
+      "caseId": "R04",
+      "family": "conflicted_read",
+      "input": {
+        "allowedFallbacks": [
+          "unknown"
+        ],
+        "proposals": [
+          {
+            "proposalRef": "proposal.R04",
+            "actionKind": "custom"
+          }
+        ],
+        "adaptive": {
+          "status": "executed",
+          "contestedClaimRefs": [],
+          "receipts": [
+            {
+              "proposalRef": "proposal.R04",
+              "resolution": "coarse",
+              "outcome": "partial",
+              "fallbackFact": {
+                "factRef": "fact.R04.unknown",
+                "strength": "unknown"
+              }
+            }
+          ]
+        },
+        "reads": [
+          {
+            "sliceRef": "slice.R04",
+            "consistencyLevel": "conflicted",
+            "blockingIssueRefs": []
+          }
+        ],
+        "issues": []
+      },
+      "expected": {
+        "triggerKinds": [
+          "conflicted_read"
+        ],
+        "applicability": "required",
+        "handling": "handled",
+        "availability": "available",
+        "disposition": "used"
+      }
+    },
+    {
+      "caseId": "D01",
+      "family": "degraded",
+      "input": {
+        "allowedFallbacks": [],
+        "proposals": [
+          {
+            "proposalRef": "proposal.D01",
+            "actionKind": "custom"
+          }
+        ],
+        "adaptive": {
+          "status": "executed",
+          "contestedClaimRefs": [],
+          "receipts": [
+            {
+              "proposalRef": "proposal.D01",
+              "resolution": "degraded",
+              "outcome": "indeterminate",
+              "failureReason": "invalid_character_plan"
+            }
+          ]
+        },
+        "reads": [],
+        "issues": []
+      },
+      "expected": {
+        "triggerKinds": [
+          "degraded_indeterminate"
+        ],
+        "applicability": "required",
+        "handling": "missing",
+        "availability": "unavailable",
+        "disposition": "unavailable"
+      }
+    },
+    {
+      "caseId": "D02",
+      "family": "degraded",
+      "input": {
+        "allowedFallbacks": [
+          "unknown"
+        ],
+        "proposals": [
+          {
+            "proposalRef": "proposal.D02",
+            "actionKind": "custom"
+          }
+        ],
+        "adaptive": {
+          "status": "executed",
+          "contestedClaimRefs": [],
+          "receipts": [
+            {
+              "proposalRef": "proposal.D02",
+              "resolution": "degraded",
+              "outcome": "indeterminate",
+              "failureReason": "invalid_character_plan"
+            }
+          ]
+        },
+        "reads": [],
+        "issues": []
+      },
+      "expected": {
+        "triggerKinds": [
+          "degraded_indeterminate"
+        ],
+        "applicability": "required",
+        "handling": "missing",
+        "availability": "available",
+        "disposition": "available_unhandled"
+      }
+    },
+    {
+      "caseId": "D03",
+      "family": "degraded",
+      "input": {
+        "allowedFallbacks": [
+          "unknown"
+        ],
+        "proposals": [
+          {
+            "proposalRef": "proposal.D03",
+            "actionKind": "custom"
+          }
+        ],
+        "adaptive": {
+          "status": "executed",
+          "contestedClaimRefs": [],
+          "receipts": [
+            {
+              "proposalRef": "proposal.D03",
+              "resolution": "degraded",
+              "outcome": "indeterminate",
+              "failureReason": "invalid_character_plan",
+              "fallbackFact": {
+                "factRef": "fact.D03.unknown",
+                "strength": "unknown"
+              }
+            }
+          ]
+        },
+        "reads": [],
+        "issues": []
+      },
+      "expected": {
+        "triggerKinds": [
+          "degraded_indeterminate"
+        ],
+        "applicability": "required",
+        "handling": "handled",
+        "availability": "available",
+        "disposition": "used"
+      }
+    },
+    {
+      "caseId": "D04",
+      "family": "degraded",
+      "input": {
+        "allowedFallbacks": [
+          "unknown"
+        ],
+        "proposals": [
+          {
+            "proposalRef": "proposal.D04",
+            "actionKind": "custom"
+          }
+        ],
+        "adaptive": {
+          "status": "executed",
+          "contestedClaimRefs": [],
+          "receipts": [
+            {
+              "proposalRef": "proposal.D04",
+              "resolution": "degraded",
+              "outcome": "indeterminate",
+              "failureReason": "invalid_character_plan"
+            }
+          ]
+        },
+        "reads": [
+          {
+            "sliceRef": "slice.D04",
+            "consistencyLevel": "conflicted",
+            "blockingIssueRefs": []
+          }
+        ],
+        "issues": []
+      },
+      "expected": {
+        "triggerKinds": [
+          "conflicted_read",
+          "degraded_indeterminate"
+        ],
+        "applicability": "required",
+        "handling": "handled",
+        "availability": "available",
+        "disposition": "available_unhandled"
+      }
+    },
+    {
+      "caseId": "B01",
+      "family": "exhausted",
+      "input": {
+        "allowedFallbacks": [],
+        "proposals": [
+          {
+            "proposalRef": "proposal.B01",
+            "actionKind": "custom"
+          }
+        ],
+        "adaptive": {
+          "status": "executed",
+          "contestedClaimRefs": [],
+          "receipts": [
+            {
+              "proposalRef": "proposal.B01",
+              "resolution": "degraded",
+              "outcome": "indeterminate",
+              "failureReason": "budget_exhausted"
+            }
+          ]
+        },
+        "reads": [],
+        "issues": []
+      },
+      "expected": {
+        "triggerKinds": [
+          "budget_exhausted",
+          "degraded_indeterminate"
+        ],
+        "applicability": "required",
+        "handling": "missing",
+        "availability": "unavailable",
+        "disposition": "unavailable"
+      }
+    },
+    {
+      "caseId": "B02",
+      "family": "exhausted",
+      "input": {
+        "allowedFallbacks": [
+          "intermediate"
+        ],
+        "proposals": [
+          {
+            "proposalRef": "proposal.B02",
+            "actionKind": "custom"
+          }
+        ],
+        "adaptive": {
+          "status": "executed",
+          "contestedClaimRefs": [],
+          "receipts": [
+            {
+              "proposalRef": "proposal.B02",
+              "resolution": "degraded",
+              "outcome": "indeterminate",
+              "failureReason": "budget_exhausted"
+            }
+          ]
+        },
+        "reads": [],
+        "issues": []
+      },
+      "expected": {
+        "triggerKinds": [
+          "budget_exhausted",
+          "degraded_indeterminate"
+        ],
+        "applicability": "required",
+        "handling": "missing",
+        "availability": "available",
+        "disposition": "available_unhandled"
+      }
+    },
+    {
+      "caseId": "B03",
+      "family": "exhausted",
+      "input": {
+        "allowedFallbacks": [
+          "intermediate"
+        ],
+        "proposals": [
+          {
+            "proposalRef": "proposal.B03",
+            "actionKind": "custom"
+          }
+        ],
+        "adaptive": {
+          "status": "executed",
+          "contestedClaimRefs": [],
+          "receipts": [
+            {
+              "proposalRef": "proposal.B03",
+              "resolution": "degraded",
+              "outcome": "indeterminate",
+              "failureReason": "budget_exhausted",
+              "fallbackFact": {
+                "factRef": "fact.B03.intermediate",
+                "strength": "intermediate"
+              }
+            }
+          ]
+        },
+        "reads": [],
+        "issues": []
+      },
+      "expected": {
+        "triggerKinds": [
+          "budget_exhausted",
+          "degraded_indeterminate"
+        ],
+        "applicability": "required",
+        "handling": "handled",
+        "availability": "available",
+        "disposition": "used"
+      }
+    },
+    {
+      "caseId": "B04",
+      "family": "exhausted",
+      "input": {
+        "allowedFallbacks": [
+          "weak"
+        ],
+        "proposals": [
+          {
+            "proposalRef": "proposal.B04",
+            "actionKind": "custom"
+          }
+        ],
+        "adaptive": {
+          "status": "executed",
+          "contestedClaimRefs": [],
+          "receipts": [
+            {
+              "proposalRef": "proposal.B04",
+              "resolution": "degraded",
+              "outcome": "indeterminate",
+              "failureReason": "budget_exhausted",
+              "fallbackFact": {
+                "factRef": "fact.B04.weak",
+                "strength": "weak"
+              }
+            }
+          ]
+        },
+        "reads": [],
+        "issues": []
+      },
+      "expected": {
+        "triggerKinds": [
+          "budget_exhausted",
+          "degraded_indeterminate"
+        ],
+        "applicability": "required",
+        "handling": "handled",
+        "availability": "available",
+        "disposition": "used"
+      }
+    },
+    {
+      "caseId": "M01",
+      "family": "interference",
+      "input": {
+        "allowedFallbacks": [
+          "defense"
+        ],
+        "proposals": [
+          {
+            "proposalRef": "proposal.M01.defense",
+            "actionKind": "defense"
+          }
+        ],
+        "adaptive": {
+          "status": "executed",
+          "contestedClaimRefs": [
+            "claim.M01"
+          ],
+          "receipts": [
+            {
+              "proposalRef": "proposal.M01.defense",
+              "resolution": "fast",
+              "outcome": "completed"
+            }
+          ]
+        },
+        "reads": [],
+        "issues": []
+      },
+      "expected": {
+        "triggerKinds": [
+          "contested_claim",
+          "selected_fallback_proposal"
+        ],
+        "applicability": "required",
+        "handling": "missing",
+        "availability": "available",
+        "disposition": "used"
+      }
+    },
+    {
+      "caseId": "M02",
+      "family": "interference",
+      "input": {
+        "allowedFallbacks": [],
+        "proposals": [
+          {
+            "proposalRef": "proposal.M02",
+            "actionKind": "custom"
+          }
+        ],
+        "adaptive": {
+          "status": "executed",
+          "contestedClaimRefs": [
+            "claim.M02"
+          ],
+          "receipts": [
+            {
+              "proposalRef": "proposal.M02",
+              "resolution": "expanded",
+              "outcome": "attempted_failed",
+              "failureReason": "simultaneous_conflict"
+            }
+          ]
+        },
+        "reads": [
+          {
+            "sliceRef": "slice.M02",
+            "consistencyLevel": "conflicted",
+            "blockingIssueRefs": []
+          }
+        ],
+        "issues": []
+      },
+      "expected": {
+        "triggerKinds": [
+          "conflicted_read",
+          "contested_claim"
+        ],
+        "applicability": "required",
+        "handling": "handled",
+        "availability": "unavailable",
+        "disposition": "unavailable"
+      }
+    },
+    {
+      "caseId": "M03",
+      "family": "interference",
+      "input": {
+        "allowedFallbacks": [
+          "unknown"
+        ],
+        "proposals": [
+          {
+            "proposalRef": "proposal.M03",
+            "actionKind": "custom"
+          }
+        ],
+        "adaptive": {
+          "status": "executed",
+          "contestedClaimRefs": [],
+          "receipts": [
+            {
+              "proposalRef": "proposal.M03",
+              "resolution": "degraded",
+              "outcome": "indeterminate",
+              "failureReason": "budget_exhausted",
+              "fallbackFact": {
+                "factRef": "fact.M03.unknown",
+                "strength": "unknown"
+              }
+            }
+          ]
+        },
+        "reads": [],
+        "issues": []
+      },
+      "expected": {
+        "triggerKinds": [
+          "budget_exhausted",
+          "degraded_indeterminate"
+        ],
+        "applicability": "required",
+        "handling": "handled",
+        "availability": "available",
+        "disposition": "used"
+      }
+    },
+    {
+      "caseId": "M04",
+      "family": "interference",
+      "input": {
+        "allowedFallbacks": [
+          "defense"
+        ],
+        "proposals": [
+          {
+            "proposalRef": "proposal.M04.defense",
+            "actionKind": "defense"
+          },
+          {
+            "proposalRef": "proposal.M04.degraded",
+            "actionKind": "custom"
+          }
+        ],
+        "adaptive": {
+          "status": "executed",
+          "contestedClaimRefs": [],
+          "receipts": [
+            {
+              "proposalRef": "proposal.M04.defense",
+              "resolution": "fast",
+              "outcome": "completed"
+            },
+            {
+              "proposalRef": "proposal.M04.degraded",
+              "resolution": "degraded",
+              "outcome": "indeterminate",
+              "failureReason": "invalid_character_plan"
+            }
+          ]
+        },
+        "reads": [],
+        "issues": []
+      },
+      "expected": {
+        "triggerKinds": [
+          "degraded_indeterminate",
+          "selected_fallback_proposal"
+        ],
+        "applicability": "required",
+        "handling": "missing",
+        "availability": "available",
+        "disposition": "used"
+      }
+    },
+    {
+      "caseId": "M05",
+      "family": "interference",
+      "input": {
+        "allowedFallbacks": [
+          "unknown"
+        ],
+        "proposals": [
+          {
+            "proposalRef": "proposal.M05",
+            "actionKind": "custom"
+          }
+        ],
+        "adaptive": {
+          "status": "executed",
+          "contestedClaimRefs": [
+            "claim.M05"
+          ],
+          "receipts": [
+            {
+              "proposalRef": "proposal.M05",
+              "resolution": "degraded",
+              "outcome": "indeterminate",
+              "failureReason": "invalid_character_plan"
+            }
+          ]
+        },
+        "reads": [
+          {
+            "sliceRef": "slice.M05",
+            "consistencyLevel": "conflicted",
+            "blockingIssueRefs": [
+              "issue.M05"
+            ]
+          }
+        ],
+        "issues": [
+          {
+            "issueRef": "issue.M05",
+            "status": "open"
+          }
+        ]
+      },
+      "expected": {
+        "triggerKinds": [
+          "conflicted_read",
+          "contested_claim",
+          "degraded_indeterminate"
+        ],
+        "applicability": "required",
+        "handling": "handled",
+        "availability": "available",
+        "disposition": "available_unhandled"
+      }
+    },
+    {
+      "caseId": "M06",
+      "family": "interference",
+      "input": {
+        "allowedFallbacks": [
+          "defense",
+          "unknown"
+        ],
+        "proposals": [
+          {
+            "proposalRef": "proposal.M06.defense",
+            "actionKind": "defense"
+          },
+          {
+            "proposalRef": "proposal.M06.exhausted",
+            "actionKind": "custom"
+          }
+        ],
+        "adaptive": {
+          "status": "executed",
+          "contestedClaimRefs": [
+            "claim.M06"
+          ],
+          "receipts": [
+            {
+              "proposalRef": "proposal.M06.defense",
+              "resolution": "fast",
+              "outcome": "completed"
+            },
+            {
+              "proposalRef": "proposal.M06.exhausted",
+              "resolution": "degraded",
+              "outcome": "indeterminate",
+              "failureReason": "budget_exhausted",
+              "fallbackFact": {
+                "factRef": "fact.M06.unknown",
+                "strength": "unknown"
+              }
+            }
+          ]
+        },
+        "reads": [
+          {
+            "sliceRef": "slice.M06",
+            "consistencyLevel": "conflicted",
+            "blockingIssueRefs": [
+              "issue.M06"
+            ]
+          }
+        ],
+        "issues": [
+          {
+            "issueRef": "issue.M06",
+            "status": "open"
+          }
+        ]
+      },
+      "expected": {
+        "triggerKinds": [
+          "budget_exhausted",
+          "conflicted_read",
+          "contested_claim",
+          "degraded_indeterminate",
+          "selected_fallback_proposal"
+        ],
+        "applicability": "required",
+        "handling": "handled",
+        "availability": "available",
+        "disposition": "used"
+      }
+    }
+  ],
+  "integrationControls": [
+    {
+      "controlId": "I01",
+      "baseScenarioId": "ordinary_fast_action",
+      "allowedFallbacks": [
+        "unknown"
+      ],
+      "expected": {
+        "triggerKinds": [],
+        "applicability": "not_applicable",
+        "handling": "not_applicable",
+        "availability": "available",
+        "disposition": "not_needed"
+      }
+    },
+    {
+      "controlId": "I02",
+      "baseScenarioId": "interrupted_expanded_action",
+      "allowedFallbacks": [],
+      "expected": {
+        "triggerKinds": [],
+        "applicability": "not_applicable",
+        "handling": "not_applicable",
+        "availability": "unavailable",
+        "disposition": "unavailable"
+      }
+    },
+    {
+      "controlId": "I03",
+      "baseScenarioId": "blocking_local_conflict",
+      "allowedFallbacks": [],
+      "expected": {
+        "triggerKinds": [
+          "conflicted_read",
+          "contested_claim",
+          "degraded_indeterminate"
+        ],
+        "applicability": "required",
+        "handling": "handled",
+        "availability": "unavailable",
+        "disposition": "unavailable"
+      }
+    },
+    {
+      "controlId": "I04",
+      "baseScenarioId": "exhausted_budget",
+      "allowedFallbacks": [],
+      "expected": {
+        "triggerKinds": [
+          "budget_exhausted",
+          "degraded_indeterminate"
+        ],
+        "applicability": "required",
+        "handling": "handled",
+        "availability": "unavailable",
+        "disposition": "unavailable"
+      }
+    },
+    {
+      "controlId": "I05",
+      "baseScenarioId": "remote_rejection",
+      "allowedFallbacks": [
+        "unknown"
+      ],
+      "expected": {
+        "triggerKinds": [],
+        "applicability": "not_applicable",
+        "handling": "not_applicable",
+        "availability": "available",
+        "disposition": "not_needed"
+      }
+    },
+    {
+      "controlId": "I06",
+      "baseScenarioId": "interrupted_expanded_action",
+      "allowedFallbacks": [
+        "defense"
+      ],
+      "expected": {
+        "triggerKinds": [],
+        "applicability": "not_applicable",
+        "handling": "not_applicable",
+        "availability": "available",
+        "disposition": "not_needed"
+      }
+    }
+  ],
+  "registeredDistribution": {
+    "total": 30,
+    "notApplicable": 4,
+    "required": 26,
+    "handled": 18,
+    "missing": 8,
+    "handlingNotApplicable": 4,
+    "dispositionUnavailable": 6,
+    "dispositionNotNeeded": 3,
+    "dispositionUsed": 14,
+    "dispositionAvailableUnhandled": 7,
+    "multiTriggerInterference": 6,
+    "integrationControls": 6
+  },
+  "boundaries": {
+    "frozenLineageVerified": true,
+    "sourceMutationCount": 0,
+    "authoritativeOutcomeChangeCount": 0,
+    "legacyReceiptMutationCount": 0,
+    "canonicalCommitCount": 0,
+    "externalLlmCallsMade": 0,
+    "xaiCallsMade": 0
+  },
+  "integrity": {
+    "algorithm": "sha256",
+    "basis": "canonical corpus excluding integrity",
+    "contentDigest": "aa296ff12a672b074f582c18237b84ef403047b063d3dd7178fa009719e7d54f"
+  }
+}

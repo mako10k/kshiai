@@ -22,6 +22,7 @@
     "build:battle-pipeline-plan-basis-replay": "tsx src/scripts/build-battle-plan-basis-corrective-replay.ts",
     "eval:battle-pipeline-plan-basis-replay": "tsx src/scripts/evaluate-battle-plan-basis-corrective-replay.ts",
     "eval:battle-pipeline-conflict-applicability": "tsx src/scripts/evaluate-battle-conflict-handling-applicability.ts",
+    "build:battle-pipeline-conflict-generalization-corpus": "tsx src/scripts/build-battle-conflict-handling-held-out-corpus.ts",
     "eval:perception-prompts": "tsx src/scripts/evaluate-perception-prompts.ts",
     "battle-state": "tsx src/scripts/battle-semantic-state.ts",
     "migrate:character-identities": "tsx src/scripts/backfill-character-identities.ts",

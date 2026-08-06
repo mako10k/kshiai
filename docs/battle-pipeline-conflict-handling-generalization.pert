@@ -22,6 +22,7 @@ milestone HELD_OUT_PROTOCOL_FIXED:
 
 milestone HELD_OUT_CORPUS_FROZEN:
   title "Held-out classifier corpus frozen"
+  state reached
 
 milestone HELD_OUT_REPLAY_DECIDED:
   title "Held-out generalization replay evaluated and decided"
@@ -42,6 +43,7 @@ task T_HELD_OUT_CORPUS HELD_OUT_PROTOCOL_FIXED -> HELD_OUT_CORPUS_FROZEN:
   title "Build the held-out classifier corpus"
   description "Encode the thirty literal input and expected-output envelopes without importing the classifier, construct six frozen integration transforms, verify exact registered distributions and frozen lineage, and add fail-closed corpus tests."
   duration 2p
+  status done
   requires:
     DEV 1
 
@@ -77,3 +79,10 @@ task_outcome OUT_T_HELD_OUT_PROTOCOL:
   against_basis sha256:8559a87f3450c5f6e5dba64fc8b0fc9a74712730ff22c27e05805153338265b3
   status conformant
   reason "Accept frozen lineage, oracle separation, thirty exact held-out cases with eight missing and six multi-trigger cases, six integration controls, fixed distributions, strict metrics, stop conditions, four-point estimate, and external LLM XAI runtime non-use boundaries"
+
+task_outcome OUT_T_HELD_OUT_CORPUS:
+  model 1
+  task T_HELD_OUT_CORPUS
+  against_basis sha256:f47bd29dd68aad780eef5c3d64e205470bc2dfff92d0f672dcd115f7d45746cd
+  status conformant
+  reason "Accept the versioned thirty-case literal oracle, exact registered distributions, six integration transform specifications, frozen lineage and content integrity, construction-only tests, zero classifier enricher external LLM XAI and canonical calls, and unchanged source authority boundaries"
