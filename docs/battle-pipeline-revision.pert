@@ -70,6 +70,7 @@ milestone ISSUES_EVALUATED:
 
 milestone READ_COHERENCE_POC_BUILT:
   title "Purpose-scoped read and bounded-repair prototype built"
+  state reached
 
 milestone READ_COHERENCE_EVALUATED:
   title "Read-time coherence and repair effectiveness evaluated"
@@ -250,8 +251,7 @@ task T_READ_POC ISSUES_EVALUATED -> READ_COHERENCE_POC_BUILT:
     repairs as ordinary RepairRef patches, preserve causal and authority order,
     rebuild the slice, and cap attempts calls and touched facts.
   duration 2p
-  status blocked
-  blocked_reason "Unblock only after issue-lifecycle evidence supports continuation; otherwise replan"
+  status done
   requires:
     DEV 1
 

@@ -150,6 +150,7 @@ export const CanonicalProjectionFactSchema = z.object({
     "semantic",
     "temporal",
     "event",
+    "repair",
   ]),
 }).strict();
 export type CanonicalProjectionFact = z.infer<
@@ -359,6 +360,7 @@ const ProjectionSourceSchema = z.enum([
   "semantic",
   "temporal",
   "event",
+  "repair",
 ]);
 
 export const ConsistencyFactRowSchema = z.union([

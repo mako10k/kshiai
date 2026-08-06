@@ -21,9 +21,9 @@ as independently observed multi-day throughput.
 
 | Scope | Points | Forecast at 2.25p/day | Qualification |
 |---|---:|---:|---|
-| `T_READ_POC` | 2p | 0.89 day | next candidate; still blocked by its decision lock |
-| `T_READ_EVAL` | 1p | 0.44 day | conditional on an authorized PoC and its result |
-| Remaining after Issues evaluation | 17p | 7.56 days | conditional on all later decision locks opening |
+| `T_READ_POC` | 2p | 0.89 day | completed implementation estimate |
+| `T_READ_EVAL` | 1p | 0.44 day | next separate evaluation; not started |
+| Remaining after Read PoC | 15p | 6.67 days | conditional on all later decision locks opening |
 
 Velocity changes calendar forecasts, not point estimates or evidence gates. A
 faster implementation does not lower evaluation thresholds, automatically
