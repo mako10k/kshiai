@@ -24,6 +24,7 @@ export * from "./battle-conflict-handling-applicability.js";
 export * from "./battle-actual-turn-shadow-observation.js";
 export * from "./battle-actual-turn-input-derivation.js";
 export * from "./battle-actual-turn-input-derivation-fixtures.js";
+export * from "./battle-actual-turn-source-authoring.js";
 export * from "./free-action.js";
 export * from "./profile-grounding.js";
 export * from "./media.js";

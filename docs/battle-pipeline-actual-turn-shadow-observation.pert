@@ -140,6 +140,7 @@ milestone SOURCE_AUTHORING_PROTOCOL_FIXED:
 
 milestone SOURCE_AUTHORING_CORE_READY:
   title "Pure owner-stage source-authoring PoC ready"
+  state reached
 
 milestone SOURCE_AUTHORING_SHADOW_READY:
   title "In-memory ordinary-turn shadow source assembly ready"
@@ -162,6 +163,7 @@ task T_SOURCE_AUTHORING_CORE_POC SOURCE_AUTHORING_PROTOCOL_FIXED -> SOURCE_AUTHO
   title "Build pure owner-stage source-authoring PoC"
   description "Build pure constructors for the five explicit source artifacts over runtime-shaped local fixtures. Every emitted field must carry exact source provenance; missing ambiguous or cross-inconsistent sources must fail closed; no resolved actions events prose cognition speech narration or fallback outcomes may be used as proxies; and input bytes battle results runtime services and persistence remain unchanged."
   duration 2p
+  status done
   requires:
     DEV 1
 
@@ -347,6 +349,13 @@ task_outcome OUT_T_SOURCE_AUTHORING_PROTOCOL:
   status conformant
   reason "Protocol docs/battle-pipeline-actual-turn-source-authoring-protocol.md sha256:34ef9f701450b78fd9afda85633e3e8e379b7d80e6240474712d831bb6893285 freezes five semantic owners and exact authoring stages, lifecycle and provenance invariants, twenty deterministic cases over four hundred dispositions, exact non-interference gates, supported revise unsupported and indeterminate rules, fail-open shadow and fail-closed evidence behavior, stop conditions, and exclusions for actual capture user data DB network providers external LLM XAI persistence release and deployment."
 
+task_outcome OUT_T_SOURCE_AUTHORING_CORE_POC:
+  model 1
+  task T_SOURCE_AUTHORING_CORE_POC
+  against_basis sha256:e7775f06211e7149dbb01abb99ce53a88d5aca5ce45c7dca824a527512c2f149
+  status conformant
+  reason "Pure shared source-authoring module packages/shared/src/battle-actual-turn-source-authoring.ts sha256:2838b2e539f54ce5796c345e98436e910fae3ba60b60d86c2dbf64d7f1d43889 and tests sha256:d82584429975e6201621725a9fe0f12c20a68bdbe252edda3c261aa15871f583 implement ordered owner-stage constructors for all five artifacts, exact leaf provenance, six ActionKind mappings, explicit skip and read close, atomic sealing, zero inference, and fail-closed missing duplicate turn digest mutation proxy and dangling-reference behavior. Thirteen targeted tests and all 404 repository tests pass with typecheck and build; runtime hooks backend imports DB network provider external LLM XAI canonical battle and persistence writes remain zero, and actual-turn capture remains unauthorized."
+
 work_event WE_SOURCE_AUTHORING_PROTOCOL_START:
   model 1
   task T_SOURCE_AUTHORING_PROTOCOL
@@ -361,3 +370,18 @@ work_event WE_SOURCE_AUTHORING_PROTOCOL_FINISH:
   occurred_at 2026-08-06T21:37:00+09:00
   active_time 0.05h
   effort 0.05ph
+
+work_event WE_SOURCE_AUTHORING_CORE_POC_START:
+  model 1
+  task T_SOURCE_AUTHORING_CORE_POC
+  kind start
+  occurred_at 2026-08-06T21:40:00+09:00
+  planned_value 2p
+
+work_event WE_SOURCE_AUTHORING_CORE_POC_FINISH:
+  model 1
+  task T_SOURCE_AUTHORING_CORE_POC
+  kind finish
+  occurred_at 2026-08-06T21:50:00+09:00
+  active_time 1/6h
+  effort 1/6ph
