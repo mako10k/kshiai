@@ -22,12 +22,16 @@ as independently observed multi-day throughput.
 | Scope | Points | Forecast at 2.3125p/day | Qualification |
 |---|---:|---:|---|
 | `T_GRAPH_POC` | 2p | 0.86 day | completed construction estimate |
-| `T_GRAPH_EVAL` | 2p | 0.86 day | next separate evaluation; not started |
+| `T_GRAPH_EVAL` | 2p | 0.86 day | active; evaluator/protocol frozen, formal run pending |
 | Remaining after Graph PoC | 12p | 5.19 days | conditional on Graph and later evidence |
 
 Velocity changes calendar forecasts, not point estimates or evidence gates. A
 faster implementation does not lower evaluation thresholds, automatically
 unblock later tasks, or authorize runtime/persistence changes.
+
+Evaluation preparation does not count as task completion, so the provisional
+velocity and the 12p remaining forecast are unchanged until the frozen formal
+run is recorded.
 
 ## Next recalibration
 

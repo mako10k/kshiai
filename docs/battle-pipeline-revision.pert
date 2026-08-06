@@ -331,6 +331,7 @@ task T_GRAPH_EVAL GRAPH_POC_BUILT -> GRAPH_EVALUATED:
     Record supported revise unsupported or indeterminate without treating faster
     queries alone as proof that independent persistence is warranted.
   duration 2p
+  status active
   requires:
     DEV 1
 
