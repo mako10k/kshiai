@@ -2,7 +2,7 @@
 project KSHIAI_BATTLE_PIPELINE_ACTUAL_TURN_SHADOW_OBSERVATION:
   version 6
   title "Actual-turn read-only shadow observation PoC"
-  description "Determine whether actual resolved turns can produce a privacy-safe read-only conflict-handling observation envelope and descriptive distribution without changing battle results call topology canonical state persistence or provider behavior. Freeze the protocol, build an offline adapter, require a separate exact capture-authority decision, capture only an approved local export, evaluate fixed sufficiency and boundary gates, and record a limited decision. This plan does not authorize runtime hook implementation or activation, DB or network access, external LLM or XAI calls, raw user-data commits, classifier changes, canonical writes, persistence, release, or deployment."
+  description "Determine whether actual resolved turns can produce a privacy-safe read-only conflict-handling observation envelope and descriptive distribution without changing battle results call topology canonical state persistence or provider behavior. After the initial capture authority decision changed to defer, first test whether all required applicability inputs are authoritatively derivable without inference, then require a new exact capture-authority review before any actual sampling. This plan does not authorize runtime hook implementation or activation, DB or network access, external LLM or XAI calls, raw user-data commits, classifier changes, canonical writes, persistence, release, or deployment."
   as_of 2026-08-06
   duration_unit point
   velocity 453p/128d
@@ -26,6 +26,7 @@ milestone OFFLINE_OBSERVER_READY:
 
 milestone CAPTURE_AUTHORITY_DECIDED:
   title "Exact actual-turn capture authority decided"
+  state reached
 
 milestone ACTUAL_SAMPLE_FROZEN:
   title "Approved privacy-safe actual-turn sample frozen"
@@ -60,12 +61,13 @@ task T_CAPTURE_AUTHORITY_DECISION OFFLINE_OBSERVER_READY -> CAPTURE_AUTHORITY_DE
   title "Decide exact actual-turn capture authority"
   description "Freeze the exact hook point read allow-list zero-write enforcement ignored destination maximum records duration pseudonymization timeout fail-open behavior environment identity disable and rollback procedure, then obtain an explicit user decision before any runtime hook implementation activation DB or network access."
   duration 1p
+  status done
   requires:
     DEV 1
 
-task T_ACTUAL_SAMPLE CAPTURE_AUTHORITY_DECIDED -> ACTUAL_SAMPLE_FROZEN:
+task T_ACTUAL_SAMPLE CAPTURE_AUTHORITY_REVIEWED -> ACTUAL_SAMPLE_FROZEN:
   title "Capture the approved actual-turn sample"
-  description "Only after a conformant explicit authority decision, capture the first eligible privacy-safe envelopes into an ignored local source, require at least fifty turns across ten battles and two dates, commit only a redacted digest manifest, and stop indeterminate rather than accessing another environment or fabricating missing samples."
+  description "Only after a conformant explicit T_CAPTURE_AUTHORITY_REVIEW outcome, capture the first eligible privacy-safe envelopes into an ignored local source, require at least fifty turns across ten battles and two dates, commit only a redacted digest manifest, and stop indeterminate rather than accessing another environment or fabricating missing samples."
   duration 2p
   requires:
     DEV 1
@@ -85,11 +87,11 @@ task T_OBSERVATION_DECISION OBSERVATION_EVALUATED -> OBSERVATION_DECIDED:
     DEV 1
 
 plan_seal T_ACTUAL_SAMPLE:
-  accepted_contract sha256:97fd84d270cebe2d90493c5609ff99e007febfc33be8ca5bff071df6dd61e72a
-  accepted_basis sha256:f8d00ed754d78e1a220c11eecd369af183d7b4223f3d2d9dbdd10c5872ac4481
+  accepted_contract sha256:98c22a862957ccd42d82be202ccc18c47f7d16bb88e90f71b84bcfd6cbdadacb
+  accepted_basis sha256:1ff0a992f7791260c168eb01f4f4f2e75c8d60b0c741431a593d57f99a67cdc3
   accepted_inputs:
-    T_CAPTURE_AUTHORITY_DECISION both sha256:b534913460293e09224de86130748d642a560d15b44180f39b9c624856fcffc1
-  reason "Freeze the reviewed actual-turn read-only shadow-observation PoC baseline before implementation or capture authority"
+    T_CAPTURE_AUTHORITY_REVIEW both sha256:72815ee61ded00cb21e2aa0e9636e5ff53f97ab6acbcbb229518de287167381e
+  reason "Accept the rerouted sample and observation tasks after the input-derivability PoC and separate capture-authority review."
 
 plan_seal T_CAPTURE_AUTHORITY_DECISION:
   accepted_contract sha256:83ecbdd1693b8b69267cfe1681b09b692206db0f5334c5051e211c2610cca0ef
@@ -100,17 +102,17 @@ plan_seal T_CAPTURE_AUTHORITY_DECISION:
 
 plan_seal T_OBSERVATION_DECISION:
   accepted_contract sha256:ce807d375c1a5963ee07c43481a491667f92de15bb943b1c4ec91a02e72d09bb
-  accepted_basis sha256:ec6cb5194a9d8838467c5220cbb6dbfa72fd325e743e2d80eb97d77baf15f798
+  accepted_basis sha256:0d575bd5b2f924b7c203340b82c81f9790bf9e1e986a2c60a18c924c260681bb
   accepted_inputs:
-    T_OBSERVATION_EVAL both sha256:6e9419b99c39e0545a420863822702bbddbe9577f26273015e891f94c7ba2a5d
-  reason "Freeze the reviewed actual-turn read-only shadow-observation PoC baseline before implementation or capture authority"
+    T_OBSERVATION_EVAL both sha256:625c27276f41445e6e606c1a863a8c7fc1ab6ba126454fb379753340b4683923
+  reason "Accept the rerouted sample and observation tasks after the input-derivability PoC and separate capture-authority review."
 
 plan_seal T_OBSERVATION_EVAL:
   accepted_contract sha256:8d25aee9cb896570faf18d30bcc20a55d82727beaf199009b7045914070a03c9
-  accepted_basis sha256:6e9419b99c39e0545a420863822702bbddbe9577f26273015e891f94c7ba2a5d
+  accepted_basis sha256:625c27276f41445e6e606c1a863a8c7fc1ab6ba126454fb379753340b4683923
   accepted_inputs:
-    T_ACTUAL_SAMPLE both sha256:f8d00ed754d78e1a220c11eecd369af183d7b4223f3d2d9dbdd10c5872ac4481
-  reason "Freeze the reviewed actual-turn read-only shadow-observation PoC baseline before implementation or capture authority"
+    T_ACTUAL_SAMPLE both sha256:1ff0a992f7791260c168eb01f4f4f2e75c8d60b0c741431a593d57f99a67cdc3
+  reason "Accept the rerouted sample and observation tasks after the input-derivability PoC and separate capture-authority review."
 
 plan_seal T_OBSERVATION_PROTOCOL:
   accepted_contract sha256:4f7a51686e0e0cf155122327af679412880d74b7ad9d7cdee3afb124b6b40de0
@@ -123,6 +125,34 @@ plan_seal T_OFFLINE_OBSERVER:
   accepted_inputs:
     T_OBSERVATION_PROTOCOL both sha256:996c695d42c8c0529df3e64777fe7967dd892266a0b20b2dea0610ebb9e18641
   reason "Freeze the reviewed actual-turn read-only shadow-observation PoC baseline before implementation or capture authority"
+
+plan_seal T_CAPTURE_AUTHORITY_REVIEW:
+  accepted_contract sha256:0d4c824528e75b2a8e72ba208ed3b87c5eddfdb54e271bd4f5848c771f20b51a
+  accepted_basis sha256:72815ee61ded00cb21e2aa0e9636e5ff53f97ab6acbcbb229518de287167381e
+  accepted_inputs:
+    T_INPUT_DERIVATION_EVAL both sha256:ea911164385e8dad85163467e01f5d1a21e2fe27386294d6602fe10edb2ede4e
+  reason "Accept the new input-derivability PoC and post-PoC capture-authority review tasks."
+
+plan_seal T_INPUT_DERIVATION_EVAL:
+  accepted_contract sha256:4da25e310c30631145d706d858d86e97ae3d9115b97cb58bc931510151e57eb7
+  accepted_basis sha256:ea911164385e8dad85163467e01f5d1a21e2fe27386294d6602fe10edb2ede4e
+  accepted_inputs:
+    T_INPUT_DERIVATION_POC both sha256:b4f91727f36616acb1068d96982a4bbd1af052079df23b6112a186a8c244835b
+  reason "Accept the new input-derivability PoC and post-PoC capture-authority review tasks."
+
+plan_seal T_INPUT_DERIVATION_POC:
+  accepted_contract sha256:760f48ac8a188a264a47dc9ec891a26b4ea35a30e2845dd2238e9d7b1f379466
+  accepted_basis sha256:b4f91727f36616acb1068d96982a4bbd1af052079df23b6112a186a8c244835b
+  accepted_inputs:
+    T_INPUT_DERIVATION_PROTOCOL both sha256:a29da895b52290f4d8bf2594c634c936a761a6a81d580f307d19320639bf8c52
+  reason "Accept the new input-derivability PoC and post-PoC capture-authority review tasks."
+
+plan_seal T_INPUT_DERIVATION_PROTOCOL:
+  accepted_contract sha256:ca693c993d8f506d10f9cc4a4393043795f47f262bd2146047fb77dd7a3fcfaf
+  accepted_basis sha256:a29da895b52290f4d8bf2594c634c936a761a6a81d580f307d19320639bf8c52
+  accepted_inputs:
+    T_CAPTURE_AUTHORITY_DECISION both sha256:f3b4bb54fe1de513664677aab5d870453da4d1c5007e3cbe01e45f6b7074142b
+  reason "Accept the new input-derivability PoC and post-PoC capture-authority review tasks."
 
 task_outcome OUT_T_OBSERVATION_PROTOCOL:
   model 1
@@ -137,3 +167,51 @@ task_outcome OUT_T_OFFLINE_OBSERVER:
   against_basis sha256:015ab0efc9eaa791f1417519472a977ce9e021196c81a87089d7671b2a441227
   status conformant
   reason "A strict versioned privacy-safe envelope and explicit local-file-only observer were implemented. Seven targeted tests verify opaque refs, identical source digests, no private output, persisted-record insufficient_source without inference, dangling-ref reporting, mutation fail-closed behavior, and no DB network provider LLM XAI or runtime-service dependency. All 380 repository tests, typecheck, and build pass; actual capture remains untested and unauthorized."
+
+task_outcome OUT_T_CAPTURE_AUTHORITY_DECISION:
+  model 1
+  task T_CAPTURE_AUTHORITY_DECISION
+  against_basis sha256:b534913460293e09224de86130748d642a560d15b44180f39b9c624856fcffc1
+  status changed
+  summary "Actual-turn capture was deferred because required applicability inputs are not authoritatively derivable from the adopted runtime."
+  reason "The user accepted defer for actual-turn-capture-authority-v1 on 2026-08-06. Runtime capture remains unauthorized and input derivability must be evaluated before authority is reconsidered."
+
+milestone INPUT_DERIVATION_PROTOCOL_FIXED:
+  title "Applicability input derivation protocol fixed"
+
+milestone INPUT_DERIVATION_POC_READY:
+  title "Offline applicability input derivation PoC ready"
+
+milestone INPUT_DERIVATION_EVALUATED:
+  title "Applicability input derivability evaluated"
+
+milestone CAPTURE_AUTHORITY_REVIEWED:
+  title "Actual-turn capture authority reviewed after derivability PoC"
+
+task T_INPUT_DERIVATION_PROTOCOL CAPTURE_AUTHORITY_DECIDED -> INPUT_DERIVATION_PROTOCOL_FIXED:
+  title "Freeze applicability input derivation protocol"
+  description "Freeze a field-by-field authoritative source map for allowedFallbacks proposals adaptive reads and issues; define source-produced versus derived or inferred data, preregistered fixtures, effectiveness metrics, fail-closed behavior, and the boundary excluding runtime hooks DB network provider LLM XAI canonical writes persistence release and deployment."
+  duration 1p
+  requires:
+    DEV 1
+
+task T_INPUT_DERIVATION_POC INPUT_DERIVATION_PROTOCOL_FIXED -> INPUT_DERIVATION_POC_READY:
+  title "Build offline applicability input derivation PoC"
+  description "Build a pure offline derivability probe over explicit local fixtures and runtime-shaped values. It must emit source provenance for every required field, never infer from events prose cognition speech or narration, reject missing or ambiguous sources, preserve input bytes, and leave battle and runtime services untouched."
+  duration 2p
+  requires:
+    DEV 1
+
+task T_INPUT_DERIVATION_EVAL INPUT_DERIVATION_POC_READY -> INPUT_DERIVATION_EVALUATED:
+  title "Evaluate applicability input derivability"
+  description "Evaluate at least fifteen preregistered cases spanning all five required input areas plus missing and ambiguous controls. Require complete provenance for every emitted field, zero inferred fields, rejection of every missing required source, identical output over twenty replays, unchanged input digests, and record supported revise unsupported or indeterminate without treating classifier output as oracle truth."
+  duration 2p
+  requires:
+    DEV 1
+
+task T_CAPTURE_AUTHORITY_REVIEW INPUT_DERIVATION_EVALUATED -> CAPTURE_AUTHORITY_REVIEWED:
+  title "Review actual-turn capture authority after derivability PoC"
+  description "Freeze the PoC evidence and exact future capture candidate, then obtain a new explicit user decision. Only a conformant approval can unlock runtime hook implementation or actual sampling; a changed unsupported or indeterminate outcome keeps them assurance-withheld."
+  duration 1p
+  requires:
+    DEV 1

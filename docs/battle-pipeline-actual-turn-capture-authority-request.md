@@ -1,10 +1,12 @@
 # Actual-Turn Capture Authority Decision Request
 
-Status: awaiting explicit user decision
+Status: accepted as `defer` on 2026-08-06
 
 Candidate ID: `actual-turn-capture-authority-v1`
 
 Recommended decision: `defer`
+
+Decision outcome: `changed`
 
 Plan task: `T_CAPTURE_AUTHORITY_DECISION`
 
@@ -174,7 +176,7 @@ deployment is included.
 
 ## 5. Decision requested
 
-The requested decision is whether to accept `defer` for candidate
-`actual-turn-capture-authority-v1`. Acceptance authorizes only recording the
-changed PERT outcome and replanning input derivability. It does not authorize
-the future capture candidate described above.
+The user accepted `defer` for candidate
+`actual-turn-capture-authority-v1` on 2026-08-06. This authorizes only recording
+the changed PERT outcome and replanning input derivability. It does not
+authorize the future capture candidate described above.
