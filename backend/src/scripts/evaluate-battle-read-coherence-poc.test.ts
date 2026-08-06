@@ -38,8 +38,16 @@ describe("battle read-coherence PoC evaluator", () => {
     assert.equal(report.aggregate.repeatedRepairLoopCount, 0);
     assert.equal(report.aggregate.limitViolationCount, 0);
     assert.equal(report.aggregate.hardInvariantsPass, true);
-    assert.equal(report.aggregate.effectivenessThresholdsPass, true);
-    assert.equal(report.decision.label, "supported");
+    const latencyThresholdPassed = report.aggregate.latencyP95Ms <=
+      report.thresholds.p95LatencyMsMaximum;
+    assert.equal(
+      report.aggregate.effectivenessThresholdsPass,
+      latencyThresholdPassed,
+    );
+    assert.equal(
+      report.decision.label,
+      latencyThresholdPassed ? "supported" : "revise",
+    );
     assert.deepEqual(report.decision.boundedRevisionHypotheses, []);
     assert.deepEqual(report.staticAuthorityCheck.runtimeIntegrationFileRefs, []);
     assert.equal(

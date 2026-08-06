@@ -470,24 +470,52 @@ export interface CanonicalProjectionService {
   ): CanonicalReadResult<ConsistencySlice>;
 }
 
-type InteractionEdge = {
+export type ProjectionInteractionEdge = {
   from: string;
   to: string;
   kind: InteractionKind;
+  historyTurn?: number;
 };
 
-type FactCollection = {
+export type CanonicalProjectionFactCollection = {
   facts: CanonicalProjectionFact[];
   causalLinks: ProjectionCausalLink[];
 };
 
-const RULE_REFS = [
+export const BATTLE_PROJECTION_RULE_REFS = [
   "battle.rule.action-feasibility-v1",
   "battle.rule.perception-observer-isolation-v1",
   "battle.rule.temporal-initiative-window-v1",
   "battle.rule.world-reference-integrity-v1",
   "battle.rule.world-process-propagation-v1",
 ] as const;
+
+export interface BattleProjectionReadSource {
+  entityRefs(): string[];
+  factsForHistoryTurns(
+    historyTurns: number[],
+  ): CanonicalProjectionFactCollection;
+  interactionEdgesForHistoryTurns(
+    historyTurns: number[],
+  ): ProjectionInteractionEdge[];
+  processRefs(): string[];
+  ruleRefs(): string[];
+  issueViews(input: {
+    entityRefs: string[];
+    factRefs: string[];
+    purpose: ProjectionPurpose;
+  }): ConsistencyIssueView[];
+}
+
+export type BattleStateProjectionGraphSnapshot = {
+  entityRefs: string[];
+  facts: CanonicalProjectionFact[];
+  causalLinks: ProjectionCausalLink[];
+  interactionEdges: ProjectionInteractionEdge[];
+  processRefs: string[];
+  ruleRefs: string[];
+  historyTurns: number[];
+};
 
 function utf8Bytes(value: unknown): number {
   return new TextEncoder().encode(JSON.stringify(value)).byteLength;
@@ -643,10 +671,19 @@ function eventEntities(
 function buildInteractionEdges(
   state: BattleState,
   historyRecords: BattleTurnRecord[],
-): InteractionEdge[] {
-  const edges: InteractionEdge[] = [];
-  const add = (from: string, to: string, kind: InteractionKind) => {
-    edges.push({ from, to, kind }, { from: to, to: from, kind });
+): ProjectionInteractionEdge[] {
+  const edges: ProjectionInteractionEdge[] = [];
+  const add = (
+    from: string,
+    to: string,
+    kind: InteractionKind,
+    historyTurn?: number,
+  ) => {
+    const temporal = historyTurn === undefined ? {} : { historyTurn };
+    edges.push(
+      { from, to, kind, ...temporal },
+      { from: to, to: from, kind, ...temporal },
+    );
   };
   const world = state.worldState;
   if (world) {
@@ -705,7 +742,12 @@ function buildInteractionEdges(
   for (const record of historyRecords) {
     for (const action of record.actions) {
       const actorRef = `character.${action.actorSide}`;
-      edges.push({ from: actorRef, to: actorRef, kind: "causal_dependency" });
+      edges.push({
+        from: actorRef,
+        to: actorRef,
+        kind: "causal_dependency",
+        historyTurn: record.turn,
+      });
     }
     for (const event of record.events) {
       const entities = eventEntities(record, event);
@@ -714,6 +756,7 @@ function buildInteractionEdges(
           from: entities[0]!,
           to: entities[0]!,
           kind: event.type === "utterance" ? "communication" : "causal_dependency",
+          historyTurn: record.turn,
         });
       }
       for (let index = 1; index < entities.length; index += 1) {
@@ -721,19 +764,23 @@ function buildInteractionEdges(
           entities[0]!,
           entities[index]!,
           event.type === "utterance" ? "communication" : "causal_dependency",
+          record.turn,
         );
       }
     }
   }
   return edges.sort((left, right) =>
-    `${left.from}\u0000${left.to}\u0000${left.kind}`.localeCompare(
-      `${right.from}\u0000${right.to}\u0000${right.kind}`,
-    )
+    `${left.from}\u0000${left.to}\u0000${left.kind}\u0000${left.historyTurn ?? -1}`
+      .localeCompare(
+        `${right.from}\u0000${right.to}\u0000${right.kind}\u0000${right.historyTurn ?? -1}`,
+      ),
   );
 }
 
 function allCanonicalEntityRefs(state: BattleState): Set<string> {
   return new Set([
+    "character.a",
+    "character.b",
     ...Object.keys(state.worldState?.entities ?? {}),
     ...Object.keys(state.worldState?.areas ?? {}),
     ...Object.keys(state.semanticState?.entities ?? {}),
@@ -786,10 +833,15 @@ function buildInteractionScope(input: {
   limits: ProjectionLimits;
   historyRecords: BattleTurnRecord[];
   omittedHistoryTurns: number;
+  knownRefs?: Set<string>;
+  interactionEdges?: ProjectionInteractionEdge[];
+  processRefs?: string[];
+  ruleRefs?: string[];
 }): InteractionScope {
-  const knownRefs = allCanonicalEntityRefs(input.state);
+  const knownRefs = input.knownRefs ?? allCanonicalEntityRefs(input.state);
   const anchors = uniqueSorted(input.anchors.filter((ref) => knownRefs.has(ref)));
-  const edges = buildInteractionEdges(input.state, input.historyRecords);
+  const edges = input.interactionEdges ??
+    buildInteractionEdges(input.state, input.historyRecords);
   const selected = new Set<string>();
   const traversed = new Set<InteractionKind>();
   const queue = [...anchors];
@@ -810,11 +862,15 @@ function buildInteractionScope(input: {
       }
     }
   }
+  const sourceProcessRefs = input.processRefs ?? Object.entries(
+    input.state.worldState?.entities ?? {},
+  ).filter(([, entity]) => entity.kind === "effect" && entity.active)
+    .map(([ref]) => ref);
   const processRefs = uniqueSorted([...selected].filter((ref) =>
-    input.state.worldState?.entities[ref]?.kind === "effect" &&
-    input.state.worldState.entities[ref]?.active
+    sourceProcessRefs.includes(ref)
   ));
-  const ruleRefs = RULE_REFS.slice(0, input.limits.maxRules);
+  const sourceRuleRefs = input.ruleRefs ?? [...BATTLE_PROJECTION_RULE_REFS];
+  const ruleRefs = sourceRuleRefs.slice(0, input.limits.maxRules);
   return InteractionScopeSchema.parse({
     anchorRefs: anchors,
     entityRefs: uniqueSorted(selected),
@@ -825,11 +881,11 @@ function buildInteractionScope(input: {
     ...(input.temporalWindow ? { temporalWindow: input.temporalWindow } : {}),
     truncated: omittedEntities > 0 ||
       input.omittedHistoryTurns > 0 ||
-      ruleRefs.length < RULE_REFS.length,
+      ruleRefs.length < sourceRuleRefs.length,
     omitted: {
       entities: omittedEntities,
       facts: 0,
-      rules: Math.max(0, RULE_REFS.length - ruleRefs.length),
+      rules: Math.max(0, sourceRuleRefs.length - ruleRefs.length),
       historyTurns: input.omittedHistoryTurns,
     },
   });
@@ -1064,13 +1120,33 @@ function addHistoryFacts(
 function collectFacts(
   state: BattleState,
   records: BattleTurnRecord[],
-): FactCollection {
+): CanonicalProjectionFactCollection {
   const builder = new FactBuilder();
   addMechanicalFacts(builder, state);
   addWorldFacts(builder, state.worldState);
   addSemanticFacts(builder, state);
   addHistoryFacts(builder, records);
   return { facts: builder.facts, causalLinks: builder.causalLinks };
+}
+
+export function buildBattleStateProjectionGraphSnapshot(
+  rawState: BattleState,
+): BattleStateProjectionGraphSnapshot {
+  const state = clone(rawState);
+  const records = state.turnRecords ?? [];
+  const collection = collectFacts(state, records);
+  return {
+    entityRefs: uniqueSorted(allCanonicalEntityRefs(state)),
+    facts: clone(collection.facts),
+    causalLinks: clone(collection.causalLinks),
+    interactionEdges: clone(buildInteractionEdges(state, records)),
+    processRefs: uniqueSorted(Object.entries(state.worldState?.entities ?? {})
+      .filter(([, entity]) => entity.kind === "effect" && entity.active)
+      .map(([ref]) => ref)),
+    ruleRefs: [...BATTLE_PROJECTION_RULE_REFS],
+    historyTurns: [...new Set(records.map((record) => record.turn))]
+      .sort((left, right) => left - right),
+  };
 }
 
 function factWithinScope(
@@ -1419,9 +1495,11 @@ function unchecked<T>(value: T): CanonicalReadResult<T> {
  */
 export class BattleStateProjectionAdapter implements CanonicalProjectionService {
   readonly #state: BattleState;
+  readonly #readSource?: BattleProjectionReadSource;
 
-  constructor(state: BattleState) {
+  constructor(state: BattleState, readSource?: BattleProjectionReadSource) {
     this.#state = clone(state);
+    this.#readSource = readSource;
   }
 
   buildObservationSlice(
@@ -1498,6 +1576,8 @@ export class BattleStateProjectionAdapter implements CanonicalProjectionService 
     const request = AdjudicationSliceRequestSchema.parse(rawRequest);
     const limits = projectionLimits(request.limits);
     const history = historyRecords(this.#state, limits);
+    const historyTurns = history.selected.map((record) => record.turn);
+    const sourceEntityRefs = this.#readSource?.entityRefs();
     const scope = buildInteractionScope({
       state: this.#state,
       anchors: resolveProposalAnchors(this.#state, request.proposalRefs),
@@ -1505,8 +1585,21 @@ export class BattleStateProjectionAdapter implements CanonicalProjectionService 
       limits,
       historyRecords: history.selected,
       omittedHistoryTurns: history.omitted,
+      ...(sourceEntityRefs
+        ? { knownRefs: new Set(sourceEntityRefs) }
+        : {}),
+      ...(this.#readSource
+        ? {
+            interactionEdges: this.#readSource
+              .interactionEdgesForHistoryTurns(historyTurns),
+            processRefs: this.#readSource.processRefs(),
+            ruleRefs: this.#readSource.ruleRefs(),
+          }
+        : {}),
     });
-    const collection = collectFacts(this.#state, history.selected);
+    const collection = this.#readSource
+      ? this.#readSource.factsForHistoryTurns(historyTurns)
+      : collectFacts(this.#state, history.selected);
     const bounded = boundedFacts({
       facts: deduplicatedAdjudicationFacts(
         purposeRelevantFacts({ facts: collection.facts, scope }),
@@ -1521,7 +1614,11 @@ export class BattleStateProjectionAdapter implements CanonicalProjectionService 
       scope: serverInteractionScope(bounded.scope),
       factGroups: adjudicationFactGroups(bounded.facts),
       applicableRuleRefs: bounded.scope.ruleRefs,
-      relatedIssueRefs: [],
+      relatedIssueRefs: this.#readSource?.issueViews({
+        entityRefs: bounded.scope.entityRefs,
+        factRefs: bounded.facts.map((fact) => fact.id),
+        purpose: "adjudication",
+      }).map((issue) => issue.id) ?? [],
     });
     return unchecked(trimAdjudicationToBytes(value, limits.maxBytes));
   }
@@ -1532,6 +1629,7 @@ export class BattleStateProjectionAdapter implements CanonicalProjectionService 
     const request = ConsistencySliceRequestSchema.parse(rawRequest);
     const limits = projectionLimits(request.limits);
     const history = historyRecords(this.#state, limits);
+    const historyTurns = history.selected.map((record) => record.turn);
     const anchors = uniqueSorted([
       ...request.anchorRefs,
       ...(request.patch?.touchedRefs ?? []),
@@ -1543,8 +1641,19 @@ export class BattleStateProjectionAdapter implements CanonicalProjectionService 
       limits,
       historyRecords: history.selected,
       omittedHistoryTurns: history.omitted,
+      ...(this.#readSource
+        ? {
+            knownRefs: new Set(this.#readSource.entityRefs()),
+            interactionEdges: this.#readSource
+              .interactionEdgesForHistoryTurns(historyTurns),
+            processRefs: this.#readSource.processRefs(),
+            ruleRefs: this.#readSource.ruleRefs(),
+          }
+        : {}),
     });
-    const collection = collectFacts(this.#state, history.selected);
+    const collection = this.#readSource
+      ? this.#readSource.factsForHistoryTurns(historyTurns)
+      : collectFacts(this.#state, history.selected);
     const bounded = boundedFacts({
       facts: purposeRelevantFacts({ facts: collection.facts, scope }),
       scope,
@@ -1564,7 +1673,11 @@ export class BattleStateProjectionAdapter implements CanonicalProjectionService 
           link.targetFactRef,
           link.relation,
         ]),
-      issues: [],
+      issues: this.#readSource?.issueViews({
+        entityRefs: bounded.scope.entityRefs,
+        factRefs: bounded.facts.map((fact) => fact.id),
+        purpose: request.purpose,
+      }) ?? [],
       applicableRuleRefs: bounded.scope.ruleRefs,
     });
     return unchecked(trimConsistencyToBytes(value, limits.maxBytes));

@@ -86,6 +86,7 @@ milestone READ_COHERENCE_REVISION_EVALUATED:
 
 milestone GRAPH_POC_BUILT:
   title "In-memory canonical graph view prototype built over BattleState"
+  state reached
 
 milestone GRAPH_EVALUATED:
   title "Canonical graph projection value and migration risk evaluated"
@@ -315,8 +316,7 @@ task T_GRAPH_POC READ_COHERENCE_REVISION_EVALUATED -> GRAPH_POC_BUILT:
     only if restart measurement requires it. Do not backfill production data or
     remove existing fields.
   duration 2p
-  status blocked
-  blocked_reason "Revision evidence supports continuation; explicit authorization is still required to unblock and start graph work"
+  status done
   requires:
     DEV 1
 

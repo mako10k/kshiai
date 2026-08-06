@@ -21,9 +21,9 @@ as independently observed multi-day throughput.
 
 | Scope | Points | Forecast at 2.3125p/day | Qualification |
 |---|---:|---:|---|
-| `T_GRAPH_POC` | 2p | 0.86 day | blocked; requires separate authorization |
-| `T_GRAPH_EVAL` | 2p | 0.86 day | conditional on Graph PoC construction |
-| Remaining after Read revision evaluation | 14p | 6.05 days | conditional on all later decision locks opening |
+| `T_GRAPH_POC` | 2p | 0.86 day | completed construction estimate |
+| `T_GRAPH_EVAL` | 2p | 0.86 day | next separate evaluation; not started |
+| Remaining after Graph PoC | 12p | 5.19 days | conditional on Graph and later evidence |
 
 Velocity changes calendar forecasts, not point estimates or evidence gates. A
 faster implementation does not lower evaluation thresholds, automatically
@@ -31,6 +31,6 @@ unblock later tasks, or authorize runtime/persistence changes.
 
 ## Next recalibration
 
-After the next explicitly authorized PoC and evaluation pair, compare its
-completed points with active workdays and update using the same 50% smoothing
-rule. If it remains on the same calendar date, retain the low-confidence label.
+After `T_GRAPH_EVAL`, compare the bounded 4p Graph cycle with its active
+workdays and update using the same 50% smoothing rule. If it remains on the
+same calendar date, retain the low-confidence label.
