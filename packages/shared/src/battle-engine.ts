@@ -1516,16 +1516,31 @@ function applyHpDamage(
   };
 }
 
-/**
- * Resolve one turn. Actions are chosen from stances unless an explicit
- * playerAction override is supplied (tests / legacy).
- * Pure function — no LLM.
- *
- * Optional supervisor injections:
- * - preEvents: environmental happenings before combat
- * - envHits: light mechanical pressure from the field
- */
-export function resolveTurn(input: {
+export type DeepReadonly<T> = T extends (...args: never[]) => unknown
+  ? T
+  : T extends readonly (infer Item)[]
+    ? readonly DeepReadonly<Item>[]
+    : T extends object
+      ? { readonly [Key in keyof T]: DeepReadonly<T[Key]> }
+      : T;
+
+export type BattleRequestedActionSnapshot = {
+  schemaVersion: 1;
+  turn: number;
+  requestedActions: {
+    a: { actionId: string; action: BattleAction };
+    b: { actionId: string; action: BattleAction };
+  };
+};
+
+export type BattleRequestedActionShadowObserver = {
+  observeRequestedActions(
+    snapshot: DeepReadonly<BattleRequestedActionSnapshot>,
+  ): unknown;
+  onObservationError?(error: unknown): void;
+};
+
+export type ResolveTurnInput = {
   state: BattleState;
   /** Optional override; when omitted, stanceA drives side A. */
   playerAction?: BattleAction;
@@ -1541,12 +1556,54 @@ export function resolveTurn(input: {
     kind: "damage" | "heal" | "disrupt";
     intensity: "minor" | "moderate";
   }>;
-}): {
+  /** Disabled by default. It observes an immutable pre-resolution clone only. */
+  shadowRequestedActionObserver?: BattleRequestedActionShadowObserver;
+};
+
+export type ResolveTurnResult = {
   state: BattleState;
   events: TurnEvent[];
   actions: ResolvedBattleAction[];
   mechanicalEvidence: CommittedMechanicalEvidence[];
-} {
+};
+
+function deepFreeze<T>(value: T): DeepReadonly<T> {
+  if (value !== null && typeof value === "object") {
+    for (const child of Object.values(value as Record<string, unknown>)) {
+      deepFreeze(child);
+    }
+    Object.freeze(value);
+  }
+  return value as DeepReadonly<T>;
+}
+
+function notifyRequestedActionShadowObserver(input: {
+  observer: BattleRequestedActionShadowObserver | undefined;
+  snapshot: BattleRequestedActionSnapshot;
+}): void {
+  if (!input.observer) return;
+  try {
+    const immutableSnapshot = deepFreeze(structuredClone(input.snapshot));
+    void input.observer.observeRequestedActions(immutableSnapshot);
+  } catch (error) {
+    try {
+      input.observer.onObservationError?.(error);
+    } catch {
+      // Shadow evidence reporting is fail-open and cannot affect adjudication.
+    }
+  }
+}
+
+/**
+ * Resolve one turn. Actions are chosen from stances unless an explicit
+ * playerAction override is supplied (tests / legacy).
+ * Pure function — no LLM.
+ *
+ * Optional supervisor injections:
+ * - preEvents: environmental happenings before combat
+ * - envHits: light mechanical pressure from the field
+ */
+export function resolveTurn(input: ResolveTurnInput): ResolveTurnResult {
   if (input.state.status !== "active") {
     return {
       state: input.state,
@@ -1717,6 +1774,17 @@ export function resolveTurn(input: {
     b: requestedActionB,
   } as const;
   const actionIds = { a: actionAId, b: actionBId } as const;
+  notifyRequestedActionShadowObserver({
+    observer: input.shadowRequestedActionObserver,
+    snapshot: {
+      schemaVersion: 1,
+      turn,
+      requestedActions: {
+        a: { actionId: actionAId, action: requestedActionA },
+        b: { actionId: actionBId, action: requestedActionB },
+      },
+    },
+  });
   const causalSituations = {
     a: applyBattleCausalCoefficients({
       situation,

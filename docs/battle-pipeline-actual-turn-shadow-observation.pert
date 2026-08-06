@@ -2,7 +2,7 @@
 project KSHIAI_BATTLE_PIPELINE_ACTUAL_TURN_SHADOW_OBSERVATION:
   version 6
   title "Actual-turn read-only shadow observation PoC"
-  description "Determine whether actual resolved turns can produce a privacy-safe read-only conflict-handling observation envelope and descriptive distribution without changing battle results call topology canonical state persistence or provider behavior. Input derivation passed its transformation gates but ordinary-runtime authoritative source availability was zero of five, so actual capture remains deferred while a separate source-authoring PoC tests pure owner-stage artifacts and non-interfering in-memory ordinary-turn shadow assembly. A second exact capture-authority review is required before any actual sampling. This plan does not authorize implementation merely by adoption, actual capture, DB or network access, external LLM or XAI calls, raw user-data commits, classifier changes, canonical or battle persistence changes, release, or deployment."
+  description "Closed PoC evidence plan. The final in-memory ordinary-turn shadow source-assembly PoC passed its frozen non-interference gates and ends the exploratory PoC phase. Historical downstream actual-sample and observation tasks remain recorded for traceability but are superseded and must not be started from this plan. Runtime adoption, actual data access, persistence, release, and deployment require the separate production staged-rollout plan and its explicit gates."
   as_of 2026-08-06
   duration_unit point
   velocity 453p/128d
@@ -171,6 +171,7 @@ task T_SOURCE_AUTHORING_SHADOW_POC SOURCE_AUTHORING_CORE_READY -> SOURCE_AUTHORI
   title "Build in-memory ordinary-turn shadow source assembly PoC"
   description "Add a disabled-by-default fail-open in-memory seam exercised only by deterministic local ordinary-turn fixtures to assemble the five owner-stage artifacts. Compare control and shadow outcome next-state narration-input call-trace and persistence-candidate digests; perform no actual-turn data capture DB network provider external LLM XAI canonical battle or persistence writes; and leave production and normal development behavior unchanged."
   duration 2p
+  status done
   requires:
     DEV 1
 
@@ -178,8 +179,10 @@ task T_SOURCE_AUTHORING_EVAL SOURCE_AUTHORING_SHADOW_READY -> SOURCE_AUTHORING_E
   title "Evaluate source availability and non-interference"
   description "Evaluate preregistered positive missing ambiguous contested partial and fail-open ordinary-turn fixtures over twenty replays. Require all five authoritative artifacts for every eligible case complete provenance zero inference rejection of invalid sources deterministic outputs unchanged inputs exact control versus shadow parity and zero extra DB network provider external LLM XAI canonical battle or persistence writes; record supported revise unsupported or indeterminate without treating classifier output as oracle truth."
   duration 2p
+  status blocked
   requires:
     DEV 1
+  blocked_reason "Superseded by the user-directed end of the exploratory PoC phase after T_SOURCE_AUTHORING_SHADOW_POC passed. Continue only through the separate production staged-rollout plan."
 
 task T_CAPTURE_AUTHORITY_REVIEW_V2 SOURCE_AUTHORING_EVALUATED -> CAPTURE_AUTHORITY_REVIEWED_V2:
   title "Review actual-turn capture authority after source-authoring PoC"
@@ -356,6 +359,13 @@ task_outcome OUT_T_SOURCE_AUTHORING_CORE_POC:
   status conformant
   reason "Pure shared source-authoring module packages/shared/src/battle-actual-turn-source-authoring.ts sha256:2838b2e539f54ce5796c345e98436e910fae3ba60b60d86c2dbf64d7f1d43889 and tests sha256:d82584429975e6201621725a9fe0f12c20a68bdbe252edda3c261aa15871f583 implement ordered owner-stage constructors for all five artifacts, exact leaf provenance, six ActionKind mappings, explicit skip and read close, atomic sealing, zero inference, and fail-closed missing duplicate turn digest mutation proxy and dangling-reference behavior. Thirteen targeted tests and all 404 repository tests pass with typecheck and build; runtime hooks backend imports DB network provider external LLM XAI canonical battle and persistence writes remain zero, and actual-turn capture remains unauthorized."
 
+task_outcome OUT_T_SOURCE_AUTHORING_SHADOW_POC:
+  model 1
+  task T_SOURCE_AUTHORING_SHADOW_POC
+  against_basis sha256:32066f3cb348805233f85ba79121fc989c5b9321aacdb7c1b8cc560c34173118
+  status conformant
+  reason "Disabled-by-default shared observer and source-authoring shadow harness preserve immutable input, ignore observer returns, fail open on observer and reporting errors, assemble all five authoritative artifacts for S01-S09, retain exact control versus shadow parity, and add zero database network provider external LLM XAI canonical battle or persistence effects. The targeted three-test suite, full npm test, typecheck, and production build pass. Source harness sha256:08a7fd0533f44ecedae03a1ee44d71bc4ecca2aaf6e5c2524f4c670abbabb9de and corrected protocol-aligned tests sha256:49b53acd449ea3e3bce76b669aee2307098081bc8c2ee1ff99052deefc6a93ca; actual capture, runtime activation, persistence, release, and deployment remain outside this PoC."
+
 work_event WE_SOURCE_AUTHORING_PROTOCOL_START:
   model 1
   task T_SOURCE_AUTHORING_PROTOCOL
@@ -385,3 +395,18 @@ work_event WE_SOURCE_AUTHORING_CORE_POC_FINISH:
   occurred_at 2026-08-06T21:50:00+09:00
   active_time 1/6h
   effort 1/6ph
+
+work_event WE_SOURCE_AUTHORING_SHADOW_POC_START:
+  model 1
+  task T_SOURCE_AUTHORING_SHADOW_POC
+  kind start
+  occurred_at 2026-08-06T21:52:00+09:00
+  planned_value 2p
+
+work_event WE_SOURCE_AUTHORING_SHADOW_POC_FINISH:
+  model 1
+  task T_SOURCE_AUTHORING_SHADOW_POC
+  kind finish
+  occurred_at 2026-08-06T23:30:00+09:00
+  active_time 49/30h
+  effort 49/30ph
