@@ -86,6 +86,48 @@ task T_OBSERVATION_DECISION OBSERVATION_EVALUATED -> OBSERVATION_DECIDED:
   requires:
     DEV 1
 
+milestone INPUT_DERIVATION_PROTOCOL_FIXED:
+  title "Applicability input derivation protocol fixed"
+  state reached
+
+milestone INPUT_DERIVATION_POC_READY:
+  title "Offline applicability input derivation PoC ready"
+
+milestone INPUT_DERIVATION_EVALUATED:
+  title "Applicability input derivability evaluated"
+
+milestone CAPTURE_AUTHORITY_REVIEWED:
+  title "Actual-turn capture authority reviewed after derivability PoC"
+
+task T_INPUT_DERIVATION_PROTOCOL CAPTURE_AUTHORITY_DECIDED -> INPUT_DERIVATION_PROTOCOL_FIXED:
+  title "Freeze applicability input derivation protocol"
+  description "Freeze a field-by-field authoritative source map for allowedFallbacks proposals adaptive reads and issues; define source-produced versus derived or inferred data, preregistered fixtures, effectiveness metrics, fail-closed behavior, and the boundary excluding runtime hooks DB network provider LLM XAI canonical writes persistence release and deployment."
+  duration 1p
+  status done
+  requires:
+    DEV 1
+
+task T_INPUT_DERIVATION_POC INPUT_DERIVATION_PROTOCOL_FIXED -> INPUT_DERIVATION_POC_READY:
+  title "Build offline applicability input derivation PoC"
+  description "Build a pure offline derivability probe over explicit local fixtures and runtime-shaped values. It must emit source provenance for every required field, never infer from events prose cognition speech or narration, reject missing or ambiguous sources, preserve input bytes, and leave battle and runtime services untouched."
+  duration 2p
+  requires:
+    DEV 1
+
+task T_INPUT_DERIVATION_EVAL INPUT_DERIVATION_POC_READY -> INPUT_DERIVATION_EVALUATED:
+  title "Evaluate applicability input derivability"
+  description "Evaluate at least fifteen preregistered cases spanning all five required input areas plus missing and ambiguous controls. Require complete provenance for every emitted field, zero inferred fields, rejection of every missing required source, identical output over twenty replays, unchanged input digests, and record supported revise unsupported or indeterminate without treating classifier output as oracle truth."
+  duration 2p
+  requires:
+    DEV 1
+
+task T_CAPTURE_AUTHORITY_REVIEW INPUT_DERIVATION_EVALUATED -> CAPTURE_AUTHORITY_REVIEWED:
+  title "Review actual-turn capture authority after derivability PoC"
+  description "Freeze the PoC evidence and exact future capture candidate, then obtain a new explicit user decision. Only a conformant approval can unlock runtime hook implementation or actual sampling; a changed unsupported or indeterminate outcome keeps them assurance-withheld."
+  duration 1p
+  requires:
+    DEV 1
+
 plan_seal T_ACTUAL_SAMPLE:
   accepted_contract sha256:98c22a862957ccd42d82be202ccc18c47f7d16bb88e90f71b84bcfd6cbdadacb
   accepted_basis sha256:1ff0a992f7791260c168eb01f4f4f2e75c8d60b0c741431a593d57f99a67cdc3
@@ -176,42 +218,9 @@ task_outcome OUT_T_CAPTURE_AUTHORITY_DECISION:
   summary "Actual-turn capture was deferred because required applicability inputs are not authoritatively derivable from the adopted runtime."
   reason "The user accepted defer for actual-turn-capture-authority-v1 on 2026-08-06. Runtime capture remains unauthorized and input derivability must be evaluated before authority is reconsidered."
 
-milestone INPUT_DERIVATION_PROTOCOL_FIXED:
-  title "Applicability input derivation protocol fixed"
-
-milestone INPUT_DERIVATION_POC_READY:
-  title "Offline applicability input derivation PoC ready"
-
-milestone INPUT_DERIVATION_EVALUATED:
-  title "Applicability input derivability evaluated"
-
-milestone CAPTURE_AUTHORITY_REVIEWED:
-  title "Actual-turn capture authority reviewed after derivability PoC"
-
-task T_INPUT_DERIVATION_PROTOCOL CAPTURE_AUTHORITY_DECIDED -> INPUT_DERIVATION_PROTOCOL_FIXED:
-  title "Freeze applicability input derivation protocol"
-  description "Freeze a field-by-field authoritative source map for allowedFallbacks proposals adaptive reads and issues; define source-produced versus derived or inferred data, preregistered fixtures, effectiveness metrics, fail-closed behavior, and the boundary excluding runtime hooks DB network provider LLM XAI canonical writes persistence release and deployment."
-  duration 1p
-  requires:
-    DEV 1
-
-task T_INPUT_DERIVATION_POC INPUT_DERIVATION_PROTOCOL_FIXED -> INPUT_DERIVATION_POC_READY:
-  title "Build offline applicability input derivation PoC"
-  description "Build a pure offline derivability probe over explicit local fixtures and runtime-shaped values. It must emit source provenance for every required field, never infer from events prose cognition speech or narration, reject missing or ambiguous sources, preserve input bytes, and leave battle and runtime services untouched."
-  duration 2p
-  requires:
-    DEV 1
-
-task T_INPUT_DERIVATION_EVAL INPUT_DERIVATION_POC_READY -> INPUT_DERIVATION_EVALUATED:
-  title "Evaluate applicability input derivability"
-  description "Evaluate at least fifteen preregistered cases spanning all five required input areas plus missing and ambiguous controls. Require complete provenance for every emitted field, zero inferred fields, rejection of every missing required source, identical output over twenty replays, unchanged input digests, and record supported revise unsupported or indeterminate without treating classifier output as oracle truth."
-  duration 2p
-  requires:
-    DEV 1
-
-task T_CAPTURE_AUTHORITY_REVIEW INPUT_DERIVATION_EVALUATED -> CAPTURE_AUTHORITY_REVIEWED:
-  title "Review actual-turn capture authority after derivability PoC"
-  description "Freeze the PoC evidence and exact future capture candidate, then obtain a new explicit user decision. Only a conformant approval can unlock runtime hook implementation or actual sampling; a changed unsupported or indeterminate outcome keeps them assurance-withheld."
-  duration 1p
-  requires:
-    DEV 1
+task_outcome OUT_T_INPUT_DERIVATION_PROTOCOL:
+  model 1
+  task T_INPUT_DERIVATION_PROTOCOL
+  against_basis sha256:a29da895b52290f4d8bf2594c634c936a761a6a81d580f307d19320639bf8c52
+  status conformant
+  reason "Protocol docs/battle-pipeline-actual-turn-input-derivability-protocol.md sha256:9ce6e1f62e7051ba8420e7ebb5aa2ee9591cece002700c4c990eeb2471f2f69b freezes the five-field authoritative source map, twenty preregistered fixtures, hard effectiveness metrics, fail-closed rules, ordinary-runtime availability 0/5, and exclusions for runtime hooks DB network provider LLM XAI canonical writes persistence release and deployment."
