@@ -30,6 +30,7 @@ milestone APPLICABILITY_RECEIPT_BUILT:
 
 milestone APPLICABILITY_REPLAY_DECIDED:
   title "Applicability replay evaluated and decided"
+  state reached
 
 task T_APPLICABILITY_PROTOCOL REVISE_DECISION_ACCEPTED -> APPLICABILITY_PROTOCOL_FIXED:
   title "Freeze conflict-handling applicability semantics"
@@ -51,6 +52,7 @@ task T_APPLICABILITY_REPLAY_DECISION APPLICABILITY_RECEIPT_BUILT -> APPLICABILIT
   title "Evaluate and decide the applicability replay"
   description "Replay seven corrective-v2 strata twenty times. Require exact classification and disposition, three applicable strata, handled over required equal to one, seven-of-seven legacy parity and battle behavior, deterministic stability, hard boundaries, and a supported revise unsupported or indeterminate decision."
   duration 1p
+  status done
   requires:
     DEV 1
 
@@ -86,3 +88,10 @@ task_outcome OUT_T_APPLICABILITY_RECEIPT:
   against_basis sha256:8bf9c13bed9dbaf7c98a6a634979762d53301a17b60553d4171229722905a408
   status conformant
   reason "Accept the additive derived v2 envelope, deterministic trigger-to-evidence classifier, five required counterexamples plus multi-trigger coverage, exact seven-stratum classification, three applicable strata, frozen-parent verification, and seven-of-seven legacy parity"
+
+task_outcome OUT_T_APPLICABILITY_REPLAY_DECISION:
+  model 1
+  task T_APPLICABILITY_REPLAY_DECISION
+  against_basis sha256:37b0f984f8673872605bfa0d66eb099166816557e6e4ca8333de89399360da4c
+  status conformant
+  reason "Accept the supported 140-run result: exact seven classifications and dispositions, exactly three applicable strata, sixty-of-sixty handled applicable runs, seven-of-seven legacy parity and battle behavior, deterministic stability, p95 within 50ms, and all hard boundaries"

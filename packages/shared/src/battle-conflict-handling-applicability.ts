@@ -271,6 +271,14 @@ export type IntegratedShadowTurnReceiptV2 = z.infer<
   typeof IntegratedShadowTurnReceiptV2Schema
 >;
 
+export const ConflictHandlingReferenceAuditSchema = z.object({
+  checkedRefCount: z.number().int().nonnegative(),
+  danglingRefs: z.array(RefSchema),
+}).strict();
+export type ConflictHandlingReferenceAudit = z.infer<
+  typeof ConflictHandlingReferenceAuditSchema
+>;
+
 function uniqueSorted<T extends string>(values: Iterable<T>): T[] {
   return [...new Set(values)].sort((left, right) => left.localeCompare(right));
 }
@@ -494,4 +502,42 @@ export function projectLegacyIntegratedShadowTurnReceipt(
   const receipt = IntegratedShadowTurnReceiptV2Schema.parse(rawReceipt);
   const { conflictHandlingV2: _conflictHandlingV2, ...legacyReceipt } = receipt;
   return IntegratedShadowTurnReceiptSchema.parse(legacyReceipt);
+}
+
+export function auditConflictHandlingV2References(input: {
+  turnInput: IntegratedShadowTurnInput;
+  receipt: IntegratedShadowTurnReceiptV2;
+}): ConflictHandlingReferenceAudit {
+  const turnInput = IntegratedShadowTurnInputSchema.parse(input.turnInput);
+  const receipt = IntegratedShadowTurnReceiptV2Schema.parse(input.receipt);
+  const knownRefs = new Set<string>();
+
+  for (const proposalCase of turnInput.characterInputs.cases) {
+    knownRefs.add(proposalCase.proposal.proposalRef);
+  }
+  if (receipt.adaptive.status === "executed") {
+    for (const contestedClaimRef of receipt.adaptive.result.contestedClaimRefs) {
+      knownRefs.add(contestedClaimRef);
+    }
+    for (const adaptiveReceipt of receipt.adaptive.result.receipts) {
+      knownRefs.add(adaptiveReceipt.proposalRef);
+      if (adaptiveReceipt.fallbackFact) {
+        knownRefs.add(adaptiveReceipt.fallbackFact.id);
+      }
+    }
+  }
+  for (const read of receipt.reads) {
+    knownRefs.add(read.sliceRef);
+    read.check.blockingIssueRefs.forEach((ref) => knownRefs.add(ref));
+  }
+  receipt.issues.forEach((issue) => knownRefs.add(issue.id));
+
+  const referenced = [
+    ...receipt.conflictHandlingV2.applicability.triggerRefs,
+    ...receipt.conflictHandlingV2.handling.evidenceRefs,
+  ];
+  return ConflictHandlingReferenceAuditSchema.parse({
+    checkedRefCount: referenced.length,
+    danglingRefs: uniqueSorted(referenced.filter((ref) => !knownRefs.has(ref))),
+  });
 }

@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import {
+  auditConflictHandlingV2References,
   buildIntegratedShadowTurnReceiptV2,
   projectLegacyIntegratedShadowTurnReceipt,
 } from "@kshiai/shared";
@@ -93,6 +94,13 @@ describe("conflict-handling applicability receipt construction", () => {
           receipt: receiptCase.legacyReceipt,
         }),
         receiptCase.receipt,
+      );
+      assert.deepEqual(
+        auditConflictHandlingV2References({
+          turnInput: receiptCase.turnInput,
+          receipt: receiptCase.receipt,
+        }).danglingRefs,
+        [],
       );
     }
     assert.equal(applicableCount, 3);
