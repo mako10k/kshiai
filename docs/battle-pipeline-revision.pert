@@ -42,6 +42,7 @@ milestone PROJECTION_POC_BUILT:
 
 milestone PROJECTION_EVALUATED:
   title "Projection effectiveness and failure modes evaluated"
+  state reached
 
 milestone PATCH_POC_BUILT:
   title "Bounded canonical-patch prototype built in shadow mode"
@@ -139,6 +140,7 @@ task T_PROJECTION_EVAL PROJECTION_POC_BUILT -> PROJECTION_EVALUATED:
     examples and uncertainty. Do not proceed automatically unless the evidence
     supports a useful bounded projection contract.
   duration 1p
+  status done
   requires:
     DEV 1
 
