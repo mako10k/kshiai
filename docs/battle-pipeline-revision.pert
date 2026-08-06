@@ -17,7 +17,7 @@ project KSHIAI_BATTLE_PIPELINE_REVISION_POC:
     provider-order changes release deployment or legacy cleanup.
   as_of 2026-08-06
   duration_unit point
-  velocity 21p/8d
+  velocity 37p/16d
   finish POC_EVIDENCE_REVIEWED
 
 resource DEV:
@@ -82,6 +82,7 @@ milestone READ_COHERENCE_REVISION_POC_BUILT:
 
 milestone READ_COHERENCE_REVISION_EVALUATED:
   title "Read-coherence causal-order revision evaluated"
+  state reached
 
 milestone GRAPH_POC_BUILT:
   title "In-memory canonical graph view prototype built over BattleState"
@@ -300,6 +301,7 @@ task T_READ_REVISION_EVAL READ_COHERENCE_REVISION_POC_BUILT -> READ_COHERENCE_RE
     Record supported revise unsupported or indeterminate. Do not proceed to the
     graph PoC automatically unless the result is supported.
   duration 1p
+  status done
   requires:
     DEV 1
 
@@ -314,7 +316,7 @@ task T_GRAPH_POC READ_COHERENCE_REVISION_EVALUATED -> GRAPH_POC_BUILT:
     remove existing fields.
   duration 2p
   status blocked
-  blocked_reason "Unblock only after revised read-coherence evidence supports continuation; otherwise replan"
+  blocked_reason "Revision evidence supports continuation; explicit authorization is still required to unblock and start graph work"
   requires:
     DEV 1
 

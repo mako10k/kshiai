@@ -3,13 +3,13 @@
 ## Status
 
 - Task: `T_READ_REVISION_POC`
-- State: built and construction-validated
+- State: built, construction-validated, and formally evaluated
 - Date: 2026-08-06
 - Estimate: 1p
 - Forecast velocity: 2.625p/day
 - Forecast duration: approximately 0.38 day
 - Authority: unchanged shadow-only boundary
-- Evaluation: pending (`T_READ_REVISION_EVAL` remains separate)
+- Evaluation: `supported` (`T_READ_REVISION_EVAL` completed separately)
 
 This revision changes only `select` ranking in
 `packages/shared/src/battle-read-coherence.ts`. The frozen evaluation found that
@@ -48,6 +48,8 @@ The shared regression suite now covers both directions:
 - facts with equal causal and authority ranks remain rejected even when their
   `validFrom` values differ.
 
-These tests show the bounded code path was revised. They are not the formal
-effectiveness decision. `T_READ_REVISION_EVAL` must re-run the unchanged frozen
-20-repetition protocol before graph work can be considered.
+These tests show the bounded code path was revised. The separate
+[`T_READ_REVISION_EVAL`](battle-pipeline-read-coherence-revision-evaluation.md)
+then passed the unchanged frozen 20-repetition protocol: correct selection was
+100%, incorrect selections and causal regressions were both zero, and every
+hard invariant passed. Graph work remains a separate decision lock.
