@@ -1,0 +1,141 @@
+project KSHIAI_BATTLE_PIPELINE_INTEGRATED_SHADOW_POC:
+  version 6
+  title "Integrated shadow-turn evidence plan"
+  description |
+    Evaluate whether the supported bounded battle-pipeline PoCs can compose on
+    one frozen turn transcript without changing the current authoritative
+    BattleState or battle outcome. Freeze transcript inputs and thresholds before
+    implementation, build a shared-only integrated receipt, and measure
+    dependency recall privacy authority causal trace temporal atomicity calls
+    tokens latency and unknown fallback. This plan does not authorize runtime
+    service wiring canonical commit database migration provider-order changes
+    release or deployment. Supported means only that the bounded shadow
+    experiment justifies a separately gated next engineering decision.
+  as_of 2026-08-06
+  duration_unit point
+  velocity 453p/128d
+  finish SHADOW_DECISION_RECORDED
+  plan_assurance_model 1
+  plan_assurance_hash_model 1
+
+resource DEV:
+  title "Developer"
+  capacity 1
+
+milestone PRIOR_POC_SYNTHESIZED:
+  title "Prior bounded PoC evidence synthesis accepted as input"
+  state reached
+
+milestone SHADOW_PROTOCOL_FIXED:
+  title "Integrated shadow-turn hypotheses boundaries and thresholds fixed"
+  state reached
+
+milestone TRANSCRIPT_BASELINE_FROZEN:
+  title "Versioned turn transcripts and authoritative baseline frozen"
+
+milestone INTEGRATED_RECEIPT_BUILT:
+  title "Shared-only integrated shadow-turn receipt built"
+
+milestone INTEGRATED_RECEIPT_EVALUATED:
+  title "Integrated receipt effectiveness and failure modes evaluated"
+
+milestone SHADOW_DECISION_RECORDED:
+  title "Integrated shadow-turn limitations and next gate recorded"
+
+task T_SHADOW_PROTOCOL PRIOR_POC_SYNTHESIZED -> SHADOW_PROTOCOL_FIXED:
+  title "Freeze the integrated shadow-turn evaluation protocol"
+  description |
+    Fix the authority boundary transcript contract scenario strata metrics hard
+    invariants proxy thresholds decision rubric and explicit non-claims before
+    transcript capture or implementation. Keep current BattleState and battle
+    results authoritative and preserve live call reduction as unmeasured.
+  duration 1p
+  status done
+  requires:
+    DEV 1
+
+task T_TRANSCRIPT_BASELINE SHADOW_PROTOCOL_FIXED -> TRANSCRIPT_BASELINE_FROZEN:
+  title "Capture fixed turn transcripts and authoritative controls"
+  description |
+    Add a versioned corpus and repeatable local capture harness for ordinary
+    remote simultaneous interrupted world-process blocking-conflict and
+    exhausted-budget cases. Record schema-valid source BattleState authoritative
+    result proposals expected dependencies boundaries call model provenance and
+    hashes without external LLM calls or runtime service writes.
+  duration 2p
+  requires:
+    DEV 1
+
+task T_INTEGRATED_RECEIPT_POC TRANSCRIPT_BASELINE_FROZEN -> INTEGRATED_RECEIPT_BUILT:
+  title "Build a shared-only integrated shadow-turn receipt"
+  description |
+    Compose compact projections derived graph queries adaptive and world
+    proposals patch audit issue registration and bounded read coherence into one
+    schema-validated receipt. Preserve sourceMutated false
+    authoritativeOutcomeChanged false and canonicalCommitPerformed false.
+  duration 3p
+  requires:
+    DEV 1
+
+task T_INTEGRATED_RECEIPT_EVAL INTEGRATED_RECEIPT_BUILT -> INTEGRATED_RECEIPT_EVALUATED:
+  title "Evaluate integrated shadow-turn effectiveness and interference"
+  description |
+    Run the frozen corpus for twenty deterministic repetitions and measure hard
+    invariants dependency recall receipt coverage conflict handling digest
+    stability latency bytes calls and tokens. Use blind semantic review only if
+    deterministic evidence cannot decide the registered question and record
+    supported revise unsupported or indeterminate without changing thresholds.
+  duration 2p
+  requires:
+    DEV 1
+
+task T_SHADOW_DECISION INTEGRATED_RECEIPT_EVALUATED -> SHADOW_DECISION_RECORDED:
+  title "Record integration limitations interactions and the next gate"
+  description |
+    Separate component evidence from integration effects and record failures
+    unknowns and superseded measurements. Decide only whether another bounded
+    engineering experiment is justified. Keep runtime persistence provider
+    release deployment and objective battle correctness separately gated.
+  duration 1p
+  requires:
+    DEV 1
+
+plan_seal T_INTEGRATED_RECEIPT_EVAL:
+  accepted_contract sha256:1ea5cedad0330e4db43ec9ef0eca7cc648f4a780f504eab7b7f6447d90d88985
+  accepted_basis sha256:57401172e9c94e8799876f67336490706bd57f9d5ace2591793371ce46c30e2c
+  accepted_inputs:
+    T_INTEGRATED_RECEIPT_POC both sha256:402e6f7268fcdbf251500a1883b77bfb654088fac345d684068f1b26aab99bef
+  reason "Accept the pre-registered integrated shadow-turn protocol and task bases"
+
+plan_seal T_INTEGRATED_RECEIPT_POC:
+  accepted_contract sha256:4f3268fa97b7055c931786ec709f044b5879dac657945027e70410d4413cbe06
+  accepted_basis sha256:402e6f7268fcdbf251500a1883b77bfb654088fac345d684068f1b26aab99bef
+  accepted_inputs:
+    T_TRANSCRIPT_BASELINE both sha256:3b2e712e6bccbb2806cc089b77fef75bebd7c17fbc074439191998676f1e8c47
+  reason "Accept the pre-registered integrated shadow-turn protocol and task bases"
+
+plan_seal T_SHADOW_DECISION:
+  accepted_contract sha256:b45cd11a2708cc4d8805e27db093366376e4c3915182bd06ad881e97745abcdb
+  accepted_basis sha256:a0c8a876ec0094d26a038f45dbdd95c00fd5cae8eafff3ccbe38dd1cabf91c8f
+  accepted_inputs:
+    T_INTEGRATED_RECEIPT_EVAL both sha256:57401172e9c94e8799876f67336490706bd57f9d5ace2591793371ce46c30e2c
+  reason "Accept the pre-registered integrated shadow-turn protocol and task bases"
+
+plan_seal T_SHADOW_PROTOCOL:
+  accepted_contract sha256:e0c8ddbb20a9315bb755e524fc5ffe7d7d51cc88097576fc3506ef3a0fd6d98a
+  accepted_basis sha256:def058b483375904211618e05b24021418acd8edd1f6fe8ed7ab8e23d7347042
+  reason "Accept the pre-registered integrated shadow-turn protocol and task bases"
+
+plan_seal T_TRANSCRIPT_BASELINE:
+  accepted_contract sha256:c55cc646daaadb0164cb07c78d5ab87977912332c7a2690f15a50129c9747ec8
+  accepted_basis sha256:3b2e712e6bccbb2806cc089b77fef75bebd7c17fbc074439191998676f1e8c47
+  accepted_inputs:
+    T_SHADOW_PROTOCOL both sha256:def058b483375904211618e05b24021418acd8edd1f6fe8ed7ab8e23d7347042
+  reason "Accept the pre-registered integrated shadow-turn protocol and task bases"
+
+task_outcome OUT_T_SHADOW_PROTOCOL:
+  model 1
+  task T_SHADOW_PROTOCOL
+  against_basis sha256:def058b483375904211618e05b24021418acd8edd1f6fe8ed7ab8e23d7347042
+  status conformant
+  reason "Accept the pre-registered protocol authority boundary and evaluation thresholds"
