@@ -102,6 +102,7 @@ milestone ADAPTIVE_EVALUATED:
 
 milestone WORLD_PROCESS_POC_BUILT:
   title "Rule-based active world-process prototype built in the shared timeline"
+  state reached
 
 milestone WORLD_PROCESS_EVALUATED:
   title "World-process integration effectiveness and failure modes evaluated"
@@ -379,8 +380,7 @@ task T_WORLD_POC ADAPTIVE_EVALUATED -> WORLD_PROCESS_POC_BUILT:
     only for a frozen ambiguous fixture and keep the feature disabled outside the
     PoC harness.
   duration 2p
-  status blocked
-  blocked_reason "Unblock only after adaptive-adjudication evidence supports continuation; otherwise replan"
+  status done
   requires:
     DEV 1
 

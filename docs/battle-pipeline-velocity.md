@@ -22,17 +22,18 @@ must not be interpreted as independently observed multi-day throughput.
 | Scope | Points | Forecast at 4.078125p/day | Qualification |
 |---|---:|---:|---|
 | Completed Adaptive cycle | 5p | 1 observed day | supported for the frozen shadow mechanism |
-| `T_WORLD_POC` | 2p | 0.49 day | blocked pending explicit continuation |
-| `T_WORLD_EVAL` | 1p | 0.25 day | conditional on World Process PoC |
+| `T_WORLD_POC` | 2p | 0.49 day | completed construction estimate |
+| `T_WORLD_EVAL` | 1p | 0.25 day | next separate evaluation; not started |
 | `T_SYNTHESIS` | 2p | 0.49 day | conditional on World Process evaluation |
-| Remaining after Adaptive evaluation | 5p | 1.23 days | conditional on later decision locks |
+| Remaining after World Process PoC | 3p | 0.74 day | conditional on evaluation evidence |
 
 Velocity changes calendar forecasts, not point estimates or evidence gates. A
 faster implementation does not lower evaluation thresholds, automatically
 unblock later tasks, or authorize runtime/persistence changes.
 
-Adaptive construction and evaluation now form the latest completed cycle. Its
-supported result changes the forecast but does not itself unblock World Process.
+Adaptive construction and evaluation remain the latest completed cycle for
+velocity. World Process construction alone does not update the rate;
+recalibration waits for its separate evaluation.
 
 ## Next recalibration
 
