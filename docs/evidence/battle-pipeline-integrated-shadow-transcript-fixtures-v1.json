@@ -1,0 +1,93 @@
+{
+  "schemaVersion": 1,
+  "fixtureVersion": "battle-pipeline-integrated-shadow-transcripts-v1",
+  "frozenAt": "2026-08-06T00:00:00.000Z",
+  "deterministicRepetitions": 20,
+  "thresholds": {
+    "schemaValidityMinimum": 1,
+    "sourceMutationMaximum": 0,
+    "authoritativeOutcomeMismatchMaximum": 0,
+    "canonicalCommitMaximum": 0,
+    "dependencyResolutionMinimum": 1,
+    "distinctOutcomeDigestsMaximumPerScenario": 1
+  },
+  "scenarios": [
+    {
+      "id": "ordinary_fast_action",
+      "runner": "ordinary_fast_action",
+      "stratum": "ordinary_fast_action",
+      "hypothesis": "An ordinary in-range attack provides a stable authoritative control and bounded fast-path shadow input.",
+      "expectedEntityRefs": ["character.a", "character.b"],
+      "expectedPredicates": ["combat.can_fight", "parameter.hp", "relation.distance"],
+      "expectedRuleRefs": ["battle.mechanical-resolution.v1"],
+      "expectedProcessRefs": [],
+      "allowedFallbacks": []
+    },
+    {
+      "id": "remote_rejection",
+      "runner": "remote_rejection",
+      "stratum": "remote_rejection",
+      "hypothesis": "A cross-area requested attack remains rejected in the authoritative control and exposes reachability dependencies.",
+      "expectedEntityRefs": ["character.a", "character.b", "area.remote"],
+      "expectedPredicates": ["relation.distance", "relation.sight", "located_in"],
+      "expectedRuleRefs": ["battle.action-feasibility.v1"],
+      "expectedProcessRefs": [],
+      "allowedFallbacks": ["defense"]
+    },
+    {
+      "id": "simultaneous_terminal_action",
+      "runner": "simultaneous_terminal_action",
+      "stratum": "simultaneous_terminal_action",
+      "hypothesis": "Equal-initiative terminal attacks preserve one authoritative atomic snapshot and two side-neutral shadow proposals.",
+      "expectedEntityRefs": ["character.a", "character.b"],
+      "expectedPredicates": ["combat.can_fight", "parameter.hp"],
+      "expectedRuleRefs": ["battle.temporal.initiative-window.v1"],
+      "expectedProcessRefs": [],
+      "allowedFallbacks": []
+    },
+    {
+      "id": "interrupted_expanded_action",
+      "runner": "interrupted_expanded_action",
+      "stratum": "interrupted_expanded_action",
+      "hypothesis": "A faster authoritative interruption can be paired with a non-authoritative detailed plan whose partial effects cannot change the official result.",
+      "expectedEntityRefs": ["character.a", "character.b"],
+      "expectedPredicates": ["combat.can_fight", "parameter.hp", "actor.mobility"],
+      "expectedRuleRefs": ["battle.temporal.revalidation.v1"],
+      "expectedProcessRefs": [],
+      "allowedFallbacks": ["intermediate", "unknown"]
+    },
+    {
+      "id": "active_world_process",
+      "runner": "active_world_process",
+      "stratum": "active_world_process",
+      "hypothesis": "An authoritative environmental hit and a rule-based active process remain separately attributed in the same fixed turn window.",
+      "expectedEntityRefs": ["character.a", "character.b", "area.1", "source.fire"],
+      "expectedPredicates": ["parameter.hp", "fire.state", "area.fire"],
+      "expectedRuleRefs": ["world-process.fire.v1"],
+      "expectedProcessRefs": ["process.fire.1"],
+      "allowedFallbacks": []
+    },
+    {
+      "id": "blocking_local_conflict",
+      "runner": "blocking_local_conflict",
+      "stratum": "blocking_local_conflict",
+      "hypothesis": "Two same-window claims and conflicting holder facts are preserved for bounded issue and read-coherence handling without source mutation.",
+      "expectedEntityRefs": ["character.a", "character.b", "object.token"],
+      "expectedPredicates": ["held_by"],
+      "expectedRuleRefs": ["battle.exclusive-claim.v1"],
+      "expectedProcessRefs": [],
+      "allowedFallbacks": ["unknown"]
+    },
+    {
+      "id": "exhausted_budget",
+      "runner": "exhausted_budget",
+      "stratum": "exhausted_budget",
+      "hypothesis": "A restrained actor with zero planning-expansion budget retains an intermediate or unknown fallback without forcing success.",
+      "expectedEntityRefs": ["character.a", "character.b"],
+      "expectedPredicates": ["actor.restraint", "restrained", "escape_progress"],
+      "expectedRuleRefs": ["battle.adaptive-budget.v1"],
+      "expectedProcessRefs": [],
+      "allowedFallbacks": ["intermediate", "weak", "unknown"]
+    }
+  ]
+}
