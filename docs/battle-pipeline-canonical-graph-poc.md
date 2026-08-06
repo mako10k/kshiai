@@ -9,8 +9,8 @@
 - Forecast velocity: 2.3125p/day
 - Forecast duration: approximately 0.86 day
 - Authority: read-only in-memory view; no commit or persistence authority
-- Evaluation: active; fixture, evaluator, and protocol frozen while the formal
-  20-repetition run remains separate
+- Evaluation: supported for a discardable in-memory derived view; independent
+  persistence remains unsupported
 
 This prototype tests whether the current `BattleState` JSON can be
 deterministically reconstructed as a bounded, indexed canonical graph view
@@ -97,8 +97,9 @@ outcome parity, latency, memory and serialized growth, index maintenance,
 reconstruction and restart cost, complexity, and rollback behavior.
 
 The separate evaluation definition is frozen in
-`battle-pipeline-canonical-graph-evaluation-protocol.md`. Its construction
-smoke is not formal evidence and does not complete `T_GRAPH_EVAL`.
+`battle-pipeline-canonical-graph-evaluation-protocol.md`. The formal result is
+recorded in `battle-pipeline-canonical-graph-evaluation.md` and does not grant
+runtime or persistence authority.
 
 ## XAI decision
 

@@ -17,7 +17,7 @@ project KSHIAI_BATTLE_PIPELINE_REVISION_POC:
     provider-order changes release deployment or legacy cleanup.
   as_of 2026-08-06
   duration_unit point
-  velocity 37p/16d
+  velocity 101p/32d
   finish POC_EVIDENCE_REVIEWED
 
 resource DEV:
@@ -90,6 +90,7 @@ milestone GRAPH_POC_BUILT:
 
 milestone GRAPH_EVALUATED:
   title "Canonical graph projection value and migration risk evaluated"
+  state reached
 
 milestone ADAPTIVE_POC_BUILT:
   title "Fast coarse and selective-expansion adjudication prototype built"
@@ -331,7 +332,7 @@ task T_GRAPH_EVAL GRAPH_POC_BUILT -> GRAPH_EVALUATED:
     Record supported revise unsupported or indeterminate without treating faster
     queries alone as proof that independent persistence is warranted.
   duration 2p
-  status active
+  status done
   requires:
     DEV 1
 
@@ -347,7 +348,7 @@ task T_ADAPTIVE_POC GRAPH_EVALUATED -> ADAPTIVE_POC_BUILT:
     intermediate weak or unknown states.
   duration 3p
   status blocked
-  blocked_reason "Unblock only after graph evidence supports continuation; otherwise replan"
+  blocked_reason "Graph evidence supports continuation; explicit authorization is still required to unblock and start adaptive adjudication work"
   requires:
     DEV 1
 

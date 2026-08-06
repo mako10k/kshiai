@@ -1,0 +1,491 @@
+{
+  "schemaVersion": 1,
+  "fixtureVersion": "battle-pipeline-canonical-graph-eval-v1",
+  "generatedAt": "2026-08-06T06:42:06.814Z",
+  "mode": "canonical_graph_poc_evaluation",
+  "provenance": {
+    "gitHead": "85115eb104a7b2d8980fc9271abb295502a5693d",
+    "workingTreeDirty": false,
+    "nodeVersion": "v25.1.0",
+    "fixturePath": "docs/evidence/battle-pipeline-canonical-graph-fixtures-v1.json",
+    "fixtureSha256": "7d68ff75f3e476d0a02b235065df80c5bfd2248384aaf0a9cd611791530ebc09",
+    "evaluatorPath": "backend/src/scripts/evaluate-battle-canonical-graph-poc.ts",
+    "evaluatorSha256": "9bf838063ef7db732d9c857cf3ef33857ba5b3c21acdecb34600b43f63dbb5e7",
+    "graphSourcePath": "packages/shared/src/battle-canonical-graph.ts",
+    "graphSourceSha256": "d6405a2d13ea28e4fb7146918c43a4d290de761dddd640b7cb0e0f6909dabd36",
+    "projectionSourcePath": "packages/shared/src/battle-projection.ts",
+    "projectionSourceSha256": "c8e3224987f091d0be6a3ba64fe1ee112264b2cb6682cdca60bddab2f97ac150"
+  },
+  "execution": {
+    "repetitionsPerFixture": 20,
+    "fixtureCount": 4,
+    "graphConstructions": 320,
+    "graphQueries": 80,
+    "projectionComparisons": 480,
+    "externalLlmCallsMade": 0,
+    "xaiUsed": false,
+    "xaiReason": "Every frozen claim is a structured equality, reachability, cost, or authority assertion; semantic judging would add noise.",
+    "indexMaintenanceMode": "discard_and_full_rebuild"
+  },
+  "thresholds": {
+    "projectionFactEqualityMinimum": 1,
+    "projectionScopeEqualityMinimum": 1,
+    "projectionCausalEqualityMinimum": 1,
+    "queryClaimRecallMinimum": 1,
+    "orderIndependenceMinimum": 1,
+    "restartParityMinimum": 1,
+    "committedOutcomeParityMinimum": 1,
+    "rollbackSuccessMinimum": 1,
+    "patchContextRecallMinimum": 1,
+    "dualRepresentationSerializedGrowthRatioMaximum": 3,
+    "p95QueryLatencyMsMaximum": 25,
+    "p95ReconstructionLatencyMsMaximum": 50,
+    "p95RestartLatencyMsMaximum": 75,
+    "p95FullRebuildMaintenanceLatencyMsMaximum": 75,
+    "graphSourceLinesMaximum": 900,
+    "graphExportedDeclarationsMaximum": 20
+  },
+  "fixtures": [
+    {
+      "id": "legacy_minimal",
+      "repetitions": 20,
+      "queryClaims": {
+        "matched": 120,
+        "total": 120,
+        "recall": 1
+      },
+      "parity": {
+        "facts": {
+          "matched": 60,
+          "total": 60,
+          "rate": 1
+        },
+        "scopes": {
+          "matched": 40,
+          "total": 40,
+          "rate": 1
+        },
+        "causalLinks": {
+          "matched": 20,
+          "total": 20,
+          "rate": 1
+        }
+      },
+      "reconstruction": {
+        "orderIndependent": {
+          "matched": 20,
+          "total": 20,
+          "rate": 1
+        },
+        "restartParity": {
+          "matched": 20,
+          "total": 20,
+          "rate": 1
+        },
+        "committedOutcomeParity": {
+          "matched": 20,
+          "total": 20,
+          "rate": 1
+        },
+        "rollbackSuccess": {
+          "matched": 20,
+          "total": 20,
+          "rate": 1
+        }
+      },
+      "patchContext": {
+        "matched": 0,
+        "total": 0,
+        "recall": 1
+      },
+      "cost": {
+        "battleStateBytes": 10864,
+        "graphSnapshotBytes": 4996,
+        "dualRepresentationSerializedGrowthRatio": 1.459867,
+        "retainedHeapDeltaBytesPerGraph": 355198.4,
+        "queryLatencyMs": {
+          "mean": 0.285519,
+          "p95": 0.352893,
+          "minimum": 0.119196,
+          "maximum": 1.872123
+        },
+        "reconstructionLatencyMs": {
+          "mean": 1.062212,
+          "p95": 0.771133,
+          "minimum": 0.461821,
+          "maximum": 10.222815
+        },
+        "restartLatencyMs": {
+          "mean": 2.003342,
+          "p95": 3.193838,
+          "minimum": 1.27611,
+          "maximum": 3.362298
+        },
+        "fullRebuildMaintenanceLatencyMs": {
+          "mean": 0.571542,
+          "p95": 0.876812,
+          "minimum": 0.418754,
+          "maximum": 1.294441
+        }
+      },
+      "indexCoverage": {
+        "entities": true,
+        "facts": true,
+        "factSubjectBuckets": true,
+        "rules": true
+      },
+      "failures": {
+        "schema": 0,
+        "sourceMutation": 0,
+        "committedOutcomeMismatch": 0
+      }
+    },
+    {
+      "id": "connected_process_and_issue",
+      "repetitions": 20,
+      "queryClaims": {
+        "matched": 260,
+        "total": 260,
+        "recall": 1
+      },
+      "parity": {
+        "facts": {
+          "matched": 60,
+          "total": 60,
+          "rate": 1
+        },
+        "scopes": {
+          "matched": 40,
+          "total": 40,
+          "rate": 1
+        },
+        "causalLinks": {
+          "matched": 20,
+          "total": 20,
+          "rate": 1
+        }
+      },
+      "reconstruction": {
+        "orderIndependent": {
+          "matched": 20,
+          "total": 20,
+          "rate": 1
+        },
+        "restartParity": {
+          "matched": 20,
+          "total": 20,
+          "rate": 1
+        },
+        "committedOutcomeParity": {
+          "matched": 20,
+          "total": 20,
+          "rate": 1
+        },
+        "rollbackSuccess": {
+          "matched": 20,
+          "total": 20,
+          "rate": 1
+        }
+      },
+      "patchContext": {
+        "matched": 180,
+        "total": 180,
+        "recall": 1
+      },
+      "cost": {
+        "battleStateBytes": 17275,
+        "graphSnapshotBytes": 19240,
+        "dualRepresentationSerializedGrowthRatio": 2.113748,
+        "retainedHeapDeltaBytesPerGraph": 1247430.8,
+        "queryLatencyMs": {
+          "mean": 0.671927,
+          "p95": 1.003861,
+          "minimum": 0.548565,
+          "maximum": 1.151168
+        },
+        "reconstructionLatencyMs": {
+          "mean": 1.489398,
+          "p95": 1.692777,
+          "minimum": 1.230242,
+          "maximum": 2.594958
+        },
+        "restartLatencyMs": {
+          "mean": 3.043729,
+          "p95": 5.249639,
+          "minimum": 2.548973,
+          "maximum": 6.219903
+        },
+        "fullRebuildMaintenanceLatencyMs": {
+          "mean": 1.671464,
+          "p95": 2.857011,
+          "minimum": 1.265023,
+          "maximum": 3.603662
+        }
+      },
+      "indexCoverage": {
+        "factObjectBuckets": true,
+        "temporalTurnBuckets": true,
+        "causalSourceBuckets": true,
+        "causalTargetBuckets": true,
+        "worldProcesses": true,
+        "issues": true
+      },
+      "failures": {
+        "schema": 0,
+        "sourceMutation": 0,
+        "committedOutcomeMismatch": 0
+      }
+    },
+    {
+      "id": "remote_targeting",
+      "repetitions": 20,
+      "queryClaims": {
+        "matched": 200,
+        "total": 200,
+        "recall": 1
+      },
+      "parity": {
+        "facts": {
+          "matched": 60,
+          "total": 60,
+          "rate": 1
+        },
+        "scopes": {
+          "matched": 40,
+          "total": 40,
+          "rate": 1
+        },
+        "causalLinks": {
+          "matched": 20,
+          "total": 20,
+          "rate": 1
+        }
+      },
+      "reconstruction": {
+        "orderIndependent": {
+          "matched": 20,
+          "total": 20,
+          "rate": 1
+        },
+        "restartParity": {
+          "matched": 20,
+          "total": 20,
+          "rate": 1
+        },
+        "committedOutcomeParity": {
+          "matched": 20,
+          "total": 20,
+          "rate": 1
+        },
+        "rollbackSuccess": {
+          "matched": 20,
+          "total": 20,
+          "rate": 1
+        }
+      },
+      "patchContext": {
+        "matched": 0,
+        "total": 0,
+        "recall": 1
+      },
+      "cost": {
+        "battleStateBytes": 12913,
+        "graphSnapshotBytes": 13965,
+        "dualRepresentationSerializedGrowthRatio": 2.081468,
+        "retainedHeapDeltaBytesPerGraph": 837653.2,
+        "queryLatencyMs": {
+          "mean": 0.601588,
+          "p95": 0.960076,
+          "minimum": 0.4359,
+          "maximum": 1.009445
+        },
+        "reconstructionLatencyMs": {
+          "mean": 1.246307,
+          "p95": 1.879423,
+          "minimum": 0.896799,
+          "maximum": 3.139091
+        },
+        "restartLatencyMs": {
+          "mean": 2.470492,
+          "p95": 4.47986,
+          "minimum": 1.986517,
+          "maximum": 4.804243
+        },
+        "fullRebuildMaintenanceLatencyMs": {
+          "mean": 1.076729,
+          "p95": 1.886414,
+          "minimum": 0.885644,
+          "maximum": 1.89186
+        }
+      },
+      "indexCoverage": {
+        "entities": true,
+        "facts": true,
+        "factObjectBuckets": true,
+        "interactionSourceBuckets": true
+      },
+      "failures": {
+        "schema": 0,
+        "sourceMutation": 0,
+        "committedOutcomeMismatch": 0
+      }
+    },
+    {
+      "id": "committed_history",
+      "repetitions": 20,
+      "queryClaims": {
+        "matched": 160,
+        "total": 160,
+        "recall": 1
+      },
+      "parity": {
+        "facts": {
+          "matched": 60,
+          "total": 60,
+          "rate": 1
+        },
+        "scopes": {
+          "matched": 40,
+          "total": 40,
+          "rate": 1
+        },
+        "causalLinks": {
+          "matched": 20,
+          "total": 20,
+          "rate": 1
+        }
+      },
+      "reconstruction": {
+        "orderIndependent": {
+          "matched": 20,
+          "total": 20,
+          "rate": 1
+        },
+        "restartParity": {
+          "matched": 20,
+          "total": 20,
+          "rate": 1
+        },
+        "committedOutcomeParity": {
+          "matched": 20,
+          "total": 20,
+          "rate": 1
+        },
+        "rollbackSuccess": {
+          "matched": 20,
+          "total": 20,
+          "rate": 1
+        }
+      },
+      "patchContext": {
+        "matched": 0,
+        "total": 0,
+        "recall": 1
+      },
+      "cost": {
+        "battleStateBytes": 24209,
+        "graphSnapshotBytes": 19577,
+        "dualRepresentationSerializedGrowthRatio": 1.808666,
+        "retainedHeapDeltaBytesPerGraph": 1147590.8,
+        "queryLatencyMs": {
+          "mean": 0.68485,
+          "p95": 1.021409,
+          "minimum": 0.488412,
+          "maximum": 3.040938
+        },
+        "reconstructionLatencyMs": {
+          "mean": 1.386656,
+          "p95": 1.604452,
+          "minimum": 1.180435,
+          "maximum": 2.056455
+        },
+        "restartLatencyMs": {
+          "mean": 2.953606,
+          "p95": 3.451951,
+          "minimum": 2.491665,
+          "maximum": 4.233519
+        },
+        "fullRebuildMaintenanceLatencyMs": {
+          "mean": 1.307699,
+          "p95": 1.487236,
+          "minimum": 1.13729,
+          "maximum": 1.588816
+        }
+      },
+      "indexCoverage": {
+        "temporalTurnBuckets": true,
+        "causalSourceBuckets": true,
+        "causalTargetBuckets": true
+      },
+      "failures": {
+        "schema": 0,
+        "sourceMutation": 0,
+        "committedOutcomeMismatch": 0
+      }
+    }
+  ],
+  "implementationComplexity": {
+    "graphSourceLines": 785,
+    "graphExportedDeclarations": 17,
+    "runtimeIntegrationRefCount": 0,
+    "exportedMutationAuthorityCount": 0
+  },
+  "aggregate": {
+    "schemaFailureCount": 0,
+    "sourceMutationCount": 0,
+    "runtimeIntegrationRefCount": 0,
+    "exportedMutationAuthorityCount": 0,
+    "committedOutcomeMismatchCount": 0,
+    "projectionFactEquality": 1,
+    "projectionScopeEquality": 1,
+    "projectionCausalEquality": 1,
+    "queryClaimRecall": 1,
+    "orderIndependence": 1,
+    "restartParity": 1,
+    "committedOutcomeParity": 1,
+    "rollbackSuccess": 1,
+    "patchContextRecall": 1,
+    "maximumDualRepresentationSerializedGrowthRatio": 2.113748,
+    "p95QueryLatencyMs": 1.009445,
+    "p95ReconstructionLatencyMs": 1.879423,
+    "p95RestartLatencyMs": 4.233519,
+    "p95FullRebuildMaintenanceLatencyMs": 1.886414,
+    "hardInvariantsPass": true,
+    "effectivenessPass": true,
+    "costAndComplexityPass": true
+  },
+  "componentAssessment": {
+    "boundedValueObserved": [
+      "entity identity and subject/inverse fact lookup",
+      "causal source and target lookup",
+      "interaction adjacency traversal",
+      "purpose-scoped issue lookup",
+      "bounded patch read context"
+    ],
+    "remainDerived": [
+      "temporal turn views",
+      "active world-process reference list",
+      "rule-reference list",
+      "serialized graph snapshot"
+    ],
+    "incrementalMaintenanceAvailable": false,
+    "independentPersistenceSupported": false
+  },
+  "decision": {
+    "label": "supported",
+    "reasons": [
+      "Every frozen invariant and effectiveness/cost threshold passed for a discardable in-memory derived graph.",
+      "Independent graph persistence remains unsupported by this evidence."
+    ],
+    "boundedRevisionHypotheses": []
+  },
+  "limitations": [
+    "Parity is measured on four frozen structured scenarios, not arbitrary future BattleState shapes.",
+    "Committed-outcome equality proves only that constructing and discarding the view does not change deterministic resolution for this corpus.",
+    "Heap delta is diagnostic because process allocation and garbage collection are not isolated; serialized growth is the stable proxy.",
+    "Full reconstruction is the only index-maintenance strategy in this PoC; no incremental mutation cost is claimed.",
+    "A supported result applies to an ephemeral derived view and does not authorize persistence, runtime wiring, or migration.",
+    "No XAI call was needed because the evaluation has no competing semantic or narrative outputs.",
+    "Passing proxies cannot guarantee a globally consistent or objectively correct final battle result."
+  ]
+}

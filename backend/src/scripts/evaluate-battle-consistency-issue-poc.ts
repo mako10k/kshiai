@@ -928,6 +928,7 @@ function staticAuthorityCheck(issueSourceText: string): {
   ]);
   const allowedSourceFiles = new Set([
     "packages/shared/src/battle-consistency-issue.ts",
+    "backend/src/scripts/evaluate-battle-canonical-graph-poc.ts",
     "backend/src/scripts/evaluate-battle-consistency-issue-poc.ts",
   ]);
   const runtimeIntegrationFileRefs = references.filter((file) =>
