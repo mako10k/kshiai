@@ -1,0 +1,99 @@
+{
+  "schemaVersion": 1,
+  "fixtureVersion": "battle-pipeline-read-coherence-eval-v1",
+  "frozenAt": "2026-08-06",
+  "repetitions": 20,
+  "thresholds": {
+    "conflictDetectionRecallMinimum": 1,
+    "falseConflictRateMaximum": 0,
+    "blockingConflictReductionMinimum": 0.75,
+    "usableReadSuccessMinimum": 1,
+    "correctSelectionRateMinimum": 1,
+    "incorrectFactSelectionCountMaximum": 0,
+    "causalRegressionCountMaximum": 0,
+    "unnecessaryRepairRateMaximum": 0,
+    "unknownFallbackRateMaximum": 0.5,
+    "outOfScopeMutationCountMaximum": 0,
+    "publicHistoryRewriteCountMaximum": 0,
+    "sourceMutationCountMaximum": 0,
+    "authorityRegressionCountMaximum": 0,
+    "repeatedRepairLoopCountMaximum": 0,
+    "limitViolationCountMaximum": 0,
+    "externalLlmCallCountMaximum": 0,
+    "p95LatencyMsMaximum": 50
+  },
+  "scenarios": [
+    {
+      "id": "later_causal_selection",
+      "runner": "later_causal_selection",
+      "expectedInitialLevel": "conflicted",
+      "expectedOutcome": "repaired",
+      "expectedFinalLevel": "repaired",
+      "expectedRetainedFactRef": "fact.location.floor",
+      "expectedUnknownFallback": false,
+      "expectedRepair": true,
+      "expectedUsable": true
+    },
+    {
+      "id": "causal_strength_recency_trap",
+      "runner": "causal_strength_recency_trap",
+      "expectedInitialLevel": "conflicted",
+      "expectedOutcome": "repaired",
+      "expectedFinalLevel": "repaired",
+      "expectedRetainedFactRef": "fact.position.causally-supported",
+      "expectedUnknownFallback": false,
+      "expectedRepair": true,
+      "expectedUsable": true
+    },
+    {
+      "id": "ambiguous_selection_to_unknown",
+      "runner": "ambiguous_selection_to_unknown",
+      "expectedInitialLevel": "conflicted",
+      "expectedOutcome": "repaired",
+      "expectedFinalLevel": "repaired",
+      "expectedUnknownFallback": true,
+      "expectedRepair": true,
+      "expectedUsable": true
+    },
+    {
+      "id": "already_coherent_noop",
+      "runner": "already_coherent_noop",
+      "expectedInitialLevel": "locally_coherent",
+      "expectedOutcome": "unchanged",
+      "expectedFinalLevel": "locally_coherent",
+      "expectedUnknownFallback": false,
+      "expectedRepair": false,
+      "expectedUsable": true
+    },
+    {
+      "id": "truncated_slice_fail_closed",
+      "runner": "truncated_slice_fail_closed",
+      "expectedInitialLevel": "unchecked",
+      "expectedOutcome": "unresolved",
+      "expectedFinalLevel": "unchecked",
+      "expectedUnknownFallback": false,
+      "expectedRepair": false,
+      "expectedUsable": false
+    },
+    {
+      "id": "scope_expansion_to_unknown",
+      "runner": "scope_expansion_to_unknown",
+      "expectedInitialLevel": "conflicted",
+      "expectedOutcome": "repaired",
+      "expectedFinalLevel": "repaired",
+      "expectedUnknownFallback": true,
+      "expectedRepair": true,
+      "expectedUsable": true
+    },
+    {
+      "id": "attempt_cap_preserves_conflict",
+      "runner": "attempt_cap_preserves_conflict",
+      "expectedInitialLevel": "conflicted",
+      "expectedOutcome": "limit_reached",
+      "expectedFinalLevel": "conflicted",
+      "expectedUnknownFallback": false,
+      "expectedRepair": false,
+      "expectedUsable": false
+    }
+  ]
+}

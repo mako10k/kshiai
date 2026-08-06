@@ -266,6 +266,7 @@ task T_READ_EVAL READ_COHERENCE_POC_BUILT -> READ_COHERENCE_EVALUATED:
     supported revise unsupported or indeterminate; an apparently coherent but
     causally weaker result counts as harm rather than success.
   duration 1p
+  status active
   requires:
     DEV 1
 

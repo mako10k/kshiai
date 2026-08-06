@@ -1153,6 +1153,7 @@ function staticAuthorityCheck(patchSourceText: string): {
   ]);
   const allowedSourceFiles = new Set([
     "packages/shared/src/battle-canonical-patch.ts",
+    "packages/shared/src/battle-read-coherence.ts",
     "backend/src/scripts/evaluate-battle-canonical-patch-poc.ts",
   ]);
   const runtimeIntegrationFileRefs = references.filter((file) =>

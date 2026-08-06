@@ -12,6 +12,7 @@
     "eval:battle-pipeline-baseline": "tsx src/scripts/evaluate-battle-pipeline-baseline.ts",
     "eval:battle-pipeline-patch": "tsx src/scripts/evaluate-battle-canonical-patch-poc.ts",
     "eval:battle-pipeline-issues": "tsx src/scripts/evaluate-battle-consistency-issue-poc.ts",
+    "eval:battle-pipeline-read": "tsx src/scripts/evaluate-battle-read-coherence-poc.ts",
     "eval:battle-pipeline-projection": "tsx src/scripts/evaluate-battle-projection-poc.ts",
     "eval:perception-prompts": "tsx src/scripts/evaluate-perception-prompts.ts",
     "battle-state": "tsx src/scripts/battle-semantic-state.ts",
