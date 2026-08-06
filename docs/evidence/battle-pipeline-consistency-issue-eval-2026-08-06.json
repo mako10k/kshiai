@@ -1,0 +1,175 @@
+{
+  "schemaVersion": 1,
+  "fixtureVersion": "battle-pipeline-consistency-issue-eval-v1",
+  "generatedAt": "2026-08-06T04:25:30.717Z",
+  "mode": "consistency_issue_poc_evaluation",
+  "provenance": {
+    "gitHead": "ae57d96f799f93b0aaefca6739abd570d48981b1",
+    "workingTreeDirty": false,
+    "nodeVersion": "v25.1.0",
+    "fixturePath": "docs/evidence/battle-pipeline-consistency-issue-fixtures-v1.json",
+    "fixtureSha256": "be81734527a9b8a285f80af19a9237e6fc42aa2ecee5e980ee1000e0baf7139a",
+    "evaluatorPath": "backend/src/scripts/evaluate-battle-consistency-issue-poc.ts",
+    "evaluatorSha256": "d7ada7525b96a278ea2fe930f7b2ae8a2f9db15d74946e9dd32c86d3574fd8f0",
+    "issueSourcePath": "packages/shared/src/battle-consistency-issue.ts",
+    "issueSourceSha256": "b29d715e45a744cc7cd679768542ea8227e238f7884f314adc9fec36f89e23d5"
+  },
+  "execution": {
+    "repetitionsPerScenario": 20,
+    "scenarioCount": 3,
+    "scenarioRuns": 60,
+    "trueIssueObservations": 240,
+    "falsePositiveBoundaryInputs": 40,
+    "externalLlmCallsMade": 0,
+    "xaiUsed": false,
+    "xaiReason": "Every conflict, duplicate, lifecycle transition, and purpose classification has explicit structured ground truth; XAI would add judgment noise rather than resolve an unmeasured semantic output."
+  },
+  "thresholds": {
+    "issueDetectionRecallMinimum": 1,
+    "falsePositiveRateMaximum": 0,
+    "deduplicationRecallMinimum": 1,
+    "distinctIssuePreservationMinimum": 1,
+    "staleReplayNoOpAccuracyMinimum": 1,
+    "purposeBlockingAccuracyMinimum": 1,
+    "lifecycleTraceabilityMinimum": 1,
+    "actionableIssueRateMinimum": 1,
+    "storageBytesPerUniqueIssueMaximum": 4096,
+    "operatorReviewInflationMaximum": 1,
+    "sourceMutationCountMaximum": 0,
+    "authorityRegressionCountMaximum": 0,
+    "globalCoherenceClaimCountMaximum": 0
+  },
+  "scenarios": [
+    {
+      "id": "mixed_alert_lifecycle",
+      "repetitions": 20,
+      "issueObservationRecall": 1,
+      "falsePositiveRate": null,
+      "deduplicationRecall": 1,
+      "distinctIssuePreservation": 1,
+      "staleReplayNoOpAccuracy": 1,
+      "purposeBlockingAccuracy": 1,
+      "lifecycleTraceability": 1,
+      "actionableIssueRate": 1,
+      "storageBytesPerUniqueIssue": 853.5,
+      "operatorReviewInflation": 1,
+      "finalUniqueIssueCount": 4,
+      "finalUnresolvedReviewItems": 3,
+      "envelopeBytes": {
+        "mean": 3414,
+        "minimum": 3414,
+        "maximum": 3414
+      },
+      "sourceMutationCount": 0,
+      "authorityRegressionCount": 0,
+      "globalCoherenceClaimCount": 0,
+      "observedLifecycleKinds": [
+        "registered",
+        "deduplicated",
+        "registered",
+        "registered",
+        "deferred",
+        "resolved",
+        "registered"
+      ]
+    },
+    {
+      "id": "audit_boundaries_and_ref_less_findings",
+      "repetitions": 20,
+      "issueObservationRecall": 1,
+      "falsePositiveRate": 0,
+      "deduplicationRecall": 1,
+      "distinctIssuePreservation": 1,
+      "staleReplayNoOpAccuracy": 1,
+      "purposeBlockingAccuracy": 1,
+      "lifecycleTraceability": 1,
+      "actionableIssueRate": 1,
+      "storageBytesPerUniqueIssue": 646,
+      "operatorReviewInflation": 1,
+      "finalUniqueIssueCount": 3,
+      "finalUnresolvedReviewItems": 3,
+      "envelopeBytes": {
+        "mean": 1938,
+        "minimum": 1938,
+        "maximum": 1938
+      },
+      "sourceMutationCount": 0,
+      "authorityRegressionCount": 0,
+      "globalCoherenceClaimCount": 0,
+      "observedLifecycleKinds": [
+        "registered",
+        "deduplicated",
+        "registered",
+        "registered"
+      ]
+    },
+    {
+      "id": "purpose_isolation_and_stale_status",
+      "repetitions": 20,
+      "issueObservationRecall": 1,
+      "falsePositiveRate": null,
+      "deduplicationRecall": null,
+      "distinctIssuePreservation": 1,
+      "staleReplayNoOpAccuracy": null,
+      "purposeBlockingAccuracy": 1,
+      "lifecycleTraceability": 1,
+      "actionableIssueRate": 1,
+      "storageBytesPerUniqueIssue": 795.666667,
+      "operatorReviewInflation": 1,
+      "finalUniqueIssueCount": 3,
+      "finalUnresolvedReviewItems": 2,
+      "envelopeBytes": {
+        "mean": 2387,
+        "minimum": 2387,
+        "maximum": 2387
+      },
+      "sourceMutationCount": 0,
+      "authorityRegressionCount": 0,
+      "globalCoherenceClaimCount": 0,
+      "observedLifecycleKinds": [
+        "registered",
+        "registered",
+        "registered",
+        "deferred",
+        "resolved"
+      ]
+    }
+  ],
+  "staticAuthorityCheck": {
+    "runtimeIntegrationFileRefs": [],
+    "exportedCanonicalWriteFunctionCount": 0
+  },
+  "aggregate": {
+    "issueDetectionRecall": 1,
+    "falsePositiveRate": 0,
+    "deduplicationRecall": 1,
+    "distinctIssuePreservation": 1,
+    "staleReplayNoOpAccuracy": 1,
+    "purposeBlockingAccuracy": 1,
+    "lifecycleTraceability": 1,
+    "actionableIssueRate": 1,
+    "storageBytesPerUniqueIssue": 773.9,
+    "operatorReviewInflation": 1,
+    "sourceMutationCount": 0,
+    "authorityRegressionCount": 0,
+    "globalCoherenceClaimCount": 0,
+    "hardInvariantsPass": true,
+    "effectivenessThresholdsPass": true
+  },
+  "decision": {
+    "label": "supported",
+    "reasons": [
+      "Every frozen lifecycle invariant and effectiveness threshold passed."
+    ],
+    "boundedRevisionHypotheses": []
+  },
+  "limitations": [
+    "The frozen stream exercises explicit issue kinds and references; it does not discover contradictions from arbitrary prose.",
+    "Purpose classifications are frozen server-side ground truth for these scenarios, not evidence that an unimplemented classifier generalizes.",
+    "Storage per issue is measured on small in-memory envelopes and does not predict database index or retention cost.",
+    "Operator-review inflation counts unresolved issue views, not human comprehension time or decision quality.",
+    "Static authority scanning checks tracked TypeScript references and exported write-like functions, not every possible dynamic capability.",
+    "No XAI call was needed because the evaluated lifecycle outputs are structured and deterministic.",
+    "A supported result would not prove global consistency or guarantee correct final battle results."
+  ]
+}

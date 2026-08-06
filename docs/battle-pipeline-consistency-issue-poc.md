@@ -9,7 +9,12 @@
 - Forecast velocity: 2.5p/day
 - Forecast duration: 0.4 day
 - Authority: shadow-only; no canonical mutation or persistence wiring
-- Evaluation: in progress (`T_ISSUES_EVAL` remains separate)
+- Evaluation: supported by the frozen protocol (`T_ISSUES_EVAL` completed)
+
+The bounded result is recorded in
+[Battle Pipeline Consistency Issue Lifecycle PoC Evaluation](battle-pipeline-consistency-issue-evaluation.md).
+It supports retaining this shadow lifecycle contract for the frozen cases. It
+does not prove arbitrary contradiction discovery or authorize the next PoC.
 
 This prototype tests whether known consistency problems can be registered,
 deduplicated, deferred, resolved, and classified by purpose without treating
