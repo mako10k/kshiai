@@ -9,7 +9,7 @@
 - Forecast velocity: 4.078125p/day
 - Forecast duration: approximately 0.49 day
 - Authority: projection input and shadow patch output only
-- Evaluation: pending (`T_WORLD_EVAL` remains separate)
+- Evaluation: supported by the frozen protocol (`T_WORLD_EVAL` completed)
 
 This prototype tests whether deterministic environmental processes can propose
 effects in the same temporal window as character actions without gaining
@@ -89,10 +89,11 @@ Six tests cover:
 - rejection of known-state rewrites, inactive processes, and missing triggers;
 - source immutability, zero LLM calls, and zero canonical commits.
 
-These are construction tests, not effectiveness evidence. `T_WORLD_EVAL` must
-measure expected progression, trigger/propagation coverage, conflict handling,
-causal completeness, A/B symmetry, same-bucket atomicity, terminal behavior,
-unsupported invention, local cost, and semantic plausibility.
+These construction tests were followed by the separately frozen evaluation in
+[battle-pipeline-world-process-evaluation.md](battle-pipeline-world-process-evaluation.md).
+Its bounded result is `supported`: every hard invariant and deterministic,
+semantic-proxy, and cost threshold passed. That result applies only to the
+frozen shadow mechanism and does not authorize runtime integration.
 
 ## Limitations
 

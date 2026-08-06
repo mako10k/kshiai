@@ -17,7 +17,7 @@ project KSHIAI_BATTLE_PIPELINE_REVISION_POC:
     provider-order changes release deployment or legacy cleanup.
   as_of 2026-08-06
   duration_unit point
-  velocity 261p/64d
+  velocity 453p/128d
   finish POC_EVIDENCE_REVIEWED
   plan_assurance_model 1
   plan_assurance_hash_model 1
@@ -108,6 +108,7 @@ milestone WORLD_PROCESS_POC_BUILT:
 
 milestone WORLD_PROCESS_EVALUATED:
   title "World-process integration effectiveness and failure modes evaluated"
+  state reached
 
 milestone POC_EVIDENCE_REVIEWED:
   title "PoC evidence limitations and next decisions recorded"
@@ -396,6 +397,7 @@ task T_WORLD_EVAL WORLD_PROCESS_POC_BUILT -> WORLD_PROCESS_EVALUATED:
     no-active-process baseline and record supported revise unsupported or
     indeterminate.
   duration 1p
+  status done
   requires:
     DEV 1
 
@@ -693,3 +695,10 @@ task_outcome OUT_T_WORLD_POC:
   against_basis sha256:26a692667017d1f525b0e0ec4a813aa66682ba86c70df34920774e79b5e7f010
   status conformant
   reason "Accept documented completion evidence during perttool 0.7.1 assurance migration"
+
+task_outcome OUT_T_WORLD_EVAL:
+  model 1
+  task T_WORLD_EVAL
+  against_basis sha256:2d54d4c0be2865478c4fe9c459b14078f65ea23cba9e1911aef0b3e96c260ba1
+  status conformant
+  reason "Accept the frozen supported world-process evaluation evidence"
