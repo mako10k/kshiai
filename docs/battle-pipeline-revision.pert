@@ -1,5 +1,5 @@
 project KSHIAI_BATTLE_PIPELINE_REVISION_POC:
-  version 2
+  version 3
   title "Evidence-driven PoC for the purpose-scoped canonical battle pipeline"
   description |
     Evaluate the interventions proposed by
@@ -43,6 +43,12 @@ milestone PROJECTION_POC_BUILT:
 milestone PROJECTION_EVALUATED:
   title "Projection effectiveness and failure modes evaluated"
   state reached
+
+milestone PROJECTION_REVISION_POC_BUILT:
+  title "Server-side projection revision prototype built"
+
+milestone PROJECTION_REVISION_EVALUATED:
+  title "Projection revision evaluated against the frozen protocol"
 
 milestone PATCH_POC_BUILT:
   title "Bounded canonical-patch prototype built in shadow mode"
@@ -144,7 +150,36 @@ task T_PROJECTION_EVAL PROJECTION_POC_BUILT -> PROJECTION_EVALUATED:
   requires:
     DEV 1
 
-task T_PATCH_POC PROJECTION_EVALUATED -> PATCH_POC_BUILT:
+task T_PROJECTION_REVISION_POC PROJECTION_EVALUATED -> PROJECTION_REVISION_POC_BUILT:
+  title "Revise server-side projection compactness without weakening recall"
+  description |
+    Keep the ObservationSlice boundary and all read-only authority privacy and
+    unchanged-outcome invariants. Revise only the server-side adjudication and
+    consistency representations by deduplicating overlapping world semantic and
+    mechanical claims and using compact purpose-specific DTOs. Preserve anchor
+    relation active-process and recent-causal recall. Do not alter the frozen
+    fixture decision rubric or thresholds, and do not start canonical patches.
+  duration 2p
+  status planned
+  requires:
+    DEV 1
+
+task T_PROJECTION_REVISION_EVAL PROJECTION_REVISION_POC_BUILT -> PROJECTION_REVISION_EVALUATED:
+  title "Re-evaluate the projection revision with the unchanged protocol"
+  description |
+    Re-run the same frozen fixture and 20-repetition protocol. Require zero hard
+    invariant failures decisive-fact recall of at least 0.98 weighted byte
+    reduction of at least 0.30 p95 latency no greater than 25 milliseconds and
+    unchanged baseline outcomes. Record supported revise unsupported or
+    indeterminate. Use XAI only for an actual unresolved semantic ambiguity; it
+    cannot offset a deterministic metric failure. Do not proceed automatically
+    unless the result is supported.
+  duration 1p
+  status planned
+  requires:
+    DEV 1
+
+task T_PATCH_POC PROJECTION_REVISION_EVALUATED -> PATCH_POC_BUILT:
   title "Prototype authority-preserving canonical patches in shadow mode"
   description |
     Add minimal CanonicalFact provenance validity CausalLink assertion
@@ -155,7 +190,7 @@ task T_PATCH_POC PROJECTION_EVALUATED -> PATCH_POC_BUILT:
     existing subsystem authority and atomic commit behavior.
   duration 2p
   status blocked
-  blocked_reason "Unblock only after projection evidence supports continuation; otherwise replan"
+  blocked_reason "Unblock only after T_PROJECTION_REVISION_EVAL records supported; otherwise replan"
   requires:
     DEV 1
 

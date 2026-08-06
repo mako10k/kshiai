@@ -97,8 +97,17 @@ explicitly frozen.
 
 `T_PATCH_POC` remains blocked. A completed evaluation with decision `revise`
 does not satisfy the plan's continuation criterion. The next authorized action
-must be an explicit projection-revision plan or a user decision to accept a
-different tradeoff; it must not silently advance to canonical patches.
+is the explicit revision loop added in plan version 3:
+
+1. `T_PROJECTION_REVISION_POC` (2p) compacts only server-side adjudication and
+   consistency slices while preserving the existing observation boundary,
+   decisive-fact recall, authority, privacy, and unchanged-outcome invariants.
+2. `T_PROJECTION_REVISION_EVAL` (1p) repeats the frozen fixture, 20-repetition
+   protocol, and thresholds without weakening them.
+
+This plan change does not start implementation. `T_PATCH_POC` now depends on
+`PROJECTION_REVISION_EVALUATED` and may be unblocked only if the revision result
+is `supported`; any other verdict requires another explicit replan.
 
 ## Validation commands
 
