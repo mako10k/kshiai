@@ -26,6 +26,7 @@ milestone HELD_OUT_CORPUS_FROZEN:
 
 milestone HELD_OUT_REPLAY_DECIDED:
   title "Held-out generalization replay evaluated and decided"
+  state reached
 
 resource DEV:
   title "Developer"
@@ -51,6 +52,7 @@ task T_HELD_OUT_REPLAY_DECISION HELD_OUT_CORPUS_FROZEN -> HELD_OUT_REPLAY_DECIDE
   title "Evaluate and decide the held-out replay"
   description "Run thirty classifier cases and six integration controls twenty times each for 720 runs. Require exact labels, trigger recall, no-trigger specificity, missing recall, handled and disposition accuracy, distributions, integration and legacy parity, deterministic stability, latency budgets, hard boundaries, and a supported revise unsupported or indeterminate decision."
   duration 1p
+  status done
   requires:
     DEV 1
 
@@ -86,3 +88,10 @@ task_outcome OUT_T_HELD_OUT_CORPUS:
   against_basis sha256:f47bd29dd68aad780eef5c3d64e205470bc2dfff92d0f672dcd115f7d45746cd
   status conformant
   reason "Accept the versioned thirty-case literal oracle, exact registered distributions, six integration transform specifications, frozen lineage and content integrity, construction-only tests, zero classifier enricher external LLM XAI and canonical calls, and unchanged source authority boundaries"
+
+task_outcome OUT_T_HELD_OUT_REPLAY_DECISION:
+  model 1
+  task T_HELD_OUT_REPLAY_DECISION
+  against_basis sha256:e158e9e9aa89e3dead54d6706a37676494c2e74cd192716008becb1b5d4bc423
+  status conformant
+  reason "Accept the supported 720-run held-out decision: exact thirty labels and trigger sets, complete recall for five trigger kinds, exact missing handled disposition distribution and interference metrics, six integration and legacy parity controls, deterministic stability, latency budgets, frozen lineage, and zero mutation canonical external LLM and XAI boundaries"
