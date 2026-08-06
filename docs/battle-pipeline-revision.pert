@@ -19,6 +19,8 @@ project KSHIAI_BATTLE_PIPELINE_REVISION_POC:
   duration_unit point
   velocity 261p/64d
   finish POC_EVIDENCE_REVIEWED
+  plan_assurance_model 1
+  plan_assurance_hash_model 1
 
 resource DEV:
   title "Developer"
@@ -413,3 +415,281 @@ task T_SYNTHESIS WORLD_PROCESS_EVALUATED -> POC_EVIDENCE_REVIEWED:
   duration 2p
   requires:
     DEV 1
+
+plan_seal T_ADAPTIVE_EVAL:
+  accepted_contract sha256:b986341fc1de4e6a50e03f55d18b5651836dda00876e90cd4fb9ef19ae05f37f
+  accepted_basis sha256:9d05aa8848a1baf9c44b0a33f851c5f744b418b5acebe5ce005d66e06e265cbf
+  accepted_inputs:
+    T_ADAPTIVE_POC both sha256:2fc5d036b35d423cda66b8122d95ccc805a99488a0c5c9932b087df4d8beb278
+  reason "Adopt perttool 0.7.1 Grammar 6 and CLI Contract 7 assurance baseline after zero-diagnostic validation"
+
+plan_seal T_ADAPTIVE_POC:
+  accepted_contract sha256:02e5c5a682c338a27b14150bacca6797a3396f66e8a054a5b124028813be26c3
+  accepted_basis sha256:2fc5d036b35d423cda66b8122d95ccc805a99488a0c5c9932b087df4d8beb278
+  accepted_inputs:
+    T_GRAPH_EVAL both sha256:c853aa0b80cd941f14bbb7160e339824ecf826c9e466d3a3d0abab886c2cb05b
+  reason "Adopt perttool 0.7.1 Grammar 6 and CLI Contract 7 assurance baseline after zero-diagnostic validation"
+
+plan_seal T_BASELINE:
+  accepted_contract sha256:45848d30fc69ac9948dc87806a4d76a2e722038498693ab4176cd114ab21543a
+  accepted_basis sha256:be4aa7d82582bb0fabc335a1976c17356558cbd063429b32c7109aee425abf10
+  accepted_inputs:
+    T_DESIGN both sha256:a27c5368cfb84f2b2f52721686366c677155c16d30127d3a11ac9f26f2e6a6bb
+  reason "Adopt perttool 0.7.1 Grammar 6 and CLI Contract 7 assurance baseline after zero-diagnostic validation"
+
+plan_seal T_DESIGN:
+  accepted_contract sha256:3c6da7e5a6bd263a63554bc22359b4727087b06145edba501f6d4930ca89836b
+  accepted_basis sha256:a27c5368cfb84f2b2f52721686366c677155c16d30127d3a11ac9f26f2e6a6bb
+  reason "Adopt perttool 0.7.1 Grammar 6 and CLI Contract 7 assurance baseline after zero-diagnostic validation"
+
+plan_seal T_GRAPH_EVAL:
+  accepted_contract sha256:5bfaf6b072ca8a16c55fee7f16d60c97dfe12c5c406c2b1d63aa5756aa3a7365
+  accepted_basis sha256:c853aa0b80cd941f14bbb7160e339824ecf826c9e466d3a3d0abab886c2cb05b
+  accepted_inputs:
+    T_GRAPH_POC both sha256:711a3bf1fcc27932ef6146575dad3c03f2bc5236e3632dd1f67e702b815d591d
+  reason "Adopt perttool 0.7.1 Grammar 6 and CLI Contract 7 assurance baseline after zero-diagnostic validation"
+
+plan_seal T_GRAPH_POC:
+  accepted_contract sha256:091ef739fe1792dafc278d59fb4cf4190738fa60e113a093c54f23912a633f5c
+  accepted_basis sha256:711a3bf1fcc27932ef6146575dad3c03f2bc5236e3632dd1f67e702b815d591d
+  accepted_inputs:
+    T_READ_REVISION_EVAL both sha256:ef18e476ad55c69edcdcf501903782d6b7b13a7c8b395e8219d2c8b942932500
+  reason "Adopt perttool 0.7.1 Grammar 6 and CLI Contract 7 assurance baseline after zero-diagnostic validation"
+
+plan_seal T_ISSUES_EVAL:
+  accepted_contract sha256:bcd19788031a5c7b0cc8321d08a229846eaf701f0307693b6b9d9dd082474ef9
+  accepted_basis sha256:fd6362641674b979dbd65c32311ff3f1398d19121c04876215c10193e4c90163
+  accepted_inputs:
+    T_ISSUES_POC both sha256:627e6124b005c6561d5334c95b7dd2497f4d642be1691ba3fd66afb15e74cf50
+  reason "Adopt perttool 0.7.1 Grammar 6 and CLI Contract 7 assurance baseline after zero-diagnostic validation"
+
+plan_seal T_ISSUES_POC:
+  accepted_contract sha256:1daa9e0d785df7c7fc8ee1252974ef41b20f3f593e90261bc4a12ba122152a3a
+  accepted_basis sha256:627e6124b005c6561d5334c95b7dd2497f4d642be1691ba3fd66afb15e74cf50
+  accepted_inputs:
+    T_PATCH_EVAL both sha256:6ee884ba5d0f027b83a41356d1e41639e0f4e9ad270e962805531377bd598aa1
+  reason "Adopt perttool 0.7.1 Grammar 6 and CLI Contract 7 assurance baseline after zero-diagnostic validation"
+
+plan_seal T_PATCH_EVAL:
+  accepted_contract sha256:6b64851c52b5c9723f46df8b5555b59512da9383e6d8ef55ae88a5fe512122ab
+  accepted_basis sha256:6ee884ba5d0f027b83a41356d1e41639e0f4e9ad270e962805531377bd598aa1
+  accepted_inputs:
+    T_PATCH_POC both sha256:42d9adde5491f6886268ee1b5245d04c766c0eb7a1028056179e98614e68b9c0
+  reason "Adopt perttool 0.7.1 Grammar 6 and CLI Contract 7 assurance baseline after zero-diagnostic validation"
+
+plan_seal T_PATCH_POC:
+  accepted_contract sha256:6f7047aa82e997823f05945b263c4b1109238ec81242355b8a8403c7193e27e9
+  accepted_basis sha256:42d9adde5491f6886268ee1b5245d04c766c0eb7a1028056179e98614e68b9c0
+  accepted_inputs:
+    T_PROJECTION_REVISION_EVAL both sha256:4b2fb36ee0b9d1b03b78afa9f63ffe38e099fa8316327460e0a8e251d44d785a
+  reason "Adopt perttool 0.7.1 Grammar 6 and CLI Contract 7 assurance baseline after zero-diagnostic validation"
+
+plan_seal T_PROJECTION_EVAL:
+  accepted_contract sha256:1ecceadf3970ac2733956c544507de88b4d5e72f2dbad8a222019302343d1083
+  accepted_basis sha256:41e467cfb089286f11f8284f1c587df16a85bb1b64fc435eb00d8729ecb05a90
+  accepted_inputs:
+    T_PROJECTION_POC both sha256:1325e152859665559352a7ffef49175be7a625f416a596eb42facb591808eeb7
+  reason "Adopt perttool 0.7.1 Grammar 6 and CLI Contract 7 assurance baseline after zero-diagnostic validation"
+
+plan_seal T_PROJECTION_POC:
+  accepted_contract sha256:72ef0512b83a21d9fce8aa280d42f9a98d5acaad037761c793f10fe2f5114647
+  accepted_basis sha256:1325e152859665559352a7ffef49175be7a625f416a596eb42facb591808eeb7
+  accepted_inputs:
+    T_BASELINE both sha256:be4aa7d82582bb0fabc335a1976c17356558cbd063429b32c7109aee425abf10
+  reason "Adopt perttool 0.7.1 Grammar 6 and CLI Contract 7 assurance baseline after zero-diagnostic validation"
+
+plan_seal T_PROJECTION_REVISION_EVAL:
+  accepted_contract sha256:435538cd6ec50e4490fd4a3da3e8886fa3390e303b227a245a9c934dbcbe4eda
+  accepted_basis sha256:4b2fb36ee0b9d1b03b78afa9f63ffe38e099fa8316327460e0a8e251d44d785a
+  accepted_inputs:
+    T_PROJECTION_REVISION_POC both sha256:17a070a37f972170d28c64922056469a816941d7fc6b929dbb0ce1aba0117c06
+  reason "Adopt perttool 0.7.1 Grammar 6 and CLI Contract 7 assurance baseline after zero-diagnostic validation"
+
+plan_seal T_PROJECTION_REVISION_POC:
+  accepted_contract sha256:4f32c1a3106f971e75a014e5d45ff5fa70122247dfd0354c7c0055071d34d811
+  accepted_basis sha256:17a070a37f972170d28c64922056469a816941d7fc6b929dbb0ce1aba0117c06
+  accepted_inputs:
+    T_PROJECTION_EVAL both sha256:41e467cfb089286f11f8284f1c587df16a85bb1b64fc435eb00d8729ecb05a90
+  reason "Adopt perttool 0.7.1 Grammar 6 and CLI Contract 7 assurance baseline after zero-diagnostic validation"
+
+plan_seal T_READ_EVAL:
+  accepted_contract sha256:e244764072c4a8306e0998b55a86394dd4fe81c998479734917b18f86b698218
+  accepted_basis sha256:e323191f4cd017b62c67b3c76cf5997886750124bb9507409332413341df347c
+  accepted_inputs:
+    T_READ_POC both sha256:6d3bc1dab7a23d52238de7c05356d7d25f9565e17d1ac63db17631cd3d053519
+  reason "Adopt perttool 0.7.1 Grammar 6 and CLI Contract 7 assurance baseline after zero-diagnostic validation"
+
+plan_seal T_READ_POC:
+  accepted_contract sha256:81fbae85e6e217231c1778ccbc3729801a5e3f97c884cbd499c67796a88a9e73
+  accepted_basis sha256:6d3bc1dab7a23d52238de7c05356d7d25f9565e17d1ac63db17631cd3d053519
+  accepted_inputs:
+    T_ISSUES_EVAL both sha256:fd6362641674b979dbd65c32311ff3f1398d19121c04876215c10193e4c90163
+  reason "Adopt perttool 0.7.1 Grammar 6 and CLI Contract 7 assurance baseline after zero-diagnostic validation"
+
+plan_seal T_READ_REVISION_EVAL:
+  accepted_contract sha256:7d87524f9f22dd98da07253c89bd941be8211abee7972088ea30561f5ac8169a
+  accepted_basis sha256:ef18e476ad55c69edcdcf501903782d6b7b13a7c8b395e8219d2c8b942932500
+  accepted_inputs:
+    T_READ_REVISION_POC both sha256:c6be34099e46338a1125c18a9c9438a74cb85237c82a54a77bab643752a34075
+  reason "Adopt perttool 0.7.1 Grammar 6 and CLI Contract 7 assurance baseline after zero-diagnostic validation"
+
+plan_seal T_READ_REVISION_POC:
+  accepted_contract sha256:9930fd448b686df98dcdba3ea182df50fe6e6c4c55a67915912220569e657ab1
+  accepted_basis sha256:c6be34099e46338a1125c18a9c9438a74cb85237c82a54a77bab643752a34075
+  accepted_inputs:
+    T_READ_EVAL both sha256:e323191f4cd017b62c67b3c76cf5997886750124bb9507409332413341df347c
+  reason "Adopt perttool 0.7.1 Grammar 6 and CLI Contract 7 assurance baseline after zero-diagnostic validation"
+
+plan_seal T_SYNTHESIS:
+  accepted_contract sha256:e9d1c628ff158e2ca4a3a077e47daeff6b78bde313b15bde0bd49cb287fae5a5
+  accepted_basis sha256:be67072cf88f6d49276856be0a8c7c2094a207cc663ecf9d3bd2a95c4c4a180b
+  accepted_inputs:
+    T_WORLD_EVAL both sha256:2d54d4c0be2865478c4fe9c459b14078f65ea23cba9e1911aef0b3e96c260ba1
+  reason "Adopt perttool 0.7.1 Grammar 6 and CLI Contract 7 assurance baseline after zero-diagnostic validation"
+
+plan_seal T_WORLD_EVAL:
+  accepted_contract sha256:d173901c4b94afabdd66561d6323c25ce6567486d97fdc637b20e0ca33ce5e72
+  accepted_basis sha256:2d54d4c0be2865478c4fe9c459b14078f65ea23cba9e1911aef0b3e96c260ba1
+  accepted_inputs:
+    T_WORLD_POC both sha256:26a692667017d1f525b0e0ec4a813aa66682ba86c70df34920774e79b5e7f010
+  reason "Adopt perttool 0.7.1 Grammar 6 and CLI Contract 7 assurance baseline after zero-diagnostic validation"
+
+plan_seal T_WORLD_POC:
+  accepted_contract sha256:7b8f62549e7983d1b841b6f458e26cf21825767b655c9e3e93a050190b77fe51
+  accepted_basis sha256:26a692667017d1f525b0e0ec4a813aa66682ba86c70df34920774e79b5e7f010
+  accepted_inputs:
+    T_ADAPTIVE_EVAL both sha256:9d05aa8848a1baf9c44b0a33f851c5f744b418b5acebe5ce005d66e06e265cbf
+  reason "Adopt perttool 0.7.1 Grammar 6 and CLI Contract 7 assurance baseline after zero-diagnostic validation"
+
+task_outcome OUT_T_DESIGN:
+  model 1
+  task T_DESIGN
+  against_basis sha256:a27c5368cfb84f2b2f52721686366c677155c16d30127d3a11ac9f26f2e6a6bb
+  status conformant
+  reason "Accept documented completion evidence during perttool 0.7.1 assurance migration"
+
+task_outcome OUT_T_BASELINE:
+  model 1
+  task T_BASELINE
+  against_basis sha256:be4aa7d82582bb0fabc335a1976c17356558cbd063429b32c7109aee425abf10
+  status conformant
+  reason "Accept documented completion evidence during perttool 0.7.1 assurance migration"
+
+task_outcome OUT_T_PROJECTION_POC:
+  model 1
+  task T_PROJECTION_POC
+  against_basis sha256:1325e152859665559352a7ffef49175be7a625f416a596eb42facb591808eeb7
+  status conformant
+  reason "Accept documented completion evidence during perttool 0.7.1 assurance migration"
+
+task_outcome OUT_T_PROJECTION_EVAL:
+  model 1
+  task T_PROJECTION_EVAL
+  against_basis sha256:41e467cfb089286f11f8284f1c587df16a85bb1b64fc435eb00d8729ecb05a90
+  status conformant
+  reason "Accept documented completion evidence during perttool 0.7.1 assurance migration"
+
+task_outcome OUT_T_PROJECTION_REVISION_POC:
+  model 1
+  task T_PROJECTION_REVISION_POC
+  against_basis sha256:17a070a37f972170d28c64922056469a816941d7fc6b929dbb0ce1aba0117c06
+  status conformant
+  reason "Accept documented completion evidence during perttool 0.7.1 assurance migration"
+
+task_outcome OUT_T_PROJECTION_REVISION_EVAL:
+  model 1
+  task T_PROJECTION_REVISION_EVAL
+  against_basis sha256:4b2fb36ee0b9d1b03b78afa9f63ffe38e099fa8316327460e0a8e251d44d785a
+  status conformant
+  reason "Accept documented completion evidence during perttool 0.7.1 assurance migration"
+
+task_outcome OUT_T_PATCH_POC:
+  model 1
+  task T_PATCH_POC
+  against_basis sha256:42d9adde5491f6886268ee1b5245d04c766c0eb7a1028056179e98614e68b9c0
+  status conformant
+  reason "Accept documented completion evidence during perttool 0.7.1 assurance migration"
+
+task_outcome OUT_T_PATCH_EVAL:
+  model 1
+  task T_PATCH_EVAL
+  against_basis sha256:6ee884ba5d0f027b83a41356d1e41639e0f4e9ad270e962805531377bd598aa1
+  status conformant
+  reason "Accept documented completion evidence during perttool 0.7.1 assurance migration"
+
+task_outcome OUT_T_ISSUES_POC:
+  model 1
+  task T_ISSUES_POC
+  against_basis sha256:627e6124b005c6561d5334c95b7dd2497f4d642be1691ba3fd66afb15e74cf50
+  status conformant
+  reason "Accept documented completion evidence during perttool 0.7.1 assurance migration"
+
+task_outcome OUT_T_ISSUES_EVAL:
+  model 1
+  task T_ISSUES_EVAL
+  against_basis sha256:fd6362641674b979dbd65c32311ff3f1398d19121c04876215c10193e4c90163
+  status conformant
+  reason "Accept documented completion evidence during perttool 0.7.1 assurance migration"
+
+task_outcome OUT_T_READ_POC:
+  model 1
+  task T_READ_POC
+  against_basis sha256:6d3bc1dab7a23d52238de7c05356d7d25f9565e17d1ac63db17631cd3d053519
+  status conformant
+  reason "Accept documented completion evidence during perttool 0.7.1 assurance migration"
+
+task_outcome OUT_T_READ_EVAL:
+  model 1
+  task T_READ_EVAL
+  against_basis sha256:e323191f4cd017b62c67b3c76cf5997886750124bb9507409332413341df347c
+  status conformant
+  reason "Accept documented completion evidence during perttool 0.7.1 assurance migration"
+
+task_outcome OUT_T_READ_REVISION_POC:
+  model 1
+  task T_READ_REVISION_POC
+  against_basis sha256:c6be34099e46338a1125c18a9c9438a74cb85237c82a54a77bab643752a34075
+  status conformant
+  reason "Accept documented completion evidence during perttool 0.7.1 assurance migration"
+
+task_outcome OUT_T_READ_REVISION_EVAL:
+  model 1
+  task T_READ_REVISION_EVAL
+  against_basis sha256:ef18e476ad55c69edcdcf501903782d6b7b13a7c8b395e8219d2c8b942932500
+  status conformant
+  reason "Accept documented completion evidence during perttool 0.7.1 assurance migration"
+
+task_outcome OUT_T_GRAPH_POC:
+  model 1
+  task T_GRAPH_POC
+  against_basis sha256:711a3bf1fcc27932ef6146575dad3c03f2bc5236e3632dd1f67e702b815d591d
+  status conformant
+  reason "Accept documented completion evidence during perttool 0.7.1 assurance migration"
+
+task_outcome OUT_T_GRAPH_EVAL:
+  model 1
+  task T_GRAPH_EVAL
+  against_basis sha256:c853aa0b80cd941f14bbb7160e339824ecf826c9e466d3a3d0abab886c2cb05b
+  status conformant
+  reason "Accept documented completion evidence during perttool 0.7.1 assurance migration"
+
+task_outcome OUT_T_ADAPTIVE_POC:
+  model 1
+  task T_ADAPTIVE_POC
+  against_basis sha256:2fc5d036b35d423cda66b8122d95ccc805a99488a0c5c9932b087df4d8beb278
+  status conformant
+  reason "Accept documented completion evidence during perttool 0.7.1 assurance migration"
+
+task_outcome OUT_T_ADAPTIVE_EVAL:
+  model 1
+  task T_ADAPTIVE_EVAL
+  against_basis sha256:9d05aa8848a1baf9c44b0a33f851c5f744b418b5acebe5ce005d66e06e265cbf
+  status conformant
+  reason "Accept documented completion evidence during perttool 0.7.1 assurance migration"
+
+task_outcome OUT_T_WORLD_POC:
+  model 1
+  task T_WORLD_POC
+  against_basis sha256:26a692667017d1f525b0e0ec4a813aa66682ba86c70df34920774e79b5e7f010
+  status conformant
+  reason "Accept documented completion evidence during perttool 0.7.1 assurance migration"
