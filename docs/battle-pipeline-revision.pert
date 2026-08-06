@@ -17,7 +17,7 @@ project KSHIAI_BATTLE_PIPELINE_REVISION_POC:
     provider-order changes release deployment or legacy cleanup.
   as_of 2026-08-06
   duration_unit point
-  velocity 101p/32d
+  velocity 261p/64d
   finish POC_EVIDENCE_REVIEWED
 
 resource DEV:
@@ -98,6 +98,7 @@ milestone ADAPTIVE_POC_BUILT:
 
 milestone ADAPTIVE_EVALUATED:
   title "Adaptive adjudication quality and cost effectiveness evaluated"
+  state reached
 
 milestone WORLD_PROCESS_POC_BUILT:
   title "Rule-based active world-process prototype built in the shared timeline"
@@ -364,6 +365,7 @@ task T_ADAPTIVE_EVAL ADAPTIVE_POC_BUILT -> ADAPTIVE_EVALUATED:
     supported revise unsupported or indeterminate and retain raw scenario-level
     evidence for later review.
   duration 2p
+  status done
   requires:
     DEV 1
 
