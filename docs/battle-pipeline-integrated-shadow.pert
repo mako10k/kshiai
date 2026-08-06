@@ -32,6 +32,7 @@ milestone SHADOW_PROTOCOL_FIXED:
 
 milestone TRANSCRIPT_BASELINE_FROZEN:
   title "Versioned turn transcripts and authoritative baseline frozen"
+  state reached
 
 milestone INTEGRATED_RECEIPT_BUILT:
   title "Shared-only integrated shadow-turn receipt built"
@@ -63,6 +64,7 @@ task T_TRANSCRIPT_BASELINE SHADOW_PROTOCOL_FIXED -> TRANSCRIPT_BASELINE_FROZEN:
     result proposals expected dependencies boundaries call model provenance and
     hashes without external LLM calls or runtime service writes.
   duration 2p
+  status done
   requires:
     DEV 1
 
@@ -139,3 +141,10 @@ task_outcome OUT_T_SHADOW_PROTOCOL:
   against_basis sha256:def058b483375904211618e05b24021418acd8edd1f6fe8ed7ab8e23d7347042
   status conformant
   reason "Accept the pre-registered protocol authority boundary and evaluation thresholds"
+
+task_outcome OUT_T_TRANSCRIPT_BASELINE:
+  model 1
+  task T_TRANSCRIPT_BASELINE
+  against_basis sha256:3b2e712e6bccbb2806cc089b77fef75bebd7c17fbc074439191998676f1e8c47
+  status conformant
+  reason "Accept the frozen seven-strata transcript corpus and clean-tree authoritative baseline"
