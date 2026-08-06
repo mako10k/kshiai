@@ -1,0 +1,86 @@
+{
+  "schemaVersion": 1,
+  "fixtureVersion": "battle-pipeline-world-process-eval-v1",
+  "frozenAt": "2026-08-06T00:00:00.000Z",
+  "deterministicRepetitions": 20,
+  "blindComparisonsPerScenario": 4,
+  "thresholds": {
+    "expectedProgressionRecallMinimum": 1,
+    "triggerDecisionPrecisionMinimum": 1,
+    "triggerDecisionRecallMinimum": 1,
+    "propagationCoverageMinimum": 1,
+    "conflictHandlingCorrectnessMinimum": 1,
+    "causalTraceCompletenessMinimum": 0.98,
+    "baselineProgressionGainMinimum": 0.8,
+    "sideSwapSymmetryMinimum": 1,
+    "sameBucketAtomicityMinimum": 1,
+    "terminalBehaviorCorrectnessMinimum": 1,
+    "unsupportedEnvironmentalInventionsMaximum": 0,
+    "blindActivePreferenceShareMinimum": 0.6,
+    "blindPlausibilityScoreDeltaMinimum": 0.25,
+    "blindContinuityScoreDeltaMinimum": 0.25,
+    "blindJudgmentCoverageMinimum": 0.9,
+    "blindOrderConsistencyMinimum": 0.75,
+    "p95ShadowLatencyMsMaximum": 25,
+    "worldSourceLinesMaximum": 650,
+    "worldExportedDeclarationsMaximum": 20,
+    "ordinaryTurnLlmCallsMaximum": 3,
+    "worldProcessAdditionalLlmCallsMaximum": 0
+  },
+  "scenarios": [
+    {
+      "id": "active_fire_progression",
+      "runner": "active_fire_progression",
+      "hypothesis": "An active fire produces the frozen burning transition while the no-active-process control does not progress.",
+      "blindReview": true
+    },
+    {
+      "id": "support_loss_progression",
+      "runner": "support_loss_progression",
+      "hypothesis": "A recorded support loss makes the supported structure unstable with complete causal attribution.",
+      "blindReview": true
+    },
+    {
+      "id": "multi_target_smoke_propagation",
+      "runner": "multi_target_smoke_propagation",
+      "hypothesis": "One active spread process covers every frozen propagation target without adding another target.",
+      "blindReview": true
+    },
+    {
+      "id": "same_window_character_conflict",
+      "runner": "same_window_character_conflict",
+      "hypothesis": "A character and fall process claiming one posture in the same bucket remain contested and emit no world patch.",
+      "blindReview": true
+    },
+    {
+      "id": "side_swap_symmetry",
+      "runner": "side_swap_symmetry",
+      "hypothesis": "Swapping the character actor label leaves the world receipt and contested claims unchanged.",
+      "blindReview": false
+    },
+    {
+      "id": "different_window_independence",
+      "runner": "different_window_independence",
+      "hypothesis": "A character claim in a later turn does not suppress an earlier fall process.",
+      "blindReview": false
+    },
+    {
+      "id": "bounded_smoke_concretization",
+      "runner": "bounded_smoke_concretization",
+      "hypothesis": "Observed airflow may refine an unknown spread trigger once without rewriting a known state.",
+      "blindReview": true
+    },
+    {
+      "id": "terminal_and_missing_trigger",
+      "runner": "terminal_and_missing_trigger",
+      "hypothesis": "Inactive and untriggered processes terminate as rejected receipts without effects.",
+      "blindReview": false
+    },
+    {
+      "id": "invalid_scope_rule_and_concretization",
+      "runner": "invalid_scope_rule_and_concretization",
+      "hypothesis": "Missing rules, out-of-scope targets, and invalid concretization fail closed without environmental inventions.",
+      "blindReview": false
+    }
+  ]
+}
