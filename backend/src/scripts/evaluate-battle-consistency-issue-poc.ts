@@ -928,6 +928,7 @@ function staticAuthorityCheck(issueSourceText: string): {
   ]);
   const allowedSourceFiles = new Set([
     "packages/shared/src/battle-consistency-issue.ts",
+    "packages/shared/src/battle-integrated-shadow-turn.ts",
     "backend/src/scripts/evaluate-battle-canonical-graph-poc.ts",
     "backend/src/scripts/evaluate-battle-consistency-issue-poc.ts",
   ]);

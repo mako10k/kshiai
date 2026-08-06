@@ -751,6 +751,7 @@ function staticAuthorityCheck(): ReadCoherenceEvaluationReport["staticAuthorityC
   const allowed = new Set([
     "backend/src/scripts/evaluate-battle-read-coherence-poc.test.ts",
     "backend/src/scripts/evaluate-battle-read-coherence-poc.ts",
+    "packages/shared/src/battle-integrated-shadow-turn.ts",
     "packages/shared/src/battle-read-coherence.test.ts",
     "packages/shared/src/battle-read-coherence.ts",
     "packages/shared/src/index.ts",

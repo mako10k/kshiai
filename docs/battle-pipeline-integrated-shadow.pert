@@ -40,6 +40,7 @@ milestone INTEGRATED_RECEIPT_BUILT:
 
 milestone INTEGRATED_RECEIPT_EVALUATED:
   title "Integrated receipt effectiveness and failure modes evaluated"
+  state reached
 
 milestone SHADOW_DECISION_RECORDED:
   title "Integrated shadow-turn limitations and next gate recorded"
@@ -90,6 +91,7 @@ task T_INTEGRATED_RECEIPT_EVAL INTEGRATED_RECEIPT_BUILT -> INTEGRATED_RECEIPT_EV
     deterministic evidence cannot decide the registered question and record
     supported revise unsupported or indeterminate without changing thresholds.
   duration 2p
+  status done
   requires:
     DEV 1
 
@@ -157,3 +159,10 @@ task_outcome OUT_T_INTEGRATED_RECEIPT_POC:
   against_basis sha256:402e6f7268fcdbf251500a1883b77bfb654088fac345d684068f1b26aab99bef
   status conformant
   reason "Accept the shared-only integrated receipt and seven-transcript authority-bound regression evidence"
+
+task_outcome OUT_T_INTEGRATED_RECEIPT_EVAL:
+  model 1
+  task T_INTEGRATED_RECEIPT_EVAL
+  against_basis sha256:57401172e9c94e8799876f67336490706bd57f9d5ace2591793371ce46c30e2c
+  status conformant
+  reason "Accept the fixed 140-run evidence and bounded revise decision without changing thresholds"
