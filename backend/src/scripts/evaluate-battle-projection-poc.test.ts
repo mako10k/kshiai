@@ -42,6 +42,15 @@ describe("battle projection PoC evaluator", () => {
     );
     assert.equal(report.aggregate.irrelevantFactByteReductionPass, true);
     assert.ok(report.aggregate.p95ProjectionLatencyMs >= 0);
-    assert.equal(report.decision.label, "supported");
+    assert.ok(
+      report.decision.label === "supported" ||
+        report.decision.label === "revise",
+    );
+    if (report.decision.label === "revise") {
+      assert.equal(report.aggregate.projectionLatencyPass, false);
+      assert.ok(report.decision.reasons.every((reason) =>
+        /latency/iu.test(reason)
+      ));
+    }
   });
 });

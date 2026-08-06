@@ -1,5 +1,5 @@
 project KSHIAI_BATTLE_PIPELINE_REVISION_POC:
-  version 3
+  version 4
   title "Evidence-driven PoC for the purpose-scoped canonical battle pipeline"
   description |
     Evaluate the interventions proposed by
@@ -17,7 +17,7 @@ project KSHIAI_BATTLE_PIPELINE_REVISION_POC:
     provider-order changes release deployment or legacy cleanup.
   as_of 2026-08-06
   duration_unit point
-  velocity 1p/1d
+  velocity 2p/1d
   finish POC_EVIDENCE_REVIEWED
 
 resource DEV:
@@ -54,6 +54,7 @@ milestone PROJECTION_REVISION_EVALUATED:
 
 milestone PATCH_POC_BUILT:
   title "Bounded canonical-patch prototype built in shadow mode"
+  state reached
 
 milestone PATCH_EVALUATED:
   title "Canonical-patch effectiveness and failure modes evaluated"
@@ -191,8 +192,7 @@ task T_PATCH_POC PROJECTION_REVISION_EVALUATED -> PATCH_POC_BUILT:
     forbidden-state retraction causal revision and size checks while preserving
     existing subsystem authority and atomic commit behavior.
   duration 2p
-  status blocked
-  blocked_reason "Projection revision is supported; await explicit authorization to start the next PoC"
+  status done
   requires:
     DEV 1
 
