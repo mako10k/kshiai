@@ -134,6 +134,58 @@ task T_CAPTURE_AUTHORITY_REVIEW INPUT_DERIVATION_EVALUATED -> CAPTURE_AUTHORITY_
   requires:
     DEV 1
 
+milestone SOURCE_AUTHORING_PROTOCOL_FIXED:
+  title "Source-authoring protocol fixed"
+  state reached
+
+milestone SOURCE_AUTHORING_CORE_READY:
+  title "Pure owner-stage source-authoring PoC ready"
+
+milestone SOURCE_AUTHORING_SHADOW_READY:
+  title "In-memory ordinary-turn shadow source assembly ready"
+
+milestone SOURCE_AUTHORING_EVALUATED:
+  title "Source-authoring availability and non-interference evaluated"
+
+milestone CAPTURE_AUTHORITY_REVIEWED_V2:
+  title "Actual-turn capture authority reviewed after source-authoring PoC"
+
+task T_SOURCE_AUTHORING_PROTOCOL CAPTURE_AUTHORITY_REVIEWED -> SOURCE_AUTHORING_PROTOCOL_FIXED:
+  title "Freeze source-authoring and non-interference protocol"
+  description "Freeze one semantic owner stage for each of turn fallback policy coarse proposal registry adaptive stage receipt purpose read set and consistency issue snapshot; define exact source fields lifecycle provenance invariants runtime-shaped deterministic fixtures availability and parity metrics decision rubric fail-open and fail-closed behavior stop conditions and the boundary excluding actual data capture DB network external providers LLM XAI persistence release and deployment."
+  duration 1p
+  status done
+  requires:
+    DEV 1
+
+task T_SOURCE_AUTHORING_CORE_POC SOURCE_AUTHORING_PROTOCOL_FIXED -> SOURCE_AUTHORING_CORE_READY:
+  title "Build pure owner-stage source-authoring PoC"
+  description "Build pure constructors for the five explicit source artifacts over runtime-shaped local fixtures. Every emitted field must carry exact source provenance; missing ambiguous or cross-inconsistent sources must fail closed; no resolved actions events prose cognition speech narration or fallback outcomes may be used as proxies; and input bytes battle results runtime services and persistence remain unchanged."
+  duration 2p
+  requires:
+    DEV 1
+
+task T_SOURCE_AUTHORING_SHADOW_POC SOURCE_AUTHORING_CORE_READY -> SOURCE_AUTHORING_SHADOW_READY:
+  title "Build in-memory ordinary-turn shadow source assembly PoC"
+  description "Add a disabled-by-default fail-open in-memory seam exercised only by deterministic local ordinary-turn fixtures to assemble the five owner-stage artifacts. Compare control and shadow outcome next-state narration-input call-trace and persistence-candidate digests; perform no actual-turn data capture DB network provider external LLM XAI canonical battle or persistence writes; and leave production and normal development behavior unchanged."
+  duration 2p
+  requires:
+    DEV 1
+
+task T_SOURCE_AUTHORING_EVAL SOURCE_AUTHORING_SHADOW_READY -> SOURCE_AUTHORING_EVALUATED:
+  title "Evaluate source availability and non-interference"
+  description "Evaluate preregistered positive missing ambiguous contested partial and fail-open ordinary-turn fixtures over twenty replays. Require all five authoritative artifacts for every eligible case complete provenance zero inference rejection of invalid sources deterministic outputs unchanged inputs exact control versus shadow parity and zero extra DB network provider external LLM XAI canonical battle or persistence writes; record supported revise unsupported or indeterminate without treating classifier output as oracle truth."
+  duration 2p
+  requires:
+    DEV 1
+
+task T_CAPTURE_AUTHORITY_REVIEW_V2 SOURCE_AUTHORING_EVALUATED -> CAPTURE_AUTHORITY_REVIEWED_V2:
+  title "Review actual-turn capture authority after source-authoring PoC"
+  description "Freeze source-authoring effectiveness evidence and the exact future capture candidate then obtain a new explicit user decision. Only a conformant approval can unlock actual sampling; a changed unsupported or indeterminate outcome keeps runtime capture activation actual data DB network persistence release and deployment assurance-withheld."
+  duration 1p
+  requires:
+    DEV 1
+
 plan_seal T_CAPTURE_AUTHORITY_DECISION:
   accepted_contract sha256:83ecbdd1693b8b69267cfe1681b09b692206db0f5334c5051e211c2610cca0ef
   accepted_basis sha256:b534913460293e09224de86130748d642a560d15b44180f39b9c624856fcffc1
@@ -288,52 +340,24 @@ task_outcome OUT_T_CAPTURE_AUTHORITY_REVIEW:
   summary "Actual-turn capture remains deferred because ordinary-turn authoritative source availability is 0/5."
   reason "The 2026-08-06 input-derivability evaluation passed every transformation gate but found zero of five required authoritative artifacts in the reviewed ordinary runtime. The user requested a source-authoring PoC replan; runtime source authoring, capture, persistence, and external access remain unauthorized."
 
-milestone SOURCE_AUTHORING_PROTOCOL_FIXED:
-  title "Source-authoring protocol fixed"
+task_outcome OUT_T_SOURCE_AUTHORING_PROTOCOL:
+  model 1
+  task T_SOURCE_AUTHORING_PROTOCOL
+  against_basis sha256:a037972d21ccb4069a40c4e3174c9e092c4afc5430c457fe1c7afc528a78bbec
+  status conformant
+  reason "Protocol docs/battle-pipeline-actual-turn-source-authoring-protocol.md sha256:34ef9f701450b78fd9afda85633e3e8e379b7d80e6240474712d831bb6893285 freezes five semantic owners and exact authoring stages, lifecycle and provenance invariants, twenty deterministic cases over four hundred dispositions, exact non-interference gates, supported revise unsupported and indeterminate rules, fail-open shadow and fail-closed evidence behavior, stop conditions, and exclusions for actual capture user data DB network providers external LLM XAI persistence release and deployment."
 
-milestone SOURCE_AUTHORING_CORE_READY:
-  title "Pure owner-stage source-authoring PoC ready"
+work_event WE_SOURCE_AUTHORING_PROTOCOL_START:
+  model 1
+  task T_SOURCE_AUTHORING_PROTOCOL
+  kind start
+  occurred_at 2026-08-06T21:34:00+09:00
+  planned_value 1p
 
-milestone SOURCE_AUTHORING_SHADOW_READY:
-  title "In-memory ordinary-turn shadow source assembly ready"
-
-milestone SOURCE_AUTHORING_EVALUATED:
-  title "Source-authoring availability and non-interference evaluated"
-
-milestone CAPTURE_AUTHORITY_REVIEWED_V2:
-  title "Actual-turn capture authority reviewed after source-authoring PoC"
-
-task T_SOURCE_AUTHORING_PROTOCOL CAPTURE_AUTHORITY_REVIEWED -> SOURCE_AUTHORING_PROTOCOL_FIXED:
-  title "Freeze source-authoring and non-interference protocol"
-  description "Freeze one semantic owner stage for each of turn fallback policy coarse proposal registry adaptive stage receipt purpose read set and consistency issue snapshot; define exact source fields lifecycle provenance invariants runtime-shaped deterministic fixtures availability and parity metrics decision rubric fail-open and fail-closed behavior stop conditions and the boundary excluding actual data capture DB network external providers LLM XAI persistence release and deployment."
-  duration 1p
-  requires:
-    DEV 1
-
-task T_SOURCE_AUTHORING_CORE_POC SOURCE_AUTHORING_PROTOCOL_FIXED -> SOURCE_AUTHORING_CORE_READY:
-  title "Build pure owner-stage source-authoring PoC"
-  description "Build pure constructors for the five explicit source artifacts over runtime-shaped local fixtures. Every emitted field must carry exact source provenance; missing ambiguous or cross-inconsistent sources must fail closed; no resolved actions events prose cognition speech narration or fallback outcomes may be used as proxies; and input bytes battle results runtime services and persistence remain unchanged."
-  duration 2p
-  requires:
-    DEV 1
-
-task T_SOURCE_AUTHORING_SHADOW_POC SOURCE_AUTHORING_CORE_READY -> SOURCE_AUTHORING_SHADOW_READY:
-  title "Build in-memory ordinary-turn shadow source assembly PoC"
-  description "Add a disabled-by-default fail-open in-memory seam exercised only by deterministic local ordinary-turn fixtures to assemble the five owner-stage artifacts. Compare control and shadow outcome next-state narration-input call-trace and persistence-candidate digests; perform no actual-turn data capture DB network provider external LLM XAI canonical battle or persistence writes; and leave production and normal development behavior unchanged."
-  duration 2p
-  requires:
-    DEV 1
-
-task T_SOURCE_AUTHORING_EVAL SOURCE_AUTHORING_SHADOW_READY -> SOURCE_AUTHORING_EVALUATED:
-  title "Evaluate source availability and non-interference"
-  description "Evaluate preregistered positive missing ambiguous contested partial and fail-open ordinary-turn fixtures over twenty replays. Require all five authoritative artifacts for every eligible case complete provenance zero inference rejection of invalid sources deterministic outputs unchanged inputs exact control versus shadow parity and zero extra DB network provider external LLM XAI canonical battle or persistence writes; record supported revise unsupported or indeterminate without treating classifier output as oracle truth."
-  duration 2p
-  requires:
-    DEV 1
-
-task T_CAPTURE_AUTHORITY_REVIEW_V2 SOURCE_AUTHORING_EVALUATED -> CAPTURE_AUTHORITY_REVIEWED_V2:
-  title "Review actual-turn capture authority after source-authoring PoC"
-  description "Freeze source-authoring effectiveness evidence and the exact future capture candidate then obtain a new explicit user decision. Only a conformant approval can unlock actual sampling; a changed unsupported or indeterminate outcome keeps runtime capture activation actual data DB network persistence release and deployment assurance-withheld."
-  duration 1p
-  requires:
-    DEV 1
+work_event WE_SOURCE_AUTHORING_PROTOCOL_FINISH:
+  model 1
+  task T_SOURCE_AUTHORING_PROTOCOL
+  kind finish
+  occurred_at 2026-08-06T21:37:00+09:00
+  active_time 0.05h
+  effort 0.05ph
