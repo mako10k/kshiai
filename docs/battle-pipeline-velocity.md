@@ -73,3 +73,28 @@ After protocol completion, the remaining 3p forecast is approximately
 `0.848d`. These values are planning forecasts, not elapsed-time actuals or
 authority to change the classifier, connect runtime services, persist state,
 release, or deploy.
+
+## Actual-turn shadow-observation update
+
+The held-out generalization plan completed without an independently recorded
+person-day actual, so the provisional velocity remains `453p/128d`
+(`3.5390625p/day`). Repository timestamps and work completed on the same
+calendar date are not treated as throughput observations.
+
+The separately bounded actual-turn read-only shadow-observation PoC is
+estimated at 9p:
+
+| Task | Points | Forecast at 3.5390625p/day |
+|---|---:|---:|
+| Freeze actual-turn observation semantics | 1p | 0.283d |
+| Build the offline read-only observation adapter | 2p | 0.565d |
+| Decide exact actual-turn capture authority | 1p | 0.283d |
+| Capture the approved actual-turn sample | 2p | 0.565d |
+| Evaluate observation effectiveness and distribution | 2p | 0.565d |
+| Record observation limitations and next gate | 1p | 0.283d |
+| Total | 9p | 2.543d |
+
+After protocol completion, the remaining 8p forecast is approximately
+`2.260d`. These are capacity forecasts only. They do not authorize a runtime
+hook, DB or network access, an external LLM or XAI call, raw user-data capture,
+canonical or persistence writes, classifier changes, release, or deployment.

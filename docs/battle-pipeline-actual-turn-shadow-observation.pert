@@ -1,0 +1,130 @@
+# Existing .pert plans should normally be maintained through perttool commands; direct DSL editing bypasses goal/DAG owner-confirmation checks.
+project KSHIAI_BATTLE_PIPELINE_ACTUAL_TURN_SHADOW_OBSERVATION:
+  version 6
+  title "Actual-turn read-only shadow observation PoC"
+  description "Determine whether actual resolved turns can produce a privacy-safe read-only conflict-handling observation envelope and descriptive distribution without changing battle results call topology canonical state persistence or provider behavior. Freeze the protocol, build an offline adapter, require a separate exact capture-authority decision, capture only an approved local export, evaluate fixed sufficiency and boundary gates, and record a limited decision. This plan does not authorize runtime hook implementation or activation, DB or network access, external LLM or XAI calls, raw user-data commits, classifier changes, canonical writes, persistence, release, or deployment."
+  as_of 2026-08-06
+  duration_unit point
+  velocity 453p/128d
+  finish OBSERVATION_DECIDED
+  goal_owner user
+  dag_owner user
+  plan_assurance_model 1
+  plan_assurance_hash_model 1
+
+milestone HELD_OUT_GENERALIZATION_SUPPORTED:
+  title "Held-out conflict-handling generalization supported"
+  state reached
+
+milestone OBSERVATION_PROTOCOL_FIXED:
+  title "Actual-turn shadow observation protocol fixed"
+  state reached
+
+milestone OFFLINE_OBSERVER_READY:
+  title "Offline read-only observer and source sufficiency audit ready"
+
+milestone CAPTURE_AUTHORITY_DECIDED:
+  title "Exact actual-turn capture authority decided"
+
+milestone ACTUAL_SAMPLE_FROZEN:
+  title "Approved privacy-safe actual-turn sample frozen"
+
+milestone OBSERVATION_EVALUATED:
+  title "Actual-turn observation effectiveness and distribution evaluated"
+
+milestone OBSERVATION_DECIDED:
+  title "Actual-turn shadow observation limitations and next gate recorded"
+
+resource DEV:
+  title "Developer"
+  capacity 1
+
+task T_OBSERVATION_PROTOCOL HELD_OUT_GENERALIZATION_SUPPORTED -> OBSERVATION_PROTOCOL_FIXED:
+  title "Freeze actual-turn observation semantics"
+  description "Freeze the existing persisted-record insufficiency, server-only envelope, privacy and authority boundary, offline-only adapter contract, sample sufficiency, metrics, descriptive distribution, decision rubric, stop conditions, capture-approval requirements, and non-claims before implementation."
+  duration 1p
+  status done
+  requires:
+    DEV 1
+
+task T_OFFLINE_OBSERVER OBSERVATION_PROTOCOL_FIXED -> OFFLINE_OBSERVER_READY:
+  title "Build the offline read-only observation adapter"
+  description "Add a strict versioned envelope and local-file-only adapter that validates explicit inputs, hashes source bytes before and after, reports persisted-record field insufficiency without inference, redacts direct identity and prose, and has no DB network provider external LLM XAI canonical persistence or runtime imports."
+  duration 2p
+  requires:
+    DEV 1
+
+task T_CAPTURE_AUTHORITY_DECISION OFFLINE_OBSERVER_READY -> CAPTURE_AUTHORITY_DECIDED:
+  title "Decide exact actual-turn capture authority"
+  description "Freeze the exact hook point read allow-list zero-write enforcement ignored destination maximum records duration pseudonymization timeout fail-open behavior environment identity disable and rollback procedure, then obtain an explicit user decision before any runtime hook implementation activation DB or network access."
+  duration 1p
+  requires:
+    DEV 1
+
+task T_ACTUAL_SAMPLE CAPTURE_AUTHORITY_DECIDED -> ACTUAL_SAMPLE_FROZEN:
+  title "Capture the approved actual-turn sample"
+  description "Only after a conformant explicit authority decision, capture the first eligible privacy-safe envelopes into an ignored local source, require at least fifty turns across ten battles and two dates, commit only a redacted digest manifest, and stop indeterminate rather than accessing another environment or fabricating missing samples."
+  duration 2p
+  requires:
+    DEV 1
+
+task T_OBSERVATION_EVAL ACTUAL_SAMPLE_FROZEN -> OBSERVATION_EVALUATED:
+  title "Evaluate observation effectiveness and distribution"
+  description "Replay each frozen envelope twenty times and require schema lineage mutation privacy completeness structural-reference determinism and latency gates while reporting trigger handling disposition insufficiency and held-out distribution differences descriptively without treating classifier output as oracle truth."
+  duration 2p
+  requires:
+    DEV 1
+
+task T_OBSERVATION_DECISION OBSERVATION_EVALUATED -> OBSERVATION_DECIDED:
+  title "Record observation limitations and next gate"
+  description "Decide supported revise unsupported or indeterminate for the read-only observation method only, preserve the absence of an actual-turn accuracy oracle, and keep classifier changes runtime adoption persistence release and deployment separately gated."
+  duration 1p
+  requires:
+    DEV 1
+
+plan_seal T_ACTUAL_SAMPLE:
+  accepted_contract sha256:97fd84d270cebe2d90493c5609ff99e007febfc33be8ca5bff071df6dd61e72a
+  accepted_basis sha256:f8d00ed754d78e1a220c11eecd369af183d7b4223f3d2d9dbdd10c5872ac4481
+  accepted_inputs:
+    T_CAPTURE_AUTHORITY_DECISION both sha256:b534913460293e09224de86130748d642a560d15b44180f39b9c624856fcffc1
+  reason "Freeze the reviewed actual-turn read-only shadow-observation PoC baseline before implementation or capture authority"
+
+plan_seal T_CAPTURE_AUTHORITY_DECISION:
+  accepted_contract sha256:83ecbdd1693b8b69267cfe1681b09b692206db0f5334c5051e211c2610cca0ef
+  accepted_basis sha256:b534913460293e09224de86130748d642a560d15b44180f39b9c624856fcffc1
+  accepted_inputs:
+    T_OFFLINE_OBSERVER both sha256:015ab0efc9eaa791f1417519472a977ce9e021196c81a87089d7671b2a441227
+  reason "Freeze the reviewed actual-turn read-only shadow-observation PoC baseline before implementation or capture authority"
+
+plan_seal T_OBSERVATION_DECISION:
+  accepted_contract sha256:ce807d375c1a5963ee07c43481a491667f92de15bb943b1c4ec91a02e72d09bb
+  accepted_basis sha256:ec6cb5194a9d8838467c5220cbb6dbfa72fd325e743e2d80eb97d77baf15f798
+  accepted_inputs:
+    T_OBSERVATION_EVAL both sha256:6e9419b99c39e0545a420863822702bbddbe9577f26273015e891f94c7ba2a5d
+  reason "Freeze the reviewed actual-turn read-only shadow-observation PoC baseline before implementation or capture authority"
+
+plan_seal T_OBSERVATION_EVAL:
+  accepted_contract sha256:8d25aee9cb896570faf18d30bcc20a55d82727beaf199009b7045914070a03c9
+  accepted_basis sha256:6e9419b99c39e0545a420863822702bbddbe9577f26273015e891f94c7ba2a5d
+  accepted_inputs:
+    T_ACTUAL_SAMPLE both sha256:f8d00ed754d78e1a220c11eecd369af183d7b4223f3d2d9dbdd10c5872ac4481
+  reason "Freeze the reviewed actual-turn read-only shadow-observation PoC baseline before implementation or capture authority"
+
+plan_seal T_OBSERVATION_PROTOCOL:
+  accepted_contract sha256:4f7a51686e0e0cf155122327af679412880d74b7ad9d7cdee3afb124b6b40de0
+  accepted_basis sha256:996c695d42c8c0529df3e64777fe7967dd892266a0b20b2dea0610ebb9e18641
+  reason "Freeze the reviewed actual-turn read-only shadow-observation PoC baseline before implementation or capture authority"
+
+plan_seal T_OFFLINE_OBSERVER:
+  accepted_contract sha256:d3d880613064c43e85a109ff908375a4a2e48924656ddbecf9fd5ab97cde69f1
+  accepted_basis sha256:015ab0efc9eaa791f1417519472a977ce9e021196c81a87089d7671b2a441227
+  accepted_inputs:
+    T_OBSERVATION_PROTOCOL both sha256:996c695d42c8c0529df3e64777fe7967dd892266a0b20b2dea0610ebb9e18641
+  reason "Freeze the reviewed actual-turn read-only shadow-observation PoC baseline before implementation or capture authority"
+
+task_outcome OUT_T_OBSERVATION_PROTOCOL:
+  model 1
+  task T_OBSERVATION_PROTOCOL
+  against_basis sha256:996c695d42c8c0529df3e64777fe7967dd892266a0b20b2dea0610ebb9e18641
+  status conformant
+  reason "The protocol records persisted-turn insufficiency, rejects prose-based inference, fixes a server-only privacy-safe envelope, local-file-only adapter boundary, sample and effectiveness gates, descriptive-only claims, and a separate capture-authority decision before runtime or data access."
