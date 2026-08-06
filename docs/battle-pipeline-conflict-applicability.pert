@@ -26,6 +26,7 @@ milestone APPLICABILITY_PROTOCOL_FIXED:
 
 milestone APPLICABILITY_RECEIPT_BUILT:
   title "Versioned applicability receipt built"
+  state reached
 
 milestone APPLICABILITY_REPLAY_DECIDED:
   title "Applicability replay evaluated and decided"
@@ -42,6 +43,7 @@ task T_APPLICABILITY_RECEIPT APPLICABILITY_PROTOCOL_FIXED -> APPLICABILITY_RECEI
   title "Build the versioned applicability receipt"
   description "Add a deterministic v2 envelope and counterexample tests without changing the legacy receipt or authoritative behavior. Record capability, trigger, handling, disposition, stable refs, and a legacy projection that removes only the new envelope."
   duration 1p
+  status done
   requires:
     DEV 1
 
@@ -77,3 +79,10 @@ task_outcome OUT_T_APPLICABILITY_PROTOCOL:
   against_basis sha256:f0d1125fce69d8e4d9729f8439237f382028f0d89f47bbeb758be06a808ab669
   status conformant
   reason "Accept separated capability, applicability, evidence and disposition semantics, seven fixed classifications, exactly three applicable strata, counterexamples, strict metrics, lineage, and stop conditions"
+
+task_outcome OUT_T_APPLICABILITY_RECEIPT:
+  model 1
+  task T_APPLICABILITY_RECEIPT
+  against_basis sha256:8bf9c13bed9dbaf7c98a6a634979762d53301a17b60553d4171229722905a408
+  status conformant
+  reason "Accept the additive derived v2 envelope, deterministic trigger-to-evidence classifier, five required counterexamples plus multi-trigger coverage, exact seven-stratum classification, three applicable strata, frozen-parent verification, and seven-of-seven legacy parity"
