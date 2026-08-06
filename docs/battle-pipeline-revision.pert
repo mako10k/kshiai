@@ -94,6 +94,7 @@ milestone GRAPH_EVALUATED:
 
 milestone ADAPTIVE_POC_BUILT:
   title "Fast coarse and selective-expansion adjudication prototype built"
+  state reached
 
 milestone ADAPTIVE_EVALUATED:
   title "Adaptive adjudication quality and cost effectiveness evaluated"
@@ -347,8 +348,7 @@ task T_ADAPTIVE_POC GRAPH_EVALUATED -> ADAPTIVE_POC_BUILT:
     execution, enforce per-purpose budgets, and degrade unsupported detail toward
     intermediate weak or unknown states.
   duration 3p
-  status blocked
-  blocked_reason "Graph evidence supports continuation; explicit authorization is still required to unblock and start adaptive adjudication work"
+  status done
   requires:
     DEV 1
 

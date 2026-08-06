@@ -14,6 +14,7 @@ export * from "./battle-temporal-rules.js";
 export * from "./battle-world.js";
 export * from "./battle-projection.js";
 export * from "./battle-canonical-graph.js";
+export * from "./battle-adaptive-adjudication.js";
 export * from "./battle-canonical-patch.js";
 export * from "./battle-consistency-issue.js";
 export * from "./battle-read-coherence.js";

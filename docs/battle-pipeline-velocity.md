@@ -22,13 +22,16 @@ as independently observed multi-day throughput.
 | Scope | Points | Forecast at 3.15625p/day | Qualification |
 |---|---:|---:|---|
 | Completed Graph cycle | 4p | 1 observed day | supported for an in-memory derived view |
-| `T_ADAPTIVE_POC` | 3p | 0.95 day | blocked; requires separate authorization |
-| `T_ADAPTIVE_EVAL` | 2p | 0.63 day | conditional on Adaptive PoC construction |
-| Remaining after Graph evaluation | 10p | 3.17 days | conditional on later decision locks opening |
+| `T_ADAPTIVE_POC` | 3p | 0.95 day | completed construction estimate |
+| `T_ADAPTIVE_EVAL` | 2p | 0.63 day | next separate evaluation; not started |
+| Remaining after Adaptive PoC | 7p | 2.22 days | conditional on Adaptive and later evidence |
 
 Velocity changes calendar forecasts, not point estimates or evidence gates. A
 faster implementation does not lower evaluation thresholds, automatically
 unblock later tasks, or authorize runtime/persistence changes.
+
+Adaptive construction completion alone does not update velocity. Recalibration
+waits for the bounded Adaptive PoC plus evaluation cycle to finish.
 
 ## Next recalibration
 
