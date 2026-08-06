@@ -78,6 +78,7 @@ milestone READ_COHERENCE_EVALUATED:
 
 milestone READ_COHERENCE_REVISION_POC_BUILT:
   title "Causal-order selection guard revision built"
+  state reached
 
 milestone READ_COHERENCE_REVISION_EVALUATED:
   title "Read-coherence causal-order revision evaluated"
@@ -286,8 +287,7 @@ task T_READ_REVISION_POC READ_COHERENCE_EVALUATED -> READ_COHERENCE_REVISION_POC
     shadow-only scope history authority fallback and limit boundaries. Do not
     change the frozen fixture rubric or start graph work.
   duration 1p
-  status blocked
-  blocked_reason "Requires explicit authorization after the read-coherence revise result"
+  status done
   requires:
     DEV 1
 

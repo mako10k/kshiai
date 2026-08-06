@@ -413,7 +413,6 @@ function causalStrength(slice: ConsistencySlice, factRef: string): number {
 
 function rankFact(slice: ConsistencySlice, fact: ShadowCanonicalFact): number[] {
   return [
-    fact.validFrom.turn,
     causalStrength(slice, fact.id),
     authorityStrength(fact.provenance.authority),
   ];

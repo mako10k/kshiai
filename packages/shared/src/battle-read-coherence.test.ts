@@ -199,7 +199,7 @@ describe("purpose-scoped read coherence PoC", () => {
     assert.match(result.reason, /bounded fact limit/u);
   });
 
-  it("selects only a uniquely stronger later fact and previews a rebuilt read", () => {
+  it("selects only a uniquely stronger causal fact and previews a rebuilt read", () => {
     const slice = consistencySlice();
     const facts = conflictFacts();
     const beforeSlice = structuredClone(slice);
@@ -243,6 +243,38 @@ describe("purpose-scoped read coherence PoC", () => {
     assert.equal(run.sourceSliceMutated, false);
     assert.deepEqual(slice, beforeSlice);
     assert.deepEqual(facts, beforeFacts);
+  });
+
+  it("keeps stronger causal evidence even when the weaker fact is newer", () => {
+    const facts = conflictFacts().map((item, index) =>
+      ShadowCanonicalFactSchema.parse(index === 0
+        ? item
+        : {
+            ...item,
+            provenance: {
+              subsystem: "repair",
+              authority: "repair",
+              sourceRef: "repair:weak-recent",
+              sourceEventRefs: ["repair:weak-recent"],
+            },
+          })
+    );
+    const slice = consistencySlice({ facts });
+    slice.causalLinks = [
+      ["event.1", "fact.sword.held", "modified"],
+      ["repair:weak-recent", "fact.sword.floor", "created"],
+    ];
+
+    const proposal = proposeShadowConsistencyRepair({
+      slice,
+      currentFacts: facts,
+      plan: plan("select"),
+    });
+
+    assert.equal(proposal.status, "proposed");
+    if (proposal.status !== "proposed") return;
+    assert.deepEqual(proposal.retainedFactRefs, ["fact.sword.held"]);
+    assert.deepEqual(proposal.retractedFactRefs, ["fact.sword.floor"]);
   });
 
   it("emits audited repair-authority assertions for every fallback strategy", () => {
@@ -295,10 +327,10 @@ describe("purpose-scoped read coherence PoC", () => {
   });
 
   it("rejects ambiguous selection, incomplete context, and scope expansion", () => {
-    const tiedFacts = conflictFacts().map((item) =>
+    const tiedFacts = conflictFacts().map((item, index) =>
       ShadowCanonicalFactSchema.parse({
         ...item,
-        validFrom: { turn: 1 },
+        validFrom: { turn: index + 1 },
         provenance: {
           ...item.provenance,
           subsystem: "semantic",

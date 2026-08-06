@@ -10,7 +10,7 @@ const repositoryRoot = path.resolve(
 );
 
 describe("battle read-coherence PoC evaluator", () => {
-  it("counts a coherent but causally weaker selection as revision-worthy harm", async () => {
+  it("requires causal selection safety before supporting the revision", async () => {
     const report = await evaluateReadCoherencePoc({
       fixturePath: path.join(
         repositoryRoot,
@@ -26,9 +26,9 @@ describe("battle read-coherence PoC evaluator", () => {
     assert.equal(report.aggregate.falseConflictRate, 0);
     assert.equal(report.aggregate.blockingConflictReduction, 0.8);
     assert.equal(report.aggregate.usableReadSuccess, 1);
-    assert.equal(report.aggregate.correctSelectionRate, 0.5);
-    assert.equal(report.aggregate.incorrectFactSelectionCount, 1);
-    assert.equal(report.aggregate.causalRegressionCount, 1);
+    assert.equal(report.aggregate.correctSelectionRate, 1);
+    assert.equal(report.aggregate.incorrectFactSelectionCount, 0);
+    assert.equal(report.aggregate.causalRegressionCount, 0);
     assert.equal(report.aggregate.unnecessaryRepairRate, 0);
     assert.equal(report.aggregate.unknownFallbackRate, 0.5);
     assert.equal(report.aggregate.outOfScopeMutationCount, 0);
@@ -38,12 +38,9 @@ describe("battle read-coherence PoC evaluator", () => {
     assert.equal(report.aggregate.repeatedRepairLoopCount, 0);
     assert.equal(report.aggregate.limitViolationCount, 0);
     assert.equal(report.aggregate.hardInvariantsPass, true);
-    assert.equal(report.aggregate.effectivenessThresholdsPass, false);
-    assert.equal(report.decision.label, "revise");
-    assert.match(
-      report.decision.boundedRevisionHypotheses.join(" "),
-      /causal-link strength/u,
-    );
+    assert.equal(report.aggregate.effectivenessThresholdsPass, true);
+    assert.equal(report.decision.label, "supported");
+    assert.deepEqual(report.decision.boundedRevisionHypotheses, []);
     assert.deepEqual(report.staticAuthorityCheck.runtimeIntegrationFileRefs, []);
     assert.equal(
       report.staticAuthorityCheck.exportedCanonicalWriteFunctionCount,
