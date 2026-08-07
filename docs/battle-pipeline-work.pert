@@ -2,14 +2,14 @@
 project KSHIAI_BATTLE_PIPELINE_WORK_V4:
   version 6
   title "Observation-driven battle-pipeline renewal"
-  description "Use persistent production E2E evidence to order axial battle-pipeline slices. Preserve the causal receipt, isolated E2E realm, and Site A, Site B, narrator I/O DAG. The v0.11.0 trial removed provider-level rejection but found all 15 proposals rejected by the server schema, so align the proposal shape and retry before selecting the environment-process or expanded-adjudication axis. Keep non-critical narrator quality issues pending until pipeline maturity; include them only when an axial slice naturally changes their input or authority boundary."
+  description "Use persistent production E2E evidence to order axial battle-pipeline slices. Preserve the causal receipt, isolated E2E realm, and Site A, Site B, narrator I/O DAG. The v0.11.1 trial accepted 20 of 21 fulfilled proposals and all 20 resolved actions, then exposed a water-pipe event whose semantic and world transitions were both skipped. Build one proposal-to-canonical environment world-process slice before expanded adjudication. Keep non-critical narrator quality issues pending until pipeline maturity; include them only when an axial slice naturally changes their input or authority boundary."
   as_of 2026-08-07
   duration_unit point
-  velocity 450p/41h
-  finish AGENT_ACTION_PROPOSAL_ALIGNMENT_TRIAL_COMPLETED
+  velocity 5400p/941h
+  finish ENVIRONMENT_WORLD_PROCESS_TRIAL_COMPLETED
   goal_owner user
   dag_owner user
-  target_duration 27p
+  target_duration 31p
 
 resource DEV:
   title "Developer"
@@ -77,6 +77,12 @@ milestone AGENT_ACTION_PROPOSAL_SHAPE_ALIGNED:
 
 milestone AGENT_ACTION_PROPOSAL_ALIGNMENT_TRIAL_COMPLETED:
   title "Aligned action proposals released and observed before the next axial choice"
+
+milestone ENVIRONMENT_WORLD_PROCESS_SLICE_IMPLEMENTED:
+  title "Environment proposal-to-canonical world-process slice implemented"
+
+milestone ENVIRONMENT_WORLD_PROCESS_TRIAL_COMPLETED:
+  title "Environment world-process slice released and observed"
 
 task T_BUILD_CAUSAL_TURN_SLICE MAIN_BASE_FIXED -> CAUSAL_SLICE_IMPLEMENTED:
   title "Build the owner-grounded causal turn receipt and narration projection"
@@ -236,6 +242,24 @@ task T_TRY_ALIGNED_AGENT_ACTION_PROPOSALS AGENT_ACTION_PROPOSAL_SHAPE_ALIGNED ->
   description "Release the prompt-only contract alignment through the protected path and run the persistent production E2E battle. Compare proposal acceptance and rejection reasons against the v0.11.0 baseline of 15 schema-invalid proposals out of 15 invoked lanes. Use the retained result to choose environment world-process or adaptive expanded adjudication next; keep non-critical narrator symptoms pending except for incidental improvement caused by accepted action diversity."
   duration 1p
   status done
+  owner "codex"
+  requires:
+    DEV 1
+
+task T_BUILD_ENVIRONMENT_WORLD_PROCESS_SLICE AGENT_ACTION_PROPOSAL_ALIGNMENT_TRIAL_COMPLETED -> ENVIRONMENT_WORLD_PROCESS_SLICE_IMPLEMENTED:
+  title "Build the proposal-to-canonical environment world-process slice"
+  description "Treat the existing supervisor happening as non-authoritative noise rather than a committed result or effect. Feed the bounded proposal plus current canonical situation and world into the existing post-resolution semantic reconciliation boundary, and persist an explicit accepted rejected or skipped environment-process receipt. Only an accepted patch may create the resolved public situation event, advance semantic and world revisions, and supply bounded next-turn situation or causal effects; a rejected or unavailable adjudication emits no resolved environmental fact. Remove direct proposal-owned coefficients envHits and pre-resolution mechanical injection from this path. Reuse the existing semantic call and strict patch validation, add no direct HP effect, narrator guard, general world engine, extra provider call, or expanded action adjudication. Expose proposal result source links and accepted effect keys in the internal turn DAG and add focused temporal authority fallback and persistence tests."
+  duration 3p
+  status planned
+  owner "codex"
+  requires:
+    DEV 1
+
+task T_TRY_ENVIRONMENT_WORLD_PROCESS_SLICE ENVIRONMENT_WORLD_PROCESS_SLICE_IMPLEMENTED -> ENVIRONMENT_WORLD_PROCESS_TRIAL_COMPLETED:
+  title "Release and observe the environment world-process slice"
+  description "Run full local acceptance then release the exact artifact through feature review annotated tag Stage and protected Promote with the new path always enabled. Execute at most two retained persistent production E2E battles to obtain one supervisor-eligible environment proposal. Verify that every proposal has an explicit receipt, rejected or skipped proposals create no resolved event, accepted proposals advance canonical state before any next-turn effect, and surface cause accepted result and later effect remain linked. Compare OBS-20260807-02 OBS-20260807-03 and OBS-20260807-06 as scorecards, while leaving narrator-only wording repetition guard and repair pending except for incidental improvement from the accepted canonical input."
+  duration 1p
+  status planned
   owner "codex"
   requires:
     DEV 1
