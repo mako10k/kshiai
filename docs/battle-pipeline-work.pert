@@ -157,6 +157,7 @@ task T_BUILD_AGENT_PIPELINE_DAG FIRST_E2E_OBSERVATION_RECORDED -> AGENT_PIPELINE
   title "Persist bounded character and narrator I/O and render the internal DAG"
   description "For future turns retain the exact bounded server-built consumer input, provider disposition and output, and accepted output for Site A and Site B, plus the narrator call input and returned output. Store no provider credentials, transport headers, hidden chain of thought, or raw request envelope. Extend the existing separate internal observation API and Web screen with a per-turn DAG from both character contexts through outputs, adjudication, canonical transition, narrator input and public output. Older battles report trace unavailability honestly."
   duration 2p
+  status active
   owner "codex"
   requires:
     DEV 1
@@ -363,3 +364,10 @@ work_event WE-b6dd0972058716269eceacddf7f03de6b4de4f80f71a1f83522940f807c3c804:
   occurred_at 2026-08-07T16:08:51+09:00
   active_time 3133/3600h
   effort 3133/3600ph
+
+work_event WE-4a90dd5b7da0af76d73616c53322a2b608dce5e367dff31c291c6d0910c2a680:
+  model 1
+  task T_BUILD_AGENT_PIPELINE_DAG
+  kind start
+  occurred_at 2026-08-07T16:46:46+09:00
+  planned_value 2p
