@@ -5,7 +5,7 @@ project KSHIAI_BATTLE_PIPELINE_WORK_V4:
   description "Use persistent production E2E evidence to order axial battle-pipeline slices. Preserve the causal receipt, isolated E2E realm, and Site A, Site B, narrator I/O DAG. Stabilize the character action-proposal boundary first because v0.10.0 rejected 22 of 30 side-turn outputs, then observe again before selecting the environment-process or expanded-adjudication axis. Keep non-critical narrator quality issues pending until pipeline maturity; include them only when an axial slice naturally changes their input or authority boundary."
   as_of 2026-08-07
   duration_unit point
-  velocity 18000p/3263h
+  velocity 6000p/1379h
   finish FOLLOWING_PIPELINE_AXIS_SELECTED
   goal_owner user
   dag_owner user
