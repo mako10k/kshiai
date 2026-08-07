@@ -5,7 +5,7 @@ project KSHIAI_BATTLE_PIPELINE_WORK_V4:
   description "Use persistent production E2E evidence to order axial battle-pipeline slices. Preserve the causal receipt, isolated E2E realm, and Site A, Site B, narrator I/O DAG. The v0.12.0 trial safely rejected all eight ungrounded environment proposals but accepted none, exposing a representability mismatch between supervisor surface motion and canonical operations. The aligned proposal trial remains required, while its timeout incident adds a separate provider-routing correction: retry 429 and bounded 503 only within the same provider, never provider-fallback on timeout, rate limit, or 503, and reserve one-hour provider fallback for provider-unavailable failures such as DNS and billing. Keep non-critical narrator quality issues pending until pipeline maturity; include them only when an axial slice naturally changes their input or authority boundary."
   as_of 2026-08-07
   duration_unit point
-  velocity 6000p/1141h
+  velocity 7200p/2159h
   finish ENVIRONMENT_PROPOSAL_ALIGNMENT_TRIAL_COMPLETED
   goal_owner user
   dag_owner user
