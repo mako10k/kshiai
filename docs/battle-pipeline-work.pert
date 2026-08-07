@@ -2,14 +2,14 @@
 project KSHIAI_BATTLE_PIPELINE_WORK_V4:
   version 6
   title "Observation-driven battle-pipeline renewal"
-  description "Use persistent production E2E evidence to order axial battle-pipeline slices. Preserve the causal receipt, isolated E2E realm, and Site A, Site B, narrator I/O DAG. Stabilize the character action-proposal boundary first because v0.10.0 rejected 22 of 30 side-turn outputs, then observe again before selecting the environment-process or expanded-adjudication axis. Keep non-critical narrator quality issues pending until pipeline maturity; include them only when an axial slice naturally changes their input or authority boundary."
+  description "Use persistent production E2E evidence to order axial battle-pipeline slices. Preserve the causal receipt, isolated E2E realm, and Site A, Site B, narrator I/O DAG. The v0.11.0 trial removed provider-level rejection but found all 15 proposals rejected by the server schema, so align the proposal shape and retry before selecting the environment-process or expanded-adjudication axis. Keep non-critical narrator quality issues pending until pipeline maturity; include them only when an axial slice naturally changes their input or authority boundary."
   as_of 2026-08-07
   duration_unit point
   velocity 6000p/1379h
-  finish FOLLOWING_PIPELINE_AXIS_SELECTED
+  finish AGENT_ACTION_PROPOSAL_ALIGNMENT_TRIAL_COMPLETED
   goal_owner user
   dag_owner user
-  target_duration 25p
+  target_duration 27p
 
 resource DEV:
   title "Developer"
@@ -70,7 +70,13 @@ milestone AGENT_ACTION_CONTRACT_TRIAL_COMPLETED:
   title "Character action-proposal boundary released and observed"
 
 milestone FOLLOWING_PIPELINE_AXIS_SELECTED:
-  title "Following environment-process or adjudication axis selected from observation"
+  title "Immediate following pipeline slice selected from observation"
+
+milestone AGENT_ACTION_PROPOSAL_SHAPE_ALIGNED:
+  title "Character-agent prompt emits action-kind-specific proposal shapes"
+
+milestone AGENT_ACTION_PROPOSAL_ALIGNMENT_TRIAL_COMPLETED:
+  title "Aligned action proposals released and observed before the next axial choice"
 
 task T_BUILD_CAUSAL_TURN_SLICE MAIN_BASE_FIXED -> CAUSAL_SLICE_IMPLEMENTED:
   title "Build the owner-grounded causal turn receipt and narration projection"
@@ -202,13 +208,31 @@ task T_TRY_AGENT_ACTION_CONTRACT AGENT_ACTION_CONTRACT_ACCEPTED -> AGENT_ACTION_
   title "Release and observe the character action-proposal contract"
   description "Run full local acceptance then release the exact artifact through feature review annotated tag Stage and protected Promote. Execute the persistent cross-account E2E battle and compare accepted rejected and skipped Site A and Site B proposals against the v0.10.0 baseline of 22 rejected side-turns out of 30. Inspect action diversity causal grounding fallback privacy latency and downstream narration only as an observation lens. Retain surviving phenomena without an interrupting narrator-only patch."
   duration 1p
+  status done
   owner "codex"
   requires:
     DEV 1
 
 task T_SELECT_FOLLOWING_PIPELINE_AXIS AGENT_ACTION_CONTRACT_TRIAL_COMPLETED -> FOLLOWING_PIPELINE_AXIS_SELECTED:
   title "Select the next pipeline axis from the new observation"
-  description "Rank the environment world-process proposal-to-adjudication-to-canonical-transition axis against adaptive expanded adjudication using retained production frequency reproducibility canonical-authority risk cross-stage user value and current-main patchability. Non-critical narrator observations remain pending scorecards; include one only when the selected axial slice shares its input or authority cause. Record the selected task and point estimate before implementation starts."
+  description "Rank continuation of the action-proposal boundary against environment world-process and adaptive expanded-adjudication axes using retained production frequency reproducibility canonical-authority risk cross-stage user value and current-main patchability. The v0.11.0 observation selects one bounded action-kind-specific output-shape alignment and production retry first because all 15 invoked proposals were fulfilled but schema-invalid. Non-critical narrator observations remain pending scorecards; include one only when the selected slice shares its input or authority cause. Record the selected task and point estimate before implementation starts."
+  duration 1p
+  status done
+  owner "codex"
+  requires:
+    DEV 1
+
+task T_ALIGN_AGENT_ACTION_PROPOSAL_SHAPE FOLLOWING_PIPELINE_AXIS_SELECTED -> AGENT_ACTION_PROPOSAL_SHAPE_ALIGNED:
+  title "Align character-agent proposal output with action-kind contracts"
+  description "Make the provider prompt express action proposals as explicit action-kind-specific JSON variants so skill basic attack defend rest and wait omit free-action-only explanation and subject fields while free action keeps its grounded attempt fields. Preserve the server validator raw bounded proposal receipt character state and speech mechanical authority and narrator policy. Add focused prompt-contract regression coverage; do not add a narrator guard or environment mechanics."
+  duration 1p
+  owner "codex"
+  requires:
+    DEV 1
+
+task T_TRY_ALIGNED_AGENT_ACTION_PROPOSALS AGENT_ACTION_PROPOSAL_SHAPE_ALIGNED -> AGENT_ACTION_PROPOSAL_ALIGNMENT_TRIAL_COMPLETED:
+  title "Release and observe aligned character action proposals"
+  description "Release the prompt-only contract alignment through the protected path and run the persistent production E2E battle. Compare proposal acceptance and rejection reasons against the v0.11.0 baseline of 15 schema-invalid proposals out of 15 invoked lanes. Use the retained result to choose environment world-process or adaptive expanded adjudication next; keep non-critical narrator symptoms pending except for incidental improvement caused by accepted action diversity."
   duration 1p
   owner "codex"
   requires:
@@ -460,3 +484,33 @@ work_event WE-e73dea9090a24e009c1e56c352d3715d824ddf391b42fa4518be692a4c15ea98:
   occurred_at 2026-08-07T18:04:58+09:00
   active_time 38/225h
   effort 38/225ph
+
+work_event WE-38d4475f65f5e4da9263cd0792aadf76e2cfd21ca5ea17babdb7b12f498dfca4:
+  model 1
+  task T_TRY_AGENT_ACTION_CONTRACT
+  kind start
+  occurred_at 2026-08-07T18:29:26+09:00
+  planned_value 1p
+
+work_event WE-1a376e65a8ae08f08bbf5f05c90e91d275bf96432343794667a95888291081e0:
+  model 1
+  task T_TRY_AGENT_ACTION_CONTRACT
+  kind finish
+  occurred_at 2026-08-07T18:39:25+09:00
+  active_time 599/3600h
+  effort 599/3600ph
+
+work_event WE-ee8db6824001fced087321457a53623adfe3a405b8ff43b1119729eb30e788f0:
+  model 1
+  task T_SELECT_FOLLOWING_PIPELINE_AXIS
+  kind start
+  occurred_at 2026-08-07T18:39:54+09:00
+  planned_value 1p
+
+work_event WE-25456dcb49fa0607dd242dd990715980dceca159e4a6a35b245956ed3d518ed6:
+  model 1
+  task T_SELECT_FOLLOWING_PIPELINE_AXIS
+  kind finish
+  occurred_at 2026-08-07T18:41:45+09:00
+  active_time 37/1200h
+  effort 37/1200ph
