@@ -1,4 +1,4 @@
-# Battle pipeline thin production slice
+# Battle pipeline hypothesis-first production slice
 
 Date: 2026-08-07 (Asia/Tokyo)
 
@@ -10,17 +10,29 @@ effectful activation.
 Execution order and authority live in
 [`battle-pipeline-production-rollout.pert`](battle-pipeline-production-rollout.pert).
 
-## Goal and ordering
+## Goal, decision hierarchy, and ordering
 
-Raise user-visible battle value quickly by making each narrated turn easier to
-trace from a chosen action through the engine-approved consequence. Implement
-the complete thin slice first behind an off-by-default boundary. Observe it in
-staging and production shadow only after the implementation and local
-acceptance gates pass.
+The primary goal is to implement and try the central battle-pipeline
+hypotheses. The observation backlog is not the source of the implementation
+scope.
 
-The target is not a perfect general world simulator. The target is one small,
-production-shaped pipeline that improves causal grounding without replacing
-the existing battle engine or persistence model.
+Use this decision order:
+
+1. Prefer ideas that form an axis of the pipeline hypothesis.
+2. Among those axial ideas, implement the slice that can be patched into the
+   current `main` with the smallest authority and persistence change.
+3. Keep the first implementation conceptually complete but deliberately thin;
+   it need not be the final generalized architecture.
+4. Try and observe the implemented pipeline only after that vertical slice is
+   connected.
+5. Use open observation items as evaluation lenses. If the hypothesis slice
+   improves an item, record that result. If the phenomenon continues, retain
+   it for a later targeted fix. An observation does not preempt the hypothesis
+   implementation by itself.
+
+The target is not a perfect general world simulator. The first target is one
+small, production-shaped path that proves the useful pipeline shape on current
+`main` and raises causal grounding in the existing user experience.
 
 ```text
 existing BattleState / worldState / semanticState
@@ -30,28 +42,47 @@ existing BattleState / worldState / semanticState
     -> existing narrator call
 ```
 
-## Thin slice
+## Hypothesis priority and first slice
+
+| Hypothesis idea | Axial importance | Patchability on current `main` | Decision for this cycle |
+|---|---|---|---|
+| Actual-turn source authoring and compact purpose-specific projection | High | High: pure shared code and existing turn boundaries can be reused | Implement first |
+| Proposal-to-adjudication-to-committed-result causal receipt | High | High: existing requested/effective actions, events, and effects already provide anchors | Implement in the same vertical slice |
+| One guarded consumer of the committed projection/receipt | High for user value | High: the existing narrator call is presentation-only | Use narration as the first consumer |
+| Adaptive expanded adjudication | High in the broader hypothesis | Medium/low: the PoC used pre-authored detail and live grounding is unproved | Try after the first slice |
+| Active world-process/environment transition engine | High in the broader hypothesis | Low: it changes proposal, adjudication, and effect ownership together | Keep as a next-axis candidate |
+| General consistency detection/repair and independent canonical persistence | Supporting, not the first user-value axis | Low and migration-heavy | Defer until a tried slice shows the need |
+
+This table, rather than the observation backlog, controls implementation
+priority. It may be revised when implementation or trial evidence changes
+patchability or axial value.
+
+## First vertical slice
 
 ### Included
 
-1. A bounded `BattleTurnContextSlice` derived from current `main` state for the
-   existing decision, adjudication, and narration owners. Every field has a
-   purpose, size limit, visibility rule, and legacy default.
-2. A bounded `BattleTurnReceipt` that connects requested and effective actions,
+1. A minimal actual-turn source-authoring path that captures explicit values at
+   their current owner stages and derives compact, purpose-specific context for
+   the existing decision, adjudication, and narration owners. Only invariants
+   needed by this slice are defined; a complete future contract is not a
+   prerequisite.
+2. A bounded causal turn receipt that connects requested and effective actions,
    committed events, mechanical effects, accepted world/semantic changes,
    observer-visible consequences, and unresolved current-turn consistency
    markers.
 3. Deterministic validation which rejects unknown references, protected-field
    writes, unsupported causal claims, and visibility leaks. Unknown or invalid
    input falls back to the existing `main` behavior.
-4. One versioned server-side mode: `off`, `shadow`, or
-   `narration_guarded`. `off` is the default and emergency state.
+4. One reversible server-side boundary with at least `off` and
+   `narration_guarded`; `shadow` may be retained when it materially accelerates
+   comparison, but is not a prerequisite to trying the implemented concept.
 5. Consumer wiring that first uses the receipt only to ground the existing
    narrator request. It must not add a normal-turn LLM call or let narration
    change actions, mechanics, state, winner, rating, or character cognition.
-6. Aggregate operational counters for construction success, rejection reason,
-   fallback, latency, and bounded size. No prose, identity, stable entity ID,
-   prompt, completion, battle ID, or per-turn hash is durable telemetry.
+6. The minimum diagnostics needed to compare baseline and candidate behavior
+   during the trial. Broader operational observability is added only when trial
+   evidence justifies it. No prose, identity, prompt, or completion is durable
+   telemetry.
 
 ### Explicitly deferred
 
@@ -84,47 +115,57 @@ not create a second source of truth.
 
 ## Implementation before observation
 
-The first four PERT tasks freeze the contract, implement the shared core, wire
-the ordinary runtime with mode `off`, and pass local acceptance. Until all four
-are complete, do not deploy the slice for staging or production observation.
+The first PERT tasks implement source authoring/projection, connect the causal
+receipt, wire the first consumer, and pass a bounded local acceptance. Contract
+work is folded into those tasks as minimum executable invariants; it is not a
+separate assurance-first phase. Until the vertical slice is connected, do not
+start staging or guarded production trials.
 
 Local acceptance requires:
 
 - exact legacy parity with mode `off`;
 - no extra provider, repository, persistence, or external calls in `off` or
   deterministic `shadow` construction;
-- bounded schemas and deterministic serialization;
-- side-swap, legacy-state, malformed-input, timeout, privacy, and
-  protected-field tests;
+- bounded schemas for the first slice and deterministic fallback;
+- focused regression tests for authority, malformed input, privacy, and the
+  existing control path;
 - full tests, typecheck, build, and PERT validation.
 
-## Observation after implementation
+## Trial and observation after implementation
 
-Staging observation uses synthetic and disposable authenticated battles. It
-tests failure injection, receipt coverage, fallback, privacy, latency, and
-rollback without production user data.
+Staging trials use synthetic and disposable authenticated battles. They compare
+the actual pipeline path with the baseline, exercise the first consumer, and
+collect enough failure, latency, and quality evidence to revise the slice.
 
-Production shadow requires a separate release/operations authorization. It
-keeps existing outcomes and narrator inputs authoritative, holds at least 24
-hours and 100 eligible turns, and requires:
+Any production trial requires separate release/operations authorization. Its
+cohort and hold time are chosen from the staging evidence rather than frozen
+before implementation. A shadow trial requires zero user-visible changes; a
+guarded narration trial requires zero mechanical changes and a bounded visible
+cohort. Both require:
 
-- zero extra domain writes and zero user-visible changes;
+- zero extra domain writes;
 - zero privacy or authority violations;
-- receipt construction/fallback errors below 1%;
-- p95 turn-latency regression within both 10% and 20 ms;
+- bounded receipt construction/fallback errors and latency regression under the
+  trial-specific limits;
 - bounded telemetry cardinality and no unexpected provider calls.
 
-Passing shadow evidence authorizes only an owner decision. It does not activate
-the receipt as narrator input.
+An off/shadow trial authorizes only an owner decision. A guarded narration
+trial remains reversible and cannot change mechanical authority.
 
 ## First user-value activation
 
 After an explicit owner approval, `narration_guarded` may be enabled for a
 small reversible cohort. It supplies the receipt to the existing narrator call
-and changes no mechanical authority. Acceptance compares blinded baseline and
+and changes no mechanical authority. Acceptance compares baseline and
 candidate turns for causal clarity, concrete progress, repetition, unsupported
-claims, privacy, latency, and cost. The contract task freezes the exact sample
-and threshold before implementation starts.
+claims, privacy, latency, and cost. The trial design is fixed immediately
+before the trial from the implemented behavior and staging evidence, not as a
+precondition for implementation.
+
+The open observation backlog is checked here as a secondary scorecard. It does
+not dictate receipt fields or create an immediate patch obligation. A naturally
+improved item may be closed with evidence; a continuing item remains open for a
+later focused change.
 
 Any factual invention, identity leak, mechanical divergence, unexpected call,
 or rollback failure returns the mode to `off`. Expansion is a separate recorded
@@ -137,7 +178,7 @@ The completed exploratory work remains preserved on remote branch
 `28fb5bab9c22232a684a5f32f37c615ccbc547f5`. Local and remote SHA equality was
 read back on 2026-08-07.
 
-Useful reference findings are:
+Useful hypothesis findings are:
 
 - purpose-scoped projections can stay compact while retaining tested decisive
   dependencies;
@@ -150,18 +191,19 @@ Useful reference findings are:
   control result in the frozen synthetic suite.
 
 The PoC did not establish production latency, cost, live user preference,
-general world correctness, or safe mechanical activation. This plan remains
-executable if the PoC branch is unavailable: requirements and current `main`
-contracts define the implementation; PoC artifacts may only supply reviewed
-test cases or design cautions.
+general world correctness, or safe mechanical activation. Those limits govern
+claims, but they do not demote the hypothesis ideas to optional background.
+The first slice deliberately implements the most axial, patchable subset on
+current `main`; PoC code is reused only after reduction and current-main review.
 
 Do not merge the PoC branch wholesale. Any reused idea or code must be reduced
-to the thin-slice contract, reviewed against current `main`, and validated as
+to the first vertical slice, reviewed against current `main`, and validated as
 new production work.
 
 ## Macro boundary
 
-Closing this slice returns portfolio execution to the parent plan. A successful
-narration-grounding slice does not automatically authorize the deferred
-pipeline concepts. A failed value gate returns to the current `main` path and
-records what was learned; it does not trigger another open-ended PoC.
+Closing this slice selects the next axial hypothesis from implementation and
+trial evidence. The expected next candidates are adaptive adjudication and the
+environment/world-process path. Observation backlog items may influence the
+choice only when they still reproduce; they do not replace this hypothesis
+sequence with an unrelated patch queue.

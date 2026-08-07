@@ -1,14 +1,14 @@
 # Existing .pert plans should normally be maintained through perttool commands; direct DSL editing bypasses goal/DAG owner-confirmation checks.
-project KSHIAI_BATTLE_PIPELINE_THIN_SLICE:
-  version 5
-  title "Battle-pipeline thin production slice"
-  description "Implement a bounded purpose-specific turn context and committed turn receipt on current main, wire it off by default, and only then observe it in staging and production shadow. The first guarded user-value effect is narration grounding; canonical graph persistence, general repair, adaptive adjudication, active world processes, new mechanical writes, extra normal-turn LLM calls, and bulk PoC import remain outside this plan."
+project KSHIAI_BATTLE_PIPELINE_HYPOTHESIS_SLICE:
+  version 6
+  title "Battle-pipeline hypothesis-first production slice"
+  description "Implement the most axial and current-main-patchable battle-pipeline hypotheses before observation: actual-turn source authoring with compact purpose projections, a proposal-to-committed-result causal receipt, and one guarded narration consumer. Observation backlog items are secondary evaluation lenses, not the source of implementation priority."
   as_of 2026-08-07
   duration_unit day
-  finish PIPELINE_SLICE_ACCEPTED
+  finish NEXT_HYPOTHESIS_SELECTED
   goal_owner user
   dag_owner user
-  target_duration 14d
+  target_duration 10d
 
 resource DEV:
   title "Developer"
@@ -20,103 +20,92 @@ resource OWNER:
 
 milestone MAIN_BASE_FIXED:
   title "Current main baseline fixed"
-  description "Implementation base is main commit 4c7ea5ccec31814a5fa38f1b9ea616ca50e764fe; the PoC branch is preserved only as optional reference evidence"
+  description "Implementation base is main commit 4c7ea5ccec31814a5fa38f1b9ea616ca50e764fe; the preserved PoC supplies hypothesis code and evidence only after current-main reduction and review"
   state reached
 
-milestone THIN_CONTRACT_FIXED:
-  title "Thin production contract fixed"
+milestone SOURCE_PROJECTION_IMPLEMENTED:
+  title "Actual-turn source authoring and compact projections implemented"
 
-milestone THIN_CORE_READY:
-  title "Bounded context and receipt core ready"
+milestone CAUSAL_RECEIPT_IMPLEMENTED:
+  title "Proposal-to-result causal receipt implemented"
 
-milestone DISABLED_RUNTIME_READY:
-  title "Off-by-default runtime wiring ready"
+milestone FIRST_CONSUMER_IMPLEMENTED:
+  title "First guarded pipeline consumer implemented"
 
-milestone LOCAL_IMPLEMENTATION_ACCEPTED:
-  title "Thin pipeline implementation accepted locally"
+milestone PIPELINE_IMPLEMENTATION_ACCEPTED:
+  title "Patchable hypothesis slice accepted locally"
 
-milestone STAGING_SHADOW_OBSERVED:
-  title "Post-implementation staging observation accepted"
+milestone STAGING_TRIAL_COMPLETED:
+  title "Implemented pipeline tried in staging"
 
-milestone PRODUCTION_SHADOW_OBSERVED:
-  title "Post-implementation production shadow accepted"
+milestone GUARDED_TRIAL_DECIDED:
+  title "Guarded production trial explicitly decided"
 
-milestone NARRATION_AUTHORITY_DECIDED:
-  title "Narration-grounding authority explicitly decided"
+milestone GUARDED_TRIAL_COMPLETED:
+  title "Guarded production trial completed or explicitly declined"
 
-milestone GUARDED_NARRATION_ACCEPTED:
-  title "Guarded narration value accepted"
+milestone NEXT_HYPOTHESIS_SELECTED:
+  title "Next axial hypothesis selected from implementation evidence"
 
-milestone PIPELINE_SLICE_ACCEPTED:
-  title "Thin production pipeline closed with evidence"
-
-task T_FREEZE_THIN_CONTRACT MAIN_BASE_FIXED -> THIN_CONTRACT_FIXED:
-  title "Freeze the current-main thin-slice contract"
-  description "Map the existing BattleState worldState semantic reconciliation engine character-agent and narrator owners. Freeze bounded BattleTurnContextSlice and BattleTurnReceipt schemas, purpose and visibility rules, legacy defaults, off shadow and narration_guarded modes, aggregate-only telemetry, product-value rubric, stop conditions, and rollback. Derive the contract from current requirements and main; PoC material is optional reference only."
-  duration 1d
-  owner "codex"
-  requires:
-    DEV 1
-
-task T_BUILD_THIN_CORE THIN_CONTRACT_FIXED -> THIN_CORE_READY:
-  title "Build bounded turn context and committed receipt"
-  description "Implement pure shared builders and validators over existing current-main state and committed outputs. Connect requested and effective actions, events, mechanical effects, accepted world and semantic changes, observer-visible consequences, and explicit current-turn consistency markers. Enforce size reference authority privacy and protected-field bounds with deterministic fallback. Do not add persistence I/O providers a canonical database or general repair."
-  duration 3d
-  owner "codex"
-  requires:
-    DEV 1
-
-task T_WIRE_DISABLED_RUNTIME THIN_CORE_READY -> DISABLED_RUNTIME_READY:
-  title "Wire the complete thin slice behind default-off mode"
-  description "Integrate construction at the existing ordinary-turn owner boundaries and prepare the existing narrator request to consume the receipt only in narration_guarded mode. Off remains byte-for-byte behavior-compatible; shadow ignores the candidate and performs no extra provider or domain write. Add bounded timeouts circuit breaking aggregate counters and exact legacy fallback."
+task T_IMPLEMENT_SOURCE_PROJECTION MAIN_BASE_FIXED -> SOURCE_PROJECTION_IMPLEMENTED:
+  title "Implement the source-authoring and projection axis on current main"
+  description "Reduce and port the relevant actual-turn source-authoring and compact purpose-projection ideas from the PoC into current main. Capture explicit values at their existing owner stages and expose only the bounded decision adjudication and narration slices needed by this vertical path. Define minimum executable schemas authority privacy and fallback invariants inside the implementation; do not run a separate exhaustive contract-freeze phase or import the PoC branch wholesale."
   duration 2d
   owner "codex"
   requires:
     DEV 1
 
-task T_ACCEPT_LOCAL_IMPLEMENTATION DISABLED_RUNTIME_READY -> LOCAL_IMPLEMENTATION_ACCEPTED:
-  title "Accept the completed implementation before observation"
-  description "Verify off-mode parity, deterministic construction, malformed and legacy fallback, side-swap behavior, privacy, protected fields, bounded state, no extra calls or writes, narrator authority, and rollback configuration. Run focused tests, full tests, typecheck, build, static audits, and PERT checks. Observation tasks cannot start until this gate passes."
-  duration 1d
-  owner "codex"
-  requires:
-    DEV 1
-
-task T_OBSERVE_STAGING_SHADOW LOCAL_IMPLEMENTATION_ACCEPTED -> STAGING_SHADOW_OBSERVED:
-  title "Observe the implemented slice in staging shadow"
-  description "Deploy one immutable disabled-first artifact, enable shadow only in staging, and use synthetic and disposable authenticated battles to measure coverage rejection fallback latency privacy and failure injection. Verify zero changes to actions state events narrator inputs persistence and provider topology, then record rollback evidence."
-  duration 1d
-  owner "codex"
-  requires:
-    DEV 1
-
-task T_OBSERVE_PRODUCTION_SHADOW STAGING_SHADOW_OBSERVED -> PRODUCTION_SHADOW_OBSERVED:
-  title "Observe the implemented slice in production shadow"
-  description "After separate operational authorization promote the exact artifact with mode off, record a baseline, then observe a deterministic one-percent cohort for at least twenty-four hours and one hundred eligible turns. Require zero extra writes visible changes privacy violations and provider calls, error rate below one percent, strict latency gates, bounded telemetry, and a successful off-switch drill. Expansion beyond this cohort requires replanning."
+task T_IMPLEMENT_CAUSAL_RECEIPT SOURCE_PROJECTION_IMPLEMENTED -> CAUSAL_RECEIPT_IMPLEMENTED:
+  title "Connect proposals adjudication and committed effects in one receipt"
+  description "Build a bounded receipt over existing requested and effective actions engine decisions committed events mechanical effects accepted world or semantic changes observer-visible consequences and current-turn unresolved markers. Preserve existing BattleState engine repository and semantic authorities. Reject unsupported links and fall back to the legacy path; do not add persistence a canonical database general repair or a new LLM call."
   duration 2d
   owner "codex"
   requires:
     DEV 1
 
-task T_DECIDE_NARRATION_AUTHORITY PRODUCTION_SHADOW_OBSERVED -> NARRATION_AUTHORITY_DECIDED:
-  title "Decide whether guarded narration grounding may begin"
-  description "Review implementation and shadow receipts and explicitly approve revise defer or reject. Approval must bind the cohort ceiling, frozen blinded comparison set and threshold, factuality and privacy gates, latency and cost limits, rollback operator, hold period, and non-claims. Without a conformant approval the mode remains off or shadow."
+task T_WIRE_FIRST_CONSUMER CAUSAL_RECEIPT_IMPLEMENTED -> FIRST_CONSUMER_IMPLEMENTED:
+  title "Wire narration as the first guarded pipeline consumer"
+  description "Pass the compact committed projection and causal receipt to the existing narrator request behind a reversible default-off guard. Reuse the existing narrator call and forbid changes to actions mechanics state winner rating character cognition or provider ordering. Add only the diagnostics needed for the first comparison."
+  duration 1d
+  owner "codex"
+  requires:
+    DEV 1
+
+task T_ACCEPT_IMPLEMENTED_PIPELINE FIRST_CONSUMER_IMPLEMENTED -> PIPELINE_IMPLEMENTATION_ACCEPTED:
+  title "Accept the implemented hypothesis slice before trial"
+  description "Run focused authority privacy malformed-input fallback and control-path regression tests plus full tests typecheck build and PERT checks. Require exact off-mode behavior and no unexpected provider repository persistence or domain writes. This is bounded engineering acceptance of the first concept slice, not proof of the generalized architecture."
+  duration 1d
+  owner "codex"
+  requires:
+    DEV 1
+
+task T_TRIAL_STAGING PIPELINE_IMPLEMENTATION_ACCEPTED -> STAGING_TRIAL_COMPLETED:
+  title "Try the implemented pipeline in staging"
+  description "Deploy the accepted immutable artifact to staging and run synthetic or disposable authenticated battles through the actual guarded consumer. Compare baseline and candidate causal clarity concrete progress unsupported claims fallback privacy latency and cost. Check open observation backlog items only as secondary scorecards and retain any continuing phenomenon without automatically scheduling a local patch."
+  duration 1d
+  owner "codex"
+  requires:
+    DEV 1
+
+task T_DECIDE_GUARDED_TRIAL STAGING_TRIAL_COMPLETED -> GUARDED_TRIAL_DECIDED:
+  title "Decide the bounded production trial from staging evidence"
+  description "Approve revise defer or reject a reversible production trial. If approved bind the exact artifact mode cohort ceiling comparison method limits rollback operator and hold time from the implemented behavior and staging evidence. This decision does not grant mechanical authority or authorize an unrelated backlog-fix queue."
   duration 1d
   owner "user"
   requires:
     OWNER 1
 
-task T_ACCEPT_GUARDED_NARRATION NARRATION_AUTHORITY_DECIDED -> GUARDED_NARRATION_ACCEPTED:
-  title "Accept the first user-value narration cohort"
-  description "Enable narration_guarded only for the approved reversible cohort. Reuse the existing narrator call and compare blinded baseline and candidate turns for causal clarity concrete progress repetition unsupported claims privacy latency and cost. Stop immediately on factual invention identity leakage mechanical divergence unexpected calls or rollback failure; do not activate character-decision or mechanical effects."
-  duration 2d
+task T_TRIAL_GUARDED_RUNTIME GUARDED_TRIAL_DECIDED -> GUARDED_TRIAL_COMPLETED:
+  title "Run or record the guarded production trial decision"
+  description "For an approved cohort enable only the accepted guarded narration path and compare it with baseline while preserving mechanical authority and rollback. If the owner defers or rejects the trial record that disposition without deployment. Stop on factual invention privacy leakage mechanical divergence unexpected calls or rollback failure."
+  duration 1d
   owner "codex"
   requires:
     DEV 1
 
-task T_CLOSE_THIN_SLICE GUARDED_NARRATION_ACCEPTED -> PIPELINE_SLICE_ACCEPTED:
-  title "Close the thin slice and choose the next portfolio step"
-  description "Freeze the accepted code and configuration scope, evidence, incidents, residual risks, telemetry retention and deletion, support and rollback instructions, and user-value result. Explicitly choose billing, another bounded current-main slice, or a separately authorized deferred pipeline concept. Success does not automatically authorize canonical persistence general repair adaptive adjudication world processes or mechanical writes."
+task T_SELECT_NEXT_HYPOTHESIS GUARDED_TRIAL_COMPLETED -> NEXT_HYPOTHESIS_SELECTED:
+  title "Select the next axial and patchable hypothesis"
+  description "Rank adaptive adjudication active environment or world processes and any other surviving pipeline axes by centrality to the hypothesis current-main patchability expected user value and evidence from the completed slice. Observation backlog items contribute only when they still reproduce; they do not replace the hypothesis sequence. Record whether to extend revise or stop before beginning another slice."
   duration 1d
   owner "user"
   requires:

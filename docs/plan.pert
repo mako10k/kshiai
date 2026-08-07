@@ -1,7 +1,7 @@
 project KSHIAI:
   version 6
   title "kshiai production pipeline and billing completion"
-  description "Continue from the deployed current main. Implement and accept the production battle pipeline through its separate staged plan before completing Stripe billing and entitlements. The archived PoC remains optional reference evidence rather than a prerequisite or merge source."
+  description "Continue from the deployed current main. Implement and try the most axial and current-main-patchable battle-pipeline hypotheses through the separate staged plan before completing Stripe billing and entitlements. Preserve the PoC as hypothesis evidence and reduced implementation material; observation backlog items are secondary evaluation lenses rather than the source of implementation priority."
   as_of 2026-08-07
   duration_unit day
   finish BILLING_READY
@@ -241,13 +241,13 @@ work_event WE-3542eeaa85062d5c70482f20c08ef76f08317897a1dbcf6e04e8e390b002a052:
   occurred_at 2026-08-03T21:13:32+09:00
 
 milestone BATTLE_PIPELINE_ACCEPTED:
-  title "Thin production battle pipeline accepted"
-  description "The current-main thin slice is implemented before observation and admitted only through explicit guarded narration gates"
+  title "Hypothesis-first production battle pipeline accepted"
+  description "The most axial and current-main-patchable source projection causal receipt and guarded consumer slice is implemented before trial; residual observation items do not preempt that sequence"
 
 task T_BATTLE_PIPELINE CICD_READY -> BATTLE_PIPELINE_ACCEPTED:
-  title "Implement observe and accept the thin production battle pipeline"
-  description "Execute docs/battle-pipeline-production-rollout.pert from current main. Implement the bounded context and committed receipt plus default-off runtime wiring before any observation; activate narration grounding only after staging production-shadow and explicit owner gates. Do not import the full PoC architecture."
-  duration 14d
+  title "Implement try and accept the axial production battle pipeline slice"
+  description "Execute docs/battle-pipeline-production-rollout.pert from current main. First implement actual-turn source authoring and compact projections the proposal-to-result causal receipt and one guarded narration consumer; then run staging and explicitly authorized production trials. Select by hypothesis centrality and current-main patchability rather than by observation backlog order, and do not import the full PoC architecture."
+  duration 10d
   requires:
     DEV 1
   owner "codex"
