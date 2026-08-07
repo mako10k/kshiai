@@ -15,6 +15,9 @@ estimates in
   `work_event start`. Commit that start event before implementation proceeds.
 - At the real finish, add a separate `work_event finish` with the exact
   timestamp. Record active hours and person-hours when they are known.
+- Express non-terminating hour values as exact rationals (for example,
+  `827/3600`) rather than rounded decimals; perttool checks explicit active
+  time against the event-derived interval exactly.
 - Use suspend/resume events for genuine inactive intervals. Never edit a start
   or finish timestamp to make a forecast look accurate.
 - Do not change the original estimate after start. Scope added after start is a
@@ -55,17 +58,19 @@ with the ledger update after review.
 
 ## Task actuals
 
-No task in the current causal-slice plan has started. Old task timestamps lack
-a conformant committed start baseline and are not used for this Velocity.
+Only conformant current-plan work events are aggregated. Old task timestamps
+lack a committed start baseline and remain excluded.
 
 | Task | Estimate | Started at | Finished at | Elapsed | Active | Effort | Disposition | Evidence commit |
 |---|---:|---|---|---:|---:|---:|---|---|
+| `T_BUILD_CAUSAL_TURN_SLICE` | 2p | 2026-08-07T11:23:39+09:00 | 2026-08-07T11:37:26+09:00 | 827s (`827/3600h`) | `827/3600h` | `827/3600ph` | complete: focused 7 tests, shared 184 tests, shared typecheck and build passed | start `21bc8c6`; implementation `3e26227`; finish `34bc4cd` |
 
 ## Velocity and forecast history
 
-The current `1p/1d` value is a bootstrap only. The first measured row replaces
-it when a conformant task finishes.
+The original `1p/1d` value was a bootstrap only. The first measured row below
+replaced it when a conformant task finished.
 
 | Observed at | Included tasks | Completed points | Elapsed window | Candidate | Adopted Velocity | Remaining points | Forecast finish | Evidence commit |
 |---|---|---:|---:|---|---|---:|---|---|
 | 2026-08-07T11:10:08+09:00 | none | 0p | unavailable | unavailable: no current-plan completion | `1p/1d` bootstrap | 9p | 9d bootstrap | n/a: bootstrap |
+| 2026-08-07T11:39:35+09:00 | `T_BUILD_CAUSAL_TURN_SLICE` | 2p | 827s | exact elapsed `7200/827p/1h`; token rejected by perttool [#7](https://github.com/mako10k/perttool/issues/7), so use available active-date candidate | `2p/1d` measured fallback | 7p | 3.5d | `34bc4cd` |
