@@ -26,6 +26,7 @@ import {
   getSessionToken,
   registerUser,
   requireAdmin,
+  requireInternalObservability,
   requireUser,
   setSessionCookie,
   userFromRequest,
@@ -49,6 +50,10 @@ import {
   toBattlePublicForViewer,
 } from "./services/battle-service.js";
 import { getBalanceSummary } from "./services/balance-observe.js";
+import {
+  getInternalBattleObservation,
+  listInternalBattleObservations,
+} from "./services/internal-observability.js";
 import { findCharacterNameConflict } from "./character-name-uniqueness.js";
 import { databaseKind, query } from "./db.js";
 import { config } from "./config.js";
@@ -184,6 +189,39 @@ export function buildRoutes() {
       summary: await getBalanceSummary(Number.isFinite(limit) ? limit : 20),
     });
   });
+
+  authed.get(
+    "/internal/observations",
+    requireInternalObservability,
+    async (c) => {
+      const limit = Number(c.req.query("limit") ?? 30);
+      const role = c.get("internalObservabilityRole");
+      return c.json({
+        role,
+        battles: await listInternalBattleObservations(
+          limit,
+          role === "admin" || role === "developer" ? "all" : "test",
+        ),
+      });
+    },
+  );
+
+  authed.get(
+    "/internal/observations/:battleId",
+    requireInternalObservability,
+    async (c) => {
+      const role = c.get("internalObservabilityRole");
+      const detail = await getInternalBattleObservation(
+        c.req.param("battleId") ?? "",
+        role === "admin" || role === "developer" ? "all" : "test",
+      );
+      if (!detail) return c.json({ error: "not_found" }, 404);
+      return c.json({
+        role,
+        ...detail,
+      });
+    },
+  );
 
   authed.get("/characters", async (c) => {
     const user = c.get("user");

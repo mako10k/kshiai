@@ -70,6 +70,12 @@ the structured rational rate into the equivalent PERT velocity syntax. A
 Velocity change and its forecast are committed with the ledger update after
 review.
 
+## Scope replan history
+
+| Recorded at | Existing task | Added task | Point impact | Reason |
+|---|---|---|---:|---|
+| 2026-08-07T15:19:07+09:00 | `T_RUN_FIRST_PERSISTENT_E2E` remains 1p and was suspended | `T_BUILD_INTERNAL_OBSERVATION_SURFACE` 2p | target 14p -> 16p | The user added a separate internal API/Web viewer for raw battle logs and canonical-world progression before the production rerun. The original estimate and its 14:41:27 start remain unchanged. |
+
 ## Task actuals
 
 Only exact current-plan work events are aggregated. Old task timestamps that

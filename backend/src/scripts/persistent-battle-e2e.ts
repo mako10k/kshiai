@@ -28,8 +28,94 @@ type SupabaseAdminUser = {
   email?: string;
 };
 
+type SanitizedObservation = {
+  runId: string;
+  observedAt: string;
+  target: { revision: string | null };
+  accounts: { crossAccount: boolean };
+  visibility: {
+    testRealmSharing: string;
+    generalCharacterLeakage: string;
+  };
+  battle: {
+    id: string;
+    status: string;
+    log: unknown[];
+  };
+  [key: string]: unknown;
+};
+
+const FORBIDDEN_OBSERVATION_KEYS = new Set([
+  "accessToken",
+  "authUserId",
+  "applicationUserId",
+  "parameters",
+  "recordOverall",
+  "semanticState",
+  "ratingSettlement",
+]);
+
 export function generateEphemeralPassword(): string {
   return `E2E-${randomUUID()}-9a!`;
+}
+
+export function resolveObservationRunId(raw: string | undefined): string {
+  if (!raw) return randomUUID();
+  if (!/^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$/.test(raw)) {
+    throw new Error("E2E_RUN_ID must be a bounded portable identifier");
+  }
+  return raw;
+}
+
+export function assertSanitizedObservation(
+  value: unknown,
+  expectedRevision: string | null,
+): asserts value is SanitizedObservation {
+  if (!value || typeof value !== "object") {
+    throw new Error("Observation must be an object");
+  }
+  const observation = value as Partial<SanitizedObservation>;
+  if (observation.target?.revision !== expectedRevision) {
+    throw new Error("Observation revision mismatch");
+  }
+  if (observation.battle?.status !== "finished" || !observation.battle.id) {
+    throw new Error("Observation did not retain a finished battle");
+  }
+  if (!Array.isArray(observation.battle.log) || observation.battle.log.length === 0) {
+    throw new Error("Observation contains no retained narration");
+  }
+  if (observation.accounts?.crossAccount !== true ||
+      observation.visibility?.testRealmSharing !== "passed" ||
+      observation.visibility?.generalCharacterLeakage !== "not_observed") {
+    throw new Error("Observation visibility assertions did not pass");
+  }
+  const visit = (current: unknown): void => {
+    if (!current || typeof current !== "object") return;
+    for (const [key, child] of Object.entries(current)) {
+      if (FORBIDDEN_OBSERVATION_KEYS.has(key)) {
+        throw new Error(`Forbidden observation key: ${key}`);
+      }
+      visit(child);
+    }
+  };
+  visit(observation);
+}
+
+export async function persistSanitizedObservation(
+  observation: SanitizedObservation,
+): Promise<void> {
+  await query(
+    `INSERT INTO balance_events
+      (kind, created_at, battle_id, character_id, payload_json)
+     VALUES ($1, $2, $3, $4, $5)`,
+    [
+      "persistent_e2e_observation",
+      observation.observedAt,
+      observation.battle.id,
+      E2E_FIXTURE_IDS.observerCharacter,
+      JSON.stringify(observation),
+    ],
+  );
 }
 
 function required(name: string): string {
@@ -335,12 +421,45 @@ async function assertTestRealmApiVisibility(
   assertContainsId(styles.styles ?? [], E2E_FIXTURE_IDS.narrationStyle, "narration styles");
 }
 
+async function inspectInternalBattleObservation(input: {
+  account: PersistentAccount;
+  apiBaseUrl: string;
+  battleId: string;
+}): Promise<{ turnRecordCount: number; canonicalTransitionCount: number }> {
+  const response = await apiJson<{
+    role?: string;
+    summary?: { battleId?: string };
+    rawBattleState?: { id?: string };
+    capabilities?: {
+      turnRecordCount?: number;
+      canonicalTransitionCount?: number;
+    };
+  }>({
+    apiBaseUrl: input.apiBaseUrl,
+    accessToken: input.account.accessToken,
+    path: `/api/internal/observations/${input.battleId}`,
+  });
+  const turnRecordCount = response.capabilities?.turnRecordCount ?? 0;
+  const canonicalTransitionCount =
+    response.capabilities?.canonicalTransitionCount ?? 0;
+  if (
+    response.role !== "e2e" ||
+    response.summary?.battleId !== input.battleId ||
+    response.rawBattleState?.id !== input.battleId ||
+    turnRecordCount <= 0 ||
+    canonicalTransitionCount <= 0
+  ) {
+    throw new Error("Internal observation API did not expose the retained canonical battle");
+  }
+  return { turnRecordCount, canonicalTransitionCount };
+}
+
 async function main(): Promise<void> {
   const apiBaseUrl = validateProductionApiUrl(required("E2E_API_URL"));
   const secretKey = required("SUPABASE_SECRET_KEY");
   const publishableKey = required("SUPABASE_PUBLISHABLE_KEY");
   required("DATABASE_URL");
-  const runId = randomUUID();
+  const runId = resolveObservationRunId(process.env.E2E_RUN_ID);
   const targetRevision = process.env.E2E_TARGET_REVISION?.trim() || null;
   const maxAdvances = Math.min(
     30,
@@ -428,6 +547,11 @@ async function main(): Promise<void> {
     if (persistedBattle.status !== "finished" || persistedBattle.log.length === 0) {
       throw new Error("Finished E2E battle was not persisted with narration");
     }
+    const internalObservability = await inspectInternalBattleObservation({
+      account: observer,
+      apiBaseUrl,
+      battleId: persistedBattle.id,
+    });
     const observation = {
       schemaVersion: 1,
       runId,
@@ -449,6 +573,10 @@ async function main(): Promise<void> {
         testRealmSharing: "passed",
         generalCharacterLeakage: "not_observed",
       },
+      internalObservability: {
+        battleDetail: "passed",
+        ...internalObservability,
+      },
       battle: {
         id: persistedBattle.id,
         status: persistedBattle.status,
@@ -462,6 +590,8 @@ async function main(): Promise<void> {
         log: persistedBattle.log,
       },
     };
+    assertSanitizedObservation(observation, targetRevision);
+    await persistSanitizedObservation(observation);
     console.log(`${OBSERVATION_PREFIX}${JSON.stringify(observation)}`);
   } finally {
     await closeDatabase();

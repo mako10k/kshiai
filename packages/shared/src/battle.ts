@@ -581,6 +581,23 @@ export const BattleTurnRecordSchema = z.object({
     .default([])
     .optional(),
   events: z.array(TurnEventSchema).default([]),
+  /** Exact server-owned semantic and mechanical world transitions for this turn. */
+  canonicalTransition: z.object({
+    semantic: z.object({
+      turn: z.number().int().nonnegative(),
+      status: z.enum(["applied", "rejected", "skipped"]),
+      fromRevision: z.number().int().nonnegative(),
+      toRevision: z.number().int().nonnegative(),
+      patch: TurnSemanticPatchSchema.nullable(),
+    }).optional(),
+    world: z.object({
+      turn: z.number().int().nonnegative(),
+      status: z.enum(["applied", "rejected", "skipped"]),
+      fromRevision: z.number().int().nonnegative(),
+      toRevision: z.number().int().nonnegative(),
+      transition: BattleWorldTransitionSchema.nullable(),
+    }).optional(),
+  }).strict().optional(),
   sideAChange: CombatantStateChangeSchema,
   sideBChange: CombatantStateChangeSchema,
   cognitionA: CharacterCognitionSchema,

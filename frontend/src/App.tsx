@@ -12,6 +12,7 @@ import { HistoryPage } from "./pages/HistoryPage";
 import { NarrationStylesPage } from "./pages/NarrationStylesPage";
 import { AuthCallbackPage } from "./pages/AuthCallbackPage";
 import { ResetPasswordPage } from "./pages/ResetPasswordPage";
+import { InternalObservationsPage } from "./pages/InternalObservationsPage";
 
 function Shell({ children }: { children: React.ReactNode }) {
   const { user, logout } = useAuth();
@@ -118,6 +119,14 @@ export function App() {
           element={
             <RequireAuth>
               <BattlePage />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/internal/observations"
+          element={
+            <RequireAuth>
+              <InternalObservationsPage />
             </RequireAuth>
           }
         />

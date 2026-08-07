@@ -365,6 +365,21 @@ export function buildBattleTurnRecord(input: {
     actions: input.actions ?? [],
     freeActionReceipts: input.after.latestFreeActionReceipts ?? [],
     events: input.events,
+    ...(
+      input.after.latestSemanticTransition?.turn === input.after.turn ||
+        input.after.latestWorldTransition?.turn === input.after.turn
+        ? {
+            canonicalTransition: {
+              ...(input.after.latestSemanticTransition?.turn === input.after.turn
+                ? { semantic: input.after.latestSemanticTransition }
+                : {}),
+              ...(input.after.latestWorldTransition?.turn === input.after.turn
+                ? { world: input.after.latestWorldTransition }
+                : {}),
+            },
+          }
+        : {}
+    ),
     sideAChange: {
       parameterChanges: changeA,
       defendingBefore: input.before.sideA.defending,

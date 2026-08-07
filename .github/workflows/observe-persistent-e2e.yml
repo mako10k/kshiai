@@ -40,6 +40,7 @@ env:
   SUPABASE_JWKS_URL: https://cvrbhpkfqkpqdegxfrlq.supabase.co/auth/v1/.well-known/jwks.json
   EXPECTED_BATTLE_CAUSAL_NARRATION_MODE: narration_guarded
   EXPECTED_ADMIN_EMAIL: mako10k@mk10.org
+  OBSERVATION_RUN_ID: github-${{ github.run_id }}-${{ github.run_attempt }}
 
 jobs:
   observe:
@@ -147,7 +148,7 @@ jobs:
             --region="$GCP_REGION" \
             --image="$IMAGE_REF" \
             --service-account=kshiai-cloud-run@kshiai.iam.gserviceaccount.com \
-            --set-env-vars="NODE_ENV=test,KSHIAI_RUN_E2E_MAIN=1,AUTH_PROVIDER=supabase,MEDIA_STORAGE=local,SUPABASE_URL=$SUPABASE_URL,SUPABASE_JWKS_URL=$SUPABASE_JWKS_URL,E2E_API_URL=$PRODUCTION_URL,E2E_ALLOWED_HOSTS=kshiai.mk10.org,E2E_MAX_ADVANCES=$MAX_ADVANCES,E2E_TARGET_REVISION=$EXPECTED_REVISION" \
+            --set-env-vars="NODE_ENV=test,KSHIAI_RUN_E2E_MAIN=1,AUTH_PROVIDER=supabase,MEDIA_STORAGE=local,SUPABASE_URL=$SUPABASE_URL,SUPABASE_JWKS_URL=$SUPABASE_JWKS_URL,E2E_API_URL=$PRODUCTION_URL,E2E_ALLOWED_HOSTS=kshiai.mk10.org,E2E_MAX_ADVANCES=$MAX_ADVANCES,E2E_TARGET_REVISION=$EXPECTED_REVISION,E2E_RUN_ID=$OBSERVATION_RUN_ID" \
             --set-secrets="DATABASE_URL=kshiai-database-url:latest,SUPABASE_SECRET_KEY=kshiai-supabase-secret-key:latest,SUPABASE_PUBLISHABLE_KEY=kshiai-supabase-publishable-key:latest" \
             --command=node \
             --args=backend/dist/scripts/persistent-battle-e2e.js \
@@ -162,62 +163,38 @@ jobs:
           [[ "$execution" =~ ^kshiai-persistent-e2e-[a-z0-9-]+$ ]]
           echo "execution=$execution" >> "$GITHUB_OUTPUT"
 
-      - name: Capture and validate sanitized observation
+      - name: Record sanitized observation receipt
         env:
           EXECUTION: ${{ steps.execute.outputs.execution }}
           EXPECTED_REVISION: ${{ inputs.expected_revision }}
+          RELEASE_TAG: ${{ inputs.tag }}
         run: |
           set -euo pipefail
-          filter="resource.type=\"cloud_run_job\" AND resource.labels.job_name=\"$E2E_JOB\" AND labels.\"run.googleapis.com/execution_name\"=\"$EXECUTION\""
-          gcloud logging read "$filter" \
-            --project="$GCP_PROJECT" \
-            --limit=200 \
-            --order=desc \
-            --format='value(textPayload)' > "$RUNNER_TEMP/e2e.log"
-          line="$(grep '^KSHIAI_E2E_OBSERVATION=' "$RUNNER_TEMP/e2e.log" | head -n 1)"
-          test -n "$line"
-          printf '%s\n' "${line#KSHIAI_E2E_OBSERVATION=}" > "$RUNNER_TEMP/e2e-observation.json"
-          EXPECTED_REVISION="$EXPECTED_REVISION" node -e '
+          node -e '
             const fs = require("fs");
-            const observation = JSON.parse(fs.readFileSync(process.argv[1], "utf8"));
-            if (observation.target?.revision !== process.env.EXPECTED_REVISION) {
-              throw new Error("Observation revision mismatch");
-            }
-            if (observation.battle?.status !== "finished" || !observation.battle?.id) {
-              throw new Error("Observation did not retain a finished battle");
-            }
-            if (!Array.isArray(observation.battle.log) || observation.battle.log.length === 0) {
-              throw new Error("Observation contains no retained narration");
-            }
-            if (observation.accounts?.crossAccount !== true ||
-                observation.visibility?.testRealmSharing !== "passed" ||
-                observation.visibility?.generalCharacterLeakage !== "not_observed") {
-              throw new Error("Observation visibility assertions did not pass");
-            }
-            const forbiddenKeys = new Set([
-              "accessToken", "authUserId", "applicationUserId", "parameters",
-              "recordOverall", "semanticState", "ratingSettlement",
-            ]);
-            const visit = (value) => {
-              if (!value || typeof value !== "object") return;
-              for (const [key, child] of Object.entries(value)) {
-                if (forbiddenKeys.has(key)) throw new Error(`Forbidden observation key: ${key}`);
-                visit(child);
-              }
+            const receipt = {
+              schemaVersion: 1,
+              observationRunId: process.env.OBSERVATION_RUN_ID,
+              releaseTag: process.env.RELEASE_TAG,
+              revision: process.env.EXPECTED_REVISION,
+              execution: process.env.EXECUTION,
+              verification: "cloud_run_job_exit_success",
+              durableObservation: "postgres.balance_events:persistent_e2e_observation",
+              durableBattle: "postgres.battles",
             };
-            visit(observation);
+            fs.writeFileSync(process.argv[1], `${JSON.stringify(receipt, null, 2)}\n`);
             fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY,
               `## Persistent E2E observation passed\n\n` +
-              `- Revision: \`${observation.target.revision}\`\n` +
-              `- Battle: \`${observation.battle.id}\`\n` +
-              `- Turns: ${observation.battle.turn}/${observation.battle.turnLimit}\n` +
-              `- Fixture disposition: \`${JSON.stringify(observation.fixtures.disposition)}\`\n`);
-          ' "$RUNNER_TEMP/e2e-observation.json"
+              `- Revision: \`${receipt.revision}\`\n` +
+              `- Execution: \`${receipt.execution}\`\n` +
+              `- Observation run: \`${receipt.observationRunId}\`\n` +
+              `- Durable observation: \`${receipt.durableObservation}\`\n`);
+          ' "$RUNNER_TEMP/e2e-observation-receipt.json"
 
-      - name: Retain observation artifact
+      - name: Retain observation receipt
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: persistent-e2e-${{ steps.execute.outputs.execution }}
-          path: ${{ runner.temp }}/e2e-observation.json
+          path: ${{ runner.temp }}/e2e-observation-receipt.json
           if-no-files-found: error
           retention-days: 90

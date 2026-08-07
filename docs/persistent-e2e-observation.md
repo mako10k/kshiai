@@ -5,11 +5,12 @@ mixing its synthetic data into the general-player population.
 
 ## Access model
 
-`users.account_kind` is a server-owned value with three allowed states:
+`users.account_kind` is a server-owned value with four allowed states:
 
 | Kind | Realm | Visible character population |
 | --- | --- | --- |
 | `general` | general | general only |
+| `developer` | test | test and E2E |
 | `test` | test | test and E2E |
 | `e2e` | test | test and E2E |
 
@@ -18,6 +19,18 @@ battlefields and narration styles are shared by administrators, test users,
 and E2E users. A normal general user sees neither those assets nor test-realm
 ratings. Custom assets belonging to another general user do not become shared
 merely because the viewer is an administrator.
+
+Administrators, developers, test users, and E2E users can open the unlinked
+`/internal/observations` screen and its `/api/internal/observations/*` API.
+General users receive `404 not_found`. This is a separate diagnostics screen;
+it adds no control, link, or state to the normal battle screen. The first slice
+lists retained battles and exposes the exact battle JSON, public narration log,
+E2E observation record, current canonical semantic/world state, and per-turn
+engine facts. Battles created after this release also retain the full semantic
+and mechanical-world transition for each turn. Older records remain viewable
+but accurately report that per-turn transition detail is unavailable.
+Administrators and developers may inspect all retained battles; test and E2E
+users remain restricted to battles owned by the test realm.
 
 The production administrator allowlist is deployment configuration, not a
 client claim. Stage binds `ADMIN_EMAILS=mako10k@mk10.org`, and Promote refuses
@@ -59,8 +72,11 @@ After a release is promoted, select that exact tag in GitHub Actions and run
 
 The protected workflow verifies the tag's required checks and the active
 immutable revision before deploying a Cloud Run Job from that exact image. A
-successful run records the database battle indefinitely and uploads a
-sanitized JSON artifact for 90 days. The artifact contains synthetic account
-labels, fixture disposition, per-advance timing, the public result, and public
-narration. It excludes access tokens, auth/application user IDs, raw character
-parameters, private semantic state, and rating internals.
+successful run validates the sanitized observation inside that trusted Job,
+records both the full public observation in `balance_events` and the battle in
+`battles` indefinitely, and uploads a non-sensitive execution receipt for 90
+days. The durable observation contains synthetic account labels, fixture
+disposition, per-advance timing, the public result, and public narration. It
+excludes access tokens, auth/application user IDs, raw character parameters,
+private semantic state, and rating internals. The GitHub deploy identity does
+not receive broad project-log access merely to copy this data into an artifact.
