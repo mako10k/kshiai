@@ -2,7 +2,7 @@
 project KSHIAI_BATTLE_PIPELINE_WORK_V4:
   version 6
   title "Observation-driven battle-pipeline renewal"
-  description "Use persistent production E2E evidence to order axial battle-pipeline slices. Preserve the causal receipt, isolated E2E realm, and Site A, Site B, narrator I/O DAG. The v0.12.0 trial safely rejected all eight ungrounded environment proposals but accepted none, exposing a representability mismatch between supervisor surface motion and canonical operations. The aligned proposal trial remains required, while its timeout incident adds a separate provider-routing correction: retry 429 and bounded 503 only within the same provider, never provider-fallback on timeout, rate limit, or 503, and reserve one-hour provider fallback for provider-unavailable failures such as DNS and billing. Keep non-critical narrator quality issues pending until pipeline maturity; include them only when an axial slice naturally changes their input or authority boundary."
+  description "Use persistent production E2E evidence to order axial battle-pipeline slices. Preserve the causal receipt, isolated E2E realm, and Site A, Site B, narrator I/O DAG. The v0.12.2 trial accepted one of five aligned environment proposals and kept all rejected proposals private and mechanically inert, but the accepted plate described on a wagon roof became a Side B held object and later defend instrument. This completes the bounded trial and selects proposal-result to canonical-operation meaning equivalence as the highest-value next pipeline boundary. Provider routing stayed on xAI with no retry or switch; timeout 429 and 503 paths remain regression-tested but unobserved. Keep non-critical narrator quality issues pending until pipeline maturity; include them only when an axial slice naturally changes their input or authority boundary."
   as_of 2026-08-07
   duration_unit point
   velocity 7200p/2159h
@@ -292,7 +292,7 @@ task T_TRY_ALIGNED_ENVIRONMENT_PROPOSALS ENVIRONMENT_PROPOSAL_TRANSITION_ALIGNED
   title "Release and observe aligned environment proposals"
   description "Release the prompt-contract alignment through the reviewed tag Stage and protected Promote path with the environment pipeline always enabled. Run one retained production E2E battle after provider availability is restored. Compare accepted rejected and no-canonical-change density; require every accepted decision to carry a qualifying operation source event resolved event and bounded following-turn effect while rejected proposals remain private and mechanically inert. Re-evaluate OBS-20260807-02 OBS-20260807-06 and OBS-20260807-08. Observe narrator output only for incidental improvement from accepted canonical input and keep standalone narrator work pending."
   duration 1p
-  status active
+  status done
   owner "codex"
   requires:
     DEV 1
@@ -695,3 +695,11 @@ work_event WE-4ef2679eeec83824e54435efc3455fb1076ff35bde455bec48f7bc0675933471:
   task T_TRY_ALIGNED_ENVIRONMENT_PROPOSALS
   kind resume
   occurred_at 2026-08-07T21:28:56+09:00
+
+work_event WE-4dbce7f1242a3ed817a4db315ff0ebf08873d730897dc3e9981937f558e8007e:
+  model 1
+  task T_TRY_ALIGNED_ENVIRONMENT_PROPOSALS
+  kind finish
+  occurred_at 2026-08-07T21:42:00+09:00
+  active_time 13/12h
+  effort 13/12ph

@@ -59,5 +59,28 @@ Release the operational correction selected by production run 31172362244:
   `xai>openai>venice` provider topology and PostgreSQL/Supabase runtime.
 - No severity `ERROR` entry was present for the new revision in the immediate
   15-minute post-promote Cloud Logging readback.
-- The aligned persistent E2E battle remains pending and separately gated; no
-  production observation run was dispatched as part of this deployment.
+- The release deployment itself dispatched no production observation. The
+  separately approved persistent E2E run 31178518891 subsequently bound tag
+  `b4155d7` to active revision `kshiai-api-00048-fiw`, completed successfully,
+  and retained battle `btl_0c19c361b6d8127610c1c5b3` plus execution receipt
+  `kshiai-persistent-e2e-hpp4n`.
+
+## Production observation result
+
+- The battle finished on turn 16 with 17 turn records, 16 canonical
+  transitions, and 17 pipeline traces. Fixture reuse, cross-account access,
+  internal detail access, and general-realm isolation passed.
+- Five environment proposals produced one accepted receipt, two
+  `no_canonical_change` receipts, and two `decision_rejected` receipts. All four
+  rejected proposals remained private, had no resolved event/effect key, and
+  produced no proposal-derived canonical operation or direct HP effect.
+- The accepted receipt carried its source event, resolved event, semantic/world
+  revision change, and `/entities/stair_plate` effect key. Its semantic meaning
+  was not sound: a plate described as landing on the wagon roof became an
+  object held by Side B and was later accepted as a defend instrument. This is
+  recorded as `OBS-20260807-09` and is the highest-value next pipeline boundary.
+- Exact-window logs contain 78 successful xAI calls, no same-provider retry and
+  no provider switch. Three invalid character-state results were terminal
+  `reason=other` failures with provider fallback disabled. Timeout, 429, and 503
+  handling therefore remain covered by regression tests but were not exercised
+  by this observation.
