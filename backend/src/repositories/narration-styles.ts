@@ -8,6 +8,11 @@ import {
 } from "@kshiai/shared";
 import { query, withTransaction } from "../db.js";
 import { newId } from "../id.js";
+import {
+  canAccessSharedAsset,
+  getUserAccessProfile,
+  normalizeAccountKind,
+} from "../account-access.js";
 
 let seedPromise: Promise<void> | null = null;
 
@@ -61,13 +66,26 @@ function parse(json: unknown): NarrationStyle {
 
 export async function listNarrationStyles(userId: string): Promise<NarrationStylePublic[]> {
   await ensureSystemNarrationStyles();
-  const { rows } = await query<{ sheet_json: unknown }>(
-    `SELECT sheet_json FROM narration_styles
-     WHERE is_system = TRUE OR owner_user_id = $1
-     ORDER BY is_system DESC, updated_at DESC`,
-    [userId],
+  const viewer = await getUserAccessProfile(userId);
+  const { rows } = await query<{
+    sheet_json: unknown;
+    owner_user_id: string | null;
+    is_system: boolean | number;
+    account_kind: string | null;
+  }>(
+    `SELECT n.sheet_json, n.owner_user_id, n.is_system, u.account_kind
+     FROM narration_styles n
+     LEFT JOIN users u ON u.id = n.owner_user_id
+     ORDER BY n.is_system DESC, n.updated_at DESC`,
   );
-  return rows.map((r) => toPublicNarrationStyle(parse(r.sheet_json)));
+  return rows
+    .filter((row) => canAccessSharedAsset({
+      viewer,
+      ownerUserId: row.owner_user_id,
+      ownerKind: normalizeAccountKind(row.account_kind),
+      isSystem: Boolean(row.is_system),
+    }))
+    .map((row) => toPublicNarrationStyle(parse(row.sheet_json)));
 }
 
 export async function getNarrationStyle(id: string): Promise<NarrationStyle | null> {
@@ -81,7 +99,7 @@ export async function getNarrationStyle(id: string): Promise<NarrationStyle | nu
   return parse(row.sheet_json);
 }
 
-/** Resolve for a match: system or owned by user; else default. */
+/** Resolve for a match: system, owned, or shared test-realm style; else default. */
 export async function resolveNarrationStyleForUser(
   userId: string,
   styleId?: string | null,
@@ -89,7 +107,18 @@ export async function resolveNarrationStyleForUser(
   await ensureSystemNarrationStyles();
   if (styleId) {
     const s = await getNarrationStyle(styleId);
-    if (s && (s.isSystem || s.ownerUserId === userId)) return s;
+    if (s) {
+      const viewer = await getUserAccessProfile(userId);
+      const owner = s.ownerUserId
+        ? await getUserAccessProfile(s.ownerUserId)
+        : null;
+      if (canAccessSharedAsset({
+        viewer,
+        ownerUserId: s.ownerUserId,
+        ownerKind: owner?.accountKind ?? "general",
+        isSystem: s.isSystem,
+      })) return s;
+    }
   }
   return (
     (await getNarrationStyle(DEFAULT_NARRATION_STYLE_ID)) ?? {

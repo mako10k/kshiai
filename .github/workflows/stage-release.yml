@@ -38,6 +38,7 @@ env:
   WRANGLER_CONFIG: infra/cloudflare-worker/wrangler.jsonc
   SUPABASE_URL: https://cvrbhpkfqkpqdegxfrlq.supabase.co
   SUPABASE_JWKS_URL: https://cvrbhpkfqkpqdegxfrlq.supabase.co/auth/v1/.well-known/jwks.json
+  ADMIN_EMAILS: mako10k@mk10.org
 
 jobs:
   stage:
@@ -137,7 +138,7 @@ jobs:
             --image="$IMAGE_REF" \
             --no-traffic \
             --tag="$alias" \
-            --update-env-vars="BATTLE_CAUSAL_NARRATION_MODE=$CAUSAL_NARRATION_MODE" \
+            --update-env-vars="BATTLE_CAUSAL_NARRATION_MODE=$CAUSAL_NARRATION_MODE,ADMIN_EMAILS=$ADMIN_EMAILS" \
             --quiet
           gcloud run services describe "$CLOUD_RUN_SERVICE" \
             --project="$GCP_PROJECT" \
@@ -326,6 +327,7 @@ jobs:
             echo "- Backend digest: \`$IMAGE_DIGEST\`"
             echo "- Cloud Run revision: \`$REVISION\`"
             echo "- Causal narration mode: \`$CAUSAL_NARRATION_MODE\`"
+            echo "- Administrator email: \`$ADMIN_EMAILS\`"
             echo "- Worker version: \`$WORKER_VERSION\`"
             echo "- Preview: $PREVIEW_URL"
             echo

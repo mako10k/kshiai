@@ -129,6 +129,7 @@ import * as battleRepo from "../repositories/battles.js";
 import * as bfRepo from "../repositories/battlefields.js";
 import * as charRepo from "../repositories/characters.js";
 import * as styleRepo from "../repositories/narration-styles.js";
+import { getUserAccessProfile } from "../account-access.js";
 import { withBattleLease } from "./distributed-guard.js";
 import {
   buildFreeActionCanonicalRoots,
@@ -258,7 +259,9 @@ export async function toBattlePublicForViewer(
   oppSheet?: CharacterSheet | null,
 ): Promise<BattlePublic> {
   const ratingDisplay = state.ratingSettlement?.applied
-    ? await charRepo.getRatingDisplayContext()
+    ? await charRepo.getRatingDisplayContext(
+        (await getUserAccessProfile(mySheet.ownerUserId)).realm,
+      )
     : undefined;
   return toBattlePublic(
     state,
@@ -279,11 +282,11 @@ async function resolveBattlefieldInstance(input: {
     input.battlefieldMode ?? (input.battlefieldPresetId ? "preset" : "random");
 
   if (mode === "preset" && input.battlefieldPresetId) {
-    const preset = await bfRepo.getPreset(input.battlefieldPresetId);
+    const preset = await bfRepo.getPresetForUser(
+      input.battlefieldPresetId,
+      input.userId,
+    );
     if (!preset) throw new Error("BATTLEFIELD_NOT_FOUND");
-    if (!preset.isSystem && preset.ownerUserId !== input.userId) {
-      throw new Error("BATTLEFIELD_FORBIDDEN");
-    }
     return input.llm.concretizeBattlefield({ preset, random: false });
   }
 
@@ -351,14 +354,29 @@ export async function generateMatchPolicies(input: {
   const foe = input.opponentCharacterId
     ? await charRepo.getSheet(input.opponentCharacterId)
     : null;
+  if (input.opponentCharacterId && !foe) {
+    throw new Error("OPPONENT_NOT_FOUND");
+  }
+  if (foe && !(await charRepo.canViewCharacter(input.userId, foe))) {
+    throw new Error("OPPONENT_NOT_FOUND");
+  }
 
   let fieldPreset: BattlefieldPreset | null = null;
   if (input.battlefieldMode === "preset" && input.battlefieldPresetId) {
-    fieldPreset = await bfRepo.getPreset(input.battlefieldPresetId);
+    fieldPreset = await bfRepo.getPresetForUser(
+      input.battlefieldPresetId,
+      input.userId,
+    );
   } else if (input.battlefieldPresetId) {
-    fieldPreset = await bfRepo.getPreset(input.battlefieldPresetId);
+    fieldPreset = await bfRepo.getPresetForUser(
+      input.battlefieldPresetId,
+      input.userId,
+    );
   } else {
     fieldPreset = await bfRepo.pickRandomSystemPreset();
+  }
+  if (input.battlefieldPresetId && !fieldPreset) {
+    throw new Error("BATTLEFIELD_NOT_FOUND");
   }
 
   const field = fieldHintFromPreset(fieldPreset);
@@ -429,6 +447,9 @@ export async function startBattle(input: {
     throw new Error("MY_CHARACTER_NOT_FOUND");
   }
   if (!opp) throw new Error("OPPONENT_NOT_FOUND");
+  if (!(await charRepo.canViewCharacter(input.userId, opp))) {
+    throw new Error("OPPONENT_NOT_FOUND");
+  }
   if (mine.id === opp.id) throw new Error("SAME_CHARACTER");
 
   const battlefield = await resolveBattlefieldInstance({

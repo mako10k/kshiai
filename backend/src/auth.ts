@@ -6,6 +6,12 @@ import type { UserPublic } from "@kshiai/shared";
 import { config } from "./config.js";
 import { query } from "./db.js";
 import { newId } from "./id.js";
+import {
+  adminIdentityMatches,
+  getUserAccessProfile,
+} from "./account-access.js";
+
+export { adminIdentityMatches } from "./account-access.js";
 
 const COOKIE = "kshiai_session";
 const SESSION_DAYS = 14;
@@ -244,32 +250,11 @@ export async function requireUser(c: Context, next: Next) {
 
 export async function requireAdmin(c: Context, next: Next) {
   const user = c.get("user");
-  let email: string | null = null;
-  if (config.adminEmails.length > 0) {
-    const result = await query<{ email: string | null }>(
-      `SELECT email FROM users WHERE id = $1`,
-      [user.id],
-    );
-    email = result.rows[0]?.email ?? null;
-  }
-  if (adminIdentityMatches({ userId: user.id, email })) {
+  if ((await getUserAccessProfile(user.id)).isAdmin) {
     await next();
     return;
   }
   return c.json({ error: "forbidden" }, 403);
-}
-
-export function adminIdentityMatches(input: {
-  userId: string;
-  email: string | null;
-  allowedUserIds?: readonly string[];
-  allowedEmails?: readonly string[];
-}): boolean {
-  const allowedUserIds = input.allowedUserIds ?? config.adminUserIds;
-  const allowedEmails = input.allowedEmails ?? config.adminEmails;
-  if (allowedUserIds.includes(input.userId)) return true;
-  const email = input.email?.trim().toLowerCase();
-  return Boolean(email && allowedEmails.includes(email));
 }
 
 declare module "hono" {

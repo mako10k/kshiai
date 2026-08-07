@@ -9,6 +9,7 @@ const tempDir = mkdtempSync(join(tmpdir(), "kshiai-character-test-"));
 process.env.DATABASE_URL = "";
 process.env.AUTH_PROVIDER = "legacy";
 process.env.DATABASE_PATH = join(tempDir, "test.db");
+process.env.ADMIN_EMAILS = "mako10k@mk10.org";
 const repo = await import("./characters.js");
 const draftRepo = await import("./character-drafts.js");
 const { pickAutoMatchedOpponent } = await import("../services/battle-service.js");
@@ -147,5 +148,61 @@ describe("owner-scoped character generation references", () => {
       active.reduce((total, character) => total + character.record.rating, 0) /
       active.length;
     assert.equal(visibleAverage, 1500);
+  });
+
+  it("isolates test characters and rating populations from general users", async () => {
+    const db = getDb();
+    const insertUser = db.prepare(
+      `INSERT INTO users
+        (id, username, password_hash, email, account_kind, created_at)
+       VALUES (?, ?, 'x', ?, ?, ?)`,
+    );
+    insertUser.run(
+      "user-e2e-a",
+      "e2e-a",
+      "e2e-a@example.test",
+      "e2e",
+      "2026-08-07T00:00:00.000Z",
+    );
+    insertUser.run(
+      "user-e2e-b",
+      "e2e-b",
+      "e2e-b@example.test",
+      "test",
+      "2026-08-07T00:00:00.000Z",
+    );
+    insertUser.run(
+      "user-admin",
+      "admin",
+      "mako10k@mk10.org",
+      "general",
+      "2026-08-07T00:00:00.000Z",
+    );
+    await repo.saveSheet(sheet("char-e2e-a", "user-e2e-a", "観測者"));
+    await repo.saveSheet(sheet("char-e2e-b", "user-e2e-b", "対照役"));
+
+    const generalIds = (await repo.listPlayableOpponentSheets("user-a"))
+      .map((item) => item.id);
+    const e2eIds = (await repo.listPlayableOpponentSheets("user-e2e-a"))
+      .map((item) => item.id);
+    const adminIds = (await repo.listPlayableOpponentSheets("user-admin"))
+      .map((item) => item.id);
+    assert.equal(generalIds.includes("char-e2e-b"), false);
+    assert.equal(e2eIds.includes("char-b"), false);
+    assert.equal(e2eIds.includes("char-e2e-b"), true);
+    assert.equal(adminIds.includes("char-b"), true);
+    assert.equal(adminIds.includes("char-e2e-b"), true);
+    assert.equal(
+      await repo.canViewCharacter("user-a", (await repo.getSheet("char-e2e-a"))!),
+      false,
+    );
+    assert.deepEqual((await repo.getRatingDisplayContext("test")).public, {
+      ratingTotal: 3000,
+      characterCount: 2,
+    });
+    assert.deepEqual((await repo.getRatingDisplayContext("general")).public, {
+      ratingTotal: 3000,
+      characterCount: 2,
+    });
   });
 });

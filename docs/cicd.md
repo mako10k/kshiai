@@ -35,6 +35,14 @@ Release deployment is deliberately split into two owner actions:
    production smoke automatically restores the previous Cloud Run and Worker
    versions. This full-cohort default applies while the product has one user;
    introduce an explicit cohort policy before relaxing it for multiple users.
+3. `Observe persistent E2E battle` runs only after promotion, from the active
+   release tag and against an explicitly confirmed 100% Cloud Run revision. It
+   reuses two non-human accounts and fixed test-realm assets, creates and
+   completes a new cross-account battle through the production API and SSE,
+   and retains a sanitized observation artifact for 90 days. The accounts,
+   characters, battlefield, narration style, battle, and accumulated test
+   ratings are not deleted. See
+   [`persistent-e2e-observation.md`](persistent-e2e-observation.md).
 
 `Roll back production` is the explicit recovery path. Dispatch it from a
 release tag with known-good revision/version IDs and type
@@ -65,6 +73,12 @@ The workflows retain defense-in-depth gates in addition to branch protection:
 - production workflows are serialized and require a typed confirmation;
 - `staging` and `production` accept deployments only from `v*` tags;
 - `production` requires approval by the repository owner before a job starts.
+
+The persistent observation workflow uses the same `production` concurrency,
+tag, owner, exact-check, protected-environment, and OIDC gates as promotion. It
+also refuses to run unless the revision is the single 100% target, causal
+narration is guarded, its image is digest-bound, and `mako10k@mk10.org` is in
+the server administrator allowlist.
 
 The environment approval is an additional explicit action; the typed workflow
 confirmation and exact-commit/artifact checks remain mandatory.

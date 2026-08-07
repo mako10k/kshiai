@@ -151,10 +151,16 @@ export function getDb(): SqliteDatabase.Database {
   if (!userColumnNames.has("email")) {
     sqlite.exec("ALTER TABLE users ADD COLUMN email TEXT");
   }
+  if (!userColumnNames.has("account_kind")) {
+    sqlite.exec(
+      "ALTER TABLE users ADD COLUMN account_kind TEXT NOT NULL DEFAULT 'general'",
+    );
+  }
   sqlite.exec(`
     CREATE UNIQUE INDEX IF NOT EXISTS idx_users_auth_user_id
       ON users (auth_user_id) WHERE auth_user_id IS NOT NULL;
     CREATE INDEX IF NOT EXISTS idx_users_email ON users (email);
+    CREATE INDEX IF NOT EXISTS idx_users_account_kind ON users (account_kind);
   `);
   return sqlite;
 }

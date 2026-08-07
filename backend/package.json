@@ -16,6 +16,7 @@
     "migrate:sqlite-to-postgres": "tsx src/scripts/sqlite-to-postgres.ts",
     "smoke:postgres-runtime": "tsx src/scripts/postgres-runtime-smoke.ts",
     "smoke:supabase-auth": "tsx src/scripts/supabase-auth-smoke.ts",
+    "observe:persistent-e2e": "KSHIAI_RUN_E2E_MAIN=1 tsx src/scripts/persistent-battle-e2e.ts",
     "migrate:legacy-account": "tsx src/scripts/migrate-legacy-account.ts"
   },
   "dependencies": {

@@ -1,0 +1,35 @@
+import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+import { describe, it } from "node:test";
+
+function workflow(name: string): string {
+  return readFileSync(
+    fileURLToPath(new URL(`../../../.github/workflows/${name}`, import.meta.url)),
+    "utf8",
+  );
+}
+
+describe("persistent E2E workflow contract", () => {
+  it("binds the administrator in Stage and verifies it before Promote", () => {
+    const stage = workflow("stage-release.yml");
+    const promote = workflow("promote-release.yml");
+    assert.match(stage, /ADMIN_EMAILS: mako10k@mk10\.org/);
+    assert.match(stage, /ADMIN_EMAILS=\$ADMIN_EMAILS/);
+    assert.match(promote, /EXPECTED_ADMIN_EMAIL: mako10k@mk10\.org/);
+    assert.match(promote, /missing the expected administrator email/);
+  });
+
+  it("runs the observer only against a confirmed immutable production revision", () => {
+    const observe = workflow("observe-persistent-e2e.yml");
+    assert.match(observe, /refs\/tags\/\$RELEASE_TAG/);
+    assert.match(observe, /verify-release\.mjs/);
+    assert.match(observe, /entry\.percent === 100/);
+    assert.match(observe, /BATTLE_CAUSAL_NARRATION_MODE/);
+    assert.match(observe, /container\?\.image\?\.includes\("@sha256:"\)/);
+    assert.match(observe, /persistent-battle-e2e\.js/);
+    assert.match(observe, /--max-retries=0/);
+    assert.match(observe, /retention-days: 90/);
+    assert.doesNotMatch(observe, /DELETE FROM|admin\/users\/\$.*DELETE/);
+  });
+});
