@@ -5,7 +5,7 @@ project KSHIAI_BATTLE_PIPELINE_WORK_V4:
   description "Use current-main owner outputs to implement and observe axial battle-pipeline slices. Preserve the causal narration receipt and persistent isolated E2E realm, then retain bounded Site A and Site B character-agent inputs, provider outputs, accepted outputs, and narrator input/output for an internal DAG viewer. Reshape narrator input to distinguish committed turn results, current canonical state, and static background without restricting narrator output. Observation backlog items remain scorecards rather than an automatic patch queue."
   as_of 2026-08-07
   duration_unit point
-  velocity 14400p/6667h
+  velocity 2000p/891h
   finish NARRATOR_INPUT_TRIAL_COMPLETED
   goal_owner user
   dag_owner user
