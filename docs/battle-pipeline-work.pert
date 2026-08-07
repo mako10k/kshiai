@@ -283,6 +283,7 @@ task T_TRY_ALIGNED_ENVIRONMENT_PROPOSALS ENVIRONMENT_PROPOSAL_TRANSITION_ALIGNED
   title "Release and observe aligned environment proposals"
   description "Release the prompt-contract alignment through the reviewed tag Stage and protected Promote path with the environment pipeline always enabled. Run one retained production E2E battle after provider availability is restored. Compare accepted rejected and no-canonical-change density; require every accepted decision to carry a qualifying operation source event resolved event and bounded following-turn effect while rejected proposals remain private and mechanically inert. Re-evaluate OBS-20260807-02 OBS-20260807-06 and OBS-20260807-08. Observe narrator output only for incidental improvement from accepted canonical input and keep standalone narrator work pending."
   duration 1p
+  status active
   owner "codex"
   requires:
     DEV 1
@@ -638,3 +639,10 @@ work_event WE-75fd0f3372136c18e3c81f7769c5da20152392d1dadc7482fe79694479453592:
   occurred_at 2026-08-07T20:11:49+09:00
   active_time 29/600h
   effort 29/600ph
+
+work_event WE-a0528f3d6a8a0a19728cc1daad70391db9722746680c22892a1749ef46133eb1:
+  model 1
+  task T_TRY_ALIGNED_ENVIRONMENT_PROPOSALS
+  kind start
+  occurred_at 2026-08-07T20:14:57+09:00
+  planned_value 1p
