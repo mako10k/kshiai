@@ -5,6 +5,31 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 
 ## [Unreleased]
 
+## [0.12.0] - 2026-08-07
+
+### Added
+
+- Adds an explicit accepted, rejected, or skipped environment-process receipt
+  linking the supervisor proposal, canonical decision, resolved event, source,
+  and following-turn effect keys in the internal battle DAG.
+
+### Changed
+
+- Treats supervisor happenings as non-authoritative proposals evaluated by the
+  existing post-resolution semantic/world reconciliation call.
+- Emits an environmental situation event and bounded following-turn situation
+  values only after a grounded non-character world transition is accepted.
+- Removes direct proposal-owned coefficients, environmental hits,
+  pre-resolution public events, and same-turn HP effects from the live service
+  path.
+
+### Operations
+
+- The new path is always enabled. It adds no migration, secret, environment
+  variable, provider call, narrator guard/repair, or cohort switch. Non-critical
+  narrator-only work remains pending while accepted canonical input can improve
+  narration incidentally.
+
 ## [0.11.1] - 2026-08-07
 
 ### Changed
