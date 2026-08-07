@@ -5,6 +5,38 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 
 ## [Unreleased]
 
+## [0.8.0] - 2026-08-07
+
+### Added
+
+- Adds server-owned `general`, `test`, and `e2e` account kinds. Test and E2E
+  users share a separate test realm for cross-account characters, battlefields,
+  narration styles, battles, and rating observations.
+- Adds two persistent Codex observation identities with reusable characters, a
+  fixed rainy-alley battlefield, and a causal-observation narrator. Each run
+  retains a new full production API/SSE battle and a sanitized observation.
+- Adds a protected production observation workflow bound to the active guarded,
+  digest-pinned Cloud Run revision.
+
+### Security and privacy
+
+- Hides test-realm characters, custom assets, direct character access, battle
+  creation targets, and rating populations from normal general users.
+- Keeps account classification and administrator authorization server-owned;
+  client claims cannot opt into the test realm or administrator access.
+- Excludes credentials, internal user IDs, raw parameters, private semantic
+  state, and rating internals from observation artifacts.
+
+### Operations
+
+- Adds forward-only migration `0007_account_kind.sql`; existing users remain
+  `general`, so the prior application revision stays compatible after migration.
+- Stage binds `ADMIN_EMAILS=mako10k@mk10.org`, and Promote rejects a staged
+  revision without that administrator binding or guarded causal narration.
+- Persistent E2E passwords rotate on every run, but accounts, fixtures, ratings,
+  and battles are never cleaned up. Sanitized workflow artifacts are retained
+  for 90 days while the database battle remains durable.
+
 ## [0.7.2] - 2026-08-07
 
 ### Added
