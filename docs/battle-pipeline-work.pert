@@ -250,7 +250,7 @@ task T_BUILD_ENVIRONMENT_WORLD_PROCESS_SLICE AGENT_ACTION_PROPOSAL_ALIGNMENT_TRI
   title "Build the proposal-to-canonical environment world-process slice"
   description "Treat the existing supervisor happening as non-authoritative noise rather than a committed result or effect. Feed the bounded proposal plus current canonical situation and world into the existing post-resolution semantic reconciliation boundary, and persist an explicit accepted rejected or skipped environment-process receipt. Only an accepted patch may create the resolved public situation event, advance semantic and world revisions, and supply bounded next-turn situation or causal effects; a rejected or unavailable adjudication emits no resolved environmental fact. Remove direct proposal-owned coefficients envHits and pre-resolution mechanical injection from this path. Reuse the existing semantic call and strict patch validation, add no direct HP effect, narrator guard, general world engine, extra provider call, or expanded action adjudication. Expose proposal result source links and accepted effect keys in the internal turn DAG and add focused temporal authority fallback and persistence tests."
   duration 3p
-  status planned
+  status active
   owner "codex"
   requires:
     DEV 1
@@ -570,3 +570,10 @@ work_event WE-2c03e5d86ad166684e97f767e4ec5b135f548ab347d3c260a607e6416716108a:
   occurred_at 2026-08-07T19:11:16+09:00
   active_time 1313/3600h
   effort 1313/3600ph
+
+work_event WE-56ffcabf13179817aaa959313854752b901e2cf7108e2dbbf00e5855da539128:
+  model 1
+  task T_BUILD_ENVIRONMENT_WORLD_PROCESS_SLICE
+  kind start
+  occurred_at 2026-08-07T19:14:46+09:00
+  planned_value 3p
