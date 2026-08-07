@@ -5,6 +5,35 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 
 ## [Unreleased]
 
+## [0.10.0] - 2026-08-07
+
+### Added
+
+- Retains bounded per-turn Site A and Site B character-agent inputs, provider
+  dispositions and outputs, and server-accepted outputs together with narrator
+  input, provider output, and public output.
+- Adds a per-turn pipeline DAG to the separate internal observation screen. It
+  shows current-turn adjudication and canonical transition, parallel character
+  inputs and outputs, and narrator input and output without modifying the
+  normal battle screen.
+
+### Changed
+
+- Sends the narrator one role-labelled turn brief that places each action beside
+  its structured causality and readable resolution reason, explicitly reports
+  accepted canonical change, and separates current state from static battlefield
+  background.
+- Removes duplicate outcome prose from the narrator payload while preserving the
+  existing single narrator call and free choice of wording. This release adds no
+  claim validator, prose rejection, repair loop, retry policy, or mechanical
+  authority for narration.
+
+### Operations
+
+- Existing battles remain readable; pipeline traces are available only for turns
+  created by this or a later backend revision. No database migration or new
+  environment variable is required.
+
 ## [0.9.0] - 2026-08-07
 
 ### Added
