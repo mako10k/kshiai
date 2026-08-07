@@ -64,6 +64,7 @@ lack a committed start baseline and remain excluded.
 | Task | Estimate | Started at | Finished at | Elapsed | Active | Effort | Disposition | Evidence commit |
 |---|---:|---|---|---:|---:|---:|---|---|
 | `T_BUILD_CAUSAL_TURN_SLICE` | 2p | 2026-08-07T11:23:39+09:00 | 2026-08-07T11:37:26+09:00 | 827s (`827/3600h`) | `827/3600h` | `827/3600ph` | complete: focused 7 tests, shared 184 tests, shared typecheck and build passed | start `21bc8c6`; implementation `3e26227`; finish `34bc4cd` |
+| `T_WIRE_NARRATION_CONSUMER` | 1p | 2026-08-07T11:40:12+09:00 | 2026-08-07T11:47:05+09:00 | 413s (`413/3600h`) | `413/3600h` | `413/3600ph` | complete: focused 16 tests, root typecheck, backend typecheck and build passed | start `46a54cc`; implementation `3f71e72`; finish `e6bd6c5` |
 
 ## Velocity and forecast history
 
@@ -74,3 +75,4 @@ replaced it when a conformant task finished.
 |---|---|---:|---:|---|---|---:|---|---|
 | 2026-08-07T11:10:08+09:00 | none | 0p | unavailable | unavailable: no current-plan completion | `1p/1d` bootstrap | 9p | 9d bootstrap | n/a: bootstrap |
 | 2026-08-07T11:39:35+09:00 | `T_BUILD_CAUSAL_TURN_SLICE` | 2p | 827s | exact elapsed `7200/827p/1h`; token rejected by perttool [#7](https://github.com/mako10k/perttool/issues/7), so use available active-date candidate | `2p/1d` measured fallback | 7p | 3.5d | `34bc4cd` |
+| 2026-08-07T11:47:31+09:00 | `T_BUILD_CAUSAL_TURN_SLICE`, `T_WIRE_NARRATION_CONSUMER` | 3p | 1406s | exact elapsed `5400/703p/1h`; same [#7](https://github.com/mako10k/perttool/issues/7) token limitation, so use available active-date candidate | `3p/1d` measured fallback | 6p | 2d | `e6bd6c5` |
