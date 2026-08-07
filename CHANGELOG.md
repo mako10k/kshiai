@@ -5,6 +5,26 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 
 ## [Unreleased]
 
+## [0.12.2] - 2026-08-07
+
+### Changed
+
+- Extends LLM operation deadlines to match fast, engine, and long-running call
+  profiles instead of aborting every provider at the former 12-second limit.
+- Retries HTTP 429 at most twice and HTTP 503 once within the selected provider,
+  while preventing retries after streamed output has begun.
+- Restricts ordered provider fallback to DNS and billing or exhausted-credit
+  failures. Timeouts, rate limits, service unavailability, parse failures, and
+  other operation errors remain terminal within the selected provider.
+
+### Operations
+
+- Keeps the existing provider order, models, call authority, and one-hour
+  in-memory cooldown. `LLM_PROVIDER_COOLDOWN_MS` is the preferred setting and
+  the existing `LLM_QUOTA_COOLDOWN_MS` remains accepted for compatibility.
+- Adds no migration, secret, cohort switch, direct battle mechanic, or narrator
+  output guard.
+
 ## [0.12.1] - 2026-08-07
 
 ### Changed
