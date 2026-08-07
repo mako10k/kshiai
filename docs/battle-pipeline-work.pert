@@ -1,0 +1,15 @@
+# Fresh history root for point estimates, explicit work events, and rolling Velocity.
+project KSHIAI_BATTLE_PIPELINE_WORK_V4:
+  version 6
+  title "Battle-pipeline work history root"
+  description "Empty, committed history root created before the active task graph so future estimates, start and finish events, and Velocity observations have an unambiguous baseline."
+  as_of 2026-08-07
+  duration_unit point
+  velocity 1p/1d
+  finish HISTORY_ROOT
+  goal_owner user
+  dag_owner user
+
+milestone HISTORY_ROOT:
+  title "Point-estimate history root committed"
+  state reached
