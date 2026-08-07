@@ -98,6 +98,28 @@ export const CHARACTER_ACTION_PROPOSAL_OUTPUT_RULES = `nextAction is an action-k
 - free_action: {"kind":"free_action","description":string,"desiredOutcome"?:string,"subjectRefs":string[],"opportunityId"?:string}
 description, desiredOutcome, subjectRefs, and opportunityId are free_action-only. They make skill, basic_attack, defend, rest, or wait invalid even when copied from an available action description. useFinisher and skillId are skill-only. instrumentRef is allowed only for skill, basic_attack, or defend.`;
 
+export const ENVIRONMENT_PROPOSAL_SYSTEM_PROMPT = `You supervise a broad fictional confrontation that is becoming stagnant. It may be physical, technological, psychic, social, comedic, cute, or abstract; preserve its established genre.
+Generate ONE possible non-character environment action that could break the detected stagnation. This is a non-authoritative proposal; the canonical world reconciler decides whether it happens.
+Japanese only. Keep it concise — no step-by-step tactics, no HP numbers. Do not call it ハプニング in title, summary, notes, or tags.
+
+Return JSON:
+{
+  "title": string,        // ~6 chars, e.g. 看板落下, 扉閉鎖, 足場崩落
+  "summary": string,      // one sentence containing the grounded cause and persistent result
+  "notes": string,        // the battlefield condition only if that result is accepted
+  "tags": string[]
+}
+Rules:
+- Ground the cause in the supplied battlefield name, scene, terrain, obstacles, conditions, or setup. Do not introduce an unrelated stock disaster or an unseen mechanism.
+- Propose a persistent result expressible in one of three forms: a new non-character object or effect remains in the scene; an existing non-character object changes location; or an existing non-character object becomes active or inactive.
+- State both the grounded cause and the persistent result in summary. Do not invent a canonical entity id; the reconciler owns identity and acceptance.
+- Do not propose transient-only intensification, flicker, reflection, ripples, weather, sound, or mood unless it leaves one of those persistent results.
+- Do not decide that the proposal succeeds or assign coefficients, damage, healing, disruption, status, or any combat effect. The canonical world reconciler does that later.
+- The result should create a shared constraint, opportunity, or pressure that either participant could use if accepted.
+- It must differ in cause and result from every previousHappening. Avoid a repetitive escalation pattern.
+- Never make one participant the sole beneficiary or victim.
+- Match the established genre and tone, including nonviolent, social, comedic, cute, technological, or psychic confrontations.`;
+
 /** Keep generated candidates inspectable without persisting an unbounded response. */
 function boundGeneratedJson(value: unknown, depth = 0): unknown | null {
   if (value === null || value === undefined) return null;
@@ -1327,24 +1349,7 @@ Do not invent a sudden environmental event or dramatic field change here. A sepa
     if (!this.client) return this.fallback.proposeHappening(input);
     try {
       const data = (await this.chatJson(
-        `You supervise a broad fictional confrontation that is becoming stagnant. It may be physical, technological, psychic, social, comedic, cute, or abstract; preserve its established genre.
-Generate ONE natural field change that breaks the detected stagnation (not a character skill).
-Japanese only. Keep it concise — no step-by-step tactics, no HP numbers. Do not call it ハプニング in title, summary, notes, or tags.
-
-Return JSON:
-{
-  "title": string,        // ~6 chars, e.g. 落石, 濃霧, 崩落
-  "summary": string,      // one sentence what happens on the field
-  "notes": string,        // ongoing battlefield mood after this
-  "tags": string[]
-}
-Rules:
-- Derive it naturally from the supplied battlefield name, scene, terrain, obstacles, conditions, and setup. Do not introduce an unrelated stock disaster.
-- Describe only a possible environmental motion. Do not decide whether it succeeds or assign coefficients, damage, healing, disruption, status, or any combat effect; the canonical world reconciler does that later.
-- It should be capable of changing the flow through a shared constraint, opportunity, or pressure if the world reconciler accepts it.
-- It must differ in cause and effect from every previousHappening. Avoid a repetitive escalation pattern.
-- Never make one participant the sole beneficiary or victim. Suggest a symmetric tradeoff or opportunity both could use.
-- Match the established genre and tone, including nonviolent, social, comedic, cute, technological, or psychic confrontations.`,
+        ENVIRONMENT_PROPOSAL_SYSTEM_PROMPT,
         JSON.stringify({
           scene: input.scene,
           turn: input.turn,

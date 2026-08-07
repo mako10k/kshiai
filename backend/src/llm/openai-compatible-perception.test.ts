@@ -1,14 +1,41 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { OpenAiCompatibleProvider } from "./openai-compatible.js";
+import {
+  ENVIRONMENT_PROPOSAL_SYSTEM_PROMPT,
+  OpenAiCompatibleProvider,
+} from "./openai-compatible.js";
 import {
   COMBINED_PERCEPTION_RESPONSE_FORMAT,
   COMBINED_PERCEPTION_SYSTEM_PROMPT,
   PERCEPTION_PROMPT_FIXTURES,
+  WORLD_RECONCILIATION_SYSTEM_PROMPT,
   type PerceptionPromptResponseFormat,
 } from "./perception-prompt-strategy.js";
 
 describe("XAI perception reconciliation", () => {
+  it("aligns environment proposals with representable canonical transitions", () => {
+    assert.match(
+      ENVIRONMENT_PROPOSAL_SYSTEM_PROMPT,
+      /new non-character object or effect remains in the scene/,
+    );
+    assert.match(
+      ENVIRONMENT_PROPOSAL_SYSTEM_PROMPT,
+      /Do not propose transient-only intensification/,
+    );
+    assert.match(
+      ENVIRONMENT_PROPOSAL_SYSTEM_PROMPT,
+      /Do not decide that the proposal succeeds/,
+    );
+    assert.match(
+      WORLD_RECONCILIATION_SYSTEM_PROMPT,
+      /does not require the proposed result to already exist in input events/,
+    );
+    assert.match(
+      WORLD_RECONCILIATION_SYSTEM_PROMPT,
+      /never return accepted with an empty or unrelated operations array/,
+    );
+  });
+
   it("keeps a valid world patch when the combined sensory section is invalid", async () => {
     const provider = new OpenAiCompatibleProvider({
       name: "xai",
