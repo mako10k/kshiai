@@ -76,6 +76,7 @@ task T_TRY_AND_REVISE_STAGING LOCAL_IMPLEMENTATION_ACCEPTED -> STAGING_ITERATION
   title "Try the implemented causal pipeline and make one bounded revision"
   description "Deploy one accepted artifact to staging and run synthetic or disposable authenticated battles through baseline and guarded narration. Compare causal coherence concrete progression unsupported claims fallback privacy latency and cost then permit one bounded revision only to the receipt builder projection guard or narrator instruction followed by the same local gates and staging replay. Check open observation backlog items as secondary scorecards and retain any survivor without scheduling an automatic local fix."
   duration 2p
+  status active
   owner "codex"
   requires:
     DEV 1
@@ -148,3 +149,10 @@ work_event WE-8ca2330f608972e375472636e73078e993e0cb354c00d2a3c9a7e75f45089bdc:
   occurred_at 2026-08-07T11:52:15+09:00
   active_time 5/72h
   effort 5/72ph
+
+work_event WE-d40571337cfee8053c0d8ac056c09a8273213fe04a2900e1c6fdc622a392b096:
+  model 1
+  task T_TRY_AND_REVISE_STAGING
+  kind start
+  occurred_at 2026-08-07T11:53:29+09:00
+  planned_value 2p
