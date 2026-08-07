@@ -5,6 +5,8 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 
 ## [Unreleased]
 
+## [0.12.1] - 2026-08-07
+
 ### Changed
 
 - Aligns non-authoritative environment proposals with persistent transition
