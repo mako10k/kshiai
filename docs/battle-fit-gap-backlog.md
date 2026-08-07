@@ -247,7 +247,8 @@ PoCで得た仮説のうち軸として重要なものを先に、その中か�
 |---|---|---|---|---|
 | OBS-20260807-01 | 公開ナレーションから、確定結果の理由と次ターンへの具体的影響を読み取れない | 本番「大剣のゴウキ」対「情熱直撃ジゴロ・レイジ」のターン1〜8。`v0.7.2` stagingでは囁きから持久力低下へのリンクは明示されたが、同時のHP低下理由は説明されなかった | 動作は分かっても戦況の意味と因果を理解できず、選択や結果への納得感が弱い | partially improved; open |
 | OBS-20260807-02 | 環境イベントの表層事象と、同時に確定する機械効果の論理的整合性が保証されない | 同戦闘ターン7で「街灯点滅」と両者のHP低下が同じハプニング提案から発生 | 表示された原因から予測・説明できない正準効果が戦闘結果へ入り、世界の納得感と裁定への信頼を損なう | open |
-| OBS-20260807-03 | 公開ナレーションが、正準状態に記録されていない次ターン制約を確定結果として述べる | `v0.9.0` 本番E2E battle `btl_03da078a3011a53dbb5cde76` のターン1〜3。「次に踏み出す方向」「次の一歩」「次の足場」の制約を述べる一方、対応するsemantic/world transitionのoperationと環境変化eventは空 | 表示を信じて次の選択を考えてもエンジン側には作用せず、説明可能性と正準世界への信頼を損なう | open |
+| OBS-20260807-03 | 公開ナレーションが、正準状態に記録されていない次ターン制約を確定結果として述べる | `v0.9.0` 本番E2E battle `btl_03da078a3011a53dbb5cde76` に加え、role-labelled inputへ変更した `v0.10.0` battle `btl_19dcf0ea770b6263943c2703` でも、水流、足滑り、次の攻防で有利な位置等を述べる一方、対応するsemantic/world changeはfalse | 表示を信じて次の選択を考えてもエンジン側には作用せず、説明可能性と正準世界への信頼を損なう | open |
+| OBS-20260807-04 | Site A / Site B character agentのprovider出力が採用されず、前状態保持へ頻繁にフォールバックする | `v0.10.0` 本番E2E battleの30 side-turn中22件がrejected。対応ログは21件が`invalid next action`、1件がprovider残高不足 | キャラクタ文脈と次ターン意図の推移が長区間停止し、提案パイプラインのユーザー価値と観測サンプル密度が低下する | open |
 
 `OBS-20260807-01` のstaging再現と部分改善の根拠は
 [`evidence/staging-causal-narration-0.7.2-2026-08-07.md`](evidence/staging-causal-narration-0.7.2-2026-08-07.md)
@@ -590,3 +591,66 @@ flowchart TD
   断定した事象として分けて保持する。
 - この記録は対応方式や実装順を決めない。上位のパイプライン仮説の試行結果として
   事象を保持し、次の軸選択時に継続性を評価する。
+
+## 13. 2026-08-07 本番E2E観測追補: v0.10.0 agent / narrator DAG
+
+### 観測対象
+
+- release `v0.10.0`、revision `kshiai-api-00038-xed`、本番E2E battle
+  `btl_19dcf0ea770b6263943c2703`。
+- 15件のturn record全てで `pipelineTrace` を読み戻した。ターン0はプロローグの
+  Site A / Site B trace、ターン1〜14は両side traceとnarrator traceを持つ。
+- 各side traceはserver-built input、provider status/output、accepted outputを分け、
+  narrator traceはrole-labelled input、provider output、public outputを分けている。
+
+### OBS-20260807-01 の継続と部分改善
+
+- ターン2は、対照剣士アイアンの自由行動が裁定で成立しなかったことを公開文で
+  明示した。ターン14は大剣一閃から戦闘不能への決定的な結果を明示した。
+- ターン1のinputにはskillからdefendへの置換と
+  `required_object_unavailable` の日本語説明が存在するが、公開文は防御姿勢のみを
+  述べ、置換理由を読者へ示していない。
+- 理由が構造化された失敗と決着は読みやすくなった一方、全ての置換理由と
+  次交換への具体的影響を一貫して読める状態には至っていないため、事象は
+  `partially improved; open` のまま保持する。
+
+### OBS-20260807-03 の継続
+
+- ターン1の `canonicalChange` はsemantic/worldとも `changed=false` だが、公開文は
+  「路地中央の僅かな凹みへ新たな水の流れが加わる」と述べた。この新規変化は
+  同ターンの `resolvedEvents` にも存在しない。
+- ターン9の `resolvedEvents` は「配電盤がショートし、路地全体が暗闇に包まれる」
+  を渡す一方、同じ `turnResult.canonicalChange` はsemantic/worldとも
+  `changed=false` である。公開文はこのeventをほぼそのまま戦況として述べた。
+- ターン13と14でも、semantic/world changeがfalseのまま、「次の攻防で有利に
+  立ち回りやすい位置」や、後ろ足を滑らせている状態を公開文が述べた。
+- したがって今回のtraceには、narratorが入力外の変化を加えた例と、入力内で
+  `resolvedEvents` と `canonicalChange` の意味が競合した例の両方がある。
+
+### 入力量の観測
+
+- ターン1〜14のnarrator inputは平均10,209 bytes、うち `turnBrief` は平均
+  8,222 bytesだった。
+- brief内の平均は `turnResult` 3,323 bytes、`presentation` 2,311 bytes、
+  `currentState` 1,138 bytes、`observationBoundary` 790 bytes、
+  `staticBackground` 530 bytesだった。後ろ3項目は各ターンに反復している。
+- 入力には失敗理由、機械結果、現在状態、正準変更有無が存在するため、今回確認した
+  説明不足を単純な情報欠落だけでは説明できない。同時に、背景・現在scene・
+  resolved event・正準変更有無が別欄で併存し、どの環境表現が今ターンに成立した
+  変化かを一意に読めないサンプルがある。
+
+### OBS-20260807-04
+
+- 全30 side-turnのprovider statusは、Site Aがfulfilled 3、rejected 11、skipped 1、
+  Site Bがfulfilled 4、rejected 11だった。
+- 同時間帯のCloud Runログを照合すると、22件のrejectedのうち21件は
+  `Character agent returned an invalid next action`、1件はproviderの残高不足だった。
+- rejected時のprovider outputはnullで、accepted outputは前のagent stateを保持し、
+  speechとnextActionをnullにした。履歴を破壊してはいないが、新しい文脈・意図・
+  台詞はそのside-turnでは進まなかった。
+
+### 事象の境界
+
+- この追補は観測事実とユーザー影響を保持し、対応方式や実装順を決めない。
+- narratorの公開文を拒否、修復、再試行するguardは追加していない。今回のtrialでも
+  narratorは単一callの自由な表示consumerであり、機械裁定権限を持たない。
