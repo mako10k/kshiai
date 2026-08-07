@@ -15,22 +15,35 @@ Estimate/actual/velocity history lives separately in
 ## Goal, decision hierarchy, and ordering
 
 The primary goal is to implement and try the central battle-pipeline
-hypotheses. The observation backlog is not the source of the implementation
-scope.
+hypotheses. The hypothesis defines the candidate axes; repeated production
+observation now determines their implementation order. The observation backlog
+remains evidence, not an automatic queue of local patches.
 
 Use this decision order:
 
-1. Prefer ideas that form an axis of the pipeline hypothesis.
-2. Among those axial ideas, implement the slice that can be patched into the
-   current `main` with the smallest authority and persistence change.
-3. Keep the first implementation conceptually complete but deliberately thin;
+1. Admit only ideas that form an axis of the pipeline hypothesis or unblock
+   trustworthy observation of such an axis.
+2. Rank admitted axes from retained production evidence: canonical-authority
+   risk first, then pipeline-blocking frequency and reproducibility, then
+   cross-stage user value and current-main patchability.
+3. Keep non-critical narrator wording, emphasis, repetition, and unsupported
+   flavor issues pending until the owner-stage pipeline is more mature. Address
+   them in the same slice only when that slice changes their input or authority
+   boundary naturally.
+4. A narrator issue remains immediate only when narrator output can change
+   canonical state, mechanics, winner, private cognition, authorization,
+   privacy, availability, or durable data integrity.
+5. Among otherwise comparable axial ideas, implement the slice that can be
+   patched into the current `main` with the smallest authority and persistence
+   change.
+6. Keep the implementation conceptually complete but deliberately thin;
    it need not be the final generalized architecture.
-4. Try and observe the implemented pipeline only after that vertical slice is
+7. Try and observe the implemented pipeline only after that vertical slice is
    connected.
-5. Use open observation items as evaluation lenses. If the hypothesis slice
+8. Use open observation items as evaluation lenses. If the hypothesis slice
    improves an item, record that result. If the phenomenon continues, retain
    it for a later targeted fix. An observation does not preempt the hypothesis
-   implementation by itself.
+   implementation unless it meets the critical boundary above.
 
 The target is not a perfect general world simulator. The first target is one
 small, production-shaped path that proves the useful pipeline shape on current
@@ -75,9 +88,9 @@ inference and projects the committed chain into the existing narrator view.
 | Adaptive expanded adjudication | High in the broader hypothesis | Medium/low: the PoC used pre-authored detail and live grounding is unproved | Compare with world process after the first trial |
 | General consistency detection/repair and independent canonical persistence | Supporting, not the first user-value axis | Low and migration-heavy | Defer until a tried slice shows the need |
 
-This table, rather than the observation backlog, controls implementation
-priority. It may be revised when implementation or trial evidence changes
-patchability or axial value.
+This table defines the candidate axes. Their ordering is revised when retained
+implementation and trial evidence changes authority risk, pipeline blockage,
+patchability, or axial value.
 
 ## First vertical slice
 
@@ -264,10 +277,20 @@ new production work.
 
 ## Macro boundary
 
-Closing this slice selects the next axial hypothesis from implementation and
-trial evidence. The environment/world-process path is the leading candidate
-because current `buildHappening` provides a concrete seam; adaptive
-adjudication remains the alternative if the first receipt exposes action-side
-ambiguity as the larger constraint. Observation backlog items may influence
-the choice only when they still reproduce; they do not replace this hypothesis
-sequence with an unrelated patch queue.
+The v0.10.0 persistent E2E trace changes the immediate ordering:
+
+1. Stabilize the character action-proposal boundary first. Twenty-two of 30
+   side-turn provider results were rejected, including 21 invalid next actions.
+   This is both an action-side pipeline failure and a blocker for trustworthy
+   observation of later axes.
+2. Re-evaluate the environment/world-process path next. `OBS-20260807-02` and
+   the v0.10.0 input conflict behind `OBS-20260807-03` both expose ambiguity
+   between an environmental proposal, a resolved event, and accepted canonical
+   change.
+3. Keep adaptive expanded adjudication as the following alternative, selected
+   only after the action-proposal trial is observed.
+
+Standalone non-critical narrator cleanup is pending. If an action, environment,
+or adjudication slice naturally supplies better narrator input, its acceptance
+may include the corresponding narration observation without creating a
+separate narrator patch task.

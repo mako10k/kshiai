@@ -1,15 +1,15 @@
 # Active point-estimated execution plan. Preserve this path and task identities while collecting work-event and Velocity history.
 project KSHIAI_BATTLE_PIPELINE_WORK_V4:
   version 6
-  title "Battle-pipeline causal slice, persistent E2E realm, and agent I/O DAG"
-  description "Use current-main owner outputs to implement and observe axial battle-pipeline slices. Preserve the causal narration receipt and persistent isolated E2E realm, then retain bounded Site A and Site B character-agent inputs, provider outputs, accepted outputs, and narrator input/output for an internal DAG viewer. Reshape narrator input to distinguish committed turn results, current canonical state, and static background without restricting narrator output. Observation backlog items remain scorecards rather than an automatic patch queue."
+  title "Observation-driven battle-pipeline renewal"
+  description "Use persistent production E2E evidence to order axial battle-pipeline slices. Preserve the causal receipt, isolated E2E realm, and Site A, Site B, narrator I/O DAG. Stabilize the character action-proposal boundary first because v0.10.0 rejected 22 of 30 side-turn outputs, then observe again before selecting the environment-process or expanded-adjudication axis. Keep non-critical narrator quality issues pending until pipeline maturity; include them only when an axial slice naturally changes their input or authority boundary."
   as_of 2026-08-07
   duration_unit point
   velocity 18000p/3263h
-  finish NARRATOR_INPUT_TRIAL_COMPLETED
+  finish FOLLOWING_PIPELINE_AXIS_SELECTED
   goal_owner user
   dag_owner user
-  target_duration 21p
+  target_duration 25p
 
 resource DEV:
   title "Developer"
@@ -62,6 +62,15 @@ milestone NARRATOR_INPUT_RESHAPED:
 
 milestone NARRATOR_INPUT_TRIAL_COMPLETED:
   title "Reshaped narrator input released and observed through persistent E2E"
+
+milestone AGENT_ACTION_CONTRACT_ACCEPTED:
+  title "Character action proposals produce explicit accepted or rejected receipts"
+
+milestone AGENT_ACTION_CONTRACT_TRIAL_COMPLETED:
+  title "Character action-proposal boundary released and observed"
+
+milestone FOLLOWING_PIPELINE_AXIS_SELECTED:
+  title "Following environment-process or adjudication axis selected from observation"
 
 task T_BUILD_CAUSAL_TURN_SLICE MAIN_BASE_FIXED -> CAUSAL_SLICE_IMPLEMENTED:
   title "Build the owner-grounded causal turn receipt and narration projection"
@@ -176,6 +185,30 @@ task T_TRY_NARRATOR_INPUT_PIPELINE NARRATOR_INPUT_RESHAPED -> NARRATOR_INPUT_TRI
   description "Run local acceptance then release the exact artifact through feature review, annotated tag, Stage and protected Promote. Execute the persistent cross-account E2E battle, inspect Site A and Site B context and output progression plus narrator input/output in the DAG, and record whether causal explanation, unsupported environmental continuation, repetition, latency, privacy and authority improve. Retain surviving phenomena without inserting unrelated fixes."
   duration 1p
   status done
+  owner "codex"
+  requires:
+    DEV 1
+
+task T_STABILIZE_AGENT_ACTION_CONTRACT NARRATOR_INPUT_TRIAL_COMPLETED -> AGENT_ACTION_CONTRACT_ACCEPTED:
+  title "Stabilize and expose the character action-proposal contract"
+  description "Use OBS-20260807-04 and retained Site A and Site B traces as the current pipeline axis. Keep the model proposal distinct from server validation and the accepted following-turn action. Constrain proposals to the supplied available actions affordances and opportunity chains, retain an explicit bounded acceptance or rejection reason without hidden facts or raw transport data, and preserve safe previous-state fallback. Add focused tests for valid skill basic defend and free-action proposals plus invalid target skill instrument finisher and affordance cases. Do not add standalone narrator wording work or broaden mechanical authority."
+  duration 2p
+  owner "codex"
+  requires:
+    DEV 1
+
+task T_TRY_AGENT_ACTION_CONTRACT AGENT_ACTION_CONTRACT_ACCEPTED -> AGENT_ACTION_CONTRACT_TRIAL_COMPLETED:
+  title "Release and observe the character action-proposal contract"
+  description "Run full local acceptance then release the exact artifact through feature review annotated tag Stage and protected Promote. Execute the persistent cross-account E2E battle and compare accepted rejected and skipped Site A and Site B proposals against the v0.10.0 baseline of 22 rejected side-turns out of 30. Inspect action diversity causal grounding fallback privacy latency and downstream narration only as an observation lens. Retain surviving phenomena without an interrupting narrator-only patch."
+  duration 1p
+  owner "codex"
+  requires:
+    DEV 1
+
+task T_SELECT_FOLLOWING_PIPELINE_AXIS AGENT_ACTION_CONTRACT_TRIAL_COMPLETED -> FOLLOWING_PIPELINE_AXIS_SELECTED:
+  title "Select the next pipeline axis from the new observation"
+  description "Rank the environment world-process proposal-to-adjudication-to-canonical-transition axis against adaptive expanded adjudication using retained production frequency reproducibility canonical-authority risk cross-stage user value and current-main patchability. Non-critical narrator observations remain pending scorecards; include one only when the selected axial slice shares its input or authority cause. Record the selected task and point estimate before implementation starts."
+  duration 1p
   owner "codex"
   requires:
     DEV 1
