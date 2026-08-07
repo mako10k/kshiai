@@ -8,7 +8,7 @@ do not authorize a release, production observation, traffic change, or
 effectful activation.
 
 Execution order and authority live in
-[`battle-pipeline-execution.pert`](battle-pipeline-execution.pert).
+[`battle-pipeline-work.pert`](battle-pipeline-work.pert).
 Estimate/actual/velocity history lives separately in
 [`battle-pipeline-actuals.md`](battle-pipeline-actuals.md).
 
