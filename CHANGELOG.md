@@ -5,6 +5,28 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 
 ## [Unreleased]
 
+## [0.11.0] - 2026-08-07
+
+### Added
+
+- Retains each bounded character-agent action proposal separately from the
+  server-owned validation receipt and accepted following-turn action.
+- Shows proposal acceptance or a bounded rejection reason in the Site A and
+  Site B lanes of the separate internal pipeline DAG.
+
+### Changed
+
+- Keeps valid character continuity and speech when only the accompanying action
+  proposal is invalid, instead of treating the complete model response as a
+  provider failure and retrying another provider.
+- Centralizes action availability, finisher, affordance, instrument, and
+  required-change validation at the battle-service authority boundary.
+
+### Operations
+
+- Existing battle records remain readable because the new trace receipt is
+  optional. No database migration or new environment variable is required.
+
 ## [0.10.0] - 2026-08-07
 
 ### Added
