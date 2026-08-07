@@ -29,7 +29,11 @@ describe("persistent E2E workflow contract", () => {
     assert.match(observe, /container\?\.image\?\.includes\("@sha256:"\)/);
     assert.match(observe, /persistent-battle-e2e\.js/);
     assert.match(observe, /--max-retries=0/);
+    assert.match(observe, /E2E_RUN_ID=\$OBSERVATION_RUN_ID/);
+    assert.match(observe, /cloud_run_job_exit_success/);
+    assert.match(observe, /postgres\.balance_events:persistent_e2e_observation/);
     assert.match(observe, /retention-days: 90/);
+    assert.doesNotMatch(observe, /gcloud logging read/);
     assert.doesNotMatch(observe, /DELETE FROM|admin\/users\/\$.*DELETE/);
   });
 });

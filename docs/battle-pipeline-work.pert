@@ -9,7 +9,7 @@ project KSHIAI_BATTLE_PIPELINE_WORK_V4:
   finish FIRST_E2E_OBSERVATION_RECORDED
   goal_owner user
   dag_owner user
-  target_duration 14p
+  target_duration 16p
 
 resource DEV:
   title "Developer"
@@ -139,7 +139,7 @@ task T_RUN_FIRST_PERSISTENT_E2E PERSISTENT_E2E_REALM_RELEASED -> FIRST_E2E_OBSER
   title "Run and retain the first persistent cross-account E2E battle"
   description "Dispatch the protected observer against the exact guarded production revision. Reuse the Codex observer and opponent accounts fixtures battlefield and narration style run through authentication match creation SSE turn advancement and finish then retain the battle and sanitized artifact. Verify general realm exclusion test realm sharing administrator access no secret or raw mechanics leakage and no unexpected production errors."
   duration 1p
-  status active
+  status suspended
   owner "codex"
   requires:
     DEV 1
@@ -285,3 +285,26 @@ work_event WE-06bf04cd672c24660cbf703292ce8255755418e17f7a65eb468ac9053e30b01a:
   kind start
   occurred_at 2026-08-07T14:41:27+09:00
   planned_value 1p
+
+work_event WE-9909db2696d86c52d105f1b944a93cc38e0756e931e505be1c19e6508a7f05e9:
+  model 1
+  task T_RUN_FIRST_PERSISTENT_E2E
+  kind suspend
+  occurred_at 2026-08-07T15:19:07+09:00
+  reason "User added a separate internal battle observation API and Web viewer before the production rerun"
+
+task T_BUILD_INTERNAL_OBSERVATION_SURFACE PERSISTENT_E2E_REALM_RELEASED -> FIRST_E2E_OBSERVATION_RECORDED:
+  title "Build and release the separate internal battle observation surface"
+  description "Persist sanitized E2E observations without Cloud Logging read access; add a server-owned developer account kind and fail-closed admin developer test e2e API; add an unlinked separate Web screen for retained battle logs raw battle state current canonical state and per-turn canonical transitions; preserve the existing battle UI; validate and release through the protected path before resuming the first E2E observation."
+  duration 2p
+  status active
+  requires:
+    DEV 1
+  owner "codex"
+
+work_event WE-ae9187e227efb79972bee95a2dbdad578c25e108bc50f9de778e85f298c7d595:
+  model 1
+  task T_BUILD_INTERNAL_OBSERVATION_SURFACE
+  kind start
+  occurred_at 2026-08-07T15:19:07+09:00
+  planned_value 2p

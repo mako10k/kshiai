@@ -257,6 +257,38 @@ describe("battle engine", () => {
       "turn-1-action-b",
     ]);
     assert.ok(resolved.events.every((event) => Boolean(event.id)));
+    const transitioned = {
+      ...resolved.state,
+      latestSemanticTransition: {
+        turn: resolved.state.turn,
+        status: "skipped" as const,
+        fromRevision: resolved.state.semanticState?.revision ?? 0,
+        toRevision: resolved.state.semanticState?.revision ?? 0,
+        patch: null,
+      },
+      latestWorldTransition: {
+        turn: resolved.state.turn,
+        status: "skipped" as const,
+        fromRevision: resolved.state.worldState?.revision ?? 0,
+        toRevision: resolved.state.worldState?.revision ?? 0,
+        transition: null,
+      },
+    };
+    const canonicalRecord = buildBattleTurnRecord({
+      before: state,
+      after: transitioned,
+      events: resolved.events,
+      actions: resolved.actions,
+    });
+    assert.equal(canonicalRecord.canonicalTransition?.semantic?.status, "skipped");
+    assert.equal(canonicalRecord.canonicalTransition?.world?.status, "skipped");
+    assert.equal(
+      BattleStateSchema.parse({
+        ...transitioned,
+        turnRecords: [canonicalRecord],
+      }).turnRecords[0]?.canonicalTransition?.semantic?.turn,
+      1,
+    );
     assert.equal(state.observationStateA?.snapshot.revision, 0);
     assert.equal(
       state.observationStateA?.snapshot.entities["character.a"]?.label,

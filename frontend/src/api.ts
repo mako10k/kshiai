@@ -25,6 +25,49 @@ export type ImageGenQuota = {
   message: string;
 };
 
+export type InternalBattleObservationSummary = {
+  battleId: string;
+  createdAt: string;
+  updatedAt: string;
+  status: string | null;
+  turn: number | null;
+  turnLimit: number | null;
+  sideAName: string | null;
+  sideBName: string | null;
+  winnerSide: string | null;
+  finishReason: string | null;
+  battlefieldName: string | null;
+  observationRunId: string | null;
+  observedAt: string | null;
+};
+
+export type InternalBattleObservationDetail = {
+  role: "admin" | "developer" | "test" | "e2e";
+  summary: InternalBattleObservationSummary;
+  observation: Record<string, unknown> | null;
+  rawBattleState: Record<string, unknown>;
+  canonicalTimeline: Array<{
+    turn: number | null;
+    actions: unknown[];
+    events: unknown[];
+    sideAChange: unknown;
+    sideBChange: unknown;
+    worldImpact: unknown | null;
+    canonicalTransition: unknown | null;
+  }>;
+  canonicalCurrent: {
+    semanticState: unknown | null;
+    worldState: unknown | null;
+    latestSemanticTransition: unknown | null;
+    latestWorldTransition: unknown | null;
+  };
+  capabilities: {
+    turnRecordCount: number;
+    canonicalTransitionCount: number;
+    perTurnCanonicalTransitions: "complete" | "partial" | "unavailable";
+  };
+};
+
 export class ApiError extends Error {
   status: number;
   code?: string;
@@ -113,6 +156,17 @@ export const api = {
       };
     }>(
       `/api/balance/summary${limit != null ? `?limit=${limit}` : ""}`,
+    ),
+  listInternalBattleObservations: (limit?: number) =>
+    request<{
+      role: "admin" | "developer" | "test" | "e2e";
+      battles: InternalBattleObservationSummary[];
+    }>(
+      `/api/internal/observations${limit != null ? `?limit=${limit}` : ""}`,
+    ),
+  getInternalBattleObservation: (battleId: string) =>
+    request<InternalBattleObservationDetail>(
+      `/api/internal/observations/${encodeURIComponent(battleId)}`,
     ),
   register: (username: string, password: string) =>
     request<{ user: UserPublic }>("/api/auth/register", {

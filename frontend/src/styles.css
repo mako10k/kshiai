@@ -103,6 +103,137 @@ h2 {
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
 }
 
+.internal-subtitle {
+  margin: 0;
+}
+
+.internal-role {
+  align-self: center;
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  color: var(--accent);
+  font-size: 0.8rem;
+  padding: 0.2rem 0.55rem;
+}
+
+.internal-observation-layout {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: minmax(240px, 0.7fr) minmax(0, 2fr);
+}
+
+.internal-battle-list {
+  align-self: start;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  max-height: calc(100dvh - 8rem);
+  overflow: auto;
+  position: sticky;
+  top: 1rem;
+}
+
+.internal-battle-item {
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 0.7rem;
+  text-align: left;
+}
+
+.internal-battle-item span {
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.internal-battle-item.is-selected {
+  background: rgba(122, 162, 255, 0.12);
+  border-color: var(--accent);
+}
+
+.internal-observation-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-width: 0;
+}
+
+.internal-summary-grid {
+  display: grid;
+  gap: 0.65rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 0;
+}
+
+.internal-summary-grid div {
+  min-width: 0;
+}
+
+.internal-summary-grid dt {
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.internal-summary-grid dd {
+  margin: 0.1rem 0 0;
+  overflow-wrap: anywhere;
+}
+
+.internal-turn-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.internal-turn,
+.internal-section {
+  min-width: 0;
+}
+
+.internal-turn {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.65rem;
+}
+
+.internal-turn summary,
+.internal-section summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.internal-json {
+  background: #090c12;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: #d6e1f5;
+  font-size: 0.75rem;
+  line-height: 1.45;
+  margin: 0.7rem 0 0;
+  max-height: 36rem;
+  overflow: auto;
+  padding: 0.8rem;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+@media (max-width: 760px) {
+  .internal-observation-layout,
+  .internal-summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .internal-battle-list {
+    max-height: 18rem;
+    position: static;
+  }
+}
+
 .grid {
   display: grid;
   gap: 0.9rem;

@@ -5,6 +5,21 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 
 ## [Unreleased]
 
+### Added
+
+- Adds a fail-closed `/internal/observations` diagnostics screen and API for
+  administrators, developers, test users, and E2E users. It exposes retained
+  battle logs, raw battle state, and canonical turn progression without
+  changing or linking from the normal battle UI.
+- Retains exact semantic and mechanical-world transitions in future turn
+  records so canonical progression can be inspected after a battle.
+
+### Fixed
+
+- Persists each validated E2E observation beside its battle and uploads only a
+  non-sensitive execution receipt, avoiding any need to grant the GitHub deploy
+  identity project-wide log-reading access.
+
 ## [0.8.1] - 2026-08-07
 
 ### Fixed

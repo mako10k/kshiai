@@ -9,6 +9,8 @@ import { newId } from "./id.js";
 import {
   adminIdentityMatches,
   getUserAccessProfile,
+  internalObservabilityRole,
+  type InternalObservabilityRole,
 } from "./account-access.js";
 
 export { adminIdentityMatches } from "./account-access.js";
@@ -257,8 +259,18 @@ export async function requireAdmin(c: Context, next: Next) {
   return c.json({ error: "forbidden" }, 403);
 }
 
+export async function requireInternalObservability(c: Context, next: Next) {
+  c.header("Cache-Control", "private, no-store");
+  const user = c.get("user");
+  const role = internalObservabilityRole(await getUserAccessProfile(user.id));
+  if (!role) return c.json({ error: "not_found" }, 404);
+  c.set("internalObservabilityRole", role);
+  await next();
+}
+
 declare module "hono" {
   interface ContextVariableMap {
     user: AuthUser;
+    internalObservabilityRole: InternalObservabilityRole;
   }
 }

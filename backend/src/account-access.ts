@@ -1,7 +1,7 @@
 import { config } from "./config.js";
 import { query } from "./db.js";
 
-export const ACCOUNT_KINDS = ["general", "test", "e2e"] as const;
+export const ACCOUNT_KINDS = ["general", "developer", "test", "e2e"] as const;
 export type AccountKind = (typeof ACCOUNT_KINDS)[number];
 export type AccountRealm = "general" | "test";
 
@@ -64,6 +64,19 @@ export function canAccessAccountKind(
 ): boolean {
   if (viewer.isAdmin) return true;
   return viewer.realm === accountRealm(ownerKind);
+}
+
+export type InternalObservabilityRole =
+  | "admin"
+  | "developer"
+  | "test"
+  | "e2e";
+
+export function internalObservabilityRole(
+  viewer: Pick<UserAccessProfile, "accountKind" | "isAdmin">,
+): InternalObservabilityRole | null {
+  if (viewer.isAdmin) return "admin";
+  return viewer.accountKind === "general" ? null : viewer.accountKind;
 }
 
 export function canAccessSharedAsset(input: {
