@@ -3,7 +3,8 @@ project KSHIAI:
   title "kshiai production pipeline and billing completion"
   description "Continue from the deployed current main. Implement and try the most axial and current-main-patchable battle-pipeline hypotheses through the separate staged plan before completing Stripe billing and entitlements. Preserve the PoC as hypothesis evidence and reduced implementation material; observation backlog items are secondary evaluation lenses rather than the source of implementation priority."
   as_of 2026-08-07
-  duration_unit day
+  duration_unit point
+  velocity 1p/1d
   finish BILLING_READY
   goal_owner user
   dag_owner user
@@ -79,105 +80,105 @@ milestone BILLING_READY:
 
 task T_DOCS NOW -> DOCS_READY:
   title "Rewrite requirements, llmthink design, pert plan"
-  duration 1d
+  duration 1p
   status done
   requires:
     DEV 1
 
 task T_SCAFFOLD DOCS_READY -> REPO_READY:
   title "Create monorepo FE/BE/shared, ports, git, gh repo"
-  duration 1d
+  duration 1p
   status done
   requires:
     DEV 1
 
 task T_AUTH REPO_READY -> AUTH_READY:
   title "Implement register login session and SQLite users"
-  duration 1d
+  duration 1p
   status done
   requires:
     DEV 1
 
 task T_CHAR AUTH_READY -> CHAR_READY:
   title "Character CRUD generate chat confirm copy search UI"
-  duration 2d
+  duration 2p
   status done
   requires:
     DEV 1
 
 task T_BATTLE CHAR_READY -> BATTLE_READY:
   title "Matchmaking battle engine narration UI terminal rules"
-  duration 2d
+  duration 2p
   status done
   requires:
     DEV 1
 
 task T_PROVIDER BATTLE_READY -> PROVIDER_READY:
   title "Wire xAI and Venice adapters plus image generation"
-  duration 1d
+  duration 1p
   status done
   requires:
     DEV 1
 
 task T_ACCEPT PROVIDER_READY -> SLICE_DONE:
   title "Run acceptance checklist and fix gaps"
-  duration 1d
+  duration 1p
   status done
   requires:
     DEV 1
 
 task T_PG_SCHEMA SLICE_DONE -> PG_SCHEMA_READY:
   title "Create PostgreSQL migrations and verify SQLite import"
-  duration 2d
+  duration 2p
   status done
   requires:
     DEV 1
 
 task T_PG_RUNTIME PG_SCHEMA_READY -> PG_RUNTIME_READY:
   title "Convert repositories to asynchronous PostgreSQL runtime"
-  duration 3d
+  duration 3p
   status done
   requires:
     DEV 1
 
 task T_DISTRIBUTED PG_RUNTIME_READY -> DISTRIBUTED_READY:
   title "Add battle leases, idempotency, R2 media, and multi-instance tests"
-  duration 3d
+  duration 3p
   status done
   requires:
     DEV 1
 
 task T_AUTH_V2 DISTRIBUTED_READY -> AUTH_V2_READY:
   title "Integrate Supabase email verification and Google OIDC"
-  duration 2d
+  duration 2p
   status done
   requires:
     DEV 1
 
 task T_DEPLOY_PLAN AUTH_V2_READY -> DEPLOY_PLAN_READY:
   title "Select the cloud runtime and define cost rollback and cutover"
-  duration 1d
+  duration 1p
   status done
   requires:
     DEV 1
 
 task T_DEPLOY_ARTIFACTS DEPLOY_PLAN_READY -> DEPLOYABLE_READY:
   title "Containerize the backend and prepare static frontend deployment"
-  duration 2d
+  duration 2p
   status done
   requires:
     DEV 1
 
 task T_DEPLOY_STAGING DEPLOYABLE_READY -> CLOUD_STAGING_READY:
   title "Provision secrets deploy and validate auth SSE PostgreSQL R2 and scaling"
-  duration 2d
+  duration 2p
   status done
   requires:
     DEV 1
 
 task T_DEPLOY_CUTOVER CLOUD_STAGING_READY -> RUNTIME_MIGRATED:
   title "Switch production traffic verify rollback and retire local runtime"
-  duration 1d
+  duration 1p
   status done
   requires:
     DEV 1
@@ -185,7 +186,7 @@ task T_DEPLOY_CUTOVER CLOUD_STAGING_READY -> RUNTIME_MIGRATED:
 task T_BILLING BATTLE_PIPELINE_ACCEPTED -> BILLING_READY:
   title "Add Stripe subscriptions, webhooks, metering, and entitlements"
   description "After the thin production battle-pipeline slice is accepted, add Stripe products checkout customer portal signed idempotent webhooks bounded usage accounting subscription entitlements and fail-closed enforcement without weakening the battle rollback path."
-  duration 3d
+  duration 3p
   requires:
     DEV 1
   owner "codex"
@@ -201,7 +202,7 @@ milestone CICD_READY:
 task T_RELEASE_RULES RUNTIME_MIGRATED -> RELEASE_RULES_READY:
   title "Define versioning release approval and rollback rules"
   description "Document SemVer branch and tag policy required checks approvals changelog artifact provenance staged promotion rollback secret rotation and emergency releases"
-  duration 1d
+  duration 1p
   status done
   requires:
     DEV 1
@@ -209,7 +210,7 @@ task T_RELEASE_RULES RUNTIME_MIGRATED -> RELEASE_RULES_READY:
 task T_CICD RELEASE_RULES_READY -> CICD_READY:
   title "Implement CI validation and controlled cloud deployment"
   description "Add GitHub Actions for build typecheck tests audits container and Worker checks plus protected deployment environments keyless identity immutable promotion smoke tests and rollback"
-  duration 2d
+  duration 2p
   status done
   requires:
     DEV 1
@@ -219,7 +220,7 @@ work_event WE-c7091dd061776688a2144da41e8b413c34b95941594aeae00bd8ad82a7275a87:
   task T_RELEASE_RULES
   kind start
   occurred_at 2026-08-03T20:46:39+09:00
-  planned_value 1d
+  planned_value 1p
 
 work_event WE-a1325480f00cc8ab6faf2614a5298d19f00a3ff5d0c1e52af7ec6de948f62655:
   model 1
@@ -232,7 +233,7 @@ work_event WE-5b907360668ac932ba48485ad0252e24d704fb47b160c6db2b09f62f8fc4380d:
   task T_CICD
   kind start
   occurred_at 2026-08-03T20:50:43+09:00
-  planned_value 2d
+  planned_value 2p
 
 work_event WE-3542eeaa85062d5c70482f20c08ef76f08317897a1dbcf6e04e8e390b002a052:
   model 1
@@ -246,9 +247,9 @@ milestone BATTLE_PIPELINE_ACCEPTED:
 
 task T_BATTLE_PIPELINE CICD_READY -> BATTLE_PIPELINE_ACCEPTED:
   title "Implement try and accept the causal production battle pipeline slice"
-  description "Execute docs/battle-pipeline-production-rollout.pert from current main. First assemble existing action resolution event source mechanical evidence and semantic result owners into a bounded causal receipt and ID-free narration projection then wire the existing narrator and run staging plus explicitly authorized production trials. Absorb source-authoring as an owner-grounded implementation property rather than porting the PoC five-artifact bundle. Select follow-on work by hypothesis centrality and current-main patchability rather than observation backlog order."
-  duration 9d
+  description "Execute docs/battle-pipeline-causal-slice.pert from current main. First assemble existing action resolution event source mechanical evidence and semantic result owners into a bounded causal receipt and ID-free narration projection then wire the existing narrator and run staging plus explicitly authorized production trials. Absorb source-authoring as an owner-grounded implementation property rather than porting the PoC five-artifact bundle. Select follow-on work by hypothesis centrality and current-main patchability rather than observation backlog order."
+  duration 9p
   requires:
     DEV 1
   owner "codex"
-  source "docs/battle-pipeline-production-rollout.pert"
+  source "docs/battle-pipeline-causal-slice.pert"

@@ -8,7 +8,9 @@ do not authorize a release, production observation, traffic change, or
 effectful activation.
 
 Execution order and authority live in
-[`battle-pipeline-production-rollout.pert`](battle-pipeline-production-rollout.pert).
+[`battle-pipeline-causal-slice.pert`](battle-pipeline-causal-slice.pert).
+Estimate/actual/velocity history lives separately in
+[`battle-pipeline-actuals.md`](battle-pipeline-actuals.md).
 
 ## Goal, decision hierarchy, and ordering
 
@@ -155,9 +157,38 @@ Local acceptance requires:
   existing control path;
 - full tests, typecheck, build, and PERT validation.
 
+## Point estimates, actuals, and rolling forecast
+
+All task estimates use points. The initial migration uses `1d = 1p` only to
+preserve the prior relative estimates. It is a bootstrap conversion, not an
+observed claim about delivery speed.
+
+For every task:
+
+1. Keep the estimate in points and commit it before work starts.
+2. Record a `work_event start` with an exact fixed-offset timestamp at the
+   actual start. Commit this event separately so it remains the baseline.
+3. Record suspend/resume events when the task genuinely stops and restarts.
+4. Record a `work_event finish` with the exact finish timestamp and, when
+   available, active hours and person-hours. Do not rewrite the original point
+   estimate to match the result.
+5. Append the measured result to `battle-pipeline-actuals.md`, separately from
+   the estimate.
+6. After every completed task, observe Velocity from the latest one to three
+   completed tasks in this slice. Adopt the tool's elapsed-throughput candidate
+   when it is available; otherwise retain the current Velocity and record why
+   no measured update was possible.
+7. Update the PERT `velocity`, rerun DAG analysis, and record the new remaining
+   forecast in the actuals ledger. Velocity is a forecast input, not a change to
+   completed estimates or scope.
+
+The initial declared Velocity is `1p/1d`. Replace it after the first conformant
+start/finish sequence. Historical tasks whose start baseline was not committed
+before their finish are excluded rather than reconstructed.
+
 ## Trial and observation after implementation
 
-Staging gets a two-day implementation/trial iteration immediately after local
+Staging gets a two-point implementation/trial iteration immediately after local
 acceptance. It uses synthetic and disposable authenticated battles, compares
 the actual path with the baseline, and allows one bounded revision to the
 receipt builder, projection, guard, or narrator instruction. It does not expand
