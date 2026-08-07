@@ -5,6 +5,8 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 
 ## [Unreleased]
 
+## [0.9.0] - 2026-08-07
+
 ### Added
 
 - Adds a fail-closed `/internal/observations` diagnostics screen and API for
