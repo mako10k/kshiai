@@ -283,7 +283,7 @@ task T_NORMALIZE_LLM_PROVIDER_ROUTING ENVIRONMENT_PROPOSAL_TRANSITION_ALIGNED ->
   title "Normalize LLM timeout retry and provider-fallback policy"
   description "Extend the too-short per-operation LLM deadlines exposed by the exact 12-second xAI and OpenAI concretizeBattlefield aborts. Retry HTTP 429 within the same provider with bounded backoff and retry HTTP 503 once within that same provider; after exhaustion return that provider error without moving to another provider. Timeout never retries or provider-fallbacks. Only provider-unavailable DNS and billing or exhausted-credit failures enter the existing one-hour in-memory cooldown and permit the ordered next provider. Other contract parse and HTTP failures remain terminal. Preserve provider order models call authority and mock policy; add focused classification retry cooldown and no-fallback tests."
   duration 2p
-  status planned
+  status active
   owner "codex"
   requires:
     DEV 1
@@ -292,7 +292,7 @@ task T_TRY_ALIGNED_ENVIRONMENT_PROPOSALS ENVIRONMENT_PROPOSAL_TRANSITION_ALIGNED
   title "Release and observe aligned environment proposals"
   description "Release the prompt-contract alignment through the reviewed tag Stage and protected Promote path with the environment pipeline always enabled. Run one retained production E2E battle after provider availability is restored. Compare accepted rejected and no-canonical-change density; require every accepted decision to carry a qualifying operation source event resolved event and bounded following-turn effect while rejected proposals remain private and mechanically inert. Re-evaluate OBS-20260807-02 OBS-20260807-06 and OBS-20260807-08. Observe narrator output only for incidental improvement from accepted canonical input and keep standalone narrator work pending."
   duration 1p
-  status active
+  status suspended
   owner "codex"
   requires:
     DEV 1
@@ -655,3 +655,16 @@ work_event WE-a0528f3d6a8a0a19728cc1daad70391db9722746680c22892a1749ef46133eb1:
   kind start
   occurred_at 2026-08-07T20:14:57+09:00
   planned_value 1p
+
+work_event WE-6a17ee7dade2e1bfaabaad8c6f5d0e462131a75a9ee59debd0e933fb6aeaba1c:
+  model 1
+  task T_TRY_ALIGNED_ENVIRONMENT_PROPOSALS
+  kind suspend
+  occurred_at 2026-08-07T20:38:19+09:00
+
+work_event WE-9463424c5362a60b139d4c6ffb2e93c97d5595e4caadfa281fc46c47fd5876ce:
+  model 1
+  task T_NORMALIZE_LLM_PROVIDER_ROUTING
+  kind start
+  occurred_at 2026-08-07T20:38:26+09:00
+  planned_value 2p
