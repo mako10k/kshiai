@@ -28,6 +28,10 @@ type SupabaseAdminUser = {
   email?: string;
 };
 
+export function generateEphemeralPassword(): string {
+  return `E2E-${randomUUID()}-9a!`;
+}
+
 function required(name: string): string {
   const value = process.env[name]?.trim();
   if (!value) throw new Error(`${name} is required`);
@@ -186,7 +190,7 @@ async function ensurePersistentAccount(input: {
   secretKey: string;
   publishableKey: string;
 }): Promise<PersistentAccount> {
-  const password = `E2E-${randomUUID()}-${randomUUID()}-9a!`;
+  const password = generateEphemeralPassword();
   const authUserId = await ensureAuthUser({
     email: input.email,
     password,

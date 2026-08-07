@@ -6,11 +6,18 @@ process.env.DATABASE_URL = "";
 process.env.AUTH_PROVIDER = "legacy";
 process.env.E2E_ALLOWED_HOSTS = "kshiai.mk10.org,release.example.test";
 const {
+  generateEphemeralPassword,
   parseBattleAdvanceStream,
   validateProductionApiUrl,
 } = await import("./persistent-battle-e2e.js");
 
 describe("persistent battle E2E runner", () => {
+  it("generates a strong ephemeral password within the Supabase limit", () => {
+    const password = generateEphemeralPassword();
+    assert.ok(Buffer.byteLength(password, "utf8") <= 72);
+    assert.match(password, /^E2E-[0-9a-f-]{36}-9a!$/);
+  });
+
   it("accepts only an explicitly allowed HTTPS origin", () => {
     assert.equal(
       validateProductionApiUrl("https://kshiai.mk10.org"),

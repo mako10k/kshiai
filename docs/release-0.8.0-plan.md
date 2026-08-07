@@ -21,13 +21,16 @@ Release the smallest reusable production-observation loop:
 - [x] Feature changes passed focused and full tests, typecheck, build, workflow,
   diff, and PERT checks before merge.
 - [x] Feature squash-merged into `main` at `0dcc0c5`.
-- [ ] Release PR versions every workspace and lockfile as `0.8.0`, adds dated
-  changelog notes, passes the four required checks, and merges.
-- [ ] Annotated `v0.8.0` resolves to the exact merged release commit.
-- [ ] `Stage release` applies migration `0007_account_kind.sql`, creates the
-  no-traffic revision with the administrator binding, and passes all smokes.
-- [ ] `Promote release` promotes the exact staged revision and Worker version,
-  then passes production health, authentication, and SSE smoke.
+- [x] Release PR #39 versions every workspace and lockfile as `0.8.0`, adds
+  dated changelog notes, passes the four required checks, and merges as
+  `001f928e1667050ee101c656d6f422e85fc34841`.
+- [x] Annotated `v0.8.0` resolves to the exact merged release commit.
+- [x] `Stage release` run 31150701052 applies migration
+  `0007_account_kind.sql`, creates no-traffic revision
+  `kshiai-api-00032-giy` with the administrator binding, and passes all smokes.
+- [x] `Promote release` run 31151087653 promotes that exact revision and Worker
+  `1a4431e2-0d79-4f62-ae11-bc8a07d7926d`, then passes production health,
+  authentication, and SSE smoke and publishes the GitHub Release.
 - [ ] The protected observer reuses or creates its fixed accounts and fixtures,
   completes one cross-account battle, and retains the battle and artifact.
 
