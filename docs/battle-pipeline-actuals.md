@@ -113,6 +113,14 @@ lack both a captured boundary and independent readback remain excluded.
 | `T_ALIGN_ENVIRONMENT_PROPOSAL_TRANSITION` | 1p | 2026-08-07T20:08:55+09:00 | 2026-08-07T20:11:49+09:00 | 174s (`29/600h`) | `29/600h` | `29/600ph` | complete: supervisor prompt now proposes a battlefield-grounded cause plus a persistent result representable as a new non-character entity or existing location/active change and excludes transient-only motion; the existing reconciler may use world/battlefield grounding without a pre-committed event and must pair accepted with a qualifying operation; server acceptance, direct-effect prohibition, call count, narrator policy and runtime topology remain unchanged; all 327 tests, root/deployment typecheck, production build, diff and PERT checks passed | plan `480c28b`; start `91adb06`; implementation `e631fff`; finish in this commit |
 | `T_NORMALIZE_LLM_PROVIDER_ROUTING` | 2p | 2026-08-07T20:38:26+09:00 | 2026-08-07T20:50:00+09:00 | 694s (`347/1800h`) | `347/1800h` | `347/1800ph` | complete: fast deadlines are 30s with 20s short calls, engine deadlines are 60s with 90s long calls, and battle envelopes no longer undercut provider-local retries; 429 retries at most twice in the selected provider, 503 once, streaming retries stop after output begins, and timeout/429/503/parse failures never move to another provider; only DNS and billing enter the default one-hour cooldown; focused 14, backend 138, and full 338 tests plus root/deployment typecheck and production build passed | plan `e59447d`; start `dd7b037`; implementation `e3b0e6e`; finish in this commit |
 
+## Open task interval history
+
+Open work is recorded without claiming completed points or changing Velocity.
+
+| Task | Estimate | Captured intervals | Active | Disposition | Evidence |
+|---|---:|---|---:|---|---|
+| `T_TRY_ALIGNED_ENVIRONMENT_PROPOSALS` | 1p | start 2026-08-07T20:14:57+09:00 -> suspend 2026-08-07T20:38:19+09:00; resume 2026-08-07T20:54:46+09:00 -> suspend 2026-08-07T21:23:20+09:00 | 3116s (`779/900h`) | open and suspended: `v0.12.2` feature/release PRs, annotated tag, Stage, protected Promote, 100-percent Cloud Run/Worker promotion, production smokes, health, and zero immediate Cloud Run ERROR readback are complete; the separately authorized persistent E2E observation remains | PR #56 `29879a9`; release PR #57 `b4155d7`; Stage 31177347444; Promote 31177770404; GitHub Release `v0.12.2`; lifecycle/readback in this ops commit |
+
 ## Velocity and forecast history
 
 The original `1p/1d` value was a bootstrap only. The first measured row below
