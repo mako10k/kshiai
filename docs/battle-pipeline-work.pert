@@ -1,15 +1,15 @@
 # Active point-estimated execution plan. Preserve this path and task identities while collecting work-event and Velocity history.
 project KSHIAI_BATTLE_PIPELINE_WORK_V4:
   version 6
-  title "Battle-pipeline causal-slice implementation and trial"
-  description "Use current-main action resolutions event source links committed mechanical evidence semantic results and NarrationTurnView to implement the smallest axial causal pipeline slice before observation. The PoC source-authoring principle is absorbed into one owner-grounded receipt; its five-artifact future applicability bundle is not a prerequisite. Observation backlog items remain secondary trial scorecards. While the product has one user, accepted user-value mechanisms deploy enabled for the full cohort; cohort splitting is deferred until multiple-user rollout control has value."
+  title "Battle-pipeline causal slice and persistent E2E observation realm"
+  description "Use current-main action resolutions event source links committed mechanical evidence semantic results and NarrationTurnView to implement the smallest axial causal pipeline slice before observation. After guarded production activation add a persistent server-owned test realm with dedicated Codex observer and opponent accounts reusable fixtures and full cross-account E2E battle artifacts. General users cannot discover test assets while administrators test users and E2E users can share them. Observation backlog items remain scorecards rather than an automatic patch queue."
   as_of 2026-08-07
   duration_unit point
-  velocity 14400p/6191h
-  finish NEXT_HYPOTHESIS_SELECTED
+  velocity 6000p/851h
+  finish FIRST_E2E_OBSERVATION_RECORDED
   goal_owner user
   dag_owner user
-  target_duration 9p
+  target_duration 14p
 
 resource DEV:
   title "Developer"
@@ -43,7 +43,16 @@ milestone PRODUCTION_TRIAL_COMPLETED:
   title "Guarded production trial completed or explicitly declined"
 
 milestone NEXT_HYPOTHESIS_SELECTED:
-  title "Next axial hypothesis selected from implementation evidence"
+  title "Persistent E2E observation realm selected as the next enabling axis"
+
+milestone PERSISTENT_E2E_REALM_IMPLEMENTED:
+  title "Persistent isolated E2E realm and observer implemented"
+
+milestone PERSISTENT_E2E_REALM_RELEASED:
+  title "Persistent E2E realm released with production administrator binding"
+
+milestone FIRST_E2E_OBSERVATION_RECORDED:
+  title "First reusable full cross-account E2E battle observation recorded"
 
 task T_BUILD_CAUSAL_TURN_SLICE MAIN_BASE_FIXED -> CAUSAL_SLICE_IMPLEMENTED:
   title "Build the owner-grounded causal turn receipt and narration projection"
@@ -101,11 +110,38 @@ task T_TRY_GUARDED_PRODUCTION PRODUCTION_TRIAL_DECIDED -> PRODUCTION_TRIAL_COMPL
 
 task T_CHOOSE_NEXT_PIPELINE_AXIS PRODUCTION_TRIAL_COMPLETED -> NEXT_HYPOTHESIS_SELECTED:
   title "Select the next axial and current-main-patchable hypothesis"
-  description "Rank the environment or world-process proposal-to-adjudication path adaptive adjudication and any surviving axes by centrality patchability expected user value and first-slice evidence. Treat buildHappening as the leading concrete seam unless evidence shows action ambiguity is more limiting. Observation backlog items contribute only when they still reproduce and do not replace the hypothesis sequence."
+  description "Selected persistent E2E observation as the immediate enabling axis after the causal slice reached production. Preserve two dedicated cross-account E2E identities deterministic reusable characters battlefield and narration style and every resulting battle. Isolate their assets from general users while test E2E and administrator identities share the test realm. This enables repeated pipeline observations before choosing the next mechanics axis."
   duration 1p
+  status done
   owner "user"
   requires:
     OWNER 1
+
+task T_BUILD_PERSISTENT_E2E_REALM NEXT_HYPOTHESIS_SELECTED -> PERSISTENT_E2E_REALM_IMPLEMENTED:
+  title "Build the persistent isolated E2E realm and observer"
+  description "Add a server-owned general test and e2e account classification with fail-closed repository visibility. General users cannot discover test or e2e characters battlefields narration styles or rating population. Test and e2e identities share their realm and can run cross-account battles; administrators can access both. Add a persistent Codex observer runner that provisions or reuses two stable E2E identities deterministic fixtures and records a sanitized full-battle artifact without deleting the accounts assets or battle. Add focused migration auth repository runner and workflow tests."
+  duration 3p
+  status done
+  owner "codex"
+  requires:
+    DEV 1
+
+task T_RELEASE_PERSISTENT_E2E_REALM PERSISTENT_E2E_REALM_IMPLEMENTED -> PERSISTENT_E2E_REALM_RELEASED:
+  title "Release the E2E realm and bind the production administrator"
+  description "Release the accepted additive migration visibility boundary and observer image through the annotated tag Stage and protected Promote path. Bind ADMIN_EMAILS to mako10k@mk10.org in the staged and promoted Cloud Run revision and verify the exact environment without changing battle mechanics provider order or public traffic policy."
+  duration 1p
+  status active
+  owner "codex"
+  requires:
+    DEV 1
+
+task T_RUN_FIRST_PERSISTENT_E2E PERSISTENT_E2E_REALM_RELEASED -> FIRST_E2E_OBSERVATION_RECORDED:
+  title "Run and retain the first persistent cross-account E2E battle"
+  description "Dispatch the protected observer against the exact guarded production revision. Reuse the Codex observer and opponent accounts fixtures battlefield and narration style run through authentication match creation SSE turn advancement and finish then retain the battle and sanitized artifact. Verify general realm exclusion test realm sharing administrator access no secret or raw mechanics leakage and no unexpected production errors."
+  duration 1p
+  owner "codex"
+  requires:
+    DEV 1
 
 work_event WE-5e9a15c374e35bf44e512c99616f115d26905c28fdc780fc316fb8a6ad7f1bee:
   model 1
@@ -196,3 +232,40 @@ work_event WE-5acd53788fa9ac6113b969790795f09f1ce2f4a544ff7cfb76119120499c0f4e:
   occurred_at 2026-08-07T13:36:40+09:00
   active_time 0.05h
   effort 0.05ph
+
+work_event WE-4c84cd90a84b4da333f04971c387b622fdcdc16c4f15b53d93deb00f39884f8f:
+  model 1
+  task T_CHOOSE_NEXT_PIPELINE_AXIS
+  kind start
+  occurred_at 2026-08-07T13:55:56+09:00
+  planned_value 1p
+
+work_event WE-0d4e6979e2e0e5204b2a4e4449b49fa0d7ed0f9f3feff7852ca58f0699292f3a:
+  model 1
+  task T_CHOOSE_NEXT_PIPELINE_AXIS
+  kind finish
+  occurred_at 2026-08-07T13:56:16+09:00
+  active_time 1/180h
+  effort 1/180ph
+
+work_event WE-5a3a352744cbac8cbe5f4637b5cfd86f927015d3583638db1032d2297f6fa44e:
+  model 1
+  task T_BUILD_PERSISTENT_E2E_REALM
+  kind start
+  occurred_at 2026-08-07T13:58:00+09:00
+  planned_value 3p
+
+work_event WE-60ce9c1a5e6bc2ef10bc58fa037b41537d607f445cd9b320f5c41dea1807c4e7:
+  model 1
+  task T_BUILD_PERSISTENT_E2E_REALM
+  kind finish
+  occurred_at 2026-08-07T14:16:13+09:00
+  active_time 1093/3600h
+  effort 1093/3600ph
+
+work_event WE-1c24f24904a812fc7af9bc433bda0ac7a3aece972d52a54307e507a1146d99e8:
+  model 1
+  task T_RELEASE_PERSISTENT_E2E_REALM
+  kind start
+  occurred_at 2026-08-07T14:17:44+09:00
+  planned_value 1p

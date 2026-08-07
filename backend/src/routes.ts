@@ -195,7 +195,9 @@ export function buildRoutes() {
   authed.get("/characters/:id", async (c) => {
     const user = c.get("user");
     const sheet = await charRepo.getSheet(c.req.param("id"));
-    if (!sheet) return c.json({ error: "not_found" }, 404);
+    if (!sheet || !(await charRepo.canViewCharacter(user.id, sheet))) {
+      return c.json({ error: "not_found" }, 404);
+    }
     return c.json({
       character: await charRepo.toPublicCharacterForViewer(sheet, user.id),
       isOwner: sheet.ownerUserId === user.id,
@@ -207,7 +209,9 @@ export function buildRoutes() {
     const user = c.get("user");
     const id = c.req.param("id");
     const sheet = await charRepo.getSheet(id);
-    if (!sheet) return c.json({ error: "not_found" }, 404);
+    if (!sheet || !(await charRepo.canViewCharacter(user.id, sheet))) {
+      return c.json({ error: "not_found" }, 404);
+    }
     const limit = Number(c.req.query("limit") ?? 50);
     const result = await battleRepo.listBattleItemsForCharacter({
       characterId: id,

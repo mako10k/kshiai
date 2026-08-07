@@ -1,0 +1,223 @@
+name: Observe persistent E2E battle
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Active production release tag; dispatch this workflow from the same tag
+        required: true
+        type: string
+      expected_revision:
+        description: Active guarded production Cloud Run revision
+        required: true
+        type: string
+      max_advances:
+        description: Safety bound including prologue and aftermath advances
+        required: true
+        default: "24"
+        type: string
+      confirmation:
+        description: Type OBSERVE followed by a space and the revision
+        required: true
+        type: string
+
+permissions:
+  checks: read
+  contents: read
+  id-token: write
+
+concurrency:
+  group: production
+  cancel-in-progress: false
+
+env:
+  GCP_PROJECT: kshiai
+  GCP_REGION: asia-northeast1
+  CLOUD_RUN_SERVICE: kshiai-api
+  E2E_JOB: kshiai-persistent-e2e
+  PRODUCTION_URL: https://kshiai.mk10.org
+  SUPABASE_URL: https://cvrbhpkfqkpqdegxfrlq.supabase.co
+  SUPABASE_JWKS_URL: https://cvrbhpkfqkpqdegxfrlq.supabase.co/auth/v1/.well-known/jwks.json
+  EXPECTED_BATTLE_CAUSAL_NARRATION_MODE: narration_guarded
+  EXPECTED_ADMIN_EMAIL: mako10k@mk10.org
+
+jobs:
+  observe:
+    name: persistent-e2e-observation
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    environment: production
+    steps:
+      - name: Validate owner approval
+        env:
+          CONFIRMATION: ${{ inputs.confirmation }}
+          EXPECTED_REVISION: ${{ inputs.expected_revision }}
+          MAX_ADVANCES: ${{ inputs.max_advances }}
+          RELEASE_TAG: ${{ inputs.tag }}
+        run: |
+          set -euo pipefail
+          test "$GITHUB_ACTOR" = "$GITHUB_REPOSITORY_OWNER"
+          test "$GITHUB_REF" = "refs/tags/$RELEASE_TAG"
+          [[ "$RELEASE_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?$ ]]
+          [[ "$EXPECTED_REVISION" =~ ^kshiai-api-[a-z0-9-]+$ ]]
+          [[ "$MAX_ADVANCES" =~ ^[0-9]+$ ]]
+          test "$MAX_ADVANCES" -ge 1
+          test "$MAX_ADVANCES" -le 30
+          test "$CONFIRMATION" = "OBSERVE $EXPECTED_REVISION"
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.tag }}
+          fetch-depth: 0
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "22"
+          cache: npm
+
+      - run: npm ci
+
+      - name: Verify release tag and required checks
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ inputs.tag }}
+        run: |
+          node scripts/verify-release.mjs "$RELEASE_TAG"
+          node scripts/verify-required-checks.mjs
+
+      - uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3
+        with:
+          project_id: ${{ env.GCP_PROJECT }}
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GCP_DEPLOY_SERVICE_ACCOUNT }}
+
+      - uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db # v3
+
+      - name: Bind observation to the active guarded artifact
+        id: target
+        env:
+          EXPECTED_REVISION: ${{ inputs.expected_revision }}
+        run: |
+          set -euo pipefail
+          gcloud run services describe "$CLOUD_RUN_SERVICE" \
+            --project="$GCP_PROJECT" \
+            --region="$GCP_REGION" \
+            --format=json > "$RUNNER_TEMP/service.json"
+          gcloud run revisions describe "$EXPECTED_REVISION" \
+            --project="$GCP_PROJECT" \
+            --region="$GCP_REGION" \
+            --format=json > "$RUNNER_TEMP/revision.json"
+          EXPECTED_REVISION="$EXPECTED_REVISION" node -e '
+            const fs = require("fs");
+            const service = require(process.argv[1]);
+            const revision = require(process.argv[2]);
+            const active = (service.status?.traffic ?? [])
+              .filter((entry) => entry.percent === 100);
+            if (active.length !== 1 || active[0].revisionName !== process.env.EXPECTED_REVISION) {
+              throw new Error("Expected revision is not the single 100 percent production target");
+            }
+            const container = revision.spec?.containers?.[0];
+            const env = Object.fromEntries((container?.env ?? [])
+              .filter((entry) => entry.value !== undefined)
+              .map((entry) => [entry.name, entry.value]));
+            if (env.BATTLE_CAUSAL_NARRATION_MODE !== process.env.EXPECTED_BATTLE_CAUSAL_NARRATION_MODE) {
+              throw new Error("Production revision is not guarded");
+            }
+            const admins = (env.ADMIN_EMAILS ?? "").split(",")
+              .map((value) => value.trim().toLowerCase()).filter(Boolean);
+            if (!admins.includes(process.env.EXPECTED_ADMIN_EMAIL)) {
+              throw new Error("Production revision is missing the expected administrator");
+            }
+            if (!container?.image?.includes("@sha256:")) {
+              throw new Error("Production revision image is not digest-bound");
+            }
+            fs.appendFileSync(process.env.GITHUB_OUTPUT, `image=${container.image}\n`);
+          ' "$RUNNER_TEMP/service.json" "$RUNNER_TEMP/revision.json"
+
+      - name: Deploy and execute persistent observer
+        id: execute
+        env:
+          EXPECTED_REVISION: ${{ inputs.expected_revision }}
+          IMAGE_REF: ${{ steps.target.outputs.image }}
+          MAX_ADVANCES: ${{ inputs.max_advances }}
+        run: |
+          set -euo pipefail
+          gcloud run jobs deploy "$E2E_JOB" \
+            --project="$GCP_PROJECT" \
+            --region="$GCP_REGION" \
+            --image="$IMAGE_REF" \
+            --service-account=kshiai-cloud-run@kshiai.iam.gserviceaccount.com \
+            --set-env-vars="NODE_ENV=test,KSHIAI_RUN_E2E_MAIN=1,AUTH_PROVIDER=supabase,MEDIA_STORAGE=local,SUPABASE_URL=$SUPABASE_URL,SUPABASE_JWKS_URL=$SUPABASE_JWKS_URL,E2E_API_URL=$PRODUCTION_URL,E2E_ALLOWED_HOSTS=kshiai.mk10.org,E2E_MAX_ADVANCES=$MAX_ADVANCES,E2E_TARGET_REVISION=$EXPECTED_REVISION" \
+            --set-secrets="DATABASE_URL=kshiai-database-url:latest,SUPABASE_SECRET_KEY=kshiai-supabase-secret-key:latest,SUPABASE_PUBLISHABLE_KEY=kshiai-supabase-publishable-key:latest" \
+            --command=node \
+            --args=backend/dist/scripts/persistent-battle-e2e.js \
+            --max-retries=0 \
+            --task-timeout=25m \
+            --quiet
+          execution="$(gcloud run jobs execute "$E2E_JOB" \
+            --project="$GCP_PROJECT" \
+            --region="$GCP_REGION" \
+            --wait \
+            --format='value(metadata.name)')"
+          [[ "$execution" =~ ^kshiai-persistent-e2e-[a-z0-9-]+$ ]]
+          echo "execution=$execution" >> "$GITHUB_OUTPUT"
+
+      - name: Capture and validate sanitized observation
+        env:
+          EXECUTION: ${{ steps.execute.outputs.execution }}
+          EXPECTED_REVISION: ${{ inputs.expected_revision }}
+        run: |
+          set -euo pipefail
+          filter="resource.type=\"cloud_run_job\" AND resource.labels.job_name=\"$E2E_JOB\" AND labels.\"run.googleapis.com/execution_name\"=\"$EXECUTION\""
+          gcloud logging read "$filter" \
+            --project="$GCP_PROJECT" \
+            --limit=200 \
+            --order=desc \
+            --format='value(textPayload)' > "$RUNNER_TEMP/e2e.log"
+          line="$(grep '^KSHIAI_E2E_OBSERVATION=' "$RUNNER_TEMP/e2e.log" | head -n 1)"
+          test -n "$line"
+          printf '%s\n' "${line#KSHIAI_E2E_OBSERVATION=}" > "$RUNNER_TEMP/e2e-observation.json"
+          EXPECTED_REVISION="$EXPECTED_REVISION" node -e '
+            const fs = require("fs");
+            const observation = JSON.parse(fs.readFileSync(process.argv[1], "utf8"));
+            if (observation.target?.revision !== process.env.EXPECTED_REVISION) {
+              throw new Error("Observation revision mismatch");
+            }
+            if (observation.battle?.status !== "finished" || !observation.battle?.id) {
+              throw new Error("Observation did not retain a finished battle");
+            }
+            if (!Array.isArray(observation.battle.log) || observation.battle.log.length === 0) {
+              throw new Error("Observation contains no retained narration");
+            }
+            if (observation.accounts?.crossAccount !== true ||
+                observation.visibility?.testRealmSharing !== "passed" ||
+                observation.visibility?.generalCharacterLeakage !== "not_observed") {
+              throw new Error("Observation visibility assertions did not pass");
+            }
+            const forbiddenKeys = new Set([
+              "accessToken", "authUserId", "applicationUserId", "parameters",
+              "recordOverall", "semanticState", "ratingSettlement",
+            ]);
+            const visit = (value) => {
+              if (!value || typeof value !== "object") return;
+              for (const [key, child] of Object.entries(value)) {
+                if (forbiddenKeys.has(key)) throw new Error(`Forbidden observation key: ${key}`);
+                visit(child);
+              }
+            };
+            visit(observation);
+            fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY,
+              `## Persistent E2E observation passed\n\n` +
+              `- Revision: \`${observation.target.revision}\`\n` +
+              `- Battle: \`${observation.battle.id}\`\n` +
+              `- Turns: ${observation.battle.turn}/${observation.battle.turnLimit}\n` +
+              `- Fixture disposition: \`${JSON.stringify(observation.fixtures.disposition)}\`\n`);
+          ' "$RUNNER_TEMP/e2e-observation.json"
+
+      - name: Retain observation artifact
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: persistent-e2e-${{ steps.execute.outputs.execution }}
+          path: ${{ runner.temp }}/e2e-observation.json
+          if-no-files-found: error
+          retention-days: 90

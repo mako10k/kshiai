@@ -6,6 +6,11 @@ import {
 } from "@kshiai/shared";
 import { query, withTransaction } from "../db.js";
 import { newId } from "../id.js";
+import {
+  canAccessSharedAsset,
+  getUserAccessProfile,
+  normalizeAccountKind,
+} from "../account-access.js";
 
 let seedPromise: Promise<void> | null = null;
 
@@ -95,14 +100,27 @@ export async function listPresets(opts: {
   includeSystem?: boolean;
 }): Promise<ReturnType<typeof toPublicPreset>[]> {
   await ensureSystemPresets();
-  const { rows } = await query<{ sheet_json: unknown }>(
-    `SELECT sheet_json FROM battlefields
-     WHERE is_system = TRUE OR owner_user_id = $1
-     ORDER BY is_system DESC, updated_at DESC`,
-    [opts.userId],
+  const viewer = await getUserAccessProfile(opts.userId);
+  const { rows } = await query<{
+    sheet_json: unknown;
+    owner_user_id: string | null;
+    is_system: boolean | number;
+    account_kind: string | null;
+  }>(
+    `SELECT b.sheet_json, b.owner_user_id, b.is_system, u.account_kind
+     FROM battlefields b
+     LEFT JOIN users u ON u.id = b.owner_user_id
+     ORDER BY b.is_system DESC, b.updated_at DESC`,
   );
 
-  let presets = rows.map(parse);
+  let presets = rows
+    .filter((row) => canAccessSharedAsset({
+      viewer,
+      ownerUserId: row.owner_user_id,
+      ownerKind: normalizeAccountKind(row.account_kind),
+      isSystem: Boolean(row.is_system),
+    }))
+    .map(parse);
   if (opts.includeSystem === false) {
     presets = presets.filter((p) => !p.isSystem);
   }
@@ -127,6 +145,34 @@ export async function getPreset(id: string): Promise<BattlefieldPreset | null> {
   );
   const row = rows[0];
   if (!row) return null;
+  return parse(row);
+}
+
+export async function getPresetForUser(
+  id: string,
+  userId: string,
+): Promise<BattlefieldPreset | null> {
+  await ensureSystemPresets();
+  const viewer = await getUserAccessProfile(userId);
+  const { rows } = await query<{
+    sheet_json: unknown;
+    owner_user_id: string | null;
+    is_system: boolean | number;
+    account_kind: string | null;
+  }>(
+    `SELECT b.sheet_json, b.owner_user_id, b.is_system, u.account_kind
+     FROM battlefields b
+     LEFT JOIN users u ON u.id = b.owner_user_id
+     WHERE b.id = $1`,
+    [id],
+  );
+  const row = rows[0];
+  if (!row || !canAccessSharedAsset({
+    viewer,
+    ownerUserId: row.owner_user_id,
+    ownerKind: normalizeAccountKind(row.account_kind),
+    isSystem: Boolean(row.is_system),
+  })) return null;
   return parse(row);
 }
 
