@@ -5,7 +5,7 @@ project KSHIAI_BATTLE_PIPELINE_WORK_V4:
   description "Use persistent production E2E evidence to order axial battle-pipeline slices. Preserve the causal receipt, isolated E2E realm, and Site A, Site B, narrator I/O DAG. The v0.11.1 trial accepted 20 of 21 fulfilled proposals and all 20 resolved actions, then exposed a water-pipe event whose semantic and world transitions were both skipped. Build one proposal-to-canonical environment world-process slice before expanded adjudication. Keep non-critical narrator quality issues pending until pipeline maturity; include them only when an axial slice naturally changes their input or authority boundary."
   as_of 2026-08-07
   duration_unit point
-  velocity 5400p/941h
+  velocity 18000p/3013h
   finish ENVIRONMENT_WORLD_PROCESS_TRIAL_COMPLETED
   goal_owner user
   dag_owner user
