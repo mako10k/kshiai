@@ -1,15 +1,15 @@
 # Active point-estimated execution plan. Preserve this path and task identities while collecting work-event and Velocity history.
 project KSHIAI_BATTLE_PIPELINE_WORK_V4:
   version 6
-  title "Battle-pipeline causal slice and persistent E2E observation realm"
-  description "Use current-main action resolutions event source links committed mechanical evidence semantic results and NarrationTurnView to implement the smallest axial causal pipeline slice before observation. After guarded production activation add a persistent server-owned test realm with dedicated Codex observer and opponent accounts reusable fixtures and full cross-account E2E battle artifacts. General users cannot discover test assets while administrators test users and E2E users can share them. Observation backlog items remain scorecards rather than an automatic patch queue."
+  title "Battle-pipeline causal slice, persistent E2E realm, and agent I/O DAG"
+  description "Use current-main owner outputs to implement and observe axial battle-pipeline slices. Preserve the causal narration receipt and persistent isolated E2E realm, then retain bounded Site A and Site B character-agent inputs, provider outputs, accepted outputs, and narrator input/output for an internal DAG viewer. Reshape narrator input to distinguish committed turn results, current canonical state, and static background without restricting narrator output. Observation backlog items remain scorecards rather than an automatic patch queue."
   as_of 2026-08-07
   duration_unit point
-  velocity 14400p/6667h
-  finish FIRST_E2E_OBSERVATION_RECORDED
+  velocity 80p/39h
+  finish NARRATOR_INPUT_TRIAL_COMPLETED
   goal_owner user
   dag_owner user
-  target_duration 16p
+  target_duration 21p
 
 resource DEV:
   title "Developer"
@@ -53,6 +53,15 @@ milestone PERSISTENT_E2E_REALM_RELEASED:
 
 milestone FIRST_E2E_OBSERVATION_RECORDED:
   title "First reusable full cross-account E2E battle observation recorded"
+
+milestone AGENT_PIPELINE_TRACE_VISIBLE:
+  title "Bounded Site A, Site B, and narrator I/O is visible as a turn DAG"
+
+milestone NARRATOR_INPUT_RESHAPED:
+  title "Narrator input distinguishes committed change, current state, and background"
+
+milestone NARRATOR_INPUT_TRIAL_COMPLETED:
+  title "Reshaped narrator input released and observed through persistent E2E"
 
 task T_BUILD_CAUSAL_TURN_SLICE MAIN_BASE_FIXED -> CAUSAL_SLICE_IMPLEMENTED:
   title "Build the owner-grounded causal turn receipt and narration projection"
@@ -140,6 +149,33 @@ task T_RUN_FIRST_PERSISTENT_E2E PERSISTENT_E2E_REALM_RELEASED -> FIRST_E2E_OBSER
   description "Dispatch the protected observer against the exact guarded production revision. Reuse the Codex observer and opponent accounts fixtures battlefield and narration style run through authentication match creation SSE turn advancement and finish then retain the battle and sanitized artifact. Verify general realm exclusion test realm sharing administrator access no secret or raw mechanics leakage and no unexpected production errors."
   duration 1p
   status done
+  owner "codex"
+  requires:
+    DEV 1
+
+task T_BUILD_AGENT_PIPELINE_DAG FIRST_E2E_OBSERVATION_RECORDED -> AGENT_PIPELINE_TRACE_VISIBLE:
+  title "Persist bounded character and narrator I/O and render the internal DAG"
+  description "For future turns retain the exact bounded server-built consumer input, provider disposition and output, and accepted output for Site A and Site B, plus the narrator call input and returned output. Store no provider credentials, transport headers, hidden chain of thought, or raw request envelope. Extend the existing separate internal observation API and Web screen with a per-turn DAG from both character contexts through outputs, adjudication, canonical transition, narrator input and public output. Older battles report trace unavailability honestly."
+  duration 2p
+  status done
+  owner "codex"
+  requires:
+    DEV 1
+
+task T_RESHAPE_NARRATOR_INPUT AGENT_PIPELINE_TRACE_VISIBLE -> NARRATOR_INPUT_RESHAPED:
+  title "Reshape narrator input without constraining narrator output"
+  description "Replace overlapping narration facts with one bounded turn brief that clearly separates committed action and consequence facts, accepted semantic or world change, current canonical conditions, and static battlefield flavor. Preserve perspective and identity boundaries and the existing single narrator call, but add no claim guard, prose validator, mechanical authority, retry policy, or narrator-output restriction. Add focused tests for information sufficiency, non-duplication, and empty-change clarity."
+  duration 2p
+  status done
+  owner "codex"
+  requires:
+    DEV 1
+
+task T_TRY_NARRATOR_INPUT_PIPELINE NARRATOR_INPUT_RESHAPED -> NARRATOR_INPUT_TRIAL_COMPLETED:
+  title "Release and observe the agent DAG and reshaped narrator input"
+  description "Run local acceptance then release the exact artifact through feature review, annotated tag, Stage and protected Promote. Execute the persistent cross-account E2E battle, inspect Site A and Site B context and output progression plus narrator input/output in the DAG, and record whether causal explanation, unsupported environmental continuation, repetition, latency, privacy and authority improve. Retain surviving phenomena without inserting unrelated fixes."
+  duration 1p
+  status active
   owner "codex"
   requires:
     DEV 1
@@ -330,3 +366,40 @@ work_event WE-b6dd0972058716269eceacddf7f03de6b4de4f80f71a1f83522940f807c3c804:
   occurred_at 2026-08-07T16:08:51+09:00
   active_time 3133/3600h
   effort 3133/3600ph
+
+work_event WE-4a90dd5b7da0af76d73616c53322a2b608dce5e367dff31c291c6d0910c2a680:
+  model 1
+  task T_BUILD_AGENT_PIPELINE_DAG
+  kind start
+  occurred_at 2026-08-07T16:46:46+09:00
+  planned_value 2p
+
+work_event WE-f4bd91066f7f5d90bffbde9837bdb1ef6d430809f912dc68110d017f33fe3b3d:
+  model 1
+  task T_BUILD_AGENT_PIPELINE_DAG
+  kind finish
+  occurred_at 2026-08-07T16:55:06+09:00
+  active_time 5/36h
+  effort 5/36ph
+
+work_event WE-96efc124b9b87eca19d07d27c4c7f81e5e6d27efacec739e20acdb4db7763667:
+  model 1
+  task T_RESHAPE_NARRATOR_INPUT
+  kind start
+  occurred_at 2026-08-07T16:56:01+09:00
+  planned_value 2p
+
+work_event WE-129494103601415ddccebc0fc1ca7bb8228407852f5fcdf36d609c8e1dda8667:
+  model 1
+  task T_RESHAPE_NARRATOR_INPUT
+  kind finish
+  occurred_at 2026-08-07T17:07:42+09:00
+  active_time 701/3600h
+  effort 701/3600ph
+
+work_event WE-b86ecbb8bea8967a0b62044f62191a1960c8a6d29ed082dae065350288313e77:
+  model 1
+  task T_TRY_NARRATOR_INPUT_PIPELINE
+  kind start
+  occurred_at 2026-08-07T17:08:53+09:00
+  planned_value 1p

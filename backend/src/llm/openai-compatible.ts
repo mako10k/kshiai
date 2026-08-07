@@ -23,6 +23,7 @@ import {
   coerceCharacterSpeech,
   coerceSpeakerDisplayLabel,
   canonicalSelfReference,
+  buildNarrationTurnBrief,
   extractStreamingNarrator,
   focusInstruction,
   isStageReaction,
@@ -76,18 +77,18 @@ const NARRATION_IDENTIFIER_RULES = `Identifier containment is mandatory. Values 
 NEVER copy, quote, speak, parenthesize, or use any such identifier as a name in narrator lines, speaker fields, or speech text. Use the matching renderLabel or supplied human display name only.
 If a subjective view marks a subject unknown, suspected, unperceived, or unidentifiable, preserve that uncertainty and never infer the hidden identity from another input field.`;
 
-const NARRATION_PROFILE_RULES = `profileAnchors are presentation-only canonical wording constraints, not observations, actions, events, or permission to reveal private profile facts.
+const NARRATION_PROFILE_RULES = `presentation.profileAnchors are presentation-only canonical wording constraints, not observations, actions, events, or permission to reveal private profile facts.
 Never contradict a non-null gender, age, self-name, display name, or appearance in an available anchor. currentStateOverrides, when present, override only the conflicting present-tense appearance/equipment detail in that same anchor; the immutable base profile remains historical/identity context. Do not announce or explain any fact merely because it appears in an anchor.
-sceneStateFacts are engine-derived current object placements, not background flavor or permission to invent an action. Preserve them when describing those objects, and never restore an object to its original place merely because a base profile or battlefield description says otherwise.
+currentState.sceneFacts are engine-derived current object placements. staticBackground is stable setting flavor, not a change that happened this turn. Preserve current facts when describing those objects, and never restore an object to its original place merely because a base profile or static background says otherwise.
 When an anchor is absent, or gender/age/selfNames is null or empty, use the supplied participant label or neutral Japanese wording. Never infer gender, age, anatomy, species, pronouns, or a legal identity from names, style, role, traits, speech, or appearance.
-Never write profileAnchors or sceneStateFacts into a character's cognition, memory, world state, effects, or result.`;
+Never write presentation anchors or current scene facts into a character's cognition, memory, world state, effects, or result.`;
 
-const NARRATION_CONTINUITY_RULES = `Narrator continuity is bounded presentation memory, not new world evidence and never character cognition. Current view/perception remains authoritative for present access and attribution. Reader-known labels must not become character knowledge, and remembered identity must not make a currently uncertain voice certain.
+const NARRATION_CONTINUITY_RULES = `presentation.continuity is bounded presentation memory, not new world evidence and never character cognition. observationBoundary remains authoritative for present access and attribution. Reader-known labels must not become character knowledge, and remembered identity must not make a currently uncertain voice certain.
 When an existing recognition has continuity same_entity, keep recognizing that subject as recognizedAs even if current access becomes weak or absent. Do not reset it to an unknown person or voice merely because a turn changed, the viewpoint changed, or only the voice is currently available. possibly_same_entity may lower attribution wording while retaining the remembered identity; unlinked means the currently perceived form is not established as that remembered subject.
 When focus permits innerDigests and a non-empty interior conclusion is supplied, weave at least one concise inner beat into the prose without exposing chain-of-thought. External focus must remain observable-only.`;
 
 const NARRATOR_RECOGNITION_RULES = `recognitionUpdates are narrator-only cognition returned in this same narration response; they never change character cognition, canonical events, world state, or battle mechanics.
-Each subjectRef must exactly match one recognitionSubjects subjectRef supplied to this call. Never place subjectRef in prose or a speaker label. Emit an update only when the current view supports recognizing, questioning, or unlinking that subject. Omission preserves the prior recognition. same_entity preserves an already identified recognizedAs; temporary occlusion, weak audio, turn changes, and viewpoint switches alone are not identity changes.`;
+Each subjectRef must exactly match one presentation.recognitionSubjects subjectRef supplied to this call. Never place subjectRef in prose or a speaker label. Emit an update only when observationBoundary supports recognizing, questioning, or unlinking that subject. Omission preserves the prior recognition. same_entity preserves an already identified recognizedAs; temporary occlusion, weak audio, turn changes, and viewpoint switches alone are not identity changes.`;
 
 function normalizedSpeechFacts(value: string): string {
   return value.normalize("NFKC").replace(/[\s「」『』（）()、。！？!?…・]/g, "");
@@ -1595,6 +1596,7 @@ JSON only: { "focus": "self"|"foe"|"external"|"both" }`,
             ? "both"
             : "external";
       const focusBlock = focusInstruction(focus);
+      const turnBrief = buildNarrationTurnBrief(input.view);
       const sideAName = input.view.participantLabels.a;
       const sideBName = input.view.participantLabels.b;
       const requiredSpeakers = input.view.perception.mode === "self"
@@ -1613,7 +1615,7 @@ JSON only: { "focus": "self"|"foe"|"external"|"both" }`,
             ]
           : [sideAName, sideBName];
       const data = (await this.chatJson(
-        `Narrate a turn-based fictional confrontation in Japanese. The supplied view is the sole authoritative source for world state, events, action beats, perception, and participant labels. It is immutable and may be physical, ranged, technological, psychic, social, comedic, cute, or abstract. Never add swordplay, bodily injury, grimness, or martial framing unless the view establishes them.
+        `Narrate a turn-based fictional confrontation in Japanese. The supplied brief is the sole authoritative source for world state, resolved events, actions, perception, and participant labels. It is immutable and may be physical, ranged, technological, psychic, social, comedic, cute, or abstract. Never add swordplay, bodily injury, grimness, or martial framing unless the brief establishes them.
 ${styleBlock}
 ${focusBlock}
 ${NARRATION_IDENTIFIER_RULES}
@@ -1621,24 +1623,24 @@ ${NARRATION_PROFILE_RULES}
 ${NARRATION_CONTINUITY_RULES}
 ${NARRATOR_RECOGNITION_RULES}
 Perspective gate overrides style instruction: never reveal inner life that is not present in innerDigests.
-For self or opponent mode, the embedded frame is the complete observation boundary. Preserve unidentified contacts, missing attribution, inaccessible subjects, and qualitative-only effect or reserve cues. Do not reconstruct facts omitted from view.
-Use view.battlefield flavor sparingly — scenery is seasoning, not the meal.
-Build 2–4 non-empty narrator lines around view.actionBeats and view.events: lead with this turn's concrete action (what was attempted and what visibly happened), then contact or reaction, then a committed consequence grounded in those events.
+For self or opponent mode, observationBoundary is the complete observation boundary. Preserve unidentified contacts, missing attribution, inaccessible subjects, and qualitative-only effect or reserve cues. Do not reconstruct facts omitted from the brief.
+Use staticBackground flavor sparingly — it describes the stable setting, while turnResult.canonicalChange says whether this turn changed the environment.
+Build 2–4 non-empty narrator lines around turnResult.actions and turnResult.resolvedEvents: lead with this turn's concrete action (what was attempted and what visibly happened), then contact or reaction, then a committed consequence grounded in those events.
 ${input.view.causalProjection
-          ? "Use view.causalProjection as the authoritative cause-to-result supplement. Explain why a committed consequence followed only when it appears in one causalChains entry, and state a concrete continuing condition from continuingConditions when it affects the next exchange. Keep observedConsequences and observedSemanticChangeKinds explicitly unattributed; never connect them to an action by guesswork.\n"
+          ? "Each turnResult.actions item keeps its name and description beside its structured causality. Use that causality as the authoritative cause-to-result supplement, including resolutionExplanation when an attempted action changed or failed. Use currentState.participantConditions when a real continuing condition affects the next exchange. Keep turnResult.observedConsequences and observedSemanticChangeKinds explicitly unattributed; never connect them to an action by guesswork.\n"
           : ""}Do not invent a soft "who is winning" scoreboard line every turn. Only mention a shift in advantage when the supplied events or action beats clearly support a real change (position, hold, failure, recovery, or decisive contact).
 When drama.progressionHint is present, treat it as optional guidance for stuck loops (e.g. repeated actions or one-sided waiting), not as a mandatory form-evaluation template.
 Prefer opening on an actor's move rather than pure ambient scenery when recentNarration already set the scene.
 Do not repeat or closely paraphrase recentNarration or either character's recentSpeeches.
-When drama.environmentBeatDue is true, incorporate only an environment change already present in view. Do not invent mechanical damage or bonuses.
-If view marks a finishing blow (とどめ / 決め手 / 戦闘不能), center the turn on that decisive action.
+When drama.environmentBeatDue is true, incorporate the corresponding accepted change from turnResult and currentState. Do not treat staticBackground as a new event.
+If turnResult marks a finishing blow (とどめ / 決め手 / 戦闘不能), center the turn on that decisive action.
 characterSpeeches were already authored by isolated character agents from their own cognition and perception. Return every supplied line exactly once with the same sourceSide. For each supplied line, freely write a natural speaker display label from the current view, its displayContext, and narratorContinuity; displayLabel is only a fallback. Preserve the viewpoint's uncertainty or misidentification. Do not reconstruct a canonical identity omitted from these presentation inputs. This label is rendering only. You may change punctuation or typographic surface only when the words, factual content, intent, and stage-reaction/dialogue distinction remain unchanged. Choose afterNarratorLine (-1 before the first line, otherwise a zero-based narrator-line index) to place each speech naturally among the narrator lines.
-You MAY add a speech or visible/audible reaction for a third-party or scene entity when the supplied view and scene state support that entity's presence and agency. For such a scene-authored line, set sourceSide to null. Do not use this permission to add another line for side A or B, or to invent an unsupported person, object agency, action, outcome, or private fact.
+You MAY add a speech or visible/audible reaction for a third-party or scene entity when currentState and observationBoundary support that entity's presence and agency. For such a scene-authored line, set sourceSide to null. Do not use this permission to add another line for side A or B, or to invent an unsupported person, object agency, action, outcome, or private fact.
 Do not add a speech or reaction for an inaccessible counterpart; characterSpeeches is already filtered to the permitted speakers: ${JSON.stringify(requiredSpeakers)}.
 JSON: { "turn": number, "focus": "${focus}", "narrator": string[], "speeches": [ { "sourceSide": "a"|"b"|null, "speaker": string, "text": string, "afterNarratorLine": number } ], "recognitionUpdates": [ { "subjectRef": string, "recognizedAs": string, "identityKnowledge": "unknown"|"suspected"|"identified", "continuity": "same_entity"|"possibly_same_entity"|"unlinked" } ] }
 Do not mention numeric HP/MP/ATK values.`,
         JSON.stringify({
-          view: input.view,
+          brief: turnBrief,
           focus,
           recentNarration: input.recentNarration?.slice(-4) ?? [],
           recentSpeeches: input.recentSpeeches?.slice(-4) ?? [],

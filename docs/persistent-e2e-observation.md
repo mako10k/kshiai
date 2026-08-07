@@ -32,6 +32,32 @@ but accurately report that per-turn transition detail is unavailable.
 Administrators and developers may inspect all retained battles; test and E2E
 users remain restricted to battles owned by the test realm.
 
+For turns created after the agent-trace release, the same screen also renders a
+per-turn pipeline DAG. It starts with the resolved current turn and canonical
+transition, then shows the isolated Site A and Site B character-agent consumer
+input, provider output, and server-accepted output. The accepted `nextAction`
+belongs to the following turn, while accepted speech feeds the current
+narrator call. The DAG then shows the exact bounded narrator call input,
+provider/fallback disposition, provider output, and final public block. It does
+not retain provider credentials, transport headers, raw HTTP envelopes, or
+hidden chain-of-thought. Older turns remain readable and report the trace as
+unavailable rather than reconstructing it from prose.
+
+The narrator-model payload is a role-labelled `turnBrief`, not a second copy of
+the full internal view. It separates:
+
+- `turnResult`: actions without duplicate outcome prose, resolved event text,
+  causal chains and explicit semantic/world change status;
+- `currentState`: the scene, canonical scene facts and participant conditions;
+- `staticBackground`: stable battlefield flavor that did not necessarily change
+  this turn; and
+- `observationBoundary` plus `presentation`: perspective-safe perception,
+  labels, rendering anchors and bounded continuity.
+
+This is an input-shaping change. It adds no narrator claim validator, prose
+rejection, repair loop, or mechanical authority, and the narrator remains free
+to choose the wording and emphasis of its response.
+
 The production administrator allowlist is deployment configuration, not a
 client claim. Stage binds `ADMIN_EMAILS=mako10k@mk10.org`, and Promote refuses
 an artifact that does not contain that binding.

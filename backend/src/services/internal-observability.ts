@@ -34,6 +34,7 @@ export type CanonicalTurnProgression = {
   sideBChange: unknown;
   worldImpact: unknown | null;
   canonicalTransition: unknown | null;
+  pipelineTrace: unknown | null;
 };
 
 export type InternalObservationScope = "all" | "test";
@@ -137,6 +138,7 @@ export async function getInternalBattleObservation(
   capabilities: {
     turnRecordCount: number;
     canonicalTransitionCount: number;
+    pipelineTraceCount: number;
     perTurnCanonicalTransitions: "complete" | "partial" | "unavailable";
   };
 } | null> {
@@ -178,10 +180,14 @@ export async function getInternalBattleObservation(
       sideBChange: record.sideBChange ?? null,
       worldImpact: record.worldImpact ?? null,
       canonicalTransition: record.canonicalTransition ?? null,
+      pipelineTrace: record.pipelineTrace ?? null,
     }];
   });
   const canonicalTransitionCount = canonicalTimeline.filter(
     (record) => record.canonicalTransition !== null,
+  ).length;
+  const pipelineTraceCount = canonicalTimeline.filter(
+    (record) => record.pipelineTrace !== null,
   ).length;
   return {
     summary: summaryFromRow(row),
@@ -197,6 +203,7 @@ export async function getInternalBattleObservation(
     capabilities: {
       turnRecordCount: canonicalTimeline.length,
       canonicalTransitionCount,
+      pipelineTraceCount,
       perTurnCanonicalTransitions: canonicalTransitionCount === 0
         ? "unavailable"
         : canonicalTransitionCount === canonicalTimeline.length

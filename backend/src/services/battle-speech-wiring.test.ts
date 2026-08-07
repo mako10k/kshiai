@@ -159,6 +159,16 @@ describe("character-authored public speech", () => {
       result.state.narratorContinuity?.a.viewpointSide,
       result.state.narratorContinuity?.b.viewpointSide,
     );
+    const pipelineTrace = result.state.turnRecords.at(-1)?.pipelineTrace;
+    assert.equal(pipelineTrace?.characterAgents?.phase, "turn");
+    assert.equal(pipelineTrace?.characterAgents?.a.providerStatus, "fulfilled");
+    assert.equal(pipelineTrace?.characterAgents?.b.providerStatus, "fulfilled");
+    assert.equal(
+      (pipelineTrace?.characterAgents?.a.input as { phase?: string } | null)?.phase,
+      "turn",
+    );
+    assert.ok(pipelineTrace?.characterAgents?.a.providerOutput);
+    assert.ok(pipelineTrace?.characterAgents?.a.acceptedOutput);
     const narratorSpeeches = buildNarratorCharacterSpeeches({
       state: result.state,
       sources: result.characterSpeeches,

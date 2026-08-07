@@ -72,6 +72,30 @@ describe("internal battle observability", () => {
             semantic: { turn: 1, status: "applied" },
             world: { turn: 1, status: "applied" },
           },
+          pipelineTrace: {
+            schemaVersion: 1,
+            characterAgents: {
+              phase: "turn",
+              a: {
+                input: { perception: "a" },
+                providerStatus: "fulfilled",
+                providerOutput: { nextAction: { kind: "wait" } },
+                acceptedOutput: { nextAction: { kind: "wait" } },
+              },
+              b: {
+                input: { perception: "b" },
+                providerStatus: "fulfilled",
+                providerOutput: { nextAction: { kind: "defend" } },
+                acceptedOutput: { nextAction: { kind: "defend" } },
+              },
+            },
+            narrator: {
+              input: { view: { turn: 1 } },
+              disposition: "provider",
+              providerOutput: { narrator: ["raw"] },
+              publicOutput: { narrator: ["public"] },
+            },
+          },
         }],
       }),
       "2026-08-07T00:00:00.000Z",
@@ -122,7 +146,13 @@ describe("internal battle observability", () => {
     assert.equal(detail.rawBattleState.id, "battle-observed");
     assert.equal(detail.canonicalTimeline[0]?.turn, 1);
     assert.deepEqual(detail.canonicalTimeline[0]?.events, [{ id: "evt-1" }]);
+    assert.deepEqual(
+      detail.canonicalTimeline[0]?.pipelineTrace,
+      (detail.rawBattleState.turnRecords as Array<Record<string, unknown>>)[0]
+        ?.pipelineTrace,
+    );
     assert.equal(detail.capabilities.perTurnCanonicalTransitions, "complete");
+    assert.equal(detail.capabilities.pipelineTraceCount, 1);
     assert.equal(detail.canonicalCurrent.worldState &&
       (detail.canonicalCurrent.worldState as { revision: number }).revision, 1);
   });

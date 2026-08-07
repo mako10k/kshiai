@@ -222,10 +222,104 @@ h2 {
   word-break: break-word;
 }
 
+.internal-pipeline-dag {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+}
+
+.internal-agent-lanes {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.internal-agent-lane {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  min-width: 0;
+  padding: 0.65rem;
+}
+
+.internal-agent-lane h4 {
+  color: var(--accent);
+  margin: 0 0 0.55rem;
+}
+
+.internal-pipeline-flow {
+  align-items: stretch;
+  display: grid;
+  gap: 0.35rem;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) auto minmax(0, 1fr);
+}
+
+.internal-pipeline-main-flow {
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) auto minmax(0, 1fr) auto minmax(0, 1fr);
+}
+
+.internal-pipeline-resolution-flow,
+.internal-pipeline-narrator-flow {
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+}
+
+.internal-pipeline-note {
+  margin: 0;
+  text-align: center;
+}
+
+.internal-pipeline-node {
+  background: #101621;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  min-width: 0;
+  padding: 0.55rem;
+}
+
+.internal-pipeline-node summary {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.internal-pipeline-node summary small {
+  color: var(--muted);
+  font-weight: 400;
+}
+
+.internal-pipeline-node .internal-json {
+  max-height: 24rem;
+}
+
+.internal-pipeline-arrow,
+.internal-pipeline-merge {
+  align-self: center;
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.internal-pipeline-merge {
+  font-size: 1.4rem;
+  text-align: center;
+}
+
 @media (max-width: 760px) {
   .internal-observation-layout,
-  .internal-summary-grid {
+  .internal-summary-grid,
+  .internal-agent-lanes {
     grid-template-columns: 1fr;
+  }
+
+  .internal-pipeline-flow,
+  .internal-pipeline-main-flow,
+  .internal-pipeline-resolution-flow,
+  .internal-pipeline-narrator-flow {
+    grid-template-columns: 1fr;
+  }
+
+  .internal-pipeline-arrow {
+    transform: rotate(90deg);
   }
 
   .internal-battle-list {

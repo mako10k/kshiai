@@ -109,8 +109,8 @@ describe("OpenAI-compatible narrator speech rendering", () => {
   });
 });
 
-describe("OpenAI-compatible causal narration guard", () => {
-  it("keeps the off prompt unchanged and adds grounding only with a projection", async () => {
+describe("OpenAI-compatible causal narration input", () => {
+  it("sends a role-labelled brief and adds causal facts only with a projection", async () => {
     const provider = new OpenAiCompatibleProvider({
       name: "xai",
       apiKey: "test-only",
@@ -145,7 +145,16 @@ describe("OpenAI-compatible causal narration guard", () => {
       continuity: null,
       recognitionSubjects: [],
       events: [],
-      actionBeats: [],
+      actionBeats: [{
+        actorLabel: "アオ",
+        actionName: "短い打撃",
+        description: "間合いへ踏み込む",
+        outcomes: ["重複させない結果文"],
+      }],
+      canonicalChange: {
+        semantic: { status: "applied", changed: false },
+        world: { status: "applied", changed: false, operationKinds: [] },
+      },
       battlefield: null,
     };
     const causalProjection: NarrationCausalProjection = {
@@ -188,12 +197,17 @@ describe("OpenAI-compatible causal narration guard", () => {
     );
     assert.doesNotMatch(systems[0]!, /authoritative cause-to-result supplement/);
     assert.doesNotMatch(users[0]!, /causalProjection/);
-    assert.match(systems[1]!, /authoritative cause-to-result supplement/);
+    assert.match(users[0]!, /"brief"/);
+    assert.match(users[0]!, /"turnResult"/);
+    assert.match(users[0]!, /"canonicalChange"/);
+    assert.match(systems[1]!, /structured causality/);
     assert.match(
       systems[1]!,
       /never connect them to an action by guesswork\.\nDo not invent/,
     );
-    assert.match(users[1]!, /causalProjection/);
-    assert.match(users[1]!, /continuingConditions/);
+    assert.doesNotMatch(users[1]!, /causalProjection/);
+    assert.match(users[1]!, /"causality"/);
+    assert.match(users[1]!, /participantConditions/);
+    assert.doesNotMatch(users[1]!, /重複させない結果文/);
   });
 });
