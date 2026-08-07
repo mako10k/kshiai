@@ -175,6 +175,7 @@ task T_TRY_NARRATOR_INPUT_PIPELINE NARRATOR_INPUT_RESHAPED -> NARRATOR_INPUT_TRI
   title "Release and observe the agent DAG and reshaped narrator input"
   description "Run local acceptance then release the exact artifact through feature review, annotated tag, Stage and protected Promote. Execute the persistent cross-account E2E battle, inspect Site A and Site B context and output progression plus narrator input/output in the DAG, and record whether causal explanation, unsupported environmental continuation, repetition, latency, privacy and authority improve. Retain surviving phenomena without inserting unrelated fixes."
   duration 1p
+  status active
   owner "codex"
   requires:
     DEV 1
@@ -395,3 +396,10 @@ work_event WE-129494103601415ddccebc0fc1ca7bb8228407852f5fcdf36d609c8e1dda8667:
   occurred_at 2026-08-07T17:07:42+09:00
   active_time 701/3600h
   effort 701/3600ph
+
+work_event WE-b86ecbb8bea8967a0b62044f62191a1960c8a6d29ed082dae065350288313e77:
+  model 1
+  task T_TRY_NARRATOR_INPUT_PIPELINE
+  kind start
+  occurred_at 2026-08-07T17:08:53+09:00
+  planned_value 1p
