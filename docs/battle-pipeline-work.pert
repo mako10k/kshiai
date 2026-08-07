@@ -58,6 +58,7 @@ task T_WIRE_NARRATION_CONSUMER CAUSAL_SLICE_IMPLEMENTED -> FIRST_CONSUMER_IMPLEM
   title "Wire the causal projection into the existing narrator path"
   description "Construct the receipt in battle-service after semantic reconciliation and before buildNarrationTurnView then add the bounded causal projection to the existing narrator input behind a reversible default-off guard. Reuse the current narrator call and fallback; add no provider repository persistence or domain write and grant narration no action mechanics state winner rating or cognition authority."
   duration 1p
+  status active
   owner "codex"
   requires:
     DEV 1
@@ -116,3 +117,10 @@ work_event WE-e13e1b559132bfedf0877dd1197df3a8f08acffc382bc355a2868bfa814302ca:
   occurred_at 2026-08-07T11:37:26+09:00
   active_time 827/3600h
   effort 827/3600ph
+
+work_event WE-82797b137b09baad4b0fc2d925dcdead8c4f4690750c59ed1acfefa4c7c705ca:
+  model 1
+  task T_WIRE_NARRATION_CONSUMER
+  kind start
+  occurred_at 2026-08-07T11:40:12+09:00
+  planned_value 1p
