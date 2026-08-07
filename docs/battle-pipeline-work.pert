@@ -130,6 +130,7 @@ task T_RELEASE_PERSISTENT_E2E_REALM PERSISTENT_E2E_REALM_IMPLEMENTED -> PERSISTE
   title "Release the E2E realm and bind the production administrator"
   description "Release the accepted additive migration visibility boundary and observer image through the annotated tag Stage and protected Promote path. Bind ADMIN_EMAILS to mako10k@mk10.org in the staged and promoted Cloud Run revision and verify the exact environment without changing battle mechanics provider order or public traffic policy."
   duration 1p
+  status active
   owner "codex"
   requires:
     DEV 1
@@ -261,3 +262,10 @@ work_event WE-60ce9c1a5e6bc2ef10bc58fa037b41537d607f445cd9b320f5c41dea1807c4e7:
   occurred_at 2026-08-07T14:16:13+09:00
   active_time 1093/3600h
   effort 1093/3600ph
+
+work_event WE-1c24f24904a812fc7af9bc433bda0ac7a3aece972d52a54307e507a1146d99e8:
+  model 1
+  task T_RELEASE_PERSISTENT_E2E_REALM
+  kind start
+  occurred_at 2026-08-07T14:17:44+09:00
+  planned_value 1p
