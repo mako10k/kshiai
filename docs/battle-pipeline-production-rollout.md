@@ -277,21 +277,21 @@ new production work.
 
 ## Macro boundary
 
-The v0.11.1 persistent E2E trace changes the immediate ordering:
+The v0.12.0 persistent E2E trace changes the immediate ordering:
 
-1. The character action-proposal boundary is sufficiently open for the next
-   axial observation. v0.11.1 accepted 20 of 21 fulfilled proposals and all 20
-   resolved combat actions, compared with zero accepted proposals and seven
-   substituted or failed actions in v0.11.0. Retain the one incompatible
-   defensive instrument as a residual observation, not an interrupting patch.
-2. Select the environment/world-process path next. `OBS-20260807-06` observed a
-   water-pipe event and public footing consequence while both semantic and world
-   transitions were skipped. This reproduces the proposal/result/canonical
-   ambiguity behind `OBS-20260807-02` and `OBS-20260807-03` after action output
-   became observable.
+1. Keep the environment/world-process axis selected. Its server boundary safely
+   rejected all eight proposals without publishing a proposal event, changing a
+   canonical revision, assigning an effect key, or linking HP loss. The direct
+   authority ambiguity behind `OBS-20260807-02` and rejected-path publication in
+   `OBS-20260807-06` did not recur.
+2. Align proposal authoring with the transition forms the existing reconciler
+   can commit before adding a broader engine. Seven proposals described only
+   transient rain, water, reflection, or lighting motion; the remaining decision
+   called a lighting change durable but emitted no operation. This 0/8 useful
+   yield is `OBS-20260807-08` and directly blocks observation of the axial path.
 3. Keep adaptive expanded adjudication as the following alternative. Recompare
-   it after one bounded environment proposal -> adjudication -> accepted world
-   transition slice and production E2E trial.
+   it after one bounded aligned proposal -> adjudication -> accepted world
+   transition trial rather than changing axis on narrator symptoms.
 
 Standalone non-critical narrator cleanup is pending. If an action, environment,
 or adjudication slice naturally supplies better narrator input, its acceptance
@@ -330,3 +330,22 @@ supervisor noise proposal
   adjudication. Narration can improve incidentally because it receives the
   accepted event and canonical state, while standalone narrator symptoms remain
   pending for later pipeline observation.
+
+## Environment proposal transition alignment
+
+The next patch keeps the same authority order and changes only what the two LLM
+stages are asked to exchange:
+
+- The supervisor proposes a cause anchored in the supplied battlefield and a
+  persistent result that can become a new non-character entity or a real
+  location/active-state change. Transient flicker, reflection, waves, worsening
+  weather, and mood alone are not useful proposals unless they leave that kind
+  of result.
+- The world reconciler may ground the proposal cause in `worldBefore` and the
+  battlefield; it does not require the uncommitted proposal to already exist as
+  a turn event. If it accepts, it must emit the corresponding operation in the
+  same response. The server remains authoritative and still rejects an accepted
+  label with no qualifying operation.
+- No schema migration, provider call, direct mechanical effect, output repair,
+  narrator guard, or general world engine is added. The production trial waits
+  for provider availability if the protected observer cannot create a battle.
