@@ -5,6 +5,20 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 
 ## [Unreleased]
 
+## [0.11.1] - 2026-08-07
+
+### Changed
+
+- Presents character-agent `nextAction` as six action-kind-specific JSON shapes
+  so standard actions do not copy free-action-only explanation and subject
+  fields into otherwise valid proposals.
+
+### Operations
+
+- Keeps the strict server validator and proposal receipt unchanged. This is an
+  always-enabled prompt-only alignment with no migration, secret, environment,
+  provider-order, or narrator-policy change.
+
 ## [0.11.0] - 2026-08-07
 
 ### Added
