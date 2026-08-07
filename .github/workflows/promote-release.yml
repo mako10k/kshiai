@@ -37,6 +37,7 @@ env:
   WORKER_NAME: kshiai-web
   WRANGLER_CONFIG: infra/cloudflare-worker/wrangler.jsonc
   PRODUCTION_URL: https://kshiai.mk10.org
+  EXPECTED_BATTLE_CAUSAL_NARRATION_MODE: narration_guarded
 
 jobs:
   promote:
@@ -95,11 +96,24 @@ jobs:
           set -euo pipefail
           [[ "$REVISION" =~ ^kshiai-api-[a-z0-9-]+$ ]]
           [[ "$WORKER_VERSION" =~ ^[0-9a-f-]{36}$ ]]
-          image="$(gcloud run revisions describe "$REVISION" \
+          revision_json="$RUNNER_TEMP/staged-revision.json"
+          gcloud run revisions describe "$REVISION" \
             --project="$GCP_PROJECT" \
             --region="$GCP_REGION" \
-            --format='value(spec.containers[0].image)')"
+            --format=json > "$revision_json"
+          image="$(node -e '
+            const revision = require(process.argv[1]);
+            process.stdout.write(revision.spec?.containers?.[0]?.image ?? "");
+          ' "$revision_json")"
+          mode="$(node -e '
+            const revision = require(process.argv[1]);
+            const entry = revision.spec?.containers?.[0]?.env?.find(
+              (candidate) => candidate.name === "BATTLE_CAUSAL_NARRATION_MODE",
+            );
+            process.stdout.write(entry?.value ?? "");
+          ' "$revision_json")"
           test -n "$image"
+          test "$mode" = "$EXPECTED_BATTLE_CAUSAL_NARRATION_MODE"
           versions="$(npx wrangler versions list --config "$WRANGLER_CONFIG" --json)"
           WORKER_VERSIONS="$versions" node -e '
             const versions = JSON.parse(process.env.WORKER_VERSIONS);
@@ -108,7 +122,7 @@ jobs:
             const tag = version.annotations?.["workers/tag"];
             if (tag && tag !== process.env.RELEASE_TAG) throw new Error("Worker tag mismatch");
           '
-          echo "Verified backend image $image and Worker version $WORKER_VERSION"
+          echo "Verified backend image $image, causal narration mode $mode, and Worker version $WORKER_VERSION"
 
       - name: Record rollback targets
         id: previous

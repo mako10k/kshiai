@@ -2,10 +2,10 @@
 project KSHIAI_BATTLE_PIPELINE_WORK_V4:
   version 6
   title "Battle-pipeline causal-slice implementation and trial"
-  description "Use current-main action resolutions event source links committed mechanical evidence semantic results and NarrationTurnView to implement the smallest axial causal pipeline slice before observation. The PoC source-authoring principle is absorbed into one owner-grounded receipt; its five-artifact future applicability bundle is not a prerequisite. Observation backlog items remain secondary trial scorecards."
+  description "Use current-main action resolutions event source links committed mechanical evidence semantic results and NarrationTurnView to implement the smallest axial causal pipeline slice before observation. The PoC source-authoring principle is absorbed into one owner-grounded receipt; its five-artifact future applicability bundle is not a prerequisite. Observation backlog items remain secondary trial scorecards. While the product has one user, accepted user-value mechanisms deploy enabled for the full cohort; cohort splitting is deferred until multiple-user rollout control has value."
   as_of 2026-08-07
   duration_unit point
-  velocity 200p/39h
+  velocity 14400p/6191h
   finish NEXT_HYPOTHESIS_SELECTED
   goal_owner user
   dag_owner user
@@ -83,16 +83,18 @@ task T_TRY_AND_REVISE_STAGING LOCAL_IMPLEMENTATION_ACCEPTED -> STAGING_ITERATION
 
 task T_DECIDE_PRODUCTION_TRIAL STAGING_ITERATION_COMPLETED -> PRODUCTION_TRIAL_DECIDED:
   title "Decide a bounded guarded production trial from staging evidence"
-  description "Approve revise defer or reject one reversible production trial. If approved bind the exact artifact mode cohort ceiling comparison method quality privacy latency and cost limits rollback operator and hold time. The decision grants no mechanical authority and does not authorize a backlog-driven patch queue."
+  description "Approved the exact v0.7.2 guarded artifacts for the current single-user full cohort: narration_guarded stays enabled at 100 percent with no cohort splitter. The prior v0.7.1 revision and Worker remain rollback targets. Production smoke unsupported factual claims privacy leakage mechanical divergence unexpected calls or rollback failure remain stop conditions. The decision grants no mechanical authority and does not authorize a backlog-driven patch queue."
   duration 1p
+  status done
   owner "user"
   requires:
     OWNER 1
 
 task T_TRY_GUARDED_PRODUCTION PRODUCTION_TRIAL_DECIDED -> PRODUCTION_TRIAL_COMPLETED:
   title "Run or record the guarded production trial disposition"
-  description "For an approved cohort enable only the accepted causal narration projection and compare it with baseline while preserving mechanics calls persistence and rollback. If deferred or rejected record that disposition without deployment. Stop on unsupported factual claims privacy leakage mechanical divergence unexpected calls or rollback failure."
+  description "Promote the accepted v0.7.2 causal narration projection enabled for the full current single-user cohort while preserving mechanics calls persistence and rollback. Verify the exact Cloud Run revision mode image and 100 percent traffic the exact Worker version production health authentication smoke release evidence and post-promote errors. Stop on unsupported factual claims privacy leakage mechanical divergence unexpected calls or rollback failure."
   duration 1p
+  status done
   owner "codex"
   requires:
     DEV 1
@@ -164,3 +166,33 @@ work_event WE-f589d0fcf1ee084ee0d50c5439d6719009cefbb64fb8305b5841b601abc412b7:
   occurred_at 2026-08-07T12:27:00+09:00
   active_time 2011/3600h
   effort 2011/3600ph
+
+work_event WE-d9872e0635b707ff932ce8776b23b61c6b4324476f229bb3cdbc330f17d1129e:
+  model 1
+  task T_DECIDE_PRODUCTION_TRIAL
+  kind start
+  occurred_at 2026-08-07T13:33:20+09:00
+  planned_value 1p
+
+work_event WE-8ef4433677f2f190c8064938e02649b0da437e319bec2abc31f3446fb0aa7417:
+  model 1
+  task T_DECIDE_PRODUCTION_TRIAL
+  kind finish
+  occurred_at 2026-08-07T13:33:40+09:00
+  active_time 1/180h
+  effort 1/180ph
+
+work_event WE-bd40a32533d518b9bf087bfc62952bf2341a777ab65b3c224855a5ef992214a2:
+  model 1
+  task T_TRY_GUARDED_PRODUCTION
+  kind start
+  occurred_at 2026-08-07T13:33:40+09:00
+  planned_value 1p
+
+work_event WE-5acd53788fa9ac6113b969790795f09f1ce2f4a544ff7cfb76119120499c0f4e:
+  model 1
+  task T_TRY_GUARDED_PRODUCTION
+  kind finish
+  occurred_at 2026-08-07T13:36:40+09:00
+  active_time 0.05h
+  effort 0.05ph

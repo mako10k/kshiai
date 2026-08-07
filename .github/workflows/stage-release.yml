@@ -10,11 +10,11 @@ on:
       battle_causal_narration_mode:
         description: Causal narration mode baked into the staged Cloud Run revision
         required: true
-        default: off
+        default: narration_guarded
         type: choice
         options:
-          - off
           - narration_guarded
+          - off
 
 permissions:
   checks: read
