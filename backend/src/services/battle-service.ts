@@ -89,6 +89,7 @@ import {
   buildNarrationIdentifierCatalog,
   buildNarrationPerceptionView,
   buildNarrationTurnView,
+  buildNarrationTurnBrief,
   buildBattleTurnCausalReceipt,
   buildNarrationCausalProjection,
   composeNarratorTurn,
@@ -2803,6 +2804,21 @@ async function advanceTurnWithLease(input: {
           events,
           actionBeats,
           ...(causalProjection ? { causalProjection } : {}),
+          canonicalChange: {
+            semantic: {
+              status: rec?.canonicalTransition?.semantic?.status ?? "unavailable",
+              changed: rec?.canonicalTransition?.semantic
+                ? (rec.canonicalTransition.semantic.patch?.operations.length ?? 0) > 0
+                : null,
+            },
+            world: {
+              status: rec?.canonicalTransition?.world?.status ?? "unavailable",
+              changed: rec?.canonicalTransition?.world
+                ? (rec.canonicalTransition.world.transition?.operations.length ?? 0) > 0
+                : null,
+              operationKinds: rec?.worldImpact?.operationKinds ?? [],
+            },
+          },
           battlefield: next.battlefield,
           narratorContinuity: next.narratorContinuity,
         })
@@ -2860,6 +2876,9 @@ async function advanceTurnWithLease(input: {
         styleInstruction: next.narrationStyle?.instruction,
         styleName: next.narrationStyle?.displayName,
       }
+    : null;
+  const narrationTurnBrief = narrationView
+    ? buildNarrationTurnBrief(narrationView)
     : null;
   let narrationResult: NarrationResult;
   let narratorDisposition: "provider" | "fallback" = "provider";
@@ -3049,7 +3068,16 @@ async function advanceTurnWithLease(input: {
             ...(traceRecord.pipelineTrace ?? {}),
             narrator: {
               input: narrationCallInput
-                ? structuredClone(narrationCallInput)
+                ? structuredClone({
+                    turnBrief: narrationTurnBrief,
+                    recentNarration: narrationCallInput.recentNarration,
+                    recentSpeeches: narrationCallInput.recentSpeeches,
+                    drama: narrationCallInput.drama,
+                    innerDigests: narrationCallInput.innerDigests,
+                    characterSpeeches: narrationCallInput.characterSpeeches,
+                    styleInstruction: narrationCallInput.styleInstruction,
+                    styleName: narrationCallInput.styleName,
+                  })
                 : null,
               disposition: narratorDisposition,
               providerOutput: narratorProviderOutput,

@@ -1,5 +1,5 @@
 import type { NarrativeBlock } from "./narrative.js";
-import type { TurnEvent } from "./battle.js";
+import type { ActionResolutionReason, TurnEvent } from "./battle.js";
 import type { BattlefieldInstance } from "./battlefield.js";
 import type { BattleSceneStateFact } from "./battle-world.js";
 import type {
@@ -652,11 +652,79 @@ export type NarrationTurnView = {
   actionBeats: NarrationTurnViewActionBeat[];
   /** Present only for the guarded causal-narration consumer. */
   causalProjection?: NarrationCausalProjection;
+  /** Explicitly separates this turn's accepted canonical change from current state. */
+  canonicalChange?: NarrationCanonicalChange;
   battlefield: {
     displayName: string;
     terrain?: string;
     obstacles: string[];
   } | null;
+};
+
+export type NarrationCanonicalChange = {
+  semantic: {
+    status: "applied" | "rejected" | "skipped" | "unavailable";
+    changed: boolean | null;
+  };
+  world: {
+    status: "applied" | "rejected" | "skipped" | "unavailable";
+    changed: boolean | null;
+    operationKinds: string[];
+  };
+};
+
+/** De-duplicated, role-labelled content sent to the narrator model. */
+export type NarrationTurnBrief = {
+  schemaVersion: 1;
+  turn: number;
+  observationBoundary: NarrationPerceptionView;
+  presentation: {
+    participantLabels: NarrationTurnView["participantLabels"];
+    profileAnchors: NarrationTurnView["profileAnchors"];
+    continuity: NarrationTurnView["continuity"];
+    recognitionSubjects: NarrationTurnView["recognitionSubjects"];
+  };
+  turnResult: {
+    actions: Array<Omit<NarrationTurnViewActionBeat, "outcomes"> & {
+      causality: (Omit<
+        NarrationCausalProjection["causalChains"][number],
+        "actorLabel"
+      > & { resolutionExplanation: string | null }) | null;
+    }>;
+    unmatchedCausality: NarrationCausalProjection["causalChains"];
+    resolvedEvents: NarrationTurnView["events"];
+    observedConsequences: NarrationCausalProjection["observedConsequences"];
+    observedSemanticChangeKinds:
+      NarrationCausalProjection["observedSemanticChangeKinds"];
+    canonicalChange: NarrationCanonicalChange;
+  };
+  currentState: {
+    scene: string;
+    sceneFacts: NarrationTurnView["sceneStateFacts"];
+    participantConditions: NarrationCausalProjection["continuingConditions"];
+  };
+  staticBackground: NarrationTurnView["battlefield"];
+};
+
+const RESOLUTION_EXPLANATIONS: Record<ActionResolutionReason, string> = {
+  invalid_intent: "要求された行動の形式が成立しなかった",
+  actor_unavailable: "行動者が現在行動できない状態だった",
+  agency_blocked: "行動者の意思による行動が阻害されていた",
+  movement_blocked: "必要な移動が現在の状態や地形に阻まれた",
+  speech_blocked: "必要な発話を実行できなかった",
+  required_object_unavailable: "必要な装備または保持物を利用できなかった",
+  skill_unavailable: "要求された技を現在利用できなかった",
+  skill_on_cooldown: "要求された技は再使用可能になる前だった",
+  insufficient_resource: "行動に必要なリソースが不足していた",
+  finisher_unavailable: "決め技を利用できる条件が揃っていなかった",
+  target_unavailable: "要求された対象が現在存在または活動していなかった",
+  target_unlocalized: "要求された対象の位置を確定できなかった",
+  out_of_range: "対象が行動の有効範囲外だった",
+  line_of_sight_blocked: "対象への視線が遮られていた",
+  free_action_unavailable: "自由行動を選べる状態ではなかった",
+  free_action_impossible: "自由行動の望む結果が正準世界では成立しなかった",
+  free_action_contested: "同時の競合により自由行動を確定できなかった",
+  free_action_rejected: "自由行動は裁定で成立しなかった",
 };
 
 export type NarrationTurnViewInput = {
@@ -679,6 +747,7 @@ export type NarrationTurnViewInput = {
   events: readonly TurnEvent[];
   actionBeats: readonly NarrationTurnSourceActionBeat[];
   causalProjection?: NarrationCausalProjection;
+  canonicalChange?: NarrationCanonicalChange;
   battlefield?: BattlefieldInstance | null;
   narratorContinuity?: BattleNarratorContinuity | null;
 };
@@ -847,6 +916,9 @@ export function buildNarrationTurnView(
     ...(input.causalProjection
       ? { causalProjection: input.causalProjection }
       : {}),
+    ...(input.canonicalChange
+      ? { canonicalChange: input.canonicalChange }
+      : {}),
     battlefield: frame || !input.battlefield
       ? null
       : {
@@ -856,5 +928,64 @@ export function buildNarrationTurnView(
             : {}),
           obstacles: (input.battlefield.obstacles ?? []).slice(0, 4).map(sanitize),
         },
+  }));
+}
+
+export function buildNarrationTurnBrief(
+  view: NarrationTurnView,
+): NarrationTurnBrief {
+  const causality = view.causalProjection;
+  const remainingChains = [...(causality?.causalChains ?? [])];
+  return deepFreezeNarrationView(structuredClone({
+    schemaVersion: 1 as const,
+    turn: view.turn,
+    observationBoundary: view.perception,
+    presentation: {
+      participantLabels: view.participantLabels,
+      profileAnchors: view.profileAnchors,
+      continuity: view.continuity,
+      recognitionSubjects: view.recognitionSubjects,
+    },
+    turnResult: {
+      actions: view.actionBeats.map(({ outcomes: _outcomes, ...action }) => {
+        const chainIndex = remainingChains.findIndex(
+          (candidate) => candidate.actorLabel === action.actorLabel,
+        );
+        const chain = chainIndex >= 0
+          ? remainingChains.splice(chainIndex, 1)[0]
+          : undefined;
+        if (!chain) return { ...action, causality: null };
+        const { actorLabel: _actorLabel, ...causalFacts } = chain;
+        return {
+          ...action,
+          causality: {
+            ...causalFacts,
+            resolutionExplanation: causalFacts.resolution.status === "known" &&
+                causalFacts.resolution.reason
+              ? RESOLUTION_EXPLANATIONS[causalFacts.resolution.reason]
+              : null,
+          },
+        };
+      }),
+      unmatchedCausality: remainingChains,
+      resolvedEvents: view.events,
+      observedConsequences: causality?.observedConsequences ?? [],
+      observedSemanticChangeKinds:
+        causality?.observedSemanticChangeKinds ?? [],
+      canonicalChange: view.canonicalChange ?? {
+        semantic: { status: "unavailable" as const, changed: null },
+        world: {
+          status: "unavailable" as const,
+          changed: null,
+          operationKinds: [],
+        },
+      },
+    },
+    currentState: {
+      scene: view.scene,
+      sceneFacts: view.sceneStateFacts,
+      participantConditions: causality?.continuingConditions ?? [],
+    },
+    staticBackground: view.battlefield,
   }));
 }

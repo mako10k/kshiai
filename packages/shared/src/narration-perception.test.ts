@@ -11,6 +11,7 @@ import type {
 import {
   buildNarrationIdentifierCatalog,
   buildNarrationPerceptionView,
+  buildNarrationTurnBrief,
   buildNarrationTurnView,
   narratorRecognitionSubjects,
   repairNarrativeBlockIdentifiers,
@@ -426,7 +427,21 @@ describe("narration perception views", () => {
     const causalProjection: NarrationCausalProjection = {
       schemaVersion: 1,
       turn: 4,
-      causalChains: [],
+      causalChains: [{
+        actorLabel: "アオ",
+        requestedKind: "skill",
+        effectiveKind: "defend",
+        executed: true,
+        skippedReason: null,
+        resolution: {
+          status: "known",
+          outcome: "substituted",
+          reason: "required_object_unavailable",
+        },
+        events: [],
+        mechanicalConsequences: [],
+        semanticChangeKinds: [],
+      }],
       observedConsequences: [],
       observedSemanticChangeKinds: [],
       continuingConditions: [],
@@ -439,9 +454,27 @@ describe("narration perception views", () => {
       events,
       actionBeats,
       causalProjection,
+      canonicalChange: {
+        semantic: { status: "applied", changed: false },
+        world: { status: "applied", changed: false, operationKinds: [] },
+      },
     });
     assert.equal("causalProjection" in external, false);
     assert.deepEqual(guarded.causalProjection, causalProjection);
     assert.equal(Object.isFrozen(guarded.causalProjection), true);
+    const brief = buildNarrationTurnBrief(guarded);
+    assert.equal(Object.isFrozen(brief), true);
+    assert.equal("outcomes" in brief.turnResult.actions[0]!, false);
+    assert.match(
+      brief.turnResult.actions[0]?.causality?.resolutionExplanation ?? "",
+      /装備または保持物/,
+    );
+    assert.deepEqual(brief.turnResult.unmatchedCausality, []);
+    assert.deepEqual(brief.turnResult.canonicalChange, {
+      semantic: { status: "applied", changed: false },
+      world: { status: "applied", changed: false, operationKinds: [] },
+    });
+    assert.deepEqual(brief.currentState.participantConditions, []);
+    assert.equal("causalProjection" in brief, false);
   });
 });
