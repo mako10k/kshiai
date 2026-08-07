@@ -63,6 +63,7 @@ import type {
 } from "./types.js";
 import { newId } from "../id.js";
 import { MockLlmProvider } from "./mock.js";
+import { retryLlmProviderCall } from "./provider-retry.js";
 import {
   COMBINED_PERCEPTION_RESPONSE_FORMAT,
   COMBINED_PERCEPTION_SYSTEM_PROMPT,
@@ -71,6 +72,11 @@ import {
   type PerceptionPromptResponseFormat,
 } from "./perception-prompt-strategy.js";
 import { reviewedPerceptionTopology } from "./perception-topology.js";
+
+const FAST_SHORT_TIMEOUT_MS = 20_000;
+const FAST_TIMEOUT_MS = 30_000;
+const ENGINE_TIMEOUT_MS = 60_000;
+const ENGINE_LONG_TIMEOUT_MS = 90_000;
 
 const NARRATION_IDENTIFIER_RULES = `Identifier containment is mandatory. Values used as IDs, controlId, perceptId, contact IDs, entity keys, action IDs, event IDs, or JSON paths are non-linguistic control metadata.
 NEVER copy, quote, speak, parenthesize, or use any such identifier as a name in narrator lines, speaker fields, or speech text. Use the matching renderLabel or supplied human display name only.
@@ -282,8 +288,8 @@ export class OpenAiCompatibleProvider implements LlmProvider {
       ? new OpenAI({
           apiKey: cfg.apiKey,
           baseURL: cfg.baseUrl,
-          // Default SDK timeout; per-call overrides apply for fast tier
-          timeout: 28_000,
+          // Every call sets its own deadline; retain a generous SDK ceiling.
+          timeout: ENGINE_LONG_TIMEOUT_MS,
           maxRetries: 0,
         })
       : null;
@@ -294,6 +300,21 @@ export class OpenAiCompatibleProvider implements LlmProvider {
 
   private modelFor(tier: LlmTier): string {
     return tier === "fast" ? this.modelFast : this.modelEngine;
+  }
+
+  private retryProviderCall<T>(
+    label: string,
+    operation: () => Promise<T>,
+    canRetry?: () => boolean,
+  ): Promise<T> {
+    return retryLlmProviderCall(operation, {
+      canRetry,
+      onRetry: ({ reason, retry, delayMs }) => {
+        console.warn(
+          `[llm] ${this.name}/${label} retry=${retry} reason=${reason} delay=${delayMs}ms same-provider`,
+        );
+      },
+    });
   }
 
   private fallbackOrThrow<T>(error: unknown, fallback: () => T): T {
@@ -315,42 +336,47 @@ export class OpenAiCompatibleProvider implements LlmProvider {
     const tier: LlmTier = opts?.tier ?? "engine";
     const model = this.modelFor(tier);
     const timeoutMs = Math.round(
-      (opts?.timeoutMs ?? (tier === "fast" ? 12_000 : 24_000)) *
+      (opts?.timeoutMs ??
+        (tier === "fast" ? FAST_TIMEOUT_MS : ENGINE_TIMEOUT_MS)) *
         this.timeoutMultiplier,
     );
     const temperature =
       opts?.temperature ?? (tier === "fast" ? 0.85 : 0.45);
     const label = opts?.label ?? tier;
     const started = Date.now();
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), timeoutMs);
     try {
-      const resp = await this.client.chat.completions.create(
-        {
-          model,
-          messages: [
-            { role: "system", content: system },
-            { role: "user", content: user },
-          ],
-          ...(this.supportsTemperature ? { temperature } : {}),
-          response_format: opts?.responseFormat ?? { type: "json_object" },
-        },
-        { signal: controller.signal, timeout: timeoutMs },
-      );
-      const text = resp.choices[0]?.message?.content ?? "{}";
-      opts?.onText?.(text);
+      const data = await this.retryProviderCall(label, async () => {
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), timeoutMs);
+        try {
+          const resp = await this.client!.chat.completions.create(
+            {
+              model,
+              messages: [
+                { role: "system", content: system },
+                { role: "user", content: user },
+              ],
+              ...(this.supportsTemperature ? { temperature } : {}),
+              response_format: opts?.responseFormat ?? { type: "json_object" },
+            },
+            { signal: controller.signal, timeout: timeoutMs },
+          );
+          const text = resp.choices[0]?.message?.content ?? "{}";
+          return JSON.parse(text) as unknown;
+        } finally {
+          clearTimeout(timer);
+        }
+      });
       console.info(
         `[llm] ${this.name}/${label} model=${model} ok ${Date.now() - started}ms`,
       );
-      return JSON.parse(text) as unknown;
+      return data;
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);
       console.warn(
         `[llm] ${this.name}/${label} model=${model} fail ${Date.now() - started}ms: ${msg.slice(0, 160)}`,
       );
       throw e;
-    } finally {
-      clearTimeout(timer);
     }
   }
 
@@ -450,7 +476,7 @@ Rules:
         {
           tier: "fast",
           label: "adjudicateFreeActions",
-          timeoutMs: 14_000,
+          timeoutMs: FAST_TIMEOUT_MS,
           temperature: 0.25,
         },
       );
@@ -479,51 +505,59 @@ Rules:
     const tier: LlmTier = opts.tier ?? "engine";
     const model = this.modelFor(tier);
     const timeoutMs = Math.round(
-      (opts.timeoutMs ?? (tier === "fast" ? 12_000 : 24_000)) *
+      (opts.timeoutMs ??
+        (tier === "fast" ? FAST_TIMEOUT_MS : ENGINE_TIMEOUT_MS)) *
         this.timeoutMultiplier,
     );
     const temperature =
       opts.temperature ?? (tier === "fast" ? 0.85 : 0.45);
     const label = opts.label ?? tier;
     const started = Date.now();
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), timeoutMs);
+    let receivedText = false;
     try {
-      const stream = await this.client.chat.completions.create(
-        {
-          model,
-          messages: [
-            { role: "system", content: system },
-            { role: "user", content: user },
-          ],
-          ...(this.supportsTemperature ? { temperature } : {}),
-          response_format: { type: "json_object" },
-          stream: true,
-        },
-        { signal: controller.signal, timeout: timeoutMs },
-      );
-      let full = "";
-      for await (const chunk of stream) {
-        const delta = chunk.choices[0]?.delta?.content ?? "";
-        if (!delta) continue;
-        full += delta;
-        opts.onText?.(full);
-      }
-      if (!full.trim()) {
-        throw new Error("empty stream completion");
-      }
+      const data = await this.retryProviderCall(label, async () => {
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), timeoutMs);
+        try {
+          const stream = await this.client!.chat.completions.create(
+            {
+              model,
+              messages: [
+                { role: "system", content: system },
+                { role: "user", content: user },
+              ],
+              ...(this.supportsTemperature ? { temperature } : {}),
+              response_format: { type: "json_object" },
+              stream: true,
+            },
+            { signal: controller.signal, timeout: timeoutMs },
+          );
+          let full = "";
+          for await (const chunk of stream) {
+            const delta = chunk.choices[0]?.delta?.content ?? "";
+            if (!delta) continue;
+            receivedText = true;
+            full += delta;
+            opts.onText?.(full);
+          }
+          if (!full.trim()) {
+            throw new Error("empty stream completion");
+          }
+          return JSON.parse(full) as unknown;
+        } finally {
+          clearTimeout(timer);
+        }
+      }, () => !receivedText);
       console.info(
         `[llm] ${this.name}/${label} model=${model} ok stream ${Date.now() - started}ms`,
       );
-      return JSON.parse(full) as unknown;
+      return data;
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);
       console.warn(
         `[llm] ${this.name}/${label} model=${model} fail stream ${Date.now() - started}ms: ${msg.slice(0, 160)}`,
       );
       throw e;
-    } finally {
-      clearTimeout(timer);
     }
   }
 
@@ -599,19 +633,22 @@ Rules:
       { role: "user", content: userWithReferences },
     ];
     const timeoutMs = Math.round(
-      (opts?.timeoutMs ?? 28_000) * this.timeoutMultiplier,
+      (opts?.timeoutMs ?? ENGINE_TIMEOUT_MS) * this.timeoutMultiplier,
     );
     for (let round = 0; round < 4; round += 1) {
-      const response = await this.client.chat.completions.create({
-        model: this.modelFor(opts?.tier ?? "engine"),
-        messages,
-        tools,
-        tool_choice: "auto",
-        ...(this.supportsTemperature
-          ? { temperature: opts?.temperature ?? 0.45 }
-          : {}),
-        response_format: { type: "json_object" },
-      }, { timeout: timeoutMs });
+      const response = await this.retryProviderCall(
+        opts?.label ?? "characterTools",
+        () => this.client!.chat.completions.create({
+          model: this.modelFor(opts?.tier ?? "engine"),
+          messages,
+          tools,
+          tool_choice: "auto",
+          ...(this.supportsTemperature
+            ? { temperature: opts?.temperature ?? 0.45 }
+            : {}),
+          response_format: { type: "json_object" },
+        }, { timeout: timeoutMs }),
+      );
       const message = response.choices[0]?.message;
       if (!message) throw new Error("LLM returned no message");
       const calls = (message.tool_calls ?? []).filter((call) => call.type === "function");
@@ -700,21 +737,24 @@ Rules:
       { role: "user", content: userWithIndex },
     ];
     const timeoutMs = Math.round(
-      (opts?.timeoutMs ?? 36_000) * this.timeoutMultiplier,
+      (opts?.timeoutMs ?? ENGINE_LONG_TIMEOUT_MS) * this.timeoutMultiplier,
     );
     for (let round = 0; round < 5; round += 1) {
-      const response = await this.client.chat.completions.create(
-        {
-          model: this.modelFor(opts?.tier ?? "engine"),
-          messages,
-          tools,
-          tool_choice: "auto",
-          ...(this.supportsTemperature
-            ? { temperature: opts?.temperature ?? 0.4 }
-            : {}),
-          response_format: { type: "json_object" },
-        },
-        { timeout: timeoutMs },
+      const response = await this.retryProviderCall(
+        opts?.label ?? "battleHistoryTools",
+        () => this.client!.chat.completions.create(
+          {
+            model: this.modelFor(opts?.tier ?? "engine"),
+            messages,
+            tools,
+            tool_choice: "auto",
+            ...(this.supportsTemperature
+              ? { temperature: opts?.temperature ?? 0.4 }
+              : {}),
+            response_format: { type: "json_object" },
+          },
+          { timeout: timeoutMs },
+        ),
       );
       const message = response.choices[0]?.message;
       if (!message) throw new Error("LLM returned no message");
@@ -1230,7 +1270,11 @@ Create semanticSeed entities only for interactable things that can be picked up,
 Respect the battlefield terrain/obstacles/conditions. Coefficients between 0.25 and 2.5.
 Do not invent a sudden environmental event or dramatic field change here. A separate supervisor may request one only after measured stagnation. Keep ordinary turns as a continuation of established conditions.`,
         JSON.stringify(input),
-        { tier: "fast", label: "proposeSituation", timeoutMs: 8_000 },
+        {
+          tier: "fast",
+          label: "proposeSituation",
+          timeoutMs: FAST_SHORT_TIMEOUT_MS,
+        },
       )) as SituationProposal;
       return data;
     } catch (error) {
@@ -1256,7 +1300,7 @@ Do not invent a sudden environmental event or dramatic field change here. A sepa
         {
           tier: "fast",
           label: "reconcileTurnSemanticState",
-          timeoutMs: 14_000,
+          timeoutMs: FAST_TIMEOUT_MS,
           temperature: 0.35,
           responseFormat: combined
             ? COMBINED_PERCEPTION_RESPONSE_FORMAT
@@ -1367,7 +1411,11 @@ Do not invent a sudden environmental event or dramatic field change here. A sepa
               }
             : null,
         }),
-        { tier: "fast", label: "proposeHappening", timeoutMs: 10_000 },
+        {
+          tier: "fast",
+          label: "proposeHappening",
+          timeoutMs: FAST_SHORT_TIMEOUT_MS,
+        },
       )) as {
         title?: string;
         summary?: string;
@@ -1445,7 +1493,7 @@ The narrator may later choose this line's display position and punctuation, but 
         {
           tier: "fast",
           label: "advanceCharacterAgent",
-          timeoutMs: 14_000,
+          timeoutMs: FAST_TIMEOUT_MS,
           temperature: 0.65,
         },
       )) as Record<string, unknown>;
@@ -1510,7 +1558,7 @@ JSON only: { "focus": "self"|"foe"|"external"|"both" }`,
         {
           tier: "fast",
           label: "chooseNarrationFocus",
-          timeoutMs: 8_000,
+          timeoutMs: FAST_SHORT_TIMEOUT_MS,
           temperature: 0.4,
         },
       )) as { focus?: string };
@@ -1595,7 +1643,7 @@ Do not mention numeric HP/MP/ATK values.`,
         {
           tier: "fast",
           label: "narrateTurn",
-          timeoutMs: 16_000,
+          timeoutMs: FAST_TIMEOUT_MS,
           temperature: 0.9,
           onText: this.narrationProgressSink(input.onProgress),
         },
@@ -1765,7 +1813,7 @@ JSON: { "turn": 0, "narrator": string[], "speeches": [ { "sourceSide": "a"|"b"|n
         {
           tier: "fast",
           label: "narratePrologue",
-          timeoutMs: 14_000,
+          timeoutMs: FAST_TIMEOUT_MS,
           temperature: 0.9,
           onText: this.narrationProgressSink(input.onProgress),
         },
@@ -1853,7 +1901,7 @@ JSON: { "before": string[], "after": string[], "speeches": [ { "sourceSide": "a"
         {
           tier: "fast",
           label: "narrateAftermath",
-          timeoutMs: 14_000,
+          timeoutMs: FAST_TIMEOUT_MS,
           temperature: 0.9,
         },
       )) as {
@@ -2100,7 +2148,7 @@ JSON: { "before": string[], "after": string[] }. Each array has at most 2 short 
           tier: "fast",
           label: "narrateJudgment",
           temperature: 0.7,
-          timeoutMs: 10_000,
+          timeoutMs: FAST_SHORT_TIMEOUT_MS,
         },
       )) as { before?: unknown; after?: unknown };
       const lines = (value: unknown) => Array.isArray(value)
@@ -2131,7 +2179,12 @@ JSON: { "before": string[], "after": string[] }. Each array has at most 2 short 
         `As a turn-limit adjudicator for a broad fictional confrontation, return raw JSON { "winnerSide": "a"|"b"|"draw", "reason": string, "reasonFacts": [{ "factor": "committed_actions"|"mechanical_effects"|"remaining_capacity"|"world_impact"|"overall_effectiveness", "favoredSide": "a"|"b"|"draw", "statement": string }] } in Japanese. Match the established genre and judge effectiveness without assuming physical violence.
 turnFacts and finalState contain bounded committed engine structure. No narrator prose, event summary, or public rendered speech is present. Use only those canonical facts and prefer engineWinnerSide unless the facts clearly require another result. reason and reasonFacts are concise fact-based rationales, not public narration.`,
         JSON.stringify(input),
-        { tier: "engine", label: "referee", temperature: 0.3, timeoutMs: 12_000 },
+        {
+          tier: "engine",
+          label: "referee",
+          temperature: 0.3,
+          timeoutMs: FAST_TIMEOUT_MS,
+        },
       )) as { winnerSide?: unknown; reason?: unknown; reasonFacts?: unknown };
       const winnerSide = data.winnerSide === "a" ||
           data.winnerSide === "b" || data.winnerSide === "draw"
@@ -2208,7 +2261,7 @@ HARD RULES:
           tier: "engine",
           label: "analyzeCharacterImprovement",
           temperature: 0.35,
-          timeoutMs: 40_000,
+          timeoutMs: ENGINE_TIMEOUT_MS,
         },
       )) as Record<string, unknown>;
 
@@ -2287,7 +2340,7 @@ assistantMessage is a short UI confirmation for the owner.`,
           tier: "fast",
           label: "generateImprovementPrompt",
           temperature: 0.4,
-          timeoutMs: 16_000,
+          timeoutMs: FAST_TIMEOUT_MS,
         },
       )) as Record<string, unknown>;
 
@@ -2338,7 +2391,11 @@ instruction is tone/density only. perspective is information rights:
 self=player inner only, foe=opponent inner only, external=no inners, omniscient=both, fluid=choose per turn.
 Default perspective external unless the user clearly wants subjective/omniscient/shifting camera.`,
         prompt,
-        { tier: "fast", label: "generateNarrationStyle", timeoutMs: 12_000 },
+        {
+          tier: "fast",
+          label: "generateNarrationStyle",
+          timeoutMs: FAST_TIMEOUT_MS,
+        },
       )) as Record<string, unknown>;
       const pRaw = String(data.perspective ?? "external");
       const perspective = (

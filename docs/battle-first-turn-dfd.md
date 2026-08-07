@@ -203,14 +203,17 @@ flowchart TB
 | D22 | キャラLLM A/B → service | 更新private state、private reaction、`plannedActionA/B` for turn 2 | private | D27へ | A/Bを並列実行。片側失敗時はその側の旧stateを維持する |
 | D23 | service ↔ focus LLM | 薄いA/B summary digestとevents → focus | private summary / control | no | narration styleがfluidの時だけ呼ぶ |
 | D24 | service → narration view builder | perspective、focus、知覚frame、public observation、events、action beats、許可済みinner digest、直近log、Drama | mixed / bounded | no | builderが語り視点に応じて世界・人物情報を削る |
-| D25 | service ↔ narrator LLM | frozen `NarrationTurnView`、直近文、Drama、style、digest → narrator・public speeches | public candidate | D27へ | 同一ターンの機械解決は既に完了している。ただしserviceは公開台詞をagent stateへ戻す。論理呼出しは最大2回試行する |
+| D25 | service ↔ narrator LLM | frozen `NarrationTurnView`、直近文、Drama、style、digest → narrator・public speeches | public candidate | D27へ | 同一ターンの機械解決は既に完了している。ただしserviceは公開台詞をagent stateへ戻す。service論理呼出しは1回で、429/503だけ選択済みprovider内で有界再試行する |
 | D26 | service → BattlePage | phase、途中narrator行、speeches | public candidate | no | clientは途中speechesを無視し、保存済みlog受信後に段階表示する |
 | D27 | service → battles | turn 1の全状態、semantic、最新A/B/public観測、最新frame/current registry、agent state、turn record、Drama、log、turn 2予約 | server exact / private | yes | 過去frameは蓄積しない |
 | D28 | battles/service → BattlePage | `BattlePublic`: 表示名、scene、公開semantic observation、log、状態、勝敗等 | public | client stateのみ | 生パラメータ、agent state、private frame、registry、turn recordは除外する |
 
 ## 7. LLM論理呼出し数
 
-「1」はprovider routerに対する論理呼出し数である。実HTTP回数は、設定順providerへのfallbackで増える場合がある。
+「1」はprovider routerに対する論理呼出し数である。実HTTP回数は、同一providerの
+429で最大2回、503で最大1回の再試行、またはDNS・課金不能providerの1時間退避に
+よるfallbackでのみ増える。timeout、429、503、parse/contract failureは別providerへ
+切り替えない。
 
 | advance | 役割 | 通常の論理呼出し | 並列・再試行 |
 |---|---|---:|---|
@@ -220,7 +223,7 @@ flowchart TB
 | 戦闘ターン1 | semantic reconciler | 1 | reviewed XAI/OpenAI構成はworld + sensoryのcombined応答 |
 | 戦闘ターン1 | キャラエージェント | 2 | A/B並列 |
 | 戦闘ターン1 | focus選択 | 0 または 1 | fluid時のみ |
-| 戦闘ターン1 | turn narrator | 1 | serviceが最大2 attempt。各attempt内でprovider fallbackし得る |
+| 戦闘ターン1 | turn narrator | 1 | service再試行なし。429/503だけ選択済みprovider内で有界再試行 |
 
 したがってprovider fallbackを数えない通常経路は、プロローグが3または4呼出し、戦闘ターン1が4または5呼出しである。
 
@@ -237,7 +240,7 @@ flowchart TB
 | 5 | キャラらしい反応と画面の台詞が一致しない | **実装確認** | character agentの`private speech`は公開されず、narratorが公開speechesを別生成する。通常は公開台詞がagentStateの`lastSpeech`を上書きする | agent private speech、narrator speech、保存後lastSpeechを役割別に比較する |
 | 6 | 台詞を読み終える前に次ターンが始まる | **実装確認** | 次advanceは前回レスポンス後900 msで開始するが、公開台詞は1行780 ms間隔で表示し、表示完了はadvanceをblockしない | `done`、speech reveal各行、次advance開始のbrowser timestampを採る |
 | 7 | ターン1で提案された状況が攻撃結果に反映されない | **実装確認** | semantic `nextSituation` は機械解決後に生成・適用されるため、同じターンの数値解決には遡及しない | engine入力situationと、semantic適用後situationをrevision付きで比較する |
-| 8 | 同じ試合でも文体・知覚品質が揺れる | **条件付きリスク** | 各LLM役割は設定順provider chainを独立にfallbackする。1ターン内で役割ごとの実providerが異なる可能性がある | role、provider、model、attempt、timeout/fallback reasonを記録する |
+| 8 | 同じ試合でも文体・知覚品質が揺れる | **条件付きリスク** | 各LLM役割はDNSまたは課金不能時だけ設定順provider chainを独立にfallbackする。1ターン内で役割ごとの実providerが異なる可能性はその退避中だけ残る | role、provider、model、same-provider retry、cooldown/fallback reasonを記録する |
 | 9 | Side Aばかり先に動き、相討ちにならない | **実装確認** | 行動順は常にA→Bで、A適用後にどちらかがdownならBをskipする。`spd`は存在するがinitiativeには使わない | 両intent、解決前spd、実行bucket、before/after、skip理由を同一turn recordへ記録する |
 | 10 | ナレータの言い回しで次の行動や判定が変わる | **実装確認** | 公開台詞をagent stateの`lastSpeech`へ戻し、turn-limit refereeにはnarrator logを渡してengine winnerを上書き可能にする | narrator出力から非表示状態・winnerへ到達する全edgeをtraceする |
 
@@ -522,6 +525,7 @@ flowchart TB
 - LLM入出力の役割別contract: [`types.ts`](../backend/src/llm/types.ts#L191)
 - provider単位のcombined perception構成: [`perception-topology.ts`](../backend/src/llm/perception-topology.ts#L26)
 - provider fallback router: [`fallback.ts`](../backend/src/llm/fallback.ts#L19)
+- provider内429/503 retry: [`provider-retry.ts`](../backend/src/llm/provider-retry.ts)
 - SSE advanceと冪等性処理: [`routes.ts`](../backend/src/routes.ts#L1196)
 - frontendの自動advance、retry、台詞非同期表示: [`BattlePage.tsx`](../frontend/src/pages/BattlePage.tsx#L17)
 - retryごとの新規key発行: [`api.ts`](../frontend/src/api.ts#L349)

@@ -1,6 +1,9 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { createFallbackLlmProvider, isQuotaLimitError } from "./fallback.js";
+import {
+  createFallbackLlmProvider,
+  isProviderUnavailableError,
+} from "./fallback.js";
 import type { LlmProvider } from "./types.js";
 
 function fakeProvider(
@@ -14,13 +17,28 @@ function fakeProvider(
 }
 
 describe("LLM provider fallback", () => {
-  it("recognizes quota and spending-limit errors", () => {
-    assert.equal(isQuotaLimitError(Object.assign(new Error("rate limit"), { status: 429 })), true);
-    assert.equal(isQuotaLimitError(Object.assign(new Error("monthly spending limit"), { status: 403 })), true);
-    assert.equal(isQuotaLimitError(Object.assign(new Error("forbidden"), { status: 403 })), false);
+  it("recognizes only DNS and billing as provider unavailable", () => {
+    assert.equal(
+      isProviderUnavailableError(Object.assign(new Error("rate limit"), { status: 429 })),
+      false,
+    );
+    assert.equal(
+      isProviderUnavailableError(Object.assign(new Error("monthly spending limit"), { status: 403 })),
+      true,
+    );
+    assert.equal(
+      isProviderUnavailableError(Object.assign(new Error("unavailable"), { status: 503 })),
+      false,
+    );
+    assert.equal(
+      isProviderUnavailableError(Object.assign(new Error("getaddrinfo ENOTFOUND"), {
+        code: "ENOTFOUND",
+      })),
+      true,
+    );
   });
 
-  it("skips a quota-limited provider until the cooldown expires", async () => {
+  it("skips a billing-unavailable provider until the cooldown expires", async () => {
     let time = 1_000;
     let primaryCalls = 0;
     const primary = fakeProvider("primary", async () => {
@@ -43,17 +61,45 @@ describe("LLM provider fallback", () => {
     assert.equal(primaryCalls, 2);
   });
 
-  it("falls through transient errors without applying the quota cooldown", async () => {
+  it("cools down DNS failures before using the next provider", async () => {
     let primaryCalls = 0;
     const primary = fakeProvider("primary", async () => {
       primaryCalls += 1;
-      throw new Error("invalid JSON");
+      throw Object.assign(new Error("getaddrinfo ENOTFOUND api.example"), {
+        code: "ENOTFOUND",
+      });
     });
     const secondary = fakeProvider("secondary", async () => ({ displayName: "ok" }));
     const router = createFallbackLlmProvider([primary, secondary], 3_600_000);
 
     await router.generateNarrationStyle!("a");
     await router.generateNarrationStyle!("b");
-    assert.equal(primaryCalls, 2);
+    assert.equal(primaryCalls, 1);
+  });
+
+  it("does not provider-fallback on timeout 429 503 or operation errors", async () => {
+    const failures = [
+      new Error("Request was aborted."),
+      Object.assign(new Error("rate limit"), { status: 429 }),
+      Object.assign(new Error("unavailable"), { status: 503 }),
+      new SyntaxError("invalid JSON"),
+    ];
+    for (const failure of failures) {
+      let secondaryCalls = 0;
+      const primary = fakeProvider("primary", async () => {
+        throw failure;
+      });
+      const secondary = fakeProvider("secondary", async () => {
+        secondaryCalls += 1;
+        return { displayName: "unexpected" };
+      });
+      const router = createFallbackLlmProvider([primary, secondary], 3_600_000);
+
+      await assert.rejects(
+        router.generateNarrationStyle!("a"),
+        (error) => error === failure,
+      );
+      assert.equal(secondaryCalls, 0);
+    }
   });
 });

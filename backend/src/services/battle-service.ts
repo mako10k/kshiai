@@ -143,6 +143,9 @@ import {
   prepareFreeActionsForTurn,
 } from "./free-action-service.js";
 
+const FAST_LLM_ENVELOPE_TIMEOUT_MS = 100_000;
+const SHORT_LLM_ENVELOPE_TIMEOUT_MS = 70_000;
+
 export function toBattlePublic(
   state: BattleState,
   mySheet: CharacterSheet,
@@ -549,7 +552,7 @@ export async function startBattle(input: {
         narrativeSetup: battlefield.narrativeSetup,
       },
       priorMatchSummary,
-    }), 12_000, "prepareBattleEncounter");
+    }), FAST_LLM_ENVELOPE_TIMEOUT_MS, "prepareBattleEncounter");
   } catch (error) {
     console.warn(
       "[battle] encounter proposal unavailable; using deterministic context",
@@ -621,44 +624,6 @@ async function withTimeout<T>(
   } finally {
     if (timer) clearTimeout(timer);
   }
-}
-
-/**
- * Retry a timed operation a few times. Each attempt gets a fresh timeout so a
- * slow primary provider can fail and a routed secondary (or a second try) still
- * has budget — unlike a single outer race that expires mid-failover.
- */
-async function withTimeoutAttempts<T>(
-  factory: () => Promise<T>,
-  opts: {
-    timeoutMs: number;
-    attempts: number;
-    label: string;
-    gapMs?: number;
-  },
-): Promise<T> {
-  const attempts = Math.max(1, opts.attempts);
-  let lastError: unknown;
-  for (let i = 0; i < attempts; i += 1) {
-    try {
-      return await withTimeout(factory(), opts.timeoutMs, opts.label);
-    } catch (error) {
-      lastError = error;
-      const msg = error instanceof Error ? error.message : String(error);
-      console.warn(
-        `[battle] ${opts.label} attempt ${i + 1}/${attempts} failed: ${msg.slice(0, 160)}`,
-      );
-      if (i + 1 < attempts) {
-        const gap = opts.gapMs ?? 350;
-        if (gap > 0) {
-          await new Promise((resolve) => setTimeout(resolve, gap));
-        }
-      }
-    }
-  }
-  throw lastError instanceof Error
-    ? lastError
-    : new Error(String(lastError ?? `${opts.label} failed`));
 }
 
 function initialAgentState(
@@ -1108,7 +1073,7 @@ export async function advanceCharacterAgents(input: {
     agents = await withTimeout(Promise.allSettled([
       inputA ? input.llm.advanceCharacterAgent(inputA) : Promise.resolve(null),
       inputB ? input.llm.advanceCharacterAgent(inputB) : Promise.resolve(null),
-    ]), 18_000, "advanceCharacterAgents");
+    ]), FAST_LLM_ENVELOPE_TIMEOUT_MS, "advanceCharacterAgents");
   } catch (error) {
     console.warn(
       "[battle] character agents skipped",
@@ -2039,7 +2004,7 @@ export async function reconcileSemanticState(input: {
           events: input.events,
         }),
       }),
-      16_000,
+      FAST_LLM_ENVELOPE_TIMEOUT_MS,
       "reconcileTurnSemanticState",
     );
     const worldProcessOperationPaths = proposed.patch?.operations
@@ -2372,7 +2337,7 @@ async function resolveNarrationFocusAndDigests(input: {
             summaryA,
             summaryB,
           }),
-          10_000,
+          SHORT_LLM_ENVELOPE_TIMEOUT_MS,
           "chooseNarrationFocus",
         );
         focus = chosen.focus;
@@ -3151,42 +3116,35 @@ async function advanceTurnWithLease(input: {
   let narrationResult: NarrationResult;
   let narratorDisposition: "provider" | "fallback" = "provider";
   try {
-    // Per-attempt budget must cover primary abort (~14–16s) + router failover to
-    // the next provider. A single 18s race was expiring mid-failover and dumping
-    // raw engine events. Retry once after a full failed attempt.
-    narrationResult = await withTimeoutAttempts(
-      () => {
-        if (!narrationView) {
-          throw new Error("narration perception view unavailable");
-        }
-        if (!narrationCallInput) {
-          throw new Error("narration call input unavailable");
-        }
-        return input.llm.narrateTurn({
-          ...narrationCallInput,
-          onProgress: (progress) => {
-            emit({
-              type: "narrator",
-              lines: progress.lines.map((line) =>
-                repairNarrationIdentifierText(line, identifierCatalog)
-              ),
-              draft: progress.draft
-                ? repairNarrationIdentifierText(
-                    progress.draft,
-                    identifierCatalog,
-                  )
-                : null,
-              turn: next.turn,
-            });
-          },
-        });
-      },
-      {
-        timeoutMs: 32_000,
-        attempts: 2,
-        label: "narrateTurn",
-        gapMs: 400,
-      },
+    if (!narrationView) {
+      throw new Error("narration perception view unavailable");
+    }
+    if (!narrationCallInput) {
+      throw new Error("narration call input unavailable");
+    }
+    // Retry policy belongs to the selected provider adapter. This envelope does
+    // not duplicate a timeout, 429, or 503 attempt and never changes provider.
+    narrationResult = await withTimeout(
+      input.llm.narrateTurn({
+        ...narrationCallInput,
+        onProgress: (progress) => {
+          emit({
+            type: "narrator",
+            lines: progress.lines.map((line) =>
+              repairNarrationIdentifierText(line, identifierCatalog)
+            ),
+            draft: progress.draft
+              ? repairNarrationIdentifierText(
+                  progress.draft,
+                  identifierCatalog,
+                )
+              : null,
+            turn: next.turn,
+          });
+        },
+      }),
+      FAST_LLM_ENVELOPE_TIMEOUT_MS,
+      "narrateTurn",
     );
   } catch (e) {
     narratorDisposition = "fallback";
@@ -3384,7 +3342,7 @@ async function advanceTurnWithLease(input: {
             turnFacts,
             finalState: buildRefereeFinalState(next),
           }),
-          12_000,
+          FAST_LLM_ENVELOPE_TIMEOUT_MS,
           "referee",
         );
       } catch (error) {
@@ -3427,7 +3385,7 @@ async function advanceTurnWithLease(input: {
             styleInstruction: next.narrationStyle?.instruction,
             styleName: next.narrationStyle?.displayName,
           }),
-          12_000,
+          SHORT_LLM_ENVELOPE_TIMEOUT_MS,
           "narrateJudgment",
         );
       } catch (error) {
@@ -3633,7 +3591,7 @@ async function runPrologueTurn(input: {
           });
         },
       }),
-      16_000,
+      FAST_LLM_ENVELOPE_TIMEOUT_MS,
       "narratePrologue",
     );
   } catch (e) {
@@ -3884,7 +3842,7 @@ async function runAftermathTurn(input: {
           });
         },
       }),
-      18_000,
+      FAST_LLM_ENVELOPE_TIMEOUT_MS,
       "narrateAftermath",
     );
   } catch (e) {
