@@ -75,6 +75,7 @@ review.
 | Recorded at | Existing task | Added task | Point impact | Reason |
 |---|---|---|---:|---|
 | 2026-08-07T15:19:07+09:00 | `T_RUN_FIRST_PERSISTENT_E2E` remains 1p and was suspended | `T_BUILD_INTERNAL_OBSERVATION_SURFACE` 2p | target 14p -> 16p | The user added a separate internal API/Web viewer for raw battle logs and canonical-world progression before the production rerun. The original estimate and its 14:41:27 start remain unchanged. |
+| 2026-08-07T16:46:08+09:00 | completed 16p causal/E2E observation sequence remains unchanged | `T_BUILD_AGENT_PIPELINE_DAG` 2p, `T_RESHAPE_NARRATOR_INPUT` 2p, `T_TRY_NARRATOR_INPUT_PIPELINE` 1p | target 16p -> 21p | The user requested per-turn Site A/Site B character context and output progression plus a DAG of pipeline inputs/outputs, and explicitly selected narrator-input improvement rather than stronger output guards. The new slice first makes the exact bounded inputs visible, then separates committed changes, current state, and static background before observation. |
 
 ## Task actuals
 
