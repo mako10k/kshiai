@@ -5,6 +5,30 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 
 ## [Unreleased]
 
+## [0.7.2] - 2026-08-07
+
+### Added
+
+- Adds a server-owned causal turn receipt that links effective actions,
+  resolution reasons, source-owned events, committed mechanical evidence,
+  semantic changes, and bounded carry-forward state without mining prose.
+- Adds an ID-free, perspective-safe causal projection to the existing narrator
+  input behind the reversible `BATTLE_CAUSAL_NARRATION_MODE` guard.
+
+### Security and privacy
+
+- Rejects dangling or uncommitted evidence and keeps canonical identifiers and
+  unobserved causal attribution out of character-limited narration inputs.
+- Keeps narration presentation-only: the slice adds no mechanics, persistence,
+  winner, rating, cognition, or additional LLM-call authority.
+
+### Operations
+
+- No database migration, backfill, authentication, provider-order, secret, or
+  infrastructure-topology change is required. The causal narration mode
+  remains `off` unless a staged Cloud Run revision explicitly selects
+  `narration_guarded`.
+
 ## [0.7.1] - 2026-08-06
 
 ### Added
