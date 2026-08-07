@@ -5,6 +5,20 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 
 ## [Unreleased]
 
+## [0.8.1] - 2026-08-07
+
+### Fixed
+
+- Bounds the rotating persistent E2E account password to 44 UTF-8 bytes. The
+  prior 81-byte value made Supabase Auth return `500 unexpected_failure` before
+  either dedicated account could complete application sign-in.
+
+### Operations
+
+- Keeps the already-created observer authentication identity and all future
+  accounts, fixtures, ratings, and battles durable; the hotfix adds no cleanup
+  or data migration.
+
 ## [0.8.0] - 2026-08-07
 
 ### Added
