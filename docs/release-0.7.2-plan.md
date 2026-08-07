@@ -22,13 +22,14 @@ Release the accepted minimal causal-pipeline slice:
 - [x] Feature changes passed focused and full tests, typecheck, build, authority,
   diff, and PERT checks before merge.
 - [x] Feature squash-merged into `main` at `8e5f525`.
-- [ ] Release PR versions every workspace and lockfile as `0.7.2`, adds dated
-  changelog notes, and passes the four required checks.
-- [ ] Annotated `v0.7.2` resolves to the exact merged release commit.
-- [ ] `Stage release` succeeds with `narration_guarded` and records the immutable
+- [x] Release PR #35 versions every workspace and lockfile as `0.7.2`, adds dated
+  changelog notes, passes the four required checks, and merges as `11d5bef`.
+- [x] Annotated `v0.7.2` resolves to the exact merged release commit.
+- [x] `Stage release` succeeds with `narration_guarded` and records the immutable
   backend digest, Cloud Run revision, Worker version, preview URL, and mode.
-- [ ] Baseline and guarded disposable battles are compared, with at most one
-  bounded pipeline revision before the production-trial decision.
+- [x] Exact-image `off` and guarded disposable battles are compared; the central
+  causal consequence improved and no bounded code revision was selected. See
+  [`evidence/staging-causal-narration-0.7.2-2026-08-07.md`](evidence/staging-causal-narration-0.7.2-2026-08-07.md).
 - [ ] Production promotion is decided and approved separately.
 
 ## Operational boundary
