@@ -5,7 +5,7 @@ project KSHIAI_BATTLE_PIPELINE_WORK_V4:
   description "Use current-main action resolutions event source links committed mechanical evidence semantic results and NarrationTurnView to implement the smallest axial causal pipeline slice before observation. After guarded production activation add a persistent server-owned test realm with dedicated Codex observer and opponent accounts reusable fixtures and full cross-account E2E battle artifacts. General users cannot discover test assets while administrators test users and E2E users can share them. Observation backlog items remain scorecards rather than an automatic patch queue."
   as_of 2026-08-07
   duration_unit point
-  velocity 675p/86h
+  velocity 6000p/851h
   finish FIRST_E2E_OBSERVATION_RECORDED
   goal_owner user
   dag_owner user
