@@ -20,6 +20,7 @@ import type {
   NarrationPerspective,
 } from "./narration-perspective.js";
 import type { NarratorRenderingProfileAnchor } from "./profile-grounding.js";
+import type { NarrationCausalProjection } from "./battle-turn-causal-receipt.js";
 
 const profileAnchorA: NarratorRenderingProfileAnchor = {
   schemaVersion: 1,
@@ -421,5 +422,26 @@ describe("narration perception views", () => {
     assert.equal(JSON.stringify(external).includes("character."), false);
     assert.equal(JSON.stringify(external).includes("relic.hidden"), false);
     assert.equal(JSON.stringify(external).includes("event.hidden.4"), false);
+
+    const causalProjection: NarrationCausalProjection = {
+      schemaVersion: 1,
+      turn: 4,
+      causalChains: [],
+      observedConsequences: [],
+      observedSemanticChangeKinds: [],
+      continuingConditions: [],
+    };
+    const guarded = buildNarrationTurnView({
+      ...projectionInput("external", "external"),
+      turn: 4,
+      scene: "暗い広間",
+      perception: externalPerception,
+      events,
+      actionBeats,
+      causalProjection,
+    });
+    assert.equal("causalProjection" in external, false);
+    assert.deepEqual(guarded.causalProjection, causalProjection);
+    assert.equal(Object.isFrozen(guarded.causalProjection), true);
   });
 });

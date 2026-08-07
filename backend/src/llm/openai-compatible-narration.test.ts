@@ -1,5 +1,9 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
+import type {
+  NarrationCausalProjection,
+  NarrationTurnView,
+} from "@kshiai/shared";
 import { OpenAiCompatibleProvider } from "./openai-compatible.js";
 
 describe("OpenAI-compatible narrator speech rendering", () => {
@@ -102,5 +106,94 @@ describe("OpenAI-compatible narrator speech rendering", () => {
       identityKnowledge: "suspected",
       continuity: "possibly_same_entity",
     }]);
+  });
+});
+
+describe("OpenAI-compatible causal narration guard", () => {
+  it("keeps the off prompt unchanged and adds grounding only with a projection", async () => {
+    const provider = new OpenAiCompatibleProvider({
+      name: "xai",
+      apiKey: "test-only",
+      baseUrl: "https://example.invalid/v1",
+      modelEngine: "grok-4-fast-non-reasoning",
+      modelFast: "grok-4-fast-non-reasoning",
+    });
+    const systems: string[] = [];
+    const users: string[] = [];
+    const privateProvider = provider as unknown as {
+      chatJson(system: string, user: string): Promise<unknown>;
+    };
+    privateProvider.chatJson = async (system, user) => {
+      systems.push(system);
+      users.push(user);
+      return { narrator: ["確定した一手が次の攻防へ残る。"], speeches: [] };
+    };
+    const view: NarrationTurnView = {
+      schemaVersion: 1,
+      turn: 1,
+      scene: "雨の路地",
+      perception: {
+        schemaVersion: 1,
+        mode: "external",
+        viewpointSide: null,
+        resolvedFromFluid: false,
+        references: [],
+      },
+      participantLabels: { a: "アオ", b: "クロ" },
+      profileAnchors: {},
+      sceneStateFacts: [],
+      continuity: null,
+      recognitionSubjects: [],
+      events: [],
+      actionBeats: [],
+      battlefield: null,
+    };
+    const causalProjection: NarrationCausalProjection = {
+      schemaVersion: 1,
+      turn: 1,
+      causalChains: [{
+        actorLabel: "アオ",
+        requestedKind: "basic_attack",
+        effectiveKind: "basic_attack",
+        executed: true,
+        skippedReason: null,
+        resolution: { status: "known", outcome: "accepted", reason: null },
+        events: [],
+        mechanicalConsequences: [],
+        semanticChangeKinds: [],
+      }],
+      observedConsequences: [],
+      observedSemanticChangeKinds: [],
+      continuingConditions: [{
+        participantLabel: "クロ",
+        canFight: true,
+        defending: false,
+        reserveCues: [{
+          parameterKey: "hp",
+          absoluteBand: "taxed",
+          relativeBand: "low",
+        }],
+      }],
+    };
+
+    await provider.narrateTurn({ view });
+    await provider.narrateTurn({
+      view: { ...view, causalProjection },
+    });
+
+    assert.equal(systems.length, 2);
+    assert.match(
+      systems[0]!,
+      /consequence grounded in those events\.\nDo not invent/,
+    );
+    assert.doesNotMatch(systems[0]!, /authoritative cause-to-result supplement/);
+    assert.doesNotMatch(users[0]!, /causalProjection/);
+    assert.match(systems[1]!, /authoritative cause-to-result supplement/);
+    assert.match(
+      systems[1]!,
+      /never connect them to an action by guesswork\.\nDo not invent/,
+    );
+    assert.match(users[1]!, /causalProjection/);
+    assert.match(users[1]!, /continuingConditions/);
   });
 });

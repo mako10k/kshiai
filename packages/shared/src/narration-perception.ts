@@ -21,6 +21,7 @@ import type {
   NarrationFocus,
   NarrationPerspective,
 } from "./narration-perspective.js";
+import type { NarrationCausalProjection } from "./battle-turn-causal-receipt.js";
 import {
   selectNarratorRenderingProfileAnchors,
   type NarratorRenderingProfileAnchor,
@@ -649,6 +650,8 @@ export type NarrationTurnView = {
   recognitionSubjects: NarratorRecognitionSubject[];
   events: Array<{ summary: string }>;
   actionBeats: NarrationTurnViewActionBeat[];
+  /** Present only for the guarded causal-narration consumer. */
+  causalProjection?: NarrationCausalProjection;
   battlefield: {
     displayName: string;
     terrain?: string;
@@ -675,6 +678,7 @@ export type NarrationTurnViewInput = {
   registryB?: ObserverContactRegistry;
   events: readonly TurnEvent[];
   actionBeats: readonly NarrationTurnSourceActionBeat[];
+  causalProjection?: NarrationCausalProjection;
   battlefield?: BattlefieldInstance | null;
   narratorContinuity?: BattleNarratorContinuity | null;
 };
@@ -840,6 +844,9 @@ export function buildNarrationTurnView(
       ? characterPerceptEvents(frame)
       : input.events.map((event) => ({ summary: sanitize(event.summary) })),
     actionBeats,
+    ...(input.causalProjection
+      ? { causalProjection: input.causalProjection }
+      : {}),
     battlefield: frame || !input.battlefield
       ? null
       : {

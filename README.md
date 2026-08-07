@@ -18,6 +18,8 @@
 
 キャラ別知覚・自己フィードバック修正計画 (perttool): [docs/battle-perception.pert](docs/battle-perception.pert)
 
+仮説優先の本番戦闘パイプライン実装・試行計画: [docs/battle-pipeline-production-rollout.md](docs/battle-pipeline-production-rollout.md) / [PERT](docs/battle-pipeline-work.pert) / [実績・Velocity](docs/battle-pipeline-actuals.md)
+
 価値駆動の自由行動・遅延object昇格設計: [docs/battle-free-action-objectives.md](docs/battle-free-action-objectives.md)
 
 同実装計画 (perttool): [docs/battle-free-action-objectives.pert](docs/battle-free-action-objectives.pert)

@@ -1624,7 +1624,9 @@ Perspective gate overrides style instruction: never reveal inner life that is no
 For self or opponent mode, the embedded frame is the complete observation boundary. Preserve unidentified contacts, missing attribution, inaccessible subjects, and qualitative-only effect or reserve cues. Do not reconstruct facts omitted from view.
 Use view.battlefield flavor sparingly — scenery is seasoning, not the meal.
 Build 2–4 non-empty narrator lines around view.actionBeats and view.events: lead with this turn's concrete action (what was attempted and what visibly happened), then contact or reaction, then a committed consequence grounded in those events.
-Do not invent a soft "who is winning" scoreboard line every turn. Only mention a shift in advantage when the supplied events or action beats clearly support a real change (position, hold, failure, recovery, or decisive contact).
+${input.view.causalProjection
+          ? "Use view.causalProjection as the authoritative cause-to-result supplement. Explain why a committed consequence followed only when it appears in one causalChains entry, and state a concrete continuing condition from continuingConditions when it affects the next exchange. Keep observedConsequences and observedSemanticChangeKinds explicitly unattributed; never connect them to an action by guesswork.\n"
+          : ""}Do not invent a soft "who is winning" scoreboard line every turn. Only mention a shift in advantage when the supplied events or action beats clearly support a real change (position, hold, failure, recovery, or decisive contact).
 When drama.progressionHint is present, treat it as optional guidance for stuck loops (e.g. repeated actions or one-sided waiting), not as a mandatory form-evaluation template.
 Prefer opening on an actor's move rather than pure ambient scenery when recentNarration already set the scene.
 Do not repeat or closely paraphrase recentNarration or either character's recentSpeeches.
