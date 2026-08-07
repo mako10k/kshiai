@@ -256,7 +256,8 @@ criticalとして即応対象にする。選択したパイプライン軸が同
 | OBS-20260807-01 | 公開ナレーションから、確定結果の理由と次ターンへの具体的影響を読み取れない | 本番「大剣のゴウキ」対「情熱直撃ジゴロ・レイジ」のターン1〜8。`v0.7.2` stagingでは囁きから持久力低下へのリンクは明示されたが、同時のHP低下理由は説明されなかった | 動作は分かっても戦況の意味と因果を理解できず、選択や結果への納得感が弱い | partially improved; pending until pipeline maturity |
 | OBS-20260807-02 | 環境イベントの表層事象と、同時に確定する機械効果の論理的整合性が保証されない | 同戦闘ターン7で「街灯点滅」と両者のHP低下が同じハプニング提案から発生 | 表示された原因から予測・説明できない正準効果が戦闘結果へ入り、世界の納得感と裁定への信頼を損なう | open |
 | OBS-20260807-03 | 公開ナレーションが、正準状態に記録されていない次ターン制約を確定結果として述べる | `v0.9.0` 本番E2E battle `btl_03da078a3011a53dbb5cde76` に加え、role-labelled inputへ変更した `v0.10.0` battle `btl_19dcf0ea770b6263943c2703` でも、水流、足滑り、次の攻防で有利な位置等を述べる一方、対応するsemantic/world changeはfalse | 表示を信じて次の選択を考えてもエンジン側には作用せず、説明可能性と正準世界への信頼を損なう | narrator symptom pending; retain input conflict as pipeline evidence |
-| OBS-20260807-04 | Site A / Site B character agentのprovider出力が採用されず、前状態保持へ頻繁にフォールバックする | `v0.10.0` 本番E2E battleの30 side-turn中22件がrejected。対応ログは21件が`invalid next action`、1件がprovider残高不足 | キャラクタ文脈と次ターン意図の推移が長区間停止し、提案パイプラインのユーザー価値と観測サンプル密度が低下する | selected as next pipeline axis |
+| OBS-20260807-04 | Site A / Site B character agentのprovider出力が採用されず、前状態保持へ頻繁にフォールバックする | `v0.10.0` 本番E2E battleの30 side-turn中22件がprovider-level rejected。`v0.11.0` では実呼出し15件が全てfulfilledとなり、stateとspeechを保持した | キャラクタ文脈と次ターン意図の推移が長区間停止し、提案パイプラインのユーザー価値と観測サンプル密度が低下する | provider-level rejection resolved; residual action nonacceptance tracked as OBS-20260807-05 |
+| OBS-20260807-05 | character agentの応答は成立するが、提案した次ターン行動がサーバ契約に一致せず全件不採用になる | `v0.11.0` 本番E2E battle `btl_442a384a57ea0952f0d215d4` の実呼出し15件は全てfulfilledした一方、提案15件全てが`schema_invalid`。skillやwaitへfree-action専用の説明・対象fieldが付いていた | stateとspeechは進むが次ターン行動が更新されず、既定行動の反復、行動多様性低下、提案から裁定までの観測不能が継続する | selected as immediate pipeline continuation |
 
 `OBS-20260807-01` のstaging再現と部分改善の根拠は
 [`evidence/staging-causal-narration-0.7.2-2026-08-07.md`](evidence/staging-causal-narration-0.7.2-2026-08-07.md)
@@ -662,3 +663,45 @@ flowchart TD
 - この追補は観測事実とユーザー影響を保持し、対応方式や実装順を決めない。
 - narratorの公開文を拒否、修復、再試行するguardは追加していない。今回のtrialでも
   narratorは単一callの自由な表示consumerであり、機械裁定権限を持たない。
+
+## 14. 2026-08-07 本番E2E観測追補: v0.11.0 action-proposal receipt
+
+### 観測対象
+
+- release `v0.11.0`、revision `kshiai-api-00041-huf`、本番E2E battle
+  `btl_442a384a57ea0952f0d215d4`、observation run
+  `github-31166408488-1`。
+- 8件のturn record全てでpipeline traceを読み戻した。7件はnarrator provider
+  traceを持ち、7件のcanonical transitionを保持した。
+- 実呼出し15 laneは全て`providerStatus=fulfilled`、accepted speechありだった。
+  v0.10.0の実呼出し29 lane中22件のprovider rejectionは再現しなかった。
+
+### OBS-20260807-05
+
+- 15件のaction proposalは全て`status=rejected`、理由は全て
+  `schema_invalid`で、accepted actionは0件だった。
+- 提案kindはskill 8件、wait 7件だった。skillとwaitの提案へ
+  `description`、`desiredOutcome`、一部では`subjectRefs`が付いていた。
+  これらは現行契約ではfree actionだけに許されるため、利用可能なskill IDや
+  waitを選んでいてもproposal全体が不採用になった。
+- provider応答とproposal裁定を分離したため、invalid proposalでもcharacter stateと
+  speechは失われず、provider障害として集計されなくなった。一方、次ターン行動は
+  15件全て更新されず、実際の7 combat turnではbasic attack 6件、defend 6件、
+  skill 2件となり、14 action中6件がsubstituted、1件がfailedだった。
+
+### 下流ナレーションの観測
+
+- 公開文はターン6で「位置取りが崩れ、次の攻防で受け手に回る流れ」と、動作から
+  後続影響まで述べた。理由・影響の表現は部分的に存在する。
+- 同時に、basic attackとdefendの反復を受け、似た動作と足滑りの表現が複数ターン
+  継続した。これはnarrator単独の表現課題として割り込ませず、action proposalが
+  採用されず既定行動が反復した下流症状として、次のproposal試行で再観測する。
+
+### 事象の境界
+
+- この節はprovider応答、proposal、server receipt、accepted actionを分離して得た
+  観測事実とユーザー影響を保持する。proposalの具体的な直し方は事象表に書かない。
+- 環境world-processとexpanded adjudicationは重要な候補として残るが、全15件で再現し
+  後続観測を直接阻害するこの境界を一度小さく試行してから比較する。
+- narrator guard、公開文の拒否・修復・再試行は追加しない。action diversityの回復で
+  表現反復が同時に改善するかだけを次のE2Eで確認する。

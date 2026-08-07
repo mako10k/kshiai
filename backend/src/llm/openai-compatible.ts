@@ -89,6 +89,15 @@ When focus permits innerDigests and a non-empty interior conclusion is supplied,
 const NARRATOR_RECOGNITION_RULES = `recognitionUpdates are narrator-only cognition returned in this same narration response; they never change character cognition, canonical events, world state, or battle mechanics.
 Each subjectRef must exactly match one presentation.recognitionSubjects subjectRef supplied to this call. Never place subjectRef in prose or a speaker label. Emit an update only when observationBoundary supports recognizing, questioning, or unlinking that subject. Omission preserves the prior recognition. same_entity preserves an already identified recognizedAs; temporary occlusion, weak audio, turn changes, and viewpoint switches alone are not identity changes.`;
 
+export const CHARACTER_ACTION_PROPOSAL_OUTPUT_RULES = `nextAction is an action-kind-specific JSON union. Emit exactly one of these shapes and no fields other than those listed for the selected kind:
+- skill: {"kind":"skill","skillId":string,"useFinisher"?:boolean,"instrumentRef"?:string}
+- basic_attack: {"kind":"basic_attack","instrumentRef"?:string}
+- defend: {"kind":"defend","instrumentRef"?:string}
+- rest: {"kind":"rest"}
+- wait: {"kind":"wait"}
+- free_action: {"kind":"free_action","description":string,"desiredOutcome"?:string,"subjectRefs":string[],"opportunityId"?:string}
+description, desiredOutcome, subjectRefs, and opportunityId are free_action-only. They make skill, basic_attack, defend, rest, or wait invalid even when copied from an available action description. useFinisher and skillId are skill-only. instrumentRef is allowed only for skill, basic_attack, or defend.`;
+
 /** Keep generated candidates inspectable without persisting an unbounded response. */
 function boundGeneratedJson(value: unknown, depth = 0): unknown | null {
   if (value === null || value === undefined) return null;
@@ -1432,17 +1441,9 @@ Return JSON only:
     }
   },
   "speech": string,
-  "nextAction"?: {
-    "kind": "skill"|"basic_attack"|"defend"|"rest"|"wait"|"free_action",
-    "skillId"?: string,
-    "useFinisher"?: boolean,
-    "description"?: string,
-    "desiredOutcome"?: string,
-    "subjectRefs"?: string[],
-    "instrumentRef"?: string,
-    "opportunityId"?: string
-  }
+  "nextAction"?: object
 }
+${CHARACTER_ACTION_PROPOSAL_OUTPUT_RULES}
 speech is this character's ACTUAL utterance or stage reaction after observing the committed turn. It is authoritative source material for later public placement and is also stored as this character's own lastSpeech. ALWAYS required (never null/empty). One short Japanese line:
 - Dialogue without 「」 brackets, OR
 - A quiet reaction: "…", "（ただ佇んでいる）", "（${counterpartLabel}の気配をうかがう）".
