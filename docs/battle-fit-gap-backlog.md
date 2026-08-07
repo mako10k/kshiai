@@ -254,13 +254,14 @@ criticalとして即応対象にする。選択したパイプライン軸が同
 | ID | 事象 | 確認例 | 影響 | 状態 |
 |---|---|---|---|---|
 | OBS-20260807-01 | 公開ナレーションから、確定結果の理由と次ターンへの具体的影響を読み取れない | 本番「大剣のゴウキ」対「情熱直撃ジゴロ・レイジ」のターン1〜8。`v0.7.2` stagingでは囁きから持久力低下へのリンクは明示されたが、同時のHP低下理由は説明されなかった | 動作は分かっても戦況の意味と因果を理解できず、選択や結果への納得感が弱い | partially improved; pending until pipeline maturity |
-| OBS-20260807-02 | 環境イベントの表層事象と、同時に確定する機械効果の論理的整合性が保証されない | 同戦闘ターン7で「街灯点滅」と両者のHP低下が同じハプニング提案から発生 | 表示された原因から予測・説明できない正準効果が戦闘結果へ入り、世界の納得感と裁定への信頼を損なう | open |
+| OBS-20260807-02 | 環境イベントの表層事象と、同時に確定する機械効果の論理的整合性が保証されない | 同戦闘ターン7で「街灯点滅」と両者のHP低下が同じハプニング提案から発生 | 表示された原因から予測・説明できない正準効果が戦闘結果へ入り、世界の納得感と裁定への信頼を損なう | direct injection resolved in v0.12; broader semantic mismatch tracked as OBS-20260807-09 |
 | OBS-20260807-03 | 公開ナレーションが、正準状態に記録されていない次ターン制約を確定結果として述べる | `v0.9.0` 本番E2E battle `btl_03da078a3011a53dbb5cde76` に加え、role-labelled inputへ変更した `v0.10.0` battle `btl_19dcf0ea770b6263943c2703` でも、水流、足滑り、次の攻防で有利な位置等を述べる一方、対応するsemantic/world changeはfalse | 表示を信じて次の選択を考えてもエンジン側には作用せず、説明可能性と正準世界への信頼を損なう | narrator symptom pending; retain input conflict as pipeline evidence |
 | OBS-20260807-04 | Site A / Site B character agentのprovider出力が採用されず、前状態保持へ頻繁にフォールバックする | `v0.10.0` 本番E2E battleの30 side-turn中22件がprovider-level rejected。`v0.11.0` では実呼出し15件が全てfulfilledとなり、stateとspeechを保持した | キャラクタ文脈と次ターン意図の推移が長区間停止し、提案パイプラインのユーザー価値と観測サンプル密度が低下する | provider-level rejection resolved; residual action nonacceptance tracked as OBS-20260807-05 |
 | OBS-20260807-05 | character agentの応答は成立するが、提案した次ターン行動がサーバ契約に一致せず全件不採用になる | `v0.11.0` 本番E2E battle `btl_442a384a57ea0952f0d215d4` の実呼出し15件は全てfulfilledした一方、提案15件全てが`schema_invalid`。`v0.11.1`では20/21提案がacceptedとなり同じ全件不採用は再現しなかった | stateとspeechは進むが次ターン行動が更新されず、既定行動の反復、行動多様性低下、提案から裁定までの観測不能が継続する | resolved for schema-shape cause in v0.11.1 |
-| OBS-20260807-06 | 環境イベントが成立した表示eventとして公開される一方、対応する正準環境推移がskippedになる | `v0.11.1` 本番E2E battle `btl_72bbc0ce65b40cc7ee290931` のturn 8で、水道管破裂と水溜まり拡大がresolved eventと公開文に現れたが、semantic/world transitionはともに`skipped`でrevisionは変化しなかった | 表示された環境変化や足場への影響を次ターンの判断に使っても正準世界には存在せず、因果・継続性・裁定への信頼を損なう | open; selected as next pipeline evidence |
+| OBS-20260807-06 | 環境イベントが成立した表示eventとして公開される一方、対応する正準環境推移がskippedになる | `v0.11.1` 本番E2E battle `btl_72bbc0ce65b40cc7ee290931` のturn 8で、水道管破裂と水溜まり拡大がresolved eventと公開文に現れたが、semantic/world transitionはともに`skipped`でrevisionは変化しなかった | 表示された環境変化や足場への影響を次ターンの判断に使っても正準世界には存在せず、因果・継続性・裁定への信頼を損なう | resolved for rejected/skipped publication boundary in v0.12; accepted semantic mismatch tracked as OBS-20260807-09 |
 | OBS-20260807-07 | action kind自体は利用可能でも、指定instrumentがそのkindに利用可能でなく提案が拒否される | 同battleのturn 6 Site Bは`defend`を提案したが、`profile:b:weapon`のaffordanceは`defend`非対応で`unavailable_instrument`となった。全21 fulfilled proposal中1件 | 少数turnで次行動意図が更新されず、action proposalから実行までの連続性と観測密度が下がる | open; low-frequency residual |
-| OBS-20260807-08 | 環境提案は安全に棄却されるが、表層提案と正準operationの表現契約が揃わず、環境推移が一件も成立しない | `v0.12.0` 本番E2E battle `btl_fdad569f54082b7981f9704f` の環境receipt 8件はaccepted 0、`decision_rejected` 7、`no_canonical_change` 1。後者は街灯変化をdurableと判定したがoperationを生成しなかった | 誤った直接効果は防げても、環境が正準世界を進めず、後続行動・裁定・ナレーションへ有用な入力を供給できない | open; next pipeline priority |
+| OBS-20260807-08 | 環境提案は安全に棄却されるが、表層提案と正準operationの表現契約が揃わず、環境推移が一件も成立しない | `v0.12.0` 本番E2E battle `btl_fdad569f54082b7981f9704f` の環境receipt 8件はaccepted 0、`decision_rejected` 7、`no_canonical_change` 1。`v0.12.2`では5件中1件がacceptedとなった | 誤った直接効果は防げても、環境が正準世界を進めず、後続行動・裁定・ナレーションへ有用な入力を供給できない | partially improved: accepted density 1/5; residual meaning mismatch tracked as OBS-20260807-09 |
+| OBS-20260807-09 | acceptedな環境提案の表層結果と、確定した正準entityの配置・意味が一致しない | `v0.12.2` 本番E2E battle `btl_0c19c361b6d8127610c1c5b3` turn 3で、提案と公開文は「非常階段の鉄板がワゴン屋根へ落下」だが、semantic/world stateは鉄板をSide Bのheld objectとして確定し、後続turnで防御instrumentとして利用可能にした | 存在しない所持・affordanceが後続行動へ因果的に波及し、公開世界と正準裁定が別の戦況を進める | open; highest-value next pipeline observation |
 
 `OBS-20260807-01` のstaging再現と部分改善の根拠は
 [`evidence/staging-causal-narration-0.7.2-2026-08-07.md`](evidence/staging-causal-narration-0.7.2-2026-08-07.md)
@@ -799,3 +800,61 @@ flowchart TD
 - 公開文には滑りや反射等の自由な環境描写が残るが、acceptedな正準環境入力が一件も
   なかったため、ナレータ品質の修正判断には使わない。非クリティカルなナレータ課題は
   pendingを維持し、次の環境入力改善で同時に変化した範囲だけを再観測する。
+
+## 17. 2026-08-07 本番E2E観測追補: v0.12.2 aligned environment proposal
+
+### 観測対象
+
+- release `v0.12.2`、revision `kshiai-api-00048-fiw`、本番E2E battle
+  `btl_0c19c361b6d8127610c1c5b3`、observation run
+  `github-31178518891-1`、Cloud Run Job execution
+  `kshiai-persistent-e2e-hpp4n`。
+- workflow run 31178518891はtag `b4155d7`と100-percent active revisionを
+  照合して成功した。17件のturn record、16件のcanonical transition、17件の
+  pipeline traceを永続PostgreSQLから読み戻した。
+- 既存のE2E専用2アカウント、battlefield、narratorを再利用し、cross-account
+  battleとinternal detail accessは成功した。一般realmへのcharacter漏洩は
+  観測されなかった。
+
+### 環境proposalと正準結果
+
+- proposalはturn 3、7、10、11、16の5件。receiptはaccepted 1、
+  `no_canonical_change` 2、`decision_rejected` 2だった。`v0.12.0`のaccepted 0/8
+  から有用出力密度は1/5へ上がった。
+- rejected 4件は全て`resolvedEvent=null`、`sourceEventIds=[]`、`effectKeys=[]`で、
+  ネオン短絡、看板傾斜、街灯点滅、街灯消灯というproposal titleは公開logに
+  出なかった。正準operationも空で、棄却提案はprivateかつ機械的に不活性だった。
+- acceptedなturn 3「階段錆落」は`hap_llm_3`をsource eventに持つresolved event、
+  semantic revision 0 -> 1、world revision 0 -> 1、
+  `/entities/stair_plate` effect keyを得た。したがってproposal -> decision -> event ->
+  canonical revisionという時系列境界は初めて本番で通った。
+- 同turnのHP -14は`turn-3-action-a`をsourceに持つ別damage eventであり、他の
+  proposal turnのHP低下も全てcharacter actionへリンクした。環境proposalから
+  HPへ直結する`OBS-20260807-02`の経路は再現しなかった。
+
+### OBS-20260807-09
+
+- proposal、decision reason、resolved event、公開ナレーションはいずれも、外れた
+  鉄板が「赤い軽ワゴンの屋根へ落ちた」とする。一方、semantic locationは
+  `{ type: "held", side: "b" }`、world placementは
+  `{ type: "held", holderId: "character.b" }`として確定した。
+- この誤った配置は表示だけに留まらない。turn 11〜13のSite B agentは
+  `entity:stair_plate`をdefend instrumentとして提案し、serverもacceptedした。
+  accepted出力が後続行動へ届く経路は成立したが、その意味が表層事象と一致しないため、
+  pipelineの次優先はaccept率の追加改善ではなく、proposal resultとcanonical
+  operationの意味同値性を観測・拘束できる境界である。
+
+### provider routingと付随観測
+
+- 同時間帯のrevision logでは成功LLM call 78件が全てxAIだった。retry 0件、
+  OpenAI/Veniceへのprovider fallback 0件で、最大callは
+  `reconcileTurnSemanticState` 10.791秒だった。今回の標本はtimeout、429、503を
+  発生させていないため、それらのretry上限は未観測である。
+- Site Aのcharacter state schema不正3件のうち、turn traceに残る2件は
+  provider rejectedとして前状態を保持した。routerは`reason=other`をterminalとし、
+  別providerへ切り替えなかった。全34 laneではfulfilled 32、rejected 2、action
+  proposalはaccepted 30、schema-invalid 1、終端でdecision-contextなし1だった。
+- accepted turn 3の公開文は、正準化されていない「次の動きが通りやすくなった」まで
+  述べた。これは`OBS-20260807-03`のナレータ症状として保持するが、今回も単独の
+  narrator guardや文面patchへは割り込ませない。先に正準operationの意味整合を扱い、
+  同じ入力改善で自然に変わる範囲を再観測する。
