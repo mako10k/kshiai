@@ -37,9 +37,11 @@ Release the smallest application-owned battle diagnostics surface:
   and Worker version is `7bb7bc30-d34a-4517-bed5-2b9ff0a29371`.
 - [x] `Promote release` run 31155105595 moves those exact staged artifacts to
   100 percent, passes production smokes, and publishes the GitHub Release.
-- [ ] The protected observer completes a reusable cross-account battle, proves
+- [x] The protected observer run 31155769295 completes reusable cross-account
+  battle `btl_03da078a3011a53dbb5cde76`, proves
   E2E access to its raw/canonical detail, and retains the battle, DB observation,
-  and non-sensitive workflow receipt.
+  and non-sensitive workflow receipt. The detail contains 13 turn records and
+  12 retained canonical transitions; all fixed fixtures were reused.
 
 ## Operational boundary
 
