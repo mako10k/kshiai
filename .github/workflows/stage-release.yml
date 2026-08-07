@@ -7,6 +7,14 @@ on:
         description: Annotated release tag; dispatch this workflow from the same tag
         required: true
         type: string
+      battle_causal_narration_mode:
+        description: Causal narration mode baked into the staged Cloud Run revision
+        required: true
+        default: off
+        type: choice
+        options:
+          - off
+          - narration_guarded
 
 permissions:
   checks: read
@@ -40,12 +48,14 @@ jobs:
     steps:
       - name: Validate dispatch authority
         env:
+          CAUSAL_NARRATION_MODE: ${{ inputs.battle_causal_narration_mode }}
           RELEASE_TAG: ${{ inputs.tag }}
         run: |
           set -euo pipefail
           test "$GITHUB_ACTOR" = "$GITHUB_REPOSITORY_OWNER"
           test "$GITHUB_REF" = "refs/tags/$RELEASE_TAG"
           [[ "$RELEASE_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?$ ]]
+          [[ "$CAUSAL_NARRATION_MODE" =~ ^(off|narration_guarded)$ ]]
 
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -115,6 +125,7 @@ jobs:
       - name: Deploy tagged Cloud Run revision without traffic
         id: backend
         env:
+          CAUSAL_NARRATION_MODE: ${{ inputs.battle_causal_narration_mode }}
           IMAGE_REF: ${{ steps.image.outputs.ref }}
           RELEASE_TAG: ${{ inputs.tag }}
         run: |
@@ -126,6 +137,7 @@ jobs:
             --image="$IMAGE_REF" \
             --no-traffic \
             --tag="$alias" \
+            --update-env-vars="BATTLE_CAUSAL_NARRATION_MODE=$CAUSAL_NARRATION_MODE" \
             --quiet
           gcloud run services describe "$CLOUD_RUN_SERVICE" \
             --project="$GCP_PROJECT" \
@@ -299,6 +311,7 @@ jobs:
 
       - name: Write staging evidence
         env:
+          CAUSAL_NARRATION_MODE: ${{ inputs.battle_causal_narration_mode }}
           IMAGE_DIGEST: ${{ steps.image.outputs.digest }}
           RELEASE_TAG: ${{ inputs.tag }}
           REVISION: ${{ steps.backend.outputs.revision }}
@@ -312,6 +325,7 @@ jobs:
             echo "- Commit: \`$GITHUB_SHA\`"
             echo "- Backend digest: \`$IMAGE_DIGEST\`"
             echo "- Cloud Run revision: \`$REVISION\`"
+            echo "- Causal narration mode: \`$CAUSAL_NARRATION_MODE\`"
             echo "- Worker version: \`$WORKER_VERSION\`"
             echo "- Preview: $PREVIEW_URL"
             echo

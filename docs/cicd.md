@@ -23,7 +23,9 @@ Release deployment is deliberately split into two owner actions:
    undeployed Worker version, and tests the public preview URL. A temporary
    confirmed email user verifies Supabase JWT mapping and SSE, then is deleted.
    A read-only R2 smoke verifies credentials, bucket listing, and one public
-   object when the bucket is non-empty.
+   object when the bucket is non-empty. Its typed causal-narration input defaults
+   to `off`; a bounded staging trial may select `narration_guarded`, and the
+   selected mode is recorded in the workflow evidence.
 2. After reviewing that run, `Promote release` takes the recorded Cloud Run
    revision and Worker version. The owner must dispatch from the same tag and
    type `DEPLOY <tag>`. It records the current rollback targets, promotes the
