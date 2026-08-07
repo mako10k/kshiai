@@ -5,7 +5,7 @@ project KSHIAI_BATTLE_PIPELINE_WORK_V4:
   description "Use current-main action resolutions event source links committed mechanical evidence semantic results and NarrationTurnView to implement the smallest axial causal pipeline slice before observation. After guarded production activation add a persistent server-owned test realm with dedicated Codex observer and opponent accounts reusable fixtures and full cross-account E2E battle artifacts. General users cannot discover test assets while administrators test users and E2E users can share them. Observation backlog items remain scorecards rather than an automatic patch queue."
   as_of 2026-08-07
   duration_unit point
-  velocity 3000p/427h
+  velocity 14400p/6667h
   finish FIRST_E2E_OBSERVATION_RECORDED
   goal_owner user
   dag_owner user
@@ -139,7 +139,7 @@ task T_RUN_FIRST_PERSISTENT_E2E PERSISTENT_E2E_REALM_RELEASED -> FIRST_E2E_OBSER
   title "Run and retain the first persistent cross-account E2E battle"
   description "Dispatch the protected observer against the exact guarded production revision. Reuse the Codex observer and opponent accounts fixtures battlefield and narration style run through authentication match creation SSE turn advancement and finish then retain the battle and sanitized artifact. Verify general realm exclusion test realm sharing administrator access no secret or raw mechanics leakage and no unexpected production errors."
   duration 1p
-  status suspended
+  status done
   owner "codex"
   requires:
     DEV 1
@@ -297,7 +297,7 @@ task T_BUILD_INTERNAL_OBSERVATION_SURFACE PERSISTENT_E2E_REALM_RELEASED -> FIRST
   title "Build and release the separate internal battle observation surface"
   description "Persist sanitized E2E observations without Cloud Logging read access; add a server-owned developer account kind and fail-closed admin developer test e2e API; add an unlinked separate Web screen for retained battle logs raw battle state current canonical state and per-turn canonical transitions; preserve the existing battle UI; validate and release through the protected path before resuming the first E2E observation."
   duration 2p
-  status active
+  status done
   requires:
     DEV 1
   owner "codex"
@@ -308,3 +308,25 @@ work_event WE-ae9187e227efb79972bee95a2dbdad578c25e108bc50f9de778e85f298c7d595:
   kind start
   occurred_at 2026-08-07T15:19:07+09:00
   planned_value 2p
+
+work_event WE-e8936b3ca632a69e28a79c5d0e59ae1a848fdfbb379322a0ff9e6e6f1528bc35:
+  model 1
+  task T_BUILD_INTERNAL_OBSERVATION_SURFACE
+  kind finish
+  occurred_at 2026-08-07T15:54:18+09:00
+  active_time 2111/3600h
+  effort 2111/3600ph
+
+work_event WE-b188b07fa2bc9b0c70fcdb3ac49824a2199ac363b8f10682fb49ec6cc5e016d6:
+  model 1
+  task T_RUN_FIRST_PERSISTENT_E2E
+  kind resume
+  occurred_at 2026-08-07T15:54:18+09:00
+
+work_event WE-b6dd0972058716269eceacddf7f03de6b4de4f80f71a1f83522940f807c3c804:
+  model 1
+  task T_RUN_FIRST_PERSISTENT_E2E
+  kind finish
+  occurred_at 2026-08-07T16:08:51+09:00
+  active_time 3133/3600h
+  effort 3133/3600ph
