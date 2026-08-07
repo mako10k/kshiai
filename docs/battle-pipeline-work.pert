@@ -166,6 +166,7 @@ task T_RESHAPE_NARRATOR_INPUT AGENT_PIPELINE_TRACE_VISIBLE -> NARRATOR_INPUT_RES
   title "Reshape narrator input without constraining narrator output"
   description "Replace overlapping narration facts with one bounded turn brief that clearly separates committed action and consequence facts, accepted semantic or world change, current canonical conditions, and static battlefield flavor. Preserve perspective and identity boundaries and the existing single narrator call, but add no claim guard, prose validator, mechanical authority, retry policy, or narrator-output restriction. Add focused tests for information sufficiency, non-duplication, and empty-change clarity."
   duration 2p
+  status active
   owner "codex"
   requires:
     DEV 1
@@ -379,3 +380,10 @@ work_event WE-f4bd91066f7f5d90bffbde9837bdb1ef6d430809f912dc68110d017f33fe3b3d:
   occurred_at 2026-08-07T16:55:06+09:00
   active_time 5/36h
   effort 5/36ph
+
+work_event WE-96efc124b9b87eca19d07d27c4c7f81e5e6d27efacec739e20acdb4db7763667:
+  model 1
+  task T_RESHAPE_NARRATOR_INPUT
+  kind start
+  occurred_at 2026-08-07T16:56:01+09:00
+  planned_value 2p
