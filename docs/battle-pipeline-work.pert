@@ -49,6 +49,7 @@ task T_BUILD_CAUSAL_TURN_SLICE MAIN_BASE_FIXED -> CAUSAL_SLICE_IMPLEMENTED:
   title "Build the owner-grounded causal turn receipt and narration projection"
   description "Add a pure shared BattleTurnCausalReceipt builder and an ID-free perspective-safe NarrationCausalProjection. Assemble only explicit current-main owner outputs after semantic reconciliation: requested and effective actions resolution outcome and reason sourceActionId-linked events validated committed mechanical evidence semantic apply status accepted change and bounded before-to-after carry-forward state. Missing links remain unknown and prose is never mined. Add focused schemas builders and tests; do not port the PoC five-artifact applicability bundle create persistence or generalize the world model."
   duration 2p
+  status active
   owner "codex"
   requires:
     DEV 1
@@ -100,3 +101,10 @@ task T_CHOOSE_NEXT_PIPELINE_AXIS PRODUCTION_TRIAL_COMPLETED -> NEXT_HYPOTHESIS_S
   owner "user"
   requires:
     OWNER 1
+
+work_event WE-5e9a15c374e35bf44e512c99616f115d26905c28fdc780fc316fb8a6ad7f1bee:
+  model 1
+  task T_BUILD_CAUSAL_TURN_SLICE
+  kind start
+  occurred_at 2026-08-07T11:23:39+09:00
+  planned_value 2p
