@@ -1250,10 +1250,27 @@ Do not invent a sudden environmental event or dramatic field change here. A sepa
         ...rawPatch,
         baseRevision: input.before.revision,
         turn: input.turn,
-        sourceEventIds: input.events.flatMap((event) => event.id ? [event.id] : []),
+        sourceEventIds: [
+          ...input.events.flatMap((event) => event.id ? [event.id] : []),
+          ...(input.environmentProposal ? [input.environmentProposal.id] : []),
+        ],
       });
       const rawSituation = data.nextSituation && typeof data.nextSituation === "object"
         ? data.nextSituation as Record<string, unknown>
+        : null;
+      const rawEnvironmentDecision = data.environmentDecision &&
+          typeof data.environmentDecision === "object"
+        ? data.environmentDecision as Record<string, unknown>
+        : null;
+      const environmentDecision = rawEnvironmentDecision &&
+          (rawEnvironmentDecision.status === "accepted" ||
+            rawEnvironmentDecision.status === "rejected") &&
+          typeof rawEnvironmentDecision.reason === "string" &&
+          rawEnvironmentDecision.reason.trim()
+        ? {
+            status: rawEnvironmentDecision.status as "accepted" | "rejected",
+            reason: rawEnvironmentDecision.reason.trim().slice(0, 240),
+          }
         : null;
       const sensory = combined
         ? PerceptionEvidenceSetSchema.safeParse(data.sensoryEvidence)
@@ -1261,6 +1278,7 @@ Do not invent a sudden environmental event or dramatic field change here. A sepa
       return {
         patch: patch.success ? patch.data : null,
         worldPatchStatus: patch.success ? "valid" : "rejected",
+        environmentDecision,
         nextSituation: rawSituation
           ? {
               notes: rawSituation.notes == null
@@ -1304,13 +1322,7 @@ Do not invent a sudden environmental event or dramatic field change here. A sepa
     title: string;
     summary: string;
     notes: string;
-    coefficients?: Record<string, number>;
     tags?: string[];
-    envHits?: Array<{
-      target: "both";
-      kind: "damage" | "heal" | "disrupt";
-      intensity: "minor" | "moderate";
-    }>;
   }> {
     if (!this.client) return this.fallback.proposeHappening(input);
     try {
@@ -1324,16 +1336,14 @@ Return JSON:
   "title": string,        // ~6 chars, e.g. 落石, 濃霧, 崩落
   "summary": string,      // one sentence what happens on the field
   "notes": string,        // ongoing battlefield mood after this
-  "coefficients": { [key: string]: number }, // 0.25-2.5 keys like damage,spd,wind,water,fire,mag,focus
-  "tags": string[],
-  "envHits": [{ "target": "both", "kind": "damage"|"heal"|"disrupt", "intensity": "minor"|"moderate" }]
+  "tags": string[]
 }
 Rules:
 - Derive it naturally from the supplied battlefield name, scene, terrain, obstacles, conditions, and setup. Do not introduce an unrelated stock disaster.
-- It must materially change the flow through a temporary shared constraint, opportunity, or pressure.
+- Describe only a possible environmental motion. Do not decide whether it succeeds or assign coefficients, damage, healing, disruption, status, or any combat effect; the canonical world reconciler does that later.
+- It should be capable of changing the flow through a shared constraint, opportunity, or pressure if the world reconciler accepts it.
 - It must differ in cause and effect from every previousHappening. Avoid a repetitive escalation pattern.
-- Never make one participant the sole beneficiary or victim. Effects must apply to both, or create a symmetric tradeoff/opportunity both can use.
-- Prefer no direct envHit; when needed, use only target "both" with minor or moderate intensity.
+- Never make one participant the sole beneficiary or victim. Suggest a symmetric tradeoff or opportunity both could use.
 - Match the established genre and tone, including nonviolent, social, comedic, cute, technological, or psychic confrontations.`,
         JSON.stringify({
           scene: input.scene,
@@ -1357,9 +1367,7 @@ Rules:
         title?: string;
         summary?: string;
         notes?: string;
-        coefficients?: Record<string, number>;
         tags?: string[];
-        envHits?: Array<Record<string, unknown>>;
       };
 
       const title = String(data.title ?? "").trim() || "異変";
@@ -1368,34 +1376,13 @@ Rules:
         "戦場の空気がざわつき、膠着が崩れる。";
       const notes =
         String(data.notes ?? "").trim() || "環境の変化が攻防を急かしている。";
-      const envHits = Array.isArray(data.envHits)
-        ? data.envHits
-            .map((h) => {
-              const target = h.target;
-              const kind = h.kind;
-              const intensity = h.intensity;
-              if (target !== "both") return null;
-              if (kind !== "damage" && kind !== "heal" && kind !== "disrupt") {
-                return null;
-              }
-              if (intensity !== "minor" && intensity !== "moderate") {
-                return null;
-              }
-              return { target, kind, intensity } as const;
-            })
-            .filter((x): x is NonNullable<typeof x> => x != null)
-            .slice(0, 3)
-        : undefined;
-
       return {
         title: title.slice(0, 16),
         summary: summary.slice(0, 80),
         notes: notes.slice(0, 80),
-        coefficients: data.coefficients,
         tags: Array.isArray(data.tags)
           ? data.tags.map(String).slice(0, 6)
           : undefined,
-        envHits,
       };
     } catch (error) {
       return this.fallbackOrThrow(error, () => this.fallback.proposeHappening(input));

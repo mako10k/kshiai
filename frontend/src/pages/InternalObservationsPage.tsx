@@ -90,6 +90,16 @@ function TurnPipelineDag({
           value={{ actions: turn.actions, events: turn.events }}
         />
         <span className="internal-pipeline-arrow" aria-hidden="true">→</span>
+        {trace.environmentProcess ? (
+          <>
+            <PipelineNode
+              title="環境提案の正準化"
+              subtitle={`${trace.environmentProcess.status} · ${trace.environmentProcess.reason}`}
+              value={trace.environmentProcess}
+            />
+            <span className="internal-pipeline-arrow" aria-hidden="true">→</span>
+          </>
+        ) : null}
         <PipelineNode title="正準遷移" value={turn.canonicalTransition} />
       </div>
       <div className="internal-pipeline-merge" aria-hidden="true">↓</div>

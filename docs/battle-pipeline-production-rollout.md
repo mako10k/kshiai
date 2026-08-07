@@ -277,20 +277,56 @@ new production work.
 
 ## Macro boundary
 
-The v0.10.0 persistent E2E trace changes the immediate ordering:
+The v0.11.1 persistent E2E trace changes the immediate ordering:
 
-1. Stabilize the character action-proposal boundary first. Twenty-two of 30
-   side-turn provider results were rejected, including 21 invalid next actions.
-   This is both an action-side pipeline failure and a blocker for trustworthy
-   observation of later axes.
-2. Re-evaluate the environment/world-process path next. `OBS-20260807-02` and
-   the v0.10.0 input conflict behind `OBS-20260807-03` both expose ambiguity
-   between an environmental proposal, a resolved event, and accepted canonical
-   change.
-3. Keep adaptive expanded adjudication as the following alternative, selected
-   only after the action-proposal trial is observed.
+1. The character action-proposal boundary is sufficiently open for the next
+   axial observation. v0.11.1 accepted 20 of 21 fulfilled proposals and all 20
+   resolved combat actions, compared with zero accepted proposals and seven
+   substituted or failed actions in v0.11.0. Retain the one incompatible
+   defensive instrument as a residual observation, not an interrupting patch.
+2. Select the environment/world-process path next. `OBS-20260807-06` observed a
+   water-pipe event and public footing consequence while both semantic and world
+   transitions were skipped. This reproduces the proposal/result/canonical
+   ambiguity behind `OBS-20260807-02` and `OBS-20260807-03` after action output
+   became observable.
+3. Keep adaptive expanded adjudication as the following alternative. Recompare
+   it after one bounded environment proposal -> adjudication -> accepted world
+   transition slice and production E2E trial.
 
 Standalone non-critical narrator cleanup is pending. If an action, environment,
 or adjudication slice naturally supplies better narrator input, its acceptance
 may include the corresponding narration observation without creating a
 separate narrator patch task.
+
+## Environment world-process slice
+
+The selected slice keeps one existing provider call and changes the authority
+order, not the narrator policy:
+
+```text
+supervisor noise proposal
+  -> post-resolution semantic/world reconciler
+  -> accepted | rejected | skipped receipt
+  -> accepted semantic and world transition
+  -> resolved public situation event
+  -> bounded situation input for the following turn
+```
+
+- The supervisor proposal contains only a candidate title, summary, notes, and
+  tags. It no longer supplies coefficients, environmental hits, or a
+  pre-resolution event to the combat engine.
+- The proposal is passed beside the current canonical semantic/world state to
+  the already existing reconciliation call. Acceptance requires a grounded
+  non-character entity addition or a real location/active-state change that
+  crosses both semantic and world boundaries.
+- Rejected, invalid, or unavailable proposals lose proposal-derived semantic
+  operations, sensory evidence, next-turn situation values, and public events.
+  They remain observable only through their internal receipt.
+- Accepted proposals emit their public event only after canonical application.
+  The receipt retains the proposal, decision reason, resolved event, proposal
+  source ID, and accepted effect keys in the separate internal turn DAG.
+- This slice is always enabled. It adds no direct HP effect, extra provider
+  call, narrator guard/repair, general-purpose world engine, or expanded action
+  adjudication. Narration can improve incidentally because it receives the
+  accepted event and canonical state, while standalone narrator symptoms remain
+  pending for later pipeline observation.

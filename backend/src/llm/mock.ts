@@ -443,28 +443,42 @@ export class MockLlmProvider implements LlmProvider {
   async reconcileTurnSemanticState(
     input: Parameters<LlmProvider["reconcileTurnSemanticState"]>[0],
   ): ReturnType<LlmProvider["reconcileTurnSemanticState"]> {
-    const areaA = input.battlefield?.obstacles?.[0] ?? input.battlefield?.terrain ?? "戦場の一角";
-    const areaB = input.battlefield?.obstacles?.[1] ?? input.battlefield?.terrain ?? "対面する一角";
+    const proposal = input.environmentProposal;
     return Promise.resolve({
       patch: {
         baseRevision: input.before.revision,
         turn: input.turn,
-        sourceEventIds: input.events.flatMap((event) => event.id ? [event.id] : []),
-        operations: input.environmentBeatDue
+        sourceEventIds: [
+          ...input.events.flatMap((event) => event.id ? [event.id] : []),
+          ...(proposal ? [proposal.id] : []),
+        ],
+        operations: proposal
           ? [
               {
-                op: "replace" as const,
-                path: "/entities/character.a/location",
-                value: { type: "scene", area: areaA },
-              },
-              {
-                op: "replace" as const,
-                path: "/entities/character.b/location",
-                value: { type: "scene", area: areaB },
+                op: "add" as const,
+                path: `/entities/environment.effect.${input.turn}`,
+                value: {
+                  kind: "effect",
+                  label: proposal.title,
+                  location: {
+                    type: "scene",
+                    area: input.before.scene.summary,
+                  },
+                  active: true,
+                  createdTurn: input.turn,
+                  updatedTurn: input.turn,
+                  facts: { summary: proposal.summary },
+                },
               },
             ]
           : [],
       },
+      environmentDecision: proposal
+        ? { status: "accepted", reason: "field-grounded durable change" }
+        : null,
+      nextSituation: proposal
+        ? { notes: proposal.notes, tags: proposal.tags ?? [], coefficients: {} }
+        : undefined,
       worldPatchStatus: "valid",
       sensoryEvidence: [],
       sensoryEvidenceStatus: "valid",
@@ -483,13 +497,7 @@ export class MockLlmProvider implements LlmProvider {
     title: string;
     summary: string;
     notes: string;
-    coefficients?: Record<string, number>;
     tags?: string[];
-    envHits?: Array<{
-      target: "both";
-      kind: "damage" | "heal" | "disrupt";
-      intensity: "minor" | "moderate";
-    }>;
   }> {
     const fieldDetails = [
       input.battlefield?.terrain,
@@ -504,9 +512,7 @@ export class MockLlmProvider implements LlmProvider {
       title: `${detail.slice(0, 12)}の変化`,
       summary: `${detail}の様子が変わり、両者が新しい流れへ対応する。`,
       notes: `${detail}の変化は、どちらにも同じ条件と機会を与えている。`,
-      coefficients: { damage: 1.05, focus: 0.9 },
       tags: [detail.slice(0, 16)],
-      envHits: [{ target: "both", kind: "disrupt", intensity: "minor" }],
     };
   }
 

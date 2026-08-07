@@ -594,6 +594,37 @@ export type CharacterActionProposalValidationReceipt = z.infer<
   typeof CharacterActionProposalValidationReceiptSchema
 >;
 
+export const EnvironmentProcessProposalSchema = z.object({
+  id: z.string().min(1).max(80),
+  title: z.string().min(1).max(40),
+  summary: z.string().min(1).max(240),
+  notes: z.string().min(1).max(240),
+  tags: z.array(z.string().min(1).max(80)).max(6).optional(),
+}).strict();
+export type EnvironmentProcessProposal = z.infer<
+  typeof EnvironmentProcessProposalSchema
+>;
+
+export const EnvironmentProcessReceiptSchema = z.object({
+  status: z.enum(["accepted", "rejected", "skipped"]),
+  reason: z.enum([
+    "accepted_canonical_change",
+    "decision_rejected",
+    "decision_invalid",
+    "no_canonical_change",
+    "semantic_rejected",
+    "semantic_unavailable",
+  ]),
+  decisionReason: z.string().max(240).nullable(),
+  proposal: EnvironmentProcessProposalSchema,
+  resolvedEvent: TurnEventSchema.nullable(),
+  sourceEventIds: z.array(z.string().min(1).max(120)).max(32),
+  effectKeys: z.array(z.string().min(1).max(240)).max(32),
+}).strict();
+export type EnvironmentProcessReceipt = z.infer<
+  typeof EnvironmentProcessReceiptSchema
+>;
+
 export const BattlePipelineAgentInvocationTraceSchema = z.object({
   input: z.unknown().nullable(),
   providerStatus: z.enum(["fulfilled", "rejected", "skipped"]),
@@ -605,6 +636,7 @@ export const BattlePipelineAgentInvocationTraceSchema = z.object({
 
 export const BattleTurnPipelineTraceSchema = z.object({
   schemaVersion: z.literal(1),
+  environmentProcess: EnvironmentProcessReceiptSchema.optional(),
   characterAgents: z.object({
     phase: z.enum(["prologue", "turn", "aftermath"]),
     a: BattlePipelineAgentInvocationTraceSchema,

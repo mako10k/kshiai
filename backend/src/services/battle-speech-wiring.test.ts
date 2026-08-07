@@ -122,14 +122,36 @@ describe("character-authored public speech", () => {
       turnLimit: 20,
       prologuePending: false,
     });
+    const environmentEvent = {
+      id: "hap_llm_1",
+      type: "situation" as const,
+      summary: "雨水が路地へ流れ込んだ。",
+    };
     const result = await advanceCharacterAgents({
       llm: new MockLlmProvider(),
       before,
       after: { ...before, turn: 1 },
       mine: sideA,
       opp: sideB,
-      events: [{ id: "event.wait", type: "wait", summary: "両者が間合いを測った。" }],
+      events: [
+        { id: "event.wait", type: "wait", summary: "両者が間合いを測った。" },
+        environmentEvent,
+      ],
       actions: [],
+      environmentProcessReceipt: {
+        status: "accepted",
+        reason: "accepted_canonical_change",
+        decisionReason: "路地の排水条件から成立する",
+        proposal: {
+          id: "hap_llm_1",
+          title: "流入",
+          summary: "雨水が路地へ流れ込む",
+          notes: "浅い水が足元に残る",
+        },
+        resolvedEvent: environmentEvent,
+        sourceEventIds: ["hap_llm_1"],
+        effectKeys: ["/entities/environment.effect.1"],
+      },
     });
     const utterances = result.state.turnRecords.at(-1)?.events.filter(
       (event) => event.type === "utterance",
@@ -175,6 +197,11 @@ describe("character-authored public speech", () => {
       "accepted",
     );
     assert.ok(pipelineTrace?.characterAgents?.a.acceptedOutput);
+    assert.equal(pipelineTrace?.environmentProcess?.status, "accepted");
+    assert.equal(
+      pipelineTrace?.environmentProcess?.resolvedEvent?.id,
+      "hap_llm_1",
+    );
     const narratorSpeeches = buildNarratorCharacterSpeeches({
       state: result.state,
       sources: result.characterSpeeches,

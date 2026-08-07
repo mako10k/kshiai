@@ -62,6 +62,10 @@ describe("perception prompt strategy", () => {
     assert.ok(access);
     assert.deepEqual(access.direction?.enum?.includes("contact"), false);
     assert.deepEqual(access.distance?.enum?.includes("contact"), true);
+    assert.deepEqual(
+      definitions.environmentDecision?.properties?.status?.enum,
+      ["accepted", "rejected"],
+    );
   });
 
   it("scores deterministic reference outputs perfectly for both topologies", () => {

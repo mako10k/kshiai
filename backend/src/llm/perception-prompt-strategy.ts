@@ -2,12 +2,15 @@ import {
   PerceptionEvidenceSetSchema,
   TurnSemanticPatchSchema,
   type BattleSemanticState,
+  type EnvironmentProcessProposal,
   type PerceptionEvidence,
   type ResolvedBattleAction,
   type TurnEvent,
   type TurnSemanticPatch,
 } from "@kshiai/shared";
 
+// The topology fixture matrix remains v10: this slice adds fields to the same
+// reviewed single combined call without changing the combined/split topology.
 export const PERCEPTION_PROMPT_FIXTURE_VERSION = "perception-prompts-v10";
 
 export const PERCEPTION_PROMPT_QUALITY_FLOORS = {
@@ -47,6 +50,7 @@ export type PerceptionPromptInput = {
     b: PerceptionPromptCharacter;
   };
   environmentBeatDue: boolean;
+  environmentProposal: EnvironmentProcessProposal | null;
   dramaPhase: "opening" | "rising" | "climax";
   mechanicalEvidence: Array<{
     eventId: string;
@@ -182,6 +186,10 @@ Return JSON only:
     "notes": string,
     "tags": string[],
     "coefficients": { [allowed_key: string]: number }
+  },
+  "environmentDecision": null | {
+    "status": "accepted"|"rejected",
+    "reason": string
   }
 }
 Patch only /scene/summary, /scene/facts leaves, or /entities entries and their label/location/active/facts/visibleTo.
@@ -198,7 +206,7 @@ Never infer or patch winner, incapacity, active=false, damage/status facts, or v
 When an event changes no persistent entity, location, object condition, terrain, weather, or other durable world fact, operations must remain empty.
 Do not add character facts that duplicate an entity location, held object, action, opponent relation, or committed event.
 Examples: an impact with no durable world alteration returns []; unidentified footsteps with no durable world alteration returns []; picking up an existing object returns only the object's location replacement and no character fact or scene-summary restatement.
-When environmentBeatDue is true, prefer one grounded, non-mechanical durable change when plausible: movement to a different established area, displacement or use of an existing object, weather/crowd/terrain evolution, or a new persistent byproduct. Keep it symmetrical in opportunity and never fabricate damage, healing, or a combat bonus. When false, only record changes directly supported by committed actions/events.
+environmentProposal is non-authoritative supervisor noise, not a committed event. When it is null, environmentDecision must be null and environmentBeatDue alone does not authorize a new environmental fact. When it is present, compare it with worldBefore and the battlefield. Accept it only when its cause is grounded and its result can be expressed as a durable world transition: add one non-character environment entity, or change an existing non-character entity's location or active state. Scene prose or entity facts alone are not enough to accept it. On acceptance, set environmentDecision.status to accepted, include the corresponding operation, and optionally provide bounded nextSituation values for the following turn. On rejection, set environmentDecision.status to rejected, explain why briefly, and do not put proposal-derived values in patch or nextSituation. Never turn an environment proposal directly into damage, healing, incapacity, winner state, or an unexplained combat bonus.
 Match dramaPhase: opening establishes positions, rising changes leverage or surroundings, climax favors irreversible commitment and visible consequence without overriding mechanics.
 nextSituation coefficients affect only the following turn and must remain between 0.25 and 2.5.`;
 
@@ -247,7 +255,7 @@ In the same response, independently add the sensoryEvidence array defined below.
 ${SENSORY_EVIDENCE_SYSTEM_PROMPT.replace("Return JSON only:", "Add this field to the same JSON object:")}`;
 
 export const WORLD_PERCEPTION_RESPONSE_FORMAT = perceptionResponseFormat(
-  "kshiai_world_perception_v10",
+  "kshiai_world_perception_v11",
   {
     patch: { $ref: "#/$defs/patch" },
     nextSituation: {
@@ -256,11 +264,17 @@ export const WORLD_PERCEPTION_RESPONSE_FORMAT = perceptionResponseFormat(
         { type: "null" },
       ],
     },
+    environmentDecision: {
+      anyOf: [
+        { $ref: "#/$defs/environmentDecision" },
+        { type: "null" },
+      ],
+    },
   },
 );
 
 export const SENSORY_PERCEPTION_RESPONSE_FORMAT = perceptionResponseFormat(
-  "kshiai_sensory_perception_v10",
+  "kshiai_sensory_perception_v11",
   {
     sensoryEvidence: {
       type: "array",
@@ -271,12 +285,18 @@ export const SENSORY_PERCEPTION_RESPONSE_FORMAT = perceptionResponseFormat(
 );
 
 export const COMBINED_PERCEPTION_RESPONSE_FORMAT = perceptionResponseFormat(
-  "kshiai_combined_perception_v10",
+  "kshiai_combined_perception_v11",
   {
     patch: { $ref: "#/$defs/patch" },
     nextSituation: {
       anyOf: [
         { $ref: "#/$defs/nextSituation" },
+        { type: "null" },
+      ],
+    },
+    environmentDecision: {
+      anyOf: [
+        { $ref: "#/$defs/environmentDecision" },
         { type: "null" },
       ],
     },
@@ -814,6 +834,7 @@ function baseInput(
       b: promptCharacter("夜渡り"),
     },
     environmentBeatDue: false,
+    environmentProposal: null,
     dramaPhase: "rising",
     mechanicalEvidence: [],
   };
@@ -1224,6 +1245,22 @@ function perceptionJsonSchemaDefinitions(): Record<string, unknown> {
       },
     },
     required: ["notes", "tags", "coefficients"],
+    additionalProperties: false,
+  };
+  definitions.environmentDecision = {
+    type: "object",
+    properties: {
+      status: {
+        type: "string",
+        enum: ["accepted", "rejected"],
+      },
+      reason: {
+        type: "string",
+        minLength: 1,
+        maxLength: 240,
+      },
+    },
+    required: ["status", "reason"],
     additionalProperties: false,
   };
   return definitions;
