@@ -24,14 +24,19 @@ Release the smallest application-owned battle diagnostics surface:
 - [x] Feature changes passed 320 tests, root typecheck, build, focused access and
   persistence tests, diff checks, and both PERT checks before merge.
 - [x] Feature squash-merged into `main` at `38e1415`.
-- [ ] Release PR versions every workspace and lockfile as `0.9.0`, adds dated
-  changelog notes, passes the four required checks, and merges to `main`.
-- [ ] Annotated `v0.9.0` resolves to the exact merged release commit.
-- [ ] `Stage release` applies `0008_developer_account_kind.sql`, creates the
+- [x] Release PR #42 versions every workspace and lockfile as `0.9.0`, adds
+  dated changelog notes, passes the four required checks, and merges to `main`
+  at `bd27dfd63469b162aaf5b0107dbdfc7ae00d2e3a`.
+- [x] Annotated `v0.9.0` resolves to that exact merged release commit.
+- [x] `Stage release` run 31154719950 applies
+  `0008_developer_account_kind.sql`, creates the
   no-traffic backend revision and Worker preview, and passes deployment,
-  authentication, SSE, R2, administrator-binding, and migration smokes.
-- [ ] `Promote release` moves those exact staged artifacts to 100 percent,
-  passes production smokes, and publishes the GitHub Release.
+  authentication, SSE, R2, administrator-binding, and migration smokes. The
+  resulting revision is `kshiai-api-00036-yew`, image digest is
+  `sha256:43c5903cc18a65ed32e67844edbdd8ab6bfd66b370a89c2de9de72e6f90383b3`,
+  and Worker version is `7bb7bc30-d34a-4517-bed5-2b9ff0a29371`.
+- [x] `Promote release` run 31155105595 moves those exact staged artifacts to
+  100 percent, passes production smokes, and publishes the GitHub Release.
 - [ ] The protected observer completes a reusable cross-account battle, proves
   E2E access to its raw/canonical detail, and retains the battle, DB observation,
   and non-sensitive workflow receipt.
