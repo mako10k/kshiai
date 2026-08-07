@@ -569,10 +569,37 @@ export const BattleAdjudicationSchema = z.object({
 }).strict();
 export type BattleAdjudication = z.infer<typeof BattleAdjudicationSchema>;
 
+export const CharacterActionProposalRejectionReasonSchema = z.enum([
+  "no_decision_context",
+  "missing_proposal",
+  "schema_invalid",
+  "unavailable_action",
+  "unavailable_finisher",
+  "ungrounded_free_action",
+  "unavailable_instrument",
+  "repeated_action_requires_change",
+]);
+export type CharacterActionProposalRejectionReason = z.infer<
+  typeof CharacterActionProposalRejectionReasonSchema
+>;
+
+/** Server-owned receipt that keeps a model proposal separate from an accepted action. */
+export const CharacterActionProposalValidationReceiptSchema = z.object({
+  status: z.enum(["accepted", "rejected", "omitted"]),
+  reason: CharacterActionProposalRejectionReasonSchema.nullable(),
+  proposedAction: z.unknown().nullable(),
+  acceptedAction: CharacterActionIntentSchema.nullable(),
+}).strict();
+export type CharacterActionProposalValidationReceipt = z.infer<
+  typeof CharacterActionProposalValidationReceiptSchema
+>;
+
 export const BattlePipelineAgentInvocationTraceSchema = z.object({
   input: z.unknown().nullable(),
   providerStatus: z.enum(["fulfilled", "rejected", "skipped"]),
   providerOutput: z.unknown().nullable(),
+  actionProposalValidation:
+    CharacterActionProposalValidationReceiptSchema.nullable().optional(),
   acceptedOutput: z.unknown().nullable(),
 }).strict();
 

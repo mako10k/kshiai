@@ -566,6 +566,7 @@ export class MockLlmProvider implements LlmProvider {
           },
         },
         speech: aftermathSpeech,
+        proposedAction: null,
       };
     }
     const ownReserveCritical = input.perception.reserveCues.some((cue) =>
@@ -668,7 +669,7 @@ export class MockLlmProvider implements LlmProvider {
         },
       },
       speech,
-      nextAction: setupAttack && preferred.kind === "free_action"
+      proposedAction: setupAttack && preferred.kind === "free_action"
         ? {
             kind: "free_action" as const,
             description: setupAttack.prerequisites[0]?.description ??

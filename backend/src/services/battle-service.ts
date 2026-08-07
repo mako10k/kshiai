@@ -1,6 +1,7 @@
 import {
   BattlePolicyOptionSchema,
   BattleAdjudicationSchema,
+  CharacterActionIntentSchema,
   accumulateBattleBalanceTrace,
   advanceSupervisorClock,
   applyBattleWorldTransition,
@@ -45,6 +46,7 @@ import {
   type BattleTurnPipelineTrace,
   type ResolvedBattleAction,
   type CharacterAgentState,
+  type CharacterActionProposalValidationReceipt,
   type CharacterCognition,
   type BattlefieldInstance,
   type BattlefieldPreset,
@@ -1161,6 +1163,9 @@ export async function advanceCharacterAgents(input: {
         : "rejected" as const
       : "skipped" as const,
     providerOutput: providerOutput ? structuredClone(providerOutput) : null,
+    actionProposalValidation: accepted.actionProposalValidation
+      ? structuredClone(accepted.actionProposalValidation)
+      : null,
     acceptedOutput: {
       state: structuredClone(accepted.state),
       nextAction: accepted.nextAction
@@ -1320,6 +1325,134 @@ type CharacterAgentAdvanceResult = Awaited<
 >;
 
 /**
+ * Validate one bounded model proposal against the server-owned decision frame.
+ * The proposal remains evidence even when no following-turn action is accepted.
+ */
+export function validateCharacterActionProposal(input: {
+  proposedAction: unknown | null;
+  decision?: Parameters<LlmProvider["advanceCharacterAgent"]>[0]["decision"];
+}): CharacterActionProposalValidationReceipt {
+  const proposedAction = input.proposedAction ?? null;
+  if (!input.decision) {
+    return {
+      status: "omitted",
+      reason: "no_decision_context",
+      proposedAction,
+      acceptedAction: null,
+    };
+  }
+  if (proposedAction === null) {
+    return {
+      status: "rejected",
+      reason: "missing_proposal",
+      proposedAction: null,
+      acceptedAction: null,
+    };
+  }
+  const parsed = CharacterActionIntentSchema.safeParse(proposedAction);
+  if (!parsed.success) {
+    return {
+      status: "rejected",
+      reason: "schema_invalid",
+      proposedAction,
+      acceptedAction: null,
+    };
+  }
+  const candidate = parsed.data;
+  const listed = input.decision.availableActions.find((action) =>
+    action.kind === candidate.kind && action.skillId === candidate.skillId
+  );
+  if (!listed) {
+    return {
+      status: "rejected",
+      reason: "unavailable_action",
+      proposedAction,
+      acceptedAction: null,
+    };
+  }
+  if (
+    candidate.useFinisher &&
+    !(
+      listed.finisherCandidate &&
+      input.decision.finisher?.unlocked &&
+      input.decision.finisher.remainingUses > 0
+    )
+  ) {
+    return {
+      status: "rejected",
+      reason: "unavailable_finisher",
+      proposedAction,
+      acceptedAction: null,
+    };
+  }
+  const affordanceRefs = new Set(
+    input.decision.affordances?.map((affordance) => affordance.ref) ?? [],
+  );
+  if (
+    candidate.kind === "free_action" &&
+    (!(candidate.subjectRefs ?? []).every((ref) => affordanceRefs.has(ref)) ||
+      (candidate.opportunityId &&
+        !input.decision.opportunityChains?.some((chain) =>
+          chain.id === candidate.opportunityId
+        )))
+  ) {
+    return {
+      status: "rejected",
+      reason: "ungrounded_free_action",
+      proposedAction,
+      acceptedAction: null,
+    };
+  }
+  if (
+    candidate.instrumentRef &&
+    (!affordanceRefs.has(candidate.instrumentRef) ||
+      !input.decision.opportunityChains?.some((chain) =>
+        chain.setupTurns === 0 &&
+        chain.continuation.actionKind === candidate.kind &&
+        chain.continuation.instrumentRef === candidate.instrumentRef
+      ))
+  ) {
+    return {
+      status: "rejected",
+      reason: "unavailable_instrument",
+      proposedAction,
+      acceptedAction: null,
+    };
+  }
+  const last = input.decision.lastAction;
+  const sameAsLast = Boolean(
+    last &&
+    candidate.kind === last.kind &&
+    (candidate.skillId ?? null) === (last.skillId ?? null),
+  );
+  const hasAlternative = input.decision.availableActions.some((action) =>
+    !(
+      last &&
+      action.kind === last.kind &&
+      (action.skillId ?? null) === (last.skillId ?? null)
+    )
+  );
+  if (
+    input.decision.varietyPressure === "require_change" &&
+    sameAsLast &&
+    hasAlternative
+  ) {
+    return {
+      status: "rejected",
+      reason: "repeated_action_requires_change",
+      proposedAction,
+      acceptedAction: null,
+    };
+  }
+  return {
+    status: "accepted",
+    reason: null,
+    proposedAction,
+    acceptedAction: candidate,
+  };
+}
+
+/**
  * Accept one agent result as the authority for actual speech. Provider state
  * cannot substitute a different lastSpeech, and later public rendering never
  * passes through this boundary.
@@ -1345,45 +1478,16 @@ export function acceptCharacterAgentResult(input: {
         selfReference,
       },
       nextAction: undefined,
+      actionProposalValidation: null,
       speech: null,
     };
   }
   const text = coerceCharacterSpeech(input.result.speech);
-  const listed = input.decision?.availableActions.find((action) =>
-    action.kind === input.result?.nextAction?.kind &&
-    action.skillId === input.result?.nextAction?.skillId
-  );
-  const finisherAllowed = !input.result.nextAction?.useFinisher || Boolean(
-    listed?.finisherCandidate &&
-    input.decision?.finisher?.unlocked &&
-    input.decision.finisher.remainingUses > 0,
-  );
-  const allowedAffordanceRefs = new Set(
-    input.decision?.affordances?.map((affordance) => affordance.ref) ?? [],
-  );
-  const freeActionGrounded = input.result.nextAction?.kind !== "free_action" || Boolean(
-    input.result.nextAction.description &&
-    (input.result.nextAction.subjectRefs?.length ?? 0) > 0 &&
-    (input.result.nextAction.subjectRefs ?? []).every((ref) =>
-      allowedAffordanceRefs.has(ref)
-    ) &&
-    (!input.result.nextAction.opportunityId ||
-      input.decision?.opportunityChains?.some((chain) =>
-        chain.id === input.result?.nextAction?.opportunityId
-      ))
-  );
-  const instrumentGrounded = !input.result.nextAction?.instrumentRef || Boolean(
-    allowedAffordanceRefs.has(input.result.nextAction.instrumentRef) &&
-    input.decision?.opportunityChains?.some((chain) =>
-      chain.continuation.actionKind === input.result?.nextAction?.kind &&
-      chain.continuation.instrumentRef === input.result?.nextAction?.instrumentRef &&
-      chain.setupTurns === 0
-    )
-  );
-  const nextAction = input.decision && listed && finisherAllowed &&
-      freeActionGrounded && instrumentGrounded
-    ? input.result.nextAction
-    : undefined;
+  const actionProposalValidation = validateCharacterActionProposal({
+    proposedAction: input.result.proposedAction,
+    decision: input.decision,
+  });
+  const nextAction = actionProposalValidation.acceptedAction ?? undefined;
   return {
     state: {
       ...input.result.state,
@@ -1391,6 +1495,7 @@ export function acceptCharacterAgentResult(input: {
       lastSpeech: text,
     },
     nextAction,
+    actionProposalValidation,
     speech: {
       side: input.side,
       speaker: input.speaker,

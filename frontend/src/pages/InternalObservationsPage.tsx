@@ -52,13 +52,19 @@ function AgentLane({
   return (
     <div className="internal-agent-lane">
       <h4>{label}</h4>
-      <div className="internal-pipeline-flow">
+      <div className="internal-pipeline-flow internal-pipeline-main-flow">
         <PipelineNode title="入力コンテキスト" value={trace.input} />
         <span className="internal-pipeline-arrow" aria-hidden="true">→</span>
         <PipelineNode
           title="キャラ出力"
           subtitle={trace.providerStatus}
           value={trace.providerOutput}
+        />
+        <span className="internal-pipeline-arrow" aria-hidden="true">→</span>
+        <PipelineNode
+          title="行動提案の検証"
+          subtitle={trace.actionProposalValidation?.status ?? "unavailable"}
+          value={trace.actionProposalValidation ?? null}
         />
         <span className="internal-pipeline-arrow" aria-hidden="true">→</span>
         <PipelineNode title="採用後出力" value={trace.acceptedOutput} />

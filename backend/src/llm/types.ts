@@ -450,7 +450,8 @@ export interface LlmProvider {
   }): Promise<{
     state: CharacterAgentState;
     speech: string;
-    nextAction?: CharacterActionIntent;
+    /** Bounded model-authored candidate. Only the battle service may accept it. */
+    proposedAction: unknown | null;
   }>;
   /**
    * Fluid perspective only: pick turn focus from thin summary digests.

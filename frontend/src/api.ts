@@ -5,6 +5,7 @@ import type {
   BattlePolicyOption,
   BattlePolicyOptionPublic,
   BattlePublic,
+  CharacterActionProposalValidationReceipt,
   CharacterImprovementPublic,
   CharacterPublic,
   NarrationStylePublic,
@@ -45,6 +46,7 @@ export type InternalAgentInvocationTrace = {
   input: unknown | null;
   providerStatus: "fulfilled" | "rejected" | "skipped";
   providerOutput: unknown | null;
+  actionProposalValidation?: CharacterActionProposalValidationReceipt | null;
   acceptedOutput: unknown | null;
 };
 
