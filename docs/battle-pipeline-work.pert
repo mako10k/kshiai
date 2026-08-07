@@ -283,7 +283,7 @@ task T_NORMALIZE_LLM_PROVIDER_ROUTING ENVIRONMENT_PROPOSAL_TRANSITION_ALIGNED ->
   title "Normalize LLM timeout retry and provider-fallback policy"
   description "Extend the too-short per-operation LLM deadlines exposed by the exact 12-second xAI and OpenAI concretizeBattlefield aborts. Retry HTTP 429 within the same provider with bounded backoff and retry HTTP 503 once within that same provider; after exhaustion return that provider error without moving to another provider. Timeout never retries or provider-fallbacks. Only provider-unavailable DNS and billing or exhausted-credit failures enter the existing one-hour in-memory cooldown and permit the ordered next provider. Other contract parse and HTTP failures remain terminal. Preserve provider order models call authority and mock policy; add focused classification retry cooldown and no-fallback tests."
   duration 2p
-  status active
+  status done
   owner "codex"
   requires:
     DEV 1
@@ -668,3 +668,11 @@ work_event WE-9463424c5362a60b139d4c6ffb2e93c97d5595e4caadfa281fc46c47fd5876ce:
   kind start
   occurred_at 2026-08-07T20:38:26+09:00
   planned_value 2p
+
+work_event WE-2a23e1e7973ae7f31e0bfa95c6f15ac67a52606e3f8ada4e16e01ea8d5f60276:
+  model 1
+  task T_NORMALIZE_LLM_PROVIDER_ROUTING
+  kind finish
+  occurred_at 2026-08-07T20:50:00+09:00
+  active_time 347/1800h
+  effort 347/1800ph
