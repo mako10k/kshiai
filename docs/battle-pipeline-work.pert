@@ -193,6 +193,7 @@ task T_STABILIZE_AGENT_ACTION_CONTRACT NARRATOR_INPUT_TRIAL_COMPLETED -> AGENT_A
   title "Stabilize and expose the character action-proposal contract"
   description "Use OBS-20260807-04 and retained Site A and Site B traces as the current pipeline axis. Keep the model proposal distinct from server validation and the accepted following-turn action. Constrain proposals to the supplied available actions affordances and opportunity chains, retain an explicit bounded acceptance or rejection reason without hidden facts or raw transport data, and preserve safe previous-state fallback. Add focused tests for valid skill basic defend and free-action proposals plus invalid target skill instrument finisher and affordance cases. Do not add standalone narrator wording work or broaden mechanical authority."
   duration 2p
+  status active
   owner "codex"
   requires:
     DEV 1
@@ -444,3 +445,10 @@ work_event WE-e9396280e8cda44beed8d9dd981b13304dd074600a9cb0f9167e74d1fa2b5f54:
   occurred_at 2026-08-07T17:41:09+09:00
   active_time 121/225h
   effort 121/225ph
+
+work_event WE-3c2cd74b79607007421b3194e7a483e8fcf4cf6cda0b5a1106c1a3175dd9dc2c:
+  model 1
+  task T_STABILIZE_AGENT_ACTION_CONTRACT
+  kind start
+  occurred_at 2026-08-07T17:54:50+09:00
+  planned_value 2p
