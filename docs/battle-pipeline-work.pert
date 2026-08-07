@@ -121,6 +121,7 @@ task T_BUILD_PERSISTENT_E2E_REALM NEXT_HYPOTHESIS_SELECTED -> PERSISTENT_E2E_REA
   title "Build the persistent isolated E2E realm and observer"
   description "Add a server-owned general test and e2e account classification with fail-closed repository visibility. General users cannot discover test or e2e characters battlefields narration styles or rating population. Test and e2e identities share their realm and can run cross-account battles; administrators can access both. Add a persistent Codex observer runner that provisions or reuses two stable E2E identities deterministic fixtures and records a sanitized full-battle artifact without deleting the accounts assets or battle. Add focused migration auth repository runner and workflow tests."
   duration 3p
+  status active
   owner "codex"
   requires:
     DEV 1
@@ -245,3 +246,10 @@ work_event WE-0d4e6979e2e0e5204b2a4e4449b49fa0d7ed0f9f3feff7852ca58f0699292f3a:
   occurred_at 2026-08-07T13:56:16+09:00
   active_time 1/180h
   effort 1/180ph
+
+work_event WE-5a3a352744cbac8cbe5f4637b5cfd86f927015d3583638db1032d2297f6fa44e:
+  model 1
+  task T_BUILD_PERSISTENT_E2E_REALM
+  kind start
+  occurred_at 2026-08-07T13:58:00+09:00
+  planned_value 3p
