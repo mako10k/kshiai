@@ -247,9 +247,9 @@ milestone BATTLE_PIPELINE_ACCEPTED:
 
 task T_BATTLE_PIPELINE CICD_READY -> BATTLE_PIPELINE_ACCEPTED:
   title "Implement try and accept the causal production battle pipeline slice"
-  description "Execute docs/battle-pipeline-causal-slice.pert from current main. First assemble existing action resolution event source mechanical evidence and semantic result owners into a bounded causal receipt and ID-free narration projection then wire the existing narrator and run staging plus explicitly authorized production trials. Absorb source-authoring as an owner-grounded implementation property rather than porting the PoC five-artifact bundle. Select follow-on work by hypothesis centrality and current-main patchability rather than observation backlog order."
+  description "Execute docs/battle-pipeline-execution.pert from current main. First assemble existing action resolution event source mechanical evidence and semantic result owners into a bounded causal receipt and ID-free narration projection then wire the existing narrator and run staging plus explicitly authorized production trials. Absorb source-authoring as an owner-grounded implementation property rather than porting the PoC five-artifact bundle. Select follow-on work by hypothesis centrality and current-main patchability rather than observation backlog order."
   duration 9p
   requires:
     DEV 1
   owner "codex"
-  source "docs/battle-pipeline-causal-slice.pert"
+  source "docs/battle-pipeline-execution.pert"

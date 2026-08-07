@@ -4,7 +4,7 @@ Date: 2026-08-07 (Asia/Tokyo)
 
 This file keeps measured execution and forecast updates separate from point
 estimates in
-[`battle-pipeline-causal-slice.pert`](battle-pipeline-causal-slice.pert).
+[`battle-pipeline-execution.pert`](battle-pipeline-execution.pert).
 
 ## Measurement contract
 
@@ -31,21 +31,21 @@ Use the timestamp captured at the actual boundary; perttool does not read the
 clock automatically.
 
 ```bash
-perttool task start docs/battle-pipeline-causal-slice.pert TASK_ID \
+perttool task start docs/battle-pipeline-execution.pert TASK_ID \
   --at 2026-08-07T11:00:00+09:00 --write
-git add docs/battle-pipeline-causal-slice.pert
+git add docs/battle-pipeline-execution.pert
 git commit -m "Start TASK_ID"
 
-perttool task finish docs/battle-pipeline-causal-slice.pert TASK_ID \
+perttool task finish docs/battle-pipeline-execution.pert TASK_ID \
   --at 2026-08-07T14:30:00+09:00 --active-time 3.5 --effort 3.5 --write
-git add docs/battle-pipeline-causal-slice.pert
+git add docs/battle-pipeline-execution.pert
 git commit -m "Finish TASK_ID"
 
-perttool project observe-velocity docs/battle-pipeline-causal-slice.pert \
+perttool project observe-velocity docs/battle-pipeline-execution.pert \
   --task TASK_ID --evidence all --format json
-perttool project set docs/battle-pipeline-causal-slice.pert \
+perttool project set docs/battle-pipeline-execution.pert \
   --velocity ADOPTABLE_VELOCITY_TOKEN --write
-perttool dag analyze docs/battle-pipeline-causal-slice.pert
+perttool dag analyze docs/battle-pipeline-execution.pert
 ```
 
 For the second and later observations, pass the latest one to three completed
