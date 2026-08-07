@@ -139,6 +139,7 @@ task T_RUN_FIRST_PERSISTENT_E2E PERSISTENT_E2E_REALM_RELEASED -> FIRST_E2E_OBSER
   title "Run and retain the first persistent cross-account E2E battle"
   description "Dispatch the protected observer against the exact guarded production revision. Reuse the Codex observer and opponent accounts fixtures battlefield and narration style run through authentication match creation SSE turn advancement and finish then retain the battle and sanitized artifact. Verify general realm exclusion test realm sharing administrator access no secret or raw mechanics leakage and no unexpected production errors."
   duration 1p
+  status active
   owner "codex"
   requires:
     DEV 1
@@ -277,3 +278,10 @@ work_event WE-013fe126860cbf6826e90ffeae8734f9f85b3ec748d5a135ef23236d8d3c8e70:
   occurred_at 2026-08-07T14:38:38+09:00
   active_time 209/600h
   effort 209/600ph
+
+work_event WE-06bf04cd672c24660cbf703292ce8255755418e17f7a65eb468ac9053e30b01a:
+  model 1
+  task T_RUN_FIRST_PERSISTENT_E2E
+  kind start
+  occurred_at 2026-08-07T14:41:27+09:00
+  planned_value 1p
