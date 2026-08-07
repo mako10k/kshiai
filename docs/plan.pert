@@ -242,12 +242,12 @@ work_event WE-3542eeaa85062d5c70482f20c08ef76f08317897a1dbcf6e04e8e390b002a052:
 
 milestone BATTLE_PIPELINE_ACCEPTED:
   title "Hypothesis-first production battle pipeline accepted"
-  description "The most axial and current-main-patchable source projection causal receipt and guarded consumer slice is implemented before trial; residual observation items do not preempt that sequence"
+  description "The current-main action event evidence and semantic outputs are connected through one owner-grounded causal receipt and existing narrator consumer before trial; residual observation items do not preempt that sequence"
 
 task T_BATTLE_PIPELINE CICD_READY -> BATTLE_PIPELINE_ACCEPTED:
-  title "Implement try and accept the axial production battle pipeline slice"
-  description "Execute docs/battle-pipeline-production-rollout.pert from current main. First implement actual-turn source authoring and compact projections the proposal-to-result causal receipt and one guarded narration consumer; then run staging and explicitly authorized production trials. Select by hypothesis centrality and current-main patchability rather than by observation backlog order, and do not import the full PoC architecture."
-  duration 10d
+  title "Implement try and accept the causal production battle pipeline slice"
+  description "Execute docs/battle-pipeline-production-rollout.pert from current main. First assemble existing action resolution event source mechanical evidence and semantic result owners into a bounded causal receipt and ID-free narration projection then wire the existing narrator and run staging plus explicitly authorized production trials. Absorb source-authoring as an owner-grounded implementation property rather than porting the PoC five-artifact bundle. Select follow-on work by hypothesis centrality and current-main patchability rather than observation backlog order."
+  duration 9d
   requires:
     DEV 1
   owner "codex"

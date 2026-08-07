@@ -1,14 +1,14 @@
 # Existing .pert plans should normally be maintained through perttool commands; direct DSL editing bypasses goal/DAG owner-confirmation checks.
 project KSHIAI_BATTLE_PIPELINE_HYPOTHESIS_SLICE:
   version 6
-  title "Battle-pipeline hypothesis-first production slice"
-  description "Implement the most axial and current-main-patchable battle-pipeline hypotheses before observation: actual-turn source authoring with compact purpose projections, a proposal-to-committed-result causal receipt, and one guarded narration consumer. Observation backlog items are secondary evaluation lenses, not the source of implementation priority."
+  title "Battle-pipeline causal-slice implementation and trial"
+  description "Use current-main action resolutions event source links committed mechanical evidence semantic results and NarrationTurnView to implement the smallest axial causal pipeline slice before observation. The PoC source-authoring principle is absorbed into one owner-grounded receipt; its five-artifact future applicability bundle is not a prerequisite. Observation backlog items remain secondary trial scorecards."
   as_of 2026-08-07
   duration_unit day
   finish NEXT_HYPOTHESIS_SELECTED
   goal_owner user
   dag_owner user
-  target_duration 10d
+  target_duration 9d
 
 resource DEV:
   title "Developer"
@@ -19,93 +19,82 @@ resource OWNER:
   capacity 1
 
 milestone MAIN_BASE_FIXED:
-  title "Current main baseline fixed"
-  description "Implementation base is main commit 4c7ea5ccec31814a5fa38f1b9ea616ca50e764fe; the preserved PoC supplies hypothesis code and evidence only after current-main reduction and review"
+  title "Current main implementation seams fixed"
+  description "Base main commit 4c7ea5ccec31814a5fa38f1b9ea616ca50e764fe already has ResolvedBattleAction resolution stable action IDs TurnEvent sourceActionId committed mechanical evidence semantic reconciliation and NarrationTurnView"
   state reached
 
-milestone SOURCE_PROJECTION_IMPLEMENTED:
-  title "Actual-turn source authoring and compact projections implemented"
-
-milestone CAUSAL_RECEIPT_IMPLEMENTED:
-  title "Proposal-to-result causal receipt implemented"
+milestone CAUSAL_SLICE_IMPLEMENTED:
+  title "Owner-grounded causal receipt and narration projection implemented"
 
 milestone FIRST_CONSUMER_IMPLEMENTED:
-  title "First guarded pipeline consumer implemented"
+  title "Existing narrator wired as the guarded first consumer"
 
-milestone PIPELINE_IMPLEMENTATION_ACCEPTED:
-  title "Patchable hypothesis slice accepted locally"
+milestone LOCAL_IMPLEMENTATION_ACCEPTED:
+  title "Minimal causal pipeline accepted locally"
 
-milestone STAGING_TRIAL_COMPLETED:
-  title "Implemented pipeline tried in staging"
+milestone STAGING_ITERATION_COMPLETED:
+  title "Implemented causal pipeline tried and boundedly revised in staging"
 
-milestone GUARDED_TRIAL_DECIDED:
+milestone PRODUCTION_TRIAL_DECIDED:
   title "Guarded production trial explicitly decided"
 
-milestone GUARDED_TRIAL_COMPLETED:
+milestone PRODUCTION_TRIAL_COMPLETED:
   title "Guarded production trial completed or explicitly declined"
 
 milestone NEXT_HYPOTHESIS_SELECTED:
   title "Next axial hypothesis selected from implementation evidence"
 
-task T_IMPLEMENT_SOURCE_PROJECTION MAIN_BASE_FIXED -> SOURCE_PROJECTION_IMPLEMENTED:
-  title "Implement the source-authoring and projection axis on current main"
-  description "Reduce and port the relevant actual-turn source-authoring and compact purpose-projection ideas from the PoC into current main. Capture explicit values at their existing owner stages and expose only the bounded decision adjudication and narration slices needed by this vertical path. Define minimum executable schemas authority privacy and fallback invariants inside the implementation; do not run a separate exhaustive contract-freeze phase or import the PoC branch wholesale."
+task T_BUILD_CAUSAL_TURN_SLICE MAIN_BASE_FIXED -> CAUSAL_SLICE_IMPLEMENTED:
+  title "Build the owner-grounded causal turn receipt and narration projection"
+  description "Add a pure shared BattleTurnCausalReceipt builder and an ID-free perspective-safe NarrationCausalProjection. Assemble only explicit current-main owner outputs after semantic reconciliation: requested and effective actions resolution outcome and reason sourceActionId-linked events validated committed mechanical evidence semantic apply status accepted change and bounded before-to-after carry-forward state. Missing links remain unknown and prose is never mined. Add focused schemas builders and tests; do not port the PoC five-artifact applicability bundle create persistence or generalize the world model."
   duration 2d
   owner "codex"
   requires:
     DEV 1
 
-task T_IMPLEMENT_CAUSAL_RECEIPT SOURCE_PROJECTION_IMPLEMENTED -> CAUSAL_RECEIPT_IMPLEMENTED:
-  title "Connect proposals adjudication and committed effects in one receipt"
-  description "Build a bounded receipt over existing requested and effective actions engine decisions committed events mechanical effects accepted world or semantic changes observer-visible consequences and current-turn unresolved markers. Preserve existing BattleState engine repository and semantic authorities. Reject unsupported links and fall back to the legacy path; do not add persistence a canonical database general repair or a new LLM call."
+task T_WIRE_NARRATION_CONSUMER CAUSAL_SLICE_IMPLEMENTED -> FIRST_CONSUMER_IMPLEMENTED:
+  title "Wire the causal projection into the existing narrator path"
+  description "Construct the receipt in battle-service after semantic reconciliation and before buildNarrationTurnView then add the bounded causal projection to the existing narrator input behind a reversible default-off guard. Reuse the current narrator call and fallback; add no provider repository persistence or domain write and grant narration no action mechanics state winner rating or cognition authority."
+  duration 1d
+  owner "codex"
+  requires:
+    DEV 1
+
+task T_ACCEPT_CAUSAL_SLICE FIRST_CONSUMER_IMPLEMENTED -> LOCAL_IMPLEMENTATION_ACCEPTED:
+  title "Accept the connected minimal pipeline before trial"
+  description "Verify receipt derivation event and evidence linkage perspective filtering dangling-link refusal legacy fallback off-mode parity narrator-only authority and no added effectful calls. Run focused shared and backend tests full tests typecheck build git diff checks and both PERT checks. This accepts only the thin implementation concept and does not claim generalized pipeline correctness."
+  duration 1d
+  owner "codex"
+  requires:
+    DEV 1
+
+task T_TRY_AND_REVISE_STAGING LOCAL_IMPLEMENTATION_ACCEPTED -> STAGING_ITERATION_COMPLETED:
+  title "Try the implemented causal pipeline and make one bounded revision"
+  description "Deploy one accepted artifact to staging and run synthetic or disposable authenticated battles through baseline and guarded narration. Compare causal coherence concrete progression unsupported claims fallback privacy latency and cost then permit one bounded revision only to the receipt builder projection guard or narrator instruction followed by the same local gates and staging replay. Check open observation backlog items as secondary scorecards and retain any survivor without scheduling an automatic local fix."
   duration 2d
   owner "codex"
   requires:
     DEV 1
 
-task T_WIRE_FIRST_CONSUMER CAUSAL_RECEIPT_IMPLEMENTED -> FIRST_CONSUMER_IMPLEMENTED:
-  title "Wire narration as the first guarded pipeline consumer"
-  description "Pass the compact committed projection and causal receipt to the existing narrator request behind a reversible default-off guard. Reuse the existing narrator call and forbid changes to actions mechanics state winner rating character cognition or provider ordering. Add only the diagnostics needed for the first comparison."
-  duration 1d
-  owner "codex"
-  requires:
-    DEV 1
-
-task T_ACCEPT_IMPLEMENTED_PIPELINE FIRST_CONSUMER_IMPLEMENTED -> PIPELINE_IMPLEMENTATION_ACCEPTED:
-  title "Accept the implemented hypothesis slice before trial"
-  description "Run focused authority privacy malformed-input fallback and control-path regression tests plus full tests typecheck build and PERT checks. Require exact off-mode behavior and no unexpected provider repository persistence or domain writes. This is bounded engineering acceptance of the first concept slice, not proof of the generalized architecture."
-  duration 1d
-  owner "codex"
-  requires:
-    DEV 1
-
-task T_TRIAL_STAGING PIPELINE_IMPLEMENTATION_ACCEPTED -> STAGING_TRIAL_COMPLETED:
-  title "Try the implemented pipeline in staging"
-  description "Deploy the accepted immutable artifact to staging and run synthetic or disposable authenticated battles through the actual guarded consumer. Compare baseline and candidate causal clarity concrete progress unsupported claims fallback privacy latency and cost. Check open observation backlog items only as secondary scorecards and retain any continuing phenomenon without automatically scheduling a local patch."
-  duration 1d
-  owner "codex"
-  requires:
-    DEV 1
-
-task T_DECIDE_GUARDED_TRIAL STAGING_TRIAL_COMPLETED -> GUARDED_TRIAL_DECIDED:
-  title "Decide the bounded production trial from staging evidence"
-  description "Approve revise defer or reject a reversible production trial. If approved bind the exact artifact mode cohort ceiling comparison method limits rollback operator and hold time from the implemented behavior and staging evidence. This decision does not grant mechanical authority or authorize an unrelated backlog-fix queue."
+task T_DECIDE_PRODUCTION_TRIAL STAGING_ITERATION_COMPLETED -> PRODUCTION_TRIAL_DECIDED:
+  title "Decide a bounded guarded production trial from staging evidence"
+  description "Approve revise defer or reject one reversible production trial. If approved bind the exact artifact mode cohort ceiling comparison method quality privacy latency and cost limits rollback operator and hold time. The decision grants no mechanical authority and does not authorize a backlog-driven patch queue."
   duration 1d
   owner "user"
   requires:
     OWNER 1
 
-task T_TRIAL_GUARDED_RUNTIME GUARDED_TRIAL_DECIDED -> GUARDED_TRIAL_COMPLETED:
-  title "Run or record the guarded production trial decision"
-  description "For an approved cohort enable only the accepted guarded narration path and compare it with baseline while preserving mechanical authority and rollback. If the owner defers or rejects the trial record that disposition without deployment. Stop on factual invention privacy leakage mechanical divergence unexpected calls or rollback failure."
+task T_TRY_GUARDED_PRODUCTION PRODUCTION_TRIAL_DECIDED -> PRODUCTION_TRIAL_COMPLETED:
+  title "Run or record the guarded production trial disposition"
+  description "For an approved cohort enable only the accepted causal narration projection and compare it with baseline while preserving mechanics calls persistence and rollback. If deferred or rejected record that disposition without deployment. Stop on unsupported factual claims privacy leakage mechanical divergence unexpected calls or rollback failure."
   duration 1d
   owner "codex"
   requires:
     DEV 1
 
-task T_SELECT_NEXT_HYPOTHESIS GUARDED_TRIAL_COMPLETED -> NEXT_HYPOTHESIS_SELECTED:
-  title "Select the next axial and patchable hypothesis"
-  description "Rank adaptive adjudication active environment or world processes and any other surviving pipeline axes by centrality to the hypothesis current-main patchability expected user value and evidence from the completed slice. Observation backlog items contribute only when they still reproduce; they do not replace the hypothesis sequence. Record whether to extend revise or stop before beginning another slice."
+task T_SELECT_NEXT_HYPOTHESIS PRODUCTION_TRIAL_COMPLETED -> NEXT_HYPOTHESIS_SELECTED:
+  title "Select the next axial and current-main-patchable hypothesis"
+  description "Rank the environment or world-process proposal-to-adjudication path adaptive adjudication and any surviving axes by centrality patchability expected user value and first-slice evidence. Treat buildHappening as the leading concrete seam unless evidence shows action ambiguity is more limiting. Observation backlog items contribute only when they still reproduce and do not replace the hypothesis sequence."
   duration 1d
   owner "user"
   requires:
