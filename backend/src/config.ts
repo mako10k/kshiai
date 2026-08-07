@@ -41,6 +41,20 @@ function parseBoolean(value: string | undefined): boolean {
   return value === "1" || value?.toLowerCase() === "true";
 }
 
+export type BattleCausalNarrationMode = "off" | "narration_guarded";
+
+export function parseBattleCausalNarrationMode(
+  value: string | undefined,
+): BattleCausalNarrationMode {
+  const normalized = value?.trim().toLowerCase() || "off";
+  if (normalized === "off" || normalized === "narration_guarded") {
+    return normalized;
+  }
+  throw new Error(
+    "BATTLE_CAUSAL_NARRATION_MODE must be off or narration_guarded",
+  );
+}
+
 function parseDatabaseSchema(value: string | undefined): string {
   const schema = value?.trim() || "public";
   if (!/^[a-z_][a-z0-9_]*$/.test(schema)) {
@@ -203,4 +217,7 @@ export const config = {
     imageModel: process.env.VENICE_IMAGE_MODEL ?? "",
   },
   battleTurnLimit: Number(process.env.BATTLE_TURN_LIMIT ?? 20),
+  battleCausalNarrationMode: parseBattleCausalNarrationMode(
+    process.env.BATTLE_CAUSAL_NARRATION_MODE,
+  ),
 };

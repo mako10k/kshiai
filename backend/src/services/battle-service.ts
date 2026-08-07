@@ -84,9 +84,12 @@ import {
   type QuantizedMechanicalEvidence,
   type ServerOnlyReserveCue,
   type NarrationPerceptionView,
+  type NarrationCausalProjection,
   buildNarrationIdentifierCatalog,
   buildNarrationPerceptionView,
   buildNarrationTurnView,
+  buildBattleTurnCausalReceipt,
+  buildNarrationCausalProjection,
   composeNarratorTurn,
   narrationParticipantLabels,
   narratorRecognitionSubjects,
@@ -103,7 +106,7 @@ import {
   recordBattleFinished,
   recordSheetSnapshot,
 } from "./balance-observe.js";
-import { config } from "../config.js";
+import { config, type BattleCausalNarrationMode } from "../config.js";
 import { newId } from "../id.js";
 import type { LlmProvider } from "../llm/index.js";
 import type {
@@ -2156,6 +2159,46 @@ function narrationPerceptionViewForState(input: {
       : null;
 }
 
+/** Build the optional narrator-only causal input without changing turn state. */
+export function buildGuardedNarrationCausalProjection(input: {
+  mode: BattleCausalNarrationMode;
+  before: BattleState;
+  after: BattleState;
+  actions: readonly ResolvedBattleAction[];
+  events: readonly TurnEvent[];
+  mechanicalEvidence: readonly CommittedMechanicalEvidence[];
+  mechanicalEvidenceStatus: EvidenceValidationStatus;
+  perception: NarrationPerceptionView;
+  participantLabels: { a: string; b: string };
+}): NarrationCausalProjection | undefined {
+  if (input.mode === "off") return undefined;
+  const semanticTransition = input.after.latestSemanticTransition;
+  if (!semanticTransition) return undefined;
+  try {
+    const built = buildBattleTurnCausalReceipt({
+      turn: input.after.turn,
+      before: input.before,
+      after: input.after,
+      actions: input.actions,
+      events: input.events,
+      mechanicalEvidence: input.mechanicalEvidence,
+      mechanicalEvidenceStatus: input.mechanicalEvidenceStatus,
+      semanticTransition,
+    });
+    if (!built.ok) return undefined;
+    return buildNarrationCausalProjection({
+      receipt: built.receipt,
+      perception: input.perception,
+      participantLabels: input.participantLabels,
+      ...(input.after.observationStatePublic
+        ? { publicObservation: input.after.observationStatePublic }
+        : {}),
+    });
+  } catch {
+    return undefined;
+  }
+}
+
 function narrationIdentifierCatalog(input: {
   state: BattleState;
   perspective: NarrationPerspective;
@@ -2641,6 +2684,19 @@ async function advanceTurnWithLease(input: {
     perspective,
     focus,
   });
+  const causalProjection = perceptionView
+    ? buildGuardedNarrationCausalProjection({
+        mode: config.battleCausalNarrationMode,
+        before: state,
+        after: semanticTurn.state,
+        actions: resolved.actions,
+        events,
+        mechanicalEvidence: semanticTurn.mechanicalEvidence,
+        mechanicalEvidenceStatus: semanticTurn.mechanicalEvidenceStatus,
+        perception: perceptionView,
+        participantLabels: narrationParticipantLabels(perceptionView),
+      })
+    : undefined;
   const narrationView =
     perceptionView &&
     next.semanticState &&
@@ -2686,6 +2742,7 @@ async function advanceTurnWithLease(input: {
           registryB: next.perceptionRegistryB,
           events,
           actionBeats,
+          ...(causalProjection ? { causalProjection } : {}),
           battlefield: next.battlefield,
           narratorContinuity: next.narratorContinuity,
         })
