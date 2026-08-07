@@ -2,14 +2,14 @@
 project KSHIAI_BATTLE_PIPELINE_WORK_V4:
   version 6
   title "Observation-driven battle-pipeline renewal"
-  description "Use persistent production E2E evidence to order axial battle-pipeline slices. Preserve the causal receipt, isolated E2E realm, and Site A, Site B, narrator I/O DAG. The v0.11.1 trial accepted 20 of 21 fulfilled proposals and all 20 resolved actions, then exposed a water-pipe event whose semantic and world transitions were both skipped. Build one proposal-to-canonical environment world-process slice before expanded adjudication. Keep non-critical narrator quality issues pending until pipeline maturity; include them only when an axial slice naturally changes their input or authority boundary."
+  description "Use persistent production E2E evidence to order axial battle-pipeline slices. Preserve the causal receipt, isolated E2E realm, and Site A, Site B, narrator I/O DAG. The v0.12.0 trial safely rejected all eight ungrounded environment proposals but accepted none, exposing a representability mismatch between supervisor surface motion and canonical operations. Align that proposal-to-transition contract before expanded adjudication. Keep non-critical narrator quality issues pending until pipeline maturity; include them only when an axial slice naturally changes their input or authority boundary."
   as_of 2026-08-07
   duration_unit point
-  velocity 18000p/3013h
-  finish ENVIRONMENT_WORLD_PROCESS_TRIAL_COMPLETED
+  velocity 6000p/1141h
+  finish ENVIRONMENT_PROPOSAL_ALIGNMENT_TRIAL_COMPLETED
   goal_owner user
   dag_owner user
-  target_duration 31p
+  target_duration 33p
 
 resource DEV:
   title "Developer"
@@ -83,6 +83,12 @@ milestone ENVIRONMENT_WORLD_PROCESS_SLICE_IMPLEMENTED:
 
 milestone ENVIRONMENT_WORLD_PROCESS_TRIAL_COMPLETED:
   title "Environment world-process slice released and observed"
+
+milestone ENVIRONMENT_PROPOSAL_TRANSITION_ALIGNED:
+  title "Environment proposals target representable canonical transitions"
+
+milestone ENVIRONMENT_PROPOSAL_ALIGNMENT_TRIAL_COMPLETED:
+  title "Aligned environment proposal contract released and observed"
 
 task T_BUILD_CAUSAL_TURN_SLICE MAIN_BASE_FIXED -> CAUSAL_SLICE_IMPLEMENTED:
   title "Build the owner-grounded causal turn receipt and narration projection"
@@ -259,7 +265,24 @@ task T_TRY_ENVIRONMENT_WORLD_PROCESS_SLICE ENVIRONMENT_WORLD_PROCESS_SLICE_IMPLE
   title "Release and observe the environment world-process slice"
   description "Run full local acceptance then release the exact artifact through feature review annotated tag Stage and protected Promote with the new path always enabled. Execute at most two retained persistent production E2E battles to obtain one supervisor-eligible environment proposal. Verify that every proposal has an explicit receipt, rejected or skipped proposals create no resolved event, accepted proposals advance canonical state before any next-turn effect, and surface cause accepted result and later effect remain linked. Compare OBS-20260807-02 OBS-20260807-03 and OBS-20260807-06 as scorecards, while leaving narrator-only wording repetition guard and repair pending except for incidental improvement from the accepted canonical input."
   duration 1p
-  status active
+  status done
+  owner "codex"
+  requires:
+    DEV 1
+
+task T_ALIGN_ENVIRONMENT_PROPOSAL_TRANSITION ENVIRONMENT_WORLD_PROCESS_TRIAL_COMPLETED -> ENVIRONMENT_PROPOSAL_TRANSITION_ALIGNED:
+  title "Align environment proposals with representable canonical transitions"
+  description "Use OBS-20260807-08 rather than narrator symptoms to align the existing two-stage environment pipeline. Keep the supervisor proposal non-authoritative, but ask it for one battlefield-grounded cause and one persistent result expressible as either a new non-character entity or a real location or active-state change. Exclude transient-only intensification, flicker, reflection, waves, and mood unless they leave such a result. Tell the existing world reconciler that battlefield and worldBefore may ground the cause without a pre-committed proposal event and that an accepted decision must include the matching canonical operation. Preserve server validation, no same-turn mechanics, no direct proposal effect, no extra provider call, and no narrator output guard. Add focused prompt-contract and rejection-boundary tests."
+  duration 1p
+  status done
+  owner "codex"
+  requires:
+    DEV 1
+
+task T_TRY_ALIGNED_ENVIRONMENT_PROPOSALS ENVIRONMENT_PROPOSAL_TRANSITION_ALIGNED -> ENVIRONMENT_PROPOSAL_ALIGNMENT_TRIAL_COMPLETED:
+  title "Release and observe aligned environment proposals"
+  description "Release the prompt-contract alignment through the reviewed tag Stage and protected Promote path with the environment pipeline always enabled. Run one retained production E2E battle after provider availability is restored. Compare accepted rejected and no-canonical-change density; require every accepted decision to carry a qualifying operation source event resolved event and bounded following-turn effect while rejected proposals remain private and mechanically inert. Re-evaluate OBS-20260807-02 OBS-20260807-06 and OBS-20260807-08. Observe narrator output only for incidental improvement from accepted canonical input and keep standalone narrator work pending."
+  duration 1p
   owner "codex"
   requires:
     DEV 1
@@ -592,3 +615,26 @@ work_event WE-177dd2521387d2460f8ceefde59dc01704e44d120a70c2c1cf02bae02faf97ee:
   kind start
   occurred_at 2026-08-07T19:38:02+09:00
   planned_value 1p
+
+work_event WE-32d6c9208d72e55596264078ec9e9aa90e2cc741a648398c4c72e98d4a1a5088:
+  model 1
+  task T_TRY_ENVIRONMENT_WORLD_PROCESS_SLICE
+  kind finish
+  occurred_at 2026-08-07T20:03:55+09:00
+  active_time 1553/3600h
+  effort 1553/3600ph
+
+work_event WE-b1a6e6fe892b0ec947a6b12d5a684e35a18a8d7981b5954d0a1fc97ab5f1d6ac:
+  model 1
+  task T_ALIGN_ENVIRONMENT_PROPOSAL_TRANSITION
+  kind start
+  occurred_at 2026-08-07T20:08:55+09:00
+  planned_value 1p
+
+work_event WE-75fd0f3372136c18e3c81f7769c5da20152392d1dadc7482fe79694479453592:
+  model 1
+  task T_ALIGN_ENVIRONMENT_PROPOSAL_TRANSITION
+  kind finish
+  occurred_at 2026-08-07T20:11:49+09:00
+  active_time 29/600h
+  effort 29/600ph

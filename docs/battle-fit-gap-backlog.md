@@ -260,6 +260,7 @@ criticalとして即応対象にする。選択したパイプライン軸が同
 | OBS-20260807-05 | character agentの応答は成立するが、提案した次ターン行動がサーバ契約に一致せず全件不採用になる | `v0.11.0` 本番E2E battle `btl_442a384a57ea0952f0d215d4` の実呼出し15件は全てfulfilledした一方、提案15件全てが`schema_invalid`。`v0.11.1`では20/21提案がacceptedとなり同じ全件不採用は再現しなかった | stateとspeechは進むが次ターン行動が更新されず、既定行動の反復、行動多様性低下、提案から裁定までの観測不能が継続する | resolved for schema-shape cause in v0.11.1 |
 | OBS-20260807-06 | 環境イベントが成立した表示eventとして公開される一方、対応する正準環境推移がskippedになる | `v0.11.1` 本番E2E battle `btl_72bbc0ce65b40cc7ee290931` のturn 8で、水道管破裂と水溜まり拡大がresolved eventと公開文に現れたが、semantic/world transitionはともに`skipped`でrevisionは変化しなかった | 表示された環境変化や足場への影響を次ターンの判断に使っても正準世界には存在せず、因果・継続性・裁定への信頼を損なう | open; selected as next pipeline evidence |
 | OBS-20260807-07 | action kind自体は利用可能でも、指定instrumentがそのkindに利用可能でなく提案が拒否される | 同battleのturn 6 Site Bは`defend`を提案したが、`profile:b:weapon`のaffordanceは`defend`非対応で`unavailable_instrument`となった。全21 fulfilled proposal中1件 | 少数turnで次行動意図が更新されず、action proposalから実行までの連続性と観測密度が下がる | open; low-frequency residual |
+| OBS-20260807-08 | 環境提案は安全に棄却されるが、表層提案と正準operationの表現契約が揃わず、環境推移が一件も成立しない | `v0.12.0` 本番E2E battle `btl_fdad569f54082b7981f9704f` の環境receipt 8件はaccepted 0、`decision_rejected` 7、`no_canonical_change` 1。後者は街灯変化をdurableと判定したがoperationを生成しなかった | 誤った直接効果は防げても、環境が正準世界を進めず、後続行動・裁定・ナレーションへ有用な入力を供給できない | open; next pipeline priority |
 
 `OBS-20260807-01` のstaging再現と部分改善の根拠は
 [`evidence/staging-causal-narration-0.7.2-2026-08-07.md`](evidence/staging-causal-narration-0.7.2-2026-08-07.md)
@@ -753,3 +754,48 @@ flowchart TD
   後続効果を持たせるsliceを選ぶ根拠が得られた。
 - ナレータ単独の言い回し、反復、repair、guardは着手しない。環境sliceがaccepted
   canonical changeを入力へ自然に供給した場合の同時改善だけを再観測する。
+
+## 16. 2026-08-07 本番E2E観測追補: v0.12.0 environment world-process
+
+### 観測対象
+
+- release `v0.12.0`、revision `kshiai-api-00045-dez`、本番E2E battle
+  `btl_fdad569f54082b7981f9704f`、observation run
+  `github-31171739984-1`。
+- 18件のturn record、17件のcanonical transition、18件のpipeline traceを
+  読み戻した。既存の専用2アカウントと全fixtureは再利用され、一般realmへの
+  character漏洩は観測されなかった。
+- supervisor proposalはturn 3、6、7、10、13、14、15、16の8件。receiptは
+  `decision_rejected` 7件、`no_canonical_change` 1件、accepted 0件だった。
+
+### 棄却境界の確認
+
+- 8件すべてで`resolvedEvent=null`、`sourceEventIds=[]`、`effectKeys=[]`だった。
+  proposal由来のpublic situation eventはなく、semantic/world revisionはいずれも
+  0から増加しなかった。
+- turn 3、7、10、16にはそれぞれ対戦相手のHP低下があるが、全て同turnの
+  character actionに対応するdamage eventを持つ。棄却された瓦、水膜、街灯等を
+  原因とするHP effectはなく、`OBS-20260807-02`の直接注入経路は再現しなかった。
+- `OBS-20260807-06`で見られた「正準化されないproposalを成立済みeventとして公開」
+  する事象も棄却経路では再現しなかった。accepted経路は未観測なので、因果を
+  正準推移から後続効果まで通せたとはまだ判断しない。
+
+### OBS-20260807-08
+
+- 7件の判定理由は、提案が一時的な雨、水膜、反射、照明変動に留まり、永続entity
+  追加または既存entityのlocation/active変更として確定できないというものだった。
+- turn 10だけはreconcilerが街灯点滅をdurableな照明条件変化と述べてaccepted判定を
+  返したが、対応するpatch operationが空だったためserverが
+  `no_canonical_change`として棄却した。
+- したがって安全境界は機能した一方、supervisorが生成する表層motionとreconcilerが
+  受理できる正準operationの表現契約が一致せず、環境world-processの有用な出力密度は
+  0/8だった。この事象を次のパイプライン優先順位の根拠として保持する。
+
+### 試行上限とナレータ境界
+
+- accepted経路を得るための第2試行 run 31172362244 は、battle作成時のVenice API
+  HTTP 402残高不足で停止し、battle/turn/receiptを一件も生成しなかった。曖昧な
+  再送はせず、観測標本には含めない。
+- 公開文には滑りや反射等の自由な環境描写が残るが、acceptedな正準環境入力が一件も
+  なかったため、ナレータ品質の修正判断には使わない。非クリティカルなナレータ課題は
+  pendingを維持し、次の環境入力改善で同時に変化した範囲だけを再観測する。

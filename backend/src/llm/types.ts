@@ -419,8 +419,8 @@ export interface LlmProvider {
     sensoryEvidenceStatus?: "valid" | "rejected" | "unavailable";
   }>;
   /**
-   * Supervisor: invent a field-driven happening that breaks a stagnant fight.
-   * Keep it coarse; engine applies light mechanical pressure separately.
+   * Supervisor: propose a battlefield-grounded non-character action with a
+   * persistent result. The canonical reconciler owns acceptance and effects.
    */
   proposeHappening(input: {
     scene: string;

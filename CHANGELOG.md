@@ -5,6 +5,20 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 
 ## [Unreleased]
 
+### Changed
+
+- Aligns non-authoritative environment proposals with persistent transition
+  shapes the canonical world reconciler can represent, while keeping final
+  acceptance and effects server-validated.
+- Clarifies that the existing battlefield and canonical world may ground a
+  proposal cause, and that an accepted environment decision must include its
+  matching canonical operation.
+
+### Operations
+
+- Adds no schema, provider call, direct environment mechanic, narrator guard,
+  or runtime flag. The always-enabled world-process boundary is unchanged.
+
 ## [0.12.0] - 2026-08-07
 
 ### Added

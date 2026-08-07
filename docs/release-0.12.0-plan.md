@@ -24,17 +24,23 @@ Release the next axial slice selected by the retained v0.11.1 observation:
 - [x] Local changes passed all 326 tests, root/deployment typecheck, production
   build, diff checks, and PERT analysis.
 - [x] Feature squash-merged into `main` at `f12a32c`.
-- [ ] Release PR versions every workspace and lockfile as `0.12.0`, adds dated
-  changelog notes, passes the four required checks, and merges to `main`.
-- [ ] Annotated `v0.12.0` resolves to the exact merged release commit, and
+- [x] Release PR #53 versions every workspace and lockfile as `0.12.0`, adds
+  dated changelog notes, passes the four required checks, and merges to `main`
+  at `70d82eb84a284e3b1d60a01b4e6d727bac30e32e`.
+- [x] Annotated `v0.12.0` resolves to the exact merged release commit, and
   `node scripts/verify-release.mjs v0.12.0` passes against the tag.
-- [ ] `Stage release` creates and verifies one backend revision and Worker
-  version from the tagged source.
-- [ ] `Promote release` moves those exact successful Stage artifacts to 100
-  percent, passes production smokes, and publishes the GitHub Release.
-- [ ] `Observe persistent E2E battle` retains one or, only if needed to obtain a
-  supervisor proposal, two new cross-account battles and reads the environment
-  receipt/canonical transition distribution from their pipeline traces.
+- [x] `Stage release` run 31171217758 creates and verifies backend revision
+  `kshiai-api-00045-dez`, image digest
+  `sha256:cf880d55d2c5e3e8aea864bca40b1be3ae261716b69474aedbfa066d5ef0b493`,
+  and Worker version `dbc162ce-3b30-47dc-9370-f12a787f5f98`.
+- [x] `Promote release` run 31171572264 moves those exact successful Stage
+  artifacts to 100 percent, passes production smokes, and publishes the GitHub
+  Release.
+- [x] `Observe persistent E2E battle` run 31171739984 retains cross-account
+  battle `btl_fdad569f54082b7981f9704f` and its 18 turn records, 17 canonical
+  transitions, and eight environment receipts. The bounded second attempt run
+  31172362244 stopped before battle creation on provider HTTP 402, so it adds no
+  battle or pipeline sample and was not retried.
 
 ## Operational boundary
 
@@ -63,3 +69,22 @@ same retained turn. A rejected/skipped proposal must create no resolved fact; an
 accepted proposal must cross canonical state before any later effect. Leave
 standalone narrator wording/repetition work pending unless the pipeline slice
 itself supplies the needed input.
+
+## Production observation result
+
+- All eight observed supervisor proposals have an explicit receipt. Seven are
+  `decision_rejected`; one is `no_canonical_change` after the model called a
+  street-lamp change durable but emitted no qualifying operation. No accepted
+  receipt was observed.
+- Every rejected proposal has an empty `sourceEventIds` and `effectKeys`, a null
+  `resolvedEvent`, no proposal-derived public situation event, and no semantic
+  or world revision increase. HP losses on turns 3, 7, 10, and 16 remain linked
+  to combat damage events rather than to the rejected environment proposals.
+- This verifies the rejection safety boundary for `OBS-20260807-02` and prevents
+  the rejected-path publication seen in `OBS-20260807-06`. It does not verify
+  the accepted proposal -> canonical transition -> following-turn effect path.
+- The next priority stays inside the environment pipeline: align supervisor
+  proposal authoring and world reconciliation around a representable durable
+  transition. Adaptive expanded adjudication remains the next alternative.
+  Non-critical narrator symptoms remain pending; this release supplied no
+  accepted canonical environment input with which to re-evaluate them.
