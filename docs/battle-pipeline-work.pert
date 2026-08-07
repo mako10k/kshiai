@@ -5,7 +5,7 @@ project KSHIAI_BATTLE_PIPELINE_WORK_V4:
   description "Use persistent production E2E evidence to order axial battle-pipeline slices. Preserve the causal receipt, isolated E2E realm, and Site A, Site B, narrator I/O DAG. The v0.11.0 trial removed provider-level rejection but found all 15 proposals rejected by the server schema, so align the proposal shape and retry before selecting the environment-process or expanded-adjudication axis. Keep non-critical narrator quality issues pending until pipeline maturity; include them only when an axial slice naturally changes their input or authority boundary."
   as_of 2026-08-07
   duration_unit point
-  velocity 2880p/563h
+  velocity 450p/41h
   finish AGENT_ACTION_PROPOSAL_ALIGNMENT_TRIAL_COMPLETED
   goal_owner user
   dag_owner user
