@@ -226,6 +226,7 @@ task T_ALIGN_AGENT_ACTION_PROPOSAL_SHAPE FOLLOWING_PIPELINE_AXIS_SELECTED -> AGE
   title "Align character-agent proposal output with action-kind contracts"
   description "Make the provider prompt express action proposals as explicit action-kind-specific JSON variants so skill basic attack defend rest and wait omit free-action-only explanation and subject fields while free action keeps its grounded attempt fields. Preserve the server validator raw bounded proposal receipt character state and speech mechanical authority and narrator policy. Add focused prompt-contract regression coverage; do not add a narrator guard or environment mechanics."
   duration 1p
+  status active
   owner "codex"
   requires:
     DEV 1
@@ -514,3 +515,10 @@ work_event WE-25456dcb49fa0607dd242dd990715980dceca159e4a6a35b245956ed3d518ed6:
   occurred_at 2026-08-07T18:41:45+09:00
   active_time 37/1200h
   effort 37/1200ph
+
+work_event WE-d43ff1d17a697e083c644228bdb79f51c1de604c2699a4fc57ecd50fdbb4a10a:
+  model 1
+  task T_ALIGN_AGENT_ACTION_PROPOSAL_SHAPE
+  kind start
+  occurred_at 2026-08-07T18:43:41+09:00
+  planned_value 1p
