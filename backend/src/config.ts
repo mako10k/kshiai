@@ -173,9 +173,13 @@ export const config = {
     .filter((value, index, values) =>
       ["xai", "venice"].includes(value) && values.indexOf(value) === index,
     ) as Array<"xai" | "venice">,
-  llmQuotaCooldownMs: Math.max(
+  llmProviderCooldownMs: Math.max(
     60_000,
-    Number(process.env.LLM_QUOTA_COOLDOWN_MS ?? 60 * 60 * 1000),
+    Number(
+      process.env.LLM_PROVIDER_COOLDOWN_MS ??
+        process.env.LLM_QUOTA_COOLDOWN_MS ??
+        60 * 60 * 1000,
+    ),
   ),
   xai: {
     apiKey: process.env.XAI_API_KEY ?? "",

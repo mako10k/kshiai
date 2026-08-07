@@ -72,9 +72,11 @@ npm run dev:frontend  # http://127.0.0.1:5188
 ```
 
 既定の `LLM_PROVIDER=mock` なら API キーなしで UI フローを通せます。  
-本番では `LLM_PROVIDER_ORDER` の順に試行します。利用枠／レート上限になった
-プロバイダは既定で1時間スキップし、次へフォールバックします。mock は実プロバイダ
-列へ暗黙追加されず、`NODE_ENV=production` では選択できません。
+本番では `LLM_PROVIDER_ORDER` の順を保ちます。DNS解決不能または課金・残高不足で
+provider自体を利用できない場合だけ、既定で1時間スキップして次へ進みます。429は
+同じproviderで最大2回、503は同じproviderで1回だけ再試行し、timeoutを含めて
+別providerへは切り替えません。mock は実provider列へ暗黙追加されず、
+`NODE_ENV=production` では選択できません。
 キャラクター本体の生成・調整と最終審判は engine モデルを使い、実況、キャラ状態、
 人物メタデータ、戦場、ケース方針などは fast モデルを使います。
 
@@ -83,7 +85,7 @@ npm run dev:frontend  # http://127.0.0.1:5188
 LLM_PROVIDER=xai
 LLM_PROVIDER_ORDER=xai,openai,venice
 ALLOW_MOCK_FALLBACK=false
-LLM_QUOTA_COOLDOWN_MS=3600000
+LLM_PROVIDER_COOLDOWN_MS=3600000
 IMAGE_PROVIDER_ORDER=xai,venice
 XAI_API_KEY=xai-...
 XAI_IMAGE_MODEL=grok-imagine-image

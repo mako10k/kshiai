@@ -1,28 +1,21 @@
 import type { LlmProvider } from "./types.js";
+import { classifyLlmProviderError } from "./provider-errors.js";
 
 type Clock = () => number;
 
-function errorStatus(error: unknown): number | null {
-  if (!error || typeof error !== "object") return null;
-  const status = (error as { status?: unknown }).status;
-  return typeof status === "number" ? status : null;
-}
-
-export function isQuotaLimitError(error: unknown): boolean {
-  const status = errorStatus(error);
-  if (status === 429) return true;
-  if (status !== 402 && status !== 403) return false;
-  const message = error instanceof Error ? error.message : String(error);
-  return /credit|quota|spend|billing|usage limit|rate limit/i.test(message);
+export function isProviderUnavailableError(error: unknown): boolean {
+  const reason = classifyLlmProviderError(error);
+  return reason === "billing" || reason === "dns";
 }
 
 /**
  * Route every LlmProvider method through an ordered provider list.
- * Quota-limited providers are skipped in memory for the configured cooldown.
+ * Only provider-unavailable DNS or billing failures enter cooldown and permit
+ * the next provider. Timeout, 429, 503, and operation errors remain terminal.
  */
 export function createFallbackLlmProvider(
   providers: LlmProvider[],
-  quotaCooldownMs: number,
+  providerCooldownMs: number,
   now: Clock = Date.now,
 ): LlmProvider {
   if (providers.length === 0) {
@@ -55,15 +48,17 @@ export function createFallbackLlmProvider(
             return await method.apply(provider, args);
           } catch (error) {
             lastError = error;
-            if (isQuotaLimitError(error)) {
-              cooldownUntil.set(provider, now() + quotaCooldownMs);
+            const reason = classifyLlmProviderError(error);
+            if (isProviderUnavailableError(error)) {
+              cooldownUntil.set(provider, now() + providerCooldownMs);
               console.warn(
-                `[llm-router] ${provider.name} quota-limited; cooldown=${Math.round(quotaCooldownMs / 1000)}s`,
+                `[llm-router] ${provider.name} unavailable reason=${reason}; cooldown=${Math.round(providerCooldownMs / 1000)}s; trying next provider`,
               );
             } else {
               console.warn(
-                `[llm-router] ${provider.name} ${String(property)} failed; trying next provider`,
+                `[llm-router] ${provider.name} ${String(property)} failed reason=${reason}; provider fallback disabled`,
               );
+              throw error;
             }
           }
         }

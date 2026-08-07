@@ -48,5 +48,5 @@ export function createLlmProvider(): LlmProvider {
       "No usable LLM provider is configured. Set provider credentials, or explicitly select mock outside production.",
     );
   }
-  return createFallbackLlmProvider(providers, config.llmQuotaCooldownMs);
+  return createFallbackLlmProvider(providers, config.llmProviderCooldownMs);
 }
