@@ -103,6 +103,7 @@ task T_CHOOSE_NEXT_PIPELINE_AXIS PRODUCTION_TRIAL_COMPLETED -> NEXT_HYPOTHESIS_S
   title "Select the next axial and current-main-patchable hypothesis"
   description "Rank the environment or world-process proposal-to-adjudication path adaptive adjudication and any surviving axes by centrality patchability expected user value and first-slice evidence. Treat buildHappening as the leading concrete seam unless evidence shows action ambiguity is more limiting. Observation backlog items contribute only when they still reproduce and do not replace the hypothesis sequence."
   duration 1p
+  status active
   owner "user"
   requires:
     OWNER 1
@@ -196,3 +197,10 @@ work_event WE-5acd53788fa9ac6113b969790795f09f1ce2f4a544ff7cfb76119120499c0f4e:
   occurred_at 2026-08-07T13:36:40+09:00
   active_time 0.05h
   effort 0.05ph
+
+work_event WE-4c84cd90a84b4da333f04971c387b622fdcdc16c4f15b53d93deb00f39884f8f:
+  model 1
+  task T_CHOOSE_NEXT_PIPELINE_AXIS
+  kind start
+  occurred_at 2026-08-07T13:55:56+09:00
+  planned_value 1p
