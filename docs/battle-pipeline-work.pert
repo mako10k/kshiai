@@ -2,14 +2,14 @@
 project KSHIAI_BATTLE_PIPELINE_WORK_V4:
   version 6
   title "Observation-driven battle-pipeline renewal"
-  description "Use persistent production E2E evidence to order axial battle-pipeline slices. Preserve the causal receipt, isolated E2E realm, and Site A, Site B, narrator I/O DAG. The v0.12.0 trial safely rejected all eight ungrounded environment proposals but accepted none, exposing a representability mismatch between supervisor surface motion and canonical operations. Align that proposal-to-transition contract before expanded adjudication. Keep non-critical narrator quality issues pending until pipeline maturity; include them only when an axial slice naturally changes their input or authority boundary."
+  description "Use persistent production E2E evidence to order axial battle-pipeline slices. Preserve the causal receipt, isolated E2E realm, and Site A, Site B, narrator I/O DAG. The v0.12.0 trial safely rejected all eight ungrounded environment proposals but accepted none, exposing a representability mismatch between supervisor surface motion and canonical operations. The aligned proposal trial remains required, while its timeout incident adds a separate provider-routing correction: retry 429 and bounded 503 only within the same provider, never provider-fallback on timeout, rate limit, or 503, and reserve one-hour provider fallback for provider-unavailable failures such as DNS and billing. Keep non-critical narrator quality issues pending until pipeline maturity; include them only when an axial slice naturally changes their input or authority boundary."
   as_of 2026-08-07
   duration_unit point
   velocity 6000p/1141h
   finish ENVIRONMENT_PROPOSAL_ALIGNMENT_TRIAL_COMPLETED
   goal_owner user
   dag_owner user
-  target_duration 33p
+  target_duration 35p
 
 resource DEV:
   title "Developer"
@@ -88,7 +88,7 @@ milestone ENVIRONMENT_PROPOSAL_TRANSITION_ALIGNED:
   title "Environment proposals target representable canonical transitions"
 
 milestone ENVIRONMENT_PROPOSAL_ALIGNMENT_TRIAL_COMPLETED:
-  title "Aligned environment proposal contract released and observed"
+  title "Aligned environment proposal contract observed with normalized provider routing"
 
 task T_BUILD_CAUSAL_TURN_SLICE MAIN_BASE_FIXED -> CAUSAL_SLICE_IMPLEMENTED:
   title "Build the owner-grounded causal turn receipt and narration projection"
@@ -275,6 +275,15 @@ task T_ALIGN_ENVIRONMENT_PROPOSAL_TRANSITION ENVIRONMENT_WORLD_PROCESS_TRIAL_COM
   description "Use OBS-20260807-08 rather than narrator symptoms to align the existing two-stage environment pipeline. Keep the supervisor proposal non-authoritative, but ask it for one battlefield-grounded cause and one persistent result expressible as either a new non-character entity or a real location or active-state change. Exclude transient-only intensification, flicker, reflection, waves, and mood unless they leave such a result. Tell the existing world reconciler that battlefield and worldBefore may ground the cause without a pre-committed proposal event and that an accepted decision must include the matching canonical operation. Preserve server validation, no same-turn mechanics, no direct proposal effect, no extra provider call, and no narrator output guard. Add focused prompt-contract and rejection-boundary tests."
   duration 1p
   status done
+  owner "codex"
+  requires:
+    DEV 1
+
+task T_NORMALIZE_LLM_PROVIDER_ROUTING ENVIRONMENT_PROPOSAL_TRANSITION_ALIGNED -> ENVIRONMENT_PROPOSAL_ALIGNMENT_TRIAL_COMPLETED:
+  title "Normalize LLM timeout retry and provider-fallback policy"
+  description "Extend the too-short per-operation LLM deadlines exposed by the exact 12-second xAI and OpenAI concretizeBattlefield aborts. Retry HTTP 429 within the same provider with bounded backoff and retry HTTP 503 once within that same provider; after exhaustion return that provider error without moving to another provider. Timeout never retries or provider-fallbacks. Only provider-unavailable DNS and billing or exhausted-credit failures enter the existing one-hour in-memory cooldown and permit the ordered next provider. Other contract parse and HTTP failures remain terminal. Preserve provider order models call authority and mock policy; add focused classification retry cooldown and no-fallback tests."
+  duration 2p
+  status planned
   owner "codex"
   requires:
     DEV 1
