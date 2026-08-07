@@ -72,6 +72,7 @@ lack a committed start baseline and remain excluded.
 |---|---:|---|---|---:|---:|---:|---|---|
 | `T_BUILD_CAUSAL_TURN_SLICE` | 2p | 2026-08-07T11:23:39+09:00 | 2026-08-07T11:37:26+09:00 | 827s (`827/3600h`) | `827/3600h` | `827/3600ph` | complete: focused 7 tests, shared 184 tests, shared typecheck and build passed | start `21bc8c6`; implementation `3e26227`; finish `34bc4cd` |
 | `T_WIRE_NARRATION_CONSUMER` | 1p | 2026-08-07T11:40:12+09:00 | 2026-08-07T11:47:05+09:00 | 413s (`413/3600h`) | `413/3600h` | `413/3600ph` | complete: focused 16 tests, root typecheck, backend typecheck and build passed | start `46a54cc`; implementation `3f71e72`; finish `e6bd6c5` |
+| `T_ACCEPT_CAUSAL_SLICE` | 1p | 2026-08-07T11:48:05+09:00 | 2026-08-07T11:52:15+09:00 | 250s (`5/72h`) | `5/72h` | `5/72ph` | complete: focused 23 and full 305 tests, root typecheck and build, diff, call-authority and PERT checks passed | start `167e3fd`; finish `9b1f76a` |
 
 ## Velocity and forecast history
 
@@ -84,3 +85,4 @@ replaced it when a conformant task finished.
 | 2026-08-07T11:39:35+09:00 | `T_BUILD_CAUSAL_TURN_SLICE` | 2p | 827s | exact elapsed `7200/827p/1h`; token rejected by perttool [#7](https://github.com/mako10k/perttool/issues/7), so use available active-date candidate | `2p/1d` measured fallback | 7p | 3.5d | `34bc4cd` |
 | 2026-08-07T11:47:31+09:00 | `T_BUILD_CAUSAL_TURN_SLICE`, `T_WIRE_NARRATION_CONSUMER` | 3p | 1406s | exact elapsed `5400/703p/1h`; same [#7](https://github.com/mako10k/perttool/issues/7) token limitation, so use available active-date candidate | `3p/1d` measured fallback | 6p | 2d | `e6bd6c5` |
 | 2026-08-07T11:51:18+09:00 | `T_BUILD_CAUSAL_TURN_SLICE`, `T_WIRE_NARRATION_CONSUMER` | 3p | 1406s | structured rate `5400/703` point/hour; losslessly normalized to valid PERT syntax `5400p/703h` | `5400p/703h` exact elapsed-hour Velocity | 6p | `703/900h` (46m52s) | `e6bd6c5`; correction of the two day-rate fallbacks above |
+| 2026-08-07T11:52:43+09:00 | `T_BUILD_CAUSAL_TURN_SLICE`, `T_WIRE_NARRATION_CONSUMER`, `T_ACCEPT_CAUSAL_SLICE` | 4p | 1716s (`143/300h`) | structured rate `1200/143` point/hour; losslessly normalized to valid PERT syntax `1200p/143h` | `1200p/143h` exact elapsed-hour Velocity | 5p | `143/240h` (35m45s) | `9b1f76a` |
