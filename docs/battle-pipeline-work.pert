@@ -259,7 +259,7 @@ task T_TRY_ENVIRONMENT_WORLD_PROCESS_SLICE ENVIRONMENT_WORLD_PROCESS_SLICE_IMPLE
   title "Release and observe the environment world-process slice"
   description "Run full local acceptance then release the exact artifact through feature review annotated tag Stage and protected Promote with the new path always enabled. Execute at most two retained persistent production E2E battles to obtain one supervisor-eligible environment proposal. Verify that every proposal has an explicit receipt, rejected or skipped proposals create no resolved event, accepted proposals advance canonical state before any next-turn effect, and surface cause accepted result and later effect remain linked. Compare OBS-20260807-02 OBS-20260807-03 and OBS-20260807-06 as scorecards, while leaving narrator-only wording repetition guard and repair pending except for incidental improvement from the accepted canonical input."
   duration 1p
-  status planned
+  status active
   owner "codex"
   requires:
     DEV 1
@@ -585,3 +585,10 @@ work_event WE-f3aaf64abe00a6a72838f00031a17bb7980d0bb490928836e6fd735cda8418e1:
   occurred_at 2026-08-07T19:33:54+09:00
   active_time 287/900h
   effort 287/900ph
+
+work_event WE-177dd2521387d2460f8ceefde59dc01704e44d120a70c2c1cf02bae02faf97ee:
+  model 1
+  task T_TRY_ENVIRONMENT_WORLD_PROCESS_SLICE
+  kind start
+  occurred_at 2026-08-07T19:38:02+09:00
+  planned_value 1p
