@@ -5,7 +5,7 @@ project KSHIAI_BATTLE_PIPELINE_WORK_V4:
   description "Use current-main owner outputs to implement and observe axial battle-pipeline slices. Preserve the causal narration receipt and persistent isolated E2E realm, then retain bounded Site A and Site B character-agent inputs, provider outputs, accepted outputs, and narrator input/output for an internal DAG viewer. Reshape narrator input to distinguish committed turn results, current canonical state, and static background without restricting narrator output. Observation backlog items remain scorecards rather than an automatic patch queue."
   as_of 2026-08-07
   duration_unit point
-  velocity 80p/39h
+  velocity 18000p/3263h
   finish NARRATOR_INPUT_TRIAL_COMPLETED
   goal_owner user
   dag_owner user
@@ -175,7 +175,7 @@ task T_TRY_NARRATOR_INPUT_PIPELINE NARRATOR_INPUT_RESHAPED -> NARRATOR_INPUT_TRI
   title "Release and observe the agent DAG and reshaped narrator input"
   description "Run local acceptance then release the exact artifact through feature review, annotated tag, Stage and protected Promote. Execute the persistent cross-account E2E battle, inspect Site A and Site B context and output progression plus narrator input/output in the DAG, and record whether causal explanation, unsupported environmental continuation, repetition, latency, privacy and authority improve. Retain surviving phenomena without inserting unrelated fixes."
   duration 1p
-  status active
+  status done
   owner "codex"
   requires:
     DEV 1
@@ -403,3 +403,11 @@ work_event WE-b86ecbb8bea8967a0b62044f62191a1960c8a6d29ed082dae065350288313e77:
   kind start
   occurred_at 2026-08-07T17:08:53+09:00
   planned_value 1p
+
+work_event WE-e9396280e8cda44beed8d9dd981b13304dd074600a9cb0f9167e74d1fa2b5f54:
+  model 1
+  task T_TRY_NARRATOR_INPUT_PIPELINE
+  kind finish
+  occurred_at 2026-08-07T17:41:09+09:00
+  active_time 121/225h
+  effort 121/225ph
