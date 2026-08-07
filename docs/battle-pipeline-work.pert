@@ -274,6 +274,7 @@ task T_ALIGN_ENVIRONMENT_PROPOSAL_TRANSITION ENVIRONMENT_WORLD_PROCESS_TRIAL_COM
   title "Align environment proposals with representable canonical transitions"
   description "Use OBS-20260807-08 rather than narrator symptoms to align the existing two-stage environment pipeline. Keep the supervisor proposal non-authoritative, but ask it for one battlefield-grounded cause and one persistent result expressible as either a new non-character entity or a real location or active-state change. Exclude transient-only intensification, flicker, reflection, waves, and mood unless they leave such a result. Tell the existing world reconciler that battlefield and worldBefore may ground the cause without a pre-committed proposal event and that an accepted decision must include the matching canonical operation. Preserve server validation, no same-turn mechanics, no direct proposal effect, no extra provider call, and no narrator output guard. Add focused prompt-contract and rejection-boundary tests."
   duration 1p
+  status active
   owner "codex"
   requires:
     DEV 1
@@ -622,3 +623,10 @@ work_event WE-32d6c9208d72e55596264078ec9e9aa90e2cc741a648398c4c72e98d4a1a5088:
   occurred_at 2026-08-07T20:03:55+09:00
   active_time 1553/3600h
   effort 1553/3600ph
+
+work_event WE-b1a6e6fe892b0ec947a6b12d5a684e35a18a8d7981b5954d0a1fc97ab5f1d6ac:
+  model 1
+  task T_ALIGN_ENVIRONMENT_PROPOSAL_TRANSITION
+  kind start
+  occurred_at 2026-08-07T20:08:55+09:00
+  planned_value 1p
