@@ -67,7 +67,7 @@ task T_ACCEPT_CAUSAL_SLICE FIRST_CONSUMER_IMPLEMENTED -> LOCAL_IMPLEMENTATION_AC
   title "Accept the connected minimal pipeline before trial"
   description "Verify receipt derivation event and evidence linkage perspective filtering dangling-link refusal legacy fallback off-mode parity narrator-only authority and no added effectful calls. Run focused shared and backend tests full tests typecheck build git diff checks and both PERT checks. This accepts only the thin implementation concept and does not claim generalized pipeline correctness."
   duration 1p
-  status active
+  status done
   owner "codex"
   requires:
     DEV 1
@@ -140,3 +140,11 @@ work_event WE-b8bb31ac139a936c74c2505ee9cca98ba0b867e25c5361f3eace7ce0732e377a:
   kind start
   occurred_at 2026-08-07T11:48:05+09:00
   planned_value 1p
+
+work_event WE-8ca2330f608972e375472636e73078e993e0cb354c00d2a3c9a7e75f45089bdc:
+  model 1
+  task T_ACCEPT_CAUSAL_SLICE
+  kind finish
+  occurred_at 2026-08-07T11:52:15+09:00
+  active_time 5/72h
+  effort 5/72ph
