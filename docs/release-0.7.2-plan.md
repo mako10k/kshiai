@@ -30,14 +30,19 @@ Release the accepted minimal causal-pipeline slice:
 - [x] Exact-image `off` and guarded disposable battles are compared; the central
   causal consequence improved and no bounded code revision was selected. See
   [`evidence/staging-causal-narration-0.7.2-2026-08-07.md`](evidence/staging-causal-narration-0.7.2-2026-08-07.md).
-- [ ] Production promotion is decided and approved separately.
+- [x] The owner approved full-cohort guarded activation while the product has a
+  single user. `Promote release` run
+  [31147799943](https://github.com/mako10k/kshiai/actions/runs/31147799943)
+  promoted the exact staged artifacts and passed production smoke.
 
 ## Operational boundary
 
 - No SQL migration, backfill, authentication, callback, secret, provider-order,
   or infrastructure-topology change.
-- The new mode defaults to `off`; the staging dispatch explicitly selects
-  `narration_guarded` and changes no production traffic.
-- A successful staging run is evidence for the next decision, not production
-  authorization. Production continues on the recorded `v0.7.1` rollback target
-  until a separate promotion is approved.
+- The released code still fails safely to `off` when the environment variable
+  is absent or invalid. Release staging now defaults its explicit selection to
+  `narration_guarded`, and production promotion rejects a staged revision whose
+  selected mode is not `narration_guarded`.
+- Production runs `kshiai-api-00029-gub` and Worker version
+  `ea366035-e7b5-44f6-8ce4-109900f70f5a` at 100%. The recorded `v0.7.1`
+  revision and Worker remain rollback targets.

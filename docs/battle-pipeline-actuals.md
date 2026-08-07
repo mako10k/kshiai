@@ -12,7 +12,11 @@ estimates in
   relative size and are not hours or calendar days.
 - Before work starts, commit the point estimate and current Velocity.
 - At the real start, capture an exact fixed-offset timestamp and add a PERT
-  `work_event start`. Commit that start event before implementation proceeds.
+  `work_event start`. Commit that start event before implementation proceeds
+  when the work can safely pause. For an already-dispatched production workflow,
+  do not pause or mutate the release merely to create a Git baseline: retain the
+  pre-dispatch local timestamp, record the closeout immediately, and corroborate
+  both boundaries with the immutable remote run timestamps.
 - At the real finish, add a separate `work_event finish` with the exact
   timestamp. Record active hours and person-hours when they are known.
 - Express non-terminating hour values as exact rationals (for example,
@@ -32,6 +36,9 @@ estimates in
   tracked in perttool [#7](https://github.com/mako10k/perttool/issues/7).
 - If evidence is incomplete, retain the current Velocity and record
   `unavailable`; do not manufacture an actual from Git timestamps or memory.
+  An exact locally captured dispatch boundary plus an immutable workflow
+  created/completed readback is operational evidence, but must be labeled as a
+  late-recorded closeout when its PERT events were committed together.
 
 ## Operational sequence
 
@@ -65,8 +72,8 @@ review.
 
 ## Task actuals
 
-Only conformant current-plan work events are aggregated. Old task timestamps
-lack a committed start baseline and remain excluded.
+Only exact current-plan work events are aggregated. Old task timestamps that
+lack both a captured boundary and independent readback remain excluded.
 
 | Task | Estimate | Started at | Finished at | Elapsed | Active | Effort | Disposition | Evidence commit |
 |---|---:|---|---|---:|---:|---:|---|---|
@@ -74,6 +81,8 @@ lack a committed start baseline and remain excluded.
 | `T_WIRE_NARRATION_CONSUMER` | 1p | 2026-08-07T11:40:12+09:00 | 2026-08-07T11:47:05+09:00 | 413s (`413/3600h`) | `413/3600h` | `413/3600ph` | complete: focused 16 tests, root typecheck, backend typecheck and build passed | start `46a54cc`; implementation `3f71e72`; finish `e6bd6c5` |
 | `T_ACCEPT_CAUSAL_SLICE` | 1p | 2026-08-07T11:48:05+09:00 | 2026-08-07T11:52:15+09:00 | 250s (`5/72h`) | `5/72h` | `5/72ph` | complete: focused 23 and full 305 tests, root typecheck and build, diff, call-authority and PERT checks passed | start `167e3fd`; finish `9b1f76a` |
 | `T_TRY_AND_REVISE_STAGING` | 2p | 2026-08-07T11:53:29+09:00 | 2026-08-07T12:27:00+09:00 | 2011s (`2011/3600h`) | `2011/3600h` | `2011/3600ph` | complete: v0.7.2 staged with all smoke gates; exact-image off/guarded disposable battles compared; central causal consequence improved; no bounded revision selected; cleanup verified | start `8e5f525`; finish/evidence `e2e4c6e` |
+| `T_DECIDE_PRODUCTION_TRIAL` | 1p | 2026-08-07T13:33:20+09:00 | 2026-08-07T13:33:40+09:00 | 20s (`1/180h`) | `1/180h` | `1/180ph` | complete: owner approved exact v0.7.2 guarded artifacts at 100% for the current single-user cohort; no cohort splitter | exact local decision/pre-dispatch capture; closeout recorded in this ops PR |
+| `T_TRY_GUARDED_PRODUCTION` | 1p | 2026-08-07T13:33:40+09:00 | 2026-08-07T13:36:40+09:00 | 180s (`1/20h`) | `1/20h` | `1/20ph` | complete: protected Promote run 31147799943 passed artifact checks, backend/Worker 100% promotion, production/auth smoke and release publication; Cloud Run mode and errors read back | exact local pre-dispatch/readback captures corroborated by GitHub run 04:33:41Z–04:35:48Z; closeout recorded in this ops PR |
 
 ## Velocity and forecast history
 
@@ -88,3 +97,4 @@ replaced it when a conformant task finished.
 | 2026-08-07T11:51:18+09:00 | `T_BUILD_CAUSAL_TURN_SLICE`, `T_WIRE_NARRATION_CONSUMER` | 3p | 1406s | structured rate `5400/703` point/hour; losslessly normalized to valid PERT syntax `5400p/703h` | `5400p/703h` exact elapsed-hour Velocity | 6p | `703/900h` (46m52s) | `e6bd6c5`; correction of the two day-rate fallbacks above |
 | 2026-08-07T11:52:43+09:00 | `T_BUILD_CAUSAL_TURN_SLICE`, `T_WIRE_NARRATION_CONSUMER`, `T_ACCEPT_CAUSAL_SLICE` | 4p | 1716s (`143/300h`) | structured rate `1200/143` point/hour; losslessly normalized to valid PERT syntax `1200p/143h` | `1200p/143h` exact elapsed-hour Velocity | 5p | `143/240h` (35m45s) | `9b1f76a` |
 | 2026-08-07T12:27:31+09:00 | `T_WIRE_NARRATION_CONSUMER`, `T_ACCEPT_CAUSAL_SLICE`, `T_TRY_AND_REVISE_STAGING` | 4p | 2808s (`39/50h`) | structured rate `200/39` point/hour; losslessly normalized to valid PERT syntax `200p/39h` | `200p/39h` exact elapsed-hour Velocity | 3p | `117/200h` (35m06s) | `e2e4c6e` |
+| 2026-08-07T13:36:40+09:00 | `T_TRY_AND_REVISE_STAGING`, `T_DECIDE_PRODUCTION_TRIAL`, `T_TRY_GUARDED_PRODUCTION` | 4p | 6191s (`6191/3600h`) | exact captured window rate `14400/6191` point/hour; normalized to valid PERT syntax `14400p/6191h`; the two production events are late-recorded together and independently corroborated by run 31147799943 | `14400p/6191h` exact elapsed-hour Velocity | 1p | `6191/14400h` (`6191/4s`, 25m47.75s) | this ops PR and workflow run 31147799943 |

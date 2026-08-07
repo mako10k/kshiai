@@ -24,14 +24,17 @@ Release deployment is deliberately split into two owner actions:
    confirmed email user verifies Supabase JWT mapping and SSE, then is deleted.
    A read-only R2 smoke verifies credentials, bucket listing, and one public
    object when the bucket is non-empty. Its typed causal-narration input defaults
-   to `off`; a bounded staging trial may select `narration_guarded`, and the
-   selected mode is recorded in the workflow evidence.
+   to `narration_guarded`; an explicit staging comparison may select `off`, and
+   the selected mode is recorded in the workflow evidence.
 2. After reviewing that run, `Promote release` takes the recorded Cloud Run
    revision and Worker version. The owner must dispatch from the same tag and
    type `DEPLOY <tag>`. It records the current rollback targets, promotes the
-   exact staged artifacts, repeats production HTTP/auth/SSE smoke checks, and
-   publishes the GitHub Release. A failed production smoke automatically
-   restores the previous Cloud Run and Worker versions.
+   exact staged artifacts, requires the staged Cloud Run revision to have
+   `BATTLE_CAUSAL_NARRATION_MODE=narration_guarded`, repeats production
+   HTTP/auth/SSE smoke checks, and publishes the GitHub Release. A failed
+   production smoke automatically restores the previous Cloud Run and Worker
+   versions. This full-cohort default applies while the product has one user;
+   introduce an explicit cohort policy before relaxing it for multiple users.
 
 `Roll back production` is the explicit recovery path. Dispatch it from a
 release tag with known-good revision/version IDs and type
