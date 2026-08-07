@@ -257,13 +257,16 @@ criticalとして即応対象にする。選択したパイプライン軸が同
 | OBS-20260807-02 | 環境イベントの表層事象と、同時に確定する機械効果の論理的整合性が保証されない | 同戦闘ターン7で「街灯点滅」と両者のHP低下が同じハプニング提案から発生 | 表示された原因から予測・説明できない正準効果が戦闘結果へ入り、世界の納得感と裁定への信頼を損なう | open |
 | OBS-20260807-03 | 公開ナレーションが、正準状態に記録されていない次ターン制約を確定結果として述べる | `v0.9.0` 本番E2E battle `btl_03da078a3011a53dbb5cde76` に加え、role-labelled inputへ変更した `v0.10.0` battle `btl_19dcf0ea770b6263943c2703` でも、水流、足滑り、次の攻防で有利な位置等を述べる一方、対応するsemantic/world changeはfalse | 表示を信じて次の選択を考えてもエンジン側には作用せず、説明可能性と正準世界への信頼を損なう | narrator symptom pending; retain input conflict as pipeline evidence |
 | OBS-20260807-04 | Site A / Site B character agentのprovider出力が採用されず、前状態保持へ頻繁にフォールバックする | `v0.10.0` 本番E2E battleの30 side-turn中22件がprovider-level rejected。`v0.11.0` では実呼出し15件が全てfulfilledとなり、stateとspeechを保持した | キャラクタ文脈と次ターン意図の推移が長区間停止し、提案パイプラインのユーザー価値と観測サンプル密度が低下する | provider-level rejection resolved; residual action nonacceptance tracked as OBS-20260807-05 |
-| OBS-20260807-05 | character agentの応答は成立するが、提案した次ターン行動がサーバ契約に一致せず全件不採用になる | `v0.11.0` 本番E2E battle `btl_442a384a57ea0952f0d215d4` の実呼出し15件は全てfulfilledした一方、提案15件全てが`schema_invalid`。skillやwaitへfree-action専用の説明・対象fieldが付いていた | stateとspeechは進むが次ターン行動が更新されず、既定行動の反復、行動多様性低下、提案から裁定までの観測不能が継続する | selected as immediate pipeline continuation |
+| OBS-20260807-05 | character agentの応答は成立するが、提案した次ターン行動がサーバ契約に一致せず全件不採用になる | `v0.11.0` 本番E2E battle `btl_442a384a57ea0952f0d215d4` の実呼出し15件は全てfulfilledした一方、提案15件全てが`schema_invalid`。`v0.11.1`では20/21提案がacceptedとなり同じ全件不採用は再現しなかった | stateとspeechは進むが次ターン行動が更新されず、既定行動の反復、行動多様性低下、提案から裁定までの観測不能が継続する | resolved for schema-shape cause in v0.11.1 |
+| OBS-20260807-06 | 環境イベントが成立した表示eventとして公開される一方、対応する正準環境推移がskippedになる | `v0.11.1` 本番E2E battle `btl_72bbc0ce65b40cc7ee290931` のturn 8で、水道管破裂と水溜まり拡大がresolved eventと公開文に現れたが、semantic/world transitionはともに`skipped`でrevisionは変化しなかった | 表示された環境変化や足場への影響を次ターンの判断に使っても正準世界には存在せず、因果・継続性・裁定への信頼を損なう | open; selected as next pipeline evidence |
+| OBS-20260807-07 | action kind自体は利用可能でも、指定instrumentがそのkindに利用可能でなく提案が拒否される | 同battleのturn 6 Site Bは`defend`を提案したが、`profile:b:weapon`のaffordanceは`defend`非対応で`unavailable_instrument`となった。全21 fulfilled proposal中1件 | 少数turnで次行動意図が更新されず、action proposalから実行までの連続性と観測密度が下がる | open; low-frequency residual |
 
 `OBS-20260807-01` のstaging再現と部分改善の根拠は
 [`evidence/staging-causal-narration-0.7.2-2026-08-07.md`](evidence/staging-causal-narration-0.7.2-2026-08-07.md)
 に記録した。これは事象の状態更新であり、残存事象から個別修正を割り込ませる
-判断ではない。`OBS-20260807-02` は今回のサンプルでは発生しておらず、未評価の
-まま保持する。
+判断ではない。`OBS-20260807-02` の直接的なHP効果不整合は後続サンプルでは
+再現していないが、同じ環境提案・結果・正準化境界の欠落は
+`OBS-20260807-06`として再現した。
 
 ### 5.2 対応候補
 
@@ -705,3 +708,48 @@ flowchart TD
   後続観測を直接阻害するこの境界を一度小さく試行してから比較する。
 - narrator guard、公開文の拒否・修復・再試行は追加しない。action diversityの回復で
   表現反復が同時に改善するかだけを次のE2Eで確認する。
+
+## 15. 2026-08-07 本番E2E観測追補: v0.11.1 aligned proposal trial
+
+### 観測対象
+
+- release `v0.11.1`、revision `kshiai-api-00043-xen`、本番E2E battle
+  `btl_72bbc0ce65b40cc7ee290931`、observation run
+  `github-31168486354-1`。
+- 11件のturn record全てでpipeline traceを読み戻した。10件のcanonical
+  transitionと10件のnarrator provider traceを保持した。
+- 既存の専用2アカウント、両character、battlefield、narration styleは全て再利用し、
+  battleを削除せず保持した。一般realmへのcharacter漏洩は観測されなかった。
+
+### OBS-20260807-05 の結果
+
+- 21件のfulfilled proposal中20件がacceptedとなった。v0.11.0の
+  `schema_invalid` 15/15から0/21へ低下し、全件不採用は再現しなかった。
+- accepted proposalはwait 9、basic attack 7、skill 3、free action 1だった。
+  resolved combat action 20件は全件acceptedで、kindはwait 7、basic attack 5、
+  skill 5、defend 2、free action 1だった。v0.11.0にあったsubstituted 6件と
+  failed 1件は再現しなかった。
+- 残る1件はSite Bの`defend` proposalで、知覚済み`profile:b:weapon`を
+  instrumentに選んだが、そのaffordanceのcompatible action kindsに`defend`がなく、
+  `unavailable_instrument`となった。終端でSite A 1 laneがskippedだった。
+
+### OBS-20260807-06
+
+- turn 8で「路地奥の水道管が破裂し、噴き出した水が足元の水溜まりを一気に
+  増やして路地全体を浅い水の床に変える」という`situation` eventが保存された。
+- 同turnのworld impact、world transition、semantic transitionは全て`skipped`で、
+  world revisionは1、semantic revisionは0のまま変化しなかった。全10 combat turnを
+  通して両revisionの増加は0だった。
+- 公開文はさらに「双方の足元がわずかに不安定になった」と後続影響を述べた。
+  表示eventとその公開上の結果は存在するが、正準世界・次turn制約には対応する
+  推移がない。
+
+### 次軸選択に使う境界
+
+- action proposalの主要なshape obstructionは解消し、20/20のresolved actionを
+  観測できた。残るinstrument互換性1件は保持するが、次の軸を専有しない。
+- expanded adjudicationより先に、環境eventを結果・効果そのものとして直接注入せず、
+  非権威proposalとしてworld-processへ渡し、accepted resultと正準推移を経てから
+  後続効果を持たせるsliceを選ぶ根拠が得られた。
+- ナレータ単独の言い回し、反復、repair、guardは着手しない。環境sliceがaccepted
+  canonical changeを入力へ自然に供給した場合の同時改善だけを再観測する。

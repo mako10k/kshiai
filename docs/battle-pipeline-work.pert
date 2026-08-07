@@ -235,7 +235,7 @@ task T_TRY_ALIGNED_AGENT_ACTION_PROPOSALS AGENT_ACTION_PROPOSAL_SHAPE_ALIGNED ->
   title "Release and observe aligned character action proposals"
   description "Release the prompt-only contract alignment through the protected path and run the persistent production E2E battle. Compare proposal acceptance and rejection reasons against the v0.11.0 baseline of 15 schema-invalid proposals out of 15 invoked lanes. Use the retained result to choose environment world-process or adaptive expanded adjudication next; keep non-critical narrator symptoms pending except for incidental improvement caused by accepted action diversity."
   duration 1p
-  status active
+  status done
   owner "codex"
   requires:
     DEV 1
@@ -538,3 +538,11 @@ work_event WE-91cb112dd6512864c3f87623e7e48f5b7b3286b42bdf9a76ee7fe7385bea8a8b:
   kind start
   occurred_at 2026-08-07T18:49:23+09:00
   planned_value 1p
+
+work_event WE-2c03e5d86ad166684e97f767e4ec5b135f548ab347d3c260a607e6416716108a:
+  model 1
+  task T_TRY_ALIGNED_AGENT_ACTION_PROPOSALS
+  kind finish
+  occurred_at 2026-08-07T19:11:16+09:00
+  active_time 1313/3600h
+  effort 1313/3600ph
