@@ -289,6 +289,207 @@ describe("public battle semantic projection", () => {
     assert.deepEqual(result.state.perceptionRegistryB?.contacts, []);
   });
 
+  it("commits an accepted environment proposal only through semantic and world state", async () => {
+    const sideA = sheet("a", "A");
+    const sideB = sheet("b", "B");
+    const state = createBattleState({
+      id: "accepted-environment-process",
+      sideA,
+      sideB,
+      turnLimit: 20,
+      prologuePending: false,
+    });
+    const hpA = state.sideA.parameters.hp;
+    const hpB = state.sideB.parameters.hp;
+    const proposal = {
+      id: "hap_llm_1",
+      title: "雨水の流入",
+      summary: "排水溝から雨水が路地へ流れ込む",
+      notes: "浅い水が路面を覆っている",
+      tags: ["water"],
+    };
+    const llm = new MockLlmProvider();
+    llm.reconcileTurnSemanticState = async (input) => ({
+      patch: {
+        baseRevision: input.before.revision,
+        turn: input.turn,
+        sourceEventIds: [proposal.id],
+        operations: [{
+          op: "add",
+          path: "/entities/environment.water.1",
+          value: {
+            kind: "terrain",
+            label: "路面を覆う浅い雨水",
+            location: { type: "scene", area: input.before.scene.summary },
+            active: true,
+            createdTurn: input.turn,
+            updatedTurn: input.turn,
+            facts: { depth: "shallow" },
+          },
+        }],
+      },
+      environmentDecision: {
+        status: "accepted",
+        reason: "既存の雨と排水溝から持続する路面変化として成立する",
+      },
+      nextSituation: {
+        notes: proposal.notes,
+        tags: ["water"],
+        coefficients: { water: 1.2 },
+      },
+      worldPatchStatus: "valid",
+      sensoryEvidence: [],
+      sensoryEvidenceStatus: "valid",
+    });
+
+    const result = await reconcileSemanticState({
+      llm,
+      stateBeforeTurn: state,
+      resolvedState: state,
+      mine: sideA,
+      opp: sideB,
+      actions: [],
+      events: [],
+      mechanicalEvidence: [],
+      environmentProposal: proposal,
+    });
+
+    assert.equal(result.environmentProcessReceipt?.status, "accepted");
+    assert.equal(
+      result.environmentProcessReceipt?.reason,
+      "accepted_canonical_change",
+    );
+    assert.equal(result.environmentEvents[0]?.id, proposal.id);
+    assert.equal(result.environmentProcessReceipt?.resolvedEvent?.id, proposal.id);
+    assert.deepEqual(result.environmentProcessReceipt?.sourceEventIds, [proposal.id]);
+    assert.ok(
+      result.environmentProcessReceipt?.effectKeys.includes(
+        "/entities/environment.water.1",
+      ),
+    );
+    assert.equal(result.state.semanticState?.revision, 1);
+    assert.equal(result.state.worldState?.revision, 1);
+    assert.equal(result.state.latestSemanticTransition?.toRevision, 1);
+    assert.equal(result.state.latestWorldTransition?.toRevision, 1);
+    assert.equal(result.state.situation.coefficients.water, 1.2);
+    assert.equal(result.state.sideA.parameters.hp, hpA);
+    assert.equal(result.state.sideB.parameters.hp, hpB);
+  });
+
+  it("drops a rejected environment proposal without a public fact or effect", async () => {
+    const sideA = sheet("a", "A");
+    const sideB = sheet("b", "B");
+    const state = createBattleState({
+      id: "rejected-environment-process",
+      sideA,
+      sideB,
+      turnLimit: 20,
+      prologuePending: false,
+    });
+    const proposal = {
+      id: "hap_llm_1",
+      title: "街灯の点滅",
+      summary: "街灯が不規則に点滅する",
+      notes: "光が揺れている",
+    };
+    const llm = new MockLlmProvider();
+    llm.reconcileTurnSemanticState = async (input) => ({
+      patch: {
+        baseRevision: input.before.revision,
+        turn: input.turn,
+        sourceEventIds: [proposal.id],
+        operations: [{
+          op: "add",
+          path: "/entities/environment.light.1",
+          value: {
+            kind: "effect",
+            label: "点滅する街灯",
+            location: { type: "scene", area: input.before.scene.summary },
+            active: true,
+            createdTurn: input.turn,
+            updatedTurn: input.turn,
+            facts: { pattern: "irregular" },
+          },
+        }],
+      },
+      environmentDecision: {
+        status: "rejected",
+        reason: "現在の世界状態には点滅の原因がない",
+      },
+      nextSituation: {
+        notes: "視界が悪い",
+        tags: ["dark"],
+        coefficients: { focus: 0.5 },
+      },
+      worldPatchStatus: "valid",
+      sensoryEvidence: [],
+      sensoryEvidenceStatus: "valid",
+    });
+
+    const result = await reconcileSemanticState({
+      llm,
+      stateBeforeTurn: state,
+      resolvedState: state,
+      mine: sideA,
+      opp: sideB,
+      actions: [],
+      events: [],
+      mechanicalEvidence: [],
+      environmentProposal: proposal,
+    });
+
+    assert.equal(result.environmentProcessReceipt?.status, "rejected");
+    assert.equal(result.environmentProcessReceipt?.reason, "decision_rejected");
+    assert.equal(result.environmentProcessReceipt?.resolvedEvent, null);
+    assert.deepEqual(result.environmentEvents, []);
+    assert.equal(result.state.semanticState?.revision, 0);
+    assert.equal(result.state.worldState?.revision, 0);
+    assert.equal(result.state.situation.coefficients.focus, undefined);
+    assert.equal(
+      result.state.semanticState?.entities["environment.light.1"],
+      undefined,
+    );
+  });
+
+  it("records an unavailable environment adjudication as skipped", async () => {
+    const sideA = sheet("a", "A");
+    const sideB = sheet("b", "B");
+    const state = createBattleState({
+      id: "skipped-environment-process",
+      sideA,
+      sideB,
+      turnLimit: 20,
+      prologuePending: false,
+    });
+    const llm = new MockLlmProvider();
+    llm.reconcileTurnSemanticState = async () => {
+      throw new Error("provider unavailable");
+    };
+    const result = await reconcileSemanticState({
+      llm,
+      stateBeforeTurn: state,
+      resolvedState: state,
+      mine: sideA,
+      opp: sideB,
+      actions: [],
+      events: [],
+      mechanicalEvidence: [],
+      environmentProposal: {
+        id: "hap_llm_1",
+        title: "風の変化",
+        summary: "路地を抜ける風が強まる",
+        notes: "風が吹き続けている",
+      },
+    });
+
+    assert.equal(result.environmentProcessReceipt?.status, "skipped");
+    assert.equal(result.environmentProcessReceipt?.reason, "semantic_unavailable");
+    assert.equal(result.environmentProcessReceipt?.resolvedEvent, null);
+    assert.deepEqual(result.environmentEvents, []);
+    assert.equal(result.state.semanticState?.revision, 0);
+    assert.equal(result.state.worldState?.revision, 0);
+  });
+
   it("freezes side-specific frames and keeps unknown source ids registry-private", async () => {
     const sideA = sheet("a", "A");
     const sideB = sheet("b", "B");

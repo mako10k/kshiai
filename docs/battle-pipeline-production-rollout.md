@@ -297,3 +297,36 @@ Standalone non-critical narrator cleanup is pending. If an action, environment,
 or adjudication slice naturally supplies better narrator input, its acceptance
 may include the corresponding narration observation without creating a
 separate narrator patch task.
+
+## Environment world-process slice
+
+The selected slice keeps one existing provider call and changes the authority
+order, not the narrator policy:
+
+```text
+supervisor noise proposal
+  -> post-resolution semantic/world reconciler
+  -> accepted | rejected | skipped receipt
+  -> accepted semantic and world transition
+  -> resolved public situation event
+  -> bounded situation input for the following turn
+```
+
+- The supervisor proposal contains only a candidate title, summary, notes, and
+  tags. It no longer supplies coefficients, environmental hits, or a
+  pre-resolution event to the combat engine.
+- The proposal is passed beside the current canonical semantic/world state to
+  the already existing reconciliation call. Acceptance requires a grounded
+  non-character entity addition or a real location/active-state change that
+  crosses both semantic and world boundaries.
+- Rejected, invalid, or unavailable proposals lose proposal-derived semantic
+  operations, sensory evidence, next-turn situation values, and public events.
+  They remain observable only through their internal receipt.
+- Accepted proposals emit their public event only after canonical application.
+  The receipt retains the proposal, decision reason, resolved event, proposal
+  source ID, and accepted effect keys in the separate internal turn DAG.
+- This slice is always enabled. It adds no direct HP effect, extra provider
+  call, narrator guard/repair, general-purpose world engine, or expanded action
+  adjudication. Narration can improve incidentally because it receives the
+  accepted event and canonical state, while standalone narrator symptoms remain
+  pending for later pipeline observation.

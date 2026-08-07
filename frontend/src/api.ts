@@ -6,6 +6,7 @@ import type {
   BattlePolicyOptionPublic,
   BattlePublic,
   CharacterActionProposalValidationReceipt,
+  EnvironmentProcessReceipt,
   CharacterImprovementPublic,
   CharacterPublic,
   NarrationStylePublic,
@@ -52,6 +53,7 @@ export type InternalAgentInvocationTrace = {
 
 export type InternalBattlePipelineTrace = {
   schemaVersion: 1;
+  environmentProcess?: EnvironmentProcessReceipt;
   characterAgents?: {
     phase: "prologue" | "turn" | "aftermath";
     a: InternalAgentInvocationTrace;

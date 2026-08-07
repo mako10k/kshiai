@@ -22,8 +22,6 @@ import {
   buildServerOnlyReserveCues,
   createBattleState,
   deriveBattleWorldTransitionFromSemanticState,
-  happeningToEvents,
-  happeningToSituationPatch,
   isPassiveTurn,
   isQuietTurn,
   normalizeSupervisor,
@@ -47,6 +45,8 @@ import {
   type ResolvedBattleAction,
   type CharacterAgentState,
   type CharacterActionProposalValidationReceipt,
+  type EnvironmentProcessProposal,
+  type EnvironmentProcessReceipt,
   type CharacterCognition,
   type BattlefieldInstance,
   type BattlefieldPreset,
@@ -57,8 +57,6 @@ import {
   type TurnSemanticPatch,
   type Skill,
   toNarrationSnapshot,
-  type HappeningPlan,
-  type Situation,
   type BattleAdvanceStreamEvent,
   type InnerDigest,
   type NarrationFocus,
@@ -1033,6 +1031,7 @@ export async function advanceCharacterAgents(input: {
   actions: ResolvedBattleAction[];
   sensoryEvidence?: PerceptionEvidence[];
   quantizedMechanicalEvidence?: QuantizedMechanicalEvidence[];
+  environmentProcessReceipt?: EnvironmentProcessReceipt;
   phase?: "prologue" | "turn" | "aftermath";
   /** Attach reaction-only utterances to the existing terminal turn record. */
   replaceLastRecord?: boolean;
@@ -1043,12 +1042,22 @@ export async function advanceCharacterAgents(input: {
   const existingRecord = input.replaceLastRecord
     ? (input.after.turnRecords ?? []).at(-1)
     : undefined;
-  const recordWithoutUtterances = existingRecord ?? buildBattleTurnRecord({
+  const baseRecord = existingRecord ?? buildBattleTurnRecord({
     before: input.before,
     after: input.after,
     events: input.events,
     actions: input.actions,
   });
+  const recordWithoutUtterances = input.environmentProcessReceipt
+    ? {
+        ...baseRecord,
+        pipelineTrace: {
+          schemaVersion: 1 as const,
+          ...(baseRecord.pipelineTrace ?? {}),
+          environmentProcess: structuredClone(input.environmentProcessReceipt),
+        },
+      }
+    : baseRecord;
   const previousA = groundCharacterAgentState(
     input.mine,
     input.after.agentStateA ?? initialAgentState(
@@ -1281,18 +1290,19 @@ export async function advanceCharacterAgents(input: {
   }
   const record = existingRecord
     ? {
-        ...existingRecord,
+        ...recordWithoutUtterances,
         events: eventsWithUtterances,
         cognitionA: {
-          ...existingRecord.cognitionA,
+          ...recordWithoutUtterances.cognitionA,
           observedEvents: eventsWithUtterances,
         },
         cognitionB: {
-          ...existingRecord.cognitionB,
+          ...recordWithoutUtterances.cognitionB,
           observedEvents: eventsWithUtterances,
         },
-        pipelineTrace: existingRecord.pipelineTrace ?? {
+        pipelineTrace: {
           schemaVersion: 1 as const,
+          ...(recordWithoutUtterances.pipelineTrace ?? {}),
           characterAgents: characterAgentTrace,
         },
       }
@@ -1305,6 +1315,7 @@ export async function advanceCharacterAgents(input: {
         }),
         pipelineTrace: {
           schemaVersion: 1 as const,
+          ...(recordWithoutUtterances.pipelineTrace ?? {}),
           characterAgents: characterAgentTrace,
         },
       };
@@ -1698,6 +1709,47 @@ export function buildAftermathNarrativeBlock(input: {
   return block;
 }
 
+function environmentProposalEvent(
+  proposal: EnvironmentProcessProposal,
+): TurnEvent {
+  return {
+    id: proposal.id,
+    type: "situation",
+    summary: `${proposal.title} — ${proposal.summary}`,
+  };
+}
+
+function isEnvironmentOperationPath(path: string): boolean {
+  if (path.startsWith("/scene/")) return true;
+  if (!path.startsWith("/entities/")) return false;
+  return path !== "/entities/character.a" &&
+    path !== "/entities/character.b" &&
+    !path.startsWith("/entities/character.a/") &&
+    !path.startsWith("/entities/character.b/");
+}
+
+function isWorldProcessCanonicalOperation(
+  operation: TurnSemanticPatch["operations"][number],
+  before: NonNullable<BattleState["semanticState"]>,
+): boolean {
+  const matched = operation.path.match(
+    /^\/entities\/([^/]+)(?:\/(location|active))?$/,
+  );
+  if (!matched) return false;
+  const [, entityId, field] = matched;
+  if (!entityId || entityId === "character.a" || entityId === "character.b") {
+    return false;
+  }
+  if (!field) {
+    return operation.op === "add" && before.entities[entityId] === undefined;
+  }
+  if (operation.op !== "replace") return false;
+  const current = field === "location"
+    ? before.entities[entityId]?.location
+    : before.entities[entityId]?.active;
+  return JSON.stringify(current) !== JSON.stringify(operation.value);
+}
+
 export async function reconcileSemanticState(input: {
   llm: LlmProvider;
   stateBeforeTurn: BattleState;
@@ -1708,6 +1760,7 @@ export async function reconcileSemanticState(input: {
   events: TurnEvent[];
   mechanicalEvidence: CommittedMechanicalEvidence[];
   environmentBeatDue?: boolean;
+  environmentProposal?: EnvironmentProcessProposal | null;
   dramaPhase?: "opening" | "rising" | "climax";
 }): Promise<{
   state: BattleState;
@@ -1720,7 +1773,38 @@ export async function reconcileSemanticState(input: {
   quantizedMechanicalEvidence: QuantizedMechanicalEvidence[];
   reserveEvidenceA: ServerOnlyReserveCue[];
   reserveEvidenceB: ServerOnlyReserveCue[];
+  environmentProcessReceipt: EnvironmentProcessReceipt | null;
+  environmentEvents: TurnEvent[];
 }> {
+  const environmentProposal = input.environmentProposal ?? null;
+  const proposedEnvironmentEvent = environmentProposal
+    ? environmentProposalEvent(environmentProposal)
+    : null;
+  const environmentOutcome = (input: {
+    status: EnvironmentProcessReceipt["status"];
+    reason: EnvironmentProcessReceipt["reason"];
+    decisionReason?: string | null;
+    effectKeys?: string[];
+    sourceEventIds?: string[];
+    accepted?: boolean;
+  }) => ({
+    environmentProcessReceipt: environmentProposal
+      ? {
+          status: input.status,
+          reason: input.reason,
+          decisionReason: input.decisionReason?.slice(0, 240) ?? null,
+          proposal: structuredClone(environmentProposal),
+          resolvedEvent: input.accepted && proposedEnvironmentEvent
+            ? structuredClone(proposedEnvironmentEvent)
+            : null,
+          sourceEventIds: [...new Set(input.sourceEventIds ?? [])].slice(0, 32),
+          effectKeys: [...new Set(input.effectKeys ?? [])].slice(0, 32),
+        } satisfies EnvironmentProcessReceipt
+      : null,
+    environmentEvents: input.accepted && proposedEnvironmentEvent
+      ? [proposedEnvironmentEvent]
+      : [],
+  });
   const reserveEvidenceA = buildServerOnlyReserveCues({
     side: "a",
     parameters: input.resolvedState.sideA.parameters,
@@ -1744,6 +1828,10 @@ export async function reconcileSemanticState(input: {
       quantizedMechanicalEvidence: [],
       reserveEvidenceA,
       reserveEvidenceB,
+      ...environmentOutcome({
+        status: "skipped",
+        reason: "semantic_unavailable",
+      }),
     };
   }
   const previousUtteranceEvents = (
@@ -1755,7 +1843,6 @@ export async function reconcileSemanticState(input: {
     previousFrameA: input.stateBeforeTurn.perceptionFrameA,
     previousFrameB: input.stateBeforeTurn.perceptionFrameB,
   });
-  const perceptionEvents = [...input.events, ...previousUtteranceEvents];
   const mechanical = validateCommittedMechanicalEvidence({
     raw: input.mechanicalEvidence,
     turn: input.resolvedState.turn,
@@ -1786,6 +1873,7 @@ export async function reconcileSemanticState(input: {
   const projectPerceptionState = (
     state: BattleState,
     sensoryEvidence: PerceptionEvidence[],
+    committedEvents: TurnEvent[],
   ): BattleState => {
     const semanticState = state.semanticState!;
     const projectionSensoryEvidence = [
@@ -1802,7 +1890,7 @@ export async function reconcileSemanticState(input: {
       const projectedA = projectObserverPerception({
         ...projectionBase,
         observerSide: "a",
-        events: perceptionEvents,
+        events: [...committedEvents, ...previousUtteranceEvents],
         reserveEvidence: reserveEvidenceA,
         sensoryEvidence: projectionSensoryEvidence,
         previousFrame: input.stateBeforeTurn.perceptionFrameA,
@@ -1813,7 +1901,7 @@ export async function reconcileSemanticState(input: {
       const projectedB = projectObserverPerception({
         ...projectionBase,
         observerSide: "b",
-        events: perceptionEvents,
+        events: [...committedEvents, ...previousUtteranceEvents],
         reserveEvidence: reserveEvidenceB,
         sensoryEvidence: projectionSensoryEvidence,
         previousFrame: input.stateBeforeTurn.perceptionFrameB,
@@ -1873,6 +1961,7 @@ export async function reconcileSemanticState(input: {
       toRevision: input.resolvedState.worldState?.revision ?? 0,
       transition: null,
     },
+    committedEvents: TurnEvent[] = input.events,
   ): BattleState => projectPerceptionState({
     ...input.resolvedState,
     semanticState: after,
@@ -1903,7 +1992,7 @@ export async function reconcileSemanticState(input: {
       patch,
     },
     latestWorldTransition,
-  }, sensoryEvidence);
+  }, sensoryEvidence, committedEvents);
   try {
     const proposed = await withTimeout(
       input.llm.reconcileTurnSemanticState({
@@ -1943,6 +2032,7 @@ export async function reconcileSemanticState(input: {
           },
         },
         environmentBeatDue: input.environmentBeatDue,
+        environmentProposal,
         dramaPhase: input.dramaPhase,
         mechanicalEvidence: buildPromptMechanicalEvidence({
           evidence: quantizedMechanicalEvidence,
@@ -1952,10 +2042,53 @@ export async function reconcileSemanticState(input: {
       16_000,
       "reconcileTurnSemanticState",
     );
+    const worldProcessOperationPaths = proposed.patch?.operations
+      .filter((operation) =>
+        isWorldProcessCanonicalOperation(operation, semanticBefore)
+      )
+      .map((operation) => operation.path) ?? [];
+    const environmentDecision = proposed.environmentDecision ?? null;
+    const environmentAcceptedCandidate = Boolean(
+      environmentProposal &&
+        input.resolvedState.worldState &&
+        environmentDecision?.status === "accepted" &&
+        worldProcessOperationPaths.length > 0,
+    );
+    const environmentReason: EnvironmentProcessReceipt["reason"] =
+      !environmentProposal
+        ? "semantic_unavailable"
+        : !environmentDecision
+          ? "decision_invalid"
+          : environmentDecision.status === "rejected"
+            ? "decision_rejected"
+            : !input.resolvedState.worldState ||
+                worldProcessOperationPaths.length === 0
+              ? "no_canonical_change"
+              : "accepted_canonical_change";
+    const patchForApply = proposed.patch && environmentProposal &&
+        !environmentAcceptedCandidate
+      ? {
+          ...proposed.patch,
+          sourceEventIds: proposed.patch.sourceEventIds.filter(
+            (eventId) => eventId !== environmentProposal.id,
+          ),
+          operations: proposed.patch.operations.filter(
+            (operation) => !isEnvironmentOperationPath(operation.path),
+          ),
+        }
+      : proposed.patch;
+    const nextSituationForApply = environmentProposal &&
+        !environmentAcceptedCandidate
+      ? undefined
+      : proposed.nextSituation;
+    const eventsForEnvironmentDecision = environmentAcceptedCandidate &&
+        proposedEnvironmentEvent
+      ? [...input.events, proposedEnvironmentEvent]
+      : input.events;
     const sensory = validateSensoryEvidence({
       raw: proposed.sensoryEvidence,
       before: semanticBefore,
-      events: input.events,
+      events: eventsForEnvironmentDecision,
       providerStatus: proposed.sensoryEvidenceStatus,
     });
     if (sensory.status === "rejected") {
@@ -1964,26 +2097,39 @@ export async function reconcileSemanticState(input: {
         sensory.issues.join("; "),
       );
     }
-    if (proposed.worldPatchStatus === "rejected" || proposed.patch === null) {
+    const sensoryOnEnvironmentFailure = environmentProposal
+      ? {
+          ...sensory,
+          evidence: sensory.evidence.filter(
+            (item) => !item.basisEventIds.includes(environmentProposal.id),
+          ),
+        }
+      : sensory;
+    if (proposed.worldPatchStatus === "rejected" || patchForApply === null) {
       console.warn("[battle] semantic patch section rejected");
       return {
         state: commitObservationState(
           semanticBefore,
           "rejected",
           null,
-          sensory.evidence,
+          sensoryOnEnvironmentFailure.evidence,
         ),
         patch: null,
         status: "rejected",
-        ...evidenceResult(sensory),
+        ...evidenceResult(sensoryOnEnvironmentFailure),
+        ...environmentOutcome({
+          status: "rejected",
+          reason: "semantic_rejected",
+          decisionReason: environmentDecision?.reason,
+        }),
       };
     }
     const applied = applyTurnSemanticPatch({
       state: semanticBefore,
-      patch: proposed.patch,
+      patch: patchForApply,
       turn: input.resolvedState.turn,
       allowedSourceEventIds: new Set(
-        input.events.flatMap((event) => event.id ? [event.id] : []),
+        eventsForEnvironmentDecision.flatMap((event) => event.id ? [event.id] : []),
       ),
     });
     if (!applied.ok) {
@@ -1994,12 +2140,17 @@ export async function reconcileSemanticState(input: {
         state: commitObservationState(
           semanticBefore,
           "rejected",
-          proposed.patch,
-          sensory.evidence,
+          patchForApply,
+          sensoryOnEnvironmentFailure.evidence,
         ),
-        patch: proposed.patch,
+        patch: patchForApply,
         status: "rejected",
-        ...evidenceResult(sensory),
+        ...evidenceResult(sensoryOnEnvironmentFailure),
+        ...environmentOutcome({
+          status: "rejected",
+          reason: "semantic_rejected",
+          decisionReason: environmentDecision?.reason,
+        }),
       };
     }
     let committedWorldState = input.resolvedState.worldState;
@@ -2015,7 +2166,7 @@ export async function reconcileSemanticState(input: {
         worldState: committedWorldState,
         semanticState: applied.state,
         turn: input.resolvedState.turn,
-        sourceEventIds: proposed.patch.sourceEventIds,
+        sourceEventIds: patchForApply.sourceEventIds,
       });
       if (!derivedWorld.ok) {
         console.warn(
@@ -2025,8 +2176,8 @@ export async function reconcileSemanticState(input: {
           state: commitObservationState(
             semanticBefore,
             "rejected",
-            proposed.patch,
-            sensory.evidence,
+            patchForApply,
+            sensoryOnEnvironmentFailure.evidence,
             committedWorldState,
             {
               turn: input.resolvedState.turn,
@@ -2036,9 +2187,14 @@ export async function reconcileSemanticState(input: {
               transition: null,
             },
           ),
-          patch: proposed.patch,
+          patch: patchForApply,
           status: "rejected",
-          ...evidenceResult(sensory),
+          ...evidenceResult(sensoryOnEnvironmentFailure),
+          ...environmentOutcome({
+            status: "rejected",
+            reason: "semantic_rejected",
+            decisionReason: environmentDecision?.reason,
+          }),
         };
       }
       const appliedWorld = applyBattleWorldTransition({
@@ -2046,7 +2202,7 @@ export async function reconcileSemanticState(input: {
         transition: derivedWorld.transition,
         turn: input.resolvedState.turn,
         allowedSourceEventIds: new Set(
-          input.events.flatMap((event) => event.id ? [event.id] : []),
+          eventsForEnvironmentDecision.flatMap((event) => event.id ? [event.id] : []),
         ),
       });
       if (!appliedWorld.ok) {
@@ -2057,8 +2213,8 @@ export async function reconcileSemanticState(input: {
           state: commitObservationState(
             semanticBefore,
             "rejected",
-            proposed.patch,
-            sensory.evidence,
+            patchForApply,
+            sensoryOnEnvironmentFailure.evidence,
             committedWorldState,
             {
               turn: input.resolvedState.turn,
@@ -2068,9 +2224,14 @@ export async function reconcileSemanticState(input: {
               transition: derivedWorld.transition,
             },
           ),
-          patch: proposed.patch,
+          patch: patchForApply,
           status: "rejected",
-          ...evidenceResult(sensory),
+          ...evidenceResult(sensoryOnEnvironmentFailure),
+          ...environmentOutcome({
+            status: "rejected",
+            reason: "semantic_rejected",
+            decisionReason: environmentDecision?.reason,
+          }),
         };
       }
       committedWorldState = appliedWorld.state;
@@ -2085,26 +2246,47 @@ export async function reconcileSemanticState(input: {
     const situation = applySituationCoefficients(
       input.resolvedState.situation,
       {
-        ...proposed.nextSituation,
+        ...nextSituationForApply,
         scene: applied.state.scene.summary || input.resolvedState.situation.scene,
       },
       input.resolvedState.battlefield?.coefficients,
     );
+    const environmentEffectKeys = environmentAcceptedCandidate
+      ? [
+          ...worldProcessOperationPaths,
+          ...Object.keys(nextSituationForApply?.coefficients ?? {}).map(
+            (key) => `situation.coefficients.${key}`,
+          ),
+          ...(nextSituationForApply?.notes ? ["situation.notes"] : []),
+          ...(nextSituationForApply?.tags?.length ? ["situation.tags"] : []),
+        ]
+      : [];
     return {
       state: {
         ...commitObservationState(
           applied.state,
           "applied",
-          proposed.patch,
+          patchForApply,
           sensory.evidence,
           committedWorldState,
           latestWorldTransition,
+          eventsForEnvironmentDecision,
         ),
         situation,
       },
-      patch: proposed.patch,
+      patch: patchForApply,
       status: "applied",
       ...evidenceResult(sensory),
+      ...environmentOutcome({
+        status: environmentAcceptedCandidate ? "accepted" : "rejected",
+        reason: environmentReason,
+        decisionReason: environmentDecision?.reason,
+        effectKeys: environmentEffectKeys,
+        sourceEventIds: environmentAcceptedCandidate && environmentProposal
+          ? [environmentProposal.id]
+          : [],
+        accepted: environmentAcceptedCandidate,
+      }),
     };
   } catch (error) {
     console.warn(
@@ -2119,6 +2301,10 @@ export async function reconcileSemanticState(input: {
         status: "unavailable",
         evidence: [],
         issues: [],
+      }),
+      ...environmentOutcome({
+        status: "skipped",
+        reason: "semantic_unavailable",
       }),
     };
   }
@@ -2205,24 +2391,6 @@ async function resolveNarrationFocusAndDigests(input: {
   return {
     focus,
     digests: selectDigestsForFocus({ focus, detailA, detailB }),
-  };
-}
-
-function mergeSituationPatches(
-  base: Partial<Situation>,
-  happening: Partial<Situation> | null,
-): Partial<Situation> {
-  if (!happening) return base;
-  return {
-    scene: happening.scene ?? base.scene,
-    notes: happening.notes ?? base.notes,
-    coefficients: {
-      ...(base.coefficients ?? {}),
-      ...(happening.coefficients ?? {}),
-    },
-    tags: [
-      ...new Set([...(base.tags ?? []), ...(happening.tags ?? [])]),
-    ],
   };
 }
 
@@ -2562,12 +2730,12 @@ export function buildNarratorCharacterSpeeches(input: {
   });
 }
 
-async function buildHappening(input: {
+async function buildEnvironmentProcessProposal(input: {
   llm: LlmProvider;
   state: BattleState;
   turn: number;
   supervisor: ReturnType<typeof normalizeSupervisor>;
-}): Promise<HappeningPlan | null> {
+}): Promise<EnvironmentProcessProposal | null> {
   const stagnationHint = `${input.supervisor.quietTurns} consecutive quiet turns with little condition change`;
 
   try {
@@ -2587,14 +2755,17 @@ async function buildHappening(input: {
         .trim();
     return {
       id: `hap_llm_${input.turn}`,
-      title: removeCategoryLabel(raw.title) || "場の変化",
+      title: (removeCategoryLabel(raw.title) || "場の変化").slice(0, 40),
       summary:
-        removeCategoryLabel(raw.summary) || "場の条件が変わり、膠着が崩れる。",
+        (removeCategoryLabel(raw.summary) || "場の条件が変わり、膠着が崩れる。")
+          .slice(0, 240),
       notes:
-        removeCategoryLabel(raw.notes) || "環境の変化が両者へ影響している。",
-      coefficients: raw.coefficients ?? { damage: 1.1 },
-      tags: raw.tags?.filter((tag) => !tag.includes("ハプニング")),
-      envHits: raw.envHits?.filter((hit) => hit.target === "both"),
+        (removeCategoryLabel(raw.notes) || "環境の変化が両者へ影響している。")
+          .slice(0, 240),
+      tags: raw.tags
+        ?.filter((tag) => !tag.includes("ハプニング"))
+        .map((tag) => tag.slice(0, 80))
+        .slice(0, 6),
     };
   } catch (e) {
     console.warn("[supervisor] generated field change skipped", e);
@@ -2676,33 +2847,20 @@ async function advanceTurnWithLease(input: {
       dramaBefore.repeatedActionB >= 2);
 
   // Generate a novel field change only after the resolved turns show stagnation.
-  let happening: HappeningPlan | null = null;
+  let environmentProposal: EnvironmentProcessProposal | null = null;
   const inject = shouldInjectHappening(
     supervisor,
     upcomingTurn,
     state.turnLimit,
   );
   if (inject) {
-    happening = await buildHappening({
+    environmentProposal = await buildEnvironmentProcessProposal({
       llm: input.llm,
       state,
       turn: upcomingTurn,
       supervisor,
     });
   }
-
-  // Ordinary scene continuity is reconciled from committed turn effects below.
-  // Only a supervisor-approved anti-stall happening may affect this turn.
-  const baseSituation: Partial<Situation> = {
-    scene: state.situation.scene,
-    notes: state.situation.notes,
-    coefficients: {},
-  };
-
-  const situationUpdate: Partial<Situation> = mergeSituationPatches(
-    baseSituation,
-    happening ? happeningToSituationPatch(happening) : null,
-  );
 
   const hpBeforeA = state.sideA.parameters.hp ?? 0;
   const hpBeforeB = state.sideB.parameters.hp ?? 0;
@@ -2722,9 +2880,6 @@ async function advanceTurnWithLease(input: {
     sideBSkills: safeSkills(opp.skills),
     sideABasicAttack: mine.basicAttack,
     sideBBasicAttack: opp.basicAttack,
-    situationUpdate,
-    preEvents: happening ? happeningToEvents(happening) : undefined,
-    envHits: happening?.envHits,
   });
   const committedFreeActions = commitFreeActionAdjudications({
     beforeState: state,
@@ -2740,7 +2895,7 @@ async function advanceTurnWithLease(input: {
     events: committedFreeActions.events,
   };
   let next = resolved.state;
-  const events = resolved.events;
+  let events = resolved.events;
 
   const hpAfterA = next.sideA.parameters.hp ?? 0;
   const hpAfterB = next.sideB.parameters.hp ?? 0;
@@ -2769,16 +2924,6 @@ async function advanceTurnWithLease(input: {
     maxHpA,
     maxHpB,
   });
-  supervisor = advanceSupervisorClock(
-    supervisor,
-    quiet,
-    isPassiveTurn(events),
-    happening,
-    hpAfterA,
-    hpAfterB,
-  );
-  next = { ...next, supervisor };
-
   emit({ type: "phase", phase: "agents" });
   const semanticTurn = await reconcileSemanticState({
     llm: input.llm,
@@ -2790,14 +2935,31 @@ async function advanceTurnWithLease(input: {
     events,
     mechanicalEvidence: resolved.mechanicalEvidence,
     environmentBeatDue,
+    environmentProposal,
     dramaPhase,
   });
   next = semanticTurn.state;
+  events = [...events, ...semanticTurn.environmentEvents];
+  const acceptedEnvironmentProposal =
+    semanticTurn.environmentProcessReceipt?.status === "accepted"
+      ? environmentProposal
+      : null;
+  supervisor = advanceSupervisorClock(
+    supervisor,
+    quiet,
+    isPassiveTurn(events),
+    acceptedEnvironmentProposal,
+    hpAfterA,
+    hpAfterB,
+  );
+  next = { ...next, supervisor };
   const semanticChanges = semanticChangeKinds(
     semanticTurn.status === "applied" ? semanticTurn.patch : null,
   );
   const environmentBeatCommitted =
-    semanticChanges.locationChanged || semanticChanges.environmentChanged;
+    semanticTurn.environmentProcessReceipt?.status === "accepted" ||
+    semanticChanges.locationChanged ||
+    semanticChanges.environmentChanged;
 
   const perspective: NarrationPerspective =
     next.narrationStyle?.perspective ?? "external";
@@ -2811,6 +2973,7 @@ async function advanceTurnWithLease(input: {
     opp,
     events,
     actions: resolved.actions,
+    environmentProcessReceipt: semanticTurn.environmentProcessReceipt ?? undefined,
     sensoryEvidence: semanticTurn.sensoryEvidence,
     quantizedMechanicalEvidence: semanticTurn.quantizedMechanicalEvidence,
   });
@@ -3155,7 +3318,8 @@ async function advanceTurnWithLease(input: {
       sideBName: next.sideB.displayName,
       locationChanged: semanticChanges.locationChanged,
       environmentBeatOccurred:
-        Boolean(happening) || semanticChanges.environmentChanged,
+        semanticTurn.environmentProcessReceipt?.status === "accepted" ||
+        semanticChanges.environmentChanged,
     }),
     log: [...next.log, narrative],
   };
