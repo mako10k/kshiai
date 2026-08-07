@@ -42,6 +42,7 @@ import {
   type BattleAdjudication,
   type BattleEncounterProposal,
   type BattleTurnRecord,
+  type BattleTurnPipelineTrace,
   type ResolvedBattleAction,
   type CharacterAgentState,
   type CharacterCognition,
@@ -1146,6 +1147,34 @@ export async function advanceCharacterAgents(input: {
     preferredSelfReference: input.after.encounterContext?.social.b.selfReference,
     decision: inputB?.decision,
   });
+  const traceSide = (
+    consumerInput: typeof inputA,
+    providerResult: typeof resultA,
+    providerOutput: CharacterAgentAdvanceResult | null,
+    accepted: typeof acceptedA,
+  ) => ({
+    input: consumerInput ? structuredClone(consumerInput) : null,
+    providerStatus: consumerInput
+      ? providerResult.status === "fulfilled"
+        ? "fulfilled" as const
+        : "rejected" as const
+      : "skipped" as const,
+    providerOutput: providerOutput ? structuredClone(providerOutput) : null,
+    acceptedOutput: {
+      state: structuredClone(accepted.state),
+      nextAction: accepted.nextAction
+        ? structuredClone(accepted.nextAction)
+        : null,
+      speech: accepted.speech ? structuredClone(accepted.speech) : null,
+    },
+  });
+  const characterAgentTrace: NonNullable<
+    BattleTurnPipelineTrace["characterAgents"]
+  > = {
+    phase: input.phase ?? "turn",
+    a: traceSide(inputA, resultA, agentA, acceptedA),
+    b: traceSide(inputB, resultB, agentB, acceptedB),
+  };
   const candidateSpeeches = [
     ...(acceptedA.speech ? [acceptedA.speech] : []),
     ...(acceptedB.speech ? [acceptedB.speech] : []),
@@ -1256,13 +1285,23 @@ export async function advanceCharacterAgents(input: {
           ...existingRecord.cognitionB,
           observedEvents: eventsWithUtterances,
         },
+        pipelineTrace: existingRecord.pipelineTrace ?? {
+          schemaVersion: 1 as const,
+          characterAgents: characterAgentTrace,
+        },
       }
-    : buildBattleTurnRecord({
-        before: input.before,
-        after: stateAfterUtterances,
-        events: eventsWithUtterances,
-        actions: input.actions,
-      });
+    : {
+        ...buildBattleTurnRecord({
+          before: input.before,
+          after: stateAfterUtterances,
+          events: eventsWithUtterances,
+          actions: input.actions,
+        }),
+        pipelineTrace: {
+          schemaVersion: 1 as const,
+          characterAgents: characterAgentTrace,
+        },
+      };
   return {
     state: refreshNarratorContinuity({
       ...stateAfterUtterances,
@@ -2783,7 +2822,47 @@ async function advanceTurnWithLease(input: {
     focus,
     view: perceptionView,
   });
+  const narratorDrama = {
+    phase: dramaPhase,
+    turn: next.turn,
+    turnLimit: next.turnLimit,
+    repeatedActionA: dramaBefore.repeatedActionA,
+    repeatedActionB: dramaBefore.repeatedActionB,
+    lastActionSignatureA: dramaBefore.lastActionSignatureA,
+    lastActionSignatureB: dramaBefore.lastActionSignatureB,
+    recentBeatFingerprints: dramaBefore.recentBeatFingerprints,
+    turnsSinceLocationChange: dramaBefore.turnsSinceLocationChange,
+    turnsSinceEnvironmentBeat: dramaBefore.turnsSinceEnvironmentBeat,
+    environmentBeatDue: environmentBeatCommitted,
+    progressionHint: dramaProgressionHint({
+      phase: dramaPhase,
+      turn: next.turn,
+      turnLimit: next.turnLimit,
+      repeatedActionA: dramaBefore.repeatedActionA,
+      repeatedActionB: dramaBefore.repeatedActionB,
+      lastActionSignatureA: dramaBefore.lastActionSignatureA,
+      lastActionSignatureB: dramaBefore.lastActionSignatureB,
+      recentBeatFingerprints: dramaBefore.recentBeatFingerprints,
+      turnsSinceLocationChange: dramaBefore.turnsSinceLocationChange,
+    }) ?? undefined,
+  };
+  const narrationCallInput: Omit<
+    Parameters<LlmProvider["narrateTurn"]>[0],
+    "onProgress"
+  > | null = narrationView
+    ? {
+        view: narrationView,
+        recentNarration: subjectiveNarration ? [] : recentNarration,
+        recentSpeeches: subjectiveNarration ? [] : recentSpeeches,
+        drama: narratorDrama,
+        innerDigests: digests,
+        characterSpeeches,
+        styleInstruction: next.narrationStyle?.instruction,
+        styleName: next.narrationStyle?.displayName,
+      }
+    : null;
   let narrationResult: NarrationResult;
+  let narratorDisposition: "provider" | "fallback" = "provider";
   try {
     // Per-attempt budget must cover primary abort (~14–16s) + router failover to
     // the next provider. A single 18s race was expiring mid-failover and dumping
@@ -2793,38 +2872,11 @@ async function advanceTurnWithLease(input: {
         if (!narrationView) {
           throw new Error("narration perception view unavailable");
         }
+        if (!narrationCallInput) {
+          throw new Error("narration call input unavailable");
+        }
         return input.llm.narrateTurn({
-          view: narrationView,
-          recentNarration: subjectiveNarration ? [] : recentNarration,
-          recentSpeeches: subjectiveNarration ? [] : recentSpeeches,
-          drama: {
-            phase: dramaPhase,
-            turn: next.turn,
-            turnLimit: next.turnLimit,
-            repeatedActionA: dramaBefore.repeatedActionA,
-            repeatedActionB: dramaBefore.repeatedActionB,
-            lastActionSignatureA: dramaBefore.lastActionSignatureA,
-            lastActionSignatureB: dramaBefore.lastActionSignatureB,
-            recentBeatFingerprints: dramaBefore.recentBeatFingerprints,
-            turnsSinceLocationChange: dramaBefore.turnsSinceLocationChange,
-            turnsSinceEnvironmentBeat: dramaBefore.turnsSinceEnvironmentBeat,
-            environmentBeatDue: environmentBeatCommitted,
-            progressionHint: dramaProgressionHint({
-              phase: dramaPhase,
-              turn: next.turn,
-              turnLimit: next.turnLimit,
-              repeatedActionA: dramaBefore.repeatedActionA,
-              repeatedActionB: dramaBefore.repeatedActionB,
-              lastActionSignatureA: dramaBefore.lastActionSignatureA,
-              lastActionSignatureB: dramaBefore.lastActionSignatureB,
-              recentBeatFingerprints: dramaBefore.recentBeatFingerprints,
-              turnsSinceLocationChange: dramaBefore.turnsSinceLocationChange,
-            }) ?? undefined,
-          },
-          innerDigests: digests,
-          characterSpeeches,
-          styleInstruction: next.narrationStyle?.instruction,
-          styleName: next.narrationStyle?.displayName,
+          ...narrationCallInput,
           onProgress: (progress) => {
             emit({
               type: "narrator",
@@ -2850,6 +2902,7 @@ async function advanceTurnWithLease(input: {
       },
     );
   } catch (e) {
+    narratorDisposition = "fallback";
     console.warn(
       "[battle] narrateTurn fallback",
       e instanceof Error ? e.message : e,
@@ -2909,6 +2962,7 @@ async function advanceTurnWithLease(input: {
       turn: next.turn,
     });
   }
+  const narratorProviderOutput = structuredClone(narrationResult);
   next = applyNarratorRecognitionResult({
     state: next,
     view: perceptionView,
@@ -2981,6 +3035,31 @@ async function advanceTurnWithLease(input: {
     }),
     log: [...next.log, narrative],
   };
+  const traceRecords = next.turnRecords ?? [];
+  const traceRecord = traceRecords.at(-1);
+  if (traceRecord) {
+    next = {
+      ...next,
+      turnRecords: [
+        ...traceRecords.slice(0, -1),
+        {
+          ...traceRecord,
+          pipelineTrace: {
+            schemaVersion: 1,
+            ...(traceRecord.pipelineTrace ?? {}),
+            narrator: {
+              input: narrationCallInput
+                ? structuredClone(narrationCallInput)
+                : null,
+              disposition: narratorDisposition,
+              providerOutput: narratorProviderOutput,
+              publicOutput: structuredClone(narrative),
+            },
+          },
+        },
+      ],
+    };
+  }
   emit({ type: "phase", phase: "finalizing" });
 
   // KO this turn: combat narrative is done, but official finish waits for aftermath advance.

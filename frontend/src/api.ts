@@ -41,6 +41,28 @@ export type InternalBattleObservationSummary = {
   observedAt: string | null;
 };
 
+export type InternalAgentInvocationTrace = {
+  input: unknown | null;
+  providerStatus: "fulfilled" | "rejected" | "skipped";
+  providerOutput: unknown | null;
+  acceptedOutput: unknown | null;
+};
+
+export type InternalBattlePipelineTrace = {
+  schemaVersion: 1;
+  characterAgents?: {
+    phase: "prologue" | "turn" | "aftermath";
+    a: InternalAgentInvocationTrace;
+    b: InternalAgentInvocationTrace;
+  };
+  narrator?: {
+    input: unknown | null;
+    disposition: "provider" | "fallback";
+    providerOutput: unknown;
+    publicOutput: unknown;
+  };
+};
+
 export type InternalBattleObservationDetail = {
   role: "admin" | "developer" | "test" | "e2e";
   summary: InternalBattleObservationSummary;
@@ -54,6 +76,7 @@ export type InternalBattleObservationDetail = {
     sideBChange: unknown;
     worldImpact: unknown | null;
     canonicalTransition: unknown | null;
+    pipelineTrace: InternalBattlePipelineTrace | null;
   }>;
   canonicalCurrent: {
     semanticState: unknown | null;
@@ -64,6 +87,7 @@ export type InternalBattleObservationDetail = {
   capabilities: {
     turnRecordCount: number;
     canonicalTransitionCount: number;
+    pipelineTraceCount: number;
     perTurnCanonicalTransitions: "complete" | "partial" | "unavailable";
   };
 };

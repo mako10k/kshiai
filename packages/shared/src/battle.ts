@@ -569,6 +569,31 @@ export const BattleAdjudicationSchema = z.object({
 }).strict();
 export type BattleAdjudication = z.infer<typeof BattleAdjudicationSchema>;
 
+export const BattlePipelineAgentInvocationTraceSchema = z.object({
+  input: z.unknown().nullable(),
+  providerStatus: z.enum(["fulfilled", "rejected", "skipped"]),
+  providerOutput: z.unknown().nullable(),
+  acceptedOutput: z.unknown().nullable(),
+}).strict();
+
+export const BattleTurnPipelineTraceSchema = z.object({
+  schemaVersion: z.literal(1),
+  characterAgents: z.object({
+    phase: z.enum(["prologue", "turn", "aftermath"]),
+    a: BattlePipelineAgentInvocationTraceSchema,
+    b: BattlePipelineAgentInvocationTraceSchema,
+  }).strict().optional(),
+  narrator: z.object({
+    input: z.unknown().nullable(),
+    disposition: z.enum(["provider", "fallback"]),
+    providerOutput: z.unknown(),
+    publicOutput: z.unknown(),
+  }).strict().optional(),
+}).strict();
+export type BattleTurnPipelineTrace = z.infer<
+  typeof BattleTurnPipelineTraceSchema
+>;
+
 /** Persisted engine facts for audit and agent cognition reconstruction. */
 export const BattleTurnRecordSchema = z.object({
   turn: z.number().int().nonnegative(),
@@ -602,6 +627,8 @@ export const BattleTurnRecordSchema = z.object({
   sideBChange: CombatantStateChangeSchema,
   cognitionA: CharacterCognitionSchema,
   cognitionB: CharacterCognitionSchema,
+  /** Bounded internal-only consumer I/O for pipeline diagnosis. */
+  pipelineTrace: BattleTurnPipelineTraceSchema.optional(),
 });
 export type BattleTurnRecord = z.infer<typeof BattleTurnRecordSchema>;
 

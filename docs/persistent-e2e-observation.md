@@ -32,6 +32,17 @@ but accurately report that per-turn transition detail is unavailable.
 Administrators and developers may inspect all retained battles; test and E2E
 users remain restricted to battles owned by the test realm.
 
+For turns created after the agent-trace release, the same screen also renders a
+per-turn pipeline DAG. It starts with the resolved current turn and canonical
+transition, then shows the isolated Site A and Site B character-agent consumer
+input, provider output, and server-accepted output. The accepted `nextAction`
+belongs to the following turn, while accepted speech feeds the current
+narrator call. The DAG then shows the exact bounded narrator call input,
+provider/fallback disposition, provider output, and final public block. It does
+not retain provider credentials, transport headers, raw HTTP envelopes, or
+hidden chain-of-thought. Older turns remain readable and report the trace as
+unavailable rather than reconstructing it from prose.
+
 The production administrator allowlist is deployment configuration, not a
 client claim. Stage binds `ADMIN_EMAILS=mako10k@mk10.org`, and Promote refuses
 an artifact that does not contain that binding.
