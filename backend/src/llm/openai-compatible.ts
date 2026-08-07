@@ -10,7 +10,6 @@ import {
   NarratorRecognitionUpdateSchema,
   TurnSemanticPatchSchema,
   CharacterAgentStateSchema,
-  CharacterActionIntentSchema,
   CharacterIdentitySchema,
   DecisionProfileSchema,
   FreeActionAdjudicationBatchSchema,
@@ -89,6 +88,29 @@ When focus permits innerDigests and a non-empty interior conclusion is supplied,
 
 const NARRATOR_RECOGNITION_RULES = `recognitionUpdates are narrator-only cognition returned in this same narration response; they never change character cognition, canonical events, world state, or battle mechanics.
 Each subjectRef must exactly match one presentation.recognitionSubjects subjectRef supplied to this call. Never place subjectRef in prose or a speaker label. Emit an update only when observationBoundary supports recognizing, questioning, or unlinking that subject. Omission preserves the prior recognition. same_entity preserves an already identified recognizedAs; temporary occlusion, weak audio, turn changes, and viewpoint switches alone are not identity changes.`;
+
+/** Keep generated candidates inspectable without persisting an unbounded response. */
+function boundGeneratedJson(value: unknown, depth = 0): unknown | null {
+  if (value === null || value === undefined) return null;
+  if (typeof value === "string") return value.slice(0, 1200);
+  if (typeof value === "boolean") return value;
+  if (typeof value === "number") return Number.isFinite(value) ? value : null;
+  if (depth >= 3) return null;
+  if (Array.isArray(value)) {
+    return value.slice(0, 12).map((item) => boundGeneratedJson(item, depth + 1));
+  }
+  if (typeof value === "object") {
+    return Object.fromEntries(
+      Object.entries(value)
+        .slice(0, 24)
+        .map(([key, item]) => [
+          key.slice(0, 80),
+          boundGeneratedJson(item, depth + 1),
+        ]),
+    );
+  }
+  return String(value).slice(0, 120);
+}
 
 function normalizedSpeechFacts(value: string): string {
   return value.normalize("NFKC").replace(/[\s「」『』（）()、。！？!?…・]/g, "");
@@ -1449,88 +1471,15 @@ The narrator may later choose this line's display position and punctuation, but 
           : String(data.speech),
         { foeName: counterpartLabel },
       );
-      const nextAction = input.decision
-        ? CharacterActionIntentSchema.safeParse(data.nextAction)
-        : null;
-      if (nextAction && !nextAction.success) {
-        throw new Error("Character agent returned an invalid next action");
-      }
-      const allowed = nextAction?.success
-        ? input.decision?.availableActions.find((action) =>
-            action.kind === nextAction.data.kind &&
-            action.skillId === nextAction.data.skillId
-          )
-        : undefined;
-      if (nextAction?.success && !allowed) {
-        throw new Error("Character agent selected an unavailable next action");
-      }
-      const affordanceRefs = new Set(
-        input.decision?.affordances?.map((affordance) => affordance.ref) ?? [],
-      );
-      if (
-        nextAction?.success &&
-        nextAction.data.kind === "free_action" &&
-        (!(nextAction.data.subjectRefs ?? []).every((ref) =>
-          affordanceRefs.has(ref)
-        ) ||
-          (nextAction.data.opportunityId &&
-            !input.decision?.opportunityChains?.some((chain) =>
-              chain.id === nextAction.data.opportunityId
-            )))
-      ) {
-        throw new Error("Character agent selected an ungrounded free action");
-      }
-      if (
-        nextAction?.success &&
-        nextAction.data.instrumentRef &&
-        (!affordanceRefs.has(nextAction.data.instrumentRef) ||
-          !input.decision?.opportunityChains?.some((chain) =>
-            chain.setupTurns === 0 &&
-            chain.continuation.actionKind === nextAction.data.kind &&
-            chain.continuation.instrumentRef === nextAction.data.instrumentRef
-          ))
-      ) {
-        throw new Error("Character agent selected an unavailable instrument");
-      }
-      if (
-        nextAction?.success &&
-        nextAction.data.useFinisher &&
-        !(
-          allowed?.finisherCandidate &&
-          input.decision?.finisher?.unlocked &&
-          input.decision.finisher.remainingUses > 0
-        )
-      ) {
-        throw new Error("Character agent selected an unavailable finisher");
-      }
-      const last = input.decision?.lastAction;
-      const sameAsLast = Boolean(
-        last &&
-        nextAction?.success &&
-        nextAction.data.kind === last.kind &&
-        (nextAction.data.skillId ?? null) === (last.skillId ?? null),
-      );
-      const hasAlternative = input.decision?.availableActions.some((action) =>
-        !(
-          last &&
-          action.kind === last.kind &&
-          (action.skillId ?? null) === (last.skillId ?? null)
-        )
-      );
-      if (
-        input.decision?.varietyPressure === "require_change" &&
-        sameAsLast &&
-        hasAlternative
-      ) {
-        throw new Error("Character agent repeated last action under require_change");
-      }
       return {
         state: {
           ...parsed.data,
           lastSpeech: speech,
         },
         speech,
-        ...(nextAction?.success ? { nextAction: nextAction.data } : {}),
+        proposedAction: input.decision
+          ? boundGeneratedJson(data.nextAction)
+          : null,
       };
     } catch (error) {
       return this.fallbackOrThrow(error, () => this.fallback.advanceCharacterAgent(input));

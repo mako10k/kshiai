@@ -21,8 +21,10 @@ import {
   buildRefereeTurnFacts,
   finalizeCharacterSpeeches,
   reconcileSemanticState,
+  validateCharacterActionProposal,
 } from "./battle-service.js";
 import { MockLlmProvider } from "../llm/mock.js";
+import { OpenAiCompatibleProvider } from "../llm/openai-compatible.js";
 
 function sheet(
   id: string,
@@ -168,6 +170,10 @@ describe("character-authored public speech", () => {
       "turn",
     );
     assert.ok(pipelineTrace?.characterAgents?.a.providerOutput);
+    assert.equal(
+      pipelineTrace?.characterAgents?.a.actionProposalValidation?.status,
+      "accepted",
+    );
     assert.ok(pipelineTrace?.characterAgents?.a.acceptedOutput);
     const narratorSpeeches = buildNarratorCharacterSpeeches({
       state: result.state,
@@ -496,7 +502,7 @@ describe("character-authored public speech", () => {
           lastSpeech: "provider内の不一致な文",
         },
         speech: "まだ決着ではない。",
-        nextAction: { kind: "wait" },
+        proposedAction: { kind: "wait" },
       },
     });
 
@@ -549,10 +555,178 @@ describe("character-authored public speech", () => {
       result: {
         state: previous,
         speech: "ここで待つ。",
-        nextAction: { kind: "skill", skillId: "hidden-skill" },
+        proposedAction: { kind: "skill", skillId: "hidden-skill" },
       },
     });
     assert.equal(accepted.speech?.text, "ここで待つ。");
+    assert.equal(accepted.nextAction, undefined);
+    assert.equal(
+      accepted.actionProposalValidation?.reason,
+      "unavailable_action",
+    );
+  });
+
+  it("records action proposal acceptance and targeted rejection reasons", () => {
+    const decision: NonNullable<
+      Parameters<typeof validateCharacterActionProposal>[0]["decision"]
+    > = {
+      nextTurn: 3,
+      turnsRemaining: 18,
+      availableActions: [{
+        kind: "skill",
+        skillId: "slash",
+        name: "斬撃",
+        skillKind: "attack",
+        finisherCandidate: true,
+        target: { kind: "counterpart", perceivedAs: "相手" },
+      }, {
+        kind: "basic_attack",
+        name: "基本攻撃",
+        target: { kind: "counterpart", perceivedAs: "相手" },
+      }, {
+        kind: "defend",
+        name: "防御",
+        target: { kind: "self", perceivedAs: "自分" },
+      }, {
+        kind: "free_action",
+        name: "自由行動",
+        target: { kind: "self", perceivedAs: "自分" },
+      }],
+      finisher: {
+        skillId: "slash",
+        skillName: "斬撃",
+        source: "derived",
+        unlocked: false,
+        turnsUntilUnlock: 1,
+        remainingUses: 1,
+        currentMultiplier: 1.5,
+        maxMultiplier: 2,
+        criticalChance: 0.2,
+        turnsUntilMax: 2,
+      },
+      affordances: [{
+        ref: "object.rock",
+        perceivedAs: "石",
+        relation: "足元にある",
+        certainty: "clear",
+        possiblePreparations: [],
+        possibleUses: [],
+      }],
+      opportunityChains: [{
+        id: "chain.rock",
+        objectiveHint: "石を使う",
+        prerequisites: [],
+        continuation: {
+          actionKind: "basic_attack",
+          instrumentRef: "object.rock",
+          description: "石で攻める",
+        },
+        setupTurns: 0,
+        expectedProgress: "攻撃手段を増やす",
+        expectedCausalPotential: { damage: "minor" },
+        risks: [],
+      }],
+      lastAction: { kind: "defend" },
+      varietyPressure: "require_change",
+    };
+    const validate = (proposedAction: unknown) =>
+      validateCharacterActionProposal({ proposedAction, decision });
+
+    assert.deepEqual(validate({ kind: "skill", skillId: "slash" }), {
+      status: "accepted",
+      reason: null,
+      proposedAction: { kind: "skill", skillId: "slash" },
+      acceptedAction: { kind: "skill", skillId: "slash" },
+    });
+    assert.equal(
+      validate({ kind: "skill", skillId: "slash", unexpected: true }).reason,
+      "schema_invalid",
+    );
+    assert.equal(
+      validate({ kind: "skill", skillId: "hidden" }).reason,
+      "unavailable_action",
+    );
+    assert.equal(
+      validate({ kind: "skill", skillId: "slash", useFinisher: true }).reason,
+      "unavailable_finisher",
+    );
+    assert.equal(
+      validate({
+        kind: "free_action",
+        description: "見えない物をつかむ",
+        subjectRefs: ["object.hidden"],
+      }).reason,
+      "ungrounded_free_action",
+    );
+    assert.equal(
+      validate({ kind: "basic_attack", instrumentRef: "object.hidden" }).reason,
+      "unavailable_instrument",
+    );
+    assert.equal(
+      validate({ kind: "defend" }).reason,
+      "repeated_action_requires_change",
+    );
+    assert.equal(
+      validate({ kind: "basic_attack", instrumentRef: "object.rock" }).status,
+      "accepted",
+    );
+  });
+
+  it("keeps valid state and speech when an OpenAI-compatible action proposal is invalid", async () => {
+    const sideA = sheet("a", "アオ", ["私"]);
+    const sideB = sheet("b", "クロ", ["俺"]);
+    const state = createBattleState({
+      id: "invalid-proposal-isolated",
+      sideA,
+      sideB,
+      turnLimit: 20,
+      prologuePending: false,
+    });
+    const consumerInput = buildCharacterAgentConsumerInput({
+      state,
+      sheet: sideA,
+      counterpartSheet: sideB,
+      side: "a",
+      previous: state.agentStateA!,
+      phase: "turn",
+    });
+    assert.ok(consumerInput?.decision);
+    const provider = new OpenAiCompatibleProvider({
+      name: "test-provider",
+      apiKey: "test-only",
+      baseUrl: "https://example.invalid/v1",
+      modelEngine: "test-engine",
+      modelFast: "test-fast",
+    });
+    const privateProvider = provider as unknown as {
+      chatJson(): Promise<unknown>;
+    };
+    privateProvider.chatJson = async () => ({
+      state: { privateMemory: "応答の有効な記憶" },
+      speech: "まだ動ける。",
+      nextAction: { kind: "skill", skillId: "slash", unexpected: true },
+    });
+
+    const providerResult = await provider.advanceCharacterAgent(consumerInput!);
+    const accepted = acceptCharacterAgentResult({
+      result: providerResult,
+      previous: state.agentStateA!,
+      side: "a",
+      speaker: sideA.displayName,
+      profile: consumerInput!.character,
+      decision: consumerInput!.decision,
+    });
+
+    assert.equal(providerResult.state.privateMemory, "応答の有効な記憶");
+    assert.equal(providerResult.speech, "まだ動ける。");
+    assert.deepEqual(providerResult.proposedAction, {
+      kind: "skill",
+      skillId: "slash",
+      unexpected: true,
+    });
+    assert.equal(accepted.state.privateMemory, "応答の有効な記憶");
+    assert.equal(accepted.speech?.text, "まだ動ける。");
+    assert.equal(accepted.actionProposalValidation?.reason, "schema_invalid");
     assert.equal(accepted.nextAction, undefined);
   });
 
@@ -575,7 +749,7 @@ describe("character-authored public speech", () => {
       result: {
         state: { ...previous, selfReference: "僕" },
         speech: "まだ続けられる。",
-        nextAction: { kind: "wait" },
+        proposedAction: { kind: "wait" },
       },
     });
     const missing = acceptCharacterAgentResult({

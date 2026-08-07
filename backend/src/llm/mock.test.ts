@@ -90,7 +90,7 @@ describe("mock LLM natural-language handling", () => {
     const result = await provider.advanceCharacterAgent(agentInput);
     assert.equal(result.state.selfReference, "わたくし");
     assert.match(result.speech ?? "", /わたくし/);
-    assert.deepEqual(result.nextAction, { kind: "basic_attack" });
+    assert.deepEqual(result.proposedAction, { kind: "basic_attack" });
 
     const humane = await provider.advanceCharacterAgent({
       ...agentInput,
@@ -119,7 +119,7 @@ describe("mock LLM natural-language handling", () => {
         },
       },
     });
-    assert.deepEqual(humane.nextAction, { kind: "defend" });
+    assert.deepEqual(humane.proposedAction, { kind: "defend" });
     assert.equal(
       humane.state.currentGoal,
       "勝負より人情を優先し、相手を傷つけない",
@@ -185,7 +185,7 @@ describe("mock LLM natural-language handling", () => {
         },
       },
     });
-    assert.deepEqual(finisherResult.nextAction, {
+    assert.deepEqual(finisherResult.proposedAction, {
       kind: "skill",
       skillId: "slash",
       useFinisher: true,
