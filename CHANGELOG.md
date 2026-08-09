@@ -5,218 +5,26 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 
 ## [Unreleased]
 
-## [0.12.2] - 2026-08-07
-
-### Changed
-
-- Extends LLM operation deadlines to match fast, engine, and long-running call
-  profiles instead of aborting every provider at the former 12-second limit.
-- Retries HTTP 429 at most twice and HTTP 503 once within the selected provider,
-  while preventing retries after streamed output has begun.
-- Restricts ordered provider fallback to DNS and billing or exhausted-credit
-  failures. Timeouts, rate limits, service unavailability, parse failures, and
-  other operation errors remain terminal within the selected provider.
-
-### Operations
-
-- Keeps the existing provider order, models, call authority, and one-hour
-  in-memory cooldown. `LLM_PROVIDER_COOLDOWN_MS` is the preferred setting and
-  the existing `LLM_QUOTA_COOLDOWN_MS` remains accepted for compatibility.
-- Adds no migration, secret, cohort switch, direct battle mechanic, or narrator
-  output guard.
-
-## [0.12.1] - 2026-08-07
-
-### Changed
-
-- Aligns non-authoritative environment proposals with persistent transition
-  shapes the canonical world reconciler can represent, while keeping final
-  acceptance and effects server-validated.
-- Clarifies that the existing battlefield and canonical world may ground a
-  proposal cause, and that an accepted environment decision must include its
-  matching canonical operation.
-
-### Operations
-
-- Adds no schema, provider call, direct environment mechanic, narrator guard,
-  or runtime flag. The always-enabled world-process boundary is unchanged.
-
-## [0.12.0] - 2026-08-07
+## [0.8.0] - 2026-08-09
 
 ### Added
 
-- Adds an explicit accepted, rejected, or skipped environment-process receipt
-  linking the supervisor proposal, canonical decision, resolved event, source,
-  and following-turn effect keys in the internal battle DAG.
+- Character agents now choose their opening strategy from their own turn-0
+  thought instead of selecting case-policy cards during match setup.
+- Bounded per-opponent memory records the opening plan and post-match
+  reflection for future encounters.
+- Repeated actions expose deterministic forecast/result cues: stamina fatigue,
+  reduced effect, and opponent readability.
 
 ### Changed
 
-- Treats supervisor happenings as non-authoritative proposals evaluated by the
-  existing post-resolution semantic/world reconciliation call.
-- Emits an environmental situation event and bounded following-turn situation
-  values only after a grounded non-character world transition is accepted.
-- Removes direct proposal-owned coefficients, environmental hits,
-  pre-resolution public events, and same-turn HP effects from the live service
-  path.
+- Match setup no longer asks the player to generate or select tactical policy
+  cards; the character decides after perceiving the opening scene.
 
 ### Operations
 
-- The new path is always enabled. It adds no migration, secret, environment
-  variable, provider call, narrator guard/repair, or cohort switch. Non-critical
-  narrator-only work remains pending while accepted canonical input can improve
-  narration incidentally.
-
-## [0.11.1] - 2026-08-07
-
-### Changed
-
-- Presents character-agent `nextAction` as six action-kind-specific JSON shapes
-  so standard actions do not copy free-action-only explanation and subject
-  fields into otherwise valid proposals.
-
-### Operations
-
-- Keeps the strict server validator and proposal receipt unchanged. This is an
-  always-enabled prompt-only alignment with no migration, secret, environment,
-  provider-order, or narrator-policy change.
-
-## [0.11.0] - 2026-08-07
-
-### Added
-
-- Retains each bounded character-agent action proposal separately from the
-  server-owned validation receipt and accepted following-turn action.
-- Shows proposal acceptance or a bounded rejection reason in the Site A and
-  Site B lanes of the separate internal pipeline DAG.
-
-### Changed
-
-- Keeps valid character continuity and speech when only the accompanying action
-  proposal is invalid, instead of treating the complete model response as a
-  provider failure and retrying another provider.
-- Centralizes action availability, finisher, affordance, instrument, and
-  required-change validation at the battle-service authority boundary.
-
-### Operations
-
-- Existing battle records remain readable because the new trace receipt is
-  optional. No database migration or new environment variable is required.
-
-## [0.10.0] - 2026-08-07
-
-### Added
-
-- Retains bounded per-turn Site A and Site B character-agent inputs, provider
-  dispositions and outputs, and server-accepted outputs together with narrator
-  input, provider output, and public output.
-- Adds a per-turn pipeline DAG to the separate internal observation screen. It
-  shows current-turn adjudication and canonical transition, parallel character
-  inputs and outputs, and narrator input and output without modifying the
-  normal battle screen.
-
-### Changed
-
-- Sends the narrator one role-labelled turn brief that places each action beside
-  its structured causality and readable resolution reason, explicitly reports
-  accepted canonical change, and separates current state from static battlefield
-  background.
-- Removes duplicate outcome prose from the narrator payload while preserving the
-  existing single narrator call and free choice of wording. This release adds no
-  claim validator, prose rejection, repair loop, retry policy, or mechanical
-  authority for narration.
-
-### Operations
-
-- Existing battles remain readable; pipeline traces are available only for turns
-  created by this or a later backend revision. No database migration or new
-  environment variable is required.
-
-## [0.9.0] - 2026-08-07
-
-### Added
-
-- Adds a fail-closed `/internal/observations` diagnostics screen and API for
-  administrators, developers, test users, and E2E users. It exposes retained
-  battle logs, raw battle state, and canonical turn progression without
-  changing or linking from the normal battle UI.
-- Retains exact semantic and mechanical-world transitions in future turn
-  records so canonical progression can be inspected after a battle.
-
-### Fixed
-
-- Persists each validated E2E observation beside its battle and uploads only a
-  non-sensitive execution receipt, avoiding any need to grant the GitHub deploy
-  identity project-wide log-reading access.
-
-## [0.8.1] - 2026-08-07
-
-### Fixed
-
-- Bounds the rotating persistent E2E account password to 44 UTF-8 bytes. The
-  prior 81-byte value made Supabase Auth return `500 unexpected_failure` before
-  either dedicated account could complete application sign-in.
-
-### Operations
-
-- Keeps the already-created observer authentication identity and all future
-  accounts, fixtures, ratings, and battles durable; the hotfix adds no cleanup
-  or data migration.
-
-## [0.8.0] - 2026-08-07
-
-### Added
-
-- Adds server-owned `general`, `test`, and `e2e` account kinds. Test and E2E
-  users share a separate test realm for cross-account characters, battlefields,
-  narration styles, battles, and rating observations.
-- Adds two persistent Codex observation identities with reusable characters, a
-  fixed rainy-alley battlefield, and a causal-observation narrator. Each run
-  retains a new full production API/SSE battle and a sanitized observation.
-- Adds a protected production observation workflow bound to the active guarded,
-  digest-pinned Cloud Run revision.
-
-### Security and privacy
-
-- Hides test-realm characters, custom assets, direct character access, battle
-  creation targets, and rating populations from normal general users.
-- Keeps account classification and administrator authorization server-owned;
-  client claims cannot opt into the test realm or administrator access.
-- Excludes credentials, internal user IDs, raw parameters, private semantic
-  state, and rating internals from observation artifacts.
-
-### Operations
-
-- Adds forward-only migration `0007_account_kind.sql`; existing users remain
-  `general`, so the prior application revision stays compatible after migration.
-- Stage binds `ADMIN_EMAILS=mako10k@mk10.org`, and Promote rejects a staged
-  revision without that administrator binding or guarded causal narration.
-- Persistent E2E passwords rotate on every run, but accounts, fixtures, ratings,
-  and battles are never cleaned up. Sanitized workflow artifacts are retained
-  for 90 days while the database battle remains durable.
-
-## [0.7.2] - 2026-08-07
-
-### Added
-
-- Adds a server-owned causal turn receipt that links effective actions,
-  resolution reasons, source-owned events, committed mechanical evidence,
-  semantic changes, and bounded carry-forward state without mining prose.
-- Adds an ID-free, perspective-safe causal projection to the existing narrator
-  input behind the reversible `BATTLE_CAUSAL_NARRATION_MODE` guard.
-
-### Security and privacy
-
-- Rejects dangling or uncommitted evidence and keeps canonical identifiers and
-  unobserved causal attribution out of character-limited narration inputs.
-- Keeps narration presentation-only: the slice adds no mechanics, persistence,
-  winner, rating, cognition, or additional LLM-call authority.
-
-### Operations
-
-- No database migration, backfill, authentication, provider-order, secret, or
-  infrastructure-topology change is required. The causal narration mode
-  remains `off` unless a staged Cloud Run revision explicitly selects
-  `narration_guarded`.
+- No database migration. Opponent memory is stored as optional owner-private
+  character JSON and remains backward-compatible with existing records.
 
 ## [0.7.1] - 2026-08-06
 
