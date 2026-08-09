@@ -460,6 +460,72 @@ describe("battle engine", () => {
     );
   });
 
+  it("penalizes consecutive basic attacks with fatigue and readable reduced effect", () => {
+    const a = sheet("repeat-a", "A", 300);
+    const b = sheet("repeat-b", "B", 1_000);
+    const initial = createBattleState({
+      id: "repeat-penalty",
+      sideA: a,
+      sideB: b,
+      turnLimit: 20,
+      prologuePending: false,
+    });
+    const first = resolveTurn({
+      state: initial,
+      playerAction: { actorSide: "a", kind: "basic_attack" },
+      sideASkills: a.skills,
+      sideBSkills: [],
+    });
+    first.state.dramaState = {
+      lastActionSignatureA: "basic_attack:-:1",
+      lastActionSignatureB: null,
+      repeatedActionA: 1,
+      repeatedActionB: 0,
+      turnsSinceLocationChange: 1,
+      turnsSinceEnvironmentBeat: 1,
+      phase: "opening",
+      recentBeatFingerprints: [],
+      lastPublicSpeechA: null,
+      lastPublicSpeechB: null,
+    };
+    const second = resolveTurn({
+      state: first.state,
+      playerAction: { actorSide: "a", kind: "basic_attack" },
+      sideASkills: a.skills,
+      sideBSkills: [],
+    });
+    second.state.dramaState = {
+      ...first.state.dramaState,
+      repeatedActionA: 2,
+    };
+    const third = resolveTurn({
+      state: second.state,
+      playerAction: { actorSide: "a", kind: "basic_attack" },
+      sideASkills: a.skills,
+      sideBSkills: [],
+    });
+
+    assert.ok(second.events.some((event) => event.summary.includes("同じ手を重ね")));
+    assert.ok(third.events.some((event) => event.summary.includes("動きは読まれ")));
+    assert.ok(
+      (second.state.sideA.parameters.stamina ?? 0) <
+        (first.state.sideA.parameters.stamina ?? 0),
+    );
+    assert.ok(
+      (third.state.sideA.parameters.stamina ?? 0) <
+        (second.state.sideA.parameters.stamina ?? 0),
+    );
+    const secondDamage = second.mechanicalEvidence.find((item) =>
+      item.sourceActionId === "turn-2-action-a" && item.parameterKey === "hp"
+    );
+    const thirdDamage = third.mechanicalEvidence.find((item) =>
+      item.sourceActionId === "turn-3-action-a" && item.parameterKey === "hp"
+    );
+    assert.ok(secondDamage);
+    assert.ok(thirdDamage);
+    assert.ok(Math.abs(thirdDamage.attemptedDelta) < Math.abs(secondDamage.attemptedDelta));
+  });
+
   it("emphasizes finishing blows instead of a bare hit line", () => {
     const target = sheet("b", "B");
     const state = createBattleState({

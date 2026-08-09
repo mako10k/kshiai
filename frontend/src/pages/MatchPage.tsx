@@ -43,8 +43,7 @@ type MatchDraft = {
  * Explicit wizard — no hidden auto-start, no policy regen on every field flick.
  *
  * Step 1: pick my char / field / opponent (random only fills opponent)
- * Step 2: generate perspectives once; each is choice A / choice B / unspecified
- * Step 3: confirm & start
+ * Step 2: confirm & start (the character chooses its own strategy at turn 0)
  */
 export function MatchPage() {
   const nav = useNavigate();
@@ -188,13 +187,12 @@ export function MatchPage() {
           "";
 
         // Coming from a character card: start on step 1 with that char selected
-        const forceStep1 = Boolean(qMy || qOpp || qField);
         return {
           myId: pickMy,
           oppId: pickOpp && pickOpp !== pickMy ? pickOpp : "",
           fieldId: pickField,
           styleId: pickStyle,
-          step: forceStep1 ? 1 : pickMy && pickOpp ? d.step : 1,
+          step: 1,
         };
       });
 
@@ -428,36 +426,10 @@ export function MatchPage() {
       setError("対戦カードが未完成です");
       return;
     }
-    let policies = engineOptions;
-    let selected = selectedIds;
-
-    if (!policiesFresh) {
-      setPolicyBusy(true);
-      try {
-        const bundle = await generatePolicies();
-        applyBundle(bundle);
-        policies = bundle.engineOptions;
-        selected = [];
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "failed");
-        setPolicyBusy(false);
-        return;
-      } finally {
-        setPolicyBusy(false);
-      }
-    }
-
-    if (policies.length === 0) {
-      setError("方針がありません。再提案してください。");
-      return;
-    }
-
     setBusy(true);
     setError(null);
     try {
       const { battle } = await api.createBattle(myId, oppId, {
-        policies,
-        selectedPolicyIds: selected,
         narrationStyleId: styleId || undefined,
         ...fieldOpts(),
       });
@@ -889,9 +861,9 @@ export function MatchPage() {
             className="btn primary match-start-btn"
             type="button"
             disabled={!matchupReady || busy || policyBusy}
-            onClick={() => void goToPolicies()}
+            onClick={() => void startBattle()}
           >
-            {policyBusy ? "準備中…" : "次へ：ケース方針を決める"}
+            {busy ? "開始中…" : "試合開始（方針はキャラが決める）"}
           </button>
         ) : (
           <button

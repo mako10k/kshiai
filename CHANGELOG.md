@@ -5,6 +5,26 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 
 ## [Unreleased]
 
+## [0.13.0] - 2026-08-09
+
+### Added
+
+- Character agents forecast deterministic repeated-action fatigue, reduced
+  effect, and opponent readability before choosing an action, and receive the
+  corresponding committed result after resolution.
+- Every character keeps bounded, owner-private opening-plan and post-battle
+  reflection memory for each opponent.
+
+### Changed
+
+- Match setup no longer generates or selects tactical policy cards. Each
+  character chooses its opening strategy from its own turn-0 thought.
+
+### Operations
+
+- No database migration. Opponent memory is optional character-sheet JSON and
+  remains compatible with existing records.
+
 ## [0.12.2] - 2026-08-07
 
 ### Changed

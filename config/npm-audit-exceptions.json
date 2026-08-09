@@ -5,12 +5,6 @@
       "package": "@hono/node-server",
       "expires": "2026-09-03",
       "reason": "The production Linux container does not use the Windows-only serve-static path. Upgrade to 2.x is tracked as a compatibility change."
-    },
-    {
-      "source": 1124282,
-      "package": "react-router",
-      "expires": "2026-09-03",
-      "reason": "The frontend does not use React Server Components or route actions; no unaffected compatible 7.x release is available."
     }
   ]
 }

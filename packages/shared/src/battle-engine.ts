@@ -574,6 +574,7 @@ export function createBattleState(input: {
     speechStyle: "",
     selfReference: encounterContext.social.a.selfReference,
     lastSpeech: null,
+    conversationHistory: [],
     interior: {
       primaryEmotion: "平静",
       concealedEmotion: null,
@@ -593,6 +594,7 @@ export function createBattleState(input: {
     speechStyle: "",
     selfReference: encounterContext.social.b.selfReference,
     lastSpeech: null,
+    conversationHistory: [],
     interior: {
       primaryEmotion: "平静",
       concealedEmotion: null,
@@ -796,6 +798,7 @@ export function ensureBattleCompatibilityState(state: BattleState): BattleState 
         speechStyle: "",
         selfReference: encounterContext.social.a.selfReference,
         lastSpeech: null,
+        conversationHistory: [],
         interior: {
           primaryEmotion: "平静",
           concealedEmotion: null,
@@ -831,6 +834,7 @@ export function ensureBattleCompatibilityState(state: BattleState): BattleState 
         speechStyle: "",
         selfReference: encounterContext.social.b.selfReference,
         lastSpeech: null,
+        conversationHistory: [],
         interior: {
           primaryEmotion: "平静",
           concealedEmotion: null,
@@ -1871,7 +1875,14 @@ export function resolveTurn(input: {
         damage: clampCoefficient(
           (baseSituation.coefficients.damage ?? 1) *
             INSTRUMENT_MULTIPLIER[damageBand] *
-            defensiveInstrumentMultipliers[targetSide],
+            defensiveInstrumentMultipliers[targetSide] *
+            repetitionEffectMultiplier({
+              repeatCount: repeatedActionCount({
+                side: inputAction.side,
+                action: inputAction.effectiveAction,
+                drama,
+              }),
+            }),
         ),
       },
     };
@@ -1895,6 +1906,11 @@ export function resolveTurn(input: {
         actorSide: inputAction.side,
       },
       finisherFor(inputAction.side),
+      repeatedActionCount({
+        side: inputAction.side,
+        action: inputAction.effectiveAction,
+        drama,
+      }),
     );
   };
   const tagFor = (
@@ -2403,6 +2419,29 @@ function applyEnvHits(
   }
 }
 
+function repeatedActionCount(input: {
+  side: BattleTemporalSide;
+  action: BattleAction;
+  drama: ReturnType<typeof normalizeDramaState>;
+}): number {
+  const previous = parseActionSignature(
+    input.side === "a"
+      ? input.drama.lastActionSignatureA
+      : input.drama.lastActionSignatureB,
+  );
+  const same = previous?.kind === input.action.kind &&
+    (previous.skillId ?? null) === (input.action.skillId ?? null);
+  const count = input.side === "a"
+    ? input.drama.repeatedActionA
+    : input.drama.repeatedActionB;
+  return same ? count + 1 : 1;
+}
+
+function repetitionEffectMultiplier(input: { repeatCount: number }): number {
+  if (input.repeatCount < 3) return 1;
+  return Math.max(0.7, 1 - (input.repeatCount - 2) * 0.1);
+}
+
 function applyAction(
   actor: CombatantState,
   target: CombatantState,
@@ -2414,7 +2453,25 @@ function applyAction(
   recordMechanicalAttempt: MechanicalAttemptRecorder,
   decisive: DecisiveContext,
   finisher?: FinisherState,
+  repeatCount = 1,
 ): boolean {
+  if (repeatCount >= 2 && ["basic_attack", "skill", "free_action"].includes(action.kind)) {
+    const fatigue = Math.min(actor.parameters.stamina ?? 0, repeatCount >= 4 ? 4 : 2);
+    if (fatigue > 0) {
+      applyTrackedParameterDelta(
+        actor,
+        { parameter: "stamina", delta: -fatigue },
+        recordMechanicalAttempt,
+      );
+    }
+    events.push({
+      type: "status",
+      actorName: actor.displayName,
+      summary: repeatCount >= 3
+        ? `${actor.displayName} の動きは読まれ、同じ手の勢いが鈍る。`
+        : `${actor.displayName} は同じ手を重ね、わずかに息が乱れる。`,
+    });
+  }
   if (action.kind === "free_action") {
     events.push({
       type: "free_action",
