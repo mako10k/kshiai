@@ -69,6 +69,15 @@ describe("mock LLM natural-language handling", () => {
         selfReference: "わたくし",
         lastSpeech: null,
       },
+      actionReaction: {
+        schemaVersion: 1,
+        turn: 1,
+        latestCommittedResult: "挑戦者が踏み込もうとしたが、距離は保たれた。",
+      },
+      conversation: {
+        schemaVersion: 1,
+        history: [{ turn: 0, speaker: "counterpart", text: "まだ続けるのか。" }],
+      },
       perception: frameA,
       counterpart: {
         displayName: "挑戦者",

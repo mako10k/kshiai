@@ -620,6 +620,7 @@ function initialAgentState(
       attitudeTowardCounterpart: "対峙している",
       confidence: "steady",
       relationshipTension: "",
+      speechMode: "weave",
       speechAppraisal: {
         expectedImpact: "",
         observedImpact: "",
@@ -652,6 +653,7 @@ function groundCharacterAgentState(
       attitudeTowardCounterpart: state.interior?.attitudeTowardCounterpart ?? "対峙している",
       confidence: state.interior?.confidence ?? "steady",
       relationshipTension: state.interior?.relationshipTension ?? "",
+      speechMode: state.interior?.speechMode ?? "weave",
       speechAppraisal: state.interior?.speechAppraisal ?? {
         expectedImpact: "",
         observedImpact: "",
@@ -974,6 +976,11 @@ export function buildCharacterAgentConsumerInput(input: {
   const dialoguePipeline = DialoguePipelineSettingsSchema.parse(
     input.dialoguePipeline ?? defaultDialoguePipelineSettings(),
   );
+  const {
+    lastActionResult: latestCommittedResult,
+    conversationHistory,
+    ...previousContinuity
+  } = input.previous;
   const decision = phase === "aftermath"
     ? undefined
     : buildCharacterDecisionContext({
@@ -987,9 +994,17 @@ export function buildCharacterAgentConsumerInput(input: {
     phase,
     character,
     previous: structuredClone({
-      ...input.previous,
+      ...previousContinuity,
       selfReference: permittedSelfReference,
-      conversationHistory: (input.previous.conversationHistory ?? [])
+    }),
+    actionReaction: deepFreezeConsumerInput({
+      schemaVersion: 1,
+      turn: input.state.turn,
+      latestCommittedResult: latestCommittedResult?.trim() || null,
+    }),
+    conversation: deepFreezeConsumerInput({
+      schemaVersion: 1,
+      history: (conversationHistory ?? [])
         .slice(-dialoguePipeline.conversationHistoryLimit),
     }),
     dialoguePipeline: deepFreezeConsumerInput(structuredClone(dialoguePipeline)),

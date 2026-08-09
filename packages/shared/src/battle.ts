@@ -484,6 +484,46 @@ export type CharacterSpeechAppraisal = z.infer<
   typeof CharacterSpeechAppraisalSchema
 >;
 
+/** The private role a character chose for one public expression. */
+export const CharacterSpeechModeSchema = z.enum([
+  "action_reaction",
+  "conversation_continuation",
+  "weave",
+]);
+export type CharacterSpeechMode = z.infer<typeof CharacterSpeechModeSchema>;
+
+/** One expression that this character actually perceived in conversation. */
+export const CharacterConversationEntrySchema = z.object({
+  turn: z.number().int().nonnegative(),
+  speaker: z.enum(["self", "counterpart"]),
+  text: z.string().max(400),
+}).strict();
+export type CharacterConversationEntry = z.infer<
+  typeof CharacterConversationEntrySchema
+>;
+
+/**
+ * Fresh, committed outcome material for the action-and-result reaction thread.
+ * It is source material for expression only, never an instruction to claim a result.
+ */
+export const CharacterActionReactionContextSchema = z.object({
+  schemaVersion: z.literal(1),
+  turn: z.number().int().nonnegative(),
+  latestCommittedResult: z.string().max(600).nullable(),
+}).strict();
+export type CharacterActionReactionContext = z.infer<
+  typeof CharacterActionReactionContextSchema
+>;
+
+/** Bounded relational continuity for the conversation-continuation thread. */
+export const CharacterConversationContextSchema = z.object({
+  schemaVersion: z.literal(1),
+  history: z.array(CharacterConversationEntrySchema).max(24),
+}).strict();
+export type CharacterConversationContext = z.infer<
+  typeof CharacterConversationContextSchema
+>;
+
 /**
  * Compact private continuity for a character agent. It stores conclusions and
  * disposition, not a model's step-by-step reasoning.
@@ -500,11 +540,7 @@ export const CharacterAgentStateSchema = z.object({
   /** Latest mechanically committed result as this character can understand it. */
   lastActionResult: z.string().max(600).optional(),
   /** Bounded expressions this character has actually perceived over time. */
-  conversationHistory: z.array(z.object({
-    turn: z.number().int().nonnegative(),
-    speaker: z.enum(["self", "counterpart"]),
-    text: z.string().max(400),
-  }).strict()).max(24).optional(),
+  conversationHistory: z.array(CharacterConversationEntrySchema).max(24).optional(),
   interior: z.object({
     primaryEmotion: z.string().max(120).default("平静"),
     concealedEmotion: z.string().max(160).nullable().default(null),
@@ -513,6 +549,8 @@ export const CharacterAgentStateSchema = z.object({
     attitudeTowardCounterpart: z.string().max(160).default("対峙している"),
     confidence: z.enum(["low", "steady", "high"]).default("steady"),
     relationshipTension: z.string().max(160).default(""),
+    /** Private selection of the expression's action/conversation relationship. */
+    speechMode: CharacterSpeechModeSchema.default("weave"),
     /** Private social feedback loop for the character's own voice. */
     speechAppraisal: CharacterSpeechAppraisalSchema.optional(),
   }).optional(),

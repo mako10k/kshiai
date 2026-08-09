@@ -27,6 +27,7 @@ const agent = (over: Partial<CharacterAgentState> = {}): CharacterAgentState => 
     attitudeTowardCounterpart: "好敵手として見る",
     confidence: "steady",
     relationshipTension: "互いに譲らない",
+    speechMode: "weave",
   },
   ...over,
 });

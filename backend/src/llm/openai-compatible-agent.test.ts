@@ -85,6 +85,7 @@ describe("character-agent action proposal prompt", () => {
             attitudeTowardCounterpart: "試している",
             confidence: "steady",
             relationshipTension: "張りつめている",
+            speechMode: "weave",
             speechAppraisal: {
               expectedImpact: "相手の足運びを変えさせる",
               observedImpact: "前の問いでは相手の構えは変わらなかった",
@@ -134,12 +135,22 @@ describe("character-agent action proposal prompt", () => {
           attitudeTowardCounterpart: "対峙している",
           confidence: "steady",
           relationshipTension: "",
+          speechMode: "conversation_continuation",
           speechAppraisal: {
             expectedImpact: "相手の返答を得る",
             observedImpact: "",
             nextApproach: "問いかける",
           },
         },
+      },
+      actionReaction: {
+        schemaVersion: 1,
+        turn: 2,
+        latestCommittedResult: "足元の水が跳ね、相手は距離を保った。",
+      },
+      conversation: {
+        schemaVersion: 1,
+        history: [{ turn: 1, speaker: "counterpart", text: "答えろ。" }],
       },
       dialoguePipeline: {
         schemaVersion: 1,
@@ -154,6 +165,8 @@ describe("character-agent action proposal prompt", () => {
       counterpart: { displayName: "ガク" },
     });
 
+    assert.match(system, /two distinct expression threads/);
+    assert.match(system, /privately select interior\.speechMode/);
     assert.match(system, /speechAppraisal is a compact private sense/);
     assert.match(system, /trusted administrator-authored interaction context/);
     const pipeline = JSON.parse(user).dialoguePipeline;
@@ -166,10 +179,21 @@ describe("character-agent action proposal prompt", () => {
       updatedAt: "2026-08-09T00:00:00.000Z",
       updatedBy: "operator",
     });
+    const input = JSON.parse(user);
+    assert.deepEqual(input.actionReaction, {
+      schemaVersion: 1,
+      turn: 2,
+      latestCommittedResult: "足元の水が跳ね、相手は距離を保った。",
+    });
+    assert.deepEqual(input.conversation, {
+      schemaVersion: 1,
+      history: [{ turn: 1, speaker: "counterpart", text: "答えろ。" }],
+    });
     assert.deepEqual(result.state.interior?.speechAppraisal, {
       expectedImpact: "相手の足運びを変えさせる",
       observedImpact: "前の問いでは相手の構えは変わらなかった",
       nextApproach: "観察を脅しではなく誘いとして使う",
     });
+    assert.equal(result.state.interior?.speechMode, "weave");
   });
 });
