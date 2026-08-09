@@ -9,6 +9,8 @@ import {
   summarizeRatingPopulation,
   toPublicCharacter,
   type RatingDisplayContext,
+  OpponentBattleMemorySchema,
+  type OpponentBattleMemory,
 } from "@kshiai/shared";
 import type { CharacterReference } from "../llm/types.js";
 import { normalizeCharacterName } from "../character-name-uniqueness.js";
@@ -262,6 +264,39 @@ export async function saveSheet(sheet: CharacterSheet): Promise<void> {
       withRecord.updatedAt,
     ],
   );
+}
+
+/** Persist bounded owner-private notes for a specific opponent. */
+export async function saveOpponentBattleMemory(input: {
+  characterId: string;
+  opponentId: string;
+  preBattlePlan?: string;
+  postBattleReflection?: string;
+  battledAt?: string;
+}): Promise<OpponentBattleMemory | null> {
+  const sheet = await getSheetIncludingDeleted(input.characterId);
+  if (!sheet) return null;
+  const previous = sheet.opponentMemories?.[input.opponentId];
+  const next = OpponentBattleMemorySchema.parse({
+    ...(previous ?? {}),
+    ...(input.preBattlePlan !== undefined
+      ? { preBattlePlan: input.preBattlePlan.slice(0, 1200) }
+      : {}),
+    ...(input.postBattleReflection !== undefined
+      ? { postBattleReflection: input.postBattleReflection.slice(0, 1200) }
+      : {}),
+    battleCount: (previous?.battleCount ?? 0) + 1,
+    lastBattleAt: input.battledAt ?? new Date().toISOString(),
+  });
+  await saveSheet({
+    ...sheet,
+    opponentMemories: {
+      ...(sheet.opponentMemories ?? {}),
+      [input.opponentId]: next,
+    },
+    updatedAt: new Date().toISOString(),
+  });
+  return next;
 }
 
 /** Soft-delete: hide from lists without modifying any battle ratings. */

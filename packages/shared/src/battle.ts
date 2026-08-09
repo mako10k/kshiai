@@ -480,6 +480,14 @@ export const CharacterAgentStateSchema = z.object({
   speechStyle: z.string().max(240).default(""),
   selfReference: z.string().max(40).nullable().default(null),
   lastSpeech: z.string().max(400).nullable().default(null),
+  /** Latest mechanically committed result as this character can understand it. */
+  lastActionResult: z.string().max(600).optional(),
+  /** Bounded expressions this character has actually perceived over time. */
+  conversationHistory: z.array(z.object({
+    turn: z.number().int().nonnegative(),
+    speaker: z.enum(["self", "counterpart"]),
+    text: z.string().max(400),
+  }).strict()).max(12).optional(),
   interior: z.object({
     primaryEmotion: z.string().max(120).default("平静"),
     concealedEmotion: z.string().max(160).nullable().default(null),
@@ -649,6 +657,9 @@ export const BattleStateSchema = z.object({
    * used for prologue rivalry / 因縁.
    */
   priorMatchSummary: z.string().nullable().optional(),
+  /** Character-authored strategy chosen during the turn-0 opening thought. */
+  openingPlanA: z.string().max(1200).optional(),
+  openingPlanB: z.string().max(1200).optional(),
   /** Immutable battle-scoped names, relationships, and initial recognition. */
   encounterContext: BattleEncounterContextSchema.optional(),
   /** Reader plus A/B presentation continuity; never character cognition. */

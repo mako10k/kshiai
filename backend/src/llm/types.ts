@@ -88,6 +88,13 @@ export type CharacterActionDecisionContext = {
   tacticalNeed?: TacticalNeedFrame;
   affordances?: LatentAffordanceProjection[];
   opportunityChains?: OpportunityChain[];
+  /** Deterministic forecast of the cost/readability penalty for repeating. */
+  repetitionPenalty?: {
+    ifRepeatedCount: number;
+    staminaCost: number;
+    effectMultiplier: number;
+    opponentRead: boolean;
+  };
 };
 
 export type CharacterCounterpartKnowledge = {

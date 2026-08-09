@@ -5,6 +5,27 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 
 ## [Unreleased]
 
+## [0.8.0] - 2026-08-09
+
+### Added
+
+- Character agents now choose their opening strategy from their own turn-0
+  thought instead of selecting case-policy cards during match setup.
+- Bounded per-opponent memory records the opening plan and post-match
+  reflection for future encounters.
+- Repeated actions expose deterministic forecast/result cues: stamina fatigue,
+  reduced effect, and opponent readability.
+
+### Changed
+
+- Match setup no longer asks the player to generate or select tactical policy
+  cards; the character decides after perceiving the opening scene.
+
+### Operations
+
+- No database migration. Opponent memory is stored as optional owner-private
+  character JSON and remains backward-compatible with existing records.
+
 ## [0.7.1] - 2026-08-06
 
 ### Added

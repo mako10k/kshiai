@@ -1380,18 +1380,23 @@ Rules:
 decisionProfile.defaultObjective is the default, not an absolute command. Compare priorities: a higher-priority commitment or constraint may override victory, while a preference guides choices without making impossible actions legal. Choose an action that advances the highest currently relevant principle as well as the tactical situation.
 For free_action, write an open natural-language attempt in description, optional desiredOutcome, and copy at least one subjectRef supplied by decision.affordances. Use the self or counterpart affordance for direct bodily/social actions. Copy opportunityId when following one opportunity chain. The attempt is not a success claim.
 For basic_attack, skill, or defend, copy instrumentRef only from a zero-setup opportunityChain continuation for that same action kind. Expected causal potential is qualitative and never guarantees success.
-When decision.varietyPressure is "prefer_change", avoid decision.lastAction if another availableActions entry exists.
+When decision.varietyPressure is "prefer_change", avoid decision.lastAction if another availableActions entry exists. decision.repetitionPenalty is a deterministic forecast: if you repeat the prior action, expect its stamina cost, reduced effect multiplier, and possible opponent read. Treat it as part of your own prediction before choosing.
 When decision.varietyPressure is "require_change", nextAction MUST differ from decision.lastAction (kind and skillId) whenever another availableActions entry exists. Do not spam wait or the same skill every turn.
 Skills appear in availableActions only when currently legal. Missing skills are on cooldown or otherwise unavailable — never invent them. Prefer a ready skill, basic_attack, defend, rest, wait, or free_action instead.`
         : "This is the aftermath reaction phase. The result is already canonical. Omit nextAction, do not plan another turn, and do not reverse or reconsider the result.";
+      const phaseRule = input.phase === "prologue"
+        ? "This is turn 0 opening thought. Choose and record a durable opening strategy in currentGoal before selecting the first action. The strategy must be your own response to this opponent, remembered matchup notes, perception, and field; it is not a user-selected policy card."
+        : input.phase === "aftermath"
+          ? "This is post-battle reflection. Put a concise, matchup-specific reflection and one reusable lesson in privateMemory. Do not turn it into public exposition."
+          : "Carry the opening strategy forward, revising it only when the current evidence or opponent behavior warrants it.";
       const data = (await this.chatJson(
         `You maintain one fictional character's private continuity during a confrontation. It may be physical, ranged, technological, psychic, social, comedic, cute, or abstract. Preserve the character's own way of acting and never introduce swords, wounds, or martial language unless supplied by the profile or events.
-You see only this character's frozen canonical own-profile anchor, previous compact state, validated available actions, and one immutable observer-relative perception frame whose observer.self is explicitly "self".
+You see only this character's frozen canonical own-profile anchor, previous compact state (including the latest committed action result), bounded conversation history of expressions actually perceived by this character, validated available actions, and one immutable observer-relative perception frame whose observer.self is explicitly "self".
 The character profile is authoritative over contradictory previous continuity or generated prose. Preserve every established non-null identity, gender, age, self-name, appearance, trait, capability, and equipment fact. character.currentStateOverrides, when present, are canonical current self-state and override only a conflicting present-tense appearance/equipment detail; they never rewrite the immutable profile or prove anything about an unperceived external subject. Null or empty profile fields remain unknown: never fill them from stereotypes, displayName, previous state, counterpart, narration style, or perception.
 The perception frame is authoritative. Preserve currentAccess, identityKnowledge, occurrence certainty, attribution certainty, qualitative magnitude, and reserve bands. Never infer a canonical identity, exact location, or current condition behind an unknown, suspected, inaccessible, contact, or ambient subject.
 counterpart is present only when identityKnowledge is identified. Its condition is absent unless current access supports it; never reconstruct a missing name or condition from control IDs or other fields.
 All IDs, contact IDs, percept IDs, skillId, and JSON keys are non-linguistic control metadata. Copy skillId only into nextAction when selecting that validated action; never place an ID into privateMemory, goals, beliefs, observations, speechStyle, selfReference, lastSpeech, or speech.
-Update conclusions and disposition; never invent confrontation results, mutate the frame, or invent numeric changes.
+Update conclusions and disposition; never invent confrontation results, mutate the frame, or invent numeric changes. ${phaseRule} Select a private conversational intention for this turn (for example: answer, probe, provoke, reassure, evade, confess, or buy_time). Keep that intention in interior.unspokenIntent; never name it in speech or expose it as a label to the counterpart. Convey it only through wording, pauses, gaze, posture, or other observable expression.
 Do not output chain-of-thought or step-by-step reasoning. privateMemory is a concise continuity summary only.
 selfReference MUST equal social.selfReference when supplied and non-null; otherwise it MUST equal character.identity.selfNames[0] when present. When both are unavailable, selfReference MUST be null and speech must avoid inventing a first-person name or pronoun. social is frozen relationship context, not permission to invent history or current perception. Any spoken line must consistently use the selected self-reference and the character's established speechStyle.
 Return JSON only:
@@ -1420,7 +1425,7 @@ Return JSON only:
     "opportunityId"?: string
   }
 }
-speech is this character's ACTUAL utterance or stage reaction after observing the committed turn. It is authoritative source material for later public placement and is also stored as this character's own lastSpeech. ALWAYS required (never null/empty). One short Japanese line:
+speech is this character's ACTUAL utterance or stage reaction after observing the committed turn. It is authoritative source material for later public placement and is also stored as this character's own lastSpeech. ALWAYS required (never null/empty). Allow one or two short Japanese sentences when a natural exchange needs a follow-up; do not force extra lines when a glance, pause, or brief reaction is more natural:
 - Dialogue without 「」 brackets, OR
 - A quiet reaction: "…", "（ただ佇んでいる）", "（${counterpartLabel}の気配をうかがう）".
 ${decisionRule}
