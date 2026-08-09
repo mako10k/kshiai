@@ -480,6 +480,14 @@ export const CharacterAgentStateSchema = z.object({
   speechStyle: z.string().max(240).default(""),
   selfReference: z.string().max(40).nullable().default(null),
   lastSpeech: z.string().max(400).nullable().default(null),
+  /** Latest mechanically committed result as this character can understand it. */
+  lastActionResult: z.string().max(600).optional(),
+  /** Bounded expressions this character has actually perceived over time. */
+  conversationHistory: z.array(z.object({
+    turn: z.number().int().nonnegative(),
+    speaker: z.enum(["self", "counterpart"]),
+    text: z.string().max(400),
+  }).strict()).max(12).optional(),
   interior: z.object({
     primaryEmotion: z.string().max(120).default("平静"),
     concealedEmotion: z.string().max(160).nullable().default(null),
@@ -569,90 +577,6 @@ export const BattleAdjudicationSchema = z.object({
 }).strict();
 export type BattleAdjudication = z.infer<typeof BattleAdjudicationSchema>;
 
-export const CharacterActionProposalRejectionReasonSchema = z.enum([
-  "no_decision_context",
-  "missing_proposal",
-  "schema_invalid",
-  "unavailable_action",
-  "unavailable_finisher",
-  "ungrounded_free_action",
-  "unavailable_instrument",
-  "repeated_action_requires_change",
-]);
-export type CharacterActionProposalRejectionReason = z.infer<
-  typeof CharacterActionProposalRejectionReasonSchema
->;
-
-/** Server-owned receipt that keeps a model proposal separate from an accepted action. */
-export const CharacterActionProposalValidationReceiptSchema = z.object({
-  status: z.enum(["accepted", "rejected", "omitted"]),
-  reason: CharacterActionProposalRejectionReasonSchema.nullable(),
-  proposedAction: z.unknown().nullable(),
-  acceptedAction: CharacterActionIntentSchema.nullable(),
-}).strict();
-export type CharacterActionProposalValidationReceipt = z.infer<
-  typeof CharacterActionProposalValidationReceiptSchema
->;
-
-export const EnvironmentProcessProposalSchema = z.object({
-  id: z.string().min(1).max(80),
-  title: z.string().min(1).max(40),
-  summary: z.string().min(1).max(240),
-  notes: z.string().min(1).max(240),
-  tags: z.array(z.string().min(1).max(80)).max(6).optional(),
-}).strict();
-export type EnvironmentProcessProposal = z.infer<
-  typeof EnvironmentProcessProposalSchema
->;
-
-export const EnvironmentProcessReceiptSchema = z.object({
-  status: z.enum(["accepted", "rejected", "skipped"]),
-  reason: z.enum([
-    "accepted_canonical_change",
-    "decision_rejected",
-    "decision_invalid",
-    "no_canonical_change",
-    "semantic_rejected",
-    "semantic_unavailable",
-  ]),
-  decisionReason: z.string().max(240).nullable(),
-  proposal: EnvironmentProcessProposalSchema,
-  resolvedEvent: TurnEventSchema.nullable(),
-  sourceEventIds: z.array(z.string().min(1).max(120)).max(32),
-  effectKeys: z.array(z.string().min(1).max(240)).max(32),
-}).strict();
-export type EnvironmentProcessReceipt = z.infer<
-  typeof EnvironmentProcessReceiptSchema
->;
-
-export const BattlePipelineAgentInvocationTraceSchema = z.object({
-  input: z.unknown().nullable(),
-  providerStatus: z.enum(["fulfilled", "rejected", "skipped"]),
-  providerOutput: z.unknown().nullable(),
-  actionProposalValidation:
-    CharacterActionProposalValidationReceiptSchema.nullable().optional(),
-  acceptedOutput: z.unknown().nullable(),
-}).strict();
-
-export const BattleTurnPipelineTraceSchema = z.object({
-  schemaVersion: z.literal(1),
-  environmentProcess: EnvironmentProcessReceiptSchema.optional(),
-  characterAgents: z.object({
-    phase: z.enum(["prologue", "turn", "aftermath"]),
-    a: BattlePipelineAgentInvocationTraceSchema,
-    b: BattlePipelineAgentInvocationTraceSchema,
-  }).strict().optional(),
-  narrator: z.object({
-    input: z.unknown().nullable(),
-    disposition: z.enum(["provider", "fallback"]),
-    providerOutput: z.unknown(),
-    publicOutput: z.unknown(),
-  }).strict().optional(),
-}).strict();
-export type BattleTurnPipelineTrace = z.infer<
-  typeof BattleTurnPipelineTraceSchema
->;
-
 /** Persisted engine facts for audit and agent cognition reconstruction. */
 export const BattleTurnRecordSchema = z.object({
   turn: z.number().int().nonnegative(),
@@ -665,29 +589,10 @@ export const BattleTurnRecordSchema = z.object({
     .default([])
     .optional(),
   events: z.array(TurnEventSchema).default([]),
-  /** Exact server-owned semantic and mechanical world transitions for this turn. */
-  canonicalTransition: z.object({
-    semantic: z.object({
-      turn: z.number().int().nonnegative(),
-      status: z.enum(["applied", "rejected", "skipped"]),
-      fromRevision: z.number().int().nonnegative(),
-      toRevision: z.number().int().nonnegative(),
-      patch: TurnSemanticPatchSchema.nullable(),
-    }).optional(),
-    world: z.object({
-      turn: z.number().int().nonnegative(),
-      status: z.enum(["applied", "rejected", "skipped"]),
-      fromRevision: z.number().int().nonnegative(),
-      toRevision: z.number().int().nonnegative(),
-      transition: BattleWorldTransitionSchema.nullable(),
-    }).optional(),
-  }).strict().optional(),
   sideAChange: CombatantStateChangeSchema,
   sideBChange: CombatantStateChangeSchema,
   cognitionA: CharacterCognitionSchema,
   cognitionB: CharacterCognitionSchema,
-  /** Bounded internal-only consumer I/O for pipeline diagnosis. */
-  pipelineTrace: BattleTurnPipelineTraceSchema.optional(),
 });
 export type BattleTurnRecord = z.infer<typeof BattleTurnRecordSchema>;
 
@@ -752,6 +657,9 @@ export const BattleStateSchema = z.object({
    * used for prologue rivalry / 因縁.
    */
   priorMatchSummary: z.string().nullable().optional(),
+  /** Character-authored strategy chosen during the turn-0 opening thought. */
+  openingPlanA: z.string().max(1200).optional(),
+  openingPlanB: z.string().max(1200).optional(),
   /** Immutable battle-scoped names, relationships, and initial recognition. */
   encounterContext: BattleEncounterContextSchema.optional(),
   /** Reader plus A/B presentation continuity; never character cognition. */
