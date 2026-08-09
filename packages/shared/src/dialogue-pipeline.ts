@@ -2,8 +2,8 @@ import { z } from "zod";
 
 /**
  * Operator-authored, runtime dialogue policy. It guides LLM-authored
- * character psychology only; deterministic combat and canonical facts never
- * read this as a mechanical rule.
+ * the pre-speech deep-psyche stage only; deterministic combat and canonical
+ * facts never read this as a mechanical rule.
  */
 export const DialoguePipelineValuesSchema = z.object({
   schemaVersion: z.literal(1),

@@ -492,6 +492,50 @@ export const CharacterSpeechModeSchema = z.enum([
 ]);
 export type CharacterSpeechMode = z.infer<typeof CharacterSpeechModeSchema>;
 
+/**
+ * Compact, private psychological conclusions that persist across a battle.
+ * This is deliberately an appraisal record, not a chain-of-thought transcript.
+ * Only the deep-psyche LLM stage may update it; speech/action generation reads
+ * the committed result as context.
+ */
+export const CharacterDeepPsycheSchema = z.object({
+  primaryEmotion: z.string().max(120).default("平静"),
+  concealedEmotion: z.string().max(160).nullable().default(null),
+  /** A stable need or value that colours the character's choices in this fight. */
+  coreNeed: z.string().max(240).default(""),
+  /** A character-specific way of guarding that need; it may justify repetition. */
+  protectiveStance: z.string().max(240).default(""),
+  /** A concise subjective meaning of the latest committed event. */
+  eventAppraisal: z.string().max(240).default(""),
+  unspokenIntent: z.string().max(240).default(""),
+  currentConcern: z.string().max(240).default(""),
+  attitudeTowardCounterpart: z.string().max(160).default("対峙している"),
+  confidence: z.enum(["low", "steady", "high"]).default("steady"),
+  relationshipTension: z.string().max(160).default(""),
+  /** Private selection of the expression's action/conversation relationship. */
+  speechMode: CharacterSpeechModeSchema.default("weave"),
+  /** Private social feedback loop for the character's own voice. */
+  speechAppraisal: CharacterSpeechAppraisalSchema.optional(),
+});
+export type CharacterDeepPsyche = z.infer<typeof CharacterDeepPsycheSchema>;
+
+/**
+ * The only persistent fields a deep-psyche stage may revise. Speech/action
+ * generation must receive this committed update read-only.
+ */
+export const CharacterDeepPsycheUpdateSchema = z.object({
+  privateMemory: z.string().max(1200).default(""),
+  currentGoal: z.string().max(240).default(""),
+  emotion: z.string().max(120).default("平静"),
+  beliefs: z.array(z.string().max(240)).max(8).default([]),
+  observations: z.array(z.string().max(240)).max(8).default([]),
+  speechStyle: z.string().max(240).default(""),
+  interior: CharacterDeepPsycheSchema,
+}).strict();
+export type CharacterDeepPsycheUpdate = z.infer<
+  typeof CharacterDeepPsycheUpdateSchema
+>;
+
 /** One expression that this character actually perceived in conversation. */
 export const CharacterConversationEntrySchema = z.object({
   turn: z.number().int().nonnegative(),
@@ -541,19 +585,7 @@ export const CharacterAgentStateSchema = z.object({
   lastActionResult: z.string().max(600).optional(),
   /** Bounded expressions this character has actually perceived over time. */
   conversationHistory: z.array(CharacterConversationEntrySchema).max(24).optional(),
-  interior: z.object({
-    primaryEmotion: z.string().max(120).default("平静"),
-    concealedEmotion: z.string().max(160).nullable().default(null),
-    unspokenIntent: z.string().max(240).default(""),
-    currentConcern: z.string().max(240).default(""),
-    attitudeTowardCounterpart: z.string().max(160).default("対峙している"),
-    confidence: z.enum(["low", "steady", "high"]).default("steady"),
-    relationshipTension: z.string().max(160).default(""),
-    /** Private selection of the expression's action/conversation relationship. */
-    speechMode: CharacterSpeechModeSchema.default("weave"),
-    /** Private social feedback loop for the character's own voice. */
-    speechAppraisal: CharacterSpeechAppraisalSchema.optional(),
-  }).optional(),
+  interior: CharacterDeepPsycheSchema.optional(),
 });
 export type CharacterAgentState = z.infer<typeof CharacterAgentStateSchema>;
 
@@ -704,6 +736,10 @@ export const BattleTurnPipelineTraceSchema = z.object({
   environmentProcess: EnvironmentProcessReceiptSchema.optional(),
   characterAgents: z.object({
     phase: z.enum(["prologue", "turn", "aftermath"]),
+    a: BattlePipelineAgentInvocationTraceSchema,
+    b: BattlePipelineAgentInvocationTraceSchema,
+  }).strict().optional(),
+  deepPsyche: z.object({
     a: BattlePipelineAgentInvocationTraceSchema,
     b: BattlePipelineAgentInvocationTraceSchema,
   }).strict().optional(),

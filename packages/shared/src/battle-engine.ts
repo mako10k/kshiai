@@ -578,6 +578,9 @@ export function createBattleState(input: {
     interior: {
       primaryEmotion: "平静",
       concealedEmotion: null,
+      coreNeed: "",
+      protectiveStance: "",
+      eventAppraisal: "",
       unspokenIntent: "",
       currentConcern: "",
       attitudeTowardCounterpart: encounterContext.social.a.relationshipLabel,
@@ -604,6 +607,9 @@ export function createBattleState(input: {
     interior: {
       primaryEmotion: "平静",
       concealedEmotion: null,
+      coreNeed: "",
+      protectiveStance: "",
+      eventAppraisal: "",
       unspokenIntent: "",
       currentConcern: "",
       attitudeTowardCounterpart: encounterContext.social.b.relationshipLabel,
@@ -794,6 +800,9 @@ export function ensureBattleCompatibilityState(state: BattleState): BattleState 
         interior: withPerception.agentStateA.interior ?? {
           primaryEmotion: withPerception.agentStateA.emotion || "平静",
           concealedEmotion: null,
+          coreNeed: "",
+          protectiveStance: "",
+          eventAppraisal: "",
           unspokenIntent: "",
           currentConcern: withPerception.agentStateA.currentGoal,
           attitudeTowardCounterpart: encounterContext.social.a.relationshipLabel,
@@ -815,6 +824,9 @@ export function ensureBattleCompatibilityState(state: BattleState): BattleState 
         interior: {
           primaryEmotion: "平静",
           concealedEmotion: null,
+          coreNeed: "",
+          protectiveStance: "",
+          eventAppraisal: "",
           unspokenIntent: "",
           currentConcern: "",
           attitudeTowardCounterpart: encounterContext.social.a.relationshipLabel,
@@ -832,6 +844,9 @@ export function ensureBattleCompatibilityState(state: BattleState): BattleState 
         interior: withPerception.agentStateB.interior ?? {
           primaryEmotion: withPerception.agentStateB.emotion || "平静",
           concealedEmotion: null,
+          coreNeed: "",
+          protectiveStance: "",
+          eventAppraisal: "",
           unspokenIntent: "",
           currentConcern: withPerception.agentStateB.currentGoal,
           attitudeTowardCounterpart: encounterContext.social.b.relationshipLabel,
@@ -853,6 +868,9 @@ export function ensureBattleCompatibilityState(state: BattleState): BattleState 
         interior: {
           primaryEmotion: "平静",
           concealedEmotion: null,
+          coreNeed: "",
+          protectiveStance: "",
+          eventAppraisal: "",
           unspokenIntent: "",
           currentConcern: "",
           attitudeTowardCounterpart: encounterContext.social.b.relationshipLabel,

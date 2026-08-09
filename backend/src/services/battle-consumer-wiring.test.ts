@@ -147,7 +147,7 @@ describe("battle perception consumer wiring", () => {
     assert.deepEqual(inputA.character.identity.selfNames, ["わたし", "アオ"]);
     assert.equal(inputA.character.appearanceSummary, "人型ではない青い光");
     assert.equal(inputA.character.basicAction.name, "光波");
-    assert.equal(inputA.previous.selfReference, "わたし");
+    assert.equal(inputA.psyche.selfReference, "わたし");
     assert.equal(Object.isFrozen(inputA.character), true);
     assert.equal(Object.isFrozen(inputA.character.identity), true);
     assert.equal("parameters" in inputA.character, false);

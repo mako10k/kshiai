@@ -97,7 +97,7 @@ export function AdminDialoguePipelinePage() {
 
       <section className="panel admin-dialogue-panel">
         <p className="admin-dialogue-boundary">
-          ここで変えるのはキャラの会話心理と参照範囲です。正準の人物設定、行動判定、ダメージ・勝敗、JSON契約はサーバー側で固定され、この設定では変更できません。
+          ここで変えるのは発話前の深層心理と会話参照範囲です。正準の人物設定、行動判定、ダメージ・勝敗、JSON契約はサーバー側で固定され、この設定では変更できません。
         </p>
         <p className="muted admin-dialogue-boundary">
           保存後、次に開始または進行するキャラ思考から反映されます。すでに実行中の呼び出しや保存済みの戦闘ログは変わりません。
@@ -122,8 +122,8 @@ export function AdminDialoguePipelinePage() {
                 onChange={(event) => setForm({ ...form, enabled: event.target.checked })}
               />
               <span>
-                <strong>会話心理の指針を有効にする</strong>
-                <small>無効時も会話履歴は渡しますが、以下の指針はキャラ思考へ送信しません。</small>
+                <strong>深層心理の指針を有効にする</strong>
+                <small>無効時も会話履歴は渡しますが、以下の指針は発話前の心理層へ送信しません。</small>
               </span>
             </label>
 
@@ -139,11 +139,11 @@ export function AdminDialoguePipelinePage() {
                   conversationHistoryLimit: Number(event.target.value),
                 })}
               />
-              <span className="field-hint">各キャラが次の発話を考える際に参照する、直近の会話記録数です。</span>
+              <span className="field-hint">深層心理が関係の連続性を受け取るための、直近の会話記録数です。</span>
             </label>
 
             <label className="field">
-              <span className="field-label">会話心理の指針</span>
+              <span className="field-label">深層心理の指針</span>
               <textarea
                 value={form.psychologyGuidance}
                 maxLength={3000}
@@ -151,7 +151,7 @@ export function AdminDialoguePipelinePage() {
                 onChange={(event) => setForm({ ...form, psychologyGuidance: event.target.value })}
               />
               <span className="field-hint">
-                キャラごとの性格・状況・相手との関係を踏まえるための運用上の指針です。キャラが反復を選ぶ理由も、ここで一律に禁じずに扱えます。
+                キャラが結果・会話・相手との関係をどう受け止めるかの運用上の指針です。反復や沈黙も、人物自身の理由があるときだけ自然な選択として扱えます。
               </span>
             </label>
 

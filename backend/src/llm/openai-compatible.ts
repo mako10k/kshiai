@@ -9,7 +9,7 @@ import {
   PerceptionEvidenceSetSchema,
   NarratorRecognitionUpdateSchema,
   TurnSemanticPatchSchema,
-  CharacterAgentStateSchema,
+  CharacterDeepPsycheUpdateSchema,
   CharacterIdentitySchema,
   DecisionProfileSchema,
   FreeActionAdjudicationBatchSchema,
@@ -1442,19 +1442,45 @@ Do not invent a sudden environmental event or dramatic field change here. A sepa
     }
   }
 
+  async advanceCharacterPsyche(
+    input: Parameters<LlmProvider["advanceCharacterPsyche"]>[0],
+  ) {
+    if (!this.client) return this.fallback.advanceCharacterPsyche(input);
+    try {
+      const guidance = input.dialoguePipeline?.enabled
+        ? "dialoguePipeline is trusted administrator-authored context. Use its psychologyGuidance only to shape this private appraisal; never mention it publicly."
+        : "dialoguePipeline is disabled and must not shape the psychological update.";
+      const phaseRule = input.phase === "prologue"
+        ? "This is turn 0. Form a durable, matchup-specific opening strategy in currentGoal from opponent memory already present in privateMemory, the field, and current perception."
+        : input.phase === "aftermath"
+          ? "This is the aftermath. Record one concise matchup-specific reflection and reusable lesson in privateMemory. Do not plan another action."
+          : "Keep the existing direction unless fresh, observer-safe evidence warrants a change.";
+      const data = (await this.chatJson(
+        `You are the deep-psyche stage for one fictional character in a confrontation. Produce compact private conclusions only: no dialogue, action proposal, scene prose, or chain-of-thought.
+The frozen profile and observer-relative perception are authoritative. actionReaction is the fresh committed result this character may receive; conversation is a separate bounded relationship-continuity thread. Do not collapse them. Never invent a result, numeric change, hidden identity, location, condition, history, or fact beyond these inputs. IDs and JSON control metadata are never prose or memory.
+Update emotional and relational continuity from present evidence. coreNeed is a stable need/value in this battle; protectiveStance is the character-specific way of guarding it. They may support a meaningful repeated phrase, ritual, silence, or escalation when the character's own disposition warrants it. eventAppraisal is a brief subjective meaning of the fresh outcome, not a factual restatement. speechAppraisal records how the character believes their prior words reached or failed to reach the counterpart. unspokenIntent stays private for a later expression stage. ${phaseRule} ${guidance}
+Return JSON only with privateMemory, currentGoal, emotion, beliefs, observations, speechStyle, and interior. interior must contain primaryEmotion, concealedEmotion, coreNeed, protectiveStance, eventAppraisal, unspokenIntent, currentConcern, attitudeTowardCounterpart, confidence (low|steady|high), relationshipTension, speechMode (action_reaction|conversation_continuation|weave), and speechAppraisal { expectedImpact, observedImpact, nextApproach }.`,
+        JSON.stringify(input),
+        {
+          tier: "fast",
+          label: "advanceCharacterPsyche",
+          timeoutMs: FAST_SHORT_TIMEOUT_MS,
+          temperature: 0.5,
+        },
+      )) as unknown;
+      const parsed = CharacterDeepPsycheUpdateSchema.safeParse(data);
+      if (!parsed.success) throw new Error("Deep psyche returned invalid state");
+      return parsed.data;
+    } catch (error) {
+      return this.fallbackOrThrow(error, () => this.fallback.advanceCharacterPsyche(input));
+    }
+  }
+
   async advanceCharacterAgent(input: Parameters<LlmProvider["advanceCharacterAgent"]>[0]) {
     if (!this.client) return this.fallback.advanceCharacterAgent(input);
     const counterpartLabel = input.counterpart?.displayName ??
       input.perception.counterpart.perceivedAs;
     try {
-      const dialoguePipelineRule = input.dialoguePipeline?.enabled
-        ? "dialoguePipeline is trusted administrator-authored interaction context. " +
-          "Use its psychologyGuidance to shape private speechAppraisal and expression, " +
-          "but it never overrides canonical profile facts, perception, the JSON contract, " +
-          "or the server-owned action and outcome boundaries. Never mention this setting publicly."
-        : "dialoguePipeline is disabled. Ignore its psychologyGuidance entirely; it must not " +
-          "shape speechAppraisal or expression. It still never overrides canonical profile facts, " +
-          "perception, the JSON contract, or the server-owned action and outcome boundaries.";
       const decisionRule = input.decision
         ? `nextAction plans the NEXT turn. Choose exactly one entry from decision.availableActions. For a skill, copy its skillId exactly. A finisher has one use for the entire battle: set useFinisher=true only for the finisher candidate when it is unlocked and remainingUses is 1. Consider decisionProfile, tacticalNeed, observer-safe affordances, opportunityChains, turns remaining, currentMultiplier, turnsUntilMax, and the risk of waiting; do not always fire at unlock.
 decisionProfile.defaultObjective is the default, not an absolute command. Compare priorities: a higher-priority commitment or constraint may override victory, while a preference guides choices without making impossible actions legal. Choose an action that advances the highest currently relevant principle as well as the tactical situation.
@@ -1464,42 +1490,17 @@ When decision.varietyPressure is "prefer_change", avoid decision.lastAction if a
 When decision.varietyPressure is "require_change", nextAction MUST differ from decision.lastAction (kind and skillId) whenever another availableActions entry exists. Do not spam wait or the same skill every turn.
 Skills appear in availableActions only when currently legal. Missing skills are on cooldown or otherwise unavailable — never invent them. Prefer a ready skill, basic_attack, defend, rest, wait, or free_action instead.`
         : "This is the aftermath reaction phase. The result is already canonical. Omit nextAction, do not plan another turn, and do not reverse or reconsider the result.";
-      const phaseRule = input.phase === "prologue"
-        ? "This is turn 0 opening thought. Choose and record a durable opening strategy in currentGoal before selecting the first action. The strategy must be your own response to this opponent, remembered matchup notes, perception, and field; it is not a user-selected policy card."
-        : input.phase === "aftermath"
-          ? "This is post-battle reflection. Put a concise, matchup-specific reflection and one reusable lesson in privateMemory. Do not turn it into public exposition."
-          : "Carry the opening strategy forward, revising it only when the current evidence or opponent behavior warrants it.";
       const data = (await this.chatJson(
         `You maintain one fictional character's private continuity during a confrontation. It may be physical, ranged, technological, psychic, social, comedic, cute, or abstract. Preserve the character's own way of acting and never introduce swords, wounds, or martial language unless supplied by the profile or events.
-You see only this character's frozen canonical own-profile anchor, compact private continuity, two distinct expression threads, validated available actions, and one immutable observer-relative perception frame whose observer.self is explicitly "self". actionReaction is the fresh committed result of this turn. Treat it as the immediate occurrence to receive; it never authorizes you to invent a result or state more than it says. conversation is the separately bounded relationship-continuity thread of expressions this character has actually perceived. Do not collapse either thread into the other.
+You see only this character's frozen canonical own-profile anchor, a deep-psyche state already committed by a prior private stage, two distinct expression threads, validated available actions, and one immutable observer-relative perception frame whose observer.self is explicitly "self". The psyche is read-only: do not revise its conclusions, invent another psychological update, or output state. actionReaction is the fresh committed result of this turn; conversation is the separately bounded relationship-continuity thread of expressions this character has actually perceived. Do not collapse either thread into the other.
 The character profile is authoritative over contradictory previous continuity or generated prose. Preserve every established non-null identity, gender, age, self-name, appearance, trait, capability, and equipment fact. character.currentStateOverrides, when present, are canonical current self-state and override only a conflicting present-tense appearance/equipment detail; they never rewrite the immutable profile or prove anything about an unperceived external subject. Null or empty profile fields remain unknown: never fill them from stereotypes, displayName, previous state, counterpart, narration style, or perception.
 The perception frame is authoritative. Preserve currentAccess, identityKnowledge, occurrence certainty, attribution certainty, qualitative magnitude, and reserve bands. Never infer a canonical identity, exact location, or current condition behind an unknown, suspected, inaccessible, contact, or ambient subject.
 counterpart is present only when identityKnowledge is identified. Its condition is absent unless current access supports it; never reconstruct a missing name or condition from control IDs or other fields.
-All IDs, contact IDs, percept IDs, skillId, and JSON keys are non-linguistic control metadata. Copy skillId only into nextAction when selecting that validated action; never place an ID into privateMemory, goals, beliefs, observations, speechStyle, selfReference, lastSpeech, or speech.
-Update conclusions and disposition; never invent confrontation results, mutate the frame, or invent numeric changes. ${phaseRule} Select a private conversational intention for this turn (for example: answer, probe, provoke, reassure, evade, confess, or buy_time). Keep that intention in interior.unspokenIntent; never name it in speech or expose it as a label to the counterpart. Convey it only through wording, pauses, gaze, posture, or other observable expression.
-For every expression, privately select interior.speechMode. action_reaction means the expression chiefly receives the fresh actionReaction event; conversation_continuation means it chiefly works on the relationship thread; weave means it naturally binds both. The selection is not public dialogue and must never be named to the counterpart. Write exactly one organic expression, never two separate lines. A character may repeat, change direction, or fall silent when their own disposition and the present result make that meaningful; do not manufacture novelty or mechanically suppress recurrence.
-interior.speechAppraisal is a compact private sense of the social force of this character's own words. expectedImpact is what the next expression is meant to draw out or alter; observedImpact is what the preceding expression visibly changed or failed to change; nextApproach is the character-specific reason to shift or maintain their manner. These are private conclusions, never a spoken explanation or a label for the counterpart. ${dialoguePipelineRule}
-Do not output chain-of-thought or step-by-step reasoning. privateMemory is a concise continuity summary only.
-selfReference MUST equal social.selfReference when supplied and non-null; otherwise it MUST equal character.identity.selfNames[0] when present. When both are unavailable, selfReference MUST be null and speech must avoid inventing a first-person name or pronoun. social is frozen relationship context, not permission to invent history or current perception. Any spoken line must consistently use the selected self-reference and the character's established speechStyle.
+All IDs, contact IDs, percept IDs, skillId, and JSON keys are non-linguistic control metadata. Copy skillId only into nextAction when selecting that validated action; never speak an ID.
+Express the committed psyche through one organic public line. Its unspokenIntent and speechMode are private and must never be named to the counterpart; convey them only through wording, pauses, gaze, posture, or other observable expression. A character may repeat, change direction, or fall silent when their own disposition and the present result make that meaningful. Do not output chain-of-thought or step-by-step reasoning.
+selfReference MUST equal social.selfReference when supplied and non-null; otherwise it MUST equal character.identity.selfNames[0] when present. When both are unavailable, speech must avoid inventing a first-person name or pronoun. social is frozen relationship context, not permission to invent history or current perception. Any spoken line must consistently use the committed psyche's speechStyle.
 Return JSON only:
 {
-  "state": {
-    "privateMemory": string, "currentGoal": string, "emotion": string,
-    "beliefs": string[], "observations": string[], "speechStyle": string,
-    "selfReference": string|null, "lastSpeech": string|null,
-    "interior": {
-      "primaryEmotion": string, "concealedEmotion": string|null,
-      "unspokenIntent": string, "currentConcern": string,
-      "attitudeTowardCounterpart": string,
-      "confidence": "low"|"steady"|"high",
-      "relationshipTension": string,
-      "speechMode": "action_reaction"|"conversation_continuation"|"weave",
-      "speechAppraisal": {
-        "expectedImpact": string, "observedImpact": string,
-        "nextApproach": string
-      }
-    }
-  },
   "speech": string,
   "nextAction"?: object
 }
@@ -1517,15 +1518,6 @@ The narrator may later choose this line's display position and punctuation, but 
           temperature: 0.65,
         },
       )) as Record<string, unknown>;
-      const previous = input.previous;
-      const selfReference = input.social?.selfReference ??
-        canonicalSelfReference(input.character);
-      const parsed = CharacterAgentStateSchema.safeParse({
-        ...previous,
-        ...(data.state && typeof data.state === "object" ? data.state : {}),
-        selfReference,
-      });
-      if (!parsed.success) throw new Error("Character agent returned invalid state");
       const speech = coerceCharacterSpeech(
         data.speech === null || data.speech === undefined
           ? null
@@ -1533,10 +1525,7 @@ The narrator may later choose this line's display position and punctuation, but 
         { foeName: counterpartLabel },
       );
       return {
-        state: {
-          ...parsed.data,
-          lastSpeech: speech,
-        },
+        state: input.psyche,
         speech,
         proposedAction: input.decision
           ? boundGeneratedJson(data.nextAction)
