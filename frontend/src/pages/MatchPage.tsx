@@ -2,8 +2,6 @@ import { useCallback, useMemo, useState, useEffect } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import type {
   BattlefieldPresetPublic,
-  BattlePolicyOption,
-  BattlePolicyOptionPublic,
   CharacterPublic,
   NarrationStylePublic,
 } from "@kshiai/shared";
@@ -23,27 +21,17 @@ import {
 } from "../match-selection-preferences";
 import { mediaSrc } from "../media";
 
-type PolicyBundle = {
-  options: BattlePolicyOptionPublic[];
-  engineOptions: BattlePolicyOption[];
-  defaultSelectedIds: string[];
-  rationale: string;
-  fieldHint: string;
-};
-
 type MatchDraft = {
   myId: string;
   oppId: string;
   fieldId: string;
   styleId: string;
-  step: 1 | 2;
 };
 
 /**
- * Explicit wizard — no hidden auto-start, no policy regen on every field flick.
- *
- * Step 1: pick my char / field / opponent (random only fills opponent)
- * Step 2: confirm & start (the character chooses its own strategy at turn 0)
+ * Match setup chooses only the public matchup. At turn 0, each character
+ * privately chooses an opening strategy from its profile, perception, and
+ * bounded memory of this opponent's past battles.
  */
 export function MatchPage() {
   const nav = useNavigate();
@@ -59,7 +47,6 @@ export function MatchPage() {
       oppId: "",
       fieldId: "",
       styleId: lastStyleId || "nst_default",
-      step: 1,
     }),
     [lastStyleId],
   );
@@ -69,7 +56,7 @@ export function MatchPage() {
   );
   const [selectionUsage, setSelectionUsage] =
     useLocalDraft<MatchSelectionUsage>("match:selectionUsage", {});
-  const { myId, oppId, fieldId, styleId, step } = draft;
+  const { myId, oppId, fieldId, styleId } = draft;
 
   const [myQuery, setMyQuery] = useState("");
   const [oppQuery, setOppQuery] = useState("");
@@ -92,48 +79,14 @@ export function MatchPage() {
     setLastStyleId(id);
     setDraft((d) => ({ ...d, styleId: id }));
   };
-  const setStep = (s: 1 | 2) => setDraft((d) => ({ ...d, step: s }));
-
   const [mine, setMine] = useState<CharacterPublic[]>([]);
   const [candidates, setCandidates] = useState<CharacterPublic[]>([]);
   const [fields, setFields] = useState<BattlefieldPresetPublic[]>([]);
   const [styles, setStyles] = useState<NarrationStylePublic[]>([]);
 
-  const [policyOptions, setPolicyOptions] = useState<BattlePolicyOptionPublic[]>(
-    [],
-  );
-  const [engineOptions, setEngineOptions] = useState<BattlePolicyOption[]>([]);
-  const [selectedIds, setSelectedIds] = useState<string[]>([]);
-  const [rationale, setRationale] = useState<string | null>(null);
-  const [fieldHint, setFieldHint] = useState<string | null>(null);
-  /** Matchup key policies were generated for */
-  const [policyKey, setPolicyKey] = useState<string | null>(null);
-
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
-  const [policyBusy, setPolicyBusy] = useState(false);
-
-  const keyOf = (my: string, opp: string, field: string) =>
-    `${my}|${opp}|${field || "random"}`;
-
-  const currentKey = keyOf(myId, oppId, fieldId);
   const matchupReady = Boolean(myId && oppId);
-  const policiesFresh = policyKey === currentKey && engineOptions.length > 0;
-  const policyGroups = useMemo(() => {
-    const groups = new Map<
-      string,
-      { title: string; options: BattlePolicyOptionPublic[] }
-    >();
-    for (const option of policyOptions) {
-      const group = groups.get(option.perspectiveId) ?? {
-        title: option.perspectiveTitle,
-        options: [],
-      };
-      group.options.push(option);
-      groups.set(option.perspectiveId, group);
-    }
-    return [...groups.entries()].map(([id, group]) => ({ id, ...group }));
-  }, [policyOptions]);
 
   useEffect(() => {
     void (async () => {
@@ -186,13 +139,11 @@ export function MatchPage() {
           s.styles[0]?.id ||
           "";
 
-        // Coming from a character card: start on step 1 with that char selected
         return {
           myId: pickMy,
           oppId: pickOpp && pickOpp !== pickMy ? pickOpp : "",
           fieldId: pickField,
           styleId: pickStyle,
-          step: 1,
         };
       });
 
@@ -304,88 +255,6 @@ export function MatchPage() {
     [selectionUsage, styleId, styleQuery, styles],
   );
 
-  function invalidatePolicies() {
-    setPolicyOptions([]);
-    setEngineOptions([]);
-    setSelectedIds([]);
-    setRationale(null);
-    setFieldHint(null);
-    setPolicyKey(null);
-  }
-
-  async function generatePolicies(): Promise<PolicyBundle> {
-    if (!myId || !oppId) throw new Error("キャラと相手を先に選んでください");
-    const res = await api.generatePolicies({
-      myCharacterId: myId,
-      opponentCharacterId: oppId,
-      ...fieldOpts(),
-    });
-    return {
-      options: res.options,
-      engineOptions: res.engineOptions,
-      defaultSelectedIds: res.defaultSelectedIds,
-      rationale: res.rationale,
-      fieldHint: res.fieldHint,
-    };
-  }
-
-  function applyBundle(bundle: PolicyBundle) {
-    setPolicyOptions(bundle.options);
-    setEngineOptions(bundle.engineOptions);
-    setSelectedIds([]);
-    setRationale(bundle.rationale);
-    setFieldHint(bundle.fieldHint);
-    setPolicyKey(currentKey);
-  }
-
-  async function goToPolicies() {
-    if (!matchupReady) {
-      setError("自分のキャラと相手を選んでください");
-      return;
-    }
-    setError(null);
-    // Only regenerate when matchup changed or empty
-    if (!policiesFresh) {
-      setPolicyBusy(true);
-      try {
-        const bundle = await generatePolicies();
-        applyBundle(bundle);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "failed");
-        return;
-      } finally {
-        setPolicyBusy(false);
-      }
-    }
-    setStep(2);
-  }
-
-  async function regeneratePolicies() {
-    if (!matchupReady) return;
-    setPolicyBusy(true);
-    setError(null);
-    try {
-      const bundle = await generatePolicies();
-      applyBundle(bundle);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "failed");
-    } finally {
-      setPolicyBusy(false);
-    }
-  }
-
-  function setPerspectiveChoice(perspectiveId: string, id: string | null) {
-    const groupIds = new Set(
-      policyOptions
-        .filter((option) => option.perspectiveId === perspectiveId)
-        .map((option) => option.id),
-    );
-    setSelectedIds((previous) => [
-      ...previous.filter((selected) => !groupIds.has(selected)),
-      ...(id ? [id] : []),
-    ]);
-  }
-
   async function pickRandomOpponent() {
     if (!myId) return;
     setBusy(true);
@@ -394,9 +263,6 @@ export function MatchPage() {
       const { opponent } = await api.randomOpponent(myId);
       setOppId(opponent.id);
       rememberSelections({ opponent: opponent.id });
-      // Opponent change invalidates policies; stay on step 1
-      invalidatePolicies();
-      if (step !== 1) setStep(1);
     } catch (err) {
       setError(err instanceof Error ? err.message : "failed");
     } finally {
@@ -412,8 +278,6 @@ export function MatchPage() {
       const { opponent } = await api.autoOpponent(myId);
       setOppId(opponent.id);
       rememberSelections({ opponent: opponent.id });
-      invalidatePolicies();
-      if (step !== 1) setStep(1);
     } catch (err) {
       setError(err instanceof Error ? err.message : "failed");
     } finally {
@@ -459,30 +323,9 @@ export function MatchPage() {
         </Link>
       </div>
 
-      <nav className="wizard-tabs" aria-label="セットアップ手順">
-        <button
-          type="button"
-          className={`wizard-tab${step === 1 ? " is-active" : ""}`}
-          onClick={() => setStep(1)}
-        >
-          <span className="wizard-tab-n">1</span>
-          対戦カード
-        </button>
-        <button
-          type="button"
-          className={`wizard-tab${step === 2 ? " is-active" : ""}`}
-          disabled={!matchupReady}
-          onClick={() => void goToPolicies()}
-        >
-          <span className="wizard-tab-n">2</span>
-          ケース方針
-        </button>
-      </nav>
-
-      {step === 1 && (
-        <div className="panel match-setup">
+      <div className="panel match-setup">
           <p className="muted help-text">
-            まず対戦の組み合わせだけ決めます。方針の生成は次の画面です。
+            対戦の組み合わせを決めると、その後はキャラクター自身が相手との過去の方針・反省、現在の戦場と状態から、非公開の開始方針を選びます。
           </p>
 
           <label className="field">
@@ -501,8 +344,6 @@ export function MatchPage() {
                 setMyId(id);
                 rememberSelections({ mine: id });
                 setOppId("");
-                invalidatePolicies();
-                setStep(1);
               }}
             >
               <option value="">選択…</option>
@@ -562,8 +403,6 @@ export function MatchPage() {
                 const id = e.target.value;
                 setFieldId(id);
                 rememberSelections({ battlefield: id });
-                // Field affects policies → mark stale, stay on step 1
-                invalidatePolicies();
               }}
             >
               <option value="">未指定（開始時にランダム具体化）</option>
@@ -641,7 +480,6 @@ export function MatchPage() {
                 const id = e.target.value;
                 setOppId(id);
                 rememberSelections({ opponent: id });
-                invalidatePolicies();
               }}
               disabled={!myId}
             >
@@ -728,166 +566,17 @@ export function MatchPage() {
               先に <Link to="/characters">キャラを生成</Link> してください。
             </p>
           )}
-        </div>
-      )}
-
-      {step === 2 && (
-        <div className="panel match-setup policy-section">
-          <div className="matchup-summary muted help-text">
-            {myChar?.displayName ?? "?"} vs {oppChar?.displayName ?? "?"}
-            {fieldMeta ? ` ／ ${fieldMeta.displayName}` : " ／ 戦場ランダム"}
-          </div>
-
-          <div className="policy-section-head">
-            <h2 className="setup-section-title">ケース方針</h2>
-            {policiesFresh && (
-              <span className="policy-count">
-                {selectedIds.length}/{policyGroups.length} 観点指定
-              </span>
-            )}
-          </div>
-
-          <p className="muted help-text">
-            観点ごとに二つの案から選べます。決めない観点は「お任せ」にすると、キャラクター自身が状況に合わせます。
-          </p>
-
-          {policyBusy && <div className="empty-hint">方針を生成中…</div>}
-
-          {fieldHint && !policyBusy && (
-            <p className="field-hint muted">{fieldHint}</p>
-          )}
-          {rationale && !policyBusy && (
-            <p className="rationale muted">{rationale}</p>
-          )}
-
-          <div className="policy-toolbar">
-            <button
-              type="button"
-              className="btn"
-              disabled={policyBusy || !matchupReady}
-              onClick={() => void regeneratePolicies()}
-            >
-              {policyBusy ? "生成中…" : "再提案"}
-            </button>
-            <button
-              type="button"
-              className="btn ghost"
-              disabled={policyOptions.length === 0}
-              onClick={() => setSelectedIds([])}
-            >
-              すべてお任せ
-            </button>
-          </div>
-
-          <div className="policy-list" aria-label="対決方針の観点">
-            {policyGroups.map((group) => {
-              const selected = group.options.find((option) =>
-                selectedIds.includes(option.id),
-              );
-              return (
-                <fieldset className="policy-perspective" key={group.id}>
-                  <legend>{group.title}</legend>
-                  <div className="policy-perspective-choices">
-                    {group.options.map((opt) => {
-                      const checked = selected?.id === opt.id;
-                      return (
-                        <button
-                          key={opt.id}
-                          type="button"
-                          className={`policy-card${checked ? " is-on" : ""}`}
-                          aria-pressed={checked}
-                          onClick={() => setPerspectiveChoice(group.id, opt.id)}
-                        >
-                          <span className="policy-card-check" aria-hidden>
-                            {checked ? "✓" : ""}
-                          </span>
-                          <span className="policy-card-body">
-                            <span className="policy-card-title">{opt.title}</span>
-                            <span className="policy-card-when">
-                              <span className="policy-k">いつ</span>
-                              <span className="policy-card-text">{opt.when}</span>
-                            </span>
-                            <span className="policy-card-then">
-                              <span className="policy-k">方針</span>
-                              <span className="policy-card-text">{opt.then}</span>
-                            </span>
-                          </span>
-                        </button>
-                      );
-                    })}
-                    <button
-                      type="button"
-                      className={`policy-card policy-card-unspecified${selected ? "" : " is-on"}`}
-                      aria-pressed={!selected}
-                      onClick={() => setPerspectiveChoice(group.id, null)}
-                    >
-                      <span className="policy-card-check" aria-hidden>
-                        {selected ? "" : "✓"}
-                      </span>
-                      <span className="policy-card-body">
-                        <span className="policy-card-title">お任せ</span>
-                        <span className="policy-card-text">
-                          キャラクター自身が状況に合わせる
-                        </span>
-                      </span>
-                    </button>
-                  </div>
-                </fieldset>
-              );
-            })}
-          </div>
-
-          {!policyBusy && policyOptions.length === 0 && (
-            <div className="empty-hint">
-              方針がまだありません。「再提案」を押してください。
-            </div>
-          )}
-
-          {error && <p className="error">{error}</p>}
-
-          <button
-            type="button"
-            className="btn ghost"
-            onClick={() => setStep(1)}
-          >
-            ← 対戦カードに戻る
-          </button>
-        </div>
-      )}
+      </div>
 
       <div className="match-action-bar">
-        {step === 1 ? (
-          <button
-            className="btn primary match-start-btn"
-            type="button"
-            disabled={!matchupReady || busy || policyBusy}
-            onClick={() => void startBattle()}
-          >
-            {busy ? "開始中…" : "試合開始（方針はキャラが決める）"}
-          </button>
-        ) : (
-          <button
-            className="btn primary match-start-btn"
-            type="button"
-            disabled={
-              busy ||
-              policyBusy ||
-              !matchupReady ||
-              (!policiesFresh && policyOptions.length === 0)
-            }
-            onClick={() => void startBattle()}
-          >
-            {busy
-              ? "開始中…"
-              : policyBusy
-                ? "方針準備中…"
-                : `試合開始${
-                    selectedIds.length
-                      ? `（${selectedIds.length}観点を指定）`
-                      : "（お任せ）"
-                  }`}
-          </button>
-        )}
+        <button
+          className="btn primary match-start-btn"
+          type="button"
+          disabled={!matchupReady || busy}
+          onClick={() => void startBattle()}
+        >
+          {busy ? "開始中…" : "試合開始（方針はキャラが決める）"}
+        </button>
       </div>
     </div>
   );

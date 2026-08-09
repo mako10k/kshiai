@@ -5,6 +5,15 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 
 ## [Unreleased]
 
+## [0.13.1] - 2026-08-09
+
+### Fixed
+
+- Removes the retired tactical-policy step and its client-side generation call
+  from match setup. Starting a match now goes directly to the character-owned
+  turn-0 strategy selection, informed by that opponent's bounded plan and
+  reflection memory as well as the current battle state.
+
 ## [0.13.0] - 2026-08-09
 
 ### Added
