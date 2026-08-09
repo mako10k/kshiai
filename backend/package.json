@@ -1,6 +1,6 @@
 {
   "name": "@kshiai/backend",
-  "version": "0.12.2",
+  "version": "0.8.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -9,6 +9,22 @@
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "node --import tsx --test src/*.test.ts src/**/*.test.ts",
+    "eval:battle-pipeline-baseline": "tsx src/scripts/evaluate-battle-pipeline-baseline.ts",
+    "eval:battle-pipeline-patch": "tsx src/scripts/evaluate-battle-canonical-patch-poc.ts",
+    "eval:battle-pipeline-issues": "tsx src/scripts/evaluate-battle-consistency-issue-poc.ts",
+    "eval:battle-pipeline-read": "tsx src/scripts/evaluate-battle-read-coherence-poc.ts",
+    "eval:battle-pipeline-projection": "tsx src/scripts/evaluate-battle-projection-poc.ts",
+    "eval:battle-pipeline-graph": "tsx src/scripts/evaluate-battle-canonical-graph-poc.ts",
+    "eval:battle-pipeline-adaptive": "tsx src/scripts/evaluate-battle-adaptive-adjudication-poc.ts",
+    "eval:battle-pipeline-world": "tsx src/scripts/evaluate-battle-world-process-poc.ts",
+    "eval:battle-pipeline-shadow-transcripts": "tsx src/scripts/capture-battle-integrated-shadow-transcripts.ts",
+    "eval:battle-pipeline-shadow-receipt": "tsx src/scripts/evaluate-battle-integrated-shadow-turn.ts",
+    "build:battle-pipeline-plan-basis-replay": "tsx src/scripts/build-battle-plan-basis-corrective-replay.ts",
+    "eval:battle-pipeline-plan-basis-replay": "tsx src/scripts/evaluate-battle-plan-basis-corrective-replay.ts",
+    "eval:battle-pipeline-conflict-applicability": "tsx src/scripts/evaluate-battle-conflict-handling-applicability.ts",
+    "build:battle-pipeline-conflict-generalization-corpus": "tsx src/scripts/build-battle-conflict-handling-held-out-corpus.ts",
+    "eval:battle-pipeline-conflict-generalization": "tsx src/scripts/evaluate-battle-conflict-handling-held-out.ts",
+    "observe:battle-pipeline-actual-turn": "tsx src/scripts/observe-battle-actual-turn-shadow.ts",
     "eval:perception-prompts": "tsx src/scripts/evaluate-perception-prompts.ts",
     "battle-state": "tsx src/scripts/battle-semantic-state.ts",
     "migrate:character-identities": "tsx src/scripts/backfill-character-identities.ts",
@@ -16,7 +32,6 @@
     "migrate:sqlite-to-postgres": "tsx src/scripts/sqlite-to-postgres.ts",
     "smoke:postgres-runtime": "tsx src/scripts/postgres-runtime-smoke.ts",
     "smoke:supabase-auth": "tsx src/scripts/supabase-auth-smoke.ts",
-    "observe:persistent-e2e": "KSHIAI_RUN_E2E_MAIN=1 tsx src/scripts/persistent-battle-e2e.ts",
     "migrate:legacy-account": "tsx src/scripts/migrate-legacy-account.ts"
   },
   "dependencies": {
