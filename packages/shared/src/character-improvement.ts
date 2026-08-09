@@ -36,6 +36,15 @@ export function ensureImprovementMemo(
   return parsed.success ? parsed.data : defaultImprovementMemo();
 }
 
+/** Owner-private notes for one recurring opponent matchup. */
+export const OpponentBattleMemorySchema = z.object({
+  preBattlePlan: z.string().max(1200).default(""),
+  postBattleReflection: z.string().max(1200).default(""),
+  battleCount: z.number().int().nonnegative().default(0),
+  lastBattleAt: z.string().nullable().default(null),
+});
+export type OpponentBattleMemory = z.infer<typeof OpponentBattleMemorySchema>;
+
 export type ImprovementAnalysisEligibility = {
   finishedBattles: number;
   canAnalyze: boolean;

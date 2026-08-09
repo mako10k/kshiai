@@ -464,57 +464,12 @@ export async function startBattle(input: {
     userId: input.userId,
   });
 
-  let policiesA = normalizePolicies(input.policies);
-  if (policiesA.length === 0) {
-    const gen = await input.llm.generateBattlePolicies({
-      self: charPublicCtx(mine),
-      foe: {
-        displayName: opp.displayName,
-        traits: opp.traits,
-        narrativeBlurb: opp.narrativeBlurb,
-      },
-      field: {
-        displayName: battlefield.displayName,
-        category: battlefield.category,
-        terrain: battlefield.terrain,
-        obstacles: battlefield.obstacles,
-        conditions: battlefield.conditions,
-        narrativeBlurb: battlefield.narrativeSetup,
-      },
-    });
-    policiesA = gen.options;
-  }
-
-  const selectedPolicyIdsA =
-    input.selectedPolicyIds !== undefined
-      ? selectPolicyIdsByPerspective(policiesA, input.selectedPolicyIds)
-      : selectPolicyIdsByPerspective(
-          policiesA,
-          policiesA.filter((p) => p.defaultSelected).map((p) => p.id),
-        );
-
-  // Opponent policies: always LLM-generated with defaults auto-selected
-  const genB = await input.llm.generateBattlePolicies({
-    self: charPublicCtx(opp),
-    foe: {
-      displayName: mine.displayName,
-      traits: mine.traits,
-      narrativeBlurb: mine.narrativeBlurb,
-    },
-    field: {
-      displayName: battlefield.displayName,
-      category: battlefield.category,
-      terrain: battlefield.terrain,
-      obstacles: battlefield.obstacles,
-      conditions: battlefield.conditions,
-      narrativeBlurb: battlefield.narrativeSetup,
-    },
-  });
-  const policiesB = genB.options;
-  const selectedPolicyIdsB = selectPolicyIdsByPerspective(
-    policiesB,
-    policiesB.filter((p) => p.defaultSelected).map((p) => p.id),
-  );
+  // Tactical policy cards are no longer selected/generated at match setup.
+  // Each isolated character agent chooses its own opening strategy at turn 0.
+  const policiesA: BattlePolicyOption[] = [];
+  const selectedPolicyIdsA: string[] = [];
+  const policiesB: BattlePolicyOption[] = [];
+  const selectedPolicyIdsB: string[] = [];
 
   const narrationStyle = await styleRepo.resolveNarrationStyleForUser(
     input.userId,
@@ -591,6 +546,18 @@ export async function startBattle(input: {
 
   state = {
     ...state,
+    agentStateA: {
+      ...(state.agentStateA as CharacterAgentState),
+      privateMemory: mine.opponentMemories?.[opp.id]
+        ? `この相手への過去方針: ${mine.opponentMemories[opp.id]!.preBattlePlan}\n過去の反省: ${mine.opponentMemories[opp.id]!.postBattleReflection}`
+        : state.agentStateA?.privateMemory ?? "",
+    },
+    agentStateB: {
+      ...(state.agentStateB as CharacterAgentState),
+      privateMemory: opp.opponentMemories?.[mine.id]
+        ? `この相手への過去方針: ${opp.opponentMemories[mine.id]!.preBattlePlan}\n過去の反省: ${opp.opponentMemories[mine.id]!.postBattleReflection}`
+        : state.agentStateB?.privateMemory ?? "",
+    },
     prologuePending: true,
     log: [],
     updatedAt: new Date().toISOString(),
@@ -639,6 +606,8 @@ function initialAgentState(
     speechStyle: "",
     selfReference,
     lastSpeech: null,
+    lastActionResult: "",
+    conversationHistory: [],
     interior: {
       primaryEmotion: "平静",
       concealedEmotion: null,
@@ -664,6 +633,8 @@ function groundCharacterAgentState(
   return {
     ...state,
     selfReference,
+    conversationHistory: state.conversationHistory ?? [],
+    lastActionResult: state.lastActionResult ?? "",
     interior: state.interior ?? {
       primaryEmotion: state.emotion || "平静",
       concealedEmotion: null,
@@ -853,6 +824,7 @@ function buildCharacterDecisionContext(input: {
       : actionRepeatCount >= 2
         ? "prefer_change" as const
         : "none" as const;
+  const predictedRepeatCount = actionRepeatCount + 1;
   if (!perception) return null;
   const roots = buildFreeActionCanonicalRoots({
     state: input.state,
@@ -897,7 +869,30 @@ function buildCharacterDecisionContext(input: {
     }),
     affordances,
     opportunityChains: buildOpportunityChains(affordances),
+    repetitionPenalty: lastAction
+      ? {
+          ifRepeatedCount: predictedRepeatCount,
+          staminaCost: predictedRepeatCount >= 4 ? 4 : 2,
+          effectMultiplier: predictedRepeatCount >= 3
+            ? Math.max(0.7, 1 - (predictedRepeatCount - 2) * 0.1)
+            : 1,
+          opponentRead: predictedRepeatCount >= 3,
+        }
+      : undefined,
   };
+}
+
+function characterActionResultSummary(
+  events: TurnEvent[],
+  side: "a" | "b",
+): string {
+  return events
+    .filter((event) => event.actorSide === side || event.targetSides?.includes(side))
+    .map((event) => event.summary)
+    .filter(Boolean)
+    .slice(-4)
+    .join(" ")
+    .slice(0, 600);
 }
 
 function deepFreezeConsumerInput<T>(value: T): T {
@@ -986,6 +981,36 @@ export function buildCharacterAgentConsumerInput(input: {
   };
 }
 
+function extendConversationHistory(input: {
+  previous: CharacterAgentState;
+  side: "a" | "b";
+  turn: number;
+  utteranceEvents: TurnEvent[];
+  speechEvidence: PerceptionEvidence[];
+}): CharacterAgentState["conversationHistory"] {
+  const visible = new Map(
+    input.speechEvidence.map((evidence) => [evidence.basisEventIds[0], evidence]),
+  );
+  const additions = input.utteranceEvents.flatMap((event) => {
+    if (!event.actorSide || !event.utterance?.text) return [];
+    const access = event.id
+      ? visible.get(event.id)?.accessBySide[input.side]
+      : undefined;
+    if (
+      event.actorSide !== input.side &&
+      !["clear", "coarse", "trace"].includes(access?.currentAccess ?? "none")
+    ) {
+      return [];
+    }
+    return [{
+      turn: input.turn,
+      speaker: event.actorSide === input.side ? "self" as const : "counterpart" as const,
+      text: event.utterance.text.slice(0, 400),
+    }];
+  });
+  return [...(input.previous.conversationHistory ?? []), ...additions].slice(-12);
+}
+
 export async function advanceCharacterAgents(input: {
   llm: LlmProvider;
   before: BattleState;
@@ -1039,6 +1064,8 @@ export async function advanceCharacterAgents(input: {
     ),
     input.after.encounterContext?.social.b.selfReference,
   );
+  previousA.lastActionResult = characterActionResultSummary(input.events, "a");
+  previousB.lastActionResult = characterActionResultSummary(input.events, "b");
   const stateWithRecord: BattleState = {
     ...input.after,
     agentStateA: previousA,
@@ -1199,6 +1226,26 @@ export async function advanceCharacterAgents(input: {
     },
     plannedActionA: input.phase === "aftermath" ? undefined : acceptedA.nextAction,
     plannedActionB: input.phase === "aftermath" ? undefined : acceptedB.nextAction,
+  };
+  stateAfterUtterances.agentStateA = {
+    ...(stateAfterUtterances.agentStateA as CharacterAgentState),
+    conversationHistory: extendConversationHistory({
+      previous: previousA,
+      side: "a",
+      turn: input.after.turn,
+      utteranceEvents,
+      speechEvidence,
+    }),
+  };
+  stateAfterUtterances.agentStateB = {
+    ...(stateAfterUtterances.agentStateB as CharacterAgentState),
+    conversationHistory: extendConversationHistory({
+      previous: previousB,
+      side: "b",
+      turn: input.after.turn,
+      utteranceEvents,
+      speechEvidence,
+    }),
   };
   if (stateAfterUtterances.semanticState) {
     try {
@@ -3670,6 +3717,8 @@ async function runPrologueTurn(input: {
 
   const next: BattleState = {
     ...state,
+    openingPlanA: state.agentStateA?.currentGoal?.slice(0, 1200),
+    openingPlanB: state.agentStateB?.currentGoal?.slice(0, 1200),
     turn: 0,
     prologuePending: false,
     log: [...state.log, narrative],
@@ -3913,6 +3962,31 @@ async function runAftermathTurn(input: {
   } catch (e) {
     console.warn(
       "[balance] recordBattleFinished skipped",
+      e instanceof Error ? e.message : e,
+    );
+  }
+
+  try {
+    const finishedAt = next.updatedAt;
+    await Promise.all([
+      charRepo.saveOpponentBattleMemory({
+        characterId: input.meta.side_a_character_id,
+        opponentId: input.meta.side_b_character_id,
+        preBattlePlan: next.openingPlanA ?? next.agentStateA?.currentGoal ?? "",
+        postBattleReflection: next.agentStateA?.privateMemory ?? "",
+        battledAt: finishedAt,
+      }),
+      charRepo.saveOpponentBattleMemory({
+        characterId: input.meta.side_b_character_id,
+        opponentId: input.meta.side_a_character_id,
+        preBattlePlan: next.openingPlanB ?? next.agentStateB?.currentGoal ?? "",
+        postBattleReflection: next.agentStateB?.privateMemory ?? "",
+        battledAt: finishedAt,
+      }),
+    ]);
+  } catch (e) {
+    console.warn(
+      "[battle] opponent memory save skipped",
       e instanceof Error ? e.message : e,
     );
   }

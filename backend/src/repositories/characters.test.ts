@@ -106,6 +106,36 @@ describe("owner-scoped character generation references", () => {
     ]);
   });
 
+  it("keeps bounded pre-battle plans and reflections for each opponent", async () => {
+    const first = await repo.saveOpponentBattleMemory({
+      characterId: "char-a",
+      opponentId: "char-b",
+      preBattlePlan: "距離を取り、相手の癖を観察する。",
+      postBattleReflection: "守りを崩す前に、間合いを測るべきだった。",
+      battledAt: "2026-08-09T00:00:00.000Z",
+    });
+    assert.deepEqual(first, {
+      preBattlePlan: "距離を取り、相手の癖を観察する。",
+      postBattleReflection: "守りを崩す前に、間合いを測るべきだった。",
+      battleCount: 1,
+      lastBattleAt: "2026-08-09T00:00:00.000Z",
+    });
+
+    const second = await repo.saveOpponentBattleMemory({
+      characterId: "char-a",
+      opponentId: "char-b",
+      postBattleReflection: "次は誘いを混ぜて反応を見る。",
+      battledAt: "2026-08-09T01:00:00.000Z",
+    });
+    assert.equal(second?.battleCount, 2);
+    assert.equal(second?.preBattlePlan, "距離を取り、相手の癖を観察する。");
+    assert.equal(second?.postBattleReflection, "次は誘いを混ぜて反応を見る。");
+    assert.equal(
+      (await repo.getSheet("char-a"))?.opponentMemories?.["char-b"]?.lastBattleAt,
+      "2026-08-09T01:00:00.000Z",
+    );
+  });
+
   it("auto-matches the nearest rating and combat profile", async () => {
     const far = sheet("char-far", "user-b", "遠い相手");
     far.record = { ...defaultRecord(), rating: 2100 };
