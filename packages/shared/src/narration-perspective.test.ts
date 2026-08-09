@@ -22,6 +22,9 @@ const agent = (over: Partial<CharacterAgentState> = {}): CharacterAgentState => 
   interior: {
     primaryEmotion: "警戒",
     concealedEmotion: "焦り",
+    coreNeed: "主導を手放さない",
+    protectiveStance: "平静を装う",
+    eventAppraisal: "相手の一手を警戒する",
     unspokenIntent: "間合いを誘導する",
     currentConcern: "足場の波",
     attitudeTowardCounterpart: "好敵手として見る",

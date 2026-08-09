@@ -68,18 +68,18 @@ describe("character-agent action proposal prompt", () => {
       system = prompt;
       user = request;
       return {
-        state: {
           privateMemory: "前の問いに返答はなかった。",
           currentGoal: "相手の構えを崩す",
           emotion: "集中",
           beliefs: [],
           observations: ["相手は剣を下げない"],
           speechStyle: "観察を交えて短く話す",
-          selfReference: "私",
-          lastSpeech: "その問いには、答えないの？",
           interior: {
             primaryEmotion: "集中",
             concealedEmotion: null,
+            coreNeed: "答えを確かめる",
+            protectiveStance: "問いを重ねる",
+            eventAppraisal: "足元の水が距離を知らせた",
             unspokenIntent: "別の反応を引き出す",
             currentConcern: "言葉が届いたか",
             attitudeTowardCounterpart: "試している",
@@ -92,12 +92,10 @@ describe("character-agent action proposal prompt", () => {
               nextApproach: "観察を脅しではなく誘いとして使う",
             },
           },
-        },
-        speech: "なら、足元の水たまりには答えが出ている。",
       };
     };
 
-    const result = await provider.advanceCharacterAgent({
+    const result = await provider.advanceCharacterPsyche({
       phase: "turn",
       character: {
         schemaVersion: 1,
@@ -130,6 +128,9 @@ describe("character-agent action proposal prompt", () => {
         interior: {
           primaryEmotion: "平静",
           concealedEmotion: null,
+          coreNeed: "答えを確かめる",
+          protectiveStance: "問いを重ねる",
+          eventAppraisal: "",
           unspokenIntent: "様子を見る",
           currentConcern: "相手の反応",
           attitudeTowardCounterpart: "対峙している",
@@ -165,10 +166,9 @@ describe("character-agent action proposal prompt", () => {
       counterpart: { displayName: "ガク" },
     });
 
-    assert.match(system, /two distinct expression threads/);
-    assert.match(system, /privately select interior\.speechMode/);
-    assert.match(system, /speechAppraisal is a compact private sense/);
-    assert.match(system, /trusted administrator-authored interaction context/);
+    assert.match(system, /deep-psyche stage/);
+    assert.match(system, /separate bounded relationship-continuity thread/);
+    assert.match(system, /trusted administrator-authored context/);
     const pipeline = JSON.parse(user).dialoguePipeline;
     assert.deepEqual(pipeline, {
       schemaVersion: 1,
@@ -189,11 +189,11 @@ describe("character-agent action proposal prompt", () => {
       schemaVersion: 1,
       history: [{ turn: 1, speaker: "counterpart", text: "答えろ。" }],
     });
-    assert.deepEqual(result.state.interior?.speechAppraisal, {
+    assert.deepEqual(result.interior.speechAppraisal, {
       expectedImpact: "相手の足運びを変えさせる",
       observedImpact: "前の問いでは相手の構えは変わらなかった",
       nextApproach: "観察を脅しではなく誘いとして使う",
     });
-    assert.equal(result.state.interior?.speechMode, "weave");
+    assert.equal(result.interior.speechMode, "weave");
   });
 });

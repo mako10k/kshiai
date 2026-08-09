@@ -5,6 +5,31 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 
 ## [Unreleased]
 
+## [0.13.5] - 2026-08-09
+
+### Changed
+
+- Adds a private deep-psyche LLM stage before each character's speech/action
+  stage. It commits compact emotional, relational, event-appraisal, core-need,
+  and protective-stance conclusions from observer-safe results and bounded
+  conversation continuity; it never produces public speech or mechanics.
+- The later speech/action stage receives that committed psyche read-only and
+  cannot replace it. It now expresses the character's private intent through
+  one organic line and proposes only the next validated action.
+- Turn-0 matchup strategy and post-battle reflection are formed by the
+  deep-psyche stage, using the existing per-opponent memory already supplied to
+  private continuity.
+- The administrator dialogue guide is applied exclusively to the deep-psyche
+  stage. The management screen now labels this responsibility explicitly.
+
+### Operations
+
+- Adds no database migration: the new bounded interior fields have defaults and
+  remain compatible with persisted battle JSON. Internal turn traces retain the
+  separate deep-psyche inputs, outputs, and accepted state for audit.
+- Canonical battle results, observer-relative perception, deterministic action
+  validation, and public narration ownership remain unchanged.
+
 ## [0.13.4] - 2026-08-09
 
 ### Changed

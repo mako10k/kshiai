@@ -615,6 +615,9 @@ function initialAgentState(
     interior: {
       primaryEmotion: "平静",
       concealedEmotion: null,
+      coreNeed: "",
+      protectiveStance: "",
+      eventAppraisal: "",
       unspokenIntent: "",
       currentConcern: "",
       attitudeTowardCounterpart: "対峙している",
@@ -648,6 +651,9 @@ function groundCharacterAgentState(
     interior: {
       primaryEmotion: state.interior?.primaryEmotion ?? (state.emotion || "平静"),
       concealedEmotion: state.interior?.concealedEmotion ?? null,
+      coreNeed: state.interior?.coreNeed ?? "",
+      protectiveStance: state.interior?.protectiveStance ?? "",
+      eventAppraisal: state.interior?.eventAppraisal ?? "",
       unspokenIntent: state.interior?.unspokenIntent ?? "",
       currentConcern: state.interior?.currentConcern ?? state.currentGoal,
       attitudeTowardCounterpart: state.interior?.attitudeTowardCounterpart ?? "対峙している",
@@ -921,7 +927,14 @@ function deepFreezeConsumerInput<T>(value: T): T {
   return value;
 }
 
-/** Build one isolated character-agent input from that side's frozen frame. */
+type CharacterAgentSharedConsumerInput = Omit<
+  Parameters<LlmProvider["advanceCharacterAgent"]>[0],
+  "decision"
+> & {
+  decision?: Parameters<LlmProvider["advanceCharacterAgent"]>[0]["decision"];
+};
+
+/** Build the shared, observer-safe input for a psyche then speech/action pair. */
 export function buildCharacterAgentConsumerInput(input: {
   state: BattleState;
   sheet: CharacterSheet;
@@ -930,7 +943,7 @@ export function buildCharacterAgentConsumerInput(input: {
   previous: CharacterAgentState;
   dialoguePipeline?: DialoguePipelineSettings;
   phase?: "prologue" | "turn" | "aftermath";
-}): Parameters<LlmProvider["advanceCharacterAgent"]>[0] | null {
+}): CharacterAgentSharedConsumerInput | null {
   const frame = input.side === "a"
     ? input.state.perceptionFrameA
     : input.state.perceptionFrameB;
@@ -993,7 +1006,7 @@ export function buildCharacterAgentConsumerInput(input: {
   return {
     phase,
     character,
-    previous: structuredClone({
+    psyche: structuredClone({
       ...previousContinuity,
       selfReference: permittedSelfReference,
     }),
@@ -1139,11 +1152,81 @@ export async function advanceCharacterAgents(input: {
     console.warn("[battle] character agents skipped: no observer-safe action available");
     return { state: refreshNarratorContinuity(stateWithRecord), characterSpeeches: [] };
   }
+  const toPsycheInput = (consumerInput: typeof inputA) => {
+    if (!consumerInput) return null;
+    const { decision: _decision, psyche, ...shared } = consumerInput;
+    return {
+      ...shared,
+      previous: psyche,
+    } satisfies Parameters<LlmProvider["advanceCharacterPsyche"]>[0];
+  };
+  const psycheInputA = toPsycheInput(inputA);
+  const psycheInputB = toPsycheInput(inputB);
+  let psycheResults: [
+    PromiseSettledResult<Awaited<ReturnType<LlmProvider["advanceCharacterPsyche"]>> | null>,
+    PromiseSettledResult<Awaited<ReturnType<LlmProvider["advanceCharacterPsyche"]>> | null>,
+  ];
+  try {
+    psycheResults = await withTimeout(Promise.allSettled([
+      psycheInputA ? input.llm.advanceCharacterPsyche(psycheInputA) : Promise.resolve(null),
+      psycheInputB ? input.llm.advanceCharacterPsyche(psycheInputB) : Promise.resolve(null),
+    ]), FAST_LLM_ENVELOPE_TIMEOUT_MS, "advanceCharacterPsyche");
+  } catch (error) {
+    console.warn(
+      "[battle] deep psyche stage retained prior state",
+      error instanceof Error ? error.message : error,
+    );
+    psycheResults = [
+      { status: "rejected", reason: error },
+      { status: "rejected", reason: error },
+    ];
+  }
+  const [psycheResultA, psycheResultB] = psycheResults;
+  const applyPsyche = (
+    result: PromiseSettledResult<Awaited<ReturnType<LlmProvider["advanceCharacterPsyche"]>> | null>,
+    previous: CharacterAgentState,
+    sheet: CharacterSheet,
+    selfReference?: string | null,
+  ) => result.status === "fulfilled" && result.value
+    ? groundCharacterAgentState(sheet, {
+        ...previous,
+        ...result.value,
+        interior: result.value.interior,
+      }, selfReference)
+    : previous;
+  const psycheA = applyPsyche(
+    psycheResultA,
+    previousA,
+    input.mine,
+    input.after.encounterContext?.social.a.selfReference,
+  );
+  const psycheB = applyPsyche(
+    psycheResultB,
+    previousB,
+    input.opp,
+    input.after.encounterContext?.social.b.selfReference,
+  );
+  if (psycheResultA.status === "rejected") {
+    console.warn("[battle] side A deep psyche retained prior state", psycheResultA.reason);
+  }
+  if (psycheResultB.status === "rejected") {
+    console.warn("[battle] side B deep psyche retained prior state", psycheResultB.reason);
+  }
+  const toSpeechActionInput = (
+    consumerInput: typeof inputA,
+    psyche: CharacterAgentState,
+  ) => {
+    if (!consumerInput) return null;
+    const { dialoguePipeline: _dialoguePipeline, ...speechActionInput } = consumerInput;
+    return { ...speechActionInput, psyche };
+  };
+  const agentInputA = toSpeechActionInput(inputA, psycheA);
+  const agentInputB = toSpeechActionInput(inputB, psycheB);
   let agents;
   try {
     agents = await withTimeout(Promise.allSettled([
-      inputA ? input.llm.advanceCharacterAgent(inputA) : Promise.resolve(null),
-      inputB ? input.llm.advanceCharacterAgent(inputB) : Promise.resolve(null),
+      agentInputA ? input.llm.advanceCharacterAgent(agentInputA) : Promise.resolve(null),
+      agentInputB ? input.llm.advanceCharacterAgent(agentInputB) : Promise.resolve(null),
     ]), FAST_LLM_ENVELOPE_TIMEOUT_MS, "advanceCharacterAgents");
   } catch (error) {
     console.warn(
@@ -1167,10 +1250,10 @@ export async function advanceCharacterAgents(input: {
   }
   const acceptedA = acceptCharacterAgentResult({
     result: agentA,
-    previous: previousA,
+    previous: psycheA,
     side: "a",
     speaker: input.after.sideA.displayName,
-    profile: inputA?.character ?? buildCharacterSelfProfileAnchor(
+    profile: agentInputA?.character ?? buildCharacterSelfProfileAnchor(
       input.mine,
       deriveBattleProfileStateOverrides({
         worldState: input.after.worldState,
@@ -1178,14 +1261,14 @@ export async function advanceCharacterAgents(input: {
       }),
     ),
     preferredSelfReference: input.after.encounterContext?.social.a.selfReference,
-    decision: inputA?.decision,
+    decision: agentInputA?.decision,
   });
   const acceptedB = acceptCharacterAgentResult({
     result: agentB,
-    previous: previousB,
+    previous: psycheB,
     side: "b",
     speaker: input.after.sideB.displayName,
-    profile: inputB?.character ?? buildCharacterSelfProfileAnchor(
+    profile: agentInputB?.character ?? buildCharacterSelfProfileAnchor(
       input.opp,
       deriveBattleProfileStateOverrides({
         worldState: input.after.worldState,
@@ -1193,10 +1276,10 @@ export async function advanceCharacterAgents(input: {
       }),
     ),
     preferredSelfReference: input.after.encounterContext?.social.b.selfReference,
-    decision: inputB?.decision,
+    decision: agentInputB?.decision,
   });
   const traceSide = (
-    consumerInput: typeof inputA,
+    consumerInput: typeof agentInputA,
     providerResult: typeof resultA,
     providerOutput: CharacterAgentAdvanceResult | null,
     accepted: typeof acceptedA,
@@ -1223,8 +1306,28 @@ export async function advanceCharacterAgents(input: {
     BattleTurnPipelineTrace["characterAgents"]
   > = {
     phase: input.phase ?? "turn",
-    a: traceSide(inputA, resultA, agentA, acceptedA),
-    b: traceSide(inputB, resultB, agentB, acceptedB),
+    a: traceSide(agentInputA, resultA, agentA, acceptedA),
+    b: traceSide(agentInputB, resultB, agentB, acceptedB),
+  };
+  const tracePsycheSide = (
+    consumerInput: typeof psycheInputA,
+    providerResult: typeof psycheResultA,
+    acceptedState: CharacterAgentState,
+  ) => ({
+    input: consumerInput ? structuredClone(consumerInput) : null,
+    providerStatus: consumerInput
+      ? providerResult.status === "fulfilled"
+        ? "fulfilled" as const
+        : "rejected" as const
+      : "skipped" as const,
+    providerOutput: providerResult.status === "fulfilled" && providerResult.value
+      ? structuredClone(providerResult.value)
+      : null,
+    acceptedOutput: structuredClone(acceptedState),
+  });
+  const psycheTrace = {
+    a: tracePsycheSide(psycheInputA, psycheResultA, psycheA),
+    b: tracePsycheSide(psycheInputB, psycheResultB, psycheB),
   };
   const candidateSpeeches = [
     ...(acceptedA.speech ? [acceptedA.speech] : []),
@@ -1361,6 +1464,7 @@ export async function advanceCharacterAgents(input: {
         pipelineTrace: {
           schemaVersion: 1 as const,
           ...(recordWithoutUtterances.pipelineTrace ?? {}),
+          deepPsyche: psycheTrace,
           characterAgents: characterAgentTrace,
         },
       }
@@ -1374,6 +1478,7 @@ export async function advanceCharacterAgents(input: {
         pipelineTrace: {
           schemaVersion: 1 as const,
           ...(recordWithoutUtterances.pipelineTrace ?? {}),
+          deepPsyche: psycheTrace,
           characterAgents: characterAgentTrace,
         },
       };
@@ -1522,9 +1627,8 @@ export function validateCharacterActionProposal(input: {
 }
 
 /**
- * Accept one agent result as the authority for actual speech. Provider state
- * cannot substitute a different lastSpeech, and later public rendering never
- * passes through this boundary.
+ * Accept one speech/action result. Psychological state is already committed by
+ * the preceding deep-psyche stage, so this later stage cannot overwrite it.
  */
 export function acceptCharacterAgentResult(input: {
   result: CharacterAgentAdvanceResult | null;
@@ -1559,7 +1663,7 @@ export function acceptCharacterAgentResult(input: {
   const nextAction = actionProposalValidation.acceptedAction ?? undefined;
   return {
     state: {
-      ...input.result.state,
+      ...input.previous,
       selfReference,
       lastSpeech: text,
     },

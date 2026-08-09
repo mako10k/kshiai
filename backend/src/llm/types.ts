@@ -9,6 +9,7 @@ import type {
   CharacterIdentity,
   CharacterSelfProfileAnchor,
   CharacterAgentState,
+  CharacterDeepPsycheUpdate,
   CharacterActionReactionContext,
   CharacterConversationContext,
   DialoguePipelineSettings,
@@ -446,12 +447,28 @@ export interface LlmProvider {
     notes: string;
     tags?: string[];
   }>;
+  /**
+   * Privately appraise the present turn before speech/action generation. This
+   * stage owns psychological continuity; it never proposes mechanics or public
+   * wording.
+   */
+  advanceCharacterPsyche(input: {
+    phase: "prologue" | "turn" | "aftermath";
+    character: CharacterSelfProfileAnchor;
+    previous: CharacterAgentState;
+    actionReaction: CharacterActionReactionContext;
+    conversation: CharacterConversationContext;
+    dialoguePipeline?: DialoguePipelineSettings;
+    perception: CharacterPerceptionFrame;
+    social?: BattleSocialView;
+    counterpart?: CharacterCounterpartKnowledge;
+  }): Promise<CharacterDeepPsycheUpdate>;
   /** Advance one character from its frozen observer-relative frame only. */
   advanceCharacterAgent(input: {
     phase: "prologue" | "turn" | "aftermath";
     character: CharacterSelfProfileAnchor;
-    /** Private continuity excluding the two expression-specific context threads. */
-    previous: CharacterAgentState;
+    /** Committed deep-psyche continuity, read-only for this expression/action stage. */
+    psyche: CharacterAgentState;
     /** Fresh committed outcome thread, separate from conversational continuity. */
     actionReaction: CharacterActionReactionContext;
     /** Bounded relational-expression thread, separate from the fresh outcome. */
@@ -466,6 +483,7 @@ export interface LlmProvider {
     /** Omitted in aftermath, where the character plans no new combat turn. */
     decision?: CharacterActionDecisionContext;
   }): Promise<{
+    /** Echoed committed psyche for compatibility; the server ignores it. */
     state: CharacterAgentState;
     speech: string;
     /** Bounded model-authored candidate. Only the battle service may accept it. */

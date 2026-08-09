@@ -184,6 +184,22 @@ describe("character-authored public speech", () => {
       result.state.narratorContinuity?.b.viewpointSide,
     );
     const pipelineTrace = result.state.turnRecords.at(-1)?.pipelineTrace;
+    assert.equal(pipelineTrace?.deepPsyche?.a.providerStatus, "fulfilled");
+    assert.equal(pipelineTrace?.deepPsyche?.b.providerStatus, "fulfilled");
+    assert.equal(
+      ((pipelineTrace?.deepPsyche?.a.acceptedOutput as {
+        interior?: { eventAppraisal?: string };
+      } | null)?.interior?.eventAppraisal ?? "").length > 0,
+      true,
+    );
+    assert.equal(
+      "dialoguePipeline" in ((pipelineTrace?.deepPsyche?.a.input as object | null) ?? {}),
+      true,
+    );
+    assert.equal(
+      "dialoguePipeline" in ((pipelineTrace?.characterAgents?.a.input as object | null) ?? {}),
+      false,
+    );
     assert.equal(pipelineTrace?.characterAgents?.phase, "turn");
     assert.equal(pipelineTrace?.characterAgents?.a.providerStatus, "fulfilled");
     assert.equal(pipelineTrace?.characterAgents?.b.providerStatus, "fulfilled");
@@ -325,8 +341,8 @@ describe("character-authored public speech", () => {
     assert.ok(consumerInput);
     assert.equal(consumerInput.conversation.history.length, 16);
     assert.equal(consumerInput.conversation.history[0]?.turn, 3);
-    assert.equal(consumerInput.previous.conversationHistory, undefined);
-    assert.equal(consumerInput.previous.lastActionResult, undefined);
+    assert.equal(consumerInput.psyche.conversationHistory, undefined);
+    assert.equal(consumerInput.psyche.lastActionResult, undefined);
     assert.equal(
       consumerInput.actionReaction.latestCommittedResult,
       "アオは足元を確かめ、クロとの距離を保った。",
@@ -577,6 +593,9 @@ describe("character-authored public speech", () => {
           interior: {
             primaryEmotion: "静かな苛立ち",
             concealedEmotion: null,
+            coreNeed: "反応を確かめる",
+            protectiveStance: "問いを重ねる",
+            eventAppraisal: "返答がなかった",
             unspokenIntent: "反応を引き出す",
             currentConcern: "前の言葉は届いたか",
             attitudeTowardCounterpart: "試している",
@@ -611,11 +630,7 @@ describe("character-authored public speech", () => {
 
     assert.equal(accepted.state.lastSpeech, "まだ決着ではない。");
     assert.equal(accepted.state.selfReference, "私");
-    assert.deepEqual(accepted.state.interior?.speechAppraisal, {
-      expectedImpact: "相手の構えを動かす",
-      observedImpact: "前の問いには返答がなかった",
-      nextApproach: "別の角度から相手の反応を探る",
-    });
+    assert.equal(accepted.state.interior, undefined);
     assert.equal(publicSpeeches[0]?.text, "まだ決着ではない。");
     assert.equal(accepted.state.lastSpeech, "まだ決着ではない。");
   });
@@ -796,7 +811,6 @@ describe("character-authored public speech", () => {
       chatJson(): Promise<unknown>;
     };
     privateProvider.chatJson = async () => ({
-      state: { privateMemory: "応答の有効な記憶" },
       speech: "まだ動ける。",
       nextAction: { kind: "skill", skillId: "slash", unexpected: true },
     });
@@ -811,14 +825,14 @@ describe("character-authored public speech", () => {
       decision: consumerInput!.decision,
     });
 
-    assert.equal(providerResult.state.privateMemory, "応答の有効な記憶");
+    assert.equal(providerResult.state.privateMemory, consumerInput!.psyche.privateMemory);
     assert.equal(providerResult.speech, "まだ動ける。");
     assert.deepEqual(providerResult.proposedAction, {
       kind: "skill",
       skillId: "slash",
       unexpected: true,
     });
-    assert.equal(accepted.state.privateMemory, "応答の有効な記憶");
+    assert.equal(accepted.state.privateMemory, state.agentStateA!.privateMemory);
     assert.equal(accepted.speech?.text, "まだ動ける。");
     assert.equal(accepted.actionProposalValidation?.reason, "schema_invalid");
     assert.equal(accepted.nextAction, undefined);

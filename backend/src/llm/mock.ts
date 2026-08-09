@@ -516,6 +516,61 @@ export class MockLlmProvider implements LlmProvider {
     };
   }
 
+  async advanceCharacterPsyche(
+    input: Parameters<LlmProvider["advanceCharacterPsyche"]>[0],
+  ) {
+    const counterpartLabel = input.counterpart?.displayName ??
+      input.perception.counterpart.perceivedAs;
+    const event = input.actionReaction.latestCommittedResult ??
+      input.conversation.history.at(-1)?.text ??
+      `${counterpartLabel}の気配をうかがっている。`;
+    const ownReserveCritical = input.perception.reserveCues.some((cue) =>
+      cue.subject.kind === "self" &&
+      (cue.relativeBand === "critical" || cue.relativeBand === "empty")
+    );
+    const aftermath = input.phase === "aftermath";
+    return {
+      privateMemory: aftermath
+        ? `${counterpartLabel}との対決を振り返った。${event}`.slice(0, 1200)
+        : event.slice(0, 1200),
+      currentGoal: input.phase === "prologue"
+        ? `${counterpartLabel}との距離と出方を見極める`
+        : aftermath
+          ? "確定した結末を受け止める"
+          : input.previous.currentGoal || `${counterpartLabel}との対決を自分らしく続ける`,
+      emotion: aftermath ? "余韻" : ownReserveCritical ? "緊張" : "集中",
+      beliefs: input.previous.beliefs.slice(-8),
+      observations: [...input.previous.observations.slice(-7), event.slice(0, 240)],
+      speechStyle: input.previous.speechStyle || "簡潔に話す",
+      interior: {
+        primaryEmotion: aftermath ? "余韻" : ownReserveCritical ? "緊張" : "集中",
+        concealedEmotion: ownReserveCritical ? "焦り" : null,
+        coreNeed: input.previous.interior?.coreNeed || "自分らしい距離と流れを守る",
+        protectiveStance: ownReserveCritical ? "慎重に間合いを保つ" : "相手の出方を見極める",
+        eventAppraisal: event.slice(0, 240),
+        unspokenIntent: aftermath ? "" : `${counterpartLabel}の次の出方を見極める`,
+        currentConcern: aftermath
+          ? "確定した結末をどう受け止めるか"
+          : ownReserveCritical ? "自分の余力" : "相手の次の動き",
+        attitudeTowardCounterpart: input.social?.relationshipLabel ?? "対峙している",
+        confidence: ownReserveCritical ? "low" as const : "steady" as const,
+        relationshipTension: aftermath ? "対決後の余韻" : "対決の緊張",
+        speechMode: input.actionReaction.latestCommittedResult
+          ? "action_reaction" as const
+          : "conversation_continuation" as const,
+        speechAppraisal: {
+          expectedImpact: `${counterpartLabel}の次の出方を見極める`,
+          observedImpact: input.previous.lastSpeech
+            ? "前の言葉の後に起きた変化を見定める"
+            : "",
+          nextApproach: input.previous.lastSpeech
+            ? "相手の反応と状況に合わせて話し方を選び直す"
+            : "まず相手の反応を測る",
+        },
+      },
+    };
+  }
+
   async advanceCharacterAgent(input: Parameters<LlmProvider["advanceCharacterAgent"]>[0]) {
     const selfReference = input.social?.selfReference ??
       canonicalSelfReference(input.character);
@@ -550,20 +605,23 @@ export class MockLlmProvider implements LlmProvider {
           : "この結末を受け止めよう。";
       return {
         state: {
-          ...input.previous,
+          ...input.psyche,
           privateMemory: event.slice(0, 1200),
           currentGoal: "確定した結末を受け止める",
           emotion: "余韻",
           observations: [
-            ...input.previous.observations.slice(-6),
+            ...input.psyche.observations.slice(-6),
             event.slice(0, 240),
           ],
-          speechStyle: input.previous.speechStyle || "簡潔に話す",
+          speechStyle: input.psyche.speechStyle || "簡潔に話す",
           selfReference,
           lastSpeech: aftermathSpeech,
           interior: {
             primaryEmotion: "余韻",
             concealedEmotion: null,
+            coreNeed: input.psyche.interior?.coreNeed ?? "",
+            protectiveStance: input.psyche.interior?.protectiveStance ?? "",
+            eventAppraisal: input.psyche.interior?.eventAppraisal ?? event.slice(0, 240),
             unspokenIntent: "",
             currentConcern: "確定した結末をどう受け止めるか",
             attitudeTowardCounterpart: input.social?.relationshipLabel ?? "対峙していた相手",
@@ -572,7 +630,7 @@ export class MockLlmProvider implements LlmProvider {
             speechMode: "action_reaction" as const,
             speechAppraisal: {
               expectedImpact: "結末を自分なりに受け止める",
-              observedImpact: input.previous.lastSpeech
+              observedImpact: input.psyche.lastSpeech
                 ? "最後の言葉と結末を振り返っている"
                 : "",
               nextApproach: "対決の余韻にふさわしい言葉を選ぶ",
@@ -660,21 +718,24 @@ export class MockLlmProvider implements LlmProvider {
         pool[0]!;
     return {
       state: {
-        ...input.previous,
+        ...input.psyche,
         privateMemory: event.slice(0, 1200),
         currentGoal: overridingPrinciple?.statement ??
           `${counterpartLabel}との対決を自分らしく続ける`,
         emotion: ownReserveCritical ? "緊張" : "集中",
         observations: [
-          ...input.previous.observations.slice(-6),
+          ...input.psyche.observations.slice(-6),
           event.slice(0, 240),
         ],
-        speechStyle: input.previous.speechStyle || "簡潔に話す",
+        speechStyle: input.psyche.speechStyle || "簡潔に話す",
         selfReference,
         lastSpeech: speech,
         interior: {
           primaryEmotion: ownReserveCritical ? "緊張" : "集中",
           concealedEmotion: ownReserveCritical ? "焦り" : null,
+          coreNeed: input.psyche.interior?.coreNeed ?? "自分らしい距離と流れを守る",
+          protectiveStance: input.psyche.interior?.protectiveStance ?? "相手の出方を見極める",
+          eventAppraisal: input.psyche.interior?.eventAppraisal ?? event.slice(0, 240),
           unspokenIntent: `${counterpartLabel}との対決を自分らしく続ける`,
           currentConcern: ownReserveCritical ? "自分の余力" : "相手の次の動き",
           attitudeTowardCounterpart: input.social?.relationshipLabel ?? "対峙している",
@@ -685,10 +746,10 @@ export class MockLlmProvider implements LlmProvider {
             : "conversation_continuation" as const,
           speechAppraisal: {
             expectedImpact: `${counterpartLabel}の次の出方を見極める`,
-            observedImpact: input.previous.lastSpeech
+            observedImpact: input.psyche.lastSpeech
               ? "前の言葉の後に起きた変化を見定める"
               : "",
-            nextApproach: input.previous.lastSpeech
+            nextApproach: input.psyche.lastSpeech
               ? "相手の反応と状況に合わせて話し方を選び直す"
               : "まず相手の反応を測る",
           },

@@ -59,7 +59,7 @@ describe("mock LLM natural-language handling", () => {
         skills: [{ name: "斬撃", description: "鋭く切り込む。" }],
         equipment: { weapon: null, armor: null },
       },
-      previous: {
+      psyche: {
         privateMemory: "",
         currentGoal: "",
         emotion: "平静",
@@ -141,7 +141,7 @@ describe("mock LLM natural-language handling", () => {
 
     const corrected = await provider.advanceCharacterAgent({
       ...agentInput,
-      previous: { ...agentInput.previous, selfReference: "俺" },
+      psyche: { ...agentInput.psyche, selfReference: "俺" },
     });
     assert.equal(corrected.state.selfReference, "わたくし");
     assert.match(corrected.speech, /わたくし/);
@@ -156,7 +156,7 @@ describe("mock LLM natural-language handling", () => {
           gender: null,
         },
       },
-      previous: { ...agentInput.previous, selfReference: "私" },
+      psyche: { ...agentInput.psyche, selfReference: "私" },
     });
     assert.equal(unknownSelfName.state.selfReference, null);
     assert.doesNotMatch(unknownSelfName.speech, /私|俺|僕|わたくし/);
