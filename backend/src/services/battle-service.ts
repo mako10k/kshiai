@@ -48,6 +48,7 @@ import {
   type EnvironmentProcessProposal,
   type EnvironmentProcessReceipt,
   type CharacterCognition,
+  type DialoguePipelineSettings,
   type BattlefieldInstance,
   type BattlefieldPreset,
   type CharacterSheet,
@@ -68,6 +69,8 @@ import {
   needsFocusChoice,
   selectDigestsForFocus,
   defaultBasicAttack,
+  defaultDialoguePipelineSettings,
+  DialoguePipelineSettingsSchema,
   buildCharacterSelfProfileAnchor,
   buildNarratorRenderingProfileAnchor,
   canonicalSelfReference,
@@ -131,6 +134,7 @@ import * as battleRepo from "../repositories/battles.js";
 import * as bfRepo from "../repositories/battlefields.js";
 import * as charRepo from "../repositories/characters.js";
 import * as styleRepo from "../repositories/narration-styles.js";
+import * as dialoguePipelineRepo from "../repositories/dialogue-pipeline-settings.js";
 import { getUserAccessProfile } from "../account-access.js";
 import { withBattleLease } from "./distributed-guard.js";
 import {
@@ -616,6 +620,11 @@ function initialAgentState(
       attitudeTowardCounterpart: "対峙している",
       confidence: "steady",
       relationshipTension: "",
+      speechAppraisal: {
+        expectedImpact: "",
+        observedImpact: "",
+        nextApproach: "",
+      },
     },
   };
 }
@@ -635,14 +644,19 @@ function groundCharacterAgentState(
     selfReference,
     conversationHistory: state.conversationHistory ?? [],
     lastActionResult: state.lastActionResult ?? "",
-    interior: state.interior ?? {
-      primaryEmotion: state.emotion || "平静",
-      concealedEmotion: null,
-      unspokenIntent: "",
-      currentConcern: state.currentGoal,
-      attitudeTowardCounterpart: "対峙している",
-      confidence: "steady",
-      relationshipTension: "",
+    interior: {
+      primaryEmotion: state.interior?.primaryEmotion ?? (state.emotion || "平静"),
+      concealedEmotion: state.interior?.concealedEmotion ?? null,
+      unspokenIntent: state.interior?.unspokenIntent ?? "",
+      currentConcern: state.interior?.currentConcern ?? state.currentGoal,
+      attitudeTowardCounterpart: state.interior?.attitudeTowardCounterpart ?? "対峙している",
+      confidence: state.interior?.confidence ?? "steady",
+      relationshipTension: state.interior?.relationshipTension ?? "",
+      speechAppraisal: state.interior?.speechAppraisal ?? {
+        expectedImpact: "",
+        observedImpact: "",
+        nextApproach: "",
+      },
     },
   };
 }
@@ -912,6 +926,7 @@ export function buildCharacterAgentConsumerInput(input: {
   counterpartSheet?: CharacterSheet;
   side: "a" | "b";
   previous: CharacterAgentState;
+  dialoguePipeline?: DialoguePipelineSettings;
   phase?: "prologue" | "turn" | "aftermath";
 }): Parameters<LlmProvider["advanceCharacterAgent"]>[0] | null {
   const frame = input.side === "a"
@@ -956,6 +971,9 @@ export function buildCharacterAgentConsumerInput(input: {
     ? social.selfReference
     : canonicalSelfReference(character);
   const phase = input.phase ?? "turn";
+  const dialoguePipeline = DialoguePipelineSettingsSchema.parse(
+    input.dialoguePipeline ?? defaultDialoguePipelineSettings(),
+  );
   const decision = phase === "aftermath"
     ? undefined
     : buildCharacterDecisionContext({
@@ -971,7 +989,10 @@ export function buildCharacterAgentConsumerInput(input: {
     previous: structuredClone({
       ...input.previous,
       selfReference: permittedSelfReference,
+      conversationHistory: (input.previous.conversationHistory ?? [])
+        .slice(-dialoguePipeline.conversationHistoryLimit),
     }),
+    dialoguePipeline: deepFreezeConsumerInput(structuredClone(dialoguePipeline)),
     perception: deepFreezeConsumerInput(structuredClone(frame)),
     ...(socialForCurrentPerception
       ? { social: deepFreezeConsumerInput(structuredClone(socialForCurrentPerception)) }
@@ -987,6 +1008,7 @@ function extendConversationHistory(input: {
   turn: number;
   utteranceEvents: TurnEvent[];
   speechEvidence: PerceptionEvidence[];
+  limit: number;
 }): CharacterAgentState["conversationHistory"] {
   const visible = new Map(
     input.speechEvidence.map((evidence) => [evidence.basisEventIds[0], evidence]),
@@ -1008,7 +1030,8 @@ function extendConversationHistory(input: {
       text: event.utterance.text.slice(0, 400),
     }];
   });
-  return [...(input.previous.conversationHistory ?? []), ...additions].slice(-12);
+  return [...(input.previous.conversationHistory ?? []), ...additions]
+    .slice(-input.limit);
 }
 
 export async function advanceCharacterAgents(input: {
@@ -1022,10 +1045,14 @@ export async function advanceCharacterAgents(input: {
   sensoryEvidence?: PerceptionEvidence[];
   quantizedMechanicalEvidence?: QuantizedMechanicalEvidence[];
   environmentProcessReceipt?: EnvironmentProcessReceipt;
+  dialoguePipeline?: DialoguePipelineSettings;
   phase?: "prologue" | "turn" | "aftermath";
   /** Attach reaction-only utterances to the existing terminal turn record. */
   replaceLastRecord?: boolean;
 }): Promise<{ state: BattleState; characterSpeeches: CharacterSpeechSource[] }> {
+  const dialoguePipeline = DialoguePipelineSettingsSchema.parse(
+    input.dialoguePipeline ?? defaultDialoguePipelineSettings(),
+  );
   const previousRecords = input.replaceLastRecord
     ? (input.after.turnRecords ?? []).slice(0, -1)
     : input.after.turnRecords ?? [];
@@ -1081,6 +1108,7 @@ export async function advanceCharacterAgents(input: {
     counterpartSheet: input.opp,
     side: "a",
     previous: previousA,
+    dialoguePipeline,
     phase: input.phase,
   });
   const inputB = buildCharacterAgentConsumerInput({
@@ -1089,6 +1117,7 @@ export async function advanceCharacterAgents(input: {
     counterpartSheet: input.mine,
     side: "b",
     previous: previousB,
+    dialoguePipeline,
     phase: input.phase,
   });
   if (!inputA && !inputB) {
@@ -1235,6 +1264,7 @@ export async function advanceCharacterAgents(input: {
       turn: input.after.turn,
       utteranceEvents,
       speechEvidence,
+      limit: dialoguePipeline.conversationHistoryLimit,
     }),
   };
   stateAfterUtterances.agentStateB = {
@@ -1245,6 +1275,7 @@ export async function advanceCharacterAgents(input: {
       turn: input.after.turn,
       utteranceEvents,
       speechEvidence,
+      limit: dialoguePipeline.conversationHistoryLimit,
     }),
   };
   if (stateAfterUtterances.semanticState) {
@@ -2817,6 +2848,7 @@ async function advanceTurnWithLease(input: {
   const mine = await charRepo.getSheet(meta.side_a_character_id);
   const opp = await charRepo.getSheet(meta.side_b_character_id);
   if (!mine || !opp) throw new Error("CHARACTER_MISSING");
+  const dialoguePipeline = await dialoguePipelineRepo.getDialoguePipelineSettings();
   // Older active battles did not snapshot restoration targets.
   state.sideA.baseParameters ??= { ...mine.parameters };
   state.sideB.baseParameters ??= { ...opp.parameters };
@@ -2829,6 +2861,7 @@ async function advanceTurnWithLease(input: {
       mine,
       opp,
       llm: input.llm,
+      dialoguePipeline,
       emit,
     });
   }
@@ -2841,6 +2874,7 @@ async function advanceTurnWithLease(input: {
       mine,
       opp,
       llm: input.llm,
+      dialoguePipeline,
       emit,
     });
   }
@@ -2986,6 +3020,7 @@ async function advanceTurnWithLease(input: {
     events,
     actions: resolved.actions,
     environmentProcessReceipt: semanticTurn.environmentProcessReceipt ?? undefined,
+    dialoguePipeline,
     sensoryEvidence: semanticTurn.sensoryEvidence,
     quantizedMechanicalEvidence: semanticTurn.quantizedMechanicalEvidence,
   });
@@ -3509,6 +3544,7 @@ async function runPrologueTurn(input: {
   mine: CharacterSheet;
   opp: CharacterSheet;
   llm: LlmProvider;
+  dialoguePipeline: DialoguePipelineSettings;
   emit?: (event: BattleAdvanceStreamEvent) => void;
 }): Promise<BattlePublic> {
   const emit = input.emit ?? (() => undefined);
@@ -3534,6 +3570,7 @@ async function runPrologueTurn(input: {
     opp: input.opp,
     events: openEvents,
     actions: [],
+    dialoguePipeline: input.dialoguePipeline,
     phase: "prologue",
   });
   state = prologueAgents.state;
@@ -3744,6 +3781,7 @@ async function runAftermathTurn(input: {
   mine: CharacterSheet;
   opp: CharacterSheet;
   llm: LlmProvider;
+  dialoguePipeline: DialoguePipelineSettings;
   emit?: (event: BattleAdvanceStreamEvent) => void;
 }): Promise<BattlePublic> {
   const emit = input.emit ?? (() => undefined);
@@ -3758,6 +3796,7 @@ async function runAftermathTurn(input: {
     opp: input.opp,
     events: terminalRecord?.events ?? [],
     actions: terminalRecord?.actions ?? [],
+    dialoguePipeline: input.dialoguePipeline,
     phase: "aftermath",
     replaceLastRecord: Boolean(terminalRecord),
   });

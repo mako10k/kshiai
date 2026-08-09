@@ -229,6 +229,11 @@ describe("battle engine", () => {
       prologuePending: false,
     });
     assert.equal(state.agentStateA?.selfReference, "わたくし");
+    assert.deepEqual(state.agentStateA?.interior?.speechAppraisal, {
+      expectedImpact: "",
+      observedImpact: "",
+      nextApproach: "",
+    });
     assert.deepEqual(state.turnRecords, []);
     assert.equal(state.semanticState?.revision, 0);
     assert.equal(state.semanticState?.entities["character.a"]?.label, "A");

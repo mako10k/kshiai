@@ -130,6 +130,13 @@ export function getDb(): SqliteDatabase.Database {
     );
     CREATE INDEX IF NOT EXISTS idx_narration_styles_owner
       ON narration_styles (owner_user_id);
+    CREATE TABLE IF NOT EXISTS dialogue_pipeline_settings (
+      id TEXT PRIMARY KEY CHECK (id = 'global'),
+      settings_json TEXT NOT NULL,
+      revision INTEGER NOT NULL,
+      updated_at TEXT NOT NULL,
+      updated_by_user_id TEXT REFERENCES users(id) ON DELETE SET NULL
+    );
     CREATE TABLE IF NOT EXISTS balance_events (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       kind TEXT NOT NULL,

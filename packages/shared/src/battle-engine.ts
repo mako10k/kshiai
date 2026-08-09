@@ -583,6 +583,11 @@ export function createBattleState(input: {
       attitudeTowardCounterpart: encounterContext.social.a.relationshipLabel,
       confidence: "steady",
       relationshipTension: "",
+      speechAppraisal: {
+        expectedImpact: "",
+        observedImpact: "",
+        nextApproach: "",
+      },
     },
   };
   const agentStateB: CharacterAgentState = {
@@ -603,6 +608,11 @@ export function createBattleState(input: {
       attitudeTowardCounterpart: encounterContext.social.b.relationshipLabel,
       confidence: "steady",
       relationshipTension: "",
+      speechAppraisal: {
+        expectedImpact: "",
+        observedImpact: "",
+        nextApproach: "",
+      },
     },
   };
   const narratorContinuity = updateBattleNarratorContinuity({

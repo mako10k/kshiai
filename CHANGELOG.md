@@ -5,6 +5,30 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 
 ## [Unreleased]
 
+## [0.13.3] - 2026-08-09
+
+### Added
+
+- Adds an administrator-only runtime settings page for the character dialogue
+  pipeline: an editable psychology guide, on/off switch, and a 4–24 entry
+  conversation-history window. Saves take effect on the next character-agent
+  invocation without a deployment.
+- Adds private character speech appraisal for expected effect, observed effect,
+  and the next character-specific approach. The model may still choose
+  repetition or silence when that is grounded in its own personality and
+  situation.
+
+### Operations
+
+- Persists the singleton dialogue setting with revision-based conflict handling
+  and an audit user/timestamp. Active character-agent trace inputs retain the
+  setting snapshot for later internal observation.
+- Adds the `dialogue_pipeline_settings` PostgreSQL migration. The SQLite runtime
+  creates the compatible table automatically.
+- Dialogue settings remain input-only context: canonical character facts,
+  server-owned action validation, damage, and battle results are not configurable
+  through this surface.
+
 ## [0.13.2] - 2026-08-09
 
 ### Added

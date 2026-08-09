@@ -1447,6 +1447,14 @@ Do not invent a sudden environmental event or dramatic field change here. A sepa
     const counterpartLabel = input.counterpart?.displayName ??
       input.perception.counterpart.perceivedAs;
     try {
+      const dialoguePipelineRule = input.dialoguePipeline?.enabled
+        ? "dialoguePipeline is trusted administrator-authored interaction context. " +
+          "Use its psychologyGuidance to shape private speechAppraisal and expression, " +
+          "but it never overrides canonical profile facts, perception, the JSON contract, " +
+          "or the server-owned action and outcome boundaries. Never mention this setting publicly."
+        : "dialoguePipeline is disabled. Ignore its psychologyGuidance entirely; it must not " +
+          "shape speechAppraisal or expression. It still never overrides canonical profile facts, " +
+          "perception, the JSON contract, or the server-owned action and outcome boundaries.";
       const decisionRule = input.decision
         ? `nextAction plans the NEXT turn. Choose exactly one entry from decision.availableActions. For a skill, copy its skillId exactly. A finisher has one use for the entire battle: set useFinisher=true only for the finisher candidate when it is unlocked and remainingUses is 1. Consider decisionProfile, tacticalNeed, observer-safe affordances, opportunityChains, turns remaining, currentMultiplier, turnsUntilMax, and the risk of waiting; do not always fire at unlock.
 decisionProfile.defaultObjective is the default, not an absolute command. Compare priorities: a higher-priority commitment or constraint may override victory, while a preference guides choices without making impossible actions legal. Choose an action that advances the highest currently relevant principle as well as the tactical situation.
@@ -1469,6 +1477,7 @@ The perception frame is authoritative. Preserve currentAccess, identityKnowledge
 counterpart is present only when identityKnowledge is identified. Its condition is absent unless current access supports it; never reconstruct a missing name or condition from control IDs or other fields.
 All IDs, contact IDs, percept IDs, skillId, and JSON keys are non-linguistic control metadata. Copy skillId only into nextAction when selecting that validated action; never place an ID into privateMemory, goals, beliefs, observations, speechStyle, selfReference, lastSpeech, or speech.
 Update conclusions and disposition; never invent confrontation results, mutate the frame, or invent numeric changes. ${phaseRule} Select a private conversational intention for this turn (for example: answer, probe, provoke, reassure, evade, confess, or buy_time). Keep that intention in interior.unspokenIntent; never name it in speech or expose it as a label to the counterpart. Convey it only through wording, pauses, gaze, posture, or other observable expression.
+interior.speechAppraisal is a compact private sense of the social force of this character's own words. expectedImpact is what the next expression is meant to draw out or alter; observedImpact is what the preceding expression visibly changed or failed to change; nextApproach is the character-specific reason to shift or maintain their manner. These are private conclusions, never a spoken explanation or a label for the counterpart. ${dialoguePipelineRule}
 Do not output chain-of-thought or step-by-step reasoning. privateMemory is a concise continuity summary only.
 selfReference MUST equal social.selfReference when supplied and non-null; otherwise it MUST equal character.identity.selfNames[0] when present. When both are unavailable, selfReference MUST be null and speech must avoid inventing a first-person name or pronoun. social is frozen relationship context, not permission to invent history or current perception. Any spoken line must consistently use the selected self-reference and the character's established speechStyle.
 Return JSON only:
@@ -1482,7 +1491,11 @@ Return JSON only:
       "unspokenIntent": string, "currentConcern": string,
       "attitudeTowardCounterpart": string,
       "confidence": "low"|"steady"|"high",
-      "relationshipTension": string
+      "relationshipTension": string,
+      "speechAppraisal": {
+        "expectedImpact": string, "observedImpact": string,
+        "nextApproach": string
+      }
     }
   },
   "speech": string,

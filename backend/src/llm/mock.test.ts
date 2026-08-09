@@ -91,6 +91,11 @@ describe("mock LLM natural-language handling", () => {
     assert.equal(result.state.selfReference, "わたくし");
     assert.match(result.speech ?? "", /わたくし/);
     assert.deepEqual(result.proposedAction, { kind: "basic_attack" });
+    assert.deepEqual(result.state.interior?.speechAppraisal, {
+      expectedImpact: "挑戦者の次の出方を見極める",
+      observedImpact: "",
+      nextApproach: "まず相手の反応を測る",
+    });
 
     const humane = await provider.advanceCharacterAgent({
       ...agentInput,

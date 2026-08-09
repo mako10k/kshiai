@@ -9,6 +9,7 @@ import type {
   EnvironmentProcessReceipt,
   CharacterImprovementPublic,
   CharacterPublic,
+  DialoguePipelineSettings,
   NarrationStylePublic,
   UserPublic,
 } from "@kshiai/shared";
@@ -185,6 +186,18 @@ export const api = {
     }>(
       `/api/balance/summary${limit != null ? `?limit=${limit}` : ""}`,
     ),
+  getDialoguePipelineSettings: () =>
+    request<{ settings: DialoguePipelineSettings }>("/api/admin/dialogue-pipeline"),
+  updateDialoguePipelineSettings: (input: {
+    expectedRevision: number;
+    enabled: boolean;
+    conversationHistoryLimit: number;
+    psychologyGuidance: string;
+  }) =>
+    request<{ settings: DialoguePipelineSettings }>("/api/admin/dialogue-pipeline", {
+      method: "PUT",
+      body: JSON.stringify(input),
+    }),
   listInternalBattleObservations: (limit?: number) =>
     request<{
       role: "admin" | "developer" | "test" | "e2e";
