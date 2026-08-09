@@ -5,6 +5,15 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 
 ## [Unreleased]
 
+## [0.13.7] - 2026-08-09
+
+### Changed
+
+- The deep-psyche stage now privately chooses whether each public expression
+  develops, reframes, intentionally reiterates, or visibly withholds its prior
+  approach. The speech/action stage executes that choice without changing
+  mechanics or applying a deterministic phrase ban.
+
 ## [0.13.6] - 2026-08-09
 
 ### Fixed
