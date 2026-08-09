@@ -234,6 +234,7 @@ describe("battle engine", () => {
       observedImpact: "",
       nextApproach: "",
     });
+    assert.equal(state.agentStateA?.interior?.speechMode, "weave");
     assert.deepEqual(state.turnRecords, []);
     assert.equal(state.semanticState?.revision, 0);
     assert.equal(state.semanticState?.entities["character.a"]?.label, "A");

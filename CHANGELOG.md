@@ -5,6 +5,25 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 
 ## [Unreleased]
 
+## [0.13.4] - 2026-08-09
+
+### Changed
+
+- Character-agent calls now receive the fresh committed action/result context
+  and the bounded conversation-continuity context as distinct input threads.
+  The character privately chooses whether each one-line expression is chiefly
+  an action reaction, conversational continuation, or a natural weave of both.
+- Keeps recurrence as a character-driven choice: the model may repeat or fall
+  silent when its disposition and current result warrant it, without a
+  deterministic phrase ban or a narrator rewrite.
+
+### Operations
+
+- No database migration or runtime setting is required. Existing stored agent
+  state remains compatible; the new private speech mode has a safe default.
+- Canonical mechanics, action validation, and public speech ownership remain
+  server-controlled and unchanged.
+
 ## [0.13.3] - 2026-08-09
 
 ### Added

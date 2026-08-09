@@ -304,6 +304,7 @@ describe("character-authored public speech", () => {
       side: "a",
       previous: {
         ...state.agentStateA!,
+        lastActionResult: "アオは足元を確かめ、クロとの距離を保った。",
         conversationHistory: Array.from({ length: 18 }, (_, index) => ({
           turn: index + 1,
           speaker: index % 2 === 0 ? "self" as const : "counterpart" as const,
@@ -322,8 +323,14 @@ describe("character-authored public speech", () => {
       phase: "turn",
     });
     assert.ok(consumerInput);
-    assert.equal(consumerInput.previous.conversationHistory?.length, 16);
-    assert.equal(consumerInput.previous.conversationHistory?.[0]?.turn, 3);
+    assert.equal(consumerInput.conversation.history.length, 16);
+    assert.equal(consumerInput.conversation.history[0]?.turn, 3);
+    assert.equal(consumerInput.previous.conversationHistory, undefined);
+    assert.equal(consumerInput.previous.lastActionResult, undefined);
+    assert.equal(
+      consumerInput.actionReaction.latestCommittedResult,
+      "アオは足元を確かめ、クロとの距離を保った。",
+    );
     assert.equal(consumerInput.dialoguePipeline?.conversationHistoryLimit, 16);
   });
 
@@ -575,6 +582,7 @@ describe("character-authored public speech", () => {
             attitudeTowardCounterpart: "試している",
             confidence: "steady",
             relationshipTension: "張りつめている",
+            speechMode: "weave",
             speechAppraisal: {
               expectedImpact: "相手の構えを動かす",
               observedImpact: "前の問いには返答がなかった",

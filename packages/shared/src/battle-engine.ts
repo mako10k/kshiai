@@ -583,6 +583,7 @@ export function createBattleState(input: {
       attitudeTowardCounterpart: encounterContext.social.a.relationshipLabel,
       confidence: "steady",
       relationshipTension: "",
+      speechMode: "weave",
       speechAppraisal: {
         expectedImpact: "",
         observedImpact: "",
@@ -608,6 +609,7 @@ export function createBattleState(input: {
       attitudeTowardCounterpart: encounterContext.social.b.relationshipLabel,
       confidence: "steady",
       relationshipTension: "",
+      speechMode: "weave",
       speechAppraisal: {
         expectedImpact: "",
         observedImpact: "",
@@ -797,6 +799,7 @@ export function ensureBattleCompatibilityState(state: BattleState): BattleState 
           attitudeTowardCounterpart: encounterContext.social.a.relationshipLabel,
           confidence: "steady" as const,
           relationshipTension: "",
+          speechMode: "weave" as const,
         },
       }
     : {
@@ -817,6 +820,7 @@ export function ensureBattleCompatibilityState(state: BattleState): BattleState 
           attitudeTowardCounterpart: encounterContext.social.a.relationshipLabel,
           confidence: "steady" as const,
           relationshipTension: "",
+          speechMode: "weave" as const,
         },
       };
   const agentStateB = withPerception.agentStateB
@@ -833,6 +837,7 @@ export function ensureBattleCompatibilityState(state: BattleState): BattleState 
           attitudeTowardCounterpart: encounterContext.social.b.relationshipLabel,
           confidence: "steady" as const,
           relationshipTension: "",
+          speechMode: "weave" as const,
         },
       }
     : {
@@ -853,6 +858,7 @@ export function ensureBattleCompatibilityState(state: BattleState): BattleState 
           attitudeTowardCounterpart: encounterContext.social.b.relationshipLabel,
           confidence: "steady" as const,
           relationshipTension: "",
+          speechMode: "weave" as const,
         },
       };
   const narratorContinuity = withPerception.narratorContinuity ?? (

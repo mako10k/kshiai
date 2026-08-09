@@ -9,6 +9,8 @@ import type {
   CharacterIdentity,
   CharacterSelfProfileAnchor,
   CharacterAgentState,
+  CharacterActionReactionContext,
+  CharacterConversationContext,
   DialoguePipelineSettings,
   CharacterActionIntent,
   CharacterPerceptionFrame,
@@ -448,7 +450,12 @@ export interface LlmProvider {
   advanceCharacterAgent(input: {
     phase: "prologue" | "turn" | "aftermath";
     character: CharacterSelfProfileAnchor;
+    /** Private continuity excluding the two expression-specific context threads. */
     previous: CharacterAgentState;
+    /** Fresh committed outcome thread, separate from conversational continuity. */
+    actionReaction: CharacterActionReactionContext;
+    /** Bounded relational-expression thread, separate from the fresh outcome. */
+    conversation: CharacterConversationContext;
     /** Runtime operator policy for character dialogue; never a mechanics rule. */
     dialoguePipeline?: DialoguePipelineSettings;
     perception: CharacterPerceptionFrame;
