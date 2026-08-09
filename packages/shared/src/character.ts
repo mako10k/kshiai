@@ -10,6 +10,7 @@ import {
 import { cacheBustMediaUrl } from "./media.js";
 import {
   CharacterImprovementMemoSchema,
+  OpponentBattleMemorySchema,
   type CharacterImprovementMemo,
 } from "./character-improvement.js";
 import { DecisionProfileSchema } from "./free-action.js";
@@ -249,6 +250,8 @@ export const CharacterSheetSchema = z.object({
    * Never included in public character DTOs.
    */
   improvementMemo: CharacterImprovementMemoSchema.optional(),
+  /** Owner-only per-opponent pre/post battle memory. */
+  opponentMemories: z.record(z.string(), OpponentBattleMemorySchema).optional(),
   /**
    * Last pre-adjustment profile snapshot for one-step restore.
    * Owner-only; not exposed on public combat DTOs beyond restore flags.
