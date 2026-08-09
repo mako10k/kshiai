@@ -9,19 +9,13 @@ import {
   summarizeRatingPopulation,
   toPublicCharacter,
   type RatingDisplayContext,
+  OpponentBattleMemorySchema,
+  type OpponentBattleMemory,
 } from "@kshiai/shared";
 import type { CharacterReference } from "../llm/types.js";
 import { normalizeCharacterName } from "../character-name-uniqueness.js";
 import { query } from "../db.js";
 import { newId } from "../id.js";
-import {
-  accountRealm,
-  canAccessAccountKind,
-  canUserAccessOwner,
-  getUserAccessProfile,
-  normalizeAccountKind,
-  type AccountRealm,
-} from "../account-access.js";
 
 function parseSheet(json: unknown): CharacterSheet {
   const value = typeof json === "string" ? JSON.parse(json) : json;
@@ -94,21 +88,8 @@ export async function listAllSheetsIncludingDeleted(): Promise<CharacterSheet[]>
 }
 
 /** Population totals used only to center visible ratings on 1500. */
-export async function getRatingDisplayContext(
-  realm: AccountRealm = "general",
-): Promise<RatingDisplayContext> {
-  const { rows } = await query<{
-    sheet_json: unknown;
-    account_kind: string | null;
-  }>(
-    `SELECT c.sheet_json, u.account_kind
-     FROM characters c
-     JOIN users u ON u.id = c.owner_user_id`,
-  );
-  const active = rows
-    .filter((row) => accountRealm(normalizeAccountKind(row.account_kind)) === realm)
-    .map((row) => parseSheet(row.sheet_json))
-    .filter(isActive);
+export async function getRatingDisplayContext(): Promise<RatingDisplayContext> {
+  const active = (await listAllSheetsIncludingDeleted()).filter(isActive);
   return {
     public: summarizeRatingPopulation(
       active.map((sheet) => ensureRecord(sheet).rating),
@@ -124,9 +105,7 @@ export async function toPublicCharacterForViewer(
   viewerUserId?: string | null,
   ratingDisplay?: RatingDisplayContext,
 ) {
-  const display = ratingDisplay ?? (await getRatingDisplayContext(
-    (await getUserAccessProfile(sheet.ownerUserId)).realm,
-  ));
+  const display = ratingDisplay ?? (await getRatingDisplayContext());
   return toPublicCharacter(sheet, viewerUserId, display);
 }
 
@@ -194,9 +173,7 @@ export async function listCharactersForUser(userId: string, q?: string) {
     if (rb !== ra) return rb - ra;
     return b.updatedAt.localeCompare(a.updatedAt);
   });
-  const ratingDisplay = await getRatingDisplayContext(
-    (await getUserAccessProfile(userId)).realm,
-  );
+  const ratingDisplay = await getRatingDisplayContext();
   // Owner always sees private overall stats
   return sheets.map((s) => toPublicCharacter(s, userId, ratingDisplay));
 }
@@ -215,45 +192,22 @@ export async function listPublicOpponents(excludeUserId: string, q?: string) {
     const needle = q.trim().toLowerCase();
     sheets = sheets.filter((s) => s.displayName.toLowerCase().includes(needle));
   }
-  const ratingDisplays = new Map<AccountRealm, RatingDisplayContext>();
-  for (const realm of ["general", "test"] as const) {
-    ratingDisplays.set(realm, await getRatingDisplayContext(realm));
-  }
-  const viewer = await getUserAccessProfile(excludeUserId);
+  const ratingDisplay = await getRatingDisplayContext();
   // Viewer is excludeUserId: own chars get overall; others public-only
-  return Promise.all(sheets.map(async (sheet) => {
-    const realm = viewer.isAdmin
-      ? (await getUserAccessProfile(sheet.ownerUserId)).realm
-      : viewer.realm;
-    return toPublicCharacter(
-      sheet,
-      excludeUserId,
-      ratingDisplays.get(realm),
-    );
-  }));
+  return sheets.map((s) =>
+    toPublicCharacter(s, excludeUserId, ratingDisplay),
+  );
 }
 
 /** Engine-only sheets available as opponents; never expose directly from routes. */
 export async function listPlayableOpponentSheets(
   excludeUserId: string,
 ): Promise<CharacterSheet[]> {
-  const viewer = await getUserAccessProfile(excludeUserId);
-  const { rows } = await query<{
-    sheet_json: unknown;
-    account_kind: string | null;
-  }>(
-    `SELECT c.sheet_json, u.account_kind
-     FROM characters c
-     JOIN users u ON u.id = c.owner_user_id
-     WHERE c.owner_user_id != $1
-     ORDER BY c.updated_at DESC
-     LIMIT 200`,
+  const { rows } = await query<{ sheet_json: unknown }>(
+    `SELECT sheet_json FROM characters WHERE owner_user_id != $1 ORDER BY updated_at DESC LIMIT 200`,
     [excludeUserId],
   );
   let sheets = rows
-    .filter((row) =>
-      canAccessAccountKind(viewer, normalizeAccountKind(row.account_kind))
-    )
     .map((r) => parseSheet(r.sheet_json))
     .filter(isPlayableOpponent);
   // Include own characters as sparring partners
@@ -269,13 +223,6 @@ export async function listPlayableOpponentSheets(
   ];
   const map = new Map(sheets.map((s) => [s.id, s]));
   return [...map.values()];
-}
-
-export async function canViewCharacter(
-  viewerUserId: string,
-  sheet: Pick<CharacterSheet, "ownerUserId">,
-): Promise<boolean> {
-  return canUserAccessOwner(viewerUserId, sheet.ownerUserId);
 }
 
 export async function getSheet(id: string): Promise<CharacterSheet | null> {
@@ -317,6 +264,39 @@ export async function saveSheet(sheet: CharacterSheet): Promise<void> {
       withRecord.updatedAt,
     ],
   );
+}
+
+/** Persist bounded owner-private notes for a specific opponent. */
+export async function saveOpponentBattleMemory(input: {
+  characterId: string;
+  opponentId: string;
+  preBattlePlan?: string;
+  postBattleReflection?: string;
+  battledAt?: string;
+}): Promise<OpponentBattleMemory | null> {
+  const sheet = await getSheetIncludingDeleted(input.characterId);
+  if (!sheet) return null;
+  const previous = sheet.opponentMemories?.[input.opponentId];
+  const next = OpponentBattleMemorySchema.parse({
+    ...(previous ?? {}),
+    ...(input.preBattlePlan !== undefined
+      ? { preBattlePlan: input.preBattlePlan.slice(0, 1200) }
+      : {}),
+    ...(input.postBattleReflection !== undefined
+      ? { postBattleReflection: input.postBattleReflection.slice(0, 1200) }
+      : {}),
+    battleCount: (previous?.battleCount ?? 0) + 1,
+    lastBattleAt: input.battledAt ?? new Date().toISOString(),
+  });
+  await saveSheet({
+    ...sheet,
+    opponentMemories: {
+      ...(sheet.opponentMemories ?? {}),
+      [input.opponentId]: next,
+    },
+    updatedAt: new Date().toISOString(),
+  });
+  return next;
 }
 
 /** Soft-delete: hide from lists without modifying any battle ratings. */
