@@ -5,6 +5,19 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 
 ## [Unreleased]
 
+## [0.13.6] - 2026-08-09
+
+### Fixed
+
+- Makes the public expression stage carry out the deep-psyche stage's already
+  committed speech approach. When a character judges that its prior words did
+  not land, it changes the character's public angle in that character's own
+  terms instead of treating that judgment as optional background.
+- Keeps repetition available only when the committed protective stance, fresh
+  result, and speech appraisal make it a meaningful character choice; this is
+  a private psychology-to-expression handoff, not a phrase ban or narration
+  rewrite.
+
 ## [0.13.5] - 2026-08-09
 
 ### Changed
