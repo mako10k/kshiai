@@ -195,5 +195,39 @@ describe("character-agent action proposal prompt", () => {
       nextApproach: "観察を脅しではなく誘いとして使う",
     });
     assert.equal(result.interior.speechMode, "weave");
+
+    privateProvider.chatJson = async (prompt, request) => {
+      system = prompt;
+      user = request;
+      return {
+        speech: "水音の向こうで、足運びだけが答えを残した。",
+      };
+    };
+    const expression = await provider.advanceCharacterAgent({
+      phase: "turn",
+      character: JSON.parse(user).character,
+      psyche: {
+        ...JSON.parse(user).previous,
+        ...result,
+        interior: result.interior,
+      },
+      actionReaction: {
+        schemaVersion: 1,
+        turn: 2,
+        latestCommittedResult: "足元の水が跳ね、相手は距離を保った。",
+      },
+      conversation: {
+        schemaVersion: 1,
+        history: [{ turn: 1, speaker: "counterpart", text: "答えろ。" }],
+      },
+      perception,
+      counterpart: { displayName: "ガク" },
+    });
+
+    assert.match(system, /expression stage, not a second private deliberation/);
+    assert.match(system, /speechAppraisal\.nextApproach is the committed character-authored approach/);
+    assert.match(system, /observedImpact says the prior approach failed, stalled, or was ignored/);
+    assert.match(system, /rather than merely restating the previous line/);
+    assert.equal(expression.speech, "水音の向こうで、足運びだけが答えを残した。");
   });
 });
