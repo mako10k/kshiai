@@ -1,6 +1,8 @@
 import { Link } from "react-router-dom";
+import { useAuth } from "../auth";
 
 export function MenuPage() {
+  const { user } = useAuth();
   return (
     <div className="panel">
       <h1>メインメニュー</h1>
@@ -28,6 +30,12 @@ export function MenuPage() {
           <strong>ナレーション</strong>
           <div className="muted">語り口のプリセット・自作</div>
         </Link>
+        {user?.isAdmin ? (
+          <Link to="/admin/dialogue-pipeline">
+            <strong>会話パイプライン</strong>
+            <div className="muted">キャラ心理と履歴コンテキストの運用設定</div>
+          </Link>
+        ) : null}
       </nav>
     </div>
   );

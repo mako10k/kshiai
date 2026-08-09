@@ -12,6 +12,8 @@ export type LoginRequest = z.infer<typeof LoginRequestSchema>;
 export const UserPublicSchema = z.object({
   id: z.string(),
   username: z.string(),
+  /** A navigation hint only; the server still enforces administrator access. */
+  isAdmin: z.boolean().optional(),
 });
 export type UserPublic = z.infer<typeof UserPublicSchema>;
 

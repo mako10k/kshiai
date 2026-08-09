@@ -569,6 +569,13 @@ export class MockLlmProvider implements LlmProvider {
             attitudeTowardCounterpart: input.social?.relationshipLabel ?? "対峙していた相手",
             confidence: "steady" as const,
             relationshipTension: "対決後の余韻",
+            speechAppraisal: {
+              expectedImpact: "結末を自分なりに受け止める",
+              observedImpact: input.previous.lastSpeech
+                ? "最後の言葉と結末を振り返っている"
+                : "",
+              nextApproach: "対決の余韻にふさわしい言葉を選ぶ",
+            },
           },
         },
         speech: aftermathSpeech,
@@ -672,6 +679,15 @@ export class MockLlmProvider implements LlmProvider {
           attitudeTowardCounterpart: input.social?.relationshipLabel ?? "対峙している",
           confidence: ownReserveCritical ? "low" as const : "steady" as const,
           relationshipTension: input.social?.relationshipLabel ?? "対決の緊張",
+          speechAppraisal: {
+            expectedImpact: `${counterpartLabel}の次の出方を見極める`,
+            observedImpact: input.previous.lastSpeech
+              ? "前の言葉の後に起きた変化を見定める"
+              : "",
+            nextApproach: input.previous.lastSpeech
+              ? "相手の反応と状況に合わせて話し方を選び直す"
+              : "まず相手の反応を測る",
+          },
         },
       },
       speech,

@@ -468,6 +468,23 @@ export const CharacterCognitionSchema = z.object({
 export type CharacterCognition = z.infer<typeof CharacterCognitionSchema>;
 
 /**
+ * A character's private sense of whether their words are reaching the other
+ * person. These are authored by the character agent as compact conclusions,
+ * never interpreted by deterministic battle code.
+ */
+export const CharacterSpeechAppraisalSchema = z.object({
+  /** What the character hopes their next expression will change or draw out. */
+  expectedImpact: z.string().max(240).default(""),
+  /** What their preceding expression appeared to change, or fail to change. */
+  observedImpact: z.string().max(240).default(""),
+  /** Why this character will shift or maintain their present way of speaking. */
+  nextApproach: z.string().max(240).default(""),
+});
+export type CharacterSpeechAppraisal = z.infer<
+  typeof CharacterSpeechAppraisalSchema
+>;
+
+/**
  * Compact private continuity for a character agent. It stores conclusions and
  * disposition, not a model's step-by-step reasoning.
  */
@@ -487,7 +504,7 @@ export const CharacterAgentStateSchema = z.object({
     turn: z.number().int().nonnegative(),
     speaker: z.enum(["self", "counterpart"]),
     text: z.string().max(400),
-  }).strict()).max(12).optional(),
+  }).strict()).max(24).optional(),
   interior: z.object({
     primaryEmotion: z.string().max(120).default("平静"),
     concealedEmotion: z.string().max(160).nullable().default(null),
@@ -496,6 +513,8 @@ export const CharacterAgentStateSchema = z.object({
     attitudeTowardCounterpart: z.string().max(160).default("対峙している"),
     confidence: z.enum(["low", "steady", "high"]).default("steady"),
     relationshipTension: z.string().max(160).default(""),
+    /** Private social feedback loop for the character's own voice. */
+    speechAppraisal: CharacterSpeechAppraisalSchema.optional(),
   }).optional(),
 });
 export type CharacterAgentState = z.infer<typeof CharacterAgentStateSchema>;

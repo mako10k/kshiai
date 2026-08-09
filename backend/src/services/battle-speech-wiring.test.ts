@@ -287,6 +287,46 @@ describe("character-authored public speech", () => {
     ));
   });
 
+  it("applies the administrator history window only to character context", () => {
+    const sideA = sheet("a", "アオ", ["私"]);
+    const sideB = sheet("b", "クロ", ["俺"]);
+    const state = createBattleState({
+      id: "dialogue-history-window",
+      sideA,
+      sideB,
+      turnLimit: 20,
+      prologuePending: false,
+    });
+    const consumerInput = buildCharacterAgentConsumerInput({
+      state,
+      sheet: sideA,
+      counterpartSheet: sideB,
+      side: "a",
+      previous: {
+        ...state.agentStateA!,
+        conversationHistory: Array.from({ length: 18 }, (_, index) => ({
+          turn: index + 1,
+          speaker: index % 2 === 0 ? "self" as const : "counterpart" as const,
+          text: `会話 ${index + 1}`,
+        })),
+      },
+      dialoguePipeline: {
+        schemaVersion: 1,
+        enabled: true,
+        conversationHistoryLimit: 16,
+        psychologyGuidance: "性格と相手への手応えを踏まえて話す。",
+        revision: 3,
+        updatedAt: "2026-08-09T00:00:00.000Z",
+        updatedBy: "operator",
+      },
+      phase: "turn",
+    });
+    assert.ok(consumerInput);
+    assert.equal(consumerInput.previous.conversationHistory?.length, 16);
+    assert.equal(consumerInput.previous.conversationHistory?.[0]?.turn, 3);
+    assert.equal(consumerInput.dialoguePipeline?.conversationHistoryLimit, 16);
+  });
+
   it("does not publish or remember an agent line that the world blocks", async () => {
     const sideA = sheet("a", "アオ", ["私"]);
     const sideB = sheet("b", "クロ", ["俺"]);
@@ -527,6 +567,20 @@ describe("character-authored public speech", () => {
         state: {
           ...previous,
           lastSpeech: "provider内の不一致な文",
+          interior: {
+            primaryEmotion: "静かな苛立ち",
+            concealedEmotion: null,
+            unspokenIntent: "反応を引き出す",
+            currentConcern: "前の言葉は届いたか",
+            attitudeTowardCounterpart: "試している",
+            confidence: "steady",
+            relationshipTension: "張りつめている",
+            speechAppraisal: {
+              expectedImpact: "相手の構えを動かす",
+              observedImpact: "前の問いには返答がなかった",
+              nextApproach: "別の角度から相手の反応を探る",
+            },
+          },
         },
         speech: "まだ決着ではない。",
         proposedAction: { kind: "wait" },
@@ -549,6 +603,11 @@ describe("character-authored public speech", () => {
 
     assert.equal(accepted.state.lastSpeech, "まだ決着ではない。");
     assert.equal(accepted.state.selfReference, "私");
+    assert.deepEqual(accepted.state.interior?.speechAppraisal, {
+      expectedImpact: "相手の構えを動かす",
+      observedImpact: "前の問いには返答がなかった",
+      nextApproach: "別の角度から相手の反応を探る",
+    });
     assert.equal(publicSpeeches[0]?.text, "まだ決着ではない。");
     assert.equal(accepted.state.lastSpeech, "まだ決着ではない。");
   });

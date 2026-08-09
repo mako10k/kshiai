@@ -9,6 +9,7 @@ import type {
   CharacterIdentity,
   CharacterSelfProfileAnchor,
   CharacterAgentState,
+  DialoguePipelineSettings,
   CharacterActionIntent,
   CharacterPerceptionFrame,
   InnerDigest,
@@ -448,6 +449,8 @@ export interface LlmProvider {
     phase: "prologue" | "turn" | "aftermath";
     character: CharacterSelfProfileAnchor;
     previous: CharacterAgentState;
+    /** Runtime operator policy for character dialogue; never a mechanics rule. */
+    dialoguePipeline?: DialoguePipelineSettings;
     perception: CharacterPerceptionFrame;
     /** Frozen asymmetric relationship terms for this battle. */
     social?: BattleSocialView;

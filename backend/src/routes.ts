@@ -11,6 +11,7 @@ import {
   RegisterRequestSchema,
   SaveBattlefieldFromBattleRequestSchema,
   UpsertNarrationStyleRequestSchema,
+  UpdateDialoguePipelineSettingsSchema,
   captureRevisionSnapshot,
   coalesceNonEmptyList,
   restoreRevisionSnapshot,
@@ -40,6 +41,7 @@ import * as draftRepo from "./repositories/character-drafts.js";
 import * as battleRepo from "./repositories/battles.js";
 import * as bfRepo from "./repositories/battlefields.js";
 import * as styleRepo from "./repositories/narration-styles.js";
+import * as dialoguePipelineRepo from "./repositories/dialogue-pipeline-settings.js";
 import {
   advanceTurn,
   generateMatchPolicies,
@@ -57,6 +59,7 @@ import {
 import { findCharacterNameConflict } from "./character-name-uniqueness.js";
 import { databaseKind, query } from "./db.js";
 import { config } from "./config.js";
+import { getUserAccessProfile } from "./account-access.js";
 import {
   abandonIdempotentRequest,
   beginIdempotentRequest,
@@ -65,6 +68,13 @@ import {
 } from "./services/distributed-guard.js";
 
 const llm = createLlmProvider();
+
+async function publicUserWithAccess(user: { id: string; username: string }) {
+  return {
+    ...user,
+    isAdmin: (await getUserAccessProfile(user.id)).isAdmin,
+  };
+}
 
 /** Versioned media (?v=) can be cached hard; bare paths revalidate often (iOS Safari). */
 function cacheControlForMedia(version: string | undefined): string {
@@ -142,7 +152,7 @@ export function buildRoutes() {
       const user = await registerUser(body.username, body.password);
       const token = await createSession(user.id);
       setSessionCookie(c, token);
-      return c.json({ user });
+      return c.json({ user: await publicUserWithAccess(user) });
     } catch (e) {
       if (e instanceof Error && e.message === "USERNAME_TAKEN") {
         return c.json({ error: "username_taken" }, 409);
@@ -160,7 +170,7 @@ export function buildRoutes() {
     if (!user) return c.json({ error: "invalid_credentials" }, 401);
     const token = await createSession(user.id);
     setSessionCookie(c, token);
-    return c.json({ user });
+    return c.json({ user: await publicUserWithAccess(user) });
   });
 
   app.post("/api/auth/logout", async (c) => {
@@ -173,7 +183,7 @@ export function buildRoutes() {
   app.get("/api/me", async (c) => {
     const user = await userFromRequest(c);
     if (!user) return c.json({ error: "unauthorized" }, 401);
-    return c.json({ user });
+    return c.json({ user: await publicUserWithAccess(user) });
   });
 
   const authed = new Hono();
@@ -188,6 +198,22 @@ export function buildRoutes() {
     return c.json({
       summary: await getBalanceSummary(Number.isFinite(limit) ? limit : 20),
     });
+  });
+
+  authed.get("/admin/dialogue-pipeline", requireAdmin, async (c) => {
+    c.header("Cache-Control", "private, no-store");
+    return c.json({ settings: await dialoguePipelineRepo.getDialoguePipelineSettings() });
+  });
+
+  authed.put("/admin/dialogue-pipeline", requireAdmin, async (c) => {
+    c.header("Cache-Control", "private, no-store");
+    const patch = UpdateDialoguePipelineSettingsSchema.parse(await c.req.json());
+    const settings = await dialoguePipelineRepo.updateDialoguePipelineSettings({
+      userId: c.get("user").id,
+      patch,
+    });
+    if (!settings) return c.json({ error: "settings_revision_conflict" }, 409);
+    return c.json({ settings });
   });
 
   authed.get(
