@@ -42,7 +42,6 @@ import type {
   OpportunityChain,
   FreeActionCanonicalRoot,
   FreeActionAdjudicationBatch,
-  EnvironmentProcessProposal,
 } from "@kshiai/shared";
 import type {
   PerceptionPromptInput,
@@ -89,6 +88,13 @@ export type CharacterActionDecisionContext = {
   tacticalNeed?: TacticalNeedFrame;
   affordances?: LatentAffordanceProjection[];
   opportunityChains?: OpportunityChain[];
+  /** Deterministic forecast of the cost/readability penalty for repeating. */
+  repetitionPenalty?: {
+    ifRepeatedCount: number;
+    staminaCost: number;
+    effectMultiplier: number;
+    opponentRead: boolean;
+  };
 };
 
 export type CharacterCounterpartKnowledge = {
@@ -402,8 +408,6 @@ export interface LlmProvider {
     };
     /** Request a non-mechanical location/object/environment change when plausible. */
     environmentBeatDue?: boolean;
-    /** Supervisor noise. It is not a committed event until this call accepts it. */
-    environmentProposal?: EnvironmentProcessProposal | null;
     dramaPhase?: "opening" | "rising" | "climax";
     /** Qualitative, committed mechanics only. Raw parameter values are forbidden. */
     mechanicalEvidence: PerceptionPromptInput["mechanicalEvidence"];
@@ -411,16 +415,12 @@ export interface LlmProvider {
     patch: TurnSemanticPatch | null;
     worldPatchStatus?: "valid" | "rejected";
     nextSituation?: Partial<Situation>;
-    environmentDecision?: {
-      status: "accepted" | "rejected";
-      reason: string;
-    } | null;
     sensoryEvidence?: PerceptionEvidence[];
     sensoryEvidenceStatus?: "valid" | "rejected" | "unavailable";
   }>;
   /**
-   * Supervisor: propose a battlefield-grounded non-character action with a
-   * persistent result. The canonical reconciler owns acceptance and effects.
+   * Supervisor: invent a field-driven happening that breaks a stagnant fight.
+   * Keep it coarse; engine applies light mechanical pressure separately.
    */
   proposeHappening(input: {
     scene: string;
@@ -434,7 +434,13 @@ export interface LlmProvider {
     title: string;
     summary: string;
     notes: string;
+    coefficients?: Record<string, number>;
     tags?: string[];
+    envHits?: Array<{
+      target: "both";
+      kind: "damage" | "heal" | "disrupt";
+      intensity: "minor" | "moderate";
+    }>;
   }>;
   /** Advance one character from its frozen observer-relative frame only. */
   advanceCharacterAgent(input: {
@@ -451,8 +457,7 @@ export interface LlmProvider {
   }): Promise<{
     state: CharacterAgentState;
     speech: string;
-    /** Bounded model-authored candidate. Only the battle service may accept it. */
-    proposedAction: unknown | null;
+    nextAction?: CharacterActionIntent;
   }>;
   /**
    * Fluid perspective only: pick turn focus from thin summary digests.
