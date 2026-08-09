@@ -469,7 +469,7 @@ export type CharacterCognition = z.infer<typeof CharacterCognitionSchema>;
 
 /**
  * A character's private sense of whether their words are reaching the other
- * person. These are authored by the character agent as compact conclusions,
+ * person. These are authored by the deep-psyche stage as compact conclusions,
  * never interpreted by deterministic battle code.
  */
 export const CharacterSpeechAppraisalSchema = z.object({
@@ -479,6 +479,16 @@ export const CharacterSpeechAppraisalSchema = z.object({
   observedImpact: z.string().max(240).default(""),
   /** Why this character will shift or maintain their present way of speaking. */
   nextApproach: z.string().max(240).default(""),
+  /**
+   * Private choice about how this expression relates to the last one. This is
+   * a character's appraisal, never a text-matching or mechanics rule.
+   */
+  continuityDecision: z.enum([
+    "advance",
+    "reframe",
+    "reiterate",
+    "withhold",
+  ]).default("advance"),
 });
 export type CharacterSpeechAppraisal = z.infer<
   typeof CharacterSpeechAppraisalSchema

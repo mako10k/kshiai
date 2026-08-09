@@ -591,6 +591,7 @@ export function createBattleState(input: {
         expectedImpact: "",
         observedImpact: "",
         nextApproach: "",
+        continuityDecision: "advance",
       },
     },
   };
@@ -620,6 +621,7 @@ export function createBattleState(input: {
         expectedImpact: "",
         observedImpact: "",
         nextApproach: "",
+        continuityDecision: "advance",
       },
     },
   };

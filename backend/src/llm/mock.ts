@@ -566,6 +566,7 @@ export class MockLlmProvider implements LlmProvider {
           nextApproach: input.previous.lastSpeech
             ? "相手の反応と状況に合わせて話し方を選び直す"
             : "まず相手の反応を測る",
+          continuityDecision: input.previous.lastSpeech ? "reframe" as const : "advance" as const,
         },
       },
     };
@@ -634,6 +635,7 @@ export class MockLlmProvider implements LlmProvider {
                 ? "最後の言葉と結末を振り返っている"
                 : "",
               nextApproach: "対決の余韻にふさわしい言葉を選ぶ",
+              continuityDecision: "withhold" as const,
             },
           },
         },
@@ -752,6 +754,7 @@ export class MockLlmProvider implements LlmProvider {
             nextApproach: input.psyche.lastSpeech
               ? "相手の反応と状況に合わせて話し方を選び直す"
               : "まず相手の反応を測る",
+            continuityDecision: input.psyche.lastSpeech ? "reframe" as const : "advance" as const,
           },
         },
       },

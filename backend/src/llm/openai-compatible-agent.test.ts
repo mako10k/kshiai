@@ -90,6 +90,7 @@ describe("character-agent action proposal prompt", () => {
               expectedImpact: "相手の足運びを変えさせる",
               observedImpact: "前の問いでは相手の構えは変わらなかった",
               nextApproach: "観察を脅しではなく誘いとして使う",
+              continuityDecision: "reframe",
             },
           },
       };
@@ -141,6 +142,7 @@ describe("character-agent action proposal prompt", () => {
             expectedImpact: "相手の返答を得る",
             observedImpact: "",
             nextApproach: "問いかける",
+            continuityDecision: "advance",
           },
         },
       },
@@ -193,6 +195,7 @@ describe("character-agent action proposal prompt", () => {
       expectedImpact: "相手の足運びを変えさせる",
       observedImpact: "前の問いでは相手の構えは変わらなかった",
       nextApproach: "観察を脅しではなく誘いとして使う",
+      continuityDecision: "reframe",
     });
     assert.equal(result.interior.speechMode, "weave");
 
@@ -225,9 +228,10 @@ describe("character-agent action proposal prompt", () => {
     });
 
     assert.match(system, /expression stage, not a second private deliberation/);
-    assert.match(system, /speechAppraisal\.nextApproach is the committed character-authored approach/);
+    assert.match(system, /speechAppraisal\.nextApproach and continuityDecision are the committed character-authored approach/);
     assert.match(system, /observedImpact says the prior approach failed, stalled, or was ignored/);
     assert.match(system, /rather than merely restating the previous line/);
+    assert.match(system, /continuityDecision=advance must develop the prior approach/);
     assert.equal(expression.speech, "水音の向こうで、足運びだけが答えを残した。");
   });
 });
