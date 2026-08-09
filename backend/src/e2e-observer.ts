@@ -10,10 +10,10 @@ import * as characterRepo from "./repositories/characters.js";
 import * as narrationStyleRepo from "./repositories/narration-styles.js";
 
 export const E2E_FIXTURE_IDS = {
-  observerCharacter: "chr_e2e_codex_observer",
-  opponentCharacter: "chr_e2e_codex_opponent",
-  battlefield: "bfp_e2e_codex_rainy_alley",
-  narrationStyle: "nst_e2e_codex_causal",
+  observerCharacter: "chr_e2e_dialogue_nagi",
+  opponentCharacter: "chr_e2e_dialogue_gaku",
+  battlefield: "bfp_e2e_dialogue_rainy_alley",
+  narrationStyle: "nst_e2e_dialogue_contrast",
 } as const;
 
 export const E2E_ACCOUNT_EMAILS = {
@@ -41,22 +41,30 @@ function characterFixture(input: {
       gender: "不明",
       age: "不明",
     },
-    tags: ["e2e", "codex-observer", input.role],
+    tags: ["e2e", "dialogue-quality", input.role],
     createdAt: input.now,
     updatedAt: input.now,
     deletedAt: null,
     appearance: {
       summary: observer
-        ? "藍色の外套と記録端末を携えた静かな観測者"
-        : "赤い上着と幅広の大剣を携えた実戦的な剣士",
+        ? "藍色の外套と記録端末を携えた、相手の言葉を逃さない観測者"
+        : "赤い上着と幅広の大剣を携えた、歯切れのよい実戦的な剣士",
       visualPrompt: observer
         ? "anime battle observer, indigo coat, handheld recorder, rainy neon alley"
         : "anime greatsword fighter, red jacket, rainy neon alley",
       imageUrl: null,
     },
     traits: observer
-      ? ["因果関係を見落とさない", "相手の変化を次の行動に結びつける"]
-      : ["正面から圧力をかける", "足場と間合いの変化を利用する"],
+      ? [
+          "因果関係を見落とさない",
+          "相手の言葉を一度受けてから、短い問いかけで返す",
+          "静かな皮肉と観測結果を交互に口にする",
+        ]
+      : [
+          "正面から圧力をかける",
+          "相手の問いには短い反論か挑発で返す",
+          "歯切れよく言い切り、無意味な沈黙に逃げない",
+        ],
     parameters: defaultParameters({
       hp: 90,
       maxHp: 90,
@@ -174,8 +182,8 @@ function characterFixture(input: {
     armor: null,
     combatFlags: { canFight: true, irreversibleIncapacitated: false },
     narrativeBlurb: observer
-      ? "戦闘中の動作、成立理由、後続への影響を確かめるためのCodex専用観測者。"
-      : "観測者と別アカウントで戦い、クロスアカウント裁定を継続検証する対照役。",
+      ? "動作の理由を読み、相手の言葉には柔らかな皮肉か質問で返す観測者。口調は落ち着いているが、ただ黙って記録するだけではない。"
+      : "観測者と別アカウントで戦う対照役。大剣のように言葉を振るい、相手の挑発や問いには短く強く反論する。",
     record: defaultRecord(),
     recordOverall: defaultRecord(),
   };
@@ -188,7 +196,7 @@ function battlefieldFixture(ownerUserId: string, now: string): BattlefieldPreset
     isSystem: false,
     displayName: "霧雨と赤いワゴンの路地",
     category: "urban",
-    tags: ["e2e", "codex-observer", "causal-coherence"],
+    tags: ["e2e", "dialogue-quality", "causal-coherence"],
     createdAt: now,
     updatedAt: now,
     appearance: {
@@ -209,16 +217,17 @@ function narrationStyleFixture(ownerUserId: string, now: string): NarrationStyle
     id: E2E_FIXTURE_IDS.narrationStyle,
     ownerUserId,
     isSystem: false,
-    displayName: "Codex因果観測ナレーター",
-    description: "動作、成立理由、具体的な後続影響を追跡するE2E用スタイル。",
+    displayName: "対照会話の因果ナレーター",
+    description: "対照的な声の応酬と、動作・成立理由・後続影響を追跡するE2E用スタイル。",
     instruction: [
       "各描写では、観測可能な動作と結果だけで終えず、与えられた因果情報の範囲で成立理由を明示する。",
       "結果は、体勢、距離、利用可能な行動、次の攻防の有利不利など、後続ターンへの具体的影響に結びつける。",
       "環境変化は、それ自体から妥当な作用だけを描き、根拠のないHP低下や能力変化を作らない。",
       "機械的数値や内部識別子は語らず、裏付けのない因果は断定しない。",
+      "実際に発せられた両者の台詞は、話者の違いが読める位置へそのまま配置する。",
     ].join(""),
     perspective: "external",
-    tags: ["e2e", "codex-observer", "causal"],
+    tags: ["e2e", "dialogue-quality", "causal"],
     createdAt: now,
     updatedAt: now,
   };
@@ -277,14 +286,14 @@ export async function ensurePersistentE2eFixtures(input: {
   const observerCharacter = characterFixture({
     id: E2E_FIXTURE_IDS.observerCharacter,
     ownerUserId: input.observerUserId,
-    displayName: "因果観測者コーデックス",
+    displayName: "観測士ナギ",
     role: "observer",
     now,
   });
   const opponentCharacter = characterFixture({
     id: E2E_FIXTURE_IDS.opponentCharacter,
     ownerUserId: input.opponentUserId,
-    displayName: "対照剣士アイアン",
+    displayName: "破城士ガク",
     role: "opponent",
     now,
   });

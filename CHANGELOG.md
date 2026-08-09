@@ -5,6 +5,17 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 
 ## [Unreleased]
 
+## [0.13.2] - 2026-08-09
+
+### Added
+
+- Adds a test-realm-only dialogue-quality observation to the persistent battle
+  E2E run. It records exact repetition, consecutive repeated lines, reaction
+  share, per-speaker lexical diversity, and structural opportunities to answer
+  a counterpart's earlier utterance without affecting battle behavior.
+- Replaces the causal-only E2E fixture with a fresh pair of deliberately
+  contrasting voices: an observant questioner and a terse, defiant swordsman.
+
 ## [0.13.1] - 2026-08-09
 
 ### Fixed

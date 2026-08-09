@@ -12,6 +12,7 @@ import {
   ensurePersistentE2eFixtures,
 } from "../e2e-observer.js";
 import { setAccountKind, type AccountKind } from "../account-access.js";
+import { assessDialogueQuality } from "./dialogue-quality.js";
 
 const OBSERVATION_PREFIX = "KSHIAI_E2E_OBSERVATION=";
 
@@ -589,6 +590,7 @@ async function main(): Promise<void> {
         advances,
         log: persistedBattle.log,
       },
+      dialogueQuality: assessDialogueQuality(persistedBattle.log),
     };
     assertSanitizedObservation(observation, targetRevision);
     await persistSanitizedObservation(observation);
