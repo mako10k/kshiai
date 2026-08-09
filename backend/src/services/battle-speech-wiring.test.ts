@@ -606,6 +606,7 @@ describe("character-authored public speech", () => {
               expectedImpact: "相手の構えを動かす",
               observedImpact: "前の問いには返答がなかった",
               nextApproach: "別の角度から相手の反応を探る",
+              continuityDecision: "reframe",
             },
           },
         },

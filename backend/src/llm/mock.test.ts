@@ -104,6 +104,7 @@ describe("mock LLM natural-language handling", () => {
       expectedImpact: "挑戦者の次の出方を見極める",
       observedImpact: "",
       nextApproach: "まず相手の反応を測る",
+      continuityDecision: "advance",
     });
 
     const humane = await provider.advanceCharacterAgent({

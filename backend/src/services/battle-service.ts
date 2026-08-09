@@ -628,6 +628,7 @@ function initialAgentState(
         expectedImpact: "",
         observedImpact: "",
         nextApproach: "",
+        continuityDecision: "advance",
       },
     },
   };
@@ -660,10 +661,11 @@ function groundCharacterAgentState(
       confidence: state.interior?.confidence ?? "steady",
       relationshipTension: state.interior?.relationshipTension ?? "",
       speechMode: state.interior?.speechMode ?? "weave",
-      speechAppraisal: state.interior?.speechAppraisal ?? {
-        expectedImpact: "",
-        observedImpact: "",
-        nextApproach: "",
+      speechAppraisal: {
+        expectedImpact: state.interior?.speechAppraisal?.expectedImpact ?? "",
+        observedImpact: state.interior?.speechAppraisal?.observedImpact ?? "",
+        nextApproach: state.interior?.speechAppraisal?.nextApproach ?? "",
+        continuityDecision: state.interior?.speechAppraisal?.continuityDecision ?? "advance",
       },
     },
   };

@@ -233,6 +233,7 @@ describe("battle engine", () => {
       expectedImpact: "",
       observedImpact: "",
       nextApproach: "",
+      continuityDecision: "advance",
     });
     assert.equal(state.agentStateA?.interior?.speechMode, "weave");
     assert.deepEqual(state.turnRecords, []);
