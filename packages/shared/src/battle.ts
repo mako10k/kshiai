@@ -479,7 +479,7 @@ export type CharacterSocialConsequence = z.infer<
 
 /** Why a character privately considers their next continuity choice warranted. */
 export const CharacterContinuityBasisSchema = z.object({
-  kind: z.enum(["fresh_leverage", "protective_hold", "withdrawal"])
+  kind: z.enum(["fresh_leverage", "social_reappraisal", "protective_hold", "withdrawal"])
     .default("fresh_leverage"),
   reason: z.string().max(240).default(""),
 });
@@ -694,7 +694,9 @@ export const CharacterDeepPsycheCompactAdvanceSchema = z.object({
     ? "protective_hold"
     : appraisal.continuityDecision === "withhold"
       ? "withdrawal"
-      : "fresh_leverage";
+      : appraisal.continuityDecision === "reframe"
+        ? "social_reappraisal"
+        : "fresh_leverage";
   if (appraisal.continuityBasis.kind !== expectedBasis) {
     context.addIssue({
       code: z.ZodIssueCode.custom,
