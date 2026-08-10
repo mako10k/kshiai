@@ -5,6 +5,27 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 
 ## [Unreleased]
 
+## [0.14.0] - 2026-08-10
+
+### Added
+
+- Projects each character's observer-relative action result into a compact,
+  role-labelled dialogue packet. The private deep-psyche stage receives that
+  packet and returns a bounded state delta plus an expression brief; the public
+  speech/action stage receives the brief separately from recent dialogue.
+- Adds a per-battle snapshot of administrator dialogue-context settings:
+  compact or legacy projection, recent-exchange length, and relevant-memory
+  limit. New battles use the saved snapshot, while active battles remain
+  reproducible with the configuration they began with.
+- Adds administrator controls for those settings and retains an internal,
+  observer-safe projection trace for diagnosis.
+
+### Operations
+
+- No database migration is required. Deterministic action validation, canonical
+  mechanics, private-memory boundaries, and public narration ownership are
+  unchanged. Rollback to v0.13.7 remains application-compatible.
+
 ## [0.13.7] - 2026-08-09
 
 ### Changed
