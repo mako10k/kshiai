@@ -12,6 +12,7 @@ import {
 import {
   acceptCharacterAgentResult,
   advanceCharacterAgents,
+  applyDialogueContextProjectionOverride,
   applyNarratorRecognitionResult,
   buildAftermathNarrativeBlock,
   buildBattleAdjudication,
@@ -63,6 +64,19 @@ function profile(selfNames: string[]) {
 }
 
 describe("character-authored public speech", () => {
+  it("uses a revision-local projection override without mutating admin settings", () => {
+    const settings = {
+      ...defaultDialoguePipelineSettings(),
+      contextProjectionMode: "legacy" as const,
+      revision: 5,
+    };
+    const compact = applyDialogueContextProjectionOverride(settings, "compact");
+    assert.equal(compact.contextProjectionMode, "compact");
+    assert.equal(compact.revision, 5);
+    assert.equal(settings.contextProjectionMode, "legacy");
+    assert.equal(applyDialogueContextProjectionOverride(settings, null), settings);
+  });
+
   it("persists narrator recognition only for subjects in the selected view", () => {
     const sideA = sheet("a", "アオ", ["私"]);
     const sideB = sheet("b", "クロ", ["俺"]);

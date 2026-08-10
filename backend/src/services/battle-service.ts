@@ -443,6 +443,13 @@ function normalizePolicies(
   return out;
 }
 
+export function applyDialogueContextProjectionOverride(
+  settings: DialoguePipelineSettings,
+  override: "legacy" | "compact" | null,
+): DialoguePipelineSettings {
+  return override ? { ...settings, contextProjectionMode: override } : settings;
+}
+
 export async function startBattle(input: {
   userId: string;
   myCharacterId: string;
@@ -490,7 +497,10 @@ export async function startBattle(input: {
     opp.id,
   );
   const dialoguePipelineSnapshot = snapshotDialoguePipelineSettings(
-    await dialoguePipelineRepo.getDialoguePipelineSettings(),
+    applyDialogueContextProjectionOverride(
+      await dialoguePipelineRepo.getDialoguePipelineSettings(),
+      config.dialogueContextProjectionOverride,
+    ),
   );
   let encounterProposal: BattleEncounterProposal | null = null;
   try {
