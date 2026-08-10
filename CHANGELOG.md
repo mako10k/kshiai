@@ -5,6 +5,20 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 
 ## [Unreleased]
 
+## [0.14.3] - 2026-08-10
+
+### Added
+
+- Adds a revision-local dialogue projection override to the protected staging
+  workflow, allowing compact dialogue observation without changing the shared
+  production administrator setting.
+
+### Operations
+
+- The override is validated as `compact` or `legacy`, is snapshotted only by
+  battles created through the zero-traffic staged revision, and is explicitly
+  removed when staging without an override.
+
 ## [0.14.2] - 2026-08-10
 
 ### Fixed
