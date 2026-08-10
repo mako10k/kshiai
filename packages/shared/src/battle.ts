@@ -468,6 +468,25 @@ export const CharacterCognitionSchema = z.object({
 });
 export type CharacterCognition = z.infer<typeof CharacterCognitionSchema>;
 
+/** A private social consequence borne by the speaker or their relationship. */
+export const CharacterSocialConsequenceSchema = z.object({
+  bearer: z.enum(["self", "relationship"]).default("self"),
+  meaning: z.string().max(240).default(""),
+});
+export type CharacterSocialConsequence = z.infer<
+  typeof CharacterSocialConsequenceSchema
+>;
+
+/** Why a character privately considers their next continuity choice warranted. */
+export const CharacterContinuityBasisSchema = z.object({
+  kind: z.enum(["fresh_leverage", "protective_hold", "withdrawal"])
+    .default("fresh_leverage"),
+  reason: z.string().max(240).default(""),
+});
+export type CharacterContinuityBasis = z.infer<
+  typeof CharacterContinuityBasisSchema
+>;
+
 /**
  * A character's private sense of whether their words are reaching the other
  * person. These are authored by the deep-psyche stage as compact conclusions,
@@ -490,6 +509,10 @@ export const CharacterSpeechAppraisalSchema = z.object({
   anticipatedSocialCost: z.string().max(240).default(""),
   /** What the prior approach cost in attention, credibility, or inner state. */
   observedSocialCost: z.string().max(240).default(""),
+  /** Structured prospective consequence; never a harm imposed on the counterpart. */
+  anticipatedSocialConsequence: CharacterSocialConsequenceSchema.optional(),
+  /** Structured observed consequence of the preceding expression. */
+  observedSocialConsequence: CharacterSocialConsequenceSchema.optional(),
   /** Why this character will shift or maintain their present way of speaking. */
   nextApproach: z.string().max(240).default(""),
   /**
@@ -503,6 +526,8 @@ export const CharacterSpeechAppraisalSchema = z.object({
     "deliberate_hold",
     "withdrawing",
   ]).default("opening"),
+  /** Private basis for this turn's continuity decision. */
+  continuityBasis: CharacterContinuityBasisSchema.optional(),
   /**
    * Private choice about how this expression relates to the last one. This is
    * a character's appraisal, never a text-matching or mechanics rule.
@@ -649,14 +674,35 @@ export const CharacterDeepPsycheCompactAdvanceSchema = z.object({
       speechAppraisal: CharacterSpeechAppraisalSchema.extend({
         anticipatedImpact: z.string().min(1).max(240),
         observedImpact: z.string().min(1).max(240),
-        anticipatedSocialCost: z.string().min(1).max(240),
-        observedSocialCost: z.string().min(1).max(240),
         nextApproach: z.string().min(1).max(240),
+        anticipatedSocialConsequence: CharacterSocialConsequenceSchema.extend({
+          meaning: z.string().min(1).max(240),
+        }),
+        observedSocialConsequence: CharacterSocialConsequenceSchema.extend({
+          meaning: z.string().min(1).max(240),
+        }),
+        continuityBasis: CharacterContinuityBasisSchema.extend({
+          reason: z.string().min(1).max(240),
+        }),
       }),
     }),
   }),
   expressionBrief: CharacterExpressionBriefSchema,
-}).strict();
+}).strict().superRefine((value, context) => {
+  const appraisal = value.delta.interior.speechAppraisal;
+  const expectedBasis = appraisal.continuityDecision === "reiterate"
+    ? "protective_hold"
+    : appraisal.continuityDecision === "withhold"
+      ? "withdrawal"
+      : "fresh_leverage";
+  if (appraisal.continuityBasis.kind !== expectedBasis) {
+    context.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["delta", "interior", "speechAppraisal", "continuityBasis", "kind"],
+      message: "Continuity basis must match the private continuity decision",
+    });
+  }
+});
 export type CharacterDeepPsycheCompactAdvance = z.infer<
   typeof CharacterDeepPsycheCompactAdvanceSchema
 >;

@@ -568,8 +568,24 @@ export class MockLlmProvider implements LlmProvider {
               observedSocialCost: input.previous.lastSpeech
                 ? "前の働きかけは相手の注意を大きく動かさなかった"
                 : "まだ言葉の手応えはない",
+              anticipatedSocialConsequence: {
+                bearer: "relationship",
+                meaning: "別の角度を急げば、相手との距離を測る余地が狭まる",
+              },
+              observedSocialConsequence: {
+                bearer: input.previous.lastSpeech ? "relationship" : "self",
+                meaning: input.previous.lastSpeech
+                  ? "前の働きかけだけでは相手との距離を変えられなかった"
+                  : "まだ自分の言葉が関係に与えた手応えはない",
+              },
               nextApproach: `${counterpartLabel}の出方を別の角度から確かめる`,
               continuityPosture: input.previous.lastSpeech ? "developing" : "opening",
+              continuityBasis: {
+                kind: "fresh_leverage",
+                reason: input.previous.lastSpeech
+                  ? "直前の反応から別の距離の測り方を選べる"
+                  : "初対面の出方を観察できる",
+              },
               continuityDecision: input.previous.lastSpeech ? "reframe" : "advance",
             },
           },

@@ -66,8 +66,20 @@ describe("dialogue context contracts", () => {
             observedImpact: "返答は得られなかった",
             anticipatedSocialCost: "待ち続ければ相手の注意を失う",
             observedSocialCost: "前の待機は返答を引き出せなかった",
+            anticipatedSocialConsequence: {
+              bearer: "relationship",
+              meaning: "待ち続ければ対話の距離が遠のく",
+            },
+            observedSocialConsequence: {
+              bearer: "self",
+              meaning: "前の待機で自分の問いへの確信が揺らいだ",
+            },
             nextApproach: "別の角度から距離を測る",
             continuityPosture: "fraying",
+            continuityBasis: {
+              kind: "fresh_leverage",
+              reason: "返答がないことで別の距離の測り方が見えた",
+            },
             continuityDecision: "reframe",
           },
         },
@@ -85,7 +97,24 @@ describe("dialogue context contracts", () => {
         interior: {
           speechAppraisal: {
             ...base.delta.interior.speechAppraisal,
-            observedSocialCost: "",
+            observedSocialConsequence: {
+              bearer: "self",
+              meaning: "",
+            },
+          },
+        },
+      },
+    }).success, false);
+    assert.equal(CharacterDeepPsycheCompactAdvanceSchema.safeParse({
+      ...base,
+      delta: {
+        interior: {
+          speechAppraisal: {
+            ...base.delta.interior.speechAppraisal,
+            continuityBasis: {
+              kind: "protective_hold",
+              reason: "今回は使わない理由",
+            },
           },
         },
       },

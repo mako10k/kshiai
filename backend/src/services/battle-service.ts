@@ -698,8 +698,11 @@ function groundCharacterAgentState(
         observedImpact: state.interior?.speechAppraisal?.observedImpact ?? "",
         anticipatedSocialCost: state.interior?.speechAppraisal?.anticipatedSocialCost ?? "",
         observedSocialCost: state.interior?.speechAppraisal?.observedSocialCost ?? "",
+        anticipatedSocialConsequence: state.interior?.speechAppraisal?.anticipatedSocialConsequence,
+        observedSocialConsequence: state.interior?.speechAppraisal?.observedSocialConsequence,
         nextApproach: state.interior?.speechAppraisal?.nextApproach ?? "",
         continuityPosture: state.interior?.speechAppraisal?.continuityPosture ?? "opening",
+        continuityBasis: state.interior?.speechAppraisal?.continuityBasis,
         continuityDecision: state.interior?.speechAppraisal?.continuityDecision ?? "advance",
       },
     },
@@ -1308,10 +1311,16 @@ export async function advanceCharacterAgents(input: {
               previous.interior?.speechAppraisal?.anticipatedSocialCost ?? "",
             observedSocialCost: delta.interior?.speechAppraisal?.observedSocialCost ??
               previous.interior?.speechAppraisal?.observedSocialCost ?? "",
+            anticipatedSocialConsequence: delta.interior?.speechAppraisal?.anticipatedSocialConsequence ??
+              previous.interior?.speechAppraisal?.anticipatedSocialConsequence,
+            observedSocialConsequence: delta.interior?.speechAppraisal?.observedSocialConsequence ??
+              previous.interior?.speechAppraisal?.observedSocialConsequence,
             nextApproach: delta.interior?.speechAppraisal?.nextApproach ??
               previous.interior?.speechAppraisal?.nextApproach ?? "",
             continuityPosture: delta.interior?.speechAppraisal?.continuityPosture ??
               previous.interior?.speechAppraisal?.continuityPosture ?? "opening",
+            continuityBasis: delta.interior?.speechAppraisal?.continuityBasis ??
+              previous.interior?.speechAppraisal?.continuityBasis,
             continuityDecision: delta.interior?.speechAppraisal?.continuityDecision ??
               previous.interior?.speechAppraisal?.continuityDecision ?? "advance",
           },
