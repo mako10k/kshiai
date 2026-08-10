@@ -5,6 +5,23 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 
 ## [Unreleased]
 
+## [0.14.6] - 2026-08-10
+
+### Fixed
+
+- Separates read-only, opponent-specific matchup notes from the current
+  battle's private inner memory, preventing a stored plan or reflection from
+  recursively becoming the next battle's dominant thought.
+- Makes compact aftermath write one standalone matchup reflection and gives
+  present observer-safe self, counterpart, and ambient results priority over a
+  familiar conversational demand when choosing a new social approach.
+
+### Operations
+
+- This remains a compact-context staging candidate only. It adds no phrase
+  matching, speech rejection, cancellation, mechanical penalty, action-timing
+  change, or additional LLM call.
+
 ## [0.14.5] - 2026-08-10
 
 ### Fixed
