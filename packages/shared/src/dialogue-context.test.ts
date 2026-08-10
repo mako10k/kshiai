@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import {
   BattleDialoguePipelineSnapshotSchema,
+  CharacterDeepPsycheCompactAdvanceSchema,
   CharacterDeepPsycheDeltaSchema,
   CharacterExpressionBriefSchema,
   DialogueThreadStateSchema,
@@ -54,6 +55,31 @@ describe("dialogue context contracts", () => {
     assert.equal(delta.interior?.speechMode, "weave");
     assert.equal(brief.continuityDecision, "reframe");
     assert.equal(brief.relationshipMove, "返答の余地を残して、距離を保つ");
+  });
+
+  it("requires compact psyche to carry its social feedback loop", () => {
+    const base = {
+      delta: {
+        interior: {
+          speechAppraisal: {
+            expectedImpact: "相手の返答を待つ",
+            observedImpact: "返答は得られなかった",
+            nextApproach: "別の角度から距離を測る",
+            continuityDecision: "reframe",
+          },
+        },
+      },
+      expressionBrief: {
+        sourceThread: "conversation_continuation",
+        continuityDecision: "reframe",
+        focus: ["counterpart_speech"],
+      },
+    };
+    assert.equal(CharacterDeepPsycheCompactAdvanceSchema.safeParse(base).success, true);
+    assert.equal(CharacterDeepPsycheCompactAdvanceSchema.safeParse({
+      ...base,
+      delta: { interior: {} },
+    }).success, false);
   });
 
   it("makes a stable battle-owned snapshot from operator settings", () => {

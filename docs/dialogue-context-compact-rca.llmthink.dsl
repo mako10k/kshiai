@@ -1,5 +1,5 @@
 domain KshiaiCompactDialogueRca:
-  description "Root-cause analysis of the v0.14.0 compact dialogue-context production observation"
+  description "Root-cause analysis of compact dialogue-context production observations"
 
 problem RCA1:
   |
@@ -64,7 +64,40 @@ decision FIX_DIRECTION based_on RC1, RC2, RC3:
     observed impact, and a semantic public aim; deterministic code validates
     only schema, category separation, ownership, and cardinality.
 
-decision VALIDATION_DIRECTION based_on FIX_DIRECTION:
+evidence OBS6:
+  |
+    Run 31354794388 on v0.14.1 battle btl_b407a7ef4fc08af9638e3cb5 finished
+    in 11 advances with 21 public lines, 17 unique lines, four duplicates, and
+    a three-line repeat run by Gaku. Nagi then counted each recurrence, so the
+    conversation converged on the repetition itself. Compact mode was disabled
+    immediately after this protected observation.
+
+evidence OBS7:
+  |
+    The v0.14.1 trace has correct A/B ownership, one conversation exchange
+    path, and utterances absent from fresh result packets. However every compact
+    deep-psyche delta updated only dialogueThread; interior.speechAppraisal
+    remained its initial blank values. ExpressionBrief therefore described a
+    semantic move but was not joined to the character's persisted assessment of
+    whether their preceding social move worked.
+
+decision RC4 based_on OBS6, OBS7:
+  |
+    Thread separation removed the original attribution and alias defects but
+    did not complete the social feedback loop. The remaining cause is an
+    under-specified compact deep-psyche output: an optional appraisal permits a
+    stable unresolved topic to repeatedly regenerate its familiar wording.
+
+decision FIX_DIRECTION_2 based_on RC4:
+  |
+    Compact deep psyche must emit a typed speechAppraisal on every turn, with
+    expected impact, observed interpersonal impact, and a next semantic
+    approach. Expression receives that private appraisal and realizes it only
+    through observable wording or behavior. The schema enforces its presence,
+    not any phrase or outcome; reiteration remains a character-authored option
+    only when its protective stance and present result make it meaningful.
+
+decision VALIDATION_DIRECTION based_on FIX_DIRECTION, FIX_DIRECTION_2:
   |
     Add deterministic projection and input-shape tests, then require six fresh
     isolated staging battles and three protected production observations. Quality
