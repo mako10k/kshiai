@@ -18,6 +18,7 @@ import {
   buildMinimalObserverPerception,
   buildCommittedUtteranceEvents,
   buildUtterancePerceptionEvidence,
+  buildTurnObservationPacket,
   buildSemanticObservationState,
   buildServerOnlyReserveCues,
   createBattleState,
@@ -44,6 +45,7 @@ import {
   type BattleTurnPipelineTrace,
   type ResolvedBattleAction,
   type CharacterAgentState,
+  type CharacterExpressionBrief,
   type CharacterActionProposalValidationReceipt,
   type EnvironmentProcessProposal,
   type EnvironmentProcessReceipt,
@@ -70,6 +72,7 @@ import {
   selectDigestsForFocus,
   defaultBasicAttack,
   defaultDialoguePipelineSettings,
+  snapshotDialoguePipelineSettings,
   DialoguePipelineSettingsSchema,
   buildCharacterSelfProfileAnchor,
   buildNarratorRenderingProfileAnchor,
@@ -484,6 +487,9 @@ export async function startBattle(input: {
     mine.id,
     opp.id,
   );
+  const dialoguePipelineSnapshot = snapshotDialoguePipelineSettings(
+    await dialoguePipelineRepo.getDialoguePipelineSettings(),
+  );
   let encounterProposal: BattleEncounterProposal | null = null;
   try {
     encounterProposal = await withTimeout(input.llm.prepareBattleEncounter({
@@ -550,6 +556,7 @@ export async function startBattle(input: {
 
   state = {
     ...state,
+    dialoguePipelineSnapshot,
     agentStateA: {
       ...(state.agentStateA as CharacterAgentState),
       privateMemory: mine.opponentMemories?.[opp.id]
@@ -612,6 +619,11 @@ function initialAgentState(
     lastSpeech: null,
     lastActionResult: "",
     conversationHistory: [],
+    dialogueThread: {
+      topic: "",
+      unresolvedMove: "",
+      anchoredExchange: null,
+    },
     interior: {
       primaryEmotion: "平静",
       concealedEmotion: null,
@@ -648,6 +660,11 @@ function groundCharacterAgentState(
     ...state,
     selfReference,
     conversationHistory: state.conversationHistory ?? [],
+    dialogueThread: state.dialogueThread ?? {
+      topic: "",
+      unresolvedMove: "",
+      anchoredExchange: null,
+    },
     lastActionResult: state.lastActionResult ?? "",
     interior: {
       primaryEmotion: state.interior?.primaryEmotion ?? (state.emotion || "平静"),
@@ -1105,6 +1122,29 @@ export async function advanceCharacterAgents(input: {
         },
       }
     : baseRecord;
+  const dialogueProjection = input.after.perceptionFrameA && input.after.perceptionFrameB
+    ? {
+        mode: "shadow" as const,
+        a: buildTurnObservationPacket({
+          frame: input.after.perceptionFrameA,
+          evidence: input.sensoryEvidence,
+        }),
+        b: buildTurnObservationPacket({
+          frame: input.after.perceptionFrameB,
+          evidence: input.sensoryEvidence,
+        }),
+      }
+    : undefined;
+  const recordWithDialogueProjection = dialogueProjection
+    ? {
+        ...recordWithoutUtterances,
+        pipelineTrace: {
+          schemaVersion: 1 as const,
+          ...(recordWithoutUtterances.pipelineTrace ?? {}),
+          dialogueProjection,
+        },
+      }
+    : recordWithoutUtterances;
   const previousA = groundCharacterAgentState(
     input.mine,
     input.after.agentStateA ?? initialAgentState(
@@ -1129,7 +1169,7 @@ export async function advanceCharacterAgents(input: {
     agentStateB: previousB,
     turnRecords: [
       ...previousRecords,
-      recordWithoutUtterances,
+      recordWithDialogueProjection,
     ].slice(-50),
   };
   const inputA = buildCharacterAgentConsumerInput({
@@ -1150,12 +1190,35 @@ export async function advanceCharacterAgents(input: {
     dialoguePipeline,
     phase: input.phase,
   });
+  const compactContext = dialoguePipeline.contextProjectionMode === "compact";
   if (!inputA && !inputB) {
     console.warn("[battle] character agents skipped: no observer-safe action available");
     return { state: refreshNarratorContinuity(stateWithRecord), characterSpeeches: [] };
   }
   const toPsycheInput = (consumerInput: typeof inputA) => {
     if (!consumerInput) return null;
+    if (compactContext) {
+      const packet = consumerInput === inputA
+        ? dialogueProjection?.a
+        : dialogueProjection?.b;
+      if (!packet) return null;
+      return {
+        contextMode: "compact" as const,
+        phase: consumerInput.phase,
+        character: consumerInput.character,
+        previous: consumerInput.psyche,
+        turnObservation: packet,
+        compactRecentExchange: consumerInput.conversation.history
+          .slice(-dialoguePipeline.recentExchangeLimit),
+        conversation: {
+          recentExchange: consumerInput.conversation.history
+            .slice(-dialoguePipeline.recentExchangeLimit),
+        },
+        dialoguePipeline: consumerInput.dialoguePipeline,
+        ...(consumerInput.social ? { social: consumerInput.social } : {}),
+        ...(consumerInput.counterpart ? { counterpart: consumerInput.counterpart } : {}),
+      } as unknown as Parameters<LlmProvider["advanceCharacterPsyche"]>[0];
+    }
     const { decision: _decision, psyche, ...shared } = consumerInput;
     return {
       ...shared,
@@ -1184,30 +1247,77 @@ export async function advanceCharacterAgents(input: {
     ];
   }
   const [psycheResultA, psycheResultB] = psycheResults;
+  const defaultExpressionBrief = (state: CharacterAgentState): CharacterExpressionBrief => ({
+    sourceThread: state.interior?.speechMode ?? "weave",
+    continuityDecision: state.interior?.speechAppraisal?.continuityDecision ?? "advance",
+    focus: ["self_result"],
+    observedImpact: state.interior?.speechAppraisal?.observedImpact ?? "",
+    publicAim: state.interior?.speechAppraisal?.nextApproach ?? "",
+  });
   const applyPsyche = (
     result: PromiseSettledResult<Awaited<ReturnType<LlmProvider["advanceCharacterPsyche"]>> | null>,
     previous: CharacterAgentState,
     sheet: CharacterSheet,
     selfReference?: string | null,
-  ) => result.status === "fulfilled" && result.value
-    ? groundCharacterAgentState(sheet, {
+  ) => {
+    if (result.status !== "fulfilled" || !result.value) {
+      return { state: previous, expressionBrief: defaultExpressionBrief(previous) };
+    }
+    if (result.value.delta && result.value.expressionBrief) {
+      const delta = result.value.delta;
+      const state = groundCharacterAgentState(sheet, {
+        ...previous,
+        ...delta,
+        interior: {
+          primaryEmotion: delta.interior?.primaryEmotion ?? previous.interior?.primaryEmotion ?? previous.emotion,
+          concealedEmotion: delta.interior?.concealedEmotion ?? previous.interior?.concealedEmotion ?? null,
+          coreNeed: delta.interior?.coreNeed ?? previous.interior?.coreNeed ?? "",
+          protectiveStance: delta.interior?.protectiveStance ?? previous.interior?.protectiveStance ?? "",
+          eventAppraisal: delta.interior?.eventAppraisal ?? previous.interior?.eventAppraisal ?? "",
+          unspokenIntent: delta.interior?.unspokenIntent ?? previous.interior?.unspokenIntent ?? "",
+          currentConcern: delta.interior?.currentConcern ?? previous.interior?.currentConcern ?? previous.currentGoal,
+          attitudeTowardCounterpart: delta.interior?.attitudeTowardCounterpart ??
+            previous.interior?.attitudeTowardCounterpart ?? "対峙している",
+          confidence: delta.interior?.confidence ?? previous.interior?.confidence ?? "steady",
+          relationshipTension: delta.interior?.relationshipTension ?? previous.interior?.relationshipTension ?? "",
+          speechMode: delta.interior?.speechMode ?? previous.interior?.speechMode ?? "weave",
+          speechAppraisal: {
+            expectedImpact: delta.interior?.speechAppraisal?.expectedImpact ??
+              previous.interior?.speechAppraisal?.expectedImpact ?? "",
+            observedImpact: delta.interior?.speechAppraisal?.observedImpact ??
+              previous.interior?.speechAppraisal?.observedImpact ?? "",
+            nextApproach: delta.interior?.speechAppraisal?.nextApproach ??
+              previous.interior?.speechAppraisal?.nextApproach ?? "",
+            continuityDecision: delta.interior?.speechAppraisal?.continuityDecision ??
+              previous.interior?.speechAppraisal?.continuityDecision ?? "advance",
+          },
+        },
+      }, selfReference);
+      return { state, expressionBrief: result.value.expressionBrief };
+    }
+    return {
+      state: groundCharacterAgentState(sheet, {
         ...previous,
         ...result.value,
         interior: result.value.interior,
-      }, selfReference)
-    : previous;
-  const psycheA = applyPsyche(
+      }, selfReference),
+      expressionBrief: defaultExpressionBrief(previous),
+    };
+  };
+  const psycheAResult = applyPsyche(
     psycheResultA,
     previousA,
     input.mine,
     input.after.encounterContext?.social.a.selfReference,
   );
-  const psycheB = applyPsyche(
+  const psycheBResult = applyPsyche(
     psycheResultB,
     previousB,
     input.opp,
     input.after.encounterContext?.social.b.selfReference,
   );
+  const psycheA = psycheAResult.state;
+  const psycheB = psycheBResult.state;
   if (psycheResultA.status === "rejected") {
     console.warn("[battle] side A deep psyche retained prior state", psycheResultA.reason);
   }
@@ -1217,13 +1327,47 @@ export async function advanceCharacterAgents(input: {
   const toSpeechActionInput = (
     consumerInput: typeof inputA,
     psyche: CharacterAgentState,
+    expressionBrief: CharacterExpressionBrief,
   ) => {
     if (!consumerInput) return null;
+    if (compactContext) {
+      const packet = consumerInput === inputA
+        ? dialogueProjection?.a
+        : dialogueProjection?.b;
+      if (!packet) return null;
+      return {
+        contextMode: "compact" as const,
+        phase: consumerInput.phase,
+        character: consumerInput.character,
+        psyche: {
+          emotion: psyche.emotion,
+          speechStyle: psyche.speechStyle,
+          interior: psyche.interior,
+          selfReference: psyche.selfReference,
+        },
+        turnObservation: packet,
+        compactRecentExchange: consumerInput.conversation.history
+          .slice(-dialoguePipeline.recentExchangeLimit),
+        anchoredExchange: psyche.dialogueThread?.anchoredExchange ?? null,
+        conversation: {
+          recentExchange: consumerInput.conversation.history
+            .slice(-dialoguePipeline.recentExchangeLimit),
+          anchoredExchange: psyche.dialogueThread?.anchoredExchange ?? null,
+        },
+        relevantMemory: dialoguePipeline.relevantMemoryLimit > 0
+          ? psyche.privateMemory.slice(-240) || null
+          : null,
+        expressionBrief,
+        ...(consumerInput.social ? { social: consumerInput.social } : {}),
+        ...(consumerInput.counterpart ? { counterpart: consumerInput.counterpart } : {}),
+        ...(consumerInput.decision ? { decision: consumerInput.decision } : {}),
+      } as unknown as Parameters<LlmProvider["advanceCharacterAgent"]>[0];
+    }
     const { dialoguePipeline: _dialoguePipeline, ...speechActionInput } = consumerInput;
     return { ...speechActionInput, psyche };
   };
-  const agentInputA = toSpeechActionInput(inputA, psycheA);
-  const agentInputB = toSpeechActionInput(inputB, psycheB);
+  const agentInputA = toSpeechActionInput(inputA, psycheA, psycheAResult.expressionBrief);
+  const agentInputB = toSpeechActionInput(inputB, psycheB, psycheBResult.expressionBrief);
   let agents;
   try {
     agents = await withTimeout(Promise.allSettled([
@@ -1453,19 +1597,19 @@ export async function advanceCharacterAgents(input: {
   }
   const record = existingRecord
     ? {
-        ...recordWithoutUtterances,
+        ...recordWithDialogueProjection,
         events: eventsWithUtterances,
         cognitionA: {
-          ...recordWithoutUtterances.cognitionA,
+          ...recordWithDialogueProjection.cognitionA,
           observedEvents: eventsWithUtterances,
         },
         cognitionB: {
-          ...recordWithoutUtterances.cognitionB,
+          ...recordWithDialogueProjection.cognitionB,
           observedEvents: eventsWithUtterances,
         },
         pipelineTrace: {
           schemaVersion: 1 as const,
-          ...(recordWithoutUtterances.pipelineTrace ?? {}),
+          ...(recordWithDialogueProjection.pipelineTrace ?? {}),
           deepPsyche: psycheTrace,
           characterAgents: characterAgentTrace,
         },
@@ -1479,7 +1623,7 @@ export async function advanceCharacterAgents(input: {
         }),
         pipelineTrace: {
           schemaVersion: 1 as const,
-          ...(recordWithoutUtterances.pipelineTrace ?? {}),
+          ...(recordWithDialogueProjection.pipelineTrace ?? {}),
           deepPsyche: psycheTrace,
           characterAgents: characterAgentTrace,
         },
@@ -2969,7 +3113,13 @@ async function advanceTurnWithLease(input: {
   const mine = await charRepo.getSheet(meta.side_a_character_id);
   const opp = await charRepo.getSheet(meta.side_b_character_id);
   if (!mine || !opp) throw new Error("CHARACTER_MISSING");
-  const dialoguePipeline = await dialoguePipelineRepo.getDialoguePipelineSettings();
+  const dialoguePipeline = state.dialoguePipelineSnapshot
+    ? {
+        ...state.dialoguePipelineSnapshot,
+        updatedAt: null,
+        updatedBy: null,
+      }
+    : await dialoguePipelineRepo.getDialoguePipelineSettings();
   // Older active battles did not snapshot restoration targets.
   state.sideA.baseParameters ??= { ...mine.parameters };
   state.sideB.baseParameters ??= { ...opp.parameters };

@@ -10,6 +10,7 @@ import {
   NarratorRecognitionUpdateSchema,
   TurnSemanticPatchSchema,
   CharacterDeepPsycheUpdateSchema,
+  CharacterDeepPsycheAdvanceSchema,
   CharacterIdentitySchema,
   DecisionProfileSchema,
   FreeActionAdjudicationBatchSchema,
@@ -1444,8 +1445,39 @@ Do not invent a sudden environmental event or dramatic field change here. A sepa
 
   async advanceCharacterPsyche(
     input: Parameters<LlmProvider["advanceCharacterPsyche"]>[0],
-  ) {
+  ): Promise<Awaited<ReturnType<LlmProvider["advanceCharacterPsyche"]>>> {
     if (!this.client) return this.fallback.advanceCharacterPsyche(input);
+    if (input.contextMode === "compact") {
+      try {
+        const data = await this.chatJson(
+          `You are the deep-psyche stage for one fictional character. Produce no dialogue, action proposal, scene prose, or chain-of-thought. The compact observer packet is the only fresh result. Return JSON only: {"delta": {optional persistent private fields and dialogueThread {topic, unresolvedMove, anchoredExchange|null}}, "expressionBrief": {"sourceThread":"action_reaction|conversation_continuation|weave", "continuityDecision":"advance|reframe|reiterate|withhold", "focus":[one or two of self_result,counterpart_result,ambient_change,counterpart_speech], "observedImpact":"", "publicAim":""}}. Repetition is a deliberate character choice only when present private stance warrants it; otherwise advance or reframe. Never invent mechanics, hidden identity, location, or numeric results.`,
+          JSON.stringify(input),
+          {
+            tier: "fast",
+            label: "advanceCharacterPsycheCompact",
+            timeoutMs: FAST_SHORT_TIMEOUT_MS,
+            temperature: 0.5,
+          },
+        );
+        const parsed = CharacterDeepPsycheAdvanceSchema.safeParse(data);
+        if (!parsed.success) throw new Error("Deep psyche returned invalid compact state");
+        return {
+          ...CharacterDeepPsycheUpdateSchema.parse({
+            privateMemory: input.previous.privateMemory,
+            currentGoal: input.previous.currentGoal,
+            emotion: input.previous.emotion,
+            beliefs: input.previous.beliefs,
+            observations: input.previous.observations,
+            speechStyle: input.previous.speechStyle,
+            interior: input.previous.interior,
+          }),
+          delta: parsed.data.delta,
+          expressionBrief: parsed.data.expressionBrief,
+        };
+      } catch (error) {
+        return this.fallbackOrThrow(error, () => this.fallback.advanceCharacterPsyche(input));
+      }
+    }
     try {
       const guidance = input.dialoguePipeline?.enabled
         ? "dialoguePipeline is trusted administrator-authored context. Use its psychologyGuidance only to shape this private appraisal; never mention it publicly."
@@ -1476,8 +1508,48 @@ Return JSON only with privateMemory, currentGoal, emotion, beliefs, observations
     }
   }
 
-  async advanceCharacterAgent(input: Parameters<LlmProvider["advanceCharacterAgent"]>[0]) {
+  async advanceCharacterAgent(
+    input: Parameters<LlmProvider["advanceCharacterAgent"]>[0],
+  ): Promise<Awaited<ReturnType<LlmProvider["advanceCharacterAgent"]>>> {
     if (!this.client) return this.fallback.advanceCharacterAgent(input);
+    if (input.contextMode === "compact") {
+      const counterpartLabel = input.counterpart?.displayName ?? "相手";
+      try {
+        const data = (await this.chatJson(
+          `You express one fictional character through one organic public Japanese line. Do not expose private intent, control IDs, or chain-of-thought. expressionBrief selects the relation between an observer-safe fresh-result thread and a compact conversation thread. Carry out continuityDecision: advance develops it, reframe changes its angle, reiterate intentionally holds the line only when character psychology supports it, withhold is a meaningful visible pause. Do not invent mechanics, hidden identity, current condition, or facts absent from the compact input. Return JSON only: {"speech": string, "nextAction"?: object}.`,
+          JSON.stringify(input),
+          {
+            tier: "fast",
+            label: "advanceCharacterAgentCompact",
+            timeoutMs: FAST_TIMEOUT_MS,
+            temperature: 0.65,
+          },
+        )) as Record<string, unknown>;
+        return {
+          state: {
+            privateMemory: "",
+            currentGoal: "",
+            emotion: input.psyche.emotion,
+            beliefs: [],
+            observations: [],
+            speechStyle: input.psyche.speechStyle,
+            selfReference: input.psyche.selfReference,
+            lastSpeech: null,
+            lastActionResult: "",
+            conversationHistory: [],
+            dialogueThread: { topic: "", unresolvedMove: "", anchoredExchange: null },
+            interior: input.psyche.interior,
+          },
+          speech: coerceCharacterSpeech(
+            data.speech === null || data.speech === undefined ? null : String(data.speech),
+            { foeName: counterpartLabel },
+          ),
+          proposedAction: input.decision ? boundGeneratedJson(data.nextAction) : null,
+        };
+      } catch (error) {
+        return this.fallbackOrThrow(error, () => this.fallback.advanceCharacterAgent(input));
+      }
+    }
     const counterpartLabel = input.counterpart?.displayName ??
       input.perception.counterpart.perceivedAs;
     try {

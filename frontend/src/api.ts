@@ -192,6 +192,9 @@ export const api = {
     expectedRevision: number;
     enabled: boolean;
     conversationHistoryLimit: number;
+    contextProjectionMode: "legacy" | "compact";
+    recentExchangeLimit: number;
+    relevantMemoryLimit: number;
     psychologyGuidance: string;
   }) =>
     request<{ settings: DialoguePipelineSettings }>("/api/admin/dialogue-pipeline", {

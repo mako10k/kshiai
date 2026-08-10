@@ -9,10 +9,15 @@ import type {
   CharacterIdentity,
   CharacterSelfProfileAnchor,
   CharacterAgentState,
+  CharacterDeepPsycheDelta,
+  CharacterExpressionBrief,
   CharacterDeepPsycheUpdate,
   CharacterActionReactionContext,
   CharacterConversationContext,
+  CharacterConversationEntry,
+  DialogueThreadState,
   DialoguePipelineSettings,
+  TurnObservationPacket,
   CharacterActionIntent,
   CharacterPerceptionFrame,
   InnerDigest,
@@ -100,6 +105,70 @@ export type CharacterActionDecisionContext = {
     effectMultiplier: number;
     opponentRead: boolean;
   };
+};
+
+export type CharacterDeepPsycheCompactInput = {
+  contextMode: "compact";
+  phase: "prologue" | "turn" | "aftermath";
+  character: CharacterSelfProfileAnchor;
+  previous: Pick<CharacterAgentState,
+    "privateMemory" | "currentGoal" | "emotion" | "beliefs" | "observations" |
+    "speechStyle" | "lastSpeech" | "interior" | "dialogueThread">;
+  turnObservation: TurnObservationPacket;
+  conversation: { recentExchange: CharacterConversationEntry[] };
+  dialoguePipeline?: DialoguePipelineSettings;
+  social?: BattleSocialView;
+  counterpart?: CharacterCounterpartKnowledge;
+};
+
+export type CharacterDeepPsycheAdvance =
+  CharacterDeepPsycheUpdate & {
+    delta?: CharacterDeepPsycheDelta;
+    expressionBrief?: CharacterExpressionBrief;
+  };
+
+export type CharacterExpressionCompactInput = {
+  contextMode: "compact";
+  phase: "prologue" | "turn" | "aftermath";
+  character: CharacterSelfProfileAnchor;
+  psyche: Pick<CharacterAgentState, "emotion" | "speechStyle" | "interior" | "selfReference">;
+  turnObservation: TurnObservationPacket;
+  conversation: {
+    recentExchange: CharacterConversationEntry[];
+    anchoredExchange: CharacterConversationEntry | null;
+  };
+  relevantMemory: string | null;
+  expressionBrief: CharacterExpressionBrief;
+  social?: BattleSocialView;
+  counterpart?: CharacterCounterpartKnowledge;
+  decision?: CharacterActionDecisionContext;
+};
+
+export type CharacterDeepPsycheInput = CharacterDeepPsycheCompactInput | {
+  contextMode?: "legacy";
+  phase: "prologue" | "turn" | "aftermath";
+  character: CharacterSelfProfileAnchor;
+  previous: CharacterAgentState;
+  actionReaction: CharacterActionReactionContext;
+  conversation: CharacterConversationContext;
+  dialoguePipeline?: DialoguePipelineSettings;
+  perception: CharacterPerceptionFrame;
+  social?: BattleSocialView;
+  counterpart?: CharacterCounterpartKnowledge;
+};
+
+export type CharacterExpressionInput = CharacterExpressionCompactInput | {
+  contextMode?: "legacy";
+  phase: "prologue" | "turn" | "aftermath";
+  character: CharacterSelfProfileAnchor;
+  psyche: CharacterAgentState;
+  actionReaction: CharacterActionReactionContext;
+  conversation: CharacterConversationContext;
+  dialoguePipeline?: DialoguePipelineSettings;
+  perception: CharacterPerceptionFrame;
+  social?: BattleSocialView;
+  counterpart?: CharacterCounterpartKnowledge;
+  decision?: CharacterActionDecisionContext;
 };
 
 export type CharacterCounterpartKnowledge = {
@@ -462,26 +531,28 @@ export interface LlmProvider {
     perception: CharacterPerceptionFrame;
     social?: BattleSocialView;
     counterpart?: CharacterCounterpartKnowledge;
-  }): Promise<CharacterDeepPsycheUpdate>;
+    contextMode?: "compact";
+    turnObservation?: TurnObservationPacket;
+    compactRecentExchange?: CharacterConversationEntry[];
+  }): Promise<CharacterDeepPsycheAdvance>;
   /** Advance one character from its frozen observer-relative frame only. */
   advanceCharacterAgent(input: {
     phase: "prologue" | "turn" | "aftermath";
     character: CharacterSelfProfileAnchor;
-    /** Committed deep-psyche continuity, read-only for this expression/action stage. */
     psyche: CharacterAgentState;
-    /** Fresh committed outcome thread, separate from conversational continuity. */
     actionReaction: CharacterActionReactionContext;
-    /** Bounded relational-expression thread, separate from the fresh outcome. */
     conversation: CharacterConversationContext;
-    /** Runtime operator policy for character dialogue; never a mechanics rule. */
     dialoguePipeline?: DialoguePipelineSettings;
     perception: CharacterPerceptionFrame;
-    /** Frozen asymmetric relationship terms for this battle. */
     social?: BattleSocialView;
-    /** Present only when this frame identifies the counterpart. */
     counterpart?: CharacterCounterpartKnowledge;
-    /** Omitted in aftermath, where the character plans no new combat turn. */
     decision?: CharacterActionDecisionContext;
+    contextMode?: "compact";
+    turnObservation?: TurnObservationPacket;
+    expressionBrief?: CharacterExpressionBrief;
+    compactRecentExchange?: CharacterConversationEntry[];
+    anchoredExchange?: CharacterConversationEntry | null;
+    relevantMemory?: string | null;
   }): Promise<{
     /** Echoed committed psyche for compatibility; the server ignores it. */
     state: CharacterAgentState;

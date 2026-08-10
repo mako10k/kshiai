@@ -575,6 +575,11 @@ export function createBattleState(input: {
     selfReference: encounterContext.social.a.selfReference,
     lastSpeech: null,
     conversationHistory: [],
+    dialogueThread: {
+      topic: "",
+      unresolvedMove: "",
+      anchoredExchange: null,
+    },
     interior: {
       primaryEmotion: "平静",
       concealedEmotion: null,
@@ -605,6 +610,11 @@ export function createBattleState(input: {
     selfReference: encounterContext.social.b.selfReference,
     lastSpeech: null,
     conversationHistory: [],
+    dialogueThread: {
+      topic: "",
+      unresolvedMove: "",
+      anchoredExchange: null,
+    },
     interior: {
       primaryEmotion: "平静",
       concealedEmotion: null,
@@ -781,7 +791,9 @@ export function ensureBattleCompatibilityState(state: BattleState): BattleState 
     withPerception.encounterContext &&
     withPerception.narratorContinuity &&
     withPerception.agentStateA?.interior &&
-    withPerception.agentStateB?.interior
+    withPerception.agentStateB?.interior &&
+    withPerception.agentStateA.dialogueThread &&
+    withPerception.agentStateB.dialogueThread
   ) {
     return withPerception;
   }
@@ -799,6 +811,11 @@ export function ensureBattleCompatibilityState(state: BattleState): BattleState 
         ...(withPerception.pipelineAuthorityVersion === 1
           ? {}
           : { lastSpeech: null }),
+        dialogueThread: withPerception.agentStateA.dialogueThread ?? {
+          topic: "",
+          unresolvedMove: "",
+          anchoredExchange: null,
+        },
         interior: withPerception.agentStateA.interior ?? {
           primaryEmotion: withPerception.agentStateA.emotion || "平静",
           concealedEmotion: null,
@@ -823,6 +840,11 @@ export function ensureBattleCompatibilityState(state: BattleState): BattleState 
         selfReference: encounterContext.social.a.selfReference,
         lastSpeech: null,
         conversationHistory: [],
+        dialogueThread: {
+          topic: "",
+          unresolvedMove: "",
+          anchoredExchange: null,
+        },
         interior: {
           primaryEmotion: "平静",
           concealedEmotion: null,
@@ -843,6 +865,11 @@ export function ensureBattleCompatibilityState(state: BattleState): BattleState 
         ...(withPerception.pipelineAuthorityVersion === 1
           ? {}
           : { lastSpeech: null }),
+        dialogueThread: withPerception.agentStateB.dialogueThread ?? {
+          topic: "",
+          unresolvedMove: "",
+          anchoredExchange: null,
+        },
         interior: withPerception.agentStateB.interior ?? {
           primaryEmotion: withPerception.agentStateB.emotion || "平静",
           concealedEmotion: null,
@@ -867,6 +894,11 @@ export function ensureBattleCompatibilityState(state: BattleState): BattleState 
         selfReference: encounterContext.social.b.selfReference,
         lastSpeech: null,
         conversationHistory: [],
+        dialogueThread: {
+          topic: "",
+          unresolvedMove: "",
+          anchoredExchange: null,
+        },
         interior: {
           primaryEmotion: "平静",
           concealedEmotion: null,

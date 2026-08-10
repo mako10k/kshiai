@@ -1206,6 +1206,16 @@ describe("battle engine", () => {
     assert.equal(migrated.worldState?.pairRelations[0]?.distance, "near");
     assert.equal(migrated.perceptionFrameA?.counterpart.identityKnowledge, "identified");
     assert.equal(migrated.perceptionFrameA?.counterpart.currentAccess, "clear");
+    assert.deepEqual(migrated.agentStateA?.dialogueThread, {
+      topic: "",
+      unresolvedMove: "",
+      anchoredExchange: null,
+    });
+    assert.deepEqual(migrated.agentStateB?.dialogueThread, {
+      topic: "",
+      unresolvedMove: "",
+      anchoredExchange: null,
+    });
     assert.equal(ensureBattleCompatibilityState(migrated), migrated);
   });
 
