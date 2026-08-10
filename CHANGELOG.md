@@ -5,6 +5,25 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 
 ## [Unreleased]
 
+## [0.14.4] - 2026-08-10
+
+### Fixed
+
+- Separates the preceding expression's observed interpersonal effect and cost
+  from the current expression's anticipated effect and cost in the private
+  dialogue appraisal.
+- Adds an LLM-authored continuity posture so a character can recognise a
+  fraying approach or deliberately hold a line for character-specific reasons,
+  without phrase bans, prose matching, retries, cancellation, or mechanic
+  changes.
+
+### Operations
+
+- Compact appraisal output now requires every temporal social-feedback field;
+  legacy persisted states retain bounded defaults. The staged compact override
+  remains revision-local and production stays on the legacy projection pending
+  fresh observation acceptance.
+
 ## [0.14.3] - 2026-08-10
 
 ### Added
