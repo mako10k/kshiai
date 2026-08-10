@@ -272,8 +272,20 @@ describe("character-agent action proposal prompt", () => {
               observedImpact: "脅しは聞かれたが、相手の行動は変わらなかった",
               anticipatedSocialCost: "直接脅せば相手の反発を強める",
               observedSocialCost: "脅しの威力は相手の注意を動かさなかった",
+              anticipatedSocialConsequence: {
+                bearer: "relationship",
+                meaning: "圧力を急げば相手との距離を固定してしまう",
+              },
+              observedSocialConsequence: {
+                bearer: "relationship",
+                meaning: "前の脅しは相手との距離を動かせなかった",
+              },
               nextApproach: "端末そのものではなく相手の構えを崩す",
               continuityPosture: "fraying",
+              continuityBasis: {
+                kind: "fresh_leverage",
+                reason: "相手の構えに現れた迷いを確かめられる",
+              },
               continuityDecision: "reframe",
             },
           },
@@ -370,15 +382,29 @@ describe("character-agent action proposal prompt", () => {
 
     assert.match(system, /anticipatedImpact is the intent of the already-spoken previous expression/);
     assert.match(system, /attention, credibility, or emotional force/);
-    assert.match(system, /anticipatedSocialCost forecast this current expression/);
+    assert.match(system, /anticipatedSocialConsequence/);
+    assert.match(system, /bearer self\|relationship/);
+    assert.match(system, /fresh_leverage/);
     assert.match(system, /Do not treat a familiar unresolved demand as development/);
     assert.deepEqual(psyche.delta?.interior?.speechAppraisal, {
       anticipatedImpact: "相手に端末から手を離させる",
       observedImpact: "脅しは聞かれたが、相手の行動は変わらなかった",
       anticipatedSocialCost: "直接脅せば相手の反発を強める",
       observedSocialCost: "脅しの威力は相手の注意を動かさなかった",
+      anticipatedSocialConsequence: {
+        bearer: "relationship",
+        meaning: "圧力を急げば相手との距離を固定してしまう",
+      },
+      observedSocialConsequence: {
+        bearer: "relationship",
+        meaning: "前の脅しは相手との距離を動かせなかった",
+      },
       nextApproach: "端末そのものではなく相手の構えを崩す",
       continuityPosture: "fraying",
+      continuityBasis: {
+        kind: "fresh_leverage",
+        reason: "相手の構えに現れた迷いを確かめられる",
+      },
       continuityDecision: "reframe",
     });
 
@@ -400,7 +426,7 @@ describe("character-agent action proposal prompt", () => {
       expressionBrief: psyche.expressionBrief!,
       relevantMemory: null,
     } as never);
-    assert.match(system, /speechAppraisal privately assesses the prior expression's effect and social cost/);
+    assert.match(system, /speechAppraisal privately assesses the prior expression's effect and its consequence/);
     assert.match(system, /through expression rather than naming it/);
     assert.equal(expression.speech, "端末ではない。お前の足が止まる場所を見ている。");
   });

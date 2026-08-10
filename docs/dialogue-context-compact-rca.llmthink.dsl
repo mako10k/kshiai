@@ -141,3 +141,39 @@ decision FIX_DIRECTION_3 based_on RC5:
     the bounded structured shape and persists it. It neither compares prose nor
     forces a topic shift, expression retry, cancellation, action rule, or extra
     model call.
+
+evidence OBS9:
+  |
+    Staged run 31357908454 on v0.14.4, battle btl_8038f5557af774f02f66cfb6,
+    used compact context only on kshiai-api-00072-kaf. All deep-psyche calls
+    fulfilled and all new temporal fields were present. Gaku nevertheless said
+    "位置を明かせ。" five times in succession; the battle had 16 unique public
+    lines out of 21. His anticipatedSocialCost described pressure or denial
+    imposed on Nagi, not a cost borne by Gaku or their relationship. At turns
+    3-5 observedSocialCost explicitly says the demand's efficacy is fading, but
+    continuityPosture remains developing and continuityDecision remains advance.
+    Expression faithfully realizes that contradictory private selection.
+
+decision RC6 based_on RC5, OBS9:
+  |
+    Temporal fields alone do not establish the referent of a social consequence
+    or the reason a character considers a continuation to be development. An
+    unrestricted cost string can be filled with an intended tactical effect on
+    the counterpart, and an unrestricted advance label can coexist with a
+    private acknowledgement of fading force. The remaining defect is therefore
+    untyped psychological ownership and an ungrounded continuity rationale,
+    not missing transmission, a provider failure, phrase duplication in input,
+    or an expression-stage override.
+
+decision FIX_DIRECTION_4 based_on RC6:
+  |
+    Keep semantic judgment with the deep psyche, but represent it as private
+    structured psychology: each observed or anticipated social consequence has
+    a bearer limited to self or relationship and a model-authored meaning; each
+    continuity decision declares a compatible private basis. Development and
+    reframing require a fresh relational leverage, reiteration requires a
+    protective hold, and withholding requires a withdrawal reason. The model
+    authors every meaning and may still choose a meaningful hold; deterministic
+    code validates only typed ownership and decision/basis compatibility. It
+    does not inspect wording, infer novelty, reject speech, alter action timing,
+    or impose a mechanical penalty.
