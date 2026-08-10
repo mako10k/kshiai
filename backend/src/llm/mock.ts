@@ -561,6 +561,12 @@ export class MockLlmProvider implements LlmProvider {
             speechMode: observation.selfResult.length > 0
               ? "action_reaction"
               : "conversation_continuation",
+            speechAppraisal: {
+              expectedImpact: input.previous.interior?.speechAppraisal?.expectedImpact ?? "",
+              observedImpact: event.slice(0, 240),
+              nextApproach: `${counterpartLabel}の出方を別の角度から確かめる`,
+              continuityDecision: input.previous.lastSpeech ? "reframe" : "advance",
+            },
           },
         },
         expressionBrief: {

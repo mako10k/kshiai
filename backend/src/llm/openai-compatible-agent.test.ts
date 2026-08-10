@@ -240,4 +240,148 @@ describe("character-agent action proposal prompt", () => {
     assert.match(system, /continuityDecision=advance must develop the prior approach/);
     assert.equal(expression.speech, "水音の向こうで、足運びだけが答えを残した。");
   });
+
+  it("requires compact psyche to carry a private appraisal into expression", async () => {
+    const provider = new OpenAiCompatibleProvider({
+      name: "xai",
+      apiKey: "test-only",
+      baseUrl: "https://example.invalid/v1",
+      modelEngine: "grok-4-fast-non-reasoning",
+      modelFast: "grok-4-fast-non-reasoning",
+    });
+    let system = "";
+    const privateProvider = provider as unknown as {
+      chatJson(system: string, user: string): Promise<unknown>;
+    };
+    privateProvider.chatJson = async (prompt) => {
+      system = prompt;
+      return {
+        delta: {
+          interior: {
+            speechAppraisal: {
+              expectedImpact: "相手に端末から手を離させる",
+              observedImpact: "脅しは聞かれたが、相手の行動は変わらなかった",
+              nextApproach: "端末そのものではなく相手の構えを崩す",
+              continuityDecision: "reframe",
+            },
+          },
+          dialogueThread: {
+            topic: "端末を巡る対立",
+            unresolvedMove: "相手は脅しを受け流している",
+            anchoredExchange: null,
+          },
+        },
+        expressionBrief: {
+          sourceThread: "weave",
+          continuityDecision: "reframe",
+          focus: ["self_result", "counterpart_speech"],
+          observedImpact: "脅しは相手の姿勢を変えなかった",
+          relationshipMove: "端末への執着を退き、構えの隙を探る",
+          publicAim: "相手の反応を別の角度から揺らす",
+        },
+      };
+    };
+
+    const compactInput = {
+      contextMode: "compact",
+      phase: "turn",
+      character: {
+        schemaVersion: 1,
+        displayName: "ガク",
+        identity: { realName: null, nicknames: [], selfNames: ["俺"], epithets: [], gender: null, age: null },
+        tags: [],
+        appearanceSummary: "大剣を持つ剣士",
+        traits: ["頑固"],
+        narrativeBlurb: "圧力で道を開く剣士。",
+        basicAction: { name: "斬る", description: "大剣を振るう。" },
+        skills: [],
+        equipment: { weapon: null, armor: null },
+      },
+      previous: {
+        privateMemory: "",
+        currentGoal: "相手の構えを崩す",
+        emotion: "苛立ち",
+        beliefs: [],
+        observations: [],
+        speechStyle: "短く言い切る",
+        selfReference: "俺",
+        lastSpeech: "端末を置け。",
+        lastActionResult: "斬撃は届かなかった。",
+        conversationHistory: [],
+        dialogueThread: { topic: "端末", unresolvedMove: "手放さない", anchoredExchange: null },
+        interior: {
+          primaryEmotion: "苛立ち",
+          concealedEmotion: null,
+          coreNeed: "主導権を渡さない",
+          protectiveStance: "圧力を保つ",
+          eventAppraisal: "届かなかった",
+          unspokenIntent: "構えを崩す",
+          currentConcern: "脅しが効いたか",
+          attitudeTowardCounterpart: "押し返している",
+          confidence: "steady",
+          relationshipTension: "張りつめている",
+          speechMode: "weave",
+          speechAppraisal: {
+            expectedImpact: "端末を置かせる",
+            observedImpact: "変化がない",
+            nextApproach: "構えを揺らす",
+            continuityDecision: "advance",
+          },
+        },
+      },
+      turnObservation: {
+        schemaVersion: 1,
+        turn: 2,
+        observerSide: "b",
+        selfResult: [{ phenomenon: "斬撃は届かなかった", certainty: "certain", sourceEventIds: ["evt.1"] }],
+        counterpartResult: [],
+        ambientChange: [],
+      },
+      conversation: { recentExchange: [{ turn: 1, speaker: "self", text: "端末を置け。" }] },
+      dialoguePipeline: {
+        schemaVersion: 1,
+        enabled: true,
+        conversationHistoryLimit: 12,
+        contextProjectionMode: "compact",
+        recentExchangeLimit: 4,
+        relevantMemoryLimit: 1,
+        psychologyGuidance: "",
+        revision: 1,
+        updatedAt: "2026-08-10T00:00:00.000Z",
+        updatedBy: null,
+      },
+    };
+    const psyche = await provider.advanceCharacterPsyche(compactInput as never);
+
+    assert.match(system, /delta\.interior\.speechAppraisal is required/);
+    assert.match(system, /attention, credibility, or emotional force/);
+    assert.deepEqual(psyche.delta?.interior?.speechAppraisal, {
+      expectedImpact: "相手に端末から手を離させる",
+      observedImpact: "脅しは聞かれたが、相手の行動は変わらなかった",
+      nextApproach: "端末そのものではなく相手の構えを崩す",
+      continuityDecision: "reframe",
+    });
+
+    privateProvider.chatJson = async (prompt) => {
+      system = prompt;
+      return { speech: "端末ではない。お前の足が止まる場所を見ている。" };
+    };
+    const expression = await provider.advanceCharacterAgent({
+      ...compactInput,
+      psyche: {
+        emotion: compactInput.previous.emotion,
+        speechStyle: compactInput.previous.speechStyle,
+        interior: {
+          ...compactInput.previous.interior,
+          ...psyche.delta?.interior,
+        },
+        selfReference: "俺",
+      },
+      expressionBrief: psyche.expressionBrief!,
+      relevantMemory: null,
+    } as never);
+    assert.match(system, /psyche\.interior\.speechAppraisal is the character's private evaluation/);
+    assert.match(system, /through expression rather than naming it/);
+    assert.equal(expression.speech, "端末ではない。お前の足が止まる場所を見ている。");
+  });
 });

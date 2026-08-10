@@ -11,6 +11,7 @@ import {
   TurnSemanticPatchSchema,
   CharacterDeepPsycheUpdateSchema,
   CharacterDeepPsycheAdvanceSchema,
+  CharacterDeepPsycheCompactAdvanceSchema,
   CharacterIdentitySchema,
   DecisionProfileSchema,
   FreeActionAdjudicationBatchSchema,
@@ -1450,7 +1451,9 @@ Do not invent a sudden environmental event or dramatic field change here. A sepa
     if (input.contextMode === "compact") {
       try {
         const data = await this.chatJson(
-          `You are the deep-psyche stage for one fictional character. Produce no dialogue, action proposal, scene prose, or chain-of-thought. turnObservation is the only fresh action/result thread; conversation is the only utterance-continuity thread. Treat dialoguePipeline.psychologyGuidance as trusted administrator-authored guidance for this private appraisal only. Compare the prior expression's expected impact with its observed impact and the present result. When it had no present, character-specific reason to hold, normally choose advance or reframe; reiterate is available only when current protectiveStance and the present result make repetition itself meaningful. Return JSON only: {"delta": {optional persistent private fields and dialogueThread {topic, unresolvedMove, anchoredExchange|null}}, "expressionBrief": {"sourceThread":"action_reaction|conversation_continuation|weave", "continuityDecision":"advance|reframe|reiterate|withhold", "focus":[one or two of self_result,counterpart_result,ambient_change,counterpart_speech], "observedImpact":"", "relationshipMove":"", "publicAim":""}}. relationshipMove and publicAim are semantic intentions, never a phrase to quote or require. Never invent mechanics, hidden identity, location, or numeric results.`,
+          `You are the deep-psyche stage for one fictional character. Produce no dialogue, action proposal, scene prose, or chain-of-thought. turnObservation is the only fresh action/result thread; conversation is the only utterance-continuity thread. Treat dialoguePipeline.psychologyGuidance as trusted administrator-authored guidance for this private appraisal only.
+The character privately evaluates whether their preceding social move had an effect. delta.interior.speechAppraisal is required: expectedImpact is what their previous expression was meant to change or establish, observedImpact is its observer-safe interpersonal result, and nextApproach is the distinct semantic relationship move they now want to make. A character normally wants their words to retain attention, credibility, or emotional force, so an unchanged, ignored, or already-resolved approach normally leads to advance or reframe. reiterate is available only when current protectiveStance and the present result make holding that same line an active, meaningful choice. The conversation may establish whether prior wording was heard; do not turn it into a fresh mechanical result.
+Return JSON only: {"delta": {"interior":{"speechAppraisal":{"expectedImpact":"","observedImpact":"","nextApproach":"","continuityDecision":"advance|reframe|reiterate|withhold"}}, optional persistent private fields and dialogueThread {topic, unresolvedMove, anchoredExchange|null}}, "expressionBrief": {"sourceThread":"action_reaction|conversation_continuation|weave", "continuityDecision":"advance|reframe|reiterate|withhold", "focus":[one or two of self_result,counterpart_result,ambient_change,counterpart_speech], "observedImpact":"", "relationshipMove":"", "publicAim":""}}. Compare the prior expected impact, its observed impact, and the present result before selecting the brief. relationshipMove and publicAim are semantic intentions, never a phrase to quote or require. Never invent mechanics, hidden identity, location, or numeric results.`,
           JSON.stringify(input),
           {
             tier: "fast",
@@ -1459,7 +1462,7 @@ Do not invent a sudden environmental event or dramatic field change here. A sepa
             temperature: 0.5,
           },
         );
-        const parsed = CharacterDeepPsycheAdvanceSchema.safeParse(data);
+        const parsed = CharacterDeepPsycheCompactAdvanceSchema.safeParse(data);
         if (!parsed.success) throw new Error("Deep psyche returned invalid compact state");
         return {
           ...CharacterDeepPsycheUpdateSchema.parse({
@@ -1516,7 +1519,7 @@ Return JSON only with privateMemory, currentGoal, emotion, beliefs, observations
       const counterpartLabel = input.counterpart?.displayName ?? "相手";
       try {
         const data = (await this.chatJson(
-          `You express one fictional character through one organic public Japanese line. Do not expose private intent, control IDs, or chain-of-thought. expressionBrief selects the relation between an observer-safe fresh-result thread and one compact conversation thread. Carry out its semantic relationshipMove and publicAim in the present situation; neither field is wording to quote. advance develops the relation, reframe changes its angle, reiterate intentionally holds a character-grounded line, and withhold is a meaningful visible pause. Do not substitute a prior utterance for the selected semantic move merely because it is familiar. Do not invent mechanics, hidden identity, current condition, or facts absent from the compact input. Return JSON only: {"speech": string, "nextAction"?: object}.`,
+          `You express one fictional character through one organic public Japanese line. Do not expose private intent, control IDs, or chain-of-thought. expressionBrief selects the relation between an observer-safe fresh-result thread and one compact conversation thread. psyche.interior.speechAppraisal is the character's private evaluation of what their earlier social move was meant to do, what it actually did, and the next approach they have chosen. Carry out that evaluation through expression rather than naming it. Carry out expressionBrief's semantic relationshipMove and publicAim in the present situation; neither field is wording to quote. advance develops the relation, reframe changes its angle, reiterate intentionally holds a character-grounded line, and withhold is a meaningful visible pause. Do not substitute a prior utterance for the selected semantic move merely because it is familiar. Do not invent mechanics, hidden identity, current condition, or facts absent from the compact input. Return JSON only: {"speech": string, "nextAction"?: object}.`,
           JSON.stringify(input),
           {
             tier: "fast",

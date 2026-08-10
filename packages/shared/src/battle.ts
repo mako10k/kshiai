@@ -615,6 +615,23 @@ export const CharacterDeepPsycheAdvanceSchema = z.object({
 }).strict();
 export type CharacterDeepPsycheAdvance = z.infer<typeof CharacterDeepPsycheAdvanceSchema>;
 
+/**
+ * Compact projection must retain the character's own social feedback loop.
+ * The server validates its structured presence; its semantic content remains
+ * model-authored and is never used as a deterministic phrase rule.
+ */
+export const CharacterDeepPsycheCompactAdvanceSchema = z.object({
+  delta: CharacterDeepPsycheDeltaSchema.extend({
+    interior: CharacterDeepPsycheSchema.partial().extend({
+      speechAppraisal: CharacterSpeechAppraisalSchema,
+    }),
+  }),
+  expressionBrief: CharacterExpressionBriefSchema,
+}).strict();
+export type CharacterDeepPsycheCompactAdvance = z.infer<
+  typeof CharacterDeepPsycheCompactAdvanceSchema
+>;
+
 /** One observer-safe fresh-result item, derived from committed perception only. */
 export const TurnObservationItemSchema = z.object({
   phenomenon: z.string().max(320),
