@@ -474,12 +474,35 @@ export type CharacterCognition = z.infer<typeof CharacterCognitionSchema>;
  * never interpreted by deterministic battle code.
  */
 export const CharacterSpeechAppraisalSchema = z.object({
-  /** What the character hopes their next expression will change or draw out. */
-  expectedImpact: z.string().max(240).default(""),
+  /**
+   * What the expression produced from this appraisal is meant to change or
+   * draw out. On the following turn, this persisted anticipation is evaluated
+   * as the preceding expression's intended impact.
+   */
+  anticipatedImpact: z.string().max(240).default(""),
   /** What their preceding expression appeared to change, or fail to change. */
   observedImpact: z.string().max(240).default(""),
+  /**
+   * What the character expects to lose socially or emotionally if this chosen
+   * approach is ignored, prolonged, or held. This is private psychology, not a
+   * deterministic penalty.
+   */
+  anticipatedSocialCost: z.string().max(240).default(""),
+  /** What the prior approach cost in attention, credibility, or inner state. */
+  observedSocialCost: z.string().max(240).default(""),
   /** Why this character will shift or maintain their present way of speaking. */
   nextApproach: z.string().max(240).default(""),
+  /**
+   * Character-authored reading of whether their social approach is opening up,
+   * gaining force, fraying, deliberately held, or being left behind.
+   */
+  continuityPosture: z.enum([
+    "opening",
+    "developing",
+    "fraying",
+    "deliberate_hold",
+    "withdrawing",
+  ]).default("opening"),
   /**
    * Private choice about how this expression relates to the last one. This is
    * a character's appraisal, never a text-matching or mechanics rule.
@@ -623,7 +646,13 @@ export type CharacterDeepPsycheAdvance = z.infer<typeof CharacterDeepPsycheAdvan
 export const CharacterDeepPsycheCompactAdvanceSchema = z.object({
   delta: CharacterDeepPsycheDeltaSchema.extend({
     interior: CharacterDeepPsycheSchema.partial().extend({
-      speechAppraisal: CharacterSpeechAppraisalSchema,
+      speechAppraisal: CharacterSpeechAppraisalSchema.extend({
+        anticipatedImpact: z.string().min(1).max(240),
+        observedImpact: z.string().min(1).max(240),
+        anticipatedSocialCost: z.string().min(1).max(240),
+        observedSocialCost: z.string().min(1).max(240),
+        nextApproach: z.string().min(1).max(240),
+      }),
     }),
   }),
   expressionBrief: CharacterExpressionBriefSchema,

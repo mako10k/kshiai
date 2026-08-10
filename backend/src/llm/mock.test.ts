@@ -101,9 +101,12 @@ describe("mock LLM natural-language handling", () => {
     assert.match(result.speech ?? "", /わたくし/);
     assert.deepEqual(result.proposedAction, { kind: "basic_attack" });
     assert.deepEqual(result.state.interior?.speechAppraisal, {
-      expectedImpact: "挑戦者の次の出方を見極める",
-      observedImpact: "",
+      anticipatedImpact: "挑戦者の次の出方を見極める",
+      observedImpact: "まだ前の言葉はない",
+      anticipatedSocialCost: "同じ探りを続ければ警戒されるかもしれない",
+      observedSocialCost: "まだ失う手応えはない",
       nextApproach: "まず相手の反応を測る",
+      continuityPosture: "opening",
       continuityDecision: "advance",
     });
 

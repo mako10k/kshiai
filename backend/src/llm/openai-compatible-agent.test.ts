@@ -87,9 +87,12 @@ describe("character-agent action proposal prompt", () => {
             relationshipTension: "張りつめている",
             speechMode: "weave",
             speechAppraisal: {
-              expectedImpact: "相手の足運びを変えさせる",
+              anticipatedImpact: "相手の足運びを変えさせる",
               observedImpact: "前の問いでは相手の構えは変わらなかった",
+              anticipatedSocialCost: "観察を重ねすぎれば相手に見切られる",
+              observedSocialCost: "前の問いは構えを変える力を持たなかった",
               nextApproach: "観察を脅しではなく誘いとして使う",
+              continuityPosture: "fraying",
               continuityDecision: "reframe",
             },
           },
@@ -139,9 +142,12 @@ describe("character-agent action proposal prompt", () => {
           relationshipTension: "",
           speechMode: "conversation_continuation",
           speechAppraisal: {
-            expectedImpact: "相手の返答を得る",
+            anticipatedImpact: "相手の返答を得る",
             observedImpact: "",
+            anticipatedSocialCost: "問いだけでは相手の警戒を強める",
+            observedSocialCost: "まだ前の言葉はない",
             nextApproach: "問いかける",
+            continuityPosture: "opening",
             continuityDecision: "advance",
           },
         },
@@ -198,9 +204,12 @@ describe("character-agent action proposal prompt", () => {
       history: [{ turn: 1, speaker: "counterpart", text: "答えろ。" }],
     });
     assert.deepEqual(result.interior.speechAppraisal, {
-      expectedImpact: "相手の足運びを変えさせる",
+      anticipatedImpact: "相手の足運びを変えさせる",
       observedImpact: "前の問いでは相手の構えは変わらなかった",
+      anticipatedSocialCost: "観察を重ねすぎれば相手に見切られる",
+      observedSocialCost: "前の問いは構えを変える力を持たなかった",
       nextApproach: "観察を脅しではなく誘いとして使う",
+      continuityPosture: "fraying",
       continuityDecision: "reframe",
     });
     assert.equal(result.interior.speechMode, "weave");
@@ -259,9 +268,12 @@ describe("character-agent action proposal prompt", () => {
         delta: {
           interior: {
             speechAppraisal: {
-              expectedImpact: "相手に端末から手を離させる",
+              anticipatedImpact: "相手に端末から手を離させる",
               observedImpact: "脅しは聞かれたが、相手の行動は変わらなかった",
+              anticipatedSocialCost: "直接脅せば相手の反発を強める",
+              observedSocialCost: "脅しの威力は相手の注意を動かさなかった",
               nextApproach: "端末そのものではなく相手の構えを崩す",
+              continuityPosture: "fraying",
               continuityDecision: "reframe",
             },
           },
@@ -322,9 +334,12 @@ describe("character-agent action proposal prompt", () => {
           relationshipTension: "張りつめている",
           speechMode: "weave",
           speechAppraisal: {
-            expectedImpact: "端末を置かせる",
+            anticipatedImpact: "端末を置かせる",
             observedImpact: "変化がない",
+            anticipatedSocialCost: "同じ要求は相手に見切られる",
+            observedSocialCost: "要求の効力は薄れている",
             nextApproach: "構えを揺らす",
+            continuityPosture: "fraying",
             continuityDecision: "advance",
           },
         },
@@ -353,12 +368,17 @@ describe("character-agent action proposal prompt", () => {
     };
     const psyche = await provider.advanceCharacterPsyche(compactInput as never);
 
-    assert.match(system, /delta\.interior\.speechAppraisal is required/);
+    assert.match(system, /anticipatedImpact is the intent of the already-spoken previous expression/);
     assert.match(system, /attention, credibility, or emotional force/);
+    assert.match(system, /anticipatedSocialCost forecast this current expression/);
+    assert.match(system, /Do not treat a familiar unresolved demand as development/);
     assert.deepEqual(psyche.delta?.interior?.speechAppraisal, {
-      expectedImpact: "相手に端末から手を離させる",
+      anticipatedImpact: "相手に端末から手を離させる",
       observedImpact: "脅しは聞かれたが、相手の行動は変わらなかった",
+      anticipatedSocialCost: "直接脅せば相手の反発を強める",
+      observedSocialCost: "脅しの威力は相手の注意を動かさなかった",
       nextApproach: "端末そのものではなく相手の構えを崩す",
+      continuityPosture: "fraying",
       continuityDecision: "reframe",
     });
 
@@ -380,7 +400,7 @@ describe("character-agent action proposal prompt", () => {
       expressionBrief: psyche.expressionBrief!,
       relevantMemory: null,
     } as never);
-    assert.match(system, /psyche\.interior\.speechAppraisal is the character's private evaluation/);
+    assert.match(system, /speechAppraisal privately assesses the prior expression's effect and social cost/);
     assert.match(system, /through expression rather than naming it/);
     assert.equal(expression.speech, "端末ではない。お前の足が止まる場所を見ている。");
   });
