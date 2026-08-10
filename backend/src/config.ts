@@ -41,6 +41,15 @@ function parseBoolean(value: string | undefined): boolean {
   return value === "1" || value?.toLowerCase() === "true";
 }
 
+function parseDialogueContextProjectionOverride(
+  value: string | undefined,
+): "legacy" | "compact" | null {
+  const override = value?.trim().toLowerCase() ?? "";
+  if (!override) return null;
+  if (override === "legacy" || override === "compact") return override;
+  throw new Error("DIALOGUE_CONTEXT_PROJECTION_OVERRIDE must be legacy or compact");
+}
+
 export type BattleCausalNarrationMode = "off" | "narration_guarded";
 
 export function parseBattleCausalNarrationMode(
@@ -223,5 +232,9 @@ export const config = {
   battleTurnLimit: Number(process.env.BATTLE_TURN_LIMIT ?? 20),
   battleCausalNarrationMode: parseBattleCausalNarrationMode(
     process.env.BATTLE_CAUSAL_NARRATION_MODE,
+  ),
+  /** Revision-local override used only for an isolated staged candidate. */
+  dialogueContextProjectionOverride: parseDialogueContextProjectionOverride(
+    process.env.DIALOGUE_CONTEXT_PROJECTION_OVERRIDE,
   ),
 };

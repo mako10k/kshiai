@@ -15,6 +15,15 @@ on:
         options:
           - narration_guarded
           - off
+      dialogue_context_projection_override:
+        description: Revision-local dialogue projection for isolated staging observations
+        required: true
+        default: none
+        type: choice
+        options:
+          - none
+          - compact
+          - legacy
 
 permissions:
   checks: read
@@ -50,6 +59,7 @@ jobs:
       - name: Validate dispatch authority
         env:
           CAUSAL_NARRATION_MODE: ${{ inputs.battle_causal_narration_mode }}
+          DIALOGUE_CONTEXT_PROJECTION_OVERRIDE: ${{ inputs.dialogue_context_projection_override }}
           RELEASE_TAG: ${{ inputs.tag }}
         run: |
           set -euo pipefail
@@ -57,6 +67,7 @@ jobs:
           test "$GITHUB_REF" = "refs/tags/$RELEASE_TAG"
           [[ "$RELEASE_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?$ ]]
           [[ "$CAUSAL_NARRATION_MODE" =~ ^(off|narration_guarded)$ ]]
+          [[ "$DIALOGUE_CONTEXT_PROJECTION_OVERRIDE" =~ ^(none|compact|legacy)$ ]]
 
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -127,18 +138,23 @@ jobs:
         id: backend
         env:
           CAUSAL_NARRATION_MODE: ${{ inputs.battle_causal_narration_mode }}
+          DIALOGUE_CONTEXT_PROJECTION_OVERRIDE: ${{ inputs.dialogue_context_projection_override }}
           IMAGE_REF: ${{ steps.image.outputs.ref }}
           RELEASE_TAG: ${{ inputs.tag }}
         run: |
           set -euo pipefail
           alias="release-${RELEASE_TAG//./-}"
+          override_flag=(--remove-env-vars="DIALOGUE_CONTEXT_PROJECTION_OVERRIDE")
+          if [[ "$DIALOGUE_CONTEXT_PROJECTION_OVERRIDE" != "none" ]]; then
+            override_flag=(--update-env-vars="BATTLE_CAUSAL_NARRATION_MODE=$CAUSAL_NARRATION_MODE,ADMIN_EMAILS=$ADMIN_EMAILS,DIALOGUE_CONTEXT_PROJECTION_OVERRIDE=$DIALOGUE_CONTEXT_PROJECTION_OVERRIDE")
+          fi
           gcloud run deploy "$CLOUD_RUN_SERVICE" \
             --project="$GCP_PROJECT" \
             --region="$GCP_REGION" \
             --image="$IMAGE_REF" \
             --no-traffic \
             --tag="$alias" \
-            --update-env-vars="BATTLE_CAUSAL_NARRATION_MODE=$CAUSAL_NARRATION_MODE,ADMIN_EMAILS=$ADMIN_EMAILS" \
+            "${override_flag[@]}" \
             --quiet
           gcloud run services describe "$CLOUD_RUN_SERVICE" \
             --project="$GCP_PROJECT" \
