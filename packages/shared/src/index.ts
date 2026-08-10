@@ -31,3 +31,4 @@ export * from "./drama.js";
 export * from "./skill-cooldown.js";
 export * from "./battle-turn-causal-receipt.js";
 export * from "./dialogue-pipeline.js";
+export * from "./dialogue-context.js";

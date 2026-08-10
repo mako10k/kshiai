@@ -57,6 +57,9 @@ export async function updateDialoguePipelineSettings(input: {
     schemaVersion: 1,
     enabled: input.patch.enabled,
     conversationHistoryLimit: input.patch.conversationHistoryLimit,
+    contextProjectionMode: input.patch.contextProjectionMode,
+    recentExchangeLimit: input.patch.recentExchangeLimit,
+    relevantMemoryLimit: input.patch.relevantMemoryLimit,
     psychologyGuidance: input.patch.psychologyGuidance.trim(),
   });
   const updatedAt = new Date().toISOString();

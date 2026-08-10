@@ -2,6 +2,7 @@ import {
   CATEGORY_LABELS,
   SYSTEM_PRESET_SEEDS,
   BattlefieldSemanticSeedSchema,
+  CharacterDeepPsycheUpdateSchema,
   clampCoefficientMap,
   composeNarratorTurn,
   canonicalSelfReference,
@@ -518,7 +519,60 @@ export class MockLlmProvider implements LlmProvider {
 
   async advanceCharacterPsyche(
     input: Parameters<LlmProvider["advanceCharacterPsyche"]>[0],
-  ) {
+  ): Promise<Awaited<ReturnType<LlmProvider["advanceCharacterPsyche"]>>> {
+    if (input.contextMode === "compact") {
+      const observation = input.turnObservation!;
+      const recentExchange = input.compactRecentExchange ?? [];
+      const event = observation.selfResult[0]?.phenomenon ??
+        observation.counterpartResult[0]?.phenomenon ??
+        observation.ambientChange[0]?.phenomenon ??
+        recentExchange.at(-1)?.text ?? "相手の気配をうかがっている。";
+      const counterpartLabel = input.counterpart?.displayName ?? "相手";
+      return {
+        ...CharacterDeepPsycheUpdateSchema.parse({
+          privateMemory: input.previous.privateMemory,
+          currentGoal: input.previous.currentGoal,
+          emotion: input.previous.emotion,
+          beliefs: input.previous.beliefs,
+          observations: input.previous.observations,
+          speechStyle: input.previous.speechStyle,
+          interior: input.previous.interior,
+        }),
+        delta: {
+          privateMemory: input.phase === "aftermath"
+            ? `${counterpartLabel}との対決を振り返った。${event}`.slice(0, 1200)
+            : event.slice(0, 1200),
+          currentGoal: input.phase === "prologue"
+            ? `${counterpartLabel}との距離と出方を見極める`
+            : input.previous.currentGoal || `${counterpartLabel}との対決を自分らしく続ける`,
+          emotion: input.phase === "aftermath" ? "余韻" : "集中",
+          observations: [...input.previous.observations.slice(-7), event.slice(0, 240)],
+          dialogueThread: {
+            topic: input.previous.dialogueThread?.topic || counterpartLabel,
+            unresolvedMove: input.phase === "aftermath" ? "" : event.slice(0, 240),
+            anchoredExchange: recentExchange.at(-1) ?? null,
+          },
+          interior: {
+            primaryEmotion: input.phase === "aftermath" ? "余韻" : "集中",
+            eventAppraisal: event.slice(0, 240),
+            speechMode: observation.selfResult.length > 0
+              ? "action_reaction"
+              : "conversation_continuation",
+          },
+        },
+        expressionBrief: {
+          sourceThread: observation.selfResult.length > 0
+            ? "action_reaction"
+            : "conversation_continuation",
+          continuityDecision: input.previous.lastSpeech ? "reframe" : "advance",
+          focus: observation.selfResult.length > 0
+            ? ["self_result"]
+            : ["counterpart_speech"],
+          observedImpact: input.previous.interior?.speechAppraisal?.observedImpact ?? "",
+          publicAim: `${counterpartLabel}の次の出方を見極める`,
+        },
+      } satisfies Awaited<ReturnType<LlmProvider["advanceCharacterPsyche"]>>;
+    }
     const counterpartLabel = input.counterpart?.displayName ??
       input.perception.counterpart.perceivedAs;
     const event = input.actionReaction.latestCommittedResult ??
@@ -572,7 +626,39 @@ export class MockLlmProvider implements LlmProvider {
     };
   }
 
-  async advanceCharacterAgent(input: Parameters<LlmProvider["advanceCharacterAgent"]>[0]) {
+  async advanceCharacterAgent(
+    input: Parameters<LlmProvider["advanceCharacterAgent"]>[0],
+  ): Promise<Awaited<ReturnType<LlmProvider["advanceCharacterAgent"]>>> {
+    if (input.contextMode === "compact") {
+      const observation = input.turnObservation!;
+      const recentExchange = input.compactRecentExchange ?? [];
+      const selfReference = input.social?.selfReference ?? input.psyche.selfReference;
+      const counterpartLabel = input.counterpart?.displayName ?? "相手";
+      const event = observation.selfResult[0]?.phenomenon ??
+        observation.counterpartResult[0]?.phenomenon ??
+        recentExchange.at(-1)?.text ?? `${counterpartLabel}の気配をうかがっている。`;
+      const speech = input.phase === "aftermath"
+        ? selfReference ? `${selfReference}は、この結末を受け止めよう。` : "この結末を受け止めよう。"
+        : selfReference ? `${selfReference}は、${event.slice(0, 80)}。` : `${event.slice(0, 80)}。`;
+      return {
+        state: {
+          privateMemory: "",
+          currentGoal: "",
+          emotion: input.psyche.emotion,
+          beliefs: [],
+          observations: [],
+          speechStyle: input.psyche.speechStyle,
+          selfReference: selfReference ?? null,
+          lastSpeech: speech,
+          lastActionResult: "",
+          conversationHistory: [],
+          dialogueThread: { topic: "", unresolvedMove: "", anchoredExchange: null },
+          interior: input.psyche.interior,
+        },
+        speech,
+        proposedAction: null,
+      };
+    }
     const selfReference = input.social?.selfReference ??
       canonicalSelfReference(input.character);
     const counterpartLabel = input.counterpart?.displayName ??

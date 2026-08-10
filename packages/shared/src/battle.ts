@@ -17,6 +17,7 @@ import {
 } from "./battle-world.js";
 import { FreeActionResolutionReceiptSchema } from "./free-action.js";
 import { DramaStateSchema } from "./drama.js";
+import { BattleDialoguePipelineSnapshotSchema } from "./dialogue-pipeline.js";
 import {
   CharacterPerceptionFrameASchema,
   CharacterPerceptionFrameBSchema,
@@ -557,6 +558,84 @@ export type CharacterConversationEntry = z.infer<
 >;
 
 /**
+ * Private compact state for the relational conversation thread. Raw history
+ * remains durable for audit, while expression receives only this summary, the
+ * recent exchange, and any explicitly selected anchor.
+ */
+export const DialogueThreadStateSchema = z.object({
+  topic: z.string().max(240).default(""),
+  unresolvedMove: z.string().max(240).default(""),
+  anchoredExchange: CharacterConversationEntrySchema.nullable().default(null),
+}).strict();
+export type DialogueThreadState = z.infer<typeof DialogueThreadStateSchema>;
+
+/** The structurally selected source material for one public expression. */
+export const ExpressionContextFocusSchema = z.enum([
+  "self_result",
+  "counterpart_result",
+  "ambient_change",
+  "counterpart_speech",
+]);
+export type ExpressionContextFocus = z.infer<typeof ExpressionContextFocusSchema>;
+
+/**
+ * Deep-psyche-owned compact instruction for the expression stage. It is private
+ * semantic context, never a deterministic mechanics rule or chain of thought.
+ */
+export const CharacterExpressionBriefSchema = z.object({
+  sourceThread: CharacterSpeechModeSchema,
+  continuityDecision: CharacterSpeechAppraisalSchema.shape.continuityDecision,
+  focus: z.array(ExpressionContextFocusSchema).min(1).max(2),
+  observedImpact: z.string().max(240).default(""),
+  publicAim: z.string().max(240).default(""),
+}).strict();
+export type CharacterExpressionBrief = z.infer<typeof CharacterExpressionBriefSchema>;
+
+/**
+ * Persistable private changes emitted by deep psyche. Applying this delta is a
+ * server-owned merge; expression receives the compact brief, not this full state.
+ */
+export const CharacterDeepPsycheDeltaSchema = z.object({
+  privateMemory: z.string().max(1200).optional(),
+  currentGoal: z.string().max(240).optional(),
+  emotion: z.string().max(120).optional(),
+  beliefs: z.array(z.string().max(240)).max(8).optional(),
+  observations: z.array(z.string().max(240)).max(8).optional(),
+  speechStyle: z.string().max(240).optional(),
+  interior: CharacterDeepPsycheSchema.partial().optional(),
+  dialogueThread: DialogueThreadStateSchema.optional(),
+}).strict();
+export type CharacterDeepPsycheDelta = z.infer<typeof CharacterDeepPsycheDeltaSchema>;
+
+export const CharacterDeepPsycheAdvanceSchema = z.object({
+  delta: CharacterDeepPsycheDeltaSchema,
+  expressionBrief: CharacterExpressionBriefSchema,
+}).strict();
+export type CharacterDeepPsycheAdvance = z.infer<typeof CharacterDeepPsycheAdvanceSchema>;
+
+/** One observer-safe fresh-result item, derived from committed perception only. */
+export const TurnObservationItemSchema = z.object({
+  phenomenon: z.string().max(320),
+  certainty: z.enum(["certain", "likely", "uncertain", "unknown"]),
+  sourceEventIds: z.array(z.string().min(1).max(120)).max(8).default([]),
+}).strict();
+export type TurnObservationItem = z.infer<typeof TurnObservationItemSchema>;
+
+/**
+ * Deterministic per-observer packet for the action-and-result expression thread.
+ * It must be built from frozen observer perception; it is not a global event log.
+ */
+export const TurnObservationPacketSchema = z.object({
+  schemaVersion: z.literal(1),
+  turn: z.number().int().nonnegative(),
+  observerSide: z.enum(["a", "b"]),
+  selfResult: z.array(TurnObservationItemSchema).max(8),
+  counterpartResult: z.array(TurnObservationItemSchema).max(8),
+  ambientChange: z.array(TurnObservationItemSchema).max(8),
+}).strict();
+export type TurnObservationPacket = z.infer<typeof TurnObservationPacketSchema>;
+
+/**
  * Fresh, committed outcome material for the action-and-result reaction thread.
  * It is source material for expression only, never an instruction to claim a result.
  */
@@ -595,6 +674,8 @@ export const CharacterAgentStateSchema = z.object({
   lastActionResult: z.string().max(600).optional(),
   /** Bounded expressions this character has actually perceived over time. */
   conversationHistory: z.array(CharacterConversationEntrySchema).max(24).optional(),
+  /** Compact private relational continuity selected by deep psyche. */
+  dialogueThread: DialogueThreadStateSchema.optional(),
   interior: CharacterDeepPsycheSchema.optional(),
 });
 export type CharacterAgentState = z.infer<typeof CharacterAgentStateSchema>;
@@ -743,6 +824,11 @@ export const BattlePipelineAgentInvocationTraceSchema = z.object({
 
 export const BattleTurnPipelineTraceSchema = z.object({
   schemaVersion: z.literal(1),
+  dialogueProjection: z.object({
+    mode: z.literal("shadow"),
+    a: TurnObservationPacketSchema,
+    b: TurnObservationPacketSchema,
+  }).strict().optional(),
   environmentProcess: EnvironmentProcessReceiptSchema.optional(),
   characterAgents: z.object({
     phase: z.enum(["prologue", "turn", "aftermath"]),
@@ -868,6 +954,8 @@ export const BattleStateSchema = z.object({
   openingPlanB: z.string().max(1200).optional(),
   /** Immutable battle-scoped names, relationships, and initial recognition. */
   encounterContext: BattleEncounterContextSchema.optional(),
+  /** Frozen dialogue-pipeline revision for a battle; never exposed publicly. */
+  dialoguePipelineSnapshot: BattleDialoguePipelineSnapshotSchema.optional(),
   /** Reader plus A/B presentation continuity; never character cognition. */
   narratorContinuity: BattleNarratorContinuitySchema.optional(),
   /** Isolated, private character-agent continuity. Never exposed publicly. */

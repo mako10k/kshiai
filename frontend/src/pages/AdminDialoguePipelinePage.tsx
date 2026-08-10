@@ -5,13 +5,21 @@ import { ApiError, api } from "../api";
 
 type FormState = Pick<
   DialoguePipelineSettings,
-  "enabled" | "conversationHistoryLimit" | "psychologyGuidance"
+  | "enabled"
+  | "conversationHistoryLimit"
+  | "contextProjectionMode"
+  | "recentExchangeLimit"
+  | "relevantMemoryLimit"
+  | "psychologyGuidance"
 >;
 
 function toFormState(settings: DialoguePipelineSettings): FormState {
   return {
     enabled: settings.enabled,
     conversationHistoryLimit: settings.conversationHistoryLimit,
+    contextProjectionMode: settings.contextProjectionMode,
+    recentExchangeLimit: settings.recentExchangeLimit,
+    relevantMemoryLimit: settings.relevantMemoryLimit,
     psychologyGuidance: settings.psychologyGuidance,
   };
 }
@@ -100,7 +108,7 @@ export function AdminDialoguePipelinePage() {
           ここで変えるのは発話前の深層心理と会話参照範囲です。正準の人物設定、行動判定、ダメージ・勝敗、JSON契約はサーバー側で固定され、この設定では変更できません。
         </p>
         <p className="muted admin-dialogue-boundary">
-          保存後、次に開始または進行するキャラ思考から反映されます。すでに実行中の呼び出しや保存済みの戦闘ログは変わりません。
+          保存後は次に開始する試合から反映されます。開始済みの試合は開始時点の設定スナップショットを維持します。
         </p>
 
         {error ? <p className="error">{error}</p> : null}
@@ -125,6 +133,43 @@ export function AdminDialoguePipelinePage() {
                 <strong>深層心理の指針を有効にする</strong>
                 <small>無効時も会話履歴は渡しますが、以下の指針は発話前の心理層へ送信しません。</small>
               </span>
+            </label>
+
+            <label className="field">
+              <span className="field-label">コンテキスト投影</span>
+              <select
+                value={form.contextProjectionMode}
+                onChange={(event) => setForm({
+                  ...form,
+                  contextProjectionMode: event.target.value as FormState["contextProjectionMode"],
+                })}
+              >
+                <option value="legacy">従来入力（互換）</option>
+                <option value="compact">圧縮コンテキスト</option>
+              </select>
+              <span className="field-hint">圧縮では、結果観測・会話継続・表出ブリーフを分離して渡します。</span>
+            </label>
+
+            <label className="field">
+              <span className="field-label">表出へ渡す直近会話数（2〜8）</span>
+              <input
+                type="number"
+                min={2}
+                max={8}
+                value={form.recentExchangeLimit}
+                onChange={(event) => setForm({ ...form, recentExchangeLimit: Number(event.target.value) })}
+              />
+            </label>
+
+            <label className="field">
+              <span className="field-label">関連メモリ数（0〜2）</span>
+              <input
+                type="number"
+                min={0}
+                max={2}
+                value={form.relevantMemoryLimit}
+                onChange={(event) => setForm({ ...form, relevantMemoryLimit: Number(event.target.value) })}
+              />
             </label>
 
             <label className="field">

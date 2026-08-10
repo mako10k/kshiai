@@ -1,0 +1,65 @@
+# Scoped execution plan for observer-safe dialogue-context projection.
+project KSHIAI_DIALOGUE_CONTEXT_PROJECTION_V1:
+  version 5
+  title "Observer-safe compact dialogue context"
+  description "Replace actor-or-target action-reaction strings and overlapping character JSON with an observer-safe TurnObservationPacket, private DialogueThreadState, and compact ExpressionBrief. Preserve deterministic mechanics, current reservation timing, and one deep-psyche plus one expression/action LLM call per side."
+  as_of 2026-08-10
+  duration_unit point
+  velocity 1p/1d
+  finish DIALOGUE_CONTEXT_PROJECTION_ACCEPTED
+  target_duration 13p
+
+resource DEV:
+  title "Developer"
+  capacity 1
+
+resource OWNER:
+  title "Product and release owner"
+  capacity 1
+
+
+
+
+
+
+milestone LOCAL_CONTEXT_ACCEPTED:
+  title "Local behavior, safety, and budget gates accepted"
+  state reached
+
+milestone STAGING_CONTEXT_ACCEPTED:
+  title "Staging observations accept compact dialogue context"
+
+milestone PRODUCTION_CONTEXT_APPROVED:
+  title "Production compact-context release explicitly approved"
+
+milestone DIALOGUE_CONTEXT_PROJECTION_ACCEPTED:
+  title "Production observation records compact-context result"
+
+
+
+
+
+
+task DCP_STAGING_OBSERVE LOCAL_CONTEXT_ACCEPTED -> STAGING_CONTEXT_ACCEPTED:
+  title "Release to staging and inspect repeated compact-context observations"
+  description "Release one immutable candidate to staging and run at least six isolated observer battles. Inspect packet attribution, expression brief execution, schema fallback, latency, prompt budget, private trace access, and dialogue repetition. Stop on any canonical-mechanics divergence, observer-side leak, unbounded prompt growth, or provider/schema failure."
+  duration 1p
+  owner "codex"
+  requires:
+    DEV 1
+
+task DCP_PRODUCTION_DECISION STAGING_CONTEXT_ACCEPTED -> PRODUCTION_CONTEXT_APPROVED:
+  title "Review staging evidence and decide production release"
+  description "The owner reviews staging observations, including every exact repeat after advance or reframe, and decides whether to promote the exact immutable artifact. A decision to decline is a valid terminal outcome and does not authorize an unrelated repair loop or cancellation feature."
+  duration 1p
+  owner "user"
+  requires:
+    OWNER 1
+
+task DCP_PRODUCTION_RELEASE PRODUCTION_CONTEXT_APPROVED -> DIALOGUE_CONTEXT_PROJECTION_ACCEPTED:
+  title "Promote, observe, and record compact dialogue context"
+  description "Use the protected release path: PR checks, annotated tag, staging artifact verification, protected production approval, health/SSE smoke, and retained production E2E observations. Analyze at least three production battles initially; use side-attribution invariants and exact-repeat diagnostics as evidence, not runtime rules. Record release and rollback targets."
+  duration 2p
+  owner "codex"
+  requires:
+    DEV 1

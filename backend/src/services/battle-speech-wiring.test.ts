@@ -5,6 +5,7 @@ import {
   buildBattleTurnRecord,
   buildNarrationPerceptionView,
   createBattleState,
+  defaultDialoguePipelineSettings,
   defaultParameters,
   type CharacterSheet,
 } from "@kshiai/shared";
@@ -184,6 +185,9 @@ describe("character-authored public speech", () => {
       result.state.narratorContinuity?.b.viewpointSide,
     );
     const pipelineTrace = result.state.turnRecords.at(-1)?.pipelineTrace;
+    assert.equal(pipelineTrace?.dialogueProjection?.mode, "shadow");
+    assert.equal(pipelineTrace?.dialogueProjection?.a.observerSide, "a");
+    assert.equal(pipelineTrace?.dialogueProjection?.b.observerSide, "b");
     assert.equal(pipelineTrace?.deepPsyche?.a.providerStatus, "fulfilled");
     assert.equal(pipelineTrace?.deepPsyche?.b.providerStatus, "fulfilled");
     assert.equal(
@@ -195,6 +199,10 @@ describe("character-authored public speech", () => {
     assert.equal(
       "dialoguePipeline" in ((pipelineTrace?.deepPsyche?.a.input as object | null) ?? {}),
       true,
+    );
+    assert.equal(
+      "turnObservation" in ((pipelineTrace?.deepPsyche?.a.input as object | null) ?? {}),
+      false,
     );
     assert.equal(
       "dialoguePipeline" in ((pipelineTrace?.characterAgents?.a.input as object | null) ?? {}),
@@ -229,6 +237,47 @@ describe("character-authored public speech", () => {
     assert.equal(perceivedB?.displayContext?.mode, "self");
     assert.equal(perceivedB?.displayContext?.identityKnowledge, "identified");
     assert.equal(perceivedB?.displayContext?.relationshipAddress, "クロ");
+  });
+
+  it("projects compact deep-psyche and expression contexts without another model call", async () => {
+    const sideA = sheet("a", "アオ", ["私"]);
+    const sideB = sheet("b", "クロ", ["俺"]);
+    const before = createBattleState({
+      id: "compact-dialogue-context",
+      sideA,
+      sideB,
+      turnLimit: 20,
+      prologuePending: false,
+    });
+    const result = await advanceCharacterAgents({
+      llm: new MockLlmProvider(),
+      before,
+      after: { ...before, turn: 1 },
+      mine: sideA,
+      opp: sideB,
+      events: [{ id: "event.compact", type: "wait", summary: "両者が様子をうかがう。" }],
+      actions: [],
+      dialoguePipeline: {
+        ...defaultDialoguePipelineSettings(),
+        contextProjectionMode: "compact",
+        recentExchangeLimit: 2,
+        relevantMemoryLimit: 1,
+      },
+    });
+    const trace = result.state.turnRecords.at(-1)?.pipelineTrace;
+    const psycheInput = trace?.deepPsyche?.a.input as Record<string, unknown>;
+    const expressionInput = trace?.characterAgents?.a.input as Record<string, unknown>;
+    assert.equal(psycheInput.contextMode, "compact");
+    assert.ok(psycheInput.turnObservation);
+    assert.equal("perception" in psycheInput, false);
+    assert.equal("actionReaction" in psycheInput, false);
+    assert.equal(expressionInput.contextMode, "compact");
+    assert.ok(expressionInput.expressionBrief);
+    assert.ok(expressionInput.turnObservation);
+    assert.equal("perception" in expressionInput, false);
+    assert.equal(result.state.agentStateA?.dialogueThread?.topic, "クロ");
+    assert.equal(trace?.deepPsyche?.a.providerStatus, "fulfilled");
+    assert.equal(trace?.characterAgents?.a.providerStatus, "fulfilled");
   });
 
   it("uses initial perception for prologue decisions and reaction-only aftermath", async () => {
@@ -331,6 +380,9 @@ describe("character-authored public speech", () => {
         schemaVersion: 1,
         enabled: true,
         conversationHistoryLimit: 16,
+        contextProjectionMode: "legacy",
+        recentExchangeLimit: 4,
+        relevantMemoryLimit: 1,
         psychologyGuidance: "性格と相手への手応えを踏まえて話す。",
         revision: 3,
         updatedAt: "2026-08-09T00:00:00.000Z",

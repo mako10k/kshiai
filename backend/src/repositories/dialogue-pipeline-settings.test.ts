@@ -21,6 +21,9 @@ describe("dialogue pipeline settings", () => {
       schemaVersion: 1,
       enabled: true,
       conversationHistoryLimit: 12,
+      contextProjectionMode: "legacy",
+      recentExchangeLimit: 4,
+      relevantMemoryLimit: 1,
       psychologyGuidance: DEFAULT_DIALOGUE_PSYCHOLOGY_GUIDANCE,
       revision: 0,
       updatedAt: null,
@@ -40,12 +43,18 @@ describe("dialogue pipeline settings", () => {
         expectedRevision: 0,
         enabled: true,
         conversationHistoryLimit: 20,
+        contextProjectionMode: "compact",
+        recentExchangeLimit: 6,
+        relevantMemoryLimit: 2,
         psychologyGuidance: "相手の反応を受け止め、性格に沿って次の言葉を考える。",
       },
     });
     assert.ok(saved);
     assert.equal(saved.revision, 1);
     assert.equal(saved.conversationHistoryLimit, 20);
+    assert.equal(saved.contextProjectionMode, "compact");
+    assert.equal(saved.recentExchangeLimit, 6);
+    assert.equal(saved.relevantMemoryLimit, 2);
     assert.equal(saved.updatedBy, "operator");
 
     const stale = await settingsRepo.updateDialoguePipelineSettings({
@@ -54,6 +63,9 @@ describe("dialogue pipeline settings", () => {
         expectedRevision: 0,
         enabled: false,
         conversationHistoryLimit: 4,
+        contextProjectionMode: "legacy",
+        recentExchangeLimit: 2,
+        relevantMemoryLimit: 0,
         psychologyGuidance: "上書きしてはいけない。",
       },
     });
@@ -63,6 +75,7 @@ describe("dialogue pipeline settings", () => {
     assert.equal(current.revision, 1);
     assert.equal(current.enabled, true);
     assert.equal(current.conversationHistoryLimit, 20);
+    assert.equal(current.contextProjectionMode, "compact");
     assert.equal(
       current.psychologyGuidance,
       "相手の反応を受け止め、性格に沿って次の言葉を考える。",
