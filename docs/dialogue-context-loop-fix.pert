@@ -37,7 +37,7 @@ milestone COMPACT_DIALOGUE_LOOP_ACCEPTED:
 
 task DCL_IMPLEMENT RCA_DIRECTION_ACCEPTED -> LOCAL_LOOP_FIX_ACCEPTED:
   title "Implement typed thread separation and temporal social-appraisal contract"
-  description "Change projections and compact inputs; preserve deterministic mechanics, reservation timing, provider count, and durable compatibility. Add regression tests for own/counterpart utterance exclusion, one-path context cardinality, brief trace linkage, prior observed versus current anticipated social effects, social-consequence bearer, and continuity-basis compatibility."
+  description "Change projections and compact inputs; preserve deterministic mechanics, reservation timing, provider count, and durable compatibility. Keep opponent matchup notes separate from battle-private memory, require a standalone compact aftermath reflection, and give present result roles priority over familiar conversation topics. Add regression tests for own/counterpart utterance exclusion, one-path context cardinality, brief trace linkage, prior observed versus current anticipated social effects, social-consequence bearer, continuity-basis compatibility, and matchup-memory lifecycle isolation."
   duration 3p
   status active
   owner "codex"

@@ -1223,16 +1223,32 @@ export async function advanceCharacterAgents(input: {
         ? dialogueProjection?.a
         : dialogueProjection?.b;
       if (!packet) return null;
+      const sheet = consumerInput === inputA ? input.mine : input.opp;
+      const counterpartSheet = consumerInput === inputA ? input.opp : input.mine;
+      const storedMatchupMemory = sheet.opponentMemories?.[counterpartSheet.id];
       const compactInput = {
         contextMode: "compact" as const,
         phase: consumerInput.phase,
         character: consumerInput.character,
-        previous: consumerInput.psyche,
+        // Opponent memory is a durable matchup note, not a current-battle
+        // thought. Do not let an old plan be copied into every inner update.
+        previous: consumerInput.phase === "prologue"
+          ? { ...consumerInput.psyche, privateMemory: "" }
+          : consumerInput.psyche,
         turnObservation: packet,
         conversation: {
           recentExchange: consumerInput.conversation.history
             .slice(-dialoguePipeline.recentExchangeLimit),
         },
+        ...(consumerInput.phase === "prologue" && storedMatchupMemory
+          ? {
+              matchupMemory: {
+                preBattlePlan: storedMatchupMemory.preBattlePlan,
+                postBattleReflection: storedMatchupMemory.postBattleReflection,
+                battleCount: storedMatchupMemory.battleCount,
+              },
+            }
+          : {}),
         dialoguePipeline: consumerInput.dialoguePipeline,
         ...(consumerInput.social ? { social: consumerInput.social } : {}),
         ...(consumerInput.counterpart ? { counterpart: consumerInput.counterpart } : {}),
@@ -1289,6 +1305,10 @@ export async function advanceCharacterAgents(input: {
       const state = groundCharacterAgentState(sheet, {
         ...previous,
         ...delta,
+        // The compact prologue can consult matchupMemory, but it starts a
+        // fresh private state for this battle. This prevents historical plans
+        // and reflections from recursively becoming the next reflection.
+        ...(compactContext && input.phase === "prologue" ? { privateMemory: "" } : {}),
         interior: {
           primaryEmotion: delta.interior?.primaryEmotion ?? previous.interior?.primaryEmotion ?? previous.emotion,
           concealedEmotion: delta.interior?.concealedEmotion ?? previous.interior?.concealedEmotion ?? null,
