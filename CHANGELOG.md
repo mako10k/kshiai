@@ -5,6 +5,22 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 
 ## [Unreleased]
 
+## [0.14.1] - 2026-08-10
+
+### Fixed
+
+- Keeps committed character utterances in one ordered conversation-continuity
+  thread instead of also treating them as fresh action/result observations.
+- Removes duplicate compact-context aliases and gives the private expression
+  brief a semantic relationship move, so recurrence remains a character-driven
+  choice rather than a repeated lexical input.
+
+### Operations
+
+- No database migration, extra LLM call, reservation-timing change, or
+  deterministic phrase ban is introduced. Canonical mechanics, observer
+  ownership, and action validation are unchanged.
+
 ## [0.14.0] - 2026-08-10
 
 ### Added
