@@ -272,3 +272,24 @@ decision FIX_DIRECTION_7 based_on RC9:
     reiteration in protective holding, and withholding in withdrawal. Code
     validates only decision/basis compatibility; it never compares speech or
     imposes a topic change.
+
+evidence OBS13:
+  |
+    Staged run 31362135710 on v0.14.8, battle btl_bb6512d7ae592b7f365972a1,
+    used social_reappraisal and reached 19 unique public lines out of 21.
+    Nagi produced 11 unique lines in 11 turns; Gaku retained two exact
+    duplicates. The protected production promotion run 31362683323 then
+    promoted the exact staged Cloud Run revision kshiai-api-00076-fal and
+    Worker version a0dcd308-cb2e-4ac3-a7fe-a02262931546. Immutable-artifact,
+    production smoke, authentication, and SSE checks passed.
+
+decision FOLLOW_UP_DIRECTION based_on OBS13:
+  |
+    The candidate shows material improvement and is now production-deployed,
+    but it is not a declaration that all dialogue monotony is solved: the
+    staged sample is one battle and still contains two exact Gaku duplicates.
+    Keep compact projection under production observation, collect the remaining
+    planned protected observations across different matchups, and reopen RCA
+    only on a recurrent semantic loop or safety/mechanics divergence. Do not
+    add phrase bans, prose matching, retries, cancellation, extra calls, or
+    mechanic changes merely to optimize this metric.
