@@ -40,6 +40,7 @@ describe("dialogue context contracts", () => {
       continuityDecision: "reframe",
       focus: ["counterpart_result", "counterpart_speech"],
       observedImpact: "前の問いには返答がなかった",
+      relationshipMove: "返答の余地を残して、距離を保つ",
       publicAim: "相手の失敗を責めずに別の角度から探る",
     });
     const delta = CharacterDeepPsycheDeltaSchema.parse({
@@ -52,6 +53,7 @@ describe("dialogue context contracts", () => {
     });
     assert.equal(delta.interior?.speechMode, "weave");
     assert.equal(brief.continuityDecision, "reframe");
+    assert.equal(brief.relationshipMove, "返答の余地を残して、距離を保つ");
   });
 
   it("makes a stable battle-owned snapshot from operator settings", () => {
@@ -238,5 +240,61 @@ describe("dialogue context contracts", () => {
       certainty: "uncertain",
       sourceEventIds: [],
     }]);
+  });
+
+  it("keeps committed utterance perception in conversation rather than result packets", () => {
+    const frame: CharacterPerceptionFrame = {
+      schemaVersion: 1,
+      observer: { side: "a", self: "self" },
+      turn: 9,
+      revision: 9,
+      self: {
+        subject: { kind: "self" },
+        currentAccess: "clear",
+        identityKnowledge: "identified",
+        perceivedAs: "自分自身",
+        percepts: [{
+          perceptId: "percept.a.evidence.utterance.utterance.8.a",
+          modality: "sound",
+          phenomenon: "自分が「同じ脅し」と発話した",
+          direction: "unknown",
+          distance: "contact",
+          salience: "prominent",
+          occurrenceCertainty: "certain",
+          attributionCertainty: "certain",
+        }],
+      },
+      counterpart: {
+        subject: { kind: "counterpart" },
+        currentAccess: "clear",
+        identityKnowledge: "identified",
+        perceivedAs: "相手",
+        percepts: [{
+          perceptId: "percept.a.evidence.utterance.utterance.8.b",
+          modality: "sound",
+          phenomenon: "相手が「同じ脅し」と発話した",
+          direction: "front",
+          distance: "near",
+          salience: "prominent",
+          occurrenceCertainty: "certain",
+          attributionCertainty: "certain",
+        }],
+      },
+      others: [],
+      qualitativeChanges: [],
+      reserveCues: [],
+      latestDiff: {
+        fromRevision: 8,
+        toRevision: 9,
+        addedOrUpdatedPerceptIds: [
+          "percept.a.evidence.utterance.utterance.8.a",
+          "percept.a.evidence.utterance.utterance.8.b",
+        ],
+        removedPerceptIds: [],
+      },
+    };
+    const packet = buildTurnObservationPacket({ frame });
+    assert.deepEqual(packet.selfResult, []);
+    assert.deepEqual(packet.counterpartResult, []);
   });
 });

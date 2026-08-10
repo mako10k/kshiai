@@ -16,6 +16,7 @@ import {
   type BattleEncounterProposal,
   type CharacterSheet,
   type CharacterIdentity,
+  type CharacterConversationEntry,
 } from "@kshiai/shared";
 import type {
   AdjustBattlefieldResult,
@@ -522,7 +523,9 @@ export class MockLlmProvider implements LlmProvider {
   ): Promise<Awaited<ReturnType<LlmProvider["advanceCharacterPsyche"]>>> {
     if (input.contextMode === "compact") {
       const observation = input.turnObservation!;
-      const recentExchange = input.compactRecentExchange ?? [];
+      const recentExchange = (input.conversation as unknown as {
+        recentExchange?: CharacterConversationEntry[];
+      }).recentExchange ?? [];
       const event = observation.selfResult[0]?.phenomenon ??
         observation.counterpartResult[0]?.phenomenon ??
         observation.ambientChange[0]?.phenomenon ??
@@ -569,6 +572,9 @@ export class MockLlmProvider implements LlmProvider {
             ? ["self_result"]
             : ["counterpart_speech"],
           observedImpact: input.previous.interior?.speechAppraisal?.observedImpact ?? "",
+          relationshipMove: input.phase === "aftermath"
+            ? "結末を自分の言葉で受け止める"
+            : `${counterpartLabel}との距離を保ちながら出方を確かめる`,
           publicAim: `${counterpartLabel}の次の出方を見極める`,
         },
       } satisfies Awaited<ReturnType<LlmProvider["advanceCharacterPsyche"]>>;
@@ -631,7 +637,9 @@ export class MockLlmProvider implements LlmProvider {
   ): Promise<Awaited<ReturnType<LlmProvider["advanceCharacterAgent"]>>> {
     if (input.contextMode === "compact") {
       const observation = input.turnObservation!;
-      const recentExchange = input.compactRecentExchange ?? [];
+      const recentExchange = (input.conversation as unknown as {
+        recentExchange?: CharacterConversationEntry[];
+      }).recentExchange ?? [];
       const selfReference = input.social?.selfReference ?? input.psyche.selfReference;
       const counterpartLabel = input.counterpart?.displayName ?? "相手";
       const event = observation.selfResult[0]?.phenomenon ??

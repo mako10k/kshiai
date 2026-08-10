@@ -271,10 +271,17 @@ describe("character-authored public speech", () => {
     assert.ok(psycheInput.turnObservation);
     assert.equal("perception" in psycheInput, false);
     assert.equal("actionReaction" in psycheInput, false);
+    assert.equal("compactRecentExchange" in psycheInput, false);
     assert.equal(expressionInput.contextMode, "compact");
     assert.ok(expressionInput.expressionBrief);
     assert.ok(expressionInput.turnObservation);
     assert.equal("perception" in expressionInput, false);
+    assert.equal("compactRecentExchange" in expressionInput, false);
+    assert.equal("anchoredExchange" in expressionInput, false);
+    assert.equal(
+      "anchoredExchange" in ((expressionInput.conversation as Record<string, unknown>) ?? {}),
+      true,
+    );
     assert.equal(result.state.agentStateA?.dialogueThread?.topic, "クロ");
     assert.equal(trace?.deepPsyche?.a.providerStatus, "fulfilled");
     assert.equal(trace?.characterAgents?.a.providerStatus, "fulfilled");

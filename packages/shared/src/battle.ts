@@ -587,6 +587,8 @@ export const CharacterExpressionBriefSchema = z.object({
   continuityDecision: CharacterSpeechAppraisalSchema.shape.continuityDecision,
   focus: z.array(ExpressionContextFocusSchema).min(1).max(2),
   observedImpact: z.string().max(240).default(""),
+  /** Semantic relationship move for this turn, never a required public phrase. */
+  relationshipMove: z.string().max(240).default(""),
   publicAim: z.string().max(240).default(""),
 }).strict();
 export type CharacterExpressionBrief = z.infer<typeof CharacterExpressionBriefSchema>;

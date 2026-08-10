@@ -119,6 +119,8 @@ import { newId } from "../id.js";
 import type { LlmProvider } from "../llm/index.js";
 import type {
   AftermathNarrationResult,
+  CharacterDeepPsycheCompactInput,
+  CharacterExpressionCompactInput,
   CharacterSpeechSource,
   JudgmentNarrationResult,
   NarrationActionBeat,
@@ -1202,14 +1204,12 @@ export async function advanceCharacterAgents(input: {
         ? dialogueProjection?.a
         : dialogueProjection?.b;
       if (!packet) return null;
-      return {
+      const compactInput = {
         contextMode: "compact" as const,
         phase: consumerInput.phase,
         character: consumerInput.character,
         previous: consumerInput.psyche,
         turnObservation: packet,
-        compactRecentExchange: consumerInput.conversation.history
-          .slice(-dialoguePipeline.recentExchangeLimit),
         conversation: {
           recentExchange: consumerInput.conversation.history
             .slice(-dialoguePipeline.recentExchangeLimit),
@@ -1217,7 +1217,8 @@ export async function advanceCharacterAgents(input: {
         dialoguePipeline: consumerInput.dialoguePipeline,
         ...(consumerInput.social ? { social: consumerInput.social } : {}),
         ...(consumerInput.counterpart ? { counterpart: consumerInput.counterpart } : {}),
-      } as unknown as Parameters<LlmProvider["advanceCharacterPsyche"]>[0];
+      } satisfies CharacterDeepPsycheCompactInput;
+      return compactInput as unknown as Parameters<LlmProvider["advanceCharacterPsyche"]>[0];
     }
     const { decision: _decision, psyche, ...shared } = consumerInput;
     return {
@@ -1252,6 +1253,7 @@ export async function advanceCharacterAgents(input: {
     continuityDecision: state.interior?.speechAppraisal?.continuityDecision ?? "advance",
     focus: ["self_result"],
     observedImpact: state.interior?.speechAppraisal?.observedImpact ?? "",
+    relationshipMove: state.interior?.speechAppraisal?.nextApproach ?? "",
     publicAim: state.interior?.speechAppraisal?.nextApproach ?? "",
   });
   const applyPsyche = (
@@ -1335,7 +1337,7 @@ export async function advanceCharacterAgents(input: {
         ? dialogueProjection?.a
         : dialogueProjection?.b;
       if (!packet) return null;
-      return {
+      const compactInput = {
         contextMode: "compact" as const,
         phase: consumerInput.phase,
         character: consumerInput.character,
@@ -1346,9 +1348,6 @@ export async function advanceCharacterAgents(input: {
           selfReference: psyche.selfReference,
         },
         turnObservation: packet,
-        compactRecentExchange: consumerInput.conversation.history
-          .slice(-dialoguePipeline.recentExchangeLimit),
-        anchoredExchange: psyche.dialogueThread?.anchoredExchange ?? null,
         conversation: {
           recentExchange: consumerInput.conversation.history
             .slice(-dialoguePipeline.recentExchangeLimit),
@@ -1361,7 +1360,8 @@ export async function advanceCharacterAgents(input: {
         ...(consumerInput.social ? { social: consumerInput.social } : {}),
         ...(consumerInput.counterpart ? { counterpart: consumerInput.counterpart } : {}),
         ...(consumerInput.decision ? { decision: consumerInput.decision } : {}),
-      } as unknown as Parameters<LlmProvider["advanceCharacterAgent"]>[0];
+      } satisfies CharacterExpressionCompactInput;
+      return compactInput as unknown as Parameters<LlmProvider["advanceCharacterAgent"]>[0];
     }
     const { dialoguePipeline: _dialoguePipeline, ...speechActionInput } = consumerInput;
     return { ...speechActionInput, psyche };
