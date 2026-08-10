@@ -116,6 +116,15 @@ export type CharacterDeepPsycheCompactInput = {
     "speechStyle" | "lastSpeech" | "interior" | "dialogueThread">;
   turnObservation: TurnObservationPacket;
   conversation: { recentExchange: CharacterConversationEntry[] };
+  /**
+   * Owner-private, opponent-specific notes. This is deliberately separate
+   * from privateMemory, which belongs to the current battle's inner state.
+   */
+  matchupMemory?: {
+    preBattlePlan: string;
+    postBattleReflection: string;
+    battleCount: number;
+  };
   dialoguePipeline?: DialoguePipelineSettings;
   social?: BattleSocialView;
   counterpart?: CharacterCounterpartKnowledge;

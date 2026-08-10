@@ -177,3 +177,39 @@ decision FIX_DIRECTION_4 based_on RC6:
     code validates only typed ownership and decision/basis compatibility. It
     does not inspect wording, infer novelty, reject speech, alter action timing,
     or impose a mechanical penalty.
+
+evidence OBS10:
+  |
+    Staged run 31358914026 on v0.14.5, battle btl_1438d3a53ba67fa05d0bc178,
+    used compact context only on kshiai-api-00073-web. It improved exact
+    uniqueness to 19 of 21 public lines, but Gaku still repeated "端末の位置を
+    明かせ。" on turns 0-2. All fulfilled compact psyche calls then retained the
+    same advance/fresh_leverage appraisal despite selfResult repeatedly
+    reporting a qualitative self loss. The trace also showed five nested
+    "この相手への過去方針/過去の反省" blocks inside privateMemory: the prior
+    battle's whole private state had been saved as the next opponent reflection
+    and reinjected as current inner state.
+
+decision RC7 based_on RC6, OBS10:
+  |
+    Typed ownership and decision/basis compatibility do not prevent stale
+    matchup notes from becoming a repeated current thought, nor do they give
+    the model an explicit priority between present action/result roles and a
+    familiar conversation topic. The remaining defect is memory-lifecycle and
+    result-thread salience: an opponent plan/reflection recursively contaminates
+    current privateMemory, while a repeated conversational demand can be
+    miscast as fresh leverage even against current self experience. This is not
+    a prose-matching, cancellation, extra-call, or deterministic mechanics
+    problem.
+
+decision FIX_DIRECTION_5 based_on RC7:
+  |
+    Keep durable opponent memory, but pass it as a separate read-only
+    matchupMemory only at compact turn 0. Begin battle-private memory empty and
+    require compact aftermath to write one standalone reflection, so saved
+    notes cannot recursively include their own labels or prior plans. In the
+    deep-psyche contract, make selfResult, counterpartResult, and ambientChange
+    explicit present-evidence roles and state that a familiar refusal, demand,
+    or counterargument alone is not fresh relational leverage. The LLM still
+    authors all psychological meaning and may deliberately hold a line; code
+    only separates data lifecycles and validates aftermath output presence.

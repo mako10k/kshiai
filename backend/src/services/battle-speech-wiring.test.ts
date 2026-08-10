@@ -301,6 +301,52 @@ describe("character-authored public speech", () => {
     assert.equal(trace?.characterAgents?.a.providerStatus, "fulfilled");
   });
 
+  it("keeps matchup memory separate from compact battle-private memory", async () => {
+    const sideA = sheet("a", "アオ", ["私"]);
+    const sideB = sheet("b", "クロ", ["俺"]);
+    sideA.opponentMemories = {
+      b: {
+        preBattlePlan: "足を止めず、間合いの変化を測る。",
+        postBattleReflection: "前回は急ぎすぎて相手の誘いに乗った。",
+        battleCount: 3,
+        lastBattleAt: "2026-08-10T00:00:00.000Z",
+      },
+    };
+    const opening = createBattleState({
+      id: "compact-matchup-memory",
+      sideA,
+      sideB,
+      turnLimit: 20,
+      prologuePending: true,
+    });
+    opening.agentStateA!.privateMemory = "この相手への過去方針: 古い計画";
+
+    const result = await advanceCharacterAgents({
+      llm: new MockLlmProvider(),
+      before: opening,
+      after: opening,
+      mine: sideA,
+      opp: sideB,
+      events: [],
+      actions: [],
+      phase: "prologue",
+      dialoguePipeline: {
+        ...defaultDialoguePipelineSettings(),
+        contextProjectionMode: "compact",
+      },
+    });
+
+    const psycheInput = result.state.turnRecords.at(-1)?.pipelineTrace?.deepPsyche?.a.input as
+      { previous?: { privateMemory?: string }; matchupMemory?: unknown };
+    assert.equal(psycheInput.previous?.privateMemory, "");
+    assert.deepEqual(psycheInput.matchupMemory, {
+      preBattlePlan: "足を止めず、間合いの変化を測る。",
+      postBattleReflection: "前回は急ぎすぎて相手の誘いに乗った。",
+      battleCount: 3,
+    });
+    assert.equal(result.state.agentStateA?.privateMemory, "");
+  });
+
   it("uses initial perception for prologue decisions and reaction-only aftermath", async () => {
     const sideA = sheet("a", "アオ", ["私"]);
     const sideB = sheet("b", "クロ", ["俺"]);
