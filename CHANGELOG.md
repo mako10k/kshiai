@@ -5,6 +5,20 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 
 ## [Unreleased]
 
+## [0.14.7] - 2026-08-10
+
+### Fixed
+
+- Clears inherited battle-private memory on the compact prologue's fail-open
+  provider path as well as its fulfilled path, preserving the boundary between
+  current inner state and durable opponent notes.
+
+### Operations
+
+- This remains a compact-context staging candidate only. It adds no phrase
+  matching, speech rejection, cancellation, mechanical penalty, action-timing
+  change, or additional LLM call.
+
 ## [0.14.6] - 2026-08-10
 
 ### Fixed
