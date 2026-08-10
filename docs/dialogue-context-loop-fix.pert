@@ -1,0 +1,76 @@
+# Scoped execution plan for compact dialogue-loop correction.
+project KSHIAI_DIALOGUE_CONTEXT_LOOP_FIX:
+  version 5
+  title "Compact dialogue thread separation"
+  description "Correct the v0.14.0 compact-context echo by separating utterance continuity from fresh result observation, removing duplicate context aliases, and strengthening appraisal-grounded ExpressionBrief semantics without phrase bans, runtime prose rejection, extra LLM calls, cancellation, or mechanic changes."
+  as_of 2026-08-10
+  duration_unit point
+  velocity 1p/1d
+  finish COMPACT_DIALOGUE_LOOP_ACCEPTED
+  target_duration 9p
+
+resource DEV:
+  title "Developer"
+  capacity 1
+
+resource OWNER:
+  title "Product and release owner"
+  capacity 1
+
+
+milestone RCA_DIRECTION_ACCEPTED:
+  title "RCA direction accepted"
+  state reached
+
+milestone LOCAL_LOOP_FIX_ACCEPTED:
+  title "Local thread-separation acceptance complete"
+
+milestone STAGING_LOOP_FIX_ACCEPTED:
+  title "Fresh staging observations accept compact context"
+
+milestone PRODUCTION_LOOP_FIX_APPROVED:
+  title "Production compact-context release approved"
+
+milestone COMPACT_DIALOGUE_LOOP_ACCEPTED:
+  title "Production observations accept compact context"
+
+
+task DCL_IMPLEMENT RCA_DIRECTION_ACCEPTED -> LOCAL_LOOP_FIX_ACCEPTED:
+  title "Implement typed thread separation and compact appraisal contract"
+  description "Change projections and compact inputs; preserve deterministic mechanics, reservation timing, provider count, and durable compatibility. Add regression tests for own/counterpart utterance exclusion, one-path context cardinality, and brief trace linkage."
+  duration 3p
+  status active
+  owner "codex"
+  requires:
+    DEV 1
+
+task DCL_LOCAL_VERIFY LOCAL_LOOP_FIX_ACCEPTED -> STAGING_LOOP_FIX_ACCEPTED:
+  title "Release immutable candidate and inspect six fresh staging battles"
+  description "Verify packet categories, side ownership, compact input cardinality, brief execution, schema/provider status, prompt budget, and dialogue variety. Stop on mechanics divergence, observer leak, duplicate aliases, provider failure, or a repeat-loop recurrence."
+  duration 2p
+  owner "codex"
+  requires:
+    DEV 1
+
+task DCL_OWNER_REVIEW STAGING_LOOP_FIX_ACCEPTED -> PRODUCTION_LOOP_FIX_APPROVED:
+  title "Review staging evidence and choose production promotion"
+  description "The owner reviews the fresh isolated observations and explicitly chooses whether to promote the exact immutable candidate."
+  duration 1p
+  owner "user"
+  requires:
+    OWNER 1
+
+task DCL_PRODUCTION_OBSERVE PRODUCTION_LOOP_FIX_APPROVED -> COMPACT_DIALOGUE_LOOP_ACCEPTED:
+  title "Promote and inspect three protected production battles"
+  description "Use the protected PR, tag, staging, approval, promotion, smoke, and observation path. Retain exact battle traces and leave compact disabled on the first quality failure."
+  duration 2p
+  owner "codex"
+  requires:
+    DEV 1
+
+work_event WE-491150f3e2a85ac620bc5147976fb8b37727c360dbb41a1ac17398fd190c3b56:
+  model 1
+  task DCL_IMPLEMENT
+  kind start
+  occurred_at 2026-08-10T12:54:56+09:00
+  planned_value 3p

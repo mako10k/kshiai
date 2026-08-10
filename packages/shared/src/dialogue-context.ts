@@ -51,8 +51,16 @@ function newPerceptsForSlot(input: {
   evidence: readonly PerceptionEvidence[];
 }): TurnObservationItem[] {
   const changed = new Set(input.frame.latestDiff.addedOrUpdatedPerceptIds);
+  // Utterance evidence remains observer-visible in the perception frame, but
+  // reaches character agents only through ordered conversation continuity.
+  // This server-owned evidence-ID prefix is not a free-form prose classifier.
   return input.slot.percepts
-    .filter((percept) => changed.has(percept.perceptId))
+    .filter((percept) =>
+      changed.has(percept.perceptId) &&
+      !percept.perceptId.startsWith(
+        `percept.${input.frame.observer.side}.evidence.utterance.`,
+      )
+    )
     .slice(0, 8)
     .map((percept) => ({
       phenomenon: percept.phenomenon.slice(0, 320),
