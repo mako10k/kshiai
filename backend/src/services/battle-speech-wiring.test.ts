@@ -347,6 +347,41 @@ describe("character-authored public speech", () => {
     assert.equal(result.state.agentStateA?.privateMemory, "");
   });
 
+  it("clears inherited compact private memory when prologue psyche is unavailable", async () => {
+    const sideA = sheet("a", "アオ", ["私"]);
+    const sideB = sheet("b", "クロ", ["俺"]);
+    const opening = createBattleState({
+      id: "compact-matchup-memory-rejected-prologue",
+      sideA,
+      sideB,
+      turnLimit: 20,
+      prologuePending: true,
+    });
+    opening.agentStateA!.privateMemory = "この相手への過去方針: 古い計画";
+    const provider = new MockLlmProvider();
+    provider.advanceCharacterPsyche = async () => {
+      throw new Error("simulated unavailable psyche");
+    };
+
+    const result = await advanceCharacterAgents({
+      llm: provider,
+      before: opening,
+      after: opening,
+      mine: sideA,
+      opp: sideB,
+      events: [],
+      actions: [],
+      phase: "prologue",
+      dialoguePipeline: {
+        ...defaultDialoguePipelineSettings(),
+        contextProjectionMode: "compact",
+      },
+    });
+
+    assert.equal(result.state.agentStateA?.privateMemory, "");
+    assert.equal(result.state.turnRecords.at(-1)?.pipelineTrace?.deepPsyche?.a.providerStatus, "rejected");
+  });
+
   it("uses initial perception for prologue decisions and reaction-only aftermath", async () => {
     const sideA = sheet("a", "アオ", ["私"]);
     const sideB = sheet("b", "クロ", ["俺"]);

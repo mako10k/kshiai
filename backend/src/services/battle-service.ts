@@ -1298,7 +1298,10 @@ export async function advanceCharacterAgents(input: {
     selfReference?: string | null,
   ) => {
     if (result.status !== "fulfilled" || !result.value) {
-      return { state: previous, expressionBrief: defaultExpressionBrief(previous) };
+      const state = compactContext && input.phase === "prologue"
+        ? groundCharacterAgentState(sheet, { ...previous, privateMemory: "" }, selfReference)
+        : previous;
+      return { state, expressionBrief: defaultExpressionBrief(state) };
     }
     if (result.value.delta && result.value.expressionBrief) {
       const delta = result.value.delta;

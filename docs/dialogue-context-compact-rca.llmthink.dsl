@@ -213,3 +213,34 @@ decision FIX_DIRECTION_5 based_on RC7:
     or counterargument alone is not fresh relational leverage. The LLM still
     authors all psychological meaning and may deliberately hold a line; code
     only separates data lifecycles and validates aftermath output presence.
+
+evidence OBS11:
+  |
+    Staged run 31360161721 on v0.14.6, battle btl_270470cad1ca6c60c55a5952,
+    had 18 unique public lines out of 21 but repeated rain/footstep observation
+    lines. Its turn-0 compact deep-psyche calls were rejected. Although the
+    compact prologue input had cleared privateMemory and supplied matchupMemory
+    separately, applyPsyche's rejected-result branch returned the original
+    state. At turn 1 both lanes therefore still contained the recursively
+    labelled legacy matchup text; later fulfilled deltas preserved it. The
+    intended lifecycle separation did not hold under the documented provider
+    failure fallback, so this observation is not valid evidence for
+    FIX_DIRECTION_5.
+
+decision RC8 based_on RC7, OBS11:
+  |
+    The immediate remaining defect is a fail-open state-transition invariant:
+    compact prologue sanitizes its provider input but not the persisted fallback
+    state. A provider rejection must not reintroduce data that the compact
+    contract deliberately excluded. This is deterministic state hygiene, not
+    a content judgment: it neither examines a line nor changes dialogue,
+    action, reservation, or LLM-call behavior.
+
+decision FIX_DIRECTION_6 based_on RC8:
+  |
+    In the compact prologue's rejected or absent psyche branch, persist the
+    same empty current-battle privateMemory as in the fulfilled branch, while
+    retaining the normal fail-open expression behavior. Add a regression test
+    that forces the prologue provider to reject and verifies that no inherited
+    matchup-labelled private state survives. Re-run staging observation before
+    judging the result-priority refinement.
