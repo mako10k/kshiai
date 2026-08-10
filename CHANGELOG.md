@@ -5,6 +5,20 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 
 ## [Unreleased]
 
+## [0.14.8] - 2026-08-10
+
+### Fixed
+
+- Distinguishes advancing with fresh relational leverage from reframing after a
+  prior social move loses force. A private `social_reappraisal` basis now
+  supports the latter without treating it as a deliberate repetition.
+
+### Operations
+
+- This remains a compact-context staging candidate only. It adds no phrase
+  matching, speech rejection, cancellation, mechanical penalty, action-timing
+  change, or additional LLM call.
+
 ## [0.14.7] - 2026-08-10
 
 ### Fixed
