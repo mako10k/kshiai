@@ -283,7 +283,7 @@ describe("character-agent action proposal prompt", () => {
               nextApproach: "端末そのものではなく相手の構えを崩す",
               continuityPosture: "fraying",
               continuityBasis: {
-                kind: "fresh_leverage",
+                kind: "social_reappraisal",
                 reason: "相手の構えに現れた迷いを確かめられる",
               },
               continuityDecision: "reframe",
@@ -384,7 +384,7 @@ describe("character-agent action proposal prompt", () => {
     assert.match(system, /attention, credibility, or emotional force/);
     assert.match(system, /anticipatedSocialConsequence/);
     assert.match(system, /bearer self\|relationship/);
-    assert.match(system, /fresh_leverage/);
+    assert.match(system, /social_reappraisal/);
     assert.match(system, /Do not treat a familiar unresolved demand as development/);
     assert.deepEqual(psyche.delta?.interior?.speechAppraisal, {
       anticipatedImpact: "相手に端末から手を離させる",
@@ -402,7 +402,7 @@ describe("character-agent action proposal prompt", () => {
       nextApproach: "端末そのものではなく相手の構えを崩す",
       continuityPosture: "fraying",
       continuityBasis: {
-        kind: "fresh_leverage",
+        kind: "social_reappraisal",
         reason: "相手の構えに現れた迷いを確かめられる",
       },
       continuityDecision: "reframe",

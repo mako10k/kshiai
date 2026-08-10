@@ -581,7 +581,7 @@ export class MockLlmProvider implements LlmProvider {
               nextApproach: `${counterpartLabel}の出方を別の角度から確かめる`,
               continuityPosture: input.previous.lastSpeech ? "developing" : "opening",
               continuityBasis: {
-                kind: "fresh_leverage",
+                kind: input.previous.lastSpeech ? "social_reappraisal" : "fresh_leverage",
                 reason: input.previous.lastSpeech
                   ? "直前の反応から別の距離の測り方を選べる"
                   : "初対面の出方を観察できる",

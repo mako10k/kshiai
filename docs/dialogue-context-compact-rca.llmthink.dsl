@@ -244,3 +244,31 @@ decision FIX_DIRECTION_6 based_on RC8:
     that forces the prologue provider to reject and verifies that no inherited
     matchup-labelled private state survives. Re-run staging observation before
     judging the result-priority refinement.
+
+evidence OBS12:
+  |
+    Staged run 31361017402 on v0.14.7, battle btl_9a06a05d753d61497dbc4437,
+    confirmed the fallback repair: both turn-1 privateMemory inputs were empty.
+    Dialogue still failed at 16 unique lines of 21, with Gaku choosing advance
+    and fresh_leverage on every fulfilled psyche turn despite repeated social
+    costs and no new relational effect. The compact schema currently forces
+    both advance and reframe to declare fresh_leverage, so a character cannot
+    structurally say that an observed loss of force itself warrants a changed
+    angle; it must either invent leverage or select a deliberate hold.
+
+decision RC9 based_on RC6, RC8, OBS12:
+  |
+    Reframing a failed social approach is psychologically distinct from
+    advancing it with new leverage. Coupling both decisions to fresh_leverage
+    incentivizes fabricated novelty and leaves the natural default unavailable.
+    The defect is in the bounded private decision vocabulary, not in public
+    wording, action timing, or opponent-memory persistence.
+
+decision FIX_DIRECTION_7 based_on RC9:
+  |
+    Add an LLM-authored social_reappraisal continuity basis exclusively for
+    reframe. It records how the previous expression's observed consequence
+    warrants a new angle, while advance remains grounded in fresh leverage,
+    reiteration in protective holding, and withholding in withdrawal. Code
+    validates only decision/basis compatibility; it never compares speech or
+    imposes a topic change.

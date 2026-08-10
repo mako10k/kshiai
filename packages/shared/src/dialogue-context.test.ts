@@ -77,7 +77,7 @@ describe("dialogue context contracts", () => {
             nextApproach: "別の角度から距離を測る",
             continuityPosture: "fraying",
             continuityBasis: {
-              kind: "fresh_leverage",
+              kind: "social_reappraisal",
               reason: "返答がないことで別の距離の測り方が見えた",
             },
             continuityDecision: "reframe",
