@@ -5,6 +5,23 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 
 ## [Unreleased]
 
+## [0.14.2] - 2026-08-10
+
+### Fixed
+
+- Makes compact deep psyche return a typed, private appraisal of the prior
+  expression's expected impact, observed interpersonal impact, and next
+  approach on every turn.
+- Gives compact expression that appraisal as the character's semantic decision
+  context, preserving meaningful character-driven reiteration without phrase
+  bans, prose rejection, or mechanical changes.
+
+### Operations
+
+- Compact mode was reverted to legacy immediately after the failed v0.14.1
+  production observation and remains opt-in until this release passes staged
+  and protected production observation.
+
 ## [0.14.1] - 2026-08-10
 
 ### Fixed
