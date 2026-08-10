@@ -5,6 +5,23 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 
 ## [Unreleased]
 
+## [0.14.5] - 2026-08-10
+
+### Fixed
+
+- Types private dialogue consequences as belonging to the speaker or the
+  relationship, rather than allowing an intended tactical effect on the
+  counterpart to occupy the social-cost appraisal.
+- Requires an LLM-authored, decision-compatible private continuity basis:
+  fresh relational leverage for development or reframing, protective holding
+  for deliberate repetition, and withdrawal for meaningful silence.
+
+### Operations
+
+- This remains a compact-context staging candidate only. It adds no phrase
+  matching, speech rejection, cancellation, mechanical penalty, action-timing
+  change, or additional LLM call.
+
 ## [0.14.4] - 2026-08-10
 
 ### Fixed
