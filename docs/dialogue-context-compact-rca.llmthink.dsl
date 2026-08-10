@@ -102,3 +102,42 @@ decision VALIDATION_DIRECTION based_on FIX_DIRECTION, FIX_DIRECTION_2:
     Add deterministic projection and input-shape tests, then require six fresh
     isolated staging battles and three protected production observations. Quality
     metrics diagnose release acceptance only and never alter a running battle.
+
+evidence OBS8:
+  |
+    Staged run 31356726626 on v0.14.3, battle btl_2d773da09f72573ad35d5f11,
+    ran with compact context scoped only to revision kshiai-api-00071-bep.
+    Every compact psyche delta contained speechAppraisal, so the schema and
+    staged override both worked. Yet Gaku retained "force the observer to
+    abandon the terminal" as expectedImpact and a direct terminal threat as
+    nextApproach through turns 1-9 while choosing advance, not reiterate.
+    Nagi then counted and restated those threats. The 21 public lines had 19
+    exact uniques, but the semantic interaction was still a closed loop.
+
+decision RC5 based_on RC4, OBS8:
+  |
+    Required field presence is insufficient. speechAppraisal currently has an
+    ambiguous write-time contract: expectedImpact is described as the preceding
+    expression's aim while the same persisted slot is read as the next
+    expression's aim. The model can therefore carry a stale initial aim forward
+    and call a semantically unchanged demand "advance." No private state makes
+    the foreseeable or observed interpersonal cost of holding an unresponsive
+    approach explicit, and dialogueThread does not require the unresolved move
+    to be re-evaluated. This is a temporal and psychological-state defect, not
+    an A/B attribution, duplicate-context, exact-duplicate, or action-timing
+    defect.
+
+decision FIX_DIRECTION_3 based_on RC5:
+  |
+    Preserve free-form character semantics, but make their time axis explicit.
+    The persisted appraisal records the prior expression's observed effect and
+    social cost, plus the current expression's anticipated effect and cost.
+    The deep psyche chooses an LLM-authored continuity posture (opening,
+    developing, fraying, deliberate hold, or withdrawal) and a current semantic
+    approach after comparing those private assessments with the compact thread.
+    Default guidance treats lost attention, credibility, or emotional force as
+    a normal human concern; protectiveStance may still make a deliberate hold,
+    ritual, silence, or repetition meaningful. Deterministic code only validates
+    the bounded structured shape and persists it. It neither compares prose nor
+    forces a topic shift, expression retry, cancellation, action rule, or extra
+    model call.

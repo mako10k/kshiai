@@ -676,9 +676,12 @@ describe("character-authored public speech", () => {
             relationshipTension: "張りつめている",
             speechMode: "weave",
             speechAppraisal: {
-              expectedImpact: "相手の構えを動かす",
+              anticipatedImpact: "相手の構えを動かす",
               observedImpact: "前の問いには返答がなかった",
+              anticipatedSocialCost: "問いを重ねれば警戒される",
+              observedSocialCost: "前の問いは注意を動かさなかった",
               nextApproach: "別の角度から相手の反応を探る",
+              continuityPosture: "fraying",
               continuityDecision: "reframe",
             },
           },

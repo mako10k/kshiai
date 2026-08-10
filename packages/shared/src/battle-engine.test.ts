@@ -230,9 +230,12 @@ describe("battle engine", () => {
     });
     assert.equal(state.agentStateA?.selfReference, "わたくし");
     assert.deepEqual(state.agentStateA?.interior?.speechAppraisal, {
-      expectedImpact: "",
+      anticipatedImpact: "",
       observedImpact: "",
+      anticipatedSocialCost: "",
+      observedSocialCost: "",
       nextApproach: "",
+      continuityPosture: "opening",
       continuityDecision: "advance",
     });
     assert.equal(state.agentStateA?.interior?.speechMode, "weave");

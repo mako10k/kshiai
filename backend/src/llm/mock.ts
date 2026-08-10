@@ -562,9 +562,14 @@ export class MockLlmProvider implements LlmProvider {
               ? "action_reaction"
               : "conversation_continuation",
             speechAppraisal: {
-              expectedImpact: input.previous.interior?.speechAppraisal?.expectedImpact ?? "",
+              anticipatedImpact: `${counterpartLabel}の出方を別の角度から確かめる`,
               observedImpact: event.slice(0, 240),
+              anticipatedSocialCost: "反応を急ぎすぎれば相手の警戒を強める",
+              observedSocialCost: input.previous.lastSpeech
+                ? "前の働きかけは相手の注意を大きく動かさなかった"
+                : "まだ言葉の手応えはない",
               nextApproach: `${counterpartLabel}の出方を別の角度から確かめる`,
+              continuityPosture: input.previous.lastSpeech ? "developing" : "opening",
               continuityDecision: input.previous.lastSpeech ? "reframe" : "advance",
             },
           },
@@ -625,13 +630,18 @@ export class MockLlmProvider implements LlmProvider {
           ? "action_reaction" as const
           : "conversation_continuation" as const,
         speechAppraisal: {
-          expectedImpact: `${counterpartLabel}の次の出方を見極める`,
+          anticipatedImpact: `${counterpartLabel}の次の出方を見極める`,
           observedImpact: input.previous.lastSpeech
             ? "前の言葉の後に起きた変化を見定める"
-            : "",
+            : "まだ前の言葉はない",
+          anticipatedSocialCost: "同じ探りを続ければ警戒されるかもしれない",
+          observedSocialCost: input.previous.lastSpeech
+            ? "前の言葉だけでは相手の出方を決められなかった"
+            : "まだ失う手応えはない",
           nextApproach: input.previous.lastSpeech
             ? "相手の反応と状況に合わせて話し方を選び直す"
             : "まず相手の反応を測る",
+          continuityPosture: input.previous.lastSpeech ? "developing" as const : "opening" as const,
           continuityDecision: input.previous.lastSpeech ? "reframe" as const : "advance" as const,
         },
       },
@@ -730,11 +740,14 @@ export class MockLlmProvider implements LlmProvider {
             relationshipTension: "対決後の余韻",
             speechMode: "action_reaction" as const,
             speechAppraisal: {
-              expectedImpact: "結末を自分なりに受け止める",
+              anticipatedImpact: "結末を自分なりに受け止める",
               observedImpact: input.psyche.lastSpeech
                 ? "最後の言葉と結末を振り返っている"
-                : "",
+                : "まだ前の言葉はない",
+              anticipatedSocialCost: "結論を急げば余韻を取り逃がす",
+              observedSocialCost: "対決の緊張がほどけ、言葉の切迫感は去った",
               nextApproach: "対決の余韻にふさわしい言葉を選ぶ",
+              continuityPosture: "withdrawing" as const,
               continuityDecision: "withhold" as const,
             },
           },
@@ -847,13 +860,18 @@ export class MockLlmProvider implements LlmProvider {
             ? "action_reaction" as const
             : "conversation_continuation" as const,
           speechAppraisal: {
-            expectedImpact: `${counterpartLabel}の次の出方を見極める`,
+            anticipatedImpact: `${counterpartLabel}の次の出方を見極める`,
             observedImpact: input.psyche.lastSpeech
               ? "前の言葉の後に起きた変化を見定める"
-              : "",
+              : "まだ前の言葉はない",
+            anticipatedSocialCost: "同じ探りを続ければ警戒されるかもしれない",
+            observedSocialCost: input.psyche.lastSpeech
+              ? "前の言葉だけでは相手の出方を決められなかった"
+              : "まだ失う手応えはない",
             nextApproach: input.psyche.lastSpeech
               ? "相手の反応と状況に合わせて話し方を選び直す"
               : "まず相手の反応を測る",
+            continuityPosture: input.psyche.lastSpeech ? "developing" as const : "opening" as const,
             continuityDecision: input.psyche.lastSpeech ? "reframe" as const : "advance" as const,
           },
         },

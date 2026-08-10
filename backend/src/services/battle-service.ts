@@ -649,9 +649,12 @@ function initialAgentState(
       relationshipTension: "",
       speechMode: "weave",
       speechAppraisal: {
-        expectedImpact: "",
+        anticipatedImpact: "",
         observedImpact: "",
+        anticipatedSocialCost: "",
+        observedSocialCost: "",
         nextApproach: "",
+        continuityPosture: "opening",
         continuityDecision: "advance",
       },
     },
@@ -691,9 +694,12 @@ function groundCharacterAgentState(
       relationshipTension: state.interior?.relationshipTension ?? "",
       speechMode: state.interior?.speechMode ?? "weave",
       speechAppraisal: {
-        expectedImpact: state.interior?.speechAppraisal?.expectedImpact ?? "",
+        anticipatedImpact: state.interior?.speechAppraisal?.anticipatedImpact ?? "",
         observedImpact: state.interior?.speechAppraisal?.observedImpact ?? "",
+        anticipatedSocialCost: state.interior?.speechAppraisal?.anticipatedSocialCost ?? "",
+        observedSocialCost: state.interior?.speechAppraisal?.observedSocialCost ?? "",
         nextApproach: state.interior?.speechAppraisal?.nextApproach ?? "",
+        continuityPosture: state.interior?.speechAppraisal?.continuityPosture ?? "opening",
         continuityDecision: state.interior?.speechAppraisal?.continuityDecision ?? "advance",
       },
     },
@@ -1294,12 +1300,18 @@ export async function advanceCharacterAgents(input: {
           relationshipTension: delta.interior?.relationshipTension ?? previous.interior?.relationshipTension ?? "",
           speechMode: delta.interior?.speechMode ?? previous.interior?.speechMode ?? "weave",
           speechAppraisal: {
-            expectedImpact: delta.interior?.speechAppraisal?.expectedImpact ??
-              previous.interior?.speechAppraisal?.expectedImpact ?? "",
+            anticipatedImpact: delta.interior?.speechAppraisal?.anticipatedImpact ??
+              previous.interior?.speechAppraisal?.anticipatedImpact ?? "",
             observedImpact: delta.interior?.speechAppraisal?.observedImpact ??
               previous.interior?.speechAppraisal?.observedImpact ?? "",
+            anticipatedSocialCost: delta.interior?.speechAppraisal?.anticipatedSocialCost ??
+              previous.interior?.speechAppraisal?.anticipatedSocialCost ?? "",
+            observedSocialCost: delta.interior?.speechAppraisal?.observedSocialCost ??
+              previous.interior?.speechAppraisal?.observedSocialCost ?? "",
             nextApproach: delta.interior?.speechAppraisal?.nextApproach ??
               previous.interior?.speechAppraisal?.nextApproach ?? "",
+            continuityPosture: delta.interior?.speechAppraisal?.continuityPosture ??
+              previous.interior?.speechAppraisal?.continuityPosture ?? "opening",
             continuityDecision: delta.interior?.speechAppraisal?.continuityDecision ??
               previous.interior?.speechAppraisal?.continuityDecision ?? "advance",
           },

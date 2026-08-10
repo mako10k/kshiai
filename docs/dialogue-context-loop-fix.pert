@@ -36,8 +36,8 @@ milestone COMPACT_DIALOGUE_LOOP_ACCEPTED:
 
 
 task DCL_IMPLEMENT RCA_DIRECTION_ACCEPTED -> LOCAL_LOOP_FIX_ACCEPTED:
-  title "Implement typed thread separation and compact appraisal contract"
-  description "Change projections and compact inputs; preserve deterministic mechanics, reservation timing, provider count, and durable compatibility. Add regression tests for own/counterpart utterance exclusion, one-path context cardinality, and brief trace linkage."
+  title "Implement typed thread separation and temporal social-appraisal contract"
+  description "Change projections and compact inputs; preserve deterministic mechanics, reservation timing, provider count, and durable compatibility. Add regression tests for own/counterpart utterance exclusion, one-path context cardinality, brief trace linkage, and prior observed versus current anticipated social effects."
   duration 3p
   status active
   owner "codex"

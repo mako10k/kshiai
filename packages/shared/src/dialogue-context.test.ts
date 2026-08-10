@@ -62,9 +62,12 @@ describe("dialogue context contracts", () => {
       delta: {
         interior: {
           speechAppraisal: {
-            expectedImpact: "相手の返答を待つ",
+            anticipatedImpact: "相手の返答を待つ",
             observedImpact: "返答は得られなかった",
+            anticipatedSocialCost: "待ち続ければ相手の注意を失う",
+            observedSocialCost: "前の待機は返答を引き出せなかった",
             nextApproach: "別の角度から距離を測る",
+            continuityPosture: "fraying",
             continuityDecision: "reframe",
           },
         },
@@ -76,6 +79,17 @@ describe("dialogue context contracts", () => {
       },
     };
     assert.equal(CharacterDeepPsycheCompactAdvanceSchema.safeParse(base).success, true);
+    assert.equal(CharacterDeepPsycheCompactAdvanceSchema.safeParse({
+      ...base,
+      delta: {
+        interior: {
+          speechAppraisal: {
+            ...base.delta.interior.speechAppraisal,
+            observedSocialCost: "",
+          },
+        },
+      },
+    }).success, false);
     assert.equal(CharacterDeepPsycheCompactAdvanceSchema.safeParse({
       ...base,
       delta: { interior: {} },
