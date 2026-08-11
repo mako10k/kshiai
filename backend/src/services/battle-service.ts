@@ -873,7 +873,8 @@ function buildCharacterDecisionContext(input: {
           | "basic_attack"
           | "defend"
           | "rest"
-          | "wait",
+          | "wait"
+          | "reflect",
         ...(parsed.skillId ? { skillId: parsed.skillId } : {}),
         ...(lastSkill?.name
           ? { name: lastSkill.name }
@@ -881,6 +882,8 @@ function buildCharacterDecisionContext(input: {
             ? { name: input.sheet.basicAttack?.name ?? "基本アクション" }
             : parsed.kind === "wait"
               ? { name: "様子を見る" }
+              : parsed.kind === "reflect"
+                ? { name: "戦況を省みる" }
               : parsed.kind === "defend"
                 ? { name: "防御" }
                 : parsed.kind === "rest"
@@ -1108,6 +1111,67 @@ function extendConversationHistory(input: {
   });
   return [...(input.previous.conversationHistory ?? []), ...additions]
     .slice(-input.limit);
+}
+
+
+/** Idempotent: re-applying the same reflect action does not duplicate markers. */
+export function applyReflectMemoryWrites(
+  state: BattleState,
+  actions: ResolvedBattleAction[],
+): BattleState {
+  let next = state;
+  for (const action of actions) {
+    if (!action.executed || action.kind !== "reflect") continue;
+    const analysis = action.reflectionAnalysis?.trim() ?? "";
+    const guideline = action.reflectionGuideline?.trim() ?? "";
+    if (!analysis && !guideline) continue;
+    const key = action.actorSide === "a" ? "agentStateA" : "agentStateB";
+    const agent = next[key];
+    if (!agent) continue;
+    const analysisMarker = analysis ? `【省察】${analysis}` : "";
+    const guidelineMarker = guideline ? `【指針】${guideline}` : "";
+    const alreadyHasAnalysis = Boolean(
+      analysisMarker && agent.privateMemory.includes(analysisMarker),
+    );
+    const alreadyHasGuideline = Boolean(
+      guidelineMarker && agent.privateMemory.includes(guidelineMarker),
+    );
+    const memoryBits = [
+      agent.privateMemory,
+      !alreadyHasAnalysis && analysisMarker,
+      !alreadyHasGuideline && guidelineMarker,
+    ].filter((part): part is string => Boolean(part && part.trim()));
+    const observationAlready = analysis
+      ? agent.observations.some((item) => item === analysis.slice(0, 240))
+      : true;
+    next = {
+      ...next,
+      [key]: {
+        ...agent,
+        privateMemory: memoryBits.join("\n").slice(0, 1200),
+        currentGoal: guideline || agent.currentGoal,
+        observations: [
+          ...agent.observations.slice(-6),
+          ...(analysis && !observationAlready ? [analysis.slice(0, 240)] : []),
+        ].slice(-8),
+        interior: {
+          primaryEmotion: agent.interior?.primaryEmotion ?? agent.emotion ?? "平静",
+          concealedEmotion: agent.interior?.concealedEmotion ?? null,
+          coreNeed: agent.interior?.coreNeed ?? "",
+          protectiveStance: agent.interior?.protectiveStance ?? "",
+          eventAppraisal: analysis.slice(0, 240) || agent.interior?.eventAppraisal || "",
+          unspokenIntent: analysis.slice(0, 240) || agent.interior?.unspokenIntent || "",
+          currentConcern: guideline.slice(0, 240) || agent.interior?.currentConcern || agent.currentGoal,
+          attitudeTowardCounterpart: agent.interior?.attitudeTowardCounterpart ?? "対峙している",
+          confidence: agent.interior?.confidence ?? "steady",
+          relationshipTension: agent.interior?.relationshipTension ?? "",
+          speechMode: agent.interior?.speechMode ?? "weave",
+          speechAppraisal: agent.interior?.speechAppraisal,
+        },
+      },
+    };
+  }
+  return next;
 }
 
 export async function advanceCharacterAgents(input: {
@@ -2785,6 +2849,8 @@ function buildNarrationActionBeats(input: {
             ? "力を取り戻す"
             : action.kind === "wait"
               ? "機をうかがう"
+              : action.kind === "reflect"
+                ? "戦況を省みる"
               : "行動"
     );
     const description = skill?.description ?? (
@@ -3344,6 +3410,10 @@ async function advanceTurnWithLease(input: {
     next.narrationStyle?.perspective ?? "external";
   let cognitionA: CharacterCognition | undefined;
   let cognitionB: CharacterCognition | undefined;
+  // Seed reflect analysis into agent memory before psyche so the same-turn
+  // private appraisal can read it, then re-apply after agents so a psyche
+  // rewrite cannot drop the durable 【省察】/【指針】 entries.
+  next = applyReflectMemoryWrites(next, resolved.actions);
   const agentTurn = await advanceCharacterAgents({
     llm: input.llm,
     before: state,
@@ -3357,7 +3427,7 @@ async function advanceTurnWithLease(input: {
     sensoryEvidence: semanticTurn.sensoryEvidence,
     quantizedMechanicalEvidence: semanticTurn.quantizedMechanicalEvidence,
   });
-  next = agentTurn.state;
+  next = applyReflectMemoryWrites(agentTurn.state, resolved.actions);
   const rec = (next.turnRecords ?? [])[(next.turnRecords ?? []).length - 1];
   cognitionA = rec?.cognitionA;
   cognitionB = rec?.cognitionB;

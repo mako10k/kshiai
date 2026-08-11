@@ -978,6 +978,12 @@ function intentFromBattleAction(action: BattleAction): CharacterActionIntent {
     ...(action.subjectRefs ? { subjectRefs: action.subjectRefs } : {}),
     ...(action.instrumentRef ? { instrumentRef: action.instrumentRef } : {}),
     ...(action.opportunityId ? { opportunityId: action.opportunityId } : {}),
+    ...(action.reflectionAnalysis
+      ? { reflectionAnalysis: action.reflectionAnalysis }
+      : {}),
+    ...(action.reflectionGuideline
+      ? { reflectionGuideline: action.reflectionGuideline }
+      : {}),
   };
 }
 
@@ -2529,7 +2535,10 @@ function applyAction(
   finisher?: FinisherState,
   repeatCount = 1,
 ): boolean {
-  if (repeatCount >= 2 && ["basic_attack", "skill", "free_action"].includes(action.kind)) {
+  if (
+    repeatCount >= 2 &&
+    ["basic_attack", "skill", "free_action", "reflect"].includes(action.kind)
+  ) {
     const fatigue = Math.min(actor.parameters.stamina ?? 0, repeatCount >= 4 ? 4 : 2);
     if (fatigue > 0) {
       applyTrackedParameterDelta(
@@ -2606,6 +2615,17 @@ function applyAction(
       type: "wait",
       actorName: actor.displayName,
       summary: `${actor.displayName} は様子をうかがった。`,
+    });
+    return false;
+  }
+
+  if (action.kind === "reflect") {
+    // Public observation is opaque; inner analysis is applied to agent memory after resolve.
+    events.push({
+      type: "reflect",
+      actorName: actor.displayName,
+      actorSide: action.actorSide,
+      summary: `${actor.displayName} は一瞬動きを止め、何かを考え込んでいる。`,
     });
     return false;
   }

@@ -352,6 +352,19 @@ export function buildObserverSafeAvailableActions(input: {
     { intent: { kind: "rest" }, option: { kind: "rest", name: "休息" } },
     { intent: { kind: "wait" }, option: { kind: "wait", name: "様子を見る" } },
     {
+      intent: {
+        kind: "reflect",
+        reflectionAnalysis: "ここまでの戦況を整理する",
+        reflectionGuideline: "次の一手の方針を立てる",
+      },
+      option: {
+        kind: "reflect",
+        name: "戦況を省みる",
+        description:
+          "1ターンを費やして戦況を分析し、今後の行動指針を私的メモリへ書き込む。慎重な判断や不利な局面、他に有効な手が薄いときに向く。短気・直情的な性格では通常選ばない。",
+      },
+    },
+    {
       intent: { kind: "free_action", description: "場面へ現実的に働きかける" },
       option: {
         kind: "free_action",

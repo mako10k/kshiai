@@ -209,6 +209,53 @@ describe("mock LLM natural-language handling", () => {
       useFinisher: true,
     });
 
+    const reflectOption = {
+      kind: "reflect" as const,
+      name: "戦況を省みる",
+      target: { kind: "self" as const, perceivedAs: "自分" },
+    };
+    const cautiousReflect = await provider.advanceCharacterAgent({
+      ...agentInput,
+      character: {
+        ...agentInput.character,
+        traits: ["慎重", "観察好き"],
+      },
+      decision: {
+        ...agentInput.decision!,
+        availableActions: [
+          ...agentInput.decision!.availableActions,
+          reflectOption,
+        ],
+      },
+    });
+    const cautiousAction = cautiousReflect.proposedAction as {
+      kind?: string;
+      reflectionAnalysis?: string;
+      reflectionGuideline?: string;
+    } | null;
+    assert.equal(cautiousAction?.kind, "reflect");
+    assert.ok(cautiousAction?.reflectionAnalysis);
+    assert.ok(cautiousAction?.reflectionGuideline);
+
+    const impulsiveSkip = await provider.advanceCharacterAgent({
+      ...agentInput,
+      character: {
+        ...agentInput.character,
+        traits: ["短気", "直情的"],
+      },
+      decision: {
+        ...agentInput.decision!,
+        availableActions: [
+          ...agentInput.decision!.availableActions,
+          reflectOption,
+        ],
+      },
+    });
+    const impulsiveAction = impulsiveSkip.proposedAction as {
+      kind?: string;
+    } | null;
+    assert.notEqual(impulsiveAction?.kind, "reflect");
+
     const perceptionView = buildNarrationPerceptionView({
       perspective: "external",
       focus: "external",
