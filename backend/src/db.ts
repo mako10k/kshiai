@@ -158,6 +158,24 @@ export function getDb(): SqliteDatabase.Database {
     );
     CREATE INDEX IF NOT EXISTS idx_friendships_friend
       ON friendships (friend_user_id);
+    CREATE TABLE IF NOT EXISTS user_favorites (
+      user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      target_user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      created_at TEXT NOT NULL,
+      PRIMARY KEY (user_id, target_user_id),
+      CHECK (user_id != target_user_id)
+    );
+    CREATE INDEX IF NOT EXISTS idx_user_favorites_target
+      ON user_favorites (target_user_id);
+    CREATE TABLE IF NOT EXISTS friend_requests (
+      from_user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      to_user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      created_at TEXT NOT NULL,
+      PRIMARY KEY (from_user_id, to_user_id),
+      CHECK (from_user_id != to_user_id)
+    );
+    CREATE INDEX IF NOT EXISTS idx_friend_requests_to
+      ON friend_requests (to_user_id);
   `);
   const userColumns = sqlite.pragma("table_info(users)") as Array<{ name: string }>;
   const userColumnNames = new Set(userColumns.map((column) => column.name));
@@ -171,6 +189,9 @@ export function getDb(): SqliteDatabase.Database {
     sqlite.exec(
       "ALTER TABLE users ADD COLUMN account_kind TEXT NOT NULL DEFAULT 'general'",
     );
+  }
+  if (!userColumnNames.has("display_name")) {
+    sqlite.exec("ALTER TABLE users ADD COLUMN display_name TEXT");
   }
   sqlite.exec(`
     CREATE UNIQUE INDEX IF NOT EXISTS idx_users_auth_user_id

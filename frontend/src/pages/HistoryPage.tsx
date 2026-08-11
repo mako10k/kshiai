@@ -282,6 +282,7 @@ export function HistoryPage() {
         )}
       </div>
 
+      <div className="match-action-spacer" aria-hidden="true" />
       <div className="match-action-bar">
         <Link className="btn primary match-start-btn" to="/match">
           新しい試合

@@ -12,6 +12,8 @@ export type LoginRequest = z.infer<typeof LoginRequestSchema>;
 export const UserPublicSchema = z.object({
   id: z.string(),
   username: z.string(),
+  /** Public-facing display name; defaults to a generated handle when unset. */
+  displayName: z.string(),
   /** A navigation hint only; the server still enforces administrator access. */
   isAdmin: z.boolean().optional(),
 });
@@ -23,9 +25,36 @@ export const FriendPublicSchema = UserPublicSchema.omit({ isAdmin: true }).exten
 export type FriendPublic = z.infer<typeof FriendPublicSchema>;
 
 export const AddFriendRequestSchema = z.object({
-  username: z.string().min(1).max(32),
+  username: z.string().min(1).max(32).optional(),
+  userId: z.string().min(1).optional(),
+}).refine((value) => Boolean(value.username?.trim() || value.userId?.trim()), {
+  message: "username_or_userId_required",
 });
 export type AddFriendRequest = z.infer<typeof AddFriendRequestSchema>;
+
+export const UpdateDisplayNameRequestSchema = z.object({
+  displayName: z.string().min(1).max(32),
+});
+export type UpdateDisplayNameRequest = z.infer<
+  typeof UpdateDisplayNameRequestSchema
+>;
+
+export const UserProfilePublicSchema = UserPublicSchema.omit({
+  isAdmin: true,
+}).extend({
+  createdAt: z.string().optional(),
+  characterCount: z.number().int().nonnegative().optional(),
+  relation: z
+    .object({
+      isSelf: z.boolean(),
+      isFriend: z.boolean(),
+      isFavorite: z.boolean(),
+      outgoingFriendRequest: z.boolean(),
+      incomingFriendRequest: z.boolean(),
+    })
+    .optional(),
+});
+export type UserProfilePublic = z.infer<typeof UserProfilePublicSchema>;
 
 export const CharacterVisibilityUpdateSchema = z.object({
   visibility: z.enum(["public", "friends", "private"]),

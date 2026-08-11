@@ -652,13 +652,26 @@ export function projectPublicObjectStates(input: {
   const rows: BattleObjectStatePublic[] = [];
   for (const [id, entity] of Object.entries(input.worldState.entities)) {
     const profileLabel = entity.objectProfile?.canonicalLabel?.trim();
+    const descriptionLabel = entity.objectProfile?.description
+      ?.split(/[。\n]/u)[0]
+      ?.trim()
+      .slice(0, 40);
+    const kindJa: Record<BattleWorldEntity["kind"], string> = {
+      character: "人物",
+      object: "物体",
+      terrain: "地形",
+      effect: "効果",
+      other: "対象",
+    };
     const label =
       profileLabel ||
       (id === "character.a"
         ? labels.a ?? "A"
         : id === "character.b"
           ? labels.b ?? "B"
-          : entity.kind);
+          : descriptionLabel ||
+            // Never surface raw enum keys like "object" as the primary name.
+            `${kindJa[entity.kind] ?? "対象"}`);
     const states = [
       ...objectStateLines(entity.objectState),
       ...actorStateLines(entity.actorState),

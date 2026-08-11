@@ -590,6 +590,7 @@ export function MatchPage() {
           )}
       </div>
 
+      <div className="match-action-spacer" aria-hidden="true" />
       <div className="match-action-bar">
         <button
           className="btn primary match-start-btn"

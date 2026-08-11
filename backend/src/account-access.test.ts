@@ -93,7 +93,7 @@ describe("account realm access", () => {
     const app = new Hono();
     app.use("*", async (context, next) => {
       const id = context.req.header("x-test-user") ?? "general-guard";
-      context.set("user", { id, username: id });
+      context.set("user", { id, username: id, displayName: id });
       await next();
     });
     app.get("/", requireInternalObservability, (context) =>

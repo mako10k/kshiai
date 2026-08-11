@@ -6,6 +6,7 @@ import type { UserPublic } from "@kshiai/shared";
 import { config } from "./config.js";
 import { query } from "./db.js";
 import { newId } from "./id.js";
+import { randomDisplayName, resolveDisplayName, toUserPublic } from "./repositories/users.js";
 import {
   adminIdentityMatches,
   getUserAccessProfile,
@@ -57,38 +58,42 @@ function usernameForIdentity(identity: SupabaseIdentity, attempt: number): strin
 export async function ensureSupabaseUser(
   identity: SupabaseIdentity,
 ): Promise<AuthUser> {
-  const existing = await query<{ id: string; username: string }>(
-    `SELECT id, username FROM users WHERE auth_user_id = $1`,
+  const existing = await query<{ id: string; username: string; display_name: string | null }>(
+    `SELECT id, username, display_name FROM users WHERE auth_user_id = $1`,
     [identity.subject],
   );
-  if (existing.rows[0]) return existing.rows[0];
+  if (existing.rows[0]) {
+    return toUserPublic(existing.rows[0]);
+  }
 
   for (let attempt = 0; attempt < 5; attempt += 1) {
     const user = {
       id: newId("usr"),
       username: usernameForIdentity(identity, attempt),
     };
+    const displayName = randomDisplayName(user.id);
     try {
       await query(
         `INSERT INTO users
-          (id, username, password_hash, auth_user_id, email, created_at)
-         VALUES ($1, $2, $3, $4, $5, $6)`,
+          (id, username, password_hash, auth_user_id, email, display_name, created_at)
+         VALUES ($1, $2, $3, $4, $5, $6, $7)`,
         [
           user.id,
           user.username,
           "!supabase-auth",
           identity.subject,
           identity.email,
+          displayName,
           new Date().toISOString(),
         ],
       );
-      return user;
+      return { ...user, displayName };
     } catch (error) {
-      const afterConflict = await query<{ id: string; username: string }>(
-        `SELECT id, username FROM users WHERE auth_user_id = $1`,
+      const afterConflict = await query<{ id: string; username: string; display_name: string | null }>(
+        `SELECT id, username, display_name FROM users WHERE auth_user_id = $1`,
         [identity.subject],
       );
-      if (afterConflict.rows[0]) return afterConflict.rows[0];
+      if (afterConflict.rows[0]) return toUserPublic(afterConflict.rows[0]);
       const code = (error as { code?: string }).code;
       const message = error instanceof Error ? error.message : String(error);
       if (code !== "23505" && !message.includes("UNIQUE")) throw error;
@@ -128,11 +133,12 @@ export async function registerUser(
   const id = newId("usr");
   const password_hash = await bcrypt.hash(password, 10);
   const created_at = new Date().toISOString();
+  const displayName = randomDisplayName(id);
   try {
     await query(
-      `INSERT INTO users (id, username, password_hash, created_at)
-       VALUES ($1, $2, $3, $4)`,
-      [id, username, password_hash, created_at],
+      `INSERT INTO users (id, username, password_hash, display_name, created_at)
+       VALUES ($1, $2, $3, $4, $5)`,
+      [id, username, password_hash, displayName, created_at],
     );
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
@@ -141,7 +147,7 @@ export async function registerUser(
     }
     throw e;
   }
-  return { id, username };
+  return { id, username, displayName };
 }
 
 export async function verifyLogin(
@@ -151,16 +157,17 @@ export async function verifyLogin(
   const result = await query<{
     id: string;
     username: string;
+    display_name: string | null;
     password_hash: string;
   }>(
-    `SELECT id, username, password_hash FROM users WHERE username = $1`,
+    `SELECT id, username, display_name, password_hash FROM users WHERE username = $1`,
     [username],
   );
   const row = result.rows[0];
   if (!row) return null;
   const ok = await bcrypt.compare(password, row.password_hash);
   if (!ok) return null;
-  return { id: row.id, username: row.username };
+  return toUserPublic(row);
 }
 
 export async function createSession(userId: string): Promise<string> {
@@ -185,9 +192,10 @@ export async function userFromToken(token: string | undefined): Promise<AuthUser
   const result = await query<{
     id: string;
     username: string;
+    display_name: string | null;
     expires_at: string | Date;
   }>(
-    `SELECT u.id, u.username, s.expires_at
+    `SELECT u.id, u.username, u.display_name, s.expires_at
      FROM sessions s JOIN users u ON u.id = s.user_id
      WHERE s.token = $1`,
     [token],
@@ -198,7 +206,7 @@ export async function userFromToken(token: string | undefined): Promise<AuthUser
     await destroySession(token);
     return null;
   }
-  return { id: row.id, username: row.username };
+  return toUserPublic(row);
 }
 
 function cookieSecureForRequest(c: Context): boolean {

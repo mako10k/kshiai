@@ -11,6 +11,7 @@ import {
   CharacterVisibilityUpdateSchema,
   LoginRequestSchema,
   RegisterRequestSchema,
+  UpdateDisplayNameRequestSchema,
   SaveBattlefieldFromBattleRequestSchema,
   UpsertNarrationStyleRequestSchema,
   UpdateDialoguePipelineSettingsSchema,
@@ -44,6 +45,7 @@ import * as battleRepo from "./repositories/battles.js";
 import * as bfRepo from "./repositories/battlefields.js";
 import * as styleRepo from "./repositories/narration-styles.js";
 import * as friendRepo from "./repositories/friends.js";
+import * as userRepo from "./repositories/users.js";
 import * as dialoguePipelineRepo from "./repositories/dialogue-pipeline-settings.js";
 import {
   advanceTurn,
@@ -72,9 +74,19 @@ import {
 
 const llm = createLlmProvider();
 
-async function publicUserWithAccess(user: { id: string; username: string }) {
+async function publicUserWithAccess(user: {
+  id: string;
+  username: string;
+  displayName?: string;
+}) {
+  const displayName =
+    user.displayName ??
+    (await userRepo.getUserPublicById(user.id))?.displayName ??
+    user.username;
   return {
-    ...user,
+    id: user.id,
+    username: user.username,
+    displayName,
     isAdmin: (await getUserAccessProfile(user.id)).isAdmin,
   };
 }
@@ -276,7 +288,10 @@ export function buildRoutes() {
       return c.json({ error: "invalid_body", details: parsed.error.flatten() }, 400);
     }
     try {
-      const friend = await friendRepo.addFriend(user.id, parsed.data.username);
+      const friend = await friendRepo.addFriend(user.id, {
+        username: parsed.data.username,
+        userId: parsed.data.userId,
+      });
       return c.json({ friend });
     } catch (err) {
       const message = err instanceof Error ? err.message : "failed";
@@ -291,6 +306,116 @@ export function buildRoutes() {
   authed.delete("/friends/:id", async (c) => {
     const user = c.get("user");
     const removed = await friendRepo.removeFriend(user.id, c.req.param("id"));
+    if (!removed) return c.json({ error: "not_found" }, 404);
+    return c.json({ ok: true });
+  });
+
+  authed.get("/users/:id", async (c) => {
+    const user = c.get("user");
+    const profile = await userRepo.getUserProfile(c.req.param("id"), user.id);
+    if (!profile) return c.json({ error: "not_found" }, 404);
+    return c.json({ user: profile });
+  });
+
+  authed.patch("/me/display-name", async (c) => {
+    const user = c.get("user");
+    const parsed = UpdateDisplayNameRequestSchema.safeParse(
+      await c.req.json().catch(() => ({})),
+    );
+    if (!parsed.success) {
+      return c.json({ error: "invalid_body", details: parsed.error.flatten() }, 400);
+    }
+    try {
+      const updated = await userRepo.updateDisplayName(
+        user.id,
+        parsed.data.displayName,
+      );
+      return c.json({ user: await publicUserWithAccess(updated) });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "failed";
+      return c.json({ error: message }, 400);
+    }
+  });
+
+  authed.get("/favorites", async (c) => {
+    const user = c.get("user");
+    return c.json({ favorites: await userRepo.listFavoriteUsers(user.id) });
+  });
+
+  authed.post("/favorites/:id", async (c) => {
+    const user = c.get("user");
+    try {
+      const favorite = await userRepo.addFavorite(user.id, c.req.param("id"));
+      return c.json({ favorite });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "failed";
+      const status =
+        err && typeof err === "object" && "status" in err
+          ? Number((err as { status?: number }).status) || 400
+          : 400;
+      return c.json({ error: message }, status as 400 | 404);
+    }
+  });
+
+  authed.delete("/favorites/:id", async (c) => {
+    const user = c.get("user");
+    const removed = await userRepo.removeFavorite(user.id, c.req.param("id"));
+    if (!removed) return c.json({ error: "not_found" }, 404);
+    return c.json({ ok: true });
+  });
+
+  authed.post("/friend-requests", async (c) => {
+    const user = c.get("user");
+    const body = (await c.req.json().catch(() => ({}))) as {
+      userId?: string;
+      username?: string;
+    };
+    let targetId = body.userId?.trim() ?? "";
+    if (!targetId && body.username?.trim()) {
+      const found = await friendRepo.findUserByUsername(body.username.trim());
+      targetId = found?.id ?? "";
+    }
+    if (!targetId) return c.json({ error: "user_required" }, 400);
+    try {
+      const request = await userRepo.createFriendRequest(user.id, targetId);
+      return c.json({ request, targetUserId: targetId });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "failed";
+      const status =
+        err && typeof err === "object" && "status" in err
+          ? Number((err as { status?: number }).status) || 400
+          : 400;
+      return c.json({ error: message }, status as 400 | 404 | 409);
+    }
+  });
+
+  authed.post("/friend-requests/:fromUserId/accept", async (c) => {
+    const user = c.get("user");
+    try {
+      await userRepo.acceptFriendRequest(user.id, c.req.param("fromUserId"));
+      return c.json({ ok: true });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "failed";
+      return c.json({ error: message }, 404);
+    }
+  });
+
+  authed.post("/friend-requests/:fromUserId/reject", async (c) => {
+    const user = c.get("user");
+    const removed = await userRepo.rejectFriendRequest(
+      user.id,
+      c.req.param("fromUserId"),
+    );
+    if (!removed) return c.json({ error: "not_found" }, 404);
+    return c.json({ ok: true });
+  });
+
+  authed.delete("/friend-requests/:toUserId", async (c) => {
+    const user = c.get("user");
+    const removed = await userRepo.cancelFriendRequest(
+      user.id,
+      c.req.param("toUserId"),
+    );
     if (!removed) return c.json({ error: "not_found" }, 404);
     return c.json({ ok: true });
   });
