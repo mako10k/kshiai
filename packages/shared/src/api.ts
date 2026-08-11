@@ -17,6 +17,23 @@ export const UserPublicSchema = z.object({
 });
 export type UserPublic = z.infer<typeof UserPublicSchema>;
 
+export const FriendPublicSchema = UserPublicSchema.omit({ isAdmin: true }).extend({
+  createdAt: z.string(),
+});
+export type FriendPublic = z.infer<typeof FriendPublicSchema>;
+
+export const AddFriendRequestSchema = z.object({
+  username: z.string().min(1).max(32),
+});
+export type AddFriendRequest = z.infer<typeof AddFriendRequestSchema>;
+
+export const CharacterVisibilityUpdateSchema = z.object({
+  visibility: z.enum(["public", "friends", "private"]),
+});
+export type CharacterVisibilityUpdate = z.infer<
+  typeof CharacterVisibilityUpdateSchema
+>;
+
 export const GenerateCharacterRequestSchema = z.object({
   prompt: z.string().min(1).max(4000),
 });

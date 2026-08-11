@@ -5,6 +5,24 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 
 ## [Unreleased]
 
+## [0.15.0] - 2026-08-11
+
+### Added
+
+- Burger menu for low-frequency tools and a fixed bottom primary navigation bar.
+- Friends list API and UI; character matchmaking visibility (`public` / `friends` / `private`).
+- Paginated character and opponent candidate lists (opponents default to 10 with search beyond).
+- Separate character creation page at `/characters/new`.
+- Public projection of non-position battlefield object/actor state on the battle screen.
+
+### Database
+
+- Adds `friendships` table (PostgreSQL migration `0007_friendships.sql` and SQLite schema).
+
+### Operations
+
+- Expand-only schema change; prior application revisions remain compatible.
+
 ## [0.14.8] - 2026-08-10
 
 ### Fixed

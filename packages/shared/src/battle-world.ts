@@ -503,6 +503,196 @@ export const BattleSceneStateFactSchema = z.object({
 }).strict();
 export type BattleSceneStateFact = z.infer<typeof BattleSceneStateFactSchema>;
 
+/**
+ * Public non-position object/area state for battlefield UI.
+ * Placement text is separate; this holds retained mechanical object state.
+ */
+export const BattleObjectStatePublicSchema = z.object({
+  label: z.string().min(1).max(120),
+  kind: z.enum(["character", "object", "terrain", "effect", "other"]),
+  active: z.boolean(),
+  presence: z.enum(["present", "absent"]),
+  /** Human-readable non-position states retained from canonical world. */
+  states: z.array(z.string().min(1).max(120)).max(16),
+  /** Optional placement summary (kept separate from states). */
+  placementSummary: z.string().max(200).optional(),
+}).strict();
+export type BattleObjectStatePublic = z.infer<
+  typeof BattleObjectStatePublicSchema
+>;
+
+function objectStateLines(
+  objectState: WorldObjectState | null | undefined,
+): string[] {
+  if (!objectState) return [];
+  const lines: string[] = [];
+  if (objectState.portable) lines.push("持ち運び可");
+  if (objectState.usable) lines.push("使用可");
+  if (objectState.exclusiveUse) lines.push("独占使用");
+  if (objectState.cover !== "none") {
+    lines.push(
+      objectState.cover === "full" ? "完全遮蔽" : "部分遮蔽",
+    );
+  }
+  if (objectState.blocksMovement) lines.push("移動阻害");
+  if (objectState.visionEffect !== "none") {
+    lines.push(
+      objectState.visionEffect === "block" ? "視界遮断" : "視界低下",
+    );
+  }
+  if (objectState.hearingEffect !== "none") {
+    lines.push(
+      objectState.hearingEffect === "block" ? "聴覚遮断" : "聴覚低下",
+    );
+  }
+  if (objectState.mobilityEffect !== "none") {
+    lines.push(
+      objectState.mobilityEffect === "immobilize" ? "拘束" : "移動妨害",
+    );
+  }
+  return lines;
+}
+
+function actorStateLines(
+  actorState: WorldActorState | null | undefined,
+): string[] {
+  if (!actorState) return [];
+  const lines: string[] = [];
+  if (actorState.consciousness !== "alert") {
+    lines.push(
+      actorState.consciousness === "unconscious"
+        ? "意識なし"
+        : actorState.consciousness === "incapacitated"
+          ? "行動不能"
+          : actorState.consciousness === "dazed"
+            ? "朦朧"
+            : actorState.consciousness,
+    );
+  }
+  if (actorState.mobility !== "mobile") {
+    lines.push(
+      actorState.mobility === "immobilized" ? "移動不能" : "移動困難",
+    );
+  }
+  if (actorState.restraint !== "free") {
+    lines.push(
+      actorState.restraint === "restrained" ? "拘束" : "部分拘束",
+    );
+  }
+  if (actorState.posture !== "standing") {
+    const postureJa: Record<string, string> = {
+      crouched: "しゃがみ",
+      prone: "伏せ",
+      airborne: "空中",
+      other: "特殊姿勢",
+    };
+    lines.push(postureJa[actorState.posture] ?? actorState.posture);
+  }
+  if (actorState.vision !== "normal") {
+    lines.push(
+      actorState.vision === "absent"
+        ? "視覚なし"
+        : actorState.vision === "blocked"
+          ? "視界遮断"
+          : "視界低下",
+    );
+  }
+  if (actorState.hearing !== "normal") {
+    lines.push(
+      actorState.hearing === "absent"
+        ? "聴覚なし"
+        : actorState.hearing === "blocked"
+          ? "聴覚遮断"
+          : "聴覚低下",
+    );
+  }
+  if (actorState.mentalClarity !== "clear") {
+    lines.push(
+      actorState.mentalClarity === "delirious" ? "錯乱" : "混乱",
+    );
+  }
+  if (actorState.agency !== "self_directed") {
+    lines.push(
+      actorState.agency === "compelled" ? "強制" : "制御不能",
+    );
+  }
+  return lines;
+}
+
+function placementSummaryJa(
+  entity: BattleWorldEntity,
+  areas: BattleWorldState["areas"],
+  labels: Partial<Record<"a" | "b", string>>,
+): string {
+  if (entity.placement.type === "scene") {
+    return areas[entity.placement.areaId]?.label ?? "場面内";
+  }
+  if (entity.placement.type === "held") {
+    const who = placementActorSide(entity.placement.holderId);
+    return `${who ? (labels[who] ?? (who === "a" ? "A" : "B")) : "誰か"}が所持`;
+  }
+  if (entity.placement.type === "worn") {
+    const who = placementActorSide(entity.placement.wearerId);
+    return `${who ? (labels[who] ?? (who === "a" ? "A" : "B")) : "誰か"}が着用`;
+  }
+  if (entity.placement.type === "attached") return "付着";
+  return "場外";
+}
+
+/**
+ * Project canonical world entities into public non-position state cards.
+ * Ensures object/actor state is retained for UI even when semantic facts omit it.
+ */
+export function projectPublicObjectStates(input: {
+  worldState?: BattleWorldState | null;
+  participantLabels?: Partial<Record<"a" | "b", string>>;
+}): BattleObjectStatePublic[] {
+  if (!input.worldState) return [];
+  const labels = input.participantLabels ?? {};
+  const rows: BattleObjectStatePublic[] = [];
+  for (const [id, entity] of Object.entries(input.worldState.entities)) {
+    const profileLabel = entity.objectProfile?.canonicalLabel?.trim();
+    const label =
+      profileLabel ||
+      (id === "character.a"
+        ? labels.a ?? "A"
+        : id === "character.b"
+          ? labels.b ?? "B"
+          : entity.kind);
+    const states = [
+      ...objectStateLines(entity.objectState),
+      ...actorStateLines(entity.actorState),
+    ];
+    // Always retain at least presence/active so state is never empty for present objects.
+    if (entity.presence === "absent") states.unshift("場にいない");
+    if (!entity.active) states.unshift("非アクティブ");
+    if (states.length === 0 && entity.kind === "character") continue;
+    rows.push({
+      label: label.slice(0, 120),
+      kind: entity.kind,
+      active: entity.active,
+      presence: entity.presence,
+      states: states.slice(0, 16),
+      placementSummary: placementSummaryJa(entity, input.worldState.areas, labels),
+    });
+  }
+  // Prefer objects/terrain/effects, then characters with non-default states.
+  return rows
+    .sort((a, b) => {
+      const rank = (row: BattleObjectStatePublic) =>
+        row.kind === "object"
+          ? 0
+          : row.kind === "terrain"
+            ? 1
+            : row.kind === "effect"
+              ? 2
+              : 3;
+      return rank(a) - rank(b) || a.label.localeCompare(b.label, "ja");
+    })
+    .slice(0, 24);
+}
+
+
 function sceneFactActorLabel(input: {
   actorSide: "a" | "b" | null;
   observerSide?: "a" | "b";

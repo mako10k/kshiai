@@ -178,7 +178,24 @@ export async function listOwnedCharacterReservedNames(userId: string): Promise<s
   return [...unique.values()];
 }
 
-export async function listCharactersForUser(userId: string, q?: string) {
+export type CharacterListPage = {
+  characters: ReturnType<typeof toPublicCharacter>[];
+  total: number;
+  limit: number;
+  offset: number;
+};
+
+function clampPage(limit?: number, offset?: number) {
+  const safeLimit = Math.max(1, Math.min(50, limit ?? 20));
+  const safeOffset = Math.max(0, offset ?? 0);
+  return { limit: safeLimit, offset: safeOffset };
+}
+
+export async function listCharactersForUser(
+  userId: string,
+  q?: string,
+  page?: { limit?: number; offset?: number },
+): Promise<CharacterListPage> {
   let sheets = (await listOwnedSheets(userId)).filter(isActive);
   if (q?.trim()) {
     const needle = q.trim().toLowerCase();
@@ -196,11 +213,19 @@ export async function listCharactersForUser(userId: string, q?: string) {
     if (rb !== ra) return rb - ra;
     return b.updatedAt.localeCompare(a.updatedAt);
   });
+  const { limit, offset } = clampPage(page?.limit, page?.offset);
+  const total = sheets.length;
+  const pageSheets = sheets.slice(offset, offset + limit);
   const ratingDisplay = await getRatingDisplayContext(
     (await getUserAccessProfile(userId)).realm,
   );
   // Owner always sees private overall stats
-  return sheets.map((s) => toPublicCharacter(s, userId, ratingDisplay));
+  return {
+    characters: pageSheets.map((s) => toPublicCharacter(s, userId, ratingDisplay)),
+    total,
+    limit,
+    offset,
+  };
 }
 
 /** Hide early mock-test junk (e.g. 「はアキ」) from matchmaking. */
@@ -211,19 +236,32 @@ function isPlayableOpponent(sheet: CharacterSheet): boolean {
   return true;
 }
 
-export async function listPublicOpponents(excludeUserId: string, q?: string) {
+export async function listPublicOpponents(
+  excludeUserId: string,
+  q?: string,
+  page?: { limit?: number; offset?: number },
+): Promise<CharacterListPage> {
   let sheets = await listPlayableOpponentSheets(excludeUserId);
   if (q?.trim()) {
     const needle = q.trim().toLowerCase();
     sheets = sheets.filter((s) => s.displayName.toLowerCase().includes(needle));
   }
+  sheets.sort((a, b) => {
+    const ra = a.record?.rating ?? 1500;
+    const rb = b.record?.rating ?? 1500;
+    if (rb !== ra) return rb - ra;
+    return b.updatedAt.localeCompare(a.updatedAt);
+  });
+  const { limit, offset } = clampPage(page?.limit ?? 10, page?.offset);
+  const total = sheets.length;
+  const pageSheets = sheets.slice(offset, offset + limit);
   const ratingDisplays = new Map<AccountRealm, RatingDisplayContext>();
   for (const realm of ["general", "test"] as const) {
     ratingDisplays.set(realm, await getRatingDisplayContext(realm));
   }
   const viewer = await getUserAccessProfile(excludeUserId);
   // Viewer is excludeUserId: own chars get overall; others public-only
-  return Promise.all(sheets.map(async (sheet) => {
+  const characters = await Promise.all(pageSheets.map(async (sheet) => {
     const realm = viewer.isAdmin
       ? (await getUserAccessProfile(sheet.ownerUserId)).realm
       : viewer.realm;
@@ -233,6 +271,7 @@ export async function listPublicOpponents(excludeUserId: string, q?: string) {
       ratingDisplays.get(realm),
     );
   }));
+  return { characters, total, limit, offset };
 }
 
 /** Engine-only sheets available as opponents; never expose directly from routes. */
@@ -252,25 +291,55 @@ export async function listPlayableOpponentSheets(
      LIMIT 200`,
     [excludeUserId],
   );
-  let sheets = rows
-    .filter((row) =>
-      canAccessAccountKind(viewer, normalizeAccountKind(row.account_kind))
-    )
-    .map((r) => parseSheet(r.sheet_json))
-    .filter(isPlayableOpponent);
+  const { isViewerFriendedByOwner } = await import("./friends.js");
+  const friendCache = new Map<string, boolean>();
+  const canViewVisibility = async (sheet: CharacterSheet): Promise<boolean> => {
+    if (!isPlayableOpponent(sheet)) return false;
+    const visibility = sheet.visibility ?? "public";
+    if (visibility === "public") return true;
+    if (visibility === "private") return false;
+    let ok = friendCache.get(sheet.ownerUserId);
+    if (ok === undefined) {
+      ok = await isViewerFriendedByOwner(sheet.ownerUserId, excludeUserId);
+      friendCache.set(sheet.ownerUserId, ok);
+    }
+    return ok;
+  };
+  const sheets: CharacterSheet[] = [];
+  for (const row of rows) {
+    if (!canAccessAccountKind(viewer, normalizeAccountKind(row.account_kind))) {
+      continue;
+    }
+    const sheet = parseSheet(row.sheet_json);
+    if (await canViewVisibility(sheet)) sheets.push(sheet);
+  }
   // Include own characters as sparring partners
   const { rows: own } = await query<{ sheet_json: unknown }>(
     `SELECT sheet_json FROM characters WHERE owner_user_id = $1`,
     [excludeUserId],
   );
-  sheets = [
-    ...sheets,
-    ...own
-      .map((r) => parseSheet(r.sheet_json))
-      .filter(isActive), // own list may still show mock during dev; opponents hide them
-  ];
+  for (const row of own) {
+    const sheet = parseSheet(row.sheet_json);
+    if (isActive(sheet)) sheets.push(sheet);
+  }
   const map = new Map(sheets.map((s) => [s.id, s]));
   return [...map.values()];
+}
+
+export async function updateCharacterVisibility(
+  characterId: string,
+  ownerUserId: string,
+  visibility: "public" | "friends" | "private",
+): Promise<CharacterSheet | null> {
+  const sheet = await getSheet(characterId);
+  if (!sheet || sheet.ownerUserId !== ownerUserId) return null;
+  const next = {
+    ...sheet,
+    visibility,
+    updatedAt: new Date().toISOString(),
+  };
+  await saveSheet(next);
+  return next;
 }
 
 export async function canViewCharacter(

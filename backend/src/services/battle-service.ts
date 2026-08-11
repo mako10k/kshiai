@@ -33,6 +33,7 @@ import {
   stanceLabel,
   summarizeSelectedPolicies,
   selectPolicyIdsByPerspective,
+  projectPublicObjectStates,
   toPublicInstance,
   toPublicPolicyOption,
   type BattlePolicyOption,
@@ -217,6 +218,13 @@ export function toBattlePublic(
       ? toPublicInstance(state.battlefield)
       : null,
     semanticState: state.observationStatePublic ?? null,
+    objectStates: projectPublicObjectStates({
+      worldState: state.worldState,
+      participantLabels: {
+        a: state.sideA.displayName,
+        b: state.sideB.displayName,
+      },
+    }),
     log: state.log,
     availableActions: [],
     winnerSide: state.winnerSide,
@@ -4388,8 +4396,11 @@ export async function performAction(input: {
 }
 
 export async function pickRandomOpponent(userId: string, myCharacterId: string) {
-  const all = await charRepo.listPublicOpponents(userId);
-  const candidates = all.filter((c) => c.id !== myCharacterId);
+  const page = await charRepo.listPublicOpponents(userId, undefined, {
+    limit: 50,
+    offset: 0,
+  });
+  const candidates = page.characters.filter((c) => c.id !== myCharacterId);
   if (candidates.length === 0) return null;
   return candidates[Math.floor(Math.random() * candidates.length)]!;
 }

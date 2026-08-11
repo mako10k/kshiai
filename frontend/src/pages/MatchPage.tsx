@@ -81,6 +81,7 @@ export function MatchPage() {
   };
   const [mine, setMine] = useState<CharacterPublic[]>([]);
   const [candidates, setCandidates] = useState<CharacterPublic[]>([]);
+  const [candidateTotal, setCandidateTotal] = useState(0);
   const [fields, setFields] = useState<BattlefieldPresetPublic[]>([]);
   const [styles, setStyles] = useState<NarrationStylePublic[]>([]);
 
@@ -88,15 +89,33 @@ export function MatchPage() {
   const [busy, setBusy] = useState(false);
   const matchupReady = Boolean(myId && oppId);
 
+  const loadCandidates = useCallback(async (query?: string) => {
+    const c = await api.candidates(query || undefined, {
+      limit: 10,
+      offset: 0,
+    });
+    setCandidates(c.candidates);
+    setCandidateTotal(c.total);
+    return c;
+  }, []);
+
+  useEffect(() => {
+    const handle = window.setTimeout(() => {
+      void loadCandidates(oppQuery.trim() || undefined).catch((e) =>
+        setError(String(e)),
+      );
+    }, 250);
+    return () => window.clearTimeout(handle);
+  }, [oppQuery, loadCandidates]);
+
   useEffect(() => {
     void (async () => {
       const [c, m, f, s] = await Promise.all([
-        api.candidates(),
-        api.listCharacters(),
+        loadCandidates(),
+        api.listCharacters(undefined, { limit: 50, offset: 0 }),
         api.listBattlefields(),
         api.listNarrationStyles(),
       ]);
-      setCandidates(c.candidates);
       setMine(m.characters);
       setFields(f.battlefields);
       setStyles(s.styles);
@@ -495,6 +514,9 @@ export function MatchPage() {
                 );
               })}
             </select>
+            <p className="muted help-text">
+              候補は最大10件。全{candidateTotal}件から検索でさらに絞り込みできます。
+            </p>
           </label>
           {myChar ? (
             <p className="muted help-text" style={{ marginTop: "-0.35rem" }}>

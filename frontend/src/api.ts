@@ -9,6 +9,8 @@ import type {
   EnvironmentProcessReceipt,
   CharacterImprovementPublic,
   CharacterPublic,
+  CharacterVisibility,
+  FriendPublic,
   DialoguePipelineSettings,
   NarrationStylePublic,
   UserPublic,
@@ -224,10 +226,32 @@ export const api = {
     }),
   logout: () =>
     request<{ ok: boolean }>("/api/auth/logout", { method: "POST" }),
-  listCharacters: (q?: string) =>
-    request<{ characters: CharacterPublic[] }>(
-      `/api/characters${q ? `?q=${encodeURIComponent(q)}` : ""}`,
-    ),
+  listCharacters: (q?: string, page?: { limit?: number; offset?: number }) => {
+    const sp = new URLSearchParams();
+    if (q) sp.set("q", q);
+    if (page?.limit != null) sp.set("limit", String(page.limit));
+    if (page?.offset != null) sp.set("offset", String(page.offset));
+    const qs = sp.toString();
+    return request<{
+      characters: CharacterPublic[];
+      total: number;
+      limit: number;
+      offset: number;
+    }>(`/api/characters${qs ? `?${qs}` : ""}`);
+  },
+  listFriends: () => request<{ friends: FriendPublic[] }>("/api/friends"),
+  addFriend: (username: string) =>
+    request<{ friend: FriendPublic }>("/api/friends", {
+      method: "POST",
+      body: JSON.stringify({ username }),
+    }),
+  removeFriend: (userId: string) =>
+    request<{ ok: boolean }>(`/api/friends/${userId}`, { method: "DELETE" }),
+  setCharacterVisibility: (id: string, visibility: CharacterVisibility) =>
+    request<{ character: CharacterPublic }>(`/api/characters/${id}/visibility`, {
+      method: "PATCH",
+      body: JSON.stringify({ visibility }),
+    }),
   getCharacter: (id: string) =>
     request<{ character: CharacterPublic; isOwner: boolean }>(
       `/api/characters/${id}`,
@@ -326,10 +350,19 @@ export const api = {
     ),
   imageQuota: (id: string) =>
     request<{ quota: ImageGenQuota }>(`/api/characters/${id}/image-quota`),
-  candidates: (q?: string) =>
-    request<{ candidates: CharacterPublic[] }>(
-      `/api/match/candidates${q ? `?q=${encodeURIComponent(q)}` : ""}`,
-    ),
+  candidates: (q?: string, page?: { limit?: number; offset?: number }) => {
+    const sp = new URLSearchParams();
+    if (q) sp.set("q", q);
+    if (page?.limit != null) sp.set("limit", String(page.limit));
+    if (page?.offset != null) sp.set("offset", String(page.offset));
+    const qs = sp.toString();
+    return request<{
+      candidates: CharacterPublic[];
+      total: number;
+      limit: number;
+      offset: number;
+    }>(`/api/match/candidates${qs ? `?${qs}` : ""}`);
+  },
   randomOpponent: (myCharacterId: string) =>
     request<{ opponent: CharacterPublic }>("/api/match/random", {
       method: "POST",

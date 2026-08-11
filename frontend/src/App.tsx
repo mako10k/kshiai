@@ -1,13 +1,17 @@
 import { Link, Navigate, Route, Routes } from "react-router-dom";
 import { useAuth } from "./auth";
+import { BottomNav } from "./components/BottomNav";
+import { BurgerMenu } from "./components/BurgerMenu";
 import { LoginPage } from "./pages/LoginPage";
 import { MenuPage } from "./pages/MenuPage";
 import { CharactersPage } from "./pages/CharactersPage";
+import { CharacterCreatePage } from "./pages/CharacterCreatePage";
 import { CharacterDetailPage } from "./pages/CharacterDetailPage";
 import { MatchPage } from "./pages/MatchPage";
 import { BattlePage } from "./pages/BattlePage";
 import { BattlefieldsPage } from "./pages/BattlefieldsPage";
 import { BattlefieldDetailPage } from "./pages/BattlefieldDetailPage";
+import { FriendsPage } from "./pages/FriendsPage";
 import { HistoryPage } from "./pages/HistoryPage";
 import { NarrationStylesPage } from "./pages/NarrationStylesPage";
 import { AuthCallbackPage } from "./pages/AuthCallbackPage";
@@ -16,23 +20,22 @@ import { InternalObservationsPage } from "./pages/InternalObservationsPage";
 import { AdminDialoguePipelinePage } from "./pages/AdminDialoguePipelinePage";
 
 function Shell({ children }: { children: React.ReactNode }) {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   return (
-    <div className="app">
+    <div className={`app${user ? " app-with-bottom-nav" : ""}`}>
       <header className="topbar">
         <Link to="/" className="brand">
           AI闘技場
         </Link>
         {user && (
           <div className="topbar-right">
-            <span className="muted">{user.username}</span>
-            <button type="button" className="btn ghost" onClick={() => void logout()}>
-              ログアウト
-            </button>
+            <span className="muted topbar-username">{user.username}</span>
+            <BurgerMenu />
           </div>
         )}
       </header>
       <main className="main">{children}</main>
+      <BottomNav />
     </div>
   );
 }
@@ -68,6 +71,14 @@ export function App() {
           }
         />
         <Route
+          path="/characters/new"
+          element={
+            <RequireAuth>
+              <CharacterCreatePage />
+            </RequireAuth>
+          }
+        />
+        <Route
           path="/characters/:id"
           element={
             <RequireAuth>
@@ -80,6 +91,14 @@ export function App() {
           element={
             <RequireAuth>
               <MatchPage />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/friends"
+          element={
+            <RequireAuth>
+              <FriendsPage />
             </RequireAuth>
           }
         />
