@@ -123,7 +123,10 @@ export function buildInnerDigest(input: {
     ...base,
     beliefs: (agent?.beliefs ?? []).slice(-4),
     recentObservations: (agent?.observations ?? []).slice(-4),
-    privateHint: (agent?.privateMemory ?? "").trim().slice(0, 280) || undefined,
+    privateHint: [
+      agent?.battleVolatileMemory?.trim(),
+      agent?.privateMemory?.trim(),
+    ].filter(Boolean).join("\n").slice(0, 280) || undefined,
     speechStyle: agent?.speechStyle?.trim() || undefined,
     selfReference: agent?.selfReference ?? null,
     primaryEmotion: agent?.interior?.primaryEmotion?.trim() || undefined,

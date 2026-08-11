@@ -630,6 +630,7 @@ function initialAgentState(
 ): CharacterAgentState {
   return {
     privateMemory: "",
+    battleVolatileMemory: "",
     currentGoal: "",
     emotion: "平静",
     beliefs: [],
@@ -1114,7 +1115,12 @@ function extendConversationHistory(input: {
 }
 
 
-/** Idempotent: re-applying the same reflect action does not duplicate markers. */
+/**
+ * Append reflect notes to battle-volatile memory only.
+ * Never writes character-persistent opponentMemories or privateMemory
+ * (aftermath may read battleVolatileMemory when composing postBattleReflection).
+ * Idempotent: re-applying the same reflect action does not duplicate markers.
+ */
 export function applyReflectMemoryWrites(
   state: BattleState,
   actions: ResolvedBattleAction[],
@@ -1130,14 +1136,15 @@ export function applyReflectMemoryWrites(
     if (!agent) continue;
     const analysisMarker = analysis ? `【省察】${analysis}` : "";
     const guidelineMarker = guideline ? `【指針】${guideline}` : "";
+    const volatile = agent.battleVolatileMemory ?? "";
     const alreadyHasAnalysis = Boolean(
-      analysisMarker && agent.privateMemory.includes(analysisMarker),
+      analysisMarker && volatile.includes(analysisMarker),
     );
     const alreadyHasGuideline = Boolean(
-      guidelineMarker && agent.privateMemory.includes(guidelineMarker),
+      guidelineMarker && volatile.includes(guidelineMarker),
     );
     const memoryBits = [
-      agent.privateMemory,
+      volatile,
       !alreadyHasAnalysis && analysisMarker,
       !alreadyHasGuideline && guidelineMarker,
     ].filter((part): part is string => Boolean(part && part.trim()));
@@ -1148,7 +1155,10 @@ export function applyReflectMemoryWrites(
       ...next,
       [key]: {
         ...agent,
-        privateMemory: memoryBits.join("\n").slice(0, 1200),
+        // Intentionally leave privateMemory untouched: that field may become
+        // durable postBattleReflection after the match, while reflect notes
+        // are match-scoped scratch only.
+        battleVolatileMemory: memoryBits.join("\n").slice(0, 1200),
         currentGoal: guideline || agent.currentGoal,
         observations: [
           ...agent.observations.slice(-6),
@@ -1380,6 +1390,8 @@ export async function advanceCharacterAgents(input: {
       const state = groundCharacterAgentState(sheet, {
         ...previous,
         ...delta,
+        // Engine-owned in-match scratch; psyche may not rewrite or clear it.
+        battleVolatileMemory: previous.battleVolatileMemory ?? "",
         // The compact prologue can consult matchupMemory, but it starts a
         // fresh private state for this battle. This prevents historical plans
         // and reflections from recursively becoming the next reflection.
@@ -1427,6 +1439,7 @@ export async function advanceCharacterAgents(input: {
       state: groundCharacterAgentState(sheet, {
         ...previous,
         ...result.value,
+        battleVolatileMemory: previous.battleVolatileMemory ?? "",
         interior: result.value.interior,
       }, selfReference),
       expressionBrief: defaultExpressionBrief(previous),
@@ -1480,7 +1493,10 @@ export async function advanceCharacterAgents(input: {
           anchoredExchange: psyche.dialogueThread?.anchoredExchange ?? null,
         },
         relevantMemory: dialoguePipeline.relevantMemoryLimit > 0
-          ? psyche.privateMemory.slice(-240) || null
+          ? [
+              psyche.battleVolatileMemory?.trim(),
+              psyche.privateMemory?.trim(),
+            ].filter(Boolean).join("\n").slice(-240) || null
           : null,
         expressionBrief,
         ...(consumerInput.social ? { social: consumerInput.social } : {}),
@@ -3410,9 +3426,9 @@ async function advanceTurnWithLease(input: {
     next.narrationStyle?.perspective ?? "external";
   let cognitionA: CharacterCognition | undefined;
   let cognitionB: CharacterCognition | undefined;
-  // Seed reflect analysis into agent memory before psyche so the same-turn
-  // private appraisal can read it, then re-apply after agents so a psyche
-  // rewrite cannot drop the durable 【省察】/【指針】 entries.
+  // Seed reflect notes into battle-volatile memory before psyche so the same-turn
+  // private appraisal can read them, then re-apply after agents so a psyche
+  // rewrite cannot drop the in-match 【省察】/【指針】 scratch entries.
   next = applyReflectMemoryWrites(next, resolved.actions);
   const agentTurn = await advanceCharacterAgents({
     llm: input.llm,
@@ -4410,6 +4426,9 @@ async function runAftermathTurn(input: {
 
   try {
     const finishedAt = next.updatedAt;
+    // Persist only aftermath-authored privateMemory. Mid-fight reflect notes
+    // live in battleVolatileMemory and must not become character opponent memory
+    // unless the aftermath psyche synthesized them into privateMemory.
     await Promise.all([
       charRepo.saveOpponentBattleMemory({
         characterId: input.meta.side_a_character_id,

@@ -969,7 +969,7 @@ describe("character-authored public speech", () => {
     );
   });
 
-  it("writes reflect analysis into private memory idempotently", () => {
+  it("writes reflect analysis into battle-volatile memory only", () => {
     const sideA = sheet("a", "アオ", ["私"]);
     const sideB = sheet("b", "クロ", ["俺"]);
     const state = createBattleState({
@@ -981,6 +981,7 @@ describe("character-authored public speech", () => {
     });
     state.agentStateA = {
       privateMemory: "既存の記憶",
+      battleVolatileMemory: "",
       currentGoal: "勝つ",
       emotion: "平静",
       beliefs: [],
@@ -999,14 +1000,16 @@ describe("character-authored public speech", () => {
       skippedReason: null,
     }];
     const once = applyReflectMemoryWrites(state, actions);
-    assert.match(once.agentStateA?.privateMemory ?? "", /【省察】相手の間合いが読めない/);
-    assert.match(once.agentStateA?.privateMemory ?? "", /【指針】次は様子を見てから踏み込む/);
+    assert.equal(once.agentStateA?.privateMemory, "既存の記憶");
+    assert.match(once.agentStateA?.battleVolatileMemory ?? "", /【省察】相手の間合いが読めない/);
+    assert.match(once.agentStateA?.battleVolatileMemory ?? "", /【指針】次は様子を見てから踏み込む/);
     assert.equal(once.agentStateA?.currentGoal, "次は様子を見てから踏み込む");
     const twice = applyReflectMemoryWrites(once, actions);
     assert.equal(
-      (twice.agentStateA?.privateMemory.match(/【省察】/g) ?? []).length,
+      ((twice.agentStateA?.battleVolatileMemory ?? "").match(/【省察】/g) ?? []).length,
       1,
     );
+    assert.equal(twice.agentStateA?.privateMemory, "既存の記憶");
   });
 
   it("keeps valid state and speech when an OpenAI-compatible action proposal is invalid", async () => {

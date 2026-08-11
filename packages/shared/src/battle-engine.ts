@@ -567,6 +567,7 @@ export function createBattleState(input: {
   const projectedB = initialProjection("b");
   const agentStateA: CharacterAgentState = {
     privateMemory: "",
+    battleVolatileMemory: "",
     currentGoal: "",
     emotion: "平静",
     beliefs: [],
@@ -605,6 +606,7 @@ export function createBattleState(input: {
   };
   const agentStateB: CharacterAgentState = {
     privateMemory: "",
+    battleVolatileMemory: "",
     currentGoal: "",
     emotion: "平静",
     beliefs: [],
@@ -814,6 +816,7 @@ export function ensureBattleCompatibilityState(state: BattleState): BattleState 
   const agentStateA = withPerception.agentStateA
     ? {
         ...withPerception.agentStateA,
+        battleVolatileMemory: withPerception.agentStateA.battleVolatileMemory ?? "",
         ...(withPerception.pipelineAuthorityVersion === 1
           ? {}
           : { lastSpeech: null }),
@@ -838,6 +841,7 @@ export function ensureBattleCompatibilityState(state: BattleState): BattleState 
       }
     : {
         privateMemory: "",
+        battleVolatileMemory: "",
         currentGoal: "",
         emotion: "平静",
         beliefs: [],
@@ -868,6 +872,7 @@ export function ensureBattleCompatibilityState(state: BattleState): BattleState 
   const agentStateB = withPerception.agentStateB
     ? {
         ...withPerception.agentStateB,
+        battleVolatileMemory: withPerception.agentStateB.battleVolatileMemory ?? "",
         ...(withPerception.pipelineAuthorityVersion === 1
           ? {}
           : { lastSpeech: null }),
@@ -892,6 +897,7 @@ export function ensureBattleCompatibilityState(state: BattleState): BattleState 
       }
     : {
         privateMemory: "",
+        battleVolatileMemory: "",
         currentGoal: "",
         emotion: "平静",
         beliefs: [],

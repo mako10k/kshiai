@@ -805,7 +805,18 @@ export type CharacterConversationContext = z.infer<
  * disposition, not a model's step-by-step reasoning.
  */
 export const CharacterAgentStateSchema = z.object({
+  /**
+   * Battle-scoped working conclusions. Aftermath may rewrite this into a
+   * durable post-battle lesson; mid-fight reflect notes must not live here.
+   */
   privateMemory: z.string().max(1200).default(""),
+  /**
+   * In-match scratch only (e.g. reflect analysis/guidelines). Lives with the
+   * battle state and is never copied into character opponentMemories. Aftermath
+   * psyche may read it when composing the durable postBattleReflection.
+   * Optional for legacy battle snapshots; treat missing as empty.
+   */
+  battleVolatileMemory: z.string().max(1200).optional(),
   currentGoal: z.string().max(240).default(""),
   emotion: z.string().max(120).default("平静"),
   beliefs: z.array(z.string().max(240)).max(8).default([]),
