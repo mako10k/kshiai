@@ -5,6 +5,38 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 
 ## [Unreleased]
 
+## [0.16.0] - 2026-08-11
+
+### Added
+
+- Battle action `reflect`: spends one turn analyzing the fight and writing
+  forward guidelines into battle-volatile memory (not durable character
+  matchup memory). Cautious or cornered agents may choose it; impulsive ones
+  avoid it. Narration keeps the pause opaque unless focus grants interior
+  access; aftermath psyche may still draw on those notes when composing a
+  post-battle lesson.
+- Public user profile pages (`/users/:id`) with settable display name (random
+  default), favorites, and friend request / remove controls.
+- Character detail links to the creator's user profile.
+
+### Fixed
+
+- Match start CTA no longer sits under the fixed bottom navigation.
+- Battlefield object labels fall back to Japanese kind names instead of the
+  raw `object` token when a canonical label is missing.
+
+### Database
+
+- Adds `users.display_name`, `user_favorites`, and `friend_requests`
+  (PostgreSQL migration `0010_user_public_profile.sql` and SQLite schema).
+
+### Operations
+
+- Expand-only schema change; prior application revisions remain compatible.
+- Mid-fight reflect notes stay on battle state (`battleVolatileMemory`) and
+  are not copied into character opponent memories unless aftermath synthesizes
+  them into `privateMemory`.
+
 ## [0.15.0] - 2026-08-11
 
 ### Added
