@@ -7,6 +7,8 @@ import {
   GenerateCharacterRequestSchema,
   GenerateNarrationStyleRequestSchema,
   GeneratePoliciesRequestSchema,
+  AddFriendRequestSchema,
+  CharacterVisibilityUpdateSchema,
   LoginRequestSchema,
   RegisterRequestSchema,
   SaveBattlefieldFromBattleRequestSchema,
@@ -41,6 +43,7 @@ import * as draftRepo from "./repositories/character-drafts.js";
 import * as battleRepo from "./repositories/battles.js";
 import * as bfRepo from "./repositories/battlefields.js";
 import * as styleRepo from "./repositories/narration-styles.js";
+import * as friendRepo from "./repositories/friends.js";
 import * as dialoguePipelineRepo from "./repositories/dialogue-pipeline-settings.js";
 import {
   advanceTurn,
@@ -252,7 +255,63 @@ export function buildRoutes() {
   authed.get("/characters", async (c) => {
     const user = c.get("user");
     const q = c.req.query("q");
-    return c.json({ characters: await charRepo.listCharactersForUser(user.id, q) });
+    const limit = Number(c.req.query("limit") ?? 20);
+    const offset = Number(c.req.query("offset") ?? 0);
+    const page = await charRepo.listCharactersForUser(user.id, q, {
+      limit: Number.isFinite(limit) ? limit : 20,
+      offset: Number.isFinite(offset) ? offset : 0,
+    });
+    return c.json(page);
+  });
+
+  authed.get("/friends", async (c) => {
+    const user = c.get("user");
+    return c.json({ friends: await friendRepo.listFriends(user.id) });
+  });
+
+  authed.post("/friends", async (c) => {
+    const user = c.get("user");
+    const parsed = AddFriendRequestSchema.safeParse(await c.req.json().catch(() => ({})));
+    if (!parsed.success) {
+      return c.json({ error: "invalid_body", details: parsed.error.flatten() }, 400);
+    }
+    try {
+      const friend = await friendRepo.addFriend(user.id, parsed.data.username);
+      return c.json({ friend });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "failed";
+      const status =
+        err && typeof err === "object" && "status" in err
+          ? Number((err as { status?: number }).status) || 400
+          : 400;
+      return c.json({ error: message }, status as 400 | 404);
+    }
+  });
+
+  authed.delete("/friends/:id", async (c) => {
+    const user = c.get("user");
+    const removed = await friendRepo.removeFriend(user.id, c.req.param("id"));
+    if (!removed) return c.json({ error: "not_found" }, 404);
+    return c.json({ ok: true });
+  });
+
+  authed.patch("/characters/:id/visibility", async (c) => {
+    const user = c.get("user");
+    const parsed = CharacterVisibilityUpdateSchema.safeParse(
+      await c.req.json().catch(() => ({})),
+    );
+    if (!parsed.success) {
+      return c.json({ error: "invalid_body", details: parsed.error.flatten() }, 400);
+    }
+    const sheet = await charRepo.updateCharacterVisibility(
+      c.req.param("id"),
+      user.id,
+      parsed.data.visibility,
+    );
+    if (!sheet) return c.json({ error: "not_found" }, 404);
+    return c.json({
+      character: await charRepo.toPublicCharacterForViewer(sheet, user.id),
+    });
   });
 
   /** Public character profile (any authenticated user). */
@@ -822,7 +881,18 @@ export function buildRoutes() {
   authed.get("/match/candidates", async (c) => {
     const user = c.get("user");
     const q = c.req.query("q");
-    return c.json({ candidates: await charRepo.listPublicOpponents(user.id, q) });
+    const limit = Number(c.req.query("limit") ?? 10);
+    const offset = Number(c.req.query("offset") ?? 0);
+    const page = await charRepo.listPublicOpponents(user.id, q, {
+      limit: Number.isFinite(limit) ? limit : 10,
+      offset: Number.isFinite(offset) ? offset : 0,
+    });
+    return c.json({
+      candidates: page.characters,
+      total: page.total,
+      limit: page.limit,
+      offset: page.offset,
+    });
   });
 
   authed.post("/match/random", async (c) => {

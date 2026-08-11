@@ -149,6 +149,15 @@ export function getDb(): SqliteDatabase.Database {
       ON balance_events (kind, created_at);
     CREATE INDEX IF NOT EXISTS idx_balance_events_battle
       ON balance_events (battle_id);
+    CREATE TABLE IF NOT EXISTS friendships (
+      user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      friend_user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      created_at TEXT NOT NULL,
+      PRIMARY KEY (user_id, friend_user_id),
+      CHECK (user_id != friend_user_id)
+    );
+    CREATE INDEX IF NOT EXISTS idx_friendships_friend
+      ON friendships (friend_user_id);
   `);
   const userColumns = sqlite.pragma("table_info(users)") as Array<{ name: string }>;
   const userColumnNames = new Set(userColumns.map((column) => column.name));

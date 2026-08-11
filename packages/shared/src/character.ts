@@ -212,6 +212,14 @@ export type CharacterRevisionSnapshot = z.infer<
   typeof CharacterRevisionSnapshotSchema
 >;
 
+/** Who may pick this character as an opponent outside the owner account. */
+export const CharacterVisibilitySchema = z.enum([
+  "public",
+  "friends",
+  "private",
+]);
+export type CharacterVisibility = z.infer<typeof CharacterVisibilitySchema>;
+
 /** Full server-side character sheet. */
 export const CharacterSheetSchema = z.object({
   id: z.string(),
@@ -219,6 +227,14 @@ export const CharacterSheetSchema = z.object({
   displayName: z.string().min(1),
   /** Separate from the public display name and omitted from public DTOs. */
   identity: CharacterIdentitySchema.optional(),
+  /**
+   * Matchmaking exposure for non-owners.
+   * - public: any authenticated player
+   * - friends: only users on the owner's friend list
+   * - private: owner sparring only
+   * Omitted on legacy sheets; treat as public.
+   */
+  visibility: CharacterVisibilitySchema.optional(),
   tags: z.array(z.string()).default([]),
   createdAt: z.string(),
   updatedAt: z.string(),
@@ -385,6 +401,8 @@ export const CharacterPublicSchema = z.object({
     selfNames: z.array(z.string()),
     epithets: z.array(z.string()),
   }),
+  /** Matchmaking exposure; owners can change it. */
+  visibility: CharacterVisibilitySchema,
   tags: z.array(z.string()),
   createdAt: z.string(),
   updatedAt: z.string(),
@@ -473,6 +491,7 @@ export function toPublicCharacter(
       selfNames: sheet.identity?.selfNames ?? [],
       epithets: sheet.identity?.epithets ?? [],
     },
+    visibility: sheet.visibility ?? "public",
     tags: sheet.tags,
     createdAt: sheet.createdAt,
     updatedAt: sheet.updatedAt,

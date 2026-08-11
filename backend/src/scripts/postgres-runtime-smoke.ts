@@ -165,7 +165,7 @@ async function main(): Promise<void> {
     const sideB = character("chr_runtime_b", user.id, "ランタイムB");
     await characters.saveSheet(sideA);
     await characters.saveSheet(sideB);
-    if ((await characters.listCharactersForUser(user.id)).length !== 2) {
+    if ((await characters.listCharactersForUser(user.id)).total !== 2) {
       throw new Error("Character repository smoke failed");
     }
 

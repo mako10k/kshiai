@@ -12,6 +12,7 @@ import {
   TurnSemanticPatchSchema,
 } from "./semantic-state.js";
 import {
+  BattleObjectStatePublicSchema,
   BattleWorldStateSchema,
   BattleWorldTransitionSchema,
 } from "./battle-world.js";
@@ -1337,6 +1338,7 @@ export const BattlePublicSchema = z.object({
   battlefield: BattlefieldInstancePublicSchema.nullable().optional(),
   /** Observable structured world only; excludes mechanics and private agents. */
   semanticState: SemanticObservationStateSchema.nullable().optional(),
+  objectStates: z.array(BattleObjectStatePublicSchema).default([]),
   log: z.array(NarrativeBlockSchema),
   /** @deprecated Per-turn choices are automatic; kept empty for compatibility. */
   availableActions: z

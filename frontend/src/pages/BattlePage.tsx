@@ -598,32 +598,73 @@ export function BattlePage() {
             {saveMsg && <p className="ok">{saveMsg}</p>}
           </div>
         )}
-        {battle.semanticState ? (
-          <details style={{ marginTop: "0.75rem" }}>
+        {(battle.objectStates?.length || battle.semanticState) ? (
+          <details style={{ marginTop: "0.75rem" }} open>
             <summary>
-              現在の戦場状態（更新 {battle.semanticState.snapshot.revision}）
+              戦場の状態
+              {battle.semanticState
+                ? `（観測 rev ${battle.semanticState.snapshot.revision}）`
+                : ""}
             </summary>
-            <p className="muted" style={{ margin: "0.5rem 0" }}>
-              {battle.semanticState.snapshot.scene.summary}
-            </p>
-            <div className="row" style={{ alignItems: "flex-start" }}>
-              {Object.entries(battle.semanticState.snapshot.entities)
-                .filter(([id, entity]) =>
-                  id !== "character.a" && id !== "character.b" && entity.active,
-                )
-                .map(([id, entity]) => (
-                  <span className="tag" key={id} title={id}>
-                    {entity.label}
-                    {entity.location.type === "held"
-                      ? `（${entity.location.side === "a" ? battle.sideA.displayName : battle.sideB.displayName}が所持）`
-                      : entity.location.type === "scene"
-                        ? `（${entity.location.area}）`
-                        : entity.location.type === "attached"
-                          ? "（付着）"
-                          : "（消失）"}
-                  </span>
+            {battle.semanticState ? (
+              <p className="muted" style={{ margin: "0.5rem 0" }}>
+                {battle.semanticState.snapshot.scene.summary}
+              </p>
+            ) : null}
+            {battle.objectStates && battle.objectStates.length > 0 ? (
+              <ul className="object-state-list">
+                {battle.objectStates.map((row) => (
+                  <li key={`${row.kind}-${row.label}-${row.placementSummary ?? ""}`}>
+                    <strong>{row.label}</strong>
+                    <span className="muted">
+                      {" "}
+                      [{row.kind}
+                      {row.placementSummary ? ` · ${row.placementSummary}` : ""}]
+                    </span>
+                    {row.states.length > 0 ? (
+                      <div className="row" style={{ flexWrap: "wrap", gap: "0.35rem", marginTop: "0.25rem" }}>
+                        {row.states.map((stateLine) => (
+                          <span className="tag" key={stateLine}>
+                            {stateLine}
+                          </span>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="muted" style={{ margin: "0.25rem 0 0" }}>
+                        位置以外の状態は未記録
+                      </p>
+                    )}
+                  </li>
                 ))}
-            </div>
+              </ul>
+            ) : null}
+            {battle.semanticState ? (
+              <div className="row" style={{ alignItems: "flex-start", marginTop: "0.5rem" }}>
+                {Object.entries(battle.semanticState.snapshot.entities)
+                  .filter(([id, entity]) =>
+                    id !== "character.a" && id !== "character.b" && entity.active,
+                  )
+                  .map(([id, entity]) => {
+                    const factLines = Object.entries(entity.facts ?? {}).map(
+                      ([key, value]) =>
+                        `${key}:${typeof value === "string" || typeof value === "number" || typeof value === "boolean" ? String(value) : "…"}`,
+                    );
+                    return (
+                      <span className="tag" key={id} title={[id, ...factLines].join(" / ")}>
+                        {entity.label}
+                        {entity.location.type === "held"
+                          ? `（${entity.location.side === "a" ? battle.sideA.displayName : battle.sideB.displayName}が所持）`
+                          : entity.location.type === "scene"
+                            ? `（${entity.location.area}）`
+                            : entity.location.type === "attached"
+                              ? "（付着）"
+                              : "（消失）"}
+                        {factLines.length > 0 ? ` · ${factLines.slice(0, 3).join(", ")}` : ""}
+                      </span>
+                    );
+                  })}
+              </div>
+            ) : null}
           </details>
         ) : null}
       </div>

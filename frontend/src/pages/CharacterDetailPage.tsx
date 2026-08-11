@@ -4,6 +4,7 @@ import type {
   BattleListItem,
   CharacterImprovementPublic,
   CharacterPublic,
+  CharacterVisibility,
 } from "@kshiai/shared";
 import { formatRatingForDisplay } from "@kshiai/shared";
 import { api, ApiError, type ImageGenQuota } from "../api";
@@ -213,6 +214,28 @@ export function CharacterDetailPage() {
     const res = await api.copyCharacter(id);
     nav(`/characters/${res.character.id}`);
   }
+
+  async function onVisibilityChange(visibility: CharacterVisibility) {
+    if (!id || !isOwner) return;
+    setBusy(true);
+    setError(null);
+    try {
+      const res = await api.setCharacterVisibility(id, visibility);
+      setCharacter(res.character);
+      setAssistant(
+        visibility === "public"
+          ? "公開範囲を「公開」にしました。"
+          : visibility === "friends"
+            ? "公開範囲を「フレンドのみ」にしました。"
+            : "公開範囲を「非公開」にしました。",
+      );
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "failed");
+    } finally {
+      setBusy(false);
+    }
+  }
+
 
   async function onDelete() {
     if (!id || !isOwner) return;
@@ -430,6 +453,31 @@ export function CharacterDetailPage() {
         </div>
         <div>
           <p>{character.narrativeBlurb}</p>
+          {isOwner ? (
+            <label className="field" style={{ marginBottom: "0.75rem" }}>
+              <span className="field-label">公開範囲</span>
+              <select
+                value={character.visibility}
+                disabled={busy}
+                onChange={(e) =>
+                  void onVisibilityChange(e.target.value as CharacterVisibility)
+                }
+              >
+                <option value="public">公開（誰でも対戦相手に選べる）</option>
+                <option value="friends">フレンドのみ</option>
+                <option value="private">非公開（自分の別キャラ sparring のみ）</option>
+              </select>
+            </label>
+          ) : (
+            <p className="muted">
+              公開範囲:{" "}
+              {character.visibility === "friends"
+                ? "フレンドのみ"
+                : character.visibility === "private"
+                  ? "非公開"
+                  : "公開"}
+            </p>
+          )}
           {nameRows.length > 0 ? (
             <dl className="profile-names">
               {nameRows.map(([label, value]) => (
