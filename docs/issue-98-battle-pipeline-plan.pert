@@ -1,7 +1,7 @@
 # GitHub Issue #98 implementation plan. Local acceptance is not release
 # authorization; owner gates decide only the listed product contracts.
 project KSHIAI_ISSUE_98_CAUSAL_BATTLE_PIPELINE:
-  version 2
+  version 6
   title "Issue #98 causal battle-pipeline renewal"
   description "Replace the all-actions-precommitted turn path with an explicitly checkpointed causal bucket state machine. Preserve server-owned mechanics, observer-relative visibility, and initiative-window-v1 unless an owner accepts a different contract. The two-combatant sequential-decision slice is separate from bounded delayed effects and from any production observation."
   as_of 2026-08-12
@@ -24,9 +24,11 @@ milestone ISSUE_INTAKE_RECORDED:
 
 milestone CAUSAL_CONTRACT_DRAFTED:
   title "Causal state machine and authority draft recorded"
+  state reached
 
 milestone CAUSAL_CONTRACT_ACCEPTED:
   title "Owner accepted bounded Phase 1 contract"
+  state reached
 
 milestone BUCKET_ENGINE_READY:
   title "Restartable bucket execution is available"
@@ -59,6 +61,7 @@ task T_DRAFT_CAUSAL_CONTRACT ISSUE_INTAKE_RECORDED -> CAUSAL_CONTRACT_DRAFTED:
   title "Trace authority, checkpoints, visibility, and prior-plan disposition"
   description "Record a formal turn state machine: prepare, durable bucket commit, observer projection, later decision, later validation, next bucket commit, and terminal finalize. List every LLM-to-persisted-state and winner edge, including narrator recognition continuity and terminal adjudication, and decide whether each is retained outside this slice, server-validated, or removed. Define durable checkpoints, idempotency-key and lease binding, resume after save/result ambiguity, public durable versus ephemeral SSE events, trace ACL/retention, and legacy read behavior. Record an explicit defer, replace, or integration decision for the completed observation plan's OBS-20260807-09 semantic-equivalence axis. Create fixtures for both speed directions, simultaneous bucket, KO, invalid proposal, timeout, save-success/response-failure, reconnect, and private-intent non-leakage."
   duration 3p
+  status done
   owner "codex"
   requires:
     DEV 1
@@ -67,6 +70,7 @@ task T_ACCEPT_CAUSAL_CONTRACT CAUSAL_CONTRACT_DRAFTED -> CAUSAL_CONTRACT_ACCEPTE
   title "Accept the bounded sequential-decision contract"
   description "Owner decides the Phase 1 action source for each bucket, semantic/world visibility timing, retained LLM authority edges, old-plan OBS-09 disposition, and the no-random-initiative/no-new-wait-semantics scope. No code, deployment, release, or Issue mutation is authorized by this decision."
   duration 1p
+  status done
   owner "user"
   requires:
     OWNER 1
@@ -75,6 +79,7 @@ task T_REFACTOR_BUCKET_EXECUTION CAUSAL_CONTRACT_ACCEPTED -> BUCKET_ENGINE_READY
   title "Refactor deterministic engine into restartable bucket execution"
   description "Extract pure prepare, resolve-bucket, and finalize operations from the current monolithic resolveTurn path. Preserve initiative-window-v1 atomic simultaneous behavior, A/B-swap invariance, server validation, and deterministic stable IDs. Persist no LLM-owned mechanics. Each operation must be re-enterable from its durable checkpoint without replaying an already committed bucket or consuming a planned action twice."
   duration 4p
+  status active
   owner "codex"
   requires:
     DEV 1
@@ -142,3 +147,40 @@ task T_ACCEPT_ISSUE_98 PACING_POLICY_ACCEPTED -> ISSUE_98_LOCALLY_ACCEPTED:
   owner "codex"
   requires:
     DEV 1
+
+work_event WE-b4c037f20ad49ffe5ff2f9ff1eb8ce748482ea8198ba2fcea40a05f8d817a37b:
+  model 1
+  task T_DRAFT_CAUSAL_CONTRACT
+  kind start
+  occurred_at 2026-08-12T08:52:49+09:00
+  planned_value 3p
+
+work_event WE-c8a7db99e8e245ec62fbc5ea21f9c8440c2e2c4067f507fb4c8c4e4ba59258e2:
+  model 1
+  task T_DRAFT_CAUSAL_CONTRACT
+  kind finish
+  occurred_at 2026-08-12T08:55:39+09:00
+  active_time 17/360h
+  effort 17/360ph
+
+work_event WE-87b7a1065b1ea6801c4c54d1e874003ad4e0a7d1425c5a22e8e4d2efbb0c9910:
+  model 1
+  task T_ACCEPT_CAUSAL_CONTRACT
+  kind start
+  occurred_at 2026-08-12T08:55:40+09:00
+  planned_value 1p
+
+work_event WE-9c5a2edaa5f901d709995eb26a10d4609e9ac9b213a6f6a25b34f373aa418e4a:
+  model 1
+  task T_ACCEPT_CAUSAL_CONTRACT
+  kind finish
+  occurred_at 2026-08-12T08:55:41+09:00
+  active_time 1/3600h
+  effort 1/3600ph
+
+work_event WE-d8b5e8b1e4af269021306b3c0839f706a6194e9bcb8bc2c50c0f3a0f4a9b25f7:
+  model 1
+  task T_REFACTOR_BUCKET_EXECUTION
+  kind start
+  occurred_at 2026-08-12T08:55:42+09:00
+  planned_value 4p
