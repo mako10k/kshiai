@@ -516,6 +516,7 @@ const NarrationCausalEventSchema = z.object({
     "parameter",
     "defend",
     "wait",
+    "reflect",
     "status",
     "situation",
     "info",

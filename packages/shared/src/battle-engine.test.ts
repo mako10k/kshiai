@@ -47,6 +47,49 @@ function sheet(id: string, name: string, hp = 100): CharacterSheet {
 }
 
 describe("battle engine", () => {
+  it("resolves reflect as a full-turn pause that preserves analysis fields", () => {
+    const a = sheet("a", "観察者");
+    const b = sheet("b", "挑戦者");
+    const state = createBattleState({
+      id: "reflect-turn",
+      sideA: a,
+      sideB: b,
+      turnLimit: 20,
+      prologuePending: false,
+    });
+    state.plannedActionA = {
+      kind: "reflect",
+      reflectionAnalysis: "相手の間合いが読めない",
+      reflectionGuideline: "次は様子を見てから踏み込む",
+    };
+    state.plannedActionB = { kind: "wait" };
+    const resolved = resolveTurn({
+      state,
+      sideASkills: a.skills,
+      sideBSkills: b.skills,
+    });
+    const reflectAction = resolved.actions.find((action) => action.actorSide === "a");
+    assert.equal(reflectAction?.kind, "reflect");
+    assert.equal(reflectAction?.executed, true);
+    assert.equal(reflectAction?.reflectionAnalysis, "相手の間合いが読めない");
+    assert.equal(reflectAction?.reflectionGuideline, "次は様子を見てから踏み込む");
+    assert.ok(
+      resolved.events.some(
+        (event) =>
+          event.type === "reflect" &&
+          event.summary.includes("考え込んでいる"),
+      ),
+    );
+    assert.equal(
+      resolved.events.some((event) => event.type === "damage" && event.actorSide === "a"),
+      false,
+    );
+    const hpBefore = state.sideB.parameters.hp ?? 0;
+    const hpAfter = resolved.state.sideB.parameters.hp ?? 0;
+    // Reflect itself deals no damage; B only waited.
+    assert.equal(hpAfter, hpBefore);
+  });
+
   it("unlocks special skills on turn 10 and scales finish pressure to turn 20", () => {
     const a = sheet("a", "A", 200);
     const b = sheet("b", "B", 200);

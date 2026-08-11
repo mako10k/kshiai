@@ -50,6 +50,8 @@ export const ActionKindSchema = z.enum([
   "rest",
   "defend",
   "wait",
+  /** Spend the turn analyzing the fight and writing guidance into private memory. */
+  "reflect",
   "free_action",
 ]);
 export type ActionKind = z.infer<typeof ActionKindSchema>;
@@ -237,6 +239,10 @@ const CharacterActionIntentObjectSchema = z.object({
   instrumentRef: z.string().min(1).max(120).optional(),
   /** Optional control reference for a projected multi-turn opportunity. */
   opportunityId: z.string().min(1).max(120).optional(),
+  /** Reflect-only: situation analysis written into private memory. */
+  reflectionAnalysis: z.string().min(1).max(400).optional(),
+  /** Reflect-only: forward action guideline written into private memory/goal. */
+  reflectionGuideline: z.string().min(1).max(400).optional(),
 }).strict();
 
 type CharacterActionIntentObject = z.infer<
@@ -269,6 +275,38 @@ function validateCharacterActionIntent(
         message: "free actions cannot carry skill, finisher, or instrument authority",
       });
     }
+    if (intent.reflectionAnalysis || intent.reflectionGuideline) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: [],
+        message: "free actions cannot carry reflect memory fields",
+      });
+    }
+    return;
+  }
+  if (intent.kind === "reflect") {
+    if (!intent.reflectionAnalysis || !intent.reflectionGuideline) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["reflectionAnalysis"],
+        message: "reflect requires analysis and guideline text",
+      });
+    }
+    if (
+      intent.description ||
+      intent.desiredOutcome ||
+      intent.subjectRefs ||
+      intent.opportunityId ||
+      intent.skillId ||
+      intent.useFinisher ||
+      intent.instrumentRef
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: [],
+        message: "reflect cannot carry combat or free-action authority fields",
+      });
+    }
     return;
   }
   if (
@@ -281,6 +319,13 @@ function validateCharacterActionIntent(
       code: z.ZodIssueCode.custom,
       path: [],
       message: "only free actions may carry open attempt fields",
+    });
+  }
+  if (intent.reflectionAnalysis || intent.reflectionGuideline) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: [],
+      message: "only reflect may carry reflection memory fields",
     });
   }
   if (
@@ -404,6 +449,7 @@ export const TurnEventSchema = z.object({
     "parameter",
     "defend",
     "wait",
+    "reflect",
     "status",
     "situation",
     "info",
@@ -759,7 +805,18 @@ export type CharacterConversationContext = z.infer<
  * disposition, not a model's step-by-step reasoning.
  */
 export const CharacterAgentStateSchema = z.object({
+  /**
+   * Battle-scoped working conclusions. Aftermath may rewrite this into a
+   * durable post-battle lesson; mid-fight reflect notes must not live here.
+   */
   privateMemory: z.string().max(1200).default(""),
+  /**
+   * In-match scratch only (e.g. reflect analysis/guidelines). Lives with the
+   * battle state and is never copied into character opponentMemories. Aftermath
+   * psyche may read it when composing the durable postBattleReflection.
+   * Optional for legacy battle snapshots; treat missing as empty.
+   */
+  battleVolatileMemory: z.string().max(1200).optional(),
   currentGoal: z.string().max(240).default(""),
   emotion: z.string().max(120).default("平静"),
   beliefs: z.array(z.string().max(240)).max(8).default([]),

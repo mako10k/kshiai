@@ -100,8 +100,9 @@ describe("observer-safe action feasibility", () => {
     assert.equal(far.some((action) => action.kind === "basic_attack"), false);
     assert.deepEqual(
       far.map((action) => action.kind).sort(),
-      ["defend", "free_action", "rest", "wait"],
+      ["defend", "free_action", "reflect", "rest", "wait"],
     );
+    assert.ok(far.some((action) => action.kind === "reflect" && action.name === "戦況を省みる"));
   });
 
   it("reflects restraint and held-object usability without exposing object IDs", () => {

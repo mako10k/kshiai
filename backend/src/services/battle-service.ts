@@ -630,6 +630,7 @@ function initialAgentState(
 ): CharacterAgentState {
   return {
     privateMemory: "",
+    battleVolatileMemory: "",
     currentGoal: "",
     emotion: "平静",
     beliefs: [],
@@ -873,7 +874,8 @@ function buildCharacterDecisionContext(input: {
           | "basic_attack"
           | "defend"
           | "rest"
-          | "wait",
+          | "wait"
+          | "reflect",
         ...(parsed.skillId ? { skillId: parsed.skillId } : {}),
         ...(lastSkill?.name
           ? { name: lastSkill.name }
@@ -881,6 +883,8 @@ function buildCharacterDecisionContext(input: {
             ? { name: input.sheet.basicAttack?.name ?? "基本アクション" }
             : parsed.kind === "wait"
               ? { name: "様子を見る" }
+              : parsed.kind === "reflect"
+                ? { name: "戦況を省みる" }
               : parsed.kind === "defend"
                 ? { name: "防御" }
                 : parsed.kind === "rest"
@@ -1110,6 +1114,76 @@ function extendConversationHistory(input: {
     .slice(-input.limit);
 }
 
+
+/**
+ * Append reflect notes to battle-volatile memory only.
+ * Never writes character-persistent opponentMemories or privateMemory
+ * (aftermath may read battleVolatileMemory when composing postBattleReflection).
+ * Idempotent: re-applying the same reflect action does not duplicate markers.
+ */
+export function applyReflectMemoryWrites(
+  state: BattleState,
+  actions: ResolvedBattleAction[],
+): BattleState {
+  let next = state;
+  for (const action of actions) {
+    if (!action.executed || action.kind !== "reflect") continue;
+    const analysis = action.reflectionAnalysis?.trim() ?? "";
+    const guideline = action.reflectionGuideline?.trim() ?? "";
+    if (!analysis && !guideline) continue;
+    const key = action.actorSide === "a" ? "agentStateA" : "agentStateB";
+    const agent = next[key];
+    if (!agent) continue;
+    const analysisMarker = analysis ? `【省察】${analysis}` : "";
+    const guidelineMarker = guideline ? `【指針】${guideline}` : "";
+    const volatile = agent.battleVolatileMemory ?? "";
+    const alreadyHasAnalysis = Boolean(
+      analysisMarker && volatile.includes(analysisMarker),
+    );
+    const alreadyHasGuideline = Boolean(
+      guidelineMarker && volatile.includes(guidelineMarker),
+    );
+    const memoryBits = [
+      volatile,
+      !alreadyHasAnalysis && analysisMarker,
+      !alreadyHasGuideline && guidelineMarker,
+    ].filter((part): part is string => Boolean(part && part.trim()));
+    const observationAlready = analysis
+      ? agent.observations.some((item) => item === analysis.slice(0, 240))
+      : true;
+    next = {
+      ...next,
+      [key]: {
+        ...agent,
+        // Intentionally leave privateMemory untouched: that field may become
+        // durable postBattleReflection after the match, while reflect notes
+        // are match-scoped scratch only.
+        battleVolatileMemory: memoryBits.join("\n").slice(0, 1200),
+        currentGoal: guideline || agent.currentGoal,
+        observations: [
+          ...agent.observations.slice(-6),
+          ...(analysis && !observationAlready ? [analysis.slice(0, 240)] : []),
+        ].slice(-8),
+        interior: {
+          primaryEmotion: agent.interior?.primaryEmotion ?? agent.emotion ?? "平静",
+          concealedEmotion: agent.interior?.concealedEmotion ?? null,
+          coreNeed: agent.interior?.coreNeed ?? "",
+          protectiveStance: agent.interior?.protectiveStance ?? "",
+          eventAppraisal: analysis.slice(0, 240) || agent.interior?.eventAppraisal || "",
+          unspokenIntent: analysis.slice(0, 240) || agent.interior?.unspokenIntent || "",
+          currentConcern: guideline.slice(0, 240) || agent.interior?.currentConcern || agent.currentGoal,
+          attitudeTowardCounterpart: agent.interior?.attitudeTowardCounterpart ?? "対峙している",
+          confidence: agent.interior?.confidence ?? "steady",
+          relationshipTension: agent.interior?.relationshipTension ?? "",
+          speechMode: agent.interior?.speechMode ?? "weave",
+          speechAppraisal: agent.interior?.speechAppraisal,
+        },
+      },
+    };
+  }
+  return next;
+}
+
 export async function advanceCharacterAgents(input: {
   llm: LlmProvider;
   before: BattleState;
@@ -1316,6 +1390,8 @@ export async function advanceCharacterAgents(input: {
       const state = groundCharacterAgentState(sheet, {
         ...previous,
         ...delta,
+        // Engine-owned in-match scratch; psyche may not rewrite or clear it.
+        battleVolatileMemory: previous.battleVolatileMemory ?? "",
         // The compact prologue can consult matchupMemory, but it starts a
         // fresh private state for this battle. This prevents historical plans
         // and reflections from recursively becoming the next reflection.
@@ -1363,6 +1439,7 @@ export async function advanceCharacterAgents(input: {
       state: groundCharacterAgentState(sheet, {
         ...previous,
         ...result.value,
+        battleVolatileMemory: previous.battleVolatileMemory ?? "",
         interior: result.value.interior,
       }, selfReference),
       expressionBrief: defaultExpressionBrief(previous),
@@ -1416,7 +1493,10 @@ export async function advanceCharacterAgents(input: {
           anchoredExchange: psyche.dialogueThread?.anchoredExchange ?? null,
         },
         relevantMemory: dialoguePipeline.relevantMemoryLimit > 0
-          ? psyche.privateMemory.slice(-240) || null
+          ? [
+              psyche.battleVolatileMemory?.trim(),
+              psyche.privateMemory?.trim(),
+            ].filter(Boolean).join("\n").slice(-240) || null
           : null,
         expressionBrief,
         ...(consumerInput.social ? { social: consumerInput.social } : {}),
@@ -2785,6 +2865,8 @@ function buildNarrationActionBeats(input: {
             ? "力を取り戻す"
             : action.kind === "wait"
               ? "機をうかがう"
+              : action.kind === "reflect"
+                ? "戦況を省みる"
               : "行動"
     );
     const description = skill?.description ?? (
@@ -3344,6 +3426,10 @@ async function advanceTurnWithLease(input: {
     next.narrationStyle?.perspective ?? "external";
   let cognitionA: CharacterCognition | undefined;
   let cognitionB: CharacterCognition | undefined;
+  // Seed reflect notes into battle-volatile memory before psyche so the same-turn
+  // private appraisal can read them, then re-apply after agents so a psyche
+  // rewrite cannot drop the in-match 【省察】/【指針】 scratch entries.
+  next = applyReflectMemoryWrites(next, resolved.actions);
   const agentTurn = await advanceCharacterAgents({
     llm: input.llm,
     before: state,
@@ -3357,7 +3443,7 @@ async function advanceTurnWithLease(input: {
     sensoryEvidence: semanticTurn.sensoryEvidence,
     quantizedMechanicalEvidence: semanticTurn.quantizedMechanicalEvidence,
   });
-  next = agentTurn.state;
+  next = applyReflectMemoryWrites(agentTurn.state, resolved.actions);
   const rec = (next.turnRecords ?? [])[(next.turnRecords ?? []).length - 1];
   cognitionA = rec?.cognitionA;
   cognitionB = rec?.cognitionB;
@@ -4340,6 +4426,9 @@ async function runAftermathTurn(input: {
 
   try {
     const finishedAt = next.updatedAt;
+    // Persist only aftermath-authored privateMemory. Mid-fight reflect notes
+    // live in battleVolatileMemory and must not become character opponent memory
+    // unless the aftermath psyche synthesized them into privateMemory.
     await Promise.all([
       charRepo.saveOpponentBattleMemory({
         characterId: input.meta.side_a_character_id,

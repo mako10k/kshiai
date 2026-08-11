@@ -824,6 +824,7 @@ export class MockLlmProvider implements LlmProvider {
     );
     const freeOption = pool.find((action) => action.kind === "free_action");
     const defendOption = pool.find((action) => action.kind === "defend");
+    const reflectOption = pool.find((action) => action.kind === "reflect");
     const decisionProfile = input.decision.decisionProfile;
     const overridingPrinciple = decisionProfile?.principles
       .filter((principle) =>
@@ -835,18 +836,58 @@ export class MockLlmProvider implements LlmProvider {
       /人情|慈悲|助け|救|守|傷つけ|殺さ|勝負より|勝利より/.test(
         overridingPrinciple.statement,
       );
+    const traitText = input.character.traits.join(" ");
+    const impulsivePersonality = /短気|直情|衝動|猪突|血気|せっかち|好戦|粗暴|激しやすい/.test(
+      traitText,
+    );
+    const cautiousPersonality = /慎重|冷静|思慮|観察|分析|用心|熟慮|沈着|慎重派|慎重な/.test(
+      traitText,
+    );
+    const unfavorable =
+      ownReserveCritical ||
+      input.decision.tacticalNeed?.offenseAdequacy === "insufficient" ||
+      ["high", "critical"].includes(
+        input.decision.tacticalNeed?.unprotectedIncomingRisk ?? "unknown",
+      );
+    const thinOptions = pool.every((action) =>
+      ["wait", "rest", "defend", "reflect"].includes(action.kind)
+    );
+    const wantsReflect = Boolean(
+      reflectOption &&
+      !impulsivePersonality &&
+      (cautiousPersonality || unfavorable || thinOptions),
+    );
     const preferred = humaneOverride && defendOption
       ? defendOption
       : urgentDefense && defendOption
       ? defendOption
+      : wantsReflect && reflectOption
+        ? reflectOption
       : setupAttack && freeOption
         ? freeOption
         : finisherAction && differsFromLast(finisherAction)
       ? finisherAction
       : pool.find((action) => action.kind === "skill" && !action.finisherCandidate) ??
         pool.find((action) => action.kind === "basic_attack") ??
-        pool.find((action) => action.kind !== "wait") ??
+        pool.find((action) => action.kind !== "wait" && action.kind !== "reflect") ??
         pool[0]!;
+    const reflectionAnalysis = wantsReflect
+      ? [
+          unfavorable ? "形勢がおもわしくない" : "ここで一度立ち止まる価値がある",
+          ownReserveCritical ? "自分の余力が危険域にある" : null,
+          thinOptions ? "他に有効な手が薄い" : null,
+          event.slice(0, 120),
+        ].filter(Boolean).join("。").slice(0, 400)
+      : "";
+    const reflectionGuideline = wantsReflect
+      ? (
+          urgentDefense
+            ? "次は守りを固めて相手の出方を測る"
+            : unfavorable
+              ? "無理に押さず、間合いと余力を立て直してから動く"
+              : "観察した弱点に合わせて次の一手を選ぶ"
+        )
+      : "";
     return {
       state: {
         ...input.psyche,
@@ -893,7 +934,13 @@ export class MockLlmProvider implements LlmProvider {
         },
       },
       speech,
-      proposedAction: setupAttack && preferred.kind === "free_action"
+      proposedAction: preferred.kind === "reflect"
+        ? {
+            kind: "reflect" as const,
+            reflectionAnalysis: reflectionAnalysis || "ここまでの戦況を整理する",
+            reflectionGuideline: reflectionGuideline || "次の一手の方針を立てる",
+          }
+        : setupAttack && preferred.kind === "free_action"
         ? {
             kind: "free_action" as const,
             description: setupAttack.prerequisites[0]?.description ??

@@ -17,6 +17,7 @@ describe("character-agent action proposal prompt", () => {
       "defend",
       "rest",
       "wait",
+      "reflect",
       "free_action",
     ]) {
       assert.match(
@@ -27,6 +28,14 @@ describe("character-agent action proposal prompt", () => {
     assert.match(
       CHARACTER_ACTION_PROPOSAL_OUTPUT_RULES,
       /description, desiredOutcome, subjectRefs, and opportunityId are free_action-only/,
+    );
+    assert.match(
+      CHARACTER_ACTION_PROPOSAL_OUTPUT_RULES,
+      /reflectionAnalysis and reflectionGuideline are reflect-only/,
+    );
+    assert.match(
+      CHARACTER_ACTION_PROPOSAL_OUTPUT_RULES,
+      /Never choose reflect for short-tempered or impulsive personalities/,
     );
     assert.match(
       CHARACTER_ACTION_PROPOSAL_OUTPUT_RULES,

@@ -14,6 +14,7 @@ import {
   advanceCharacterAgents,
   applyDialogueContextProjectionOverride,
   applyNarratorRecognitionResult,
+  applyReflectMemoryWrites,
   buildAftermathNarrativeBlock,
   buildBattleAdjudication,
   buildCharacterAgentConsumerInput,
@@ -858,6 +859,10 @@ describe("character-authored public speech", () => {
         kind: "free_action",
         name: "自由行動",
         target: { kind: "self", perceivedAs: "自分" },
+      }, {
+        kind: "reflect",
+        name: "戦況を省みる",
+        target: { kind: "self", perceivedAs: "自分" },
       }],
       finisher: {
         skillId: "slash",
@@ -937,6 +942,74 @@ describe("character-authored public speech", () => {
       validate({ kind: "basic_attack", instrumentRef: "object.rock" }).status,
       "accepted",
     );
+    assert.equal(
+      validate({ kind: "reflect" }).reason,
+      "schema_invalid",
+    );
+    assert.deepEqual(
+      validate({
+        kind: "reflect",
+        reflectionAnalysis: "形勢が悪い",
+        reflectionGuideline: "守りから立て直す",
+      }),
+      {
+        status: "accepted",
+        reason: null,
+        proposedAction: {
+          kind: "reflect",
+          reflectionAnalysis: "形勢が悪い",
+          reflectionGuideline: "守りから立て直す",
+        },
+        acceptedAction: {
+          kind: "reflect",
+          reflectionAnalysis: "形勢が悪い",
+          reflectionGuideline: "守りから立て直す",
+        },
+      },
+    );
+  });
+
+  it("writes reflect analysis into battle-volatile memory only", () => {
+    const sideA = sheet("a", "アオ", ["私"]);
+    const sideB = sheet("b", "クロ", ["俺"]);
+    const state = createBattleState({
+      id: "reflect-memory",
+      sideA,
+      sideB,
+      turnLimit: 20,
+      prologuePending: false,
+    });
+    state.agentStateA = {
+      privateMemory: "既存の記憶",
+      battleVolatileMemory: "",
+      currentGoal: "勝つ",
+      emotion: "平静",
+      beliefs: [],
+      observations: [],
+      speechStyle: "短く",
+      selfReference: "私",
+      lastSpeech: null,
+    };
+    const actions = [{
+      id: "turn-1-action-a",
+      actorSide: "a" as const,
+      kind: "reflect" as const,
+      reflectionAnalysis: "相手の間合いが読めない",
+      reflectionGuideline: "次は様子を見てから踏み込む",
+      executed: true,
+      skippedReason: null,
+    }];
+    const once = applyReflectMemoryWrites(state, actions);
+    assert.equal(once.agentStateA?.privateMemory, "既存の記憶");
+    assert.match(once.agentStateA?.battleVolatileMemory ?? "", /【省察】相手の間合いが読めない/);
+    assert.match(once.agentStateA?.battleVolatileMemory ?? "", /【指針】次は様子を見てから踏み込む/);
+    assert.equal(once.agentStateA?.currentGoal, "次は様子を見てから踏み込む");
+    const twice = applyReflectMemoryWrites(once, actions);
+    assert.equal(
+      ((twice.agentStateA?.battleVolatileMemory ?? "").match(/【省察】/g) ?? []).length,
+      1,
+    );
+    assert.equal(twice.agentStateA?.privateMemory, "既存の記憶");
   });
 
   it("keeps valid state and speech when an OpenAI-compatible action proposal is invalid", async () => {
