@@ -30,7 +30,7 @@ export function FriendsPage() {
     setError(null);
     setMessage(null);
     try {
-      await api.addFriend(name);
+      await api.addFriend({ username: name });
       setUsername("");
       setMessage(`${name} をフレンドに追加しました`);
       await reload();
@@ -91,9 +91,12 @@ export function FriendsPage() {
             {friends.map((friend) => (
               <li key={friend.id} className="friend-list-item">
                 <div>
-                  <strong>{friend.username}</strong>
+                  <Link to={`/users/${friend.id}`}>
+                    <strong>{friend.displayName}</strong>
+                  </Link>
                   <div className="muted" style={{ fontSize: "0.85rem" }}>
-                    追加: {new Date(friend.createdAt).toLocaleString("ja-JP")}
+                    @{friend.username} · 追加:{" "}
+                    {new Date(friend.createdAt).toLocaleString("ja-JP")}
                   </div>
                 </div>
                 <button

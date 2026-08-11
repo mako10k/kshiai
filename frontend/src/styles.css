@@ -3282,3 +3282,48 @@ textarea::placeholder {
     font-size: 1.15rem;
   }
 }
+
+/* —— Bottom nav + match action bar stacking (final overrides) —— */
+.app-with-bottom-nav {
+  padding-bottom: calc(5.5rem + var(--safe-bottom));
+}
+
+.app-with-bottom-nav .main {
+  padding-bottom: 1rem;
+}
+
+.bottom-nav {
+  z-index: 40;
+}
+
+.match-action-bar {
+  position: fixed !important;
+  left: 0;
+  right: 0;
+  bottom: calc(4.1rem + var(--safe-bottom)) !important;
+  z-index: 45;
+  padding: 0.65rem 0.85rem 0.65rem;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(15, 18, 24, 0.92) 28%,
+    rgba(15, 18, 24, 0.98) 100%
+  );
+  border-top: 1px solid rgba(44, 54, 72, 0.8);
+}
+
+.match-start-btn {
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+  display: block;
+  font-weight: 700;
+  font-size: 1.05rem;
+  min-height: 3rem;
+}
+
+/* Leave room so page content is not under fixed bars */
+.app-with-bottom-nav .match-setup-spacer,
+.app-with-bottom-nav .match-action-spacer {
+  height: calc(4.5rem + var(--safe-bottom));
+}

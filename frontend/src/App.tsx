@@ -14,6 +14,7 @@ import { BattlefieldDetailPage } from "./pages/BattlefieldDetailPage";
 import { FriendsPage } from "./pages/FriendsPage";
 import { HistoryPage } from "./pages/HistoryPage";
 import { NarrationStylesPage } from "./pages/NarrationStylesPage";
+import { UserProfilePage } from "./pages/UserProfilePage";
 import { AuthCallbackPage } from "./pages/AuthCallbackPage";
 import { ResetPasswordPage } from "./pages/ResetPasswordPage";
 import { InternalObservationsPage } from "./pages/InternalObservationsPage";
@@ -29,7 +30,13 @@ function Shell({ children }: { children: React.ReactNode }) {
         </Link>
         {user && (
           <div className="topbar-right">
-            <span className="muted topbar-username">{user.username}</span>
+            <Link
+              to={`/users/${user.id}`}
+              className="muted topbar-username"
+              title={`@${user.username}`}
+            >
+              {user.displayName || user.username}
+            </Link>
             <BurgerMenu />
           </div>
         )}
@@ -99,6 +106,14 @@ export function App() {
           element={
             <RequireAuth>
               <FriendsPage />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/users/:id"
+          element={
+            <RequireAuth>
+              <UserProfilePage />
             </RequireAuth>
           }
         />

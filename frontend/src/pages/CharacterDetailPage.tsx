@@ -453,6 +453,15 @@ export function CharacterDetailPage() {
         </div>
         <div>
           <p>{character.narrativeBlurb}</p>
+          {character.owner ? (
+            <p className="muted" style={{ marginBottom: "0.75rem" }}>
+              作成ユーザ:{" "}
+              <Link to={`/users/${character.owner.id}`}>
+                {character.owner.displayName}
+              </Link>
+              <span> (@{character.owner.username})</span>
+            </p>
+          ) : null}
           {isOwner ? (
             <label className="field" style={{ marginBottom: "0.75rem" }}>
               <span className="field-label">公開範囲</span>

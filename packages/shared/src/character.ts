@@ -393,6 +393,14 @@ const RecordPublicSchema = z.object({
 export const CharacterPublicSchema = z.object({
   id: z.string(),
   ownerUserId: z.string(),
+  /** Creator public handle for navigation to the user profile. */
+  owner: z
+    .object({
+      id: z.string(),
+      username: z.string(),
+      displayName: z.string(),
+    })
+    .optional(),
   displayName: z.string(),
   /** Public name classifications; gender and age remain private. */
   names: z.object({
@@ -475,6 +483,7 @@ export function toPublicCharacter(
   sheet: CharacterSheet,
   viewerUserId?: string | null,
   ratingDisplay?: RatingDisplayContext,
+  owner?: { id: string; username: string; displayName: string } | null,
 ): CharacterPublic {
   sheet = ensureCharacterIdentityProperties(
     ensureCharacterCombatProperties(sheet),
@@ -484,6 +493,13 @@ export function toPublicCharacter(
   return {
     id: sheet.id,
     ownerUserId: sheet.ownerUserId,
+    owner: owner
+      ? {
+          id: owner.id,
+          username: owner.username,
+          displayName: owner.displayName,
+        }
+      : undefined,
     displayName: sheet.displayName,
     names: {
       realName: sheet.identity?.realName ?? null,

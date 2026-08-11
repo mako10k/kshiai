@@ -129,7 +129,20 @@ export async function toPublicCharacterForViewer(
   const display = ratingDisplay ?? (await getRatingDisplayContext(
     (await getUserAccessProfile(sheet.ownerUserId)).realm,
   ));
-  return toPublicCharacter(sheet, viewerUserId, display);
+  const { getUserPublicById } = await import("./users.js");
+  const owner = await getUserPublicById(sheet.ownerUserId);
+  return toPublicCharacter(
+    sheet,
+    viewerUserId,
+    display,
+    owner
+      ? {
+          id: owner.id,
+          username: owner.username,
+          displayName: owner.displayName,
+        }
+      : null,
+  );
 }
 
 export async function listSheetsMissingIdentity(): Promise<CharacterSheet[]> {

@@ -94,7 +94,13 @@ export function BurgerMenu() {
             <div className="burger-panel-header">
               <div>
                 <div className="burger-panel-title">その他</div>
-                <div className="muted burger-user">{user.username}</div>
+                <Link
+                  to={`/users/${user.id}`}
+                  className="muted burger-user"
+                  onClick={() => setOpen(false)}
+                >
+                  {user.displayName || user.username}
+                </Link>
               </div>
               <button
                 type="button"

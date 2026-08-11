@@ -11,6 +11,7 @@ import type {
   CharacterPublic,
   CharacterVisibility,
   FriendPublic,
+  UserProfilePublic,
   DialoguePipelineSettings,
   NarrationStylePublic,
   UserPublic,
@@ -240,10 +241,45 @@ export const api = {
     }>(`/api/characters${qs ? `?${qs}` : ""}`);
   },
   listFriends: () => request<{ friends: FriendPublic[] }>("/api/friends"),
-  addFriend: (username: string) =>
+  addFriend: (target: { username?: string; userId?: string }) =>
     request<{ friend: FriendPublic }>("/api/friends", {
       method: "POST",
-      body: JSON.stringify({ username }),
+      body: JSON.stringify(target),
+    }),
+  getUser: (id: string) =>
+    request<{ user: UserProfilePublic }>(`/api/users/${id}`),
+  updateDisplayName: (displayName: string) =>
+    request<{ user: UserPublic }>("/api/me/display-name", {
+      method: "PATCH",
+      body: JSON.stringify({ displayName }),
+    }),
+  listFavorites: () =>
+    request<{ favorites: Array<UserPublic & { createdAt: string }> }>(
+      "/api/favorites",
+    ),
+  addFavorite: (userId: string) =>
+    request<{ favorite: UserPublic & { createdAt: string } }>(
+      `/api/favorites/${userId}`,
+      { method: "POST" },
+    ),
+  removeFavorite: (userId: string) =>
+    request<{ ok: boolean }>(`/api/favorites/${userId}`, { method: "DELETE" }),
+  sendFriendRequest: (target: { userId?: string; username?: string }) =>
+    request<{ request: { createdAt: string }; targetUserId: string }>(
+      "/api/friend-requests",
+      { method: "POST", body: JSON.stringify(target) },
+    ),
+  acceptFriendRequest: (fromUserId: string) =>
+    request<{ ok: boolean }>(`/api/friend-requests/${fromUserId}/accept`, {
+      method: "POST",
+    }),
+  rejectFriendRequest: (fromUserId: string) =>
+    request<{ ok: boolean }>(`/api/friend-requests/${fromUserId}/reject`, {
+      method: "POST",
+    }),
+  cancelFriendRequest: (toUserId: string) =>
+    request<{ ok: boolean }>(`/api/friend-requests/${toUserId}`, {
+      method: "DELETE",
     }),
   removeFriend: (userId: string) =>
     request<{ ok: boolean }>(`/api/friends/${userId}`, { method: "DELETE" }),
