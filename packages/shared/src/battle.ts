@@ -26,6 +26,7 @@ import {
   ObserverContactRegistryBSchema,
 } from "./perception.js";
 import { BattleTemporalPlanSchema } from "./battle-temporal-rules.js";
+import { CausalTurnExecutionSchema } from "./battle-causal-execution.js";
 import {
   BattleEncounterContextSchema,
   BattleNarratorContinuitySchema,
@@ -1196,6 +1197,12 @@ export const BattleStateSchema = z.object({
     .optional(),
   /** Latest server-owned action ordering receipt; never exposed publicly. */
   latestTemporalResolution: BattleTemporalPlanSchema.optional(),
+  /**
+   * Additive Issue #98 checkpoint. Legacy battles omit it and continue through
+   * the complete-turn path until the service explicitly opts into the causal
+   * execution revision.
+   */
+  causalExecution: CausalTurnExecutionSchema.optional(),
   /**
    * Engine-internal balance metrics (not exposed on BattlePublic).
    * Accumulated from HP deltas each combat turn for observability.
