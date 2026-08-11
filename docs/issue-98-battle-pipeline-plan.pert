@@ -1,0 +1,144 @@
+# GitHub Issue #98 implementation plan. Local acceptance is not release
+# authorization; owner gates decide only the listed product contracts.
+project KSHIAI_ISSUE_98_CAUSAL_BATTLE_PIPELINE:
+  version 2
+  title "Issue #98 causal battle-pipeline renewal"
+  description "Replace the all-actions-precommitted turn path with an explicitly checkpointed causal bucket state machine. Preserve server-owned mechanics, observer-relative visibility, and initiative-window-v1 unless an owner accepts a different contract. The two-combatant sequential-decision slice is separate from bounded delayed effects and from any production observation."
+  as_of 2026-08-12
+  duration_unit point
+  velocity 2880p/1117h
+  target_duration 28p
+  finish ISSUE_98_LOCALLY_ACCEPTED
+
+resource DEV:
+  title "Developer"
+  capacity 1
+
+resource OWNER:
+  title "Product and release owner"
+  capacity 1
+
+milestone ISSUE_INTAKE_RECORDED:
+  title "Issue intent and current baseline recorded"
+  state reached
+
+milestone CAUSAL_CONTRACT_DRAFTED:
+  title "Causal state machine and authority draft recorded"
+
+milestone CAUSAL_CONTRACT_ACCEPTED:
+  title "Owner accepted bounded Phase 1 contract"
+
+milestone BUCKET_ENGINE_READY:
+  title "Restartable bucket execution is available"
+
+milestone SEQUENTIAL_SLICE_READY:
+  title "Later actor can decide from earlier observable committed facts"
+
+milestone DURABILITY_READY:
+  title "Retry, persistence, and SSE boundaries are verified"
+
+milestone EFFECT_CONTRACT_ACCEPTED:
+  title "Owner accepted bounded effect scope"
+
+milestone EFFECT_LIFECYCLE_READY:
+  title "Action, effect, and system provenance are separately traceable"
+
+milestone DEFERRED_EFFECTS_READY:
+  title "Bounded two-combatant delayed and conditional effects are available"
+
+milestone PACING_MEASURED:
+  title "Local pacing evidence and candidate policy are recorded"
+
+milestone PACING_POLICY_ACCEPTED:
+  title "Owner decided whether to adopt a pacing candidate"
+
+milestone ISSUE_98_LOCALLY_ACCEPTED:
+  title "Issue #98 local acceptance complete"
+
+task T_DRAFT_CAUSAL_CONTRACT ISSUE_INTAKE_RECORDED -> CAUSAL_CONTRACT_DRAFTED:
+  title "Trace authority, checkpoints, visibility, and prior-plan disposition"
+  description "Record a formal turn state machine: prepare, durable bucket commit, observer projection, later decision, later validation, next bucket commit, and terminal finalize. List every LLM-to-persisted-state and winner edge, including narrator recognition continuity and terminal adjudication, and decide whether each is retained outside this slice, server-validated, or removed. Define durable checkpoints, idempotency-key and lease binding, resume after save/result ambiguity, public durable versus ephemeral SSE events, trace ACL/retention, and legacy read behavior. Record an explicit defer, replace, or integration decision for the completed observation plan's OBS-20260807-09 semantic-equivalence axis. Create fixtures for both speed directions, simultaneous bucket, KO, invalid proposal, timeout, save-success/response-failure, reconnect, and private-intent non-leakage."
+  duration 3p
+  owner "codex"
+  requires:
+    DEV 1
+
+task T_ACCEPT_CAUSAL_CONTRACT CAUSAL_CONTRACT_DRAFTED -> CAUSAL_CONTRACT_ACCEPTED:
+  title "Accept the bounded sequential-decision contract"
+  description "Owner decides the Phase 1 action source for each bucket, semantic/world visibility timing, retained LLM authority edges, old-plan OBS-09 disposition, and the no-random-initiative/no-new-wait-semantics scope. No code, deployment, release, or Issue mutation is authorized by this decision."
+  duration 1p
+  owner "user"
+  requires:
+    OWNER 1
+
+task T_REFACTOR_BUCKET_EXECUTION CAUSAL_CONTRACT_ACCEPTED -> BUCKET_ENGINE_READY:
+  title "Refactor deterministic engine into restartable bucket execution"
+  description "Extract pure prepare, resolve-bucket, and finalize operations from the current monolithic resolveTurn path. Preserve initiative-window-v1 atomic simultaneous behavior, A/B-swap invariance, server validation, and deterministic stable IDs. Persist no LLM-owned mechanics. Each operation must be re-enterable from its durable checkpoint without replaying an already committed bucket or consuming a planned action twice."
+  duration 4p
+  owner "codex"
+  requires:
+    DEV 1
+
+task T_WIRE_SEQUENTIAL_DECISION BUCKET_ENGINE_READY -> SEQUENTIAL_SLICE_READY:
+  title "Wire observer-safe later-bucket decision and phase receipts"
+  description "For distinct initiative buckets, commit the first server-owned bucket, apply the contractually selected semantic/world observation boundary, project only committed observer-visible facts, then request, validate, and resolve the later actor action. Specify whether the first actor remains a legacy reservation in this first slice or also decides in-turn. Keep same-bucket actors parallel from the same snapshot. Record source-linked pre-action expression, action, consequence, and post-action expression receipts; do not create a speech or action after a provider failure."
+  duration 4p
+  owner "codex"
+  requires:
+    DEV 1
+
+task T_HARDEN_CAUSAL_DURABILITY SEQUENTIAL_SLICE_READY -> DURABILITY_READY:
+  title "Verify checkpoint recovery, idempotency, and public stream ordering"
+  description "Bind request idempotency, battle lease/version, committed bucket receipt, and final response transactionally or with an explicit recoverable outbox. A retry returns the durable committed result rather than rerunning LLM work. Hold the frontend idempotency key across reconnect retries. Emit new public causal bucket events only after their durable commit; keep progress and private trace out of public SSE replay. Test disconnect/reconnect, save succeeds but response completion fails, later LLM timeout after first commit, and stale concurrent advance."
+  duration 3p
+  owner "codex"
+  requires:
+    DEV 1
+
+task T_ACCEPT_EFFECT_SCOPE DURABILITY_READY -> EFFECT_CONTRACT_ACCEPTED:
+  title "Accept bounded effect provenance and deferred-effect scope"
+  description "Owner decides the initial server-defined predicates, due/expiry/cancel semantics, observer visibility, and retention. Scope is restricted to effects on the existing two combatants and existing world entities; reinforcements or new combat participants require a separate participant-lifecycle design and approval."
+  duration 1p
+  owner "user"
+  requires:
+    OWNER 1
+
+task T_SEPARATE_ACTION_EFFECTS EFFECT_CONTRACT_ACCEPTED -> EFFECT_LIFECYCLE_READY:
+  title "Separate action, effect, world, and system provenance"
+  description "Add versioned bounded receipts with tagged provenance: action, scheduled effect, system/rules stage, or environment/world transition. Link new public consequences and deltas to exactly one such receipt while retaining lawful start-turn restoration and other system-origin events. Do not infer causal links from prose. Migrate turn records additively; define replay narrowly as pure pending-effect schedule resolution, not unsupported full semantic or full-turn replay."
+  duration 4p
+  owner "codex"
+  requires:
+    DEV 1
+
+task T_IMPLEMENT_DEFERRED_EFFECTS EFFECT_LIFECYCLE_READY -> DEFERRED_EFFECTS_READY:
+  title "Implement bounded delayed and conditional effects"
+  description "Implement stable pending-effect IDs, due-turn or owner-approved server-defined predicates, cancellation/expiry, deterministic schedule resolution, and observer-safe projection at the accepted pre-action boundary. Cover one delayed-hit equivalent and one conditional effect fixture. Do not add arbitrary scripts, unbounded timers, narrator-controlled state changes, or new combat participants."
+  duration 3p
+  owner "codex"
+  requires:
+    DEV 1
+
+task T_MEASURE_LOCAL_PACING DEFERRED_EFFECTS_READY -> PACING_MEASURED:
+  title "Measure local pacing and prepare a policy candidate"
+  description "Version and persist turn-limit, finisher-unlock, decisive-pressure, warning, and terminal-adjudication policy together. Compare the current policy with a local candidate at no more than 12 turns using mean/median completion turn, limit-hit and forced-terminal classification, KO rate, per-turn committed change, repeated action/speech, initiative distribution, and delayed-effect resolution. Record sample size and variance; do not deploy or claim production evidence."
+  duration 2p
+  owner "codex"
+  requires:
+    DEV 1
+
+task T_ACCEPT_PACING_POLICY PACING_MEASURED -> PACING_POLICY_ACCEPTED:
+  title "Decide whether to adopt a measured pacing candidate"
+  description "Owner decides retain, revise, or adopt the candidate based on local evidence. The 8-turn average remains a hypothesis, not an acceptance threshold by itself. Production observation, if desired, is a separately approved task."
+  duration 1p
+  owner "user"
+  requires:
+    OWNER 1
+
+task T_ACCEPT_ISSUE_98 PACING_POLICY_ACCEPTED -> ISSUE_98_LOCALLY_ACCEPTED:
+  title "Accept Issue #98 locally and prepare release-decision evidence"
+  description "Run focused shared/backend fixtures plus full test, typecheck, build, migration, limited schedule replay, checkpoint recovery, A/B swap, simultaneous bucket, privacy across DTO/SSE/trace/LLM payload, and provider failure tests. Inspect the internal DAG for durable phase order and provenance. Record release success criteria, rollback target, and a separately authorized production-observation protocol, but do not tag, deploy, promote, mutate the Issue, or change production configuration."
+  duration 3p
+  owner "codex"
+  requires:
+    DEV 1
