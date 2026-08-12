@@ -1901,6 +1901,23 @@ export function materializeBattleStateAtBucketBoundary(input: {
   };
 }
 
+/** Restore the immutable pre-turn mechanics used by causal record assembly. */
+export function materializeBattleTurnStartState(input: {
+  state: BattleState;
+  continuation: BattleTurnEngineContinuation;
+}): BattleState {
+  const continuation = BattleTurnEngineContinuationSchema.parse(input.continuation);
+  if (!continuation.turnStartSideA || !continuation.turnStartSideB) {
+    throw new Error("TURN_START_SNAPSHOT_MISSING");
+  }
+  return {
+    ...input.state,
+    turn: Math.max(0, continuation.turn - 1),
+    sideA: structuredClone(continuation.turnStartSideA),
+    sideB: structuredClone(continuation.turnStartSideB),
+  };
+}
+
 /** Only already-executed actions may enter a bucket observer projection. */
 export function committedActionsAtBucketBoundary(
   continuation: BattleTurnEngineContinuation,
@@ -2219,6 +2236,12 @@ export function resolveTurn(input: ResolveTurnInput): {
     ? BattleTurnEngineContinuationSchema.parse(input.engineContinuation)
     : null;
   const prepared = resumed ? null : prepareBattleTurnStart(input);
+  const turnStartSideA = cloneCombatant(
+    resumed?.turnStartSideA ?? input.state.sideA,
+  );
+  const turnStartSideB = cloneCombatant(
+    resumed?.turnStartSideB ?? input.state.sideB,
+  );
   let sideA = cloneCombatant(resumed?.sideA ?? prepared!.sideA);
   let sideB = cloneCombatant(resumed?.sideB ?? prepared!.sideB);
   const situation = resumed?.situation ?? prepared!.situation;
@@ -2752,6 +2775,8 @@ export function resolveTurn(input: ResolveTurnInput): {
       turn,
       temporalResolution,
       nextBucketIndex,
+      turnStartSideA,
+      turnStartSideB,
       sideA,
       sideB,
       situation,

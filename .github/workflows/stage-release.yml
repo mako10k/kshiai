@@ -56,6 +56,9 @@ env:
   SUPABASE_URL: https://cvrbhpkfqkpqdegxfrlq.supabase.co
   SUPABASE_JWKS_URL: https://cvrbhpkfqkpqdegxfrlq.supabase.co/auth/v1/.well-known/jwks.json
   ADMIN_EMAILS: mako10k@mk10.org
+  NARRATION_TASK_QUEUE: kshiai-narration
+  NARRATION_TASK_TARGET_URL: https://kshiai.mk10.org/api/internal/narration/task
+  NARRATION_TASK_SERVICE_ACCOUNT_EMAIL: kshiai-cloud-run@kshiai.iam.gserviceaccount.com
 
 jobs:
   stage:
@@ -107,6 +110,14 @@ jobs:
 
       - uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db # v3
 
+      - name: Verify narration task queue
+        run: |
+          set -euo pipefail
+          gcloud tasks queues describe "$NARRATION_TASK_QUEUE" \
+            --project="$GCP_PROJECT" \
+            --location="$GCP_REGION" \
+            --format='value(state)' | grep -Fx RUNNING
+
       - name: Build immutable backend image
         id: image
         run: |
@@ -156,11 +167,11 @@ jobs:
           set -euo pipefail
           alias="release-${RELEASE_TAG//./-}"
           override_flags=(
-            --update-env-vars="BATTLE_CAUSAL_NARRATION_MODE=$CAUSAL_NARRATION_MODE,ADMIN_EMAILS=$ADMIN_EMAILS,BATTLE_PACING_POLICY=$PACING_POLICY"
+            --update-env-vars="BATTLE_CAUSAL_NARRATION_MODE=$CAUSAL_NARRATION_MODE,ADMIN_EMAILS=$ADMIN_EMAILS,BATTLE_PACING_POLICY=$PACING_POLICY,NARRATION_TASK_PROJECT=$GCP_PROJECT,NARRATION_TASK_LOCATION=$GCP_REGION,NARRATION_TASK_QUEUE=$NARRATION_TASK_QUEUE,NARRATION_TASK_TARGET_URL=$NARRATION_TASK_TARGET_URL,NARRATION_TASK_SERVICE_ACCOUNT_EMAIL=$NARRATION_TASK_SERVICE_ACCOUNT_EMAIL,NARRATION_TASK_AUDIENCE=$NARRATION_TASK_TARGET_URL"
             --remove-env-vars="DIALOGUE_CONTEXT_PROJECTION_OVERRIDE"
           )
           if [[ "$DIALOGUE_CONTEXT_PROJECTION_OVERRIDE" != "none" ]]; then
-            override_flags=(--update-env-vars="BATTLE_CAUSAL_NARRATION_MODE=$CAUSAL_NARRATION_MODE,ADMIN_EMAILS=$ADMIN_EMAILS,BATTLE_PACING_POLICY=$PACING_POLICY,DIALOGUE_CONTEXT_PROJECTION_OVERRIDE=$DIALOGUE_CONTEXT_PROJECTION_OVERRIDE")
+            override_flags=(--update-env-vars="BATTLE_CAUSAL_NARRATION_MODE=$CAUSAL_NARRATION_MODE,ADMIN_EMAILS=$ADMIN_EMAILS,BATTLE_PACING_POLICY=$PACING_POLICY,DIALOGUE_CONTEXT_PROJECTION_OVERRIDE=$DIALOGUE_CONTEXT_PROJECTION_OVERRIDE,NARRATION_TASK_PROJECT=$GCP_PROJECT,NARRATION_TASK_LOCATION=$GCP_REGION,NARRATION_TASK_QUEUE=$NARRATION_TASK_QUEUE,NARRATION_TASK_TARGET_URL=$NARRATION_TASK_TARGET_URL,NARRATION_TASK_SERVICE_ACCOUNT_EMAIL=$NARRATION_TASK_SERVICE_ACCOUNT_EMAIL,NARRATION_TASK_AUDIENCE=$NARRATION_TASK_TARGET_URL")
           fi
           gcloud run deploy "$CLOUD_RUN_SERVICE" \
             --project="$GCP_PROJECT" \

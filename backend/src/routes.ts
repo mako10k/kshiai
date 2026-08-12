@@ -78,6 +78,10 @@ import {
   processNextNarrationAcrossBattles,
   readBattleNarrationEvents,
 } from "./services/narration-worker.js";
+import {
+  dispatchPendingNarrationTasks,
+  verifyNarrationTaskAuthorization,
+} from "./services/narration-task-dispatch.js";
 
 const llm = createLlmProvider();
 
@@ -98,6 +102,17 @@ async function publicUserWithAccess(user: {
   };
 }
 
+async function wakeNarrationTasks(): Promise<void> {
+  try {
+    const dispatch = await dispatchPendingNarrationTasks();
+    if (dispatch.failed > 0) {
+      console.error("[narration] task dispatch incomplete", dispatch);
+    }
+  } catch (error) {
+    console.error("[narration] task dispatch failed", error);
+  }
+}
+
 /** Versioned media (?v=) can be cached hard; bare paths revalidate often (iOS Safari). */
 function cacheControlForMedia(version: string | undefined): string {
   if (version && version.length > 0) {
@@ -113,6 +128,41 @@ function readIdempotencyKey(value: string | undefined): string | null {
 
 export function buildRoutes() {
   const app = new Hono();
+
+  app.post("/api/internal/narration/task", async (c) => {
+    if (!await verifyNarrationTaskAuthorization(c.req.header("Authorization"))) {
+      return c.json({ error: "forbidden" }, 403);
+    }
+    const body = await c.req.json().catch(() => ({})) as {
+      battleId?: unknown;
+      receiptId?: unknown;
+      outboxId?: unknown;
+    };
+    if (
+      typeof body.battleId !== "string" ||
+      typeof body.receiptId !== "string" ||
+      typeof body.outboxId !== "string"
+    ) {
+      return c.json({ error: "invalid_task" }, 400);
+    }
+    try {
+      const result = await processNextNarration({
+        battleId: body.battleId,
+        ownerId: `cloud-task:${body.outboxId}`,
+        generator: createLlmNarrationGenerator(llm),
+      });
+      if (result === "retry_queued") {
+        return c.json({ result }, 503);
+      }
+      return c.json({ result });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "error";
+      if (message === "NARRATION_LEASE_BUSY" || message === "NARRATION_CLAIM_CONFLICT") {
+        return c.json({ error: message.toLowerCase() }, 503);
+      }
+      throw error;
+    }
+  });
 
   app.get("/api/health", async (c) => {
     await query(`SELECT 1 AS ready`);
@@ -1348,6 +1398,7 @@ export function buildRoutes() {
         ownerId: idempotency.ownerId,
         response,
       });
+      await wakeNarrationTasks();
       return c.json(response);
     } catch (e) {
       if (!operationCompleted) {
@@ -1536,6 +1587,7 @@ export function buildRoutes() {
         ownerId: idempotency.ownerId,
         response,
       });
+      await wakeNarrationTasks();
       return c.json(response);
     } catch (e) {
       if (!operationCompleted) {
@@ -1653,6 +1705,7 @@ export function buildRoutes() {
             ownerId: idempotency.ownerId,
             response: { battle },
           });
+          await wakeNarrationTasks();
           send({ type: "done", battle });
           console.info(
             `[battles] advance stream ok ${battleId} turn=${battle.turn} ${Date.now() - started}ms aft=${battle.aftermathPending ? 1 : 0}`,
@@ -1733,6 +1786,7 @@ export function buildRoutes() {
         ownerId: idempotency.ownerId,
         response,
       });
+      await wakeNarrationTasks();
       return c.json(response);
     } catch (e) {
       if (!operationCompleted) {

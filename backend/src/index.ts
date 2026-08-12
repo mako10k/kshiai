@@ -6,6 +6,7 @@ import { databaseKind, initializeDatabase } from "./db.js";
 import { ensureSystemPresets } from "./repositories/battlefields.js";
 import { ensureSystemNarrationStyles } from "./repositories/narration-styles.js";
 import { buildRoutes } from "./routes.js";
+import { dispatchPendingNarrationTasks } from "./services/narration-task-dispatch.js";
 import {
   ORIGIN_VERIFICATION_HEADER,
   verifyOriginSecret,
@@ -14,9 +15,23 @@ import {
 // Ensure DB is ready + system battlefield presets
 await initializeDatabase();
 await Promise.all([ensureSystemPresets(), ensureSystemNarrationStyles()]);
+try {
+  const narrationDispatch = await dispatchPendingNarrationTasks();
+  if (narrationDispatch.failed > 0) {
+    console.error("[narration] startup task dispatch incomplete", narrationDispatch);
+  }
+} catch (error) {
+  // Durable outbox rows remain pending and are retried on the next startup or
+  // battle mutation. Readiness is not coupled to a transient Cloud Tasks call.
+  console.error("[narration] startup task dispatch failed", error);
+}
 
 const app = new Hono();
 app.use("/api/*", async (c, next) => {
+  if (c.req.path === "/api/internal/narration/task") {
+    await next();
+    return;
+  }
   if (!verifyOriginSecret(
     config.originSharedSecret,
     c.req.header(ORIGIN_VERIFICATION_HEADER),

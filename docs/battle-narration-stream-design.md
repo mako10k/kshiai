@@ -336,6 +336,10 @@ document.
    Redelivery is normal. A recovery scan re-enqueues orphaned queued or expired
    generating entries. Selecting the managed queue remains an infrastructure
    approval, but a push-capable wake-up is mandatory.
+   The selected implementation is Google Cloud Tasks: deterministic task names
+   make enqueue idempotent, Google OIDC authenticates the task endpoint, and
+   Cloud Tasks retries a non-terminal worker response. Guarded narration must
+   fail startup configuration when the queue identity or target is absent.
 3. **Fenced ordering lease.** A monotonic fencing token is checked by heartbeat,
    attempt transition, event insert and terminal write. Eligible selection locks
    the lowest sequence and proves no earlier non-terminal entry; a stale worker

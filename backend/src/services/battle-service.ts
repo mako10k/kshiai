@@ -39,6 +39,7 @@ import {
   ratingForDisplay,
   resolveNextBattleTurnBucket,
   materializeBattleStateAtBucketBoundary,
+  materializeBattleTurnStartState,
   bindNextBucketDecision,
   resolveTurn,
   sheetCombatProfile,
@@ -3638,6 +3639,12 @@ async function advanceTurnWithLease(input: {
     executionId: causalExecution.executionId,
   };
   const resumedEngineContinuation = state.causalEngineContinuation;
+  const turnRecordBefore = resumedEngineContinuation
+    ? materializeBattleTurnStartState({
+        state,
+        continuation: resumedEngineContinuation,
+      })
+    : structuredClone(state);
   if (resumedEngineContinuation) {
     const resumedBucket = causalExecution.temporalPlan.buckets[causalExecution.bucketIndex];
     if (!resumedBucket) throw new Error("CAUSAL_BUCKET_MISSING");
@@ -3908,7 +3915,7 @@ async function advanceTurnWithLease(input: {
   emit({ type: "phase", phase: "agents" });
   const semanticTurn = await reconcileSemanticState({
     llm: input.llm,
-    stateBeforeTurn: state,
+    stateBeforeTurn: turnRecordBefore,
     resolvedState: next,
     mine,
     opp,
@@ -3952,7 +3959,7 @@ async function advanceTurnWithLease(input: {
   next = applyReflectMemoryWrites(next, resolved.actions);
   const agentTurn = await advanceCharacterAgents({
     llm: input.llm,
-    before: state,
+    before: turnRecordBefore,
     after: next,
     mine,
     opp,

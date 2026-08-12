@@ -16,6 +16,7 @@ import {
   resolveBattleTurnBucket,
   resolveNextBattleTurnBucket,
   materializeBattleStateAtBucketBoundary,
+  materializeBattleTurnStartState,
   committedActionsAtBucketBoundary,
   bindNextBucketDecision,
   resolveTurn,
@@ -1502,6 +1503,28 @@ describe("battle engine", () => {
     assert.deepEqual(resumed.events, monolithic.events);
     assert.deepEqual(resumed.actions, monolithic.actions);
     assert.deepEqual(resumed.mechanicalEvidence, monolithic.mechanicalEvidence);
+    const turnStart = materializeBattleTurnStartState({
+      state: boundary,
+      continuation: serializedContinuation,
+    });
+    const resumedRecord = buildBattleTurnRecord({
+      before: turnStart,
+      after: resumed.state,
+      events: resumed.events,
+      actions: resumed.actions,
+      mechanicalEvidence: resumed.mechanicalEvidence,
+    });
+    assert.equal(
+      resumedRecord.sideAChange.parameterChanges.stamina,
+      (monolithic.state.sideA.parameters.stamina ?? 0) -
+        (state.sideA.parameters.stamina ?? 0),
+    );
+    assert.equal(
+      resumedRecord.sideAChange.parameterChanges.hp,
+      (monolithic.state.sideA.parameters.hp ?? 0) -
+        (state.sideA.parameters.hp ?? 0),
+    );
+    assert.doesNotThrow(() => BattleTurnRecordSchema.parse(resumedRecord));
   });
 
   it("keeps explicit prepare, bucket, and finalize stages equivalent to resolveTurn", () => {
