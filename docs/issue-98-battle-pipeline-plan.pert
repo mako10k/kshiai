@@ -80,44 +80,28 @@ task T_ACCEPT_ISSUE_98 PACING_POLICY_ACCEPTED -> ISSUE_98_LOCALLY_ACCEPTED:
 
 
 
-task T_DEPLOY_PACING_CANDIDATE PACING_DEPLOY_AUTHORIZED -> PACING_PRODUCTION_DEPLOYED:
-  title "Deploy the pacing candidate"
-  description "Run the repository's guarded release and production deployment path for the accepted SHA, verify deployed revision and health, and stop or roll back on the accepted failure thresholds. Do not include unrelated changes."
-  duration 2p
-  status done
-  requires:
-    DEV 1
-  owner "codex"
 
 task T_OBSERVE_PRODUCTION_PACING PACING_PRODUCTION_DEPLOYED -> PACING_PRODUCTION_OBSERVED:
   title "Observe the bounded production pacing trial"
   description "After an initial safety readback, accumulate ordinary production battle evidence over time: completion distribution, maximum-turn and forced-terminal rate, KO and one-shot rate, committed change, action and speech repetition, initiative response, delayed effects, errors, latency, calls, tokens, retries, and cost. Compare periodic snapshots with the frozen pre-deploy baseline and make small versioned policy revisions; do not imply that the provisional values are final."
   duration 3p
+  status active
   requires:
     DEV 1
   owner "codex"
 
 
-milestone PACING_DEPLOY_AUTHORIZED:
-  title "Owner accepted the exact pacing production trial"
-  state reached
 
 milestone PACING_PRODUCTION_DEPLOYED:
   title "Pacing candidate is deployed to production"
+  state reached
 
 milestone PACING_PRODUCTION_OBSERVED:
   title "Bounded production pacing evidence is recorded"
 
-work_event EVT_DEPLOY_PACING_START_20260812:
+work_event EVT_OBSERVE_PACING_START_20260812:
   model 1
-  task T_DEPLOY_PACING_CANDIDATE
+  task T_OBSERVE_PRODUCTION_PACING
   kind start
-  occurred_at 2026-08-12T19:06:43+09:00
-  planned_value 2p
-
-work_event EVT_DEPLOY_PACING_DONE_20260812:
-  model 1
-  task T_DEPLOY_PACING_CANDIDATE
-  kind finish
-  occurred_at 2026-08-12T19:18:08+09:00
-  effort 0.19ph
+  occurred_at 2026-08-12T19:18:19+09:00
+  planned_value 3p
