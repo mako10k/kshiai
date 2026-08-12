@@ -1,3 +1,4 @@
+import { randomInt } from "node:crypto";
 import {
   BattlePolicyOptionSchema,
   BattleAdjudicationSchema,
@@ -22,6 +23,11 @@ import {
   buildSemanticObservationState,
   buildServerOnlyReserveCues,
   createBattleState,
+  createCausalTurnExecution,
+  acceptCausalExecutionDecision,
+  commitCausalExecutionBucket,
+  finishCausalTurnExecution,
+  prepareSequentialBattleTurnInitiative,
   deriveBattleWorldTransitionFromSemanticState,
   isPassiveTurn,
   isQuietTurn,
@@ -3243,7 +3249,7 @@ async function advanceTurnWithLease(input: {
     }
   };
   const meta = await battleRepo.getBattleMeta(input.battleId);
-  const state = await battleRepo.getBattle(input.battleId);
+  let state = await battleRepo.getBattle(input.battleId);
   if (!meta || !state) throw new Error("BATTLE_NOT_FOUND");
   if (meta.side_a_user_id !== input.userId) throw new Error("FORBIDDEN");
   if (state.status !== "active") throw new Error("BATTLE_FINISHED");
@@ -3326,6 +3332,39 @@ async function advanceTurnWithLease(input: {
   const hpBeforeA = state.sideA.parameters.hp ?? 0;
   const hpBeforeB = state.sideB.parameters.hp ?? 0;
 
+  // Clamp legacy inflated skill.power (LLM sometimes wrote 20–40 as "damage score")
+  const safeSkills = (skills: Skill[]) => skills.map(balanceSkill);
+  let causalExecution = state.causalExecution?.turn === upcomingTurn &&
+      state.causalExecution.status !== "finished"
+    ? state.causalExecution
+    : null;
+  if (!causalExecution) {
+    const drawRange = 2 ** 32;
+    const prepared = prepareSequentialBattleTurnInitiative({
+      state,
+      sideASkills: safeSkills(mine.skills),
+      sideBSkills: safeSkills(opp.skills),
+      sideABasicAttack: mine.basicAttack,
+      sideBBasicAttack: opp.basicAttack,
+      tieDrawSample: randomInt(0, drawRange) / drawRange,
+    });
+    if (!prepared) throw new Error("CAUSAL_TURN_PREPARATION_UNAVAILABLE");
+    causalExecution = createCausalTurnExecution({
+      executionId: `${state.id}:turn:${prepared.turn}`,
+      battleId: state.id,
+      turn: prepared.turn,
+      expectedStateRevision: state.semanticState?.revision ?? 0,
+      temporalPlan: prepared.temporalResolution,
+      initiativeOrder: prepared.temporalResolution.initiativeOrder,
+    });
+    state = { ...state, causalExecution };
+    await battleRepo.saveBattle(state, {
+      sideAUserId: meta.side_a_user_id,
+      sideACharacterId: meta.side_a_character_id,
+      sideBCharacterId: meta.side_b_character_id,
+    });
+  }
+
   const freeActionPreparation = await prepareFreeActionsForTurn({
     llm: input.llm,
     state,
@@ -3333,14 +3372,13 @@ async function advanceTurnWithLease(input: {
     opp,
   });
 
-  // Clamp legacy inflated skill.power (LLM sometimes wrote 20–40 as "damage score")
-  const safeSkills = (skills: Skill[]) => skills.map(balanceSkill);
   const engineResolved = resolveTurn({
     state,
     sideASkills: safeSkills(mine.skills),
     sideBSkills: safeSkills(opp.skills),
     sideABasicAttack: mine.basicAttack,
     sideBBasicAttack: opp.basicAttack,
+    temporalResolutionOverride: causalExecution.temporalPlan,
   });
   const committedFreeActions = commitFreeActionAdjudications({
     beforeState: state,
@@ -3943,6 +3981,25 @@ async function advanceTurnWithLease(input: {
       );
     }
   }
+
+  let finishedExecution = causalExecution;
+  while (finishedExecution.status === "awaiting_decision") {
+    const bucket = finishedExecution.temporalPlan.buckets[finishedExecution.bucketIndex];
+    if (!bucket) throw new Error("CAUSAL_BUCKET_MISSING");
+    for (const side of bucket.actorSides) {
+      finishedExecution = acceptCausalExecutionDecision({
+        execution: finishedExecution,
+        side,
+      });
+    }
+    finishedExecution = commitCausalExecutionBucket({
+      execution: finishedExecution,
+    });
+  }
+  if (finishedExecution.status === "awaiting_finalize") {
+    finishedExecution = finishCausalTurnExecution({ execution: finishedExecution });
+  }
+  next = { ...next, causalExecution: finishedExecution };
 
   await battleRepo.saveBattle(next, {
     sideAUserId: meta.side_a_user_id,

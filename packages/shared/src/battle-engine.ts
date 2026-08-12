@@ -1650,6 +1650,8 @@ export type ResolveTurnInput = {
     kind: "damage" | "heal" | "disrupt";
     intensity: "minor" | "moderate";
   }>;
+  /** Persisted ADR-0001 plan selected before any action provider call. */
+  temporalResolutionOverride?: BattleTemporalPlan;
 };
 
 type PreparedBattleTurnStart = {
@@ -1989,12 +1991,27 @@ export function resolveTurn(input: ResolveTurnInput): {
     a: 1,
     b: 1,
   };
-  const temporalResolution = buildPreparedTemporalResolution({
-    state: input.state,
-    sideA,
-    sideB,
-    situation,
-  });
+  const temporalResolution = input.temporalResolutionOverride ??
+    buildPreparedTemporalResolution({
+      state: input.state,
+      sideA,
+      sideB,
+      situation,
+    });
+  if (input.temporalResolutionOverride) {
+    const expectedScores = buildPreparedTemporalResolution({
+      state: input.state,
+      sideA,
+      sideB,
+      situation,
+    }).initiativeScores;
+    if (
+      temporalResolution.initiativeScores.a !== expectedScores.a ||
+      temporalResolution.initiativeScores.b !== expectedScores.b
+    ) {
+      throw new Error("temporal resolution override does not match prepared initiative");
+    }
+  }
   const actions: ResolvedBattleAction[] = [
     {
       ...requestedActionA,
