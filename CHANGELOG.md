@@ -5,6 +5,36 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 
 ## [Unreleased]
 
+## [0.17.2] - 2026-08-12
+
+### Fixed
+
+- Binds narration tasks to an exact receipt and delivery generation, fences
+  stale workers, and prevents duplicate or out-of-order provider work.
+- Streams durable narration receipt updates independently from battle advance
+  and renders terminal and pending receipts in one canonical sequence.
+- Removes duplicate first-class battlefield object cards by preferring the
+  observer-safe object projection over the legacy semantic fallback.
+- Routes the turn-limit referee explanation through the fast model tier while
+  preserving deterministic winner authority.
+- Keeps active battles visible in battle history and fails invalid persisted
+  history rows visibly instead of silently dropping them.
+
+### Operations
+
+- Production observation now requires an exact run approval and a declared
+  provider-operation ceiling before creating a battle.
+- Observation acceptance verifies ordered terminal narration receipts, one
+  attempt per receipt, no live leases, completed outbox delivery, and battle
+  history visibility.
+- Stage runs an LLM-free exact-receipt lifecycle fixture before its bounded
+  Cloud Tasks OIDC transport smoke.
+
+### Database
+
+- No new migration. The additive v0.17.1 schema remains compatible with the
+  v0.17.1 application rollback target.
+
 ## [0.17.1] - 2026-08-12
 
 ### Fixed
