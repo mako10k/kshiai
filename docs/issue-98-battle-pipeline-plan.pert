@@ -113,33 +113,7 @@ milestone PACING_PRODUCTION_DEPLOYED:
 milestone PACING_PRODUCTION_OBSERVED:
   title "Bounded production pacing evidence is recorded"
 
-milestone PACING_RELEASE_READY:
-  title "Pacing release path and rollback are ready"
-  state reached
 
 milestone PACING_BASELINE_CAPTURED:
   title "Current production pacing baseline is recorded"
-
-
-task T_CAPTURE_CURRENT_PACING_BASELINE PACING_RELEASE_READY -> PACING_BASELINE_CAPTURED:
-  title "Capture the current production pacing baseline"
-  description "Read current production release identity and retained battle evidence before changing traffic. Record completion distribution, turn-limit and forced-terminal rate, KO and one-shot indicators, committed mechanical and semantic change, action and speech repetition, initiative response, delayed effects, errors, latency, calls, tokens, retries, and cost where available. Mark unavailable metrics explicitly; perform no production write or LLM generation."
-  duration 2p
-  status done
-  requires:
-    DEV 1
-  owner "codex"
-
-work_event EVT_PACING_BASELINE_START_20260812:
-  model 1
-  task T_CAPTURE_CURRENT_PACING_BASELINE
-  kind start
-  occurred_at 2026-08-12T18:59:55+09:00
-  planned_value 2p
-
-work_event EVT_PACING_BASELINE_DONE_20260812:
-  model 1
-  task T_CAPTURE_CURRENT_PACING_BASELINE
-  kind finish
-  occurred_at 2026-08-12T19:04:03+09:00
-  effort 0.07ph
+  state reached
