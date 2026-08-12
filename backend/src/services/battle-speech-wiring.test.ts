@@ -7,6 +7,9 @@ import {
   createBattleState,
   defaultDialoguePipelineSettings,
   defaultParameters,
+  PSYCHE_REACTION_POLICY_V1,
+  BattleTurnRecordSchema,
+  type BattleState,
   type CharacterSheet,
 } from "@kshiai/shared";
 import {
@@ -22,12 +25,23 @@ import {
   buildNarratorCharacterSpeeches,
   buildRefereeFinalState,
   buildRefereeTurnFacts,
+  completeAdvancePhases,
   finalizeCharacterSpeeches,
   reconcileSemanticState,
   validateCharacterActionProposal,
 } from "./battle-service.js";
 import { MockLlmProvider } from "../llm/mock.js";
 import { OpenAiCompatibleProvider } from "../llm/openai-compatible.js";
+
+function enableDeterministicPsyche(state: BattleState): void {
+  state.assetManifest = {
+    rules: {
+      battleEngine: "battle-engine-v1",
+      temporalRules: "initiative-window-v2",
+      psycheReaction: PSYCHE_REACTION_POLICY_V1,
+    },
+  } as BattleState["assetManifest"];
+}
 
 function sheet(
   id: string,
@@ -65,6 +79,57 @@ function profile(selfNames: string[]) {
 }
 
 describe("character-authored public speech", () => {
+  it("runs only the selected isolated character context", async () => {
+    const sideA = sheet("a", "アオ", ["私"]);
+    const sideB = sheet("b", "クロ", ["俺"]);
+    const before = createBattleState({
+      id: "single-side-character-agent",
+      sideA,
+      sideB,
+      turnLimit: 20,
+      prologuePending: false,
+    });
+    enableDeterministicPsyche(before);
+    before.plannedActionA = { kind: "wait" };
+    before.plannedActionB = { kind: "basic_attack" };
+    const provider = new MockLlmProvider();
+    let psycheCalls = 0;
+    let agentCalls = 0;
+    const originalPsyche = provider.advanceCharacterPsyche.bind(provider);
+    const originalAgent = provider.advanceCharacterAgent.bind(provider);
+    provider.advanceCharacterPsyche = async (input) => {
+      psycheCalls += 1;
+      return originalPsyche(input);
+    };
+    provider.advanceCharacterAgent = async (input) => {
+      agentCalls += 1;
+      return originalAgent(input);
+    };
+
+    const result = await advanceCharacterAgents({
+      llm: provider,
+      before,
+      after: { ...before, turn: 1 },
+      mine: sideA,
+      opp: sideB,
+      events: [],
+      actions: [],
+      activeSides: ["b"],
+    });
+
+    assert.equal(psycheCalls, 0);
+    assert.equal(agentCalls, 1);
+    assert.equal(result.state.plannedActionA?.kind, "wait");
+    assert.equal(
+      result.state.turnRecords.at(-1)?.pipelineTrace?.characterAgents?.a.providerStatus,
+      "skipped",
+    );
+    assert.equal(
+      result.state.turnRecords.at(-1)?.pipelineTrace?.deepPsyche?.a.providerStatus,
+      "skipped",
+    );
+  });
+
   it("uses a revision-local projection override without mutating admin settings", () => {
     const settings = {
       ...defaultDialoguePipelineSettings(),
@@ -138,6 +203,7 @@ describe("character-authored public speech", () => {
       turnLimit: 20,
       prologuePending: false,
     });
+    enableDeterministicPsyche(before);
     const environmentEvent = {
       id: "hap_llm_1",
       type: "situation" as const,
@@ -173,6 +239,10 @@ describe("character-authored public speech", () => {
       (event) => event.type === "utterance",
     ) ?? [];
     assert.equal(utterances.length, 2);
+    const parsedRecord = BattleTurnRecordSchema.safeParse(
+      result.state.turnRecords.at(-1),
+    );
+    assert.deepEqual(parsedRecord.success ? [] : parsedRecord.error.issues, []);
     assert.deepEqual(
       utterances.map((event) => event.utterance?.text),
       result.characterSpeeches.map((speech) => speech.text),
@@ -203,17 +273,17 @@ describe("character-authored public speech", () => {
     assert.equal(pipelineTrace?.dialogueProjection?.mode, "shadow");
     assert.equal(pipelineTrace?.dialogueProjection?.a.observerSide, "a");
     assert.equal(pipelineTrace?.dialogueProjection?.b.observerSide, "b");
-    assert.equal(pipelineTrace?.deepPsyche?.a.providerStatus, "fulfilled");
-    assert.equal(pipelineTrace?.deepPsyche?.b.providerStatus, "fulfilled");
+    assert.equal(pipelineTrace?.deepPsyche?.a.providerStatus, "skipped");
+    assert.equal(pipelineTrace?.deepPsyche?.b.providerStatus, "skipped");
     assert.equal(
-      ((pipelineTrace?.deepPsyche?.a.acceptedOutput as {
-        interior?: { eventAppraisal?: string };
-      } | null)?.interior?.eventAppraisal ?? "").length > 0,
-      true,
+      (pipelineTrace?.deepPsyche?.a.acceptedOutput as {
+        reactionReceiptV1?: { route?: string };
+      } | null)?.reactionReceiptV1?.route,
+      "deterministic_no_call",
     );
     assert.equal(
       "dialoguePipeline" in ((pipelineTrace?.deepPsyche?.a.input as object | null) ?? {}),
-      true,
+      false,
     );
     assert.equal(
       "turnObservation" in ((pipelineTrace?.deepPsyche?.a.input as object | null) ?? {}),
@@ -254,7 +324,7 @@ describe("character-authored public speech", () => {
     assert.equal(perceivedB?.displayContext?.relationshipAddress, "クロ");
   });
 
-  it("projects compact deep-psyche and expression contexts without another model call", async () => {
+  it("projects deterministic psyche and compact expression contexts without a psyche model call", async () => {
     const sideA = sheet("a", "アオ", ["私"]);
     const sideB = sheet("b", "クロ", ["俺"]);
     const before = createBattleState({
@@ -264,6 +334,7 @@ describe("character-authored public speech", () => {
       turnLimit: 20,
       prologuePending: false,
     });
+    enableDeterministicPsyche(before);
     const result = await advanceCharacterAgents({
       llm: new MockLlmProvider(),
       before,
@@ -280,13 +351,13 @@ describe("character-authored public speech", () => {
       },
     });
     const trace = result.state.turnRecords.at(-1)?.pipelineTrace;
-    const psycheInput = trace?.deepPsyche?.a.input as Record<string, unknown>;
+    const psycheInput = trace?.deepPsyche?.a.input;
     const expressionInput = trace?.characterAgents?.a.input as Record<string, unknown>;
-    assert.equal(psycheInput.contextMode, "compact");
-    assert.ok(psycheInput.turnObservation);
-    assert.equal("perception" in psycheInput, false);
-    assert.equal("actionReaction" in psycheInput, false);
-    assert.equal("compactRecentExchange" in psycheInput, false);
+    assert.equal(psycheInput, null);
+    assert.equal(trace?.deepPsyche?.a.providerStatus, "skipped");
+    assert.equal(result.state.agentStateA?.reactionReceiptV1?.route, "deterministic_no_call");
+    assert.equal(result.state.agentStateA?.reactionReceiptV1?.observerSide, "a");
+    assert.equal(result.state.agentStateA?.reactionReceiptV1?.reason, "committed_observation");
     assert.equal(expressionInput.contextMode, "compact");
     assert.ok(expressionInput.expressionBrief);
     assert.ok(expressionInput.turnObservation);
@@ -297,8 +368,8 @@ describe("character-authored public speech", () => {
       "anchoredExchange" in ((expressionInput.conversation as Record<string, unknown>) ?? {}),
       true,
     );
-    assert.equal(result.state.agentStateA?.dialogueThread?.topic, "クロ");
-    assert.equal(trace?.deepPsyche?.a.providerStatus, "fulfilled");
+    assert.equal(result.state.agentStateA?.dialogueThread?.topic, "");
+    assert.equal(trace?.deepPsyche?.a.providerStatus, "skipped");
     assert.equal(trace?.characterAgents?.a.providerStatus, "fulfilled");
   });
 
@@ -1242,7 +1313,7 @@ describe("character-authored public speech", () => {
       turnFacts: [],
       result,
     });
-    assert.equal(adjudication.winnerSide, "b");
+    assert.equal(adjudication.winnerSide, "a");
     assert.equal(adjudication.engineFallbackSide, "a");
     assert.equal(adjudication.source, "semantic_adjudicator");
     assert.deepEqual(adjudication.reasonFacts, result.reasonFacts);
@@ -1254,6 +1325,50 @@ describe("character-authored public speech", () => {
     });
     assert.equal(fallback.winnerSide, "a");
     assert.equal(fallback.source, "deterministic_fallback");
+  });
+
+  it("commits ordered combat and judgment receipts from frozen canonical facts", () => {
+    const state = createBattleState({
+      id: "phase-receipts",
+      sideA: sheet("a", "A"),
+      sideB: sheet("b", "B"),
+      turnLimit: 20,
+      prologuePending: false,
+    });
+    state.turn = 20;
+    state.winnerSide = "a";
+    state.finishReason = "turn_limit";
+    state.log = [{ turn: 19, narrator: ["provider-private-marker"], speeches: [] }];
+    state.advanceOperation = {
+      schemaVersion: 1,
+      operationId: "op_receipts",
+      expectedRevision: 0,
+      status: "active",
+      phase: "combat",
+      startedAt: new Date().toISOString(),
+      completedAt: null,
+      receiptIds: [],
+    };
+
+    const committed = completeAdvancePhases({
+      state,
+      operationId: "op_receipts",
+      phases: ["combat", "judgment"],
+    });
+    assert.equal(committed.battleRevision, 2);
+    assert.deepEqual(committed.phaseReceipts?.map((receipt) => receipt.phase), [
+      "combat",
+      "judgment",
+    ]);
+    assert.deepEqual(committed.phaseReceipts?.map((receipt) => receipt.sequence), [1, 2]);
+    assert.deepEqual(committed.advanceOperation?.receiptIds, [
+      "phase-receipts:phase:1",
+      "phase-receipts:phase:2",
+    ]);
+    assert.doesNotMatch(
+      JSON.stringify(committed.phaseReceipts),
+      /provider-private-marker/,
+    );
   });
 
   it("keeps the raw judgment immutable across narration styles", () => {

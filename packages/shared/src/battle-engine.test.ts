@@ -9,10 +9,23 @@ import {
   ensureBattleCompatibilityState,
   ensureBattlePerceptionState,
   ensureBattleWorldState,
+  finalizeBattleTurnExecution,
+  prepareBattleTurnInitiative,
+  prepareBattleTurnExecution,
+  prepareSequentialBattleTurnInitiative,
+  resolveBattleTurnBucket,
+  resolveNextBattleTurnBucket,
+  materializeBattleStateAtBucketBoundary,
+  committedActionsAtBucketBoundary,
+  bindNextBucketDecision,
   resolveTurn,
 } from "./battle-engine.js";
 import { defaultParameters, type CharacterSheet } from "./character.js";
-import { BattleStateSchema, type BattleState } from "./battle.js";
+import {
+  BattleStateSchema,
+  BattleTurnRecordSchema,
+  type BattleState,
+} from "./battle.js";
 import { quantizeCommittedMechanicalEvidence } from "./perception-quantization.js";
 import { applyBattleWorldTransition } from "./battle-world.js";
 
@@ -309,6 +322,25 @@ describe("battle engine", () => {
       "turn-1-action-a",
       "turn-1-action-b",
     ]);
+    assert.deepEqual(
+      record.consequenceReceipts?.filter((receipt) =>
+        receipt.source.kind === "action"
+      ).map((receipt) => receipt.source.kind),
+      ["action", "action"],
+    );
+    const ownedEventIds = record.consequenceReceipts?.flatMap((receipt) =>
+      receipt.eventIds
+    ) ?? [];
+    assert.deepEqual(
+      [...ownedEventIds].sort(),
+      resolved.events.flatMap((event) => event.id ? [event.id] : []).sort(),
+    );
+    const hpOwners = record.consequenceReceipts?.filter((receipt) =>
+      receipt.parameterChanges.b.hp !== undefined
+    ) ?? [];
+    assert.equal(hpOwners.length, 1);
+    assert.equal(hpOwners[0]?.source.kind, "action");
+    assert.equal(hpOwners[0]?.parameterChanges.b.hp, record.sideBChange.parameterChanges.hp);
     assert.ok(resolved.events.every((event) => Boolean(event.id)));
     const transitioned = {
       ...resolved.state,
@@ -342,6 +374,11 @@ describe("battle engine", () => {
       }).turnRecords[0]?.canonicalTransition?.semantic?.turn,
       1,
     );
+    const duplicateOwner = structuredClone(canonicalRecord);
+    duplicateOwner.consequenceReceipts?.[0]?.eventIds.push(
+      duplicateOwner.consequenceReceipts[1]?.eventIds[0] ?? "missing",
+    );
+    assert.equal(BattleTurnRecordSchema.safeParse(duplicateOwner).success, false);
     assert.equal(state.observationStateA?.snapshot.revision, 0);
     assert.equal(
       state.observationStateA?.snapshot.entities["character.a"]?.label,
@@ -1311,6 +1348,220 @@ describe("battle engine", () => {
     assert.equal(resolved.actions[0]?.skippedReason, null);
   });
 
+  it("prepares initiative from a cloned post-restoration snapshot", () => {
+    const a = sheet("a", "先行候補");
+    const b = sheet("b", "後攻候補");
+    const state = createBattleState({
+      id: "prepared-initiative",
+      sideA: a,
+      sideB: b,
+      turnLimit: 20,
+      prologuePending: false,
+    });
+    state.turn = 1;
+    state.sideA.parameters.spd = 1;
+    state.sideA.baseParameters!.spd = 30;
+    state.sideB.parameters.spd = 5;
+    state.sideB.baseParameters!.spd = 5;
+
+    const prepared = prepareBattleTurnInitiative({
+      state,
+      sideASkills: a.skills,
+      sideBSkills: b.skills,
+    });
+
+    assert.ok(prepared);
+    assert.equal(state.sideA.parameters.spd, 1);
+    assert.equal(prepared.sideA.parameters.spd, 7);
+    assert.deepEqual(
+      prepared.temporalResolution.buckets.map((bucket) => bucket.actorSides),
+      [["a"], ["b"]],
+    );
+  });
+
+  it("prepares and retains ADR-0001 order before action resolution", () => {
+    const a = sheet("a", "A");
+    const b = sheet("b", "B");
+    const state = createBattleState({
+      id: "sequential-order-checkpoint",
+      sideA: a,
+      sideB: b,
+      turnLimit: 20,
+      prologuePending: false,
+    });
+    state.sideA.parameters.spd = 10;
+    state.sideB.parameters.spd = 10;
+    const first = prepareSequentialBattleTurnInitiative({
+      state,
+      sideASkills: a.skills,
+      sideBSkills: b.skills,
+      tieDrawSample: 0.75,
+    });
+    assert.ok(first);
+    assert.deepEqual(first.temporalResolution.initiativeOrder.order, ["b", "a"]);
+    assert.equal(first.temporalResolution.initiativeOrder.reason, "fair_redraw");
+
+    state.latestTemporalResolution = first.temporalResolution;
+    const later = prepareSequentialBattleTurnInitiative({
+      state,
+      sideASkills: a.skills,
+      sideBSkills: b.skills,
+      tieDrawSample: 0.01,
+    });
+    assert.ok(later);
+    assert.deepEqual(later.temporalResolution.initiativeOrder.order, ["b", "a"]);
+    assert.equal(later.temporalResolution.initiativeOrder.reason, "previous_order");
+    assert.equal(later.temporalResolution.initiativeOrder.draw, null);
+  });
+
+  it("resumes the later bucket without replaying the committed predecessor", () => {
+    const a = sheet("a", "先行");
+    const b = sheet("b", "後攻");
+    const state = createBattleState({
+      id: "restartable-bucket-engine",
+      sideA: a,
+      sideB: b,
+      turnLimit: 20,
+      prologuePending: false,
+    });
+    state.sideA.parameters.spd = 20;
+    state.sideB.parameters.spd = 5;
+    state.plannedActionA = { kind: "basic_attack" };
+    state.plannedActionB = { kind: "basic_attack" };
+    const prepared = prepareSequentialBattleTurnInitiative({
+      state,
+      sideASkills: a.skills,
+      sideBSkills: b.skills,
+    });
+    assert.ok(prepared);
+    const common = {
+      state,
+      sideASkills: a.skills,
+      sideBSkills: b.skills,
+      temporalResolutionOverride: prepared.temporalResolution,
+      executionId: `${state.id}:turn:1`,
+    };
+    const monolithic = resolveTurn(common);
+    const first = resolveNextBattleTurnBucket(common);
+    assert.ok(first.engineContinuation);
+    assert.equal(first.bucketCommits?.length, 1);
+    assert.equal(first.bucketCommits?.[0]?.bucketIndex, 0);
+    assert.equal(first.engineContinuation.nextBucketIndex, 1);
+    const boundary = materializeBattleStateAtBucketBoundary({
+      state,
+      continuation: first.engineContinuation,
+    });
+    assert.equal(boundary.turn, 1);
+    assert.deepEqual(boundary.sideA, first.engineContinuation.sideA);
+    assert.deepEqual(boundary.sideB, first.engineContinuation.sideB);
+    assert.deepEqual(
+      committedActionsAtBucketBoundary(first.engineContinuation).map((action) => action.actorSide),
+      ["a"],
+    );
+    assert.equal(
+      committedActionsAtBucketBoundary(first.engineContinuation).some((action) =>
+        action.actorSide === "b"
+      ),
+      false,
+    );
+
+    const revisedState = bindNextBucketDecision({
+      state,
+      continuation: first.engineContinuation,
+      side: "b",
+      intent: { kind: "defend" },
+    });
+    const revised = resolveNextBattleTurnBucket({
+      ...common,
+      state: revisedState,
+      engineContinuation: first.engineContinuation,
+    });
+    assert.equal(revised.actions[0]?.kind, "basic_attack");
+    assert.equal(revised.actions[0]?.executed, true);
+    assert.equal(revised.actions[1]?.kind, "defend");
+    assert.equal(revised.actions[1]?.executed, true);
+    assert.throws(() => bindNextBucketDecision({
+      state,
+      continuation: first.engineContinuation!,
+      side: "a",
+      intent: { kind: "wait" },
+    }), /not in the unresolved next bucket|committed/);
+
+    const serializedContinuation = JSON.parse(JSON.stringify(first.engineContinuation));
+    const resumed = resolveNextBattleTurnBucket({
+      ...common,
+      engineContinuation: serializedContinuation,
+    });
+    assert.equal(resumed.engineContinuation, undefined);
+    assert.equal(resumed.bucketCommits?.length, 1);
+    assert.equal(resumed.bucketCommits?.[0]?.bucketIndex, 1);
+    assert.deepEqual(
+      { ...resumed.state, updatedAt: monolithic.state.updatedAt },
+      monolithic.state,
+    );
+    assert.deepEqual(resumed.events, monolithic.events);
+    assert.deepEqual(resumed.actions, monolithic.actions);
+    assert.deepEqual(resumed.mechanicalEvidence, monolithic.mechanicalEvidence);
+  });
+
+  it("keeps explicit prepare, bucket, and finalize stages equivalent to resolveTurn", () => {
+    const a = sheet("a", "先行");
+    const b = sheet("b", "後攻");
+    const state = createBattleState({
+      id: "explicit-bucket-engine-stages",
+      sideA: a,
+      sideB: b,
+      turnLimit: 20,
+      prologuePending: false,
+    });
+    state.sideA.parameters.spd = 20;
+    state.sideB.parameters.spd = 5;
+    state.plannedActionA = { kind: "basic_attack" };
+    state.plannedActionB = { kind: "defend" };
+    const preparedInitiative = prepareSequentialBattleTurnInitiative({
+      state,
+      sideASkills: a.skills,
+      sideBSkills: b.skills,
+    });
+    assert.ok(preparedInitiative);
+    const common = {
+      state,
+      sideASkills: a.skills,
+      sideBSkills: b.skills,
+      temporalResolutionOverride: preparedInitiative.temporalResolution,
+      executionId: `${state.id}:turn:1`,
+    };
+    const monolithic = resolveTurn(common);
+    const prepared = prepareBattleTurnExecution(common);
+    assert.ok(prepared);
+    assert.equal(prepared.nextBucketIndex, 0);
+
+    const first = resolveBattleTurnBucket({
+      ...common,
+      engineContinuation: prepared,
+    });
+    assert.equal(first.commit.bucketIndex, 0);
+    assert.equal(first.continuation.nextBucketIndex, 1);
+    const second = resolveBattleTurnBucket({
+      ...common,
+      engineContinuation: JSON.parse(JSON.stringify(first.continuation)),
+    });
+    assert.equal(second.commit.bucketIndex, 1);
+    assert.equal(second.continuation.nextBucketIndex, 2);
+
+    const finalized = finalizeBattleTurnExecution({
+      ...common,
+      engineContinuation: JSON.parse(JSON.stringify(second.continuation)),
+    });
+    assert.deepEqual(
+      { ...finalized.state, updatedAt: monolithic.state.updatedAt },
+      monolithic.state,
+    );
+    assert.deepEqual(finalized.events, monolithic.events);
+    assert.deepEqual(finalized.actions, monolithic.actions);
+    assert.deepEqual(finalized.mechanicalEvidence, monolithic.mechanicalEvidence);
+  });
+
   it("atomically preserves equal-speed mutual incapacitation", () => {
     const a = sheet("a", "アオ");
     const b = sheet("b", "クロ");
@@ -1382,6 +1633,14 @@ describe("battle engine", () => {
     assert.equal(resolved.actions[0]?.executed, false);
     assert.equal(resolved.actions[0]?.skippedReason, "incapacitated_before_action");
     assert.equal(resolved.state.winnerSide, "b");
+    assert.equal(resolved.bucketCommits?.length, 2);
+    assert.deepEqual(resolved.bucketCommits?.[0]?.actorSides, ["b"]);
+    assert.equal(resolved.bucketCommits?.[0]?.sideA.parameters.hp, 0);
+    assert.deepEqual(resolved.bucketCommits?.[1]?.actions, [resolved.actions[0]]);
+    assert.doesNotThrow(() => BattleStateSchema.parse({
+      ...state,
+      causalBucketCommit: resolved.bucketCommits?.[0],
+    }));
   });
 
   it("applies same-bucket defense before either attack is evaluated", () => {

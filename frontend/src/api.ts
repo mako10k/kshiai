@@ -1,6 +1,8 @@
 import type {
   BattlefieldPresetPublic,
   BattleAdvanceStreamEvent,
+  BattleNarrationFollowEvent,
+  BattleNarrationSnapshot,
   BattleListItem,
   BattlePolicyOption,
   BattlePolicyOptionPublic,
@@ -30,6 +32,18 @@ export type ImageGenQuota = {
   nextAllowedAt: string | null;
   message: string;
 };
+
+export function parseBattleNarrationSse(body: string): BattleNarrationFollowEvent[] {
+  return body.split("\n\n").flatMap((frame) => {
+    const line = frame.split("\n").find((value) => value.startsWith("data:"));
+    if (!line) return [];
+    try {
+      return [JSON.parse(line.slice(5).trim()) as BattleNarrationFollowEvent];
+    } catch {
+      return [];
+    }
+  });
+}
 
 export type InternalBattleObservationSummary = {
   battleId: string;
@@ -71,6 +85,44 @@ export type InternalBattlePipelineTrace = {
   };
 };
 
+export type InternalBattleTemporalPlan = {
+  rulesetId: string;
+  initiativeScores: { a: number; b: number };
+  initiativeOrder?: {
+    schemaVersion: 1;
+    initiativeScores: { a: number; b: number };
+    order: ["a" | "b", "a" | "b"];
+    reason: "higher_initiative" | "previous_order" | "weighted_redraw" | "fair_redraw";
+    draw: {
+      sample: number;
+      weights: { a: number; b: number };
+      probabilityAFirst: number;
+    } | null;
+  };
+  buckets: Array<{
+    index: number;
+    actorSides: Array<"a" | "b">;
+    initiativeScore: number;
+    simultaneous: boolean;
+    readsFrom: "turn_start" | "previous_bucket_commit";
+    commitMode: "atomic" | "sequential";
+  }>;
+};
+
+export type InternalCausalTurnExecution = {
+  schemaVersion: 1;
+  executionId: string;
+  battleId: string;
+  turn: number;
+  expectedStateRevision: number;
+  temporalPlan: InternalBattleTemporalPlan;
+  initiativeOrder?: InternalBattleTemporalPlan["initiativeOrder"];
+  bucketIndex: number;
+  status: "awaiting_decision" | "awaiting_bucket_commit" | "awaiting_finalize" | "finished";
+  decidedSides: Array<"a" | "b">;
+  committedBucketIndices: number[];
+};
+
 export type InternalBattleObservationDetail = {
   role: "admin" | "developer" | "test" | "e2e";
   summary: InternalBattleObservationSummary;
@@ -78,8 +130,10 @@ export type InternalBattleObservationDetail = {
   rawBattleState: Record<string, unknown>;
   canonicalTimeline: Array<{
     turn: number | null;
+    temporalResolution: InternalBattleTemporalPlan | null;
     actions: unknown[];
     events: unknown[];
+    consequenceReceipts: unknown[];
     sideAChange: unknown;
     sideBChange: unknown;
     worldImpact: unknown | null;
@@ -87,6 +141,63 @@ export type InternalBattleObservationDetail = {
     pipelineTrace: InternalBattlePipelineTrace | null;
   }>;
   canonicalCurrent: {
+    assetManifest: {
+      schemaVersion: 1;
+      boundAt: string;
+      characters: {
+        a: { assetId: string; generationId: string; contentDigest?: string };
+        b: { assetId: string; generationId: string; contentDigest?: string };
+      };
+      narrationStyle: { assetId: string; generationId: string; contentDigest?: string };
+      battlefield: {
+        assetId: string | null;
+        presetGenerationId?: string | null;
+        generationId: string;
+        contentDigest?: string;
+      };
+      dialoguePipeline: { generationId: string; contentDigest?: string };
+      rules: { battleEngine: string; temporalRules: string; psycheReaction?: string };
+    } | null;
+    assetManifestValidation: Record<
+      string,
+      "valid" | "mismatch" | "legacy_unknown"
+    > | null;
+    causalExecution: InternalCausalTurnExecution | null;
+    causalBucketCommit: Record<string, unknown> | null;
+    causalEngineContinuation: Record<string, unknown> | null;
+    causalLaterDecision: Record<string, unknown> | null;
+    pendingEffects: unknown[];
+    battleRevision: number | null;
+    phaseReceipts: Array<{
+      receiptId: string;
+      sequence: number;
+      phase: string;
+      combatTurn: number | null;
+      stateRevision: number;
+      inputDigest: string | null;
+    }>;
+    psycheReaction: {
+      a: {
+        schemaVersion: number | null;
+        policyGeneration: string | null;
+        turn: number | null;
+        observerSide: string | null;
+        route: string | null;
+        reason: string | null;
+        sourceCount: number;
+        contributions: Array<{ code: string; dimension: string }>;
+      } | null;
+      b: {
+        schemaVersion: number | null;
+        policyGeneration: string | null;
+        turn: number | null;
+        observerSide: string | null;
+        route: string | null;
+        reason: string | null;
+        sourceCount: number;
+        contributions: Array<{ code: string; dimension: string }>;
+      } | null;
+    };
     semanticState: unknown | null;
     worldState: unknown | null;
     latestSemanticTransition: unknown | null;
@@ -96,7 +207,36 @@ export type InternalBattleObservationDetail = {
     turnRecordCount: number;
     canonicalTransitionCount: number;
     pipelineTraceCount: number;
+    temporalResolutionCount: number;
+    hasCausalExecutionCheckpoint: boolean;
     perTurnCanonicalTransitions: "complete" | "partial" | "unavailable";
+  };
+  narrationQueue: Array<{
+    receiptId: string;
+    sequence: number;
+    phase: string;
+    combatTurn: number | null;
+    status: string;
+    attemptCount: number;
+    blockedBySequence: number | null;
+    updatedAt: string;
+    lease: { fencingToken: number; expiresAt: string; expired: boolean } | null;
+    latestAttempt: {
+      status: string;
+      provider: string;
+      model: string | null;
+      route: string;
+      httpAttempts: number;
+      tokenCount: number | null;
+      estimatedCostUsd: number | null;
+      elapsedMs: number | null;
+      fallbackReason: string | null;
+    } | null;
+  }>;
+  narrationRetention: {
+    publicEventDays: number;
+    attemptDays: number;
+    prunedThroughSequence: number;
   };
 };
 
@@ -484,6 +624,30 @@ export const api = {
     }),
   getBattle: (id: string) =>
     request<{ battle: BattlePublic }>(`/api/battles/${id}`),
+  getBattleNarration: (id: string) =>
+    request<BattleNarrationSnapshot>(`/api/battles/${id}/narration`),
+  getBattleNarrationEvents: (id: string, cursor: string | null) => {
+    const query = cursor ? `?cursor=${encodeURIComponent(cursor)}` : "";
+    return request<{ events: BattleNarrationFollowEvent[]; cursor: string | null }>(
+      `/api/battles/${id}/narration/events${query}`,
+    );
+  },
+  followBattleNarration: async (
+    id: string,
+    cursor: string | null,
+    signal?: AbortSignal,
+  ): Promise<BattleNarrationFollowEvent[]> => {
+    const query = cursor ? `?cursor=${encodeURIComponent(cursor)}` : "";
+    const response = await authenticatedFetch(
+      `/api/battles/${id}/narration/follow${query}`,
+      { headers: { Accept: "text/event-stream" }, signal },
+      currentAccessToken,
+    );
+    if (!response.ok) {
+      throw new ApiError(`http_${response.status}`, { status: response.status });
+    }
+    return parseBattleNarrationSse(await response.text());
+  },
   listBattles: (opts?: {
     q?: string;
     status?: "all" | "active" | "finished";
@@ -518,6 +682,7 @@ export const api = {
     opts?: {
       onEvent?: (event: BattleAdvanceStreamEvent) => void;
       signal?: AbortSignal;
+      idempotencyKey?: string;
     },
   ): Promise<BattlePublic> => {
     const res = await authenticatedFetch(`/api/battles/${id}/advance/stream`, {
@@ -525,7 +690,7 @@ export const api = {
       headers: {
         Accept: "text/event-stream",
         "Content-Type": "application/json",
-        "Idempotency-Key": crypto.randomUUID(),
+        "Idempotency-Key": opts?.idempotencyKey ?? crypto.randomUUID(),
       },
       body: "{}",
       signal: opts?.signal,

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, type ReactNode } from "react";
 import { Link } from "react-router-dom";
 import {
   ApiError,
@@ -6,6 +6,8 @@ import {
   type InternalBattleObservationDetail,
   type InternalBattleObservationSummary,
   type InternalAgentInvocationTrace,
+  type InternalBattleTemporalPlan,
+  type InternalCausalTurnExecution,
 } from "../api";
 
 function formatWhen(value: string | null): string {
@@ -73,24 +75,90 @@ function AgentLane({
   );
 }
 
+function TemporalBuckets({
+  plan,
+  execution,
+}: {
+  plan: InternalBattleTemporalPlan;
+  execution?: InternalCausalTurnExecution | null;
+}) {
+  const committed = new Set(execution?.committedBucketIndices ?? []);
+  return (
+    <div className="internal-temporal-plan">
+      <div className="internal-temporal-heading">
+        <strong>{plan.rulesetId}</strong>
+        <span>A {plan.initiativeScores.a} / B {plan.initiativeScores.b}</span>
+        {plan.initiativeOrder ? (
+          <span>
+            {plan.initiativeOrder.reason} · {plan.initiativeOrder.order.join(" → ")}
+            {plan.initiativeOrder.draw
+              ? ` · sample ${plan.initiativeOrder.draw.sample.toFixed(6)}`
+              : ""}
+          </span>
+        ) : null}
+      </div>
+      <div className="internal-pipeline-flow internal-temporal-buckets">
+        {plan.buckets.map((bucket) => {
+          const active = execution?.bucketIndex === bucket.index &&
+            execution.status !== "finished";
+          const state = committed.has(bucket.index)
+            ? "commit済み"
+            : active
+              ? execution.status
+              : "未到達";
+          return (
+            <div className={`internal-temporal-bucket${active ? " is-active" : ""}`} key={bucket.index}>
+              <small>Bucket {bucket.index} · {state}</small>
+              <strong>{bucket.actorSides.map((side) => `Side ${side.toUpperCase()}`).join(" + ")}</strong>
+              <span>{bucket.commitMode} · {bucket.readsFrom}</span>
+            </div>
+          );
+        }).reduce<ReactNode[]>((nodes, bucket, index) => {
+          if (index > 0) nodes.push(
+            <span className="internal-pipeline-arrow" aria-hidden="true" key={`arrow-${index}`}>→</span>,
+          );
+          nodes.push(bucket);
+          return nodes;
+        }, [])}
+      </div>
+    </div>
+  );
+}
+
 function TurnPipelineDag({
   turn,
 }: {
   turn: InternalBattleObservationDetail["canonicalTimeline"][number];
 }) {
   const trace = turn.pipelineTrace;
-  if (!trace) {
+  if (!trace && !turn.temporalResolution) {
     return <p className="muted">このターンにはパイプラインtraceがありません。</p>;
   }
   return (
     <div className="internal-pipeline-dag">
+      {turn.temporalResolution ? (
+        <>
+          <TemporalBuckets plan={turn.temporalResolution} />
+          <div className="internal-pipeline-merge" aria-hidden="true">↓</div>
+        </>
+      ) : (
+        <p className="muted">このターンには initiative bucket 記録がありません。</p>
+      )}
       <div className="internal-pipeline-flow internal-pipeline-resolution-flow">
         <PipelineNode
           title="現在ターン裁定"
           value={{ actions: turn.actions, events: turn.events }}
         />
         <span className="internal-pipeline-arrow" aria-hidden="true">→</span>
-        {trace.environmentProcess ? (
+        <PipelineNode
+          title="因果 provenance receipt"
+          subtitle={turn.consequenceReceipts.length > 0
+            ? `${turn.consequenceReceipts.length} sources · action/effect/system/world`
+            : "legacy / unavailable"}
+          value={turn.consequenceReceipts}
+        />
+        <span className="internal-pipeline-arrow" aria-hidden="true">→</span>
+        {trace?.environmentProcess ? (
           <>
             <PipelineNode
               title="環境提案の正準化"
@@ -103,25 +171,25 @@ function TurnPipelineDag({
         <PipelineNode title="正準遷移" value={turn.canonicalTransition} />
       </div>
       <div className="internal-pipeline-merge" aria-hidden="true">↓</div>
-      {trace.characterAgents ? (
+      {trace?.characterAgents ? (
         <div className="internal-agent-lanes">
           <AgentLane label="Site A" trace={trace.characterAgents.a} />
           <AgentLane label="Site B" trace={trace.characterAgents.b} />
         </div>
       ) : null}
       <p className="muted internal-pipeline-note">
-        採用後のnextActionは次ターン用。speechと現在の反応はこのターンのナレータ入力へ進みます。
+        legacy traceでは採用後のnextActionは次ターン用。因果実行への移行後は各bucketの判断・commitを順に表示します。
       </p>
       <div className="internal-pipeline-merge" aria-hidden="true">↓</div>
       <div className="internal-pipeline-flow internal-pipeline-narrator-flow">
-        <PipelineNode title="ナレータ入力" value={trace.narrator?.input ?? null} />
+        <PipelineNode title="ナレータ入力" value={trace?.narrator?.input ?? null} />
         <span className="internal-pipeline-arrow" aria-hidden="true">→</span>
         <PipelineNode
           title="ナレータ出力"
-          subtitle={trace.narrator?.disposition ?? "unavailable"}
+          subtitle={trace?.narrator?.disposition ?? "unavailable"}
           value={{
-            provider: trace.narrator?.providerOutput ?? null,
-            public: trace.narrator?.publicOutput ?? null,
+            provider: trace?.narrator?.providerOutput ?? null,
+            public: trace?.narrator?.publicOutput ?? null,
           }}
         />
       </div>
@@ -242,10 +310,160 @@ export function InternalObservationsPage() {
               </div>
 
               <div className="panel">
+                <h2>束縛済み資産世代</h2>
+                {detail.canonicalCurrent.assetManifest ? (
+                  <>
+                    <p className="muted">
+                      {detail.canonicalCurrent.assetManifest.boundAt} に固定。以後の編集はこの戦闘へ反映されません。
+                    </p>
+                    <p className="muted">
+                      manifest検証: {Object.entries(detail.canonicalCurrent.assetManifestValidation ?? {})
+                        .map(([name, status]) => `${name}=${status}`)
+                        .join(" / ") || "legacy_unknown"}
+                    </p>
+                    <dl className="internal-summary-grid">
+                      <div><dt>Side A character</dt><dd>{detail.canonicalCurrent.assetManifest.characters.a.generationId}</dd></div>
+                      <div><dt>Side B character</dt><dd>{detail.canonicalCurrent.assetManifest.characters.b.generationId}</dd></div>
+                      <div><dt>ナレーション</dt><dd>{detail.canonicalCurrent.assetManifest.narrationStyle.generationId}</dd></div>
+                      <div><dt>戦場preset</dt><dd>{detail.canonicalCurrent.assetManifest.battlefield.presetGenerationId ?? "legacy unknown"}</dd></div>
+                      <div><dt>戦場instance</dt><dd>{detail.canonicalCurrent.assetManifest.battlefield.generationId}</dd></div>
+                      <div><dt>会話設定</dt><dd>{detail.canonicalCurrent.assetManifest.dialoguePipeline.generationId}</dd></div>
+                      <div><dt>ルール</dt><dd>{detail.canonicalCurrent.assetManifest.rules.battleEngine} / {detail.canonicalCurrent.assetManifest.rules.temporalRules} / {detail.canonicalCurrent.assetManifest.rules.psycheReaction ?? "legacy psyche"}</dd></div>
+                    </dl>
+                  </>
+                ) : (
+                  <p className="muted">legacy unknown generation（記録のない現行資産から補完しません）</p>
+                )}
+              </div>
+
+              <div className="panel">
+                <h2>現在の因果ターン実行</h2>
+                {detail.canonicalCurrent.causalExecution ? (
+                  <>
+                    <TemporalBuckets
+                      plan={detail.canonicalCurrent.causalExecution.temporalPlan}
+                      execution={detail.canonicalCurrent.causalExecution}
+                    />
+                    <dl className="internal-summary-grid internal-causal-summary">
+                      <div><dt>Execution ID</dt><dd>{detail.canonicalCurrent.causalExecution.executionId}</dd></div>
+                      <div><dt>状態</dt><dd>{detail.canonicalCurrent.causalExecution.status}</dd></div>
+                      <div><dt>期待 revision</dt><dd>{detail.canonicalCurrent.causalExecution.expectedStateRevision}</dd></div>
+                      <div><dt>判断済み side</dt><dd>{detail.canonicalCurrent.causalExecution.decidedSides.join(", ") || "—"}</dd></div>
+                    </dl>
+                    {detail.canonicalCurrent.causalBucketCommit ? (
+                      <PipelineNode
+                        title="Durable bucket mechanics receipt"
+                        subtitle="後攻判断前に保存済み"
+                        value={detail.canonicalCurrent.causalBucketCommit}
+                      />
+                    ) : null}
+                    {detail.canonicalCurrent.causalEngineContinuation ? (
+                      <PipelineNode
+                        title="Restartable engine continuation"
+                        subtitle="次bucketから再開するためのserver-private checkpoint"
+                        value={detail.canonicalCurrent.causalEngineContinuation}
+                      />
+                    ) : null}
+                    {detail.canonicalCurrent.causalLaterDecision ? (
+                      <PipelineNode
+                        title="Later-bucket isolated action decision"
+                        subtitle="確定済みbucket観測のみを入力にした後攻判断（private prompt非表示）"
+                        value={detail.canonicalCurrent.causalLaterDecision}
+                      />
+                    ) : null}
+                    <PipelineNode
+                      title="Pending effect schedule"
+                      subtitle={`${detail.canonicalCurrent.pendingEffects.length} bounded effects · pre-action resolution`}
+                      value={detail.canonicalCurrent.pendingEffects}
+                    />
+                  </>
+                ) : (
+                  <p className="muted">checkpointなし（旧形式、またはbucket実行開始前）</p>
+                )}
+              </div>
+
+              <div className="panel">
+                <h2>正準phase receipt / narration境界</h2>
+                <p className="muted">
+                  battle revision {detail.canonicalCurrent.battleRevision ?? "legacy"}。入力digestまでが正準commitで、ナレーション本文はpresentation read model側です。
+                </p>
+                {detail.canonicalCurrent.phaseReceipts.length > 0 ? (
+                  <div className="internal-turn-list">
+                    {detail.canonicalCurrent.phaseReceipts.map((receipt) => (
+                      <div className="internal-turn" key={receipt.receiptId}>
+                        <strong>#{receipt.sequence} {receipt.phase}</strong>
+                        <span> · turn {receipt.combatTurn ?? "—"} · revision {receipt.stateRevision}</span>
+                        <div className="muted">{receipt.receiptId}</div>
+                        <div className="muted">input {receipt.inputDigest ?? "legacy/unavailable"}</div>
+                      </div>
+                    ))}
+                  </div>
+                ) : <p className="muted">legacy / receipt unavailable</p>}
+              </div>
+
+              <div className="panel">
+                <h2>非同期ナレーション queue / lease / cost</h2>
+                <p className="muted">
+                  公開本文・private prompt・provider raw outputを含まない運用投影です。
+                </p>
+                <p className="muted">
+                  public event {detail.narrationRetention.publicEventDays}日 / attempt {detail.narrationRetention.attemptDays}日
+                  {` · pruned through #${detail.narrationRetention.prunedThroughSequence}`}
+                </p>
+                {detail.narrationQueue.length > 0 ? (
+                  <div className="internal-turn-list">
+                    {detail.narrationQueue.map((entry) => (
+                      <div className="internal-turn" key={`narration-${entry.receiptId}`}>
+                        <strong>#{entry.sequence} {entry.phase} · {entry.status}</strong>
+                        <span> · attempts {entry.attemptCount}</span>
+                        {entry.blockedBySequence !== null ? (
+                          <div className="muted">#{entry.blockedBySequence} の完了待ち</div>
+                        ) : null}
+                        <div className="muted">
+                          lease {entry.lease
+                            ? `fence ${entry.lease.fencingToken} / ${entry.lease.expired ? "expired" : "active"}`
+                            : "none"}
+                        </div>
+                        {entry.latestAttempt ? (
+                          <div className="muted">
+                            {entry.latestAttempt.route} · {entry.latestAttempt.provider}
+                            {entry.latestAttempt.model ? `/${entry.latestAttempt.model}` : ""}
+                            {` · HTTP ${entry.latestAttempt.httpAttempts}`}
+                            {` · tokens ${entry.latestAttempt.tokenCount ?? "n/a"}`}
+                            {` · cost $${entry.latestAttempt.estimatedCostUsd ?? "n/a"}`}
+                            {` · ${entry.latestAttempt.elapsedMs ?? "n/a"}ms`}
+                          </div>
+                        ) : null}
+                      </div>
+                    ))}
+                  </div>
+                ) : <p className="muted">legacy / queue entry unavailable</p>}
+              </div>
+
+              <div className="panel">
                 <h2>キャラ・ナレータ パイプラインDAG</h2>
+                <div className="internal-agent-lanes">
+                  {(["a", "b"] as const).map((side) => {
+                    const reaction = detail.canonicalCurrent.psycheReaction[side];
+                    return (
+                      <div className="internal-agent-lane" key={`psyche-${side}`}>
+                        <h4>Site {side.toUpperCase()} · deterministic psyche</h4>
+                        {reaction ? (
+                          <dl className="internal-summary-grid">
+                            <div><dt>route</dt><dd>{reaction.route ?? "unavailable"}</dd></div>
+                            <div><dt>reason</dt><dd>{reaction.reason ?? "unavailable"}</dd></div>
+                            <div><dt>generation</dt><dd>{reaction.policyGeneration ?? "unavailable"}</dd></div>
+                            <div><dt>source count</dt><dd>{reaction.sourceCount}</dd></div>
+                          </dl>
+                        ) : <p className="muted">legacy / not processed</p>}
+                      </div>
+                    );
+                  })}
+                </div>
                 <p className="muted">
                   {detail.capabilities.pipelineTraceCount}/{detail.capabilities.turnRecordCount} ターンで
-                  Site A/Bの入力、キャラ出力、採用後出力、裁定、正準遷移、ナレータ入出力を保持。
+                  trace、{detail.capabilities.temporalResolutionCount}/{detail.capabilities.turnRecordCount} ターンで
+                  initiative bucketを保持。Site A/Bの入力、採用後出力、裁定、正準遷移、ナレータ入出力を表示します。
                 </p>
                 <div className="internal-turn-list">
                   {detail.canonicalTimeline.map((turn, index) => (

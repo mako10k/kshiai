@@ -30,6 +30,36 @@ function sheet(id: string, name: string): CharacterSheet {
 }
 
 describe("public battle semantic projection", () => {
+  it("projects only explicitly visible pending effects without raw deltas", () => {
+    const sideA = sheet("effect-a", "A");
+    const sideB = sheet("effect-b", "B");
+    const state = createBattleState({
+      id: "public-effects",
+      sideA,
+      sideB,
+      turnLimit: 20,
+      prologuePending: false,
+    });
+    const base = {
+      schemaVersion: 1 as const,
+      createdTurn: 0,
+      source: { kind: "system_rules" as const, ruleId: "fixture" },
+      sourceSide: null,
+      targetSide: "b" as const,
+      payload: { kind: "parameter_delta" as const, parameterKey: "hp" as const, delta: -20 },
+      trigger: { kind: "due_turn" as const, dueTurn: 2 },
+      expiresTurn: 3,
+      cancelIfSourceIncapacitated: false,
+    };
+    state.pendingEffects = [
+      { ...base, effectId: "visible", visibility: "public_when_scheduled" },
+      { ...base, effectId: "hidden", visibility: "public_on_resolution" },
+    ];
+    const projected = toBattlePublic(state, sideA, null, sideB);
+    assert.deepEqual(projected.pendingEffects.map((effect) => effect.effectId), ["visible"]);
+    assert.doesNotMatch(JSON.stringify(projected.pendingEffects), /-20|delta/);
+  });
+
   it("exposes observable semantic state without mechanics or private agents", () => {
     const sideA = sheet("a", "A");
     const sideB = sheet("b", "B");
@@ -61,6 +91,45 @@ describe("public battle semantic projection", () => {
       nextContactSequence: 1,
       contacts: [],
     };
+    Object.assign(state, {
+      causalEngineContinuation: {
+        schemaVersion: 1,
+        executionId: "private-engine-checkpoint",
+        privateMarker: "must-not-reach-public-dto",
+      },
+    });
+    state.agentStateA = {
+      ...state.agentStateA!,
+      reactionStateV1: {
+        schemaVersion: 1,
+        emotion: { irritation: 10, anxiety: 20, relief: 30, fear: 40 },
+        interpretation: { adverse: 50, uncertain: 60, affiliative: 70 },
+        impulse: { confront: 80, withdraw: 90, approach: 100, seekReassurance: 110 },
+        arousal: 120,
+      },
+      reactionReceiptV1: {
+        schemaVersion: 1,
+        policyGeneration: "psyche-reaction-policy-v1",
+        turn: 1,
+        observerSide: "a",
+        route: "deterministic_no_call",
+        reason: "committed_observation",
+        sourceEventIds: ["private-reaction-source"],
+        contributions: [{ code: "uncertainty", dimension: "interpretation.uncertain", amount: 20 }],
+      },
+    };
+    state.phaseReceipts = [{
+      schemaVersion: 1,
+      id: "public-semantic:phase:1",
+      sequence: 1,
+      operationId: "private-operation-id",
+      phase: "combat",
+      combatTurn: 1,
+      fromRevision: 0,
+      toRevision: 1,
+      committedAt: "2026-08-12T00:00:00.000Z",
+      narrationInputDigest: "a".repeat(64),
+    }];
     const publicState = toBattlePublic(state, sideA, null, sideB);
     assert.equal(
       publicState.semanticState?.snapshot.entities["character.a"]?.label,
@@ -75,6 +144,19 @@ describe("public battle semantic projection", () => {
     assert.equal(json.includes("encounterContext"), false);
     assert.equal(json.includes("worldState"), false);
     assert.equal(json.includes("hidden.enemy.1"), false);
+    assert.equal(json.includes("causalEngineContinuation"), false);
+    assert.equal(json.includes("must-not-reach-public-dto"), false);
+    assert.equal(json.includes("reactionStateV1"), false);
+    assert.equal(json.includes("private-reaction-source"), false);
+    assert.deepEqual(publicState.receipts, [{
+      turnReceiptId: "public-semantic:phase:1",
+      sequence: 1,
+      phase: "combat",
+      combatTurn: 1,
+      stateRevision: 1,
+    }]);
+    assert.equal(json.includes("private-operation-id"), false);
+    assert.equal(json.includes("a".repeat(64)), false);
   });
 
   it("centers settled ratings independently for each visible track", () => {

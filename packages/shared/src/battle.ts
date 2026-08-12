@@ -1,11 +1,22 @@
 import { z } from "zod";
 import { NarrativeBlockSchema } from "./narrative.js";
-import { ParamKeySchema, ParametersSchema } from "./character.js";
+import {
+  CharacterSheetSchema,
+  ParamKeySchema,
+  ParametersSchema,
+  type CharacterSheet,
+  type ParamKey,
+} from "./character.js";
 import {
   BattlefieldInstancePublicSchema,
   BattlefieldInstanceSchema,
+  type BattlefieldInstance,
 } from "./battlefield.js";
-import { NarrationStyleSnapshotSchema } from "./narration-style.js";
+import {
+  NarrationStyleSnapshotSchema,
+  type NarrationStyleSnapshot,
+} from "./narration-style.js";
+import { NarrationPerspectiveSchema } from "./narration-perspective.js";
 import {
   BattleSemanticStateSchema,
   SemanticObservationStateSchema,
@@ -18,14 +29,22 @@ import {
 } from "./battle-world.js";
 import { FreeActionResolutionReceiptSchema } from "./free-action.js";
 import { DramaStateSchema } from "./drama.js";
-import { BattleDialoguePipelineSnapshotSchema } from "./dialogue-pipeline.js";
 import {
+  BattleDialoguePipelineSnapshotSchema,
+  type BattleDialoguePipelineSnapshot,
+} from "./dialogue-pipeline.js";
+import {
+  BattlePacingPolicySchema,
+} from "./battle-pacing.js";
+import {
+  CommittedMechanicalEvidenceSetSchema,
   CharacterPerceptionFrameASchema,
   CharacterPerceptionFrameBSchema,
   ObserverContactRegistryASchema,
   ObserverContactRegistryBSchema,
 } from "./perception.js";
 import { BattleTemporalPlanSchema } from "./battle-temporal-rules.js";
+import { CausalTurnExecutionSchema } from "./battle-causal-execution.js";
 import {
   BattleEncounterContextSchema,
   BattleNarratorContinuitySchema,
@@ -440,7 +459,31 @@ export const SituationSchema = z.object({
 });
 export type Situation = z.infer<typeof SituationSchema>;
 
-export const TurnEventSchema = z.object({
+export type TurnEvent = {
+  id?: string;
+  type: "damage" | "heal" | "rest" | "parameter" | "defend" | "wait" |
+    "reflect" | "status" | "situation" | "info" | "utterance" | "free_action";
+  actorName?: string;
+  actorSide?: "a" | "b";
+  targetName?: string;
+  targetSides?: Array<"a" | "b">;
+  sourceActionId?: string;
+  sourceEffectId?: string;
+  skillName?: string;
+  parameterKey?: ParamKey;
+  parameterDirection?: "loss" | "gain";
+  intensity?: "minor" | "moderate" | "heavy" | "critical";
+  utterance?: {
+    text: string;
+    delivery: "spoken" | "visible_reaction";
+    volume: "quiet" | "normal" | "loud";
+    articulation: "clear" | "impaired";
+    language: string;
+  };
+  summary: string;
+};
+
+export const TurnEventSchema: z.ZodType<TurnEvent> = z.object({
   id: z.string().min(1).optional(),
   type: z.enum([
     "damage",
@@ -461,6 +504,7 @@ export const TurnEventSchema = z.object({
   targetName: z.string().optional(),
   targetSides: z.array(z.enum(["a", "b"])).max(2).optional(),
   sourceActionId: z.string().min(1).optional(),
+  sourceEffectId: z.string().min(1).max(120).optional(),
   skillName: z.string().optional(),
   /** Structured mechanical attribution; never infer these fields from summary. */
   parameterKey: ParamKeySchema.optional(),
@@ -477,6 +521,13 @@ export const TurnEventSchema = z.object({
   }).strict().optional(),
   summary: z.string(),
 }).superRefine((event, ctx) => {
+  if (event.sourceActionId && event.sourceEffectId) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["sourceEffectId"],
+      message: "an event cannot have both action and scheduled-effect sources",
+    });
+  }
   if (event.type === "utterance") {
     if (!event.id || !event.actorSide || !event.utterance) {
       ctx.addIssue({
@@ -493,7 +544,53 @@ export const TurnEventSchema = z.object({
     });
   }
 });
-export type TurnEvent = z.infer<typeof TurnEventSchema>;
+
+export const PendingBattleEffectSchema = z.object({
+  schemaVersion: z.literal(1),
+  effectId: z.string().min(1).max(120),
+  createdTurn: z.number().int().nonnegative(),
+  source: z.discriminatedUnion("kind", [
+    z.object({ kind: z.literal("action"), actionId: z.string().min(1).max(120) }).strict(),
+    z.object({ kind: z.literal("system_rules"), ruleId: z.string().min(1).max(80) }).strict(),
+    z.object({ kind: z.literal("environment_world"), transitionId: z.string().min(1).max(120) }).strict(),
+  ]),
+  targetSide: z.enum(["a", "b"]),
+  payload: z.object({
+    kind: z.literal("parameter_delta"),
+    parameterKey: ParamKeySchema,
+    delta: z.number().int().min(-50).max(50).refine((value) => value !== 0),
+  }).strict(),
+  trigger: z.discriminatedUnion("kind", [
+    z.object({ kind: z.literal("due_turn"), dueTurn: z.number().int().positive() }).strict(),
+    z.object({
+      kind: z.literal("target_hp_at_most_percent"),
+      percent: z.number().int().min(1).max(99),
+    }).strict(),
+  ]),
+  expiresTurn: z.number().int().positive(),
+  cancelIfSourceIncapacitated: z.boolean(),
+  sourceSide: z.enum(["a", "b"]).nullable(),
+  visibility: z.enum(["public_when_scheduled", "public_on_resolution"]),
+}).strict().superRefine((effect, ctx) => {
+  if (effect.expiresTurn <= effect.createdTurn) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["expiresTurn"],
+      message: "effect expiry must be after creation",
+    });
+  }
+  if (effect.trigger.kind === "due_turn" && effect.trigger.dueTurn > effect.expiresTurn) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["trigger", "dueTurn"],
+      message: "due turn must not exceed expiry",
+    });
+  }
+});
+export type PendingBattleEffect = z.infer<typeof PendingBattleEffectSchema>;
+const PendingBattleEffectListSchema: z.ZodType<PendingBattleEffect[]> = z
+  .array(PendingBattleEffectSchema)
+  .max(32);
 
 /** Qualitative condition visible to one character after engine resolution. */
 export const PerceivedConditionSchema = z.enum([
@@ -778,6 +875,85 @@ export const TurnObservationPacketSchema = z.object({
 }).strict();
 export type TurnObservationPacket = z.infer<typeof TurnObservationPacketSchema>;
 
+const PsycheActivationSchema = z.number().int().min(0).max(1000);
+const PsycheRelationshipValueSchema = z.number().int().min(-1000).max(1000);
+
+/** Versioned, server-private inputs for the deterministic normal-turn policy. */
+export const PsycheTraitProfileV1Schema = z.object({
+  adverseSensitivity: PsycheActivationSchema,
+  uncertaintySensitivity: PsycheActivationSchema,
+  recoverySpeed: PsycheActivationSchema,
+  irritationPersistence: PsycheActivationSchema,
+  anxietyPersistence: PsycheActivationSchema,
+  approachTendency: PsycheActivationSchema,
+  withdrawalTendency: PsycheActivationSchema,
+  impulseInhibition: PsycheActivationSchema,
+  expressionRestraint: PsycheActivationSchema,
+}).strict();
+export type PsycheTraitProfileV1 = z.infer<typeof PsycheTraitProfileV1Schema>;
+
+export const PsycheRelationshipStateV1Schema = z.object({
+  trust: PsycheRelationshipValueSchema,
+  affiliation: PsycheRelationshipValueSchema,
+  fear: PsycheRelationshipValueSchema,
+  competition: PsycheRelationshipValueSchema,
+}).strict();
+export type PsycheRelationshipStateV1 = z.infer<
+  typeof PsycheRelationshipStateV1Schema
+>;
+
+export const PsycheReactionStateV1Schema = z.object({
+  schemaVersion: z.literal(1),
+  emotion: z.object({
+    irritation: PsycheActivationSchema,
+    anxiety: PsycheActivationSchema,
+    relief: PsycheActivationSchema,
+    fear: PsycheActivationSchema,
+  }).strict(),
+  interpretation: z.object({
+    adverse: PsycheActivationSchema,
+    uncertain: PsycheActivationSchema,
+    affiliative: PsycheActivationSchema,
+  }).strict(),
+  impulse: z.object({
+    confront: PsycheActivationSchema,
+    withdraw: PsycheActivationSchema,
+    approach: PsycheActivationSchema,
+    seekReassurance: PsycheActivationSchema,
+  }).strict(),
+  arousal: PsycheActivationSchema,
+}).strict();
+export type PsycheReactionStateV1 = z.infer<typeof PsycheReactionStateV1Schema>;
+
+export const PsycheReactionProjectionV1Schema = z.object({
+  schemaVersion: z.literal(1),
+  arousal: z.enum(["low", "medium", "high"]),
+  interpretation: z.array(z.enum(["adverse", "uncertain", "affiliative"])).max(3),
+  impulse: z.array(z.enum(["confront", "withdraw", "approach", "seek_reassurance"])).max(4),
+  expressionTendency: z.enum(["withhold", "restrained", "available"]).optional(),
+}).strict();
+export type PsycheReactionProjectionV1 = z.infer<
+  typeof PsycheReactionProjectionV1Schema
+>;
+
+export const PsycheReactionReceiptV1Schema = z.object({
+  schemaVersion: z.literal(1),
+  policyGeneration: z.string().min(1).max(120),
+  turn: z.number().int().nonnegative(),
+  observerSide: z.enum(["a", "b"]),
+  route: z.literal("deterministic_no_call"),
+  reason: z.enum(["committed_observation", "no_observation_decay", "feature_unavailable_hold"]),
+  sourceEventIds: z.array(z.string().min(1).max(120)).max(24),
+  contributions: z.array(z.object({
+    code: z.enum(["decay", "uncertainty", "activation", "inhibition", "restraint"]),
+    dimension: z.string().min(1).max(80),
+    amount: z.number().int().min(-1000).max(1000),
+  }).strict()).max(48),
+}).strict();
+export type PsycheReactionReceiptV1 = z.infer<
+  typeof PsycheReactionReceiptV1Schema
+>;
+
 /**
  * Fresh, committed outcome material for the action-and-result reaction thread.
  * It is source material for expression only, never an instruction to claim a result.
@@ -831,6 +1007,9 @@ export const CharacterAgentStateSchema = z.object({
   /** Compact private relational continuity selected by deep psyche. */
   dialogueThread: DialogueThreadStateSchema.optional(),
   interior: CharacterDeepPsycheSchema.optional(),
+  /** Deterministic normal-turn reaction state; private and battle-scoped. */
+  reactionStateV1: PsycheReactionStateV1Schema.optional(),
+  reactionReceiptV1: PsycheReactionReceiptV1Schema.optional(),
 });
 export type CharacterAgentState = z.infer<typeof CharacterAgentStateSchema>;
 
@@ -878,6 +1057,53 @@ export const BattleTurnWorldImpactSchema = z.object({
 }).strict();
 export type BattleTurnWorldImpact = z.infer<
   typeof BattleTurnWorldImpactSchema
+>;
+
+export const BattleConsequenceProvenanceSourceSchema = z.discriminatedUnion(
+  "kind",
+  [
+    z.object({
+      kind: z.literal("action"),
+      actionId: z.string().min(1).max(120),
+      actorSide: z.enum(["a", "b"]),
+    }).strict(),
+    z.object({
+      kind: z.literal("scheduled_effect"),
+      effectId: z.string().min(1).max(120),
+    }).strict(),
+    z.object({
+      kind: z.literal("system_rules"),
+      stage: z.enum(["turn_start", "turn_resolution", "terminal"]),
+    }).strict(),
+    z.object({
+      kind: z.literal("environment_world"),
+      transition: z.enum(["semantic", "world"]),
+    }).strict(),
+  ],
+);
+export type BattleConsequenceProvenanceSource = z.infer<
+  typeof BattleConsequenceProvenanceSourceSchema
+>;
+
+/**
+ * Immutable bounded provenance for one committed turn. This is not a full-turn
+ * replay log; only scheduled-effect resolution is intended to become replayable.
+ */
+export const BattleConsequenceReceiptSchema = z.object({
+  schemaVersion: z.literal(1),
+  receiptId: z.string().min(1).max(180),
+  turn: z.number().int().nonnegative(),
+  source: BattleConsequenceProvenanceSourceSchema,
+  eventIds: z.array(z.string().min(1).max(120)).max(64),
+  parameterChanges: z.object({
+    a: z.record(ParamKeySchema, z.number()),
+    b: z.record(ParamKeySchema, z.number()),
+  }).strict(),
+  semanticOperationIndexes: z.array(z.number().int().nonnegative()).max(24),
+  worldOperationIndexes: z.array(z.number().int().nonnegative()).max(24),
+}).strict();
+export type BattleConsequenceReceipt = z.infer<
+  typeof BattleConsequenceReceiptSchema
 >;
 
 export const BattleAdjudicationReasonFactSchema = z.object({
@@ -1016,6 +1242,8 @@ export const BattleTurnRecordSchema = z.object({
     .default([])
     .optional(),
   events: z.array(TurnEventSchema).default([]),
+  /** Additive for legacy records; every new event and committed delta has one owner. */
+  consequenceReceipts: z.array(BattleConsequenceReceiptSchema).max(16).optional(),
   /** Exact server-owned semantic and mechanical world transitions for this turn. */
   canonicalTransition: z.object({
     semantic: z.object({
@@ -1039,6 +1267,79 @@ export const BattleTurnRecordSchema = z.object({
   cognitionB: CharacterCognitionSchema,
   /** Bounded internal-only consumer I/O for pipeline diagnosis. */
   pipelineTrace: BattleTurnPipelineTraceSchema.optional(),
+}).superRefine((record, ctx) => {
+  if (!record.consequenceReceipts) return;
+  const ownedEventIds = record.consequenceReceipts.flatMap((receipt) =>
+    receipt.eventIds
+  );
+  const expectedEventIds = record.events.flatMap((event) => event.id ? [event.id] : []);
+  if (
+    new Set(ownedEventIds).size !== ownedEventIds.length ||
+    expectedEventIds.some((id) => !ownedEventIds.includes(id)) ||
+    ownedEventIds.some((id) => !expectedEventIds.includes(id))
+  ) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["consequenceReceipts"],
+      message: "each identified turn event must belong to exactly one consequence receipt",
+    });
+  }
+  for (const side of ["a", "b"] as const) {
+    const expected = side === "a"
+      ? record.sideAChange.parameterChanges
+      : record.sideBChange.parameterChanges;
+    const owners = new Map<string, number[]>();
+    for (const receipt of record.consequenceReceipts) {
+      for (const [key, value] of Object.entries(receipt.parameterChanges[side])) {
+        owners.set(key, [...(owners.get(key) ?? []), value]);
+      }
+    }
+    for (const [key, value] of Object.entries(expected)) {
+      const values = owners.get(key) ?? [];
+      if (values.length === 0 || values.reduce((sum, item) => sum + item, 0) !== value) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["consequenceReceipts"],
+          message: `parameter delta ${side}.${key} must equal its source-owned contributions`,
+        });
+      }
+    }
+    for (const key of owners.keys()) {
+      if (!(key in expected)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["consequenceReceipts"],
+          message: `receipt owns absent parameter delta ${side}.${key}`,
+        });
+      }
+    }
+  }
+  const validateIndexes = (
+    key: "semanticOperationIndexes" | "worldOperationIndexes",
+    count: number,
+  ) => {
+    const indexes = record.consequenceReceipts!.flatMap((receipt) => receipt[key]);
+    if (
+      new Set(indexes).size !== indexes.length ||
+      indexes.some((index) => index >= count) ||
+      Array.from({ length: count }, (_value, index) => index)
+        .some((index) => !indexes.includes(index))
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["consequenceReceipts"],
+        message: `each ${key} value must have exactly one owner`,
+      });
+    }
+  };
+  validateIndexes(
+    "semanticOperationIndexes",
+    record.canonicalTransition?.semantic?.patch?.operations.length ?? 0,
+  );
+  validateIndexes(
+    "worldOperationIndexes",
+    record.canonicalTransition?.world?.transition?.operations.length ?? 0,
+  );
 });
 export type BattleTurnRecord = z.infer<typeof BattleTurnRecordSchema>;
 
@@ -1058,6 +1359,139 @@ export const SupervisorStateSchema = z.object({
 });
 export type SupervisorState = z.infer<typeof SupervisorStateSchema>;
 
+export const BattleBucketMechanicalCommitSchema = z.object({
+  schemaVersion: z.literal(1),
+  executionId: z.string().min(1).max(160),
+  turn: z.number().int().positive(),
+  bucketIndex: z.number().int().nonnegative(),
+  actorSides: z.array(z.enum(["a", "b"])).min(1).max(2),
+  sideA: CombatantStateSchema,
+  sideB: CombatantStateSchema,
+  situation: SituationSchema,
+  finisherA: FinisherStateSchema.nullable(),
+  finisherB: FinisherStateSchema.nullable(),
+  actions: z.array(ResolvedBattleActionSchema).max(2),
+  events: z.array(TurnEventSchema),
+  mechanicalEvidence: CommittedMechanicalEvidenceSetSchema,
+  defensiveInstrumentMultipliers: z.object({
+    a: z.number().positive(),
+    b: z.number().positive(),
+  }).strict(),
+}).strict();
+export type BattleBucketMechanicalCommit = z.infer<
+  typeof BattleBucketMechanicalCommitSchema
+>;
+
+/** Serializable pure-engine continuation between durable bucket commits. */
+export const BattleTurnEngineContinuationSchema = z.object({
+  schemaVersion: z.literal(1),
+  executionId: z.string().min(1).max(160),
+  turn: z.number().int().positive(),
+  temporalResolution: BattleTemporalPlanSchema,
+  nextBucketIndex: z.number().int().nonnegative(),
+  sideA: CombatantStateSchema,
+  sideB: CombatantStateSchema,
+  situation: SituationSchema,
+  finisherA: FinisherStateSchema.nullable(),
+  finisherB: FinisherStateSchema.nullable(),
+  actions: z.array(ResolvedBattleActionSchema).length(2),
+  events: z.array(TurnEventSchema),
+  mechanicalEvidence: CommittedMechanicalEvidenceSetSchema,
+  pendingEffects: PendingBattleEffectListSchema.default([]),
+  defensiveInstrumentMultipliers: z.object({
+    a: z.number().positive(),
+    b: z.number().positive(),
+  }).strict(),
+}).strict().superRefine((continuation, context) => {
+  if (continuation.nextBucketIndex > continuation.temporalResolution.buckets.length) {
+    context.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["nextBucketIndex"],
+      message: "continuation cannot advance beyond the temporal plan",
+    });
+  }
+});
+export type BattleTurnEngineContinuation = z.infer<
+  typeof BattleTurnEngineContinuationSchema
+>;
+
+/**
+ * Immutable authoritative inputs captured when a battle is created.
+ *
+ * Generation IDs are assigned by the server. The embedded snapshots make the
+ * battle independent from mutable current-asset rows, including after an
+ * asset generation is archived or hidden from ordinary editors.
+ */
+export interface BattleAssetManifest {
+  schemaVersion: 1;
+  boundAt: string;
+  characters: {
+    a: { assetId: string; generationId: string; contentDigest: string; snapshot: CharacterSheet };
+    b: { assetId: string; generationId: string; contentDigest: string; snapshot: CharacterSheet };
+  };
+  narrationStyle: {
+    assetId: string;
+    generationId: string;
+    contentDigest: string;
+    snapshot: NarrationStyleSnapshot;
+  };
+  battlefield: {
+    assetId: string | null;
+    presetGenerationId?: string | null;
+    generationId: string;
+    contentDigest: string;
+    snapshot: BattlefieldInstance;
+  };
+  dialoguePipeline: {
+    generationId: string;
+    contentDigest: string;
+    snapshot: BattleDialoguePipelineSnapshot;
+  };
+  rules: { battleEngine: string; temporalRules: string; psycheReaction?: string };
+}
+
+export const BattleAssetManifestSchema = z.object({
+  schemaVersion: z.literal(1),
+  boundAt: z.string(),
+  characters: z.object({
+    a: z.object({
+      assetId: z.string(),
+      generationId: z.string().min(1),
+      contentDigest: z.string().regex(/^[a-f0-9]{64}$/).optional().default("0".repeat(64)),
+      snapshot: CharacterSheetSchema,
+    }).strict(),
+    b: z.object({
+      assetId: z.string(),
+      generationId: z.string().min(1),
+      contentDigest: z.string().regex(/^[a-f0-9]{64}$/).optional().default("0".repeat(64)),
+      snapshot: CharacterSheetSchema,
+    }).strict(),
+  }).strict(),
+  narrationStyle: z.object({
+    assetId: z.string(),
+    generationId: z.string().min(1),
+    contentDigest: z.string().regex(/^[a-f0-9]{64}$/).optional().default("0".repeat(64)),
+    snapshot: NarrationStyleSnapshotSchema,
+  }).strict(),
+  battlefield: z.object({
+    assetId: z.string().nullable(),
+    presetGenerationId: z.string().nullable().optional(),
+    generationId: z.string().min(1),
+    contentDigest: z.string().regex(/^[a-f0-9]{64}$/).optional().default("0".repeat(64)),
+    snapshot: BattlefieldInstanceSchema,
+  }).strict(),
+  dialoguePipeline: z.object({
+    generationId: z.string().min(1),
+    contentDigest: z.string().regex(/^[a-f0-9]{64}$/).optional().default("0".repeat(64)),
+    snapshot: BattleDialoguePipelineSnapshotSchema,
+  }).strict(),
+  rules: z.object({
+    battleEngine: z.string().min(1),
+    temporalRules: z.string().min(1),
+    psycheReaction: z.string().min(1).optional(),
+  }).strict(),
+}).strict() as unknown as z.ZodType<BattleAssetManifest>;
+
 export const BattleStateSchema = z.object({
   id: z.string(),
   /** Present after narrator/speech/perception authority migration. */
@@ -1065,6 +1499,10 @@ export const BattleStateSchema = z.object({
   status: BattleStatusSchema,
   turn: z.number().int().nonnegative(),
   turnLimit: z.number().int().positive(),
+  /** Versioned pacing rules frozen for this battle; absent on legacy saves. */
+  pacingPolicy: BattlePacingPolicySchema.optional(),
+  /** Frozen source generations used by all authoritative battle processing. */
+  assetManifest: BattleAssetManifestSchema.optional(),
   sideA: CombatantStateSchema,
   sideB: CombatantStateSchema,
   /** @deprecated Use policiesA / selectedPolicyIdsA. */
@@ -1123,6 +1561,9 @@ export const BattleStateSchema = z.object({
   plannedActionB: CharacterActionIntentSchema.optional(),
   /** Structured engine transitions; narrative log is presentation only. */
   turnRecords: z.array(BattleTurnRecordSchema).default([]),
+  pendingEffects: z.custom<PendingBattleEffect[]>((value) =>
+    PendingBattleEffectListSchema.safeParse(value).success
+  ).optional(),
   /** Mutable observable world overlay; optional while legacy battles exist. */
   semanticState: BattleSemanticStateSchema.optional(),
   /** Server-owned coarse mechanical world; never exposed without projection. */
@@ -1196,6 +1637,94 @@ export const BattleStateSchema = z.object({
     .optional(),
   /** Latest server-owned action ordering receipt; never exposed publicly. */
   latestTemporalResolution: BattleTemporalPlanSchema.optional(),
+  /**
+   * Additive Issue #98 checkpoint. Legacy battles omit it and continue through
+   * the complete-turn path until the service explicitly opts into the causal
+   * execution revision.
+   */
+  causalExecution: CausalTurnExecutionSchema.optional(),
+  /** Durable first-bucket mechanics while the later decision is pending. */
+  causalBucketCommit: BattleBucketMechanicalCommitSchema.optional(),
+  /** Pure-engine state required to resume after the durable bucket commit. */
+  causalEngineContinuation: BattleTurnEngineContinuationSchema.optional(),
+  /** Privacy-safe receipt for the isolated decision made after a bucket commit. */
+  causalLaterDecision: z.object({
+    schemaVersion: z.literal(1),
+    executionId: z.string().min(1),
+    sourceBucketIndex: z.number().int().nonnegative(),
+    side: z.enum(["a", "b"]),
+    status: z.enum(["accepted", "fallback"]),
+    /** Actual server-accepted intent, including deterministic fallback. */
+    acceptedAction: CharacterActionIntentSchema.nullable().optional(),
+    validation: CharacterActionProposalValidationReceiptSchema,
+    provider: z.string().min(1),
+    model: z.string().min(1).nullable(),
+    callCount: z.number().int().nonnegative(),
+    tokenCount: z.number().int().nonnegative().nullable(),
+    estimatedCostUsd: z.number().nonnegative().nullable(),
+    elapsedMs: z.number().int().nonnegative(),
+    fallbackReason: z.string().min(1).nullable(),
+  }).strict().optional(),
+  /** Battle-wide optimistic revision for recoverable advance operations. */
+  battleRevision: z.number().int().nonnegative().optional(),
+  /** Monotonic identity source for committed phase receipts. */
+  phaseReceiptSequence: z.number().int().nonnegative().optional(),
+  /** Bounded durable receipts; narration activation is a later task. */
+  phaseReceipts: z.array(z.object({
+    schemaVersion: z.literal(1),
+    id: z.string().min(1).max(160),
+    sequence: z.number().int().positive(),
+    operationId: z.string().min(1).max(160),
+    phase: z.enum(["prologue", "combat", "judgment", "aftermath"]),
+    combatTurn: z.number().int().nonnegative().nullable(),
+    fromRevision: z.number().int().nonnegative(),
+    toRevision: z.number().int().positive(),
+    committedAt: z.string().datetime(),
+    /** Frozen internal request for the later narration worker; never public DTO data. */
+    narrationInput: z.union([z.object({
+      schemaVersion: z.literal(1),
+      scene: z.string().max(1200),
+      perspective: NarrationPerspectiveSchema,
+      participantLabels: z.object({
+        a: z.string().min(1).max(160),
+        b: z.string().min(1).max(160),
+      }).strict(),
+      winnerSide: z.enum(["a", "b", "draw"]).nullable(),
+      finishReason: FinishReasonSchema.nullable(),
+      adjudicationReason: z.string().min(1).max(600).nullable(),
+      eventFacts: z.array(z.object({
+        type: z.string().min(1).max(80),
+        actorSide: z.enum(["a", "b"]).nullable(),
+        targetSides: z.array(z.enum(["a", "b"])).max(2),
+        intensity: z.string().max(40).nullable(),
+      }).strict()).max(48),
+      characterSpeeches: z.array(z.object({
+        sourceSide: z.enum(["a", "b"]),
+        text: z.string().min(1).max(800),
+      }).strict()).max(8),
+      assetGenerationIds: z.object({
+        sideA: z.string().min(1).max(160).nullable(),
+        sideB: z.string().min(1).max(160).nullable(),
+        battlefield: z.string().min(1).max(160).nullable(),
+        narrationStyle: z.string().min(1).max(160).nullable(),
+      }).strict(),
+    }).strict(), z.object({
+      kind: z.enum(["prologue", "combat", "judgment", "aftermath"]),
+      request: z.record(z.string(), z.unknown()),
+    }).strict()]).optional(),
+    narrationInputDigest: z.string().regex(/^[a-f0-9]{64}$/).optional(),
+  }).strict()).max(100).optional(),
+  /** Stable request identity persisted through intermediate bucket checkpoints. */
+  advanceOperation: z.object({
+    schemaVersion: z.literal(1),
+    operationId: z.string().min(1).max(160),
+    expectedRevision: z.number().int().nonnegative(),
+    status: z.enum(["active", "completed"]),
+    phase: z.enum(["prologue", "combat", "aftermath"]),
+    startedAt: z.string().datetime(),
+    completedAt: z.string().datetime().nullable(),
+    receiptIds: z.array(z.string().min(1).max(160)).max(4),
+  }).strict().optional(),
   /**
    * Engine-internal balance metrics (not exposed on BattlePublic).
    * Accumulated from HP deltas each combat turn for observability.
@@ -1296,6 +1825,14 @@ export const BattleStateSchema = z.object({
   createdAt: z.string(),
   updatedAt: z.string(),
 }).superRefine((state, ctx) => {
+  const effectIds = (state.pendingEffects ?? []).map((effect) => effect.effectId);
+  if (new Set(effectIds).size !== effectIds.length) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["pendingEffects"],
+      message: "pending effect IDs must be unique within a battle",
+    });
+  }
   if (state.adjudication) {
     if (
       state.status !== "finished" ||
@@ -1396,7 +1933,26 @@ export const BattlePublicSchema = z.object({
   /** Observable structured world only; excludes mechanics and private agents. */
   semanticState: SemanticObservationStateSchema.nullable().optional(),
   objectStates: z.array(BattleObjectStatePublicSchema).default([]),
+  pendingEffects: z.array(z.object({
+    effectId: z.string().min(1).max(120),
+    targetSide: z.enum(["a", "b"]),
+    parameterKey: ParamKeySchema,
+    direction: z.enum(["loss", "gain"]),
+    trigger: z.union([
+      z.object({ kind: z.literal("due_turn"), dueTurn: z.number().int().positive() }).strict(),
+      z.object({ kind: z.literal("target_hp_at_most_percent") }).strict(),
+    ]),
+    expiresTurn: z.number().int().positive(),
+  }).strict()).max(32).default([]),
   log: z.array(NarrativeBlockSchema),
+  /** Ordered canonical phase identities; contains no private narration input. */
+  receipts: z.array(z.object({
+    turnReceiptId: z.string().min(1).max(160),
+    sequence: z.number().int().positive(),
+    phase: z.enum(["prologue", "combat", "judgment", "aftermath"]),
+    combatTurn: z.number().int().nonnegative().nullable(),
+    stateRevision: z.number().int().positive(),
+  }).strict()).max(100).default([]),
   /** @deprecated Per-turn choices are automatic; kept empty for compatibility. */
   availableActions: z
     .array(

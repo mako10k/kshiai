@@ -10,6 +10,7 @@ import {
   restoreRevisionSnapshot,
   toggleCharacterPortrait,
   toPublicCharacter,
+  toBattleCharacterSnapshot,
 } from "./character.js";
 
 describe("coalesceNonEmptyList", () => {
@@ -118,6 +119,44 @@ describe("revision snapshot restore", () => {
 });
 
 describe("character combat extensions", () => {
+  it("excludes mutable owner and record state from battle snapshots", () => {
+    const sheet = CharacterSheetSchema.parse({
+      id: "battle-snapshot",
+      ownerUserId: "u1",
+      displayName: "固定対象",
+      visibility: "private",
+      tags: [],
+      createdAt: "2026-01-01T00:00:00.000Z",
+      updatedAt: "2026-01-02T00:00:00.000Z",
+      deletedAt: null,
+      appearance: { summary: "test", visualPrompt: "test" },
+      traits: [],
+      parameters: defaultParameters(),
+      skills: [],
+      weapon: null,
+      armor: null,
+      combatFlags: { canFight: true, irreversibleIncapacitated: false },
+      narrativeBlurb: "test",
+      record: { rating: 1500, gamesPlayed: 1, wins: 1, losses: 0, draws: 0 },
+      opponentMemories: {
+        opponent: {
+          preBattlePlan: "private",
+          postBattleReflection: "private",
+          battleCount: 1,
+          lastBattleAt: "2026-01-01T00:00:00.000Z",
+        },
+      },
+      revisionSnapshot: null,
+    });
+    const snapshot = toBattleCharacterSnapshot(sheet);
+    assert.equal(snapshot.visibility, undefined);
+    assert.equal(snapshot.record, undefined);
+    assert.equal(snapshot.opponentMemories, undefined);
+    assert.equal(snapshot.revisionSnapshot, undefined);
+    assert.equal(snapshot.displayName, sheet.displayName);
+    assert.deepEqual(snapshot.parameters, sheet.parameters);
+  });
+
   it("keeps legacy character JSON compatible and supplies a public default attack", () => {
     const sheet = CharacterSheetSchema.parse({
       id: "legacy",

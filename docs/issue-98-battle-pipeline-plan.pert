@@ -1,0 +1,116 @@
+# GitHub Issue #98 implementation plan. Local acceptance is not release
+# authorization; owner gates decide only the listed product contracts.
+project KSHIAI_ISSUE_98_CAUSAL_BATTLE_PIPELINE:
+  version 6
+  title "Issue #98 causal battle-pipeline renewal"
+  description "Replanned from baseline bc47793 while preserving the original active-task estimate and work events. Finish the pure restartable bucket engine, then audit and integrate the already-written continuation persistence, administrator checkpoint display, and isolated-side agent groundwork before proceeding through asset generations and pipeline-wide LLM cost gates. Do not treat groundwork commits as completed downstream tasks. Private psyche, action, expression, adjudication, and narration contexts remain separate; neural training, embedding, LLM judging, and data-review infrastructure remain deferred."
+  as_of 2026-08-12
+  duration_unit point
+  velocity 2880p/1117h
+  target_duration 56p
+  finish ISSUE_98_LOCALLY_ACCEPTED
+
+resource DEV:
+  title "Developer"
+  capacity 1
+
+resource OWNER:
+  title "Product and release owner"
+  capacity 1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+milestone PACING_POLICY_ACCEPTED:
+  title "Owner decided whether to adopt a pacing candidate"
+
+milestone ISSUE_98_LOCALLY_ACCEPTED:
+  title "Issue #98 local acceptance complete"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+task T_ACCEPT_PACING_POLICY PACING_PRODUCTION_OBSERVED -> PACING_POLICY_ACCEPTED:
+  title "Decide whether to adopt a measured pacing candidate"
+  description "Owner periodically decides keep, revise, or roll back the provisional policy using accumulated production evidence. There is no requirement to finalize the numeric values after one observation window; each adjustment remains versioned and existing battles retain their frozen policy."
+  duration 1p
+  owner "user"
+  requires:
+    OWNER 1
+
+task T_ACCEPT_ISSUE_98 PACING_POLICY_ACCEPTED -> ISSUE_98_LOCALLY_ACCEPTED:
+  title "Accept Issue #98 locally and prepare release-decision evidence"
+  description "Run focused shared/backend/frontend fixtures plus full test, typecheck, build, migration, limited schedule replay, checkpoint recovery, A/B swap, equal-initiative prior-order reuse, first-turn weighted and 50/50 draws, retry without redraw, privacy across DTO/SSE/trace/LLM payload, and provider failure tests. Compare the frozen pipeline-wide LLM baseline with the candidate by total battle/turn cost, calls, tokens, retry, fallback, and p50/p95 latency while enforcing each responsibility's quality/privacy floor; reject a candidate whose total cost rises through longer prompts or escalation. Inspect the administrator internal DAG and cost receipts from persisted evidence. Record release success criteria, rollback target, and a separately authorized production-observation protocol, but do not tag, deploy, promote, mutate the Issue, or change production configuration."
+  duration 3p
+  owner "codex"
+  requires:
+    DEV 1
+
+
+
+
+
+
+
+
+
+
+task T_DEPLOY_PACING_CANDIDATE PACING_DEPLOY_AUTHORIZED -> PACING_PRODUCTION_DEPLOYED:
+  title "Deploy the pacing candidate"
+  description "Run the repository's guarded release and production deployment path for the accepted SHA, verify deployed revision and health, and stop or roll back on the accepted failure thresholds. Do not include unrelated changes."
+  duration 2p
+  status active
+  requires:
+    DEV 1
+  owner "codex"
+
+task T_OBSERVE_PRODUCTION_PACING PACING_PRODUCTION_DEPLOYED -> PACING_PRODUCTION_OBSERVED:
+  title "Observe the bounded production pacing trial"
+  description "After an initial safety readback, accumulate ordinary production battle evidence over time: completion distribution, maximum-turn and forced-terminal rate, KO and one-shot rate, committed change, action and speech repetition, initiative response, delayed effects, errors, latency, calls, tokens, retries, and cost. Compare periodic snapshots with the frozen pre-deploy baseline and make small versioned policy revisions; do not imply that the provisional values are final."
+  duration 3p
+  requires:
+    DEV 1
+  owner "codex"
+
+
+milestone PACING_DEPLOY_AUTHORIZED:
+  title "Owner accepted the exact pacing production trial"
+  state reached
+
+milestone PACING_PRODUCTION_DEPLOYED:
+  title "Pacing candidate is deployed to production"
+
+milestone PACING_PRODUCTION_OBSERVED:
+  title "Bounded production pacing evidence is recorded"
+
+work_event EVT_DEPLOY_PACING_START_20260812:
+  model 1
+  task T_DEPLOY_PACING_CANDIDATE
+  kind start
+  occurred_at 2026-08-12T19:06:43+09:00
+  planned_value 2p

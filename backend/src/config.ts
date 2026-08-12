@@ -50,6 +50,18 @@ function parseDialogueContextProjectionOverride(
   throw new Error("DIALOGUE_CONTEXT_PROJECTION_OVERRIDE must be legacy or compact");
 }
 
+export function parseBattlePacingPolicy(
+  value: string | undefined,
+): "current" | "candidate-12-v2" {
+  const normalized = value?.trim().toLowerCase() || "current";
+  if (normalized === "current" || normalized === "candidate-12-v2") {
+    return normalized;
+  }
+  throw new Error(
+    "BATTLE_PACING_POLICY must be current or candidate-12-v2",
+  );
+}
+
 export type BattleCausalNarrationMode = "off" | "narration_guarded";
 
 export function parseBattleCausalNarrationMode(
@@ -126,6 +138,8 @@ export function isMockProviderAllowed(input: {
 }
 
 export const config = {
+  battlePresentationReadModel:
+    (process.env.BATTLE_PRESENTATION_READ_MODEL ?? "composite") !== "legacy",
   host: process.env.HOST ?? "127.0.0.1",
   port: Number(process.env.PORT ?? 3088),
   databasePath: path.resolve(
@@ -230,6 +244,7 @@ export const config = {
     imageModel: process.env.VENICE_IMAGE_MODEL ?? "",
   },
   battleTurnLimit: Number(process.env.BATTLE_TURN_LIMIT ?? 20),
+  battlePacingPolicy: parseBattlePacingPolicy(process.env.BATTLE_PACING_POLICY),
   battleCausalNarrationMode: parseBattleCausalNarrationMode(
     process.env.BATTLE_CAUSAL_NARRATION_MODE,
   ),

@@ -7,7 +7,10 @@ import {
   ensureBattleCompatibilityState,
   resolveBattlefieldImageUrl,
 } from "@kshiai/shared";
-import { query } from "../db.js";
+import { query, withTransaction, type DatabaseConnection } from "../db.js";
+import { listBattlePresentations } from "./battle-presentations.js";
+import { config } from "../config.js";
+import { enqueueNarrationInTransaction } from "../services/narration-worker.js";
 
 export async function saveBattle(
   state: BattleState,
@@ -15,16 +18,39 @@ export async function saveBattle(
     sideAUserId: string;
     sideACharacterId: string;
     sideBCharacterId: string;
+    /** Explicit compare revision for the one save that advances the revision. */
+    expectedRevision?: number;
+  },
+): Promise<void> {
+  await writeBattle({ query }, state, meta);
+}
+
+async function writeBattle(
+  connection: DatabaseConnection,
+  state: BattleState,
+  meta: {
+    sideAUserId: string;
+    sideACharacterId: string;
+    sideBCharacterId: string;
+    expectedRevision?: number;
   },
 ): Promise<void> {
   const json = JSON.stringify(state);
-  await query(
+  const expectedRevision = meta.expectedRevision ??
+    (state.advanceOperation?.status === "active"
+      ? state.advanceOperation.expectedRevision
+      : state.battleRevision ?? 0);
+  const nextRevision = state.battleRevision ?? expectedRevision;
+  const result = await connection.query<{ id: string }>(
     `INSERT INTO battles
-      (id, state_json, side_a_user_id, side_a_character_id, side_b_character_id, created_at, updated_at)
-     VALUES ($1, $2, $3, $4, $5, $6, $7)
+      (id, state_json, side_a_user_id, side_a_character_id, side_b_character_id, created_at, updated_at, revision)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $9)
      ON CONFLICT (id) DO UPDATE
        SET state_json = EXCLUDED.state_json,
-           updated_at = EXCLUDED.updated_at`,
+           updated_at = EXCLUDED.updated_at,
+           revision = EXCLUDED.revision
+       WHERE battles.revision = $8
+     RETURNING id`,
     [
       state.id,
       json,
@@ -33,8 +59,42 @@ export async function saveBattle(
       meta.sideBCharacterId,
       state.createdAt,
       state.updatedAt,
+      expectedRevision,
+      nextRevision,
     ],
   );
+  if (result.rowCount !== 1) throw new Error("BATTLE_REVISION_CONFLICT");
+}
+
+export async function saveBattleWithNarrationOutbox(
+  state: BattleState,
+  meta: {
+    sideAUserId: string;
+    sideACharacterId: string;
+    sideBCharacterId: string;
+    expectedRevision?: number;
+  },
+): Promise<void> {
+  await withTransaction(async (connection) => {
+    await writeBattle(connection, state, meta);
+    const receiptIds = new Set(state.advanceOperation?.receiptIds ?? []);
+    for (const receipt of state.phaseReceipts ?? []) {
+      if (!receiptIds.has(receipt.id)) continue;
+      if (!receipt.narrationInput || !receipt.narrationInputDigest) {
+        throw new Error("NARRATION_INPUT_MISSING");
+      }
+      await enqueueNarrationInTransaction(connection, {
+        battleId: state.id,
+        receiptId: receipt.id,
+        sequence: receipt.sequence,
+        phase: receipt.phase,
+        combatTurn: receipt.combatTurn,
+        frozenInput: receipt.narrationInput,
+        inputDigest: receipt.narrationInputDigest,
+        now: receipt.committedAt,
+      });
+    }
+  });
 }
 
 function parseBattleState(rawJson: unknown, idHint = "?"): BattleState {
@@ -472,7 +532,12 @@ export async function getCharacterBattleDetail(
   const rows = await listBattlesInvolvingCharacter(characterId);
   const row = rows.find((r) => r.state.id === battleId);
   if (!row) return null;
-  const state = row.state;
+  const presentationLog = config.battlePresentationReadModel
+    ? await listBattlePresentations(row.state.id)
+    : [];
+  const state = presentationLog.length > 0
+    ? { ...row.state, log: [...row.state.log, ...presentationLog] }
+    : row.state;
   const hit = toSearchHit(state, characterId);
   const onA = state.sideA.characterId === characterId;
   const policies = onA ? state.policiesA : state.policiesB;
@@ -531,6 +596,12 @@ export async function findPriorMatchSummary(
       continue;
     }
     if (state.status !== "finished") continue;
+    const presentationLog = config.battlePresentationReadModel
+      ? await listBattlePresentations(state.id)
+      : [];
+    if (presentationLog.length > 0) {
+      state = { ...state, log: [...state.log, ...presentationLog] };
+    }
 
     const a = state.sideA.displayName;
     const b = state.sideB.displayName;

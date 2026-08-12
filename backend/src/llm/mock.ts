@@ -977,6 +977,22 @@ export class MockLlmProvider implements LlmProvider {
     }
   }
 
+  async decideCharacterAction(
+    input: Parameters<LlmProvider["decideCharacterAction"]>[0],
+  ): Promise<Awaited<ReturnType<LlmProvider["decideCharacterAction"]>>> {
+    const preferred = input.decision.availableActions.find((action) =>
+      action.kind === "basic_attack"
+    ) ?? input.decision.availableActions.find((action) =>
+      action.kind !== "wait" && action.kind !== "reflect"
+    ) ?? input.decision.availableActions[0];
+    if (!preferred) return { proposedAction: null };
+    return {
+      proposedAction: preferred.kind === "skill"
+        ? { kind: "skill", skillId: preferred.skillId }
+        : { kind: preferred.kind },
+    };
+  }
+
   async chooseNarrationFocus(input: {
     turn: number;
     scene: string;

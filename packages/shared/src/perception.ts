@@ -171,6 +171,7 @@ export const CommittedMechanicalEvidenceSchema = z.object({
   evidenceId: SemanticIdSchema,
   turn: z.number().int().nonnegative(),
   sourceActionId: SemanticIdSchema.nullable(),
+  sourceEffectId: SemanticIdSchema.nullable().optional(),
   basisEventIds: z
     .array(SemanticIdSchema)
     .max(PERCEPTION_LIMITS.maxBasisEventIds),
@@ -187,7 +188,11 @@ export const CommittedMechanicalEvidenceSchema = z.object({
   relativeReferenceBeforeValue: z.number().finite().nonnegative(),
   relativeReferenceAfterValue: z.number().finite().nonnegative(),
 }).strict().superRefine((evidence, ctx) => {
-  if (evidence.sourceActionId === null && evidence.basisEventIds.length === 0) {
+  if (
+    evidence.sourceActionId === null &&
+    (evidence.sourceEffectId ?? null) === null &&
+    evidence.basisEventIds.length === 0
+  ) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
       path: ["basisEventIds"],

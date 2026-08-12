@@ -3,8 +3,98 @@ import { describe, it } from "node:test";
 import {
   BATTLE_TEMPORAL_RULESET,
   buildBattleTemporalPlan,
+  buildSequentialBattleTemporalPlan,
   resolveBattleTemporalExclusiveClaims,
+  selectSequentialInitiativeOrder,
 } from "./battle-temporal-rules.js";
+
+describe("selectSequentialInitiativeOrder", () => {
+  it("orders unequal initiative without consuming a draw", () => {
+    const receipt = selectSequentialInitiativeOrder({
+      effectiveSpeedA: 8,
+      effectiveSpeedB: 12,
+    });
+    assert.deepEqual(receipt.order, ["b", "a"]);
+    assert.equal(receipt.reason, "higher_initiative");
+    assert.equal(receipt.draw, null);
+  });
+
+  it("reuses the previous order when initiative is equal", () => {
+    const receipt = selectSequentialInitiativeOrder({
+      effectiveSpeedA: 10,
+      effectiveSpeedB: 10,
+      previousOrder: ["b", "a"],
+      drawSample: 0.01,
+    });
+    assert.deepEqual(receipt.order, ["b", "a"]);
+    assert.equal(receipt.reason, "previous_order");
+    assert.equal(receipt.draw, null);
+  });
+
+  it("uses the supplied ratio for the first equal-initiative order", () => {
+    const aFirst = selectSequentialInitiativeOrder({
+      effectiveSpeedA: 10,
+      effectiveSpeedB: 10,
+      redrawWeights: { a: 3, b: 1 },
+      drawSample: 0.74,
+    });
+    const bFirst = selectSequentialInitiativeOrder({
+      effectiveSpeedA: 10,
+      effectiveSpeedB: 10,
+      redrawWeights: { a: 3, b: 1 },
+      drawSample: 0.75,
+    });
+    assert.deepEqual(aFirst.order, ["a", "b"]);
+    assert.deepEqual(bFirst.order, ["b", "a"]);
+    assert.equal(aFirst.reason, "weighted_redraw");
+    assert.equal(aFirst.draw?.probabilityAFirst, 0.75);
+  });
+
+  it("defaults to an exact fair draw and requires its sample", () => {
+    const aFirst = selectSequentialInitiativeOrder({
+      effectiveSpeedA: 10,
+      effectiveSpeedB: 10,
+      drawSample: 0.499999,
+    });
+    const bFirst = selectSequentialInitiativeOrder({
+      effectiveSpeedA: 10,
+      effectiveSpeedB: 10,
+      drawSample: 0.5,
+    });
+    assert.deepEqual(aFirst.order, ["a", "b"]);
+    assert.deepEqual(bFirst.order, ["b", "a"]);
+    assert.deepEqual(aFirst.draw?.weights, { a: 1, b: 1 });
+    assert.equal(aFirst.reason, "fair_redraw");
+    assert.throws(
+      () => selectSequentialInitiativeOrder({
+        effectiveSpeedA: 10,
+        effectiveSpeedB: 10,
+      }),
+      /requires one draw sample/,
+    );
+  });
+
+  it("builds two sequential v2 buckets even for equal initiative", () => {
+    const receipt = selectSequentialInitiativeOrder({
+      effectiveSpeedA: 10,
+      effectiveSpeedB: 10,
+      previousOrder: ["b", "a"],
+    });
+    const plan = buildSequentialBattleTemporalPlan(receipt);
+    assert.equal(plan.rulesetId, "initiative-sequential-v2");
+    assert.deepEqual(
+      plan.buckets.map((bucket) => ({
+        sides: bucket.actorSides,
+        simultaneous: bucket.simultaneous,
+        readsFrom: bucket.readsFrom,
+      })),
+      [
+        { sides: ["b"], simultaneous: false, readsFrom: "turn_start" },
+        { sides: ["a"], simultaneous: false, readsFrom: "previous_bucket_commit" },
+      ],
+    );
+  });
+});
 
 describe("buildBattleTemporalPlan", () => {
   it("places equal and near-equal initiative in one atomic bucket", () => {

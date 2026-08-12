@@ -1,9 +1,11 @@
 import type {
   BattleAction,
+  BattleBucketMechanicalCommit,
   BattlePolicyOption,
   BattleStance,
   BattleState,
   BattleTurnRecord,
+  BattleTurnEngineContinuation,
   CharacterAgentState,
   CharacterAgentStateChange,
   CharacterActionIntent,
@@ -14,7 +16,12 @@ import type {
   Situation,
   TurnEvent,
 } from "./battle.js";
-import { clampCoefficient, isCombatantDown } from "./battle.js";
+import {
+  CharacterActionIntentSchema,
+  BattleTurnEngineContinuationSchema,
+  clampCoefficient,
+  isCombatantDown,
+} from "./battle.js";
 import type {
   BasicAttackProfile,
   CharacterSheet,
@@ -60,8 +67,13 @@ import {
 } from "./perception-projection.js";
 import { revalidateCharacterAction } from "./action-feasibility.js";
 import { applyBattleCausalCoefficients } from "./battle-causality.js";
+import { resolvePendingEffectSchedule } from "./battle-effects.js";
 import {
+  buildSequentialBattleTemporalPlan,
   buildBattleTemporalPlan,
+  selectSequentialInitiativeOrder,
+  type BattleTemporalBucket,
+  type BattleTemporalPlan,
   type BattleTemporalSide,
 } from "./battle-temporal-rules.js";
 import {
@@ -70,6 +82,11 @@ import {
   type BattleEncounterContext,
   updateBattleNarratorContinuity,
 } from "./battle-social.js";
+import {
+  battlePacingPolicyForState,
+  currentBattlePacingPolicy,
+  type BattlePacingPolicy,
+} from "./battle-pacing.js";
 
 function nowIso(): string {
   return new Date().toISOString();
@@ -122,6 +139,7 @@ function parameterChanges(before: CombatantState, after: CombatantState) {
 
 type MechanicalResolutionSpan = {
   sourceActionId: string | null;
+  sourceEffectId: string | null;
   actorSide: "a" | "b" | null;
   beforeA: Parameters;
   beforeB: Parameters;
@@ -157,6 +175,7 @@ function parametersSnapshot(combatant: CombatantState): Parameters {
 
 function mechanicalResolutionSpan(input: {
   sourceActionId?: string | null;
+  sourceEffectId?: string | null;
   actorSide?: "a" | "b" | null;
   beforeA: Parameters;
   beforeB: Parameters;
@@ -168,6 +187,7 @@ function mechanicalResolutionSpan(input: {
 }): MechanicalResolutionSpan {
   return {
     sourceActionId: input.sourceActionId ?? null,
+    sourceEffectId: input.sourceEffectId ?? null,
     actorSide: input.actorSide ?? null,
     beforeA: input.beforeA,
     beforeB: input.beforeB,
@@ -262,6 +282,7 @@ function committedMechanicalEvidence(input: {
   turn: number;
   spans: MechanicalResolutionSpan[];
   events: TurnEvent[];
+  evidenceOffset?: number;
 }): CommittedMechanicalEvidence[] {
   const evidence: CommittedMechanicalEvidence[] = [];
   for (const span of input.spans) {
@@ -273,13 +294,17 @@ function committedMechanicalEvidence(input: {
       | "evidenceId"
       | "turn"
       | "sourceActionId"
+      | "sourceEffectId"
       | "basisEventIds"
       | "actorSide"
     >) => {
       evidence.push({
-        evidenceId: `turn-${input.turn}-mechanical-${evidence.length + 1}`,
+        evidenceId: `turn-${input.turn}-mechanical-${
+          (input.evidenceOffset ?? 0) + evidence.length + 1
+        }`,
         turn: input.turn,
         sourceActionId: span.sourceActionId,
+        sourceEffectId: span.sourceEffectId,
         basisEventIds,
         actorSide: span.actorSide,
         ...item,
@@ -338,6 +363,7 @@ export function buildBattleTurnRecord(input: {
   after: BattleState;
   events: TurnEvent[];
   actions?: ResolvedBattleAction[];
+  mechanicalEvidence?: readonly CommittedMechanicalEvidence[];
 }): BattleTurnRecord {
   const changeA = parameterChanges(input.before.sideA, input.after.sideA);
   const changeB = parameterChanges(input.before.sideB, input.after.sideB);
@@ -346,6 +372,157 @@ export function buildBattleTurnRecord(input: {
     scene: input.after.situation.scene,
     observedEvents: input.events,
   };
+  const actionById = new Map(
+    (input.actions ?? []).map((action) => [action.id, action] as const),
+  );
+  const actionParameterChanges = new Map<string, {
+    a: Partial<Record<ParamKey, number>>;
+    b: Partial<Record<ParamKey, number>>;
+  }>((input.actions ?? []).map((action) => [action.id, { a: {}, b: {} }]));
+  const effectIds = [...new Set(input.events.flatMap((event) =>
+    event.sourceEffectId ? [event.sourceEffectId] : []
+  ))];
+  const effectParameterChanges = new Map<string, {
+    a: Partial<Record<ParamKey, number>>;
+    b: Partial<Record<ParamKey, number>>;
+  }>(effectIds.map((effectId) => [effectId, { a: {}, b: {} }]));
+  const systemParameterChanges: {
+    a: Partial<Record<ParamKey, number>>;
+    b: Partial<Record<ParamKey, number>>;
+  } = { a: {}, b: {} };
+  for (const evidence of input.mechanicalEvidence ?? []) {
+    if (evidence.delta === 0) continue;
+    const owner = evidence.sourceActionId
+      ? actionParameterChanges.get(evidence.sourceActionId)
+      : evidence.sourceEffectId
+        ? effectParameterChanges.get(evidence.sourceEffectId)
+        : undefined;
+    const target = owner ?? systemParameterChanges;
+    target[evidence.target.side][evidence.parameterKey] =
+      (target[evidence.target.side][evidence.parameterKey] ?? 0) + evidence.delta;
+  }
+  for (const [side, changes] of [["a", changeA], ["b", changeB]] as const) {
+    for (const [key, delta] of Object.entries(changes) as Array<[ParamKey, number]>) {
+      const attributed = [
+        ...actionParameterChanges.values(),
+        ...effectParameterChanges.values(),
+        systemParameterChanges,
+      ].reduce((sum, changesBySource) =>
+        sum + (changesBySource[side][key] ?? 0), 0
+      );
+      const remainder = delta - attributed;
+      if (remainder === 0) continue;
+      const candidateActionIds = new Set(input.events.flatMap((event) =>
+        event.parameterKey === key && event.targetSides?.includes(side) &&
+          event.sourceActionId && actionById.has(event.sourceActionId)
+          ? [event.sourceActionId]
+          : []
+      ));
+      const actionId = candidateActionIds.size === 1
+        ? [...candidateActionIds][0]
+        : undefined;
+      if (actionId) {
+        actionParameterChanges.get(actionId)![side][key] =
+          (actionParameterChanges.get(actionId)![side][key] ?? 0) + remainder;
+      } else {
+        const candidateEffectIds = new Set(input.events.flatMap((event) =>
+          event.parameterKey === key && event.targetSides?.includes(side) &&
+            event.sourceEffectId
+            ? [event.sourceEffectId]
+            : []
+        ));
+        const effectId = candidateEffectIds.size === 1
+          ? [...candidateEffectIds][0]
+          : undefined;
+        if (effectId) {
+          effectParameterChanges.get(effectId)![side][key] =
+            (effectParameterChanges.get(effectId)![side][key] ?? 0) + remainder;
+        } else {
+          systemParameterChanges[side][key] =
+            (systemParameterChanges[side][key] ?? 0) + remainder;
+        }
+      }
+    }
+  }
+  const actionReceipts = (input.actions ?? []).map((action) => ({
+    schemaVersion: 1 as const,
+    receiptId: `${input.after.id}:turn:${input.after.turn}:action:${action.id}`,
+    turn: input.after.turn,
+    source: {
+      kind: "action" as const,
+      actionId: action.id,
+      actorSide: action.actorSide,
+    },
+    eventIds: input.events.flatMap((event) =>
+      event.sourceActionId === action.id && event.id ? [event.id] : []
+    ),
+    parameterChanges: actionParameterChanges.get(action.id)!,
+    semanticOperationIndexes: [],
+    worldOperationIndexes: [],
+  }));
+  const effectReceipts = effectIds.map((effectId) => ({
+    schemaVersion: 1 as const,
+    receiptId: `${input.after.id}:turn:${input.after.turn}:effect:${effectId}`,
+    turn: input.after.turn,
+    source: { kind: "scheduled_effect" as const, effectId },
+    eventIds: input.events.flatMap((event) =>
+      event.sourceEffectId === effectId && event.id ? [event.id] : []
+    ),
+    parameterChanges: effectParameterChanges.get(effectId)!,
+    semanticOperationIndexes: [],
+    worldOperationIndexes: [],
+  }));
+  const unownedEvents = input.events.filter((event) =>
+    (!event.sourceActionId || !actionById.has(event.sourceActionId)) &&
+    !event.sourceEffectId
+  );
+  const systemReceipt = {
+    schemaVersion: 1 as const,
+    receiptId: `${input.after.id}:turn:${input.after.turn}:system:resolution`,
+    turn: input.after.turn,
+    source: {
+      kind: "system_rules" as const,
+      stage: "turn_resolution" as const,
+    },
+    eventIds: unownedEvents.flatMap((event) => event.id ? [event.id] : []),
+    parameterChanges: systemParameterChanges,
+    semanticOperationIndexes: [],
+    worldOperationIndexes: [],
+  };
+  const environmentReceipts = [
+    ...((input.after.latestSemanticTransition?.patch?.operations.length ?? 0) > 0
+      ? [{
+          schemaVersion: 1 as const,
+          receiptId: `${input.after.id}:turn:${input.after.turn}:environment:semantic`,
+          turn: input.after.turn,
+          source: {
+            kind: "environment_world" as const,
+            transition: "semantic" as const,
+          },
+          eventIds: [],
+          parameterChanges: { a: {}, b: {} },
+          semanticOperationIndexes: (input.after.latestSemanticTransition?.patch
+            ?.operations ?? []).map((_operation, index) => index),
+          worldOperationIndexes: [],
+        }]
+      : []),
+    ...((input.after.latestWorldTransition?.transition?.operations.length ?? 0) > 0
+      ? [{
+          schemaVersion: 1 as const,
+          receiptId: `${input.after.id}:turn:${input.after.turn}:environment:world`,
+          turn: input.after.turn,
+          source: {
+            kind: "environment_world" as const,
+            transition: "world" as const,
+          },
+          eventIds: [],
+          parameterChanges: { a: {}, b: {} },
+          semanticOperationIndexes: [],
+          worldOperationIndexes: (input.after.latestWorldTransition?.transition
+            ?.operations ?? []).map((_operation, index) => index),
+        }]
+      : []),
+  ];
   return {
     turn: input.after.turn,
     ...(input.after.latestTemporalResolution
@@ -365,6 +542,12 @@ export function buildBattleTurnRecord(input: {
     actions: input.actions ?? [],
     freeActionReceipts: input.after.latestFreeActionReceipts ?? [],
     events: input.events,
+    consequenceReceipts: [
+      ...actionReceipts,
+      ...effectReceipts,
+      systemReceipt,
+      ...environmentReceipts,
+    ],
     ...(
       input.after.latestSemanticTransition?.turn === input.after.turn ||
         input.after.latestWorldTransition?.turn === input.after.turn
@@ -472,6 +655,7 @@ export function createBattleState(input: {
   sideA: CharacterSheet;
   sideB: CharacterSheet;
   turnLimit: number;
+  pacingPolicy?: BattlePacingPolicy;
   scene?: string;
   battlefield?: BattlefieldInstance;
   stanceA?: BattleStance;
@@ -487,6 +671,8 @@ export function createBattleState(input: {
   prologuePending?: boolean;
 }): BattleState {
   const t = nowIso();
+  const pacingPolicy = input.pacingPolicy ??
+    currentBattlePacingPolicy(input.turnLimit);
   const bf = input.battlefield;
   const baseCoeffs = clampCoefficientMap(bf?.coefficients ?? {});
   const tags = [
@@ -657,7 +843,12 @@ export function createBattleState(input: {
     pipelineAuthorityVersion: 1,
     status: "active",
     turn: 0,
-    turnLimit: input.turnLimit,
+    battleRevision: 0,
+    phaseReceiptSequence: 0,
+    phaseReceipts: [],
+    pendingEffects: [],
+    turnLimit: pacingPolicy.turnLimit,
+    pacingPolicy,
     sideA,
     sideB,
     stanceA: input.stanceA,
@@ -1630,7 +1821,7 @@ function applyHpDamage(
  * - preEvents: environmental happenings before combat
  * - envHits: light mechanical pressure from the field
  */
-export function resolveTurn(input: {
+export type ResolveTurnInput = {
   state: BattleState;
   /** Optional override; when omitted, stanceA drives side A. */
   playerAction?: BattleAction;
@@ -1646,32 +1837,112 @@ export function resolveTurn(input: {
     kind: "damage" | "heal" | "disrupt";
     intensity: "minor" | "moderate";
   }>;
-}): {
-  state: BattleState;
-  events: TurnEvent[];
-  actions: ResolvedBattleAction[];
-  mechanicalEvidence: CommittedMechanicalEvidence[];
-} {
-  if (input.state.status !== "active") {
-    return {
-      state: input.state,
-      events: [],
-      actions: [],
-      mechanicalEvidence: [],
-    };
-  }
-  // Prologue / aftermath are resolved outside the combat engine (LLM beats).
-  if (input.state.prologuePending || input.state.aftermathPending) {
-    return {
-      state: input.state,
-      events: [],
-      actions: [],
-      mechanicalEvidence: [],
-    };
-  }
+  /** Persisted ADR-0001 plan selected before any action provider call. */
+  temporalResolutionOverride?: BattleTemporalPlan;
+  executionId?: string;
+  /** Internal durable resume point used by resolveNextBattleTurnBucket. */
+  engineContinuation?: BattleTurnEngineContinuation;
+  /** Resolve only the next temporal bucket and return a continuation. */
+  stopAfterNextBucket?: boolean;
+  /** Prepare a durable continuation without resolving a temporal bucket. */
+  prepareOnly?: boolean;
+  /** Return a continuation after the selected buckets, including at finalize. */
+  deferFinalize?: boolean;
+};
 
-  let sideA = cloneCombatant(input.state.sideA);
-  let sideB = cloneCombatant(input.state.sideB);
+type PreparedBattleTurnStart = {
+  sideA: CombatantState;
+  sideB: CombatantState;
+  situation: Situation;
+  events: TurnEvent[];
+  mechanicalSpans: MechanicalResolutionSpan[];
+  turn: number;
+  pendingEffects: BattleState["pendingEffects"];
+};
+
+export type PreparedBattleTurnInitiative = {
+  turn: number;
+  sideA: CombatantState;
+  sideB: CombatantState;
+  situation: Situation;
+  temporalResolution: BattleTemporalPlan;
+};
+
+export type PreparedSequentialBattleTurnInitiative = PreparedBattleTurnInitiative & {
+  temporalResolution: Extract<BattleTemporalPlan, {
+    rulesetId: "initiative-sequential-v2";
+  }>;
+};
+
+/**
+ * Materialize the exact committed mechanics visible at a durable bucket
+ * boundary. Semantic/world state remains the caller's last committed snapshot
+ * until the service reconciles this bucket; unresolved action placeholders are
+ * never exposed through this helper.
+ */
+export function materializeBattleStateAtBucketBoundary(input: {
+  state: BattleState;
+  continuation: BattleTurnEngineContinuation;
+}): BattleState {
+  const continuation = BattleTurnEngineContinuationSchema.parse(input.continuation);
+  return {
+    ...input.state,
+    turn: continuation.turn,
+    sideA: structuredClone(continuation.sideA),
+    sideB: structuredClone(continuation.sideB),
+    situation: structuredClone(continuation.situation),
+    finisherA: continuation.finisherA
+      ? structuredClone(continuation.finisherA)
+      : input.state.finisherA,
+    finisherB: continuation.finisherB
+      ? structuredClone(continuation.finisherB)
+      : input.state.finisherB,
+    latestTemporalResolution: structuredClone(continuation.temporalResolution),
+  };
+}
+
+/** Only already-executed actions may enter a bucket observer projection. */
+export function committedActionsAtBucketBoundary(
+  continuation: BattleTurnEngineContinuation,
+): ResolvedBattleAction[] {
+  return BattleTurnEngineContinuationSchema.parse(continuation).actions
+    .filter((action) => action.executed)
+    .map((action) => structuredClone(action));
+}
+
+/**
+ * Bind a freshly validated intent only to the unresolved next bucket. The
+ * committed predecessor remains immutable inside the continuation.
+ */
+export function bindNextBucketDecision(input: {
+  state: BattleState;
+  continuation: BattleTurnEngineContinuation;
+  side: BattleTemporalSide;
+  intent: CharacterActionIntent;
+}): BattleState {
+  const continuation = BattleTurnEngineContinuationSchema.parse(input.continuation);
+  const nextBucket = continuation.temporalResolution.buckets[continuation.nextBucketIndex];
+  if (!nextBucket || !nextBucket.actorSides.includes(input.side)) {
+    throw new Error("decision side is not in the unresolved next bucket");
+  }
+  const committedSides = new Set(
+    continuation.temporalResolution.buckets
+      .slice(0, continuation.nextBucketIndex)
+      .flatMap((bucket) => bucket.actorSides),
+  );
+  if (committedSides.has(input.side)) {
+    throw new Error("cannot replace a committed bucket decision");
+  }
+  const intent = CharacterActionIntentSchema.parse(input.intent);
+  return input.side === "a"
+    ? { ...input.state, plannedActionA: intent }
+    : { ...input.state, plannedActionB: intent };
+}
+
+/** Deterministically applies the once-per-turn setup before initiative. */
+function prepareBattleTurnStart(input: ResolveTurnInput): PreparedBattleTurnStart {
+  const sideA = cloneCombatant(input.state.sideA);
+  const sideB = cloneCombatant(input.state.sideB);
   sideA.defending = false;
   sideB.defending = false;
 
@@ -1684,10 +1955,12 @@ export function resolveTurn(input: {
   const events: TurnEvent[] = [];
   const mechanicalSpans: MechanicalResolutionSpan[] = [];
   const turn = input.state.turn + 1;
-  let finisherA = normalizeFinisher(input.state.finisherA, input.sideASkills);
-  let finisherB = normalizeFinisher(input.state.finisherB, input.sideBSkills);
 
-  if (turn > 1) {
+  const pacingPolicy = battlePacingPolicyForState(input.state);
+  if (
+    turn > 1 &&
+    pacingPolicy.automaticRestoration === "legacy_twenty_percent"
+  ) {
     for (const [combatant, actorSide] of [
       [sideA, "a"],
       [sideB, "b"],
@@ -1716,7 +1989,60 @@ export function resolveTurn(input: {
     }
   }
 
-  // Battlefield flavor event occasionally when obstacles/conditions matter
+  const effectSchedule = resolvePendingEffectSchedule({
+    turn,
+    effects: input.state.pendingEffects ?? [],
+    sideA,
+    sideB,
+  });
+  for (const resolution of effectSchedule.resolutions) {
+    if (resolution.status === "pending") continue;
+    const effect = resolution.effect;
+    const target = effect.targetSide === "a" ? sideA : sideB;
+    if (resolution.status === "applied") {
+      const beforeA = parametersSnapshot(sideA);
+      const beforeB = parametersSnapshot(sideB);
+      const eventStart = events.length;
+      const delta = applyTrackedParameterDelta(
+        target,
+        {
+          parameter: effect.payload.parameterKey,
+          delta: effect.payload.delta,
+        },
+        () => undefined,
+      );
+      events.push({
+        type: effect.payload.delta < 0 ? "damage" : "heal",
+        actorName: target.displayName,
+        targetName: target.displayName,
+        targetSides: [effect.targetSide],
+        sourceEffectId: effect.effectId,
+        parameterKey: effect.payload.parameterKey,
+        parameterDirection: delta < 0 ? "loss" : "gain",
+        intensity: intensityFromDamage(Math.abs(delta)),
+        summary: `${target.displayName} に遅延していた影響が現れた。`,
+      });
+      mechanicalSpans.push(mechanicalResolutionSpan({
+        sourceActionId: null,
+        sourceEffectId: effect.effectId,
+        beforeA,
+        beforeB,
+        sideA,
+        sideB,
+        eventStart,
+        eventEnd: events.length,
+      }));
+    } else {
+      events.push({
+        type: "info",
+        sourceEffectId: effect.effectId,
+        summary: resolution.status === "cancelled"
+          ? "保留されていた影響は発動条件を失い、取り消された。"
+          : "保留されていた影響は期限を迎え、失効した。",
+      });
+    }
+  }
+
   if (turn === 1 && input.state.battlefield) {
     const bf = input.state.battlefield;
     const bits = [
@@ -1732,16 +2058,183 @@ export function resolveTurn(input: {
     }
   }
 
-  if (input.preEvents?.length) {
-    events.push(...input.preEvents);
-  }
-
+  if (input.preEvents?.length) events.push(...input.preEvents);
   if (input.envHits?.length) {
     applyEnvHits(sideA, sideB, input.envHits, events, mechanicalSpans);
   }
 
+  return {
+    sideA,
+    sideB,
+    situation,
+    events,
+    mechanicalSpans,
+    turn,
+    pendingEffects: effectSchedule.pendingEffects,
+  };
+}
+
+function buildPreparedTemporalResolution(input: {
+  state: BattleState;
+  sideA: CombatantState;
+  sideB: CombatantState;
+  situation: Situation;
+}): BattleTemporalPlan {
+  const causalSituationA = applyBattleCausalCoefficients({
+    situation: input.situation,
+    worldState: input.state.worldState,
+    actorSide: "a",
+    targetSide: "b",
+  });
+  const causalSituationB = applyBattleCausalCoefficients({
+    situation: input.situation,
+    worldState: input.state.worldState,
+    actorSide: "b",
+    targetSide: "a",
+  });
+  return buildBattleTemporalPlan({
+    effectiveSpeedA: (input.sideA.parameters.spd ?? 0) *
+      coeff(causalSituationA, "spd"),
+    effectiveSpeedB: (input.sideB.parameters.spd ?? 0) *
+      coeff(causalSituationB, "spd"),
+  });
+}
+
+/**
+ * Produces the committed turn-start snapshot and initiative buckets without
+ * mutating the persisted battle state or selecting either combatant's action.
+ */
+export function prepareBattleTurnInitiative(
+  input: ResolveTurnInput,
+): PreparedBattleTurnInitiative | null {
+  if (
+    input.state.status !== "active" ||
+    input.state.prologuePending ||
+    input.state.aftermathPending
+  ) {
+    return null;
+  }
+  const prepared = prepareBattleTurnStart(input);
+  return {
+    turn: prepared.turn,
+    sideA: prepared.sideA,
+    sideB: prepared.sideB,
+    situation: prepared.situation,
+    temporalResolution: buildPreparedTemporalResolution({
+      state: input.state,
+      sideA: prepared.sideA,
+      sideB: prepared.sideB,
+      situation: prepared.situation,
+    }),
+  };
+}
+
+function previousResolvedInitiativeOrder(
+  state: BattleState,
+): [BattleTemporalSide, BattleTemporalSide] | null {
+  const order = state.latestTemporalResolution?.buckets.flatMap(
+    (bucket) => bucket.actorSides,
+  );
+  return order?.length === 2 && order[0] !== order[1]
+    ? [order[0]!, order[1]!]
+    : null;
+}
+
+/** Prepares ADR-0001 ordering for persistence before any action provider call. */
+export function prepareSequentialBattleTurnInitiative(
+  input: ResolveTurnInput & {
+    tieDrawSample?: number;
+    redrawWeights?: { a: number; b: number } | null;
+  },
+): PreparedSequentialBattleTurnInitiative | null {
+  if (
+    input.state.status !== "active" ||
+    input.state.prologuePending ||
+    input.state.aftermathPending
+  ) {
+    return null;
+  }
+  const prepared = prepareBattleTurnStart(input);
+  const causalSituationA = applyBattleCausalCoefficients({
+    situation: prepared.situation,
+    worldState: input.state.worldState,
+    actorSide: "a",
+    targetSide: "b",
+  });
+  const causalSituationB = applyBattleCausalCoefficients({
+    situation: prepared.situation,
+    worldState: input.state.worldState,
+    actorSide: "b",
+    targetSide: "a",
+  });
+  const initiativeOrder = selectSequentialInitiativeOrder({
+    effectiveSpeedA: (prepared.sideA.parameters.spd ?? 0) *
+      coeff(causalSituationA, "spd"),
+    effectiveSpeedB: (prepared.sideB.parameters.spd ?? 0) *
+      coeff(causalSituationB, "spd"),
+    previousOrder: previousResolvedInitiativeOrder(input.state),
+    redrawWeights: input.redrawWeights,
+    drawSample: input.tieDrawSample,
+  });
+  const temporalResolution = buildSequentialBattleTemporalPlan(initiativeOrder);
+  if (temporalResolution.rulesetId !== "initiative-sequential-v2") {
+    throw new Error("sequential initiative preparation produced a legacy plan");
+  }
+  return {
+    turn: prepared.turn,
+    sideA: prepared.sideA,
+    sideB: prepared.sideB,
+    situation: prepared.situation,
+    temporalResolution,
+  };
+}
+
+export function resolveTurn(input: ResolveTurnInput): {
+  state: BattleState;
+  events: TurnEvent[];
+  actions: ResolvedBattleAction[];
+  mechanicalEvidence: CommittedMechanicalEvidence[];
+  bucketCommits?: BattleBucketMechanicalCommit[];
+  engineContinuation?: BattleTurnEngineContinuation;
+} {
+  if (input.state.status !== "active") {
+    return {
+      state: input.state,
+      events: [],
+      actions: [],
+      mechanicalEvidence: [],
+    };
+  }
+  // Prologue / aftermath are resolved outside the combat engine (LLM beats).
+  if (input.state.prologuePending || input.state.aftermathPending) {
+    return {
+      state: input.state,
+      events: [],
+      actions: [],
+      mechanicalEvidence: [],
+    };
+  }
+
+  const resumed = input.engineContinuation
+    ? BattleTurnEngineContinuationSchema.parse(input.engineContinuation)
+    : null;
+  const prepared = resumed ? null : prepareBattleTurnStart(input);
+  let sideA = cloneCombatant(resumed?.sideA ?? prepared!.sideA);
+  let sideB = cloneCombatant(resumed?.sideB ?? prepared!.sideB);
+  const situation = resumed?.situation ?? prepared!.situation;
+  const events = resumed ? [...resumed.events] : prepared!.events;
+  const mechanicalSpans = resumed ? [] : prepared!.mechanicalSpans;
+  const accumulatedMechanicalEvidence = resumed?.mechanicalEvidence ?? [];
+  const turn = resumed?.turn ?? prepared!.turn;
+  const pacingPolicy = battlePacingPolicyForState(input.state);
+  const pendingEffects = resumed?.pendingEffects ?? prepared!.pendingEffects;
+  let finisherA = resumed?.finisherA ??
+    normalizeFinisher(input.state.finisherA, input.sideASkills);
+  let finisherB = resumed?.finisherB ??
+    normalizeFinisher(input.state.finisherB, input.sideBSkills);
+
   const forceOffense = (input.state.supervisor?.passiveTurns ?? 0) >= 2;
-  if (forceOffense) {
+  if (!resumed && forceOffense) {
     events.push({
       type: "status",
       summary: "膠着打破 — 両者は間合いを捨て、強制的に打ち合いへ踏み込む。",
@@ -1836,17 +2329,34 @@ export function resolveTurn(input: {
       targetSide: "a",
     }),
   } as const;
-  const defensiveInstrumentMultipliers: Record<BattleTemporalSide, number> = {
-    a: 1,
-    b: 1,
-  };
-  const temporalResolution = buildBattleTemporalPlan({
-    effectiveSpeedA: (sideA.parameters.spd ?? 0) *
-      coeff(causalSituations.a, "spd"),
-    effectiveSpeedB: (sideB.parameters.spd ?? 0) *
-      coeff(causalSituations.b, "spd"),
-  });
-  const actions: ResolvedBattleAction[] = [
+  const defensiveInstrumentMultipliers: Record<BattleTemporalSide, number> = resumed
+    ? { ...resumed.defensiveInstrumentMultipliers }
+    : { a: 1, b: 1 };
+  const temporalResolution = resumed?.temporalResolution ??
+    input.temporalResolutionOverride ??
+    buildPreparedTemporalResolution({
+      state: input.state,
+      sideA,
+      sideB,
+      situation,
+    });
+  if (input.temporalResolutionOverride && !resumed) {
+    const expectedScores = buildPreparedTemporalResolution({
+      state: input.state,
+      sideA,
+      sideB,
+      situation,
+    }).initiativeScores;
+    if (
+      temporalResolution.initiativeScores.a !== expectedScores.a ||
+      temporalResolution.initiativeScores.b !== expectedScores.b
+    ) {
+      throw new Error("temporal resolution override does not match prepared initiative");
+    }
+  }
+  const actions: ResolvedBattleAction[] = resumed
+    ? [...resumed.actions]
+    : [
     {
       ...requestedActionA,
       id: actionAId,
@@ -1869,7 +2379,8 @@ export function resolveTurn(input: {
         reason: "actor_unavailable",
       },
     },
-  ];
+      ];
+  const bucketCommits: BattleBucketMechanicalCommit[] = [];
 
   const sideIndex = (side: BattleTemporalSide) => side === "a" ? 0 : 1;
   const skillsFor = (side: BattleTemporalSide) =>
@@ -1960,6 +2471,7 @@ export function resolveTurn(input: {
         ...baseSituation.coefficients,
         damage: clampCoefficient(
           (baseSituation.coefficients.damage ?? 1) *
+            pacingPolicy.damageMultiplier *
             INSTRUMENT_MULTIPLIER[damageBand] *
             defensiveInstrumentMultipliers[targetSide] *
             repetitionEffectMultiplier({
@@ -1968,6 +2480,8 @@ export function resolveTurn(input: {
                 action: inputAction.effectiveAction,
                 drama,
               }),
+              penaltyStart: pacingPolicy.repeatedActionPenaltyStart,
+              damageFloor: pacingPolicy.repeatedActionDamageFloor,
             }),
         ),
       },
@@ -1989,6 +2503,14 @@ export function resolveTurn(input: {
         battleId: input.state.id,
         turn,
         turnLimit: input.state.turnLimit,
+        pressureStartTurn: pacingPolicy.decisivePressureStartTurn,
+        pressureMaximumTurn: pacingPolicy.decisivePressureMaximumTurn,
+        finisherUnlockTurn: pacingPolicy.finisherUnlockTurn,
+        finisherMaximumMultiplier: pacingPolicy.finisherMaximumMultiplier,
+        criticalChanceMaximum: pacingPolicy.decisiveCriticalChanceMaximum,
+        criticalDamageMultiplier: pacingPolicy.decisiveCriticalDamageMultiplier,
+        damageCapRatio: pacingPolicy.decisiveDamageCapRatio,
+        defendingDamageMultiplier: pacingPolicy.defendingDamageMultiplier,
         actorSide: inputAction.side,
       },
       finisherFor(inputAction.side),
@@ -2016,7 +2538,7 @@ export function resolveTurn(input: {
     });
   };
 
-  for (const bucket of temporalResolution.buckets) {
+  const resolveTemporalBucket = (bucket: BattleTemporalBucket): void => {
     if (bucket.simultaneous) {
       const bucketStartA = cloneCombatant(sideA);
       const bucketStartB = cloneCombatant(sideB);
@@ -2110,11 +2632,11 @@ export function resolveTurn(input: {
         }));
         updateFinisher(proposal.side, proposal.usedFinisher);
       }
-      continue;
+      return;
     }
 
     const side = bucket.actorSides[0]!;
-    if (isCombatantDown(sideA) || isCombatantDown(sideB)) continue;
+    if (isCombatantDown(sideA) || isCombatantDown(sideB)) return;
     const result = revalidate(side, sideA, sideB);
     setResolvedAction(side, result);
     if (result.action?.kind === "defend") {
@@ -2157,6 +2679,101 @@ export function resolveTurn(input: {
       eventStart,
       eventEnd: events.length,
     }));
+  };
+
+  const firstBucketIndex = resumed?.nextBucketIndex ?? 0;
+  const bucketsToResolve = input.prepareOnly
+    ? []
+    : input.stopAfterNextBucket
+      ? temporalResolution.buckets.slice(firstBucketIndex, firstBucketIndex + 1)
+      : temporalResolution.buckets.slice(firstBucketIndex);
+  for (const bucket of bucketsToResolve) {
+    const eventStart = events.length;
+    const spanStart = mechanicalSpans.length;
+    resolveTemporalBucket(bucket);
+    const finalizedSoFar = events.map((event, index) => ({
+      ...event,
+      id: event.id ?? `turn-${turn}-event-${index + 1}`,
+    }));
+    bucketCommits.push({
+      schemaVersion: 1,
+      executionId: input.executionId ?? `${input.state.id}:turn:${turn}`,
+      turn,
+      bucketIndex: bucket.index,
+      actorSides: [...bucket.actorSides],
+      sideA: cloneCombatant(sideA),
+      sideB: cloneCombatant(sideB),
+      situation,
+      finisherA: finisherA ?? null,
+      finisherB: finisherB ?? null,
+      actions: bucket.actorSides.map((side) => actions[sideIndex(side)]!),
+      events: finalizedSoFar.slice(eventStart),
+      mechanicalEvidence: committedMechanicalEvidence({
+        turn,
+        spans: mechanicalSpans.slice(spanStart),
+        events: finalizedSoFar,
+        evidenceOffset: accumulatedMechanicalEvidence.length +
+          committedMechanicalEvidence({
+            turn,
+            spans: mechanicalSpans.slice(0, spanStart),
+            events: finalizedSoFar,
+          }).length,
+      }),
+      defensiveInstrumentMultipliers: { ...defensiveInstrumentMultipliers },
+    });
+  }
+
+  const newMechanicalEvidence = committedMechanicalEvidence({
+    turn,
+    spans: mechanicalSpans,
+    events: events.map((event, index) => ({
+      ...event,
+      id: event.id ?? `turn-${turn}-event-${index + 1}`,
+    })),
+    evidenceOffset: accumulatedMechanicalEvidence.length,
+  });
+  const mechanicalEvidence = CommittedMechanicalEvidenceSetSchema.parse([
+    ...accumulatedMechanicalEvidence,
+    ...newMechanicalEvidence,
+  ]);
+  const nextBucketIndex = firstBucketIndex + bucketsToResolve.length;
+  if (
+    input.prepareOnly ||
+    (input.deferFinalize && (
+      input.stopAfterNextBucket ||
+      nextBucketIndex === temporalResolution.buckets.length
+    )) ||
+    (input.stopAfterNextBucket && nextBucketIndex < temporalResolution.buckets.length)
+  ) {
+    const engineContinuation = BattleTurnEngineContinuationSchema.parse({
+      schemaVersion: 1,
+      executionId: input.executionId ?? resumed?.executionId ??
+        `${input.state.id}:turn:${turn}`,
+      turn,
+      temporalResolution,
+      nextBucketIndex,
+      sideA,
+      sideB,
+      situation,
+      finisherA: finisherA ?? null,
+      finisherB: finisherB ?? null,
+      actions,
+      events: events.map((event, index) => ({
+        ...event,
+        id: event.id ?? `turn-${turn}-event-${index + 1}`,
+      })),
+      mechanicalEvidence,
+      pendingEffects,
+      defensiveInstrumentMultipliers,
+    });
+    return {
+      state: input.state,
+      events: engineContinuation.events,
+      actions,
+      mechanicalEvidence,
+      bucketCommits,
+      engineContinuation,
+    };
   }
 
   // Incapacity flags
@@ -2217,7 +2834,7 @@ export function resolveTurn(input: {
       type: "info",
       summary: `${sideB.displayName} は対決を続けられなくなった。${sideA.displayName} とこの場が、その後をどう迎えるか——`,
     });
-  } else if (turn >= input.state.turnLimit) {
+  } else if (turn >= pacingPolicy.turnLimit) {
     status = "finished";
     finishReason = "turn_limit";
     // Hidden score for turn-limit tie-break (engine-side); referee LLM may override later.
@@ -2232,7 +2849,10 @@ export function resolveTurn(input: {
           ? "規定ターン終了 — 審判は互角と見て、最終判定に入る。"
           : `規定ターン終了 — 審判は ${winnerSide === "a" ? sideA.displayName : sideB.displayName} 優勢として最終判定に入る。`,
     });
-  } else if (turn === input.state.turnLimit - 1) {
+  } else if (
+    pacingPolicy.warningTurnsBeforeLimit > 0 &&
+    turn === pacingPolicy.turnLimit - pacingPolicy.warningTurnsBeforeLimit
+  ) {
     events.push({
       type: "info",
       summary: "判定予告 — 次が最終ターン。働きかけの有効性、残力、場への影響が勝敗を分ける。",
@@ -2251,6 +2871,7 @@ export function resolveTurn(input: {
     aftermathPending,
     finisherA,
     finisherB,
+    pendingEffects,
     latestTemporalResolution: temporalResolution,
     plannedActionA: undefined,
     plannedActionB: undefined,
@@ -2265,11 +2886,100 @@ export function resolveTurn(input: {
     state,
     events: finalizedEvents,
     actions,
-    mechanicalEvidence: committedMechanicalEvidence({
-      turn,
-      spans: mechanicalSpans,
-      events: finalizedEvents,
-    }),
+    mechanicalEvidence,
+    bucketCommits,
+  };
+}
+
+/** Prepares turn-start state, actions, and ordering without resolving a bucket. */
+export function prepareBattleTurnExecution(
+  input: Omit<ResolveTurnInput, "engineContinuation" | "stopAfterNextBucket" | "prepareOnly" | "deferFinalize">,
+): BattleTurnEngineContinuation | null {
+  const prepared = resolveTurn({
+    ...input,
+    prepareOnly: true,
+    deferFinalize: true,
+  });
+  return prepared.engineContinuation ?? null;
+}
+
+export type BattleTurnBucketExecutionResult = {
+  continuation: BattleTurnEngineContinuation;
+  commit: BattleBucketMechanicalCommit;
+};
+
+/** Resolves exactly one pending bucket and always stops before finalization. */
+export function resolveBattleTurnBucket(
+  input: Omit<ResolveTurnInput, "stopAfterNextBucket" | "prepareOnly" | "deferFinalize"> & {
+    engineContinuation: BattleTurnEngineContinuation;
+  },
+): BattleTurnBucketExecutionResult {
+  const continuation = BattleTurnEngineContinuationSchema.parse(
+    input.engineContinuation,
+  );
+  if (continuation.nextBucketIndex >= continuation.temporalResolution.buckets.length) {
+    throw new Error("battle turn continuation has no pending bucket");
+  }
+  const resolved = resolveTurn({
+    ...input,
+    stopAfterNextBucket: true,
+    deferFinalize: true,
+  });
+  const next = resolved.engineContinuation;
+  const commit = resolved.bucketCommits?.[0];
+  if (!next || !commit) {
+    throw new Error("battle turn bucket did not produce a continuation and commit");
+  }
+  return { continuation: next, commit };
+}
+
+/** Finalizes terminal flags and the BattleState after every bucket committed. */
+export function finalizeBattleTurnExecution(
+  input: Omit<ResolveTurnInput, "stopAfterNextBucket" | "prepareOnly" | "deferFinalize"> & {
+    engineContinuation: BattleTurnEngineContinuation;
+  },
+): ReturnType<typeof resolveTurn> {
+  const continuation = BattleTurnEngineContinuationSchema.parse(
+    input.engineContinuation,
+  );
+  if (continuation.nextBucketIndex !== continuation.temporalResolution.buckets.length) {
+    throw new Error("battle turn continuation still has pending buckets");
+  }
+  return resolveTurn(input);
+}
+
+/** Resolves exactly one bucket without replaying any committed predecessor. */
+export function resolveNextBattleTurnBucket(
+  input: Omit<ResolveTurnInput, "stopAfterNextBucket" | "prepareOnly" | "deferFinalize">,
+): ReturnType<typeof resolveTurn> {
+  const prepared = input.engineContinuation ?? prepareBattleTurnExecution(input);
+  if (!prepared) {
+    return resolveTurn(input);
+  }
+  const bucket = resolveBattleTurnBucket({
+    ...input,
+    engineContinuation: prepared,
+  });
+  if (
+    bucket.continuation.nextBucketIndex <
+      bucket.continuation.temporalResolution.buckets.length
+  ) {
+    return {
+      state: input.state,
+      events: bucket.continuation.events,
+      actions: bucket.continuation.actions,
+      mechanicalEvidence: bucket.continuation.mechanicalEvidence,
+      bucketCommits: [bucket.commit],
+      engineContinuation: bucket.continuation,
+    };
+  }
+  const finalized = finalizeBattleTurnExecution({
+    ...input,
+    engineContinuation: bucket.continuation,
+  });
+  return {
+    ...finalized,
+    bucketCommits: [bucket.commit],
   };
 }
 
@@ -2308,6 +3018,14 @@ type DecisiveContext = {
   battleId: string;
   turn: number;
   turnLimit: number;
+  pressureStartTurn?: number;
+  pressureMaximumTurn?: number;
+  finisherUnlockTurn?: number;
+  finisherMaximumMultiplier?: number;
+  criticalChanceMaximum?: number;
+  criticalDamageMultiplier?: number;
+  damageCapRatio?: number;
+  defendingDamageMultiplier?: number;
   actorSide: "a" | "b";
 };
 
@@ -2330,18 +3048,22 @@ export function decisivePressure(input: DecisiveContext): {
   criticalChance: number;
   specialMultiplier: number;
 } {
-  if (input.turn <= 10) {
+  const startTurn = input.pressureStartTurn ?? 10;
+  if (input.turn <= startTurn) {
     return { progress: 0, criticalChance: 0, specialMultiplier: 1 };
   }
-  const maximumTurn = Math.max(11, Math.min(20, input.turnLimit));
+  const maximumTurn = input.pressureMaximumTurn ??
+    Math.max(startTurn + 1, Math.min(20, input.turnLimit));
+  const pressureSpan = Math.max(1, maximumTurn - startTurn);
   const progress = Math.min(
     1,
-    Math.max(0, (input.turn - 10) / (maximumTurn - 10)),
+    Math.max(0, (input.turn - startTurn) / pressureSpan),
   );
   return {
     progress,
-    criticalChance: progress * 0.4,
-    specialMultiplier: 1 + progress,
+    criticalChance: progress * (input.criticalChanceMaximum ?? 0.4),
+    specialMultiplier: 1 + progress *
+      ((input.finisherMaximumMultiplier ?? 2) - 1),
   };
 }
 
@@ -2353,7 +3075,7 @@ export type FinisherWindow = {
   turnsUntilUnlock: number;
   remainingUses: 0 | 1;
   currentMultiplier: number;
-  maxMultiplier: 2;
+  maxMultiplier: number;
   criticalChance: number;
   turnsUntilMax: number;
 };
@@ -2363,24 +3085,30 @@ export function buildFinisherWindow(input: {
   finisher?: FinisherState;
   turn: number;
   turnLimit: number;
+  pacingPolicy?: BattlePacingPolicy;
 }): FinisherWindow | null {
   if (!input.finisher) return null;
+  const policy = input.pacingPolicy ?? currentBattlePacingPolicy(input.turnLimit);
   const pressure = decisivePressure({
     battleId: "window",
     turn: input.turn,
     turnLimit: input.turnLimit,
+    pressureStartTurn: policy.decisivePressureStartTurn,
+    pressureMaximumTurn: policy.decisivePressureMaximumTurn,
+    finisherMaximumMultiplier: policy.finisherMaximumMultiplier,
+    criticalChanceMaximum: policy.decisiveCriticalChanceMaximum,
     actorSide: "a",
   });
-  const maximumTurn = Math.max(11, Math.min(20, input.turnLimit));
+  const maximumTurn = policy.decisivePressureMaximumTurn;
   return {
     skillId: input.finisher.skillId,
     skillName: input.finisher.skillName,
     source: input.finisher.source,
-    unlocked: input.turn >= 10,
-    turnsUntilUnlock: Math.max(0, 10 - input.turn),
+    unlocked: input.turn >= policy.finisherUnlockTurn,
+    turnsUntilUnlock: Math.max(0, policy.finisherUnlockTurn - input.turn),
     remainingUses: input.finisher.used ? 0 : 1,
     currentMultiplier: pressure.specialMultiplier,
-    maxMultiplier: 2,
+    maxMultiplier: policy.finisherMaximumMultiplier,
     criticalChance: pressure.criticalChance,
     turnsUntilMax: Math.max(0, maximumTurn - input.turn),
   };
@@ -2396,12 +3124,13 @@ function applyDecisivePressure(input: {
   const critical = pressure.criticalChance > 0 && deterministicRoll(
     `${input.context.battleId}:${input.context.turn}:${input.context.actorSide}`,
   ) < pressure.criticalChance;
+  const criticalMultiplier = input.context.criticalDamageMultiplier ?? 1.5;
   const multiplier =
     (input.special ? pressure.specialMultiplier : 1) *
-    (critical ? 1.5 : 1);
-  const maximumRatio = 0.26 *
+    (critical ? criticalMultiplier : 1);
+  const maximumRatio = (input.context.damageCapRatio ?? 0.26) *
     (input.special ? pressure.specialMultiplier : 1) *
-    (critical ? 1.5 : 1);
+    (critical ? criticalMultiplier : 1);
   return {
     amount: Math.max(
       1,
@@ -2523,9 +3252,16 @@ function repeatedActionCount(input: {
   return same ? count + 1 : 1;
 }
 
-function repetitionEffectMultiplier(input: { repeatCount: number }): number {
-  if (input.repeatCount < 3) return 1;
-  return Math.max(0.7, 1 - (input.repeatCount - 2) * 0.1);
+function repetitionEffectMultiplier(input: {
+  repeatCount: number;
+  penaltyStart: number;
+  damageFloor: number;
+}): number {
+  if (input.repeatCount < input.penaltyStart) return 1;
+  return Math.max(
+    input.damageFloor,
+    1 - (input.repeatCount - input.penaltyStart + 1) * 0.1,
+  );
 }
 
 function applyAction(
@@ -2657,7 +3393,8 @@ function applyAction(
   }
   if (
     skill.kind === "special" &&
-    (decisive.turn < 10 || finisher?.used || skill.id !== finisher?.skillId)
+    ((decisive.finisherUnlockTurn ?? 10) > decisive.turn ||
+      finisher?.used || skill.id !== finisher?.skillId)
   ) {
     events.push({
       type: "info",
@@ -2758,7 +3495,7 @@ function applyAction(
   const activateFinisher = Boolean(
     finisher &&
     !finisher.used &&
-    decisive.turn >= 10 &&
+    decisive.turn >= (decisive.finisherUnlockTurn ?? 10) &&
     skill.id === finisher.skillId &&
     (skill.kind === "special" || action.useFinisher === true),
   );
@@ -2813,7 +3550,9 @@ function applyBasicAttack(
   const parameter = profile.targetParameter;
   let critical = false;
   if (parameter === "hp") {
-    if (target.defending) amount = Math.round(amount * 0.55);
+    if (target.defending) {
+      amount = Math.round(amount * (decisive.defendingDamageMultiplier ?? 0.55));
+    }
     amount = softenCombatDamage({
       rawDamage: amount,
       targetMaxHp: target.parameters.maxHp ?? 100,
@@ -2934,7 +3673,9 @@ function applyAttackSkill(
       coeff(situation, "damage") *
       coeff(situation, skill.element ?? "neutral", 1),
   );
-  if (target.defending) dmg = Math.round(dmg * 0.55);
+  if (target.defending) {
+    dmg = Math.round(dmg * (decisive.defendingDamageMultiplier ?? 0.55));
+  }
   dmg = softenCombatDamage({
     rawDamage: dmg,
     targetMaxHp: target.parameters.maxHp ?? 100,

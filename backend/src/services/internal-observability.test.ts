@@ -61,8 +61,76 @@ describe("internal battle observability", () => {
         worldState: { revision: 1 },
         latestSemanticTransition: { turn: 1, status: "applied" },
         latestWorldTransition: { turn: 1, status: "applied" },
+        phaseReceipts: [{
+          id: "battle-observed:phase:1",
+          sequence: 1,
+          phase: "combat",
+          toRevision: 1,
+          narrationInput: {
+            kind: "combat",
+            request: { innerDigests: [{ detail: "private-narration-input" }] },
+          },
+          narrationInputDigest: "a".repeat(64),
+        }],
+        agentStateA: {
+          reactionReceiptV1: {
+            schemaVersion: 1,
+            policyGeneration: "psyche-reaction-policy-v1",
+            turn: 1,
+            observerSide: "a",
+            route: "deterministic_no_call",
+            reason: "committed_observation",
+            sourceEventIds: ["private-source-1"],
+            contributions: [{ code: "uncertainty", dimension: "interpretation.uncertain", amount: 20 }],
+          },
+        },
+        assetManifest: {
+          schemaVersion: 1,
+          boundAt: "2026-08-07T00:00:00.000Z",
+          characters: {
+            a: { assetId: "char-a", generationId: "character:char-a:1" },
+            b: { assetId: "char-b", generationId: "character:char-b:1" },
+          },
+          narrationStyle: { assetId: "style-1", generationId: "style:1" },
+          battlefield: { assetId: "field-1", generationId: "field:1" },
+          dialoguePipeline: { generationId: "dialogue-pipeline:1" },
+          rules: {
+            battleEngine: "battle-engine-v1",
+            temporalRules: "initiative-window-v2",
+          },
+        },
+        causalExecution: {
+          schemaVersion: 1,
+          executionId: "battle-observed:turn:2",
+          battleId: "battle-observed",
+          turn: 2,
+          expectedStateRevision: 1,
+          temporalPlan: {
+            rulesetId: "initiative-window-v1",
+            initiativeScores: { a: 12, b: 8 },
+            buckets: [
+              { index: 0, actorSides: ["a"], initiativeScore: 12, simultaneous: false, readsFrom: "turn_start", commitMode: "sequential" },
+              { index: 1, actorSides: ["b"], initiativeScore: 8, simultaneous: false, readsFrom: "previous_bucket_commit", commitMode: "sequential" },
+            ],
+          },
+          bucketIndex: 1,
+          status: "awaiting_decision",
+          decidedSides: [],
+          committedBucketIndices: [0],
+        },
+        causalEngineContinuation: {
+          schemaVersion: 1,
+          executionId: "battle-observed:turn:2",
+          nextBucketIndex: 1,
+          serverPrivate: true,
+        },
         turnRecords: [{
           turn: 1,
+          temporalResolution: {
+            rulesetId: "initiative-window-v1",
+            initiativeScores: { a: 12, b: 8 },
+            buckets: [],
+          },
           actions: [{ id: "act-1" }],
           events: [{ id: "evt-1" }],
           sideAChange: { parameterChanges: {} },
@@ -151,9 +219,56 @@ describe("internal battle observability", () => {
       (detail.rawBattleState.turnRecords as Array<Record<string, unknown>>)[0]
         ?.pipelineTrace,
     );
+    assert.doesNotMatch(JSON.stringify(detail.rawBattleState), /perception":"a|nextAction|raw/);
+    assert.doesNotMatch(JSON.stringify(detail.rawBattleState), /private-narration-input/);
+    assert.match(JSON.stringify(detail.rawBattleState), /\[redacted\]/);
     assert.equal(detail.capabilities.perTurnCanonicalTransitions, "complete");
     assert.equal(detail.capabilities.pipelineTraceCount, 1);
+    assert.equal(detail.capabilities.temporalResolutionCount, 1);
+    assert.equal(detail.capabilities.hasCausalExecutionCheckpoint, true);
+    assert.deepEqual(detail.canonicalCurrent.phaseReceipts, [{
+      receiptId: "battle-observed:phase:1",
+      sequence: 1,
+      phase: "combat",
+      combatTurn: null,
+      stateRevision: 1,
+      inputDigest: "a".repeat(64),
+    }]);
+    assert.equal(
+      (detail.canonicalCurrent.assetManifest as {
+        characters: { a: { generationId: string } };
+      }).characters.a.generationId,
+      "character:char-a:1",
+    );
+    assert.equal(
+      detail.canonicalCurrent.assetManifestValidation?.characterA,
+      "legacy_unknown",
+    );
+    assert.equal(
+      (detail.canonicalCurrent.causalExecution as { status: string }).status,
+      "awaiting_decision",
+    );
+    assert.equal(
+      (detail.canonicalCurrent.causalEngineContinuation as {
+        nextBucketIndex: number;
+      }).nextBucketIndex,
+      1,
+    );
     assert.equal(detail.canonicalCurrent.worldState &&
       (detail.canonicalCurrent.worldState as { revision: number }).revision, 1);
+    assert.deepEqual(detail.canonicalCurrent.psycheReaction.a, {
+      schemaVersion: 1,
+      policyGeneration: "psyche-reaction-policy-v1",
+      turn: 1,
+      observerSide: "a",
+      route: "deterministic_no_call",
+      reason: "committed_observation",
+      sourceCount: 1,
+      contributions: [{ code: "uncertainty", dimension: "interpretation.uncertain" }],
+    });
+    assert.equal(
+      JSON.stringify(detail.canonicalCurrent.psycheReaction).includes("private-source-1"),
+      false,
+    );
   });
 });

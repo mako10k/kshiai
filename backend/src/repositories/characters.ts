@@ -10,11 +10,12 @@ import {
   toPublicCharacter,
   type RatingDisplayContext,
   OpponentBattleMemorySchema,
+  toBattleCharacterSnapshot,
   type OpponentBattleMemory,
 } from "@kshiai/shared";
 import type { CharacterReference } from "../llm/types.js";
 import { normalizeCharacterName } from "../character-name-uniqueness.js";
-import { query } from "../db.js";
+import { query, withTransaction } from "../db.js";
 import { newId } from "../id.js";
 import {
   accountRealm,
@@ -24,6 +25,7 @@ import {
   normalizeAccountKind,
   type AccountRealm,
 } from "../account-access.js";
+import { writeAssetGeneration } from "./asset-generations.js";
 
 function parseSheet(json: unknown): CharacterSheet {
   const value = typeof json === "string" ? JSON.parse(json) : json;
@@ -386,21 +388,30 @@ export async function saveSheet(sheet: CharacterSheet): Promise<void> {
     record: sheet.record ?? defaultRecord(),
   };
   const json = JSON.stringify(withRecord);
-  await query(
-    `INSERT INTO characters (id, owner_user_id, sheet_json, created_at, updated_at)
-     VALUES ($1, $2, $3, $4, $5)
-     ON CONFLICT (id) DO UPDATE
-       SET owner_user_id = EXCLUDED.owner_user_id,
-           sheet_json = EXCLUDED.sheet_json,
-           updated_at = EXCLUDED.updated_at`,
-    [
-      withRecord.id,
-      withRecord.ownerUserId,
-      json,
-      withRecord.createdAt,
-      withRecord.updatedAt,
-    ],
-  );
+  await withTransaction(async (connection) => {
+    await writeAssetGeneration(connection, {
+      assetType: "character",
+      assetId: withRecord.id,
+      schemaVersion: 1,
+      content: toBattleCharacterSnapshot(withRecord),
+      createdAt: withRecord.updatedAt,
+    });
+    await connection.query(
+      `INSERT INTO characters (id, owner_user_id, sheet_json, created_at, updated_at)
+       VALUES ($1, $2, $3, $4, $5)
+       ON CONFLICT (id) DO UPDATE
+         SET owner_user_id = EXCLUDED.owner_user_id,
+             sheet_json = EXCLUDED.sheet_json,
+             updated_at = EXCLUDED.updated_at`,
+      [
+        withRecord.id,
+        withRecord.ownerUserId,
+        json,
+        withRecord.createdAt,
+        withRecord.updatedAt,
+      ],
+    );
+  });
 }
 
 /** Persist bounded owner-private notes for a specific opponent. */

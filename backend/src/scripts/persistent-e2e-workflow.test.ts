@@ -20,6 +20,22 @@ describe("persistent E2E workflow contract", () => {
     assert.match(promote, /missing the expected administrator email/);
   });
 
+  it("freezes the selected pacing policy into Stage and verifies it before Promote", () => {
+    const stage = workflow("stage-release.yml");
+    const promote = workflow("promote-release.yml");
+    for (const source of [stage, promote]) {
+      assert.match(source, /battle_pacing_policy:/);
+      assert.match(source, /candidate-12-v2/);
+      assert.match(source, /current/);
+    }
+    assert.match(stage, /BATTLE_PACING_POLICY=\$PACING_POLICY/);
+    assert.match(promote, /candidate\.name === "BATTLE_PACING_POLICY"/);
+    assert.match(
+      promote,
+      /test "\$pacing_policy" = "\$EXPECTED_BATTLE_PACING_POLICY"/,
+    );
+  });
+
   it("runs the observer only against a confirmed immutable production revision", () => {
     const observe = workflow("observe-persistent-e2e.yml");
     assert.match(observe, /refs\/tags\/\$RELEASE_TAG/);

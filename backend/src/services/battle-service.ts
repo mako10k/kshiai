@@ -1,3 +1,5 @@
+import { randomInt } from "node:crypto";
+import { requestDigest } from "./distributed-guard.js";
 import {
   BattlePolicyOptionSchema,
   BattleAdjudicationSchema,
@@ -19,14 +21,25 @@ import {
   buildCommittedUtteranceEvents,
   buildUtterancePerceptionEvidence,
   buildTurnObservationPacket,
+  advancePsycheReactionV1,
+  PSYCHE_REACTION_POLICY_V1,
   buildSemanticObservationState,
   buildServerOnlyReserveCues,
   createBattleState,
+  LOCAL_TWELVE_TURN_PACING_CANDIDATE,
+  createCausalTurnExecution,
+  acceptCausalExecutionDecision,
+  commitCausalExecutionBucket,
+  finishCausalTurnExecution,
+  prepareSequentialBattleTurnInitiative,
   deriveBattleWorldTransitionFromSemanticState,
   isPassiveTurn,
   isQuietTurn,
   normalizeSupervisor,
   ratingForDisplay,
+  resolveNextBattleTurnBucket,
+  materializeBattleStateAtBucketBoundary,
+  bindNextBucketDecision,
   resolveTurn,
   sheetCombatProfile,
   shouldInjectHappening,
@@ -61,6 +74,7 @@ import {
   type TurnSemanticPatch,
   type Skill,
   toNarrationSnapshot,
+  toBattleCharacterSnapshot,
   type BattleAdvanceStreamEvent,
   type InnerDigest,
   type NarrationFocus,
@@ -137,10 +151,12 @@ import {
   type EvidenceValidationStatus,
 } from "../llm/perception-evidence.js";
 import * as battleRepo from "../repositories/battles.js";
+import * as presentationRepo from "../repositories/battle-presentations.js";
 import * as bfRepo from "../repositories/battlefields.js";
 import * as charRepo from "../repositories/characters.js";
 import * as styleRepo from "../repositories/narration-styles.js";
 import * as dialoguePipelineRepo from "../repositories/dialogue-pipeline-settings.js";
+import { createAssetGeneration } from "../repositories/asset-generations.js";
 import { getUserAccessProfile } from "../account-access.js";
 import { withBattleLease } from "./distributed-guard.js";
 import {
@@ -225,7 +241,28 @@ export function toBattlePublic(
         b: state.sideB.displayName,
       },
     }),
+    pendingEffects: (state.pendingEffects ?? []).flatMap((effect) =>
+      effect.visibility === "public_when_scheduled"
+        ? [{
+            effectId: effect.effectId,
+            targetSide: effect.targetSide,
+            parameterKey: effect.payload.parameterKey,
+            direction: effect.payload.delta < 0 ? "loss" as const : "gain" as const,
+            trigger: effect.trigger.kind === "due_turn"
+              ? { kind: "due_turn" as const, dueTurn: effect.trigger.dueTurn }
+              : { kind: "target_hp_at_most_percent" as const },
+            expiresTurn: effect.expiresTurn,
+          }]
+        : []
+    ),
     log: state.log,
+    receipts: (state.phaseReceipts ?? []).map((receipt) => ({
+      turnReceiptId: receipt.id,
+      sequence: receipt.sequence,
+      phase: receipt.phase,
+      combatTurn: receipt.combatTurn,
+      stateRevision: receipt.toRevision,
+    })),
     availableActions: [],
     winnerSide: state.winnerSide,
     finishReason: state.finishReason,
@@ -285,8 +322,14 @@ export async function toBattlePublicForViewer(
         (await getUserAccessProfile(mySheet.ownerUserId)).realm,
       )
     : undefined;
+  const presentationLog = config.battlePresentationReadModel
+    ? await presentationRepo.listBattlePresentations(state.id)
+    : [];
+  const presentationState = presentationLog.length > 0
+    ? { ...state, log: [...state.log, ...presentationLog] }
+    : state;
   return toBattlePublic(
-    state,
+    presentationState,
     mySheet,
     resultSummary,
     oppSheet,
@@ -557,6 +600,9 @@ export async function startBattle(input: {
     sideA: mine,
     sideB: opp,
     turnLimit: config.battleTurnLimit,
+    pacingPolicy: config.battlePacingPolicy === "candidate-12-v2"
+      ? LOCAL_TWELVE_TURN_PACING_CANDIDATE
+      : undefined,
     battlefield,
     stanceA: input.stance,
     policiesA,
@@ -574,8 +620,109 @@ export async function startBattle(input: {
     encounterContext,
   });
 
+  const sourceBattlefieldPreset = battlefield.sourcePresetId
+    ? await bfRepo.getPreset(battlefield.sourcePresetId)
+    : null;
+  const assetBoundAt = new Date().toISOString();
+  const mineSnapshot = toBattleCharacterSnapshot(mine);
+  const opponentSnapshot = toBattleCharacterSnapshot(opp);
+  const battlefieldPresetSnapshot = sourceBattlefieldPreset
+    ? {
+        ...sourceBattlefieldPreset,
+        updatedAt: sourceBattlefieldPreset.createdAt,
+      }
+    : null;
+  const [mineGeneration, opponentGeneration, narrationGeneration,
+    battlefieldPresetGeneration, battlefieldInstanceGeneration,
+    dialogueGeneration] = await Promise.all([
+    createAssetGeneration({
+      assetType: "character",
+      assetId: mine.id,
+      schemaVersion: 1,
+      content: mineSnapshot,
+      createdAt: mine.updatedAt,
+    }),
+    createAssetGeneration({
+      assetType: "character",
+      assetId: opp.id,
+      schemaVersion: 1,
+      content: opponentSnapshot,
+      createdAt: opp.updatedAt,
+    }),
+    createAssetGeneration({
+      assetType: "narration-style",
+      assetId: narrationStyle.id,
+      schemaVersion: 1,
+      content: narrationSnap,
+      createdAt: narrationStyle.updatedAt,
+    }),
+    battlefieldPresetSnapshot
+      ? createAssetGeneration({
+          assetType: "battlefield-preset",
+          assetId: battlefieldPresetSnapshot.id,
+          schemaVersion: 1,
+          content: battlefieldPresetSnapshot,
+          createdAt: sourceBattlefieldPreset!.updatedAt,
+        })
+      : Promise.resolve(null),
+    createAssetGeneration({
+      assetType: "battlefield-instance",
+      assetId: id,
+      schemaVersion: 1,
+      content: battlefield,
+    }),
+    createAssetGeneration({
+      assetType: "dialogue-pipeline",
+      assetId: "global",
+      schemaVersion: 1,
+      content: dialoguePipelineSnapshot,
+      createdAt: assetBoundAt,
+    }),
+  ]);
+
   state = {
     ...state,
+    assetManifest: {
+      schemaVersion: 1,
+      boundAt: assetBoundAt,
+      characters: {
+        a: {
+          assetId: mine.id,
+          generationId: mineGeneration.generationId,
+          contentDigest: mineGeneration.contentDigest,
+          snapshot: mineSnapshot,
+        },
+        b: {
+          assetId: opp.id,
+          generationId: opponentGeneration.generationId,
+          contentDigest: opponentGeneration.contentDigest,
+          snapshot: opponentSnapshot,
+        },
+      },
+      narrationStyle: {
+        assetId: narrationSnap.id,
+        generationId: narrationGeneration.generationId,
+        contentDigest: narrationGeneration.contentDigest,
+        snapshot: narrationSnap,
+      },
+      battlefield: {
+        assetId: battlefield.sourcePresetId,
+        presetGenerationId: battlefieldPresetGeneration?.generationId ?? null,
+        generationId: battlefieldInstanceGeneration.generationId,
+        contentDigest: battlefieldInstanceGeneration.contentDigest,
+        snapshot: battlefield,
+      },
+      dialoguePipeline: {
+        generationId: dialogueGeneration.generationId,
+        contentDigest: dialogueGeneration.contentDigest,
+        snapshot: dialoguePipelineSnapshot,
+      },
+      rules: {
+        battleEngine: "battle-engine-v1",
+        temporalRules: "initiative-window-v2",
+        psycheReaction: PSYCHE_REACTION_POLICY_V1,
+      },
+    },
     dialoguePipelineSnapshot,
     agentStateA: {
       ...(state.agentStateA as CharacterAgentState),
@@ -842,6 +989,7 @@ function buildCharacterDecisionContext(input: {
   sheet: CharacterSheet;
   counterpartSheet?: CharacterSheet;
   side: "a" | "b";
+  decisionTurn?: number;
 }) {
   const self = input.side === "a" ? input.state.sideA : input.state.sideB;
   const perception = input.side === "a"
@@ -850,11 +998,12 @@ function buildCharacterDecisionContext(input: {
   const finisher = input.side === "a"
     ? input.state.finisherA
     : input.state.finisherB;
-  const nextTurn = input.state.turn + 1;
+  const nextTurn = input.decisionTurn ?? input.state.turn + 1;
   const window = buildFinisherWindow({
     finisher,
     turn: nextTurn,
     turnLimit: input.state.turnLimit,
+    pacingPolicy: input.state.pacingPolicy,
   });
   const drama = normalizeDramaState(input.state.dramaState);
   const signature = input.side === "a"
@@ -954,6 +1103,51 @@ function buildCharacterDecisionContext(input: {
         }
       : undefined,
   };
+}
+
+/** Build the deliberately narrow input used between sequential buckets. */
+export function buildLaterBucketActionInput(input: {
+  state: BattleState;
+  sheet: CharacterSheet;
+  counterpartSheet?: CharacterSheet;
+  side: "a" | "b";
+}): Parameters<LlmProvider["decideCharacterAction"]>[0] | null {
+  const perception = input.side === "a"
+    ? input.state.perceptionFrameA
+    : input.state.perceptionFrameB;
+  if (!perception || perception.observer.side !== input.side) return null;
+  const decision = buildCharacterDecisionContext({
+    ...input,
+    decisionTurn: input.state.turn,
+  });
+  if (!decision || decision.availableActions.length === 0) return null;
+  return deepFreezeConsumerInput({
+    character: buildCharacterSelfProfileAnchor(
+      input.sheet,
+      deriveBattleProfileStateOverrides({
+        worldState: input.state.worldState,
+        side: input.side,
+      }),
+    ),
+    perception: structuredClone(perception),
+    decision,
+  });
+}
+
+function deterministicLaterBucketFallback(
+  decision: Parameters<LlmProvider["decideCharacterAction"]>[0]["decision"],
+) {
+  const selected = decision.availableActions.find((action) =>
+    action.kind === "basic_attack"
+  ) ?? decision.availableActions.find((action) =>
+    action.kind !== "wait" && action.kind !== "reflect"
+  ) ?? decision.availableActions[0];
+  if (!selected) return null;
+  return CharacterActionIntentSchema.parse(
+    selected.kind === "skill"
+      ? { kind: "skill", skillId: selected.skillId }
+      : { kind: selected.kind },
+  );
 }
 
 function characterActionResultSummary(
@@ -1194,9 +1388,12 @@ export async function advanceCharacterAgents(input: {
   actions: ResolvedBattleAction[];
   sensoryEvidence?: PerceptionEvidence[];
   quantizedMechanicalEvidence?: QuantizedMechanicalEvidence[];
+  mechanicalEvidence?: CommittedMechanicalEvidence[];
   environmentProcessReceipt?: EnvironmentProcessReceipt;
   dialoguePipeline?: DialoguePipelineSettings;
   phase?: "prologue" | "turn" | "aftermath";
+  /** Restrict provider work to selected isolated character contexts. */
+  activeSides?: ReadonlyArray<"a" | "b">;
   /** Attach reaction-only utterances to the existing terminal turn record. */
   replaceLastRecord?: boolean;
 }): Promise<{ state: BattleState; characterSpeeches: CharacterSpeechSource[] }> {
@@ -1214,6 +1411,7 @@ export async function advanceCharacterAgents(input: {
     after: input.after,
     events: input.events,
     actions: input.actions,
+    mechanicalEvidence: input.mechanicalEvidence,
   });
   const recordWithoutUtterances = input.environmentProcessReceipt
     ? {
@@ -1248,6 +1446,10 @@ export async function advanceCharacterAgents(input: {
         },
       }
     : recordWithoutUtterances;
+  const activeSides = new Set(input.activeSides ?? ["a", "b"]);
+  const deterministicPsyche =
+    input.after.assetManifest?.rules.psycheReaction === PSYCHE_REACTION_POLICY_V1 &&
+    (input.phase ?? "turn") === "turn";
   const previousA = groundCharacterAgentState(
     input.mine,
     input.after.agentStateA ?? initialAgentState(
@@ -1266,6 +1468,24 @@ export async function advanceCharacterAgents(input: {
   );
   previousA.lastActionResult = characterActionResultSummary(input.events, "a");
   previousB.lastActionResult = characterActionResultSummary(input.events, "b");
+  if (deterministicPsyche) {
+    if (activeSides.has("a")) {
+      const reaction = advancePsycheReactionV1({
+        prior: previousA.reactionStateV1,
+        packet: dialogueProjection?.a ?? null,
+      });
+      previousA.reactionStateV1 = reaction.state;
+      previousA.reactionReceiptV1 = reaction.receipt;
+    }
+    if (activeSides.has("b")) {
+      const reaction = advancePsycheReactionV1({
+        prior: previousB.reactionStateV1,
+        packet: dialogueProjection?.b ?? null,
+      });
+      previousB.reactionStateV1 = reaction.state;
+      previousB.reactionReceiptV1 = reaction.receipt;
+    }
+  }
   const stateWithRecord: BattleState = {
     ...input.after,
     agentStateA: previousA,
@@ -1275,7 +1495,7 @@ export async function advanceCharacterAgents(input: {
       recordWithDialogueProjection,
     ].slice(-50),
   };
-  const inputA = buildCharacterAgentConsumerInput({
+  const inputA = activeSides.has("a") ? buildCharacterAgentConsumerInput({
     state: input.after,
     sheet: input.mine,
     counterpartSheet: input.opp,
@@ -1283,8 +1503,8 @@ export async function advanceCharacterAgents(input: {
     previous: previousA,
     dialoguePipeline,
     phase: input.phase,
-  });
-  const inputB = buildCharacterAgentConsumerInput({
+  }) : null;
+  const inputB = activeSides.has("b") ? buildCharacterAgentConsumerInput({
     state: input.after,
     sheet: input.opp,
     counterpartSheet: input.mine,
@@ -1292,7 +1512,7 @@ export async function advanceCharacterAgents(input: {
     previous: previousB,
     dialoguePipeline,
     phase: input.phase,
-  });
+  }) : null;
   const compactContext = dialoguePipeline.contextProjectionMode === "compact";
   if (!inputA && !inputB) {
     console.warn("[battle] character agents skipped: no observer-safe action available");
@@ -1300,6 +1520,9 @@ export async function advanceCharacterAgents(input: {
   }
   const toPsycheInput = (consumerInput: typeof inputA) => {
     if (!consumerInput) return null;
+    // Accepted V1 contract: normal-turn private reaction is deterministic and
+    // must not escalate to a provider when features are absent or uncertain.
+    if (deterministicPsyche && consumerInput.phase === "turn") return null;
     if (compactContext) {
       const packet = consumerInput === inputA
         ? dialogueProjection?.a
@@ -1659,8 +1882,16 @@ export async function advanceCharacterAgents(input: {
         ? acceptedB.state.lastSpeech
         : previousB.lastSpeech,
     },
-    plannedActionA: input.phase === "aftermath" ? undefined : acceptedA.nextAction,
-    plannedActionB: input.phase === "aftermath" ? undefined : acceptedB.nextAction,
+    plannedActionA: input.phase === "aftermath"
+      ? undefined
+      : activeSides.has("a")
+        ? acceptedA.nextAction
+        : input.after.plannedActionA,
+    plannedActionB: input.phase === "aftermath"
+      ? undefined
+      : activeSides.has("b")
+        ? acceptedB.nextAction
+        : input.after.plannedActionB,
   };
   stateAfterUtterances.agentStateA = {
     ...(stateAfterUtterances.agentStateA as CharacterAgentState),
@@ -1762,6 +1993,7 @@ export async function advanceCharacterAgents(input: {
           after: stateAfterUtterances,
           events: eventsWithUtterances,
           actions: input.actions,
+          mechanicalEvidence: input.mechanicalEvidence,
         }),
         pipelineTrace: {
           schemaVersion: 1 as const,
@@ -1770,12 +2002,30 @@ export async function advanceCharacterAgents(input: {
           characterAgents: characterAgentTrace,
         },
       };
+  const receiptOwnedEventIds = new Set(
+    record.consequenceReceipts?.flatMap((receipt) => receipt.eventIds) ?? [],
+  );
+  const addedEventIds = eventsWithUtterances.flatMap((event) =>
+    event.id && !receiptOwnedEventIds.has(event.id) ? [event.id] : []
+  );
+  const recordWithUtteranceProvenance = record.consequenceReceipts &&
+      addedEventIds.length > 0
+    ? {
+        ...record,
+        consequenceReceipts: record.consequenceReceipts.map((receipt) =>
+          receipt.source.kind === "system_rules" &&
+            receipt.source.stage === "turn_resolution"
+            ? { ...receipt, eventIds: [...receipt.eventIds, ...addedEventIds] }
+            : receipt
+        ),
+      }
+    : record;
   return {
     state: refreshNarratorContinuity({
       ...stateAfterUtterances,
       turnRecords: [
         ...previousRecords,
-        record,
+        recordWithUtteranceProvenance,
       ].slice(-50),
     }),
     characterSpeeches,
@@ -2034,10 +2284,8 @@ export function buildBattleAdjudication(input: {
   result?: RefereeResult;
 }): BattleAdjudication {
   const engineFallbackSide = input.engineWinnerSide ?? "draw";
-  const winnerSide = input.result?.winnerSide === "a" ||
-      input.result?.winnerSide === "b" || input.result?.winnerSide === "draw"
-    ? input.result.winnerSide
-    : engineFallbackSide;
+  // ADR-0006: provider output may explain the committed result, never select it.
+  const winnerSide = engineFallbackSide;
   const reason = input.result?.reason.trim().slice(0, 600) ||
     "確定した行動、影響、残力を総合して判定した。";
   const parsedFacts = (input.result?.reasonFacts ?? []).flatMap((fact) => {
@@ -2810,32 +3058,9 @@ async function resolveNarrationFocusAndDigests(input: {
 
   let focus = lockedFocusFromPerspective(input.perspective);
   if (focus == null || needsFocusChoice(input.perspective)) {
-    try {
-      if (input.llm.chooseNarrationFocus) {
-        const chosen = await withTimeout(
-          input.llm.chooseNarrationFocus({
-            turn: input.turn,
-            scene: input.scene,
-            sideAName: input.sideAName,
-            sideBName: input.sideBName,
-            events: input.events,
-            summaryA,
-            summaryB,
-          }),
-          SHORT_LLM_ENVELOPE_TIMEOUT_MS,
-          "chooseNarrationFocus",
-        );
-        focus = chosen.focus;
-      } else {
-        focus = "external";
-      }
-    } catch (e) {
-      console.warn(
-        "[battle] chooseNarrationFocus failed",
-        e instanceof Error ? e.message : e,
-      );
-      focus = "external";
-    }
+    // Focus is presentation-only and is resolved by the ordered narration
+    // worker. Canonical advance must not invoke a narration provider.
+    focus = "external";
   }
 
   return {
@@ -3228,6 +3453,7 @@ async function buildEnvironmentProcessProposal(input: {
 async function advanceTurnWithLease(input: {
   userId: string;
   battleId: string;
+  operationId: string;
   llm: LlmProvider;
   /** Optional progressive updates (SSE). */
   onProgress?: (event: BattleAdvanceStreamEvent) => void;
@@ -3243,10 +3469,49 @@ async function advanceTurnWithLease(input: {
     }
   };
   const meta = await battleRepo.getBattleMeta(input.battleId);
-  const state = await battleRepo.getBattle(input.battleId);
-  if (!meta || !state) throw new Error("BATTLE_NOT_FOUND");
+  const loadedState = await battleRepo.getBattle(input.battleId);
+  if (!meta || !loadedState) throw new Error("BATTLE_NOT_FOUND");
+  let state: BattleState = loadedState;
   if (meta.side_a_user_id !== input.userId) throw new Error("FORBIDDEN");
+  if (
+    state.advanceOperation?.status === "active" &&
+    state.advanceOperation.operationId !== input.operationId
+  ) {
+    throw new Error("ADVANCE_OPERATION_CONFLICT");
+  }
+  if (
+    state.advanceOperation?.status === "completed" &&
+    state.advanceOperation.operationId === input.operationId
+  ) {
+    const replayMine = state.assetManifest?.characters.a.snapshot ??
+      await charRepo.getSheet(meta.side_a_character_id);
+    const replayOpp = state.assetManifest?.characters.b.snapshot ??
+      await charRepo.getSheet(meta.side_b_character_id);
+    if (!replayMine || !replayOpp) throw new Error("CHARACTER_MISSING");
+    return toBattlePublicForViewer(state, replayMine, null, replayOpp);
+  }
   if (state.status !== "active") throw new Error("BATTLE_FINISHED");
+
+  const phase = state.prologuePending
+    ? "prologue" as const
+    : state.aftermathPending
+      ? "aftermath" as const
+      : "combat" as const;
+  if (!state.advanceOperation || state.advanceOperation.status === "completed") {
+    state = {
+      ...state,
+      advanceOperation: {
+        schemaVersion: 1,
+        operationId: input.operationId,
+        expectedRevision: state.battleRevision ?? 0,
+        status: "active",
+        phase,
+        startedAt: new Date().toISOString(),
+        completedAt: null,
+        receiptIds: [],
+      },
+    };
+  }
 
   // Backfill for older battles
   if (!state.policiesA) state.policiesA = [];
@@ -3254,8 +3519,10 @@ async function advanceTurnWithLease(input: {
   if (!state.policiesB) state.policiesB = [];
   if (!state.selectedPolicyIdsB) state.selectedPolicyIdsB = [];
 
-  const mine = await charRepo.getSheet(meta.side_a_character_id);
-  const opp = await charRepo.getSheet(meta.side_b_character_id);
+  const mine = state.assetManifest?.characters.a.snapshot ??
+    await charRepo.getSheet(meta.side_a_character_id);
+  const opp = state.assetManifest?.characters.b.snapshot ??
+    await charRepo.getSheet(meta.side_b_character_id);
   if (!mine || !opp) throw new Error("CHARACTER_MISSING");
   const dialoguePipeline = state.dialoguePipelineSnapshot
     ? {
@@ -3278,6 +3545,7 @@ async function advanceTurnWithLease(input: {
       llm: input.llm,
       dialoguePipeline,
       emit,
+      operationId: input.operationId,
     });
   }
 
@@ -3291,6 +3559,7 @@ async function advanceTurnWithLease(input: {
       llm: input.llm,
       dialoguePipeline,
       emit,
+      operationId: input.operationId,
     });
   }
 
@@ -3326,21 +3595,272 @@ async function advanceTurnWithLease(input: {
   const hpBeforeA = state.sideA.parameters.hp ?? 0;
   const hpBeforeB = state.sideB.parameters.hp ?? 0;
 
-  const freeActionPreparation = await prepareFreeActionsForTurn({
-    llm: input.llm,
-    state,
-    mine,
-    opp,
-  });
-
   // Clamp legacy inflated skill.power (LLM sometimes wrote 20–40 as "damage score")
   const safeSkills = (skills: Skill[]) => skills.map(balanceSkill);
-  const engineResolved = resolveTurn({
+  let causalExecution = state.causalExecution?.turn === upcomingTurn &&
+      state.causalExecution.status !== "finished"
+    ? state.causalExecution
+    : null;
+  if (!causalExecution) {
+    const drawRange = 2 ** 32;
+    const prepared = prepareSequentialBattleTurnInitiative({
+      state,
+      sideASkills: safeSkills(mine.skills),
+      sideBSkills: safeSkills(opp.skills),
+      sideABasicAttack: mine.basicAttack,
+      sideBBasicAttack: opp.basicAttack,
+      tieDrawSample: randomInt(0, drawRange) / drawRange,
+    });
+    if (!prepared) throw new Error("CAUSAL_TURN_PREPARATION_UNAVAILABLE");
+    causalExecution = createCausalTurnExecution({
+      executionId: `${state.id}:turn:${prepared.turn}`,
+      battleId: state.id,
+      turn: prepared.turn,
+      expectedStateRevision: state.semanticState?.revision ?? 0,
+      temporalPlan: prepared.temporalResolution,
+      initiativeOrder: prepared.temporalResolution.initiativeOrder,
+    });
+    state = { ...state, causalExecution };
+    await battleRepo.saveBattle(state, {
+      sideAUserId: meta.side_a_user_id,
+      sideACharacterId: meta.side_a_character_id,
+      sideBCharacterId: meta.side_b_character_id,
+    });
+  }
+
+  const engineInput = {
     state,
     sideASkills: safeSkills(mine.skills),
     sideBSkills: safeSkills(opp.skills),
     sideABasicAttack: mine.basicAttack,
     sideBBasicAttack: opp.basicAttack,
+    temporalResolutionOverride: causalExecution.temporalPlan,
+    executionId: causalExecution.executionId,
+  };
+  const resumedEngineContinuation = state.causalEngineContinuation;
+  if (resumedEngineContinuation) {
+    const resumedBucket = causalExecution.temporalPlan.buckets[causalExecution.bucketIndex];
+    if (!resumedBucket) throw new Error("CAUSAL_BUCKET_MISSING");
+    for (const side of resumedBucket.actorSides) {
+      causalExecution = acceptCausalExecutionDecision({
+        execution: causalExecution,
+        side,
+      });
+    }
+  }
+  let engineResolved = resolveNextBattleTurnBucket({
+    ...engineInput,
+    engineContinuation: resumedEngineContinuation,
+  });
+  const firstBucketCommit = engineResolved.bucketCommits?.[0];
+  if (!firstBucketCommit) throw new Error("CAUSAL_FIRST_BUCKET_COMMIT_MISSING");
+  if (state.causalBucketCommit) {
+    if (!resumedEngineContinuation) {
+      // Compatibility for a checkpoint written before engine continuations.
+      engineResolved = resolveTurn(engineInput);
+    } else {
+      causalExecution = commitCausalExecutionBucket({ execution: causalExecution });
+      state = {
+        ...state,
+        causalExecution,
+        causalEngineContinuation: engineResolved.engineContinuation,
+      };
+      if (engineResolved.engineContinuation) {
+        await battleRepo.saveBattle(state, {
+          sideAUserId: meta.side_a_user_id,
+          sideACharacterId: meta.side_a_character_id,
+          sideBCharacterId: meta.side_b_character_id,
+        });
+      }
+    }
+  } else {
+    const firstBucket = causalExecution.temporalPlan.buckets[0];
+    if (!firstBucket) throw new Error("CAUSAL_FIRST_BUCKET_MISSING");
+    for (const side of firstBucket.actorSides) {
+      causalExecution = acceptCausalExecutionDecision({
+        execution: causalExecution,
+        side,
+      });
+    }
+    causalExecution = commitCausalExecutionBucket({ execution: causalExecution });
+    state = {
+      ...state,
+      causalExecution,
+      causalBucketCommit: firstBucketCommit,
+      causalEngineContinuation: engineResolved.engineContinuation,
+    };
+    if (engineResolved.engineContinuation) {
+      await battleRepo.saveBattle(state, {
+        sideAUserId: meta.side_a_user_id,
+        sideACharacterId: meta.side_a_character_id,
+        sideBCharacterId: meta.side_b_character_id,
+      });
+    }
+  }
+  while (engineResolved.engineContinuation) {
+    const nextBucket = causalExecution.temporalPlan.buckets[causalExecution.bucketIndex];
+    if (!nextBucket) throw new Error("CAUSAL_BUCKET_MISSING");
+    const continuation = engineResolved.engineContinuation;
+    const laterSide = nextBucket.actorSides.length === 1
+      ? nextBucket.actorSides[0]
+      : undefined;
+    if (laterSide) {
+      let boundaryState = materializeBattleStateAtBucketBoundary({
+        state,
+        continuation,
+      });
+      if (boundaryState.semanticState) {
+        const projected = projectObserverPerception({
+          observerSide: laterSide,
+          turn: boundaryState.turn,
+          semanticState: boundaryState.semanticState,
+          worldState: boundaryState.worldState,
+          events: continuation.events,
+          quantizedMechanicalEvidence: quantizeCommittedMechanicalEvidence(
+            continuation.mechanicalEvidence,
+          ),
+          reserveEvidence: buildServerOnlyReserveCues({
+            side: laterSide,
+            parameters: laterSide === "a"
+              ? boundaryState.sideA.parameters
+              : boundaryState.sideB.parameters,
+            baseParameters: laterSide === "a"
+              ? boundaryState.sideA.baseParameters
+              : boundaryState.sideB.baseParameters,
+          }),
+          sensoryEvidence: [],
+          previousFrame: laterSide === "a"
+            ? state.perceptionFrameA
+            : state.perceptionFrameB,
+          previousRegistry: laterSide === "a"
+            ? state.perceptionRegistryA
+            : state.perceptionRegistryB,
+          legacyCounterpartIdentified: laterSide === "a"
+            ? state.perceptionRegistryA === undefined
+            : state.perceptionRegistryB === undefined,
+        });
+        boundaryState = laterSide === "a"
+          ? {
+              ...boundaryState,
+              perceptionFrameA: projected.frame,
+              perceptionRegistryA: projected.registry,
+            }
+          : {
+              ...boundaryState,
+              perceptionFrameB: projected.frame,
+              perceptionRegistryB: projected.registry,
+            };
+      }
+      const laterCombatant = laterSide === "a"
+        ? boundaryState.sideA
+        : boundaryState.sideB;
+      const laterInput = (laterCombatant.parameters.hp ?? 0) > 0
+        ? buildLaterBucketActionInput({
+            state: boundaryState,
+            sheet: laterSide === "a" ? mine : opp,
+            counterpartSheet: laterSide === "a" ? opp : mine,
+            side: laterSide,
+          })
+        : null;
+      if (laterInput) {
+        const priorDecision = state.causalLaterDecision;
+        if (
+          priorDecision?.executionId === causalExecution.executionId &&
+          priorDecision.sourceBucketIndex === Math.max(0, causalExecution.bucketIndex - 1) &&
+          priorDecision.side === laterSide &&
+          priorDecision.acceptedAction
+        ) {
+          state = bindNextBucketDecision({
+            state: boundaryState,
+            continuation,
+            side: laterSide,
+            intent: priorDecision.acceptedAction,
+          });
+        } else {
+          const startedAt = Date.now();
+          let proposedAction: unknown | null = null;
+          let providerFailure: string | null = null;
+          try {
+            proposedAction = (await input.llm.decideCharacterAction(laterInput))
+              .proposedAction;
+          } catch (error) {
+            providerFailure = error instanceof Error ? error.message : "provider_error";
+          }
+          const validation = validateCharacterActionProposal({
+            proposedAction,
+            decision: laterInput.decision,
+          });
+          const fallback = validation.acceptedAction
+            ? null
+            : deterministicLaterBucketFallback(laterInput.decision);
+          const acceptedAction = validation.acceptedAction ?? fallback;
+          if (acceptedAction) {
+            boundaryState = bindNextBucketDecision({
+              state: boundaryState,
+              continuation,
+              side: laterSide,
+              intent: acceptedAction,
+            });
+          }
+          state = {
+            ...boundaryState,
+            causalLaterDecision: {
+              schemaVersion: 1,
+              executionId: causalExecution.executionId,
+              sourceBucketIndex: Math.max(0, causalExecution.bucketIndex - 1),
+              side: laterSide,
+              status: validation.acceptedAction ? "accepted" : "fallback",
+              acceptedAction,
+              validation,
+              provider: input.llm.name,
+              model: input.llm.models?.fast ?? null,
+              callCount: 1,
+              tokenCount: null,
+              estimatedCostUsd: null,
+              elapsedMs: Math.max(0, Date.now() - startedAt),
+              fallbackReason: validation.acceptedAction
+                ? null
+                : providerFailure ?? validation.reason ?? "deterministic_fallback",
+            },
+          };
+          await battleRepo.saveBattle(state, {
+            sideAUserId: meta.side_a_user_id,
+            sideACharacterId: meta.side_a_character_id,
+            sideBCharacterId: meta.side_b_character_id,
+          });
+        }
+      }
+    }
+    for (const side of nextBucket.actorSides) {
+      causalExecution = acceptCausalExecutionDecision({
+        execution: causalExecution,
+        side,
+      });
+    }
+    engineResolved = resolveNextBattleTurnBucket({
+      ...engineInput,
+      state,
+      engineContinuation: engineResolved.engineContinuation,
+    });
+    causalExecution = commitCausalExecutionBucket({ execution: causalExecution });
+    state = {
+      ...state,
+      causalExecution,
+      causalEngineContinuation: engineResolved.engineContinuation,
+    };
+    if (engineResolved.engineContinuation) {
+      await battleRepo.saveBattle(state, {
+        sideAUserId: meta.side_a_user_id,
+        sideACharacterId: meta.side_a_character_id,
+        sideBCharacterId: meta.side_b_character_id,
+      });
+    }
+  }
+  const freeActionPreparation = await prepareFreeActionsForTurn({
+    llm: input.llm,
+    state,
+    mine,
+    opp,
   });
   const committedFreeActions = commitFreeActionAdjudications({
     beforeState: state,
@@ -3442,6 +3962,7 @@ async function advanceTurnWithLease(input: {
     dialoguePipeline,
     sensoryEvidence: semanticTurn.sensoryEvidence,
     quantizedMechanicalEvidence: semanticTurn.quantizedMechanicalEvidence,
+    mechanicalEvidence: semanticTurn.mechanicalEvidence,
   });
   next = applyReflectMemoryWrites(agentTurn.state, resolved.actions);
   const rec = (next.turnRecords ?? [])[(next.turnRecords ?? []).length - 1];
@@ -3464,9 +3985,9 @@ async function advanceTurnWithLease(input: {
     perceptionFrameB: next.perceptionFrameB,
   });
   emit({ type: "phase", phase: "narrating" });
-  const recentBlocks = state.log.slice(-2);
-  const recentNarration = recentBlocks.flatMap((block) => block.narrator).slice(-4);
-  const recentSpeeches = recentBlocks.flatMap((block) => block.speeches).slice(-4);
+  // ADR-0006: canonical advancement never consumes prior generated prose.
+  const recentNarration: string[] = [];
+  const recentSpeeches: NarrativeBlock["speeches"] = [];
   const actionBeats = buildNarrationActionBeats({
     actions: resolved.actions,
     events,
@@ -3611,11 +4132,14 @@ async function advanceTurnWithLease(input: {
         styleName: next.narrationStyle?.displayName,
       }
     : null;
+  const combatNarrationInput: DeferredNarrationInput = {
+    kind: "combat",
+    request: narrationCallInput ?? {},
+  };
   const narrationTurnBrief = narrationView
     ? buildNarrationTurnBrief(narrationView)
     : null;
   let narrationResult: NarrationResult;
-  let narratorDisposition: "provider" | "fallback" = "provider";
   try {
     if (!narrationView) {
       throw new Error("narration perception view unavailable");
@@ -3625,34 +4149,11 @@ async function advanceTurnWithLease(input: {
     }
     // Retry policy belongs to the selected provider adapter. This envelope does
     // not duplicate a timeout, 429, or 503 attempt and never changes provider.
-    narrationResult = await withTimeout(
-      input.llm.narrateTurn({
-        ...narrationCallInput,
-        onProgress: (progress) => {
-          emit({
-            type: "narrator",
-            lines: progress.lines.map((line) =>
-              repairNarrationIdentifierText(line, identifierCatalog)
-            ),
-            draft: progress.draft
-              ? repairNarrationIdentifierText(
-                  progress.draft,
-                  identifierCatalog,
-                )
-              : null,
-            turn: next.turn,
-          });
-        },
-      }),
-      FAST_LLM_ENVELOPE_TIMEOUT_MS,
-      "narrateTurn",
-    );
+    throw new Error("narration deferred to ordered worker");
   } catch (e) {
-    narratorDisposition = "fallback";
-    console.warn(
-      "[battle] narrateTurn fallback",
-      e instanceof Error ? e.message : e,
-    );
+    if (!(e instanceof Error && e.message === "narration deferred to ordered worker")) {
+      console.warn("[battle] narrateTurn fallback", e instanceof Error ? e.message : e);
+    }
     // Public log must stay narrator-shaped. Never dump engine event.summary or
     // raw action outcomes into the user-visible log.
     const fallbackDrama = {
@@ -3699,22 +4200,7 @@ async function advanceTurnWithLease(input: {
             : fallbackNarrative.narrator.length - 1,
       })),
     };
-    emit({
-      type: "narrator",
-      lines: narrationResult.narrator.map((line) =>
-        repairNarrationIdentifierText(line, identifierCatalog)
-      ),
-      draft: null,
-      turn: next.turn,
-    });
   }
-  const narratorProviderOutput = structuredClone(narrationResult);
-  next = applyNarratorRecognitionResult({
-    state: next,
-    view: perceptionView,
-    turn: next.turn,
-    updates: narrationResult.recognitionUpdates,
-  });
   let narrative = publicNarrativeBlock(narrationResult);
   narrative = repairNarrativeBlockIdentifiers(narrative, identifierCatalog);
   const recentNarrationFingerprints = new Set(
@@ -3762,9 +4248,6 @@ async function advanceTurnWithLease(input: {
     sources: characterSpeeches,
   });
   narrative = repairNarrativeBlockIdentifiers(narrative, identifierCatalog);
-  if (narrative.speeches?.length) {
-    emit({ type: "speeches", speeches: narrative.speeches });
-  }
   next = {
     ...next,
     dramaState: advanceDramaState({
@@ -3773,6 +4256,10 @@ async function advanceTurnWithLease(input: {
       turnLimit: next.turnLimit,
       actions: resolved.actions,
       narrative,
+      characterSpeeches: characterSpeeches.map((speech) => ({
+        sourceSide: speech.side,
+        text: speech.text,
+      })),
       sideAName: next.sideA.displayName,
       sideBName: next.sideB.displayName,
       locationChanged: semanticChanges.locationChanged,
@@ -3780,56 +4267,30 @@ async function advanceTurnWithLease(input: {
         semanticTurn.environmentProcessReceipt?.status === "accepted" ||
         semanticChanges.environmentChanged,
     }),
-    log: [...next.log, narrative],
   };
-  const traceRecords = next.turnRecords ?? [];
-  const traceRecord = traceRecords.at(-1);
-  if (traceRecord) {
-    next = {
-      ...next,
-      turnRecords: [
-        ...traceRecords.slice(0, -1),
-        {
-          ...traceRecord,
-          pipelineTrace: {
-            schemaVersion: 1,
-            ...(traceRecord.pipelineTrace ?? {}),
-            narrator: {
-              input: narrationCallInput
-                ? structuredClone({
-                    turnBrief: narrationTurnBrief,
-                    recentNarration: narrationCallInput.recentNarration,
-                    recentSpeeches: narrationCallInput.recentSpeeches,
-                    drama: narrationCallInput.drama,
-                    innerDigests: narrationCallInput.innerDigests,
-                    characterSpeeches: narrationCallInput.characterSpeeches,
-                    styleInstruction: narrationCallInput.styleInstruction,
-                    styleName: narrationCallInput.styleName,
-                  })
-                : null,
-              disposition: narratorDisposition,
-              providerOutput: narratorProviderOutput,
-              publicOutput: structuredClone(narrative),
-            },
-          },
-        },
-      ],
-    };
-  }
   emit({ type: "phase", phase: "finalizing" });
 
   // KO this turn: combat narrative is done, but official finish waits for aftermath advance.
   // Do not settle rating yet.
   if (next.aftermathPending) {
-    await battleRepo.saveBattle(next, {
+    next = completeAdvancePhases({
+      state: next,
+      operationId: input.operationId,
+      phases: ["combat"],
+      narrationInputs: { combat: combatNarrationInput },
+    });
+    await battleRepo.saveBattleWithNarrationOutbox(next, {
       sideAUserId: meta.side_a_user_id,
       sideACharacterId: meta.side_a_character_id,
       sideBCharacterId: meta.side_b_character_id,
+      expectedRevision: next.advanceOperation?.expectedRevision,
     });
     return toBattlePublicForViewer(next, mine, null, opp);
   }
 
   let resultSummary: string | null = null;
+  let judgmentNarrative: NarrativeBlock | null = null;
+  let judgmentNarrationInput: DeferredNarrationInput | undefined;
   if (next.status === "finished") {
     if (next.finishReason === "turn_limit") {
       const turnFacts = buildRefereeTurnFacts(next.turnRecords ?? []);
@@ -3869,31 +4330,27 @@ async function advanceTurnWithLease(input: {
           ? next.sideB.displayName
           : null;
       let judgmentPresentation: JudgmentNarrationResult | undefined;
+      judgmentNarrationInput = {
+        kind: "judgment" as const,
+        request: {
+          turn: next.turn,
+          scene: next.situation.scene,
+          sideAName: next.sideA.displayName,
+          sideBName: next.sideB.displayName,
+          winnerSide: adjudication.winnerSide,
+          winnerName,
+          adjudicationReason: adjudication.reason,
+          recentPublicNarration: [],
+          styleInstruction: next.narrationStyle?.instruction,
+          styleName: next.narrationStyle?.displayName,
+        },
+      };
       try {
-        judgmentPresentation = await withTimeout(
-          input.llm.narrateJudgment({
-            turn: next.turn,
-            scene: next.situation.scene,
-            sideAName: next.sideA.displayName,
-            sideBName: next.sideB.displayName,
-            winnerSide: adjudication.winnerSide,
-            winnerName,
-            adjudicationReason: adjudication.reason,
-            recentPublicNarration: next.log
-              .slice(-2)
-              .flatMap((block) => block.narrator)
-              .slice(-8),
-            styleInstruction: next.narrationStyle?.instruction,
-            styleName: next.narrationStyle?.displayName,
-          }),
-          SHORT_LLM_ENVELOPE_TIMEOUT_MS,
-          "narrateJudgment",
-        );
+        throw new Error("judgment narration deferred to ordered worker");
       } catch (error) {
-        console.warn(
-          "[battle] narrateJudgment failed",
-          error instanceof Error ? error.message : error,
-        );
+        if (!(error instanceof Error && error.message === "judgment narration deferred to ordered worker")) {
+          console.warn("[battle] narrateJudgment failed", error instanceof Error ? error.message : error);
+        }
       }
       const judgmentBlock = repairNarrativeBlockIdentifiers(
         buildJudgmentNarrativeBlock({
@@ -3911,8 +4368,8 @@ async function advanceTurnWithLease(input: {
         .join(" ");
       next = {
         ...next,
-        log: [...next.log, judgmentBlock],
       };
+      judgmentNarrative = judgmentBlock;
     } else {
       const winner =
         next.winnerSide === "a"
@@ -3944,13 +4401,165 @@ async function advanceTurnWithLease(input: {
     }
   }
 
-  await battleRepo.saveBattle(next, {
+  let finishedExecution = causalExecution;
+  while (finishedExecution.status === "awaiting_decision") {
+    const bucket = finishedExecution.temporalPlan.buckets[finishedExecution.bucketIndex];
+    if (!bucket) throw new Error("CAUSAL_BUCKET_MISSING");
+    for (const side of bucket.actorSides) {
+      finishedExecution = acceptCausalExecutionDecision({
+        execution: finishedExecution,
+        side,
+      });
+    }
+    finishedExecution = commitCausalExecutionBucket({
+      execution: finishedExecution,
+    });
+  }
+  if (finishedExecution.status === "awaiting_finalize") {
+    finishedExecution = finishCausalTurnExecution({ execution: finishedExecution });
+  }
+  next = {
+    ...next,
+    causalExecution: finishedExecution,
+    causalBucketCommit: undefined,
+    causalEngineContinuation: undefined,
+  };
+  next = completeAdvancePhases({
+    state: next,
+    operationId: input.operationId,
+    phases: next.finishReason === "turn_limit"
+      ? ["combat", "judgment"]
+      : ["combat"],
+    narrationInputs: {
+      combat: combatNarrationInput,
+      ...(judgmentNarrationInput ? { judgment: judgmentNarrationInput } : {}),
+    },
+  });
+
+  await battleRepo.saveBattleWithNarrationOutbox(next, {
     sideAUserId: meta.side_a_user_id,
     sideACharacterId: meta.side_a_character_id,
     sideBCharacterId: meta.side_b_character_id,
+    expectedRevision: next.advanceOperation?.expectedRevision,
   });
 
   return toBattlePublicForViewer(next, mine, resultSummary, opp);
+}
+
+function buildFrozenNarrationInput(
+  state: BattleState,
+  phase: "prologue" | "combat" | "judgment" | "aftermath",
+) {
+  const record = (state.turnRecords ?? []).at(-1);
+  const snapshot = {
+    schemaVersion: 1 as const,
+    scene: state.situation.scene,
+    perspective: state.narrationStyle?.perspective ?? "external" as const,
+    participantLabels: {
+      a: state.sideA.displayName,
+      b: state.sideB.displayName,
+    },
+    winnerSide: state.winnerSide,
+    finishReason: state.finishReason,
+    adjudicationReason: state.adjudication?.reason ?? null,
+    eventFacts: (record?.events ?? []).map((event) => ({
+      type: event.type,
+      actorSide: event.actorSide ?? null,
+      targetSides: event.targetSides ?? [],
+      intensity: event.intensity ?? null,
+    })).slice(0, 48),
+    characterSpeeches: (record?.events ?? [])
+      .filter((event) => event.type === "utterance" && event.actorSide && event.utterance)
+      .map((event) => ({
+        sourceSide: event.actorSide as "a" | "b",
+        text: event.utterance!.text,
+      }))
+      .slice(0, 8),
+    assetGenerationIds: {
+      sideA: state.assetManifest?.characters.a.generationId ?? null,
+      sideB: state.assetManifest?.characters.b.generationId ?? null,
+      battlefield: state.assetManifest?.battlefield.generationId ?? null,
+      narrationStyle: state.assetManifest?.narrationStyle.generationId ?? null,
+    },
+  };
+  return {
+    snapshot,
+    digest: requestDigest({ phase, combatTurn: state.turn, snapshot }),
+  };
+}
+
+type DeferredNarrationInput = {
+  kind: "prologue" | "combat" | "judgment" | "aftermath";
+  request: Record<string, unknown>;
+};
+
+export function completeAdvancePhases(input: {
+  state: BattleState;
+  operationId: string;
+  phases: readonly ("prologue" | "combat" | "judgment" | "aftermath")[];
+  narrationInputs?: Partial<Record<
+    "prologue" | "combat" | "judgment" | "aftermath",
+    DeferredNarrationInput
+  >>;
+}): BattleState {
+  const operation = input.state.advanceOperation;
+  if (!operation || operation.operationId !== input.operationId) {
+    throw new Error("ADVANCE_OPERATION_MISSING");
+  }
+  if (operation.status === "completed") return input.state;
+  const fromRevision = operation.expectedRevision;
+  if ((input.state.battleRevision ?? 0) !== fromRevision) {
+    throw new Error("BATTLE_REVISION_CONFLICT");
+  }
+  if (input.phases.length === 0) throw new Error("ADVANCE_PHASES_EMPTY");
+  const firstSequence = (input.state.phaseReceiptSequence ?? 0) + 1;
+  const toRevision = fromRevision + input.phases.length;
+  const committedAt = new Date().toISOString();
+  const receipts = input.phases.map((phase, index) => {
+    const sequence = firstSequence + index;
+    const receiptFromRevision = fromRevision + index;
+    const override = input.narrationInputs?.[phase];
+    const frozen = override === undefined
+      ? buildFrozenNarrationInput(input.state, phase)
+      : {
+          snapshot: override,
+          digest: requestDigest({
+            phase,
+            combatTurn: input.state.turn,
+            snapshot: override,
+          }),
+        };
+    return {
+      schemaVersion: 1 as const,
+      id: `${input.state.id}:phase:${sequence}`,
+      sequence,
+      operationId: input.operationId,
+      phase,
+      combatTurn: phase === "combat" || phase === "judgment"
+        ? input.state.turn
+        : null,
+      fromRevision: receiptFromRevision,
+      toRevision: receiptFromRevision + 1,
+      committedAt,
+      narrationInput: frozen.snapshot,
+      narrationInputDigest: frozen.digest,
+    };
+  });
+  return {
+    ...input.state,
+    battleRevision: toRevision,
+    phaseReceiptSequence: firstSequence + input.phases.length - 1,
+    phaseReceipts: [
+      ...(input.state.phaseReceipts ?? []),
+      ...receipts,
+    ].slice(-100),
+    advanceOperation: {
+      ...operation,
+      status: "completed",
+      completedAt: committedAt,
+      receiptIds: receipts.map((receipt) => receipt.id),
+    },
+  };
 }
 
 async function runPrologueTurn(input: {
@@ -3965,6 +4574,7 @@ async function runPrologueTurn(input: {
   llm: LlmProvider;
   dialoguePipeline: DialoguePipelineSettings;
   emit?: (event: BattleAdvanceStreamEvent) => void;
+  operationId: string;
 }): Promise<BattlePublic> {
   const emit = input.emit ?? (() => undefined);
   let state = input.state;
@@ -4040,65 +4650,48 @@ async function runPrologueTurn(input: {
   });
 
   emit({ type: "phase", phase: "narrating" });
+  const prologueNarrationRequest = {
+    scene: state.situation.scene,
+    sideAName: narratorParticipantLabels.a,
+    sideBName: narratorParticipantLabels.b,
+    sideABlurb: profileAnchors.a ? input.mine.narrativeBlurb : undefined,
+    sideBBlurb: profileAnchors.b ? input.opp.narrativeBlurb : undefined,
+    sideATraits: profileAnchors.a ? input.mine.traits : undefined,
+    sideBTraits: profileAnchors.b ? input.opp.traits : undefined,
+    policySummary: policyLine,
+    priorMatchSummary: state.priorMatchSummary ?? undefined,
+    battlefield: state.battlefield,
+    innerDigests: digests,
+    characterSpeeches,
+    profileAnchors,
+    sceneStateFacts: buildNarratorSceneStateFacts({
+      state,
+      mine: input.mine,
+      opp: input.opp,
+      perspective,
+      focus,
+    }),
+    focus,
+    perspective,
+    narratorContinuity: state.narratorContinuity
+      ? selectNarratorContinuityForFocus({
+          continuity: state.narratorContinuity,
+          focus,
+        })
+      : null,
+    recognitionSubjects: prologuePerceptionView
+      ? narratorRecognitionSubjects(prologuePerceptionView)
+      : [],
+    styleInstruction: state.narrationStyle?.instruction,
+    styleName: state.narrationStyle?.displayName,
+  };
   let narrationResult: NarrationResult;
   try {
-    narrationResult = await withTimeout(
-      input.llm.narratePrologue({
-        scene: state.situation.scene,
-        sideAName: narratorParticipantLabels.a,
-        sideBName: narratorParticipantLabels.b,
-        sideABlurb: profileAnchors.a
-          ? input.mine.narrativeBlurb
-          : undefined,
-        sideBBlurb: profileAnchors.b
-          ? input.opp.narrativeBlurb
-          : undefined,
-        sideATraits: profileAnchors.a ? input.mine.traits : undefined,
-        sideBTraits: profileAnchors.b ? input.opp.traits : undefined,
-        policySummary: policyLine,
-        priorMatchSummary: state.priorMatchSummary ?? undefined,
-        battlefield: state.battlefield,
-        innerDigests: digests,
-        characterSpeeches,
-        profileAnchors,
-        sceneStateFacts: buildNarratorSceneStateFacts({
-          state,
-          mine: input.mine,
-          opp: input.opp,
-          perspective,
-          focus,
-        }),
-        focus,
-        perspective,
-        narratorContinuity: state.narratorContinuity
-          ? selectNarratorContinuityForFocus({
-              continuity: state.narratorContinuity,
-              focus,
-            })
-          : null,
-        recognitionSubjects: prologuePerceptionView
-          ? narratorRecognitionSubjects(prologuePerceptionView)
-          : [],
-        styleInstruction: state.narrationStyle?.instruction,
-        styleName: state.narrationStyle?.displayName,
-        onProgress: (progress) => {
-          emit({
-            type: "narrator",
-            lines: progress.lines.map((line) =>
-              repairNarrationIdentifierText(line, identifierCatalog)
-            ),
-            draft: progress.draft
-              ? repairNarrationIdentifierText(progress.draft, identifierCatalog)
-              : null,
-            turn: 0,
-          });
-        },
-      }),
-      FAST_LLM_ENVELOPE_TIMEOUT_MS,
-      "narratePrologue",
-    );
+    throw new Error("prologue narration deferred to ordered worker");
   } catch (e) {
-    console.warn("[battle] narratePrologue failed", e);
+    if (!(e instanceof Error && e.message === "prologue narration deferred to ordered worker")) {
+      console.warn("[battle] narratePrologue failed", e);
+    }
     const place =
       state.battlefield?.displayName ?? state.situation.scene;
     narrationResult = {
@@ -4120,21 +4713,7 @@ async function runPrologueTurn(input: {
         text: speech.text,
       })),
     };
-    emit({
-      type: "narrator",
-      lines: narrationResult.narrator.map((line) =>
-        repairNarrationIdentifierText(line, identifierCatalog)
-      ),
-      draft: null,
-      turn: 0,
-    });
   }
-  state = applyNarratorRecognitionResult({
-    state,
-    view: prologuePerceptionView,
-    turn: 0,
-    updates: narrationResult.recognitionUpdates,
-  });
   let narrative = publicNarrativeBlock(narrationResult);
   narrative = repairNarrativeBlockIdentifiers(narrative, identifierCatalog);
   if (
@@ -4166,27 +4745,31 @@ async function runPrologueTurn(input: {
     sources: characterSpeeches,
   });
 
-  if (narrative.speeches.length) {
-    emit({ type: "speeches", speeches: narrative.speeches });
-  }
   emit({ type: "phase", phase: "finalizing" });
 
-  const next: BattleState = {
+  let next: BattleState = {
     ...state,
     openingPlanA: state.agentStateA?.currentGoal?.slice(0, 1200),
     openingPlanB: state.agentStateB?.currentGoal?.slice(0, 1200),
     turn: 0,
     prologuePending: false,
-    log: [...state.log, narrative],
     updatedAt: new Date().toISOString(),
   };
+  next = completeAdvancePhases({
+    state: next,
+    operationId: input.operationId,
+    phases: ["prologue"],
+    narrationInputs: {
+      prologue: { kind: "prologue", request: prologueNarrationRequest },
+    },
+  });
 
-  await battleRepo.saveBattle(next, {
+  await battleRepo.saveBattleWithNarrationOutbox(next, {
     sideAUserId: input.meta.side_a_user_id,
     sideACharacterId: input.meta.side_a_character_id,
     sideBCharacterId: input.meta.side_b_character_id,
+    expectedRevision: next.advanceOperation?.expectedRevision,
   });
-
   return toBattlePublicForViewer(next, input.mine, null, input.opp);
 }
 
@@ -4202,6 +4785,7 @@ async function runAftermathTurn(input: {
   llm: LlmProvider;
   dialoguePipeline: DialoguePipelineSettings;
   emit?: (event: BattleAdvanceStreamEvent) => void;
+  operationId: string;
 }): Promise<BattlePublic> {
   const emit = input.emit ?? (() => undefined);
   let state = input.state;
@@ -4288,72 +4872,53 @@ async function runAftermathTurn(input: {
     focus,
   });
   emit({ type: "phase", phase: "narrating" });
+  const aftermathNarrationRequest = {
+    turn: aftermathTurn,
+    scene: state.situation.scene,
+    sideAName: narratorParticipantLabels.a,
+    sideBName: narratorParticipantLabels.b,
+    winnerSide: state.winnerSide,
+    winnerName: narratorWinnerName,
+    fallenNames: narratorFallenNames,
+    battlefield: state.battlefield,
+    recentNarration: [],
+    innerDigests: digests,
+    characterSpeeches,
+    profileAnchors: buildNarratorProfileAnchors({
+      mine: input.mine,
+      opp: input.opp,
+      perspective,
+      focus,
+      state,
+    }),
+    sceneStateFacts: buildNarratorSceneStateFacts({
+      state,
+      mine: input.mine,
+      opp: input.opp,
+      perspective,
+      focus,
+    }),
+    focus,
+    perspective,
+    narratorContinuity: state.narratorContinuity
+      ? selectNarratorContinuityForFocus({
+          continuity: state.narratorContinuity,
+          focus,
+        })
+      : null,
+    recognitionSubjects: aftermathPerceptionView
+      ? narratorRecognitionSubjects(aftermathPerceptionView)
+      : [],
+    styleInstruction: state.narrationStyle?.instruction,
+    styleName: state.narrationStyle?.displayName,
+  };
   let presentation: AftermathNarrationResult | undefined;
   try {
-    presentation = await withTimeout(
-      input.llm.narrateAftermath({
-        turn: aftermathTurn,
-        scene: state.situation.scene,
-        sideAName: narratorParticipantLabels.a,
-        sideBName: narratorParticipantLabels.b,
-        winnerSide: state.winnerSide,
-        winnerName: narratorWinnerName,
-        fallenNames: narratorFallenNames,
-        battlefield: state.battlefield,
-        recentNarration: aftermathPerceptionView?.mode === "self" ||
-            aftermathPerceptionView?.mode === "opponent"
-          ? []
-          : state.log
-              .slice(-2)
-              .flatMap((b) => b.narrator)
-              .slice(-8),
-        innerDigests: digests,
-        characterSpeeches,
-        profileAnchors: buildNarratorProfileAnchors({
-          mine: input.mine,
-          opp: input.opp,
-          perspective,
-          focus,
-          state,
-        }),
-        sceneStateFacts: buildNarratorSceneStateFacts({
-          state,
-          mine: input.mine,
-          opp: input.opp,
-          perspective,
-          focus,
-        }),
-        focus,
-        perspective,
-        narratorContinuity: state.narratorContinuity
-          ? selectNarratorContinuityForFocus({
-              continuity: state.narratorContinuity,
-              focus,
-            })
-          : null,
-        recognitionSubjects: aftermathPerceptionView
-          ? narratorRecognitionSubjects(aftermathPerceptionView)
-          : [],
-        styleInstruction: state.narrationStyle?.instruction,
-        styleName: state.narrationStyle?.displayName,
-        onProgress: (progress) => {
-          emit({
-            type: "narrator",
-            lines: progress.lines.map((line) =>
-              repairNarrationIdentifierText(line, identifierCatalog)
-            ),
-            draft: progress.draft
-              ? repairNarrationIdentifierText(progress.draft, identifierCatalog)
-              : null,
-            turn: aftermathTurn,
-          });
-        },
-      }),
-      FAST_LLM_ENVELOPE_TIMEOUT_MS,
-      "narrateAftermath",
-    );
+    throw new Error("aftermath narration deferred to ordered worker");
   } catch (e) {
-    console.warn("[battle] narrateAftermath failed", e);
+    if (!(e instanceof Error && e.message === "aftermath narration deferred to ordered worker")) {
+      console.warn("[battle] narrateAftermath failed", e);
+    }
     presentation = {
       before: ["場には、対決の余韻だけが静かに残った。"],
       after: ["幕は、そこで静かに下りた。"],
@@ -4366,12 +4931,6 @@ async function runAftermathTurn(input: {
     };
   }
 
-  state = applyNarratorRecognitionResult({
-    state,
-    view: aftermathPerceptionView,
-    turn: aftermathTurn,
-    updates: presentation.recognitionUpdates,
-  });
 
   let narrative = repairNarrativeBlockIdentifiers(
     buildAftermathNarrativeBlock({
@@ -4387,23 +4946,12 @@ async function runAftermathTurn(input: {
     narrative,
     sources: characterSpeeches,
   });
-  emit({
-    type: "narrator",
-    lines: narrative.narrator,
-    draft: null,
-    turn: aftermathTurn,
-  });
-  if (narrative.speeches.length) {
-    emit({ type: "speeches", speeches: narrative.speeches });
-  }
-
   emit({ type: "phase", phase: "finalizing" });
 
   let next: BattleState = {
     ...state,
     status: "finished",
     aftermathPending: false,
-    log: [...state.log, narrative],
     updatedAt: new Date().toISOString(),
   };
 
@@ -4452,12 +5000,21 @@ async function runAftermathTurn(input: {
     );
   }
 
-  await battleRepo.saveBattle(next, {
+  next = completeAdvancePhases({
+    state: next,
+    operationId: input.operationId,
+    phases: ["aftermath"],
+    narrationInputs: {
+      aftermath: { kind: "aftermath", request: aftermathNarrationRequest },
+    },
+  });
+
+  await battleRepo.saveBattleWithNarrationOutbox(next, {
     sideAUserId: input.meta.side_a_user_id,
     sideACharacterId: input.meta.side_a_character_id,
     sideBCharacterId: input.meta.side_b_character_id,
+    expectedRevision: next.advanceOperation?.expectedRevision,
   });
-
   // The winner card already states the mechanical result. The aftermath log is
   // LLM-authored, so do not append a second fixed-prose result summary here.
   return toBattlePublicForViewer(next, input.mine, null, input.opp);
@@ -4466,6 +5023,7 @@ async function runAftermathTurn(input: {
 export async function advanceTurn(input: {
   userId: string;
   battleId: string;
+  operationId?: string;
   llm: LlmProvider;
   /** Optional progressive updates (SSE). */
   onProgress?: (event: BattleAdvanceStreamEvent) => void;
@@ -4473,7 +5031,10 @@ export async function advanceTurn(input: {
   const meta = await battleRepo.getBattleMeta(input.battleId);
   if (!meta) throw new Error("BATTLE_NOT_FOUND");
   if (meta.side_a_user_id !== input.userId) throw new Error("FORBIDDEN");
-  return withBattleLease(input.battleId, () => advanceTurnWithLease(input));
+  return withBattleLease(input.battleId, () => advanceTurnWithLease({
+    ...input,
+    operationId: input.operationId ?? `legacy:${newId("advance")}`,
+  }));
 }
 
 export async function performAction(input: {

@@ -10,6 +10,78 @@ import {
 } from "./openai-compatible.js";
 
 describe("character-agent action proposal prompt", () => {
+  it("keeps later-bucket action context separate from speech and psyche", async () => {
+    const semanticState = createBattleSemanticState({
+      scene: "石橋",
+      sideA: { displayName: "先行者" },
+      sideB: { displayName: "後攻者" },
+    });
+    const perception = buildMinimalObserverPerception({
+      observerSide: "b",
+      turn: 3,
+      semanticState,
+      quantizedMechanicalEvidence: [],
+      reserveEvidence: [],
+      legacyCounterpartIdentified: true,
+    }).frame;
+    const provider = new OpenAiCompatibleProvider({
+      name: "test-fast",
+      apiKey: "test-only",
+      baseUrl: "https://example.invalid/v1",
+      modelEngine: "engine",
+      modelFast: "fast",
+    });
+    let system = "";
+    let user = "";
+    (provider as unknown as {
+      chatJson(system: string, user: string): Promise<unknown>;
+    }).chatJson = async (prompt, request) => {
+      system = prompt;
+      user = request;
+      return { nextAction: { kind: "defend" } };
+    };
+    const result = await provider.decideCharacterAction({
+      character: {
+        schemaVersion: 1,
+        displayName: "後攻者",
+        identity: {
+          realName: null,
+          nicknames: [],
+          selfNames: [],
+          epithets: [],
+          gender: null,
+          age: null,
+        },
+        tags: [],
+        appearanceSummary: "外套を着ている",
+        traits: ["慎重"],
+        narrativeBlurb: "状況を見て動く。",
+        basicAction: { name: "一撃", description: "間合いを詰める。" },
+        skills: [],
+        equipment: { weapon: null, armor: null },
+      },
+      perception,
+      decision: {
+        nextTurn: 3,
+        turnsRemaining: 9,
+        availableActions: [{
+          kind: "defend",
+          name: "防御",
+          target: { kind: "self", perceivedAs: "自分" },
+        }],
+        finisher: null,
+      },
+    });
+    assert.deepEqual(result.proposedAction, { kind: "defend" });
+    assert.match(system, /action-only stage/);
+    assert.doesNotMatch(user, /conversation|expressionBrief|lastSpeech|privateMemory/);
+    assert.deepEqual(Object.keys(JSON.parse(user)).sort(), [
+      "character",
+      "decision",
+      "perception",
+    ]);
+  });
+
   it("defines mutually exclusive action-kind output shapes", () => {
     for (const kind of [
       "skill",

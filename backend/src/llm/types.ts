@@ -107,6 +107,15 @@ export type CharacterActionDecisionContext = {
   };
 };
 
+export type CharacterActionDecisionInput = {
+  /** Frozen self-only profile. Never includes the counterpart's private state. */
+  character: CharacterSelfProfileAnchor;
+  /** Observer-relative facts committed before this decision boundary. */
+  perception: CharacterPerceptionFrame;
+  /** Server-owned legal choices and qualitative tactical constraints. */
+  decision: CharacterActionDecisionContext;
+};
+
 export type CharacterDeepPsycheCompactInput = {
   contextMode: "compact";
   phase: "prologue" | "turn" | "aftermath";
@@ -544,6 +553,13 @@ export interface LlmProvider {
     turnObservation?: TurnObservationPacket;
     compactRecentExchange?: CharacterConversationEntry[];
   }): Promise<CharacterDeepPsycheAdvance>;
+  /**
+   * Choose one bounded action without producing speech or revising psyche.
+   * This deliberately has a smaller context than advanceCharacterAgent.
+   */
+  decideCharacterAction(input: CharacterActionDecisionInput): Promise<{
+    proposedAction: unknown | null;
+  }>;
   /** Advance one character from its frozen observer-relative frame only. */
   advanceCharacterAgent(input: {
     phase: "prologue" | "turn" | "aftermath";
