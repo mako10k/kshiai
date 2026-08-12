@@ -126,6 +126,7 @@ task T_ACCEPT_NARRATION_CONTRACT NARRATION_AUTHORITY_READY -> NARRATION_CONTRACT
   title "Accept narration infrastructure and delivery contract"
   description "Owner accepts or revises the deterministic terminal rule, recognition-continuity disposition, authenticated queue-push infrastructure and recovery operation, terminal-only public prose, lightweight model route with total adapter-plus-worker attempt/token/cost ceiling, audience/realm policy, public-event and internal-attempt retention, reset high-watermark policy, and legacy trace handling. This local design gate does not authorize cloud deployment or production configuration."
   duration 1p
+  status done
   requires:
     OWNER 1
   owner "user"
@@ -164,3 +165,16 @@ task T_CUTOVER_NARRATION_COMPATIBILITY NARRATION_MIGRATION_ACCEPTED -> NARRATION
   requires:
     DEV 1
   owner "codex"
+
+work_event WE-9f7ddd6e517c822e4528ef5fb55dc6fba04f52ec285b249b2a8e2177bff186c2:
+  model 1
+  task T_ACCEPT_NARRATION_CONTRACT
+  kind start
+  occurred_at 2026-08-12T16:13:43+09:00
+  planned_value 1p
+
+work_event WE-4b18c7fe2ace32e9ebf36cf925434b432b7e2b46064be4690297766c52bd31bf:
+  model 1
+  task T_ACCEPT_NARRATION_CONTRACT
+  kind finish
+  occurred_at 2026-08-12T16:13:43+09:00
