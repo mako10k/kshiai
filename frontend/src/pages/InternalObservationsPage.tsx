@@ -343,6 +343,13 @@ export function InternalObservationsPage() {
                         value={detail.canonicalCurrent.causalBucketCommit}
                       />
                     ) : null}
+                    {detail.canonicalCurrent.causalEngineContinuation ? (
+                      <PipelineNode
+                        title="Restartable engine continuation"
+                        subtitle="次bucketから再開するためのserver-private checkpoint"
+                        value={detail.canonicalCurrent.causalEngineContinuation}
+                      />
+                    ) : null}
                   </>
                 ) : (
                   <p className="muted">checkpointなし（旧形式、またはbucket実行開始前）</p>

@@ -1341,6 +1341,8 @@ export const BattleStateSchema = z.object({
   causalExecution: CausalTurnExecutionSchema.optional(),
   /** Durable first-bucket mechanics while the later decision is pending. */
   causalBucketCommit: BattleBucketMechanicalCommitSchema.optional(),
+  /** Pure-engine state required to resume after the durable bucket commit. */
+  causalEngineContinuation: BattleTurnEngineContinuationSchema.optional(),
   /**
    * Engine-internal balance metrics (not exposed on BattlePublic).
    * Accumulated from HP deltas each combat turn for observability.

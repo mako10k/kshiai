@@ -140,6 +140,7 @@ export type InternalBattleObservationDetail = {
     } | null;
     causalExecution: InternalCausalTurnExecution | null;
     causalBucketCommit: Record<string, unknown> | null;
+    causalEngineContinuation: Record<string, unknown> | null;
     semanticState: unknown | null;
     worldState: unknown | null;
     latestSemanticTransition: unknown | null;

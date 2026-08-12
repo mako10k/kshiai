@@ -134,6 +134,7 @@ export async function getInternalBattleObservation(
     assetManifest: unknown | null;
     causalExecution: unknown | null;
     causalBucketCommit: unknown | null;
+    causalEngineContinuation: unknown | null;
     semanticState: unknown | null;
     worldState: unknown | null;
     latestSemanticTransition: unknown | null;
@@ -208,6 +209,7 @@ export async function getInternalBattleObservation(
       assetManifest: rawBattleState.assetManifest ?? null,
       causalExecution: rawBattleState.causalExecution ?? null,
       causalBucketCommit: rawBattleState.causalBucketCommit ?? null,
+      causalEngineContinuation: rawBattleState.causalEngineContinuation ?? null,
       semanticState: rawBattleState.semanticState ?? null,
       worldState: rawBattleState.worldState ?? null,
       latestSemanticTransition: rawBattleState.latestSemanticTransition ?? null,

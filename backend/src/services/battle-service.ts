@@ -33,6 +33,7 @@ import {
   isQuietTurn,
   normalizeSupervisor,
   ratingForDisplay,
+  resolveNextBattleTurnBucket,
   resolveTurn,
   sheetCombatProfile,
   shouldInjectHappening,
@@ -3434,7 +3435,7 @@ async function advanceTurnWithLease(input: {
     });
   }
 
-  const engineResolved = resolveTurn({
+  const engineInput = {
     state,
     sideASkills: safeSkills(mine.skills),
     sideBSkills: safeSkills(opp.skills),
@@ -3442,12 +3443,42 @@ async function advanceTurnWithLease(input: {
     sideBBasicAttack: opp.basicAttack,
     temporalResolutionOverride: causalExecution.temporalPlan,
     executionId: causalExecution.executionId,
+  };
+  const resumedEngineContinuation = state.causalEngineContinuation;
+  if (resumedEngineContinuation) {
+    const resumedBucket = causalExecution.temporalPlan.buckets[causalExecution.bucketIndex];
+    if (!resumedBucket) throw new Error("CAUSAL_BUCKET_MISSING");
+    for (const side of resumedBucket.actorSides) {
+      causalExecution = acceptCausalExecutionDecision({
+        execution: causalExecution,
+        side,
+      });
+    }
+  }
+  let engineResolved = resolveNextBattleTurnBucket({
+    ...engineInput,
+    engineContinuation: resumedEngineContinuation,
   });
   const firstBucketCommit = engineResolved.bucketCommits?.[0];
   if (!firstBucketCommit) throw new Error("CAUSAL_FIRST_BUCKET_COMMIT_MISSING");
   if (state.causalBucketCommit) {
-    if (JSON.stringify(state.causalBucketCommit) !== JSON.stringify(firstBucketCommit)) {
-      throw new Error("CAUSAL_FIRST_BUCKET_REPLAY_MISMATCH");
+    if (!resumedEngineContinuation) {
+      // Compatibility for a checkpoint written before engine continuations.
+      engineResolved = resolveTurn(engineInput);
+    } else {
+      causalExecution = commitCausalExecutionBucket({ execution: causalExecution });
+      state = {
+        ...state,
+        causalExecution,
+        causalEngineContinuation: engineResolved.engineContinuation,
+      };
+      if (engineResolved.engineContinuation) {
+        await battleRepo.saveBattle(state, {
+          sideAUserId: meta.side_a_user_id,
+          sideACharacterId: meta.side_a_character_id,
+          sideBCharacterId: meta.side_b_character_id,
+        });
+      }
     }
   } else {
     const firstBucket = causalExecution.temporalPlan.buckets[0];
@@ -3463,12 +3494,42 @@ async function advanceTurnWithLease(input: {
       ...state,
       causalExecution,
       causalBucketCommit: firstBucketCommit,
+      causalEngineContinuation: engineResolved.engineContinuation,
     };
-    await battleRepo.saveBattle(state, {
-      sideAUserId: meta.side_a_user_id,
-      sideACharacterId: meta.side_a_character_id,
-      sideBCharacterId: meta.side_b_character_id,
+    if (engineResolved.engineContinuation) {
+      await battleRepo.saveBattle(state, {
+        sideAUserId: meta.side_a_user_id,
+        sideACharacterId: meta.side_a_character_id,
+        sideBCharacterId: meta.side_b_character_id,
+      });
+    }
+  }
+  while (engineResolved.engineContinuation) {
+    const nextBucket = causalExecution.temporalPlan.buckets[causalExecution.bucketIndex];
+    if (!nextBucket) throw new Error("CAUSAL_BUCKET_MISSING");
+    for (const side of nextBucket.actorSides) {
+      causalExecution = acceptCausalExecutionDecision({
+        execution: causalExecution,
+        side,
+      });
+    }
+    engineResolved = resolveNextBattleTurnBucket({
+      ...engineInput,
+      engineContinuation: engineResolved.engineContinuation,
     });
+    causalExecution = commitCausalExecutionBucket({ execution: causalExecution });
+    state = {
+      ...state,
+      causalExecution,
+      causalEngineContinuation: engineResolved.engineContinuation,
+    };
+    if (engineResolved.engineContinuation) {
+      await battleRepo.saveBattle(state, {
+        sideAUserId: meta.side_a_user_id,
+        sideACharacterId: meta.side_a_character_id,
+        sideBCharacterId: meta.side_b_character_id,
+      });
+    }
   }
   const freeActionPreparation = await prepareFreeActionsForTurn({
     llm: input.llm,
@@ -4099,6 +4160,7 @@ async function advanceTurnWithLease(input: {
     ...next,
     causalExecution: finishedExecution,
     causalBucketCommit: undefined,
+    causalEngineContinuation: undefined,
   };
 
   await battleRepo.saveBattle(next, {
