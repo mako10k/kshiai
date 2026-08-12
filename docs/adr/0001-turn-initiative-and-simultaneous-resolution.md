@@ -1,6 +1,6 @@
 # ADR-0001: Turn initiative and simultaneous resolution
 
-- Status: Proposed
+- Status: Accepted
 - Date: 2026-08-12
 - Decision owner: Product owner
 - Related: GitHub Issue #98; `docs/issue-98-battle-pipeline-plan.md`; `docs/issue-98-causal-contract.md`; PERT task `T_REFACTOR_BUCKET_EXECUTION`
@@ -30,9 +30,11 @@ The initial implementation plan retained simultaneous resolution to preserve cur
 
 ## Decision
 
-Proposed direction: choose option 2 and remove implicit simultaneous resolution for ordinary character actions.
+Choose option 2 and remove implicit simultaneous resolution for ordinary character actions. Every ordinary turn has a first and later actor.
 
-This is not yet accepted. The owner must separately select the deterministic tie-break policy. Candidate policies include a battle-persisted initiative token that alternates on ties, or a battle seed and turn-derived order stored in the turn checkpoint. A fixed Side A priority is not acceptable because it violates side-label symmetry.
+When effective initiative values are equal, reuse the previous resolved turn's first/second order. If the battle has no previous resolved order, draw once using the same A/B probability weights used by the initiative calculation. When the calculation supplies no random weights, as in the current speed-only calculation, use an exactly equal 50/50 draw. A fixed Side A priority is not allowed.
+
+The server records the draw basis, sampled value, selected first side, and resulting order in the first durable turn checkpoint before requesting an action. Retry and resume read that record and never draw again. Changing runtime randomness cannot change an already checkpointed turn.
 
 Explicit rules may still create atomic or simultaneous effects when simultaneity is part of the rule itself. Counterattacks, delayed effects, death triggers, and mutual incapacitation must be modeled as named mechanics with their own provenance rather than by placing ordinary actions in one implicit bucket.
 
@@ -48,7 +50,7 @@ Explicit rules may still create atomic or simultaneous effects when simultaneity
 ### Negative and risks
 
 - Near-equal initiative and mutual-incapacitation outcomes can differ from existing battles.
-- A deterministic and fair tie-break policy becomes persisted domain state.
+- A fair, persisted tie-break receipt becomes domain state.
 - Existing atomic-bucket tests and `initiative-window-v1` documentation must change together.
 - More durable commits and observer projections may increase service latency and persistence load.
 
@@ -57,7 +59,7 @@ Explicit rules may still create atomic or simultaneous effects when simultaneity
 - Existing turn records retain their recorded `initiative-window-v1` temporal plan and continue to display simultaneous buckets.
 - New rules require a new temporal ruleset identifier; historical records must not be reinterpreted under it.
 - Active legacy battles need an explicit policy snapshot or compatibility path before the new ruleset is enabled.
-- `BattleState.causalExecution`, turn receipts, internal observability DTOs, and retry keys must carry the selected deterministic order.
+- `BattleState.causalExecution`, turn receipts, internal observability DTOs, and retry keys must carry the probability basis, sampled value, and selected order.
 - Release, deployment, and production observation remain separately authorized.
 
 ## Verification

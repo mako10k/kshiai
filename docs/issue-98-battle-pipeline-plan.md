@@ -9,7 +9,7 @@
 
 「先行側の確定・可視結果を後攻側が読んで同ターンに判断する」には、agent 呼出しを動かすだけでは足りない。現在は A/B 両方の予約 action を `resolveTurn` の開始時に読み、同じ呼出し内で全 bucket を解決してから、両 agent を並列に呼ぶ構造である。
 
-したがって最初の実装対象は、**再開可能な bucket 状態機械**である。`prepare → bucket commit → observer projection → later decision → validation → next bucket commit → finalize` を durable checkpoint とともに設計・実装する。既存の同時 bucket は同じ snapshot からの atomic merge を維持する。
+したがって最初の実装対象は、**再開可能な bucket 状態機械**である。`prepare → order checkpoint → bucket commit → observer projection → later decision → validation → next bucket commit → finalize` を durable checkpoint とともに設計・実装する。ADR-0001により通常行動の同時 bucket は廃止し、同値時は前回順、履歴がなければ既存比率または50/50の一度限りの抽選結果を永続化する。
 
 ## 現在確認できる事実と訂正
 
@@ -24,7 +24,7 @@
 | Phase | 成果 | owner decision | 受入の要点 |
 | --- | --- | --- | --- |
 | 0: 契約ドラフト (4p) | authority matrix、state machine、checkpoint、visibility/SSE、retry、OBS-09 disposition | 次 phase の仕様を承認 | LLM→永続 state/winner edge と public/private trace を全列挙 |
-| 1a: bucket engine (4p) | pure prepare/resolve-bucket/finalize、再入可能な checkpoint | - | 既存 simultaneous atomic merge と A/B swap を維持 |
+| 1a: bucket engine (4p) | pure prepare/resolve-bucket/finalize、再入可能な order checkpoint | - | ADR-0001の前回順/一度限り抽選、A/B swap、retry時非再抽選を維持 |
 | 1b: 順次判断 (4p) | first commit →可視 projection→later decision/validation/commit、phase receipt | action source と semantic/world 可視時点 | private intent を渡さず、KO/invalid/timeout を理由付き処理 |
 | 1c: durability/SSE/可視化 (3p) | lease/idempotency/outbox、reconnect、durable public event、管理者向け causal DAG | - | save後応答失敗・後攻 LLM timeout でも二重 commit なし。active/committed bucket と phase receipt を永続記録から表示 |
 | 2: effect scope (1p) | predicate、cancel/expiry、visibility、2 combatant制限 | effect contract を承認 | 援軍・新 combat participant は今回の範囲外 |
@@ -36,7 +36,7 @@
 
 1. Engine、server validation、semantic/world reconciliation が canonical mechanics を所有する。speech/narration/proposal は、それぞれ authority matrix に明記された既存 edge を除き、直接 state を変更しない。
 2. 後攻へ渡すのは、先行 bucket の durable commit 後に observer が知覚可能な事実だけ。private psyche、intent、未成立 effect、診断 trace は渡さない。
-3. 同時 bucket は片方の結果で相手の action を遡及取消ししない。atomic merge と A/B 入替え不変性を維持する。
+3. 通常行動は常に順次 bucket とする。同値時は前回順を再利用し、履歴がなければ同じ確率比、比率がなければ50/50で一度だけ抽選し、その根拠と結果を最初の durable checkpoint に保存する。
 4. 新しい public causal event は durable commit 後にだけ SSE へ送る。ephemeral progress、private trace、未確定 proposal は replayable public stream に混ぜない。
 5. retry は同じ idempotency key と battle version/lease に結び、既に commit 済みの receipt を返す。LLM・effect・action を二重実行しない。
 6. 既存 battle / turn record は additive に読む。新 phase detail や provenance を旧記録へ推測補完しない。
@@ -47,12 +47,12 @@
 - 各 bucket の action source: first actor の旧予約を暫定維持するか、両者とも同ターン decision へ移すか。
 - 先行 mechanics 後の semantic/world transition を後攻の可視入力へ含める時点と、既存 narrator recognition / terminal adjudication の authority をどう扱うか。
 - `OBS-20260807-09` を本計画へ統合するか、別軸として defer するか。
-- random initiative と、新しい戦術的 `wait` は初回 scope 外のままにする。導入するなら seed/replay/tie/A-B swap を別契約にする。
+- 同値時抽選はADR-0001の範囲に限定する。initiative全体のランダム化と、新しい戦術的 `wait` は初回 scope 外のままにする。
 - delayed/condition effect の server-defined predicate、cancel/expiry/visibility と、二戦闘者制限。
 - 12-turn candidate を局所 evidence 後に retain / revise / adopt のいずれにするか。production observation はこの計画に含まない。
 
 ## 検証とリリース境界
 
-最終受入では `npm test`、`npm run typecheck`、`npm run build` に加え、migration、限定 replay、checkpoint recovery、save 成功後の response failure、concurrent advance、SSE reconnect、A/B swap、同時 bucket、DTO/SSE/DB trace/LLM payload の privacy、provider failure を確認する。管理者向け内部戦闘観測では、永続 checkpoint と turn record だけを根拠に initiative score、bucket の reads-from/commit mode、active/committed 状態、判断・検証・結果・semantic/world transition・narrator の順序を表示し、旧記録は推測せず unavailable とする。
+最終受入では `npm test`、`npm run typecheck`、`npm run build` に加え、migration、限定 replay、checkpoint recovery、save 成功後の response failure、concurrent advance、SSE reconnect、A/B swap、同値時前回順、初回重み付き/50対50抽選、retry時非再抽選、DTO/SSE/DB trace/LLM payload の privacy、provider failure を確認する。管理者向け内部戦闘観測では、永続 checkpoint と turn record だけを根拠に initiative score、bucket の reads-from/commit mode、active/committed 状態、判断・検証・結果・semantic/world transition・narrator の順序を表示し、旧記録は推測せず unavailable とする。
 
 tag、deploy、Cloud Run/Worker promotion、production E2E、Issue 更新・close は含まない。local acceptance の証拠と rollback target を揃えた後、別途 owner が承認する。

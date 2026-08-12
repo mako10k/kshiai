@@ -14,4 +14,4 @@ This directory contains durable records of architectural and product-rule decisi
 
 | ADR | Status | Decision |
 | --- | --- | --- |
-| [0001](0001-turn-initiative-and-simultaneous-resolution.md) | Proposed | Whether ordinary turns retain simultaneous action buckets |
+| [0001](0001-turn-initiative-and-simultaneous-resolution.md) | Accepted | Ordinary turns are sequential; equal initiative reuses prior order or performs one persisted draw |

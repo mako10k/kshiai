@@ -3,7 +3,7 @@
 project KSHIAI_ISSUE_98_CAUSAL_BATTLE_PIPELINE:
   version 6
   title "Issue #98 causal battle-pipeline renewal"
-  description "Replace the all-actions-precommitted turn path with an explicitly checkpointed causal bucket state machine. Preserve server-owned mechanics, observer-relative visibility, and initiative-window-v1 unless an owner accepts a different contract. The two-combatant sequential-decision slice is separate from bounded delayed effects and from any production observation."
+  description "Replace the all-actions-precommitted turn path with an explicitly checkpointed causal bucket state machine. Preserve server-owned mechanics and observer-relative visibility. ADR-0001 supersedes initiative-window-v1 for new ordinary turns with sequential buckets and one persisted equal-initiative order decision. The two-combatant sequential-decision slice is separate from bounded delayed effects and from any production observation."
   as_of 2026-08-12
   duration_unit point
   velocity 2880p/1117h
@@ -77,9 +77,9 @@ task T_ACCEPT_CAUSAL_CONTRACT CAUSAL_CONTRACT_DRAFTED -> CAUSAL_CONTRACT_ACCEPTE
 
 task T_REFACTOR_BUCKET_EXECUTION CAUSAL_CONTRACT_ACCEPTED -> BUCKET_ENGINE_READY:
   title "Refactor deterministic engine into restartable bucket execution"
-  description "Extract pure prepare, resolve-bucket, and finalize operations from the current monolithic resolveTurn path. Preserve initiative-window-v1 atomic simultaneous behavior, A/B-swap invariance, server validation, and deterministic stable IDs. Persist no LLM-owned mechanics. Each operation must be re-enterable from its durable checkpoint without replaying an already committed bucket or consuming a planned action twice."
+  description "Extract pure prepare, resolve-bucket, and finalize operations from the current monolithic resolveTurn path. Implement ADR-0001: ordinary actions always use sequential buckets; equal initiative reuses the previous resolved order, or performs one persisted draw with the initiative calculation's A/B weights, defaulting to exact 50/50 when weights are absent. Preserve A/B-swap invariance, server validation, and deterministic stable IDs. Persist the draw basis, sample, and selected order before action calls. Each operation must be re-enterable without redrawing, replaying an already committed bucket, or consuming a planned action twice."
   duration 4p
-  status suspended
+  status active
   owner "codex"
   requires:
     DEV 1
@@ -142,7 +142,7 @@ task T_ACCEPT_PACING_POLICY PACING_MEASURED -> PACING_POLICY_ACCEPTED:
 
 task T_ACCEPT_ISSUE_98 PACING_POLICY_ACCEPTED -> ISSUE_98_LOCALLY_ACCEPTED:
   title "Accept Issue #98 locally and prepare release-decision evidence"
-  description "Run focused shared/backend/frontend fixtures plus full test, typecheck, build, migration, limited schedule replay, checkpoint recovery, A/B swap, simultaneous bucket, privacy across DTO/SSE/trace/LLM payload, and provider failure tests. Inspect the administrator internal DAG against persisted receipts for durable phase order and provenance, including partial checkpoint and legacy-unavailable displays. Record release success criteria, rollback target, and a separately authorized production-observation protocol, but do not tag, deploy, promote, mutate the Issue, or change production configuration."
+  description "Run focused shared/backend/frontend fixtures plus full test, typecheck, build, migration, limited schedule replay, checkpoint recovery, A/B swap, equal-initiative prior-order reuse, first-turn weighted and 50/50 draws, retry without redraw, privacy across DTO/SSE/trace/LLM payload, and provider failure tests. Inspect the administrator internal DAG against persisted receipts for durable phase order and provenance, including draw reason, partial checkpoint, and legacy-unavailable displays. Record release success criteria, rollback target, and a separately authorized production-observation protocol, but do not tag, deploy, promote, mutate the Issue, or change production configuration."
   duration 3p
   owner "codex"
   requires:
@@ -191,3 +191,9 @@ work_event WE-ddeebafbb739189c8b742f3abc2779eba9af96fea49b28544ff660281f46ed6c:
   kind suspend
   occurred_at 2026-08-12T09:37:29+09:00
   reason "ADR-0001 tie-break and simultaneous-resolution decision pending"
+
+work_event WE-d80deb1ffc3201da989ec15dfd650f24b3598862c39ee790a80a23abbb21cc09:
+  model 1
+  task T_REFACTOR_BUCKET_EXECUTION
+  kind resume
+  occurred_at 2026-08-12T09:45:00+09:00

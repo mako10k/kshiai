@@ -15,12 +15,14 @@ agents in parallel. Agent output becomes the following turn's reservation. No
 durable boundary therefore exists between a first-bucket commit and a
 later-bucket decision.
 
-The proposed initial scope is exactly two combatants and the existing
-`initiative-window-v1`. Different buckets are sequential; same buckets retain
-the same-start-snapshot atomic merge. Both normal-turn decisions move in-turn,
-so action source and pre-action expression are unambiguous. Legacy battles
-continue through their existing path. Random initiative, new tactical `wait`,
-delayed effects, and new participants are excluded from this first slice.
+The proposed initial scope is exactly two combatants. Historical records retain
+`initiative-window-v1`; new ordinary turns follow ADR-0001 and always use
+sequential action buckets. Equal initiative reuses the prior resolved order, or
+performs one persisted weighted draw when no prior order exists; absent weights,
+the draw is exactly 50/50. Both normal-turn decisions move in-turn, so action
+source and pre-action expression are unambiguous. Legacy battles continue
+through their existing path. Random initiative beyond ADR-0001's persisted tie
+draw, new tactical `wait`, delayed effects, and new participants are excluded.
 
 ## Durable state machine
 
@@ -111,6 +113,7 @@ case.
 The recommended decision is to migrate both normal-turn decisions in-turn;
 admit accepted first-bucket semantic/world observer facts before the later
 decision; retain narrator continuity and terminal referee as explicit
-exceptions; defer `OBS-20260807-09` remediation; and exclude random initiative,
-new tactical `wait`, and participant join. Acceptance authorizes no release,
+exceptions; defer `OBS-20260807-09` remediation; and exclude random initiative
+beyond ADR-0001's persisted equal-initiative tie draw, new tactical `wait`, and
+participant join. Acceptance authorizes no release,
 deployment, production observation, or Issue mutation.
