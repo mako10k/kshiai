@@ -1,6 +1,10 @@
 # Battle pacing evidence validity
 
-Status: validation in progress (`T_VALIDATE_PACING_EVIDENCE`)
+Status: minimum smoke validation complete (`T_VALIDATE_PACING_EVIDENCE`)
+
+Scope was intentionally narrowed by owner direction on 2026-08-12. Broad
+simulator correspondence is not a prerequisite for parameter exploration;
+production observation is the decision evidence.
 
 ## Purpose
 
@@ -21,6 +25,17 @@ error: the harness omits the behavioral loops that motivated Issue #98.
 The earlier recommendation to revise or reject the twelve-turn candidate may be
 used only to reject that particular synthetic fixture configuration. It cannot
 reject the Issue target or establish actual battle pacing.
+
+## Minimum smoke result
+
+- Two independent fixed-seed runs produced the identical SHA-256 digest
+  `f477b101b57546e988ad45febc1e73e56da198867e74a6a38d8fe19c4f705460`.
+- The shared suite passed 214 tests, including turn-limit classification,
+  finisher timing/pressure, sequential initiative, and bounded delayed effects.
+- Paired fixture streams are isolated per fixture, so differing match lengths
+  do not shift later comparison inputs.
+- The harness is therefore usable for aggressive candidate search and
+  regression checks, with the adoption limitations below unchanged.
 
 ## Known validity gaps
 
