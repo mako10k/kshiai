@@ -103,7 +103,7 @@ task T_REPAIR_OBSERVATION_PIPELINE PACING_PRODUCTION_DEPLOYED -> PACING_PRODUCTI
   title "Repair production observation pipeline after RCA"
   description "Preserve turn-start receipts; recover exhausted narration delivery generations; fence battle checkpoints; make battle create replayable; expose outbox state; prove staged Cloud Tasks OIDC delivery without an LLM."
   duration 5p
-  status active
+  status done
   requires:
     DEV 1
   owner "codex"
@@ -128,3 +128,9 @@ work_event EVT_REPAIR_OBSERVATION_PIPELINE_START_20260812:
   kind start
   occurred_at 2026-08-12T19:52:25+09:00
   planned_value 5p
+
+work_event EVT_REPAIR_OBSERVATION_PIPELINE_FINISH_20260812:
+  model 1
+  task T_REPAIR_OBSERVATION_PIPELINE
+  kind finish
+  occurred_at 2026-08-12T20:32:23+09:00
