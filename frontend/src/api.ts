@@ -134,7 +134,11 @@ export type InternalBattleObservationDetail = {
         b: { assetId: string; generationId: string };
       };
       narrationStyle: { assetId: string; generationId: string };
-      battlefield: { assetId: string | null; generationId: string };
+      battlefield: {
+        assetId: string | null;
+        presetGenerationId?: string | null;
+        generationId: string;
+      };
       dialoguePipeline: { generationId: string };
       rules: { battleEngine: string; temporalRules: string };
     } | null;

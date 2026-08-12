@@ -312,7 +312,8 @@ export function InternalObservationsPage() {
                       <div><dt>Side A character</dt><dd>{detail.canonicalCurrent.assetManifest.characters.a.generationId}</dd></div>
                       <div><dt>Side B character</dt><dd>{detail.canonicalCurrent.assetManifest.characters.b.generationId}</dd></div>
                       <div><dt>ナレーション</dt><dd>{detail.canonicalCurrent.assetManifest.narrationStyle.generationId}</dd></div>
-                      <div><dt>戦場</dt><dd>{detail.canonicalCurrent.assetManifest.battlefield.generationId}</dd></div>
+                      <div><dt>戦場preset</dt><dd>{detail.canonicalCurrent.assetManifest.battlefield.presetGenerationId ?? "legacy unknown"}</dd></div>
+                      <div><dt>戦場instance</dt><dd>{detail.canonicalCurrent.assetManifest.battlefield.generationId}</dd></div>
                       <div><dt>会話設定</dt><dd>{detail.canonicalCurrent.assetManifest.dialoguePipeline.generationId}</dd></div>
                       <div><dt>ルール</dt><dd>{detail.canonicalCurrent.assetManifest.rules.battleEngine} / {detail.canonicalCurrent.assetManifest.rules.temporalRules}</dd></div>
                     </dl>

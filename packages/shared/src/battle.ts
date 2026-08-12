@@ -1148,6 +1148,7 @@ export interface BattleAssetManifest {
   };
   battlefield: {
     assetId: string | null;
+    presetGenerationId?: string | null;
     generationId: string;
     snapshot: BattlefieldInstance;
   };
@@ -1180,6 +1181,7 @@ export const BattleAssetManifestSchema = z.object({
   }).strict(),
   battlefield: z.object({
     assetId: z.string().nullable(),
+    presetGenerationId: z.string().nullable().optional(),
     generationId: z.string().min(1),
     snapshot: BattlefieldInstanceSchema,
   }).strict(),

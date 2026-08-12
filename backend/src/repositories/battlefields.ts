@@ -11,6 +11,7 @@ import {
   getUserAccessProfile,
   normalizeAccountKind,
 } from "../account-access.js";
+import { writeAssetGeneration } from "./asset-generations.js";
 
 let seedPromise: Promise<void> | null = null;
 
@@ -178,24 +179,33 @@ export async function getPresetForUser(
 
 export async function savePreset(preset: BattlefieldPreset): Promise<void> {
   const json = JSON.stringify(preset);
-  await query(
-    `INSERT INTO battlefields
-      (id, owner_user_id, is_system, sheet_json, created_at, updated_at)
-     VALUES ($1, $2, $3, $4, $5, $6)
-     ON CONFLICT (id) DO UPDATE
-       SET owner_user_id = EXCLUDED.owner_user_id,
-           is_system = EXCLUDED.is_system,
-           sheet_json = EXCLUDED.sheet_json,
-           updated_at = EXCLUDED.updated_at`,
-    [
-      preset.id,
-      preset.ownerUserId,
-      preset.isSystem,
-      json,
-      preset.createdAt,
-      preset.updatedAt,
-    ],
-  );
+  await withTransaction(async (connection) => {
+    await writeAssetGeneration(connection, {
+      assetType: "battlefield-preset",
+      assetId: preset.id,
+      schemaVersion: 1,
+      content: preset,
+      createdAt: preset.updatedAt,
+    });
+    await connection.query(
+      `INSERT INTO battlefields
+        (id, owner_user_id, is_system, sheet_json, created_at, updated_at)
+       VALUES ($1, $2, $3, $4, $5, $6)
+       ON CONFLICT (id) DO UPDATE
+         SET owner_user_id = EXCLUDED.owner_user_id,
+             is_system = EXCLUDED.is_system,
+             sheet_json = EXCLUDED.sheet_json,
+             updated_at = EXCLUDED.updated_at`,
+      [
+        preset.id,
+        preset.ownerUserId,
+        preset.isSystem,
+        json,
+        preset.createdAt,
+        preset.updatedAt,
+      ],
+    );
+  });
 }
 
 export async function deletePreset(id: string, ownerUserId: string): Promise<boolean> {

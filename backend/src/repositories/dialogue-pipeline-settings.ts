@@ -6,6 +6,7 @@ import {
   type UpdateDialoguePipelineSettings,
 } from "@kshiai/shared";
 import { query, withTransaction } from "../db.js";
+import { writeAssetGeneration } from "./asset-generations.js";
 
 const GLOBAL_SETTINGS_ID = "global";
 
@@ -115,12 +116,20 @@ export async function updateDialoguePipelineSettings(input: {
       );
       if (updated.rowCount !== 1) return null;
     }
-    return DialoguePipelineSettingsSchema.parse({
+    const generationContent = DialoguePipelineSettingsSchema.parse({
       ...values,
       revision: nextRevision,
       updatedAt,
       updatedBy: null,
     });
+    await writeAssetGeneration(connection, {
+      assetType: "dialogue-pipeline",
+      assetId: GLOBAL_SETTINGS_ID,
+      schemaVersion: 1,
+      content: generationContent,
+      createdAt: updatedAt,
+    });
+    return generationContent;
   });
   if (!next) return null;
   const saved = await getDialoguePipelineSettings();

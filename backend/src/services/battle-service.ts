@@ -1,4 +1,4 @@
-import { createHash, randomInt } from "node:crypto";
+import { randomInt } from "node:crypto";
 import {
   BattlePolicyOptionSchema,
   BattleAdjudicationSchema,
@@ -148,6 +148,7 @@ import * as bfRepo from "../repositories/battlefields.js";
 import * as charRepo from "../repositories/characters.js";
 import * as styleRepo from "../repositories/narration-styles.js";
 import * as dialoguePipelineRepo from "../repositories/dialogue-pipeline-settings.js";
+import { createAssetGeneration } from "../repositories/asset-generations.js";
 import { getUserAccessProfile } from "../account-access.js";
 import { withBattleLease } from "./distributed-guard.js";
 import {
@@ -465,19 +466,6 @@ export function applyDialogueContextProjectionOverride(
   return override ? { ...settings, contextProjectionMode: override } : settings;
 }
 
-function immutableGenerationId(
-  kind: string,
-  assetId: string,
-  sourceUpdatedAt: string | null,
-  snapshot: unknown,
-): string {
-  const digest = createHash("sha256")
-    .update(JSON.stringify(snapshot))
-    .digest("hex")
-    .slice(0, 24);
-  return `${kind}:${assetId}:${sourceUpdatedAt ?? "generated"}:${digest}`;
-}
-
 export async function startBattle(input: {
   userId: string;
   myCharacterId: string;
@@ -594,55 +582,88 @@ export async function startBattle(input: {
     encounterContext,
   });
 
+  const sourceBattlefieldPreset = battlefield.sourcePresetId
+    ? await bfRepo.getPreset(battlefield.sourcePresetId)
+    : null;
+  const assetBoundAt = new Date().toISOString();
+  const [mineGeneration, opponentGeneration, narrationGeneration,
+    battlefieldPresetGeneration, battlefieldInstanceGeneration,
+    dialogueGeneration] = await Promise.all([
+    createAssetGeneration({
+      assetType: "character",
+      assetId: mine.id,
+      schemaVersion: 1,
+      content: mine,
+      createdAt: mine.updatedAt,
+    }),
+    createAssetGeneration({
+      assetType: "character",
+      assetId: opp.id,
+      schemaVersion: 1,
+      content: opp,
+      createdAt: opp.updatedAt,
+    }),
+    createAssetGeneration({
+      assetType: "narration-style",
+      assetId: narrationStyle.id,
+      schemaVersion: 1,
+      content: narrationStyle,
+      createdAt: narrationStyle.updatedAt,
+    }),
+    sourceBattlefieldPreset
+      ? createAssetGeneration({
+          assetType: "battlefield-preset",
+          assetId: sourceBattlefieldPreset.id,
+          schemaVersion: 1,
+          content: sourceBattlefieldPreset,
+          createdAt: sourceBattlefieldPreset.updatedAt,
+        })
+      : Promise.resolve(null),
+    createAssetGeneration({
+      assetType: "battlefield-instance",
+      assetId: id,
+      schemaVersion: 1,
+      content: battlefield,
+    }),
+    createAssetGeneration({
+      assetType: "dialogue-pipeline",
+      assetId: "global",
+      schemaVersion: 1,
+      content: dialoguePipelineSnapshot,
+      createdAt: assetBoundAt,
+    }),
+  ]);
+
   state = {
     ...state,
     assetManifest: {
       schemaVersion: 1,
-      boundAt: new Date().toISOString(),
+      boundAt: assetBoundAt,
       characters: {
         a: {
           assetId: mine.id,
-          generationId: immutableGenerationId(
-            "character",
-            mine.id,
-            mine.updatedAt,
-            mine,
-          ),
+          generationId: mineGeneration.generationId,
           snapshot: mine,
         },
         b: {
           assetId: opp.id,
-          generationId: immutableGenerationId(
-            "character",
-            opp.id,
-            opp.updatedAt,
-            opp,
-          ),
+          generationId: opponentGeneration.generationId,
           snapshot: opp,
         },
       },
       narrationStyle: {
         assetId: narrationSnap.id,
-        generationId: immutableGenerationId(
-          "narration-style",
-          narrationSnap.id,
-          narrationStyle.updatedAt,
-          narrationSnap,
-        ),
+        generationId: narrationGeneration.generationId,
         snapshot: narrationSnap,
       },
       battlefield: {
         assetId: battlefield.sourcePresetId,
-        generationId: immutableGenerationId(
-          "battlefield",
-          battlefield.sourcePresetId ?? state.id,
-          null,
-          battlefield,
-        ),
+        presetGenerationId: battlefieldPresetGeneration?.generationId ?? null,
+        generationId: battlefieldInstanceGeneration.generationId,
         snapshot: battlefield,
       },
       dialoguePipeline: {
-        generationId: `dialogue-pipeline:${dialoguePipelineSnapshot.revision}`,
+        generationId: dialogueGeneration.generationId,
         snapshot: dialoguePipelineSnapshot,
       },
       rules: {

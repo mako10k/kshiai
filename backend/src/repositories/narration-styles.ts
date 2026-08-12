@@ -13,6 +13,7 @@ import {
   getUserAccessProfile,
   normalizeAccountKind,
 } from "../account-access.js";
+import { writeAssetGeneration } from "./asset-generations.js";
 
 let seedPromise: Promise<void> | null = null;
 
@@ -131,17 +132,26 @@ export async function resolveNarrationStyleForUser(
 
 export async function saveNarrationStyle(style: NarrationStyle): Promise<void> {
   const json = JSON.stringify(style);
-  await query(
-    `INSERT INTO narration_styles
-      (id, owner_user_id, is_system, sheet_json, created_at, updated_at)
-     VALUES ($1, $2, $3, $4, $5, $6)
-     ON CONFLICT (id) DO UPDATE
-       SET owner_user_id = EXCLUDED.owner_user_id,
-           is_system = EXCLUDED.is_system,
-           sheet_json = EXCLUDED.sheet_json,
-           updated_at = EXCLUDED.updated_at`,
-    [style.id, style.ownerUserId, style.isSystem, json, style.createdAt, style.updatedAt],
-  );
+  await withTransaction(async (connection) => {
+    await writeAssetGeneration(connection, {
+      assetType: "narration-style",
+      assetId: style.id,
+      schemaVersion: 1,
+      content: style,
+      createdAt: style.updatedAt,
+    });
+    await connection.query(
+      `INSERT INTO narration_styles
+        (id, owner_user_id, is_system, sheet_json, created_at, updated_at)
+       VALUES ($1, $2, $3, $4, $5, $6)
+       ON CONFLICT (id) DO UPDATE
+         SET owner_user_id = EXCLUDED.owner_user_id,
+             is_system = EXCLUDED.is_system,
+             sheet_json = EXCLUDED.sheet_json,
+             updated_at = EXCLUDED.updated_at`,
+      [style.id, style.ownerUserId, style.isSystem, json, style.createdAt, style.updatedAt],
+    );
+  });
 }
 
 export async function createUserNarrationStyle(
