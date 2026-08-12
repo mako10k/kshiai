@@ -126,7 +126,7 @@ task T_PREPARE_PACING_RELEASE PACING_CANDIDATE_TUNED -> PACING_RELEASE_READY:
   title "Prepare the provisional pacing release"
   description "Add an explicit candidate-12-v2 Stage release input, pass it to Cloud Run, verify the staged revision value, and preserve current as fail-closed rollback. Review migrations 0011 through 0014 for forward-only and prior-revision compatibility; verify release workflow structure; update all package versions and CHANGELOG for the complete unreleased scope; prepare the release branch and PR, and require validate, security, backend-image, and worker checks. Record screenshots for administrator-visible changes. Do not tag, stage, or promote yet."
   duration 4p
-  status active
+  status done
   requires:
     DEV 1
   owner "codex"
@@ -145,3 +145,10 @@ work_event WE-bcc83e575fe728ef08ba1181c17ecfc55c998609203a9e89faa7b7a1151e3a63:
   kind start
   occurred_at 2026-08-12T18:52:00+09:00
   planned_value 4p
+
+work_event EVT_PREP_RELEASE_DONE_20260812:
+  model 1
+  task T_PREPARE_PACING_RELEASE
+  kind finish
+  occurred_at 2026-08-12T18:59:04+09:00
+  effort 0.12ph
