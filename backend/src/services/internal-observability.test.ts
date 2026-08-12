@@ -95,6 +95,12 @@ describe("internal battle observability", () => {
           decidedSides: [],
           committedBucketIndices: [0],
         },
+        causalEngineContinuation: {
+          schemaVersion: 1,
+          executionId: "battle-observed:turn:2",
+          nextBucketIndex: 1,
+          serverPrivate: true,
+        },
         turnRecords: [{
           turn: 1,
           temporalResolution: {
@@ -203,6 +209,12 @@ describe("internal battle observability", () => {
     assert.equal(
       (detail.canonicalCurrent.causalExecution as { status: string }).status,
       "awaiting_decision",
+    );
+    assert.equal(
+      (detail.canonicalCurrent.causalEngineContinuation as {
+        nextBucketIndex: number;
+      }).nextBucketIndex,
+      1,
     );
     assert.equal(detail.canonicalCurrent.worldState &&
       (detail.canonicalCurrent.worldState as { revision: number }).revision, 1);

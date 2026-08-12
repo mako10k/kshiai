@@ -61,6 +61,13 @@ describe("public battle semantic projection", () => {
       nextContactSequence: 1,
       contacts: [],
     };
+    Object.assign(state, {
+      causalEngineContinuation: {
+        schemaVersion: 1,
+        executionId: "private-engine-checkpoint",
+        privateMarker: "must-not-reach-public-dto",
+      },
+    });
     const publicState = toBattlePublic(state, sideA, null, sideB);
     assert.equal(
       publicState.semanticState?.snapshot.entities["character.a"]?.label,
@@ -75,6 +82,8 @@ describe("public battle semantic projection", () => {
     assert.equal(json.includes("encounterContext"), false);
     assert.equal(json.includes("worldState"), false);
     assert.equal(json.includes("hidden.enemy.1"), false);
+    assert.equal(json.includes("causalEngineContinuation"), false);
+    assert.equal(json.includes("must-not-reach-public-dto"), false);
   });
 
   it("centers settled ratings independently for each visible track", () => {
