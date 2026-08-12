@@ -80,11 +80,13 @@ Provisioned on 2026-08-12 after the v0.17.0 observation RCA:
 | Queue | `projects/kshiai/locations/asia-northeast1/queues/kshiai-narration` |
 | Rate limit | 2 dispatches/second, 2 concurrent |
 | Retry limit | 5 attempts, 10–300 second backoff |
-| Enqueuer | `kshiai-cloud-run@kshiai.iam.gserviceaccount.com` |
+| Enqueuer | runtime service account; GitHub deploy service account only for staged delivery smoke |
 | Task identity | same runtime service account, exact OIDC audience bound by release configuration |
 
 The queue does not run narration until a revision containing the authenticated
 worker endpoint and `NARRATION_TASK_*` settings is staged and promoted.
+Stage binds the task target and OIDC audience to the immutable Cloud Run tag,
+then sends a deterministic, LLM-free smoke task and verifies its revision log.
 
 Supabase Auth temporarily allowed the Workers.dev callback for browser
 acceptance. The callback was removed when Workers.dev was disabled at cutover.

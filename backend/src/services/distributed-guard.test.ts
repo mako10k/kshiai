@@ -3,6 +3,7 @@ import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { after, before, describe, it } from "node:test";
+import type { BattleState } from "@kshiai/shared";
 
 const temporaryDirectory = mkdtempSync(join(tmpdir(), "kshiai-distributed-test-"));
 process.env.DATABASE_URL = "";
@@ -10,7 +11,8 @@ process.env.AUTH_PROVIDER = "legacy";
 process.env.DATABASE_PATH = join(temporaryDirectory, "distributed.db");
 
 const guard = await import("./distributed-guard.js");
-const { closeDatabase, getDb } = await import("../db.js");
+const { closeDatabase, getDb, query } = await import("../db.js");
+const battleRepo = await import("../repositories/battles.js");
 
 before(() => {
   const database = getDb();
@@ -76,6 +78,34 @@ describe("multi-instance battle leases", () => {
     );
     await guard.releaseBattleLease("battle-distributed", winner);
     await guard.releaseBattleLease("battle-distributed", loser);
+  });
+
+  it("rejects a checkpoint write after the lease fencing token changes", async () => {
+    await assert.rejects(
+      guard.withBattleLease("battle-distributed", async () => {
+        await query(
+          `UPDATE battle_leases
+              SET owner_id = 'replacement', fencing_token = fencing_token + 1,
+                  expires_at = $2
+            WHERE battle_id = $1`,
+          ["battle-distributed", "2026-08-13T00:00:00.000Z"],
+        );
+        await battleRepo.saveBattle({
+          id: "battle-distributed",
+          createdAt: "2026-08-03T00:00:00.000Z",
+          updatedAt: "2026-08-12T00:00:00.000Z",
+          battleRevision: 0,
+        } as BattleState, {
+          sideAUserId: "user-distributed",
+          sideACharacterId: "char-a",
+          sideBCharacterId: "char-b",
+        });
+      }),
+      /BATTLE_REVISION_CONFLICT/,
+    );
+    await query("DELETE FROM battle_leases WHERE battle_id = $1", [
+      "battle-distributed",
+    ]);
   });
 });
 

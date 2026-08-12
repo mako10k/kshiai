@@ -30,6 +30,7 @@ describe("narration task dispatch", () => {
         outboxId: "outbox-1",
         battleId: "battle-1",
         receiptId: "receipt-1",
+        deliveryGeneration: 2,
       }, fetchImpl);
     } finally {
       Object.assign(config.narrationTaskQueue, prior);

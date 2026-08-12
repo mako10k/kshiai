@@ -85,7 +85,7 @@ task T_OBSERVE_PRODUCTION_PACING PACING_PRODUCTION_DEPLOYED -> PACING_PRODUCTION
   title "Observe the bounded production pacing trial"
   description "After an initial safety readback, accumulate ordinary production battle evidence over time: completion distribution, maximum-turn and forced-terminal rate, KO and one-shot rate, committed change, action and speech repetition, initiative response, delayed effects, errors, latency, calls, tokens, retries, and cost. Compare periodic snapshots with the frozen pre-deploy baseline and make small versioned policy revisions; do not imply that the provisional values are final."
   duration 3p
-  status active
+  status suspended
   requires:
     DEV 1
   owner "codex"
@@ -99,9 +99,32 @@ milestone PACING_PRODUCTION_DEPLOYED:
 milestone PACING_PRODUCTION_OBSERVED:
   title "Bounded production pacing evidence is recorded"
 
+task T_REPAIR_OBSERVATION_PIPELINE PACING_PRODUCTION_DEPLOYED -> PACING_PRODUCTION_OBSERVED:
+  title "Repair production observation pipeline after RCA"
+  description "Preserve turn-start receipts; recover exhausted narration delivery generations; fence battle checkpoints; make battle create replayable; expose outbox state; prove staged Cloud Tasks OIDC delivery without an LLM."
+  duration 5p
+  status active
+  requires:
+    DEV 1
+  owner "codex"
+
 work_event EVT_OBSERVE_PACING_START_20260812:
   model 1
   task T_OBSERVE_PRODUCTION_PACING
   kind start
   occurred_at 2026-08-12T19:18:19+09:00
   planned_value 3p
+
+work_event OBS_PIPELINE_RCA_SUSPEND:
+  model 1
+  task T_OBSERVE_PRODUCTION_PACING
+  kind suspend
+  occurred_at 2026-08-12T20:05:18+09:00
+  reason "The first production observation exposed receipt and narration wake failures; resume only after the RCA repair prerequisite is locally and staging verified."
+
+work_event EVT_REPAIR_OBSERVATION_PIPELINE_START_20260812:
+  model 1
+  task T_REPAIR_OBSERVATION_PIPELINE
+  kind start
+  occurred_at 2026-08-12T19:52:25+09:00
+  planned_value 5p

@@ -48,7 +48,6 @@ env:
   EXPECTED_BATTLE_CAUSAL_NARRATION_MODE: narration_guarded
   EXPECTED_ADMIN_EMAIL: mako10k@mk10.org
   EXPECTED_NARRATION_TASK_QUEUE: kshiai-narration
-  EXPECTED_NARRATION_TASK_TARGET_URL: https://kshiai.mk10.org/api/internal/narration/task
   EXPECTED_NARRATION_TASK_SERVICE_ACCOUNT_EMAIL: kshiai-cloud-run@kshiai.iam.gserviceaccount.com
 
 jobs:
@@ -149,14 +148,20 @@ jobs:
               NARRATION_TASK_PROJECT: process.env.GCP_PROJECT,
               NARRATION_TASK_LOCATION: process.env.GCP_REGION,
               NARRATION_TASK_QUEUE: process.env.EXPECTED_NARRATION_TASK_QUEUE,
-              NARRATION_TASK_TARGET_URL: process.env.EXPECTED_NARRATION_TASK_TARGET_URL,
               NARRATION_TASK_SERVICE_ACCOUNT_EMAIL:
                 process.env.EXPECTED_NARRATION_TASK_SERVICE_ACCOUNT_EMAIL,
-              NARRATION_TASK_AUDIENCE: process.env.EXPECTED_NARRATION_TASK_TARGET_URL,
             };
             for (const [name, value] of Object.entries(expected)) {
               if (env.get(name) !== value) throw new Error(`${name} mismatch`);
             }
+            const target = new URL(env.get("NARRATION_TASK_TARGET_URL") ?? "");
+            const alias = `release-${process.env.RELEASE_TAG.replaceAll(".", "-")}`;
+            if (
+              target.protocol !== "https:" ||
+              !target.hostname.startsWith(`${alias}---kshiai-api-`) ||
+              target.pathname !== "/api/internal/narration/task" ||
+              env.get("NARRATION_TASK_AUDIENCE") !== target.href
+            ) throw new Error("Narration task target is not bound to the staged revision tag");
           '
           test -n "$image"
           test "$mode" = "$EXPECTED_BATTLE_CAUSAL_NARRATION_MODE"

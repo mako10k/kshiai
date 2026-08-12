@@ -3,6 +3,7 @@ import { createRemoteJWKSet, jwtVerify } from "jose";
 import { config } from "../config.js";
 import {
   dispatchNarrationOutbox,
+  recoverStaleNarrationOutbox,
   type NarrationOutboxDelivery,
 } from "./narration-worker.js";
 
@@ -35,7 +36,9 @@ export async function enqueueNarrationTask(
   if (!task.configured) throw new Error("NARRATION_TASK_QUEUE_NOT_CONFIGURED");
   const accessToken = await metadataAccessToken(fetchImpl);
   const parent = `projects/${task.project}/locations/${task.location}/queues/${task.queue}`;
-  const taskId = createHash("sha256").update(delivery.outboxId).digest("hex");
+  const taskId = createHash("sha256")
+    .update(`${delivery.outboxId}:${delivery.deliveryGeneration}`)
+    .digest("hex");
   const response = await fetchImpl(
     `https://cloudtasks.googleapis.com/v2/${parent}/tasks`,
     {
@@ -72,6 +75,7 @@ export async function dispatchPendingNarrationTasks(limit = 20): Promise<{
   failed: number;
 }> {
   if (!config.narrationTaskQueue.configured) return { delivered: 0, failed: 0 };
+  await recoverStaleNarrationOutbox();
   return dispatchNarrationOutbox((delivery) => enqueueNarrationTask(delivery), limit);
 }
 

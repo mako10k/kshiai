@@ -11,6 +11,7 @@ import { query, withTransaction, type DatabaseConnection } from "../db.js";
 import { listBattlePresentations } from "./battle-presentations.js";
 import { config } from "../config.js";
 import { enqueueNarrationInTransaction } from "../services/narration-worker.js";
+import { currentBattleLeaseFence } from "../services/distributed-guard.js";
 
 export async function saveBattle(
   state: BattleState,
@@ -41,6 +42,10 @@ async function writeBattle(
       ? state.advanceOperation.expectedRevision
       : state.battleRevision ?? 0);
   const nextRevision = state.battleRevision ?? expectedRevision;
+  const fence = currentBattleLeaseFence();
+  if (fence && fence.battleId !== state.id) {
+    throw new Error("BATTLE_LEASE_SCOPE_MISMATCH");
+  }
   const result = await connection.query<{ id: string }>(
     `INSERT INTO battles
       (id, state_json, side_a_user_id, side_a_character_id, side_b_character_id, created_at, updated_at, revision)
@@ -50,6 +55,13 @@ async function writeBattle(
            updated_at = EXCLUDED.updated_at,
            revision = EXCLUDED.revision
        WHERE battles.revision = $8
+         AND (CAST($10 AS TEXT) IS NULL OR EXISTS (
+           SELECT 1 FROM battle_leases lease
+            WHERE lease.battle_id = $1
+              AND lease.owner_id = $10
+              AND lease.fencing_token = $11
+              AND lease.expires_at > $12
+         ))
      RETURNING id`,
     [
       state.id,
@@ -61,6 +73,9 @@ async function writeBattle(
       state.updatedAt,
       expectedRevision,
       nextRevision,
+      fence?.ownerId ?? null,
+      fence?.fencingToken ?? null,
+      new Date().toISOString(),
     ],
   );
   if (result.rowCount !== 1) throw new Error("BATTLE_REVISION_CONFLICT");

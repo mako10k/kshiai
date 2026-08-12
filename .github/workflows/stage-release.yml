@@ -57,7 +57,6 @@ env:
   SUPABASE_JWKS_URL: https://cvrbhpkfqkpqdegxfrlq.supabase.co/auth/v1/.well-known/jwks.json
   ADMIN_EMAILS: mako10k@mk10.org
   NARRATION_TASK_QUEUE: kshiai-narration
-  NARRATION_TASK_TARGET_URL: https://kshiai.mk10.org/api/internal/narration/task
   NARRATION_TASK_SERVICE_ACCOUNT_EMAIL: kshiai-cloud-run@kshiai.iam.gserviceaccount.com
 
 jobs:
@@ -166,12 +165,17 @@ jobs:
         run: |
           set -euo pipefail
           alias="release-${RELEASE_TAG//./-}"
+          service_url="$(gcloud run services describe "$CLOUD_RUN_SERVICE" \
+            --project="$GCP_PROJECT" --region="$GCP_REGION" \
+            --format='value(status.url)')"
+          service_host="${service_url#https://}"
+          narration_task_target_url="https://${alias}---${service_host}/api/internal/narration/task"
           override_flags=(
-            --update-env-vars="BATTLE_CAUSAL_NARRATION_MODE=$CAUSAL_NARRATION_MODE,ADMIN_EMAILS=$ADMIN_EMAILS,BATTLE_PACING_POLICY=$PACING_POLICY,NARRATION_TASK_PROJECT=$GCP_PROJECT,NARRATION_TASK_LOCATION=$GCP_REGION,NARRATION_TASK_QUEUE=$NARRATION_TASK_QUEUE,NARRATION_TASK_TARGET_URL=$NARRATION_TASK_TARGET_URL,NARRATION_TASK_SERVICE_ACCOUNT_EMAIL=$NARRATION_TASK_SERVICE_ACCOUNT_EMAIL,NARRATION_TASK_AUDIENCE=$NARRATION_TASK_TARGET_URL"
+            --update-env-vars="BATTLE_CAUSAL_NARRATION_MODE=$CAUSAL_NARRATION_MODE,ADMIN_EMAILS=$ADMIN_EMAILS,BATTLE_PACING_POLICY=$PACING_POLICY,NARRATION_TASK_PROJECT=$GCP_PROJECT,NARRATION_TASK_LOCATION=$GCP_REGION,NARRATION_TASK_QUEUE=$NARRATION_TASK_QUEUE,NARRATION_TASK_TARGET_URL=$narration_task_target_url,NARRATION_TASK_SERVICE_ACCOUNT_EMAIL=$NARRATION_TASK_SERVICE_ACCOUNT_EMAIL,NARRATION_TASK_AUDIENCE=$narration_task_target_url"
             --remove-env-vars="DIALOGUE_CONTEXT_PROJECTION_OVERRIDE"
           )
           if [[ "$DIALOGUE_CONTEXT_PROJECTION_OVERRIDE" != "none" ]]; then
-            override_flags=(--update-env-vars="BATTLE_CAUSAL_NARRATION_MODE=$CAUSAL_NARRATION_MODE,ADMIN_EMAILS=$ADMIN_EMAILS,BATTLE_PACING_POLICY=$PACING_POLICY,DIALOGUE_CONTEXT_PROJECTION_OVERRIDE=$DIALOGUE_CONTEXT_PROJECTION_OVERRIDE,NARRATION_TASK_PROJECT=$GCP_PROJECT,NARRATION_TASK_LOCATION=$GCP_REGION,NARRATION_TASK_QUEUE=$NARRATION_TASK_QUEUE,NARRATION_TASK_TARGET_URL=$NARRATION_TASK_TARGET_URL,NARRATION_TASK_SERVICE_ACCOUNT_EMAIL=$NARRATION_TASK_SERVICE_ACCOUNT_EMAIL,NARRATION_TASK_AUDIENCE=$NARRATION_TASK_TARGET_URL")
+            override_flags=(--update-env-vars="BATTLE_CAUSAL_NARRATION_MODE=$CAUSAL_NARRATION_MODE,ADMIN_EMAILS=$ADMIN_EMAILS,BATTLE_PACING_POLICY=$PACING_POLICY,DIALOGUE_CONTEXT_PROJECTION_OVERRIDE=$DIALOGUE_CONTEXT_PROJECTION_OVERRIDE,NARRATION_TASK_PROJECT=$GCP_PROJECT,NARRATION_TASK_LOCATION=$GCP_REGION,NARRATION_TASK_QUEUE=$NARRATION_TASK_QUEUE,NARRATION_TASK_TARGET_URL=$narration_task_target_url,NARRATION_TASK_SERVICE_ACCOUNT_EMAIL=$NARRATION_TASK_SERVICE_ACCOUNT_EMAIL,NARRATION_TASK_AUDIENCE=$narration_task_target_url")
           fi
           gcloud run deploy "$CLOUD_RUN_SERVICE" \
             --project="$GCP_PROJECT" \
@@ -214,6 +218,34 @@ jobs:
             --project="$GCP_PROJECT" \
             --region="$GCP_REGION" \
             --wait
+
+      - name: Prove Cloud Tasks OIDC delivery to staged revision
+        env:
+          BACKEND_URL: ${{ steps.backend.outputs.url }}
+        run: |
+          set -euo pipefail
+          smoke_id="stage-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          task_name="narration-smoke-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          target_url="${BACKEND_URL%/}/api/internal/narration/task"
+          gcloud tasks create-http-task "$task_name" \
+            --project="$GCP_PROJECT" \
+            --location="$GCP_REGION" \
+            --queue="$NARRATION_TASK_QUEUE" \
+            --url="$target_url" \
+            --method=POST \
+            --header='Content-Type: application/json' \
+            --body-content="{\"smokeId\":\"$smoke_id\"}" \
+            --oidc-service-account-email="$NARRATION_TASK_SERVICE_ACCOUNT_EMAIL" \
+            --oidc-token-audience="$target_url"
+          found=""
+          for _ in {1..24}; do
+            found="$(gcloud logging read \
+              "resource.type=cloud_run_revision AND resource.labels.revision_name=${{ steps.backend.outputs.revision }} AND textPayload=\"[narration] task smoke ok $smoke_id\"" \
+              --project="$GCP_PROJECT" --limit=1 --format='value(textPayload)')"
+            [[ -n "$found" ]] && break
+            sleep 5
+          done
+          test "$found" = "[narration] task smoke ok $smoke_id"
 
       - name: Build and upload immutable Worker version
         id: worker

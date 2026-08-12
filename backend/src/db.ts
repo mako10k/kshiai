@@ -103,6 +103,7 @@ export function getDb(): SqliteDatabase.Database {
     CREATE TABLE IF NOT EXISTS battle_leases (
       battle_id TEXT PRIMARY KEY REFERENCES battles(id) ON DELETE CASCADE,
       owner_id TEXT NOT NULL,
+      fencing_token INTEGER NOT NULL DEFAULT 1,
       acquired_at TEXT NOT NULL,
       expires_at TEXT NOT NULL
     );
@@ -183,6 +184,7 @@ export function getDb(): SqliteDatabase.Database {
       receipt_id TEXT NOT NULL,
       status TEXT NOT NULL,
       delivery_attempts INTEGER NOT NULL DEFAULT 0,
+      delivery_generation INTEGER NOT NULL DEFAULT 0,
       created_at TEXT NOT NULL,
       dispatched_at TEXT
     );
@@ -289,6 +291,22 @@ export function getDb(): SqliteDatabase.Database {
   const battleColumns = sqlite.pragma("table_info(battles)") as Array<{ name: string }>;
   if (!battleColumns.some((column) => column.name === "revision")) {
     sqlite.exec("ALTER TABLE battles ADD COLUMN revision INTEGER NOT NULL DEFAULT 0");
+  }
+  const battleLeaseColumns = sqlite.pragma("table_info(battle_leases)") as Array<{
+    name: string;
+  }>;
+  if (!battleLeaseColumns.some((column) => column.name === "fencing_token")) {
+    sqlite.exec(
+      "ALTER TABLE battle_leases ADD COLUMN fencing_token INTEGER NOT NULL DEFAULT 1",
+    );
+  }
+  const narrationOutboxColumns = sqlite.pragma(
+    "table_info(battle_narration_outbox)",
+  ) as Array<{ name: string }>;
+  if (!narrationOutboxColumns.some((column) => column.name === "delivery_generation")) {
+    sqlite.exec(
+      "ALTER TABLE battle_narration_outbox ADD COLUMN delivery_generation INTEGER NOT NULL DEFAULT 0",
+    );
   }
   const userColumns = sqlite.pragma("table_info(users)") as Array<{ name: string }>;
   const userColumnNames = new Set(userColumns.map((column) => column.name));

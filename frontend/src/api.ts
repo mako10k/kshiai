@@ -220,6 +220,12 @@ export type InternalBattleObservationDetail = {
     attemptCount: number;
     blockedBySequence: number | null;
     updatedAt: string;
+    outbox: {
+      status: string;
+      deliveryAttempts: number;
+      deliveryGeneration: number;
+      dispatchedAt: string | null;
+    } | null;
     lease: { fencingToken: number; expiresAt: string; expired: boolean } | null;
     latestAttempt: {
       status: string;

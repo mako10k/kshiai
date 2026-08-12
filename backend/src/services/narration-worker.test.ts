@@ -19,6 +19,7 @@ const {
   listNarrationEvents,
   nextNarrationBattleId,
   processNextNarration,
+  recoverStaleNarrationOutbox,
   readBattleNarrationEvents,
 } = await import("./narration-worker.js");
 
@@ -314,6 +315,89 @@ describe("ordered narration worker", () => {
       delivered: 0,
       failed: 0,
     });
+  });
+
+  it("re-arms a stale dispatched outbox with a new delivery generation", async () => {
+    const battleId = "worker-outbox-recovery";
+    await createBattle(battleId);
+    await enqueueNarration({
+      battleId,
+      receiptId: `${battleId}:phase:1`,
+      sequence: 1,
+      phase: "combat",
+      combatTurn: 1,
+      frozenInput: { scene: "recover" },
+      inputDigest: "f".repeat(64),
+      now: "2026-08-12T00:00:00.000Z",
+    });
+    await query(
+      `UPDATE battle_narration_outbox SET status = 'dispatched', dispatched_at = $2
+        WHERE battle_id = $1`,
+      [battleId, "2026-08-12T00:00:01.000Z"],
+    );
+    assert.equal(
+      await recoverStaleNarrationOutbox(new Date("2026-08-12T00:10:00.000Z")),
+      1,
+    );
+    const recovered = await query<{
+      status: string;
+      delivery_generation: number;
+    }>(
+      `SELECT status, delivery_generation FROM battle_narration_outbox
+        WHERE battle_id = $1`,
+      [battleId],
+    );
+    assert.deepEqual(recovered.rows[0], {
+      status: "pending",
+      delivery_generation: 1,
+    });
+    assert.equal(
+      await recoverStaleNarrationOutbox(new Date("2026-08-12T00:20:00.000Z")),
+      0,
+    );
+  });
+
+  it("does not recover generating work while its fenced lease is active", async () => {
+    const battleId = "worker-outbox-active-lease";
+    await createBattle(battleId);
+    await enqueueNarration({
+      battleId,
+      receiptId: `${battleId}:phase:1`,
+      sequence: 1,
+      phase: "combat",
+      combatTurn: 1,
+      frozenInput: { scene: "active" },
+      inputDigest: "a".repeat(64),
+      now: "2026-08-12T00:00:00.000Z",
+    });
+    await query(
+      `UPDATE battle_narration_entries SET status = 'generating'
+        WHERE battle_id = $1`,
+      [battleId],
+    );
+    await query(
+      `UPDATE battle_narration_outbox SET status = 'dispatched', dispatched_at = $2
+        WHERE battle_id = $1`,
+      [battleId, "2026-08-12T00:00:01.000Z"],
+    );
+    await query(
+      `INSERT INTO battle_narration_leases
+        (battle_id, owner_id, fencing_token, expires_at, updated_at)
+       VALUES ($1, 'worker', 1, $2, $3)`,
+      [battleId, "2026-08-12T00:20:00.000Z", "2026-08-12T00:00:01.000Z"],
+    );
+    assert.equal(
+      await recoverStaleNarrationOutbox(new Date("2026-08-12T00:10:00.000Z")),
+      0,
+    );
+    await query(
+      `UPDATE battle_narration_leases SET expires_at = $2 WHERE battle_id = $1`,
+      [battleId, "2026-08-12T00:09:00.000Z"],
+    );
+    assert.equal(
+      await recoverStaleNarrationOutbox(new Date("2026-08-12T00:10:00.000Z")),
+      1,
+    );
   });
 
   it("selects the oldest ready battle and permits a fenced heartbeat", async () => {

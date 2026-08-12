@@ -504,6 +504,8 @@ export function applyDialogueContextProjectionOverride(
 
 export async function startBattle(input: {
   userId: string;
+  /** Stable resource identity supplied by the idempotent create operation. */
+  battleId?: string;
   myCharacterId: string;
   opponentCharacterId: string;
   battlefieldPresetId?: string;
@@ -514,6 +516,28 @@ export async function startBattle(input: {
   narrationStyleId?: string;
   llm: LlmProvider;
 }): Promise<BattlePublic> {
+  if (input.battleId) {
+    const [existing, existingMeta] = await Promise.all([
+      battleRepo.getBattle(input.battleId),
+      battleRepo.getBattleMeta(input.battleId),
+    ]);
+    if (existing || existingMeta) {
+      if (
+        !existing || !existingMeta ||
+        existingMeta.side_a_user_id !== input.userId ||
+        existingMeta.side_a_character_id !== input.myCharacterId ||
+        existingMeta.side_b_character_id !== input.opponentCharacterId
+      ) {
+        throw new Error("BATTLE_CREATE_IDENTITY_CONFLICT");
+      }
+      const existingMine = existing.assetManifest?.characters.a.snapshot ??
+        await charRepo.getSheet(existingMeta.side_a_character_id);
+      const existingOpp = existing.assetManifest?.characters.b.snapshot ??
+        await charRepo.getSheet(existingMeta.side_b_character_id);
+      if (!existingMine || !existingOpp) throw new Error("CHARACTER_MISSING");
+      return toBattlePublicForViewer(existing, existingMine, null, existingOpp);
+    }
+  }
   const mine = await charRepo.getSheet(input.myCharacterId);
   const opp = await charRepo.getSheet(input.opponentCharacterId);
   if (!mine || mine.ownerUserId !== input.userId) {
@@ -595,7 +619,7 @@ export async function startBattle(input: {
     proposal: encounterProposal,
   });
 
-  const id = newId("btl");
+  const id = input.battleId ?? newId("btl");
   let state = createBattleState({
     id,
     sideA: mine,

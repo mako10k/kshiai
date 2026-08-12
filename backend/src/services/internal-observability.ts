@@ -105,6 +105,12 @@ export type InternalNarrationQueueEntry = {
   attemptCount: number;
   blockedBySequence: number | null;
   updatedAt: string;
+  outbox: {
+    status: string;
+    deliveryAttempts: number;
+    deliveryGeneration: number;
+    dispatchedAt: string | null;
+  } | null;
   lease: { fencingToken: number; expiresAt: string; expired: boolean } | null;
   latestAttempt: {
     status: string;
@@ -354,17 +360,26 @@ export async function getInternalBattleObservation(
     estimated_cost_usd: number | null;
     elapsed_ms: number | null;
     fallback_reason: string | null;
+    outbox_status: string | null;
+    delivery_attempts: number | null;
+    delivery_generation: number | null;
+    dispatched_at: string | Date | null;
   }>(
     `SELECT entry.receipt_id, entry.sequence, entry.phase, entry.combat_turn,
             entry.status AS entry_status, entry.attempt_count, entry.updated_at,
             lease.fencing_token, lease.expires_at,
             attempt.status AS attempt_status, attempt.provider, attempt.model,
             attempt.route, attempt.http_attempts, attempt.token_count,
-            attempt.estimated_cost_usd, attempt.elapsed_ms, attempt.fallback_reason
+            attempt.estimated_cost_usd, attempt.elapsed_ms, attempt.fallback_reason,
+            outbox.status AS outbox_status, outbox.delivery_attempts,
+            outbox.delivery_generation, outbox.dispatched_at
        FROM battle_narration_entries entry
        LEFT JOIN battle_narration_leases lease ON lease.battle_id = entry.battle_id
        LEFT JOIN battle_narration_attempts attempt
          ON attempt.attempt_id = entry.active_attempt_id
+       LEFT JOIN battle_narration_outbox outbox
+         ON outbox.battle_id = entry.battle_id
+        AND outbox.receipt_id = entry.receipt_id
       WHERE entry.battle_id = $1
       ORDER BY entry.sequence`,
     [battleId],
@@ -384,6 +399,14 @@ export async function getInternalBattleObservation(
       ? Number(firstNonterminal)
       : null,
     updatedAt: isoTimestamp(entry.updated_at),
+    outbox: entry.outbox_status === null ? null : {
+      status: entry.outbox_status,
+      deliveryAttempts: Number(entry.delivery_attempts ?? 0),
+      deliveryGeneration: Number(entry.delivery_generation ?? 0),
+      dispatchedAt: entry.dispatched_at === null
+        ? null
+        : isoTimestamp(entry.dispatched_at),
+    },
     lease: entry.fencing_token === null || entry.expires_at === null ? null : {
       fencingToken: Number(entry.fencing_token),
       expiresAt: isoTimestamp(entry.expires_at),

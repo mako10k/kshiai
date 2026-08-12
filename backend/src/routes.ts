@@ -137,7 +137,15 @@ export function buildRoutes() {
       battleId?: unknown;
       receiptId?: unknown;
       outboxId?: unknown;
+      smokeId?: unknown;
     };
+    if (
+      typeof body.smokeId === "string" &&
+      /^[a-zA-Z0-9_-]{8,80}$/.test(body.smokeId)
+    ) {
+      console.info(`[narration] task smoke ok ${body.smokeId}`);
+      return c.json({ result: "smoke_ok", smokeId: body.smokeId });
+    }
     if (
       typeof body.battleId !== "string" ||
       typeof body.receiptId !== "string" ||
@@ -1362,11 +1370,12 @@ export function buildRoutes() {
       return c.json({ error: "idempotency_key_required" }, 400);
     }
     const scope = "battle-create";
+    const createRequestHash = requestDigest(body);
     const idempotency = await beginIdempotentRequest({
       userId: user.id,
       scope,
       key: idempotencyKey,
-      requestHash: requestDigest(body),
+      requestHash: createRequestHash,
     });
     if (idempotency.kind === "conflict") {
       return c.json({ error: "idempotency_key_conflict" }, 409);
@@ -1379,6 +1388,12 @@ export function buildRoutes() {
     try {
       const battle = await startBattle({
         userId: user.id,
+        battleId: `btl_${requestDigest({
+          userId: user.id,
+          scope,
+          key: idempotencyKey,
+          requestHash: createRequestHash,
+        }).slice(0, 32)}`,
         myCharacterId: body.myCharacterId,
         opponentCharacterId: body.opponentCharacterId,
         battlefieldPresetId: body.battlefieldPresetId,
