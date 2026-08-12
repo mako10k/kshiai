@@ -125,6 +125,14 @@ task T_CUTOVER_NARRATION_COMPATIBILITY NARRATION_MIGRATION_ACCEPTED -> NARRATION
   title "Cut over local narration compatibility surfaces"
   description "After owner acceptance, remove non-durable narrator progress from advance SSE, default the feature-gated composite presentation read model for local clients, retain the documented rollback switch and rerun API/frontend/history/improvement/admin privacy fixtures. Do not deploy, create cloud queue infrastructure, migrate production data, release, or observe production."
   duration 1p
+  status active
   requires:
     DEV 1
   owner "codex"
+
+work_event WE-508ca016e45c5655e3fe05e44d4180386c7d9a219a3b2a16eaf404d7330f458b:
+  model 1
+  task T_CUTOVER_NARRATION_COMPATIBILITY
+  kind start
+  occurred_at 2026-08-12T16:43:35+09:00
+  planned_value 1p
