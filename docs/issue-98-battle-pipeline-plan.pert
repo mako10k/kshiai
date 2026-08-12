@@ -82,7 +82,7 @@ milestone PACING_CANDIDATE_TUNED:
 
 
 
-task T_ACCEPT_PACING_PRODUCTION_TRIAL PACING_CANDIDATE_TUNED -> PACING_DEPLOY_AUTHORIZED:
+task T_ACCEPT_PACING_PRODUCTION_TRIAL PACING_BASELINE_CAPTURED -> PACING_DEPLOY_AUTHORIZED:
   title "Accept the exact pacing production trial"
   description "Owner confirms the provisional candidate policy, exact commit SHA, migration and configuration impact, initial safety thresholds, and rollback target. No separate 20 USD experiment budget is reserved: ordinary production usage accumulates evidence over time. This authorizes one guarded production deployment with the policy explicitly marked provisional, not permanent adoption."
   duration 1p
@@ -115,3 +115,25 @@ milestone PACING_PRODUCTION_DEPLOYED:
 
 milestone PACING_PRODUCTION_OBSERVED:
   title "Bounded production pacing evidence is recorded"
+
+milestone PACING_RELEASE_READY:
+  title "Pacing release path and rollback are ready"
+
+milestone PACING_BASELINE_CAPTURED:
+  title "Current production pacing baseline is recorded"
+
+task T_PREPARE_PACING_RELEASE PACING_CANDIDATE_TUNED -> PACING_RELEASE_READY:
+  title "Prepare the provisional pacing release"
+  description "Add an explicit candidate-12-v2 Stage release input, pass it to Cloud Run, verify the staged revision value, and preserve current as fail-closed rollback. Review migrations 0011 through 0014 for forward-only and prior-revision compatibility; fix the duplicated checkout keys; update all package versions and CHANGELOG for the complete unreleased scope; prepare the release branch and PR, and require validate, security, backend-image, and worker checks. Record screenshots for administrator-visible changes. Do not tag, stage, or promote yet."
+  duration 4p
+  requires:
+    DEV 1
+  owner "codex"
+
+task T_CAPTURE_CURRENT_PACING_BASELINE PACING_RELEASE_READY -> PACING_BASELINE_CAPTURED:
+  title "Capture the current production pacing baseline"
+  description "Read current production release identity and retained battle evidence before changing traffic. Record completion distribution, turn-limit and forced-terminal rate, KO and one-shot indicators, committed mechanical and semantic change, action and speech repetition, initiative response, delayed effects, errors, latency, calls, tokens, retries, and cost where available. Mark unavailable metrics explicitly; perform no production write or LLM generation."
+  duration 2p
+  requires:
+    DEV 1
+  owner "codex"
