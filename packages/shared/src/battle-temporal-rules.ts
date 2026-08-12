@@ -1,6 +1,50 @@
 import { z } from "zod";
 
 export type BattleTemporalSide = "a" | "b";
+export const BattleTemporalSideSchema = z.enum(["a", "b"]);
+
+export const SequentialInitiativeOrderReceiptSchema = z.object({
+  schemaVersion: z.literal(1),
+  initiativeScores: z.object({
+    a: z.number().int(),
+    b: z.number().int(),
+  }).strict(),
+  order: z.tuple([BattleTemporalSideSchema, BattleTemporalSideSchema]),
+  reason: z.enum([
+    "higher_initiative",
+    "previous_order",
+    "weighted_redraw",
+    "fair_redraw",
+  ]),
+  draw: z.object({
+    sample: z.number().min(0).lt(1),
+    weights: z.object({
+      a: z.number().nonnegative(),
+      b: z.number().nonnegative(),
+    }).strict(),
+    probabilityAFirst: z.number().min(0).max(1),
+  }).strict().nullable(),
+}).strict().superRefine((receipt, ctx) => {
+  if (receipt.order[0] === receipt.order[1]) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["order"],
+      message: "initiative order must contain both sides",
+    });
+  }
+  const redraw = receipt.reason === "weighted_redraw" ||
+    receipt.reason === "fair_redraw";
+  if (redraw !== (receipt.draw !== null)) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["draw"],
+      message: "draw details must exist only for a redraw",
+    });
+  }
+});
+export type SequentialInitiativeOrderReceipt = z.infer<
+  typeof SequentialInitiativeOrderReceiptSchema
+>;
 
 export const BATTLE_TEMPORAL_RULESET = Object.freeze({
   id: "initiative-window-v1",
@@ -14,8 +58,6 @@ export const BATTLE_TEMPORAL_RULESET = Object.freeze({
   exclusiveConflict: "contested",
   orderingRandomness: "forbidden",
 } as const);
-
-export const BattleTemporalSideSchema = z.enum(["a", "b"]);
 
 export const BattleTemporalBucketSchema = z.object({
   index: z.number().int().nonnegative(),
@@ -52,6 +94,66 @@ function normalizeInitiativeScore(value: number): number {
     throw new Error("effective initiative must be finite");
   }
   return Math.round(value);
+}
+
+/**
+ * Selects the ADR-0001 ordinary-action order. Randomness is injected once by
+ * the caller so the returned receipt can be persisted before any action call.
+ */
+export function selectSequentialInitiativeOrder(input: {
+  effectiveSpeedA: number;
+  effectiveSpeedB: number;
+  previousOrder?: [BattleTemporalSide, BattleTemporalSide] | null;
+  redrawWeights?: { a: number; b: number } | null;
+  drawSample?: number;
+}): SequentialInitiativeOrderReceipt {
+  const initiativeScores = {
+    a: normalizeInitiativeScore(input.effectiveSpeedA),
+    b: normalizeInitiativeScore(input.effectiveSpeedB),
+  };
+  if (initiativeScores.a !== initiativeScores.b) {
+    const first = initiativeScores.a > initiativeScores.b ? "a" : "b";
+    return SequentialInitiativeOrderReceiptSchema.parse({
+      schemaVersion: 1,
+      initiativeScores,
+      order: [first, first === "a" ? "b" : "a"],
+      reason: "higher_initiative",
+      draw: null,
+    });
+  }
+
+  if (input.previousOrder) {
+    return SequentialInitiativeOrderReceiptSchema.parse({
+      schemaVersion: 1,
+      initiativeScores,
+      order: input.previousOrder,
+      reason: "previous_order",
+      draw: null,
+    });
+  }
+
+  if (input.drawSample === undefined) {
+    throw new Error("equal initiative without previous order requires one draw sample");
+  }
+  const suppliedWeights = input.redrawWeights;
+  const weighted = suppliedWeights !== null && suppliedWeights !== undefined &&
+    Number.isFinite(suppliedWeights.a) && Number.isFinite(suppliedWeights.b) &&
+    suppliedWeights.a >= 0 && suppliedWeights.b >= 0 &&
+    suppliedWeights.a + suppliedWeights.b > 0;
+  const weights = weighted ? suppliedWeights : { a: 1, b: 1 };
+  const probabilityAFirst = weights.a / (weights.a + weights.b);
+  const first = input.drawSample < probabilityAFirst ? "a" : "b";
+  return SequentialInitiativeOrderReceiptSchema.parse({
+    schemaVersion: 1,
+    initiativeScores,
+    order: [first, first === "a" ? "b" : "a"],
+    reason: weighted ? "weighted_redraw" : "fair_redraw",
+    draw: {
+      sample: input.drawSample,
+      weights,
+      probabilityAFirst,
+    },
+  });
 }
 
 /**

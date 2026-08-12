@@ -2,6 +2,7 @@ import { z } from "zod";
 import {
   BattleTemporalPlanSchema,
   BattleTemporalSideSchema,
+  SequentialInitiativeOrderReceiptSchema,
 } from "./battle-temporal-rules.js";
 
 /**
@@ -29,6 +30,8 @@ export const CausalTurnExecutionSchema = z.object({
   /** Battle-state revision captured before the first decision. */
   expectedStateRevision: z.number().int().nonnegative(),
   temporalPlan: BattleTemporalPlanSchema,
+  /** ADR-0001 order receipt, persisted before any character action call. */
+  initiativeOrder: SequentialInitiativeOrderReceiptSchema.optional(),
   /** Bucket currently awaiting a decision or commit. */
   bucketIndex: z.number().int().nonnegative(),
   status: CausalTurnExecutionStatusSchema,
@@ -37,6 +40,21 @@ export const CausalTurnExecutionSchema = z.object({
   /** Buckets that the engine durably committed. */
   committedBucketIndices: z.array(z.number().int().nonnegative()).max(2),
 }).strict().superRefine((execution, ctx) => {
+  if (execution.initiativeOrder) {
+    const plannedOrder = execution.temporalPlan.buckets.flatMap(
+      (plannedBucket) => plannedBucket.actorSides,
+    );
+    if (
+      plannedOrder.length !== 2 ||
+      plannedOrder.some((side, index) => side !== execution.initiativeOrder?.order[index])
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["initiativeOrder", "order"],
+        message: "initiative order must match the temporal plan",
+      });
+    }
+  }
   const bucket = execution.temporalPlan.buckets[execution.bucketIndex];
   if (
     execution.status === "awaiting_finalize" ||
@@ -100,6 +118,7 @@ export function createCausalTurnExecution(input: {
   turn: number;
   expectedStateRevision: number;
   temporalPlan: z.input<typeof BattleTemporalPlanSchema>;
+  initiativeOrder?: z.input<typeof SequentialInitiativeOrderReceiptSchema>;
 }): CausalTurnExecution {
   return CausalTurnExecutionSchema.parse({
     schemaVersion: 1,
@@ -108,6 +127,7 @@ export function createCausalTurnExecution(input: {
     turn: input.turn,
     expectedStateRevision: input.expectedStateRevision,
     temporalPlan: input.temporalPlan,
+    ...(input.initiativeOrder ? { initiativeOrder: input.initiativeOrder } : {}),
     bucketIndex: 0,
     status: "awaiting_decision",
     decidedSides: [],

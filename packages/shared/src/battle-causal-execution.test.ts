@@ -7,9 +7,30 @@ import {
   createCausalTurnExecution,
   finishCausalTurnExecution,
 } from "./battle-causal-execution.js";
+import { selectSequentialInitiativeOrder } from "./battle-temporal-rules.js";
 import { buildBattleTemporalPlan } from "./battle-temporal-rules.js";
 
 describe("causal turn execution", () => {
+  it("persists the initiative order receipt before decisions", () => {
+    const initiativeOrder = selectSequentialInitiativeOrder({
+      effectiveSpeedA: 15,
+      effectiveSpeedB: 10,
+    });
+    const execution = createCausalTurnExecution({
+      executionId: "battle-1:turn:1",
+      battleId: "battle-1",
+      turn: 1,
+      expectedStateRevision: 0,
+      temporalPlan: buildBattleTemporalPlan({
+        effectiveSpeedA: 15,
+        effectiveSpeedB: 10,
+      }),
+      initiativeOrder,
+    });
+    assert.deepEqual(execution.initiativeOrder, initiativeOrder);
+    assert.deepEqual(causalExecutionDecisionSides(execution), ["a"]);
+  });
+
   it("makes the later sequential bucket available only after a durable first commit", () => {
     let execution = createCausalTurnExecution({
       executionId: "exec-1",
