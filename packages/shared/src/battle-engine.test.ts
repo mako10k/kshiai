@@ -11,6 +11,7 @@ import {
   ensureBattleWorldState,
   prepareBattleTurnInitiative,
   prepareSequentialBattleTurnInitiative,
+  resolveNextBattleTurnBucket,
   resolveTurn,
 } from "./battle-engine.js";
 import { defaultParameters, type CharacterSheet } from "./character.js";
@@ -1377,6 +1378,57 @@ describe("battle engine", () => {
     assert.deepEqual(later.temporalResolution.initiativeOrder.order, ["b", "a"]);
     assert.equal(later.temporalResolution.initiativeOrder.reason, "previous_order");
     assert.equal(later.temporalResolution.initiativeOrder.draw, null);
+  });
+
+  it("resumes the later bucket without replaying the committed predecessor", () => {
+    const a = sheet("a", "先行");
+    const b = sheet("b", "後攻");
+    const state = createBattleState({
+      id: "restartable-bucket-engine",
+      sideA: a,
+      sideB: b,
+      turnLimit: 20,
+      prologuePending: false,
+    });
+    state.sideA.parameters.spd = 20;
+    state.sideB.parameters.spd = 5;
+    state.plannedActionA = { kind: "basic_attack" };
+    state.plannedActionB = { kind: "basic_attack" };
+    const prepared = prepareSequentialBattleTurnInitiative({
+      state,
+      sideASkills: a.skills,
+      sideBSkills: b.skills,
+    });
+    assert.ok(prepared);
+    const common = {
+      state,
+      sideASkills: a.skills,
+      sideBSkills: b.skills,
+      temporalResolutionOverride: prepared.temporalResolution,
+      executionId: `${state.id}:turn:1`,
+    };
+    const monolithic = resolveTurn(common);
+    const first = resolveNextBattleTurnBucket(common);
+    assert.ok(first.engineContinuation);
+    assert.equal(first.bucketCommits?.length, 1);
+    assert.equal(first.bucketCommits?.[0]?.bucketIndex, 0);
+    assert.equal(first.engineContinuation.nextBucketIndex, 1);
+
+    const serializedContinuation = JSON.parse(JSON.stringify(first.engineContinuation));
+    const resumed = resolveNextBattleTurnBucket({
+      ...common,
+      engineContinuation: serializedContinuation,
+    });
+    assert.equal(resumed.engineContinuation, undefined);
+    assert.equal(resumed.bucketCommits?.length, 1);
+    assert.equal(resumed.bucketCommits?.[0]?.bucketIndex, 1);
+    assert.deepEqual(
+      { ...resumed.state, updatedAt: monolithic.state.updatedAt },
+      monolithic.state,
+    );
+    assert.deepEqual(resumed.events, monolithic.events);
+    assert.deepEqual(resumed.actions, monolithic.actions);
+    assert.deepEqual(resumed.mechanicalEvidence, monolithic.mechanicalEvidence);
   });
 
   it("atomically preserves equal-speed mutual incapacitation", () => {

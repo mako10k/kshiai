@@ -1095,6 +1095,38 @@ export type BattleBucketMechanicalCommit = z.infer<
   typeof BattleBucketMechanicalCommitSchema
 >;
 
+/** Serializable pure-engine continuation between durable bucket commits. */
+export const BattleTurnEngineContinuationSchema = z.object({
+  schemaVersion: z.literal(1),
+  executionId: z.string().min(1).max(160),
+  turn: z.number().int().positive(),
+  temporalResolution: BattleTemporalPlanSchema,
+  nextBucketIndex: z.number().int().nonnegative(),
+  sideA: CombatantStateSchema,
+  sideB: CombatantStateSchema,
+  situation: SituationSchema,
+  finisherA: FinisherStateSchema.nullable(),
+  finisherB: FinisherStateSchema.nullable(),
+  actions: z.array(ResolvedBattleActionSchema).length(2),
+  events: z.array(TurnEventSchema),
+  mechanicalEvidence: CommittedMechanicalEvidenceSetSchema,
+  defensiveInstrumentMultipliers: z.object({
+    a: z.number().positive(),
+    b: z.number().positive(),
+  }).strict(),
+}).strict().superRefine((continuation, context) => {
+  if (continuation.nextBucketIndex > continuation.temporalResolution.buckets.length) {
+    context.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["nextBucketIndex"],
+      message: "continuation cannot advance beyond the temporal plan",
+    });
+  }
+});
+export type BattleTurnEngineContinuation = z.infer<
+  typeof BattleTurnEngineContinuationSchema
+>;
+
 /**
  * Immutable authoritative inputs captured when a battle is created.
  *

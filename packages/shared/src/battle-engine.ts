@@ -5,6 +5,7 @@ import type {
   BattleStance,
   BattleState,
   BattleTurnRecord,
+  BattleTurnEngineContinuation,
   CharacterAgentState,
   CharacterAgentStateChange,
   CharacterActionIntent,
@@ -15,7 +16,11 @@ import type {
   Situation,
   TurnEvent,
 } from "./battle.js";
-import { clampCoefficient, isCombatantDown } from "./battle.js";
+import {
+  BattleTurnEngineContinuationSchema,
+  clampCoefficient,
+  isCombatantDown,
+} from "./battle.js";
 import type {
   BasicAttackProfile,
   CharacterSheet,
@@ -267,6 +272,7 @@ function committedMechanicalEvidence(input: {
   turn: number;
   spans: MechanicalResolutionSpan[];
   events: TurnEvent[];
+  evidenceOffset?: number;
 }): CommittedMechanicalEvidence[] {
   const evidence: CommittedMechanicalEvidence[] = [];
   for (const span of input.spans) {
@@ -282,7 +288,9 @@ function committedMechanicalEvidence(input: {
       | "actorSide"
     >) => {
       evidence.push({
-        evidenceId: `turn-${input.turn}-mechanical-${evidence.length + 1}`,
+        evidenceId: `turn-${input.turn}-mechanical-${
+          (input.evidenceOffset ?? 0) + evidence.length + 1
+        }`,
         turn: input.turn,
         sourceActionId: span.sourceActionId,
         basisEventIds,
@@ -1654,6 +1662,10 @@ export type ResolveTurnInput = {
   /** Persisted ADR-0001 plan selected before any action provider call. */
   temporalResolutionOverride?: BattleTemporalPlan;
   executionId?: string;
+  /** Internal durable resume point used by resolveNextBattleTurnBucket. */
+  engineContinuation?: BattleTurnEngineContinuation;
+  /** Resolve only the next temporal bucket and return a continuation. */
+  stopAfterNextBucket?: boolean;
 };
 
 type PreparedBattleTurnStart = {
@@ -1869,6 +1881,7 @@ export function resolveTurn(input: ResolveTurnInput): {
   actions: ResolvedBattleAction[];
   mechanicalEvidence: CommittedMechanicalEvidence[];
   bucketCommits?: BattleBucketMechanicalCommit[];
+  engineContinuation?: BattleTurnEngineContinuation;
 } {
   if (input.state.status !== "active") {
     return {
@@ -1888,14 +1901,24 @@ export function resolveTurn(input: ResolveTurnInput): {
     };
   }
 
-  const prepared = prepareBattleTurnStart(input);
-  let { sideA, sideB } = prepared;
-  const { situation, events, mechanicalSpans, turn } = prepared;
-  let finisherA = normalizeFinisher(input.state.finisherA, input.sideASkills);
-  let finisherB = normalizeFinisher(input.state.finisherB, input.sideBSkills);
+  const resumed = input.engineContinuation
+    ? BattleTurnEngineContinuationSchema.parse(input.engineContinuation)
+    : null;
+  const prepared = resumed ? null : prepareBattleTurnStart(input);
+  let sideA = cloneCombatant(resumed?.sideA ?? prepared!.sideA);
+  let sideB = cloneCombatant(resumed?.sideB ?? prepared!.sideB);
+  const situation = resumed?.situation ?? prepared!.situation;
+  const events = resumed ? [...resumed.events] : prepared!.events;
+  const mechanicalSpans = resumed ? [] : prepared!.mechanicalSpans;
+  const accumulatedMechanicalEvidence = resumed?.mechanicalEvidence ?? [];
+  const turn = resumed?.turn ?? prepared!.turn;
+  let finisherA = resumed?.finisherA ??
+    normalizeFinisher(input.state.finisherA, input.sideASkills);
+  let finisherB = resumed?.finisherB ??
+    normalizeFinisher(input.state.finisherB, input.sideBSkills);
 
   const forceOffense = (input.state.supervisor?.passiveTurns ?? 0) >= 2;
-  if (forceOffense) {
+  if (!resumed && forceOffense) {
     events.push({
       type: "status",
       summary: "膠着打破 — 両者は間合いを捨て、強制的に打ち合いへ踏み込む。",
@@ -1990,11 +2013,11 @@ export function resolveTurn(input: ResolveTurnInput): {
       targetSide: "a",
     }),
   } as const;
-  const defensiveInstrumentMultipliers: Record<BattleTemporalSide, number> = {
-    a: 1,
-    b: 1,
-  };
-  const temporalResolution = input.temporalResolutionOverride ??
+  const defensiveInstrumentMultipliers: Record<BattleTemporalSide, number> = resumed
+    ? { ...resumed.defensiveInstrumentMultipliers }
+    : { a: 1, b: 1 };
+  const temporalResolution = resumed?.temporalResolution ??
+    input.temporalResolutionOverride ??
     buildPreparedTemporalResolution({
       state: input.state,
       sideA,
@@ -2015,7 +2038,9 @@ export function resolveTurn(input: ResolveTurnInput): {
       throw new Error("temporal resolution override does not match prepared initiative");
     }
   }
-  const actions: ResolvedBattleAction[] = [
+  const actions: ResolvedBattleAction[] = resumed
+    ? [...resumed.actions]
+    : [
     {
       ...requestedActionA,
       id: actionAId,
@@ -2038,7 +2063,7 @@ export function resolveTurn(input: ResolveTurnInput): {
         reason: "actor_unavailable",
       },
     },
-  ];
+      ];
   const bucketCommits: BattleBucketMechanicalCommit[] = [];
 
   const sideIndex = (side: BattleTemporalSide) => side === "a" ? 0 : 1;
@@ -2329,7 +2354,11 @@ export function resolveTurn(input: ResolveTurnInput): {
     }));
   };
 
-  for (const bucket of temporalResolution.buckets) {
+  const firstBucketIndex = resumed?.nextBucketIndex ?? 0;
+  const bucketsToResolve = input.stopAfterNextBucket
+    ? temporalResolution.buckets.slice(firstBucketIndex, firstBucketIndex + 1)
+    : temporalResolution.buckets.slice(firstBucketIndex);
+  for (const bucket of bucketsToResolve) {
     const eventStart = events.length;
     const spanStart = mechanicalSpans.length;
     resolveTemporalBucket(bucket);
@@ -2354,9 +2383,60 @@ export function resolveTurn(input: ResolveTurnInput): {
         turn,
         spans: mechanicalSpans.slice(spanStart),
         events: finalizedSoFar,
+        evidenceOffset: accumulatedMechanicalEvidence.length +
+          committedMechanicalEvidence({
+            turn,
+            spans: mechanicalSpans.slice(0, spanStart),
+            events: finalizedSoFar,
+          }).length,
       }),
       defensiveInstrumentMultipliers: { ...defensiveInstrumentMultipliers },
     });
+  }
+
+  const newMechanicalEvidence = committedMechanicalEvidence({
+    turn,
+    spans: mechanicalSpans,
+    events: events.map((event, index) => ({
+      ...event,
+      id: event.id ?? `turn-${turn}-event-${index + 1}`,
+    })),
+    evidenceOffset: accumulatedMechanicalEvidence.length,
+  });
+  const mechanicalEvidence = CommittedMechanicalEvidenceSetSchema.parse([
+    ...accumulatedMechanicalEvidence,
+    ...newMechanicalEvidence,
+  ]);
+  const nextBucketIndex = firstBucketIndex + bucketsToResolve.length;
+  if (input.stopAfterNextBucket && nextBucketIndex < temporalResolution.buckets.length) {
+    const engineContinuation = BattleTurnEngineContinuationSchema.parse({
+      schemaVersion: 1,
+      executionId: input.executionId ?? resumed?.executionId ??
+        `${input.state.id}:turn:${turn}`,
+      turn,
+      temporalResolution,
+      nextBucketIndex,
+      sideA,
+      sideB,
+      situation,
+      finisherA: finisherA ?? null,
+      finisherB: finisherB ?? null,
+      actions,
+      events: events.map((event, index) => ({
+        ...event,
+        id: event.id ?? `turn-${turn}-event-${index + 1}`,
+      })),
+      mechanicalEvidence,
+      defensiveInstrumentMultipliers,
+    });
+    return {
+      state: input.state,
+      events: engineContinuation.events,
+      actions,
+      mechanicalEvidence,
+      bucketCommits,
+      engineContinuation,
+    };
   }
 
   // Incapacity flags
@@ -2465,13 +2545,16 @@ export function resolveTurn(input: ResolveTurnInput): {
     state,
     events: finalizedEvents,
     actions,
-    mechanicalEvidence: committedMechanicalEvidence({
-      turn,
-      spans: mechanicalSpans,
-      events: finalizedEvents,
-    }),
+    mechanicalEvidence,
     bucketCommits,
   };
+}
+
+/** Resolves exactly one bucket without replaying any committed predecessor. */
+export function resolveNextBattleTurnBucket(
+  input: Omit<ResolveTurnInput, "stopAfterNextBucket">,
+): ReturnType<typeof resolveTurn> {
+  return resolveTurn({ ...input, stopAfterNextBucket: true });
 }
 
 function tagActionEvents(
