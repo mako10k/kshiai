@@ -125,6 +125,7 @@ task T_BUILD_ORDERED_NARRATION_WORKER NARRATION_CONTRACT_ACCEPTED -> NARRATION_W
   title "Build fenced ordered narration worker"
   description "Persist unique battleId+turnReceiptId entries, battle-local sequence, terminal-only allowlisted audience events, internal attempt receipts and an independent fenced lease. Use durable outbox plus authenticated queue push for Cloud Run scale-to-zero and recovery scan. Enforce earliest-nonterminal ordering, cross-battle fairness, stale-worker rejection and the accepted total retry/token/cost ceiling. Use the accepted lightweight narrator route and deterministic terminal fallback. Test redelivery, lease loss, worker crash/takeover, failure releasing the successor, no partial prose mixing, backlog, privacy and sanitized admin queue/lease/cost evidence."
   duration 4p
+  status active
   requires:
     DEV 1
   owner "codex"
@@ -155,3 +156,10 @@ task T_CUTOVER_NARRATION_COMPATIBILITY NARRATION_MIGRATION_ACCEPTED -> NARRATION
   requires:
     DEV 1
   owner "codex"
+
+work_event WE-4a27fbee32c9bf81d5fc22ea9dc529b3e2882fba5de006f41b5e8a7cd1300916:
+  model 1
+  task T_BUILD_ORDERED_NARRATION_WORKER
+  kind start
+  occurred_at 2026-08-12T16:13:53+09:00
+  planned_value 4p
