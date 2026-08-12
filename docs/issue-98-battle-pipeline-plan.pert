@@ -18,26 +18,14 @@ resource OWNER:
   title "Product and release owner"
   capacity 1
 
-milestone ISSUE_INTAKE_RECORDED:
-  title "Issue intent and current baseline recorded"
-  state reached
 
-milestone CAUSAL_CONTRACT_DRAFTED:
-  title "Causal state machine and authority draft recorded"
-  state reached
 
-milestone CAUSAL_CONTRACT_ACCEPTED:
-  title "Owner accepted bounded Phase 1 contract"
-  state reached
 
-milestone BUCKET_ENGINE_READY:
-  title "Restartable bucket execution is available"
 
-milestone EARLY_GROUNDWORK_AUDITED:
-  title "Early persistence, visibility, and side-isolation groundwork is integrated"
 
 milestone ASSET_GENERATIONS_READY:
   title "Battles bind immutable editable-asset generations"
+  state reached
 
 milestone LLM_COST_CONTRACT_ACCEPTED:
   title "Owner accepted pipeline-wide LLM cost budgets and routing"
@@ -75,50 +63,10 @@ milestone PACING_POLICY_ACCEPTED:
 milestone ISSUE_98_LOCALLY_ACCEPTED:
   title "Issue #98 local acceptance complete"
 
-task T_DRAFT_CAUSAL_CONTRACT ISSUE_INTAKE_RECORDED -> CAUSAL_CONTRACT_DRAFTED:
-  title "Trace authority, checkpoints, visibility, and prior-plan disposition"
-  description "Record a formal turn state machine: prepare, durable bucket commit, observer projection, later decision, later validation, next bucket commit, and terminal finalize. List every LLM-to-persisted-state and winner edge, including narrator recognition continuity and terminal adjudication, and decide whether each is retained outside this slice, server-validated, or removed. Define durable checkpoints, idempotency-key and lease binding, resume after save/result ambiguity, public durable versus ephemeral SSE events, trace ACL/retention, and legacy read behavior. Record an explicit defer, replace, or integration decision for the completed observation plan's OBS-20260807-09 semantic-equivalence axis. Create fixtures for both speed directions, simultaneous bucket, KO, invalid proposal, timeout, save-success/response-failure, reconnect, and private-intent non-leakage."
-  duration 3p
-  status done
-  owner "codex"
-  requires:
-    DEV 1
 
-task T_ACCEPT_CAUSAL_CONTRACT CAUSAL_CONTRACT_DRAFTED -> CAUSAL_CONTRACT_ACCEPTED:
-  title "Accept the bounded sequential-decision contract"
-  description "Owner decides the Phase 1 action source for each bucket, semantic/world visibility timing, retained LLM authority edges, old-plan OBS-09 disposition, and the no-random-initiative/no-new-wait-semantics scope. No code, deployment, release, or Issue mutation is authorized by this decision."
-  duration 1p
-  status done
-  owner "user"
-  requires:
-    OWNER 1
 
-task T_REFACTOR_BUCKET_EXECUTION CAUSAL_CONTRACT_ACCEPTED -> BUCKET_ENGINE_READY:
-  title "Refactor deterministic engine into restartable bucket execution"
-  description "Extract pure prepare, resolve-bucket, and finalize operations from the current monolithic resolveTurn path. Implement ADR-0001: ordinary actions always use sequential buckets; equal initiative reuses the previous resolved order, or performs one persisted draw with the initiative calculation's A/B weights, defaulting to exact 50/50 when weights are absent. Preserve A/B-swap invariance, server validation, and deterministic stable IDs. Persist the draw basis, sample, and selected order before action calls. Each operation must be re-enterable without redrawing, replaying an already committed bucket, or consuming a planned action twice."
-  duration 4p
-  status done
-  owner "codex"
-  requires:
-    DEV 1
 
-task T_AUDIT_EARLY_BUCKET_GROUNDWORK BUCKET_ENGINE_READY -> EARLY_GROUNDWORK_AUDITED:
-  title "Audit and integrate prematurely implemented bucket groundwork"
-  description "Review commits f22e98c, 2496b54, and bc47793 against the completed bucket-engine contract. Retain only conformant restart continuation, BattleState persistence, retry behavior, administrator checkpoint display, and isolated-side character-agent execution. Add missing focused recovery, privacy, DTO/UI, provider-call-count, and no-committed-bucket-replay tests. Record any remaining durability and sequential-decision obligations in their existing later tasks. This is a new scope item added after T_REFACTOR_BUCKET_EXECUTION started; do not manufacture historical start/finish times or count the groundwork as accepted before this audit finishes."
-  duration 1p
-  status done
-  owner "codex"
-  requires:
-    DEV 1
 
-task T_COMPLETE_ASSET_GENERATIONS EARLY_GROUNDWORK_AUDITED -> ASSET_GENERATIONS_READY:
-  title "Complete durable generations and a minimal normalized battle manifest"
-  description "Implement ADR-0003 beyond the baseline. Add append-only generations and current pointers for editable authoritative assets, transactional edit semantics, historical reads, retention identity, and versioned canonical normalization/digests. Replace full CharacterSheet snapshots with a minimal battle-authoritative character generation excluding records, owner memories, revision buffers, and unrelated mutable fields. Bind field preset generation plus concrete derivation, narration style, dialogue settings, rules, psyche contracts, and later narration jobs. Fail closed for new battles; isolate legacy unknowns without reading current rows as historical truth. Test mid-battle edits, retry identity, privacy, legacy reads, and administrator display."
-  duration 4p
-  status done
-  owner "codex"
-  requires:
-    DEV 1
 
 task T_ACCEPT_PIPELINE_LLM_COST_CONTRACT ASSET_GENERATIONS_READY -> LLM_COST_CONTRACT_ACCEPTED:
   title "Accept pipeline-wide LLM cost measurement and routing"
@@ -215,91 +163,3 @@ task T_ACCEPT_ISSUE_98 PACING_POLICY_ACCEPTED -> ISSUE_98_LOCALLY_ACCEPTED:
   owner "codex"
   requires:
     DEV 1
-
-work_event WE-b4c037f20ad49ffe5ff2f9ff1eb8ce748482ea8198ba2fcea40a05f8d817a37b:
-  model 1
-  task T_DRAFT_CAUSAL_CONTRACT
-  kind start
-  occurred_at 2026-08-12T08:52:49+09:00
-  planned_value 3p
-
-work_event WE-c8a7db99e8e245ec62fbc5ea21f9c8440c2e2c4067f507fb4c8c4e4ba59258e2:
-  model 1
-  task T_DRAFT_CAUSAL_CONTRACT
-  kind finish
-  occurred_at 2026-08-12T08:55:39+09:00
-  active_time 17/360h
-  effort 17/360ph
-
-work_event WE-87b7a1065b1ea6801c4c54d1e874003ad4e0a7d1425c5a22e8e4d2efbb0c9910:
-  model 1
-  task T_ACCEPT_CAUSAL_CONTRACT
-  kind start
-  occurred_at 2026-08-12T08:55:40+09:00
-  planned_value 1p
-
-work_event WE-9c5a2edaa5f901d709995eb26a10d4609e9ac9b213a6f6a25b34f373aa418e4a:
-  model 1
-  task T_ACCEPT_CAUSAL_CONTRACT
-  kind finish
-  occurred_at 2026-08-12T08:55:41+09:00
-  active_time 1/3600h
-  effort 1/3600ph
-
-work_event WE-d8b5e8b1e4af269021306b3c0839f706a6194e9bcb8bc2c50c0f3a0f4a9b25f7:
-  model 1
-  task T_REFACTOR_BUCKET_EXECUTION
-  kind start
-  occurred_at 2026-08-12T08:55:42+09:00
-  planned_value 4p
-
-work_event WE-ddeebafbb739189c8b742f3abc2779eba9af96fea49b28544ff660281f46ed6c:
-  model 1
-  task T_REFACTOR_BUCKET_EXECUTION
-  kind suspend
-  occurred_at 2026-08-12T09:37:29+09:00
-  reason "ADR-0001 tie-break and simultaneous-resolution decision pending"
-
-work_event WE-d80deb1ffc3201da989ec15dfd650f24b3598862c39ee790a80a23abbb21cc09:
-  model 1
-  task T_REFACTOR_BUCKET_EXECUTION
-  kind resume
-  occurred_at 2026-08-12T09:45:00+09:00
-
-work_event WE-a89322bbd92260ac2e521cfaa6cde41180c1fcd9aca5d477fe85bd62fce4cccc:
-  model 1
-  task T_REFACTOR_BUCKET_EXECUTION
-  kind finish
-  occurred_at 2026-08-12T11:53:36+09:00
-  active_time 10223/3600h
-  effort 10223/3600ph
-
-work_event WE-e40682749eff6d470194a7543a62b8bb724fb82e48bfffb0ea71d9b0e4d9ca4b:
-  model 1
-  task T_AUDIT_EARLY_BUCKET_GROUNDWORK
-  kind start
-  occurred_at 2026-08-12T11:54:16+09:00
-  planned_value 1p
-
-work_event WE-5ca598ec4bfd0fe1c2f4ddc96509deb69b2dc82edca3b91c704717fedf80b3a0:
-  model 1
-  task T_AUDIT_EARLY_BUCKET_GROUNDWORK
-  kind finish
-  occurred_at 2026-08-12T11:56:41+09:00
-  active_time 29/720h
-  effort 29/720ph
-
-work_event WE-672f8adc36cc9743ed207c7923d934700eab2bf4c37f87a9315c987b0aef2881:
-  model 1
-  task T_COMPLETE_ASSET_GENERATIONS
-  kind start
-  occurred_at 2026-08-12T12:02:52+09:00
-  planned_value 4p
-
-work_event WE-54ddfa0ed1308d9f66a8ae58e7a9c81708565b7cc4b9f20cfd262a6a163e311f:
-  model 1
-  task T_COMPLETE_ASSET_GENERATIONS
-  kind finish
-  occurred_at 2026-08-12T12:15:02+09:00
-  active_time 73/360h
-  effort 73/360ph
