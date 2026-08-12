@@ -1617,7 +1617,11 @@ export function buildRoutes() {
               key: idempotencyKey,
             }),
             llm,
-            onProgress: (event) => send(event),
+            // Narration is followed through the durable narration API. Advance
+            // SSE carries only non-prose phase state plus the terminal battle.
+            onProgress: (event) => {
+              if (event.type === "phase") send(event);
+            },
           });
           operationCompleted = true;
           await completeIdempotentRequest({

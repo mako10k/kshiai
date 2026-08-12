@@ -280,10 +280,12 @@ Implemented local stream boundary (2026-08-12):
   Pruning transactionally advances a retained high-watermark; a cursor behind
   it receives one terminal snapshot reset before following newer events;
 - the battle page follows narration independently of advance and displays
-  ordered queued/generating placeholders. During the compatibility interval,
-  advance may still complete the same entry through the synchronous bridge;
-  removing that bridge and narrator progress is gated by
-  `T_ACCEPT_NARRATION_MIGRATION` and the subsequent cutover task.
+  ordered queued/generating placeholders. After the accepted local cutover,
+  advance SSE publishes phase and terminal battle events only; narrator prose,
+  drafts and bulk speech placement are read exclusively from durable narration
+  entries. The synchronous terminal import remains a bounded rollback adapter
+  until authenticated queue infrastructure is separately authorized; it emits
+  no advance prose and cannot create a second receipt or provider attempt.
 
 ## Acceptance matrix
 

@@ -4129,24 +4129,7 @@ async function advanceTurnWithLease(input: {
     // Retry policy belongs to the selected provider adapter. This envelope does
     // not duplicate a timeout, 429, or 503 attempt and never changes provider.
     narrationResult = await withTimeout(
-      input.llm.narrateTurn({
-        ...narrationCallInput,
-        onProgress: (progress) => {
-          emit({
-            type: "narrator",
-            lines: progress.lines.map((line) =>
-              repairNarrationIdentifierText(line, identifierCatalog)
-            ),
-            draft: progress.draft
-              ? repairNarrationIdentifierText(
-                  progress.draft,
-                  identifierCatalog,
-                )
-              : null,
-            turn: next.turn,
-          });
-        },
-      }),
+      input.llm.narrateTurn(narrationCallInput),
       FAST_LLM_ENVELOPE_TIMEOUT_MS,
       "narrateTurn",
     );
@@ -4201,14 +4184,6 @@ async function advanceTurnWithLease(input: {
             : fallbackNarrative.narrator.length - 1,
       })),
     };
-    emit({
-      type: "narrator",
-      lines: narrationResult.narrator.map((line) =>
-        repairNarrationIdentifierText(line, identifierCatalog)
-      ),
-      draft: null,
-      turn: next.turn,
-    });
   }
   let narrative = publicNarrativeBlock(narrationResult);
   narrative = repairNarrativeBlockIdentifiers(narrative, identifierCatalog);
@@ -4257,9 +4232,6 @@ async function advanceTurnWithLease(input: {
     sources: characterSpeeches,
   });
   narrative = repairNarrativeBlockIdentifiers(narrative, identifierCatalog);
-  if (narrative.speeches?.length) {
-    emit({ type: "speeches", speeches: narrative.speeches });
-  }
   next = {
     ...next,
     dramaState: advanceDramaState({
@@ -4718,18 +4690,6 @@ async function runPrologueTurn(input: {
           : [],
         styleInstruction: state.narrationStyle?.instruction,
         styleName: state.narrationStyle?.displayName,
-        onProgress: (progress) => {
-          emit({
-            type: "narrator",
-            lines: progress.lines.map((line) =>
-              repairNarrationIdentifierText(line, identifierCatalog)
-            ),
-            draft: progress.draft
-              ? repairNarrationIdentifierText(progress.draft, identifierCatalog)
-              : null,
-            turn: 0,
-          });
-        },
       }),
       FAST_LLM_ENVELOPE_TIMEOUT_MS,
       "narratePrologue",
@@ -4757,14 +4717,6 @@ async function runPrologueTurn(input: {
         text: speech.text,
       })),
     };
-    emit({
-      type: "narrator",
-      lines: narrationResult.narrator.map((line) =>
-        repairNarrationIdentifierText(line, identifierCatalog)
-      ),
-      draft: null,
-      turn: 0,
-    });
   }
   let narrative = publicNarrativeBlock(narrationResult);
   narrative = repairNarrativeBlockIdentifiers(narrative, identifierCatalog);
@@ -4797,9 +4749,6 @@ async function runPrologueTurn(input: {
     sources: characterSpeeches,
   });
 
-  if (narrative.speeches.length) {
-    emit({ type: "speeches", speeches: narrative.speeches });
-  }
   emit({ type: "phase", phase: "finalizing" });
 
   let next: BattleState = {
@@ -4968,18 +4917,6 @@ async function runAftermathTurn(input: {
           : [],
         styleInstruction: state.narrationStyle?.instruction,
         styleName: state.narrationStyle?.displayName,
-        onProgress: (progress) => {
-          emit({
-            type: "narrator",
-            lines: progress.lines.map((line) =>
-              repairNarrationIdentifierText(line, identifierCatalog)
-            ),
-            draft: progress.draft
-              ? repairNarrationIdentifierText(progress.draft, identifierCatalog)
-              : null,
-            turn: aftermathTurn,
-          });
-        },
       }),
       FAST_LLM_ENVELOPE_TIMEOUT_MS,
       "narrateAftermath",
@@ -5013,16 +4950,6 @@ async function runAftermathTurn(input: {
     narrative,
     sources: characterSpeeches,
   });
-  emit({
-    type: "narrator",
-    lines: narrative.narrator,
-    draft: null,
-    turn: aftermathTurn,
-  });
-  if (narrative.speeches.length) {
-    emit({ type: "speeches", speeches: narrative.speeches });
-  }
-
   emit({ type: "phase", phase: "finalizing" });
 
   let next: BattleState = {
