@@ -58,7 +58,10 @@ describe("persistent E2E workflow contract", () => {
     const promote = workflow("promote-release.yml");
     assert.match(stage, /Prove Cloud Tasks OIDC delivery to staged revision/);
     assert.match(stage, /Prove exact narration receipt lifecycle without an LLM/);
-    assert.match(stage, /claims only the exact receipt generation/);
+    assert.match(
+      stage,
+      /Prove exact narration receipt lifecycle without an LLM[\s\S]*?npm run build --workspace=@kshiai\/shared[\s\S]*?node --import tsx --test \\\n\s+--test-name-pattern="claims only the exact receipt generation" \\\n\s+src\/services\/narration-worker\.test\.ts/,
+    );
     assert.match(stage, /gcloud tasks create-http-task/);
     assert.match(stage, /--oidc-service-account-email/);
     assert.match(stage, /task smoke ok/);

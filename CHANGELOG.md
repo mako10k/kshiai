@@ -5,6 +5,19 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 
 ## [Unreleased]
 
+## [0.17.3] - 2026-08-13
+
+### Fixed
+
+- Builds `@kshiai/shared` before the Stage narration receipt fixture and pins
+  the proof to the single exact worker test instead of invoking the full backend
+  suite.
+
+### Database
+
+- No new migration. The additive v0.17.1 schema remains compatible with the
+  production v0.17.1 application rollback target.
+
 ## [0.17.2] - 2026-08-12
 
 ### Fixed

@@ -220,7 +220,15 @@ jobs:
           ' "$RUNNER_TEMP/service.json"
 
       - name: Prove exact narration receipt lifecycle without an LLM
-        run: npm test --workspace @kshiai/backend -- --test-name-pattern="claims only the exact receipt generation"
+        run: |
+          set -euo pipefail
+          npm run build --workspace=@kshiai/shared
+          (
+            cd backend
+            node --import tsx --test \
+              --test-name-pattern="claims only the exact receipt generation" \
+              src/services/narration-worker.test.ts
+          )
 
       - name: Prove Cloud Tasks OIDC delivery to staged revision
         env:
