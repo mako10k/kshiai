@@ -124,6 +124,7 @@ task T_BUILD_BATTLE_NARRATION_STREAM NARRATION_WORKER_READY -> NARRATION_STREAM_
   title "Build battle narration API, UI, and compatibility migration"
   description "Add authorized ordered read/per-receipt APIs and finite bearer-authenticated fetch-SSE follow with opaque durable cursor. Provide at-least-once replay, idempotent replacement reducer, atomic retention reset high-watermark, periodic authorization/realm/deletion checks, heartbeat and reconnect across platform timeout. Move frontend to independent advance/narration states, ordered receipt placeholders and held advance idempotency key. Integrate the feature-gated presentation read model with BattlePublic/history/improvement, retain rollback, and expose sanitized administrator queue/blocking/cost/retention lane. Test N+1 waiting without blocking advance, no provider call on connect, token refresh, pruned cursor, audience isolation, legacy dual-read and physical reconnect."
   duration 5p
+  status active
   requires:
     DEV 1
   owner "codex"
@@ -146,3 +147,10 @@ task T_CUTOVER_NARRATION_COMPATIBILITY NARRATION_MIGRATION_ACCEPTED -> NARRATION
   requires:
     DEV 1
   owner "codex"
+
+work_event WE-9628c553af932846afb8549af1516df521fcdc515e1ca204dc9b1b080c47f9cc:
+  model 1
+  task T_BUILD_BATTLE_NARRATION_STREAM
+  kind start
+  occurred_at 2026-08-12T16:28:26+09:00
+  planned_value 5p
