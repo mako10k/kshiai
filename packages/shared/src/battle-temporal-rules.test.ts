@@ -3,6 +3,7 @@ import { describe, it } from "node:test";
 import {
   BATTLE_TEMPORAL_RULESET,
   buildBattleTemporalPlan,
+  buildSequentialBattleTemporalPlan,
   resolveBattleTemporalExclusiveClaims,
   selectSequentialInitiativeOrder,
 } from "./battle-temporal-rules.js";
@@ -70,6 +71,27 @@ describe("selectSequentialInitiativeOrder", () => {
         effectiveSpeedB: 10,
       }),
       /requires one draw sample/,
+    );
+  });
+
+  it("builds two sequential v2 buckets even for equal initiative", () => {
+    const receipt = selectSequentialInitiativeOrder({
+      effectiveSpeedA: 10,
+      effectiveSpeedB: 10,
+      previousOrder: ["b", "a"],
+    });
+    const plan = buildSequentialBattleTemporalPlan(receipt);
+    assert.equal(plan.rulesetId, "initiative-sequential-v2");
+    assert.deepEqual(
+      plan.buckets.map((bucket) => ({
+        sides: bucket.actorSides,
+        simultaneous: bucket.simultaneous,
+        readsFrom: bucket.readsFrom,
+      })),
+      [
+        { sides: ["b"], simultaneous: false, readsFrom: "turn_start" },
+        { sides: ["a"], simultaneous: false, readsFrom: "previous_bucket_commit" },
+      ],
     );
   });
 });

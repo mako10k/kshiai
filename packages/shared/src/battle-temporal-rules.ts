@@ -59,6 +59,14 @@ export const BATTLE_TEMPORAL_RULESET = Object.freeze({
   orderingRandomness: "forbidden",
 } as const);
 
+export const SEQUENTIAL_BATTLE_TEMPORAL_RULESET = Object.freeze({
+  id: "initiative-sequential-v2",
+  ordinaryActionCommit: "sequential",
+  equalInitiative: "previous_order_then_persisted_redraw",
+  lowerBucketRevalidation: "required",
+  incapacitatedBeforeBucket: "skip",
+} as const);
+
 export const BattleTemporalBucketSchema = z.object({
   index: z.number().int().nonnegative(),
   actorSides: z.array(BattleTemporalSideSchema).min(1).max(2),
@@ -69,7 +77,7 @@ export const BattleTemporalBucketSchema = z.object({
 }).strict();
 export type BattleTemporalBucket = z.infer<typeof BattleTemporalBucketSchema>;
 
-export const BattleTemporalPlanSchema = z.object({
+export const LegacyBattleTemporalPlanSchema = z.object({
   rulesetId: z.literal(BATTLE_TEMPORAL_RULESET.id),
   initiativeScores: z.object({
     a: z.number().int(),
@@ -77,6 +85,38 @@ export const BattleTemporalPlanSchema = z.object({
   }).strict(),
   buckets: z.array(BattleTemporalBucketSchema).min(1).max(2),
 }).strict();
+export const SequentialBattleTemporalPlanSchema = z.object({
+  rulesetId: z.literal(SEQUENTIAL_BATTLE_TEMPORAL_RULESET.id),
+  initiativeScores: z.object({
+    a: z.number().int(),
+    b: z.number().int(),
+  }).strict(),
+  initiativeOrder: SequentialInitiativeOrderReceiptSchema,
+  buckets: z.tuple([BattleTemporalBucketSchema, BattleTemporalBucketSchema]),
+}).strict().superRefine((plan, ctx) => {
+  const plannedOrder = plan.buckets.flatMap((bucket) => bucket.actorSides);
+  if (
+    plannedOrder.length !== 2 ||
+    plannedOrder.some((side, index) => side !== plan.initiativeOrder.order[index])
+  ) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["buckets"],
+      message: "sequential buckets must match the initiative order",
+    });
+  }
+  if (plan.buckets.some((bucket) => bucket.simultaneous || bucket.commitMode !== "sequential")) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["buckets"],
+      message: "ordinary v2 buckets must be sequential",
+    });
+  }
+});
+export const BattleTemporalPlanSchema = z.union([
+  LegacyBattleTemporalPlanSchema,
+  SequentialBattleTemporalPlanSchema,
+]);
 export type BattleTemporalPlan = z.infer<typeof BattleTemporalPlanSchema>;
 
 export type BattleTemporalExclusiveClaim = {
@@ -156,6 +196,36 @@ export function selectSequentialInitiativeOrder(input: {
   });
 }
 
+export function buildSequentialBattleTemporalPlan(
+  initiativeOrder: SequentialInitiativeOrderReceipt,
+): BattleTemporalPlan {
+  const receipt = SequentialInitiativeOrderReceiptSchema.parse(initiativeOrder);
+  const [first, later] = receipt.order;
+  return SequentialBattleTemporalPlanSchema.parse({
+    rulesetId: SEQUENTIAL_BATTLE_TEMPORAL_RULESET.id,
+    initiativeScores: receipt.initiativeScores,
+    initiativeOrder: receipt,
+    buckets: [
+      {
+        index: 0,
+        actorSides: [first],
+        initiativeScore: receipt.initiativeScores[first],
+        simultaneous: false,
+        readsFrom: "turn_start",
+        commitMode: "sequential",
+      },
+      {
+        index: 1,
+        actorSides: [later],
+        initiativeScore: receipt.initiativeScores[later],
+        simultaneous: false,
+        readsFrom: "previous_bucket_commit",
+        commitMode: "sequential",
+      },
+    ],
+  });
+}
+
 /**
  * Builds the side-neutral execution buckets for a two-combatant turn.
  *
@@ -178,7 +248,7 @@ export function buildBattleTemporalPlan(input: {
     Math.abs(difference) <=
       BATTLE_TEMPORAL_RULESET.simultaneousInitiativeDelta
   ) {
-    return BattleTemporalPlanSchema.parse({
+    return LegacyBattleTemporalPlanSchema.parse({
       rulesetId: BATTLE_TEMPORAL_RULESET.id,
       initiativeScores,
       buckets: [{
@@ -194,7 +264,7 @@ export function buildBattleTemporalPlan(input: {
 
   const faster: BattleTemporalSide = difference > 0 ? "a" : "b";
   const slower: BattleTemporalSide = faster === "a" ? "b" : "a";
-  return BattleTemporalPlanSchema.parse({
+  return LegacyBattleTemporalPlanSchema.parse({
     rulesetId: BATTLE_TEMPORAL_RULESET.id,
     initiativeScores,
     buckets: [
