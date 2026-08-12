@@ -11,6 +11,8 @@
 
 戦闘全体のLLMコスト方針: [battle-llm-cost-policy.md](battle-llm-cost-policy.md)
 
+ADR-0006実装設計: [battle-narration-stream-design.md](battle-narration-stream-design.md)
+
 対応 PERT: [issue-98-battle-pipeline-plan.pert](issue-98-battle-pipeline-plan.pert)（`bc47793` 基準の再計画版、owner gateを含む）
 
 ## 監査後の結論
@@ -40,8 +42,13 @@
 | 1c: adoptable psyche/cost contract (2p + owner 1p) | V1入力・trait/state・projection、no-call/lightweight/fallback routing | tag・値域・retention・call ceiling・cost/quality閾値を承認 | embedding・学習・LLM judgeは対象外 |
 | 1d: psyche cost reduction (4p) | 決定的policyと軽量LLM候補をshadow比較し、通常caseの高コストcallを削減 | route採用は契約範囲内 | context分離を維持し、call/token/cost/fallback/品質をreceiptで検証 |
 | 1e: 順次判断 (5p) | turn N finalize→N+1 order→first reservation、first commit→later decision/validation/commit | action/表現の発火条件 | private intentを渡さず、通常時LLM予算を固定。KO/invalid/timeoutを理由付き処理 |
-| 1f: durability/SSE/可視化 (3p) | lease/idempotency/outbox、reconnect、durable public event、管理者向け causal DAG | - | save後応答失敗でも二重commitなし。世代、心理receipt、呼出しskip理由も表示 |
-| 1g: narration API (4p) | immutable narration job、read/stream API、ordered UI placeholder | - | ADR-0002。narration失敗中も次advance可、再接続でprovider再実行なし |
+| 1f: advance durability (4p) | lease/idempotency/outbox、commit readback、重複action/LLM防止 | - | save後応答失敗でも二重commitなし。turn receiptをrequestへ相関 |
+| 1g: narration authority/input (3p) | deterministic winner、narrator canonical write除去、immutable input | - | ADR-0006。後続advanceはnarrationを一切読まない |
+| 1g-gate: narration contract (1p) | terminal snapshot、queue push、cost ceiling、audience/retention | runtime/route contractを承認 | cloud作成・deployの承認ではない |
+| 1h: ordered narration persistence/worker (4p) | battle+turn receipt identity、sequence、lease、durable event、bounded retry | - | 前turn終端前に後続provider callなし。失敗は後続を解放 |
+| 1i: battle narration API/UI (5p) | battle単位read/follow SSE、cursor replay/reset、継続接続、管理者lane | - | advanceを跨いで同じ論理SSE。再接続でprovider再実行なし |
+| 1i-gate: compatibility cutover (1p) | legacy dual-read、rollback、admin evidence | 旧advance narrator progress除去を承認 | release/deploy/data migrationは別承認 |
+| 1j: local compatibility cleanup (1p) | advance SSEから非durable narrator progressを除去、composite readをlocal default化 | - | rollback switchを保持して全consumer fixtureを再検証 |
 | 2: effect scope (1p) | predicate、cancel/expiry、visibility、2 combatant制限 | effect contract を承認 | 援軍・新 combat participant は今回の範囲外 |
 | 3: provenance/effect (7p) | tagged receipt、bounded pending effect、limited replay | - | delayed hit と condition の各1 fixture。proseから effect を作らない |
 | 4: local pacing (3p) | policy snapshot、最大12 candidate の局所計測 | retain/revise/adopt を承認 | forced terminal/KO率を含む比較。平均8は仮説 |
@@ -60,6 +67,8 @@
 9. deep psycheはまず明示パラメータの決定的状態遷移とし、学習モデルはshadow受入後だけ候補にする。キャラ埋め込みは正規化済み`PsycheTraitProfile`だけを入力とし、キャラ全体を埋め込まない。
 10. deep-psycheの通常経路はコストを優先し、`deterministic/no-call → lightweight LLM → 明示例外のhigh-cost fallback`の順で固定routingする。call削減のためのcontext統合と無制限なmodel escalationは禁止する。
 11. 全LLM責務で`skip/reuse → deterministic → lightweight → 明示fallback`を評価し、call数ではなくbattle/turnあたりの総token・課金・retry込みcostを上位受入指標にする。同等品質なら軽いmodelを選ぶ。
+12. narrationの公開identityは`battleId + turnReceiptId`とし、公開`narrationId`を作らない。battle内sequenceは生成・表示順、SSE event IDはopaqueなdurable replay cursor、provider attempt IDは内部運用識別子として分離する。
+13. narration生成はbattle単位で直列化する。前sequenceがterminalになるまで後続provider callを開始しないが、canonical advanceは待機させない。SSE接続はadvanceを跨いで継続する。
 
 ## `97b5bbe` 基線の評価
 

@@ -324,4 +324,6 @@ flowchart LR
 - [ADR-0001: Turn initiative and simultaneous resolution](adr/0001-turn-initiative-and-simultaneous-resolution.md)
 - [ADR-0002: Separate advance and narration APIs](adr/0002-separate-advance-and-narration-apis.md)
 - [ADR-0005: Battle-scoped ordered narration stream](adr/0005-battle-scoped-ordered-narration-stream.md)
+- [ADR-0006: Terminal-snapshot narration delivery](adr/0006-terminal-snapshot-narration-delivery.md)
+- [Battle-scoped narration stream design](battle-narration-stream-design.md)
 - [Battle LLM cost policy](battle-llm-cost-policy.md)

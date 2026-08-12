@@ -7,7 +7,7 @@ project KSHIAI_ISSUE_98_CAUSAL_BATTLE_PIPELINE:
   as_of 2026-08-12
   duration_unit point
   velocity 2880p/1117h
-  target_duration 49p
+  target_duration 52p
   finish ISSUE_98_LOCALLY_ACCEPTED
 
 resource DEV:
@@ -65,17 +65,17 @@ milestone ISSUE_98_LOCALLY_ACCEPTED:
 
 
 task T_HARDEN_CAUSAL_DURABILITY SEQUENTIAL_SLICE_READY -> DURABILITY_READY:
-  title "Verify checkpoint recovery, idempotency, and public stream ordering"
-  description "Complete—not merely retain—the audited checkpoint groundwork. Bind request idempotency, battle lease/version, committed bucket receipt, and final response transactionally or with an explicit recoverable outbox. A retry returns the durable committed result rather than rerunning LLM work. Hold the frontend idempotency key across reconnect retries. Emit new public causal bucket events only after their durable commit; keep progress and private trace out of public SSE replay. Persist privacy-safe responsibility, route, model/prompt generation, token, estimated cost, latency, attempt, reuse, and fallback receipts, and aggregate them in administrator observations alongside causal checkpoints. Legacy records remain unavailable rather than inferred. Test disconnect/reconnect, save succeeds but response completion fails, later LLM timeout after first commit, stale concurrent advance, duplicate-call prevention, and observability DTO/UI compatibility."
-  duration 3p
+  title "Make advance commits recoverable and idempotent"
+  description "Add a battle-wide revision and ordered phase receipt sequence. Transactionally correlate the advance operation/idempotency key, expected-revision CAS, canonical phase commit, ordered receipts[] and replayable advance result. Frontend retries retain one key until readback. A takeover returns committed receipts and never repeats canonical mechanics; external character/provider steps require durable step receipts or a narrower explicit guarantee. Define the inactive outbox correlation schema but do not create or wake narration entries until the following authority task closes canonical winner/phase ownership. Test save/response ambiguity, expired ownership, stale advance, duplicate calls, digest mismatch and A/B checkpoint recovery. Do not add narration streaming in this task."
+  duration 4p
   owner "codex"
   requires:
     DEV 1
 
-task T_SEPARATE_ADVANCE_NARRATION DURABILITY_READY -> NARRATION_API_READY:
-  title "Separate gameplay advance from immutable narration jobs"
-  description "Implement ADR-0002. Advance commits decisions, mechanics, semantic/world state, terminal outcome, and a turn receipt, then creates or reuses one narration job and returns its ID without awaiting narration. Persist immutable job input bound to the battle asset manifest. Add authorized narration read and SSE stream APIs whose reconnect never reinvokes the provider; order UI placeholders by turn rather than completion. Evaluate an accepted lightweight narrator route against responsibility-specific fixtures and permit a high-cost narrator only for enumerated classes such as an accepted finale route. Remove narrator writes to canonical battle state and make deterministic terminal outcome authoritative. Test pending/failed narration with later advance, out-of-order completion, provider idempotency, snapshot isolation, cost ceilings, and no unbounded escalation."
-  duration 4p
+task T_SEPARATE_ADVANCE_NARRATION DURABILITY_READY -> NARRATION_AUTHORITY_READY:
+  title "Close narration authority and freeze phase inputs"
+  description "Implement ADR-0006 authority prerequisites: deterministic winner and ordered prologue/combat/judgment/aftermath receipts[]; remove narrator recognition, prose-derived drama, new raw narrator traces and winner feedback from canonical BattleState; freeze observer-safe input per receipt; add narration-only ordered continuity and a feature-gated legacy presentation read model for battle GET/log/history/improvement. Stop new private prompt/provider payload persistence and define legacy trace retention/access. Test phase cardinality, battle revision CAS, immutable generations/digests, later advance independence, sanitized administrator DTO, legacy dual-read and rollback."
+  duration 3p
   owner "codex"
   requires:
     DEV 1
@@ -127,3 +127,58 @@ task T_ACCEPT_ISSUE_98 PACING_POLICY_ACCEPTED -> ISSUE_98_LOCALLY_ACCEPTED:
   owner "codex"
   requires:
     DEV 1
+
+milestone NARRATION_AUTHORITY_READY:
+  title "Canonical narration authority and immutable inputs are separated"
+
+milestone NARRATION_CONTRACT_ACCEPTED:
+  title "Owner accepted narration runtime, cost, audience, and retention contract"
+
+milestone NARRATION_WORKER_READY:
+  title "Ordered fenced narration worker is locally verified"
+
+milestone NARRATION_STREAM_READY:
+  title "Battle narration API and UI migration are locally verified"
+
+task T_ACCEPT_NARRATION_CONTRACT NARRATION_AUTHORITY_READY -> NARRATION_CONTRACT_ACCEPTED:
+  title "Accept narration infrastructure and delivery contract"
+  description "Owner accepts or revises the deterministic terminal rule, recognition-continuity disposition, authenticated queue-push infrastructure and recovery operation, terminal-only public prose, lightweight model route with total adapter-plus-worker attempt/token/cost ceiling, audience/realm policy, public-event and internal-attempt retention, reset high-watermark policy, and legacy trace handling. This local design gate does not authorize cloud deployment or production configuration."
+  duration 1p
+  requires:
+    OWNER 1
+  owner "user"
+
+task T_BUILD_ORDERED_NARRATION_WORKER NARRATION_CONTRACT_ACCEPTED -> NARRATION_WORKER_READY:
+  title "Build fenced ordered narration worker"
+  description "Persist unique battleId+turnReceiptId entries, battle-local sequence, terminal-only allowlisted audience events, internal attempt receipts and an independent fenced lease. Use durable outbox plus authenticated queue push for Cloud Run scale-to-zero and recovery scan. Enforce earliest-nonterminal ordering, cross-battle fairness, stale-worker rejection and the accepted total retry/token/cost ceiling. Use the accepted lightweight narrator route and deterministic terminal fallback. Test redelivery, lease loss, worker crash/takeover, failure releasing the successor, no partial prose mixing, backlog, privacy and sanitized admin queue/lease/cost evidence."
+  duration 4p
+  requires:
+    DEV 1
+  owner "codex"
+
+task T_BUILD_BATTLE_NARRATION_STREAM NARRATION_WORKER_READY -> NARRATION_STREAM_READY:
+  title "Build battle narration API, UI, and compatibility migration"
+  description "Add authorized ordered read/per-receipt APIs and finite bearer-authenticated fetch-SSE follow with opaque durable cursor. Provide at-least-once replay, idempotent replacement reducer, atomic retention reset high-watermark, periodic authorization/realm/deletion checks, heartbeat and reconnect across platform timeout. Move frontend to independent advance/narration states, ordered receipt placeholders and held advance idempotency key. Integrate the feature-gated presentation read model with BattlePublic/history/improvement, retain rollback, and expose sanitized administrator queue/blocking/cost/retention lane. Test N+1 waiting without blocking advance, no provider call on connect, token refresh, pruned cursor, audience isolation, legacy dual-read and physical reconnect."
+  duration 5p
+  requires:
+    DEV 1
+  owner "codex"
+
+task T_ACCEPT_NARRATION_MIGRATION NARRATION_STREAM_READY -> NARRATION_MIGRATION_ACCEPTED:
+  title "Accept narration compatibility cutover"
+  description "Owner reviews local migration fixtures, queue/lease/cost/admin evidence, legacy dual-read and rollback. Acceptance authorizes the following local cleanup task to remove narrator progress from advance SSE and default the composite presentation read model. It does not authorize cloud queue creation, deployment, production data migration, release, or production observation."
+  duration 1p
+  requires:
+    OWNER 1
+  owner "user"
+
+milestone NARRATION_MIGRATION_ACCEPTED:
+  title "Owner accepted the local narration compatibility cutover"
+
+task T_CUTOVER_NARRATION_COMPATIBILITY NARRATION_MIGRATION_ACCEPTED -> NARRATION_API_READY:
+  title "Cut over local narration compatibility surfaces"
+  description "After owner acceptance, remove non-durable narrator progress from advance SSE, default the feature-gated composite presentation read model for local clients, retain the documented rollback switch and rerun API/frontend/history/improvement/admin privacy fixtures. Do not deploy, create cloud queue infrastructure, migrate production data, release, or observe production."
+  duration 1p
+  requires:
+    DEV 1
+  owner "codex"

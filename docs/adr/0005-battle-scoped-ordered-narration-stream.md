@@ -1,9 +1,10 @@
 # ADR-0005: Battle-scoped ordered narration stream
 
-- Status: Accepted
+- Status: Superseded
 - Date: 2026-08-12
 - Decision owner: Product owner
 - Supersedes: [ADR-0002: Separate advance and narration APIs](0002-separate-advance-and-narration-apis.md)
+- Superseded by: [ADR-0006: Terminal-snapshot narration delivery](0006-terminal-snapshot-narration-delivery.md)
 - Related: GitHub Issue #98; ADR-0001; `docs/current-battle-pipeline.md`; `docs/issue-98-battle-pipeline-plan.md`; PERT tasks `T_HARDEN_CAUSAL_DURABILITY` and `T_SEPARATE_ADVANCE_NARRATION`
 
 ## Context
@@ -249,4 +250,3 @@ narration-only read model and cannot asynchronously write canonical
 
 - Decision record added before implementation; add implementation commits, PRs,
   schema migrations, and evidence here as work proceeds.
-
