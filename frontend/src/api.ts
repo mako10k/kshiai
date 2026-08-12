@@ -71,6 +71,32 @@ export type InternalBattlePipelineTrace = {
   };
 };
 
+export type InternalBattleTemporalPlan = {
+  rulesetId: string;
+  initiativeScores: { a: number; b: number };
+  buckets: Array<{
+    index: number;
+    actorSides: Array<"a" | "b">;
+    initiativeScore: number;
+    simultaneous: boolean;
+    readsFrom: "turn_start" | "previous_bucket_commit";
+    commitMode: "atomic" | "sequential";
+  }>;
+};
+
+export type InternalCausalTurnExecution = {
+  schemaVersion: 1;
+  executionId: string;
+  battleId: string;
+  turn: number;
+  expectedStateRevision: number;
+  temporalPlan: InternalBattleTemporalPlan;
+  bucketIndex: number;
+  status: "awaiting_decision" | "awaiting_bucket_commit" | "awaiting_finalize" | "finished";
+  decidedSides: Array<"a" | "b">;
+  committedBucketIndices: number[];
+};
+
 export type InternalBattleObservationDetail = {
   role: "admin" | "developer" | "test" | "e2e";
   summary: InternalBattleObservationSummary;
@@ -78,6 +104,7 @@ export type InternalBattleObservationDetail = {
   rawBattleState: Record<string, unknown>;
   canonicalTimeline: Array<{
     turn: number | null;
+    temporalResolution: InternalBattleTemporalPlan | null;
     actions: unknown[];
     events: unknown[];
     sideAChange: unknown;
@@ -87,6 +114,7 @@ export type InternalBattleObservationDetail = {
     pipelineTrace: InternalBattlePipelineTrace | null;
   }>;
   canonicalCurrent: {
+    causalExecution: InternalCausalTurnExecution | null;
     semanticState: unknown | null;
     worldState: unknown | null;
     latestSemanticTransition: unknown | null;
@@ -96,6 +124,8 @@ export type InternalBattleObservationDetail = {
     turnRecordCount: number;
     canonicalTransitionCount: number;
     pipelineTraceCount: number;
+    temporalResolutionCount: number;
+    hasCausalExecutionCheckpoint: boolean;
     perTurnCanonicalTransitions: "complete" | "partial" | "unavailable";
   };
 };

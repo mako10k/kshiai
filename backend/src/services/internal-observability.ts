@@ -28,6 +28,7 @@ export type InternalBattleObservationSummary = {
 
 export type CanonicalTurnProgression = {
   turn: number | null;
+  temporalResolution: unknown | null;
   actions: unknown[];
   events: unknown[];
   sideAChange: unknown;
@@ -130,6 +131,7 @@ export async function getInternalBattleObservation(
   rawBattleState: JsonObject;
   canonicalTimeline: CanonicalTurnProgression[];
   canonicalCurrent: {
+    causalExecution: unknown | null;
     semanticState: unknown | null;
     worldState: unknown | null;
     latestSemanticTransition: unknown | null;
@@ -139,6 +141,8 @@ export async function getInternalBattleObservation(
     turnRecordCount: number;
     canonicalTransitionCount: number;
     pipelineTraceCount: number;
+    temporalResolutionCount: number;
+    hasCausalExecutionCheckpoint: boolean;
     perTurnCanonicalTransitions: "complete" | "partial" | "unavailable";
   };
 } | null> {
@@ -174,6 +178,7 @@ export async function getInternalBattleObservation(
     if (!record) return [];
     return [{
       turn: asNumber(record.turn),
+      temporalResolution: record.temporalResolution ?? null,
       actions: Array.isArray(record.actions) ? record.actions : [],
       events: Array.isArray(record.events) ? record.events : [],
       sideAChange: record.sideAChange ?? null,
@@ -189,12 +194,16 @@ export async function getInternalBattleObservation(
   const pipelineTraceCount = canonicalTimeline.filter(
     (record) => record.pipelineTrace !== null,
   ).length;
+  const temporalResolutionCount = canonicalTimeline.filter(
+    (record) => record.temporalResolution !== null,
+  ).length;
   return {
     summary: summaryFromRow(row),
     observation: asObject(row.observation_json),
     rawBattleState,
     canonicalTimeline,
     canonicalCurrent: {
+      causalExecution: rawBattleState.causalExecution ?? null,
       semanticState: rawBattleState.semanticState ?? null,
       worldState: rawBattleState.worldState ?? null,
       latestSemanticTransition: rawBattleState.latestSemanticTransition ?? null,
@@ -204,6 +213,8 @@ export async function getInternalBattleObservation(
       turnRecordCount: canonicalTimeline.length,
       canonicalTransitionCount,
       pipelineTraceCount,
+      temporalResolutionCount,
+      hasCausalExecutionCheckpoint: rawBattleState.causalExecution != null,
       perTurnCanonicalTransitions: canonicalTransitionCount === 0
         ? "unavailable"
         : canonicalTransitionCount === canonicalTimeline.length

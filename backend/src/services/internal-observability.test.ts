@@ -61,8 +61,32 @@ describe("internal battle observability", () => {
         worldState: { revision: 1 },
         latestSemanticTransition: { turn: 1, status: "applied" },
         latestWorldTransition: { turn: 1, status: "applied" },
+        causalExecution: {
+          schemaVersion: 1,
+          executionId: "battle-observed:turn:2",
+          battleId: "battle-observed",
+          turn: 2,
+          expectedStateRevision: 1,
+          temporalPlan: {
+            rulesetId: "initiative-window-v1",
+            initiativeScores: { a: 12, b: 8 },
+            buckets: [
+              { index: 0, actorSides: ["a"], initiativeScore: 12, simultaneous: false, readsFrom: "turn_start", commitMode: "sequential" },
+              { index: 1, actorSides: ["b"], initiativeScore: 8, simultaneous: false, readsFrom: "previous_bucket_commit", commitMode: "sequential" },
+            ],
+          },
+          bucketIndex: 1,
+          status: "awaiting_decision",
+          decidedSides: [],
+          committedBucketIndices: [0],
+        },
         turnRecords: [{
           turn: 1,
+          temporalResolution: {
+            rulesetId: "initiative-window-v1",
+            initiativeScores: { a: 12, b: 8 },
+            buckets: [],
+          },
           actions: [{ id: "act-1" }],
           events: [{ id: "evt-1" }],
           sideAChange: { parameterChanges: {} },
@@ -153,6 +177,12 @@ describe("internal battle observability", () => {
     );
     assert.equal(detail.capabilities.perTurnCanonicalTransitions, "complete");
     assert.equal(detail.capabilities.pipelineTraceCount, 1);
+    assert.equal(detail.capabilities.temporalResolutionCount, 1);
+    assert.equal(detail.capabilities.hasCausalExecutionCheckpoint, true);
+    assert.equal(
+      (detail.canonicalCurrent.causalExecution as { status: string }).status,
+      "awaiting_decision",
+    );
     assert.equal(detail.canonicalCurrent.worldState &&
       (detail.canonicalCurrent.worldState as { revision: number }).revision, 1);
   });

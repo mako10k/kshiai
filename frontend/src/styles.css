@@ -170,6 +170,46 @@ h2 {
   min-width: 0;
 }
 
+.internal-temporal-plan {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.internal-temporal-heading {
+  align-items: baseline;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.internal-temporal-heading span,
+.internal-temporal-bucket small,
+.internal-temporal-bucket span {
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.internal-temporal-bucket {
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 10rem;
+  padding: 0.65rem;
+}
+
+.internal-temporal-bucket.is-active {
+  background: rgba(122, 162, 255, 0.12);
+  border-color: var(--accent);
+}
+
+.internal-causal-summary {
+  margin-top: 0.85rem;
+}
+
 .internal-summary-grid {
   display: grid;
   gap: 0.65rem;

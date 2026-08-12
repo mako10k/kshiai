@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, type ReactNode } from "react";
 import { Link } from "react-router-dom";
 import {
   ApiError,
@@ -6,6 +6,8 @@ import {
   type InternalBattleObservationDetail,
   type InternalBattleObservationSummary,
   type InternalAgentInvocationTrace,
+  type InternalBattleTemporalPlan,
+  type InternalCausalTurnExecution,
 } from "../api";
 
 function formatWhen(value: string | null): string {
@@ -73,24 +75,74 @@ function AgentLane({
   );
 }
 
+function TemporalBuckets({
+  plan,
+  execution,
+}: {
+  plan: InternalBattleTemporalPlan;
+  execution?: InternalCausalTurnExecution | null;
+}) {
+  const committed = new Set(execution?.committedBucketIndices ?? []);
+  return (
+    <div className="internal-temporal-plan">
+      <div className="internal-temporal-heading">
+        <strong>{plan.rulesetId}</strong>
+        <span>A {plan.initiativeScores.a} / B {plan.initiativeScores.b}</span>
+      </div>
+      <div className="internal-pipeline-flow internal-temporal-buckets">
+        {plan.buckets.map((bucket) => {
+          const active = execution?.bucketIndex === bucket.index &&
+            execution.status !== "finished";
+          const state = committed.has(bucket.index)
+            ? "commit済み"
+            : active
+              ? execution.status
+              : "未到達";
+          return (
+            <div className={`internal-temporal-bucket${active ? " is-active" : ""}`} key={bucket.index}>
+              <small>Bucket {bucket.index} · {state}</small>
+              <strong>{bucket.actorSides.map((side) => `Side ${side.toUpperCase()}`).join(" + ")}</strong>
+              <span>{bucket.commitMode} · {bucket.readsFrom}</span>
+            </div>
+          );
+        }).reduce<ReactNode[]>((nodes, bucket, index) => {
+          if (index > 0) nodes.push(
+            <span className="internal-pipeline-arrow" aria-hidden="true" key={`arrow-${index}`}>→</span>,
+          );
+          nodes.push(bucket);
+          return nodes;
+        }, [])}
+      </div>
+    </div>
+  );
+}
+
 function TurnPipelineDag({
   turn,
 }: {
   turn: InternalBattleObservationDetail["canonicalTimeline"][number];
 }) {
   const trace = turn.pipelineTrace;
-  if (!trace) {
+  if (!trace && !turn.temporalResolution) {
     return <p className="muted">このターンにはパイプラインtraceがありません。</p>;
   }
   return (
     <div className="internal-pipeline-dag">
+      {turn.temporalResolution ? (
+        <>
+          <TemporalBuckets plan={turn.temporalResolution} />
+          <div className="internal-pipeline-merge" aria-hidden="true">↓</div>
+        </>
+      ) : (
+        <p className="muted">このターンには initiative bucket 記録がありません。</p>
+      )}
       <div className="internal-pipeline-flow internal-pipeline-resolution-flow">
         <PipelineNode
           title="現在ターン裁定"
           value={{ actions: turn.actions, events: turn.events }}
         />
         <span className="internal-pipeline-arrow" aria-hidden="true">→</span>
-        {trace.environmentProcess ? (
+        {trace?.environmentProcess ? (
           <>
             <PipelineNode
               title="環境提案の正準化"
@@ -103,25 +155,25 @@ function TurnPipelineDag({
         <PipelineNode title="正準遷移" value={turn.canonicalTransition} />
       </div>
       <div className="internal-pipeline-merge" aria-hidden="true">↓</div>
-      {trace.characterAgents ? (
+      {trace?.characterAgents ? (
         <div className="internal-agent-lanes">
           <AgentLane label="Site A" trace={trace.characterAgents.a} />
           <AgentLane label="Site B" trace={trace.characterAgents.b} />
         </div>
       ) : null}
       <p className="muted internal-pipeline-note">
-        採用後のnextActionは次ターン用。speechと現在の反応はこのターンのナレータ入力へ進みます。
+        legacy traceでは採用後のnextActionは次ターン用。因果実行への移行後は各bucketの判断・commitを順に表示します。
       </p>
       <div className="internal-pipeline-merge" aria-hidden="true">↓</div>
       <div className="internal-pipeline-flow internal-pipeline-narrator-flow">
-        <PipelineNode title="ナレータ入力" value={trace.narrator?.input ?? null} />
+        <PipelineNode title="ナレータ入力" value={trace?.narrator?.input ?? null} />
         <span className="internal-pipeline-arrow" aria-hidden="true">→</span>
         <PipelineNode
           title="ナレータ出力"
-          subtitle={trace.narrator?.disposition ?? "unavailable"}
+          subtitle={trace?.narrator?.disposition ?? "unavailable"}
           value={{
-            provider: trace.narrator?.providerOutput ?? null,
-            public: trace.narrator?.publicOutput ?? null,
+            provider: trace?.narrator?.providerOutput ?? null,
+            public: trace?.narrator?.publicOutput ?? null,
           }}
         />
       </div>
@@ -242,10 +294,31 @@ export function InternalObservationsPage() {
               </div>
 
               <div className="panel">
+                <h2>現在の因果ターン実行</h2>
+                {detail.canonicalCurrent.causalExecution ? (
+                  <>
+                    <TemporalBuckets
+                      plan={detail.canonicalCurrent.causalExecution.temporalPlan}
+                      execution={detail.canonicalCurrent.causalExecution}
+                    />
+                    <dl className="internal-summary-grid internal-causal-summary">
+                      <div><dt>Execution ID</dt><dd>{detail.canonicalCurrent.causalExecution.executionId}</dd></div>
+                      <div><dt>状態</dt><dd>{detail.canonicalCurrent.causalExecution.status}</dd></div>
+                      <div><dt>期待 revision</dt><dd>{detail.canonicalCurrent.causalExecution.expectedStateRevision}</dd></div>
+                      <div><dt>判断済み side</dt><dd>{detail.canonicalCurrent.causalExecution.decidedSides.join(", ") || "—"}</dd></div>
+                    </dl>
+                  </>
+                ) : (
+                  <p className="muted">checkpointなし（旧形式、またはbucket実行開始前）</p>
+                )}
+              </div>
+
+              <div className="panel">
                 <h2>キャラ・ナレータ パイプラインDAG</h2>
                 <p className="muted">
                   {detail.capabilities.pipelineTraceCount}/{detail.capabilities.turnRecordCount} ターンで
-                  Site A/Bの入力、キャラ出力、採用後出力、裁定、正準遷移、ナレータ入出力を保持。
+                  trace、{detail.capabilities.temporalResolutionCount}/{detail.capabilities.turnRecordCount} ターンで
+                  initiative bucketを保持。Site A/Bの入力、採用後出力、裁定、正準遷移、ナレータ入出力を表示します。
                 </p>
                 <div className="internal-turn-list">
                   {detail.canonicalTimeline.map((turn, index) => (
