@@ -1,5 +1,10 @@
 # Battle pacing local measurement (2026-08-12)
 
+> Evidence correction: this single synthetic fixture family is suitable only
+> for candidate-search regression. It is not adoption-grade and cannot reject
+> Issue #98's pacing hypotheses. See
+> [battle-pacing-evidence-validity.md](battle-pacing-evidence-validity.md).
+
 ## Decision scope
 
 This is deterministic local evidence for `T_MEASURE_LOCAL_PACING`. It is not
@@ -63,8 +68,8 @@ forced terminal judgment. The likely mechanism is that moving the one-use
 finisher to turn 6 replaces an otherwise effective attack before pressure has
 grown enough; this is a hypothesis to verify, not a production conclusion.
 
-Recommendation to the owner: **revise**, rather than adopt, `pacing-local-12-v1`.
-Keep the versioned snapshot implementation, then measure a follow-up candidate
-that separates the turn limit from finisher unlock/power timing. The desired
-eight-turn average remains a hypothesis. Speech quality and production pacing
-require separately authorized evidence.
+This run rejects only `pacing-local-12-v1` under this synthetic fixture
+configuration. It does not support an owner retain/revise/adopt decision and
+does not reject the desired eight-turn hypothesis. Validate correspondence,
+tune multiple candidates, and obtain separately authorized real-pipeline
+evidence before requesting that decision.
