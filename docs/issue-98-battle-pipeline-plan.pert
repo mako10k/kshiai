@@ -32,12 +32,10 @@ resource OWNER:
 
 
 
-milestone DEFERRED_EFFECTS_READY:
-  title "Bounded two-combatant delayed and conditional effects are available"
-  state reached
 
 milestone PACING_MEASURED:
   title "Local pacing evidence and candidate policy are recorded"
+  state reached
 
 milestone PACING_POLICY_ACCEPTED:
   title "Owner decided whether to adopt a pacing candidate"
@@ -59,14 +57,6 @@ milestone ISSUE_98_LOCALLY_ACCEPTED:
 
 
 
-task T_MEASURE_LOCAL_PACING DEFERRED_EFFECTS_READY -> PACING_MEASURED:
-  title "Measure local pacing and prepare a policy candidate"
-  description "Version and persist turn-limit, finisher-unlock, decisive-pressure, warning, and terminal-adjudication policy together. Compare the current policy with a local candidate at no more than 12 turns using mean/median completion turn, limit-hit and forced-terminal classification, KO rate, per-turn committed change, repeated action/speech, initiative distribution, and delayed-effect resolution. Record sample size and variance; do not deploy or claim production evidence."
-  duration 2p
-  status done
-  owner "codex"
-  requires:
-    DEV 1
 
 task T_ACCEPT_PACING_POLICY PACING_MEASURED -> PACING_POLICY_ACCEPTED:
   title "Decide whether to adopt a measured pacing candidate"
@@ -83,18 +73,3 @@ task T_ACCEPT_ISSUE_98 PACING_POLICY_ACCEPTED -> ISSUE_98_LOCALLY_ACCEPTED:
   owner "codex"
   requires:
     DEV 1
-
-work_event WE-bbe075929b5e6f5f32f1ec77c5e47bbe471e893c7bc24ba88c5847e9319cff15:
-  model 1
-  task T_MEASURE_LOCAL_PACING
-  kind start
-  occurred_at 2026-08-12T17:58:30+09:00
-  planned_value 2p
-
-work_event WE-2111eb8b08f46cf9701c27256157ad374aa16df39470c4f3e897f83680f360eb:
-  model 1
-  task T_MEASURE_LOCAL_PACING
-  kind finish
-  occurred_at 2026-08-12T18:08:08+09:00
-  active_time 289/1800h
-  effort 289/1800ph
