@@ -131,6 +131,7 @@ export async function getInternalBattleObservation(
   rawBattleState: JsonObject;
   canonicalTimeline: CanonicalTurnProgression[];
   canonicalCurrent: {
+    assetManifest: unknown | null;
     causalExecution: unknown | null;
     causalBucketCommit: unknown | null;
     semanticState: unknown | null;
@@ -204,6 +205,7 @@ export async function getInternalBattleObservation(
     rawBattleState,
     canonicalTimeline,
     canonicalCurrent: {
+      assetManifest: rawBattleState.assetManifest ?? null,
       causalExecution: rawBattleState.causalExecution ?? null,
       causalBucketCommit: rawBattleState.causalBucketCommit ?? null,
       semanticState: rawBattleState.semanticState ?? null,

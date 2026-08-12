@@ -61,6 +61,21 @@ describe("internal battle observability", () => {
         worldState: { revision: 1 },
         latestSemanticTransition: { turn: 1, status: "applied" },
         latestWorldTransition: { turn: 1, status: "applied" },
+        assetManifest: {
+          schemaVersion: 1,
+          boundAt: "2026-08-07T00:00:00.000Z",
+          characters: {
+            a: { assetId: "char-a", generationId: "character:char-a:1" },
+            b: { assetId: "char-b", generationId: "character:char-b:1" },
+          },
+          narrationStyle: { assetId: "style-1", generationId: "style:1" },
+          battlefield: { assetId: "field-1", generationId: "field:1" },
+          dialoguePipeline: { generationId: "dialogue-pipeline:1" },
+          rules: {
+            battleEngine: "battle-engine-v1",
+            temporalRules: "initiative-window-v2",
+          },
+        },
         causalExecution: {
           schemaVersion: 1,
           executionId: "battle-observed:turn:2",
@@ -179,6 +194,12 @@ describe("internal battle observability", () => {
     assert.equal(detail.capabilities.pipelineTraceCount, 1);
     assert.equal(detail.capabilities.temporalResolutionCount, 1);
     assert.equal(detail.capabilities.hasCausalExecutionCheckpoint, true);
+    assert.equal(
+      (detail.canonicalCurrent.assetManifest as {
+        characters: { a: { generationId: string } };
+      }).characters.a.generationId,
+      "character:char-a:1",
+    );
     assert.equal(
       (detail.canonicalCurrent.causalExecution as { status: string }).status,
       "awaiting_decision",

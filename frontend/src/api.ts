@@ -126,6 +126,18 @@ export type InternalBattleObservationDetail = {
     pipelineTrace: InternalBattlePipelineTrace | null;
   }>;
   canonicalCurrent: {
+    assetManifest: {
+      schemaVersion: 1;
+      boundAt: string;
+      characters: {
+        a: { assetId: string; generationId: string };
+        b: { assetId: string; generationId: string };
+      };
+      narrationStyle: { assetId: string; generationId: string };
+      battlefield: { assetId: string | null; generationId: string };
+      dialoguePipeline: { generationId: string };
+      rules: { battleEngine: string; temporalRules: string };
+    } | null;
     causalExecution: InternalCausalTurnExecution | null;
     causalBucketCommit: Record<string, unknown> | null;
     semanticState: unknown | null;

@@ -1,4 +1,4 @@
-import { randomInt } from "node:crypto";
+import { createHash, randomInt } from "node:crypto";
 import {
   BattlePolicyOptionSchema,
   BattleAdjudicationSchema,
@@ -464,6 +464,19 @@ export function applyDialogueContextProjectionOverride(
   return override ? { ...settings, contextProjectionMode: override } : settings;
 }
 
+function immutableGenerationId(
+  kind: string,
+  assetId: string,
+  sourceUpdatedAt: string | null,
+  snapshot: unknown,
+): string {
+  const digest = createHash("sha256")
+    .update(JSON.stringify(snapshot))
+    .digest("hex")
+    .slice(0, 24);
+  return `${kind}:${assetId}:${sourceUpdatedAt ?? "generated"}:${digest}`;
+}
+
 export async function startBattle(input: {
   userId: string;
   myCharacterId: string;
@@ -582,6 +595,60 @@ export async function startBattle(input: {
 
   state = {
     ...state,
+    assetManifest: {
+      schemaVersion: 1,
+      boundAt: new Date().toISOString(),
+      characters: {
+        a: {
+          assetId: mine.id,
+          generationId: immutableGenerationId(
+            "character",
+            mine.id,
+            mine.updatedAt,
+            mine,
+          ),
+          snapshot: mine,
+        },
+        b: {
+          assetId: opp.id,
+          generationId: immutableGenerationId(
+            "character",
+            opp.id,
+            opp.updatedAt,
+            opp,
+          ),
+          snapshot: opp,
+        },
+      },
+      narrationStyle: {
+        assetId: narrationSnap.id,
+        generationId: immutableGenerationId(
+          "narration-style",
+          narrationSnap.id,
+          narrationStyle.updatedAt,
+          narrationSnap,
+        ),
+        snapshot: narrationSnap,
+      },
+      battlefield: {
+        assetId: battlefield.sourcePresetId,
+        generationId: immutableGenerationId(
+          "battlefield",
+          battlefield.sourcePresetId ?? state.id,
+          null,
+          battlefield,
+        ),
+        snapshot: battlefield,
+      },
+      dialoguePipeline: {
+        generationId: `dialogue-pipeline:${dialoguePipelineSnapshot.revision}`,
+        snapshot: dialoguePipelineSnapshot,
+      },
+      rules: {
+        battleEngine: "battle-engine-v1",
+        temporalRules: "initiative-window-v2",
+      },
+    },
     dialoguePipelineSnapshot,
     agentStateA: {
       ...(state.agentStateA as CharacterAgentState),
@@ -3260,8 +3327,10 @@ async function advanceTurnWithLease(input: {
   if (!state.policiesB) state.policiesB = [];
   if (!state.selectedPolicyIdsB) state.selectedPolicyIdsB = [];
 
-  const mine = await charRepo.getSheet(meta.side_a_character_id);
-  const opp = await charRepo.getSheet(meta.side_b_character_id);
+  const mine = state.assetManifest?.characters.a.snapshot ??
+    await charRepo.getSheet(meta.side_a_character_id);
+  const opp = state.assetManifest?.characters.b.snapshot ??
+    await charRepo.getSheet(meta.side_b_character_id);
   if (!mine || !opp) throw new Error("CHARACTER_MISSING");
   const dialoguePipeline = state.dialoguePipelineSnapshot
     ? {

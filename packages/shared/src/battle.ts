@@ -1,11 +1,20 @@
 import { z } from "zod";
 import { NarrativeBlockSchema } from "./narrative.js";
-import { ParamKeySchema, ParametersSchema } from "./character.js";
+import {
+  CharacterSheetSchema,
+  ParamKeySchema,
+  ParametersSchema,
+  type CharacterSheet,
+} from "./character.js";
 import {
   BattlefieldInstancePublicSchema,
   BattlefieldInstanceSchema,
+  type BattlefieldInstance,
 } from "./battlefield.js";
-import { NarrationStyleSnapshotSchema } from "./narration-style.js";
+import {
+  NarrationStyleSnapshotSchema,
+  type NarrationStyleSnapshot,
+} from "./narration-style.js";
 import {
   BattleSemanticStateSchema,
   SemanticObservationStateSchema,
@@ -18,7 +27,10 @@ import {
 } from "./battle-world.js";
 import { FreeActionResolutionReceiptSchema } from "./free-action.js";
 import { DramaStateSchema } from "./drama.js";
-import { BattleDialoguePipelineSnapshotSchema } from "./dialogue-pipeline.js";
+import {
+  BattleDialoguePipelineSnapshotSchema,
+  type BattleDialoguePipelineSnapshot,
+} from "./dialogue-pipeline.js";
 import {
   CommittedMechanicalEvidenceSetSchema,
   CharacterPerceptionFrameASchema,
@@ -1083,6 +1095,72 @@ export type BattleBucketMechanicalCommit = z.infer<
   typeof BattleBucketMechanicalCommitSchema
 >;
 
+/**
+ * Immutable authoritative inputs captured when a battle is created.
+ *
+ * Generation IDs are assigned by the server. The embedded snapshots make the
+ * battle independent from mutable current-asset rows, including after an
+ * asset generation is archived or hidden from ordinary editors.
+ */
+export interface BattleAssetManifest {
+  schemaVersion: 1;
+  boundAt: string;
+  characters: {
+    a: { assetId: string; generationId: string; snapshot: CharacterSheet };
+    b: { assetId: string; generationId: string; snapshot: CharacterSheet };
+  };
+  narrationStyle: {
+    assetId: string;
+    generationId: string;
+    snapshot: NarrationStyleSnapshot;
+  };
+  battlefield: {
+    assetId: string | null;
+    generationId: string;
+    snapshot: BattlefieldInstance;
+  };
+  dialoguePipeline: {
+    generationId: string;
+    snapshot: BattleDialoguePipelineSnapshot;
+  };
+  rules: { battleEngine: string; temporalRules: string };
+}
+
+export const BattleAssetManifestSchema = z.object({
+  schemaVersion: z.literal(1),
+  boundAt: z.string(),
+  characters: z.object({
+    a: z.object({
+      assetId: z.string(),
+      generationId: z.string().min(1),
+      snapshot: CharacterSheetSchema,
+    }).strict(),
+    b: z.object({
+      assetId: z.string(),
+      generationId: z.string().min(1),
+      snapshot: CharacterSheetSchema,
+    }).strict(),
+  }).strict(),
+  narrationStyle: z.object({
+    assetId: z.string(),
+    generationId: z.string().min(1),
+    snapshot: NarrationStyleSnapshotSchema,
+  }).strict(),
+  battlefield: z.object({
+    assetId: z.string().nullable(),
+    generationId: z.string().min(1),
+    snapshot: BattlefieldInstanceSchema,
+  }).strict(),
+  dialoguePipeline: z.object({
+    generationId: z.string().min(1),
+    snapshot: BattleDialoguePipelineSnapshotSchema,
+  }).strict(),
+  rules: z.object({
+    battleEngine: z.string().min(1),
+    temporalRules: z.string().min(1),
+  }).strict(),
+}).strict() as unknown as z.ZodType<BattleAssetManifest>;
+
 export const BattleStateSchema = z.object({
   id: z.string(),
   /** Present after narrator/speech/perception authority migration. */
@@ -1090,6 +1168,8 @@ export const BattleStateSchema = z.object({
   status: BattleStatusSchema,
   turn: z.number().int().nonnegative(),
   turnLimit: z.number().int().positive(),
+  /** Frozen source generations used by all authoritative battle processing. */
+  assetManifest: BattleAssetManifestSchema.optional(),
   sideA: CombatantStateSchema,
   sideB: CombatantStateSchema,
   /** @deprecated Use policiesA / selectedPolicyIdsA. */
