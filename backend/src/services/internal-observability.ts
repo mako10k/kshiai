@@ -108,6 +108,38 @@ function asString(value: unknown): string | null {
   return typeof value === "string" ? value : null;
 }
 
+const INTERNAL_PRIVATE_KEYS = new Set([
+  "input",
+  "providerOutput",
+  "acceptedOutput",
+  "proposedAction",
+  "rawOutput",
+]);
+
+function sanitizeInternalValue(value: unknown): unknown {
+  if (Array.isArray(value)) return value.map(sanitizeInternalValue);
+  const object = asObject(value);
+  if (!object) return value;
+  return Object.fromEntries(Object.entries(object).flatMap(([key, nested]) =>
+    INTERNAL_PRIVATE_KEYS.has(key)
+      ? [[key, "[redacted]"]]
+      : [[key, sanitizeInternalValue(nested)]]
+  ));
+}
+
+function sanitizeInternalBattleState(state: JsonObject): JsonObject {
+  const sanitized = sanitizeInternalValue(state) as JsonObject;
+  for (const key of [
+    "agentStateA",
+    "agentStateB",
+    "perceptionRegistryA",
+    "perceptionRegistryB",
+  ]) {
+    if (key in sanitized) sanitized[key] = "[redacted]";
+  }
+  return sanitized;
+}
+
 function asNumber(value: unknown): number | null {
   return typeof value === "number" && Number.isFinite(value) ? value : null;
 }
@@ -188,6 +220,15 @@ export async function getInternalBattleObservation(
     causalBucketCommit: unknown | null;
     causalEngineContinuation: unknown | null;
     causalLaterDecision: unknown | null;
+    battleRevision: number | null;
+    phaseReceipts: Array<{
+      receiptId: string;
+      sequence: number;
+      phase: string;
+      combatTurn: number | null;
+      stateRevision: number;
+      inputDigest: string | null;
+    }>;
     psycheReaction: { a: JsonObject | null; b: JsonObject | null };
     semanticState: unknown | null;
     worldState: unknown | null;
@@ -225,8 +266,9 @@ export async function getInternalBattleObservation(
   );
   const row = result.rows[0];
   if (!row) return null;
-  const rawBattleState = asObject(row.state_json);
-  if (!rawBattleState) throw new Error("INTERNAL_BATTLE_STATE_INVALID");
+  const persistedBattleState = asObject(row.state_json);
+  if (!persistedBattleState) throw new Error("INTERNAL_BATTLE_STATE_INVALID");
+  const rawBattleState = sanitizeInternalBattleState(persistedBattleState);
   const records = Array.isArray(rawBattleState.turnRecords)
     ? rawBattleState.turnRecords
     : [];
@@ -242,7 +284,7 @@ export async function getInternalBattleObservation(
       sideBChange: record.sideBChange ?? null,
       worldImpact: record.worldImpact ?? null,
       canonicalTransition: record.canonicalTransition ?? null,
-      pipelineTrace: record.pipelineTrace ?? null,
+      pipelineTrace: sanitizeInternalValue(record.pipelineTrace ?? null),
     }];
   });
   const canonicalTransitionCount = canonicalTimeline.filter(
@@ -266,9 +308,28 @@ export async function getInternalBattleObservation(
       causalBucketCommit: rawBattleState.causalBucketCommit ?? null,
       causalEngineContinuation: rawBattleState.causalEngineContinuation ?? null,
       causalLaterDecision: rawBattleState.causalLaterDecision ?? null,
+      battleRevision: asNumber(rawBattleState.battleRevision),
+      phaseReceipts: Array.isArray(rawBattleState.phaseReceipts)
+        ? rawBattleState.phaseReceipts.flatMap((value) => {
+            const receipt = asObject(value);
+            const receiptId = asString(receipt?.id);
+            const sequence = asNumber(receipt?.sequence);
+            const phase = asString(receipt?.phase);
+            const stateRevision = asNumber(receipt?.toRevision);
+            if (!receiptId || sequence === null || !phase || stateRevision === null) return [];
+            return [{
+              receiptId,
+              sequence,
+              phase,
+              combatTurn: asNumber(receipt?.combatTurn),
+              stateRevision,
+              inputDigest: asString(receipt?.narrationInputDigest),
+            }];
+          })
+        : [],
       psycheReaction: {
-        a: psycheReactionSummary(rawBattleState.agentStateA),
-        b: psycheReactionSummary(rawBattleState.agentStateB),
+        a: psycheReactionSummary(persistedBattleState.agentStateA),
+        b: psycheReactionSummary(persistedBattleState.agentStateB),
       },
       semanticState: rawBattleState.semanticState ?? null,
       worldState: rawBattleState.worldState ?? null,

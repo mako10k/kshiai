@@ -151,6 +151,15 @@ export type InternalBattleObservationDetail = {
     causalBucketCommit: Record<string, unknown> | null;
     causalEngineContinuation: Record<string, unknown> | null;
     causalLaterDecision: Record<string, unknown> | null;
+    battleRevision: number | null;
+    phaseReceipts: Array<{
+      receiptId: string;
+      sequence: number;
+      phase: string;
+      combatTurn: number | null;
+      stateRevision: number;
+      inputDigest: string | null;
+    }>;
     psycheReaction: {
       a: {
         schemaVersion: number | null;

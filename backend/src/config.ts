@@ -126,6 +126,8 @@ export function isMockProviderAllowed(input: {
 }
 
 export const config = {
+  battlePresentationReadModel:
+    (process.env.BATTLE_PRESENTATION_READ_MODEL ?? "composite") !== "legacy",
   host: process.env.HOST ?? "127.0.0.1",
   port: Number(process.env.PORT ?? 3088),
   databasePath: path.resolve(

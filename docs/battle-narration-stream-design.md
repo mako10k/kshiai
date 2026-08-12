@@ -1,6 +1,7 @@
 # Battle-scoped ordered narration stream design
 
-Status: design baseline for ADR-0006; implementation has not started.
+Status: ADR-0006 authority prerequisites and composite presentation read model
+implemented locally; ordered worker, outbox, queue and stream remain pending.
 
 Related: [ADR-0006](adr/0006-terminal-snapshot-narration-delivery.md),
 [current pipeline](current-battle-pipeline.md), and
@@ -248,6 +249,20 @@ or secret is displayed.
 6. Move the frontend to independent advance and narration state machines; retain
    a bounded compatibility adapter during migration.
 7. Remove narrator progress from advance SSE after the new client is accepted.
+
+Current local compatibility boundary:
+
+- new phase narration is stored in `battle_presentations`, not appended to
+  canonical `BattleState.log`;
+- battle GET and character history/detail compose retained legacy log blocks
+  with ordered receipt presentations when
+  `BATTLE_PRESENTATION_READ_MODEL` is not `legacy`;
+- setting that variable to `legacy` is the local read rollback and does not
+  delete either representation;
+- new narrator recognition and raw narrator pipeline trace writes have stopped;
+  existing persisted traces are retained for now, but administrator responses
+  redact private inputs and provider outputs. Retention/deletion remains an
+  owner decision at `T_ACCEPT_NARRATION_CONTRACT`.
 
 ## Acceptance matrix
 

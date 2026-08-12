@@ -1,4 +1,5 @@
 import { randomInt } from "node:crypto";
+import { requestDigest } from "./distributed-guard.js";
 import {
   BattlePolicyOptionSchema,
   BattleAdjudicationSchema,
@@ -149,6 +150,7 @@ import {
   type EvidenceValidationStatus,
 } from "../llm/perception-evidence.js";
 import * as battleRepo from "../repositories/battles.js";
+import * as presentationRepo from "../repositories/battle-presentations.js";
 import * as bfRepo from "../repositories/battlefields.js";
 import * as charRepo from "../repositories/characters.js";
 import * as styleRepo from "../repositories/narration-styles.js";
@@ -239,6 +241,13 @@ export function toBattlePublic(
       },
     }),
     log: state.log,
+    receipts: (state.phaseReceipts ?? []).map((receipt) => ({
+      turnReceiptId: receipt.id,
+      sequence: receipt.sequence,
+      phase: receipt.phase,
+      combatTurn: receipt.combatTurn,
+      stateRevision: receipt.toRevision,
+    })),
     availableActions: [],
     winnerSide: state.winnerSide,
     finishReason: state.finishReason,
@@ -298,8 +307,14 @@ export async function toBattlePublicForViewer(
         (await getUserAccessProfile(mySheet.ownerUserId)).realm,
       )
     : undefined;
+  const presentationLog = config.battlePresentationReadModel
+    ? await presentationRepo.listBattlePresentations(state.id)
+    : [];
+  const presentationState = presentationLog.length > 0
+    ? { ...state, log: [...state.log, ...presentationLog] }
+    : state;
   return toBattlePublic(
-    state,
+    presentationState,
     mySheet,
     resultSummary,
     oppSheet,
@@ -2229,10 +2244,8 @@ export function buildBattleAdjudication(input: {
   result?: RefereeResult;
 }): BattleAdjudication {
   const engineFallbackSide = input.engineWinnerSide ?? "draw";
-  const winnerSide = input.result?.winnerSide === "a" ||
-      input.result?.winnerSide === "b" || input.result?.winnerSide === "draw"
-    ? input.result.winnerSide
-    : engineFallbackSide;
+  // ADR-0006: provider output may explain the committed result, never select it.
+  const winnerSide = engineFallbackSide;
   const reason = input.result?.reason.trim().slice(0, 600) ||
     "確定した行動、影響、残力を総合して判定した。";
   const parsedFacts = (input.result?.reasonFacts ?? []).flatMap((fact) => {
@@ -3954,9 +3967,9 @@ async function advanceTurnWithLease(input: {
     perceptionFrameB: next.perceptionFrameB,
   });
   emit({ type: "phase", phase: "narrating" });
-  const recentBlocks = state.log.slice(-2);
-  const recentNarration = recentBlocks.flatMap((block) => block.narrator).slice(-4);
-  const recentSpeeches = recentBlocks.flatMap((block) => block.speeches).slice(-4);
+  // ADR-0006: canonical advancement never consumes prior generated prose.
+  const recentNarration: string[] = [];
+  const recentSpeeches: NarrativeBlock["speeches"] = [];
   const actionBeats = buildNarrationActionBeats({
     actions: resolved.actions,
     events,
@@ -4105,7 +4118,6 @@ async function advanceTurnWithLease(input: {
     ? buildNarrationTurnBrief(narrationView)
     : null;
   let narrationResult: NarrationResult;
-  let narratorDisposition: "provider" | "fallback" = "provider";
   try {
     if (!narrationView) {
       throw new Error("narration perception view unavailable");
@@ -4138,7 +4150,6 @@ async function advanceTurnWithLease(input: {
       "narrateTurn",
     );
   } catch (e) {
-    narratorDisposition = "fallback";
     console.warn(
       "[battle] narrateTurn fallback",
       e instanceof Error ? e.message : e,
@@ -4198,13 +4209,6 @@ async function advanceTurnWithLease(input: {
       turn: next.turn,
     });
   }
-  const narratorProviderOutput = structuredClone(narrationResult);
-  next = applyNarratorRecognitionResult({
-    state: next,
-    view: perceptionView,
-    turn: next.turn,
-    updates: narrationResult.recognitionUpdates,
-  });
   let narrative = publicNarrativeBlock(narrationResult);
   narrative = repairNarrativeBlockIdentifiers(narrative, identifierCatalog);
   const recentNarrationFingerprints = new Set(
@@ -4263,6 +4267,10 @@ async function advanceTurnWithLease(input: {
       turnLimit: next.turnLimit,
       actions: resolved.actions,
       narrative,
+      characterSpeeches: characterSpeeches.map((speech) => ({
+        sourceSide: speech.side,
+        text: speech.text,
+      })),
       sideAName: next.sideA.displayName,
       sideBName: next.sideB.displayName,
       locationChanged: semanticChanges.locationChanged,
@@ -4270,51 +4278,16 @@ async function advanceTurnWithLease(input: {
         semanticTurn.environmentProcessReceipt?.status === "accepted" ||
         semanticChanges.environmentChanged,
     }),
-    log: [...next.log, narrative],
   };
-  const traceRecords = next.turnRecords ?? [];
-  const traceRecord = traceRecords.at(-1);
-  if (traceRecord) {
-    next = {
-      ...next,
-      turnRecords: [
-        ...traceRecords.slice(0, -1),
-        {
-          ...traceRecord,
-          pipelineTrace: {
-            schemaVersion: 1,
-            ...(traceRecord.pipelineTrace ?? {}),
-            narrator: {
-              input: narrationCallInput
-                ? structuredClone({
-                    turnBrief: narrationTurnBrief,
-                    recentNarration: narrationCallInput.recentNarration,
-                    recentSpeeches: narrationCallInput.recentSpeeches,
-                    drama: narrationCallInput.drama,
-                    innerDigests: narrationCallInput.innerDigests,
-                    characterSpeeches: narrationCallInput.characterSpeeches,
-                    styleInstruction: narrationCallInput.styleInstruction,
-                    styleName: narrationCallInput.styleName,
-                  })
-                : null,
-              disposition: narratorDisposition,
-              providerOutput: narratorProviderOutput,
-              publicOutput: structuredClone(narrative),
-            },
-          },
-        },
-      ],
-    };
-  }
   emit({ type: "phase", phase: "finalizing" });
 
   // KO this turn: combat narrative is done, but official finish waits for aftermath advance.
   // Do not settle rating yet.
   if (next.aftermathPending) {
-    next = completeAdvancePhase({
+    next = completeAdvancePhases({
       state: next,
       operationId: input.operationId,
-      phase: "combat",
+      phases: ["combat"],
     });
     await battleRepo.saveBattle(next, {
       sideAUserId: meta.side_a_user_id,
@@ -4322,10 +4295,12 @@ async function advanceTurnWithLease(input: {
       sideBCharacterId: meta.side_b_character_id,
       expectedRevision: next.advanceOperation?.expectedRevision,
     });
+    await saveCommittedPresentation({ state: next, phase: "combat", narrative });
     return toBattlePublicForViewer(next, mine, null, opp);
   }
 
   let resultSummary: string | null = null;
+  let judgmentNarrative: NarrativeBlock | null = null;
   if (next.status === "finished") {
     if (next.finishReason === "turn_limit") {
       const turnFacts = buildRefereeTurnFacts(next.turnRecords ?? []);
@@ -4375,10 +4350,7 @@ async function advanceTurnWithLease(input: {
             winnerSide: adjudication.winnerSide,
             winnerName,
             adjudicationReason: adjudication.reason,
-            recentPublicNarration: next.log
-              .slice(-2)
-              .flatMap((block) => block.narrator)
-              .slice(-8),
+            recentPublicNarration: [],
             styleInstruction: next.narrationStyle?.instruction,
             styleName: next.narrationStyle?.displayName,
           }),
@@ -4407,8 +4379,8 @@ async function advanceTurnWithLease(input: {
         .join(" ");
       next = {
         ...next,
-        log: [...next.log, judgmentBlock],
       };
+      judgmentNarrative = judgmentBlock;
     } else {
       const winner =
         next.winnerSide === "a"
@@ -4463,10 +4435,12 @@ async function advanceTurnWithLease(input: {
     causalBucketCommit: undefined,
     causalEngineContinuation: undefined,
   };
-  next = completeAdvancePhase({
+  next = completeAdvancePhases({
     state: next,
     operationId: input.operationId,
-    phase: "combat",
+    phases: next.finishReason === "turn_limit"
+      ? ["combat", "judgment"]
+      : ["combat"],
   });
 
   await battleRepo.saveBattle(next, {
@@ -4475,14 +4449,64 @@ async function advanceTurnWithLease(input: {
     sideBCharacterId: meta.side_b_character_id,
     expectedRevision: next.advanceOperation?.expectedRevision,
   });
+  await saveCommittedPresentation({ state: next, phase: "combat", narrative });
+  if (judgmentNarrative) {
+    await saveCommittedPresentation({
+      state: next,
+      phase: "judgment",
+      narrative: judgmentNarrative,
+    });
+  }
 
   return toBattlePublicForViewer(next, mine, resultSummary, opp);
 }
 
-function completeAdvancePhase(input: {
+function buildFrozenNarrationInput(
+  state: BattleState,
+  phase: "prologue" | "combat" | "judgment" | "aftermath",
+) {
+  const record = (state.turnRecords ?? []).at(-1);
+  const snapshot = {
+    schemaVersion: 1 as const,
+    scene: state.situation.scene,
+    perspective: state.narrationStyle?.perspective ?? "external" as const,
+    participantLabels: {
+      a: state.sideA.displayName,
+      b: state.sideB.displayName,
+    },
+    winnerSide: state.winnerSide,
+    finishReason: state.finishReason,
+    adjudicationReason: state.adjudication?.reason ?? null,
+    eventFacts: (record?.events ?? []).map((event) => ({
+      type: event.type,
+      actorSide: event.actorSide ?? null,
+      targetSides: event.targetSides ?? [],
+      intensity: event.intensity ?? null,
+    })).slice(0, 48),
+    characterSpeeches: (record?.events ?? [])
+      .filter((event) => event.type === "utterance" && event.actorSide && event.utterance)
+      .map((event) => ({
+        sourceSide: event.actorSide as "a" | "b",
+        text: event.utterance!.text,
+      }))
+      .slice(0, 8),
+    assetGenerationIds: {
+      sideA: state.assetManifest?.characters.a.generationId ?? null,
+      sideB: state.assetManifest?.characters.b.generationId ?? null,
+      battlefield: state.assetManifest?.battlefield.generationId ?? null,
+      narrationStyle: state.assetManifest?.narrationStyle.generationId ?? null,
+    },
+  };
+  return {
+    snapshot,
+    digest: requestDigest({ phase, combatTurn: state.turn, snapshot }),
+  };
+}
+
+export function completeAdvancePhases(input: {
   state: BattleState;
   operationId: string;
-  phase: "prologue" | "combat" | "aftermath";
+  phases: readonly ("prologue" | "combat" | "judgment" | "aftermath")[];
 }): BattleState {
   const operation = input.state.advanceOperation;
   if (!operation || operation.operationId !== input.operationId) {
@@ -4493,35 +4517,68 @@ function completeAdvancePhase(input: {
   if ((input.state.battleRevision ?? 0) !== fromRevision) {
     throw new Error("BATTLE_REVISION_CONFLICT");
   }
-  const sequence = (input.state.phaseReceiptSequence ?? 0) + 1;
-  const toRevision = fromRevision + 1;
+  if (input.phases.length === 0) throw new Error("ADVANCE_PHASES_EMPTY");
+  const firstSequence = (input.state.phaseReceiptSequence ?? 0) + 1;
+  const toRevision = fromRevision + input.phases.length;
   const committedAt = new Date().toISOString();
-  const receiptId = `${input.state.id}:phase:${sequence}`;
+  const receipts = input.phases.map((phase, index) => {
+    const sequence = firstSequence + index;
+    const receiptFromRevision = fromRevision + index;
+    const frozen = buildFrozenNarrationInput(input.state, phase);
+    return {
+      schemaVersion: 1 as const,
+      id: `${input.state.id}:phase:${sequence}`,
+      sequence,
+      operationId: input.operationId,
+      phase,
+      combatTurn: phase === "combat" || phase === "judgment"
+        ? input.state.turn
+        : null,
+      fromRevision: receiptFromRevision,
+      toRevision: receiptFromRevision + 1,
+      committedAt,
+      narrationInput: frozen.snapshot,
+      narrationInputDigest: frozen.digest,
+    };
+  });
   return {
     ...input.state,
     battleRevision: toRevision,
-    phaseReceiptSequence: sequence,
+    phaseReceiptSequence: firstSequence + input.phases.length - 1,
     phaseReceipts: [
       ...(input.state.phaseReceipts ?? []),
-      {
-        schemaVersion: 1 as const,
-        id: receiptId,
-        sequence,
-        operationId: input.operationId,
-        phase: input.phase,
-        combatTurn: input.phase === "combat" ? input.state.turn : null,
-        fromRevision,
-        toRevision,
-        committedAt,
-      },
+      ...receipts,
     ].slice(-100),
     advanceOperation: {
       ...operation,
       status: "completed",
       completedAt: committedAt,
-      receiptIds: [receiptId],
+      receiptIds: receipts.map((receipt) => receipt.id),
     },
   };
+}
+
+async function saveCommittedPresentation(input: {
+  state: BattleState;
+  phase: "prologue" | "combat" | "judgment" | "aftermath";
+  narrative: NarrativeBlock;
+}): Promise<void> {
+  const receipt = [...(input.state.phaseReceipts ?? [])]
+    .reverse()
+    .find((candidate) => candidate.phase === input.phase);
+  if (!receipt?.narrationInputDigest) {
+    throw new Error("PRESENTATION_RECEIPT_MISSING");
+  }
+  await presentationRepo.saveBattlePresentation({
+    battleId: input.state.id,
+    receiptId: receipt.id,
+    sequence: receipt.sequence,
+    phase: receipt.phase,
+    combatTurn: receipt.combatTurn,
+    inputDigest: receipt.narrationInputDigest,
+    narrative: input.narrative,
+    createdAt: receipt.committedAt,
+  });
 }
 
 async function runPrologueTurn(input: {
@@ -4701,12 +4758,6 @@ async function runPrologueTurn(input: {
       turn: 0,
     });
   }
-  state = applyNarratorRecognitionResult({
-    state,
-    view: prologuePerceptionView,
-    turn: 0,
-    updates: narrationResult.recognitionUpdates,
-  });
   let narrative = publicNarrativeBlock(narrationResult);
   narrative = repairNarrativeBlockIdentifiers(narrative, identifierCatalog);
   if (
@@ -4749,13 +4800,12 @@ async function runPrologueTurn(input: {
     openingPlanB: state.agentStateB?.currentGoal?.slice(0, 1200),
     turn: 0,
     prologuePending: false,
-    log: [...state.log, narrative],
     updatedAt: new Date().toISOString(),
   };
-  next = completeAdvancePhase({
+  next = completeAdvancePhases({
     state: next,
     operationId: input.operationId,
-    phase: "prologue",
+    phases: ["prologue"],
   });
 
   await battleRepo.saveBattle(next, {
@@ -4764,6 +4814,7 @@ async function runPrologueTurn(input: {
     sideBCharacterId: input.meta.side_b_character_id,
     expectedRevision: next.advanceOperation?.expectedRevision,
   });
+  await saveCommittedPresentation({ state: next, phase: "prologue", narrative });
 
   return toBattlePublicForViewer(next, input.mine, null, input.opp);
 }
@@ -4879,13 +4930,7 @@ async function runAftermathTurn(input: {
         winnerName: narratorWinnerName,
         fallenNames: narratorFallenNames,
         battlefield: state.battlefield,
-        recentNarration: aftermathPerceptionView?.mode === "self" ||
-            aftermathPerceptionView?.mode === "opponent"
-          ? []
-          : state.log
-              .slice(-2)
-              .flatMap((b) => b.narrator)
-              .slice(-8),
+        recentNarration: [],
         innerDigests: digests,
         characterSpeeches,
         profileAnchors: buildNarratorProfileAnchors({
@@ -4945,12 +4990,6 @@ async function runAftermathTurn(input: {
     };
   }
 
-  state = applyNarratorRecognitionResult({
-    state,
-    view: aftermathPerceptionView,
-    turn: aftermathTurn,
-    updates: presentation.recognitionUpdates,
-  });
 
   let narrative = repairNarrativeBlockIdentifiers(
     buildAftermathNarrativeBlock({
@@ -4982,7 +5021,6 @@ async function runAftermathTurn(input: {
     ...state,
     status: "finished",
     aftermathPending: false,
-    log: [...state.log, narrative],
     updatedAt: new Date().toISOString(),
   };
 
@@ -5031,10 +5069,10 @@ async function runAftermathTurn(input: {
     );
   }
 
-  next = completeAdvancePhase({
+  next = completeAdvancePhases({
     state: next,
     operationId: input.operationId,
-    phase: "aftermath",
+    phases: ["aftermath"],
   });
 
   await battleRepo.saveBattle(next, {
@@ -5043,6 +5081,7 @@ async function runAftermathTurn(input: {
     sideBCharacterId: input.meta.side_b_character_id,
     expectedRevision: next.advanceOperation?.expectedRevision,
   });
+  await saveCommittedPresentation({ state: next, phase: "aftermath", narrative });
 
   // The winner card already states the mechanical result. The aftermath log is
   // LLM-authored, so do not append a second fixed-prose result summary here.

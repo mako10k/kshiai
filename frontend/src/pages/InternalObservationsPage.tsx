@@ -370,6 +370,25 @@ export function InternalObservationsPage() {
               </div>
 
               <div className="panel">
+                <h2>正準phase receipt / narration境界</h2>
+                <p className="muted">
+                  battle revision {detail.canonicalCurrent.battleRevision ?? "legacy"}。入力digestまでが正準commitで、ナレーション本文はpresentation read model側です。
+                </p>
+                {detail.canonicalCurrent.phaseReceipts.length > 0 ? (
+                  <div className="internal-turn-list">
+                    {detail.canonicalCurrent.phaseReceipts.map((receipt) => (
+                      <div className="internal-turn" key={receipt.receiptId}>
+                        <strong>#{receipt.sequence} {receipt.phase}</strong>
+                        <span> · turn {receipt.combatTurn ?? "—"} · revision {receipt.stateRevision}</span>
+                        <div className="muted">{receipt.receiptId}</div>
+                        <div className="muted">input {receipt.inputDigest ?? "legacy/unavailable"}</div>
+                      </div>
+                    ))}
+                  </div>
+                ) : <p className="muted">legacy / receipt unavailable</p>}
+              </div>
+
+              <div className="panel">
                 <h2>キャラ・ナレータ パイプラインDAG</h2>
                 <div className="internal-agent-lanes">
                   {(["a", "b"] as const).map((side) => {

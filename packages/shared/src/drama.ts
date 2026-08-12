@@ -110,6 +110,8 @@ export function advanceDramaState(input: {
   turnLimit: number;
   actions: ResolvedBattleAction[];
   narrative: NarrativeBlock;
+  /** Canonical character-authored speech; narrator placement is presentation-only. */
+  characterSpeeches?: readonly { sourceSide: "a" | "b"; text: string }[];
   sideAName: string;
   sideBName: string;
   locationChanged: boolean;
@@ -145,9 +147,11 @@ export function advanceDramaState(input: {
       ...previous.recentBeatFingerprints,
       fingerprint,
     ].slice(-3),
-    lastPublicSpeechA:
-      latestSpeech(input.narrative, input.sideAName) ?? previous.lastPublicSpeechA,
-    lastPublicSpeechB:
-      latestSpeech(input.narrative, input.sideBName) ?? previous.lastPublicSpeechB,
+    lastPublicSpeechA: [...(input.characterSpeeches ?? [])]
+      .reverse().find((speech) => speech.sourceSide === "a")?.text ??
+      previous.lastPublicSpeechA,
+    lastPublicSpeechB: [...(input.characterSpeeches ?? [])]
+      .reverse().find((speech) => speech.sourceSide === "b")?.text ??
+      previous.lastPublicSpeechB,
   };
 }

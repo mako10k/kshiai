@@ -24,6 +24,7 @@ import {
   buildNarratorCharacterSpeeches,
   buildRefereeFinalState,
   buildRefereeTurnFacts,
+  completeAdvancePhases,
   finalizeCharacterSpeeches,
   reconcileSemanticState,
   validateCharacterActionProposal,
@@ -1307,7 +1308,7 @@ describe("character-authored public speech", () => {
       turnFacts: [],
       result,
     });
-    assert.equal(adjudication.winnerSide, "b");
+    assert.equal(adjudication.winnerSide, "a");
     assert.equal(adjudication.engineFallbackSide, "a");
     assert.equal(adjudication.source, "semantic_adjudicator");
     assert.deepEqual(adjudication.reasonFacts, result.reasonFacts);
@@ -1319,6 +1320,50 @@ describe("character-authored public speech", () => {
     });
     assert.equal(fallback.winnerSide, "a");
     assert.equal(fallback.source, "deterministic_fallback");
+  });
+
+  it("commits ordered combat and judgment receipts from frozen canonical facts", () => {
+    const state = createBattleState({
+      id: "phase-receipts",
+      sideA: sheet("a", "A"),
+      sideB: sheet("b", "B"),
+      turnLimit: 20,
+      prologuePending: false,
+    });
+    state.turn = 20;
+    state.winnerSide = "a";
+    state.finishReason = "turn_limit";
+    state.log = [{ turn: 19, narrator: ["provider-private-marker"], speeches: [] }];
+    state.advanceOperation = {
+      schemaVersion: 1,
+      operationId: "op_receipts",
+      expectedRevision: 0,
+      status: "active",
+      phase: "combat",
+      startedAt: new Date().toISOString(),
+      completedAt: null,
+      receiptIds: [],
+    };
+
+    const committed = completeAdvancePhases({
+      state,
+      operationId: "op_receipts",
+      phases: ["combat", "judgment"],
+    });
+    assert.equal(committed.battleRevision, 2);
+    assert.deepEqual(committed.phaseReceipts?.map((receipt) => receipt.phase), [
+      "combat",
+      "judgment",
+    ]);
+    assert.deepEqual(committed.phaseReceipts?.map((receipt) => receipt.sequence), [1, 2]);
+    assert.deepEqual(committed.advanceOperation?.receiptIds, [
+      "phase-receipts:phase:1",
+      "phase-receipts:phase:2",
+    ]);
+    assert.doesNotMatch(
+      JSON.stringify(committed.phaseReceipts),
+      /provider-private-marker/,
+    );
   });
 
   it("keeps the raw judgment immutable across narration styles", () => {

@@ -88,6 +88,18 @@ describe("public battle semantic projection", () => {
         contributions: [{ code: "uncertainty", dimension: "interpretation.uncertain", amount: 20 }],
       },
     };
+    state.phaseReceipts = [{
+      schemaVersion: 1,
+      id: "public-semantic:phase:1",
+      sequence: 1,
+      operationId: "private-operation-id",
+      phase: "combat",
+      combatTurn: 1,
+      fromRevision: 0,
+      toRevision: 1,
+      committedAt: "2026-08-12T00:00:00.000Z",
+      narrationInputDigest: "a".repeat(64),
+    }];
     const publicState = toBattlePublic(state, sideA, null, sideB);
     assert.equal(
       publicState.semanticState?.snapshot.entities["character.a"]?.label,
@@ -106,6 +118,15 @@ describe("public battle semantic projection", () => {
     assert.equal(json.includes("must-not-reach-public-dto"), false);
     assert.equal(json.includes("reactionStateV1"), false);
     assert.equal(json.includes("private-reaction-source"), false);
+    assert.deepEqual(publicState.receipts, [{
+      turnReceiptId: "public-semantic:phase:1",
+      sequence: 1,
+      phase: "combat",
+      combatTurn: 1,
+      stateRevision: 1,
+    }]);
+    assert.equal(json.includes("private-operation-id"), false);
+    assert.equal(json.includes("a".repeat(64)), false);
   });
 
   it("centers settled ratings independently for each visible track", () => {

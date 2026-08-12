@@ -208,10 +208,13 @@ describe("internal battle observability", () => {
       (detail.rawBattleState.turnRecords as Array<Record<string, unknown>>)[0]
         ?.pipelineTrace,
     );
+    assert.doesNotMatch(JSON.stringify(detail.rawBattleState), /perception":"a|nextAction|raw/);
+    assert.match(JSON.stringify(detail.rawBattleState), /\[redacted\]/);
     assert.equal(detail.capabilities.perTurnCanonicalTransitions, "complete");
     assert.equal(detail.capabilities.pipelineTraceCount, 1);
     assert.equal(detail.capabilities.temporalResolutionCount, 1);
     assert.equal(detail.capabilities.hasCausalExecutionCheckpoint, true);
+    assert.deepEqual(detail.canonicalCurrent.phaseReceipts, []);
     assert.equal(
       (detail.canonicalCurrent.assetManifest as {
         characters: { a: { generationId: string } };

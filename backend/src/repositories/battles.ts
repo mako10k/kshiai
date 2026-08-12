@@ -8,6 +8,8 @@ import {
   resolveBattlefieldImageUrl,
 } from "@kshiai/shared";
 import { query } from "../db.js";
+import { listBattlePresentations } from "./battle-presentations.js";
+import { config } from "../config.js";
 
 export async function saveBattle(
   state: BattleState,
@@ -485,7 +487,12 @@ export async function getCharacterBattleDetail(
   const rows = await listBattlesInvolvingCharacter(characterId);
   const row = rows.find((r) => r.state.id === battleId);
   if (!row) return null;
-  const state = row.state;
+  const presentationLog = config.battlePresentationReadModel
+    ? await listBattlePresentations(row.state.id)
+    : [];
+  const state = presentationLog.length > 0
+    ? { ...row.state, log: [...row.state.log, ...presentationLog] }
+    : row.state;
   const hit = toSearchHit(state, characterId);
   const onA = state.sideA.characterId === characterId;
   const policies = onA ? state.policiesA : state.policiesB;
@@ -544,6 +551,12 @@ export async function findPriorMatchSummary(
       continue;
     }
     if (state.status !== "finished") continue;
+    const presentationLog = config.battlePresentationReadModel
+      ? await listBattlePresentations(state.id)
+      : [];
+    if (presentationLog.length > 0) {
+      state = { ...state, log: [...state.log, ...presentationLog] };
+    }
 
     const a = state.sideA.displayName;
     const b = state.sideB.displayName;

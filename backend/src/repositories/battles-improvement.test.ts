@@ -11,6 +11,7 @@ process.env.DATABASE_PATH = join(tempDir, "test.db");
 
 const { saveBattle, getBattle, searchCharacterBattleHistory, countFinishedBattlesForCharacter, getCharacterBattleDetail } =
   await import("./battles.js");
+const { saveBattlePresentation } = await import("./battle-presentations.js");
 const { defaultParameters } = await import("@kshiai/shared");
 import type { BattleState } from "@kshiai/shared";
 
@@ -138,6 +139,16 @@ describe("character battle history tools", () => {
         sideBCharacterId: opponentId,
       },
     );
+    await saveBattlePresentation({
+      battleId: "bat_1",
+      receiptId: "bat_1:phase:1",
+      sequence: 1,
+      phase: "combat",
+      combatTurn: 1,
+      inputDigest: "c".repeat(64),
+      narrative: { turn: 1, narrator: ["read-model narration"], speeches: [] },
+      createdAt: new Date().toISOString(),
+    });
     await saveBattle(
       makeFinishedBattle({
         id: "bat_2",
@@ -174,6 +185,7 @@ describe("character battle history tools", () => {
     assert.equal(detail!.result, "win");
     assert.ok(detail!.skillMentions.includes("先手のひらめき"));
     assert.ok(detail!.narrationExcerpts.length >= 1);
+    assert.equal(detail!.narrationExcerpts.includes("read-model narration"), true);
     const legacyLoaded = await getBattle("bat_1");
     assert.equal(legacyLoaded?.pipelineAuthorityVersion, 1);
     assert.equal(legacyLoaded?.semanticState?.revision, 0);

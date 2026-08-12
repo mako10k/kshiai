@@ -15,6 +15,7 @@ import {
   NarrationStyleSnapshotSchema,
   type NarrationStyleSnapshot,
 } from "./narration-style.js";
+import { NarrationPerspectiveSchema } from "./narration-perspective.js";
 import {
   BattleSemanticStateSchema,
   SemanticObservationStateSchema,
@@ -1469,6 +1470,36 @@ export const BattleStateSchema = z.object({
     fromRevision: z.number().int().nonnegative(),
     toRevision: z.number().int().positive(),
     committedAt: z.string().datetime(),
+    /** Frozen observer-safe facts for the later narration worker. */
+    narrationInput: z.object({
+      schemaVersion: z.literal(1),
+      scene: z.string().max(1200),
+      perspective: NarrationPerspectiveSchema,
+      participantLabels: z.object({
+        a: z.string().min(1).max(160),
+        b: z.string().min(1).max(160),
+      }).strict(),
+      winnerSide: z.enum(["a", "b", "draw"]).nullable(),
+      finishReason: FinishReasonSchema.nullable(),
+      adjudicationReason: z.string().min(1).max(600).nullable(),
+      eventFacts: z.array(z.object({
+        type: z.string().min(1).max(80),
+        actorSide: z.enum(["a", "b"]).nullable(),
+        targetSides: z.array(z.enum(["a", "b"])).max(2),
+        intensity: z.string().max(40).nullable(),
+      }).strict()).max(48),
+      characterSpeeches: z.array(z.object({
+        sourceSide: z.enum(["a", "b"]),
+        text: z.string().min(1).max(800),
+      }).strict()).max(8),
+      assetGenerationIds: z.object({
+        sideA: z.string().min(1).max(160).nullable(),
+        sideB: z.string().min(1).max(160).nullable(),
+        battlefield: z.string().min(1).max(160).nullable(),
+        narrationStyle: z.string().min(1).max(160).nullable(),
+      }).strict(),
+    }).strict().optional(),
+    narrationInputDigest: z.string().regex(/^[a-f0-9]{64}$/).optional(),
   }).strict()).max(100).optional(),
   /** Stable request identity persisted through intermediate bucket checkpoints. */
   advanceOperation: z.object({
@@ -1682,6 +1713,14 @@ export const BattlePublicSchema = z.object({
   semanticState: SemanticObservationStateSchema.nullable().optional(),
   objectStates: z.array(BattleObjectStatePublicSchema).default([]),
   log: z.array(NarrativeBlockSchema),
+  /** Ordered canonical phase identities; contains no private narration input. */
+  receipts: z.array(z.object({
+    turnReceiptId: z.string().min(1).max(160),
+    sequence: z.number().int().positive(),
+    phase: z.enum(["prologue", "combat", "judgment", "aftermath"]),
+    combatTurn: z.number().int().nonnegative().nullable(),
+    stateRevision: z.number().int().positive(),
+  }).strict()).max(100).default([]),
   /** @deprecated Per-turn choices are automatic; kept empty for compatibility. */
   availableActions: z
     .array(

@@ -108,6 +108,20 @@ export function getDb(): SqliteDatabase.Database {
     );
     CREATE INDEX IF NOT EXISTS idx_battle_leases_expires
       ON battle_leases (expires_at);
+    CREATE TABLE IF NOT EXISTS battle_presentations (
+      battle_id TEXT NOT NULL REFERENCES battles(id) ON DELETE CASCADE,
+      receipt_id TEXT NOT NULL,
+      sequence INTEGER NOT NULL,
+      phase TEXT NOT NULL,
+      combat_turn INTEGER,
+      input_digest TEXT NOT NULL,
+      narrative_json TEXT NOT NULL,
+      created_at TEXT NOT NULL,
+      PRIMARY KEY (battle_id, receipt_id),
+      UNIQUE (battle_id, sequence)
+    );
+    CREATE INDEX IF NOT EXISTS idx_battle_presentations_sequence
+      ON battle_presentations (battle_id, sequence);
     CREATE TABLE IF NOT EXISTS idempotency_keys (
       user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
       scope TEXT NOT NULL,
