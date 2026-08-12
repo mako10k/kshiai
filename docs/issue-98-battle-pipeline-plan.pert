@@ -119,6 +119,14 @@ task T_ENABLE_ASYNC_NARRATION_EXECUTION NARRATION_API_READY -> NARRATION_ASYNC_E
   title "Make advance independent from narration execution"
   description "Refactor prologue, combat, deterministic judgment presentation and aftermath so canonical phase receipts plus outbox commit and advance returns without invoking or awaiting narration/focus/presentation providers. Add an authenticated injectable local worker entry that consumes the frozen input on the accepted lightweight route, remove synchronous terminal import, retain deterministic fallback and the legacy read rollback only. Verify provider-call absence in advance, failure independence, N+1 commit during N generation, ordered terminal delivery, idempotent retry, history/improvement/admin privacy, and every phase. Do not create Cloud Tasks, deploy, migrate production data or perform production observation."
   duration 4p
+  status active
   requires:
     DEV 1
   owner "codex"
+
+work_event WE-961e8225e8b355189855539d7fe674469338a243426c328a0b2577cbad94a90c:
+  model 1
+  task T_ENABLE_ASYNC_NARRATION_EXECUTION
+  kind start
+  occurred_at 2026-08-12T17:08:07+09:00
+  planned_value 4p
