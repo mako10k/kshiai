@@ -70,7 +70,7 @@ task T_REDUCE_PSYCHE_LLM_COST PSYCHE_CALL_CONTRACT_ACCEPTED -> PSYCHE_COST_REDUC
   title "Route routine psyche processing through accepted low-cost paths"
   description "Implement the accepted V1 feature builder, explicit bounded decay/reaction policy, consumer projections, and private reason receipt. Measure deterministic/no-op coverage against the existing deep-psyche path without treating its prose as truth. Where the accepted contract requires semantic compatibility, evaluate one fixed lightweight model with a psyche-only context. Route in the fixed order deterministic/no-call, lightweight LLM, then explicitly allowed high-cost fallback; prohibit runtime escalation outside enumerated cases and keep action/expression calls separate. Accept only if total call, token, and cost fall while fixed privacy, continuity, schema, and downstream regression gates pass."
   duration 4p
-  status active
+  status done
   owner "codex"
   requires:
     DEV 1
@@ -153,3 +153,11 @@ work_event WE-1c9eec0f87a28bcaaeb6d60321685bab3195afd008c19caf38006f9490c30505:
   kind start
   occurred_at 2026-08-12T13:43:03+09:00
   planned_value 4p
+
+work_event WE-abe4e99e1be846a0b9c39c18c291718ffdd1dc0aa4290dc341da4170c28bc3dc:
+  model 1
+  task T_REDUCE_PSYCHE_LLM_COST
+  kind finish
+  occurred_at 2026-08-12T13:52:35+09:00
+  active_time 143/900h
+  effort 143/900ph
