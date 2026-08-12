@@ -79,7 +79,7 @@ task T_REFACTOR_BUCKET_EXECUTION CAUSAL_CONTRACT_ACCEPTED -> BUCKET_ENGINE_READY
   title "Refactor deterministic engine into restartable bucket execution"
   description "Extract pure prepare, resolve-bucket, and finalize operations from the current monolithic resolveTurn path. Preserve initiative-window-v1 atomic simultaneous behavior, A/B-swap invariance, server validation, and deterministic stable IDs. Persist no LLM-owned mechanics. Each operation must be re-enterable from its durable checkpoint without replaying an already committed bucket or consuming a planned action twice."
   duration 4p
-  status active
+  status suspended
   owner "codex"
   requires:
     DEV 1
@@ -184,3 +184,10 @@ work_event WE-d8b5e8b1e4af269021306b3c0839f706a6194e9bcb8bc2c50c0f3a0f4a9b25f7:
   kind start
   occurred_at 2026-08-12T08:55:42+09:00
   planned_value 4p
+
+work_event WE-ddeebafbb739189c8b742f3abc2779eba9af96fea49b28544ff660281f46ed6c:
+  model 1
+  task T_REFACTOR_BUCKET_EXECUTION
+  kind suspend
+  occurred_at 2026-08-12T09:37:29+09:00
+  reason "ADR-0001 tie-break and simultaneous-resolution decision pending"
