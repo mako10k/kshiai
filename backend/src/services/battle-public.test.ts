@@ -30,6 +30,36 @@ function sheet(id: string, name: string): CharacterSheet {
 }
 
 describe("public battle semantic projection", () => {
+  it("projects only explicitly visible pending effects without raw deltas", () => {
+    const sideA = sheet("effect-a", "A");
+    const sideB = sheet("effect-b", "B");
+    const state = createBattleState({
+      id: "public-effects",
+      sideA,
+      sideB,
+      turnLimit: 20,
+      prologuePending: false,
+    });
+    const base = {
+      schemaVersion: 1 as const,
+      createdTurn: 0,
+      source: { kind: "system_rules" as const, ruleId: "fixture" },
+      sourceSide: null,
+      targetSide: "b" as const,
+      payload: { kind: "parameter_delta" as const, parameterKey: "hp" as const, delta: -20 },
+      trigger: { kind: "due_turn" as const, dueTurn: 2 },
+      expiresTurn: 3,
+      cancelIfSourceIncapacitated: false,
+    };
+    state.pendingEffects = [
+      { ...base, effectId: "visible", visibility: "public_when_scheduled" },
+      { ...base, effectId: "hidden", visibility: "public_on_resolution" },
+    ];
+    const projected = toBattlePublic(state, sideA, null, sideB);
+    assert.deepEqual(projected.pendingEffects.map((effect) => effect.effectId), ["visible"]);
+    assert.doesNotMatch(JSON.stringify(projected.pendingEffects), /-20|delta/);
+  });
+
   it("exposes observable semantic state without mechanics or private agents", () => {
     const sideA = sheet("a", "A");
     const sideB = sheet("b", "B");

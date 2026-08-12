@@ -19,6 +19,18 @@ narrationから原因を推測しない。legacy turn recordはreceiptなしで�
 保証するreplayは将来のpending-effect schedule純粋再解決に限定し、full semantic replayや
 full-turn replayは対象外とする。
 
+## Bounded pending effect lifecycle
+
+`pendingEffects`は戦闘内で最大32件に制限し、任意scriptや自然言語predicateを保存しない。
+初期実装が受け付けるtriggerは、指定turn到達と対象HPのserver-defined比率判定だけである。
+payloadは既存2戦闘者へのbounded parameter deltaに限定する。各effectはstable ID、作成turn、
+期限、発生元、任意のsource incapacitation取消、公開時点を持つ。
+
+turn開始のpre-action境界でpure schedulerを実行し、結果と残存scheduleをengine continuationへ
+固定する。retryはそのcontinuationから再開するため、同じeffectを再発火しない。発火・取消・
+失効eventは`sourceEffectId`を持ち、発火deltaは`scheduled_effect` receiptへ結び付く。
+公開DTOは明示的に`public_when_scheduled`とされたeffectだけを、raw deltaを除いて投影する。
+
 ## 責務境界
 
 ```mermaid

@@ -67,6 +67,7 @@ import {
 } from "./perception-projection.js";
 import { revalidateCharacterAction } from "./action-feasibility.js";
 import { applyBattleCausalCoefficients } from "./battle-causality.js";
+import { resolvePendingEffectSchedule } from "./battle-effects.js";
 import {
   buildSequentialBattleTemporalPlan,
   buildBattleTemporalPlan,
@@ -133,6 +134,7 @@ function parameterChanges(before: CombatantState, after: CombatantState) {
 
 type MechanicalResolutionSpan = {
   sourceActionId: string | null;
+  sourceEffectId: string | null;
   actorSide: "a" | "b" | null;
   beforeA: Parameters;
   beforeB: Parameters;
@@ -168,6 +170,7 @@ function parametersSnapshot(combatant: CombatantState): Parameters {
 
 function mechanicalResolutionSpan(input: {
   sourceActionId?: string | null;
+  sourceEffectId?: string | null;
   actorSide?: "a" | "b" | null;
   beforeA: Parameters;
   beforeB: Parameters;
@@ -179,6 +182,7 @@ function mechanicalResolutionSpan(input: {
 }): MechanicalResolutionSpan {
   return {
     sourceActionId: input.sourceActionId ?? null,
+    sourceEffectId: input.sourceEffectId ?? null,
     actorSide: input.actorSide ?? null,
     beforeA: input.beforeA,
     beforeB: input.beforeB,
@@ -285,6 +289,7 @@ function committedMechanicalEvidence(input: {
       | "evidenceId"
       | "turn"
       | "sourceActionId"
+      | "sourceEffectId"
       | "basisEventIds"
       | "actorSide"
     >) => {
@@ -294,6 +299,7 @@ function committedMechanicalEvidence(input: {
         }`,
         turn: input.turn,
         sourceActionId: span.sourceActionId,
+        sourceEffectId: span.sourceEffectId,
         basisEventIds,
         actorSide: span.actorSide,
         ...item,
@@ -352,6 +358,7 @@ export function buildBattleTurnRecord(input: {
   after: BattleState;
   events: TurnEvent[];
   actions?: ResolvedBattleAction[];
+  mechanicalEvidence?: readonly CommittedMechanicalEvidence[];
 }): BattleTurnRecord {
   const changeA = parameterChanges(input.before.sideA, input.after.sideA);
   const changeB = parameterChanges(input.before.sideB, input.after.sideB);
@@ -367,12 +374,39 @@ export function buildBattleTurnRecord(input: {
     a: Partial<Record<ParamKey, number>>;
     b: Partial<Record<ParamKey, number>>;
   }>((input.actions ?? []).map((action) => [action.id, { a: {}, b: {} }]));
+  const effectIds = [...new Set(input.events.flatMap((event) =>
+    event.sourceEffectId ? [event.sourceEffectId] : []
+  ))];
+  const effectParameterChanges = new Map<string, {
+    a: Partial<Record<ParamKey, number>>;
+    b: Partial<Record<ParamKey, number>>;
+  }>(effectIds.map((effectId) => [effectId, { a: {}, b: {} }]));
   const systemParameterChanges: {
     a: Partial<Record<ParamKey, number>>;
     b: Partial<Record<ParamKey, number>>;
   } = { a: {}, b: {} };
+  for (const evidence of input.mechanicalEvidence ?? []) {
+    if (evidence.delta === 0) continue;
+    const owner = evidence.sourceActionId
+      ? actionParameterChanges.get(evidence.sourceActionId)
+      : evidence.sourceEffectId
+        ? effectParameterChanges.get(evidence.sourceEffectId)
+        : undefined;
+    const target = owner ?? systemParameterChanges;
+    target[evidence.target.side][evidence.parameterKey] =
+      (target[evidence.target.side][evidence.parameterKey] ?? 0) + evidence.delta;
+  }
   for (const [side, changes] of [["a", changeA], ["b", changeB]] as const) {
     for (const [key, delta] of Object.entries(changes) as Array<[ParamKey, number]>) {
+      const attributed = [
+        ...actionParameterChanges.values(),
+        ...effectParameterChanges.values(),
+        systemParameterChanges,
+      ].reduce((sum, changesBySource) =>
+        sum + (changesBySource[side][key] ?? 0), 0
+      );
+      const remainder = delta - attributed;
+      if (remainder === 0) continue;
       const candidateActionIds = new Set(input.events.flatMap((event) =>
         event.parameterKey === key && event.targetSides?.includes(side) &&
           event.sourceActionId && actionById.has(event.sourceActionId)
@@ -383,9 +417,25 @@ export function buildBattleTurnRecord(input: {
         ? [...candidateActionIds][0]
         : undefined;
       if (actionId) {
-        actionParameterChanges.get(actionId)![side][key] = delta;
+        actionParameterChanges.get(actionId)![side][key] =
+          (actionParameterChanges.get(actionId)![side][key] ?? 0) + remainder;
       } else {
-        systemParameterChanges[side][key] = delta;
+        const candidateEffectIds = new Set(input.events.flatMap((event) =>
+          event.parameterKey === key && event.targetSides?.includes(side) &&
+            event.sourceEffectId
+            ? [event.sourceEffectId]
+            : []
+        ));
+        const effectId = candidateEffectIds.size === 1
+          ? [...candidateEffectIds][0]
+          : undefined;
+        if (effectId) {
+          effectParameterChanges.get(effectId)![side][key] =
+            (effectParameterChanges.get(effectId)![side][key] ?? 0) + remainder;
+        } else {
+          systemParameterChanges[side][key] =
+            (systemParameterChanges[side][key] ?? 0) + remainder;
+        }
       }
     }
   }
@@ -405,8 +455,21 @@ export function buildBattleTurnRecord(input: {
     semanticOperationIndexes: [],
     worldOperationIndexes: [],
   }));
+  const effectReceipts = effectIds.map((effectId) => ({
+    schemaVersion: 1 as const,
+    receiptId: `${input.after.id}:turn:${input.after.turn}:effect:${effectId}`,
+    turn: input.after.turn,
+    source: { kind: "scheduled_effect" as const, effectId },
+    eventIds: input.events.flatMap((event) =>
+      event.sourceEffectId === effectId && event.id ? [event.id] : []
+    ),
+    parameterChanges: effectParameterChanges.get(effectId)!,
+    semanticOperationIndexes: [],
+    worldOperationIndexes: [],
+  }));
   const unownedEvents = input.events.filter((event) =>
-    !event.sourceActionId || !actionById.has(event.sourceActionId)
+    (!event.sourceActionId || !actionById.has(event.sourceActionId)) &&
+    !event.sourceEffectId
   );
   const systemReceipt = {
     schemaVersion: 1 as const,
@@ -476,6 +539,7 @@ export function buildBattleTurnRecord(input: {
     events: input.events,
     consequenceReceipts: [
       ...actionReceipts,
+      ...effectReceipts,
       systemReceipt,
       ...environmentReceipts,
     ],
@@ -774,6 +838,7 @@ export function createBattleState(input: {
     battleRevision: 0,
     phaseReceiptSequence: 0,
     phaseReceipts: [],
+    pendingEffects: [],
     turnLimit: input.turnLimit,
     sideA,
     sideB,
@@ -1783,6 +1848,7 @@ type PreparedBattleTurnStart = {
   events: TurnEvent[];
   mechanicalSpans: MechanicalResolutionSpan[];
   turn: number;
+  pendingEffects: BattleState["pendingEffects"];
 };
 
 export type PreparedBattleTurnInitiative = {
@@ -1910,6 +1976,60 @@ function prepareBattleTurnStart(input: ResolveTurnInput): PreparedBattleTurnStar
     }
   }
 
+  const effectSchedule = resolvePendingEffectSchedule({
+    turn,
+    effects: input.state.pendingEffects ?? [],
+    sideA,
+    sideB,
+  });
+  for (const resolution of effectSchedule.resolutions) {
+    if (resolution.status === "pending") continue;
+    const effect = resolution.effect;
+    const target = effect.targetSide === "a" ? sideA : sideB;
+    if (resolution.status === "applied") {
+      const beforeA = parametersSnapshot(sideA);
+      const beforeB = parametersSnapshot(sideB);
+      const eventStart = events.length;
+      const delta = applyTrackedParameterDelta(
+        target,
+        {
+          parameter: effect.payload.parameterKey,
+          delta: effect.payload.delta,
+        },
+        () => undefined,
+      );
+      events.push({
+        type: effect.payload.delta < 0 ? "damage" : "heal",
+        actorName: target.displayName,
+        targetName: target.displayName,
+        targetSides: [effect.targetSide],
+        sourceEffectId: effect.effectId,
+        parameterKey: effect.payload.parameterKey,
+        parameterDirection: delta < 0 ? "loss" : "gain",
+        intensity: intensityFromDamage(Math.abs(delta)),
+        summary: `${target.displayName} に遅延していた影響が現れた。`,
+      });
+      mechanicalSpans.push(mechanicalResolutionSpan({
+        sourceActionId: null,
+        sourceEffectId: effect.effectId,
+        beforeA,
+        beforeB,
+        sideA,
+        sideB,
+        eventStart,
+        eventEnd: events.length,
+      }));
+    } else {
+      events.push({
+        type: "info",
+        sourceEffectId: effect.effectId,
+        summary: resolution.status === "cancelled"
+          ? "保留されていた影響は発動条件を失い、取り消された。"
+          : "保留されていた影響は期限を迎え、失効した。",
+      });
+    }
+  }
+
   if (turn === 1 && input.state.battlefield) {
     const bf = input.state.battlefield;
     const bits = [
@@ -1930,7 +2050,15 @@ function prepareBattleTurnStart(input: ResolveTurnInput): PreparedBattleTurnStar
     applyEnvHits(sideA, sideB, input.envHits, events, mechanicalSpans);
   }
 
-  return { sideA, sideB, situation, events, mechanicalSpans, turn };
+  return {
+    sideA,
+    sideB,
+    situation,
+    events,
+    mechanicalSpans,
+    turn,
+    pendingEffects: effectSchedule.pendingEffects,
+  };
 }
 
 function buildPreparedTemporalResolution(input: {
@@ -2085,6 +2213,7 @@ export function resolveTurn(input: ResolveTurnInput): {
   const mechanicalSpans = resumed ? [] : prepared!.mechanicalSpans;
   const accumulatedMechanicalEvidence = resumed?.mechanicalEvidence ?? [];
   const turn = resumed?.turn ?? prepared!.turn;
+  const pendingEffects = resumed?.pendingEffects ?? prepared!.pendingEffects;
   let finisherA = resumed?.finisherA ??
     normalizeFinisher(input.state.finisherA, input.sideASkills);
   let finisherB = resumed?.finisherB ??
@@ -2609,6 +2738,7 @@ export function resolveTurn(input: ResolveTurnInput): {
         id: event.id ?? `turn-${turn}-event-${index + 1}`,
       })),
       mechanicalEvidence,
+      pendingEffects,
       defensiveInstrumentMultipliers,
     });
     return {
@@ -2713,6 +2843,7 @@ export function resolveTurn(input: ResolveTurnInput): {
     aftermathPending,
     finisherA,
     finisherB,
+    pendingEffects,
     latestTemporalResolution: temporalResolution,
     plannedActionA: undefined,
     plannedActionB: undefined,

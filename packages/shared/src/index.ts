@@ -10,6 +10,7 @@ export * from "./battle-stream.js";
 export * from "./battle-engine.js";
 export * from "./action-feasibility.js";
 export * from "./battle-causality.js";
+export * from "./battle-effects.js";
 export * from "./battle-temporal-rules.js";
 export * from "./battle-causal-execution.js";
 export * from "./battle-world.js";

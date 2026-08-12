@@ -249,6 +249,7 @@ export async function getInternalBattleObservation(
     causalBucketCommit: unknown | null;
     causalEngineContinuation: unknown | null;
     causalLaterDecision: unknown | null;
+    pendingEffects: unknown[];
     battleRevision: number | null;
     phaseReceipts: Array<{
       receiptId: string;
@@ -419,6 +420,9 @@ export async function getInternalBattleObservation(
       causalBucketCommit: rawBattleState.causalBucketCommit ?? null,
       causalEngineContinuation: rawBattleState.causalEngineContinuation ?? null,
       causalLaterDecision: rawBattleState.causalLaterDecision ?? null,
+      pendingEffects: Array.isArray(rawBattleState.pendingEffects)
+        ? rawBattleState.pendingEffects
+        : [],
       battleRevision: asNumber(rawBattleState.battleRevision),
       phaseReceipts: Array.isArray(rawBattleState.phaseReceipts)
         ? rawBattleState.phaseReceipts.flatMap((value) => {

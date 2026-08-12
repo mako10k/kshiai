@@ -5,6 +5,7 @@ import {
   ParamKeySchema,
   ParametersSchema,
   type CharacterSheet,
+  type ParamKey,
 } from "./character.js";
 import {
   BattlefieldInstancePublicSchema,
@@ -455,7 +456,31 @@ export const SituationSchema = z.object({
 });
 export type Situation = z.infer<typeof SituationSchema>;
 
-export const TurnEventSchema = z.object({
+export type TurnEvent = {
+  id?: string;
+  type: "damage" | "heal" | "rest" | "parameter" | "defend" | "wait" |
+    "reflect" | "status" | "situation" | "info" | "utterance" | "free_action";
+  actorName?: string;
+  actorSide?: "a" | "b";
+  targetName?: string;
+  targetSides?: Array<"a" | "b">;
+  sourceActionId?: string;
+  sourceEffectId?: string;
+  skillName?: string;
+  parameterKey?: ParamKey;
+  parameterDirection?: "loss" | "gain";
+  intensity?: "minor" | "moderate" | "heavy" | "critical";
+  utterance?: {
+    text: string;
+    delivery: "spoken" | "visible_reaction";
+    volume: "quiet" | "normal" | "loud";
+    articulation: "clear" | "impaired";
+    language: string;
+  };
+  summary: string;
+};
+
+export const TurnEventSchema: z.ZodType<TurnEvent> = z.object({
   id: z.string().min(1).optional(),
   type: z.enum([
     "damage",
@@ -476,6 +501,7 @@ export const TurnEventSchema = z.object({
   targetName: z.string().optional(),
   targetSides: z.array(z.enum(["a", "b"])).max(2).optional(),
   sourceActionId: z.string().min(1).optional(),
+  sourceEffectId: z.string().min(1).max(120).optional(),
   skillName: z.string().optional(),
   /** Structured mechanical attribution; never infer these fields from summary. */
   parameterKey: ParamKeySchema.optional(),
@@ -492,6 +518,13 @@ export const TurnEventSchema = z.object({
   }).strict().optional(),
   summary: z.string(),
 }).superRefine((event, ctx) => {
+  if (event.sourceActionId && event.sourceEffectId) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["sourceEffectId"],
+      message: "an event cannot have both action and scheduled-effect sources",
+    });
+  }
   if (event.type === "utterance") {
     if (!event.id || !event.actorSide || !event.utterance) {
       ctx.addIssue({
@@ -508,7 +541,53 @@ export const TurnEventSchema = z.object({
     });
   }
 });
-export type TurnEvent = z.infer<typeof TurnEventSchema>;
+
+export const PendingBattleEffectSchema = z.object({
+  schemaVersion: z.literal(1),
+  effectId: z.string().min(1).max(120),
+  createdTurn: z.number().int().nonnegative(),
+  source: z.discriminatedUnion("kind", [
+    z.object({ kind: z.literal("action"), actionId: z.string().min(1).max(120) }).strict(),
+    z.object({ kind: z.literal("system_rules"), ruleId: z.string().min(1).max(80) }).strict(),
+    z.object({ kind: z.literal("environment_world"), transitionId: z.string().min(1).max(120) }).strict(),
+  ]),
+  targetSide: z.enum(["a", "b"]),
+  payload: z.object({
+    kind: z.literal("parameter_delta"),
+    parameterKey: ParamKeySchema,
+    delta: z.number().int().min(-50).max(50).refine((value) => value !== 0),
+  }).strict(),
+  trigger: z.discriminatedUnion("kind", [
+    z.object({ kind: z.literal("due_turn"), dueTurn: z.number().int().positive() }).strict(),
+    z.object({
+      kind: z.literal("target_hp_at_most_percent"),
+      percent: z.number().int().min(1).max(99),
+    }).strict(),
+  ]),
+  expiresTurn: z.number().int().positive(),
+  cancelIfSourceIncapacitated: z.boolean(),
+  sourceSide: z.enum(["a", "b"]).nullable(),
+  visibility: z.enum(["public_when_scheduled", "public_on_resolution"]),
+}).strict().superRefine((effect, ctx) => {
+  if (effect.expiresTurn <= effect.createdTurn) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["expiresTurn"],
+      message: "effect expiry must be after creation",
+    });
+  }
+  if (effect.trigger.kind === "due_turn" && effect.trigger.dueTurn > effect.expiresTurn) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["trigger", "dueTurn"],
+      message: "due turn must not exceed expiry",
+    });
+  }
+});
+export type PendingBattleEffect = z.infer<typeof PendingBattleEffectSchema>;
+const PendingBattleEffectListSchema: z.ZodType<PendingBattleEffect[]> = z
+  .array(PendingBattleEffectSchema)
+  .max(32);
 
 /** Qualitative condition visible to one character after engine resolution. */
 export const PerceivedConditionSchema = z.enum([
@@ -1214,11 +1293,11 @@ export const BattleTurnRecordSchema = z.object({
     }
     for (const [key, value] of Object.entries(expected)) {
       const values = owners.get(key) ?? [];
-      if (values.length !== 1 || values[0] !== value) {
+      if (values.length === 0 || values.reduce((sum, item) => sum + item, 0) !== value) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           path: ["consequenceReceipts"],
-          message: `parameter delta ${side}.${key} must have exactly one matching owner`,
+          message: `parameter delta ${side}.${key} must equal its source-owned contributions`,
         });
       }
     }
@@ -1315,6 +1394,7 @@ export const BattleTurnEngineContinuationSchema = z.object({
   actions: z.array(ResolvedBattleActionSchema).length(2),
   events: z.array(TurnEventSchema),
   mechanicalEvidence: CommittedMechanicalEvidenceSetSchema,
+  pendingEffects: PendingBattleEffectListSchema.default([]),
   defensiveInstrumentMultipliers: z.object({
     a: z.number().positive(),
     b: z.number().positive(),
@@ -1476,6 +1556,9 @@ export const BattleStateSchema = z.object({
   plannedActionB: CharacterActionIntentSchema.optional(),
   /** Structured engine transitions; narrative log is presentation only. */
   turnRecords: z.array(BattleTurnRecordSchema).default([]),
+  pendingEffects: z.custom<PendingBattleEffect[]>((value) =>
+    PendingBattleEffectListSchema.safeParse(value).success
+  ).optional(),
   /** Mutable observable world overlay; optional while legacy battles exist. */
   semanticState: BattleSemanticStateSchema.optional(),
   /** Server-owned coarse mechanical world; never exposed without projection. */
@@ -1737,6 +1820,14 @@ export const BattleStateSchema = z.object({
   createdAt: z.string(),
   updatedAt: z.string(),
 }).superRefine((state, ctx) => {
+  const effectIds = (state.pendingEffects ?? []).map((effect) => effect.effectId);
+  if (new Set(effectIds).size !== effectIds.length) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["pendingEffects"],
+      message: "pending effect IDs must be unique within a battle",
+    });
+  }
   if (state.adjudication) {
     if (
       state.status !== "finished" ||
@@ -1837,6 +1928,17 @@ export const BattlePublicSchema = z.object({
   /** Observable structured world only; excludes mechanics and private agents. */
   semanticState: SemanticObservationStateSchema.nullable().optional(),
   objectStates: z.array(BattleObjectStatePublicSchema).default([]),
+  pendingEffects: z.array(z.object({
+    effectId: z.string().min(1).max(120),
+    targetSide: z.enum(["a", "b"]),
+    parameterKey: ParamKeySchema,
+    direction: z.enum(["loss", "gain"]),
+    trigger: z.union([
+      z.object({ kind: z.literal("due_turn"), dueTurn: z.number().int().positive() }).strict(),
+      z.object({ kind: z.literal("target_hp_at_most_percent") }).strict(),
+    ]),
+    expiresTurn: z.number().int().positive(),
+  }).strict()).max(32).default([]),
   log: z.array(NarrativeBlockSchema),
   /** Ordered canonical phase identities; contains no private narration input. */
   receipts: z.array(z.object({

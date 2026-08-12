@@ -240,6 +240,20 @@ export function toBattlePublic(
         b: state.sideB.displayName,
       },
     }),
+    pendingEffects: (state.pendingEffects ?? []).flatMap((effect) =>
+      effect.visibility === "public_when_scheduled"
+        ? [{
+            effectId: effect.effectId,
+            targetSide: effect.targetSide,
+            parameterKey: effect.payload.parameterKey,
+            direction: effect.payload.delta < 0 ? "loss" as const : "gain" as const,
+            trigger: effect.trigger.kind === "due_turn"
+              ? { kind: "due_turn" as const, dueTurn: effect.trigger.dueTurn }
+              : { kind: "target_hp_at_most_percent" as const },
+            expiresTurn: effect.expiresTurn,
+          }]
+        : []
+    ),
     log: state.log,
     receipts: (state.phaseReceipts ?? []).map((receipt) => ({
       turnReceiptId: receipt.id,
@@ -1369,6 +1383,7 @@ export async function advanceCharacterAgents(input: {
   actions: ResolvedBattleAction[];
   sensoryEvidence?: PerceptionEvidence[];
   quantizedMechanicalEvidence?: QuantizedMechanicalEvidence[];
+  mechanicalEvidence?: CommittedMechanicalEvidence[];
   environmentProcessReceipt?: EnvironmentProcessReceipt;
   dialoguePipeline?: DialoguePipelineSettings;
   phase?: "prologue" | "turn" | "aftermath";
@@ -1391,6 +1406,7 @@ export async function advanceCharacterAgents(input: {
     after: input.after,
     events: input.events,
     actions: input.actions,
+    mechanicalEvidence: input.mechanicalEvidence,
   });
   const recordWithoutUtterances = input.environmentProcessReceipt
     ? {
@@ -1972,6 +1988,7 @@ export async function advanceCharacterAgents(input: {
           after: stateAfterUtterances,
           events: eventsWithUtterances,
           actions: input.actions,
+          mechanicalEvidence: input.mechanicalEvidence,
         }),
         pipelineTrace: {
           schemaVersion: 1 as const,
@@ -3940,6 +3957,7 @@ async function advanceTurnWithLease(input: {
     dialoguePipeline,
     sensoryEvidence: semanticTurn.sensoryEvidence,
     quantizedMechanicalEvidence: semanticTurn.quantizedMechanicalEvidence,
+    mechanicalEvidence: semanticTurn.mechanicalEvidence,
   });
   next = applyReflectMemoryWrites(agentTurn.state, resolved.actions);
   const rec = (next.turnRecords ?? [])[(next.turnRecords ?? []).length - 1];

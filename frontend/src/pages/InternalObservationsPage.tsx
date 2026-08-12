@@ -371,6 +371,11 @@ export function InternalObservationsPage() {
                         value={detail.canonicalCurrent.causalLaterDecision}
                       />
                     ) : null}
+                    <PipelineNode
+                      title="Pending effect schedule"
+                      subtitle={`${detail.canonicalCurrent.pendingEffects.length} bounded effects · pre-action resolution`}
+                      value={detail.canonicalCurrent.pendingEffects}
+                    />
                   </>
                 ) : (
                   <p className="muted">checkpointなし（旧形式、またはbucket実行開始前）</p>

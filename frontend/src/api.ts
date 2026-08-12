@@ -166,6 +166,7 @@ export type InternalBattleObservationDetail = {
     causalBucketCommit: Record<string, unknown> | null;
     causalEngineContinuation: Record<string, unknown> | null;
     causalLaterDecision: Record<string, unknown> | null;
+    pendingEffects: unknown[];
     battleRevision: number | null;
     phaseReceipts: Array<{
       receiptId: string;
