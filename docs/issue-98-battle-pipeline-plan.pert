@@ -31,6 +31,7 @@ resource OWNER:
 
 milestone NARRATION_API_READY:
   title "Narration is an independent immutable asynchronous job"
+  state reached
 
 milestone EFFECT_CONTRACT_ACCEPTED:
   title "Owner accepted bounded effect scope"
@@ -108,39 +109,3 @@ task T_ACCEPT_ISSUE_98 PACING_POLICY_ACCEPTED -> ISSUE_98_LOCALLY_ACCEPTED:
   owner "codex"
   requires:
     DEV 1
-
-
-
-
-
-
-
-
-
-milestone NARRATION_MIGRATION_ACCEPTED:
-  title "Owner accepted the local narration compatibility cutover"
-  state reached
-
-task T_CUTOVER_NARRATION_COMPATIBILITY NARRATION_MIGRATION_ACCEPTED -> NARRATION_API_READY:
-  title "Cut over local narration compatibility surfaces"
-  description "After owner acceptance, remove non-durable narrator progress from advance SSE, default the feature-gated composite presentation read model for local clients, retain the documented rollback switch and rerun API/frontend/history/improvement/admin privacy fixtures. Do not deploy, create cloud queue infrastructure, migrate production data, release, or observe production."
-  duration 1p
-  status done
-  requires:
-    DEV 1
-  owner "codex"
-
-work_event WE-508ca016e45c5655e3fe05e44d4180386c7d9a219a3b2a16eaf404d7330f458b:
-  model 1
-  task T_CUTOVER_NARRATION_COMPATIBILITY
-  kind start
-  occurred_at 2026-08-12T16:43:35+09:00
-  planned_value 1p
-
-work_event WE-f511cf486d2e68dca19770e58527421d096d2b2a4903e3cd0ddc4a87182d6dc2:
-  model 1
-  task T_CUTOVER_NARRATION_COMPATIBILITY
-  kind finish
-  occurred_at 2026-08-12T16:47:27+09:00
-  active_time 29/450h
-  effort 29/450ph
