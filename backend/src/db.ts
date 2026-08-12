@@ -59,6 +59,27 @@ export function getDb(): SqliteDatabase.Database {
       created_at TEXT NOT NULL,
       updated_at TEXT NOT NULL
     );
+    CREATE TABLE IF NOT EXISTS asset_generations (
+      asset_type TEXT NOT NULL,
+      asset_id TEXT NOT NULL,
+      generation INTEGER NOT NULL,
+      generation_id TEXT NOT NULL UNIQUE,
+      schema_version INTEGER NOT NULL,
+      content_json TEXT NOT NULL,
+      content_digest TEXT NOT NULL,
+      created_at TEXT NOT NULL,
+      PRIMARY KEY (asset_type, asset_id, generation)
+    );
+    CREATE TABLE IF NOT EXISTS asset_current_generations (
+      asset_type TEXT NOT NULL,
+      asset_id TEXT NOT NULL,
+      generation INTEGER NOT NULL,
+      generation_id TEXT NOT NULL,
+      updated_at TEXT NOT NULL,
+      PRIMARY KEY (asset_type, asset_id)
+    );
+    CREATE INDEX IF NOT EXISTS idx_asset_generations_lookup
+      ON asset_generations (asset_type, asset_id, generation DESC);
     CREATE TABLE IF NOT EXISTS character_drafts (
       id TEXT PRIMARY KEY,
       owner_user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
