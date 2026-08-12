@@ -90,6 +90,7 @@ task T_VALIDATE_PACING_EVIDENCE PACING_MEASURED -> PACING_HARNESS_VALIDATED:
   title "Validate the pacing evidence method"
   description "Treat the existing deterministic harness only as candidate-search evidence. Compare its predictions with existing persisted battle records and representative engine/application fixtures; cover attack, defend, recovery, finisher, initiative, interruption, and delayed effects; run multiple seeds and sensitivity checks; quantify mismatch and confidence limits. Do not reject or accept the Issue hypothesis from synthetic evidence alone and do not call a real LLM."
   duration 3p
+  status active
   requires:
     DEV 1
   owner "codex"
@@ -117,3 +118,10 @@ task T_OBSERVE_BOUNDED_LLM_PACING PACING_LLM_TRIAL_AUTHORIZED -> PACING_E2E_OBSE
   requires:
     DEV 1
   owner "codex"
+
+work_event WE-a34f76f890ad62bfe5345f7b9ec4db01dc3f2c263896ad8deafdeb87ecdfbc03:
+  model 1
+  task T_VALIDATE_PACING_EVIDENCE
+  kind start
+  occurred_at 2026-08-12T18:14:00+09:00
+  planned_value 3p
