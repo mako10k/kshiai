@@ -18,10 +18,10 @@ Legacy saves without the snapshot retain the current derived policy.
 
 ## Compared policies
 
-| Policy | Limit | Finisher | Pressure | Warning | Terminal authority |
-|---|---:|---:|---:|---:|---|
-| `pacing-current-v1-20` | 20 | 10 | 10 to 20 | 1 turn | deterministic engine |
-| `pacing-local-12-v1` | 12 | 6 | 6 to 12 | 1 turn | deterministic engine |
+| Policy | Limit | Finisher | Pressure | Automatic restoration | Terminal authority |
+|---|---:|---:|---:|---|---|
+| `pacing-current-v1-20` | 20 | 10 | 10 to 20 | legacy 20% | deterministic engine |
+| `pacing-local-12-v1` | 12 | 6 | 6 to 12 | explicit effects only | deterministic engine |
 
 The 12-turn policy is a proposal only. Its earlier thresholds scale the
 decision windows; they are not asserted to be optimal.

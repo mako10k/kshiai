@@ -1953,7 +1953,11 @@ function prepareBattleTurnStart(input: ResolveTurnInput): PreparedBattleTurnStar
   const mechanicalSpans: MechanicalResolutionSpan[] = [];
   const turn = input.state.turn + 1;
 
-  if (turn > 1) {
+  const pacingPolicy = battlePacingPolicyForState(input.state);
+  if (
+    turn > 1 &&
+    pacingPolicy.automaticRestoration === "legacy_twenty_percent"
+  ) {
     for (const [combatant, actorSide] of [
       [sideA, "a"],
       [sideB, "b"],

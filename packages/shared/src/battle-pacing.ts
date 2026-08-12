@@ -8,6 +8,10 @@ export const BattlePacingPolicySchema = z.object({
   decisivePressureStartTurn: z.number().int().nonnegative(),
   decisivePressureMaximumTurn: z.number().int().positive(),
   warningTurnsBeforeLimit: z.number().int().nonnegative(),
+  automaticRestoration: z.enum([
+    "legacy_twenty_percent",
+    "explicit_effects_only",
+  ]),
   terminalAdjudication: z.literal("deterministic_engine"),
 }).strict().superRefine((policy, context) => {
   if (policy.finisherUnlockTurn > policy.turnLimit) {
@@ -50,6 +54,7 @@ export function currentBattlePacingPolicy(turnLimit: number): BattlePacingPolicy
       Math.min(20, safeLimit),
     ),
     warningTurnsBeforeLimit: 1,
+    automaticRestoration: "legacy_twenty_percent",
     terminalAdjudication: "deterministic_engine",
   });
 }
@@ -64,6 +69,7 @@ export const LOCAL_TWELVE_TURN_PACING_CANDIDATE =
     decisivePressureStartTurn: 6,
     decisivePressureMaximumTurn: 12,
     warningTurnsBeforeLimit: 1,
+    automaticRestoration: "explicit_effects_only",
     terminalAdjudication: "deterministic_engine",
   });
 

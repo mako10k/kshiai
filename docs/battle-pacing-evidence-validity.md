@@ -81,6 +81,20 @@ No lower rung may be presented as evidence for an omitted higher-rung behavior.
 - Only after correspondence is acceptable, tune candidates toward the Issue
   hypotheses and prepare an exact real-LLM trial budget for owner approval.
 
+## Automatic restoration decision
+
+The production candidate uses `explicit_effects_only`. It does not apply the
+legacy once-per-turn 20% movement toward base parameters. HP was already
+excluded from that legacy restoration; the change primarily stops implicit
+MP/stamina recovery and automatic erasure of buffs, debuffs, and maximum-value
+changes.
+
+Recovery and reversal must instead come from an accepted action (`rest`,
+`defend`, or a skill), a scheduled effect, or an explicit rules/world effect.
+Existing battles and the current rollback policy retain
+`legacy_twenty_percent`, so the candidate can be reverted without rewriting
+their historical semantics.
+
 ## Sources currently available
 
 - `docs/evidence/production-narration-2026-08-04.md`: retained production
