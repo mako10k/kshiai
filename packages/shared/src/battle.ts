@@ -2063,6 +2063,9 @@ export const BattleListItemSchema = z.object({
   createdAt: z.string(),
   updatedAt: z.string(),
   canResume: z.boolean(),
+  /** Read-model health; degraded rows remain visible but are not resumable. */
+  integrityStatus: z.enum(["valid", "degraded"]).optional(),
+  integrityMessage: z.string().nullable().optional(),
 });
 export type BattleListItem = z.infer<typeof BattleListItemSchema>;
 

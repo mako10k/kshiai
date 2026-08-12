@@ -3,7 +3,7 @@ import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { after, before, describe, it } from "node:test";
-import type { BattleState } from "@kshiai/shared";
+import { defaultParameters, type BattleState } from "@kshiai/shared";
 
 const temporaryDirectory = mkdtempSync(join(tmpdir(), "kshiai-distributed-test-"));
 process.env.DATABASE_URL = "";
@@ -13,6 +13,45 @@ process.env.DATABASE_PATH = join(temporaryDirectory, "distributed.db");
 const guard = await import("./distributed-guard.js");
 const { closeDatabase, getDb, query } = await import("../db.js");
 const battleRepo = await import("../repositories/battles.js");
+
+function checkpointState(): BattleState {
+  return {
+    id: "battle-distributed",
+    status: "active",
+    turn: 0,
+    turnLimit: 20,
+    sideA: {
+      characterId: "char-a",
+      displayName: "A",
+      parameters: defaultParameters(),
+      defending: false,
+      canFight: true,
+      irreversibleIncapacitated: false,
+    },
+    sideB: {
+      characterId: "char-b",
+      displayName: "B",
+      parameters: defaultParameters(),
+      defending: false,
+      canFight: true,
+      irreversibleIncapacitated: false,
+    },
+    policiesA: [],
+    selectedPolicyIdsA: [],
+    policiesB: [],
+    selectedPolicyIdsB: [],
+    situation: { scene: "test", notes: "", coefficients: {}, tags: [] },
+    prologuePending: true,
+    aftermathPending: false,
+    turnRecords: [],
+    log: [],
+    winnerSide: null,
+    finishReason: null,
+    createdAt: "2026-08-03T00:00:00.000Z",
+    updatedAt: "2026-08-12T00:00:00.000Z",
+    battleRevision: 0,
+  };
+}
 
 before(() => {
   const database = getDb();
@@ -90,12 +129,7 @@ describe("multi-instance battle leases", () => {
             WHERE battle_id = $1`,
           ["battle-distributed", "2026-08-13T00:00:00.000Z"],
         );
-        await battleRepo.saveBattle({
-          id: "battle-distributed",
-          createdAt: "2026-08-03T00:00:00.000Z",
-          updatedAt: "2026-08-12T00:00:00.000Z",
-          battleRevision: 0,
-        } as BattleState, {
+        await battleRepo.saveBattle(checkpointState(), {
           sideAUserId: "user-distributed",
           sideACharacterId: "char-a",
           sideBCharacterId: "char-b",

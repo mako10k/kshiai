@@ -36,7 +36,8 @@ async function writeBattle(
     expectedRevision?: number;
   },
 ): Promise<void> {
-  const json = JSON.stringify(state);
+  const validatedState = BattleStateSchema.parse(state);
+  const json = JSON.stringify(validatedState);
   const expectedRevision = meta.expectedRevision ??
     (state.advanceOperation?.status === "active"
       ? state.advanceOperation.expectedRevision
@@ -113,16 +114,26 @@ export async function saveBattleWithNarrationOutbox(
 }
 
 function parseBattleState(rawJson: unknown, idHint = "?"): BattleState {
+  return parseBattleStateDetailed(rawJson, idHint).state;
+}
+
+function parseBattleStateDetailed(
+  rawJson: unknown,
+  idHint = "?",
+): { state: BattleState; repaired: boolean } {
   const raw = typeof rawJson === "string" ? JSON.parse(rawJson) : rawJson;
   const parsed = BattleStateSchema.safeParse(raw);
-  if (parsed.success) return ensureSemanticState(parsed.data);
+  if (parsed.success) return { state: ensureSemanticState(parsed.data), repaired: false };
   console.warn(
     "[battles] schema soft-repair",
     idHint,
     parsed.error.issues.slice(0, 3),
   );
   const fixed = sanitizeBattleStateJson(raw);
-  return ensureSemanticState(BattleStateSchema.parse(fixed));
+  return {
+    state: ensureSemanticState(BattleStateSchema.parse(fixed)),
+    repaired: true,
+  };
 }
 
 function ensureSemanticState(state: BattleState): BattleState {
@@ -212,6 +223,23 @@ function sanitizeBattleStateJson(raw: unknown): unknown {
       return pol;
     });
   }
+  for (const key of ["agentStateA", "agentStateB"] as const) {
+    const value = state[key];
+    if (!value || typeof value !== "object") continue;
+    const agent = { ...(value as Record<string, unknown>) };
+    if (typeof agent.currentGoal === "string") {
+      agent.currentGoal = agent.currentGoal.slice(0, 240);
+    }
+    const interiorValue = agent.interior;
+    if (interiorValue && typeof interiorValue === "object") {
+      const interior = { ...(interiorValue as Record<string, unknown>) };
+      if (typeof interior.currentConcern === "string") {
+        interior.currentConcern = interior.currentConcern.slice(0, 240);
+      }
+      agent.interior = interior;
+    }
+    state[key] = agent;
+  }
   return state;
 }
 
@@ -228,7 +256,7 @@ export async function getBattleMeta(id: string) {
   return rows[0];
 }
 
-function toListItem(state: BattleState): BattleListItem {
+function toListItem(state: BattleState, repaired = false): BattleListItem {
   const sideAName = state.sideA.displayName;
   const sideBName = state.sideB.displayName;
   return {
@@ -258,6 +286,58 @@ function toListItem(state: BattleState): BattleListItem {
     createdAt: state.createdAt,
     updatedAt: state.updatedAt,
     canResume: state.status === "active",
+    integrityStatus: repaired ? "degraded" : "valid",
+    integrityMessage: repaired ? "保存データの一部を互換変換して表示しています。" : null,
+  };
+}
+
+function degradedListItem(rawJson: unknown): BattleListItem | null {
+  const raw = typeof rawJson === "string" ? JSON.parse(rawJson) : rawJson;
+  if (!raw || typeof raw !== "object") return null;
+  const value = raw as Record<string, unknown>;
+  const side = (key: "sideA" | "sideB") => {
+    const candidate = value[key];
+    return candidate && typeof candidate === "object"
+      ? candidate as Record<string, unknown>
+      : {};
+  };
+  const situation = value.situation && typeof value.situation === "object"
+    ? value.situation as Record<string, unknown>
+    : {};
+  const status = value.status === "finished" ? "finished" : "active";
+  const winnerSide = value.winnerSide === "a" || value.winnerSide === "b" ||
+      value.winnerSide === "draw"
+    ? value.winnerSide
+    : null;
+  const stringValue = (candidate: unknown, fallback: string) =>
+    typeof candidate === "string" && candidate.trim() ? candidate : fallback;
+  return {
+    id: stringValue(value.id, "unknown-battle"),
+    status,
+    turn: typeof value.turn === "number" && Number.isFinite(value.turn) ? value.turn : 0,
+    turnLimit: typeof value.turnLimit === "number" && Number.isFinite(value.turnLimit)
+      ? value.turnLimit
+      : 0,
+    sideAName: stringValue(side("sideA").displayName, "不明な参加者"),
+    sideBName: stringValue(side("sideB").displayName, "不明な参加者"),
+    sideACharacterId: typeof side("sideA").characterId === "string"
+      ? side("sideA").characterId as string
+      : undefined,
+    sideBCharacterId: typeof side("sideB").characterId === "string"
+      ? side("sideB").characterId as string
+      : undefined,
+    sideAImageUrl: null,
+    sideBImageUrl: null,
+    scene: stringValue(situation.scene, "記録の復旧が必要です"),
+    battlefieldName: null,
+    battlefieldImageUrl: null,
+    winnerSide,
+    resultLabel: "記録の一部を読み取れません",
+    createdAt: stringValue(value.createdAt, "1970-01-01T00:00:00.000Z"),
+    updatedAt: stringValue(value.updatedAt, "1970-01-01T00:00:00.000Z"),
+    canResume: false,
+    integrityStatus: "degraded",
+    integrityMessage: "保存データを完全に検証できないため、閲覧のみ可能です。",
   };
 }
 
@@ -283,9 +363,16 @@ export async function listBattlesForUser(input: {
   let items: BattleListItem[] = [];
   for (const r of rows) {
     try {
-      items.push(toListItem(parseBattleState(r.state_json)));
+      const parsed = parseBattleStateDetailed(r.state_json);
+      items.push(toListItem(parsed.state, parsed.repaired));
     } catch (e) {
-      console.warn("[battles] skip unlistable battle", e);
+      console.warn("[battles] degraded unlistable battle", e);
+      try {
+        const degraded = degradedListItem(r.state_json);
+        if (degraded) items.push(degraded);
+      } catch (projectionError) {
+        console.error("[battles] invalid history projection", projectionError);
+      }
     }
   }
 

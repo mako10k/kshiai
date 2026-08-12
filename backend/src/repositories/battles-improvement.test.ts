@@ -9,8 +9,9 @@ process.env.DATABASE_URL = "";
 process.env.AUTH_PROVIDER = "legacy";
 process.env.DATABASE_PATH = join(tempDir, "test.db");
 
-const { saveBattle, getBattle, searchCharacterBattleHistory, countFinishedBattlesForCharacter, getCharacterBattleDetail } =
+const { saveBattle, getBattle, listBattlesForUser, searchCharacterBattleHistory, countFinishedBattlesForCharacter, getCharacterBattleDetail } =
   await import("./battles.js");
+const { query } = await import("../db.js");
 const { saveBattlePresentation } = await import("./battle-presentations.js");
 const { defaultParameters } = await import("@kshiai/shared");
 import type { BattleState } from "@kshiai/shared";
@@ -248,5 +249,52 @@ describe("character battle history tools", () => {
       /BATTLE_REVISION_CONFLICT/,
     );
     assert.equal((await getBattle(base.id))?.battleRevision, 1);
+  });
+
+  it("keeps an invalid legacy battle visible as a degraded history row", async () => {
+    const state = makeFinishedBattle({
+      id: "bat_degraded_history",
+      characterId,
+      opponentId,
+      selfName: "アオイ",
+      oppName: "カゲ",
+      winnerSide: "a",
+    }) as unknown as Record<string, unknown>;
+    state.agentStateA = { currentGoal: "長".repeat(400) };
+    await query(
+      `INSERT INTO battles
+        (id, state_json, side_a_user_id, side_a_character_id, side_b_character_id,
+         created_at, updated_at, revision)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, 0)`,
+      [state.id, JSON.stringify(state), "usr_degraded", characterId, opponentId,
+        state.createdAt, state.updatedAt],
+    );
+
+    const listed = await listBattlesForUser({ userId: "usr_degraded" });
+    assert.equal(listed.total, 1);
+    assert.equal(listed.battles[0]?.id, "bat_degraded_history");
+    assert.equal(listed.battles[0]?.integrityStatus, "degraded");
+    assert.equal(listed.battles[0]?.canResume, false);
+  });
+
+  it("rejects a schema-invalid state before persistence", async () => {
+    const invalid = makeFinishedBattle({
+      id: "bat_invalid_write",
+      characterId,
+      opponentId,
+      selfName: "アオイ",
+      oppName: "カゲ",
+      winnerSide: "a",
+    }) as BattleState & { turn: unknown };
+    invalid.turn = Number.NaN;
+
+    await assert.rejects(
+      saveBattle(invalid as BattleState, {
+        sideAUserId: "usr_invalid",
+        sideACharacterId: characterId,
+        sideBCharacterId: opponentId,
+      }),
+    );
+    assert.equal(await getBattle("bat_invalid_write"), null);
   });
 });

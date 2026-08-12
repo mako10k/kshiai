@@ -78,6 +78,7 @@ export function HistoryPage() {
   }
 
   function openBattle(b: BattleListItem) {
+    if (b.integrityStatus === "degraded") return;
     if (b.canResume) {
       nav(`/battles/${b.id}?resume=1`);
     } else {
@@ -209,6 +210,7 @@ export function HistoryPage() {
                         type="button"
                         className="history-vs-btn"
                         onClick={() => openBattle(b)}
+                        disabled={b.integrityStatus === "degraded"}
                       >
                         <strong className="history-vs">
                           {b.sideAName}
@@ -239,13 +241,16 @@ export function HistoryPage() {
                       )}
                     </div>
                     <span className={`status-pill${b.canResume ? " live" : ""}`}>
-                      {b.canResume ? "進行中" : (b.resultLabel ?? "終了")}
+                      {b.integrityStatus === "degraded"
+                        ? "記録要確認"
+                        : b.canResume ? "進行中" : (b.resultLabel ?? "終了")}
                     </span>
                   </div>
                   <button
                     type="button"
                     className="history-card-open"
                     onClick={() => openBattle(b)}
+                    disabled={b.integrityStatus === "degraded"}
                   >
                     <p className="history-meta muted">
                       {b.battlefieldName || b.scene}
@@ -256,8 +261,13 @@ export function HistoryPage() {
                           : ""}
                     </p>
                     <p className="history-when muted">{formatWhen(b.updatedAt)}</p>
+                    {b.integrityStatus === "degraded" && (
+                      <p className="error">{b.integrityMessage}</p>
+                    )}
                     <span className="history-cta">
-                      {b.canResume ? "続きから再開 →" : "記録を見る →"}
+                      {b.integrityStatus === "degraded"
+                        ? "管理者による記録確認が必要です"
+                        : b.canResume ? "続きから再開 →" : "記録を見る →"}
                     </span>
                   </button>
                 </div>
