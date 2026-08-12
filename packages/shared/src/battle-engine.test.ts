@@ -10,6 +10,7 @@ import {
   ensureBattlePerceptionState,
   ensureBattleWorldState,
   prepareBattleTurnInitiative,
+  prepareSequentialBattleTurnInitiative,
   resolveTurn,
 } from "./battle-engine.js";
 import { defaultParameters, type CharacterSheet } from "./character.js";
@@ -1341,6 +1342,41 @@ describe("battle engine", () => {
       prepared.temporalResolution.buckets.map((bucket) => bucket.actorSides),
       [["a"], ["b"]],
     );
+  });
+
+  it("prepares and retains ADR-0001 order before action resolution", () => {
+    const a = sheet("a", "A");
+    const b = sheet("b", "B");
+    const state = createBattleState({
+      id: "sequential-order-checkpoint",
+      sideA: a,
+      sideB: b,
+      turnLimit: 20,
+      prologuePending: false,
+    });
+    state.sideA.parameters.spd = 10;
+    state.sideB.parameters.spd = 10;
+    const first = prepareSequentialBattleTurnInitiative({
+      state,
+      sideASkills: a.skills,
+      sideBSkills: b.skills,
+      tieDrawSample: 0.75,
+    });
+    assert.ok(first);
+    assert.deepEqual(first.temporalResolution.initiativeOrder.order, ["b", "a"]);
+    assert.equal(first.temporalResolution.initiativeOrder.reason, "fair_redraw");
+
+    state.latestTemporalResolution = first.temporalResolution;
+    const later = prepareSequentialBattleTurnInitiative({
+      state,
+      sideASkills: a.skills,
+      sideBSkills: b.skills,
+      tieDrawSample: 0.01,
+    });
+    assert.ok(later);
+    assert.deepEqual(later.temporalResolution.initiativeOrder.order, ["b", "a"]);
+    assert.equal(later.temporalResolution.initiativeOrder.reason, "previous_order");
+    assert.equal(later.temporalResolution.initiativeOrder.draw, null);
   });
 
   it("atomically preserves equal-speed mutual incapacitation", () => {

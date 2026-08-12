@@ -61,7 +61,9 @@ import {
 import { revalidateCharacterAction } from "./action-feasibility.js";
 import { applyBattleCausalCoefficients } from "./battle-causality.js";
 import {
+  buildSequentialBattleTemporalPlan,
   buildBattleTemporalPlan,
+  selectSequentialInitiativeOrder,
   type BattleTemporalBucket,
   type BattleTemporalPlan,
   type BattleTemporalSide,
@@ -1667,6 +1669,12 @@ export type PreparedBattleTurnInitiative = {
   temporalResolution: BattleTemporalPlan;
 };
 
+export type PreparedSequentialBattleTurnInitiative = PreparedBattleTurnInitiative & {
+  temporalResolution: Extract<BattleTemporalPlan, {
+    rulesetId: "initiative-sequential-v2";
+  }>;
+};
+
 /** Deterministically applies the once-per-turn setup before initiative. */
 function prepareBattleTurnStart(input: ResolveTurnInput): PreparedBattleTurnStart {
   const sideA = cloneCombatant(input.state.sideA);
@@ -1788,6 +1796,66 @@ export function prepareBattleTurnInitiative(
       sideB: prepared.sideB,
       situation: prepared.situation,
     }),
+  };
+}
+
+function previousResolvedInitiativeOrder(
+  state: BattleState,
+): [BattleTemporalSide, BattleTemporalSide] | null {
+  const order = state.latestTemporalResolution?.buckets.flatMap(
+    (bucket) => bucket.actorSides,
+  );
+  return order?.length === 2 && order[0] !== order[1]
+    ? [order[0]!, order[1]!]
+    : null;
+}
+
+/** Prepares ADR-0001 ordering for persistence before any action provider call. */
+export function prepareSequentialBattleTurnInitiative(
+  input: ResolveTurnInput & {
+    tieDrawSample?: number;
+    redrawWeights?: { a: number; b: number } | null;
+  },
+): PreparedSequentialBattleTurnInitiative | null {
+  if (
+    input.state.status !== "active" ||
+    input.state.prologuePending ||
+    input.state.aftermathPending
+  ) {
+    return null;
+  }
+  const prepared = prepareBattleTurnStart(input);
+  const causalSituationA = applyBattleCausalCoefficients({
+    situation: prepared.situation,
+    worldState: input.state.worldState,
+    actorSide: "a",
+    targetSide: "b",
+  });
+  const causalSituationB = applyBattleCausalCoefficients({
+    situation: prepared.situation,
+    worldState: input.state.worldState,
+    actorSide: "b",
+    targetSide: "a",
+  });
+  const initiativeOrder = selectSequentialInitiativeOrder({
+    effectiveSpeedA: (prepared.sideA.parameters.spd ?? 0) *
+      coeff(causalSituationA, "spd"),
+    effectiveSpeedB: (prepared.sideB.parameters.spd ?? 0) *
+      coeff(causalSituationB, "spd"),
+    previousOrder: previousResolvedInitiativeOrder(input.state),
+    redrawWeights: input.redrawWeights,
+    drawSample: input.tieDrawSample,
+  });
+  const temporalResolution = buildSequentialBattleTemporalPlan(initiativeOrder);
+  if (temporalResolution.rulesetId !== "initiative-sequential-v2") {
+    throw new Error("sequential initiative preparation produced a legacy plan");
+  }
+  return {
+    turn: prepared.turn,
+    sideA: prepared.sideA,
+    sideB: prepared.sideB,
+    situation: prepared.situation,
+    temporalResolution,
   };
 }
 
