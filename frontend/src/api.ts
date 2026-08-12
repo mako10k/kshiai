@@ -74,6 +74,17 @@ export type InternalBattlePipelineTrace = {
 export type InternalBattleTemporalPlan = {
   rulesetId: string;
   initiativeScores: { a: number; b: number };
+  initiativeOrder?: {
+    schemaVersion: 1;
+    initiativeScores: { a: number; b: number };
+    order: ["a" | "b", "a" | "b"];
+    reason: "higher_initiative" | "previous_order" | "weighted_redraw" | "fair_redraw";
+    draw: {
+      sample: number;
+      weights: { a: number; b: number };
+      probabilityAFirst: number;
+    } | null;
+  };
   buckets: Array<{
     index: number;
     actorSides: Array<"a" | "b">;
@@ -91,6 +102,7 @@ export type InternalCausalTurnExecution = {
   turn: number;
   expectedStateRevision: number;
   temporalPlan: InternalBattleTemporalPlan;
+  initiativeOrder?: InternalBattleTemporalPlan["initiativeOrder"];
   bucketIndex: number;
   status: "awaiting_decision" | "awaiting_bucket_commit" | "awaiting_finalize" | "finished";
   decidedSides: Array<"a" | "b">;

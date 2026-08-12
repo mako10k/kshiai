@@ -88,6 +88,14 @@ function TemporalBuckets({
       <div className="internal-temporal-heading">
         <strong>{plan.rulesetId}</strong>
         <span>A {plan.initiativeScores.a} / B {plan.initiativeScores.b}</span>
+        {plan.initiativeOrder ? (
+          <span>
+            {plan.initiativeOrder.reason} · {plan.initiativeOrder.order.join(" → ")}
+            {plan.initiativeOrder.draw
+              ? ` · sample ${plan.initiativeOrder.draw.sample.toFixed(6)}`
+              : ""}
+          </span>
+        ) : null}
       </div>
       <div className="internal-pipeline-flow internal-temporal-buckets">
         {plan.buckets.map((bucket) => {
