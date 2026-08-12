@@ -1,6 +1,6 @@
 # キャラクター反応ポリシー — 初期採用可能スライス
 
-Status: proposed implementation design; implementation requires owner gate  
+Status: owner decision candidate; implementation remains gated
 Date: 2026-08-12  
 Reference model: [軽量NNによる深層心理・内的反応ポリシー設計](lightweight-psyche-reaction-policy.md)  
 Decision constraints: [ADR-0004](adr/0004-versioned-lightweight-psyche-dynamics.md)
@@ -74,7 +74,7 @@ DeterministicReactionPolicyV1
 
 ## 4. 初期schemaの最小候補
 
-以下は実装前owner gateで調整する概念候補であり、確定APIではない。
+以下はV1契約の判断候補である。実装時のpublic APIやDB表現を固定するものではないが、意味、値域、privacy境界を変える場合はcontract generationを更新する。
 
 ### 4.1 ReactionInputV1
 
@@ -105,7 +105,7 @@ DeterministicReactionPolicyV1
 - impulse inhibition。
 - expression restraint。
 
-名称と軸数は未決だが、各軸には値域、neutral、unknown、default、方向、作用先を定義する。character proseやcharacter全体のembeddingは使用しない。
+V1では上記9軸を固定候補とする。各値は`0..1000`の整数で、`500`をneutral/defaultとする。未設定は`unknown`として別に保持し、計算時だけgenerationに記録されたdefaultへ解決する。`unknown`をneutral値がauthorされた状態と同一視しない。値が大きいほど名称どおりの傾向が強い。character proseやcharacter全体のembeddingは使用しない。
 
 ### 4.3 RelationshipStateV1
 
@@ -116,7 +116,7 @@ DeterministicReactionPolicyV1
 - fear。
 - competition。
 
-battle間継承は行わない。既存opponent memoryから数値を推測しない。初期値をcharacter pairからどう設定するか決まらない場合は、全軸neutralの明示値を使用し、unknownとは区別する。
+battle間継承は行わない。既存opponent memoryから数値を推測しない。V1は全軸`0`の明示neutralから開始する。各軸は`-1000..1000`の整数とし、正は名称どおり、負は反対方向、`0`はauthorされたneutral、未設定は`unknown`として区別する。owner-authored pair値とbattle間学習はV1に含めない。
 
 ### 4.4 ReactionStateV1 / ReactionDeltaV1
 
@@ -127,7 +127,7 @@ battle間継承は行わない。既存opponent memoryから数値を推測し�
 - impulse activation: `confront`, `withdraw`, `approach`, `seek_reassurance`。
 - arousal。
 
-すべてbounded continuous valueとする候補で、複数同時活性を許す。`impulse`はactionではない。model reliabilityはV1の心理stateへ混ぜず、receiptの処理信頼性として保持する。
+すべて`0..1000`の整数activationとし、複数同時活性を許す。初期値は`0`、arousalを除く各次元の通常更新deltaは1 eventあたり`-250..250`へclampする。arousalも最終値を`0..1000`へclampする。具体的weightとdimension別decayはpolicy generationで固定し、contract本文では心理学的事実として断定しない。`impulse`はactionではない。model reliabilityはV1の心理stateへ混ぜず、receiptの処理信頼性として保持する。
 
 ## 5. 正規化と更新
 
@@ -186,7 +186,16 @@ weight、decay、clampはversioned tableとして管理し、理由別contributi
 
 目標値は現時点で断定せず、Phase A0でbaseline計測方法とreject thresholdを決める。ただし、call数が減ってもfallbackの再試行やprompt増大で総costが増える候補は不採用とする。
 
-shadow比較では、現行deep-psyche LLM outputを自動的な正解としない。比較対象はstate continuity、変化方向、downstream repetition、latency、call countであり、自由文同値性を要求しない。
+shadow比較では、現行deep-psyche LLM outputを自動的な正解としない。比較対象はstate continuity、変化方向、downstream repetition、latency、call countであり、自由文同値性を要求しない。V1実装とlocal fixtureは実LLMなしで受入可能とし、providerを使うshadow比較は別途、provider/model/call上限/予算を承認してから行う。
+
+### 7.1 V1 call・failure契約候補
+
+- 対象phaseはnormal combat turnだけとする。prologueとaftermathは現行経路を維持する。
+- normal turnのpsyche provider call ceilingは0。feature不足、unknown、schema不整合、OODを理由に自動でLLMへ昇格しない。
+- featureを安全に構築できない場合はprior stateをdimension別にdecayするだけの`hold`を採用し、新しいinterpretationやimpulseを追加しない。
+- optional lightweight-LLM routeはcontract上の拡張点として保持するが、V1 authoritative routeには接続しない。別fixture、固定model、最大1 attempt、予算のowner承認後だけshadowで実行できる。
+- current high-cost psyche LLMはnormal-turn V1のfallbackにしない。rollbackはbattle開始時に固定した旧policy generationへbattle単位で戻す。
+- actionとexpressionは別consumerのまま、それぞれ最大1 application call。reaction policyはcall数を増やさない。
 
 ## 8. 初期導入計画
 
@@ -195,7 +204,7 @@ shadow比較では、現行deep-psyche LLM outputを自動的な正解としな�
 - V1 tag、値域、default/unknown/neutral、trait作用、private retentionを承認。
 - 現行LLMと並行するshadowの保存範囲とアクセス権を承認。
 - retained user battle dataを学習へ使わないことを初期defaultとして確認。
-- normal turnのcall ceiling、high-cost fallback対象、lightweight model候補、cost/quality reject thresholdを承認。
+- normal turn psycheは0 call、provider fallbackなし、失敗時holdとする。lightweight model候補と金額閾値は将来のshadow承認へ延期する。
 
 ### A1: schemaとfixture
 
@@ -240,16 +249,27 @@ shadow比較では、現行deep-psyche LLM outputを自動的な正解としな�
 
 除外は設計要素の否定ではなく、初期採用判断を可能にするためのscope boundaryである。
 
-## 10. 実装前の未決事項
+## 10. owner decision candidate
 
-1. V1 tagとtraitの最小集合、値域、default。
-2. relationship V1を全neutralで開始するか、owner-authored値を許可するか。
-3. utterance receivedを意味分類せずevent categoryとして扱う範囲。
-4. 現行deep-psyche LLMとのshadow結果をどこまで保存するか。
-5. fallbackを現行LLM、prior-state維持、no-op deltaのどれにするか。
-6. `CharacterAgentState`へnumeric stateを加えるか、別private envelopeにするか。
-7. prologue / normal / aftermathのうちV1対象をnormal turnだけにするか。
-8. A4でrule policyを採用した際、free-text emotionとの互換projectionをどう作るか。
-9. lightweight LLMの候補、hosting、cost ceiling、provider failure時の扱い。
+V1の受入候補を次に固定する。
 
-これらを決定するまでは実装を開始しない。
+1. event category、9 trait、4 relationship、emotion/interpretation/impulse/arousalの最小集合を採る。
+2. trait/stateは`0..1000`、relationshipは`-1000..1000`の整数とし、unknown/absent/neutralを区別する。
+3. relationshipはbattle-local neutralから開始し、proseやopponent memoryから推測しない。
+4. 対象はnormal combat turnだけで、psyche provider callは通常0、failure時はprior stateのdecayだけを行う。
+5. action projectionとexpression projectionを分離し、raw trait/state/reasonを渡さない。
+6. reaction stateとreceiptはserver-privateでbattle/manifest generationに束縛し、public DTO、opponent、narratorへ出さない。receiptはraw perception文を複製せず、source IDs、bounded reason code、contribution、generationだけをbattle recordのretention期間保持する。
+7. retained user battle dataを学習へ二次利用しない。NN、embedding、LLM judge、gold/silver、人間review UIは別契約とする。
+8. optional lightweight LLMは拡張点だけ残し、provider/model/call上限/予算を別途承認するまで実行しない。
+
+この受入は実装を許可するが、実LLM実験、学習、production route変更、active battleのpolicy変更を許可しない。
+
+## 11. 実装時に解決する設計詳細
+
+- `CharacterAgentState`へnumeric stateを加えるか、別private envelopeにするか。
+- utterance receivedを意味分類せずevent categoryとして扱える構造証拠の範囲。
+- dimension別weight/decay tableとquantization後の単調性fixture。
+- free-text emotion/currentGoal/beliefsとの互換projectionをどこまで維持するか。
+- 管理画面に出すbounded reason codeと、非表示にするprivate詳細の境界。
+
+これらは上記contractを弱めず、実装・fixtureで比較できる範囲の詳細とする。境界変更が必要なら実装を止めて再承認する。
