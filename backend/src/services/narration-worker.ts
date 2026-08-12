@@ -1021,3 +1021,18 @@ export async function readBattleNarrationEvents(input: {
     cursor: events.at(-1)?.cursor ?? input.cursor ?? null,
   };
 }
+
+export async function waitForBattleNarrationEvents(input: {
+  battleId: string;
+  cursor?: string | null;
+  waitMs?: number;
+  pollMs?: number;
+}): Promise<{ events: BattleNarrationFollowEvent[]; cursor: string | null }> {
+  const deadline = Date.now() + Math.max(0, Math.min(input.waitMs ?? 10_000, 15_000));
+  const pollMs = Math.max(50, Math.min(input.pollMs ?? 250, 1_000));
+  while (true) {
+    const replay = await readBattleNarrationEvents(input);
+    if (replay.events.length > 0 || Date.now() >= deadline) return replay;
+    await new Promise<void>((resolve) => setTimeout(resolve, pollMs));
+  }
+}

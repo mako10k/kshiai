@@ -217,19 +217,22 @@ export function BattlePage() {
           if (stopped) return;
           narrationStateRef.current = narrationStateFromSnapshot(snapshot);
         } else {
-          const events = await api.followBattleNarration(
-            id,
-            narrationStateRef.current.cursor,
-          );
-          if (stopped) return;
           const previousTerminal = narrationStateRef.current.entries.filter(
             (entry) => entry.narrative !== null,
           ).length;
-          for (const event of events) {
-            narrationStateRef.current = event.type === "reset"
-              ? narrationStateFromSnapshot(event.snapshot)
-              : reduceNarrationEvent(narrationStateRef.current, event);
-          }
+          await api.followBattleNarration(
+            id,
+            narrationStateRef.current.cursor,
+            undefined,
+            (event) => {
+              if (stopped || !narrationStateRef.current) return;
+              narrationStateRef.current = event.type === "reset"
+                ? narrationStateFromSnapshot(event.snapshot)
+                : reduceNarrationEvent(narrationStateRef.current, event);
+              setNarrationEntries(narrationStateRef.current.entries);
+            },
+          );
+          if (stopped) return;
           const nextTerminal = narrationStateRef.current.entries.filter(
             (entry) => entry.narrative !== null,
           ).length;

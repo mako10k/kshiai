@@ -77,6 +77,7 @@ import {
   processNextNarration,
   processNextNarrationAcrossBattles,
   readBattleNarrationEvents,
+  waitForBattleNarrationEvents,
 } from "./services/narration-worker.js";
 import {
   dispatchPendingNarrationTasks,
@@ -1511,7 +1512,7 @@ export function buildRoutes() {
     if (access === "not_found") return c.json({ error: access }, 404);
     if (access === "forbidden") return c.json({ error: access }, 403);
     try {
-      const replay = await readBattleNarrationEvents({
+      const replay = await waitForBattleNarrationEvents({
         battleId,
         cursor: c.req.query("cursor") ?? null,
       });

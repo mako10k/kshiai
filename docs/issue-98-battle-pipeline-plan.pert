@@ -131,6 +131,7 @@ task T_RCA_SSE_UI_SEQUENCE RCA_NARRATION_LIFECYCLE_SAFE -> RCA_PRESENTATION_SAFE
   title "Implement bounded SSE and ordered battle presentation"
   description "Implement FIX3 and FIX4: bounded follow waits for durable events or heartbeat, frontend consumes the stream incrementally with cursor and refreshed credentials, one reducer orders terminal and pending receipts, legacy advance narration state is removed, and canonical versus narrated-through progress is labelled explicitly. Add reconnect, duplicate-event, ordering, and active-finished UI fixtures."
   duration 4p
+  status active
   requires:
     DEV 1
   owner "codex"
@@ -228,3 +229,10 @@ work_event EVT_RCA_EXACT_RECEIPT_FINISH_20260812:
   kind finish
   occurred_at 2026-08-12T21:40:20+09:00
   effort 0.1ph
+
+work_event EVT_RCA_SSE_UI_START_20260812:
+  model 1
+  task T_RCA_SSE_UI_SEQUENCE
+  kind start
+  occurred_at 2026-08-12T21:40:20+09:00
+  planned_value 4p
