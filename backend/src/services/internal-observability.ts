@@ -187,6 +187,7 @@ export async function getInternalBattleObservation(
     causalExecution: unknown | null;
     causalBucketCommit: unknown | null;
     causalEngineContinuation: unknown | null;
+    causalLaterDecision: unknown | null;
     psycheReaction: { a: JsonObject | null; b: JsonObject | null };
     semanticState: unknown | null;
     worldState: unknown | null;
@@ -264,6 +265,7 @@ export async function getInternalBattleObservation(
       causalExecution: rawBattleState.causalExecution ?? null,
       causalBucketCommit: rawBattleState.causalBucketCommit ?? null,
       causalEngineContinuation: rawBattleState.causalEngineContinuation ?? null,
+      causalLaterDecision: rawBattleState.causalLaterDecision ?? null,
       psycheReaction: {
         a: psycheReactionSummary(rawBattleState.agentStateA),
         b: psycheReactionSummary(rawBattleState.agentStateB),

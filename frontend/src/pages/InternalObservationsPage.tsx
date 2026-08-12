@@ -356,6 +356,13 @@ export function InternalObservationsPage() {
                         value={detail.canonicalCurrent.causalEngineContinuation}
                       />
                     ) : null}
+                    {detail.canonicalCurrent.causalLaterDecision ? (
+                      <PipelineNode
+                        title="Later-bucket isolated action decision"
+                        subtitle="確定済みbucket観測のみを入力にした後攻判断（private prompt非表示）"
+                        value={detail.canonicalCurrent.causalLaterDecision}
+                      />
+                    ) : null}
                   </>
                 ) : (
                   <p className="muted">checkpointなし（旧形式、またはbucket実行開始前）</p>

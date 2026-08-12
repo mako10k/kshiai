@@ -36,6 +36,8 @@ import {
   normalizeSupervisor,
   ratingForDisplay,
   resolveNextBattleTurnBucket,
+  materializeBattleStateAtBucketBoundary,
+  bindNextBucketDecision,
   resolveTurn,
   sheetCombatProfile,
   shouldInjectHappening,
@@ -954,6 +956,7 @@ function buildCharacterDecisionContext(input: {
   sheet: CharacterSheet;
   counterpartSheet?: CharacterSheet;
   side: "a" | "b";
+  decisionTurn?: number;
 }) {
   const self = input.side === "a" ? input.state.sideA : input.state.sideB;
   const perception = input.side === "a"
@@ -962,7 +965,7 @@ function buildCharacterDecisionContext(input: {
   const finisher = input.side === "a"
     ? input.state.finisherA
     : input.state.finisherB;
-  const nextTurn = input.state.turn + 1;
+  const nextTurn = input.decisionTurn ?? input.state.turn + 1;
   const window = buildFinisherWindow({
     finisher,
     turn: nextTurn,
@@ -1066,6 +1069,51 @@ function buildCharacterDecisionContext(input: {
         }
       : undefined,
   };
+}
+
+/** Build the deliberately narrow input used between sequential buckets. */
+export function buildLaterBucketActionInput(input: {
+  state: BattleState;
+  sheet: CharacterSheet;
+  counterpartSheet?: CharacterSheet;
+  side: "a" | "b";
+}): Parameters<LlmProvider["decideCharacterAction"]>[0] | null {
+  const perception = input.side === "a"
+    ? input.state.perceptionFrameA
+    : input.state.perceptionFrameB;
+  if (!perception || perception.observer.side !== input.side) return null;
+  const decision = buildCharacterDecisionContext({
+    ...input,
+    decisionTurn: input.state.turn,
+  });
+  if (!decision || decision.availableActions.length === 0) return null;
+  return deepFreezeConsumerInput({
+    character: buildCharacterSelfProfileAnchor(
+      input.sheet,
+      deriveBattleProfileStateOverrides({
+        worldState: input.state.worldState,
+        side: input.side,
+      }),
+    ),
+    perception: structuredClone(perception),
+    decision,
+  });
+}
+
+function deterministicLaterBucketFallback(
+  decision: Parameters<LlmProvider["decideCharacterAction"]>[0]["decision"],
+) {
+  const selected = decision.availableActions.find((action) =>
+    action.kind === "basic_attack"
+  ) ?? decision.availableActions.find((action) =>
+    action.kind !== "wait" && action.kind !== "reflect"
+  ) ?? decision.availableActions[0];
+  if (!selected) return null;
+  return CharacterActionIntentSchema.parse(
+    selected.kind === "skill"
+      ? { kind: "skill", skillId: selected.skillId }
+      : { kind: selected.kind },
+  );
 }
 
 function characterActionResultSummary(
@@ -3580,6 +3628,121 @@ async function advanceTurnWithLease(input: {
   while (engineResolved.engineContinuation) {
     const nextBucket = causalExecution.temporalPlan.buckets[causalExecution.bucketIndex];
     if (!nextBucket) throw new Error("CAUSAL_BUCKET_MISSING");
+    const continuation = engineResolved.engineContinuation;
+    const laterSide = nextBucket.actorSides.length === 1
+      ? nextBucket.actorSides[0]
+      : undefined;
+    if (laterSide) {
+      let boundaryState = materializeBattleStateAtBucketBoundary({
+        state,
+        continuation,
+      });
+      if (boundaryState.semanticState) {
+        const projected = projectObserverPerception({
+          observerSide: laterSide,
+          turn: boundaryState.turn,
+          semanticState: boundaryState.semanticState,
+          worldState: boundaryState.worldState,
+          events: continuation.events,
+          quantizedMechanicalEvidence: quantizeCommittedMechanicalEvidence(
+            continuation.mechanicalEvidence,
+          ),
+          reserveEvidence: buildServerOnlyReserveCues({
+            side: laterSide,
+            parameters: laterSide === "a"
+              ? boundaryState.sideA.parameters
+              : boundaryState.sideB.parameters,
+            baseParameters: laterSide === "a"
+              ? boundaryState.sideA.baseParameters
+              : boundaryState.sideB.baseParameters,
+          }),
+          sensoryEvidence: [],
+          previousFrame: laterSide === "a"
+            ? state.perceptionFrameA
+            : state.perceptionFrameB,
+          previousRegistry: laterSide === "a"
+            ? state.perceptionRegistryA
+            : state.perceptionRegistryB,
+          legacyCounterpartIdentified: laterSide === "a"
+            ? state.perceptionRegistryA === undefined
+            : state.perceptionRegistryB === undefined,
+        });
+        boundaryState = laterSide === "a"
+          ? {
+              ...boundaryState,
+              perceptionFrameA: projected.frame,
+              perceptionRegistryA: projected.registry,
+            }
+          : {
+              ...boundaryState,
+              perceptionFrameB: projected.frame,
+              perceptionRegistryB: projected.registry,
+            };
+      }
+      const laterCombatant = laterSide === "a"
+        ? boundaryState.sideA
+        : boundaryState.sideB;
+      const laterInput = (laterCombatant.parameters.hp ?? 0) > 0
+        ? buildLaterBucketActionInput({
+            state: boundaryState,
+            sheet: laterSide === "a" ? mine : opp,
+            counterpartSheet: laterSide === "a" ? opp : mine,
+            side: laterSide,
+          })
+        : null;
+      if (laterInput) {
+        const startedAt = Date.now();
+        let proposedAction: unknown | null = null;
+        let providerFailure: string | null = null;
+        try {
+          proposedAction = (await input.llm.decideCharacterAction(laterInput))
+            .proposedAction;
+        } catch (error) {
+          providerFailure = error instanceof Error ? error.message : "provider_error";
+        }
+        const validation = validateCharacterActionProposal({
+          proposedAction,
+          decision: laterInput.decision,
+        });
+        const fallback = validation.acceptedAction
+          ? null
+          : deterministicLaterBucketFallback(laterInput.decision);
+        const acceptedAction = validation.acceptedAction ?? fallback;
+        if (acceptedAction) {
+          boundaryState = bindNextBucketDecision({
+            state: boundaryState,
+            continuation,
+            side: laterSide,
+            intent: acceptedAction,
+          });
+        }
+        state = {
+          ...boundaryState,
+          causalLaterDecision: {
+            schemaVersion: 1,
+            executionId: causalExecution.executionId,
+            sourceBucketIndex: Math.max(0, causalExecution.bucketIndex - 1),
+            side: laterSide,
+            status: validation.acceptedAction ? "accepted" : "fallback",
+            validation,
+            provider: input.llm.name,
+            model: input.llm.models?.fast ?? null,
+            callCount: 1,
+            tokenCount: null,
+            estimatedCostUsd: null,
+            elapsedMs: Math.max(0, Date.now() - startedAt),
+            fallbackReason: validation.acceptedAction
+              ? null
+              : providerFailure ?? validation.reason ?? "deterministic_fallback",
+          },
+        };
+        await battleRepo.saveBattle(state, {
+          sideAUserId: meta.side_a_user_id,
+          sideACharacterId: meta.side_a_character_id,
+          sideBCharacterId: meta.side_b_character_id,
+        });
+      }
+    }
     for (const side of nextBucket.actorSides) {
       causalExecution = acceptCausalExecutionDecision({
         execution: causalExecution,
@@ -3588,6 +3751,7 @@ async function advanceTurnWithLease(input: {
     }
     engineResolved = resolveNextBattleTurnBucket({
       ...engineInput,
+      state,
       engineContinuation: engineResolved.engineContinuation,
     });
     causalExecution = commitCausalExecutionBucket({ execution: causalExecution });

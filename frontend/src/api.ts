@@ -150,6 +150,7 @@ export type InternalBattleObservationDetail = {
     causalExecution: InternalCausalTurnExecution | null;
     causalBucketCommit: Record<string, unknown> | null;
     causalEngineContinuation: Record<string, unknown> | null;
+    causalLaterDecision: Record<string, unknown> | null;
     psycheReaction: {
       a: {
         schemaVersion: number | null;

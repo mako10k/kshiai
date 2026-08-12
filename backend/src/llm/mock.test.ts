@@ -100,6 +100,12 @@ describe("mock LLM natural-language handling", () => {
     assert.equal(result.state.selfReference, "わたくし");
     assert.match(result.speech ?? "", /わたくし/);
     assert.deepEqual(result.proposedAction, { kind: "basic_attack" });
+    const isolatedDecision = await provider.decideCharacterAction({
+      character: agentInput.character,
+      perception: agentInput.perception,
+      decision: agentInput.decision!,
+    });
+    assert.deepEqual(isolatedDecision.proposedAction, { kind: "basic_attack" });
     assert.deepEqual(result.state.interior?.speechAppraisal, {
       anticipatedImpact: "挑戦者の次の出方を見極める",
       observedImpact: "まだ前の言葉はない",

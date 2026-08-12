@@ -1622,6 +1622,29 @@ The narrator may later choose this line's display position and punctuation, but 
     }
   }
 
+  async decideCharacterAction(
+    input: Parameters<LlmProvider["decideCharacterAction"]>[0],
+  ): Promise<Awaited<ReturnType<LlmProvider["decideCharacterAction"]>>> {
+    if (!this.client) return this.fallback.decideCharacterAction(input);
+    try {
+      const data = (await this.chatJson(
+        `Choose one fictional character action from decision.availableActions. This is an action-only stage: do not generate speech, narration, emotion, hidden thoughts, or world facts. Use only the frozen self profile, observer-relative perception, and server-owned decision frame supplied in the input. Copy skillId exactly for a skill. Return JSON only: {"nextAction": object}.\n${CHARACTER_ACTION_PROPOSAL_OUTPUT_RULES}`,
+        JSON.stringify(input),
+        {
+          tier: "fast",
+          label: "decideCharacterAction",
+          timeoutMs: FAST_TIMEOUT_MS,
+          temperature: 0.35,
+        },
+      )) as Record<string, unknown>;
+      return { proposedAction: boundGeneratedJson(data.nextAction) };
+    } catch (error) {
+      return this.fallbackOrThrow(error, () =>
+        this.fallback.decideCharacterAction(input)
+      );
+    }
+  }
+
   async chooseNarrationFocus(input: {
     turn: number;
     scene: string;

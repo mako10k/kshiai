@@ -1436,6 +1436,22 @@ export const BattleStateSchema = z.object({
   causalBucketCommit: BattleBucketMechanicalCommitSchema.optional(),
   /** Pure-engine state required to resume after the durable bucket commit. */
   causalEngineContinuation: BattleTurnEngineContinuationSchema.optional(),
+  /** Privacy-safe receipt for the isolated decision made after a bucket commit. */
+  causalLaterDecision: z.object({
+    schemaVersion: z.literal(1),
+    executionId: z.string().min(1),
+    sourceBucketIndex: z.number().int().nonnegative(),
+    side: z.enum(["a", "b"]),
+    status: z.enum(["accepted", "fallback"]),
+    validation: CharacterActionProposalValidationReceiptSchema,
+    provider: z.string().min(1),
+    model: z.string().min(1).nullable(),
+    callCount: z.number().int().nonnegative(),
+    tokenCount: z.number().int().nonnegative().nullable(),
+    estimatedCostUsd: z.number().nonnegative().nullable(),
+    elapsedMs: z.number().int().nonnegative(),
+    fallbackReason: z.string().min(1).nullable(),
+  }).strict().optional(),
   /**
    * Engine-internal balance metrics (not exposed on BattlePublic).
    * Accumulated from HP deltas each combat turn for observability.
