@@ -1,6 +1,31 @@
 import { query } from "../db.js";
+import { assetContentDigest } from "../repositories/asset-generations.js";
 
 type JsonObject = Record<string, unknown>;
+type AssetBindingValidation = "valid" | "mismatch" | "legacy_unknown";
+
+function validateAssetManifest(manifest: unknown): Record<string, AssetBindingValidation> | null {
+  const root = asObject(manifest);
+  if (!root) return null;
+  const characters = asObject(root.characters);
+  const entries: Array<[string, JsonObject | null]> = [
+    ["characterA", asObject(characters?.a)],
+    ["characterB", asObject(characters?.b)],
+    ["narrationStyle", asObject(root.narrationStyle)],
+    ["battlefieldInstance", asObject(root.battlefield)],
+    ["dialoguePipeline", asObject(root.dialoguePipeline)],
+  ];
+  return Object.fromEntries(entries.map(([name, binding]) => {
+    const digest = binding?.contentDigest;
+    if (typeof digest !== "string" || digest === "0".repeat(64)) {
+      return [name, "legacy_unknown"];
+    }
+    return [
+      name,
+      assetContentDigest(binding?.snapshot) === digest ? "valid" : "mismatch",
+    ];
+  }));
+}
 
 type InternalBattleRow = {
   id: string;
@@ -132,6 +157,7 @@ export async function getInternalBattleObservation(
   canonicalTimeline: CanonicalTurnProgression[];
   canonicalCurrent: {
     assetManifest: unknown | null;
+    assetManifestValidation: Record<string, AssetBindingValidation> | null;
     causalExecution: unknown | null;
     causalBucketCommit: unknown | null;
     causalEngineContinuation: unknown | null;
@@ -207,6 +233,7 @@ export async function getInternalBattleObservation(
     canonicalTimeline,
     canonicalCurrent: {
       assetManifest: rawBattleState.assetManifest ?? null,
+      assetManifestValidation: validateAssetManifest(rawBattleState.assetManifest),
       causalExecution: rawBattleState.causalExecution ?? null,
       causalBucketCommit: rawBattleState.causalBucketCommit ?? null,
       causalEngineContinuation: rawBattleState.causalEngineContinuation ?? null,

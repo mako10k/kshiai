@@ -207,6 +207,10 @@ describe("internal battle observability", () => {
       "character:char-a:1",
     );
     assert.equal(
+      detail.canonicalCurrent.assetManifestValidation?.characterA,
+      "legacy_unknown",
+    );
+    assert.equal(
       (detail.canonicalCurrent.causalExecution as { status: string }).status,
       "awaiting_decision",
     );

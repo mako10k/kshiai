@@ -143,6 +143,10 @@ export type InternalBattleObservationDetail = {
       dialoguePipeline: { generationId: string; contentDigest?: string };
       rules: { battleEngine: string; temporalRules: string };
     } | null;
+    assetManifestValidation: Record<
+      string,
+      "valid" | "mismatch" | "legacy_unknown"
+    > | null;
     causalExecution: InternalCausalTurnExecution | null;
     causalBucketCommit: Record<string, unknown> | null;
     causalEngineContinuation: Record<string, unknown> | null;

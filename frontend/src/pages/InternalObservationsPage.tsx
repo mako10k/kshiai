@@ -308,6 +308,11 @@ export function InternalObservationsPage() {
                     <p className="muted">
                       {detail.canonicalCurrent.assetManifest.boundAt} に固定。以後の編集はこの戦闘へ反映されません。
                     </p>
+                    <p className="muted">
+                      manifest検証: {Object.entries(detail.canonicalCurrent.assetManifestValidation ?? {})
+                        .map(([name, status]) => `${name}=${status}`)
+                        .join(" / ") || "legacy_unknown"}
+                    </p>
                     <dl className="internal-summary-grid">
                       <div><dt>Side A character</dt><dd>{detail.canonicalCurrent.assetManifest.characters.a.generationId}</dd></div>
                       <div><dt>Side B character</dt><dd>{detail.canonicalCurrent.assetManifest.characters.b.generationId}</dd></div>
