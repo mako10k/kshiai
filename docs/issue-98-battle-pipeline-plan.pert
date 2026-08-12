@@ -32,6 +32,7 @@ resource OWNER:
 
 milestone EFFECT_CONTRACT_ACCEPTED:
   title "Owner accepted bounded effect scope"
+  state reached
 
 milestone EFFECT_LIFECYCLE_READY:
   title "Action, effect, and system provenance are separately traceable"
@@ -59,14 +60,6 @@ milestone ISSUE_98_LOCALLY_ACCEPTED:
 
 
 
-task T_ACCEPT_EFFECT_SCOPE NARRATION_ASYNC_EXECUTION_READY -> EFFECT_CONTRACT_ACCEPTED:
-  title "Accept bounded effect provenance and deferred-effect scope"
-  description "Owner decides the initial server-defined predicates, due/expiry/cancel semantics, observer visibility, and retention. Scope is restricted to effects on the existing two combatants and existing world entities; reinforcements or new combat participants require a separate participant-lifecycle design and approval."
-  duration 1p
-  status done
-  owner "user"
-  requires:
-    OWNER 1
 
 task T_SEPARATE_ACTION_EFFECTS EFFECT_CONTRACT_ACCEPTED -> EFFECT_LIFECYCLE_READY:
   title "Separate action, effect, world, and system provenance"
@@ -107,23 +100,3 @@ task T_ACCEPT_ISSUE_98 PACING_POLICY_ACCEPTED -> ISSUE_98_LOCALLY_ACCEPTED:
   owner "codex"
   requires:
     DEV 1
-
-milestone NARRATION_ASYNC_EXECUTION_READY:
-  title "Advance and narration execution are independently verified"
-  description "Required evidence before reach: advance invokes and awaits no narration/focus/presentation provider; receipt and outbox commit before response; a separately invoked local worker generates terminal prose; narration failure preserves canonical advance; N+1 advance can commit while N narration is generating; prologue/combat/judgment/aftermath pass; synchronous compatibility completion is removed; cloud queue creation and deployment remain separately gated."
-  state reached
-
-work_event WE-a6c894ef6e9044e439885ef4e8491122d7e9d1fdfa193a349a76e592924fa1e5:
-  model 1
-  task T_ACCEPT_EFFECT_SCOPE
-  kind start
-  occurred_at 2026-08-12T17:27:00+09:00
-  planned_value 1p
-
-work_event WE-625944e43465041c7fd9b942d5946f4e56077b5308bdb1bbf8334bb099220551:
-  model 1
-  task T_ACCEPT_EFFECT_SCOPE
-  kind finish
-  occurred_at 2026-08-12T17:27:01+09:00
-  active_time 1/3600h
-  effort 1/3600ph
