@@ -15,6 +15,14 @@ on:
         description: Worker version ID from the successful staging run
         required: true
         type: string
+      battle_pacing_policy:
+        description: Expected policy on the staged Cloud Run revision
+        required: true
+        default: current
+        type: choice
+        options:
+          - current
+          - candidate-12-v2
       confirmation:
         description: Type DEPLOY followed by a space and the release tag
         required: true
@@ -52,6 +60,7 @@ jobs:
       - name: Validate owner approval
         env:
           CONFIRMATION: ${{ inputs.confirmation }}
+          PACING_POLICY: ${{ inputs.battle_pacing_policy }}
           RELEASE_TAG: ${{ inputs.tag }}
         run: |
           set -euo pipefail
@@ -59,6 +68,7 @@ jobs:
           test "$GITHUB_REF" = "refs/tags/$RELEASE_TAG"
           test "$CONFIRMATION" = "DEPLOY $RELEASE_TAG"
           [[ "$RELEASE_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?$ ]]
+          [[ "$PACING_POLICY" =~ ^(current|candidate-12-v2)$ ]]
 
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -90,6 +100,7 @@ jobs:
 
       - name: Verify staged immutable artifacts
         env:
+          EXPECTED_BATTLE_PACING_POLICY: ${{ inputs.battle_pacing_policy }}
           RELEASE_TAG: ${{ inputs.tag }}
           REVISION: ${{ inputs.cloud_run_revision }}
           WORKER_VERSION: ${{ inputs.worker_version }}
@@ -120,8 +131,16 @@ jobs:
             );
             process.stdout.write(entry?.value ?? "");
           ' "$revision_json")"
+          pacing_policy="$(node -e '
+            const revision = require(process.argv[1]);
+            const entry = revision.spec?.containers?.[0]?.env?.find(
+              (candidate) => candidate.name === "BATTLE_PACING_POLICY",
+            );
+            process.stdout.write(entry?.value ?? "");
+          ' "$revision_json")"
           test -n "$image"
           test "$mode" = "$EXPECTED_BATTLE_CAUSAL_NARRATION_MODE"
+          test "$pacing_policy" = "$EXPECTED_BATTLE_PACING_POLICY"
           ADMIN_EMAILS="$admin_emails" node -e '
             const emails = (process.env.ADMIN_EMAILS ?? "")
               .split(",").map((value) => value.trim().toLowerCase()).filter(Boolean);
@@ -137,7 +156,7 @@ jobs:
             const tag = version.annotations?.["workers/tag"];
             if (tag && tag !== process.env.RELEASE_TAG) throw new Error("Worker tag mismatch");
           '
-          echo "Verified backend image $image, causal narration mode $mode, administrator binding, and Worker version $WORKER_VERSION"
+          echo "Verified backend image $image, causal narration mode $mode, pacing policy $pacing_policy, administrator binding, and Worker version $WORKER_VERSION"
 
       - name: Record rollback targets
         id: previous

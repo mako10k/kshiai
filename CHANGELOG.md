@@ -5,6 +5,56 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 
 ## [Unreleased]
 
+## [0.17.0] - 2026-08-12
+
+### Added
+
+- Sequential initiative checkpoints let the later character observe the
+  committed, observer-safe result of the earlier action before deciding. Equal
+  initiative reuses the previous order or performs the specified weighted/fair
+  draw without redrawing on retry.
+- Durable, ordered narration receipts and battle-scoped SSE replay decouple
+  canonical advance from terminal narration generation, with fenced workers,
+  idempotent recovery, deterministic fallback, and administrator queue/cost
+  visibility.
+- Immutable generations for editable characters, battlefields, narration
+  styles, and dialogue settings are bound into each battle.
+- Bounded delayed and conditional battle effects carry explicit action,
+  system-rule, or environment/world provenance.
+- A deterministic lightweight psyche reaction policy supplies structured
+  emotion, interpretation, impulse, arousal, and confidence without an
+  additional normal-turn LLM call.
+- Versioned battle-pacing snapshots and the provisional
+  `candidate-12-v2` policy support twelve-turn battles, earlier finish pressure,
+  effect-driven restoration, and gradual production observation.
+
+### Changed
+
+- Narration and semantic-adjudicator prose can explain canonical results but
+  cannot overwrite gameplay state or the deterministic winner.
+- Battle advances persist restartable bucket-level revisions and expose their
+  causal DAG in the administrator view without exposing private prompts or raw
+  provider output.
+- The provisional pacing candidate increases committed per-turn change and
+  removes implicit 20% parameter restoration; existing battles retain their
+  frozen legacy policy.
+
+### Database
+
+- Adds immutable asset generations (`0011_asset_generations.sql`).
+- Adds optimistic battle revisions (`0012_battle_revision.sql`).
+- Adds the battle presentation read model (`0013_battle_presentations.sql`).
+- Adds ordered narration entries, fenced leases, attempts, public events,
+  outbox, and retention state (`0014_ordered_narration_worker.sql`).
+
+### Operations
+
+- All migrations are additive and forward-only; the prior application revision
+  ignores the new structures and remains a valid application rollback target.
+- Stage and Promote workflows require the exact `BATTLE_PACING_POLICY` value.
+  `current` is the rollback value; `candidate-12-v2` affects only newly created
+  battles and remains provisional.
+
 ## [0.16.0] - 2026-08-11
 
 ### Added

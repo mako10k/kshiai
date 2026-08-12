@@ -24,6 +24,14 @@ on:
           - none
           - compact
           - legacy
+      battle_pacing_policy:
+        description: Provisional pacing policy frozen into newly created battles
+        required: true
+        default: current
+        type: choice
+        options:
+          - current
+          - candidate-12-v2
 
 permissions:
   checks: read
@@ -60,6 +68,7 @@ jobs:
         env:
           CAUSAL_NARRATION_MODE: ${{ inputs.battle_causal_narration_mode }}
           DIALOGUE_CONTEXT_PROJECTION_OVERRIDE: ${{ inputs.dialogue_context_projection_override }}
+          PACING_POLICY: ${{ inputs.battle_pacing_policy }}
           RELEASE_TAG: ${{ inputs.tag }}
         run: |
           set -euo pipefail
@@ -68,6 +77,7 @@ jobs:
           [[ "$RELEASE_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?$ ]]
           [[ "$CAUSAL_NARRATION_MODE" =~ ^(off|narration_guarded)$ ]]
           [[ "$DIALOGUE_CONTEXT_PROJECTION_OVERRIDE" =~ ^(none|compact|legacy)$ ]]
+          [[ "$PACING_POLICY" =~ ^(current|candidate-12-v2)$ ]]
 
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -139,14 +149,18 @@ jobs:
         env:
           CAUSAL_NARRATION_MODE: ${{ inputs.battle_causal_narration_mode }}
           DIALOGUE_CONTEXT_PROJECTION_OVERRIDE: ${{ inputs.dialogue_context_projection_override }}
+          PACING_POLICY: ${{ inputs.battle_pacing_policy }}
           IMAGE_REF: ${{ steps.image.outputs.ref }}
           RELEASE_TAG: ${{ inputs.tag }}
         run: |
           set -euo pipefail
           alias="release-${RELEASE_TAG//./-}"
-          override_flag=(--remove-env-vars="DIALOGUE_CONTEXT_PROJECTION_OVERRIDE")
+          override_flags=(
+            --update-env-vars="BATTLE_CAUSAL_NARRATION_MODE=$CAUSAL_NARRATION_MODE,ADMIN_EMAILS=$ADMIN_EMAILS,BATTLE_PACING_POLICY=$PACING_POLICY"
+            --remove-env-vars="DIALOGUE_CONTEXT_PROJECTION_OVERRIDE"
+          )
           if [[ "$DIALOGUE_CONTEXT_PROJECTION_OVERRIDE" != "none" ]]; then
-            override_flag=(--update-env-vars="BATTLE_CAUSAL_NARRATION_MODE=$CAUSAL_NARRATION_MODE,ADMIN_EMAILS=$ADMIN_EMAILS,DIALOGUE_CONTEXT_PROJECTION_OVERRIDE=$DIALOGUE_CONTEXT_PROJECTION_OVERRIDE")
+            override_flags=(--update-env-vars="BATTLE_CAUSAL_NARRATION_MODE=$CAUSAL_NARRATION_MODE,ADMIN_EMAILS=$ADMIN_EMAILS,BATTLE_PACING_POLICY=$PACING_POLICY,DIALOGUE_CONTEXT_PROJECTION_OVERRIDE=$DIALOGUE_CONTEXT_PROJECTION_OVERRIDE")
           fi
           gcloud run deploy "$CLOUD_RUN_SERVICE" \
             --project="$GCP_PROJECT" \
@@ -154,7 +168,7 @@ jobs:
             --image="$IMAGE_REF" \
             --no-traffic \
             --tag="$alias" \
-            "${override_flag[@]}" \
+            "${override_flags[@]}" \
             --quiet
           gcloud run services describe "$CLOUD_RUN_SERVICE" \
             --project="$GCP_PROJECT" \

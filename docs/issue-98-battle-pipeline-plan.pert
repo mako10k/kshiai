@@ -124,7 +124,7 @@ milestone PACING_BASELINE_CAPTURED:
 
 task T_PREPARE_PACING_RELEASE PACING_CANDIDATE_TUNED -> PACING_RELEASE_READY:
   title "Prepare the provisional pacing release"
-  description "Add an explicit candidate-12-v2 Stage release input, pass it to Cloud Run, verify the staged revision value, and preserve current as fail-closed rollback. Review migrations 0011 through 0014 for forward-only and prior-revision compatibility; fix the duplicated checkout keys; update all package versions and CHANGELOG for the complete unreleased scope; prepare the release branch and PR, and require validate, security, backend-image, and worker checks. Record screenshots for administrator-visible changes. Do not tag, stage, or promote yet."
+  description "Add an explicit candidate-12-v2 Stage release input, pass it to Cloud Run, verify the staged revision value, and preserve current as fail-closed rollback. Review migrations 0011 through 0014 for forward-only and prior-revision compatibility; verify release workflow structure; update all package versions and CHANGELOG for the complete unreleased scope; prepare the release branch and PR, and require validate, security, backend-image, and worker checks. Record screenshots for administrator-visible changes. Do not tag, stage, or promote yet."
   duration 4p
   status active
   requires:
