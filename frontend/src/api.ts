@@ -606,6 +606,7 @@ export const api = {
     opts?: {
       onEvent?: (event: BattleAdvanceStreamEvent) => void;
       signal?: AbortSignal;
+      idempotencyKey?: string;
     },
   ): Promise<BattlePublic> => {
     const res = await authenticatedFetch(`/api/battles/${id}/advance/stream`, {
@@ -613,7 +614,7 @@ export const api = {
       headers: {
         Accept: "text/event-stream",
         "Content-Type": "application/json",
-        "Idempotency-Key": crypto.randomUUID(),
+        "Idempotency-Key": opts?.idempotencyKey ?? crypto.randomUUID(),
       },
       body: "{}",
       signal: opts?.signal,

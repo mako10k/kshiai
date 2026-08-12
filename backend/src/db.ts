@@ -93,6 +93,7 @@ export function getDb(): SqliteDatabase.Database {
     CREATE TABLE IF NOT EXISTS battles (
       id TEXT PRIMARY KEY,
       state_json TEXT NOT NULL,
+      revision INTEGER NOT NULL DEFAULT 0,
       side_a_user_id TEXT NOT NULL,
       side_b_character_id TEXT NOT NULL,
       side_a_character_id TEXT NOT NULL,
@@ -198,6 +199,10 @@ export function getDb(): SqliteDatabase.Database {
     CREATE INDEX IF NOT EXISTS idx_friend_requests_to
       ON friend_requests (to_user_id);
   `);
+  const battleColumns = sqlite.pragma("table_info(battles)") as Array<{ name: string }>;
+  if (!battleColumns.some((column) => column.name === "revision")) {
+    sqlite.exec("ALTER TABLE battles ADD COLUMN revision INTEGER NOT NULL DEFAULT 0");
+  }
   const userColumns = sqlite.pragma("table_info(users)") as Array<{ name: string }>;
   const userColumnNames = new Set(userColumns.map((column) => column.name));
   if (!userColumnNames.has("auth_user_id")) {

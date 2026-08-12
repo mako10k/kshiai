@@ -1413,6 +1413,11 @@ export function buildRoutes() {
       const battle = await advanceTurn({
         userId: user.id,
         battleId,
+        operationId: requestDigest({
+          userId: user.id,
+          scope,
+          key: idempotencyKey,
+        }),
         llm,
       });
       operationCompleted = true;
@@ -1524,6 +1529,11 @@ export function buildRoutes() {
           const battle = await advanceTurn({
             userId: user.id,
             battleId,
+            operationId: requestDigest({
+              userId: user.id,
+              scope,
+              key: idempotencyKey,
+            }),
             llm,
             onProgress: (event) => send(event),
           });

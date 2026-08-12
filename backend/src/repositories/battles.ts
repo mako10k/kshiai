@@ -15,16 +15,26 @@ export async function saveBattle(
     sideAUserId: string;
     sideACharacterId: string;
     sideBCharacterId: string;
+    /** Explicit compare revision for the one save that advances the revision. */
+    expectedRevision?: number;
   },
 ): Promise<void> {
   const json = JSON.stringify(state);
-  await query(
+  const expectedRevision = meta.expectedRevision ??
+    (state.advanceOperation?.status === "active"
+      ? state.advanceOperation.expectedRevision
+      : state.battleRevision ?? 0);
+  const nextRevision = state.battleRevision ?? expectedRevision;
+  const result = await query<{ id: string }>(
     `INSERT INTO battles
-      (id, state_json, side_a_user_id, side_a_character_id, side_b_character_id, created_at, updated_at)
-     VALUES ($1, $2, $3, $4, $5, $6, $7)
+      (id, state_json, side_a_user_id, side_a_character_id, side_b_character_id, created_at, updated_at, revision)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $9)
      ON CONFLICT (id) DO UPDATE
        SET state_json = EXCLUDED.state_json,
-           updated_at = EXCLUDED.updated_at`,
+           updated_at = EXCLUDED.updated_at,
+           revision = EXCLUDED.revision
+       WHERE battles.revision = $8
+     RETURNING id`,
     [
       state.id,
       json,
@@ -33,8 +43,11 @@ export async function saveBattle(
       meta.sideBCharacterId,
       state.createdAt,
       state.updatedAt,
+      expectedRevision,
+      nextRevision,
     ],
   );
+  if (result.rowCount !== 1) throw new Error("BATTLE_REVISION_CONFLICT");
 }
 
 function parseBattleState(rawJson: unknown, idHint = "?"): BattleState {

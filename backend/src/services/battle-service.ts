@@ -3423,6 +3423,7 @@ async function buildEnvironmentProcessProposal(input: {
 async function advanceTurnWithLease(input: {
   userId: string;
   battleId: string;
+  operationId: string;
   llm: LlmProvider;
   /** Optional progressive updates (SSE). */
   onProgress?: (event: BattleAdvanceStreamEvent) => void;
@@ -3438,10 +3439,49 @@ async function advanceTurnWithLease(input: {
     }
   };
   const meta = await battleRepo.getBattleMeta(input.battleId);
-  let state = await battleRepo.getBattle(input.battleId);
-  if (!meta || !state) throw new Error("BATTLE_NOT_FOUND");
+  const loadedState = await battleRepo.getBattle(input.battleId);
+  if (!meta || !loadedState) throw new Error("BATTLE_NOT_FOUND");
+  let state: BattleState = loadedState;
   if (meta.side_a_user_id !== input.userId) throw new Error("FORBIDDEN");
+  if (
+    state.advanceOperation?.status === "active" &&
+    state.advanceOperation.operationId !== input.operationId
+  ) {
+    throw new Error("ADVANCE_OPERATION_CONFLICT");
+  }
+  if (
+    state.advanceOperation?.status === "completed" &&
+    state.advanceOperation.operationId === input.operationId
+  ) {
+    const replayMine = state.assetManifest?.characters.a.snapshot ??
+      await charRepo.getSheet(meta.side_a_character_id);
+    const replayOpp = state.assetManifest?.characters.b.snapshot ??
+      await charRepo.getSheet(meta.side_b_character_id);
+    if (!replayMine || !replayOpp) throw new Error("CHARACTER_MISSING");
+    return toBattlePublicForViewer(state, replayMine, null, replayOpp);
+  }
   if (state.status !== "active") throw new Error("BATTLE_FINISHED");
+
+  const phase = state.prologuePending
+    ? "prologue" as const
+    : state.aftermathPending
+      ? "aftermath" as const
+      : "combat" as const;
+  if (!state.advanceOperation || state.advanceOperation.status === "completed") {
+    state = {
+      ...state,
+      advanceOperation: {
+        schemaVersion: 1,
+        operationId: input.operationId,
+        expectedRevision: state.battleRevision ?? 0,
+        status: "active",
+        phase,
+        startedAt: new Date().toISOString(),
+        completedAt: null,
+        receiptIds: [],
+      },
+    };
+  }
 
   // Backfill for older battles
   if (!state.policiesA) state.policiesA = [];
@@ -3475,6 +3515,7 @@ async function advanceTurnWithLease(input: {
       llm: input.llm,
       dialoguePipeline,
       emit,
+      operationId: input.operationId,
     });
   }
 
@@ -3488,6 +3529,7 @@ async function advanceTurnWithLease(input: {
       llm: input.llm,
       dialoguePipeline,
       emit,
+      operationId: input.operationId,
     });
   }
 
@@ -3691,56 +3733,72 @@ async function advanceTurnWithLease(input: {
           })
         : null;
       if (laterInput) {
-        const startedAt = Date.now();
-        let proposedAction: unknown | null = null;
-        let providerFailure: string | null = null;
-        try {
-          proposedAction = (await input.llm.decideCharacterAction(laterInput))
-            .proposedAction;
-        } catch (error) {
-          providerFailure = error instanceof Error ? error.message : "provider_error";
-        }
-        const validation = validateCharacterActionProposal({
-          proposedAction,
-          decision: laterInput.decision,
-        });
-        const fallback = validation.acceptedAction
-          ? null
-          : deterministicLaterBucketFallback(laterInput.decision);
-        const acceptedAction = validation.acceptedAction ?? fallback;
-        if (acceptedAction) {
-          boundaryState = bindNextBucketDecision({
+        const priorDecision = state.causalLaterDecision;
+        if (
+          priorDecision?.executionId === causalExecution.executionId &&
+          priorDecision.sourceBucketIndex === Math.max(0, causalExecution.bucketIndex - 1) &&
+          priorDecision.side === laterSide &&
+          priorDecision.acceptedAction
+        ) {
+          state = bindNextBucketDecision({
             state: boundaryState,
             continuation,
             side: laterSide,
-            intent: acceptedAction,
+            intent: priorDecision.acceptedAction,
+          });
+        } else {
+          const startedAt = Date.now();
+          let proposedAction: unknown | null = null;
+          let providerFailure: string | null = null;
+          try {
+            proposedAction = (await input.llm.decideCharacterAction(laterInput))
+              .proposedAction;
+          } catch (error) {
+            providerFailure = error instanceof Error ? error.message : "provider_error";
+          }
+          const validation = validateCharacterActionProposal({
+            proposedAction,
+            decision: laterInput.decision,
+          });
+          const fallback = validation.acceptedAction
+            ? null
+            : deterministicLaterBucketFallback(laterInput.decision);
+          const acceptedAction = validation.acceptedAction ?? fallback;
+          if (acceptedAction) {
+            boundaryState = bindNextBucketDecision({
+              state: boundaryState,
+              continuation,
+              side: laterSide,
+              intent: acceptedAction,
+            });
+          }
+          state = {
+            ...boundaryState,
+            causalLaterDecision: {
+              schemaVersion: 1,
+              executionId: causalExecution.executionId,
+              sourceBucketIndex: Math.max(0, causalExecution.bucketIndex - 1),
+              side: laterSide,
+              status: validation.acceptedAction ? "accepted" : "fallback",
+              acceptedAction,
+              validation,
+              provider: input.llm.name,
+              model: input.llm.models?.fast ?? null,
+              callCount: 1,
+              tokenCount: null,
+              estimatedCostUsd: null,
+              elapsedMs: Math.max(0, Date.now() - startedAt),
+              fallbackReason: validation.acceptedAction
+                ? null
+                : providerFailure ?? validation.reason ?? "deterministic_fallback",
+            },
+          };
+          await battleRepo.saveBattle(state, {
+            sideAUserId: meta.side_a_user_id,
+            sideACharacterId: meta.side_a_character_id,
+            sideBCharacterId: meta.side_b_character_id,
           });
         }
-        state = {
-          ...boundaryState,
-          causalLaterDecision: {
-            schemaVersion: 1,
-            executionId: causalExecution.executionId,
-            sourceBucketIndex: Math.max(0, causalExecution.bucketIndex - 1),
-            side: laterSide,
-            status: validation.acceptedAction ? "accepted" : "fallback",
-            validation,
-            provider: input.llm.name,
-            model: input.llm.models?.fast ?? null,
-            callCount: 1,
-            tokenCount: null,
-            estimatedCostUsd: null,
-            elapsedMs: Math.max(0, Date.now() - startedAt),
-            fallbackReason: validation.acceptedAction
-              ? null
-              : providerFailure ?? validation.reason ?? "deterministic_fallback",
-          },
-        };
-        await battleRepo.saveBattle(state, {
-          sideAUserId: meta.side_a_user_id,
-          sideACharacterId: meta.side_a_character_id,
-          sideBCharacterId: meta.side_b_character_id,
-        });
       }
     }
     for (const side of nextBucket.actorSides) {
@@ -4253,10 +4311,16 @@ async function advanceTurnWithLease(input: {
   // KO this turn: combat narrative is done, but official finish waits for aftermath advance.
   // Do not settle rating yet.
   if (next.aftermathPending) {
+    next = completeAdvancePhase({
+      state: next,
+      operationId: input.operationId,
+      phase: "combat",
+    });
     await battleRepo.saveBattle(next, {
       sideAUserId: meta.side_a_user_id,
       sideACharacterId: meta.side_a_character_id,
       sideBCharacterId: meta.side_b_character_id,
+      expectedRevision: next.advanceOperation?.expectedRevision,
     });
     return toBattlePublicForViewer(next, mine, null, opp);
   }
@@ -4399,14 +4463,65 @@ async function advanceTurnWithLease(input: {
     causalBucketCommit: undefined,
     causalEngineContinuation: undefined,
   };
+  next = completeAdvancePhase({
+    state: next,
+    operationId: input.operationId,
+    phase: "combat",
+  });
 
   await battleRepo.saveBattle(next, {
     sideAUserId: meta.side_a_user_id,
     sideACharacterId: meta.side_a_character_id,
     sideBCharacterId: meta.side_b_character_id,
+    expectedRevision: next.advanceOperation?.expectedRevision,
   });
 
   return toBattlePublicForViewer(next, mine, resultSummary, opp);
+}
+
+function completeAdvancePhase(input: {
+  state: BattleState;
+  operationId: string;
+  phase: "prologue" | "combat" | "aftermath";
+}): BattleState {
+  const operation = input.state.advanceOperation;
+  if (!operation || operation.operationId !== input.operationId) {
+    throw new Error("ADVANCE_OPERATION_MISSING");
+  }
+  if (operation.status === "completed") return input.state;
+  const fromRevision = operation.expectedRevision;
+  if ((input.state.battleRevision ?? 0) !== fromRevision) {
+    throw new Error("BATTLE_REVISION_CONFLICT");
+  }
+  const sequence = (input.state.phaseReceiptSequence ?? 0) + 1;
+  const toRevision = fromRevision + 1;
+  const committedAt = new Date().toISOString();
+  const receiptId = `${input.state.id}:phase:${sequence}`;
+  return {
+    ...input.state,
+    battleRevision: toRevision,
+    phaseReceiptSequence: sequence,
+    phaseReceipts: [
+      ...(input.state.phaseReceipts ?? []),
+      {
+        schemaVersion: 1 as const,
+        id: receiptId,
+        sequence,
+        operationId: input.operationId,
+        phase: input.phase,
+        combatTurn: input.phase === "combat" ? input.state.turn : null,
+        fromRevision,
+        toRevision,
+        committedAt,
+      },
+    ].slice(-100),
+    advanceOperation: {
+      ...operation,
+      status: "completed",
+      completedAt: committedAt,
+      receiptIds: [receiptId],
+    },
+  };
 }
 
 async function runPrologueTurn(input: {
@@ -4421,6 +4536,7 @@ async function runPrologueTurn(input: {
   llm: LlmProvider;
   dialoguePipeline: DialoguePipelineSettings;
   emit?: (event: BattleAdvanceStreamEvent) => void;
+  operationId: string;
 }): Promise<BattlePublic> {
   const emit = input.emit ?? (() => undefined);
   let state = input.state;
@@ -4627,7 +4743,7 @@ async function runPrologueTurn(input: {
   }
   emit({ type: "phase", phase: "finalizing" });
 
-  const next: BattleState = {
+  let next: BattleState = {
     ...state,
     openingPlanA: state.agentStateA?.currentGoal?.slice(0, 1200),
     openingPlanB: state.agentStateB?.currentGoal?.slice(0, 1200),
@@ -4636,11 +4752,17 @@ async function runPrologueTurn(input: {
     log: [...state.log, narrative],
     updatedAt: new Date().toISOString(),
   };
+  next = completeAdvancePhase({
+    state: next,
+    operationId: input.operationId,
+    phase: "prologue",
+  });
 
   await battleRepo.saveBattle(next, {
     sideAUserId: input.meta.side_a_user_id,
     sideACharacterId: input.meta.side_a_character_id,
     sideBCharacterId: input.meta.side_b_character_id,
+    expectedRevision: next.advanceOperation?.expectedRevision,
   });
 
   return toBattlePublicForViewer(next, input.mine, null, input.opp);
@@ -4658,6 +4780,7 @@ async function runAftermathTurn(input: {
   llm: LlmProvider;
   dialoguePipeline: DialoguePipelineSettings;
   emit?: (event: BattleAdvanceStreamEvent) => void;
+  operationId: string;
 }): Promise<BattlePublic> {
   const emit = input.emit ?? (() => undefined);
   let state = input.state;
@@ -4908,10 +5031,17 @@ async function runAftermathTurn(input: {
     );
   }
 
+  next = completeAdvancePhase({
+    state: next,
+    operationId: input.operationId,
+    phase: "aftermath",
+  });
+
   await battleRepo.saveBattle(next, {
     sideAUserId: input.meta.side_a_user_id,
     sideACharacterId: input.meta.side_a_character_id,
     sideBCharacterId: input.meta.side_b_character_id,
+    expectedRevision: next.advanceOperation?.expectedRevision,
   });
 
   // The winner card already states the mechanical result. The aftermath log is
@@ -4922,6 +5052,7 @@ async function runAftermathTurn(input: {
 export async function advanceTurn(input: {
   userId: string;
   battleId: string;
+  operationId?: string;
   llm: LlmProvider;
   /** Optional progressive updates (SSE). */
   onProgress?: (event: BattleAdvanceStreamEvent) => void;
@@ -4929,7 +5060,10 @@ export async function advanceTurn(input: {
   const meta = await battleRepo.getBattleMeta(input.battleId);
   if (!meta) throw new Error("BATTLE_NOT_FOUND");
   if (meta.side_a_user_id !== input.userId) throw new Error("FORBIDDEN");
-  return withBattleLease(input.battleId, () => advanceTurnWithLease(input));
+  return withBattleLease(input.battleId, () => advanceTurnWithLease({
+    ...input,
+    operationId: input.operationId ?? `legacy:${newId("advance")}`,
+  }));
 }
 
 export async function performAction(input: {

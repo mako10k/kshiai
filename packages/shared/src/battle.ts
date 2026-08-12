@@ -1443,6 +1443,8 @@ export const BattleStateSchema = z.object({
     sourceBucketIndex: z.number().int().nonnegative(),
     side: z.enum(["a", "b"]),
     status: z.enum(["accepted", "fallback"]),
+    /** Actual server-accepted intent, including deterministic fallback. */
+    acceptedAction: CharacterActionIntentSchema.nullable().optional(),
     validation: CharacterActionProposalValidationReceiptSchema,
     provider: z.string().min(1),
     model: z.string().min(1).nullable(),
@@ -1451,6 +1453,33 @@ export const BattleStateSchema = z.object({
     estimatedCostUsd: z.number().nonnegative().nullable(),
     elapsedMs: z.number().int().nonnegative(),
     fallbackReason: z.string().min(1).nullable(),
+  }).strict().optional(),
+  /** Battle-wide optimistic revision for recoverable advance operations. */
+  battleRevision: z.number().int().nonnegative().optional(),
+  /** Monotonic identity source for committed phase receipts. */
+  phaseReceiptSequence: z.number().int().nonnegative().optional(),
+  /** Bounded durable receipts; narration activation is a later task. */
+  phaseReceipts: z.array(z.object({
+    schemaVersion: z.literal(1),
+    id: z.string().min(1).max(160),
+    sequence: z.number().int().positive(),
+    operationId: z.string().min(1).max(160),
+    phase: z.enum(["prologue", "combat", "judgment", "aftermath"]),
+    combatTurn: z.number().int().nonnegative().nullable(),
+    fromRevision: z.number().int().nonnegative(),
+    toRevision: z.number().int().positive(),
+    committedAt: z.string().datetime(),
+  }).strict()).max(100).optional(),
+  /** Stable request identity persisted through intermediate bucket checkpoints. */
+  advanceOperation: z.object({
+    schemaVersion: z.literal(1),
+    operationId: z.string().min(1).max(160),
+    expectedRevision: z.number().int().nonnegative(),
+    status: z.enum(["active", "completed"]),
+    phase: z.enum(["prologue", "combat", "aftermath"]),
+    startedAt: z.string().datetime(),
+    completedAt: z.string().datetime().nullable(),
+    receiptIds: z.array(z.string().min(1).max(160)).max(4),
   }).strict().optional(),
   /**
    * Engine-internal balance metrics (not exposed on BattlePublic).

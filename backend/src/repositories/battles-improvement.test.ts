@@ -184,4 +184,57 @@ describe("character battle history tools", () => {
       "アオイ",
     );
   });
+
+  it("rejects a stale battle revision after a committed advance", async () => {
+    const meta = {
+      sideAUserId: "usr_revision",
+      sideACharacterId: characterId,
+      sideBCharacterId: opponentId,
+    };
+    const base = {
+      ...makeFinishedBattle({
+        id: "bat_revision_cas",
+        characterId,
+        opponentId,
+        selfName: "アオイ",
+        oppName: "カゲ",
+        winnerSide: "a",
+      }),
+      battleRevision: 0,
+    } satisfies BattleState;
+    await saveBattle(base, meta);
+
+    const startedAt = new Date().toISOString();
+    const stale = {
+      ...base,
+      advanceOperation: {
+        schemaVersion: 1 as const,
+        operationId: "op_stale",
+        expectedRevision: 0,
+        status: "active" as const,
+        phase: "combat" as const,
+        startedAt,
+        completedAt: null,
+        receiptIds: [],
+      },
+    };
+    const committed = {
+      ...base,
+      battleRevision: 1,
+      advanceOperation: {
+        ...stale.advanceOperation,
+        operationId: "op_committed",
+        status: "completed" as const,
+        completedAt: startedAt,
+        receiptIds: ["bat_revision_cas:phase:1"],
+      },
+    };
+    await saveBattle(committed, { ...meta, expectedRevision: 0 });
+
+    await assert.rejects(
+      saveBattle(stale, meta),
+      /BATTLE_REVISION_CONFLICT/,
+    );
+    assert.equal((await getBattle(base.id))?.battleRevision, 1);
+  });
 });

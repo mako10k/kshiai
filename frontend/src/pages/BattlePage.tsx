@@ -364,9 +364,11 @@ export function BattlePage() {
     retries: number,
   ): Promise<BattlePublic> {
     let lastErr: unknown;
+    const idempotencyKey = crypto.randomUUID();
     for (let i = 0; i <= retries; i++) {
       try {
         return await api.advanceBattleStream(battleId, {
+          idempotencyKey,
           onEvent: (event) => {
             if (cancelledRef.current) return;
             if (event.type === "phase") {
