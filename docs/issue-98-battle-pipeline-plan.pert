@@ -3,11 +3,11 @@
 project KSHIAI_ISSUE_98_CAUSAL_BATTLE_PIPELINE:
   version 6
   title "Issue #98 causal battle-pipeline renewal"
-  description "Replace the all-actions-precommitted turn path with an explicitly checkpointed causal bucket state machine. Preserve server-owned mechanics and observer-relative visibility. ADR-0001 supersedes initiative-window-v1 for new ordinary turns with sequential buckets and one persisted equal-initiative order decision. The two-combatant sequential-decision slice is separate from bounded delayed effects and from any production observation."
+  description "Replanned from clean baseline 97b5bbe. Complete durable asset generations, replace routine deep-psyche LLM calls with ADR-0004 deterministic bounded dynamics, then wire the sequential decision boundary without merging private psyche, action, expression, adjudication, or narration contexts. Learned psyche dynamics remain shadow-only until a separate adoption decision."
   as_of 2026-08-12
   duration_unit point
   velocity 2880p/1117h
-  target_duration 37p
+  target_duration 48p
   finish ISSUE_98_LOCALLY_ACCEPTED
 
 resource DEV:
@@ -36,6 +36,12 @@ milestone BUCKET_ENGINE_READY:
 milestone ASSET_GENERATIONS_READY:
   title "Battles bind immutable editable-asset generations"
 
+milestone PSYCHE_CALL_CONTRACT_ACCEPTED:
+  title "Owner accepted normalized psyche and separated-call contract"
+
+milestone DETERMINISTIC_PSYCHE_READY:
+  title "Routine private psyche no longer requires an LLM"
+
 milestone SEQUENTIAL_SLICE_READY:
   title "Later actor can decide from earlier observable committed facts"
 
@@ -44,6 +50,9 @@ milestone DURABILITY_READY:
 
 milestone NARRATION_API_READY:
   title "Narration is an independent immutable asynchronous job"
+
+milestone PSYCHE_SHADOW_READY:
+  title "A versioned lightweight learned psyche candidate runs shadow-only"
 
 milestone EFFECT_CONTRACT_ACCEPTED:
   title "Owner accepted bounded effect scope"
@@ -90,18 +99,34 @@ task T_REFACTOR_BUCKET_EXECUTION CAUSAL_CONTRACT_ACCEPTED -> BUCKET_ENGINE_READY
   requires:
     DEV 1
 
-task T_BIND_BATTLE_ASSET_GENERATIONS BUCKET_ENGINE_READY -> ASSET_GENERATIONS_READY:
-  title "Version editable assets and bind an immutable battle manifest"
-  description "Implement ADR-0003. Create immutable generations and current pointers for characters, narration styles, battlefield presets, and other authoritative editable assets; bind new battles to a validated manifest including dialogue settings and ruleset identifiers. Replace advance, agent, reconciliation, narration, and observability reads of mutable current assets with the bound generations. Preserve existing embedded field/style/settings snapshots as legacy unknown generations; never backfill missing historical facts from current assets. Test mid-battle edits, retry manifest identity, legacy reads, and administrator generation display."
-  duration 5p
+task T_COMPLETE_ASSET_GENERATIONS BUCKET_ENGINE_READY -> ASSET_GENERATIONS_READY:
+  title "Complete durable generations and a minimal normalized battle manifest"
+  description "Implement ADR-0003 beyond the baseline. Add append-only generations and current pointers for editable authoritative assets, transactional edit semantics, historical reads, retention identity, and versioned canonical normalization/digests. Replace full CharacterSheet snapshots with a minimal battle-authoritative character generation excluding records, owner memories, revision buffers, and unrelated mutable fields. Bind field preset generation plus concrete derivation, narration style, dialogue settings, rules, psyche contracts, and later narration jobs. Fail closed for new battles; isolate legacy unknowns without reading current rows as historical truth. Test mid-battle edits, retry identity, privacy, legacy reads, and administrator display."
+  duration 4p
   owner "codex"
   requires:
     DEV 1
 
-task T_WIRE_SEQUENTIAL_DECISION ASSET_GENERATIONS_READY -> SEQUENTIAL_SLICE_READY:
-  title "Wire observer-safe later-bucket decision and phase receipts"
-  description "For distinct initiative buckets, commit the first server-owned bucket, apply the contractually selected semantic/world observation boundary, project only committed observer-visible facts, then request, validate, and resolve the later actor action. Specify whether the first actor remains a legacy reservation in this first slice or also decides in-turn. Keep same-bucket actors parallel from the same snapshot. Record source-linked pre-action expression, action, consequence, and post-action expression receipts; do not create a speech or action after a provider failure."
+task T_ACCEPT_PSYCHE_CALL_CONTRACT ASSET_GENERATIONS_READY -> PSYCHE_CALL_CONTRACT_ACCEPTED:
+  title "Accept normalized psyche features and separated LLM-call budgets"
+  description "Specify and owner-accept ADR-0004 details: explicit psyche dimensions and parameter bounds; observer-safe input features; PsycheTraitProfile controlled vocabulary; Unicode, alias, ordering, default, unknown/absent/neutral, scale, clamp, quantization, contradiction, and canonical-serialization normalization; independent least-authority projections for action and expression; deterministic expression-call gating; normal-turn call ceilings; provider-failure behavior; private receipt retention; and shadow-model evaluation thresholds. Do not authorize context merging or authoritative learned weights."
+  duration 3p
+  owner "user"
+  requires:
+    OWNER 1
+
+task T_IMPLEMENT_DETERMINISTIC_PSYCHE PSYCHE_CALL_CONTRACT_ACCEPTED -> DETERMINISTIC_PSYCHE_READY:
+  title "Replace routine deep-psyche LLM calls with bounded state dynamics"
+  description "Implement a versioned deterministic psyche engine with baseline state, appraisal sensitivities, cross-dimension gains/inhibition, recovery/decay, action projection, expression projection, and reason-coded contribution receipts. Consume only server-normalized observer-relative features and the battle-bound PsycheTraitProfile. Preserve action and expression as separate consumers; never expose raw private state. Verify replay, bounds, profile differences, unrelated-sheet invariance, fallback, and administrator-safe observability."
   duration 4p
+  owner "codex"
+  requires:
+    DEV 1
+
+task T_WIRE_SEQUENTIAL_DECISION DETERMINISTIC_PSYCHE_READY -> SEQUENTIAL_SLICE_READY:
+  title "Wire observer-safe later-bucket decision and phase receipts"
+  description "At turn N finalization, determine and persist turn N+1 initiative/order before requesting the selected first actor reservation; never reserve before order exists. At turn N+1 advance, commit the first bucket, apply immediate server-owned semantic/world facts needed for observation, project only committed observer-visible facts, then independently request, validate, and resolve the later actor action and any deterministically eligible expression. Keep private psyche, action, and expression contexts separate. Record call counts, token usage, skip/fallback reason, source-linked expression/action/consequence receipts, and terminal/invalid/timeout outcomes without publishing private prompts."
+  duration 5p
   owner "codex"
   requires:
     DEV 1
@@ -122,7 +147,15 @@ task T_SEPARATE_ADVANCE_NARRATION DURABILITY_READY -> NARRATION_API_READY:
   requires:
     DEV 1
 
-task T_ACCEPT_EFFECT_SCOPE NARRATION_API_READY -> EFFECT_CONTRACT_ACCEPTED:
+task T_BUILD_PSYCHE_LEARNING_SHADOW NARRATION_API_READY -> PSYCHE_SHADOW_READY:
+  title "Build a lightweight learned psyche shadow candidate"
+  description "Define accepted trajectory/evaluation records without treating deterministic self-distillation as independent truth. Train or adapt a small bounded transition network from explicit normalized features. Condition only on an embedding of the normalized canonical PsycheTraitProfile string, never the whole character. Version normalizer, feature contract, embedding model/vector digest, architecture, weights, quantization, and fallback. Run shadow-only against deterministic receipts; include Chordia, FAtiMA/ALMA-derived expectations, and PELD-style personality transition only as references or comparison candidates. No learned output changes battle state in this task."
+  duration 3p
+  owner "codex"
+  requires:
+    DEV 1
+
+task T_ACCEPT_EFFECT_SCOPE PSYCHE_SHADOW_READY -> EFFECT_CONTRACT_ACCEPTED:
   title "Accept bounded effect provenance and deferred-effect scope"
   description "Owner decides the initial server-defined predicates, due/expiry/cancel semantics, observer visibility, and retention. Scope is restricted to effects on the existing two combatants and existing world entities; reinforcements or new combat participants require a separate participant-lifecycle design and approval."
   duration 1p
