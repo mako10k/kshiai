@@ -32,6 +32,14 @@ Character differences must affect not only the initial emotional state but also 
 
 ## Decision
 
+The layered decomposition, named state dimensions, candidate neural structures,
+and rollout phases in the detailed design are a reference target rather than a
+required implementation shape. Later plans may combine, split, rename, omit, or
+reorder those elements when evidence supports it, but must record how each
+reference concern is addressed or intentionally deferred. The authority,
+privacy, non-direct-action, psyche-only-input, boundedness, and version-binding
+constraints below remain controlling.
+
 ### Stable component boundaries
 
 The psyche engine consumes only a private, server-validated feature packet derived from the character's observer-relative perception, prior private psyche state, and battle-frozen psyche trait profile. It emits a bounded private state plus reason-coded transition evidence.

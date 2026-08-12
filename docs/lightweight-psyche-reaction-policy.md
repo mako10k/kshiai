@@ -17,6 +17,20 @@ Related: [Observer-relative battle perception](battle-perception.md), [Battle se
 
 本モジュールは人間心理一般を正確に再現するモデルではない。対象キャラクターについて、設計者が望む一貫した反応傾向を、観測可能な経験と持続状態から生成する**キャラクター反応ポリシー**である。「深層心理」はゲーム内部の非公開・持続的なキャラクター状態を指す製品用語であり、臨床的・心理学的診断を意味しない。
 
+### 0.1 目標像の扱い
+
+本書の五層分割、入力group、出力head、状態更新式、モデル候補、Phase順序は、現時点の**理想的な参照モデル**であって、将来実装がその形を忠実に再現することを要求しない。既存コードへの適合、データ品質、評価結果、推論コスト、運用可能性に応じて、項目の統合・分割・省略・名称変更・導入順序変更を認める。
+
+ただし、形を変更する場合も、本書で挙げる要素を設計レビューのチェックリストとして参照し、採用、代替、延期、不要のいずれかと理由を記録する。たとえば三つの独立headを一つの共有表現から導出してもよいが、emotion、interpretation、impulseが概念上混同され、衝動がそのまま行動命令になる設計は避ける。
+
+形より優先する制約は次である。
+
+- observer-relativeな入力境界とprivate stateの非公開性。
+- reaction outputが発話、行動、mechanics、勝敗を直接決定しないこと。
+- LLM削減を理由に異なるauthorityのcontextを無検討に統合しないこと。
+- 入力、正規化、モデル、評価器、データの世代と比較可能性を保持すること。
+- 未確認事項を現在仕様や心理学的事実として扱わないこと。
+
 ## 1. 背景と目的
 
 ### 1.1 現在の構成
@@ -86,7 +100,7 @@ canonical mechanics / semantic world
 
 ### 3.1 責務の五層
 
-**提案:** 製品上の概念を次の五層に分ける。
+**提案:** 製品上の責務を検討するため、次の五層を参照モデルとする。実装module数やAPI境界を五つに固定するものではない。
 
 | 層 | 主な責務 | authority |
 | --- | --- | --- |
@@ -332,7 +346,7 @@ action/expression proposals -> server validation -> canonical adjudication
 
 ### 6.1 基本更新候補
 
-**提案:** 毎turn全状態を再生成せず、前状態の減衰と今回reactionをserver-owned update policyで合成する。
+**提案:** 毎turn全状態を再生成せず、前状態の減衰と今回reactionをserver-owned update policyで合成する方式を第一の参照候補とする。評価上より安定した別方式があれば置換できる。
 
 ```text
 decayed_state = decay(prior_state, trait_profile, elapsed_steps)
@@ -619,7 +633,7 @@ qualityは上書き履歴を消さず、transition receiptを残す。goldとsil
 
 ## 13. 段階的な導入計画
 
-依頼されたPhase 0〜5を維持しつつ、各phaseにpromotion gateを置く。理由は、schema、evaluator、model、runtimeを同時変更すると改善原因とrollback単位が失われるためである。
+依頼されたPhase 0〜5を基準順序として示し、各phaseにpromotion gateを置く。これは固定工程ではなく、少量PoCの前倒し、評価器準備の反復、Phase間の往復を許容する。変更時にも、schema、evaluator、model、runtimeを無秩序に同時変更せず、比較可能性とrollback単位を残す。
 
 ### Phase 0: 契約・ontology・固定評価セット
 
@@ -719,7 +733,7 @@ Gate: broader adoptionは別owner approval。production release、deployment、d
 
 ## 15. 将来の実装候補
 
-以下は順序候補であり、今回の実装項目ではない。
+以下は要素を見落とさないための順序候補であり、今回の実装項目でも必須実装順でもない。各要素は実装計画時に採用、代替、延期、不要を判断する。
 
 1. sharedにserver-private conceptual schemasを追加する。
 2. committed evidenceから`NormalizedExperience`を作る決定的feature builderを追加する。
