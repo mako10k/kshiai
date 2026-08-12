@@ -94,7 +94,7 @@ task T_WIRE_SEQUENTIAL_DECISION BUCKET_ENGINE_READY -> SEQUENTIAL_SLICE_READY:
 
 task T_HARDEN_CAUSAL_DURABILITY SEQUENTIAL_SLICE_READY -> DURABILITY_READY:
   title "Verify checkpoint recovery, idempotency, and public stream ordering"
-  description "Bind request idempotency, battle lease/version, committed bucket receipt, and final response transactionally or with an explicit recoverable outbox. A retry returns the durable committed result rather than rerunning LLM work. Hold the frontend idempotency key across reconnect retries. Emit new public causal bucket events only after their durable commit; keep progress and private trace out of public SSE replay. Test disconnect/reconnect, save succeeds but response completion fails, later LLM timeout after first commit, and stale concurrent advance."
+  description "Bind request idempotency, battle lease/version, committed bucket receipt, and final response transactionally or with an explicit recoverable outbox. A retry returns the durable committed result rather than rerunning LLM work. Hold the frontend idempotency key across reconnect retries. Emit new public causal bucket events only after their durable commit; keep progress and private trace out of public SSE replay. Extend administrator internal observations from persisted data with initiative scores, reads-from/commit mode, active and committed buckets, phase receipts, canonical transitions, and narrator ordering; legacy records remain explicitly unavailable rather than inferred. Test disconnect/reconnect, save succeeds but response completion fails, later LLM timeout after first commit, stale concurrent advance, and observability DTO/UI compatibility."
   duration 3p
   owner "codex"
   requires:
@@ -142,7 +142,7 @@ task T_ACCEPT_PACING_POLICY PACING_MEASURED -> PACING_POLICY_ACCEPTED:
 
 task T_ACCEPT_ISSUE_98 PACING_POLICY_ACCEPTED -> ISSUE_98_LOCALLY_ACCEPTED:
   title "Accept Issue #98 locally and prepare release-decision evidence"
-  description "Run focused shared/backend fixtures plus full test, typecheck, build, migration, limited schedule replay, checkpoint recovery, A/B swap, simultaneous bucket, privacy across DTO/SSE/trace/LLM payload, and provider failure tests. Inspect the internal DAG for durable phase order and provenance. Record release success criteria, rollback target, and a separately authorized production-observation protocol, but do not tag, deploy, promote, mutate the Issue, or change production configuration."
+  description "Run focused shared/backend/frontend fixtures plus full test, typecheck, build, migration, limited schedule replay, checkpoint recovery, A/B swap, simultaneous bucket, privacy across DTO/SSE/trace/LLM payload, and provider failure tests. Inspect the administrator internal DAG against persisted receipts for durable phase order and provenance, including partial checkpoint and legacy-unavailable displays. Record release success criteria, rollback target, and a separately authorized production-observation protocol, but do not tag, deploy, promote, mutate the Issue, or change production configuration."
   duration 3p
   owner "codex"
   requires:

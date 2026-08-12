@@ -26,7 +26,7 @@
 | 0: 契約ドラフト (4p) | authority matrix、state machine、checkpoint、visibility/SSE、retry、OBS-09 disposition | 次 phase の仕様を承認 | LLM→永続 state/winner edge と public/private trace を全列挙 |
 | 1a: bucket engine (4p) | pure prepare/resolve-bucket/finalize、再入可能な checkpoint | - | 既存 simultaneous atomic merge と A/B swap を維持 |
 | 1b: 順次判断 (4p) | first commit →可視 projection→later decision/validation/commit、phase receipt | action source と semantic/world 可視時点 | private intent を渡さず、KO/invalid/timeout を理由付き処理 |
-| 1c: durability/SSE (3p) | lease/idempotency/outbox、reconnect、durable public event | - | save後応答失敗・後攻 LLM timeout でも二重 commit なし |
+| 1c: durability/SSE/可視化 (3p) | lease/idempotency/outbox、reconnect、durable public event、管理者向け causal DAG | - | save後応答失敗・後攻 LLM timeout でも二重 commit なし。active/committed bucket と phase receipt を永続記録から表示 |
 | 2: effect scope (1p) | predicate、cancel/expiry、visibility、2 combatant制限 | effect contract を承認 | 援軍・新 combat participant は今回の範囲外 |
 | 3: provenance/effect (7p) | tagged receipt、bounded pending effect、limited replay | - | delayed hit と condition の各1 fixture。proseから effect を作らない |
 | 4: local pacing (3p) | policy snapshot、最大12 candidate の局所計測 | retain/revise/adopt を承認 | forced terminal/KO率を含む比較。平均8は仮説 |
@@ -53,6 +53,6 @@
 
 ## 検証とリリース境界
 
-最終受入では `npm test`、`npm run typecheck`、`npm run build` に加え、migration、限定 replay、checkpoint recovery、save 成功後の response failure、concurrent advance、SSE reconnect、A/B swap、同時 bucket、DTO/SSE/DB trace/LLM payload の privacy、provider failure を確認する。
+最終受入では `npm test`、`npm run typecheck`、`npm run build` に加え、migration、限定 replay、checkpoint recovery、save 成功後の response failure、concurrent advance、SSE reconnect、A/B swap、同時 bucket、DTO/SSE/DB trace/LLM payload の privacy、provider failure を確認する。管理者向け内部戦闘観測では、永続 checkpoint と turn record だけを根拠に initiative score、bucket の reads-from/commit mode、active/committed 状態、判断・検証・結果・semantic/world transition・narrator の順序を表示し、旧記録は推測せず unavailable とする。
 
 tag、deploy、Cloud Run/Worker promotion、production E2E、Issue 更新・close は含まない。local acceptance の証拠と rollback target を揃えた後、別途 owner が承認する。
