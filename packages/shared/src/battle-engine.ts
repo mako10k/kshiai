@@ -1,5 +1,6 @@
 import type {
   BattleAction,
+  BattleBucketMechanicalCommit,
   BattlePolicyOption,
   BattleStance,
   BattleState,
@@ -1652,6 +1653,7 @@ export type ResolveTurnInput = {
   }>;
   /** Persisted ADR-0001 plan selected before any action provider call. */
   temporalResolutionOverride?: BattleTemporalPlan;
+  executionId?: string;
 };
 
 type PreparedBattleTurnStart = {
@@ -1866,6 +1868,7 @@ export function resolveTurn(input: ResolveTurnInput): {
   events: TurnEvent[];
   actions: ResolvedBattleAction[];
   mechanicalEvidence: CommittedMechanicalEvidence[];
+  bucketCommits?: BattleBucketMechanicalCommit[];
 } {
   if (input.state.status !== "active") {
     return {
@@ -2036,6 +2039,7 @@ export function resolveTurn(input: ResolveTurnInput): {
       },
     },
   ];
+  const bucketCommits: BattleBucketMechanicalCommit[] = [];
 
   const sideIndex = (side: BattleTemporalSide) => side === "a" ? 0 : 1;
   const skillsFor = (side: BattleTemporalSide) =>
@@ -2326,7 +2330,33 @@ export function resolveTurn(input: ResolveTurnInput): {
   };
 
   for (const bucket of temporalResolution.buckets) {
+    const eventStart = events.length;
+    const spanStart = mechanicalSpans.length;
     resolveTemporalBucket(bucket);
+    const finalizedSoFar = events.map((event, index) => ({
+      ...event,
+      id: event.id ?? `turn-${turn}-event-${index + 1}`,
+    }));
+    bucketCommits.push({
+      schemaVersion: 1,
+      executionId: input.executionId ?? `${input.state.id}:turn:${turn}`,
+      turn,
+      bucketIndex: bucket.index,
+      actorSides: [...bucket.actorSides],
+      sideA: cloneCombatant(sideA),
+      sideB: cloneCombatant(sideB),
+      situation,
+      finisherA: finisherA ?? null,
+      finisherB: finisherB ?? null,
+      actions: bucket.actorSides.map((side) => actions[sideIndex(side)]!),
+      events: finalizedSoFar.slice(eventStart),
+      mechanicalEvidence: committedMechanicalEvidence({
+        turn,
+        spans: mechanicalSpans.slice(spanStart),
+        events: finalizedSoFar,
+      }),
+      defensiveInstrumentMultipliers: { ...defensiveInstrumentMultipliers },
+    });
   }
 
   // Incapacity flags
@@ -2440,6 +2470,7 @@ export function resolveTurn(input: ResolveTurnInput): {
       spans: mechanicalSpans,
       events: finalizedEvents,
     }),
+    bucketCommits,
   };
 }
 

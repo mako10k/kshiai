@@ -315,6 +315,13 @@ export function InternalObservationsPage() {
                       <div><dt>期待 revision</dt><dd>{detail.canonicalCurrent.causalExecution.expectedStateRevision}</dd></div>
                       <div><dt>判断済み side</dt><dd>{detail.canonicalCurrent.causalExecution.decidedSides.join(", ") || "—"}</dd></div>
                     </dl>
+                    {detail.canonicalCurrent.causalBucketCommit ? (
+                      <PipelineNode
+                        title="Durable bucket mechanics receipt"
+                        subtitle="後攻判断前に保存済み"
+                        value={detail.canonicalCurrent.causalBucketCommit}
+                      />
+                    ) : null}
                   </>
                 ) : (
                   <p className="muted">checkpointなし（旧形式、またはbucket実行開始前）</p>

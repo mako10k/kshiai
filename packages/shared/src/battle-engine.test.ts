@@ -1450,6 +1450,14 @@ describe("battle engine", () => {
     assert.equal(resolved.actions[0]?.executed, false);
     assert.equal(resolved.actions[0]?.skippedReason, "incapacitated_before_action");
     assert.equal(resolved.state.winnerSide, "b");
+    assert.equal(resolved.bucketCommits?.length, 2);
+    assert.deepEqual(resolved.bucketCommits?.[0]?.actorSides, ["b"]);
+    assert.equal(resolved.bucketCommits?.[0]?.sideA.parameters.hp, 0);
+    assert.deepEqual(resolved.bucketCommits?.[1]?.actions, [resolved.actions[0]]);
+    assert.doesNotThrow(() => BattleStateSchema.parse({
+      ...state,
+      causalBucketCommit: resolved.bucketCommits?.[0],
+    }));
   });
 
   it("applies same-bucket defense before either attack is evaluated", () => {

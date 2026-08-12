@@ -3365,13 +3365,6 @@ async function advanceTurnWithLease(input: {
     });
   }
 
-  const freeActionPreparation = await prepareFreeActionsForTurn({
-    llm: input.llm,
-    state,
-    mine,
-    opp,
-  });
-
   const engineResolved = resolveTurn({
     state,
     sideASkills: safeSkills(mine.skills),
@@ -3379,6 +3372,40 @@ async function advanceTurnWithLease(input: {
     sideABasicAttack: mine.basicAttack,
     sideBBasicAttack: opp.basicAttack,
     temporalResolutionOverride: causalExecution.temporalPlan,
+    executionId: causalExecution.executionId,
+  });
+  const firstBucketCommit = engineResolved.bucketCommits?.[0];
+  if (!firstBucketCommit) throw new Error("CAUSAL_FIRST_BUCKET_COMMIT_MISSING");
+  if (state.causalBucketCommit) {
+    if (JSON.stringify(state.causalBucketCommit) !== JSON.stringify(firstBucketCommit)) {
+      throw new Error("CAUSAL_FIRST_BUCKET_REPLAY_MISMATCH");
+    }
+  } else {
+    const firstBucket = causalExecution.temporalPlan.buckets[0];
+    if (!firstBucket) throw new Error("CAUSAL_FIRST_BUCKET_MISSING");
+    for (const side of firstBucket.actorSides) {
+      causalExecution = acceptCausalExecutionDecision({
+        execution: causalExecution,
+        side,
+      });
+    }
+    causalExecution = commitCausalExecutionBucket({ execution: causalExecution });
+    state = {
+      ...state,
+      causalExecution,
+      causalBucketCommit: firstBucketCommit,
+    };
+    await battleRepo.saveBattle(state, {
+      sideAUserId: meta.side_a_user_id,
+      sideACharacterId: meta.side_a_character_id,
+      sideBCharacterId: meta.side_b_character_id,
+    });
+  }
+  const freeActionPreparation = await prepareFreeActionsForTurn({
+    llm: input.llm,
+    state,
+    mine,
+    opp,
   });
   const committedFreeActions = commitFreeActionAdjudications({
     beforeState: state,
@@ -3999,7 +4026,11 @@ async function advanceTurnWithLease(input: {
   if (finishedExecution.status === "awaiting_finalize") {
     finishedExecution = finishCausalTurnExecution({ execution: finishedExecution });
   }
-  next = { ...next, causalExecution: finishedExecution };
+  next = {
+    ...next,
+    causalExecution: finishedExecution,
+    causalBucketCommit: undefined,
+  };
 
   await battleRepo.saveBattle(next, {
     sideAUserId: meta.side_a_user_id,

@@ -132,6 +132,7 @@ export async function getInternalBattleObservation(
   canonicalTimeline: CanonicalTurnProgression[];
   canonicalCurrent: {
     causalExecution: unknown | null;
+    causalBucketCommit: unknown | null;
     semanticState: unknown | null;
     worldState: unknown | null;
     latestSemanticTransition: unknown | null;
@@ -204,6 +205,7 @@ export async function getInternalBattleObservation(
     canonicalTimeline,
     canonicalCurrent: {
       causalExecution: rawBattleState.causalExecution ?? null,
+      causalBucketCommit: rawBattleState.causalBucketCommit ?? null,
       semanticState: rawBattleState.semanticState ?? null,
       worldState: rawBattleState.worldState ?? null,
       latestSemanticTransition: rawBattleState.latestSemanticTransition ?? null,

@@ -20,6 +20,7 @@ import { FreeActionResolutionReceiptSchema } from "./free-action.js";
 import { DramaStateSchema } from "./drama.js";
 import { BattleDialoguePipelineSnapshotSchema } from "./dialogue-pipeline.js";
 import {
+  CommittedMechanicalEvidenceSetSchema,
   CharacterPerceptionFrameASchema,
   CharacterPerceptionFrameBSchema,
   ObserverContactRegistryASchema,
@@ -1059,6 +1060,29 @@ export const SupervisorStateSchema = z.object({
 });
 export type SupervisorState = z.infer<typeof SupervisorStateSchema>;
 
+export const BattleBucketMechanicalCommitSchema = z.object({
+  schemaVersion: z.literal(1),
+  executionId: z.string().min(1).max(160),
+  turn: z.number().int().positive(),
+  bucketIndex: z.number().int().nonnegative(),
+  actorSides: z.array(z.enum(["a", "b"])).min(1).max(2),
+  sideA: CombatantStateSchema,
+  sideB: CombatantStateSchema,
+  situation: SituationSchema,
+  finisherA: FinisherStateSchema.nullable(),
+  finisherB: FinisherStateSchema.nullable(),
+  actions: z.array(ResolvedBattleActionSchema).max(2),
+  events: z.array(TurnEventSchema),
+  mechanicalEvidence: CommittedMechanicalEvidenceSetSchema,
+  defensiveInstrumentMultipliers: z.object({
+    a: z.number().positive(),
+    b: z.number().positive(),
+  }).strict(),
+}).strict();
+export type BattleBucketMechanicalCommit = z.infer<
+  typeof BattleBucketMechanicalCommitSchema
+>;
+
 export const BattleStateSchema = z.object({
   id: z.string(),
   /** Present after narrator/speech/perception authority migration. */
@@ -1203,6 +1227,8 @@ export const BattleStateSchema = z.object({
    * execution revision.
    */
   causalExecution: CausalTurnExecutionSchema.optional(),
+  /** Durable first-bucket mechanics while the later decision is pending. */
+  causalBucketCommit: BattleBucketMechanicalCommitSchema.optional(),
   /**
    * Engine-internal balance metrics (not exposed on BattlePublic).
    * Accumulated from HP deltas each combat turn for observability.
