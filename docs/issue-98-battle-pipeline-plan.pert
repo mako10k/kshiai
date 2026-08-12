@@ -65,6 +65,7 @@ task T_SEPARATE_ACTION_EFFECTS EFFECT_CONTRACT_ACCEPTED -> EFFECT_LIFECYCLE_READ
   title "Separate action, effect, world, and system provenance"
   description "Add versioned bounded receipts with tagged provenance: action, scheduled effect, system/rules stage, or environment/world transition. Link new public consequences and deltas to exactly one such receipt while retaining lawful start-turn restoration and other system-origin events. Do not infer causal links from prose. Migrate turn records additively; define replay narrowly as pure pending-effect schedule resolution, not unsupported full semantic or full-turn replay."
   duration 4p
+  status active
   owner "codex"
   requires:
     DEV 1
@@ -100,3 +101,10 @@ task T_ACCEPT_ISSUE_98 PACING_POLICY_ACCEPTED -> ISSUE_98_LOCALLY_ACCEPTED:
   owner "codex"
   requires:
     DEV 1
+
+work_event WE-7e1e6db2c59a4ac0c4fa7b0328e40f2065ef143e890bb1be55c2d64a2cd51463:
+  model 1
+  task T_SEPARATE_ACTION_EFFECTS
+  kind start
+  occurred_at 2026-08-12T17:31:10+09:00
+  planned_value 4p
