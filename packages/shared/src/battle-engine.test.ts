@@ -17,6 +17,7 @@ import {
   resolveNextBattleTurnBucket,
   materializeBattleStateAtBucketBoundary,
   committedActionsAtBucketBoundary,
+  bindNextBucketDecision,
   resolveTurn,
 } from "./battle-engine.js";
 import { defaultParameters, type CharacterSheet } from "./character.js";
@@ -1435,6 +1436,28 @@ describe("battle engine", () => {
       ),
       false,
     );
+
+    const revisedState = bindNextBucketDecision({
+      state,
+      continuation: first.engineContinuation,
+      side: "b",
+      intent: { kind: "defend" },
+    });
+    const revised = resolveNextBattleTurnBucket({
+      ...common,
+      state: revisedState,
+      engineContinuation: first.engineContinuation,
+    });
+    assert.equal(revised.actions[0]?.kind, "basic_attack");
+    assert.equal(revised.actions[0]?.executed, true);
+    assert.equal(revised.actions[1]?.kind, "defend");
+    assert.equal(revised.actions[1]?.executed, true);
+    assert.throws(() => bindNextBucketDecision({
+      state,
+      continuation: first.engineContinuation!,
+      side: "a",
+      intent: { kind: "wait" },
+    }), /not in the unresolved next bucket|committed/);
 
     const serializedContinuation = JSON.parse(JSON.stringify(first.engineContinuation));
     const resumed = resolveNextBattleTurnBucket({

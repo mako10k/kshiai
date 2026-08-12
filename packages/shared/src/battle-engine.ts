@@ -17,6 +17,7 @@ import type {
   TurnEvent,
 } from "./battle.js";
 import {
+  CharacterActionIntentSchema,
   BattleTurnEngineContinuationSchema,
   clampCoefficient,
   isCombatantDown,
@@ -1729,6 +1730,35 @@ export function committedActionsAtBucketBoundary(
   return BattleTurnEngineContinuationSchema.parse(continuation).actions
     .filter((action) => action.executed)
     .map((action) => structuredClone(action));
+}
+
+/**
+ * Bind a freshly validated intent only to the unresolved next bucket. The
+ * committed predecessor remains immutable inside the continuation.
+ */
+export function bindNextBucketDecision(input: {
+  state: BattleState;
+  continuation: BattleTurnEngineContinuation;
+  side: BattleTemporalSide;
+  intent: CharacterActionIntent;
+}): BattleState {
+  const continuation = BattleTurnEngineContinuationSchema.parse(input.continuation);
+  const nextBucket = continuation.temporalResolution.buckets[continuation.nextBucketIndex];
+  if (!nextBucket || !nextBucket.actorSides.includes(input.side)) {
+    throw new Error("decision side is not in the unresolved next bucket");
+  }
+  const committedSides = new Set(
+    continuation.temporalResolution.buckets
+      .slice(0, continuation.nextBucketIndex)
+      .flatMap((bucket) => bucket.actorSides),
+  );
+  if (committedSides.has(input.side)) {
+    throw new Error("cannot replace a committed bucket decision");
+  }
+  const intent = CharacterActionIntentSchema.parse(input.intent);
+  return input.side === "a"
+    ? { ...input.state, plannedActionA: intent }
+    : { ...input.state, plannedActionB: intent };
 }
 
 /** Deterministically applies the once-per-turn setup before initiative. */
