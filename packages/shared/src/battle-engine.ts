@@ -1631,7 +1631,7 @@ function applyHpDamage(
  * - preEvents: environmental happenings before combat
  * - envHits: light mechanical pressure from the field
  */
-export function resolveTurn(input: {
+export type ResolveTurnInput = {
   state: BattleState;
   /** Optional override; when omitted, stanceA drives side A. */
   playerAction?: BattleAction;
@@ -1647,32 +1647,21 @@ export function resolveTurn(input: {
     kind: "damage" | "heal" | "disrupt";
     intensity: "minor" | "moderate";
   }>;
-}): {
-  state: BattleState;
-  events: TurnEvent[];
-  actions: ResolvedBattleAction[];
-  mechanicalEvidence: CommittedMechanicalEvidence[];
-} {
-  if (input.state.status !== "active") {
-    return {
-      state: input.state,
-      events: [],
-      actions: [],
-      mechanicalEvidence: [],
-    };
-  }
-  // Prologue / aftermath are resolved outside the combat engine (LLM beats).
-  if (input.state.prologuePending || input.state.aftermathPending) {
-    return {
-      state: input.state,
-      events: [],
-      actions: [],
-      mechanicalEvidence: [],
-    };
-  }
+};
 
-  let sideA = cloneCombatant(input.state.sideA);
-  let sideB = cloneCombatant(input.state.sideB);
+type PreparedBattleTurnStart = {
+  sideA: CombatantState;
+  sideB: CombatantState;
+  situation: Situation;
+  events: TurnEvent[];
+  mechanicalSpans: MechanicalResolutionSpan[];
+  turn: number;
+};
+
+/** Deterministically applies the once-per-turn setup before initiative. */
+function prepareBattleTurnStart(input: ResolveTurnInput): PreparedBattleTurnStart {
+  const sideA = cloneCombatant(input.state.sideA);
+  const sideB = cloneCombatant(input.state.sideB);
   sideA.defending = false;
   sideB.defending = false;
 
@@ -1685,8 +1674,6 @@ export function resolveTurn(input: {
   const events: TurnEvent[] = [];
   const mechanicalSpans: MechanicalResolutionSpan[] = [];
   const turn = input.state.turn + 1;
-  let finisherA = normalizeFinisher(input.state.finisherA, input.sideASkills);
-  let finisherB = normalizeFinisher(input.state.finisherB, input.sideBSkills);
 
   if (turn > 1) {
     for (const [combatant, actorSide] of [
@@ -1717,7 +1704,6 @@ export function resolveTurn(input: {
     }
   }
 
-  // Battlefield flavor event occasionally when obstacles/conditions matter
   if (turn === 1 && input.state.battlefield) {
     const bf = input.state.battlefield;
     const bits = [
@@ -1733,13 +1719,43 @@ export function resolveTurn(input: {
     }
   }
 
-  if (input.preEvents?.length) {
-    events.push(...input.preEvents);
-  }
-
+  if (input.preEvents?.length) events.push(...input.preEvents);
   if (input.envHits?.length) {
     applyEnvHits(sideA, sideB, input.envHits, events, mechanicalSpans);
   }
+
+  return { sideA, sideB, situation, events, mechanicalSpans, turn };
+}
+
+export function resolveTurn(input: ResolveTurnInput): {
+  state: BattleState;
+  events: TurnEvent[];
+  actions: ResolvedBattleAction[];
+  mechanicalEvidence: CommittedMechanicalEvidence[];
+} {
+  if (input.state.status !== "active") {
+    return {
+      state: input.state,
+      events: [],
+      actions: [],
+      mechanicalEvidence: [],
+    };
+  }
+  // Prologue / aftermath are resolved outside the combat engine (LLM beats).
+  if (input.state.prologuePending || input.state.aftermathPending) {
+    return {
+      state: input.state,
+      events: [],
+      actions: [],
+      mechanicalEvidence: [],
+    };
+  }
+
+  const prepared = prepareBattleTurnStart(input);
+  let { sideA, sideB } = prepared;
+  const { situation, events, mechanicalSpans, turn } = prepared;
+  let finisherA = normalizeFinisher(input.state.finisherA, input.sideASkills);
+  let finisherB = normalizeFinisher(input.state.finisherB, input.sideBSkills);
 
   const forceOffense = (input.state.supervisor?.passiveTurns ?? 0) >= 2;
   if (forceOffense) {
