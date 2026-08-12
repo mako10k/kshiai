@@ -1666,6 +1666,10 @@ export type ResolveTurnInput = {
   engineContinuation?: BattleTurnEngineContinuation;
   /** Resolve only the next temporal bucket and return a continuation. */
   stopAfterNextBucket?: boolean;
+  /** Prepare a durable continuation without resolving a temporal bucket. */
+  prepareOnly?: boolean;
+  /** Return a continuation after the selected buckets, including at finalize. */
+  deferFinalize?: boolean;
 };
 
 type PreparedBattleTurnStart = {
@@ -2024,7 +2028,7 @@ export function resolveTurn(input: ResolveTurnInput): {
       sideB,
       situation,
     });
-  if (input.temporalResolutionOverride) {
+  if (input.temporalResolutionOverride && !resumed) {
     const expectedScores = buildPreparedTemporalResolution({
       state: input.state,
       sideA,
@@ -2355,9 +2359,11 @@ export function resolveTurn(input: ResolveTurnInput): {
   };
 
   const firstBucketIndex = resumed?.nextBucketIndex ?? 0;
-  const bucketsToResolve = input.stopAfterNextBucket
-    ? temporalResolution.buckets.slice(firstBucketIndex, firstBucketIndex + 1)
-    : temporalResolution.buckets.slice(firstBucketIndex);
+  const bucketsToResolve = input.prepareOnly
+    ? []
+    : input.stopAfterNextBucket
+      ? temporalResolution.buckets.slice(firstBucketIndex, firstBucketIndex + 1)
+      : temporalResolution.buckets.slice(firstBucketIndex);
   for (const bucket of bucketsToResolve) {
     const eventStart = events.length;
     const spanStart = mechanicalSpans.length;
@@ -2408,7 +2414,14 @@ export function resolveTurn(input: ResolveTurnInput): {
     ...newMechanicalEvidence,
   ]);
   const nextBucketIndex = firstBucketIndex + bucketsToResolve.length;
-  if (input.stopAfterNextBucket && nextBucketIndex < temporalResolution.buckets.length) {
+  if (
+    input.prepareOnly ||
+    (input.deferFinalize && (
+      input.stopAfterNextBucket ||
+      nextBucketIndex === temporalResolution.buckets.length
+    )) ||
+    (input.stopAfterNextBucket && nextBucketIndex < temporalResolution.buckets.length)
+  ) {
     const engineContinuation = BattleTurnEngineContinuationSchema.parse({
       schemaVersion: 1,
       executionId: input.executionId ?? resumed?.executionId ??
@@ -2550,11 +2563,96 @@ export function resolveTurn(input: ResolveTurnInput): {
   };
 }
 
+/** Prepares turn-start state, actions, and ordering without resolving a bucket. */
+export function prepareBattleTurnExecution(
+  input: Omit<ResolveTurnInput, "engineContinuation" | "stopAfterNextBucket" | "prepareOnly" | "deferFinalize">,
+): BattleTurnEngineContinuation | null {
+  const prepared = resolveTurn({
+    ...input,
+    prepareOnly: true,
+    deferFinalize: true,
+  });
+  return prepared.engineContinuation ?? null;
+}
+
+export type BattleTurnBucketExecutionResult = {
+  continuation: BattleTurnEngineContinuation;
+  commit: BattleBucketMechanicalCommit;
+};
+
+/** Resolves exactly one pending bucket and always stops before finalization. */
+export function resolveBattleTurnBucket(
+  input: Omit<ResolveTurnInput, "stopAfterNextBucket" | "prepareOnly" | "deferFinalize"> & {
+    engineContinuation: BattleTurnEngineContinuation;
+  },
+): BattleTurnBucketExecutionResult {
+  const continuation = BattleTurnEngineContinuationSchema.parse(
+    input.engineContinuation,
+  );
+  if (continuation.nextBucketIndex >= continuation.temporalResolution.buckets.length) {
+    throw new Error("battle turn continuation has no pending bucket");
+  }
+  const resolved = resolveTurn({
+    ...input,
+    stopAfterNextBucket: true,
+    deferFinalize: true,
+  });
+  const next = resolved.engineContinuation;
+  const commit = resolved.bucketCommits?.[0];
+  if (!next || !commit) {
+    throw new Error("battle turn bucket did not produce a continuation and commit");
+  }
+  return { continuation: next, commit };
+}
+
+/** Finalizes terminal flags and the BattleState after every bucket committed. */
+export function finalizeBattleTurnExecution(
+  input: Omit<ResolveTurnInput, "stopAfterNextBucket" | "prepareOnly" | "deferFinalize"> & {
+    engineContinuation: BattleTurnEngineContinuation;
+  },
+): ReturnType<typeof resolveTurn> {
+  const continuation = BattleTurnEngineContinuationSchema.parse(
+    input.engineContinuation,
+  );
+  if (continuation.nextBucketIndex !== continuation.temporalResolution.buckets.length) {
+    throw new Error("battle turn continuation still has pending buckets");
+  }
+  return resolveTurn(input);
+}
+
 /** Resolves exactly one bucket without replaying any committed predecessor. */
 export function resolveNextBattleTurnBucket(
-  input: Omit<ResolveTurnInput, "stopAfterNextBucket">,
+  input: Omit<ResolveTurnInput, "stopAfterNextBucket" | "prepareOnly" | "deferFinalize">,
 ): ReturnType<typeof resolveTurn> {
-  return resolveTurn({ ...input, stopAfterNextBucket: true });
+  const prepared = input.engineContinuation ?? prepareBattleTurnExecution(input);
+  if (!prepared) {
+    return resolveTurn(input);
+  }
+  const bucket = resolveBattleTurnBucket({
+    ...input,
+    engineContinuation: prepared,
+  });
+  if (
+    bucket.continuation.nextBucketIndex <
+      bucket.continuation.temporalResolution.buckets.length
+  ) {
+    return {
+      state: input.state,
+      events: bucket.continuation.events,
+      actions: bucket.continuation.actions,
+      mechanicalEvidence: bucket.continuation.mechanicalEvidence,
+      bucketCommits: [bucket.commit],
+      engineContinuation: bucket.continuation,
+    };
+  }
+  const finalized = finalizeBattleTurnExecution({
+    ...input,
+    engineContinuation: bucket.continuation,
+  });
+  return {
+    ...finalized,
+    bucketCommits: [bucket.commit],
+  };
 }
 
 function tagActionEvents(
