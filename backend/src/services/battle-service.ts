@@ -20,6 +20,8 @@ import {
   buildCommittedUtteranceEvents,
   buildUtterancePerceptionEvidence,
   buildTurnObservationPacket,
+  advancePsycheReactionV1,
+  PSYCHE_REACTION_POLICY_V1,
   buildSemanticObservationState,
   buildServerOnlyReserveCues,
   createBattleState,
@@ -683,6 +685,7 @@ export async function startBattle(input: {
       rules: {
         battleEngine: "battle-engine-v1",
         temporalRules: "initiative-window-v2",
+        psycheReaction: PSYCHE_REACTION_POLICY_V1,
       },
     },
     dialoguePipelineSnapshot,
@@ -1359,6 +1362,10 @@ export async function advanceCharacterAgents(input: {
         },
       }
     : recordWithoutUtterances;
+  const activeSides = new Set(input.activeSides ?? ["a", "b"]);
+  const deterministicPsyche =
+    input.after.assetManifest?.rules.psycheReaction === PSYCHE_REACTION_POLICY_V1 &&
+    (input.phase ?? "turn") === "turn";
   const previousA = groundCharacterAgentState(
     input.mine,
     input.after.agentStateA ?? initialAgentState(
@@ -1377,6 +1384,24 @@ export async function advanceCharacterAgents(input: {
   );
   previousA.lastActionResult = characterActionResultSummary(input.events, "a");
   previousB.lastActionResult = characterActionResultSummary(input.events, "b");
+  if (deterministicPsyche) {
+    if (activeSides.has("a")) {
+      const reaction = advancePsycheReactionV1({
+        prior: previousA.reactionStateV1,
+        packet: dialogueProjection?.a ?? null,
+      });
+      previousA.reactionStateV1 = reaction.state;
+      previousA.reactionReceiptV1 = reaction.receipt;
+    }
+    if (activeSides.has("b")) {
+      const reaction = advancePsycheReactionV1({
+        prior: previousB.reactionStateV1,
+        packet: dialogueProjection?.b ?? null,
+      });
+      previousB.reactionStateV1 = reaction.state;
+      previousB.reactionReceiptV1 = reaction.receipt;
+    }
+  }
   const stateWithRecord: BattleState = {
     ...input.after,
     agentStateA: previousA,
@@ -1386,7 +1411,6 @@ export async function advanceCharacterAgents(input: {
       recordWithDialogueProjection,
     ].slice(-50),
   };
-  const activeSides = new Set(input.activeSides ?? ["a", "b"]);
   const inputA = activeSides.has("a") ? buildCharacterAgentConsumerInput({
     state: input.after,
     sheet: input.mine,
@@ -1412,6 +1436,9 @@ export async function advanceCharacterAgents(input: {
   }
   const toPsycheInput = (consumerInput: typeof inputA) => {
     if (!consumerInput) return null;
+    // Accepted V1 contract: normal-turn private reaction is deterministic and
+    // must not escalate to a provider when features are absent or uncertain.
+    if (deterministicPsyche && consumerInput.phase === "turn") return null;
     if (compactContext) {
       const packet = consumerInput === inputA
         ? dialogueProjection?.a

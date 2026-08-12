@@ -320,7 +320,7 @@ export function InternalObservationsPage() {
                       <div><dt>戦場preset</dt><dd>{detail.canonicalCurrent.assetManifest.battlefield.presetGenerationId ?? "legacy unknown"}</dd></div>
                       <div><dt>戦場instance</dt><dd>{detail.canonicalCurrent.assetManifest.battlefield.generationId}</dd></div>
                       <div><dt>会話設定</dt><dd>{detail.canonicalCurrent.assetManifest.dialoguePipeline.generationId}</dd></div>
-                      <div><dt>ルール</dt><dd>{detail.canonicalCurrent.assetManifest.rules.battleEngine} / {detail.canonicalCurrent.assetManifest.rules.temporalRules}</dd></div>
+                      <div><dt>ルール</dt><dd>{detail.canonicalCurrent.assetManifest.rules.battleEngine} / {detail.canonicalCurrent.assetManifest.rules.temporalRules} / {detail.canonicalCurrent.assetManifest.rules.psycheReaction ?? "legacy psyche"}</dd></div>
                     </dl>
                   </>
                 ) : (
@@ -364,6 +364,24 @@ export function InternalObservationsPage() {
 
               <div className="panel">
                 <h2>キャラ・ナレータ パイプラインDAG</h2>
+                <div className="internal-agent-lanes">
+                  {(["a", "b"] as const).map((side) => {
+                    const reaction = detail.canonicalCurrent.psycheReaction[side];
+                    return (
+                      <div className="internal-agent-lane" key={`psyche-${side}`}>
+                        <h4>Site {side.toUpperCase()} · deterministic psyche</h4>
+                        {reaction ? (
+                          <dl className="internal-summary-grid">
+                            <div><dt>route</dt><dd>{reaction.route ?? "unavailable"}</dd></div>
+                            <div><dt>reason</dt><dd>{reaction.reason ?? "unavailable"}</dd></div>
+                            <div><dt>generation</dt><dd>{reaction.policyGeneration ?? "unavailable"}</dd></div>
+                            <div><dt>source count</dt><dd>{reaction.sourceCount}</dd></div>
+                          </dl>
+                        ) : <p className="muted">legacy / not processed</p>}
+                      </div>
+                    );
+                  })}
+                </div>
                 <p className="muted">
                   {detail.capabilities.pipelineTraceCount}/{detail.capabilities.turnRecordCount} ターンで
                   trace、{detail.capabilities.temporalResolutionCount}/{detail.capabilities.turnRecordCount} ターンで

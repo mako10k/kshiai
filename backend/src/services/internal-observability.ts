@@ -4,6 +4,32 @@ import { assetContentDigest } from "../repositories/asset-generations.js";
 type JsonObject = Record<string, unknown>;
 type AssetBindingValidation = "valid" | "mismatch" | "legacy_unknown";
 
+function psycheReactionSummary(agent: unknown): JsonObject | null {
+  const receipt = asObject(asObject(agent)?.reactionReceiptV1);
+  if (!receipt) return null;
+  const contributions = Array.isArray(receipt.contributions)
+    ? receipt.contributions.flatMap((value) => {
+        const contribution = asObject(value);
+        const code = asString(contribution?.code);
+        const dimension = asString(contribution?.dimension);
+        return code && dimension ? [{ code, dimension }] : [];
+      }).slice(0, 48)
+    : [];
+  const sourceEventIds = Array.isArray(receipt.sourceEventIds)
+    ? receipt.sourceEventIds.filter((value): value is string => typeof value === "string")
+    : [];
+  return {
+    schemaVersion: asNumber(receipt.schemaVersion),
+    policyGeneration: asString(receipt.policyGeneration),
+    turn: asNumber(receipt.turn),
+    observerSide: asString(receipt.observerSide),
+    route: asString(receipt.route),
+    reason: asString(receipt.reason),
+    sourceCount: sourceEventIds.length,
+    contributions,
+  };
+}
+
 function validateAssetManifest(manifest: unknown): Record<string, AssetBindingValidation> | null {
   const root = asObject(manifest);
   if (!root) return null;
@@ -161,6 +187,7 @@ export async function getInternalBattleObservation(
     causalExecution: unknown | null;
     causalBucketCommit: unknown | null;
     causalEngineContinuation: unknown | null;
+    psycheReaction: { a: JsonObject | null; b: JsonObject | null };
     semanticState: unknown | null;
     worldState: unknown | null;
     latestSemanticTransition: unknown | null;
@@ -237,6 +264,10 @@ export async function getInternalBattleObservation(
       causalExecution: rawBattleState.causalExecution ?? null,
       causalBucketCommit: rawBattleState.causalBucketCommit ?? null,
       causalEngineContinuation: rawBattleState.causalEngineContinuation ?? null,
+      psycheReaction: {
+        a: psycheReactionSummary(rawBattleState.agentStateA),
+        b: psycheReactionSummary(rawBattleState.agentStateB),
+      },
       semanticState: rawBattleState.semanticState ?? null,
       worldState: rawBattleState.worldState ?? null,
       latestSemanticTransition: rawBattleState.latestSemanticTransition ?? null,

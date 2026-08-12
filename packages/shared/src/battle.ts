@@ -792,6 +792,85 @@ export const TurnObservationPacketSchema = z.object({
 }).strict();
 export type TurnObservationPacket = z.infer<typeof TurnObservationPacketSchema>;
 
+const PsycheActivationSchema = z.number().int().min(0).max(1000);
+const PsycheRelationshipValueSchema = z.number().int().min(-1000).max(1000);
+
+/** Versioned, server-private inputs for the deterministic normal-turn policy. */
+export const PsycheTraitProfileV1Schema = z.object({
+  adverseSensitivity: PsycheActivationSchema,
+  uncertaintySensitivity: PsycheActivationSchema,
+  recoverySpeed: PsycheActivationSchema,
+  irritationPersistence: PsycheActivationSchema,
+  anxietyPersistence: PsycheActivationSchema,
+  approachTendency: PsycheActivationSchema,
+  withdrawalTendency: PsycheActivationSchema,
+  impulseInhibition: PsycheActivationSchema,
+  expressionRestraint: PsycheActivationSchema,
+}).strict();
+export type PsycheTraitProfileV1 = z.infer<typeof PsycheTraitProfileV1Schema>;
+
+export const PsycheRelationshipStateV1Schema = z.object({
+  trust: PsycheRelationshipValueSchema,
+  affiliation: PsycheRelationshipValueSchema,
+  fear: PsycheRelationshipValueSchema,
+  competition: PsycheRelationshipValueSchema,
+}).strict();
+export type PsycheRelationshipStateV1 = z.infer<
+  typeof PsycheRelationshipStateV1Schema
+>;
+
+export const PsycheReactionStateV1Schema = z.object({
+  schemaVersion: z.literal(1),
+  emotion: z.object({
+    irritation: PsycheActivationSchema,
+    anxiety: PsycheActivationSchema,
+    relief: PsycheActivationSchema,
+    fear: PsycheActivationSchema,
+  }).strict(),
+  interpretation: z.object({
+    adverse: PsycheActivationSchema,
+    uncertain: PsycheActivationSchema,
+    affiliative: PsycheActivationSchema,
+  }).strict(),
+  impulse: z.object({
+    confront: PsycheActivationSchema,
+    withdraw: PsycheActivationSchema,
+    approach: PsycheActivationSchema,
+    seekReassurance: PsycheActivationSchema,
+  }).strict(),
+  arousal: PsycheActivationSchema,
+}).strict();
+export type PsycheReactionStateV1 = z.infer<typeof PsycheReactionStateV1Schema>;
+
+export const PsycheReactionProjectionV1Schema = z.object({
+  schemaVersion: z.literal(1),
+  arousal: z.enum(["low", "medium", "high"]),
+  interpretation: z.array(z.enum(["adverse", "uncertain", "affiliative"])).max(3),
+  impulse: z.array(z.enum(["confront", "withdraw", "approach", "seek_reassurance"])).max(4),
+  expressionTendency: z.enum(["withhold", "restrained", "available"]).optional(),
+}).strict();
+export type PsycheReactionProjectionV1 = z.infer<
+  typeof PsycheReactionProjectionV1Schema
+>;
+
+export const PsycheReactionReceiptV1Schema = z.object({
+  schemaVersion: z.literal(1),
+  policyGeneration: z.string().min(1).max(120),
+  turn: z.number().int().nonnegative(),
+  observerSide: z.enum(["a", "b"]),
+  route: z.literal("deterministic_no_call"),
+  reason: z.enum(["committed_observation", "no_observation_decay", "feature_unavailable_hold"]),
+  sourceEventIds: z.array(z.string().min(1).max(120)).max(24),
+  contributions: z.array(z.object({
+    code: z.enum(["decay", "uncertainty", "activation", "inhibition", "restraint"]),
+    dimension: z.string().min(1).max(80),
+    amount: z.number().int().min(-1000).max(1000),
+  }).strict()).max(48),
+}).strict();
+export type PsycheReactionReceiptV1 = z.infer<
+  typeof PsycheReactionReceiptV1Schema
+>;
+
 /**
  * Fresh, committed outcome material for the action-and-result reaction thread.
  * It is source material for expression only, never an instruction to claim a result.
@@ -845,6 +924,9 @@ export const CharacterAgentStateSchema = z.object({
   /** Compact private relational continuity selected by deep psyche. */
   dialogueThread: DialogueThreadStateSchema.optional(),
   interior: CharacterDeepPsycheSchema.optional(),
+  /** Deterministic normal-turn reaction state; private and battle-scoped. */
+  reactionStateV1: PsycheReactionStateV1Schema.optional(),
+  reactionReceiptV1: PsycheReactionReceiptV1Schema.optional(),
 });
 export type CharacterAgentState = z.infer<typeof CharacterAgentStateSchema>;
 
@@ -1159,7 +1241,7 @@ export interface BattleAssetManifest {
     contentDigest: string;
     snapshot: BattleDialoguePipelineSnapshot;
   };
-  rules: { battleEngine: string; temporalRules: string };
+  rules: { battleEngine: string; temporalRules: string; psycheReaction?: string };
 }
 
 export const BattleAssetManifestSchema = z.object({
@@ -1200,6 +1282,7 @@ export const BattleAssetManifestSchema = z.object({
   rules: z.object({
     battleEngine: z.string().min(1),
     temporalRules: z.string().min(1),
+    psycheReaction: z.string().min(1).optional(),
   }).strict(),
 }).strict() as unknown as z.ZodType<BattleAssetManifest>;
 

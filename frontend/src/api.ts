@@ -141,7 +141,7 @@ export type InternalBattleObservationDetail = {
         contentDigest?: string;
       };
       dialoguePipeline: { generationId: string; contentDigest?: string };
-      rules: { battleEngine: string; temporalRules: string };
+      rules: { battleEngine: string; temporalRules: string; psycheReaction?: string };
     } | null;
     assetManifestValidation: Record<
       string,
@@ -150,6 +150,28 @@ export type InternalBattleObservationDetail = {
     causalExecution: InternalCausalTurnExecution | null;
     causalBucketCommit: Record<string, unknown> | null;
     causalEngineContinuation: Record<string, unknown> | null;
+    psycheReaction: {
+      a: {
+        schemaVersion: number | null;
+        policyGeneration: string | null;
+        turn: number | null;
+        observerSide: string | null;
+        route: string | null;
+        reason: string | null;
+        sourceCount: number;
+        contributions: Array<{ code: string; dimension: string }>;
+      } | null;
+      b: {
+        schemaVersion: number | null;
+        policyGeneration: string | null;
+        turn: number | null;
+        observerSide: string | null;
+        route: string | null;
+        reason: string | null;
+        sourceCount: number;
+        contributions: Array<{ code: string; dimension: string }>;
+      } | null;
+    };
     semanticState: unknown | null;
     worldState: unknown | null;
     latestSemanticTransition: unknown | null;

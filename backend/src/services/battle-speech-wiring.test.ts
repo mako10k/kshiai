@@ -7,6 +7,8 @@ import {
   createBattleState,
   defaultDialoguePipelineSettings,
   defaultParameters,
+  PSYCHE_REACTION_POLICY_V1,
+  type BattleState,
   type CharacterSheet,
 } from "@kshiai/shared";
 import {
@@ -28,6 +30,16 @@ import {
 } from "./battle-service.js";
 import { MockLlmProvider } from "../llm/mock.js";
 import { OpenAiCompatibleProvider } from "../llm/openai-compatible.js";
+
+function enableDeterministicPsyche(state: BattleState): void {
+  state.assetManifest = {
+    rules: {
+      battleEngine: "battle-engine-v1",
+      temporalRules: "initiative-window-v2",
+      psycheReaction: PSYCHE_REACTION_POLICY_V1,
+    },
+  } as BattleState["assetManifest"];
+}
 
 function sheet(
   id: string,
@@ -75,6 +87,7 @@ describe("character-authored public speech", () => {
       turnLimit: 20,
       prologuePending: false,
     });
+    enableDeterministicPsyche(before);
     before.plannedActionA = { kind: "wait" };
     before.plannedActionB = { kind: "basic_attack" };
     const provider = new MockLlmProvider();
@@ -102,7 +115,7 @@ describe("character-authored public speech", () => {
       activeSides: ["b"],
     });
 
-    assert.equal(psycheCalls, 1);
+    assert.equal(psycheCalls, 0);
     assert.equal(agentCalls, 1);
     assert.equal(result.state.plannedActionA?.kind, "wait");
     assert.equal(
@@ -188,6 +201,7 @@ describe("character-authored public speech", () => {
       turnLimit: 20,
       prologuePending: false,
     });
+    enableDeterministicPsyche(before);
     const environmentEvent = {
       id: "hap_llm_1",
       type: "situation" as const,
@@ -253,17 +267,17 @@ describe("character-authored public speech", () => {
     assert.equal(pipelineTrace?.dialogueProjection?.mode, "shadow");
     assert.equal(pipelineTrace?.dialogueProjection?.a.observerSide, "a");
     assert.equal(pipelineTrace?.dialogueProjection?.b.observerSide, "b");
-    assert.equal(pipelineTrace?.deepPsyche?.a.providerStatus, "fulfilled");
-    assert.equal(pipelineTrace?.deepPsyche?.b.providerStatus, "fulfilled");
+    assert.equal(pipelineTrace?.deepPsyche?.a.providerStatus, "skipped");
+    assert.equal(pipelineTrace?.deepPsyche?.b.providerStatus, "skipped");
     assert.equal(
-      ((pipelineTrace?.deepPsyche?.a.acceptedOutput as {
-        interior?: { eventAppraisal?: string };
-      } | null)?.interior?.eventAppraisal ?? "").length > 0,
-      true,
+      (pipelineTrace?.deepPsyche?.a.acceptedOutput as {
+        reactionReceiptV1?: { route?: string };
+      } | null)?.reactionReceiptV1?.route,
+      "deterministic_no_call",
     );
     assert.equal(
       "dialoguePipeline" in ((pipelineTrace?.deepPsyche?.a.input as object | null) ?? {}),
-      true,
+      false,
     );
     assert.equal(
       "turnObservation" in ((pipelineTrace?.deepPsyche?.a.input as object | null) ?? {}),
@@ -304,7 +318,7 @@ describe("character-authored public speech", () => {
     assert.equal(perceivedB?.displayContext?.relationshipAddress, "クロ");
   });
 
-  it("projects compact deep-psyche and expression contexts without another model call", async () => {
+  it("projects deterministic psyche and compact expression contexts without a psyche model call", async () => {
     const sideA = sheet("a", "アオ", ["私"]);
     const sideB = sheet("b", "クロ", ["俺"]);
     const before = createBattleState({
@@ -314,6 +328,7 @@ describe("character-authored public speech", () => {
       turnLimit: 20,
       prologuePending: false,
     });
+    enableDeterministicPsyche(before);
     const result = await advanceCharacterAgents({
       llm: new MockLlmProvider(),
       before,
@@ -330,13 +345,13 @@ describe("character-authored public speech", () => {
       },
     });
     const trace = result.state.turnRecords.at(-1)?.pipelineTrace;
-    const psycheInput = trace?.deepPsyche?.a.input as Record<string, unknown>;
+    const psycheInput = trace?.deepPsyche?.a.input;
     const expressionInput = trace?.characterAgents?.a.input as Record<string, unknown>;
-    assert.equal(psycheInput.contextMode, "compact");
-    assert.ok(psycheInput.turnObservation);
-    assert.equal("perception" in psycheInput, false);
-    assert.equal("actionReaction" in psycheInput, false);
-    assert.equal("compactRecentExchange" in psycheInput, false);
+    assert.equal(psycheInput, null);
+    assert.equal(trace?.deepPsyche?.a.providerStatus, "skipped");
+    assert.equal(result.state.agentStateA?.reactionReceiptV1?.route, "deterministic_no_call");
+    assert.equal(result.state.agentStateA?.reactionReceiptV1?.observerSide, "a");
+    assert.equal(result.state.agentStateA?.reactionReceiptV1?.reason, "committed_observation");
     assert.equal(expressionInput.contextMode, "compact");
     assert.ok(expressionInput.expressionBrief);
     assert.ok(expressionInput.turnObservation);
@@ -347,8 +362,8 @@ describe("character-authored public speech", () => {
       "anchoredExchange" in ((expressionInput.conversation as Record<string, unknown>) ?? {}),
       true,
     );
-    assert.equal(result.state.agentStateA?.dialogueThread?.topic, "クロ");
-    assert.equal(trace?.deepPsyche?.a.providerStatus, "fulfilled");
+    assert.equal(result.state.agentStateA?.dialogueThread?.topic, "");
+    assert.equal(trace?.deepPsyche?.a.providerStatus, "skipped");
     assert.equal(trace?.characterAgents?.a.providerStatus, "fulfilled");
   });
 

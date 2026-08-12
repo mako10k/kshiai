@@ -68,6 +68,26 @@ describe("public battle semantic projection", () => {
         privateMarker: "must-not-reach-public-dto",
       },
     });
+    state.agentStateA = {
+      ...state.agentStateA!,
+      reactionStateV1: {
+        schemaVersion: 1,
+        emotion: { irritation: 10, anxiety: 20, relief: 30, fear: 40 },
+        interpretation: { adverse: 50, uncertain: 60, affiliative: 70 },
+        impulse: { confront: 80, withdraw: 90, approach: 100, seekReassurance: 110 },
+        arousal: 120,
+      },
+      reactionReceiptV1: {
+        schemaVersion: 1,
+        policyGeneration: "psyche-reaction-policy-v1",
+        turn: 1,
+        observerSide: "a",
+        route: "deterministic_no_call",
+        reason: "committed_observation",
+        sourceEventIds: ["private-reaction-source"],
+        contributions: [{ code: "uncertainty", dimension: "interpretation.uncertain", amount: 20 }],
+      },
+    };
     const publicState = toBattlePublic(state, sideA, null, sideB);
     assert.equal(
       publicState.semanticState?.snapshot.entities["character.a"]?.label,
@@ -84,6 +104,8 @@ describe("public battle semantic projection", () => {
     assert.equal(json.includes("hidden.enemy.1"), false);
     assert.equal(json.includes("causalEngineContinuation"), false);
     assert.equal(json.includes("must-not-reach-public-dto"), false);
+    assert.equal(json.includes("reactionStateV1"), false);
+    assert.equal(json.includes("private-reaction-source"), false);
   });
 
   it("centers settled ratings independently for each visible track", () => {

@@ -61,6 +61,18 @@ describe("internal battle observability", () => {
         worldState: { revision: 1 },
         latestSemanticTransition: { turn: 1, status: "applied" },
         latestWorldTransition: { turn: 1, status: "applied" },
+        agentStateA: {
+          reactionReceiptV1: {
+            schemaVersion: 1,
+            policyGeneration: "psyche-reaction-policy-v1",
+            turn: 1,
+            observerSide: "a",
+            route: "deterministic_no_call",
+            reason: "committed_observation",
+            sourceEventIds: ["private-source-1"],
+            contributions: [{ code: "uncertainty", dimension: "interpretation.uncertain", amount: 20 }],
+          },
+        },
         assetManifest: {
           schemaVersion: 1,
           boundAt: "2026-08-07T00:00:00.000Z",
@@ -222,5 +234,19 @@ describe("internal battle observability", () => {
     );
     assert.equal(detail.canonicalCurrent.worldState &&
       (detail.canonicalCurrent.worldState as { revision: number }).revision, 1);
+    assert.deepEqual(detail.canonicalCurrent.psycheReaction.a, {
+      schemaVersion: 1,
+      policyGeneration: "psyche-reaction-policy-v1",
+      turn: 1,
+      observerSide: "a",
+      route: "deterministic_no_call",
+      reason: "committed_observation",
+      sourceCount: 1,
+      contributions: [{ code: "uncertainty", dimension: "interpretation.uncertain" }],
+    });
+    assert.equal(
+      JSON.stringify(detail.canonicalCurrent.psycheReaction).includes("private-source-1"),
+      false,
+    );
   });
 });
