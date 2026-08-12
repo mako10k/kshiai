@@ -1,7 +1,9 @@
 import { randomUUID } from "node:crypto";
 import {
   BattlePublicSchema,
+  type BattleListItem,
   type BattleAdvanceStreamEvent,
+  type BattleNarrationSnapshot,
   type BattlePublic,
 } from "@kshiai/shared";
 import { config } from "../config.js";
@@ -46,6 +48,52 @@ type SanitizedObservation = {
   [key: string]: unknown;
 };
 
+export type ObservationProviderOperationBudget = {
+  encounter: number;
+  characterExpression: number;
+  deepPsyche: number;
+  environment: number;
+  narration: number;
+  referee: number;
+  total: number;
+};
+
+export function projectObservationProviderOperations(
+  maxAdvances: number,
+): ObservationProviderOperationBudget {
+  if (!Number.isInteger(maxAdvances) || maxAdvances < 1 || maxAdvances > 30) {
+    throw new Error("maxAdvances must be an integer from 1 through 30");
+  }
+  const layers = {
+    encounter: 1,
+    characterExpression: maxAdvances * 2,
+    deepPsyche: 0,
+    environment: maxAdvances,
+    narration: maxAdvances + 2,
+    referee: 1,
+  };
+  return { ...layers, total: Object.values(layers).reduce((sum, value) => sum + value, 0) };
+}
+
+export function authorizeObservationProviderBudget(input: {
+  runId: string;
+  approvedRunId: string | undefined;
+  ceiling: number;
+  projected: ObservationProviderOperationBudget;
+}): void {
+  if (input.approvedRunId !== input.runId) {
+    throw new Error("E2E_OBSERVATION_APPROVED_RUN_ID must exactly match E2E_RUN_ID");
+  }
+  if (!Number.isInteger(input.ceiling) || input.ceiling < 1) {
+    throw new Error("E2E_PROVIDER_OPERATION_CEILING must be a positive integer");
+  }
+  if (input.projected.total > input.ceiling) {
+    throw new Error(
+      `Projected provider operations ${input.projected.total} exceed ceiling ${input.ceiling}`,
+    );
+  }
+}
+
 const FORBIDDEN_OBSERVATION_KEYS = new Set([
   "accessToken",
   "authUserId",
@@ -82,8 +130,11 @@ export function assertSanitizedObservation(
   if (observation.battle?.status !== "finished" || !observation.battle.id) {
     throw new Error("Observation did not retain a finished battle");
   }
-  if (!Array.isArray(observation.battle.log) || observation.battle.log.length === 0) {
-    throw new Error("Observation contains no retained narration");
+  const controls = observation as Record<string, unknown>;
+  if (controls.historyVisibility !== "passed" ||
+      !(controls.narrationConvergence as { terminalReceiptCount?: number } | undefined)
+        ?.terminalReceiptCount) {
+    throw new Error("Observation lacks narration convergence or history visibility evidence");
   }
   if (observation.accounts?.crossAccount !== true ||
       observation.visibility?.testRealmSharing !== "passed" ||
@@ -426,7 +477,11 @@ async function inspectInternalBattleObservation(input: {
   account: PersistentAccount;
   apiBaseUrl: string;
   battleId: string;
-}): Promise<{ turnRecordCount: number; canonicalTransitionCount: number }> {
+}): Promise<{
+  turnRecordCount: number;
+  canonicalTransitionCount: number;
+  narrationProviderOperations: number;
+}> {
   const response = await apiJson<{
     role?: string;
     summary?: { battleId?: string };
@@ -435,6 +490,15 @@ async function inspectInternalBattleObservation(input: {
       turnRecordCount?: number;
       canonicalTransitionCount?: number;
     };
+    narrationQueue?: Array<{
+      sequence?: number;
+      status?: string;
+      attemptCount?: number;
+      blockedBySequence?: number | null;
+      outbox?: { status?: string } | null;
+      lease?: unknown | null;
+      latestAttempt?: { httpAttempts?: number } | null;
+    }>;
   }>({
     apiBaseUrl: input.apiBaseUrl,
     accessToken: input.account.accessToken,
@@ -452,7 +516,67 @@ async function inspectInternalBattleObservation(input: {
   ) {
     throw new Error("Internal observation API did not expose the retained canonical battle");
   }
-  return { turnRecordCount, canonicalTransitionCount };
+  const narrationQueue = response.narrationQueue ?? [];
+  if (narrationQueue.length === 0 || narrationQueue.some((entry) =>
+    !["completed", "failed", "cancelled"].includes(entry.status ?? "") ||
+    entry.attemptCount !== 1 || entry.blockedBySequence !== null ||
+    entry.lease !== null || entry.outbox?.status !== "completed"
+  )) {
+    throw new Error("Narration receipts did not converge to one terminal attempt each");
+  }
+  const sequences = narrationQueue.map((entry) => entry.sequence);
+  if (sequences.some((value, index) => value !== index + 1)) {
+    throw new Error("Narration receipt sequence is not contiguous");
+  }
+  return {
+    turnRecordCount,
+    canonicalTransitionCount,
+    narrationProviderOperations: narrationQueue.reduce(
+      (sum, entry) => sum + (entry.latestAttempt?.httpAttempts ?? 0),
+      0,
+    ),
+  };
+}
+
+async function waitForNarrationConvergence(input: {
+  apiBaseUrl: string;
+  accessToken: string;
+  battleId: string;
+}): Promise<BattleNarrationSnapshot> {
+  for (let poll = 0; poll < 90; poll += 1) {
+    const snapshot = await apiJson<BattleNarrationSnapshot>({
+      apiBaseUrl: input.apiBaseUrl,
+      accessToken: input.accessToken,
+      path: `/api/battles/${input.battleId}/narration`,
+    });
+    const terminal = snapshot.entries.length > 0 && snapshot.entries.every((entry) =>
+      entry.status === "completed" || entry.status === "failed" || entry.status === "cancelled"
+    );
+    if (terminal) {
+      const sequences = snapshot.entries.map((entry) => entry.sequence);
+      if (sequences.some((value, index) => value !== index + 1)) {
+        throw new Error("Public narration projection is not in contiguous receipt order");
+      }
+      return snapshot;
+    }
+    await new Promise((resolve) => setTimeout(resolve, 2_000));
+  }
+  throw new Error("Narration receipts did not reach terminal state within 180 seconds");
+}
+
+async function assertBattleHistoryVisibility(input: {
+  apiBaseUrl: string;
+  accessToken: string;
+  battleId: string;
+}): Promise<void> {
+  const history = await apiJson<{ battles?: BattleListItem[] }>({
+    apiBaseUrl: input.apiBaseUrl,
+    accessToken: input.accessToken,
+    path: `/api/battles?status=all&q=${encodeURIComponent(input.battleId)}`,
+  });
+  if (!history.battles?.some((battle) => battle.id === input.battleId)) {
+    throw new Error("Finished battle is missing from battle history");
+  }
 }
 
 async function main(): Promise<void> {
@@ -467,6 +591,14 @@ async function main(): Promise<void> {
     Math.max(1, Number(process.env.E2E_MAX_ADVANCES ?? 24)),
   );
   if (!Number.isInteger(maxAdvances)) throw new Error("E2E_MAX_ADVANCES must be an integer");
+  const projectedProviderOperations = projectObservationProviderOperations(maxAdvances);
+  const providerOperationCeiling = Number(process.env.E2E_PROVIDER_OPERATION_CEILING ?? "");
+  authorizeObservationProviderBudget({
+    runId,
+    approvedRunId: process.env.E2E_OBSERVATION_APPROVED_RUN_ID,
+    ceiling: providerOperationCeiling,
+    projected: projectedProviderOperations,
+  });
 
   try {
     const observer = await ensurePersistentAccount({
@@ -545,9 +677,19 @@ async function main(): Promise<void> {
       path: `/api/battles/${battle.id}`,
     });
     const persistedBattle = BattlePublicSchema.parse(persisted.battle);
-    if (persistedBattle.status !== "finished" || persistedBattle.log.length === 0) {
-      throw new Error("Finished E2E battle was not persisted with narration");
+    if (persistedBattle.status !== "finished") {
+      throw new Error("Finished E2E battle was not persisted");
     }
+    const narration = await waitForNarrationConvergence({
+      apiBaseUrl,
+      accessToken: observer.accessToken,
+      battleId: persistedBattle.id,
+    });
+    await assertBattleHistoryVisibility({
+      apiBaseUrl,
+      accessToken: observer.accessToken,
+      battleId: persistedBattle.id,
+    });
     const internalObservability = await inspectInternalBattleObservation({
       account: observer,
       apiBaseUrl,
@@ -578,6 +720,21 @@ async function main(): Promise<void> {
         battleDetail: "passed",
         ...internalObservability,
       },
+      providerOperations: {
+        approvedCeiling: providerOperationCeiling,
+        projected: projectedProviderOperations,
+        actualMeasured: {
+          narration: internalObservability.narrationProviderOperations,
+          scope: "persisted narration HTTP attempts; other layers remain bounded by the approved projection",
+        },
+      },
+      narrationConvergence: {
+        terminalReceiptCount: narration.entries.length,
+        orderedProjection: "passed",
+        oneAttemptPerReceipt: "passed",
+        liveGenerations: 0,
+      },
+      historyVisibility: "passed",
       battle: {
         id: persistedBattle.id,
         status: persistedBattle.status,

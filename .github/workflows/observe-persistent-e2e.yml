@@ -16,6 +16,11 @@ on:
         required: true
         default: "24"
         type: string
+      provider_operation_ceiling:
+        description: Maximum projected provider operations for this one observation
+        required: true
+        default: "100"
+        type: string
       confirmation:
         description: Type OBSERVE followed by a space and the revision
         required: true
@@ -54,6 +59,7 @@ jobs:
           CONFIRMATION: ${{ inputs.confirmation }}
           EXPECTED_REVISION: ${{ inputs.expected_revision }}
           MAX_ADVANCES: ${{ inputs.max_advances }}
+          PROVIDER_OPERATION_CEILING: ${{ inputs.provider_operation_ceiling }}
           RELEASE_TAG: ${{ inputs.tag }}
         run: |
           set -euo pipefail
@@ -64,6 +70,8 @@ jobs:
           [[ "$MAX_ADVANCES" =~ ^[0-9]+$ ]]
           test "$MAX_ADVANCES" -ge 1
           test "$MAX_ADVANCES" -le 30
+          [[ "$PROVIDER_OPERATION_CEILING" =~ ^[0-9]+$ ]]
+          test "$PROVIDER_OPERATION_CEILING" -ge 1
           test "$CONFIRMATION" = "OBSERVE $EXPECTED_REVISION"
 
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -141,6 +149,7 @@ jobs:
           EXPECTED_REVISION: ${{ inputs.expected_revision }}
           IMAGE_REF: ${{ steps.target.outputs.image }}
           MAX_ADVANCES: ${{ inputs.max_advances }}
+          PROVIDER_OPERATION_CEILING: ${{ inputs.provider_operation_ceiling }}
         run: |
           set -euo pipefail
           gcloud run jobs deploy "$E2E_JOB" \
@@ -148,7 +157,7 @@ jobs:
             --region="$GCP_REGION" \
             --image="$IMAGE_REF" \
             --service-account=kshiai-cloud-run@kshiai.iam.gserviceaccount.com \
-            --set-env-vars="NODE_ENV=test,KSHIAI_RUN_E2E_MAIN=1,AUTH_PROVIDER=supabase,MEDIA_STORAGE=local,SUPABASE_URL=$SUPABASE_URL,SUPABASE_JWKS_URL=$SUPABASE_JWKS_URL,E2E_API_URL=$PRODUCTION_URL,E2E_ALLOWED_HOSTS=kshiai.mk10.org,E2E_MAX_ADVANCES=$MAX_ADVANCES,E2E_TARGET_REVISION=$EXPECTED_REVISION,E2E_RUN_ID=$OBSERVATION_RUN_ID" \
+            --set-env-vars="NODE_ENV=test,KSHIAI_RUN_E2E_MAIN=1,AUTH_PROVIDER=supabase,MEDIA_STORAGE=local,SUPABASE_URL=$SUPABASE_URL,SUPABASE_JWKS_URL=$SUPABASE_JWKS_URL,E2E_API_URL=$PRODUCTION_URL,E2E_ALLOWED_HOSTS=kshiai.mk10.org,E2E_MAX_ADVANCES=$MAX_ADVANCES,E2E_TARGET_REVISION=$EXPECTED_REVISION,E2E_RUN_ID=$OBSERVATION_RUN_ID,E2E_OBSERVATION_APPROVED_RUN_ID=$OBSERVATION_RUN_ID,E2E_PROVIDER_OPERATION_CEILING=$PROVIDER_OPERATION_CEILING" \
             --set-secrets="DATABASE_URL=kshiai-database-url:latest,SUPABASE_SECRET_KEY=kshiai-supabase-secret-key:latest,SUPABASE_PUBLISHABLE_KEY=kshiai-supabase-publishable-key:latest" \
             --command=node \
             --args=backend/dist/scripts/persistent-battle-e2e.js \

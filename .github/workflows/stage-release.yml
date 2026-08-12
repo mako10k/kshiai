@@ -219,6 +219,9 @@ jobs:
             fs.appendFileSync(process.env.GITHUB_OUTPUT, `url=${traffic.url}\nrevision=${traffic.revisionName}\n`);
           ' "$RUNNER_TEMP/service.json"
 
+      - name: Prove exact narration receipt lifecycle without an LLM
+        run: npm test --workspace @kshiai/backend -- --test-name-pattern="claims only the exact receipt generation"
+
       - name: Prove Cloud Tasks OIDC delivery to staged revision
         env:
           BACKEND_URL: ${{ steps.backend.outputs.url }}

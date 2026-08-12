@@ -35,6 +35,95 @@ async function createBattle(id: string): Promise<void> {
 }
 
 describe("ordered narration worker", () => {
+  it("claims only the exact receipt generation and defers successors without provider work", async () => {
+    const battleId = "worker-exact-receipt";
+    await createBattle(battleId);
+    for (const sequence of [1, 2]) {
+      await enqueueNarration({
+        battleId,
+        receiptId: `${battleId}:phase:${sequence}`,
+        sequence,
+        phase: "combat",
+        combatTurn: sequence,
+        frozenInput: { scene: `exact-${sequence}` },
+        inputDigest: String(sequence).repeat(64),
+      });
+    }
+    const outboxes = await query<{
+      outbox_id: string;
+      receipt_id: string;
+      delivery_generation: number;
+    }>(
+      `SELECT outbox_id, receipt_id, delivery_generation
+         FROM battle_narration_outbox
+        WHERE battle_id = $1 ORDER BY receipt_id`,
+      [battleId],
+    );
+    const first = outboxes.rows[0]!;
+    const second = outboxes.rows[1]!;
+    const dispatched: string[] = [];
+    assert.deepEqual(await dispatchNarrationOutbox(async (delivery) => {
+      dispatched.push(delivery.receiptId);
+    }), { delivered: 1, failed: 0 });
+    assert.deepEqual(dispatched, [first.receipt_id]);
+    await query(
+      `UPDATE battle_narration_outbox SET status = 'dispatched'
+        WHERE battle_id = $1 AND receipt_id = $2`,
+      [battleId, second.receipt_id],
+    );
+    const generated: string[] = [];
+    const generator = async (raw: unknown) => {
+      const scene = (raw as { scene: string }).scene;
+      generated.push(scene);
+      return {
+        narrative: { turn: generated.length, narrator: [scene], speeches: [] },
+        provider: "stub",
+        model: null,
+        route: "fast" as const,
+        httpAttempts: 1,
+        tokenCount: 1,
+        estimatedCostUsd: 0,
+      };
+    };
+
+    assert.equal(await processNextNarration({
+      battleId,
+      receiptId: second.receipt_id,
+      outboxId: second.outbox_id,
+      deliveryGeneration: Number(second.delivery_generation),
+      ownerId: `task:${second.outbox_id}:0`,
+      generator,
+    }), "deferred");
+    assert.deepEqual(generated, []);
+    assert.equal(await processNextNarration({
+      battleId,
+      receiptId: first.receipt_id,
+      outboxId: first.outbox_id,
+      deliveryGeneration: Number(first.delivery_generation),
+      ownerId: `task:${first.outbox_id}:0`,
+      generator,
+    }), "completed");
+    assert.deepEqual(generated, ["exact-1"]);
+    assert.equal(await processNextNarration({
+      battleId,
+      receiptId: first.receipt_id,
+      outboxId: first.outbox_id,
+      deliveryGeneration: Number(first.delivery_generation),
+      ownerId: `task:${first.outbox_id}:0:stale`,
+      generator,
+    }), "acknowledged");
+    assert.deepEqual(generated, ["exact-1"]);
+    assert.equal(await processNextNarration({
+      battleId,
+      receiptId: second.receipt_id,
+      outboxId: second.outbox_id,
+      deliveryGeneration: Number(second.delivery_generation),
+      ownerId: `task:${second.outbox_id}:0`,
+      generator,
+    }), "completed");
+    assert.deepEqual(generated, ["exact-1", "exact-2"]);
+  });
+
   it("generates the earliest receipt first and publishes only terminal prose", async () => {
     const battleId = "worker-ordered";
     await createBattle(battleId);

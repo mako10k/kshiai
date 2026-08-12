@@ -15,9 +15,11 @@ const persistentE2eModule: typeof import("./persistent-battle-e2e.js") =
 const assertSanitizedObservation: typeof persistentE2eModule.assertSanitizedObservation =
   persistentE2eModule.assertSanitizedObservation;
 const {
+  authorizeObservationProviderBudget,
   generateEphemeralPassword,
   parseBattleAdvanceStream,
   persistSanitizedObservation,
+  projectObservationProviderOperations,
   resolveObservationRunId,
   validateProductionApiUrl,
 } = persistentE2eModule;
@@ -29,6 +31,37 @@ after(async () => {
 });
 
 describe("persistent battle E2E runner", () => {
+  it("requires an exact operator approval and rejects an over-budget observation", () => {
+    const projected = projectObservationProviderOperations(12);
+    assert.deepEqual(projected, {
+      encounter: 1,
+      characterExpression: 24,
+      deepPsyche: 0,
+      environment: 12,
+      narration: 14,
+      referee: 1,
+      total: 52,
+    });
+    assert.throws(() => authorizeObservationProviderBudget({
+      runId: "run-1",
+      approvedRunId: "run-2",
+      ceiling: 52,
+      projected,
+    }), /exactly match/);
+    assert.throws(() => authorizeObservationProviderBudget({
+      runId: "run-1",
+      approvedRunId: "run-1",
+      ceiling: 51,
+      projected,
+    }), /exceed ceiling/);
+    authorizeObservationProviderBudget({
+      runId: "run-1",
+      approvedRunId: "run-1",
+      ceiling: 52,
+      projected,
+    });
+  });
+
   it("generates a strong ephemeral password within the Supabase limit", () => {
     const password = generateEphemeralPassword();
     assert.ok(Buffer.byteLength(password, "utf8") <= 72);
@@ -57,6 +90,13 @@ describe("persistent battle E2E runner", () => {
         status: "finished",
         log: [{ turn: 1, narrator: ["完了"] }],
       },
+      narrationConvergence: {
+        terminalReceiptCount: 1,
+        orderedProjection: "passed",
+        oneAttemptPerReceipt: "passed",
+        liveGenerations: 0,
+      },
+      historyVisibility: "passed",
     };
     assertSanitizedObservation(observation, "kshiai-api-test");
     await persistSanitizedObservation(observation);

@@ -7,8 +7,8 @@ a production observation battle.
 
 v0.17.1 is a backward-compatible recovery patch for the v0.17.0 battle
 observation pipeline. It packages the accepted RCA fixes from PR #101 and adds
-an LLM-free Stage proof for Cloud Tasks OIDC delivery to the exact no-traffic
-Cloud Run revision.
+an LLM-free exact-receipt lifecycle fixture plus a Cloud Tasks OIDC delivery
+proof against the exact no-traffic Cloud Run revision.
 
 ## Stage acceptance
 
@@ -17,7 +17,9 @@ Cloud Run revision.
   release commit.
 - The annotated `v0.17.1` tag resolves to that release commit.
 - Stage applies forward-only migration `0015_pipeline_recovery_fencing.sql`.
-- The Stage workflow creates one bounded smoke task and observes its exact
+- The Stage workflow first runs the exact-receipt worker fixture, proving
+  ordered processing, generation fencing, and one generator call per receipt.
+- It then creates one bounded transport smoke task and observes its exact
   `smokeId` on the tagged Cloud Run revision.
 - The smoke path performs no battle mutation and no LLM call.
 - The workflow records the immutable backend digest, Cloud Run revision, and

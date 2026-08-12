@@ -35,6 +35,52 @@ function completion(content: string): unknown {
 }
 
 describe("OpenAI-compatible provider routing policy", () => {
+  it("routes turn-limit referee rationale through the fast tier", async () => {
+    const provider = new OpenAiCompatibleProvider({
+      name: "primary",
+      apiKey: "test-only",
+      baseUrl: "https://example.invalid/v1",
+      modelEngine: "engine-model",
+      modelFast: "fast-model",
+    });
+    let observedTier: "fast" | "engine" | undefined;
+    const privateProvider = provider as unknown as {
+      chatJson(
+        system: string,
+        user: string,
+        opts?: { tier?: "fast" | "engine"; label?: string },
+      ): Promise<unknown>;
+    };
+    privateProvider.chatJson = async (_system, _user, opts) => {
+      observedTier = opts?.tier;
+      return {
+        winnerSide: "b",
+        reason: "確定済みの事実を要約した。",
+        reasonFacts: [],
+      };
+    };
+
+    const result = await provider.referee({
+      sideAName: "A",
+      sideBName: "B",
+      engineWinnerSide: "a",
+      turnFacts: [],
+      finalState: {
+        a: {
+          condition: "steady",
+          reserves: { hp: "ample", mp: "available", stamina: "available" },
+        },
+        b: {
+          condition: "strained",
+          reserves: { hp: "low", mp: "available", stamina: "available" },
+        },
+      },
+    });
+
+    assert.equal(observedTier, "fast");
+    assert.equal(result.winnerSide, "b");
+  });
+
   it("uses the extended fast timeout and retries 429 in the same client", async () => {
     const provider = privateProvider();
     const timeouts: Array<number | undefined> = [];

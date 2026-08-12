@@ -266,8 +266,9 @@ type ChatOpts = {
  * providers. The application factory disables it for real provider chains.
  *
  * Two model tiers:
- * - engine: structured generation (chars, policies, referee) — slower/stronger
- * - fast: turn narration / situation color — low latency, non-reasoning preferred
+ * - engine: structured character and policy generation — slower/stronger
+ * - fast: turn narration, situation color, and referee rationale — low latency,
+ *   non-reasoning preferred
  */
 export class OpenAiCompatibleProvider implements LlmProvider {
   readonly name: string;
@@ -2298,7 +2299,7 @@ JSON: { "before": string[], "after": string[] }. Each array has at most 2 short 
 turnFacts and finalState contain bounded committed engine structure. No narrator prose, event summary, or public rendered speech is present. Use only those canonical facts and prefer engineWinnerSide unless the facts clearly require another result. reason and reasonFacts are concise fact-based rationales, not public narration.`,
         JSON.stringify(input),
         {
-          tier: "engine",
+          tier: "fast",
           label: "referee",
           temperature: 0.3,
           timeoutMs: FAST_TIMEOUT_MS,

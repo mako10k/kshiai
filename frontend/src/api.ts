@@ -45,6 +45,30 @@ export function parseBattleNarrationSse(body: string): BattleNarrationFollowEven
   });
 }
 
+async function readBattleNarrationSse(
+  response: Response,
+  onEvent?: (event: BattleNarrationFollowEvent) => void,
+): Promise<BattleNarrationFollowEvent[]> {
+  if (!response.body) return parseBattleNarrationSse(await response.text());
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  const events: BattleNarrationFollowEvent[] = [];
+  let buffered = "";
+  while (true) {
+    const { value, done } = await reader.read();
+    buffered += decoder.decode(value, { stream: !done });
+    const frames = buffered.split("\n\n");
+    buffered = done ? "" : frames.pop() ?? "";
+    const parsed = parseBattleNarrationSse(frames.join("\n\n"));
+    for (const event of parsed) {
+      events.push(event);
+      onEvent?.(event);
+    }
+    if (done) break;
+  }
+  return events;
+}
+
 export type InternalBattleObservationSummary = {
   battleId: string;
   createdAt: string;
@@ -642,6 +666,7 @@ export const api = {
     id: string,
     cursor: string | null,
     signal?: AbortSignal,
+    onEvent?: (event: BattleNarrationFollowEvent) => void,
   ): Promise<BattleNarrationFollowEvent[]> => {
     const query = cursor ? `?cursor=${encodeURIComponent(cursor)}` : "";
     const response = await authenticatedFetch(
@@ -652,7 +677,7 @@ export const api = {
     if (!response.ok) {
       throw new ApiError(`http_${response.status}`, { status: response.status });
     }
-    return parseBattleNarrationSse(await response.text());
+    return readBattleNarrationSse(response, onEvent);
   },
   listBattles: (opts?: {
     q?: string;

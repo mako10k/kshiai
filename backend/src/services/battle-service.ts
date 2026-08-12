@@ -1378,7 +1378,7 @@ export function applyReflectMemoryWrites(
         // durable postBattleReflection after the match, while reflect notes
         // are match-scoped scratch only.
         battleVolatileMemory: memoryBits.join("\n").slice(0, 1200),
-        currentGoal: guideline || agent.currentGoal,
+        currentGoal: guideline.slice(0, 240) || agent.currentGoal,
         observations: [
           ...agent.observations.slice(-6),
           ...(analysis && !observationAlready ? [analysis.slice(0, 240)] : []),
