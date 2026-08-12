@@ -69,7 +69,7 @@ task T_WIRE_SEQUENTIAL_DECISION PSYCHE_COST_REDUCED -> SEQUENTIAL_SLICE_READY:
   title "Wire observer-safe later-bucket decision and phase receipts"
   description "At turn N finalization, determine and persist turn N+1 initiative/order before requesting the selected first actor reservation; never reserve before order exists. At turn N+1 advance, commit the first bucket, apply immediate server-owned semantic/world facts needed for observation, project only committed observer-visible facts, then independently request, validate, and resolve the later actor action and any deterministically eligible expression. Reuse the audited isolated-side agent foundation without treating its earlier commit as acceptance of this task. Apply the accepted independent action/expression routes and evaluate lightweight models without combining their contexts. Record call counts, token and estimated cost, model route, skip/fallback reason, source-linked expression/action/consequence receipts, and terminal/invalid/timeout outcomes without publishing private prompts."
   duration 5p
-  status active
+  status done
   owner "codex"
   requires:
     DEV 1
@@ -144,3 +144,11 @@ work_event WE-6680a22a3d6558c22694582c4120057c50bd7c6e0bc6f8aa840750a765e23b22:
   kind start
   occurred_at 2026-08-12T13:53:36+09:00
   planned_value 5p
+
+work_event WE-6c8c5db2f22858e1b68be0cd68847fe3be6f55887dd9cc4e12fdadc2a03cb2ff:
+  model 1
+  task T_WIRE_SEQUENTIAL_DECISION
+  kind finish
+  occurred_at 2026-08-12T14:20:05+09:00
+  active_time 1589/3600h
+  effort 1589/3600ph
