@@ -72,6 +72,7 @@ task T_ACCEPT_PIPELINE_LLM_COST_CONTRACT ASSET_GENERATIONS_READY -> LLM_COST_CON
   title "Accept pipeline-wide LLM cost measurement and routing"
   description "Inventory every battle LLM responsibility and establish a measured baseline for calls, input/output tokens, pricing snapshot, retries, fallback, and p50/p95 latency by phase. Define independent versioned routes for encounter, psyche, action, expression, semantic/world, sensory evidence, narration, and terminal explanation using the order skip or durable reuse, deterministic local processing, fixed lightweight model, then explicitly enumerated high-cost fallback. Set per-responsibility attempt and token ceilings, quality/privacy floors, cost ceilings, receipt fields, and administrator-safe aggregation. Do not merge contexts, allow unbounded repair/escalation, or select models before fixture-based measurement."
   duration 3p
+  status active
   owner "user"
   requires:
     OWNER 1
@@ -163,3 +164,10 @@ task T_ACCEPT_ISSUE_98 PACING_POLICY_ACCEPTED -> ISSUE_98_LOCALLY_ACCEPTED:
   owner "codex"
   requires:
     DEV 1
+
+work_event WE-32ff65f2dbef6a3da93d21b941ee591187ba47a09bffb93b2f2bd56335862190:
+  model 1
+  task T_ACCEPT_PIPELINE_LLM_COST_CONTRACT
+  kind start
+  occurred_at 2026-08-12T13:20:06+09:00
+  planned_value 3p
