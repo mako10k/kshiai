@@ -62,6 +62,7 @@ import { revalidateCharacterAction } from "./action-feasibility.js";
 import { applyBattleCausalCoefficients } from "./battle-causality.js";
 import {
   buildBattleTemporalPlan,
+  type BattleTemporalBucket,
   type BattleTemporalSide,
 } from "./battle-temporal-rules.js";
 import {
@@ -2016,7 +2017,7 @@ export function resolveTurn(input: {
     });
   };
 
-  for (const bucket of temporalResolution.buckets) {
+  const resolveTemporalBucket = (bucket: BattleTemporalBucket): void => {
     if (bucket.simultaneous) {
       const bucketStartA = cloneCombatant(sideA);
       const bucketStartB = cloneCombatant(sideB);
@@ -2110,11 +2111,11 @@ export function resolveTurn(input: {
         }));
         updateFinisher(proposal.side, proposal.usedFinisher);
       }
-      continue;
+      return;
     }
 
     const side = bucket.actorSides[0]!;
-    if (isCombatantDown(sideA) || isCombatantDown(sideB)) continue;
+    if (isCombatantDown(sideA) || isCombatantDown(sideB)) return;
     const result = revalidate(side, sideA, sideB);
     setResolvedAction(side, result);
     if (result.action?.kind === "defend") {
@@ -2157,6 +2158,10 @@ export function resolveTurn(input: {
       eventStart,
       eventEnd: events.length,
     }));
+  };
+
+  for (const bucket of temporalResolution.buckets) {
+    resolveTemporalBucket(bucket);
   }
 
   // Incapacity flags
