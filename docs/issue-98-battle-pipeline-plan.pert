@@ -97,7 +97,7 @@ task T_REFACTOR_BUCKET_EXECUTION CAUSAL_CONTRACT_ACCEPTED -> BUCKET_ENGINE_READY
   title "Refactor deterministic engine into restartable bucket execution"
   description "Extract pure prepare, resolve-bucket, and finalize operations from the current monolithic resolveTurn path. Implement ADR-0001: ordinary actions always use sequential buckets; equal initiative reuses the previous resolved order, or performs one persisted draw with the initiative calculation's A/B weights, defaulting to exact 50/50 when weights are absent. Preserve A/B-swap invariance, server validation, and deterministic stable IDs. Persist the draw basis, sample, and selected order before action calls. Each operation must be re-enterable without redrawing, replaying an already committed bucket, or consuming a planned action twice."
   duration 4p
-  status active
+  status done
   owner "codex"
   requires:
     DEV 1
@@ -263,3 +263,11 @@ work_event WE-d80deb1ffc3201da989ec15dfd650f24b3598862c39ee790a80a23abbb21cc09:
   task T_REFACTOR_BUCKET_EXECUTION
   kind resume
   occurred_at 2026-08-12T09:45:00+09:00
+
+work_event WE-a89322bbd92260ac2e521cfaa6cde41180c1fcd9aca5d477fe85bd62fce4cccc:
+  model 1
+  task T_REFACTOR_BUCKET_EXECUTION
+  kind finish
+  occurred_at 2026-08-12T11:53:36+09:00
+  active_time 10223/3600h
+  effort 10223/3600ph
