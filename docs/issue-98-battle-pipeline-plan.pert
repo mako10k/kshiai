@@ -24,12 +24,10 @@ resource OWNER:
 
 
 
-milestone LLM_COST_CONTRACT_ACCEPTED:
-  title "Owner accepted pipeline-wide LLM cost budgets and routing"
-  state reached
 
 milestone PSYCHE_CALL_CONTRACT_ACCEPTED:
   title "Owner accepted normalized psyche and separated-call contract"
+  state reached
 
 milestone PSYCHE_COST_REDUCED:
   title "Routine private psyche uses accepted low-cost routing"
@@ -67,14 +65,6 @@ milestone ISSUE_98_LOCALLY_ACCEPTED:
 
 
 
-task T_ACCEPT_PSYCHE_CALL_CONTRACT LLM_COST_CONTRACT_ACCEPTED -> PSYCHE_CALL_CONTRACT_ACCEPTED:
-  title "Accept the adoptable psyche V1 and low-cost call-routing contract"
-  description "Specify and owner-accept only the adoptable slice: a small V1 tag/state/trait set derived from committed observer-safe evidence; canonical structural normalization; battle-local neutral relationship defaults; independent least-authority action and expression projections; deterministic no-call and hold routes; an optional fixed lightweight-LLM psyche-only route; explicitly enumerated high-cost fallback; normal-turn call ceilings; cost/token/latency/fallback and quality reject thresholds; provider-failure behavior; and private receipt retention. Neural training, character or experience embeddings, LLM judge, silver/gold pipelines, human-review UI, recurrent state, and long-term relationship learning are outside this contract."
-  duration 3p
-  status done
-  owner "user"
-  requires:
-    OWNER 1
 
 task T_REDUCE_PSYCHE_LLM_COST PSYCHE_CALL_CONTRACT_ACCEPTED -> PSYCHE_COST_REDUCED:
   title "Route routine psyche processing through accepted low-cost paths"
@@ -155,18 +145,3 @@ task T_ACCEPT_ISSUE_98 PACING_POLICY_ACCEPTED -> ISSUE_98_LOCALLY_ACCEPTED:
   owner "codex"
   requires:
     DEV 1
-
-work_event WE-b4a089f1dd0cd079352dd478f6fed2928cfb8a2362ea359e85226c51a387fce7:
-  model 1
-  task T_ACCEPT_PSYCHE_CALL_CONTRACT
-  kind start
-  occurred_at 2026-08-12T13:37:30+09:00
-  planned_value 3p
-
-work_event WE-991efd9fd417c67918782f3b65f4e284afbfa1ed5427a8adaf883690b9efb9c7:
-  model 1
-  task T_ACCEPT_PSYCHE_CALL_CONTRACT
-  kind finish
-  occurred_at 2026-08-12T13:42:57+09:00
-  active_time 109/1200h
-  effort 109/1200ph
