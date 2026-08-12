@@ -122,6 +122,74 @@ export function getDb(): SqliteDatabase.Database {
     );
     CREATE INDEX IF NOT EXISTS idx_battle_presentations_sequence
       ON battle_presentations (battle_id, sequence);
+    CREATE TABLE IF NOT EXISTS battle_narration_entries (
+      battle_id TEXT NOT NULL REFERENCES battles(id) ON DELETE CASCADE,
+      receipt_id TEXT NOT NULL,
+      sequence INTEGER NOT NULL,
+      phase TEXT NOT NULL,
+      combat_turn INTEGER,
+      input_json TEXT NOT NULL,
+      input_digest TEXT NOT NULL,
+      status TEXT NOT NULL,
+      active_attempt_id TEXT,
+      attempt_count INTEGER NOT NULL DEFAULT 0,
+      terminal_narrative_json TEXT,
+      fallback_reason TEXT,
+      created_at TEXT NOT NULL,
+      updated_at TEXT NOT NULL,
+      PRIMARY KEY (battle_id, receipt_id),
+      UNIQUE (battle_id, sequence)
+    );
+    CREATE TABLE IF NOT EXISTS battle_narration_leases (
+      battle_id TEXT PRIMARY KEY REFERENCES battles(id) ON DELETE CASCADE,
+      owner_id TEXT NOT NULL,
+      fencing_token INTEGER NOT NULL,
+      expires_at TEXT NOT NULL,
+      updated_at TEXT NOT NULL
+    );
+    CREATE TABLE IF NOT EXISTS battle_narration_attempts (
+      attempt_id TEXT PRIMARY KEY,
+      battle_id TEXT NOT NULL,
+      receipt_id TEXT NOT NULL,
+      fencing_token INTEGER NOT NULL,
+      status TEXT NOT NULL,
+      provider TEXT NOT NULL,
+      model TEXT,
+      route TEXT NOT NULL,
+      http_attempts INTEGER NOT NULL DEFAULT 0,
+      token_count INTEGER,
+      estimated_cost_usd REAL,
+      elapsed_ms INTEGER,
+      fallback_reason TEXT,
+      error_class TEXT,
+      started_at TEXT NOT NULL,
+      finished_at TEXT
+    );
+    CREATE TABLE IF NOT EXISTS battle_narration_events (
+      battle_id TEXT NOT NULL,
+      event_sequence INTEGER NOT NULL,
+      event_id TEXT NOT NULL,
+      receipt_id TEXT NOT NULL,
+      narration_sequence INTEGER NOT NULL,
+      kind TEXT NOT NULL,
+      public_payload_json TEXT NOT NULL,
+      created_at TEXT NOT NULL,
+      PRIMARY KEY (battle_id, event_sequence),
+      UNIQUE (battle_id, event_id)
+    );
+    CREATE TABLE IF NOT EXISTS battle_narration_outbox (
+      outbox_id TEXT PRIMARY KEY,
+      battle_id TEXT NOT NULL,
+      receipt_id TEXT NOT NULL,
+      status TEXT NOT NULL,
+      delivery_attempts INTEGER NOT NULL DEFAULT 0,
+      created_at TEXT NOT NULL,
+      dispatched_at TEXT
+    );
+    CREATE INDEX IF NOT EXISTS idx_battle_narration_entries_ready
+      ON battle_narration_entries (status, battle_id, sequence);
+    CREATE INDEX IF NOT EXISTS idx_battle_narration_outbox_pending
+      ON battle_narration_outbox (status, created_at);
     CREATE TABLE IF NOT EXISTS idempotency_keys (
       user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
       scope TEXT NOT NULL,

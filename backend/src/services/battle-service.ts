@@ -158,6 +158,7 @@ import * as dialoguePipelineRepo from "../repositories/dialogue-pipeline-setting
 import { createAssetGeneration } from "../repositories/asset-generations.js";
 import { getUserAccessProfile } from "../account-access.js";
 import { withBattleLease } from "./distributed-guard.js";
+import { completeCompatibilityNarration } from "./narration-worker.js";
 import {
   buildFreeActionCanonicalRoots,
   buildLatentAffordances,
@@ -4289,7 +4290,7 @@ async function advanceTurnWithLease(input: {
       operationId: input.operationId,
       phases: ["combat"],
     });
-    await battleRepo.saveBattle(next, {
+    await battleRepo.saveBattleWithNarrationOutbox(next, {
       sideAUserId: meta.side_a_user_id,
       sideACharacterId: meta.side_a_character_id,
       sideBCharacterId: meta.side_b_character_id,
@@ -4443,7 +4444,7 @@ async function advanceTurnWithLease(input: {
       : ["combat"],
   });
 
-  await battleRepo.saveBattle(next, {
+  await battleRepo.saveBattleWithNarrationOutbox(next, {
     sideAUserId: meta.side_a_user_id,
     sideACharacterId: meta.side_a_character_id,
     sideBCharacterId: meta.side_b_character_id,
@@ -4578,6 +4579,13 @@ async function saveCommittedPresentation(input: {
     inputDigest: receipt.narrationInputDigest,
     narrative: input.narrative,
     createdAt: receipt.committedAt,
+  });
+  await completeCompatibilityNarration({
+    battleId: input.state.id,
+    receiptId: receipt.id,
+    inputDigest: receipt.narrationInputDigest,
+    narrative: input.narrative,
+    now: receipt.committedAt,
   });
 }
 
@@ -4808,7 +4816,7 @@ async function runPrologueTurn(input: {
     phases: ["prologue"],
   });
 
-  await battleRepo.saveBattle(next, {
+  await battleRepo.saveBattleWithNarrationOutbox(next, {
     sideAUserId: input.meta.side_a_user_id,
     sideACharacterId: input.meta.side_a_character_id,
     sideBCharacterId: input.meta.side_b_character_id,
@@ -5075,7 +5083,7 @@ async function runAftermathTurn(input: {
     phases: ["aftermath"],
   });
 
-  await battleRepo.saveBattle(next, {
+  await battleRepo.saveBattleWithNarrationOutbox(next, {
     sideAUserId: input.meta.side_a_user_id,
     sideACharacterId: input.meta.side_a_character_id,
     sideBCharacterId: input.meta.side_b_character_id,

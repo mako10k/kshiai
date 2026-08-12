@@ -1,0 +1,615 @@
+import { NarrativeBlockSchema, type NarrativeBlock } from "@kshiai/shared";
+import { query, withTransaction, type DatabaseConnection } from "../db.js";
+import { newId } from "../id.js";
+
+export const NARRATION_WORKER_MAX_ATTEMPTS = 2;
+export const NARRATION_TOTAL_HTTP_ATTEMPTS = 4;
+export const NARRATION_TOTAL_TOKEN_CEILING = 12_000;
+
+type EntryRow = {
+  battle_id: string;
+  receipt_id: string;
+  sequence: number;
+  phase: "prologue" | "combat" | "judgment" | "aftermath";
+  combat_turn: number | null;
+  input_json: unknown;
+  input_digest: string;
+  status: "queued" | "generating" | "completed" | "failed" | "cancelled";
+  attempt_count: number;
+};
+
+export type NarrationGenerationResult = {
+  narrative: NarrativeBlock;
+  provider: string;
+  model: string | null;
+  route: "fast" | "deterministic";
+  httpAttempts: number;
+  tokenCount: number | null;
+  estimatedCostUsd: number | null;
+};
+
+export type NarrationGenerator = (
+  input: unknown,
+  context?: {
+    heartbeat: () => Promise<void>;
+    remainingHttpAttempts: number;
+    remainingTokens: number;
+  },
+) => Promise<NarrationGenerationResult>;
+
+function json(value: unknown): string {
+  return JSON.stringify(value);
+}
+
+async function nextEventSequence(
+  connection: DatabaseConnection,
+  battleId: string,
+): Promise<number> {
+  const result = await connection.query<{ next_sequence: number }>(
+    `SELECT COALESCE(MAX(event_sequence), 0) + 1 AS next_sequence
+       FROM battle_narration_events
+      WHERE battle_id = $1`,
+    [battleId],
+  );
+  return Number(result.rows[0]?.next_sequence ?? 1);
+}
+
+async function appendPublicEvent(input: {
+  connection: DatabaseConnection;
+  battleId: string;
+  receiptId: string;
+  narrationSequence: number;
+  kind: "queued" | "started" | "completed" | "failed" | "cancelled";
+  payload: Record<string, unknown>;
+  now: string;
+}): Promise<void> {
+  const sequence = await nextEventSequence(input.connection, input.battleId);
+  await input.connection.query(
+    `INSERT INTO battle_narration_events
+      (battle_id, event_sequence, event_id, receipt_id, narration_sequence,
+       kind, public_payload_json, created_at)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+    [
+      input.battleId,
+      sequence,
+      `${input.battleId}:event:${sequence}`,
+      input.receiptId,
+      input.narrationSequence,
+      input.kind,
+      json(input.payload),
+      input.now,
+    ],
+  );
+}
+
+type EnqueueNarrationInput = {
+  battleId: string;
+  receiptId: string;
+  sequence: number;
+  phase: "prologue" | "combat" | "judgment" | "aftermath";
+  combatTurn: number | null;
+  frozenInput: unknown;
+  inputDigest: string;
+  now?: string;
+};
+
+export async function enqueueNarrationInTransaction(
+  connection: DatabaseConnection,
+  input: EnqueueNarrationInput,
+): Promise<void> {
+  const now = input.now ?? new Date().toISOString();
+  const inserted = await connection.query<{ receipt_id: string }>(
+      `INSERT INTO battle_narration_entries
+        (battle_id, receipt_id, sequence, phase, combat_turn, input_json,
+         input_digest, status, created_at, updated_at)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, 'queued', $8, $8)
+       ON CONFLICT (battle_id, receipt_id) DO NOTHING
+       RETURNING receipt_id`,
+      [
+        input.battleId,
+        input.receiptId,
+        input.sequence,
+        input.phase,
+        input.combatTurn,
+        json(input.frozenInput),
+        input.inputDigest,
+        now,
+      ],
+  );
+  if (inserted.rowCount === 0) {
+      const existing = await connection.query<{ input_digest: string }>(
+        `SELECT input_digest FROM battle_narration_entries
+          WHERE battle_id = $1 AND receipt_id = $2`,
+        [input.battleId, input.receiptId],
+      );
+      if (existing.rows[0]?.input_digest !== input.inputDigest) {
+        throw new Error("NARRATION_INPUT_DIGEST_CONFLICT");
+      }
+    return;
+  }
+  await appendPublicEvent({
+      connection,
+      battleId: input.battleId,
+      receiptId: input.receiptId,
+      narrationSequence: input.sequence,
+      kind: "queued",
+      payload: {
+        turnReceiptId: input.receiptId,
+        narrationSequence: input.sequence,
+        phase: input.phase,
+        combatTurn: input.combatTurn,
+        status: "queued",
+      },
+      now,
+  });
+  await connection.query(
+      `INSERT INTO battle_narration_outbox
+        (outbox_id, battle_id, receipt_id, status, created_at)
+       VALUES ($1, $2, $3, 'pending', $4)
+       ON CONFLICT (outbox_id) DO NOTHING`,
+      [`outbox:${input.battleId}:${input.receiptId}`, input.battleId, input.receiptId, now],
+  );
+}
+
+export async function enqueueNarration(input: EnqueueNarrationInput): Promise<void> {
+  await withTransaction(async (connection) => {
+    await enqueueNarrationInTransaction(connection, input);
+  });
+}
+
+/** Temporary dual-write bridge until advance stops generating narration. */
+export async function completeCompatibilityNarration(input: {
+  battleId: string;
+  receiptId: string;
+  inputDigest: string;
+  narrative: NarrativeBlock;
+  now?: string;
+}): Promise<void> {
+  const now = input.now ?? new Date().toISOString();
+  await withTransaction(async (connection) => {
+    const entry = await connection.query<EntryRow>(
+      `SELECT battle_id, receipt_id, sequence, phase, combat_turn, input_json,
+              input_digest, status, attempt_count
+         FROM battle_narration_entries
+        WHERE battle_id = $1 AND receipt_id = $2`,
+      [input.battleId, input.receiptId],
+    );
+    const current = entry.rows[0];
+    if (!current || current.input_digest !== input.inputDigest) {
+      throw new Error("NARRATION_INPUT_DIGEST_CONFLICT");
+    }
+    if (current.status === "completed") return;
+    NarrativeBlockSchema.parse(input.narrative);
+    const updated = await connection.query(
+      `UPDATE battle_narration_entries
+          SET status = 'completed', terminal_narrative_json = $3,
+              fallback_reason = 'legacy_sync_bridge', active_attempt_id = NULL,
+              updated_at = $4
+        WHERE battle_id = $1 AND receipt_id = $2
+          AND status IN ('queued', 'generating')`,
+      [input.battleId, input.receiptId, json(input.narrative), now],
+    );
+    if (updated.rowCount !== 1) throw new Error("NARRATION_COMPATIBILITY_CONFLICT");
+    await appendPublicEvent({
+      connection,
+      battleId: input.battleId,
+      receiptId: input.receiptId,
+      narrationSequence: Number(current.sequence),
+      kind: "completed",
+      payload: {
+        turnReceiptId: input.receiptId,
+        narrationSequence: Number(current.sequence),
+        phase: current.phase,
+        combatTurn: current.combat_turn,
+        status: "completed",
+        narrative: input.narrative,
+      },
+      now,
+    });
+  });
+}
+
+async function acquireFencedLease(input: {
+  battleId: string;
+  ownerId: string;
+  now: string;
+  expiresAt: string;
+}): Promise<number> {
+  return withTransaction(async (connection) => {
+    const result = await connection.query<{ fencing_token: number }>(
+      `INSERT INTO battle_narration_leases
+        (battle_id, owner_id, fencing_token, expires_at, updated_at)
+       VALUES ($1, $2, 1, $3, $4)
+       ON CONFLICT (battle_id) DO UPDATE
+         SET owner_id = EXCLUDED.owner_id,
+             fencing_token = battle_narration_leases.fencing_token + 1,
+             expires_at = EXCLUDED.expires_at,
+             updated_at = EXCLUDED.updated_at
+       WHERE battle_narration_leases.owner_id = EXCLUDED.owner_id
+          OR battle_narration_leases.expires_at <= $4
+       RETURNING fencing_token`,
+      [input.battleId, input.ownerId, input.expiresAt, input.now],
+    );
+    const token = result.rows[0]?.fencing_token;
+    if (token === undefined) throw new Error("NARRATION_LEASE_BUSY");
+    return Number(token);
+  });
+}
+
+async function renewFencedLease(input: {
+  battleId: string;
+  ownerId: string;
+  fencingToken: number;
+  now?: Date;
+  leaseMs?: number;
+}): Promise<void> {
+  const now = input.now ?? new Date();
+  const result = await query(
+    `UPDATE battle_narration_leases
+        SET expires_at = $4, updated_at = $5
+      WHERE battle_id = $1 AND owner_id = $2 AND fencing_token = $3
+        AND expires_at > $5`,
+    [
+      input.battleId,
+      input.ownerId,
+      input.fencingToken,
+      new Date(now.getTime() + (input.leaseMs ?? 60_000)).toISOString(),
+      now.toISOString(),
+    ],
+  );
+  if (result.rowCount !== 1) throw new Error("NARRATION_STALE_FENCE");
+}
+
+function deterministicFallback(entry: EntryRow): NarrativeBlock {
+  const parsed = typeof entry.input_json === "string"
+    ? JSON.parse(entry.input_json) as Record<string, unknown>
+    : entry.input_json as Record<string, unknown>;
+  const scene = typeof parsed?.scene === "string" ? parsed.scene : "戦場";
+  return {
+    turn: entry.combat_turn ?? 0,
+    narrator: [`${scene}で、確定した局面が静かに刻まれた。`],
+    speeches: [],
+  };
+}
+
+export async function processNextNarration(input: {
+  battleId: string;
+  ownerId: string;
+  generator: NarrationGenerator;
+  now?: Date;
+  leaseMs?: number;
+}): Promise<"idle" | "completed" | "retry_queued" | "failed"> {
+  const nowDate = input.now ?? new Date();
+  const now = nowDate.toISOString();
+  const expiresAt = new Date(
+    nowDate.getTime() + (input.leaseMs ?? 60_000),
+  ).toISOString();
+  const fence = await acquireFencedLease({
+    battleId: input.battleId,
+    ownerId: input.ownerId,
+    now,
+    expiresAt,
+  });
+  const claimed = await withTransaction(async (connection) => {
+    const selected = await connection.query<EntryRow>(
+      `SELECT battle_id, receipt_id, sequence, phase, combat_turn, input_json,
+              input_digest, status, attempt_count
+         FROM battle_narration_entries
+        WHERE battle_id = $1
+          AND status IN ('queued', 'generating')
+        ORDER BY sequence ASC
+        LIMIT 1`,
+      [input.battleId],
+    );
+    const entry = selected.rows[0];
+    if (!entry) return null;
+    const attemptId = newId("narration_attempt");
+    const updated = await connection.query(
+      `UPDATE battle_narration_entries
+          SET status = 'generating', active_attempt_id = $3,
+              attempt_count = attempt_count + 1, updated_at = $4
+        WHERE battle_id = $1 AND receipt_id = $2
+          AND status IN ('queued', 'generating')`,
+      [entry.battle_id, entry.receipt_id, attemptId, now],
+    );
+    if (updated.rowCount !== 1) throw new Error("NARRATION_CLAIM_CONFLICT");
+    await connection.query(
+      `INSERT INTO battle_narration_attempts
+        (attempt_id, battle_id, receipt_id, fencing_token, status,
+         provider, model, route, started_at)
+       VALUES ($1, $2, $3, $4, 'generating', 'pending', NULL, 'fast', $5)`,
+      [attemptId, entry.battle_id, entry.receipt_id, fence, now],
+    );
+    await appendPublicEvent({
+      connection,
+      battleId: entry.battle_id,
+      receiptId: entry.receipt_id,
+      narrationSequence: Number(entry.sequence),
+      kind: "started",
+      payload: {
+        turnReceiptId: entry.receipt_id,
+        narrationSequence: Number(entry.sequence),
+        phase: entry.phase,
+        combatTurn: entry.combat_turn,
+        status: "generating",
+      },
+      now,
+    });
+    return { entry, attemptId };
+  });
+  if (!claimed) return "idle";
+
+  const started = Date.now();
+  let generated: NarrationGenerationResult | null = null;
+  let errorClass: string | null = null;
+  let failureHttpAttempts = 0;
+  let failureTokenCount: number | null = null;
+  let failureEstimatedCostUsd: number | null = null;
+  let ceilingReached = false;
+  const priorUsage = await query<{
+    http_attempts: number;
+    token_count: number;
+  }>(
+    `SELECT COALESCE(SUM(http_attempts), 0) AS http_attempts,
+            COALESCE(SUM(token_count), 0) AS token_count
+       FROM battle_narration_attempts
+      WHERE battle_id = $1 AND receipt_id = $2 AND attempt_id <> $3`,
+    [input.battleId, claimed.entry.receipt_id, claimed.attemptId],
+  );
+  const priorHttpAttempts = Number(priorUsage.rows[0]?.http_attempts ?? 0);
+  const priorTokenCount = Number(priorUsage.rows[0]?.token_count ?? 0);
+  try {
+    if (priorHttpAttempts >= NARRATION_TOTAL_HTTP_ATTEMPTS ||
+        priorTokenCount >= NARRATION_TOTAL_TOKEN_CEILING) {
+      ceilingReached = true;
+      throw new Error("narration_budget_exhausted");
+    }
+    generated = await input.generator(
+      typeof claimed.entry.input_json === "string"
+        ? JSON.parse(claimed.entry.input_json)
+        : claimed.entry.input_json,
+      {
+        heartbeat: () => renewFencedLease({
+          battleId: input.battleId,
+          ownerId: input.ownerId,
+          fencingToken: fence,
+          leaseMs: input.leaseMs,
+        }),
+        remainingHttpAttempts: NARRATION_TOTAL_HTTP_ATTEMPTS - priorHttpAttempts,
+        remainingTokens: NARRATION_TOTAL_TOKEN_CEILING - priorTokenCount,
+      },
+    );
+    NarrativeBlockSchema.parse(generated.narrative);
+    const totalHttpAttempts = priorHttpAttempts + generated.httpAttempts;
+    const totalTokenCount = priorTokenCount +
+      (generated.tokenCount ?? 0);
+    if (totalHttpAttempts > NARRATION_TOTAL_HTTP_ATTEMPTS) {
+      ceilingReached = true;
+      throw new Error("http_attempt_ceiling");
+    }
+    if (totalTokenCount > NARRATION_TOTAL_TOKEN_CEILING) {
+      ceilingReached = true;
+      throw new Error("token_ceiling");
+    }
+  } catch (error) {
+    errorClass = error instanceof Error ? error.message.slice(0, 80) : "generation_error";
+    const usage = error && typeof error === "object"
+      ? error as { httpAttempts?: unknown; tokenCount?: unknown; estimatedCostUsd?: unknown }
+      : null;
+    failureHttpAttempts = typeof usage?.httpAttempts === "number" ? usage.httpAttempts : 0;
+    failureTokenCount = typeof usage?.tokenCount === "number" ? usage.tokenCount : null;
+    failureEstimatedCostUsd = typeof usage?.estimatedCostUsd === "number"
+      ? usage.estimatedCostUsd
+      : null;
+    if (priorHttpAttempts + failureHttpAttempts >= NARRATION_TOTAL_HTTP_ATTEMPTS ||
+        priorTokenCount + (failureTokenCount ?? 0) >= NARRATION_TOTAL_TOKEN_CEILING) {
+      ceilingReached = true;
+    }
+    generated = null;
+  }
+  const finishedAt = new Date().toISOString();
+  const elapsedMs = Math.max(0, Date.now() - started);
+  return withTransaction(async (connection) => {
+    const lease = await connection.query<{ fencing_token: number }>(
+      `SELECT fencing_token FROM battle_narration_leases
+        WHERE battle_id = $1 AND owner_id = $2
+          AND fencing_token = $3 AND expires_at > $4`,
+      [input.battleId, input.ownerId, fence, finishedAt],
+    );
+    if (lease.rowCount !== 1) throw new Error("NARRATION_STALE_FENCE");
+    if (generated) {
+      await connection.query(
+        `UPDATE battle_narration_attempts
+            SET status = 'completed', provider = $2, model = $3, route = $4,
+                http_attempts = $5, token_count = $6, estimated_cost_usd = $7,
+                elapsed_ms = $8, finished_at = $9
+          WHERE attempt_id = $1 AND fencing_token = $10`,
+        [claimed.attemptId, generated.provider, generated.model, generated.route,
+          generated.httpAttempts, generated.tokenCount, generated.estimatedCostUsd,
+          elapsedMs, finishedAt, fence],
+      );
+      const committed = await connection.query(
+        `UPDATE battle_narration_entries
+            SET status = 'completed', terminal_narrative_json = $3,
+                active_attempt_id = NULL, updated_at = $4
+          WHERE battle_id = $1 AND receipt_id = $2
+            AND active_attempt_id = $5`,
+        [input.battleId, claimed.entry.receipt_id, json(generated.narrative), finishedAt,
+          claimed.attemptId],
+      );
+      if (committed.rowCount !== 1) throw new Error("NARRATION_STALE_ATTEMPT");
+      await appendPublicEvent({
+        connection,
+        battleId: input.battleId,
+        receiptId: claimed.entry.receipt_id,
+        narrationSequence: Number(claimed.entry.sequence),
+        kind: "completed",
+        payload: {
+          turnReceiptId: claimed.entry.receipt_id,
+          narrationSequence: Number(claimed.entry.sequence),
+          phase: claimed.entry.phase,
+          combatTurn: claimed.entry.combat_turn,
+          status: "completed",
+          narrative: generated.narrative,
+        },
+        now: finishedAt,
+      });
+      return "completed";
+    }
+
+    const attempts = Number(claimed.entry.attempt_count) + 1;
+    const terminal = ceilingReached || attempts >= NARRATION_WORKER_MAX_ATTEMPTS;
+    await connection.query(
+      `UPDATE battle_narration_attempts
+          SET status = $2, provider = 'unavailable', route = 'deterministic',
+              http_attempts = $3, token_count = $4, estimated_cost_usd = $5,
+              elapsed_ms = $6, fallback_reason = $7, error_class = $7,
+              finished_at = $8
+        WHERE attempt_id = $1 AND fencing_token = $9`,
+      [claimed.attemptId, terminal ? "failed" : "abandoned", failureHttpAttempts,
+        failureTokenCount, failureEstimatedCostUsd, elapsedMs,
+        errorClass ?? "generation_error", finishedAt, fence],
+    );
+    if (!terminal) {
+      await connection.query(
+        `UPDATE battle_narration_entries
+            SET status = 'queued', active_attempt_id = NULL, updated_at = $3
+          WHERE battle_id = $1 AND receipt_id = $2 AND active_attempt_id = $4`,
+        [input.battleId, claimed.entry.receipt_id, finishedAt, claimed.attemptId],
+      );
+      return "retry_queued";
+    }
+    const fallback = deterministicFallback(claimed.entry);
+    await connection.query(
+      `UPDATE battle_narration_entries
+          SET status = 'failed', terminal_narrative_json = $3,
+              fallback_reason = $4, active_attempt_id = NULL, updated_at = $5
+        WHERE battle_id = $1 AND receipt_id = $2 AND active_attempt_id = $6`,
+      [input.battleId, claimed.entry.receipt_id, json(fallback),
+        errorClass ?? "generation_error", finishedAt, claimed.attemptId],
+    );
+    await appendPublicEvent({
+      connection,
+      battleId: input.battleId,
+      receiptId: claimed.entry.receipt_id,
+      narrationSequence: Number(claimed.entry.sequence),
+      kind: "failed",
+      payload: {
+        turnReceiptId: claimed.entry.receipt_id,
+        narrationSequence: Number(claimed.entry.sequence),
+        phase: claimed.entry.phase,
+        combatTurn: claimed.entry.combat_turn,
+        status: "failed",
+        narrative: fallback,
+        fallbackReason: errorClass ?? "generation_error",
+      },
+      now: finishedAt,
+    });
+    return "failed";
+  });
+}
+
+export type NarrationOutboxDelivery = {
+  outboxId: string;
+  battleId: string;
+  receiptId: string;
+};
+
+export async function dispatchNarrationOutbox(
+  dispatcher: (delivery: NarrationOutboxDelivery) => Promise<void>,
+  limit = 20,
+): Promise<{ delivered: number; failed: number }> {
+  const pending = await query<{
+    outbox_id: string;
+    battle_id: string;
+    receipt_id: string;
+  }>(
+    `SELECT outbox_id, battle_id, receipt_id
+       FROM battle_narration_outbox
+      WHERE status = 'pending'
+      ORDER BY created_at, outbox_id
+      LIMIT $1`,
+    [Math.max(1, Math.min(100, Math.trunc(limit)))],
+  );
+  let delivered = 0;
+  let failed = 0;
+  for (const row of pending.rows) {
+    await query(
+      `UPDATE battle_narration_outbox
+          SET delivery_attempts = delivery_attempts + 1
+        WHERE outbox_id = $1 AND status = 'pending'`,
+      [row.outbox_id],
+    );
+    try {
+      await dispatcher({
+        outboxId: row.outbox_id,
+        battleId: row.battle_id,
+        receiptId: row.receipt_id,
+      });
+      const marked = await query(
+        `UPDATE battle_narration_outbox
+            SET status = 'dispatched', dispatched_at = $2
+          WHERE outbox_id = $1 AND status = 'pending'`,
+        [row.outbox_id, new Date().toISOString()],
+      );
+      if (marked.rowCount === 1) delivered += 1;
+    } catch {
+      failed += 1;
+    }
+  }
+  return { delivered, failed };
+}
+
+export async function nextNarrationBattleId(): Promise<string | null> {
+  const result = await query<{ battle_id: string }>(
+    `SELECT battle_id
+       FROM battle_narration_entries entry
+      WHERE status IN ('queued', 'generating')
+        AND NOT EXISTS (
+          SELECT 1 FROM battle_narration_entries earlier
+           WHERE earlier.battle_id = entry.battle_id
+             AND earlier.sequence < entry.sequence
+             AND earlier.status IN ('queued', 'generating')
+        )
+      ORDER BY updated_at, battle_id
+      LIMIT 1`,
+  );
+  return result.rows[0]?.battle_id ?? null;
+}
+
+export async function processNextNarrationAcrossBattles(input: {
+  ownerId: string;
+  generator: NarrationGenerator;
+  leaseMs?: number;
+}): Promise<"idle" | "completed" | "retry_queued" | "failed"> {
+  const battleId = await nextNarrationBattleId();
+  if (!battleId) return "idle";
+  return processNextNarration({ ...input, battleId });
+}
+
+export async function listNarrationEvents(battleId: string): Promise<Array<{
+  eventId: string;
+  sequence: number;
+  kind: string;
+  payload: unknown;
+}>> {
+  const result = await query<{
+    event_id: string;
+    event_sequence: number;
+    kind: string;
+    public_payload_json: unknown;
+  }>(
+    `SELECT event_id, event_sequence, kind, public_payload_json
+       FROM battle_narration_events
+      WHERE battle_id = $1 ORDER BY event_sequence`,
+    [battleId],
+  );
+  return result.rows.map((row) => ({
+    eventId: row.event_id,
+    sequence: Number(row.event_sequence),
+    kind: row.kind,
+    payload: typeof row.public_payload_json === "string"
+      ? JSON.parse(row.public_payload_json)
+      : row.public_payload_json,
+  }));
+}

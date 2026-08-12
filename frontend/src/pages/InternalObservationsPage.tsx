@@ -389,6 +389,41 @@ export function InternalObservationsPage() {
               </div>
 
               <div className="panel">
+                <h2>非同期ナレーション queue / lease / cost</h2>
+                <p className="muted">
+                  公開本文・private prompt・provider raw outputを含まない運用投影です。
+                </p>
+                {detail.narrationQueue.length > 0 ? (
+                  <div className="internal-turn-list">
+                    {detail.narrationQueue.map((entry) => (
+                      <div className="internal-turn" key={`narration-${entry.receiptId}`}>
+                        <strong>#{entry.sequence} {entry.phase} · {entry.status}</strong>
+                        <span> · attempts {entry.attemptCount}</span>
+                        {entry.blockedBySequence !== null ? (
+                          <div className="muted">#{entry.blockedBySequence} の完了待ち</div>
+                        ) : null}
+                        <div className="muted">
+                          lease {entry.lease
+                            ? `fence ${entry.lease.fencingToken} / ${entry.lease.expired ? "expired" : "active"}`
+                            : "none"}
+                        </div>
+                        {entry.latestAttempt ? (
+                          <div className="muted">
+                            {entry.latestAttempt.route} · {entry.latestAttempt.provider}
+                            {entry.latestAttempt.model ? `/${entry.latestAttempt.model}` : ""}
+                            {` · HTTP ${entry.latestAttempt.httpAttempts}`}
+                            {` · tokens ${entry.latestAttempt.tokenCount ?? "n/a"}`}
+                            {` · cost $${entry.latestAttempt.estimatedCostUsd ?? "n/a"}`}
+                            {` · ${entry.latestAttempt.elapsedMs ?? "n/a"}ms`}
+                          </div>
+                        ) : null}
+                      </div>
+                    ))}
+                  </div>
+                ) : <p className="muted">legacy / queue entry unavailable</p>}
+              </div>
+
+              <div className="panel">
                 <h2>キャラ・ナレータ パイプラインDAG</h2>
                 <div className="internal-agent-lanes">
                   {(["a", "b"] as const).map((side) => {

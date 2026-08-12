@@ -195,6 +195,28 @@ export type InternalBattleObservationDetail = {
     hasCausalExecutionCheckpoint: boolean;
     perTurnCanonicalTransitions: "complete" | "partial" | "unavailable";
   };
+  narrationQueue: Array<{
+    receiptId: string;
+    sequence: number;
+    phase: string;
+    combatTurn: number | null;
+    status: string;
+    attemptCount: number;
+    blockedBySequence: number | null;
+    updatedAt: string;
+    lease: { fencingToken: number; expiresAt: string; expired: boolean } | null;
+    latestAttempt: {
+      status: string;
+      provider: string;
+      model: string | null;
+      route: string;
+      httpAttempts: number;
+      tokenCount: number | null;
+      estimatedCostUsd: number | null;
+      elapsedMs: number | null;
+      fallbackReason: string | null;
+    } | null;
+  }>;
 };
 
 export class ApiError extends Error {

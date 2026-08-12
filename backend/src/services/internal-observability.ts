@@ -91,6 +91,29 @@ export type CanonicalTurnProgression = {
 
 export type InternalObservationScope = "all" | "test";
 
+export type InternalNarrationQueueEntry = {
+  receiptId: string;
+  sequence: number;
+  phase: string;
+  combatTurn: number | null;
+  status: string;
+  attemptCount: number;
+  blockedBySequence: number | null;
+  updatedAt: string;
+  lease: { fencingToken: number; expiresAt: string; expired: boolean } | null;
+  latestAttempt: {
+    status: string;
+    provider: string;
+    model: string | null;
+    route: string;
+    httpAttempts: number;
+    tokenCount: number | null;
+    estimatedCostUsd: number | null;
+    elapsedMs: number | null;
+    fallbackReason: string | null;
+  } | null;
+};
+
 function asObject(value: unknown): JsonObject | null {
   if (typeof value === "string") {
     try {
@@ -243,6 +266,7 @@ export async function getInternalBattleObservation(
     hasCausalExecutionCheckpoint: boolean;
     perTurnCanonicalTransitions: "complete" | "partial" | "unavailable";
   };
+  narrationQueue: InternalNarrationQueueEntry[];
 } | null> {
   const realmFilter = scope === "test"
     ? `AND EXISTS (
@@ -296,6 +320,74 @@ export async function getInternalBattleObservation(
   const temporalResolutionCount = canonicalTimeline.filter(
     (record) => record.temporalResolution !== null,
   ).length;
+  const narrationRows = await query<{
+    receipt_id: string;
+    sequence: number;
+    phase: string;
+    combat_turn: number | null;
+    entry_status: string;
+    attempt_count: number;
+    updated_at: string | Date;
+    fencing_token: number | null;
+    expires_at: string | Date | null;
+    attempt_status: string | null;
+    provider: string | null;
+    model: string | null;
+    route: string | null;
+    http_attempts: number | null;
+    token_count: number | null;
+    estimated_cost_usd: number | null;
+    elapsed_ms: number | null;
+    fallback_reason: string | null;
+  }>(
+    `SELECT entry.receipt_id, entry.sequence, entry.phase, entry.combat_turn,
+            entry.status AS entry_status, entry.attempt_count, entry.updated_at,
+            lease.fencing_token, lease.expires_at,
+            attempt.status AS attempt_status, attempt.provider, attempt.model,
+            attempt.route, attempt.http_attempts, attempt.token_count,
+            attempt.estimated_cost_usd, attempt.elapsed_ms, attempt.fallback_reason
+       FROM battle_narration_entries entry
+       LEFT JOIN battle_narration_leases lease ON lease.battle_id = entry.battle_id
+       LEFT JOIN battle_narration_attempts attempt
+         ON attempt.attempt_id = entry.active_attempt_id
+      WHERE entry.battle_id = $1
+      ORDER BY entry.sequence`,
+    [battleId],
+  );
+  const firstNonterminal = narrationRows.rows.find((entry) =>
+    entry.entry_status === "queued" || entry.entry_status === "generating"
+  )?.sequence ?? null;
+  const observedAt = Date.now();
+  const narrationQueue: InternalNarrationQueueEntry[] = narrationRows.rows.map((entry) => ({
+    receiptId: entry.receipt_id,
+    sequence: Number(entry.sequence),
+    phase: entry.phase,
+    combatTurn: entry.combat_turn === null ? null : Number(entry.combat_turn),
+    status: entry.entry_status,
+    attemptCount: Number(entry.attempt_count),
+    blockedBySequence: firstNonterminal !== null && Number(entry.sequence) > Number(firstNonterminal)
+      ? Number(firstNonterminal)
+      : null,
+    updatedAt: isoTimestamp(entry.updated_at),
+    lease: entry.fencing_token === null || entry.expires_at === null ? null : {
+      fencingToken: Number(entry.fencing_token),
+      expiresAt: isoTimestamp(entry.expires_at),
+      expired: new Date(entry.expires_at).getTime() <= observedAt,
+    },
+    latestAttempt: entry.attempt_status === null ? null : {
+      status: entry.attempt_status,
+      provider: entry.provider ?? "unavailable",
+      model: entry.model,
+      route: entry.route ?? "unavailable",
+      httpAttempts: Number(entry.http_attempts ?? 0),
+      tokenCount: entry.token_count === null ? null : Number(entry.token_count),
+      estimatedCostUsd: entry.estimated_cost_usd === null
+        ? null
+        : Number(entry.estimated_cost_usd),
+      elapsedMs: entry.elapsed_ms === null ? null : Number(entry.elapsed_ms),
+      fallbackReason: entry.fallback_reason,
+    },
+  }));
   return {
     summary: summaryFromRow(row),
     observation: asObject(row.observation_json),
@@ -348,5 +440,6 @@ export async function getInternalBattleObservation(
           ? "complete"
           : "partial",
     },
+    narrationQueue,
   };
 }
