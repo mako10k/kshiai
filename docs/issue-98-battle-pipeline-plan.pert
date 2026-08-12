@@ -83,6 +83,7 @@ task T_ACCEPT_PACING_PRODUCTION_TRIAL PACING_BASELINE_CAPTURED -> PACING_DEPLOY_
   title "Accept the exact pacing production trial"
   description "Owner confirms the provisional candidate policy, exact commit SHA, migration and configuration impact, initial safety thresholds, and rollback target. No separate 20 USD experiment budget is reserved: ordinary production usage accumulates evidence over time. This authorizes one guarded production deployment with the policy explicitly marked provisional, not permanent adoption."
   duration 1p
+  status done
   requires:
     OWNER 1
   owner "user"
@@ -117,3 +118,17 @@ milestone PACING_PRODUCTION_OBSERVED:
 milestone PACING_BASELINE_CAPTURED:
   title "Current production pacing baseline is recorded"
   state reached
+
+work_event EVT_ACCEPT_PACING_DEPLOY_START_20260812:
+  model 1
+  task T_ACCEPT_PACING_PRODUCTION_TRIAL
+  kind start
+  occurred_at 2026-08-12T19:06:34+09:00
+  planned_value 1p
+
+work_event EVT_ACCEPT_PACING_DEPLOY_DONE_20260812:
+  model 1
+  task T_ACCEPT_PACING_PRODUCTION_TRIAL
+  kind finish
+  occurred_at 2026-08-12T19:06:36+09:00
+  effort 0.01ph
