@@ -1,5 +1,6 @@
 import type { BattlePublic } from "./battle.js";
 import type { SpeechLine } from "./narrative.js";
+import type { NarrativeBlock } from "./narrative.js";
 
 /** Progress phases during a streamed battle advance. */
 export type BattleAdvancePhase =
@@ -25,6 +26,44 @@ export type BattleAdvanceStreamEvent =
   | { type: "speeches"; speeches: SpeechLine[] }
   | { type: "done"; battle: BattlePublic }
   | { type: "error"; message: string };
+
+export type BattleNarrationStatus =
+  | "queued"
+  | "generating"
+  | "completed"
+  | "failed"
+  | "cancelled";
+
+/** Public terminal-snapshot narration projection. */
+export type BattleNarrationEntryPublic = {
+  turnReceiptId: string;
+  sequence: number;
+  phase: "prologue" | "combat" | "judgment" | "aftermath";
+  combatTurn: number | null;
+  status: BattleNarrationStatus;
+  narrative: NarrativeBlock | null;
+};
+
+export type BattleNarrationEventPublic = {
+  eventId: string;
+  cursor: string;
+  type: "narration";
+  entry: BattleNarrationEntryPublic;
+};
+
+export type BattleNarrationFollowEvent = BattleNarrationEventPublic | {
+  eventId: string;
+  cursor: string | null;
+  type: "reset";
+  snapshot: BattleNarrationSnapshot;
+};
+
+export type BattleNarrationSnapshot = {
+  battleId: string;
+  entries: BattleNarrationEntryPublic[];
+  cursor: string | null;
+  reset: boolean;
+};
 
 /**
  * Extract completed `"narrator": [...]` string elements from a partial JSON

@@ -1,5 +1,9 @@
 import { query } from "../db.js";
 import { assetContentDigest } from "../repositories/asset-generations.js";
+import {
+  NARRATION_ATTEMPT_RETENTION_DAYS,
+  NARRATION_PUBLIC_EVENT_RETENTION_DAYS,
+} from "./narration-worker.js";
 
 type JsonObject = Record<string, unknown>;
 type AssetBindingValidation = "valid" | "mismatch" | "legacy_unknown";
@@ -267,6 +271,11 @@ export async function getInternalBattleObservation(
     perTurnCanonicalTransitions: "complete" | "partial" | "unavailable";
   };
   narrationQueue: InternalNarrationQueueEntry[];
+  narrationRetention: {
+    publicEventDays: number;
+    attemptDays: number;
+    prunedThroughSequence: number;
+  };
 } | null> {
   const realmFilter = scope === "test"
     ? `AND EXISTS (
@@ -388,6 +397,11 @@ export async function getInternalBattleObservation(
       fallbackReason: entry.fallback_reason,
     },
   }));
+  const retention = await query<{ pruned_through_sequence: number }>(
+    `SELECT pruned_through_sequence FROM battle_narration_retention
+      WHERE battle_id = $1`,
+    [battleId],
+  );
   return {
     summary: summaryFromRow(row),
     observation: asObject(row.observation_json),
@@ -441,5 +455,10 @@ export async function getInternalBattleObservation(
           : "partial",
     },
     narrationQueue,
+    narrationRetention: {
+      publicEventDays: NARRATION_PUBLIC_EVENT_RETENTION_DAYS,
+      attemptDays: NARRATION_ATTEMPT_RETENTION_DAYS,
+      prunedThroughSequence: Number(retention.rows[0]?.pruned_through_sequence ?? 0),
+    },
   };
 }

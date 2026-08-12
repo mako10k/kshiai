@@ -264,6 +264,27 @@ Current local compatibility boundary:
   redact private inputs and provider outputs. Retention/deletion remains an
   owner decision at `T_ACCEPT_NARRATION_CONTRACT`.
 
+Implemented local stream boundary (2026-08-12):
+
+- owner-authorized snapshot, per-receipt, event replay and finite fetch-SSE
+  endpoints use `battleId` plus receipt identity; there is no public narration
+  ID;
+- the opaque cursor identifies a durable battle-local event high-watermark.
+  Network delivery is at-least-once and the frontend replaces entries by
+  receipt ID while deduplicating event IDs;
+- public events retain only allowlisted status and terminal prose. Frozen input,
+  provider output, attempts, usage and lease data remain outside the public DTO;
+- physical SSE requests are deliberately finite. The client reconnects with a
+  fresh bearer token, causing battle access to be rechecked each time;
+- public events are retained for 30 days and internal attempts for 14 days.
+  Pruning transactionally advances a retained high-watermark; a cursor behind
+  it receives one terminal snapshot reset before following newer events;
+- the battle page follows narration independently of advance and displays
+  ordered queued/generating placeholders. During the compatibility interval,
+  advance may still complete the same entry through the synchronous bridge;
+  removing that bridge and narrator progress is gated by
+  `T_ACCEPT_NARRATION_MIGRATION` and the subsequent cutover task.
+
 ## Acceptance matrix
 
 - advance N and N+1 commit while narration N is generating;

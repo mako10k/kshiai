@@ -71,6 +71,10 @@ import {
   completeIdempotentRequest,
   requestDigest,
 } from "./services/distributed-guard.js";
+import {
+  getBattleNarrationSnapshot,
+  readBattleNarrationEvents,
+} from "./services/narration-worker.js";
 
 const llm = createLlmProvider();
 
@@ -1367,6 +1371,84 @@ export function buildRoutes() {
     const ok = await battleRepo.deleteBattle(c.req.param("id"), user.id);
     if (!ok) return c.json({ error: "not_found" }, 404);
     return c.json({ ok: true });
+  });
+
+  async function authorizeBattleNarration(battleId: string, userId: string) {
+    const meta = await battleRepo.getBattleMeta(battleId);
+    if (!meta) return "not_found" as const;
+    if (meta.side_a_user_id !== userId) return "forbidden" as const;
+    return meta;
+  }
+
+  authed.get("/battles/:id/narration", async (c) => {
+    const battleId = c.req.param("id");
+    const access = await authorizeBattleNarration(battleId, c.get("user").id);
+    if (access === "not_found") return c.json({ error: access }, 404);
+    if (access === "forbidden") return c.json({ error: access }, 403);
+    c.header("Cache-Control", "private, no-store");
+    return c.json(await getBattleNarrationSnapshot(battleId));
+  });
+
+  authed.get("/battles/:id/narration/events", async (c) => {
+    const battleId = c.req.param("id");
+    const access = await authorizeBattleNarration(battleId, c.get("user").id);
+    if (access === "not_found") return c.json({ error: access }, 404);
+    if (access === "forbidden") return c.json({ error: access }, 403);
+    try {
+      c.header("Cache-Control", "private, no-store");
+      return c.json(await readBattleNarrationEvents({
+        battleId,
+        cursor: c.req.query("cursor") ?? null,
+      }));
+    } catch (error) {
+      if (error instanceof Error && error.message === "NARRATION_CURSOR_INVALID") {
+        return c.json({ error: "narration_cursor_invalid" }, 400);
+      }
+      throw error;
+    }
+  });
+
+  /** Finite authenticated SSE replay. Clients reconnect with the last cursor. */
+  authed.get("/battles/:id/narration/follow", async (c) => {
+    const battleId = c.req.param("id");
+    const access = await authorizeBattleNarration(battleId, c.get("user").id);
+    if (access === "not_found") return c.json({ error: access }, 404);
+    if (access === "forbidden") return c.json({ error: access }, 403);
+    try {
+      const replay = await readBattleNarrationEvents({
+        battleId,
+        cursor: c.req.query("cursor") ?? null,
+      });
+      const frames = replay.events.map((event) =>
+        `id: ${event.cursor ?? "reset"}\nevent: ${event.type}\ndata: ${JSON.stringify(event)}\n\n`
+      ).join("");
+      return new Response(`${frames}: reconnect\n\n`, {
+        headers: {
+          "Content-Type": "text/event-stream",
+          "Cache-Control": "private, no-cache, no-transform",
+          "X-Accel-Buffering": "no",
+        },
+      });
+    } catch (error) {
+      if (error instanceof Error && error.message === "NARRATION_CURSOR_INVALID") {
+        return c.json({ error: "narration_cursor_invalid" }, 400);
+      }
+      throw error;
+    }
+  });
+
+  authed.get("/battles/:id/narration/:receiptId", async (c) => {
+    const battleId = c.req.param("id");
+    const access = await authorizeBattleNarration(battleId, c.get("user").id);
+    if (access === "not_found") return c.json({ error: access }, 404);
+    if (access === "forbidden") return c.json({ error: access }, 403);
+    const snapshot = await getBattleNarrationSnapshot(battleId);
+    const entry = snapshot.entries.find(
+      (candidate) => candidate.turnReceiptId === c.req.param("receiptId"),
+    );
+    if (!entry) return c.json({ error: "not_found" }, 404);
+    c.header("Cache-Control", "private, no-store");
+    return c.json({ entry, cursor: snapshot.cursor });
   });
 
   authed.get("/battles/:id", async (c) => {

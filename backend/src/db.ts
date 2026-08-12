@@ -186,6 +186,11 @@ export function getDb(): SqliteDatabase.Database {
       created_at TEXT NOT NULL,
       dispatched_at TEXT
     );
+    CREATE TABLE IF NOT EXISTS battle_narration_retention (
+      battle_id TEXT PRIMARY KEY REFERENCES battles(id) ON DELETE CASCADE,
+      pruned_through_sequence INTEGER NOT NULL DEFAULT 0,
+      updated_at TEXT NOT NULL
+    );
     CREATE INDEX IF NOT EXISTS idx_battle_narration_entries_ready
       ON battle_narration_entries (status, battle_id, sequence);
     CREATE INDEX IF NOT EXISTS idx_battle_narration_outbox_pending

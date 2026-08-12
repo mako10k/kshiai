@@ -1,10 +1,19 @@
-import { NarrativeBlockSchema, type NarrativeBlock } from "@kshiai/shared";
+import {
+  NarrativeBlockSchema,
+  type BattleNarrationEntryPublic,
+  type BattleNarrationEventPublic,
+  type BattleNarrationFollowEvent,
+  type BattleNarrationSnapshot,
+  type NarrativeBlock,
+} from "@kshiai/shared";
 import { query, withTransaction, type DatabaseConnection } from "../db.js";
 import { newId } from "../id.js";
 
 export const NARRATION_WORKER_MAX_ATTEMPTS = 2;
 export const NARRATION_TOTAL_HTTP_ATTEMPTS = 4;
 export const NARRATION_TOTAL_TOKEN_CEILING = 12_000;
+export const NARRATION_PUBLIC_EVENT_RETENTION_DAYS = 30;
+export const NARRATION_ATTEMPT_RETENTION_DAYS = 14;
 
 type EntryRow = {
   battle_id: string;
@@ -587,6 +596,49 @@ export async function processNextNarrationAcrossBattles(input: {
   return processNextNarration({ ...input, battleId });
 }
 
+export async function pruneNarrationOperationalHistory(now = new Date()): Promise<{
+  publicEvents: number;
+  attempts: number;
+}> {
+  const publicCutoff = new Date(
+    now.getTime() - NARRATION_PUBLIC_EVENT_RETENTION_DAYS * 86_400_000,
+  ).toISOString();
+  const attemptCutoff = new Date(
+    now.getTime() - NARRATION_ATTEMPT_RETENTION_DAYS * 86_400_000,
+  ).toISOString();
+  return withTransaction(async (connection) => {
+    await connection.query(
+      `INSERT INTO battle_narration_retention
+        (battle_id, pruned_through_sequence, updated_at)
+       SELECT battle_id, MAX(event_sequence), $2
+         FROM battle_narration_events
+        WHERE created_at < $1
+        GROUP BY battle_id
+       ON CONFLICT (battle_id) DO UPDATE
+         SET pruned_through_sequence = CASE
+               WHEN EXCLUDED.pruned_through_sequence > battle_narration_retention.pruned_through_sequence
+               THEN EXCLUDED.pruned_through_sequence
+               ELSE battle_narration_retention.pruned_through_sequence
+             END,
+             updated_at = EXCLUDED.updated_at`,
+      [publicCutoff, now.toISOString()],
+    );
+    const publicEvents = await connection.query(
+      `DELETE FROM battle_narration_events WHERE created_at < $1`,
+      [publicCutoff],
+    );
+    const attempts = await connection.query(
+      `DELETE FROM battle_narration_attempts
+        WHERE finished_at IS NOT NULL AND finished_at < $1`,
+      [attemptCutoff],
+    );
+    return {
+      publicEvents: publicEvents.rowCount,
+      attempts: attempts.rowCount,
+    };
+  });
+}
+
 export async function listNarrationEvents(battleId: string): Promise<Array<{
   eventId: string;
   sequence: number;
@@ -612,4 +664,150 @@ export async function listNarrationEvents(battleId: string): Promise<Array<{
       ? JSON.parse(row.public_payload_json)
       : row.public_payload_json,
   }));
+}
+
+function encodeCursor(sequence: number): string {
+  return Buffer.from(`battle-narration-event:${sequence}`, "utf8").toString("base64url");
+}
+
+function decodeCursor(cursor: string | null | undefined): number | null {
+  if (!cursor) return null;
+  try {
+    const decoded = Buffer.from(cursor, "base64url").toString("utf8");
+    const match = /^battle-narration-event:(\d+)$/.exec(decoded);
+    return match ? Number(match[1]) : null;
+  } catch {
+    return null;
+  }
+}
+
+function publicEntry(row: {
+  receipt_id: string;
+  sequence: number;
+  phase: BattleNarrationEntryPublic["phase"];
+  combat_turn: number | null;
+  status: BattleNarrationEntryPublic["status"];
+  terminal_narrative_json: unknown | null;
+}): BattleNarrationEntryPublic {
+  const terminal = row.terminal_narrative_json === null
+    ? null
+    : NarrativeBlockSchema.parse(typeof row.terminal_narrative_json === "string"
+      ? JSON.parse(row.terminal_narrative_json)
+      : row.terminal_narrative_json);
+  return {
+    turnReceiptId: row.receipt_id,
+    sequence: Number(row.sequence),
+    phase: row.phase,
+    combatTurn: row.combat_turn === null ? null : Number(row.combat_turn),
+    status: row.status,
+    narrative: terminal,
+  };
+}
+
+export async function getBattleNarrationSnapshot(
+  battleId: string,
+): Promise<BattleNarrationSnapshot> {
+  return withTransaction(async (connection) => {
+    const highWatermark = await connection.query<{ event_sequence: number | null }>(
+      `SELECT MAX(event_sequence) AS event_sequence FROM (
+         SELECT event_sequence FROM battle_narration_events WHERE battle_id = $1
+         UNION ALL
+         SELECT pruned_through_sequence AS event_sequence
+           FROM battle_narration_retention WHERE battle_id = $1
+       ) watermark`,
+      [battleId],
+    );
+    const sequence = highWatermark.rows[0]?.event_sequence;
+    const entries = await connection.query<{
+      receipt_id: string;
+      sequence: number;
+      phase: BattleNarrationEntryPublic["phase"];
+      combat_turn: number | null;
+      status: BattleNarrationEntryPublic["status"];
+      terminal_narrative_json: unknown | null;
+    }>(
+      `SELECT receipt_id, sequence, phase, combat_turn, status,
+              terminal_narrative_json
+         FROM battle_narration_entries
+        WHERE battle_id = $1 ORDER BY sequence`,
+      [battleId],
+    );
+    return {
+      battleId,
+      entries: entries.rows.map(publicEntry),
+      cursor: sequence === null || sequence === undefined
+        ? null
+        : encodeCursor(Number(sequence)),
+      reset: true,
+    };
+  });
+}
+
+export async function readBattleNarrationEvents(input: {
+  battleId: string;
+  cursor?: string | null;
+  limit?: number;
+}): Promise<{ events: BattleNarrationFollowEvent[]; cursor: string | null }> {
+  const after = decodeCursor(input.cursor);
+  if (input.cursor && after === null) throw new Error("NARRATION_CURSOR_INVALID");
+  if (after !== null) {
+    const retained = await query<{
+      minimum_sequence: number | null;
+      pruned_through_sequence: number | null;
+    }>(
+      `SELECT
+        (SELECT MIN(event_sequence) FROM battle_narration_events
+          WHERE battle_id = $1) AS minimum_sequence,
+        (SELECT pruned_through_sequence FROM battle_narration_retention
+          WHERE battle_id = $1) AS pruned_through_sequence`,
+      [input.battleId],
+    );
+    const minimum = retained.rows[0]?.minimum_sequence;
+    const prunedThrough = Number(retained.rows[0]?.pruned_through_sequence ?? 0);
+    if (after < prunedThrough ||
+        (minimum !== null && minimum !== undefined && after < Number(minimum) - 1)) {
+      const snapshot = await getBattleNarrationSnapshot(input.battleId);
+      return {
+        events: [{
+          eventId: `reset:${snapshot.cursor ?? "empty"}`,
+          cursor: snapshot.cursor,
+          type: "reset",
+          snapshot,
+        }],
+        cursor: snapshot.cursor,
+      };
+    }
+  }
+  const result = await query<{
+    event_id: string;
+    event_sequence: number;
+    receipt_id: string;
+    sequence: number;
+    phase: BattleNarrationEntryPublic["phase"];
+    combat_turn: number | null;
+    status: BattleNarrationEntryPublic["status"];
+    terminal_narrative_json: unknown | null;
+  }>(
+    `SELECT event.event_id, event.event_sequence, entry.receipt_id,
+            entry.sequence, entry.phase, entry.combat_turn, entry.status,
+            entry.terminal_narrative_json
+       FROM battle_narration_events event
+       JOIN battle_narration_entries entry
+         ON entry.battle_id = event.battle_id
+        AND entry.receipt_id = event.receipt_id
+      WHERE event.battle_id = $1 AND event.event_sequence > $2
+      ORDER BY event.event_sequence
+      LIMIT $3`,
+    [input.battleId, after ?? 0, Math.max(1, Math.min(100, input.limit ?? 50))],
+  );
+  const events = result.rows.map((row): BattleNarrationEventPublic => ({
+    eventId: row.event_id,
+    cursor: encodeCursor(Number(row.event_sequence)),
+    type: "narration",
+    entry: publicEntry(row),
+  }));
+  return {
+    events,
+    cursor: events.at(-1)?.cursor ?? input.cursor ?? null,
+  };
 }

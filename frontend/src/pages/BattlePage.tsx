@@ -5,6 +5,7 @@ import {
   formatSpeech,
   narrativeEntries,
   type BattleAdvancePhase,
+  type BattleNarrationEntryPublic,
   type BattlePublic,
   type SpeechLine,
 } from "@kshiai/shared";
@@ -14,6 +15,11 @@ import {
   hasReachedLatestPosition,
 } from "../battle-scroll";
 import { mediaSrc } from "../media";
+import {
+  narrationStateFromSnapshot,
+  reduceNarrationEvent,
+  type BattleNarrationClientState,
+} from "../battle-narration";
 
 /** Gap before requesting the next turn (does not wait for speech animation). */
 const AUTO_TURN_DELAY_MS = 900;
@@ -53,6 +59,7 @@ export function BattlePage() {
   const [busy, setBusy] = useState(false);
   const [saveMsg, setSaveMsg] = useState<string | null>(null);
   const [streamDraft, setStreamDraft] = useState<StreamDraft | null>(null);
+  const [narrationEntries, setNarrationEntries] = useState<BattleNarrationEntryPublic[]>([]);
   const [speechReveal, setSpeechReveal] = useState<SpeechReveal | null>(null);
   const [autoScrollHeld, setAutoScrollHeld] = useState(false);
   /** Resume opens paused so the player can catch up on the log. */
@@ -70,6 +77,7 @@ export function BattlePage() {
   > | null>(null);
   const manualScrollFrameRef = useRef<number | null>(null);
   const advancingRef = useRef(false);
+  const narrationStateRef = useRef<BattleNarrationClientState | null>(null);
   const cancelledRef = useRef(false);
   /** First battle payload shows all speeches; later log growth animates. */
   const skipSpeechAnimRef = useRef(true);
@@ -195,6 +203,55 @@ export function BattlePage() {
         cancelAnimationFrame(manualScrollFrameRef.current);
         manualScrollFrameRef.current = null;
       }
+    };
+  }, [id]);
+
+  useEffect(() => {
+    if (!id) return;
+    let stopped = false;
+    let timer: ReturnType<typeof setTimeout> | null = null;
+    const poll = async () => {
+      try {
+        if (!narrationStateRef.current) {
+          const snapshot = await api.getBattleNarration(id);
+          if (stopped) return;
+          narrationStateRef.current = narrationStateFromSnapshot(snapshot);
+        } else {
+          const events = await api.followBattleNarration(
+            id,
+            narrationStateRef.current.cursor,
+          );
+          if (stopped) return;
+          const previousTerminal = narrationStateRef.current.entries.filter(
+            (entry) => entry.narrative !== null,
+          ).length;
+          for (const event of events) {
+            narrationStateRef.current = event.type === "reset"
+              ? narrationStateFromSnapshot(event.snapshot)
+              : reduceNarrationEvent(narrationStateRef.current, event);
+          }
+          const nextTerminal = narrationStateRef.current.entries.filter(
+            (entry) => entry.narrative !== null,
+          ).length;
+          if (nextTerminal > previousTerminal) {
+            const refreshed = await api.getBattle(id);
+            if (!stopped) setBattle(refreshed.battle);
+          }
+        }
+        if (!stopped && narrationStateRef.current) {
+          setNarrationEntries(narrationStateRef.current.entries);
+        }
+      } catch (pollError) {
+        console.warn("[battle] narration follow reconnect", pollError);
+      } finally {
+        if (!stopped) timer = setTimeout(poll, 1500);
+      }
+    };
+    void poll();
+    return () => {
+      stopped = true;
+      if (timer) clearTimeout(timer);
+      narrationStateRef.current = null;
     };
   }, [id]);
 
@@ -750,6 +807,24 @@ export function BattlePage() {
                 ) : null}
               </div>
             )}
+          {narrationEntries.filter((entry) =>
+            entry.status === "queued" || entry.status === "generating"
+          ).map((entry) => (
+            <div
+              className="log-block log-block-streaming"
+              key={`narration-pending-${entry.turnReceiptId}`}
+              aria-live="polite"
+            >
+              <div className="muted" style={{ fontSize: "0.8rem" }}>
+                — {entry.combatTurn === null
+                  ? entry.phase
+                  : `ターン ${entry.combatTurn}`}（ナレーション待機中）—
+              </div>
+              <p className="muted" style={{ margin: "0.25rem 0" }}>
+                {entry.status === "generating" ? "語りを生成しています…" : "順番を待っています…"}
+              </p>
+            </div>
+          ))}
           <div ref={logEnd} />
         </div>
       </div>

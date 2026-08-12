@@ -1,6 +1,8 @@
 import type {
   BattlefieldPresetPublic,
   BattleAdvanceStreamEvent,
+  BattleNarrationFollowEvent,
+  BattleNarrationSnapshot,
   BattleListItem,
   BattlePolicyOption,
   BattlePolicyOptionPublic,
@@ -30,6 +32,18 @@ export type ImageGenQuota = {
   nextAllowedAt: string | null;
   message: string;
 };
+
+export function parseBattleNarrationSse(body: string): BattleNarrationFollowEvent[] {
+  return body.split("\n\n").flatMap((frame) => {
+    const line = frame.split("\n").find((value) => value.startsWith("data:"));
+    if (!line) return [];
+    try {
+      return [JSON.parse(line.slice(5).trim()) as BattleNarrationFollowEvent];
+    } catch {
+      return [];
+    }
+  });
+}
 
 export type InternalBattleObservationSummary = {
   battleId: string;
@@ -217,6 +231,11 @@ export type InternalBattleObservationDetail = {
       fallbackReason: string | null;
     } | null;
   }>;
+  narrationRetention: {
+    publicEventDays: number;
+    attemptDays: number;
+    prunedThroughSequence: number;
+  };
 };
 
 export class ApiError extends Error {
@@ -603,6 +622,30 @@ export const api = {
     }),
   getBattle: (id: string) =>
     request<{ battle: BattlePublic }>(`/api/battles/${id}`),
+  getBattleNarration: (id: string) =>
+    request<BattleNarrationSnapshot>(`/api/battles/${id}/narration`),
+  getBattleNarrationEvents: (id: string, cursor: string | null) => {
+    const query = cursor ? `?cursor=${encodeURIComponent(cursor)}` : "";
+    return request<{ events: BattleNarrationFollowEvent[]; cursor: string | null }>(
+      `/api/battles/${id}/narration/events${query}`,
+    );
+  },
+  followBattleNarration: async (
+    id: string,
+    cursor: string | null,
+    signal?: AbortSignal,
+  ): Promise<BattleNarrationFollowEvent[]> => {
+    const query = cursor ? `?cursor=${encodeURIComponent(cursor)}` : "";
+    const response = await authenticatedFetch(
+      `/api/battles/${id}/narration/follow${query}`,
+      { headers: { Accept: "text/event-stream" }, signal },
+      currentAccessToken,
+    );
+    if (!response.ok) {
+      throw new ApiError(`http_${response.status}`, { status: response.status });
+    }
+    return parseBattleNarrationSse(await response.text());
+  },
   listBattles: (opts?: {
     q?: string;
     status?: "all" | "active" | "finished";

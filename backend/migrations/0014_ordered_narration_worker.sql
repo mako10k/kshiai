@@ -67,6 +67,12 @@ CREATE TABLE IF NOT EXISTS public.battle_narration_outbox (
   dispatched_at timestamptz
 );
 
+CREATE TABLE IF NOT EXISTS public.battle_narration_retention (
+  battle_id text PRIMARY KEY REFERENCES public.battles(id) ON DELETE CASCADE,
+  pruned_through_sequence bigint NOT NULL DEFAULT 0,
+  updated_at timestamptz NOT NULL
+);
+
 CREATE INDEX IF NOT EXISTS idx_battle_narration_entries_ready
   ON public.battle_narration_entries (status, battle_id, sequence);
 CREATE INDEX IF NOT EXISTS idx_battle_narration_outbox_pending

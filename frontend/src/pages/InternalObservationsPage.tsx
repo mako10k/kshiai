@@ -393,6 +393,10 @@ export function InternalObservationsPage() {
                 <p className="muted">
                   公開本文・private prompt・provider raw outputを含まない運用投影です。
                 </p>
+                <p className="muted">
+                  public event {detail.narrationRetention.publicEventDays}日 / attempt {detail.narrationRetention.attemptDays}日
+                  {` · pruned through #${detail.narrationRetention.prunedThroughSequence}`}
+                </p>
                 {detail.narrationQueue.length > 0 ? (
                   <div className="internal-turn-list">
                     {detail.narrationQueue.map((entry) => (

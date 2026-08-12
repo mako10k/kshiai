@@ -13,9 +13,11 @@ const { query } = await import("../db.js");
 const {
   dispatchNarrationOutbox,
   enqueueNarration,
+  getBattleNarrationSnapshot,
   listNarrationEvents,
   nextNarrationBattleId,
   processNextNarration,
+  readBattleNarrationEvents,
 } = await import("./narration-worker.js");
 
 async function createBattle(id: string): Promise<void> {
@@ -255,5 +257,56 @@ describe("ordered narration worker", () => {
       },
     }), "completed");
     assert.equal(await nextNarrationBattleId(), secondBattle);
+  });
+
+  it("provides opaque cursor replay and terminal-only public snapshots", async () => {
+    const battleId = "worker-public-read";
+    await createBattle(battleId);
+    await enqueueNarration({
+      battleId,
+      receiptId: `${battleId}:phase:1`,
+      sequence: 1,
+      phase: "combat",
+      combatTurn: 1,
+      frozenInput: { scene: "private-scene", privateMarker: "must-not-leak" },
+      inputDigest: "1".repeat(64),
+    });
+    const initial = await getBattleNarrationSnapshot(battleId);
+    assert.equal(initial.entries[0]?.status, "queued");
+    assert.equal(initial.entries[0]?.narrative, null);
+    assert.doesNotMatch(JSON.stringify(initial), /must-not-leak|private-scene/);
+    const replay = await readBattleNarrationEvents({ battleId });
+    assert.equal(replay.events.length, 1);
+    assert.ok(replay.cursor);
+    assert.doesNotMatch(replay.cursor, /battle|event|:/);
+    assert.deepEqual(
+      await readBattleNarrationEvents({ battleId, cursor: replay.cursor }),
+      { events: [], cursor: replay.cursor },
+    );
+    await processNextNarration({
+      battleId,
+      ownerId: "public-read-worker",
+      generator: async () => ({
+        narrative: { turn: 1, narrator: ["terminal-public"], speeches: [] },
+        provider: "stub",
+        model: null,
+        route: "fast",
+        httpAttempts: 1,
+        tokenCount: 1,
+        estimatedCostUsd: 0,
+      }),
+    });
+    await query(
+      `DELETE FROM battle_narration_events
+        WHERE battle_id = $1 AND event_sequence <= 2`,
+      [battleId],
+    );
+    const reset = await readBattleNarrationEvents({ battleId, cursor: replay.cursor });
+    assert.equal(reset.events[0]?.type, "reset");
+    assert.match(JSON.stringify(reset), /terminal-public/);
+    await assert.rejects(
+      readBattleNarrationEvents({ battleId, cursor: "not-a-cursor" }),
+      /NARRATION_CURSOR_INVALID/,
+    );
   });
 });
