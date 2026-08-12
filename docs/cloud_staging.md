@@ -82,11 +82,14 @@ Provisioned on 2026-08-12 after the v0.17.0 observation RCA:
 | Retry limit | 5 attempts, 10–300 second backoff |
 | Enqueuer | runtime service account; GitHub deploy service account only for staged delivery smoke |
 | Task identity | same runtime service account, exact OIDC audience bound by release configuration |
+| Deploy readback | queue-scoped Cloud Tasks Viewer and project Logs Viewer for Stage evidence only |
 
 The queue does not run narration until a revision containing the authenticated
 worker endpoint and `NARRATION_TASK_*` settings is staged and promoted.
 Stage binds the task target and OIDC audience to the immutable Cloud Run tag,
 then sends a deterministic, LLM-free smoke task and verifies its revision log.
+Forward-only migrations run before the new revision is deployed, so its startup
+dispatcher never observes a schema older than the image it is running.
 
 Supabase Auth temporarily allowed the Workers.dev callback for browser
 acceptance. The callback was removed when Workers.dev was disabled at cutover.

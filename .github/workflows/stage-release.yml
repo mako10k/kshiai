@@ -154,6 +154,27 @@ jobs:
           echo "ref=$IMAGE_REPOSITORY@$digest" >> "$GITHUB_OUTPUT"
           echo "digest=$digest" >> "$GITHUB_OUTPUT"
 
+      - name: Apply forward-only migrations
+        env:
+          IMAGE_REF: ${{ steps.image.outputs.ref }}
+        run: |
+          set -euo pipefail
+          gcloud run jobs deploy "$MIGRATION_JOB" \
+            --project="$GCP_PROJECT" \
+            --region="$GCP_REGION" \
+            --image="$IMAGE_REF" \
+            --service-account=kshiai-cloud-run@kshiai.iam.gserviceaccount.com \
+            --set-secrets=DIRECT_URL=kshiai-direct-url:latest \
+            --command=node \
+            --args=backend/dist/scripts/postgres-migrations.js,--apply \
+            --max-retries=0 \
+            --task-timeout=10m \
+            --quiet
+          gcloud run jobs execute "$MIGRATION_JOB" \
+            --project="$GCP_PROJECT" \
+            --region="$GCP_REGION" \
+            --wait
+
       - name: Deploy tagged Cloud Run revision without traffic
         id: backend
         env:
@@ -197,27 +218,6 @@ jobs:
             if (!traffic?.url || !traffic?.revisionName) throw new Error("Tagged revision was not found");
             fs.appendFileSync(process.env.GITHUB_OUTPUT, `url=${traffic.url}\nrevision=${traffic.revisionName}\n`);
           ' "$RUNNER_TEMP/service.json"
-
-      - name: Apply forward-only migrations
-        env:
-          IMAGE_REF: ${{ steps.image.outputs.ref }}
-        run: |
-          set -euo pipefail
-          gcloud run jobs deploy "$MIGRATION_JOB" \
-            --project="$GCP_PROJECT" \
-            --region="$GCP_REGION" \
-            --image="$IMAGE_REF" \
-            --service-account=kshiai-cloud-run@kshiai.iam.gserviceaccount.com \
-            --set-secrets=DIRECT_URL=kshiai-direct-url:latest \
-            --command=node \
-            --args=backend/dist/scripts/postgres-migrations.js,--apply \
-            --max-retries=0 \
-            --task-timeout=10m \
-            --quiet
-          gcloud run jobs execute "$MIGRATION_JOB" \
-            --project="$GCP_PROJECT" \
-            --region="$GCP_REGION" \
-            --wait
 
       - name: Prove Cloud Tasks OIDC delivery to staged revision
         env:

@@ -61,6 +61,11 @@ describe("persistent E2E workflow contract", () => {
     assert.match(stage, /--oidc-service-account-email/);
     assert.match(stage, /task smoke ok/);
     assert.match(stage, /narration_task_target_url=.*alias/);
+    assert.ok(
+      stage.indexOf("- name: Apply forward-only migrations") <
+        stage.indexOf("- name: Deploy tagged Cloud Run revision without traffic"),
+      "migrations must finish before the new revision can start",
+    );
     assert.match(promote, /Narration task target is not bound to the staged revision tag/);
   });
 });
