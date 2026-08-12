@@ -85,6 +85,7 @@ task T_TUNE_PACING_POLICY PACING_HARNESS_VALIDATED -> PACING_CANDIDATE_TUNED:
   title "Aggressively tune the production pacing candidate"
   description "Explore coupled turn limit, damage and defense scaling, recovery, repeated-action pressure, finisher timing and power, and decisive-pressure curves. Target approximately eight average turns and no more than twelve while checking catastrophic one-shots, excessive forced terminals, initiative skew, and delayed-effect starvation. Use local simulation as search and regression evidence, not final product evidence; preserve the current policy as rollback."
   duration 4p
+  status active
   requires:
     DEV 1
   owner "codex"
@@ -124,3 +125,10 @@ milestone PACING_PRODUCTION_DEPLOYED:
 
 milestone PACING_PRODUCTION_OBSERVED:
   title "Bounded production pacing evidence is recorded"
+
+work_event WE-9d3ead6b5db8cc24b4a26f8d1fc521fc4c4bcd935ee8935d31d7bd1649c170cc:
+  model 1
+  task T_TUNE_PACING_POLICY
+  kind start
+  occurred_at 2026-08-12T18:28:15+09:00
+  planned_value 4p
