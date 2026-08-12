@@ -10,8 +10,20 @@ import type { BattlePacingPolicy } from "./battle-pacing.js";
 export type BattlePacingMeasurement = {
   policyId: string;
   sampleSize: number;
-  completionTurn: { mean: number; median: number; variance: number };
-  outcomes: { koRate: number; limitHitRate: number; forcedTerminalRate: number };
+  completionTurn: {
+    mean: number;
+    median: number;
+    variance: number;
+    minimum: number;
+    p90: number;
+    maximum: number;
+  };
+  outcomes: {
+    koRate: number;
+    earlyKoRate: number;
+    limitHitRate: number;
+    forcedTerminalRate: number;
+  };
   meanCommittedHpChangePerTurn: number;
   repeatedActionRate: number;
   repeatedSpeech: { status: "not_measured"; reason: string };
@@ -63,6 +75,11 @@ function percentileMedian(values: readonly number[]): number {
     : sorted[middle]!;
 }
 
+function percentile(values: readonly number[], ratio: number): number {
+  const sorted = [...values].sort((a, b) => a - b);
+  return sorted[Math.min(sorted.length - 1, Math.ceil(sorted.length * ratio) - 1)]!;
+}
+
 export function measureBattlePacing(input: {
   policy: BattlePacingPolicy;
   sampleSize?: number;
@@ -72,6 +89,7 @@ export function measureBattlePacing(input: {
   const baseSeed = input.seed ?? 0x98_12_20;
   const completionTurns: number[] = [];
   let ko = 0;
+  let earlyKo = 0;
   let limitHit = 0;
   let committedHpChange = 0;
   let resolvedTurns = 0;
@@ -175,7 +193,10 @@ export function measureBattlePacing(input: {
       state = resolved.state;
     }
     completionTurns.push(state.turn);
-    if (state.finishReason === "incapacitated") ko += 1;
+    if (state.finishReason === "incapacitated") {
+      ko += 1;
+      if (state.turn <= 2) earlyKo += 1;
+    }
     if (state.finishReason === "turn_limit") limitHit += 1;
   }
 
@@ -187,9 +208,17 @@ export function measureBattlePacing(input: {
   return {
     policyId: input.policy.policyId,
     sampleSize,
-    completionTurn: { mean, median: percentileMedian(completionTurns), variance },
+    completionTurn: {
+      mean,
+      median: percentileMedian(completionTurns),
+      variance,
+      minimum: Math.min(...completionTurns),
+      p90: percentile(completionTurns, 0.9),
+      maximum: Math.max(...completionTurns),
+    },
     outcomes: {
       koRate: ko / sampleSize,
+      earlyKoRate: earlyKo / sampleSize,
       limitHitRate: limitHit / sampleSize,
       forcedTerminalRate: limitHit / sampleSize,
     },

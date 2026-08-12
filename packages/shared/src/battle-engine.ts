@@ -655,6 +655,7 @@ export function createBattleState(input: {
   sideA: CharacterSheet;
   sideB: CharacterSheet;
   turnLimit: number;
+  pacingPolicy?: BattlePacingPolicy;
   scene?: string;
   battlefield?: BattlefieldInstance;
   stanceA?: BattleStance;
@@ -670,6 +671,8 @@ export function createBattleState(input: {
   prologuePending?: boolean;
 }): BattleState {
   const t = nowIso();
+  const pacingPolicy = input.pacingPolicy ??
+    currentBattlePacingPolicy(input.turnLimit);
   const bf = input.battlefield;
   const baseCoeffs = clampCoefficientMap(bf?.coefficients ?? {});
   const tags = [
@@ -844,8 +847,8 @@ export function createBattleState(input: {
     phaseReceiptSequence: 0,
     phaseReceipts: [],
     pendingEffects: [],
-    turnLimit: input.turnLimit,
-    pacingPolicy: currentBattlePacingPolicy(input.turnLimit),
+    turnLimit: pacingPolicy.turnLimit,
+    pacingPolicy,
     sideA,
     sideB,
     stanceA: input.stanceA,
@@ -2468,6 +2471,7 @@ export function resolveTurn(input: ResolveTurnInput): {
         ...baseSituation.coefficients,
         damage: clampCoefficient(
           (baseSituation.coefficients.damage ?? 1) *
+            pacingPolicy.damageMultiplier *
             INSTRUMENT_MULTIPLIER[damageBand] *
             defensiveInstrumentMultipliers[targetSide] *
             repetitionEffectMultiplier({
@@ -2476,6 +2480,8 @@ export function resolveTurn(input: ResolveTurnInput): {
                 action: inputAction.effectiveAction,
                 drama,
               }),
+              penaltyStart: pacingPolicy.repeatedActionPenaltyStart,
+              damageFloor: pacingPolicy.repeatedActionDamageFloor,
             }),
         ),
       },
@@ -2500,6 +2506,11 @@ export function resolveTurn(input: ResolveTurnInput): {
         pressureStartTurn: pacingPolicy.decisivePressureStartTurn,
         pressureMaximumTurn: pacingPolicy.decisivePressureMaximumTurn,
         finisherUnlockTurn: pacingPolicy.finisherUnlockTurn,
+        finisherMaximumMultiplier: pacingPolicy.finisherMaximumMultiplier,
+        criticalChanceMaximum: pacingPolicy.decisiveCriticalChanceMaximum,
+        criticalDamageMultiplier: pacingPolicy.decisiveCriticalDamageMultiplier,
+        damageCapRatio: pacingPolicy.decisiveDamageCapRatio,
+        defendingDamageMultiplier: pacingPolicy.defendingDamageMultiplier,
         actorSide: inputAction.side,
       },
       finisherFor(inputAction.side),
@@ -3010,6 +3021,11 @@ type DecisiveContext = {
   pressureStartTurn?: number;
   pressureMaximumTurn?: number;
   finisherUnlockTurn?: number;
+  finisherMaximumMultiplier?: number;
+  criticalChanceMaximum?: number;
+  criticalDamageMultiplier?: number;
+  damageCapRatio?: number;
+  defendingDamageMultiplier?: number;
   actorSide: "a" | "b";
 };
 
@@ -3045,8 +3061,9 @@ export function decisivePressure(input: DecisiveContext): {
   );
   return {
     progress,
-    criticalChance: progress * 0.4,
-    specialMultiplier: 1 + progress,
+    criticalChance: progress * (input.criticalChanceMaximum ?? 0.4),
+    specialMultiplier: 1 + progress *
+      ((input.finisherMaximumMultiplier ?? 2) - 1),
   };
 }
 
@@ -3058,7 +3075,7 @@ export type FinisherWindow = {
   turnsUntilUnlock: number;
   remainingUses: 0 | 1;
   currentMultiplier: number;
-  maxMultiplier: 2;
+  maxMultiplier: number;
   criticalChance: number;
   turnsUntilMax: number;
 };
@@ -3078,6 +3095,8 @@ export function buildFinisherWindow(input: {
     turnLimit: input.turnLimit,
     pressureStartTurn: policy.decisivePressureStartTurn,
     pressureMaximumTurn: policy.decisivePressureMaximumTurn,
+    finisherMaximumMultiplier: policy.finisherMaximumMultiplier,
+    criticalChanceMaximum: policy.decisiveCriticalChanceMaximum,
     actorSide: "a",
   });
   const maximumTurn = policy.decisivePressureMaximumTurn;
@@ -3089,7 +3108,7 @@ export function buildFinisherWindow(input: {
     turnsUntilUnlock: Math.max(0, policy.finisherUnlockTurn - input.turn),
     remainingUses: input.finisher.used ? 0 : 1,
     currentMultiplier: pressure.specialMultiplier,
-    maxMultiplier: 2,
+    maxMultiplier: policy.finisherMaximumMultiplier,
     criticalChance: pressure.criticalChance,
     turnsUntilMax: Math.max(0, maximumTurn - input.turn),
   };
@@ -3105,12 +3124,13 @@ function applyDecisivePressure(input: {
   const critical = pressure.criticalChance > 0 && deterministicRoll(
     `${input.context.battleId}:${input.context.turn}:${input.context.actorSide}`,
   ) < pressure.criticalChance;
+  const criticalMultiplier = input.context.criticalDamageMultiplier ?? 1.5;
   const multiplier =
     (input.special ? pressure.specialMultiplier : 1) *
-    (critical ? 1.5 : 1);
-  const maximumRatio = 0.26 *
+    (critical ? criticalMultiplier : 1);
+  const maximumRatio = (input.context.damageCapRatio ?? 0.26) *
     (input.special ? pressure.specialMultiplier : 1) *
-    (critical ? 1.5 : 1);
+    (critical ? criticalMultiplier : 1);
   return {
     amount: Math.max(
       1,
@@ -3232,9 +3252,16 @@ function repeatedActionCount(input: {
   return same ? count + 1 : 1;
 }
 
-function repetitionEffectMultiplier(input: { repeatCount: number }): number {
-  if (input.repeatCount < 3) return 1;
-  return Math.max(0.7, 1 - (input.repeatCount - 2) * 0.1);
+function repetitionEffectMultiplier(input: {
+  repeatCount: number;
+  penaltyStart: number;
+  damageFloor: number;
+}): number {
+  if (input.repeatCount < input.penaltyStart) return 1;
+  return Math.max(
+    input.damageFloor,
+    1 - (input.repeatCount - input.penaltyStart + 1) * 0.1,
+  );
 }
 
 function applyAction(
@@ -3468,7 +3495,7 @@ function applyAction(
   const activateFinisher = Boolean(
     finisher &&
     !finisher.used &&
-    decisive.turn >= 10 &&
+    decisive.turn >= (decisive.finisherUnlockTurn ?? 10) &&
     skill.id === finisher.skillId &&
     (skill.kind === "special" || action.useFinisher === true),
   );
@@ -3523,7 +3550,9 @@ function applyBasicAttack(
   const parameter = profile.targetParameter;
   let critical = false;
   if (parameter === "hp") {
-    if (target.defending) amount = Math.round(amount * 0.55);
+    if (target.defending) {
+      amount = Math.round(amount * (decisive.defendingDamageMultiplier ?? 0.55));
+    }
     amount = softenCombatDamage({
       rawDamage: amount,
       targetMaxHp: target.parameters.maxHp ?? 100,
@@ -3644,7 +3673,9 @@ function applyAttackSkill(
       coeff(situation, "damage") *
       coeff(situation, skill.element ?? "neutral", 1),
   );
-  if (target.defending) dmg = Math.round(dmg * 0.55);
+  if (target.defending) {
+    dmg = Math.round(dmg * (decisive.defendingDamageMultiplier ?? 0.55));
+  }
   dmg = softenCombatDamage({
     rawDamage: dmg,
     targetMaxHp: target.parameters.maxHp ?? 100,

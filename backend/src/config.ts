@@ -50,6 +50,18 @@ function parseDialogueContextProjectionOverride(
   throw new Error("DIALOGUE_CONTEXT_PROJECTION_OVERRIDE must be legacy or compact");
 }
 
+export function parseBattlePacingPolicy(
+  value: string | undefined,
+): "current" | "candidate-12-v2" {
+  const normalized = value?.trim().toLowerCase() || "current";
+  if (normalized === "current" || normalized === "candidate-12-v2") {
+    return normalized;
+  }
+  throw new Error(
+    "BATTLE_PACING_POLICY must be current or candidate-12-v2",
+  );
+}
+
 export type BattleCausalNarrationMode = "off" | "narration_guarded";
 
 export function parseBattleCausalNarrationMode(
@@ -232,6 +244,7 @@ export const config = {
     imageModel: process.env.VENICE_IMAGE_MODEL ?? "",
   },
   battleTurnLimit: Number(process.env.BATTLE_TURN_LIMIT ?? 20),
+  battlePacingPolicy: parseBattlePacingPolicy(process.env.BATTLE_PACING_POLICY),
   battleCausalNarrationMode: parseBattleCausalNarrationMode(
     process.env.BATTLE_CAUSAL_NARRATION_MODE,
   ),

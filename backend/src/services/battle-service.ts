@@ -26,6 +26,7 @@ import {
   buildSemanticObservationState,
   buildServerOnlyReserveCues,
   createBattleState,
+  LOCAL_TWELVE_TURN_PACING_CANDIDATE,
   createCausalTurnExecution,
   acceptCausalExecutionDecision,
   commitCausalExecutionBucket,
@@ -599,6 +600,9 @@ export async function startBattle(input: {
     sideA: mine,
     sideB: opp,
     turnLimit: config.battleTurnLimit,
+    pacingPolicy: config.battlePacingPolicy === "candidate-12-v2"
+      ? LOCAL_TWELVE_TURN_PACING_CANDIDATE
+      : undefined,
     battlefield,
     stanceA: input.stance,
     policiesA,

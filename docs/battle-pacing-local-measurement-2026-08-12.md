@@ -21,7 +21,7 @@ Legacy saves without the snapshot retain the current derived policy.
 | Policy | Limit | Finisher | Pressure | Automatic restoration | Terminal authority |
 |---|---:|---:|---:|---|---|
 | `pacing-current-v1-20` | 20 | 10 | 10 to 20 | legacy 20% | deterministic engine |
-| `pacing-local-12-v1` | 12 | 6 | 6 to 12 | explicit effects only | deterministic engine |
+| `pacing-candidate-12-v2` | 12 | 6 | 6 to 12 | explicit effects only | deterministic engine |
 
 The 12-turn policy is a proposal only. Its earlier thresholds scale the
 decision windows; they are not asserted to be optimal.
@@ -48,13 +48,14 @@ node --import tsx scripts/measure-battle-pacing.ts
 
 | Metric | Current 20 | Candidate 12 |
 |---|---:|---:|
-| Completion turn, mean | 9.4125 | 10.3333 |
-| Completion turn, median | 10 | 11 |
-| Completion-turn variance | 1.8257 | 1.7639 |
-| KO rate | 100% | 91.67% |
-| Limit-hit / forced-terminal rate | 0% | 8.33% |
-| Mean committed HP change per resolved turn | 20.7348 | 18.7738 |
-| Repeated-action rate | 73.20% | 61.61% |
+| Completion turn, mean | 9.4125 | 7.9625 |
+| Completion turn, median | 10 | 8 |
+| Completion-turn variance | 1.8257 | 2.0028 |
+| KO rate | 100% | 100% |
+| Early KO (turn 1–2) | 0% | 0% |
+| Limit-hit / forced-terminal rate | 0% | 0% |
+| Mean committed HP change per resolved turn | 20.7348 | 24.3904 |
+| Repeated-action rate | 73.20% | 58.08% |
 | First initiative A / B | 52.92% / 47.08% | 52.92% / 47.08% |
 | Scheduled delayed effects resolved | 100% | 100% |
 | Repeated speech | not measured | not measured |
@@ -68,8 +69,7 @@ forced terminal judgment. The likely mechanism is that moving the one-use
 finisher to turn 6 replaces an otherwise effective attack before pressure has
 grown enough; this is a hypothesis to verify, not a production conclusion.
 
-This run rejects only `pacing-local-12-v1` under this synthetic fixture
-configuration. It does not support an owner retain/revise/adopt decision and
-does not reject the desired eight-turn hypothesis. Validate correspondence,
-tune multiple candidates, and obtain separately authorized real-pipeline
-evidence before requesting that decision.
+The initial v1 candidate was superseded after parameter search. The v2 search
+candidate reaches the eight-turn hypothesis in this synthetic fixture, but it
+does not support a permanent retain/revise/adopt decision. Production behavior
+under the separately accepted guarded trial is the decision evidence.
