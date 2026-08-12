@@ -86,7 +86,7 @@ task T_VALIDATE_PACING_EVIDENCE PACING_MEASURED -> PACING_HARNESS_VALIDATED:
   title "Smoke-check the pacing harness"
   description "Perform only the minimum checks needed to catch obvious harness breakage: deterministic reproducibility, paired inputs, terminal classification, and agreement with selected engine fixtures. Record limitations, but do not delay aggressive parameter exploration for broad simulator validation. The original active-task estimate is retained as historical planning evidence even though the scope is intentionally narrowed."
   duration 3p
-  status active
+  status done
   requires:
     DEV 1
   owner "codex"
@@ -140,3 +140,11 @@ milestone PACING_PRODUCTION_DEPLOYED:
 
 milestone PACING_PRODUCTION_OBSERVED:
   title "Bounded production pacing evidence is recorded"
+
+work_event WE-aec6f63c104bacac6f94b9d268b966ee0489bcd28e2ab9abbdc26761a3c20c1c:
+  model 1
+  task T_VALIDATE_PACING_EVIDENCE
+  kind finish
+  occurred_at 2026-08-12T18:28:00+09:00
+  active_time 7/30h
+  effort 7/30ph
