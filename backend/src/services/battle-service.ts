@@ -1271,6 +1271,8 @@ export async function advanceCharacterAgents(input: {
   environmentProcessReceipt?: EnvironmentProcessReceipt;
   dialoguePipeline?: DialoguePipelineSettings;
   phase?: "prologue" | "turn" | "aftermath";
+  /** Restrict provider work to selected isolated character contexts. */
+  activeSides?: ReadonlyArray<"a" | "b">;
   /** Attach reaction-only utterances to the existing terminal turn record. */
   replaceLastRecord?: boolean;
 }): Promise<{ state: BattleState; characterSpeeches: CharacterSpeechSource[] }> {
@@ -1349,7 +1351,8 @@ export async function advanceCharacterAgents(input: {
       recordWithDialogueProjection,
     ].slice(-50),
   };
-  const inputA = buildCharacterAgentConsumerInput({
+  const activeSides = new Set(input.activeSides ?? ["a", "b"]);
+  const inputA = activeSides.has("a") ? buildCharacterAgentConsumerInput({
     state: input.after,
     sheet: input.mine,
     counterpartSheet: input.opp,
@@ -1357,8 +1360,8 @@ export async function advanceCharacterAgents(input: {
     previous: previousA,
     dialoguePipeline,
     phase: input.phase,
-  });
-  const inputB = buildCharacterAgentConsumerInput({
+  }) : null;
+  const inputB = activeSides.has("b") ? buildCharacterAgentConsumerInput({
     state: input.after,
     sheet: input.opp,
     counterpartSheet: input.mine,
@@ -1366,7 +1369,7 @@ export async function advanceCharacterAgents(input: {
     previous: previousB,
     dialoguePipeline,
     phase: input.phase,
-  });
+  }) : null;
   const compactContext = dialoguePipeline.contextProjectionMode === "compact";
   if (!inputA && !inputB) {
     console.warn("[battle] character agents skipped: no observer-safe action available");
@@ -1733,8 +1736,16 @@ export async function advanceCharacterAgents(input: {
         ? acceptedB.state.lastSpeech
         : previousB.lastSpeech,
     },
-    plannedActionA: input.phase === "aftermath" ? undefined : acceptedA.nextAction,
-    plannedActionB: input.phase === "aftermath" ? undefined : acceptedB.nextAction,
+    plannedActionA: input.phase === "aftermath"
+      ? undefined
+      : activeSides.has("a")
+        ? acceptedA.nextAction
+        : input.after.plannedActionA,
+    plannedActionB: input.phase === "aftermath"
+      ? undefined
+      : activeSides.has("b")
+        ? acceptedB.nextAction
+        : input.after.plannedActionB,
   };
   stateAfterUtterances.agentStateA = {
     ...(stateAfterUtterances.agentStateA as CharacterAgentState),

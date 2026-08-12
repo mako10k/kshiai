@@ -65,6 +65,56 @@ function profile(selfNames: string[]) {
 }
 
 describe("character-authored public speech", () => {
+  it("runs only the selected isolated character context", async () => {
+    const sideA = sheet("a", "アオ", ["私"]);
+    const sideB = sheet("b", "クロ", ["俺"]);
+    const before = createBattleState({
+      id: "single-side-character-agent",
+      sideA,
+      sideB,
+      turnLimit: 20,
+      prologuePending: false,
+    });
+    before.plannedActionA = { kind: "wait" };
+    before.plannedActionB = { kind: "basic_attack" };
+    const provider = new MockLlmProvider();
+    let psycheCalls = 0;
+    let agentCalls = 0;
+    const originalPsyche = provider.advanceCharacterPsyche.bind(provider);
+    const originalAgent = provider.advanceCharacterAgent.bind(provider);
+    provider.advanceCharacterPsyche = async (input) => {
+      psycheCalls += 1;
+      return originalPsyche(input);
+    };
+    provider.advanceCharacterAgent = async (input) => {
+      agentCalls += 1;
+      return originalAgent(input);
+    };
+
+    const result = await advanceCharacterAgents({
+      llm: provider,
+      before,
+      after: { ...before, turn: 1 },
+      mine: sideA,
+      opp: sideB,
+      events: [],
+      actions: [],
+      activeSides: ["b"],
+    });
+
+    assert.equal(psycheCalls, 1);
+    assert.equal(agentCalls, 1);
+    assert.equal(result.state.plannedActionA?.kind, "wait");
+    assert.equal(
+      result.state.turnRecords.at(-1)?.pipelineTrace?.characterAgents?.a.providerStatus,
+      "skipped",
+    );
+    assert.equal(
+      result.state.turnRecords.at(-1)?.pipelineTrace?.deepPsyche?.a.providerStatus,
+      "skipped",
+    );
+  });
+
   it("uses a revision-local projection override without mutating admin settings", () => {
     const settings = {
       ...defaultDialoguePipelineSettings(),
