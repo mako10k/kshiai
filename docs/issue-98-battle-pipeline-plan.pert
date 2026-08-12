@@ -7,7 +7,7 @@ project KSHIAI_ISSUE_98_CAUSAL_BATTLE_PIPELINE:
   as_of 2026-08-12
   duration_unit point
   velocity 2880p/1117h
-  target_duration 28p
+  target_duration 37p
   finish ISSUE_98_LOCALLY_ACCEPTED
 
 resource DEV:
@@ -33,11 +33,17 @@ milestone CAUSAL_CONTRACT_ACCEPTED:
 milestone BUCKET_ENGINE_READY:
   title "Restartable bucket execution is available"
 
+milestone ASSET_GENERATIONS_READY:
+  title "Battles bind immutable editable-asset generations"
+
 milestone SEQUENTIAL_SLICE_READY:
   title "Later actor can decide from earlier observable committed facts"
 
 milestone DURABILITY_READY:
   title "Retry, persistence, and SSE boundaries are verified"
+
+milestone NARRATION_API_READY:
+  title "Narration is an independent immutable asynchronous job"
 
 milestone EFFECT_CONTRACT_ACCEPTED:
   title "Owner accepted bounded effect scope"
@@ -84,7 +90,15 @@ task T_REFACTOR_BUCKET_EXECUTION CAUSAL_CONTRACT_ACCEPTED -> BUCKET_ENGINE_READY
   requires:
     DEV 1
 
-task T_WIRE_SEQUENTIAL_DECISION BUCKET_ENGINE_READY -> SEQUENTIAL_SLICE_READY:
+task T_BIND_BATTLE_ASSET_GENERATIONS BUCKET_ENGINE_READY -> ASSET_GENERATIONS_READY:
+  title "Version editable assets and bind an immutable battle manifest"
+  description "Implement ADR-0003. Create immutable generations and current pointers for characters, narration styles, battlefield presets, and other authoritative editable assets; bind new battles to a validated manifest including dialogue settings and ruleset identifiers. Replace advance, agent, reconciliation, narration, and observability reads of mutable current assets with the bound generations. Preserve existing embedded field/style/settings snapshots as legacy unknown generations; never backfill missing historical facts from current assets. Test mid-battle edits, retry manifest identity, legacy reads, and administrator generation display."
+  duration 5p
+  owner "codex"
+  requires:
+    DEV 1
+
+task T_WIRE_SEQUENTIAL_DECISION ASSET_GENERATIONS_READY -> SEQUENTIAL_SLICE_READY:
   title "Wire observer-safe later-bucket decision and phase receipts"
   description "For distinct initiative buckets, commit the first server-owned bucket, apply the contractually selected semantic/world observation boundary, project only committed observer-visible facts, then request, validate, and resolve the later actor action. Specify whether the first actor remains a legacy reservation in this first slice or also decides in-turn. Keep same-bucket actors parallel from the same snapshot. Record source-linked pre-action expression, action, consequence, and post-action expression receipts; do not create a speech or action after a provider failure."
   duration 4p
@@ -100,7 +114,15 @@ task T_HARDEN_CAUSAL_DURABILITY SEQUENTIAL_SLICE_READY -> DURABILITY_READY:
   requires:
     DEV 1
 
-task T_ACCEPT_EFFECT_SCOPE DURABILITY_READY -> EFFECT_CONTRACT_ACCEPTED:
+task T_SEPARATE_ADVANCE_NARRATION DURABILITY_READY -> NARRATION_API_READY:
+  title "Separate gameplay advance from immutable narration jobs"
+  description "Implement ADR-0002. Advance commits decisions, mechanics, semantic/world state, terminal outcome, and a turn receipt, then creates or reuses one narration job and returns its ID without awaiting narration. Persist immutable job input bound to the battle asset manifest. Add authorized narration read and SSE stream APIs whose reconnect never reinvokes the provider; order UI placeholders by turn rather than completion. Remove narrator writes to canonical battle state and make deterministic terminal outcome authoritative. Test pending/failed narration with later advance, out-of-order completion, provider idempotency, and snapshot isolation."
+  duration 4p
+  owner "codex"
+  requires:
+    DEV 1
+
+task T_ACCEPT_EFFECT_SCOPE NARRATION_API_READY -> EFFECT_CONTRACT_ACCEPTED:
   title "Accept bounded effect provenance and deferred-effect scope"
   description "Owner decides the initial server-defined predicates, due/expiry/cancel semantics, observer visibility, and retention. Scope is restricted to effects on the existing two combatants and existing world entities; reinforcements or new combat participants require a separate participant-lifecycle design and approval."
   duration 1p

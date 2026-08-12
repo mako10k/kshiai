@@ -33,6 +33,8 @@ Record material architectural and product-rule decisions as ADRs under `docs/adr
 - Do not rewrite the decision or rationale of an accepted ADR. Record later changes in a new ADR and mark the old one `Superseded` with a link to its replacement.
 - Keep exploratory plans in PERT or design documents. When implementation depends on a disputed or changing architectural choice, link the plan to a `Proposed` ADR and stop at the decision boundary until it is accepted.
 
+Editable domain assets must be revisioned. Battles and other long-running workflows bind immutable asset revision IDs and snapshots at creation; they must not reread a mutable current character, narration style, battlefield, or policy definition during execution. Corrections create a new revision, while existing battles remain on their recorded revisions unless an explicit migration ADR defines otherwise.
+
 ## Commit & Pull Request Guidelines
 
 Recent commits use short, imperative, sentence-case subjects (for example, `Improve battle flow...`). Keep each commit focused. Pull requests should summarize behavior and architecture changes, list validation commands, link relevant issues or `docs/plan.pert` work, and include screenshots for visible UI changes. Call out database, environment, provider, or deployment impacts explicitly. Never commit `.env`, API keys, SQLite data, generated `dist/`, or user media.

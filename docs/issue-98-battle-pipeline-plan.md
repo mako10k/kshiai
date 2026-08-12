@@ -25,8 +25,10 @@
 | --- | --- | --- | --- |
 | 0: 契約ドラフト (4p) | authority matrix、state machine、checkpoint、visibility/SSE、retry、OBS-09 disposition | 次 phase の仕様を承認 | LLM→永続 state/winner edge と public/private trace を全列挙 |
 | 1a: bucket engine (4p) | pure prepare/resolve-bucket/finalize、再入可能な order checkpoint | - | ADR-0001の前回順/一度限り抽選、A/B swap、retry時非再抽選を維持 |
-| 1b: 順次判断 (4p) | first commit →可視 projection→later decision/validation/commit、phase receipt | action source と semantic/world 可視時点 | private intent を渡さず、KO/invalid/timeout を理由付き処理 |
-| 1c: durability/SSE/可視化 (3p) | lease/idempotency/outbox、reconnect、durable public event、管理者向け causal DAG | - | save後応答失敗・後攻 LLM timeout でも二重 commit なし。active/committed bucket と phase receipt を永続記録から表示 |
+| 1b: asset generations (5p) | character/style/field/settings世代、battle asset manifest、legacy境界 | - | ADR-0003。advance/agent/narrationがcurrent assetを再読込しない |
+| 1c: 順次判断 (4p) | first commit →可視 projection→later decision/validation/commit、phase receipt | action source と semantic/world 可視時点 | private intent を渡さず、KO/invalid/timeout を理由付き処理 |
+| 1d: durability/SSE/可視化 (3p) | lease/idempotency/outbox、reconnect、durable public event、管理者向け causal DAG | - | save後応答失敗・後攻 LLM timeout でも二重 commit なし。active/committed bucket と phase receipt を永続記録から表示 |
+| 1e: narration API (4p) | immutable narration job、read/stream API、ordered UI placeholder | - | ADR-0002。narration失敗中も次advance可、再接続でprovider再実行なし |
 | 2: effect scope (1p) | predicate、cancel/expiry、visibility、2 combatant制限 | effect contract を承認 | 援軍・新 combat participant は今回の範囲外 |
 | 3: provenance/effect (7p) | tagged receipt、bounded pending effect、limited replay | - | delayed hit と condition の各1 fixture。proseから effect を作らない |
 | 4: local pacing (3p) | policy snapshot、最大12 candidate の局所計測 | retain/revise/adopt を承認 | forced terminal/KO率を含む比較。平均8は仮説 |
