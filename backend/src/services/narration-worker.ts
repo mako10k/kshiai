@@ -544,7 +544,38 @@ export type NarrationOutboxDelivery = {
   outboxId: string;
   battleId: string;
   receiptId: string;
+  deliveryGeneration: number;
 };
+
+export async function recoverStaleNarrationOutbox(
+  now = new Date(),
+  staleMs = 5 * 60 * 1000,
+): Promise<number> {
+  const cutoff = new Date(now.getTime() - Math.max(60_000, staleMs)).toISOString();
+  const recovered = await query(
+    `UPDATE battle_narration_outbox
+        SET status = 'pending', dispatched_at = NULL,
+            delivery_generation = delivery_generation + 1
+      WHERE status = 'dispatched'
+        AND EXISTS (
+          SELECT 1
+            FROM battle_narration_entries entry
+            LEFT JOIN battle_narration_leases lease
+              ON lease.battle_id = entry.battle_id
+           WHERE entry.battle_id = battle_narration_outbox.battle_id
+             AND entry.receipt_id = battle_narration_outbox.receipt_id
+             AND entry.updated_at <= $1
+             AND (
+               entry.status = 'queued'
+               OR (entry.status = 'generating' AND (
+                 lease.battle_id IS NULL OR lease.expires_at <= $2
+               ))
+             )
+        )`,
+    [cutoff, now.toISOString()],
+  );
+  return recovered.rowCount;
+}
 
 export async function dispatchNarrationOutbox(
   dispatcher: (delivery: NarrationOutboxDelivery) => Promise<void>,
@@ -554,8 +585,9 @@ export async function dispatchNarrationOutbox(
     outbox_id: string;
     battle_id: string;
     receipt_id: string;
+    delivery_generation: number;
   }>(
-    `SELECT outbox_id, battle_id, receipt_id
+    `SELECT outbox_id, battle_id, receipt_id, delivery_generation
        FROM battle_narration_outbox
       WHERE status = 'pending'
       ORDER BY created_at, outbox_id
@@ -576,6 +608,7 @@ export async function dispatchNarrationOutbox(
         outboxId: row.outbox_id,
         battleId: row.battle_id,
         receiptId: row.receipt_id,
+        deliveryGeneration: Number(row.delivery_generation),
       });
       const marked = await query(
         `UPDATE battle_narration_outbox

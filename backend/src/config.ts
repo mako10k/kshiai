@@ -128,6 +128,27 @@ if (process.env.NODE_ENV === "production" && mediaStorage !== "r2") {
   throw new Error("MEDIA_STORAGE=r2 is required when NODE_ENV=production");
 }
 
+const narrationTaskQueue = {
+  project: process.env.NARRATION_TASK_PROJECT?.trim() ?? "",
+  location: process.env.NARRATION_TASK_LOCATION?.trim() ?? "",
+  queue: process.env.NARRATION_TASK_QUEUE?.trim() ?? "",
+  targetUrl: process.env.NARRATION_TASK_TARGET_URL?.trim() ?? "",
+  serviceAccountEmail:
+    process.env.NARRATION_TASK_SERVICE_ACCOUNT_EMAIL?.trim() ?? "",
+  audience: process.env.NARRATION_TASK_AUDIENCE?.trim() ?? "",
+};
+const narrationTaskQueueConfigured = Object.values(narrationTaskQueue).every(Boolean);
+if (
+  process.env.NODE_ENV === "production" &&
+  parseBattleCausalNarrationMode(process.env.BATTLE_CAUSAL_NARRATION_MODE) ===
+    "narration_guarded" &&
+  !narrationTaskQueueConfigured
+) {
+  throw new Error(
+    "NARRATION_TASK_* settings are required for guarded narration in production",
+  );
+}
+
 export function isMockProviderAllowed(input: {
   nodeEnv: string | undefined;
   primaryProvider: string;
@@ -248,6 +269,10 @@ export const config = {
   battleCausalNarrationMode: parseBattleCausalNarrationMode(
     process.env.BATTLE_CAUSAL_NARRATION_MODE,
   ),
+  narrationTaskQueue: {
+    ...narrationTaskQueue,
+    configured: narrationTaskQueueConfigured,
+  },
   /** Revision-local override used only for an isolated staged candidate. */
   dialogueContextProjectionOverride: parseDialogueContextProjectionOverride(
     process.env.DIALOGUE_CONTEXT_PROJECTION_OVERRIDE,

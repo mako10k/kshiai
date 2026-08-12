@@ -52,4 +52,15 @@ describe("persistent E2E workflow contract", () => {
     assert.doesNotMatch(observe, /gcloud logging read/);
     assert.doesNotMatch(observe, /DELETE FROM|admin\/users\/\$.*DELETE/);
   });
+
+  it("proves narration queue OIDC delivery against the staged revision", () => {
+    const stage = workflow("stage-release.yml");
+    const promote = workflow("promote-release.yml");
+    assert.match(stage, /Prove Cloud Tasks OIDC delivery to staged revision/);
+    assert.match(stage, /gcloud tasks create-http-task/);
+    assert.match(stage, /--oidc-service-account-email/);
+    assert.match(stage, /task smoke ok/);
+    assert.match(stage, /narration_task_target_url=.*alias/);
+    assert.match(promote, /Narration task target is not bound to the staged revision tag/);
+  });
 });

@@ -416,6 +416,11 @@ export function InternalObservationsPage() {
                       <div className="internal-turn" key={`narration-${entry.receiptId}`}>
                         <strong>#{entry.sequence} {entry.phase} · {entry.status}</strong>
                         <span> · attempts {entry.attemptCount}</span>
+                        <div className="muted">
+                          outbox {entry.outbox
+                            ? `${entry.outbox.status} / generation ${entry.outbox.deliveryGeneration} / deliveries ${entry.outbox.deliveryAttempts}`
+                            : "unavailable"}
+                        </div>
                         {entry.blockedBySequence !== null ? (
                           <div className="muted">#{entry.blockedBySequence} の完了待ち</div>
                         ) : null}

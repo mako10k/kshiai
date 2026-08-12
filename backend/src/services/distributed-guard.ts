@@ -1,9 +1,22 @@
 import { createHash, randomUUID } from "node:crypto";
+import { AsyncLocalStorage } from "node:async_hooks";
 import { query, withTransaction } from "../db.js";
 
 const battleLeaseMs = 10 * 60 * 1000;
 const idempotencyProcessingMs = 10 * 60 * 1000;
 const idempotencyRetentionMs = 24 * 60 * 60 * 1000;
+
+export type BattleLeaseFence = {
+  battleId: string;
+  ownerId: string;
+  fencingToken: number;
+};
+
+const battleLeaseContext = new AsyncLocalStorage<BattleLeaseFence>();
+
+export function currentBattleLeaseFence(): BattleLeaseFence | null {
+  return battleLeaseContext.getStore() ?? null;
+}
 
 export function requestDigest(value: unknown): string {
   return createHash("sha256").update(JSON.stringify(value)).digest("hex");
@@ -15,20 +28,34 @@ export async function acquireBattleLease(
   now = new Date(),
   durationMs = battleLeaseMs,
 ): Promise<boolean> {
+  return (await acquireBattleLeaseFence(battleId, ownerId, now, durationMs)) !== null;
+}
+
+export async function acquireBattleLeaseFence(
+  battleId: string,
+  ownerId: string,
+  now = new Date(),
+  durationMs = battleLeaseMs,
+): Promise<BattleLeaseFence | null> {
   const expiresAt = new Date(now.getTime() + durationMs).toISOString();
-  const result = await query<{ owner_id: string }>(
-    `INSERT INTO battle_leases (battle_id, owner_id, acquired_at, expires_at)
-     VALUES ($1, $2, $3, $4)
+  const result = await query<{ owner_id: string; fencing_token: number }>(
+    `INSERT INTO battle_leases
+       (battle_id, owner_id, fencing_token, acquired_at, expires_at)
+     VALUES ($1, $2, 1, $3, $4)
      ON CONFLICT (battle_id) DO UPDATE
        SET owner_id = EXCLUDED.owner_id,
+           fencing_token = battle_leases.fencing_token + 1,
            acquired_at = EXCLUDED.acquired_at,
            expires_at = EXCLUDED.expires_at
        WHERE battle_leases.owner_id = EXCLUDED.owner_id
           OR battle_leases.expires_at <= EXCLUDED.acquired_at
-     RETURNING owner_id`,
+     RETURNING owner_id, fencing_token`,
     [battleId, ownerId, now.toISOString(), expiresAt],
   );
-  return result.rows[0]?.owner_id === ownerId;
+  const row = result.rows[0];
+  return row?.owner_id === ownerId
+    ? { battleId, ownerId, fencingToken: Number(row.fencing_token) }
+    : null;
 }
 
 export async function renewBattleLease(
@@ -51,6 +78,27 @@ export async function renewBattleLease(
   return result.rowCount === 1;
 }
 
+async function renewBattleLeaseFence(
+  fence: BattleLeaseFence,
+  now = new Date(),
+  durationMs = battleLeaseMs,
+): Promise<boolean> {
+  const result = await query(
+    `UPDATE battle_leases
+        SET expires_at = $4
+      WHERE battle_id = $1 AND owner_id = $2 AND fencing_token = $3
+        AND expires_at > $5`,
+    [
+      fence.battleId,
+      fence.ownerId,
+      fence.fencingToken,
+      new Date(now.getTime() + durationMs).toISOString(),
+      now.toISOString(),
+    ],
+  );
+  return result.rowCount === 1;
+}
+
 export async function releaseBattleLease(
   battleId: string,
   ownerId: string,
@@ -66,17 +114,35 @@ export async function withBattleLease<T>(
   callback: () => Promise<T>,
 ): Promise<T> {
   const ownerId = randomUUID();
-  if (!await acquireBattleLease(battleId, ownerId)) {
+  const fence = await acquireBattleLeaseFence(battleId, ownerId);
+  if (!fence) {
     throw new Error("BATTLE_BUSY");
   }
+  let rejectOwnershipLoss!: (error: Error) => void;
+  const ownershipLoss = new Promise<never>((_resolve, reject) => {
+    rejectOwnershipLoss = reject;
+  });
+  let lost = false;
   const heartbeat = setInterval(() => {
-    void renewBattleLease(battleId, ownerId).catch((error) => {
+    void renewBattleLeaseFence(fence).then((renewed) => {
+      if (!renewed && !lost) {
+        lost = true;
+        rejectOwnershipLoss(new Error("BATTLE_LEASE_LOST"));
+      }
+    }).catch((error) => {
       console.error("[battle] lease renewal failed", battleId, error);
+      if (!lost) {
+        lost = true;
+        rejectOwnershipLoss(new Error("BATTLE_LEASE_LOST"));
+      }
     });
   }, 60_000);
   heartbeat.unref();
   try {
-    return await callback();
+    return await battleLeaseContext.run(
+      fence,
+      () => Promise.race([callback(), ownershipLoss]),
+    );
   } finally {
     clearInterval(heartbeat);
     await releaseBattleLease(battleId, ownerId).catch((error) => {

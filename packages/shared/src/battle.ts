@@ -1389,6 +1389,10 @@ export const BattleTurnEngineContinuationSchema = z.object({
   turn: z.number().int().positive(),
   temporalResolution: BattleTemporalPlanSchema,
   nextBucketIndex: z.number().int().nonnegative(),
+  /** Immutable pre-turn basis retained across durable bucket resumes. */
+  turnStartSideA: CombatantStateSchema.optional(),
+  /** Immutable pre-turn basis retained across durable bucket resumes. */
+  turnStartSideB: CombatantStateSchema.optional(),
   sideA: CombatantStateSchema,
   sideB: CombatantStateSchema,
   situation: SituationSchema,

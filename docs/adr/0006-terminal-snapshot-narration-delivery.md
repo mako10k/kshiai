@@ -62,6 +62,20 @@ Choose option 2.
   read model. It is not canonical battle input.
 - Cloud Run scale-to-zero wake-up requires a durable outbox and authenticated
   queue push. Worker writes use a narration-specific fenced lease.
+- The managed push implementation is Google Cloud Tasks. One deterministic task
+  name is derived from each outbox ID; `ALREADY_EXISTS` is a successful
+  idempotent enqueue. The task carries a Google OIDC token bound to the exact
+  worker audience. The worker endpoint accepts only that service-account email.
+  A startup scan and later battle mutations retry outbox rows left pending by an
+  ambiguous or failed Cloud Tasks API call.
+- A dispatched wake is not completion. Nonterminal entries older than the
+  recovery delay re-arm their outbox with a monotonically increasing delivery
+  generation. Task identity is derived from `(outbox ID, generation)`, so an
+  ambiguous retry within one generation deduplicates while a genuinely lost or
+  exhausted task can be replaced. An active fenced worker lease blocks recovery.
+- Battle advancement uses a separate monotonic fencing token on every
+  checkpoint write. Losing lease ownership makes subsequent writes fail even
+  while the battle revision has not yet advanced.
 
 ## Consequences
 
@@ -109,4 +123,3 @@ Choose option 2.
 
 - [Detailed design](../battle-narration-stream-design.md)
 - Add implementation commits, migrations, tests and evidence as work proceeds.
-
