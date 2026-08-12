@@ -5,6 +5,8 @@
 作成日: 2026-08-12 (JST)
 再計画基準: `97b5bbe` (`Bind battles to immutable asset snapshots`)
 
+心理reaction policy詳細: [lightweight-psyche-reaction-policy.md](lightweight-psyche-reaction-policy.md)
+
 対応 PERT: [issue-98-battle-pipeline-plan.pert](issue-98-battle-pipeline-plan.pert)（`97b5bbe` 基準の再計画版、owner gateを含む）
 
 ## 監査後の結論

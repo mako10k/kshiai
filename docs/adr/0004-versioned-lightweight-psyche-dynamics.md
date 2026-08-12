@@ -4,6 +4,7 @@
 - Date: 2026-08-12
 - Decision owner: Product owner
 - Related: GitHub Issue #98; ADR-0002; ADR-0003; `docs/dialogue-context-projection.pert`; `docs/battle-semantic-state.md`
+- Detailed design: `docs/lightweight-psyche-reaction-policy.md`
 
 ## Context
 
