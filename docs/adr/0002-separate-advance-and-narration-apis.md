@@ -1,9 +1,10 @@
 # ADR-0002: Separate advance and narration APIs
 
-- Status: Accepted
+- Status: Superseded
 - Date: 2026-08-12
 - Decision owner: Product owner
 - Related: GitHub Issue #98; ADR-0001; `docs/issue-98-battle-pipeline-plan.md`; PERT tasks `T_WIRE_SEQUENTIAL_DECISION` and `T_HARDEN_CAUSAL_DURABILITY`
+- Superseded by: [ADR-0005: Battle-scoped ordered narration stream](0005-battle-scoped-ordered-narration-stream.md)
 
 ## Context
 
