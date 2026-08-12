@@ -49,6 +49,7 @@ ADR-0006実装設計: [battle-narration-stream-design.md](battle-narration-strea
 | 1i: battle narration API/UI (5p) | battle単位read/follow SSE、cursor replay/reset、継続接続、管理者lane | - | advanceを跨いで同じ論理SSE。再接続でprovider再実行なし |
 | 1i-gate: compatibility cutover (1p) | legacy dual-read、rollback、admin evidence | 旧advance narrator progress除去を承認 | release/deploy/data migrationは別承認 |
 | 1j: local compatibility cleanup (1p) | advance SSEから非durable narrator progressを除去、composite readをlocal default化 | - | rollback switchを保持して全consumer fixtureを再検証 |
+| 1k: async narration execution correction (4p) | advance内のnarration/focus/presentation provider待機を除去し、receipt/outbox commitで返却。別worker入口で生成 | - | N+1並行、失敗独立、全phase、provider-call absenceを証明。Cloud Tasks作成・deployは対象外 |
 | 2: effect scope (1p) | predicate、cancel/expiry、visibility、2 combatant制限 | effect contract を承認 | 援軍・新 combat participant は今回の範囲外 |
 | 3: provenance/effect (7p) | tagged receipt、bounded pending effect、limited replay | - | delayed hit と condition の各1 fixture。proseから effect を作らない |
 | 4: local pacing (3p) | policy snapshot、最大12 candidate の局所計測 | retain/revise/adopt を承認 | forced terminal/KO率を含む比較。平均8は仮説 |
@@ -69,6 +70,23 @@ ADR-0006実装設計: [battle-narration-stream-design.md](battle-narration-strea
 11. 全LLM責務で`skip/reuse → deterministic → lightweight → 明示fallback`を評価し、call数ではなくbattle/turnあたりの総token・課金・retry込みcostを上位受入指標にする。同等品質なら軽いmodelを選ぶ。
 12. narrationの公開identityは`battleId + turnReceiptId`とし、公開`narrationId`を作らない。battle内sequenceは生成・表示順、SSE event IDはopaqueなdurable replay cursor、provider attempt IDは内部運用識別子として分離する。
 13. narration生成はbattle単位で直列化する。前sequenceがterminalになるまで後続provider callを開始しないが、canonical advanceは待機させない。SSE接続はadvanceを跨いで継続する。
+
+## 2026-08-12 milestone訂正
+
+旧`NARRATION_API_READY`はgraph closureにより到達済みとなったが、実際に証明できた範囲はdurable receipt、ordered worker primitive、read/follow API、terminal-only delivery、advance SSEからのprose除去までである。advance本体はなお同期narrator providerを待つため、「independent immutable asynchronous job」という旧titleは過剰だった。
+
+到達済みmilestoneは履歴を偽って撤回せず、`Durable ordered narration delivery API is locally ready`へ意味を狭めた。新しい`NARRATION_ASYNC_EXECUTION_READY`を追加し、次の全条件を満たすまでeffect owner gateへ進まない。
+
+- advanceがnarration、focus選択、presentation生成providerを呼ばず、待たない。
+- canonical phase receiptとoutboxが同一commitで永続化され、その後advanceが返る。
+- 別に起動したlocal workerがfrozen inputからterminal proseを生成する。
+- narration失敗がcanonical advanceをrollbackしない。
+- narration Nの生成中にadvance N+1をcommitでき、表示とprovider callはsequence順を守る。
+- prologue、combat、judgment、aftermathの全phaseで成立する。
+- synchronous compatibility completionを除去する。
+- history、improvement、administrator privacyとlegacy read rollbackを維持する。
+
+Cloud Tasks等のクラウド資源作成、deployment、production migration/observationはこの訂正タスクの権限外であり、local injectable workerで上記因果境界を検証する。
 
 ## `97b5bbe` 基線の評価
 
