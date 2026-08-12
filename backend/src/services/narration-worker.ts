@@ -292,13 +292,56 @@ function deterministicFallback(entry: EntryRow): NarrativeBlock {
 
 export async function processNextNarration(input: {
   battleId: string;
+  receiptId?: string;
+  outboxId?: string;
+  deliveryGeneration?: number;
   ownerId: string;
   generator: NarrationGenerator;
   now?: Date;
   leaseMs?: number;
-}): Promise<"idle" | "completed" | "retry_queued" | "failed"> {
+}): Promise<"idle" | "acknowledged" | "deferred" | "completed" | "retry_queued" | "failed"> {
   const nowDate = input.now ?? new Date();
   const now = nowDate.toISOString();
+  if (input.receiptId && input.outboxId && input.deliveryGeneration !== undefined) {
+    const disposition = await withTransaction(async (connection) => {
+      const delivery = await connection.query<{
+        status: string;
+        delivery_generation: number;
+      }>(
+        `SELECT status, delivery_generation
+           FROM battle_narration_outbox
+          WHERE outbox_id = $1 AND battle_id = $2 AND receipt_id = $3`,
+        [input.outboxId, input.battleId, input.receiptId],
+      );
+      const outbox = delivery.rows[0];
+      if (!outbox || Number(outbox.delivery_generation) !== input.deliveryGeneration ||
+          outbox.status === "completed") {
+        return "acknowledged" as const;
+      }
+      const predecessor = await connection.query(
+        `SELECT 1
+           FROM battle_narration_entries current_entry
+           JOIN battle_narration_entries earlier
+             ON earlier.battle_id = current_entry.battle_id
+            AND earlier.sequence < current_entry.sequence
+          WHERE current_entry.battle_id = $1
+            AND current_entry.receipt_id = $2
+            AND earlier.status IN ('queued', 'generating')
+          LIMIT 1`,
+        [input.battleId, input.receiptId],
+      );
+      if (predecessor.rowCount === 0) return "ready" as const;
+      await connection.query(
+        `UPDATE battle_narration_outbox
+            SET status = 'pending', dispatched_at = NULL
+          WHERE outbox_id = $1 AND delivery_generation = $2
+            AND status = 'dispatched'`,
+        [input.outboxId, input.deliveryGeneration],
+      );
+      return "deferred" as const;
+    });
+    if (disposition !== "ready") return disposition;
+  }
   const expiresAt = new Date(
     nowDate.getTime() + (input.leaseMs ?? 60_000),
   ).toISOString();
@@ -309,18 +352,82 @@ export async function processNextNarration(input: {
     expiresAt,
   });
   const claimed = await withTransaction(async (connection) => {
+    if (input.receiptId && input.outboxId && input.deliveryGeneration !== undefined) {
+      const delivery = await connection.query<{
+        status: string;
+        delivery_generation: number;
+      }>(
+        `SELECT status, delivery_generation
+           FROM battle_narration_outbox
+          WHERE outbox_id = $1 AND battle_id = $2 AND receipt_id = $3`,
+        [input.outboxId, input.battleId, input.receiptId],
+      );
+      const outbox = delivery.rows[0];
+      if (!outbox || Number(outbox.delivery_generation) !== input.deliveryGeneration ||
+          outbox.status === "completed") {
+        await connection.query(
+          `DELETE FROM battle_narration_leases
+            WHERE battle_id = $1 AND owner_id = $2 AND fencing_token = $3`,
+          [input.battleId, input.ownerId, fence],
+        );
+        return { disposition: "acknowledged" as const };
+      }
+      const predecessor = await connection.query(
+        `SELECT 1
+           FROM battle_narration_entries current_entry
+           JOIN battle_narration_entries earlier
+             ON earlier.battle_id = current_entry.battle_id
+            AND earlier.sequence < current_entry.sequence
+          WHERE current_entry.battle_id = $1
+            AND current_entry.receipt_id = $2
+            AND earlier.status IN ('queued', 'generating')
+          LIMIT 1`,
+        [input.battleId, input.receiptId],
+      );
+      if (predecessor.rowCount > 0) {
+        await connection.query(
+          `UPDATE battle_narration_outbox
+              SET status = 'pending', dispatched_at = NULL
+            WHERE outbox_id = $1 AND delivery_generation = $2
+              AND status = 'dispatched'`,
+          [input.outboxId, input.deliveryGeneration],
+        );
+        await connection.query(
+          `DELETE FROM battle_narration_leases
+            WHERE battle_id = $1 AND owner_id = $2 AND fencing_token = $3`,
+          [input.battleId, input.ownerId, fence],
+        );
+        return { disposition: "deferred" as const };
+      }
+    }
     const selected = await connection.query<EntryRow>(
       `SELECT battle_id, receipt_id, sequence, phase, combat_turn, input_json,
               input_digest, status, attempt_count
          FROM battle_narration_entries
         WHERE battle_id = $1
           AND status IN ('queued', 'generating')
+          ${input.receiptId ? "AND receipt_id = $2" : ""}
         ORDER BY sequence ASC
         LIMIT 1`,
-      [input.battleId],
+      input.receiptId ? [input.battleId, input.receiptId] : [input.battleId],
     );
     const entry = selected.rows[0];
-    if (!entry) return null;
+    if (!entry) {
+      if (input.outboxId && input.deliveryGeneration !== undefined) {
+        await connection.query(
+          `UPDATE battle_narration_outbox
+              SET status = 'completed'
+            WHERE outbox_id = $1 AND delivery_generation = $2`,
+          [input.outboxId, input.deliveryGeneration],
+        );
+      }
+      await connection.query(
+        `DELETE FROM battle_narration_leases
+          WHERE battle_id = $1 AND owner_id = $2 AND fencing_token = $3`,
+        [input.battleId, input.ownerId, fence],
+      );
+      return { disposition: "acknowledged" as const };
+    }
     const attemptId = newId("narration_attempt");
     const updated = await connection.query(
       `UPDATE battle_narration_entries
@@ -353,9 +460,9 @@ export async function processNextNarration(input: {
       },
       now,
     });
-    return { entry, attemptId };
+    return { disposition: "claimed" as const, entry, attemptId };
   });
-  if (!claimed) return "idle";
+  if (claimed.disposition !== "claimed") return claimed.disposition;
 
   const started = Date.now();
   let generated: NarrationGenerationResult | null = null;
@@ -485,6 +592,19 @@ export async function processNextNarration(input: {
         },
         now: finishedAt,
       });
+      if (input.outboxId && input.deliveryGeneration !== undefined) {
+        await connection.query(
+          `UPDATE battle_narration_outbox
+              SET status = 'completed'
+            WHERE outbox_id = $1 AND delivery_generation = $2`,
+          [input.outboxId, input.deliveryGeneration],
+        );
+      }
+      await connection.query(
+        `DELETE FROM battle_narration_leases
+          WHERE battle_id = $1 AND owner_id = $2 AND fencing_token = $3`,
+        [input.battleId, input.ownerId, fence],
+      );
       return "completed";
     }
 
@@ -507,6 +627,11 @@ export async function processNextNarration(input: {
             SET status = 'queued', active_attempt_id = NULL, updated_at = $3
           WHERE battle_id = $1 AND receipt_id = $2 AND active_attempt_id = $4`,
         [input.battleId, claimed.entry.receipt_id, finishedAt, claimed.attemptId],
+      );
+      await connection.query(
+        `DELETE FROM battle_narration_leases
+          WHERE battle_id = $1 AND owner_id = $2 AND fencing_token = $3`,
+        [input.battleId, input.ownerId, fence],
       );
       return "retry_queued";
     }
@@ -536,6 +661,19 @@ export async function processNextNarration(input: {
       },
       now: finishedAt,
     });
+    if (input.outboxId && input.deliveryGeneration !== undefined) {
+      await connection.query(
+        `UPDATE battle_narration_outbox
+            SET status = 'completed'
+          WHERE outbox_id = $1 AND delivery_generation = $2`,
+        [input.outboxId, input.deliveryGeneration],
+      );
+    }
+    await connection.query(
+      `DELETE FROM battle_narration_leases
+        WHERE battle_id = $1 AND owner_id = $2 AND fencing_token = $3`,
+      [input.battleId, input.ownerId, fence],
+    );
     return "failed";
   });
 }
@@ -557,6 +695,7 @@ export async function recoverStaleNarrationOutbox(
         SET status = 'pending', dispatched_at = NULL,
             delivery_generation = delivery_generation + 1
       WHERE status = 'dispatched'
+        AND dispatched_at <= $1
         AND EXISTS (
           SELECT 1
             FROM battle_narration_entries entry
@@ -564,7 +703,12 @@ export async function recoverStaleNarrationOutbox(
               ON lease.battle_id = entry.battle_id
            WHERE entry.battle_id = battle_narration_outbox.battle_id
              AND entry.receipt_id = battle_narration_outbox.receipt_id
-             AND entry.updated_at <= $1
+             AND NOT EXISTS (
+               SELECT 1 FROM battle_narration_entries earlier
+                WHERE earlier.battle_id = entry.battle_id
+                  AND earlier.sequence < entry.sequence
+                  AND earlier.status IN ('queued', 'generating')
+             )
              AND (
                entry.status = 'queued'
                OR (entry.status = 'generating' AND (
@@ -587,10 +731,21 @@ export async function dispatchNarrationOutbox(
     receipt_id: string;
     delivery_generation: number;
   }>(
-    `SELECT outbox_id, battle_id, receipt_id, delivery_generation
-       FROM battle_narration_outbox
-      WHERE status = 'pending'
-      ORDER BY created_at, outbox_id
+    `SELECT outbox.outbox_id, outbox.battle_id, outbox.receipt_id,
+            outbox.delivery_generation
+       FROM battle_narration_outbox outbox
+       JOIN battle_narration_entries entry
+         ON entry.battle_id = outbox.battle_id
+        AND entry.receipt_id = outbox.receipt_id
+      WHERE outbox.status = 'pending'
+        AND entry.status IN ('queued', 'generating')
+        AND NOT EXISTS (
+          SELECT 1 FROM battle_narration_entries earlier
+           WHERE earlier.battle_id = entry.battle_id
+             AND earlier.sequence < entry.sequence
+             AND earlier.status IN ('queued', 'generating')
+        )
+      ORDER BY outbox.created_at, outbox.outbox_id
       LIMIT $1`,
     [Math.max(1, Math.min(100, Math.trunc(limit)))],
   );
@@ -645,7 +800,7 @@ export async function processNextNarrationAcrossBattles(input: {
   ownerId: string;
   generator: NarrationGenerator;
   leaseMs?: number;
-}): Promise<"idle" | "completed" | "retry_queued" | "failed"> {
+}): Promise<"idle" | "acknowledged" | "deferred" | "completed" | "retry_queued" | "failed"> {
   const battleId = await nextNarrationBattleId();
   if (!battleId) return "idle";
   return processNextNarration({ ...input, battleId });

@@ -137,6 +137,7 @@ export function buildRoutes() {
       battleId?: unknown;
       receiptId?: unknown;
       outboxId?: unknown;
+      deliveryGeneration?: unknown;
       smokeId?: unknown;
     };
     if (
@@ -149,19 +150,26 @@ export function buildRoutes() {
     if (
       typeof body.battleId !== "string" ||
       typeof body.receiptId !== "string" ||
-      typeof body.outboxId !== "string"
+      typeof body.outboxId !== "string" ||
+      typeof body.deliveryGeneration !== "number" ||
+      !Number.isInteger(body.deliveryGeneration) ||
+      body.deliveryGeneration < 0
     ) {
       return c.json({ error: "invalid_task" }, 400);
     }
     try {
       const result = await processNextNarration({
         battleId: body.battleId,
-        ownerId: `cloud-task:${body.outboxId}`,
+        receiptId: body.receiptId,
+        outboxId: body.outboxId,
+        deliveryGeneration: body.deliveryGeneration,
+        ownerId: `cloud-task:${body.outboxId}:${body.deliveryGeneration}`,
         generator: createLlmNarrationGenerator(llm),
       });
       if (result === "retry_queued") {
         return c.json({ result }, 503);
       }
+      await dispatchPendingNarrationTasks();
       return c.json({ result });
     } catch (error) {
       const message = error instanceof Error ? error.message : "error";

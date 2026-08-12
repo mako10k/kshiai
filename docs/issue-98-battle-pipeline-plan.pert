@@ -117,20 +117,12 @@ task T_ROUTE_REFEREE_FAST_AND_CORRECT_RCA PACING_PRODUCTION_DEPLOYED -> PACING_P
     DEV 1
   owner "codex"
 
-task T_RCA_HISTORY_SCHEMA_FIX PACING_PRODUCTION_DEPLOYED -> RCA_HISTORY_SAFE:
-  title "Make battle persistence and history fail-safe"
-  description "Implement FIX5 without LLM use: bound reflect guideline at the CharacterAgentState write boundary, validate BattleState before persistence, return degraded history rows with diagnostics instead of silently omitting active battles, and add regression fixtures for overlong currentGoal and legacy-invalid private state. Do not mutate production rows without separate owner approval."
-  duration 2p
-  status done
-  requires:
-    DEV 1
-  owner "codex"
 
 task T_RCA_EXACT_RECEIPT_LIFECYCLE RCA_HISTORY_SAFE -> RCA_NARRATION_LIFECYCLE_SAFE:
   title "Implement exact-receipt narration lifecycle"
   description "Implement FIX1 and FIX2: bind task execution to battleId, receiptId, outboxId, and deliveryGeneration; claim only that receipt; use unique fenced ownership; terminally acknowledge stale or completed generations; avoid 503 as normal ordering; replace age-only global recovery with explicit generation eligibility and singleton or transactionally claimed recovery. Prove duplicate wakes cannot duplicate provider work using stubs only."
   duration 4p
-  status active
+  status done
   requires:
     DEV 1
   owner "codex"
@@ -207,6 +199,7 @@ work_event EVT_REFEREE_FAST_RCA_FINISH_20260812:
 
 milestone RCA_HISTORY_SAFE:
   title "Battle history and persisted schema are fail-safe"
+  state reached
 
 milestone RCA_NARRATION_LIFECYCLE_SAFE:
   title "Exact-receipt narration lifecycle is safe"
@@ -220,19 +213,7 @@ milestone RCA_OBSERVATION_GUARDED:
 gate G_RCA_GUARDS_BEFORE_OBSERVATION_ACCEPTANCE RCA_OBSERVATION_GUARDED -> PACING_PRODUCTION_OBSERVED:
   reason "Production observation cannot be accepted until every adopted RCA repair is locally verified."
 
-work_event EVT_RCA_HISTORY_SCHEMA_START_20260812:
-  model 1
-  task T_RCA_HISTORY_SCHEMA_FIX
-  kind start
-  occurred_at 2026-08-12T21:29:26+09:00
-  planned_value 2p
 
-work_event EVT_RCA_HISTORY_SCHEMA_FINISH_20260812:
-  model 1
-  task T_RCA_HISTORY_SCHEMA_FIX
-  kind finish
-  occurred_at 2026-08-12T21:33:58+09:00
-  effort 0.075ph
 
 work_event EVT_RCA_EXACT_RECEIPT_START_20260812:
   model 1
@@ -240,3 +221,10 @@ work_event EVT_RCA_EXACT_RECEIPT_START_20260812:
   kind start
   occurred_at 2026-08-12T21:33:58+09:00
   planned_value 4p
+
+work_event EVT_RCA_EXACT_RECEIPT_FINISH_20260812:
+  model 1
+  task T_RCA_EXACT_RECEIPT_LIFECYCLE
+  kind finish
+  occurred_at 2026-08-12T21:40:20+09:00
+  effort 0.1ph
