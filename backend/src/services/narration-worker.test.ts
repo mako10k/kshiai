@@ -3,6 +3,7 @@ import { mkdtempSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { describe, it } from "node:test";
+import type { LlmProvider } from "../llm/types.js";
 
 const tempDir = mkdtempSync(join(tmpdir(), "kshiai-narration-worker-"));
 process.env.DATABASE_URL = "";
@@ -11,6 +12,7 @@ process.env.DATABASE_PATH = join(tempDir, "test.db");
 
 const { query } = await import("../db.js");
 const {
+  createLlmNarrationGenerator,
   dispatchNarrationOutbox,
   enqueueNarration,
   getBattleNarrationSnapshot,
@@ -71,6 +73,54 @@ describe("ordered narration worker", () => {
     const publicJson = JSON.stringify(events);
     assert.doesNotMatch(publicJson, /never-public|stub-fast|stub-v1|tokenCount/);
     assert.match(publicJson, /done-scene-1/);
+    const presentations = await query<{ count: number }>(
+      "SELECT COUNT(*) AS count FROM battle_presentations WHERE battle_id = $1",
+      [battleId],
+    );
+    assert.equal(Number(presentations.rows[0]?.count), 2);
+  });
+
+  it("invokes the phase-specific provider only from the worker generator", async () => {
+    const called: string[] = [];
+    const llm = {
+      name: "worker-only-provider",
+      models: { engine: "standard", fast: "light" },
+      narrateTurn: async (request: { view: { turn: number } }) => {
+        called.push("combat");
+        return { turn: request.view.turn, narrator: ["combat"], speeches: [] };
+      },
+      narratePrologue: async () => {
+        called.push("prologue");
+        return { turn: 0, narrator: ["prologue"], speeches: [] };
+      },
+      narrateAftermath: async () => {
+        called.push("aftermath");
+        return { before: ["before"], after: ["after"], speeches: [] };
+      },
+      narrateJudgment: async () => {
+        called.push("judgment");
+        return { before: ["before"], after: ["after"] };
+      },
+    } as unknown as LlmProvider;
+    const generate = createLlmNarrationGenerator(llm);
+
+    const combat = await generate({ kind: "combat", request: { view: { turn: 3 } } });
+    const prologue = await generate({ kind: "prologue", request: {} });
+    const aftermath = await generate({ kind: "aftermath", request: { turn: 4 } });
+    const judgment = await generate({
+      kind: "judgment",
+      request: {
+        turn: 5,
+        winnerName: "A",
+        adjudicationReason: "canonical facts",
+      },
+    });
+
+    assert.deepEqual(called, ["combat", "prologue", "aftermath", "judgment"]);
+    assert.equal(combat.model, "light");
+    assert.equal(prologue.narrative.turn, 0);
+    assert.equal(aftermath.narrative.turn, 4);
+    assert.match(judgment.narrative.narrator.join(" "), /A.*canonical facts/);
   });
 
   it("deduplicates enqueue and fails closed on input digest drift", async () => {
@@ -138,6 +188,58 @@ describe("ordered narration worker", () => {
     const terminal = (await listNarrationEvents(battleId))
       .filter((event) => event.kind === "failed" || event.kind === "completed");
     assert.deepEqual(terminal.map((event) => event.kind), ["failed", "completed"]);
+    const battle = await query<{ revision: number }>(
+      "SELECT revision FROM battles WHERE id = $1",
+      [battleId],
+    );
+    assert.equal(Number(battle.rows[0]?.revision), 0);
+  });
+
+  it("does not hold the battle transaction while narration is generating", async () => {
+    const battleId = "worker-independent-advance";
+    await createBattle(battleId);
+    await enqueueNarration({
+      battleId,
+      receiptId: `${battleId}:phase:1`,
+      sequence: 1,
+      phase: "combat",
+      combatTurn: 1,
+      frozenInput: { scene: "slow narration" },
+      inputDigest: "9".repeat(64),
+    });
+    let releaseGeneration: (() => void) | undefined;
+    const generationStarted = new Promise<void>((resolve) => {
+      releaseGeneration = resolve;
+    });
+    let markStarted: (() => void) | undefined;
+    const started = new Promise<void>((resolve) => {
+      markStarted = resolve;
+    });
+    const processing = processNextNarration({
+      battleId,
+      ownerId: "slow-worker",
+      generator: async () => {
+        markStarted?.();
+        await generationStarted;
+        return {
+          narrative: { turn: 1, narrator: ["complete"], speeches: [] },
+          provider: "stub",
+          model: null,
+          route: "fast",
+          httpAttempts: 1,
+          tokenCount: 1,
+          estimatedCostUsd: 0,
+        };
+      },
+    });
+    await started;
+    const updated = await query(
+      "UPDATE battles SET revision = revision + 1 WHERE id = $1",
+      [battleId],
+    );
+    assert.equal(updated.rowCount, 1);
+    releaseGeneration?.();
+    assert.equal(await processing, "completed");
   });
 
   it("rejects a stale worker after its fencing lease is replaced", async () => {

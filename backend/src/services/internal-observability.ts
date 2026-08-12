@@ -137,6 +137,7 @@ function asString(value: unknown): string | null {
 
 const INTERNAL_PRIVATE_KEYS = new Set([
   "input",
+  "narrationInput",
   "providerOutput",
   "acceptedOutput",
   "proposedAction",

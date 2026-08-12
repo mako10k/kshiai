@@ -247,7 +247,7 @@ or secret is displayed.
 5. Add battle read/follow APIs with cursor replay, reset, authorization and
    heartbeat behavior.
 6. Move the frontend to independent advance and narration state machines; retain
-   a bounded compatibility adapter during migration.
+   only the legacy presentation read switch as the bounded rollback path.
 7. Remove narrator progress from advance SSE after the new client is accepted.
 
 Current local compatibility boundary:
@@ -283,9 +283,12 @@ Implemented local stream boundary (2026-08-12):
   ordered queued/generating placeholders. After the accepted local cutover,
   advance SSE publishes phase and terminal battle events only; narrator prose,
   drafts and bulk speech placement are read exclusively from durable narration
-  entries. The synchronous terminal import remains a bounded rollback adapter
-  until authenticated queue infrastructure is separately authorized; it emits
-  no advance prose and cannot create a second receipt or provider attempt.
+  entries;
+- advance now freezes the exact phase-specific provider request and commits its
+  receipt/outbox without invoking a narration or focus provider. An authenticated
+  local worker endpoint consumes the ordered entry and writes one terminal
+  presentation. The synchronous terminal import has been removed; cloud queue
+  infrastructure remains separately authorized.
 
 ## Acceptance matrix
 

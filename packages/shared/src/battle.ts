@@ -1470,8 +1470,8 @@ export const BattleStateSchema = z.object({
     fromRevision: z.number().int().nonnegative(),
     toRevision: z.number().int().positive(),
     committedAt: z.string().datetime(),
-    /** Frozen observer-safe facts for the later narration worker. */
-    narrationInput: z.object({
+    /** Frozen internal request for the later narration worker; never public DTO data. */
+    narrationInput: z.union([z.object({
       schemaVersion: z.literal(1),
       scene: z.string().max(1200),
       perspective: NarrationPerspectiveSchema,
@@ -1498,7 +1498,10 @@ export const BattleStateSchema = z.object({
         battlefield: z.string().min(1).max(160).nullable(),
         narrationStyle: z.string().min(1).max(160).nullable(),
       }).strict(),
-    }).strict().optional(),
+    }).strict(), z.object({
+      kind: z.enum(["prologue", "combat", "judgment", "aftermath"]),
+      request: z.record(z.string(), z.unknown()),
+    }).strict()]).optional(),
     narrationInputDigest: z.string().regex(/^[a-f0-9]{64}$/).optional(),
   }).strict()).max(100).optional(),
   /** Stable request identity persisted through intermediate bucket checkpoints. */

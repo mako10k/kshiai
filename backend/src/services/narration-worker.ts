@@ -8,6 +8,7 @@ import {
 } from "@kshiai/shared";
 import { query, withTransaction, type DatabaseConnection } from "../db.js";
 import { newId } from "../id.js";
+import type { LlmProvider } from "../llm/types.js";
 
 export const NARRATION_WORKER_MAX_ATTEMPTS = 2;
 export const NARRATION_TOTAL_HTTP_ATTEMPTS = 4;
@@ -45,6 +46,66 @@ export type NarrationGenerator = (
     remainingTokens: number;
   },
 ) => Promise<NarrationGenerationResult>;
+
+export function createLlmNarrationGenerator(llm: LlmProvider): NarrationGenerator {
+  return async (raw) => {
+    if (!raw || typeof raw !== "object") throw new Error("narration_input_invalid");
+    const input = raw as { kind?: unknown; request?: unknown };
+    if (!input.request || typeof input.request !== "object") {
+      throw new Error("narration_request_missing");
+    }
+    let narrative: NarrativeBlock;
+    if (input.kind === "combat") {
+      const result = await llm.narrateTurn(
+        input.request as Parameters<LlmProvider["narrateTurn"]>[0],
+      );
+      narrative = {
+        turn: result.turn,
+        narrator: result.narrator,
+        speeches: result.speeches,
+      };
+    } else if (input.kind === "prologue") {
+      const result = await llm.narratePrologue(
+        input.request as Parameters<LlmProvider["narratePrologue"]>[0],
+      );
+      narrative = {
+        turn: result.turn,
+        narrator: result.narrator,
+        speeches: result.speeches,
+      };
+    } else if (input.kind === "aftermath") {
+      const request = input.request as Parameters<LlmProvider["narrateAftermath"]>[0];
+      const result = await llm.narrateAftermath(request);
+      narrative = {
+        turn: request.turn,
+        narrator: [...result.before, ...result.after],
+        speeches: result.speeches,
+      };
+    } else if (input.kind === "judgment") {
+      const request = input.request as Parameters<LlmProvider["narrateJudgment"]>[0];
+      const result = await llm.narrateJudgment(request);
+      const verdict = request.winnerName
+        ? `${request.winnerName} の勝利。${request.adjudicationReason}`
+        : `引き分け。${request.adjudicationReason}`;
+      narrative = {
+        turn: request.turn,
+        narrator: [...result.before, "——判定——", verdict, ...result.after],
+        speeches: [],
+      };
+    } else {
+      throw new Error("narration_kind_invalid");
+    }
+    return {
+      narrative: NarrativeBlockSchema.parse(narrative),
+      provider: llm.name,
+      model: llm.models?.fast ?? null,
+      route: "fast",
+      httpAttempts: 1,
+      tokenCount: null,
+      estimatedCostUsd: null,
+    };
+  };
+}
 
 function json(value: unknown): string {
   return JSON.stringify(value);
@@ -163,58 +224,6 @@ export async function enqueueNarrationInTransaction(
 export async function enqueueNarration(input: EnqueueNarrationInput): Promise<void> {
   await withTransaction(async (connection) => {
     await enqueueNarrationInTransaction(connection, input);
-  });
-}
-
-/** Temporary dual-write bridge until advance stops generating narration. */
-export async function completeCompatibilityNarration(input: {
-  battleId: string;
-  receiptId: string;
-  inputDigest: string;
-  narrative: NarrativeBlock;
-  now?: string;
-}): Promise<void> {
-  const now = input.now ?? new Date().toISOString();
-  await withTransaction(async (connection) => {
-    const entry = await connection.query<EntryRow>(
-      `SELECT battle_id, receipt_id, sequence, phase, combat_turn, input_json,
-              input_digest, status, attempt_count
-         FROM battle_narration_entries
-        WHERE battle_id = $1 AND receipt_id = $2`,
-      [input.battleId, input.receiptId],
-    );
-    const current = entry.rows[0];
-    if (!current || current.input_digest !== input.inputDigest) {
-      throw new Error("NARRATION_INPUT_DIGEST_CONFLICT");
-    }
-    if (current.status === "completed") return;
-    NarrativeBlockSchema.parse(input.narrative);
-    const updated = await connection.query(
-      `UPDATE battle_narration_entries
-          SET status = 'completed', terminal_narrative_json = $3,
-              fallback_reason = 'legacy_sync_bridge', active_attempt_id = NULL,
-              updated_at = $4
-        WHERE battle_id = $1 AND receipt_id = $2
-          AND status IN ('queued', 'generating')`,
-      [input.battleId, input.receiptId, json(input.narrative), now],
-    );
-    if (updated.rowCount !== 1) throw new Error("NARRATION_COMPATIBILITY_CONFLICT");
-    await appendPublicEvent({
-      connection,
-      battleId: input.battleId,
-      receiptId: input.receiptId,
-      narrationSequence: Number(current.sequence),
-      kind: "completed",
-      payload: {
-        turnReceiptId: input.receiptId,
-        narrationSequence: Number(current.sequence),
-        phase: current.phase,
-        combatTurn: current.combat_turn,
-        status: "completed",
-        narrative: input.narrative,
-      },
-      now,
-    });
   });
 }
 
@@ -447,6 +456,19 @@ export async function processNextNarration(input: {
           claimed.attemptId],
       );
       if (committed.rowCount !== 1) throw new Error("NARRATION_STALE_ATTEMPT");
+      const presentation = await connection.query(
+        `INSERT INTO battle_presentations
+          (battle_id, receipt_id, sequence, phase, combat_turn, input_digest,
+           narrative_json, created_at)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+         ON CONFLICT (battle_id, receipt_id) DO UPDATE
+           SET narrative_json = EXCLUDED.narrative_json
+           WHERE battle_presentations.input_digest = EXCLUDED.input_digest`,
+        [input.battleId, claimed.entry.receipt_id, claimed.entry.sequence,
+          claimed.entry.phase, claimed.entry.combat_turn, claimed.entry.input_digest,
+          json(generated.narrative), finishedAt],
+      );
+      if (presentation.rowCount !== 1) throw new Error("PRESENTATION_DIGEST_CONFLICT");
       await appendPublicEvent({
         connection,
         battleId: input.battleId,

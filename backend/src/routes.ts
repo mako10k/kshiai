@@ -72,7 +72,10 @@ import {
   requestDigest,
 } from "./services/distributed-guard.js";
 import {
+  createLlmNarrationGenerator,
   getBattleNarrationSnapshot,
+  processNextNarration,
+  processNextNarrationAcrossBattles,
   readBattleNarrationEvents,
 } from "./services/narration-worker.js";
 
@@ -265,6 +268,25 @@ export function buildRoutes() {
         role,
         ...detail,
       });
+    },
+  );
+
+  authed.post(
+    "/internal/narration/process-next",
+    requireInternalObservability,
+    async (c) => {
+      const body = await c.req.json().catch(() => ({})) as { battleId?: unknown };
+      const ownerId = `local-worker:${c.get("user").id}`;
+      const generator = createLlmNarrationGenerator(llm);
+      const result = typeof body.battleId === "string" && body.battleId.length > 0
+        ? await processNextNarration({
+            battleId: body.battleId,
+            ownerId,
+            generator,
+          })
+        : await processNextNarrationAcrossBattles({ ownerId, generator });
+      c.header("Cache-Control", "private, no-store");
+      return c.json({ result });
     },
   );
 

@@ -158,7 +158,6 @@ import * as dialoguePipelineRepo from "../repositories/dialogue-pipeline-setting
 import { createAssetGeneration } from "../repositories/asset-generations.js";
 import { getUserAccessProfile } from "../account-access.js";
 import { withBattleLease } from "./distributed-guard.js";
-import { completeCompatibilityNarration } from "./narration-worker.js";
 import {
   buildFreeActionCanonicalRoots,
   buildLatentAffordances,
@@ -3019,32 +3018,9 @@ async function resolveNarrationFocusAndDigests(input: {
 
   let focus = lockedFocusFromPerspective(input.perspective);
   if (focus == null || needsFocusChoice(input.perspective)) {
-    try {
-      if (input.llm.chooseNarrationFocus) {
-        const chosen = await withTimeout(
-          input.llm.chooseNarrationFocus({
-            turn: input.turn,
-            scene: input.scene,
-            sideAName: input.sideAName,
-            sideBName: input.sideBName,
-            events: input.events,
-            summaryA,
-            summaryB,
-          }),
-          SHORT_LLM_ENVELOPE_TIMEOUT_MS,
-          "chooseNarrationFocus",
-        );
-        focus = chosen.focus;
-      } else {
-        focus = "external";
-      }
-    } catch (e) {
-      console.warn(
-        "[battle] chooseNarrationFocus failed",
-        e instanceof Error ? e.message : e,
-      );
-      focus = "external";
-    }
+    // Focus is presentation-only and is resolved by the ordered narration
+    // worker. Canonical advance must not invoke a narration provider.
+    focus = "external";
   }
 
   return {
@@ -4115,6 +4091,10 @@ async function advanceTurnWithLease(input: {
         styleName: next.narrationStyle?.displayName,
       }
     : null;
+  const combatNarrationInput: DeferredNarrationInput = {
+    kind: "combat",
+    request: narrationCallInput ?? {},
+  };
   const narrationTurnBrief = narrationView
     ? buildNarrationTurnBrief(narrationView)
     : null;
@@ -4128,16 +4108,11 @@ async function advanceTurnWithLease(input: {
     }
     // Retry policy belongs to the selected provider adapter. This envelope does
     // not duplicate a timeout, 429, or 503 attempt and never changes provider.
-    narrationResult = await withTimeout(
-      input.llm.narrateTurn(narrationCallInput),
-      FAST_LLM_ENVELOPE_TIMEOUT_MS,
-      "narrateTurn",
-    );
+    throw new Error("narration deferred to ordered worker");
   } catch (e) {
-    console.warn(
-      "[battle] narrateTurn fallback",
-      e instanceof Error ? e.message : e,
-    );
+    if (!(e instanceof Error && e.message === "narration deferred to ordered worker")) {
+      console.warn("[battle] narrateTurn fallback", e instanceof Error ? e.message : e);
+    }
     // Public log must stay narrator-shaped. Never dump engine event.summary or
     // raw action outcomes into the user-visible log.
     const fallbackDrama = {
@@ -4261,6 +4236,7 @@ async function advanceTurnWithLease(input: {
       state: next,
       operationId: input.operationId,
       phases: ["combat"],
+      narrationInputs: { combat: combatNarrationInput },
     });
     await battleRepo.saveBattleWithNarrationOutbox(next, {
       sideAUserId: meta.side_a_user_id,
@@ -4268,12 +4244,12 @@ async function advanceTurnWithLease(input: {
       sideBCharacterId: meta.side_b_character_id,
       expectedRevision: next.advanceOperation?.expectedRevision,
     });
-    await saveCommittedPresentation({ state: next, phase: "combat", narrative });
     return toBattlePublicForViewer(next, mine, null, opp);
   }
 
   let resultSummary: string | null = null;
   let judgmentNarrative: NarrativeBlock | null = null;
+  let judgmentNarrationInput: DeferredNarrationInput | undefined;
   if (next.status === "finished") {
     if (next.finishReason === "turn_limit") {
       const turnFacts = buildRefereeTurnFacts(next.turnRecords ?? []);
@@ -4313,28 +4289,27 @@ async function advanceTurnWithLease(input: {
           ? next.sideB.displayName
           : null;
       let judgmentPresentation: JudgmentNarrationResult | undefined;
+      judgmentNarrationInput = {
+        kind: "judgment" as const,
+        request: {
+          turn: next.turn,
+          scene: next.situation.scene,
+          sideAName: next.sideA.displayName,
+          sideBName: next.sideB.displayName,
+          winnerSide: adjudication.winnerSide,
+          winnerName,
+          adjudicationReason: adjudication.reason,
+          recentPublicNarration: [],
+          styleInstruction: next.narrationStyle?.instruction,
+          styleName: next.narrationStyle?.displayName,
+        },
+      };
       try {
-        judgmentPresentation = await withTimeout(
-          input.llm.narrateJudgment({
-            turn: next.turn,
-            scene: next.situation.scene,
-            sideAName: next.sideA.displayName,
-            sideBName: next.sideB.displayName,
-            winnerSide: adjudication.winnerSide,
-            winnerName,
-            adjudicationReason: adjudication.reason,
-            recentPublicNarration: [],
-            styleInstruction: next.narrationStyle?.instruction,
-            styleName: next.narrationStyle?.displayName,
-          }),
-          SHORT_LLM_ENVELOPE_TIMEOUT_MS,
-          "narrateJudgment",
-        );
+        throw new Error("judgment narration deferred to ordered worker");
       } catch (error) {
-        console.warn(
-          "[battle] narrateJudgment failed",
-          error instanceof Error ? error.message : error,
-        );
+        if (!(error instanceof Error && error.message === "judgment narration deferred to ordered worker")) {
+          console.warn("[battle] narrateJudgment failed", error instanceof Error ? error.message : error);
+        }
       }
       const judgmentBlock = repairNarrativeBlockIdentifiers(
         buildJudgmentNarrativeBlock({
@@ -4414,6 +4389,10 @@ async function advanceTurnWithLease(input: {
     phases: next.finishReason === "turn_limit"
       ? ["combat", "judgment"]
       : ["combat"],
+    narrationInputs: {
+      combat: combatNarrationInput,
+      ...(judgmentNarrationInput ? { judgment: judgmentNarrationInput } : {}),
+    },
   });
 
   await battleRepo.saveBattleWithNarrationOutbox(next, {
@@ -4422,14 +4401,6 @@ async function advanceTurnWithLease(input: {
     sideBCharacterId: meta.side_b_character_id,
     expectedRevision: next.advanceOperation?.expectedRevision,
   });
-  await saveCommittedPresentation({ state: next, phase: "combat", narrative });
-  if (judgmentNarrative) {
-    await saveCommittedPresentation({
-      state: next,
-      phase: "judgment",
-      narrative: judgmentNarrative,
-    });
-  }
 
   return toBattlePublicForViewer(next, mine, resultSummary, opp);
 }
@@ -4476,10 +4447,19 @@ function buildFrozenNarrationInput(
   };
 }
 
+type DeferredNarrationInput = {
+  kind: "prologue" | "combat" | "judgment" | "aftermath";
+  request: Record<string, unknown>;
+};
+
 export function completeAdvancePhases(input: {
   state: BattleState;
   operationId: string;
   phases: readonly ("prologue" | "combat" | "judgment" | "aftermath")[];
+  narrationInputs?: Partial<Record<
+    "prologue" | "combat" | "judgment" | "aftermath",
+    DeferredNarrationInput
+  >>;
 }): BattleState {
   const operation = input.state.advanceOperation;
   if (!operation || operation.operationId !== input.operationId) {
@@ -4497,7 +4477,17 @@ export function completeAdvancePhases(input: {
   const receipts = input.phases.map((phase, index) => {
     const sequence = firstSequence + index;
     const receiptFromRevision = fromRevision + index;
-    const frozen = buildFrozenNarrationInput(input.state, phase);
+    const override = input.narrationInputs?.[phase];
+    const frozen = override === undefined
+      ? buildFrozenNarrationInput(input.state, phase)
+      : {
+          snapshot: override,
+          digest: requestDigest({
+            phase,
+            combatTurn: input.state.turn,
+            snapshot: override,
+          }),
+        };
     return {
       schemaVersion: 1 as const,
       id: `${input.state.id}:phase:${sequence}`,
@@ -4529,36 +4519,6 @@ export function completeAdvancePhases(input: {
       receiptIds: receipts.map((receipt) => receipt.id),
     },
   };
-}
-
-async function saveCommittedPresentation(input: {
-  state: BattleState;
-  phase: "prologue" | "combat" | "judgment" | "aftermath";
-  narrative: NarrativeBlock;
-}): Promise<void> {
-  const receipt = [...(input.state.phaseReceipts ?? [])]
-    .reverse()
-    .find((candidate) => candidate.phase === input.phase);
-  if (!receipt?.narrationInputDigest) {
-    throw new Error("PRESENTATION_RECEIPT_MISSING");
-  }
-  await presentationRepo.saveBattlePresentation({
-    battleId: input.state.id,
-    receiptId: receipt.id,
-    sequence: receipt.sequence,
-    phase: receipt.phase,
-    combatTurn: receipt.combatTurn,
-    inputDigest: receipt.narrationInputDigest,
-    narrative: input.narrative,
-    createdAt: receipt.committedAt,
-  });
-  await completeCompatibilityNarration({
-    battleId: input.state.id,
-    receiptId: receipt.id,
-    inputDigest: receipt.narrationInputDigest,
-    narrative: input.narrative,
-    now: receipt.committedAt,
-  });
 }
 
 async function runPrologueTurn(input: {
@@ -4649,53 +4609,48 @@ async function runPrologueTurn(input: {
   });
 
   emit({ type: "phase", phase: "narrating" });
+  const prologueNarrationRequest = {
+    scene: state.situation.scene,
+    sideAName: narratorParticipantLabels.a,
+    sideBName: narratorParticipantLabels.b,
+    sideABlurb: profileAnchors.a ? input.mine.narrativeBlurb : undefined,
+    sideBBlurb: profileAnchors.b ? input.opp.narrativeBlurb : undefined,
+    sideATraits: profileAnchors.a ? input.mine.traits : undefined,
+    sideBTraits: profileAnchors.b ? input.opp.traits : undefined,
+    policySummary: policyLine,
+    priorMatchSummary: state.priorMatchSummary ?? undefined,
+    battlefield: state.battlefield,
+    innerDigests: digests,
+    characterSpeeches,
+    profileAnchors,
+    sceneStateFacts: buildNarratorSceneStateFacts({
+      state,
+      mine: input.mine,
+      opp: input.opp,
+      perspective,
+      focus,
+    }),
+    focus,
+    perspective,
+    narratorContinuity: state.narratorContinuity
+      ? selectNarratorContinuityForFocus({
+          continuity: state.narratorContinuity,
+          focus,
+        })
+      : null,
+    recognitionSubjects: prologuePerceptionView
+      ? narratorRecognitionSubjects(prologuePerceptionView)
+      : [],
+    styleInstruction: state.narrationStyle?.instruction,
+    styleName: state.narrationStyle?.displayName,
+  };
   let narrationResult: NarrationResult;
   try {
-    narrationResult = await withTimeout(
-      input.llm.narratePrologue({
-        scene: state.situation.scene,
-        sideAName: narratorParticipantLabels.a,
-        sideBName: narratorParticipantLabels.b,
-        sideABlurb: profileAnchors.a
-          ? input.mine.narrativeBlurb
-          : undefined,
-        sideBBlurb: profileAnchors.b
-          ? input.opp.narrativeBlurb
-          : undefined,
-        sideATraits: profileAnchors.a ? input.mine.traits : undefined,
-        sideBTraits: profileAnchors.b ? input.opp.traits : undefined,
-        policySummary: policyLine,
-        priorMatchSummary: state.priorMatchSummary ?? undefined,
-        battlefield: state.battlefield,
-        innerDigests: digests,
-        characterSpeeches,
-        profileAnchors,
-        sceneStateFacts: buildNarratorSceneStateFacts({
-          state,
-          mine: input.mine,
-          opp: input.opp,
-          perspective,
-          focus,
-        }),
-        focus,
-        perspective,
-        narratorContinuity: state.narratorContinuity
-          ? selectNarratorContinuityForFocus({
-              continuity: state.narratorContinuity,
-              focus,
-            })
-          : null,
-        recognitionSubjects: prologuePerceptionView
-          ? narratorRecognitionSubjects(prologuePerceptionView)
-          : [],
-        styleInstruction: state.narrationStyle?.instruction,
-        styleName: state.narrationStyle?.displayName,
-      }),
-      FAST_LLM_ENVELOPE_TIMEOUT_MS,
-      "narratePrologue",
-    );
+    throw new Error("prologue narration deferred to ordered worker");
   } catch (e) {
-    console.warn("[battle] narratePrologue failed", e);
+    if (!(e instanceof Error && e.message === "prologue narration deferred to ordered worker")) {
+      console.warn("[battle] narratePrologue failed", e);
+    }
     const place =
       state.battlefield?.displayName ?? state.situation.scene;
     narrationResult = {
@@ -4763,6 +4718,9 @@ async function runPrologueTurn(input: {
     state: next,
     operationId: input.operationId,
     phases: ["prologue"],
+    narrationInputs: {
+      prologue: { kind: "prologue", request: prologueNarrationRequest },
+    },
   });
 
   await battleRepo.saveBattleWithNarrationOutbox(next, {
@@ -4771,8 +4729,6 @@ async function runPrologueTurn(input: {
     sideBCharacterId: input.meta.side_b_character_id,
     expectedRevision: next.advanceOperation?.expectedRevision,
   });
-  await saveCommittedPresentation({ state: next, phase: "prologue", narrative });
-
   return toBattlePublicForViewer(next, input.mine, null, input.opp);
 }
 
@@ -4875,54 +4831,53 @@ async function runAftermathTurn(input: {
     focus,
   });
   emit({ type: "phase", phase: "narrating" });
+  const aftermathNarrationRequest = {
+    turn: aftermathTurn,
+    scene: state.situation.scene,
+    sideAName: narratorParticipantLabels.a,
+    sideBName: narratorParticipantLabels.b,
+    winnerSide: state.winnerSide,
+    winnerName: narratorWinnerName,
+    fallenNames: narratorFallenNames,
+    battlefield: state.battlefield,
+    recentNarration: [],
+    innerDigests: digests,
+    characterSpeeches,
+    profileAnchors: buildNarratorProfileAnchors({
+      mine: input.mine,
+      opp: input.opp,
+      perspective,
+      focus,
+      state,
+    }),
+    sceneStateFacts: buildNarratorSceneStateFacts({
+      state,
+      mine: input.mine,
+      opp: input.opp,
+      perspective,
+      focus,
+    }),
+    focus,
+    perspective,
+    narratorContinuity: state.narratorContinuity
+      ? selectNarratorContinuityForFocus({
+          continuity: state.narratorContinuity,
+          focus,
+        })
+      : null,
+    recognitionSubjects: aftermathPerceptionView
+      ? narratorRecognitionSubjects(aftermathPerceptionView)
+      : [],
+    styleInstruction: state.narrationStyle?.instruction,
+    styleName: state.narrationStyle?.displayName,
+  };
   let presentation: AftermathNarrationResult | undefined;
   try {
-    presentation = await withTimeout(
-      input.llm.narrateAftermath({
-        turn: aftermathTurn,
-        scene: state.situation.scene,
-        sideAName: narratorParticipantLabels.a,
-        sideBName: narratorParticipantLabels.b,
-        winnerSide: state.winnerSide,
-        winnerName: narratorWinnerName,
-        fallenNames: narratorFallenNames,
-        battlefield: state.battlefield,
-        recentNarration: [],
-        innerDigests: digests,
-        characterSpeeches,
-        profileAnchors: buildNarratorProfileAnchors({
-          mine: input.mine,
-          opp: input.opp,
-          perspective,
-          focus,
-          state,
-        }),
-        sceneStateFacts: buildNarratorSceneStateFacts({
-          state,
-          mine: input.mine,
-          opp: input.opp,
-          perspective,
-          focus,
-        }),
-        focus,
-        perspective,
-        narratorContinuity: state.narratorContinuity
-          ? selectNarratorContinuityForFocus({
-              continuity: state.narratorContinuity,
-              focus,
-            })
-          : null,
-        recognitionSubjects: aftermathPerceptionView
-          ? narratorRecognitionSubjects(aftermathPerceptionView)
-          : [],
-        styleInstruction: state.narrationStyle?.instruction,
-        styleName: state.narrationStyle?.displayName,
-      }),
-      FAST_LLM_ENVELOPE_TIMEOUT_MS,
-      "narrateAftermath",
-    );
+    throw new Error("aftermath narration deferred to ordered worker");
   } catch (e) {
-    console.warn("[battle] narrateAftermath failed", e);
+    if (!(e instanceof Error && e.message === "aftermath narration deferred to ordered worker")) {
+      console.warn("[battle] narrateAftermath failed", e);
+    }
     presentation = {
       before: ["場には、対決の余韻だけが静かに残った。"],
       after: ["幕は、そこで静かに下りた。"],
@@ -5008,6 +4963,9 @@ async function runAftermathTurn(input: {
     state: next,
     operationId: input.operationId,
     phases: ["aftermath"],
+    narrationInputs: {
+      aftermath: { kind: "aftermath", request: aftermathNarrationRequest },
+    },
   });
 
   await battleRepo.saveBattleWithNarrationOutbox(next, {
@@ -5016,8 +4974,6 @@ async function runAftermathTurn(input: {
     sideBCharacterId: input.meta.side_b_character_id,
     expectedRevision: next.advanceOperation?.expectedRevision,
   });
-  await saveCommittedPresentation({ state: next, phase: "aftermath", narrative });
-
   // The winner card already states the mechanical result. The aftermath log is
   // LLM-authored, so do not append a second fixed-prose result summary here.
   return toBattlePublicForViewer(next, input.mine, null, input.opp);

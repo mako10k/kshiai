@@ -58,19 +58,16 @@ flowchart TD
     PSYCHE --> EXPRESSION["LIGHTWEIGHT LLM:<br/>advanceCharacterAgent A/B<br/>expression and next-turn proposal"]
     EXPRESSION --> RECORD[("Persist turn record,<br/>perception and character speech")]
 
-    RECORD --> FOCUS{"Narration focus choice needed?"}
-    FOCUS -->|yes| FOCUS_LLM["LIGHTWEIGHT LLM:<br/>chooseNarrationFocus"]
-    FOCUS -->|no| NARRATE
-    FOCUS_LLM --> NARRATE
-
-    NARRATE["LIGHTWEIGHT LLM: narrateTurn<br/>currently synchronous inside advance<br/>streams through advance SSE"]
-    NARRATE --> NARRATOR_WRITE["Build public log<br/>update narrator recognition continuity"]
-    NARRATOR_WRITE --> TURN_LIMIT{"Turn-limit terminal?"}
+    RECORD --> RECEIPT["Freeze phase-specific narration input<br/>commit receipt and outbox"]
+    RECEIPT --> TURN_LIMIT{"Turn-limit terminal?"}
     TURN_LIMIT -->|yes| REFEREE["STANDARD LLM: referee<br/>engine tier; may currently select winner"]
-    REFEREE --> JUDGMENT["LIGHTWEIGHT LLM:<br/>narrateJudgment"]
-    JUDGMENT --> FINAL
+    REFEREE --> FINAL
     TURN_LIMIT -->|no| FINAL[("Save final BattleState")]
-    FINAL --> RESPONSE["Return advance response"]
+    FINAL --> RESPONSE["Return advance response<br/>without narration provider"]
+
+    RECEIPT -. "independent worker invocation" .-> WORKER["Ordered worker<br/>lease and fencing"]
+    WORKER --> NARRATE["LIGHTWEIGHT LLM:<br/>phase narration"]
+    NARRATE --> PRESENTATION[("Terminal presentation<br/>and durable event")]
 
     PROLOGUE --> RESPONSE
     AFTERMATH --> RESPONSE
@@ -81,11 +78,11 @@ flowchart TD
     classDef store fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20;
     classDef control fill:#f5f5f5,stroke:#616161,stroke-width:2px,color:#212121;
 
-    class LEGEND_LLM_LIGHT,ENV_LLM,LATER_ACTION,FREE_LLM,SEMANTIC,EXPRESSION,FOCUS_LLM,NARRATE,JUDGMENT llmLight;
+    class LEGEND_LLM_LIGHT,ENV_LLM,LATER_ACTION,FREE_LLM,SEMANTIC,EXPRESSION,NARRATE llmLight;
     class LEGEND_LLM_STANDARD,REFEREE llmStandard;
-    class LEGEND_MACHINE,ORDER,FIRST_RESERVED,FIRST_ENGINE,PROJECT,VALIDATE,ACCEPT,FALLBACK,SECOND_ENGINE,FREE_VALIDATE,CANONICAL,PSYCHE,NARRATOR_WRITE machine;
-    class LEGEND_STORE,ORDER_SAVE,FIRST_COMMIT,DECISION_SAVE,RECORD,FINAL store;
-    class LEGEND_CONTROL,API,LOAD,PHASE,ENV,FREE,FOCUS,TURN_LIMIT,RESPONSE,PROLOGUE,AFTERMATH control;
+    class LEGEND_MACHINE,ORDER,FIRST_RESERVED,FIRST_ENGINE,PROJECT,VALIDATE,ACCEPT,FALLBACK,SECOND_ENGINE,FREE_VALIDATE,CANONICAL,PSYCHE,WORKER machine;
+    class LEGEND_STORE,ORDER_SAVE,FIRST_COMMIT,DECISION_SAVE,RECORD,RECEIPT,FINAL,PRESENTATION store;
+    class LEGEND_CONTROL,API,LOAD,PHASE,ENV,FREE,TURN_LIMIT,RESPONSE,PROLOGUE,AFTERMATH control;
 ```
 
 ## Context and authority boundaries
@@ -142,12 +139,15 @@ flowchart LR
 - LLM-authored semantic/world reconciliation still runs after both action
   buckets. The later actor therefore sees committed mechanics and the existing
   canonical world, not a newly LLM-interpreted intermediate world patch.
-- Narration is still executed synchronously inside `advance`. ADR-0002's
-  independent narration job and API have been accepted but are not implemented.
+- `advance` freezes a phase-specific narration request and commits a durable
+  receipt/outbox without invoking narration or focus providers. A separately
+  invoked authenticated local worker generates terminal prose in battle order.
+- The worker trigger is local and injectable. Cloud queue creation, deployment,
+  and production migration remain outside the current implementation scope.
 - Initiative is currently selected during that turn's `advance`; the complete
   future turn-boundary reservation design is not yet implemented.
-- Durable duplicate-call prevention and SSE replay hardening remain subsequent
-  work.
+- Durable narration deduplication, fenced worker ownership, terminal-only event
+  replay, and idempotent frontend reduction are implemented locally.
 
 ## Data-flow view: state and memory
 

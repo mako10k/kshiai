@@ -61,6 +61,17 @@ describe("internal battle observability", () => {
         worldState: { revision: 1 },
         latestSemanticTransition: { turn: 1, status: "applied" },
         latestWorldTransition: { turn: 1, status: "applied" },
+        phaseReceipts: [{
+          id: "battle-observed:phase:1",
+          sequence: 1,
+          phase: "combat",
+          toRevision: 1,
+          narrationInput: {
+            kind: "combat",
+            request: { innerDigests: [{ detail: "private-narration-input" }] },
+          },
+          narrationInputDigest: "a".repeat(64),
+        }],
         agentStateA: {
           reactionReceiptV1: {
             schemaVersion: 1,
@@ -209,12 +220,20 @@ describe("internal battle observability", () => {
         ?.pipelineTrace,
     );
     assert.doesNotMatch(JSON.stringify(detail.rawBattleState), /perception":"a|nextAction|raw/);
+    assert.doesNotMatch(JSON.stringify(detail.rawBattleState), /private-narration-input/);
     assert.match(JSON.stringify(detail.rawBattleState), /\[redacted\]/);
     assert.equal(detail.capabilities.perTurnCanonicalTransitions, "complete");
     assert.equal(detail.capabilities.pipelineTraceCount, 1);
     assert.equal(detail.capabilities.temporalResolutionCount, 1);
     assert.equal(detail.capabilities.hasCausalExecutionCheckpoint, true);
-    assert.deepEqual(detail.canonicalCurrent.phaseReceipts, []);
+    assert.deepEqual(detail.canonicalCurrent.phaseReceipts, [{
+      receiptId: "battle-observed:phase:1",
+      sequence: 1,
+      phase: "combat",
+      combatTurn: null,
+      stateRevision: 1,
+      inputDigest: "a".repeat(64),
+    }]);
     assert.equal(
       (detail.canonicalCurrent.assetManifest as {
         characters: { a: { generationId: string } };
