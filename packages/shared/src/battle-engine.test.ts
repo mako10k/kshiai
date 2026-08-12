@@ -15,6 +15,8 @@ import {
   prepareSequentialBattleTurnInitiative,
   resolveBattleTurnBucket,
   resolveNextBattleTurnBucket,
+  materializeBattleStateAtBucketBoundary,
+  committedActionsAtBucketBoundary,
   resolveTurn,
 } from "./battle-engine.js";
 import { defaultParameters, type CharacterSheet } from "./character.js";
@@ -1416,6 +1418,23 @@ describe("battle engine", () => {
     assert.equal(first.bucketCommits?.length, 1);
     assert.equal(first.bucketCommits?.[0]?.bucketIndex, 0);
     assert.equal(first.engineContinuation.nextBucketIndex, 1);
+    const boundary = materializeBattleStateAtBucketBoundary({
+      state,
+      continuation: first.engineContinuation,
+    });
+    assert.equal(boundary.turn, 1);
+    assert.deepEqual(boundary.sideA, first.engineContinuation.sideA);
+    assert.deepEqual(boundary.sideB, first.engineContinuation.sideB);
+    assert.deepEqual(
+      committedActionsAtBucketBoundary(first.engineContinuation).map((action) => action.actorSide),
+      ["a"],
+    );
+    assert.equal(
+      committedActionsAtBucketBoundary(first.engineContinuation).some((action) =>
+        action.actorSide === "b"
+      ),
+      false,
+    );
 
     const serializedContinuation = JSON.parse(JSON.stringify(first.engineContinuation));
     const resumed = resolveNextBattleTurnBucket({

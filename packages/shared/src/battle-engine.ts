@@ -1695,6 +1695,42 @@ export type PreparedSequentialBattleTurnInitiative = PreparedBattleTurnInitiativ
   }>;
 };
 
+/**
+ * Materialize the exact committed mechanics visible at a durable bucket
+ * boundary. Semantic/world state remains the caller's last committed snapshot
+ * until the service reconciles this bucket; unresolved action placeholders are
+ * never exposed through this helper.
+ */
+export function materializeBattleStateAtBucketBoundary(input: {
+  state: BattleState;
+  continuation: BattleTurnEngineContinuation;
+}): BattleState {
+  const continuation = BattleTurnEngineContinuationSchema.parse(input.continuation);
+  return {
+    ...input.state,
+    turn: continuation.turn,
+    sideA: structuredClone(continuation.sideA),
+    sideB: structuredClone(continuation.sideB),
+    situation: structuredClone(continuation.situation),
+    finisherA: continuation.finisherA
+      ? structuredClone(continuation.finisherA)
+      : input.state.finisherA,
+    finisherB: continuation.finisherB
+      ? structuredClone(continuation.finisherB)
+      : input.state.finisherB,
+    latestTemporalResolution: structuredClone(continuation.temporalResolution),
+  };
+}
+
+/** Only already-executed actions may enter a bucket observer projection. */
+export function committedActionsAtBucketBoundary(
+  continuation: BattleTurnEngineContinuation,
+): ResolvedBattleAction[] {
+  return BattleTurnEngineContinuationSchema.parse(continuation).actions
+    .filter((action) => action.executed)
+    .map((action) => structuredClone(action));
+}
+
 /** Deterministically applies the once-per-turn setup before initiative. */
 function prepareBattleTurnStart(input: ResolveTurnInput): PreparedBattleTurnStart {
   const sideA = cloneCombatant(input.state.sideA);
