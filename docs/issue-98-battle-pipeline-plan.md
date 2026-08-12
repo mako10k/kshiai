@@ -3,7 +3,7 @@
 対象: [GitHub Issue #98](https://github.com/mako10k/kshiai/issues/98) `戦闘パイプラインの変更`
 
 作成日: 2026-08-12 (JST)
-再計画基準: `97b5bbe` (`Bind battles to immutable asset snapshots`)
+再計画基準: `bc47793`（bucket継続点・暫定永続化・side分離groundworkを含む。後段タスクの受入済みを意味しない）
 
 心理reaction policy詳細: [lightweight-psyche-reaction-policy.md](lightweight-psyche-reaction-policy.md)
 
@@ -11,7 +11,7 @@
 
 戦闘全体のLLMコスト方針: [battle-llm-cost-policy.md](battle-llm-cost-policy.md)
 
-対応 PERT: [issue-98-battle-pipeline-plan.pert](issue-98-battle-pipeline-plan.pert)（`97b5bbe` 基準の再計画版、owner gateを含む）
+対応 PERT: [issue-98-battle-pipeline-plan.pert](issue-98-battle-pipeline-plan.pert)（`bc47793` 基準の再計画版、owner gateを含む）
 
 ## 監査後の結論
 
@@ -33,6 +33,7 @@
 | --- | --- | --- | --- |
 | 0: 契約ドラフト (4p) | authority matrix、state machine、checkpoint、visibility/SSE、retry、OBS-09 disposition | 次 phase の仕様を承認 | LLM→永続 state/winner edge と public/private trace を全列挙 |
 | 1a: bucket engine (4p) | pure prepare/resolve-bucket/finalize、再入可能な order checkpoint | - | ADR-0001の前回順/一度限り抽選、A/B swap、retry時非再抽選を維持 |
+| 1a1: early groundwork audit (1p) | `f22e98c`・`2496b54`・`bc47793`の契約適合確認と不足test | - | 先行実装を後段タスク完了とは扱わず、engine完了後に保持・修正・撤回を判断 |
 | 1b0: asset snapshot baseline (完了) | 新規battleへ固定manifestを埋込み、advanceと管理画面から参照 | - | `97b5bbe`。これは永続世代管理の完成ではない |
 | 1b1: asset generations (4p) | append-only世代/current pointer、最小戦闘用snapshot、正規化digest、legacy境界 | - | ADR-0003。current assetを権威入力として再読込しない。完全CharacterSheet埋込みを解消 |
 | 1b2: pipeline-wide LLM cost contract (2p + owner 1p) | 全call inventory、責務別route、call/token/cost baseline、quality floor | route policyと計測を承認 | 心理に限定せず、軽量modelを第一候補として比較。context統合は禁止 |

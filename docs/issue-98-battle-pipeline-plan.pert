@@ -3,11 +3,11 @@
 project KSHIAI_ISSUE_98_CAUSAL_BATTLE_PIPELINE:
   version 6
   title "Issue #98 causal battle-pipeline renewal"
-  description "Replanned from clean baseline 97b5bbe. Complete durable asset generations, reduce routine deep-psyche LLM cost through deterministic no-call processing and a separately bounded lightweight-LLM route, then wire sequential decisions without merging private psyche, action, expression, adjudication, or narration contexts. Neural training, embedding, LLM judging, and data-review infrastructure are deferred to a separate evidence-backed plan."
+  description "Replanned from baseline bc47793 while preserving the original active-task estimate and work events. Finish the pure restartable bucket engine, then audit and integrate the already-written continuation persistence, administrator checkpoint display, and isolated-side agent groundwork before proceeding through asset generations and pipeline-wide LLM cost gates. Do not treat groundwork commits as completed downstream tasks. Private psyche, action, expression, adjudication, and narration contexts remain separate; neural training, embedding, LLM judging, and data-review infrastructure remain deferred."
   as_of 2026-08-12
   duration_unit point
   velocity 2880p/1117h
-  target_duration 48p
+  target_duration 49p
   finish ISSUE_98_LOCALLY_ACCEPTED
 
 resource DEV:
@@ -32,6 +32,9 @@ milestone CAUSAL_CONTRACT_ACCEPTED:
 
 milestone BUCKET_ENGINE_READY:
   title "Restartable bucket execution is available"
+
+milestone EARLY_GROUNDWORK_AUDITED:
+  title "Early persistence, visibility, and side-isolation groundwork is integrated"
 
 milestone ASSET_GENERATIONS_READY:
   title "Battles bind immutable editable-asset generations"
@@ -99,7 +102,15 @@ task T_REFACTOR_BUCKET_EXECUTION CAUSAL_CONTRACT_ACCEPTED -> BUCKET_ENGINE_READY
   requires:
     DEV 1
 
-task T_COMPLETE_ASSET_GENERATIONS BUCKET_ENGINE_READY -> ASSET_GENERATIONS_READY:
+task T_AUDIT_EARLY_BUCKET_GROUNDWORK BUCKET_ENGINE_READY -> EARLY_GROUNDWORK_AUDITED:
+  title "Audit and integrate prematurely implemented bucket groundwork"
+  description "Review commits f22e98c, 2496b54, and bc47793 against the completed bucket-engine contract. Retain only conformant restart continuation, BattleState persistence, retry behavior, administrator checkpoint display, and isolated-side character-agent execution. Add missing focused recovery, privacy, DTO/UI, provider-call-count, and no-committed-bucket-replay tests. Record any remaining durability and sequential-decision obligations in their existing later tasks. This is a new scope item added after T_REFACTOR_BUCKET_EXECUTION started; do not manufacture historical start/finish times or count the groundwork as accepted before this audit finishes."
+  duration 1p
+  owner "codex"
+  requires:
+    DEV 1
+
+task T_COMPLETE_ASSET_GENERATIONS EARLY_GROUNDWORK_AUDITED -> ASSET_GENERATIONS_READY:
   title "Complete durable generations and a minimal normalized battle manifest"
   description "Implement ADR-0003 beyond the baseline. Add append-only generations and current pointers for editable authoritative assets, transactional edit semantics, historical reads, retention identity, and versioned canonical normalization/digests. Replace full CharacterSheet snapshots with a minimal battle-authoritative character generation excluding records, owner memories, revision buffers, and unrelated mutable fields. Bind field preset generation plus concrete derivation, narration style, dialogue settings, rules, psyche contracts, and later narration jobs. Fail closed for new battles; isolate legacy unknowns without reading current rows as historical truth. Test mid-battle edits, retry identity, privacy, legacy reads, and administrator display."
   duration 4p
@@ -133,7 +144,7 @@ task T_REDUCE_PSYCHE_LLM_COST PSYCHE_CALL_CONTRACT_ACCEPTED -> PSYCHE_COST_REDUC
 
 task T_WIRE_SEQUENTIAL_DECISION PSYCHE_COST_REDUCED -> SEQUENTIAL_SLICE_READY:
   title "Wire observer-safe later-bucket decision and phase receipts"
-  description "At turn N finalization, determine and persist turn N+1 initiative/order before requesting the selected first actor reservation; never reserve before order exists. At turn N+1 advance, commit the first bucket, apply immediate server-owned semantic/world facts needed for observation, project only committed observer-visible facts, then independently request, validate, and resolve the later actor action and any deterministically eligible expression. Apply the accepted independent action/expression routes and evaluate lightweight models without combining their contexts. Record call counts, token and estimated cost, model route, skip/fallback reason, source-linked expression/action/consequence receipts, and terminal/invalid/timeout outcomes without publishing private prompts."
+  description "At turn N finalization, determine and persist turn N+1 initiative/order before requesting the selected first actor reservation; never reserve before order exists. At turn N+1 advance, commit the first bucket, apply immediate server-owned semantic/world facts needed for observation, project only committed observer-visible facts, then independently request, validate, and resolve the later actor action and any deterministically eligible expression. Reuse the audited isolated-side agent foundation without treating its earlier commit as acceptance of this task. Apply the accepted independent action/expression routes and evaluate lightweight models without combining their contexts. Record call counts, token and estimated cost, model route, skip/fallback reason, source-linked expression/action/consequence receipts, and terminal/invalid/timeout outcomes without publishing private prompts."
   duration 5p
   owner "codex"
   requires:
@@ -141,7 +152,7 @@ task T_WIRE_SEQUENTIAL_DECISION PSYCHE_COST_REDUCED -> SEQUENTIAL_SLICE_READY:
 
 task T_HARDEN_CAUSAL_DURABILITY SEQUENTIAL_SLICE_READY -> DURABILITY_READY:
   title "Verify checkpoint recovery, idempotency, and public stream ordering"
-  description "Bind request idempotency, battle lease/version, committed bucket receipt, and final response transactionally or with an explicit recoverable outbox. A retry returns the durable committed result rather than rerunning LLM work. Hold the frontend idempotency key across reconnect retries. Emit new public causal bucket events only after their durable commit; keep progress and private trace out of public SSE replay. Persist privacy-safe responsibility, route, model/prompt generation, token, estimated cost, latency, attempt, reuse, and fallback receipts, and aggregate them in administrator observations alongside causal checkpoints. Legacy records remain unavailable rather than inferred. Test disconnect/reconnect, save succeeds but response completion fails, later LLM timeout after first commit, stale concurrent advance, duplicate-call prevention, and observability DTO/UI compatibility."
+  description "Complete—not merely retain—the audited checkpoint groundwork. Bind request idempotency, battle lease/version, committed bucket receipt, and final response transactionally or with an explicit recoverable outbox. A retry returns the durable committed result rather than rerunning LLM work. Hold the frontend idempotency key across reconnect retries. Emit new public causal bucket events only after their durable commit; keep progress and private trace out of public SSE replay. Persist privacy-safe responsibility, route, model/prompt generation, token, estimated cost, latency, attempt, reuse, and fallback receipts, and aggregate them in administrator observations alongside causal checkpoints. Legacy records remain unavailable rather than inferred. Test disconnect/reconnect, save succeeds but response completion fails, later LLM timeout after first commit, stale concurrent advance, duplicate-call prevention, and observability DTO/UI compatibility."
   duration 3p
   owner "codex"
   requires:
