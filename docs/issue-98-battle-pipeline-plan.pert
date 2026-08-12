@@ -31,12 +31,10 @@ resource OWNER:
 
 
 
-milestone EFFECT_LIFECYCLE_READY:
-  title "Action, effect, and system provenance are separately traceable"
-  state reached
 
 milestone DEFERRED_EFFECTS_READY:
   title "Bounded two-combatant delayed and conditional effects are available"
+  state reached
 
 milestone PACING_MEASURED:
   title "Local pacing evidence and candidate policy are recorded"
@@ -60,14 +58,6 @@ milestone ISSUE_98_LOCALLY_ACCEPTED:
 
 
 
-task T_IMPLEMENT_DEFERRED_EFFECTS EFFECT_LIFECYCLE_READY -> DEFERRED_EFFECTS_READY:
-  title "Implement bounded delayed and conditional effects"
-  description "Implement stable pending-effect IDs, due-turn or owner-approved server-defined predicates, cancellation/expiry, deterministic schedule resolution, and observer-safe projection at the accepted pre-action boundary. Cover one delayed-hit equivalent and one conditional effect fixture. Do not add arbitrary scripts, unbounded timers, narrator-controlled state changes, or new combat participants."
-  duration 3p
-  status done
-  owner "codex"
-  requires:
-    DEV 1
 
 task T_MEASURE_LOCAL_PACING DEFERRED_EFFECTS_READY -> PACING_MEASURED:
   title "Measure local pacing and prepare a policy candidate"
@@ -92,18 +82,3 @@ task T_ACCEPT_ISSUE_98 PACING_POLICY_ACCEPTED -> ISSUE_98_LOCALLY_ACCEPTED:
   owner "codex"
   requires:
     DEV 1
-
-work_event WE-fb8e5eed731cf1ce37be9466beeaa1d2c5c039e5e4f66b39a1f3fac05d5d4022:
-  model 1
-  task T_IMPLEMENT_DEFERRED_EFFECTS
-  kind start
-  occurred_at 2026-08-12T17:38:10+09:00
-  planned_value 3p
-
-work_event WE-fb10c2e159debac6f733fc42c436c0280f32f4c23104a20fe1a959726637ccd4:
-  model 1
-  task T_IMPLEMENT_DEFERRED_EFFECTS
-  kind finish
-  occurred_at 2026-08-12T17:58:09+09:00
-  active_time 1199/3600h
-  effort 1199/3600ph
