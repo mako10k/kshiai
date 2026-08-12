@@ -67,7 +67,7 @@ task T_SEPARATE_ADVANCE_NARRATION DURABILITY_READY -> NARRATION_AUTHORITY_READY:
   title "Close narration authority and freeze phase inputs"
   description "Implement ADR-0006 authority prerequisites: deterministic winner and ordered prologue/combat/judgment/aftermath receipts[]; remove narrator recognition, prose-derived drama, new raw narrator traces and winner feedback from canonical BattleState; freeze observer-safe input per receipt; add narration-only ordered continuity and a feature-gated legacy presentation read model for battle GET/log/history/improvement. Stop new private prompt/provider payload persistence and define legacy trace retention/access. Test phase cardinality, battle revision CAS, immutable generations/digests, later advance independence, sanitized administrator DTO, legacy dual-read and rollback."
   duration 3p
-  status active
+  status done
   owner "codex"
   requires:
     DEV 1
@@ -181,3 +181,9 @@ work_event WE-3dc14a97a4db8a5d58033179fec6b71223f41e66609d544f94048ce57404e543:
   kind start
   occurred_at 2026-08-12T15:52:45+09:00
   planned_value 3p
+
+work_event WE-1932743c44853adec707e9ebe5db99b50c606300deeaa4356f51c392e577fb5d:
+  model 1
+  task T_SEPARATE_ADVANCE_NARRATION
+  kind finish
+  occurred_at 2026-08-12T16:12:00+09:00
