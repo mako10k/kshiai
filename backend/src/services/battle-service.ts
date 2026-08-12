@@ -999,6 +999,7 @@ function buildCharacterDecisionContext(input: {
     finisher,
     turn: nextTurn,
     turnLimit: input.state.turnLimit,
+    pacingPolicy: input.state.pacingPolicy,
   });
   const drama = normalizeDramaState(input.state.dramaState);
   const signature = input.side === "a"

@@ -82,6 +82,11 @@ import {
   type BattleEncounterContext,
   updateBattleNarratorContinuity,
 } from "./battle-social.js";
+import {
+  battlePacingPolicyForState,
+  currentBattlePacingPolicy,
+  type BattlePacingPolicy,
+} from "./battle-pacing.js";
 
 function nowIso(): string {
   return new Date().toISOString();
@@ -840,6 +845,7 @@ export function createBattleState(input: {
     phaseReceipts: [],
     pendingEffects: [],
     turnLimit: input.turnLimit,
+    pacingPolicy: currentBattlePacingPolicy(input.turnLimit),
     sideA,
     sideB,
     stanceA: input.stanceA,
@@ -2213,6 +2219,7 @@ export function resolveTurn(input: ResolveTurnInput): {
   const mechanicalSpans = resumed ? [] : prepared!.mechanicalSpans;
   const accumulatedMechanicalEvidence = resumed?.mechanicalEvidence ?? [];
   const turn = resumed?.turn ?? prepared!.turn;
+  const pacingPolicy = battlePacingPolicyForState(input.state);
   const pendingEffects = resumed?.pendingEffects ?? prepared!.pendingEffects;
   let finisherA = resumed?.finisherA ??
     normalizeFinisher(input.state.finisherA, input.sideASkills);
@@ -2486,6 +2493,9 @@ export function resolveTurn(input: ResolveTurnInput): {
         battleId: input.state.id,
         turn,
         turnLimit: input.state.turnLimit,
+        pressureStartTurn: pacingPolicy.decisivePressureStartTurn,
+        pressureMaximumTurn: pacingPolicy.decisivePressureMaximumTurn,
+        finisherUnlockTurn: pacingPolicy.finisherUnlockTurn,
         actorSide: inputAction.side,
       },
       finisherFor(inputAction.side),
@@ -2809,7 +2819,7 @@ export function resolveTurn(input: ResolveTurnInput): {
       type: "info",
       summary: `${sideB.displayName} は対決を続けられなくなった。${sideA.displayName} とこの場が、その後をどう迎えるか——`,
     });
-  } else if (turn >= input.state.turnLimit) {
+  } else if (turn >= pacingPolicy.turnLimit) {
     status = "finished";
     finishReason = "turn_limit";
     // Hidden score for turn-limit tie-break (engine-side); referee LLM may override later.
@@ -2824,7 +2834,10 @@ export function resolveTurn(input: ResolveTurnInput): {
           ? "規定ターン終了 — 審判は互角と見て、最終判定に入る。"
           : `規定ターン終了 — 審判は ${winnerSide === "a" ? sideA.displayName : sideB.displayName} 優勢として最終判定に入る。`,
     });
-  } else if (turn === input.state.turnLimit - 1) {
+  } else if (
+    pacingPolicy.warningTurnsBeforeLimit > 0 &&
+    turn === pacingPolicy.turnLimit - pacingPolicy.warningTurnsBeforeLimit
+  ) {
     events.push({
       type: "info",
       summary: "判定予告 — 次が最終ターン。働きかけの有効性、残力、場への影響が勝敗を分ける。",
@@ -2990,6 +3003,9 @@ type DecisiveContext = {
   battleId: string;
   turn: number;
   turnLimit: number;
+  pressureStartTurn?: number;
+  pressureMaximumTurn?: number;
+  finisherUnlockTurn?: number;
   actorSide: "a" | "b";
 };
 
@@ -3012,13 +3028,16 @@ export function decisivePressure(input: DecisiveContext): {
   criticalChance: number;
   specialMultiplier: number;
 } {
-  if (input.turn <= 10) {
+  const startTurn = input.pressureStartTurn ?? 10;
+  if (input.turn <= startTurn) {
     return { progress: 0, criticalChance: 0, specialMultiplier: 1 };
   }
-  const maximumTurn = Math.max(11, Math.min(20, input.turnLimit));
+  const maximumTurn = input.pressureMaximumTurn ??
+    Math.max(startTurn + 1, Math.min(20, input.turnLimit));
+  const pressureSpan = Math.max(1, maximumTurn - startTurn);
   const progress = Math.min(
     1,
-    Math.max(0, (input.turn - 10) / (maximumTurn - 10)),
+    Math.max(0, (input.turn - startTurn) / pressureSpan),
   );
   return {
     progress,
@@ -3045,21 +3064,25 @@ export function buildFinisherWindow(input: {
   finisher?: FinisherState;
   turn: number;
   turnLimit: number;
+  pacingPolicy?: BattlePacingPolicy;
 }): FinisherWindow | null {
   if (!input.finisher) return null;
+  const policy = input.pacingPolicy ?? currentBattlePacingPolicy(input.turnLimit);
   const pressure = decisivePressure({
     battleId: "window",
     turn: input.turn,
     turnLimit: input.turnLimit,
+    pressureStartTurn: policy.decisivePressureStartTurn,
+    pressureMaximumTurn: policy.decisivePressureMaximumTurn,
     actorSide: "a",
   });
-  const maximumTurn = Math.max(11, Math.min(20, input.turnLimit));
+  const maximumTurn = policy.decisivePressureMaximumTurn;
   return {
     skillId: input.finisher.skillId,
     skillName: input.finisher.skillName,
     source: input.finisher.source,
-    unlocked: input.turn >= 10,
-    turnsUntilUnlock: Math.max(0, 10 - input.turn),
+    unlocked: input.turn >= policy.finisherUnlockTurn,
+    turnsUntilUnlock: Math.max(0, policy.finisherUnlockTurn - input.turn),
     remainingUses: input.finisher.used ? 0 : 1,
     currentMultiplier: pressure.specialMultiplier,
     maxMultiplier: 2,
@@ -3339,7 +3362,8 @@ function applyAction(
   }
   if (
     skill.kind === "special" &&
-    (decisive.turn < 10 || finisher?.used || skill.id !== finisher?.skillId)
+    ((decisive.finisherUnlockTurn ?? 10) > decisive.turn ||
+      finisher?.used || skill.id !== finisher?.skillId)
   ) {
     events.push({
       type: "info",

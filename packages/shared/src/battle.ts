@@ -34,6 +34,9 @@ import {
   type BattleDialoguePipelineSnapshot,
 } from "./dialogue-pipeline.js";
 import {
+  BattlePacingPolicySchema,
+} from "./battle-pacing.js";
+import {
   CommittedMechanicalEvidenceSetSchema,
   CharacterPerceptionFrameASchema,
   CharacterPerceptionFrameBSchema,
@@ -1496,6 +1499,8 @@ export const BattleStateSchema = z.object({
   status: BattleStatusSchema,
   turn: z.number().int().nonnegative(),
   turnLimit: z.number().int().positive(),
+  /** Versioned pacing rules frozen for this battle; absent on legacy saves. */
+  pacingPolicy: BattlePacingPolicySchema.optional(),
   /** Frozen source generations used by all authoritative battle processing. */
   assetManifest: BattleAssetManifestSchema.optional(),
   sideA: CombatantStateSchema,
