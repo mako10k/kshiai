@@ -140,6 +140,7 @@ task T_RCA_COST_RELEASE_GUARDS RCA_PRESENTATION_SAFE -> RCA_OBSERVATION_GUARDED:
   title "Close observation cost telemetry and release acceptance"
   description "Implement FIX6 and FIX7: replace smoke-only acceptance with an LLM-free exact-receipt lifecycle fixture; require terminal receipt convergence, one provider attempt per receipt, history visibility, ordered projection, and no live generations; add observation-wide projected and actual provider-operation ceilings by layer with an operator pause. Preserve responsibility separation and do not resume production observation."
   duration 4p
+  status done
   requires:
     DEV 1
   owner "codex"
@@ -243,3 +244,16 @@ work_event EVT_RCA_SSE_UI_FINISH_20260812:
   kind finish
   occurred_at 2026-08-12T21:46:00+09:00
   effort 0.095ph
+
+work_event EVT_RCA_COST_RELEASE_START_20260812:
+  model 1
+  task T_RCA_COST_RELEASE_GUARDS
+  kind start
+  occurred_at 2026-08-12T21:46:00+09:00
+  planned_value 4p
+
+work_event EVT_RCA_COST_RELEASE_FINISH_20260812:
+  model 1
+  task T_RCA_COST_RELEASE_GUARDS
+  kind finish
+  occurred_at 2026-08-12T21:53:07+09:00
