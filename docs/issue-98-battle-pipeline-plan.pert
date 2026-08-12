@@ -79,19 +79,12 @@ task T_ACCEPT_ISSUE_98 PACING_POLICY_ACCEPTED -> ISSUE_98_LOCALLY_ACCEPTED:
 
 
 
-task T_ACCEPT_PACING_PRODUCTION_TRIAL PACING_BASELINE_CAPTURED -> PACING_DEPLOY_AUTHORIZED:
-  title "Accept the exact pacing production trial"
-  description "Owner confirms the provisional candidate policy, exact commit SHA, migration and configuration impact, initial safety thresholds, and rollback target. No separate 20 USD experiment budget is reserved: ordinary production usage accumulates evidence over time. This authorizes one guarded production deployment with the policy explicitly marked provisional, not permanent adoption."
-  duration 1p
-  status done
-  requires:
-    OWNER 1
-  owner "user"
 
 task T_DEPLOY_PACING_CANDIDATE PACING_DEPLOY_AUTHORIZED -> PACING_PRODUCTION_DEPLOYED:
   title "Deploy the pacing candidate"
   description "Run the repository's guarded release and production deployment path for the accepted SHA, verify deployed revision and health, and stop or roll back on the accepted failure thresholds. Do not include unrelated changes."
   duration 2p
+  status active
   requires:
     DEV 1
   owner "codex"
@@ -107,6 +100,7 @@ task T_OBSERVE_PRODUCTION_PACING PACING_PRODUCTION_DEPLOYED -> PACING_PRODUCTION
 
 milestone PACING_DEPLOY_AUTHORIZED:
   title "Owner accepted the exact pacing production trial"
+  state reached
 
 milestone PACING_PRODUCTION_DEPLOYED:
   title "Pacing candidate is deployed to production"
@@ -114,21 +108,9 @@ milestone PACING_PRODUCTION_DEPLOYED:
 milestone PACING_PRODUCTION_OBSERVED:
   title "Bounded production pacing evidence is recorded"
 
-
-milestone PACING_BASELINE_CAPTURED:
-  title "Current production pacing baseline is recorded"
-  state reached
-
-work_event EVT_ACCEPT_PACING_DEPLOY_START_20260812:
+work_event EVT_DEPLOY_PACING_START_20260812:
   model 1
-  task T_ACCEPT_PACING_PRODUCTION_TRIAL
+  task T_DEPLOY_PACING_CANDIDATE
   kind start
-  occurred_at 2026-08-12T19:06:34+09:00
-  planned_value 1p
-
-work_event EVT_ACCEPT_PACING_DEPLOY_DONE_20260812:
-  model 1
-  task T_ACCEPT_PACING_PRODUCTION_TRIAL
-  kind finish
-  occurred_at 2026-08-12T19:06:36+09:00
-  effort 0.01ph
+  occurred_at 2026-08-12T19:06:43+09:00
+  planned_value 2p
