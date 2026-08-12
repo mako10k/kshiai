@@ -5,6 +5,31 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 
 ## [Unreleased]
 
+## [0.17.1] - 2026-08-12
+
+### Fixed
+
+- Recovers narration deliveries whose Cloud Task was accepted but never
+  completed, using generation-bound task identities and stale-entry checks.
+- Rejects battle checkpoints from stale lease holders with monotonic fencing,
+  and makes retried battle creation reuse its committed battle instead of
+  repeating setup work.
+- Shows sanitized narration outbox status, delivery generation, and attempt
+  count in the administrator battle-pipeline view.
+
+### Database
+
+- Adds narration delivery generations and battle-lease fencing tokens
+  (`0015_pipeline_recovery_fencing.sql`).
+
+### Operations
+
+- Stage release now proves Cloud Tasks OIDC delivery to the exact no-traffic
+  revision with a bounded smoke request that does not call an LLM or mutate a
+  battle.
+- The migration is additive; the v0.17.0 application remains the application
+  rollback target while the new columns remain in place.
+
 ## [0.17.0] - 2026-08-12
 
 ### Added
