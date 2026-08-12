@@ -4,6 +4,21 @@
 対象: `BL-040`, `BL-041`, `T_CAUSALITY`
 実装: `packages/shared/src/battle-causality.ts`, `packages/shared/src/battle-world.ts`
 
+## 永続 consequence provenance
+
+新規turn recordは加算的な`consequenceReceipts`を保持する。識別可能なevent、parameter
+delta、semantic operation、world operationには、次のtagged sourceを必ず1つ割り当てる。
+
+- `action`: 検証・解決済みのキャラクター行動
+- `scheduled_effect`: bounded effect instance（遅延effect実装sliceで利用予定）
+- `system_rules`: turn-start、turn-resolution、terminal rule
+- `environment_world`: 検証済みsemanticまたはcanonical world transition
+
+linkは構造化ID、対象、parameter key、operation indexのみから構成し、event summaryや
+narrationから原因を推測しない。legacy turn recordはreceiptなしで読み取れる。本receiptが
+保証するreplayは将来のpending-effect schedule純粋再解決に限定し、full semantic replayや
+full-turn replayは対象外とする。
+
 ## 責務境界
 
 ```mermaid

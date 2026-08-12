@@ -360,6 +360,101 @@ export function buildBattleTurnRecord(input: {
     scene: input.after.situation.scene,
     observedEvents: input.events,
   };
+  const actionById = new Map(
+    (input.actions ?? []).map((action) => [action.id, action] as const),
+  );
+  const actionParameterChanges = new Map<string, {
+    a: Partial<Record<ParamKey, number>>;
+    b: Partial<Record<ParamKey, number>>;
+  }>((input.actions ?? []).map((action) => [action.id, { a: {}, b: {} }]));
+  const systemParameterChanges: {
+    a: Partial<Record<ParamKey, number>>;
+    b: Partial<Record<ParamKey, number>>;
+  } = { a: {}, b: {} };
+  for (const [side, changes] of [["a", changeA], ["b", changeB]] as const) {
+    for (const [key, delta] of Object.entries(changes) as Array<[ParamKey, number]>) {
+      const candidateActionIds = new Set(input.events.flatMap((event) =>
+        event.parameterKey === key && event.targetSides?.includes(side) &&
+          event.sourceActionId && actionById.has(event.sourceActionId)
+          ? [event.sourceActionId]
+          : []
+      ));
+      const actionId = candidateActionIds.size === 1
+        ? [...candidateActionIds][0]
+        : undefined;
+      if (actionId) {
+        actionParameterChanges.get(actionId)![side][key] = delta;
+      } else {
+        systemParameterChanges[side][key] = delta;
+      }
+    }
+  }
+  const actionReceipts = (input.actions ?? []).map((action) => ({
+    schemaVersion: 1 as const,
+    receiptId: `${input.after.id}:turn:${input.after.turn}:action:${action.id}`,
+    turn: input.after.turn,
+    source: {
+      kind: "action" as const,
+      actionId: action.id,
+      actorSide: action.actorSide,
+    },
+    eventIds: input.events.flatMap((event) =>
+      event.sourceActionId === action.id && event.id ? [event.id] : []
+    ),
+    parameterChanges: actionParameterChanges.get(action.id)!,
+    semanticOperationIndexes: [],
+    worldOperationIndexes: [],
+  }));
+  const unownedEvents = input.events.filter((event) =>
+    !event.sourceActionId || !actionById.has(event.sourceActionId)
+  );
+  const systemReceipt = {
+    schemaVersion: 1 as const,
+    receiptId: `${input.after.id}:turn:${input.after.turn}:system:resolution`,
+    turn: input.after.turn,
+    source: {
+      kind: "system_rules" as const,
+      stage: "turn_resolution" as const,
+    },
+    eventIds: unownedEvents.flatMap((event) => event.id ? [event.id] : []),
+    parameterChanges: systemParameterChanges,
+    semanticOperationIndexes: [],
+    worldOperationIndexes: [],
+  };
+  const environmentReceipts = [
+    ...((input.after.latestSemanticTransition?.patch?.operations.length ?? 0) > 0
+      ? [{
+          schemaVersion: 1 as const,
+          receiptId: `${input.after.id}:turn:${input.after.turn}:environment:semantic`,
+          turn: input.after.turn,
+          source: {
+            kind: "environment_world" as const,
+            transition: "semantic" as const,
+          },
+          eventIds: [],
+          parameterChanges: { a: {}, b: {} },
+          semanticOperationIndexes: (input.after.latestSemanticTransition?.patch
+            ?.operations ?? []).map((_operation, index) => index),
+          worldOperationIndexes: [],
+        }]
+      : []),
+    ...((input.after.latestWorldTransition?.transition?.operations.length ?? 0) > 0
+      ? [{
+          schemaVersion: 1 as const,
+          receiptId: `${input.after.id}:turn:${input.after.turn}:environment:world`,
+          turn: input.after.turn,
+          source: {
+            kind: "environment_world" as const,
+            transition: "world" as const,
+          },
+          eventIds: [],
+          parameterChanges: { a: {}, b: {} },
+          semanticOperationIndexes: [],
+          worldOperationIndexes: (input.after.latestWorldTransition?.transition
+            ?.operations ?? []).map((_operation, index) => index),
+        }]
+      : []),
+  ];
   return {
     turn: input.after.turn,
     ...(input.after.latestTemporalResolution
@@ -379,6 +474,11 @@ export function buildBattleTurnRecord(input: {
     actions: input.actions ?? [],
     freeActionReceipts: input.after.latestFreeActionReceipts ?? [],
     events: input.events,
+    consequenceReceipts: [
+      ...actionReceipts,
+      systemReceipt,
+      ...environmentReceipts,
+    ],
     ...(
       input.after.latestSemanticTransition?.turn === input.after.turn ||
         input.after.latestWorldTransition?.turn === input.after.turn

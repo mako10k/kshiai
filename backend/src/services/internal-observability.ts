@@ -86,6 +86,7 @@ export type CanonicalTurnProgression = {
   temporalResolution: unknown | null;
   actions: unknown[];
   events: unknown[];
+  consequenceReceipts: unknown[];
   sideAChange: unknown;
   sideBChange: unknown;
   worldImpact: unknown | null;
@@ -314,6 +315,9 @@ export async function getInternalBattleObservation(
       temporalResolution: record.temporalResolution ?? null,
       actions: Array.isArray(record.actions) ? record.actions : [],
       events: Array.isArray(record.events) ? record.events : [],
+      consequenceReceipts: Array.isArray(record.consequenceReceipts)
+        ? record.consequenceReceipts
+        : [],
       sideAChange: record.sideAChange ?? null,
       sideBChange: record.sideBChange ?? null,
       worldImpact: record.worldImpact ?? null,

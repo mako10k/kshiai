@@ -1980,12 +1980,30 @@ export async function advanceCharacterAgents(input: {
           characterAgents: characterAgentTrace,
         },
       };
+  const receiptOwnedEventIds = new Set(
+    record.consequenceReceipts?.flatMap((receipt) => receipt.eventIds) ?? [],
+  );
+  const addedEventIds = eventsWithUtterances.flatMap((event) =>
+    event.id && !receiptOwnedEventIds.has(event.id) ? [event.id] : []
+  );
+  const recordWithUtteranceProvenance = record.consequenceReceipts &&
+      addedEventIds.length > 0
+    ? {
+        ...record,
+        consequenceReceipts: record.consequenceReceipts.map((receipt) =>
+          receipt.source.kind === "system_rules" &&
+            receipt.source.stage === "turn_resolution"
+            ? { ...receipt, eventIds: [...receipt.eventIds, ...addedEventIds] }
+            : receipt
+        ),
+      }
+    : record;
   return {
     state: refreshNarratorContinuity({
       ...stateAfterUtterances,
       turnRecords: [
         ...previousRecords,
-        record,
+        recordWithUtteranceProvenance,
       ].slice(-50),
     }),
     characterSpeeches,

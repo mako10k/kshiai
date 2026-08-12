@@ -8,6 +8,7 @@ import {
   defaultDialoguePipelineSettings,
   defaultParameters,
   PSYCHE_REACTION_POLICY_V1,
+  BattleTurnRecordSchema,
   type BattleState,
   type CharacterSheet,
 } from "@kshiai/shared";
@@ -238,6 +239,10 @@ describe("character-authored public speech", () => {
       (event) => event.type === "utterance",
     ) ?? [];
     assert.equal(utterances.length, 2);
+    const parsedRecord = BattleTurnRecordSchema.safeParse(
+      result.state.turnRecords.at(-1),
+    );
+    assert.deepEqual(parsedRecord.success ? [] : parsedRecord.error.issues, []);
     assert.deepEqual(
       utterances.map((event) => event.utterance?.text),
       result.characterSpeeches.map((speech) => speech.text),

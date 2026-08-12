@@ -150,6 +150,14 @@ function TurnPipelineDag({
           value={{ actions: turn.actions, events: turn.events }}
         />
         <span className="internal-pipeline-arrow" aria-hidden="true">→</span>
+        <PipelineNode
+          title="因果 provenance receipt"
+          subtitle={turn.consequenceReceipts.length > 0
+            ? `${turn.consequenceReceipts.length} sources · action/effect/system/world`
+            : "legacy / unavailable"}
+          value={turn.consequenceReceipts}
+        />
+        <span className="internal-pipeline-arrow" aria-hidden="true">→</span>
         {trace?.environmentProcess ? (
           <>
             <PipelineNode

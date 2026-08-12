@@ -977,6 +977,53 @@ export type BattleTurnWorldImpact = z.infer<
   typeof BattleTurnWorldImpactSchema
 >;
 
+export const BattleConsequenceProvenanceSourceSchema = z.discriminatedUnion(
+  "kind",
+  [
+    z.object({
+      kind: z.literal("action"),
+      actionId: z.string().min(1).max(120),
+      actorSide: z.enum(["a", "b"]),
+    }).strict(),
+    z.object({
+      kind: z.literal("scheduled_effect"),
+      effectId: z.string().min(1).max(120),
+    }).strict(),
+    z.object({
+      kind: z.literal("system_rules"),
+      stage: z.enum(["turn_start", "turn_resolution", "terminal"]),
+    }).strict(),
+    z.object({
+      kind: z.literal("environment_world"),
+      transition: z.enum(["semantic", "world"]),
+    }).strict(),
+  ],
+);
+export type BattleConsequenceProvenanceSource = z.infer<
+  typeof BattleConsequenceProvenanceSourceSchema
+>;
+
+/**
+ * Immutable bounded provenance for one committed turn. This is not a full-turn
+ * replay log; only scheduled-effect resolution is intended to become replayable.
+ */
+export const BattleConsequenceReceiptSchema = z.object({
+  schemaVersion: z.literal(1),
+  receiptId: z.string().min(1).max(180),
+  turn: z.number().int().nonnegative(),
+  source: BattleConsequenceProvenanceSourceSchema,
+  eventIds: z.array(z.string().min(1).max(120)).max(64),
+  parameterChanges: z.object({
+    a: z.record(ParamKeySchema, z.number()),
+    b: z.record(ParamKeySchema, z.number()),
+  }).strict(),
+  semanticOperationIndexes: z.array(z.number().int().nonnegative()).max(24),
+  worldOperationIndexes: z.array(z.number().int().nonnegative()).max(24),
+}).strict();
+export type BattleConsequenceReceipt = z.infer<
+  typeof BattleConsequenceReceiptSchema
+>;
+
 export const BattleAdjudicationReasonFactSchema = z.object({
   factor: z.enum([
     "committed_actions",
@@ -1113,6 +1160,8 @@ export const BattleTurnRecordSchema = z.object({
     .default([])
     .optional(),
   events: z.array(TurnEventSchema).default([]),
+  /** Additive for legacy records; every new event and committed delta has one owner. */
+  consequenceReceipts: z.array(BattleConsequenceReceiptSchema).max(16).optional(),
   /** Exact server-owned semantic and mechanical world transitions for this turn. */
   canonicalTransition: z.object({
     semantic: z.object({
@@ -1136,6 +1185,79 @@ export const BattleTurnRecordSchema = z.object({
   cognitionB: CharacterCognitionSchema,
   /** Bounded internal-only consumer I/O for pipeline diagnosis. */
   pipelineTrace: BattleTurnPipelineTraceSchema.optional(),
+}).superRefine((record, ctx) => {
+  if (!record.consequenceReceipts) return;
+  const ownedEventIds = record.consequenceReceipts.flatMap((receipt) =>
+    receipt.eventIds
+  );
+  const expectedEventIds = record.events.flatMap((event) => event.id ? [event.id] : []);
+  if (
+    new Set(ownedEventIds).size !== ownedEventIds.length ||
+    expectedEventIds.some((id) => !ownedEventIds.includes(id)) ||
+    ownedEventIds.some((id) => !expectedEventIds.includes(id))
+  ) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["consequenceReceipts"],
+      message: "each identified turn event must belong to exactly one consequence receipt",
+    });
+  }
+  for (const side of ["a", "b"] as const) {
+    const expected = side === "a"
+      ? record.sideAChange.parameterChanges
+      : record.sideBChange.parameterChanges;
+    const owners = new Map<string, number[]>();
+    for (const receipt of record.consequenceReceipts) {
+      for (const [key, value] of Object.entries(receipt.parameterChanges[side])) {
+        owners.set(key, [...(owners.get(key) ?? []), value]);
+      }
+    }
+    for (const [key, value] of Object.entries(expected)) {
+      const values = owners.get(key) ?? [];
+      if (values.length !== 1 || values[0] !== value) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["consequenceReceipts"],
+          message: `parameter delta ${side}.${key} must have exactly one matching owner`,
+        });
+      }
+    }
+    for (const key of owners.keys()) {
+      if (!(key in expected)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["consequenceReceipts"],
+          message: `receipt owns absent parameter delta ${side}.${key}`,
+        });
+      }
+    }
+  }
+  const validateIndexes = (
+    key: "semanticOperationIndexes" | "worldOperationIndexes",
+    count: number,
+  ) => {
+    const indexes = record.consequenceReceipts!.flatMap((receipt) => receipt[key]);
+    if (
+      new Set(indexes).size !== indexes.length ||
+      indexes.some((index) => index >= count) ||
+      Array.from({ length: count }, (_value, index) => index)
+        .some((index) => !indexes.includes(index))
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["consequenceReceipts"],
+        message: `each ${key} value must have exactly one owner`,
+      });
+    }
+  };
+  validateIndexes(
+    "semanticOperationIndexes",
+    record.canonicalTransition?.semantic?.patch?.operations.length ?? 0,
+  );
+  validateIndexes(
+    "worldOperationIndexes",
+    record.canonicalTransition?.world?.transition?.operations.length ?? 0,
+  );
 });
 export type BattleTurnRecord = z.infer<typeof BattleTurnRecordSchema>;
 

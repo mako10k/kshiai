@@ -21,7 +21,11 @@ import {
   resolveTurn,
 } from "./battle-engine.js";
 import { defaultParameters, type CharacterSheet } from "./character.js";
-import { BattleStateSchema, type BattleState } from "./battle.js";
+import {
+  BattleStateSchema,
+  BattleTurnRecordSchema,
+  type BattleState,
+} from "./battle.js";
 import { quantizeCommittedMechanicalEvidence } from "./perception-quantization.js";
 import { applyBattleWorldTransition } from "./battle-world.js";
 
@@ -318,6 +322,25 @@ describe("battle engine", () => {
       "turn-1-action-a",
       "turn-1-action-b",
     ]);
+    assert.deepEqual(
+      record.consequenceReceipts?.filter((receipt) =>
+        receipt.source.kind === "action"
+      ).map((receipt) => receipt.source.kind),
+      ["action", "action"],
+    );
+    const ownedEventIds = record.consequenceReceipts?.flatMap((receipt) =>
+      receipt.eventIds
+    ) ?? [];
+    assert.deepEqual(
+      [...ownedEventIds].sort(),
+      resolved.events.flatMap((event) => event.id ? [event.id] : []).sort(),
+    );
+    const hpOwners = record.consequenceReceipts?.filter((receipt) =>
+      receipt.parameterChanges.b.hp !== undefined
+    ) ?? [];
+    assert.equal(hpOwners.length, 1);
+    assert.equal(hpOwners[0]?.source.kind, "action");
+    assert.equal(hpOwners[0]?.parameterChanges.b.hp, record.sideBChange.parameterChanges.hp);
     assert.ok(resolved.events.every((event) => Boolean(event.id)));
     const transitioned = {
       ...resolved.state,
@@ -351,6 +374,11 @@ describe("battle engine", () => {
       }).turnRecords[0]?.canonicalTransition?.semantic?.turn,
       1,
     );
+    const duplicateOwner = structuredClone(canonicalRecord);
+    duplicateOwner.consequenceReceipts?.[0]?.eventIds.push(
+      duplicateOwner.consequenceReceipts[1]?.eventIds[0] ?? "missing",
+    );
+    assert.equal(BattleTurnRecordSchema.safeParse(duplicateOwner).success, false);
     assert.equal(state.observationStateA?.snapshot.revision, 0);
     assert.equal(
       state.observationStateA?.snapshot.entities["character.a"]?.label,

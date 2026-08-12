@@ -133,6 +133,7 @@ export type InternalBattleObservationDetail = {
     temporalResolution: InternalBattleTemporalPlan | null;
     actions: unknown[];
     events: unknown[];
+    consequenceReceipts: unknown[];
     sideAChange: unknown;
     sideBChange: unknown;
     worldImpact: unknown | null;
