@@ -58,9 +58,9 @@ milestone ISSUE_98_LOCALLY_ACCEPTED:
 
 
 
-task T_ACCEPT_PACING_POLICY PACING_E2E_OBSERVED -> PACING_POLICY_ACCEPTED:
+task T_ACCEPT_PACING_POLICY PACING_PRODUCTION_OBSERVED -> PACING_POLICY_ACCEPTED:
   title "Decide whether to adopt a measured pacing candidate"
-  description "Owner decides retain, revise, or adopt the candidate using validated synthetic evidence plus the bounded real-pipeline observation. The Issue hypotheses of about eight average turns and no more than twelve are assessed with uncertainty and quality tradeoffs; neither is rejected from synthetic evidence alone. Production observation remains separately authorized."
+  description "Owner decides retain, revise, or roll back the candidate using bounded production evidence. Local simulation remains supporting evidence only; production behavior, quality, safety, reliability, and cost determine adoption."
   duration 1p
   owner "user"
   requires:
@@ -80,15 +80,11 @@ milestone PACING_HARNESS_VALIDATED:
 milestone PACING_CANDIDATE_TUNED:
   title "A measured pacing candidate meets the exploration criteria"
 
-milestone PACING_LLM_TRIAL_AUTHORIZED:
-  title "Owner authorized a bounded real-LLM pacing trial"
 
-milestone PACING_E2E_OBSERVED:
-  title "Bounded end-to-end pacing evidence is recorded"
 
 task T_VALIDATE_PACING_EVIDENCE PACING_MEASURED -> PACING_HARNESS_VALIDATED:
-  title "Validate the pacing evidence method"
-  description "Treat the existing deterministic harness only as candidate-search evidence. Compare its predictions with existing persisted battle records and representative engine/application fixtures; cover attack, defend, recovery, finisher, initiative, interruption, and delayed effects; run multiple seeds and sensitivity checks; quantify mismatch and confidence limits. Do not reject or accept the Issue hypothesis from synthetic evidence alone and do not call a real LLM."
+  title "Smoke-check the pacing harness"
+  description "Perform only the minimum checks needed to catch obvious harness breakage: deterministic reproducibility, paired inputs, terminal classification, and agreement with selected engine fixtures. Record limitations, but do not delay aggressive parameter exploration for broad simulator validation. The original active-task estimate is retained as historical planning evidence even though the scope is intentionally narrowed."
   duration 3p
   status active
   requires:
@@ -96,24 +92,34 @@ task T_VALIDATE_PACING_EVIDENCE PACING_MEASURED -> PACING_HARNESS_VALIDATED:
   owner "codex"
 
 task T_TUNE_PACING_POLICY PACING_HARNESS_VALIDATED -> PACING_CANDIDATE_TUNED:
-  title "Tune a credible pacing candidate"
-  description "Using only the validated portions of the evidence method, tune coupled damage, defense, recovery, finisher timing and power, decisive pressure, and maximum turn parameters toward the Issue hypothesis of about eight average turns and no more than twelve. Compare multiple candidates, report distributions and forced-terminal tradeoffs, retain current behavior as rollback, and do not claim real-play validity."
-  duration 3p
+  title "Aggressively tune the production pacing candidate"
+  description "Explore coupled turn limit, damage and defense scaling, recovery, repeated-action pressure, finisher timing and power, and decisive-pressure curves. Target approximately eight average turns and no more than twelve while checking catastrophic one-shots, excessive forced terminals, initiative skew, and delayed-effect starvation. Use local simulation as search and regression evidence, not final product evidence; preserve the current policy as rollback."
+  duration 4p
   requires:
     DEV 1
   owner "codex"
 
-task T_ACCEPT_BOUNDED_LLM_PACING_TRIAL PACING_CANDIDATE_TUNED -> PACING_LLM_TRIAL_AUTHORIZED:
-  title "Authorize a bounded real-LLM pacing trial"
-  description "Owner reviews the tuned candidate, fixture limitations, exact non-production sample size, provider/model, maximum calls, tokens, retries, and cost before any real LLM call. Approval authorizes only that bounded local trial, not deployment or policy adoption."
+
+
+task T_ACCEPT_PACING_PRODUCTION_TRIAL PACING_CANDIDATE_TUNED -> PACING_DEPLOY_AUTHORIZED:
+  title "Accept the exact pacing production trial"
+  description "Owner confirms the exact candidate policy, commit SHA, migration/config impact, success and rollback thresholds, observation window, and maximum provider cost. This authorizes one guarded production deployment and bounded observation, not permanent adoption."
   duration 1p
   requires:
     OWNER 1
   owner "user"
 
-task T_OBSERVE_BOUNDED_LLM_PACING PACING_LLM_TRIAL_AUTHORIZED -> PACING_E2E_OBSERVED:
-  title "Observe pacing through the real battle pipeline"
-  description "Run only the owner-approved non-production real-LLM sample through the actual advance pipeline. Record completion distribution, forced terminals, per-turn state change, repeated action and speech, initiative response, delayed-effect behavior, total calls, tokens, retries, latency, and cost. Compare against a frozen baseline and preserve failed or inconclusive evidence without expanding the authorized budget."
+task T_DEPLOY_PACING_CANDIDATE PACING_DEPLOY_AUTHORIZED -> PACING_PRODUCTION_DEPLOYED:
+  title "Deploy the pacing candidate"
+  description "Run the repository's guarded release and production deployment path for the accepted SHA, verify deployed revision and health, and stop or roll back on the accepted failure thresholds. Do not include unrelated changes."
+  duration 2p
+  requires:
+    DEV 1
+  owner "codex"
+
+task T_OBSERVE_PRODUCTION_PACING PACING_PRODUCTION_DEPLOYED -> PACING_PRODUCTION_OBSERVED:
+  title "Observe the bounded production pacing trial"
+  description "Measure real battles over the accepted window: completion distribution, maximum-turn and forced-terminal rate, KO/one-shot rate, committed change, action and speech repetition, initiative response, delayed effects, errors, latency, calls, tokens, retries, and cost. Compare with the frozen production baseline and execute the accepted rollback rule when required."
   duration 3p
   requires:
     DEV 1
@@ -125,3 +131,12 @@ work_event WE-a34f76f890ad62bfe5345f7b9ec4db01dc3f2c263896ad8deafdeb87ecdfbc03:
   kind start
   occurred_at 2026-08-12T18:14:00+09:00
   planned_value 3p
+
+milestone PACING_DEPLOY_AUTHORIZED:
+  title "Owner accepted the exact pacing production trial"
+
+milestone PACING_PRODUCTION_DEPLOYED:
+  title "Pacing candidate is deployed to production"
+
+milestone PACING_PRODUCTION_OBSERVED:
+  title "Bounded production pacing evidence is recorded"
