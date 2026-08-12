@@ -115,6 +115,7 @@ task T_COMPLETE_ASSET_GENERATIONS EARLY_GROUNDWORK_AUDITED -> ASSET_GENERATIONS_
   title "Complete durable generations and a minimal normalized battle manifest"
   description "Implement ADR-0003 beyond the baseline. Add append-only generations and current pointers for editable authoritative assets, transactional edit semantics, historical reads, retention identity, and versioned canonical normalization/digests. Replace full CharacterSheet snapshots with a minimal battle-authoritative character generation excluding records, owner memories, revision buffers, and unrelated mutable fields. Bind field preset generation plus concrete derivation, narration style, dialogue settings, rules, psyche contracts, and later narration jobs. Fail closed for new battles; isolate legacy unknowns without reading current rows as historical truth. Test mid-battle edits, retry identity, privacy, legacy reads, and administrator display."
   duration 4p
+  status active
   owner "codex"
   requires:
     DEV 1
@@ -287,3 +288,10 @@ work_event WE-5ca598ec4bfd0fe1c2f4ddc96509deb69b2dc82edca3b91c704717fedf80b3a0:
   occurred_at 2026-08-12T11:56:41+09:00
   active_time 29/720h
   effort 29/720ph
+
+work_event WE-672f8adc36cc9743ed207c7923d934700eab2bf4c37f87a9315c987b0aef2881:
+  model 1
+  task T_COMPLETE_ASSET_GENERATIONS
+  kind start
+  occurred_at 2026-08-12T12:02:52+09:00
+  planned_value 4p
