@@ -3,7 +3,7 @@
 project KSHIAI_ISSUE_98_CAUSAL_BATTLE_PIPELINE:
   version 6
   title "Issue #98 causal battle-pipeline renewal"
-  description "Replanned from clean baseline 97b5bbe. Complete durable asset generations, replace routine deep-psyche LLM calls with ADR-0004 deterministic bounded dynamics, then wire the sequential decision boundary without merging private psyche, action, expression, adjudication, or narration contexts. Learned psyche dynamics remain shadow-only until a separate adoption decision."
+  description "Replanned from clean baseline 97b5bbe. Complete durable asset generations, reduce routine deep-psyche LLM cost through deterministic no-call processing and a separately bounded lightweight-LLM route, then wire sequential decisions without merging private psyche, action, expression, adjudication, or narration contexts. Neural training, embedding, LLM judging, and data-review infrastructure are deferred to a separate evidence-backed plan."
   as_of 2026-08-12
   duration_unit point
   velocity 2880p/1117h
@@ -36,11 +36,14 @@ milestone BUCKET_ENGINE_READY:
 milestone ASSET_GENERATIONS_READY:
   title "Battles bind immutable editable-asset generations"
 
+milestone LLM_COST_CONTRACT_ACCEPTED:
+  title "Owner accepted pipeline-wide LLM cost budgets and routing"
+
 milestone PSYCHE_CALL_CONTRACT_ACCEPTED:
   title "Owner accepted normalized psyche and separated-call contract"
 
-milestone DETERMINISTIC_PSYCHE_READY:
-  title "Routine private psyche no longer requires an LLM"
+milestone PSYCHE_COST_REDUCED:
+  title "Routine private psyche uses accepted low-cost routing"
 
 milestone SEQUENTIAL_SLICE_READY:
   title "Later actor can decide from earlier observable committed facts"
@@ -50,9 +53,6 @@ milestone DURABILITY_READY:
 
 milestone NARRATION_API_READY:
   title "Narration is an independent immutable asynchronous job"
-
-milestone PSYCHE_SHADOW_READY:
-  title "A versioned lightweight learned psyche candidate runs shadow-only"
 
 milestone EFFECT_CONTRACT_ACCEPTED:
   title "Owner accepted bounded effect scope"
@@ -107,25 +107,33 @@ task T_COMPLETE_ASSET_GENERATIONS BUCKET_ENGINE_READY -> ASSET_GENERATIONS_READY
   requires:
     DEV 1
 
-task T_ACCEPT_PSYCHE_CALL_CONTRACT ASSET_GENERATIONS_READY -> PSYCHE_CALL_CONTRACT_ACCEPTED:
-  title "Accept normalized psyche features and separated LLM-call budgets"
-  description "Specify and owner-accept ADR-0004 details: explicit psyche dimensions and parameter bounds; observer-safe input features; PsycheTraitProfile controlled vocabulary; Unicode, alias, ordering, default, unknown/absent/neutral, scale, clamp, quantization, contradiction, and canonical-serialization normalization; independent least-authority projections for action and expression; deterministic expression-call gating; normal-turn call ceilings; provider-failure behavior; private receipt retention; and shadow-model evaluation thresholds. Do not authorize context merging or authoritative learned weights."
+task T_ACCEPT_PIPELINE_LLM_COST_CONTRACT ASSET_GENERATIONS_READY -> LLM_COST_CONTRACT_ACCEPTED:
+  title "Accept pipeline-wide LLM cost measurement and routing"
+  description "Inventory every battle LLM responsibility and establish a measured baseline for calls, input/output tokens, pricing snapshot, retries, fallback, and p50/p95 latency by phase. Define independent versioned routes for encounter, psyche, action, expression, semantic/world, sensory evidence, narration, and terminal explanation using the order skip or durable reuse, deterministic local processing, fixed lightweight model, then explicitly enumerated high-cost fallback. Set per-responsibility attempt and token ceilings, quality/privacy floors, cost ceilings, receipt fields, and administrator-safe aggregation. Do not merge contexts, allow unbounded repair/escalation, or select models before fixture-based measurement."
   duration 3p
   owner "user"
   requires:
     OWNER 1
 
-task T_IMPLEMENT_DETERMINISTIC_PSYCHE PSYCHE_CALL_CONTRACT_ACCEPTED -> DETERMINISTIC_PSYCHE_READY:
-  title "Replace routine deep-psyche LLM calls with bounded state dynamics"
-  description "Implement a versioned deterministic psyche engine with baseline state, appraisal sensitivities, cross-dimension gains/inhibition, recovery/decay, action projection, expression projection, and reason-coded contribution receipts. Consume only server-normalized observer-relative features and the battle-bound PsycheTraitProfile. Preserve action and expression as separate consumers; never expose raw private state. Verify replay, bounds, profile differences, unrelated-sheet invariance, fallback, and administrator-safe observability."
+task T_ACCEPT_PSYCHE_CALL_CONTRACT LLM_COST_CONTRACT_ACCEPTED -> PSYCHE_CALL_CONTRACT_ACCEPTED:
+  title "Accept the adoptable psyche V1 and low-cost call-routing contract"
+  description "Specify and owner-accept only the adoptable slice: a small V1 tag/state/trait set derived from committed observer-safe evidence; canonical structural normalization; battle-local neutral relationship defaults; independent least-authority action and expression projections; deterministic no-call and hold routes; an optional fixed lightweight-LLM psyche-only route; explicitly enumerated high-cost fallback; normal-turn call ceilings; cost/token/latency/fallback and quality reject thresholds; provider-failure behavior; and private receipt retention. Neural training, character or experience embeddings, LLM judge, silver/gold pipelines, human-review UI, recurrent state, and long-term relationship learning are outside this contract."
+  duration 3p
+  owner "user"
+  requires:
+    OWNER 1
+
+task T_REDUCE_PSYCHE_LLM_COST PSYCHE_CALL_CONTRACT_ACCEPTED -> PSYCHE_COST_REDUCED:
+  title "Route routine psyche processing through accepted low-cost paths"
+  description "Implement the accepted V1 feature builder, explicit bounded decay/reaction policy, consumer projections, and private reason receipt. Measure deterministic/no-op coverage against the existing deep-psyche path without treating its prose as truth. Where the accepted contract requires semantic compatibility, evaluate one fixed lightweight model with a psyche-only context. Route in the fixed order deterministic/no-call, lightweight LLM, then explicitly allowed high-cost fallback; prohibit runtime escalation outside enumerated cases and keep action/expression calls separate. Accept only if total call, token, and cost fall while fixed privacy, continuity, schema, and downstream regression gates pass."
   duration 4p
   owner "codex"
   requires:
     DEV 1
 
-task T_WIRE_SEQUENTIAL_DECISION DETERMINISTIC_PSYCHE_READY -> SEQUENTIAL_SLICE_READY:
+task T_WIRE_SEQUENTIAL_DECISION PSYCHE_COST_REDUCED -> SEQUENTIAL_SLICE_READY:
   title "Wire observer-safe later-bucket decision and phase receipts"
-  description "At turn N finalization, determine and persist turn N+1 initiative/order before requesting the selected first actor reservation; never reserve before order exists. At turn N+1 advance, commit the first bucket, apply immediate server-owned semantic/world facts needed for observation, project only committed observer-visible facts, then independently request, validate, and resolve the later actor action and any deterministically eligible expression. Keep private psyche, action, and expression contexts separate. Record call counts, token usage, skip/fallback reason, source-linked expression/action/consequence receipts, and terminal/invalid/timeout outcomes without publishing private prompts."
+  description "At turn N finalization, determine and persist turn N+1 initiative/order before requesting the selected first actor reservation; never reserve before order exists. At turn N+1 advance, commit the first bucket, apply immediate server-owned semantic/world facts needed for observation, project only committed observer-visible facts, then independently request, validate, and resolve the later actor action and any deterministically eligible expression. Apply the accepted independent action/expression routes and evaluate lightweight models without combining their contexts. Record call counts, token and estimated cost, model route, skip/fallback reason, source-linked expression/action/consequence receipts, and terminal/invalid/timeout outcomes without publishing private prompts."
   duration 5p
   owner "codex"
   requires:
@@ -133,7 +141,7 @@ task T_WIRE_SEQUENTIAL_DECISION DETERMINISTIC_PSYCHE_READY -> SEQUENTIAL_SLICE_R
 
 task T_HARDEN_CAUSAL_DURABILITY SEQUENTIAL_SLICE_READY -> DURABILITY_READY:
   title "Verify checkpoint recovery, idempotency, and public stream ordering"
-  description "Bind request idempotency, battle lease/version, committed bucket receipt, and final response transactionally or with an explicit recoverable outbox. A retry returns the durable committed result rather than rerunning LLM work. Hold the frontend idempotency key across reconnect retries. Emit new public causal bucket events only after their durable commit; keep progress and private trace out of public SSE replay. Extend administrator internal observations from persisted data with initiative scores, reads-from/commit mode, active and committed buckets, phase receipts, canonical transitions, and narrator ordering; legacy records remain explicitly unavailable rather than inferred. Test disconnect/reconnect, save succeeds but response completion fails, later LLM timeout after first commit, stale concurrent advance, and observability DTO/UI compatibility."
+  description "Bind request idempotency, battle lease/version, committed bucket receipt, and final response transactionally or with an explicit recoverable outbox. A retry returns the durable committed result rather than rerunning LLM work. Hold the frontend idempotency key across reconnect retries. Emit new public causal bucket events only after their durable commit; keep progress and private trace out of public SSE replay. Persist privacy-safe responsibility, route, model/prompt generation, token, estimated cost, latency, attempt, reuse, and fallback receipts, and aggregate them in administrator observations alongside causal checkpoints. Legacy records remain unavailable rather than inferred. Test disconnect/reconnect, save succeeds but response completion fails, later LLM timeout after first commit, stale concurrent advance, duplicate-call prevention, and observability DTO/UI compatibility."
   duration 3p
   owner "codex"
   requires:
@@ -141,21 +149,13 @@ task T_HARDEN_CAUSAL_DURABILITY SEQUENTIAL_SLICE_READY -> DURABILITY_READY:
 
 task T_SEPARATE_ADVANCE_NARRATION DURABILITY_READY -> NARRATION_API_READY:
   title "Separate gameplay advance from immutable narration jobs"
-  description "Implement ADR-0002. Advance commits decisions, mechanics, semantic/world state, terminal outcome, and a turn receipt, then creates or reuses one narration job and returns its ID without awaiting narration. Persist immutable job input bound to the battle asset manifest. Add authorized narration read and SSE stream APIs whose reconnect never reinvokes the provider; order UI placeholders by turn rather than completion. Remove narrator writes to canonical battle state and make deterministic terminal outcome authoritative. Test pending/failed narration with later advance, out-of-order completion, provider idempotency, and snapshot isolation."
+  description "Implement ADR-0002. Advance commits decisions, mechanics, semantic/world state, terminal outcome, and a turn receipt, then creates or reuses one narration job and returns its ID without awaiting narration. Persist immutable job input bound to the battle asset manifest. Add authorized narration read and SSE stream APIs whose reconnect never reinvokes the provider; order UI placeholders by turn rather than completion. Evaluate an accepted lightweight narrator route against responsibility-specific fixtures and permit a high-cost narrator only for enumerated classes such as an accepted finale route. Remove narrator writes to canonical battle state and make deterministic terminal outcome authoritative. Test pending/failed narration with later advance, out-of-order completion, provider idempotency, snapshot isolation, cost ceilings, and no unbounded escalation."
   duration 4p
   owner "codex"
   requires:
     DEV 1
 
-task T_BUILD_PSYCHE_LEARNING_SHADOW NARRATION_API_READY -> PSYCHE_SHADOW_READY:
-  title "Build a lightweight learned psyche shadow candidate"
-  description "Define accepted trajectory/evaluation records without treating deterministic self-distillation as independent truth. Train or adapt a small bounded transition network from explicit normalized features. Condition only on an embedding of the normalized canonical PsycheTraitProfile string, never the whole character. Version normalizer, feature contract, embedding model/vector digest, architecture, weights, quantization, and fallback. Run shadow-only against deterministic receipts; include Chordia, FAtiMA/ALMA-derived expectations, and PELD-style personality transition only as references or comparison candidates. No learned output changes battle state in this task."
-  duration 3p
-  owner "codex"
-  requires:
-    DEV 1
-
-task T_ACCEPT_EFFECT_SCOPE PSYCHE_SHADOW_READY -> EFFECT_CONTRACT_ACCEPTED:
+task T_ACCEPT_EFFECT_SCOPE NARRATION_API_READY -> EFFECT_CONTRACT_ACCEPTED:
   title "Accept bounded effect provenance and deferred-effect scope"
   description "Owner decides the initial server-defined predicates, due/expiry/cancel semantics, observer visibility, and retention. Scope is restricted to effects on the existing two combatants and existing world entities; reinforcements or new combat participants require a separate participant-lifecycle design and approval."
   duration 1p
@@ -197,7 +197,7 @@ task T_ACCEPT_PACING_POLICY PACING_MEASURED -> PACING_POLICY_ACCEPTED:
 
 task T_ACCEPT_ISSUE_98 PACING_POLICY_ACCEPTED -> ISSUE_98_LOCALLY_ACCEPTED:
   title "Accept Issue #98 locally and prepare release-decision evidence"
-  description "Run focused shared/backend/frontend fixtures plus full test, typecheck, build, migration, limited schedule replay, checkpoint recovery, A/B swap, equal-initiative prior-order reuse, first-turn weighted and 50/50 draws, retry without redraw, privacy across DTO/SSE/trace/LLM payload, and provider failure tests. Inspect the administrator internal DAG against persisted receipts for durable phase order and provenance, including draw reason, partial checkpoint, and legacy-unavailable displays. Record release success criteria, rollback target, and a separately authorized production-observation protocol, but do not tag, deploy, promote, mutate the Issue, or change production configuration."
+  description "Run focused shared/backend/frontend fixtures plus full test, typecheck, build, migration, limited schedule replay, checkpoint recovery, A/B swap, equal-initiative prior-order reuse, first-turn weighted and 50/50 draws, retry without redraw, privacy across DTO/SSE/trace/LLM payload, and provider failure tests. Compare the frozen pipeline-wide LLM baseline with the candidate by total battle/turn cost, calls, tokens, retry, fallback, and p50/p95 latency while enforcing each responsibility's quality/privacy floor; reject a candidate whose total cost rises through longer prompts or escalation. Inspect the administrator internal DAG and cost receipts from persisted evidence. Record release success criteria, rollback target, and a separately authorized production-observation protocol, but do not tag, deploy, promote, mutate the Issue, or change production configuration."
   duration 3p
   owner "codex"
   requires:

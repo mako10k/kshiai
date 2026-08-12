@@ -5,6 +5,8 @@ Date: 2026-08-12
 Decision basis: [ADR-0004](adr/0004-versioned-lightweight-psyche-dynamics.md)  
 Related: [Observer-relative battle perception](battle-perception.md), [Battle semantic state](battle-semantic-state.md), [Issue #98 battle pipeline plan](issue-98-battle-pipeline-plan.md)
 
+Initial adoptable subset: [キャラクター反応ポリシー — 初期採用可能スライス](lightweight-psyche-adoptable-slice.md)
+
 ## 0. 文書上の区分
 
 本書では、現在の実装と将来案を混同しないため、次の語を使う。

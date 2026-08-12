@@ -7,6 +7,10 @@
 
 心理reaction policy詳細: [lightweight-psyche-reaction-policy.md](lightweight-psyche-reaction-policy.md)
 
+初期採用可能スライス: [lightweight-psyche-adoptable-slice.md](lightweight-psyche-adoptable-slice.md)
+
+戦闘全体のLLMコスト方針: [battle-llm-cost-policy.md](battle-llm-cost-policy.md)
+
 対応 PERT: [issue-98-battle-pipeline-plan.pert](issue-98-battle-pipeline-plan.pert)（`97b5bbe` 基準の再計画版、owner gateを含む）
 
 ## 監査後の結論
@@ -31,12 +35,12 @@
 | 1a: bucket engine (4p) | pure prepare/resolve-bucket/finalize、再入可能な order checkpoint | - | ADR-0001の前回順/一度限り抽選、A/B swap、retry時非再抽選を維持 |
 | 1b0: asset snapshot baseline (完了) | 新規battleへ固定manifestを埋込み、advanceと管理画面から参照 | - | `97b5bbe`。これは永続世代管理の完成ではない |
 | 1b1: asset generations (4p) | append-only世代/current pointer、最小戦闘用snapshot、正規化digest、legacy境界 | - | ADR-0003。current assetを権威入力として再読込しない。完全CharacterSheet埋込みを解消 |
-| 1c: psyche/call contract (2p + owner 1p) | 正規化入力、明示心理パラメータ、consumer別projection、呼出し予算とskip条件 | 契約を承認 | ADR-0004。削減目的のcontext統合を禁止 |
-| 1d: deterministic psyche (4p) | LLM deep-psycheを有界・決定的な状態遷移へ置換 | - | reason receipt、replay、モデル失敗なし、行動/表現は独立consumer |
+| 1b2: pipeline-wide LLM cost contract (2p + owner 1p) | 全call inventory、責務別route、call/token/cost baseline、quality floor | route policyと計測を承認 | 心理に限定せず、軽量modelを第一候補として比較。context統合は禁止 |
+| 1c: adoptable psyche/cost contract (2p + owner 1p) | V1入力・trait/state・projection、no-call/lightweight/fallback routing | tag・値域・retention・call ceiling・cost/quality閾値を承認 | embedding・学習・LLM judgeは対象外 |
+| 1d: psyche cost reduction (4p) | 決定的policyと軽量LLM候補をshadow比較し、通常caseの高コストcallを削減 | route採用は契約範囲内 | context分離を維持し、call/token/cost/fallback/品質をreceiptで検証 |
 | 1e: 順次判断 (5p) | turn N finalize→N+1 order→first reservation、first commit→later decision/validation/commit | action/表現の発火条件 | private intentを渡さず、通常時LLM予算を固定。KO/invalid/timeoutを理由付き処理 |
 | 1f: durability/SSE/可視化 (3p) | lease/idempotency/outbox、reconnect、durable public event、管理者向け causal DAG | - | save後応答失敗でも二重commitなし。世代、心理receipt、呼出しskip理由も表示 |
 | 1g: narration API (4p) | immutable narration job、read/stream API、ordered UI placeholder | - | ADR-0002。narration失敗中も次advance可、再接続でprovider再実行なし |
-| 1h: psyche learning shadow (3p) | 明示モデルを基準に学習/evaluation形式と軽量NN shadow adapter | authoritative化は別承認 | psyche-only正規化文字列embedding、重み/normalizer世代固定。第三者モデルは比較のみ |
 | 2: effect scope (1p) | predicate、cancel/expiry、visibility、2 combatant制限 | effect contract を承認 | 援軍・新 combat participant は今回の範囲外 |
 | 3: provenance/effect (7p) | tagged receipt、bounded pending effect、limited replay | - | delayed hit と condition の各1 fixture。proseから effect を作らない |
 | 4: local pacing (3p) | policy snapshot、最大12 candidate の局所計測 | retain/revise/adopt を承認 | forced terminal/KO率を含む比較。平均8は仮説 |
@@ -53,6 +57,8 @@
 7. deferred effect は既存の二戦闘者・既存 world entity に限定する。援軍など参加者 lifecycle を変える例は別設計・別承認とする。
 8. LLM削減のためにprivate psyche、action、expression、semantic/world、narrationの入力を一つに統合しない。文脈構成、知覚投影、正規化、検証はローカル処理とする。
 9. deep psycheはまず明示パラメータの決定的状態遷移とし、学習モデルはshadow受入後だけ候補にする。キャラ埋め込みは正規化済み`PsycheTraitProfile`だけを入力とし、キャラ全体を埋め込まない。
+10. deep-psycheの通常経路はコストを優先し、`deterministic/no-call → lightweight LLM → 明示例外のhigh-cost fallback`の順で固定routingする。call削減のためのcontext統合と無制限なmodel escalationは禁止する。
+11. 全LLM責務で`skip/reuse → deterministic → lightweight → 明示fallback`を評価し、call数ではなくbattle/turnあたりの総token・課金・retry込みcostを上位受入指標にする。同等品質なら軽いmodelを選ぶ。
 
 ## `97b5bbe` 基線の評価
 
