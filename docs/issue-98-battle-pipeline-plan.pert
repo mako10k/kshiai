@@ -68,6 +68,7 @@ task T_HARDEN_CAUSAL_DURABILITY SEQUENTIAL_SLICE_READY -> DURABILITY_READY:
   title "Make advance commits recoverable and idempotent"
   description "Add a battle-wide revision and ordered phase receipt sequence. Transactionally correlate the advance operation/idempotency key, expected-revision CAS, canonical phase commit, ordered receipts[] and replayable advance result. Frontend retries retain one key until readback. A takeover returns committed receipts and never repeats canonical mechanics; external character/provider steps require durable step receipts or a narrower explicit guarantee. Define the inactive outbox correlation schema but do not create or wake narration entries until the following authority task closes canonical winner/phase ownership. Test save/response ambiguity, expired ownership, stale advance, duplicate calls, digest mismatch and A/B checkpoint recovery. Do not add narration streaming in this task."
   duration 4p
+  status active
   owner "codex"
   requires:
     DEV 1
@@ -182,3 +183,10 @@ task T_CUTOVER_NARRATION_COMPATIBILITY NARRATION_MIGRATION_ACCEPTED -> NARRATION
   requires:
     DEV 1
   owner "codex"
+
+work_event WE-393610fe37d4b77bdbb15a6a04a3d24a6f39b1215b6eed0a4d951de16d75101a:
+  model 1
+  task T_HARDEN_CAUSAL_DURABILITY
+  kind start
+  occurred_at 2026-08-12T15:38:12+09:00
+  planned_value 4p
