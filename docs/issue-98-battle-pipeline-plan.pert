@@ -106,6 +106,7 @@ task T_AUDIT_EARLY_BUCKET_GROUNDWORK BUCKET_ENGINE_READY -> EARLY_GROUNDWORK_AUD
   title "Audit and integrate prematurely implemented bucket groundwork"
   description "Review commits f22e98c, 2496b54, and bc47793 against the completed bucket-engine contract. Retain only conformant restart continuation, BattleState persistence, retry behavior, administrator checkpoint display, and isolated-side character-agent execution. Add missing focused recovery, privacy, DTO/UI, provider-call-count, and no-committed-bucket-replay tests. Record any remaining durability and sequential-decision obligations in their existing later tasks. This is a new scope item added after T_REFACTOR_BUCKET_EXECUTION started; do not manufacture historical start/finish times or count the groundwork as accepted before this audit finishes."
   duration 1p
+  status active
   owner "codex"
   requires:
     DEV 1
@@ -271,3 +272,10 @@ work_event WE-a89322bbd92260ac2e521cfaa6cde41180c1fcd9aca5d477fe85bd62fce4cccc:
   occurred_at 2026-08-12T11:53:36+09:00
   active_time 10223/3600h
   effort 10223/3600ph
+
+work_event WE-e40682749eff6d470194a7543a62b8bb724fb82e48bfffb0ea71d9b0e4d9ca4b:
+  model 1
+  task T_AUDIT_EARLY_BUCKET_GROUNDWORK
+  kind start
+  occurred_at 2026-08-12T11:54:16+09:00
+  planned_value 1p
