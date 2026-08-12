@@ -63,6 +63,7 @@ import { applyBattleCausalCoefficients } from "./battle-causality.js";
 import {
   buildBattleTemporalPlan,
   type BattleTemporalBucket,
+  type BattleTemporalPlan,
   type BattleTemporalSide,
 } from "./battle-temporal-rules.js";
 import {
@@ -1658,6 +1659,14 @@ type PreparedBattleTurnStart = {
   turn: number;
 };
 
+export type PreparedBattleTurnInitiative = {
+  turn: number;
+  sideA: CombatantState;
+  sideB: CombatantState;
+  situation: Situation;
+  temporalResolution: BattleTemporalPlan;
+};
+
 /** Deterministically applies the once-per-turn setup before initiative. */
 function prepareBattleTurnStart(input: ResolveTurnInput): PreparedBattleTurnStart {
   const sideA = cloneCombatant(input.state.sideA);
@@ -1725,6 +1734,61 @@ function prepareBattleTurnStart(input: ResolveTurnInput): PreparedBattleTurnStar
   }
 
   return { sideA, sideB, situation, events, mechanicalSpans, turn };
+}
+
+function buildPreparedTemporalResolution(input: {
+  state: BattleState;
+  sideA: CombatantState;
+  sideB: CombatantState;
+  situation: Situation;
+}): BattleTemporalPlan {
+  const causalSituationA = applyBattleCausalCoefficients({
+    situation: input.situation,
+    worldState: input.state.worldState,
+    actorSide: "a",
+    targetSide: "b",
+  });
+  const causalSituationB = applyBattleCausalCoefficients({
+    situation: input.situation,
+    worldState: input.state.worldState,
+    actorSide: "b",
+    targetSide: "a",
+  });
+  return buildBattleTemporalPlan({
+    effectiveSpeedA: (input.sideA.parameters.spd ?? 0) *
+      coeff(causalSituationA, "spd"),
+    effectiveSpeedB: (input.sideB.parameters.spd ?? 0) *
+      coeff(causalSituationB, "spd"),
+  });
+}
+
+/**
+ * Produces the committed turn-start snapshot and initiative buckets without
+ * mutating the persisted battle state or selecting either combatant's action.
+ */
+export function prepareBattleTurnInitiative(
+  input: ResolveTurnInput,
+): PreparedBattleTurnInitiative | null {
+  if (
+    input.state.status !== "active" ||
+    input.state.prologuePending ||
+    input.state.aftermathPending
+  ) {
+    return null;
+  }
+  const prepared = prepareBattleTurnStart(input);
+  return {
+    turn: prepared.turn,
+    sideA: prepared.sideA,
+    sideB: prepared.sideB,
+    situation: prepared.situation,
+    temporalResolution: buildPreparedTemporalResolution({
+      state: input.state,
+      sideA: prepared.sideA,
+      sideB: prepared.sideB,
+      situation: prepared.situation,
+    }),
+  };
 }
 
 export function resolveTurn(input: ResolveTurnInput): {
@@ -1857,11 +1921,11 @@ export function resolveTurn(input: ResolveTurnInput): {
     a: 1,
     b: 1,
   };
-  const temporalResolution = buildBattleTemporalPlan({
-    effectiveSpeedA: (sideA.parameters.spd ?? 0) *
-      coeff(causalSituations.a, "spd"),
-    effectiveSpeedB: (sideB.parameters.spd ?? 0) *
-      coeff(causalSituations.b, "spd"),
+  const temporalResolution = buildPreparedTemporalResolution({
+    state: input.state,
+    sideA,
+    sideB,
+    situation,
   });
   const actions: ResolvedBattleAction[] = [
     {

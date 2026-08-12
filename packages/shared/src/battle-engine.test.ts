@@ -9,6 +9,7 @@ import {
   ensureBattleCompatibilityState,
   ensureBattlePerceptionState,
   ensureBattleWorldState,
+  prepareBattleTurnInitiative,
   resolveTurn,
 } from "./battle-engine.js";
 import { defaultParameters, type CharacterSheet } from "./character.js";
@@ -1309,6 +1310,37 @@ describe("battle engine", () => {
       reason: "out_of_range",
     });
     assert.equal(resolved.actions[0]?.skippedReason, null);
+  });
+
+  it("prepares initiative from a cloned post-restoration snapshot", () => {
+    const a = sheet("a", "先行候補");
+    const b = sheet("b", "後攻候補");
+    const state = createBattleState({
+      id: "prepared-initiative",
+      sideA: a,
+      sideB: b,
+      turnLimit: 20,
+      prologuePending: false,
+    });
+    state.turn = 1;
+    state.sideA.parameters.spd = 1;
+    state.sideA.baseParameters!.spd = 30;
+    state.sideB.parameters.spd = 5;
+    state.sideB.baseParameters!.spd = 5;
+
+    const prepared = prepareBattleTurnInitiative({
+      state,
+      sideASkills: a.skills,
+      sideBSkills: b.skills,
+    });
+
+    assert.ok(prepared);
+    assert.equal(state.sideA.parameters.spd, 1);
+    assert.equal(prepared.sideA.parameters.spd, 7);
+    assert.deepEqual(
+      prepared.temporalResolution.buckets.map((bucket) => bucket.actorSides),
+      [["a"], ["b"]],
+    );
   });
 
   it("atomically preserves equal-speed mutual incapacitation", () => {
