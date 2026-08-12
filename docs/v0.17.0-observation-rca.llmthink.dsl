@@ -68,6 +68,14 @@ evidence OBS7:
     cloudtasks.googleapis.com has not been enabled for project kshiai. No queue
     resource was created during RCA.
 
+evidence OBS8:
+  |
+    After explicit infrastructure approval on 2026-08-12, Cloud Tasks API was
+    enabled and kshiai-narration was created RUNNING in asia-northeast1 with
+    2 dispatches/second, concurrency 2, and 5 delivery attempts. The runtime
+    service account has queue-scoped enqueuer and self actAs permissions; the
+    Cloud Tasks service agent binding was read back. No release was deployed.
+
 decision RC_NARRATION based_on RCA1, OBS5, OBS6:
   |
     Narration is stuck because the implemented durable enqueue boundary was
