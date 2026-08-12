@@ -1138,22 +1138,25 @@ export interface BattleAssetManifest {
   schemaVersion: 1;
   boundAt: string;
   characters: {
-    a: { assetId: string; generationId: string; snapshot: CharacterSheet };
-    b: { assetId: string; generationId: string; snapshot: CharacterSheet };
+    a: { assetId: string; generationId: string; contentDigest: string; snapshot: CharacterSheet };
+    b: { assetId: string; generationId: string; contentDigest: string; snapshot: CharacterSheet };
   };
   narrationStyle: {
     assetId: string;
     generationId: string;
+    contentDigest: string;
     snapshot: NarrationStyleSnapshot;
   };
   battlefield: {
     assetId: string | null;
     presetGenerationId?: string | null;
     generationId: string;
+    contentDigest: string;
     snapshot: BattlefieldInstance;
   };
   dialoguePipeline: {
     generationId: string;
+    contentDigest: string;
     snapshot: BattleDialoguePipelineSnapshot;
   };
   rules: { battleEngine: string; temporalRules: string };
@@ -1166,27 +1169,32 @@ export const BattleAssetManifestSchema = z.object({
     a: z.object({
       assetId: z.string(),
       generationId: z.string().min(1),
+      contentDigest: z.string().regex(/^[a-f0-9]{64}$/).optional().default("0".repeat(64)),
       snapshot: CharacterSheetSchema,
     }).strict(),
     b: z.object({
       assetId: z.string(),
       generationId: z.string().min(1),
+      contentDigest: z.string().regex(/^[a-f0-9]{64}$/).optional().default("0".repeat(64)),
       snapshot: CharacterSheetSchema,
     }).strict(),
   }).strict(),
   narrationStyle: z.object({
     assetId: z.string(),
     generationId: z.string().min(1),
+    contentDigest: z.string().regex(/^[a-f0-9]{64}$/).optional().default("0".repeat(64)),
     snapshot: NarrationStyleSnapshotSchema,
   }).strict(),
   battlefield: z.object({
     assetId: z.string().nullable(),
     presetGenerationId: z.string().nullable().optional(),
     generationId: z.string().min(1),
+    contentDigest: z.string().regex(/^[a-f0-9]{64}$/).optional().default("0".repeat(64)),
     snapshot: BattlefieldInstanceSchema,
   }).strict(),
   dialoguePipeline: z.object({
     generationId: z.string().min(1),
+    contentDigest: z.string().regex(/^[a-f0-9]{64}$/).optional().default("0".repeat(64)),
     snapshot: BattleDialoguePipelineSnapshotSchema,
   }).strict(),
   rules: z.object({

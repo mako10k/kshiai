@@ -130,16 +130,17 @@ export type InternalBattleObservationDetail = {
       schemaVersion: 1;
       boundAt: string;
       characters: {
-        a: { assetId: string; generationId: string };
-        b: { assetId: string; generationId: string };
+        a: { assetId: string; generationId: string; contentDigest?: string };
+        b: { assetId: string; generationId: string; contentDigest?: string };
       };
-      narrationStyle: { assetId: string; generationId: string };
+      narrationStyle: { assetId: string; generationId: string; contentDigest?: string };
       battlefield: {
         assetId: string | null;
         presetGenerationId?: string | null;
         generationId: string;
+        contentDigest?: string;
       };
-      dialoguePipeline: { generationId: string };
+      dialoguePipeline: { generationId: string; contentDigest?: string };
       rules: { battleEngine: string; temporalRules: string };
     } | null;
     causalExecution: InternalCausalTurnExecution | null;

@@ -277,6 +277,26 @@ export const CharacterSheetSchema = z.object({
 export type CharacterSheet = z.infer<typeof CharacterSheetSchema>;
 export type { CharacterImprovementMemo };
 
+/** Character fields frozen as authoritative battle input by ADR-0003. */
+export function toBattleCharacterSnapshot(sheet: CharacterSheet): CharacterSheet {
+  const {
+    visibility: _visibility,
+    deletedAt: _deletedAt,
+    record: _record,
+    recordOverall: _recordOverall,
+    improvementMemo: _improvementMemo,
+    opponentMemories: _opponentMemories,
+    revisionSnapshot: _revisionSnapshot,
+    ...authoritative
+  } = sheet;
+  return CharacterSheetSchema.parse({
+    ...authoritative,
+    // Repository edit clocks are not battle behavior and would otherwise make
+    // owner-memory or record-only writes create a new battle generation.
+    updatedAt: authoritative.createdAt,
+  });
+}
+
 /** Capture mutable profile fields before a chat/improvement apply. */
 export function captureRevisionSnapshot(
   sheet: CharacterSheet,

@@ -10,6 +10,7 @@ import {
   toPublicCharacter,
   type RatingDisplayContext,
   OpponentBattleMemorySchema,
+  toBattleCharacterSnapshot,
   type OpponentBattleMemory,
 } from "@kshiai/shared";
 import type { CharacterReference } from "../llm/types.js";
@@ -392,7 +393,7 @@ export async function saveSheet(sheet: CharacterSheet): Promise<void> {
       assetType: "character",
       assetId: withRecord.id,
       schemaVersion: 1,
-      content: withRecord,
+      content: toBattleCharacterSnapshot(withRecord),
       createdAt: withRecord.updatedAt,
     });
     await connection.query(

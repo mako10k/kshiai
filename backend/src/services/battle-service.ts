@@ -68,6 +68,7 @@ import {
   type TurnSemanticPatch,
   type Skill,
   toNarrationSnapshot,
+  toBattleCharacterSnapshot,
   type BattleAdvanceStreamEvent,
   type InnerDigest,
   type NarrationFocus,
@@ -586,6 +587,14 @@ export async function startBattle(input: {
     ? await bfRepo.getPreset(battlefield.sourcePresetId)
     : null;
   const assetBoundAt = new Date().toISOString();
+  const mineSnapshot = toBattleCharacterSnapshot(mine);
+  const opponentSnapshot = toBattleCharacterSnapshot(opp);
+  const battlefieldPresetSnapshot = sourceBattlefieldPreset
+    ? {
+        ...sourceBattlefieldPreset,
+        updatedAt: sourceBattlefieldPreset.createdAt,
+      }
+    : null;
   const [mineGeneration, opponentGeneration, narrationGeneration,
     battlefieldPresetGeneration, battlefieldInstanceGeneration,
     dialogueGeneration] = await Promise.all([
@@ -593,30 +602,30 @@ export async function startBattle(input: {
       assetType: "character",
       assetId: mine.id,
       schemaVersion: 1,
-      content: mine,
+      content: mineSnapshot,
       createdAt: mine.updatedAt,
     }),
     createAssetGeneration({
       assetType: "character",
       assetId: opp.id,
       schemaVersion: 1,
-      content: opp,
+      content: opponentSnapshot,
       createdAt: opp.updatedAt,
     }),
     createAssetGeneration({
       assetType: "narration-style",
       assetId: narrationStyle.id,
       schemaVersion: 1,
-      content: narrationStyle,
+      content: narrationSnap,
       createdAt: narrationStyle.updatedAt,
     }),
-    sourceBattlefieldPreset
+    battlefieldPresetSnapshot
       ? createAssetGeneration({
           assetType: "battlefield-preset",
-          assetId: sourceBattlefieldPreset.id,
+          assetId: battlefieldPresetSnapshot.id,
           schemaVersion: 1,
-          content: sourceBattlefieldPreset,
-          createdAt: sourceBattlefieldPreset.updatedAt,
+          content: battlefieldPresetSnapshot,
+          createdAt: sourceBattlefieldPreset!.updatedAt,
         })
       : Promise.resolve(null),
     createAssetGeneration({
@@ -643,27 +652,32 @@ export async function startBattle(input: {
         a: {
           assetId: mine.id,
           generationId: mineGeneration.generationId,
-          snapshot: mine,
+          contentDigest: mineGeneration.contentDigest,
+          snapshot: mineSnapshot,
         },
         b: {
           assetId: opp.id,
           generationId: opponentGeneration.generationId,
-          snapshot: opp,
+          contentDigest: opponentGeneration.contentDigest,
+          snapshot: opponentSnapshot,
         },
       },
       narrationStyle: {
         assetId: narrationSnap.id,
         generationId: narrationGeneration.generationId,
+        contentDigest: narrationGeneration.contentDigest,
         snapshot: narrationSnap,
       },
       battlefield: {
         assetId: battlefield.sourcePresetId,
         presetGenerationId: battlefieldPresetGeneration?.generationId ?? null,
         generationId: battlefieldInstanceGeneration.generationId,
+        contentDigest: battlefieldInstanceGeneration.contentDigest,
         snapshot: battlefield,
       },
       dialoguePipeline: {
         generationId: dialogueGeneration.generationId,
+        contentDigest: dialogueGeneration.contentDigest,
         snapshot: dialoguePipelineSnapshot,
       },
       rules: {
