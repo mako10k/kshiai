@@ -26,6 +26,11 @@ import type {
   GenerateBattlefieldResult,
   GenerateCharacterResult,
   GenerateCharacterInput,
+  GenerateCharacterProfileInput,
+  GenerateCharacterProfileResult,
+  GenerateCharacterDefinitionV2Input,
+  ValidateCharacterProfileClaimsInput,
+  ValidateCharacterProfileClaimsResult,
   GenerateImprovementPromptInput,
   GenerateImprovementPromptResult,
   JudgmentNarrationResult,
@@ -155,6 +160,48 @@ export class MockLlmProvider implements LlmProvider {
     return {
       sheet,
       assistantMessage: `了解しました。${displayName} として整えました。対決の方法は元の依頼のジャンルに合わせています。さらに変えたい点があれば自然文でどうぞ。`,
+    };
+  }
+
+  async generateCharacterProfile(
+    input: GenerateCharacterProfileInput,
+  ): Promise<GenerateCharacterProfileResult> {
+    const selected = input.projection.facts.slice(0, 8);
+    const facts = selected
+      .filter((fact) => fact.supportRef !== "identity.displayName")
+      .map((fact) => fact.text)
+      .filter(Boolean);
+    const text = facts.length > 0
+      ? `${input.projection.displayName}。${facts.join("。")}`.slice(0, 1600)
+      : `${input.projection.displayName}という挑戦者。`;
+    return {
+      description: text,
+      segments: [{
+        id: "profile-main",
+        text,
+        kind: "fact",
+        supportRefs: selected.map((fact) => fact.supportRef),
+      }],
+      assistantMessage: "構造化した設定から公開プロフィールを作成しました。",
+    };
+  }
+
+  async generateCharacterDefinitionV2(
+    input: GenerateCharacterDefinitionV2Input,
+  ) {
+    return structuredClone(input.baseDefinition);
+  }
+
+  async validateCharacterProfileClaims(
+    input: ValidateCharacterProfileClaimsInput,
+  ): Promise<ValidateCharacterProfileClaimsResult> {
+    return {
+      segments: input.profile.segments.map((segment) => ({
+        segmentId: segment.id,
+        verdict: segment.kind === "flavor" ? "flavor_only" : "supported",
+        supportRefs: segment.kind === "flavor" ? [] : [...segment.supportRefs],
+        riskCodes: [],
+      })),
     };
   }
 
@@ -693,10 +740,10 @@ export class MockLlmProvider implements LlmProvider {
           lastActionResult: "",
           conversationHistory: [],
           dialogueThread: { topic: "", unresolvedMove: "", anchoredExchange: null },
-          interior: input.psyche.interior,
         },
         speech,
         proposedAction: null,
+        realizedManifestation: null,
       };
     }
     const selfReference = input.social?.selfReference ??
@@ -732,44 +779,18 @@ export class MockLlmProvider implements LlmProvider {
           : "この結末を受け止めよう。";
       return {
         state: {
-          ...input.psyche,
           privateMemory: event.slice(0, 1200),
           currentGoal: "確定した結末を受け止める",
           emotion: "余韻",
-          observations: [
-            ...input.psyche.observations.slice(-6),
-            event.slice(0, 240),
-          ],
+          beliefs: [],
+          observations: [event.slice(0, 240)],
           speechStyle: input.psyche.speechStyle || "簡潔に話す",
           selfReference,
           lastSpeech: aftermathSpeech,
-          interior: {
-            primaryEmotion: "余韻",
-            concealedEmotion: null,
-            coreNeed: input.psyche.interior?.coreNeed ?? "",
-            protectiveStance: input.psyche.interior?.protectiveStance ?? "",
-            eventAppraisal: input.psyche.interior?.eventAppraisal ?? event.slice(0, 240),
-            unspokenIntent: "",
-            currentConcern: "確定した結末をどう受け止めるか",
-            attitudeTowardCounterpart: input.social?.relationshipLabel ?? "対峙していた相手",
-            confidence: "steady" as const,
-            relationshipTension: "対決後の余韻",
-            speechMode: "action_reaction" as const,
-            speechAppraisal: {
-              anticipatedImpact: "結末を自分なりに受け止める",
-              observedImpact: input.psyche.lastSpeech
-                ? "最後の言葉と結末を振り返っている"
-                : "まだ前の言葉はない",
-              anticipatedSocialCost: "結論を急げば余韻を取り逃がす",
-              observedSocialCost: "対決の緊張がほどけ、言葉の切迫感は去った",
-              nextApproach: "対決の余韻にふさわしい言葉を選ぶ",
-              continuityPosture: "withdrawing" as const,
-              continuityDecision: "withhold" as const,
-            },
-          },
         },
         speech: aftermathSpeech,
         proposedAction: null,
+        realizedManifestation: null,
       };
     }
     const ownReserveCritical = input.perception.reserveCues.some((cue) =>
@@ -890,48 +911,15 @@ export class MockLlmProvider implements LlmProvider {
       : "";
     return {
       state: {
-        ...input.psyche,
         privateMemory: event.slice(0, 1200),
         currentGoal: overridingPrinciple?.statement ??
           `${counterpartLabel}との対決を自分らしく続ける`,
         emotion: ownReserveCritical ? "緊張" : "集中",
-        observations: [
-          ...input.psyche.observations.slice(-6),
-          event.slice(0, 240),
-        ],
+        beliefs: [],
+        observations: [event.slice(0, 240)],
         speechStyle: input.psyche.speechStyle || "簡潔に話す",
         selfReference,
         lastSpeech: speech,
-        interior: {
-          primaryEmotion: ownReserveCritical ? "緊張" : "集中",
-          concealedEmotion: ownReserveCritical ? "焦り" : null,
-          coreNeed: input.psyche.interior?.coreNeed ?? "自分らしい距離と流れを守る",
-          protectiveStance: input.psyche.interior?.protectiveStance ?? "相手の出方を見極める",
-          eventAppraisal: input.psyche.interior?.eventAppraisal ?? event.slice(0, 240),
-          unspokenIntent: `${counterpartLabel}との対決を自分らしく続ける`,
-          currentConcern: ownReserveCritical ? "自分の余力" : "相手の次の動き",
-          attitudeTowardCounterpart: input.social?.relationshipLabel ?? "対峙している",
-          confidence: ownReserveCritical ? "low" as const : "steady" as const,
-          relationshipTension: input.social?.relationshipLabel ?? "対決の緊張",
-          speechMode: input.actionReaction.latestCommittedResult
-            ? "action_reaction" as const
-            : "conversation_continuation" as const,
-          speechAppraisal: {
-            anticipatedImpact: `${counterpartLabel}の次の出方を見極める`,
-            observedImpact: input.psyche.lastSpeech
-              ? "前の言葉の後に起きた変化を見定める"
-              : "まだ前の言葉はない",
-            anticipatedSocialCost: "同じ探りを続ければ警戒されるかもしれない",
-            observedSocialCost: input.psyche.lastSpeech
-              ? "前の言葉だけでは相手の出方を決められなかった"
-              : "まだ失う手応えはない",
-            nextApproach: input.psyche.lastSpeech
-              ? "相手の反応と状況に合わせて話し方を選び直す"
-              : "まず相手の反応を測る",
-            continuityPosture: input.psyche.lastSpeech ? "developing" as const : "opening" as const,
-            continuityDecision: input.psyche.lastSpeech ? "reframe" as const : "advance" as const,
-          },
-        },
       },
       speech,
       proposedAction: preferred.kind === "reflect"
@@ -961,6 +949,7 @@ export class MockLlmProvider implements LlmProvider {
                 ? { instrumentRef: readyAttack.continuation.instrumentRef }
                 : {}),
           },
+      realizedManifestation: null,
     };
   }
 
@@ -1106,7 +1095,7 @@ export class MockLlmProvider implements LlmProvider {
     sideBName: string;
     winnerSide: "a" | "b" | "draw";
     winnerName: string | null;
-    adjudicationReason: string;
+    presentationProjection: import("@kshiai/shared").JudgmentPresentationProjection;
     recentPublicNarration: string[];
     styleInstruction?: string;
     styleName?: string;

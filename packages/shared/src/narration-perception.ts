@@ -661,6 +661,55 @@ export type NarrationTurnView = {
   } | null;
 };
 
+export const NARRATION_PRESENTATION_FOCUS_MODE_V1 = "impact_release_v1";
+export type NarrationPresentationFocusMode =
+  typeof NARRATION_PRESENTATION_FOCUS_MODE_V1;
+
+type NarrationCausalChain =
+  NarrationCausalProjection["causalChains"][number];
+
+export type NarrationPresentationFocusV1 = {
+  schemaVersion: 1;
+  phase: "impact" | "release";
+  primary:
+    | {
+        source: "mechanical_consequence";
+        actorLabel: string;
+        actionName: string;
+        targetLabel: string;
+        change: NarrationCausalChain["mechanicalConsequences"][number]["change"];
+      }
+    | {
+        source: "action_resolution";
+        actorLabel: string;
+        actionName: string;
+        requestedKind: NarrationCausalChain["requestedKind"];
+        effectiveKind: NarrationCausalChain["effectiveKind"];
+        outcome: "partial" | "substituted" | "failed";
+        reason: ActionResolutionReason | null;
+        resolutionExplanation: string | null;
+      }
+    | {
+        source: "semantic_change";
+        actorLabel: string | null;
+        actionName: string | null;
+        changeKind:
+          | "scene"
+          | "location"
+          | "presence"
+          | "condition"
+          | "visibility"
+          | "identity"
+          | "other";
+      }
+    | {
+        source: "causal_event";
+        actorLabel: string | null;
+        actionName: string | null;
+        event: NarrationCausalChain["events"][number];
+      };
+};
+
 export type NarrationCanonicalChange = {
   semantic: {
     status: "applied" | "rejected" | "skipped" | "unavailable";
@@ -704,6 +753,8 @@ export type NarrationTurnBrief = {
     participantConditions: NarrationCausalProjection["continuingConditions"];
   };
   staticBackground: NarrationTurnView["battlefield"];
+  /** Optional single-result emphasis for an explicitly enabled narrator experiment. */
+  presentationFocus?: NarrationPresentationFocusV1;
 };
 
 const RESOLUTION_EXPLANATIONS: Record<ActionResolutionReason, string> = {
@@ -726,6 +777,183 @@ const RESOLUTION_EXPLANATIONS: Record<ActionResolutionReason, string> = {
   free_action_contested: "同時の競合により自由行動を確定できなかった",
   free_action_rejected: "自由行動は裁定で成立しなかった",
 };
+
+type PresentationFocusCandidate = {
+  score: number;
+  focus: NarrationPresentationFocusV1;
+};
+
+const MECHANICAL_BAND_SCORE = {
+  none: 0,
+  trace: 600,
+  light: 650,
+  solid: 700,
+  heavy: 900,
+  extreme: 950,
+} as const;
+
+const SEMANTIC_CHANGE_SCORE = {
+  presence: 760,
+  location: 750,
+  condition: 740,
+  scene: 730,
+  visibility: 720,
+  identity: 710,
+  other: 700,
+} as const;
+
+const CAUSAL_EVENT_SCORE: Record<
+  NarrationCausalChain["events"][number]["type"],
+  number
+> = {
+  damage: 590,
+  heal: 580,
+  free_action: 570,
+  situation: 560,
+  status: 550,
+  parameter: 540,
+  defend: 530,
+  rest: 520,
+  wait: 510,
+  reflect: 500,
+  info: 490,
+  utterance: 480,
+};
+
+function actionNameForChain(
+  view: NarrationTurnView,
+  chain: NarrationCausalChain,
+): string {
+  return view.actionBeats.find((beat) => beat.actorLabel === chain.actorLabel)
+    ?.actionName ?? chain.effectiveKind;
+}
+
+function mechanicalScore(
+  change: NarrationCausalChain["mechanicalConsequences"][number]["change"],
+): number {
+  if (change.outcome === "incapacitated" || change.outcome === "overkill") {
+    return 1000;
+  }
+  if (change.outcome === "immune") return 830;
+  if (change.outcome === "none" && change.direction === "unchanged") return 0;
+  return MECHANICAL_BAND_SCORE[change.absoluteBand];
+}
+
+/**
+ * Select at most one already-admitted committed result for narrator emphasis.
+ * Stable input order breaks equal-score ties; prose, current state, and static
+ * background never participate in ranking.
+ */
+export function buildNarrationPresentationFocus(
+  view: NarrationTurnView,
+): NarrationPresentationFocusV1 | null {
+  const causal = view.causalProjection;
+  if (!causal) return null;
+  const candidates: PresentationFocusCandidate[] = [];
+
+  for (const chain of causal.causalChains) {
+    const actionName = actionNameForChain(view, chain);
+    for (const consequence of chain.mechanicalConsequences) {
+      const score = mechanicalScore(consequence.change);
+      if (score <= 0) continue;
+      candidates.push({
+        score,
+        focus: {
+          schemaVersion: 1,
+          phase: "impact",
+          primary: {
+            source: "mechanical_consequence",
+            actorLabel: chain.actorLabel,
+            actionName,
+            targetLabel: consequence.targetLabel,
+            change: consequence.change,
+          },
+        },
+      });
+    }
+    if (
+      chain.resolution.status === "known" &&
+      chain.resolution.outcome !== "accepted"
+    ) {
+      const outcome = chain.resolution.outcome;
+      candidates.push({
+        score: outcome === "failed" ? 850 : outcome === "substituted" ? 820 : 800,
+        focus: {
+          schemaVersion: 1,
+          phase: "impact",
+          primary: {
+            source: "action_resolution",
+            actorLabel: chain.actorLabel,
+            actionName,
+            requestedKind: chain.requestedKind,
+            effectiveKind: chain.effectiveKind,
+            outcome,
+            reason: chain.resolution.reason,
+            resolutionExplanation: chain.resolution.reason
+              ? RESOLUTION_EXPLANATIONS[chain.resolution.reason]
+              : null,
+          },
+        },
+      });
+    }
+    for (const changeKind of chain.semanticChangeKinds) {
+      candidates.push({
+        score: SEMANTIC_CHANGE_SCORE[changeKind],
+        focus: {
+          schemaVersion: 1,
+          phase: "impact",
+          primary: {
+            source: "semantic_change",
+            actorLabel: chain.actorLabel,
+            actionName,
+            changeKind,
+          },
+        },
+      });
+    }
+    for (const event of chain.events) {
+      candidates.push({
+        score: CAUSAL_EVENT_SCORE[event.type],
+        focus: {
+          schemaVersion: 1,
+          phase: ["rest", "wait", "reflect"].includes(event.type)
+            ? "release"
+            : "impact",
+          primary: {
+            source: "causal_event",
+            actorLabel: event.actorLabel,
+            actionName,
+            event,
+          },
+        },
+      });
+    }
+  }
+
+  for (const changeKind of causal.observedSemanticChangeKinds) {
+    candidates.push({
+      score: SEMANTIC_CHANGE_SCORE[changeKind],
+      focus: {
+        schemaVersion: 1,
+        phase: "impact",
+        primary: {
+          source: "semantic_change",
+          actorLabel: null,
+          actionName: null,
+          changeKind,
+        },
+      },
+    });
+  }
+
+  const selected = candidates.reduce<PresentationFocusCandidate | null>(
+    (best, candidate) => !best || candidate.score > best.score ? candidate : best,
+    null,
+  );
+  return selected
+    ? deepFreezeNarrationView(structuredClone(selected.focus))
+    : null;
+}
 
 export type NarrationTurnViewInput = {
   turn: number;
@@ -933,9 +1161,16 @@ export function buildNarrationTurnView(
 
 export function buildNarrationTurnBrief(
   view: NarrationTurnView,
+  options: {
+    presentationFocusMode?: NarrationPresentationFocusMode;
+  } = {},
 ): NarrationTurnBrief {
   const causality = view.causalProjection;
   const remainingChains = [...(causality?.causalChains ?? [])];
+  const presentationFocus =
+    options.presentationFocusMode === NARRATION_PRESENTATION_FOCUS_MODE_V1
+      ? buildNarrationPresentationFocus(view)
+      : null;
   return deepFreezeNarrationView(structuredClone({
     schemaVersion: 1 as const,
     turn: view.turn,
@@ -987,5 +1222,6 @@ export function buildNarrationTurnBrief(
       participantConditions: causality?.continuingConditions ?? [],
     },
     staticBackground: view.battlefield,
+    ...(presentationFocus ? { presentationFocus } : {}),
   }));
 }

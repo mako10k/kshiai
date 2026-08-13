@@ -4,6 +4,7 @@ import type {
   NarrationCausalProjection,
   NarrationTurnView,
 } from "@kshiai/shared";
+import { NARRATION_PRESENTATION_FOCUS_MODE_V1 } from "@kshiai/shared";
 import { OpenAiCompatibleProvider } from "./openai-compatible.js";
 
 describe("OpenAI-compatible narrator speech rendering", () => {
@@ -185,12 +186,49 @@ describe("OpenAI-compatible causal narration input", () => {
       }],
     };
 
-    await provider.narrateTurn({ view });
+    await provider.narrateTurn({
+      view,
+      structuredCharacterContexts: {
+        a: {
+          staticProjection: {
+            contractVersion: 2,
+            access: "external",
+            appearance: ["白い外套"],
+            innerBackground: [],
+            innerDisposition: [],
+            observablePatterns: [],
+            behaviorPrinciples: [],
+          },
+          narrativeCues: [{
+            access: "external_observable",
+            description: "一瞬だけ眉が揺れる。",
+            sourceEventIds: ["event.manifestation.1.a.1"],
+          }],
+        },
+      },
+    });
     await provider.narrateTurn({
       view: { ...view, causalProjection },
     });
+    await provider.narrateTurn({
+      view: {
+        ...view,
+        causalProjection: {
+          ...causalProjection,
+          causalChains: [{
+            ...causalProjection.causalChains[0]!,
+            resolution: {
+              status: "known",
+              outcome: "failed",
+              reason: "actor_unavailable",
+            },
+          }],
+        },
+      },
+      presentationFocusMode: NARRATION_PRESENTATION_FOCUS_MODE_V1,
+    });
 
-    assert.equal(systems.length, 2);
+    assert.equal(systems.length, 3);
     assert.match(
       systems[0]!,
       /consequence grounded in those events\.\nDo not invent/,
@@ -200,6 +238,9 @@ describe("OpenAI-compatible causal narration input", () => {
     assert.match(users[0]!, /"brief"/);
     assert.match(users[0]!, /"turnResult"/);
     assert.match(users[0]!, /"canonicalChange"/);
+    assert.match(users[0]!, /structuredCharacterContexts/);
+    assert.match(users[0]!, /一瞬だけ眉が揺れる/);
+    assert.match(systems[0]!, /Never infer omitted fields, raw dynamics/);
     assert.match(systems[1]!, /structured causality/);
     assert.match(
       systems[1]!,
@@ -209,5 +250,60 @@ describe("OpenAI-compatible causal narration input", () => {
     assert.match(users[1]!, /"causality"/);
     assert.match(users[1]!, /participantConditions/);
     assert.doesNotMatch(users[1]!, /重複させない結果文/);
+    assert.doesNotMatch(systems[1]!, /audience-facing emphasis/);
+    assert.doesNotMatch(users[1]!, /presentationFocus/);
+    assert.match(systems[2]!, /single primary result legible/);
+    assert.match(users[2]!, /"presentationFocus"/);
+    assert.match(users[2]!, /"source":"action_resolution"/);
+    assert.match(users[2]!, /行動者が現在行動できない状態だった/);
+  });
+});
+
+describe("OpenAI-compatible judgment presentation input", () => {
+  it("admits the public projection but not raw adjudication prose", async () => {
+    const provider = new OpenAiCompatibleProvider({
+      name: "xai",
+      apiKey: "test-only",
+      baseUrl: "https://example.invalid/v1",
+      modelEngine: "grok-4.3",
+      modelFast: "grok-4.3",
+    });
+    let observedSystem = "";
+    let observedUser = "";
+    const privateProvider = provider as unknown as {
+      chatJson(system: string, user: string): Promise<unknown>;
+    };
+    privateProvider.chatJson = async (system, user) => {
+      observedSystem = system;
+      observedUser = user;
+      return { before: ["宣告の時が来る。"], after: ["余韻が残る。"] };
+    };
+
+    const result = await provider.narrateJudgment({
+      turn: 20,
+      scene: "雨の浮橋",
+      sideAName: "アオ",
+      sideBName: "クロ",
+      winnerSide: "a",
+      winnerName: "アオ",
+      presentationProjection: {
+        schemaVersion: 1,
+        verdictKind: "win",
+        winnerLabel: "アオ",
+        basisLines: ["アオは場の流れをより強く動かした。"],
+      },
+      recentPublicNarration: [],
+      ...({ adjudicationReason: "INTERNAL_REASON_MUST_NOT_LEAK" } as Record<string, string>),
+    });
+
+    assert.match(observedSystem, /audience-safe projection/);
+    assert.match(observedSystem, /Never expose JSON keys, scoring criteria/);
+    assert.match(observedUser, /アオは場の流れをより強く動かした/);
+    assert.doesNotMatch(observedUser, /INTERNAL_REASON_MUST_NOT_LEAK/);
+    assert.doesNotMatch(observedUser, /reasonFacts|engineFallbackSide|inputTurnRange/);
+    assert.deepEqual(result, {
+      before: ["宣告の時が来る。"],
+      after: ["余韻が残る。"],
+    });
   });
 });

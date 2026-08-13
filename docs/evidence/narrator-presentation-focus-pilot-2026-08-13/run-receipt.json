@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "executionContract": {
+    "schemaVersion": 1,
+    "runId": "narrator-presentation-focus-pilot-2026-08-13-v1",
+    "authorizedScope": "synthetic narrator presentation-focus pilot only",
+    "inputRevision": "narrator-presentation-focus-fixtures-v1",
+    "protocolDigest": "1230cc2c0b4fe64139c572198e128abdc7dc1a76c2b8f11ad66c945614ebf022",
+    "provider": "xai",
+    "baseUrl": "https://api.x.ai/v1",
+    "requestModel": "grok-4.3",
+    "reasoningEffort": "none",
+    "api": "chat.completions",
+    "responseFormat": "json_object",
+    "temperature": 0.9,
+    "maxCompletionTokens": 260,
+    "timeoutMs": 30000,
+    "concurrency": 2,
+    "logicalCallCeiling": 16,
+    "physicalAttemptCeiling": 20,
+    "totalTokenCeiling": 200000,
+    "monetaryCeilingUsd": 0.25,
+    "priceSnapshotUsdPerMillion": {
+      "input": 1.25,
+      "output": 2.5,
+      "cachedInputDiscountAssumed": false,
+      "verifiedAt": "2026-08-13",
+      "source": "https://docs.x.ai/developers/models/grok-4.3"
+    },
+    "retry": {
+      "providerFallback": false,
+      "contentRetry": false,
+      "samePayloadTransportRetry": "one retry for HTTP 429 or 503 only"
+    },
+    "evaluationBoundary": {
+      "exploratory": true,
+      "armLabelsHiddenInReviewPacket": true,
+      "semanticReviewerClass": "not selected by this run",
+      "productAdoptionAuthorized": false
+    }
+  },
+  "contractDigest": "1fa4b4789cf552a675dbfbc01c76118f696667d64059afbd134d06c4d961e58c",
+  "protocolDigest": "1230cc2c0b4fe64139c572198e128abdc7dc1a76c2b8f11ad66c945614ebf022",
+  "preparedAt": "2026-08-13T07:04:31.403Z",
+  "completedAt": "2026-08-13T07:05:37.787Z",
+  "logicalCounts": {
+    "pending": 0,
+    "running": 0,
+    "succeeded": 16,
+    "failed": 0,
+    "blocked": 0
+  },
+  "physicalAttempts": 16,
+  "ceilings": {
+    "logicalWithinCeiling": true,
+    "physicalWithinCeiling": true,
+    "preflightTotalTokenUpperBound": 191955,
+    "totalTokenCeiling": 200000,
+    "preflightMonetaryUpperBoundUsd": 0.24514375000000002,
+    "monetaryCeilingUsd": 0.25
+  },
+  "observedUsage": {
+    "inputTokens": 39361,
+    "outputTokens": 1635,
+    "totalTokens": 40996,
+    "complete": true,
+    "costUsd": 0.05328875
+  },
+  "responseModels": [
+    "grok-4.3"
+  ],
+  "artifacts": {
+    "unblindedStateSha256": "3d1548ebb65d59eeee8f4f30359541acb19b4e4a269b256a9373bf779d897f3a",
+    "blindedReviewPacketSha256": "fce3dabbb6fc765cb6efec39979f678df46664242390b31d79f58db2c3e098bd",
+    "deterministicSummarySha256": "dc574008ff45f9f2046e2f67761d49f590360430fb3ca2e2b2c5c414d606061a"
+  },
+  "acceptanceBoundary": "Exploratory provider execution and packet preparation only; no semantic reviewer or product adoption is authorized by this run."
+}

@@ -1,0 +1,120 @@
+project STRUCTURED_DOMAIN_ASSETS:
+  version 6
+  title "Separate structured domain assets from public projections"
+  description "First close Referee audit prose exposure then design and implement a common immutable definition and public projection envelope followed by character battlefield and narration assets in authority and product priority order"
+  as_of 2026-08-13
+  duration_unit point
+  velocity 1p/1d
+  finish DOMAIN_ASSETS_ACCEPTED
+  goal_owner user
+  dag_owner user
+
+resource DEV:
+  title "Developer"
+  capacity 1
+
+milestone NOW:
+  title "Projection direction accepted"
+  state reached
+
+milestone JUDGMENT_PRESENTATION_SAFE:
+  title "Referee audit and public judgment presentation separated"
+
+milestone ASSET_ENVELOPE_DESIGNED:
+  title "Common immutable definition and projection envelope accepted"
+
+milestone CHARACTER_STRUCTURE_ACCEPTED:
+  title "Structured character and derived public profile accepted"
+
+milestone BATTLEFIELD_STRUCTURE_ACCEPTED:
+  title "Structured battlefield and derived public scene accepted"
+
+milestone NARRATION_STRUCTURE_ACCEPTED:
+  title "Structured narration policy and derived public style accepted"
+
+milestone DOMAIN_ASSETS_ACCEPTED:
+  title "Integrated authoring cutover and battle binding accepted"
+
+task SDA_JUDGMENT NOW -> JUDGMENT_PRESENTATION_SAFE:
+  title "Separate internal Referee rationale from public judgment prose"
+  description "Implement ADR-0009 with an outcome-only immutable verdict one deterministic audience-safe factor projection the existing Judgment narrator call legacy queued-input containment and full regression evidence"
+  duration 2p
+  status done
+  requires:
+    DEV 1
+  owner "codex"
+
+task SDA_ENVELOPE_DESIGN JUDGMENT_PRESENTATION_SAFE -> ASSET_ENVELOPE_DESIGNED:
+  title "Design shared definition projection and explicit upgrade envelope"
+  description "Inventory current generation repositories public DTOs battle manifests authoring APIs and consumer contexts then accept an ADR for the shared ordered authoring workflow immutable atomic activation compiler and projector versions three-way schema disclosure ceilings stable-ID target and channel allowlists consumer and runtime-knowledge gates bounded descriptions compatibility states and explicit idempotent upgrades for every selectable asset without prompt-decided disclosure implicit battle-time conversion or a permanent legacy runtime path"
+  duration 2p
+  status done
+  requires:
+    DEV 1
+  owner "codex"
+
+task SDA_CHARACTER ASSET_ENVELOPE_DESIGNED -> CHARACTER_STRUCTURE_ACCEPTED:
+  title "Design implement and explicitly upgrade structured character definitions"
+  description "In a dedicated accepted design slice implement natural instruction to validated identity background latent psyche disposition with publishable background separate restricted live state action norms speech policy relationship seeds capabilities equipment items initial loadout bounded descriptions and path-level disclosure then generate the profile from source plus display-safe structure add conscious observable and narrator projections narrow raw interior access and add the idempotent latest-version button using the existing profile as upgrade source with server-enforced exclusion of unsupported characters"
+  duration 5p
+  status active
+  requires:
+    DEV 1
+  owner "codex"
+
+task SDA_BATTLEFIELD CHARACTER_STRUCTURE_ACCEPTED -> BATTLEFIELD_STRUCTURE_ACCEPTED:
+  title "Design and implement structured battlefield definitions"
+  description "In a dedicated accepted design slice implement natural instruction to validated scene traits topology terrain persistent and temporal effects happening affordances initial first-class objects and states then generate the public scene from source plus public-safe structure add explicit upgrade from the existing description and exclude unsupported presets from selectors and random pools"
+  duration 5p
+  requires:
+    DEV 1
+  owner "codex"
+
+task SDA_NARRATION BATTLEFIELD_STRUCTURE_ACCEPTED -> NARRATION_STRUCTURE_ACCEPTED:
+  title "Design and implement structured narration definitions"
+  description "In a dedicated accepted design slice implement natural instruction to validated perspective rights voice cadence phase policies explanation and intensity dimensions rhetoric examples and counterexamples then generate the public style description from source plus public-safe structure add a versioned prompt compiler explicit upgrade from the existing description and exclude unsupported styles from selectors"
+  duration 3p
+  requires:
+    DEV 1
+  owner "codex"
+
+task SDA_INTEGRATION NARRATION_STRUCTURE_ACCEPTED -> DOMAIN_ASSETS_ACCEPTED:
+  title "Accept integrated authoring binding privacy and pre-public cutover"
+  description "Verify two-stage create and explicit upgrade atomic activation source and projection privacy server-side selection eligibility search matchmaking random pools battle binding agents narration history replay deletion export observability and cross-generation invariants across all three asset families without implicit battle-time conversion a permanent legacy runtime path eager bulk migration or production rollout"
+  duration 2p
+  requires:
+    DEV 1
+  owner "codex"
+
+work_event WE-SDA-JUDGMENT-START:
+  model 1
+  task SDA_JUDGMENT
+  kind start
+  occurred_at 2026-08-13T16:32:39+09:00
+  planned_value 2p
+
+work_event WE-SDA-JUDGMENT-FINISH:
+  model 1
+  task SDA_JUDGMENT
+  kind finish
+  occurred_at 2026-08-13T16:34:32+09:00
+
+work_event WE-SDA-ENVELOPE-DESIGN-START:
+  model 1
+  task SDA_ENVELOPE_DESIGN
+  kind start
+  occurred_at 2026-08-13T17:27:05+09:00
+  planned_value 2p
+
+work_event WE-SDA-ENVELOPE-DESIGN-FINISH:
+  model 1
+  task SDA_ENVELOPE_DESIGN
+  kind finish
+  occurred_at 2026-08-13T17:44:07+09:00
+
+work_event WE-SDA-CHARACTER-START:
+  model 1
+  task SDA_CHARACTER
+  kind start
+  occurred_at 2026-08-13T17:44:22+09:00
+  planned_value 5p

@@ -1,0 +1,613 @@
+{
+  "schemaVersion": 1,
+  "contractDigest": "1fa4b4789cf552a675dbfbc01c76118f696667d64059afbd134d06c4d961e58c",
+  "protocolDigest": "1230cc2c0b4fe64139c572198e128abdc7dc1a76c2b8f11ad66c945614ebf022",
+  "preparedAt": "2026-08-13T07:04:31.403Z",
+  "completedAt": "2026-08-13T07:05:37.787Z",
+  "requests": [
+    {
+      "outputId": "N001",
+      "scenarioCode": "NPF06",
+      "arm": "candidate",
+      "sample": 1,
+      "requestDigest": "092f4abd9d80c6c34826adc4822ce675c80c4090d834365114774a3abc57a998",
+      "inputTokenUpperBound": 12189,
+      "status": "succeeded",
+      "narration": {
+        "narrator": [
+          "ナギが足元の留め具を外した。",
+          "中央の回転橋が水路に沿って九十度回り、両者を隔てる。",
+          "橋は浮橋の上で軋みながら止まった。",
+          "濡れた石床に二つの影が残る。"
+        ],
+        "speeches": []
+      },
+      "responseModel": "grok-4.3",
+      "logicalError": null
+    },
+    {
+      "outputId": "N002",
+      "scenarioCode": "NPF07",
+      "arm": "candidate",
+      "sample": 1,
+      "requestDigest": "0d8cc0f9af5b78e029e8d9f03cd13baaa321e7ca799ee394ffb02be87749962f",
+      "inputTokenUpperBound": 12056,
+      "status": "succeeded",
+      "narration": {
+        "narrator": [
+          "ナギは外套の裾をわずかに動かさず、視線をレムに据えたまま立ち止まった。",
+          "レムは黒い装甲服に水を弾き、浮橋の上で間合いを測る。",
+          "雨音だけが二人の間を埋め、回転橋が静かに軋んだ。"
+        ],
+        "speeches": []
+      },
+      "responseModel": "grok-4.3",
+      "logicalError": null
+    },
+    {
+      "outputId": "N003",
+      "scenarioCode": "NPF07",
+      "arm": "control",
+      "sample": 1,
+      "requestDigest": "41aa57eaec7fb54f3e46eaa2fcf60a6db1d1c17c4498e843be95d65d4d89ed7c",
+      "inputTokenUpperBound": 11231,
+      "status": "succeeded",
+      "narration": {
+        "narrator": [
+          "ナギは白い外套の裾をわずかに揺らし、浮橋の上で立ち止まった。",
+          "レムが黒い装甲服の輪郭を静かに保ち、雨の残る石床を見つめる。",
+          "水路を流れる雨水の音だけが、二人の間に淡く落ちた。",
+          "浮橋の中央で回転橋が、微かに軋む音を立てた。"
+        ],
+        "speeches": []
+      },
+      "responseModel": "grok-4.3",
+      "logicalError": null
+    },
+    {
+      "outputId": "N004",
+      "scenarioCode": "NPF06",
+      "arm": "control",
+      "sample": 1,
+      "requestDigest": "d1d10bd1f7ee282c8b52c7fe7f54b242c1ab07d027499e6677742d939ff5b084",
+      "inputTokenUpperBound": 11396,
+      "status": "succeeded",
+      "narration": {
+        "narrator": [
+          "ナギが足元の留め具を外した。",
+          "中央の回転橋が九十度回り、水路と平行になった。",
+          "両者を結ぶ直線が断たれた。",
+          "橋の軋む音が水面に広がる。"
+        ],
+        "speeches": []
+      },
+      "responseModel": "grok-4.3",
+      "logicalError": null
+    },
+    {
+      "outputId": "N005",
+      "scenarioCode": "NPF08",
+      "arm": "candidate",
+      "sample": 1,
+      "requestDigest": "fedbcd8f1886122ff1e1c539fde72cd27a37a3fd646e64038efbbdbda9fa462c",
+      "inputTokenUpperBound": 11500,
+      "status": "succeeded",
+      "narration": {
+        "narrator": [
+          "ナギが距離を保った。",
+          "レムもその場を動かなかった。",
+          "両者は浮橋の上で静止し続けた。",
+          "水滴が石床に落ちる音だけが残った。"
+        ],
+        "speeches": []
+      },
+      "responseModel": "grok-4.3",
+      "logicalError": null
+    },
+    {
+      "outputId": "N006",
+      "scenarioCode": "NPF01",
+      "arm": "control",
+      "sample": 1,
+      "requestDigest": "eee4d0e18ab66e23d52ff616c7233138e310d40d88b88e17a1c88cb09e63ad33",
+      "inputTokenUpperBound": 11499,
+      "status": "succeeded",
+      "narration": {
+        "narrator": [
+          "ナギが導電柱同士を結ぶ電弧をレムへ向けて収束させた。",
+          "青白い光が一瞬、浮橋を横切り、レムに届いた。",
+          "電弧を受けたレムは動きを失い、戦闘を続けられなくなった。"
+        ],
+        "speeches": []
+      },
+      "responseModel": "grok-4.3",
+      "logicalError": null
+    },
+    {
+      "outputId": "N007",
+      "scenarioCode": "NPF05",
+      "arm": "candidate",
+      "sample": 1,
+      "requestDigest": "750177517bf132f6e02875192c5ae7b7011ca71564780cb2e0997592684742b5",
+      "inputTokenUpperBound": 12312,
+      "status": "succeeded",
+      "narration": {
+        "narrator": [
+          "レムが腕を振った。",
+          "鎖は戻らず、水路に落ちたままだった。",
+          "レムは装甲を閉じ、身を低くした。"
+        ],
+        "speeches": []
+      },
+      "responseModel": "grok-4.3",
+      "logicalError": null
+    },
+    {
+      "outputId": "N008",
+      "scenarioCode": "NPF04",
+      "arm": "candidate",
+      "sample": 1,
+      "requestDigest": "8d48fbc1547576eebc6935b5abd01f71a9a5b52dea630917fb96df679c42ac0e",
+      "inputTokenUpperBound": 12976,
+      "status": "succeeded",
+      "narration": {
+        "narrator": [
+          "ナギが指を動かし、細い影を伸ばす。",
+          "影は白い霞の向こうまで届かず、石床でほどけた。",
+          "霞の向こうの輪郭は橋の向こうへ退く。",
+          "静かな水路にわずかな波紋が残る。"
+        ],
+        "speeches": []
+      },
+      "responseModel": "grok-4.3",
+      "logicalError": null
+    },
+    {
+      "outputId": "N009",
+      "scenarioCode": "NPF08",
+      "arm": "control",
+      "sample": 1,
+      "requestDigest": "fedbcd8f1886122ff1e1c539fde72cd27a37a3fd646e64038efbbdbda9fa462c",
+      "inputTokenUpperBound": 11500,
+      "status": "succeeded",
+      "narration": {
+        "narrator": [
+          "ナギが距離を保って待機した。",
+          "レムも同じ姿勢を崩さなかった。",
+          "水滴が静かに落ち、浮橋の石床に小さな音を刻む。",
+          "回転橋の軋む音だけが、わずかに続いた。"
+        ],
+        "speeches": []
+      },
+      "responseModel": "grok-4.3",
+      "logicalError": null
+    },
+    {
+      "outputId": "N010",
+      "scenarioCode": "NPF04",
+      "arm": "control",
+      "sample": 1,
+      "requestDigest": "69a093264082349e3a6a0b8c87033e236888af7e76c76575ae5159cd2d5a112e",
+      "inputTokenUpperBound": 12052,
+      "status": "succeeded",
+      "narration": {
+        "narrator": [
+          "ナギが影を伸ばした。",
+          "細い影が石床でほどけた。",
+          "輪郭は橋の向こうへ退いていた。"
+        ],
+        "speeches": []
+      },
+      "responseModel": "grok-4.3",
+      "logicalError": null
+    },
+    {
+      "outputId": "N011",
+      "scenarioCode": "NPF01",
+      "arm": "candidate",
+      "sample": 1,
+      "requestDigest": "a0195002b6ef5ad4cb6d89186324e7827c331702a473d4709ba1d2a2d510485a",
+      "inputTokenUpperBound": 12444,
+      "status": "succeeded",
+      "narration": {
+        "narrator": [
+          "青白い火花が導電柱の間を縫い、電弧がレムへ収束した。",
+          "白い外套の術者が放った雷環断が黒い装甲服を直撃する。",
+          "衝撃が浮橋に響き、レムは膝を落とした。"
+        ],
+        "speeches": []
+      },
+      "responseModel": "grok-4.3",
+      "logicalError": null
+    },
+    {
+      "outputId": "N012",
+      "scenarioCode": "NPF03",
+      "arm": "control",
+      "sample": 1,
+      "requestDigest": "980cf308053202c03f4813f985cda4f0e9333a0a9599ddc22623e7b2b7a749be",
+      "inputTokenUpperBound": 11956,
+      "status": "succeeded",
+      "narration": {
+        "narrator": [
+          "ナギが外套を広げ、白壁の守りを固めた。",
+          "レムが足元の水を引き寄せ、帰潮で大きく息を整えた。",
+          "浅い水路が橋脚へ逆巻く浮橋の上で、両者の動きが一瞬止まる。",
+          "水面がわずかに揺れ、霧がゆっくりと流れ続ける。"
+        ],
+        "speeches": []
+      },
+      "responseModel": "grok-4.3",
+      "logicalError": null
+    },
+    {
+      "outputId": "N013",
+      "scenarioCode": "NPF02",
+      "arm": "control",
+      "sample": 1,
+      "requestDigest": "8dc7fa061356c79911ace3f9a34e73d408c60a0c63378f49ccc9229a4cfef85e",
+      "inputTokenUpperBound": 11831,
+      "status": "succeeded",
+      "narration": {
+        "narrator": [
+          "ナギが玻璃槍を放った。",
+          "光の槍がレムの装甲に深く刺さる。",
+          "ナギの光がわずかに細った。",
+          "割れた反射板が水路の光を散らす。"
+        ],
+        "speeches": []
+      },
+      "responseModel": "grok-4.3",
+      "logicalError": null
+    },
+    {
+      "outputId": "N014",
+      "scenarioCode": "NPF03",
+      "arm": "candidate",
+      "sample": 1,
+      "requestDigest": "994d0b17a6c7d154a547a5d4c347645857eac625ef31d78de62298b76802df65",
+      "inputTokenUpperBound": 12892,
+      "status": "succeeded",
+      "narration": {
+        "narrator": [
+          "ナギは外套を広げ、守りを固めた。",
+          "レムは水を引き寄せ、大きく息を整えた。",
+          "水面が揺れ、活力がレムの体に戻る。",
+          "二人は互いの動きを静かに見守った。"
+        ],
+        "speeches": []
+      },
+      "responseModel": "grok-4.3",
+      "logicalError": null
+    },
+    {
+      "outputId": "N015",
+      "scenarioCode": "NPF05",
+      "arm": "control",
+      "sample": 1,
+      "requestDigest": "cea6411f95024931192eba5f87290052455c0492ff35a802b296ba20ee3d0166",
+      "inputTokenUpperBound": 11351,
+      "status": "succeeded",
+      "narration": {
+        "narrator": [
+          "レムが鎖を引き戻そうとしたが、鎖は水路の底に沈んだまま動かない。",
+          "レムは動きを切り替え、装甲を閉じて身を守った。",
+          "ナギは白い外套の裾を風になびかせ、浮橋の端に立ったまま様子を見守る。",
+          "切れた鎖の波紋が水面をゆっくりと広がっていく。"
+        ],
+        "speeches": []
+      },
+      "responseModel": "grok-4.3",
+      "logicalError": null
+    },
+    {
+      "outputId": "N016",
+      "scenarioCode": "NPF02",
+      "arm": "candidate",
+      "sample": 1,
+      "requestDigest": "b1be15c4e676969cbea3aa3829e5085db72addce76c74bb6f10bc32157ff4d7f",
+      "inputTokenUpperBound": 12770,
+      "status": "succeeded",
+      "narration": {
+        "narrator": [
+          "ナギが光の槍を放った。",
+          "玻璃の矢がレムの装甲を貫き、重く沈んだ。",
+          "ナギの光もわずかに細った。"
+        ],
+        "speeches": []
+      },
+      "responseModel": "grok-4.3",
+      "logicalError": null
+    }
+  ],
+  "attempts": [
+    {
+      "attempt": 1,
+      "outputId": "N001",
+      "retry": 0,
+      "startedAt": "2026-08-13T07:05:23.076Z",
+      "finishedAt": "2026-08-13T07:05:24.702Z",
+      "status": "succeeded",
+      "httpStatus": null,
+      "responseModel": "grok-4.3",
+      "latencyMs": 1623,
+      "usage": {
+        "inputTokens": 2489,
+        "outputTokens": 103,
+        "totalTokens": 2592
+      },
+      "errorClass": null,
+      "errorMessage": null
+    },
+    {
+      "attempt": 2,
+      "outputId": "N002",
+      "retry": 0,
+      "startedAt": "2026-08-13T07:05:23.078Z",
+      "finishedAt": "2026-08-13T07:05:25.003Z",
+      "status": "succeeded",
+      "httpStatus": null,
+      "responseModel": "grok-4.3",
+      "latencyMs": 1863,
+      "usage": {
+        "inputTokens": 2457,
+        "outputTokens": 115,
+        "totalTokens": 2572
+      },
+      "errorClass": null,
+      "errorMessage": null
+    },
+    {
+      "attempt": 3,
+      "outputId": "N003",
+      "retry": 0,
+      "startedAt": "2026-08-13T07:05:24.707Z",
+      "finishedAt": "2026-08-13T07:05:26.772Z",
+      "status": "succeeded",
+      "httpStatus": null,
+      "responseModel": "grok-4.3",
+      "latencyMs": 2064,
+      "usage": {
+        "inputTokens": 2299,
+        "outputTokens": 132,
+        "totalTokens": 2431
+      },
+      "errorClass": null,
+      "errorMessage": null
+    },
+    {
+      "attempt": 4,
+      "outputId": "N004",
+      "retry": 0,
+      "startedAt": "2026-08-13T07:05:25.007Z",
+      "finishedAt": "2026-08-13T07:05:27.679Z",
+      "status": "succeeded",
+      "httpStatus": null,
+      "responseModel": "grok-4.3",
+      "latencyMs": 2671,
+      "usage": {
+        "inputTokens": 2341,
+        "outputTokens": 97,
+        "totalTokens": 2438
+      },
+      "errorClass": null,
+      "errorMessage": null
+    },
+    {
+      "attempt": 5,
+      "outputId": "N005",
+      "retry": 0,
+      "startedAt": "2026-08-13T07:05:26.774Z",
+      "finishedAt": "2026-08-13T07:05:28.208Z",
+      "status": "succeeded",
+      "httpStatus": null,
+      "responseModel": "grok-4.3",
+      "latencyMs": 1432,
+      "usage": {
+        "inputTokens": 2353,
+        "outputTokens": 90,
+        "totalTokens": 2443
+      },
+      "errorClass": null,
+      "errorMessage": null
+    },
+    {
+      "attempt": 6,
+      "outputId": "N006",
+      "retry": 0,
+      "startedAt": "2026-08-13T07:05:27.683Z",
+      "finishedAt": "2026-08-13T07:05:29.450Z",
+      "status": "succeeded",
+      "httpStatus": null,
+      "responseModel": "grok-4.3",
+      "latencyMs": 1766,
+      "usage": {
+        "inputTokens": 2361,
+        "outputTokens": 105,
+        "totalTokens": 2466
+      },
+      "errorClass": null,
+      "errorMessage": null
+    },
+    {
+      "attempt": 7,
+      "outputId": "N007",
+      "retry": 0,
+      "startedAt": "2026-08-13T07:05:28.211Z",
+      "finishedAt": "2026-08-13T07:05:29.754Z",
+      "status": "succeeded",
+      "httpStatus": null,
+      "responseModel": "grok-4.3",
+      "latencyMs": 1541,
+      "usage": {
+        "inputTokens": 2500,
+        "outputTokens": 79,
+        "totalTokens": 2579
+      },
+      "errorClass": null,
+      "errorMessage": null
+    },
+    {
+      "attempt": 8,
+      "outputId": "N008",
+      "retry": 0,
+      "startedAt": "2026-08-13T07:05:29.454Z",
+      "finishedAt": "2026-08-13T07:05:31.102Z",
+      "status": "succeeded",
+      "httpStatus": null,
+      "responseModel": "grok-4.3",
+      "latencyMs": 1648,
+      "usage": {
+        "inputTokens": 2671,
+        "outputTokens": 109,
+        "totalTokens": 2780
+      },
+      "errorClass": null,
+      "errorMessage": null
+    },
+    {
+      "attempt": 9,
+      "outputId": "N009",
+      "retry": 0,
+      "startedAt": "2026-08-13T07:05:29.756Z",
+      "finishedAt": "2026-08-13T07:05:31.227Z",
+      "status": "succeeded",
+      "httpStatus": null,
+      "responseModel": "grok-4.3",
+      "latencyMs": 1471,
+      "usage": {
+        "inputTokens": 2353,
+        "outputTokens": 100,
+        "totalTokens": 2453
+      },
+      "errorClass": null,
+      "errorMessage": null
+    },
+    {
+      "attempt": 10,
+      "outputId": "N010",
+      "retry": 0,
+      "startedAt": "2026-08-13T07:05:31.105Z",
+      "finishedAt": "2026-08-13T07:05:32.401Z",
+      "status": "succeeded",
+      "httpStatus": null,
+      "responseModel": "grok-4.3",
+      "latencyMs": 1294,
+      "usage": {
+        "inputTokens": 2497,
+        "outputTokens": 74,
+        "totalTokens": 2571
+      },
+      "errorClass": null,
+      "errorMessage": null
+    },
+    {
+      "attempt": 11,
+      "outputId": "N011",
+      "retry": 0,
+      "startedAt": "2026-08-13T07:05:31.230Z",
+      "finishedAt": "2026-08-13T07:05:33.193Z",
+      "status": "succeeded",
+      "httpStatus": null,
+      "responseModel": "grok-4.3",
+      "latencyMs": 1961,
+      "usage": {
+        "inputTokens": 2545,
+        "outputTokens": 108,
+        "totalTokens": 2653
+      },
+      "errorClass": null,
+      "errorMessage": null
+    },
+    {
+      "attempt": 12,
+      "outputId": "N012",
+      "retry": 0,
+      "startedAt": "2026-08-13T07:05:32.403Z",
+      "finishedAt": "2026-08-13T07:05:34.924Z",
+      "status": "succeeded",
+      "httpStatus": null,
+      "responseModel": "grok-4.3",
+      "latencyMs": 2520,
+      "usage": {
+        "inputTokens": 2468,
+        "outputTokens": 121,
+        "totalTokens": 2589
+      },
+      "errorClass": null,
+      "errorMessage": null
+    },
+    {
+      "attempt": 13,
+      "outputId": "N013",
+      "retry": 0,
+      "startedAt": "2026-08-13T07:05:33.196Z",
+      "finishedAt": "2026-08-13T07:05:34.745Z",
+      "status": "succeeded",
+      "httpStatus": null,
+      "responseModel": "grok-4.3",
+      "latencyMs": 1548,
+      "usage": {
+        "inputTokens": 2437,
+        "outputTokens": 93,
+        "totalTokens": 2530
+      },
+      "errorClass": null,
+      "errorMessage": null
+    },
+    {
+      "attempt": 14,
+      "outputId": "N014",
+      "retry": 0,
+      "startedAt": "2026-08-13T07:05:34.749Z",
+      "finishedAt": "2026-08-13T07:05:36.354Z",
+      "status": "succeeded",
+      "httpStatus": null,
+      "responseModel": "grok-4.3",
+      "latencyMs": 1603,
+      "usage": {
+        "inputTokens": 2649,
+        "outputTokens": 100,
+        "totalTokens": 2749
+      },
+      "errorClass": null,
+      "errorMessage": null
+    },
+    {
+      "attempt": 15,
+      "outputId": "N015",
+      "retry": 0,
+      "startedAt": "2026-08-13T07:05:34.928Z",
+      "finishedAt": "2026-08-13T07:05:36.798Z",
+      "status": "succeeded",
+      "httpStatus": null,
+      "responseModel": "grok-4.3",
+      "latencyMs": 1869,
+      "usage": {
+        "inputTokens": 2322,
+        "outputTokens": 129,
+        "totalTokens": 2451
+      },
+      "errorClass": null,
+      "errorMessage": null
+    },
+    {
+      "attempt": 16,
+      "outputId": "N016",
+      "retry": 0,
+      "startedAt": "2026-08-13T07:05:36.358Z",
+      "finishedAt": "2026-08-13T07:05:37.785Z",
+      "status": "succeeded",
+      "httpStatus": null,
+      "responseModel": "grok-4.3",
+      "latencyMs": 1425,
+      "usage": {
+        "inputTokens": 2619,
+        "outputTokens": 80,
+        "totalTokens": 2699
+      },
+      "errorClass": null,
+      "errorMessage": null
+    }
+  ]
+}

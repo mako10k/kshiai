@@ -2,6 +2,7 @@ import OpenAI from "openai";
 import type {
   ChatCompletionMessageParam,
   ChatCompletionTool,
+  ChatCompletionCreateParamsNonStreaming,
 } from "openai/resources/chat/completions";
 import {
   BasicAttackProfileSchema,
@@ -13,6 +14,8 @@ import {
   CharacterDeepPsycheAdvanceSchema,
   CharacterDeepPsycheCompactAdvanceSchema,
   CharacterIdentitySchema,
+  CharacterDefinitionV2Schema,
+  AssetClaimRiskCodeSchema,
   DecisionProfileSchema,
   FreeActionAdjudicationBatchSchema,
   EquipmentSchema,
@@ -51,6 +54,11 @@ import type {
   GenerateBattlefieldResult,
   GenerateCharacterResult,
   GenerateCharacterInput,
+  GenerateCharacterProfileInput,
+  GenerateCharacterProfileResult,
+  GenerateCharacterDefinitionV2Input,
+  ValidateCharacterProfileClaimsInput,
+  ValidateCharacterProfileClaimsResult,
   GenerateImprovementPromptInput,
   GenerateImprovementPromptResult,
   JudgmentNarrationResult,
@@ -78,6 +86,7 @@ import {
   type PerceptionPromptResponseFormat,
 } from "./perception-prompt-strategy.js";
 import { reviewedPerceptionTopology } from "./perception-topology.js";
+import { CHARACTER_EXPRESSION_COMPACT_SYSTEM_PROMPT } from "./character-expression-prompt.js";
 
 const FAST_SHORT_TIMEOUT_MS = 20_000;
 const FAST_TIMEOUT_MS = 30_000;
@@ -173,6 +182,101 @@ function narratorVisibleCharacterSpeeches(
   }));
 }
 
+export type NarrateTurnPromptMaterial = {
+  system: string;
+  user: string;
+  focus: NarrationFocus;
+  requiredSpeakers: string[];
+  turnBrief: ReturnType<typeof buildNarrationTurnBrief>;
+};
+
+/**
+ * Pure prompt boundary shared by the runtime provider and bounded narrator
+ * experiments. Keeping one builder prevents a pilot-only prompt from being
+ * mistaken for evidence about the production narration path.
+ */
+export function buildNarrateTurnPromptMaterial(
+  input: Parameters<LlmProvider["narrateTurn"]>[0],
+): NarrateTurnPromptMaterial {
+  const styleBlock = input.styleInstruction?.trim()
+    ? `Narration style「${input.styleName ?? "custom"}」: ${input.styleInstruction.trim()}`
+    : "Narration style: 落ち着いた標準の物語調。";
+  const focus: NarrationFocus = input.view.perception.mode === "self"
+    ? "self"
+    : input.view.perception.mode === "opponent"
+      ? "foe"
+      : input.view.perception.mode === "omniscient"
+        ? "both"
+        : "external";
+  const focusBlock = focusInstruction(focus);
+  const turnBrief = buildNarrationTurnBrief(input.view, {
+    ...(input.presentationFocusMode
+      ? { presentationFocusMode: input.presentationFocusMode }
+      : {}),
+  });
+  const presentationFocusBlock = turnBrief.presentationFocus
+    ? `presentationFocus is an optional audience-facing emphasis copied from the committed structured result already present in the brief. Make its single primary result legible before optional surrounding detail. Use the rest of the brief for attribution, contradiction, continuity, and style. It cannot authorize a new action, motive, relationship fact, sensory detail, future commitment, or character speech. For release, add only bounded meaning supported by the committed event; do not invent development. An actorLabel of null is deliberately unattributed and must remain so. Do not mechanically restate the focus twice.`
+    : "";
+  const sideAName = input.view.participantLabels.a;
+  const sideBName = input.view.participantLabels.b;
+  const requiredSpeakers = input.view.perception.mode === "self"
+    ? [
+        sideAName,
+        ...(input.view.perception.frame.counterpart.currentAccess === "none"
+          ? []
+          : [sideBName]),
+      ]
+    : input.view.perception.mode === "opponent"
+      ? [
+          ...(input.view.perception.frame.counterpart.currentAccess === "none"
+            ? []
+            : [sideAName]),
+          sideBName,
+        ]
+      : [sideAName, sideBName];
+  const system = `Narrate a turn-based fictional confrontation in Japanese. The supplied brief is the sole authoritative source for world state, resolved events, actions, perception, and participant labels. It is immutable and may be physical, ranged, technological, psychic, social, comedic, cute, or abstract. Never add swordplay, bodily injury, grimness, or martial framing unless the brief establishes them.
+${styleBlock}
+${focusBlock}
+${NARRATION_IDENTIFIER_RULES}
+${NARRATION_PROFILE_RULES}
+structuredCharacterContexts is perspective-compiled. Use staticProjection only as bounded rendering context, never as a new event; narrativeCues are committed observable cues. Never infer omitted inner fields, raw dynamics, hidden triggers, or causes.
+${NARRATION_CONTINUITY_RULES}
+${NARRATOR_RECOGNITION_RULES}${presentationFocusBlock
+    ? `\n${presentationFocusBlock}`
+    : ""}
+Perspective gate overrides style instruction: never reveal inner life that is not present in innerDigests.
+structuredCharacterContexts is a separately compiled character projection for this exact perspective. staticProjection may guide wording but cannot establish a new turn event. narrativeCues are already committed and evidence-gated; render them without adding a hidden cause. Never infer omitted fields, raw dynamics, trigger labels, control metadata, or another character's inner information.
+For self or opponent mode, observationBoundary is the complete observation boundary. Preserve unidentified contacts, missing attribution, inaccessible subjects, and qualitative-only effect or reserve cues. Do not reconstruct facts omitted from the brief.
+Use staticBackground flavor sparingly — it describes the stable setting, while turnResult.canonicalChange says whether this turn changed the environment.
+Build 2–4 non-empty narrator lines around turnResult.actions and turnResult.resolvedEvents: lead with this turn's concrete action (what was attempted and what visibly happened), then contact or reaction, then a committed consequence grounded in those events.
+${input.view.causalProjection
+    ? "Each turnResult.actions item keeps its name and description beside its structured causality. Use that causality as the authoritative cause-to-result supplement, including resolutionExplanation when an attempted action changed or failed. Use currentState.participantConditions when a real continuing condition affects the next exchange. Keep turnResult.observedConsequences and observedSemanticChangeKinds explicitly unattributed; never connect them to an action by guesswork.\n"
+    : ""}Do not invent a soft "who is winning" scoreboard line every turn. Only mention a shift in advantage when the supplied events or action beats clearly support a real change (position, hold, failure, recovery, or decisive contact).
+When drama.progressionHint is present, treat it as optional guidance for stuck loops (e.g. repeated actions or one-sided waiting), not as a mandatory form-evaluation template.
+Prefer opening on an actor's move rather than pure ambient scenery when recentNarration already set the scene.
+Do not repeat or closely paraphrase recentNarration or either character's recentSpeeches.
+When drama.environmentBeatDue is true, incorporate the corresponding accepted change from turnResult and currentState. Do not treat staticBackground as a new event.
+If turnResult marks a finishing blow (とどめ / 決め手 / 戦闘不能), center the turn on that decisive action.
+characterSpeeches were already authored by isolated character agents from their own cognition and perception. Return every supplied line exactly once with the same sourceSide. For each supplied line, freely write a natural speaker display label from the current view, its displayContext, and narratorContinuity; displayLabel is only a fallback. Preserve the viewpoint's uncertainty or misidentification. Do not reconstruct a canonical identity omitted from these presentation inputs. This label is rendering only. You may change punctuation or typographic surface only when the words, factual content, intent, and stage-reaction/dialogue distinction remain unchanged. Choose afterNarratorLine (-1 before the first line, otherwise a zero-based narrator-line index) to place each speech naturally among the narrator lines.
+You MAY add a speech or visible/audible reaction for a third-party or scene entity when currentState and observationBoundary support that entity's presence and agency. For such a scene-authored line, set sourceSide to null. Do not use this permission to add another line for side A or B, or to invent an unsupported person, object agency, action, outcome, or private fact.
+Do not add a speech or reaction for an inaccessible counterpart; characterSpeeches is already filtered to the permitted speakers: ${JSON.stringify(requiredSpeakers)}.
+JSON: { "turn": number, "focus": "${focus}", "narrator": string[], "speeches": [ { "sourceSide": "a"|"b"|null, "speaker": string, "text": string, "afterNarratorLine": number } ], "recognitionUpdates": [ { "subjectRef": string, "recognizedAs": string, "identityKnowledge": "unknown"|"suspected"|"identified", "continuity": "same_entity"|"possibly_same_entity"|"unlinked" } ] }
+Do not mention numeric HP/MP/ATK values.`;
+  const user = JSON.stringify({
+    brief: turnBrief,
+    focus,
+    recentNarration: input.recentNarration?.slice(-4) ?? [],
+    recentSpeeches: input.recentSpeeches?.slice(-4) ?? [],
+    drama: input.drama ?? null,
+    innerDigests: input.innerDigests ?? [],
+    structuredCharacterContexts: input.structuredCharacterContexts ?? {},
+    characterSpeeches: narratorVisibleCharacterSpeeches(
+      input.characterSpeeches ?? [],
+    ),
+  });
+  return { system, user, focus, requiredSpeakers, turnBrief };
+}
+
 function normalizeNarratorRecognitionUpdates(
   raw: unknown,
 ): NarratorRecognitionUpdate[] {
@@ -264,6 +368,10 @@ type ChatOpts = {
   onText?: (fullText: string) => void;
 };
 
+/** xAI supports `none`; OpenAI SDK v5's provider-neutral union does not list it. */
+const XAI_REASONING_EFFORT_NONE =
+  "none" as ChatCompletionCreateParamsNonStreaming["reasoning_effort"];
+
 /**
  * OpenAI-compatible chat provider (xAI, Venice, etc.).
  * Optional mock fallback exists only for explicitly constructed development
@@ -309,6 +417,14 @@ export class OpenAiCompatibleProvider implements LlmProvider {
 
   private modelFor(tier: LlmTier): string {
     return tier === "fast" ? this.modelFast : this.modelEngine;
+  }
+
+  private reasoningOptions(model: string):
+    { reasoning_effort: ChatCompletionCreateParamsNonStreaming["reasoning_effort"] } |
+    Record<string, never> {
+    return this.name === "xai" && model === "grok-4.3"
+      ? { reasoning_effort: XAI_REASONING_EFFORT_NONE }
+      : {};
   }
 
   private retryProviderCall<T>(
@@ -371,6 +487,7 @@ export class OpenAiCompatibleProvider implements LlmProvider {
               const resp = await this.client!.chat.completions.create(
                 {
                   model,
+                  ...this.reasoningOptions(model),
                   messages: [
                     { role: "system", content: system },
                     { role: "user", content: user },
@@ -556,6 +673,7 @@ Rules:
               const stream = await this.client!.chat.completions.create(
                 {
                   model,
+                  ...this.reasoningOptions(model),
                   messages: [
                     { role: "system", content: system },
                     { role: "user", content: user },
@@ -684,6 +802,7 @@ Rules:
           model,
           action: () => this.client!.chat.completions.create({
             model,
+            ...this.reasoningOptions(model),
             messages,
             tools,
             tool_choice: "auto",
@@ -801,6 +920,7 @@ Rules:
           action: () => this.client!.chat.completions.create(
             {
               model,
+              ...this.reasoningOptions(model),
               messages,
               tools,
               tool_choice: "auto",
@@ -996,6 +1116,181 @@ Safe-for-work anime portrait only.`,
     } catch (error) {
       return this.fallbackOrThrow(error, () => this.fallback.generateCharacter(input));
     }
+  }
+
+  async generateCharacterProfile(
+    input: GenerateCharacterProfileInput,
+  ): Promise<GenerateCharacterProfileResult> {
+    if (!this.client) return this.fallback.generateCharacterProfile(input);
+    try {
+      const data = await this.chatJson(
+        `You write a concise public character profile from a server-approved fact projection.
+Return JSON only: {
+  "description": string,
+  "segments": [{ "id": string, "text": string,
+    "kind": "fact"|"flavor", "supportRefs": string[] }],
+  "assistantMessage": string
+}
+Use the same language as the owner source. The owner source may guide tone and emphasis,
+but it is NOT permission to publish a fact. Every material factual segment must cite one
+or more exact supportRef values from approvedFacts. Flavor may add rhythm or metaphor,
+but must not add a proper noun, number, capability, item, relationship, history event,
+hidden cause, or information right. Do not expose schema names, IDs, control values,
+numeric combat values, hidden psyche dynamics, or disclosure rules. Keep the description
+to 2-4 natural sentences and no more than 1600 characters. description must be the exact
+segment texts joined in order, with no additional unsegmented prose.`,
+        JSON.stringify({
+          ownerSourceForToneOnly: input.sourceText.slice(0, 6000),
+          displayName: input.projection.displayName,
+          approvedFacts: input.projection.facts,
+        }),
+        { tier: "engine", label: "generateCharacterProfile", temperature: 0.6 },
+      ) as Record<string, unknown>;
+      const segments = (Array.isArray(data.segments) ? data.segments : [])
+        .slice(0, 12)
+        .map((raw, index) => {
+          const value = raw as Record<string, unknown>;
+          return {
+            id: String(value.id ?? `segment-${index + 1}`).slice(0, 120),
+            text: String(value.text ?? "").slice(0, 1200),
+            kind: value.kind === "flavor" ? "flavor" as const : "fact" as const,
+            supportRefs: Array.isArray(value.supportRefs)
+              ? value.supportRefs.map(String).slice(0, 12)
+              : [],
+          };
+        })
+        .filter((segment) => segment.text.length > 0);
+      const description = String(data.description ??
+        segments.map((segment) => segment.text).join("\n")).slice(0, 4000);
+      if (!description || segments.length === 0) {
+        throw new Error("Character profile generation returned no valid segments");
+      }
+      return {
+        description,
+        segments,
+        assistantMessage: String(
+          data.assistantMessage ?? "構造化した設定から公開プロフィールを作成しました。",
+        ),
+      };
+    } catch (error) {
+      return this.fallbackOrThrow(
+        error,
+        () => this.fallback.generateCharacterProfile(input),
+      );
+    }
+  }
+
+  async generateCharacterDefinitionV2(
+    input: GenerateCharacterDefinitionV2Input,
+  ) {
+    if (!this.client) return this.fallback.generateCharacterDefinitionV2(input);
+    try {
+      const data = await this.chatJson(
+        `You refine a VALID CharacterDefinitionV2 JSON value from an owner source and a
+valid deterministic base. Return JSON only: {"definition": object}.
+
+Keep schemaVersion=2 and preserve all base stable IDs for the same semantic elements.
+The base mechanics, parameters, capability mechanics, item bonuses/effects, identity,
+appearance, and explicit legacy decision principles are authoritative. Do not alter
+them unless the owner source explicitly requests a change and this is not an upgrade.
+
+Use the source to structure only supported characterization into bounded fields:
+- profileBackground entries with stable IDs, kind, summary, description, selfAwareness;
+- psycheDisposition coreNeeds/tendencies and descriptive manifestations;
+- actionNorms with registered clauses, deterministic response, priority and force;
+- speechPolicy frequency/phasePolicy/reactTo/register/cadence/vocabulary, examples and
+  counterexamples (examples are style only, never facts);
+- relationshipSeeds only when an exact logical character ID or supported generic role is
+  actually established; never match a display name to an asset ID;
+- expressionNotes for bounded cross-cutting nuance that fits no narrower element.
+
+Descriptions must use only registered consumerTags already present in the base schema.
+Numeric psyche dynamics are restricted deterministic inputs in 0..1000. Calibrate them
+conservatively from explicit stable tendencies; use 500 when unsupported. They are never
+public prose. selfAwareness means character awareness, not human owner visibility.
+For sourceKind=upgrade_description, do not invent missing history, causes, relationships,
+latent dispositions, self-awareness, possessions, or capabilities from a polished public
+profile. Empty arrays and neutral dynamics are valid and preferred to fabrication.
+Do not put current feelings, thoughts, wounds, battle observations, or live relationships
+in this immutable definition. Preserve strict bounds and every reference.`,
+        JSON.stringify({
+          sourceKind: input.sourceKind,
+          ownerSource: input.sourceText.slice(0, 8000),
+          validBaseDefinition: input.baseDefinition,
+        }),
+        {
+          tier: "engine",
+          label: "generateCharacterDefinitionV2",
+          timeoutMs: ENGINE_LONG_TIMEOUT_MS,
+          temperature: 0.35,
+        },
+      ) as Record<string, unknown>;
+      return CharacterDefinitionV2Schema.parse(data.definition);
+    } catch (error) {
+      return this.fallbackOrThrow(
+        error,
+        () => this.fallback.generateCharacterDefinitionV2(input),
+      );
+    }
+  }
+
+  async validateCharacterProfileClaims(
+    input: ValidateCharacterProfileClaimsInput,
+  ): Promise<ValidateCharacterProfileClaimsResult> {
+    if (!this.client) return this.fallback.validateCharacterProfileClaims(input);
+    const data = await this.chatJson(
+      `You are an independent bounded material-claim validator for a public character profile.
+Return JSON only: {
+  "segments": [{
+    "segmentId": string,
+    "verdict": "supported"|"flavor_only"|"unsupported",
+    "supportRefs": string[],
+    "riskCodes": string[]
+  }]
+}
+
+You receive ONLY the candidate public profile and the server-approved public projection.
+Assess every candidate segment exactly once. A fact is supported only when its complete
+material meaning follows from one or more approved facts; return their exact supportRef
+values. Do not infer from style, plausibility, common sense, or a character name.
+flavor_only is allowed only for a flavor segment that adds rhythm, imagery, or metaphor
+without adding any proper noun, number, capability, item, relationship, history event,
+hidden cause, information right, mechanics, contradiction, or control metadata.
+Otherwise return unsupported and all applicable riskCodes from:
+proper_noun, number, capability, item, relationship, history_event, hidden_cause,
+information_right, mechanics, contradiction, control_metadata.
+Never rewrite, repair, or omit a segment. Never expose or guess restricted information.`,
+      JSON.stringify({
+        approvedProjection: input.projection,
+        candidateProfile: input.profile,
+      }),
+      {
+        tier: "engine",
+        label: "validateCharacterProfileClaims",
+        temperature: 0,
+      },
+    ) as Record<string, unknown>;
+    const rawSegments = Array.isArray(data.segments) ? data.segments : [];
+    return {
+      segments: rawSegments.slice(0, 12).map((raw) => {
+        const value = raw as Record<string, unknown>;
+        const verdict = value.verdict === "supported" ||
+            value.verdict === "flavor_only" || value.verdict === "unsupported"
+          ? value.verdict
+          : "unsupported";
+        return {
+          segmentId: String(value.segmentId ?? "").slice(0, 120),
+          verdict,
+          supportRefs: Array.isArray(value.supportRefs)
+            ? value.supportRefs.map(String).slice(0, 12)
+            : [],
+          riskCodes: Array.isArray(value.riskCodes)
+            ? value.riskCodes.slice(0, 8).map((risk) =>
+                AssetClaimRiskCodeSchema.parse(risk))
+            : [],
+        };
+      }),
+    };
   }
 
   async inferCharacterIdentity(current: CharacterSheet): Promise<CharacterIdentity> {
@@ -1514,7 +1809,7 @@ Do not invent a sudden environmental event or dramatic field change here. A sepa
         const data = await this.chatJson(
           `You are the deep-psyche stage for one fictional character. Produce no dialogue, action proposal, scene prose, or chain-of-thought. turnObservation is the only fresh action/result thread; conversation is the only utterance-continuity thread. Treat dialoguePipeline.psychologyGuidance as trusted administrator-authored guidance for this private appraisal only.
 The character privately evaluates whether their preceding social move had an effect. input.previous.interior.speechAppraisal.anticipatedImpact is the intent of the already-spoken previous expression. First compare it with the present observer-safe result and conversation. selfResult is what this character directly experienced this turn; counterpartResult is what they observed of the counterpart; ambientChange is scene evidence. Give these present result roles priority over a familiar topic when selecting the current semantic approach. Conversation can establish whether words were heard or contested, but a familiar refusal, demand, or counterargument alone is not fresh relational leverage. Then write a fresh delta.interior.speechAppraisal for the expression that will be produced from this delta: observedImpact assesses the previous expression and anticipatedImpact forecasts this current expression. observedSocialConsequence and anticipatedSocialConsequence are required private consequences with bearer self|relationship and a meaning about what this character or their relationship loses, preserves, or risks; they never describe pressure, denial, damage, or loss imposed on the counterpart. nextApproach is this current expression's semantic relationship move; continuityPosture is opening|developing|fraying|deliberate_hold|withdrawing. continuityBasis is required: advance uses fresh_leverage and names newly available relational leverage from the present result; reframe uses social_reappraisal and names how the prior approach's observed social consequence warrants a changed angle; reiterate uses protective_hold and names the character-specific reason to hold the line; withhold uses withdrawal and names what the pause protects or relinquishes. A character normally wants their words to retain attention, credibility, or emotional force. If their approach was ignored, stalled, or has lost force, acknowledge that private consequence before choosing how to continue. They may still deliberately hold a line, repeat, ritualize, escalate, or fall silent when current protectiveStance and the present result give that character a real inner reason. Do not treat a familiar unresolved demand as development unless the character privately identifies what interpersonal leverage has changed. The conversation may establish whether prior wording was heard; do not turn it into a fresh mechanical result. ${phaseRule}
-Return JSON only: {"delta": {"interior":{"speechAppraisal":{"anticipatedImpact":"","observedImpact":"","anticipatedSocialConsequence":{"bearer":"self|relationship","meaning":""},"observedSocialConsequence":{"bearer":"self|relationship","meaning":""},"nextApproach":"","continuityPosture":"opening|developing|fraying|deliberate_hold|withdrawing","continuityBasis":{"kind":"fresh_leverage|social_reappraisal|protective_hold|withdrawal","reason":""},"continuityDecision":"advance|reframe|reiterate|withhold"}}, optional persistent private fields and dialogueThread {topic, unresolvedMove, anchoredExchange|null}}, "expressionBrief": {"sourceThread":"action_reaction|conversation_continuation|weave", "continuityDecision":"advance|reframe|reiterate|withhold", "focus":[one or two of self_result,counterpart_result,ambient_change,counterpart_speech], "observedImpact":"", "relationshipMove":"", "publicAim":""}}. Compare the prior anticipation, its observed social consequence, and the present result before selecting the brief. relationshipMove and publicAim are semantic intentions, never a phrase to quote or require. Never invent mechanics, hidden identity, location, or numeric results.`,
+Return JSON only: {"delta": {"interior":{"speechAppraisal":{"anticipatedImpact":"","observedImpact":"","anticipatedSocialConsequence":{"bearer":"self|relationship","meaning":""},"observedSocialConsequence":{"bearer":"self|relationship","meaning":""},"nextApproach":"","continuityPosture":"opening|developing|fraying|deliberate_hold|withdrawing","continuityBasis":{"kind":"fresh_leverage|social_reappraisal|protective_hold|withdrawal","reason":""},"continuityDecision":"advance|reframe|reiterate|withhold"}}, optional persistent private fields and dialogueThread {topic, unresolvedMove, anchoredExchange|null}}, "expressionBrief": {"sourceThread":"action_reaction|conversation_continuation|weave", "continuityDecision":"advance|reframe|reiterate|withhold", "focus":[one or two of self_result,counterpart_result,ambient_change,counterpart_speech], "observedImpact":"", "relationshipMove":"", "publicAim":""}, optional "observableManifestations":[{"modality":"movement|posture|expression|voice","proposal":"","sourceEventIds":[]}], optional "narrativeCues":[{"access":"self_inner|omniscient","description":"","sourceEventIds":[]}]}. A manifestation is only a proposed outward detail for the following expression; it is not yet an observation or event. Copy one or more exact sourceEventIds from turnObservation and never name a hidden cause, trait label, score, or private state in it. A narrative cue is narrator-only, uses exact sourceEventIds, and must not restate raw private state or control labels. Omit both arrays when no grounded cue is useful. Compare the prior anticipation, its observed social consequence, and the present result before selecting the brief. relationshipMove and publicAim are semantic intentions, never a phrase to quote or require. Never invent mechanics, hidden identity, location, or numeric results.`,
           JSON.stringify(input),
           {
             tier: "fast",
@@ -1540,6 +1835,8 @@ Return JSON only: {"delta": {"interior":{"speechAppraisal":{"anticipatedImpact":
           }),
           delta: parsed.data.delta,
           expressionBrief: parsed.data.expressionBrief,
+          observableManifestations: parsed.data.observableManifestations,
+          narrativeCues: parsed.data.narrativeCues,
         };
       } catch (error) {
         return this.fallbackOrThrow(error, () => this.fallback.advanceCharacterPsyche(input));
@@ -1582,9 +1879,31 @@ Return JSON only with privateMemory, currentGoal, emotion, beliefs, observations
     if (input.contextMode === "compact") {
       const counterpartLabel = input.counterpart?.displayName ?? "相手";
       try {
+        // Rebuild the contract at the provider boundary. Type casts, stale
+        // callers, or spread objects must not smuggle deep-psyche fields into
+        // the conscious expression request.
+        const consciousInput = {
+          contextMode: "compact" as const,
+          phase: input.phase,
+          character: input.character,
+          ...(input.structuredSelf ? { structuredSelf: input.structuredSelf } : {}),
+          psyche: {
+            emotion: input.psyche.emotion,
+            speechStyle: input.psyche.speechStyle,
+            selfReference: input.psyche.selfReference,
+          },
+          turnObservation: input.turnObservation,
+          conversation: input.conversation,
+          relevantMemory: input.relevantMemory,
+          expressionBrief: input.expressionBrief,
+          observableManifestations: input.observableManifestations ?? [],
+          ...(input.social ? { social: input.social } : {}),
+          ...(input.counterpart ? { counterpart: input.counterpart } : {}),
+          ...(input.decision ? { decision: input.decision } : {}),
+        };
         const data = (await this.chatJson(
-          `You express one fictional character through one organic public Japanese line. Do not expose private intent, control IDs, or chain-of-thought. expressionBrief selects the relation between an observer-safe fresh-result thread and one compact conversation thread. psyche.interior.speechAppraisal privately assesses the prior expression's effect and its consequence for the character or relationship, then commits this expression's intended effect, consequence, and continuity basis. Carry out that living evaluation through expression rather than naming it. Carry out expressionBrief's semantic relationshipMove and publicAim in the present situation; neither field is wording to quote. advance develops the relation through its fresh leverage, reframe changes its angle, reiterate intentionally holds a character-grounded line, and withhold is a meaningful visible pause. Do not substitute a prior utterance for the selected semantic move merely because it is familiar. Do not invent mechanics, hidden identity, current condition, or facts absent from the compact input. Return JSON only: {"speech": string, "nextAction"?: object}.`,
-          JSON.stringify(input),
+          CHARACTER_EXPRESSION_COMPACT_SYSTEM_PROMPT,
+          JSON.stringify(consciousInput),
           {
             tier: "fast",
             label: "advanceCharacterAgentCompact",
@@ -1605,13 +1924,19 @@ Return JSON only with privateMemory, currentGoal, emotion, beliefs, observations
             lastActionResult: "",
             conversationHistory: [],
             dialogueThread: { topic: "", unresolvedMove: "", anchoredExchange: null },
-            interior: input.psyche.interior,
           },
           speech: coerceCharacterSpeech(
             data.speech === null || data.speech === undefined ? null : String(data.speech),
             { foeName: counterpartLabel },
           ),
           proposedAction: input.decision ? boundGeneratedJson(data.nextAction) : null,
+          realizedManifestation:
+            typeof data.realizedManifestation === "string" &&
+              input.observableManifestations?.some((candidate) =>
+                candidate.proposal === data.realizedManifestation
+              )
+              ? data.realizedManifestation
+              : null,
         };
       } catch (error) {
         return this.fallbackOrThrow(error, () => this.fallback.advanceCharacterAgent(input));
@@ -1637,12 +1962,14 @@ The perception frame is authoritative. Preserve currentAccess, identityKnowledge
 counterpart is present only when identityKnowledge is identified. Its condition is absent unless current access supports it; never reconstruct a missing name or condition from control IDs or other fields.
 All IDs, contact IDs, percept IDs, skillId, and JSON keys are non-linguistic control metadata. Copy skillId only into nextAction when selecting that validated action; never speak an ID.
 Express the committed psyche through one organic public line. This is an expression stage, not a second private deliberation: speechAppraisal.nextApproach and continuityDecision are the committed character-authored approach that this line must carry out. Treat speechMode as the selected source of attention: action_reaction centers the fresh actionReaction; conversation_continuation develops the relational thread; weave makes a deliberate connection between both. Its unspokenIntent and speechMode are private and must never be named to the counterpart; convey them only through wording, pauses, gaze, posture, or other observable expression.
+observableManifestations, when present, are bounded outward proposals, not observations already committed. Realize at most one and copy its proposal exactly into realizedManifestation; otherwise return null. Never invent another manifestation or reveal its hidden cause.
 The character's own assessment of whether their earlier words landed is binding for expression. continuityDecision=advance must develop the prior approach through fresh evidence; reframe must shift its public angle, tone, or focus; reiterate is the only choice that intentionally restates a stance; withhold must be a meaningful visible pause. When speechAppraisal.observedImpact says the prior approach failed, stalled, or was ignored, enact speechAppraisal.nextApproach and the selected continuityDecision rather than merely restating the previous line or its unresolved demand. Repetition remains available only when protectiveStance, the fresh result, and the appraisal together make reiteration itself the meaningful chosen act. Do not output chain-of-thought or step-by-step reasoning.
 selfReference MUST equal social.selfReference when supplied and non-null; otherwise it MUST equal character.identity.selfNames[0] when present. When both are unavailable, speech must avoid inventing a first-person name or pronoun. social is frozen relationship context, not permission to invent history or current perception. Any spoken line must consistently use the committed psyche's speechStyle.
 Return JSON only:
 {
   "speech": string,
-  "nextAction"?: object
+  "nextAction"?: object,
+  "realizedManifestation": string|null
 }
 ${CHARACTER_ACTION_PROPOSAL_OUTPUT_RULES}
 speech is this character's ACTUAL utterance or stage reaction after observing the committed turn. It is authoritative source material for later public placement and is also stored as this character's own lastSpeech. ALWAYS required (never null/empty). One short Japanese line:
@@ -1665,11 +1992,27 @@ The narrator may later choose this line's display position and punctuation, but 
         { foeName: counterpartLabel },
       );
       return {
-        state: input.psyche,
+        state: {
+          privateMemory: "",
+          currentGoal: "",
+          emotion: input.psyche.emotion,
+          beliefs: [],
+          observations: [],
+          speechStyle: input.psyche.speechStyle,
+          selfReference: input.psyche.selfReference,
+          lastSpeech: speech,
+        },
         speech,
         proposedAction: input.decision
           ? boundGeneratedJson(data.nextAction)
           : null,
+        realizedManifestation:
+          typeof data.realizedManifestation === "string" &&
+            input.observableManifestations?.some((candidate) =>
+              candidate.proposal === data.realizedManifestation
+            )
+            ? data.realizedManifestation
+            : null,
       };
     } catch (error) {
       return this.fallbackOrThrow(error, () => this.fallback.advanceCharacterAgent(input));
@@ -1747,71 +2090,10 @@ JSON only: { "focus": "self"|"foe"|"external"|"both" }`,
   ): Promise<NarrationResult> {
     if (!this.client) return this.fallback.narrateTurn(input);
     try {
-      const styleBlock = input.styleInstruction?.trim()
-        ? `Narration style「${input.styleName ?? "custom"}」: ${input.styleInstruction.trim()}`
-        : "Narration style: 落ち着いた標準の物語調。";
-      const focus: NarrationFocus = input.view.perception.mode === "self"
-        ? "self"
-        : input.view.perception.mode === "opponent"
-          ? "foe"
-          : input.view.perception.mode === "omniscient"
-            ? "both"
-            : "external";
-      const focusBlock = focusInstruction(focus);
-      const turnBrief = buildNarrationTurnBrief(input.view);
-      const sideAName = input.view.participantLabels.a;
-      const sideBName = input.view.participantLabels.b;
-      const requiredSpeakers = input.view.perception.mode === "self"
-        ? [
-            sideAName,
-            ...(input.view.perception.frame.counterpart.currentAccess === "none"
-              ? []
-              : [sideBName]),
-          ]
-        : input.view.perception.mode === "opponent"
-          ? [
-              ...(input.view.perception.frame.counterpart.currentAccess === "none"
-                ? []
-                : [sideAName]),
-              sideBName,
-            ]
-          : [sideAName, sideBName];
+      const prompt = buildNarrateTurnPromptMaterial(input);
       const data = (await this.chatJson(
-        `Narrate a turn-based fictional confrontation in Japanese. The supplied brief is the sole authoritative source for world state, resolved events, actions, perception, and participant labels. It is immutable and may be physical, ranged, technological, psychic, social, comedic, cute, or abstract. Never add swordplay, bodily injury, grimness, or martial framing unless the brief establishes them.
-${styleBlock}
-${focusBlock}
-${NARRATION_IDENTIFIER_RULES}
-${NARRATION_PROFILE_RULES}
-${NARRATION_CONTINUITY_RULES}
-${NARRATOR_RECOGNITION_RULES}
-Perspective gate overrides style instruction: never reveal inner life that is not present in innerDigests.
-For self or opponent mode, observationBoundary is the complete observation boundary. Preserve unidentified contacts, missing attribution, inaccessible subjects, and qualitative-only effect or reserve cues. Do not reconstruct facts omitted from the brief.
-Use staticBackground flavor sparingly — it describes the stable setting, while turnResult.canonicalChange says whether this turn changed the environment.
-Build 2–4 non-empty narrator lines around turnResult.actions and turnResult.resolvedEvents: lead with this turn's concrete action (what was attempted and what visibly happened), then contact or reaction, then a committed consequence grounded in those events.
-${input.view.causalProjection
-          ? "Each turnResult.actions item keeps its name and description beside its structured causality. Use that causality as the authoritative cause-to-result supplement, including resolutionExplanation when an attempted action changed or failed. Use currentState.participantConditions when a real continuing condition affects the next exchange. Keep turnResult.observedConsequences and observedSemanticChangeKinds explicitly unattributed; never connect them to an action by guesswork.\n"
-          : ""}Do not invent a soft "who is winning" scoreboard line every turn. Only mention a shift in advantage when the supplied events or action beats clearly support a real change (position, hold, failure, recovery, or decisive contact).
-When drama.progressionHint is present, treat it as optional guidance for stuck loops (e.g. repeated actions or one-sided waiting), not as a mandatory form-evaluation template.
-Prefer opening on an actor's move rather than pure ambient scenery when recentNarration already set the scene.
-Do not repeat or closely paraphrase recentNarration or either character's recentSpeeches.
-When drama.environmentBeatDue is true, incorporate the corresponding accepted change from turnResult and currentState. Do not treat staticBackground as a new event.
-If turnResult marks a finishing blow (とどめ / 決め手 / 戦闘不能), center the turn on that decisive action.
-characterSpeeches were already authored by isolated character agents from their own cognition and perception. Return every supplied line exactly once with the same sourceSide. For each supplied line, freely write a natural speaker display label from the current view, its displayContext, and narratorContinuity; displayLabel is only a fallback. Preserve the viewpoint's uncertainty or misidentification. Do not reconstruct a canonical identity omitted from these presentation inputs. This label is rendering only. You may change punctuation or typographic surface only when the words, factual content, intent, and stage-reaction/dialogue distinction remain unchanged. Choose afterNarratorLine (-1 before the first line, otherwise a zero-based narrator-line index) to place each speech naturally among the narrator lines.
-You MAY add a speech or visible/audible reaction for a third-party or scene entity when currentState and observationBoundary support that entity's presence and agency. For such a scene-authored line, set sourceSide to null. Do not use this permission to add another line for side A or B, or to invent an unsupported person, object agency, action, outcome, or private fact.
-Do not add a speech or reaction for an inaccessible counterpart; characterSpeeches is already filtered to the permitted speakers: ${JSON.stringify(requiredSpeakers)}.
-JSON: { "turn": number, "focus": "${focus}", "narrator": string[], "speeches": [ { "sourceSide": "a"|"b"|null, "speaker": string, "text": string, "afterNarratorLine": number } ], "recognitionUpdates": [ { "subjectRef": string, "recognizedAs": string, "identityKnowledge": "unknown"|"suspected"|"identified", "continuity": "same_entity"|"possibly_same_entity"|"unlinked" } ] }
-Do not mention numeric HP/MP/ATK values.`,
-        JSON.stringify({
-          brief: turnBrief,
-          focus,
-          recentNarration: input.recentNarration?.slice(-4) ?? [],
-          recentSpeeches: input.recentSpeeches?.slice(-4) ?? [],
-          drama: input.drama ?? null,
-          innerDigests: input.innerDigests ?? [],
-          characterSpeeches: narratorVisibleCharacterSpeeches(
-            input.characterSpeeches ?? [],
-          ),
-        }),
+        prompt.system,
+        prompt.user,
         {
           tier: "fast",
           label: "narrateTurn",
@@ -1940,6 +2222,7 @@ ${styleBlock}
 ${focusInstruction(focus)}
 ${NARRATION_IDENTIFIER_RULES}
 ${NARRATION_PROFILE_RULES}
+structuredCharacterContexts is perspective-compiled. Use staticProjection only as bounded rendering context, never as a new event; narrativeCues are committed observable cues. Never infer omitted inner fields, raw dynamics, hidden triggers, or causes.
 ${NARRATION_CONTINUITY_RULES}
 ${NARRATOR_RECOGNITION_RULES}
 Include: atmosphere of the field, each participant's opening presence, and rivalry or fate (因縁).
@@ -1967,6 +2250,7 @@ JSON: { "turn": 0, "narrator": string[], "speeches": [ { "sourceSide": "a"|"b"|n
           profileAnchors: input.profileAnchors,
           sceneStateFacts: input.sceneStateFacts ?? [],
           innerDigests: input.innerDigests ?? [],
+          structuredCharacterContexts: input.structuredCharacterContexts ?? {},
           narratorContinuity: input.narratorContinuity ?? null,
           recognitionSubjects: input.recognitionSubjects ?? [],
           characterSpeeches: narratorVisibleCharacterSpeeches(
@@ -2056,6 +2340,7 @@ JSON: { "before": string[], "after": string[], "speeches": [ { "sourceSide": "a"
           profileAnchors: input.profileAnchors,
           sceneStateFacts: input.sceneStateFacts ?? [],
           innerDigests: input.innerDigests ?? [],
+          structuredCharacterContexts: input.structuredCharacterContexts ?? {},
           narratorContinuity: input.narratorContinuity ?? null,
           recognitionSubjects: input.recognitionSubjects ?? [],
           characterSpeeches: narratorVisibleCharacterSpeeches(
@@ -2300,7 +2585,7 @@ Rules:
       const data = (await this.chatJson(
         `Frame an already-decided turn-limit judgment for the user in Japanese.
 ${styleBlock}
-The adjudicator has exclusive authority over winnerSide and adjudicationReason. Recent public narration is context for tone and continuity only. Do not reconsider, contradict, paraphrase, or restate the winner, loser, draw, reason, actions, or outcomes. Do not add character speech. Return only optional atmospheric framing that can surround an immutable server-rendered verdict line.
+The server has exclusive authority over the immutable verdict line. presentationProjection is a deterministic audience-safe projection, not the adjudicator's audit record. You may naturally express at most one supplied basisLines meaning in the framing. Never expose JSON keys, scoring criteria, resource bands, engine terms, or an internal evaluation process. Recent public narration is context for tone and continuity only. Do not reconsider, contradict, paraphrase, or restate the winner, loser, draw, action, or outcome. Do not invent another basis, action, result, motive, or character speech. Return only optional framing that can surround the immutable server-rendered verdict line.
 JSON: { "before": string[], "after": string[] }. Each array has at most 2 short lines.`,
         JSON.stringify({
           turn: input.turn,
@@ -2309,11 +2594,7 @@ JSON: { "before": string[], "after": string[] }. Each array has at most 2 short 
             a: input.sideAName,
             b: input.sideBName,
           },
-          judgment: {
-            winnerSide: input.winnerSide,
-            winnerName: input.winnerName,
-            reason: input.adjudicationReason,
-          },
+          presentationProjection: input.presentationProjection,
           recentPublicNarration: input.recentPublicNarration.slice(-8),
         }),
         {

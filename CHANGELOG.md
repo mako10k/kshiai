@@ -5,6 +5,54 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 
 ## [Unreleased]
 
+## [0.18.0] - 2026-08-13
+
+### Added
+
+- Adds version-2 structured character definitions with immutable generation
+  envelopes, disclosure policies, claim-validated public profiles, and explicit
+  owner confirmation before activation.
+- Adds the owner-facing `このキャラを最新版に更新` workflow. Unsupported
+  characters remain manageable but are excluded from match, opponent, random,
+  and direct battle selection until a compatible generation is activated.
+- Adds perspective-specific external, self-inner, and omniscient character
+  projections for narration, plus an appearance-only portrait prompt compiler.
+- Adds grounded observable manifestations that become public battle events only
+  after an observer-safe source event and compatible committed expression exist.
+- Adds a deterministic narrator presentation-focus projection for emphasizing
+  one committed consequence without changing battle authority.
+
+### Changed
+
+- Separates internal turn-limit adjudication rationale from the public verdict.
+  The existing judgment narrator receives only a bounded audience-safe factor
+  projection and cannot reconsider the canonical result.
+- Removes raw latent `interior` state from conscious character-expression
+  inputs while retaining it inside the private psyche stage.
+- New battles bind the exact ready character generation and frozen compiler
+  inputs without creating or activating an asset generation during battle start.
+- V2 portrait revisions and restore operations append immutable character
+  generations; V2 portrait prompts exclude background, relationships,
+  capabilities, equipment, and private psyche fields.
+
+### Database
+
+- Adds `character_asset_states` and owner-scoped
+  `character_authoring_attempts` in
+  `0017_structured_character_assets.sql`. The tables are additive and existing
+  character rows are deliberately treated as unsupported until their owner
+  explicitly upgrades them.
+
+### Operations
+
+- This pre-public compatibility cutover does not bulk-migrate or infer hidden
+  character structure. After deployment, each character intended for a new
+  battle must be explicitly upgraded and accepted by its owner.
+- Application rollback keeps migration `0017` in place. The v0.17.4 application
+  ignores the new tables; V2 generations created after deployment must not be
+  assumed to preserve V2 selection semantics while that older application is
+  serving traffic.
+
 ## [0.17.4] - 2026-08-13
 
 ### Fixed

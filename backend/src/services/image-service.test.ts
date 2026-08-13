@@ -4,11 +4,14 @@ import {
   CharacterSheetSchema,
   defaultParameters,
   type BattlefieldPreset,
+  type CharacterImageBriefV2,
 } from "@kshiai/shared";
 import type { ImageProvider } from "../image/index.js";
 import {
   buildBattlefieldImagePrompt,
+  buildCharacterPortraitPrompt,
   generateAndStoreCharacterPortrait,
+  publicRevisionedMediaPath,
 } from "./image-service.js";
 
 describe("battlefield image prompts", () => {
@@ -45,6 +48,47 @@ describe("battlefield image prompts", () => {
 });
 
 describe("character image failure", () => {
+  it("uses only the V2 appearance brief and explicit visual adjustment", () => {
+    const sheet = CharacterSheetSchema.parse({
+      id: "char-image-brief",
+      ownerUserId: "user-1",
+      displayName: "秘密名",
+      tags: ["secret-history"],
+      createdAt: "2026-08-03T00:00:00.000Z",
+      updatedAt: "2026-08-03T00:00:00.000Z",
+      appearance: { summary: "legacy summary", visualPrompt: "legacy visual" },
+      traits: ["王都を救った過去"],
+      parameters: defaultParameters(),
+      skills: [],
+      weapon: { name: "秘密の剣", description: "history", atkBonus: 1, defBonus: 0, magBonus: 0 },
+      armor: null,
+      combatFlags: { canFight: true, irreversibleIncapacitated: false },
+      narrativeBlurb: "秘密の関係を持つ。",
+    });
+    const brief: CharacterImageBriefV2 = {
+      contractVersion: 2,
+      publicSummary: "赤い外套をまとう成人",
+      details: ["琥珀色の瞳"],
+      visualPrompt: "adult traveler, red cloak, amber eyes",
+    };
+    const prompt = buildCharacterPortraitPrompt(sheet, "rainy lighting", brief);
+    assert.match(prompt, /red cloak/);
+    assert.match(prompt, /琥珀色の瞳/);
+    assert.match(prompt, /rainy lighting/);
+    assert.doesNotMatch(prompt, /秘密名|王都|秘密の剣|秘密の関係|legacy/);
+  });
+
+  it("builds an immutable local URL for a V2 media revision", () => {
+    assert.equal(
+      publicRevisionedMediaPath("characters", "char-1", "img-abc123"),
+      "/api/media/characters/char-1.img-abc123.jpg",
+    );
+    assert.throws(
+      () => publicRevisionedMediaPath("characters", "char-1", "../escape"),
+      /invalid_media_revision_id/,
+    );
+  });
+
   it("rejects instead of returning a persisted placeholder URL", async () => {
     const sheet = CharacterSheetSchema.parse({
       id: "char-image-failure",

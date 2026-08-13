@@ -397,11 +397,15 @@ export const api = {
     }),
   logout: () =>
     request<{ ok: boolean }>("/api/auth/logout", { method: "POST" }),
-  listCharacters: (q?: string, page?: { limit?: number; offset?: number }) => {
+  listCharacters: (
+    q?: string,
+    page?: { limit?: number; offset?: number; selectable?: boolean },
+  ) => {
     const sp = new URLSearchParams();
     if (q) sp.set("q", q);
     if (page?.limit != null) sp.set("limit", String(page.limit));
     if (page?.offset != null) sp.set("offset", String(page.offset));
+    if (page?.selectable) sp.set("selectable", "true");
     const qs = sp.toString();
     return request<{
       characters: CharacterPublic[];
@@ -482,7 +486,11 @@ export const api = {
       };
     }>(
       "/api/characters/generate",
-      { method: "POST", body: JSON.stringify({ prompt }) },
+      {
+        method: "POST",
+        headers: { "Idempotency-Key": crypto.randomUUID() },
+        body: JSON.stringify({ prompt }),
+      },
     ),
   chatCharacterDraft: (id: string, message: string) =>
     request<{
@@ -513,14 +521,39 @@ export const api = {
       method: "DELETE",
     }),
   chatCharacter: (id: string, message: string) =>
-    request<{ character: CharacterPublic; assistantMessage: string }>(
+    request<{
+      draft: {
+        id: string;
+        character: CharacterPublic;
+        assistantMessage: string;
+      };
+      requiresConfirmation: true;
+    }>(
       `/api/characters/${id}/chat`,
-      { method: "POST", body: JSON.stringify({ message }) },
+      {
+        method: "POST",
+        headers: { "Idempotency-Key": crypto.randomUUID() },
+        body: JSON.stringify({ message }),
+      },
     ),
+  upgradeCharacter: (id: string) =>
+    request<{
+      draft: {
+        id: string;
+        character: CharacterPublic;
+        assistantMessage: string;
+      };
+    }>(`/api/characters/${id}/upgrade`, {
+      method: "POST",
+      headers: { "Idempotency-Key": crypto.randomUUID() },
+    }),
   restoreCharacterRevision: (id: string) =>
     request<{ character: CharacterPublic; assistantMessage: string }>(
       `/api/characters/${id}/restore-revision`,
-      { method: "POST" },
+      {
+        method: "POST",
+        headers: { "Idempotency-Key": crypto.randomUUID() },
+      },
     ),
   getCharacterImprovement: (id: string) =>
     request<CharacterImprovementPublic>(`/api/characters/${id}/improvement`),
@@ -547,12 +580,16 @@ export const api = {
       quota?: ImageGenQuota;
     }>(`/api/characters/${id}/image`, {
       method: "POST",
+      headers: { "Idempotency-Key": crypto.randomUUID() },
       body: JSON.stringify(extra ? { extra } : {}),
     }),
   toggleCharacterImage: (id: string) =>
     request<{ character: CharacterPublic; assistantMessage: string }>(
       `/api/characters/${id}/image/toggle`,
-      { method: "POST" },
+      {
+        method: "POST",
+        headers: { "Idempotency-Key": crypto.randomUUID() },
+      },
     ),
   imageQuota: (id: string) =>
     request<{ quota: ImageGenQuota }>(`/api/characters/${id}/image-quota`),

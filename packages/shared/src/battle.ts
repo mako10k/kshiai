@@ -449,6 +449,26 @@ export const CombatantStateSchema = z.object({
 });
 export type CombatantState = z.infer<typeof CombatantStateSchema>;
 
+/** Private, bounded proposal. It is not observable until the server commits it. */
+export const CharacterObservableManifestationV2Schema = z.object({
+  modality: z.enum(["movement", "posture", "expression", "voice"]),
+  proposal: z.string().min(1).max(240),
+  sourceEventIds: z.array(z.string().min(1).max(120)).max(8),
+}).strict();
+export type CharacterObservableManifestationV2 = z.infer<
+  typeof CharacterObservableManifestationV2Schema
+>;
+
+/** Narrator-only dynamic cue. Access is resolved again at the narration boundary. */
+export const CharacterNarrativeCueV2Schema = z.object({
+  access: z.enum(["self_inner", "omniscient", "external_observable"]),
+  description: z.string().min(1).max(240),
+  sourceEventIds: z.array(z.string().min(1).max(120)).max(8),
+}).strict();
+export type CharacterNarrativeCueV2 = z.infer<
+  typeof CharacterNarrativeCueV2Schema
+>;
+
 export const SituationSchema = z.object({
   scene: z.string(),
   notes: z.string().default(""),
@@ -462,7 +482,8 @@ export type Situation = z.infer<typeof SituationSchema>;
 export type TurnEvent = {
   id?: string;
   type: "damage" | "heal" | "rest" | "parameter" | "defend" | "wait" |
-    "reflect" | "status" | "situation" | "info" | "utterance" | "free_action";
+    "reflect" | "status" | "situation" | "info" | "utterance" |
+    "manifestation" | "free_action";
   actorName?: string;
   actorSide?: "a" | "b";
   targetName?: string;
@@ -479,6 +500,12 @@ export type TurnEvent = {
     volume: "quiet" | "normal" | "loud";
     articulation: "clear" | "impaired";
     language: string;
+  };
+  manifestation?: {
+    modality: "movement" | "posture" | "expression" | "voice";
+    description: string;
+    sourceEventIds: string[];
+    carrierEventId: string;
   };
   summary: string;
 };
@@ -497,6 +524,7 @@ export const TurnEventSchema: z.ZodType<TurnEvent> = z.object({
     "situation",
     "info",
     "utterance",
+    "manifestation",
     "free_action",
   ]),
   actorName: z.string().optional(),
@@ -518,6 +546,12 @@ export const TurnEventSchema: z.ZodType<TurnEvent> = z.object({
     volume: z.enum(["quiet", "normal", "loud"]),
     articulation: z.enum(["clear", "impaired"]),
     language: z.string().min(1).max(40),
+  }).strict().optional(),
+  manifestation: z.object({
+    modality: CharacterObservableManifestationV2Schema.shape.modality,
+    description: z.string().min(1).max(240),
+    sourceEventIds: z.array(z.string().min(1).max(120)).min(1).max(8),
+    carrierEventId: z.string().min(1).max(120),
   }).strict().optional(),
   summary: z.string(),
 }).superRefine((event, ctx) => {
@@ -541,6 +575,21 @@ export const TurnEventSchema: z.ZodType<TurnEvent> = z.object({
       code: z.ZodIssueCode.custom,
       path: ["utterance"],
       message: "only utterance events may carry an utterance payload",
+    });
+  }
+  if (event.type === "manifestation") {
+    if (!event.id || !event.actorSide || !event.manifestation) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["manifestation"],
+        message: "manifestation events require id, actorSide, and manifestation payload",
+      });
+    }
+  } else if (event.manifestation !== undefined) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["manifestation"],
+      message: "only manifestation events may carry a manifestation payload",
     });
   }
 });
@@ -804,6 +853,10 @@ export type CharacterDeepPsycheDelta = z.infer<typeof CharacterDeepPsycheDeltaSc
 export const CharacterDeepPsycheAdvanceSchema = z.object({
   delta: CharacterDeepPsycheDeltaSchema,
   expressionBrief: CharacterExpressionBriefSchema,
+  observableManifestations: z.array(
+    CharacterObservableManifestationV2Schema,
+  ).max(2).optional(),
+  narrativeCues: z.array(CharacterNarrativeCueV2Schema).max(2).optional(),
 }).strict();
 export type CharacterDeepPsycheAdvance = z.infer<typeof CharacterDeepPsycheAdvanceSchema>;
 
@@ -832,6 +885,10 @@ export const CharacterDeepPsycheCompactAdvanceSchema = z.object({
     }),
   }),
   expressionBrief: CharacterExpressionBriefSchema,
+  observableManifestations: z.array(
+    CharacterObservableManifestationV2Schema,
+  ).max(2).optional(),
+  narrativeCues: z.array(CharacterNarrativeCueV2Schema).max(2).optional(),
 }).strict().superRefine((value, context) => {
   const appraisal = value.delta.interior.speechAppraisal;
   const expectedBasis = appraisal.continuityDecision === "reiterate"
@@ -891,6 +948,83 @@ export const PsycheTraitProfileV1Schema = z.object({
   expressionRestraint: PsycheActivationSchema,
 }).strict();
 export type PsycheTraitProfileV1 = z.infer<typeof PsycheTraitProfileV1Schema>;
+
+/** Frozen descriptive disposition for the private deep-psyche consumer. */
+export const CharacterDeepPsycheStaticProjectionV2Schema = z.object({
+  contractVersion: z.literal(2),
+  background: z.array(z.object({
+    id: z.string().min(1).max(120),
+    text: z.string().min(1).max(600),
+    selfAwareness: z.enum(["unaware", "partial", "aware"]),
+  }).strict()).max(16),
+  tendencies: z.array(z.object({
+    id: z.string().min(1).max(120),
+    tendency: z.string().min(1).max(600),
+    manifestation: z.string().min(1).max(600),
+    backgroundRefs: z.array(z.string().min(1).max(120)).max(6),
+    selfAwareness: z.enum(["unaware", "partial", "aware"]),
+  }).strict()).max(12),
+  coreNeeds: z.array(z.object({
+    id: z.string().min(1).max(120),
+    text: z.string().min(1).max(600),
+    selfAwareness: z.enum(["unaware", "partial", "aware"]),
+  }).strict()).max(6),
+}).strict();
+export type CharacterDeepPsycheStaticProjectionV2 = z.infer<
+  typeof CharacterDeepPsycheStaticProjectionV2Schema
+>;
+
+/** Frozen self-aware profile for conscious action and expression consumers. */
+export const CharacterConsciousSelfStaticProjectionV2Schema = z.object({
+  contractVersion: z.literal(2),
+  displayName: z.string().min(1).max(48),
+  background: z.array(z.string().min(1).max(600)).max(16),
+  tendencies: z.array(z.string().min(1).max(600)).max(12),
+  actionPrinciples: z.array(z.string().min(1).max(320)).max(12),
+  speech: z.object({
+    register: z.string().max(160),
+    cadence: z.string().max(160),
+    sentenceLength: z.enum(["short", "mixed", "long"]),
+    vocabularyHabits: z.array(z.string().min(1).max(80)).max(12),
+    examples: z.array(z.string().min(1).max(240)).max(2),
+  }).strict(),
+}).strict();
+export type CharacterConsciousSelfStaticProjectionV2 = z.infer<
+  typeof CharacterConsciousSelfStaticProjectionV2Schema
+>;
+
+/** Static character facts compiled separately for each narrator access mode. */
+export const CharacterNarratorStaticProjectionV2Schema = z.object({
+  contractVersion: z.literal(2),
+  access: z.enum(["external", "self_inner", "omniscient"]),
+  appearance: z.array(z.string().min(1).max(600)).max(12),
+  innerBackground: z.array(z.string().min(1).max(600)).max(10),
+  innerDisposition: z.array(z.string().min(1).max(600)).max(10),
+  observablePatterns: z.array(z.string().min(1).max(600)).max(10),
+  behaviorPrinciples: z.array(z.string().min(1).max(320)).max(10),
+}).strict();
+export type CharacterNarratorStaticProjectionV2 = z.infer<
+  typeof CharacterNarratorStaticProjectionV2Schema
+>;
+
+export const CharacterNarratorProjectionSetV2Schema = z.object({
+  external: CharacterNarratorStaticProjectionV2Schema,
+  selfInner: CharacterNarratorStaticProjectionV2Schema,
+  omniscient: CharacterNarratorStaticProjectionV2Schema,
+}).strict();
+export type CharacterNarratorProjectionSetV2 = z.infer<
+  typeof CharacterNarratorProjectionSetV2Schema
+>;
+
+export const CharacterBattleCompilerInputsV2Schema = z.object({
+  psycheTraits: PsycheTraitProfileV1Schema,
+  deepPsyche: CharacterDeepPsycheStaticProjectionV2Schema,
+  consciousSelf: CharacterConsciousSelfStaticProjectionV2Schema,
+  narratorViews: CharacterNarratorProjectionSetV2Schema.optional(),
+}).strict();
+export type CharacterBattleCompilerInputsV2 = z.infer<
+  typeof CharacterBattleCompilerInputsV2Schema
+>;
 
 export const PsycheRelationshipStateV1Schema = z.object({
   trust: PsycheRelationshipValueSchema,
@@ -1287,6 +1421,32 @@ export const BattleAdjudicationSchema = z.object({
 }).strict();
 export type BattleAdjudication = z.infer<typeof BattleAdjudicationSchema>;
 
+/** Audience-safe terminal basis; never contains raw adjudication prose. */
+export const JudgmentPresentationProjectionSchema = z.object({
+  schemaVersion: z.literal(1),
+  verdictKind: z.enum(["win", "draw"]),
+  winnerLabel: z.string().min(1).max(240).nullable(),
+  basisLines: z.array(z.string().min(1).max(240)).min(1).max(2),
+}).strict().superRefine((projection, ctx) => {
+  if (projection.verdictKind === "win" && projection.winnerLabel === null) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["winnerLabel"],
+      message: "win projection requires a winner label",
+    });
+  }
+  if (projection.verdictKind === "draw" && projection.winnerLabel !== null) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["winnerLabel"],
+      message: "draw projection cannot carry a winner label",
+    });
+  }
+});
+export type JudgmentPresentationProjection = z.infer<
+  typeof JudgmentPresentationProjectionSchema
+>;
+
 export const CharacterActionProposalRejectionReasonSchema = z.enum([
   "no_decision_context",
   "missing_proposal",
@@ -1605,8 +1765,8 @@ export interface BattleAssetManifest {
   schemaVersion: 1;
   boundAt: string;
   characters: {
-    a: { assetId: string; generationId: string; contentDigest: string; snapshot: CharacterSheet };
-    b: { assetId: string; generationId: string; contentDigest: string; snapshot: CharacterSheet };
+    a: { assetId: string; generationId: string; contentDigest: string; snapshot: CharacterSheet; compilerInputsV2?: CharacterBattleCompilerInputsV2 };
+    b: { assetId: string; generationId: string; contentDigest: string; snapshot: CharacterSheet; compilerInputsV2?: CharacterBattleCompilerInputsV2 };
   };
   narrationStyle: {
     assetId: string;
@@ -1643,12 +1803,14 @@ export const BattleAssetManifestSchema = z.object({
       generationId: z.string().min(1),
       contentDigest: z.string().regex(/^[a-f0-9]{64}$/).optional().default("0".repeat(64)),
       snapshot: CharacterSheetSchema,
+      compilerInputsV2: CharacterBattleCompilerInputsV2Schema.optional(),
     }).strict(),
     b: z.object({
       assetId: z.string(),
       generationId: z.string().min(1),
       contentDigest: z.string().regex(/^[a-f0-9]{64}$/).optional().default("0".repeat(64)),
       snapshot: CharacterSheetSchema,
+      compilerInputsV2: CharacterBattleCompilerInputsV2Schema.optional(),
     }).strict(),
   }).strict(),
   narrationStyle: z.object({

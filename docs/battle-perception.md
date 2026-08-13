@@ -1,7 +1,7 @@
 # Observer-relative battle perception
 
 Status: accepted; prepare release 0.5.0
-Last updated: 2026-08-04
+Last updated: 2026-08-13
 Architecture decisions: `D23` through `D27` in [`design.llmthink.dsl`](design.llmthink.dsl)
 Implementation plan: [`battle-perception.pert`](battle-perception.pert)
 Handoff checkpoint: [`handoff-battle-perception-consumers-2026-08-04.md`](handoff-battle-perception-consumers-2026-08-04.md)
@@ -12,9 +12,13 @@ qualitative effect/reserve cues, and ephemeral narration views.
 
 Completed slice: `T_PROMPT_STRATEGY` has a versioned fixture matrix, independent
 world/sensory scoring, billed-call evaluation CLI, and exact provider/model
-decision registry. XAI remains the primary provider and
-`xai/grok-4-fast-non-reasoning` is reviewed as combined using native strict JSON
-Schema output. OpenAI remains fallback and is not a substitute for a failed XAI
+decision registry. XAI remains the primary provider and `xai/grok-4.3` with
+`reasoning_effort: none` is reviewed as combined using native strict JSON
+Schema output. The original post-retirement evidence requested the retired
+`grok-4-fast-non-reasoning` alias; xAI documents that exact alias as a redirect
+to `grok-4.3` with reasoning disabled, and the 2026-08-13 replay receipt confirms
+the effective response model. Runtime now names that effective contract
+directly. OpenAI remains fallback and is not a substitute for a failed XAI
 prompt evaluation. See
 [`perception-prompt-evaluation.md`](perception-prompt-evaluation.md).
 

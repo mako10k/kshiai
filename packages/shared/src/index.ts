@@ -38,3 +38,7 @@ export * from "./dialogue-pipeline.js";
 export * from "./dialogue-context.js";
 export * from "./psyche-reaction-policy.js";
 export * from "./character-focus-policy.js";
+export * from "./character-focus-policy.fixtures.js";
+export * from "./structured-assets.js";
+export * from "./structured-character.js";
+export * from "./character-manifestation.js";

@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "executionContract": {
+    "schemaVersion": 1,
+    "runId": "character-focus-replay-2026-08-13-v1",
+    "authorizedScope": "synthetic compact-expression ablation only",
+    "sourceBaselineSha": "9535a3d3090b6e39f465c368d5a23b29da9606d8",
+    "inputRevision": "character-focus-expression-ablation-v1",
+    "protocolDigest": "3268556a30eb6629008cb6a8a8528d5eaf6adb667bdfab30603068866a5d2be6",
+    "provider": "xai",
+    "baseUrl": "https://api.x.ai/v1",
+    "requestModel": "grok-4-fast-non-reasoning",
+    "expectedEffectiveModel": "grok-4.3",
+    "documentedRedirectReasoningEffort": "none",
+    "api": "chat.completions",
+    "responseFormat": "json_object",
+    "temperature": 0.65,
+    "maxCompletionTokens": 180,
+    "timeoutMs": 30000,
+    "concurrency": 4,
+    "logicalCallCeiling": 144,
+    "physicalAttemptCeiling": 160,
+    "totalTokenCeiling": 1000000,
+    "monetaryCeilingUsd": 1.5,
+    "priceSnapshotUsdPerMillion": {
+      "input": 1.25,
+      "output": 2.5,
+      "cachedInputDiscountAssumed": false
+    },
+    "retry": {
+      "providerFallback": false,
+      "contentRetry": false,
+      "samePayloadTransportRetry": "one retry for HTTP 429 or 503 only"
+    },
+    "reviewers": {
+      "minimumIndependentHumans": 2,
+      "llmJudge": false,
+      "armLabelsHiddenUntilScoresFrozen": true
+    }
+  },
+  "contractDigest": "c0c3e6114a1ae126d8fec4b4f47890fcdb89c32d70640f3959e013825ef65d74",
+  "protocolDigest": "3268556a30eb6629008cb6a8a8528d5eaf6adb667bdfab30603068866a5d2be6",
+  "preparedAt": "2026-08-13T03:32:53.737Z",
+  "completedAt": "2026-08-13T04:19:29.467Z",
+  "logicalCounts": {
+    "pending": 0,
+    "running": 0,
+    "succeeded": 144,
+    "failed": 0,
+    "blocked": 0
+  },
+  "physicalAttempts": 144,
+  "ceilings": {
+    "logicalWithinCeiling": true,
+    "physicalWithinCeiling": true,
+    "preflightTotalTokenUpperBound": 723579,
+    "totalTokenCeiling": 1000000,
+    "preflightMonetaryUpperBoundUsd": 0.9368737500000001,
+    "monetaryCeilingUsd": 1.5
+  },
+  "observedUsage": {
+    "inputTokens": 157674,
+    "outputTokens": 4272,
+    "totalTokens": 161946,
+    "complete": true,
+    "costUsd": 0.2077725
+  },
+  "responseModels": [
+    "grok-4.3"
+  ],
+  "artifacts": {
+    "unblindedStateSha256": "eba6aeac5b3bb0731c9f9b1bfee71d5585baeb50823de581de4d990043014b0b",
+    "blindedReviewPacketSha256": "4950964efc9707f4943e30dad986efb74c501ad7c8642d70883da4ace508ab71"
+  },
+  "acceptanceBoundary": "Provider execution and blinded packet preparation only; two independent human reviews remain required before scoring or arm reveal."
+}

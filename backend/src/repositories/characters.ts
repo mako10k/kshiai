@@ -12,6 +12,12 @@ import {
   OpponentBattleMemorySchema,
   toBattleCharacterSnapshot,
   type OpponentBattleMemory,
+  CharacterGenerationEnvelopeV2Schema,
+  CHARACTER_PROFILE_CLAIM_VALIDATOR_CONTRACT,
+  REQUIRED_CHARACTER_COMPILERS_V2,
+  defaultCharacterDisclosurePolicyV2,
+  legacyCharacterSheetToDefinitionV2,
+  projectCharacterProfileSourceV2,
 } from "@kshiai/shared";
 import type { CharacterReference } from "../llm/types.js";
 import { normalizeCharacterName } from "../character-name-uniqueness.js";
@@ -25,7 +31,17 @@ import {
   normalizeAccountKind,
   type AccountRealm,
 } from "../account-access.js";
-import { writeAssetGeneration } from "./asset-generations.js";
+import {
+  activateAssetGeneration,
+  appendAssetGeneration,
+  assetContentDigest,
+  writeAssetGeneration,
+} from "./asset-generations.js";
+import {
+  getCharacterCompatibility,
+  getReadyCharacterGenerationHistory,
+  listReadyCharacterIds,
+} from "./character-assets-v2.js";
 
 function parseSheet(json: unknown): CharacterSheet {
   const value = typeof json === "string" ? JSON.parse(json) : json;
@@ -133,7 +149,7 @@ export async function toPublicCharacterForViewer(
   ));
   const { getUserPublicById } = await import("./users.js");
   const owner = await getUserPublicById(sheet.ownerUserId);
-  return toPublicCharacter(
+  const dto = toPublicCharacter(
     sheet,
     viewerUserId,
     display,
@@ -145,6 +161,33 @@ export async function toPublicCharacterForViewer(
         }
       : null,
   );
+  const compatibility = await getCharacterCompatibility(sheet.id);
+  const isOwner = viewerUserId === sheet.ownerUserId;
+  const history = isOwner && compatibility.status === "ready"
+    ? await getReadyCharacterGenerationHistory(sheet.id)
+    : null;
+  const currentPortrait = history?.current.content.definition.appearance.portrait;
+  const previousPortrait = history?.previousPortrait;
+  return {
+    ...dto,
+    ...(isOwner && history
+      ? {
+          appearance: {
+            ...dto.appearance,
+            previousImageUrl: previousPortrait?.mediaId ?? null,
+          },
+          canToggleImage: Boolean(currentPortrait && previousPortrait),
+          canRestoreRevision: history.previous != null,
+          revisionSavedAt: history.previous ? history.current.createdAt : null,
+          revisionLabel: history.previous ? "直前の確定世代" : null,
+        }
+      : {}),
+    compatibility,
+    selectable: compatibility.status === "ready",
+    upgradeAction: isOwner && compatibility.status !== "ready"
+      ? { label: "このキャラを最新版に更新", targetSchemaVersion: 2 }
+      : null,
+  };
 }
 
 export async function listSheetsMissingIdentity(): Promise<CharacterSheet[]> {
@@ -174,9 +217,14 @@ function isActive(sheet: CharacterSheet): boolean {
 }
 
 /** All owner-scoped identifying names, used to prevent accidental reuse. */
-export async function listOwnedCharacterReservedNames(userId: string): Promise<string[]> {
+export async function listOwnedCharacterReservedNames(
+  userId: string,
+  excludeCharacterId?: string,
+): Promise<string[]> {
   const unique = new Map<string, string>();
-  for (const sheet of (await listOwnedSheets(userId)).filter(isActive)) {
+  for (const sheet of (await listOwnedSheets(userId))
+    .filter(isActive)
+    .filter((candidate) => candidate.id !== excludeCharacterId)) {
     const identity = ensureCharacterIdentityProperties(sheet).identity!;
     const names = [
       sheet.displayName,
@@ -236,7 +284,17 @@ export async function listCharactersForUser(
   );
   // Owner always sees private overall stats
   return {
-    characters: pageSheets.map((s) => toPublicCharacter(s, userId, ratingDisplay)),
+    characters: await Promise.all(pageSheets.map(async (sheet) => {
+      const compatibility = await getCharacterCompatibility(sheet.id);
+      return {
+        ...toPublicCharacter(sheet, userId, ratingDisplay),
+        compatibility,
+        selectable: compatibility.status === "ready",
+        upgradeAction: compatibility.status === "ready"
+          ? null
+          : { label: "このキャラを最新版に更新", targetSchemaVersion: 2 },
+      };
+    })),
     total,
     limit,
     offset,
@@ -338,7 +396,9 @@ export async function listPlayableOpponentSheets(
     if (isActive(sheet)) sheets.push(sheet);
   }
   const map = new Map(sheets.map((s) => [s.id, s]));
-  return [...map.values()];
+  const unique = [...map.values()];
+  const readyIds = await listReadyCharacterIds(unique.map((sheet) => sheet.id));
+  return unique.filter((sheet) => readyIds.has(sheet.id));
 }
 
 export async function updateCharacterVisibility(
@@ -389,13 +449,85 @@ export async function saveSheet(sheet: CharacterSheet): Promise<void> {
   };
   const json = JSON.stringify(withRecord);
   await withTransaction(async (connection) => {
-    await writeAssetGeneration(connection, {
-      assetType: "character",
-      assetId: withRecord.id,
-      schemaVersion: 1,
-      content: toBattleCharacterSnapshot(withRecord),
-      createdAt: withRecord.updatedAt,
-    });
+    const stored = await connection.query<{ id: string }>(
+      `SELECT id FROM characters WHERE id = $1`,
+      [withRecord.id],
+    );
+    const state = await connection.query<{ compatibility_status: string }>(
+      `SELECT compatibility_status FROM character_asset_states
+        WHERE character_id = $1`,
+      [withRecord.id],
+    );
+    // V2 authority is immutable. Legacy operational writers may refresh the
+    // transitional read model, but cannot replace the active V2 envelope.
+    let importedGeneration: Awaited<ReturnType<typeof appendAssetGeneration>> | null = null;
+    if (!stored.rows[0]) {
+      // Programmatic seed/import of a brand-new character is explicitly marked
+      // as an import. Existing rows are never auto-upgraded by this path.
+      const definition = legacyCharacterSheetToDefinitionV2(withRecord);
+      const disclosurePolicy = defaultCharacterDisclosurePolicyV2(definition);
+      const projection = projectCharacterProfileSourceV2(
+        definition,
+        disclosurePolicy,
+      );
+      const projectionDigest = assetContentDigest(projection);
+      const sourceDigest = assetContentDigest(withRecord.narrativeBlurb);
+      const description = withRecord.narrativeBlurb.trim() || withRecord.displayName;
+      const envelope = CharacterGenerationEnvelopeV2Schema.parse({
+        envelopeVersion: 2,
+        definitionSchema: { family: "character", version: 2 },
+        definition,
+        disclosurePolicy,
+        publicPresentation: {
+          description,
+          projectionContractVersion: 2,
+          projectionDigest,
+          descriptionInputDigest: assetContentDigest({ sourceDigest, projectionDigest }),
+          segments: [{
+            id: "imported-profile",
+            text: description.slice(0, 1200),
+            kind: "fact",
+            supportRefs: projection.facts.map((fact) => fact.supportRef).slice(0, 12),
+          }],
+          claimValidation: {
+            contractVersion: 1,
+            validatorContract: CHARACTER_PROFILE_CLAIM_VALIDATOR_CONTRACT,
+            projectionDigest,
+            segments: [{
+              segmentId: "imported-profile",
+              verdict: "supported",
+              supportRefs: projection.facts
+                .map((fact) => fact.supportRef)
+                .slice(0, 12),
+              riskCodes: [],
+            }],
+          },
+        },
+        provenance: {
+          sourceKind: "import",
+          sourceDigest,
+          attemptId: `internal-import:${withRecord.id}`.slice(0, 160),
+          structureGeneratorContract: "legacy-deterministic-import-v2",
+          descriptionGeneratorContract: "trusted-import-profile-v2",
+        },
+        compilerCompatibility: [...REQUIRED_CHARACTER_COMPILERS_V2],
+      });
+      importedGeneration = await appendAssetGeneration(connection, {
+        assetType: "character",
+        assetId: withRecord.id,
+        schemaVersion: 2,
+        content: envelope,
+        createdAt: withRecord.updatedAt,
+      });
+    } else if (state.rows[0]?.compatibility_status !== "ready") {
+      await writeAssetGeneration(connection, {
+        assetType: "character",
+        assetId: withRecord.id,
+        schemaVersion: 1,
+        content: toBattleCharacterSnapshot(withRecord),
+        createdAt: withRecord.updatedAt,
+      });
+    }
     await connection.query(
       `INSERT INTO characters (id, owner_user_id, sheet_json, created_at, updated_at)
        VALUES ($1, $2, $3, $4, $5)
@@ -411,6 +543,21 @@ export async function saveSheet(sheet: CharacterSheet): Promise<void> {
         withRecord.updatedAt,
       ],
     );
+    if (importedGeneration) {
+      await activateAssetGeneration(
+        connection,
+        importedGeneration,
+        null,
+        withRecord.updatedAt,
+      );
+      await connection.query(
+        `INSERT INTO character_asset_states
+          (character_id, compatibility_status, current_generation_id,
+           active_attempt_id, reason_code, updated_at)
+         VALUES ($1, 'ready', $2, NULL, NULL, $3)`,
+        [withRecord.id, importedGeneration.generationId, withRecord.updatedAt],
+      );
+    }
   });
 }
 

@@ -4,6 +4,12 @@
 現状スナップショット: `206a1b0fded3054c8f590589ca1316e3cd4cf342` (`origin/HEAD`, `origin/main`, `v0.5.1`)
 状態: **Fit / Gap 基準線（実行状態はPERTで管理）**
 
+2026-08-13 以降の「内部構造化されたキャラ・戦場・ナレーション」と
+「表示用自然言語projection」の分離は、履歴基準線である本文を書き換えず、
+[`structured-domain-assets-backlog.md`](structured-domain-assets-backlog.md) と
+[`structured-domain-assets.pert`](structured-domain-assets.pert) で優先順・設計境界・
+実行依存を管理する。
+
 実行計画: [`battle-fit-gap.pert`](battle-fit-gap.pert)
 進捗注記: 基準線の取り違えが判明したため、2026-08-05 に `origin/HEAD` を
 fetchして上記SHAへ固定し、ソース調査と正常系テストをやり直した。`T_NARRATOR`

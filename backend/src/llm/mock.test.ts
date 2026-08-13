@@ -60,14 +60,9 @@ describe("mock LLM natural-language handling", () => {
         equipment: { weapon: null, armor: null },
       },
       psyche: {
-        privateMemory: "",
-        currentGoal: "",
         emotion: "平静",
-        beliefs: [],
-        observations: [],
         speechStyle: "丁寧に話す",
         selfReference: "わたくし",
-        lastSpeech: null,
       },
       actionReaction: {
         schemaVersion: 1,
@@ -106,15 +101,7 @@ describe("mock LLM natural-language handling", () => {
       decision: agentInput.decision!,
     });
     assert.deepEqual(isolatedDecision.proposedAction, { kind: "basic_attack" });
-    assert.deepEqual(result.state.interior?.speechAppraisal, {
-      anticipatedImpact: "挑戦者の次の出方を見極める",
-      observedImpact: "まだ前の言葉はない",
-      anticipatedSocialCost: "同じ探りを続ければ警戒されるかもしれない",
-      observedSocialCost: "まだ失う手応えはない",
-      nextApproach: "まず相手の反応を測る",
-      continuityPosture: "opening",
-      continuityDecision: "advance",
-    });
+    assert.equal(result.state.interior, undefined);
 
     const humane = await provider.advanceCharacterAgent({
       ...agentInput,

@@ -1,8 +1,22 @@
 # Character focus-state hypothesis experiment
 
-Status: deterministic fixture and no-effect shadow slice complete. Provider
-replay, expression projection, staging deployment, production observation, and
-retained-user-data use remain unauthorized.
+Status: deterministic fixture, no-effect shadow, and bounded synthetic replay
+are complete. The provider replay was authorized under
+`docs/evidence/character-focus-replay-authorization-2026-08-13.md`; the owner
+subsequently authorized two independent LLM sub-agent reviewers under
+`docs/evidence/character-focus-replay-2026-08-13/review-protocol-amendment.md`.
+The reconciled result does not support A-to-C uplift, weak-cue focus
+calibration, or the C novelty/restraint guards. Therefore no opt-in candidate
+is selected or started. Expression projection, staging deployment, production
+observation, and retained-user-data use remain unauthorized.
+
+Post-replay product direction is recorded in
+`docs/character-focus-and-narrator-presentation-direction.md`. Character focus
+remains unproven and separate from the newly selected narrator-first design
+direction. The first presentation candidate, if separately planned and
+authorized, is limited to audience-only impact/release narration derived from
+committed public receipts. Audible action calls and counterpart reactions are
+deferred as future simulation features.
 
 ## Objective
 
@@ -119,9 +133,10 @@ does not fall back to another provider or silently reduce an arm. Use the same
 one expression responsibility in every arm. Do not add deep-psyche, judge,
 repair, retry-on-content, narration, or complete-battle calls.
 
-At least two reviewers score anonymized output before arm labels are revealed.
-Resolve rubric disagreements and freeze the scored set before computing the
-comparison. Do not use an LLM judge for acceptance.
+The two owner-selected LLM sub-agent reviewer profiles score anonymized output
+independently before arm labels are revealed. Freeze both raw files, then apply
+the predeclared conservative deterministic reconciliation; do not use a third
+judge or adaptive discussion to resolve disagreements.
 
 ## Evaluation metrics and thresholds
 

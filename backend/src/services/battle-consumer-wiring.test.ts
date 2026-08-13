@@ -4,14 +4,20 @@ import {
   applyBattleWorldTransition,
   createBattleState,
   buildCharacterSelfProfileAnchor,
+  CharacterDefinitionV2Schema,
+  defaultCharacterDisclosurePolicyV2,
   defaultParameters,
   ensureBattlePerceptionState,
+  legacyCharacterSheetToDefinitionV2,
+  projectCharacterNarratorViewsV2,
+  type BattleState,
   type CharacterSheet,
 } from "@kshiai/shared";
 import {
   buildCharacterAgentConsumerInput,
   buildNarratorProfileAnchors,
   buildNarratorSceneStateFacts,
+  buildNarratorStructuredCharacterContextsV2,
 } from "./battle-service.js";
 
 function sheet(id: string, displayName: string): CharacterSheet {
@@ -200,6 +206,103 @@ describe("battle perception consumer wiring", () => {
     assert.equal(foe.b?.gender, null);
     assert.deepEqual(Object.keys(external).sort(), ["a", "b"]);
     assert.equal(Object.isFrozen(external), true);
+  });
+
+  it("selects static narrator context by focus and only carries committed manifestations", () => {
+    const sideA = sheet("a", "アオ");
+    const sideB = sheet("b", "クロ");
+    const definitionFor = (source: CharacterSheet, secret: string) => {
+      const base = legacyCharacterSheetToDefinitionV2(source);
+      const definition = CharacterDefinitionV2Schema.parse({
+        ...base,
+        profileBackground: [{
+          id: "inner-background",
+          kind: "belief_context",
+          summary: secret,
+          description: {
+            text: secret,
+            consumerTags: [
+              "deep-psyche",
+              "narrator-self-inner",
+              "narrator-omniscient",
+            ],
+            sourceSupportRefs: [],
+          },
+          selfAwareness: "aware",
+        }],
+      });
+      return projectCharacterNarratorViewsV2(
+        definition,
+        defaultCharacterDisclosurePolicyV2(definition),
+      );
+    };
+    const state = createBattleState({
+      id: "structured-narrator-context",
+      sideA,
+      sideB,
+      turnLimit: 20,
+      prologuePending: false,
+    });
+    const structuredState = structuredClone(state) as BattleState;
+    structuredState.assetManifest = {
+      characters: {
+        a: { compilerInputsV2: { narratorViews: definitionFor(sideA, "Aだけの内面") } },
+        b: { compilerInputsV2: { narratorViews: definitionFor(sideB, "Bだけの内面") } },
+      },
+    } as BattleState["assetManifest"];
+    structuredState.turnRecords = [{
+      events: [{
+        id: "event.hit.1",
+        type: "damage",
+        actorSide: "b",
+        targetSides: ["a"],
+        summary: "攻撃が命中した。",
+      }, {
+        id: "event.utterance.1.a",
+        type: "utterance",
+        actorSide: "a",
+        actorName: "アオ",
+        utterance: {
+          text: "まだだ。",
+          delivery: "spoken",
+          volume: "normal",
+          articulation: "clear",
+          language: "ja",
+        },
+        summary: "アオが発話した。",
+      }, {
+        id: "event.manifestation.1.a.1",
+        type: "manifestation",
+        actorSide: "a",
+        actorName: "アオ",
+        manifestation: {
+          modality: "expression",
+          description: "一瞬だけ眉が揺れる。",
+          sourceEventIds: ["event.hit.1"],
+          carrierEventId: "event.utterance.1.a",
+        },
+        summary: "アオが観測可能な反応を示した。",
+      }],
+    }] as BattleState["turnRecords"];
+
+    const self = buildNarratorStructuredCharacterContextsV2({
+      state: structuredState,
+      focus: "self",
+    });
+    assert.deepEqual(self.a?.staticProjection.innerBackground, ["Aだけの内面"]);
+    assert.deepEqual(self.b?.staticProjection.innerBackground, []);
+    assert.deepEqual(
+      self.a?.narrativeCues.map((cue) => cue.description),
+      ["一瞬だけ眉が揺れる。"],
+    );
+    assert.deepEqual(self.b?.narrativeCues, []);
+
+    const foe = buildNarratorStructuredCharacterContextsV2({
+      state: structuredState,
+      focus: "foe",
+    });
+    assert.deepEqual(foe.a?.staticProjection.innerBackground, []);
+    assert.deepEqual(foe.b?.staticProjection.innerBackground, ["Bだけの内面"]);
   });
 
   it("wires canonical profile and scene projections without mutating the sheet", () => {

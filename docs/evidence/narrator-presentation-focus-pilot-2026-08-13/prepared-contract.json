@@ -1,0 +1,46 @@
+{
+  "executionContract": {
+    "schemaVersion": 1,
+    "runId": "narrator-presentation-focus-pilot-2026-08-13-v1",
+    "authorizedScope": "synthetic narrator presentation-focus pilot only",
+    "inputRevision": "narrator-presentation-focus-fixtures-v1",
+    "protocolDigest": "1230cc2c0b4fe64139c572198e128abdc7dc1a76c2b8f11ad66c945614ebf022",
+    "provider": "xai",
+    "baseUrl": "https://api.x.ai/v1",
+    "requestModel": "grok-4.3",
+    "reasoningEffort": "none",
+    "api": "chat.completions",
+    "responseFormat": "json_object",
+    "temperature": 0.9,
+    "maxCompletionTokens": 260,
+    "timeoutMs": 30000,
+    "concurrency": 2,
+    "logicalCallCeiling": 16,
+    "physicalAttemptCeiling": 20,
+    "totalTokenCeiling": 200000,
+    "monetaryCeilingUsd": 0.25,
+    "priceSnapshotUsdPerMillion": {
+      "input": 1.25,
+      "output": 2.5,
+      "cachedInputDiscountAssumed": false,
+      "verifiedAt": "2026-08-13",
+      "source": "https://docs.x.ai/developers/models/grok-4.3"
+    },
+    "retry": {
+      "providerFallback": false,
+      "contentRetry": false,
+      "samePayloadTransportRetry": "one retry for HTTP 429 or 503 only"
+    },
+    "evaluationBoundary": {
+      "exploratory": true,
+      "armLabelsHiddenInReviewPacket": true,
+      "semanticReviewerClass": "not selected by this run",
+      "productAdoptionAuthorized": false
+    }
+  },
+  "contractDigest": "1fa4b4789cf552a675dbfbc01c76118f696667d64059afbd134d06c4d961e58c",
+  "protocolDigest": "1230cc2c0b4fe64139c572198e128abdc7dc1a76c2b8f11ad66c945614ebf022",
+  "logicalCalls": 16,
+  "preflightTotalTokenUpperBound": 191955,
+  "preflightMonetaryUpperBoundUsd": 0.24514375000000002
+}

@@ -104,6 +104,10 @@ describe("owner-scoped character generation references", () => {
       "比堂",
       "比堂 本名",
     ]);
+    assert.deepEqual(
+      await repo.listOwnedCharacterReservedNames("user-a", "char-a"),
+      [],
+    );
   });
 
   it("keeps bounded pre-battle plans and reflections for each opponent", async () => {

@@ -3,6 +3,7 @@ import { requestDigest } from "./distributed-guard.js";
 import {
   BattlePolicyOptionSchema,
   BattleAdjudicationSchema,
+  JudgmentPresentationProjectionSchema,
   CharacterActionIntentSchema,
   accumulateBattleBalanceTrace,
   advanceSupervisorClock,
@@ -20,6 +21,11 @@ import {
   buildMinimalObserverPerception,
   buildCommittedUtteranceEvents,
   buildUtterancePerceptionEvidence,
+  buildCommittedManifestationNarrativeCuesV2,
+  buildManifestationPerceptionEvidenceV2,
+  commitCharacterObservableManifestationsV2,
+  selectCharacterNarrativeCuesV2,
+  validateCharacterPsycheProjectionEvidenceV2,
   buildTurnObservationPacket,
   advancePsycheReactionV1,
   PSYCHE_REACTION_POLICY_V1,
@@ -57,6 +63,7 @@ import {
   type BattleStance,
   type BattleState,
   type BattleAdjudication,
+  type JudgmentPresentationProjection,
   type BattleEncounterProposal,
   type BattleTurnRecord,
   type BattleTurnPipelineTrace,
@@ -127,6 +134,12 @@ import {
   isStageReaction,
   type NarrativeBlock,
   type SpeechLine,
+  CharacterGenerationEnvelopeV2Schema,
+  characterDefinitionV2ToLegacySheet,
+  compileCharacterPsycheTraitsV1,
+  projectCharacterConsciousSelfV2,
+  projectCharacterDeepPsycheV2,
+  projectCharacterNarratorViewsV2,
 } from "@kshiai/shared";
 import {
   recordBattleFinished,
@@ -161,6 +174,7 @@ import * as charRepo from "../repositories/characters.js";
 import * as styleRepo from "../repositories/narration-styles.js";
 import * as dialoguePipelineRepo from "../repositories/dialogue-pipeline-settings.js";
 import { createAssetGeneration } from "../repositories/asset-generations.js";
+import { getReadyCharacterGeneration } from "../repositories/character-assets-v2.js";
 import { getUserAccessProfile } from "../account-access.js";
 import { withBattleLease } from "./distributed-guard.js";
 import {
@@ -541,16 +555,60 @@ export async function startBattle(input: {
       return toBattlePublicForViewer(existing, existingMine, null, existingOpp);
     }
   }
-  const mine = await charRepo.getSheet(input.myCharacterId);
-  const opp = await charRepo.getSheet(input.opponentCharacterId);
-  if (!mine || mine.ownerUserId !== input.userId) {
+  const currentMine = await charRepo.getSheet(input.myCharacterId);
+  const currentOpp = await charRepo.getSheet(input.opponentCharacterId);
+  if (!currentMine || currentMine.ownerUserId !== input.userId) {
     throw new Error("MY_CHARACTER_NOT_FOUND");
   }
-  if (!opp) throw new Error("OPPONENT_NOT_FOUND");
-  if (!(await charRepo.canViewCharacter(input.userId, opp))) {
+  if (!currentOpp) throw new Error("OPPONENT_NOT_FOUND");
+  if (!(await charRepo.canViewCharacter(input.userId, currentOpp))) {
     throw new Error("OPPONENT_NOT_FOUND");
   }
-  if (mine.id === opp.id) throw new Error("SAME_CHARACTER");
+  if (currentMine.id === currentOpp.id) throw new Error("SAME_CHARACTER");
+  const [mineGeneration, opponentGeneration] = await Promise.all([
+    getReadyCharacterGeneration(currentMine.id),
+    getReadyCharacterGeneration(currentOpp.id),
+  ]);
+  if (!mineGeneration) throw new Error("MY_CHARACTER_UPGRADE_REQUIRED");
+  if (!opponentGeneration) throw new Error("OPPONENT_CHARACTER_UPGRADE_REQUIRED");
+  const mineEnvelope = CharacterGenerationEnvelopeV2Schema.parse(
+    mineGeneration.content,
+  );
+  const opponentEnvelope = CharacterGenerationEnvelopeV2Schema.parse(
+    opponentGeneration.content,
+  );
+  const mine = characterDefinitionV2ToLegacySheet({
+    characterId: currentMine.id,
+    ownerUserId: currentMine.ownerUserId,
+    definition: mineEnvelope.definition,
+    publicPresentation: mineEnvelope.publicPresentation,
+    createdAt: currentMine.createdAt,
+    updatedAt: mineGeneration.createdAt,
+    operational: {
+      visibility: currentMine.visibility,
+      record: currentMine.record,
+      recordOverall: currentMine.recordOverall,
+      improvementMemo: currentMine.improvementMemo,
+      opponentMemories: currentMine.opponentMemories,
+      deletedAt: currentMine.deletedAt,
+    },
+  });
+  const opp = characterDefinitionV2ToLegacySheet({
+    characterId: currentOpp.id,
+    ownerUserId: currentOpp.ownerUserId,
+    definition: opponentEnvelope.definition,
+    publicPresentation: opponentEnvelope.publicPresentation,
+    createdAt: currentOpp.createdAt,
+    updatedAt: opponentGeneration.createdAt,
+    operational: {
+      visibility: currentOpp.visibility,
+      record: currentOpp.record,
+      recordOverall: currentOpp.recordOverall,
+      improvementMemo: currentOpp.improvementMemo,
+      opponentMemories: currentOpp.opponentMemories,
+      deletedAt: currentOpp.deletedAt,
+    },
+  });
 
   const battlefield = await resolveBattlefieldInstance({
     llm: input.llm,
@@ -661,23 +719,9 @@ export async function startBattle(input: {
         updatedAt: sourceBattlefieldPreset.createdAt,
       }
     : null;
-  const [mineGeneration, opponentGeneration, narrationGeneration,
+  const [narrationGeneration,
     battlefieldPresetGeneration, battlefieldInstanceGeneration,
     dialogueGeneration] = await Promise.all([
-    createAssetGeneration({
-      assetType: "character",
-      assetId: mine.id,
-      schemaVersion: 1,
-      content: mineSnapshot,
-      createdAt: mine.updatedAt,
-    }),
-    createAssetGeneration({
-      assetType: "character",
-      assetId: opp.id,
-      schemaVersion: 1,
-      content: opponentSnapshot,
-      createdAt: opp.updatedAt,
-    }),
     createAssetGeneration({
       assetType: "narration-style",
       assetId: narrationStyle.id,
@@ -720,12 +764,30 @@ export async function startBattle(input: {
           generationId: mineGeneration.generationId,
           contentDigest: mineGeneration.contentDigest,
           snapshot: mineSnapshot,
+          compilerInputsV2: {
+            psycheTraits: compileCharacterPsycheTraitsV1(mineEnvelope.definition),
+            deepPsyche: projectCharacterDeepPsycheV2(mineEnvelope.definition),
+            consciousSelf: projectCharacterConsciousSelfV2(mineEnvelope.definition),
+            narratorViews: projectCharacterNarratorViewsV2(
+              mineEnvelope.definition,
+              mineEnvelope.disclosurePolicy,
+            ),
+          },
         },
         b: {
           assetId: opp.id,
           generationId: opponentGeneration.generationId,
           contentDigest: opponentGeneration.contentDigest,
           snapshot: opponentSnapshot,
+          compilerInputsV2: {
+            psycheTraits: compileCharacterPsycheTraitsV1(opponentEnvelope.definition),
+            deepPsyche: projectCharacterDeepPsycheV2(opponentEnvelope.definition),
+            consciousSelf: projectCharacterConsciousSelfV2(opponentEnvelope.definition),
+            narratorViews: projectCharacterNarratorViewsV2(
+              opponentEnvelope.definition,
+              opponentEnvelope.disclosurePolicy,
+            ),
+          },
         },
       },
       narrationStyle: {
@@ -990,6 +1052,55 @@ export function buildNarratorProfileAnchors(input: {
   });
 }
 
+export function buildNarratorStructuredCharacterContextsV2(input: {
+  state: BattleState;
+  focus: NarrationFocus;
+}) {
+  const records = input.state.turnRecords ?? [];
+  const committedEvents = records.at(-1)?.events ?? [];
+  const carrierEvidence = buildUtterancePerceptionEvidence({
+    events: committedEvents,
+    worldState: input.state.worldState,
+    previousFrameA: input.state.perceptionFrameA,
+    previousFrameB: input.state.perceptionFrameB,
+  });
+  const manifestationEvents = committedEvents.filter((event) =>
+    event.type === "manifestation"
+  );
+  const manifestationEvidence = buildManifestationPerceptionEvidenceV2({
+    events: manifestationEvents,
+    carrierEvidence,
+  });
+  const contextFor = (side: "a" | "b") => {
+    const views = input.state.assetManifest?.characters[side]
+      .compilerInputsV2?.narratorViews;
+    if (!views) return null;
+    const ownInner = (input.focus === "self" && side === "a") ||
+      (input.focus === "foe" && side === "b");
+    const staticProjection = input.focus === "both"
+      ? views.omniscient
+      : ownInner
+        ? views.selfInner
+        : views.external;
+    const narrativeCues = selectCharacterNarrativeCuesV2({
+      side,
+      focus: input.focus,
+      proposedCues: buildCommittedManifestationNarrativeCuesV2(
+        manifestationEvents.filter((event) => event.actorSide === side),
+      ),
+      committedEvents,
+      manifestationEvidence,
+    });
+    return { staticProjection, narrativeCues };
+  };
+  const a = contextFor("a");
+  const b = contextFor("b");
+  return {
+    ...(a ? { a } : {}),
+    ...(b ? { b } : {}),
+  };
+}
+
 export function buildNarratorSceneStateFacts(input: {
   state: BattleState;
   mine: CharacterSheet;
@@ -1161,6 +1272,12 @@ export function buildLaterBucketActionInput(input: {
         side: input.side,
       }),
     ),
+    ...(input.state.assetManifest?.characters?.[input.side].compilerInputsV2
+      ? {
+          structuredSelf: input.state.assetManifest.characters[input.side]
+            .compilerInputsV2!.consciousSelf,
+        }
+      : {}),
     perception: structuredClone(perception),
     decision,
   });
@@ -1207,8 +1324,10 @@ function deepFreezeConsumerInput<T>(value: T): T {
 
 type CharacterAgentSharedConsumerInput = Omit<
   Parameters<LlmProvider["advanceCharacterAgent"]>[0],
-  "decision"
+  "decision" | "psyche"
 > & {
+  /** Server-private continuity used only by the preceding deep-psyche stage. */
+  psyche: CharacterAgentState;
   decision?: Parameters<LlmProvider["advanceCharacterAgent"]>[0]["decision"];
 };
 
@@ -1288,6 +1407,14 @@ export function buildCharacterAgentConsumerInput(input: {
   return {
     phase,
     character,
+    ...(input.state.assetManifest?.characters?.[input.side].compilerInputsV2
+      ? {
+          structuredSelf: deepFreezeConsumerInput(structuredClone(
+            input.state.assetManifest.characters[input.side]
+              .compilerInputsV2!.consciousSelf,
+          )),
+        }
+      : {}),
     psyche: structuredClone({
       ...previousContinuity,
       selfReference: permittedSelfReference,
@@ -1516,6 +1643,8 @@ export async function advanceCharacterAgents(input: {
       const reaction = advancePsycheReactionV1({
         prior: previousA.reactionStateV1,
         packet: dialogueProjection?.a ?? null,
+        traits: input.after.assetManifest?.characters?.a.compilerInputsV2
+          ?.psycheTraits,
       });
       previousA.reactionStateV1 = reaction.state;
       previousA.reactionReceiptV1 = reaction.receipt;
@@ -1525,6 +1654,8 @@ export async function advanceCharacterAgents(input: {
       const reaction = advancePsycheReactionV1({
         prior: previousB.reactionStateV1,
         packet: dialogueProjection?.b ?? null,
+        traits: input.after.assetManifest?.characters?.b.compilerInputsV2
+          ?.psycheTraits,
       });
       previousB.reactionStateV1 = reaction.state;
       previousB.reactionReceiptV1 = reaction.receipt;
@@ -1642,11 +1773,17 @@ export async function advanceCharacterAgents(input: {
       if (!packet) return null;
       const sheet = consumerInput === inputA ? input.mine : input.opp;
       const counterpartSheet = consumerInput === inputA ? input.opp : input.mine;
+      const compilerInputs = input.after.assetManifest?.characters?.[
+        consumerInput === inputA ? "a" : "b"
+      ].compilerInputsV2;
       const storedMatchupMemory = sheet.opponentMemories?.[counterpartSheet.id];
       const compactInput = {
         contextMode: "compact" as const,
         phase: consumerInput.phase,
         character: consumerInput.character,
+        ...(compilerInputs
+          ? { stableDisposition: compilerInputs.deepPsyche }
+          : {}),
         // Opponent memory is a durable matchup note, not a current-battle
         // thought. Do not let an old plan be copied into every inner update.
         previous: consumerInput.phase === "prologue"
@@ -1672,9 +1809,20 @@ export async function advanceCharacterAgents(input: {
       } satisfies CharacterDeepPsycheCompactInput;
       return compactInput as unknown as Parameters<LlmProvider["advanceCharacterPsyche"]>[0];
     }
-    const { decision: _decision, psyche, ...shared } = consumerInput;
+    const {
+      decision: _decision,
+      structuredSelf: _structuredSelf,
+      psyche,
+      ...shared
+    } = consumerInput;
+    const compilerInputs = input.after.assetManifest?.characters?.[
+      consumerInput === inputA ? "a" : "b"
+    ].compilerInputsV2;
     return {
       ...shared,
+      ...(compilerInputs
+        ? { stableDisposition: compilerInputs.deepPsyche }
+        : {}),
       previous: psyche,
     } satisfies Parameters<LlmProvider["advanceCharacterPsyche"]>[0];
   };
@@ -1721,15 +1869,30 @@ export async function advanceCharacterAgents(input: {
     previous: CharacterAgentState,
     sheet: CharacterSheet,
     selfReference?: string | null,
+    projectionPacket?: Parameters<
+      typeof validateCharacterPsycheProjectionEvidenceV2
+    >[0]["packet"],
   ) => {
+    const emptyProjection = { manifestations: [], narrativeCues: [] };
     if (result.status !== "fulfilled" || !result.value) {
       const state = compactContext && input.phase === "prologue"
         ? groundCharacterAgentState(sheet, { ...previous, privateMemory: "" }, selfReference)
         : previous;
-      return { state, expressionBrief: defaultExpressionBrief(state) };
+      return {
+        state,
+        expressionBrief: defaultExpressionBrief(state),
+        ...emptyProjection,
+      };
     }
     if (result.value.delta && result.value.expressionBrief) {
       const delta = result.value.delta;
+      const projected = projectionPacket
+        ? validateCharacterPsycheProjectionEvidenceV2({
+            packet: projectionPacket,
+            manifestations: result.value.observableManifestations,
+            narrativeCues: result.value.narrativeCues,
+          })
+        : emptyProjection;
       const state = groundCharacterAgentState(sheet, {
         ...previous,
         ...delta,
@@ -1776,7 +1939,11 @@ export async function advanceCharacterAgents(input: {
           },
         },
       }, selfReference);
-      return { state, expressionBrief: result.value.expressionBrief };
+      return {
+        state,
+        expressionBrief: result.value.expressionBrief,
+        ...projected,
+      };
     }
     return {
       state: groundCharacterAgentState(sheet, {
@@ -1786,6 +1953,7 @@ export async function advanceCharacterAgents(input: {
         interior: result.value.interior,
       }, selfReference),
       expressionBrief: defaultExpressionBrief(previous),
+      ...emptyProjection,
     };
   };
   const psycheAResult = applyPsyche(
@@ -1793,12 +1961,14 @@ export async function advanceCharacterAgents(input: {
     previousA,
     input.mine,
     input.after.encounterContext?.social.a.selfReference,
+    dialogueProjection?.a,
   );
   const psycheBResult = applyPsyche(
     psycheResultB,
     previousB,
     input.opp,
     input.after.encounterContext?.social.b.selfReference,
+    dialogueProjection?.b,
   );
   const psycheA = psycheAResult.state;
   const psycheB = psycheBResult.state;
@@ -1826,7 +1996,6 @@ export async function advanceCharacterAgents(input: {
         psyche: {
           emotion: psyche.emotion,
           speechStyle: psyche.speechStyle,
-          interior: psyche.interior,
           selfReference: psyche.selfReference,
         },
         turnObservation: packet,
@@ -1842,6 +2011,9 @@ export async function advanceCharacterAgents(input: {
             ].filter(Boolean).join("\n").slice(-240) || null
           : null,
         expressionBrief,
+        observableManifestations: consumerInput === inputA
+          ? psycheAResult.manifestations
+          : psycheBResult.manifestations,
         ...(consumerInput.social ? { social: consumerInput.social } : {}),
         ...(consumerInput.counterpart ? { counterpart: consumerInput.counterpart } : {}),
         ...(consumerInput.decision ? { decision: consumerInput.decision } : {}),
@@ -1849,7 +2021,18 @@ export async function advanceCharacterAgents(input: {
       return compactInput as unknown as Parameters<LlmProvider["advanceCharacterAgent"]>[0];
     }
     const { dialoguePipeline: _dialoguePipeline, ...speechActionInput } = consumerInput;
-    return { ...speechActionInput, psyche };
+    return {
+      ...speechActionInput,
+      psyche: {
+        emotion: psyche.emotion,
+        speechStyle: psyche.speechStyle,
+        selfReference: psyche.selfReference,
+      },
+      expressionBrief,
+      observableManifestations: consumerInput === inputA
+        ? psycheAResult.manifestations
+        : psycheBResult.manifestations,
+    };
   };
   const agentInputA = toSpeechActionInput(inputA, psycheA, psycheAResult.expressionBrief);
   const agentInputB = toSpeechActionInput(inputB, psycheB, psycheBResult.expressionBrief);
@@ -1901,6 +2084,7 @@ export async function advanceCharacterAgents(input: {
     ),
     preferredSelfReference: input.after.encounterContext?.social.a.selfReference,
     decision: agentInputA?.decision,
+    observableManifestations: agentInputA?.observableManifestations,
   });
   const acceptedB = acceptCharacterAgentResult({
     result: agentB,
@@ -1916,6 +2100,7 @@ export async function advanceCharacterAgents(input: {
     ),
     preferredSelfReference: input.after.encounterContext?.social.b.selfReference,
     decision: agentInputB?.decision,
+    observableManifestations: agentInputB?.observableManifestations,
   });
   const traceSide = (
     consumerInput: typeof agentInputA,
@@ -1939,6 +2124,9 @@ export async function advanceCharacterAgents(input: {
         ? structuredClone(accepted.nextAction)
         : null,
       speech: accepted.speech ? structuredClone(accepted.speech) : null,
+      realizedManifestation: accepted.realizedManifestation
+        ? structuredClone(accepted.realizedManifestation)
+        : null,
     },
   });
   const characterAgentTrace: NonNullable<
@@ -1996,6 +2184,34 @@ export async function advanceCharacterAgents(input: {
     previousFrameA: input.after.perceptionFrameA,
     previousFrameB: input.after.perceptionFrameB,
   });
+  const manifestationEvents = [
+    ...commitCharacterObservableManifestationsV2({
+      turn: input.after.turn,
+      actorSide: "a",
+      actorName: input.after.sideA.displayName,
+      proposals: acceptedA.realizedManifestation
+        ? [acceptedA.realizedManifestation]
+        : [],
+      committedEvents: eventsWithUtterances,
+    }),
+    ...commitCharacterObservableManifestationsV2({
+      turn: input.after.turn,
+      actorSide: "b",
+      actorName: input.after.sideB.displayName,
+      proposals: acceptedB.realizedManifestation
+        ? [acceptedB.realizedManifestation]
+        : [],
+      committedEvents: eventsWithUtterances,
+    }),
+  ];
+  const manifestationEvidence = buildManifestationPerceptionEvidenceV2({
+    events: manifestationEvents,
+    carrierEvidence: speechEvidence,
+  });
+  const eventsWithExpressions = [
+    ...eventsWithUtterances,
+    ...manifestationEvents,
+  ];
   let stateAfterUtterances: BattleState = {
     ...input.after,
     agentStateA: {
@@ -2049,11 +2265,12 @@ export async function advanceCharacterAgents(input: {
         turn: stateAfterUtterances.turn,
         semanticState: stateAfterUtterances.semanticState,
         worldState: stateAfterUtterances.worldState,
-        events: eventsWithUtterances,
+        events: eventsWithExpressions,
         quantizedMechanicalEvidence: input.quantizedMechanicalEvidence ?? [],
         sensoryEvidence: [
           ...(input.sensoryEvidence ?? []),
           ...speechEvidence,
+          ...manifestationEvidence,
         ],
       };
       const projectedA = projectObserverPerception({
@@ -2099,14 +2316,14 @@ export async function advanceCharacterAgents(input: {
   const record = existingRecord
     ? {
         ...recordWithFocusShadow,
-        events: eventsWithUtterances,
+        events: eventsWithExpressions,
         cognitionA: {
           ...recordWithFocusShadow.cognitionA,
-          observedEvents: eventsWithUtterances,
+          observedEvents: eventsWithExpressions,
         },
         cognitionB: {
           ...recordWithFocusShadow.cognitionB,
-          observedEvents: eventsWithUtterances,
+          observedEvents: eventsWithExpressions,
         },
         pipelineTrace: {
           schemaVersion: 1 as const,
@@ -2119,7 +2336,7 @@ export async function advanceCharacterAgents(input: {
         ...buildBattleTurnRecord({
           before: input.before,
           after: stateAfterUtterances,
-          events: eventsWithUtterances,
+        events: eventsWithExpressions,
           actions: input.actions,
           mechanicalEvidence: input.mechanicalEvidence,
         }),
@@ -2133,7 +2350,7 @@ export async function advanceCharacterAgents(input: {
   const receiptOwnedEventIds = new Set(
     record.consequenceReceipts?.flatMap((receipt) => receipt.eventIds) ?? [],
   );
-  const addedEventIds = eventsWithUtterances.flatMap((event) =>
+  const addedEventIds = eventsWithExpressions.flatMap((event) =>
     event.id && !receiptOwnedEventIds.has(event.id) ? [event.id] : []
   );
   const recordWithUtteranceProvenance = record.consequenceReceipts &&
@@ -2304,6 +2521,9 @@ export function acceptCharacterAgentResult(input: {
   profile: Parameters<LlmProvider["advanceCharacterAgent"]>[0]["character"];
   preferredSelfReference?: string | null;
   decision?: Parameters<LlmProvider["advanceCharacterAgent"]>[0]["decision"];
+  observableManifestations?: Parameters<
+    LlmProvider["advanceCharacterAgent"]
+  >[0]["observableManifestations"];
 }) {
   const selfReference = input.preferredSelfReference !== undefined &&
       (input.preferredSelfReference === null ||
@@ -2319,6 +2539,7 @@ export function acceptCharacterAgentResult(input: {
       nextAction: undefined,
       actionProposalValidation: null,
       speech: null,
+      realizedManifestation: null,
     };
   }
   const text = coerceCharacterSpeech(input.result.speech);
@@ -2327,6 +2548,9 @@ export function acceptCharacterAgentResult(input: {
     decision: input.decision,
   });
   const nextAction = actionProposalValidation.acceptedAction ?? undefined;
+  const realizedManifestation = input.observableManifestations?.find(
+    (candidate) => candidate.proposal === input.result?.realizedManifestation,
+  ) ?? null;
   return {
     state: {
       ...input.previous,
@@ -2340,6 +2564,7 @@ export function acceptCharacterAgentResult(input: {
       speaker: input.speaker,
       text,
     } satisfies CharacterSpeechSource,
+    realizedManifestation,
   };
 }
 
@@ -2444,6 +2669,80 @@ export function buildBattleAdjudication(input: {
   });
 }
 
+const JUDGMENT_PRESENTATION_FACTOR_ORDER = [
+  "overall_effectiveness",
+  "committed_actions",
+  "mechanical_effects",
+  "remaining_capacity",
+  "world_impact",
+] as const satisfies readonly BattleAdjudication["reasonFacts"][number]["factor"][];
+
+function judgmentPresentationBasisLine(
+  factor: BattleAdjudication["reasonFacts"][number]["factor"],
+  winnerLabel: string | null,
+): string {
+  if (winnerLabel === null) {
+    if (factor === "committed_actions") {
+      return "両者の働きかけは最後まで拮抗した。";
+    }
+    if (factor === "mechanical_effects") {
+      return "両者が残した結果に決定的な差はなかった。";
+    }
+    if (factor === "remaining_capacity") {
+      return "終幕に残した余地も、両者ほぼ互角だった。";
+    }
+    if (factor === "world_impact") {
+      return "場へ与えた影響も、両者の間で拮抗した。";
+    }
+    return "対決全体を通して、両者は譲らなかった。";
+  }
+  if (factor === "committed_actions") {
+    return `${winnerLabel}は最後まで有効な働きかけを積み重ねた。`;
+  }
+  if (factor === "mechanical_effects") {
+    return `${winnerLabel}は働きかけの結果をより強く残した。`;
+  }
+  if (factor === "remaining_capacity") {
+    return `${winnerLabel}は終幕まで対決を続ける余地をより多く保った。`;
+  }
+  if (factor === "world_impact") {
+    return `${winnerLabel}は場の流れをより強く動かした。`;
+  }
+  return `${winnerLabel}は対決全体で一歩上回った。`;
+}
+
+/** Project internal factor identity to bounded public wording; discard raw prose. */
+export function buildJudgmentPresentationProjection(input: {
+  adjudication: BattleAdjudication;
+  sideAName: string;
+  sideBName: string;
+}): JudgmentPresentationProjection {
+  const winnerLabel = input.adjudication.winnerSide === "a"
+    ? input.sideAName
+    : input.adjudication.winnerSide === "b"
+      ? input.sideBName
+      : null;
+  const consistentFactors = new Set(
+    input.adjudication.reasonFacts.flatMap((fact) =>
+      fact.favoredSide === input.adjudication.winnerSide ? [fact.factor] : []
+    ),
+  );
+  const factors = JUDGMENT_PRESENTATION_FACTOR_ORDER
+    .filter((factor) => consistentFactors.has(factor))
+    .slice(0, 2);
+  if (factors.length === 0) factors.push("overall_effectiveness");
+  const projection = JudgmentPresentationProjectionSchema.parse({
+    schemaVersion: 1,
+    verdictKind: winnerLabel ? "win" : "draw",
+    winnerLabel,
+    basisLines: factors.map((factor) =>
+      judgmentPresentationBasisLine(factor, winnerLabel)
+    ),
+  });
+  Object.freeze(projection.basisLines);
+  return Object.freeze(projection);
+}
+
 /**
  * Keep the adjudicator's verdict immutable while allowing the narrator to add
  * presentation-only framing based on the public story so far.
@@ -2453,7 +2752,6 @@ export function buildJudgmentNarrativeBlock(input: {
   sideAName: string;
   sideBName: string;
   winnerSide: "a" | "b" | "draw";
-  adjudicationReason: string;
   presentation?: JudgmentNarrationResult;
 }): NarrativeBlock {
   const winnerName = input.winnerSide === "a"
@@ -2461,11 +2759,9 @@ export function buildJudgmentNarrativeBlock(input: {
     : input.winnerSide === "b"
       ? input.sideBName
       : null;
-  const reason = input.adjudicationReason.trim() ||
-    "確定した行動と影響を総合して判定した。";
   const verdict = winnerName
-    ? `判定は ${winnerName} の勝利。${reason}`
-    : `判定は引き分け。${reason}`;
+    ? `判定は ${winnerName} の勝利。`
+    : "判定は引き分け。";
   const framing = (lines: readonly string[] | undefined) => (lines ?? [])
     .map((line) => line.trim())
     .filter(Boolean)
@@ -4263,6 +4559,10 @@ async function advanceTurnWithLease(input: {
         recentSpeeches: subjectiveNarration ? [] : recentSpeeches,
         drama: narratorDrama,
         innerDigests: digests,
+        structuredCharacterContexts: buildNarratorStructuredCharacterContextsV2({
+          state: next,
+          focus,
+        }),
         characterSpeeches,
         styleInstruction: next.narrationStyle?.instruction,
         styleName: next.narrationStyle?.displayName,
@@ -4466,6 +4766,11 @@ async function advanceTurnWithLease(input: {
         : adjudication.winnerSide === "b"
           ? next.sideB.displayName
           : null;
+      const presentationProjection = buildJudgmentPresentationProjection({
+        adjudication,
+        sideAName: next.sideA.displayName,
+        sideBName: next.sideB.displayName,
+      });
       let judgmentPresentation: JudgmentNarrationResult | undefined;
       judgmentNarrationInput = {
         kind: "judgment" as const,
@@ -4476,7 +4781,7 @@ async function advanceTurnWithLease(input: {
           sideBName: next.sideB.displayName,
           winnerSide: adjudication.winnerSide,
           winnerName,
-          adjudicationReason: adjudication.reason,
+          presentationProjection,
           recentPublicNarration: [],
           styleInstruction: next.narrationStyle?.instruction,
           styleName: next.narrationStyle?.displayName,
@@ -4495,7 +4800,6 @@ async function advanceTurnWithLease(input: {
           sideAName: next.sideA.displayName,
           sideBName: next.sideB.displayName,
           winnerSide: adjudication.winnerSide,
-          adjudicationReason: adjudication.reason,
           presentation: judgmentPresentation,
         }),
         identifierCatalog,
@@ -4799,6 +5103,10 @@ async function runPrologueTurn(input: {
     priorMatchSummary: state.priorMatchSummary ?? undefined,
     battlefield: state.battlefield,
     innerDigests: digests,
+    structuredCharacterContexts: buildNarratorStructuredCharacterContextsV2({
+      state,
+      focus,
+    }),
     characterSpeeches,
     profileAnchors,
     sceneStateFacts: buildNarratorSceneStateFacts({
@@ -5020,6 +5328,10 @@ async function runAftermathTurn(input: {
     battlefield: state.battlefield,
     recentNarration: [],
     innerDigests: digests,
+    structuredCharacterContexts: buildNarratorStructuredCharacterContextsV2({
+      state,
+      focus,
+    }),
     characterSpeeches,
     profileAnchors: buildNarratorProfileAnchors({
       mine: input.mine,

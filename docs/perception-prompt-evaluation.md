@@ -2,7 +2,7 @@
 
 Status: XAI primary topology reviewed; OpenAI remains fallback
 Fixture version: `perception-prompts-v10`
-Last updated: 2026-08-05
+Last updated: 2026-08-13
 
 ## Purpose and authority boundary
 
@@ -58,7 +58,7 @@ Latency p95/mean and token totals/means cannot override a quality failure.
 Combined response sections are scored independently, so invalid sensory
 evidence does not make a valid world patch invalid.
 
-## Running an XAI evaluation
+## Historical XAI evaluation command
 
 The command requires an explicit provider and `--execute` acknowledgement:
 
@@ -75,11 +75,23 @@ The output file is created exclusively and never rewrites configuration. An
 exact provider/model decision is added only after review. Unknown revisions do
 not inherit another model's decision.
 
+The command above records the request slug used by the 2026-08-04 evidence.
+xAI retired that slug on 2026-05-15 and documents that requests are served by
+`grok-4.3` with reasoning effort `none`. The 2026-08-13 expression replay also
+recorded `grok-4.3` as the effective response model for all 144 requests. The
+runtime therefore directly requests `grok-4.3` with `reasoning_effort: none`;
+it no longer relies on the retired alias. This is an explicit naming correction
+of the already served model and does not reinterpret the historical latency or
+quality measurements as a fresh direct-request evaluation.
+
+xAI migration reference:
+<https://docs.x.ai/developers/migration/may-15-retirement>.
+
 ## Current reviewed decisions
 
 | Role | Provider | Model | Current topology | Evidence |
 |---|---|---|---|---|
-| Primary | `xai` | `grok-4-fast-non-reasoning` | `combined` | v10 combined and parallel split both passed 9/9; combined uses fewer calls and tokens |
+| Primary | `xai` | `grok-4.3`, reasoning `none` | `combined` | post-retirement v10 alias evidence passed 9/9; redirect and effective response model are separately recorded |
 | Fallback | `openai` | `gpt-4.1-mini` | historical v8 `combined` | retained as fallback evidence; not a current-v10 XAI substitute |
 | Development | `mock` | `mock-v1` | `combined` | deterministic reference samples pass |
 

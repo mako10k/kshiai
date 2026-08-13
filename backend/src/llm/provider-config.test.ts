@@ -1,9 +1,12 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import {
+  DEFAULT_XAI_FAST_MODEL,
   isMockProviderAllowed,
   parseBattleCausalNarrationMode,
 } from "../config.js";
+
+assert.equal(DEFAULT_XAI_FAST_MODEL, "grok-4.3");
 
 describe("mock provider boundary", () => {
   it("allows explicitly selected mock outside production", () => {

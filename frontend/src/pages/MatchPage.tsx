@@ -112,7 +112,11 @@ export function MatchPage() {
     void (async () => {
       const [c, m, f, s] = await Promise.all([
         loadCandidates(),
-        api.listCharacters(undefined, { limit: 50, offset: 0 }),
+        api.listCharacters(undefined, {
+          limit: 50,
+          offset: 0,
+          selectable: true,
+        }),
         api.listBattlefields(),
         api.listNarrationStyles(),
       ]);
