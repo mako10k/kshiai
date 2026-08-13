@@ -7,7 +7,7 @@ project KSHIAI_ISSUE_98_CAUSAL_BATTLE_PIPELINE:
   as_of 2026-08-13
   duration_unit point
   velocity 2880p/1117h
-  target_duration 71p
+  target_duration 73p
   finish ISSUE_98_LOCALLY_ACCEPTED
 
 resource DEV:
@@ -34,6 +34,10 @@ resource OWNER:
 
 
 
+milestone BATTLE_OBSERVATION_KPIS_READY:
+  title "Battle observation KPI contract is explicit"
+  description "Acceptance invariants, pacing, operation cost, latency, dialogue, and semantic-quality metrics have named formulas, cohorts, evidence states, and decision boundaries."
+
 milestone PACING_POLICY_ACCEPTED:
   title "Owner decided whether to adopt a pacing candidate"
 
@@ -55,7 +59,16 @@ milestone ISSUE_98_LOCALLY_ACCEPTED:
 
 
 
-task T_ACCEPT_PACING_POLICY PACING_PRODUCTION_OBSERVED -> PACING_POLICY_ACCEPTED:
+task T_DEFINE_BATTLE_OBSERVATION_KPIS PACING_PRODUCTION_OBSERVED -> BATTLE_OBSERVATION_KPIS_READY:
+  title "Define battle observation KPIs and current reading"
+  description "Publish the canonical KPI contract with exact denominators, comparable cohorts, hard acceptance invariants, provisional quality bands, unavailable semantic measures, and the v0.17.3 to v0.17.4 reading. Expose directly derivable worst-speaker repetition metrics in the sanitized observer without adding provider calls, changing runtime battle behavior, or authorizing another observation."
+  duration 2p
+  status done
+  requires:
+    DEV 1
+  owner "codex"
+
+task T_ACCEPT_PACING_POLICY BATTLE_OBSERVATION_KPIS_READY -> PACING_POLICY_ACCEPTED:
   title "Decide whether to adopt a measured pacing candidate"
   description "Owner periodically decides keep, revise, or roll back the provisional policy using accumulated production evidence. There is no requirement to finalize the numeric values after one observation window; each adjustment remains versioned and existing battles retain their frozen policy."
   duration 1p
@@ -478,3 +491,17 @@ work_event EVT_OBSERVE_PACING_FINISH_V0174_20260813:
   kind finish
   occurred_at 2026-08-13T10:40:16+09:00
   effort 0.07ph
+
+work_event EVT_DEFINE_BATTLE_OBSERVATION_KPIS_START_20260813:
+  model 1
+  task T_DEFINE_BATTLE_OBSERVATION_KPIS
+  kind start
+  occurred_at 2026-08-13T11:20:37+09:00
+  planned_value 2p
+
+work_event EVT_DEFINE_BATTLE_OBSERVATION_KPIS_FINISH_20260813:
+  model 1
+  task T_DEFINE_BATTLE_OBSERVATION_KPIS
+  kind finish
+  occurred_at 2026-08-13T11:23:26+09:00
+  effort 0.25ph

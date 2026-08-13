@@ -6,6 +6,7 @@ export type DialogueSpeakerQuality = {
   reactionLines: number;
   uniqueLines: number;
   exactDuplicateLines: number;
+  exactUniqueRate: number;
   longestExactRepeatRun: number;
   wordCount: number;
   uniqueWordCount: number;
@@ -15,12 +16,14 @@ export type DialogueSpeakerQuality = {
 };
 
 export type DialogueQualityMetrics = {
-  schemaVersion: 1;
+  schemaVersion: 2;
   totalLines: number;
   reactionLines: number;
   uniqueLines: number;
   exactDuplicateLines: number;
   exactUniqueRate: number | null;
+  worstSpeakerExactUniqueRate: number | null;
+  longestExactRepeatRun: number;
   speakerMetrics: DialogueSpeakerQuality[];
 };
 
@@ -101,6 +104,7 @@ export function assessDialogueQuality(
       reactionLines: lines.filter((line) => line.isReaction).length,
       uniqueLines,
       exactDuplicateLines: lines.length - uniqueLines,
+      exactUniqueRate: uniqueLines / lines.length,
       longestExactRepeatRun: longestRepeatRun(lines),
       wordCount: words.length,
       uniqueWordCount: uniqueWords,
@@ -111,12 +115,18 @@ export function assessDialogueQuality(
   });
   const uniqueLines = new Set(speeches.map((speech) => speech.normalizedText)).size;
   return {
-    schemaVersion: 1,
+    schemaVersion: 2,
     totalLines: speeches.length,
     reactionLines: speeches.filter((speech) => speech.isReaction).length,
     uniqueLines,
     exactDuplicateLines: speeches.length - uniqueLines,
     exactUniqueRate: speeches.length > 0 ? uniqueLines / speeches.length : null,
+    worstSpeakerExactUniqueRate: speakerMetrics.length > 0
+      ? Math.min(...speakerMetrics.map((metric) => metric.exactUniqueRate))
+      : null,
+    longestExactRepeatRun: speakerMetrics.length > 0
+      ? Math.max(...speakerMetrics.map((metric) => metric.longestExactRepeatRun))
+      : 0,
     speakerMetrics,
   };
 }

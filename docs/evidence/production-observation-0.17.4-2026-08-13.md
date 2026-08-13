@@ -68,6 +68,13 @@ battle used 57 attempts:
   was classified as a reaction. This is a quality observation, not an
   accounting or release acceptance failure.
 
+Under the subsequently accepted
+[battle-observation KPI contract](../battle-observation-kpis.md), the overall
+exact-unique rate is between the target and review trigger, while side B's
+`3/9 = 0.333` exact-unique rate and the four-line run both trigger dialogue
+review. This interpretation does not retroactively change the successful
+operational acceptance of the bounded observation.
+
 ## Scope and remaining unknowns
 
 This is one bounded synthetic battle. It confirms the release path and fixes

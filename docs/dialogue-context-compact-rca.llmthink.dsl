@@ -293,3 +293,41 @@ decision FOLLOW_UP_DIRECTION based_on OBS13:
     only on a recurrent semantic loop or safety/mechanics divergence. Do not
     add phrase bans, prose matching, retries, cancellation, extra calls, or
     mechanic changes merely to optimize this metric.
+
+evidence OBS14:
+  |
+    The bounded v0.17.4 production observation, battle
+    btl_85a6e128fdba9fc15d30d1e4de62238c, produced 13 exact-unique public
+    lines out of 19. Nagi was 10 of 10, while Gaku was 3 of 9 with a
+    four-line exact-repeat run. The provider ledger recorded only four deep
+    psyche attempts for the whole battle: the prologue and aftermath lanes.
+    Normal combat turns used PSYCHE_REACTION_POLICY_V1, which updates the
+    deterministic reaction state but skips advanceCharacterPsyche. The
+    expression fallback therefore rebuilt expressionBrief from the persisted
+    prologue speech appraisal on every normal turn. Expression received four
+    recent exchanges inside a compact JSON user message, but no deterministic
+    recent-line exclusion, output novelty check, or provider repetition
+    penalty exists.
+
+decision RC10 based_on OBS14, RC9:
+  |
+    The current recurrence is not inference-time learning caused by a large
+    structured string. Each expression is a stateless provider call; model
+    weights do not change. Large stable JSON can reduce the relative salience
+    of the recent exchange and can recirculate a repeated line, so it is an
+    amplifier. The stronger code-level cause is an expression-intent ownership
+    gap: routine deterministic psyche updates present reaction state without
+    refreshing the semantic expression brief, while the expression stage is
+    allowed to realize the same persisted approach again. The asymmetric
+    Nagi/Gaku result under the same projection also excludes JSON size alone as
+    a sufficient cause.
+
+decision FOLLOW_UP_DIRECTION_2 based_on RC10:
+  |
+    Measure both aggregate and worst-speaker repetition, then design an
+    expression-intent owner that can consume the deterministic reaction and
+    present exchange without restoring a routine deep-psyche provider call.
+    Treat semantic response and topic progress as separate unavailable KPIs
+    until an independent evaluator is accepted. Do not implement phrase bans,
+    speech retries, mechanical penalties, or an extra provider call from this
+    diagnosis alone.
