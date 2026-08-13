@@ -181,6 +181,39 @@ describe("internal battle observability", () => {
       "2026-08-07T00:00:30.000Z",
     );
     database.prepare(
+      `INSERT INTO battle_narration_entries
+        (battle_id, receipt_id, sequence, phase, combat_turn, input_json,
+         input_digest, status, active_attempt_id, attempt_count,
+         terminal_narrative_json, created_at, updated_at)
+       VALUES ('battle-observed', 'receipt-1', 1, 'combat', 1, '{}', ?,
+         'completed', NULL, 2, '{}', ?, ?)`,
+    ).run(
+      "b".repeat(64),
+      "2026-08-07T00:00:10.000Z",
+      "2026-08-07T00:00:30.000Z",
+    );
+    database.prepare(
+      `INSERT INTO battle_narration_attempts
+        (attempt_id, battle_id, receipt_id, fencing_token, status, provider,
+         model, route, http_attempts, token_count, estimated_cost_usd,
+         elapsed_ms, started_at, finished_at)
+       VALUES ('attempt-1', 'battle-observed', 'receipt-1', 1, 'abandoned',
+         'test', 'fast-test', 'fast', 2, NULL, NULL, 1000, ?, ?),
+        ('attempt-2', 'battle-observed', 'receipt-1', 2, 'completed',
+         'test', 'fast-test', 'fast', 1, 100, 0.01, 800, ?, ?)`,
+    ).run(
+      "2026-08-07T00:00:10.000Z",
+      "2026-08-07T00:00:20.000Z",
+      "2026-08-07T00:00:21.000Z",
+      "2026-08-07T00:00:29.000Z",
+    );
+    database.prepare(
+      `INSERT INTO battle_narration_outbox
+        (outbox_id, battle_id, receipt_id, status, delivery_attempts,
+         delivery_generation, created_at, dispatched_at)
+       VALUES ('outbox-1', 'battle-observed', 'receipt-1', 'completed', 2, 1, ?, ?)`,
+    ).run("2026-08-07T00:00:10.000Z", "2026-08-07T00:00:21.000Z");
+    database.prepare(
       `INSERT INTO balance_events
         (kind, created_at, battle_id, character_id, payload_json)
        VALUES ('persistent_e2e_observation', ?, 'battle-observed', 'char-a', ?)`,
@@ -226,6 +259,14 @@ describe("internal battle observability", () => {
     assert.equal(detail.capabilities.pipelineTraceCount, 1);
     assert.equal(detail.capabilities.temporalResolutionCount, 1);
     assert.equal(detail.capabilities.hasCausalExecutionCheckpoint, true);
+    assert.equal(detail.narrationQueue[0]?.latestAttempt?.status, "completed");
+    assert.equal(detail.narrationQueue[0]?.latestAttempt?.httpAttempts, 1);
+    assert.deepEqual(detail.narrationQueue[0]?.attemptTotals, {
+      attemptCount: 2,
+      httpAttempts: 3,
+      tokenCount: null,
+      estimatedCostUsd: null,
+    });
     assert.deepEqual(detail.canonicalCurrent.phaseReceipts, [{
       receiptId: "battle-observed:phase:1",
       sequence: 1,

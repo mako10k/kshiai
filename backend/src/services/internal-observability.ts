@@ -123,6 +123,12 @@ export type InternalNarrationQueueEntry = {
     elapsedMs: number | null;
     fallbackReason: string | null;
   } | null;
+  attemptTotals: {
+    attemptCount: number;
+    httpAttempts: number;
+    tokenCount: number | null;
+    estimatedCostUsd: number | null;
+  };
 };
 
 function asObject(value: unknown): JsonObject | null {
@@ -360,6 +366,10 @@ export async function getInternalBattleObservation(
     estimated_cost_usd: number | null;
     elapsed_ms: number | null;
     fallback_reason: string | null;
+    retained_attempt_count: number | null;
+    total_http_attempts: number | null;
+    total_token_count: number | null;
+    total_estimated_cost_usd: number | null;
     outbox_status: string | null;
     delivery_attempts: number | null;
     delivery_generation: number | null;
@@ -371,12 +381,33 @@ export async function getInternalBattleObservation(
             attempt.status AS attempt_status, attempt.provider, attempt.model,
             attempt.route, attempt.http_attempts, attempt.token_count,
             attempt.estimated_cost_usd, attempt.elapsed_ms, attempt.fallback_reason,
+            totals.retained_attempt_count, totals.total_http_attempts,
+            totals.total_token_count, totals.total_estimated_cost_usd,
             outbox.status AS outbox_status, outbox.delivery_attempts,
             outbox.delivery_generation, outbox.dispatched_at
        FROM battle_narration_entries entry
        LEFT JOIN battle_narration_leases lease ON lease.battle_id = entry.battle_id
        LEFT JOIN battle_narration_attempts attempt
-         ON attempt.attempt_id = entry.active_attempt_id
+         ON attempt.attempt_id = (
+           SELECT latest.attempt_id
+             FROM battle_narration_attempts latest
+            WHERE latest.battle_id = entry.battle_id
+              AND latest.receipt_id = entry.receipt_id
+            ORDER BY latest.started_at DESC, latest.attempt_id DESC
+            LIMIT 1
+         )
+       LEFT JOIN (
+         SELECT battle_id, receipt_id,
+                COUNT(*) AS retained_attempt_count,
+                COALESCE(SUM(http_attempts), 0) AS total_http_attempts,
+                CASE WHEN COUNT(*) = COUNT(token_count)
+                  THEN SUM(token_count) ELSE NULL END AS total_token_count,
+                CASE WHEN COUNT(*) = COUNT(estimated_cost_usd)
+                  THEN SUM(estimated_cost_usd) ELSE NULL END AS total_estimated_cost_usd
+           FROM battle_narration_attempts
+          GROUP BY battle_id, receipt_id
+       ) totals ON totals.battle_id = entry.battle_id
+        AND totals.receipt_id = entry.receipt_id
        LEFT JOIN battle_narration_outbox outbox
          ON outbox.battle_id = entry.battle_id
         AND outbox.receipt_id = entry.receipt_id
@@ -424,6 +455,14 @@ export async function getInternalBattleObservation(
         : Number(entry.estimated_cost_usd),
       elapsedMs: entry.elapsed_ms === null ? null : Number(entry.elapsed_ms),
       fallbackReason: entry.fallback_reason,
+    },
+    attemptTotals: {
+      attemptCount: Number(entry.retained_attempt_count ?? 0),
+      httpAttempts: Number(entry.total_http_attempts ?? 0),
+      tokenCount: entry.total_token_count === null ? null : Number(entry.total_token_count),
+      estimatedCostUsd: entry.total_estimated_cost_usd === null
+        ? null
+        : Number(entry.total_estimated_cost_usd),
     },
   }));
   const retention = await query<{ pruned_through_sequence: number }>(

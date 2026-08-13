@@ -12,6 +12,7 @@ import { listBattlePresentations } from "./battle-presentations.js";
 import { config } from "../config.js";
 import { enqueueNarrationInTransaction } from "../services/narration-worker.js";
 import { currentBattleLeaseFence } from "../services/distributed-guard.js";
+import { currentProviderOperationContext } from "../llm/provider-accounting.js";
 
 export async function saveBattle(
   state: BattleState,
@@ -47,15 +48,23 @@ async function writeBattle(
   if (fence && fence.battleId !== state.id) {
     throw new Error("BATTLE_LEASE_SCOPE_MISMATCH");
   }
+  const providerContext = currentProviderOperationContext();
+  if (providerContext && providerContext.battleId !== state.id) {
+    throw new Error("PROVIDER_OPERATION_BATTLE_SCOPE_MISMATCH");
+  }
+  const observationRunId = providerContext?.runId ?? null;
   const result = await connection.query<{ id: string }>(
     `INSERT INTO battles
-      (id, state_json, side_a_user_id, side_a_character_id, side_b_character_id, created_at, updated_at, revision)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $9)
+      (id, state_json, side_a_user_id, side_a_character_id, side_b_character_id,
+       created_at, updated_at, revision, observation_run_id)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $9, $13)
      ON CONFLICT (id) DO UPDATE
        SET state_json = EXCLUDED.state_json,
            updated_at = EXCLUDED.updated_at,
            revision = EXCLUDED.revision
        WHERE battles.revision = $8
+         AND (battles.observation_run_id = EXCLUDED.observation_run_id OR
+              (battles.observation_run_id IS NULL AND EXCLUDED.observation_run_id IS NULL))
          AND (CAST($10 AS TEXT) IS NULL OR EXISTS (
            SELECT 1 FROM battle_leases lease
             WHERE lease.battle_id = $1
@@ -77,6 +86,7 @@ async function writeBattle(
       fence?.ownerId ?? null,
       fence?.fencingToken ?? null,
       new Date().toISOString(),
+      observationRunId,
     ],
   );
   if (result.rowCount !== 1) throw new Error("BATTLE_REVISION_CONFLICT");
@@ -248,8 +258,10 @@ export async function getBattleMeta(id: string) {
         side_a_user_id: string;
         side_a_character_id: string;
         side_b_character_id: string;
+        observation_run_id: string | null;
       }>(
-    `SELECT side_a_user_id, side_a_character_id, side_b_character_id
+    `SELECT side_a_user_id, side_a_character_id, side_b_character_id,
+            observation_run_id
        FROM battles WHERE id = $1`,
     [id],
   );

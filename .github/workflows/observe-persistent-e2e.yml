@@ -19,7 +19,7 @@ on:
       provider_operation_ceiling:
         description: Maximum projected provider operations for this one observation
         required: true
-        default: "100"
+        default: "169"
         type: string
       confirmation:
         description: Type OBSERVE followed by a space and the revision

@@ -230,6 +230,14 @@ jobs:
               src/services/narration-worker.test.ts
           )
 
+      - name: Prove provider attempt accounting without an LLM
+        run: |
+          set -euo pipefail
+          (
+            cd backend
+            node --import tsx --test src/llm/provider-accounting.test.ts
+          )
+
       - name: Prove Cloud Tasks OIDC delivery to staged revision
         env:
           BACKEND_URL: ${{ steps.backend.outputs.url }}

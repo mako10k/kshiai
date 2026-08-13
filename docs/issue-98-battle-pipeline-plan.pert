@@ -3,11 +3,11 @@
 project KSHIAI_ISSUE_98_CAUSAL_BATTLE_PIPELINE:
   version 6
   title "Issue #98 causal battle-pipeline renewal"
-  description "Replanned from baseline bc47793 while preserving the original active-task estimate and work events. Finish the pure restartable bucket engine, then audit and integrate the already-written continuation persistence, administrator checkpoint display, and isolated-side agent groundwork before proceeding through asset generations and pipeline-wide LLM cost gates. Do not treat groundwork commits as completed downstream tasks. Private psyche, action, expression, adjudication, and narration contexts remain separate; neural training, embedding, LLM judging, and data-review infrastructure remain deferred."
-  as_of 2026-08-12
+  description "Replanned from baseline bc47793 while preserving completed work and observation history. The v0.17.3 functional observation exposed an acceptance failure in provider-operation accounting, so add a new critical-path slice for an accepted accounting ADR, terminal attempt read correctness and exhaustive operation taxonomy, a durable physical-attempt ledger with atomic reservation, and an LLM-free Stage acceptance gate before production observation may resume. Private psyche, action, expression, adjudication, and narration contexts remain separate; release and another production observation remain separately authorized."
+  as_of 2026-08-13
   duration_unit point
   velocity 2880p/1117h
-  target_duration 56p
+  target_duration 68p
   finish ISSUE_98_LOCALLY_ACCEPTED
 
 resource DEV:
@@ -145,6 +145,46 @@ task T_RCA_COST_RELEASE_GUARDS RCA_PRESENTATION_SAFE -> RCA_OBSERVATION_GUARDED:
     DEV 1
   owner "codex"
 
+task T_ACCEPT_PROVIDER_ACCOUNTING_ADR PACING_PRODUCTION_DEPLOYED -> PROVIDER_ACCOUNTING_CONTRACT_ACCEPTED:
+  title "Accept the provider operation accounting contract"
+  description "Record ADR-0007 from the audited v0.17.3 LLMTHINK RCA. Fix ownership, correlation, physical-attempt identity, atomic reservation, privacy, retention, migration and acceptance boundaries before implementation. The accepted direction does not authorize deployment, release or another production observation."
+  duration 2p
+  status done
+  priority 100
+  requires:
+    DEV 1
+  owner "codex"
+
+task T_FIX_PROVIDER_ACCOUNTING_READ_MODEL PROVIDER_ACCOUNTING_CONTRACT_ACCEPTED -> PROVIDER_ACCOUNTING_READ_SAFE:
+  title "Correct retained attempts and operation projection"
+  description "Separate active narration ownership from retained latest-attempt display; aggregate all attempts including abandoned and failed rows; define an exhaustive revisioned layer taxonomy; and derive a conservative phase-aware projection that includes battlefield concretization, encounter preparation, deep psyche, expression, environment, narration and referee operations. Prove the slice with provider stubs only."
+  duration 2p
+  status done
+  priority 100
+  requires:
+    DEV 1
+  owner "codex"
+
+task T_IMPLEMENT_PROVIDER_ATTEMPT_LEDGER PROVIDER_ACCOUNTING_READ_SAFE -> PROVIDER_ACCOUNTING_ENFORCED:
+  title "Implement the provider attempt ledger and reservation ceiling"
+  description "At the common provider transport boundary, bind observation run, battle, logical call, layer, operation, model tier and attempt ordinal; atomically reserve each physical outbound attempt before the call; durably record outcome and available usage without prompts or private state; count failed attempts; reject unbound or unclassified observation calls; and preserve unknown token or cost values as unknown."
+  duration 5p
+  status done
+  priority 100
+  requires:
+    DEV 1
+  owner "codex"
+
+task T_VERIFY_PROVIDER_ACCOUNTING_GATES PROVIDER_ACCOUNTING_ENFORCED -> PROVIDER_ACCOUNTING_STAGE_ACCEPTED:
+  title "Verify provider accounting and observation acceptance"
+  description "Use an injected fake transport to prove success, retry, failure, idempotent reservation and fail-closed exhaustion. Require exact run and battle binding, complete classification, terminal logical calls and narration receipts, ledger totals equal by-layer sums, receipt-ledger agreement and no unknown usage represented as zero. Pass focused and full local gates plus the LLM-free Stage fixture; do not deploy or observe production."
+  duration 3p
+  status done
+  priority 100
+  requires:
+    DEV 1
+  owner "codex"
+
 work_event EVT_OBSERVE_PACING_START_20260812:
   model 1
   task T_OBSERVE_PRODUCTION_PACING
@@ -270,3 +310,74 @@ work_event EVT_OBSERVE_PACING_SUSPEND_V0173_TELEMETRY_20260813:
   kind suspend
   occurred_at 2026-08-13T09:12:16+09:00
   reason "The v0.17.3 functional observation passed, but persisted narration HTTP attempts reported zero despite eleven successful narration provider calls, and the projected budget omitted four deep-psyche calls; pause additional paid observation until by-layer actual operation accounting is corrected and locally and staging verified."
+
+milestone PROVIDER_ACCOUNTING_CONTRACT_ACCEPTED:
+  title "Provider operation accounting contract accepted"
+
+milestone PROVIDER_ACCOUNTING_READ_SAFE:
+  title "Provider operation read model and projection are complete"
+
+milestone PROVIDER_ACCOUNTING_ENFORCED:
+  title "Physical provider attempts are durably bounded"
+
+milestone PROVIDER_ACCOUNTING_STAGE_ACCEPTED:
+  title "LLM-free provider accounting acceptance passed"
+
+gate G_PROVIDER_ACCOUNTING_BEFORE_OBSERVATION PROVIDER_ACCOUNTING_STAGE_ACCEPTED -> PACING_PRODUCTION_OBSERVED:
+  reason "Production pacing observation cannot be accepted or resumed until physical provider attempts are durably classified, atomically bounded, and accepted by the LLM-free Stage gate."
+
+work_event EVT_PROVIDER_ACCOUNTING_ADR_START_20260813:
+  model 1
+  task T_ACCEPT_PROVIDER_ACCOUNTING_ADR
+  kind start
+  occurred_at 2026-08-13T09:39:36+09:00
+  planned_value 2p
+
+work_event EVT_PROVIDER_ACCOUNTING_ADR_FINISH_20260813:
+  model 1
+  task T_ACCEPT_PROVIDER_ACCOUNTING_ADR
+  kind finish
+  occurred_at 2026-08-13T09:40:49+09:00
+  effort 0.02ph
+
+work_event EVT_PROVIDER_ACCOUNTING_READ_START_20260813:
+  model 1
+  task T_FIX_PROVIDER_ACCOUNTING_READ_MODEL
+  kind start
+  occurred_at 2026-08-13T09:41:37+09:00
+  planned_value 2p
+
+work_event EVT_PROVIDER_ACCOUNTING_READ_FINISH_20260813:
+  model 1
+  task T_FIX_PROVIDER_ACCOUNTING_READ_MODEL
+  kind finish
+  occurred_at 2026-08-13T09:43:43+09:00
+  effort 0.04ph
+
+work_event EVT_PROVIDER_ATTEMPT_LEDGER_START_20260813:
+  model 1
+  task T_IMPLEMENT_PROVIDER_ATTEMPT_LEDGER
+  kind start
+  occurred_at 2026-08-13T09:43:59+09:00
+  planned_value 5p
+
+work_event EVT_PROVIDER_ATTEMPT_LEDGER_FINISH_20260813:
+  model 1
+  task T_IMPLEMENT_PROVIDER_ATTEMPT_LEDGER
+  kind finish
+  occurred_at 2026-08-13T09:59:37+09:00
+  effort 0.26ph
+
+work_event EVT_VERIFY_PROVIDER_ACCOUNTING_START_20260813:
+  model 1
+  task T_VERIFY_PROVIDER_ACCOUNTING_GATES
+  kind start
+  occurred_at 2026-08-13T09:59:55+09:00
+  planned_value 3p
+
+work_event EVT_VERIFY_PROVIDER_ACCOUNTING_FINISH_20260813:
+  model 1
+  task T_VERIFY_PROVIDER_ACCOUNTING_GATES
+  kind finish
+  occurred_at 2026-08-13T10:11:07+09:00
+  effort 0.19ph

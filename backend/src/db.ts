@@ -94,12 +94,48 @@ export function getDb(): SqliteDatabase.Database {
       id TEXT PRIMARY KEY,
       state_json TEXT NOT NULL,
       revision INTEGER NOT NULL DEFAULT 0,
+      observation_run_id TEXT,
       side_a_user_id TEXT NOT NULL,
       side_b_character_id TEXT NOT NULL,
       side_a_character_id TEXT NOT NULL,
       created_at TEXT NOT NULL,
       updated_at TEXT NOT NULL
     );
+    CREATE TABLE IF NOT EXISTS provider_operation_runs (
+      run_id TEXT PRIMARY KEY,
+      observer_user_id TEXT NOT NULL,
+      battle_id TEXT UNIQUE,
+      taxonomy_revision TEXT NOT NULL,
+      projected_operations_json TEXT NOT NULL,
+      approved_attempt_ceiling INTEGER NOT NULL CHECK (approved_attempt_ceiling > 0),
+      reserved_attempts INTEGER NOT NULL DEFAULT 0
+        CHECK (reserved_attempts >= 0 AND reserved_attempts <= approved_attempt_ceiling),
+      status TEXT NOT NULL CHECK (status IN ('active', 'completed', 'failed')),
+      created_at TEXT NOT NULL,
+      finished_at TEXT
+    );
+    CREATE TABLE IF NOT EXISTS provider_operation_attempts (
+      run_id TEXT NOT NULL REFERENCES provider_operation_runs(run_id) ON DELETE CASCADE,
+      logical_call_id TEXT NOT NULL,
+      attempt_ordinal INTEGER NOT NULL CHECK (attempt_ordinal > 0),
+      battle_id TEXT NOT NULL,
+      layer TEXT NOT NULL,
+      operation TEXT NOT NULL,
+      provider TEXT NOT NULL,
+      model TEXT NOT NULL,
+      status TEXT NOT NULL CHECK (status IN ('reserved', 'succeeded', 'failed')),
+      token_count INTEGER,
+      estimated_cost_usd REAL,
+      elapsed_ms INTEGER,
+      error_class TEXT,
+      started_at TEXT NOT NULL,
+      finished_at TEXT,
+      PRIMARY KEY (run_id, logical_call_id, attempt_ordinal)
+    );
+    CREATE INDEX IF NOT EXISTS idx_provider_operation_attempts_run_layer
+      ON provider_operation_attempts (run_id, layer, operation);
+    CREATE UNIQUE INDEX IF NOT EXISTS uq_battles_observation_run
+      ON battles (observation_run_id) WHERE observation_run_id IS NOT NULL;
     CREATE TABLE IF NOT EXISTS battle_leases (
       battle_id TEXT PRIMARY KEY REFERENCES battles(id) ON DELETE CASCADE,
       owner_id TEXT NOT NULL,
@@ -291,6 +327,9 @@ export function getDb(): SqliteDatabase.Database {
   const battleColumns = sqlite.pragma("table_info(battles)") as Array<{ name: string }>;
   if (!battleColumns.some((column) => column.name === "revision")) {
     sqlite.exec("ALTER TABLE battles ADD COLUMN revision INTEGER NOT NULL DEFAULT 0");
+  }
+  if (!battleColumns.some((column) => column.name === "observation_run_id")) {
+    sqlite.exec("ALTER TABLE battles ADD COLUMN observation_run_id TEXT");
   }
   const battleLeaseColumns = sqlite.pragma("table_info(battle_leases)") as Array<{
     name: string;

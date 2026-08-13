@@ -87,5 +87,24 @@ describe("battle create idempotency", () => {
       [input.battleId],
     );
     assert.equal(Number(count.rows[0]?.count), 1);
+
+    const exhaustedProvider = new MockLlmProvider();
+    exhaustedProvider.prepareBattleEncounter = async () => {
+      throw new Error("PROVIDER_OPERATION_CEILING_EXHAUSTED");
+    };
+    const exhaustedBattleId = "btl_provider_ceiling_fixture";
+    await assert.rejects(
+      startBattle({
+        ...input,
+        battleId: exhaustedBattleId,
+        llm: exhaustedProvider,
+      }),
+      /PROVIDER_OPERATION_CEILING_EXHAUSTED/,
+    );
+    const exhaustedCount = await query<{ count: number }>(
+      "SELECT COUNT(*) AS count FROM battles WHERE id = $1",
+      [exhaustedBattleId],
+    );
+    assert.equal(Number(exhaustedCount.rows[0]?.count), 0);
   });
 });

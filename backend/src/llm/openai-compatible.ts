@@ -67,6 +67,10 @@ import { newId } from "../id.js";
 import { MockLlmProvider } from "./mock.js";
 import { retryLlmProviderCall } from "./provider-retry.js";
 import {
+  executeProviderOperationAttempt,
+  isProviderOperationAccountingError,
+} from "./provider-accounting.js";
+import {
   COMBINED_PERCEPTION_RESPONSE_FORMAT,
   COMBINED_PERCEPTION_SYSTEM_PROMPT,
   WORLD_PERCEPTION_RESPONSE_FORMAT,
@@ -323,6 +327,7 @@ export class OpenAiCompatibleProvider implements LlmProvider {
   }
 
   private fallbackOrThrow<T>(error: unknown, fallback: () => T): T {
+    if (isProviderOperationAccountingError(error)) throw error;
     if (!this.fallbackOnError) throw error;
     return fallback();
   }
@@ -348,26 +353,41 @@ export class OpenAiCompatibleProvider implements LlmProvider {
     const temperature =
       opts?.temperature ?? (tier === "fast" ? 0.85 : 0.45);
     const label = opts?.label ?? tier;
+    const logicalCallId = newId("provider_call");
+    let attemptOrdinal = 0;
     const started = Date.now();
     try {
       const data = await this.retryProviderCall(label, async () => {
         const controller = new AbortController();
         const timer = setTimeout(() => controller.abort(), timeoutMs);
         try {
-          const resp = await this.client!.chat.completions.create(
-            {
-              model,
-              messages: [
-                { role: "system", content: system },
-                { role: "user", content: user },
-              ],
-              ...(this.supportsTemperature ? { temperature } : {}),
-              response_format: opts?.responseFormat ?? { type: "json_object" },
+          return executeProviderOperationAttempt({
+            logicalCallId,
+            attemptOrdinal: ++attemptOrdinal,
+            operation: label,
+            provider: this.name,
+            model,
+            action: async () => {
+              const resp = await this.client!.chat.completions.create(
+                {
+                  model,
+                  messages: [
+                    { role: "system", content: system },
+                    { role: "user", content: user },
+                  ],
+                  ...(this.supportsTemperature ? { temperature } : {}),
+                  response_format: opts?.responseFormat ?? { type: "json_object" },
+                },
+                { signal: controller.signal, timeout: timeoutMs },
+              );
+              const text = resp.choices[0]?.message?.content ?? "{}";
+              return {
+                data: JSON.parse(text) as unknown,
+                tokenCount: resp.usage?.total_tokens ?? null,
+              };
             },
-            { signal: controller.signal, timeout: timeoutMs },
-          );
-          const text = resp.choices[0]?.message?.content ?? "{}";
-          return JSON.parse(text) as unknown;
+            usage: (result) => ({ tokenCount: result.tokenCount }),
+          }).then((result) => result.data);
         } finally {
           clearTimeout(timer);
         }
@@ -517,6 +537,8 @@ Rules:
     const temperature =
       opts.temperature ?? (tier === "fast" ? 0.85 : 0.45);
     const label = opts.label ?? tier;
+    const logicalCallId = newId("provider_call");
+    let attemptOrdinal = 0;
     const started = Date.now();
     let receivedText = false;
     try {
@@ -524,31 +546,38 @@ Rules:
         const controller = new AbortController();
         const timer = setTimeout(() => controller.abort(), timeoutMs);
         try {
-          const stream = await this.client!.chat.completions.create(
-            {
-              model,
-              messages: [
-                { role: "system", content: system },
-                { role: "user", content: user },
-              ],
-              ...(this.supportsTemperature ? { temperature } : {}),
-              response_format: { type: "json_object" },
-              stream: true,
+          return executeProviderOperationAttempt({
+            logicalCallId,
+            attemptOrdinal: ++attemptOrdinal,
+            operation: label,
+            provider: this.name,
+            model,
+            action: async () => {
+              const stream = await this.client!.chat.completions.create(
+                {
+                  model,
+                  messages: [
+                    { role: "system", content: system },
+                    { role: "user", content: user },
+                  ],
+                  ...(this.supportsTemperature ? { temperature } : {}),
+                  response_format: { type: "json_object" },
+                  stream: true,
+                },
+                { signal: controller.signal, timeout: timeoutMs },
+              );
+              let full = "";
+              for await (const chunk of stream) {
+                const delta = chunk.choices[0]?.delta?.content ?? "";
+                if (!delta) continue;
+                receivedText = true;
+                full += delta;
+                opts.onText?.(full);
+              }
+              if (!full.trim()) throw new Error("empty stream completion");
+              return JSON.parse(full) as unknown;
             },
-            { signal: controller.signal, timeout: timeoutMs },
-          );
-          let full = "";
-          for await (const chunk of stream) {
-            const delta = chunk.choices[0]?.delta?.content ?? "";
-            if (!delta) continue;
-            receivedText = true;
-            full += delta;
-            opts.onText?.(full);
-          }
-          if (!full.trim()) {
-            throw new Error("empty stream completion");
-          }
-          return JSON.parse(full) as unknown;
+          });
         } finally {
           clearTimeout(timer);
         }
@@ -641,18 +670,30 @@ Rules:
       (opts?.timeoutMs ?? ENGINE_TIMEOUT_MS) * this.timeoutMultiplier,
     );
     for (let round = 0; round < 4; round += 1) {
+      const logicalCallId = newId("provider_call");
+      let attemptOrdinal = 0;
+      const label = opts?.label ?? "characterTools";
+      const model = this.modelFor(opts?.tier ?? "engine");
       const response = await this.retryProviderCall(
-        opts?.label ?? "characterTools",
-        () => this.client!.chat.completions.create({
-          model: this.modelFor(opts?.tier ?? "engine"),
-          messages,
-          tools,
-          tool_choice: "auto",
-          ...(this.supportsTemperature
-            ? { temperature: opts?.temperature ?? 0.45 }
-            : {}),
-          response_format: { type: "json_object" },
-        }, { timeout: timeoutMs }),
+        label,
+        () => executeProviderOperationAttempt({
+          logicalCallId,
+          attemptOrdinal: ++attemptOrdinal,
+          operation: label,
+          provider: this.name,
+          model,
+          action: () => this.client!.chat.completions.create({
+            model,
+            messages,
+            tools,
+            tool_choice: "auto",
+            ...(this.supportsTemperature
+              ? { temperature: opts?.temperature ?? 0.45 }
+              : {}),
+            response_format: { type: "json_object" },
+          }, { timeout: timeoutMs }),
+          usage: (result) => ({ tokenCount: result.usage?.total_tokens ?? null }),
+        }),
       );
       const message = response.choices[0]?.message;
       if (!message) throw new Error("LLM returned no message");
@@ -745,21 +786,33 @@ Rules:
       (opts?.timeoutMs ?? ENGINE_LONG_TIMEOUT_MS) * this.timeoutMultiplier,
     );
     for (let round = 0; round < 5; round += 1) {
+      const logicalCallId = newId("provider_call");
+      let attemptOrdinal = 0;
+      const label = opts?.label ?? "battleHistoryTools";
+      const model = this.modelFor(opts?.tier ?? "engine");
       const response = await this.retryProviderCall(
-        opts?.label ?? "battleHistoryTools",
-        () => this.client!.chat.completions.create(
-          {
-            model: this.modelFor(opts?.tier ?? "engine"),
-            messages,
-            tools,
-            tool_choice: "auto",
-            ...(this.supportsTemperature
-              ? { temperature: opts?.temperature ?? 0.4 }
-              : {}),
-            response_format: { type: "json_object" },
-          },
-          { timeout: timeoutMs },
-        ),
+        label,
+        () => executeProviderOperationAttempt({
+          logicalCallId,
+          attemptOrdinal: ++attemptOrdinal,
+          operation: label,
+          provider: this.name,
+          model,
+          action: () => this.client!.chat.completions.create(
+            {
+              model,
+              messages,
+              tools,
+              tool_choice: "auto",
+              ...(this.supportsTemperature
+                ? { temperature: opts?.temperature ?? 0.4 }
+                : {}),
+              response_format: { type: "json_object" },
+            },
+            { timeout: timeoutMs },
+          ),
+          usage: (result) => ({ tokenCount: result.usage?.total_tokens ?? null }),
+        }),
       );
       const message = response.choices[0]?.message;
       if (!message) throw new Error("LLM returned no message");

@@ -285,6 +285,37 @@ describe("ordered narration worker", () => {
     assert.equal(Number(battle.rows[0]?.revision), 0);
   });
 
+  it("does not retry an observation accounting stop", async () => {
+    const battleId = "worker-accounting-stop";
+    await createBattle(battleId);
+    await enqueueNarration({
+      battleId,
+      receiptId: `${battleId}:phase:1`,
+      sequence: 1,
+      phase: "combat",
+      combatTurn: 1,
+      frozenInput: { scene: "accounting-stop" },
+      inputDigest: "f".repeat(64),
+    });
+    assert.equal(
+      await processNextNarration({
+        battleId,
+        ownerId: "worker-a",
+        generator: async () => {
+          throw new Error("PROVIDER_OPERATION_CEILING_EXHAUSTED");
+        },
+      }),
+      "failed",
+    );
+    const attempts = await query<{ count: number; status: string }>(
+      `SELECT COUNT(*) AS count, MIN(status) AS status
+         FROM battle_narration_attempts WHERE battle_id = $1`,
+      [battleId],
+    );
+    assert.equal(Number(attempts.rows[0]?.count), 1);
+    assert.equal(attempts.rows[0]?.status, "failed");
+  });
+
   it("does not hold the battle transaction while narration is generating", async () => {
     const battleId = "worker-independent-advance";
     await createBattle(battleId);

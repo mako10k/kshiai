@@ -9,6 +9,11 @@ import {
 import { query, withTransaction, type DatabaseConnection } from "../db.js";
 import { newId } from "../id.js";
 import type { LlmProvider } from "../llm/types.js";
+import {
+  captureProviderHttpAttempts,
+  isProviderOperationAccountingError,
+  withBattleProviderOperationContext,
+} from "../llm/provider-accounting.js";
 
 export const NARRATION_WORKER_MAX_ATTEMPTS = 2;
 export const NARRATION_TOTAL_HTTP_ATTEMPTS = 4;
@@ -54,53 +59,56 @@ export function createLlmNarrationGenerator(llm: LlmProvider): NarrationGenerato
     if (!input.request || typeof input.request !== "object") {
       throw new Error("narration_request_missing");
     }
-    let narrative: NarrativeBlock;
-    if (input.kind === "combat") {
-      const result = await llm.narrateTurn(
-        input.request as Parameters<LlmProvider["narrateTurn"]>[0],
-      );
-      narrative = {
-        turn: result.turn,
-        narrator: result.narrator,
-        speeches: result.speeches,
-      };
-    } else if (input.kind === "prologue") {
-      const result = await llm.narratePrologue(
-        input.request as Parameters<LlmProvider["narratePrologue"]>[0],
-      );
-      narrative = {
-        turn: result.turn,
-        narrator: result.narrator,
-        speeches: result.speeches,
-      };
-    } else if (input.kind === "aftermath") {
-      const request = input.request as Parameters<LlmProvider["narrateAftermath"]>[0];
-      const result = await llm.narrateAftermath(request);
-      narrative = {
-        turn: request.turn,
-        narrator: [...result.before, ...result.after],
-        speeches: result.speeches,
-      };
-    } else if (input.kind === "judgment") {
-      const request = input.request as Parameters<LlmProvider["narrateJudgment"]>[0];
-      const result = await llm.narrateJudgment(request);
-      const verdict = request.winnerName
-        ? `${request.winnerName} の勝利。${request.adjudicationReason}`
-        : `引き分け。${request.adjudicationReason}`;
-      narrative = {
-        turn: request.turn,
-        narrator: [...result.before, "——判定——", verdict, ...result.after],
-        speeches: [],
-      };
-    } else {
-      throw new Error("narration_kind_invalid");
-    }
+    const generated = await captureProviderHttpAttempts(async () => {
+      let narrative: NarrativeBlock;
+      if (input.kind === "combat") {
+        const result = await llm.narrateTurn(
+          input.request as Parameters<LlmProvider["narrateTurn"]>[0],
+        );
+        narrative = {
+          turn: result.turn,
+          narrator: result.narrator,
+          speeches: result.speeches,
+        };
+      } else if (input.kind === "prologue") {
+        const result = await llm.narratePrologue(
+          input.request as Parameters<LlmProvider["narratePrologue"]>[0],
+        );
+        narrative = {
+          turn: result.turn,
+          narrator: result.narrator,
+          speeches: result.speeches,
+        };
+      } else if (input.kind === "aftermath") {
+        const request = input.request as Parameters<LlmProvider["narrateAftermath"]>[0];
+        const result = await llm.narrateAftermath(request);
+        narrative = {
+          turn: request.turn,
+          narrator: [...result.before, ...result.after],
+          speeches: result.speeches,
+        };
+      } else if (input.kind === "judgment") {
+        const request = input.request as Parameters<LlmProvider["narrateJudgment"]>[0];
+        const result = await llm.narrateJudgment(request);
+        const verdict = request.winnerName
+          ? `${request.winnerName} の勝利。${request.adjudicationReason}`
+          : `引き分け。${request.adjudicationReason}`;
+        narrative = {
+          turn: request.turn,
+          narrator: [...result.before, "——判定——", verdict, ...result.after],
+          speeches: [],
+        };
+      } else {
+        throw new Error("narration_kind_invalid");
+      }
+      return narrative;
+    });
     return {
-      narrative: NarrativeBlockSchema.parse(narrative),
+      narrative: NarrativeBlockSchema.parse(generated.value),
       provider: llm.name,
       model: llm.models?.fast ?? null,
       route: "fast",
-      httpAttempts: 1,
+      httpAttempts: generated.httpAttempts,
       tokenCount: null,
       estimatedCostUsd: null,
     };
@@ -517,6 +525,7 @@ export async function processNextNarration(input: {
       throw new Error("token_ceiling");
     }
   } catch (error) {
+    if (isProviderOperationAccountingError(error)) ceilingReached = true;
     errorClass = error instanceof Error ? error.message.slice(0, 80) : "generation_error";
     const usage = error && typeof error === "object"
       ? error as { httpAttempts?: unknown; tokenCount?: unknown; estimatedCostUsd?: unknown }
@@ -803,7 +812,10 @@ export async function processNextNarrationAcrossBattles(input: {
 }): Promise<"idle" | "acknowledged" | "deferred" | "completed" | "retry_queued" | "failed"> {
   const battleId = await nextNarrationBattleId();
   if (!battleId) return "idle";
-  return processNextNarration({ ...input, battleId });
+  return withBattleProviderOperationContext(
+    battleId,
+    () => processNextNarration({ ...input, battleId }),
+  );
 }
 
 export async function pruneNarrationOperationalHistory(now = new Date()): Promise<{

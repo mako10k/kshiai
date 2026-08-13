@@ -39,6 +39,13 @@ import {
 } from "./auth.js";
 import { newId } from "./id.js";
 import { createLlmProvider } from "./llm/index.js";
+import {
+  OBSERVATION_RUN_HEADER,
+  bindProviderOperationRun,
+  parseObservationRunId,
+  withBattleProviderOperationContext,
+  withProviderOperationContext,
+} from "./llm/provider-accounting.js";
 import * as charRepo from "./repositories/characters.js";
 import * as draftRepo from "./repositories/character-drafts.js";
 import * as battleRepo from "./repositories/battles.js";
@@ -159,14 +166,17 @@ export function buildRoutes() {
       return c.json({ error: "invalid_task" }, 400);
     }
     try {
-      const result = await processNextNarration({
-        battleId: body.battleId,
-        receiptId: body.receiptId,
-        outboxId: body.outboxId,
-        deliveryGeneration: body.deliveryGeneration,
-        ownerId: `cloud-task:${body.outboxId}:${body.deliveryGeneration}`,
-        generator: createLlmNarrationGenerator(llm),
-      });
+      const result = await withBattleProviderOperationContext(
+        body.battleId,
+        () => processNextNarration({
+          battleId: body.battleId as string,
+          receiptId: body.receiptId as string,
+          outboxId: body.outboxId as string,
+          deliveryGeneration: body.deliveryGeneration as number,
+          ownerId: `cloud-task:${body.outboxId}:${body.deliveryGeneration}`,
+          generator: createLlmNarrationGenerator(llm),
+        }),
+      );
       if (result === "retry_queued") {
         return c.json({ result }, 503);
       }
@@ -346,11 +356,14 @@ export function buildRoutes() {
       const ownerId = `local-worker:${c.get("user").id}`;
       const generator = createLlmNarrationGenerator(llm);
       const result = typeof body.battleId === "string" && body.battleId.length > 0
-        ? await processNextNarration({
-            battleId: body.battleId,
-            ownerId,
-            generator,
-          })
+        ? await withBattleProviderOperationContext(
+            body.battleId,
+            () => processNextNarration({
+              battleId: body.battleId as string,
+              ownerId,
+              generator,
+            }),
+          )
         : await processNextNarrationAcrossBattles({ ownerId, generator });
       c.header("Cache-Control", "private, no-store");
       return c.json({ result });
@@ -1380,6 +1393,21 @@ export function buildRoutes() {
     }
     const scope = "battle-create";
     const createRequestHash = requestDigest(body);
+    const battleId = `btl_${requestDigest({
+      userId: user.id,
+      scope,
+      key: idempotencyKey,
+      requestHash: createRequestHash,
+    }).slice(0, 32)}`;
+    let observationRunId: string | null;
+    try {
+      observationRunId = parseObservationRunId(
+        c.req.header(OBSERVATION_RUN_HEADER),
+      );
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "invalid_observation_run";
+      return c.json({ error: message.toLowerCase() }, 400);
+    }
     const idempotency = await beginIdempotentRequest({
       userId: user.id,
       scope,
@@ -1395,14 +1423,9 @@ export function buildRoutes() {
     if (idempotency.kind === "replay") return c.json(idempotency.response);
     let operationCompleted = false;
     try {
-      const battle = await startBattle({
+      const start = () => startBattle({
         userId: user.id,
-        battleId: `btl_${requestDigest({
-          userId: user.id,
-          scope,
-          key: idempotencyKey,
-          requestHash: createRequestHash,
-        }).slice(0, 32)}`,
+        battleId,
         myCharacterId: body.myCharacterId,
         opponentCharacterId: body.opponentCharacterId,
         battlefieldPresetId: body.battlefieldPresetId,
@@ -1413,6 +1436,20 @@ export function buildRoutes() {
         narrationStyleId: body.narrationStyleId,
         llm,
       });
+      const battle = observationRunId
+        ? await (async () => {
+            const access = await getUserAccessProfile(user.id);
+            if (access.accountKind !== "e2e") {
+              throw new Error("OBSERVATION_RUN_FORBIDDEN");
+            }
+            const context = await bindProviderOperationRun({
+              runId: observationRunId,
+              observerUserId: user.id,
+              battleId,
+            });
+            return withProviderOperationContext(context, start);
+          })()
+        : await start();
       operationCompleted = true;
       const response = { battle };
       await completeIdempotentRequest({
@@ -1437,7 +1474,13 @@ export function buildRoutes() {
       console.error("[battles] startBattle failed", msg, e);
       return c.json(
         { error: msg.toLowerCase(), message: msg },
-        msg.includes("NOT_FOUND") || msg.includes("FORBIDDEN") ? 400 : 500,
+        msg === "OBSERVATION_RUN_FORBIDDEN"
+          ? 403
+          : msg.includes("NOT_FOUND") || msg.includes("FORBIDDEN")
+            ? 400
+            : msg.includes("PROVIDER_OPERATION_")
+              ? 409
+              : 500,
       );
     }
   });
@@ -1589,16 +1632,19 @@ export function buildRoutes() {
     console.info(`[battles] advance start ${battleId}`);
     let operationCompleted = false;
     try {
-      const battle = await advanceTurn({
-        userId: user.id,
+      const battle = await withBattleProviderOperationContext(
         battleId,
-        operationId: requestDigest({
+        () => advanceTurn({
           userId: user.id,
-          scope,
-          key: idempotencyKey,
+          battleId,
+          operationId: requestDigest({
+            userId: user.id,
+            scope,
+            key: idempotencyKey,
+          }),
+          llm,
         }),
-        llm,
-      });
+      );
       operationCompleted = true;
       console.info(
         `[battles] advance ok ${battleId} turn=${battle.turn} ${Date.now() - started}ms aft=${battle.aftermathPending ? 1 : 0}`,
@@ -1636,7 +1682,10 @@ export function buildRoutes() {
               ? 409
               : msg === "BATTLE_BUSY"
                 ? 409
-              : 500;
+                : msg.startsWith("PROVIDER_OPERATION_") ||
+                    msg.startsWith("PROVIDER_ATTEMPT_")
+                  ? 409
+                  : 500;
       return c.json({ error: msg.toLowerCase(), message: msg }, code);
     }
   });
@@ -1706,21 +1755,24 @@ export function buildRoutes() {
           write(`: ka ${Date.now() - started}\n\n`);
         }, 12_000);
         try {
-          const battle = await advanceTurn({
-            userId: user.id,
+          const battle = await withBattleProviderOperationContext(
             battleId,
-            operationId: requestDigest({
+            () => advanceTurn({
               userId: user.id,
-              scope,
-              key: idempotencyKey,
+              battleId,
+              operationId: requestDigest({
+                userId: user.id,
+                scope,
+                key: idempotencyKey,
+              }),
+              llm,
+              // Narration is followed through the durable narration API. Advance
+              // SSE carries only non-prose phase state plus the terminal battle.
+              onProgress: (event) => {
+                if (event.type === "phase") send(event);
+              },
             }),
-            llm,
-            // Narration is followed through the durable narration API. Advance
-            // SSE carries only non-prose phase state plus the terminal battle.
-            onProgress: (event) => {
-              if (event.type === "phase") send(event);
-            },
-          });
+          );
           operationCompleted = true;
           await completeIdempotentRequest({
             userId: user.id,
@@ -1796,11 +1848,14 @@ export function buildRoutes() {
     if (idempotency.kind === "replay") return c.json(idempotency.response);
     let operationCompleted = false;
     try {
-      const battle = await advanceTurn({
-        userId: user.id,
+      const battle = await withBattleProviderOperationContext(
         battleId,
-        llm,
-      });
+        () => advanceTurn({
+          userId: user.id,
+          battleId,
+          llm,
+        }),
+      );
       operationCompleted = true;
       const response = { battle };
       await completeIdempotentRequest({
