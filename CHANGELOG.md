@@ -5,6 +5,35 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 
 ## [Unreleased]
 
+## [0.17.4] - 2026-08-13
+
+### Fixed
+
+- Records every physical provider attempt at the shared transport boundary,
+  including retries and failed calls, and classifies each attempt by a
+  revisioned battle-operation taxonomy.
+- Reads retained narration attempts independently from active lease ownership
+  so completed and abandoned attempts remain visible in observation totals.
+- Stops an observation before outbound provider I/O when its atomically
+  reserved operation ceiling would be exceeded.
+
+### Operations
+
+- Binds each observed battle immutably to one approved observation run and
+  requires exact ledger, narration receipt, per-layer total, and terminal-state
+  reconciliation before accepting the run.
+- Adds an LLM-free provider-accounting Stage fixture covering success, retry,
+  failure, idempotent reservation, and fail-closed ceiling exhaustion.
+- Uses a phase-aware upper bound of 169 provider operations for the normal
+  24-advance production observation while preserving unavailable token or cost
+  values as unknown.
+
+### Database
+
+- Adds the observation run and physical provider-attempt ledger in
+  `0016_provider_operation_accounting.sql`. The migration is additive, and the
+  v0.17.3 application ignores the new structures as a rollback target.
+
 ## [0.17.3] - 2026-08-13
 
 ### Fixed
