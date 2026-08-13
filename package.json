@@ -18,6 +18,7 @@
     "test": "npm run test --workspaces --if-present && npm run test:deployment",
     "test:deployment": "node --import tsx --test infra/cloudflare-worker/src/**/*.test.ts",
     "build:worker": "npm run build --workspace=@kshiai/shared && npm run build --workspace=frontend && wrangler deploy --config infra/cloudflare-worker/wrangler.jsonc --dry-run",
+    "observe:character-focus-shadow": "node --import tsx scripts/observe-character-focus-shadow.ts",
     "lint": "npm run typecheck",
     "sync:secdat": "bash scripts/sync-env-from-secdat.sh"
   },

@@ -3,12 +3,17 @@ import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { after, describe, it } from "node:test";
-import { defaultParameters, type CharacterSheet } from "@kshiai/shared";
+import {
+  CHARACTER_FOCUS_POLICY_V1,
+  defaultParameters,
+  type CharacterSheet,
+} from "@kshiai/shared";
 
 const temporaryDirectory = mkdtempSync(join(tmpdir(), "kshiai-create-idempotency-"));
 process.env.DATABASE_URL = "";
 process.env.AUTH_PROVIDER = "legacy";
 process.env.DATABASE_PATH = join(temporaryDirectory, "create.db");
+process.env.CHARACTER_FOCUS_SHADOW_MODE = "shadow";
 
 const { closeDatabase, query } = await import("../db.js");
 const { MockLlmProvider } = await import("../llm/mock.js");
@@ -87,6 +92,17 @@ describe("battle create idempotency", () => {
       [input.battleId],
     );
     assert.equal(Number(count.rows[0]?.count), 1);
+    const stored = await query<{ state_json: string }>(
+      "SELECT state_json FROM battles WHERE id = $1",
+      [input.battleId],
+    );
+    const storedState = JSON.parse(stored.rows[0]!.state_json) as {
+      assetManifest?: { rules?: { characterFocus?: string } };
+    };
+    assert.equal(
+      storedState.assetManifest?.rules?.characterFocus,
+      CHARACTER_FOCUS_POLICY_V1,
+    );
 
     const exhaustedProvider = new MockLlmProvider();
     exhaustedProvider.prepareBattleEncounter = async () => {

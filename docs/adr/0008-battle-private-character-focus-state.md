@@ -1,6 +1,6 @@
 # ADR-0008: Battle-private character focus state
 
-- Status: Proposed
+- Status: Accepted
 - Date: 2026-08-13
 - Decision owner: Product owner
 - Related: ADR-0003; ADR-0004; `docs/character-focus-hypothesis-plan.md`; `docs/character-focus-hypothesis.pert`; `docs/battle-observation-kpis.md`; `docs/dialogue-context-compact-rca.llmthink.dsl`
@@ -100,9 +100,10 @@ legacy states retain current behavior; no focus state is inferred from their
 old prose. Missing or invalid focus input produces a deterministic no-focus
 packet and no provider fallback.
 
-This Proposed ADR authorizes no implementation, provider replay, staging
-deployment, production change, or use of retained user battle data. Those
-boundaries remain separate PERT owner gates.
+Acceptance of this ADR authorizes only the deterministic fixture and no-effect
+shadow slice. It does not authorize provider replay, expression projection,
+staging deployment, production change, or use of retained user battle data.
+Those boundaries remain separate PERT owner gates.
 
 ## Consequences
 
@@ -160,4 +161,3 @@ boundaries remain separate PERT owner gates.
 ## Implementation references
 
 - Add implementation commits and evidence only after this ADR is Accepted.
-

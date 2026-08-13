@@ -23,6 +23,8 @@ import {
   buildTurnObservationPacket,
   advancePsycheReactionV1,
   PSYCHE_REACTION_POLICY_V1,
+  advanceCharacterFocusV1,
+  CHARACTER_FOCUS_POLICY_V1,
   buildSemanticObservationState,
   buildServerOnlyReserveCues,
   createBattleState,
@@ -748,6 +750,9 @@ export async function startBattle(input: {
         battleEngine: "battle-engine-v1",
         temporalRules: "initiative-window-v2",
         psycheReaction: PSYCHE_REACTION_POLICY_V1,
+        ...(config.characterFocusShadowMode === "shadow"
+          ? { characterFocus: CHARACTER_FOCUS_POLICY_V1 }
+          : {}),
       },
     },
     dialoguePipelineSnapshot,
@@ -1265,6 +1270,10 @@ export function buildCharacterAgentConsumerInput(input: {
   const {
     lastActionResult: latestCommittedResult,
     conversationHistory,
+    // Shadow state is persisted and observable internally, but is not an
+    // action, deep-psyche, or expression provider input in this slice.
+    focusStateV1: _focusStateV1,
+    focusReceiptV1: _focusReceiptV1,
     ...previousContinuity
   } = input.previous;
   const decision = phase === "aftermath"
@@ -1477,6 +1486,9 @@ export async function advanceCharacterAgents(input: {
   const deterministicPsyche =
     input.after.assetManifest?.rules.psycheReaction === PSYCHE_REACTION_POLICY_V1 &&
     (input.phase ?? "turn") === "turn";
+  const deterministicFocus =
+    input.after.assetManifest?.rules.characterFocus === CHARACTER_FOCUS_POLICY_V1 &&
+    (input.phase ?? "turn") === "turn";
   const previousA = groundCharacterAgentState(
     input.mine,
     input.after.agentStateA ?? initialAgentState(
@@ -1495,6 +1507,10 @@ export async function advanceCharacterAgents(input: {
   );
   previousA.lastActionResult = characterActionResultSummary(input.events, "a");
   previousB.lastActionResult = characterActionResultSummary(input.events, "b");
+  let reactionProjectionA:
+    ReturnType<typeof advancePsycheReactionV1>["expressionProjection"] | undefined;
+  let reactionProjectionB:
+    ReturnType<typeof advancePsycheReactionV1>["expressionProjection"] | undefined;
   if (deterministicPsyche) {
     if (activeSides.has("a")) {
       const reaction = advancePsycheReactionV1({
@@ -1503,6 +1519,7 @@ export async function advanceCharacterAgents(input: {
       });
       previousA.reactionStateV1 = reaction.state;
       previousA.reactionReceiptV1 = reaction.receipt;
+      reactionProjectionA = reaction.expressionProjection;
     }
     if (activeSides.has("b")) {
       const reaction = advancePsycheReactionV1({
@@ -1511,15 +1528,83 @@ export async function advanceCharacterAgents(input: {
       });
       previousB.reactionStateV1 = reaction.state;
       previousB.reactionReceiptV1 = reaction.receipt;
+      reactionProjectionB = reaction.expressionProjection;
     }
   }
+  const retainedDialoguePackets = (side: "a" | "b") => previousRecords.flatMap(
+    (record) => {
+      const packet = record.pipelineTrace?.dialogueProjection?.[side];
+      return packet ? [packet] : [];
+    },
+  );
+  const focusCueFor = (side: "a" | "b"): ServerOnlyReserveCue | null =>
+    buildServerOnlyReserveCues({
+      side,
+      parameters: side === "a"
+        ? input.after.sideA.parameters
+        : input.after.sideB.parameters,
+      baseParameters: side === "a"
+        ? input.after.sideA.baseParameters
+        : input.after.sideB.baseParameters,
+    }).find((cue) => cue.parameterKey === "focus") ?? null;
+  const protectiveHold = (state: CharacterAgentState) =>
+    state.interior?.speechAppraisal?.continuityDecision === "reiterate" &&
+    state.interior.speechAppraisal.continuityBasis?.kind === "protective_hold";
+  const focusA = deterministicFocus && activeSides.has("a")
+    ? advanceCharacterFocusV1({
+        observerSide: "a",
+        turn: input.after.turn,
+        prior: previousA.focusStateV1,
+        packet: dialogueProjection?.a ?? null,
+        retainedPackets: retainedDialoguePackets("a"),
+        conversation: previousA.conversationHistory,
+        focusCue: focusCueFor("a"),
+        reaction: reactionProjectionA,
+        protectiveHold: protectiveHold(previousA),
+      })
+    : null;
+  const focusB = deterministicFocus && activeSides.has("b")
+    ? advanceCharacterFocusV1({
+        observerSide: "b",
+        turn: input.after.turn,
+        prior: previousB.focusStateV1,
+        packet: dialogueProjection?.b ?? null,
+        retainedPackets: retainedDialoguePackets("b"),
+        conversation: previousB.conversationHistory,
+        focusCue: focusCueFor("b"),
+        reaction: reactionProjectionB,
+        protectiveHold: protectiveHold(previousB),
+      })
+    : null;
+  if (focusA) {
+    previousA.focusStateV1 = focusA.state;
+    previousA.focusReceiptV1 = focusA.receipt;
+  }
+  if (focusB) {
+    previousB.focusStateV1 = focusB.state;
+    previousB.focusReceiptV1 = focusB.receipt;
+  }
+  const recordWithFocusShadow = deterministicFocus
+    ? {
+        ...recordWithDialogueProjection,
+        pipelineTrace: {
+          schemaVersion: 1 as const,
+          ...(recordWithDialogueProjection.pipelineTrace ?? {}),
+          characterFocus: {
+            mode: "shadow" as const,
+            a: focusA ? { packet: focusA.packet, receipt: focusA.receipt } : null,
+            b: focusB ? { packet: focusB.packet, receipt: focusB.receipt } : null,
+          },
+        },
+      }
+    : recordWithDialogueProjection;
   const stateWithRecord: BattleState = {
     ...input.after,
     agentStateA: previousA,
     agentStateB: previousB,
     turnRecords: [
       ...previousRecords,
-      recordWithDialogueProjection,
+      recordWithFocusShadow,
     ].slice(-50),
   };
   const inputA = activeSides.has("a") ? buildCharacterAgentConsumerInput({
@@ -2013,19 +2098,19 @@ export async function advanceCharacterAgents(input: {
   }
   const record = existingRecord
     ? {
-        ...recordWithDialogueProjection,
+        ...recordWithFocusShadow,
         events: eventsWithUtterances,
         cognitionA: {
-          ...recordWithDialogueProjection.cognitionA,
+          ...recordWithFocusShadow.cognitionA,
           observedEvents: eventsWithUtterances,
         },
         cognitionB: {
-          ...recordWithDialogueProjection.cognitionB,
+          ...recordWithFocusShadow.cognitionB,
           observedEvents: eventsWithUtterances,
         },
         pipelineTrace: {
           schemaVersion: 1 as const,
-          ...(recordWithDialogueProjection.pipelineTrace ?? {}),
+          ...(recordWithFocusShadow.pipelineTrace ?? {}),
           deepPsyche: psycheTrace,
           characterAgents: characterAgentTrace,
         },
@@ -2040,7 +2125,7 @@ export async function advanceCharacterAgents(input: {
         }),
         pipelineTrace: {
           schemaVersion: 1 as const,
-          ...(recordWithDialogueProjection.pipelineTrace ?? {}),
+          ...(recordWithFocusShadow.pipelineTrace ?? {}),
           deepPsyche: psycheTrace,
           characterAgents: characterAgentTrace,
         },

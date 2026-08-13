@@ -954,6 +954,153 @@ export type PsycheReactionReceiptV1 = z.infer<
   typeof PsycheReactionReceiptV1Schema
 >;
 
+export const CharacterFocusEvidenceKindV1Schema = z.enum([
+  "self_result",
+  "counterpart_result",
+  "ambient_change",
+  "counterpart_speech",
+]);
+export type CharacterFocusEvidenceKindV1 = z.infer<
+  typeof CharacterFocusEvidenceKindV1Schema
+>;
+
+export const CharacterFocusStrengthV1Schema = z.enum([
+  "weak",
+  "clear",
+  "strong",
+]);
+export type CharacterFocusStrengthV1 = z.infer<
+  typeof CharacterFocusStrengthV1Schema
+>;
+
+export const CharacterAttentionEffectivenessV1Schema = z.enum([
+  "strained",
+  "steady",
+  "sharp",
+]);
+export type CharacterAttentionEffectivenessV1 = z.infer<
+  typeof CharacterAttentionEffectivenessV1Schema
+>;
+
+export const CharacterFocusTransitionReasonV1Schema = z.enum([
+  "selected_fresh",
+  "refreshed_fresh",
+  "switched_stronger",
+  "held_hysteresis",
+  "held_protective",
+  "decayed_unsupported",
+  "no_detectable_evidence",
+  "feature_unavailable",
+]);
+export type CharacterFocusTransitionReasonV1 = z.infer<
+  typeof CharacterFocusTransitionReasonV1Schema
+>;
+
+/** One battle-private reference to retained observer-relative evidence. */
+export interface CharacterFocusSlotV1 {
+  kind: CharacterFocusEvidenceKindV1;
+  evidenceRef: string;
+  salience: number;
+  strength: CharacterFocusStrengthV1;
+  beganTurn: number;
+  lastEvidenceTurn: number;
+}
+
+export const CharacterFocusSlotV1Schema = z.object({
+  kind: CharacterFocusEvidenceKindV1Schema,
+  evidenceRef: z.string().min(1).max(120),
+  salience: z.number().int().min(0).max(1000),
+  strength: CharacterFocusStrengthV1Schema,
+  beganTurn: z.number().int().nonnegative(),
+  lastEvidenceTurn: z.number().int().nonnegative(),
+}).strict() as z.ZodType<CharacterFocusSlotV1>;
+
+/** Deterministic battle-private focus state; it stores no copied prose. */
+export interface CharacterFocusStateV1 {
+  schemaVersion: 1;
+  policyGeneration: string;
+  primary: CharacterFocusSlotV1 | null;
+  secondary: CharacterFocusSlotV1 | null;
+  processedConversationThrough: number | null;
+  transitionReason: CharacterFocusTransitionReasonV1;
+}
+
+export const CharacterFocusStateV1Schema = z.object({
+  schemaVersion: z.literal(1),
+  policyGeneration: z.string().min(1).max(120),
+  primary: CharacterFocusSlotV1Schema.nullable(),
+  secondary: CharacterFocusSlotV1Schema.nullable(),
+  processedConversationThrough: z.number().int().nonnegative().nullable(),
+  transitionReason: CharacterFocusTransitionReasonV1Schema,
+}).strict() as z.ZodType<CharacterFocusStateV1>;
+
+/** ID-free, observer-safe projection reserved for a later expression experiment. */
+export interface CharacterFocusPacketSlotV1 {
+  kind: CharacterFocusEvidenceKindV1;
+  perceivedChange: string;
+  freshness: "fresh" | "held" | "decaying";
+  strength: CharacterFocusStrengthV1;
+}
+
+export interface CharacterFocusPacketV1 {
+  schemaVersion: 1;
+  effectiveness: CharacterAttentionEffectivenessV1 | null;
+  transition: CharacterFocusTransitionReasonV1;
+  primary: CharacterFocusPacketSlotV1 | null;
+  secondary: CharacterFocusPacketSlotV1 | null;
+}
+
+export const CharacterFocusPacketV1Schema = z.object({
+  schemaVersion: z.literal(1),
+  effectiveness: CharacterAttentionEffectivenessV1Schema.nullable(),
+  transition: CharacterFocusTransitionReasonV1Schema,
+  primary: z.object({
+    kind: CharacterFocusEvidenceKindV1Schema,
+    perceivedChange: z.string().max(320),
+    freshness: z.enum(["fresh", "held", "decaying"]),
+    strength: CharacterFocusStrengthV1Schema,
+  }).strict().nullable(),
+  secondary: z.object({
+    kind: CharacterFocusEvidenceKindV1Schema,
+    perceivedChange: z.string().max(320),
+    freshness: z.enum(["fresh", "held", "decaying"]),
+    strength: CharacterFocusStrengthV1Schema,
+  }).strict().nullable(),
+}).strict() as z.ZodType<CharacterFocusPacketV1>;
+
+/** Auditable deterministic transition receipt; never an expression input. */
+export interface CharacterFocusTransitionReceiptV1 {
+  schemaVersion: 1;
+  policyGeneration: string;
+  turn: number;
+  observerSide: "a" | "b";
+  route: "deterministic_shadow_no_call";
+  reason: CharacterFocusTransitionReasonV1;
+  effectiveness: CharacterAttentionEffectivenessV1 | null;
+  detectionThreshold: number | null;
+  decayAmount: number;
+  switchMargin: number;
+  consideredEvidenceRefs: string[];
+  selectedEvidenceRefs: string[];
+  sourceEventIds: string[];
+}
+
+export const CharacterFocusTransitionReceiptV1Schema = z.object({
+  schemaVersion: z.literal(1),
+  policyGeneration: z.string().min(1).max(120),
+  turn: z.number().int().nonnegative(),
+  observerSide: z.enum(["a", "b"]),
+  route: z.literal("deterministic_shadow_no_call"),
+  reason: CharacterFocusTransitionReasonV1Schema,
+  effectiveness: CharacterAttentionEffectivenessV1Schema.nullable(),
+  detectionThreshold: z.number().int().min(0).max(1000).nullable(),
+  decayAmount: z.number().int().min(0).max(1000),
+  switchMargin: z.number().int().min(0).max(1000),
+  consideredEvidenceRefs: z.array(z.string().min(1).max(120)).max(32),
+  selectedEvidenceRefs: z.array(z.string().min(1).max(120)).max(2),
+  sourceEventIds: z.array(z.string().min(1).max(120)).max(24),
+}).strict() as z.ZodType<CharacterFocusTransitionReceiptV1>;
+
 /**
  * Fresh, committed outcome material for the action-and-result reaction thread.
  * It is source material for expression only, never an instruction to claim a result.
@@ -1010,6 +1157,9 @@ export const CharacterAgentStateSchema = z.object({
   /** Deterministic normal-turn reaction state; private and battle-scoped. */
   reactionStateV1: PsycheReactionStateV1Schema.optional(),
   reactionReceiptV1: PsycheReactionReceiptV1Schema.optional(),
+  /** Deterministic no-effect attention shadow; never exposed publicly. */
+  focusStateV1: CharacterFocusStateV1Schema.optional(),
+  focusReceiptV1: CharacterFocusTransitionReceiptV1Schema.optional(),
 });
 export type CharacterAgentState = z.infer<typeof CharacterAgentStateSchema>;
 
@@ -1202,6 +1352,30 @@ export const BattlePipelineAgentInvocationTraceSchema = z.object({
   acceptedOutput: z.unknown().nullable(),
 }).strict();
 
+export interface CharacterFocusShadowTraceV1 {
+  mode: "shadow";
+  a: {
+    packet: CharacterFocusPacketV1;
+    receipt: CharacterFocusTransitionReceiptV1;
+  } | null;
+  b: {
+    packet: CharacterFocusPacketV1;
+    receipt: CharacterFocusTransitionReceiptV1;
+  } | null;
+}
+
+export const CharacterFocusShadowTraceV1Schema = z.object({
+  mode: z.literal("shadow"),
+  a: z.object({
+    packet: CharacterFocusPacketV1Schema,
+    receipt: CharacterFocusTransitionReceiptV1Schema,
+  }).strict().nullable(),
+  b: z.object({
+    packet: CharacterFocusPacketV1Schema,
+    receipt: CharacterFocusTransitionReceiptV1Schema,
+  }).strict().nullable(),
+}).strict() as z.ZodType<CharacterFocusShadowTraceV1>;
+
 export const BattleTurnPipelineTraceSchema = z.object({
   schemaVersion: z.literal(1),
   dialogueProjection: z.object({
@@ -1209,6 +1383,7 @@ export const BattleTurnPipelineTraceSchema = z.object({
     a: TurnObservationPacketSchema,
     b: TurnObservationPacketSchema,
   }).strict().optional(),
+  characterFocus: CharacterFocusShadowTraceV1Schema.optional(),
   environmentProcess: EnvironmentProcessReceiptSchema.optional(),
   characterAgents: z.object({
     phase: z.enum(["prologue", "turn", "aftermath"]),
@@ -1451,7 +1626,12 @@ export interface BattleAssetManifest {
     contentDigest: string;
     snapshot: BattleDialoguePipelineSnapshot;
   };
-  rules: { battleEngine: string; temporalRules: string; psycheReaction?: string };
+  rules: {
+    battleEngine: string;
+    temporalRules: string;
+    psycheReaction?: string;
+    characterFocus?: string;
+  };
 }
 
 export const BattleAssetManifestSchema = z.object({
@@ -1493,6 +1673,7 @@ export const BattleAssetManifestSchema = z.object({
     battleEngine: z.string().min(1),
     temporalRules: z.string().min(1),
     psycheReaction: z.string().min(1).optional(),
+    characterFocus: z.string().min(1).optional(),
   }).strict(),
 }).strict() as unknown as z.ZodType<BattleAssetManifest>;
 

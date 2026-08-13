@@ -21,4 +21,4 @@ This directory contains durable records of architectural and product-rule decisi
 | [0005](0005-battle-scoped-ordered-narration-stream.md) | Superseded | Battle-scoped ordered narration stream with reconnectable delivery |
 | [0006](0006-terminal-snapshot-narration-delivery.md) | Accepted | Terminal-snapshot narration delivery with durable phase receipts and fenced workers |
 | [0007](0007-provider-operation-ledger-and-observation-ceilings.md) | Accepted | Durable physical provider-attempt accounting and observation ceilings |
-| [0008](0008-battle-private-character-focus-state.md) | Proposed | Battle-private character focus state selected from perceived deltas and modulated by existing focus bands |
+| [0008](0008-battle-private-character-focus-state.md) | Accepted | Battle-private character focus state selected from perceived deltas and modulated by existing focus bands |

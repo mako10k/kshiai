@@ -7,6 +7,7 @@ import {
   createBattleState,
   defaultDialoguePipelineSettings,
   defaultParameters,
+  CHARACTER_FOCUS_POLICY_V1,
   PSYCHE_REACTION_POLICY_V1,
   BattleTurnRecordSchema,
   type BattleState,
@@ -28,6 +29,7 @@ import {
   completeAdvancePhases,
   finalizeCharacterSpeeches,
   reconcileSemanticState,
+  toBattlePublic,
   validateCharacterActionProposal,
 } from "./battle-service.js";
 import { MockLlmProvider } from "../llm/mock.js";
@@ -39,6 +41,7 @@ function enableDeterministicPsyche(state: BattleState): void {
       battleEngine: "battle-engine-v1",
       temporalRules: "initiative-window-v2",
       psycheReaction: PSYCHE_REACTION_POLICY_V1,
+      characterFocus: CHARACTER_FOCUS_POLICY_V1,
     },
   } as BattleState["assetManifest"];
 }
@@ -119,6 +122,17 @@ describe("character-authored public speech", () => {
 
     assert.equal(psycheCalls, 0);
     assert.equal(agentCalls, 1);
+    assert.equal(
+      result.state.turnRecords.at(-1)?.pipelineTrace?.characterFocus?.a,
+      null,
+    );
+    assert.equal(
+      result.state.turnRecords.at(-1)?.pipelineTrace?.characterFocus?.b
+        ?.receipt.route,
+      "deterministic_shadow_no_call",
+    );
+    assert.equal(result.state.agentStateA?.focusStateV1, undefined);
+    assert.ok(result.state.agentStateB?.focusStateV1);
     assert.equal(result.state.plannedActionA?.kind, "wait");
     assert.equal(
       result.state.turnRecords.at(-1)?.pipelineTrace?.characterAgents?.a.providerStatus,
@@ -324,7 +338,7 @@ describe("character-authored public speech", () => {
     assert.equal(perceivedB?.displayContext?.relationshipAddress, "クロ");
   });
 
-  it("projects deterministic psyche and compact expression contexts without a psyche model call", async () => {
+  it("projects deterministic psyche and no-effect focus shadow without another model call", async () => {
     const sideA = sheet("a", "アオ", ["私"]);
     const sideB = sheet("b", "クロ", ["俺"]);
     const before = createBattleState({
@@ -335,10 +349,36 @@ describe("character-authored public speech", () => {
       prologuePending: false,
     });
     enableDeterministicPsyche(before);
+    const controlBefore = structuredClone(before);
+    delete controlBefore.assetManifest!.rules.characterFocus;
+    const after = {
+      ...before,
+      turn: 1,
+      perceptionFrameA: { ...before.perceptionFrameA!, turn: 1 },
+      perceptionFrameB: { ...before.perceptionFrameB!, turn: 1 },
+    };
     const result = await advanceCharacterAgents({
       llm: new MockLlmProvider(),
       before,
-      after: { ...before, turn: 1 },
+      after,
+      mine: sideA,
+      opp: sideB,
+      events: [{ id: "event.compact", type: "wait", summary: "両者が様子をうかがう。" }],
+      actions: [],
+      dialoguePipeline: {
+        ...defaultDialoguePipelineSettings(),
+        contextProjectionMode: "compact",
+        recentExchangeLimit: 2,
+        relevantMemoryLimit: 1,
+      },
+    });
+    const control = await advanceCharacterAgents({
+      llm: new MockLlmProvider(),
+      before: controlBefore,
+      after: {
+        ...after,
+        assetManifest: controlBefore.assetManifest,
+      },
       mine: sideA,
       opp: sideB,
       events: [{ id: "event.compact", type: "wait", summary: "両者が様子をうかがう。" }],
@@ -358,12 +398,21 @@ describe("character-authored public speech", () => {
     assert.equal(result.state.agentStateA?.reactionReceiptV1?.route, "deterministic_no_call");
     assert.equal(result.state.agentStateA?.reactionReceiptV1?.observerSide, "a");
     assert.equal(result.state.agentStateA?.reactionReceiptV1?.reason, "committed_observation");
+    assert.equal(
+      result.state.agentStateA?.focusReceiptV1?.route,
+      "deterministic_shadow_no_call",
+    );
+    assert.equal(trace?.characterFocus?.mode, "shadow");
+    assert.equal(trace?.characterFocus?.a?.packet.effectiveness, "sharp");
+    assert.equal(trace?.characterFocus?.a?.receipt.observerSide, "a");
     assert.equal(expressionInput.contextMode, "compact");
     assert.ok(expressionInput.expressionBrief);
     assert.ok(expressionInput.turnObservation);
     assert.equal("perception" in expressionInput, false);
     assert.equal("compactRecentExchange" in expressionInput, false);
     assert.equal("anchoredExchange" in expressionInput, false);
+    assert.equal("characterFocus" in expressionInput, false);
+    assert.equal("focusStateV1" in expressionInput, false);
     assert.equal(
       "anchoredExchange" in ((expressionInput.conversation as Record<string, unknown>) ?? {}),
       true,
@@ -371,6 +420,17 @@ describe("character-authored public speech", () => {
     assert.equal(result.state.agentStateA?.dialogueThread?.topic, "");
     assert.equal(trace?.deepPsyche?.a.providerStatus, "skipped");
     assert.equal(trace?.characterAgents?.a.providerStatus, "fulfilled");
+    assert.deepEqual(
+      expressionInput,
+      control.state.turnRecords.at(-1)?.pipelineTrace?.characterAgents?.a.input,
+    );
+    assert.deepEqual(result.characterSpeeches, control.characterSpeeches);
+    assert.deepEqual(result.state.sideA.parameters, before.sideA.parameters);
+    assert.deepEqual(result.state.sideB.parameters, before.sideB.parameters);
+    const publicState = toBattlePublic(result.state, sideA);
+    assert.equal(JSON.stringify(publicState).includes("focusStateV1"), false);
+    assert.equal(JSON.stringify(publicState).includes("focusReceiptV1"), false);
+    assert.equal(JSON.stringify(publicState).includes("characterFocus"), false);
   });
 
   it("keeps matchup memory separate from compact battle-private memory", async () => {

@@ -27,12 +27,15 @@ milestone NOW:
 
 milestone ATTENTION_ADR_ACCEPTED:
   title "Character focus-state architecture accepted"
+  state reached
 
 milestone FIXTURE_PROTOCOL_READY:
   title "Synthetic fixtures and evaluation protocol ready"
+  state reached
 
 milestone DETERMINISTIC_SHADOW_ACCEPTED:
   title "Deterministic focus state and no-effect shadow accepted"
+  state reached
 
 milestone REPLAY_AUTHORIZED:
   title "Bounded blinded expression replay authorized"
@@ -56,6 +59,7 @@ task CF_ACCEPT_ADR NOW -> ATTENTION_ADR_ACCEPTED:
   title "Accept, revise, or reject ADR-0008"
   description "The owner decides the private state owner, observer-relative inputs, focus-band role, persistence, generation binding, self-echo exclusion, expression-only projection, and fail-closed compatibility contract. Acceptance authorizes only deterministic fixture and shadow implementation, not provider calls or deployment."
   duration 1p
+  status done
   requires:
     OWNER 1
   owner "user"
@@ -65,6 +69,7 @@ task CF_BUILD_FIXTURES ATTENTION_ADR_ACCEPTED -> FIXTURE_PROTOCOL_READY:
   title "Freeze synthetic focus fixtures and blinded scoring protocol"
   description "Create the twelve observer-relative scenarios, high/steady/strained variants, A/B swaps, forbidden evidence, expected hold/switch outcomes, four ablation input revisions, reviewer rubric, raw-denominator report format, and fixture digest. Use no retained user battle data and no provider."
   duration 2p
+  status done
   requires:
     DEV 1
   owner "codex"
@@ -74,6 +79,7 @@ task CF_IMPLEMENT_DETERMINISTIC_SHADOW FIXTURE_PROTOCOL_READY -> DETERMINISTIC_S
   title "Implement and accept deterministic no-effect focus shadow"
   description "Add versioned private focus state, packet, receipt, decay, novelty, hysteresis, focus-band effectiveness, self-echo exclusion, legacy no-focus fallback, and shadow trace. Prove deterministic replay, observer safety, A/B symmetry, immutable binding, and zero diffs to action, mechanics, public DTO, narration, persistence authority, and provider calls. Do not feed the focus packet to expression."
   duration 4p
+  status done
   requires:
     DEV 1
   owner "codex"
