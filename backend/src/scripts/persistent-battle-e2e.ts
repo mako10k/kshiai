@@ -15,6 +15,22 @@ import {
 } from "../e2e-observer.js";
 import { setAccountKind, type AccountKind } from "../account-access.js";
 import { assessDialogueQuality } from "./dialogue-quality.js";
+import {
+  PROVIDER_OPERATION_LAYERS,
+  PROVIDER_OPERATION_TAXONOMY_REVISION,
+  type ProviderOperationLayer,
+} from "../llm/provider-operation-taxonomy.js";
+import {
+  OBSERVATION_RUN_HEADER,
+  createProviderOperationRun,
+  finalizeProviderOperationRun,
+  readProviderOperationRun,
+} from "../llm/provider-accounting.js";
+
+export {
+  PROVIDER_OPERATION_LAYERS as OBSERVATION_PROVIDER_OPERATION_LAYERS,
+  PROVIDER_OPERATION_TAXONOMY_REVISION as OBSERVATION_PROVIDER_OPERATION_TAXONOMY_REVISION,
+};
 
 const OBSERVATION_PREFIX = "KSHIAI_E2E_OBSERVATION=";
 
@@ -64,11 +80,20 @@ export function projectObservationProviderOperations(
   if (!Number.isInteger(maxAdvances) || maxAdvances < 1 || maxAdvances > 30) {
     throw new Error("maxAdvances must be an integer from 1 through 30");
   }
+  const combatAdvances = Math.max(0, maxAdvances - 2);
   const layers = {
-    encounter: 1,
-    characterExpression: maxAdvances * 2,
-    deepPsyche: 0,
-    environment: maxAdvances,
+    // Creation can both concretize the battlefield and prepare encounter terms.
+    encounter: 2,
+    // Each phase may express both characters; combat may additionally decide
+    // one action for each side before expression.
+    characterExpression: (maxAdvances * 2) + (combatAdvances * 2),
+    // Normal-turn psyche is deterministic, while prologue and aftermath may
+    // each call both isolated character contexts.
+    deepPsyche: 4,
+    // Each combat advance may propose an environment beat and reconcile the
+    // committed semantic state.
+    environment: combatAdvances * 2,
+    // One receipt per advance plus bounded judgment/terminal phase receipts.
     narration: maxAdvances + 2,
     referee: 1,
   };
@@ -298,6 +323,7 @@ async function apiRequest(input: {
   body?: unknown;
   idempotencyKey?: string;
   timeoutMs?: number;
+  observationRunId?: string;
 }): Promise<Response> {
   return fetch(`${input.apiBaseUrl}${input.path}`, {
     method: input.method ?? "GET",
@@ -306,6 +332,9 @@ async function apiRequest(input: {
       ...(input.body === undefined ? {} : { "Content-Type": "application/json" }),
       ...(input.idempotencyKey
         ? { "Idempotency-Key": input.idempotencyKey }
+        : {}),
+      ...(input.observationRunId
+        ? { [OBSERVATION_RUN_HEADER]: input.observationRunId }
         : {}),
     },
     body: input.body === undefined ? undefined : JSON.stringify(input.body),
@@ -498,6 +527,7 @@ async function inspectInternalBattleObservation(input: {
       outbox?: { status?: string } | null;
       lease?: unknown | null;
       latestAttempt?: { httpAttempts?: number } | null;
+      attemptTotals?: { httpAttempts?: number };
     }>;
   }>({
     apiBaseUrl: input.apiBaseUrl,
@@ -532,7 +562,7 @@ async function inspectInternalBattleObservation(input: {
     turnRecordCount,
     canonicalTransitionCount,
     narrationProviderOperations: narrationQueue.reduce(
-      (sum, entry) => sum + (entry.latestAttempt?.httpAttempts ?? 0),
+      (sum, entry) => sum + (entry.attemptTotals?.httpAttempts ?? 0),
       0,
     ),
   };
@@ -579,6 +609,68 @@ async function assertBattleHistoryVisibility(input: {
   }
 }
 
+export function verifyProviderOperationLedger(input: {
+  ledger: Awaited<ReturnType<typeof readProviderOperationRun>>;
+  runId: string;
+  battleId: string;
+  ceiling: number;
+  narrationProviderOperations: number;
+}): {
+  byLayer: Record<ProviderOperationLayer, number>;
+  total: number;
+  tokenCount: number | null;
+  estimatedCostUsd: number | null;
+} {
+  if (
+    input.ledger.runId !== input.runId ||
+    input.ledger.battleId !== input.battleId ||
+    input.ledger.battleObservationRunId !== input.runId ||
+    input.ledger.taxonomyRevision !== PROVIDER_OPERATION_TAXONOMY_REVISION ||
+    input.ledger.approvedAttemptCeiling !== input.ceiling ||
+    input.ledger.status !== "active"
+  ) {
+    throw new Error("Provider operation ledger identity mismatch");
+  }
+  if (input.ledger.attempts.some((attempt) => attempt.status === "reserved")) {
+    throw new Error("Provider operation ledger retains unresolved attempts");
+  }
+  const byLayer: Record<ProviderOperationLayer, number> = {
+    encounter: 0,
+    characterExpression: 0,
+    deepPsyche: 0,
+    environment: 0,
+    narration: 0,
+    referee: 0,
+  };
+  for (const attempt of input.ledger.attempts) {
+    if (!(attempt.layer in byLayer)) {
+      throw new Error(`Provider operation ledger contains unknown layer: ${attempt.layer}`);
+    }
+    byLayer[attempt.layer as ProviderOperationLayer] += attempt.count;
+  }
+  const total = Object.values(byLayer).reduce((sum, count) => sum + count, 0);
+  if (total !== input.ledger.reservedAttempts || total > input.ceiling) {
+    throw new Error("Provider operation ledger total does not reconcile with reservations");
+  }
+  if (byLayer.narration !== input.narrationProviderOperations) {
+    throw new Error(
+      `Narration accounting mismatch: ledger=${byLayer.narration} receipts=${input.narrationProviderOperations}`,
+    );
+  }
+  const tokenCount = input.ledger.attempts.every((attempt) => attempt.tokenCount !== null)
+    ? input.ledger.attempts.reduce((sum, attempt) => sum + (attempt.tokenCount ?? 0), 0)
+    : null;
+  const estimatedCostUsd = input.ledger.attempts.every(
+    (attempt) => attempt.estimatedCostUsd !== null,
+  )
+    ? input.ledger.attempts.reduce(
+        (sum, attempt) => sum + (attempt.estimatedCostUsd ?? 0),
+        0,
+      )
+    : null;
+  return { byLayer, total, tokenCount, estimatedCostUsd };
+}
+
 async function main(): Promise<void> {
   const apiBaseUrl = validateProductionApiUrl(required("E2E_API_URL"));
   const secretKey = required("SUPABASE_SECRET_KEY");
@@ -600,6 +692,8 @@ async function main(): Promise<void> {
     projected: projectedProviderOperations,
   });
 
+  let providerRunCreated = false;
+  let providerRunFinalized = false;
   try {
     const observer = await ensurePersistentAccount({
       email: E2E_ACCOUNT_EMAILS.observer,
@@ -623,6 +717,13 @@ async function main(): Promise<void> {
       opponentUserId: opponent.applicationUserId,
     });
     await assertTestRealmApiVisibility(observer, apiBaseUrl);
+    await createProviderOperationRun({
+      runId,
+      observerUserId: observer.applicationUserId,
+      approvedAttemptCeiling: providerOperationCeiling,
+      projectedOperations: projectedProviderOperations,
+    });
+    providerRunCreated = true;
 
     const created = await apiJson<{ battle?: unknown }>({
       apiBaseUrl,
@@ -631,6 +732,7 @@ async function main(): Promise<void> {
       method: "POST",
       idempotencyKey: `e2e-${runId}-create`,
       timeoutMs: 5 * 60_000,
+      observationRunId: runId,
       body: {
         myCharacterId: E2E_FIXTURE_IDS.observerCharacter,
         opponentCharacterId: E2E_FIXTURE_IDS.opponentCharacter,
@@ -695,6 +797,16 @@ async function main(): Promise<void> {
       apiBaseUrl,
       battleId: persistedBattle.id,
     });
+    const ledger = await readProviderOperationRun(runId);
+    const actualProviderOperations = verifyProviderOperationLedger({
+      ledger,
+      runId,
+      battleId: persistedBattle.id,
+      ceiling: providerOperationCeiling,
+      narrationProviderOperations: internalObservability.narrationProviderOperations,
+    });
+    await finalizeProviderOperationRun(runId, "completed");
+    providerRunFinalized = true;
     const observation = {
       schemaVersion: 1,
       runId,
@@ -724,8 +836,10 @@ async function main(): Promise<void> {
         approvedCeiling: providerOperationCeiling,
         projected: projectedProviderOperations,
         actualMeasured: {
-          narration: internalObservability.narrationProviderOperations,
-          scope: "persisted narration HTTP attempts; other layers remain bounded by the approved projection",
+          taxonomyRevision: PROVIDER_OPERATION_TAXONOMY_REVISION,
+          battleId: persistedBattle.id,
+          ...actualProviderOperations,
+          scope: "durable physical provider HTTP attempts by layer",
         },
       },
       narrationConvergence: {
@@ -752,6 +866,18 @@ async function main(): Promise<void> {
     assertSanitizedObservation(observation, targetRevision);
     await persistSanitizedObservation(observation);
     console.log(`${OBSERVATION_PREFIX}${JSON.stringify(observation)}`);
+  } catch (error) {
+    if (providerRunCreated && !providerRunFinalized) {
+      try {
+        await finalizeProviderOperationRun(runId, "failed");
+      } catch (finalizeError) {
+        console.error(
+          "Failed to finalize provider operation run",
+          finalizeError instanceof Error ? finalizeError.message : String(finalizeError),
+        );
+      }
+    }
+    throw error;
   } finally {
     await closeDatabase();
   }

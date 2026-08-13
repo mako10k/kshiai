@@ -133,6 +133,7 @@ import {
 import { config, type BattleCausalNarrationMode } from "../config.js";
 import { newId } from "../id.js";
 import type { LlmProvider } from "../llm/index.js";
+import { isProviderOperationAccountingError } from "../llm/provider-accounting.js";
 import type {
   AftermathNarrationResult,
   CharacterDeepPsycheCompactInput,
@@ -607,6 +608,7 @@ export async function startBattle(input: {
       priorMatchSummary,
     }), FAST_LLM_ENVELOPE_TIMEOUT_MS, "prepareBattleEncounter");
   } catch (error) {
+    if (isProviderOperationAccountingError(error)) throw error;
     console.warn(
       "[battle] encounter proposal unavailable; using deterministic context",
       error instanceof Error ? error.message : error,
@@ -1603,6 +1605,7 @@ export async function advanceCharacterAgents(input: {
       psycheInputB ? input.llm.advanceCharacterPsyche(psycheInputB) : Promise.resolve(null),
     ]), FAST_LLM_ENVELOPE_TIMEOUT_MS, "advanceCharacterPsyche");
   } catch (error) {
+    if (isProviderOperationAccountingError(error)) throw error;
     console.warn(
       "[battle] deep psyche stage retained prior state",
       error instanceof Error ? error.message : error,
@@ -1611,6 +1614,13 @@ export async function advanceCharacterAgents(input: {
       { status: "rejected", reason: error },
       { status: "rejected", reason: error },
     ];
+  }
+  const psycheAccountingFailure = psycheResults.find(
+    (result) => result.status === "rejected" &&
+      isProviderOperationAccountingError(result.reason),
+  );
+  if (psycheAccountingFailure?.status === "rejected") {
+    throw psycheAccountingFailure.reason;
   }
   const [psycheResultA, psycheResultB] = psycheResults;
   const defaultExpressionBrief = (state: CharacterAgentState): CharacterExpressionBrief => ({
@@ -1765,6 +1775,7 @@ export async function advanceCharacterAgents(input: {
       agentInputB ? input.llm.advanceCharacterAgent(agentInputB) : Promise.resolve(null),
     ]), FAST_LLM_ENVELOPE_TIMEOUT_MS, "advanceCharacterAgents");
   } catch (error) {
+    if (isProviderOperationAccountingError(error)) throw error;
     console.warn(
       "[battle] character agents skipped",
       error instanceof Error ? error.message : error,
@@ -1774,6 +1785,13 @@ export async function advanceCharacterAgents(input: {
       state: refreshNarratorContinuity(stateWithRecord),
       characterSpeeches: [],
     };
+  }
+  const agentAccountingFailure = agents.find(
+    (result) => result.status === "rejected" &&
+      isProviderOperationAccountingError(result.reason),
+  );
+  if (agentAccountingFailure?.status === "rejected") {
+    throw agentAccountingFailure.reason;
   }
   const [resultA, resultB] = agents;
   const agentA = resultA.status === "fulfilled" ? resultA.value : null;
@@ -3012,6 +3030,7 @@ export async function reconcileSemanticState(input: {
       }),
     };
   } catch (error) {
+    if (isProviderOperationAccountingError(error)) throw error;
     console.warn(
       "[battle] semantic reconciliation skipped",
       error instanceof Error ? error.message : error,
@@ -3815,6 +3834,7 @@ async function advanceTurnWithLease(input: {
             proposedAction = (await input.llm.decideCharacterAction(laterInput))
               .proposedAction;
           } catch (error) {
+            if (isProviderOperationAccountingError(error)) throw error;
             providerFailure = error instanceof Error ? error.message : "provider_error";
           }
           const validation = validateCharacterActionProposal({
@@ -4339,6 +4359,7 @@ async function advanceTurnWithLease(input: {
           "referee",
         );
       } catch (error) {
+        if (isProviderOperationAccountingError(error)) throw error;
         console.warn(
           "[battle] semantic adjudication failed; using deterministic fallback",
           error instanceof Error ? error.message : error,

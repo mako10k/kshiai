@@ -15,6 +15,8 @@ const persistentE2eModule: typeof import("./persistent-battle-e2e.js") =
 const assertSanitizedObservation: typeof persistentE2eModule.assertSanitizedObservation =
   persistentE2eModule.assertSanitizedObservation;
 const {
+  OBSERVATION_PROVIDER_OPERATION_LAYERS,
+  OBSERVATION_PROVIDER_OPERATION_TAXONOMY_REVISION,
   authorizeObservationProviderBudget,
   generateEphemeralPassword,
   parseBattleAdvanceStream,
@@ -22,6 +24,7 @@ const {
   projectObservationProviderOperations,
   resolveObservationRunId,
   validateProductionApiUrl,
+  verifyProviderOperationLedger,
 } = persistentE2eModule;
 const { closeDatabase, query } = await import("../db.js");
 
@@ -31,35 +34,127 @@ after(async () => {
 });
 
 describe("persistent battle E2E runner", () => {
+  it("classifies every observation provider operation under one revision", () => {
+    assert.equal(
+      OBSERVATION_PROVIDER_OPERATION_TAXONOMY_REVISION,
+      "battle-provider-operations-v1",
+    );
+    assert.deepEqual(OBSERVATION_PROVIDER_OPERATION_LAYERS, {
+      concretizeBattlefield: "encounter",
+      prepareBattleEncounter: "encounter",
+      adjudicateFreeActions: "environment",
+      proposeSituation: "environment",
+      reconcileTurnSemanticState: "environment",
+      proposeHappening: "environment",
+      advanceCharacterPsycheCompact: "deepPsyche",
+      advanceCharacterPsyche: "deepPsyche",
+      advanceCharacterAgentCompact: "characterExpression",
+      advanceCharacterAgent: "characterExpression",
+      decideCharacterAction: "characterExpression",
+      chooseNarrationFocus: "narration",
+      narratePrologue: "narration",
+      narrateTurn: "narration",
+      narrateJudgment: "narration",
+      narrateAftermath: "narration",
+      referee: "referee",
+    });
+  });
+
   it("requires an exact operator approval and rejects an over-budget observation", () => {
     const projected = projectObservationProviderOperations(12);
     assert.deepEqual(projected, {
-      encounter: 1,
-      characterExpression: 24,
-      deepPsyche: 0,
-      environment: 12,
+      encounter: 2,
+      characterExpression: 44,
+      deepPsyche: 4,
+      environment: 20,
       narration: 14,
       referee: 1,
-      total: 52,
+      total: 85,
     });
     assert.throws(() => authorizeObservationProviderBudget({
       runId: "run-1",
       approvedRunId: "run-2",
-      ceiling: 52,
+      ceiling: 85,
       projected,
     }), /exactly match/);
     assert.throws(() => authorizeObservationProviderBudget({
       runId: "run-1",
       approvedRunId: "run-1",
-      ceiling: 51,
+      ceiling: 84,
       projected,
     }), /exceed ceiling/);
     authorizeObservationProviderBudget({
       runId: "run-1",
       approvedRunId: "run-1",
-      ceiling: 52,
+      ceiling: 85,
       projected,
     });
+  });
+
+  it("accepts only a terminal reconciled physical-attempt ledger", () => {
+    const ledger: Parameters<typeof verifyProviderOperationLedger>[0]["ledger"] = {
+      runId: "run-ledger",
+      battleId: "battle-ledger",
+      battleObservationRunId: "run-ledger",
+      taxonomyRevision: "battle-provider-operations-v1",
+      approvedAttemptCeiling: 5,
+      reservedAttempts: 3,
+      status: "active",
+      attempts: [
+        {
+          layer: "encounter",
+          operation: "prepareBattleEncounter",
+          status: "succeeded",
+          count: 1,
+          tokenCount: 20,
+          estimatedCostUsd: null,
+        },
+        {
+          layer: "narration",
+          operation: "narrateTurn",
+          status: "succeeded",
+          count: 2,
+          tokenCount: null,
+          estimatedCostUsd: null,
+        },
+      ],
+    };
+    assert.deepEqual(verifyProviderOperationLedger({
+      ledger,
+      runId: "run-ledger",
+      battleId: "battle-ledger",
+      ceiling: 5,
+      narrationProviderOperations: 2,
+    }), {
+      byLayer: {
+        encounter: 1,
+        characterExpression: 0,
+        deepPsyche: 0,
+        environment: 0,
+        narration: 2,
+        referee: 0,
+      },
+      total: 3,
+      tokenCount: null,
+      estimatedCostUsd: null,
+    });
+    assert.throws(() => verifyProviderOperationLedger({
+      ledger,
+      runId: "run-ledger",
+      battleId: "battle-ledger",
+      ceiling: 5,
+      narrationProviderOperations: 1,
+    }), /Narration accounting mismatch/);
+    assert.throws(() => verifyProviderOperationLedger({
+      ledger: {
+        ...ledger,
+        attempts: [{ ...ledger.attempts[0]!, status: "reserved" }],
+      },
+      runId: "run-ledger",
+      battleId: "battle-ledger",
+      ceiling: 5,
+      narrationProviderOperations: 0,
+    }), /unresolved attempts/);
   });
 
   it("generates a strong ephemeral password within the Supabase limit", () => {

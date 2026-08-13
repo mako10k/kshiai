@@ -27,6 +27,7 @@ import {
   type WorldDistance,
 } from "@kshiai/shared";
 import type { LlmProvider } from "../llm/types.js";
+import { isProviderOperationAccountingError } from "../llm/provider-accounting.js";
 
 type BattleSide = "a" | "b";
 
@@ -658,6 +659,7 @@ export async function prepareFreeActionsForTurn(input: {
       adjudication: parsed.success ? parsed.data : null,
     };
   } catch (error) {
+    if (isProviderOperationAccountingError(error)) throw error;
     console.warn(
       "[battle] free-action adjudication unavailable",
       error instanceof Error ? error.message : error,

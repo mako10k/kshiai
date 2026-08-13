@@ -46,6 +46,7 @@ describe("persistent E2E workflow contract", () => {
     assert.match(observe, /persistent-battle-e2e\.js/);
     assert.match(observe, /--max-retries=0/);
     assert.match(observe, /E2E_RUN_ID=\$OBSERVATION_RUN_ID/);
+    assert.match(observe, /provider_operation_ceiling:[\s\S]*?default: "169"/);
     assert.match(observe, /cloud_run_job_exit_success/);
     assert.match(observe, /postgres\.balance_events:persistent_e2e_observation/);
     assert.match(observe, /retention-days: 90/);
@@ -58,9 +59,14 @@ describe("persistent E2E workflow contract", () => {
     const promote = workflow("promote-release.yml");
     assert.match(stage, /Prove Cloud Tasks OIDC delivery to staged revision/);
     assert.match(stage, /Prove exact narration receipt lifecycle without an LLM/);
+    assert.match(stage, /Prove provider attempt accounting without an LLM/);
     assert.match(
       stage,
       /Prove exact narration receipt lifecycle without an LLM[\s\S]*?npm run build --workspace=@kshiai\/shared[\s\S]*?node --import tsx --test \\\n\s+--test-name-pattern="claims only the exact receipt generation" \\\n\s+src\/services\/narration-worker\.test\.ts/,
+    );
+    assert.match(
+      stage,
+      /Prove provider attempt accounting without an LLM[\s\S]*?node --import tsx --test src\/llm\/provider-accounting\.test\.ts/,
     );
     assert.match(stage, /gcloud tasks create-http-task/);
     assert.match(stage, /--oidc-service-account-email/);
