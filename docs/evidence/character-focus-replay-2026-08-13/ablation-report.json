@@ -1,0 +1,624 @@
+{
+  "schemaVersion": 1,
+  "logicalOutputs": 144,
+  "reviewerAgreement": {
+    "agreements": 757,
+    "comparableCells": 816,
+    "rate": 0.9276960784313726,
+    "disagreements": [
+      {
+        "outputId": "R002",
+        "metric": "noChangeRestraint",
+        "reviewerA": 1,
+        "reviewerB": 0
+      },
+      {
+        "outputId": "R016",
+        "metric": "semanticResponse",
+        "reviewerA": 0,
+        "reviewerB": 1
+      },
+      {
+        "outputId": "R019",
+        "metric": "semanticResponse",
+        "reviewerA": 1,
+        "reviewerB": 0
+      },
+      {
+        "outputId": "R019",
+        "metric": "unsupportedNovelty",
+        "reviewerA": 0,
+        "reviewerB": 1
+      },
+      {
+        "outputId": "R025",
+        "metric": "unsupportedNovelty",
+        "reviewerA": 1,
+        "reviewerB": 0
+      },
+      {
+        "outputId": "R030",
+        "metric": "unsupportedNovelty",
+        "reviewerA": 1,
+        "reviewerB": 0
+      },
+      {
+        "outputId": "R030",
+        "metric": "noChangeRestraint",
+        "reviewerA": 0,
+        "reviewerB": 1
+      },
+      {
+        "outputId": "R031",
+        "metric": "unsupportedNovelty",
+        "reviewerA": 1,
+        "reviewerB": 0
+      },
+      {
+        "outputId": "R031",
+        "metric": "noChangeRestraint",
+        "reviewerA": 0,
+        "reviewerB": 1
+      },
+      {
+        "outputId": "R033",
+        "metric": "unsupportedNovelty",
+        "reviewerA": 1,
+        "reviewerB": 0
+      },
+      {
+        "outputId": "R033",
+        "metric": "noChangeRestraint",
+        "reviewerA": 0,
+        "reviewerB": 1
+      },
+      {
+        "outputId": "R036",
+        "metric": "freshEvidenceGrounding",
+        "reviewerA": 0,
+        "reviewerB": 1
+      },
+      {
+        "outputId": "R036",
+        "metric": "semanticResponse",
+        "reviewerA": 1,
+        "reviewerB": 0
+      },
+      {
+        "outputId": "R037",
+        "metric": "unsupportedNovelty",
+        "reviewerA": 1,
+        "reviewerB": 0
+      },
+      {
+        "outputId": "R037",
+        "metric": "noChangeRestraint",
+        "reviewerA": 0,
+        "reviewerB": 1
+      },
+      {
+        "outputId": "R040",
+        "metric": "semanticResponse",
+        "reviewerA": 1,
+        "reviewerB": 0
+      },
+      {
+        "outputId": "R040",
+        "metric": "unsupportedNovelty",
+        "reviewerA": 0,
+        "reviewerB": 1
+      },
+      {
+        "outputId": "R041",
+        "metric": "unsupportedNovelty",
+        "reviewerA": 1,
+        "reviewerB": 0
+      },
+      {
+        "outputId": "R043",
+        "metric": "semanticResponse",
+        "reviewerA": 1,
+        "reviewerB": 0
+      },
+      {
+        "outputId": "R043",
+        "metric": "unsupportedNovelty",
+        "reviewerA": 0,
+        "reviewerB": 1
+      },
+      {
+        "outputId": "R044",
+        "metric": "semanticResponse",
+        "reviewerA": 0,
+        "reviewerB": 1
+      },
+      {
+        "outputId": "R046",
+        "metric": "freshEvidenceGrounding",
+        "reviewerA": 0,
+        "reviewerB": 1
+      },
+      {
+        "outputId": "R050",
+        "metric": "freshEvidenceGrounding",
+        "reviewerA": 0,
+        "reviewerB": 1
+      },
+      {
+        "outputId": "R050",
+        "metric": "semanticResponse",
+        "reviewerA": 1,
+        "reviewerB": 0
+      },
+      {
+        "outputId": "R055",
+        "metric": "freshEvidenceGrounding",
+        "reviewerA": 0,
+        "reviewerB": 1
+      },
+      {
+        "outputId": "R055",
+        "metric": "semanticResponse",
+        "reviewerA": 0,
+        "reviewerB": 1
+      },
+      {
+        "outputId": "R055",
+        "metric": "naturalness",
+        "reviewerA": 0,
+        "reviewerB": 1
+      },
+      {
+        "outputId": "R056",
+        "metric": "unsupportedNovelty",
+        "reviewerA": 1,
+        "reviewerB": 0
+      },
+      {
+        "outputId": "R056",
+        "metric": "noChangeRestraint",
+        "reviewerA": 0,
+        "reviewerB": 1
+      },
+      {
+        "outputId": "R060",
+        "metric": "unsupportedNovelty",
+        "reviewerA": 1,
+        "reviewerB": 0
+      },
+      {
+        "outputId": "R060",
+        "metric": "noChangeRestraint",
+        "reviewerA": 0,
+        "reviewerB": 1
+      },
+      {
+        "outputId": "R062",
+        "metric": "naturalness",
+        "reviewerA": 0,
+        "reviewerB": 1
+      },
+      {
+        "outputId": "R064",
+        "metric": "semanticResponse",
+        "reviewerA": 1,
+        "reviewerB": 0
+      },
+      {
+        "outputId": "R064",
+        "metric": "unsupportedNovelty",
+        "reviewerA": 0,
+        "reviewerB": 1
+      },
+      {
+        "outputId": "R067",
+        "metric": "unsupportedNovelty",
+        "reviewerA": 0,
+        "reviewerB": 1
+      },
+      {
+        "outputId": "R067",
+        "metric": "noChangeRestraint",
+        "reviewerA": 1,
+        "reviewerB": 0
+      },
+      {
+        "outputId": "R072",
+        "metric": "unsupportedNovelty",
+        "reviewerA": 0,
+        "reviewerB": 1
+      },
+      {
+        "outputId": "R072",
+        "metric": "noChangeRestraint",
+        "reviewerA": 1,
+        "reviewerB": 0
+      },
+      {
+        "outputId": "R083",
+        "metric": "unsupportedNovelty",
+        "reviewerA": 1,
+        "reviewerB": 0
+      },
+      {
+        "outputId": "R083",
+        "metric": "noChangeRestraint",
+        "reviewerA": 0,
+        "reviewerB": 1
+      },
+      {
+        "outputId": "R084",
+        "metric": "unsupportedNovelty",
+        "reviewerA": 0,
+        "reviewerB": 1
+      },
+      {
+        "outputId": "R084",
+        "metric": "noChangeRestraint",
+        "reviewerA": 1,
+        "reviewerB": 0
+      },
+      {
+        "outputId": "R089",
+        "metric": "unsupportedNovelty",
+        "reviewerA": 1,
+        "reviewerB": 0
+      },
+      {
+        "outputId": "R091",
+        "metric": "unsupportedNovelty",
+        "reviewerA": 0,
+        "reviewerB": 1
+      },
+      {
+        "outputId": "R091",
+        "metric": "noChangeRestraint",
+        "reviewerA": 1,
+        "reviewerB": 0
+      },
+      {
+        "outputId": "R094",
+        "metric": "noChangeRestraint",
+        "reviewerA": 1,
+        "reviewerB": 0
+      },
+      {
+        "outputId": "R115",
+        "metric": "unsupportedNovelty",
+        "reviewerA": 1,
+        "reviewerB": 0
+      },
+      {
+        "outputId": "R116",
+        "metric": "unsupportedNovelty",
+        "reviewerA": 1,
+        "reviewerB": 0
+      },
+      {
+        "outputId": "R116",
+        "metric": "noChangeRestraint",
+        "reviewerA": 0,
+        "reviewerB": 1
+      },
+      {
+        "outputId": "R120",
+        "metric": "semanticResponse",
+        "reviewerA": 1,
+        "reviewerB": 0
+      },
+      {
+        "outputId": "R120",
+        "metric": "unsupportedNovelty",
+        "reviewerA": 0,
+        "reviewerB": 1
+      },
+      {
+        "outputId": "R122",
+        "metric": "freshEvidenceGrounding",
+        "reviewerA": 0,
+        "reviewerB": 1
+      },
+      {
+        "outputId": "R122",
+        "metric": "semanticResponse",
+        "reviewerA": 0,
+        "reviewerB": 1
+      },
+      {
+        "outputId": "R125",
+        "metric": "unsupportedNovelty",
+        "reviewerA": 1,
+        "reviewerB": 0
+      },
+      {
+        "outputId": "R134",
+        "metric": "unsupportedNovelty",
+        "reviewerA": 1,
+        "reviewerB": 0
+      },
+      {
+        "outputId": "R136",
+        "metric": "freshEvidenceGrounding",
+        "reviewerA": 0,
+        "reviewerB": 1
+      },
+      {
+        "outputId": "R136",
+        "metric": "semanticResponse",
+        "reviewerA": 0,
+        "reviewerB": 1
+      },
+      {
+        "outputId": "R140",
+        "metric": "unsupportedNovelty",
+        "reviewerA": 0,
+        "reviewerB": 1
+      },
+      {
+        "outputId": "R140",
+        "metric": "noChangeRestraint",
+        "reviewerA": 1,
+        "reviewerB": 0
+      }
+    ]
+  },
+  "arms": {
+    "A": {
+      "observerSafetyViolation": {
+        "numerator": 0,
+        "denominator": 36,
+        "scenarioMacroRate": 0
+      },
+      "freshEvidenceGrounding": {
+        "numerator": 22,
+        "denominator": 24,
+        "scenarioMacroRate": 0.9166666666666666
+      },
+      "semanticResponse": {
+        "numerator": 19,
+        "denominator": 24,
+        "scenarioMacroRate": 0.7916666666666666
+      },
+      "unsupportedNovelty": {
+        "numerator": 10,
+        "denominator": 36,
+        "scenarioMacroRate": 0.27777777777777773
+      },
+      "characterConsistency": {
+        "numerator": 36,
+        "denominator": 36,
+        "scenarioMacroRate": 1
+      },
+      "noChangeRestraint": {
+        "numerator": 7,
+        "denominator": 12,
+        "scenarioMacroRate": 0.5833333333333334
+      },
+      "naturalness": {
+        "numerator": 35,
+        "denominator": 36,
+        "scenarioMacroRate": 0.9722222222222222
+      },
+      "exactUnique": {
+        "numerator": 34,
+        "denominator": 36,
+        "rate": 0.9444444444444444
+      },
+      "worstSpeakerExactUnique": {
+        "profileId": "tomori",
+        "numerator": 10,
+        "denominator": 12,
+        "rate": 0.8333333333333334
+      },
+      "longestExactRepeatRun": 3
+    },
+    "B": {
+      "observerSafetyViolation": {
+        "numerator": 0,
+        "denominator": 36,
+        "scenarioMacroRate": 0
+      },
+      "freshEvidenceGrounding": {
+        "numerator": 21,
+        "denominator": 24,
+        "scenarioMacroRate": 0.8750000000000001
+      },
+      "semanticResponse": {
+        "numerator": 19,
+        "denominator": 24,
+        "scenarioMacroRate": 0.7916666666666666
+      },
+      "unsupportedNovelty": {
+        "numerator": 14,
+        "denominator": 36,
+        "scenarioMacroRate": 0.38888888888888884
+      },
+      "characterConsistency": {
+        "numerator": 36,
+        "denominator": 36,
+        "scenarioMacroRate": 1
+      },
+      "noChangeRestraint": {
+        "numerator": 8,
+        "denominator": 12,
+        "scenarioMacroRate": 0.6666666666666666
+      },
+      "naturalness": {
+        "numerator": 35,
+        "denominator": 36,
+        "scenarioMacroRate": 0.9722222222222222
+      },
+      "exactUnique": {
+        "numerator": 33,
+        "denominator": 36,
+        "rate": 0.9166666666666666
+      },
+      "worstSpeakerExactUnique": {
+        "profileId": "hibana",
+        "numerator": 9,
+        "denominator": 12,
+        "rate": 0.75
+      },
+      "longestExactRepeatRun": 3
+    },
+    "C": {
+      "observerSafetyViolation": {
+        "numerator": 0,
+        "denominator": 36,
+        "scenarioMacroRate": 0
+      },
+      "freshEvidenceGrounding": {
+        "numerator": 22,
+        "denominator": 24,
+        "scenarioMacroRate": 0.9166666666666667
+      },
+      "semanticResponse": {
+        "numerator": 21,
+        "denominator": 24,
+        "scenarioMacroRate": 0.8750000000000001
+      },
+      "unsupportedNovelty": {
+        "numerator": 13,
+        "denominator": 36,
+        "scenarioMacroRate": 0.3611111111111111
+      },
+      "characterConsistency": {
+        "numerator": 36,
+        "denominator": 36,
+        "scenarioMacroRate": 1
+      },
+      "noChangeRestraint": {
+        "numerator": 7,
+        "denominator": 12,
+        "scenarioMacroRate": 0.5833333333333333
+      },
+      "naturalness": {
+        "numerator": 35,
+        "denominator": 36,
+        "scenarioMacroRate": 0.9722222222222222
+      },
+      "exactUnique": {
+        "numerator": 36,
+        "denominator": 36,
+        "rate": 1
+      },
+      "worstSpeakerExactUnique": {
+        "profileId": "hibana",
+        "numerator": 12,
+        "denominator": 12,
+        "rate": 1
+      },
+      "longestExactRepeatRun": 1
+    },
+    "D": {
+      "observerSafetyViolation": {
+        "numerator": 0,
+        "denominator": 36,
+        "scenarioMacroRate": 0
+      },
+      "freshEvidenceGrounding": {
+        "numerator": 23,
+        "denominator": 24,
+        "scenarioMacroRate": 0.9583333333333333
+      },
+      "semanticResponse": {
+        "numerator": 21,
+        "denominator": 24,
+        "scenarioMacroRate": 0.8750000000000001
+      },
+      "unsupportedNovelty": {
+        "numerator": 10,
+        "denominator": 36,
+        "scenarioMacroRate": 0.2777777777777778
+      },
+      "characterConsistency": {
+        "numerator": 36,
+        "denominator": 36,
+        "scenarioMacroRate": 1
+      },
+      "noChangeRestraint": {
+        "numerator": 9,
+        "denominator": 12,
+        "scenarioMacroRate": 0.75
+      },
+      "naturalness": {
+        "numerator": 36,
+        "denominator": 36,
+        "scenarioMacroRate": 1
+      },
+      "exactUnique": {
+        "numerator": 35,
+        "denominator": 36,
+        "rate": 0.9722222222222222
+      },
+      "worstSpeakerExactUnique": {
+        "profileId": "hibana",
+        "numerator": 11,
+        "denominator": 12,
+        "rate": 0.9166666666666666
+      },
+      "longestExactRepeatRun": 2
+    }
+  },
+  "focusCalibration": {
+    "weakCueSharp": {
+      "numerator": 6,
+      "denominator": 6,
+      "scenarioMacroRate": 1
+    },
+    "weakCueStrained": {
+      "numerator": 3,
+      "denominator": 3,
+      "scenarioMacroRate": 1
+    },
+    "sharpMinusStrained": 0,
+    "strongCueSharp": {
+      "numerator": 5,
+      "denominator": 6,
+      "scenarioMacroRate": 0.8333333333333333
+    },
+    "strongCueStrained": {
+      "numerator": 9,
+      "denominator": 9,
+      "scenarioMacroRate": 1
+    },
+    "strainedMinusSharp": 0.16666666666666674,
+    "lowFocusJointProseD": {
+      "numerator": 18,
+      "denominator": 18,
+      "scenarioMacroRate": 1
+    },
+    "matchedJointProseC": {
+      "numerator": 17,
+      "denominator": 18,
+      "scenarioMacroRate": 0.9444444444444445
+    },
+    "dMinusC": 0.05555555555555547
+  },
+  "acceptance": {
+    "observerSafetyZeroEveryArm": true,
+    "cFreshEvidenceGrounding": true,
+    "cFreshEvidenceDeltaFromA": false,
+    "cSemanticResponse": true,
+    "cSemanticResponseDeltaFromA": false,
+    "cUnsupportedNovelty": false,
+    "cCharacterConsistency": true,
+    "cNoChangeRestraint": false,
+    "worstSpeakerExactUnique": true,
+    "longestExactRepeatRun": false,
+    "weakCueFocusCalibration": false,
+    "strongCueNonInferiority": true,
+    "lowFocusProseNonInferiority": true
+  },
+  "directionalComparisons": {
+    "bMinusA": {
+      "freshEvidenceGrounding": -0.04166666666666652,
+      "semanticResponse": 0
+    },
+    "cMinusB": {
+      "freshEvidenceGrounding": 0.04166666666666663,
+      "semanticResponse": 0.08333333333333348
+    }
+  },
+  "boundary": "Fixed-fixture evidence only. Passing does not authorize an opt-in candidate, staging, release, or production use; the owner must decide the supported component separately."
+}

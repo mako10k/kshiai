@@ -98,6 +98,7 @@ task CF_RUN_BLINDED_ABLATION REPLAY_AUTHORIZED -> REPLAY_ACCEPTED:
   title "Run and score the four-arm blinded expression ablation"
   description "Randomize 12 scenarios by current control, foreground-only, steady focus-state, and focus-modulated focus-state arms with three samples each. Use the expression responsibility only, stop at the physical ceiling, blind arm labels through two-reviewer scoring, and report semantic grounding, response, unsupported novelty, consistency, no-change restraint, dialogue repetition, and focus calibration with raw denominators. Do not adapt prompts or rerun failed content."
   duration 2p
+  status done
   requires:
     DEV 1
   owner "codex"
@@ -133,3 +134,9 @@ task CF_DECIDE_HYPOTHESIS STAGING_OBSERVED -> HYPOTHESIS_DECIDED:
   requires:
     OWNER 1
   owner "user"
+
+work_event WE-19dcbaa9c09620be5d25575d366367a2702baeadcf2d9b44af84354a9c58d505:
+  model 1
+  task CF_RUN_BLINDED_ABLATION
+  kind finish
+  occurred_at 2026-08-13T14:02:08+09:00

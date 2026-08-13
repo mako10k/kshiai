@@ -2,8 +2,10 @@
 
 - Status: Authorized and prepared on 2026-08-13
 - Owner authorization: the product owner said `では、進めてください。` after the
-  replay hypothesis plan, the explicit provider-call boundary, and the
-  two-human-review boundary were stated.
+  replay hypothesis plan and explicit provider-call boundary were stated. The
+  proposed human-review condition was not separately agreed and was later
+  replaced by the owner's explicit sub-agent review instruction; see the
+  review-protocol amendment.
 - Contract digest:
   `c0c3e6114a1ae126d8fec4b4f47890fcdb89c32d70640f3959e013825ef65d74`
 - Protocol digest:
@@ -51,10 +53,11 @@ selection only and is explicitly forbidden from lowering language quality.
 ## Review and acceptance boundary
 
 The generated packet hides arm, focus band, sample number, and provider
-metadata. At least two people independently score every completed output using
-the frozen binary rubric. Their files and any reconciled score set are frozen
-before the arm map is read. Provider execution alone cannot complete
-`CF_RUN_BLINDED_ABLATION`; it remains open until this human review exists.
+metadata. The current owner-approved reviewer identities and deterministic
+reconciliation are recorded in
+`evidence/character-focus-replay-2026-08-13/review-protocol-amendment.md`.
+Their files and the reconciled score set are frozen before the arm map is read.
+Provider execution alone cannot complete `CF_RUN_BLINDED_ABLATION`.
 
 No staging, production deployment, release, or battle-policy adoption is
 authorized here.

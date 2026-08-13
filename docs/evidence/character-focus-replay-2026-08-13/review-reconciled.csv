@@ -1,0 +1,145 @@
+output_id,observer_safety_violation,fresh_evidence_grounding,semantic_response,unsupported_novelty,character_consistency,no_change_restraint,naturalness,notes
+R001,0,1,1,0,1,NA,1,reviewers agree
+R002,0,NA,NA,1,1,0,1,conservative reconciliation: noChangeRestraint
+R003,0,1,1,0,1,NA,1,reviewers agree
+R004,0,NA,NA,0,1,1,1,reviewers agree
+R005,0,NA,NA,0,1,1,1,reviewers agree
+R006,0,1,1,1,1,NA,1,reviewers agree
+R007,0,1,1,0,1,NA,1,reviewers agree
+R008,0,1,1,0,1,NA,1,reviewers agree
+R009,0,NA,NA,0,1,1,1,reviewers agree
+R010,0,1,1,0,1,NA,1,reviewers agree
+R011,0,1,1,0,1,NA,1,reviewers agree
+R012,0,1,1,0,1,NA,1,reviewers agree
+R013,0,1,1,1,1,NA,1,reviewers agree
+R014,0,1,1,0,1,NA,1,reviewers agree
+R015,0,1,1,1,1,NA,1,reviewers agree
+R016,0,1,0,0,1,NA,1,conservative reconciliation: semanticResponse
+R017,0,1,1,0,1,NA,1,reviewers agree
+R018,0,1,1,0,1,NA,1,reviewers agree
+R019,0,1,0,1,1,NA,1,conservative reconciliation: semanticResponse|unsupportedNovelty
+R020,0,1,1,0,1,NA,1,reviewers agree
+R021,0,1,1,1,1,NA,1,reviewers agree
+R022,0,NA,NA,0,1,1,1,reviewers agree
+R023,0,NA,NA,0,1,1,1,reviewers agree
+R024,0,1,1,0,1,NA,1,reviewers agree
+R025,0,1,1,1,1,NA,1,conservative reconciliation: unsupportedNovelty
+R026,0,1,1,0,1,NA,1,reviewers agree
+R027,0,1,1,0,1,NA,1,reviewers agree
+R028,0,1,1,0,1,NA,1,reviewers agree
+R029,0,NA,NA,0,1,1,1,reviewers agree
+R030,0,NA,NA,1,1,0,1,conservative reconciliation: unsupportedNovelty|noChangeRestraint
+R031,0,NA,NA,1,1,0,1,conservative reconciliation: unsupportedNovelty|noChangeRestraint
+R032,0,1,1,1,1,NA,1,reviewers agree
+R033,0,NA,NA,1,1,0,1,conservative reconciliation: unsupportedNovelty|noChangeRestraint
+R034,0,1,1,0,1,NA,1,reviewers agree
+R035,0,NA,NA,0,1,1,1,reviewers agree
+R036,0,0,0,0,1,NA,1,conservative reconciliation: freshEvidenceGrounding|semanticResponse
+R037,0,NA,NA,1,1,0,1,conservative reconciliation: unsupportedNovelty|noChangeRestraint
+R038,0,1,1,0,1,NA,1,reviewers agree
+R039,0,NA,NA,0,1,1,1,reviewers agree
+R040,0,1,0,1,1,NA,1,conservative reconciliation: semanticResponse|unsupportedNovelty
+R041,0,1,1,1,1,NA,1,conservative reconciliation: unsupportedNovelty
+R042,0,NA,NA,0,1,1,1,reviewers agree
+R043,0,1,0,1,1,NA,1,conservative reconciliation: semanticResponse|unsupportedNovelty
+R044,0,1,0,0,1,NA,1,conservative reconciliation: semanticResponse
+R045,0,1,1,0,1,NA,1,reviewers agree
+R046,0,0,1,0,1,NA,1,conservative reconciliation: freshEvidenceGrounding
+R047,0,1,1,0,1,NA,1,reviewers agree
+R048,0,1,1,0,1,NA,1,reviewers agree
+R049,0,1,1,1,1,NA,1,reviewers agree
+R050,0,0,0,0,1,NA,1,conservative reconciliation: freshEvidenceGrounding|semanticResponse
+R051,0,NA,NA,0,1,1,1,reviewers agree
+R052,0,0,0,0,1,NA,1,reviewers agree
+R053,0,NA,NA,0,1,1,1,reviewers agree
+R054,0,NA,NA,0,1,1,1,reviewers agree
+R055,0,0,0,0,1,NA,0,conservative reconciliation: freshEvidenceGrounding|semanticResponse|naturalness
+R056,0,NA,NA,1,1,0,1,conservative reconciliation: unsupportedNovelty|noChangeRestraint
+R057,0,1,1,0,1,NA,1,reviewers agree
+R058,0,NA,NA,0,1,1,1,reviewers agree
+R059,0,1,1,0,1,NA,1,reviewers agree
+R060,0,NA,NA,1,1,0,1,conservative reconciliation: unsupportedNovelty|noChangeRestraint
+R061,0,1,1,1,1,NA,1,reviewers agree
+R062,0,NA,NA,1,1,0,0,conservative reconciliation: naturalness
+R063,0,1,1,0,1,NA,1,reviewers agree
+R064,0,1,0,1,1,NA,1,conservative reconciliation: semanticResponse|unsupportedNovelty
+R065,0,1,1,0,1,NA,1,reviewers agree
+R066,0,NA,NA,0,1,1,1,reviewers agree
+R067,0,NA,NA,1,1,0,1,conservative reconciliation: unsupportedNovelty|noChangeRestraint
+R068,0,NA,NA,0,1,1,1,reviewers agree
+R069,0,1,1,1,1,NA,1,reviewers agree
+R070,0,1,1,0,1,NA,1,reviewers agree
+R071,0,NA,NA,0,1,1,1,reviewers agree
+R072,0,NA,NA,1,1,0,0,conservative reconciliation: unsupportedNovelty|noChangeRestraint
+R073,0,NA,NA,0,1,1,1,reviewers agree
+R074,0,1,1,0,1,NA,1,reviewers agree
+R075,0,1,1,0,1,NA,1,reviewers agree
+R076,0,1,1,0,1,NA,1,reviewers agree
+R077,0,1,1,0,1,NA,1,reviewers agree
+R078,0,1,1,0,1,NA,1,reviewers agree
+R079,0,1,1,0,1,NA,1,reviewers agree
+R080,0,NA,NA,0,1,1,1,reviewers agree
+R081,0,1,1,1,1,NA,1,reviewers agree
+R082,0,NA,NA,0,1,1,1,reviewers agree
+R083,0,NA,NA,1,1,0,1,conservative reconciliation: unsupportedNovelty|noChangeRestraint
+R084,0,NA,NA,1,1,0,1,conservative reconciliation: unsupportedNovelty|noChangeRestraint
+R085,0,NA,NA,0,1,1,1,reviewers agree
+R086,0,1,1,0,1,NA,1,reviewers agree
+R087,0,1,1,0,1,NA,1,reviewers agree
+R088,0,NA,NA,0,1,1,1,reviewers agree
+R089,0,1,1,1,1,NA,1,conservative reconciliation: unsupportedNovelty
+R090,0,1,1,1,1,NA,1,reviewers agree
+R091,0,NA,NA,1,1,0,1,conservative reconciliation: unsupportedNovelty|noChangeRestraint
+R092,0,NA,NA,0,1,1,1,reviewers agree
+R093,0,NA,NA,0,1,1,1,reviewers agree
+R094,0,NA,NA,1,1,0,1,conservative reconciliation: noChangeRestraint
+R095,0,1,1,1,1,NA,1,reviewers agree
+R096,0,NA,NA,0,1,1,1,reviewers agree
+R097,0,1,1,0,1,NA,1,reviewers agree
+R098,0,NA,NA,0,1,1,1,reviewers agree
+R099,0,1,1,0,1,NA,1,reviewers agree
+R100,0,NA,NA,0,1,1,1,reviewers agree
+R101,0,NA,NA,0,1,1,1,reviewers agree
+R102,0,1,1,0,1,NA,1,reviewers agree
+R103,0,1,1,0,1,NA,1,reviewers agree
+R104,0,1,1,0,1,NA,1,reviewers agree
+R105,0,1,1,0,1,NA,1,reviewers agree
+R106,0,NA,NA,0,1,1,1,reviewers agree
+R107,0,1,1,1,1,NA,1,reviewers agree
+R108,0,1,1,0,1,NA,1,reviewers agree
+R109,0,NA,NA,0,1,1,1,reviewers agree
+R110,0,1,1,1,1,NA,1,reviewers agree
+R111,0,1,1,1,1,NA,1,reviewers agree
+R112,0,1,1,0,1,NA,1,reviewers agree
+R113,0,1,1,0,1,NA,1,reviewers agree
+R114,0,1,1,0,1,NA,1,reviewers agree
+R115,0,1,0,1,1,NA,1,conservative reconciliation: unsupportedNovelty
+R116,0,NA,NA,1,1,0,1,conservative reconciliation: unsupportedNovelty|noChangeRestraint
+R117,0,1,1,0,1,NA,1,reviewers agree
+R118,0,1,1,0,1,NA,1,reviewers agree
+R119,0,1,1,0,1,NA,1,reviewers agree
+R120,0,1,0,1,1,NA,1,conservative reconciliation: semanticResponse|unsupportedNovelty
+R121,0,1,1,0,1,NA,1,reviewers agree
+R122,0,0,0,1,1,NA,1,conservative reconciliation: freshEvidenceGrounding|semanticResponse
+R123,0,1,1,1,1,NA,1,reviewers agree
+R124,0,1,1,0,1,NA,1,reviewers agree
+R125,0,1,0,1,1,NA,1,conservative reconciliation: unsupportedNovelty
+R126,0,1,1,1,1,NA,1,reviewers agree
+R127,0,1,1,0,1,NA,1,reviewers agree
+R128,0,1,1,0,1,NA,1,reviewers agree
+R129,0,0,0,0,1,NA,1,reviewers agree
+R130,0,1,1,0,1,NA,1,reviewers agree
+R131,0,1,1,1,1,NA,1,reviewers agree
+R132,0,1,1,0,1,NA,1,reviewers agree
+R133,0,NA,NA,1,1,0,1,reviewers agree
+R134,0,1,1,1,1,NA,1,conservative reconciliation: unsupportedNovelty
+R135,0,1,1,0,1,NA,1,reviewers agree
+R136,0,0,0,1,1,NA,1,conservative reconciliation: freshEvidenceGrounding|semanticResponse
+R137,0,1,1,0,1,NA,1,reviewers agree
+R138,0,NA,NA,0,1,1,1,reviewers agree
+R139,0,NA,NA,0,1,1,1,reviewers agree
+R140,0,NA,NA,1,1,0,1,conservative reconciliation: unsupportedNovelty|noChangeRestraint
+R141,0,1,1,0,1,NA,1,reviewers agree
+R142,0,1,1,0,1,NA,1,reviewers agree
+R143,0,1,1,0,1,NA,1,reviewers agree
+R144,0,1,1,0,1,NA,1,reviewers agree

@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "frozenAt": "2026-08-13T14:00:05+09:00",
+  "reviewPacketSha256": "4950964efc9707f4943e30dad986efb74c501ad7c8642d70883da4ace508ab71",
+  "reviewInstructionsSha256": "07484defd61b30882f4e7eecdbd572d6040d1eb449b2d86dec95ea8e761dc241",
+  "protocolAmendmentSha256": "023fadc2d73cdcc8f0db28794eae8c9d73ecad50fd510d1471599304eb9ca02f",
+  "reviewers": [
+    {
+      "id": "logical-subagent",
+      "kind": "llm-subagent",
+      "scores": "review-logical.csv",
+      "scoresSha256": "a9626cf176af041bd2042e72d79e292563622fd30d7eeafa67b087a02592d319",
+      "impressions": "impressions-logical.md",
+      "impressionsSha256": "cf9f5ed1c411136fb66d6996be9baa18f313f9ffb29a0e926dc27d09a0c8bac6"
+    },
+    {
+      "id": "story-subagent",
+      "kind": "llm-subagent",
+      "scores": "review-story.csv",
+      "scoresSha256": "cf84ebbd66b8f5ddebcd546aa85dd01c6dc26131f1bc7e6dff449f8764e4064e",
+      "impressions": "impressions-story.md",
+      "impressionsSha256": "56a61d47c7a1f6adc9255c53b3d55830b3d3de4e43255ee69a05fc1a1f2adcf5"
+    }
+  ],
+  "accessDisclosure": "The story reviewer additionally read only the blank review template header to confirm output columns; it contained no output, arm, focus, model, or provider data. The logical reviewer used the header names supplied by root without opening the template.",
+  "blinding": "Both raw score files were frozen before root opened the unblinded arm mapping or the other review.",
+  "reconciliation": "beneficial fields require both 1; adverse fields become 1 if either reviewer reports 1; eligibility alone determines NA"
+}
