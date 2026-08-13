@@ -85,7 +85,7 @@ task T_OBSERVE_PRODUCTION_PACING PACING_PRODUCTION_DEPLOYED -> PACING_PRODUCTION
   title "Observe the bounded production pacing trial"
   description "After an initial safety readback, accumulate ordinary production battle evidence over time: completion distribution, maximum-turn and forced-terminal rate, KO and one-shot rate, committed change, action and speech repetition, initiative response, delayed effects, errors, latency, calls, tokens, retries, and cost. Compare periodic snapshots with the frozen pre-deploy baseline and make small versioned policy revisions; do not imply that the provisional values are final."
   duration 3p
-  status suspended
+  status done
   requires:
     DEV 1
   owner "codex"
@@ -336,7 +336,7 @@ task T_PREPARE_PROVIDER_ACCOUNTING_RELEASE PROVIDER_ACCOUNTING_STAGE_ACCEPTED ->
   title "Prepare and verify the v0.17.4 release candidate"
   description "Merge the accepted accounting implementation, bump every workspace and lockfile to v0.17.4, record the migration and rollback contract, pass the exact release PR checks, and freeze an annotated immutable tag. Do not stage from any different commit."
   duration 1p
-  status active
+  status done
   priority 100
   requires:
     DEV 1
@@ -346,6 +346,7 @@ task T_STAGE_PROVIDER_ACCOUNTING_RELEASE PROVIDER_ACCOUNTING_RELEASE_CANDIDATE_R
   title "Stage the exact v0.17.4 artifacts"
   description "Dispatch Stage from the annotated tag with narration_guarded, no dialogue override, and candidate-12-v2. Apply migration 0016, prove provider accounting without an LLM, and retain the exact backend digest, Cloud Run revision, Worker version, authentication, SSE, R2, and Cloud Tasks evidence."
   duration 1p
+  status done
   priority 100
   requires:
     DEV 1
@@ -355,6 +356,7 @@ task T_PROMOTE_PROVIDER_ACCOUNTING_RELEASE PROVIDER_ACCOUNTING_STAGED -> PROVIDE
   title "Promote the exact v0.17.4 artifacts"
   description "After Stage acceptance, record rollback targets and use the protected Promote workflow to move the exact staged Cloud Run revision and Worker version to 100 percent production traffic. Require production smoke, authentication, error readback, and GitHub Release publication before observation."
   duration 1p
+  status done
   priority 100
   requires:
     DEV 1
@@ -428,3 +430,51 @@ work_event EVT_PREPARE_PROVIDER_ACCOUNTING_RELEASE_START_20260813:
   kind start
   occurred_at 2026-08-13T10:21:06+09:00
   planned_value 1p
+
+work_event EVT_PREPARE_PROVIDER_ACCOUNTING_RELEASE_FINISH_20260813:
+  model 1
+  task T_PREPARE_PROVIDER_ACCOUNTING_RELEASE
+  kind finish
+  occurred_at 2026-08-13T10:26:18+09:00
+  effort 0.1ph
+
+work_event EVT_STAGE_PROVIDER_ACCOUNTING_RELEASE_START_20260813:
+  model 1
+  task T_STAGE_PROVIDER_ACCOUNTING_RELEASE
+  kind start
+  occurred_at 2026-08-13T10:26:18+09:00
+  planned_value 1p
+
+work_event EVT_STAGE_PROVIDER_ACCOUNTING_RELEASE_FINISH_20260813:
+  model 1
+  task T_STAGE_PROVIDER_ACCOUNTING_RELEASE
+  kind finish
+  occurred_at 2026-08-13T10:31:49+09:00
+  effort 0.08ph
+
+work_event EVT_PROMOTE_PROVIDER_ACCOUNTING_RELEASE_START_20260813:
+  model 1
+  task T_PROMOTE_PROVIDER_ACCOUNTING_RELEASE
+  kind start
+  occurred_at 2026-08-13T10:31:49+09:00
+  planned_value 1p
+
+work_event EVT_PROMOTE_PROVIDER_ACCOUNTING_RELEASE_FINISH_20260813:
+  model 1
+  task T_PROMOTE_PROVIDER_ACCOUNTING_RELEASE
+  kind finish
+  occurred_at 2026-08-13T10:34:30+09:00
+  effort 0.03ph
+
+work_event EVT_OBSERVE_PACING_RESUME_V0174_20260813:
+  model 1
+  task T_OBSERVE_PRODUCTION_PACING
+  kind resume
+  occurred_at 2026-08-13T10:34:30+09:00
+
+work_event EVT_OBSERVE_PACING_FINISH_V0174_20260813:
+  model 1
+  task T_OBSERVE_PRODUCTION_PACING
+  kind finish
+  occurred_at 2026-08-13T10:40:16+09:00
+  effort 0.07ph
