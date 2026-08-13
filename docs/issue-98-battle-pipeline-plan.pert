@@ -257,3 +257,16 @@ work_event EVT_RCA_COST_RELEASE_FINISH_20260812:
   task T_RCA_COST_RELEASE_GUARDS
   kind finish
   occurred_at 2026-08-12T21:53:07+09:00
+
+work_event EVT_OBSERVE_PACING_RESUME_V0173_20260813:
+  model 1
+  task T_OBSERVE_PRODUCTION_PACING
+  kind resume
+  occurred_at 2026-08-13T09:04:38+09:00
+
+work_event EVT_OBSERVE_PACING_SUSPEND_V0173_TELEMETRY_20260813:
+  model 1
+  task T_OBSERVE_PRODUCTION_PACING
+  kind suspend
+  occurred_at 2026-08-13T09:12:16+09:00
+  reason "The v0.17.3 functional observation passed, but persisted narration HTTP attempts reported zero despite eleven successful narration provider calls, and the projected budget omitted four deep-psyche calls; pause additional paid observation until by-layer actual operation accounting is corrected and locally and staging verified."
