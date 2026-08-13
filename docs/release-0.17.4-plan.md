@@ -1,8 +1,8 @@
 # v0.17.4 release preparation
 
-Status: release, deployment, and one bounded production observation are
-authorized. This plan freezes the exact guarded path; it does not authorize a
-second observation or a pacing-policy decision.
+Status: released, deployed, and observed successfully. This plan freezes the
+completed exact guarded path; it does not authorize a second observation or a
+pacing-policy decision.
 
 ## Release intent
 
@@ -43,3 +43,14 @@ rollback does not remove the migration or observation evidence.
 Token and monetary usage remain `null` when a provider does not return them;
 the release must not convert unknown usage to zero. A separate conservative
 price-bound decision remains outside this release.
+
+## Completion evidence
+
+- Release commit: `abb42e6b138b27f6f3ef075178d5d00b0b3bf151`
+- Stage run: `31657704957`
+- Cloud Run revision: `kshiai-api-00090-luh`
+- Worker version: `4b25b139-bebf-49d3-9dc5-d057bafaf674`
+- Promote run: `31658001263`
+- Observation run: `31658142563`
+- Observation evidence:
+  [production-observation-0.17.4-2026-08-13.md](evidence/production-observation-0.17.4-2026-08-13.md)
