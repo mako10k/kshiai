@@ -114,6 +114,8 @@ if (authProvider !== "legacy" && authProvider !== "supabase") {
 if (authProvider === "supabase" && (!supabaseUrl || !supabaseJwksUrl)) {
   throw new Error("SUPABASE_URL and SUPABASE_JWKS_URL are required for Supabase Auth");
 }
+
+export const DEFAULT_XAI_FAST_MODEL = "grok-4.3";
 if (process.env.NODE_ENV === "production" && authProvider !== "supabase") {
   throw new Error("AUTH_PROVIDER=supabase is required when NODE_ENV=production");
 }
@@ -252,7 +254,7 @@ export const config = {
      * Prefer non-reasoning / low-latency models.
      */
     modelFast:
-      process.env.XAI_MODEL_FAST ?? "grok-4-fast-non-reasoning",
+      process.env.XAI_MODEL_FAST ?? DEFAULT_XAI_FAST_MODEL,
     imageModel: process.env.XAI_IMAGE_MODEL ?? "grok-imagine-image",
   },
   openai: {

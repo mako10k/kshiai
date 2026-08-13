@@ -2,6 +2,7 @@ import OpenAI from "openai";
 import type {
   ChatCompletionMessageParam,
   ChatCompletionTool,
+  ChatCompletionCreateParamsNonStreaming,
 } from "openai/resources/chat/completions";
 import {
   BasicAttackProfileSchema,
@@ -265,6 +266,10 @@ type ChatOpts = {
   onText?: (fullText: string) => void;
 };
 
+/** xAI supports `none`; OpenAI SDK v5's provider-neutral union does not list it. */
+const XAI_REASONING_EFFORT_NONE =
+  "none" as ChatCompletionCreateParamsNonStreaming["reasoning_effort"];
+
 /**
  * OpenAI-compatible chat provider (xAI, Venice, etc.).
  * Optional mock fallback exists only for explicitly constructed development
@@ -310,6 +315,14 @@ export class OpenAiCompatibleProvider implements LlmProvider {
 
   private modelFor(tier: LlmTier): string {
     return tier === "fast" ? this.modelFast : this.modelEngine;
+  }
+
+  private reasoningOptions(model: string):
+    { reasoning_effort: ChatCompletionCreateParamsNonStreaming["reasoning_effort"] } |
+    Record<string, never> {
+    return this.name === "xai" && model === "grok-4.3"
+      ? { reasoning_effort: XAI_REASONING_EFFORT_NONE }
+      : {};
   }
 
   private retryProviderCall<T>(
@@ -372,6 +385,7 @@ export class OpenAiCompatibleProvider implements LlmProvider {
               const resp = await this.client!.chat.completions.create(
                 {
                   model,
+                  ...this.reasoningOptions(model),
                   messages: [
                     { role: "system", content: system },
                     { role: "user", content: user },
@@ -557,6 +571,7 @@ Rules:
               const stream = await this.client!.chat.completions.create(
                 {
                   model,
+                  ...this.reasoningOptions(model),
                   messages: [
                     { role: "system", content: system },
                     { role: "user", content: user },
@@ -685,6 +700,7 @@ Rules:
           model,
           action: () => this.client!.chat.completions.create({
             model,
+            ...this.reasoningOptions(model),
             messages,
             tools,
             tool_choice: "auto",
@@ -802,6 +818,7 @@ Rules:
           action: () => this.client!.chat.completions.create(
             {
               model,
+              ...this.reasoningOptions(model),
               messages,
               tools,
               tool_choice: "auto",

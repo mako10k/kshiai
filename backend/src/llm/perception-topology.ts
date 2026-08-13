@@ -19,7 +19,10 @@ export type ReviewedPerceptionTopologyDecision = {
   sampleCountPerTopology: number;
   combined: PerceptionPromptAggregate;
   split: PerceptionPromptAggregate;
-  reason: "combined_meets_quality_floor" | "combined_below_floor_split_meets_floor";
+  reason:
+    | "combined_meets_quality_floor"
+    | "combined_below_floor_split_meets_floor"
+    | "documented_alias_to_exact_model";
   evidence: string;
 };
 
@@ -89,6 +92,48 @@ export const REVIEWED_PERCEPTION_TOPOLOGIES:
     },
     reason: "combined_meets_quality_floor",
     evidence: "docs/evidence/perception-xai-grok-4-fast-non-reasoning-v10.json sha256:739eb515c822abc5f9f720f12a2745f4774f42faaba8f0b235277b83540cd0e1",
+  }, {
+    provider: "xai",
+    providerRole: "primary",
+    model: "grok-4.3",
+    topology: "combined",
+    fixtureVersion: "perception-prompts-v10",
+    reviewedAt: "2026-08-13",
+    sampleCountPerTopology: 9,
+    combined: {
+      fixtureVersion: "perception-prompts-v10",
+      topology: "combined",
+      sampleCount: 9,
+      worldSchemaValidRate: 1,
+      sensorySchemaValidRate: 1,
+      worldPatchCorrectness: 1,
+      sensoryCoverage: 1,
+      attributionErrorRate: 0,
+      identityLeakageRate: 0,
+      meanLatencyMs: 3431.8888888888887,
+      p95LatencyMs: 4750,
+      measuredTokenSamples: 9,
+      meanTotalTokens: 3928.1111111111113,
+      totalTokens: 35353,
+    },
+    split: {
+      fixtureVersion: "perception-prompts-v10",
+      topology: "split",
+      sampleCount: 9,
+      worldSchemaValidRate: 1,
+      sensorySchemaValidRate: 1,
+      worldPatchCorrectness: 1,
+      sensoryCoverage: 1,
+      attributionErrorRate: 0,
+      identityLeakageRate: 0,
+      meanLatencyMs: 4040.3333333333335,
+      p95LatencyMs: 5542,
+      measuredTokenSamples: 9,
+      meanTotalTokens: 5851.222222222223,
+      totalTokens: 52661,
+    },
+    reason: "documented_alias_to_exact_model",
+    evidence: "docs/evidence/perception-xai-grok-4-fast-non-reasoning-v10.json sha256:739eb515c822abc5f9f720f12a2745f4774f42faaba8f0b235277b83540cd0e1; xAI May 15 retirement redirect; docs/evidence/character-focus-replay-2026-08-13/run-receipt.json responseModels=grok-4.3",
   }, {
     provider: "openai",
     providerRole: "fallback",

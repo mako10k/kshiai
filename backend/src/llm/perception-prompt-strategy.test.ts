@@ -184,7 +184,7 @@ describe("perception prompt strategy", () => {
       primary: "xai",
       fallback: "openai",
     });
-    assert.equal(REVIEWED_PERCEPTION_TOPOLOGIES.length, 3);
+    assert.equal(REVIEWED_PERCEPTION_TOPOLOGIES.length, 4);
     assert.equal(reviewedPerceptionTopology("mock", "mock-v1")?.topology, "combined");
     const xai = reviewedPerceptionTopology(
       "xai",
@@ -194,6 +194,9 @@ describe("perception prompt strategy", () => {
     assert.equal(xai?.topology, "combined");
     assert.equal(xai?.combined.worldPatchCorrectness, 1);
     assert.equal(xai?.combined.sensorySchemaValidRate, 1);
+    const xaiDirect = reviewedPerceptionTopology("xai", "grok-4.3");
+    assert.equal(xaiDirect?.topology, "combined");
+    assert.equal(xaiDirect?.reason, "documented_alias_to_exact_model");
     const historicalOpenAi = REVIEWED_PERCEPTION_TOPOLOGIES.find(
       (decision) => decision.provider === "openai",
     );

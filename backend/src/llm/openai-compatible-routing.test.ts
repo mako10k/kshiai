@@ -35,6 +35,56 @@ function completion(content: string): unknown {
 }
 
 describe("OpenAI-compatible provider routing policy", () => {
+  it("requests xAI grok-4.3 directly with reasoning effort none", async () => {
+    const provider = new OpenAiCompatibleProvider({
+      name: "xai",
+      apiKey: "test-only",
+      baseUrl: "https://example.invalid/v1",
+      modelEngine: "grok-4.5",
+      modelFast: "grok-4.3",
+    }) as unknown as PrivateProvider;
+    const bodies: Array<Record<string, unknown>> = [];
+    provider.client = {
+      chat: {
+        completions: {
+          create: async (value) => {
+            bodies.push(value as Record<string, unknown>);
+            return completion('{"ok":true}');
+          },
+        },
+      },
+    };
+
+    await provider.chatJson("system", "user", { tier: "fast" });
+    assert.equal(bodies[0]?.model, "grok-4.3");
+    assert.equal(bodies[0]?.reasoning_effort, "none");
+  });
+
+  it("does not send xAI-only reasoning effort to another provider", async () => {
+    const provider = new OpenAiCompatibleProvider({
+      name: "openai",
+      apiKey: "test-only",
+      baseUrl: "https://example.invalid/v1",
+      modelEngine: "gpt-4.1",
+      modelFast: "gpt-4.1-mini",
+    }) as unknown as PrivateProvider;
+    const bodies: Array<Record<string, unknown>> = [];
+    provider.client = {
+      chat: {
+        completions: {
+          create: async (value) => {
+            bodies.push(value as Record<string, unknown>);
+            return completion('{"ok":true}');
+          },
+        },
+      },
+    };
+
+    await provider.chatJson("system", "user", { tier: "fast" });
+    assert.equal(bodies[0]?.model, "gpt-4.1-mini");
+    assert.equal("reasoning_effort" in (bodies[0] ?? {}), false);
+  });
+
   it("routes turn-limit referee rationale through the fast tier", async () => {
     const provider = new OpenAiCompatibleProvider({
       name: "primary",
