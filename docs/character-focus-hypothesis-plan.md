@@ -1,8 +1,8 @@
 # Character focus-state hypothesis experiment
 
-Status: proposed plan. Planning only; no implementation, provider replay,
-staging deployment, production observation, or retained-user-data use is
-authorized.
+Status: deterministic fixture and no-effect shadow slice complete. Provider
+replay, expression projection, staging deployment, production observation, and
+retained-user-data use remain unauthorized.
 
 ## Objective
 

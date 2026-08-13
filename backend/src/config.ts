@@ -76,6 +76,16 @@ export function parseBattleCausalNarrationMode(
   );
 }
 
+export type CharacterFocusShadowMode = "off" | "shadow";
+
+export function parseCharacterFocusShadowMode(
+  value: string | undefined,
+): CharacterFocusShadowMode {
+  const normalized = value?.trim().toLowerCase() || "off";
+  if (normalized === "off" || normalized === "shadow") return normalized;
+  throw new Error("CHARACTER_FOCUS_SHADOW_MODE must be off or shadow");
+}
+
 function parseDatabaseSchema(value: string | undefined): string {
   const schema = value?.trim() || "public";
   if (!/^[a-z_][a-z0-9_]*$/.test(schema)) {
@@ -268,6 +278,9 @@ export const config = {
   battlePacingPolicy: parseBattlePacingPolicy(process.env.BATTLE_PACING_POLICY),
   battleCausalNarrationMode: parseBattleCausalNarrationMode(
     process.env.BATTLE_CAUSAL_NARRATION_MODE,
+  ),
+  characterFocusShadowMode: parseCharacterFocusShadowMode(
+    process.env.CHARACTER_FOCUS_SHADOW_MODE,
   ),
   narrationTaskQueue: {
     ...narrationTaskQueue,
