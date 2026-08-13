@@ -85,7 +85,7 @@ task T_OBSERVE_PRODUCTION_PACING PACING_PRODUCTION_DEPLOYED -> PACING_PRODUCTION
   title "Observe the bounded production pacing trial"
   description "After an initial safety readback, accumulate ordinary production battle evidence over time: completion distribution, maximum-turn and forced-terminal rate, KO and one-shot rate, committed change, action and speech repetition, initiative response, delayed effects, errors, latency, calls, tokens, retries, and cost. Compare periodic snapshots with the frozen pre-deploy baseline and make small versioned policy revisions; do not imply that the provisional values are final."
   duration 3p
-  status suspended
+  status active
   requires:
     DEV 1
   owner "codex"
@@ -257,3 +257,9 @@ work_event EVT_RCA_COST_RELEASE_FINISH_20260812:
   task T_RCA_COST_RELEASE_GUARDS
   kind finish
   occurred_at 2026-08-12T21:53:07+09:00
+
+work_event EVT_OBSERVE_PACING_RESUME_V0173_20260813:
+  model 1
+  task T_OBSERVE_PRODUCTION_PACING
+  kind resume
+  occurred_at 2026-08-13T09:04:38+09:00
