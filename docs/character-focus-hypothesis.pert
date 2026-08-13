@@ -1,0 +1,127 @@
+# Hypothesis-validation plan only. Owner gates separately control architecture,
+# provider replay, staging deployment, and the final decision. No production
+# task is present.
+project KSHIAI_CHARACTER_FOCUS_HYPOTHESIS:
+  version 6
+  title "Character focus-state hypothesis validation"
+  description "Test prompt foregrounding, persistent battle-private character focus state, and existing focus-parameter modulation as separate ablation arms. Use synthetic observer-safe fixtures, deterministic shadow acceptance, one explicitly bounded expression replay, and at most six separately authorized staging battles. Preserve action, mechanics, privacy, narration, and provider-call authority boundaries."
+  as_of 2026-08-13
+  duration_unit point
+  velocity 1p/1d
+  target_duration 17p
+  finish HYPOTHESIS_DECIDED
+  goal_owner user
+  dag_owner user
+
+resource DEV:
+  title "Developer"
+  capacity 1
+
+resource OWNER:
+  title "Product and experiment owner"
+  capacity 1
+
+milestone NOW:
+  title "Proposed ADR and validation plan ready"
+  state reached
+
+milestone ATTENTION_ADR_ACCEPTED:
+  title "Character focus-state architecture accepted"
+
+milestone FIXTURE_PROTOCOL_READY:
+  title "Synthetic fixtures and evaluation protocol ready"
+
+milestone DETERMINISTIC_SHADOW_ACCEPTED:
+  title "Deterministic focus state and no-effect shadow accepted"
+
+milestone REPLAY_AUTHORIZED:
+  title "Bounded blinded expression replay authorized"
+
+milestone REPLAY_ACCEPTED:
+  title "Four-arm expression replay evaluated"
+
+milestone STAGING_CANDIDATE_READY:
+  title "Smallest supported opt-in staging candidate ready"
+
+milestone STAGING_AUTHORIZED:
+  title "Exact bounded staging trial authorized"
+
+milestone STAGING_OBSERVED:
+  title "Bounded staging focus trial recorded"
+
+milestone HYPOTHESIS_DECIDED:
+  title "Owner decided the supported focus hypothesis component"
+
+task CF_ACCEPT_ADR NOW -> ATTENTION_ADR_ACCEPTED:
+  title "Accept, revise, or reject ADR-0008"
+  description "The owner decides the private state owner, observer-relative inputs, focus-band role, persistence, generation binding, self-echo exclusion, expression-only projection, and fail-closed compatibility contract. Acceptance authorizes only deterministic fixture and shadow implementation, not provider calls or deployment."
+  duration 1p
+  requires:
+    OWNER 1
+  owner "user"
+  source "docs/adr/0008-battle-private-character-focus-state.md"
+
+task CF_BUILD_FIXTURES ATTENTION_ADR_ACCEPTED -> FIXTURE_PROTOCOL_READY:
+  title "Freeze synthetic focus fixtures and blinded scoring protocol"
+  description "Create the twelve observer-relative scenarios, high/steady/strained variants, A/B swaps, forbidden evidence, expected hold/switch outcomes, four ablation input revisions, reviewer rubric, raw-denominator report format, and fixture digest. Use no retained user battle data and no provider."
+  duration 2p
+  requires:
+    DEV 1
+  owner "codex"
+  source "docs/character-focus-hypothesis-plan.md"
+
+task CF_IMPLEMENT_DETERMINISTIC_SHADOW FIXTURE_PROTOCOL_READY -> DETERMINISTIC_SHADOW_ACCEPTED:
+  title "Implement and accept deterministic no-effect focus shadow"
+  description "Add versioned private focus state, packet, receipt, decay, novelty, hysteresis, focus-band effectiveness, self-echo exclusion, legacy no-focus fallback, and shadow trace. Prove deterministic replay, observer safety, A/B symmetry, immutable binding, and zero diffs to action, mechanics, public DTO, narration, persistence authority, and provider calls. Do not feed the focus packet to expression."
+  duration 4p
+  requires:
+    DEV 1
+  owner "codex"
+
+task CF_AUTHORIZE_REPLAY DETERMINISTIC_SHADOW_ACCEPTED -> REPLAY_AUTHORIZED:
+  title "Authorize the frozen blinded expression replay"
+  description "The owner reviews deterministic evidence and freezes provider, model, temperature support, input revisions, fixture digest, two-reviewer rubric, 144 logical-call maximum, 160 physical-attempt ceiling, token ceiling, monetary ceiling, and stop conditions. Declining authorization is a valid terminal decision and permits no provider call."
+  duration 1p
+  requires:
+    OWNER 1
+  owner "user"
+
+task CF_RUN_BLINDED_ABLATION REPLAY_AUTHORIZED -> REPLAY_ACCEPTED:
+  title "Run and score the four-arm blinded expression ablation"
+  description "Randomize 12 scenarios by current control, foreground-only, steady focus-state, and focus-modulated focus-state arms with three samples each. Use the expression responsibility only, stop at the physical ceiling, blind arm labels through two-reviewer scoring, and report semantic grounding, response, unsupported novelty, consistency, no-change restraint, dialogue repetition, and focus calibration with raw denominators. Do not adapt prompts or rerun failed content."
+  duration 2p
+  requires:
+    DEV 1
+  owner "codex"
+
+task CF_IMPLEMENT_OPT_IN_CANDIDATE REPLAY_ACCEPTED -> STAGING_CANDIDATE_READY:
+  title "Implement the smallest replay-supported opt-in candidate"
+  description "Choose B, C, or D strictly from the frozen component results. Wire only that versioned expression projection for new opt-in battles; keep legacy battles, action, mechanics, world, rating, narration, provider counts, and retry behavior unchanged. Pass full local gates and record the exact candidate SHA and rollback path. Do not deploy."
+  duration 3p
+  requires:
+    DEV 1
+  owner "codex"
+
+task CF_AUTHORIZE_STAGING STAGING_CANDIDATE_READY -> STAGING_AUTHORIZED:
+  title "Authorize the exact bounded staging focus trial"
+  description "The owner reviews the exact SHA, immutable artifacts, focus policy generation, local receipt, rollback target, six-battle maximum, three-matchup matrix, high/low and temporary focus variants, provider-operation and token ceilings, monetary ceiling, and stop conditions. This gate authorizes staging only, never production."
+  duration 1p
+  requires:
+    OWNER 1
+  owner "user"
+
+task CF_STAGE_AND_OBSERVE STAGING_AUTHORIZED -> STAGING_OBSERVED:
+  title "Stage and observe at most six fixed focus battles"
+  description "Deploy the exact authorized opt-in candidate to isolated staging and run no more than six fixed battles across at least three matchups. Record operational invariants, semantic grounding rubric, attention receipts, focus gain/loss behavior, dialogue KPIs, latency, attempts, tokens, privacy, and rollback evidence. Stop on any safety, mechanics, schema, cost, or privacy divergence and do not promote."
+  duration 2p
+  requires:
+    DEV 1
+  owner "codex"
+
+task CF_DECIDE_HYPOTHESIS STAGING_OBSERVED -> HYPOTHESIS_DECIDED:
+  title "Decide the supported character-focus component"
+  description "The owner decides foreground-only, persistent state without focus coupling, persistent state with focus coupling, or reject/revise. A supported result authorizes a separately planned adoption and release decision; it does not authorize production deployment or observation."
+  duration 1p
+  requires:
+    OWNER 1
+  owner "user"
