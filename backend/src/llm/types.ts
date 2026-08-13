@@ -24,6 +24,7 @@ import type {
   NarrativeBlock,
   NarrationFocus,
   NarrationPerspective,
+  NarrationPresentationFocusMode,
   NarrationTurnView,
   NarratorRenderingProfileAnchors,
   NarratorContinuityView,
@@ -38,6 +39,7 @@ import type {
   PerceptionEvidence,
   ObserverSafeAvailableAction,
   BattleAdjudicationReasonFact,
+  JudgmentPresentationProjection,
   BattleEncounterProposal,
   BattleSocialView,
   ApparentIdentityBelief,
@@ -52,6 +54,14 @@ import type {
   FreeActionCanonicalRoot,
   FreeActionAdjudicationBatch,
   EnvironmentProcessProposal,
+  CharacterProfileSourceProjectionV2,
+  CharacterDefinitionV2,
+  CharacterConsciousSelfStaticProjectionV2,
+  CharacterDeepPsycheStaticProjectionV2,
+  CharacterNarrativeCueV2,
+  CharacterNarratorStaticProjectionV2,
+  CharacterObservableManifestationV2,
+  AssetClaimRiskCode,
 } from "@kshiai/shared";
 import type {
   PerceptionPromptInput,
@@ -110,6 +120,7 @@ export type CharacterActionDecisionContext = {
 export type CharacterActionDecisionInput = {
   /** Frozen self-only profile. Never includes the counterpart's private state. */
   character: CharacterSelfProfileAnchor;
+  structuredSelf?: CharacterConsciousSelfStaticProjectionV2;
   /** Observer-relative facts committed before this decision boundary. */
   perception: CharacterPerceptionFrame;
   /** Server-owned legal choices and qualitative tactical constraints. */
@@ -120,6 +131,7 @@ export type CharacterDeepPsycheCompactInput = {
   contextMode: "compact";
   phase: "prologue" | "turn" | "aftermath";
   character: CharacterSelfProfileAnchor;
+  stableDisposition?: CharacterDeepPsycheStaticProjectionV2;
   previous: Pick<CharacterAgentState,
     "privateMemory" | "currentGoal" | "emotion" | "beliefs" | "observations" |
     "speechStyle" | "lastSpeech" | "interior" | "dialogueThread">;
@@ -143,13 +155,22 @@ export type CharacterDeepPsycheAdvance =
   CharacterDeepPsycheUpdate & {
     delta?: CharacterDeepPsycheDelta;
     expressionBrief?: CharacterExpressionBrief;
+    observableManifestations?: readonly CharacterObservableManifestationV2[];
+    narrativeCues?: readonly CharacterNarrativeCueV2[];
   };
+
+/** Conscious expression boundary: no raw latent psyche or interior state. */
+export type CharacterConsciousPsycheProjection = Pick<
+  CharacterAgentState,
+  "emotion" | "speechStyle" | "selfReference"
+>;
 
 export type CharacterExpressionCompactInput = {
   contextMode: "compact";
   phase: "prologue" | "turn" | "aftermath";
   character: CharacterSelfProfileAnchor;
-  psyche: Pick<CharacterAgentState, "emotion" | "speechStyle" | "interior" | "selfReference">;
+  structuredSelf?: CharacterConsciousSelfStaticProjectionV2;
+  psyche: CharacterConsciousPsycheProjection;
   turnObservation: TurnObservationPacket;
   conversation: {
     recentExchange: CharacterConversationEntry[];
@@ -157,6 +178,7 @@ export type CharacterExpressionCompactInput = {
   };
   relevantMemory: string | null;
   expressionBrief: CharacterExpressionBrief;
+  observableManifestations?: readonly CharacterObservableManifestationV2[];
   social?: BattleSocialView;
   counterpart?: CharacterCounterpartKnowledge;
   decision?: CharacterActionDecisionContext;
@@ -166,6 +188,7 @@ export type CharacterDeepPsycheInput = CharacterDeepPsycheCompactInput | {
   contextMode?: "legacy";
   phase: "prologue" | "turn" | "aftermath";
   character: CharacterSelfProfileAnchor;
+  stableDisposition?: CharacterDeepPsycheStaticProjectionV2;
   previous: CharacterAgentState;
   actionReaction: CharacterActionReactionContext;
   conversation: CharacterConversationContext;
@@ -179,7 +202,8 @@ export type CharacterExpressionInput = CharacterExpressionCompactInput | {
   contextMode?: "legacy";
   phase: "prologue" | "turn" | "aftermath";
   character: CharacterSelfProfileAnchor;
-  psyche: CharacterAgentState;
+  structuredSelf?: CharacterConsciousSelfStaticProjectionV2;
+  psyche: CharacterConsciousPsycheProjection;
   actionReaction: CharacterActionReactionContext;
   conversation: CharacterConversationContext;
   dialoguePipeline?: DialoguePipelineSettings;
@@ -194,6 +218,11 @@ export type CharacterCounterpartKnowledge = {
   /** Current coarse condition is omitted when the counterpart is not accessible. */
   condition?: PerceivedCondition;
 };
+
+export type NarratorCharacterContextV2 = Readonly<{
+  staticProjection: CharacterNarratorStaticProjectionV2;
+  narrativeCues: readonly CharacterNarrativeCueV2[];
+}>;
 
 /** Character-authored speech supplied to narration as immutable source material. */
 export type CharacterSpeechDisplayContext = Readonly<{
@@ -300,6 +329,45 @@ export type GenerateCharacterResult = {
     "id" | "ownerUserId" | "createdAt" | "updatedAt"
   >;
   assistantMessage: string;
+};
+
+export type GenerateCharacterProfileInput = {
+  /** Frozen owner instruction; usable for tone, never an independent fact allowlist. */
+  sourceText: string;
+  projection: CharacterProfileSourceProjectionV2;
+};
+
+export type GenerateCharacterDefinitionV2Input = {
+  sourceText: string;
+  /** Valid deterministic base carrying mechanics and stable references. */
+  baseDefinition: CharacterDefinitionV2;
+  sourceKind: "create_instruction" | "revision_instruction" |
+    "upgrade_description" | "import";
+};
+
+export type GenerateCharacterProfileResult = {
+  description: string;
+  segments: Array<{
+    id: string;
+    text: string;
+    kind: "fact" | "flavor";
+    supportRefs: string[];
+  }>;
+  assistantMessage: string;
+};
+
+export type ValidateCharacterProfileClaimsInput = {
+  projection: CharacterProfileSourceProjectionV2;
+  profile: Pick<GenerateCharacterProfileResult, "description" | "segments">;
+};
+
+export type ValidateCharacterProfileClaimsResult = {
+  segments: Array<{
+    segmentId: string;
+    verdict: "supported" | "flavor_only" | "unsupported";
+    supportRefs: string[];
+    riskCodes: AssetClaimRiskCode[];
+  }>;
 };
 
 export type NarrationActionBeat = {
@@ -409,6 +477,15 @@ export interface LlmProvider {
   /** Optional dual-tier model ids for diagnostics. */
   readonly models?: { engine: string; fast: string };
   generateCharacter(input: GenerateCharacterInput): Promise<GenerateCharacterResult>;
+  generateCharacterDefinitionV2(
+    input: GenerateCharacterDefinitionV2Input,
+  ): Promise<CharacterDefinitionV2>;
+  generateCharacterProfile(
+    input: GenerateCharacterProfileInput,
+  ): Promise<GenerateCharacterProfileResult>;
+  validateCharacterProfileClaims(
+    input: ValidateCharacterProfileClaimsInput,
+  ): Promise<ValidateCharacterProfileClaimsResult>;
   inferCharacterIdentity(current: CharacterSheet): Promise<CharacterIdentity>;
   adjustCharacter(
     current: CharacterSheet,
@@ -542,6 +619,7 @@ export interface LlmProvider {
   advanceCharacterPsyche(input: {
     phase: "prologue" | "turn" | "aftermath";
     character: CharacterSelfProfileAnchor;
+    stableDisposition?: CharacterDeepPsycheStaticProjectionV2;
     previous: CharacterAgentState;
     actionReaction: CharacterActionReactionContext;
     conversation: CharacterConversationContext;
@@ -564,7 +642,8 @@ export interface LlmProvider {
   advanceCharacterAgent(input: {
     phase: "prologue" | "turn" | "aftermath";
     character: CharacterSelfProfileAnchor;
-    psyche: CharacterAgentState;
+    structuredSelf?: CharacterConsciousSelfStaticProjectionV2;
+    psyche: CharacterConsciousPsycheProjection;
     actionReaction: CharacterActionReactionContext;
     conversation: CharacterConversationContext;
     dialoguePipeline?: DialoguePipelineSettings;
@@ -575,6 +654,7 @@ export interface LlmProvider {
     contextMode?: "compact";
     turnObservation?: TurnObservationPacket;
     expressionBrief?: CharacterExpressionBrief;
+    observableManifestations?: readonly CharacterObservableManifestationV2[];
     compactRecentExchange?: CharacterConversationEntry[];
     anchoredExchange?: CharacterConversationEntry | null;
     relevantMemory?: string | null;
@@ -584,6 +664,8 @@ export interface LlmProvider {
     speech: string;
     /** Bounded model-authored candidate. Only the battle service may accept it. */
     proposedAction: unknown | null;
+    /** Exact echo of one supplied proposal; the server still owns commitment. */
+    realizedManifestation?: string | null;
   }>;
   /**
    * Fluid perspective only: pick turn focus from thin summary digests.
@@ -601,6 +683,8 @@ export interface LlmProvider {
   narrateTurn(input: {
     /** Sole world/event source, already derived for the resolved perspective. */
     view: NarrationTurnView;
+    /** Explicit local-evaluation opt-in; ordinary battle requests omit it. */
+    presentationFocusMode?: NarrationPresentationFocusMode;
     recentNarration?: string[];
     recentSpeeches?: Array<{ speaker: string; text: string }>;
     drama?: {
@@ -620,6 +704,11 @@ export interface LlmProvider {
     };
     /** Already filtered digests for the resolved focus (may be empty). */
     innerDigests?: InnerDigest[];
+    /** Perspective-selected static facts plus commit/evidence-gated dynamic cues. */
+    structuredCharacterContexts?: Readonly<{
+      a?: NarratorCharacterContextV2;
+      b?: NarratorCharacterContextV2;
+    }>;
     /** Character-authored lines. Narration may place and surface-style, not invent. */
     characterSpeeches?: readonly CharacterSpeechSource[];
     /** Narration style instruction for this match. */
@@ -644,6 +733,10 @@ export interface LlmProvider {
     /** Summary of last finished matchup between these two, if any. */
     priorMatchSummary?: string;
     innerDigests?: InnerDigest[];
+    structuredCharacterContexts?: Readonly<{
+      a?: NarratorCharacterContextV2;
+      b?: NarratorCharacterContextV2;
+    }>;
     characterSpeeches?: readonly CharacterSpeechSource[];
     /** Rendering-only identity constraints, filtered for the resolved focus. */
     profileAnchors: NarratorRenderingProfileAnchors;
@@ -673,6 +766,10 @@ export interface LlmProvider {
     battlefield?: BattlefieldInstance | null;
     recentNarration?: string[];
     innerDigests?: InnerDigest[];
+    structuredCharacterContexts?: Readonly<{
+      a?: NarratorCharacterContextV2;
+      b?: NarratorCharacterContextV2;
+    }>;
     characterSpeeches?: readonly CharacterSpeechSource[];
     /** Rendering-only identity constraints, filtered for the resolved focus. */
     profileAnchors: NarratorRenderingProfileAnchors;
@@ -697,7 +794,8 @@ export interface LlmProvider {
     sideBName: string;
     winnerSide: "a" | "b" | "draw";
     winnerName: string | null;
-    adjudicationReason: string;
+    /** Audience-safe projection; raw adjudication prose is never admitted. */
+    presentationProjection: JudgmentPresentationProjection;
     recentPublicNarration: string[];
     styleInstruction?: string;
     styleName?: string;

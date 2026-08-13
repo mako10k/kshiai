@@ -1,0 +1,380 @@
+{
+  "schemaVersion": 1,
+  "runId": "narrator-presentation-focus-pilot-2026-08-13-v1",
+  "contractDigest": "1fa4b4789cf552a675dbfbc01c76118f696667d64059afbd134d06c4d961e58c",
+  "blinding": "Arm, scenario code, sample identity, and provider metadata are omitted.",
+  "rubricDraft": {
+    "status": "prepared_not_accepted",
+    "allowedValues": "1=yes, 0=no, NA=not eligible",
+    "fields": {
+      "unsupported_fact": "Adds a fact outside authoritativeFacts or asserts a forbiddenInference.",
+      "selected_primary_grounding": "Makes reviewTarget materially legible.",
+      "impact_or_release_legibility": "Gives the committed impact or bounded release a clear dramatic function.",
+      "invented_character_speech": "Adds participant speech when none was supplied.",
+      "template_like": "Reads like a reusable result template rather than this scene.",
+      "naturalness": "Reads as coherent Japanese action narration."
+    }
+  },
+  "items": [
+    {
+      "outputId": "N001",
+      "presentationPhase": "impact",
+      "reviewTarget": "ナギの操作で中央橋が回り、両者の位置関係が変わったこと",
+      "authoritativeFacts": [
+        "ナギが回転橋の留め具を外した",
+        "中央橋が回転した",
+        "橋の回転で位置関係が変化した"
+      ],
+      "forbiddenInferences": [
+        "転落",
+        "損失",
+        "橋の破壊",
+        "発話"
+      ],
+      "narrator": [
+        "ナギが足元の留め具を外した。",
+        "中央の回転橋が水路に沿って九十度回り、両者を隔てる。",
+        "橋は浮橋の上で軋みながら止まった。",
+        "濡れた石床に二つの影が残る。"
+      ],
+      "speeches": []
+    },
+    {
+      "outputId": "N002",
+      "presentationPhase": "release",
+      "reviewTarget": "ナギが攻撃せず、間合いを観察する一拍を選んだこと",
+      "authoritativeFacts": [
+        "ナギは内省を選び、そのターンは攻撃しなかった",
+        "外から確認できるのは静止と観察だけ",
+        "私的な分析内容は供給されていない"
+      ],
+      "forbiddenInferences": [
+        "分析内容",
+        "新しい決意",
+        "未来の作戦",
+        "発話"
+      ],
+      "narrator": [
+        "ナギは外套の裾をわずかに動かさず、視線をレムに据えたまま立ち止まった。",
+        "レムは黒い装甲服に水を弾き、浮橋の上で間合いを測る。",
+        "雨音だけが二人の間を埋め、回転橋が静かに軋んだ。"
+      ],
+      "speeches": []
+    },
+    {
+      "outputId": "N003",
+      "presentationPhase": "release",
+      "reviewTarget": "ナギが攻撃せず、間合いを観察する一拍を選んだこと",
+      "authoritativeFacts": [
+        "ナギは内省を選び、そのターンは攻撃しなかった",
+        "外から確認できるのは静止と観察だけ",
+        "私的な分析内容は供給されていない"
+      ],
+      "forbiddenInferences": [
+        "分析内容",
+        "新しい決意",
+        "未来の作戦",
+        "発話"
+      ],
+      "narrator": [
+        "ナギは白い外套の裾をわずかに揺らし、浮橋の上で立ち止まった。",
+        "レムが黒い装甲服の輪郭を静かに保ち、雨の残る石床を見つめる。",
+        "水路を流れる雨水の音だけが、二人の間に淡く落ちた。",
+        "浮橋の中央で回転橋が、微かに軋む音を立てた。"
+      ],
+      "speeches": []
+    },
+    {
+      "outputId": "N004",
+      "presentationPhase": "impact",
+      "reviewTarget": "ナギの操作で中央橋が回り、両者の位置関係が変わったこと",
+      "authoritativeFacts": [
+        "ナギが回転橋の留め具を外した",
+        "中央橋が回転した",
+        "橋の回転で位置関係が変化した"
+      ],
+      "forbiddenInferences": [
+        "転落",
+        "損失",
+        "橋の破壊",
+        "発話"
+      ],
+      "narrator": [
+        "ナギが足元の留め具を外した。",
+        "中央の回転橋が九十度回り、水路と平行になった。",
+        "両者を結ぶ直線が断たれた。",
+        "橋の軋む音が水面に広がる。"
+      ],
+      "speeches": []
+    },
+    {
+      "outputId": "N005",
+      "presentationPhase": "none",
+      "reviewTarget": "構造化された変化がなく、候補モードも追加焦点を作らないこと",
+      "authoritativeFacts": [
+        "ナギとレムは互いに待機した",
+        "構造化された損失・回復・状態・位置変化はない"
+      ],
+      "forbiddenInferences": [
+        "損失",
+        "回復",
+        "優勢変化",
+        "新しい決意",
+        "発話"
+      ],
+      "narrator": [
+        "ナギが距離を保った。",
+        "レムもその場を動かなかった。",
+        "両者は浮橋の上で静止し続けた。",
+        "水滴が石床に落ちる音だけが残った。"
+      ],
+      "speeches": []
+    },
+    {
+      "outputId": "N006",
+      "presentationPhase": "impact",
+      "reviewTarget": "雷環断の直後、レムが戦闘継続不能になったこと",
+      "authoritativeFacts": [
+        "ナギが雷環断を実行した",
+        "レムは強い損失を受けて戦闘継続不能になった"
+      ],
+      "forbiddenInferences": [
+        "死亡",
+        "身体欠損",
+        "勝者確定",
+        "発話"
+      ],
+      "narrator": [
+        "ナギが導電柱同士を結ぶ電弧をレムへ向けて収束させた。",
+        "青白い光が一瞬、浮橋を横切り、レムに届いた。",
+        "電弧を受けたレムは動きを失い、戦闘を続けられなくなった。"
+      ],
+      "speeches": []
+    },
+    {
+      "outputId": "N007",
+      "presentationPhase": "impact",
+      "reviewTarget": "鎖砲は使えず、レムの行動が防御へ置換されたこと",
+      "authoritativeFacts": [
+        "レムは鎖砲を試みた",
+        "必要な保持物を利用できなかった",
+        "実効行動は防御へ置換された"
+      ],
+      "forbiddenInferences": [
+        "鎖砲発射",
+        "命中",
+        "損失",
+        "発話"
+      ],
+      "narrator": [
+        "レムが腕を振った。",
+        "鎖は戻らず、水路に落ちたままだった。",
+        "レムは装甲を閉じ、身を低くした。"
+      ],
+      "speeches": []
+    },
+    {
+      "outputId": "N008",
+      "presentationPhase": "impact",
+      "reviewTarget": "ナギの影縫いが距離不足で成立しなかったこと",
+      "authoritativeFacts": [
+        "ナギは影縫いを試みた",
+        "対象が有効範囲外だったため行動は失敗した",
+        "相手は霞越しの輪郭としてしか知覚できない"
+      ],
+      "forbiddenInferences": [
+        "相手の正体",
+        "相手の意図",
+        "命中",
+        "発話"
+      ],
+      "narrator": [
+        "ナギが指を動かし、細い影を伸ばす。",
+        "影は白い霞の向こうまで届かず、石床でほどけた。",
+        "霞の向こうの輪郭は橋の向こうへ退く。",
+        "静かな水路にわずかな波紋が残る。"
+      ],
+      "speeches": []
+    },
+    {
+      "outputId": "N009",
+      "presentationPhase": "none",
+      "reviewTarget": "構造化された変化がなく、候補モードも追加焦点を作らないこと",
+      "authoritativeFacts": [
+        "ナギとレムは互いに待機した",
+        "構造化された損失・回復・状態・位置変化はない"
+      ],
+      "forbiddenInferences": [
+        "損失",
+        "回復",
+        "優勢変化",
+        "新しい決意",
+        "発話"
+      ],
+      "narrator": [
+        "ナギが距離を保って待機した。",
+        "レムも同じ姿勢を崩さなかった。",
+        "水滴が静かに落ち、浮橋の石床に小さな音を刻む。",
+        "回転橋の軋む音だけが、わずかに続いた。"
+      ],
+      "speeches": []
+    },
+    {
+      "outputId": "N010",
+      "presentationPhase": "impact",
+      "reviewTarget": "ナギの影縫いが距離不足で成立しなかったこと",
+      "authoritativeFacts": [
+        "ナギは影縫いを試みた",
+        "対象が有効範囲外だったため行動は失敗した",
+        "相手は霞越しの輪郭としてしか知覚できない"
+      ],
+      "forbiddenInferences": [
+        "相手の正体",
+        "相手の意図",
+        "命中",
+        "発話"
+      ],
+      "narrator": [
+        "ナギが影を伸ばした。",
+        "細い影が石床でほどけた。",
+        "輪郭は橋の向こうへ退いていた。"
+      ],
+      "speeches": []
+    },
+    {
+      "outputId": "N011",
+      "presentationPhase": "impact",
+      "reviewTarget": "雷環断の直後、レムが戦闘継続不能になったこと",
+      "authoritativeFacts": [
+        "ナギが雷環断を実行した",
+        "レムは強い損失を受けて戦闘継続不能になった"
+      ],
+      "forbiddenInferences": [
+        "死亡",
+        "身体欠損",
+        "勝者確定",
+        "発話"
+      ],
+      "narrator": [
+        "青白い火花が導電柱の間を縫い、電弧がレムへ収束した。",
+        "白い外套の術者が放った雷環断が黒い装甲服を直撃する。",
+        "衝撃が浮橋に響き、レムは膝を落とした。"
+      ],
+      "speeches": []
+    },
+    {
+      "outputId": "N012",
+      "presentationPhase": "impact",
+      "reviewTarget": "帰潮によってレムの活力が大きく回復したこと",
+      "authoritativeFacts": [
+        "レムが帰潮を実行した",
+        "レムの活力が大きく回復した",
+        "ナギは防御姿勢を取った"
+      ],
+      "forbiddenInferences": [
+        "全快",
+        "負傷消滅",
+        "優勢確定",
+        "発話"
+      ],
+      "narrator": [
+        "ナギが外套を広げ、白壁の守りを固めた。",
+        "レムが足元の水を引き寄せ、帰潮で大きく息を整えた。",
+        "浅い水路が橋脚へ逆巻く浮橋の上で、両者の動きが一瞬止まる。",
+        "水面がわずかに揺れ、霧がゆっくりと流れ続ける。"
+      ],
+      "speeches": []
+    },
+    {
+      "outputId": "N013",
+      "presentationPhase": "impact",
+      "reviewTarget": "玻璃槍がレムへ重い損失を与えたこと（ナギの軽い消耗より主）",
+      "authoritativeFacts": [
+        "ナギの玻璃槍がレムへ重い損失を与えた",
+        "同時にナギも軽く消耗した",
+        "両者とも戦闘継続可能"
+      ],
+      "forbiddenInferences": [
+        "戦闘不能",
+        "死亡",
+        "勝者確定",
+        "発話"
+      ],
+      "narrator": [
+        "ナギが玻璃槍を放った。",
+        "光の槍がレムの装甲に深く刺さる。",
+        "ナギの光がわずかに細った。",
+        "割れた反射板が水路の光を散らす。"
+      ],
+      "speeches": []
+    },
+    {
+      "outputId": "N014",
+      "presentationPhase": "impact",
+      "reviewTarget": "帰潮によってレムの活力が大きく回復したこと",
+      "authoritativeFacts": [
+        "レムが帰潮を実行した",
+        "レムの活力が大きく回復した",
+        "ナギは防御姿勢を取った"
+      ],
+      "forbiddenInferences": [
+        "全快",
+        "負傷消滅",
+        "優勢確定",
+        "発話"
+      ],
+      "narrator": [
+        "ナギは外套を広げ、守りを固めた。",
+        "レムは水を引き寄せ、大きく息を整えた。",
+        "水面が揺れ、活力がレムの体に戻る。",
+        "二人は互いの動きを静かに見守った。"
+      ],
+      "speeches": []
+    },
+    {
+      "outputId": "N015",
+      "presentationPhase": "impact",
+      "reviewTarget": "鎖砲は使えず、レムの行動が防御へ置換されたこと",
+      "authoritativeFacts": [
+        "レムは鎖砲を試みた",
+        "必要な保持物を利用できなかった",
+        "実効行動は防御へ置換された"
+      ],
+      "forbiddenInferences": [
+        "鎖砲発射",
+        "命中",
+        "損失",
+        "発話"
+      ],
+      "narrator": [
+        "レムが鎖を引き戻そうとしたが、鎖は水路の底に沈んだまま動かない。",
+        "レムは動きを切り替え、装甲を閉じて身を守った。",
+        "ナギは白い外套の裾を風になびかせ、浮橋の端に立ったまま様子を見守る。",
+        "切れた鎖の波紋が水面をゆっくりと広がっていく。"
+      ],
+      "speeches": []
+    },
+    {
+      "outputId": "N016",
+      "presentationPhase": "impact",
+      "reviewTarget": "玻璃槍がレムへ重い損失を与えたこと（ナギの軽い消耗より主）",
+      "authoritativeFacts": [
+        "ナギの玻璃槍がレムへ重い損失を与えた",
+        "同時にナギも軽く消耗した",
+        "両者とも戦闘継続可能"
+      ],
+      "forbiddenInferences": [
+        "戦闘不能",
+        "死亡",
+        "勝者確定",
+        "発話"
+      ],
+      "narrator": [
+        "ナギが光の槍を放った。",
+        "玻璃の矢がレムの装甲を貫き、重く沈んだ。",
+        "ナギの光もわずかに細った。"
+      ],
+      "speeches": []
+    }
+  ]
+}

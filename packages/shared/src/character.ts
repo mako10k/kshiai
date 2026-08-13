@@ -14,6 +14,7 @@ import {
   type CharacterImprovementMemo,
 } from "./character-improvement.js";
 import { DecisionProfileSchema } from "./free-action.js";
+import { AssetCompatibilitySchema } from "./structured-assets.js";
 
 /** Internal combat parameters — never sent to normal clients. */
 export const ParamKeySchema = z.enum([
@@ -470,6 +471,15 @@ export const CharacterPublicSchema = z.object({
   revisionLabel: z.string().nullable().optional(),
   /** Owner-only: can toggle between current and previous portrait. */
   canToggleImage: z.boolean().optional(),
+  /** Selectable-asset schema readiness; absent only during rolling compatibility. */
+  compatibility: AssetCompatibilitySchema.optional(),
+  /** Server-computed battle eligibility, never inferred by the client. */
+  selectable: z.boolean().optional(),
+  /** Owner-only explicit migration action for an unsupported character. */
+  upgradeAction: z.object({
+    label: z.string(),
+    targetSchemaVersion: z.number().int().positive(),
+  }).strict().nullable().optional(),
 });
 export type CharacterPublic = z.infer<typeof CharacterPublicSchema>;
 

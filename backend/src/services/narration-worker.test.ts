@@ -187,8 +187,17 @@ describe("ordered narration worker", () => {
         called.push("aftermath");
         return { before: ["before"], after: ["after"], speeches: [] };
       },
-      narrateJudgment: async () => {
+      narrateJudgment: async (
+        input: Parameters<LlmProvider["narrateJudgment"]>[0],
+      ) => {
         called.push("judgment");
+        assert.equal("adjudicationReason" in input, false);
+        assert.deepEqual(input.presentationProjection, {
+          schemaVersion: 1,
+          verdictKind: "win",
+          winnerLabel: "A",
+          basisLines: ["長い対決に、判定の時が訪れた。"],
+        });
         return { before: ["before"], after: ["after"] };
       },
     } as unknown as LlmProvider;
@@ -210,7 +219,8 @@ describe("ordered narration worker", () => {
     assert.equal(combat.model, "light");
     assert.equal(prologue.narrative.turn, 0);
     assert.equal(aftermath.narrative.turn, 4);
-    assert.match(judgment.narrative.narrator.join(" "), /A.*canonical facts/);
+    assert.match(judgment.narrative.narrator.join(" "), /判定は A の勝利/);
+    assert.doesNotMatch(judgment.narrative.narrator.join(" "), /canonical facts/);
   });
 
   it("deduplicates enqueue and fails closed on input digest drift", async () => {

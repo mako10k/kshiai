@@ -21,6 +21,7 @@ const { ensureSystemNarrationStyles } = await import(
   "../repositories/narration-styles.js"
 );
 const { startBattle } = await import("./battle-service.js");
+const characterRepo = await import("../repositories/characters.js");
 
 function sheet(id: string, displayName: string): CharacterSheet {
   const now = "2026-08-12T00:00:00.000Z";
@@ -58,12 +59,7 @@ describe("battle create idempotency", () => {
     const sideA = sheet("create-a", "A");
     const sideB = sheet("create-b", "B");
     for (const character of [sideA, sideB]) {
-      await query(
-        `INSERT INTO characters
-          (id, owner_user_id, sheet_json, created_at, updated_at)
-         VALUES ($1, $2, $3, $4, $5)`,
-        [character.id, character.ownerUserId, JSON.stringify(character), now, now],
-      );
+      await characterRepo.saveSheet(character);
     }
     await ensureSystemNarrationStyles();
     const provider = new MockLlmProvider();
@@ -97,11 +93,54 @@ describe("battle create idempotency", () => {
       [input.battleId],
     );
     const storedState = JSON.parse(stored.rows[0]!.state_json) as {
-      assetManifest?: { rules?: { characterFocus?: string } };
+      assetManifest?: {
+        rules?: { characterFocus?: string };
+        characters?: {
+          a?: {
+            generationId?: string;
+            compilerInputsV2?: {
+              psycheTraits?: { adverseSensitivity?: number };
+              deepPsyche?: unknown;
+              consciousSelf?: unknown;
+              narratorViews?: {
+                external?: { access?: string };
+                selfInner?: { access?: string };
+                omniscient?: { access?: string };
+              };
+            };
+          };
+        };
+      };
     };
     assert.equal(
       storedState.assetManifest?.rules?.characterFocus,
       CHARACTER_FOCUS_POLICY_V1,
+    );
+    assert.match(
+      storedState.assetManifest?.characters?.a?.generationId ?? "",
+      /^character:create-a:g1:/,
+    );
+    assert.equal(
+      storedState.assetManifest?.characters?.a?.compilerInputsV2
+        ?.psycheTraits?.adverseSensitivity,
+      500,
+    );
+    assert.ok(storedState.assetManifest?.characters?.a?.compilerInputsV2?.deepPsyche);
+    assert.ok(storedState.assetManifest?.characters?.a?.compilerInputsV2?.consciousSelf);
+    assert.equal(
+      storedState.assetManifest?.characters?.a?.compilerInputsV2?.narratorViews
+        ?.external?.access,
+      "external",
+    );
+    assert.equal(
+      storedState.assetManifest?.characters?.a?.compilerInputsV2?.narratorViews
+        ?.selfInner?.access,
+      "self_inner",
+    );
+    assert.equal(
+      storedState.assetManifest?.characters?.a?.compilerInputsV2?.narratorViews
+        ?.omniscient?.access,
+      "omniscient",
     );
 
     const exhaustedProvider = new MockLlmProvider();

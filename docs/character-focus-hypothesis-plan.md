@@ -10,6 +10,14 @@ calibration, or the C novelty/restraint guards. Therefore no opt-in candidate
 is selected or started. Expression projection, staging deployment, production
 observation, and retained-user-data use remain unauthorized.
 
+Post-replay product direction is recorded in
+`docs/character-focus-and-narrator-presentation-direction.md`. Character focus
+remains unproven and separate from the newly selected narrator-first design
+direction. The first presentation candidate, if separately planned and
+authorized, is limited to audience-only impact/release narration derived from
+committed public receipts. Audible action calls and counterpart reactions are
+deferred as future simulation features.
+
 ## Objective
 
 Test whether character speech becomes more responsive to small situational

@@ -23,6 +23,7 @@ import {
   buildBattleAdjudication,
   buildCharacterAgentConsumerInput,
   buildJudgmentNarrativeBlock,
+  buildJudgmentPresentationProjection,
   buildNarratorCharacterSpeeches,
   buildRefereeFinalState,
   buildRefereeTurnFacts,
@@ -336,6 +337,142 @@ describe("character-authored public speech", () => {
     assert.equal(perceivedB?.displayContext?.mode, "self");
     assert.equal(perceivedB?.displayContext?.identityKnowledge, "identified");
     assert.equal(perceivedB?.displayContext?.relationshipAddress, "クロ");
+  });
+
+  it("commits a grounded manifestation only after the expression realizes it", async () => {
+    const sideA = sheet("a", "アオ", ["私"]);
+    const sideB = sheet("b", "クロ", ["俺"]);
+    const before = createBattleState({
+      id: "manifestation-wiring",
+      sideA,
+      sideB,
+      turnLimit: 20,
+      prologuePending: false,
+    });
+    const provider = new MockLlmProvider();
+    const originalPsyche = provider.advanceCharacterPsyche.bind(provider);
+    const originalAgent = provider.advanceCharacterAgent.bind(provider);
+    provider.advanceCharacterPsyche = async (input) => {
+      const result = await originalPsyche(input);
+      return input.contextMode === "compact"
+        ? {
+            ...result,
+            observableManifestations: [{
+              modality: "expression" as const,
+              proposal: "一瞬だけ眉が揺れる。",
+              sourceEventIds: ["event.hit.1"],
+            }],
+          }
+        : result;
+    };
+    provider.advanceCharacterAgent = async (input) => ({
+      ...await originalAgent(input),
+      realizedManifestation: input.observableManifestations?.[0]?.proposal ?? null,
+    });
+    const observedHit = {
+      evidenceId: "evidence.hit.1",
+      basisEventIds: ["event.hit.1"],
+      modality: "touch" as const,
+      phenomenon: "クロの一撃を受け止めた衝撃",
+      source: { kind: "event" as const, eventId: "event.hit.1" },
+      accessBySide: {
+        a: {
+          currentAccess: "clear" as const,
+          identityKnowledge: "identified" as const,
+          perceivedAs: "受け止めた衝撃",
+          direction: "front" as const,
+          distance: "contact" as const,
+          occurrenceCertainty: "certain" as const,
+          attributionCertainty: "certain" as const,
+        },
+        b: {
+          currentAccess: "clear" as const,
+          identityKnowledge: "identified" as const,
+          perceivedAs: "攻撃を受け止められた手応え",
+          direction: "front" as const,
+          distance: "contact" as const,
+          occurrenceCertainty: "certain" as const,
+          attributionCertainty: "certain" as const,
+        },
+      },
+      publicAccess: {
+        currentAccess: "coarse" as const,
+        identityKnowledge: "identified" as const,
+        perceivedAs: "一撃を受け止めた衝撃",
+        direction: "front" as const,
+        distance: "contact" as const,
+        occurrenceCertainty: "certain" as const,
+        attributionCertainty: "certain" as const,
+      },
+    };
+    const after = {
+      ...before,
+      turn: 1,
+      perceptionFrameA: {
+        ...before.perceptionFrameA!,
+        turn: 1,
+        self: {
+          ...before.perceptionFrameA!.self,
+          percepts: [{
+            perceptId: "percept.a.evidence.hit.1",
+            modality: "touch" as const,
+            phenomenon: observedHit.phenomenon,
+            direction: "front" as const,
+            distance: "contact" as const,
+            salience: "prominent" as const,
+            occurrenceCertainty: "certain" as const,
+            attributionCertainty: "certain" as const,
+          }],
+        },
+        latestDiff: {
+          fromRevision: 0,
+          toRevision: 1,
+          addedOrUpdatedPerceptIds: ["percept.a.evidence.hit.1"],
+          removedPerceptIds: [],
+        },
+      },
+      perceptionFrameB: { ...before.perceptionFrameB!, turn: 1 },
+    };
+
+    const result = await advanceCharacterAgents({
+      llm: provider,
+      before,
+      after,
+      mine: sideA,
+      opp: sideB,
+      events: [{
+        id: "event.hit.1",
+        type: "damage",
+        actorSide: "b",
+        targetSides: ["a"],
+        summary: "クロの一撃をアオが受け止めた。",
+      }],
+      actions: [],
+      sensoryEvidence: [observedHit],
+      activeSides: ["a"],
+      dialoguePipeline: {
+        ...defaultDialoguePipelineSettings(),
+        contextProjectionMode: "compact",
+      },
+    });
+    const manifestations = result.state.turnRecords.at(-1)?.events.filter(
+      (event) => event.type === "manifestation",
+    ) ?? [];
+    assert.equal(manifestations.length, 1);
+    assert.equal(
+      manifestations[0]?.manifestation?.description,
+      "一瞬だけ眉が揺れる。",
+    );
+    assert.equal(
+      result.state.perceptionFrameB?.counterpart.percepts.some((percept) =>
+        percept.phenomenon === "一瞬だけ眉が揺れる。"
+      ),
+      true,
+    );
+    assert.equal(
+      BattleTurnRecordSchema.safeParse(result.state.turnRecords.at(-1)).success,
+      true,
+    );
   });
 
   it("projects deterministic psyche and no-effect focus shadow without another model call", async () => {
@@ -1187,7 +1324,7 @@ describe("character-authored public speech", () => {
       decision: consumerInput!.decision,
     });
 
-    assert.equal(providerResult.state.privateMemory, consumerInput!.psyche.privateMemory);
+    assert.equal(providerResult.state.privateMemory, "");
     assert.equal(providerResult.speech, "まだ動ける。");
     assert.deepEqual(providerResult.proposedAction, {
       kind: "skill",
@@ -1431,13 +1568,117 @@ describe("character-authored public speech", () => {
     );
   });
 
-  it("keeps the raw judgment immutable across narration styles", () => {
+  it("projects only factor identity and discards raw adjudication prose", () => {
+    const adjudication = buildBattleAdjudication({
+      turn: 20,
+      engineWinnerSide: "a",
+      turnFacts: [],
+      result: {
+        winnerSide: "a",
+        reason: "INTERNAL_REASON_MUST_NOT_LEAK",
+        reasonFacts: [{
+          factor: "remaining_capacity",
+          favoredSide: "a",
+          statement: "INTERNAL_STATEMENT_MUST_NOT_LEAK",
+        }, {
+          factor: "world_impact",
+          favoredSide: "b",
+          statement: "CONTRADICTORY_STATEMENT_MUST_NOT_LEAK",
+        }],
+      },
+    });
+    const projection = buildJudgmentPresentationProjection({
+      adjudication,
+      sideAName: "A",
+      sideBName: "B",
+    });
+    assert.deepEqual(projection, {
+      schemaVersion: 1,
+      verdictKind: "win",
+      winnerLabel: "A",
+      basisLines: ["Aは終幕まで対決を続ける余地をより多く保った。"],
+    });
+    assert.equal(Object.isFrozen(projection), true);
+    assert.equal(Object.isFrozen(projection.basisLines), true);
+    assert.doesNotMatch(JSON.stringify(projection), /INTERNAL|CONTRADICTORY/);
+
+    const changedRawProse = buildJudgmentPresentationProjection({
+      adjudication: {
+        ...adjudication,
+        reason: "別の内部理由",
+        reasonFacts: adjudication.reasonFacts.map((fact) => ({
+          ...fact,
+          statement: "別の内部statement",
+        })),
+      },
+      sideAName: "A",
+      sideBName: "B",
+    });
+    assert.deepEqual(changedRawProse, projection);
+  });
+
+  it("projects draw and inconsistent winner facts without exposing internals", () => {
+    const drawProjection = buildJudgmentPresentationProjection({
+      adjudication: buildBattleAdjudication({
+        turn: 20,
+        engineWinnerSide: "draw",
+        turnFacts: [],
+        result: {
+          winnerSide: "draw",
+          reason: "INTERNAL_DRAW_REASON",
+          reasonFacts: [{
+            factor: "world_impact",
+            favoredSide: "draw",
+            statement: "INTERNAL_DRAW_STATEMENT",
+          }],
+        },
+      }),
+      sideAName: "A",
+      sideBName: "B",
+    });
+    assert.deepEqual(drawProjection, {
+      schemaVersion: 1,
+      verdictKind: "draw",
+      winnerLabel: null,
+      basisLines: ["場へ与えた影響も、両者の間で拮抗した。"],
+    });
+
+    const fallbackProjection = buildJudgmentPresentationProjection({
+      adjudication: buildBattleAdjudication({
+        turn: 20,
+        engineWinnerSide: "a",
+        turnFacts: [],
+        result: {
+          winnerSide: "a",
+          reason: "INTERNAL_WIN_REASON",
+          reasonFacts: [{
+            factor: "world_impact",
+            favoredSide: "b",
+            statement: "INCONSISTENT_INTERNAL_STATEMENT",
+          }],
+        },
+      }),
+      sideAName: "A",
+      sideBName: "B",
+    });
+    assert.deepEqual(fallbackProjection, {
+      schemaVersion: 1,
+      verdictKind: "win",
+      winnerLabel: "A",
+      basisLines: ["Aは対決全体で一歩上回った。"],
+    });
+    assert.doesNotMatch(
+      JSON.stringify([drawProjection, fallbackProjection]),
+      /INTERNAL|INCONSISTENT/,
+    );
+  });
+
+  it("keeps only the exact outcome immutable across narration styles", () => {
     const quiet = buildJudgmentNarrativeBlock({
       turn: 20,
       sideAName: "A",
       sideBName: "B",
       winnerSide: "a",
-      adjudicationReason: "確定した働きかけが上回った。",
       presentation: {
         before: ["場が静まる。"],
         after: ["余韻が残る。"],
@@ -1448,16 +1689,17 @@ describe("character-authored public speech", () => {
       sideAName: "A",
       sideBName: "B",
       winnerSide: "a",
-      adjudicationReason: "確定した働きかけが上回った。",
       presentation: {
         before: ["長い時を経て、宣告の瞬間が来る。"],
         after: ["熱気だけが場に残った。"],
       },
     });
 
-    const verdict = "判定は A の勝利。確定した働きかけが上回った。";
+    const verdict = "判定は A の勝利。";
     assert.equal(quiet.narrator.includes(verdict), true);
     assert.equal(dramatic.narrator.includes(verdict), true);
+    assert.doesNotMatch(quiet.narrator.join(" "), /確定した働きかけ/);
+    assert.doesNotMatch(dramatic.narrator.join(" "), /確定した働きかけ/);
     assert.deepEqual(quiet.speeches, []);
     assert.deepEqual(dramatic.speeches, []);
   });

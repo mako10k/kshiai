@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-08-13T07:05:37.829Z",
+  "counts": {
+    "planned": 16,
+    "succeeded": 16,
+    "failed": 0,
+    "blocked": 0,
+    "physicalAttempts": 16
+  },
+  "deterministicIntegrity": {
+    "noStructuredChangePromptDigestsEqual": true,
+    "ordinaryRuntimeActivationChanged": false,
+    "additionalRoutineProviderCalls": 0
+  },
+  "heuristicPresentation": [
+    {
+      "arm": "control",
+      "succeeded": 8,
+      "lexicalAnchorHit": 6,
+      "lexicalAnchorEligible": 7,
+      "meanNarratorCharacters": 80,
+      "inventedSpeechResponses": 0,
+      "uniqueNarrations": 8,
+      "uniqueOpenings12": 8
+    },
+    {
+      "arm": "candidate",
+      "succeeded": 8,
+      "lexicalAnchorHit": 6,
+      "lexicalAnchorEligible": 7,
+      "meanNarratorCharacters": 66.63,
+      "inventedSpeechResponses": 0,
+      "uniqueNarrations": 8,
+      "uniqueOpenings12": 8
+    }
+  ],
+  "crossArmExactDuplicateCount": 0,
+  "semanticIntegrity": {
+    "unsupportedCanonicalFact": "requires_frozen_semantic_review",
+    "privateOrHiddenFact": "requires_frozen_semantic_review",
+    "causalOrderContradiction": "requires_frozen_semantic_review",
+    "releaseMeaning": "requires_frozen_semantic_review"
+  },
+  "interpretation": "Lexical anchors and length are diagnostic heuristics only; they do not establish semantic improvement or adoption acceptance."
+}

@@ -1,6 +1,6 @@
 {
   "name": "@kshiai/backend",
-  "version": "0.17.4",
+  "version": "0.18.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -12,6 +12,7 @@
     "eval:perception-prompts": "tsx src/scripts/evaluate-perception-prompts.ts",
     "eval:character-focus": "tsx src/scripts/replay-character-focus-ablation.ts",
     "eval:character-focus:aggregate": "tsx src/scripts/aggregate-character-focus-reviews.ts",
+    "eval:narrator-presentation-focus": "tsx src/scripts/replay-narrator-presentation-focus.ts",
     "battle-state": "tsx src/scripts/battle-semantic-state.ts",
     "migrate:character-identities": "tsx src/scripts/backfill-character-identities.ts",
     "migrate:postgres": "tsx src/scripts/postgres-migrations.ts",

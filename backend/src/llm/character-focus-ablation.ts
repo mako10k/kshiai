@@ -310,44 +310,6 @@ function compactInputFor(
           ? "穏やかで簡潔。相手を決めつけず、譲れない点は静かに示す。"
           : "短く静かに話し、目の前の具体を比喩にしても一つまで。",
       selfReference: character.identity.selfNames[0] ?? null,
-      interior: {
-        primaryEmotion: "警戒",
-        concealedEmotion: null,
-        coreNeed: "自分らしさを失わず相手と向き合う",
-        protectiveStance: fixture.protectiveHold
-          ? "一度定めた相手との距離を、根拠なく手放さない"
-          : "見えている事実だけを足場にする",
-        eventAppraisal: hasFreshEvidence
-          ? "目の前に応酬を動かし得る変化がある"
-          : "新しい変化を断定できる根拠はない",
-        unspokenIntent: "相手の次の反応を引き出す",
-        currentConcern: "同じ言葉だけで場を止めない",
-        attitudeTowardCounterpart: "注意深く向き合っている",
-        confidence: "steady",
-        relationshipTension: "距離を測り合っている",
-        speechMode: "weave",
-        speechAppraisal: {
-          anticipatedImpact: "相手から次の反応を引き出す",
-          observedImpact: "直前までの言葉が届いたかはまだ定かでない",
-          anticipatedSocialCost: "根拠のない断定は相手との距離を固定する",
-          observedSocialCost: "同じ構えだけでは応酬が止まり得る",
-          nextApproach: hasFreshEvidence
-            ? "現在の変化を足場に応酬を一歩進める"
-            : "変化を捏造せず現在の姿勢を選び直す",
-          continuityPosture: continuityDecision === "reiterate"
-            ? "deliberate_hold"
-            : "developing",
-          continuityBasis: {
-            kind: continuityDecision === "reiterate"
-              ? "protective_hold"
-              : continuityDecision === "reframe" ? "social_reappraisal" : "fresh_leverage",
-            reason: hasFreshEvidence
-              ? "観測できた範囲に応答の足場がある"
-              : "見えていない変化を言い立てない",
-          },
-          continuityDecision,
-        },
-      },
     },
     turnObservation: fixture.packet,
     conversation: {

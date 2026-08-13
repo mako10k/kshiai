@@ -11,8 +11,10 @@ import type {
 import {
   buildNarrationIdentifierCatalog,
   buildNarrationPerceptionView,
+  buildNarrationPresentationFocus,
   buildNarrationTurnBrief,
   buildNarrationTurnView,
+  NARRATION_PRESENTATION_FOCUS_MODE_V1,
   narratorRecognitionSubjects,
   repairNarrativeBlockIdentifiers,
 } from "./narration-perception.js";
@@ -476,5 +478,242 @@ describe("narration perception views", () => {
     });
     assert.deepEqual(brief.currentState.participantConditions, []);
     assert.equal("causalProjection" in brief, false);
+  });
+});
+
+describe("narrator presentation focus", () => {
+  function viewWithProjection(
+    causalProjection: NarrationCausalProjection,
+  ) {
+    const perception = buildNarrationPerceptionView(
+      projectionInput("external", "external"),
+    );
+    return buildNarrationTurnView({
+      ...projectionInput("external", "external"),
+      turn: 4,
+      scene: "暗い広間",
+      perception,
+      events: [{
+        id: "event.not-ranked",
+        type: "info" as const,
+        summary: "自由記述の秘密を順位付けへ使わない",
+      }],
+      actionBeats: causalProjection.causalChains.map((chain, index) => ({
+        actionId: `action.${index}`,
+        actorSide: index === 0 ? "a" as const : "b" as const,
+        actorName: chain.actorLabel,
+        actionName: index === 0 ? "遮断" : "突進",
+        description: "順位付けへ入らない自由記述",
+        outcomes: ["コピーしてはならない旧結果"],
+      })),
+      causalProjection,
+      canonicalChange: {
+        semantic: { status: "applied", changed: true },
+        world: {
+          status: "applied",
+          changed: true,
+          operationKinds: ["replace"],
+        },
+      },
+    });
+  }
+
+  it("selects one decisive committed consequence over weaker alternatives", () => {
+    const view = viewWithProjection({
+      schemaVersion: 1,
+      turn: 4,
+      causalChains: [{
+        actorLabel: "アオ",
+        requestedKind: "skill",
+        effectiveKind: "skill",
+        executed: true,
+        skippedReason: null,
+        resolution: { status: "known", outcome: "accepted", reason: null },
+        events: [{
+          type: "damage",
+          actorLabel: "アオ",
+          targetLabels: ["クロ"],
+          parameterKey: "hp",
+          parameterDirection: "loss",
+          intensity: "heavy",
+        }],
+        mechanicalConsequences: [{
+          targetLabel: "クロ",
+          change: {
+            parameterKey: "hp",
+            parameterClass: "vitality",
+            direction: "loss",
+            absoluteBand: "heavy",
+            relativeBand: "solid",
+            outcome: "incapacitated",
+          },
+        }],
+        semanticChangeKinds: ["location"],
+      }, {
+        actorLabel: "クロ",
+        requestedKind: "basic_attack",
+        effectiveKind: "wait",
+        executed: false,
+        skippedReason: "action_infeasible",
+        resolution: {
+          status: "known",
+          outcome: "failed",
+          reason: "actor_unavailable",
+        },
+        events: [{
+          type: "wait",
+          actorLabel: "クロ",
+          targetLabels: [],
+        }],
+        mechanicalConsequences: [],
+        semanticChangeKinds: [],
+      }],
+      observedConsequences: [],
+      observedSemanticChangeKinds: ["scene"],
+      continuingConditions: [],
+    });
+
+    const focus = buildNarrationPresentationFocus(view);
+    assert.deepEqual(focus, {
+      schemaVersion: 1,
+      phase: "impact",
+      primary: {
+        source: "mechanical_consequence",
+        actorLabel: "アオ",
+        actionName: "遮断",
+        targetLabel: "クロ",
+        change: {
+          parameterKey: "hp",
+          parameterClass: "vitality",
+          direction: "loss",
+          absoluteBand: "heavy",
+          relativeBand: "solid",
+          outcome: "incapacitated",
+        },
+      },
+    });
+    assert.equal(Object.isFrozen(focus), true);
+    assert.equal(JSON.stringify(focus).includes("event.not-ranked"), false);
+    assert.equal(JSON.stringify(focus).includes("自由記述"), false);
+    assert.deepEqual(buildNarrationPresentationFocus(view), focus);
+  });
+
+  it("uses release only for a committed quiet event", () => {
+    const view = viewWithProjection({
+      schemaVersion: 1,
+      turn: 4,
+      causalChains: [{
+        actorLabel: "アオ",
+        requestedKind: "reflect",
+        effectiveKind: "reflect",
+        executed: true,
+        skippedReason: null,
+        resolution: { status: "known", outcome: "accepted", reason: null },
+        events: [{
+          type: "reflect",
+          actorLabel: "アオ",
+          targetLabels: [],
+        }],
+        mechanicalConsequences: [],
+        semanticChangeKinds: [],
+      }],
+      observedConsequences: [],
+      observedSemanticChangeKinds: [],
+      continuingConditions: [],
+    });
+
+    assert.deepEqual(buildNarrationPresentationFocus(view), {
+      schemaVersion: 1,
+      phase: "release",
+      primary: {
+        source: "causal_event",
+        actorLabel: "アオ",
+        actionName: "遮断",
+        event: {
+          type: "reflect",
+          actorLabel: "アオ",
+          targetLabels: [],
+        },
+      },
+    });
+  });
+
+  it("ignores stable conditions and unattributed consequences without a safe target", () => {
+    const view = viewWithProjection({
+      schemaVersion: 1,
+      turn: 4,
+      causalChains: [{
+        actorLabel: "アオ",
+        requestedKind: "wait",
+        effectiveKind: "wait",
+        executed: true,
+        skippedReason: null,
+        resolution: { status: "known", outcome: "accepted", reason: null },
+        events: [],
+        mechanicalConsequences: [],
+        semanticChangeKinds: [],
+      }],
+      observedConsequences: [{
+        parameterKey: "hp",
+        parameterClass: "vitality",
+        direction: "loss",
+        absoluteBand: "heavy",
+        relativeBand: "solid",
+        outcome: "effective",
+        sourceKnowledge: "unknown",
+        targetKnowledge: "unknown",
+      }],
+      observedSemanticChangeKinds: [],
+      continuingConditions: [{
+        participantLabel: "アオ",
+        canFight: true,
+        defending: false,
+        reserveCues: [],
+      }],
+    });
+
+    assert.equal(buildNarrationPresentationFocus(view), null);
+    assert.equal("presentationFocus" in buildNarrationTurnBrief(view), false);
+    assert.equal(
+      "presentationFocus" in buildNarrationTurnBrief(view, {
+        presentationFocusMode: NARRATION_PRESENTATION_FOCUS_MODE_V1,
+      }),
+      false,
+    );
+  });
+
+  it("adds the focus only under the explicit experimental mode", () => {
+    const view = viewWithProjection({
+      schemaVersion: 1,
+      turn: 4,
+      causalChains: [{
+        actorLabel: "アオ",
+        requestedKind: "skill",
+        effectiveKind: "defend",
+        executed: true,
+        skippedReason: null,
+        resolution: {
+          status: "known",
+          outcome: "substituted",
+          reason: "required_object_unavailable",
+        },
+        events: [],
+        mechanicalConsequences: [],
+        semanticChangeKinds: [],
+      }],
+      observedConsequences: [],
+      observedSemanticChangeKinds: [],
+      continuingConditions: [],
+    });
+    const control = buildNarrationTurnBrief(view);
+    const candidate = buildNarrationTurnBrief(view, {
+      presentationFocusMode: NARRATION_PRESENTATION_FOCUS_MODE_V1,
+    });
+
+    assert.equal("presentationFocus" in control, false);
+    assert.equal(candidate.presentationFocus?.primary.source, "action_resolution");
+    assert.equal(Object.isFrozen(candidate.presentationFocus), true);
+    const { presentationFocus: _focus, ...candidateBase } = candidate;
+    assert.deepEqual(candidateBase, control);
   });
 });

@@ -1,8 +1,9 @@
 # ADR-0003: Revision editable assets and bind battles
 
-- Status: Accepted
+- Status: Superseded
 - Date: 2026-08-12
 - Decision owner: Product owner
+- Superseded by: ADR-0010
 - Related: GitHub Issue #98; ADR-0002; `docs/battle-phase-authority.md`; `docs/battle-world-model.md`
 
 ## Context

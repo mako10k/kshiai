@@ -71,6 +71,11 @@ export function CharacterDetailPage() {
   const [improvement, setImprovement] =
     useState<CharacterImprovementPublic | null>(null);
   const [improvementBusy, setImprovementBusy] = useState(false);
+  const [pendingDraft, setPendingDraft] = useState<{
+    id: string;
+    character: CharacterPublic;
+    assistantMessage: string;
+  } | null>(null);
 
   const reloadQuota = useCallback(async (charId: string) => {
     try {
@@ -175,13 +180,61 @@ export function CharacterDetailPage() {
     setError(null);
     try {
       const res = await api.chatCharacter(id, text);
-      setCharacter(res.character);
-      setAssistant(
-        `${res.assistantMessage}（気に入らなければ「調整前に戻す」で直前の内容に戻せます）`,
-      );
+      setPendingDraft(res.draft);
+      setAssistant("変更案を作成しました。内容を確認して確定してください。");
       clearChat();
     } catch (err) {
       setError(err instanceof Error ? err.message : "failed");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function onUpgrade() {
+    if (!id || !isOwner) return;
+    setBusy(true);
+    setError(null);
+    try {
+      const res = await api.upgradeCharacter(id);
+      setPendingDraft(res.draft);
+      setAssistant("最新版への更新案を作成しました。確定するまで対戦には使われません。");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "最新版への更新に失敗しました");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function confirmPendingDraft() {
+    if (!pendingDraft) return;
+    setBusy(true);
+    setError(null);
+    try {
+      const res = await api.confirmCharacterDraft(pendingDraft.id);
+      setCharacter(res.character);
+      setPendingDraft(null);
+      setAssistant(res.assistantMessage);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "確定に失敗しました");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function discardPendingDraft() {
+    if (!pendingDraft) return;
+    setBusy(true);
+    setError(null);
+    try {
+      await api.discardCharacterDraft(pendingDraft.id);
+      setPendingDraft(null);
+      setAssistant("変更案を破棄しました。現在のキャラクターは変わっていません。");
+      if (id) {
+        const refreshed = await api.getCharacter(id);
+        setCharacter(refreshed.character);
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "破棄に失敗しました");
     } finally {
       setBusy(false);
     }
@@ -191,7 +244,7 @@ export function CharacterDetailPage() {
     if (!id || !isOwner) return;
     if (
       !confirm(
-        "直前の会話調整の前の内容に戻します。いまの調整結果は失われます。よろしいですか？",
+        "直前の確定世代の内容を、新しい世代として復元します。よろしいですか？",
       )
     ) {
       return;
@@ -366,30 +419,83 @@ export function CharacterDetailPage() {
       : character.appearance.imageUrl
         ? "顔を再生成"
         : "顔を AI 生成";
+  const selectable = character.selectable !== false &&
+    character.compatibility?.status !== "unsupported" &&
+    character.compatibility?.status !== "upgrading" &&
+    character.compatibility?.status !== "upgrade_failed";
 
   return (
     <>
       <div className="row" style={{ justifyContent: "space-between" }}>
         <h1>{character.displayName}</h1>
         <div className="row" style={{ gap: "0.45rem" }}>
-          {isOwner ? (
+          {selectable && isOwner ? (
             <Link
               className="btn primary"
               to={`/match?my=${encodeURIComponent(character.id)}`}
             >
               このキャラで対戦
             </Link>
-          ) : (
+          ) : selectable ? (
             <Link
               className="btn primary"
               to={`/match?opp=${encodeURIComponent(character.id)}`}
             >
               このキャラと対戦
             </Link>
-          )}
+          ) : null}
           <Link to="/characters">← 一覧</Link>
         </div>
       </div>
+
+      {!selectable && (
+        <div className="panel">
+          <h2>最新版への更新が必要です</h2>
+          <p className="muted">
+            このキャラクターは管理・閲覧できますが、最新版への更新を確定するまで対戦の選択肢には表示されません。
+          </p>
+          {isOwner && character.upgradeAction ? (
+            <button
+              className="btn primary"
+              type="button"
+              disabled={busy}
+              onClick={() => void onUpgrade()}
+            >
+              {busy ? "更新案を作成中…" : character.upgradeAction.label}
+            </button>
+          ) : null}
+        </div>
+      )}
+
+      {pendingDraft && (
+        <div className="panel">
+          <h2>変更案を確認</h2>
+          <div className="card" style={{ padding: "1rem" }}>
+            <strong>{pendingDraft.character.displayName}</strong>
+            <p>{pendingDraft.character.narrativeBlurb}</p>
+            <p className="muted">{pendingDraft.character.appearance.summary}</p>
+            <p className="muted">{pendingDraft.assistantMessage}</p>
+          </div>
+          <div className="row" style={{ marginTop: "0.75rem" }}>
+            <button
+              className="btn primary"
+              type="button"
+              disabled={busy}
+              onClick={() => void confirmPendingDraft()}
+            >
+              この内容で確定
+            </button>
+            <button
+              className="btn ghost danger"
+              type="button"
+              disabled={busy}
+              onClick={() => void discardPendingDraft()}
+            >
+              破棄
+            </button>
+          </div>
+        </div>
+      )}
 
       <div className="panel grid" style={{ gridTemplateColumns: "160px 1fr", gap: "1rem" }}>
         <div className="portrait-column">
@@ -574,21 +680,21 @@ export function CharacterDetailPage() {
             ) : null}
           </p>
           <div className="row">
-            {isOwner ? (
+            {selectable && isOwner ? (
               <Link
                 className="btn primary"
                 to={`/match?my=${encodeURIComponent(character.id)}`}
               >
                 対戦する
               </Link>
-            ) : (
+            ) : selectable ? (
               <Link
                 className="btn primary"
                 to={`/match?opp=${encodeURIComponent(character.id)}`}
               >
                 相手にする
               </Link>
-            )}
+            ) : null}
             {isOwner && (
               <button
                 className="btn"
@@ -742,7 +848,7 @@ export function CharacterDetailPage() {
           <h2>会話で微調整</h2>
           <p className="muted">
             印象や戦い方の雰囲気を言葉で伝えてください。改善プロンプト生成を使うと、ここに案が入ります。
-            送信したときだけシートに反映され、直前の内容は「調整前に戻す」で取り消せます。
+            送信すると変更案を作り、内容を確認して確定したときだけ反映されます。
           </p>
           <form className="grid" onSubmit={(e) => void onChat(e)}>
             <textarea
@@ -757,7 +863,7 @@ export function CharacterDetailPage() {
                 type="submit"
                 disabled={busy || imageBusy || improvementBusy}
               >
-                送信して適用
+                変更案を作成
               </button>
               <button
                 className="btn"
@@ -773,13 +879,13 @@ export function CharacterDetailPage() {
                   character.canRestoreRevision
                     ? character.revisionSavedAt
                       ? `${character.revisionLabel ?? "調整前"}（${formatWhen(character.revisionSavedAt)}）に戻す`
-                      : "直前の調整前に戻す"
+                      : "直前の確定世代に戻す"
                     : "まだ戻せる調整履歴がありません"
                 }
               >
                 {character.revisionLabel
                   ? `${character.revisionLabel}に戻す`
-                  : "調整前に戻す"}
+                  : "直前の世代に戻す"}
               </button>
             </div>
           </form>

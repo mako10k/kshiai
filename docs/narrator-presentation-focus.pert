@@ -1,0 +1,118 @@
+project NARRATOR_PRESENTATION_FOCUS:
+  version 6
+  title "Narrator-only presentation focus local candidate"
+  description "Investigate design implement and validate one deterministic committed public impact or release focus in the existing narrator call without character context changes extra routine calls or production adoption"
+  as_of 2026-08-13
+  duration_unit point
+  velocity 1p/1d
+  finish LOCAL_EVIDENCE_READY
+  goal_owner user
+  dag_owner user
+
+resource DEV:
+  title "Developer"
+  capacity 1
+
+milestone NOW:
+  title "Direction selected"
+  state reached
+
+milestone FEASIBILITY_READY:
+  title "Existing narration boundary and evidence seams verified"
+
+milestone DESIGN_READY:
+  title "Projection and experiment contract frozen"
+
+milestone CANDIDATE_READY:
+  title "Opt-in local candidate and fixtures implemented"
+
+milestone LOCAL_EVIDENCE_READY:
+  title "Deterministic validation and bounded pilot evidence complete"
+
+task NPF_INVESTIGATE NOW -> FEASIBILITY_READY:
+  title "Verify existing receipt projection narrator and contamination boundaries"
+  description "Confirm the candidate can derive one public committed result inside ADR-0006 without a new receipt persistence owner character input or routine provider call"
+  duration 1p
+  status done
+  requires:
+    DEV 1
+  owner "codex"
+
+task NPF_DESIGN FEASIBILITY_READY -> DESIGN_READY:
+  title "Freeze presentation focus and pilot contracts"
+  description "Define admitted sources deterministic priority phase semantics opt-in activation integrity guards paired fixtures ceilings and authority boundaries"
+  duration 1p
+  status done
+  requires:
+    DEV 1
+  owner "codex"
+
+task NPF_IMPLEMENT DESIGN_READY -> CANDIDATE_READY:
+  title "Implement opt-in narrator presentation focus and fixed pilot"
+  description "Add the pure single-primary projection experimental narrator input prompt contract tests and bounded synthetic replay preparation while leaving ordinary battle requests unchanged"
+  duration 2p
+  status done
+  requires:
+    DEV 1
+  owner "codex"
+
+task NPF_VERIFY CANDIDATE_READY -> LOCAL_EVIDENCE_READY:
+  title "Run regression gates and bounded synthetic pilot"
+  description "Run focused and full validation prove no ordinary-path diff execute the frozen provider pilot within ceilings and retain outputs review packet and an evidence report without adopting the candidate"
+  duration 1p
+  status done
+  requires:
+    DEV 1
+  owner "codex"
+
+work_event WE-NPF-INVESTIGATE-START:
+  model 1
+  task NPF_INVESTIGATE
+  kind start
+  occurred_at 2026-08-13T15:48:10+09:00
+  planned_value 1p
+
+work_event WE-NPF-INVESTIGATE-FINISH:
+  model 1
+  task NPF_INVESTIGATE
+  kind finish
+  occurred_at 2026-08-13T15:48:11+09:00
+
+work_event WE-NPF-DESIGN-START:
+  model 1
+  task NPF_DESIGN
+  kind start
+  occurred_at 2026-08-13T15:48:12+09:00
+  planned_value 1p
+
+work_event WE-NPF-DESIGN-FINISH:
+  model 1
+  task NPF_DESIGN
+  kind finish
+  occurred_at 2026-08-13T15:48:13+09:00
+
+work_event WE-NPF-IMPLEMENT-START:
+  model 1
+  task NPF_IMPLEMENT
+  kind start
+  occurred_at 2026-08-13T15:48:14+09:00
+  planned_value 2p
+
+work_event WE-NPF-IMPLEMENT-FINISH:
+  model 1
+  task NPF_IMPLEMENT
+  kind finish
+  occurred_at 2026-08-13T16:04:59+09:00
+
+work_event WE-NPF-VERIFY-START:
+  model 1
+  task NPF_VERIFY
+  kind start
+  occurred_at 2026-08-13T16:05:00+09:00
+  planned_value 1p
+
+work_event WE-NPF-VERIFY-FINISH:
+  model 1
+  task NPF_VERIFY
+  kind finish
+  occurred_at 2026-08-13T16:07:56+09:00

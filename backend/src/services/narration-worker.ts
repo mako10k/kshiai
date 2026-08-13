@@ -1,4 +1,5 @@
 import {
+  JudgmentPresentationProjectionSchema,
   NarrativeBlockSchema,
   type BattleNarrationEntryPublic,
   type BattleNarrationEventPublic,
@@ -88,11 +89,47 @@ export function createLlmNarrationGenerator(llm: LlmProvider): NarrationGenerato
           speeches: result.speeches,
         };
       } else if (input.kind === "judgment") {
-        const request = input.request as Parameters<LlmProvider["narrateJudgment"]>[0];
+        const source = input.request as Record<string, unknown>;
+        const winnerName = typeof source.winnerName === "string" &&
+            source.winnerName.trim()
+          ? source.winnerName.trim()
+          : null;
+        const parsedProjection = JudgmentPresentationProjectionSchema.safeParse(
+          source.presentationProjection,
+        );
+        const presentationProjection = parsedProjection.success
+          ? parsedProjection.data
+          : JudgmentPresentationProjectionSchema.parse({
+              schemaVersion: 1,
+              verdictKind: winnerName ? "win" : "draw",
+              winnerLabel: winnerName,
+              basisLines: ["長い対決に、判定の時が訪れた。"],
+            });
+        const request: Parameters<LlmProvider["narrateJudgment"]>[0] = {
+          turn: typeof source.turn === "number" ? source.turn : 0,
+          scene: typeof source.scene === "string" ? source.scene : "",
+          sideAName: typeof source.sideAName === "string" ? source.sideAName : "一方",
+          sideBName: typeof source.sideBName === "string" ? source.sideBName : "もう一方",
+          winnerSide: source.winnerSide === "a" || source.winnerSide === "b" ||
+              source.winnerSide === "draw"
+            ? source.winnerSide
+            : winnerName ? "a" : "draw",
+          winnerName,
+          presentationProjection,
+          recentPublicNarration: Array.isArray(source.recentPublicNarration)
+            ? source.recentPublicNarration.map(String).slice(-8)
+            : [],
+          ...(typeof source.styleInstruction === "string"
+            ? { styleInstruction: source.styleInstruction }
+            : {}),
+          ...(typeof source.styleName === "string"
+            ? { styleName: source.styleName }
+            : {}),
+        };
         const result = await llm.narrateJudgment(request);
-        const verdict = request.winnerName
-          ? `${request.winnerName} の勝利。${request.adjudicationReason}`
-          : `引き分け。${request.adjudicationReason}`;
+        const verdict = winnerName
+          ? `判定は ${winnerName} の勝利。`
+          : "判定は引き分け。";
         narrative = {
           turn: request.turn,
           narrator: [...result.before, "——判定——", verdict, ...result.after],

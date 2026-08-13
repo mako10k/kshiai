@@ -340,6 +340,7 @@ describe("character-agent action proposal prompt", () => {
       modelFast: "grok-4-fast-non-reasoning",
     });
     let system = "";
+    let expressionUser = "";
     const privateProvider = provider as unknown as {
       chatJson(system: string, user: string): Promise<unknown>;
     };
@@ -489,8 +490,9 @@ describe("character-agent action proposal prompt", () => {
       continuityDecision: "reframe",
     });
 
-    privateProvider.chatJson = async (prompt) => {
+    privateProvider.chatJson = async (prompt, user) => {
       system = prompt;
+      expressionUser = user;
       return { speech: "端末ではない。お前の足が止まる場所を見ている。" };
     };
     const expression = await provider.advanceCharacterAgent({
@@ -498,17 +500,99 @@ describe("character-agent action proposal prompt", () => {
       psyche: {
         emotion: compactInput.previous.emotion,
         speechStyle: compactInput.previous.speechStyle,
-        interior: {
-          ...compactInput.previous.interior,
-          ...psyche.delta?.interior,
-        },
         selfReference: "俺",
       },
       expressionBrief: psyche.expressionBrief!,
       relevantMemory: null,
     } as never);
-    assert.match(system, /speechAppraisal privately assesses the prior expression's effect and its consequence/);
-    assert.match(system, /through expression rather than naming it/);
+    assert.match(system, /Raw latent psyche and interior state are deliberately absent/);
+    assert.match(system, /expressionBrief is the bounded conscious projection/);
+    assert.equal(expressionUser.includes('"interior"'), false);
+    assert.equal(expressionUser.includes('"stableDisposition"'), false);
     assert.equal(expression.speech, "端末ではない。お前の足が止まる場所を見ている。");
+  });
+});
+
+describe("public character profile claim validator", () => {
+  const input = {
+    projection: {
+      contractVersion: 2 as const,
+      displayName: "灯",
+      facts: [{
+        supportRef: "appearance.publicSummary",
+        valuePath: "appearance.publicSummary",
+        text: "赤い外套をまとう",
+      }],
+    },
+    profile: {
+      description: "灯は赤い外套をまとう。",
+      segments: [{
+        id: "appearance",
+        text: "灯は赤い外套をまとう。",
+        kind: "fact" as const,
+        supportRefs: ["appearance.publicSummary"],
+      }],
+    },
+  };
+
+  it("receives no owner source or restricted definition", async () => {
+    const provider = new OpenAiCompatibleProvider({
+      name: "xai",
+      apiKey: "test-only",
+      baseUrl: "https://example.invalid/v1",
+      modelEngine: "grok-4.3",
+      modelFast: "grok-4.3",
+    });
+    let system = "";
+    let user = "";
+    (provider as unknown as {
+      chatJson(system: string, user: string): Promise<unknown>;
+    }).chatJson = async (prompt, request) => {
+      system = prompt;
+      user = request;
+      return {
+        segments: [{
+          segmentId: "appearance",
+          verdict: "supported",
+          supportRefs: ["appearance.publicSummary"],
+          riskCodes: [],
+        }],
+      };
+    };
+
+    const result = await provider.validateCharacterProfileClaims(input);
+    assert.match(system, /independent bounded material-claim validator/);
+    assert.deepEqual(Object.keys(JSON.parse(user)).sort(), [
+      "approvedProjection",
+      "candidateProfile",
+    ]);
+    assert.equal(user.includes("ownerSource"), false);
+    assert.equal(user.includes("psycheDisposition"), false);
+    assert.deepEqual(result.segments[0], {
+      segmentId: "appearance",
+      verdict: "supported",
+      supportRefs: ["appearance.publicSummary"],
+      riskCodes: [],
+    });
+  });
+
+  it("fails closed instead of using provider fallback", async () => {
+    const provider = new OpenAiCompatibleProvider({
+      name: "xai",
+      apiKey: "test-only",
+      baseUrl: "https://example.invalid/v1",
+      modelEngine: "grok-4.3",
+      modelFast: "grok-4.3",
+      fallbackOnError: true,
+    });
+    (provider as unknown as {
+      chatJson(system: string, user: string): Promise<unknown>;
+    }).chatJson = async () => {
+      throw new Error("validator unavailable");
+    };
+    await assert.rejects(
+      provider.validateCharacterProfileClaims(input),
+      /validator unavailable/,
+    );
   });
 });

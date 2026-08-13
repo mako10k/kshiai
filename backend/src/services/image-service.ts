@@ -1,7 +1,11 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import type { BattlefieldPreset, CharacterSheet } from "@kshiai/shared";
+import type {
+  BattlefieldPreset,
+  CharacterImageBriefV2,
+  CharacterSheet,
+} from "@kshiai/shared";
 import { config } from "../config.js";
 import { createImageProvider, type ImageProvider } from "../image/index.js";
 import { putR2Image, type MediaKind } from "./r2-storage.js";
@@ -24,6 +28,18 @@ export function publicMediaPath(
 ): string {
   const file = variant === "previous" ? `${id}.prev.jpg` : `${id}.jpg`;
   return `/api/media/${kind}/${file}`;
+}
+
+export function publicRevisionedMediaPath(
+  kind: "characters" | "battlefields",
+  id: string,
+  revisionId: string,
+): string {
+  if (!/^[a-zA-Z0-9_-]+$/.test(id) ||
+      !/^[a-zA-Z0-9_-]{1,80}$/.test(revisionId)) {
+    throw new Error("invalid_media_revision_id");
+  }
+  return `/api/media/${kind}/${id}.${revisionId}.jpg`;
 }
 
 export function absoluteMediaFile(
@@ -175,11 +191,19 @@ function asciiNameHint(name: string): string {
 export function buildCharacterPortraitPrompt(
   sheet: CharacterSheet,
   extra?: string,
+  imageBrief?: CharacterImageBriefV2,
 ): string {
   const name = sheet.displayName?.trim() || "hero";
   const nameHint = asciiNameHint(name);
-  const summary = sanitizePortraitSource(sheet.appearance?.summary ?? "");
-  const visual = sanitizePortraitSource(sheet.appearance?.visualPrompt ?? "");
+  const summary = sanitizePortraitSource(
+    imageBrief?.publicSummary ?? sheet.appearance?.summary ?? "",
+  );
+  const visual = sanitizePortraitSource(
+    imageBrief?.visualPrompt ?? sheet.appearance?.visualPrompt ?? "",
+  );
+  const appearanceDetails = imageBrief
+    ? sanitizePortraitSource(imageBrief.details.join(", "))
+    : "";
   const traits = sanitizePortraitSource(
     (sheet.traits ?? []).filter(Boolean).join(", "),
   );
@@ -191,12 +215,13 @@ export function buildCharacterPortraitPrompt(
     "Safe-for-work anime style character portrait",
     "adult character, clearly 20s age appearance, mature proportions",
     "upper body bust shot, face clearly visible, detailed eyes and hair",
-    `character name vibe: ${nameHint}`,
+    imageBrief ? null : `character name vibe: ${nameHint}`,
     visual || null,
     summary || null,
-    traits ? `personality vibe: ${traits}` : null,
-    weapon ? `associated with ${weapon}` : null,
-    armor ? `wearing modest ${armor}` : null,
+    appearanceDetails || null,
+    !imageBrief && traits ? `personality vibe: ${traits}` : null,
+    !imageBrief && weapon ? `associated with ${weapon}` : null,
+    !imageBrief && armor ? `wearing modest ${armor}` : null,
     extraText || null,
     "fully clothed, intact outfit, no torn clothes, no nudity, no sexualization",
     "single character only, soft dramatic lighting, clean simple background",
@@ -295,6 +320,7 @@ async function persistImage(
   sourceUrl: string,
   kind: MediaKind,
   id: string,
+  revisionId?: string,
 ): Promise<string> {
   const buffer = await downloadImage(sourceUrl);
   if (config.mediaStorage === "r2") {
@@ -311,7 +337,13 @@ async function persistImage(
     return url;
   }
 
-  const destPath = absoluteMediaFile(kind, id, "primary");
+  const revisionedUrl = revisionId
+    ? publicRevisionedMediaPath(kind, id, revisionId)
+    : null;
+  const destPath = revisionedUrl
+    ? absolutePathFromPublicMediaUrl(revisionedUrl)
+    : absoluteMediaFile(kind, id, "primary");
+  if (!destPath) throw new Error("invalid_media_revision_path");
   const tempPath = `${destPath}.tmp-${process.pid}-${Date.now()}`;
   try {
     fs.writeFileSync(tempPath, buffer);
@@ -328,7 +360,7 @@ async function persistImage(
     dest: path.basename(destPath),
     storage: "local",
   });
-  return publicMediaPath(kind, id, "primary");
+  return revisionedUrl ?? publicMediaPath(kind, id, "primary");
 }
 
 function isModerationError(msg: string): boolean {
@@ -343,9 +375,13 @@ export async function generateAndStoreCharacterPortrait(
   sheet: CharacterSheet,
   extra?: string,
   provider: ImageProvider = createImageProvider(),
+  revisionId?: string,
+  imageBrief?: CharacterImageBriefV2,
 ): Promise<ImageGenResult> {
-  const primary = buildCharacterPortraitPrompt(sheet, extra);
-  const fallback = safeFallbackPrompt(asciiNameHint(sheet.displayName ?? "hero"));
+  const primary = buildCharacterPortraitPrompt(sheet, extra, imageBrief);
+  const fallback = safeFallbackPrompt(
+    imageBrief ? "anime adventurer" : asciiNameHint(sheet.displayName ?? "hero"),
+  );
 
   logImageEvent({
     phase: "start",
@@ -357,7 +393,7 @@ export async function generateAndStoreCharacterPortrait(
   });
 
   // Archive the portrait currently shown so the owner can toggle back.
-  const previousUrl = config.mediaStorage === "r2"
+  const previousUrl = revisionId || config.mediaStorage === "r2"
     ? sheet.appearance.imageUrl ?? null
     : archiveActiveCharacterPortrait(sheet);
 
@@ -383,7 +419,12 @@ export async function generateAndStoreCharacterPortrait(
         },
         provider,
       );
-      const url = await persistImage(remote, "characters", sheet.id);
+      const url = await persistImage(
+        remote,
+        "characters",
+        sheet.id,
+        revisionId,
+      );
       logImageEvent({
         phase: "done",
         ok: true,

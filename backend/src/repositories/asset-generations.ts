@@ -147,6 +147,112 @@ export async function writeAssetGeneration(
   };
 }
 
+/** Append immutable content without moving the current-generation pointer. */
+export async function appendAssetGeneration(
+  connection: DatabaseConnection,
+  input: {
+    assetType: string;
+    assetId: string;
+    schemaVersion: number;
+    content: unknown;
+    createdAt?: string;
+  },
+): Promise<AssetGeneration> {
+  const contentJson = canonicalAssetJson(input.content);
+  const contentDigest = assetContentDigest(input.content);
+  if (databaseKind() === "postgres") {
+    await connection.query(
+      `SELECT pg_advisory_xact_lock(hashtext($1), hashtext($2))`,
+      [input.assetType, input.assetId],
+    );
+  }
+  const latest = await connection.query<{
+    generation: number;
+    generation_id: string;
+    content_digest: string;
+  }>(
+    `SELECT generation, generation_id, content_digest
+       FROM asset_generations
+      WHERE asset_type = $1 AND asset_id = $2
+      ORDER BY generation DESC
+      LIMIT 1`,
+    [input.assetType, input.assetId],
+  );
+  const existing = latest.rows[0];
+  if (existing?.content_digest === contentDigest) {
+    const retained = await connection.query<Parameters<typeof parseRow>[0]>(
+      `SELECT asset_type, asset_id, generation, generation_id, schema_version,
+              content_json, content_digest, created_at
+         FROM asset_generations WHERE generation_id = $1`,
+      [existing.generation_id],
+    );
+    return parseRow(retained.rows[0]!);
+  }
+  const generation = Number(existing?.generation ?? 0) + 1;
+  const generationId = `${input.assetType}:${input.assetId}:g${generation}:${contentDigest.slice(0, 16)}`;
+  const createdAt = input.createdAt ?? new Date().toISOString();
+  await connection.query(
+    `INSERT INTO asset_generations
+      (asset_type, asset_id, generation, generation_id, schema_version,
+       content_json, content_digest, created_at)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+    [
+      input.assetType,
+      input.assetId,
+      generation,
+      generationId,
+      input.schemaVersion,
+      contentJson,
+      contentDigest,
+      createdAt,
+    ],
+  );
+  return {
+    assetType: input.assetType,
+    assetId: input.assetId,
+    generation,
+    generationId,
+    schemaVersion: input.schemaVersion,
+    content: JSON.parse(contentJson),
+    contentDigest,
+    createdAt,
+  };
+}
+
+/** Move the pointer only when its observed token still matches. */
+export async function activateAssetGeneration(
+  connection: DatabaseConnection,
+  generation: AssetGeneration,
+  expectedGenerationId: string | null,
+  updatedAt = new Date().toISOString(),
+): Promise<void> {
+  const current = await connection.query<{ generation_id: string }>(
+    `SELECT generation_id FROM asset_current_generations
+      WHERE asset_type = $1 AND asset_id = $2`,
+    [generation.assetType, generation.assetId],
+  );
+  const actual = current.rows[0]?.generation_id ?? null;
+  if (actual !== expectedGenerationId) {
+    throw new Error("ASSET_CURRENT_GENERATION_DRIFT");
+  }
+  await connection.query(
+    `INSERT INTO asset_current_generations
+      (asset_type, asset_id, generation, generation_id, updated_at)
+     VALUES ($1, $2, $3, $4, $5)
+     ON CONFLICT (asset_type, asset_id) DO UPDATE
+       SET generation = EXCLUDED.generation,
+           generation_id = EXCLUDED.generation_id,
+           updated_at = EXCLUDED.updated_at`,
+    [
+      generation.assetType,
+      generation.assetId,
+      generation.generation,
+      generation.generationId,
+      updatedAt,
+    ],
+  );
+}
+
 export function createAssetGeneration(input: {
   assetType: string;
   assetId: string;
