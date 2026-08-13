@@ -38,3 +38,4 @@ export * from "./dialogue-pipeline.js";
 export * from "./dialogue-context.js";
 export * from "./psyche-reaction-policy.js";
 export * from "./character-focus-policy.js";
+export * from "./character-focus-policy.fixtures.js";

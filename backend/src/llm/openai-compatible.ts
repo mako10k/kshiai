@@ -78,6 +78,7 @@ import {
   type PerceptionPromptResponseFormat,
 } from "./perception-prompt-strategy.js";
 import { reviewedPerceptionTopology } from "./perception-topology.js";
+import { CHARACTER_EXPRESSION_COMPACT_SYSTEM_PROMPT } from "./character-expression-prompt.js";
 
 const FAST_SHORT_TIMEOUT_MS = 20_000;
 const FAST_TIMEOUT_MS = 30_000;
@@ -1583,7 +1584,7 @@ Return JSON only with privateMemory, currentGoal, emotion, beliefs, observations
       const counterpartLabel = input.counterpart?.displayName ?? "相手";
       try {
         const data = (await this.chatJson(
-          `You express one fictional character through one organic public Japanese line. Do not expose private intent, control IDs, or chain-of-thought. expressionBrief selects the relation between an observer-safe fresh-result thread and one compact conversation thread. psyche.interior.speechAppraisal privately assesses the prior expression's effect and its consequence for the character or relationship, then commits this expression's intended effect, consequence, and continuity basis. Carry out that living evaluation through expression rather than naming it. Carry out expressionBrief's semantic relationshipMove and publicAim in the present situation; neither field is wording to quote. advance develops the relation through its fresh leverage, reframe changes its angle, reiterate intentionally holds a character-grounded line, and withhold is a meaningful visible pause. Do not substitute a prior utterance for the selected semantic move merely because it is familiar. Do not invent mechanics, hidden identity, current condition, or facts absent from the compact input. Return JSON only: {"speech": string, "nextAction"?: object}.`,
+          CHARACTER_EXPRESSION_COMPACT_SYSTEM_PROMPT,
           JSON.stringify(input),
           {
             tier: "fast",

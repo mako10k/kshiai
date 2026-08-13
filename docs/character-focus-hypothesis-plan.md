@@ -1,8 +1,11 @@
 # Character focus-state hypothesis experiment
 
-Status: deterministic fixture and no-effect shadow slice complete. Provider
-replay, expression projection, staging deployment, production observation, and
-retained-user-data use remain unauthorized.
+Status: deterministic fixture and no-effect shadow slice complete. The bounded
+synthetic provider replay is authorized under
+`docs/evidence/character-focus-replay-authorization-2026-08-13.md`; scoring
+still requires two independent human reviews. Expression projection, staging
+deployment, production observation, and retained-user-data use remain
+unauthorized.
 
 ## Objective
 

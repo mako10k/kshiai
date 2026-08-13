@@ -88,9 +88,11 @@ task CF_AUTHORIZE_REPLAY DETERMINISTIC_SHADOW_ACCEPTED -> REPLAY_AUTHORIZED:
   title "Authorize the frozen blinded expression replay"
   description "The owner reviews deterministic evidence and freezes provider, model, temperature support, input revisions, fixture digest, two-reviewer rubric, 144 logical-call maximum, 160 physical-attempt ceiling, token ceiling, monetary ceiling, and stop conditions. Declining authorization is a valid terminal decision and permits no provider call."
   duration 1p
+  status done
   requires:
     OWNER 1
   owner "user"
+  source "docs/evidence/character-focus-replay-authorization-2026-08-13.md"
 
 task CF_RUN_BLINDED_ABLATION REPLAY_AUTHORIZED -> REPLAY_ACCEPTED:
   title "Run and score the four-arm blinded expression ablation"
