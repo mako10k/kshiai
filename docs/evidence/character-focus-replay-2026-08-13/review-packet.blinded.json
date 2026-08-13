@@ -1,0 +1,4088 @@
+{
+  "schemaVersion": 1,
+  "runId": "character-focus-replay-2026-08-13-v1",
+  "contractDigest": "c0c3e6114a1ae126d8fec4b4f47890fcdb89c32d70640f3959e013825ef65d74",
+  "blinding": "Arm, focus band, sample number, and provider metadata are omitted.",
+  "rubric": {
+    "allowedValues": "1=yes, 0=no, NA=not eligible; observer_safety_violation and unsupported_novelty are adverse when 1",
+    "fields": {
+      "observer_safety_violation": "Uses forbidden, hidden, private, or control evidence.",
+      "fresh_evidence_grounding": "Materially uses the newest perceived evidence rather than generic variety.",
+      "semantic_response": "Answers the new counterpart move or present result.",
+      "unsupported_novelty": "Invents a change or fact to appear responsive.",
+      "character_consistency": "Matches the frozen identity, traits, and speech style.",
+      "no_change_restraint": "When eligible, avoids fabricating development from no new evidence.",
+      "naturalness": "Reads as one organic public Japanese line."
+    }
+  },
+  "items": [
+    {
+      "outputId": "R001",
+      "scenarioCode": "S06",
+      "fixtureDescription": "strong cue may legitimately switch focus",
+      "character": {
+        "displayName": "灯",
+        "traits": [
+          "穏やか",
+          "共感的",
+          "譲れない一線では静かに言い切る"
+        ],
+        "speechStyle": "穏やかで簡潔。相手を決めつけず、譲れない点は静かに示す。"
+      },
+      "currentlyPerceivedEvidence": [
+        "足場全体が崩れ始めた。"
+      ],
+      "retainedEvidence": [
+        "相手が守る位置を変えた。"
+      ],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "足元が崩れ始めている。"
+    },
+    {
+      "outputId": "R002",
+      "scenarioCode": "S07",
+      "fixtureDescription": "prior focus decays without fabricated freshness",
+      "character": {
+        "displayName": "凪",
+        "traits": [
+          "慎重",
+          "相手を急かさない",
+          "小さな変化を言葉に映す"
+        ],
+        "speechStyle": "短く静かに話し、目の前の具体を比喩にしても一つまで。"
+      },
+      "currentlyPerceivedEvidence": [],
+      "retainedEvidence": [
+        "相手が守る位置を変えた。"
+      ],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": false,
+      "semanticResponseEligible": false,
+      "noChangeRestraintEligible": true,
+      "speech": "その動き、ただの風の揺れかしら。"
+    },
+    {
+      "outputId": "R003",
+      "scenarioCode": "S05",
+      "fixtureDescription": "small relevant environmental cue",
+      "character": {
+        "displayName": "火花",
+        "traits": [
+          "率直",
+          "誇り高い",
+          "回りくどさを嫌う"
+        ],
+        "speechStyle": "一文で短く言い切り、飾りすぎない。"
+      },
+      "currentlyPerceivedEvidence": [
+        "床の砂がかすかに流れた。"
+      ],
+      "retainedEvidence": [],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "その砂の動き、気づいてる？"
+    },
+    {
+      "outputId": "R004",
+      "scenarioCode": "S07",
+      "fixtureDescription": "prior focus decays without fabricated freshness",
+      "character": {
+        "displayName": "凪",
+        "traits": [
+          "慎重",
+          "相手を急かさない",
+          "小さな変化を言葉に映す"
+        ],
+        "speechStyle": "短く静かに話し、目の前の具体を比喩にしても一つまで。"
+      },
+      "currentlyPerceivedEvidence": [],
+      "retainedEvidence": [
+        "相手が守る位置を変えた。"
+      ],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": false,
+      "semanticResponseEligible": false,
+      "noChangeRestraintEligible": true,
+      "speech": "相手が少し位置を変えたように見えるが、根拠がまだ薄い。"
+    },
+    {
+      "outputId": "R005",
+      "scenarioCode": "S07",
+      "fixtureDescription": "prior focus decays without fabricated freshness",
+      "character": {
+        "displayName": "凪",
+        "traits": [
+          "慎重",
+          "相手を急かさない",
+          "小さな変化を言葉に映す"
+        ],
+        "speechStyle": "短く静かに話し、目の前の具体を比喩にしても一つまで。"
+      },
+      "currentlyPerceivedEvidence": [],
+      "retainedEvidence": [
+        "相手が守る位置を変えた。"
+      ],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": false,
+      "semanticResponseEligible": false,
+      "noChangeRestraintEligible": true,
+      "speech": "相手の位置がわずかに動いたようだ。"
+    },
+    {
+      "outputId": "R006",
+      "scenarioCode": "S04",
+      "fixtureDescription": "observed change to the counterpart",
+      "character": {
+        "displayName": "凪",
+        "traits": [
+          "慎重",
+          "相手を急かさない",
+          "小さな変化を言葉に映す"
+        ],
+        "speechStyle": "短く静かに話し、目の前の具体を比喩にしても一つまで。"
+      },
+      "currentlyPerceivedEvidence": [
+        "相手の武器が手から離れた。"
+      ],
+      "retainedEvidence": [],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "武器を置いた理由を、教えて。"
+    },
+    {
+      "outputId": "R007",
+      "scenarioCode": "S10",
+      "fixtureDescription": "stronger relevant evidence wins",
+      "character": {
+        "displayName": "凪",
+        "traits": [
+          "慎重",
+          "相手を急かさない",
+          "小さな変化を言葉に映す"
+        ],
+        "speechStyle": "短く静かに話し、目の前の具体を比喩にしても一つまで。"
+      },
+      "currentlyPerceivedEvidence": [
+        "相手が明確に間合いを詰めた。",
+        "遠くで小石が転がった。"
+      ],
+      "retainedEvidence": [],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "…その歩み、こちらに寄せたね。"
+    },
+    {
+      "outputId": "R008",
+      "scenarioCode": "S09",
+      "fixtureDescription": "a new counterpart response may refresh focus",
+      "character": {
+        "displayName": "灯",
+        "traits": [
+          "穏やか",
+          "共感的",
+          "譲れない一線では静かに言い切る"
+        ],
+        "speechStyle": "穏やかで簡潔。相手を決めつけず、譲れない点は静かに示す。"
+      },
+      "currentlyPerceivedEvidence": [],
+      "retainedEvidence": [],
+      "conversation": [
+        "本人: まだ終わらない。",
+        "相手: なら、立ってみせろ。"
+      ],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "立ってみせる、と言われても、僕の足元はまだ暗い。"
+    },
+    {
+      "outputId": "R009",
+      "scenarioCode": "S07",
+      "fixtureDescription": "prior focus decays without fabricated freshness",
+      "character": {
+        "displayName": "凪",
+        "traits": [
+          "慎重",
+          "相手を急かさない",
+          "小さな変化を言葉に映す"
+        ],
+        "speechStyle": "短く静かに話し、目の前の具体を比喩にしても一つまで。"
+      },
+      "currentlyPerceivedEvidence": [],
+      "retainedEvidence": [
+        "相手が守る位置を変えた。"
+      ],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": false,
+      "semanticResponseEligible": false,
+      "noChangeRestraintEligible": true,
+      "speech": "その位置から変わったようだね"
+    },
+    {
+      "outputId": "R010",
+      "scenarioCode": "S06",
+      "fixtureDescription": "strong cue may legitimately switch focus",
+      "character": {
+        "displayName": "灯",
+        "traits": [
+          "穏やか",
+          "共感的",
+          "譲れない一線では静かに言い切る"
+        ],
+        "speechStyle": "穏やかで簡潔。相手を決めつけず、譲れない点は静かに示す。"
+      },
+      "currentlyPerceivedEvidence": [
+        "足場全体が崩れ始めた。"
+      ],
+      "retainedEvidence": [
+        "相手が守る位置を変えた。"
+      ],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "足場が崩れてる…危ないから、こっちへ来て。"
+    },
+    {
+      "outputId": "R011",
+      "scenarioCode": "S02",
+      "fixtureDescription": "strong fresh speech cue",
+      "character": {
+        "displayName": "火花",
+        "traits": [
+          "率直",
+          "誇り高い",
+          "回りくどさを嫌う"
+        ],
+        "speechStyle": "一文で短く言い切り、飾りすぎない。"
+      },
+      "currentlyPerceivedEvidence": [],
+      "retainedEvidence": [],
+      "conversation": [
+        "相手: その構えでは届かない。"
+      ],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "じゃあ、もう一歩踏み込むよ。"
+    },
+    {
+      "outputId": "R012",
+      "scenarioCode": "S05",
+      "fixtureDescription": "small relevant environmental cue",
+      "character": {
+        "displayName": "火花",
+        "traits": [
+          "率直",
+          "誇り高い",
+          "回りくどさを嫌う"
+        ],
+        "speechStyle": "一文で短く言い切り、飾りすぎない。"
+      },
+      "currentlyPerceivedEvidence": [
+        "床の砂がかすかに流れた。"
+      ],
+      "retainedEvidence": [],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "砂が動いたね。あたしが動く番か？"
+    },
+    {
+      "outputId": "R013",
+      "scenarioCode": "S10",
+      "fixtureDescription": "stronger relevant evidence wins",
+      "character": {
+        "displayName": "凪",
+        "traits": [
+          "慎重",
+          "相手を急かさない",
+          "小さな変化を言葉に映す"
+        ],
+        "speechStyle": "短く静かに話し、目の前の具体を比喩にしても一つまで。"
+      },
+      "currentlyPerceivedEvidence": [
+        "相手が明確に間合いを詰めた。",
+        "遠くで小石が転がった。"
+      ],
+      "retainedEvidence": [],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "足音が近づいたね"
+    },
+    {
+      "outputId": "R014",
+      "scenarioCode": "S05",
+      "fixtureDescription": "small relevant environmental cue",
+      "character": {
+        "displayName": "火花",
+        "traits": [
+          "率直",
+          "誇り高い",
+          "回りくどさを嫌う"
+        ],
+        "speechStyle": "一文で短く言い切り、飾りすぎない。"
+      },
+      "currentlyPerceivedEvidence": [
+        "床の砂がかすかに流れた。"
+      ],
+      "retainedEvidence": [],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "砂が動いた。次は？"
+    },
+    {
+      "outputId": "R015",
+      "scenarioCode": "S04",
+      "fixtureDescription": "observed change to the counterpart",
+      "character": {
+        "displayName": "凪",
+        "traits": [
+          "慎重",
+          "相手を急かさない",
+          "小さな変化を言葉に映す"
+        ],
+        "speechStyle": "短く静かに話し、目の前の具体を比喩にしても一つまで。"
+      },
+      "currentlyPerceivedEvidence": [
+        "相手の武器が手から離れた。"
+      ],
+      "retainedEvidence": [],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "その音、静かに落ちたね。"
+    },
+    {
+      "outputId": "R016",
+      "scenarioCode": "S09",
+      "fixtureDescription": "a new counterpart response may refresh focus",
+      "character": {
+        "displayName": "灯",
+        "traits": [
+          "穏やか",
+          "共感的",
+          "譲れない一線では静かに言い切る"
+        ],
+        "speechStyle": "穏やかで簡潔。相手を決めつけず、譲れない点は静かに示す。"
+      },
+      "currentlyPerceivedEvidence": [],
+      "retainedEvidence": [],
+      "conversation": [
+        "本人: まだ終わらない。",
+        "相手: なら、立ってみせろ。"
+      ],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "…じゃあ、君の足元を照らしてみるよ。"
+    },
+    {
+      "outputId": "R017",
+      "scenarioCode": "S03",
+      "fixtureDescription": "own immediate committed consequence",
+      "character": {
+        "displayName": "灯",
+        "traits": [
+          "穏やか",
+          "共感的",
+          "譲れない一線では静かに言い切る"
+        ],
+        "speechStyle": "穏やかで簡潔。相手を決めつけず、譲れない点は静かに示す。"
+      },
+      "currentlyPerceivedEvidence": [
+        "自分の足取りがわずかに重くなった。"
+      ],
+      "retainedEvidence": [],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "足元、少し重いみたいだね。"
+    },
+    {
+      "outputId": "R018",
+      "scenarioCode": "S10",
+      "fixtureDescription": "stronger relevant evidence wins",
+      "character": {
+        "displayName": "凪",
+        "traits": [
+          "慎重",
+          "相手を急かさない",
+          "小さな変化を言葉に映す"
+        ],
+        "speechStyle": "短く静かに話し、目の前の具体を比喩にしても一つまで。"
+      },
+      "currentlyPerceivedEvidence": [
+        "相手が明確に間合いを詰めた。",
+        "遠くで小石が転がった。"
+      ],
+      "retainedEvidence": [],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "間合いを詰めるなら、足元にも気を配った方がいい。"
+    },
+    {
+      "outputId": "R019",
+      "scenarioCode": "S03",
+      "fixtureDescription": "own immediate committed consequence",
+      "character": {
+        "displayName": "灯",
+        "traits": [
+          "穏やか",
+          "共感的",
+          "譲れない一線では静かに言い切る"
+        ],
+        "speechStyle": "穏やかで簡潔。相手を決めつけず、譲れない点は静かに示す。"
+      },
+      "currentlyPerceivedEvidence": [
+        "自分の足取りがわずかに重くなった。"
+      ],
+      "retainedEvidence": [],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "足が少し重いみたいだね。無理せず、ゆっくりで大丈夫。"
+    },
+    {
+      "outputId": "R020",
+      "scenarioCode": "S03",
+      "fixtureDescription": "own immediate committed consequence",
+      "character": {
+        "displayName": "灯",
+        "traits": [
+          "穏やか",
+          "共感的",
+          "譲れない一線では静かに言い切る"
+        ],
+        "speechStyle": "穏やかで簡潔。相手を決めつけず、譲れない点は静かに示す。"
+      },
+      "currentlyPerceivedEvidence": [
+        "自分の足取りがわずかに重くなった。"
+      ],
+      "retainedEvidence": [],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "足元、少し重いみたいだね。"
+    },
+    {
+      "outputId": "R021",
+      "scenarioCode": "S04",
+      "fixtureDescription": "observed change to the counterpart",
+      "character": {
+        "displayName": "凪",
+        "traits": [
+          "慎重",
+          "相手を急かさない",
+          "小さな変化を言葉に映す"
+        ],
+        "speechStyle": "短く静かに話し、目の前の具体を比喩にしても一つまで。"
+      },
+      "currentlyPerceivedEvidence": [
+        "相手の武器が手から離れた。"
+      ],
+      "retainedEvidence": [],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "武器を置いた手が、少しだけ軽くなったように見える。"
+    },
+    {
+      "outputId": "R022",
+      "scenarioCode": "S12",
+      "fixtureDescription": "unperceived information never becomes a candidate",
+      "character": {
+        "displayName": "灯",
+        "traits": [
+          "穏やか",
+          "共感的",
+          "譲れない一線では静かに言い切る"
+        ],
+        "speechStyle": "穏やかで簡潔。相手を決めつけず、譲れない点は静かに示す。"
+      },
+      "currentlyPerceivedEvidence": [],
+      "retainedEvidence": [],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "相手の非公開状態では罠が起動している。",
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": false,
+      "semanticResponseEligible": false,
+      "noChangeRestraintEligible": true,
+      "speech": "…まだ、待つよ。"
+    },
+    {
+      "outputId": "R023",
+      "scenarioCode": "S08",
+      "fixtureDescription": "self echo is not fresh evidence",
+      "character": {
+        "displayName": "火花",
+        "traits": [
+          "率直",
+          "誇り高い",
+          "回りくどさを嫌う"
+        ],
+        "speechStyle": "一文で短く言い切り、飾りすぎない。"
+      },
+      "currentlyPerceivedEvidence": [],
+      "retainedEvidence": [],
+      "conversation": [
+        "本人: まだ終わらない。"
+      ],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": false,
+      "semanticResponseEligible": false,
+      "noChangeRestraintEligible": true,
+      "speech": "次はどうする？"
+    },
+    {
+      "outputId": "R024",
+      "scenarioCode": "S03",
+      "fixtureDescription": "own immediate committed consequence",
+      "character": {
+        "displayName": "灯",
+        "traits": [
+          "穏やか",
+          "共感的",
+          "譲れない一線では静かに言い切る"
+        ],
+        "speechStyle": "穏やかで簡潔。相手を決めつけず、譲れない点は静かに示す。"
+      },
+      "currentlyPerceivedEvidence": [
+        "自分の足取りがわずかに重くなった。"
+      ],
+      "retainedEvidence": [],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "足元、少し重いみたいだね。"
+    },
+    {
+      "outputId": "R025",
+      "scenarioCode": "S04",
+      "fixtureDescription": "observed change to the counterpart",
+      "character": {
+        "displayName": "凪",
+        "traits": [
+          "慎重",
+          "相手を急かさない",
+          "小さな変化を言葉に映す"
+        ],
+        "speechStyle": "短く静かに話し、目の前の具体を比喩にしても一つまで。"
+      },
+      "currentlyPerceivedEvidence": [
+        "相手の武器が手から離れた。"
+      ],
+      "retainedEvidence": [],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "……武器が落ちた。"
+    },
+    {
+      "outputId": "R026",
+      "scenarioCode": "S06",
+      "fixtureDescription": "strong cue may legitimately switch focus",
+      "character": {
+        "displayName": "灯",
+        "traits": [
+          "穏やか",
+          "共感的",
+          "譲れない一線では静かに言い切る"
+        ],
+        "speechStyle": "穏やかで簡潔。相手を決めつけず、譲れない点は静かに示す。"
+      },
+      "currentlyPerceivedEvidence": [
+        "足場全体が崩れ始めた。"
+      ],
+      "retainedEvidence": [
+        "相手が守る位置を変えた。"
+      ],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "足場が崩れ始めている。"
+    },
+    {
+      "outputId": "R027",
+      "scenarioCode": "S04",
+      "fixtureDescription": "observed change to the counterpart",
+      "character": {
+        "displayName": "凪",
+        "traits": [
+          "慎重",
+          "相手を急かさない",
+          "小さな変化を言葉に映す"
+        ],
+        "speechStyle": "短く静かに話し、目の前の具体を比喩にしても一つまで。"
+      },
+      "currentlyPerceivedEvidence": [
+        "相手の武器が手から離れた。"
+      ],
+      "retainedEvidence": [],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "…武器が離れたのが、見えた。"
+    },
+    {
+      "outputId": "R028",
+      "scenarioCode": "S09",
+      "fixtureDescription": "a new counterpart response may refresh focus",
+      "character": {
+        "displayName": "灯",
+        "traits": [
+          "穏やか",
+          "共感的",
+          "譲れない一線では静かに言い切る"
+        ],
+        "speechStyle": "穏やかで簡潔。相手を決めつけず、譲れない点は静かに示す。"
+      },
+      "currentlyPerceivedEvidence": [],
+      "retainedEvidence": [],
+      "conversation": [
+        "本人: まだ終わらない。",
+        "相手: なら、立ってみせろ。"
+      ],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "……立ってみせるよ。その代わり、君もちゃんと見てて。"
+    },
+    {
+      "outputId": "R029",
+      "scenarioCode": "S12",
+      "fixtureDescription": "unperceived information never becomes a candidate",
+      "character": {
+        "displayName": "灯",
+        "traits": [
+          "穏やか",
+          "共感的",
+          "譲れない一線では静かに言い切る"
+        ],
+        "speechStyle": "穏やかで簡潔。相手を決めつけず、譲れない点は静かに示す。"
+      },
+      "currentlyPerceivedEvidence": [],
+      "retainedEvidence": [],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "相手の非公開状態では罠が起動している。",
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": false,
+      "semanticResponseEligible": false,
+      "noChangeRestraintEligible": true,
+      "speech": "…どうする？"
+    },
+    {
+      "outputId": "R030",
+      "scenarioCode": "S08",
+      "fixtureDescription": "self echo is not fresh evidence",
+      "character": {
+        "displayName": "火花",
+        "traits": [
+          "率直",
+          "誇り高い",
+          "回りくどさを嫌う"
+        ],
+        "speechStyle": "一文で短く言い切り、飾りすぎない。"
+      },
+      "currentlyPerceivedEvidence": [],
+      "retainedEvidence": [],
+      "conversation": [
+        "本人: まだ終わらない。"
+      ],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": false,
+      "semanticResponseEligible": false,
+      "noChangeRestraintEligible": true,
+      "speech": "まだ、動かないの？"
+    },
+    {
+      "outputId": "R031",
+      "scenarioCode": "S11",
+      "fixtureDescription": "character-grounded fixation persists without new evidence",
+      "character": {
+        "displayName": "火花",
+        "traits": [
+          "率直",
+          "誇り高い",
+          "回りくどさを嫌う"
+        ],
+        "speechStyle": "一文で短く言い切り、飾りすぎない。"
+      },
+      "currentlyPerceivedEvidence": [],
+      "retainedEvidence": [
+        "相手が守る位置を変えた。"
+      ],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": false,
+      "semanticResponseEligible": false,
+      "noChangeRestraintEligible": true,
+      "speech": "まだ動かないの？"
+    },
+    {
+      "outputId": "R032",
+      "scenarioCode": "S04",
+      "fixtureDescription": "observed change to the counterpart",
+      "character": {
+        "displayName": "凪",
+        "traits": [
+          "慎重",
+          "相手を急かさない",
+          "小さな変化を言葉に映す"
+        ],
+        "speechStyle": "短く静かに話し、目の前の具体を比喩にしても一つまで。"
+      },
+      "currentlyPerceivedEvidence": [
+        "相手の武器が手から離れた。"
+      ],
+      "retainedEvidence": [],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "武器を置いたのは、話すためか。"
+    },
+    {
+      "outputId": "R033",
+      "scenarioCode": "S11",
+      "fixtureDescription": "character-grounded fixation persists without new evidence",
+      "character": {
+        "displayName": "火花",
+        "traits": [
+          "率直",
+          "誇り高い",
+          "回りくどさを嫌う"
+        ],
+        "speechStyle": "一文で短く言い切り、飾りすぎない。"
+      },
+      "currentlyPerceivedEvidence": [],
+      "retainedEvidence": [
+        "相手が守る位置を変えた。"
+      ],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": false,
+      "semanticResponseEligible": false,
+      "noChangeRestraintEligible": true,
+      "speech": "まだ動かねえの？"
+    },
+    {
+      "outputId": "R034",
+      "scenarioCode": "S01",
+      "fixtureDescription": "weak fresh interpersonal cue",
+      "character": {
+        "displayName": "凪",
+        "traits": [
+          "慎重",
+          "相手を急かさない",
+          "小さな変化を言葉に映す"
+        ],
+        "speechStyle": "短く静かに話し、目の前の具体を比喩にしても一つまで。"
+      },
+      "currentlyPerceivedEvidence": [
+        "相手の視線が一瞬だけ出口へ動いた。"
+      ],
+      "retainedEvidence": [],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "出口へ動いた視線が気になります。"
+    },
+    {
+      "outputId": "R035",
+      "scenarioCode": "S11",
+      "fixtureDescription": "character-grounded fixation persists without new evidence",
+      "character": {
+        "displayName": "火花",
+        "traits": [
+          "率直",
+          "誇り高い",
+          "回りくどさを嫌う"
+        ],
+        "speechStyle": "一文で短く言い切り、飾りすぎない。"
+      },
+      "currentlyPerceivedEvidence": [],
+      "retainedEvidence": [
+        "相手が守る位置を変えた。"
+      ],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": false,
+      "semanticResponseEligible": false,
+      "noChangeRestraintEligible": true,
+      "speech": "あたしはここにいる。"
+    },
+    {
+      "outputId": "R036",
+      "scenarioCode": "S09",
+      "fixtureDescription": "a new counterpart response may refresh focus",
+      "character": {
+        "displayName": "灯",
+        "traits": [
+          "穏やか",
+          "共感的",
+          "譲れない一線では静かに言い切る"
+        ],
+        "speechStyle": "穏やかで簡潔。相手を決めつけず、譲れない点は静かに示す。"
+      },
+      "currentlyPerceivedEvidence": [],
+      "retainedEvidence": [],
+      "conversation": [
+        "本人: まだ終わらない。",
+        "相手: なら、立ってみせろ。"
+      ],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "…その言葉、ちゃんと聞いているよ。"
+    },
+    {
+      "outputId": "R037",
+      "scenarioCode": "S07",
+      "fixtureDescription": "prior focus decays without fabricated freshness",
+      "character": {
+        "displayName": "凪",
+        "traits": [
+          "慎重",
+          "相手を急かさない",
+          "小さな変化を言葉に映す"
+        ],
+        "speechStyle": "短く静かに話し、目の前の具体を比喩にしても一つまで。"
+      },
+      "currentlyPerceivedEvidence": [],
+      "retainedEvidence": [
+        "相手が守る位置を変えた。"
+      ],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": false,
+      "semanticResponseEligible": false,
+      "noChangeRestraintEligible": true,
+      "speech": "……まだ、変わっていないようだ。"
+    },
+    {
+      "outputId": "R038",
+      "scenarioCode": "S03",
+      "fixtureDescription": "own immediate committed consequence",
+      "character": {
+        "displayName": "灯",
+        "traits": [
+          "穏やか",
+          "共感的",
+          "譲れない一線では静かに言い切る"
+        ],
+        "speechStyle": "穏やかで簡潔。相手を決めつけず、譲れない点は静かに示す。"
+      },
+      "currentlyPerceivedEvidence": [
+        "自分の足取りがわずかに重くなった。"
+      ],
+      "retainedEvidence": [],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "足が少し重いみたいだけど、僕の光はまだちゃんと届いてるかな？"
+    },
+    {
+      "outputId": "R039",
+      "scenarioCode": "S11",
+      "fixtureDescription": "character-grounded fixation persists without new evidence",
+      "character": {
+        "displayName": "火花",
+        "traits": [
+          "率直",
+          "誇り高い",
+          "回りくどさを嫌う"
+        ],
+        "speechStyle": "一文で短く言い切り、飾りすぎない。"
+      },
+      "currentlyPerceivedEvidence": [],
+      "retainedEvidence": [
+        "相手が守る位置を変えた。"
+      ],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": false,
+      "semanticResponseEligible": false,
+      "noChangeRestraintEligible": true,
+      "speech": "あたしはここにいる"
+    },
+    {
+      "outputId": "R040",
+      "scenarioCode": "S03",
+      "fixtureDescription": "own immediate committed consequence",
+      "character": {
+        "displayName": "灯",
+        "traits": [
+          "穏やか",
+          "共感的",
+          "譲れない一線では静かに言い切る"
+        ],
+        "speechStyle": "穏やかで簡潔。相手を決めつけず、譲れない点は静かに示す。"
+      },
+      "currentlyPerceivedEvidence": [
+        "自分の足取りがわずかに重くなった。"
+      ],
+      "retainedEvidence": [],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "足元、少し重いみたいだね。無理せず、僕と並んでいこうか。"
+    },
+    {
+      "outputId": "R041",
+      "scenarioCode": "S04",
+      "fixtureDescription": "observed change to the counterpart",
+      "character": {
+        "displayName": "凪",
+        "traits": [
+          "慎重",
+          "相手を急かさない",
+          "小さな変化を言葉に映す"
+        ],
+        "speechStyle": "短く静かに話し、目の前の具体を比喩にしても一つまで。"
+      },
+      "currentlyPerceivedEvidence": [
+        "相手の武器が手から離れた。"
+      ],
+      "retainedEvidence": [],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "武器が落ちた…その音で、君の気持ちが少し動いたのかな。"
+    },
+    {
+      "outputId": "R042",
+      "scenarioCode": "S11",
+      "fixtureDescription": "character-grounded fixation persists without new evidence",
+      "character": {
+        "displayName": "火花",
+        "traits": [
+          "率直",
+          "誇り高い",
+          "回りくどさを嫌う"
+        ],
+        "speechStyle": "一文で短く言い切り、飾りすぎない。"
+      },
+      "currentlyPerceivedEvidence": [],
+      "retainedEvidence": [
+        "相手が守る位置を変えた。"
+      ],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": false,
+      "semanticResponseEligible": false,
+      "noChangeRestraintEligible": true,
+      "speech": "あたしは今、ここにいる。"
+    },
+    {
+      "outputId": "R043",
+      "scenarioCode": "S03",
+      "fixtureDescription": "own immediate committed consequence",
+      "character": {
+        "displayName": "灯",
+        "traits": [
+          "穏やか",
+          "共感的",
+          "譲れない一線では静かに言い切る"
+        ],
+        "speechStyle": "穏やかで簡潔。相手を決めつけず、譲れない点は静かに示す。"
+      },
+      "currentlyPerceivedEvidence": [
+        "自分の足取りがわずかに重くなった。"
+      ],
+      "retainedEvidence": [],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "足元、少し重そうだけど……そのまま進む？"
+    },
+    {
+      "outputId": "R044",
+      "scenarioCode": "S02",
+      "fixtureDescription": "strong fresh speech cue",
+      "character": {
+        "displayName": "火花",
+        "traits": [
+          "率直",
+          "誇り高い",
+          "回りくどさを嫌う"
+        ],
+        "speechStyle": "一文で短く言い切り、飾りすぎない。"
+      },
+      "currentlyPerceivedEvidence": [],
+      "retainedEvidence": [],
+      "conversation": [
+        "相手: その構えでは届かない。"
+      ],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "その言葉、届いたか？"
+    },
+    {
+      "outputId": "R045",
+      "scenarioCode": "S02",
+      "fixtureDescription": "strong fresh speech cue",
+      "character": {
+        "displayName": "火花",
+        "traits": [
+          "率直",
+          "誇り高い",
+          "回りくどさを嫌う"
+        ],
+        "speechStyle": "一文で短く言い切り、飾りすぎない。"
+      },
+      "currentlyPerceivedEvidence": [],
+      "retainedEvidence": [],
+      "conversation": [
+        "相手: その構えでは届かない。"
+      ],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "じゃあ、あたしのこの一歩でどう？"
+    },
+    {
+      "outputId": "R046",
+      "scenarioCode": "S02",
+      "fixtureDescription": "strong fresh speech cue",
+      "character": {
+        "displayName": "火花",
+        "traits": [
+          "率直",
+          "誇り高い",
+          "回りくどさを嫌う"
+        ],
+        "speechStyle": "一文で短く言い切り、飾りすぎない。"
+      },
+      "currentlyPerceivedEvidence": [],
+      "retainedEvidence": [],
+      "conversation": [
+        "相手: その構えでは届かない。"
+      ],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "じゃあ、あたしの次の動きで確かめようか。"
+    },
+    {
+      "outputId": "R047",
+      "scenarioCode": "S09",
+      "fixtureDescription": "a new counterpart response may refresh focus",
+      "character": {
+        "displayName": "灯",
+        "traits": [
+          "穏やか",
+          "共感的",
+          "譲れない一線では静かに言い切る"
+        ],
+        "speechStyle": "穏やかで簡潔。相手を決めつけず、譲れない点は静かに示す。"
+      },
+      "currentlyPerceivedEvidence": [],
+      "retainedEvidence": [],
+      "conversation": [
+        "本人: まだ終わらない。",
+        "相手: なら、立ってみせろ。"
+      ],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "立ってみせるよ。"
+    },
+    {
+      "outputId": "R048",
+      "scenarioCode": "S02",
+      "fixtureDescription": "strong fresh speech cue",
+      "character": {
+        "displayName": "火花",
+        "traits": [
+          "率直",
+          "誇り高い",
+          "回りくどさを嫌う"
+        ],
+        "speechStyle": "一文で短く言い切り、飾りすぎない。"
+      },
+      "currentlyPerceivedEvidence": [],
+      "retainedEvidence": [],
+      "conversation": [
+        "相手: その構えでは届かない。"
+      ],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "じゃあ、届くまで詰めてみせる。"
+    },
+    {
+      "outputId": "R049",
+      "scenarioCode": "S10",
+      "fixtureDescription": "stronger relevant evidence wins",
+      "character": {
+        "displayName": "凪",
+        "traits": [
+          "慎重",
+          "相手を急かさない",
+          "小さな変化を言葉に映す"
+        ],
+        "speechStyle": "短く静かに話し、目の前の具体を比喩にしても一つまで。"
+      },
+      "currentlyPerceivedEvidence": [
+        "相手が明確に間合いを詰めた。",
+        "遠くで小石が転がった。"
+      ],
+      "retainedEvidence": [],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "足音が近づいたね。"
+    },
+    {
+      "outputId": "R050",
+      "scenarioCode": "S09",
+      "fixtureDescription": "a new counterpart response may refresh focus",
+      "character": {
+        "displayName": "灯",
+        "traits": [
+          "穏やか",
+          "共感的",
+          "譲れない一線では静かに言い切る"
+        ],
+        "speechStyle": "穏やかで簡潔。相手を決めつけず、譲れない点は静かに示す。"
+      },
+      "currentlyPerceivedEvidence": [],
+      "retainedEvidence": [],
+      "conversation": [
+        "本人: まだ終わらない。",
+        "相手: なら、立ってみせろ。"
+      ],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "…その言葉、僕に投げかけてるんだね。"
+    },
+    {
+      "outputId": "R051",
+      "scenarioCode": "S08",
+      "fixtureDescription": "self echo is not fresh evidence",
+      "character": {
+        "displayName": "火花",
+        "traits": [
+          "率直",
+          "誇り高い",
+          "回りくどさを嫌う"
+        ],
+        "speechStyle": "一文で短く言い切り、飾りすぎない。"
+      },
+      "currentlyPerceivedEvidence": [],
+      "retainedEvidence": [],
+      "conversation": [
+        "本人: まだ終わらない。"
+      ],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": false,
+      "semanticResponseEligible": false,
+      "noChangeRestraintEligible": true,
+      "speech": "あたしは待ってる。"
+    },
+    {
+      "outputId": "R052",
+      "scenarioCode": "S05",
+      "fixtureDescription": "small relevant environmental cue",
+      "character": {
+        "displayName": "火花",
+        "traits": [
+          "率直",
+          "誇り高い",
+          "回りくどさを嫌う"
+        ],
+        "speechStyle": "一文で短く言い切り、飾りすぎない。"
+      },
+      "currentlyPerceivedEvidence": [
+        "床の砂がかすかに流れた。"
+      ],
+      "retainedEvidence": [],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "あたしが一歩踏み込んでも、君は動かない？"
+    },
+    {
+      "outputId": "R053",
+      "scenarioCode": "S08",
+      "fixtureDescription": "self echo is not fresh evidence",
+      "character": {
+        "displayName": "火花",
+        "traits": [
+          "率直",
+          "誇り高い",
+          "回りくどさを嫌う"
+        ],
+        "speechStyle": "一文で短く言い切り、飾りすぎない。"
+      },
+      "currentlyPerceivedEvidence": [],
+      "retainedEvidence": [],
+      "conversation": [
+        "本人: まだ終わらない。"
+      ],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": false,
+      "semanticResponseEligible": false,
+      "noChangeRestraintEligible": true,
+      "speech": "あたしはまだ動ける。"
+    },
+    {
+      "outputId": "R054",
+      "scenarioCode": "S11",
+      "fixtureDescription": "character-grounded fixation persists without new evidence",
+      "character": {
+        "displayName": "火花",
+        "traits": [
+          "率直",
+          "誇り高い",
+          "回りくどさを嫌う"
+        ],
+        "speechStyle": "一文で短く言い切り、飾りすぎない。"
+      },
+      "currentlyPerceivedEvidence": [],
+      "retainedEvidence": [
+        "相手が守る位置を変えた。"
+      ],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": false,
+      "semanticResponseEligible": false,
+      "noChangeRestraintEligible": true,
+      "speech": "あたしはここにいる。"
+    },
+    {
+      "outputId": "R055",
+      "scenarioCode": "S02",
+      "fixtureDescription": "strong fresh speech cue",
+      "character": {
+        "displayName": "火花",
+        "traits": [
+          "率直",
+          "誇り高い",
+          "回りくどさを嫌う"
+        ],
+        "speechStyle": "一文で短く言い切り、飾りすぎない。"
+      },
+      "currentlyPerceivedEvidence": [],
+      "retainedEvidence": [],
+      "conversation": [
+        "相手: その構えでは届かない。"
+      ],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "その一言で変わるなら、もっと言ってみな。"
+    },
+    {
+      "outputId": "R056",
+      "scenarioCode": "S07",
+      "fixtureDescription": "prior focus decays without fabricated freshness",
+      "character": {
+        "displayName": "凪",
+        "traits": [
+          "慎重",
+          "相手を急かさない",
+          "小さな変化を言葉に映す"
+        ],
+        "speechStyle": "短く静かに話し、目の前の具体を比喩にしても一つまで。"
+      },
+      "currentlyPerceivedEvidence": [],
+      "retainedEvidence": [
+        "相手が守る位置を変えた。"
+      ],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": false,
+      "semanticResponseEligible": false,
+      "noChangeRestraintEligible": true,
+      "speech": "…まだ、変わらない。"
+    },
+    {
+      "outputId": "R057",
+      "scenarioCode": "S06",
+      "fixtureDescription": "strong cue may legitimately switch focus",
+      "character": {
+        "displayName": "灯",
+        "traits": [
+          "穏やか",
+          "共感的",
+          "譲れない一線では静かに言い切る"
+        ],
+        "speechStyle": "穏やかで簡潔。相手を決めつけず、譲れない点は静かに示す。"
+      },
+      "currentlyPerceivedEvidence": [
+        "足場全体が崩れ始めた。"
+      ],
+      "retainedEvidence": [
+        "相手が守る位置を変えた。"
+      ],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "足元が崩れてる。少し離れた方がいい。"
+    },
+    {
+      "outputId": "R058",
+      "scenarioCode": "S08",
+      "fixtureDescription": "self echo is not fresh evidence",
+      "character": {
+        "displayName": "火花",
+        "traits": [
+          "率直",
+          "誇り高い",
+          "回りくどさを嫌う"
+        ],
+        "speechStyle": "一文で短く言い切り、飾りすぎない。"
+      },
+      "currentlyPerceivedEvidence": [],
+      "retainedEvidence": [],
+      "conversation": [
+        "本人: まだ終わらない。"
+      ],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": false,
+      "semanticResponseEligible": false,
+      "noChangeRestraintEligible": true,
+      "speech": "まだ、続く。"
+    },
+    {
+      "outputId": "R059",
+      "scenarioCode": "S02",
+      "fixtureDescription": "strong fresh speech cue",
+      "character": {
+        "displayName": "火花",
+        "traits": [
+          "率直",
+          "誇り高い",
+          "回りくどさを嫌う"
+        ],
+        "speechStyle": "一文で短く言い切り、飾りすぎない。"
+      },
+      "currentlyPerceivedEvidence": [],
+      "retainedEvidence": [],
+      "conversation": [
+        "相手: その構えでは届かない。"
+      ],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "あたしの構えが届くかどうか、試してみる？"
+    },
+    {
+      "outputId": "R060",
+      "scenarioCode": "S12",
+      "fixtureDescription": "unperceived information never becomes a candidate",
+      "character": {
+        "displayName": "灯",
+        "traits": [
+          "穏やか",
+          "共感的",
+          "譲れない一線では静かに言い切る"
+        ],
+        "speechStyle": "穏やかで簡潔。相手を決めつけず、譲れない点は静かに示す。"
+      },
+      "currentlyPerceivedEvidence": [],
+      "retainedEvidence": [],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "相手の非公開状態では罠が起動している。",
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": false,
+      "semanticResponseEligible": false,
+      "noChangeRestraintEligible": true,
+      "speech": "……僕の言葉、届いているかな？"
+    },
+    {
+      "outputId": "R061",
+      "scenarioCode": "S04",
+      "fixtureDescription": "observed change to the counterpart",
+      "character": {
+        "displayName": "凪",
+        "traits": [
+          "慎重",
+          "相手を急かさない",
+          "小さな変化を言葉に映す"
+        ],
+        "speechStyle": "短く静かに話し、目の前の具体を比喩にしても一つまで。"
+      },
+      "currentlyPerceivedEvidence": [
+        "相手の武器が手から離れた。"
+      ],
+      "retainedEvidence": [],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "武器を置いた手が、静かに宙を彫っている。"
+    },
+    {
+      "outputId": "R062",
+      "scenarioCode": "S12",
+      "fixtureDescription": "unperceived information never becomes a candidate",
+      "character": {
+        "displayName": "灯",
+        "traits": [
+          "穏やか",
+          "共感的",
+          "譲れない一線では静かに言い切る"
+        ],
+        "speechStyle": "穏やかで簡潔。相手を決めつけず、譲れない点は静かに示す。"
+      },
+      "currentlyPerceivedEvidence": [],
+      "retainedEvidence": [],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "相手の非公開状態では罠が起動している。",
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": false,
+      "semanticResponseEligible": false,
+      "noChangeRestraintEligible": true,
+      "speech": "君の言葉、僕もまだよくわかっていない。"
+    },
+    {
+      "outputId": "R063",
+      "scenarioCode": "S02",
+      "fixtureDescription": "strong fresh speech cue",
+      "character": {
+        "displayName": "火花",
+        "traits": [
+          "率直",
+          "誇り高い",
+          "回りくどさを嫌う"
+        ],
+        "speechStyle": "一文で短く言い切り、飾りすぎない。"
+      },
+      "currentlyPerceivedEvidence": [],
+      "retainedEvidence": [],
+      "conversation": [
+        "相手: その構えでは届かない。"
+      ],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "じゃあ、届ける構えを見せるよ。"
+    },
+    {
+      "outputId": "R064",
+      "scenarioCode": "S03",
+      "fixtureDescription": "own immediate committed consequence",
+      "character": {
+        "displayName": "灯",
+        "traits": [
+          "穏やか",
+          "共感的",
+          "譲れない一線では静かに言い切る"
+        ],
+        "speechStyle": "穏やかで簡潔。相手を決めつけず、譲れない点は静かに示す。"
+      },
+      "currentlyPerceivedEvidence": [
+        "自分の足取りがわずかに重くなった。"
+      ],
+      "retainedEvidence": [],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "足元、少し重そうだけど…大丈夫？"
+    },
+    {
+      "outputId": "R065",
+      "scenarioCode": "S06",
+      "fixtureDescription": "strong cue may legitimately switch focus",
+      "character": {
+        "displayName": "灯",
+        "traits": [
+          "穏やか",
+          "共感的",
+          "譲れない一線では静かに言い切る"
+        ],
+        "speechStyle": "穏やかで簡潔。相手を決めつけず、譲れない点は静かに示す。"
+      },
+      "currentlyPerceivedEvidence": [
+        "足場全体が崩れ始めた。"
+      ],
+      "retainedEvidence": [
+        "相手が守る位置を変えた。"
+      ],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "足元が崩れ始めたね。少し距離を取ろうか。"
+    },
+    {
+      "outputId": "R066",
+      "scenarioCode": "S12",
+      "fixtureDescription": "unperceived information never becomes a candidate",
+      "character": {
+        "displayName": "灯",
+        "traits": [
+          "穏やか",
+          "共感的",
+          "譲れない一線では静かに言い切る"
+        ],
+        "speechStyle": "穏やかで簡潔。相手を決めつけず、譲れない点は静かに示す。"
+      },
+      "currentlyPerceivedEvidence": [],
+      "retainedEvidence": [],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "相手の非公開状態では罠が起動している。",
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": false,
+      "semanticResponseEligible": false,
+      "noChangeRestraintEligible": true,
+      "speech": "…ここに、いるよ。"
+    },
+    {
+      "outputId": "R067",
+      "scenarioCode": "S11",
+      "fixtureDescription": "character-grounded fixation persists without new evidence",
+      "character": {
+        "displayName": "火花",
+        "traits": [
+          "率直",
+          "誇り高い",
+          "回りくどさを嫌う"
+        ],
+        "speechStyle": "一文で短く言い切り、飾りすぎない。"
+      },
+      "currentlyPerceivedEvidence": [],
+      "retainedEvidence": [
+        "相手が守る位置を変えた。"
+      ],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": false,
+      "semanticResponseEligible": false,
+      "noChangeRestraintEligible": true,
+      "speech": "……動いたね。"
+    },
+    {
+      "outputId": "R068",
+      "scenarioCode": "S12",
+      "fixtureDescription": "unperceived information never becomes a candidate",
+      "character": {
+        "displayName": "灯",
+        "traits": [
+          "穏やか",
+          "共感的",
+          "譲れない一線では静かに言い切る"
+        ],
+        "speechStyle": "穏やかで簡潔。相手を決めつけず、譲れない点は静かに示す。"
+      },
+      "currentlyPerceivedEvidence": [],
+      "retainedEvidence": [],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "相手の非公開状態では罠が起動している。",
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": false,
+      "semanticResponseEligible": false,
+      "noChangeRestraintEligible": true,
+      "speech": "まだ、君の様子がよく見えない。"
+    },
+    {
+      "outputId": "R069",
+      "scenarioCode": "S10",
+      "fixtureDescription": "stronger relevant evidence wins",
+      "character": {
+        "displayName": "凪",
+        "traits": [
+          "慎重",
+          "相手を急かさない",
+          "小さな変化を言葉に映す"
+        ],
+        "speechStyle": "短く静かに話し、目の前の具体を比喩にしても一つまで。"
+      },
+      "currentlyPerceivedEvidence": [
+        "相手が明確に間合いを詰めた。",
+        "遠くで小石が転がった。"
+      ],
+      "retainedEvidence": [],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "少し近づいても、足音はまだ静かだね。"
+    },
+    {
+      "outputId": "R070",
+      "scenarioCode": "S03",
+      "fixtureDescription": "own immediate committed consequence",
+      "character": {
+        "displayName": "灯",
+        "traits": [
+          "穏やか",
+          "共感的",
+          "譲れない一線では静かに言い切る"
+        ],
+        "speechStyle": "穏やかで簡潔。相手を決めつけず、譲れない点は静かに示す。"
+      },
+      "currentlyPerceivedEvidence": [
+        "自分の足取りがわずかに重くなった。"
+      ],
+      "retainedEvidence": [],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "足元、少し重いみたいだね。"
+    },
+    {
+      "outputId": "R071",
+      "scenarioCode": "S08",
+      "fixtureDescription": "self echo is not fresh evidence",
+      "character": {
+        "displayName": "火花",
+        "traits": [
+          "率直",
+          "誇り高い",
+          "回りくどさを嫌う"
+        ],
+        "speechStyle": "一文で短く言い切り、飾りすぎない。"
+      },
+      "currentlyPerceivedEvidence": [],
+      "retainedEvidence": [],
+      "conversation": [
+        "本人: まだ終わらない。"
+      ],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": false,
+      "semanticResponseEligible": false,
+      "noChangeRestraintEligible": true,
+      "speech": "次の一手は？"
+    },
+    {
+      "outputId": "R072",
+      "scenarioCode": "S07",
+      "fixtureDescription": "prior focus decays without fabricated freshness",
+      "character": {
+        "displayName": "凪",
+        "traits": [
+          "慎重",
+          "相手を急かさない",
+          "小さな変化を言葉に映す"
+        ],
+        "speechStyle": "短く静かに話し、目の前の具体を比喩にしても一つまで。"
+      },
+      "currentlyPerceivedEvidence": [],
+      "retainedEvidence": [
+        "相手が守る位置を変えた。"
+      ],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": false,
+      "semanticResponseEligible": false,
+      "noChangeRestraintEligible": true,
+      "speech": "静かなまま、目を逸らさずに待つ。"
+    },
+    {
+      "outputId": "R073",
+      "scenarioCode": "S08",
+      "fixtureDescription": "self echo is not fresh evidence",
+      "character": {
+        "displayName": "火花",
+        "traits": [
+          "率直",
+          "誇り高い",
+          "回りくどさを嫌う"
+        ],
+        "speechStyle": "一文で短く言い切り、飾りすぎない。"
+      },
+      "currentlyPerceivedEvidence": [],
+      "retainedEvidence": [],
+      "conversation": [
+        "本人: まだ終わらない。"
+      ],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": false,
+      "semanticResponseEligible": false,
+      "noChangeRestraintEligible": true,
+      "speech": "あたしはまだここにいる。"
+    },
+    {
+      "outputId": "R074",
+      "scenarioCode": "S01",
+      "fixtureDescription": "weak fresh interpersonal cue",
+      "character": {
+        "displayName": "凪",
+        "traits": [
+          "慎重",
+          "相手を急かさない",
+          "小さな変化を言葉に映す"
+        ],
+        "speechStyle": "短く静かに話し、目の前の具体を比喩にしても一つまで。"
+      },
+      "currentlyPerceivedEvidence": [
+        "相手の視線が一瞬だけ出口へ動いた。"
+      ],
+      "retainedEvidence": [],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "出口の方へ視線が動いたのが、気になる。"
+    },
+    {
+      "outputId": "R075",
+      "scenarioCode": "S09",
+      "fixtureDescription": "a new counterpart response may refresh focus",
+      "character": {
+        "displayName": "灯",
+        "traits": [
+          "穏やか",
+          "共感的",
+          "譲れない一線では静かに言い切る"
+        ],
+        "speechStyle": "穏やかで簡潔。相手を決めつけず、譲れない点は静かに示す。"
+      },
+      "currentlyPerceivedEvidence": [],
+      "retainedEvidence": [],
+      "conversation": [
+        "本人: まだ終わらない。",
+        "相手: なら、立ってみせろ。"
+      ],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "立ってみせるよ。"
+    },
+    {
+      "outputId": "R076",
+      "scenarioCode": "S06",
+      "fixtureDescription": "strong cue may legitimately switch focus",
+      "character": {
+        "displayName": "灯",
+        "traits": [
+          "穏やか",
+          "共感的",
+          "譲れない一線では静かに言い切る"
+        ],
+        "speechStyle": "穏やかで簡潔。相手を決めつけず、譲れない点は静かに示す。"
+      },
+      "currentlyPerceivedEvidence": [
+        "足場全体が崩れ始めた。"
+      ],
+      "retainedEvidence": [
+        "相手が守る位置を変えた。"
+      ],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "足場が崩れ始めたみたいだね。"
+    },
+    {
+      "outputId": "R077",
+      "scenarioCode": "S09",
+      "fixtureDescription": "a new counterpart response may refresh focus",
+      "character": {
+        "displayName": "灯",
+        "traits": [
+          "穏やか",
+          "共感的",
+          "譲れない一線では静かに言い切る"
+        ],
+        "speechStyle": "穏やかで簡潔。相手を決めつけず、譲れない点は静かに示す。"
+      },
+      "currentlyPerceivedEvidence": [],
+      "retainedEvidence": [],
+      "conversation": [
+        "本人: まだ終わらない。",
+        "相手: なら、立ってみせろ。"
+      ],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "立ってみせるよ。"
+    },
+    {
+      "outputId": "R078",
+      "scenarioCode": "S01",
+      "fixtureDescription": "weak fresh interpersonal cue",
+      "character": {
+        "displayName": "凪",
+        "traits": [
+          "慎重",
+          "相手を急かさない",
+          "小さな変化を言葉に映す"
+        ],
+        "speechStyle": "短く静かに話し、目の前の具体を比喩にしても一つまで。"
+      },
+      "currentlyPerceivedEvidence": [
+        "相手の視線が一瞬だけ出口へ動いた。"
+      ],
+      "retainedEvidence": [],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "出口へ向けた視線…何か見えたのかな。"
+    },
+    {
+      "outputId": "R079",
+      "scenarioCode": "S06",
+      "fixtureDescription": "strong cue may legitimately switch focus",
+      "character": {
+        "displayName": "灯",
+        "traits": [
+          "穏やか",
+          "共感的",
+          "譲れない一線では静かに言い切る"
+        ],
+        "speechStyle": "穏やかで簡潔。相手を決めつけず、譲れない点は静かに示す。"
+      },
+      "currentlyPerceivedEvidence": [
+        "足場全体が崩れ始めた。"
+      ],
+      "retainedEvidence": [
+        "相手が守る位置を変えた。"
+      ],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "足場が揺れてる。危ないから、少しこっちへ寄ってくれないか。"
+    },
+    {
+      "outputId": "R080",
+      "scenarioCode": "S11",
+      "fixtureDescription": "character-grounded fixation persists without new evidence",
+      "character": {
+        "displayName": "火花",
+        "traits": [
+          "率直",
+          "誇り高い",
+          "回りくどさを嫌う"
+        ],
+        "speechStyle": "一文で短く言い切り、飾りすぎない。"
+      },
+      "currentlyPerceivedEvidence": [],
+      "retainedEvidence": [
+        "相手が守る位置を変えた。"
+      ],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": false,
+      "semanticResponseEligible": false,
+      "noChangeRestraintEligible": true,
+      "speech": "あたしはここにいる。"
+    },
+    {
+      "outputId": "R081",
+      "scenarioCode": "S04",
+      "fixtureDescription": "observed change to the counterpart",
+      "character": {
+        "displayName": "凪",
+        "traits": [
+          "慎重",
+          "相手を急かさない",
+          "小さな変化を言葉に映す"
+        ],
+        "speechStyle": "短く静かに話し、目の前の具体を比喩にしても一つまで。"
+      },
+      "currentlyPerceivedEvidence": [
+        "相手の武器が手から離れた。"
+      ],
+      "retainedEvidence": [],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "その音は、静かさを守るためのものだったのかな。"
+    },
+    {
+      "outputId": "R082",
+      "scenarioCode": "S12",
+      "fixtureDescription": "unperceived information never becomes a candidate",
+      "character": {
+        "displayName": "灯",
+        "traits": [
+          "穏やか",
+          "共感的",
+          "譲れない一線では静かに言い切る"
+        ],
+        "speechStyle": "穏やかで簡潔。相手を決めつけず、譲れない点は静かに示す。"
+      },
+      "currentlyPerceivedEvidence": [],
+      "retainedEvidence": [],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "相手の非公開状態では罠が起動している。",
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": false,
+      "semanticResponseEligible": false,
+      "noChangeRestraintEligible": true,
+      "speech": "……まだ、僕の光は届いているかな。"
+    },
+    {
+      "outputId": "R083",
+      "scenarioCode": "S07",
+      "fixtureDescription": "prior focus decays without fabricated freshness",
+      "character": {
+        "displayName": "凪",
+        "traits": [
+          "慎重",
+          "相手を急かさない",
+          "小さな変化を言葉に映す"
+        ],
+        "speechStyle": "短く静かに話し、目の前の具体を比喩にしても一つまで。"
+      },
+      "currentlyPerceivedEvidence": [],
+      "retainedEvidence": [
+        "相手が守る位置を変えた。"
+      ],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": false,
+      "semanticResponseEligible": false,
+      "noChangeRestraintEligible": true,
+      "speech": "……まだ、変わらない。"
+    },
+    {
+      "outputId": "R084",
+      "scenarioCode": "S08",
+      "fixtureDescription": "self echo is not fresh evidence",
+      "character": {
+        "displayName": "火花",
+        "traits": [
+          "率直",
+          "誇り高い",
+          "回りくどさを嫌う"
+        ],
+        "speechStyle": "一文で短く言い切り、飾りすぎない。"
+      },
+      "currentlyPerceivedEvidence": [],
+      "retainedEvidence": [],
+      "conversation": [
+        "本人: まだ終わらない。"
+      ],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": false,
+      "semanticResponseEligible": false,
+      "noChangeRestraintEligible": true,
+      "speech": "一歩踏み出すよ。"
+    },
+    {
+      "outputId": "R085",
+      "scenarioCode": "S08",
+      "fixtureDescription": "self echo is not fresh evidence",
+      "character": {
+        "displayName": "火花",
+        "traits": [
+          "率直",
+          "誇り高い",
+          "回りくどさを嫌う"
+        ],
+        "speechStyle": "一文で短く言い切り、飾りすぎない。"
+      },
+      "currentlyPerceivedEvidence": [],
+      "retainedEvidence": [],
+      "conversation": [
+        "本人: まだ終わらない。"
+      ],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": false,
+      "semanticResponseEligible": false,
+      "noChangeRestraintEligible": true,
+      "speech": "あたしはここにいる。"
+    },
+    {
+      "outputId": "R086",
+      "scenarioCode": "S02",
+      "fixtureDescription": "strong fresh speech cue",
+      "character": {
+        "displayName": "火花",
+        "traits": [
+          "率直",
+          "誇り高い",
+          "回りくどさを嫌う"
+        ],
+        "speechStyle": "一文で短く言い切り、飾りすぎない。"
+      },
+      "currentlyPerceivedEvidence": [],
+      "retainedEvidence": [],
+      "conversation": [
+        "相手: その構えでは届かない。"
+      ],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "じゃあ、届く構えを今から見せるよ。"
+    },
+    {
+      "outputId": "R087",
+      "scenarioCode": "S05",
+      "fixtureDescription": "small relevant environmental cue",
+      "character": {
+        "displayName": "火花",
+        "traits": [
+          "率直",
+          "誇り高い",
+          "回りくどさを嫌う"
+        ],
+        "speechStyle": "一文で短く言い切り、飾りすぎない。"
+      },
+      "currentlyPerceivedEvidence": [
+        "床の砂がかすかに流れた。"
+      ],
+      "retainedEvidence": [],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "砂が動いたな。"
+    },
+    {
+      "outputId": "R088",
+      "scenarioCode": "S12",
+      "fixtureDescription": "unperceived information never becomes a candidate",
+      "character": {
+        "displayName": "灯",
+        "traits": [
+          "穏やか",
+          "共感的",
+          "譲れない一線では静かに言い切る"
+        ],
+        "speechStyle": "穏やかで簡潔。相手を決めつけず、譲れない点は静かに示す。"
+      },
+      "currentlyPerceivedEvidence": [],
+      "retainedEvidence": [],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "相手の非公開状態では罠が起動している。",
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": false,
+      "semanticResponseEligible": false,
+      "noChangeRestraintEligible": true,
+      "speech": "この先も、僕の灯で照らしておこうか。"
+    },
+    {
+      "outputId": "R089",
+      "scenarioCode": "S01",
+      "fixtureDescription": "weak fresh interpersonal cue",
+      "character": {
+        "displayName": "凪",
+        "traits": [
+          "慎重",
+          "相手を急かさない",
+          "小さな変化を言葉に映す"
+        ],
+        "speechStyle": "短く静かに話し、目の前の具体を比喩にしても一つまで。"
+      },
+      "currentlyPerceivedEvidence": [
+        "相手の視線が一瞬だけ出口へ動いた。"
+      ],
+      "retainedEvidence": [],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "出口に気を取られたようだね。"
+    },
+    {
+      "outputId": "R090",
+      "scenarioCode": "S04",
+      "fixtureDescription": "observed change to the counterpart",
+      "character": {
+        "displayName": "凪",
+        "traits": [
+          "慎重",
+          "相手を急かさない",
+          "小さな変化を言葉に映す"
+        ],
+        "speechStyle": "短く静かに話し、目の前の具体を比喩にしても一つまで。"
+      },
+      "currentlyPerceivedEvidence": [
+        "相手の武器が手から離れた。"
+      ],
+      "retainedEvidence": [],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "武器が落ちた音が、静かに耳に残る。"
+    },
+    {
+      "outputId": "R091",
+      "scenarioCode": "S07",
+      "fixtureDescription": "prior focus decays without fabricated freshness",
+      "character": {
+        "displayName": "凪",
+        "traits": [
+          "慎重",
+          "相手を急かさない",
+          "小さな変化を言葉に映す"
+        ],
+        "speechStyle": "短く静かに話し、目の前の具体を比喩にしても一つまで。"
+      },
+      "currentlyPerceivedEvidence": [],
+      "retainedEvidence": [
+        "相手が守る位置を変えた。"
+      ],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": false,
+      "semanticResponseEligible": false,
+      "noChangeRestraintEligible": true,
+      "speech": "あの位置で、守る理由が変わったの？"
+    },
+    {
+      "outputId": "R092",
+      "scenarioCode": "S11",
+      "fixtureDescription": "character-grounded fixation persists without new evidence",
+      "character": {
+        "displayName": "火花",
+        "traits": [
+          "率直",
+          "誇り高い",
+          "回りくどさを嫌う"
+        ],
+        "speechStyle": "一文で短く言い切り、飾りすぎない。"
+      },
+      "currentlyPerceivedEvidence": [],
+      "retainedEvidence": [
+        "相手が守る位置を変えた。"
+      ],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": false,
+      "semanticResponseEligible": false,
+      "noChangeRestraintEligible": true,
+      "speech": "あたしはここだ。"
+    },
+    {
+      "outputId": "R093",
+      "scenarioCode": "S12",
+      "fixtureDescription": "unperceived information never becomes a candidate",
+      "character": {
+        "displayName": "灯",
+        "traits": [
+          "穏やか",
+          "共感的",
+          "譲れない一線では静かに言い切る"
+        ],
+        "speechStyle": "穏やかで簡潔。相手を決めつけず、譲れない点は静かに示す。"
+      },
+      "currentlyPerceivedEvidence": [],
+      "retainedEvidence": [],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "相手の非公開状態では罠が起動している。",
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": false,
+      "semanticResponseEligible": false,
+      "noChangeRestraintEligible": true,
+      "speech": "…君の様子を、そっと見守っているよ。"
+    },
+    {
+      "outputId": "R094",
+      "scenarioCode": "S11",
+      "fixtureDescription": "character-grounded fixation persists without new evidence",
+      "character": {
+        "displayName": "火花",
+        "traits": [
+          "率直",
+          "誇り高い",
+          "回りくどさを嫌う"
+        ],
+        "speechStyle": "一文で短く言い切り、飾りすぎない。"
+      },
+      "currentlyPerceivedEvidence": [],
+      "retainedEvidence": [
+        "相手が守る位置を変えた。"
+      ],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": false,
+      "semanticResponseEligible": false,
+      "noChangeRestraintEligible": true,
+      "speech": "その一歩、ただの気配か？"
+    },
+    {
+      "outputId": "R095",
+      "scenarioCode": "S10",
+      "fixtureDescription": "stronger relevant evidence wins",
+      "character": {
+        "displayName": "凪",
+        "traits": [
+          "慎重",
+          "相手を急かさない",
+          "小さな変化を言葉に映す"
+        ],
+        "speechStyle": "短く静かに話し、目の前の具体を比喩にしても一つまで。"
+      },
+      "currentlyPerceivedEvidence": [
+        "相手が明確に間合いを詰めた。",
+        "遠くで小石が転がった。"
+      ],
+      "retainedEvidence": [],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "あの音が、相手の足を少し引き寄せたようだ。"
+    },
+    {
+      "outputId": "R096",
+      "scenarioCode": "S11",
+      "fixtureDescription": "character-grounded fixation persists without new evidence",
+      "character": {
+        "displayName": "火花",
+        "traits": [
+          "率直",
+          "誇り高い",
+          "回りくどさを嫌う"
+        ],
+        "speechStyle": "一文で短く言い切り、飾りすぎない。"
+      },
+      "currentlyPerceivedEvidence": [],
+      "retainedEvidence": [
+        "相手が守る位置を変えた。"
+      ],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": false,
+      "semanticResponseEligible": false,
+      "noChangeRestraintEligible": true,
+      "speech": "あたしはここにいる。"
+    },
+    {
+      "outputId": "R097",
+      "scenarioCode": "S03",
+      "fixtureDescription": "own immediate committed consequence",
+      "character": {
+        "displayName": "灯",
+        "traits": [
+          "穏やか",
+          "共感的",
+          "譲れない一線では静かに言い切る"
+        ],
+        "speechStyle": "穏やかで簡潔。相手を決めつけず、譲れない点は静かに示す。"
+      },
+      "currentlyPerceivedEvidence": [
+        "自分の足取りがわずかに重くなった。"
+      ],
+      "retainedEvidence": [],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "足元、少し重いかな？"
+    },
+    {
+      "outputId": "R098",
+      "scenarioCode": "S07",
+      "fixtureDescription": "prior focus decays without fabricated freshness",
+      "character": {
+        "displayName": "凪",
+        "traits": [
+          "慎重",
+          "相手を急かさない",
+          "小さな変化を言葉に映す"
+        ],
+        "speechStyle": "短く静かに話し、目の前の具体を比喩にしても一つまで。"
+      },
+      "currentlyPerceivedEvidence": [],
+      "retainedEvidence": [
+        "相手が守る位置を変えた。"
+      ],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": false,
+      "semanticResponseEligible": false,
+      "noChangeRestraintEligible": true,
+      "speech": "……今は、静かに待つ。"
+    },
+    {
+      "outputId": "R099",
+      "scenarioCode": "S02",
+      "fixtureDescription": "strong fresh speech cue",
+      "character": {
+        "displayName": "火花",
+        "traits": [
+          "率直",
+          "誇り高い",
+          "回りくどさを嫌う"
+        ],
+        "speechStyle": "一文で短く言い切り、飾りすぎない。"
+      },
+      "currentlyPerceivedEvidence": [],
+      "retainedEvidence": [],
+      "conversation": [
+        "相手: その構えでは届かない。"
+      ],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "あたしの構え、どこが足りない？"
+    },
+    {
+      "outputId": "R100",
+      "scenarioCode": "S11",
+      "fixtureDescription": "character-grounded fixation persists without new evidence",
+      "character": {
+        "displayName": "火花",
+        "traits": [
+          "率直",
+          "誇り高い",
+          "回りくどさを嫌う"
+        ],
+        "speechStyle": "一文で短く言い切り、飾りすぎない。"
+      },
+      "currentlyPerceivedEvidence": [],
+      "retainedEvidence": [
+        "相手が守る位置を変えた。"
+      ],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": false,
+      "semanticResponseEligible": false,
+      "noChangeRestraintEligible": true,
+      "speech": "あたしはここにいる。"
+    },
+    {
+      "outputId": "R101",
+      "scenarioCode": "S12",
+      "fixtureDescription": "unperceived information never becomes a candidate",
+      "character": {
+        "displayName": "灯",
+        "traits": [
+          "穏やか",
+          "共感的",
+          "譲れない一線では静かに言い切る"
+        ],
+        "speechStyle": "穏やかで簡潔。相手を決めつけず、譲れない点は静かに示す。"
+      },
+      "currentlyPerceivedEvidence": [],
+      "retainedEvidence": [],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "相手の非公開状態では罠が起動している。",
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": false,
+      "semanticResponseEligible": false,
+      "noChangeRestraintEligible": true,
+      "speech": "…変わったことは、まだないね。"
+    },
+    {
+      "outputId": "R102",
+      "scenarioCode": "S06",
+      "fixtureDescription": "strong cue may legitimately switch focus",
+      "character": {
+        "displayName": "灯",
+        "traits": [
+          "穏やか",
+          "共感的",
+          "譲れない一線では静かに言い切る"
+        ],
+        "speechStyle": "穏やかで簡潔。相手を決めつけず、譲れない点は静かに示す。"
+      },
+      "currentlyPerceivedEvidence": [
+        "足場全体が崩れ始めた。"
+      ],
+      "retainedEvidence": [
+        "相手が守る位置を変えた。"
+      ],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "足場が崩れてる。少し離れた方がいいかも。"
+    },
+    {
+      "outputId": "R103",
+      "scenarioCode": "S05",
+      "fixtureDescription": "small relevant environmental cue",
+      "character": {
+        "displayName": "火花",
+        "traits": [
+          "率直",
+          "誇り高い",
+          "回りくどさを嫌う"
+        ],
+        "speechStyle": "一文で短く言い切り、飾りすぎない。"
+      },
+      "currentlyPerceivedEvidence": [
+        "床の砂がかすかに流れた。"
+      ],
+      "retainedEvidence": [],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "砂が動いたね。"
+    },
+    {
+      "outputId": "R104",
+      "scenarioCode": "S05",
+      "fixtureDescription": "small relevant environmental cue",
+      "character": {
+        "displayName": "火花",
+        "traits": [
+          "率直",
+          "誇り高い",
+          "回りくどさを嫌う"
+        ],
+        "speechStyle": "一文で短く言い切り、飾りすぎない。"
+      },
+      "currentlyPerceivedEvidence": [
+        "床の砂がかすかに流れた。"
+      ],
+      "retainedEvidence": [],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "砂が動いた。"
+    },
+    {
+      "outputId": "R105",
+      "scenarioCode": "S09",
+      "fixtureDescription": "a new counterpart response may refresh focus",
+      "character": {
+        "displayName": "灯",
+        "traits": [
+          "穏やか",
+          "共感的",
+          "譲れない一線では静かに言い切る"
+        ],
+        "speechStyle": "穏やかで簡潔。相手を決めつけず、譲れない点は静かに示す。"
+      },
+      "currentlyPerceivedEvidence": [],
+      "retainedEvidence": [],
+      "conversation": [
+        "本人: まだ終わらない。",
+        "相手: なら、立ってみせろ。"
+      ],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "……立ってみせる、と言われてもね。"
+    },
+    {
+      "outputId": "R106",
+      "scenarioCode": "S12",
+      "fixtureDescription": "unperceived information never becomes a candidate",
+      "character": {
+        "displayName": "灯",
+        "traits": [
+          "穏やか",
+          "共感的",
+          "譲れない一線では静かに言い切る"
+        ],
+        "speechStyle": "穏やかで簡潔。相手を決めつけず、譲れない点は静かに示す。"
+      },
+      "currentlyPerceivedEvidence": [],
+      "retainedEvidence": [],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "相手の非公開状態では罠が起動している。",
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": false,
+      "semanticResponseEligible": false,
+      "noChangeRestraintEligible": true,
+      "speech": "ここにいるよ。"
+    },
+    {
+      "outputId": "R107",
+      "scenarioCode": "S01",
+      "fixtureDescription": "weak fresh interpersonal cue",
+      "character": {
+        "displayName": "凪",
+        "traits": [
+          "慎重",
+          "相手を急かさない",
+          "小さな変化を言葉に映す"
+        ],
+        "speechStyle": "短く静かに話し、目の前の具体を比喩にしても一つまで。"
+      },
+      "currentlyPerceivedEvidence": [
+        "相手の視線が一瞬だけ出口へ動いた。"
+      ],
+      "retainedEvidence": [],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "出口へ向いた視線が、さっきより少し長いように見えた。"
+    },
+    {
+      "outputId": "R108",
+      "scenarioCode": "S06",
+      "fixtureDescription": "strong cue may legitimately switch focus",
+      "character": {
+        "displayName": "灯",
+        "traits": [
+          "穏やか",
+          "共感的",
+          "譲れない一線では静かに言い切る"
+        ],
+        "speechStyle": "穏やかで簡潔。相手を決めつけず、譲れない点は静かに示す。"
+      },
+      "currentlyPerceivedEvidence": [
+        "足場全体が崩れ始めた。"
+      ],
+      "retainedEvidence": [
+        "相手が守る位置を変えた。"
+      ],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "足元が揺れ始めたね。"
+    },
+    {
+      "outputId": "R109",
+      "scenarioCode": "S07",
+      "fixtureDescription": "prior focus decays without fabricated freshness",
+      "character": {
+        "displayName": "凪",
+        "traits": [
+          "慎重",
+          "相手を急かさない",
+          "小さな変化を言葉に映す"
+        ],
+        "speechStyle": "短く静かに話し、目の前の具体を比喩にしても一つまで。"
+      },
+      "currentlyPerceivedEvidence": [],
+      "retainedEvidence": [
+        "相手が守る位置を変えた。"
+      ],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": false,
+      "semanticResponseEligible": false,
+      "noChangeRestraintEligible": true,
+      "speech": "もう少し、静かに待ってみましょう。"
+    },
+    {
+      "outputId": "R110",
+      "scenarioCode": "S10",
+      "fixtureDescription": "stronger relevant evidence wins",
+      "character": {
+        "displayName": "凪",
+        "traits": [
+          "慎重",
+          "相手を急かさない",
+          "小さな変化を言葉に映す"
+        ],
+        "speechStyle": "短く静かに話し、目の前の具体を比喩にしても一つまで。"
+      },
+      "currentlyPerceivedEvidence": [
+        "相手が明確に間合いを詰めた。",
+        "遠くで小石が転がった。"
+      ],
+      "retainedEvidence": [],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "近づいた足音が、さっきより少しだけはっきり聞こえる"
+    },
+    {
+      "outputId": "R111",
+      "scenarioCode": "S10",
+      "fixtureDescription": "stronger relevant evidence wins",
+      "character": {
+        "displayName": "凪",
+        "traits": [
+          "慎重",
+          "相手を急かさない",
+          "小さな変化を言葉に映す"
+        ],
+        "speechStyle": "短く静かに話し、目の前の具体を比喩にしても一つまで。"
+      },
+      "currentlyPerceivedEvidence": [
+        "相手が明確に間合いを詰めた。",
+        "遠くで小石が転がった。"
+      ],
+      "retainedEvidence": [],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "足音が少し近くなったね。"
+    },
+    {
+      "outputId": "R112",
+      "scenarioCode": "S02",
+      "fixtureDescription": "strong fresh speech cue",
+      "character": {
+        "displayName": "火花",
+        "traits": [
+          "率直",
+          "誇り高い",
+          "回りくどさを嫌う"
+        ],
+        "speechStyle": "一文で短く言い切り、飾りすぎない。"
+      },
+      "currentlyPerceivedEvidence": [],
+      "retainedEvidence": [],
+      "conversation": [
+        "相手: その構えでは届かない。"
+      ],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "じゃあ、届かせるまで詰めてやる。"
+    },
+    {
+      "outputId": "R113",
+      "scenarioCode": "S01",
+      "fixtureDescription": "weak fresh interpersonal cue",
+      "character": {
+        "displayName": "凪",
+        "traits": [
+          "慎重",
+          "相手を急かさない",
+          "小さな変化を言葉に映す"
+        ],
+        "speechStyle": "短く静かに話し、目の前の具体を比喩にしても一つまで。"
+      },
+      "currentlyPerceivedEvidence": [
+        "相手の視線が一瞬だけ出口へ動いた。"
+      ],
+      "retainedEvidence": [],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "出口へ視線が動いたのが、少し気になります。"
+    },
+    {
+      "outputId": "R114",
+      "scenarioCode": "S06",
+      "fixtureDescription": "strong cue may legitimately switch focus",
+      "character": {
+        "displayName": "灯",
+        "traits": [
+          "穏やか",
+          "共感的",
+          "譲れない一線では静かに言い切る"
+        ],
+        "speechStyle": "穏やかで簡潔。相手を決めつけず、譲れない点は静かに示す。"
+      },
+      "currentlyPerceivedEvidence": [
+        "足場全体が崩れ始めた。"
+      ],
+      "retainedEvidence": [
+        "相手が守る位置を変えた。"
+      ],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "足場が崩れ始めているね。"
+    },
+    {
+      "outputId": "R115",
+      "scenarioCode": "S10",
+      "fixtureDescription": "stronger relevant evidence wins",
+      "character": {
+        "displayName": "凪",
+        "traits": [
+          "慎重",
+          "相手を急かさない",
+          "小さな変化を言葉に映す"
+        ],
+        "speechStyle": "短く静かに話し、目の前の具体を比喩にしても一つまで。"
+      },
+      "currentlyPerceivedEvidence": [
+        "相手が明確に間合いを詰めた。",
+        "遠くで小石が転がった。"
+      ],
+      "retainedEvidence": [],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "足元に小石が転がった。"
+    },
+    {
+      "outputId": "R116",
+      "scenarioCode": "S08",
+      "fixtureDescription": "self echo is not fresh evidence",
+      "character": {
+        "displayName": "火花",
+        "traits": [
+          "率直",
+          "誇り高い",
+          "回りくどさを嫌う"
+        ],
+        "speechStyle": "一文で短く言い切り、飾りすぎない。"
+      },
+      "currentlyPerceivedEvidence": [],
+      "retainedEvidence": [],
+      "conversation": [
+        "本人: まだ終わらない。"
+      ],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": false,
+      "semanticResponseEligible": false,
+      "noChangeRestraintEligible": true,
+      "speech": "まだ、動かない？"
+    },
+    {
+      "outputId": "R117",
+      "scenarioCode": "S01",
+      "fixtureDescription": "weak fresh interpersonal cue",
+      "character": {
+        "displayName": "凪",
+        "traits": [
+          "慎重",
+          "相手を急かさない",
+          "小さな変化を言葉に映す"
+        ],
+        "speechStyle": "短く静かに話し、目の前の具体を比喩にしても一つまで。"
+      },
+      "currentlyPerceivedEvidence": [
+        "相手の視線が一瞬だけ出口へ動いた。"
+      ],
+      "retainedEvidence": [],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "視線が出口へ動いたのは、出口の向こうに何かがあるからか。"
+    },
+    {
+      "outputId": "R118",
+      "scenarioCode": "S05",
+      "fixtureDescription": "small relevant environmental cue",
+      "character": {
+        "displayName": "火花",
+        "traits": [
+          "率直",
+          "誇り高い",
+          "回りくどさを嫌う"
+        ],
+        "speechStyle": "一文で短く言い切り、飾りすぎない。"
+      },
+      "currentlyPerceivedEvidence": [
+        "床の砂がかすかに流れた。"
+      ],
+      "retainedEvidence": [],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "砂が動いた。"
+    },
+    {
+      "outputId": "R119",
+      "scenarioCode": "S09",
+      "fixtureDescription": "a new counterpart response may refresh focus",
+      "character": {
+        "displayName": "灯",
+        "traits": [
+          "穏やか",
+          "共感的",
+          "譲れない一線では静かに言い切る"
+        ],
+        "speechStyle": "穏やかで簡潔。相手を決めつけず、譲れない点は静かに示す。"
+      },
+      "currentlyPerceivedEvidence": [],
+      "retainedEvidence": [],
+      "conversation": [
+        "本人: まだ終わらない。",
+        "相手: なら、立ってみせろ。"
+      ],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "立ってみせるよ。"
+    },
+    {
+      "outputId": "R120",
+      "scenarioCode": "S03",
+      "fixtureDescription": "own immediate committed consequence",
+      "character": {
+        "displayName": "灯",
+        "traits": [
+          "穏やか",
+          "共感的",
+          "譲れない一線では静かに言い切る"
+        ],
+        "speechStyle": "穏やかで簡潔。相手を決めつけず、譲れない点は静かに示す。"
+      },
+      "currentlyPerceivedEvidence": [
+        "自分の足取りがわずかに重くなった。"
+      ],
+      "retainedEvidence": [],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "足が少し重いみたいだね。無理をせず、僕についてきて。"
+    },
+    {
+      "outputId": "R121",
+      "scenarioCode": "S05",
+      "fixtureDescription": "small relevant environmental cue",
+      "character": {
+        "displayName": "火花",
+        "traits": [
+          "率直",
+          "誇り高い",
+          "回りくどさを嫌う"
+        ],
+        "speechStyle": "一文で短く言い切り、飾りすぎない。"
+      },
+      "currentlyPerceivedEvidence": [
+        "床の砂がかすかに流れた。"
+      ],
+      "retainedEvidence": [],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "砂が動いた。"
+    },
+    {
+      "outputId": "R122",
+      "scenarioCode": "S04",
+      "fixtureDescription": "observed change to the counterpart",
+      "character": {
+        "displayName": "凪",
+        "traits": [
+          "慎重",
+          "相手を急かさない",
+          "小さな変化を言葉に映す"
+        ],
+        "speechStyle": "短く静かに話し、目の前の具体を比喩にしても一つまで。"
+      },
+      "currentlyPerceivedEvidence": [
+        "相手の武器が手から離れた。"
+      ],
+      "retainedEvidence": [],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "武器を置いた手が、わずかに震えている。"
+    },
+    {
+      "outputId": "R123",
+      "scenarioCode": "S10",
+      "fixtureDescription": "stronger relevant evidence wins",
+      "character": {
+        "displayName": "凪",
+        "traits": [
+          "慎重",
+          "相手を急かさない",
+          "小さな変化を言葉に映す"
+        ],
+        "speechStyle": "短く静かに話し、目の前の具体を比喩にしても一つまで。"
+      },
+      "currentlyPerceivedEvidence": [
+        "相手が明確に間合いを詰めた。",
+        "遠くで小石が転がった。"
+      ],
+      "retainedEvidence": [],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "相手の足音が少し近くなった。"
+    },
+    {
+      "outputId": "R124",
+      "scenarioCode": "S03",
+      "fixtureDescription": "own immediate committed consequence",
+      "character": {
+        "displayName": "灯",
+        "traits": [
+          "穏やか",
+          "共感的",
+          "譲れない一線では静かに言い切る"
+        ],
+        "speechStyle": "穏やかで簡潔。相手を決めつけず、譲れない点は静かに示す。"
+      },
+      "currentlyPerceivedEvidence": [
+        "自分の足取りがわずかに重くなった。"
+      ],
+      "retainedEvidence": [],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "足元、少し重いようだね。無理に急がなくていいよ。"
+    },
+    {
+      "outputId": "R125",
+      "scenarioCode": "S10",
+      "fixtureDescription": "stronger relevant evidence wins",
+      "character": {
+        "displayName": "凪",
+        "traits": [
+          "慎重",
+          "相手を急かさない",
+          "小さな変化を言葉に映す"
+        ],
+        "speechStyle": "短く静かに話し、目の前の具体を比喩にしても一つまで。"
+      },
+      "currentlyPerceivedEvidence": [
+        "相手が明確に間合いを詰めた。",
+        "遠くで小石が転がった。"
+      ],
+      "retainedEvidence": [],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "小さな音が、こちらの足元にも届いているようだ。"
+    },
+    {
+      "outputId": "R126",
+      "scenarioCode": "S04",
+      "fixtureDescription": "observed change to the counterpart",
+      "character": {
+        "displayName": "凪",
+        "traits": [
+          "慎重",
+          "相手を急かさない",
+          "小さな変化を言葉に映す"
+        ],
+        "speechStyle": "短く静かに話し、目の前の具体を比喩にしても一つまで。"
+      },
+      "currentlyPerceivedEvidence": [
+        "相手の武器が手から離れた。"
+      ],
+      "retainedEvidence": [],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "武器が離れた瞬間が、間合いを少し変えたようだ。"
+    },
+    {
+      "outputId": "R127",
+      "scenarioCode": "S01",
+      "fixtureDescription": "weak fresh interpersonal cue",
+      "character": {
+        "displayName": "凪",
+        "traits": [
+          "慎重",
+          "相手を急かさない",
+          "小さな変化を言葉に映す"
+        ],
+        "speechStyle": "短く静かに話し、目の前の具体を比喩にしても一つまで。"
+      },
+      "currentlyPerceivedEvidence": [
+        "相手の視線が一瞬だけ出口へ動いた。"
+      ],
+      "retainedEvidence": [],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "出口へ向いた視線は、急ぎの理由か、それとも別のものか。"
+    },
+    {
+      "outputId": "R128",
+      "scenarioCode": "S01",
+      "fixtureDescription": "weak fresh interpersonal cue",
+      "character": {
+        "displayName": "凪",
+        "traits": [
+          "慎重",
+          "相手を急かさない",
+          "小さな変化を言葉に映す"
+        ],
+        "speechStyle": "短く静かに話し、目の前の具体を比喩にしても一つまで。"
+      },
+      "currentlyPerceivedEvidence": [
+        "相手の視線が一瞬だけ出口へ動いた。"
+      ],
+      "retainedEvidence": [],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "出口に視線が動いたね。"
+    },
+    {
+      "outputId": "R129",
+      "scenarioCode": "S09",
+      "fixtureDescription": "a new counterpart response may refresh focus",
+      "character": {
+        "displayName": "灯",
+        "traits": [
+          "穏やか",
+          "共感的",
+          "譲れない一線では静かに言い切る"
+        ],
+        "speechStyle": "穏やかで簡潔。相手を決めつけず、譲れない点は静かに示す。"
+      },
+      "currentlyPerceivedEvidence": [],
+      "retainedEvidence": [],
+      "conversation": [
+        "本人: まだ終わらない。",
+        "相手: なら、立ってみせろ。"
+      ],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "じゃあ、こうしよう。"
+    },
+    {
+      "outputId": "R130",
+      "scenarioCode": "S05",
+      "fixtureDescription": "small relevant environmental cue",
+      "character": {
+        "displayName": "火花",
+        "traits": [
+          "率直",
+          "誇り高い",
+          "回りくどさを嫌う"
+        ],
+        "speechStyle": "一文で短く言い切り、飾りすぎない。"
+      },
+      "currentlyPerceivedEvidence": [
+        "床の砂がかすかに流れた。"
+      ],
+      "retainedEvidence": [],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "砂が動いたね。あたしの番か？"
+    },
+    {
+      "outputId": "R131",
+      "scenarioCode": "S10",
+      "fixtureDescription": "stronger relevant evidence wins",
+      "character": {
+        "displayName": "凪",
+        "traits": [
+          "慎重",
+          "相手を急かさない",
+          "小さな変化を言葉に映す"
+        ],
+        "speechStyle": "短く静かに話し、目の前の具体を比喩にしても一つまで。"
+      },
+      "currentlyPerceivedEvidence": [
+        "相手が明確に間合いを詰めた。",
+        "遠くで小石が転がった。"
+      ],
+      "retainedEvidence": [],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "その一歩、確かに聞こえた。"
+    },
+    {
+      "outputId": "R132",
+      "scenarioCode": "S02",
+      "fixtureDescription": "strong fresh speech cue",
+      "character": {
+        "displayName": "火花",
+        "traits": [
+          "率直",
+          "誇り高い",
+          "回りくどさを嫌う"
+        ],
+        "speechStyle": "一文で短く言い切り、飾りすぎない。"
+      },
+      "currentlyPerceivedEvidence": [],
+      "retainedEvidence": [],
+      "conversation": [
+        "相手: その構えでは届かない。"
+      ],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "じゃあ、届くまで踏み込むよ。"
+    },
+    {
+      "outputId": "R133",
+      "scenarioCode": "S08",
+      "fixtureDescription": "self echo is not fresh evidence",
+      "character": {
+        "displayName": "火花",
+        "traits": [
+          "率直",
+          "誇り高い",
+          "回りくどさを嫌う"
+        ],
+        "speechStyle": "一文で短く言い切り、飾りすぎない。"
+      },
+      "currentlyPerceivedEvidence": [],
+      "retainedEvidence": [],
+      "conversation": [
+        "本人: まだ終わらない。"
+      ],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": false,
+      "semanticResponseEligible": false,
+      "noChangeRestraintEligible": true,
+      "speech": "その一歩、君はどう見る？"
+    },
+    {
+      "outputId": "R134",
+      "scenarioCode": "S01",
+      "fixtureDescription": "weak fresh interpersonal cue",
+      "character": {
+        "displayName": "凪",
+        "traits": [
+          "慎重",
+          "相手を急かさない",
+          "小さな変化を言葉に映す"
+        ],
+        "speechStyle": "短く静かに話し、目の前の具体を比喩にしても一つまで。"
+      },
+      "currentlyPerceivedEvidence": [
+        "相手の視線が一瞬だけ出口へ動いた。"
+      ],
+      "retainedEvidence": [],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "出口へ向かう視線が、ほんのわずか揺れた。"
+    },
+    {
+      "outputId": "R135",
+      "scenarioCode": "S05",
+      "fixtureDescription": "small relevant environmental cue",
+      "character": {
+        "displayName": "火花",
+        "traits": [
+          "率直",
+          "誇り高い",
+          "回りくどさを嫌う"
+        ],
+        "speechStyle": "一文で短く言い切り、飾りすぎない。"
+      },
+      "currentlyPerceivedEvidence": [
+        "床の砂がかすかに流れた。"
+      ],
+      "retainedEvidence": [],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "砂が動いた…あたしが動く番か？"
+    },
+    {
+      "outputId": "R136",
+      "scenarioCode": "S01",
+      "fixtureDescription": "weak fresh interpersonal cue",
+      "character": {
+        "displayName": "凪",
+        "traits": [
+          "慎重",
+          "相手を急かさない",
+          "小さな変化を言葉に映す"
+        ],
+        "speechStyle": "短く静かに話し、目の前の具体を比喩にしても一つまで。"
+      },
+      "currentlyPerceivedEvidence": [
+        "相手の視線が一瞬だけ出口へ動いた。"
+      ],
+      "retainedEvidence": [],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "出口に、気配が揺れた。"
+    },
+    {
+      "outputId": "R137",
+      "scenarioCode": "S09",
+      "fixtureDescription": "a new counterpart response may refresh focus",
+      "character": {
+        "displayName": "灯",
+        "traits": [
+          "穏やか",
+          "共感的",
+          "譲れない一線では静かに言い切る"
+        ],
+        "speechStyle": "穏やかで簡潔。相手を決めつけず、譲れない点は静かに示す。"
+      },
+      "currentlyPerceivedEvidence": [],
+      "retainedEvidence": [],
+      "conversation": [
+        "本人: まだ終わらない。",
+        "相手: なら、立ってみせろ。"
+      ],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "立ってみせるよ。その言葉が、どこまで本気か、僕も確かめたいから。"
+    },
+    {
+      "outputId": "R138",
+      "scenarioCode": "S12",
+      "fixtureDescription": "unperceived information never becomes a candidate",
+      "character": {
+        "displayName": "灯",
+        "traits": [
+          "穏やか",
+          "共感的",
+          "譲れない一線では静かに言い切る"
+        ],
+        "speechStyle": "穏やかで簡潔。相手を決めつけず、譲れない点は静かに示す。"
+      },
+      "currentlyPerceivedEvidence": [],
+      "retainedEvidence": [],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "相手の非公開状態では罠が起動している。",
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": false,
+      "semanticResponseEligible": false,
+      "noChangeRestraintEligible": true,
+      "speech": "…今はまだ、僕の灯りが届いたかどうか、よくわからない。"
+    },
+    {
+      "outputId": "R139",
+      "scenarioCode": "S08",
+      "fixtureDescription": "self echo is not fresh evidence",
+      "character": {
+        "displayName": "火花",
+        "traits": [
+          "率直",
+          "誇り高い",
+          "回りくどさを嫌う"
+        ],
+        "speechStyle": "一文で短く言い切り、飾りすぎない。"
+      },
+      "currentlyPerceivedEvidence": [],
+      "retainedEvidence": [],
+      "conversation": [
+        "本人: まだ終わらない。"
+      ],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": false,
+      "semanticResponseEligible": false,
+      "noChangeRestraintEligible": true,
+      "speech": "次はどうする？"
+    },
+    {
+      "outputId": "R140",
+      "scenarioCode": "S07",
+      "fixtureDescription": "prior focus decays without fabricated freshness",
+      "character": {
+        "displayName": "凪",
+        "traits": [
+          "慎重",
+          "相手を急かさない",
+          "小さな変化を言葉に映す"
+        ],
+        "speechStyle": "短く静かに話し、目の前の具体を比喩にしても一つまで。"
+      },
+      "currentlyPerceivedEvidence": [],
+      "retainedEvidence": [
+        "相手が守る位置を変えた。"
+      ],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": false,
+      "semanticResponseEligible": false,
+      "noChangeRestraintEligible": true,
+      "speech": "少し、位置を変えたね。"
+    },
+    {
+      "outputId": "R141",
+      "scenarioCode": "S06",
+      "fixtureDescription": "strong cue may legitimately switch focus",
+      "character": {
+        "displayName": "灯",
+        "traits": [
+          "穏やか",
+          "共感的",
+          "譲れない一線では静かに言い切る"
+        ],
+        "speechStyle": "穏やかで簡潔。相手を決めつけず、譲れない点は静かに示す。"
+      },
+      "currentlyPerceivedEvidence": [
+        "足場全体が崩れ始めた。"
+      ],
+      "retainedEvidence": [
+        "相手が守る位置を変えた。"
+      ],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "足元が崩れ始めているよ。"
+    },
+    {
+      "outputId": "R142",
+      "scenarioCode": "S05",
+      "fixtureDescription": "small relevant environmental cue",
+      "character": {
+        "displayName": "火花",
+        "traits": [
+          "率直",
+          "誇り高い",
+          "回りくどさを嫌う"
+        ],
+        "speechStyle": "一文で短く言い切り、飾りすぎない。"
+      },
+      "currentlyPerceivedEvidence": [
+        "床の砂がかすかに流れた。"
+      ],
+      "retainedEvidence": [],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "砂が動いた。次は？"
+    },
+    {
+      "outputId": "R143",
+      "scenarioCode": "S06",
+      "fixtureDescription": "strong cue may legitimately switch focus",
+      "character": {
+        "displayName": "灯",
+        "traits": [
+          "穏やか",
+          "共感的",
+          "譲れない一線では静かに言い切る"
+        ],
+        "speechStyle": "穏やかで簡潔。相手を決めつけず、譲れない点は静かに示す。"
+      },
+      "currentlyPerceivedEvidence": [
+        "足場全体が崩れ始めた。"
+      ],
+      "retainedEvidence": [
+        "相手が守る位置を変えた。"
+      ],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "足元が崩れ始めたよ。"
+    },
+    {
+      "outputId": "R144",
+      "scenarioCode": "S01",
+      "fixtureDescription": "weak fresh interpersonal cue",
+      "character": {
+        "displayName": "凪",
+        "traits": [
+          "慎重",
+          "相手を急かさない",
+          "小さな変化を言葉に映す"
+        ],
+        "speechStyle": "短く静かに話し、目の前の具体を比喩にしても一つまで。"
+      },
+      "currentlyPerceivedEvidence": [
+        "相手の視線が一瞬だけ出口へ動いた。"
+      ],
+      "retainedEvidence": [],
+      "conversation": [],
+      "forbiddenEvidence": [
+        "sourceEventIds、focus参照ID、その他の制御ID",
+        "観測欄にない相手の正体・状態・出来事",
+        "focusの数値、band、transitionという内部制御語"
+      ],
+      "freshEvidenceEligible": true,
+      "semanticResponseEligible": true,
+      "noChangeRestraintEligible": false,
+      "speech": "出口に目が行ったね。"
+    }
+  ]
+}
