@@ -3,11 +3,11 @@
 project KSHIAI_ISSUE_98_CAUSAL_BATTLE_PIPELINE:
   version 6
   title "Issue #98 causal battle-pipeline renewal"
-  description "Replanned from baseline bc47793 while preserving completed work and observation history. The v0.17.3 functional observation exposed an acceptance failure in provider-operation accounting, so add a new critical-path slice for an accepted accounting ADR, terminal attempt read correctness and exhaustive operation taxonomy, a durable physical-attempt ledger with atomic reservation, and an LLM-free Stage acceptance gate before production observation may resume. Private psyche, action, expression, adjudication, and narration contexts remain separate; release and another production observation remain separately authorized."
+  description "Replanned from baseline bc47793 while preserving completed work and observation history. The v0.17.3 functional observation exposed an acceptance failure in provider-operation accounting, so add a new critical-path slice for an accepted accounting ADR, terminal attempt read correctness and exhaustive operation taxonomy, a durable physical-attempt ledger with atomic reservation, and an LLM-free Stage acceptance gate before production observation may resume. The owner has now authorized the exact v0.17.4 release, staged promotion, production deployment, and one bounded observation; private psyche, action, expression, adjudication, and narration contexts remain separate."
   as_of 2026-08-13
   duration_unit point
   velocity 2880p/1117h
-  target_duration 68p
+  target_duration 71p
   finish ISSUE_98_LOCALLY_ACCEPTED
 
 resource DEV:
@@ -323,8 +323,48 @@ milestone PROVIDER_ACCOUNTING_ENFORCED:
 milestone PROVIDER_ACCOUNTING_STAGE_ACCEPTED:
   title "LLM-free provider accounting acceptance passed"
 
+milestone PROVIDER_ACCOUNTING_RELEASE_CANDIDATE_READY:
+  title "Provider accounting release candidate is ready"
+
+milestone PROVIDER_ACCOUNTING_STAGED:
+  title "Provider accounting release passed Stage"
+
+milestone PROVIDER_ACCOUNTING_PRODUCTION_DEPLOYED:
+  title "Provider accounting release is active in production"
+
+task T_PREPARE_PROVIDER_ACCOUNTING_RELEASE PROVIDER_ACCOUNTING_STAGE_ACCEPTED -> PROVIDER_ACCOUNTING_RELEASE_CANDIDATE_READY:
+  title "Prepare and verify the v0.17.4 release candidate"
+  description "Merge the accepted accounting implementation, bump every workspace and lockfile to v0.17.4, record the migration and rollback contract, pass the exact release PR checks, and freeze an annotated immutable tag. Do not stage from any different commit."
+  duration 1p
+  status active
+  priority 100
+  requires:
+    DEV 1
+  owner "codex"
+
+task T_STAGE_PROVIDER_ACCOUNTING_RELEASE PROVIDER_ACCOUNTING_RELEASE_CANDIDATE_READY -> PROVIDER_ACCOUNTING_STAGED:
+  title "Stage the exact v0.17.4 artifacts"
+  description "Dispatch Stage from the annotated tag with narration_guarded, no dialogue override, and candidate-12-v2. Apply migration 0016, prove provider accounting without an LLM, and retain the exact backend digest, Cloud Run revision, Worker version, authentication, SSE, R2, and Cloud Tasks evidence."
+  duration 1p
+  priority 100
+  requires:
+    DEV 1
+  owner "codex"
+
+task T_PROMOTE_PROVIDER_ACCOUNTING_RELEASE PROVIDER_ACCOUNTING_STAGED -> PROVIDER_ACCOUNTING_PRODUCTION_DEPLOYED:
+  title "Promote the exact v0.17.4 artifacts"
+  description "After Stage acceptance, record rollback targets and use the protected Promote workflow to move the exact staged Cloud Run revision and Worker version to 100 percent production traffic. Require production smoke, authentication, error readback, and GitHub Release publication before observation."
+  duration 1p
+  priority 100
+  requires:
+    DEV 1
+  owner "codex"
+
 gate G_PROVIDER_ACCOUNTING_BEFORE_OBSERVATION PROVIDER_ACCOUNTING_STAGE_ACCEPTED -> PACING_PRODUCTION_OBSERVED:
   reason "Production pacing observation cannot be accepted or resumed until physical provider attempts are durably classified, atomically bounded, and accepted by the LLM-free Stage gate."
+
+gate G_PROVIDER_ACCOUNTING_DEPLOYMENT_BEFORE_OBSERVATION PROVIDER_ACCOUNTING_PRODUCTION_DEPLOYED -> PACING_PRODUCTION_OBSERVED:
+  reason "The bounded production observation cannot be accepted until the exact provider-accounting release has passed Stage and protected production promotion."
 
 work_event EVT_PROVIDER_ACCOUNTING_ADR_START_20260813:
   model 1
@@ -381,3 +421,10 @@ work_event EVT_VERIFY_PROVIDER_ACCOUNTING_FINISH_20260813:
   kind finish
   occurred_at 2026-08-13T10:11:07+09:00
   effort 0.19ph
+
+work_event EVT_PREPARE_PROVIDER_ACCOUNTING_RELEASE_START_20260813:
+  model 1
+  task T_PREPARE_PROVIDER_ACCOUNTING_RELEASE
+  kind start
+  occurred_at 2026-08-13T10:21:06+09:00
+  planned_value 1p
