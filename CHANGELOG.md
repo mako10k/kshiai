@@ -5,6 +5,48 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 
 ## [Unreleased]
 
+## [0.19.0] - 2026-08-14
+
+### Added
+
+- Adds version-2 structured battlefield definitions with immutable generations,
+  disclosure-bound public scene projections, deterministic instance compilation,
+  and explicit owner-reviewed creation and upgrade flows.
+- Adds version-2 structured narration-style definitions with bounded perspective,
+  voice, cadence, phase, intensity, rhetoric, example, and counterexample policies,
+  plus a deterministic phase prompt compiler.
+- Adds deterministic character action-norm and relationship-seed receipts so
+  priority, inhibition, exception, and exact logical-character precedence remain
+  server-owned and replayable.
+
+### Changed
+
+- Makes structured character, battlefield, and narration generations authoritative
+  for new battle selection and binding. Public descriptions remain derived
+  projections and are never reverse-parsed into runtime authority.
+- Binds each new battle to immutable generation IDs, content digests, compiler
+  contracts, a deterministic battlefield instance, and compiled narration phase
+  policies that survive later asset edits or deletion.
+- Excludes unsupported, upgrading, failed, inaccessible, and deleted assets from
+  search, matchmaking, random pools, direct battle creation, and retry paths while
+  preserving owner management and historical battle replay.
+
+### Database
+
+- Adds additive migrations `0018_structured_battlefield_assets.sql` and
+  `0019_structured_narration_assets.sql` for compatibility state and two-stage
+  authoring attempts. Existing owner assets are not inferred or bulk-upgraded.
+
+### Operations
+
+- Adds `jscpd` duplication checks and `lizard` complexity, function-length, and
+  parameter-count baselines to the required static validation path.
+- Leaves billing design-only and deferred; this release adds no payment provider,
+  entitlement, metering, price, or checkout runtime behavior.
+- Application rollback leaves migrations `0017` through `0019` and retained
+  immutable generations in place; older applications must not be assumed to
+  enforce the new selection-eligibility boundary.
+
 ## [0.18.1] - 2026-08-14
 
 ### Fixed
