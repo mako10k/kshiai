@@ -66,6 +66,7 @@ task SDA_BATTLEFIELD CHARACTER_STRUCTURE_ACCEPTED -> BATTLEFIELD_STRUCTURE_ACCEP
   title "Design and implement structured battlefield definitions"
   description "In a dedicated accepted design slice implement natural instruction to validated scene traits topology terrain persistent and temporal effects happening affordances initial first-class objects and states then generate the public scene from source plus public-safe structure add explicit upgrade from the existing description and exclude unsupported presets from selectors and random pools"
   duration 5p
+  status active
   requires:
     DEV 1
   owner "codex"
@@ -124,3 +125,10 @@ work_event WE-SDA-CHARACTER-FINISH:
   task SDA_CHARACTER
   kind finish
   occurred_at 2026-08-14T09:39:39+09:00
+
+work_event WE-SDA-BATTLEFIELD-START:
+  model 1
+  task SDA_BATTLEFIELD
+  kind start
+  occurred_at 2026-08-14T09:51:47+09:00
+  planned_value 5p
