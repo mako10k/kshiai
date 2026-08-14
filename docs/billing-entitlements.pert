@@ -1,0 +1,172 @@
+project KSHIAI_BILLING_ENTITLEMENTS:
+  version 7
+  title "Add verified subscription and bounded usage entitlements"
+  description "Accept billing authority before implementing a durable Stripe webhook inbox server-owned subscription projection versioned catalog idempotent usage receipts fail-closed cost-bearing route guards hosted Checkout and portal recovery then validate test-mode Stage before a separately approved production activation"
+  as_of 2026-08-14
+  duration_unit point
+  velocity 1p/1d
+  finish BILLING_PRODUCTION_ACCEPTED
+  goal_owner user
+  dag_owner user
+  target_duration 16p
+
+resource DEV:
+  title "Developer"
+  capacity 1
+
+resource OWNER:
+  title "Product and release owner"
+  capacity 1
+
+milestone NOW:
+  title "Billing proposal ready for owner decision"
+  state reached
+
+milestone BILLING_AUTHORITY_ACCEPTED:
+  title "Billing authority catalog direction and requirements change accepted"
+
+milestone BILLING_LEDGER_READY:
+  title "Durable entitlement usage and webhook persistence ready"
+
+milestone STRIPE_CONTROL_READY:
+  title "Signed reconciliation Checkout and portal control paths ready"
+
+milestone BILLING_ENFORCEMENT_READY:
+  title "All cost-bearing product operations enforce bounded entitlements"
+
+milestone BILLING_LOCAL_ACCEPTED:
+  title "Local billing behavior safety and migration evidence accepted"
+
+milestone BILLING_STAGE_ACCEPTED:
+  title "Stripe test-mode Stage lifecycle and rollback accepted"
+
+milestone BILLING_PRODUCTION_APPROVED:
+  title "Exact live catalog secrets artifacts and activation approved"
+
+milestone BILLING_PRODUCTION_ACCEPTED:
+  title "Production billing activation and recovery readback accepted"
+
+task BIL_ACCEPT_AUTHORITY NOW -> BILLING_AUTHORITY_ACCEPTED:
+  title "Accept Stripe projection and hard-allowance subscription authority"
+  description "Review and either accept or revise ADR-0014 including the requirements non-goal change recurring hard-allowance no-overage direction local verified entitlement authority public recovery boundary and the separately gated catalog Stage and production decisions"
+  duration 1p
+  owner "user"
+  requires:
+    OWNER 1
+
+task BIL_BUILD_LEDGER BILLING_AUTHORITY_ACCEPTED -> BILLING_LEDGER_READY:
+  title "Build durable billing projection and idempotent usage ledger"
+  description "Add shared closed billing contracts forward PostgreSQL and SQLite schemas account mapping webhook inbox subscription snapshots explicit grants usage reservation receipts leases and concurrency tests without public payment data implicit account-kind bypass reverse migration or production configuration"
+  duration 3p
+  owner "codex"
+  requires:
+    DEV 1
+
+task BIL_BUILD_STRIPE_CONTROL BILLING_LEDGER_READY -> STRIPE_CONTROL_READY:
+  title "Build signed webhook reconciliation Checkout and portal paths"
+  description "Add pinned Stripe adapter raw-body signature verification bounded durable duplicate receipt leased current-object reconciliation safe customer mapping server price allowlisting idempotent hosted Checkout and portal sessions task wake-up redispatch and status projection with Stripe test doubles and no redirect-based grant"
+  duration 3p
+  owner "codex"
+  requires:
+    DEV 1
+
+task BIL_ENFORCE_USAGE STRIPE_CONTROL_READY -> BILLING_ENFORCEMENT_READY:
+  title "Enforce entitlements at every cost-bearing operation"
+  description "Add missing application idempotency keys central reservation and consume-or-release handling for structured authoring improvement policies images battle creation and all battle advance aliases while keeping reads history replay deletion billing recovery and durable response replay available and leaving domain authority unchanged"
+  duration 3p
+  owner "codex"
+  requires:
+    DEV 1
+
+task BIL_ACCEPT_LOCAL BILLING_ENFORCEMENT_READY -> BILLING_LOCAL_ACCEPTED:
+  title "Accept local billing safety migration and inventory evidence"
+  description "Verify signature mutation duplicate and ordering fixtures Checkout and portal isolation concurrent final-unit races stale reservation recovery expired snapshots route-inventory coverage privacy migration parity full lint tests build Worker body preservation and PERT checks then record exact local evidence without Stripe or deployment writes"
+  duration 1p
+  owner "codex"
+  requires:
+    DEV 1
+
+task BIL_TRY_STAGE BILLING_LOCAL_ACCEPTED -> BILLING_STAGE_ACCEPTED:
+  title "Try the exact candidate with Stripe test mode in protected Stage"
+  description "After separate Stage authorization bind test-only Stripe secrets and catalog to the exact immutable no-traffic candidate apply forward migration verify webhook and task recovery subscription lifecycle concurrent allowance enforcement secret rotation rollback and retained ledger readback without live Stripe objects or production traffic"
+  duration 2p
+  owner "codex"
+  requires:
+    DEV 1
+
+task BIL_APPROVE_PRODUCTION BILLING_STAGE_ACCEPTED -> BILLING_PRODUCTION_APPROVED:
+  title "Approve the exact live billing catalog and production activation"
+  description "The owner reviews Stage receipts exact price currency interval allowances failure policy existing-user and active-battle behavior live product and webhook write set secrets and IAM diff immutable artifacts enforcement switch rollback and support recovery then explicitly approves or declines production activation"
+  duration 1p
+  owner "user"
+  requires:
+    OWNER 1
+
+task BIL_ACTIVATE_PRODUCTION BILLING_PRODUCTION_APPROVED -> BILLING_PRODUCTION_ACCEPTED:
+  title "Activate observe and accept production billing"
+  description "Create only the approved live Stripe objects and secrets release the exact immutable artifacts apply the forward migration promote behind the protected approval verify signed webhook Checkout portal subscription entitlement usage denial recovery rollback and no public leakage then retain readback without deleting financial evidence"
+  duration 2p
+  owner "codex"
+  requires:
+    DEV 1
+
+milestone_criterion_set BIL_NOW_ACCEPTANCE:
+  milestone NOW
+  revision R1
+  commitment sha256:55c821c89529ccea5f4cae03f9917fef3f0ade70a9c510b20b94a520c31e0bc1
+  criterion PROPOSAL_READY required owner "ADR-0014 detailed design and execution plan are reviewable"
+
+milestone_criterion_set BIL_AUTHORITY_ACCEPTANCE:
+  milestone BILLING_AUTHORITY_ACCEPTED
+  revision R1
+  commitment sha256:209832ddfdc6760954122d198a9994676a32353bd315cd5208eed0c22f84f7c1
+  criterion ADR_ACCEPTED required owner "ADR-0014 is Accepted by the product owner"
+  criterion REQUIREMENTS_ALIGNED required owner "The billing non-goal change and initial product direction are explicit"
+
+milestone_criterion_set BIL_LEDGER_ACCEPTANCE:
+  milestone BILLING_LEDGER_READY
+  revision R1
+  commitment sha256:d6e03b4a443004b9864f4d8150b29dd3381a7032032bd8b734d0a0b0fab6d247
+  criterion PERSISTENCE_PROVED required owner "PostgreSQL and SQLite billing persistence contracts pass"
+  criterion CONCURRENCY_PROVED required owner "Concurrent final-unit reservation and replay invariants pass"
+
+milestone_criterion_set BIL_CONTROL_ACCEPTANCE:
+  milestone STRIPE_CONTROL_READY
+  revision R1
+  commitment sha256:42d90fc7b81cbc07c8f67d85ccf536da147f813cdfd4065b5cabc3a7953d0d04
+  criterion WEBHOOK_PROVED required owner "Raw signature duplicate ordering retry and recovery fixtures pass"
+  criterion CUSTOMER_ISOLATION_PROVED required owner "Checkout portal and Stripe customer ownership isolation pass"
+
+milestone_criterion_set BIL_ENFORCEMENT_ACCEPTANCE:
+  milestone BILLING_ENFORCEMENT_READY
+  revision R1
+  commitment sha256:ee17403442a27a9563dcde9e2e7c3415db68b900abfc2e90f5ef93f12cf10257
+  criterion ROUTE_INVENTORY_PROVED required owner "Every cost-bearing route uses the central entitlement guard"
+  criterion FAIL_CLOSED_PROVED required owner "Unknown or exhausted access denies paid work without blocking recovery reads"
+
+milestone_criterion_set BIL_LOCAL_ACCEPTANCE:
+  milestone BILLING_LOCAL_ACCEPTED
+  revision R1
+  commitment sha256:c27ad075de866d30c65747a4f03fc5d219d5b581c7f518c80d37eaf7f61f6772
+  criterion LOCAL_CHECKS_PASSED required owner "Lint tests build migrations Worker and PERT checks pass"
+  criterion PRIVACY_PROVED required owner "Public APIs logs and frontend retain no private billing payload"
+
+milestone_criterion_set BIL_STAGE_ACCEPTANCE:
+  milestone BILLING_STAGE_ACCEPTED
+  revision R1
+  commitment sha256:d6e63538028302ba8c309f4e151dd32a478ad7fe66dcd4dfb994f4aab6c5232a
+  criterion TEST_MODE_LIFECYCLE_PROVED required owner "Stripe test-mode lifecycle and task recovery pass on the exact Stage artifact"
+  criterion ROLLBACK_PROVED required owner "Rollback preserves billing ledger and restores the recorded application target"
+
+milestone_criterion_set BIL_PRODUCTION_APPROVAL:
+  milestone BILLING_PRODUCTION_APPROVED
+  revision R1
+  commitment sha256:3065ecdf9ffc49f939465a401a0dbded429dc57b9d6da3757b763ce5a6cb6948
+  criterion OWNER_RELEASE_APPROVAL required owner "The exact live catalog writes secrets artifacts activation and rollback are approved"
+
+milestone_criterion_set BIL_PRODUCTION_ACCEPTANCE:
+  milestone BILLING_PRODUCTION_ACCEPTED
+  revision R1
+  commitment sha256:20e5e8f0089c10d16e0579874491c4f6c0c184dda899fce2278f87560895eea7
+  criterion LIVE_READBACK_PROVED required owner "Production subscription entitlement usage and denial readback pass"
+  criterion RECOVERY_PROVED required owner "Portal webhook reconciliation and rollback recovery remain operable"
