@@ -272,6 +272,16 @@ Required design decisions before implementation:
 - bounded deterministic mapping of separately stored legacy perspective fields
   alongside the existing natural description or instruction.
 
+ADR-0013 and
+[`structured-narration-definition-design.md`](structured-narration-definition-design.md)
+accept these decisions: closed operational dimensions with display-only tags,
+fixed safety/grounding then perspective then phase then style precedence, a
+two-positive/one-counterexample per-phase budget with anti-copy clauses, and
+exact legacy perspective preservation with validated regeneration of all other
+structure. P4 implementation is active; local acceptance still requires the
+authoring, selector, exact-binding, phase-consumer, and persistence evidence
+listed in that design.
+
 ### P5 — Integrated authoring and cutover acceptance
 
 - create/edit flows show structure and generated public projection together;
