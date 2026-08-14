@@ -19,6 +19,8 @@
     "test:deployment": "node --import tsx --test infra/cloudflare-worker/src/**/*.test.ts",
     "build:worker": "npm run build --workspace=@kshiai/shared && npm run build --workspace=frontend && wrangler deploy --config infra/cloudflare-worker/wrangler.jsonc --dry-run",
     "observe:character-focus-shadow": "node --import tsx scripts/observe-character-focus-shadow.ts",
+    "adr:check": "node scripts/check-adrs.mjs",
+    "adr:check:sealgraph": "node scripts/check-adr-sealgraph.mjs",
     "static": "npm run static:jscpd && npm run static:lizard",
     "static:jscpd": "jscpd --config .jscpd.json backend/src frontend/src packages/shared/src infra/cloudflare-worker/src scripts",
     "static:lizard": "python3 scripts/check-lizard.py",

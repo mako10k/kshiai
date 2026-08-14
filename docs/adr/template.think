@@ -1,0 +1,46 @@
+framework ArchitectureDecisionRecord:
+  requires problem and decision
+  requires premise and evidence
+  warns pending
+
+domain ADRNNNN:
+  description "ADR-NNNN: Decision title"
+
+problem P1:
+  |
+    Describe the current behavior, the problem, and why a decision is required.
+
+premise DRIVER1:
+  |
+    State a constraint or decision driver that materially distinguishes options.
+
+premise OPTIONS:
+  |
+    Describe the considered options and their relevant tradeoffs. Explain why
+    dual or ambiguous authority is not acceptable when that applies.
+
+evidence E1:
+  |
+    Record a verified observation supporting the decision. Attach resource
+    provenance when a file, URL, or immutable artifact is available.
+
+decision D1 based_on P1, DRIVER1, OPTIONS, E1:
+  |
+    State the proposed direction precisely, including authority, compatibility,
+    migration, rollout, and non-goal boundaries that affect implementation.
+  annotation caveat:
+    "ADR status is Proposed; this decision is not implementation authority."
+
+pending OWNER_ACCEPTANCE:
+  |
+    The named decision owner has not explicitly approved the exact ADR identity
+    and decision revision. Do not implement this direction yet.
+
+# To accept this ADR, replace OWNER_ACCEPTANCE pending with evidence containing
+# the owner's explicit instruction, update the decision caveat, and add:
+#
+# decision ACCEPTANCE based_on D1, OWNER_ACCEPTANCE:
+#   |
+#     ADR-NNNN is Accepted and D1 authorizes its bounded implementation.
+#   annotation rationale:
+#     "The named decision owner explicitly approved this ADR and revision."

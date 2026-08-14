@@ -16,4 +16,5 @@ frontend/dist/
 .venv-static/
 thoughts/
 .llmthink/
+.sealgraph/
 gha-creds-*.json

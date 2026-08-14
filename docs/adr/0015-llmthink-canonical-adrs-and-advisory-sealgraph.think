@@ -1,0 +1,121 @@
+framework ArchitectureDecisionRecord:
+  requires problem and decision
+  requires premise and evidence
+  warns pending
+
+domain ADR0015:
+  description "LLMTHINK canonical ADRs with advisory sealgraph projection"
+
+problem P1:
+  |
+    Markdown-only ADRs mix causal decision structure, human explanation, and
+    approval state in one document. That makes unsupported conclusions and
+    ambiguous status transitions difficult to detect before implementation.
+
+premise DRIVER_CAUSALITY:
+  |
+    The authoritative record must expose which observations, constraints, and
+    prior decisions support each selected direction.
+
+premise DRIVER_READABILITY:
+  |
+    Reviewers still need a concise human-readable ADR without requiring them to
+    read or operate the LLMTHINK DSL.
+
+premise DRIVER_AUTHORITY:
+  |
+    An agent may draft and audit an ADR, but only the named decision owner may
+    change the exact proposed decision to Accepted.
+
+premise OPTIONS:
+  |
+    Considered options are: keep Markdown as the only authoritative artifact;
+    make Markdown and LLMTHINK independently authoritative; or make LLMTHINK
+    authoritative with Markdown as a human-readable projection. Independent
+    dual authority is rejected because disagreement would leave no deterministic
+    source of truth.
+
+evidence E1:
+  |
+    The locally installed LLMTHINK help identifies .think as the standard file
+    extension and .dsl as a compatibility alias, and supports explicit
+    decision based_on relationships plus audit.
+
+evidence E2:
+  |
+    On 2026-08-14, the repository owner requested that ADRs be written with
+    LLMTHINK and that sealgraph be used experimentally only as a secondary
+    check because breaking changes remain possible.
+
+decision D1 based_on P1, DRIVER_CAUSALITY, DRIVER_READABILITY, OPTIONS, E1, E2:
+  |
+    For ADR-0015 and later ADRs, the same-basename .think file is the
+    authoritative decision and causal record. The .md file is a human-readable
+    projection. If the two disagree, the .think file controls and the projection
+    must be corrected. ADR-0001 through ADR-0014 retain their existing Markdown
+    authority unless a later accepted migration ADR replaces it.
+  annotation caveat:
+    "Accepted through OWNER_ACCEPTANCE on 2026-08-14."
+
+decision D2 based_on D1, DRIVER_AUTHORITY, E2:
+  |
+    A new ADR begins as Proposed. Accepted requires evidence in the authoritative
+    .think file that the named decision owner explicitly approved the exact ADR
+    identity and decision revision. A request to draft, inspect, or continue work
+    is not acceptance. The drafting agent must not create its own approval
+    evidence or infer acceptance from an implementation instruction.
+  annotation caveat:
+    "Accepted through OWNER_ACCEPTANCE on 2026-08-14."
+
+problem P2:
+  |
+    sealgraph can independently project dependency edges and reveal stale or
+    inconsistent provenance, but its 0.1.0-dev CLI and storage contract are under
+    active development and may change incompatibly.
+
+decision D3 based_on P2, D1, E2:
+  |
+    Use sealgraph only as an experimental, reproducible secondary projection of
+    selected LLMTHINK based_on and artifact dependencies. Run it in isolated
+    disposable storage. Its findings may trigger investigation, but sealgraph
+    output must never become the ADR source of truth, rewrite the .think file,
+    supply owner approval, or independently accept, reject, authorize, or block
+    an ADR. Missing or incompatible sealgraph is reported as advisory and is not
+    a required CI or release gate while this decision remains in effect.
+    Persisted sealgraph storage and reports are disposable caches. Every
+    projection must be reconstructable from the authoritative .think file and
+    its referenced source artifacts without reading earlier sealgraph storage.
+    When a new sealgraph version cannot read old storage, discard that cache and
+    rebuild only after adapting the advisory projection to the new CLI contract.
+  annotation caveat:
+    "Accepted through OWNER_ACCEPTANCE on 2026-08-14."
+
+problem P3:
+  |
+    Existing ADR status labels do not consistently include durable evidence of
+    the owner's exact acceptance instruction.
+
+decision D4 based_on P3, D2:
+  |
+    Do not rewrite historical ADR decisions or statuses during this migration.
+    Inventory their acceptance provenance separately. When provenance is absent
+    or ambiguous, record it as unknown and obtain explicit owner confirmation
+    before relying on that ADR alone to authorize new implementation.
+  annotation caveat:
+    "Accepted through OWNER_ACCEPTANCE on 2026-08-14."
+
+evidence OWNER_ACCEPTANCE:
+  |
+    On 2026-08-14, the product owner explicitly stated: "OK、D1～D4は承認します。
+    ただし注意点は、 sealgraph はあくまでも参考で、新バージョンでは「読み出せない」
+    破壊的変更が起きうる（今まさにその更新を行ってる）ので注意して、原本から復元可能に
+    しておいてください。" The accepted scope is D1 through D4 with the
+    rebuildability condition incorporated into D3.
+
+decision ACCEPTANCE based_on D1, D2, D3, D4, OWNER_ACCEPTANCE:
+  |
+    ADR-0015 is Accepted. D1 through D4 authorize the bounded workflow and
+    migration changes described by this ADR, including a reconstruct-only,
+    non-authoritative sealgraph adapter.
+  annotation rationale:
+    "The named decision owner explicitly approved D1 through D4 and supplied the D3 compatibility condition."
