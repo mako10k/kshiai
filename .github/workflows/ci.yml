@@ -26,9 +26,13 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
+      - uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548 # v6.1.0
+        with:
+          python-version: "3.12"
       - run: npm ci
+      - run: python3 -m pip install --disable-pip-version-check --requirement requirements-static.txt
       - run: npm run build
-      - run: npm run typecheck
+      - run: npm run lint
       - run: npm test
       - name: Verify generated files are clean
         run: git diff --exit-code
