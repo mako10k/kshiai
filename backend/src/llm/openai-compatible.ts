@@ -15,6 +15,7 @@ import {
   CharacterDeepPsycheCompactAdvanceSchema,
   CharacterIdentitySchema,
   CharacterDefinitionV2Schema,
+  BattlefieldDefinitionV2Schema,
   AssetClaimRiskCodeSchema,
   DecisionProfileSchema,
   FreeActionAdjudicationBatchSchema,
@@ -52,6 +53,7 @@ import type {
   AnalyzeCharacterImprovementResult,
   BattleHistoryTools,
   GenerateBattlefieldResult,
+  GenerateBattlefieldDefinitionV2Input,
   GenerateCharacterResult,
   GenerateCharacterInput,
   GenerateCharacterProfileInput,
@@ -59,6 +61,10 @@ import type {
   GenerateCharacterDefinitionV2Input,
   ValidateCharacterProfileClaimsInput,
   ValidateCharacterProfileClaimsResult,
+  GenerateBattlefieldSceneInput,
+  GenerateBattlefieldSceneResult,
+  ValidateBattlefieldSceneClaimsInput,
+  ValidateBattlefieldSceneClaimsResult,
   GenerateImprovementPromptInput,
   GenerateImprovementPromptResult,
   JudgmentNarrationResult,
@@ -134,6 +140,7 @@ Return JSON:
 }
 Rules:
 - Ground the cause in the supplied battlefield name, scene, terrain, obstacles, conditions, or setup. Do not introduce an unrelated stock disaster or an unseen mechanism.
+- When allowedEvolution is present, express only that exact pressure over its referenced areas/objects. It is permission, not proof that a different change may occur. Respect every forbiddenDiscontinuity.
 - Propose a persistent result expressible in one of three forms: a new non-character object or effect remains in the scene; an existing non-character object changes location; or an existing non-character object becomes active or inactive.
 - State both the grounded cause and the persistent result in summary. Do not invent a canonical entity id; the reconciler owns identity and acceptance.
 - Do not propose transient-only intensification, flicker, reflection, ripples, weather, sound, or mood unless it leaves one of those persistent results.
@@ -1479,6 +1486,166 @@ Coefficients between 0.25 and 2.5. Do not invent stats for characters.`,
     }
   }
 
+  async generateBattlefieldDefinitionV2(
+    input: GenerateBattlefieldDefinitionV2Input,
+  ) {
+    if (!this.client) return this.fallback.generateBattlefieldDefinitionV2(input);
+    try {
+      const data = await this.chatJson(
+        `You refine a VALID BattlefieldDefinitionV2 JSON value from an owner source and a
+valid deterministic base. Return JSON only: {"definition": object}.
+
+Preserve every stable ID for the same semantic area, edge, effect, object, and evolution
+affordance. Keep all references valid and globally unique. Use only the enum values and
+closed coefficient keys already demonstrated by the base. The base is authoritative for
+facts recovered from legacy structured fields; owner source may refine it only where the
+source explicitly supports the change.
+
+Structure bounded authored scene facts into areas, directed topology, entry areas,
+objects, effects, and evolutionAffordances. Every description must be concise and carry
+sourceSupportRefs. An evolution affordance is permission for one pressure only; it must
+reference existing area/object IDs and must not itself assert that a future change has
+happened. forbiddenDiscontinuities must retain unregistered topology, object, and effect
+guards. Do not add character entities, current battle state, a winner, damage to a
+participant, or live object placement.
+
+For sourceKind=upgrade_description, prefer the deterministic base to inventing topology,
+hidden objects, mechanics, or unstored causes from polished prose. Empty effects or
+evolutionAffordances are valid when the source establishes none. Preserve strict bounds.`,
+        JSON.stringify({
+          sourceKind: input.sourceKind,
+          ownerSource: input.sourceText.slice(0, 8000),
+          validBaseDefinition: input.baseDefinition,
+        }),
+        {
+          tier: "engine",
+          label: "generateBattlefieldDefinitionV2",
+          timeoutMs: ENGINE_LONG_TIMEOUT_MS,
+          temperature: 0.35,
+        },
+      ) as Record<string, unknown>;
+      return BattlefieldDefinitionV2Schema.parse(data.definition);
+    } catch (error) {
+      return this.fallbackOrThrow(
+        error,
+        () => this.fallback.generateBattlefieldDefinitionV2(input),
+      );
+    }
+  }
+
+  async generateBattlefieldScene(
+    input: GenerateBattlefieldSceneInput,
+  ): Promise<GenerateBattlefieldSceneResult> {
+    if (!this.client) return this.fallback.generateBattlefieldScene(input);
+    try {
+      const data = await this.chatJson(
+        `You write a concise public battlefield card from a server-approved fact projection.
+Return JSON only: {
+  "description": string,
+  "segments": [{ "id": string, "text": string,
+    "kind": "fact"|"flavor", "supportRefs": string[] }],
+  "assistantMessage": string
+}
+Use the same language as the owner source. The owner source may guide tone only and is
+not permission to publish a fact. Every material factual segment must cite exact
+supportRef values from approvedFacts. Flavor cannot add topology, an object, an effect,
+a proper noun, a number, mechanics, hidden state, or evolution controls. Do not expose
+schema names, IDs, coefficient values, triggers, cancellation rules, hidden objects, or
+control metadata. Keep the card to 2-4 natural sentences and at most 1600 characters.
+description must be the exact segment texts joined in order.`,
+        JSON.stringify({
+          ownerSourceForToneOnly: input.sourceText.slice(0, 6000),
+          displayName: input.projection.displayName,
+          approvedFacts: input.projection.facts,
+        }),
+        { tier: "engine", label: "generateBattlefieldScene", temperature: 0.6 },
+      ) as Record<string, unknown>;
+      const segments = (Array.isArray(data.segments) ? data.segments : [])
+        .slice(0, 12)
+        .map((raw, index) => {
+          const value = raw as Record<string, unknown>;
+          return {
+            id: String(value.id ?? `segment-${index + 1}`).slice(0, 120),
+            text: String(value.text ?? "").slice(0, 1200),
+            kind: value.kind === "flavor" ? "flavor" as const : "fact" as const,
+            supportRefs: Array.isArray(value.supportRefs)
+              ? value.supportRefs.map(String).slice(0, 12)
+              : [],
+          };
+        })
+        .filter((segment) => segment.text.length > 0);
+      const description = String(data.description ??
+        segments.map((segment) => segment.text).join("\n")).slice(0, 4000);
+      if (!description || segments.length === 0) {
+        throw new Error("Battlefield scene generation returned no valid segments");
+      }
+      return {
+        description,
+        segments,
+        assistantMessage: String(
+          data.assistantMessage ?? "構造化した設定から公開シーンを作成しました。",
+        ),
+      };
+    } catch (error) {
+      return this.fallbackOrThrow(
+        error,
+        () => this.fallback.generateBattlefieldScene(input),
+      );
+    }
+  }
+
+  async validateBattlefieldSceneClaims(
+    input: ValidateBattlefieldSceneClaimsInput,
+  ): Promise<ValidateBattlefieldSceneClaimsResult> {
+    if (!this.client) return this.fallback.validateBattlefieldSceneClaims(input);
+    const data = await this.chatJson(
+      `You are an independent bounded material-claim validator for a public battlefield card.
+Return JSON only: {
+  "segments": [{
+    "segmentId": string,
+    "verdict": "supported"|"flavor_only"|"unsupported",
+    "supportRefs": string[],
+    "riskCodes": string[]
+  }]
+}
+Assess every segment exactly once using only the approved projection. A fact is supported
+only when its complete meaning follows from exact approved facts. Flavor cannot add a
+proper noun, number, capability, item, relationship, history event, hidden cause,
+information right, mechanics, contradiction, or control metadata. Otherwise mark it
+unsupported and return applicable riskCodes. Never repair or omit a segment.`,
+      JSON.stringify({
+        approvedProjection: input.projection,
+        candidateScene: input.scene,
+      }),
+      {
+        tier: "engine",
+        label: "validateBattlefieldSceneClaims",
+        temperature: 0,
+      },
+    ) as Record<string, unknown>;
+    const rawSegments = Array.isArray(data.segments) ? data.segments : [];
+    return {
+      segments: rawSegments.slice(0, 12).map((raw) => {
+        const value = raw as Record<string, unknown>;
+        const verdict = value.verdict === "supported" ||
+            value.verdict === "flavor_only" || value.verdict === "unsupported"
+          ? value.verdict
+          : "unsupported";
+        return {
+          segmentId: String(value.segmentId ?? "").slice(0, 120),
+          verdict,
+          supportRefs: Array.isArray(value.supportRefs)
+            ? value.supportRefs.map(String).slice(0, 12)
+            : [],
+          riskCodes: Array.isArray(value.riskCodes)
+            ? value.riskCodes.slice(0, 8).map((risk) =>
+                AssetClaimRiskCodeSchema.parse(risk))
+            : [],
+        };
+      }),
+    };
+  }
+
   async adjustBattlefieldPreset(
     current: BattlefieldPreset,
     userMessage: string,
@@ -1737,6 +1904,8 @@ Do not invent a sudden environmental event or dramatic field change here. A sepa
     stagnationHint: string;
     previousHappenings: Array<{ title: string; summary: string }>;
     battlefield?: BattlefieldInstance | null;
+    evolutionAffordance?: import("@kshiai/shared").BattlefieldEvolutionAffordanceV2 | null;
+    forbiddenDiscontinuities?: string[];
   }): Promise<{
     title: string;
     summary: string;
@@ -1761,6 +1930,9 @@ Do not invent a sudden environmental event or dramatic field change here. A sepa
                 obstacles: input.battlefield.obstacles?.slice(0, 4),
                 conditions: input.battlefield.conditions?.slice(0, 4),
                 setup: input.battlefield.narrativeSetup,
+                allowedEvolution: input.evolutionAffordance ?? null,
+                forbiddenDiscontinuities:
+                  input.forbiddenDiscontinuities?.slice(0, 24) ?? [],
               }
             : null,
         }),

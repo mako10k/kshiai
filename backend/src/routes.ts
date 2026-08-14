@@ -20,8 +20,11 @@ import {
   toPublicPreset,
   balanceCharacterCombatFields,
   CharacterGenerationEnvelopeV2Schema,
+  BattlefieldGenerationEnvelopeV2Schema,
   characterDefinitionV2ToLegacySheet,
+  battlefieldDefinitionV2ToLegacyPreset,
   projectCharacterImageBriefV2,
+  projectBattlefieldImageBriefV2,
   type BattlefieldPreset,
   type CharacterSheet,
 } from "@kshiai/shared";
@@ -49,6 +52,7 @@ import {
 } from "./llm/provider-accounting.js";
 import * as charRepo from "./repositories/characters.js";
 import * as charAssetRepo from "./repositories/character-assets-v2.js";
+import * as battlefieldAssetRepo from "./repositories/battlefield-assets-v2.js";
 import * as battleRepo from "./repositories/battles.js";
 import * as bfRepo from "./repositories/battlefields.js";
 import * as styleRepo from "./repositories/narration-styles.js";
@@ -93,11 +97,16 @@ import {
 } from "./services/narration-task-dispatch.js";
 import { assetContentDigest } from "./repositories/asset-generations.js";
 import { buildCharacterGenerationCandidate } from "./services/character-authoring-service.js";
+import { buildBattlefieldGenerationCandidate } from "./services/battlefield-authoring-service.js";
 import type { GenerateCharacterResult, LlmProvider } from "./llm/types.js";
 
 type CharacterPortraitGenerator = typeof import(
   "./services/image-service.js"
 )["generateAndStoreCharacterPortrait"];
+
+type BattlefieldImageGenerator = typeof import(
+  "./services/image-service.js"
+)["generateAndStoreBattlefieldImage"];
 
 async function publicUserWithAccess(user: {
   id: string;
@@ -182,6 +191,60 @@ async function characterDraftResponse(
   };
 }
 
+async function battlefieldPresetForAttempt(
+  attempt: battlefieldAssetRepo.BattlefieldAuthoringAttempt,
+): Promise<BattlefieldPreset> {
+  if (!attempt.candidate) throw new Error("AUTHORING_CANDIDATE_MISSING");
+  const existing = await bfRepo.getPreset(attempt.battlefieldId);
+  return battlefieldDefinitionV2ToLegacyPreset({
+    battlefieldId: attempt.battlefieldId,
+    ownerUserId: attempt.ownerUserId,
+    isSystem: false,
+    definition: attempt.candidate.definition,
+    publicPresentation: attempt.candidate.publicPresentation,
+    createdAt: existing?.createdAt ?? attempt.createdAt,
+    updatedAt: attempt.updatedAt,
+  });
+}
+
+async function battlefieldDraftResponse(
+  attempt: battlefieldAssetRepo.BattlefieldAuthoringAttempt,
+) {
+  return {
+    id: attempt.attemptId,
+    battlefield: toPublicPreset(await battlefieldPresetForAttempt(attempt)),
+    assistantMessage: attempt.assistantMessage,
+    kind: attempt.kind,
+    expiresAt: attempt.expiresAt,
+  };
+}
+
+function adjustedBattlefieldGenerationResult(
+  current: BattlefieldPreset,
+  patch: Awaited<ReturnType<LlmProvider["adjustBattlefieldPreset"]>>,
+) {
+  const next: BattlefieldPreset = {
+    ...current,
+    ...patch.presetPatch,
+    baseCoefficients: patch.presetPatch.baseCoefficients
+      ? { ...current.baseCoefficients, ...patch.presetPatch.baseCoefficients }
+      : current.baseCoefficients,
+    appearance: patch.presetPatch.appearance
+      ? { ...current.appearance, ...patch.presetPatch.appearance }
+      : current.appearance,
+    updatedAt: new Date().toISOString(),
+  };
+  const {
+    id: _id,
+    ownerUserId: _ownerUserId,
+    isSystem: _isSystem,
+    createdAt: _createdAt,
+    updatedAt: _updatedAt,
+    ...preset
+  } = next;
+  return { preset, assistantMessage: patch.assistantMessage };
+}
+
 function adjustedGenerationResult(
   current: CharacterSheet,
   patch: Awaited<ReturnType<LlmProvider["adjustCharacter"]>>,
@@ -220,6 +283,7 @@ function adjustedGenerationResult(
 export function buildRoutes(options: {
   llm?: LlmProvider;
   generateCharacterPortrait?: CharacterPortraitGenerator;
+  generateBattlefieldImage?: BattlefieldImageGenerator;
 } = {}) {
   const app = new Hono();
   const llm = options.llm ?? createLlmProvider();
@@ -227,6 +291,10 @@ export function buildRoutes(options: {
     (async (...args: Parameters<CharacterPortraitGenerator>) =>
       (await import("./services/image-service.js"))
         .generateAndStoreCharacterPortrait(...args));
+  const generateBattlefieldImage = options.generateBattlefieldImage ??
+    (async (...args: Parameters<BattlefieldImageGenerator>) =>
+      (await import("./services/image-service.js"))
+        .generateAndStoreBattlefieldImage(...args));
 
   app.post("/api/internal/narration/task", async (c) => {
     if (!await verifyNarrationTaskAuthorization(c.req.header("Authorization"))) {
@@ -1608,30 +1676,261 @@ export function buildRoutes(options: {
   authed.get("/battlefields", async (c) => {
     const user = c.get("user");
     const q = c.req.query("q");
-    return c.json({ battlefields: await bfRepo.listPresets({ userId: user.id, q }) });
+    const selectable = c.req.query("selectable") === "true";
+    return c.json({
+      battlefields: await bfRepo.listPresets({
+        userId: user.id,
+        q,
+        selectable,
+      }),
+    });
   });
 
   authed.post("/battlefields/generate", async (c) => {
     const user = c.get("user");
     const body = GenerateBattlefieldRequestSchema.parse(await c.req.json());
-    const gen = await llm.generateBattlefieldPreset({
-      prompt: body.prompt,
-      category: body.category,
-    });
-    const t = new Date().toISOString();
-    const preset: BattlefieldPreset = {
-      id: newId("bfp"),
-      ownerUserId: user.id,
-      isSystem: false,
-      createdAt: t,
-      updatedAt: t,
-      ...gen.preset,
-    };
-    await bfRepo.savePreset(preset);
+    const idempotencyKey = readIdempotencyKey(c.req.header("Idempotency-Key"));
+    if (!idempotencyKey) {
+      return c.json({ error: "idempotency_key_required" }, 400);
+    }
+    let started: Awaited<ReturnType<
+      typeof battlefieldAssetRepo.beginBattlefieldAuthoringAttempt
+    >>;
+    try {
+      started = await battlefieldAssetRepo.beginBattlefieldAuthoringAttempt({
+        ownerUserId: user.id,
+        kind: "create",
+        idempotencyKey: `battlefield-create:${idempotencyKey}`,
+        requestDigest: assetContentDigest(body),
+        sourceText: body.prompt,
+        sourceDigest: assetContentDigest(body.prompt),
+      });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "authoring_failed";
+      return c.json(
+        { error: message === "AUTHORING_IDEMPOTENCY_CONFLICT"
+            ? "idempotency_key_conflict"
+            : "authoring_start_failed" },
+        message === "AUTHORING_IDEMPOTENCY_CONFLICT" ? 409 : 400,
+      );
+    }
+    if (started.replayed) {
+      return started.attempt.candidate
+        ? c.json({ draft: await battlefieldDraftResponse(started.attempt) })
+        : c.json({ error: "request_in_progress" }, 409);
+    }
+    try {
+      const generated = await llm.generateBattlefieldPreset({
+        prompt: body.prompt,
+        category: body.category,
+      });
+      await battlefieldAssetRepo.updateBattlefieldAuthoringStatus({
+        attemptId: started.attempt.attemptId,
+        ownerUserId: user.id,
+        status: "generating_description",
+      });
+      const candidate = await buildBattlefieldGenerationCandidate({
+        llm,
+        attemptId: started.attempt.attemptId,
+        battlefieldId: started.attempt.battlefieldId,
+        ownerUserId: user.id,
+        sourceText: body.prompt,
+        sourceKind: "create_instruction",
+        generated,
+      });
+      const saved = await battlefieldAssetRepo.saveBattlefieldAuthoringCandidate({
+        attemptId: started.attempt.attemptId,
+        ownerUserId: user.id,
+        envelope: candidate.envelope,
+        assistantMessage: candidate.assistantMessage,
+      });
+      return c.json({ draft: await battlefieldDraftResponse(saved) });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "authoring_failed";
+      await battlefieldAssetRepo.failBattlefieldAuthoringAttempt({
+        attemptId: started.attempt.attemptId,
+        ownerUserId: user.id,
+        errorCode: message.slice(0, 120),
+      });
+      return c.json({ error: "battlefield_authoring_failed", message }, 502);
+    }
+  });
+
+  authed.get("/battlefield-drafts/latest", async (c) => {
+    const user = c.get("user");
+    const attempt = await battlefieldAssetRepo.getLatestBattlefieldAuthoringAttempt(
+      user.id,
+    );
     return c.json({
-      battlefield: toPublicPreset(preset),
-      assistantMessage: gen.assistantMessage,
+      draft: attempt?.candidate ? await battlefieldDraftResponse(attempt) : null,
     });
+  });
+
+  authed.post("/battlefield-drafts/:id/chat", async (c) => {
+    const user = c.get("user");
+    const body = BattlefieldChatRequestSchema.parse(await c.req.json());
+    const attempt = await battlefieldAssetRepo.getBattlefieldAuthoringAttempt(
+      c.req.param("id"),
+      user.id,
+    );
+    if (!attempt?.candidate) return c.json({ error: "not_found" }, 404);
+    try {
+      const current = await battlefieldPresetForAttempt(attempt);
+      const adjustment = await llm.adjustBattlefieldPreset(current, body.message);
+      const sourceText = `${attempt.sourceText ?? current.narrativeBlurb}\n\n追加調整: ${body.message}`;
+      await battlefieldAssetRepo.replaceBattlefieldAuthoringSource({
+        attemptId: attempt.attemptId,
+        ownerUserId: user.id,
+        sourceText,
+        sourceDigest: assetContentDigest(sourceText),
+      });
+      const candidate = await buildBattlefieldGenerationCandidate({
+        llm,
+        attemptId: attempt.attemptId,
+        battlefieldId: attempt.battlefieldId,
+        ownerUserId: user.id,
+        sourceText,
+        sourceKind: attempt.kind === "upgrade"
+          ? "upgrade_description"
+          : attempt.kind === "revision"
+            ? "revision_instruction"
+            : "create_instruction",
+        generated: adjustedBattlefieldGenerationResult(current, adjustment),
+        existing: await bfRepo.getPreset(attempt.battlefieldId),
+      });
+      const saved = await battlefieldAssetRepo.saveBattlefieldAuthoringCandidate({
+        attemptId: attempt.attemptId,
+        ownerUserId: user.id,
+        envelope: candidate.envelope,
+        assistantMessage: candidate.assistantMessage,
+      });
+      return c.json({ draft: await battlefieldDraftResponse(saved) });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "authoring_failed";
+      await battlefieldAssetRepo.failBattlefieldAuthoringAttempt({
+        attemptId: attempt.attemptId,
+        ownerUserId: user.id,
+        errorCode: message.slice(0, 120),
+      });
+      return c.json({ error: "battlefield_authoring_failed", message }, 502);
+    }
+  });
+
+  authed.post("/battlefields/:id/confirm", async (c) => {
+    const user = c.get("user");
+    try {
+      const activated = await battlefieldAssetRepo.activateBattlefieldAuthoringAttempt({
+        attemptId: c.req.param("id"),
+        ownerUserId: user.id,
+      });
+      return c.json({
+        battlefield: {
+          ...toPublicPreset(activated.preset),
+          compatibility: await battlefieldAssetRepo.getBattlefieldCompatibility(
+            activated.preset.id,
+          ),
+          selectable: true,
+          upgradeAction: null,
+        },
+        assistantMessage: "構造化した戦場設定と公開シーンを確定しました。",
+      });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "activation_failed";
+      return c.json({ error: "battlefield_activation_failed", message }, 409);
+    }
+  });
+
+  authed.delete("/battlefield-drafts/:id", async (c) => {
+    const user = c.get("user");
+    const discarded = await battlefieldAssetRepo.discardBattlefieldAuthoringAttempt(
+      c.req.param("id"),
+      user.id,
+    );
+    return discarded
+      ? c.json({ ok: true })
+      : c.json({ error: "not_found" }, 404);
+  });
+
+  authed.post("/battlefields/:id/upgrade", async (c) => {
+    const user = c.get("user");
+    const preset = await bfRepo.getPreset(c.req.param("id"));
+    if (!preset || preset.isSystem || preset.ownerUserId !== user.id) {
+      return c.json({ error: "not_found" }, 404);
+    }
+    const compatibility = await battlefieldAssetRepo.getBattlefieldCompatibility(preset.id);
+    if (compatibility.status === "ready") {
+      return c.json({ error: "already_current" }, 409);
+    }
+    const idempotencyKey = readIdempotencyKey(c.req.header("Idempotency-Key"));
+    if (!idempotencyKey) return c.json({ error: "idempotency_key_required" }, 400);
+    let started: Awaited<ReturnType<
+      typeof battlefieldAssetRepo.beginBattlefieldAuthoringAttempt
+    >>;
+    try {
+      started = await battlefieldAssetRepo.beginBattlefieldAuthoringAttempt({
+        ownerUserId: user.id,
+        battlefieldId: preset.id,
+        kind: "upgrade",
+        idempotencyKey: `battlefield-upgrade:${preset.id}:${idempotencyKey}`,
+        requestDigest: assetContentDigest({
+          battlefieldId: preset.id,
+          source: preset.narrativeBlurb,
+        }),
+        sourceText: preset.narrativeBlurb,
+        sourceDigest: assetContentDigest(preset.narrativeBlurb),
+      });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "upgrade_start_failed";
+      return c.json({ error: message === "AUTHORING_IDEMPOTENCY_CONFLICT"
+        ? "idempotency_key_conflict"
+        : "upgrade_start_failed" }, message === "AUTHORING_IDEMPOTENCY_CONFLICT" ? 409 : 400);
+    }
+    if (started.replayed) {
+      return started.attempt.candidate
+        ? c.json({ draft: await battlefieldDraftResponse(started.attempt) })
+        : c.json({ error: "request_in_progress" }, 409);
+    }
+    try {
+      const generated = {
+        preset: {
+          displayName: preset.displayName,
+          category: preset.category,
+          tags: preset.tags,
+          appearance: preset.appearance,
+          terrainHints: preset.terrainHints,
+          obstacleHints: preset.obstacleHints,
+          conditionHints: preset.conditionHints,
+          baseCoefficients: preset.baseCoefficients,
+          narrativeBlurb: preset.narrativeBlurb,
+        },
+        assistantMessage: "既存の戦場から最新版の構造化候補を作成しました。",
+      };
+      const candidate = await buildBattlefieldGenerationCandidate({
+        llm,
+        attemptId: started.attempt.attemptId,
+        battlefieldId: preset.id,
+        ownerUserId: user.id,
+        sourceText: preset.narrativeBlurb,
+        sourceKind: "upgrade_description",
+        generated,
+        existing: preset,
+      });
+      const saved = await battlefieldAssetRepo.saveBattlefieldAuthoringCandidate({
+        attemptId: started.attempt.attemptId,
+        ownerUserId: user.id,
+        envelope: candidate.envelope,
+        assistantMessage: candidate.assistantMessage,
+      });
+      return c.json({ draft: await battlefieldDraftResponse(saved) });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "upgrade_failed";
+      await battlefieldAssetRepo.failBattlefieldAuthoringAttempt({
+        attemptId: started.attempt.attemptId,
+        ownerUserId: user.id,
+        errorCode: message.slice(0, 120),
+      });
+      return c.json({ error: "battlefield_upgrade_failed", message }, 502);
+    }
   });
 
   authed.post("/battlefields/:id/chat", async (c) => {
@@ -1642,23 +1941,60 @@ export function buildRoutes(options: {
     if (!preset || preset.isSystem || preset.ownerUserId !== user.id) {
       return c.json({ error: "not_found" }, 404);
     }
-    const adj = await llm.adjustBattlefieldPreset(preset, body.message);
-    const next: BattlefieldPreset = {
-      ...preset,
-      ...adj.presetPatch,
-      baseCoefficients: adj.presetPatch.baseCoefficients
-        ? { ...preset.baseCoefficients, ...adj.presetPatch.baseCoefficients }
-        : preset.baseCoefficients,
-      appearance: adj.presetPatch.appearance
-        ? { ...preset.appearance, ...adj.presetPatch.appearance }
-        : preset.appearance,
-      updatedAt: new Date().toISOString(),
-    };
-    await bfRepo.savePreset(next);
-    return c.json({
-      battlefield: toPublicPreset(next),
-      assistantMessage: adj.assistantMessage,
-    });
+    const ready = await battlefieldAssetRepo.getReadyBattlefieldGeneration(id);
+    if (!ready) return c.json({ error: "battlefield_upgrade_required" }, 409);
+    const idempotencyKey = readIdempotencyKey(c.req.header("Idempotency-Key"));
+    if (!idempotencyKey) return c.json({ error: "idempotency_key_required" }, 400);
+    let started: Awaited<ReturnType<
+      typeof battlefieldAssetRepo.beginBattlefieldAuthoringAttempt
+    >>;
+    try {
+      started = await battlefieldAssetRepo.beginBattlefieldAuthoringAttempt({
+        ownerUserId: user.id,
+        battlefieldId: id,
+        kind: "revision",
+        idempotencyKey: `battlefield-revision:${id}:${idempotencyKey}`,
+        requestDigest: assetContentDigest({ battlefieldId: id, message: body.message }),
+        sourceText: body.message,
+        sourceDigest: assetContentDigest(body.message),
+      });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "revision_start_failed";
+      return c.json({ error: message.toLowerCase() }, 409);
+    }
+    if (started.replayed) {
+      return started.attempt.candidate
+        ? c.json({ draft: await battlefieldDraftResponse(started.attempt) })
+        : c.json({ error: "request_in_progress" }, 409);
+    }
+    try {
+      const adjustment = await llm.adjustBattlefieldPreset(preset, body.message);
+      const candidate = await buildBattlefieldGenerationCandidate({
+        llm,
+        attemptId: started.attempt.attemptId,
+        battlefieldId: id,
+        ownerUserId: user.id,
+        sourceText: body.message,
+        sourceKind: "revision_instruction",
+        generated: adjustedBattlefieldGenerationResult(preset, adjustment),
+        existing: preset,
+      });
+      const saved = await battlefieldAssetRepo.saveBattlefieldAuthoringCandidate({
+        attemptId: started.attempt.attemptId,
+        ownerUserId: user.id,
+        envelope: candidate.envelope,
+        assistantMessage: candidate.assistantMessage,
+      });
+      return c.json({ draft: await battlefieldDraftResponse(saved), requiresConfirmation: true });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "revision_failed";
+      await battlefieldAssetRepo.failBattlefieldAuthoringAttempt({
+        attemptId: started.attempt.attemptId,
+        ownerUserId: user.id,
+        errorCode: message.slice(0, 120),
+      });
+      return c.json({ error: "battlefield_revision_failed", message }, 502);
+    }
   });
 
   authed.post("/battlefields/:id/copy", async (c) => {
@@ -1691,23 +2027,67 @@ export function buildRoutes(options: {
     } catch {
       // An empty body is valid.
     }
+    const ready = await battlefieldAssetRepo.getReadyBattlefieldGeneration(preset.id);
+    if (!ready) return c.json({ error: "battlefield_upgrade_required" }, 409);
+    const idempotencyKey = readIdempotencyKey(c.req.header("Idempotency-Key"));
+    if (!idempotencyKey) return c.json({ error: "idempotency_key_required" }, 400);
+    const scope = `battlefield-image:${preset.id}`;
+    const operation = await beginIdempotentRequest({
+      userId: user.id,
+      scope,
+      key: idempotencyKey,
+      requestHash: requestDigest({ battlefieldId: preset.id, extra: extra ?? null }),
+    });
+    if (operation.kind === "conflict") {
+      return c.json({ error: "idempotency_key_conflict" }, 409);
+    }
+    if (operation.kind === "processing") {
+      return c.json({ error: "request_in_progress" }, 409);
+    }
+    if (operation.kind === "replay") return c.json(operation.response);
+    const mediaRevisionId = `img-${assetContentDigest({
+      battlefieldId: preset.id,
+      key: idempotencyKey,
+    }).slice(0, 24)}`;
     try {
-      const { generateAndStoreBattlefieldImage } = await import(
-        "./services/image-service.js"
+      const envelope = BattlefieldGenerationEnvelopeV2Schema.parse(ready.content);
+      const result = await generateBattlefieldImage(
+        preset,
+        extra,
+        undefined,
+        mediaRevisionId,
+        projectBattlefieldImageBriefV2(envelope.definition),
       );
-      const result = await generateAndStoreBattlefieldImage(preset, extra);
-      const next: BattlefieldPreset = {
-        ...preset,
-        appearance: { ...preset.appearance, imageUrl: result.url },
-        updatedAt: new Date().toISOString(),
-      };
-      await bfRepo.savePreset(next);
-      return c.json({
-        battlefield: toPublicPreset(next),
+      const activated = await battlefieldAssetRepo.activateBattlefieldImageRevision({
+        battlefieldId: preset.id,
+        ownerUserId: user.id,
+        expectedGenerationId: ready.generationId,
+        operationId: idempotencyKey,
+        mediaId: result.url,
+        mediaRevisionId,
+      });
+      const response = {
+        battlefield: toPublicPreset(activated.preset),
         note: result.note,
         ok: true,
+      };
+      await completeIdempotentRequest({
+        userId: user.id,
+        scope,
+        key: idempotencyKey,
+        ownerId: operation.ownerId,
+        response,
+      });
+      return c.json({
+        ...response,
       });
     } catch (error) {
+      await abandonIdempotentRequest({
+        userId: user.id,
+        scope,
+        key: idempotencyKey,
+        ownerId: operation.ownerId,
+      });
       const message = error instanceof Error ? error.message : String(error);
       console.error("[battlefields/image]", message);
       return c.json(
@@ -1732,7 +2112,7 @@ export function buildRoutes(options: {
       user.id,
       body.displayName,
     );
-    await bfRepo.savePreset(preset);
+    await bfRepo.importPreset(preset);
     return c.json({ battlefield: toPublicPreset(preset) });
   });
 

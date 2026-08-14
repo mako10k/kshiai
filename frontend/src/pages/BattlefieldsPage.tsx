@@ -1,7 +1,7 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { Link } from "react-router-dom";
 import type { BattlefieldPresetPublic } from "@kshiai/shared";
-import { api } from "../api";
+import { api, type BattlefieldAuthoringDraft } from "../api";
 import { useLocalDraft } from "../hooks/useLocalDraft";
 import { mediaSrc } from "../media";
 
@@ -26,6 +26,8 @@ export function BattlefieldsPage() {
     DEFAULT_CREATE,
   );
   const [message, setMessage] = useState<string | null>(null);
+  const [draft, setDraft] = useState<BattlefieldAuthoringDraft | null>(null);
+  const [draftAdjustment, setDraftAdjustment] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -38,7 +40,10 @@ export function BattlefieldsPage() {
   }
 
   useEffect(() => {
-    void reload(q || undefined).catch((e) => setError(String(e)));
+    void Promise.all([
+      reload(q || undefined),
+      api.latestBattlefieldDraft().then((result) => setDraft(result.draft)),
+    ]).catch((e) => setError(String(e)));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -58,14 +63,57 @@ export function BattlefieldsPage() {
     setError(null);
     try {
       const res = await api.generateBattlefield(text, category);
-      setMessage(res.assistantMessage);
+      setDraft(res.draft);
+      setMessage(res.draft.assistantMessage);
       clearCreate();
-      await reload(q);
     } catch (err) {
       setError(err instanceof Error ? err.message : "failed");
     } finally {
       setBusy(false);
     }
+  }
+
+  async function onAdjustDraft(e: FormEvent) {
+    e.preventDefault();
+    if (!draft || !draftAdjustment.trim()) return;
+    setBusy(true);
+    setError(null);
+    try {
+      const result = await api.chatBattlefieldDraft(
+        draft.id,
+        draftAdjustment.trim(),
+      );
+      setDraft(result.draft);
+      setMessage(result.draft.assistantMessage);
+      setDraftAdjustment("");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "failed");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function onConfirmDraft() {
+    if (!draft) return;
+    setBusy(true);
+    setError(null);
+    try {
+      const result = await api.confirmBattlefieldDraft(draft.id);
+      setDraft(null);
+      setMessage(result.assistantMessage);
+      await reload(q || undefined);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "failed");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function onDiscardDraft() {
+    if (!draft) return;
+    await api.discardBattlefieldDraft(draft.id);
+    setDraft(null);
+    setDraftAdjustment("");
   }
 
   return (
@@ -80,10 +128,52 @@ export function BattlefieldsPage() {
         </div>
       </div>
 
+      {draft ? (
+        <div className="panel">
+          <h2>保存前の確認</h2>
+          <h3>{draft.battlefield.displayName}</h3>
+          <p>{draft.battlefield.narrativeBlurb}</p>
+          <p className="muted">
+            地形: {draft.battlefield.terrainHints.join(" / ") || "—"}<br />
+            障害物: {draft.battlefield.obstacleHints.join(" / ") || "—"}<br />
+            状況: {draft.battlefield.conditionHints.join(" / ") || "—"}
+          </p>
+          <form className="grid" onSubmit={(e) => void onAdjustDraft(e)}>
+            <textarea
+              value={draftAdjustment}
+              onChange={(e) => setDraftAdjustment(e.target.value)}
+              placeholder="保存前に調整したい内容"
+              rows={3}
+            />
+            <div className="row">
+              <button className="btn" type="submit" disabled={busy}>
+                候補を調整
+              </button>
+              <button
+                className="btn primary"
+                type="button"
+                disabled={busy}
+                onClick={() => void onConfirmDraft()}
+              >
+                この内容で保存
+              </button>
+              <button
+                className="btn danger"
+                type="button"
+                disabled={busy}
+                onClick={() => void onDiscardDraft()}
+              >
+                破棄
+              </button>
+            </div>
+          </form>
+        </div>
+      ) : null}
+
       <div className="panel">
         <h2>自然文からプリセット生成</h2>
         <p className="muted">
-          森・闘技場・海などのテンプレを編集できます。試合時はここから具体的な地形・障害・状況が決まります。
+          森・闘技場・海などの構造化プリセットを作成します。確定した地形・障害・状況を対戦開始時にそのまま固定します。
         </p>
         <form className="grid" onSubmit={(e) => void onGenerate(e)}>
           <label>
@@ -175,12 +265,16 @@ export function BattlefieldsPage() {
                 ))}
               </div>
               <div className="row" style={{ marginTop: "0.5rem", gap: "0.4rem" }}>
-                <Link
-                  className="btn primary"
-                  to={`/match?field=${encodeURIComponent(b.id)}`}
-                >
-                  この戦場で対戦
-                </Link>
+                {b.selectable ? (
+                  <Link
+                    className="btn primary"
+                    to={`/match?field=${encodeURIComponent(b.id)}`}
+                  >
+                    この戦場で対戦
+                  </Link>
+                ) : (
+                  <span className="tag">最新版への更新が必要</span>
+                )}
                 <Link className="btn" to={`/battlefields/${b.id}`}>
                   詳細・調整
                 </Link>

@@ -3,6 +3,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import type {
   BattlefieldPreset,
+  BattlefieldImageBriefV2,
   CharacterImageBriefV2,
   CharacterSheet,
 } from "@kshiai/shared";
@@ -473,7 +474,28 @@ export async function generateAndStoreCharacterPortrait(
 export function buildBattlefieldImagePrompt(
   preset: BattlefieldPreset,
   extra?: string,
+  imageBrief?: BattlefieldImageBriefV2,
 ): string {
+  if (imageBrief) {
+    return [
+      "Cinematic anime fantasy battlefield environment",
+      imageBrief.visualPrompt,
+      imageBrief.publicSummary,
+      imageBrief.atmosphere.length > 0
+        ? `atmosphere: ${imageBrief.atmosphere.join(", ")}`
+        : null,
+      imageBrief.visibleAreas.length > 0
+        ? `areas: ${imageBrief.visibleAreas.join(", ")}`
+        : null,
+      imageBrief.visibleObjects.length > 0
+        ? `objects: ${imageBrief.visibleObjects.join(", ")}`
+        : null,
+      extra?.trim() || null,
+      "wide establishing shot, clear traversable arena, dramatic depth and lighting",
+      "environment only, no characters, no text, no watermark, no UI, no collage",
+    ].filter((part): part is string => Boolean(part))
+      .join(". ").replace(/\s+/g, " ").slice(0, 1800).trim();
+  }
   const parts = [
     "Cinematic anime fantasy battlefield environment",
     preset.appearance.visualPrompt.trim(),
@@ -499,15 +521,17 @@ export async function generateAndStoreBattlefieldImage(
   preset: BattlefieldPreset,
   extra?: string,
   provider: ImageProvider = createImageProvider(),
+  revisionId?: string,
+  imageBrief?: BattlefieldImageBriefV2,
 ): Promise<ImageGenResult> {
-  const prompt = buildBattlefieldImagePrompt(preset, extra);
+  const prompt = buildBattlefieldImagePrompt(preset, extra, imageBrief);
   const remote = await generateWithProvider(
     prompt,
     "16:9",
     { assetId: preset.id, attempt: 1, tag: "battlefield" },
     provider,
   );
-  const url = await persistImage(remote, "battlefields", preset.id);
+  const url = await persistImage(remote, "battlefields", preset.id, revisionId);
   return {
     url,
     previousUrl: null,

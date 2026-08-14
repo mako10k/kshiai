@@ -2,6 +2,7 @@ import {
   CATEGORY_LABELS,
   SYSTEM_PRESET_SEEDS,
   BattlefieldSemanticSeedSchema,
+  BattlefieldDefinitionV2Schema,
   CharacterDeepPsycheUpdateSchema,
   clampCoefficientMap,
   composeNarratorTurn,
@@ -24,6 +25,7 @@ import type {
   AnalyzeCharacterImprovementInput,
   AnalyzeCharacterImprovementResult,
   GenerateBattlefieldResult,
+  GenerateBattlefieldDefinitionV2Input,
   GenerateCharacterResult,
   GenerateCharacterInput,
   GenerateCharacterProfileInput,
@@ -394,6 +396,69 @@ export class MockLlmProvider implements LlmProvider {
     };
   }
 
+  async generateBattlefieldScene(
+    input: import("./types.js").GenerateBattlefieldSceneInput,
+  ): Promise<import("./types.js").GenerateBattlefieldSceneResult> {
+    const selected = input.projection.facts.slice(0, 12);
+    const text = selected.map((fact) => fact.text).join("。").slice(0, 1600) ||
+      `${input.projection.displayName}という戦場。`;
+    return {
+      description: text,
+      segments: [{
+        id: "scene-main",
+        text,
+        kind: "fact",
+        supportRefs: selected.map((fact) => fact.supportRef),
+      }],
+      assistantMessage: "構造化した設定から公開シーンを作成しました。",
+    };
+  }
+
+  async generateBattlefieldDefinitionV2(
+    input: GenerateBattlefieldDefinitionV2Input,
+  ) {
+    if (input.baseDefinition.evolutionAffordances.length > 0) {
+      return input.baseDefinition;
+    }
+    if (input.sourceKind === "upgrade_description" ||
+        input.sourceKind === "import") {
+      return input.baseDefinition;
+    }
+    const areaRefs = input.baseDefinition.areas.map((area) => area.id).slice(0, 12);
+    const objectRefs = input.baseDefinition.objects.map((object) => object.id).slice(0, 4);
+    const basis = input.baseDefinition.identity.atmosphere[0] ??
+      input.baseDefinition.effects[0]?.description.text ??
+      input.baseDefinition.appearance.publicSummary;
+    return BattlefieldDefinitionV2Schema.parse({
+      ...input.baseDefinition,
+      evolutionAffordances: [{
+        id: "evolution.stagnation-pressure",
+        pressure: input.baseDefinition.identity.category === "ruins"
+          ? "structural_failure"
+          : "visibility_shift",
+        areaRefs,
+        objectRefs,
+        description: {
+          text: `${basis}に由来する場の変化だけが、膠着時に進行できる。`,
+          sourceSupportRefs: ["owner.source"],
+        },
+      }],
+    });
+  }
+
+  async validateBattlefieldSceneClaims(
+    input: import("./types.js").ValidateBattlefieldSceneClaimsInput,
+  ): Promise<import("./types.js").ValidateBattlefieldSceneClaimsResult> {
+    return {
+      segments: input.scene.segments.map((segment) => ({
+        segmentId: segment.id,
+        verdict: segment.kind === "flavor" ? "flavor_only" : "supported",
+        supportRefs: segment.kind === "flavor" ? [] : [...segment.supportRefs],
+        riskCodes: [],
+      })),
+    };
+  }
+
   async adjustBattlefieldPreset(
     current: BattlefieldPreset,
     userMessage: string,
@@ -542,6 +607,8 @@ export class MockLlmProvider implements LlmProvider {
     stagnationHint: string;
     previousHappenings: Array<{ title: string; summary: string }>;
     battlefield?: BattlefieldInstance | null;
+    evolutionAffordance?: import("@kshiai/shared").BattlefieldEvolutionAffordanceV2 | null;
+    forbiddenDiscontinuities?: string[];
   }): Promise<{
     title: string;
     summary: string;
@@ -549,11 +616,12 @@ export class MockLlmProvider implements LlmProvider {
     tags?: string[];
   }> {
     const fieldDetails = [
+      input.evolutionAffordance?.description.text,
       input.battlefield?.terrain,
       ...(input.battlefield?.obstacles ?? []),
       ...(input.battlefield?.conditions ?? []),
     ].filter((value): value is string => Boolean(value));
-    const detail = fieldDetails[
+    const detail = input.evolutionAffordance?.description.text ?? fieldDetails[
       (input.turn + input.previousHappenings.length) %
         Math.max(1, fieldDetails.length)
     ] ?? input.battlefield?.displayName ?? input.scene;

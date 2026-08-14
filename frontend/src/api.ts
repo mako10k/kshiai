@@ -33,6 +33,22 @@ export type ImageGenQuota = {
   message: string;
 };
 
+export type BattlefieldAuthoringDraft = {
+  id: string;
+  battlefield: BattlefieldPresetPublic;
+  assistantMessage: string;
+  kind: "create" | "revision" | "upgrade";
+  expiresAt: string;
+};
+
+function battlefieldListUrl(q?: string, opts?: { selectable?: boolean }): string {
+  const params = new URLSearchParams();
+  if (q) params.set("q", q);
+  if (opts?.selectable) params.set("selectable", "true");
+  const query = params.toString();
+  return `/api/battlefields${query ? `?${query}` : ""}`;
+}
+
 export function parseBattleNarrationSse(body: string): BattleNarrationFollowEvent[] {
   return body.split("\n\n").flatMap((frame) => {
     const line = frame.split("\n").find((value) => value.startsWith("data:"));
@@ -830,19 +846,53 @@ export const api = {
     }
     return finalBattle;
   },
-  listBattlefields: (q?: string) =>
+  listBattlefields: (q?: string, opts?: { selectable?: boolean }) =>
     request<{ battlefields: BattlefieldPresetPublic[] }>(
-      `/api/battlefields${q ? `?q=${encodeURIComponent(q)}` : ""}`,
+      battlefieldListUrl(q, opts),
     ),
   generateBattlefield: (prompt: string, category?: string) =>
-    request<{ battlefield: BattlefieldPresetPublic; assistantMessage: string }>(
+    request<{ draft: BattlefieldAuthoringDraft }>(
       "/api/battlefields/generate",
-      { method: "POST", body: JSON.stringify({ prompt, category }) },
+      {
+        method: "POST",
+        headers: { "Idempotency-Key": crypto.randomUUID() },
+        body: JSON.stringify({ prompt, category }),
+      },
     ),
   chatBattlefield: (id: string, message: string) =>
-    request<{ battlefield: BattlefieldPresetPublic; assistantMessage: string }>(
+    request<{ draft: BattlefieldAuthoringDraft; requiresConfirmation: true }>(
       `/api/battlefields/${id}/chat`,
+      {
+        method: "POST",
+        headers: { "Idempotency-Key": crypto.randomUUID() },
+        body: JSON.stringify({ message }),
+      },
+    ),
+  latestBattlefieldDraft: () =>
+    request<{ draft: BattlefieldAuthoringDraft | null }>(
+      "/api/battlefield-drafts/latest",
+    ),
+  chatBattlefieldDraft: (id: string, message: string) =>
+    request<{ draft: BattlefieldAuthoringDraft }>(
+      `/api/battlefield-drafts/${id}/chat`,
       { method: "POST", body: JSON.stringify({ message }) },
+    ),
+  confirmBattlefieldDraft: (id: string) =>
+    request<{
+      battlefield: BattlefieldPresetPublic;
+      assistantMessage: string;
+    }>(`/api/battlefields/${id}/confirm`, { method: "POST" }),
+  discardBattlefieldDraft: (id: string) =>
+    request<{ ok: boolean }>(`/api/battlefield-drafts/${id}`, {
+      method: "DELETE",
+    }),
+  upgradeBattlefield: (id: string) =>
+    request<{ draft: BattlefieldAuthoringDraft }>(
+      `/api/battlefields/${id}/upgrade`,
+      {
+        method: "POST",
+        headers: { "Idempotency-Key": crypto.randomUUID() },
+      },
     ),
   copyBattlefield: (id: string) =>
     request<{ battlefield: BattlefieldPresetPublic }>(
@@ -854,7 +904,10 @@ export const api = {
   generateBattlefieldImage: (id: string) =>
     request<{ battlefield: BattlefieldPresetPublic; note?: string }>(
       `/api/battlefields/${id}/image`,
-      { method: "POST" },
+      {
+        method: "POST",
+        headers: { "Idempotency-Key": crypto.randomUUID() },
+      },
     ),
   saveBattlefieldFromBattle: (battleId: string, displayName?: string) =>
     request<{ battlefield: BattlefieldPresetPublic }>(

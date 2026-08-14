@@ -1,6 +1,6 @@
 # Structured domain assets and public projections backlog
 
-- Status: Prioritized backlog; P0-P2 complete, P3 battlefield implementation active
+- Status: Prioritized backlog; P0-P3 complete, P4 narration frontier
 - Date: 2026-08-14
 - Decision owner: Product owner
 - Governing decisions: [ADR-0009](adr/0009-separate-adjudication-from-judgment-presentation.md), [ADR-0010](adr/0010-structured-selectable-asset-envelope.md); [ADR-0003](adr/0003-revision-editable-assets-and-bind-battles.md) is Superseded
@@ -226,7 +226,11 @@ ADR-0012 and
 [`structured-battlefield-definition-design.md`](structured-battlefield-definition-design.md)
 accept these decisions: reusable definition, deterministic instance compiler,
 closed effect/evolution vocabularies, stable object keys, no LLM-authored
-battle-time topology, and bounded legacy mapping. P3 implementation is active.
+battle-time topology, and bounded legacy mapping. P3 is complete locally. Its
+V2 structure/public-scene pipeline, explicit upgrade, immutable media and
+revision activation, selector/direct-ID gates, exact battle binding, and live
+single-affordance happening gate are recorded in
+[`structured-battlefield-cutover-acceptance-2026-08-14.md`](evidence/structured-battlefield-cutover-acceptance-2026-08-14.md).
 
 ### P4 — Narration definition and compiled rendering policy
 

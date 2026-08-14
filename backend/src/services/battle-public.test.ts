@@ -3,11 +3,21 @@ import { describe, it } from "node:test";
 import {
   createBattleState,
   defaultParameters,
+  BattlefieldDefinitionV2Schema,
+  compileBattlefieldInstanceV2,
+  legacyBattlefieldPresetToDefinitionV2,
+  normalizeSupervisor,
   resolveTurn,
+  type BattlefieldInstance,
+  type BattlefieldPreset,
   type CharacterSheet,
 } from "@kshiai/shared";
 import { MockLlmProvider } from "../llm/mock.js";
-import { reconcileSemanticState, toBattlePublic } from "./battle-service.js";
+import {
+  buildEnvironmentProcessProposal,
+  reconcileSemanticState,
+  toBattlePublic,
+} from "./battle-service.js";
 
 function sheet(id: string, name: string): CharacterSheet {
   const now = "2026-08-04T00:00:00.000Z";
@@ -531,6 +541,186 @@ describe("public battle semantic projection", () => {
       result.state.semanticState?.entities["environment.light.1"],
       undefined,
     );
+  });
+
+  it("rejects a structured environment operation outside the selected affordance", async () => {
+    const sideA = sheet("authority-a", "A");
+    const sideB = sheet("authority-b", "B");
+    const now = "2026-08-14T00:00:00.000Z";
+    const preset: BattlefieldPreset = {
+      id: "authority-field",
+      ownerUserId: "owner",
+      isSystem: false,
+      displayName: "石柱の広場",
+      category: "ruins",
+      tags: [],
+      createdAt: now,
+      updatedAt: now,
+      appearance: {
+        summary: "一本の石柱が残る広場",
+        visualPrompt: "stone plaza",
+        imageUrl: null,
+      },
+      terrainHints: ["中央広場"],
+      obstacleHints: ["石柱"],
+      conditionHints: [],
+      baseCoefficients: {},
+      narrativeBlurb: "石柱が残っている。",
+    };
+    const base = legacyBattlefieldPresetToDefinitionV2(preset);
+    const objectId = base.objects[0]!.id;
+    const areaId = base.areas[0]!.id;
+    const definition = BattlefieldDefinitionV2Schema.parse({
+      ...base,
+      evolutionAffordances: [{
+        id: "evolution.visibility",
+        pressure: "visibility_shift",
+        areaRefs: [areaId],
+        objectRefs: [],
+        description: {
+          text: "広場の視界だけが変化できる",
+          sourceSupportRefs: ["fixture.visibility"],
+        },
+      }],
+    });
+    const battlefield = compileBattlefieldInstanceV2(definition, preset.id);
+    const state = createBattleState({
+      id: "structured-environment-authority",
+      sideA,
+      sideB,
+      turnLimit: 20,
+      prologuePending: false,
+      battlefield,
+    });
+    const proposal = {
+      id: "hap_llm_3",
+      title: "石柱崩落",
+      summary: "石柱が崩れて消える",
+      notes: "石柱は失われた",
+      authority: {
+        compilerContract: "battlefield-instance-v2" as const,
+        affordanceId: "evolution.visibility",
+        pressure: "visibility_shift" as const,
+        areaRefs: [areaId],
+        objectRefs: [],
+      },
+    };
+    const llm = new MockLlmProvider();
+    llm.reconcileTurnSemanticState = async (input) => ({
+      patch: {
+        baseRevision: input.before.revision,
+        turn: input.turn,
+        sourceEventIds: [proposal.id],
+        operations: [{
+          op: "replace",
+          path: `/entities/${objectId}/active`,
+          value: false,
+        }],
+      },
+      environmentDecision: {
+        status: "accepted",
+        reason: "石柱を変化させる",
+      },
+      worldPatchStatus: "valid",
+      sensoryEvidence: [],
+      sensoryEvidenceStatus: "valid",
+    });
+
+    const result = await reconcileSemanticState({
+      llm,
+      stateBeforeTurn: state,
+      resolvedState: state,
+      mine: sideA,
+      opp: sideB,
+      actions: [],
+      events: [],
+      mechanicalEvidence: [],
+      environmentProposal: proposal,
+    });
+
+    assert.equal(result.environmentProcessReceipt?.status, "rejected");
+    assert.equal(result.environmentProcessReceipt?.reason, "no_canonical_change");
+    assert.equal(result.state.semanticState?.entities[objectId]?.active, true);
+    assert.deepEqual(result.environmentEvents, []);
+  });
+
+  it("gives the happening provider one deterministic authored affordance", async () => {
+    const sideA = sheet("gate-a", "A");
+    const sideB = sheet("gate-b", "B");
+    const battlefield: BattlefieldInstance = {
+      sourcePresetId: "gate-field",
+      displayName: "霧の広場",
+      category: "ruins",
+      scene: "霧の広場",
+      terrain: "石床",
+      obstacles: ["石柱"],
+      conditions: ["霧"],
+      coefficients: {},
+      narrativeSetup: "霧に包まれている。",
+      compilerContract: "battlefield-instance-v2",
+      areas: [{ id: "area.plaza", name: "中央広場" }],
+      entryAreas: { a: "area.plaza", b: "area.plaza" },
+      topology: [],
+      evolutionAffordances: [{
+        id: "evolution.fog",
+        pressure: "visibility_shift",
+        areaRefs: ["area.plaza"],
+        objectRefs: [],
+        description: {
+          text: "中央広場の霧だけが濃くなれる",
+          sourceSupportRefs: ["fixture.fog"],
+        },
+      }],
+      forbiddenDiscontinuities: ["unregistered_object"],
+    };
+    const state = createBattleState({
+      id: "structured-evolution-gate",
+      sideA,
+      sideB,
+      turnLimit: 20,
+      prologuePending: false,
+      battlefield,
+    });
+    const llm = new MockLlmProvider();
+    const received: Array<Parameters<typeof llm.proposeHappening>[0]> = [];
+    llm.proposeHappening = async (input) => {
+      received.push(input);
+      return {
+        title: "霧の変化",
+        summary: "中央広場の霧が濃くなる",
+        notes: "中央広場の視界が狭まっている",
+      };
+    };
+    const supervisor = {
+      ...normalizeSupervisor(null),
+      quietTurns: 2,
+      turnsSinceHappening: 2,
+    };
+
+    const proposal = await buildEnvironmentProcessProposal({
+      llm,
+      state,
+      turn: 3,
+      supervisor,
+    });
+    assert.equal(received[0]?.evolutionAffordance?.id, "evolution.fog");
+    assert.deepEqual(received[0]?.forbiddenDiscontinuities,
+      ["unregistered_object"]);
+    assert.equal(proposal?.authority?.affordanceId, "evolution.fog");
+    assert.deepEqual(proposal?.authority?.areaRefs, ["area.plaza"]);
+
+    received.length = 0;
+    const blocked = await buildEnvironmentProcessProposal({
+      llm,
+      state: {
+        ...state,
+        battlefield: { ...battlefield, evolutionAffordances: [] },
+      },
+      turn: 3,
+      supervisor,
+    });
+    assert.equal(blocked, null);
+    assert.equal(received.length, 0);
   });
 
   it("records an unavailable environment adjudication as skipped", async () => {

@@ -1489,16 +1489,44 @@ export type CharacterActionProposalValidationReceipt = z.infer<
   typeof CharacterActionProposalValidationReceiptSchema
 >;
 
+export type EnvironmentProcessProposal = {
+  id: string;
+  title: string;
+  summary: string;
+  notes: string;
+  tags?: string[];
+  authority?: {
+    compilerContract: "battlefield-instance-v2";
+    affordanceId: string;
+    pressure: "weather_shift" | "visibility_shift" |
+      "hazard_escalation" | "structural_failure" | "crowd_shift" |
+      "resource_emergence";
+    areaRefs: string[];
+    objectRefs: string[];
+  };
+};
+
 export const EnvironmentProcessProposalSchema = z.object({
   id: z.string().min(1).max(80),
   title: z.string().min(1).max(40),
   summary: z.string().min(1).max(240),
   notes: z.string().min(1).max(240),
   tags: z.array(z.string().min(1).max(80)).max(6).optional(),
-}).strict();
-export type EnvironmentProcessProposal = z.infer<
-  typeof EnvironmentProcessProposalSchema
->;
+  authority: z.object({
+    compilerContract: z.literal("battlefield-instance-v2"),
+    affordanceId: z.string().min(1).max(80),
+    pressure: z.enum([
+      "weather_shift",
+      "visibility_shift",
+      "hazard_escalation",
+      "structural_failure",
+      "crowd_shift",
+      "resource_emergence",
+    ]),
+    areaRefs: z.array(z.string().min(1).max(80)).max(12),
+    objectRefs: z.array(z.string().min(1).max(80)).max(12),
+  }).strict().optional(),
+}).strict() as unknown as z.ZodType<EnvironmentProcessProposal>;
 
 export const EnvironmentProcessReceiptSchema = z.object({
   status: z.enum(["accepted", "rejected", "skipped"]),
@@ -1804,6 +1832,7 @@ export interface BattleAssetManifest {
   battlefield: {
     assetId: string | null;
     presetGenerationId?: string | null;
+    presetContentDigest?: string | null;
     generationId: string;
     contentDigest: string;
     snapshot: BattlefieldInstance;
@@ -1819,6 +1848,7 @@ export interface BattleAssetManifest {
     psycheReaction?: string;
     characterFocus?: string;
     characterDefinitionRules?: string;
+    battlefieldDefinitionRules?: string;
   };
 }
 
@@ -1850,6 +1880,7 @@ export const BattleAssetManifestSchema = z.object({
   battlefield: z.object({
     assetId: z.string().nullable(),
     presetGenerationId: z.string().nullable().optional(),
+    presetContentDigest: z.string().regex(/^[a-f0-9]{64}$/).nullable().optional(),
     generationId: z.string().min(1),
     contentDigest: z.string().regex(/^[a-f0-9]{64}$/).optional().default("0".repeat(64)),
     snapshot: BattlefieldInstanceSchema,
@@ -1865,6 +1896,7 @@ export const BattleAssetManifestSchema = z.object({
     psycheReaction: z.string().min(1).optional(),
     characterFocus: z.string().min(1).optional(),
     characterDefinitionRules: z.string().min(1).optional(),
+    battlefieldDefinitionRules: z.string().min(1).optional(),
   }).strict(),
 }).strict() as unknown as z.ZodType<BattleAssetManifest>;
 

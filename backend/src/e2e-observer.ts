@@ -260,7 +260,7 @@ async function ensureBattlefield(
     }
     return "reused";
   }
-  await battlefieldRepo.savePreset(fixture);
+  await battlefieldRepo.importPreset(fixture);
   return "created";
 }
 

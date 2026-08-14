@@ -414,7 +414,18 @@ F-BTL-58〜71は完全受け入れ時の規範要件である。2026-08-05時点
 | POST | `/api/characters/:id/image` | ready V2 キャラの画像を immutable generation として生成 |
 | POST | `/api/characters/:id/image/toggle` | ready V2 キャラの画像を immutable generation として切替 |
 | POST | `/api/characters/:id/restore-revision` | ready V2 キャラの前世代を新しい immutable generation として復元 |
-| POST | `/api/battlefields/:id/image` | 戦場画像生成 |
+| GET | `/api/battlefields` | 管理用戦場一覧。`selectable=true` では ready V2 のみ返す |
+| POST | `/api/battlefields/generate` | 自然文から V2 battlefield authoring candidate を生成 |
+| GET | `/api/battlefield-drafts/latest` | 自分の最新 V2 battlefield candidate |
+| POST | `/api/battlefield-drafts/:id/chat` | V2 battlefield candidate の会話調整 |
+| DELETE | `/api/battlefield-drafts/:id` | V2 battlefield candidate の破棄 |
+| POST | `/api/battlefields/:id/chat` | ready V2 戦場の immutable revision candidate を生成 |
+| POST | `/api/battlefields/:id/confirm` | candidate を immutable battlefield generation として確定 |
+| POST | `/api/battlefields/:id/upgrade` | 既存戦場から明示的 V2 upgrade candidate を生成 |
+| POST | `/api/battlefields/:id/copy` | 戦場を新しい ready V2 generation 1 としてコピー |
+| DELETE | `/api/battlefields/:id` | 自分の戦場を削除 |
+| POST | `/api/battlefields/:id/image` | ready V2 戦場画像を immutable media revision として生成 |
+| POST | `/api/battlefields/from-battle` | battle-owned instance を新しい ready V2 preset として明示保存 |
 | GET | `/api/match/candidates` | 相手候補 |
 | POST | `/api/match/random` | ランダム相手 |
 | POST | `/api/match/auto` | 同程度の相手を自動選択 |

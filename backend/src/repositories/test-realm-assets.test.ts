@@ -65,7 +65,7 @@ describe("test-realm shared assets", () => {
     insertUser.run("test-b", "test-b", "test-b@example.test", "test", now);
     insertUser.run("admin", "admin", "mako10k@mk10.org", "general", now);
 
-    await battlefieldRepo.savePreset(battlefield("field-e2e", "e2e-a"));
+    await battlefieldRepo.importPreset(battlefield("field-e2e", "e2e-a"));
     await narrationStyleRepo.saveNarrationStyle(narrationStyle("style-e2e", "e2e-a"));
 
     assert.equal(
