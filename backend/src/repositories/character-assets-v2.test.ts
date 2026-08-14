@@ -305,6 +305,164 @@ describe("character authoring V2", () => {
     assert.equal((await repo.getCharacterCompatibility(legacy.id)).status, "unsupported");
   });
 
+  it("persists expiry without activating a candidate or retaining an upgrade hold", async () => {
+    const sourceText = "期限切れになる新規キャラクター";
+    const create = await repo.beginCharacterAuthoringAttempt({
+      ownerUserId: "owner-v2",
+      kind: "create",
+      idempotencyKey: "create:expired-character-v2",
+      requestDigest: assetContentDigest({ sourceText }),
+      sourceText,
+      sourceDigest: assetContentDigest(sourceText),
+      ttlMs: -1,
+    });
+    await repo.saveCharacterAuthoringCandidate({
+      attemptId: create.attempt.attemptId,
+      ownerUserId: "owner-v2",
+      envelope: envelope({
+        attemptId: create.attempt.attemptId,
+        sourceText,
+        sheet: sheet(create.attempt.characterId),
+      }),
+      assistantMessage: "期限切れ候補",
+    });
+
+    await assert.rejects(
+      repo.activateCharacterAuthoringAttempt({
+        attemptId: create.attempt.attemptId,
+        ownerUserId: "owner-v2",
+      }),
+      /AUTHORING_ATTEMPT_EXPIRED/,
+    );
+    const expiredCreate = await repo.getCharacterAuthoringAttempt(
+      create.attempt.attemptId,
+      "owner-v2",
+    );
+    assert.equal(expiredCreate?.status, "expired");
+    assert.equal(expiredCreate?.sourceText, null);
+    assert.equal(await characters.getSheet(create.attempt.characterId), null);
+    const createGenerationCount = await query<{ count: number }>(
+      `SELECT COUNT(*) AS count FROM asset_generations
+        WHERE asset_type = 'character' AND asset_id = $1`,
+      [create.attempt.characterId],
+    );
+    assert.equal(Number(createGenerationCount.rows[0]?.count), 0);
+
+    const legacy = sheet("expired-upgrade-v2");
+    await query(
+      `INSERT INTO characters (id, owner_user_id, sheet_json, created_at, updated_at)
+       VALUES ($1, $2, $3, $4, $5)`,
+      [legacy.id, legacy.ownerUserId, JSON.stringify(legacy), legacy.createdAt, legacy.updatedAt],
+    );
+    const upgrade = await repo.beginCharacterAuthoringAttempt({
+      ownerUserId: legacy.ownerUserId,
+      characterId: legacy.id,
+      kind: "upgrade",
+      idempotencyKey: "upgrade:expired-character-v2",
+      requestDigest: assetContentDigest({ sourceText: legacy.narrativeBlurb }),
+      sourceText: legacy.narrativeBlurb,
+      sourceDigest: assetContentDigest(legacy.narrativeBlurb),
+      ttlMs: -1,
+    });
+    await repo.saveCharacterAuthoringCandidate({
+      attemptId: upgrade.attempt.attemptId,
+      ownerUserId: legacy.ownerUserId,
+      envelope: envelope({
+        attemptId: upgrade.attempt.attemptId,
+        sourceText: legacy.narrativeBlurb,
+        sheet: legacy,
+      }),
+      assistantMessage: "期限切れアップグレード候補",
+    });
+    await assert.rejects(
+      repo.activateCharacterAuthoringAttempt({
+        attemptId: upgrade.attempt.attemptId,
+        ownerUserId: legacy.ownerUserId,
+      }),
+      /AUTHORING_ATTEMPT_EXPIRED/,
+    );
+    assert.deepEqual(await repo.getCharacterCompatibility(legacy.id), {
+      status: "upgrade_failed",
+      schemaVersion: null,
+      currentGenerationId: null,
+      reasonCode: "authoring_attempt_expired",
+    });
+  });
+
+  it("rolls back a stale revision candidate after concurrent pointer drift", async () => {
+    const currentSheet = sheet("concurrent-pointer-v2");
+    await characters.saveSheet(currentSheet);
+    const original = await repo.getReadyCharacterGeneration(currentSheet.id);
+    assert.ok(original);
+    const sourceText = "表示名を構造子改へ更新する";
+    const revision = await repo.beginCharacterAuthoringAttempt({
+      ownerUserId: currentSheet.ownerUserId,
+      characterId: currentSheet.id,
+      kind: "revision",
+      idempotencyKey: "revision:concurrent-pointer-v2",
+      requestDigest: assetContentDigest({ sourceText }),
+      sourceText,
+      sourceDigest: assetContentDigest(sourceText),
+    });
+    await repo.saveCharacterAuthoringCandidate({
+      attemptId: revision.attempt.attemptId,
+      ownerUserId: currentSheet.ownerUserId,
+      envelope: envelope({
+        attemptId: revision.attempt.attemptId,
+        sourceText,
+        sheet: { ...currentSheet, displayName: "構造子改" },
+      }),
+      assistantMessage: "更新候補",
+    });
+
+    const concurrent = await repo.activateCharacterPortraitRevision({
+      characterId: currentSheet.id,
+      ownerUserId: currentSheet.ownerUserId,
+      expectedGenerationId: original.generationId,
+      operationId: "concurrent-portrait-v2",
+      mediaId: "/api/media/characters/concurrent.jpg",
+      mediaRevisionId: "concurrent-image-v2",
+      sourceDigest: assetContentDigest("concurrent-portrait-v2"),
+    });
+    const generationCountBefore = await query<{ count: number }>(
+      `SELECT COUNT(*) AS count FROM asset_generations
+        WHERE asset_type = 'character' AND asset_id = $1`,
+      [currentSheet.id],
+    );
+
+    await assert.rejects(
+      repo.activateCharacterAuthoringAttempt({
+        attemptId: revision.attempt.attemptId,
+        ownerUserId: currentSheet.ownerUserId,
+      }),
+      /ASSET_CURRENT_GENERATION_DRIFT/,
+    );
+    const generationCountAfter = await query<{ count: number }>(
+      `SELECT COUNT(*) AS count FROM asset_generations
+        WHERE asset_type = 'character' AND asset_id = $1`,
+      [currentSheet.id],
+    );
+    assert.equal(
+      Number(generationCountAfter.rows[0]?.count),
+      Number(generationCountBefore.rows[0]?.count),
+    );
+    assert.equal(
+      (await repo.getReadyCharacterGeneration(currentSheet.id))?.generationId,
+      concurrent.generation.generationId,
+    );
+    assert.equal(
+      (await characters.getSheet(currentSheet.id))?.appearance.imageUrl,
+      "/api/media/characters/concurrent.jpg",
+    );
+    assert.equal(
+      (await repo.getCharacterAuthoringAttempt(
+        revision.attempt.attemptId,
+        currentSheet.ownerUserId,
+      ))?.status,
+      "awaiting_owner_acceptance",
+    );
+  });
+
   it("excludes a pre-validator V2 generation until explicit update", async () => {
     const currentSheet = sheet("pre-validator-v2");
     await characters.saveSheet(currentSheet);

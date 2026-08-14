@@ -605,7 +605,7 @@ export async function activateCharacterAuthoringAttempt(input: {
   attemptId: string;
   ownerUserId: string;
 }): Promise<{ sheet: CharacterSheet; generation: AssetGeneration }> {
-  return withTransaction(async (connection) => {
+  const result = await withTransaction(async (connection) => {
     const attempt = await selectAttempt(connection, input.attemptId, input.ownerUserId);
     if (!attempt) throw new Error("AUTHORING_ATTEMPT_NOT_FOUND");
     if (attempt.status === "succeeded" && attempt.resultGenerationId) {
@@ -631,35 +631,57 @@ export async function activateCharacterAuthoringAttempt(input: {
       }
       const row = generationResult.rows[0];
       return {
-        sheet: (typeof sheetResult.rows[0].sheet_json === "string"
-          ? JSON.parse(sheetResult.rows[0].sheet_json)
-          : sheetResult.rows[0].sheet_json) as CharacterSheet,
-        generation: {
-          assetType: row.asset_type,
-          assetId: row.asset_id,
-          generation: Number(row.generation),
-          generationId: row.generation_id,
-          schemaVersion: Number(row.schema_version),
-          content: typeof row.content_json === "string"
-            ? JSON.parse(row.content_json)
-            : row.content_json,
-          contentDigest: row.content_digest,
-          createdAt: row.created_at,
+        kind: "activated" as const,
+        value: {
+          sheet: (typeof sheetResult.rows[0].sheet_json === "string"
+            ? JSON.parse(sheetResult.rows[0].sheet_json)
+            : sheetResult.rows[0].sheet_json) as CharacterSheet,
+          generation: {
+            assetType: row.asset_type,
+            assetId: row.asset_id,
+            generation: Number(row.generation),
+            generationId: row.generation_id,
+            schemaVersion: Number(row.schema_version),
+            content: typeof row.content_json === "string"
+              ? JSON.parse(row.content_json)
+              : row.content_json,
+            contentDigest: row.content_digest,
+            createdAt: row.created_at,
+          },
         },
       };
     }
     if (attempt.status !== "awaiting_owner_acceptance" || !attempt.candidate) {
       throw new Error("AUTHORING_NOT_AWAITING_ACCEPTANCE");
     }
-    assertCharacterGenerationReadyV2(attempt.candidate);
     if (Date.parse(attempt.expiresAt) <= Date.now()) {
+      const expiredAt = new Date().toISOString();
       await connection.query(
         `UPDATE character_authoring_attempts SET status = 'expired',
-          source_text = NULL, updated_at = $2 WHERE attempt_id = $1`,
-        [attempt.attemptId, new Date().toISOString()],
+          source_text = NULL, updated_at = $3
+          WHERE attempt_id = $1 AND owner_user_id = $2`,
+        [attempt.attemptId, input.ownerUserId, expiredAt],
       );
-      throw new Error("AUTHORING_ATTEMPT_EXPIRED");
+      if (attempt.kind === "upgrade") {
+        await connection.query(
+          `UPDATE character_asset_states
+              SET compatibility_status = 'upgrade_failed',
+                  active_attempt_id = NULL,
+                  reason_code = 'authoring_attempt_expired', updated_at = $2
+            WHERE character_id = $1 AND active_attempt_id = $3`,
+          [attempt.characterId, expiredAt, attempt.attemptId],
+        );
+      } else if (attempt.kind === "revision") {
+        await connection.query(
+          `UPDATE character_asset_states
+              SET active_attempt_id = NULL, updated_at = $2
+            WHERE character_id = $1 AND active_attempt_id = $3`,
+          [attempt.characterId, expiredAt, attempt.attemptId],
+        );
+      }
+      return { kind: "expired" as const };
     }
+    assertCharacterGenerationReadyV2(attempt.candidate);
     if (assetContentDigest(attempt.candidate) !== attempt.candidateDigest) {
       throw new Error("AUTHORING_CANDIDATE_DIGEST_MISMATCH");
     }
@@ -744,8 +766,10 @@ export async function activateCharacterAuthoringAttempt(input: {
         WHERE attempt_id = $1 AND owner_user_id = $2`,
       [attempt.attemptId, input.ownerUserId, generation.generationId, updatedAt],
     );
-    return { sheet, generation };
+    return { kind: "activated" as const, value: { sheet, generation } };
   });
+  if (result.kind === "expired") throw new Error("AUTHORING_ATTEMPT_EXPIRED");
+  return result.value;
 }
 
 export async function getCharacterCompatibility(

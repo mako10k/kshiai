@@ -55,19 +55,20 @@ Results:
 - all workspace type checks and builds passed;
 - patch whitespace validation passed.
 
-## Remaining `SDA_CHARACTER` acceptance scope
+## Follow-up result
 
-This slice closes the first unmet item in the 2026-08-13 checkpoint, but it does
-not finish `SDA_CHARACTER`. Remaining work is:
+The authoring and route-level integration matrix was subsequently closed in
+[`structured-character-authoring-route-acceptance-2026-08-14.md`](structured-character-authoring-route-acceptance-2026-08-14.md).
+That evidence proves authoring-attempt expiry, concurrent current-pointer drift,
+provider partial failure, route-level selector exclusion, and direct-battle
+rejection at the runtime and persistence seams.
 
-1. prove authoring-attempt expiry, concurrent current-pointer drift, provider
-   partial failure, route-level selector exclusion, and direct-battle rejection;
-2. remove the remaining legacy draft and direct-mutation fallbacks only after the
-   V2 authoring path has equivalent regression coverage.
+`SDA_CHARACTER` remains active. The remaining work is to remove the legacy draft
+and direct-mutation fallbacks only where the V2 authoring path has equivalent
+route and persistence regression coverage.
 
 ## Next frontier
 
-The next coherent slice is the authoring and route-level integration acceptance
-matrix. It should prove failure/expiry/concurrency behavior and every server-side
-selection boundary before any legacy fallback is removed. Production Promote for
-v0.18.0 remains a separate protected decision and is not authorized here.
+The next coherent slice is the bounded legacy-fallback removal and its regression
+matrix. Production Promote for v0.18.0 remains a separate protected decision and
+is not authorized here.

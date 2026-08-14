@@ -96,9 +96,7 @@ import {
 } from "./services/narration-task-dispatch.js";
 import { assetContentDigest } from "./repositories/asset-generations.js";
 import { buildCharacterGenerationCandidate } from "./services/character-authoring-service.js";
-import type { GenerateCharacterResult } from "./llm/types.js";
-
-const llm = createLlmProvider();
+import type { GenerateCharacterResult, LlmProvider } from "./llm/types.js";
 
 async function publicUserWithAccess(user: {
   id: string;
@@ -185,7 +183,7 @@ async function characterDraftResponse(
 
 function adjustedGenerationResult(
   current: CharacterSheet,
-  patch: Awaited<ReturnType<typeof llm.adjustCharacter>>,
+  patch: Awaited<ReturnType<LlmProvider["adjustCharacter"]>>,
 ): GenerateCharacterResult {
   const nextSkills = coalesceNonEmptyList(patch.sheetPatch.skills, current.skills);
   const nextTraits = coalesceNonEmptyList(patch.sheetPatch.traits, current.traits);
@@ -218,8 +216,9 @@ function adjustedGenerationResult(
   return { sheet, assistantMessage: patch.assistantMessage };
 }
 
-export function buildRoutes() {
+export function buildRoutes(options: { llm?: LlmProvider } = {}) {
   const app = new Hono();
+  const llm = options.llm ?? createLlmProvider();
 
   app.post("/api/internal/narration/task", async (c) => {
     if (!await verifyNarrationTaskAuthorization(c.req.header("Authorization"))) {
@@ -701,57 +700,57 @@ export function buildRoutes() {
       }
       return c.json({ error: "request_in_progress" }, 409);
     }
-    const referenceTools = {
-      search: async (query: string, limit?: number) =>
-        charRepo.searchOwnedCharacterReferences(user.id, query, limit),
-      get: async (characterId: string) =>
-        charRepo.getOwnedCharacterReference(user.id, characterId),
-    };
-    const rejectedNames: string[] = [];
-    let gen: Awaited<ReturnType<typeof llm.generateCharacter>> | null = null;
-    for (let attempt = 0; attempt < 3; attempt += 1) {
-      const promptReservedNames =
-        await charRepo.listOwnedCharacterReservedNames(user.id);
-      const candidate = await llm.generateCharacter({
-        prompt: body.prompt,
-        referenceTools,
-        reservedNames: promptReservedNames,
-        rejectedNames,
-      });
-      // Refresh after the LLM call so concurrent generation cannot slip a
-      // duplicate between the initial name snapshot and this synchronous save.
-      const currentReservedNames =
-        await charRepo.listOwnedCharacterReservedNames(user.id);
-      const conflict = findCharacterNameConflict(
-        [candidate.sheet.displayName, candidate.sheet.identity?.realName],
-        currentReservedNames,
-      );
-      if (!conflict) {
-        gen = candidate;
-        break;
-      }
-      rejectedNames.push(
-        candidate.sheet.displayName,
-        ...(candidate.sheet.identity?.realName
-          ? [candidate.sheet.identity.realName]
-          : []),
-      );
-    }
-    if (!gen) {
-      await charAssetRepo.failCharacterAuthoringAttempt({
-        attemptId: started.attempt.attemptId,
-        ownerUserId: user.id,
-        errorCode: "duplicate_character_name",
-      });
-      return c.json(
-        {
-          error: "duplicate_character_name",
-          message: "既存キャラクターと異なる名前を生成できませんでした。もう一度お試しください。",
-        },
-        409,
-      );
-    }
     try {
+      const referenceTools = {
+        search: async (query: string, limit?: number) =>
+          charRepo.searchOwnedCharacterReferences(user.id, query, limit),
+        get: async (characterId: string) =>
+          charRepo.getOwnedCharacterReference(user.id, characterId),
+      };
+      const rejectedNames: string[] = [];
+      let gen: Awaited<ReturnType<typeof llm.generateCharacter>> | null = null;
+      for (let attempt = 0; attempt < 3; attempt += 1) {
+        const promptReservedNames =
+          await charRepo.listOwnedCharacterReservedNames(user.id);
+        const candidate = await llm.generateCharacter({
+          prompt: body.prompt,
+          referenceTools,
+          reservedNames: promptReservedNames,
+          rejectedNames,
+        });
+        // Refresh after the LLM call so concurrent generation cannot slip a
+        // duplicate between the initial name snapshot and this synchronous save.
+        const currentReservedNames =
+          await charRepo.listOwnedCharacterReservedNames(user.id);
+        const conflict = findCharacterNameConflict(
+          [candidate.sheet.displayName, candidate.sheet.identity?.realName],
+          currentReservedNames,
+        );
+        if (!conflict) {
+          gen = candidate;
+          break;
+        }
+        rejectedNames.push(
+          candidate.sheet.displayName,
+          ...(candidate.sheet.identity?.realName
+            ? [candidate.sheet.identity.realName]
+            : []),
+        );
+      }
+      if (!gen) {
+        await charAssetRepo.failCharacterAuthoringAttempt({
+          attemptId: started.attempt.attemptId,
+          ownerUserId: user.id,
+          errorCode: "duplicate_character_name",
+        });
+        return c.json(
+          {
+            error: "duplicate_character_name",
+            message: "既存キャラクターと異なる名前を生成できませんでした。もう一度お試しください。",
+          },
+          409,
+        );
+      }
       await charAssetRepo.updateCharacterAuthoringStatus({
         attemptId: started.attempt.attemptId,
         ownerUserId: user.id,
