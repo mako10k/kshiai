@@ -16,6 +16,7 @@ import type {
   UserProfilePublic,
   DialoguePipelineSettings,
   NarrationStylePublic,
+  NarrationDefinitionV2,
   UserPublic,
 } from "@kshiai/shared";
 import { authenticatedFetch } from "./authenticated-fetch";
@@ -36,6 +37,15 @@ export type ImageGenQuota = {
 export type BattlefieldAuthoringDraft = {
   id: string;
   battlefield: BattlefieldPresetPublic;
+  assistantMessage: string;
+  kind: "create" | "revision" | "upgrade";
+  expiresAt: string;
+};
+
+export type NarrationStyleAuthoringDraft = {
+  id: string;
+  style: NarrationStylePublic;
+  definition: NarrationDefinitionV2;
   assistantMessage: string;
   kind: "create" | "revision" | "upgrade";
   expiresAt: string;
@@ -648,38 +658,46 @@ export const api = {
       method: "POST",
       body: JSON.stringify(body),
     }),
-  listNarrationStyles: () =>
-    request<{ styles: NarrationStylePublic[] }>("/api/narration-styles"),
-  createNarrationStyle: (body: {
-    displayName: string;
-    description?: string;
-    instruction: string;
-    perspective?: string;
-    tags?: string[];
-  }) =>
-    request<{ style: NarrationStylePublic }>("/api/narration-styles", {
-      method: "POST",
-      body: JSON.stringify(body),
-    }),
+  listNarrationStyles: (selectable = false) =>
+    request<{ styles: NarrationStylePublic[] }>(
+      `/api/narration-styles${selectable ? "?selectable=true" : ""}`,
+    ),
   generateNarrationStyle: (prompt: string) =>
-    request<{ style: NarrationStylePublic }>("/api/narration-styles/generate", {
+    request<{ draft: NarrationStyleAuthoringDraft }>("/api/narration-styles/generate", {
       method: "POST",
+      headers: { "Idempotency-Key": crypto.randomUUID() },
       body: JSON.stringify({ prompt }),
     }),
-  updateNarrationStyle: (
-    id: string,
-    body: {
-      displayName?: string;
-      description?: string;
-      instruction?: string;
-      perspective?: string;
-      tags?: string[];
-    },
-  ) =>
-    request<{ style: NarrationStylePublic }>(`/api/narration-styles/${id}`, {
-      method: "PATCH",
-      body: JSON.stringify(body),
+  latestNarrationStyleDraft: () =>
+    request<{ draft: NarrationStyleAuthoringDraft | null }>(
+      "/api/narration-style-drafts/latest",
+    ),
+  confirmNarrationStyleDraft: (draftId: string) =>
+    request<{ style: NarrationStylePublic; assistantMessage: string }>(
+      `/api/narration-styles/${draftId}/confirm`,
+      { method: "POST" },
+    ),
+  discardNarrationStyleDraft: (draftId: string) =>
+    request<{ ok: boolean }>(`/api/narration-style-drafts/${draftId}`, {
+      method: "DELETE",
     }),
+  upgradeNarrationStyle: (id: string) =>
+    request<{ draft: NarrationStyleAuthoringDraft }>(
+      `/api/narration-styles/${id}/upgrade`,
+      {
+        method: "POST",
+        headers: { "Idempotency-Key": crypto.randomUUID() },
+      },
+    ),
+  reviseNarrationStyle: (id: string, prompt: string) =>
+    request<{ draft: NarrationStyleAuthoringDraft }>(
+      `/api/narration-styles/${id}/revise`,
+      {
+        method: "POST",
+        headers: { "Idempotency-Key": crypto.randomUUID() },
+        body: JSON.stringify({ prompt }),
+      },
+    ),
   deleteNarrationStyle: (id: string) =>
     request<{ ok: boolean }>(`/api/narration-styles/${id}`, {
       method: "DELETE",

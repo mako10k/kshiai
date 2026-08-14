@@ -21,12 +21,14 @@ import {
   balanceCharacterCombatFields,
   CharacterGenerationEnvelopeV2Schema,
   BattlefieldGenerationEnvelopeV2Schema,
+  narrationDefinitionV2ToLegacyStyle,
   characterDefinitionV2ToLegacySheet,
   battlefieldDefinitionV2ToLegacyPreset,
   projectCharacterImageBriefV2,
   projectBattlefieldImageBriefV2,
   type BattlefieldPreset,
   type CharacterSheet,
+  type NarrationStyle,
 } from "@kshiai/shared";
 import {
   clearSessionCookie,
@@ -53,6 +55,7 @@ import {
 import * as charRepo from "./repositories/characters.js";
 import * as charAssetRepo from "./repositories/character-assets-v2.js";
 import * as battlefieldAssetRepo from "./repositories/battlefield-assets-v2.js";
+import * as narrationStyleAssetRepo from "./repositories/narration-style-assets-v2.js";
 import * as battleRepo from "./repositories/battles.js";
 import * as bfRepo from "./repositories/battlefields.js";
 import * as styleRepo from "./repositories/narration-styles.js";
@@ -98,6 +101,7 @@ import {
 import { assetContentDigest } from "./repositories/asset-generations.js";
 import { buildCharacterGenerationCandidate } from "./services/character-authoring-service.js";
 import { buildBattlefieldGenerationCandidate } from "./services/battlefield-authoring-service.js";
+import { buildNarrationStyleGenerationCandidate } from "./services/narration-style-authoring-service.js";
 import type { GenerateCharacterResult, LlmProvider } from "./llm/types.js";
 
 type CharacterPortraitGenerator = typeof import(
@@ -213,6 +217,35 @@ async function battlefieldDraftResponse(
   return {
     id: attempt.attemptId,
     battlefield: toPublicPreset(await battlefieldPresetForAttempt(attempt)),
+    assistantMessage: attempt.assistantMessage,
+    kind: attempt.kind,
+    expiresAt: attempt.expiresAt,
+  };
+}
+
+async function narrationStyleForAttempt(
+  attempt: narrationStyleAssetRepo.NarrationStyleAuthoringAttempt,
+): Promise<NarrationStyle> {
+  if (!attempt.candidate) throw new Error("AUTHORING_CANDIDATE_MISSING");
+  const existing = await styleRepo.getNarrationStyle(attempt.narrationStyleId);
+  return narrationDefinitionV2ToLegacyStyle({
+    styleId: attempt.narrationStyleId,
+    ownerUserId: attempt.ownerUserId,
+    isSystem: false,
+    definition: attempt.candidate.definition,
+    publicPresentation: attempt.candidate.publicPresentation,
+    createdAt: existing?.createdAt ?? attempt.createdAt,
+    updatedAt: attempt.updatedAt,
+  });
+}
+
+async function narrationStyleDraftResponse(
+  attempt: narrationStyleAssetRepo.NarrationStyleAuthoringAttempt,
+) {
+  return {
+    id: attempt.attemptId,
+    style: toPublicNarrationStyle(await narrationStyleForAttempt(attempt)),
+    definition: attempt.candidate?.definition ?? null,
     assistantMessage: attempt.assistantMessage,
     kind: attempt.kind,
     expiresAt: attempt.expiresAt,
@@ -2119,25 +2152,53 @@ export function buildRoutes(options: {
   // —— Narration styles (system presets + user custom) ——
   authed.get("/narration-styles", async (c) => {
     const user = c.get("user");
-    return c.json({ styles: await styleRepo.listNarrationStyles(user.id) });
+    return c.json({
+      styles: await styleRepo.listNarrationStyles(user.id, {
+        selectable: c.req.query("selectable") === "true",
+      }),
+    });
   });
 
   authed.post("/narration-styles", async (c) => {
-    const user = c.get("user");
-    try {
-      const body = UpsertNarrationStyleRequestSchema.parse(await c.req.json());
-      const style = await styleRepo.createUserNarrationStyle(user.id, body);
-      return c.json({ style: toPublicNarrationStyle(style) }, 201);
-    } catch (e) {
-      const message = e instanceof Error ? e.message : "invalid";
-      return c.json({ error: "invalid_request", message }, 400);
-    }
+    return c.json({
+      error: "structured_authoring_required",
+      message: "自然文から候補を生成し、内容を確認して確定してください。",
+    }, 409);
   });
 
   authed.post("/narration-styles/generate", async (c) => {
     const user = c.get("user");
+    const body = GenerateNarrationStyleRequestSchema.parse(await c.req.json());
+    const idempotencyKey = readIdempotencyKey(c.req.header("Idempotency-Key"));
+    if (!idempotencyKey) {
+      return c.json({ error: "idempotency_key_required" }, 400);
+    }
+    let started: Awaited<ReturnType<
+      typeof narrationStyleAssetRepo.beginNarrationStyleAuthoringAttempt
+    >>;
     try {
-      const body = GenerateNarrationStyleRequestSchema.parse(await c.req.json());
+      started = await narrationStyleAssetRepo.beginNarrationStyleAuthoringAttempt({
+        ownerUserId: user.id,
+        kind: "create",
+        idempotencyKey: `narration-create:${idempotencyKey}`,
+        requestDigest: assetContentDigest(body),
+        sourceText: body.prompt,
+        sourceDigest: assetContentDigest(body.prompt),
+      });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "authoring_failed";
+      return c.json({
+        error: message === "AUTHORING_IDEMPOTENCY_CONFLICT"
+          ? "idempotency_key_conflict"
+          : "authoring_start_failed",
+      }, message === "AUTHORING_IDEMPOTENCY_CONFLICT" ? 409 : 400);
+    }
+    if (started.replayed) {
+      return started.attempt.candidate
+        ? c.json({ draft: await narrationStyleDraftResponse(started.attempt) })
+        : c.json({ error: "request_in_progress" }, 409);
+    }
+    try {
       const draft = llm.generateNarrationStyle
         ? await llm.generateNarrationStyle(body.prompt)
         : {
@@ -2146,31 +2207,218 @@ export function buildRoutes(options: {
             instruction: `次の雰囲気で語る: ${body.prompt}`,
             tags: ["custom"],
           };
-      const style = await styleRepo.createUserNarrationStyle(user.id, draft);
-      return c.json({ style: toPublicNarrationStyle(style) }, 201);
-    } catch (e) {
-      const message = e instanceof Error ? e.message : "failed";
-      return c.json({ error: "generate_failed", message }, 400);
+      const candidate = await buildNarrationStyleGenerationCandidate({
+        llm,
+        attemptId: started.attempt.attemptId,
+        narrationStyleId: started.attempt.narrationStyleId,
+        ownerUserId: user.id,
+        sourceText: body.prompt,
+        sourceKind: "create_instruction",
+        generated: draft,
+      });
+      const saved = await narrationStyleAssetRepo.saveNarrationStyleAuthoringCandidate({
+        attemptId: started.attempt.attemptId,
+        ownerUserId: user.id,
+        envelope: candidate.envelope,
+        assistantMessage: candidate.assistantMessage,
+      });
+      return c.json({ draft: await narrationStyleDraftResponse(saved) });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "failed";
+      await narrationStyleAssetRepo.failNarrationStyleAuthoringAttempt({
+        attemptId: started.attempt.attemptId,
+        ownerUserId: user.id,
+        errorCode: message.slice(0, 120),
+      });
+      return c.json({ error: "narration_style_authoring_failed", message }, 502);
+    }
+  });
+
+  authed.get("/narration-style-drafts/latest", async (c) => {
+    const user = c.get("user");
+    const attempt = await narrationStyleAssetRepo
+      .getLatestNarrationStyleAuthoringAttempt(user.id);
+    return c.json({
+      draft: attempt?.candidate
+        ? await narrationStyleDraftResponse(attempt)
+        : null,
+    });
+  });
+
+  authed.delete("/narration-style-drafts/:id", async (c) => {
+    const user = c.get("user");
+    const discarded = await narrationStyleAssetRepo
+      .discardNarrationStyleAuthoringAttempt(c.req.param("id"), user.id);
+    return discarded
+      ? c.json({ ok: true })
+      : c.json({ error: "not_found" }, 404);
+  });
+
+  authed.post("/narration-styles/:id/confirm", async (c) => {
+    const user = c.get("user");
+    try {
+      const activated = await narrationStyleAssetRepo
+        .activateNarrationStyleAuthoringAttempt({
+          attemptId: c.req.param("id"),
+          ownerUserId: user.id,
+        });
+      return c.json({
+        style: toPublicNarrationStyle(activated.style, {
+          compatibility: await narrationStyleAssetRepo
+            .getNarrationStyleCompatibility(activated.style.id),
+          selectable: true,
+          upgradeAction: null,
+        }),
+        assistantMessage: "構造化した語り方針と公開説明を確定しました。",
+      });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "activation_failed";
+      return c.json({ error: "narration_style_activation_failed", message }, 409);
+    }
+  });
+
+  authed.post("/narration-styles/:id/upgrade", async (c) => {
+    const user = c.get("user");
+    const style = await styleRepo.getNarrationStyle(c.req.param("id"));
+    if (!style || style.isSystem || style.ownerUserId !== user.id) {
+      return c.json({ error: "not_found" }, 404);
+    }
+    const compatibility = await narrationStyleAssetRepo
+      .getNarrationStyleCompatibility(style.id);
+    if (compatibility.status === "ready") {
+      return c.json({ error: "already_current" }, 409);
+    }
+    const idempotencyKey = readIdempotencyKey(c.req.header("Idempotency-Key"));
+    if (!idempotencyKey) return c.json({ error: "idempotency_key_required" }, 400);
+    const sourceText = [style.description, style.instruction].filter(Boolean).join("\n\n");
+    let started: Awaited<ReturnType<
+      typeof narrationStyleAssetRepo.beginNarrationStyleAuthoringAttempt
+    >>;
+    try {
+      started = await narrationStyleAssetRepo.beginNarrationStyleAuthoringAttempt({
+        ownerUserId: user.id,
+        narrationStyleId: style.id,
+        kind: "upgrade",
+        idempotencyKey: `narration-upgrade:${style.id}:${idempotencyKey}`,
+        requestDigest: assetContentDigest({ narrationStyleId: style.id, sourceText }),
+        sourceText,
+        sourceDigest: assetContentDigest(sourceText),
+      });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "upgrade_start_failed";
+      return c.json({ error: message.toLowerCase() }, 409);
+    }
+    if (started.replayed) {
+      return started.attempt.candidate
+        ? c.json({ draft: await narrationStyleDraftResponse(started.attempt) })
+        : c.json({ error: "request_in_progress" }, 409);
+    }
+    try {
+      const candidate = await buildNarrationStyleGenerationCandidate({
+        llm,
+        attemptId: started.attempt.attemptId,
+        narrationStyleId: style.id,
+        ownerUserId: user.id,
+        sourceText,
+        sourceKind: "upgrade_description",
+        generated: style,
+        existing: style,
+      });
+      const saved = await narrationStyleAssetRepo.saveNarrationStyleAuthoringCandidate({
+        attemptId: started.attempt.attemptId,
+        ownerUserId: user.id,
+        envelope: candidate.envelope,
+        assistantMessage: candidate.assistantMessage,
+      });
+      return c.json({ draft: await narrationStyleDraftResponse(saved) });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "upgrade_failed";
+      await narrationStyleAssetRepo.failNarrationStyleAuthoringAttempt({
+        attemptId: started.attempt.attemptId,
+        ownerUserId: user.id,
+        errorCode: message.slice(0, 120),
+      });
+      return c.json({ error: "narration_style_upgrade_failed", message }, 502);
+    }
+  });
+
+  authed.post("/narration-styles/:id/revise", async (c) => {
+    const user = c.get("user");
+    const style = await styleRepo.getNarrationStyle(c.req.param("id"));
+    if (!style || style.isSystem || style.ownerUserId !== user.id) {
+      return c.json({ error: "not_found" }, 404);
+    }
+    const ready = await narrationStyleAssetRepo
+      .getReadyNarrationStyleGeneration(style.id);
+    if (!ready) return c.json({ error: "narration_style_upgrade_required" }, 409);
+    const body = GenerateNarrationStyleRequestSchema.parse(await c.req.json());
+    const idempotencyKey = readIdempotencyKey(c.req.header("Idempotency-Key"));
+    if (!idempotencyKey) return c.json({ error: "idempotency_key_required" }, 400);
+    let started: Awaited<ReturnType<
+      typeof narrationStyleAssetRepo.beginNarrationStyleAuthoringAttempt
+    >>;
+    try {
+      started = await narrationStyleAssetRepo.beginNarrationStyleAuthoringAttempt({
+        ownerUserId: user.id,
+        narrationStyleId: style.id,
+        kind: "revision",
+        idempotencyKey: `narration-revision:${style.id}:${idempotencyKey}`,
+        requestDigest: assetContentDigest({ narrationStyleId: style.id, prompt: body.prompt }),
+        sourceText: body.prompt,
+        sourceDigest: assetContentDigest(body.prompt),
+      });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "revision_start_failed";
+      return c.json({ error: message.toLowerCase() }, 409);
+    }
+    if (started.replayed) {
+      return started.attempt.candidate
+        ? c.json({ draft: await narrationStyleDraftResponse(started.attempt) })
+        : c.json({ error: "request_in_progress" }, 409);
+    }
+    try {
+      const generated = llm.generateNarrationStyle
+        ? await llm.generateNarrationStyle(body.prompt)
+        : {
+            displayName: style.displayName,
+            description: style.description,
+            instruction: body.prompt,
+            tags: style.tags,
+            perspective: style.perspective,
+          };
+      const candidate = await buildNarrationStyleGenerationCandidate({
+        llm,
+        attemptId: started.attempt.attemptId,
+        narrationStyleId: style.id,
+        ownerUserId: user.id,
+        sourceText: body.prompt,
+        sourceKind: "revision_instruction",
+        generated,
+        existing: style,
+      });
+      const saved = await narrationStyleAssetRepo.saveNarrationStyleAuthoringCandidate({
+        attemptId: started.attempt.attemptId,
+        ownerUserId: user.id,
+        envelope: candidate.envelope,
+        assistantMessage: candidate.assistantMessage,
+      });
+      return c.json({ draft: await narrationStyleDraftResponse(saved) });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "revision_failed";
+      await narrationStyleAssetRepo.failNarrationStyleAuthoringAttempt({
+        attemptId: started.attempt.attemptId,
+        ownerUserId: user.id,
+        errorCode: message.slice(0, 120),
+      });
+      return c.json({ error: "narration_style_revision_failed", message }, 502);
     }
   });
 
   authed.patch("/narration-styles/:id", async (c) => {
-    const user = c.get("user");
-    try {
-      const body = UpsertNarrationStyleRequestSchema.partial().parse(
-        await c.req.json(),
-      );
-      const style = await styleRepo.updateUserNarrationStyle(
-        c.req.param("id"),
-        user.id,
-        body,
-      );
-      if (!style) return c.json({ error: "not_found" }, 404);
-      return c.json({ style: toPublicNarrationStyle(style) });
-    } catch (e) {
-      const message = e instanceof Error ? e.message : "invalid";
-      return c.json({ error: "invalid_request", message }, 400);
-    }
+    return c.json({
+      error: "structured_authoring_required",
+      message: "revision endpoint で候補を生成し、内容を確認して確定してください。",
+    }, 409);
   });
 
   authed.delete("/narration-styles/:id", async (c) => {

@@ -22,6 +22,7 @@ export * from "./media.js";
 export * from "./supervisor.js";
 export * from "./narration-perspective.js";
 export * from "./narration-style.js";
+export * from "./structured-narration.js";
 export * from "./semantic-state.js";
 export * from "./perception.js";
 export * from "./perception-quantization.js";

@@ -4,6 +4,11 @@ import {
   PERSPECTIVE_LABELS,
   type NarrationPerspective,
 } from "./narration-perspective.js";
+import { AssetCompatibilitySchema } from "./structured-assets.js";
+import {
+  CompiledNarrationPolicyV2Schema,
+  type CompiledNarrationPolicyV2,
+} from "./structured-narration.js";
 
 /**
  * How battle narration is voiced — selectable at match start,
@@ -32,42 +37,89 @@ export const NarrationStyleSchema = z.object({
 });
 export type NarrationStyle = z.infer<typeof NarrationStyleSchema>;
 
-export const NarrationStylePublicSchema = NarrationStyleSchema.pick({
-  id: true,
-  ownerUserId: true,
-  isSystem: true,
-  displayName: true,
-  description: true,
-  instruction: true,
-  perspective: true,
-  tags: true,
-  createdAt: true,
-  updatedAt: true,
+export const NarrationStylePublicSchema = z.object({
+  id: z.string(),
+  ownerUserId: z.string().nullable(),
+  isSystem: z.boolean(),
+  displayName: z.string(),
+  description: z.string(),
+  perspective: NarrationPerspectiveSchema,
+  tags: z.array(z.string()),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+  compatibility: AssetCompatibilitySchema.optional(),
+  selectable: z.boolean().optional(),
+  upgradeAction: z.object({
+    label: z.string(),
+    targetSchemaVersion: z.number().int().positive(),
+  }).strict().nullable().optional(),
 });
 export type NarrationStylePublic = z.infer<typeof NarrationStylePublicSchema>;
 
 /** Snapshot stored on BattleState so mid-match edits don't change the fight. */
+export interface NarrationStyleSnapshot {
+  id: string;
+  displayName: string;
+  instruction: string;
+  perspective: NarrationPerspective;
+  compiledPolicyV2?: CompiledNarrationPolicyV2;
+}
+
 export const NarrationStyleSnapshotSchema = z.object({
   id: z.string(),
   displayName: z.string(),
   instruction: z.string(),
   perspective: NarrationPerspectiveSchema.default("external"),
-});
-export type NarrationStyleSnapshot = z.infer<typeof NarrationStyleSnapshotSchema>;
+  compiledPolicyV2: CompiledNarrationPolicyV2Schema.optional(),
+}).strict() as unknown as z.ZodType<NarrationStyleSnapshot>;
 
-export function toPublicNarrationStyle(s: NarrationStyle): NarrationStylePublic {
+export function toPublicNarrationStyle(
+  s: NarrationStyle,
+  options?: Pick<NarrationStylePublic, "compatibility" | "selectable" | "upgradeAction">,
+): NarrationStylePublic {
   return {
     id: s.id,
     ownerUserId: s.ownerUserId,
     isSystem: s.isSystem,
     displayName: s.displayName,
     description: s.description,
-    instruction: s.instruction,
     perspective: s.perspective ?? "external",
     tags: s.tags,
     createdAt: s.createdAt,
     updatedAt: s.updatedAt,
+    ...options,
   };
+}
+
+export function toNarrationSnapshotV2(
+  s: Pick<NarrationStyle, "id" | "displayName">,
+  compiledPolicyV2: CompiledNarrationPolicyV2,
+): NarrationStyleSnapshot {
+  const parsed = CompiledNarrationPolicyV2Schema.parse(compiledPolicyV2);
+  return {
+    id: s.id,
+    displayName: s.displayName,
+    instruction: parsed.fallbackInstruction,
+    perspective: parsed.perspective,
+    compiledPolicyV2: parsed,
+  };
+}
+
+export function narrationInstructionForPhase(
+  snapshot: NarrationStyleSnapshot | undefined,
+  phase: "prologue" | "combat" | "judgment" | "aftermath",
+): string | undefined {
+  if (!snapshot) return undefined;
+  const compiled = snapshot.compiledPolicyV2;
+  if (!compiled) return snapshot.instruction;
+  if (phase === "combat") {
+    return [
+      compiled.phases.action.instruction.slice(0, 1900),
+      compiled.phases.impact.instruction.slice(0, 1900),
+      compiled.phases.release.instruction.slice(0, 1900),
+    ].join("\n\n").slice(0, 6000);
+  }
+  return compiled.phases[phase].instruction;
 }
 
 export function toNarrationSnapshot(

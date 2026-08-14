@@ -118,7 +118,7 @@ export function MatchPage() {
           selectable: true,
         }),
         api.listBattlefields(undefined, { selectable: true }),
-        api.listNarrationStyles(),
+        api.listNarrationStyles(true),
       ]);
       setMine(m.characters);
       setFields(f.battlefields);
