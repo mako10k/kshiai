@@ -43,6 +43,8 @@ export const REQUIRED_CHARACTER_COMPILERS_V2 = [
   { consumer: "character-narrator-view", version: 2 },
   { consumer: "character-image-brief", version: 2 },
   { consumer: "character-observable-manifestation", version: 2 },
+  { consumer: "character-action-norms", version: 2 },
+  { consumer: "character-relationship", version: 2 },
 ] as const;
 
 export const RegisteredCharacterConsumerSchema = z.enum([
@@ -113,7 +115,73 @@ export const CharacterNormClauseV2Schema = z.object({
   ]),
   operator: z.enum(["is", "is_not", "at_least", "at_most"]),
   value: z.string().min(1).max(120),
-}).strict();
+}).strict().superRefine((clause, context) => {
+  const values = {
+    always: ["true"],
+    battle_phase: ["prologue", "turn", "aftermath"],
+    self_condition: ["steady", "strained", "critical", "incapacitated"],
+    counterpart_condition: ["steady", "strained", "critical", "incapacitated"],
+    resource_band: ["empty", "critical", "low", "taxed", "ready", "full"]
+      .flatMap((band) => ["hp", "mp", "stamina", "focus"]
+        .map((resource) => `${resource}:${band}`)),
+    distance_band: [
+      "contact",
+      "near",
+      "medium",
+      "far",
+      "separate_area",
+      "out_of_scene",
+    ],
+    relationship_band: [
+      "stranger",
+      "ally",
+      "rival",
+      "enemy",
+      "mentor",
+      "student",
+      "family",
+      "protected_person",
+      "other",
+    ],
+    observed_event_kind: [
+      "damage",
+      "heal",
+      "rest",
+      "parameter",
+      "defend",
+      "wait",
+      "reflect",
+      "status",
+      "situation",
+      "info",
+      "utterance",
+      "manifestation",
+      "free_action",
+    ],
+  } as const;
+  if (!(values[clause.kind] as readonly string[]).includes(clause.value)) {
+    context.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: `unregistered ${clause.kind} value: ${clause.value}`,
+      path: ["value"],
+    });
+  }
+  if (
+    (clause.operator === "at_least" || clause.operator === "at_most") &&
+    ![
+      "self_condition",
+      "counterpart_condition",
+      "resource_band",
+      "distance_band",
+    ].includes(clause.kind)
+  ) {
+    context.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: `${clause.operator} is unavailable for ${clause.kind}`,
+      path: ["operator"],
+    });
+  }
+});
 export type CharacterNormClauseV2 = z.infer<
   typeof CharacterNormClauseV2Schema
 >;
@@ -157,6 +225,7 @@ export const CharacterActionNormV2Schema = z.object({
     });
   }
 });
+export type CharacterActionNormV2 = z.infer<typeof CharacterActionNormV2Schema>;
 
 export const CharacterActionDefinitionV2Schema = z.object({
   id: StableIdSchema,
@@ -398,8 +467,18 @@ export const CharacterDefinitionV2Schema = z.object({
   unique(definition.profileBackground.map((item) => item.id), ["profileBackground"]);
   unique(definition.psycheDisposition.tendencies.map((item) => item.id), ["psycheDisposition", "tendencies"]);
   unique(definition.actionNorms.map((item) => item.id), ["actionNorms"]);
+  unique(definition.relationshipSeeds.map((item) => item.id), ["relationshipSeeds"]);
   unique(definition.capabilities.skills.map((item) => item.id), ["capabilities", "skills"]);
   unique(definition.inventory.map((item) => item.id), ["inventory"]);
+  if (definition.capabilities.skills.some((skill) =>
+    skill.id === definition.capabilities.basicAction.id
+  )) {
+    context.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: `duplicate stable action id: ${definition.capabilities.basicAction.id}`,
+      path: ["capabilities", "basicAction", "id"],
+    });
+  }
   const actionIds = new Set([
     definition.capabilities.basicAction.id,
     ...definition.capabilities.skills.map((item) => item.id),
@@ -424,6 +503,85 @@ export const CharacterDefinitionV2Schema = z.object({
           code: z.ZodIssueCode.custom,
           message: `unknown action reference: ${actionRef}`,
           path: ["actionNorms", index, "response", "actionRefs"],
+        });
+      }
+    }
+  }
+  const canonicalClauses = (
+    clauses: CharacterNormClauseV2[],
+  ) => clauses
+    .map((clause) => `${clause.kind}:${clause.operator}:${clause.value}`)
+    .sort()
+    .join("|");
+  const activationSignature = (
+    norm: CharacterActionNormV2,
+  ) => JSON.stringify({
+    match: norm.when.match,
+    clauses: canonicalClauses(norm.when.clauses),
+    exceptions: norm.exceptions
+      .map((exception) => canonicalClauses(exception.clauses))
+      .sort(),
+  });
+  type StaticNormAction = {
+    ref: string | null;
+    kind: CharacterActionNormV2["response"]["actionKinds"][number] | null;
+    tags: string[];
+  };
+  const possibleActions: StaticNormAction[] = [
+    {
+      ref: definition.capabilities.basicAction.id,
+      kind: "basic_action",
+      tags: definition.capabilities.basicAction.tacticTags,
+    },
+    ...definition.capabilities.skills.map((skill) => ({
+      ref: skill.id,
+      kind: "skill" as const,
+      tags: skill.tacticTags,
+    })),
+    { ref: null, kind: "defend" as const, tags: [] as string[] },
+    { ref: null, kind: "wait" as const, tags: [] as string[] },
+    { ref: null, kind: "free_action" as const, tags: [] as string[] },
+    { ref: null, kind: null as null, tags: [] as string[] },
+  ];
+  const normMatchesAction = (
+    norm: CharacterActionNormV2,
+    action: StaticNormAction,
+  ) => Boolean(
+    (action.ref && norm.response.actionRefs.includes(action.ref)) ||
+    (action.kind && norm.response.actionKinds.includes(action.kind)) ||
+    action.tags.some((tag) => norm.response.tacticTags.includes(tag)),
+  );
+  const applyConstraint = (
+    norm: CharacterActionNormV2,
+    actions: StaticNormAction[],
+  ) => norm.response.disposition === "allow_only"
+    ? actions.filter((action) => normMatchesAction(norm, action))
+    : actions.filter((action) => !normMatchesAction(norm, action));
+  for (let leftIndex = 0; leftIndex < definition.actionNorms.length; leftIndex += 1) {
+    const left = definition.actionNorms[leftIndex];
+    if (!left || left.force !== "constraint") continue;
+    for (
+      let rightIndex = leftIndex + 1;
+      rightIndex < definition.actionNorms.length;
+      rightIndex += 1
+    ) {
+      const right = definition.actionNorms[rightIndex];
+      if (!right || right.force !== "constraint" ||
+          left.priority !== right.priority ||
+          left.when.clauses.length !== right.when.clauses.length ||
+          activationSignature(left) !== activationSignature(right)) {
+        continue;
+      }
+      const afterLeft = applyConstraint(left, possibleActions);
+      const afterRight = applyConstraint(right, possibleActions);
+      if (
+        afterLeft.length > 0 && afterRight.length > 0 &&
+        applyConstraint(right, afterLeft).length === 0
+      ) {
+        context.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: `statically contradictory equal-rank constraints: ${left.id}, ${right.id}`,
+          path: ["actionNorms", rightIndex],
         });
       }
     }

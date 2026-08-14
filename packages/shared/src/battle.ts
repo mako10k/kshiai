@@ -49,6 +49,13 @@ import {
   BattleEncounterContextSchema,
   BattleNarratorContinuitySchema,
 } from "./battle-social.js";
+import {
+  CharacterActionNormProgramV2Schema,
+  CharacterActionNormResolutionReceiptV2Schema,
+  CharacterRelationshipResolutionReceiptV2Schema,
+  CharacterRelationshipResolutionV2Schema,
+  CharacterRelationshipDescriptiveProjectionV2Schema,
+} from "./character-definition-rules.js";
 
 export const BattleStatusSchema = z.enum([
   "active",
@@ -969,6 +976,9 @@ export const CharacterDeepPsycheStaticProjectionV2Schema = z.object({
     text: z.string().min(1).max(600),
     selfAwareness: z.enum(["unaware", "partial", "aware"]),
   }).strict()).max(6),
+  relationship: CharacterRelationshipDescriptiveProjectionV2Schema
+    .nullable()
+    .optional(),
 }).strict();
 export type CharacterDeepPsycheStaticProjectionV2 = z.infer<
   typeof CharacterDeepPsycheStaticProjectionV2Schema
@@ -988,6 +998,9 @@ export const CharacterConsciousSelfStaticProjectionV2Schema = z.object({
     vocabularyHabits: z.array(z.string().min(1).max(80)).max(12),
     examples: z.array(z.string().min(1).max(240)).max(2),
   }).strict(),
+  relationship: CharacterRelationshipDescriptiveProjectionV2Schema
+    .nullable()
+    .optional(),
 }).strict();
 export type CharacterConsciousSelfStaticProjectionV2 = z.infer<
   typeof CharacterConsciousSelfStaticProjectionV2Schema
@@ -1021,6 +1034,10 @@ export const CharacterBattleCompilerInputsV2Schema = z.object({
   deepPsyche: CharacterDeepPsycheStaticProjectionV2Schema,
   consciousSelf: CharacterConsciousSelfStaticProjectionV2Schema,
   narratorViews: CharacterNarratorProjectionSetV2Schema.optional(),
+  /** Optional for immutable battles created before the P2 rule-compiler slice. */
+  actionNorms: CharacterActionNormProgramV2Schema.optional(),
+  /** Exact logical-target resolution frozen at battle creation. */
+  relationship: CharacterRelationshipResolutionV2Schema.optional(),
 }).strict();
 export type CharacterBattleCompilerInputsV2 = z.infer<
   typeof CharacterBattleCompilerInputsV2Schema
@@ -1550,6 +1567,16 @@ export const BattleTurnPipelineTraceSchema = z.object({
     a: BattlePipelineAgentInvocationTraceSchema,
     b: BattlePipelineAgentInvocationTraceSchema,
   }).strict().optional(),
+  characterDefinitionRules: z.object({
+    a: z.object({
+      actionNorm: CharacterActionNormResolutionReceiptV2Schema.nullable(),
+      relationship: CharacterRelationshipResolutionReceiptV2Schema.nullable(),
+    }).strict(),
+    b: z.object({
+      actionNorm: CharacterActionNormResolutionReceiptV2Schema.nullable(),
+      relationship: CharacterRelationshipResolutionReceiptV2Schema.nullable(),
+    }).strict(),
+  }).strict().optional(),
   deepPsyche: z.object({
     a: BattlePipelineAgentInvocationTraceSchema,
     b: BattlePipelineAgentInvocationTraceSchema,
@@ -1791,6 +1818,7 @@ export interface BattleAssetManifest {
     temporalRules: string;
     psycheReaction?: string;
     characterFocus?: string;
+    characterDefinitionRules?: string;
   };
 }
 
@@ -1836,6 +1864,7 @@ export const BattleAssetManifestSchema = z.object({
     temporalRules: z.string().min(1),
     psycheReaction: z.string().min(1).optional(),
     characterFocus: z.string().min(1).optional(),
+    characterDefinitionRules: z.string().min(1).optional(),
   }).strict(),
 }).strict() as unknown as z.ZodType<BattleAssetManifest>;
 
@@ -2011,6 +2040,9 @@ export const BattleStateSchema = z.object({
     estimatedCostUsd: z.number().nonnegative().nullable(),
     elapsedMs: z.number().int().nonnegative(),
     fallbackReason: z.string().min(1).nullable(),
+    actionNormReceipt: CharacterActionNormResolutionReceiptV2Schema.optional(),
+    relationshipReceipt:
+      CharacterRelationshipResolutionReceiptV2Schema.optional(),
   }).strict().optional(),
   /** Battle-wide optimistic revision for recoverable advance operations. */
   battleRevision: z.number().int().nonnegative().optional(),

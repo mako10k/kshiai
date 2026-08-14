@@ -41,4 +41,5 @@ export * from "./character-focus-policy.js";
 export * from "./character-focus-policy.fixtures.js";
 export * from "./structured-assets.js";
 export * from "./structured-character.js";
+export * from "./character-definition-rules.js";
 export * from "./character-manifestation.js";

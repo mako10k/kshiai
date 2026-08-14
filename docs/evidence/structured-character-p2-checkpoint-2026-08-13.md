@@ -116,3 +116,9 @@ The next coherent slice is deterministic action-norm conflict and relationship
 precedence: produce a bounded receipt, prove the legal fallback path, and keep
 the same decision under A/B swap. Do not mark `SDA_CHARACTER` finished until all
 required verification in the accepted design is satisfied.
+
+Subsequent evidence: the deterministic rule-receipt slice was completed locally
+on 2026-08-14 in
+[`structured-character-rule-receipts-2026-08-14.md`](structured-character-rule-receipts-2026-08-14.md).
+`SDA_CHARACTER` remains active at the integration and legacy-cutover frontier
+recorded there.
