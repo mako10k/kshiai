@@ -1,0 +1,91 @@
+# Scoped recovery plan for effective compact-dialogue activation and the
+# character-focus experiment. It contains no production promotion task.
+project KSHIAI_DIALOGUE_ACTIVATION_FOCUS_RECOVERY:
+  version 6
+  title "Recover dialogue activation authority before focus wiring"
+  description "Establish the effective compact-dialogue configuration owner, accept its immutable activation contract, implement only the bounded local wiring, run a separately authorized Stage observation, and replace the stale character-focus candidate with a causally valid experiment plan. Preserve existing battles, mechanics, provider counts, privacy, release gates, and the production boundary."
+  as_of 2026-08-14
+  duration_unit point
+  velocity 1p/1d
+  target_duration 10p
+  finish RECOVERY_PLAN_COMPLETED
+  goal_owner user
+  dag_owner user
+
+resource DEV:
+  title "Developer"
+  capacity 1
+
+resource OWNER:
+  title "Product and release owner"
+  capacity 1
+
+milestone NOW:
+  title "Recovery tasks registered and handed off"
+  state reached
+
+milestone AUTHORITY_AUDITED:
+  title "Effective dialogue mode authority and historical drift audited"
+
+milestone ACTIVATION_ADR_ACCEPTED:
+  title "Dialogue activation authority explicitly accepted"
+
+milestone LOCAL_WIRING_READY:
+  title "Immutable compact-dialogue activation wiring passes local gates"
+
+milestone STAGE_AUTHORIZED:
+  title "Exact bounded Stage observation explicitly authorized"
+
+milestone STAGE_OBSERVED:
+  title "Compact-dialogue activation observed on the authorized Stage artifact"
+
+milestone RECOVERY_PLAN_COMPLETED:
+  title "Focus plan reconciled with causal replay evidence"
+
+task DAF_AUDIT NOW -> AUTHORITY_AUDITED:
+  title "Audit effective dialogue mode ownership and plan drift"
+  description "Read current code, persisted settings metadata, deployment variable selection, immutable battle snapshots, retained traces, release records, and the DCL plan without mutating runtime state. Produce a LLMTHINK RCA and an exact precedence table for default, administrator setting, revision-local override, and battle binding. Record only enum choices, revisions, artifact identities, digests, and source references; never read or retain secret values. Use sealgraph only as a disposable reconstruction from the LLMTHINK original. Reconcile achieved DCL implementation separately from unmet activation and observation scope."
+  duration 1p
+  requires:
+    DEV 1
+  owner "codex"
+
+task DAF_ACCEPT_ACTIVATION_ADR AUTHORITY_AUDITED -> ACTIVATION_ADR_ACCEPTED:
+  title "Accept or revise ADR-0016 dialogue activation authority"
+  description "Review the exact LLMTHINK ADR draft and decide the normal authority, the narrowly staged override boundary, immutable mode source and revision receipts, compatibility, rollback, and non-goals. Generic continuation does not accept the ADR. Rejection or revision is valid and authorizes no wiring."
+  duration 1p
+  requires:
+    OWNER 1
+  owner "user"
+
+task DAF_WIRE_COMPACT_LOCAL ACTIVATION_ADR_ACCEPTED -> LOCAL_WIRING_READY:
+  title "Wire compact dialogue activation into new immutable battle snapshots"
+  description "Implement only the accepted authority contract. Bind new battles to the effective projection mode, source, settings revision, and content identity; do not reread mutable settings during a battle or migrate existing battles. Preserve action, mechanics, world, rating, narration authority, provider call count, retries, and public privacy. Add precedence, direct-create, legacy, missing-setting, rollback, and no-ordinary-path-drift tests. Pass full local gates and record the exact candidate SHA. Do not deploy."
+  duration 3p
+  requires:
+    DEV 1
+  owner "codex"
+
+task DAF_AUTHORIZE_STAGE LOCAL_WIRING_READY -> STAGE_AUTHORIZED:
+  title "Authorize the exact compact-dialogue Stage observation"
+  description "The owner reviews the exact candidate SHA, immutable mode receipt, rollback target, fixed six-battle matrix, provider-operation and token ceilings, cost ceiling, and stop conditions. This authorizes only the stated Stage run and never Promote or production observation."
+  duration 1p
+  requires:
+    OWNER 1
+  owner "user"
+
+task DAF_STAGE_OBSERVE STAGE_AUTHORIZED -> STAGE_OBSERVED:
+  title "Stage and inspect six fixed compact-dialogue battles"
+  description "Deploy only the authorized artifact to isolated Stage and run at most six fixed battles. Verify effective mode and source receipts, packet ownership, input cardinality, dialogue variety, provider status, latency, privacy, immutable binding, and mechanics equivalence. Stop on any secret exposure, observer leak, schema or provider failure, prompt growth, mechanics drift, or repeat-loop recurrence. Retain sanitized evidence and do not promote."
+  duration 2p
+  requires:
+    DEV 1
+  owner "codex"
+
+task DAF_REPLAN_FOCUS STAGE_OBSERVED -> RECOVERY_PLAN_COMPLETED:
+  title "Replace the stale focus candidate with a causal experiment plan"
+  description "Reconcile docs/character-focus-hypothesis.pert with the replay RCA that forbids selecting B, C, or D from the completed replay. Inventory ADR-0008 acceptance provenance before relying on it. Define paired same-input sharp and strained cases, an actual expression-selectable evidence boundary, distractor-rich controls, multi-turn retained switched decayed and held trajectories, non-ceiling thresholds, reviewer authority, and explicit provider and deployment gates. Do not wire focus into product expression, call a provider, deploy, or reopen production during this task."
+  duration 2p
+  requires:
+    DEV 1
+  owner "codex"
