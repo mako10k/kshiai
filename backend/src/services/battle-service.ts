@@ -84,7 +84,9 @@ import {
   type TurnEvent,
   type TurnSemanticPatch,
   type Skill,
-  toNarrationSnapshot,
+  toNarrationSnapshotV2,
+  narrationInstructionForPhase,
+  NARRATION_PROMPT_COMPILER_V2,
   toBattleCharacterSnapshot,
   type BattleAdvanceStreamEvent,
   type InnerDigest,
@@ -682,11 +684,15 @@ export async function startBattle(input: {
   const policiesB: BattlePolicyOption[] = [];
   const selectedPolicyIdsB: string[] = [];
 
-  const narrationStyle = await styleRepo.resolveNarrationStyleForUser(
+  const resolvedNarrationStyle = await styleRepo.resolveReadyNarrationStyleForUser(
     input.userId,
     input.narrationStyleId,
   );
-  const narrationSnap = toNarrationSnapshot(narrationStyle);
+  const narrationStyle = resolvedNarrationStyle.style;
+  const narrationSnap = toNarrationSnapshotV2(
+    narrationStyle,
+    resolvedNarrationStyle.compiledPolicy,
+  );
   const priorMatchSummary = await battleRepo.findPriorMatchSummary(
     mine.id,
     opp.id,
@@ -768,16 +774,8 @@ export async function startBattle(input: {
   const assetBoundAt = new Date().toISOString();
   const mineSnapshot = toBattleCharacterSnapshot(mine);
   const opponentSnapshot = toBattleCharacterSnapshot(opp);
-  const [narrationGeneration,
-    battlefieldInstanceGeneration,
+  const [battlefieldInstanceGeneration,
     dialogueGeneration] = await Promise.all([
-    createAssetGeneration({
-      assetType: "narration-style",
-      assetId: narrationStyle.id,
-      schemaVersion: 1,
-      content: narrationSnap,
-      createdAt: narrationStyle.updatedAt,
-    }),
     createAssetGeneration({
       assetType: "battlefield-instance",
       assetId: id,
@@ -889,8 +887,8 @@ export async function startBattle(input: {
       },
       narrationStyle: {
         assetId: narrationSnap.id,
-        generationId: narrationGeneration.generationId,
-        contentDigest: narrationGeneration.contentDigest,
+        generationId: resolvedNarrationStyle.generation.generationId,
+        contentDigest: resolvedNarrationStyle.generation.contentDigest,
         snapshot: narrationSnap,
       },
       battlefield: {
@@ -912,6 +910,7 @@ export async function startBattle(input: {
         psycheReaction: PSYCHE_REACTION_POLICY_V1,
         characterDefinitionRules: CHARACTER_DEFINITION_RULE_POLICY_V2,
         battlefieldDefinitionRules: BATTLEFIELD_INSTANCE_COMPILER_V2,
+        narrationStyleRules: NARRATION_PROMPT_COMPILER_V2,
         ...(config.characterFocusShadowMode === "shadow"
           ? { characterFocus: CHARACTER_FOCUS_POLICY_V1 }
           : {}),
@@ -4948,7 +4947,10 @@ async function advanceTurnWithLease(input: {
           focus,
         }),
         characterSpeeches,
-        styleInstruction: next.narrationStyle?.instruction,
+        styleInstruction: narrationInstructionForPhase(
+          next.narrationStyle,
+          "combat",
+        ),
         styleName: next.narrationStyle?.displayName,
       }
     : null;
@@ -5167,7 +5169,10 @@ async function advanceTurnWithLease(input: {
           winnerName,
           presentationProjection,
           recentPublicNarration: [],
-          styleInstruction: next.narrationStyle?.instruction,
+          styleInstruction: narrationInstructionForPhase(
+            next.narrationStyle,
+            "judgment",
+          ),
           styleName: next.narrationStyle?.displayName,
         },
       };
@@ -5511,7 +5516,10 @@ async function runPrologueTurn(input: {
     recognitionSubjects: prologuePerceptionView
       ? narratorRecognitionSubjects(prologuePerceptionView)
       : [],
-    styleInstruction: state.narrationStyle?.instruction,
+    styleInstruction: narrationInstructionForPhase(
+      state.narrationStyle,
+      "prologue",
+    ),
     styleName: state.narrationStyle?.displayName,
   };
   let narrationResult: NarrationResult;
@@ -5742,7 +5750,10 @@ async function runAftermathTurn(input: {
     recognitionSubjects: aftermathPerceptionView
       ? narratorRecognitionSubjects(aftermathPerceptionView)
       : [],
-    styleInstruction: state.narrationStyle?.instruction,
+    styleInstruction: narrationInstructionForPhase(
+      state.narrationStyle,
+      "aftermath",
+    ),
     styleName: state.narrationStyle?.displayName,
   };
   let presentation: AftermathNarrationResult | undefined;

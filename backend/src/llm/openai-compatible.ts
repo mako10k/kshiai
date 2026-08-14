@@ -16,6 +16,7 @@ import {
   CharacterIdentitySchema,
   CharacterDefinitionV2Schema,
   BattlefieldDefinitionV2Schema,
+  NarrationDefinitionV2Schema,
   AssetClaimRiskCodeSchema,
   DecisionProfileSchema,
   FreeActionAdjudicationBatchSchema,
@@ -65,6 +66,11 @@ import type {
   GenerateBattlefieldSceneResult,
   ValidateBattlefieldSceneClaimsInput,
   ValidateBattlefieldSceneClaimsResult,
+  GenerateNarrationDefinitionV2Input,
+  GenerateNarrationStyleDescriptionInput,
+  GenerateNarrationStyleDescriptionResult,
+  ValidateNarrationStyleClaimsInput,
+  ValidateNarrationStyleClaimsResult,
   GenerateImprovementPromptInput,
   GenerateImprovementPromptResult,
   JudgmentNarrationResult,
@@ -1622,6 +1628,148 @@ unsupported and return applicable riskCodes. Never repair or omit a segment.`,
         label: "validateBattlefieldSceneClaims",
         temperature: 0,
       },
+    ) as Record<string, unknown>;
+    const rawSegments = Array.isArray(data.segments) ? data.segments : [];
+    return {
+      segments: rawSegments.slice(0, 12).map((raw) => {
+        const value = raw as Record<string, unknown>;
+        const verdict = value.verdict === "supported" ||
+            value.verdict === "flavor_only" || value.verdict === "unsupported"
+          ? value.verdict
+          : "unsupported";
+        return {
+          segmentId: String(value.segmentId ?? "").slice(0, 120),
+          verdict,
+          supportRefs: Array.isArray(value.supportRefs)
+            ? value.supportRefs.map(String).slice(0, 12)
+            : [],
+          riskCodes: Array.isArray(value.riskCodes)
+            ? value.riskCodes.slice(0, 8).map((risk) =>
+                AssetClaimRiskCodeSchema.parse(risk))
+            : [],
+        };
+      }),
+    };
+  }
+
+  async generateNarrationDefinitionV2(
+    input: GenerateNarrationDefinitionV2Input,
+  ) {
+    if (!this.client) return this.fallback.generateNarrationDefinitionV2(input);
+    try {
+      const data = await this.chatJson(
+        `Refine a VALID NarrationDefinitionV2 JSON value from the owner source and a
+valid deterministic base. Return JSON only: {"definition": object}.
+
+Keep exactly these top-level sections: identity, perspective, voice, cadence, phases,
+dimensions, preferredRhetoric, forbiddenRhetoric, examples, counterexamples. Preserve
+stable IDs for the same rhetoric/example. Use only enum values demonstrated in the base
+and integer bounds already present. phases must contain exactly prologue, action, impact,
+release, judgment, aftermath.
+
+Structure voice, cadence, phase emphasis, explanation, imagery, metaphor, humor,
+violence, explicitness, and rhetoric. Perspective requests information rights but cannot
+broaden server projections. Examples and counterexamples are style-only rendering
+guidance: never write battle, character, world, result, or private facts into them, and
+never include template variables or system/user/assistant authority markers. Do not put
+instructions, forbidden patterns, examples, or compiler controls into public tags.
+
+For sourceKind=upgrade_description, preserve base perspective exactly and prefer bounded
+defaults over inventing unstated intensity or rhetoric. Empty rhetoric/example arrays are
+valid. Keep personaDescriptor concise and free of result or fact claims.`,
+        JSON.stringify({
+          sourceKind: input.sourceKind,
+          ownerSource: input.sourceText.slice(0, 6000),
+          validBaseDefinition: input.baseDefinition,
+        }),
+        {
+          tier: "engine",
+          label: "generateNarrationDefinitionV2",
+          timeoutMs: ENGINE_LONG_TIMEOUT_MS,
+          temperature: 0.35,
+        },
+      ) as Record<string, unknown>;
+      return NarrationDefinitionV2Schema.parse(data.definition);
+    } catch (error) {
+      return this.fallbackOrThrow(
+        error,
+        () => this.fallback.generateNarrationDefinitionV2(input),
+      );
+    }
+  }
+
+  async generateNarrationStyleDescription(
+    input: GenerateNarrationStyleDescriptionInput,
+  ): Promise<GenerateNarrationStyleDescriptionResult> {
+    if (!this.client) return this.fallback.generateNarrationStyleDescription(input);
+    try {
+      const data = await this.chatJson(
+        `Write a concise public narration-style card from a server-approved projection.
+Return JSON only: {
+  "description": string,
+  "segments": [{"id": string, "text": string,
+    "kind": "fact"|"flavor", "supportRefs": string[]}],
+  "assistantMessage": string
+}
+Use the owner source for tone only. Each factual segment must cite exact supportRef values
+from approvedFacts. Do not quote examples or counterexamples. Do not expose forbidden
+rhetoric, compiler instructions, precedence, schema names, control metadata, hidden
+information, battle facts, mechanics, or claims that perspective can override the server.
+Keep the card to 2-4 sentences and description equal to segment texts joined in order.`,
+        JSON.stringify({
+          ownerSourceForToneOnly: input.sourceText.slice(0, 4000),
+          displayName: input.projection.displayName,
+          approvedFacts: input.projection.facts,
+        }),
+        { tier: "engine", label: "generateNarrationStyleDescription", temperature: 0.55 },
+      ) as Record<string, unknown>;
+      const segments = (Array.isArray(data.segments) ? data.segments : [])
+        .slice(0, 12)
+        .map((raw, index) => {
+          const value = raw as Record<string, unknown>;
+          return {
+            id: String(value.id ?? `segment-${index + 1}`).slice(0, 120),
+            text: String(value.text ?? "").slice(0, 1200),
+            kind: value.kind === "flavor" ? "flavor" as const : "fact" as const,
+            supportRefs: Array.isArray(value.supportRefs)
+              ? value.supportRefs.map(String).slice(0, 12)
+              : [],
+          };
+        })
+        .filter((segment) => segment.text.length > 0);
+      const description = String(data.description ??
+        segments.map((segment) => segment.text).join("\n")).slice(0, 4000);
+      if (!description || segments.length === 0) {
+        throw new Error("Narration style description returned no valid segments");
+      }
+      return {
+        description,
+        segments,
+        assistantMessage: String(
+          data.assistantMessage ?? "構造化した方針から公開スタイル説明を作成しました。",
+        ),
+      };
+    } catch (error) {
+      return this.fallbackOrThrow(
+        error,
+        () => this.fallback.generateNarrationStyleDescription(input),
+      );
+    }
+  }
+
+  async validateNarrationStyleClaims(
+    input: ValidateNarrationStyleClaimsInput,
+  ): Promise<ValidateNarrationStyleClaimsResult> {
+    if (!this.client) return this.fallback.validateNarrationStyleClaims(input);
+    const data = await this.chatJson(
+      `Independently validate every segment of a public narration-style card against only
+the approved projection. Return JSON only with segments containing segmentId, verdict
+(supported|flavor_only|unsupported), supportRefs, and riskCodes. A factual segment is
+supported only when its complete meaning follows from cited projection facts. Mark any
+example quote, information-right overclaim, mechanics, contradiction, proper noun not in
+projection, or control metadata unsupported. Never repair or omit a segment.`,
+      JSON.stringify({ approvedProjection: input.projection, candidateStyle: input.style }),
+      { tier: "engine", label: "validateNarrationStyleClaims", temperature: 0 },
     ) as Record<string, unknown>;
     const rawSegments = Array.isArray(data.segments) ? data.segments : [];
     return {

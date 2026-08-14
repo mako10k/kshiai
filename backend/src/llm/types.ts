@@ -65,6 +65,8 @@ import type {
   BattlefieldDefinitionV2,
   BattlefieldEvolutionAffordanceV2,
   BattlefieldSceneSourceProjectionV2,
+  NarrationDefinitionV2,
+  NarrationStyleSourceProjectionV2,
 } from "@kshiai/shared";
 import type {
   PerceptionPromptInput,
@@ -412,6 +414,44 @@ export type ValidateBattlefieldSceneClaimsResult = {
   }>;
 };
 
+export type GenerateNarrationDefinitionV2Input = {
+  sourceText: string;
+  baseDefinition: NarrationDefinitionV2;
+  sourceKind: "create_instruction" | "revision_instruction" |
+    "upgrade_description" | "import";
+};
+
+export type GenerateNarrationStyleDescriptionInput = {
+  /** Frozen owner source is tone-only; projection owns publishable facts. */
+  sourceText: string;
+  projection: NarrationStyleSourceProjectionV2;
+};
+
+export type GenerateNarrationStyleDescriptionResult = {
+  description: string;
+  segments: Array<{
+    id: string;
+    text: string;
+    kind: "fact" | "flavor";
+    supportRefs: string[];
+  }>;
+  assistantMessage: string;
+};
+
+export type ValidateNarrationStyleClaimsInput = {
+  projection: NarrationStyleSourceProjectionV2;
+  style: Pick<GenerateNarrationStyleDescriptionResult, "description" | "segments">;
+};
+
+export type ValidateNarrationStyleClaimsResult = {
+  segments: Array<{
+    segmentId: string;
+    verdict: "supported" | "flavor_only" | "unsupported";
+    supportRefs: string[];
+    riskCodes: AssetClaimRiskCode[];
+  }>;
+};
+
 export type NarrationActionBeat = {
   actionId: string;
   actorSide: "a" | "b";
@@ -546,6 +586,15 @@ export interface LlmProvider {
   validateBattlefieldSceneClaims(
     input: ValidateBattlefieldSceneClaimsInput,
   ): Promise<ValidateBattlefieldSceneClaimsResult>;
+  generateNarrationDefinitionV2(
+    input: GenerateNarrationDefinitionV2Input,
+  ): Promise<NarrationDefinitionV2>;
+  generateNarrationStyleDescription(
+    input: GenerateNarrationStyleDescriptionInput,
+  ): Promise<GenerateNarrationStyleDescriptionResult>;
+  validateNarrationStyleClaims(
+    input: ValidateNarrationStyleClaimsInput,
+  ): Promise<ValidateNarrationStyleClaimsResult>;
   adjustBattlefieldPreset(
     current: BattlefieldPreset,
     userMessage: string,

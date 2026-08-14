@@ -75,7 +75,7 @@ task SDA_NARRATION BATTLEFIELD_STRUCTURE_ACCEPTED -> NARRATION_STRUCTURE_ACCEPTE
   title "Design and implement structured narration definitions"
   description "In a dedicated accepted design slice implement natural instruction to validated perspective rights voice cadence phase policies explanation and intensity dimensions rhetoric examples and counterexamples then generate the public style description from source plus public-safe structure add a versioned prompt compiler explicit upgrade from the existing description and exclude unsupported styles from selectors"
   duration 3p
-  status active
+  status done
   requires:
     DEV 1
   owner "codex"
@@ -146,3 +146,9 @@ work_event WE-SDA-NARRATION-START:
   kind start
   occurred_at 2026-08-14T11:13:40+09:00
   planned_value 3p
+
+work_event WE-SDA-NARRATION-FINISH:
+  model 1
+  task SDA_NARRATION
+  kind finish
+  occurred_at 2026-08-14T11:39:15+09:00

@@ -3,6 +3,7 @@ import {
   SYSTEM_PRESET_SEEDS,
   BattlefieldSemanticSeedSchema,
   BattlefieldDefinitionV2Schema,
+  NarrationDefinitionV2Schema,
   CharacterDeepPsycheUpdateSchema,
   clampCoefficientMap,
   composeNarratorTurn,
@@ -26,6 +27,7 @@ import type {
   AnalyzeCharacterImprovementResult,
   GenerateBattlefieldResult,
   GenerateBattlefieldDefinitionV2Input,
+  GenerateNarrationDefinitionV2Input,
   GenerateCharacterResult,
   GenerateCharacterInput,
   GenerateCharacterProfileInput,
@@ -33,6 +35,10 @@ import type {
   GenerateCharacterDefinitionV2Input,
   ValidateCharacterProfileClaimsInput,
   ValidateCharacterProfileClaimsResult,
+  GenerateNarrationStyleDescriptionInput,
+  GenerateNarrationStyleDescriptionResult,
+  ValidateNarrationStyleClaimsInput,
+  ValidateNarrationStyleClaimsResult,
   GenerateImprovementPromptInput,
   GenerateImprovementPromptResult,
   JudgmentNarrationResult,
@@ -451,6 +457,67 @@ export class MockLlmProvider implements LlmProvider {
   ): Promise<import("./types.js").ValidateBattlefieldSceneClaimsResult> {
     return {
       segments: input.scene.segments.map((segment) => ({
+        segmentId: segment.id,
+        verdict: segment.kind === "flavor" ? "flavor_only" : "supported",
+        supportRefs: segment.kind === "flavor" ? [] : [...segment.supportRefs],
+        riskCodes: [],
+      })),
+    };
+  }
+
+  async generateNarrationDefinitionV2(
+    input: GenerateNarrationDefinitionV2Input,
+  ) {
+    if (input.sourceKind === "upgrade_description" ||
+        input.sourceKind === "import") {
+      return input.baseDefinition;
+    }
+    const source = input.sourceText.toLowerCase();
+    return NarrationDefinitionV2Schema.parse({
+      ...input.baseDefinition,
+      voice: {
+        ...input.baseDefinition.voice,
+        register: /実況|broadcast|radio/.test(source)
+          ? "broadcast"
+          : /分析|解説|analyt/.test(source)
+            ? "analytical"
+            : input.baseDefinition.voice.register,
+        subjectivity: /熱|dramatic|劇的/.test(source)
+          ? "dramatic"
+          : input.baseDefinition.voice.subjectivity,
+      },
+      cadence: {
+        ...input.baseDefinition.cadence,
+        sentenceLength: /短|簡潔|short/.test(source)
+          ? "short"
+          : input.baseDefinition.cadence.sentenceLength,
+      },
+    });
+  }
+
+  async generateNarrationStyleDescription(
+    input: GenerateNarrationStyleDescriptionInput,
+  ): Promise<GenerateNarrationStyleDescriptionResult> {
+    const selected = input.projection.facts.slice(0, 12);
+    const text = selected.map((fact) => fact.text).join("。 ").slice(0, 1200) ||
+      `${input.projection.displayName}という語り口。`;
+    return {
+      description: text,
+      segments: [{
+        id: "style-main",
+        text,
+        kind: "fact",
+        supportRefs: selected.map((fact) => fact.supportRef),
+      }],
+      assistantMessage: "構造化した方針から公開スタイル説明を作成しました。",
+    };
+  }
+
+  async validateNarrationStyleClaims(
+    input: ValidateNarrationStyleClaimsInput,
+  ): Promise<ValidateNarrationStyleClaimsResult> {
+    return {
+      segments: input.style.segments.map((segment) => ({
         segmentId: segment.id,
         verdict: segment.kind === "flavor" ? "flavor_only" : "supported",
         supportRefs: segment.kind === "flavor" ? [] : [...segment.supportRefs],

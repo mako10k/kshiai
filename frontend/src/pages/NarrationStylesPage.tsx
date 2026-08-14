@@ -2,19 +2,10 @@ import { useEffect, useState, type FormEvent } from "react";
 import { Link } from "react-router-dom";
 import {
   perspectiveLabel,
-  type NarrationPerspective,
   type NarrationStylePublic,
 } from "@kshiai/shared";
-import { api } from "../api";
+import { api, type NarrationStyleAuthoringDraft } from "../api";
 import { useLocalDraft } from "../hooks/useLocalDraft";
-
-const PERSPECTIVE_OPTIONS: { value: NarrationPerspective; label: string }[] = [
-  { value: "external", label: "三人称限定（内心なし）" },
-  { value: "self", label: "一人称（自分側の内心）" },
-  { value: "foe", label: "相手視点（相手の内心）" },
-  { value: "omniscient", label: "全知（両方）" },
-  { value: "fluid", label: "可変視点（ターンごとに焦点）" },
-];
 
 const GEN_PLACEHOLDER =
   "昭和のラジオ実況みたいに熱く、でも下品にならない感じで";
@@ -25,20 +16,19 @@ export function NarrationStylesPage() {
     "narration-styles:generate",
     "",
   );
-  const [manual, setManual] = useLocalDraft("narration-styles:manual", {
-    displayName: "",
-    description: "",
-    instruction: "",
-    perspective: "external" as NarrationPerspective,
-  });
+  const [draft, setDraft] = useState<NarrationStyleAuthoringDraft | null>(null);
+  const [revisingId, setRevisingId] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
-  const [editingId, setEditingId] = useState<string | null>(null);
 
   async function reload() {
-    const { styles } = await api.listNarrationStyles();
+    const [{ styles }, latest] = await Promise.all([
+      api.listNarrationStyles(),
+      api.latestNarrationStyleDraft(),
+    ]);
     setList(styles);
+    setDraft(latest.draft);
   }
 
   useEffect(() => {
@@ -49,14 +39,18 @@ export function NarrationStylesPage() {
     e.preventDefault();
     const text = prompt.trim();
     if (!text) {
-      setError("雰囲気を入力してください");
+      setError("語り口の希望を入力してください");
       return;
     }
     setBusy(true);
     setError(null);
     try {
-      const res = await api.generateNarrationStyle(text);
-      setMessage(`「${res.style.displayName}」を作成しました`);
+      const result = revisingId
+        ? await api.reviseNarrationStyle(revisingId, text)
+        : await api.generateNarrationStyle(text);
+      setDraft(result.draft);
+      setMessage("構造と公開説明の候補を作成しました。内容を確認してください。");
+      setRevisingId(null);
       clearPrompt();
       await reload();
     } catch (err) {
@@ -66,36 +60,13 @@ export function NarrationStylesPage() {
     }
   }
 
-  async function onManual(e: FormEvent) {
-    e.preventDefault();
-    if (!manual.displayName.trim() || !manual.instruction.trim()) {
-      setError("名前と指示文は必須です");
-      return;
-    }
+  async function onUpgrade(style: NarrationStylePublic) {
     setBusy(true);
     setError(null);
     try {
-      const payload = {
-        displayName: manual.displayName.trim(),
-        description: manual.description.trim() || undefined,
-        instruction: manual.instruction.trim(),
-        perspective: manual.perspective,
-      };
-      const res = editingId
-        ? await api.updateNarrationStyle(editingId, payload)
-        : await api.createNarrationStyle(payload);
-      setMessage(
-        editingId
-          ? `「${res.style.displayName}」を更新しました`
-          : `「${res.style.displayName}」を保存しました`,
-      );
-      setEditingId(null);
-      setManual({
-        displayName: "",
-        description: "",
-        instruction: "",
-        perspective: "external",
-      });
+      const result = await api.upgradeNarrationStyle(style.id);
+      setDraft(result.draft);
+      setMessage(`「${style.displayName}」の最新版候補を作成しました。`);
       await reload();
     } catch (err) {
       setError(err instanceof Error ? err.message : "failed");
@@ -104,26 +75,36 @@ export function NarrationStylesPage() {
     }
   }
 
-  function startEdit(style: NarrationStylePublic) {
-    setEditingId(style.id);
-    setManual({
-      displayName: style.displayName,
-      description: style.description,
-      instruction: style.instruction,
-      perspective: style.perspective,
-    });
-    setMessage(null);
+  async function onConfirm() {
+    if (!draft) return;
+    setBusy(true);
     setError(null);
+    try {
+      const result = await api.confirmNarrationStyleDraft(draft.id);
+      setDraft(null);
+      setMessage(`「${result.style.displayName}」を確定しました。`);
+      await reload();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "failed");
+    } finally {
+      setBusy(false);
+    }
   }
 
-  function cancelEdit() {
-    setEditingId(null);
-    setManual({
-      displayName: "",
-      description: "",
-      instruction: "",
-      perspective: "external",
-    });
+  async function onDiscard() {
+    if (!draft) return;
+    setBusy(true);
+    setError(null);
+    try {
+      await api.discardNarrationStyleDraft(draft.id);
+      setDraft(null);
+      setMessage("候補を破棄しました。");
+      await reload();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "failed");
+    } finally {
+      setBusy(false);
+    }
   }
 
   async function onDelete(id: string, name: string) {
@@ -137,19 +118,17 @@ export function NarrationStylesPage() {
       <div className="row" style={{ justifyContent: "space-between" }}>
         <h1>ナレーションスタイル</h1>
         <div className="row" style={{ gap: "0.45rem" }}>
-          <Link className="btn primary" to="/match">
-            対戦セットアップ
-          </Link>
+          <Link className="btn primary" to="/match">対戦セットアップ</Link>
           <Link to="/">← メニュー</Link>
         </div>
       </div>
 
       <p className="muted">
-        試合の語り口と<strong>視点</strong>（内心をナレに渡す範囲）です。標準プリセットに加え、自分用を作れます。試合開始時に選択します。
+        自然文から視点・声・テンポ・フェーズ別方針を構造化し、公開説明と一緒に確認してから確定します。
       </p>
 
       <div className="panel">
-        <h2>自然文から生成</h2>
+        <h2>{revisingId ? "最新版の修正候補" : "自然文から候補を生成"}</h2>
         <form className="grid" onSubmit={(e) => void onGenerate(e)}>
           <textarea
             value={prompt}
@@ -157,131 +136,92 @@ export function NarrationStylesPage() {
             placeholder={GEN_PLACEHOLDER}
             rows={3}
           />
-          <button className="btn primary" type="submit" disabled={busy}>
-            {busy ? "生成中…" : "スタイルを生成して保存"}
-          </button>
-        </form>
-      </div>
-
-      <div className="panel">
-        <h2>{editingId ? "スタイルを編集" : "手入力で作成"}</h2>
-        <form className="grid" onSubmit={(e) => void onManual(e)}>
-          <label className="field">
-            <span className="field-label">名前</span>
-            <input
-              value={manual.displayName}
-              onChange={(e) =>
-                setManual((m) => ({ ...m, displayName: e.target.value }))
-              }
-              placeholder="例: 毒舌解説"
-            />
-          </label>
-          <label className="field">
-            <span className="field-label">説明（任意）</span>
-            <input
-              value={manual.description}
-              onChange={(e) =>
-                setManual((m) => ({ ...m, description: e.target.value }))
-              }
-              placeholder="ピッカーに出す短い説明"
-            />
-          </label>
-          <label className="field">
-            <span className="field-label">語りへの指示</span>
-            <textarea
-              value={manual.instruction}
-              onChange={(e) =>
-                setManual((m) => ({ ...m, instruction: e.target.value }))
-              }
-              placeholder="LLM に渡すスタイル指示（口調・密度など）。内心の権限は下の視点で制御"
-              rows={4}
-            />
-          </label>
-          <label className="field">
-            <span className="field-label">視点（情報範囲）</span>
-            <select
-              value={manual.perspective}
-              onChange={(e) =>
-                setManual((m) => ({
-                  ...m,
-                  perspective: e.target.value as NarrationPerspective,
-                }))
-              }
-            >
-              {PERSPECTIVE_OPTIONS.map((o) => (
-                <option key={o.value} value={o.value}>
-                  {o.label}
-                </option>
-              ))}
-            </select>
-          </label>
           <div className="row">
             <button className="btn primary" type="submit" disabled={busy}>
-              {editingId ? "変更を保存" : "保存"}
+              {busy ? "生成中…" : revisingId ? "修正候補を生成" : "候補を生成"}
             </button>
-            {editingId && (
-              <button className="btn" type="button" disabled={busy} onClick={cancelEdit}>
+            {revisingId && (
+              <button className="btn" type="button" onClick={() => setRevisingId(null)}>
                 キャンセル
               </button>
             )}
           </div>
         </form>
-        {message && <p className="ok">{message}</p>}
-        {error && <p className="error">{error}</p>}
       </div>
+
+      {draft && (
+        <div className="panel">
+          <h2>確定前の候補</h2>
+          <h3>{draft.style.displayName}</h3>
+          <p>{draft.style.description}</p>
+          <p className="muted">
+            視点: {perspectiveLabel(draft.definition.perspective)} · 声: {draft.definition.voice.register}
+            /{draft.definition.voice.subjectivity} · 文長: {draft.definition.cadence.sentenceLength}
+            · 最大 {draft.definition.cadence.lineBudget} 行
+          </p>
+          <p className="muted">
+            フェーズ: {Object.entries(draft.definition.phases)
+              .map(([phase, policy]) => `${phase}:${policy.emphasis}`)
+              .join(" / ")}
+          </p>
+          <p className="muted">
+            例 {draft.definition.examples.length} 件 / 反例 {draft.definition.counterexamples.length} 件
+            · 推奨表現 {draft.definition.preferredRhetoric.length} 件 / 禁止表現 {draft.definition.forbiddenRhetoric.length} 件
+          </p>
+          <div className="row">
+            <button className="btn primary" type="button" disabled={busy} onClick={() => void onConfirm()}>
+              この内容で確定
+            </button>
+            <button className="btn" type="button" disabled={busy} onClick={() => void onDiscard()}>
+              破棄
+            </button>
+          </div>
+        </div>
+      )}
+
+      {message && <p className="ok">{message}</p>}
+      {error && <p className="error">{error}</p>}
 
       <div className="panel">
         <h2>一覧</h2>
         <div className="grid" style={{ gap: "0.75rem" }}>
-          {list.map((s) => (
-            <div className="card" key={s.id} style={{ padding: "0.85rem" }}>
+          {list.map((style) => (
+            <div className="card" key={style.id} style={{ padding: "0.85rem" }}>
               <strong>
-                {s.displayName}
-                {s.isSystem ? (
-                  <span className="tag" style={{ marginLeft: 6 }}>
-                    システム
-                  </span>
-                ) : null}
+                {style.displayName}
+                {style.isSystem && <span className="tag" style={{ marginLeft: 6 }}>システム</span>}
+                <span className="tag" style={{ marginLeft: 6 }}>
+                  {style.selectable ? "選択可能" : "更新が必要"}
+                </span>
               </strong>
               <p className="muted" style={{ margin: "0.35rem 0" }}>
-                {s.description || "—"}
+                {style.description || "—"}
                 <span className="tag" style={{ marginLeft: 6 }}>
-                  {perspectiveLabel(s.perspective)}
+                  {perspectiveLabel(style.perspective)}
                 </span>
               </p>
-              <p style={{ margin: 0, fontSize: "0.85rem", lineHeight: 1.45 }}>
-                {s.instruction}
-              </p>
-              <div style={{ marginTop: "0.5rem" }}>
-                {s.tags.map((t) => (
-                  <span className="tag" key={t}>
-                    {t}
-                  </span>
-                ))}
+              <div>
+                {style.tags.map((tag) => <span className="tag" key={tag}>{tag}</span>)}
               </div>
-              {!s.isSystem && (
+              {!style.isSystem && (
                 <div className="row" style={{ marginTop: "0.65rem" }}>
-                  <button
-                    className="btn"
-                    type="button"
-                    onClick={() => startEdit(s)}
-                  >
-                    編集
-                  </button>
-                  <button
-                    className="btn danger"
-                    type="button"
-                    onClick={() => void onDelete(s.id, s.displayName)}
-                  >
+                  {style.selectable ? (
+                    <button className="btn" type="button" onClick={() => setRevisingId(style.id)}>
+                      修正候補を作る
+                    </button>
+                  ) : (
+                    <button className="btn primary" type="button" disabled={busy} onClick={() => void onUpgrade(style)}>
+                      最新版に更新
+                    </button>
+                  )}
+                  <button className="btn danger" type="button" onClick={() => void onDelete(style.id, style.displayName)}>
                     削除
                   </button>
                 </div>
               )}
             </div>
           ))}
-          {list.length === 0 && (
-            <p className="muted">スタイルがありません。</p>
-          )}
+          {list.length === 0 && <p className="muted">スタイルがありません。</p>}
         </div>
       </div>
     </>

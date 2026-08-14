@@ -278,9 +278,10 @@ accept these decisions: closed operational dimensions with display-only tags,
 fixed safety/grounding then perspective then phase then style precedence, a
 two-positive/one-counterexample per-phase budget with anti-copy clauses, and
 exact legacy perspective preservation with validated regeneration of all other
-structure. P4 implementation is active; local acceptance still requires the
-authoring, selector, exact-binding, phase-consumer, and persistence evidence
-listed in that design.
+structure. P4 is complete locally. Its two-stage authoring, explicit upgrade,
+selector/direct-ID gates, phase compiler, exact read-only battle binding, and
+transactional failure evidence are recorded in
+[`structured-narration-cutover-acceptance-2026-08-14.md`](evidence/structured-narration-cutover-acceptance-2026-08-14.md).
 
 ### P5 — Integrated authoring and cutover acceptance
 

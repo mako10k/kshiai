@@ -1849,6 +1849,7 @@ export interface BattleAssetManifest {
     characterFocus?: string;
     characterDefinitionRules?: string;
     battlefieldDefinitionRules?: string;
+    narrationStyleRules?: string;
   };
 }
 
@@ -1897,6 +1898,7 @@ export const BattleAssetManifestSchema = z.object({
     characterFocus: z.string().min(1).optional(),
     characterDefinitionRules: z.string().min(1).optional(),
     battlefieldDefinitionRules: z.string().min(1).optional(),
+    narrationStyleRules: z.string().min(1).optional(),
   }).strict(),
 }).strict() as unknown as z.ZodType<BattleAssetManifest>;
 
