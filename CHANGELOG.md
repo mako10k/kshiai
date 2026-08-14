@@ -5,6 +5,24 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 
 ## [Unreleased]
 
+## [0.18.1] - 2026-08-14
+
+### Fixed
+
+- Constrains provider-generated `CharacterDefinitionV2` values with the full
+  strict JSON Schema before applying the existing server-side Zod validation.
+- Performs at most one validation-receipt-bound repair request when semantic or
+  cross-reference validation still rejects a structured definition, then
+  fails closed if the repaired definition remains invalid.
+- Removes self-referenced JSON Schema defaults emitted for repeated action
+  feasibility fields while preserving their original strict constraints.
+
+### Operations
+
+- Adds no database migration and performs no bulk character upgrade. Existing
+  characters remain owner-managed and unselectable until their explicit
+  latest-version candidate is generated, reviewed, and accepted.
+
 ## [0.18.0] - 2026-08-13
 
 ### Added
