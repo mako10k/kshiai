@@ -689,6 +689,9 @@ export function createBattleState(input: {
   const selectedPolicyIdsB =
     input.selectedPolicyIdsB ??
     policiesB.filter((p) => p.defaultSelected).map((p) => p.id);
+  const battlefieldAreaNames = new Map(
+    (bf?.areas ?? []).map((area) => [area.id, area.name] as const),
+  );
   const semanticState = createBattleSemanticState({
     scene: bf?.scene ?? input.scene ?? "対決の舞台",
     notes:
@@ -702,10 +705,16 @@ export function createBattleState(input: {
     sideA: {
       displayName: input.sideA.displayName,
       appearanceSummary: input.sideA.appearance.summary,
+      initialArea: bf?.entryAreas
+        ? battlefieldAreaNames.get(bf.entryAreas.a)
+        : undefined,
     },
     sideB: {
       displayName: input.sideB.displayName,
       appearanceSummary: input.sideB.appearance.summary,
+      initialArea: bf?.entryAreas
+        ? battlefieldAreaNames.get(bf.entryAreas.b)
+        : undefined,
     },
   });
   const sideA = combatantFromSheet(input.sideA);

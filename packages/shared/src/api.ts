@@ -88,8 +88,8 @@ export const CreateBattleRequestSchema = z.object({
   opponentCharacterId: z.string(),
   /**
    * Battlefield selection:
-   * - omit / "random" → random concretized field (default)
-   * - preset id → concretize from that preset
+   * - omit / "random" → compile one ready system preset (default)
+   * - preset id → bind and deterministically compile that exact ready revision
    */
   battlefieldPresetId: z.string().optional(),
   battlefieldMode: z.enum(["random", "preset"]).optional(),

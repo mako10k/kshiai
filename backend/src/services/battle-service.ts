@@ -146,6 +146,9 @@ import {
   evaluateCharacterActionNormsV2,
   projectCharacterRelationshipDescriptionV2,
   resolveCharacterRelationshipV2,
+  BATTLEFIELD_INSTANCE_COMPILER_V2,
+  compileBattlefieldInstanceV2,
+  selectBattlefieldEvolutionAffordanceV2,
   type CharacterActionNormProgramV2,
   type CharacterActionNormResolutionReceiptV2,
   type CharacterNormActionCandidateV2,
@@ -383,28 +386,48 @@ export async function toBattlePublicForViewer(
 }
 
 async function resolveBattlefieldInstance(input: {
-  llm: LlmProvider;
   battlefieldPresetId?: string;
   battlefieldMode?: "random" | "preset";
   userId: string;
-}): Promise<BattlefieldInstance> {
+}): Promise<{
+  instance: BattlefieldInstance;
+  source: bfRepo.ReadyBattlefieldPreset;
+}> {
   const mode =
     input.battlefieldMode ?? (input.battlefieldPresetId ? "preset" : "random");
 
   if (mode === "preset" && input.battlefieldPresetId) {
-    const preset = await bfRepo.getPresetForUser(
+    const source = await bfRepo.getReadyPresetForUser(
       input.battlefieldPresetId,
       input.userId,
     );
-    if (!preset) throw new Error("BATTLEFIELD_NOT_FOUND");
-    return input.llm.concretizeBattlefield({ preset, random: false });
+    if (!source) {
+      const accessible = await bfRepo.getPresetForUser(
+        input.battlefieldPresetId,
+        input.userId,
+      );
+      throw new Error(accessible
+        ? "BATTLEFIELD_UPGRADE_REQUIRED"
+        : "BATTLEFIELD_NOT_FOUND");
+    }
+    return {
+      instance: compileBattlefieldInstanceV2(
+        source.envelope.definition,
+        source.preset.id,
+      ),
+      source,
+    };
   }
 
-  const seed = await bfRepo.pickRandomSystemPreset();
-  return input.llm.concretizeBattlefield({
-    preset: seed,
-    random: true,
-  });
+  const source = await bfRepo.pickRandomSystemPreset();
+  if (!source) throw new Error("BATTLEFIELD_READY_SYSTEM_PRESET_MISSING");
+  return {
+    instance: compileBattlefieldInstanceV2(
+      source.envelope.definition,
+      source.preset.id,
+    ),
+    source,
+  };
 }
 
 function fieldHintFromPreset(preset: BattlefieldPreset | null): {
@@ -473,20 +496,28 @@ export async function generateMatchPolicies(input: {
 
   let fieldPreset: BattlefieldPreset | null = null;
   if (input.battlefieldMode === "preset" && input.battlefieldPresetId) {
-    fieldPreset = await bfRepo.getPresetForUser(
+    const source = await bfRepo.getReadyPresetForUser(
       input.battlefieldPresetId,
       input.userId,
     );
+    fieldPreset = source?.preset ?? null;
   } else if (input.battlefieldPresetId) {
-    fieldPreset = await bfRepo.getPresetForUser(
+    const source = await bfRepo.getReadyPresetForUser(
       input.battlefieldPresetId,
       input.userId,
     );
+    fieldPreset = source?.preset ?? null;
   } else {
-    fieldPreset = await bfRepo.pickRandomSystemPreset();
+    fieldPreset = (await bfRepo.pickRandomSystemPreset())?.preset ?? null;
   }
   if (input.battlefieldPresetId && !fieldPreset) {
-    throw new Error("BATTLEFIELD_NOT_FOUND");
+    const accessible = await bfRepo.getPresetForUser(
+      input.battlefieldPresetId,
+      input.userId,
+    );
+    throw new Error(accessible
+      ? "BATTLEFIELD_UPGRADE_REQUIRED"
+      : "BATTLEFIELD_NOT_FOUND");
   }
 
   const field = fieldHintFromPreset(fieldPreset);
@@ -637,12 +668,12 @@ export async function startBattle(input: {
     },
   });
 
-  const battlefield = await resolveBattlefieldInstance({
-    llm: input.llm,
+  const resolvedBattlefield = await resolveBattlefieldInstance({
     battlefieldPresetId: input.battlefieldPresetId,
     battlefieldMode: input.battlefieldMode,
     userId: input.userId,
   });
+  const battlefield = resolvedBattlefield.instance;
 
   // Tactical policy cards are no longer selected/generated at match setup.
   // Each isolated character agent chooses its own opening strategy at turn 0.
@@ -734,20 +765,11 @@ export async function startBattle(input: {
     encounterContext,
   });
 
-  const sourceBattlefieldPreset = battlefield.sourcePresetId
-    ? await bfRepo.getPreset(battlefield.sourcePresetId)
-    : null;
   const assetBoundAt = new Date().toISOString();
   const mineSnapshot = toBattleCharacterSnapshot(mine);
   const opponentSnapshot = toBattleCharacterSnapshot(opp);
-  const battlefieldPresetSnapshot = sourceBattlefieldPreset
-    ? {
-        ...sourceBattlefieldPreset,
-        updatedAt: sourceBattlefieldPreset.createdAt,
-      }
-    : null;
   const [narrationGeneration,
-    battlefieldPresetGeneration, battlefieldInstanceGeneration,
+    battlefieldInstanceGeneration,
     dialogueGeneration] = await Promise.all([
     createAssetGeneration({
       assetType: "narration-style",
@@ -756,15 +778,6 @@ export async function startBattle(input: {
       content: narrationSnap,
       createdAt: narrationStyle.updatedAt,
     }),
-    battlefieldPresetSnapshot
-      ? createAssetGeneration({
-          assetType: "battlefield-preset",
-          assetId: battlefieldPresetSnapshot.id,
-          schemaVersion: 1,
-          content: battlefieldPresetSnapshot,
-          createdAt: sourceBattlefieldPreset!.updatedAt,
-        })
-      : Promise.resolve(null),
     createAssetGeneration({
       assetType: "battlefield-instance",
       assetId: id,
@@ -881,8 +894,9 @@ export async function startBattle(input: {
         snapshot: narrationSnap,
       },
       battlefield: {
-        assetId: battlefield.sourcePresetId,
-        presetGenerationId: battlefieldPresetGeneration?.generationId ?? null,
+        assetId: resolvedBattlefield.source.preset.id,
+        presetGenerationId: resolvedBattlefield.source.generation.generationId,
+        presetContentDigest: resolvedBattlefield.source.generation.contentDigest,
         generationId: battlefieldInstanceGeneration.generationId,
         contentDigest: battlefieldInstanceGeneration.contentDigest,
         snapshot: battlefield,
@@ -897,6 +911,7 @@ export async function startBattle(input: {
         temporalRules: "initiative-window-v2",
         psycheReaction: PSYCHE_REACTION_POLICY_V1,
         characterDefinitionRules: CHARACTER_DEFINITION_RULE_POLICY_V2,
+        battlefieldDefinitionRules: BATTLEFIELD_INSTANCE_COMPILER_V2,
         ...(config.characterFocusShadowMode === "shadow"
           ? { characterFocus: CHARACTER_FOCUS_POLICY_V1 }
           : {}),
@@ -3147,6 +3162,54 @@ function isWorldProcessCanonicalOperation(
   return JSON.stringify(current) !== JSON.stringify(operation.value);
 }
 
+function isStructuredEnvironmentOperationAuthorized(input: {
+  operation: TurnSemanticPatch["operations"][number];
+  proposal: EnvironmentProcessProposal;
+  battlefield: BattlefieldInstance | null | undefined;
+}): boolean {
+  const authority = input.proposal.authority;
+  if (!authority) return true;
+  if (input.battlefield?.compilerContract !== authority.compilerContract) {
+    return false;
+  }
+  const matched = input.operation.path.match(
+    /^\/entities\/([^/]+)(?:\/(location|active))?$/,
+  );
+  if (!matched) return false;
+  const [, entityId, field] = matched;
+  if (!entityId) return false;
+  if (field) {
+    if (input.operation.op !== "replace") return false;
+    if (!authority.objectRefs.includes(entityId)) return false;
+    if (field === "active") return true;
+    const location = input.operation.value as {
+      type?: unknown;
+      area?: unknown;
+    } | undefined;
+    if (location?.type !== "scene" || typeof location.area !== "string") {
+      return false;
+    }
+    const allowedAreaNames = new Set((input.battlefield.areas ?? [])
+      .filter((area) => authority.areaRefs.includes(area.id))
+      .map((area) => area.name));
+    return allowedAreaNames.has(location.area);
+  }
+  if (input.operation.op !== "add") return false;
+  const entity = input.operation.value as {
+    kind?: unknown;
+    location?: { type?: unknown; area?: unknown };
+  } | undefined;
+  if (entity?.kind !== "object" && entity?.kind !== "effect") return false;
+  if (entity.location?.type !== "scene" ||
+      typeof entity.location.area !== "string") {
+    return false;
+  }
+  const allowedAreaNames = new Set((input.battlefield.areas ?? [])
+    .filter((area) => authority.areaRefs.includes(area.id))
+    .map((area) => area.name));
+  return allowedAreaNames.has(entity.location.area);
+}
+
 export async function reconcileSemanticState(input: {
   llm: LlmProvider;
   stateBeforeTurn: BattleState;
@@ -3439,17 +3502,29 @@ export async function reconcileSemanticState(input: {
       FAST_LLM_ENVELOPE_TIMEOUT_MS,
       "reconcileTurnSemanticState",
     );
-    const worldProcessOperationPaths = proposed.patch?.operations
+    const worldProcessOperations = proposed.patch?.operations
       .filter((operation) =>
         isWorldProcessCanonicalOperation(operation, semanticBefore)
-      )
-      .map((operation) => operation.path) ?? [];
+      ) ?? [];
+    const authorizedWorldProcessOperations = environmentProposal
+      ? worldProcessOperations.filter((operation) =>
+          isStructuredEnvironmentOperationAuthorized({
+            operation,
+            proposal: environmentProposal,
+            battlefield: input.resolvedState.battlefield,
+          }))
+      : [];
+    const worldProcessOperationPaths = authorizedWorldProcessOperations
+      .map((operation) => operation.path);
+    const environmentAuthorityValid =
+      authorizedWorldProcessOperations.length === worldProcessOperations.length;
     const environmentDecision = proposed.environmentDecision ?? null;
     const environmentAcceptedCandidate = Boolean(
       environmentProposal &&
         input.resolvedState.worldState &&
         environmentDecision?.status === "accepted" &&
-        worldProcessOperationPaths.length > 0,
+        worldProcessOperationPaths.length > 0 &&
+        environmentAuthorityValid,
     );
     const environmentReason: EnvironmentProcessReceipt["reason"] =
       !environmentProposal
@@ -3459,7 +3534,8 @@ export async function reconcileSemanticState(input: {
           : environmentDecision.status === "rejected"
             ? "decision_rejected"
             : !input.resolvedState.worldState ||
-                worldProcessOperationPaths.length === 0
+                worldProcessOperationPaths.length === 0 ||
+                !environmentAuthorityValid
               ? "no_canonical_change"
               : "accepted_canonical_change";
     const patchForApply = proposed.patch && environmentProposal &&
@@ -4107,13 +4183,23 @@ export function buildNarratorCharacterSpeeches(input: {
   });
 }
 
-async function buildEnvironmentProcessProposal(input: {
+export async function buildEnvironmentProcessProposal(input: {
   llm: LlmProvider;
   state: BattleState;
   turn: number;
   supervisor: ReturnType<typeof normalizeSupervisor>;
 }): Promise<EnvironmentProcessProposal | null> {
   const stagnationHint = `${input.supervisor.quietTurns} consecutive quiet turns with little condition change`;
+  const structured = input.state.battlefield?.compilerContract ===
+    BATTLEFIELD_INSTANCE_COMPILER_V2;
+  const evolutionAffordance = input.state.battlefield
+    ? selectBattlefieldEvolutionAffordanceV2(
+        input.state.battlefield,
+        input.turn,
+        input.supervisor.happenings,
+      )
+    : null;
+  if (structured && !evolutionAffordance) return null;
 
   try {
     const raw = await input.llm.proposeHappening({
@@ -4124,6 +4210,9 @@ async function buildEnvironmentProcessProposal(input: {
       stagnationHint,
       previousHappenings: input.supervisor.recentHappenings,
       battlefield: input.state.battlefield,
+      evolutionAffordance,
+      forbiddenDiscontinuities:
+        input.state.battlefield?.forbiddenDiscontinuities ?? [],
     });
     const removeCategoryLabel = (value: string) =>
       value
@@ -4143,6 +4232,17 @@ async function buildEnvironmentProcessProposal(input: {
         ?.filter((tag) => !tag.includes("ハプニング"))
         .map((tag) => tag.slice(0, 80))
         .slice(0, 6),
+      ...(evolutionAffordance
+        ? {
+            authority: {
+              compilerContract: BATTLEFIELD_INSTANCE_COMPILER_V2,
+              affordanceId: evolutionAffordance.id,
+              pressure: evolutionAffordance.pressure,
+              areaRefs: [...evolutionAffordance.areaRefs],
+              objectRefs: [...evolutionAffordance.objectRefs],
+            },
+          }
+        : {}),
     };
   } catch (e) {
     console.warn("[supervisor] generated field change skipped", e);
