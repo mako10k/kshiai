@@ -18,6 +18,7 @@ import {
   selectNarratorContinuityForFocus,
   buildFinisherWindow,
   buildObserverSafeAvailableActions,
+  readBattleWorldPair,
   buildMinimalObserverPerception,
   buildCommittedUtteranceEvents,
   buildUtterancePerceptionEvidence,
@@ -140,6 +141,16 @@ import {
   projectCharacterConsciousSelfV2,
   projectCharacterDeepPsycheV2,
   projectCharacterNarratorViewsV2,
+  compileCharacterActionNormProgramV2,
+  compileCharacterRelationshipProgramV2,
+  evaluateCharacterActionNormsV2,
+  projectCharacterRelationshipDescriptionV2,
+  resolveCharacterRelationshipV2,
+  type CharacterActionNormProgramV2,
+  type CharacterActionNormResolutionReceiptV2,
+  type CharacterNormActionCandidateV2,
+  type CharacterNormFactV2,
+  type CharacterRelationshipResolutionReceiptV2,
 } from "@kshiai/shared";
 import {
   recordBattleFinished,
@@ -189,6 +200,22 @@ import {
 
 const FAST_LLM_ENVELOPE_TIMEOUT_MS = 100_000;
 const SHORT_LLM_ENVELOPE_TIMEOUT_MS = 70_000;
+const CHARACTER_DEFINITION_RULE_POLICY_V2 = "character-definition-rules-v2";
+
+type CharacterDecisionRuleMetadata = {
+  actionNorm: CharacterActionNormResolutionReceiptV2 | null;
+  relationship: CharacterRelationshipResolutionReceiptV2 | null;
+  consciousActionPrinciples: string[] | null;
+};
+
+/**
+ * Server-only side channel. Rule IDs, priorities, and conflict details are
+ * persisted in internal receipts but never serialized into provider input.
+ */
+const characterDecisionRuleMetadata = new WeakMap<
+  object,
+  CharacterDecisionRuleMetadata
+>();
 
 export function toBattlePublic(
   state: BattleState,
@@ -753,6 +780,31 @@ export async function startBattle(input: {
     }),
   ]);
 
+  const mineRelationship = resolveCharacterRelationshipV2({
+    program: compileCharacterRelationshipProgramV2(mineEnvelope.definition),
+    counterpartCharacterAssetId: opp.id,
+    relationshipRoles: ["stranger"],
+  });
+  const opponentRelationship = resolveCharacterRelationshipV2({
+    program: compileCharacterRelationshipProgramV2(
+      opponentEnvelope.definition,
+    ),
+    counterpartCharacterAssetId: mine.id,
+    relationshipRoles: ["stranger"],
+  });
+  const mineDeepPsyche = projectCharacterDeepPsycheV2(
+    mineEnvelope.definition,
+  );
+  const opponentDeepPsyche = projectCharacterDeepPsycheV2(
+    opponentEnvelope.definition,
+  );
+  const mineConsciousSelf = projectCharacterConsciousSelfV2(
+    mineEnvelope.definition,
+  );
+  const opponentConsciousSelf = projectCharacterConsciousSelfV2(
+    opponentEnvelope.definition,
+  );
+
   state = {
     ...state,
     assetManifest: {
@@ -766,12 +818,28 @@ export async function startBattle(input: {
           snapshot: mineSnapshot,
           compilerInputsV2: {
             psycheTraits: compileCharacterPsycheTraitsV1(mineEnvelope.definition),
-            deepPsyche: projectCharacterDeepPsycheV2(mineEnvelope.definition),
-            consciousSelf: projectCharacterConsciousSelfV2(mineEnvelope.definition),
+            deepPsyche: {
+              ...mineDeepPsyche,
+              relationship: projectCharacterRelationshipDescriptionV2({
+                resolution: mineRelationship,
+                consumer: "deep-psyche",
+              }),
+            },
+            consciousSelf: {
+              ...mineConsciousSelf,
+              relationship: projectCharacterRelationshipDescriptionV2({
+                resolution: mineRelationship,
+                consumer: "conscious-self",
+              }),
+            },
             narratorViews: projectCharacterNarratorViewsV2(
               mineEnvelope.definition,
               mineEnvelope.disclosurePolicy,
             ),
+            actionNorms: compileCharacterActionNormProgramV2(
+              mineEnvelope.definition,
+            ),
+            relationship: mineRelationship,
           },
         },
         b: {
@@ -781,12 +849,28 @@ export async function startBattle(input: {
           snapshot: opponentSnapshot,
           compilerInputsV2: {
             psycheTraits: compileCharacterPsycheTraitsV1(opponentEnvelope.definition),
-            deepPsyche: projectCharacterDeepPsycheV2(opponentEnvelope.definition),
-            consciousSelf: projectCharacterConsciousSelfV2(opponentEnvelope.definition),
+            deepPsyche: {
+              ...opponentDeepPsyche,
+              relationship: projectCharacterRelationshipDescriptionV2({
+                resolution: opponentRelationship,
+                consumer: "deep-psyche",
+              }),
+            },
+            consciousSelf: {
+              ...opponentConsciousSelf,
+              relationship: projectCharacterRelationshipDescriptionV2({
+                resolution: opponentRelationship,
+                consumer: "conscious-self",
+              }),
+            },
             narratorViews: projectCharacterNarratorViewsV2(
               opponentEnvelope.definition,
               opponentEnvelope.disclosurePolicy,
             ),
+            actionNorms: compileCharacterActionNormProgramV2(
+              opponentEnvelope.definition,
+            ),
+            relationship: opponentRelationship,
           },
         },
       },
@@ -812,6 +896,7 @@ export async function startBattle(input: {
         battleEngine: "battle-engine-v1",
         temporalRules: "initiative-window-v2",
         psycheReaction: PSYCHE_REACTION_POLICY_V1,
+        characterDefinitionRules: CHARACTER_DEFINITION_RULE_POLICY_V2,
         ...(config.characterFocusShadowMode === "shadow"
           ? { characterFocus: CHARACTER_FOCUS_POLICY_V1 }
           : {}),
@@ -1127,12 +1212,119 @@ export function buildNarratorSceneStateFacts(input: {
   });
 }
 
+function characterNormActionKey(
+  action: ReturnType<typeof buildObserverSafeAvailableActions>[number],
+): string {
+  return action.kind === "skill"
+    ? `skill:${action.skillId ?? "missing"}`
+    : action.kind;
+}
+
+function characterNormActionKind(
+  action: ReturnType<typeof buildObserverSafeAvailableActions>[number],
+): CharacterNormActionCandidateV2["actionKind"] {
+  if (action.kind === "basic_attack") return "basic_action";
+  if (action.kind === "skill") return "skill";
+  if (
+    action.kind === "defend" || action.kind === "wait" ||
+    action.kind === "free_action"
+  ) {
+    return action.kind;
+  }
+  return null;
+}
+
+function characterNormActionCandidate(input: {
+  action: ReturnType<typeof buildObserverSafeAvailableActions>[number];
+  program: CharacterActionNormProgramV2;
+}): CharacterNormActionCandidateV2 {
+  const actionKind = characterNormActionKind(input.action);
+  const catalogEntry = input.action.kind === "skill"
+    ? input.program.actionCatalog.find((entry) =>
+        entry.actionKind === "skill" && entry.actionRef === input.action.skillId
+      )
+    : input.action.kind === "basic_attack"
+      ? input.program.actionCatalog.find((entry) =>
+          entry.actionKind === "basic_action"
+        )
+      : null;
+  return {
+    actionKey: characterNormActionKey(input.action),
+    actionRef: catalogEntry?.actionRef ?? null,
+    actionKind,
+    tacticTags: catalogEntry?.tacticTags ?? [],
+  };
+}
+
+function characterNormFacts(input: {
+  state: BattleState;
+  side: "a" | "b";
+  phase: "prologue" | "turn" | "aftermath";
+}): CharacterNormFactV2[] {
+  const self = input.side === "a" ? input.state.sideA : input.state.sideB;
+  const counterpart = input.side === "a"
+    ? input.state.sideB
+    : input.state.sideA;
+  const frame = input.side === "a"
+    ? input.state.perceptionFrameA
+    : input.state.perceptionFrameB;
+  const facts: CharacterNormFactV2[] = [
+    { kind: "always", value: "true" },
+    { kind: "battle_phase", value: input.phase },
+    { kind: "self_condition", value: perceivedCondition(self) },
+  ];
+  for (const cue of buildServerOnlyReserveCues({
+    side: input.side,
+    parameters: self.parameters,
+    baseParameters: self.baseParameters,
+  })) {
+    facts.push({
+      kind: "resource_band",
+      value: `${cue.parameterKey}:${cue.absoluteBand}`,
+    });
+  }
+  if (frame && frame.counterpart.currentAccess !== "none") {
+    facts.push({
+      kind: "counterpart_condition",
+      value: perceivedCondition(counterpart),
+    });
+    const pair = input.state.worldState
+      ? readBattleWorldPair(
+          input.state.worldState,
+          `character.${input.side}`,
+          `character.${input.side === "a" ? "b" : "a"}`,
+        )
+      : null;
+    if (pair) facts.push({ kind: "distance_band", value: pair.distance });
+  }
+  const relationship = input.state.assetManifest?.characters?.[input.side]
+    .compilerInputsV2?.relationship?.selected;
+  for (const relationshipBand of relationship?.relationKinds ?? []) {
+    facts.push({ kind: "relationship_band", value: relationshipBand });
+  }
+  const latestRecord = input.state.turnRecords?.at(-1);
+  const cognition = input.side === "a"
+    ? latestRecord?.cognitionA
+    : latestRecord?.cognitionB;
+  for (const event of cognition?.observedEvents ?? []) {
+    facts.push({ kind: "observed_event_kind", value: event.type });
+  }
+  const seen = new Set<string>();
+  return facts.filter((fact) => {
+    const key = `${fact.kind}:${fact.value}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
 function buildCharacterDecisionContext(input: {
   state: BattleState;
   sheet: CharacterSheet;
   counterpartSheet?: CharacterSheet;
   side: "a" | "b";
   decisionTurn?: number;
+  phase?: "prologue" | "turn" | "aftermath";
 }) {
   const self = input.side === "a" ? input.state.sideA : input.state.sideB;
   const perception = input.side === "a"
@@ -1212,18 +1404,46 @@ function buildCharacterDecisionContext(input: {
     side: input.side,
     roots,
   });
-  return {
+  const rawAvailableActions = buildObserverSafeAvailableActions({
+    actorSide: input.side,
+    actor: self,
+    sheet: input.sheet,
+    finisher,
+    turn: nextTurn,
+    worldState: input.state.worldState,
+    perception,
+  });
+  const compilerInputs = input.state.assetManifest?.characters?.[input.side]
+    .compilerInputsV2;
+  const normResolution = compilerInputs?.actionNorms
+    ? evaluateCharacterActionNormsV2({
+        program: compilerInputs.actionNorms,
+        facts: characterNormFacts({
+          state: input.state,
+          side: input.side,
+          phase: input.phase ?? "turn",
+        }),
+        legalActions: rawAvailableActions.map((action) =>
+          characterNormActionCandidate({
+            action,
+            program: compilerInputs.actionNorms!,
+          })
+        ),
+      })
+    : null;
+  const availableByKey = new Map(
+    rawAvailableActions.map((action) => [characterNormActionKey(action), action]),
+  );
+  const availableActions = normResolution
+    ? normResolution.actions.flatMap((action) => {
+        const available = availableByKey.get(action.actionKey);
+        return available ? [available] : [];
+      })
+    : rawAvailableActions;
+  const decision = {
     nextTurn,
     turnsRemaining: Math.max(0, input.state.turnLimit - nextTurn + 1),
-    availableActions: buildObserverSafeAvailableActions({
-      actorSide: input.side,
-      actor: self,
-      sheet: input.sheet,
-      finisher,
-      turn: nextTurn,
-      worldState: input.state.worldState,
-      perception,
-    }),
+    availableActions,
     finisher: window,
     lastAction,
     actionRepeatCount,
@@ -1246,6 +1466,13 @@ function buildCharacterDecisionContext(input: {
         }
       : undefined,
   };
+  characterDecisionRuleMetadata.set(decision, {
+    actionNorm: normResolution?.receipt ?? null,
+    relationship: compilerInputs?.relationship?.receipt ?? null,
+    consciousActionPrinciples:
+      normResolution?.consciousActionPrinciples ?? null,
+  });
+  return decision;
 }
 
 /** Build the deliberately narrow input used between sequential buckets. */
@@ -1262,8 +1489,12 @@ export function buildLaterBucketActionInput(input: {
   const decision = buildCharacterDecisionContext({
     ...input,
     decisionTurn: input.state.turn,
+    phase: "turn",
   });
   if (!decision || decision.availableActions.length === 0) return null;
+  const compilerInputs = input.state.assetManifest?.characters?.[input.side]
+    .compilerInputsV2;
+  const ruleMetadata = characterDecisionRuleMetadata.get(decision);
   return deepFreezeConsumerInput({
     character: buildCharacterSelfProfileAnchor(
       input.sheet,
@@ -1272,10 +1503,17 @@ export function buildLaterBucketActionInput(input: {
         side: input.side,
       }),
     ),
-    ...(input.state.assetManifest?.characters?.[input.side].compilerInputsV2
+    ...(compilerInputs
       ? {
-          structuredSelf: input.state.assetManifest.characters[input.side]
-            .compilerInputsV2!.consciousSelf,
+          structuredSelf: {
+            ...compilerInputs.consciousSelf,
+            ...(ruleMetadata?.consciousActionPrinciples
+              ? {
+                  actionPrinciples:
+                    ruleMetadata.consciousActionPrinciples,
+                }
+              : {}),
+          },
         }
       : {}),
     perception: structuredClone(perception),
@@ -1402,16 +1640,29 @@ export function buildCharacterAgentConsumerInput(input: {
         sheet: input.sheet,
         counterpartSheet: input.counterpartSheet,
         side: input.side,
+        phase,
       });
   if (decision && decision.availableActions.length === 0) return null;
+  const compilerInputs = input.state.assetManifest?.characters?.[input.side]
+    .compilerInputsV2;
+  const ruleMetadata = decision
+    ? characterDecisionRuleMetadata.get(decision)
+    : undefined;
   return {
     phase,
     character,
-    ...(input.state.assetManifest?.characters?.[input.side].compilerInputsV2
+    ...(compilerInputs
       ? {
           structuredSelf: deepFreezeConsumerInput(structuredClone(
-            input.state.assetManifest.characters[input.side]
-              .compilerInputsV2!.consciousSelf,
+            {
+              ...compilerInputs.consciousSelf,
+              ...(ruleMetadata?.consciousActionPrinciples
+                ? {
+                    actionPrinciples:
+                      ruleMetadata.consciousActionPrinciples,
+                  }
+                : {}),
+            },
           )),
         }
       : {}),
@@ -1645,6 +1896,8 @@ export async function advanceCharacterAgents(input: {
         packet: dialogueProjection?.a ?? null,
         traits: input.after.assetManifest?.characters?.a.compilerInputsV2
           ?.psycheTraits,
+        relationship: input.after.assetManifest?.characters?.a.compilerInputsV2
+          ?.relationship?.selected?.dynamics,
       });
       previousA.reactionStateV1 = reaction.state;
       previousA.reactionReceiptV1 = reaction.receipt;
@@ -1656,6 +1909,8 @@ export async function advanceCharacterAgents(input: {
         packet: dialogueProjection?.b ?? null,
         traits: input.after.assetManifest?.characters?.b.compilerInputsV2
           ?.psycheTraits,
+        relationship: input.after.assetManifest?.characters?.b.compilerInputsV2
+          ?.relationship?.selected?.dynamics,
       });
       previousB.reactionStateV1 = reaction.state;
       previousB.reactionReceiptV1 = reaction.receipt;
@@ -2136,6 +2391,24 @@ export async function advanceCharacterAgents(input: {
     a: traceSide(agentInputA, resultA, agentA, acceptedA),
     b: traceSide(agentInputB, resultB, agentB, acceptedB),
   };
+  const definitionRuleTrace: NonNullable<
+    BattleTurnPipelineTrace["characterDefinitionRules"]
+  > = {
+    a: {
+      actionNorm: inputA?.decision
+        ? characterDecisionRuleMetadata.get(inputA.decision)?.actionNorm ?? null
+        : null,
+      relationship: input.after.assetManifest?.characters?.a.compilerInputsV2
+        ?.relationship?.receipt ?? null,
+    },
+    b: {
+      actionNorm: inputB?.decision
+        ? characterDecisionRuleMetadata.get(inputB.decision)?.actionNorm ?? null
+        : null,
+      relationship: input.after.assetManifest?.characters?.b.compilerInputsV2
+        ?.relationship?.receipt ?? null,
+    },
+  };
   const tracePsycheSide = (
     consumerInput: typeof psycheInputA,
     providerResult: typeof psycheResultA,
@@ -2330,6 +2603,7 @@ export async function advanceCharacterAgents(input: {
           ...(recordWithFocusShadow.pipelineTrace ?? {}),
           deepPsyche: psycheTrace,
           characterAgents: characterAgentTrace,
+          characterDefinitionRules: definitionRuleTrace,
         },
       }
     : {
@@ -2345,6 +2619,7 @@ export async function advanceCharacterAgents(input: {
           ...(recordWithFocusShadow.pipelineTrace ?? {}),
           deepPsyche: psycheTrace,
           characterAgents: characterAgentTrace,
+          characterDefinitionRules: definitionRuleTrace,
         },
       };
   const receiptOwnedEventIds = new Set(
@@ -4226,6 +4501,9 @@ async function advanceTurnWithLease(input: {
             ? null
             : deterministicLaterBucketFallback(laterInput.decision);
           const acceptedAction = validation.acceptedAction ?? fallback;
+          const laterRuleMetadata = characterDecisionRuleMetadata.get(
+            laterInput.decision,
+          );
           if (acceptedAction) {
             boundaryState = bindNextBucketDecision({
               state: boundaryState,
@@ -4253,6 +4531,12 @@ async function advanceTurnWithLease(input: {
               fallbackReason: validation.acceptedAction
                 ? null
                 : providerFailure ?? validation.reason ?? "deterministic_fallback",
+              ...(laterRuleMetadata?.actionNorm
+                ? { actionNormReceipt: laterRuleMetadata.actionNorm }
+                : {}),
+              ...(laterRuleMetadata?.relationship
+                ? { relationshipReceipt: laterRuleMetadata.relationship }
+                : {}),
             },
           };
           await battleRepo.saveBattle(state, {

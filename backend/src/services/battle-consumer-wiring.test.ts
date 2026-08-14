@@ -5,11 +5,15 @@ import {
   createBattleState,
   buildCharacterSelfProfileAnchor,
   CharacterDefinitionV2Schema,
+  compileCharacterActionNormProgramV2,
+  compileCharacterRelationshipProgramV2,
   defaultCharacterDisclosurePolicyV2,
   defaultParameters,
   ensureBattlePerceptionState,
   legacyCharacterSheetToDefinitionV2,
+  projectCharacterConsciousSelfV2,
   projectCharacterNarratorViewsV2,
+  resolveCharacterRelationshipV2,
   type BattleState,
   type CharacterSheet,
 } from "@kshiai/shared";
@@ -52,6 +56,102 @@ const previous = {
 };
 
 describe("battle perception consumer wiring", () => {
+  it("applies battle-bound action norms without exposing internal receipts", () => {
+    const sideA = sheet("character-a", "アオ");
+    const sideB = sheet("character-b", "クロ");
+    sideA.skills = [{
+      id: "skill-shield",
+      name: "静かな盾",
+      description: "盾を構える",
+      costMp: 0,
+      costStamina: 0,
+      power: 0.5,
+      kind: "defend",
+    }];
+    const base = legacyCharacterSheetToDefinitionV2(sideA);
+    const definition = CharacterDefinitionV2Schema.parse({
+      ...base,
+      actionNorms: [{
+        id: "server-only-norm-id",
+        when: {
+          match: "all",
+          clauses: [{ kind: "always", operator: "is", value: "true" }],
+        },
+        response: {
+          disposition: "allow_only",
+          actionRefs: ["skill-shield"],
+          actionKinds: [],
+          tacticTags: [],
+          statement: "静かな盾を優先する。",
+          fallbackActionRef: "skill-shield",
+        },
+        priority: 90,
+        force: "constraint",
+        selfAwareness: "aware",
+        exceptions: [],
+        description: null,
+      }],
+      relationshipSeeds: [{
+        id: "server-only-relationship-id",
+        target: { kind: "character", characterAssetId: sideB.id },
+        relationKinds: ["rival"],
+        historySummary: null,
+        defaultAddress: "好敵手",
+        selfAwareness: "aware",
+        dynamics: { trust: 0, affiliation: 0, fear: 0, competition: 700 },
+        priority: 80,
+      }],
+    });
+    const state = createBattleState({
+      id: "structured-character-rules",
+      sideA,
+      sideB,
+      turnLimit: 20,
+      prologuePending: false,
+    });
+    state.assetManifest = {
+      characters: {
+        a: {
+          compilerInputsV2: {
+            consciousSelf: projectCharacterConsciousSelfV2(definition),
+            actionNorms: compileCharacterActionNormProgramV2(definition),
+            relationship: resolveCharacterRelationshipV2({
+              program: compileCharacterRelationshipProgramV2(definition),
+              counterpartCharacterAssetId: sideB.id,
+            }),
+          },
+        },
+      },
+    } as BattleState["assetManifest"];
+
+    const input = buildCharacterAgentConsumerInput({
+      state,
+      sheet: sideA,
+      counterpartSheet: sideB,
+      side: "a",
+      previous,
+      phase: "turn",
+    });
+
+    assert.ok(input?.decision);
+    assert.deepEqual(
+      input.decision.availableActions.map((action) => [
+        action.kind,
+        action.skillId,
+      ]),
+      [["skill", "skill-shield"]],
+    );
+    assert.deepEqual(input.structuredSelf?.actionPrinciples, [
+      "静かな盾を優先する。",
+    ]);
+    const serialized = JSON.stringify(input);
+    assert.equal(serialized.includes("server-only-norm-id"), false);
+    assert.equal(serialized.includes("server-only-relationship-id"), false);
+    assert.equal(serialized.includes("character_norm_conflict"), false);
+    assert.equal(serialized.includes("applicableNormIds"), false);
+    assert.equal(serialized.includes("constraintNormIds"), false);
+  });
+
   it("wires A and B only to their own frozen perception frame", () => {
     const sideA = sheet("a", "アオ");
     const sideB = sheet("b", "クロ");

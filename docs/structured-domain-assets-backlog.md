@@ -173,6 +173,13 @@ ADR-0011 and its detailed design now propose answers for:
 - whether the button label should include a target schema/version in diagnostic
   or administrator views while retaining the simple player-facing label.
 
+Local implementation evidence now also includes deterministic action-norm and
+relationship-precedence receipts, legal fallback behavior, provider-boundary
+non-leakage, and A/B symmetry. See
+[`structured-character-rule-receipts-2026-08-14.md`](evidence/structured-character-rule-receipts-2026-08-14.md).
+P2 remains active pending the authoring/route integration matrix and removal of
+covered legacy mutation fallbacks.
+
 ### P3 — Battlefield definition, initial world, and evolution affordances
 
 Second domain priority because it supplies canonical constraints and the source

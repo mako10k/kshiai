@@ -5,8 +5,16 @@ import {
   buildBattleTurnRecord,
   buildNarrationPerceptionView,
   createBattleState,
+  CharacterDefinitionV2Schema,
+  compileCharacterActionNormProgramV2,
+  compileCharacterPsycheTraitsV1,
+  compileCharacterRelationshipProgramV2,
   defaultDialoguePipelineSettings,
   defaultParameters,
+  legacyCharacterSheetToDefinitionV2,
+  projectCharacterConsciousSelfV2,
+  projectCharacterDeepPsycheV2,
+  resolveCharacterRelationshipV2,
   CHARACTER_FOCUS_POLICY_V1,
   PSYCHE_REACTION_POLICY_V1,
   BattleTurnRecordSchema,
@@ -83,6 +91,103 @@ function profile(selfNames: string[]) {
 }
 
 describe("character-authored public speech", () => {
+  it("persists internal character-rule receipts outside provider input", async () => {
+    const sideA = sheet("character-a", "アオ", ["私"]);
+    const sideB = sheet("character-b", "クロ", ["俺"]);
+    const base = legacyCharacterSheetToDefinitionV2(sideA);
+    const definition = CharacterDefinitionV2Schema.parse({
+      ...base,
+      actionNorms: [{
+        id: "internal-wait-norm",
+        when: {
+          match: "all",
+          clauses: [{ kind: "always", operator: "is", value: "true" }],
+        },
+        response: {
+          disposition: "allow_only",
+          actionRefs: [],
+          actionKinds: ["wait"],
+          tacticTags: [],
+          statement: "今は静かに待つ。",
+          fallbackActionRef: null,
+        },
+        priority: 90,
+        force: "constraint",
+        selfAwareness: "aware",
+        exceptions: [],
+        description: null,
+      }],
+      relationshipSeeds: [{
+        id: "internal-exact-relation",
+        target: { kind: "character", characterAssetId: sideB.id },
+        relationKinds: ["rival"],
+        historySummary: null,
+        defaultAddress: "好敵手",
+        selfAwareness: "aware",
+        dynamics: { trust: 0, affiliation: 0, fear: 0, competition: 700 },
+        priority: 80,
+      }],
+    });
+    const relationship = resolveCharacterRelationshipV2({
+      program: compileCharacterRelationshipProgramV2(definition),
+      counterpartCharacterAssetId: sideB.id,
+    });
+    const state = createBattleState({
+      id: "character-rule-receipts",
+      sideA,
+      sideB,
+      turnLimit: 20,
+      prologuePending: false,
+    });
+    state.assetManifest = {
+      rules: {
+        battleEngine: "battle-engine-v1",
+        temporalRules: "initiative-window-v2",
+        psycheReaction: PSYCHE_REACTION_POLICY_V1,
+        characterDefinitionRules: "character-definition-rules-v2",
+      },
+      characters: {
+        a: {
+          compilerInputsV2: {
+            psycheTraits: compileCharacterPsycheTraitsV1(definition),
+            deepPsyche: projectCharacterDeepPsycheV2(definition),
+            consciousSelf: projectCharacterConsciousSelfV2(definition),
+            actionNorms: compileCharacterActionNormProgramV2(definition),
+            relationship,
+          },
+        },
+        b: {},
+      },
+    } as BattleState["assetManifest"];
+
+    const result = await advanceCharacterAgents({
+      llm: new MockLlmProvider(),
+      before: state,
+      after: { ...state, turn: 1 },
+      mine: sideA,
+      opp: sideB,
+      events: [],
+      actions: [],
+      activeSides: ["a"],
+    });
+
+    const trace = result.state.turnRecords.at(-1)?.pipelineTrace;
+    assert.equal(trace?.characterDefinitionRules?.a.actionNorm?.status, "applied");
+    assert.deepEqual(
+      trace?.characterDefinitionRules?.a.actionNorm?.rankedActionKeys,
+      ["wait"],
+    );
+    assert.equal(
+      trace?.characterDefinitionRules?.a.relationship?.selectedSeedId,
+      "internal-exact-relation",
+    );
+    const providerInput = JSON.stringify(trace?.characterAgents?.a.input);
+    assert.equal(providerInput.includes("internal-wait-norm"), false);
+    assert.equal(providerInput.includes("internal-exact-relation"), false);
+    assert.equal(providerInput.includes("applicableNormIds"), false);
+    assert.match(providerInput, /今は静かに待つ/);
+  });
+
   it("runs only the selected isolated character context", async () => {
     const sideA = sheet("a", "アオ", ["私"]);
     const sideB = sheet("b", "クロ", ["俺"]);
