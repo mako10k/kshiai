@@ -1,6 +1,6 @@
 # Structured domain assets and public projections backlog
 
-- Status: Prioritized backlog; P0-P3 complete, P4 narration frontier
+- Status: P0-P5 complete locally; integration review and publication frontier
 - Date: 2026-08-14
 - Decision owner: Product owner
 - Governing decisions: [ADR-0009](adr/0009-separate-adjudication-from-judgment-presentation.md), [ADR-0010](adr/0010-structured-selectable-asset-envelope.md); [ADR-0003](adr/0003-revision-editable-assets-and-bind-battles.md) is Superseded
