@@ -5,10 +5,30 @@
 [`ci.yml`](../.github/workflows/ci.yml) runs on every pull request and push to
 `main`. Its stable job names are the release policy's four required checks:
 
-- `validate`: clean install, build, typecheck, tests, and generated-file diff
+- `validate`: clean install, build, typecheck, jscpd/lizard static analysis,
+  tests, and generated-file diff
 - `security`: npm advisory policy and repository secret scan
 - `backend-image`: container build and fixed high/critical vulnerability scan
 - `worker`: Worker tests, typecheck, frontend build, and Wrangler dry-run
+
+For the same checks locally, install the pinned Python analyzer in an isolated
+environment before running lint:
+
+```bash
+python3 -m venv .venv-static
+. .venv-static/bin/activate
+python3 -m pip install --requirement requirements-static.txt
+npm run lint
+```
+
+`jscpd` rejects a repository-wide duplicated-line percentage above `2.11%`
+for production TypeScript/JavaScript. Lizard applies conventional warning
+thresholds of cyclomatic complexity `15`, function length `100`, and parameter
+count `6`; [`lizard-baseline.json`](../config/lizard-baseline.json) also prevents
+the count, maximum, or total excess of each metric from increasing. Tests are
+excluded from both measurements. Any intentional baseline replacement must be
+reviewed as static-analysis policy and is generated with
+`npm run static:lizard -- --write-baseline`.
 
 Npm advisory exceptions live in
 [`config/npm-audit-exceptions.json`](../config/npm-audit-exceptions.json). Each

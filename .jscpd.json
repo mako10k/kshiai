@@ -1,0 +1,20 @@
+{
+  "minTokens": 70,
+  "minLines": 10,
+  "mode": "strict",
+  "format": [
+    "javascript",
+    "typescript",
+    "tsx"
+  ],
+  "ignore": [
+    "**/*.test.ts",
+    "**/*.test.tsx"
+  ],
+  "reporters": [
+    "threshold"
+  ],
+  "threshold": 2.11,
+  "noColors": true,
+  "noTips": true
+}

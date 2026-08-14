@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "lizardVersion": "1.23.0",
+  "sourcePaths": [
+    "backend/src",
+    "frontend/src",
+    "packages/shared/src",
+    "infra/cloudflare-worker/src",
+    "scripts"
+  ],
+  "excludedPatterns": [
+    "**/*.test.ts",
+    "**/*.test.tsx"
+  ],
+  "metrics": {
+    "cyclomaticComplexity": {
+      "threshold": 15,
+      "allowedCount": 121,
+      "allowedMaximum": 92,
+      "allowedTotalExcess": 1369
+    },
+    "functionLength": {
+      "threshold": 100,
+      "allowedCount": 67,
+      "allowedMaximum": 733,
+      "allowedTotalExcess": 7390
+    },
+    "parameterCount": {
+      "threshold": 6,
+      "allowedCount": 5,
+      "allowedMaximum": 11,
+      "allowedTotalExcess": 10
+    }
+  }
+}

@@ -13,6 +13,7 @@ backend/data/media/
 frontend/dist/
 *.tsbuildinfo
 .vite/
+.venv-static/
 thoughts/
 .llmthink/
 gha-creds-*.json
