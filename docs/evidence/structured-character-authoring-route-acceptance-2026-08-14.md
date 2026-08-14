@@ -48,12 +48,13 @@ provider when no override is supplied.
   existing non-blocking large-chunk warning.
 - `git diff --check`: passed.
 
-## Remaining `SDA_CHARACTER` scope
+## Follow-up result
 
-This evidence closes the integration matrix, but it does not finish
-`SDA_CHARACTER`. The remaining coherent slice is to remove the legacy character
-draft and direct-mutation fallbacks only where the V2 path has equivalent route
-and persistence regression coverage. `SDA_CHARACTER` therefore remains active.
+The bounded legacy-fallback removal and its route/persistence regression matrix
+were subsequently closed in
+[`structured-character-cutover-acceptance-2026-08-14.md`](structured-character-cutover-acceptance-2026-08-14.md).
+That evidence completes the local `SDA_CHARACTER` acceptance boundary. The next
+PERT frontier is `SDA_BATTLEFIELD`.
 
 Production Promote for v0.18.0 remains a separate protected decision and is not
 authorized by this local evidence.
