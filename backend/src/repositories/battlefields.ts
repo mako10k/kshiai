@@ -91,7 +91,6 @@ async function seedSystemPresets(): Promise<void> {
   );
   for (const row of systemRows.rows) {
     const preset = parse(row);
-    if (await battlefieldAssetRepo.getReadyBattlefieldGeneration(preset.id)) continue;
     await battlefieldAssetRepo.activateImportedBattlefield({
       preset,
       envelope: buildImportedBattlefieldEnvelopeV2({

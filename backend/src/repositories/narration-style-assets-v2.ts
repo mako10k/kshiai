@@ -612,7 +612,6 @@ export async function activateImportedNarrationStyle(input: {
 }): Promise<AssetGeneration> {
   const envelope = assertNarrationGenerationReadyV2(input.envelope);
   return withTransaction(async (connection) => {
-    const current = await currentGenerationRow(connection, input.style.id);
     const style = narrationDefinitionV2ToLegacyStyle({
       styleId: input.style.id,
       ownerUserId: input.style.ownerUserId,
@@ -629,6 +628,7 @@ export async function activateImportedNarrationStyle(input: {
       content: envelope,
       createdAt: style.updatedAt,
     });
+    const current = await currentGenerationRow(connection, input.style.id);
     await connection.query(
       `INSERT INTO narration_styles
         (id, owner_user_id, is_system, sheet_json, created_at, updated_at)

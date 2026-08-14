@@ -84,6 +84,7 @@ task SDA_INTEGRATION NARRATION_STRUCTURE_ACCEPTED -> DOMAIN_ASSETS_ACCEPTED:
   title "Accept integrated authoring binding privacy and pre-public cutover"
   description "Verify two-stage create and explicit upgrade atomic activation source and projection privacy server-side selection eligibility search matchmaking random pools battle binding agents narration history replay deletion export observability and cross-generation invariants across all three asset families without implicit battle-time conversion a permanent legacy runtime path eager bulk migration or production rollout"
   duration 2p
+  status done
   requires:
     DEV 1
   owner "codex"
@@ -152,3 +153,16 @@ work_event WE-SDA-NARRATION-FINISH:
   task SDA_NARRATION
   kind finish
   occurred_at 2026-08-14T11:39:15+09:00
+
+work_event WE-SDA-INTEGRATION-START:
+  model 1
+  task SDA_INTEGRATION
+  kind start
+  occurred_at 2026-08-14T12:00:25+09:00
+  planned_value 2p
+
+work_event WE-SDA-INTEGRATION-FINISH:
+  model 1
+  task SDA_INTEGRATION
+  kind finish
+  occurred_at 2026-08-14T12:11:53+09:00
