@@ -402,15 +402,18 @@ F-BTL-58〜71は完全受け入れ時の規範要件である。2026-08-05時点
 | GET | `/api/me` | Bearer JWTを検証し、対応するアプリ内ユーザーを返す |
 | GET | `/api/me` | 自分 |
 | GET | `/api/characters` | 自分のキャラ一覧（公開 DTO） |
-| POST | `/api/characters/generate` | 自然文からサーバー下書きを生成 |
-| GET | `/api/character-drafts/latest` | 自分の最新生成下書き |
-| POST | `/api/character-drafts/:id/chat` | 保存前下書きの会話調整 |
-| DELETE | `/api/character-drafts/:id` | 保存前下書きの破棄 |
-| POST | `/api/characters/:id/chat` | 微調整会話 |
-| POST | `/api/characters/:id/confirm` | 生成確定 |
+| POST | `/api/characters/generate` | 自然文から V2 authoring candidate を生成 |
+| GET | `/api/character-drafts/latest` | 自分の最新 V2 authoring candidate |
+| POST | `/api/character-drafts/:id/chat` | V2 authoring candidate の会話調整 |
+| DELETE | `/api/character-drafts/:id` | V2 authoring candidate の破棄 |
+| POST | `/api/characters/:id/chat` | V2 immutable revision candidate の生成 |
+| POST | `/api/characters/:id/confirm` | V2 candidate を immutable generation として確定 |
+| POST | `/api/characters/:id/upgrade` | 既存キャラから V2 upgrade candidate を生成 |
 | POST | `/api/characters/:id/copy` | コピー |
 | DELETE | `/api/characters/:id` | 削除 |
-| POST | `/api/characters/:id/image` | 画像生成 |
+| POST | `/api/characters/:id/image` | ready V2 キャラの画像を immutable generation として生成 |
+| POST | `/api/characters/:id/image/toggle` | ready V2 キャラの画像を immutable generation として切替 |
+| POST | `/api/characters/:id/restore-revision` | ready V2 キャラの前世代を新しい immutable generation として復元 |
 | POST | `/api/battlefields/:id/image` | 戦場画像生成 |
 | GET | `/api/match/candidates` | 相手候補 |
 | POST | `/api/match/random` | ランダム相手 |

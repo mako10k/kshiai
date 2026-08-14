@@ -63,12 +63,12 @@ That evidence proves authoring-attempt expiry, concurrent current-pointer drift,
 provider partial failure, route-level selector exclusion, and direct-battle
 rejection at the runtime and persistence seams.
 
-`SDA_CHARACTER` remains active. The remaining work is to remove the legacy draft
-and direct-mutation fallbacks only where the V2 authoring path has equivalent
-route and persistence regression coverage.
+The bounded legacy-fallback removal and its route/persistence regression matrix
+were subsequently closed in
+[`structured-character-cutover-acceptance-2026-08-14.md`](structured-character-cutover-acceptance-2026-08-14.md).
+That evidence completes the local `SDA_CHARACTER` acceptance boundary.
 
 ## Next frontier
 
-The next coherent slice is the bounded legacy-fallback removal and its regression
-matrix. Production Promote for v0.18.0 remains a separate protected decision and
-is not authorized here.
+The next PERT frontier is `SDA_BATTLEFIELD`. Production Promote for v0.18.0
+remains a separate protected decision and is not authorized here.

@@ -16,8 +16,6 @@ import {
   UpsertNarrationStyleRequestSchema,
   UpdateDialoguePipelineSettingsSchema,
   coalesceNonEmptyList,
-  restoreRevisionSnapshot,
-  toggleCharacterPortrait,
   toPublicNarrationStyle,
   toPublicPreset,
   balanceCharacterCombatFields,
@@ -51,7 +49,6 @@ import {
 } from "./llm/provider-accounting.js";
 import * as charRepo from "./repositories/characters.js";
 import * as charAssetRepo from "./repositories/character-assets-v2.js";
-import * as draftRepo from "./repositories/character-drafts.js";
 import * as battleRepo from "./repositories/battles.js";
 import * as bfRepo from "./repositories/battlefields.js";
 import * as styleRepo from "./repositories/narration-styles.js";
@@ -97,6 +94,10 @@ import {
 import { assetContentDigest } from "./repositories/asset-generations.js";
 import { buildCharacterGenerationCandidate } from "./services/character-authoring-service.js";
 import type { GenerateCharacterResult, LlmProvider } from "./llm/types.js";
+
+type CharacterPortraitGenerator = typeof import(
+  "./services/image-service.js"
+)["generateAndStoreCharacterPortrait"];
 
 async function publicUserWithAccess(user: {
   id: string;
@@ -216,9 +217,16 @@ function adjustedGenerationResult(
   return { sheet, assistantMessage: patch.assistantMessage };
 }
 
-export function buildRoutes(options: { llm?: LlmProvider } = {}) {
+export function buildRoutes(options: {
+  llm?: LlmProvider;
+  generateCharacterPortrait?: CharacterPortraitGenerator;
+} = {}) {
   const app = new Hono();
   const llm = options.llm ?? createLlmProvider();
+  const generateCharacterPortrait = options.generateCharacterPortrait ??
+    (async (...args: Parameters<CharacterPortraitGenerator>) =>
+      (await import("./services/image-service.js"))
+        .generateAndStoreCharacterPortrait(...args));
 
   app.post("/api/internal/narration/task", async (c) => {
     if (!await verifyNarrationTaskAuthorization(c.req.header("Authorization"))) {
@@ -832,52 +840,7 @@ export function buildRoutes(options: { llm?: LlmProvider } = {}) {
         return c.json({ error: "character_authoring_failed", message }, 502);
       }
     }
-    const draft = await draftRepo.getCharacterDraft(c.req.param("id"), user.id);
-    if (!draft) return c.json({ error: "not_found" }, 404);
-
-    const adj = await llm.adjustCharacter(draft.sheet, body.message);
-    const { balanceCharacterCombatFields } = await import("@kshiai/shared");
-    const nextSkills = coalesceNonEmptyList(
-      adj.sheetPatch.skills,
-      draft.sheet.skills,
-    );
-    const nextTraits = coalesceNonEmptyList(
-      adj.sheetPatch.traits,
-      draft.sheet.traits,
-    );
-    const updatedAt = new Date().toISOString();
-    const sheet = balanceCharacterCombatFields({
-      ...draft.sheet,
-      ...adj.sheetPatch,
-      parameters: adj.sheetPatch.parameters
-        ? { ...draft.sheet.parameters, ...adj.sheetPatch.parameters }
-        : draft.sheet.parameters,
-      basicAttack: adj.sheetPatch.basicAttack ?? draft.sheet.basicAttack,
-      skills: nextSkills,
-      traits: nextTraits,
-      weapon:
-        adj.sheetPatch.weapon !== undefined
-          ? adj.sheetPatch.weapon
-          : draft.sheet.weapon,
-      armor:
-        adj.sheetPatch.armor !== undefined
-          ? adj.sheetPatch.armor
-          : draft.sheet.armor,
-      updatedAt,
-    });
-    await draftRepo.saveCharacterDraft({
-      ...draft,
-      sheet,
-      assistantMessage: adj.assistantMessage,
-      updatedAt,
-    });
-    return c.json({
-      draft: {
-        id: draft.id,
-        character: await charRepo.toPublicCharacterForViewer(sheet, user.id),
-        assistantMessage: adj.assistantMessage,
-      },
-    });
+    return c.json({ error: "not_found" }, 404);
   });
 
   authed.get("/character-drafts/latest", async (c) => {
@@ -888,18 +851,8 @@ export function buildRoutes(options: { llm?: LlmProvider } = {}) {
         draft: await characterDraftResponse(structured, user.id),
       });
     }
-    const draft = await draftRepo.getLatestCharacterDraft(user.id);
     return c.json({
-      draft: draft
-        ? {
-            id: draft.id,
-            character: await charRepo.toPublicCharacterForViewer(
-              draft.sheet,
-              user.id,
-            ),
-            assistantMessage: draft.assistantMessage,
-          }
-        : null,
+      draft: null,
     });
   });
 
@@ -944,54 +897,16 @@ export function buildRoutes(options: { llm?: LlmProvider } = {}) {
         return c.json({ error: "character_activation_failed", message }, 409);
       }
     }
-    const draft = await draftRepo.getCharacterDraft(c.req.param("id"), user.id);
-    if (!draft) return c.json({ error: "not_found" }, 404);
-    const reservedNames = await charRepo.listOwnedCharacterReservedNames(user.id);
-    const conflict = findCharacterNameConflict(
-      [draft.sheet.displayName, draft.sheet.identity?.realName],
-      reservedNames,
-    );
-    if (conflict) {
-      return c.json(
-        {
-          error: "duplicate_character_name",
-          message: `「${conflict.candidate}」は既存の「${conflict.reservedName}」と重複しています。下書きを調整してください。`,
-        },
-        409,
-      );
-    }
-    await charRepo.saveSheet(draft.sheet);
-    await draftRepo.deleteCharacterDraft(draft.id, user.id);
-    try {
-      const { recordSheetSnapshot } = await import(
-        "./services/balance-observe.js"
-      );
-      await recordSheetSnapshot({ sheet: draft.sheet, phase: "generate" });
-    } catch {
-      /* non-fatal */
-    }
-    return c.json({
-      character: await charRepo.toPublicCharacterForViewer(
-        draft.sheet,
-        user.id,
-      ),
-      assistantMessage: "キャラクターを確定して保存しました。",
-    });
+    return c.json({ error: "not_found" }, 404);
   });
 
   authed.delete("/character-drafts/:id", async (c) => {
     const user = c.get("user");
-    if (await charAssetRepo.discardCharacterAuthoringAttempt(
-      c.req.param("id"),
-      user.id,
-    )) {
-      return c.json({ ok: true });
-    }
-    const deleted = await draftRepo.deleteCharacterDraft(
+    const discarded = await charAssetRepo.discardCharacterAuthoringAttempt(
       c.req.param("id"),
       user.id,
     );
-    return deleted
+    return discarded
       ? c.json({ ok: true })
       : c.json({ error: "not_found" }, 404);
   });
@@ -1178,7 +1093,7 @@ export function buildRoutes(options: { llm?: LlmProvider } = {}) {
     }
   });
 
-  /** Restore one V2 generation, or the legacy one-step snapshot for V1. */
+  /** Restore one immutable V2 generation. */
   authed.post("/characters/:id/restore-revision", async (c) => {
     const user = c.get("user");
     const id = c.req.param("id");
@@ -1187,90 +1102,66 @@ export function buildRoutes(options: { llm?: LlmProvider } = {}) {
       return c.json({ error: "not_found" }, 404);
     }
     const compatibility = await charAssetRepo.getCharacterCompatibility(id);
-    if (compatibility.schemaVersion === 2 && compatibility.status !== "ready") {
+    if (compatibility.status !== "ready") {
       return c.json({
         error: "character_upgrade_required",
         message: "このキャラを最新版に更新してから復元してください。",
       }, 409);
     }
-    const readyGeneration = compatibility.status === "ready"
-      ? await charAssetRepo.getReadyCharacterGeneration(id)
-      : null;
-    if (readyGeneration) {
-      const idempotencyKey = readIdempotencyKey(c.req.header("Idempotency-Key"));
-      if (!idempotencyKey) {
-        return c.json({ error: "idempotency_key_required" }, 400);
-      }
-      const scope = `character-generation-restore:${id}`;
-      const operation = await beginIdempotentRequest({
+    const readyGeneration = await charAssetRepo.getReadyCharacterGeneration(id);
+    if (!readyGeneration) {
+      return c.json({ error: "character_upgrade_required" }, 409);
+    }
+    const idempotencyKey = readIdempotencyKey(c.req.header("Idempotency-Key"));
+    if (!idempotencyKey) {
+      return c.json({ error: "idempotency_key_required" }, 400);
+    }
+    const scope = `character-generation-restore:${id}`;
+    const operation = await beginIdempotentRequest({
+      userId: user.id,
+      scope,
+      key: idempotencyKey,
+      requestHash: requestDigest({ characterId: id, operation: "restore" }),
+    });
+    if (operation.kind === "conflict") {
+      return c.json({ error: "idempotency_key_conflict" }, 409);
+    }
+    if (operation.kind === "processing") {
+      return c.json({ error: "request_in_progress" }, 409);
+    }
+    if (operation.kind === "replay") return c.json(operation.response);
+    try {
+      const restored = await charAssetRepo.restorePreviousCharacterGeneration({
+        characterId: id,
+        ownerUserId: user.id,
+        expectedGenerationId: readyGeneration.generationId,
+        operationId: idempotencyKey,
+      });
+      const response = {
+        character: await charRepo.toPublicCharacterForViewer(restored.sheet, user.id),
+        assistantMessage: "直前の確定世代を、新しい世代として復元しました。",
+      };
+      await completeIdempotentRequest({
         userId: user.id,
         scope,
         key: idempotencyKey,
-        requestHash: requestDigest({ characterId: id, operation: "restore" }),
+        ownerId: operation.ownerId,
+        response,
       });
-      if (operation.kind === "conflict") {
-        return c.json({ error: "idempotency_key_conflict" }, 409);
-      }
-      if (operation.kind === "processing") {
-        return c.json({ error: "request_in_progress" }, 409);
-      }
-      if (operation.kind === "replay") return c.json(operation.response);
-      try {
-        const restored = await charAssetRepo.restorePreviousCharacterGeneration({
-          characterId: id,
-          ownerUserId: user.id,
-          expectedGenerationId: readyGeneration.generationId,
-          operationId: idempotencyKey,
-        });
-        const response = {
-          character: await charRepo.toPublicCharacterForViewer(restored.sheet, user.id),
-          assistantMessage: "直前の確定世代を、新しい世代として復元しました。",
-        };
-        await completeIdempotentRequest({
-          userId: user.id,
-          scope,
-          key: idempotencyKey,
-          ownerId: operation.ownerId,
-          response,
-        });
-        return c.json(response);
-      } catch (error) {
-        await abandonIdempotentRequest({
-          userId: user.id,
-          scope,
-          key: idempotencyKey,
-          ownerId: operation.ownerId,
-        });
-        const message = error instanceof Error ? error.message : "restore_failed";
-        return c.json(
-          { error: message.toLowerCase(), message },
-          message === "NO_PREVIOUS_CHARACTER_GENERATION" ? 400 : 409,
-        );
-      }
-    }
-    if (!sheet.revisionSnapshot) {
+      return c.json(response);
+    } catch (error) {
+      await abandonIdempotentRequest({
+        userId: user.id,
+        scope,
+        key: idempotencyKey,
+        ownerId: operation.ownerId,
+      });
+      const message = error instanceof Error ? error.message : "restore_failed";
       return c.json(
-        {
-          error: "no_revision",
-          message: "戻せる調整前スナップショットがありません。",
-        },
-        400,
+        { error: message.toLowerCase(), message },
+        message === "NO_PREVIOUS_CHARACTER_GENERATION" ? 400 : 409,
       );
     }
-    const restored = restoreRevisionSnapshot(sheet, sheet.revisionSnapshot);
-    await charRepo.saveSheet(restored);
-    try {
-      const { recordSheetSnapshot } = await import(
-        "./services/balance-observe.js"
-      );
-      await recordSheetSnapshot({ sheet: restored, phase: "restore" });
-    } catch {
-      /* non-fatal */
-    }
-    return c.json({
-      character: await charRepo.toPublicCharacterForViewer(restored, user.id),
-      assistantMessage: "直前の調整前の内容に戻しました。",
-    });
   });
 
   /** Owner-only improvement memo + analysis eligibility. */
@@ -1393,82 +1284,66 @@ export function buildRoutes(options: { llm?: LlmProvider } = {}) {
       return c.json({ error: "not_found" }, 404);
     }
     const compatibility = await charAssetRepo.getCharacterCompatibility(id);
-    if (compatibility.schemaVersion === 2 && compatibility.status !== "ready") {
+    if (compatibility.status !== "ready") {
       return c.json({
         error: "character_upgrade_required",
         message: "このキャラを最新版に更新してから顔画像を変更してください。",
       }, 409);
     }
-    const readyGeneration = compatibility.status === "ready"
-      ? await charAssetRepo.getReadyCharacterGeneration(id)
-      : null;
-    if (readyGeneration) {
-      const idempotencyKey = readIdempotencyKey(c.req.header("Idempotency-Key"));
-      if (!idempotencyKey) {
-        return c.json({ error: "idempotency_key_required" }, 400);
-      }
-      const scope = `character-portrait-toggle:${id}`;
-      const operation = await beginIdempotentRequest({
+    const readyGeneration = await charAssetRepo.getReadyCharacterGeneration(id);
+    if (!readyGeneration) {
+      return c.json({ error: "character_upgrade_required" }, 409);
+    }
+    const idempotencyKey = readIdempotencyKey(c.req.header("Idempotency-Key"));
+    if (!idempotencyKey) {
+      return c.json({ error: "idempotency_key_required" }, 400);
+    }
+    const scope = `character-portrait-toggle:${id}`;
+    const operation = await beginIdempotentRequest({
+      userId: user.id,
+      scope,
+      key: idempotencyKey,
+      requestHash: requestDigest({ characterId: id, operation: "toggle" }),
+    });
+    if (operation.kind === "conflict") {
+      return c.json({ error: "idempotency_key_conflict" }, 409);
+    }
+    if (operation.kind === "processing") {
+      return c.json({ error: "request_in_progress" }, 409);
+    }
+    if (operation.kind === "replay") return c.json(operation.response);
+    try {
+      const toggled = await charAssetRepo.toggleCharacterPortraitGeneration({
+        characterId: id,
+        ownerUserId: user.id,
+        expectedGenerationId: readyGeneration.generationId,
+        operationId: idempotencyKey,
+      });
+      const response = {
+        character: await charRepo.toPublicCharacterForViewer(toggled.sheet, user.id),
+        assistantMessage: "顔画像を新しい世代として切り替えました。",
+      };
+      await completeIdempotentRequest({
         userId: user.id,
         scope,
         key: idempotencyKey,
-        requestHash: requestDigest({ characterId: id, operation: "toggle" }),
+        ownerId: operation.ownerId,
+        response,
       });
-      if (operation.kind === "conflict") {
-        return c.json({ error: "idempotency_key_conflict" }, 409);
-      }
-      if (operation.kind === "processing") {
-        return c.json({ error: "request_in_progress" }, 409);
-      }
-      if (operation.kind === "replay") return c.json(operation.response);
-      try {
-        const toggled = await charAssetRepo.toggleCharacterPortraitGeneration({
-          characterId: id,
-          ownerUserId: user.id,
-          expectedGenerationId: readyGeneration.generationId,
-          operationId: idempotencyKey,
-        });
-        const response = {
-          character: await charRepo.toPublicCharacterForViewer(toggled.sheet, user.id),
-          assistantMessage: "顔画像を新しい世代として切り替えました。",
-        };
-        await completeIdempotentRequest({
-          userId: user.id,
-          scope,
-          key: idempotencyKey,
-          ownerId: operation.ownerId,
-          response,
-        });
-        return c.json(response);
-      } catch (error) {
-        await abandonIdempotentRequest({
-          userId: user.id,
-          scope,
-          key: idempotencyKey,
-          ownerId: operation.ownerId,
-        });
-        const message = error instanceof Error ? error.message : "toggle_failed";
-        return c.json(
-          { error: message.toLowerCase(), message },
-          message === "NO_PREVIOUS_CHARACTER_PORTRAIT" ? 400 : 409,
-        );
-      }
-    }
-    const toggled = toggleCharacterPortrait(sheet);
-    if (!toggled) {
+      return c.json(response);
+    } catch (error) {
+      await abandonIdempotentRequest({
+        userId: user.id,
+        scope,
+        key: idempotencyKey,
+        ownerId: operation.ownerId,
+      });
+      const message = error instanceof Error ? error.message : "toggle_failed";
       return c.json(
-        {
-          error: "no_previous_image",
-          message: "切り替える直前の顔画像がありません。",
-        },
-        400,
+        { error: message.toLowerCase(), message },
+        message === "NO_PREVIOUS_CHARACTER_PORTRAIT" ? 400 : 409,
       );
     }
-    await charRepo.saveSheet(toggled);
-    return c.json({
-      character: await charRepo.toPublicCharacterForViewer(toggled, user.id),
-      assistantMessage: "顔画像を切り替えました。",
-    });
   });
 
   authed.post("/characters/:id/image", async (c) => {
@@ -1491,47 +1366,44 @@ export function buildRoutes(options: { llm?: LlmProvider } = {}) {
     }
 
     const compatibility = await charAssetRepo.getCharacterCompatibility(sheet.id);
-    if (compatibility.schemaVersion === 2 && compatibility.status !== "ready") {
+    if (compatibility.status !== "ready") {
       return c.json({
         error: "character_upgrade_required",
         message: "このキャラを最新版に更新してから顔画像を生成してください。",
       }, 409);
     }
-    const readyGeneration = compatibility.status === "ready"
-      ? await charAssetRepo.getReadyCharacterGeneration(sheet.id)
-      : null;
-    let imageOperation: { ownerId: string } | null = null;
-    let imageScope = "";
-    let imageIdempotencyKey = "";
-    let mediaRevisionId: string | undefined;
-    if (readyGeneration) {
-      const key = readIdempotencyKey(c.req.header("Idempotency-Key"));
-      if (!key) return c.json({ error: "idempotency_key_required" }, 400);
-      imageIdempotencyKey = key;
-      imageScope = `character-portrait-generate:${sheet.id}`;
-      const operation = await beginIdempotentRequest({
-        userId: user.id,
-        scope: imageScope,
-        key,
-        requestHash: requestDigest({
-          characterId: sheet.id,
-          operation: "generate",
-          extra: extra ?? null,
-        }),
-      });
-      if (operation.kind === "conflict") {
-        return c.json({ error: "idempotency_key_conflict" }, 409);
-      }
-      if (operation.kind === "processing") {
-        return c.json({ error: "request_in_progress" }, 409);
-      }
-      if (operation.kind === "replay") return c.json(operation.response);
-      imageOperation = operation;
-      mediaRevisionId = `img-${assetContentDigest({
-        characterId: sheet.id,
-        key,
-      }).slice(0, 24)}`;
+    const readyGeneration = await charAssetRepo.getReadyCharacterGeneration(sheet.id);
+    if (!readyGeneration) {
+      return c.json({ error: "character_upgrade_required" }, 409);
     }
+    const imageIdempotencyKey = readIdempotencyKey(
+      c.req.header("Idempotency-Key"),
+    );
+    if (!imageIdempotencyKey) {
+      return c.json({ error: "idempotency_key_required" }, 400);
+    }
+    const imageScope = `character-portrait-generate:${sheet.id}`;
+    const imageOperation = await beginIdempotentRequest({
+      userId: user.id,
+      scope: imageScope,
+      key: imageIdempotencyKey,
+      requestHash: requestDigest({
+        characterId: sheet.id,
+        operation: "generate",
+        extra: extra ?? null,
+      }),
+    });
+    if (imageOperation.kind === "conflict") {
+      return c.json({ error: "idempotency_key_conflict" }, 409);
+    }
+    if (imageOperation.kind === "processing") {
+      return c.json({ error: "request_in_progress" }, 409);
+    }
+    if (imageOperation.kind === "replay") return c.json(imageOperation.response);
+    const mediaRevisionId = `img-${assetContentDigest({
+      characterId: sheet.id,
+      key: imageIdempotencyKey,
+    }).slice(0, 24)}`;
 
     const { getImageGenQuota, recordImageGenEvent, pruneImageGenEvents } =
       await import("./services/image-quota.js");
@@ -1543,14 +1415,12 @@ export function buildRoutes(options: { llm?: LlmProvider } = {}) {
 
     const quotaBefore = await getImageGenQuota(sheet.id);
     if (!quotaBefore.allowed) {
-      if (imageOperation) {
-        await abandonIdempotentRequest({
-          userId: user.id,
-          scope: imageScope,
-          key: imageIdempotencyKey,
-          ownerId: imageOperation.ownerId,
-        });
-      }
+      await abandonIdempotentRequest({
+        userId: user.id,
+        scope: imageScope,
+        key: imageIdempotencyKey,
+        ownerId: imageOperation.ownerId,
+      });
       return c.json(
         {
           error: "rate_limited",
@@ -1565,7 +1435,7 @@ export function buildRoutes(options: { llm?: LlmProvider } = {}) {
     let lastQuota = quotaBefore;
     let immutableRevisionCommitted = false;
     try {
-      const { generateAndStoreCharacterPortrait, logImageEvent } = await import(
+      const { logImageEvent } = await import(
         "./services/image-service.js"
       );
       logImageEvent({
@@ -1575,18 +1445,16 @@ export function buildRoutes(options: { llm?: LlmProvider } = {}) {
         hasExtra: Boolean(extra),
         quota: quotaBefore,
       });
-      const result = await generateAndStoreCharacterPortrait(
+      const result = await generateCharacterPortrait(
         sheet,
         extra,
         undefined,
         mediaRevisionId,
-        readyGeneration
-          ? projectCharacterImageBriefV2(
-              CharacterGenerationEnvelopeV2Schema.parse(
-                readyGeneration.content,
-              ).definition,
-            )
-          : undefined,
+        projectCharacterImageBriefV2(
+          CharacterGenerationEnvelopeV2Schema.parse(
+            readyGeneration.content,
+          ).definition,
+        ),
       );
       // Count attempt after we actually hit the image pipeline (ok or soft-fallback)
       const quota = await recordImageGenEvent({
@@ -1596,56 +1464,36 @@ export function buildRoutes(options: { llm?: LlmProvider } = {}) {
       });
       quotaRecorded = true;
       lastQuota = quota;
-      // Always bump updatedAt so public imageUrl ?v= changes (cache bust for iOS)
-      const updatedAt = new Date().toISOString();
-      const next: CharacterSheet = {
-        ...sheet,
-        appearance: {
-          ...sheet.appearance,
-          imageUrl: result.url,
-          // Keep archived previous when re-gen; otherwise preserve existing slot.
-          previousImageUrl:
-            result.previousUrl ?? sheet.appearance.previousImageUrl ?? null,
-          visualPrompt:
-            sheet.appearance.visualPrompt?.trim() ||
-            `${sheet.displayName}, ${sheet.appearance.summary || "anime portrait"}`,
-        },
-        updatedAt,
-      };
-      const saved = readyGeneration && mediaRevisionId
-        ? await charAssetRepo.activateCharacterPortraitRevision({
-            characterId: sheet.id,
-            ownerUserId: user.id,
-            expectedGenerationId: readyGeneration.generationId,
-            operationId: imageIdempotencyKey,
-            mediaId: result.url,
-            mediaRevisionId,
-            sourceDigest: assetContentDigest({
-              characterId: sheet.id,
-              extra: extra ?? null,
-              mediaId: result.url,
-              mediaRevisionId,
-            }),
-          }).then((activated) => {
-            immutableRevisionCommitted = true;
-            return activated.sheet;
-          })
-        : await charRepo.saveSheet(next).then(() => next);
+      const saved = await charAssetRepo.activateCharacterPortraitRevision({
+        characterId: sheet.id,
+        ownerUserId: user.id,
+        expectedGenerationId: readyGeneration.generationId,
+        operationId: imageIdempotencyKey,
+        mediaId: result.url,
+        mediaRevisionId,
+        sourceDigest: assetContentDigest({
+          characterId: sheet.id,
+          extra: extra ?? null,
+          mediaId: result.url,
+          mediaRevisionId,
+        }),
+      }).then((activated) => {
+        immutableRevisionCommitted = true;
+        return activated.sheet;
+      });
       const response = {
         character: await charRepo.toPublicCharacterForViewer(saved, user.id),
         note: result.note,
         ok: result.ok,
         quota,
       };
-      if (imageOperation) {
-        await completeIdempotentRequest({
-          userId: user.id,
-          scope: imageScope,
-          key: imageIdempotencyKey,
-          ownerId: imageOperation.ownerId,
-          response,
-        });
-      }
+      await completeIdempotentRequest({
+        userId: user.id,
+        scope: imageScope,
+        key: imageIdempotencyKey,
+        ownerId: imageOperation.ownerId,
+        response,
+      });
       return c.json(response);
     } catch (e) {
       const message = e instanceof Error ? e.message : String(e);
@@ -1661,7 +1509,7 @@ export function buildRoutes(options: { llm?: LlmProvider } = {}) {
       } catch {
         /* ignore */
       }
-      if (imageOperation && !immutableRevisionCommitted) {
+      if (!immutableRevisionCommitted) {
         await abandonIdempotentRequest({
           userId: user.id,
           scope: imageScope,

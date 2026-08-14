@@ -11,7 +11,6 @@ process.env.AUTH_PROVIDER = "legacy";
 process.env.DATABASE_PATH = join(tempDir, "test.db");
 process.env.ADMIN_EMAILS = "mako10k@mk10.org";
 const repo = await import("./characters.js");
-const draftRepo = await import("./character-drafts.js");
 const { pickAutoMatchedOpponent } = await import("../services/battle-service.js");
 const { getDb } = await import("../db.js");
 
@@ -63,36 +62,6 @@ describe("owner-scoped character generation references", () => {
     );
     assert.equal(await repo.getOwnedCharacterReference("user-a", "char-b"), null);
     assert.equal((await repo.getOwnedCharacterReference("user-a", "char-a"))?.identity.realName, "楓 本名");
-  });
-
-  it("persists one owner-scoped review draft until confirm or discard", async () => {
-    const first = sheet("draft-char-a", "user-a", "下書きA");
-    await draftRepo.saveCharacterDraft({
-      id: "draft-a",
-      ownerUserId: "user-a",
-      sheet: first,
-      assistantMessage: "確認してください。",
-      createdAt: first.createdAt,
-      updatedAt: first.updatedAt,
-    });
-    assert.equal(
-      (await draftRepo.getLatestCharacterDraft("user-a"))?.sheet.displayName,
-      "下書きA",
-    );
-    assert.equal(await draftRepo.getCharacterDraft("draft-a", "user-b"), null);
-
-    const second = sheet("draft-char-b", "user-a", "下書きB");
-    await draftRepo.saveCharacterDraft({
-      id: "draft-b",
-      ownerUserId: "user-a",
-      sheet: second,
-      assistantMessage: "更新しました。",
-      createdAt: second.createdAt,
-      updatedAt: "2026-08-02T00:01:00.000Z",
-    });
-    assert.equal(await draftRepo.getCharacterDraft("draft-a", "user-a"), null);
-    assert.equal(await draftRepo.deleteCharacterDraft("draft-b", "user-a"), true);
-    assert.equal(await draftRepo.getLatestCharacterDraft("user-a"), null);
   });
 
   it("lists all active identifying names for owner-scoped uniqueness checks", async () => {

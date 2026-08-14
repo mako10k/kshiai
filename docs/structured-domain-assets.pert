@@ -1,8 +1,8 @@
 project STRUCTURED_DOMAIN_ASSETS:
-  version 6
+  version 7
   title "Separate structured domain assets from public projections"
   description "First close Referee audit prose exposure then design and implement a common immutable definition and public projection envelope followed by character battlefield and narration assets in authority and product priority order"
-  as_of 2026-08-13
+  as_of 2026-08-14
   duration_unit point
   velocity 1p/1d
   finish DOMAIN_ASSETS_ACCEPTED
@@ -57,7 +57,7 @@ task SDA_CHARACTER ASSET_ENVELOPE_DESIGNED -> CHARACTER_STRUCTURE_ACCEPTED:
   title "Design implement and explicitly upgrade structured character definitions"
   description "In a dedicated accepted design slice implement natural instruction to validated identity background latent psyche disposition with publishable background separate restricted live state action norms speech policy relationship seeds capabilities equipment items initial loadout bounded descriptions and path-level disclosure then generate the profile from source plus display-safe structure add conscious observable and narrator projections narrow raw interior access and add the idempotent latest-version button using the existing profile as upgrade source with server-enforced exclusion of unsupported characters"
   duration 5p
-  status active
+  status done
   requires:
     DEV 1
   owner "codex"
@@ -118,3 +118,9 @@ work_event WE-SDA-CHARACTER-START:
   kind start
   occurred_at 2026-08-13T17:44:22+09:00
   planned_value 5p
+
+work_event WE-SDA-CHARACTER-FINISH:
+  model 1
+  task SDA_CHARACTER
+  kind finish
+  occurred_at 2026-08-14T09:39:39+09:00
