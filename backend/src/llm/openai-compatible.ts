@@ -1,9 +1,11 @@
 import OpenAI from "openai";
+import { zodResponseFormat } from "openai/helpers/zod";
 import type {
   ChatCompletionMessageParam,
   ChatCompletionTool,
   ChatCompletionCreateParamsNonStreaming,
 } from "openai/resources/chat/completions";
+import { z } from "zod";
 import {
   BasicAttackProfileSchema,
   BattlefieldSemanticSeedSchema,
@@ -92,6 +94,99 @@ const FAST_SHORT_TIMEOUT_MS = 20_000;
 const FAST_TIMEOUT_MS = 30_000;
 const ENGINE_TIMEOUT_MS = 60_000;
 const ENGINE_LONG_TIMEOUT_MS = 90_000;
+
+function schemaRecord(value: unknown, label: string): Record<string, unknown> {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    throw new Error(`Character definition response schema lacks ${label}`);
+  }
+  return value as Record<string, unknown>;
+}
+
+function nestedSchema(
+  root: Record<string, unknown>,
+  ...path: string[]
+): Record<string, unknown> {
+  let current = root;
+  for (const segment of path) {
+    current = schemaRecord(current[segment], path.join("."));
+  }
+  return current;
+}
+
+function containsDefinitionReference(
+  value: unknown,
+  reference: string,
+): boolean {
+  if (!value || typeof value !== "object") return false;
+  if (Array.isArray(value)) {
+    return value.some((item) => containsDefinitionReference(item, reference));
+  }
+  const record = value as Record<string, unknown>;
+  if (record.$ref === reference) return true;
+  return Object.values(record).some((item) =>
+    containsDefinitionReference(item, reference));
+}
+
+function characterDefinitionResponseFormat(): PerceptionPromptResponseFormat {
+  const generated = zodResponseFormat(
+    z.object({ definition: CharacterDefinitionV2Schema }).strict(),
+    "character_definition_v2",
+  );
+  const schema = structuredClone(generated.json_schema.schema) as Record<
+    string,
+    unknown
+  >;
+  const definitions = nestedSchema(schema, "definitions");
+  const constraintProperties = nestedSchema(
+    schema,
+    "properties",
+    "definition",
+    "properties",
+    "capabilities",
+    "properties",
+    "basicAction",
+    "properties",
+    "mechanics",
+    "properties",
+    "constraints",
+    "properties",
+  );
+  const constraintFields = new Set([
+    "reach",
+    "requiresSight",
+    "mobility",
+    "requiresSpeech",
+    "requiresUsableHeldObject",
+  ]);
+  for (const [name, definition] of Object.entries(definitions)) {
+    const direct = schemaRecord(definition, `definitions.${name}`);
+    if (direct.$ref !== `#/definitions/${name}`) continue;
+    const field = [...constraintFields].find((candidate) =>
+      name.endsWith(`_properties_${candidate}`));
+    if (!field) {
+      throw new Error(`Unsupported self-referenced response schema: ${name}`);
+    }
+    definitions[name] = structuredClone(
+      schemaRecord(constraintProperties[field], `constraints.${field}`),
+    );
+  }
+  for (const [name, definition] of Object.entries(definitions)) {
+    if (containsDefinitionReference(definition, `#/definitions/${name}`)) {
+      throw new Error(`Self-referenced response schema remains: ${name}`);
+    }
+  }
+  return {
+    type: "json_schema",
+    json_schema: {
+      name: generated.json_schema.name,
+      strict: true,
+      schema,
+    },
+  };
+}
+
+const CHARACTER_DEFINITION_RESPONSE_FORMAT =
+  characterDefinitionResponseFormat();
 
 const NARRATION_IDENTIFIER_RULES = `Identifier containment is mandatory. Values used as IDs, controlId, perceptId, contact IDs, entity keys, action IDs, event IDs, or JSON paths are non-linguistic control metadata.
 NEVER copy, quote, speak, parenthesize, or use any such identifier as a name in narrator lines, speaker fields, or speech text. Use the matching renderLabel or supplied human display name only.
@@ -1223,9 +1318,45 @@ in this immutable definition. Preserve strict bounds and every reference.`,
           label: "generateCharacterDefinitionV2",
           timeoutMs: ENGINE_LONG_TIMEOUT_MS,
           temperature: 0.35,
+          responseFormat: CHARACTER_DEFINITION_RESPONSE_FORMAT,
         },
       ) as Record<string, unknown>;
-      return CharacterDefinitionV2Schema.parse(data.definition);
+      const parsed = CharacterDefinitionV2Schema.safeParse(data.definition);
+      if (parsed.success) return parsed.data;
+
+      const repaired = await this.chatJson(
+        `You repair one rejected CharacterDefinitionV2 candidate. Return JSON only:
+{"definition": object}.
+
+The server will apply the same strict schema again. Return a complete definition,
+not a patch. Correct only the listed validation issues and preserve every valid
+part of the rejected candidate. validBaseDefinition is server-generated and known
+valid: preserve its identity, appearance, mechanics, inventory, loadout, and legacy
+decision principles unless the owner source explicitly requests a change and the
+sourceKind is not upgrade_description. Do not add a fact merely to satisfy the
+schema. If optional enrichment cannot be repaired from the owner source, restore
+the corresponding validBaseDefinition value. Do not expose schema commentary in
+the definition.`,
+        JSON.stringify({
+          sourceKind: input.sourceKind,
+          ownerSource: input.sourceText.slice(0, 8000),
+          validBaseDefinition: input.baseDefinition,
+          rejectedDefinition: data.definition,
+          validationIssues: parsed.error.issues.map((issue) => ({
+            code: issue.code,
+            path: issue.path,
+            message: issue.message,
+          })),
+        }),
+        {
+          tier: "engine",
+          label: "generateCharacterDefinitionV2Repair",
+          timeoutMs: ENGINE_LONG_TIMEOUT_MS,
+          temperature: 0.2,
+          responseFormat: CHARACTER_DEFINITION_RESPONSE_FORMAT,
+        },
+      ) as Record<string, unknown>;
+      return CharacterDefinitionV2Schema.parse(repaired.definition);
     } catch (error) {
       return this.fallbackOrThrow(
         error,
