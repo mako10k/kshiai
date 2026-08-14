@@ -187,9 +187,11 @@ task T_BILLING BATTLE_PIPELINE_ACCEPTED -> BILLING_READY:
   title "Add Stripe subscriptions, webhooks, metering, and entitlements"
   description "After the thin production battle-pipeline slice is accepted, add Stripe products checkout customer portal signed idempotent webhooks bounded usage accounting subscription entitlements and fail-closed enforcement without weakening the battle rollback path."
   duration 16p
+  status blocked
   requires:
     DEV 1
   owner "codex"
+  blocked_reason "Billing model is undefined; revisit only after an explicit product-maturity review defines value pricing and allowance boundaries"
   source "docs/billing-entitlements.pert"
 
 milestone RELEASE_RULES_READY:

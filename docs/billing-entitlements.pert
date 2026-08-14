@@ -19,7 +19,7 @@ resource OWNER:
   capacity 1
 
 milestone NOW:
-  title "Billing proposal ready for owner decision"
+  title "Billing proposal deferred pending a mature product model"
   state reached
 
 milestone BILLING_AUTHORITY_ACCEPTED:
@@ -50,9 +50,11 @@ task BIL_ACCEPT_AUTHORITY NOW -> BILLING_AUTHORITY_ACCEPTED:
   title "Accept Stripe projection and hard-allowance subscription authority"
   description "Review and either accept or revise ADR-0014 including the requirements non-goal change recurring hard-allowance no-overage direction local verified entitlement authority public recovery boundary and the separately gated catalog Stage and production decisions"
   duration 1p
+  status blocked
   owner "user"
   requires:
     OWNER 1
+  blocked_reason "Deferred by the product owner until the product and billing model are mature enough to define"
 
 task BIL_BUILD_LEDGER BILLING_AUTHORITY_ACCEPTED -> BILLING_LEDGER_READY:
   title "Build durable billing projection and idempotent usage ledger"

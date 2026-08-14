@@ -1,9 +1,22 @@
 # Stripe billing and entitlement design
 
-- Status: Proposal; implementation is blocked on acceptance of ADR-0014
+- Status: Deferred proposal; not a current implementation plan
 - Date: 2026-08-14
 - Related: [ADR-0014](adr/0014-stripe-billing-and-entitlement-authority.md),
   [`T_BILLING`](plan.pert), [execution plan](billing-entitlements.pert)
+
+## 0. Deferral decision
+
+On 2026-08-14 the product owner confirmed that the billing model is still
+undefined and should be discussed only after the product matures. The material
+below is retained as design inventory, not as an accepted direction or current
+frontier. No billing schema, dependency, route, Stripe object, secret,
+deployment, or entitlement enforcement may be added from this proposal.
+
+Reconsideration starts by defining the product value boundary and billing
+model. Only then may the owner decide whether this proposal should be revised,
+accepted, replaced, or rejected. A generic request to continue unrelated
+product work does not reopen the deferred billing scope.
 
 ## 1. Scope and current-state findings
 

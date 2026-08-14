@@ -1,6 +1,7 @@
 # ADR-0014: Project Stripe billing into server-owned entitlements
 
 - Status: Proposed
+- Decision state: Deferred by the product owner on 2026-08-14
 - Date: 2026-08-14
 - Decision owner: Product owner
 - Related: `T_BILLING` in `docs/plan.pert`;
@@ -15,6 +16,12 @@ accounting, and fail-closed entitlements. The original product requirements
 still list billing and paid items as an explicit non-goal. Accepting this ADR
 must therefore also authorize removing subscription access from that non-goal;
 the existing plan alone does not silently override it.
+
+The product owner has decided that the billing model is not defined and that
+billing should be reconsidered only after the product is more mature. This ADR
+therefore remains a dormant proposal. It does not select a pricing model,
+authorize implementation, or make billing the next development frontier.
+Reopening it requires an explicit product-maturity review and owner consent.
 
 The runtime is a stateless Hono API behind a Cloudflare Worker, with Supabase
 authentication and shared PostgreSQL persistence. Cost-bearing routes already
