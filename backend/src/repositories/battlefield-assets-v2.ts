@@ -688,7 +688,6 @@ export async function activateImportedBattlefield(input: {
 }): Promise<AssetGeneration> {
   const envelope = assertBattlefieldGenerationReadyV2(input.envelope);
   return withTransaction(async (connection) => {
-    const current = await currentGenerationRow(connection, input.preset.id);
     const updatedAt = input.preset.updatedAt;
     const generation = await appendAssetGeneration(connection, {
       assetType: "battlefield-preset",
@@ -697,6 +696,7 @@ export async function activateImportedBattlefield(input: {
       content: envelope,
       createdAt: updatedAt,
     });
+    const current = await currentGenerationRow(connection, input.preset.id);
     await connection.query(
       `INSERT INTO battlefields
         (id, owner_user_id, is_system, sheet_json, created_at, updated_at)

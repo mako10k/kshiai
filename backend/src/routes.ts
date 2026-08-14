@@ -13,7 +13,6 @@ import {
   RegisterRequestSchema,
   UpdateDisplayNameRequestSchema,
   SaveBattlefieldFromBattleRequestSchema,
-  UpsertNarrationStyleRequestSchema,
   UpdateDialoguePipelineSettingsSchema,
   coalesceNonEmptyList,
   toPublicNarrationStyle,
@@ -2651,9 +2650,11 @@ export function buildRoutes(options: {
     const state = await battleRepo.getBattle(id);
     if (!meta || !state) return c.json({ error: "not_found" }, 404);
     if (meta.side_a_user_id !== user.id) return c.json({ error: "forbidden" }, 403);
-    const mine = await charRepo.getSheet(meta.side_a_character_id);
+    const mine = state.assetManifest?.characters.a.snapshot ??
+      await charRepo.getSheetIncludingDeleted(meta.side_a_character_id);
     if (!mine) return c.json({ error: "not_found" }, 404);
-    const opp = await charRepo.getSheet(meta.side_b_character_id);
+    const opp = state.assetManifest?.characters.b.snapshot ??
+      await charRepo.getSheetIncludingDeleted(meta.side_b_character_id);
     return c.json({
       battle: await toBattlePublicForViewer(state, mine, null, opp),
     });

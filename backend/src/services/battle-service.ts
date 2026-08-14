@@ -608,9 +608,9 @@ export async function startBattle(input: {
         throw new Error("BATTLE_CREATE_IDENTITY_CONFLICT");
       }
       const existingMine = existing.assetManifest?.characters.a.snapshot ??
-        await charRepo.getSheet(existingMeta.side_a_character_id);
+        await charRepo.getSheetIncludingDeleted(existingMeta.side_a_character_id);
       const existingOpp = existing.assetManifest?.characters.b.snapshot ??
-        await charRepo.getSheet(existingMeta.side_b_character_id);
+        await charRepo.getSheetIncludingDeleted(existingMeta.side_b_character_id);
       if (!existingMine || !existingOpp) throw new Error("CHARACTER_MISSING");
       return toBattlePublicForViewer(existing, existingMine, null, existingOpp);
     }
@@ -4283,9 +4283,9 @@ async function advanceTurnWithLease(input: {
     state.advanceOperation.operationId === input.operationId
   ) {
     const replayMine = state.assetManifest?.characters.a.snapshot ??
-      await charRepo.getSheet(meta.side_a_character_id);
+      await charRepo.getSheetIncludingDeleted(meta.side_a_character_id);
     const replayOpp = state.assetManifest?.characters.b.snapshot ??
-      await charRepo.getSheet(meta.side_b_character_id);
+      await charRepo.getSheetIncludingDeleted(meta.side_b_character_id);
     if (!replayMine || !replayOpp) throw new Error("CHARACTER_MISSING");
     return toBattlePublicForViewer(state, replayMine, null, replayOpp);
   }
@@ -4319,9 +4319,9 @@ async function advanceTurnWithLease(input: {
   if (!state.selectedPolicyIdsB) state.selectedPolicyIdsB = [];
 
   const mine = state.assetManifest?.characters.a.snapshot ??
-    await charRepo.getSheet(meta.side_a_character_id);
+    await charRepo.getSheetIncludingDeleted(meta.side_a_character_id);
   const opp = state.assetManifest?.characters.b.snapshot ??
-    await charRepo.getSheet(meta.side_b_character_id);
+    await charRepo.getSheetIncludingDeleted(meta.side_b_character_id);
   if (!mine || !opp) throw new Error("CHARACTER_MISSING");
   const dialoguePipeline = state.dialoguePipelineSnapshot
     ? {

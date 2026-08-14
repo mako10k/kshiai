@@ -10,7 +10,6 @@ import {
   toPublicCharacter,
   type RatingDisplayContext,
   OpponentBattleMemorySchema,
-  toBattleCharacterSnapshot,
   type OpponentBattleMemory,
   CharacterGenerationEnvelopeV2Schema,
   CHARACTER_PROFILE_CLAIM_VALIDATOR_CONTRACT,
@@ -35,7 +34,6 @@ import {
   activateAssetGeneration,
   appendAssetGeneration,
   assetContentDigest,
-  writeAssetGeneration,
 } from "./asset-generations.js";
 import {
   getCharacterCompatibility,
@@ -453,13 +451,8 @@ export async function saveSheet(sheet: CharacterSheet): Promise<void> {
       `SELECT id FROM characters WHERE id = $1`,
       [withRecord.id],
     );
-    const state = await connection.query<{ compatibility_status: string }>(
-      `SELECT compatibility_status FROM character_asset_states
-        WHERE character_id = $1`,
-      [withRecord.id],
-    );
-    // V2 authority is immutable. Legacy operational writers may refresh the
-    // transitional read model, but cannot replace the active V2 envelope.
+    // V2 authority is immutable. Existing operational rows may refresh only
+    // the transitional read model; they never append a legacy generation.
     let importedGeneration: Awaited<ReturnType<typeof appendAssetGeneration>> | null = null;
     if (!stored.rows[0]) {
       // Programmatic seed/import of a brand-new character is explicitly marked
@@ -517,14 +510,6 @@ export async function saveSheet(sheet: CharacterSheet): Promise<void> {
         assetId: withRecord.id,
         schemaVersion: 2,
         content: envelope,
-        createdAt: withRecord.updatedAt,
-      });
-    } else if (state.rows[0]?.compatibility_status !== "ready") {
-      await writeAssetGeneration(connection, {
-        assetType: "character",
-        assetId: withRecord.id,
-        schemaVersion: 1,
-        content: toBattleCharacterSnapshot(withRecord),
         createdAt: withRecord.updatedAt,
       });
     }

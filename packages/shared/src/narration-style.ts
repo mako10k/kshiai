@@ -122,17 +122,6 @@ export function narrationInstructionForPhase(
   return compiled.phases[phase].instruction;
 }
 
-export function toNarrationSnapshot(
-  s: Pick<NarrationStyle, "id" | "displayName" | "instruction" | "perspective">,
-): NarrationStyleSnapshot {
-  return {
-    id: s.id,
-    displayName: s.displayName,
-    instruction: s.instruction,
-    perspective: s.perspective ?? "external",
-  };
-}
-
 export function perspectiveLabel(p: NarrationPerspective | undefined): string {
   return PERSPECTIVE_LABELS[p ?? "external"];
 }

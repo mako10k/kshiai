@@ -9,13 +9,11 @@ import {
   compileNarrationPolicyV2,
 } from "@kshiai/shared";
 import { query, withTransaction } from "../db.js";
-import { newId } from "../id.js";
 import {
   canAccessSharedAsset,
   getUserAccessProfile,
   normalizeAccountKind,
 } from "../account-access.js";
-import { writeAssetGeneration } from "./asset-generations.js";
 import * as narrationAssetRepo from "./narration-style-assets-v2.js";
 import { buildImportedNarrationStyleEnvelopeV2 } from "../services/narration-style-authoring-service.js";
 import type { AssetGeneration } from "./asset-generations.js";
@@ -138,36 +136,6 @@ export async function getNarrationStyle(id: string): Promise<NarrationStyle | nu
   return getNarrationStyleRow(id);
 }
 
-/** Resolve for a match: system, owned, or shared test-realm style; else default. */
-export async function resolveNarrationStyleForUser(
-  userId: string,
-  styleId?: string | null,
-): Promise<NarrationStyle> {
-  await ensureSystemNarrationStyles();
-  if (styleId) {
-    const s = await getNarrationStyle(styleId);
-    if (s) {
-      const viewer = await getUserAccessProfile(userId);
-      const owner = s.ownerUserId
-        ? await getUserAccessProfile(s.ownerUserId)
-        : null;
-      if (canAccessSharedAsset({
-        viewer,
-        ownerUserId: s.ownerUserId,
-        ownerKind: owner?.accountKind ?? "general",
-        isSystem: s.isSystem,
-      })) return s;
-    }
-  }
-  return (
-    (await getNarrationStyle(DEFAULT_NARRATION_STYLE_ID)) ?? {
-      ...SYSTEM_NARRATION_STYLE_SEEDS[0]!,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    }
-  );
-}
-
 export async function resolveReadyNarrationStyleForUser(
   userId: string,
   styleId?: string | null,
@@ -204,86 +172,6 @@ export async function resolveReadyNarrationStyleForUser(
     envelope,
     compiledPolicy: compileNarrationPolicyV2(envelope.definition),
   };
-}
-
-export async function saveNarrationStyle(style: NarrationStyle): Promise<void> {
-  const json = JSON.stringify(style);
-  await withTransaction(async (connection) => {
-    await writeAssetGeneration(connection, {
-      assetType: "narration-style",
-      assetId: style.id,
-      schemaVersion: 1,
-      content: style,
-      createdAt: style.updatedAt,
-    });
-    await connection.query(
-      `INSERT INTO narration_styles
-        (id, owner_user_id, is_system, sheet_json, created_at, updated_at)
-       VALUES ($1, $2, $3, $4, $5, $6)
-       ON CONFLICT (id) DO UPDATE
-         SET owner_user_id = EXCLUDED.owner_user_id,
-             is_system = EXCLUDED.is_system,
-             sheet_json = EXCLUDED.sheet_json,
-             updated_at = EXCLUDED.updated_at`,
-      [style.id, style.ownerUserId, style.isSystem, json, style.createdAt, style.updatedAt],
-    );
-  });
-}
-
-export async function createUserNarrationStyle(
-  userId: string,
-  input: {
-    displayName: string;
-    description?: string;
-    instruction: string;
-    tags?: string[];
-    perspective?: NarrationStyle["perspective"];
-  },
-): Promise<NarrationStyle> {
-  const t = new Date().toISOString();
-  const style: NarrationStyle = {
-    id: newId("nst"),
-    ownerUserId: userId,
-    isSystem: false,
-    displayName: input.displayName.trim(),
-    description: (input.description ?? "").trim(),
-    instruction: input.instruction.trim(),
-    perspective: input.perspective ?? "external",
-    tags: input.tags ?? [],
-    createdAt: t,
-    updatedAt: t,
-  };
-  await saveNarrationStyle(style);
-  return style;
-}
-
-export async function updateUserNarrationStyle(
-  id: string,
-  userId: string,
-  input: {
-    displayName?: string;
-    description?: string;
-    instruction?: string;
-    tags?: string[];
-    perspective?: NarrationStyle["perspective"];
-  },
-): Promise<NarrationStyle | null> {
-  const cur = await getNarrationStyle(id);
-  if (!cur || cur.isSystem || cur.ownerUserId !== userId) return null;
-  const next: NarrationStyle = {
-    ...cur,
-    displayName: input.displayName?.trim() || cur.displayName,
-    description:
-      input.description !== undefined
-        ? input.description.trim()
-        : cur.description,
-    instruction: input.instruction?.trim() || cur.instruction,
-    perspective: input.perspective ?? cur.perspective ?? "external",
-    tags: input.tags ?? cur.tags,
-    updatedAt: new Date().toISOString(),
-  };
-  await saveNarrationStyle(next);
-  return next;
 }
 
 export async function deleteUserNarrationStyle(

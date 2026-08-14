@@ -298,6 +298,11 @@ transactional failure evidence are recorded in
 - privacy, deletion/tombstone, export, and internal-observability behavior is
   explicit for every section.
 
+P5 is complete locally. The three-family selection/binding, cross-generation,
+deletion, history/replay, export absence, observability, system-seed activation,
+and final legacy-path cutover receipts are recorded in
+[`structured-domain-assets-integration-acceptance-2026-08-14.md`](evidence/structured-domain-assets-integration-acceptance-2026-08-14.md).
+
 ## Explicitly excluded
 
 - eager conversion of all existing assets and battles;
