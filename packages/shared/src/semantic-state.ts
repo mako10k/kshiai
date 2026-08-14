@@ -468,8 +468,16 @@ export function createBattleSemanticState(input: {
   obstacles?: string[];
   conditions?: string[];
   seed?: BattlefieldSemanticSeed | null;
-  sideA: { displayName: string; appearanceSummary?: string };
-  sideB: { displayName: string; appearanceSummary?: string };
+  sideA: {
+    displayName: string;
+    appearanceSummary?: string;
+    initialArea?: string;
+  };
+  sideB: {
+    displayName: string;
+    appearanceSummary?: string;
+    initialArea?: string;
+  };
 }): BattleSemanticState {
   const parsedSeed = BattlefieldSemanticSeedSchema.safeParse(input.seed ?? {});
   const seed = parsedSeed.success ? parsedSeed.data : null;
@@ -477,6 +485,8 @@ export function createBattleSemanticState(input: {
     ? seed.entities
     : fallbackFieldEntities(input);
   const area = boundedText(input.scene, 240) || "scene";
+  const areaA = boundedText(input.sideA.initialArea, 240) || area;
+  const areaB = boundedText(input.sideB.initialArea, 240) || area;
   const conditions = input.conditions ?? [];
   const sceneFacts: Record<string, SemanticValue> = {
     ...(boundedText(input.notes, 2000)
@@ -515,7 +525,7 @@ export function createBattleSemanticState(input: {
       "character.a": {
         kind: "character",
         label: boundedText(input.sideA.displayName, 240) || "side A",
-        location: { type: "scene", area },
+        location: { type: "scene", area: areaA },
         active: true,
         createdTurn: 0,
         updatedTurn: 0,
@@ -528,7 +538,7 @@ export function createBattleSemanticState(input: {
       "character.b": {
         kind: "character",
         label: boundedText(input.sideB.displayName, 240) || "side B",
-        location: { type: "scene", area },
+        location: { type: "scene", area: areaB },
         active: true,
         createdTurn: 0,
         updatedTurn: 0,
@@ -553,7 +563,7 @@ export function createBattleSemanticState(input: {
       "character.a": {
         kind: "character",
         label: boundedText(input.sideA.displayName, 240) || "side A",
-        location: { type: "scene", area },
+        location: { type: "scene", area: areaA },
         active: true,
         createdTurn: 0,
         updatedTurn: 0,
@@ -562,7 +572,7 @@ export function createBattleSemanticState(input: {
       "character.b": {
         kind: "character",
         label: boundedText(input.sideB.displayName, 240) || "side B",
-        location: { type: "scene", area },
+        location: { type: "scene", area: areaB },
         active: true,
         createdTurn: 0,
         updatedTurn: 0,

@@ -1,7 +1,7 @@
 # Structured domain assets and public projections backlog
 
-- Status: Prioritized backlog; P0-P1 complete, P2 character implementation active
-- Date: 2026-08-13
+- Status: P0-P5 complete locally; integration review and publication frontier
+- Date: 2026-08-14
 - Decision owner: Product owner
 - Governing decisions: [ADR-0009](adr/0009-separate-adjudication-from-judgment-presentation.md), [ADR-0010](adr/0010-structured-selectable-asset-envelope.md); [ADR-0003](adr/0003-revision-editable-assets-and-bind-battles.md) is Superseded
 - Execution order: [structured-domain-assets.pert](structured-domain-assets.pert)
@@ -173,6 +173,14 @@ ADR-0011 and its detailed design now propose answers for:
 - whether the button label should include a target schema/version in diagnostic
   or administrator views while retaining the simple player-facing label.
 
+Local implementation evidence now also includes deterministic action-norm and
+relationship-precedence receipts, legal fallback behavior, provider-boundary
+non-leakage, and A/B symmetry. See
+[`structured-character-rule-receipts-2026-08-14.md`](evidence/structured-character-rule-receipts-2026-08-14.md).
+P2 is complete. The authoring/route integration matrix and bounded legacy
+fallback removal are recorded in
+[`structured-character-cutover-acceptance-2026-08-14.md`](evidence/structured-character-cutover-acceptance-2026-08-14.md).
+
 ### P3 — Battlefield definition, initial world, and evolution affordances
 
 Second domain priority because it supplies canonical constraints and the source
@@ -214,6 +222,16 @@ Required design decisions before implementation:
 - bounded deterministic mapping of separately stored legacy terrain, obstacle,
   and condition fields alongside the existing natural description.
 
+ADR-0012 and
+[`structured-battlefield-definition-design.md`](structured-battlefield-definition-design.md)
+accept these decisions: reusable definition, deterministic instance compiler,
+closed effect/evolution vocabularies, stable object keys, no LLM-authored
+battle-time topology, and bounded legacy mapping. P3 is complete locally. Its
+V2 structure/public-scene pipeline, explicit upgrade, immutable media and
+revision activation, selector/direct-ID gates, exact battle binding, and live
+single-affordance happening gate are recorded in
+[`structured-battlefield-cutover-acceptance-2026-08-14.md`](evidence/structured-battlefield-cutover-acceptance-2026-08-14.md).
+
 ### P4 — Narration definition and compiled rendering policy
 
 Third domain priority because it affects presentation only after character and
@@ -254,6 +272,17 @@ Required design decisions before implementation:
 - bounded deterministic mapping of separately stored legacy perspective fields
   alongside the existing natural description or instruction.
 
+ADR-0013 and
+[`structured-narration-definition-design.md`](structured-narration-definition-design.md)
+accept these decisions: closed operational dimensions with display-only tags,
+fixed safety/grounding then perspective then phase then style precedence, a
+two-positive/one-counterexample per-phase budget with anti-copy clauses, and
+exact legacy perspective preservation with validated regeneration of all other
+structure. P4 is complete locally. Its two-stage authoring, explicit upgrade,
+selector/direct-ID gates, phase compiler, exact read-only battle binding, and
+transactional failure evidence are recorded in
+[`structured-narration-cutover-acceptance-2026-08-14.md`](evidence/structured-narration-cutover-acceptance-2026-08-14.md).
+
 ### P5 — Integrated authoring and cutover acceptance
 
 - create/edit flows show structure and generated public projection together;
@@ -268,6 +297,11 @@ Required design decisions before implementation:
 - cross-generation and mid-battle edit tests prove immutable binding;
 - privacy, deletion/tombstone, export, and internal-observability behavior is
   explicit for every section.
+
+P5 is complete locally. The three-family selection/binding, cross-generation,
+deletion, history/replay, export absence, observability, system-seed activation,
+and final legacy-path cutover receipts are recorded in
+[`structured-domain-assets-integration-acceptance-2026-08-14.md`](evidence/structured-domain-assets-integration-acceptance-2026-08-14.md).
 
 ## Explicitly excluded
 

@@ -12,6 +12,10 @@ process.env.DATABASE_PATH = join(tempDir, "test.db");
 process.env.ADMIN_EMAILS = "mako10k@mk10.org";
 const battlefieldRepo = await import("./battlefields.js");
 const narrationStyleRepo = await import("./narration-styles.js");
+const narrationStyleAssetRepo = await import("./narration-style-assets-v2.js");
+const { buildImportedNarrationStyleEnvelopeV2 } = await import(
+  "../services/narration-style-authoring-service.js"
+);
 const { getDb } = await import("../db.js");
 
 after(() => rmSync(tempDir, { recursive: true, force: true }));
@@ -65,8 +69,15 @@ describe("test-realm shared assets", () => {
     insertUser.run("test-b", "test-b", "test-b@example.test", "test", now);
     insertUser.run("admin", "admin", "mako10k@mk10.org", "general", now);
 
-    await battlefieldRepo.savePreset(battlefield("field-e2e", "e2e-a"));
-    await narrationStyleRepo.saveNarrationStyle(narrationStyle("style-e2e", "e2e-a"));
+    await battlefieldRepo.importPreset(battlefield("field-e2e", "e2e-a"));
+    const readyStyle = narrationStyle("style-e2e", "e2e-a");
+    await narrationStyleAssetRepo.activateImportedNarrationStyle({
+      style: readyStyle,
+      envelope: buildImportedNarrationStyleEnvelopeV2({
+        style: readyStyle,
+        attemptId: "test-realm-style-import-v2",
+      }),
+    });
 
     assert.equal(
       (await battlefieldRepo.listPresets({ userId: "general" }))
@@ -82,16 +93,17 @@ describe("test-realm shared assets", () => {
       await battlefieldRepo.getPresetForUser("field-e2e", "general"),
       null,
     );
-    assert.notEqual(
-      (await narrationStyleRepo.resolveNarrationStyleForUser("general", "style-e2e")).id,
-      "style-e2e",
+    await assert.rejects(
+      narrationStyleRepo.resolveReadyNarrationStyleForUser("general", "style-e2e"),
+      /NARRATION_STYLE_NOT_FOUND/,
     );
     assert.equal(
       (await battlefieldRepo.getPresetForUser("field-e2e", "test-b"))?.id,
       "field-e2e",
     );
     assert.equal(
-      (await narrationStyleRepo.resolveNarrationStyleForUser("test-b", "style-e2e")).id,
+      (await narrationStyleRepo.resolveReadyNarrationStyleForUser("test-b", "style-e2e"))
+        .style.id,
       "style-e2e",
     );
     assert.equal(
@@ -99,7 +111,8 @@ describe("test-realm shared assets", () => {
       "field-e2e",
     );
     assert.equal(
-      (await narrationStyleRepo.resolveNarrationStyleForUser("admin", "style-e2e")).id,
+      (await narrationStyleRepo.resolveReadyNarrationStyleForUser("admin", "style-e2e"))
+        .style.id,
       "style-e2e",
     );
   });

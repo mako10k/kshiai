@@ -2,6 +2,8 @@ import {
   CATEGORY_LABELS,
   SYSTEM_PRESET_SEEDS,
   BattlefieldSemanticSeedSchema,
+  BattlefieldDefinitionV2Schema,
+  NarrationDefinitionV2Schema,
   CharacterDeepPsycheUpdateSchema,
   clampCoefficientMap,
   composeNarratorTurn,
@@ -24,6 +26,8 @@ import type {
   AnalyzeCharacterImprovementInput,
   AnalyzeCharacterImprovementResult,
   GenerateBattlefieldResult,
+  GenerateBattlefieldDefinitionV2Input,
+  GenerateNarrationDefinitionV2Input,
   GenerateCharacterResult,
   GenerateCharacterInput,
   GenerateCharacterProfileInput,
@@ -31,6 +35,10 @@ import type {
   GenerateCharacterDefinitionV2Input,
   ValidateCharacterProfileClaimsInput,
   ValidateCharacterProfileClaimsResult,
+  GenerateNarrationStyleDescriptionInput,
+  GenerateNarrationStyleDescriptionResult,
+  ValidateNarrationStyleClaimsInput,
+  ValidateNarrationStyleClaimsResult,
   GenerateImprovementPromptInput,
   GenerateImprovementPromptResult,
   JudgmentNarrationResult,
@@ -394,6 +402,130 @@ export class MockLlmProvider implements LlmProvider {
     };
   }
 
+  async generateBattlefieldScene(
+    input: import("./types.js").GenerateBattlefieldSceneInput,
+  ): Promise<import("./types.js").GenerateBattlefieldSceneResult> {
+    const selected = input.projection.facts.slice(0, 12);
+    const text = selected.map((fact) => fact.text).join("。").slice(0, 1600) ||
+      `${input.projection.displayName}という戦場。`;
+    return {
+      description: text,
+      segments: [{
+        id: "scene-main",
+        text,
+        kind: "fact",
+        supportRefs: selected.map((fact) => fact.supportRef),
+      }],
+      assistantMessage: "構造化した設定から公開シーンを作成しました。",
+    };
+  }
+
+  async generateBattlefieldDefinitionV2(
+    input: GenerateBattlefieldDefinitionV2Input,
+  ) {
+    if (input.baseDefinition.evolutionAffordances.length > 0) {
+      return input.baseDefinition;
+    }
+    if (input.sourceKind === "upgrade_description" ||
+        input.sourceKind === "import") {
+      return input.baseDefinition;
+    }
+    const areaRefs = input.baseDefinition.areas.map((area) => area.id).slice(0, 12);
+    const objectRefs = input.baseDefinition.objects.map((object) => object.id).slice(0, 4);
+    const basis = input.baseDefinition.identity.atmosphere[0] ??
+      input.baseDefinition.effects[0]?.description.text ??
+      input.baseDefinition.appearance.publicSummary;
+    return BattlefieldDefinitionV2Schema.parse({
+      ...input.baseDefinition,
+      evolutionAffordances: [{
+        id: "evolution.stagnation-pressure",
+        pressure: input.baseDefinition.identity.category === "ruins"
+          ? "structural_failure"
+          : "visibility_shift",
+        areaRefs,
+        objectRefs,
+        description: {
+          text: `${basis}に由来する場の変化だけが、膠着時に進行できる。`,
+          sourceSupportRefs: ["owner.source"],
+        },
+      }],
+    });
+  }
+
+  async validateBattlefieldSceneClaims(
+    input: import("./types.js").ValidateBattlefieldSceneClaimsInput,
+  ): Promise<import("./types.js").ValidateBattlefieldSceneClaimsResult> {
+    return {
+      segments: input.scene.segments.map((segment) => ({
+        segmentId: segment.id,
+        verdict: segment.kind === "flavor" ? "flavor_only" : "supported",
+        supportRefs: segment.kind === "flavor" ? [] : [...segment.supportRefs],
+        riskCodes: [],
+      })),
+    };
+  }
+
+  async generateNarrationDefinitionV2(
+    input: GenerateNarrationDefinitionV2Input,
+  ) {
+    if (input.sourceKind === "upgrade_description" ||
+        input.sourceKind === "import") {
+      return input.baseDefinition;
+    }
+    const source = input.sourceText.toLowerCase();
+    return NarrationDefinitionV2Schema.parse({
+      ...input.baseDefinition,
+      voice: {
+        ...input.baseDefinition.voice,
+        register: /実況|broadcast|radio/.test(source)
+          ? "broadcast"
+          : /分析|解説|analyt/.test(source)
+            ? "analytical"
+            : input.baseDefinition.voice.register,
+        subjectivity: /熱|dramatic|劇的/.test(source)
+          ? "dramatic"
+          : input.baseDefinition.voice.subjectivity,
+      },
+      cadence: {
+        ...input.baseDefinition.cadence,
+        sentenceLength: /短|簡潔|short/.test(source)
+          ? "short"
+          : input.baseDefinition.cadence.sentenceLength,
+      },
+    });
+  }
+
+  async generateNarrationStyleDescription(
+    input: GenerateNarrationStyleDescriptionInput,
+  ): Promise<GenerateNarrationStyleDescriptionResult> {
+    const selected = input.projection.facts.slice(0, 12);
+    const text = selected.map((fact) => fact.text).join("。 ").slice(0, 1200) ||
+      `${input.projection.displayName}という語り口。`;
+    return {
+      description: text,
+      segments: [{
+        id: "style-main",
+        text,
+        kind: "fact",
+        supportRefs: selected.map((fact) => fact.supportRef),
+      }],
+      assistantMessage: "構造化した方針から公開スタイル説明を作成しました。",
+    };
+  }
+
+  async validateNarrationStyleClaims(
+    input: ValidateNarrationStyleClaimsInput,
+  ): Promise<ValidateNarrationStyleClaimsResult> {
+    return {
+      segments: input.style.segments.map((segment) => ({
+        segmentId: segment.id,
+        verdict: segment.kind === "flavor" ? "flavor_only" : "supported",
+        supportRefs: segment.kind === "flavor" ? [] : [...segment.supportRefs],
+        riskCodes: [],
+      })),
+    };
+  }
+
   async adjustBattlefieldPreset(
     current: BattlefieldPreset,
     userMessage: string,
@@ -542,6 +674,8 @@ export class MockLlmProvider implements LlmProvider {
     stagnationHint: string;
     previousHappenings: Array<{ title: string; summary: string }>;
     battlefield?: BattlefieldInstance | null;
+    evolutionAffordance?: import("@kshiai/shared").BattlefieldEvolutionAffordanceV2 | null;
+    forbiddenDiscontinuities?: string[];
   }): Promise<{
     title: string;
     summary: string;
@@ -549,11 +683,12 @@ export class MockLlmProvider implements LlmProvider {
     tags?: string[];
   }> {
     const fieldDetails = [
+      input.evolutionAffordance?.description.text,
       input.battlefield?.terrain,
       ...(input.battlefield?.obstacles ?? []),
       ...(input.battlefield?.conditions ?? []),
     ].filter((value): value is string => Boolean(value));
-    const detail = fieldDetails[
+    const detail = input.evolutionAffordance?.description.text ?? fieldDetails[
       (input.turn + input.previousHappenings.length) %
         Math.max(1, fieldDetails.length)
     ] ?? input.battlefield?.displayName ?? input.scene;

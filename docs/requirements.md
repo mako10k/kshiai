@@ -174,6 +174,16 @@ CharacterSheet
 | F-BF-07 | 試合中の具体状況を気に入ったらプリセットとして保存できる | Must |
 | F-BF-08 | 戦場画像は外見記述・地形・障害・環境条件から生成し、本番は共有オブジェクトストレージへ永続化する。生成失敗時は既存 imageUrl を変更しない | Must |
 
+### 4.3c ナレーションスタイル
+
+| ID | 要件 | 優先度 |
+|----|------|--------|
+| F-NAR-01 | 自然文から視点権限、声、テンポ、全6フェーズ、説明・比喩・ユーモア・暴力・明示度、推奨/禁止表現、例・反例を V2 構造として生成し、公開説明と一緒に確認してから immutable generation として確定する | Must |
+| F-NAR-02 | 公開スタイル説明は disclosure-filtered projection から生成・claim 検証し、例・反例、禁止表現、compiler 指示、優先順位、制御 metadata を公開しない | Must |
+| F-NAR-03 | ready V2 だけを対戦 selector と直接 battle binding に許可し、legacy style は管理・削除・明示 upgrade に限る | Must |
+| F-NAR-04 | 試合開始時に exact generation、digest、`narration-prompt-v2` の6フェーズ出力を固定し、選択 style generation を追加・再活性化しない | Must |
+| F-NAR-05 | safety・出力 schema・確定 battle fact・grounding、server perspective、phase contract、style の順で競合を解決し、style や例が情報権限・勝敗・事実を拡張しない | Must |
+
 ### 4.4 バトルエンジン（プログラム責任）
 
 | ID | 要件 | 優先度 |
@@ -402,16 +412,38 @@ F-BTL-58〜71は完全受け入れ時の規範要件である。2026-08-05時点
 | GET | `/api/me` | Bearer JWTを検証し、対応するアプリ内ユーザーを返す |
 | GET | `/api/me` | 自分 |
 | GET | `/api/characters` | 自分のキャラ一覧（公開 DTO） |
-| POST | `/api/characters/generate` | 自然文からサーバー下書きを生成 |
-| GET | `/api/character-drafts/latest` | 自分の最新生成下書き |
-| POST | `/api/character-drafts/:id/chat` | 保存前下書きの会話調整 |
-| DELETE | `/api/character-drafts/:id` | 保存前下書きの破棄 |
-| POST | `/api/characters/:id/chat` | 微調整会話 |
-| POST | `/api/characters/:id/confirm` | 生成確定 |
+| POST | `/api/characters/generate` | 自然文から V2 authoring candidate を生成 |
+| GET | `/api/character-drafts/latest` | 自分の最新 V2 authoring candidate |
+| POST | `/api/character-drafts/:id/chat` | V2 authoring candidate の会話調整 |
+| DELETE | `/api/character-drafts/:id` | V2 authoring candidate の破棄 |
+| POST | `/api/characters/:id/chat` | V2 immutable revision candidate の生成 |
+| POST | `/api/characters/:id/confirm` | V2 candidate を immutable generation として確定 |
+| POST | `/api/characters/:id/upgrade` | 既存キャラから V2 upgrade candidate を生成 |
 | POST | `/api/characters/:id/copy` | コピー |
 | DELETE | `/api/characters/:id` | 削除 |
-| POST | `/api/characters/:id/image` | 画像生成 |
-| POST | `/api/battlefields/:id/image` | 戦場画像生成 |
+| POST | `/api/characters/:id/image` | ready V2 キャラの画像を immutable generation として生成 |
+| POST | `/api/characters/:id/image/toggle` | ready V2 キャラの画像を immutable generation として切替 |
+| POST | `/api/characters/:id/restore-revision` | ready V2 キャラの前世代を新しい immutable generation として復元 |
+| GET | `/api/battlefields` | 管理用戦場一覧。`selectable=true` では ready V2 のみ返す |
+| POST | `/api/battlefields/generate` | 自然文から V2 battlefield authoring candidate を生成 |
+| GET | `/api/battlefield-drafts/latest` | 自分の最新 V2 battlefield candidate |
+| POST | `/api/battlefield-drafts/:id/chat` | V2 battlefield candidate の会話調整 |
+| DELETE | `/api/battlefield-drafts/:id` | V2 battlefield candidate の破棄 |
+| POST | `/api/battlefields/:id/chat` | ready V2 戦場の immutable revision candidate を生成 |
+| POST | `/api/battlefields/:id/confirm` | candidate を immutable battlefield generation として確定 |
+| POST | `/api/battlefields/:id/upgrade` | 既存戦場から明示的 V2 upgrade candidate を生成 |
+| POST | `/api/battlefields/:id/copy` | 戦場を新しい ready V2 generation 1 としてコピー |
+| DELETE | `/api/battlefields/:id` | 自分の戦場を削除 |
+| POST | `/api/battlefields/:id/image` | ready V2 戦場画像を immutable media revision として生成 |
+| POST | `/api/battlefields/from-battle` | battle-owned instance を新しい ready V2 preset として明示保存 |
+| GET | `/api/narration-styles` | 管理用スタイル一覧。`selectable=true` では ready V2 のみ返す |
+| POST | `/api/narration-styles/generate` | 自然文から V2 narration-style candidate を生成 |
+| GET | `/api/narration-style-drafts/latest` | 自分の最新 V2 narration-style candidate |
+| DELETE | `/api/narration-style-drafts/:id` | V2 narration-style candidate の破棄 |
+| POST | `/api/narration-styles/:id/revise` | ready V2 style の immutable revision candidate を生成 |
+| POST | `/api/narration-styles/:id/confirm` | candidate を immutable narration-style generation として確定 |
+| POST | `/api/narration-styles/:id/upgrade` | legacy style から明示的 V2 upgrade candidate を生成 |
+| DELETE | `/api/narration-styles/:id` | 自分の narration style を削除 |
 | GET | `/api/match/candidates` | 相手候補 |
 | POST | `/api/match/random` | ランダム相手 |
 | POST | `/api/match/auto` | 同程度の相手を自動選択 |

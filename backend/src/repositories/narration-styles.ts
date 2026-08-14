@@ -5,15 +5,18 @@ import {
   toPublicNarrationStyle,
   type NarrationStyle,
   type NarrationStylePublic,
+  NarrationGenerationEnvelopeV2Schema,
+  compileNarrationPolicyV2,
 } from "@kshiai/shared";
 import { query, withTransaction } from "../db.js";
-import { newId } from "../id.js";
 import {
   canAccessSharedAsset,
   getUserAccessProfile,
   normalizeAccountKind,
 } from "../account-access.js";
-import { writeAssetGeneration } from "./asset-generations.js";
+import * as narrationAssetRepo from "./narration-style-assets-v2.js";
+import { buildImportedNarrationStyleEnvelopeV2 } from "../services/narration-style-authoring-service.js";
+import type { AssetGeneration } from "./asset-generations.js";
 
 let seedPromise: Promise<void> | null = null;
 
@@ -56,6 +59,15 @@ async function seedSystemNarrationStyles(): Promise<void> {
       );
     }
   });
+  for (const seed of SYSTEM_NARRATION_STYLE_SEEDS) {
+    const style = await getNarrationStyleRow(seed.id);
+    if (!style) continue;
+    const envelope = buildImportedNarrationStyleEnvelopeV2({
+      style,
+      attemptId: `system-import:${style.id}:v2`,
+    });
+    await narrationAssetRepo.activateImportedNarrationStyle({ style, envelope });
+  }
 }
 
 function parse(json: unknown): NarrationStyle {
@@ -65,7 +77,18 @@ function parse(json: unknown): NarrationStyle {
   return NarrationStyleSchema.parse(raw);
 }
 
-export async function listNarrationStyles(userId: string): Promise<NarrationStylePublic[]> {
+async function getNarrationStyleRow(id: string): Promise<NarrationStyle | null> {
+  const { rows } = await query<{ sheet_json: unknown }>(
+    `SELECT sheet_json FROM narration_styles WHERE id = $1`,
+    [id],
+  );
+  return rows[0] ? parse(rows[0].sheet_json) : null;
+}
+
+export async function listNarrationStyles(
+  userId: string,
+  options?: { selectable?: boolean },
+): Promise<NarrationStylePublic[]> {
   await ensureSystemNarrationStyles();
   const viewer = await getUserAccessProfile(userId);
   const { rows } = await query<{
@@ -79,135 +102,76 @@ export async function listNarrationStyles(userId: string): Promise<NarrationStyl
      LEFT JOIN users u ON u.id = n.owner_user_id
      ORDER BY n.is_system DESC, n.updated_at DESC`,
   );
-  return rows
+  const accessible = rows
     .filter((row) => canAccessSharedAsset({
       viewer,
       ownerUserId: row.owner_user_id,
       ownerKind: normalizeAccountKind(row.account_kind),
       isSystem: Boolean(row.is_system),
     }))
-    .map((row) => toPublicNarrationStyle(parse(row.sheet_json)));
+    .map((row) => parse(row.sheet_json));
+  const readyIds = await narrationAssetRepo.listReadyNarrationStyleIds(
+    accessible.map((style) => style.id),
+  );
+  const publicStyles = await Promise.all(accessible.map(async (style) => {
+    const compatibility = await narrationAssetRepo.getNarrationStyleCompatibility(
+      style.id,
+    );
+    const selectable = readyIds.has(style.id);
+    return toPublicNarrationStyle(style, {
+      compatibility,
+      selectable,
+      upgradeAction: !style.isSystem && compatibility.status !== "ready"
+        ? { label: "最新版に更新", targetSchemaVersion: 2 }
+        : null,
+    });
+  }));
+  return options?.selectable
+    ? publicStyles.filter((style) => style.selectable)
+    : publicStyles;
 }
 
 export async function getNarrationStyle(id: string): Promise<NarrationStyle | null> {
   await ensureSystemNarrationStyles();
-  const { rows } = await query<{ sheet_json: unknown }>(
-    `SELECT sheet_json FROM narration_styles WHERE id = $1`,
-    [id],
-  );
-  const row = rows[0];
-  if (!row) return null;
-  return parse(row.sheet_json);
+  return getNarrationStyleRow(id);
 }
 
-/** Resolve for a match: system, owned, or shared test-realm style; else default. */
-export async function resolveNarrationStyleForUser(
+export async function resolveReadyNarrationStyleForUser(
   userId: string,
   styleId?: string | null,
-): Promise<NarrationStyle> {
+): Promise<{
+  style: NarrationStyle;
+  generation: AssetGeneration;
+  envelope: ReturnType<typeof NarrationGenerationEnvelopeV2Schema.parse>;
+  compiledPolicy: ReturnType<typeof compileNarrationPolicyV2>;
+}> {
   await ensureSystemNarrationStyles();
-  if (styleId) {
-    const s = await getNarrationStyle(styleId);
-    if (s) {
-      const viewer = await getUserAccessProfile(userId);
-      const owner = s.ownerUserId
-        ? await getUserAccessProfile(s.ownerUserId)
-        : null;
-      if (canAccessSharedAsset({
-        viewer,
-        ownerUserId: s.ownerUserId,
-        ownerKind: owner?.accountKind ?? "general",
-        isSystem: s.isSystem,
-      })) return s;
-    }
+  const requestedId = styleId ?? DEFAULT_NARRATION_STYLE_ID;
+  const style = await getNarrationStyleRow(requestedId);
+  if (!style) throw new Error("NARRATION_STYLE_NOT_FOUND");
+  const viewer = await getUserAccessProfile(userId);
+  const owner = style.ownerUserId
+    ? await getUserAccessProfile(style.ownerUserId)
+    : null;
+  if (!canAccessSharedAsset({
+    viewer,
+    ownerUserId: style.ownerUserId,
+    ownerKind: owner?.accountKind ?? "general",
+    isSystem: style.isSystem,
+  })) {
+    throw new Error("NARRATION_STYLE_NOT_FOUND");
   }
-  return (
-    (await getNarrationStyle(DEFAULT_NARRATION_STYLE_ID)) ?? {
-      ...SYSTEM_NARRATION_STYLE_SEEDS[0]!,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    }
+  const generation = await narrationAssetRepo.getReadyNarrationStyleGeneration(
+    requestedId,
   );
-}
-
-export async function saveNarrationStyle(style: NarrationStyle): Promise<void> {
-  const json = JSON.stringify(style);
-  await withTransaction(async (connection) => {
-    await writeAssetGeneration(connection, {
-      assetType: "narration-style",
-      assetId: style.id,
-      schemaVersion: 1,
-      content: style,
-      createdAt: style.updatedAt,
-    });
-    await connection.query(
-      `INSERT INTO narration_styles
-        (id, owner_user_id, is_system, sheet_json, created_at, updated_at)
-       VALUES ($1, $2, $3, $4, $5, $6)
-       ON CONFLICT (id) DO UPDATE
-         SET owner_user_id = EXCLUDED.owner_user_id,
-             is_system = EXCLUDED.is_system,
-             sheet_json = EXCLUDED.sheet_json,
-             updated_at = EXCLUDED.updated_at`,
-      [style.id, style.ownerUserId, style.isSystem, json, style.createdAt, style.updatedAt],
-    );
-  });
-}
-
-export async function createUserNarrationStyle(
-  userId: string,
-  input: {
-    displayName: string;
-    description?: string;
-    instruction: string;
-    tags?: string[];
-    perspective?: NarrationStyle["perspective"];
-  },
-): Promise<NarrationStyle> {
-  const t = new Date().toISOString();
-  const style: NarrationStyle = {
-    id: newId("nst"),
-    ownerUserId: userId,
-    isSystem: false,
-    displayName: input.displayName.trim(),
-    description: (input.description ?? "").trim(),
-    instruction: input.instruction.trim(),
-    perspective: input.perspective ?? "external",
-    tags: input.tags ?? [],
-    createdAt: t,
-    updatedAt: t,
+  if (!generation) throw new Error("NARRATION_STYLE_UPGRADE_REQUIRED");
+  const envelope = NarrationGenerationEnvelopeV2Schema.parse(generation.content);
+  return {
+    style,
+    generation,
+    envelope,
+    compiledPolicy: compileNarrationPolicyV2(envelope.definition),
   };
-  await saveNarrationStyle(style);
-  return style;
-}
-
-export async function updateUserNarrationStyle(
-  id: string,
-  userId: string,
-  input: {
-    displayName?: string;
-    description?: string;
-    instruction?: string;
-    tags?: string[];
-    perspective?: NarrationStyle["perspective"];
-  },
-): Promise<NarrationStyle | null> {
-  const cur = await getNarrationStyle(id);
-  if (!cur || cur.isSystem || cur.ownerUserId !== userId) return null;
-  const next: NarrationStyle = {
-    ...cur,
-    displayName: input.displayName?.trim() || cur.displayName,
-    description:
-      input.description !== undefined
-        ? input.description.trim()
-        : cur.description,
-    instruction: input.instruction?.trim() || cur.instruction,
-    perspective: input.perspective ?? cur.perspective ?? "external",
-    tags: input.tags ?? cur.tags,
-    updatedAt: new Date().toISOString(),
-  };
-  await saveNarrationStyle(next);
-  return next;
 }
 
 export async function deleteUserNarrationStyle(

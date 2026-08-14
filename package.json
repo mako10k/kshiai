@@ -19,7 +19,10 @@
     "test:deployment": "node --import tsx --test infra/cloudflare-worker/src/**/*.test.ts",
     "build:worker": "npm run build --workspace=@kshiai/shared && npm run build --workspace=frontend && wrangler deploy --config infra/cloudflare-worker/wrangler.jsonc --dry-run",
     "observe:character-focus-shadow": "node --import tsx scripts/observe-character-focus-shadow.ts",
-    "lint": "npm run typecheck",
+    "static": "npm run static:jscpd && npm run static:lizard",
+    "static:jscpd": "jscpd --config .jscpd.json backend/src frontend/src packages/shared/src infra/cloudflare-worker/src scripts",
+    "static:lizard": "python3 scripts/check-lizard.py",
+    "lint": "npm run typecheck && npm run static",
     "sync:secdat": "bash scripts/sync-env-from-secdat.sh"
   },
   "engines": {
@@ -34,6 +37,7 @@
     "undici": "7.29.0"
   },
   "devDependencies": {
+    "jscpd": "5.0.15",
     "wrangler": "^4.118.0"
   }
 }

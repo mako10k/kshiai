@@ -86,6 +86,17 @@ export const BattlefieldPresetPublicSchema = z.object({
   obstacleHints: z.array(z.string()),
   conditionHints: z.array(z.string()),
   narrativeBlurb: z.string(),
+  compatibility: z.object({
+    status: z.enum(["unsupported", "upgrading", "upgrade_failed", "ready"]),
+    schemaVersion: z.number().int().positive().nullable(),
+    currentGenerationId: z.string().nullable(),
+    reasonCode: z.string().nullable(),
+  }).strict().optional(),
+  selectable: z.boolean().optional(),
+  upgradeAction: z.object({
+    label: z.string(),
+    targetSchemaVersion: z.number().int().positive(),
+  }).strict().nullable().optional(),
 });
 export type BattlefieldPresetPublic = z.infer<typeof BattlefieldPresetPublicSchema>;
 
@@ -106,6 +117,39 @@ export const BattlefieldInstanceSchema = z.object({
   /** Structured, immutable seed for the match's mutable semantic state. */
   semanticSeed: BattlefieldSemanticSeedSchema.optional(),
   appearance: BattlefieldAppearanceSchema.optional(),
+  /** Present for deterministic structured preset compilation. */
+  compilerContract: z.string().min(1).max(120).optional(),
+  areas: z.array(z.object({
+    id: z.string(),
+    name: z.string(),
+  }).strict()).max(24).optional(),
+  entryAreas: z.object({ a: z.string(), b: z.string() }).strict().optional(),
+  topology: z.array(z.object({
+    id: z.string(),
+    fromAreaId: z.string(),
+    toAreaId: z.string(),
+    movement: z.enum(["open", "difficult", "blocked"]),
+    sight: z.enum(["clear", "obscured", "blocked"]),
+    sound: z.enum(["clear", "muffled", "blocked"]),
+  }).strict()).max(64).optional(),
+  evolutionAffordances: z.array(z.object({
+    id: z.string(),
+    pressure: z.enum([
+      "weather_shift",
+      "visibility_shift",
+      "hazard_escalation",
+      "structural_failure",
+      "crowd_shift",
+      "resource_emergence",
+    ]),
+    areaRefs: z.array(z.string()).max(12),
+    objectRefs: z.array(z.string()).max(12),
+    description: z.object({
+      text: z.string(),
+      sourceSupportRefs: z.array(z.string()),
+    }).strict(),
+  }).strict()).max(24).optional(),
+  forbiddenDiscontinuities: z.array(z.string()).max(24).optional(),
 });
 export type BattlefieldInstance = z.infer<typeof BattlefieldInstanceSchema>;
 

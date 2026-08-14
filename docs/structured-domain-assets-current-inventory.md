@@ -1,5 +1,9 @@
 # Structured selectable assets: current-state inventory
 
+> Historical P1 inventory: the gaps below describe the 2026-08-13 baseline.
+> The accepted local cutover result is recorded in
+> [the integrated acceptance evidence](evidence/structured-domain-assets-integration-acceptance-2026-08-14.md).
+
 - Status: Current-state evidence for `SDA_ENVELOPE_DESIGN`
 - Date: 2026-08-13
 - Scope: characters, battlefield presets, narration styles, asset generations,

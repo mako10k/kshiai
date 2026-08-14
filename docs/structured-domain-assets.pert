@@ -1,8 +1,8 @@
 project STRUCTURED_DOMAIN_ASSETS:
-  version 6
+  version 7
   title "Separate structured domain assets from public projections"
   description "First close Referee audit prose exposure then design and implement a common immutable definition and public projection envelope followed by character battlefield and narration assets in authority and product priority order"
-  as_of 2026-08-13
+  as_of 2026-08-14
   duration_unit point
   velocity 1p/1d
   finish DOMAIN_ASSETS_ACCEPTED
@@ -57,7 +57,7 @@ task SDA_CHARACTER ASSET_ENVELOPE_DESIGNED -> CHARACTER_STRUCTURE_ACCEPTED:
   title "Design implement and explicitly upgrade structured character definitions"
   description "In a dedicated accepted design slice implement natural instruction to validated identity background latent psyche disposition with publishable background separate restricted live state action norms speech policy relationship seeds capabilities equipment items initial loadout bounded descriptions and path-level disclosure then generate the profile from source plus display-safe structure add conscious observable and narrator projections narrow raw interior access and add the idempotent latest-version button using the existing profile as upgrade source with server-enforced exclusion of unsupported characters"
   duration 5p
-  status active
+  status done
   requires:
     DEV 1
   owner "codex"
@@ -66,6 +66,7 @@ task SDA_BATTLEFIELD CHARACTER_STRUCTURE_ACCEPTED -> BATTLEFIELD_STRUCTURE_ACCEP
   title "Design and implement structured battlefield definitions"
   description "In a dedicated accepted design slice implement natural instruction to validated scene traits topology terrain persistent and temporal effects happening affordances initial first-class objects and states then generate the public scene from source plus public-safe structure add explicit upgrade from the existing description and exclude unsupported presets from selectors and random pools"
   duration 5p
+  status done
   requires:
     DEV 1
   owner "codex"
@@ -74,6 +75,7 @@ task SDA_NARRATION BATTLEFIELD_STRUCTURE_ACCEPTED -> NARRATION_STRUCTURE_ACCEPTE
   title "Design and implement structured narration definitions"
   description "In a dedicated accepted design slice implement natural instruction to validated perspective rights voice cadence phase policies explanation and intensity dimensions rhetoric examples and counterexamples then generate the public style description from source plus public-safe structure add a versioned prompt compiler explicit upgrade from the existing description and exclude unsupported styles from selectors"
   duration 3p
+  status done
   requires:
     DEV 1
   owner "codex"
@@ -82,6 +84,7 @@ task SDA_INTEGRATION NARRATION_STRUCTURE_ACCEPTED -> DOMAIN_ASSETS_ACCEPTED:
   title "Accept integrated authoring binding privacy and pre-public cutover"
   description "Verify two-stage create and explicit upgrade atomic activation source and projection privacy server-side selection eligibility search matchmaking random pools battle binding agents narration history replay deletion export observability and cross-generation invariants across all three asset families without implicit battle-time conversion a permanent legacy runtime path eager bulk migration or production rollout"
   duration 2p
+  status done
   requires:
     DEV 1
   owner "codex"
@@ -118,3 +121,48 @@ work_event WE-SDA-CHARACTER-START:
   kind start
   occurred_at 2026-08-13T17:44:22+09:00
   planned_value 5p
+
+work_event WE-SDA-CHARACTER-FINISH:
+  model 1
+  task SDA_CHARACTER
+  kind finish
+  occurred_at 2026-08-14T09:39:39+09:00
+
+work_event WE-SDA-BATTLEFIELD-START:
+  model 1
+  task SDA_BATTLEFIELD
+  kind start
+  occurred_at 2026-08-14T09:51:47+09:00
+  planned_value 5p
+
+work_event WE-SDA-BATTLEFIELD-FINISH:
+  model 1
+  task SDA_BATTLEFIELD
+  kind finish
+  occurred_at 2026-08-14T10:52:09+09:00
+
+work_event WE-SDA-NARRATION-START:
+  model 1
+  task SDA_NARRATION
+  kind start
+  occurred_at 2026-08-14T11:13:40+09:00
+  planned_value 3p
+
+work_event WE-SDA-NARRATION-FINISH:
+  model 1
+  task SDA_NARRATION
+  kind finish
+  occurred_at 2026-08-14T11:39:15+09:00
+
+work_event WE-SDA-INTEGRATION-START:
+  model 1
+  task SDA_INTEGRATION
+  kind start
+  occurred_at 2026-08-14T12:00:25+09:00
+  planned_value 2p
+
+work_event WE-SDA-INTEGRATION-FINISH:
+  model 1
+  task SDA_INTEGRATION
+  kind finish
+  occurred_at 2026-08-14T12:11:53+09:00

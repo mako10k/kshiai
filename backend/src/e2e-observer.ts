@@ -8,6 +8,8 @@ import {
 import * as battlefieldRepo from "./repositories/battlefields.js";
 import * as characterRepo from "./repositories/characters.js";
 import * as narrationStyleRepo from "./repositories/narration-styles.js";
+import * as narrationStyleAssetRepo from "./repositories/narration-style-assets-v2.js";
+import { buildImportedNarrationStyleEnvelopeV2 } from "./services/narration-style-authoring-service.js";
 
 export const E2E_FIXTURE_IDS = {
   observerCharacter: "chr_e2e_dialogue_nagi",
@@ -260,7 +262,7 @@ async function ensureBattlefield(
     }
     return "reused";
   }
-  await battlefieldRepo.savePreset(fixture);
+  await battlefieldRepo.importPreset(fixture);
   return "created";
 }
 
@@ -272,10 +274,19 @@ async function ensureNarrationStyle(
     if (existing.ownerUserId !== fixture.ownerUserId || existing.isSystem) {
       throw new Error(`E2E fixture ownership mismatch: ${fixture.id}`);
     }
-    return "reused";
+    const ready = await narrationStyleAssetRepo.getReadyNarrationStyleGeneration(
+      fixture.id,
+    );
+    if (ready) return "reused";
   }
-  await narrationStyleRepo.saveNarrationStyle(fixture);
-  return "created";
+  await narrationStyleAssetRepo.activateImportedNarrationStyle({
+    style: fixture,
+    envelope: buildImportedNarrationStyleEnvelopeV2({
+      style: fixture,
+      attemptId: `e2e-fixture-import:${fixture.id}:v2`,
+    }),
+  });
+  return existing ? "reused" : "created";
 }
 
 export async function ensurePersistentE2eFixtures(input: {
