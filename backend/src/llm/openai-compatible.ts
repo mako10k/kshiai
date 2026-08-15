@@ -1429,7 +1429,42 @@ emit kind=character. Speech examples are style only, never facts.`,
           temperature: 0.2,
         },
       ) as Record<string, unknown>;
-      const fill = CharacterDefinitionGapFillV2Schema.parse(data.fill ?? {});
+      const parsedFill = CharacterDefinitionGapFillV2Schema.safeParse(data.fill ?? {});
+      if (parsedFill.success) {
+        return restoreAuthoritativeCharacterDefinitionV2(
+          input.baseDefinition,
+          applyCharacterDefinitionGapFillV2(
+            input.baseDefinition,
+            parsedFill.data,
+            input.sourceKind,
+          ),
+          input.sourceKind,
+        );
+      }
+      const repaired = await this.chatJson(
+        `You repair one rejected character definition fill. Return JSON only:
+{"fill": object}.
+
+Correct only the listed validation issues. Do not regenerate identity, combat,
+capabilities, inventory, or loadout. Empty arrays are valid.`,
+        JSON.stringify({
+          sourceKind: input.sourceKind,
+          ownerSource: input.sourceText.slice(0, 6000),
+          rejectedFill: data.fill ?? {},
+          validationIssues: parsedFill.error.issues.map((issue) => ({
+            code: issue.code,
+            path: issue.path,
+            message: issue.message,
+          })),
+        }),
+        {
+          tier: "engine",
+          label: "fillCharacterDefinitionGapsV2Repair",
+          timeoutMs: ENGINE_TIMEOUT_MS,
+          temperature: 0.2,
+        },
+      ) as Record<string, unknown>;
+      const fill = CharacterDefinitionGapFillV2Schema.parse(repaired.fill ?? {});
       return restoreAuthoritativeCharacterDefinitionV2(
         input.baseDefinition,
         applyCharacterDefinitionGapFillV2(
