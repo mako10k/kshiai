@@ -8,6 +8,7 @@ import {
   type CharacterSheet,
 } from "@kshiai/shared";
 import type {
+  GenerateCharacterDefinitionV2Input,
   GenerateCharacterInput,
   GenerateCharacterProfileInput,
 } from "./llm/types.js";
@@ -305,7 +306,7 @@ describe("structured character route acceptance", () => {
     const latest = await successApp.request("/api/character-drafts/latest", {
       headers: authHeaders,
     });
-    assert.deepEqual(await latest.json(), { draft: null });
+    assert.deepEqual(await latest.json(), { draft: null, progress: null });
 
     const chat = await successApp.request(
       "/api/character-drafts/route-legacy-draft/chat",
@@ -671,5 +672,61 @@ describe("structured character route acceptance", () => {
       }).characters.map((character) => character.id),
     );
     assert.equal(selectableIds.has("route-legacy-mine"), true);
+  });
+
+  it("exposes in-flight authoring progress while an upgrade is running", async () => {
+    class SlowStructureProvider extends MockLlmProvider {
+      override async generateCharacterDefinitionV2(
+        input: GenerateCharacterDefinitionV2Input,
+      ) {
+        await new Promise((resolve) => setTimeout(resolve, 250));
+        return super.generateCharacterDefinitionV2(input);
+      }
+    }
+
+    await insertLegacyCharacter(sheet({
+      id: "route-legacy-progress",
+      ownerUserId: "route-owner",
+      displayName: "進捗確認キャラ",
+    }));
+    const progressApp = buildRoutes({ llm: new SlowStructureProvider() });
+    const upgrade = progressApp.request(
+      "/api/characters/route-legacy-progress/upgrade",
+      {
+        method: "POST",
+        headers: {
+          ...authHeaders,
+          "Idempotency-Key": "route-v2-progress-001",
+        },
+      },
+    );
+    await new Promise((resolve) => setTimeout(resolve, 60));
+    const mid = await progressApp.request(
+      "/api/characters/route-legacy-progress",
+      { headers: authHeaders },
+    );
+    assert.equal(mid.status, 200);
+    const midBody = await mid.json() as {
+      character: {
+        authoringProgress: {
+          status: string;
+          label: string;
+          step: number;
+          stepCount: number;
+        } | null;
+      };
+    };
+    assert.ok(midBody.character.authoringProgress);
+    assert.equal(
+      midBody.character.authoringProgress?.status,
+      "generating_structure",
+    );
+    assert.match(
+      midBody.character.authoringProgress?.label ?? "",
+      /構造/,
+    );
+    assert.equal(midBody.character.authoringProgress?.stepCount, 5);
+    const finished = await upgrade;
+    assert.equal(finished.status, 200);
   });
 });

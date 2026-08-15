@@ -8,6 +8,7 @@ import {
   ensureCharacterIdentityProperties,
   summarizeRatingPopulation,
   toPublicCharacter,
+  toAssetAuthoringProgress,
   type RatingDisplayContext,
   OpponentBattleMemorySchema,
   type OpponentBattleMemory,
@@ -37,6 +38,7 @@ import {
 } from "./asset-generations.js";
 import {
   getCharacterCompatibility,
+  getInFlightCharacterAuthoringAttempt,
   getReadyCharacterGenerationHistory,
   listReadyCharacterIds,
 } from "./character-assets-v2.js";
@@ -161,6 +163,9 @@ export async function toPublicCharacterForViewer(
   );
   const compatibility = await getCharacterCompatibility(sheet.id);
   const isOwner = viewerUserId === sheet.ownerUserId;
+  const inFlight = isOwner
+    ? await getInFlightCharacterAuthoringAttempt(sheet.id, sheet.ownerUserId)
+    : null;
   const history = isOwner && compatibility.status === "ready"
     ? await getReadyCharacterGenerationHistory(sheet.id)
     : null;
@@ -184,6 +189,9 @@ export async function toPublicCharacterForViewer(
     selectable: compatibility.status === "ready",
     upgradeAction: isOwner && compatibility.status !== "ready"
       ? { label: "このキャラを最新版に更新", targetSchemaVersion: 2 }
+      : null,
+    authoringProgress: inFlight
+      ? toAssetAuthoringProgress(inFlight.kind, inFlight.status)
       : null,
   };
 }

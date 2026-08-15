@@ -8,14 +8,36 @@ import {
   defaultCharacterDisclosurePolicyV2,
   defaultRecord,
   legacyCharacterSheetToDefinitionV2,
+  listCharacterDefinitionGapsV2,
+  normalizeCharacterDefinitionV2,
   projectCharacterProfileSourceV2,
   validateCharacterProfileClaimAssessmentV2,
   validateCharacterPublicPresentationV2,
+  type AssetAuthoringAttemptStatus,
   type CharacterGenerationEnvelopeV2,
   type CharacterSheet,
 } from "@kshiai/shared";
 import { type LlmProvider, type GenerateCharacterResult } from "../llm/types.js";
 import { assetContentDigest } from "../repositories/asset-generations.js";
+
+export const CHARACTER_DEFINITION_CHECK_FAILED =
+  "CHARACTER_DEFINITION_CHECK_FAILED";
+
+export function existingCharacterGenerationResult(
+  sheet: CharacterSheet,
+): GenerateCharacterResult {
+  const {
+    id: _id,
+    ownerUserId: _ownerUserId,
+    createdAt: _createdAt,
+    updatedAt: _updatedAt,
+    ...rest
+  } = sheet;
+  return {
+    assistantMessage: "既存の公開設定を最新版の構造へ移します。",
+    sheet: rest,
+  };
+}
 
 export const CHARACTER_STRUCTURE_GENERATOR_CONTRACT =
   "character-structure-transitional-v2";
@@ -32,17 +54,22 @@ export async function buildCharacterGenerationCandidate(input: {
     "upgrade_description" | "import";
   generated: GenerateCharacterResult;
   existing?: CharacterSheet | null;
+  reportStatus?: (status: AssetAuthoringAttemptStatus) => Promise<void>;
 }): Promise<{
   envelope: CharacterGenerationEnvelopeV2;
   previewSheet: CharacterSheet;
   assistantMessage: string;
 }> {
   const now = new Date().toISOString();
+  const keepLegacyBlurb = input.sourceKind === "upgrade_description";
   const balanced = balanceCharacterCombatFields({
     ...input.generated.sheet,
-    // The first-stage public blurb is deliberately discarded. Public prose is
-    // derived only after the structured definition and disclosure policy pass.
-    narrativeBlurb: "",
+    // Create/revision discard the first-stage public blurb so profile prose is
+    // derived only after structure. Upgrade keeps the existing blurb as the
+    // deterministic expressionNotes source.
+    narrativeBlurb: keepLegacyBlurb
+      ? (input.existing?.narrativeBlurb || input.generated.sheet.narrativeBlurb || "")
+      : "",
   });
   const temporary: CharacterSheet = {
     ...balanced,
@@ -58,16 +85,49 @@ export async function buildCharacterGenerationCandidate(input: {
     visibility: input.existing?.visibility ?? "public",
   };
   const baseDefinition = legacyCharacterSheetToDefinitionV2(temporary);
-  const definition = await input.llm.generateCharacterDefinitionV2({
+  await input.reportStatus?.("generating_structure");
+  const generatedDefinition = await input.llm.generateCharacterDefinitionV2({
     sourceText: input.sourceText,
     baseDefinition,
     sourceKind: input.sourceKind,
   });
+  await input.reportStatus?.("validating_structure");
+  const firstPass = normalizeCharacterDefinitionV2({
+    base: baseDefinition,
+    candidate: generatedDefinition,
+    sourceKind: input.sourceKind,
+  });
+  const review = await input.llm.reviewCharacterDefinitionV2({
+    sourceText: input.sourceText,
+    sourceKind: input.sourceKind,
+    baseDefinition,
+    candidate: firstPass.definition,
+    gaps: listCharacterDefinitionGapsV2(baseDefinition),
+    findings: firstPass.findings,
+  });
+  let definition = firstPass.definition;
+  let findings = firstPass.findings;
+  if (review.verdict === "revise" && review.fill) {
+    const corrected = normalizeCharacterDefinitionV2({
+      base: baseDefinition,
+      candidate: definition,
+      sourceKind: input.sourceKind,
+      fill: review.fill,
+    });
+    definition = corrected.definition;
+    findings = corrected.findings;
+  }
+  if (findings.length > 0) {
+    throw new Error(
+      `${CHARACTER_DEFINITION_CHECK_FAILED}:${findings.map((finding) => finding.code).join(",")}`,
+    );
+  }
   const disclosurePolicy = defaultCharacterDisclosurePolicyV2(definition);
   const projection = projectCharacterProfileSourceV2(
     definition,
     disclosurePolicy,
   );
+  await input.reportStatus?.("generating_description");
   const generatedProfile = await input.llm.generateCharacterProfile({
     sourceText: input.sourceText,
     projection,
@@ -89,6 +149,7 @@ export async function buildCharacterGenerationCandidate(input: {
       segments: generatedProfile.segments,
     }),
   );
+  await input.reportStatus?.("validating_description");
   const claimAssessment = await input.llm.validateCharacterProfileClaims({
     projection,
     profile: {

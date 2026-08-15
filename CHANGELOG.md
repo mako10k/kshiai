@@ -5,6 +5,25 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 
 ## [Unreleased]
 
+## [0.19.1] - 2026-08-15
+
+### Fixed
+
+- Stops re-generating a full legacy character sheet during old-character
+  upgrade. The existing sheet is converted deterministically, then only missing
+  structured fields are filled. Mechanical checks restore combat, identity, and
+  capabilities, and a single self-review pass may correct the remainder.
+
+### Added
+
+- Shows in-flight authoring progress with a spinner and step label during
+  character create and upgrade, including resume after reload.
+
+### Operations
+
+- No database migration. Application rollback returns to v0.19.0, which remains
+  compatible with the existing authoring-attempt status vocabulary.
+
 ## [0.19.0] - 2026-08-14
 
 ### Added

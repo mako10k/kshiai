@@ -33,6 +33,8 @@ import type {
   GenerateCharacterProfileInput,
   GenerateCharacterProfileResult,
   GenerateCharacterDefinitionV2Input,
+  ReviewCharacterDefinitionV2Input,
+  ReviewCharacterDefinitionV2Result,
   ValidateCharacterProfileClaimsInput,
   ValidateCharacterProfileClaimsResult,
   GenerateNarrationStyleDescriptionInput,
@@ -198,6 +200,12 @@ export class MockLlmProvider implements LlmProvider {
     input: GenerateCharacterDefinitionV2Input,
   ) {
     return structuredClone(input.baseDefinition);
+  }
+
+  async reviewCharacterDefinitionV2(
+    _input: ReviewCharacterDefinitionV2Input,
+  ): Promise<ReviewCharacterDefinitionV2Result> {
+    return { verdict: "accept", issues: [], fill: null };
   }
 
   async validateCharacterProfileClaims(

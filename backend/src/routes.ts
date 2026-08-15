@@ -25,6 +25,8 @@ import {
   battlefieldDefinitionV2ToLegacyPreset,
   projectCharacterImageBriefV2,
   projectBattlefieldImageBriefV2,
+  toAssetAuthoringProgress,
+  type AssetAuthoringAttemptStatus,
   type BattlefieldPreset,
   type CharacterSheet,
   type NarrationStyle,
@@ -98,7 +100,10 @@ import {
   verifyNarrationTaskAuthorization,
 } from "./services/narration-task-dispatch.js";
 import { assetContentDigest } from "./repositories/asset-generations.js";
-import { buildCharacterGenerationCandidate } from "./services/character-authoring-service.js";
+import {
+  buildCharacterGenerationCandidate,
+  existingCharacterGenerationResult,
+} from "./services/character-authoring-service.js";
 import { buildBattlefieldGenerationCandidate } from "./services/battlefield-authoring-service.js";
 import { buildNarrationStyleGenerationCandidate } from "./services/narration-style-authoring-service.js";
 import type { GenerateCharacterResult, LlmProvider } from "./llm/types.js";
@@ -178,6 +183,18 @@ async function characterSheetForAttempt(
         }
       : undefined,
   });
+}
+
+function reportCharacterAuthoringStatus(
+  attemptId: string,
+  ownerUserId: string,
+) {
+  return (status: AssetAuthoringAttemptStatus) =>
+    charAssetRepo.updateCharacterAuthoringStatus({
+      attemptId,
+      ownerUserId,
+      status,
+    });
 }
 
 async function characterDraftResponse(
@@ -809,6 +826,11 @@ export function buildRoutes(options: {
       return c.json({ error: "request_in_progress" }, 409);
     }
     try {
+      await charAssetRepo.updateCharacterAuthoringStatus({
+        attemptId: started.attempt.attemptId,
+        ownerUserId: user.id,
+        status: "generating_structure",
+      });
       const referenceTools = {
         search: async (query: string, limit?: number) =>
           charRepo.searchOwnedCharacterReferences(user.id, query, limit),
@@ -859,11 +881,6 @@ export function buildRoutes(options: {
           409,
         );
       }
-      await charAssetRepo.updateCharacterAuthoringStatus({
-        attemptId: started.attempt.attemptId,
-        ownerUserId: user.id,
-        status: "generating_description",
-      });
       const candidate = await buildCharacterGenerationCandidate({
         llm,
         attemptId: started.attempt.attemptId,
@@ -872,6 +889,10 @@ export function buildRoutes(options: {
         sourceText: body.prompt,
         sourceKind: "create_instruction",
         generated: gen,
+        reportStatus: reportCharacterAuthoringStatus(
+          started.attempt.attemptId,
+          user.id,
+        ),
       });
       const saved = await charAssetRepo.saveCharacterAuthoringCandidate({
         attemptId: started.attempt.attemptId,
@@ -922,6 +943,10 @@ export function buildRoutes(options: {
               : "create_instruction",
           generated: adjustedGenerationResult(current, adjustment),
           existing: await charRepo.getSheetIncludingDeleted(structured.characterId),
+          reportStatus: reportCharacterAuthoringStatus(
+            structured.attemptId,
+            user.id,
+          ),
         });
         const saved = await charAssetRepo.saveCharacterAuthoringCandidate({
           attemptId: structured.attemptId,
@@ -949,10 +974,14 @@ export function buildRoutes(options: {
     if (structured?.candidate) {
       return c.json({
         draft: await characterDraftResponse(structured, user.id),
+        progress: null,
       });
     }
     return c.json({
       draft: null,
+      progress: structured
+        ? toAssetAuthoringProgress(structured.kind, structured.status)
+        : null,
     });
   });
 
@@ -1054,35 +1083,6 @@ export function buildRoutes(options: {
         ownerUserId: user.id,
         status: "generating_structure",
       });
-      const regenerated = await llm.generateCharacter({
-        prompt: `次の既存公開プロフィールを最新版の構造化キャラクター設定へ再構築してください。記載のない経歴、関係性、潜在意識の原因は発明しないでください。\n\n${sourceText}`,
-      });
-      const generated: GenerateCharacterResult = {
-        assistantMessage: regenerated.assistantMessage,
-        sheet: {
-          ...regenerated.sheet,
-          // Deterministically known legacy values win over model inference.
-          displayName: sheet.displayName,
-          identity: sheet.identity,
-          tags: sheet.tags,
-          appearance: sheet.appearance,
-          parameters: sheet.parameters,
-          basicAttack: sheet.basicAttack,
-          skills: sheet.skills,
-          weapon: sheet.weapon,
-          armor: sheet.armor,
-          combatFlags: sheet.combatFlags,
-          decisionProfile: sheet.decisionProfile,
-          narrativeBlurb: "",
-          visibility: sheet.visibility,
-          deletedAt: sheet.deletedAt,
-          record: sheet.record,
-          recordOverall: sheet.recordOverall,
-          improvementMemo: sheet.improvementMemo,
-          opponentMemories: sheet.opponentMemories,
-          revisionSnapshot: sheet.revisionSnapshot,
-        },
-      };
       const candidate = await buildCharacterGenerationCandidate({
         llm,
         attemptId: started.attempt.attemptId,
@@ -1090,8 +1090,12 @@ export function buildRoutes(options: {
         ownerUserId: user.id,
         sourceText,
         sourceKind: "upgrade_description",
-        generated,
+        generated: existingCharacterGenerationResult(sheet),
         existing: sheet,
+        reportStatus: reportCharacterAuthoringStatus(
+          started.attempt.attemptId,
+          user.id,
+        ),
       });
       const saved = await charAssetRepo.saveCharacterAuthoringCandidate({
         attemptId: started.attempt.attemptId,
@@ -1171,6 +1175,10 @@ export function buildRoutes(options: {
         sourceKind: "revision_instruction",
         generated: adjustedGenerationResult(sheet, adjustment),
         existing: sheet,
+        reportStatus: reportCharacterAuthoringStatus(
+          started.attempt.attemptId,
+          user.id,
+        ),
       });
       const saved = await charAssetRepo.saveCharacterAuthoringCandidate({
         attemptId: started.attempt.attemptId,
