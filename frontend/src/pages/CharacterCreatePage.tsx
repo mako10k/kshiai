@@ -131,12 +131,11 @@ export function CharacterCreatePage() {
             {busy || resumeInFlight ? "生成中…" : "生成する"}
           </button>
         </form>
-        {(busy || resumeInFlight || progress) && (
-          <AuthoringProgressNotice
-            progress={progress}
-            fallbackLabel="キャラクターを生成中…"
-          />
-        )}
+        <AuthoringProgressNotice
+          active={busy || resumeInFlight}
+          progress={progress}
+          fallbackLabel="キャラクターを生成中…"
+        />
         {message && <p className="ok">{message}</p>}
         {error && <p className="error">{error}</p>}
       </div>

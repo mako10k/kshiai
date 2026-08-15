@@ -3,7 +3,9 @@ import type { AssetAuthoringProgress } from "@kshiai/shared";
 export function AuthoringProgressNotice(props: {
   progress?: AssetAuthoringProgress | null;
   fallbackLabel: string;
+  active?: boolean;
 }) {
+  if (!props.active && !props.progress) return null;
   const label = props.progress?.label ?? props.fallbackLabel;
   const step = props.progress?.step;
   const stepCount = props.progress?.stepCount;

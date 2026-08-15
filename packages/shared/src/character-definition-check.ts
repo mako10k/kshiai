@@ -119,53 +119,73 @@ function dropExactCharacterTargets<T extends {
   return items.filter((item) => item.target.kind !== "character");
 }
 
+function applyOneGapFill(
+  next: CharacterDefinitionV2,
+  fill: CharacterDefinitionGapFillV2,
+  allow: (key: CharacterDefinitionGapKey) => boolean,
+): CharacterDefinitionV2 {
+  const patched = { ...next };
+  if (fill.profileBackground && allow("profileBackground")) {
+    patched.profileBackground = fill.profileBackground;
+  }
+  if (fill.appearanceDetails && allow("appearanceDetails")) {
+    patched.appearance = { ...patched.appearance, details: fill.appearanceDetails };
+  }
+  if (fill.relationshipSeeds && allow("relationshipSeeds")) {
+    patched.relationshipSeeds = dropExactCharacterTargets(fill.relationshipSeeds);
+  }
+  if (fill.actionNorms && allow("actionNorms")) {
+    patched.actionNorms = fill.actionNorms;
+  }
+  if (fill.expressionNotes !== undefined && allow("expressionNotes")) {
+    patched.expressionNotes = fill.expressionNotes;
+  }
+  return patched;
+}
+
+function applyPsycheAndSpeechFill(
+  next: CharacterDefinitionV2,
+  fill: CharacterDefinitionGapFillV2,
+  allow: (key: CharacterDefinitionGapKey) => boolean,
+): CharacterDefinitionV2 {
+  const patched = { ...next };
+  if (fill.psycheDisposition && allow("psycheCoreNeeds")) {
+    patched.psycheDisposition = {
+      ...patched.psycheDisposition,
+      coreNeeds: fill.psycheDisposition.coreNeeds ??
+        patched.psycheDisposition.coreNeeds,
+      description: fill.psycheDisposition.description !== undefined
+        ? fill.psycheDisposition.description
+        : patched.psycheDisposition.description,
+    };
+  }
+  if (fill.speechPolicy && allow("speechPolicy")) {
+    patched.speechPolicy = {
+      ...patched.speechPolicy,
+      ...fill.speechPolicy,
+      addressRules: dropExactCharacterTargets(
+        fill.speechPolicy.addressRules ?? patched.speechPolicy.addressRules,
+      ),
+    };
+  }
+  return patched;
+}
+
 export function applyCharacterDefinitionGapFillV2(
   base: CharacterDefinitionV2,
   fill: CharacterDefinitionGapFillV2,
   sourceKind: CharacterDefinitionSourceKind,
 ): CharacterDefinitionV2 {
   const gaps = new Set(listCharacterDefinitionGapsV2(base));
-  const upgrade = sourceKind === "upgrade_description";
-  const allow = (key: CharacterDefinitionGapKey) => !upgrade || gaps.has(key);
-  const next = structuredClone(base);
-  if (fill.profileBackground && allow("profileBackground")) {
-    next.profileBackground = fill.profileBackground;
-  }
-  if (fill.appearanceDetails && allow("appearanceDetails")) {
-    next.appearance = {
-      ...next.appearance,
-      details: fill.appearanceDetails,
-    };
-  }
-  if (fill.psycheDisposition && allow("psycheCoreNeeds")) {
-    next.psycheDisposition = {
-      ...next.psycheDisposition,
-      coreNeeds: fill.psycheDisposition.coreNeeds ??
-        next.psycheDisposition.coreNeeds,
-      description: fill.psycheDisposition.description !== undefined
-        ? fill.psycheDisposition.description
-        : next.psycheDisposition.description,
-    };
-  }
-  if (fill.speechPolicy && allow("speechPolicy")) {
-    next.speechPolicy = {
-      ...next.speechPolicy,
-      ...fill.speechPolicy,
-      addressRules: dropExactCharacterTargets(
-        fill.speechPolicy.addressRules ?? next.speechPolicy.addressRules,
-      ),
-    };
-  }
-  if (fill.relationshipSeeds && allow("relationshipSeeds")) {
-    next.relationshipSeeds = dropExactCharacterTargets(fill.relationshipSeeds);
-  }
-  if (fill.actionNorms && allow("actionNorms")) {
-    next.actionNorms = fill.actionNorms;
-  }
-  if (fill.expressionNotes !== undefined && allow("expressionNotes")) {
-    next.expressionNotes = fill.expressionNotes;
-  }
-  return CharacterDefinitionV2Schema.parse(next);
+  const allow = (key: CharacterDefinitionGapKey) =>
+    sourceKind !== "upgrade_description" || gaps.has(key);
+  return CharacterDefinitionV2Schema.parse(
+    applyPsycheAndSpeechFill(
+      applyOneGapFill(structuredClone(base), fill, allow),
+      fill,
+      allow,
+    ),
+  );
 }
 
 export function restoreAuthoritativeCharacterDefinitionV2(
@@ -238,12 +258,8 @@ function mechanicsEqual(
   });
 }
 
-export function checkCharacterDefinitionV2(
+function compileFindings(
   definition: CharacterDefinitionV2,
-  options?: {
-    base?: CharacterDefinitionV2;
-    sourceKind?: CharacterDefinitionSourceKind;
-  },
 ): CharacterDefinitionCheckFinding[] {
   const findings: CharacterDefinitionCheckFinding[] = [];
   try {
@@ -264,6 +280,13 @@ export function checkCharacterDefinitionV2(
       message: error instanceof Error ? error.message : "relationship compile failed",
     });
   }
+  return findings;
+}
+
+function referenceFindings(
+  definition: CharacterDefinitionV2,
+): CharacterDefinitionCheckFinding[] {
+  const findings: CharacterDefinitionCheckFinding[] = [];
   for (const [index, seed] of definition.relationshipSeeds.entries()) {
     if (seed.target.kind === "character") {
       findings.push({
@@ -293,6 +316,17 @@ export function checkCharacterDefinitionV2(
       message: "selfReferenceNameId must point at an identity name",
     });
   }
+  return findings;
+}
+
+function authorityFindings(
+  definition: CharacterDefinitionV2,
+  options?: {
+    base?: CharacterDefinitionV2;
+    sourceKind?: CharacterDefinitionSourceKind;
+  },
+): CharacterDefinitionCheckFinding[] {
+  const findings: CharacterDefinitionCheckFinding[] = [];
   if (options?.base && !mechanicsEqual(options.base, definition)) {
     findings.push({
       code: "authoritative_mechanics_drift",
@@ -312,6 +346,20 @@ export function checkCharacterDefinitionV2(
     });
   }
   return findings;
+}
+
+export function checkCharacterDefinitionV2(
+  definition: CharacterDefinitionV2,
+  options?: {
+    base?: CharacterDefinitionV2;
+    sourceKind?: CharacterDefinitionSourceKind;
+  },
+): CharacterDefinitionCheckFinding[] {
+  return [
+    ...compileFindings(definition),
+    ...referenceFindings(definition),
+    ...authorityFindings(definition, options),
+  ];
 }
 
 export function normalizeCharacterDefinitionV2(input: {

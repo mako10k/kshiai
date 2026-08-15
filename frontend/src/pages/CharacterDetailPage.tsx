@@ -1,7 +1,6 @@
-import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import type {
-  AssetAuthoringProgress,
   BattleListItem,
   CharacterImprovementPublic,
   CharacterPublic,
@@ -10,8 +9,30 @@ import type {
 import { formatRatingForDisplay } from "@kshiai/shared";
 import { api, ApiError, type ImageGenQuota } from "../api";
 import { AuthoringProgressNotice } from "../components/AuthoringProgressNotice";
+import { useCharacterAuthoringSync } from "../hooks/useCharacterAuthoringSync";
 import { useLocalDraft } from "../hooks/useLocalDraft";
 import { mediaSrc } from "../media";
+
+const EMPTY_IMPROVEMENT: CharacterImprovementPublic = {
+  memo: {
+    strengths: [],
+    improvements: [],
+    summary: "",
+    lastAnalyzedAt: null,
+    lastAnalyzedBattleCount: 0,
+    analysisCount: 0,
+  },
+  eligibility: {
+    finishedBattles: 0,
+    canAnalyze: false,
+    battlesUntilNext: 5,
+    reason: "改善メモを取得できませんでした。再読み込みしてください。",
+    lastAnalyzedAt: null,
+    lastAnalyzedBattleCount: 0,
+    analysisCount: 0,
+    nextAnalyzeAtBattleCount: 5,
+  },
+};
 
 const CHAT_PLACEHOLDER = "もっと慎重で、相手を観察するタイプにして";
 
@@ -68,19 +89,22 @@ export function CharacterDetailPage() {
   const [assistant, setAssistant] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
-  const [authoringProgress, setAuthoringProgress] =
-    useState<AssetAuthoringProgress | null>(null);
-  const shouldPollRef = useRef(false);
   const [imageBusy, setImageBusy] = useState(false);
   const [quota, setQuota] = useState<ImageGenQuota | null>(null);
   const [improvement, setImprovement] =
     useState<CharacterImprovementPublic | null>(null);
   const [improvementBusy, setImprovementBusy] = useState(false);
-  const [pendingDraft, setPendingDraft] = useState<{
-    id: string;
-    character: CharacterPublic;
-    assistantMessage: string;
-  } | null>(null);
+  const {
+    authoringProgress,
+    setAuthoringProgress,
+    pendingDraft,
+    setPendingDraft,
+  } = useCharacterAuthoringSync({
+    id,
+    isOwner,
+    busy,
+    onCharacter: setCharacter,
+  });
 
   const reloadQuota = useCallback(async (charId: string) => {
     try {
@@ -111,26 +135,7 @@ export function CharacterDetailPage() {
       setImprovement(res);
     } catch {
       // Keep UI usable offline from analysis; eligibility will re-fetch later.
-      setImprovement({
-        memo: {
-          strengths: [],
-          improvements: [],
-          summary: "",
-          lastAnalyzedAt: null,
-          lastAnalyzedBattleCount: 0,
-          analysisCount: 0,
-        },
-        eligibility: {
-          finishedBattles: 0,
-          canAnalyze: false,
-          battlesUntilNext: 5,
-          reason: "改善メモを取得できませんでした。再読み込みしてください。",
-          lastAnalyzedAt: null,
-          lastAnalyzedBattleCount: 0,
-          analysisCount: 0,
-          nextAnalyzeAtBattleCount: 5,
-        },
-      });
+      setImprovement(EMPTY_IMPROVEMENT);
     }
   }, []);
 
@@ -160,44 +165,6 @@ export function CharacterDetailPage() {
         );
       });
   }, [id, reloadQuota, reloadHistory, reloadImprovement]);
-
-  shouldPollRef.current = busy || Boolean(authoringProgress);
-
-  useEffect(() => {
-    if (!id || !isOwner) return;
-    let cancelled = false;
-    const tick = async () => {
-      try {
-        const [{ character: c }, latest] = await Promise.all([
-          api.getCharacter(id),
-          api.latestCharacterDraft().catch(() => ({
-            draft: null,
-            progress: null,
-          })),
-        ]);
-        if (cancelled) return;
-        setCharacter(c);
-        setAuthoringProgress(c.authoringProgress ?? null);
-        if (latest.draft?.character.id === id) {
-          setPendingDraft({
-            id: latest.draft.id,
-            character: latest.draft.character,
-            assistantMessage: latest.draft.assistantMessage,
-          });
-        }
-      } catch {
-        /* keep the last known step */
-      }
-    };
-    void tick();
-    const timer = window.setInterval(() => {
-      if (shouldPollRef.current) void tick();
-    }, 1500);
-    return () => {
-      cancelled = true;
-      window.clearInterval(timer);
-    };
-  }, [id, isOwner]);
 
   // Refresh countdown label while waiting for next slot
   useEffect(() => {
@@ -492,17 +459,6 @@ export function CharacterDetailPage() {
         </div>
       </div>
 
-      {(busy || authoringProgress) && (
-        <AuthoringProgressNotice
-          progress={authoringProgress}
-          fallbackLabel={
-            !selectable && character.upgradeAction
-              ? "最新版への更新案を作成中…"
-              : "変更案を作成中…"
-          }
-        />
-      )}
-
       {!selectable && (
         <div className="panel">
           <h2>最新版への更新が必要です</h2>
@@ -513,16 +469,19 @@ export function CharacterDetailPage() {
             <button
               className="btn primary"
               type="button"
-              disabled={busy || Boolean(authoringProgress)}
+              disabled={busy}
               onClick={() => void onUpgrade()}
             >
-              {busy || authoringProgress
-                ? "更新中…"
-                : character.upgradeAction.label}
+              {busy ? "更新案を作成中…" : character.upgradeAction.label}
             </button>
           ) : null}
         </div>
       )}
+      <AuthoringProgressNotice
+        active={busy}
+        progress={authoringProgress}
+        fallbackLabel="最新版への更新案を作成中…"
+      />
 
       {pendingDraft && (
         <div className="panel">
