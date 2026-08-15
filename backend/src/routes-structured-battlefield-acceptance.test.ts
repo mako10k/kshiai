@@ -26,6 +26,9 @@ const battlefieldAssetRepo = await import(
   "./repositories/battlefield-assets-v2.js"
 );
 const battleRepo = await import("./repositories/battles.js");
+const { drainCharacterAuthoringJobs } = await import(
+  "./services/character-authoring-jobs.js"
+);
 const { buildRoutes } = await import("./routes.js");
 
 class BattlefieldAcceptanceProvider extends MockLlmProvider {
@@ -68,14 +71,31 @@ const app = buildRoutes({
     };
   },
 });
+const failureLlm = new BattlefieldStructureFailureProvider();
 const failureApp = buildRoutes({
-  llm: new BattlefieldStructureFailureProvider(),
+  llm: failureLlm,
 });
 
 const sessionToken = "ses_structured_battlefield_route_acceptance";
 const authHeaders = {
   Cookie: `kshiai_session=${sessionToken}`,
 };
+
+async function drainAuthoring(
+  provider: BattlefieldAcceptanceProvider | BattlefieldStructureFailureProvider,
+): Promise<void> {
+  await drainCharacterAuthoringJobs({ llm: provider, workerId: "bf-route-test" });
+}
+
+async function acceptedAttemptId(response: Response): Promise<string> {
+  const body = (await response.json()) as {
+    attemptId?: string;
+    draft?: { id: string };
+  };
+  const attemptId = body.attemptId ?? body.draft?.id;
+  assert.ok(attemptId);
+  return attemptId;
+}
 
 function sheet(input: {
   id: string;
@@ -213,11 +233,10 @@ describe("structured battlefield route acceptance", () => {
       },
       body: JSON.stringify({ prompt: "途中失敗する戦場" }),
     });
-    assert.equal(response.status, 502);
-    assert.deepEqual(await response.json(), {
-      error: "battlefield_authoring_failed",
-      message: "PROVIDER_BATTLEFIELD_STRUCTURE_FAILURE",
-    });
+    assert.equal(response.status, 202);
+    const accepted = await response.json() as { attemptId: string };
+    assert.ok(accepted.attemptId);
+    await drainAuthoring(failureLlm);
     const attempt = await query<{
       battlefield_id: string;
       status: string;
@@ -322,10 +341,9 @@ describe("structured battlefield route acceptance", () => {
         },
       },
     );
-    assert.equal(upgrade.status, 200);
-    const attemptId = ((await upgrade.json()) as {
-      draft: { id: string; battlefield: { id: string } };
-    }).draft.id;
+    assert.equal(upgrade.status, 202);
+    const attemptId = await acceptedAttemptId(upgrade);
+    await drainAuthoring(llm);
     assert.equal(
       (await battlefieldAssetRepo.getBattlefieldCompatibility(
         "route-legacy-field",
@@ -373,6 +391,57 @@ describe("structured battlefield route acceptance", () => {
     );
   });
 
+  it("returns a compare review and list mark for an awaiting battlefield upgrade", async () => {
+    await insertLegacyBattlefield(battlefield({
+      id: "route-review-field",
+      displayName: "比較用旧戦場",
+    }));
+    const upgrade = await app.request(
+      "/api/battlefields/route-review-field/upgrade",
+      {
+        method: "POST",
+        headers: {
+          ...authHeaders,
+          "Idempotency-Key": "review-field-upgrade-001",
+        },
+      },
+    );
+    assert.equal(upgrade.status, 202);
+    const attemptId = await acceptedAttemptId(upgrade);
+    await drainAuthoring(llm);
+    const review = await app.request(`/api/battlefield-drafts/${attemptId}`, {
+      headers: authHeaders,
+    });
+    assert.equal(review.status, 200);
+    const body = await review.json() as {
+      family: string;
+      kind: string;
+      canAccept: boolean;
+      current: { displayName: string } | null;
+      candidate: { displayName: string } | null;
+    };
+    assert.equal(body.family, "battlefield");
+    assert.equal(body.kind, "upgrade");
+    assert.equal(body.canAccept, true);
+    assert.equal(body.current?.displayName, "比較用旧戦場");
+    assert.ok(body.candidate?.displayName);
+    const listed = await app.request("/api/battlefields", { headers: authHeaders });
+    const listedBody = await listed.json() as {
+      battlefields: Array<{
+        id: string;
+        reviewState: string | null;
+        reviewAttemptId: string | null;
+      }>;
+    };
+    const marked = listedBody.battlefields.find((item) => item.id === "route-review-field");
+    assert.equal(marked?.reviewState, "awaiting_acceptance");
+    assert.equal(marked?.reviewAttemptId, attemptId);
+    await app.request(`/api/battlefield-drafts/${attemptId}`, {
+      method: "DELETE",
+      headers: authHeaders,
+    });
+  });
+
   it("expires an upgrade candidate without creating or selecting a generation", async () => {
     const upgrade = await app.request(
       "/api/battlefields/route-expiry-field/upgrade",
@@ -384,9 +453,9 @@ describe("structured battlefield route acceptance", () => {
         },
       },
     );
-    assert.equal(upgrade.status, 200);
-    const attemptId = ((await upgrade.json()) as { draft: { id: string } })
-      .draft.id;
+    assert.equal(upgrade.status, 202);
+    const attemptId = await acceptedAttemptId(upgrade);
+    await drainAuthoring(llm);
     await query(
       `UPDATE battlefield_authoring_attempts
           SET expires_at = $1
@@ -436,9 +505,9 @@ describe("structured battlefield route acceptance", () => {
         body: JSON.stringify({ message: "候補だけを作る" }),
       },
     );
-    assert.equal(revision.status, 200);
-    const attemptId = ((await revision.json()) as { draft: { id: string } })
-      .draft.id;
+    assert.equal(revision.status, 202);
+    const attemptId = await acceptedAttemptId(revision);
+    await drainAuthoring(llm);
     const currentPreset = await battlefieldRepo.getPreset("route-drift-field");
     assert.ok(currentPreset);
     await battlefieldRepo.importPreset({
@@ -484,12 +553,21 @@ describe("structured battlefield route acceptance", () => {
       headers: createHeaders,
       body: JSON.stringify({ prompt: "風の通る円形闘技場", category: "arena" }),
     });
-    assert.equal(generated.status, 200);
-    const generatedBody = (await generated.json()) as {
-      draft: { id: string; battlefield: { id: string } };
+    assert.equal(generated.status, 202);
+    const attemptId = await acceptedAttemptId(generated);
+    await drainAuthoring(llm);
+    const review = await app.request(`/api/battlefield-drafts/${attemptId}`, {
+      headers: authHeaders,
+    });
+    assert.equal(review.status, 200);
+    const reviewBody = (await review.json()) as {
+      assetId: string;
+      canAccept: boolean;
+      candidate: { id: string } | null;
     };
-    const attemptId = generatedBody.draft.id;
-    const battlefieldId = generatedBody.draft.battlefield.id;
+    assert.equal(reviewBody.canAccept, true);
+    const battlefieldId = reviewBody.assetId;
+    assert.ok(reviewBody.candidate);
     assert.equal(await battlefieldRepo.getPreset(battlefieldId), null);
     assert.equal(await generationCount(battlefieldId), 0);
 
@@ -509,7 +587,8 @@ describe("structured battlefield route acceptance", () => {
       headers: { ...authHeaders, "Content-Type": "application/json" },
       body: JSON.stringify({ message: "高台を目立たせてください" }),
     });
-    assert.equal(adjusted.status, 200);
+    assert.equal(adjusted.status, 202);
+    await drainAuthoring(llm);
     assert.equal(await generationCount(battlefieldId), 0);
 
     const confirmed = await app.request(`/api/battlefields/${attemptId}/confirm`, {
@@ -535,10 +614,9 @@ describe("structured battlefield route acceptance", () => {
       },
       body: JSON.stringify({ message: "薄い霧を加えてください" }),
     });
-    assert.equal(revision.status, 200);
-    const revisionAttemptId = ((await revision.json()) as {
-      draft: { id: string };
-    }).draft.id;
+    assert.equal(revision.status, 202);
+    const revisionAttemptId = await acceptedAttemptId(revision);
+    await drainAuthoring(llm);
     assert.equal(
       (await battlefieldAssetRepo.getReadyBattlefieldGeneration(battlefieldId))
         ?.generationId,

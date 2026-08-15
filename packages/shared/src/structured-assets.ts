@@ -197,6 +197,7 @@ export type AssetAuthoringAttemptStatus = z.infer<
 >;
 
 export const AssetAuthoringProgressSchema = z.object({
+  attemptId: z.string().min(1).max(80).optional(),
   kind: AssetAuthoringAttemptKindSchema,
   status: AssetAuthoringAttemptStatusSchema,
   label: z.string().min(1).max(80),
@@ -204,6 +205,71 @@ export const AssetAuthoringProgressSchema = z.object({
   stepCount: z.number().int().min(1).max(8),
 }).strict();
 export type AssetAuthoringProgress = z.infer<typeof AssetAuthoringProgressSchema>;
+
+export const AssetAuthoringFailureSchema = z.object({
+  attemptId: z.string().min(1).max(80),
+  characterId: z.string().min(1).max(80),
+  kind: AssetAuthoringAttemptKindSchema,
+  errorCode: z.string().max(120).nullable(),
+  updatedAt: z.string().min(1),
+}).strict();
+export type AssetAuthoringFailure = z.infer<typeof AssetAuthoringFailureSchema>;
+
+export const AssetAuthoringAcceptedSchema = z.object({
+  attemptId: z.string().min(1).max(80),
+  characterId: z.string().min(1).max(80),
+  kind: AssetAuthoringAttemptKindSchema,
+  progress: AssetAuthoringProgressSchema.nullable(),
+}).strict();
+export type AssetAuthoringAccepted = z.infer<typeof AssetAuthoringAcceptedSchema>;
+
+export const AssetAuthoringReviewBaseSchema = z.object({
+  attemptId: z.string().min(1).max(80),
+  kind: AssetAuthoringAttemptKindSchema,
+  status: z.string().min(1),
+  assistantMessage: z.string(),
+  expiresAt: z.string().min(1),
+  latestAttemptId: z.string().min(1).max(80),
+  stale: z.boolean(),
+  canAccept: z.boolean(),
+  failed: AssetAuthoringFailureSchema.nullable(),
+  progress: AssetAuthoringProgressSchema.nullable(),
+}).strict();
+
+export const CharacterReviewStateSchema = z.enum([
+  "queued",
+  "generating",
+  "awaiting_acceptance",
+  "failed",
+]);
+export type CharacterReviewState = z.infer<typeof CharacterReviewStateSchema>;
+
+export const OwnerNotificationKindSchema = z.enum([
+  "authoring_ready",
+  "authoring_failed",
+]);
+export type OwnerNotificationKind = z.infer<typeof OwnerNotificationKindSchema>;
+
+export const AuthoringAssetTypeSchema = z.enum([
+  "character",
+  "battlefield",
+  "narration_style",
+]);
+export type AuthoringAssetType = z.infer<typeof AuthoringAssetTypeSchema>;
+
+export const OwnerNotificationPublicSchema = z.object({
+  id: z.string().min(1).max(80),
+  kind: OwnerNotificationKindSchema,
+  attemptId: z.string().min(1).max(80),
+  characterId: z.string().min(1).max(80),
+  assetType: AuthoringAssetTypeSchema.default("character"),
+  attemptKind: AssetAuthoringAttemptKindSchema,
+  title: z.string().min(1).max(80),
+  href: z.string().min(1).max(160),
+  createdAt: z.string().min(1),
+  readAt: z.string().nullable(),
+}).strict();
+export type OwnerNotificationPublic = z.infer<typeof OwnerNotificationPublicSchema>;
 
 const AUTHORING_IN_FLIGHT_STATUSES = [
   "pending_structure",
@@ -252,10 +318,12 @@ function authoringProgressLabel(
 export function toAssetAuthoringProgress(
   kind: AssetAuthoringAttemptKind,
   status: AssetAuthoringAttemptStatus,
+  attemptId?: string,
 ): AssetAuthoringProgress | null {
   const mapped = authoringProgressLabel(kind, status);
   if (!mapped) return null;
   return AssetAuthoringProgressSchema.parse({
+    ...(attemptId ? { attemptId } : {}),
     kind,
     status,
     label: mapped.label,

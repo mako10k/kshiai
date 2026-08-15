@@ -1,4 +1,7 @@
-import type { AssetAuthoringProgress } from "@kshiai/shared";
+import type {
+  AssetAuthoringFailure,
+  AssetAuthoringProgress,
+} from "@kshiai/shared";
 
 export function AuthoringProgressNotice(props: {
   progress?: AssetAuthoringProgress | null;
@@ -21,5 +24,14 @@ export function AuthoringProgressNotice(props: {
         ) : null}
       </div>
     </div>
+  );
+}
+
+export function AuthoringFailureNotice(props: {
+  failure: AssetAuthoringFailure | null;
+}) {
+  if (!props.failure) return null;
+  return (
+    <p className="error">{props.failure.errorCode ?? "更新に失敗しました"}</p>
   );
 }

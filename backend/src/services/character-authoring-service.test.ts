@@ -17,6 +17,7 @@ import {
   buildCharacterGenerationCandidate,
   CHARACTER_DEFINITION_CHECK_FAILED,
   existingCharacterGenerationResult,
+  lastAuthoringAdjustment,
 } from "./character-authoring-service.js";
 
 function generatedCharacter(): GenerateCharacterResult {
@@ -323,6 +324,16 @@ describe("structured character authoring claim validation", () => {
         generated: generatedCharacter(),
       }),
       new RegExp(CHARACTER_DEFINITION_CHECK_FAILED),
+    );
+  });
+});
+
+describe("lastAuthoringAdjustment", () => {
+  it("reads the last 追加調整 suffix", () => {
+    assert.equal(lastAuthoringAdjustment("元の依頼"), null);
+    assert.equal(
+      lastAuthoringAdjustment("元の依頼\n\n追加調整: 髪を短く\n\n追加調整: 声を低く"),
+      "声を低く",
     );
   });
 });

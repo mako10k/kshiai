@@ -39,9 +39,22 @@ import {
 import {
   getCharacterCompatibility,
   getInFlightCharacterAuthoringAttempt,
+  getLatestCharacterAuthoringAttemptForCharacter,
   getReadyCharacterGenerationHistory,
   listReadyCharacterIds,
 } from "./character-assets-v2.js";
+import {
+  listLatestAttemptsByCharacterIds,
+  reviewStateFromAttempt,
+} from "./owner-notifications.js";
+
+async function reviewMarkForCharacter(characterId: string, ownerUserId: string) {
+  const latest = await getLatestCharacterAuthoringAttemptForCharacter(
+    characterId,
+    ownerUserId,
+  );
+  return reviewStateFromAttempt(latest);
+}
 
 function parseSheet(json: unknown): CharacterSheet {
   const value = typeof json === "string" ? JSON.parse(json) : json;
@@ -191,8 +204,11 @@ export async function toPublicCharacterForViewer(
       ? { label: "このキャラを最新版に更新", targetSchemaVersion: 2 }
       : null,
     authoringProgress: inFlight
-      ? toAssetAuthoringProgress(inFlight.kind, inFlight.status)
+      ? toAssetAuthoringProgress(inFlight.kind, inFlight.status, inFlight.attemptId)
       : null,
+    ...(isOwner
+      ? await reviewMarkForCharacter(sheet.id, sheet.ownerUserId)
+      : { reviewState: null, reviewAttemptId: null }),
   };
 }
 
@@ -285,6 +301,10 @@ export async function listCharactersForUser(
   const { limit, offset } = clampPage(page?.limit, page?.offset);
   const total = sheets.length;
   const pageSheets = sheets.slice(offset, offset + limit);
+  const latestAttempts = await listLatestAttemptsByCharacterIds(
+    userId,
+    pageSheets.map((sheet) => sheet.id),
+  );
   const ratingDisplay = await getRatingDisplayContext(
     (await getUserAccessProfile(userId)).realm,
   );
@@ -292,6 +312,8 @@ export async function listCharactersForUser(
   return {
     characters: await Promise.all(pageSheets.map(async (sheet) => {
       const compatibility = await getCharacterCompatibility(sheet.id);
+      const latest = latestAttempts.get(sheet.id) ?? null;
+      const mark = reviewStateFromAttempt(latest);
       return {
         ...toPublicCharacter(sheet, userId, ratingDisplay),
         compatibility,
@@ -299,6 +321,8 @@ export async function listCharactersForUser(
         upgradeAction: compatibility.status === "ready"
           ? null
           : { label: "このキャラを最新版に更新", targetSchemaVersion: 2 },
+        reviewState: mark.reviewState,
+        reviewAttemptId: mark.reviewAttemptId,
       };
     })),
     total,

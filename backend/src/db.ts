@@ -492,7 +492,91 @@ export function getDb(): SqliteDatabase.Database {
     CREATE INDEX IF NOT EXISTS idx_users_email ON users (email);
     CREATE INDEX IF NOT EXISTS idx_users_account_kind ON users (account_kind);
   `);
+  ensureSqliteAuthoringJobs(sqlite);
+  ensureSqliteOwnerNotifications(sqlite);
+  ensureSqliteFamilyAuthoringJobs(sqlite);
   return sqlite;
+}
+
+function ensureSqliteAuthoringJobs(database: SqliteDatabase.Database): void {
+  database.exec(`
+    CREATE TABLE IF NOT EXISTS character_authoring_jobs (
+      attempt_id TEXT PRIMARY KEY
+        REFERENCES character_authoring_attempts(attempt_id) ON DELETE CASCADE,
+      owner_user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      character_id TEXT NOT NULL,
+      status TEXT NOT NULL CHECK (
+        status IN ('pending', 'claimed', 'completed', 'cancelled')
+      ),
+      claimed_by TEXT,
+      claimed_until TEXT,
+      created_at TEXT NOT NULL,
+      updated_at TEXT NOT NULL
+    );
+    CREATE INDEX IF NOT EXISTS idx_character_authoring_jobs_pending
+      ON character_authoring_jobs (status, created_at);
+  `);
+}
+
+function ensureSqliteFamilyAuthoringJobs(database: SqliteDatabase.Database): void {
+  database.exec(`
+    CREATE TABLE IF NOT EXISTS battlefield_authoring_jobs (
+      attempt_id TEXT PRIMARY KEY
+        REFERENCES battlefield_authoring_attempts(attempt_id) ON DELETE CASCADE,
+      owner_user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      battlefield_id TEXT NOT NULL,
+      status TEXT NOT NULL CHECK (
+        status IN ('pending', 'claimed', 'completed', 'cancelled')
+      ),
+      claimed_by TEXT,
+      claimed_until TEXT,
+      created_at TEXT NOT NULL,
+      updated_at TEXT NOT NULL
+    );
+    CREATE INDEX IF NOT EXISTS idx_battlefield_authoring_jobs_pending
+      ON battlefield_authoring_jobs (status, created_at);
+    CREATE TABLE IF NOT EXISTS narration_style_authoring_jobs (
+      attempt_id TEXT PRIMARY KEY
+        REFERENCES narration_style_authoring_attempts(attempt_id) ON DELETE CASCADE,
+      owner_user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      narration_style_id TEXT NOT NULL,
+      status TEXT NOT NULL CHECK (
+        status IN ('pending', 'claimed', 'completed', 'cancelled')
+      ),
+      claimed_by TEXT,
+      claimed_until TEXT,
+      created_at TEXT NOT NULL,
+      updated_at TEXT NOT NULL
+    );
+    CREATE INDEX IF NOT EXISTS idx_narration_style_authoring_jobs_pending
+      ON narration_style_authoring_jobs (status, created_at);
+  `);
+}
+
+function ensureSqliteOwnerNotifications(database: SqliteDatabase.Database): void {
+  database.exec(`
+    CREATE TABLE IF NOT EXISTS owner_notifications (
+      notification_id TEXT PRIMARY KEY,
+      owner_user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      kind TEXT NOT NULL CHECK (kind IN ('authoring_ready', 'authoring_failed')),
+      attempt_id TEXT NOT NULL,
+      character_id TEXT NOT NULL,
+      attempt_kind TEXT NOT NULL CHECK (attempt_kind IN ('create', 'revision', 'upgrade')),
+      created_at TEXT NOT NULL,
+      read_at TEXT,
+      asset_type TEXT NOT NULL DEFAULT 'character',
+      UNIQUE (attempt_id, kind)
+    );
+    CREATE INDEX IF NOT EXISTS idx_owner_notifications_owner_created
+      ON owner_notifications (owner_user_id, created_at DESC);
+  `);
+  try {
+    database.exec(
+      "ALTER TABLE owner_notifications ADD COLUMN asset_type TEXT NOT NULL DEFAULT 'character'",
+    );
+  } catch {
+    /* already present */
+  }
 }
 
 function getPostgresPool(): Pool {

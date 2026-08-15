@@ -1,30 +1,18 @@
 import { useEffect, useId, useRef, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { useAuth } from "../auth";
-
-/** Low-frequency destinations that belong in the burger menu, not primary nav. */
-const LOW_FREQUENCY_LINKS = [
-  {
-    to: "/friends",
-    title: "フレンド",
-    description: "対戦相手の公開範囲に使う",
-  },
-  {
-    to: "/battlefields",
-    title: "戦場",
-    description: "プリセットの管理",
-  },
-  {
-    to: "/narration-styles",
-    title: "ナレーション",
-    description: "語り口のプリセット・自作",
-  },
-] as const;
+import {
+  BurgerPanel,
+  BurgerUnreadBadge,
+  burgerToggleLabel,
+  useUnreadNotifications,
+} from "./BurgerNotifications";
 
 export function BurgerMenu() {
   const { user, logout } = useAuth();
   const location = useLocation();
   const [open, setOpen] = useState(false);
+  const { unreadCount, recent } = useUnreadNotifications();
   const panelId = useId();
   const buttonRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
@@ -63,7 +51,7 @@ export function BurgerMenu() {
         ref={buttonRef}
         type="button"
         className="burger-toggle btn ghost"
-        aria-label={open ? "メニューを閉じる" : "メニューを開く"}
+        aria-label={burgerToggleLabel(open, unreadCount)}
         aria-expanded={open}
         aria-controls={panelId}
         onClick={() => setOpen((value) => !value)}
@@ -73,71 +61,26 @@ export function BurgerMenu() {
           <span />
           <span />
         </span>
+        <BurgerUnreadBadge unreadCount={unreadCount} />
       </button>
 
-      {open && (
-        <>
-          <button
-            type="button"
-            className="burger-backdrop"
-            aria-label="メニューを閉じる"
-            onClick={() => setOpen(false)}
-          />
-          <div
-            ref={panelRef}
-            id={panelId}
-            className="burger-panel"
-            role="dialog"
-            aria-modal="true"
-            aria-label="その他のメニュー"
-          >
-            <div className="burger-panel-header">
-              <div>
-                <div className="burger-panel-title">その他</div>
-                <Link
-                  to={`/users/${user.id}`}
-                  className="muted burger-user"
-                  onClick={() => setOpen(false)}
-                >
-                  {user.displayName || user.username}
-                </Link>
-              </div>
-              <button
-                type="button"
-                className="btn ghost"
-                onClick={() => {
-                  setOpen(false);
-                  buttonRef.current?.focus();
-                }}
-              >
-                閉じる
-              </button>
-            </div>
-
-            <nav className="burger-links" aria-label="低頻度機能">
-              {LOW_FREQUENCY_LINKS.map((link) => (
-                <Link key={link.to} to={link.to} onClick={() => setOpen(false)}>
-                  <strong>{link.title}</strong>
-                  <div className="muted">{link.description}</div>
-                </Link>
-              ))}
-            </nav>
-
-            <div className="burger-footer">
-              <button
-                type="button"
-                className="btn ghost danger"
-                onClick={() => {
-                  setOpen(false);
-                  void logout();
-                }}
-              >
-                ログアウト
-              </button>
-            </div>
-          </div>
-        </>
-      )}
+      {open ? (
+        <BurgerPanel
+          userId={user.id}
+          userLabel={user.displayName || user.username}
+          panelId={panelId}
+          panelRef={panelRef}
+          recent={recent}
+          onClose={() => {
+            setOpen(false);
+            buttonRef.current?.focus();
+          }}
+          onLogout={() => {
+            setOpen(false);
+            void logout();
+          }}
+        />
+      ) : null}
     </div>
   );
 }

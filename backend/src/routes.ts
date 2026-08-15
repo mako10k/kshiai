@@ -26,7 +26,6 @@ import {
   projectCharacterImageBriefV2,
   projectBattlefieldImageBriefV2,
   toAssetAuthoringProgress,
-  type AssetAuthoringAttemptStatus,
   type BattlefieldPreset,
   type CharacterSheet,
   type NarrationStyle,
@@ -63,6 +62,7 @@ import * as styleRepo from "./repositories/narration-styles.js";
 import * as friendRepo from "./repositories/friends.js";
 import * as userRepo from "./repositories/users.js";
 import * as dialoguePipelineRepo from "./repositories/dialogue-pipeline-settings.js";
+import * as notificationRepo from "./repositories/owner-notifications.js";
 import {
   advanceTurn,
   generateMatchPolicies,
@@ -100,13 +100,12 @@ import {
   verifyNarrationTaskAuthorization,
 } from "./services/narration-task-dispatch.js";
 import { assetContentDigest } from "./repositories/asset-generations.js";
+
 import {
-  buildCharacterGenerationCandidate,
-  existingCharacterGenerationResult,
-} from "./services/character-authoring-service.js";
-import { buildBattlefieldGenerationCandidate } from "./services/battlefield-authoring-service.js";
-import { buildNarrationStyleGenerationCandidate } from "./services/narration-style-authoring-service.js";
-import type { GenerateCharacterResult, LlmProvider } from "./llm/types.js";
+  authoringAcceptedFromAttempt,
+  wakeCharacterAuthoringJobs,
+} from "./services/character-authoring-jobs.js";
+import type { LlmProvider } from "./llm/types.js";
 
 type CharacterPortraitGenerator = typeof import(
   "./services/image-service.js"
@@ -185,16 +184,49 @@ async function characterSheetForAttempt(
   });
 }
 
-function reportCharacterAuthoringStatus(
-  attemptId: string,
-  ownerUserId: string,
+async function characterReviewResponse(
+  attempt: charAssetRepo.CharacterAuthoringAttempt,
+  viewerUserId: string,
 ) {
-  return (status: AssetAuthoringAttemptStatus) =>
-    charAssetRepo.updateCharacterAuthoringStatus({
-      attemptId,
-      ownerUserId,
-      status,
-    });
+  const latest = await charAssetRepo.getLatestCharacterAuthoringAttemptForCharacter(
+    attempt.characterId,
+    attempt.ownerUserId,
+  );
+  const latestAttemptId = latest?.attemptId ?? attempt.attemptId;
+  const stale = latestAttemptId !== attempt.attemptId;
+  const awaiting = attempt.status === "awaiting_owner_acceptance" && Boolean(attempt.candidate);
+  const candidate = awaiting && !stale
+    ? (await characterDraftResponse(attempt, viewerUserId)).character
+    : null;
+  const currentSheet = attempt.kind === "create"
+    ? null
+    : await charRepo.getSheetIncludingDeleted(attempt.characterId);
+  const current = currentSheet
+    ? await charRepo.toPublicCharacterForViewer(currentSheet, viewerUserId)
+    : null;
+  return {
+    attemptId: attempt.attemptId,
+    characterId: attempt.characterId,
+    kind: attempt.kind,
+    status: attempt.status,
+    assistantMessage: attempt.assistantMessage,
+    expiresAt: attempt.expiresAt,
+    candidate,
+    current,
+    latestAttemptId,
+    stale,
+    canAccept: Boolean(candidate),
+    failed: attempt.status === "failed"
+      ? {
+          attemptId: attempt.attemptId,
+          characterId: attempt.characterId,
+          kind: attempt.kind,
+          errorCode: attempt.errorCode,
+          updatedAt: attempt.updatedAt,
+        }
+      : null,
+    progress: toAssetAuthoringProgress(attempt.kind, attempt.status, attempt.attemptId),
+  };
 }
 
 async function characterDraftResponse(
@@ -266,67 +298,6 @@ async function narrationStyleDraftResponse(
     kind: attempt.kind,
     expiresAt: attempt.expiresAt,
   };
-}
-
-function adjustedBattlefieldGenerationResult(
-  current: BattlefieldPreset,
-  patch: Awaited<ReturnType<LlmProvider["adjustBattlefieldPreset"]>>,
-) {
-  const next: BattlefieldPreset = {
-    ...current,
-    ...patch.presetPatch,
-    baseCoefficients: patch.presetPatch.baseCoefficients
-      ? { ...current.baseCoefficients, ...patch.presetPatch.baseCoefficients }
-      : current.baseCoefficients,
-    appearance: patch.presetPatch.appearance
-      ? { ...current.appearance, ...patch.presetPatch.appearance }
-      : current.appearance,
-    updatedAt: new Date().toISOString(),
-  };
-  const {
-    id: _id,
-    ownerUserId: _ownerUserId,
-    isSystem: _isSystem,
-    createdAt: _createdAt,
-    updatedAt: _updatedAt,
-    ...preset
-  } = next;
-  return { preset, assistantMessage: patch.assistantMessage };
-}
-
-function adjustedGenerationResult(
-  current: CharacterSheet,
-  patch: Awaited<ReturnType<LlmProvider["adjustCharacter"]>>,
-): GenerateCharacterResult {
-  const nextSkills = coalesceNonEmptyList(patch.sheetPatch.skills, current.skills);
-  const nextTraits = coalesceNonEmptyList(patch.sheetPatch.traits, current.traits);
-  const merged = balanceCharacterCombatFields({
-    ...current,
-    ...patch.sheetPatch,
-    parameters: patch.sheetPatch.parameters
-      ? { ...current.parameters, ...patch.sheetPatch.parameters }
-      : current.parameters,
-    basicAttack: patch.sheetPatch.basicAttack ?? current.basicAttack,
-    skills: nextSkills,
-    traits: nextTraits,
-    weapon: patch.sheetPatch.weapon !== undefined
-      ? patch.sheetPatch.weapon
-      : current.weapon,
-    armor: patch.sheetPatch.armor !== undefined
-      ? patch.sheetPatch.armor
-      : current.armor,
-    appearance: patch.sheetPatch.appearance
-      ? { ...current.appearance, ...patch.sheetPatch.appearance }
-      : current.appearance,
-  });
-  const {
-    id: _id,
-    ownerUserId: _ownerUserId,
-    createdAt: _createdAt,
-    updatedAt: _updatedAt,
-    ...sheet
-  } = merged;
-  return { sheet, assistantMessage: patch.assistantMessage };
 }
 
 export function buildRoutes(options: {
@@ -817,99 +788,13 @@ export function buildRoutes(options: {
         message === "AUTHORING_IDEMPOTENCY_CONFLICT" ? 409 : 400,
       );
     }
-    if (started.replayed) {
-      if (started.attempt.candidate) {
-        return c.json({
-          draft: await characterDraftResponse(started.attempt, user.id),
-        });
-      }
-      return c.json({ error: "request_in_progress" }, 409);
+    if (started.replayed && started.attempt.candidate) {
+      return c.json({
+        draft: await characterDraftResponse(started.attempt, user.id),
+      });
     }
-    try {
-      await charAssetRepo.updateCharacterAuthoringStatus({
-        attemptId: started.attempt.attemptId,
-        ownerUserId: user.id,
-        status: "generating_structure",
-      });
-      const referenceTools = {
-        search: async (query: string, limit?: number) =>
-          charRepo.searchOwnedCharacterReferences(user.id, query, limit),
-        get: async (characterId: string) =>
-          charRepo.getOwnedCharacterReference(user.id, characterId),
-      };
-      const rejectedNames: string[] = [];
-      let gen: Awaited<ReturnType<typeof llm.generateCharacter>> | null = null;
-      for (let attempt = 0; attempt < 3; attempt += 1) {
-        const promptReservedNames =
-          await charRepo.listOwnedCharacterReservedNames(user.id);
-        const candidate = await llm.generateCharacter({
-          prompt: body.prompt,
-          referenceTools,
-          reservedNames: promptReservedNames,
-          rejectedNames,
-        });
-        // Refresh after the LLM call so concurrent generation cannot slip a
-        // duplicate between the initial name snapshot and this synchronous save.
-        const currentReservedNames =
-          await charRepo.listOwnedCharacterReservedNames(user.id);
-        const conflict = findCharacterNameConflict(
-          [candidate.sheet.displayName, candidate.sheet.identity?.realName],
-          currentReservedNames,
-        );
-        if (!conflict) {
-          gen = candidate;
-          break;
-        }
-        rejectedNames.push(
-          candidate.sheet.displayName,
-          ...(candidate.sheet.identity?.realName
-            ? [candidate.sheet.identity.realName]
-            : []),
-        );
-      }
-      if (!gen) {
-        await charAssetRepo.failCharacterAuthoringAttempt({
-          attemptId: started.attempt.attemptId,
-          ownerUserId: user.id,
-          errorCode: "duplicate_character_name",
-        });
-        return c.json(
-          {
-            error: "duplicate_character_name",
-            message: "既存キャラクターと異なる名前を生成できませんでした。もう一度お試しください。",
-          },
-          409,
-        );
-      }
-      const candidate = await buildCharacterGenerationCandidate({
-        llm,
-        attemptId: started.attempt.attemptId,
-        characterId: started.attempt.characterId,
-        ownerUserId: user.id,
-        sourceText: body.prompt,
-        sourceKind: "create_instruction",
-        generated: gen,
-        reportStatus: reportCharacterAuthoringStatus(
-          started.attempt.attemptId,
-          user.id,
-        ),
-      });
-      const saved = await charAssetRepo.saveCharacterAuthoringCandidate({
-        attemptId: started.attempt.attemptId,
-        ownerUserId: user.id,
-        envelope: candidate.envelope,
-        assistantMessage: candidate.assistantMessage,
-      });
-      return c.json({ draft: await characterDraftResponse(saved, user.id) });
-    } catch (error) {
-      const message = error instanceof Error ? error.message : "authoring_failed";
-      await charAssetRepo.failCharacterAuthoringAttempt({
-        attemptId: started.attempt.attemptId,
-        ownerUserId: user.id,
-        errorCode: message.slice(0, 120),
-      });
-      return c.json({ error: "character_authoring_failed", message }, 502);
-    }
+    wakeCharacterAuthoringJobs(llm);
+    return c.json(authoringAcceptedFromAttempt(started.attempt), 202);
   });
 
   authed.post("/character-drafts/:id/chat", async (c) => {
@@ -919,70 +804,91 @@ export function buildRoutes(options: {
       c.req.param("id"),
       user.id,
     );
-    if (structured?.candidate) {
+    if (structured?.status === "awaiting_owner_acceptance" && structured.candidate) {
+      const current = await characterSheetForAttempt(structured);
+      const sourceText = `${structured.sourceText ?? current.narrativeBlurb}\n\n追加調整: ${body.message}`;
       try {
-        const current = await characterSheetForAttempt(structured);
-        const adjustment = await llm.adjustCharacter(current, body.message);
-        const sourceText = `${structured.sourceText ?? current.narrativeBlurb}\n\n追加調整: ${body.message}`;
         await charAssetRepo.replaceCharacterAuthoringSource({
           attemptId: structured.attemptId,
           ownerUserId: user.id,
           sourceText,
           sourceDigest: assetContentDigest(sourceText),
         });
-        const candidate = await buildCharacterGenerationCandidate({
-          llm,
-          attemptId: structured.attemptId,
-          characterId: structured.characterId,
-          ownerUserId: user.id,
-          sourceText,
-          sourceKind: structured.kind === "upgrade"
-            ? "upgrade_description"
-            : structured.kind === "revision"
-              ? "revision_instruction"
-              : "create_instruction",
-          generated: adjustedGenerationResult(current, adjustment),
-          existing: await charRepo.getSheetIncludingDeleted(structured.characterId),
-          reportStatus: reportCharacterAuthoringStatus(
-            structured.attemptId,
-            user.id,
-          ),
-        });
-        const saved = await charAssetRepo.saveCharacterAuthoringCandidate({
-          attemptId: structured.attemptId,
-          ownerUserId: user.id,
-          envelope: candidate.envelope,
-          assistantMessage: candidate.assistantMessage,
-        });
-        return c.json({ draft: await characterDraftResponse(saved, user.id) });
       } catch (error) {
         const message = error instanceof Error ? error.message : "authoring_failed";
-        await charAssetRepo.failCharacterAuthoringAttempt({
-          attemptId: structured.attemptId,
-          ownerUserId: user.id,
-          errorCode: message.slice(0, 120),
-        });
-        return c.json({ error: "character_authoring_failed", message }, 502);
+        return c.json({ error: "character_authoring_failed", message }, 409);
       }
+      wakeCharacterAuthoringJobs(llm);
+      return c.json(authoringAcceptedFromAttempt(structured), 202);
     }
     return c.json({ error: "not_found" }, 404);
   });
 
   authed.get("/character-drafts/latest", async (c) => {
     const user = c.get("user");
+    wakeCharacterAuthoringJobs(llm);
     const structured = await charAssetRepo.getLatestCharacterAuthoringAttempt(user.id);
-    if (structured?.candidate) {
+    if (!structured) {
+      return c.json({ draft: null, progress: null, failed: null });
+    }
+    if (structured.status === "failed") {
+      return c.json({
+        draft: null,
+        progress: null,
+        failed: {
+          attemptId: structured.attemptId,
+          characterId: structured.characterId,
+          kind: structured.kind,
+          errorCode: structured.errorCode,
+          updatedAt: structured.updatedAt,
+        },
+      });
+    }
+    if (structured.candidate && structured.status === "awaiting_owner_acceptance") {
       return c.json({
         draft: await characterDraftResponse(structured, user.id),
         progress: null,
+        failed: null,
       });
     }
     return c.json({
       draft: null,
-      progress: structured
-        ? toAssetAuthoringProgress(structured.kind, structured.status)
-        : null,
+      progress: toAssetAuthoringProgress(
+        structured.kind,
+        structured.status,
+        structured.attemptId,
+      ),
+      failed: null,
     });
+  });
+
+  authed.get("/notifications", async (c) => {
+    const user = c.get("user");
+    const limit = Number(c.req.query("limit") ?? 20);
+    return c.json(await notificationRepo.listOwnerNotifications(
+      user.id,
+      Number.isFinite(limit) ? limit : 20,
+    ));
+  });
+
+  authed.post("/notifications/:id/read", async (c) => {
+    const user = c.get("user");
+    const ok = await notificationRepo.markOwnerNotificationRead(
+      c.req.param("id"),
+      user.id,
+    );
+    return ok ? c.json({ ok: true }) : c.json({ error: "not_found" }, 404);
+  });
+
+  authed.get("/character-drafts/:id", async (c) => {
+    const user = c.get("user");
+    wakeCharacterAuthoringJobs(llm);
+    const structured = await charAssetRepo.getCharacterAuthoringAttempt(
+      c.req.param("id"),
+      user.id,
+    );
+    if (!structured) return c.json({ error: "not_found" }, 404);
+    return c.json(await characterReviewResponse(structured, user.id));
   });
 
   authed.post("/characters/:id/confirm", async (c) => {
@@ -1068,51 +974,19 @@ export function buildRoutes(options: {
       });
     } catch (error) {
       const message = error instanceof Error ? error.message : "upgrade_start_failed";
-      return c.json({ error: message === "AUTHORING_IDEMPOTENCY_CONFLICT"
-        ? "idempotency_key_conflict"
-        : "upgrade_start_failed" }, message === "AUTHORING_IDEMPOTENCY_CONFLICT" ? 409 : 400);
+      if (message === "AUTHORING_IDEMPOTENCY_CONFLICT") {
+        return c.json({ error: "idempotency_key_conflict" }, 409);
+      }
+      if (message === "AUTHORING_ALREADY_IN_PROGRESS") {
+        return c.json({ error: "request_in_progress" }, 409);
+      }
+      return c.json({ error: "upgrade_start_failed" }, 400);
     }
-    if (started.replayed) {
-      return started.attempt.candidate
-        ? c.json({ draft: await characterDraftResponse(started.attempt, user.id) })
-        : c.json({ error: "request_in_progress" }, 409);
+    if (started.replayed && started.attempt.candidate) {
+      return c.json({ draft: await characterDraftResponse(started.attempt, user.id) });
     }
-    try {
-      await charAssetRepo.updateCharacterAuthoringStatus({
-        attemptId: started.attempt.attemptId,
-        ownerUserId: user.id,
-        status: "generating_structure",
-      });
-      const candidate = await buildCharacterGenerationCandidate({
-        llm,
-        attemptId: started.attempt.attemptId,
-        characterId: sheet.id,
-        ownerUserId: user.id,
-        sourceText,
-        sourceKind: "upgrade_description",
-        generated: existingCharacterGenerationResult(sheet),
-        existing: sheet,
-        reportStatus: reportCharacterAuthoringStatus(
-          started.attempt.attemptId,
-          user.id,
-        ),
-      });
-      const saved = await charAssetRepo.saveCharacterAuthoringCandidate({
-        attemptId: started.attempt.attemptId,
-        ownerUserId: user.id,
-        envelope: candidate.envelope,
-        assistantMessage: candidate.assistantMessage,
-      });
-      return c.json({ draft: await characterDraftResponse(saved, user.id) });
-    } catch (error) {
-      const message = error instanceof Error ? error.message : "upgrade_failed";
-      await charAssetRepo.failCharacterAuthoringAttempt({
-        attemptId: started.attempt.attemptId,
-        ownerUserId: user.id,
-        errorCode: message.slice(0, 120),
-      });
-      return c.json({ error: "character_upgrade_failed", message }, 502);
-    }
+    wakeCharacterAuthoringJobs(llm);
+    return c.json(authoringAcceptedFromAttempt(started.attempt), 202);
   });
 
   authed.post("/characters/:id/chat", async (c) => {
@@ -1147,58 +1021,25 @@ export function buildRoutes(options: {
       });
     } catch (error) {
       const message = error instanceof Error ? error.message : "revision_start_failed";
-      return c.json({ error: message === "AUTHORING_IDEMPOTENCY_CONFLICT"
-        ? "idempotency_key_conflict"
-        : "revision_start_failed" }, message === "AUTHORING_IDEMPOTENCY_CONFLICT" ? 409 : 400);
+      if (message === "AUTHORING_IDEMPOTENCY_CONFLICT") {
+        return c.json({ error: "idempotency_key_conflict" }, 409);
+      }
+      if (message === "AUTHORING_ALREADY_IN_PROGRESS") {
+        return c.json({ error: "request_in_progress" }, 409);
+      }
+      return c.json({ error: "revision_start_failed" }, 400);
     }
-    if (started.replayed) {
-      return started.attempt.candidate
-        ? c.json({
-            draft: await characterDraftResponse(started.attempt, user.id),
-            requiresConfirmation: true,
-          })
-        : c.json({ error: "request_in_progress" }, 409);
-    }
-    try {
-      await charAssetRepo.updateCharacterAuthoringStatus({
-        attemptId: started.attempt.attemptId,
-        ownerUserId: user.id,
-        status: "generating_structure",
-      });
-      const adjustment = await llm.adjustCharacter(sheet, body.message);
-      const candidate = await buildCharacterGenerationCandidate({
-        llm,
-        attemptId: started.attempt.attemptId,
-        characterId: sheet.id,
-        ownerUserId: user.id,
-        sourceText: body.message,
-        sourceKind: "revision_instruction",
-        generated: adjustedGenerationResult(sheet, adjustment),
-        existing: sheet,
-        reportStatus: reportCharacterAuthoringStatus(
-          started.attempt.attemptId,
-          user.id,
-        ),
-      });
-      const saved = await charAssetRepo.saveCharacterAuthoringCandidate({
-        attemptId: started.attempt.attemptId,
-        ownerUserId: user.id,
-        envelope: candidate.envelope,
-        assistantMessage: candidate.assistantMessage,
-      });
+    if (started.replayed && started.attempt.candidate) {
       return c.json({
-        draft: await characterDraftResponse(saved, user.id),
+        draft: await characterDraftResponse(started.attempt, user.id),
         requiresConfirmation: true,
       });
-    } catch (error) {
-      const message = error instanceof Error ? error.message : "revision_failed";
-      await charAssetRepo.failCharacterAuthoringAttempt({
-        attemptId: started.attempt.attemptId,
-        ownerUserId: user.id,
-        errorCode: message.slice(0, 120),
-      });
-      return c.json({ error: "character_revision_failed", message }, 502);
     }
+    wakeCharacterAuthoringJobs(llm);
+    return c.json({
+      ...authoringAcceptedFromAttempt(started.attempt),
+      requiresConfirmation: true,
+    }, 202);
   });
 
   /** Restore one immutable V2 generation. */
@@ -1754,55 +1595,101 @@ export function buildRoutes(options: {
         message === "AUTHORING_IDEMPOTENCY_CONFLICT" ? 409 : 400,
       );
     }
-    if (started.replayed) {
-      return started.attempt.candidate
-        ? c.json({ draft: await battlefieldDraftResponse(started.attempt) })
-        : c.json({ error: "request_in_progress" }, 409);
+    if (started.replayed && started.attempt.candidate) {
+      return c.json({ draft: await battlefieldDraftResponse(started.attempt) });
     }
-    try {
-      const generated = await llm.generateBattlefieldPreset({
-        prompt: body.prompt,
-        category: body.category,
-      });
-      await battlefieldAssetRepo.updateBattlefieldAuthoringStatus({
-        attemptId: started.attempt.attemptId,
-        ownerUserId: user.id,
-        status: "generating_description",
-      });
-      const candidate = await buildBattlefieldGenerationCandidate({
-        llm,
-        attemptId: started.attempt.attemptId,
-        battlefieldId: started.attempt.battlefieldId,
-        ownerUserId: user.id,
-        sourceText: body.prompt,
-        sourceKind: "create_instruction",
-        generated,
-      });
-      const saved = await battlefieldAssetRepo.saveBattlefieldAuthoringCandidate({
-        attemptId: started.attempt.attemptId,
-        ownerUserId: user.id,
-        envelope: candidate.envelope,
-        assistantMessage: candidate.assistantMessage,
-      });
-      return c.json({ draft: await battlefieldDraftResponse(saved) });
-    } catch (error) {
-      const message = error instanceof Error ? error.message : "authoring_failed";
-      await battlefieldAssetRepo.failBattlefieldAuthoringAttempt({
-        attemptId: started.attempt.attemptId,
-        ownerUserId: user.id,
-        errorCode: message.slice(0, 120),
-      });
-      return c.json({ error: "battlefield_authoring_failed", message }, 502);
-    }
+    wakeCharacterAuthoringJobs(llm);
+    return c.json(authoringAcceptedFromAttempt({
+      attemptId: started.attempt.attemptId,
+      characterId: started.attempt.battlefieldId,
+      kind: started.attempt.kind,
+      status: started.attempt.status,
+    }), 202);
   });
 
   authed.get("/battlefield-drafts/latest", async (c) => {
     const user = c.get("user");
+    wakeCharacterAuthoringJobs(llm);
     const attempt = await battlefieldAssetRepo.getLatestBattlefieldAuthoringAttempt(
       user.id,
     );
+    if (!attempt) return c.json({ draft: null, progress: null, failed: null });
+    if (attempt.status === "failed") {
+      return c.json({
+        draft: null,
+        progress: null,
+        failed: {
+          attemptId: attempt.attemptId,
+          characterId: attempt.battlefieldId,
+          kind: attempt.kind,
+          errorCode: attempt.errorCode,
+          updatedAt: attempt.updatedAt,
+        },
+      });
+    }
+    if (attempt.candidate && attempt.status === "awaiting_owner_acceptance") {
+      return c.json({
+        draft: await battlefieldDraftResponse(attempt),
+        progress: null,
+        failed: null,
+      });
+    }
     return c.json({
-      draft: attempt?.candidate ? await battlefieldDraftResponse(attempt) : null,
+      draft: null,
+      progress: toAssetAuthoringProgress(
+        attempt.kind,
+        attempt.status,
+        attempt.attemptId,
+      ),
+      failed: null,
+    });
+  });
+
+  authed.get("/battlefield-drafts/:id", async (c) => {
+    const user = c.get("user");
+    wakeCharacterAuthoringJobs(llm);
+    const attempt = await battlefieldAssetRepo.getBattlefieldAuthoringAttempt(
+      c.req.param("id"),
+      user.id,
+    );
+    if (!attempt) return c.json({ error: "not_found" }, 404);
+    const latest = await battlefieldAssetRepo
+      .getLatestBattlefieldAuthoringAttemptForAsset(
+        attempt.battlefieldId,
+        user.id,
+      );
+    const stale = Boolean(latest && latest.attemptId !== attempt.attemptId);
+    const awaiting = attempt.status === "awaiting_owner_acceptance" &&
+      Boolean(attempt.candidate) && !stale;
+    return c.json({
+      attemptId: attempt.attemptId,
+      assetId: attempt.battlefieldId,
+      family: "battlefield",
+      kind: attempt.kind,
+      status: attempt.status,
+      assistantMessage: attempt.assistantMessage,
+      expiresAt: attempt.expiresAt,
+      candidate: awaiting ? (await battlefieldDraftResponse(attempt)).battlefield : null,
+      current: attempt.kind === "create"
+        ? null
+        : toPublicPreset((await bfRepo.getPreset(attempt.battlefieldId))!),
+      latestAttemptId: latest?.attemptId ?? attempt.attemptId,
+      stale,
+      canAccept: awaiting,
+      failed: attempt.status === "failed"
+        ? {
+            attemptId: attempt.attemptId,
+            characterId: attempt.battlefieldId,
+            kind: attempt.kind,
+            errorCode: attempt.errorCode,
+            updatedAt: attempt.updatedAt,
+          }
+        : null,
+      progress: toAssetAuthoringProgress(
+        attempt.kind,
+        attempt.status,
+        attempt.attemptId,
+      ),
     });
   });
 
@@ -1813,47 +1700,29 @@ export function buildRoutes(options: {
       c.req.param("id"),
       user.id,
     );
-    if (!attempt?.candidate) return c.json({ error: "not_found" }, 404);
+    if (attempt?.status !== "awaiting_owner_acceptance" || !attempt.candidate) {
+      return c.json({ error: "not_found" }, 404);
+    }
+    const current = await battlefieldPresetForAttempt(attempt);
+    const sourceText = `${attempt.sourceText ?? current.narrativeBlurb}\n\n追加調整: ${body.message}`;
     try {
-      const current = await battlefieldPresetForAttempt(attempt);
-      const adjustment = await llm.adjustBattlefieldPreset(current, body.message);
-      const sourceText = `${attempt.sourceText ?? current.narrativeBlurb}\n\n追加調整: ${body.message}`;
       await battlefieldAssetRepo.replaceBattlefieldAuthoringSource({
         attemptId: attempt.attemptId,
         ownerUserId: user.id,
         sourceText,
         sourceDigest: assetContentDigest(sourceText),
       });
-      const candidate = await buildBattlefieldGenerationCandidate({
-        llm,
-        attemptId: attempt.attemptId,
-        battlefieldId: attempt.battlefieldId,
-        ownerUserId: user.id,
-        sourceText,
-        sourceKind: attempt.kind === "upgrade"
-          ? "upgrade_description"
-          : attempt.kind === "revision"
-            ? "revision_instruction"
-            : "create_instruction",
-        generated: adjustedBattlefieldGenerationResult(current, adjustment),
-        existing: await bfRepo.getPreset(attempt.battlefieldId),
-      });
-      const saved = await battlefieldAssetRepo.saveBattlefieldAuthoringCandidate({
-        attemptId: attempt.attemptId,
-        ownerUserId: user.id,
-        envelope: candidate.envelope,
-        assistantMessage: candidate.assistantMessage,
-      });
-      return c.json({ draft: await battlefieldDraftResponse(saved) });
     } catch (error) {
       const message = error instanceof Error ? error.message : "authoring_failed";
-      await battlefieldAssetRepo.failBattlefieldAuthoringAttempt({
-        attemptId: attempt.attemptId,
-        ownerUserId: user.id,
-        errorCode: message.slice(0, 120),
-      });
-      return c.json({ error: "battlefield_authoring_failed", message }, 502);
+      return c.json({ error: "battlefield_authoring_failed", message }, 409);
     }
+    wakeCharacterAuthoringJobs(llm);
+    return c.json(authoringAcceptedFromAttempt({
+      attemptId: attempt.attemptId,
+      characterId: attempt.battlefieldId,
+      kind: attempt.kind,
+      status: "pending_structure",
+    }), 202);
   });
 
   authed.post("/battlefields/:id/confirm", async (c) => {
@@ -1921,56 +1790,24 @@ export function buildRoutes(options: {
       });
     } catch (error) {
       const message = error instanceof Error ? error.message : "upgrade_start_failed";
-      return c.json({ error: message === "AUTHORING_IDEMPOTENCY_CONFLICT"
-        ? "idempotency_key_conflict"
-        : "upgrade_start_failed" }, message === "AUTHORING_IDEMPOTENCY_CONFLICT" ? 409 : 400);
+      if (message === "AUTHORING_IDEMPOTENCY_CONFLICT") {
+        return c.json({ error: "idempotency_key_conflict" }, 409);
+      }
+      if (message === "AUTHORING_ALREADY_IN_PROGRESS") {
+        return c.json({ error: "request_in_progress" }, 409);
+      }
+      return c.json({ error: "upgrade_start_failed" }, 400);
     }
-    if (started.replayed) {
-      return started.attempt.candidate
-        ? c.json({ draft: await battlefieldDraftResponse(started.attempt) })
-        : c.json({ error: "request_in_progress" }, 409);
+    if (started.replayed && started.attempt.candidate) {
+      return c.json({ draft: await battlefieldDraftResponse(started.attempt) });
     }
-    try {
-      const generated = {
-        preset: {
-          displayName: preset.displayName,
-          category: preset.category,
-          tags: preset.tags,
-          appearance: preset.appearance,
-          terrainHints: preset.terrainHints,
-          obstacleHints: preset.obstacleHints,
-          conditionHints: preset.conditionHints,
-          baseCoefficients: preset.baseCoefficients,
-          narrativeBlurb: preset.narrativeBlurb,
-        },
-        assistantMessage: "既存の戦場から最新版の構造化候補を作成しました。",
-      };
-      const candidate = await buildBattlefieldGenerationCandidate({
-        llm,
-        attemptId: started.attempt.attemptId,
-        battlefieldId: preset.id,
-        ownerUserId: user.id,
-        sourceText: preset.narrativeBlurb,
-        sourceKind: "upgrade_description",
-        generated,
-        existing: preset,
-      });
-      const saved = await battlefieldAssetRepo.saveBattlefieldAuthoringCandidate({
-        attemptId: started.attempt.attemptId,
-        ownerUserId: user.id,
-        envelope: candidate.envelope,
-        assistantMessage: candidate.assistantMessage,
-      });
-      return c.json({ draft: await battlefieldDraftResponse(saved) });
-    } catch (error) {
-      const message = error instanceof Error ? error.message : "upgrade_failed";
-      await battlefieldAssetRepo.failBattlefieldAuthoringAttempt({
-        attemptId: started.attempt.attemptId,
-        ownerUserId: user.id,
-        errorCode: message.slice(0, 120),
-      });
-      return c.json({ error: "battlefield_upgrade_failed", message }, 502);
-    }
+    wakeCharacterAuthoringJobs(llm);
+    return c.json(authoringAcceptedFromAttempt({
+      attemptId: started.attempt.attemptId,
+      characterId: started.attempt.battlefieldId,
+      kind: started.attempt.kind,
+      status: started.attempt.status,
+    }), 202);
   });
 
   authed.post("/battlefields/:id/chat", async (c) => {
@@ -2000,41 +1837,27 @@ export function buildRoutes(options: {
       });
     } catch (error) {
       const message = error instanceof Error ? error.message : "revision_start_failed";
+      if (message === "AUTHORING_ALREADY_IN_PROGRESS") {
+        return c.json({ error: "request_in_progress" }, 409);
+      }
       return c.json({ error: message.toLowerCase() }, 409);
     }
-    if (started.replayed) {
-      return started.attempt.candidate
-        ? c.json({ draft: await battlefieldDraftResponse(started.attempt) })
-        : c.json({ error: "request_in_progress" }, 409);
+    if (started.replayed && started.attempt.candidate) {
+      return c.json({
+        draft: await battlefieldDraftResponse(started.attempt),
+        requiresConfirmation: true,
+      });
     }
-    try {
-      const adjustment = await llm.adjustBattlefieldPreset(preset, body.message);
-      const candidate = await buildBattlefieldGenerationCandidate({
-        llm,
+    wakeCharacterAuthoringJobs(llm);
+    return c.json({
+      ...authoringAcceptedFromAttempt({
         attemptId: started.attempt.attemptId,
-        battlefieldId: id,
-        ownerUserId: user.id,
-        sourceText: body.message,
-        sourceKind: "revision_instruction",
-        generated: adjustedBattlefieldGenerationResult(preset, adjustment),
-        existing: preset,
-      });
-      const saved = await battlefieldAssetRepo.saveBattlefieldAuthoringCandidate({
-        attemptId: started.attempt.attemptId,
-        ownerUserId: user.id,
-        envelope: candidate.envelope,
-        assistantMessage: candidate.assistantMessage,
-      });
-      return c.json({ draft: await battlefieldDraftResponse(saved), requiresConfirmation: true });
-    } catch (error) {
-      const message = error instanceof Error ? error.message : "revision_failed";
-      await battlefieldAssetRepo.failBattlefieldAuthoringAttempt({
-        attemptId: started.attempt.attemptId,
-        ownerUserId: user.id,
-        errorCode: message.slice(0, 120),
-      });
-      return c.json({ error: "battlefield_revision_failed", message }, 502);
-    }
+        characterId: started.attempt.battlefieldId,
+        kind: started.attempt.kind,
+        status: started.attempt.status,
+      }),
+      requiresConfirmation: true,
+    }, 202);
   });
 
   authed.post("/battlefields/:id/copy", async (c) => {
@@ -2200,55 +2023,104 @@ export function buildRoutes(options: {
           : "authoring_start_failed",
       }, message === "AUTHORING_IDEMPOTENCY_CONFLICT" ? 409 : 400);
     }
-    if (started.replayed) {
-      return started.attempt.candidate
-        ? c.json({ draft: await narrationStyleDraftResponse(started.attempt) })
-        : c.json({ error: "request_in_progress" }, 409);
+    if (started.replayed && started.attempt.candidate) {
+      return c.json({ draft: await narrationStyleDraftResponse(started.attempt) });
     }
-    try {
-      const draft = llm.generateNarrationStyle
-        ? await llm.generateNarrationStyle(body.prompt)
-        : {
-            displayName: body.prompt.slice(0, 12) || "カスタム",
-            description: body.prompt.slice(0, 80),
-            instruction: `次の雰囲気で語る: ${body.prompt}`,
-            tags: ["custom"],
-          };
-      const candidate = await buildNarrationStyleGenerationCandidate({
-        llm,
-        attemptId: started.attempt.attemptId,
-        narrationStyleId: started.attempt.narrationStyleId,
-        ownerUserId: user.id,
-        sourceText: body.prompt,
-        sourceKind: "create_instruction",
-        generated: draft,
-      });
-      const saved = await narrationStyleAssetRepo.saveNarrationStyleAuthoringCandidate({
-        attemptId: started.attempt.attemptId,
-        ownerUserId: user.id,
-        envelope: candidate.envelope,
-        assistantMessage: candidate.assistantMessage,
-      });
-      return c.json({ draft: await narrationStyleDraftResponse(saved) });
-    } catch (error) {
-      const message = error instanceof Error ? error.message : "failed";
-      await narrationStyleAssetRepo.failNarrationStyleAuthoringAttempt({
-        attemptId: started.attempt.attemptId,
-        ownerUserId: user.id,
-        errorCode: message.slice(0, 120),
-      });
-      return c.json({ error: "narration_style_authoring_failed", message }, 502);
-    }
+    wakeCharacterAuthoringJobs(llm);
+    return c.json(authoringAcceptedFromAttempt({
+      attemptId: started.attempt.attemptId,
+      characterId: started.attempt.narrationStyleId,
+      kind: started.attempt.kind,
+      status: started.attempt.status,
+    }), 202);
   });
 
   authed.get("/narration-style-drafts/latest", async (c) => {
     const user = c.get("user");
+    wakeCharacterAuthoringJobs(llm);
     const attempt = await narrationStyleAssetRepo
       .getLatestNarrationStyleAuthoringAttempt(user.id);
+    if (!attempt) return c.json({ draft: null, progress: null, failed: null });
+    if (attempt.status === "failed") {
+      return c.json({
+        draft: null,
+        progress: null,
+        failed: {
+          attemptId: attempt.attemptId,
+          characterId: attempt.narrationStyleId,
+          kind: attempt.kind,
+          errorCode: attempt.errorCode,
+          updatedAt: attempt.updatedAt,
+        },
+      });
+    }
+    if (attempt.candidate && attempt.status === "awaiting_owner_acceptance") {
+      return c.json({
+        draft: await narrationStyleDraftResponse(attempt),
+        progress: null,
+        failed: null,
+      });
+    }
     return c.json({
-      draft: attempt?.candidate
-        ? await narrationStyleDraftResponse(attempt)
+      draft: null,
+      progress: toAssetAuthoringProgress(
+        attempt.kind,
+        attempt.status,
+        attempt.attemptId,
+      ),
+      failed: null,
+    });
+  });
+
+  authed.get("/narration-style-drafts/:id", async (c) => {
+    const user = c.get("user");
+    wakeCharacterAuthoringJobs(llm);
+    const attempt = await narrationStyleAssetRepo.getNarrationStyleAuthoringAttempt(
+      c.req.param("id"),
+      user.id,
+    );
+    if (!attempt) return c.json({ error: "not_found" }, 404);
+    const latest = await narrationStyleAssetRepo
+      .getLatestNarrationStyleAuthoringAttemptForAsset(
+        attempt.narrationStyleId,
+        user.id,
+      );
+    const stale = Boolean(latest && latest.attemptId !== attempt.attemptId);
+    const awaiting = attempt.status === "awaiting_owner_acceptance" &&
+      Boolean(attempt.candidate) && !stale;
+    const currentStyle = attempt.kind === "create"
+      ? null
+      : await styleRepo.getNarrationStyle(attempt.narrationStyleId);
+    return c.json({
+      attemptId: attempt.attemptId,
+      assetId: attempt.narrationStyleId,
+      family: "narration_style",
+      kind: attempt.kind,
+      status: attempt.status,
+      assistantMessage: attempt.assistantMessage,
+      expiresAt: attempt.expiresAt,
+      candidate: awaiting
+        ? (await narrationStyleDraftResponse(attempt)).style
         : null,
+      current: currentStyle ? toPublicNarrationStyle(currentStyle) : null,
+      definition: awaiting ? attempt.candidate?.definition ?? null : null,
+      latestAttemptId: latest?.attemptId ?? attempt.attemptId,
+      stale,
+      canAccept: awaiting,
+      failed: attempt.status === "failed"
+        ? {
+            attemptId: attempt.attemptId,
+            characterId: attempt.narrationStyleId,
+            kind: attempt.kind,
+            errorCode: attempt.errorCode,
+            updatedAt: attempt.updatedAt,
+          }
+        : null,
+      progress: toAssetAuthoringProgress(
+        attempt.kind,
+        attempt.status,
+        attempt.attemptId,
+      ),
     });
   });
 
@@ -2313,40 +2185,21 @@ export function buildRoutes(options: {
       });
     } catch (error) {
       const message = error instanceof Error ? error.message : "upgrade_start_failed";
+      if (message === "AUTHORING_ALREADY_IN_PROGRESS") {
+        return c.json({ error: "request_in_progress" }, 409);
+      }
       return c.json({ error: message.toLowerCase() }, 409);
     }
-    if (started.replayed) {
-      return started.attempt.candidate
-        ? c.json({ draft: await narrationStyleDraftResponse(started.attempt) })
-        : c.json({ error: "request_in_progress" }, 409);
+    if (started.replayed && started.attempt.candidate) {
+      return c.json({ draft: await narrationStyleDraftResponse(started.attempt) });
     }
-    try {
-      const candidate = await buildNarrationStyleGenerationCandidate({
-        llm,
-        attemptId: started.attempt.attemptId,
-        narrationStyleId: style.id,
-        ownerUserId: user.id,
-        sourceText,
-        sourceKind: "upgrade_description",
-        generated: style,
-        existing: style,
-      });
-      const saved = await narrationStyleAssetRepo.saveNarrationStyleAuthoringCandidate({
-        attemptId: started.attempt.attemptId,
-        ownerUserId: user.id,
-        envelope: candidate.envelope,
-        assistantMessage: candidate.assistantMessage,
-      });
-      return c.json({ draft: await narrationStyleDraftResponse(saved) });
-    } catch (error) {
-      const message = error instanceof Error ? error.message : "upgrade_failed";
-      await narrationStyleAssetRepo.failNarrationStyleAuthoringAttempt({
-        attemptId: started.attempt.attemptId,
-        ownerUserId: user.id,
-        errorCode: message.slice(0, 120),
-      });
-      return c.json({ error: "narration_style_upgrade_failed", message }, 502);
-    }
+    wakeCharacterAuthoringJobs(llm);
+    return c.json(authoringAcceptedFromAttempt({
+      attemptId: started.attempt.attemptId,
+      characterId: started.attempt.narrationStyleId,
+      kind: started.attempt.kind,
+      status: started.attempt.status,
+    }), 202);
   });
 
   authed.post("/narration-styles/:id/revise", async (c) => {
@@ -2376,49 +2229,21 @@ export function buildRoutes(options: {
       });
     } catch (error) {
       const message = error instanceof Error ? error.message : "revision_start_failed";
+      if (message === "AUTHORING_ALREADY_IN_PROGRESS") {
+        return c.json({ error: "request_in_progress" }, 409);
+      }
       return c.json({ error: message.toLowerCase() }, 409);
     }
-    if (started.replayed) {
-      return started.attempt.candidate
-        ? c.json({ draft: await narrationStyleDraftResponse(started.attempt) })
-        : c.json({ error: "request_in_progress" }, 409);
+    if (started.replayed && started.attempt.candidate) {
+      return c.json({ draft: await narrationStyleDraftResponse(started.attempt) });
     }
-    try {
-      const generated = llm.generateNarrationStyle
-        ? await llm.generateNarrationStyle(body.prompt)
-        : {
-            displayName: style.displayName,
-            description: style.description,
-            instruction: body.prompt,
-            tags: style.tags,
-            perspective: style.perspective,
-          };
-      const candidate = await buildNarrationStyleGenerationCandidate({
-        llm,
-        attemptId: started.attempt.attemptId,
-        narrationStyleId: style.id,
-        ownerUserId: user.id,
-        sourceText: body.prompt,
-        sourceKind: "revision_instruction",
-        generated,
-        existing: style,
-      });
-      const saved = await narrationStyleAssetRepo.saveNarrationStyleAuthoringCandidate({
-        attemptId: started.attempt.attemptId,
-        ownerUserId: user.id,
-        envelope: candidate.envelope,
-        assistantMessage: candidate.assistantMessage,
-      });
-      return c.json({ draft: await narrationStyleDraftResponse(saved) });
-    } catch (error) {
-      const message = error instanceof Error ? error.message : "revision_failed";
-      await narrationStyleAssetRepo.failNarrationStyleAuthoringAttempt({
-        attemptId: started.attempt.attemptId,
-        ownerUserId: user.id,
-        errorCode: message.slice(0, 120),
-      });
-      return c.json({ error: "narration_style_revision_failed", message }, 502);
-    }
+    wakeCharacterAuthoringJobs(llm);
+    return c.json(authoringAcceptedFromAttempt({
+      attemptId: started.attempt.attemptId,
+      characterId: started.attempt.narrationStyleId,
+      kind: started.attempt.kind,
+      status: started.attempt.status,
+    }), 202);
   });
 
   authed.patch("/narration-styles/:id", async (c) => {
