@@ -52,10 +52,9 @@ function definitionInput(): GenerateCharacterDefinitionV2Input {
 }
 
 function definitionMissingActionNormResponse(
-  base: CharacterDefinitionV2,
+  _base: CharacterDefinitionV2,
 ): Record<string, unknown> {
   return {
-    ...structuredClone(base),
     actionNorms: [{
       id: "ask-after-observing",
       when: {
@@ -108,55 +107,30 @@ describe("OpenAI-compatible character definition repair", () => {
   it("does not issue a repair call for an initially valid definition", async () => {
     const input = definitionInput();
     const { provider, calls } = providerWithResponses([
-      { definition: input.baseDefinition },
+      { fill: {} },
     ]);
 
     const definition = await provider.generateCharacterDefinitionV2(input);
 
     assert.deepEqual(definition, input.baseDefinition);
     assert.equal(calls.length, 1);
-    assert.equal(calls[0]?.label, "generateCharacterDefinitionV2");
-    assert.equal(
-      (calls[0]?.responseFormat as { type?: string })?.type,
-      "json_schema",
-    );
-    const schema = (calls[0]?.responseFormat as {
-      json_schema?: { schema?: Record<string, unknown> };
-    })?.json_schema?.schema;
-    assert.ok(schema);
-    const definitions = schema.definitions as Record<string, unknown>;
-    for (const [name, definition] of Object.entries(definitions)) {
-      assert.notEqual(
-        (definition as { $ref?: string }).$ref,
-        `#/definitions/${name}`,
-      );
-    }
+    assert.equal(calls[0]?.label, "fillCharacterDefinitionGapsV2");
   });
 
   it("repairs one strict-schema failure with its bounded validation receipt", async () => {
     const input = definitionInput();
     const invalid = definitionMissingActionNormResponse(input.baseDefinition);
     const { provider, calls } = providerWithResponses([
-      { definition: invalid },
-      { definition: input.baseDefinition },
+      { fill: invalid },
+      { fill: {} },
     ]);
 
     const definition = await provider.generateCharacterDefinitionV2(input);
 
     assert.deepEqual(definition, input.baseDefinition);
     assert.equal(calls.length, 2);
-    assert.equal(calls[0]?.label, "generateCharacterDefinitionV2");
-    assert.equal(calls[1]?.label, "generateCharacterDefinitionV2Repair");
-    assert.equal(
-      (calls[0]?.responseFormat as { json_schema?: { name?: string } })
-        ?.json_schema?.name,
-      "character_definition_v2",
-    );
-    assert.equal(
-      (calls[1]?.responseFormat as { json_schema?: { name?: string } })
-        ?.json_schema?.name,
-      "character_definition_v2",
-    );
+    assert.equal(calls[0]?.label, "fillCharacterDefinitionGapsV2");
+    assert.equal(calls[1]?.label, "fillCharacterDefinitionGapsV2Repair");
     const repair = JSON.parse(calls[1]!.user) as {
       sourceKind: string;
       validationIssues: Array<{ path: Array<string | number> }>;
@@ -172,8 +146,8 @@ describe("OpenAI-compatible character definition repair", () => {
     const input = definitionInput();
     const invalid = definitionMissingActionNormResponse(input.baseDefinition);
     const { provider, calls } = providerWithResponses([
-      { definition: invalid },
-      { definition: invalid },
+      { fill: invalid },
+      { fill: invalid },
     ]);
 
     await assert.rejects(

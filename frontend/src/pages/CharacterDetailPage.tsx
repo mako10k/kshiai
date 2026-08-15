@@ -8,8 +8,31 @@ import type {
 } from "@kshiai/shared";
 import { formatRatingForDisplay } from "@kshiai/shared";
 import { api, ApiError, type ImageGenQuota } from "../api";
+import { AuthoringProgressNotice } from "../components/AuthoringProgressNotice";
+import { useCharacterAuthoringSync } from "../hooks/useCharacterAuthoringSync";
 import { useLocalDraft } from "../hooks/useLocalDraft";
 import { mediaSrc } from "../media";
+
+const EMPTY_IMPROVEMENT: CharacterImprovementPublic = {
+  memo: {
+    strengths: [],
+    improvements: [],
+    summary: "",
+    lastAnalyzedAt: null,
+    lastAnalyzedBattleCount: 0,
+    analysisCount: 0,
+  },
+  eligibility: {
+    finishedBattles: 0,
+    canAnalyze: false,
+    battlesUntilNext: 5,
+    reason: "改善メモを取得できませんでした。再読み込みしてください。",
+    lastAnalyzedAt: null,
+    lastAnalyzedBattleCount: 0,
+    analysisCount: 0,
+    nextAnalyzeAtBattleCount: 5,
+  },
+};
 
 const CHAT_PLACEHOLDER = "もっと慎重で、相手を観察するタイプにして";
 
@@ -71,11 +94,17 @@ export function CharacterDetailPage() {
   const [improvement, setImprovement] =
     useState<CharacterImprovementPublic | null>(null);
   const [improvementBusy, setImprovementBusy] = useState(false);
-  const [pendingDraft, setPendingDraft] = useState<{
-    id: string;
-    character: CharacterPublic;
-    assistantMessage: string;
-  } | null>(null);
+  const {
+    authoringProgress,
+    setAuthoringProgress,
+    pendingDraft,
+    setPendingDraft,
+  } = useCharacterAuthoringSync({
+    id,
+    isOwner,
+    busy,
+    onCharacter: setCharacter,
+  });
 
   const reloadQuota = useCallback(async (charId: string) => {
     try {
@@ -106,26 +135,7 @@ export function CharacterDetailPage() {
       setImprovement(res);
     } catch {
       // Keep UI usable offline from analysis; eligibility will re-fetch later.
-      setImprovement({
-        memo: {
-          strengths: [],
-          improvements: [],
-          summary: "",
-          lastAnalyzedAt: null,
-          lastAnalyzedBattleCount: 0,
-          analysisCount: 0,
-        },
-        eligibility: {
-          finishedBattles: 0,
-          canAnalyze: false,
-          battlesUntilNext: 5,
-          reason: "改善メモを取得できませんでした。再読み込みしてください。",
-          lastAnalyzedAt: null,
-          lastAnalyzedBattleCount: 0,
-          analysisCount: 0,
-          nextAnalyzeAtBattleCount: 5,
-        },
-      });
+      setImprovement(EMPTY_IMPROVEMENT);
     }
   }, []);
 
@@ -137,6 +147,7 @@ export function CharacterDetailPage() {
       .then(({ character: c, isOwner: owner }) => {
         setCharacter(c);
         setIsOwner(owner);
+        setAuthoringProgress(c.authoringProgress ?? null);
         if (owner) {
           void reloadQuota(id);
           void reloadImprovement(id);
@@ -466,6 +477,11 @@ export function CharacterDetailPage() {
           ) : null}
         </div>
       )}
+      <AuthoringProgressNotice
+        active={busy}
+        progress={authoringProgress}
+        fallbackLabel="最新版への更新案を作成中…"
+      />
 
       {pendingDraft && (
         <div className="panel">

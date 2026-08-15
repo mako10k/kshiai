@@ -56,6 +56,9 @@ import type {
   EnvironmentProcessProposal,
   CharacterProfileSourceProjectionV2,
   CharacterDefinitionV2,
+  CharacterDefinitionGapFillV2,
+  CharacterDefinitionGapKey,
+  CharacterDefinitionCheckFinding,
   CharacterConsciousSelfStaticProjectionV2,
   CharacterDeepPsycheStaticProjectionV2,
   CharacterNarrativeCueV2,
@@ -375,6 +378,21 @@ export type ValidateCharacterProfileClaimsResult = {
   }>;
 };
 
+export type ReviewCharacterDefinitionV2Input = {
+  sourceText: string;
+  sourceKind: GenerateCharacterDefinitionV2Input["sourceKind"];
+  baseDefinition: CharacterDefinitionV2;
+  candidate: CharacterDefinitionV2;
+  gaps: CharacterDefinitionGapKey[];
+  findings: CharacterDefinitionCheckFinding[];
+};
+
+export type ReviewCharacterDefinitionV2Result = {
+  verdict: "accept" | "revise";
+  issues: CharacterDefinitionCheckFinding[];
+  fill: CharacterDefinitionGapFillV2 | null;
+};
+
 export type GenerateBattlefieldSceneInput = {
   /** Frozen owner source is tone-only; projection owns publishable facts. */
   sourceText: string;
@@ -562,6 +580,9 @@ export interface LlmProvider {
   generateCharacterDefinitionV2(
     input: GenerateCharacterDefinitionV2Input,
   ): Promise<CharacterDefinitionV2>;
+  reviewCharacterDefinitionV2(
+    input: ReviewCharacterDefinitionV2Input,
+  ): Promise<ReviewCharacterDefinitionV2Result>;
   generateCharacterProfile(
     input: GenerateCharacterProfileInput,
   ): Promise<GenerateCharacterProfileResult>;

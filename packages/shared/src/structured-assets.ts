@@ -195,3 +195,71 @@ export const AssetAuthoringAttemptStatusSchema = z.enum([
 export type AssetAuthoringAttemptStatus = z.infer<
   typeof AssetAuthoringAttemptStatusSchema
 >;
+
+export const AssetAuthoringProgressSchema = z.object({
+  kind: AssetAuthoringAttemptKindSchema,
+  status: AssetAuthoringAttemptStatusSchema,
+  label: z.string().min(1).max(80),
+  step: z.number().int().min(1).max(8),
+  stepCount: z.number().int().min(1).max(8),
+}).strict();
+export type AssetAuthoringProgress = z.infer<typeof AssetAuthoringProgressSchema>;
+
+const AUTHORING_IN_FLIGHT_STATUSES = [
+  "pending_structure",
+  "generating_structure",
+  "validating_structure",
+  "generating_description",
+  "validating_description",
+] as const satisfies readonly AssetAuthoringAttemptStatus[];
+
+export function isAssetAuthoringInFlight(
+  status: AssetAuthoringAttemptStatus,
+): boolean {
+  return (AUTHORING_IN_FLIGHT_STATUSES as readonly string[]).includes(status);
+}
+
+const AUTHORING_PROGRESS_STEP_COUNT = 5;
+
+function authoringProgressLabel(
+  kind: AssetAuthoringAttemptKind,
+  status: AssetAuthoringAttemptStatus,
+): { step: number; label: string } | null {
+  if (status === "pending_structure") {
+    return { step: 1, label: "準備しています" };
+  }
+  if (status === "generating_structure") {
+    if (kind === "upgrade") {
+      return { step: 2, label: "既存設定を構造へ移しています" };
+    }
+    if (kind === "revision") {
+      return { step: 2, label: "変更を構造へ反映しています" };
+    }
+    return { step: 2, label: "構造化設定を作成中" };
+  }
+  if (status === "validating_structure") {
+    return { step: 3, label: "機械チェックと自己レビュー中" };
+  }
+  if (status === "generating_description") {
+    return { step: 4, label: "公開プロフィールを作成中" };
+  }
+  if (status === "validating_description") {
+    return { step: 5, label: "記載内容を検証中" };
+  }
+  return null;
+}
+
+export function toAssetAuthoringProgress(
+  kind: AssetAuthoringAttemptKind,
+  status: AssetAuthoringAttemptStatus,
+): AssetAuthoringProgress | null {
+  const mapped = authoringProgressLabel(kind, status);
+  if (!mapped) return null;
+  return AssetAuthoringProgressSchema.parse({
+    kind,
+    status,
+    label: mapped.label,
+    step: mapped.step,
+    stepCount: AUTHORING_PROGRESS_STEP_COUNT,
+  });
+}

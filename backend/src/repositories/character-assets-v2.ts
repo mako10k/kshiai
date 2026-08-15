@@ -425,6 +425,21 @@ export function getCharacterAuthoringAttempt(
   ).then((result) => result.rows[0] ? parseAttempt(result.rows[0]) : null);
 }
 
+export function getInFlightCharacterAuthoringAttempt(
+  characterId: string,
+  ownerUserId: string,
+): Promise<CharacterAuthoringAttempt | null> {
+  return query<AttemptRow>(
+    `SELECT * FROM character_authoring_attempts
+      WHERE character_id = $1 AND owner_user_id = $2
+        AND status IN ('pending_structure', 'generating_structure',
+          'validating_structure', 'generating_description',
+          'validating_description')
+      ORDER BY updated_at DESC LIMIT 1`,
+    [characterId, ownerUserId],
+  ).then((result) => result.rows[0] ? parseAttempt(result.rows[0]) : null);
+}
+
 export function getLatestCharacterAuthoringAttempt(
   ownerUserId: string,
 ): Promise<CharacterAuthoringAttempt | null> {

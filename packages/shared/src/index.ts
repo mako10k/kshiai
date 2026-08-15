@@ -44,4 +44,5 @@ export * from "./structured-assets.js";
 export * from "./structured-character.js";
 export * from "./structured-battlefield.js";
 export * from "./character-definition-rules.js";
+export * from "./character-definition-check.js";
 export * from "./character-manifestation.js";

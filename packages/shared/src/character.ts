@@ -14,7 +14,10 @@ import {
   type CharacterImprovementMemo,
 } from "./character-improvement.js";
 import { DecisionProfileSchema } from "./free-action.js";
-import { AssetCompatibilitySchema } from "./structured-assets.js";
+import {
+  AssetAuthoringProgressSchema,
+  AssetCompatibilitySchema,
+} from "./structured-assets.js";
 
 /** Internal combat parameters — never sent to normal clients. */
 export const ParamKeySchema = z.enum([
@@ -480,6 +483,8 @@ export const CharacterPublicSchema = z.object({
     label: z.string(),
     targetSchemaVersion: z.number().int().positive(),
   }).strict().nullable().optional(),
+  /** Owner-only in-flight authoring step, absent when nothing is generating. */
+  authoringProgress: AssetAuthoringProgressSchema.nullable().optional(),
 });
 export type CharacterPublic = z.infer<typeof CharacterPublicSchema>;
 

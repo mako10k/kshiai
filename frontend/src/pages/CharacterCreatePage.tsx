@@ -2,6 +2,8 @@ import { useEffect, useState, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import type { CharacterPublic } from "@kshiai/shared";
 import { api } from "../api";
+import { AuthoringProgressNotice } from "../components/AuthoringProgressNotice";
+import { useAuthoringProgressPoll } from "../hooks/useAuthoringProgressPoll";
 import { useLocalDraft } from "../hooks/useLocalDraft";
 
 const PROMPT_PLACEHOLDER =
@@ -19,10 +21,25 @@ export function CharacterCreatePage() {
     assistantMessage: string;
   } | null>(null);
   const [draftMessage, setDraftMessage] = useState("");
+  const [resumeInFlight, setResumeInFlight] = useState(false);
+  const progress = useAuthoringProgressPoll({
+    enabled: busy || resumeInFlight,
+    poll: async () => {
+      const result = await api.latestCharacterDraft();
+      if (result.draft) {
+        setDraft(result.draft);
+        setResumeInFlight(false);
+      }
+      return result.progress;
+    },
+  });
 
   useEffect(() => {
     void api.latestCharacterDraft()
-      .then((result) => setDraft(result.draft))
+      .then((result) => {
+        setDraft(result.draft);
+        if (result.progress) setResumeInFlight(true);
+      })
       .catch((e) => setError(String(e)));
   }, []);
 
@@ -110,10 +127,15 @@ export function CharacterCreatePage() {
             placeholder={PROMPT_PLACEHOLDER}
             rows={4}
           />
-          <button className="btn primary" type="submit" disabled={busy}>
-            {busy ? "生成中…" : "生成する"}
+          <button className="btn primary" type="submit" disabled={busy || resumeInFlight}>
+            {busy || resumeInFlight ? "生成中…" : "生成する"}
           </button>
         </form>
+        <AuthoringProgressNotice
+          active={busy || resumeInFlight}
+          progress={progress}
+          fallbackLabel="キャラクターを生成中…"
+        />
         {message && <p className="ok">{message}</p>}
         {error && <p className="error">{error}</p>}
       </div>

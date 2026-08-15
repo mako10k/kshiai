@@ -17,6 +17,11 @@ import {
   CharacterDeepPsycheCompactAdvanceSchema,
   CharacterIdentitySchema,
   CharacterDefinitionV2Schema,
+  CharacterDefinitionGapFillV2Schema,
+  applyCharacterDefinitionGapFillV2,
+  characterDefinitionPreservedSnapshotV2,
+  listCharacterDefinitionGapsV2,
+  restoreAuthoritativeCharacterDefinitionV2,
   BattlefieldDefinitionV2Schema,
   NarrationDefinitionV2Schema,
   AssetClaimRiskCodeSchema,
@@ -62,6 +67,8 @@ import type {
   GenerateCharacterProfileInput,
   GenerateCharacterProfileResult,
   GenerateCharacterDefinitionV2Input,
+  ReviewCharacterDefinitionV2Input,
+  ReviewCharacterDefinitionV2Result,
   ValidateCharacterProfileClaimsInput,
   ValidateCharacterProfileClaimsResult,
   GenerateBattlefieldSceneInput,
@@ -1292,6 +1299,9 @@ segment texts joined in order, with no additional unsegmented prose.`,
     input: GenerateCharacterDefinitionV2Input,
   ) {
     if (!this.client) return this.fallback.generateCharacterDefinitionV2(input);
+    if (input.sourceKind === "upgrade_description") {
+      return this.fillCharacterDefinitionGapsV2(input);
+    }
     try {
       const data = await this.chatJson(
         `You refine a VALID CharacterDefinitionV2 JSON value from an owner source and a
@@ -1316,9 +1326,6 @@ Descriptions must use only registered consumerTags already present in the base s
 Numeric psyche dynamics are restricted deterministic inputs in 0..1000. Calibrate them
 conservatively from explicit stable tendencies; use 500 when unsupported. They are never
 public prose. selfAwareness means character awareness, not human owner visibility.
-For sourceKind=upgrade_description, do not invent missing history, causes, relationships,
-latent dispositions, self-awareness, possessions, or capabilities from a polished public
-profile. Empty arrays and neutral dynamics are valid and preferred to fabrication.
 Do not put current feelings, thoughts, wounds, battle observations, or live relationships
 in this immutable definition. Preserve strict bounds and every reference.`,
         JSON.stringify({
@@ -1335,7 +1342,13 @@ in this immutable definition. Preserve strict bounds and every reference.`,
         },
       ) as Record<string, unknown>;
       const parsed = CharacterDefinitionV2Schema.safeParse(data.definition);
-      if (parsed.success) return parsed.data;
+      if (parsed.success) {
+        return restoreAuthoritativeCharacterDefinitionV2(
+          input.baseDefinition,
+          parsed.data,
+          input.sourceKind,
+        );
+      }
 
       const repaired = await this.chatJson(
         `You repair one rejected CharacterDefinitionV2 candidate. Return JSON only:
@@ -1369,11 +1382,169 @@ the definition.`,
           responseFormat: CHARACTER_DEFINITION_RESPONSE_FORMAT,
         },
       ) as Record<string, unknown>;
-      return CharacterDefinitionV2Schema.parse(repaired.definition);
+      return restoreAuthoritativeCharacterDefinitionV2(
+        input.baseDefinition,
+        CharacterDefinitionV2Schema.parse(repaired.definition),
+        input.sourceKind,
+      );
     } catch (error) {
       return this.fallbackOrThrow(
         error,
         () => this.fallback.generateCharacterDefinitionV2(input),
+      );
+    }
+  }
+
+  private async fillCharacterDefinitionGapsV2(
+    input: GenerateCharacterDefinitionV2Input,
+  ) {
+    const gaps = listCharacterDefinitionGapsV2(input.baseDefinition);
+    if (gaps.length === 0 || !input.sourceText.trim()) {
+      return structuredClone(input.baseDefinition);
+    }
+    try {
+      const data = await this.chatJson(
+        `You fill ONLY missing structured character fields from an owner source and a
+deterministic base snapshot. Return JSON only: {"fill": object}.
+
+Do not regenerate identity, combat, capabilities, inventory, loadout, or numeric psyche
+dynamics. Do not invent history, causes, relationships, latent dispositions, possessions,
+or capabilities that the source does not explicitly support. Empty arrays are valid and
+preferred to fabrication.
+
+Allowed fill keys: profileBackground, appearanceDetails, psycheDisposition
+(coreNeeds/description only), speechPolicy, relationshipSeeds, actionNorms,
+expressionNotes. Relationship and address targets may use registered roles only; never
+emit kind=character. Speech examples are style only, never facts.`,
+        JSON.stringify({
+          sourceKind: input.sourceKind,
+          ownerSource: input.sourceText.slice(0, 6000),
+          gaps,
+          preserved: characterDefinitionPreservedSnapshotV2(input.baseDefinition),
+        }),
+        {
+          tier: "engine",
+          label: "fillCharacterDefinitionGapsV2",
+          timeoutMs: ENGINE_TIMEOUT_MS,
+          temperature: 0.2,
+        },
+      ) as Record<string, unknown>;
+      const parsedFill = CharacterDefinitionGapFillV2Schema.safeParse(data.fill ?? {});
+      if (parsedFill.success) {
+        return restoreAuthoritativeCharacterDefinitionV2(
+          input.baseDefinition,
+          applyCharacterDefinitionGapFillV2(
+            input.baseDefinition,
+            parsedFill.data,
+            input.sourceKind,
+          ),
+          input.sourceKind,
+        );
+      }
+      const repaired = await this.chatJson(
+        `You repair one rejected character definition fill. Return JSON only:
+{"fill": object}.
+
+Correct only the listed validation issues. Do not regenerate identity, combat,
+capabilities, inventory, or loadout. Empty arrays are valid.`,
+        JSON.stringify({
+          sourceKind: input.sourceKind,
+          ownerSource: input.sourceText.slice(0, 6000),
+          rejectedFill: data.fill ?? {},
+          validationIssues: parsedFill.error.issues.map((issue) => ({
+            code: issue.code,
+            path: issue.path,
+            message: issue.message,
+          })),
+        }),
+        {
+          tier: "engine",
+          label: "fillCharacterDefinitionGapsV2Repair",
+          timeoutMs: ENGINE_TIMEOUT_MS,
+          temperature: 0.2,
+        },
+      ) as Record<string, unknown>;
+      const fill = CharacterDefinitionGapFillV2Schema.parse(repaired.fill ?? {});
+      return restoreAuthoritativeCharacterDefinitionV2(
+        input.baseDefinition,
+        applyCharacterDefinitionGapFillV2(
+          input.baseDefinition,
+          fill,
+          input.sourceKind,
+        ),
+        input.sourceKind,
+      );
+    } catch (error) {
+      return this.fallbackOrThrow(
+        error,
+        () => this.fallback.generateCharacterDefinitionV2(input),
+      );
+    }
+  }
+
+  async reviewCharacterDefinitionV2(
+    input: ReviewCharacterDefinitionV2Input,
+  ): Promise<ReviewCharacterDefinitionV2Result> {
+    if (!this.client) return this.fallback.reviewCharacterDefinitionV2(input);
+    try {
+      const data = await this.chatJson(
+        `You review a CharacterDefinitionV2 candidate against the owner source and
+mechanical findings. Return JSON only: {
+  "verdict": "accept"|"revise",
+  "issues": [{ "code": string, "path": string, "message": string }],
+  "fill": object|null
+}
+
+Fix every mechanical finding. Do not change identity, combat, capabilities, inventory,
+loadout, or numeric psyche dynamics. For sourceKind=upgrade_description, do not invent
+missing history, causes, relationships, or capabilities; prefer emptying a fabricated
+field over polishing it. Relationship and address targets may use registered roles only.
+If the candidate is already faithful and the findings are empty, verdict=accept and
+fill=null. fill may include only: profileBackground, appearanceDetails,
+psycheDisposition.coreNeeds/description, speechPolicy, relationshipSeeds, actionNorms,
+expressionNotes.`,
+        JSON.stringify({
+          sourceKind: input.sourceKind,
+          ownerSource: input.sourceText.slice(0, 6000),
+          gaps: input.gaps,
+          findings: input.findings,
+          preserved: characterDefinitionPreservedSnapshotV2(input.baseDefinition),
+          candidate: {
+            profileBackground: input.candidate.profileBackground,
+            appearanceDetails: input.candidate.appearance.details,
+            coreNeeds: input.candidate.psycheDisposition.coreNeeds,
+            speechPolicy: input.candidate.speechPolicy,
+            relationshipSeeds: input.candidate.relationshipSeeds,
+            actionNorms: input.candidate.actionNorms,
+            expressionNotes: input.candidate.expressionNotes,
+          },
+        }),
+        {
+          tier: "engine",
+          label: "reviewCharacterDefinitionV2",
+          timeoutMs: ENGINE_TIMEOUT_MS,
+          temperature: 0.15,
+        },
+      ) as Record<string, unknown>;
+      const verdict = data.verdict === "revise" ? "revise" as const : "accept" as const;
+      const issues = Array.isArray(data.issues)
+        ? data.issues.slice(0, 16).map((raw) => {
+            const value = raw as Record<string, unknown>;
+            return {
+              code: String(value.code ?? "review_issue").slice(0, 80),
+              path: String(value.path ?? "definition").slice(0, 160),
+              message: String(value.message ?? "").slice(0, 320),
+            };
+          }).filter((issue) => issue.message.length > 0)
+        : [];
+      const fill = verdict === "revise" && data.fill
+        ? CharacterDefinitionGapFillV2Schema.parse(data.fill)
+        : null;
+      return { verdict, issues, fill };
+    } catch (error) {
+      return this.fallbackOrThrow(
+        error,
+        () => this.fallback.reviewCharacterDefinitionV2(input),
       );
     }
   }

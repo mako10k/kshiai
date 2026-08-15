@@ -30,6 +30,7 @@ import {
 } from "./structured-assets.js";
 
 export const CHARACTER_DEFINITION_SCHEMA_VERSION = 2 as const;
+export const LEGACY_SPEECH_UNSPECIFIED = "既存プロフィールからは特定しない";
 export const CHARACTER_PROFILE_PROJECTION_VERSION = 2 as const;
 export const CHARACTER_PROFILE_CLAIM_VALIDATOR_CONTRACT =
   "character-profile-claim-validator-v1" as const;
@@ -261,7 +262,7 @@ export type CharacterActionDefinitionV2 = z.infer<
   typeof CharacterActionDefinitionV2Schema
 >;
 
-export const CharacterDefinitionV2Schema = z.object({
+export const CharacterDefinitionV2ObjectSchema = z.object({
   schemaVersion: z.literal(CHARACTER_DEFINITION_SCHEMA_VERSION),
   identity: z.object({
     displayName: z.string().min(1).max(48),
@@ -449,7 +450,8 @@ export const CharacterDefinitionV2Schema = z.object({
     ]),
   }).strict()).max(16),
   expressionNotes: CharacterDescriptionV2Schema.nullable(),
-}).strict().superRefine((definition, context) => {
+}).strict();
+export const CharacterDefinitionV2Schema = CharacterDefinitionV2ObjectSchema.superRefine((definition, context) => {
   const unique = (ids: string[], path: Array<string | number>) => {
     const seen = new Set<string>();
     for (const [index, id] of ids.entries()) {
@@ -1246,8 +1248,8 @@ export function legacyCharacterSheetToDefinitionV2(
       phasePolicy: { prologue: "allow", turn: "allow", aftermath: "allow" },
       reactTo: ["direct_address", "self_impact", "counterpart_impact", "ambient_change"],
       silenceRules: [],
-      register: "既存プロフィールからは特定しない",
-      cadence: "既存プロフィールからは特定しない",
+      register: LEGACY_SPEECH_UNSPECIFIED,
+      cadence: LEGACY_SPEECH_UNSPECIFIED,
       sentenceLength: "mixed",
       vocabularyHabits: [],
       addressRules: [],

@@ -11,6 +11,7 @@ import type {
   EnvironmentProcessReceipt,
   CharacterImprovementPublic,
   CharacterPublic,
+  AssetAuthoringProgress,
   CharacterVisibility,
   FriendPublic,
   UserProfilePublic,
@@ -536,6 +537,7 @@ export const api = {
         character: CharacterPublic;
         assistantMessage: string;
       } | null;
+      progress: AssetAuthoringProgress | null;
     }>("/api/character-drafts/latest"),
   confirmCharacterDraft: (id: string) =>
     request<{ character: CharacterPublic; assistantMessage: string }>(
