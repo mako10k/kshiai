@@ -20,6 +20,18 @@ import {
   getCurrentAssetGeneration,
   type AssetGeneration,
 } from "./asset-generations.js";
+import {
+  finishFamilyAuthoringJob,
+  insertFamilyAuthoringJob,
+  reopenFamilyAuthoringJob,
+} from "./family-authoring-jobs.js";
+import { insertOwnerNotification } from "./owner-notifications.js";
+import {
+  isoTimestamp,
+  parseAuthoringAttemptBase,
+  projectAssetCompatibility,
+  type AuthoringAttemptRow,
+} from "./authoring-attempt-row.js";
 
 export type BattlefieldAuthoringAttempt = {
   attemptId: string;
@@ -43,27 +55,7 @@ export type BattlefieldAuthoringAttempt = {
   expiresAt: string;
 };
 
-type AttemptRow = {
-  attempt_id: string;
-  owner_user_id: string;
-  battlefield_id: string;
-  kind: string;
-  idempotency_key: string;
-  request_digest: string;
-  source_text: string | null;
-  source_digest: string;
-  expected_generation_id: string | null;
-  expected_content_digest: string | null;
-  status: string;
-  candidate_json: unknown | null;
-  candidate_digest: string | null;
-  assistant_message: string;
-  error_code: string | null;
-  result_generation_id: string | null;
-  created_at: string | Date;
-  updated_at: string | Date;
-  expires_at: string | Date;
-};
+type AttemptRow = AuthoringAttemptRow & { battlefield_id: string };
 
 type GenerationRow = {
   asset_type: string;
@@ -76,36 +68,14 @@ type GenerationRow = {
   created_at: string | Date;
 };
 
-function iso(value: string | Date): string {
-  return value instanceof Date ? value.toISOString() : value;
-}
-
 function parseAttempt(row: AttemptRow): BattlefieldAuthoringAttempt {
-  const rawCandidate = typeof row.candidate_json === "string"
-    ? JSON.parse(row.candidate_json)
-    : row.candidate_json;
+  const base = parseAuthoringAttemptBase(row);
   return {
-    attemptId: row.attempt_id,
-    ownerUserId: row.owner_user_id,
+    ...base,
     battlefieldId: row.battlefield_id,
-    kind: AssetAuthoringAttemptKindSchema.parse(row.kind),
-    idempotencyKey: row.idempotency_key,
-    requestDigest: row.request_digest,
-    sourceText: row.source_text,
-    sourceDigest: row.source_digest,
-    expectedGenerationId: row.expected_generation_id,
-    expectedContentDigest: row.expected_content_digest,
-    status: AssetAuthoringAttemptStatusSchema.parse(row.status),
-    candidate: rawCandidate == null
+    candidate: base.rawCandidate == null
       ? null
-      : BattlefieldGenerationEnvelopeV2Schema.parse(rawCandidate),
-    candidateDigest: row.candidate_digest,
-    assistantMessage: row.assistant_message,
-    errorCode: row.error_code,
-    resultGenerationId: row.result_generation_id,
-    createdAt: iso(row.created_at),
-    updatedAt: iso(row.updated_at),
-    expiresAt: iso(row.expires_at),
+      : BattlefieldGenerationEnvelopeV2Schema.parse(base.rawCandidate),
   };
 }
 
@@ -120,7 +90,7 @@ function parseGeneration(row: GenerationRow): AssetGeneration {
       ? JSON.parse(row.content_json)
       : row.content_json,
     contentDigest: row.content_digest,
-    createdAt: iso(row.created_at),
+    createdAt: isoTimestamp(row.created_at),
   };
 }
 
@@ -222,6 +192,19 @@ export async function beginBattlefieldAuthoringAttempt(input: {
     if (input.kind === "revision" && !expected) {
       throw new Error("BATTLEFIELD_GENERATION_MISSING");
     }
+    if (input.kind !== "create") {
+      const inflight = await connection.query<{ attempt_id: string }>(
+        `SELECT attempt_id FROM battlefield_authoring_attempts
+          WHERE battlefield_id = $1 AND owner_user_id = $2
+            AND status IN ('pending_structure', 'generating_structure',
+              'validating_structure', 'generating_description',
+              'validating_description', 'awaiting_owner_acceptance',
+              'committing')
+          LIMIT 1`,
+        [battlefieldId, input.ownerUserId],
+      );
+      if (inflight.rows[0]) throw new Error("AUTHORING_ALREADY_IN_PROGRESS");
+    }
     const now = new Date();
     const createdAt = now.toISOString();
     const expiresAt = new Date(now.getTime() + (input.ttlMs ?? 24 * 60 * 60 * 1000))
@@ -271,6 +254,12 @@ export async function beginBattlefieldAuthoringAttempt(input: {
         [battlefieldId, attemptId, createdAt],
       );
     }
+    await insertFamilyAuthoringJob(connection, "battlefield", {
+      attemptId,
+      ownerUserId: input.ownerUserId,
+      assetId: battlefieldId,
+      createdAt,
+    });
     const attempt = await selectAttempt(connection, attemptId, input.ownerUserId);
     if (!attempt) throw new Error("AUTHORING_ATTEMPT_INSERT_FAILED");
     return { attempt, replayed: false };
@@ -288,15 +277,24 @@ export function getBattlefieldAuthoringAttempt(
   ).then((result) => result.rows[0] ? parseAttempt(result.rows[0]) : null);
 }
 
+export function getLatestBattlefieldAuthoringAttemptForAsset(
+  battlefieldId: string,
+  ownerUserId: string,
+): Promise<BattlefieldAuthoringAttempt | null> {
+  return query<AttemptRow>(
+    `SELECT * FROM battlefield_authoring_attempts
+      WHERE battlefield_id = $1 AND owner_user_id = $2
+      ORDER BY updated_at DESC LIMIT 1`,
+    [battlefieldId, ownerUserId],
+  ).then((result) => result.rows[0] ? parseAttempt(result.rows[0]) : null);
+}
+
 export function getLatestBattlefieldAuthoringAttempt(
   ownerUserId: string,
 ): Promise<BattlefieldAuthoringAttempt | null> {
   return query<AttemptRow>(
     `SELECT * FROM battlefield_authoring_attempts
       WHERE owner_user_id = $1
-        AND status IN ('pending_structure', 'generating_structure',
-          'validating_structure', 'generating_description',
-          'validating_description', 'awaiting_owner_acceptance')
       ORDER BY updated_at DESC LIMIT 1`,
     [ownerUserId],
   ).then((result) => result.rows[0] ? parseAttempt(result.rows[0]) : null);
@@ -312,7 +310,8 @@ export async function updateBattlefieldAuthoringStatus(input: {
   await query(
     `UPDATE battlefield_authoring_attempts
         SET status = $3, error_code = $4, updated_at = $5
-      WHERE attempt_id = $1 AND owner_user_id = $2`,
+      WHERE attempt_id = $1 AND owner_user_id = $2
+        AND status NOT IN ('succeeded', 'discarded', 'expired', 'failed')`,
     [
       input.attemptId,
       input.ownerUserId,
@@ -329,22 +328,32 @@ export async function replaceBattlefieldAuthoringSource(input: {
   sourceText: string;
   sourceDigest: string;
 }): Promise<void> {
-  const result = await query(
-    `UPDATE battlefield_authoring_attempts
-        SET source_text = $3, source_digest = $4,
-            status = 'generating_structure', candidate_json = NULL,
-            candidate_digest = NULL, error_code = NULL, updated_at = $5
-      WHERE attempt_id = $1 AND owner_user_id = $2
-        AND status = 'awaiting_owner_acceptance'`,
-    [
-      input.attemptId,
-      input.ownerUserId,
-      input.sourceText,
-      input.sourceDigest,
-      new Date().toISOString(),
-    ],
-  );
-  if (result.rowCount !== 1) throw new Error("AUTHORING_ATTEMPT_NOT_EDITABLE");
+  const updatedAt = new Date().toISOString();
+  await withTransaction(async (connection) => {
+    const result = await connection.query(
+      `UPDATE battlefield_authoring_attempts
+          SET source_text = $3, source_digest = $4,
+              status = 'pending_structure', error_code = NULL, updated_at = $5
+        WHERE attempt_id = $1 AND owner_user_id = $2
+          AND status = 'awaiting_owner_acceptance'`,
+      [
+        input.attemptId,
+        input.ownerUserId,
+        input.sourceText,
+        input.sourceDigest,
+        updatedAt,
+      ],
+    );
+    if (result.rowCount !== 1) throw new Error("AUTHORING_ATTEMPT_NOT_EDITABLE");
+    const attempt = await selectAttempt(connection, input.attemptId, input.ownerUserId);
+    if (!attempt) throw new Error("AUTHORING_ATTEMPT_NOT_FOUND");
+    await reopenFamilyAuthoringJob(connection, "battlefield", {
+      attemptId: attempt.attemptId,
+      ownerUserId: attempt.ownerUserId,
+      assetId: attempt.battlefieldId,
+      updatedAt,
+    });
+  });
 }
 
 export async function saveBattlefieldAuthoringCandidate(input: {
@@ -379,6 +388,15 @@ export async function saveBattlefieldAuthoringCandidate(input: {
         updatedAt,
       ],
     );
+    await insertOwnerNotification(connection, {
+      ownerUserId: input.ownerUserId,
+      kind: "authoring_ready",
+      attemptId: input.attemptId,
+      characterId: attempt.battlefieldId,
+      attemptKind: attempt.kind,
+      createdAt: updatedAt,
+      assetType: "battlefield",
+    });
     if (attempt.kind === "upgrade") {
       await connection.query(
         `UPDATE battlefield_asset_states
@@ -407,9 +425,19 @@ export async function failBattlefieldAuthoringAttempt(input: {
       `UPDATE battlefield_authoring_attempts
           SET status = 'failed', error_code = $3, updated_at = $4
         WHERE attempt_id = $1 AND owner_user_id = $2
-          AND status NOT IN ('succeeded', 'discarded')`,
+          AND status NOT IN ('succeeded', 'discarded', 'failed')`,
       [input.attemptId, input.ownerUserId, input.errorCode, updatedAt],
     );
+    await insertOwnerNotification(connection, {
+      ownerUserId: input.ownerUserId,
+      kind: "authoring_failed",
+      attemptId: input.attemptId,
+      characterId: attempt.battlefieldId,
+      attemptKind: attempt.kind,
+      createdAt: updatedAt,
+      assetType: "battlefield",
+    });
+    await finishFamilyAuthoringJob("battlefield", input.attemptId, "cancelled");
     if (attempt.kind === "upgrade") {
       await connection.query(
         `UPDATE battlefield_asset_states
@@ -459,6 +487,7 @@ export async function discardBattlefieldAuthoringAttempt(
         [attempt.battlefieldId, updatedAt, attempt.attemptId],
       );
     }
+    await finishFamilyAuthoringJob("battlefield", attemptId, "cancelled");
     return true;
   });
 }
@@ -494,6 +523,15 @@ export async function activateBattlefieldAuthoringAttempt(input: {
     }
     if (attempt.status !== "awaiting_owner_acceptance" || !attempt.candidate) {
       throw new Error("AUTHORING_NOT_AWAITING_ACCEPTANCE");
+    }
+    const latest = await connection.query<{ attempt_id: string }>(
+      `SELECT attempt_id FROM battlefield_authoring_attempts
+        WHERE battlefield_id = $1 AND owner_user_id = $2
+        ORDER BY updated_at DESC LIMIT 1`,
+      [attempt.battlefieldId, input.ownerUserId],
+    );
+    if (latest.rows[0] && latest.rows[0].attempt_id !== attempt.attemptId) {
+      throw new Error("AUTHORING_ATTEMPT_STALE");
     }
     if (Date.parse(attempt.expiresAt) <= Date.now()) {
       const expiredAt = new Date().toISOString();
@@ -629,41 +667,10 @@ export async function getBattlefieldCompatibility(
     [battlefieldId],
   );
   const current = await getCurrentAssetGeneration("battlefield-preset", battlefieldId);
-  if (!state.rows[0]) {
-    return AssetCompatibilitySchema.parse({
-      status: "unsupported",
-      schemaVersion: current?.schemaVersion ?? null,
-      currentGenerationId: current?.generationId ?? null,
-      reasonCode: "legacy_schema",
-    });
-  }
-  const row = state.rows[0];
-  if (row.compatibility_status === "ready" &&
-      (!current || current.schemaVersion !== 2 ||
-       current.generationId !== row.current_generation_id)) {
-    return AssetCompatibilitySchema.parse({
-      status: "unsupported",
-      schemaVersion: current?.schemaVersion ?? null,
-      currentGenerationId: current?.generationId ?? null,
-      reasonCode: "state_pointer_mismatch",
-    });
-  }
-  if (row.compatibility_status === "ready" && current) {
-    const reasonCode = battlefieldReadinessReason(current.content);
-    if (reasonCode) {
-      return AssetCompatibilitySchema.parse({
-        status: "unsupported",
-        schemaVersion: current.schemaVersion,
-        currentGenerationId: current.generationId,
-        reasonCode,
-      });
-    }
-  }
-  return AssetCompatibilitySchema.parse({
-    status: row.compatibility_status,
-    schemaVersion: current?.schemaVersion ?? null,
-    currentGenerationId: current?.generationId ?? row.current_generation_id,
-    reasonCode: row.reason_code,
+  return projectAssetCompatibility({
+    state: state.rows[0],
+    current,
+    readinessReason: battlefieldReadinessReason,
   });
 }
 

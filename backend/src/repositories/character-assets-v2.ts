@@ -20,6 +20,7 @@ import {
   getCurrentAssetGeneration,
   type AssetGeneration,
 } from "./asset-generations.js";
+import { insertOwnerNotification } from "./owner-notifications.js";
 
 export type CharacterAuthoringAttempt = {
   attemptId: string;
@@ -293,6 +294,58 @@ async function commitDerivedCharacterGeneration(input: {
   return { sheet, generation };
 }
 
+async function insertCharacterAuthoringJob(
+  connection: DatabaseConnection,
+  attemptId: string,
+  ownerUserId: string,
+  characterId: string,
+  createdAt: string,
+): Promise<void> {
+  await connection.query(
+    `INSERT INTO character_authoring_jobs
+      (attempt_id, owner_user_id, character_id, status, created_at, updated_at)
+     VALUES ($1, $2, $3, 'pending', $4, $4)`,
+    [attemptId, ownerUserId, characterId, createdAt],
+  );
+}
+
+async function rejectStaleCharacterAuthoring(
+  connection: DatabaseConnection,
+  characterId: string,
+  ownerUserId: string,
+  attemptId: string,
+): Promise<void> {
+  const latest = await connection.query<{ attempt_id: string }>(
+    `SELECT attempt_id FROM character_authoring_attempts
+      WHERE character_id = $1 AND owner_user_id = $2
+      ORDER BY updated_at DESC LIMIT 1`,
+    [characterId, ownerUserId],
+  );
+  if (latest.rows[0] && latest.rows[0].attempt_id !== attemptId) {
+    throw new Error("AUTHORING_ATTEMPT_STALE");
+  }
+}
+
+async function rejectBusyCharacterAuthoring(
+  connection: DatabaseConnection,
+  characterId: string,
+  ownerUserId: string,
+  kind: AssetAuthoringAttemptKind,
+): Promise<void> {
+  if (kind === "create") return;
+  const inflight = await connection.query<{ attempt_id: string }>(
+    `SELECT attempt_id FROM character_authoring_attempts
+      WHERE character_id = $1 AND owner_user_id = $2
+        AND status IN ('pending_structure', 'generating_structure',
+          'validating_structure', 'generating_description',
+          'validating_description', 'awaiting_owner_acceptance',
+          'committing')
+      LIMIT 1`,
+    [characterId, ownerUserId],
+  );
+  if (inflight.rows[0]) throw new Error("AUTHORING_ALREADY_IN_PROGRESS");
+}
+
 async function selectAttempt(
   connection: DatabaseConnection,
   attemptId: string,
@@ -304,6 +357,132 @@ async function selectAttempt(
     [attemptId, ownerUserId],
   );
   return result.rows[0] ? parseAttempt(result.rows[0]) : null;
+}
+
+async function replayExistingAttempt(
+  connection: DatabaseConnection,
+  ownerUserId: string,
+  idempotencyKey: string,
+  requestDigest: string,
+): Promise<{ attempt: CharacterAuthoringAttempt; replayed: boolean } | null> {
+  const existing = await connection.query<AttemptRow>(
+    `SELECT * FROM character_authoring_attempts
+      WHERE owner_user_id = $1 AND idempotency_key = $2`,
+    [ownerUserId, idempotencyKey],
+  );
+  if (!existing.rows[0]) return null;
+  const attempt = parseAttempt(existing.rows[0]);
+  if (attempt.requestDigest !== requestDigest) {
+    throw new Error("AUTHORING_IDEMPOTENCY_CONFLICT");
+  }
+  return { attempt, replayed: true };
+}
+
+async function insertNewAuthoringAttempt(
+  connection: DatabaseConnection,
+  input: {
+    ownerUserId: string;
+    characterId?: string;
+    kind: AssetAuthoringAttemptKind;
+    idempotencyKey: string;
+    requestDigest: string;
+    sourceText: string;
+    sourceDigest: string;
+    ttlMs?: number;
+  },
+): Promise<CharacterAuthoringAttempt> {
+  const characterId = input.characterId ?? newId("chr");
+  const character = await connection.query<{ owner_user_id: string }>(
+    `SELECT owner_user_id FROM characters WHERE id = $1`,
+    [characterId],
+  );
+  const existingCharacter = character.rows[0] ?? null;
+  const current = await connection.query<{
+    generation_id: string;
+    content_digest: string;
+  }>(
+    `SELECT c.generation_id, g.content_digest
+       FROM asset_current_generations c
+       JOIN asset_generations g ON g.generation_id = c.generation_id
+      WHERE c.asset_type = 'character' AND c.asset_id = $1`,
+    [characterId],
+  );
+  const expected = current.rows[0] ?? null;
+  if (input.kind === "create" && (existingCharacter || expected)) {
+    throw new Error("CHARACTER_ALREADY_EXISTS");
+  }
+  if (input.kind !== "create" &&
+      (!existingCharacter || existingCharacter.owner_user_id !== input.ownerUserId)) {
+    throw new Error("CHARACTER_NOT_FOUND");
+  }
+  if (input.kind === "revision" && !expected) {
+    throw new Error("CHARACTER_GENERATION_MISSING");
+  }
+  await rejectBusyCharacterAuthoring(
+    connection,
+    characterId,
+    input.ownerUserId,
+    input.kind,
+  );
+  const now = new Date();
+  const createdAt = now.toISOString();
+  const expiresAt = new Date(now.getTime() + (input.ttlMs ?? 24 * 60 * 60 * 1000))
+    .toISOString();
+  const attemptId = newId("cat");
+  await connection.query(
+    `INSERT INTO character_authoring_attempts
+      (attempt_id, owner_user_id, character_id, kind, idempotency_key,
+       request_digest, source_text, source_digest, expected_generation_id,
+       expected_content_digest, status, created_at, updated_at, expires_at)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10,
+             'pending_structure', $11, $11, $12)`,
+    [
+      attemptId,
+      input.ownerUserId,
+      characterId,
+      input.kind,
+      input.idempotencyKey,
+      input.requestDigest,
+      input.sourceText,
+      input.sourceDigest,
+      expected?.generation_id ?? null,
+      expected?.content_digest ?? null,
+      createdAt,
+      expiresAt,
+    ],
+  );
+  if (input.kind === "upgrade") {
+    await connection.query(
+      `INSERT INTO character_asset_states
+        (character_id, compatibility_status, current_generation_id,
+         active_attempt_id, reason_code, updated_at)
+       VALUES ($1, 'upgrading', $2, $3, NULL, $4)
+       ON CONFLICT (character_id) DO UPDATE
+         SET compatibility_status = 'upgrading',
+             current_generation_id = EXCLUDED.current_generation_id,
+             active_attempt_id = EXCLUDED.active_attempt_id,
+             reason_code = NULL,
+             updated_at = EXCLUDED.updated_at`,
+      [characterId, expected?.generation_id ?? null, attemptId, createdAt],
+    );
+  } else if (input.kind === "revision") {
+    await connection.query(
+      `UPDATE character_asset_states
+          SET active_attempt_id = $2, updated_at = $3
+        WHERE character_id = $1 AND compatibility_status = 'ready'`,
+      [characterId, attemptId, createdAt],
+    );
+  }
+  await insertCharacterAuthoringJob(
+    connection,
+    attemptId,
+    input.ownerUserId,
+    characterId,
+    createdAt,
+  );
+  const attempt = await selectAttempt(connection, attemptId, input.ownerUserId);
+  if (!attempt) throw new Error("AUTHORING_ATTEMPT_INSERT_FAILED");
+  return attempt;
 }
 
 export async function beginCharacterAuthoringAttempt(input: {
@@ -320,97 +499,17 @@ export async function beginCharacterAuthoringAttempt(input: {
     throw new Error("INVALID_IDEMPOTENCY_KEY");
   }
   return withTransaction(async (connection) => {
-    const existing = await connection.query<AttemptRow>(
-      `SELECT * FROM character_authoring_attempts
-        WHERE owner_user_id = $1 AND idempotency_key = $2`,
-      [input.ownerUserId, input.idempotencyKey],
+    const replayed = await replayExistingAttempt(
+      connection,
+      input.ownerUserId,
+      input.idempotencyKey,
+      input.requestDigest,
     );
-    if (existing.rows[0]) {
-      const attempt = parseAttempt(existing.rows[0]);
-      if (attempt.requestDigest !== input.requestDigest) {
-        throw new Error("AUTHORING_IDEMPOTENCY_CONFLICT");
-      }
-      return { attempt, replayed: true };
-    }
-    const characterId = input.characterId ?? newId("chr");
-    const character = await connection.query<{ owner_user_id: string }>(
-      `SELECT owner_user_id FROM characters WHERE id = $1`,
-      [characterId],
-    );
-    const existingCharacter = character.rows[0] ?? null;
-    const current = await connection.query<{
-      generation_id: string;
-      content_digest: string;
-    }>(
-      `SELECT c.generation_id, g.content_digest
-         FROM asset_current_generations c
-         JOIN asset_generations g ON g.generation_id = c.generation_id
-        WHERE c.asset_type = 'character' AND c.asset_id = $1`,
-      [characterId],
-    );
-    const expected = current.rows[0] ?? null;
-    if (input.kind === "create" && (existingCharacter || expected)) {
-      throw new Error("CHARACTER_ALREADY_EXISTS");
-    }
-    if (input.kind !== "create" &&
-        (!existingCharacter || existingCharacter.owner_user_id !== input.ownerUserId)) {
-      throw new Error("CHARACTER_NOT_FOUND");
-    }
-    if (input.kind === "revision" && !expected) {
-      throw new Error("CHARACTER_GENERATION_MISSING");
-    }
-    const now = new Date();
-    const createdAt = now.toISOString();
-    const expiresAt = new Date(now.getTime() + (input.ttlMs ?? 24 * 60 * 60 * 1000))
-      .toISOString();
-    const attemptId = newId("cat");
-    await connection.query(
-      `INSERT INTO character_authoring_attempts
-        (attempt_id, owner_user_id, character_id, kind, idempotency_key,
-         request_digest, source_text, source_digest, expected_generation_id,
-         expected_content_digest, status, created_at, updated_at, expires_at)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10,
-               'pending_structure', $11, $11, $12)`,
-      [
-        attemptId,
-        input.ownerUserId,
-        characterId,
-        input.kind,
-        input.idempotencyKey,
-        input.requestDigest,
-        input.sourceText,
-        input.sourceDigest,
-        expected?.generation_id ?? null,
-        expected?.content_digest ?? null,
-        createdAt,
-        expiresAt,
-      ],
-    );
-    if (input.kind === "upgrade") {
-      await connection.query(
-        `INSERT INTO character_asset_states
-          (character_id, compatibility_status, current_generation_id,
-           active_attempt_id, reason_code, updated_at)
-         VALUES ($1, 'upgrading', $2, $3, NULL, $4)
-         ON CONFLICT (character_id) DO UPDATE
-           SET compatibility_status = 'upgrading',
-               current_generation_id = EXCLUDED.current_generation_id,
-               active_attempt_id = EXCLUDED.active_attempt_id,
-               reason_code = NULL,
-               updated_at = EXCLUDED.updated_at`,
-        [characterId, expected?.generation_id ?? null, attemptId, createdAt],
-      );
-    } else if (input.kind === "revision") {
-      await connection.query(
-        `UPDATE character_asset_states
-            SET active_attempt_id = $2, updated_at = $3
-          WHERE character_id = $1 AND compatibility_status = 'ready'`,
-        [characterId, attemptId, createdAt],
-      );
-    }
-    const attempt = await selectAttempt(connection, attemptId, input.ownerUserId);
-    if (!attempt) throw new Error("AUTHORING_ATTEMPT_INSERT_FAILED");
-    return { attempt, replayed: false };
+    if (replayed) return replayed;
+    return {
+      attempt: await insertNewAuthoringAttempt(connection, input),
+      replayed: false,
+    };
   });
 }
 
@@ -446,12 +545,111 @@ export function getLatestCharacterAuthoringAttempt(
   return query<AttemptRow>(
     `SELECT * FROM character_authoring_attempts
       WHERE owner_user_id = $1
-        AND status IN ('pending_structure', 'generating_structure',
-          'validating_structure', 'generating_description',
-          'validating_description', 'awaiting_owner_acceptance')
       ORDER BY updated_at DESC LIMIT 1`,
     [ownerUserId],
   ).then((result) => result.rows[0] ? parseAttempt(result.rows[0]) : null);
+}
+
+export function getLatestCharacterAuthoringAttemptForCharacter(
+  characterId: string,
+  ownerUserId: string,
+): Promise<CharacterAuthoringAttempt | null> {
+  return query<AttemptRow>(
+    `SELECT * FROM character_authoring_attempts
+      WHERE character_id = $1 AND owner_user_id = $2
+      ORDER BY updated_at DESC LIMIT 1`,
+    [characterId, ownerUserId],
+  ).then((result) => result.rows[0] ? parseAttempt(result.rows[0]) : null);
+}
+
+export const AUTHORING_JOB_CLAIM_MS = 180_000;
+
+export async function recoverExpiredCharacterAuthoringJobs(
+  now = new Date().toISOString(),
+): Promise<void> {
+  await query(
+    `UPDATE character_authoring_jobs
+        SET status = 'pending', claimed_by = NULL, claimed_until = NULL,
+            updated_at = $1
+      WHERE status = 'claimed' AND claimed_until IS NOT NULL
+        AND claimed_until <= $1`,
+    [now],
+  );
+}
+
+export async function claimNextCharacterAuthoringJob(input: {
+  workerId: string;
+  cap?: number;
+  now?: Date;
+}): Promise<{
+  attemptId: string;
+  ownerUserId: string;
+  characterId: string;
+} | null> {
+  const cap = input.cap ?? 1;
+  const now = input.now ?? new Date();
+  const nowIso = now.toISOString();
+  const claimedUntil = new Date(now.getTime() + AUTHORING_JOB_CLAIM_MS).toISOString();
+  await recoverExpiredCharacterAuthoringJobs(nowIso);
+  return withTransaction(async (connection) => {
+    const running = await connection.query<{ count: number }>(
+      `SELECT COUNT(*) AS count FROM character_authoring_jobs
+        WHERE status = 'claimed'`,
+    );
+    if (Number(running.rows[0]?.count ?? 0) >= cap) return null;
+    const next = await connection.query<{
+      attempt_id: string;
+      owner_user_id: string;
+      character_id: string;
+    }>(
+      `SELECT attempt_id, owner_user_id, character_id
+         FROM character_authoring_jobs candidate
+        WHERE status = 'pending'
+          AND NOT EXISTS (
+            SELECT 1 FROM character_authoring_jobs sibling
+             WHERE sibling.character_id = candidate.character_id
+               AND sibling.status = 'claimed'
+          )
+        ORDER BY created_at ASC
+        LIMIT 1`,
+    );
+    const row = next.rows[0];
+    if (!row) return null;
+    const claimed = await connection.query(
+      `UPDATE character_authoring_jobs
+          SET status = 'claimed', claimed_by = $2, claimed_until = $3,
+              updated_at = $4
+        WHERE attempt_id = $1 AND status = 'pending'`,
+      [row.attempt_id, input.workerId, claimedUntil, nowIso],
+    );
+    if (claimed.rowCount !== 1) return null;
+    return {
+      attemptId: row.attempt_id,
+      ownerUserId: row.owner_user_id,
+      characterId: row.character_id,
+    };
+  });
+}
+
+export async function countOpenCharacterAuthoringJobs(): Promise<number> {
+  const result = await query<{ count: number }>(
+    `SELECT COUNT(*) AS count FROM character_authoring_jobs
+      WHERE status IN ('pending', 'claimed')`,
+  );
+  return Number(result.rows[0]?.count ?? 0);
+}
+
+export async function finishCharacterAuthoringJob(
+  attemptId: string,
+  status: "completed" | "cancelled",
+): Promise<void> {
+  await query(
+    `UPDATE character_authoring_jobs
+        SET status = $2, claimed_by = NULL, claimed_until = NULL,
+            updated_at = $3
+      WHERE attempt_id = $1 AND status IN ('pending', 'claimed')`,
+    [attemptId, status, new Date().toISOString()],
+  );
 }
 
 export async function updateCharacterAuthoringStatus(input: {
@@ -464,7 +662,8 @@ export async function updateCharacterAuthoringStatus(input: {
   await query(
     `UPDATE character_authoring_attempts
         SET status = $3, error_code = $4, updated_at = $5
-      WHERE attempt_id = $1 AND owner_user_id = $2`,
+      WHERE attempt_id = $1 AND owner_user_id = $2
+        AND status NOT IN ('succeeded', 'discarded', 'expired', 'failed')`,
     [
       input.attemptId,
       input.ownerUserId,
@@ -482,22 +681,48 @@ export async function replaceCharacterAuthoringSource(input: {
   sourceDigest: string;
 }): Promise<void> {
   const updatedAt = new Date().toISOString();
-  const result = await query(
-    `UPDATE character_authoring_attempts
-        SET source_text = $3, source_digest = $4,
-            status = 'generating_structure', candidate_json = NULL,
-            candidate_digest = NULL, error_code = NULL, updated_at = $5
-      WHERE attempt_id = $1 AND owner_user_id = $2
-        AND status = 'awaiting_owner_acceptance'`,
-    [
-      input.attemptId,
-      input.ownerUserId,
-      input.sourceText,
-      input.sourceDigest,
-      updatedAt,
-    ],
+  await withTransaction(async (connection) => {
+    const result = await connection.query(
+      `UPDATE character_authoring_attempts
+          SET source_text = $3, source_digest = $4,
+              status = 'pending_structure', error_code = NULL, updated_at = $5
+        WHERE attempt_id = $1 AND owner_user_id = $2
+          AND status = 'awaiting_owner_acceptance'`,
+      [
+        input.attemptId,
+        input.ownerUserId,
+        input.sourceText,
+        input.sourceDigest,
+        updatedAt,
+      ],
+    );
+    if (result.rowCount !== 1) throw new Error("AUTHORING_ATTEMPT_NOT_EDITABLE");
+    const attempt = await selectAttempt(connection, input.attemptId, input.ownerUserId);
+    if (!attempt) throw new Error("AUTHORING_ATTEMPT_NOT_FOUND");
+    await reopenCharacterAuthoringJob(connection, attempt, updatedAt);
+  });
+}
+
+async function reopenCharacterAuthoringJob(
+  connection: DatabaseConnection,
+  attempt: CharacterAuthoringAttempt,
+  updatedAt: string,
+): Promise<void> {
+  const reset = await connection.query(
+    `UPDATE character_authoring_jobs
+        SET status = 'pending', claimed_by = NULL, claimed_until = NULL,
+            updated_at = $2
+      WHERE attempt_id = $1 AND status IN ('completed', 'cancelled')`,
+    [attempt.attemptId, updatedAt],
   );
-  if (result.rowCount !== 1) throw new Error("AUTHORING_ATTEMPT_NOT_EDITABLE");
+  if (reset.rowCount === 1) return;
+  await connection.query(
+    `INSERT INTO character_authoring_jobs
+      (attempt_id, owner_user_id, character_id, status, created_at, updated_at)
+     VALUES ($1, $2, $3, 'pending', $4, $4)
+     ON CONFLICT (attempt_id) DO NOTHING`,
+    [attempt.attemptId, attempt.ownerUserId, attempt.characterId, updatedAt],
+  );
 }
 
 export async function saveCharacterAuthoringCandidate(input: {
@@ -517,12 +742,13 @@ export async function saveCharacterAuthoringCandidate(input: {
     if (["succeeded", "discarded", "expired"].includes(attempt.status)) {
       throw new Error("AUTHORING_ATTEMPT_TERMINAL");
     }
-    await connection.query(
+    const savedRow = await connection.query(
       `UPDATE character_authoring_attempts
           SET candidate_json = $3, candidate_digest = $4,
               assistant_message = $5, status = 'awaiting_owner_acceptance',
               error_code = NULL, updated_at = $6
-        WHERE attempt_id = $1 AND owner_user_id = $2`,
+        WHERE attempt_id = $1 AND owner_user_id = $2
+          AND status NOT IN ('succeeded', 'discarded', 'expired', 'failed')`,
       [
         input.attemptId,
         input.ownerUserId,
@@ -532,6 +758,15 @@ export async function saveCharacterAuthoringCandidate(input: {
         updatedAt,
       ],
     );
+    if (savedRow.rowCount !== 1) throw new Error("AUTHORING_ATTEMPT_TERMINAL");
+    await insertOwnerNotification(connection, {
+      ownerUserId: input.ownerUserId,
+      kind: "authoring_ready",
+      attemptId: input.attemptId,
+      characterId: attempt.characterId,
+      attemptKind: attempt.kind,
+      createdAt: updatedAt,
+    });
     if (attempt.kind === "upgrade") {
       await connection.query(
         `UPDATE character_asset_states
@@ -556,13 +791,23 @@ export async function failCharacterAuthoringAttempt(input: {
     const attempt = await selectAttempt(connection, input.attemptId, input.ownerUserId);
     if (!attempt) return;
     const updatedAt = new Date().toISOString();
-    await connection.query(
+    const failed = await connection.query(
       `UPDATE character_authoring_attempts
           SET status = 'failed', error_code = $3, updated_at = $4
         WHERE attempt_id = $1 AND owner_user_id = $2
-          AND status NOT IN ('succeeded', 'discarded')`,
+          AND status NOT IN ('succeeded', 'discarded', 'failed')`,
       [input.attemptId, input.ownerUserId, input.errorCode, updatedAt],
     );
+    if (failed.rowCount === 1) {
+      await insertOwnerNotification(connection, {
+        ownerUserId: input.ownerUserId,
+        kind: "authoring_failed",
+        attemptId: input.attemptId,
+        characterId: attempt.characterId,
+        attemptKind: attempt.kind,
+        createdAt: updatedAt,
+      });
+    }
     if (attempt.kind === "upgrade") {
       await connection.query(
         `UPDATE character_asset_states
@@ -579,6 +824,13 @@ export async function failCharacterAuthoringAttempt(input: {
         [attempt.characterId, updatedAt, attempt.attemptId],
       );
     }
+    await connection.query(
+      `UPDATE character_authoring_jobs
+          SET status = 'cancelled', claimed_by = NULL, claimed_until = NULL,
+              updated_at = $2
+        WHERE attempt_id = $1 AND status IN ('pending', 'claimed')`,
+      [input.attemptId, updatedAt],
+    );
   });
 }
 
@@ -612,6 +864,13 @@ export async function discardCharacterAuthoringAttempt(
         [attempt.characterId, updatedAt, attempt.attemptId],
       );
     }
+    await connection.query(
+      `UPDATE character_authoring_jobs
+          SET status = 'cancelled', claimed_by = NULL, claimed_until = NULL,
+              updated_at = $2
+        WHERE attempt_id = $1 AND status IN ('pending', 'claimed')`,
+      [attemptId, updatedAt],
+    );
     return true;
   });
 }
@@ -669,6 +928,12 @@ export async function activateCharacterAuthoringAttempt(input: {
     if (attempt.status !== "awaiting_owner_acceptance" || !attempt.candidate) {
       throw new Error("AUTHORING_NOT_AWAITING_ACCEPTANCE");
     }
+    await rejectStaleCharacterAuthoring(
+      connection,
+      attempt.characterId,
+      input.ownerUserId,
+      attempt.attemptId,
+    );
     if (Date.parse(attempt.expiresAt) <= Date.now()) {
       const expiredAt = new Date().toISOString();
       await connection.query(

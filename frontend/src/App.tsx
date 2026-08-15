@@ -7,6 +7,10 @@ import { MenuPage } from "./pages/MenuPage";
 import { CharactersPage } from "./pages/CharactersPage";
 import { CharacterCreatePage } from "./pages/CharacterCreatePage";
 import { CharacterDetailPage } from "./pages/CharacterDetailPage";
+import { CharacterReviewPage } from "./pages/CharacterReviewPage";
+import { BattlefieldReviewPage } from "./pages/BattlefieldReviewPage";
+import { NarrationStyleReviewPage } from "./pages/NarrationStyleReviewPage";
+import { NotificationsPage } from "./pages/NotificationsPage";
 import { MatchPage } from "./pages/MatchPage";
 import { BattlePage } from "./pages/BattlePage";
 import { BattlefieldsPage } from "./pages/BattlefieldsPage";
@@ -90,6 +94,38 @@ export function App() {
           element={
             <RequireAuth>
               <CharacterDetailPage />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/notifications"
+          element={
+            <RequireAuth>
+              <NotificationsPage />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/reviews/battlefields/:attemptId"
+          element={
+            <RequireAuth>
+              <BattlefieldReviewPage />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/reviews/narration-styles/:attemptId"
+          element={
+            <RequireAuth>
+              <NarrationStyleReviewPage />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/reviews/:attemptId"
+          element={
+            <RequireAuth>
+              <CharacterReviewPage />
             </RequireAuth>
           }
         />

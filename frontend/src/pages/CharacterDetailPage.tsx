@@ -8,7 +8,10 @@ import type {
 } from "@kshiai/shared";
 import { formatRatingForDisplay } from "@kshiai/shared";
 import { api, ApiError, type ImageGenQuota } from "../api";
-import { AuthoringProgressNotice } from "../components/AuthoringProgressNotice";
+import {
+  AuthoringFailureNotice,
+  AuthoringProgressNotice,
+} from "../components/AuthoringProgressNotice";
 import { useCharacterAuthoringSync } from "../hooks/useCharacterAuthoringSync";
 import { useLocalDraft } from "../hooks/useLocalDraft";
 import { mediaSrc } from "../media";
@@ -99,12 +102,17 @@ export function CharacterDetailPage() {
     setAuthoringProgress,
     pendingDraft,
     setPendingDraft,
+    failure,
   } = useCharacterAuthoringSync({
     id,
     isOwner,
     busy,
     onCharacter: setCharacter,
   });
+
+  useEffect(() => {
+    if (pendingDraft) nav(`/reviews/${pendingDraft.id}`);
+  }, [pendingDraft, nav]);
 
   const reloadQuota = useCallback(async (charId: string) => {
     try {
@@ -189,10 +197,14 @@ export function CharacterDetailPage() {
     }
     setBusy(true);
     setError(null);
+    setPendingDraft(null);
     try {
       const res = await api.chatCharacter(id, text);
-      setPendingDraft(res.draft);
-      setAssistant("変更案を作成しました。内容を確認して確定してください。");
+      if (res.draft) {
+        nav(`/reviews/${res.draft.id}`);
+      } else {
+        setAssistant("受け付けました。準備できたら確認できます。");
+      }
       clearChat();
     } catch (err) {
       setError(err instanceof Error ? err.message : "failed");
@@ -205,47 +217,16 @@ export function CharacterDetailPage() {
     if (!id || !isOwner) return;
     setBusy(true);
     setError(null);
+    setPendingDraft(null);
     try {
       const res = await api.upgradeCharacter(id);
-      setPendingDraft(res.draft);
-      setAssistant("最新版への更新案を作成しました。確定するまで対戦には使われません。");
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "最新版への更新に失敗しました");
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  async function confirmPendingDraft() {
-    if (!pendingDraft) return;
-    setBusy(true);
-    setError(null);
-    try {
-      const res = await api.confirmCharacterDraft(pendingDraft.id);
-      setCharacter(res.character);
-      setPendingDraft(null);
-      setAssistant(res.assistantMessage);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "確定に失敗しました");
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  async function discardPendingDraft() {
-    if (!pendingDraft) return;
-    setBusy(true);
-    setError(null);
-    try {
-      await api.discardCharacterDraft(pendingDraft.id);
-      setPendingDraft(null);
-      setAssistant("変更案を破棄しました。現在のキャラクターは変わっていません。");
-      if (id) {
-        const refreshed = await api.getCharacter(id);
-        setCharacter(refreshed.character);
+      if (res.draft) {
+        nav(`/reviews/${res.draft.id}`);
+      } else {
+        setAssistant("受け付けました。準備できたら確認できます。");
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "破棄に失敗しました");
+      setError(err instanceof Error ? err.message : "最新版への更新に失敗しました");
     } finally {
       setBusy(false);
     }
@@ -482,36 +463,6 @@ export function CharacterDetailPage() {
         progress={authoringProgress}
         fallbackLabel="最新版への更新案を作成中…"
       />
-
-      {pendingDraft && (
-        <div className="panel">
-          <h2>変更案を確認</h2>
-          <div className="card" style={{ padding: "1rem" }}>
-            <strong>{pendingDraft.character.displayName}</strong>
-            <p>{pendingDraft.character.narrativeBlurb}</p>
-            <p className="muted">{pendingDraft.character.appearance.summary}</p>
-            <p className="muted">{pendingDraft.assistantMessage}</p>
-          </div>
-          <div className="row" style={{ marginTop: "0.75rem" }}>
-            <button
-              className="btn primary"
-              type="button"
-              disabled={busy}
-              onClick={() => void confirmPendingDraft()}
-            >
-              この内容で確定
-            </button>
-            <button
-              className="btn ghost danger"
-              type="button"
-              disabled={busy}
-              onClick={() => void discardPendingDraft()}
-            >
-              破棄
-            </button>
-          </div>
-        </div>
-      )}
 
       <div className="panel grid" style={{ gridTemplateColumns: "160px 1fr", gap: "1rem" }}>
         <div className="portrait-column">
@@ -914,6 +865,7 @@ export function CharacterDetailPage() {
           ) : null}
           {assistant && <p className="ok">{assistant}</p>}
           {error && error !== "not_found" && <p className="error">{error}</p>}
+          <AuthoringFailureNotice failure={failure} />
         </div>
       )}
 

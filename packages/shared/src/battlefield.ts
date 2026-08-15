@@ -1,6 +1,10 @@
 import { z } from "zod";
 import { cacheBustMediaUrl } from "./media.js";
 import { BattlefieldSemanticSeedSchema } from "./semantic-state.js";
+import {
+  AssetAuthoringReviewBaseSchema,
+  CharacterReviewStateSchema,
+} from "./structured-assets.js";
 
 const COEFF_MIN = 0.25;
 const COEFF_MAX = 2.5;
@@ -97,8 +101,18 @@ export const BattlefieldPresetPublicSchema = z.object({
     label: z.string(),
     targetSchemaVersion: z.number().int().positive(),
   }).strict().nullable().optional(),
+  reviewState: CharacterReviewStateSchema.nullable().optional(),
+  reviewAttemptId: z.string().min(1).max(80).nullable().optional(),
 });
 export type BattlefieldPresetPublic = z.infer<typeof BattlefieldPresetPublicSchema>;
+
+export const BattlefieldAuthoringReviewSchema = AssetAuthoringReviewBaseSchema.extend({
+  assetId: z.string().min(1).max(80),
+  family: z.literal("battlefield"),
+  candidate: BattlefieldPresetPublicSchema.nullable(),
+  current: BattlefieldPresetPublicSchema.nullable(),
+}).strict();
+export type BattlefieldAuthoringReview = z.infer<typeof BattlefieldAuthoringReviewSchema>;
 
 /**
  * Concrete battlefield for one match — terrain/obstacles/conditions fixed at start.

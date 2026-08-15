@@ -544,6 +544,58 @@ h2 {
   font-size: 0.85rem;
 }
 
+.review-summary {
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.review-skill {
+  margin: 0.35rem 0;
+}
+
+.review-compare-stack {
+  display: grid;
+  gap: 0.85rem;
+  margin-bottom: 1rem;
+}
+
+.review-field {
+  padding: 0.85rem;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--panel);
+}
+
+.review-field.is-changed {
+  border-color: rgba(122, 162, 255, 0.55);
+}
+
+.review-field h3 {
+  margin: 0 0 0.55rem;
+  font-size: 0.95rem;
+}
+
+.review-compare {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.review-compare p {
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+.review-compare-label {
+  margin: 0 0 0.25rem;
+  font-size: 0.8rem;
+}
+
+@media (min-width: 761px) {
+  .review-compare {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
 .spinner {
   width: 1.15rem;
   height: 1.15rem;
@@ -1794,12 +1846,28 @@ textarea::placeholder {
 }
 
 .burger-toggle {
+  position: relative;
   min-width: var(--tap);
   min-height: var(--tap);
   padding: 0.45rem;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+}
+
+.burger-badge {
+  position: absolute;
+  top: 0.15rem;
+  right: 0.1rem;
+  min-width: 1.1rem;
+  height: 1.1rem;
+  padding: 0 0.25rem;
+  border-radius: 999px;
+  background: var(--danger);
+  color: #fff;
+  font-size: 0.7rem;
+  line-height: 1.1rem;
+  text-align: center;
 }
 
 .burger-icon {
@@ -1885,6 +1953,62 @@ textarea::placeholder {
 .burger-links a:focus-visible {
   border-color: var(--accent);
   outline: none;
+}
+
+.burger-notify {
+  display: grid;
+  gap: 0.55rem;
+  padding-bottom: 0.35rem;
+}
+
+.notification-list {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.notification-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.15rem;
+  width: 100%;
+  padding: 0.7rem 0.85rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+}
+
+.notification-item.is-unread {
+  border-color: rgba(122, 162, 255, 0.55);
+}
+
+.review-mark {
+  display: inline-block;
+  margin-bottom: 0.45rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.review-mark.is-awaiting_acceptance {
+  background: rgba(122, 162, 255, 0.18);
+  color: var(--accent);
+}
+
+.review-mark.is-generating,
+.review-mark.is-queued {
+  background: rgba(192, 132, 252, 0.16);
+  color: var(--accent-2);
+}
+
+.review-mark.is-failed {
+  background: rgba(248, 113, 113, 0.16);
+  color: var(--danger);
 }
 
 .burger-footer {

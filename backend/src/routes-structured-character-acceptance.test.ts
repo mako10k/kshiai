@@ -23,6 +23,7 @@ const { closeDatabase, query } = await import("./db.js");
 const { MockLlmProvider } = await import("./llm/mock.js");
 const characterRepo = await import("./repositories/characters.js");
 const characterAssetRepo = await import("./repositories/character-assets-v2.js");
+const { drainCharacterAuthoringJobs } = await import("./services/character-authoring-jobs.js");
 const { buildRoutes } = await import("./routes.js");
 
 class PartialFailureProvider extends MockLlmProvider {
@@ -41,13 +42,16 @@ class InitialFailureProvider extends MockLlmProvider {
   }
 }
 
-const app = buildRoutes({ llm: new PartialFailureProvider() });
-const initialFailureApp = buildRoutes({ llm: new InitialFailureProvider() });
+const partialFailureLlm = new PartialFailureProvider();
+const initialFailureLlm = new InitialFailureProvider();
+const successLlm = new MockLlmProvider();
+const app = buildRoutes({ llm: partialFailureLlm });
+const initialFailureApp = buildRoutes({ llm: initialFailureLlm });
 let generatedPortraitCalls = 0;
 const generatedPortraitUrl =
   "/api/media/characters/route-ready-mine.generated.jpg";
 const successApp = buildRoutes({
-  llm: new MockLlmProvider(),
+  llm: successLlm,
   generateCharacterPortrait: async (character) => {
     generatedPortraitCalls += 1;
     return {
@@ -62,6 +66,10 @@ const sessionToken = "ses_structured_character_route_acceptance";
 const authHeaders = {
   Cookie: `kshiai_session=${sessionToken}`,
 };
+
+async function drainAuthoring(llm: typeof successLlm): Promise<void> {
+  await drainCharacterAuthoringJobs({ llm, workerId: "route-test-worker" });
+}
 
 function sheet(input: {
   id: string;
@@ -168,11 +176,13 @@ describe("structured character route acceptance", () => {
     const cases = [
       {
         routeApp: initialFailureApp,
+        llm: initialFailureLlm,
         key: "route-initial-failure-001",
         message: "PROVIDER_INITIAL_FAILURE",
       },
       {
         routeApp: app,
+        llm: partialFailureLlm,
         key: "route-partial-failure-001",
         message: "PROVIDER_PROFILE_PARTIAL_FAILURE",
       },
@@ -187,11 +197,10 @@ describe("structured character route acceptance", () => {
         },
         body: JSON.stringify({ prompt: "部分失敗を検証する旅人" }),
       });
-      assert.equal(response.status, 502);
-      assert.deepEqual(await response.json(), {
-        error: "character_authoring_failed",
-        message: testCase.message,
-      });
+      assert.equal(response.status, 202);
+      const accepted = await response.json() as { attemptId: string };
+      assert.ok(accepted.attemptId);
+      await drainAuthoring(testCase.llm);
 
       const attempt = await query<{
         character_id: string;
@@ -217,6 +226,16 @@ describe("structured character route acceptance", () => {
       assert.equal(Number(partialRows.rows[0]?.count), 0);
       assert.equal(await characterRepo.getSheet(characterId), null);
     }
+    const latest = await app.request("/api/character-drafts/latest", {
+      headers: authHeaders,
+    });
+    assert.equal(latest.status, 200);
+    const latestBody = await latest.json() as {
+      draft: unknown;
+      failed: { errorCode: string | null } | null;
+    };
+    assert.equal(latestBody.draft, null);
+    assert.equal(latestBody.failed?.errorCode, "PROVIDER_PROFILE_PARTIAL_FAILURE");
   });
 
   it("uses only V2 attempts for create review confirm and discard routes", async () => {
@@ -229,11 +248,13 @@ describe("structured character route acceptance", () => {
       },
       body: JSON.stringify({ prompt: "V2経路だけで確定する航海士" }),
     });
-    assert.equal(generated.status, 200);
+    assert.equal(generated.status, 202);
+    await drainAuthoring(successLlm);
     const generatedBody = await generated.json() as {
-      draft: { id: string; character: { id: string } };
+      attemptId: string;
+      characterId: string;
     };
-    const attemptId = generatedBody.draft.id;
+    const attemptId = generatedBody.attemptId;
 
     const latest = await successApp.request("/api/character-drafts/latest", {
       headers: authHeaders,
@@ -252,11 +273,17 @@ describe("structured character route acceptance", () => {
         body: JSON.stringify({ message: "判断をより慎重にしてください" }),
       },
     );
-    assert.equal(adjusted.status, 200);
-    assert.equal(
-      ((await adjusted.json()) as { draft: { id: string } }).draft.id,
-      attemptId,
-    );
+    assert.equal(adjusted.status, 202);
+    await drainAuthoring(successLlm);
+    const afterChat = await successApp.request(`/api/character-drafts/${attemptId}`, {
+      headers: authHeaders,
+    });
+    const afterChatBody = await afterChat.json() as {
+      canAccept: boolean;
+      attemptId: string;
+    };
+    assert.equal(afterChatBody.attemptId, attemptId);
+    assert.equal(afterChatBody.canAccept, true);
 
     const confirmed = await successApp.request(
       `/api/characters/${attemptId}/confirm`,
@@ -266,7 +293,7 @@ describe("structured character route acceptance", () => {
     const confirmedBody = await confirmed.json() as {
       character: { id: string; compatibility: { status: string } };
     };
-    assert.equal(confirmedBody.character.id, generatedBody.draft.character.id);
+    assert.equal(confirmedBody.character.id, generatedBody.characterId);
     assert.equal(confirmedBody.character.compatibility.status, "ready");
     assert.equal(
       (await characterAssetRepo.getReadyCharacterGeneration(
@@ -284,10 +311,11 @@ describe("structured character route acceptance", () => {
       },
       body: JSON.stringify({ prompt: "破棄するV2候補" }),
     });
-    assert.equal(discardCandidate.status, 200);
+    assert.equal(discardCandidate.status, 202);
+    await drainAuthoring(successLlm);
     const discardAttemptId = ((await discardCandidate.json()) as {
-      draft: { id: string };
-    }).draft.id;
+      attemptId: string;
+    }).attemptId;
     const discarded = await successApp.request(
       `/api/character-drafts/${discardAttemptId}`,
       { method: "DELETE", headers: authHeaders },
@@ -306,7 +334,11 @@ describe("structured character route acceptance", () => {
     const latest = await successApp.request("/api/character-drafts/latest", {
       headers: authHeaders,
     });
-    assert.deepEqual(await latest.json(), { draft: null, progress: null });
+    assert.deepEqual(await latest.json(), {
+      draft: null,
+      progress: null,
+      failed: null,
+    });
 
     const chat = await successApp.request(
       "/api/character-drafts/route-legacy-draft/chat",
@@ -629,8 +661,9 @@ describe("structured character route acceptance", () => {
         },
       },
     );
-    assert.equal(upgrade.status, 200);
-    const attemptId = ((await upgrade.json()) as { draft: { id: string } }).draft.id;
+    assert.equal(upgrade.status, 202);
+    await drainAuthoring(successLlm);
+    const attemptId = ((await upgrade.json()) as { attemptId: string }).attemptId;
     assert.equal(
       (await characterAssetRepo.getCharacterCompatibility("route-legacy-mine"))
         .status,
@@ -689,7 +722,8 @@ describe("structured character route acceptance", () => {
       ownerUserId: "route-owner",
       displayName: "進捗確認キャラ",
     }));
-    const progressApp = buildRoutes({ llm: new SlowStructureProvider() });
+    const slowLlm = new SlowStructureProvider();
+    const progressApp = buildRoutes({ llm: slowLlm });
     const upgrade = progressApp.request(
       "/api/characters/route-legacy-progress/upgrade",
       {
@@ -727,6 +761,253 @@ describe("structured character route acceptance", () => {
     );
     assert.equal(midBody.character.authoringProgress?.stepCount, 5);
     const finished = await upgrade;
-    assert.equal(finished.status, 200);
+    assert.equal(finished.status, 202);
+    await drainAuthoring(slowLlm);
+  });
+
+  it("does not surface an older awaiting draft after a later attempt fails", async () => {
+    const first = await successApp.request("/api/characters/generate", {
+      method: "POST",
+      headers: {
+        ...authHeaders,
+        "Content-Type": "application/json",
+        "Idempotency-Key": "route-stale-draft-001",
+      },
+      body: JSON.stringify({ prompt: "先に残す下書き" }),
+    });
+    assert.equal(first.status, 202);
+    await drainAuthoring(successLlm);
+    const firstId = ((await first.json()) as { attemptId: string }).attemptId;
+    const latestBefore = await successApp.request("/api/character-drafts/latest", {
+      headers: authHeaders,
+    });
+    assert.equal(
+      ((await latestBefore.json()) as { draft: { id: string } }).draft.id,
+      firstId,
+    );
+
+    const failed = await initialFailureApp.request("/api/characters/generate", {
+      method: "POST",
+      headers: {
+        ...authHeaders,
+        "Content-Type": "application/json",
+        "Idempotency-Key": "route-stale-draft-fail-001",
+      },
+      body: JSON.stringify({ prompt: "後から失敗する生成" }),
+    });
+    assert.equal(failed.status, 202);
+    await drainAuthoring(initialFailureLlm);
+    const latest = await initialFailureApp.request("/api/character-drafts/latest", {
+      headers: authHeaders,
+    });
+    const latestBody = await latest.json() as {
+      draft: unknown;
+      failed: { errorCode: string | null } | null;
+    };
+    assert.equal(latestBody.draft, null);
+    assert.equal(latestBody.failed?.errorCode, "PROVIDER_INITIAL_FAILURE");
+  });
+
+  it("discards an unclaimed queued attempt before the worker runs", async () => {
+    const generated = await successApp.request("/api/characters/generate", {
+      method: "POST",
+      headers: {
+        ...authHeaders,
+        "Content-Type": "application/json",
+        "Idempotency-Key": "route-unclaimed-discard-001",
+      },
+      body: JSON.stringify({ prompt: "受け付け直後に破棄する" }),
+    });
+    assert.equal(generated.status, 202);
+    const attemptId = ((await generated.json()) as { attemptId: string }).attemptId;
+    const discarded = await successApp.request(
+      `/api/character-drafts/${attemptId}`,
+      { method: "DELETE", headers: authHeaders },
+    );
+    assert.equal(discarded.status, 200);
+    await drainAuthoring(successLlm);
+    assert.equal(
+      (await characterAssetRepo.getCharacterAuthoringAttempt(
+        attemptId,
+        "route-owner",
+      ))?.status,
+      "discarded",
+    );
+  });
+
+  it("returns a create review without a current character", async () => {
+    const generated = await successApp.request("/api/characters/generate", {
+      method: "POST",
+      headers: {
+        ...authHeaders,
+        "Content-Type": "application/json",
+        "Idempotency-Key": "route-review-create-001",
+      },
+      body: JSON.stringify({ prompt: "承認画面用の旅人" }),
+    });
+    assert.equal(generated.status, 202);
+    await drainAuthoring(successLlm);
+    const attemptId = ((await generated.json()) as { attemptId: string }).attemptId;
+    const review = await successApp.request(`/api/character-drafts/${attemptId}`, {
+      headers: authHeaders,
+    });
+    assert.equal(review.status, 200);
+    const body = await review.json() as {
+      kind: string;
+      canAccept: boolean;
+      current: unknown;
+      candidate: { displayName: string } | null;
+      stale: boolean;
+    };
+    assert.equal(body.kind, "create");
+    assert.equal(body.canAccept, true);
+    assert.equal(body.current, null);
+    assert.ok(body.candidate?.displayName);
+    assert.equal(body.stale, false);
+  });
+
+  it("returns a compare review for upgrade and marks an older attempt stale", async () => {
+    await insertLegacyCharacter(sheet({
+      id: "route-legacy-review",
+      ownerUserId: "route-owner",
+      displayName: "比較用旧キャラ",
+    }));
+    const upgrade = await successApp.request(
+      "/api/characters/route-legacy-review/upgrade",
+      {
+        method: "POST",
+        headers: {
+          ...authHeaders,
+          "Idempotency-Key": "route-review-upgrade-001",
+        },
+      },
+    );
+    assert.equal(upgrade.status, 202);
+    await drainAuthoring(successLlm);
+    const attemptId = ((await upgrade.json()) as { attemptId: string }).attemptId;
+    const review = await successApp.request(`/api/character-drafts/${attemptId}`, {
+      headers: authHeaders,
+    });
+    assert.equal(review.status, 200);
+    const body = await review.json() as {
+      kind: string;
+      canAccept: boolean;
+      current: { displayName: string } | null;
+      candidate: { displayName: string } | null;
+    };
+    assert.equal(body.kind, "upgrade");
+    assert.equal(body.canAccept, true);
+    assert.equal(body.current?.displayName, "比較用旧キャラ");
+    assert.ok(body.candidate?.displayName);
+    const listed = await successApp.request("/api/characters?limit=50", {
+      headers: authHeaders,
+    });
+    const listedBody = await listed.json() as {
+      characters: Array<{
+        id: string;
+        reviewState: string | null;
+        reviewAttemptId: string | null;
+      }>;
+    };
+    const marked = listedBody.characters.find((item) => item.id === "route-legacy-review");
+    assert.equal(marked?.reviewState, "awaiting_acceptance");
+    assert.equal(marked?.reviewAttemptId, attemptId);
+
+    const blocked = await successApp.request(
+      "/api/characters/route-legacy-review/upgrade",
+      {
+        method: "POST",
+        headers: {
+          ...authHeaders,
+          "Idempotency-Key": "route-review-upgrade-blocked",
+        },
+      },
+    );
+    assert.equal(blocked.status, 409);
+    const discarded = await successApp.request(
+      `/api/character-drafts/${attemptId}`,
+      { method: "DELETE", headers: authHeaders },
+    );
+    assert.equal(discarded.status, 200);
+    const next = await successApp.request(
+      "/api/characters/route-legacy-review/upgrade",
+      {
+        method: "POST",
+        headers: {
+          ...authHeaders,
+          "Idempotency-Key": "route-review-upgrade-002",
+        },
+      },
+    );
+    assert.equal(next.status, 202);
+    await drainAuthoring(successLlm);
+    const stale = await successApp.request(`/api/character-drafts/${attemptId}`, {
+      headers: authHeaders,
+    });
+    const staleBody = await stale.json() as { stale: boolean; canAccept: boolean };
+    assert.equal(staleBody.stale, true);
+    assert.equal(staleBody.canAccept, false);
+  });
+
+  it("projects ready and failed notifications without duplicating them", async () => {
+    const generated = await successApp.request("/api/characters/generate", {
+      method: "POST",
+      headers: {
+        ...authHeaders,
+        "Content-Type": "application/json",
+        "Idempotency-Key": "route-notify-ready-001",
+      },
+      body: JSON.stringify({ prompt: "お知らせ用の成功" }),
+    });
+    assert.equal(generated.status, 202);
+    await drainAuthoring(successLlm);
+    const inbox = await successApp.request("/api/notifications?limit=20", {
+      headers: authHeaders,
+    });
+    assert.equal(inbox.status, 200);
+    const inboxBody = await inbox.json() as {
+      unreadCount: number;
+      notifications: Array<{
+        id: string;
+        kind: string;
+        attemptId: string;
+        readAt: string | null;
+      }>;
+    };
+    const ready = inboxBody.notifications.find((item) => item.kind === "authoring_ready");
+    assert.ok(ready);
+    assert.equal(ready?.readAt, null);
+    assert.ok(inboxBody.unreadCount >= 1);
+    const marked = await successApp.request(`/api/notifications/${ready!.id}/read`, {
+      method: "POST",
+      headers: authHeaders,
+    });
+    assert.equal(marked.status, 200);
+    const afterRead = await successApp.request("/api/notifications?limit=20", {
+      headers: authHeaders,
+    });
+    const afterBody = await afterRead.json() as {
+      notifications: Array<{ id: string; readAt: string | null }>;
+    };
+    assert.ok(afterBody.notifications.find((item) => item.id === ready!.id)?.readAt);
+
+    const failed = await initialFailureApp.request("/api/characters/generate", {
+      method: "POST",
+      headers: {
+        ...authHeaders,
+        "Content-Type": "application/json",
+        "Idempotency-Key": "route-notify-fail-001",
+      },
+      body: JSON.stringify({ prompt: "お知らせ用の失敗" }),
+    });
+    assert.equal(failed.status, 202);
+    await drainAuthoring(initialFailureLlm);
+    const failedInbox = await initialFailureApp.request("/api/notifications?limit=20", {
+      headers: authHeaders,
+    });
+    const failedBody = await failedInbox.json() as {
+      notifications: Array<{ kind: string }>;
+    };
+    assert.ok(failedBody.notifications.some((item) => item.kind === "authoring_failed"));
   });
 });

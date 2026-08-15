@@ -4,7 +4,11 @@ import {
   PERSPECTIVE_LABELS,
   type NarrationPerspective,
 } from "./narration-perspective.js";
-import { AssetCompatibilitySchema } from "./structured-assets.js";
+import {
+  AssetAuthoringReviewBaseSchema,
+  AssetCompatibilitySchema,
+  CharacterReviewStateSchema,
+} from "./structured-assets.js";
 import {
   CompiledNarrationPolicyV2Schema,
   type CompiledNarrationPolicyV2,
@@ -53,8 +57,21 @@ export const NarrationStylePublicSchema = z.object({
     label: z.string(),
     targetSchemaVersion: z.number().int().positive(),
   }).strict().nullable().optional(),
+  reviewState: CharacterReviewStateSchema.nullable().optional(),
+  reviewAttemptId: z.string().min(1).max(80).nullable().optional(),
 });
 export type NarrationStylePublic = z.infer<typeof NarrationStylePublicSchema>;
+
+export const NarrationStyleAuthoringReviewSchema = AssetAuthoringReviewBaseSchema.extend({
+  assetId: z.string().min(1).max(80),
+  family: z.literal("narration_style"),
+  candidate: NarrationStylePublicSchema.nullable(),
+  current: NarrationStylePublicSchema.nullable(),
+  definition: z.unknown().nullable().optional(),
+}).strict();
+export type NarrationStyleAuthoringReview = z.infer<
+  typeof NarrationStyleAuthoringReviewSchema
+>;
 
 /** Snapshot stored on BattleState so mid-match edits don't change the fight. */
 export interface NarrationStyleSnapshot {

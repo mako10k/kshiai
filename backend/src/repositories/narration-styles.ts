@@ -16,6 +16,10 @@ import {
 } from "../account-access.js";
 import * as narrationAssetRepo from "./narration-style-assets-v2.js";
 import { buildImportedNarrationStyleEnvelopeV2 } from "../services/narration-style-authoring-service.js";
+import {
+  listLatestNarrationStyleAttemptsByIds,
+  reviewStateFromAttempt,
+} from "./owner-notifications.js";
 import type { AssetGeneration } from "./asset-generations.js";
 
 let seedPromise: Promise<void> | null = null;
@@ -113,18 +117,32 @@ export async function listNarrationStyles(
   const readyIds = await narrationAssetRepo.listReadyNarrationStyleIds(
     accessible.map((style) => style.id),
   );
+  const ownedIds = accessible
+    .filter((style) => style.ownerUserId === userId)
+    .map((style) => style.id);
+  const latestAttempts = await listLatestNarrationStyleAttemptsByIds(
+    userId,
+    ownedIds,
+  );
   const publicStyles = await Promise.all(accessible.map(async (style) => {
     const compatibility = await narrationAssetRepo.getNarrationStyleCompatibility(
       style.id,
     );
     const selectable = readyIds.has(style.id);
-    return toPublicNarrationStyle(style, {
-      compatibility,
-      selectable,
-      upgradeAction: !style.isSystem && compatibility.status !== "ready"
-        ? { label: "最新版に更新", targetSchemaVersion: 2 }
-        : null,
-    });
+    const mark = style.ownerUserId === userId
+      ? reviewStateFromAttempt(latestAttempts.get(style.id) ?? null)
+      : { reviewState: null, reviewAttemptId: null };
+    return {
+      ...toPublicNarrationStyle(style, {
+        compatibility,
+        selectable,
+        upgradeAction: !style.isSystem && compatibility.status !== "ready"
+          ? { label: "最新版に更新", targetSchemaVersion: 2 }
+          : null,
+      }),
+      reviewState: mark.reviewState,
+      reviewAttemptId: mark.reviewAttemptId,
+    };
   }));
   return options?.selectable
     ? publicStyles.filter((style) => style.selectable)

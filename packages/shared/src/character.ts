@@ -16,7 +16,9 @@ import {
 import { DecisionProfileSchema } from "./free-action.js";
 import {
   AssetAuthoringProgressSchema,
+  AssetAuthoringReviewBaseSchema,
   AssetCompatibilitySchema,
+  CharacterReviewStateSchema,
 } from "./structured-assets.js";
 
 /** Internal combat parameters — never sent to normal clients. */
@@ -485,8 +487,19 @@ export const CharacterPublicSchema = z.object({
   }).strict().nullable().optional(),
   /** Owner-only in-flight authoring step, absent when nothing is generating. */
   authoringProgress: AssetAuthoringProgressSchema.nullable().optional(),
+  /** Owner-only latest attempt mark for lists and management cards. */
+  reviewState: CharacterReviewStateSchema.nullable().optional(),
+  /** Owner-only attempt id for the reviewState mark. */
+  reviewAttemptId: z.string().min(1).max(80).nullable().optional(),
 });
 export type CharacterPublic = z.infer<typeof CharacterPublicSchema>;
+
+export const CharacterAuthoringReviewSchema = AssetAuthoringReviewBaseSchema.extend({
+  characterId: z.string().min(1).max(80),
+  candidate: CharacterPublicSchema.nullable(),
+  current: CharacterPublicSchema.nullable(),
+}).strict();
+export type CharacterAuthoringReview = z.infer<typeof CharacterAuthoringReviewSchema>;
 
 export function ensureRecord(sheet: CharacterSheet): CharacterRecord {
   return normalizeRecord(sheet.record);

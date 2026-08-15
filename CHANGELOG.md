@@ -5,6 +5,35 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 
 ## [Unreleased]
 
+## [0.20.0] - 2026-08-15
+
+### Added
+
+- Queues character, battlefield, and narration-style generate, upgrade, and
+  revision work instead of running the provider inside the owner HTTP request.
+- Opens dedicated review screens for create approval and change compare, with
+  burger notifications and list marks for queued, generating, awaiting, and
+  failed attempts.
+
+### Changed
+
+- Begin-authoring routes return `202` with attempt progress. Latest reads
+  include failed attempts so an older awaiting draft is not shown after a later
+  failure.
+
+### Database
+
+- Adds additive migrations `0020_character_authoring_jobs.sql`,
+  `0021_owner_notifications.sql`, and `0022_family_authoring_jobs.sql`. They
+  create job and notification tables and add `owner_notifications.asset_type`.
+  Existing authoring attempts and generations are not rewritten.
+
+### Operations
+
+- Implements Accepted ADR-0014. Application rollback leaves migrations `0020`
+  through `0022` in place. v0.19.1 remains compatible with the new tables
+  because it does not read them.
+
 ## [0.19.1] - 2026-08-15
 
 ### Fixed

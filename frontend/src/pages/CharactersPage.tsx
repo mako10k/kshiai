@@ -5,6 +5,7 @@ import {
   type CharacterPublic,
 } from "@kshiai/shared";
 import { api } from "../api";
+import { CharacterReviewMark } from "./CharacterReviewMark";
 import { useLocalDraft } from "../hooks/useLocalDraft";
 import { mediaSrc } from "../media";
 
@@ -89,6 +90,7 @@ export function CharactersPage() {
       <div className="grid cards">
         {list.map((character) => (
           <div className="card" key={character.id}>
+            <CharacterReviewMark character={character} />
             <Link className="char-card-face" to={`/characters/${character.id}`}>
               {character.appearance.imageUrl ? (
                 <img

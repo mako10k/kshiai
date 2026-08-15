@@ -16,6 +16,10 @@ import {
 import type { AssetGeneration } from "./asset-generations.js";
 import * as battlefieldAssetRepo from "./battlefield-assets-v2.js";
 import { buildImportedBattlefieldEnvelopeV2 } from "../services/battlefield-authoring-service.js";
+import {
+  listLatestBattlefieldAttemptsByIds,
+  reviewStateFromAttempt,
+} from "./owner-notifications.js";
 
 let seedPromise: Promise<void> | null = null;
 
@@ -154,10 +158,20 @@ export async function listPresets(opts: {
   if (opts.selectable) {
     presets = presets.filter((preset) => readyIds.has(preset.id));
   }
+  const ownedIds = presets
+    .filter((preset) => preset.ownerUserId === opts.userId)
+    .map((preset) => preset.id);
+  const latestAttempts = await listLatestBattlefieldAttemptsByIds(
+    opts.userId,
+    ownedIds,
+  );
   return Promise.all(presets.map(async (preset) => {
     const compatibility = await battlefieldAssetRepo.getBattlefieldCompatibility(
       preset.id,
     );
+    const mark = preset.ownerUserId === opts.userId
+      ? reviewStateFromAttempt(latestAttempts.get(preset.id) ?? null)
+      : { reviewState: null, reviewAttemptId: null };
     return {
       ...toPublicPreset(preset),
       compatibility,
@@ -166,6 +180,8 @@ export async function listPresets(opts: {
           compatibility.status !== "ready"
         ? { label: "この戦場を最新版に更新", targetSchemaVersion: 2 }
         : null,
+      reviewState: mark.reviewState,
+      reviewAttemptId: mark.reviewAttemptId,
     };
   }));
 }

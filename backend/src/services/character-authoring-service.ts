@@ -4,6 +4,7 @@ import {
   CHARACTER_PROFILE_CLAIM_VALIDATOR_CONTRACT,
   REQUIRED_CHARACTER_COMPILERS_V2,
   balanceCharacterCombatFields,
+  coalesceNonEmptyList,
   characterDefinitionV2ToLegacySheet,
   defaultCharacterDisclosurePolicyV2,
   defaultRecord,
@@ -19,6 +20,42 @@ import {
 } from "@kshiai/shared";
 import { type LlmProvider, type GenerateCharacterResult } from "../llm/types.js";
 import { assetContentDigest } from "../repositories/asset-generations.js";
+
+export function lastAuthoringAdjustment(sourceText: string): string | null {
+  const matches = [...sourceText.matchAll(/追加調整:\s*(.*)/g)];
+  const last = matches.at(-1)?.[1]?.trim();
+  return last || null;
+}
+
+export function sheetFromAuthoringCandidate(input: {
+  characterId: string;
+  ownerUserId: string;
+  createdAt: string;
+  updatedAt: string;
+  candidate: CharacterGenerationEnvelopeV2;
+  existing?: CharacterSheet | null;
+}): CharacterSheet {
+  return characterDefinitionV2ToLegacySheet({
+    characterId: input.characterId,
+    ownerUserId: input.ownerUserId,
+    definition: input.candidate.definition,
+    publicPresentation: input.candidate.publicPresentation,
+    createdAt: input.existing?.createdAt ?? input.createdAt,
+    updatedAt: input.updatedAt,
+    previousImageUrl: input.existing?.appearance.previousImageUrl,
+    operational: input.existing
+      ? {
+          visibility: input.existing.visibility,
+          record: input.existing.record,
+          recordOverall: input.existing.recordOverall,
+          improvementMemo: input.existing.improvementMemo,
+          opponentMemories: input.existing.opponentMemories,
+          deletedAt: input.existing.deletedAt,
+          revisionSnapshot: input.existing.revisionSnapshot,
+        }
+      : undefined,
+  });
+}
 
 export const CHARACTER_DEFINITION_CHECK_FAILED =
   "CHARACTER_DEFINITION_CHECK_FAILED";
@@ -37,6 +74,41 @@ export function existingCharacterGenerationResult(
     assistantMessage: "既存の公開設定を最新版の構造へ移します。",
     sheet: rest,
   };
+}
+
+export function adjustedGenerationResult(
+  current: CharacterSheet,
+  patch: Awaited<ReturnType<LlmProvider["adjustCharacter"]>>,
+): GenerateCharacterResult {
+  const nextSkills = coalesceNonEmptyList(patch.sheetPatch.skills, current.skills);
+  const nextTraits = coalesceNonEmptyList(patch.sheetPatch.traits, current.traits);
+  const merged = balanceCharacterCombatFields({
+    ...current,
+    ...patch.sheetPatch,
+    parameters: patch.sheetPatch.parameters
+      ? { ...current.parameters, ...patch.sheetPatch.parameters }
+      : current.parameters,
+    basicAttack: patch.sheetPatch.basicAttack ?? current.basicAttack,
+    skills: nextSkills,
+    traits: nextTraits,
+    weapon: patch.sheetPatch.weapon !== undefined
+      ? patch.sheetPatch.weapon
+      : current.weapon,
+    armor: patch.sheetPatch.armor !== undefined
+      ? patch.sheetPatch.armor
+      : current.armor,
+    appearance: patch.sheetPatch.appearance
+      ? { ...current.appearance, ...patch.sheetPatch.appearance }
+      : current.appearance,
+  });
+  const {
+    id: _id,
+    ownerUserId: _ownerUserId,
+    createdAt: _createdAt,
+    updatedAt: _updatedAt,
+    ...sheet
+  } = merged;
+  return { sheet, assistantMessage: patch.assistantMessage };
 }
 
 export const CHARACTER_STRUCTURE_GENERATOR_CONTRACT =

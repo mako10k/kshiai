@@ -1,13 +1,15 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import type { CharacterPublic } from "@kshiai/shared";
 import { api } from "../api";
 import { AuthoringProgressNotice } from "../components/AuthoringProgressNotice";
 import { useAuthoringProgressPoll } from "../hooks/useAuthoringProgressPoll";
 import { useLocalDraft } from "../hooks/useLocalDraft";
+import { pollLatestAuthoring } from "./asset-review-shared";
 
 const PROMPT_PLACEHOLDER =
   "名前はカエデ。紅葉色の髪の弓使い。森の案内人として旅人と獣の間を取り持つ。";
+
+
 
 export function CharacterCreatePage() {
   const nav = useNavigate();
@@ -15,30 +17,33 @@ export function CharacterCreatePage() {
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
-  const [draft, setDraft] = useState<{
-    id: string;
-    character: CharacterPublic;
-    assistantMessage: string;
-  } | null>(null);
-  const [draftMessage, setDraftMessage] = useState("");
   const [resumeInFlight, setResumeInFlight] = useState(false);
+  const [trackedAttemptId, setTrackedAttemptId] = useState<string | null>(null);
   const progress = useAuthoringProgressPoll({
     enabled: busy || resumeInFlight,
-    poll: async () => {
-      const result = await api.latestCharacterDraft();
-      if (result.draft) {
-        setDraft(result.draft);
-        setResumeInFlight(false);
-      }
-      return result.progress;
-    },
+    poll: () => pollLatestAuthoring(api.latestCharacterDraft, {
+      trackedAttemptId,
+      onReady: (attemptId) => nav(`/reviews/${attemptId}`),
+      setResumeInFlight,
+      setError,
+    }),
   });
 
   useEffect(() => {
     void api.latestCharacterDraft()
       .then((result) => {
-        setDraft(result.draft);
-        if (result.progress) setResumeInFlight(true);
+        if (result.failed) {
+          setError(result.failed.errorCode ?? "生成に失敗しました");
+          return;
+        }
+        if (result.draft) {
+          nav(`/reviews/${result.draft.id}`);
+          return;
+        }
+        if (result.progress) {
+          setTrackedAttemptId(result.progress.attemptId ?? null);
+          setResumeInFlight(true);
+        }
       })
       .catch((e) => setError(String(e)));
   }, []);
@@ -54,55 +59,14 @@ export function CharacterCreatePage() {
     setError(null);
     try {
       const res = await api.generateCharacter(text);
-      setDraft(res.draft);
-      setMessage("内容を確認し、必要なら会話で調整してから確定してください。");
+      if (res.draft) {
+        nav(`/reviews/${res.draft.id}`);
+      } else {
+        setTrackedAttemptId(res.attemptId ?? null);
+        setResumeInFlight(true);
+        setMessage("受け付けました。準備できたら確認できます。");
+      }
       clearPrompt();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "failed");
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  async function onDraftChat(e: FormEvent) {
-    e.preventDefault();
-    if (!draft || !draftMessage.trim()) return;
-    setBusy(true);
-    setError(null);
-    try {
-      const res = await api.chatCharacterDraft(draft.id, draftMessage.trim());
-      setDraft(res.draft);
-      setDraftMessage("");
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "failed");
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  async function confirmDraft() {
-    if (!draft) return;
-    setBusy(true);
-    setError(null);
-    try {
-      const res = await api.confirmCharacterDraft(draft.id);
-      setDraft(null);
-      nav(`/characters/${res.character.id}`);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "failed");
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  async function discardDraft() {
-    if (!draft) return;
-    setBusy(true);
-    setError(null);
-    try {
-      await api.discardCharacterDraft(draft.id);
-      setDraft(null);
-      setMessage("下書きを破棄しました。");
     } catch (err) {
       setError(err instanceof Error ? err.message : "failed");
     } finally {
@@ -139,58 +103,6 @@ export function CharacterCreatePage() {
         {message && <p className="ok">{message}</p>}
         {error && <p className="error">{error}</p>}
       </div>
-
-      {draft && (
-        <div className="panel">
-          <h2>生成内容を確認</h2>
-          <div className="card" style={{ padding: "1rem" }}>
-            <strong>{draft.character.displayName}</strong>
-            <p>{draft.character.narrativeBlurb}</p>
-            <p className="muted">{draft.character.appearance.summary}</p>
-            <p>
-              <strong>{draft.character.basicAttackName}</strong> —{" "}
-              {draft.character.basicAttackDescription}
-            </p>
-            {draft.character.skillSummaries.map((skill) => (
-              <p key={skill.name} style={{ margin: "0.35rem 0" }}>
-                <strong>{skill.name}</strong> — {skill.description}
-              </p>
-            ))}
-            <p className="muted" style={{ marginBottom: 0 }}>
-              {draft.assistantMessage}
-            </p>
-          </div>
-          <form className="grid" onSubmit={(e) => void onDraftChat(e)}>
-            <textarea
-              value={draftMessage}
-              onChange={(e) => setDraftMessage(e.target.value)}
-              placeholder="例: もっと防御寄りに。髪色を暗い赤に。"
-              rows={3}
-            />
-            <button className="btn" type="submit" disabled={busy || !draftMessage.trim()}>
-              会話で調整
-            </button>
-          </form>
-          <div className="row" style={{ marginTop: "0.75rem" }}>
-            <button
-              className="btn primary"
-              type="button"
-              disabled={busy}
-              onClick={() => void confirmDraft()}
-            >
-              確定して保存
-            </button>
-            <button
-              className="btn ghost danger"
-              type="button"
-              disabled={busy}
-              onClick={() => void discardDraft()}
-            >
-              破棄
-            </button>
-          </div>
-        </div>
-      )}
     </>
   );
 }

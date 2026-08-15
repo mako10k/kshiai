@@ -52,6 +52,26 @@ export type NarrationStyleAuthoringDraft = {
   expiresAt: string;
 };
 
+export type AuthoringAcceptedResponse = {
+  attemptId: string;
+  characterId: string;
+  kind: "create" | "revision" | "upgrade";
+  progress: AssetAuthoringProgress | null;
+  draft?: BattlefieldAuthoringDraft | NarrationStyleAuthoringDraft;
+};
+
+export type LatestAuthoringResponse<TDraft> = {
+  draft: TDraft | null;
+  progress: AssetAuthoringProgress | null;
+  failed: {
+    attemptId: string;
+    characterId: string;
+    kind: "create" | "revision" | "upgrade";
+    errorCode: string | null;
+    updatedAt: string;
+  } | null;
+};
+
 function battlefieldListUrl(q?: string, opts?: { selectable?: boolean }): string {
   const params = new URLSearchParams();
   if (q) params.set("q", q);
@@ -313,7 +333,7 @@ export class ApiError extends Error {
   }
 }
 
-async function request<T>(
+export async function request<T>(
   path: string,
   init?: RequestInit,
 ): Promise<T> {
@@ -506,7 +526,10 @@ export const api = {
   },
   generateCharacter: (prompt: string) =>
     request<{
-      draft: {
+      attemptId?: string;
+      characterId?: string;
+      progress?: AssetAuthoringProgress | null;
+      draft?: {
         id: string;
         character: CharacterPublic;
         assistantMessage: string;
@@ -538,6 +561,13 @@ export const api = {
         assistantMessage: string;
       } | null;
       progress: AssetAuthoringProgress | null;
+      failed: {
+        attemptId: string;
+        characterId: string;
+        kind: "create" | "revision" | "upgrade";
+        errorCode: string | null;
+        updatedAt: string;
+      } | null;
     }>("/api/character-drafts/latest"),
   confirmCharacterDraft: (id: string) =>
     request<{ character: CharacterPublic; assistantMessage: string }>(
@@ -550,7 +580,9 @@ export const api = {
     }),
   chatCharacter: (id: string, message: string) =>
     request<{
-      draft: {
+      attemptId?: string;
+      progress?: AssetAuthoringProgress | null;
+      draft?: {
         id: string;
         character: CharacterPublic;
         assistantMessage: string;
@@ -566,7 +598,9 @@ export const api = {
     ),
   upgradeCharacter: (id: string) =>
     request<{
-      draft: {
+      attemptId?: string;
+      progress?: AssetAuthoringProgress | null;
+      draft?: {
         id: string;
         character: CharacterPublic;
         assistantMessage: string;
@@ -665,13 +699,16 @@ export const api = {
       `/api/narration-styles${selectable ? "?selectable=true" : ""}`,
     ),
   generateNarrationStyle: (prompt: string) =>
-    request<{ draft: NarrationStyleAuthoringDraft }>("/api/narration-styles/generate", {
-      method: "POST",
-      headers: { "Idempotency-Key": crypto.randomUUID() },
-      body: JSON.stringify({ prompt }),
-    }),
+    request<AuthoringAcceptedResponse & { draft?: NarrationStyleAuthoringDraft }>(
+      "/api/narration-styles/generate",
+      {
+        method: "POST",
+        headers: { "Idempotency-Key": crypto.randomUUID() },
+        body: JSON.stringify({ prompt }),
+      },
+    ),
   latestNarrationStyleDraft: () =>
-    request<{ draft: NarrationStyleAuthoringDraft | null }>(
+    request<LatestAuthoringResponse<NarrationStyleAuthoringDraft>>(
       "/api/narration-style-drafts/latest",
     ),
   confirmNarrationStyleDraft: (draftId: string) =>
@@ -684,7 +721,7 @@ export const api = {
       method: "DELETE",
     }),
   upgradeNarrationStyle: (id: string) =>
-    request<{ draft: NarrationStyleAuthoringDraft }>(
+    request<AuthoringAcceptedResponse & { draft?: NarrationStyleAuthoringDraft }>(
       `/api/narration-styles/${id}/upgrade`,
       {
         method: "POST",
@@ -692,7 +729,7 @@ export const api = {
       },
     ),
   reviseNarrationStyle: (id: string, prompt: string) =>
-    request<{ draft: NarrationStyleAuthoringDraft }>(
+    request<AuthoringAcceptedResponse & { draft?: NarrationStyleAuthoringDraft }>(
       `/api/narration-styles/${id}/revise`,
       {
         method: "POST",
@@ -871,7 +908,7 @@ export const api = {
       battlefieldListUrl(q, opts),
     ),
   generateBattlefield: (prompt: string, category?: string) =>
-    request<{ draft: BattlefieldAuthoringDraft }>(
+    request<AuthoringAcceptedResponse & { draft?: BattlefieldAuthoringDraft }>(
       "/api/battlefields/generate",
       {
         method: "POST",
@@ -880,7 +917,10 @@ export const api = {
       },
     ),
   chatBattlefield: (id: string, message: string) =>
-    request<{ draft: BattlefieldAuthoringDraft; requiresConfirmation: true }>(
+    request<AuthoringAcceptedResponse & {
+      draft?: BattlefieldAuthoringDraft;
+      requiresConfirmation: true;
+    }>(
       `/api/battlefields/${id}/chat`,
       {
         method: "POST",
@@ -889,11 +929,11 @@ export const api = {
       },
     ),
   latestBattlefieldDraft: () =>
-    request<{ draft: BattlefieldAuthoringDraft | null }>(
+    request<LatestAuthoringResponse<BattlefieldAuthoringDraft>>(
       "/api/battlefield-drafts/latest",
     ),
   chatBattlefieldDraft: (id: string, message: string) =>
-    request<{ draft: BattlefieldAuthoringDraft }>(
+    request<AuthoringAcceptedResponse & { draft?: BattlefieldAuthoringDraft }>(
       `/api/battlefield-drafts/${id}/chat`,
       { method: "POST", body: JSON.stringify({ message }) },
     ),
@@ -907,7 +947,7 @@ export const api = {
       method: "DELETE",
     }),
   upgradeBattlefield: (id: string) =>
-    request<{ draft: BattlefieldAuthoringDraft }>(
+    request<AuthoringAcceptedResponse & { draft?: BattlefieldAuthoringDraft }>(
       `/api/battlefields/${id}/upgrade`,
       {
         method: "POST",

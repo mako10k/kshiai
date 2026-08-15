@@ -31,6 +31,9 @@ const { buildNarrationStyleGenerationCandidate } = await import(
   "./services/narration-style-authoring-service.js"
 );
 const { buildRoutes } = await import("./routes.js");
+const { drainCharacterAuthoringJobs } = await import(
+  "./services/character-authoring-jobs.js"
+);
 
 class NarrationStructureFailureProvider extends MockLlmProvider {
   override async generateNarrationDefinitionV2(): Promise<never> {
@@ -38,10 +41,28 @@ class NarrationStructureFailureProvider extends MockLlmProvider {
   }
 }
 
-const app = buildRoutes({ llm: new MockLlmProvider() });
-const failureApp = buildRoutes({ llm: new NarrationStructureFailureProvider() });
+const llm = new MockLlmProvider();
+const failureLlm = new NarrationStructureFailureProvider();
+const app = buildRoutes({ llm });
+const failureApp = buildRoutes({ llm: failureLlm });
 const sessionToken = "ses_structured_narration_route_acceptance";
 const authHeaders = { Cookie: `kshiai_session=${sessionToken}` };
+
+async function drainAuthoring(
+  provider: typeof llm,
+): Promise<void> {
+  await drainCharacterAuthoringJobs({ llm: provider, workerId: "ns-route-test" });
+}
+
+async function acceptedAttemptId(response: Response): Promise<string> {
+  const body = (await response.json()) as {
+    attemptId?: string;
+    draft?: { id: string };
+  };
+  const attemptId = body.attemptId ?? body.draft?.id;
+  assert.ok(attemptId);
+  return attemptId;
+}
 
 function sheet(input: {
   id: string;
@@ -177,7 +198,9 @@ describe("structured narration route acceptance", () => {
       },
       body: JSON.stringify({ prompt: "途中失敗する語り口" }),
     });
-    assert.equal(response.status, 502);
+    assert.equal(response.status, 202);
+    assert.ok(((await response.json()) as { attemptId: string }).attemptId);
+    await drainAuthoring(failureLlm);
     const attempt = await query<{
       narration_style_id: string;
       status: string;
@@ -262,16 +285,23 @@ describe("structured narration route acceptance", () => {
       },
       body: JSON.stringify({ prompt: "短文の熱いラジオ実況" }),
     });
-    assert.equal(create.status, 200);
-    const createdDraft = (await create.json()) as {
-      draft: {
-        id: string;
-        style: { id: string; description: string; instruction?: string };
-        definition: { phases: Record<string, unknown>; voice: { register: string } };
-      };
+    assert.equal(create.status, 202);
+    const createdAttemptId = await acceptedAttemptId(create);
+    await drainAuthoring(llm);
+    const createdReview = await app.request(
+      `/api/narration-style-drafts/${createdAttemptId}`,
+      { headers: authHeaders },
+    );
+    assert.equal(createdReview.status, 200);
+    const createdDraft = (await createdReview.json()) as {
+      attemptId: string;
+      assetId: string;
+      candidate: { id: string; description: string; instruction?: string } | null;
+      definition: { phases: Record<string, unknown>; voice: { register: string } } | null;
     };
-    assert.equal(createdDraft.draft.definition.voice.register, "broadcast");
-    assert.deepEqual(Object.keys(createdDraft.draft.definition.phases), [
+    assert.ok(createdDraft.candidate);
+    assert.equal(createdDraft.definition?.voice.register, "broadcast");
+    assert.deepEqual(Object.keys(createdDraft.definition?.phases ?? {}), [
       "prologue",
       "action",
       "impact",
@@ -279,22 +309,22 @@ describe("structured narration route acceptance", () => {
       "judgment",
       "aftermath",
     ]);
-    assert.equal("instruction" in createdDraft.draft.style, false);
+    assert.equal("instruction" in createdDraft.candidate, false);
     assert.equal(
-      await narrationRepo.getNarrationStyle(createdDraft.draft.style.id),
+      await narrationRepo.getNarrationStyle(createdDraft.assetId),
       null,
     );
     const confirmed = await app.request(
-      `/api/narration-styles/${createdDraft.draft.id}/confirm`,
+      `/api/narration-styles/${createdDraft.attemptId}/confirm`,
       { method: "POST", headers: authHeaders },
     );
     assert.equal(confirmed.status, 200);
     const replay = await app.request(
-      `/api/narration-styles/${createdDraft.draft.id}/confirm`,
+      `/api/narration-styles/${createdDraft.attemptId}/confirm`,
       { method: "POST", headers: authHeaders },
     );
     assert.equal(replay.status, 200);
-    assert.equal(await generationCount(createdDraft.draft.style.id), 1);
+    assert.equal(await generationCount(createdDraft.assetId), 1);
 
     const upgrade = await app.request(
       "/api/narration-styles/narration-route-legacy/upgrade",
@@ -306,8 +336,9 @@ describe("structured narration route acceptance", () => {
         },
       },
     );
-    assert.equal(upgrade.status, 200);
-    const upgradeDraft = (await upgrade.json()) as { draft: { id: string } };
+    assert.equal(upgrade.status, 202);
+    const upgradeAttemptId = await acceptedAttemptId(upgrade);
+    await drainAuthoring(llm);
     assert.equal(
       (await narrationAssetRepo.getNarrationStyleCompatibility(
         "narration-route-legacy",
@@ -320,8 +351,21 @@ describe("structured narration route acceptance", () => {
       ),
       null,
     );
+    const listed = await app.request("/api/narration-styles", {
+      headers: authHeaders,
+    });
+    const listedBody = await listed.json() as {
+      styles: Array<{
+        id: string;
+        reviewState: string | null;
+        reviewAttemptId: string | null;
+      }>;
+    };
+    const marked = listedBody.styles.find((item) => item.id === "narration-route-legacy");
+    assert.equal(marked?.reviewState, "awaiting_acceptance");
+    assert.equal(marked?.reviewAttemptId, upgradeAttemptId);
     const upgraded = await app.request(
-      `/api/narration-styles/${upgradeDraft.draft.id}/confirm`,
+      `/api/narration-styles/${upgradeAttemptId}/confirm`,
       { method: "POST", headers: authHeaders },
     );
     assert.equal(upgraded.status, 200);

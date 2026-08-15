@@ -20,6 +20,17 @@ import {
   getCurrentAssetGeneration,
   type AssetGeneration,
 } from "./asset-generations.js";
+import {
+  finishFamilyAuthoringJob,
+  insertFamilyAuthoringJob,
+} from "./family-authoring-jobs.js";
+import { insertOwnerNotification } from "./owner-notifications.js";
+import {
+  isoTimestamp,
+  parseAuthoringAttemptBase,
+  projectAssetCompatibility,
+  type AuthoringAttemptRow,
+} from "./authoring-attempt-row.js";
 
 export type NarrationStyleAuthoringAttempt = {
   attemptId: string;
@@ -43,58 +54,16 @@ export type NarrationStyleAuthoringAttempt = {
   expiresAt: string;
 };
 
-type AttemptRow = {
-  attempt_id: string;
-  owner_user_id: string;
-  narration_style_id: string;
-  kind: string;
-  idempotency_key: string;
-  request_digest: string;
-  source_text: string | null;
-  source_digest: string;
-  expected_generation_id: string | null;
-  expected_content_digest: string | null;
-  status: string;
-  candidate_json: unknown | null;
-  candidate_digest: string | null;
-  assistant_message: string;
-  error_code: string | null;
-  result_generation_id: string | null;
-  created_at: string | Date;
-  updated_at: string | Date;
-  expires_at: string | Date;
-};
-
-function iso(value: string | Date): string {
-  return value instanceof Date ? value.toISOString() : value;
-}
+type AttemptRow = AuthoringAttemptRow & { narration_style_id: string };
 
 function parseAttempt(row: AttemptRow): NarrationStyleAuthoringAttempt {
-  const rawCandidate = typeof row.candidate_json === "string"
-    ? JSON.parse(row.candidate_json)
-    : row.candidate_json;
+  const base = parseAuthoringAttemptBase(row);
   return {
-    attemptId: row.attempt_id,
-    ownerUserId: row.owner_user_id,
+    ...base,
     narrationStyleId: row.narration_style_id,
-    kind: AssetAuthoringAttemptKindSchema.parse(row.kind),
-    idempotencyKey: row.idempotency_key,
-    requestDigest: row.request_digest,
-    sourceText: row.source_text,
-    sourceDigest: row.source_digest,
-    expectedGenerationId: row.expected_generation_id,
-    expectedContentDigest: row.expected_content_digest,
-    status: AssetAuthoringAttemptStatusSchema.parse(row.status),
-    candidate: rawCandidate == null
+    candidate: base.rawCandidate == null
       ? null
-      : NarrationGenerationEnvelopeV2Schema.parse(rawCandidate),
-    candidateDigest: row.candidate_digest,
-    assistantMessage: row.assistant_message,
-    errorCode: row.error_code,
-    resultGenerationId: row.result_generation_id,
-    createdAt: iso(row.created_at),
-    updatedAt: iso(row.updated_at),
-    expiresAt: iso(row.expires_at),
+      : NarrationGenerationEnvelopeV2Schema.parse(base.rawCandidate),
   };
 }
 
@@ -176,6 +145,19 @@ export async function beginNarrationStyleAuthoringAttempt(input: {
     if (input.kind === "revision" && !expected) {
       throw new Error("NARRATION_STYLE_GENERATION_MISSING");
     }
+    if (input.kind !== "create") {
+      const inflight = await connection.query<{ attempt_id: string }>(
+        `SELECT attempt_id FROM narration_style_authoring_attempts
+          WHERE narration_style_id = $1 AND owner_user_id = $2
+            AND status IN ('pending_structure', 'generating_structure',
+              'validating_structure', 'generating_description',
+              'validating_description', 'awaiting_owner_acceptance',
+              'committing')
+          LIMIT 1`,
+        [narrationStyleId, input.ownerUserId],
+      );
+      if (inflight.rows[0]) throw new Error("AUTHORING_ALREADY_IN_PROGRESS");
+    }
 
     const now = new Date();
     const createdAt = now.toISOString();
@@ -225,6 +207,12 @@ export async function beginNarrationStyleAuthoringAttempt(input: {
         [narrationStyleId, attemptId, createdAt],
       );
     }
+    await insertFamilyAuthoringJob(connection, "narration_style", {
+      attemptId,
+      ownerUserId: input.ownerUserId,
+      assetId: narrationStyleId,
+      createdAt,
+    });
     const attempt = await selectAttempt(connection, attemptId, input.ownerUserId);
     return { attempt: attempt!, replayed: false };
   });
@@ -238,13 +226,25 @@ export function getNarrationStyleAuthoringAttempt(
     selectAttempt(connection, attemptId, ownerUserId));
 }
 
+export async function getLatestNarrationStyleAuthoringAttemptForAsset(
+  narrationStyleId: string,
+  ownerUserId: string,
+): Promise<NarrationStyleAuthoringAttempt | null> {
+  const result = await query<AttemptRow>(
+    `SELECT * FROM narration_style_authoring_attempts
+      WHERE narration_style_id = $1 AND owner_user_id = $2
+      ORDER BY updated_at DESC LIMIT 1`,
+    [narrationStyleId, ownerUserId],
+  );
+  return result.rows[0] ? parseAttempt(result.rows[0]) : null;
+}
+
 export async function getLatestNarrationStyleAuthoringAttempt(
   ownerUserId: string,
 ): Promise<NarrationStyleAuthoringAttempt | null> {
   const result = await query<AttemptRow>(
     `SELECT * FROM narration_style_authoring_attempts
       WHERE owner_user_id = $1
-        AND status NOT IN ('succeeded', 'discarded', 'expired')
       ORDER BY updated_at DESC LIMIT 1`,
     [ownerUserId],
   );
@@ -282,6 +282,15 @@ export async function saveNarrationStyleAuthoringCandidate(input: {
         updatedAt,
       ],
     );
+    await insertOwnerNotification(connection, {
+      ownerUserId: input.ownerUserId,
+      kind: "authoring_ready",
+      attemptId: input.attemptId,
+      characterId: attempt.narrationStyleId,
+      attemptKind: attempt.kind,
+      createdAt: updatedAt,
+      assetType: "narration_style",
+    });
     return (await selectAttempt(connection, input.attemptId, input.ownerUserId))!;
   });
 }
@@ -317,6 +326,16 @@ export async function failNarrationStyleAuthoringAttempt(input: {
         [attempt.narrationStyleId, updatedAt, attempt.attemptId],
       );
     }
+    await insertOwnerNotification(connection, {
+      ownerUserId: input.ownerUserId,
+      kind: "authoring_failed",
+      attemptId: input.attemptId,
+      characterId: attempt.narrationStyleId,
+      attemptKind: attempt.kind,
+      createdAt: updatedAt,
+      assetType: "narration_style",
+    });
+    await finishFamilyAuthoringJob("narration_style", input.attemptId, "cancelled");
   });
 }
 
@@ -350,6 +369,7 @@ export async function discardNarrationStyleAuthoringAttempt(
         [attempt.narrationStyleId, updatedAt, attempt.attemptId],
       );
     }
+    await finishFamilyAuthoringJob("narration_style", attemptId, "cancelled");
     return true;
   });
 }
@@ -398,13 +418,22 @@ export async function activateNarrationStyleAuthoringAttempt(input: {
             ? JSON.parse(row.content_json)
             : row.content_json,
           contentDigest: row.content_digest,
-          createdAt: iso(row.created_at),
+          createdAt: isoTimestamp(row.created_at),
           },
         },
       };
     }
     if (attempt.status !== "awaiting_owner_acceptance" || !attempt.candidate) {
       throw new Error("AUTHORING_NOT_AWAITING_ACCEPTANCE");
+    }
+    const latest = await connection.query<{ attempt_id: string }>(
+      `SELECT attempt_id FROM narration_style_authoring_attempts
+        WHERE narration_style_id = $1 AND owner_user_id = $2
+        ORDER BY updated_at DESC LIMIT 1`,
+      [attempt.narrationStyleId, input.ownerUserId],
+    );
+    if (latest.rows[0] && latest.rows[0].attempt_id !== attempt.attemptId) {
+      throw new Error("AUTHORING_ATTEMPT_STALE");
     }
     if (Date.parse(attempt.expiresAt) <= Date.now()) {
       const expiredAt = new Date().toISOString();
@@ -553,41 +582,10 @@ export async function getNarrationStyleCompatibility(
     [narrationStyleId],
   );
   const current = await getCurrentAssetGeneration("narration-style", narrationStyleId);
-  if (!state.rows[0]) {
-    return AssetCompatibilitySchema.parse({
-      status: "unsupported",
-      schemaVersion: current?.schemaVersion ?? null,
-      currentGenerationId: current?.generationId ?? null,
-      reasonCode: "legacy_schema",
-    });
-  }
-  const row = state.rows[0];
-  if (row.compatibility_status === "ready" &&
-      (!current || current.schemaVersion !== 2 ||
-       current.generationId !== row.current_generation_id)) {
-    return AssetCompatibilitySchema.parse({
-      status: "unsupported",
-      schemaVersion: current?.schemaVersion ?? null,
-      currentGenerationId: current?.generationId ?? null,
-      reasonCode: "state_pointer_mismatch",
-    });
-  }
-  if (row.compatibility_status === "ready" && current) {
-    const reasonCode = readinessReason(current.content);
-    if (reasonCode) {
-      return AssetCompatibilitySchema.parse({
-        status: "unsupported",
-        schemaVersion: current.schemaVersion,
-        currentGenerationId: current.generationId,
-        reasonCode,
-      });
-    }
-  }
-  return AssetCompatibilitySchema.parse({
-    status: row.compatibility_status,
-    schemaVersion: current?.schemaVersion ?? null,
-    currentGenerationId: current?.generationId ?? row.current_generation_id,
-    reasonCode: row.reason_code,
+  return projectAssetCompatibility({
+    state: state.rows[0],
+    current,
+    readinessReason,
   });
 }
 
