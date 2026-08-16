@@ -1,10 +1,12 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import {
+  CharacterDefinitionGapFillV2Schema,
   applyCharacterDefinitionGapFillV2,
   checkCharacterDefinitionV2,
   listCharacterDefinitionGapsV2,
   normalizeCharacterDefinitionV2,
+  parseCharacterDefinitionGapFillV2,
   restoreAuthoritativeCharacterDefinitionV2,
 } from "./character-definition-check.js";
 import { defaultParameters, type CharacterSheet } from "./character.js";
@@ -157,5 +159,113 @@ describe("character definition upgrade checks", () => {
     assert.equal(result.definition.appearance.details[0]?.id, "detail-cloak");
     assert.equal(result.definition.combat.parameters.atk, 12);
     assert.equal(result.definition.capabilities.skills[0]?.name, "火花");
+  });
+
+  it("accepts a natural string-description fill the JSON schema can emit", () => {
+    const base = legacyCharacterSheetToDefinitionV2(legacySheet());
+    const rejected = CharacterDefinitionGapFillV2Schema.safeParse({
+      appearanceDetails: [{
+        id: "detail-cloak",
+        region: "clothing",
+        description: "赤い外套",
+      }],
+      speech: { register: "丁寧語", cadence: "短く区切る" },
+      actionNorms: [{
+        id: "ask-first",
+        statement: "まず相手の動きを見る",
+        force: "preference",
+        selfAwareness: "aware",
+      }],
+    });
+    assert.equal(rejected.success, false);
+
+    const fill = parseCharacterDefinitionGapFillV2({
+      profileBackground: [{
+        id: "background-origin",
+        kind: "origin",
+        summary: "火を守る旅",
+        description: "火を守る旅人として各地を歩く。",
+        selfAwareness: "aware",
+      }],
+      appearanceDetails: [{
+        id: "detail-cloak",
+        region: "clothing",
+        description: "赤い外套",
+      }],
+      psycheCoreNeeds: [{
+        id: "need-protect",
+        description: "仲間を守りたい",
+        selfAwareness: "partial",
+      }],
+      speech: { register: "落ち着いた丁寧語", cadence: "短く区切る" },
+      relationshipSeeds: [{
+        id: "rel-rival",
+        role: "rival",
+        relationKinds: ["rival"],
+        historySummary: "",
+        defaultAddress: "",
+        selfAwareness: "aware",
+        priority: 10,
+      }],
+      actionNorms: [{
+        id: "ask-first",
+        statement: "まず相手の動きを見る",
+        force: "preference",
+        selfAwareness: "aware",
+      }],
+      expressionNotes: null,
+    });
+    const filled = applyCharacterDefinitionGapFillV2(
+      base,
+      fill,
+      "upgrade_description",
+    );
+    assert.equal(filled.appearance.details[0]?.description.text, "赤い外套");
+    assert.equal(filled.speechPolicy.register, "落ち着いた丁寧語");
+    assert.equal(filled.actionNorms[0]?.response.statement, "まず相手の動きを見る");
+    assert.equal(filled.actionNorms[0]?.response.disposition, "prefer");
+    assert.equal(filled.relationshipSeeds[0]?.target.kind, "role");
+    assert.equal(filled.profileBackground[0]?.description.consumerTags.length > 0, true);
+    assert.deepEqual(
+      checkCharacterDefinitionV2(filled, {
+        base,
+        sourceKind: "upgrade_description",
+      }),
+      [],
+    );
+  });
+
+  it("coerces mixed or incomplete fill objects instead of demanding internals", () => {
+    const fill = parseCharacterDefinitionGapFillV2({
+      appearanceDetails: [{
+        id: "detail-cloak",
+        region: "clothing",
+        description: "赤い外套",
+      }],
+      speechPolicy: { register: "丁寧語" },
+      actionNorms: [{
+        id: "duplicate",
+        statement: "待つ",
+        force: "constraint",
+        selfAwareness: "aware",
+      }, {
+        id: "duplicate",
+        response: { statement: "聞いてから動く" },
+        force: "preference",
+      }],
+    });
+    const base = legacyCharacterSheetToDefinitionV2(legacySheet());
+    const filled = applyCharacterDefinitionGapFillV2(
+      base,
+      fill,
+      "upgrade_description",
+    );
+    assert.equal(filled.appearance.details[0]?.description.text, "赤い外套");
+    assert.equal(filled.speechPolicy.register, "丁寧語");
+    assert.equal(filled.speechPolicy.cadence, "丁寧語");
+    assert.equal(filled.actionNorms.length, 2);
+    assert.notEqual(filled.actionNorms[0]?.id, filled.actionNorms[1]?.id);
+    assert.equal(filled.actionNorms[0]?.response.disposition, "allow_only");
+    assert.equal(filled.actionNorms[1]?.response.statement, "聞いてから動く");
   });
 });

@@ -5,6 +5,22 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 
 ## [Unreleased]
 
+## [0.20.1] - 2026-08-16
+
+### Fixed
+
+- Stops asking the model for the internal character-definition object during
+  create, revision, and old-character upgrade. Fill now uses a small
+  required-and-nullable schema with string descriptions, then the server
+  supplies consumer tags, clause defaults, and force-coupled responses.
+- Accepts mixed or incomplete fill objects instead of failing the job when a
+  description is a string or an action norm omits `response`.
+
+### Operations
+
+- No database migration. Application rollback returns to v0.20.0, which remains
+  compatible with the existing authoring-attempt and job tables.
+
 ## [0.20.0] - 2026-08-15
 
 ### Added
