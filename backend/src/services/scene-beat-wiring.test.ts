@@ -16,7 +16,7 @@ process.env.AUTH_PROVIDER = "legacy";
 process.env.DATABASE_PATH = join(temporaryDirectory, "scene-beat.db");
 
 const { closeDatabase, query } = await import("../db.js");
-const { completeAdvancePhases, startBattle } = await import("./battle-service.js");
+const { advanceTurn, completeAdvancePhases, startBattle } = await import("./battle-service.js");
 const { saveBattleWithNarrationOutbox } = await import("../repositories/battles.js");
 const characterRepo = await import("../repositories/characters.js");
 const { MockLlmProvider } = await import("../llm/mock.js");
@@ -29,7 +29,12 @@ after(async () => {
   rmSync(temporaryDirectory, { recursive: true, force: true });
 });
 
-function sheet(id: string, ownerUserId: string, displayName: string): CharacterSheet {
+function sheet(
+  id: string,
+  ownerUserId: string,
+  displayName: string,
+  hp = 100,
+): CharacterSheet {
   const now = "2026-08-16T00:00:00.000Z";
   return {
     id,
@@ -40,7 +45,7 @@ function sheet(id: string, ownerUserId: string, displayName: string): CharacterS
     updatedAt: now,
     appearance: { summary: displayName, visualPrompt: "test" },
     traits: [],
-    parameters: defaultParameters(),
+    parameters: defaultParameters({ hp, maxHp: hp }),
     skills: [],
     weapon: null,
     armor: null,
@@ -123,5 +128,116 @@ describe("scene beat narration deferral", () => {
       sceneBeat?: { k?: number };
     };
     assert.equal(state.sceneBeat?.k, 3);
+  });
+
+  it("advances past turn 5 on a new scene-beat battle", async () => {
+    const now = "2026-08-16T00:00:00.000Z";
+    await query(
+      `INSERT INTO users (id, username, password_hash, created_at)
+       VALUES ($1, $2, $3, $4)`,
+      ["beat-adv-owner", "beat-adv-owner", "hash", now],
+    );
+    const sideA = sheet("beat-adv-a", "beat-adv-owner", "甲");
+    const sideB = sheet("beat-adv-b", "beat-adv-owner", "乙");
+    for (const character of [sideA, sideB]) {
+      await characterRepo.saveSheet(character);
+    }
+    await ensureSystemNarrationStyles();
+    const llm = new MockLlmProvider();
+    const created = await startBattle({
+      userId: "beat-adv-owner",
+      battleId: "btl_scene_beat_advance",
+      myCharacterId: sideA.id,
+      opponentCharacterId: sideB.id,
+      battlefieldMode: "random",
+      llm,
+    });
+    let battle = created;
+    for (let step = 1; step <= 7; step += 1) {
+      battle = await advanceTurn({
+        userId: "beat-adv-owner",
+        battleId: created.id,
+        operationId: `op-beat-${step}`,
+        llm,
+      });
+    }
+    assert.ok(
+      battle.turn >= 5 || battle.status === "finished",
+      `turn=${battle.turn} status=${battle.status}`,
+    );
+  });
+
+  it("saves the first skip turn after a beat-close semantic patch", async () => {
+    const now = "2026-08-16T00:00:00.000Z";
+    await query(
+      `INSERT INTO users (id, username, password_hash, created_at)
+       VALUES ($1, $2, $3, $4)`,
+      ["beat-patch-owner", "beat-patch-owner", "hash", now],
+    );
+    const sideA = sheet("beat-patch-a", "beat-patch-owner", "甲", 10_000);
+    const sideB = sheet("beat-patch-b", "beat-patch-owner", "乙", 10_000);
+    for (const character of [sideA, sideB]) {
+      await characterRepo.saveSheet(character);
+    }
+    await ensureSystemNarrationStyles();
+    const llm = new MockLlmProvider();
+    llm.reconcileTurnSemanticState = async (input) => ({
+      patch: {
+        baseRevision: input.before.revision,
+        turn: input.turn,
+        sourceEventIds: input.events.flatMap((event) => event.id ? [event.id] : []),
+        operations: [{
+          op: "replace",
+          path: "/scene/summary",
+          value: `閉じた場面 ${input.turn}`,
+        }],
+      },
+      worldPatchStatus: "valid",
+      sensoryEvidence: [],
+      sensoryEvidenceStatus: "valid",
+    });
+    const created = await startBattle({
+      userId: "beat-patch-owner",
+      battleId: "btl_scene_beat_patch_skip",
+      myCharacterId: sideA.id,
+      opponentCharacterId: sideB.id,
+      battlefieldMode: "random",
+      llm,
+    });
+    let battle = created;
+    for (let step = 1; step <= 5; step += 1) {
+      battle = await advanceTurn({
+        userId: "beat-patch-owner",
+        battleId: created.id,
+        operationId: `op-patch-${step}`,
+        llm,
+      });
+    }
+    assert.ok(
+      battle.turn >= 4 || battle.status === "finished",
+      `turn=${battle.turn} status=${battle.status}`,
+    );
+    const stored = await query<{ state_json: string }>(
+      `SELECT state_json FROM battles WHERE id = $1`,
+      [created.id],
+    );
+    const state = JSON.parse(stored.rows[0]?.state_json ?? "{}") as {
+      turnRecords?: Array<{
+        turn: number;
+        canonicalTransition?: { semantic?: { status?: string } };
+      }>;
+    };
+    const records = state.turnRecords ?? [];
+    assert.ok(
+      records.some((record) =>
+        record.canonicalTransition?.semantic?.status === "applied"
+      ),
+    );
+    assert.ok(
+      records.some((record) =>
+        record.turn >= 4 &&
+        record.canonicalTransition?.semantic?.status === "skipped"
+      ),
+    );
   });
 });

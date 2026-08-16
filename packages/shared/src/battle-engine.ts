@@ -489,8 +489,18 @@ export function buildBattleTurnRecord(input: {
     semanticOperationIndexes: [],
     worldOperationIndexes: [],
   };
+  const currentSemanticTransition =
+    input.after.latestSemanticTransition?.turn === input.after.turn
+      ? input.after.latestSemanticTransition
+      : undefined;
+  const currentWorldTransition =
+    input.after.latestWorldTransition?.turn === input.after.turn
+      ? input.after.latestWorldTransition
+      : undefined;
+  const semanticOperations = currentSemanticTransition?.patch?.operations ?? [];
+  const worldOperations = currentWorldTransition?.transition?.operations ?? [];
   const environmentReceipts = [
-    ...((input.after.latestSemanticTransition?.patch?.operations.length ?? 0) > 0
+    ...(semanticOperations.length > 0
       ? [{
           schemaVersion: 1 as const,
           receiptId: `${input.after.id}:turn:${input.after.turn}:environment:semantic`,
@@ -501,12 +511,13 @@ export function buildBattleTurnRecord(input: {
           },
           eventIds: [],
           parameterChanges: { a: {}, b: {} },
-          semanticOperationIndexes: (input.after.latestSemanticTransition?.patch
-            ?.operations ?? []).map((_operation, index) => index),
+          semanticOperationIndexes: semanticOperations.map(
+            (_operation, index) => index,
+          ),
           worldOperationIndexes: [],
         }]
       : []),
-    ...((input.after.latestWorldTransition?.transition?.operations.length ?? 0) > 0
+    ...(worldOperations.length > 0
       ? [{
           schemaVersion: 1 as const,
           receiptId: `${input.after.id}:turn:${input.after.turn}:environment:world`,
@@ -518,8 +529,9 @@ export function buildBattleTurnRecord(input: {
           eventIds: [],
           parameterChanges: { a: {}, b: {} },
           semanticOperationIndexes: [],
-          worldOperationIndexes: (input.after.latestWorldTransition?.transition
-            ?.operations ?? []).map((_operation, index) => index),
+          worldOperationIndexes: worldOperations.map(
+            (_operation, index) => index,
+          ),
         }]
       : []),
   ];
@@ -528,12 +540,12 @@ export function buildBattleTurnRecord(input: {
     ...(input.after.latestTemporalResolution
       ? { temporalResolution: input.after.latestTemporalResolution }
       : {}),
-    ...(input.after.latestWorldTransition?.turn === input.after.turn
+    ...(currentWorldTransition
       ? {
           worldImpact: {
-            status: input.after.latestWorldTransition.status,
+            status: currentWorldTransition.status,
             operationKinds:
-              input.after.latestWorldTransition.transition?.operations.map(
+              currentWorldTransition.transition?.operations.map(
                 (operation) => operation.op,
               ) ?? [],
           },
@@ -549,15 +561,14 @@ export function buildBattleTurnRecord(input: {
       ...environmentReceipts,
     ],
     ...(
-      input.after.latestSemanticTransition?.turn === input.after.turn ||
-        input.after.latestWorldTransition?.turn === input.after.turn
+      currentSemanticTransition || currentWorldTransition
         ? {
             canonicalTransition: {
-              ...(input.after.latestSemanticTransition?.turn === input.after.turn
-                ? { semantic: input.after.latestSemanticTransition }
+              ...(currentSemanticTransition
+                ? { semantic: currentSemanticTransition }
                 : {}),
-              ...(input.after.latestWorldTransition?.turn === input.after.turn
-                ? { world: input.after.latestWorldTransition }
+              ...(currentWorldTransition
+                ? { world: currentWorldTransition }
                 : {}),
             },
           }
