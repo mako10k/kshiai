@@ -30,3 +30,4 @@ This directory contains durable records of architectural and product-rule decisi
 | [0014](0014-queue-asset-authoring.md) | Accepted | Queue asset authoring; accept on dedicated review screens |
 | [0015](0015-e2e-operator-session-reentry.md) | Accepted | Operator re-enters the real E2E identity for GUI verification |
 | [0016](0016-scene-beats-batched-narration.md) | Accepted | Scene beats batch narration and reserved action sequences |
+| [0017](0017-public-turn-intra-turn-beats.md) | Accepted | Public clock is twelve turns; three beats sit inside each turn |

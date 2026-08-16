@@ -17,7 +17,8 @@ describe("battle screen model", () => {
     });
     assert.equal(blocks.length, 1);
     assert.equal(blocks[0]?.key, "r1");
-    assert.equal(blocks[0]?.heading, "ターン 3");
+    assert.equal(blocks[0]?.heading, "戦闘");
+    assert.equal(blocks[0]?.heading.includes("ターン"), false);
     assert.equal(blocks[0]?.narrative?.narrator[0], "新しく届いた語り");
   });
 

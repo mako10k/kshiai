@@ -3,22 +3,56 @@ import type { CharacterActionIntent } from "./battle.js";
 export const DEFAULT_SCENE_BEAT_K = 3;
 export const SCENE_BEAT_HP_DELTA_RATIO = 0.15;
 
+export type SceneBeatClock = "micro-turn" | "public-turn";
+
 export type SceneBeatState = {
   schemaVersion: 1;
   k: number;
   receiptIds: string[];
   reservedA: CharacterActionIntent[];
   reservedB: CharacterActionIntent[];
+  /** Absent or micro-turn: ADR-0016 increment. public-turn: ADR-0017. */
+  clock?: SceneBeatClock;
 };
 
-export function openSceneBeat(k = DEFAULT_SCENE_BEAT_K): SceneBeatState {
+export function openSceneBeat(
+  k = DEFAULT_SCENE_BEAT_K,
+  clock: SceneBeatClock | undefined = "public-turn",
+): SceneBeatState {
   return {
     schemaVersion: 1,
     k,
     receiptIds: [],
     reservedA: [],
     reservedB: [],
+    ...(clock ? { clock } : {}),
   };
+}
+
+export function usesPublicTurnClock(state: {
+  sceneBeat?: SceneBeatState;
+}): boolean {
+  return state.sceneBeat?.clock === "public-turn";
+}
+
+/** Next public combat turn. Continuing intra-turn beats keep the same number. */
+export function nextPublicCombatTurn(state: {
+  turn: number;
+  sceneBeat?: SceneBeatState;
+}): number {
+  if (!usesPublicTurnClock(state)) return state.turn + 1;
+  if ((state.sceneBeat?.receiptIds.length ?? 0) > 0) return state.turn;
+  return state.turn + 1;
+}
+
+export function nextCombatTick(state: { combatTick?: number }): number {
+  return (state.combatTick ?? 0) + 1;
+}
+
+export function publicTurnBeatIndex(state: {
+  sceneBeat?: SceneBeatState;
+}): number {
+  return (state.sceneBeat?.receiptIds.length ?? 0) + 1;
 }
 
 export function sceneBeatK(state: { sceneBeat?: SceneBeatState }): number {

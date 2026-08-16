@@ -3,12 +3,16 @@ import { describe, it } from "node:test";
 import {
   DEFAULT_SCENE_BEAT_K,
   hpSwingClosesSceneBeat,
+  nextCombatTick,
+  nextPublicCombatTurn,
   nextReservedAction,
   openSceneBeat,
+  publicTurnBeatIndex,
   recordSceneBeatReceipt,
   sceneBeatK,
   sceneBeatsEnabled,
   shouldCloseSceneBeat,
+  usesPublicTurnClock,
 } from "./scene-beat.js";
 
 describe("scene beats", () => {
@@ -17,6 +21,25 @@ describe("scene beats", () => {
     assert.equal(sceneBeatsEnabled({}), false);
     assert.equal(sceneBeatsEnabled({ sceneBeat: openSceneBeat(3) }), true);
     assert.equal(DEFAULT_SCENE_BEAT_K, 3);
+    assert.equal(usesPublicTurnClock({ sceneBeat: openSceneBeat(3) }), true);
+    assert.equal(usesPublicTurnClock({
+      sceneBeat: { ...openSceneBeat(3), clock: undefined },
+    }), false);
+  });
+
+  it("holds the public turn across intra-turn beats and increments on a new turn", () => {
+    const open = { turn: 1, combatTick: 1, sceneBeat: recordSceneBeatReceipt(openSceneBeat(3), "r1") };
+    assert.equal(nextPublicCombatTurn(open), 1);
+    assert.equal(publicTurnBeatIndex(open), 2);
+    assert.equal(nextCombatTick(open), 2);
+    assert.equal(nextPublicCombatTurn({
+      turn: 1,
+      sceneBeat: openSceneBeat(3),
+    }), 2);
+    assert.equal(nextPublicCombatTurn({
+      turn: 4,
+      sceneBeat: { ...openSceneBeat(3), clock: undefined },
+    }), 5);
   });
 
   it("closes on K receipts, terminal, scene delta, or infeasible reservation", () => {

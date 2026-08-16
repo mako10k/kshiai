@@ -162,9 +162,74 @@ describe("scene beat narration deferral", () => {
       });
     }
     assert.ok(
-      battle.turn >= 5 || battle.status === "finished",
+      battle.turn >= 2 || battle.status === "finished",
       `turn=${battle.turn} status=${battle.status}`,
     );
+  });
+
+  it("holds the public turn across the first three combat beats", async () => {
+    const now = "2026-08-16T00:00:00.000Z";
+    await query(
+      `INSERT INTO users (id, username, password_hash, created_at)
+       VALUES ($1, $2, $3, $4)`,
+      ["beat-clock-owner", "beat-clock-owner", "hash", now],
+    );
+    const sideA = sheet("beat-clock-a", "beat-clock-owner", "甲", 10_000);
+    const sideB = sheet("beat-clock-b", "beat-clock-owner", "乙", 10_000);
+    for (const character of [sideA, sideB]) {
+      await characterRepo.saveSheet(character);
+    }
+    await ensureSystemNarrationStyles();
+    const llm = new MockLlmProvider();
+    const created = await startBattle({
+      userId: "beat-clock-owner",
+      battleId: "btl_scene_beat_clock",
+      myCharacterId: sideA.id,
+      opponentCharacterId: sideB.id,
+      battlefieldMode: "random",
+      llm,
+    });
+    let battle = created;
+    while (battle.prologuePending && battle.status === "active") {
+      battle = await advanceTurn({
+        userId: "beat-clock-owner",
+        battleId: created.id,
+        operationId: `op-clock-pro-${battle.turn}`,
+        llm,
+      });
+    }
+    const first = await advanceTurn({
+      userId: "beat-clock-owner",
+      battleId: created.id,
+      operationId: "op-clock-1",
+      llm,
+    });
+    const second = await advanceTurn({
+      userId: "beat-clock-owner",
+      battleId: created.id,
+      operationId: "op-clock-2",
+      llm,
+    });
+    const third = await advanceTurn({
+      userId: "beat-clock-owner",
+      battleId: created.id,
+      operationId: "op-clock-3",
+      llm,
+    });
+    const fourth = await advanceTurn({
+      userId: "beat-clock-owner",
+      battleId: created.id,
+      operationId: "op-clock-4",
+      llm,
+    });
+    assert.equal(first.turn, 1);
+    assert.equal(first.combatBeat, 1);
+    assert.equal(second.turn, 1);
+    assert.equal(second.combatBeat, 2);
+    assert.equal(third.turn, 1);
+    assert.equal(third.combatBeat, undefined);
+    assert.equal(fourth.turn, 2);
+    assert.equal(fourth.combatBeat, 1);
   });
 
   it("saves the first skip turn after a beat-close semantic patch", async () => {
@@ -214,7 +279,7 @@ describe("scene beat narration deferral", () => {
       });
     }
     assert.ok(
-      battle.turn >= 4 || battle.status === "finished",
+      battle.turn >= 2 || battle.status === "finished",
       `turn=${battle.turn} status=${battle.status}`,
     );
     const stored = await query<{ state_json: string }>(
@@ -235,7 +300,7 @@ describe("scene beat narration deferral", () => {
     );
     assert.ok(
       records.some((record) =>
-        record.turn >= 4 &&
+        record.turn >= 2 &&
         record.canonicalTransition?.semantic?.status === "skipped"
       ),
     );
