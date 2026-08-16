@@ -106,6 +106,7 @@ export async function saveBattleWithNarrationOutbox(
     const receiptIds = new Set(state.advanceOperation?.receiptIds ?? []);
     for (const receipt of state.phaseReceipts ?? []) {
       if (!receiptIds.has(receipt.id)) continue;
+      if (receipt.narrationDeferred) continue;
       if (!receipt.narrationInput || !receipt.narrationInputDigest) {
         throw new Error("NARRATION_INPUT_MISSING");
       }

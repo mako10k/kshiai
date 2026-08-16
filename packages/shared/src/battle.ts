@@ -1969,6 +1969,34 @@ export const BattleStateSchema = z.object({
   /** Character-authored intent for the next turn; consumed once by the engine. */
   plannedActionA: CharacterActionIntentSchema.optional(),
   plannedActionB: CharacterActionIntentSchema.optional(),
+  /**
+   * Open scene beat for batched narration and reserved actions (ADR-0016).
+   * Missing means legacy one-combat-receipt narration.
+   */
+  sceneBeat: z.custom<{
+    schemaVersion: 1;
+    k: number;
+    receiptIds: string[];
+    reservedA: CharacterActionIntent[];
+    reservedB: CharacterActionIntent[];
+  }>((value) => {
+    if (value === undefined) return true;
+    if (!value || typeof value !== "object") return false;
+    const beat = value as {
+      schemaVersion?: unknown;
+      k?: unknown;
+      receiptIds?: unknown;
+      reservedA?: unknown;
+      reservedB?: unknown;
+    };
+    return beat.schemaVersion === 1 &&
+      typeof beat.k === "number" &&
+      beat.k >= 1 &&
+      beat.k <= 8 &&
+      Array.isArray(beat.receiptIds) &&
+      Array.isArray(beat.reservedA) &&
+      Array.isArray(beat.reservedB);
+  }).optional(),
   /** Structured engine transitions; narrative log is presentation only. */
   turnRecords: z.array(BattleTurnRecordSchema).default([]),
   pendingEffects: z.custom<PendingBattleEffect[]>((value) =>
@@ -2126,6 +2154,8 @@ export const BattleStateSchema = z.object({
       request: z.record(z.string(), z.unknown()),
     }).strict()]).optional(),
     narrationInputDigest: z.string().regex(/^[a-f0-9]{64}$/).optional(),
+    /** Combat receipt waits for scene-beat close before a narration job. */
+    narrationDeferred: z.boolean().optional(),
   }).strict()).max(100).optional(),
   /** Stable request identity persisted through intermediate bucket checkpoints. */
   advanceOperation: z.object({

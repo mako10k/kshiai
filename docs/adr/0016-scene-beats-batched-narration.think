@@ -1,0 +1,147 @@
+ADR-0016
+title: Scene beats batch narration and reserved action sequences
+status: Accepted
+date: 2026-08-16
+decision_owner: Product owner
+related:
+  - ADR-0001
+  - ADR-0006
+  - ADR-0007
+  - docs/current-battle-pipeline.md
+  - docs/battle-pacing-candidate-12-v2.md
+authority: this file is the causal record; 0016-scene-beats-batched-narration.md is the projection
+
+PROBLEM P1
+  Players see little scene movement. One combat turn resolves about one
+  action per side, then the narrator describes that small delta. The
+  物語 pane therefore ticks in small, similar beats even when
+  candidate-12-v2 already shortens the fight and raises damage.
+
+EVIDENCE E1
+  Production pacing is candidate-12-v2: turnLimit 12, damage 1.4.
+  That changes how fast HP ends, not how far the world or positions
+  move in one public story block.
+
+EVIDENCE E2
+  A normal combat advance already calls several lightweight providers:
+  later-actor decideCharacterAction, semantic/world reconcile,
+  expression agents A and B, then a separate narration job.
+  Prologue and aftermath add more. Doubling combat turns would
+  roughly double those calls.
+
+EVIDENCE E3
+  ADR-0006 binds one public narration snapshot to one committed phase
+  receipt. Combat receipts are one-per-combat-turn. The UI renders
+  one 物語 block per receipt.
+
+EVIDENCE E4
+  Expression already proposes a reserved nextAction consumed on a
+  later turn. The later actor may still be asked again when the
+  first bucket has new facts. There is no reserved sequence of
+  length greater than one.
+
+CAUSE C1
+  Scene motion is limited by public beat size, not only by per-action
+  coefficient size. The story cannot show a burst of movement unless
+  several committed micro-turns are allowed to accumulate before
+  narration and the next agent call.
+
+REJECTED O1: only raise per-action damage or scene coefficients
+  Makes hits larger. Does not create more object, position, or
+  causal steps inside one story block.
+
+REJECTED O2: raise turnLimit and keep 1:1 narration plus agents
+  More motion, but LLM cost and latency scale with turn count.
+  Violates the "do not explode provider calls" driver.
+
+REJECTED O3: let the narrator invent larger movement than the engine
+  committed. Rejected by ADR-0006 and ADR-0009: prose has no
+  mechanical authority.
+
+REJECTED O4: true simultaneous multi-action in one bucket
+  Conflicts with ADR-0001 sequential cause-and-observation order.
+
+DECISION O5: scene beats
+  Keep sequential micro-turns as the mechanical unit. Group them
+  into a scene beat for agent expression and narration. A beat
+  consumes a short reserved action sequence. Close the beat on a
+  bounded count, a deterministic world/semantic delta, or a
+  terminal event. One lightweight narration job describes the
+  whole closed beat.
+
+OWNER_ACCEPTANCE
+  Product owner directed merge of this ADR with the log-container
+  fix on 2026-08-16 after the Proposed text was presented, and
+  ordered implementation as a follow-up branch.
+
+ACCEPTANCE
+  ADR-0016 revision dated 2026-08-16 is Accepted. Selected option
+  is O5. Rules R1 through R11 are in force.
+
+RULES
+  R1. Micro-turn remains the engine unit. ADR-0001 order, bucket
+      commits, and receipts stay per micro-turn. Existing battles
+      keep one narration per combat receipt.
+  R2. A scene beat is a consecutive run of combat micro-turns in
+      one battle. Prologue, judgment, and aftermath stay their
+      own beats.
+  R3. A beat closes on the first of: K committed combat
+      micro-turns (first slice K=3), a deterministic scene-delta
+      threshold, KO/terminal, or infeasible reserved action.
+      K is frozen on the battle with the pacing policy.
+  R4. Expression agents run at beat open (or after close, for
+      the next beat) and may reserve up to K next actions per
+      side. The engine consumes that sequence across micro-turns
+      without another expression call while the beat is open.
+  R5. decideCharacterAction is skipped when the reserved action
+      for that side is still feasible. It is called only when
+      the reservation is empty or the server rejects it.
+  R6. Semantic/world LLM reconcile runs once when the beat
+      closes. Intermediate micro-turns apply only deterministic
+      engine and already-accepted world transitions. A later
+      actor in the same micro-turn still sees committed earlier
+      facts from that micro-turn.
+  R7. Narration job creation moves from every combat receipt to
+      beat close. The job snapshot includes every micro-turn
+      receipt in the beat, in order. Public 物語 shows one
+      block per beat, not per micro-turn.
+  R8. Observability and /internal/observations still expose
+      every micro-turn receipt and pipeline DAG. Beats do not
+      hide mechanics.
+  R9. First slice must not raise the per-battle lightweight
+      provider count above the current 12-turn mean. Target is
+      at most one expression pair, one world reconcile, and one
+      narration per beat, plus decideCharacterAction only on
+      reservation miss.
+  R10. Auto-advance HTTP may still be one micro-turn per call.
+       Beat close, not HTTP grouping, creates the narration job.
+       A later slice may resolve a whole remaining beat inside
+       one advance if lease and timeout allow.
+  R11. Environment proposeHappening and referee stay at their
+       current cadence. This ADR does not add engine-tier calls.
+
+CONSEQUENCES
+  + A story block can cover several committed movements.
+  + Reserved sequences give "several actions at once" without
+    simultaneous buckets.
+  + Provider calls grow with beats, not micro-turns.
+  - Open beats delay public prose until close.
+  - Stale reserved actions need a cheap feasibility check.
+  - ADR-0006's one-combat-receipt-one-narration grouping is
+    amended for new battles only.
+
+COMPATIBILITY
+  Battles created before this ADR keep 1:1 combat narration.
+  New battles bind beat K and the beat-close rule at creation.
+  No database migration if beat state fits existing receipts
+  plus battle-scoped JSON. If a new table is required, it is
+  additive and named in the implementation commit.
+
+VERIFICATION after acceptance
+  - A three-micro-turn beat with feasible reservations makes
+    one narration job and at most one expression pair.
+  - A KO on micro-turn 1 closes the beat immediately.
+  - Public 物語 has one block per beat; receipts still list
+    each micro-turn.
+  - Provider ledger counts do not grow linearly with K.
+  - Old battles still narrate each combat receipt.

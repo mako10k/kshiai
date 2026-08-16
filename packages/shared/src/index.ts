@@ -10,6 +10,7 @@ export * from "./narrative.js";
 export * from "./battle-stream.js";
 export * from "./battle-engine.js";
 export * from "./battle-pacing.js";
+export * from "./scene-beat.js";
 export * from "./battle-pacing-observe.js";
 export * from "./action-feasibility.js";
 export * from "./battle-causality.js";

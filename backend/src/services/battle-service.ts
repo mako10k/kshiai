@@ -36,6 +36,14 @@ import {
   buildServerOnlyReserveCues,
   createBattleState,
   LOCAL_TWELVE_TURN_PACING_CANDIDATE,
+  DEFAULT_SCENE_BEAT_K,
+  hpSwingClosesSceneBeat,
+  nextReservedAction,
+  openSceneBeat,
+  recordSceneBeatReceipt,
+  sceneBeatK,
+  sceneBeatsEnabled,
+  shouldCloseSceneBeat,
   createCausalTurnExecution,
   acceptCausalExecutionDecision,
   commitCausalExecutionBucket,
@@ -306,13 +314,7 @@ export function toBattlePublic(
         : []
     ),
     log: state.log,
-    receipts: (state.phaseReceipts ?? []).map((receipt) => ({
-      turnReceiptId: receipt.id,
-      sequence: receipt.sequence,
-      phase: receipt.phase,
-      combatTurn: receipt.combatTurn,
-      stateRevision: receipt.toRevision,
-    })),
+    receipts: publicPhaseReceipts(state.phaseReceipts),
     availableActions: [],
     winnerSide: state.winnerSide,
     finishReason: state.finishReason,
@@ -770,6 +772,10 @@ export async function startBattle(input: {
     priorMatchSummary,
     encounterContext,
   });
+  state = {
+    ...state,
+    sceneBeat: openSceneBeat(DEFAULT_SCENE_BEAT_K),
+  };
 
   const assetBoundAt = new Date().toISOString();
   const mineSnapshot = toBattleCharacterSnapshot(mine);
@@ -3221,6 +3227,7 @@ export async function reconcileSemanticState(input: {
   environmentBeatDue?: boolean;
   environmentProposal?: EnvironmentProcessProposal | null;
   dramaPhase?: "opening" | "rising" | "climax";
+  skipProvider?: boolean;
 }): Promise<{
   state: BattleState;
   patch: TurnSemanticPatch | null;
@@ -3275,6 +3282,24 @@ export async function reconcileSemanticState(input: {
     baseParameters: input.resolvedState.sideB.baseParameters,
   });
   const semanticBefore = input.stateBeforeTurn.semanticState;
+  if (input.skipProvider) {
+    return {
+      state: input.resolvedState,
+      patch: null,
+      status: "skipped",
+      mechanicalEvidence: input.mechanicalEvidence,
+      mechanicalEvidenceStatus: "unavailable",
+      sensoryEvidence: [],
+      sensoryEvidenceStatus: "unavailable",
+      quantizedMechanicalEvidence: [],
+      reserveEvidenceA,
+      reserveEvidenceB,
+      ...environmentOutcome({
+        status: "skipped",
+        reason: "no_canonical_change",
+      }),
+    };
+  }
   if (!semanticBefore) {
     return {
       state: input.resolvedState,
@@ -4697,6 +4722,20 @@ async function advanceTurnWithLease(input: {
   const hpAfterB = next.sideB.parameters.hp ?? 0;
   const maxHpA = next.sideA.parameters.maxHp ?? 100;
   const maxHpB = next.sideB.parameters.maxHp ?? 100;
+  const closeSceneBeat = !sceneBeatsEnabled(next) || shouldCloseSceneBeat({
+    beat: next.sceneBeat ?? openSceneBeat(1),
+    nextReceiptCount: (next.sceneBeat?.receiptIds.length ?? 0) + 1,
+    terminal: Boolean(next.aftermathPending || next.status === "finished"),
+    sceneDelta: hpSwingClosesSceneBeat({
+      hpBeforeA,
+      hpBeforeB,
+      hpAfterA,
+      hpAfterB,
+      maxHpA,
+      maxHpB,
+    }),
+  });
+  const stateBeforeSceneBeat = next;
 
   // Observation only — does not alter combat outcomes
   next = {
@@ -4733,6 +4772,7 @@ async function advanceTurnWithLease(input: {
     environmentBeatDue,
     environmentProposal,
     dramaPhase,
+    skipProvider: !closeSceneBeat,
   });
   next = semanticTurn.state;
   events = [...events, ...semanticTurn.environmentEvents];
@@ -4765,20 +4805,37 @@ async function advanceTurnWithLease(input: {
   // private appraisal can read them, then re-apply after agents so a psyche
   // rewrite cannot drop the in-match 【省察】/【指針】 scratch entries.
   next = applyReflectMemoryWrites(next, resolved.actions);
-  const agentTurn = await advanceCharacterAgents({
-    llm: input.llm,
-    before: turnRecordBefore,
-    after: next,
-    mine,
-    opp,
-    events,
-    actions: resolved.actions,
-    environmentProcessReceipt: semanticTurn.environmentProcessReceipt ?? undefined,
-    dialoguePipeline,
-    sensoryEvidence: semanticTurn.sensoryEvidence,
-    quantizedMechanicalEvidence: semanticTurn.quantizedMechanicalEvidence,
-    mechanicalEvidence: semanticTurn.mechanicalEvidence,
-  });
+  const agentTurn = closeSceneBeat
+    ? await advanceCharacterAgents({
+        llm: input.llm,
+        before: turnRecordBefore,
+        after: next,
+        mine,
+        opp,
+        events,
+        actions: resolved.actions,
+        environmentProcessReceipt: semanticTurn.environmentProcessReceipt ?? undefined,
+        dialoguePipeline,
+        sensoryEvidence: semanticTurn.sensoryEvidence,
+        quantizedMechanicalEvidence: semanticTurn.quantizedMechanicalEvidence,
+        mechanicalEvidence: semanticTurn.mechanicalEvidence,
+      })
+    : {
+        state: {
+          ...next,
+          turnRecords: [
+            ...(next.turnRecords ?? []),
+            buildBattleTurnRecord({
+              before: turnRecordBefore,
+              after: next,
+              events,
+              actions: resolved.actions,
+              mechanicalEvidence: semanticTurn.mechanicalEvidence,
+            }),
+          ].slice(-50),
+        },
+        characterSpeeches: [],
+      };
   next = applyReflectMemoryWrites(agentTurn.state, resolved.actions);
   const rec = (next.turnRecords ?? [])[(next.turnRecords ?? []).length - 1];
   cognitionA = rec?.cognitionA;
@@ -4803,9 +4860,18 @@ async function advanceTurnWithLease(input: {
   // ADR-0006: canonical advancement never consumes prior generated prose.
   const recentNarration: string[] = [];
   const recentSpeeches: NarrativeBlock["speeches"] = [];
+  const beatHistory = closeSceneBeat && sceneBeatsEnabled(stateBeforeSceneBeat)
+    ? (next.turnRecords ?? []).slice(
+        -((stateBeforeSceneBeat.sceneBeat?.receiptIds.length ?? 0) + 1),
+      )
+    : [];
   const actionBeats = buildNarrationActionBeats({
-    actions: resolved.actions,
-    events,
+    actions: beatHistory.length > 1
+      ? beatHistory.flatMap((record) => record.actions)
+      : resolved.actions,
+    events: beatHistory.length > 1
+      ? beatHistory.flatMap((record) => record.events)
+      : events,
     mine,
     opp,
     state: next,
@@ -5095,11 +5161,16 @@ async function advanceTurnWithLease(input: {
   // KO this turn: combat narrative is done, but official finish waits for aftermath advance.
   // Do not settle rating yet.
   if (next.aftermathPending) {
-    next = completeAdvancePhases({
-      state: next,
-      operationId: input.operationId,
-      phases: ["combat"],
-      narrationInputs: { combat: combatNarrationInput },
+    next = applyCombatSceneBeat({
+      before: stateBeforeSceneBeat,
+      after: completeAdvancePhases({
+        state: next,
+        operationId: input.operationId,
+        phases: ["combat"],
+        narrationInputs: { combat: combatNarrationInput },
+        deferCombatNarration: !closeSceneBeat,
+      }),
+      closed: closeSceneBeat,
     });
     await battleRepo.saveBattleWithNarrationOutbox(next, {
       sideAUserId: meta.side_a_user_id,
@@ -5254,16 +5325,21 @@ async function advanceTurnWithLease(input: {
     causalBucketCommit: undefined,
     causalEngineContinuation: undefined,
   };
-  next = completeAdvancePhases({
-    state: next,
-    operationId: input.operationId,
-    phases: next.finishReason === "turn_limit"
-      ? ["combat", "judgment"]
-      : ["combat"],
-    narrationInputs: {
-      combat: combatNarrationInput,
-      ...(judgmentNarrationInput ? { judgment: judgmentNarrationInput } : {}),
-    },
+  next = applyCombatSceneBeat({
+    before: stateBeforeSceneBeat,
+    after: completeAdvancePhases({
+      state: next,
+      operationId: input.operationId,
+      phases: next.finishReason === "turn_limit"
+        ? ["combat", "judgment"]
+        : ["combat"],
+      narrationInputs: {
+        combat: combatNarrationInput,
+        ...(judgmentNarrationInput ? { judgment: judgmentNarrationInput } : {}),
+      },
+      deferCombatNarration: !closeSceneBeat,
+    }),
+    closed: closeSceneBeat,
   });
 
   await battleRepo.saveBattleWithNarrationOutbox(next, {
@@ -5331,6 +5407,7 @@ export function completeAdvancePhases(input: {
     "prologue" | "combat" | "judgment" | "aftermath",
     DeferredNarrationInput
   >>;
+  deferCombatNarration?: boolean;
 }): BattleState {
   const operation = input.state.advanceOperation;
   if (!operation || operation.operationId !== input.operationId) {
@@ -5349,16 +5426,19 @@ export function completeAdvancePhases(input: {
     const sequence = firstSequence + index;
     const receiptFromRevision = fromRevision + index;
     const override = input.narrationInputs?.[phase];
-    const frozen = override === undefined
-      ? buildFrozenNarrationInput(input.state, phase)
-      : {
-          snapshot: override,
-          digest: requestDigest({
-            phase,
-            combatTurn: input.state.turn,
+    const defer = Boolean(input.deferCombatNarration && phase === "combat");
+    const frozen = defer
+      ? null
+      : override === undefined
+        ? buildFrozenNarrationInput(input.state, phase)
+        : {
             snapshot: override,
-          }),
-        };
+            digest: requestDigest({
+              phase,
+              combatTurn: input.state.turn,
+              snapshot: override,
+            }),
+          };
     return {
       schemaVersion: 1 as const,
       id: `${input.state.id}:phase:${sequence}`,
@@ -5371,8 +5451,9 @@ export function completeAdvancePhases(input: {
       fromRevision: receiptFromRevision,
       toRevision: receiptFromRevision + 1,
       committedAt,
-      narrationInput: frozen.snapshot,
-      narrationInputDigest: frozen.digest,
+      narrationInput: frozen?.snapshot,
+      narrationInputDigest: frozen?.digest,
+      narrationDeferred: defer || undefined,
     };
   });
   return {
@@ -5389,6 +5470,35 @@ export function completeAdvancePhases(input: {
       completedAt: committedAt,
       receiptIds: receipts.map((receipt) => receipt.id),
     },
+  };
+}
+
+function applyCombatSceneBeat(input: {
+  before: BattleState;
+  after: BattleState;
+  closed: boolean;
+}): BattleState {
+  if (!sceneBeatsEnabled(input.before)) return input.after;
+  const k = sceneBeatK(input.before);
+  const previous = input.before.sceneBeat ?? openSceneBeat(k);
+  const combatReceipt = [...(input.after.phaseReceipts ?? [])]
+    .reverse()
+    .find((receipt) => receipt.phase === "combat");
+  if (!combatReceipt) return input.after;
+  if (input.closed) {
+    return { ...input.after, sceneBeat: openSceneBeat(k) };
+  }
+  const reservedA = nextReservedAction(previous.reservedA);
+  const reservedB = nextReservedAction(previous.reservedB);
+  return {
+    ...input.after,
+    sceneBeat: {
+      ...recordSceneBeatReceipt(previous, combatReceipt.id),
+      reservedA: reservedA.remaining,
+      reservedB: reservedB.remaining,
+    },
+    plannedActionA: reservedA.next,
+    plannedActionB: reservedB.next,
   };
 }
 
@@ -5929,5 +6039,21 @@ export async function pickAutoMatchedOpponent(
     return delta !== 0 ? delta : a.id.localeCompare(b.id);
   });
   return charRepo.toPublicCharacterForViewer(candidates[0]!, userId);
+}
+
+function publicPhaseReceipts(
+  receipts: BattleState["phaseReceipts"],
+): BattlePublic["receipts"] {
+  const published: BattlePublic["receipts"] = [];
+  for (const receipt of receipts ?? []) {
+    published.push({
+      turnReceiptId: receipt.id,
+      sequence: receipt.sequence,
+      phase: receipt.phase,
+      combatTurn: receipt.combatTurn,
+      stateRevision: receipt.toRevision,
+    });
+  }
+  return published;
 }
 
