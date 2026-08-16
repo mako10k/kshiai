@@ -3284,7 +3284,7 @@ export async function reconcileSemanticState(input: {
   const semanticBefore = input.stateBeforeTurn.semanticState;
   if (input.skipProvider) {
     return {
-      state: input.resolvedState,
+      state: retainOrSkipCanonicalTransitions(input.resolvedState),
       patch: null,
       status: "skipped",
       mechanicalEvidence: input.mechanicalEvidence,
@@ -6039,6 +6039,36 @@ export async function pickAutoMatchedOpponent(
     return delta !== 0 ? delta : a.id.localeCompare(b.id);
   });
   return charRepo.toPublicCharacterForViewer(candidates[0]!, userId);
+}
+
+function retainOrSkipCanonicalTransitions(state: BattleState): BattleState {
+  const semanticRevision = state.semanticState?.revision;
+  const worldRevision = state.worldState?.revision ?? 0;
+  return {
+    ...state,
+    latestSemanticTransition: state.latestSemanticTransition?.turn === state.turn
+      ? state.latestSemanticTransition
+      : state.semanticState && semanticRevision !== undefined
+        ? {
+            turn: state.turn,
+            status: "skipped",
+            fromRevision: semanticRevision,
+            toRevision: semanticRevision,
+            patch: null,
+          }
+        : state.latestSemanticTransition,
+    latestWorldTransition: state.latestWorldTransition?.turn === state.turn
+      ? state.latestWorldTransition
+      : state.worldState
+        ? {
+            turn: state.turn,
+            status: "skipped",
+            fromRevision: worldRevision,
+            toRevision: worldRevision,
+            transition: null,
+          }
+        : state.latestWorldTransition,
+  };
 }
 
 function publicPhaseReceipts(

@@ -375,6 +375,39 @@ describe("battle engine", () => {
       }).turnRecords[0]?.canonicalTransition?.semantic?.turn,
       1,
     );
+    const staleTransitioned = {
+      ...resolved.state,
+      latestSemanticTransition: {
+        turn: resolved.state.turn - 1,
+        status: "applied" as const,
+        fromRevision: 0,
+        toRevision: 1,
+        patch: {
+          baseRevision: 0,
+          turn: resolved.state.turn - 1,
+          sourceEventIds: [],
+          operations: [{
+            op: "replace" as const,
+            path: "/scene/notes",
+            value: "前ターンの場の変化",
+          }],
+        },
+      },
+    };
+    const skipRecord = buildBattleTurnRecord({
+      before: state,
+      after: staleTransitioned,
+      events: resolved.events,
+      actions: resolved.actions,
+    });
+    assert.equal(skipRecord.canonicalTransition, undefined);
+    assert.equal(
+      skipRecord.consequenceReceipts?.some((receipt) =>
+        receipt.source.kind === "environment_world"
+      ),
+      false,
+    );
+    assert.equal(BattleTurnRecordSchema.safeParse(skipRecord).success, true);
     const duplicateOwner = structuredClone(canonicalRecord);
     duplicateOwner.consequenceReceipts?.[0]?.eventIds.push(
       duplicateOwner.consequenceReceipts[1]?.eventIds[0] ?? "missing",

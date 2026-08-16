@@ -5,6 +5,18 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 
 ## [Unreleased]
 
+## [0.21.4] - 2026-08-16
+
+### Fixed
+
+- Open scene-beat combat no longer copies the previous turn's semantic or
+  world operations into the new turn record. The first skip after a beat
+  close can save again.
+
+### Operations
+
+- No database migration. Application rollback returns to v0.21.3.
+
 ## [0.21.3] - 2026-08-16
 
 ### Fixed
