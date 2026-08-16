@@ -1,7 +1,7 @@
 {
   "name": "kshiai",
   "private": true,
-  "version": "0.21.1",
+  "version": "0.21.2",
   "description": "Turn-based multi-user LLM battle game",
   "workspaces": [
     "packages/*",
@@ -23,7 +23,9 @@
     "static:jscpd": "jscpd --config .jscpd.json backend/src frontend/src packages/shared/src infra/cloudflare-worker/src scripts",
     "static:lizard": "python3 scripts/check-lizard.py",
     "lint": "npm run typecheck && npm run static",
-    "sync:secdat": "bash scripts/sync-env-from-secdat.sh"
+    "sync:secdat": "bash scripts/sync-env-from-secdat.sh",
+    "test:e2e-gui": "playwright test",
+    "e2e-gui:session": "tsx scripts/e2e-gui-session.ts"
   },
   "engines": {
     "node": ">=20"
@@ -37,6 +39,7 @@
     "undici": "7.29.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.55.1",
     "jscpd": "5.0.15",
     "wrangler": "^4.118.0"
   }

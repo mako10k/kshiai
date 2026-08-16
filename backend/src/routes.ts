@@ -9,6 +9,7 @@ import {
   GeneratePoliciesRequestSchema,
   AddFriendRequestSchema,
   CharacterVisibilityUpdateSchema,
+  E2eSessionRequestSchema,
   LoginRequestSchema,
   RegisterRequestSchema,
   UpdateDisplayNameRequestSchema,
@@ -36,6 +37,7 @@ import {
   getSessionToken,
   registerUser,
   requireAdmin,
+  requireE2eSessionOperator,
   requireInternalObservability,
   requireUser,
   setSessionCookie,
@@ -76,6 +78,7 @@ import {
   getInternalBattleObservation,
   listInternalBattleObservations,
 } from "./services/internal-observability.js";
+import { mintE2eSession } from "./services/e2e-session.js";
 import { findCharacterNameConflict } from "./character-name-uniqueness.js";
 import { databaseKind, query } from "./db.js";
 import { config } from "./config.js";
@@ -525,6 +528,37 @@ export function buildRoutes(options: {
         role,
         ...detail,
       });
+    },
+  );
+
+  authed.post(
+    "/internal/e2e-session",
+    requireE2eSessionOperator,
+    async (c) => {
+      let body: ReturnType<typeof E2eSessionRequestSchema.parse>;
+      try {
+        body = E2eSessionRequestSchema.parse(await c.req.json());
+      } catch {
+        return c.json({ error: "invalid_request" }, 400);
+      }
+      try {
+        const session = await mintE2eSession({
+          operatorUserId: c.get("user").id,
+          target: body.target,
+        });
+        c.header("Cache-Control", "private, no-store");
+        return c.json(session);
+      } catch (error) {
+        const message = error instanceof Error ? error.message : "error";
+        if (message === "E2E_SESSION_UNAVAILABLE") {
+          return c.json({ error: "e2e_session_unavailable" }, 503);
+        }
+        if (message === "E2E_SESSION_FIXTURE_MISSING") {
+          return c.json({ error: "e2e_session_fixture_missing" }, 409);
+        }
+        console.error("[e2e-session] mint failed", message);
+        return c.json({ error: "e2e_session_failed" }, 500);
+      }
     },
   );
 

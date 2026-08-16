@@ -276,6 +276,18 @@ export async function requireInternalObservability(c: Context, next: Next) {
   await next();
 }
 
+export async function requireE2eSessionOperator(c: Context, next: Next) {
+  c.header("Cache-Control", "private, no-store");
+  const user = c.get("user");
+  const profile = await getUserAccessProfile(user.id);
+  const role = internalObservabilityRole(profile);
+  if (role !== "admin" && role !== "developer") {
+    return c.json({ error: "not_found" }, 404);
+  }
+  c.set("internalObservabilityRole", role);
+  await next();
+}
+
 declare module "hono" {
   interface ContextVariableMap {
     user: AuthUser;

@@ -1,0 +1,144 @@
+ADR-0015
+title: E2E operator session re-entry for GUI verification
+status: Accepted
+date: 2026-08-16
+decision_owner: Product owner
+related:
+  - docs/persistent-e2e-observation.md
+  - backend/src/scripts/persistent-battle-e2e.ts
+  - backend/src/e2e-observer.ts
+  - v0.21.1 battle-screen deploy could not be exercised as a participant
+authority: this file is the causal record; 0015-e2e-operator-session-reentry.md is the projection
+
+PROBLEM P1
+  GUI faults (bottom-nav crush, burger stacking, battlefield object dump,
+  save-from-battle) take multiple releases to close because the operator
+  cannot open the real BattlePage after Promote.
+  Health and /internal/observations prove the API and the diagnostics
+  screen. They do not prove scroll inset, accordion default, or the
+  absence of persist controls.
+
+EVIDENCE E1
+  v0.21.1 shipped from unit tests plus production /api/health.
+  BattlePage was not driven as a signed-in participant.
+  Playwright exists on the operator machine but not in this workspace,
+  and there is no login the browser can complete without Google OAuth.
+
+EVIDENCE E2
+  Persistent E2E already owns two non-human Supabase users
+  (codex-e2e-observer@example.test kind=e2e,
+   codex-e2e-opponent@example.test kind=test)
+  and fixture characters, battlefield, and narrator.
+  Each Observe job calls generateEphemeralPassword, writes it through
+  the Supabase admin API, signs in once, and discards the secret.
+  The password is not in secdat, the repo, or the observation artifact.
+
+EVIDENCE E3
+  0.8.0 made account_kind server-owned. Client claims cannot enter the
+  test realm. General users must not see test-realm assets or ratings.
+  /internal/observations is 404 for general users and is not BattlePage.
+
+EVIDENCE E4
+  ensurePersistentAccount already performs the only allowed password
+  write for those identities. A second password store or a second auth
+  provider would split that authority.
+
+CAUSE C1
+  The missing capability is not a browser binary. It is a way to obtain
+  a short-lived, normal Supabase password session for an existing E2E
+  identity after the operator is already authorized.
+
+REJECTED O1: do nothing / Google-only Playwright
+  Google OAuth is not a controllable E2E login. Leaving the gap keeps
+  GUI verification as a manual afterthought.
+
+REJECTED O2: stable password in secdat
+  Contradicts the 0.8.0 rotation rule. A durable shared secret becomes
+  a standing test-realm credential.
+
+REJECTED O3: impersonation header or admin-acting-as
+  BattlePage would render under the operator user id while pretending
+  to be the fixture owner. That mixes identities, bypasses participant
+  checks, and is a new privacy boundary.
+
+REJECTED O4: new auth provider or session cookie that skips Supabase
+  Production auth is Supabase JWKS. A parallel session type would fork
+  user mapping and Stage/Promote smoke.
+
+REJECTED O5: local legacy-auth Playwright only
+  Useful for a screenshot. It does not exercise the promoted Worker,
+  bottom-nav tokens, or production BattlePage.
+
+DECISION O6: operator re-entry into the real E2E identity
+  An already-authorized operator asks the server to rotate the fixture
+  password the same way the Observe job does, receives the secret once,
+  and signs in through the normal email/password path.
+  After that, the browser session is the E2E user. BattlePage, history,
+  and matchmaking run as that user. No impersonation.
+
+OWNER_ACCEPTANCE
+  Product owner accepted this revision of ADR-0015 on 2026-08-16 with
+  the statement "受け入れます" after the Proposed text was presented.
+
+ACCEPTANCE
+  ADR-0015 revision dated 2026-08-16 is Accepted. Selected option is O6.
+  Rules R1 through R10 are in force.
+
+RULES
+  R1. Reuse the existing fixture emails. Do not add a third human-looking
+      account and do not change account_kind rules.
+  R2. Mint is allowed only for a caller whose server-owned profile is
+      admin or developer. general, test, and e2e callers get the same
+      404 used by other internal routes. Client claims cannot opt in.
+  R3. POST /api/internal/e2e-session with target observer | opponent
+      rotates the password via generateEphemeralPassword and the
+      existing Supabase admin write, then returns
+      { email, password, accountKind } once. The secret is not stored.
+  R4. The browser signs out the operator session and calls the normal
+      Supabase password grant. There is no act-as header, no dual
+      session, and no backend-issued cookie.
+  R5. The same mint function may be called from a trusted runner
+      (Playwright setup or Observe job). The runner already holds
+      SUPABASE_SECRET_KEY. It must not print the password.
+  R6. A mint invalidates the previous password. An in-flight Observe
+      job that still holds a live access token may continue until that
+      token expires; a later password grant by that job fails.
+      Operators must not mint during a running Observe workflow.
+  R7. Record a non-secret audit row (operator user id, target, time).
+      Forbidden keys stay the same as observation sanitization:
+      password, accessToken, auth/application ids in public artifacts.
+  R8. UI: /internal/observations exposes re-entry only to
+      admin/developer. The control names the target and states that
+      the current session will end.
+  R9. Playwright lives in this repository as the GUI verification
+      tool. It logs in with a minted session and drives BattlePage.
+      It is not a fifth required merge check. First use is operator
+      and post-promote verification, not branch protection.
+  R10. Playwright must exercise the usable viewport above the bottom
+       navigation, the closed object accordion, and the absence of
+       save-from-battle. API health is not a substitute.
+
+CONSEQUENCES
+  + Operator can open the same BattlePage a player sees, on staging
+    or production, without Google in the automation path.
+  + Password authority stays in one function.
+  + Test-realm isolation is unchanged for general users.
+  - Mint races the Observe job's next password grant.
+  - The JSON response contains a secret for one hop.
+  - Developer and admin can enter the fixture identities at will.
+
+COMPATIBILITY
+  No database migration. No change to users.account_kind, fixture
+  ownership, or observation workflow confirmation.
+  Application rollback does not need a schema undo.
+  Existing Observe job remains the battle-pipeline observation path.
+
+VERIFICATION after acceptance and implementation
+  - general caller receives 404
+  - admin/developer mint returns email+password; a second mint
+    rejects the first password
+  - sign-in with the returned password yields the fixture user's
+    /api/me and accountKind
+  - audit row exists and does not contain the password
+  - Playwright opens BattlePage for a fixture battle and asserts
+    R10 without using Google

@@ -204,6 +204,7 @@ jobs:
             --image="$IMAGE_REF" \
             --no-traffic \
             --tag="$alias" \
+            --update-secrets=SUPABASE_SECRET_KEY=kshiai-supabase-secret-key:latest \
             "${override_flags[@]}" \
             --quiet
           gcloud run services describe "$CLOUD_RUN_SERVICE" \

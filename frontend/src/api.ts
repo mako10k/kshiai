@@ -433,6 +433,15 @@ export const api = {
     request<InternalBattleObservationDetail>(
       `/api/internal/observations/${encodeURIComponent(battleId)}`,
     ),
+  createE2eSession: (target: "observer" | "opponent") =>
+    request<{
+      email: string;
+      password: string;
+      accountKind: "test" | "e2e";
+    }>("/api/internal/e2e-session", {
+      method: "POST",
+      body: JSON.stringify({ target }),
+    }),
   register: (username: string, password: string) =>
     request<{ user: UserPublic }>("/api/auth/register", {
       method: "POST",

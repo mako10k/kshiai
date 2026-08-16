@@ -193,6 +193,7 @@ export const config = {
     .filter(Boolean),
   supabaseUrl,
   supabaseJwksUrl,
+  supabaseSecretKey: process.env.SUPABASE_SECRET_KEY?.trim() ?? "",
   mediaStorage: mediaStorage as "local" | "r2",
   r2,
   sessionSecret: process.env.SESSION_SECRET ?? "dev-secret-change-me",

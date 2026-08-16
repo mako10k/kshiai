@@ -5,6 +5,22 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 
 ## [Unreleased]
 
+## [0.21.2] - 2026-08-16
+
+### Added
+
+- Administrators and developers can re-enter as the existing E2E observer or
+  opponent from `/internal/observations`. The server rotates a one-shot
+  password; the browser signs in through the normal email/password grant.
+- Adds an in-repo Playwright battle-screen smoke (`npm run test:e2e-gui`). It
+  is not a required merge check.
+
+### Operations
+
+- Implements Accepted ADR-0015. Stage binds `SUPABASE_SECRET_KEY` on Cloud Run
+  so mint works on the API. No database migration. Application rollback returns
+  to v0.21.1.
+
 ## [0.21.1] - 2026-08-16
 
 ### Fixed
