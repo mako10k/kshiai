@@ -500,6 +500,7 @@ export async function activateNarrationStyleAuthoringAttempt(input: {
       publicPresentation: attempt.candidate.publicPresentation,
       createdAt: currentStyle?.createdAt ?? attempt.createdAt,
       updatedAt,
+      visibility: currentStyle?.visibility,
     });
     const generation = await appendAssetGeneration(connection, {
       assetType: "narration-style",
@@ -618,6 +619,7 @@ export async function activateImportedNarrationStyle(input: {
       publicPresentation: envelope.publicPresentation,
       createdAt: input.style.createdAt,
       updatedAt: input.style.updatedAt,
+      visibility: input.style.visibility,
     });
     const generation = await appendAssetGeneration(connection, {
       assetType: "narration-style",

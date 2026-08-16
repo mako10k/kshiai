@@ -4,6 +4,7 @@ import {
   toPublicPreset,
   BattlefieldGenerationEnvelopeV2Schema,
   assertBattlefieldGenerationReadyV2,
+  type AssetVisibility,
   type BattlefieldPreset,
 } from "@kshiai/shared";
 import { query, withTransaction } from "../db.js";
@@ -20,6 +21,10 @@ import {
   listLatestBattlefieldAttemptsByIds,
   reviewStateFromAttempt,
 } from "./owner-notifications.js";
+import {
+  canViewOwnedAsset,
+  filterAssetsByVisibility,
+} from "./asset-visibility.js";
 
 let seedPromise: Promise<void> | null = null;
 
@@ -139,6 +144,7 @@ export async function listPresets(opts: {
       isSystem: Boolean(row.is_system),
     }))
     .map(parse);
+  presets = await filterAssetsByVisibility(opts.userId, presets);
   if (opts.includeSystem === false) {
     presets = presets.filter((p) => !p.isSystem);
   }
@@ -222,7 +228,30 @@ export async function getPresetForUser(
     ownerKind: normalizeAccountKind(row.account_kind),
     isSystem: Boolean(row.is_system),
   })) return null;
-  return parse(row);
+  const preset = parse(row);
+  if (!await canViewOwnedAsset(userId, preset)) return null;
+  return preset;
+}
+
+export async function updateBattlefieldVisibility(
+  battlefieldId: string,
+  ownerUserId: string,
+  visibility: AssetVisibility,
+): Promise<BattlefieldPreset | null> {
+  const preset = await getPreset(battlefieldId);
+  if (!preset || preset.isSystem || preset.ownerUserId !== ownerUserId) {
+    return null;
+  }
+  const next: BattlefieldPreset = {
+    ...preset,
+    visibility,
+    updatedAt: new Date().toISOString(),
+  };
+  await query(
+    `UPDATE battlefields SET sheet_json = $1, updated_at = $2 WHERE id = $3`,
+    [JSON.stringify(next), next.updatedAt, battlefieldId],
+  );
+  return next;
 }
 
 export async function importPreset(preset: BattlefieldPreset): Promise<void> {

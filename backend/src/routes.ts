@@ -256,6 +256,7 @@ async function battlefieldPresetForAttempt(
     publicPresentation: attempt.candidate.publicPresentation,
     createdAt: existing?.createdAt ?? attempt.createdAt,
     updatedAt: attempt.updatedAt,
+    visibility: existing?.visibility,
   });
 }
 
@@ -284,6 +285,7 @@ async function narrationStyleForAttempt(
     publicPresentation: attempt.candidate.publicPresentation,
     createdAt: existing?.createdAt ?? attempt.createdAt,
     updatedAt: attempt.updatedAt,
+    visibility: existing?.visibility,
   });
 }
 
@@ -1567,6 +1569,23 @@ export function buildRoutes(options: {
     });
   });
 
+  authed.patch("/battlefields/:id/visibility", async (c) => {
+    const user = c.get("user");
+    const parsed = CharacterVisibilityUpdateSchema.safeParse(
+      await c.req.json().catch(() => ({})),
+    );
+    if (!parsed.success) {
+      return c.json({ error: "invalid_body", details: parsed.error.flatten() }, 400);
+    }
+    const preset = await bfRepo.updateBattlefieldVisibility(
+      c.req.param("id"),
+      user.id,
+      parsed.data.visibility,
+    );
+    if (!preset) return c.json({ error: "not_found" }, 404);
+    return c.json({ battlefield: toPublicPreset(preset) });
+  });
+
   authed.post("/battlefields/generate", async (c) => {
     const user = c.get("user");
     const body = GenerateBattlefieldRequestSchema.parse(await c.req.json());
@@ -1987,6 +2006,23 @@ export function buildRoutes(options: {
         selectable: c.req.query("selectable") === "true",
       }),
     });
+  });
+
+  authed.patch("/narration-styles/:id/visibility", async (c) => {
+    const user = c.get("user");
+    const parsed = CharacterVisibilityUpdateSchema.safeParse(
+      await c.req.json().catch(() => ({})),
+    );
+    if (!parsed.success) {
+      return c.json({ error: "invalid_body", details: parsed.error.flatten() }, 400);
+    }
+    const style = await styleRepo.updateNarrationStyleVisibility(
+      c.req.param("id"),
+      user.id,
+      parsed.data.visibility,
+    );
+    if (!style) return c.json({ error: "not_found" }, 404);
+    return c.json({ style: toPublicNarrationStyle(style) });
   });
 
   authed.post("/narration-styles", async (c) => {

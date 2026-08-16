@@ -1,3 +1,4 @@
+export * from "./asset-visibility.js";
 export * from "./character.js";
 export * from "./character-improvement.js";
 export * from "./rating.js";
@@ -43,6 +44,7 @@ export * from "./character-focus-policy.fixtures.js";
 export * from "./structured-assets.js";
 export * from "./structured-character.js";
 export * from "./structured-battlefield.js";
+export * from "./battlefield-definition-check.js";
 export * from "./character-definition-rules.js";
 export * from "./character-definition-check.js";
 export * from "./character-manifestation.js";

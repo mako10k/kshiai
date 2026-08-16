@@ -14,6 +14,11 @@ import {
   getUserAccessProfile,
   normalizeAccountKind,
 } from "../account-access.js";
+import {
+  canViewOwnedAsset,
+  filterAssetsByVisibility,
+} from "./asset-visibility.js";
+import type { AssetVisibility } from "@kshiai/shared";
 import * as narrationAssetRepo from "./narration-style-assets-v2.js";
 import { buildImportedNarrationStyleEnvelopeV2 } from "../services/narration-style-authoring-service.js";
 import {
@@ -114,17 +119,18 @@ export async function listNarrationStyles(
       isSystem: Boolean(row.is_system),
     }))
     .map((row) => parse(row.sheet_json));
+  const visible = await filterAssetsByVisibility(userId, accessible);
   const readyIds = await narrationAssetRepo.listReadyNarrationStyleIds(
-    accessible.map((style) => style.id),
+    visible.map((style) => style.id),
   );
-  const ownedIds = accessible
+  const ownedIds = visible
     .filter((style) => style.ownerUserId === userId)
     .map((style) => style.id);
   const latestAttempts = await listLatestNarrationStyleAttemptsByIds(
     userId,
     ownedIds,
   );
-  const publicStyles = await Promise.all(accessible.map(async (style) => {
+  const publicStyles = await Promise.all(visible.map(async (style) => {
     const compatibility = await narrationAssetRepo.getNarrationStyleCompatibility(
       style.id,
     );
@@ -154,6 +160,25 @@ export async function getNarrationStyle(id: string): Promise<NarrationStyle | nu
   return getNarrationStyleRow(id);
 }
 
+export async function updateNarrationStyleVisibility(
+  styleId: string,
+  ownerUserId: string,
+  visibility: AssetVisibility,
+): Promise<NarrationStyle | null> {
+  const style = await getNarrationStyle(styleId);
+  if (!style || style.isSystem || style.ownerUserId !== ownerUserId) return null;
+  const next: NarrationStyle = {
+    ...style,
+    visibility,
+    updatedAt: new Date().toISOString(),
+  };
+  await query(
+    `UPDATE narration_styles SET sheet_json = $1, updated_at = $2 WHERE id = $3`,
+    [JSON.stringify(next), next.updatedAt, styleId],
+  );
+  return next;
+}
+
 export async function resolveReadyNarrationStyleForUser(
   userId: string,
   styleId?: string | null,
@@ -176,7 +201,7 @@ export async function resolveReadyNarrationStyleForUser(
     ownerUserId: style.ownerUserId,
     ownerKind: owner?.accountKind ?? "general",
     isSystem: style.isSystem,
-  })) {
+  }) || !await canViewOwnedAsset(userId, style)) {
     throw new Error("NARRATION_STYLE_NOT_FOUND");
   }
   const generation = await narrationAssetRepo.getReadyNarrationStyleGeneration(

@@ -1,8 +1,6 @@
 import { useEffect, useState, type RefObject } from "react";
 import { Link, useLocation } from "react-router-dom";
-import type { OwnerNotificationPublic } from "@kshiai/shared";
 import { listNotifications } from "../authoring-api";
-import { NotificationList } from "../pages/NotificationsPage";
 
 const LOW_FREQUENCY_LINKS = [
   {
@@ -22,40 +20,32 @@ const LOW_FREQUENCY_LINKS = [
   },
 ] as const;
 
-export function useUnreadNotifications(): {
-  unreadCount: number;
-  recent: OwnerNotificationPublic[];
-} {
+export function useUnreadNotifications(refreshKey = false): { unreadCount: number } {
   const location = useLocation();
   const [unreadCount, setUnreadCount] = useState(0);
-  const [recent, setRecent] = useState<OwnerNotificationPublic[]>([]);
 
   useEffect(() => {
-    void listNotifications(5)
-      .then((result) => {
-        setUnreadCount(result.unreadCount);
-        setRecent(result.notifications);
-      })
+    void listNotifications(1)
+      .then((result) => setUnreadCount(result.unreadCount))
       .catch(() => undefined);
-  }, [location.pathname]);
+  }, [location.pathname, refreshKey]);
 
-  return { unreadCount, recent };
+  return { unreadCount };
 }
 
-export function BurgerNotifications(props: {
-  recent: OwnerNotificationPublic[];
+export function BurgerNotifyLink(props: {
+  unreadCount: number;
   onNavigate: () => void;
 }) {
   return (
-    <div className="burger-notify">
-      <div className="row" style={{ justifyContent: "space-between" }}>
-        <strong>お知らせ</strong>
-        <Link to="/notifications" onClick={props.onNavigate}>
-          すべて
-        </Link>
+    <Link to="/notifications" onClick={props.onNavigate}>
+      <strong>お知らせ</strong>
+      <div className="muted">
+        {props.unreadCount > 0
+          ? `未読 ${props.unreadCount} 件`
+          : "未読はありません"}
       </div>
-      <NotificationList items={props.recent} empty="新しいお知らせはありません。" />
-    </div>
+    </Link>
   );
 }
 
@@ -79,7 +69,7 @@ export function BurgerPanel(props: {
   userLabel: string;
   panelId: string;
   panelRef: RefObject<HTMLDivElement | null>;
-  recent: OwnerNotificationPublic[];
+  unreadCount: number;
   onClose: () => void;
   onLogout: () => void;
 }) {
@@ -115,7 +105,10 @@ export function BurgerPanel(props: {
           </button>
         </div>
         <nav className="burger-links" aria-label="低頻度機能">
-          <BurgerNotifications recent={props.recent} onNavigate={props.onClose} />
+          <BurgerNotifyLink
+            unreadCount={props.unreadCount}
+            onNavigate={props.onClose}
+          />
           {LOW_FREQUENCY_LINKS.map((link) => (
             <Link key={link.to} to={link.to} onClick={props.onClose}>
               <strong>{link.title}</strong>

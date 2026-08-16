@@ -1,10 +1,14 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
+  assetVisibilityLabel,
   perspectiveLabel,
+  type AssetVisibility,
   type NarrationStylePublic,
 } from "@kshiai/shared";
+import { useAuth } from "../auth";
 import { api } from "../api";
+import { AssetVisibilityField } from "../components/AssetVisibilityField";
 import { AuthoringProgressNotice } from "../components/AuthoringProgressNotice";
 import { useAuthoringProgressPoll } from "../hooks/useAuthoringProgressPoll";
 import { useLocalDraft } from "../hooks/useLocalDraft";
@@ -50,6 +54,8 @@ function NarrationGenerateForm(props: {
 function NarrationStyleCard(props: {
   style: NarrationStylePublic;
   busy: boolean;
+  isOwner: boolean;
+  onVisibilityChange: (id: string, visibility: AssetVisibility) => void;
   onRevise: (id: string) => void;
   onUpgrade: (style: NarrationStylePublic) => void;
   onDelete: (id: string, name: string) => void;
@@ -77,7 +83,20 @@ function NarrationStyleCard(props: {
         <span className="tag" style={{ marginLeft: 6 }}>
           {perspectiveLabel(style.perspective)}
         </span>
+        <span className="tag" style={{ marginLeft: 6 }}>
+          {assetVisibilityLabel(style.visibility)}
+        </span>
       </p>
+      {!style.isSystem ? (
+        <AssetVisibilityField
+          value={style.visibility}
+          disabled={props.busy}
+          canEdit={props.isOwner}
+          onChange={(visibility) =>
+            props.onVisibilityChange(style.id, visibility)
+          }
+        />
+      ) : null}
       <div>
         {style.tags.map((tag) => <span className="tag" key={tag}>{tag}</span>)}
       </div>
@@ -112,6 +131,7 @@ function NarrationStyleCard(props: {
 
 export function NarrationStylesPage() {
   const nav = useNavigate();
+  const { user } = useAuth();
   const [list, setList] = useState<NarrationStylePublic[]>([]);
   const [prompt, setPrompt, clearPrompt] = useLocalDraft(
     "narration-styles:generate",
@@ -264,6 +284,30 @@ export function NarrationStylesPage() {
               key={style.id}
               style={style}
               busy={busy}
+              isOwner={Boolean(user && style.ownerUserId === user.id)}
+              onVisibilityChange={(id, visibility) => {
+                void (async () => {
+                  setBusy(true);
+                  setError(null);
+                  try {
+                    const res = await api.setNarrationStyleVisibility(id, visibility);
+                    setList((current) =>
+                      current.map((item) => item.id === id ? res.style : item),
+                    );
+                    setMessage(
+                      visibility === "public"
+                        ? "公開範囲を「公開」にしました。"
+                        : visibility === "friends"
+                          ? "公開範囲を「フレンドのみ」にしました。"
+                          : "公開範囲を「非公開」にしました。",
+                    );
+                  } catch (err) {
+                    setError(err instanceof Error ? err.message : "failed");
+                  } finally {
+                    setBusy(false);
+                  }
+                })();
+              }}
               onRevise={setRevisingId}
               onUpgrade={(item) => void onUpgrade(item)}
               onDelete={(id, name) => void onDelete(id, name)}

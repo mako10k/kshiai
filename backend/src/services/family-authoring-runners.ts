@@ -39,6 +39,7 @@ async function generatedBattlefieldFromAttempt(
       createdAt: existing?.createdAt ?? attempt.createdAt,
       updatedAt: attempt.updatedAt,
       isSystem: existing?.isSystem ?? false,
+      visibility: existing?.visibility,
     });
     const patch = await llm.adjustBattlefieldPreset(current, adjust);
     return {

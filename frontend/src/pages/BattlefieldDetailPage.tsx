@@ -1,7 +1,9 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import type { BattlefieldPresetPublic } from "@kshiai/shared";
+import type { AssetVisibility, BattlefieldPresetPublic } from "@kshiai/shared";
+import { useAuth } from "../auth";
 import { api } from "../api";
+import { AssetVisibilityField } from "../components/AssetVisibilityField";
 import { AuthoringProgressNotice } from "../components/AuthoringProgressNotice";
 import { useLocalDraft } from "../hooks/useLocalDraft";
 import { mediaSrc } from "../media";
@@ -102,6 +104,8 @@ function BattlefieldOwnerEditor(props: {
 function BattlefieldDetailSummary(props: {
   field: BattlefieldPresetPublic;
   busy: boolean;
+  isOwner: boolean;
+  onVisibilityChange: (visibility: AssetVisibility) => void;
   onImage: () => void;
   onUpgrade: () => void;
   onCopy: () => void;
@@ -140,6 +144,14 @@ function BattlefieldDetailSummary(props: {
           </p>
           <p>{field.narrativeBlurb}</p>
           <p className="muted">{field.appearance.summary}</p>
+          {!field.isSystem ? (
+            <AssetVisibilityField
+              value={field.visibility}
+              disabled={props.busy}
+              canEdit={props.isOwner}
+              onChange={props.onVisibilityChange}
+            />
+          ) : null}
           <p>
             地形のヒント: {field.terrainHints.join(" / ") || "—"}
             <br />
@@ -227,9 +239,75 @@ async function runBattlefieldMutation(
   }
 }
 
+function battlefieldVisibilityNote(visibility: AssetVisibility): string {
+  if (visibility === "friends") return "公開範囲を「フレンドのみ」にしました。";
+  if (visibility === "private") return "公開範囲を「非公開」にしました。";
+  return "公開範囲を「公開」にしました。";
+}
+
+function useBattlefieldOwnerActions(input: {
+  id: string | undefined;
+  field: BattlefieldPresetPublic | null;
+  isOwner: boolean;
+  nav: ReturnType<typeof useNavigate>;
+  setBusy: (value: boolean) => void;
+  setError: (value: string | null) => void;
+  setAssistant: (value: string) => void;
+  setField: (field: BattlefieldPresetPublic) => void;
+}) {
+  const { id, field, isOwner, nav } = input;
+  const mutate = (
+    work: () => Promise<{ draft?: { id: string }; attemptId?: string } | BattlefieldPresetPublic>,
+  ) => runBattlefieldMutation(
+    work,
+    nav,
+    input.setBusy,
+    input.setError,
+    input.setAssistant,
+    input.setField,
+  );
+  return {
+    onVisibilityChange(visibility: AssetVisibility) {
+      if (!id || !isOwner) return;
+      void mutate(async () => {
+        const res = await api.setBattlefieldVisibility(id, visibility);
+        input.setAssistant(battlefieldVisibilityNote(visibility));
+        return res.battlefield;
+      });
+    },
+    onImage() {
+      if (!id || field?.isSystem) return;
+      void mutate(async () => {
+        const res = await api.generateBattlefieldImage(id);
+        input.setAssistant(res.note ?? "画像を更新しました");
+        return res.battlefield;
+      });
+    },
+    onUpgrade() {
+      if (!id) return;
+      void runBattlefieldMutation(
+        () => api.upgradeBattlefield(id),
+        nav,
+        input.setBusy,
+        input.setError,
+        input.setAssistant,
+      );
+    },
+    onCopy() {
+      if (!id) return;
+      void api.copyBattlefield(id).then((res) => nav(`/battlefields/${res.battlefield.id}`));
+    },
+    onDelete() {
+      if (!id || field?.isSystem || !confirm("削除しますか？")) return;
+      void api.deleteBattlefield(id).then(() => nav("/battlefields"));
+    },
+  };
+}
+
 export function BattlefieldDetailPage() {
   const { id } = useParams();
   const nav = useNavigate();
+  const { user } = useAuth();
   const [field, setField] = useState<BattlefieldPresetPublic | null>(null);
   const [chat, setChat, clearChat] = useLocalDraft(
     `battlefields:chat:${id ?? "unknown"}`,
@@ -238,6 +316,17 @@ export function BattlefieldDetailPage() {
   const [assistant, setAssistant] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const isOwner = Boolean(user && field?.ownerUserId === user.id);
+  const actions = useBattlefieldOwnerActions({
+    id,
+    field,
+    isOwner,
+    nav,
+    setBusy,
+    setError,
+    setAssistant,
+    setField,
+  });
 
   useEffect(() => {
     if (!id) return;
@@ -258,39 +347,12 @@ export function BattlefieldDetailPage() {
       <BattlefieldDetailSummary
         field={field}
         busy={busy}
-        onImage={() => {
-          if (!id || field.isSystem) return;
-          void runBattlefieldMutation(
-            async () => {
-              const res = await api.generateBattlefieldImage(id);
-              setAssistant(res.note ?? "画像を更新しました");
-              return res.battlefield;
-            },
-            nav,
-            setBusy,
-            setError,
-            setAssistant,
-            setField,
-          );
-        }}
-        onUpgrade={() => {
-          if (!id) return;
-          void runBattlefieldMutation(
-            () => api.upgradeBattlefield(id),
-            nav,
-            setBusy,
-            setError,
-            setAssistant,
-          );
-        }}
-        onCopy={() => {
-          if (!id) return;
-          void api.copyBattlefield(id).then((res) => nav(`/battlefields/${res.battlefield.id}`));
-        }}
-        onDelete={() => {
-          if (!id || field.isSystem || !confirm("削除しますか？")) return;
-          void api.deleteBattlefield(id).then(() => nav("/battlefields"));
-        }}
+        isOwner={isOwner}
+        onVisibilityChange={actions.onVisibilityChange}
+        onImage={actions.onImage}
+        onUpgrade={actions.onUpgrade}
+        onCopy={actions.onCopy}
+        onDelete={actions.onDelete}
       />
       <BattlefieldOwnerEditor
         field={field}

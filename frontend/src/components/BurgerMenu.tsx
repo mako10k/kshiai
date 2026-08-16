@@ -12,7 +12,7 @@ export function BurgerMenu() {
   const { user, logout } = useAuth();
   const location = useLocation();
   const [open, setOpen] = useState(false);
-  const { unreadCount, recent } = useUnreadNotifications();
+  const { unreadCount } = useUnreadNotifications(open);
   const panelId = useId();
   const buttonRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
@@ -70,7 +70,7 @@ export function BurgerMenu() {
           userLabel={user.displayName || user.username}
           panelId={panelId}
           panelRef={panelRef}
-          recent={recent}
+          unreadCount={unreadCount}
           onClose={() => {
             setOpen(false);
             buttonRef.current?.focus();

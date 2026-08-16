@@ -603,6 +603,7 @@ export async function activateBattlefieldAuthoringAttempt(input: {
       publicPresentation: attempt.candidate.publicPresentation,
       createdAt: currentPreset?.createdAt ?? attempt.createdAt,
       updatedAt,
+      visibility: currentPreset?.visibility,
     });
     const generation = await appendAssetGeneration(connection, {
       assetType: "battlefield-preset",
@@ -745,6 +746,30 @@ export async function activateImportedBattlefield(input: {
   });
 }
 
+function battlefieldSheetFromDefinition(input: {
+  sheetJson: unknown;
+  battlefieldId: string;
+  ownerUserId: string | null;
+  definition: BattlefieldGenerationEnvelopeV2["definition"];
+  publicPresentation: BattlefieldGenerationEnvelopeV2["publicPresentation"];
+  updatedAt: string;
+}): BattlefieldPreset {
+  const raw = typeof input.sheetJson === "string"
+    ? JSON.parse(input.sheetJson)
+    : input.sheetJson;
+  const current = raw as BattlefieldPreset;
+  return battlefieldDefinitionV2ToLegacyPreset({
+    battlefieldId: input.battlefieldId,
+    ownerUserId: input.ownerUserId,
+    isSystem: false,
+    definition: input.definition,
+    publicPresentation: input.publicPresentation,
+    createdAt: current.createdAt,
+    updatedAt: input.updatedAt,
+    visibility: current.visibility,
+  });
+}
+
 export async function activateBattlefieldImageRevision(input: {
   battlefieldId: string;
   ownerUserId: string;
@@ -805,17 +830,12 @@ export async function activateBattlefieldImageRevision(input: {
         attemptId: input.operationId,
       },
     });
-    const raw = typeof rawPreset.sheet_json === "string"
-      ? JSON.parse(rawPreset.sheet_json)
-      : rawPreset.sheet_json;
-    const currentPreset = raw as BattlefieldPreset;
-    const preset = battlefieldDefinitionV2ToLegacyPreset({
+    const preset = battlefieldSheetFromDefinition({
+      sheetJson: rawPreset.sheet_json,
       battlefieldId: input.battlefieldId,
       ownerUserId: input.ownerUserId,
-      isSystem: false,
       definition: envelope.definition,
       publicPresentation: envelope.publicPresentation,
-      createdAt: currentPreset.createdAt,
       updatedAt,
     });
     const generation = await appendAssetGeneration(connection, {

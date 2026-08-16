@@ -62,6 +62,8 @@ export const CharacterVisibilityUpdateSchema = z.object({
 export type CharacterVisibilityUpdate = z.infer<
   typeof CharacterVisibilityUpdateSchema
 >;
+export const AssetVisibilityUpdateSchema = CharacterVisibilityUpdateSchema;
+export type AssetVisibilityUpdate = CharacterVisibilityUpdate;
 
 export const GenerateCharacterRequestSchema = z.object({
   prompt: z.string().min(1).max(4000),

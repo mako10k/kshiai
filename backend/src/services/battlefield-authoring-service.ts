@@ -5,12 +5,14 @@ import {
   REQUIRED_BATTLEFIELD_COMPILERS_V2,
   battlefieldDefinitionV2ToLegacyPreset,
   defaultBattlefieldDisclosurePolicyV2,
+  deterministicBattlefieldSceneV2,
   legacyBattlefieldPresetToDefinitionV2,
   projectBattlefieldSceneSourceV2,
   validateBattlefieldPublicPresentationV2,
   validateBattlefieldSceneClaimAssessmentV2,
   type BattlefieldGenerationEnvelopeV2,
   type BattlefieldPreset,
+  type BattlefieldSceneSourceProjectionV2,
 } from "@kshiai/shared";
 import type { GenerateBattlefieldResult, LlmProvider } from "../llm/types.js";
 import { assetContentDigest } from "../repositories/asset-generations.js";
@@ -19,6 +21,92 @@ export const BATTLEFIELD_STRUCTURE_GENERATOR_CONTRACT =
   "battlefield-structure-v2";
 export const BATTLEFIELD_DESCRIPTION_GENERATOR_CONTRACT =
   "battlefield-public-scene-v2";
+
+async function buildBattlefieldScenePresentation(input: {
+  llm: LlmProvider;
+  sourceText: string;
+  sourceKind: "create_instruction" | "revision_instruction" |
+    "upgrade_description" | "import";
+  existingBlurb?: string;
+  projection: BattlefieldSceneSourceProjectionV2;
+  projectionDigest: string;
+  descriptionInputDigest: string;
+}) {
+  const fallback = deterministicBattlefieldSceneV2(
+    input.projection,
+    input.existingBlurb,
+  );
+  const asPresentation = (scene: {
+    description: string;
+    segments: Array<{
+      id: string;
+      text: string;
+      kind: "fact" | "flavor";
+      supportRefs: string[];
+    }>;
+  }) => AssetPublicPresentationV2Schema.parse({
+    description: scene.segments.map((segment) => segment.text).join("\n\n") ||
+      scene.description,
+    projectionContractVersion: 2,
+    projectionDigest: input.projectionDigest,
+    descriptionInputDigest: input.descriptionInputDigest,
+    segments: scene.segments,
+  });
+  try {
+    const generatedScene = await input.llm.generateBattlefieldScene({
+      sourceText: input.sourceText,
+      projection: input.projection,
+    });
+    const sceneDraft = validateBattlefieldPublicPresentationV2(
+      input.projection,
+      asPresentation(generatedScene),
+    );
+    const claimAssessment = await input.llm.validateBattlefieldSceneClaims({
+      projection: input.projection,
+      scene: {
+        description: sceneDraft.description,
+        segments: sceneDraft.segments,
+      },
+    });
+    return {
+      presentation: validateBattlefieldSceneClaimAssessmentV2(
+        input.projection,
+        sceneDraft,
+        {
+          contractVersion: 1,
+          validatorContract: BATTLEFIELD_SCENE_CLAIM_VALIDATOR_CONTRACT,
+          projectionDigest: input.projectionDigest,
+          segments: claimAssessment.segments,
+        },
+      ),
+      assistantMessage: generatedScene.assistantMessage,
+    };
+  } catch (error) {
+    if (input.sourceKind !== "upgrade_description") throw error;
+    const sceneDraft = validateBattlefieldPublicPresentationV2(
+      input.projection,
+      asPresentation(fallback),
+    );
+    return {
+      presentation: validateBattlefieldSceneClaimAssessmentV2(
+        input.projection,
+        sceneDraft,
+        {
+          contractVersion: 1,
+          validatorContract: BATTLEFIELD_SCENE_CLAIM_VALIDATOR_CONTRACT,
+          projectionDigest: input.projectionDigest,
+          segments: sceneDraft.segments.map((segment) => ({
+            segmentId: segment.id,
+            verdict: "supported" as const,
+            supportRefs: [...segment.supportRefs],
+            riskCodes: [],
+          })),
+        },
+      ),
+      assistantMessage: "既存の戦場から公開シーンを復元しました。",
+    };
+  }
+}
 
 export async function buildBattlefieldGenerationCandidate(input: {
   llm: LlmProvider;
@@ -54,42 +142,21 @@ export async function buildBattlefieldGenerationCandidate(input: {
   });
   const disclosurePolicy = defaultBattlefieldDisclosurePolicyV2(definition);
   const projection = projectBattlefieldSceneSourceV2(definition, disclosurePolicy);
-  const generatedScene = await input.llm.generateBattlefieldScene({
-    sourceText: input.sourceText,
-    projection,
-  });
   const projectionDigest = assetContentDigest(projection);
   const descriptionInputDigest = assetContentDigest({
     sourceDigest: assetContentDigest(input.sourceText),
     projectionDigest,
   });
-  const sceneDraft = validateBattlefieldPublicPresentationV2(
+  const scene = await buildBattlefieldScenePresentation({
+    llm: input.llm,
+    sourceText: input.sourceText,
+    sourceKind: input.sourceKind,
+    existingBlurb: input.existing?.narrativeBlurb,
     projection,
-    AssetPublicPresentationV2Schema.parse({
-      description: generatedScene.segments.map((segment) => segment.text).join("\n\n"),
-      projectionContractVersion: 2,
-      projectionDigest,
-      descriptionInputDigest,
-      segments: generatedScene.segments,
-    }),
-  );
-  const claimAssessment = await input.llm.validateBattlefieldSceneClaims({
-    projection,
-    scene: {
-      description: sceneDraft.description,
-      segments: sceneDraft.segments,
-    },
+    projectionDigest,
+    descriptionInputDigest,
   });
-  const publicPresentation = validateBattlefieldSceneClaimAssessmentV2(
-    projection,
-    sceneDraft,
-    {
-      contractVersion: 1,
-      validatorContract: BATTLEFIELD_SCENE_CLAIM_VALIDATOR_CONTRACT,
-      projectionDigest,
-      segments: claimAssessment.segments,
-    },
-  );
+  const publicPresentation = scene.presentation;
   const envelope = BattlefieldGenerationEnvelopeV2Schema.parse({
     envelopeVersion: 2,
     definitionSchema: { family: "battlefield-preset", version: 2 },
@@ -113,11 +180,12 @@ export async function buildBattlefieldGenerationCandidate(input: {
     publicPresentation,
     createdAt: input.existing?.createdAt ?? now,
     updatedAt: now,
+    visibility: input.existing?.visibility,
   });
   return {
     envelope,
     previewPreset,
-    assistantMessage: `${input.generated.assistantMessage}\n${generatedScene.assistantMessage}`,
+    assistantMessage: `${input.generated.assistantMessage}\n${scene.assistantMessage}`,
   };
 }
 

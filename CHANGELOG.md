@@ -5,6 +5,29 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 
 ## [Unreleased]
 
+## [0.21.0] - 2026-08-16
+
+### Added
+
+- Adds public / friends-only / private visibility to battlefields and narration
+  styles, matching character matchmaking. Owners change it from the battlefield
+  detail and narration-style list. Existing assets without a setting stay public.
+
+### Fixed
+
+- Stops asking the model for the full battlefield definition during create,
+  revision, and upgrade. Fill uses a small required-and-nullable schema with
+  string descriptions; the server supplies IDs, topology, and force-free
+  defaults. Upgrade restores a public scene from the existing blurb if the
+  card validator rejects the model output.
+- Shows only unread counts in the burger menu and opens the list on
+  `/notifications`. The open panel sits above the bottom navigation.
+
+### Operations
+
+- No database migration. Visibility lives in existing `sheet_json`. Application
+  rollback returns to v0.20.1.
+
 ## [0.20.1] - 2026-08-16
 
 ### Fixed

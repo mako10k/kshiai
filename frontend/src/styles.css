@@ -14,6 +14,7 @@
   --tap: 44px;
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --safe-top: env(safe-area-inset-top, 0px);
+  --bottom-nav-height: 4.1rem;
   font-family: "Segoe UI", "Hiragino Sans", "Noto Sans JP", system-ui, sans-serif;
   line-height: 1.5;
   background: radial-gradient(1200px 600px at 10% -10%, #1a2744 0%, transparent 50%),
@@ -1842,7 +1843,9 @@ textarea::placeholder {
 /* —— Burger menu (low-frequency functions) —— */
 .burger {
   position: relative;
-  z-index: 40;
+  /* Above .bottom-nav (40) and .match-action-bar (45). Fixed children
+     inherit this stacking context, so the open panel is not crushed. */
+  z-index: 80;
 }
 
 .burger-toggle {
@@ -1900,13 +1903,15 @@ textarea::placeholder {
   position: fixed;
   top: 0;
   right: 0;
+  bottom: calc(var(--bottom-nav-height) + var(--safe-bottom));
   z-index: 50;
   width: min(20rem, 100vw);
-  height: 100dvh;
+  height: auto;
+  max-height: none;
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-  padding: max(0.85rem, var(--safe-top)) 1rem calc(1rem + var(--safe-bottom));
+  padding: max(0.85rem, var(--safe-top)) 1rem 1rem;
   background: linear-gradient(180deg, var(--panel) 0%, var(--panel-2) 100%);
   border-left: 1px solid var(--border);
   box-shadow: -12px 0 40px rgba(0, 0, 0, 0.35);
@@ -1953,12 +1958,6 @@ textarea::placeholder {
 .burger-links a:focus-visible {
   border-color: var(--accent);
   outline: none;
-}
-
-.burger-notify {
-  display: grid;
-  gap: 0.55rem;
-  padding-bottom: 0.35rem;
 }
 
 .notification-list {

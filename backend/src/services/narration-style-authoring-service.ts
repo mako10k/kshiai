@@ -127,6 +127,7 @@ export async function buildNarrationStyleGenerationCandidate(input: {
     publicPresentation,
     createdAt: input.existing?.createdAt ?? now,
     updatedAt: now,
+    visibility: input.existing?.visibility,
   });
   return {
     envelope,

@@ -51,18 +51,27 @@ export function NotificationList(props: {
 
 export function NotificationsPage() {
   const [items, setItems] = useState<OwnerNotificationPublic[]>([]);
+  const [unreadCount, setUnreadCount] = useState(0);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     void listNotifications(50)
-      .then((result) => setItems(result.notifications))
+      .then((result) => {
+        setItems(result.notifications);
+        setUnreadCount(result.unreadCount);
+      })
       .catch((err) => setError(err instanceof Error ? err.message : "failed"));
   }, []);
 
   return (
     <>
       <div className="row" style={{ justifyContent: "space-between" }}>
-        <h1>お知らせ</h1>
+        <div>
+          <h1>お知らせ</h1>
+          <p className="muted" style={{ margin: 0 }}>
+            {unreadCount > 0 ? `未読 ${unreadCount} 件` : "未読はありません"}
+          </p>
+        </div>
         <Link to="/">← メニュー</Link>
       </div>
       {error ? <p className="error">{error}</p> : null}
