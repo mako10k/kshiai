@@ -67,4 +67,38 @@ test.describe("battle screen", () => {
     );
     expect(Number.parseFloat(scrollMargin)).toBeGreaterThan(60);
   });
+
+  test("follows new story lines inside the log container", async ({ page }) => {
+    const longBattle = structuredClone(e2eGuiBattle);
+    longBattle.battle.log = Array.from({ length: 24 }, (_, turn) => ({
+      turn,
+      narrator: [`ターン${turn}の長い語り。石畳に雨が続き、路地の奥まで声が落ちる。`],
+      speeches: [],
+    }));
+    await page.setViewportSize({ width: 390, height: 844 });
+    await mockParticipantApis(page);
+    await page.unroute(`**/api/battles/${e2eGuiBattleId}`);
+    await page.route(`**/api/battles/${e2eGuiBattleId}`, async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify(longBattle),
+      });
+    });
+    await page.goto(`/battles/${e2eGuiBattleId}?view=1`);
+
+    const log = page.locator(".log");
+    await expect(log).toBeVisible();
+    await expect(page.getByText("ターン23の長い語り", { exact: false })).toBeAttached();
+    await expect.poll(async () => {
+      const position = await log.evaluate((node) => ({
+        scrollTop: node.scrollTop,
+        distanceFromEnd: node.scrollHeight - node.clientHeight - node.scrollTop,
+        overflowing: node.scrollHeight > node.clientHeight,
+      }));
+      return position.overflowing && position.distanceFromEnd < 80
+        ? position.scrollTop
+        : 0;
+    }).toBeGreaterThan(0);
+  });
 });

@@ -10,7 +10,6 @@ import { api } from "../api";
 import {
   extendManualScrollHold,
   hasReachedLatestPosition,
-  latestScrollY,
 } from "../battle-scroll";
 import {
   narrationStateFromSnapshot,
@@ -103,10 +102,12 @@ export function BattlePage() {
   function latestPositionReached(): boolean {
     const marker = logEnd.current;
     if (!marker || typeof window === "undefined") return true;
+    const scrollport = marker.closest(".log");
     return hasReachedLatestPosition({
       latestTop: marker.getBoundingClientRect().top,
       viewportHeight: window.innerHeight,
       bottomInset: bottomInset(),
+      scrollportBottom: scrollport?.getBoundingClientRect().bottom,
     });
   }
 
@@ -128,16 +129,11 @@ export function BattlePage() {
     releaseAutoScrollHold();
     programmaticScrollRef.current = true;
     const marker = logEnd.current;
-    if (marker && typeof window !== "undefined") {
-      window.scrollTo({
-        top: latestScrollY({
-          scrollY: window.scrollY,
-          latestBottom: marker.getBoundingClientRect().bottom,
-          viewportHeight: window.innerHeight,
-          bottomInset: bottomInset(),
-        }),
-        behavior: "smooth",
-      });
+    const log = marker?.closest(".log");
+    if (log instanceof HTMLElement) {
+      log.scrollTo({ top: log.scrollHeight, behavior: "smooth" });
+    } else {
+      marker?.scrollIntoView({ behavior: "smooth", block: "end" });
     }
     finishProgrammaticScrollSoon();
   }
@@ -319,15 +315,15 @@ export function BattlePage() {
     });
     window.addEventListener("keydown", onKeyDown);
     window.addEventListener("pointerdown", onPointerDown, { passive: true });
-    window.addEventListener("scroll", onScroll, { passive: true });
+    document.addEventListener("scroll", onScroll, { passive: true, capture: true });
     return () => {
       window.removeEventListener("wheel", onManualScrollIntent);
       window.removeEventListener("touchmove", onManualScrollIntent);
       window.removeEventListener("keydown", onKeyDown);
       window.removeEventListener("pointerdown", onPointerDown);
-      window.removeEventListener("scroll", onScroll);
+      document.removeEventListener("scroll", onScroll, { capture: true });
     };
-  }, [id]);
+  }, [id, battle?.id]);
 
   useEffect(() => {
     if (!id) return;
