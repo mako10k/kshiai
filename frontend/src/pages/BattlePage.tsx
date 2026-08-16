@@ -16,6 +16,7 @@ import {
   reduceNarrationEvent,
   type BattleNarrationClientState,
 } from "../battle-narration";
+import { battleStoryBlocks } from "../battle-screen";
 import { BattlePageView } from "./BattlePageView";
 
 /** Gap before requesting the next turn (does not wait for speech animation). */
@@ -31,6 +32,7 @@ type SpeechReveal = {
   total: number;
 };
 
+/** Snapshot: GET + advance done. Story: narration follow. Progress: one advance loop. */
 export function BattlePage() {
   const { id } = useParams();
   const [searchParams] = useSearchParams();
@@ -58,7 +60,6 @@ export function BattlePage() {
     typeof setTimeout
   > | null>(null);
   const manualScrollFrameRef = useRef<number | null>(null);
-  const advancingRef = useRef(false);
   const advanceKeyRef = useRef<string | null>(null);
   const narrationStateRef = useRef<BattleNarrationClientState | null>(null);
   const cancelledRef = useRef(false);
@@ -209,16 +210,13 @@ export function BattlePage() {
     if (!id) return;
     let stopped = false;
     let timer: ReturnType<typeof setTimeout> | null = null;
-    const poll = async () => {
+    const followStory = async () => {
       try {
         if (!narrationStateRef.current) {
           const snapshot = await api.getBattleNarration(id);
           if (stopped) return;
           narrationStateRef.current = narrationStateFromSnapshot(snapshot);
         } else {
-          const previousTerminal = narrationStateRef.current.entries.filter(
-            (entry) => entry.narrative !== null,
-          ).length;
           await api.followBattleNarration(
             id,
             narrationStateRef.current.cursor,
@@ -231,14 +229,6 @@ export function BattlePage() {
               setNarrationEntries(narrationStateRef.current.entries);
             },
           );
-          if (stopped) return;
-          const nextTerminal = narrationStateRef.current.entries.filter(
-            (entry) => entry.narrative !== null,
-          ).length;
-          if (nextTerminal > previousTerminal) {
-            const refreshed = await api.getBattle(id);
-            if (!stopped) setBattle(refreshed.battle);
-          }
         }
         if (!stopped && narrationStateRef.current) {
           setNarrationEntries(narrationStateRef.current.entries);
@@ -246,10 +236,10 @@ export function BattlePage() {
       } catch (pollError) {
         console.warn("[battle] narration follow reconnect", pollError);
       } finally {
-        if (!stopped) timer = setTimeout(poll, 1500);
+        if (!stopped) timer = setTimeout(followStory, 1500);
       }
     };
-    void poll();
+    void followStory();
     return () => {
       stopped = true;
       if (timer) clearTimeout(timer);
@@ -338,24 +328,22 @@ export function BattlePage() {
       .catch((e) => setError(String(e)));
   }, [id]);
 
-  // Stagger speeches on the newest log block; next turn may already be resolving.
   useEffect(() => {
-    if (!battle?.log.length) return;
-    const last = battle.log[battle.log.length - 1]!;
-    const key = `${battle.log.length}:${last.turn}:${last.speeches.length}`;
+    const last = [...battleStoryBlocks({
+      entries: narrationEntries,
+      legacyLog: battle?.log ?? [],
+    })]
+      .reverse()
+      .find((block) => block.narrative);
+    if (!last?.narrative) return;
     if (skipSpeechAnimRef.current) {
       skipSpeechAnimRef.current = false;
       setSpeechReveal(null);
       return;
     }
-    startSpeechReveal(key, last.speeches.length);
+    startSpeechReveal(last.key, last.narrative.speeches.length);
     return () => clearSpeechTimers();
-  }, [
-    battle?.log.length,
-    battle?.turn,
-    battle?.prologuePending,
-    battle?.aftermathPending,
-  ]);
+  }, [narrationEntries, battle?.log]);
 
   useEffect(() => {
     if (battle?.status !== "active" || isViewOnly) releaseAutoScrollHold();
@@ -369,48 +357,58 @@ export function BattlePage() {
     speechReveal?.visible,
   ]);
 
-  useEffect(() => {
-    if (!id || !battle || battle.status !== "active") return;
-    if (paused || error) return;
+  const canAdvance = Boolean(
+    id && battle && battle.status === "active" && !paused && !error && !isViewOnly,
+  );
 
-    const delay = battle.prologuePending
-      ? OPENING_DELAY_MS
-      : AUTO_TURN_DELAY_MS;
-    const timer = setTimeout(() => {
-      if (cancelledRef.current || advancingRef.current) return;
-      advancingRef.current = true;
-      setBusy(true);
-      setAdvancePhase("resolving");
-      void advanceWithRetry(id, 2)
-        .then((next) => {
+  useEffect(() => {
+    if (!id || !battle || !canAdvance) return;
+    let stopped = false;
+    let timer: ReturnType<typeof setTimeout> | null = null;
+    let settleWait: (() => void) | null = null;
+    let nextDelay = battle.prologuePending ? OPENING_DELAY_MS : AUTO_TURN_DELAY_MS;
+    const wait = (ms: number) =>
+      new Promise<void>((resolve) => {
+        settleWait = resolve;
+        timer = setTimeout(() => {
+          timer = null;
+          settleWait = null;
+          resolve();
+        }, ms);
+      });
+
+    void (async () => {
+      while (!stopped && !cancelledRef.current) {
+        await wait(nextDelay);
+        if (stopped || cancelledRef.current) return;
+        setBusy(true);
+        setAdvancePhase("resolving");
+        try {
+          const next = await advanceWithRetry(id, 2);
           if (cancelledRef.current) return;
           setBattle(next);
           setError(null);
-        })
-        .catch((err) => {
-          if (cancelledRef.current) return;
+          if (next.status !== "active") return;
+          nextDelay = next.prologuePending ? OPENING_DELAY_MS : AUTO_TURN_DELAY_MS;
+        } catch (err) {
+          if (stopped || cancelledRef.current) return;
           setError(err instanceof Error ? err.message : "failed");
-        })
-        .finally(() => {
-          advancingRef.current = false;
+          return;
+        } finally {
           if (!cancelledRef.current) {
             setBusy(false);
             setAdvancePhase(null);
           }
-        });
-    }, delay);
+        }
+      }
+    })();
 
-    return () => clearTimeout(timer);
-  }, [
-    id,
-    battle?.status,
-    battle?.turn,
-    battle?.prologuePending,
-    battle?.aftermathPending,
-    battle?.log?.length,
-    paused,
-    error,
-  ]);
+    return () => {
+      stopped = true;
+      if (timer) clearTimeout(timer);
+      settleWait?.();
+    };
+  }, [id, canAdvance]);
 
   async function advanceWithRetry(
     battleId: string,
@@ -445,32 +443,11 @@ export function BattlePage() {
     throw lastErr instanceof Error ? lastErr : new Error("advance_failed");
   }
 
-  async function retryAdvance() {
-    if (!id) return;
-    setError(null);
-    setBusy(true);
-    setAdvancePhase("resolving");
-    try {
-      const next = await advanceWithRetry(id, 2);
-      setBattle(next);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "failed");
-    } finally {
-      setBusy(false);
-      setAdvancePhase(null);
-    }
-  }
-
   function speechesVisibleForBlock(
-    blockIndex: number,
+    blockKey: string,
     speeches: SpeechLine[],
   ): SpeechLine[] {
-    if (!battle) return speeches;
-    const lastIndex = battle.log.length - 1;
-    if (blockIndex !== lastIndex || !speechReveal) return speeches;
-    const last = battle.log[lastIndex]!;
-    const key = `${battle.log.length}:${last.turn}:${last.speeches.length}`;
-    if (speechReveal.key !== key) return speeches;
+    if (!speechReveal || speechReveal.key !== blockKey) return speeches;
     return speeches.slice(0, speechReveal.visible);
   }
 
@@ -490,7 +467,7 @@ export function BattlePage() {
       logEnd={logEnd}
       speechesVisibleForBlock={speechesVisibleForBlock}
       onTogglePaused={() => setPaused((value) => !value)}
-      onRetryAdvance={() => void retryAdvance()}
+      onRetryAdvance={() => setError(null)}
       onScrollToLatest={scrollToLatest}
     />
   );

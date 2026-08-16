@@ -9,14 +9,8 @@ import {
   type BattlePublic,
   type SpeechLine,
 } from "@kshiai/shared";
+import { battleProgressText, battleStoryBlocks } from "../battle-screen";
 import { mediaSrc } from "../media";
-
-const PHASE_LABEL: Record<BattleAdvancePhase, string> = {
-  resolving: "局面を解決しています…",
-  agents: "キャラの反応を紡いでいます…",
-  narrating: "ナレーションを予約しています…",
-  finalizing: "記録しています…",
-};
 
 export function BattlePageView(input: {
   battle: BattlePublic;
@@ -28,7 +22,7 @@ export function BattlePageView(input: {
   paused: boolean;
   isResume: boolean;
   logEnd: RefObject<HTMLDivElement | null>;
-  speechesVisibleForBlock: (blockIndex: number, speeches: SpeechLine[]) => SpeechLine[];
+  speechesVisibleForBlock: (blockKey: string, speeches: SpeechLine[]) => SpeechLine[];
   onTogglePaused: () => void;
   onRetryAdvance: () => void;
   onScrollToLatest: () => void;
@@ -62,6 +56,16 @@ export function BattlePageView(input: {
     bf?.imageUrl,
     bf?.displayName ?? battle.scene,
   );
+  const story = battleStoryBlocks({
+    entries: narrationEntries,
+    legacyLog: battle.log,
+  });
+  const progressText = battleProgressText({
+    paused,
+    error,
+    busy,
+    phase: advancePhase,
+  });
 
   return (
     <>
@@ -197,77 +201,43 @@ export function BattlePageView(input: {
       <div className="panel">
         <h2>物語</h2>
         <div className="log">
-          {narrationEntries.length === 0 && battle.log.map((block, i) => (
-            <div className="log-block" key={`${block.turn}-${i}`}>
-              {block.narrator[0]?.includes("判定") ? (
-                <div className="muted" style={{ fontSize: "0.8rem" }}>
-                  — 最終判定 —
-                </div>
-              ) : block.turn > 0 ? (
-                <div className="muted" style={{ fontSize: "0.8rem" }}>
-                  — ターン {block.turn} —
-                </div>
-              ) : block.narrator[0]?.includes("開幕") ||
-                block.narrator[0]?.includes("プロローグ") ? (
-                <div className="muted" style={{ fontSize: "0.8rem" }}>
-                  — プロローグ —
-                </div>
-              ) : null}
-              {narrativeEntries({
-                ...block,
-                speeches: speechesVisibleForBlock(i, block.speeches),
-              }).map((entry) =>
-                entry.kind === "narrator" ? (
-                  <p
-                    key={`n-${entry.narratorLine}`}
-                    style={{ margin: "0.25rem 0" }}
-                  >
-                    {entry.text}
-                  </p>
-                ) : (
-                  <p
-                    key={`s-${entry.speechLine}`}
-                    className="speaker speech-enter"
-                    style={{ margin: "0.25rem 0" }}
-                  >
-                    {formatSpeech(entry.speech)}
-                  </p>
-                )
-              )}
-            </div>
-          ))}
-          {narrationEntries.map((entry) => (
+          {story.map((block) => (
             <div
-              className={`log-block${entry.narrative ? "" : " log-block-streaming"}`}
-              key={`narration-${entry.turnReceiptId}`}
-              aria-live="polite"
+              className={`log-block${block.streaming ? " log-block-streaming" : ""}`}
+              key={block.key}
+              aria-live={block.streaming ? "polite" : undefined}
             >
               <div className="muted" style={{ fontSize: "0.8rem" }}>
-                — {entry.combatTurn === null
-                  ? entry.phase
-                  : `ターン ${entry.combatTurn}`}{entry.narrative ? "" : "（ナレーション待機中）"}—
+                — {block.heading}{block.streaming ? "（ナレーション待機中）" : ""} —
               </div>
-              {entry.narrative
-                ? narrativeEntries(entry.narrative).map((line) =>
-                    line.kind === "narrator" ? (
-                      <p key={`n-${line.narratorLine}`} style={{ margin: "0.25rem 0" }}>
-                        {line.text}
+              {block.narrative
+                ? narrativeEntries({
+                    ...block.narrative,
+                    speeches: speechesVisibleForBlock(
+                      block.key,
+                      block.narrative.speeches,
+                    ),
+                  }).map((entry) =>
+                    entry.kind === "narrator" ? (
+                      <p
+                        key={`n-${entry.narratorLine}`}
+                        style={{ margin: "0.25rem 0" }}
+                      >
+                        {entry.text}
                       </p>
                     ) : (
                       <p
-                        key={`s-${line.speechLine}`}
-                        className="speaker"
+                        key={`s-${entry.speechLine}`}
+                        className="speaker speech-enter"
                         style={{ margin: "0.25rem 0" }}
                       >
-                        {formatSpeech(line.speech)}
+                        {formatSpeech(entry.speech)}
                       </p>
                     )
                   )
                 : (
                     <p className="muted" style={{ margin: "0.25rem 0" }}>
-                      {entry.status === "generating"
-                        ? "語りを生成しています…"
-                        : "順番を待っています…"}
+                      {block.pendingText}
                     </p>
                   )}
             </div>
@@ -283,15 +253,9 @@ export function BattlePageView(input: {
             <p className="muted">続きから開きました。準備ができたら再開してください。</p>
           )}
           <div className="row">
-            {busy && !paused && (
-              <span className="muted">
-                {advancePhase
-                  ? PHASE_LABEL[advancePhase]
-                  : "進めています…"}
-              </span>
-            )}
-            {!busy && !paused && !error && <span className="ok">自動進行中</span>}
-            {paused && <span className="muted">一時停止中</span>}
+            <span className={!busy && !paused && !error ? "ok" : "muted"}>
+              {progressText}
+            </span>
             <button
               className="btn primary"
               type="button"
