@@ -29,3 +29,4 @@ This directory contains durable records of architectural and product-rule decisi
 | [0013](0013-structured-narration-definition.md) | Accepted | Narration styles compile into phase-specific policy |
 | [0014](0014-queue-asset-authoring.md) | Accepted | Queue asset authoring; accept on dedicated review screens |
 | [0015](0015-e2e-operator-session-reentry.md) | Accepted | Operator re-enters the real E2E identity for GUI verification |
+| [0016](0016-scene-beats-batched-narration.md) | Accepted | Scene beats batch narration and reserved action sequences |
