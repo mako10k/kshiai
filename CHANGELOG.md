@@ -5,6 +5,24 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 
 ## [Unreleased]
 
+## [0.21.6] - 2026-08-16
+
+### Fixed
+
+- Auto-advance no longer stalls on 「自動進行中」 after a successful turn.
+  The battle screen keeps one sequential advance loop and no longer
+  reschedules from turn or log-length changes.
+
+### Changed
+
+- Snapshot, story, and progress are separate. Advance `done` updates the
+  match snapshot. The narration follow stream owns the 物語 pane and no
+  longer refreshes battle state.
+
+### Operations
+
+- No database migration. Application rollback returns to v0.21.5.
+
 ## [0.21.5] - 2026-08-16
 
 ### Fixed
