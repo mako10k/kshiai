@@ -4297,12 +4297,7 @@ async function advanceTurnWithLease(input: {
   if (!meta || !loadedState) throw new Error("BATTLE_NOT_FOUND");
   let state: BattleState = loadedState;
   if (meta.side_a_user_id !== input.userId) throw new Error("FORBIDDEN");
-  if (
-    state.advanceOperation?.status === "active" &&
-    state.advanceOperation.operationId !== input.operationId
-  ) {
-    throw new Error("ADVANCE_OPERATION_CONFLICT");
-  }
+  state = adoptOrphanedAdvanceOperation(state, input.operationId);
   if (
     state.advanceOperation?.status === "completed" &&
     state.advanceOperation.operationId === input.operationId
@@ -6068,6 +6063,25 @@ function retainOrSkipCanonicalTransitions(state: BattleState): BattleState {
             transition: null,
           }
         : state.latestWorldTransition,
+  };
+}
+
+function adoptOrphanedAdvanceOperation(
+  state: BattleState,
+  operationId: string,
+): BattleState {
+  if (
+    state.advanceOperation?.status !== "active" ||
+    state.advanceOperation.operationId === operationId
+  ) {
+    return state;
+  }
+  return {
+    ...state,
+    advanceOperation: {
+      ...state.advanceOperation,
+      operationId,
+    },
   };
 }
 

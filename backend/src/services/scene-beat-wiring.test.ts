@@ -240,4 +240,71 @@ describe("scene beat narration deferral", () => {
       ),
     );
   });
+
+  it("adopts an orphaned active advance instead of conflicting", async () => {
+    const now = "2026-08-16T00:00:00.000Z";
+    await query(
+      `INSERT INTO users (id, username, password_hash, created_at)
+       VALUES ($1, $2, $3, $4)`,
+      ["beat-orphan-owner", "beat-orphan-owner", "hash", now],
+    );
+    const sideA = sheet("beat-orphan-a", "beat-orphan-owner", "甲");
+    const sideB = sheet("beat-orphan-b", "beat-orphan-owner", "乙");
+    for (const character of [sideA, sideB]) {
+      await characterRepo.saveSheet(character);
+    }
+    await ensureSystemNarrationStyles();
+    const llm = new MockLlmProvider();
+    const created = await startBattle({
+      userId: "beat-orphan-owner",
+      battleId: "btl_scene_beat_orphan",
+      myCharacterId: sideA.id,
+      opponentCharacterId: sideB.id,
+      battlefieldMode: "random",
+      llm,
+    });
+    const stored = await query<{ state_json: string }>(
+      `SELECT state_json FROM battles WHERE id = $1`,
+      [created.id],
+    );
+    const state = JSON.parse(stored.rows[0]?.state_json ?? "{}") as {
+      battleRevision?: number;
+      advanceOperation?: {
+        schemaVersion: 1;
+        operationId: string;
+        expectedRevision: number;
+        status: "active";
+        phase: "prologue" | "combat";
+        startedAt: string;
+        completedAt: null;
+        receiptIds: [];
+      };
+    };
+    state.advanceOperation = {
+      schemaVersion: 1,
+      operationId: "op-orphaned",
+      expectedRevision: state.battleRevision ?? 0,
+      status: "active",
+      phase: created.prologuePending ? "prologue" : "combat",
+      startedAt: now,
+      completedAt: null,
+      receiptIds: [],
+    };
+    await query(
+      `UPDATE battles SET state_json = $2 WHERE id = $1`,
+      [created.id, JSON.stringify(state)],
+    );
+    const advanced = await advanceTurn({
+      userId: "beat-orphan-owner",
+      battleId: created.id,
+      operationId: "op-retry",
+      llm,
+    });
+    assert.ok(
+      advanced.turn >= created.turn ||
+        advanced.prologuePending === false ||
+        advanced.status === "finished",
+      `turn=${advanced.turn} prologue=${advanced.prologuePending}`,
+    );
+  });
 });
