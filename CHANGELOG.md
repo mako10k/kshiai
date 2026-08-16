@@ -5,6 +5,24 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 
 ## [Unreleased]
 
+## [0.21.1] - 2026-08-16
+
+### Fixed
+
+- Battle auto-follow uses the usable viewport above the bottom navigation, so
+  the latest log is not crushed under the menu.
+- Compact battlefield object list: closed accordion, smaller type, no
+  character rows or portable/usable facts, and duplicate labels omitted.
+
+### Changed
+
+- Battlefield instances stay one-fight. The save-from-battle route and battle
+  screen save buttons are removed.
+
+### Operations
+
+- No database migration. Application rollback returns to v0.21.0.
+
 ## [0.21.0] - 2026-08-16
 
 ### Added

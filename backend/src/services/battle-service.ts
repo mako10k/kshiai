@@ -5931,30 +5931,3 @@ export async function pickAutoMatchedOpponent(
   return charRepo.toPublicCharacterForViewer(candidates[0]!, userId);
 }
 
-export function instanceToPreset(
-  inst: BattlefieldInstance,
-  ownerUserId: string,
-  displayName?: string,
-): BattlefieldPreset {
-  const t = new Date().toISOString();
-  return {
-    id: newId("bfp"),
-    ownerUserId,
-    isSystem: false,
-    displayName: displayName?.trim() || inst.displayName,
-    category: inst.category,
-    tags: ["from-battle", inst.category],
-    createdAt: t,
-    updatedAt: t,
-    appearance: inst.appearance ?? {
-      summary: inst.terrain,
-      visualPrompt: `${inst.scene}, ${inst.terrain}, anime battlefield`,
-      imageUrl: null,
-    },
-    terrainHints: [inst.terrain].filter(Boolean),
-    obstacleHints: [...inst.obstacles],
-    conditionHints: [...inst.conditions],
-    baseCoefficients: { ...inst.coefficients },
-    narrativeBlurb: inst.narrativeSetup || inst.scene,
-  };
-}

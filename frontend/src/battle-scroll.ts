@@ -6,12 +6,24 @@ export function extendManualScrollHold(now: number): number {
   return now + MANUAL_SCROLL_HOLD_MS;
 }
 
-/** True when the log-end marker is visible, nearly visible, or already above us. */
+/** True when the log-end marker is in the usable viewport, not under the bottom nav. */
 export function hasReachedLatestPosition(input: {
   latestTop: number;
   viewportHeight: number;
   threshold?: number;
+  bottomInset?: number;
 }): boolean {
   const threshold = input.threshold ?? LATEST_POSITION_THRESHOLD_PX;
-  return input.latestTop <= input.viewportHeight + threshold;
+  const visibleBottom = input.viewportHeight - (input.bottomInset ?? 0);
+  return input.latestTop <= visibleBottom + threshold;
+}
+
+export function latestScrollY(input: {
+  scrollY: number;
+  latestBottom: number;
+  viewportHeight: number;
+  bottomInset?: number;
+}): number {
+  const visibleBottom = input.viewportHeight - (input.bottomInset ?? 0);
+  return Math.max(0, input.scrollY + input.latestBottom - visibleBottom);
 }

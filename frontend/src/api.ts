@@ -986,12 +986,4 @@ export const api = {
         headers: { "Idempotency-Key": crypto.randomUUID() },
       },
     ),
-  saveBattlefieldFromBattle: (battleId: string, displayName?: string) =>
-    request<{ battlefield: BattlefieldPresetPublic }>(
-      "/api/battlefields/from-battle",
-      {
-        method: "POST",
-        body: JSON.stringify({ battleId, displayName }),
-      },
-    ),
 };

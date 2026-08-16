@@ -526,8 +526,6 @@ function objectStateLines(
 ): string[] {
   if (!objectState) return [];
   const lines: string[] = [];
-  if (objectState.portable) lines.push("持ち運び可");
-  if (objectState.usable) lines.push("使用可");
   if (objectState.exclusiveUse) lines.push("独占使用");
   if (objectState.cover !== "none") {
     lines.push(
@@ -650,7 +648,9 @@ export function projectPublicObjectStates(input: {
   if (!input.worldState) return [];
   const labels = input.participantLabels ?? {};
   const rows: BattleObjectStatePublic[] = [];
-  for (const [id, entity] of Object.entries(input.worldState.entities)) {
+  for (const entity of Object.values(input.worldState.entities)) {
+    if (entity.kind === "character") continue;
+    if (!entity.active && entity.presence === "absent") continue;
     const profileLabel = entity.objectProfile?.canonicalLabel?.trim();
     const descriptionLabel = entity.objectProfile?.description
       ?.split(/[。\n]/u)[0]
@@ -663,33 +663,23 @@ export function projectPublicObjectStates(input: {
       effect: "効果",
       other: "対象",
     };
-    const label =
-      profileLabel ||
-      (id === "character.a"
-        ? labels.a ?? "A"
-        : id === "character.b"
-          ? labels.b ?? "B"
-          : descriptionLabel ||
-            // Never surface raw enum keys like "object" as the primary name.
-            `${kindJa[entity.kind] ?? "対象"}`);
+    const label = profileLabel || descriptionLabel ||
+      `${kindJa[entity.kind] ?? "対象"}`;
     const states = [
       ...objectStateLines(entity.objectState),
       ...actorStateLines(entity.actorState),
     ];
-    // Always retain at least presence/active so state is never empty for present objects.
     if (entity.presence === "absent") states.unshift("場にいない");
-    if (!entity.active) states.unshift("非アクティブ");
-    if (states.length === 0 && entity.kind === "character") continue;
     rows.push({
       label: label.slice(0, 120),
       kind: entity.kind,
       active: entity.active,
       presence: entity.presence,
-      states: states.slice(0, 16),
+      states: states.slice(0, 4),
       placementSummary: placementSummaryJa(entity, input.worldState.areas, labels),
     });
   }
-  // Prefer objects/terrain/effects, then characters with non-default states.
+  const seen = new Set<string>();
   return rows
     .sort((a, b) => {
       const rank = (row: BattleObjectStatePublic) =>
@@ -702,7 +692,13 @@ export function projectPublicObjectStates(input: {
               : 3;
       return rank(a) - rank(b) || a.label.localeCompare(b.label, "ja");
     })
-    .slice(0, 24);
+    .filter((row) => {
+      const key = `${row.kind}:${row.label}:${row.placementSummary ?? ""}`;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    })
+    .slice(0, 12);
 }
 
 
