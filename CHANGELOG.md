@@ -5,6 +5,23 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 
 ## [Unreleased]
 
+## [0.21.3] - 2026-08-16
+
+### Fixed
+
+- Battle story auto-follow scrolls the overflowing 物語 pane again, not the
+  window. Inner scroll also holds follow.
+
+### Changed
+
+- New battles group combat into 3-micro-turn scene beats (ADR-0016). Open-beat
+  combat skips the narration job, world LLM, and expression agents until the
+  beat closes. Existing battles keep one narration per combat turn.
+
+### Operations
+
+- No database migration. Application rollback returns to v0.21.2.
+
 ## [0.21.2] - 2026-08-16
 
 ### Added
