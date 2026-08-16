@@ -37,6 +37,12 @@ import { clampCoefficientMap, mergeCoefficients } from "./battlefield.js";
 import type { NarrationStyleSnapshot } from "./narration-style.js";
 import { defaultNarrationSnapshot } from "./narration-style.js";
 import {
+  nextPublicCombatTurn,
+  publicTurnBeatIndex,
+  sceneBeatK,
+  usesPublicTurnClock,
+} from "./scene-beat.js";
+import {
   buildSemanticObservationState,
   createBattleSemanticState,
 } from "./semantic-state.js";
@@ -1991,10 +1997,13 @@ function prepareBattleTurnStart(input: ResolveTurnInput): PreparedBattleTurnStar
   );
   const events: TurnEvent[] = [];
   const mechanicalSpans: MechanicalResolutionSpan[] = [];
-  const turn = input.state.turn + 1;
+  const continuingPublicTurn = usesPublicTurnClock(input.state) &&
+    (input.state.sceneBeat?.receiptIds.length ?? 0) > 0;
+  const turn = nextPublicCombatTurn(input.state);
 
   const pacingPolicy = battlePacingPolicyForState(input.state);
   if (
+    !continuingPublicTurn &&
     turn > 1 &&
     pacingPolicy.automaticRestoration === "legacy_twenty_percent"
   ) {
@@ -2026,12 +2035,14 @@ function prepareBattleTurnStart(input: ResolveTurnInput): PreparedBattleTurnStar
     }
   }
 
-  const effectSchedule = resolvePendingEffectSchedule({
-    turn,
-    effects: input.state.pendingEffects ?? [],
-    sideA,
-    sideB,
-  });
+  const effectSchedule = continuingPublicTurn
+    ? { resolutions: [] as ReturnType<typeof resolvePendingEffectSchedule>["resolutions"], pendingEffects: input.state.pendingEffects ?? [] }
+    : resolvePendingEffectSchedule({
+        turn,
+        effects: input.state.pendingEffects ?? [],
+        sideA,
+        sideB,
+      });
   for (const resolution of effectSchedule.resolutions) {
     if (resolution.status === "pending") continue;
     const effect = resolution.effect;
@@ -2080,7 +2091,7 @@ function prepareBattleTurnStart(input: ResolveTurnInput): PreparedBattleTurnStar
     }
   }
 
-  if (turn === 1 && input.state.battlefield) {
+  if (turn === 1 && !continuingPublicTurn && input.state.battlefield) {
     const bf = input.state.battlefield;
     const bits = [
       bf.terrain,
@@ -2879,7 +2890,13 @@ export function resolveTurn(input: ResolveTurnInput): {
       type: "info",
       summary: `${sideB.displayName} は対決を続けられなくなった。${sideA.displayName} とこの場が、その後をどう迎えるか——`,
     });
-  } else if (turn >= pacingPolicy.turnLimit) {
+  } else if (
+    turn >= pacingPolicy.turnLimit &&
+    (
+      !usesPublicTurnClock(input.state) ||
+      publicTurnBeatIndex(input.state) >= sceneBeatK(input.state)
+    )
+  ) {
     status = "finished";
     finishReason = "turn_limit";
     // Hidden score for turn-limit tie-break (engine-side); referee LLM may override later.
@@ -2895,6 +2912,7 @@ export function resolveTurn(input: ResolveTurnInput): {
           : `規定ターン終了 — 審判は ${winnerSide === "a" ? sideA.displayName : sideB.displayName} 優勢として最終判定に入る。`,
     });
   } else if (
+    publicTurnBeatIndex(input.state) === 1 &&
     pacingPolicy.warningTurnsBeforeLimit > 0 &&
     turn === pacingPolicy.turnLimit - pacingPolicy.warningTurnsBeforeLimit
   ) {
@@ -2907,6 +2925,7 @@ export function resolveTurn(input: ResolveTurnInput): {
   const state: BattleState = {
     ...input.state,
     turn,
+    combatTick: (input.state.combatTick ?? 0) + 1,
     sideA,
     sideB,
     situation,

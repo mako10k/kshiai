@@ -1909,6 +1909,8 @@ export const BattleStateSchema = z.object({
   status: BattleStatusSchema,
   turn: z.number().int().nonnegative(),
   turnLimit: z.number().int().positive(),
+  /** Engine beat count; public turn may stay still across several beats. */
+  combatTick: z.number().int().nonnegative().optional(),
   /** Versioned pacing rules frozen for this battle; absent on legacy saves. */
   pacingPolicy: BattlePacingPolicySchema.optional(),
   /** Frozen source generations used by all authoritative battle processing. */
@@ -1979,6 +1981,7 @@ export const BattleStateSchema = z.object({
     receiptIds: string[];
     reservedA: CharacterActionIntent[];
     reservedB: CharacterActionIntent[];
+    clock?: "micro-turn" | "public-turn";
   }>((value) => {
     if (value === undefined) return true;
     if (!value || typeof value !== "object") return false;
@@ -1988,14 +1991,19 @@ export const BattleStateSchema = z.object({
       receiptIds?: unknown;
       reservedA?: unknown;
       reservedB?: unknown;
+      clock?: unknown;
     };
+    const clockOk = beat.clock === undefined ||
+      beat.clock === "micro-turn" ||
+      beat.clock === "public-turn";
     return beat.schemaVersion === 1 &&
       typeof beat.k === "number" &&
       beat.k >= 1 &&
       beat.k <= 8 &&
       Array.isArray(beat.receiptIds) &&
       Array.isArray(beat.reservedA) &&
-      Array.isArray(beat.reservedB);
+      Array.isArray(beat.reservedB) &&
+      clockOk;
   }).optional(),
   /** Structured engine transitions; narrative log is presentation only. */
   turnRecords: z.array(BattleTurnRecordSchema).default([]),
@@ -2348,6 +2356,9 @@ export const BattlePublicSchema = z.object({
   status: BattleStatusSchema,
   turn: z.number(),
   turnLimit: z.number(),
+  /** Intra-turn beat index when the public-turn clock is bound. */
+  combatBeat: z.number().int().positive().optional(),
+  combatBeatsPerTurn: z.number().int().positive().optional(),
   sideA: z.object({
     characterId: z.string(),
     displayName: z.string(),

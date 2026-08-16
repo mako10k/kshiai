@@ -5,6 +5,19 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 
 ## [Unreleased]
 
+## [0.21.7] - 2026-08-16
+
+### Changed
+
+- New battles keep the public clock at twelve turns. Three engine beats sit
+  inside each turn. The 物語 pane and narrator no longer print turn numbers.
+  The match header still shows `ターン N / 12` and the current beat.
+
+### Operations
+
+- No database migration. In-flight battles without `sceneBeat.clock` keep
+  the previous increment. Application rollback returns to v0.21.6.
+
 ## [0.21.6] - 2026-08-16
 
 ### Fixed

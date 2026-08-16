@@ -34,9 +34,7 @@ export function battleStoryBlocks(input: {
   if (input.entries.length > 0) {
     return input.entries.map((entry) => ({
       key: entry.turnReceiptId,
-      heading: entry.combatTurn === null
-        ? PHASE_HEADING[entry.phase]
-        : `ターン ${entry.combatTurn}`,
+      heading: PHASE_HEADING[entry.phase],
       streaming: entry.narrative === null,
       narrative: entry.narrative,
       pendingText: pendingNarrationText(entry),
@@ -74,12 +72,12 @@ function pendingNarrationText(
 
 function legacyHeading(block: NarrativeBlock): string {
   if (block.narrator[0]?.includes("判定")) return "最終判定";
-  if (block.turn > 0) return `ターン ${block.turn}`;
   if (
     block.narrator[0]?.includes("開幕") ||
     block.narrator[0]?.includes("プロローグ")
   ) {
     return "プロローグ";
   }
+  if (block.turn > 0) return "戦闘";
   return "物語";
 }

@@ -323,7 +323,11 @@ export function buildBattleTurnCausalReceipt(
       issues: [{ code: "invalid_input", message: "causal receipt input is invalid" }],
     };
   }
-  if (input.turn !== input.after.turn || input.before.turn + 1 !== input.turn) {
+  const tickAdvanced = (input.after.combatTick ?? 0) ===
+    (input.before.combatTick ?? 0) + 1;
+  const ordinaryTurn = input.before.turn + 1 === input.turn;
+  const samePublicTurnBeat = input.before.turn === input.turn && tickAdvanced;
+  if (input.turn !== input.after.turn || !(ordinaryTurn || samePublicTurnBeat)) {
     issues.push({
       code: "turn_mismatch",
       message: "causal receipt must describe exactly one committed ordinary turn",

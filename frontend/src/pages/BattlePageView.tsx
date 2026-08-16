@@ -128,7 +128,11 @@ export function BattlePageView(input: {
                 ? `プロローグ…`
                 : battle.aftermathPending
                   ? `決着の余波…`
-                  : `ターン ${battle.turn} / ${battle.turnLimit}`}
+                  : `ターン ${battle.turn} / ${battle.turnLimit}${
+                      battle.combatBeat && battle.combatBeatsPerTurn
+                        ? ` · ${battle.combatBeat}/${battle.combatBeatsPerTurn}`
+                        : ""
+                    }`}
           </span>
         </div>
         {battle.prologuePending && !finished ? (

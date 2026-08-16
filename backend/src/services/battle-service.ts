@@ -38,12 +38,15 @@ import {
   LOCAL_TWELVE_TURN_PACING_CANDIDATE,
   DEFAULT_SCENE_BEAT_K,
   hpSwingClosesSceneBeat,
+  nextPublicCombatTurn,
   nextReservedAction,
   openSceneBeat,
+  publicTurnBeatIndex,
   recordSceneBeatReceipt,
   sceneBeatK,
   sceneBeatsEnabled,
   shouldCloseSceneBeat,
+  usesPublicTurnClock,
   createCausalTurnExecution,
   acceptCausalExecutionDecision,
   commitCausalExecutionBucket,
@@ -261,6 +264,13 @@ export function toBattlePublic(
     status: state.status,
     turn: state.turn,
     turnLimit: state.turnLimit,
+    ...(usesPublicTurnClock(state) &&
+    (state.sceneBeat?.receiptIds.length ?? 0) > 0
+      ? {
+          combatBeat: state.sceneBeat?.receiptIds.length,
+          combatBeatsPerTurn: sceneBeatK(state),
+        }
+      : {}),
     sideA: {
       characterId: state.sideA.characterId,
       displayName: state.sideA.displayName,
@@ -1353,7 +1363,7 @@ function buildCharacterDecisionContext(input: {
   const finisher = input.side === "a"
     ? input.state.finisherA
     : input.state.finisherB;
-  const nextTurn = input.decisionTurn ?? input.state.turn + 1;
+  const nextTurn = input.decisionTurn ?? nextPublicCombatTurn(input.state);
   const window = buildFinisherWindow({
     finisher,
     turn: nextTurn,
@@ -4384,11 +4394,15 @@ async function advanceTurnWithLease(input: {
 
   emit({ type: "phase", phase: "resolving" });
 
-  const upcomingTurn = state.turn + 1;
+  const upcomingTurn = nextPublicCombatTurn(state);
+  const upcomingTick = (state.combatTick ?? 0) + 1;
+  const continuingPublicTurn = usesPublicTurnClock(state) &&
+    (state.sceneBeat?.receiptIds.length ?? 0) > 0;
   let supervisor = normalizeSupervisor(state.supervisor);
   const dramaBefore = normalizeDramaState(state.dramaState);
   const dramaPhase = dramaPhaseForTurn(upcomingTurn, state.turnLimit);
   const environmentBeatDue =
+    !continuingPublicTurn &&
     upcomingTurn > 1 &&
     (dramaBefore.turnsSinceEnvironmentBeat >= 2 ||
       dramaBefore.turnsSinceLocationChange >= 3 ||
@@ -4402,7 +4416,7 @@ async function advanceTurnWithLease(input: {
     upcomingTurn,
     state.turnLimit,
   );
-  if (inject) {
+  if (inject && !continuingPublicTurn) {
     environmentProposal = await buildEnvironmentProcessProposal({
       llm: input.llm,
       state,
@@ -4416,7 +4430,8 @@ async function advanceTurnWithLease(input: {
 
   // Clamp legacy inflated skill.power (LLM sometimes wrote 20–40 as "damage score")
   const safeSkills = (skills: Skill[]) => skills.map(balanceSkill);
-  let causalExecution = state.causalExecution?.turn === upcomingTurn &&
+  const beatExecutionId = `${state.id}:turn:${upcomingTurn}:tick:${upcomingTick}`;
+  let causalExecution = state.causalExecution?.executionId === beatExecutionId &&
       state.causalExecution.status !== "finished"
     ? state.causalExecution
     : null;
@@ -4432,7 +4447,7 @@ async function advanceTurnWithLease(input: {
     });
     if (!prepared) throw new Error("CAUSAL_TURN_PREPARATION_UNAVAILABLE");
     causalExecution = createCausalTurnExecution({
-      executionId: `${state.id}:turn:${prepared.turn}`,
+      executionId: beatExecutionId,
       battleId: state.id,
       turn: prepared.turn,
       expectedStateRevision: state.semanticState?.revision ?? 0,
@@ -5481,7 +5496,7 @@ function applyCombatSceneBeat(input: {
     .find((receipt) => receipt.phase === "combat");
   if (!combatReceipt) return input.after;
   if (input.closed) {
-    return { ...input.after, sceneBeat: openSceneBeat(k) };
+    return { ...input.after, sceneBeat: openSceneBeat(k, previous.clock) };
   }
   const reservedA = nextReservedAction(previous.reservedA);
   const reservedB = nextReservedAction(previous.reservedB);

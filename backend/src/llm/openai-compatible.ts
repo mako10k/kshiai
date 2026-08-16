@@ -445,7 +445,8 @@ characterSpeeches were already authored by isolated character agents from their 
 You MAY add a speech or visible/audible reaction for a third-party or scene entity when currentState and observationBoundary support that entity's presence and agency. For such a scene-authored line, set sourceSide to null. Do not use this permission to add another line for side A or B, or to invent an unsupported person, object agency, action, outcome, or private fact.
 Do not add a speech or reaction for an inaccessible counterpart; characterSpeeches is already filtered to the permitted speakers: ${JSON.stringify(requiredSpeakers)}.
 JSON: { "turn": number, "focus": "${focus}", "narrator": string[], "speeches": [ { "sourceSide": "a"|"b"|null, "speaker": string, "text": string, "afterNarratorLine": number } ], "recognitionUpdates": [ { "subjectRef": string, "recognizedAs": string, "identityKnowledge": "unknown"|"suspected"|"identified", "continuity": "same_entity"|"possibly_same_entity"|"unlinked" } ] }
-Do not mention numeric HP/MP/ATK values.`;
+Do not mention numeric HP/MP/ATK values.
+Do not mention turn numbers, ターン counts, or 第Nターン.`;
   const user = JSON.stringify({
     brief: turnBrief,
     focus,

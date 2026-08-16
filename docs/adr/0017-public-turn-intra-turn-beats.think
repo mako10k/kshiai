@@ -1,0 +1,83 @@
+ADR-0017
+title: Public turn clock with three intra-turn beats
+status: Accepted
+date: 2026-08-16
+decision_owner: Product owner
+related:
+  - ADR-0001
+  - ADR-0006
+  - ADR-0016
+  - docs/battle-pacing-candidate-12-v2.md
+authority: this file is the causal record; 0017-public-turn-intra-turn-beats.md is the projection
+
+PROBLEM P1
+  ADR-0016 grouped K=3 engine resolutions for narration but counted
+  each resolution as a public ターン. The owner never accepted
+  beat = turn. The 12-turn pacing clock and the intra-turn
+  subdivision were collapsed into one counter.
+
+EVIDENCE E1
+  candidate-12-v2 freezes turnLimit 12 as the public match clock.
+EVIDENCE E2
+  Production UI and 物語 headings printed engine resolution
+  numbers as ターン N.
+EVIDENCE E3
+  Owner 2026-08-16: beat is not a turn; reconstitute as twelve
+  turns with three beats each; do not show turns to the narrator.
+
+CAUSE C1
+  Implementation treated the existing engine turn increment as the
+  micro-turn identity. That made K consume the public clock.
+
+REJECTED O1: keep 0016 clock and only hide headings
+  Display lie. Pacing, turn-limit, and story identity stay wrong.
+REJECTED O2: raise turnLimit to 36 and keep one counter
+  Still names beats as turns.
+
+DECISION O3: public turn is the 12-count clock. Each public
+  combat turn contains up to K=3 sequential engine beats.
+  Narration still fires on beat-group close. Public 物語 and
+  narrator-facing copy do not display turn numbers. The match
+  header may show ターン N / 12.
+
+OWNER_ACCEPTANCE
+  Product owner directed this reconstitution on 2026-08-16:
+  do not equate beat with turn; no narrator turn display;
+  twelve turns, three beats per turn.
+
+ACCEPTANCE
+  ADR-0017 revision dated 2026-08-16 is Accepted. Selected
+  option is O3. This amends ADR-0016 R1/R3 clock identity.
+  ADR-0016 skip-LLM, reserved actions, and sequential order remain.
+
+RULES
+  R1. New battles bind sceneBeat.clock = public-turn. Missing
+      clock keeps ADR-0016 micro-turn increment for in-flight
+      battles.
+  R2. Public state.turn increments only when a new public combat
+      turn starts. Continuing beats keep the same turn.
+  R3. K=3 beats belong inside one public turn. Close still uses
+      K, 15% HP swing, KO/terminal, or infeasible reservation.
+  R4. turnLimit 12 counts public turns. Turn-limit finish waits
+      until the last beat of public turn 12, unless KO ends first.
+  R5. combatTick increments every engine beat. Causal execution
+      identity includes beat index so two beats of one turn do
+      not resume each other.
+  R6. Restoration, due-turn effects, happenings, and battlefield
+      intro run on the first beat of a public turn only.
+  R7. Public 物語 headings and narrator-facing presentation do
+      not print ターン numbers. Header ターン N / 12 remains.
+  R8. Auto-advance HTTP remains one beat per call.
+  R9. No database migration.
+
+CONSEQUENCES
+  + Public clock matches the 12-turn pacing policy.
+  + Three engine exchanges can land in one public turn / one story.
+  + In-flight 0016 battles keep their recorded increment.
+  - A public turn can take three HTTP advances before the header
+    increments; beat index is shown beside the header.
+  - Matches last up to 36 combat beats.
+
+COMPATIBILITY
+  Battles without sceneBeat.clock keep 0016 counting.
+  New battles created after this ADR use public-turn.
