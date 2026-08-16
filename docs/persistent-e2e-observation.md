@@ -74,6 +74,13 @@ Their runtime password is randomized on every run and is never stored in the
 repository or artifact. The auth identities and mapped application users are
 not deleted.
 
+Administrators and developers can mint a one-shot password for the same
+identities through `POST /api/internal/e2e-session` and the
+`/internal/observations` re-entry controls (ADR-0015). That ends the operator
+session and signs in as the fixture user through the normal email/password
+grant. Do not mint while an Observe workflow is running. Playwright GUI
+verification uses `npm run test:e2e-gui` and is not a required merge check.
+
 The job creates the two fixed characters, the rainy-alley battlefield, and the
 causal-observation narrator only when their stable IDs do not exist. A later
 run reuses the existing records without overwriting battle records, ratings,

@@ -1,5 +1,20 @@
 import { z } from "zod";
 
+export const E2eSessionTargetSchema = z.enum(["observer", "opponent"]);
+export type E2eSessionTarget = z.infer<typeof E2eSessionTargetSchema>;
+
+export const E2eSessionRequestSchema = z.object({
+  target: E2eSessionTargetSchema,
+});
+export type E2eSessionRequest = z.infer<typeof E2eSessionRequestSchema>;
+
+export const E2eSessionResponseSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(1),
+  accountKind: z.enum(["test", "e2e"]),
+});
+export type E2eSessionResponse = z.infer<typeof E2eSessionResponseSchema>;
+
 export const RegisterRequestSchema = z.object({
   username: z.string().min(3).max(32),
   password: z.string().min(6).max(128),

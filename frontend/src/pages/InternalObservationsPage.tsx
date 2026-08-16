@@ -9,6 +9,7 @@ import {
   type InternalBattleTemporalPlan,
   type InternalCausalTurnExecution,
 } from "../api";
+import { E2eSessionReentry } from "../components/E2eSessionReentry";
 
 function formatWhen(value: string | null): string {
   if (!value) return "—";
@@ -270,6 +271,7 @@ export function InternalObservationsPage() {
       </div>
 
       {error && <p className="error">{error}</p>}
+      <E2eSessionReentry role={role} />
       {loading && battles.length === 0 ? <p className="muted">読み込み中…</p> : null}
 
       <div className="internal-observation-layout">

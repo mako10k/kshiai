@@ -28,3 +28,4 @@ This directory contains durable records of architectural and product-rule decisi
 | [0012](0012-structured-battlefield-definition.md) | Accepted | Battlefield presets, compiled instances, and live world state stay separate |
 | [0013](0013-structured-narration-definition.md) | Accepted | Narration styles compile into phase-specific policy |
 | [0014](0014-queue-asset-authoring.md) | Accepted | Queue asset authoring; accept on dedicated review screens |
+| [0015](0015-e2e-operator-session-reentry.md) | Accepted | Operator re-enters the real E2E identity for GUI verification |

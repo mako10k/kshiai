@@ -17,3 +17,6 @@ frontend/dist/
 thoughts/
 .llmthink/
 gha-creds-*.json
+playwright-report/
+test-results/
+e2e/.auth/
