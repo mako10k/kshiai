@@ -59,6 +59,7 @@ export function BattlePage() {
   > | null>(null);
   const manualScrollFrameRef = useRef<number | null>(null);
   const advancingRef = useRef(false);
+  const advanceKeyRef = useRef<string | null>(null);
   const narrationStateRef = useRef<BattleNarrationClientState | null>(null);
   const cancelledRef = useRef(false);
   /** First battle payload shows all speeches; later log growth animates. */
@@ -189,6 +190,7 @@ export function BattlePage() {
   useEffect(() => {
     cancelledRef.current = false;
     skipSpeechAnimRef.current = true;
+    advanceKeyRef.current = null;
     releaseAutoScrollHold();
     programmaticScrollRef.current = false;
     return () => {
@@ -415,10 +417,11 @@ export function BattlePage() {
     retries: number,
   ): Promise<BattlePublic> {
     let lastErr: unknown;
-    const idempotencyKey = crypto.randomUUID();
+    const idempotencyKey = advanceKeyRef.current ?? crypto.randomUUID();
+    advanceKeyRef.current = idempotencyKey;
     for (let i = 0; i <= retries; i++) {
       try {
-        return await api.advanceBattleStream(battleId, {
+        const battle = await api.advanceBattleStream(battleId, {
           idempotencyKey,
           onEvent: (event) => {
             if (cancelledRef.current) return;
@@ -428,6 +431,8 @@ export function BattlePage() {
             // Narration is owned by the separate receipt stream, not advance SSE.
           },
         });
+        advanceKeyRef.current = null;
+        return battle;
       } catch (err) {
         lastErr = err;
         // Brief pause then retry (LLM / tunnel blips)

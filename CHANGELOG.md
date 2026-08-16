@@ -5,6 +5,19 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 
 ## [Unreleased]
 
+## [0.21.5] - 2026-08-16
+
+### Fixed
+
+- A leftover active advance after a failed turn no longer blocks retry with
+  `ADVANCE_OPERATION_CONFLICT`. The lease holder adopts the orphaned
+  operation, and the battle screen reuses the same idempotency key until the
+  advance succeeds.
+
+### Operations
+
+- No database migration. Application rollback returns to v0.21.4.
+
 ## [0.21.4] - 2026-08-16
 
 ### Fixed
