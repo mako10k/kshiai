@@ -46,6 +46,24 @@ describe("battle auto scroll", () => {
       }),
       true,
     );
+    assert.equal(
+      hasReachedLatestPosition({
+        latestTop: 700,
+        viewportHeight: 800,
+        bottomInset: 80,
+        scrollportBottom: 620,
+      }),
+      false,
+    );
+    assert.equal(
+      hasReachedLatestPosition({
+        latestTop: 619,
+        viewportHeight: 800,
+        bottomInset: 80,
+        scrollportBottom: 620,
+      }),
+      true,
+    );
   });
 
   it("stays enabled after scrolling below the latest marker", () => {
