@@ -12,7 +12,7 @@ import {
   LoginRequestSchema,
   RegisterRequestSchema,
   UpdateDisplayNameRequestSchema,
-  SaveBattlefieldFromBattleRequestSchema,
+
   UpdateDialoguePipelineSettingsSchema,
   coalesceNonEmptyList,
   toPublicNarrationStyle,
@@ -66,7 +66,6 @@ import * as notificationRepo from "./repositories/owner-notifications.js";
 import {
   advanceTurn,
   generateMatchPolicies,
-  instanceToPreset,
   pickRandomOpponent,
   pickAutoMatchedOpponent,
   startBattle,
@@ -1977,25 +1976,6 @@ export function buildRoutes(options: {
         502,
       );
     }
-  });
-
-  authed.post("/battlefields/from-battle", async (c) => {
-    const user = c.get("user");
-    const body = SaveBattlefieldFromBattleRequestSchema.parse(await c.req.json());
-    const meta = await battleRepo.getBattleMeta(body.battleId);
-    const state = await battleRepo.getBattle(body.battleId);
-    if (!meta || !state) return c.json({ error: "not_found" }, 404);
-    if (meta.side_a_user_id !== user.id) return c.json({ error: "forbidden" }, 403);
-    if (!state.battlefield) {
-      return c.json({ error: "no_battlefield" }, 400);
-    }
-    const preset = instanceToPreset(
-      state.battlefield,
-      user.id,
-      body.displayName,
-    );
-    await bfRepo.importPreset(preset);
-    return c.json({ battlefield: toPublicPreset(preset) });
   });
 
   // —— Narration styles (system presets + user custom) ——

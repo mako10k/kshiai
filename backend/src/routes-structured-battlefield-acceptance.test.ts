@@ -734,19 +734,5 @@ describe("structured battlefield route acceptance", () => {
       1,
     );
 
-    const saved = await app.request("/api/battlefields/from-battle", {
-      method: "POST",
-      headers: { ...authHeaders, "Content-Type": "application/json" },
-      body: JSON.stringify({ battleId, displayName: "対戦から保存した遺跡" }),
-    });
-    assert.equal(saved.status, 200);
-    const savedId = ((await saved.json()) as {
-      battlefield: { id: string };
-    }).battlefield.id;
-    assert.equal(
-      (await battlefieldAssetRepo.getReadyBattlefieldGeneration(savedId))
-        ?.generation,
-      1,
-    );
   });
 });

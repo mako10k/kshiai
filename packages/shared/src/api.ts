@@ -168,14 +168,6 @@ export const BattlefieldChatRequestSchema = z.object({
 });
 export type BattlefieldChatRequest = z.infer<typeof BattlefieldChatRequestSchema>;
 
-export const SaveBattlefieldFromBattleRequestSchema = z.object({
-  battleId: z.string(),
-  displayName: z.string().min(1).max(64).optional(),
-});
-export type SaveBattlefieldFromBattleRequest = z.infer<
-  typeof SaveBattlefieldFromBattleRequestSchema
->;
-
 /** @deprecated Prefer POST .../advance — per-turn actions are automatic. */
 export const BattleActionRequestSchema = z.object({
   kind: z.enum(["skill", "defend", "wait"]).optional(),
