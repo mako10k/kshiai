@@ -24,7 +24,12 @@ import {
   listCharacterDefinitionGapsV2,
   parseCharacterDefinitionGapFillV2,
   restoreAuthoritativeCharacterDefinitionV2,
-  BattlefieldDefinitionV2Schema,
+  BattlefieldDefinitionLlmFillV2Schema,
+  applyBattlefieldDefinitionGapFillV2,
+  battlefieldDefinitionPreservedSnapshotV2,
+  listBattlefieldDefinitionGapsV2,
+  parseBattlefieldDefinitionGapFillV2,
+  restoreAuthoritativeBattlefieldDefinitionV2,
   NarrationDefinitionV2Schema,
   AssetClaimRiskCodeSchema,
   DecisionProfileSchema,
@@ -252,6 +257,24 @@ function characterDefinitionReviewResponseFormat(): PerceptionPromptResponseForm
 
 const CHARACTER_DEFINITION_REVIEW_RESPONSE_FORMAT =
   characterDefinitionReviewResponseFormat();
+
+function battlefieldDefinitionFillResponseFormat(): PerceptionPromptResponseFormat {
+  const generated = zodResponseFormat(
+    z.object({ fill: BattlefieldDefinitionLlmFillV2Schema }).strict(),
+    "battlefield_definition_fill_v2",
+  );
+  return {
+    type: "json_schema",
+    json_schema: {
+      name: generated.json_schema.name,
+      strict: true,
+      schema: schemaRecord(generated.json_schema.schema, "battlefield fill schema"),
+    },
+  };
+}
+
+const BATTLEFIELD_DEFINITION_FILL_RESPONSE_FORMAT =
+  battlefieldDefinitionFillResponseFormat();
 
 const NARRATION_IDENTIFIER_RULES = `Identifier containment is mandatory. Values used as IDs, controlId, perceptId, contact IDs, entity keys, action IDs, event IDs, or JSON paths are non-linguistic control metadata.
 NEVER copy, quote, speak, parenthesize, or use any such identifier as a name in narrator lines, speaker fields, or speech text. Use the matching renderLabel or supplied human display name only.
@@ -1872,41 +1895,105 @@ Coefficients between 0.25 and 2.5. Do not invent stats for characters.`,
     input: GenerateBattlefieldDefinitionV2Input,
   ) {
     if (!this.client) return this.fallback.generateBattlefieldDefinitionV2(input);
+    if (input.sourceKind === "import") {
+      return structuredClone(input.baseDefinition);
+    }
+    return this.fillBattlefieldDefinitionGapsV2(input);
+  }
+
+  private async fillBattlefieldDefinitionGapsV2(
+    input: GenerateBattlefieldDefinitionV2Input,
+  ) {
+    const gaps = listBattlefieldDefinitionGapsV2(input.baseDefinition);
+    if (gaps.length === 0 || !input.sourceText.trim()) {
+      return structuredClone(input.baseDefinition);
+    }
+    const upgrade = input.sourceKind === "upgrade_description";
     try {
       const data = await this.chatJson(
-        `You refine a VALID BattlefieldDefinitionV2 JSON value from an owner source and a
-valid deterministic base. Return JSON only: {"definition": object}.
+        `You fill missing structured battlefield fields from an owner source and a
+deterministic base snapshot. Return JSON only: {"fill": object}.
 
-Preserve every stable ID for the same semantic area, edge, effect, object, and evolution
-affordance. Keep all references valid and globally unique. Use only the enum values and
-closed coefficient keys already demonstrated by the base. The base is authoritative for
-facts recovered from legacy structured fields; owner source may refine it only where the
-source explicitly supports the change.
+fill keys are required and nullable. Use null to skip a key. Description fields are
+plain Japanese or English strings, not objects. objects.area and effects.area are
+area names or ids from the preserved snapshot. duration is persistent, short, or long.
+target is scene, all_combatants, or area.
 
-Structure bounded authored scene facts into areas, directed topology, entry areas,
-objects, effects, and evolutionAffordances. Every description must be concise and carry
-sourceSupportRefs. An evolution affordance is permission for one pressure only; it must
-reference existing area/object IDs and must not itself assert that a future change has
-happened. forbiddenDiscontinuities must retain unregistered topology, object, and effect
-guards. Do not add character entities, current battle state, a winner, damage to a
-participant, or live object placement.
-
-For sourceKind=upgrade_description, prefer the deterministic base to inventing topology,
-hidden objects, mechanics, or unstored causes from polished prose. Empty effects or
-evolutionAffordances are valid when the source establishes none. Preserve strict bounds.`,
+Do not regenerate identity, appearance, coefficients, or topology. ${upgrade
+    ? "Do not invent hidden objects, mechanics, or unstored causes. Prefer null or [] over fabrication."
+    : "Structure only what the owner source supports. Prefer null or [] over fabrication."}`,
         JSON.stringify({
           sourceKind: input.sourceKind,
-          ownerSource: input.sourceText.slice(0, 8000),
-          validBaseDefinition: input.baseDefinition,
+          ownerSource: input.sourceText.slice(0, 6000),
+          gaps,
+          preserved: battlefieldDefinitionPreservedSnapshotV2(input.baseDefinition),
         }),
         {
           tier: "engine",
-          label: "generateBattlefieldDefinitionV2",
-          timeoutMs: ENGINE_LONG_TIMEOUT_MS,
-          temperature: 0.35,
+          label: "fillBattlefieldDefinitionGapsV2",
+          timeoutMs: ENGINE_TIMEOUT_MS,
+          temperature: 0.2,
+          responseFormat: BATTLEFIELD_DEFINITION_FILL_RESPONSE_FORMAT,
         },
       ) as Record<string, unknown>;
-      return BattlefieldDefinitionV2Schema.parse(data.definition);
+      try {
+        const fill = parseBattlefieldDefinitionGapFillV2(data.fill ?? {});
+        return restoreAuthoritativeBattlefieldDefinitionV2(
+          input.baseDefinition,
+          applyBattlefieldDefinitionGapFillV2(
+            input.baseDefinition,
+            fill,
+            input.sourceKind,
+          ),
+          input.sourceKind,
+        );
+      } catch (firstError) {
+        const firstIssues = firstError instanceof z.ZodError
+          ? firstError.issues
+          : [{ code: "custom", path: [], message: String(firstError) }];
+        const repaired = await this.chatJson(
+          `You repair one rejected battlefield definition fill. Return JSON only:
+{"fill": object}.
+
+Use the same fill shape: nullable keys, string descriptions, duration as
+persistent/short/long, target as scene/all_combatants/area. Correct only the listed
+issues. null and [] are valid.`,
+          JSON.stringify({
+            sourceKind: input.sourceKind,
+            ownerSource: input.sourceText.slice(0, 6000),
+            rejectedFill: data.fill ?? {},
+            validationIssues: firstIssues.map((issue) => ({
+              code: "code" in issue ? issue.code : "custom",
+              path: "path" in issue ? issue.path : [],
+              message: issue.message,
+            })),
+          }),
+          {
+            tier: "engine",
+            label: "fillBattlefieldDefinitionGapsV2Repair",
+            timeoutMs: ENGINE_TIMEOUT_MS,
+            temperature: 0.2,
+            responseFormat: BATTLEFIELD_DEFINITION_FILL_RESPONSE_FORMAT,
+          },
+        ) as Record<string, unknown>;
+        try {
+          const fill = parseBattlefieldDefinitionGapFillV2(repaired.fill ?? {});
+          return restoreAuthoritativeBattlefieldDefinitionV2(
+            input.baseDefinition,
+            applyBattlefieldDefinitionGapFillV2(
+              input.baseDefinition,
+              fill,
+              input.sourceKind,
+            ),
+            input.sourceKind,
+          );
+        } catch (repairError) {
+          if (repairError instanceof z.ZodError) {
+            throw new Error(formatDefinitionSchemaIssues(repairError));
+          }
+          throw repairError;
+        }
+      }
     } catch (error) {
       return this.fallbackOrThrow(
         error,

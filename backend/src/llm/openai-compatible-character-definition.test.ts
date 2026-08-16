@@ -2,8 +2,10 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import {
   defaultParameters,
+  legacyBattlefieldPresetToDefinitionV2,
   legacyCharacterSheetToDefinitionV2,
 } from "@kshiai/shared";
+import type { GenerateBattlefieldDefinitionV2Input } from "./types.js";
 import type { GenerateCharacterDefinitionV2Input } from "./types.js";
 import { OpenAiCompatibleProvider } from "./openai-compatible.js";
 
@@ -165,5 +167,71 @@ describe("OpenAI-compatible character definition repair", () => {
       /Expected object|invalid_type/,
     );
     assert.equal(calls.length, 2);
+  });
+});
+
+function battlefieldInput(): GenerateBattlefieldDefinitionV2Input {
+  return {
+    sourceKind: "upgrade_description",
+    sourceText: "霧に沈む石造遺跡。中央広場と崩れた回廊がある。",
+    baseDefinition: legacyBattlefieldPresetToDefinitionV2({
+      id: "field-upgrade",
+      ownerUserId: "owner-upgrade",
+      isSystem: false,
+      displayName: "霧の遺跡",
+      category: "ruins",
+      tags: ["霧"],
+      createdAt: "2026-08-14T00:00:00.000Z",
+      updatedAt: "2026-08-14T00:00:00.000Z",
+      appearance: {
+        summary: "霧に沈む石造遺跡",
+        visualPrompt: "misty stone ruins",
+        imageUrl: null,
+      },
+      terrainHints: ["中央広場"],
+      obstacleHints: [],
+      conditionHints: [],
+      baseCoefficients: { damage: 0.9 },
+      narrativeBlurb: "霧に閉ざされた遺跡。",
+    }),
+  };
+}
+
+describe("OpenAI-compatible battlefield definition fill", () => {
+  it("applies a natural string-description fill without repair", async () => {
+    const input = battlefieldInput();
+    const { provider, calls } = providerWithResponses([{
+      fill: {
+        atmosphere: ["濃霧"],
+        scale: null,
+        genre: null,
+        areas: null,
+        objects: [{
+          id: "pillar",
+          label: "石柱",
+          description: "倒れた石柱",
+          area: "中央広場",
+          portable: false,
+          usable: false,
+          cover: "partial",
+          blocking: true,
+        }],
+        effects: null,
+        evolutionAffordances: [{
+          id: "fog",
+          pressure: "visibility_shift",
+          description: "霧だけが濃くなる",
+        }],
+      },
+    }]);
+
+    const definition = await provider.generateBattlefieldDefinitionV2(input);
+
+    assert.deepEqual(definition.identity.atmosphere, ["濃霧"]);
+    assert.equal(definition.objects[0]?.label, "石柱");
+    assert.equal(definition.evolutionAffordances[0]?.pressure, "visibility_shift");
+    assert.equal(definition.baseCoefficients.damage, 0.9);
+    assert.equal(calls.length, 1);
+    assert.equal(calls[0]?.label, "fillBattlefieldDefinitionGapsV2");
   });
 });

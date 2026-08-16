@@ -4,6 +4,7 @@ import {
   PERSPECTIVE_LABELS,
   type NarrationPerspective,
 } from "./narration-perspective.js";
+import { AssetVisibilitySchema } from "./asset-visibility.js";
 import {
   AssetAuthoringReviewBaseSchema,
   AssetCompatibilitySchema,
@@ -36,6 +37,11 @@ export const NarrationStyleSchema = z.object({
    */
   perspective: NarrationPerspectiveSchema.default("external"),
   tags: z.array(z.string()).default([]),
+  /**
+   * Matchmaking exposure for non-owners.
+   * Omitted on legacy styles; treat as public.
+   */
+  visibility: AssetVisibilitySchema.optional(),
   createdAt: z.string(),
   updatedAt: z.string(),
 });
@@ -49,6 +55,7 @@ export const NarrationStylePublicSchema = z.object({
   description: z.string(),
   perspective: NarrationPerspectiveSchema,
   tags: z.array(z.string()),
+  visibility: AssetVisibilitySchema,
   createdAt: z.string(),
   updatedAt: z.string(),
   compatibility: AssetCompatibilitySchema.optional(),
@@ -102,6 +109,7 @@ export function toPublicNarrationStyle(
     description: s.description,
     perspective: s.perspective ?? "external",
     tags: s.tags,
+    visibility: s.visibility ?? "public",
     createdAt: s.createdAt,
     updatedAt: s.updatedAt,
     ...options,

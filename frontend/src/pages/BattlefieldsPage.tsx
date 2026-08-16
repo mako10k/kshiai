@@ -1,6 +1,7 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import type { BattlefieldPresetPublic } from "@kshiai/shared";
+import { assetVisibilityLabel } from "@kshiai/shared";
 import { api } from "../api";
 import { AuthoringProgressNotice } from "../components/AuthoringProgressNotice";
 import { useAuthoringProgressPoll } from "../hooks/useAuthoringProgressPoll";
@@ -102,6 +103,9 @@ function BattlefieldCard(props: { field: BattlefieldPresetPublic }) {
       </strong>
       <p className="muted" style={{ margin: 0, fontSize: "0.9rem" }}>
         {field.narrativeBlurb}
+      </p>
+      <p className="muted" style={{ margin: "0.25rem 0 0", fontSize: "0.8rem" }}>
+        公開: {assetVisibilityLabel(field.visibility)}
       </p>
       <div>
         <span className="tag">{field.categoryLabel}</span>

@@ -487,10 +487,12 @@ export function narrationDefinitionV2ToLegacyStyle(input: {
   publicPresentation: AssetPublicPresentationV2;
   createdAt: string;
   updatedAt: string;
+  visibility?: "public" | "friends" | "private";
 }): {
   id: string;
   ownerUserId: string | null;
   isSystem: boolean;
+  visibility: "public" | "friends" | "private";
   displayName: string;
   description: string;
   instruction: string;
@@ -503,6 +505,7 @@ export function narrationDefinitionV2ToLegacyStyle(input: {
     id: input.styleId,
     ownerUserId: input.ownerUserId,
     isSystem: input.isSystem,
+    visibility: input.visibility ?? "public",
     displayName: input.definition.identity.displayName,
     description: input.publicPresentation.description,
     instruction: compileNarrationPolicyV2(input.definition)

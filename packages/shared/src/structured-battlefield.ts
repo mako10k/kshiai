@@ -629,11 +629,13 @@ export function battlefieldDefinitionV2ToLegacyPreset(input: {
   publicPresentation: AssetPublicPresentationV2;
   createdAt: string;
   updatedAt: string;
+  visibility?: BattlefieldPreset["visibility"];
 }): BattlefieldPreset {
   return BattlefieldPresetSchema.parse({
     id: input.battlefieldId,
     ownerUserId: input.ownerUserId,
     isSystem: input.isSystem,
+    visibility: input.visibility ?? "public",
     displayName: input.definition.identity.displayName,
     category: input.definition.identity.category,
     tags: input.definition.identity.tags,

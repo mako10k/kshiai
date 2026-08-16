@@ -13,6 +13,7 @@ import type {
   CharacterPublic,
   AssetAuthoringProgress,
   CharacterVisibility,
+  AssetVisibility,
   FriendPublic,
   UserProfilePublic,
   DialoguePipelineSettings,
@@ -509,6 +510,22 @@ export const api = {
       method: "PATCH",
       body: JSON.stringify({ visibility }),
     }),
+  setBattlefieldVisibility: (id: string, visibility: AssetVisibility) =>
+    request<{ battlefield: BattlefieldPresetPublic }>(
+      `/api/battlefields/${id}/visibility`,
+      {
+        method: "PATCH",
+        body: JSON.stringify({ visibility }),
+      },
+    ),
+  setNarrationStyleVisibility: (id: string, visibility: AssetVisibility) =>
+    request<{ style: NarrationStylePublic }>(
+      `/api/narration-styles/${id}/visibility`,
+      {
+        method: "PATCH",
+        body: JSON.stringify({ visibility }),
+      },
+    ),
   getCharacter: (id: string) =>
     request<{ character: CharacterPublic; isOwner: boolean }>(
       `/api/characters/${id}`,

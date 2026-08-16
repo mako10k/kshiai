@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { cacheBustMediaUrl } from "./media.js";
 import { BattlefieldSemanticSeedSchema } from "./semantic-state.js";
+import { AssetVisibilitySchema } from "./asset-visibility.js";
 import {
   AssetAuthoringReviewBaseSchema,
   CharacterReviewStateSchema,
@@ -56,6 +57,14 @@ export const BattlefieldPresetSchema = z.object({
   displayName: z.string().min(1),
   category: BattlefieldCategorySchema.default("custom"),
   tags: z.array(z.string()).default([]),
+  /**
+   * Matchmaking exposure for non-owners.
+   * - public: any authenticated player
+   * - friends: only users on the owner's friend list
+   * - private: owner only
+   * Omitted on legacy sheets; treat as public.
+   */
+  visibility: AssetVisibilitySchema.optional(),
   createdAt: z.string(),
   updatedAt: z.string(),
   appearance: BattlefieldAppearanceSchema,
@@ -80,6 +89,7 @@ export const BattlefieldPresetPublicSchema = z.object({
   category: BattlefieldCategorySchema,
   categoryLabel: z.string(),
   tags: z.array(z.string()),
+  visibility: AssetVisibilitySchema,
   createdAt: z.string(),
   updatedAt: z.string(),
   appearance: z.object({
@@ -190,6 +200,7 @@ export function toPublicPreset(p: BattlefieldPreset): BattlefieldPresetPublic {
     category: p.category,
     categoryLabel: CATEGORY_LABELS[p.category] ?? p.category,
     tags: p.tags,
+    visibility: p.visibility ?? "public",
     createdAt: p.createdAt,
     updatedAt: p.updatedAt,
     appearance: {
