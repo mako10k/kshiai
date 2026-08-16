@@ -3,7 +3,6 @@ import { describe, it } from "node:test";
 import {
   defaultParameters,
   legacyCharacterSheetToDefinitionV2,
-  type CharacterDefinitionV2,
 } from "@kshiai/shared";
 import type { GenerateCharacterDefinitionV2Input } from "./types.js";
 import { OpenAiCompatibleProvider } from "./openai-compatible.js";
@@ -51,22 +50,24 @@ function definitionInput(): GenerateCharacterDefinitionV2Input {
   };
 }
 
-function definitionMissingActionNormResponse(
-  _base: CharacterDefinitionV2,
-): Record<string, unknown> {
+function naturalStringFill(): Record<string, unknown> {
   return {
+    profileBackground: null,
+    appearanceDetails: [{
+      id: "detail-coat",
+      region: "clothing",
+      description: "藍色の外套",
+    }],
+    psycheCoreNeeds: null,
+    speech: { register: "落ち着いた丁寧語", cadence: "短く区切る" },
+    relationshipSeeds: null,
     actionNorms: [{
       id: "ask-after-observing",
-      when: {
-        match: "all",
-        clauses: [{ kind: "always", operator: "is", value: "true" }],
-      },
-      priority: 50,
+      statement: "相手の動きを見てから問いかける",
       force: "preference",
       selfAwareness: "aware",
-      exceptions: [],
-      description: null,
     }],
+    expressionNotes: null,
   };
 }
 
@@ -104,24 +105,37 @@ function providerWithResponses(responses: unknown[]): {
 }
 
 describe("OpenAI-compatible character definition repair", () => {
-  it("does not issue a repair call for an initially valid definition", async () => {
+  it("does not issue a repair call for a natural string-description fill", async () => {
     const input = definitionInput();
     const { provider, calls } = providerWithResponses([
-      { fill: {} },
+      { fill: naturalStringFill() },
     ]);
 
     const definition = await provider.generateCharacterDefinitionV2(input);
 
-    assert.deepEqual(definition, input.baseDefinition);
+    assert.equal(definition.appearance.details[0]?.description.text, "藍色の外套");
+    assert.equal(definition.speechPolicy.register, "落ち着いた丁寧語");
+    assert.equal(
+      definition.actionNorms[0]?.response.statement,
+      "相手の動きを見てから問いかける",
+    );
     assert.equal(calls.length, 1);
     assert.equal(calls[0]?.label, "fillCharacterDefinitionGapsV2");
+    const format = calls[0]?.responseFormat as {
+      json_schema?: { name?: string; schema?: { properties?: Record<string, unknown> } };
+    };
+    assert.equal(format.json_schema?.name, "character_definition_fill_v2");
+    assert.ok(format.json_schema?.schema?.properties);
+    assert.equal(
+      "identity" in (format.json_schema?.schema?.properties ?? {}),
+      false,
+    );
   });
 
-  it("repairs one strict-schema failure with its bounded validation receipt", async () => {
+  it("repairs a non-object fill with a bounded validation receipt", async () => {
     const input = definitionInput();
-    const invalid = definitionMissingActionNormResponse(input.baseDefinition);
     const { provider, calls } = providerWithResponses([
-      { fill: invalid },
+      { fill: "not-an-object" },
       { fill: {} },
     ]);
 
@@ -133,26 +147,22 @@ describe("OpenAI-compatible character definition repair", () => {
     assert.equal(calls[1]?.label, "fillCharacterDefinitionGapsV2Repair");
     const repair = JSON.parse(calls[1]!.user) as {
       sourceKind: string;
-      validationIssues: Array<{ path: Array<string | number> }>;
+      validationIssues: Array<{ path: Array<string | number>; message: string }>;
     };
     assert.equal(repair.sourceKind, "upgrade_description");
-    const responseIssue = repair.validationIssues.find(
-      (issue) => issue.path[0] === "actionNorms",
-    );
-    assert.deepEqual(responseIssue?.path, ["actionNorms", 0, "response"]);
+    assert.ok(repair.validationIssues.length > 0);
   });
 
   it("fails closed after one unsuccessful repair attempt", async () => {
     const input = definitionInput();
-    const invalid = definitionMissingActionNormResponse(input.baseDefinition);
     const { provider, calls } = providerWithResponses([
-      { fill: invalid },
-      { fill: invalid },
+      { fill: "not-an-object" },
+      { fill: "not-an-object" },
     ]);
 
     await assert.rejects(
       provider.generateCharacterDefinitionV2(input),
-      /actionNorms/,
+      /Expected object|invalid_type/,
     );
     assert.equal(calls.length, 2);
   });

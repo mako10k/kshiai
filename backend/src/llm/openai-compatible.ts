@@ -17,10 +17,12 @@ import {
   CharacterDeepPsycheCompactAdvanceSchema,
   CharacterIdentitySchema,
   CharacterDefinitionV2Schema,
-  CharacterDefinitionGapFillV2Schema,
+  CharacterDefinitionLlmFillV2Schema,
   applyCharacterDefinitionGapFillV2,
   characterDefinitionPreservedSnapshotV2,
+  formatDefinitionSchemaIssues,
   listCharacterDefinitionGapsV2,
+  parseCharacterDefinitionGapFillV2,
   restoreAuthoritativeCharacterDefinitionV2,
   BattlefieldDefinitionV2Schema,
   NarrationDefinitionV2Schema,
@@ -206,6 +208,50 @@ function characterDefinitionResponseFormat(): PerceptionPromptResponseFormat {
 
 const CHARACTER_DEFINITION_RESPONSE_FORMAT =
   characterDefinitionResponseFormat();
+
+function characterDefinitionFillResponseFormat(): PerceptionPromptResponseFormat {
+  const generated = zodResponseFormat(
+    z.object({ fill: CharacterDefinitionLlmFillV2Schema }).strict(),
+    "character_definition_fill_v2",
+  );
+  return {
+    type: "json_schema",
+    json_schema: {
+      name: generated.json_schema.name,
+      strict: true,
+      schema: schemaRecord(generated.json_schema.schema, "fill schema"),
+    },
+  };
+}
+
+const CHARACTER_DEFINITION_FILL_RESPONSE_FORMAT =
+  characterDefinitionFillResponseFormat();
+
+function characterDefinitionReviewResponseFormat(): PerceptionPromptResponseFormat {
+  const generated = zodResponseFormat(
+    z.object({
+      verdict: z.enum(["accept", "revise"]),
+      issues: z.array(z.object({
+        code: z.string().min(1).max(80),
+        path: z.string().min(1).max(160),
+        message: z.string().min(1).max(320),
+      }).strict()).max(16),
+      fill: CharacterDefinitionLlmFillV2Schema.nullable(),
+    }).strict(),
+    "character_definition_review_v2",
+  );
+  return {
+    type: "json_schema",
+    json_schema: {
+      name: generated.json_schema.name,
+      strict: true,
+      schema: schemaRecord(generated.json_schema.schema, "review schema"),
+    },
+  };
+}
+
+const CHARACTER_DEFINITION_REVIEW_RESPONSE_FORMAT =
+  characterDefinitionReviewResponseFormat();
 
 const NARRATION_IDENTIFIER_RULES = `Identifier containment is mandatory. Values used as IDs, controlId, perceptId, contact IDs, entity keys, action IDs, event IDs, or JSON paths are non-linguistic control metadata.
 NEVER copy, quote, speak, parenthesize, or use any such identifier as a name in narrator lines, speaker fields, or speech text. Use the matching renderLabel or supplied human display name only.
@@ -1299,7 +1345,11 @@ segment texts joined in order, with no additional unsegmented prose.`,
     input: GenerateCharacterDefinitionV2Input,
   ) {
     if (!this.client) return this.fallback.generateCharacterDefinitionV2(input);
-    if (input.sourceKind === "upgrade_description") {
+    if (
+      input.sourceKind === "upgrade_description" ||
+      input.sourceKind === "create_instruction" ||
+      input.sourceKind === "revision_instruction"
+    ) {
       return this.fillCharacterDefinitionGapsV2(input);
     }
     try {
@@ -1402,20 +1452,21 @@ the definition.`,
     if (gaps.length === 0 || !input.sourceText.trim()) {
       return structuredClone(input.baseDefinition);
     }
+    const upgrade = input.sourceKind === "upgrade_description";
     try {
       const data = await this.chatJson(
-        `You fill ONLY missing structured character fields from an owner source and a
+        `You fill missing structured character fields from an owner source and a
 deterministic base snapshot. Return JSON only: {"fill": object}.
 
-Do not regenerate identity, combat, capabilities, inventory, loadout, or numeric psyche
-dynamics. Do not invent history, causes, relationships, latent dispositions, possessions,
-or capabilities that the source does not explicitly support. Empty arrays are valid and
-preferred to fabrication.
+fill keys are required and nullable. Use null to skip a key. Description fields are
+plain Japanese or English strings, not objects. actionNorms need only
+id, statement, force, and selfAwareness. speech needs only register and cadence.
+relationshipSeeds use role names only, never character IDs.
 
-Allowed fill keys: profileBackground, appearanceDetails, psycheDisposition
-(coreNeeds/description only), speechPolicy, relationshipSeeds, actionNorms,
-expressionNotes. Relationship and address targets may use registered roles only; never
-emit kind=character. Speech examples are style only, never facts.`,
+Do not regenerate identity, combat, capabilities, inventory, loadout, or numeric psyche
+dynamics. ${upgrade
+    ? "Do not invent history, causes, relationships, or capabilities the source does not support. Prefer null or [] over fabrication."
+    : "Structure only what the owner source supports. Prefer null or [] over fabrication."}`,
         JSON.stringify({
           sourceKind: input.sourceKind,
           ownerSource: input.sourceText.slice(0, 6000),
@@ -1427,53 +1478,68 @@ emit kind=character. Speech examples are style only, never facts.`,
           label: "fillCharacterDefinitionGapsV2",
           timeoutMs: ENGINE_TIMEOUT_MS,
           temperature: 0.2,
+          responseFormat: CHARACTER_DEFINITION_FILL_RESPONSE_FORMAT,
         },
       ) as Record<string, unknown>;
-      const parsedFill = CharacterDefinitionGapFillV2Schema.safeParse(data.fill ?? {});
-      if (parsedFill.success) {
+      try {
+        const fill = parseCharacterDefinitionGapFillV2(data.fill ?? {});
         return restoreAuthoritativeCharacterDefinitionV2(
           input.baseDefinition,
           applyCharacterDefinitionGapFillV2(
             input.baseDefinition,
-            parsedFill.data,
+            fill,
             input.sourceKind,
           ),
           input.sourceKind,
         );
-      }
-      const repaired = await this.chatJson(
-        `You repair one rejected character definition fill. Return JSON only:
+      } catch (firstError) {
+        const firstIssues = firstError instanceof z.ZodError
+          ? firstError.issues
+          : [{ code: "custom", path: [], message: String(firstError) }];
+        const repaired = await this.chatJson(
+          `You repair one rejected character definition fill. Return JSON only:
 {"fill": object}.
 
-Correct only the listed validation issues. Do not regenerate identity, combat,
-capabilities, inventory, or loadout. Empty arrays are valid.`,
-        JSON.stringify({
-          sourceKind: input.sourceKind,
-          ownerSource: input.sourceText.slice(0, 6000),
-          rejectedFill: data.fill ?? {},
-          validationIssues: parsedFill.error.issues.map((issue) => ({
-            code: issue.code,
-            path: issue.path,
-            message: issue.message,
-          })),
-        }),
-        {
-          tier: "engine",
-          label: "fillCharacterDefinitionGapsV2Repair",
-          timeoutMs: ENGINE_TIMEOUT_MS,
-          temperature: 0.2,
-        },
-      ) as Record<string, unknown>;
-      const fill = CharacterDefinitionGapFillV2Schema.parse(repaired.fill ?? {});
-      return restoreAuthoritativeCharacterDefinitionV2(
-        input.baseDefinition,
-        applyCharacterDefinitionGapFillV2(
-          input.baseDefinition,
-          fill,
-          input.sourceKind,
-        ),
-        input.sourceKind,
-      );
+Use the same fill shape: nullable keys, string descriptions, actionNorms as
+id/statement/force/selfAwareness, speech as register/cadence. Correct only the
+listed issues. Do not regenerate identity, combat, capabilities, inventory, or
+loadout. null and [] are valid.`,
+          JSON.stringify({
+            sourceKind: input.sourceKind,
+            ownerSource: input.sourceText.slice(0, 6000),
+            rejectedFill: data.fill ?? {},
+            validationIssues: firstIssues.map((issue) => ({
+              code: "code" in issue ? issue.code : "custom",
+              path: "path" in issue ? issue.path : [],
+              message: issue.message,
+            })),
+          }),
+          {
+            tier: "engine",
+            label: "fillCharacterDefinitionGapsV2Repair",
+            timeoutMs: ENGINE_TIMEOUT_MS,
+            temperature: 0.2,
+            responseFormat: CHARACTER_DEFINITION_FILL_RESPONSE_FORMAT,
+          },
+        ) as Record<string, unknown>;
+        try {
+          const fill = parseCharacterDefinitionGapFillV2(repaired.fill ?? {});
+          return restoreAuthoritativeCharacterDefinitionV2(
+            input.baseDefinition,
+            applyCharacterDefinitionGapFillV2(
+              input.baseDefinition,
+              fill,
+              input.sourceKind,
+            ),
+            input.sourceKind,
+          );
+        } catch (repairError) {
+          if (repairError instanceof z.ZodError) {
+            throw new Error(formatDefinitionSchemaIssues(repairError));
+          }
+          throw repairError;
+        }
+      }
     } catch (error) {
       return this.fallbackOrThrow(
         error,
@@ -1495,14 +1561,16 @@ mechanical findings. Return JSON only: {
   "fill": object|null
 }
 
+fill uses the same nullable-key shape as generation: string descriptions, speech as
+{register,cadence}, actionNorms as {id,statement,force,selfAwareness}, relationshipSeeds
+as role names only. Use null to skip a key. Do not emit consumerTags, clause trees,
+or numeric dynamics.
+
 Fix every mechanical finding. Do not change identity, combat, capabilities, inventory,
 loadout, or numeric psyche dynamics. For sourceKind=upgrade_description, do not invent
-missing history, causes, relationships, or capabilities; prefer emptying a fabricated
-field over polishing it. Relationship and address targets may use registered roles only.
-If the candidate is already faithful and the findings are empty, verdict=accept and
-fill=null. fill may include only: profileBackground, appearanceDetails,
-psycheDisposition.coreNeeds/description, speechPolicy, relationshipSeeds, actionNorms,
-expressionNotes.`,
+missing history, causes, relationships, or capabilities; prefer null or [] over
+fabrication. If the candidate is already faithful and the findings are empty,
+verdict=accept and fill=null.`,
         JSON.stringify({
           sourceKind: input.sourceKind,
           ownerSource: input.sourceText.slice(0, 6000),
@@ -1524,6 +1592,7 @@ expressionNotes.`,
           label: "reviewCharacterDefinitionV2",
           timeoutMs: ENGINE_TIMEOUT_MS,
           temperature: 0.15,
+          responseFormat: CHARACTER_DEFINITION_REVIEW_RESPONSE_FORMAT,
         },
       ) as Record<string, unknown>;
       const verdict = data.verdict === "revise" ? "revise" as const : "accept" as const;
@@ -1537,9 +1606,14 @@ expressionNotes.`,
             };
           }).filter((issue) => issue.message.length > 0)
         : [];
-      const fill = verdict === "revise" && data.fill
-        ? CharacterDefinitionGapFillV2Schema.parse(data.fill)
-        : null;
+      let fill = null;
+      if (verdict === "revise" && data.fill) {
+        try {
+          fill = parseCharacterDefinitionGapFillV2(data.fill);
+        } catch {
+          fill = null;
+        }
+      }
       return { verdict, issues, fill };
     } catch (error) {
       return this.fallbackOrThrow(
