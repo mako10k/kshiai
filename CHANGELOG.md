@@ -5,6 +5,29 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 
 ## [Unreleased]
 
+## [0.22.0] - 2026-09-04
+
+### Added
+
+- New battles retain an immutable dialogue-activation receipt containing the
+  effective projection mode, its authority source, and the applicable settings
+  or deployment identity.
+- A release-bound Stage revision can select the compact dialogue projection for
+  one isolated observation without changing the persisted product setting.
+
+### Changed
+
+- The persisted dialogue-pipeline setting is the normal authority for new
+  battles. When it is absent, new battles retain the existing legacy default.
+  Existing battles continue using their bound snapshot.
+
+### Operations
+
+- No database migration. Ordinary production releases do not set the Stage
+  dialogue override, and promotion rejects a release that retains it.
+  Application rollback returns new battle creation to v0.21.7 behavior without
+  rewriting receipts already bound by v0.22.0.
+
 ## [0.21.7] - 2026-08-16
 
 ### Changed

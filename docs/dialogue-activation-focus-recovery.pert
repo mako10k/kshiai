@@ -3,11 +3,11 @@
 project KSHIAI_DIALOGUE_ACTIVATION_FOCUS_RECOVERY:
   version 6
   title "Recover dialogue activation authority before focus wiring"
-  description "Establish the effective compact-dialogue configuration owner, accept its immutable activation contract, implement only the bounded local wiring, run a separately authorized Stage observation, and replace the stale character-focus candidate with a causally valid experiment plan. Preserve existing battles, mechanics, provider counts, privacy, release gates, and the production boundary."
-  as_of 2026-09-03
+  description "Establish the effective compact-dialogue configuration owner, preserve the accepted immutable activation contract and completed local wiring, deploy one separately authorized no-traffic Stage candidate, observe one bounded battle, and choose the next smallest step from that result. Preserve existing battles, mechanics, provider counts, privacy, release gates, and the production boundary; do not precommit later observations or speculative controls."
+  as_of 2026-09-04
   duration_unit point
   velocity 1p/1d
-  target_duration 14p
+  target_duration 9p
   finish RECOVERY_PLAN_COMPLETED
   goal_owner user
   dag_owner user
@@ -34,20 +34,15 @@ milestone ACTIVATION_ADR_ACCEPTED:
 milestone LOCAL_WIRING_READY:
   title "Immutable compact-dialogue activation wiring passes local gates"
 
-milestone STAGE_BUDGET_ADR_ACCEPTED:
-  title "Observation budget authority explicitly accepted"
 
-milestone STAGE_OBSERVER_READY:
-  title "Bounded no-traffic Stage observer passes local gates"
 
-milestone STAGE_AUTHORIZED:
-  title "Exact bounded Stage observation explicitly authorized"
 
 milestone STAGE_OBSERVED:
-  title "Compact-dialogue activation observed on the authorized Stage artifact"
+  title "First bounded compact-dialogue Stage outcome retained"
+  description "One exactly identified no-traffic Stage candidate has produced one retained success, failure, or stopped outcome; this milestone alone does not authorize another battle, Promote, or production activation."
 
 milestone RECOVERY_PLAN_COMPLETED:
-  title "Focus plan reconciled with causal replay evidence"
+  title "First Stage outcome assessed and next causal task selected"
 
 task DAF_AUDIT NOW -> AUTHORITY_AUDITED:
   title "Audit effective dialogue mode ownership and plan drift"
@@ -79,51 +74,27 @@ task DAF_WIRE_COMPACT_LOCAL ACTIVATION_ADR_ACCEPTED -> LOCAL_WIRING_READY:
   owner "codex"
   source "git:4133445b2f144187c955f4487c209d02d895bedb"
 
-task DAF_ACCEPT_STAGE_BUDGET_ADR LOCAL_WIRING_READY -> STAGE_BUDGET_ADR_ACCEPTED:
-  title "Accept or revise ADR-0019 observation budget authority"
-  description "The owner reviews the exact Proposed ADR-0019 decisions for immutable route and price identity, conservative atomic token and USD reservation, usage reconciliation, and the no-traffic six-run controller. Acceptance authorizes only the stated local schema, provider-boundary, controller and fake-provider test work. It does not authorize a migration execution, provider or billing mutation, tag, push, artifact publication, Stage dispatch, provider call, Promote, production observation or persisted dialogue-setting write. Generic continuation does not accept the ADR."
-  duration 1p
-  status planned
-  requires:
-    OWNER 1
-  owner "user"
-  source "docs/adr/0019-observation-token-and-cost-admission.think"
 
-task DAF_BUILD_STAGE_OBSERVER STAGE_BUDGET_ADR_ACCEPTED -> STAGE_OBSERVER_READY:
-  title "Implement bounded no-traffic Stage observation controls"
-  description "Implement only an accepted ADR-0019: bind immutable provider, model and price policy; reserve conservative token and USD exposure atomically with physical attempts; reconcile usage without turning unknown into zero; bind one exact no-traffic Stage revision; and run six predetermined slots sequentially with stop without replacement. Verify locally with fake providers. Do not execute a migration, mutate provider or billing settings, tag, push, publish, dispatch Stage, call a paid provider, Promote, observe production or write the persisted dialogue setting."
-  duration 3p
-  status planned
-  requires:
-    DEV 1
-  owner "codex"
-  source "docs/adr/0019-observation-token-and-cost-admission.think"
 
-task DAF_AUTHORIZE_STAGE STAGE_OBSERVER_READY -> STAGE_AUTHORIZED:
-  title "Authorize the exact compact-dialogue Stage observation"
-  description "The owner reviews the exact candidate SHA, immutable mode receipt, rollback target, fixed six-battle matrix, provider-operation and token ceilings, cost ceiling, and stop conditions. This authorizes only the stated Stage run and never Promote or production observation."
-  duration 1p
-  status planned
-  requires:
-    OWNER 1
-  owner "user"
-  source "docs/evidence/dialogue-activation-stage-authorization-review-2026-09-04.md"
 
-task DAF_STAGE_OBSERVE STAGE_AUTHORIZED -> STAGE_OBSERVED:
-  title "Stage and inspect six fixed compact-dialogue battles"
-  description "Deploy only the authorized artifact to isolated Stage and run at most six fixed battles. Verify effective mode and source receipts, packet ownership, input cardinality, dialogue variety, provider status, latency, privacy, immutable binding, and mechanics equivalence. Stop on any secret exposure, observer leak, schema or provider failure, prompt growth, mechanics drift, or repeat-loop recurrence. Retain sanitized evidence and do not promote."
-  duration 2p
-  requires:
-    DEV 1
-  owner "codex"
 
 task DAF_REPLAN_FOCUS STAGE_OBSERVED -> RECOVERY_PLAN_COMPLETED:
-  title "Replace the stale focus candidate with a causal experiment plan"
-  description "Reconcile docs/character-focus-hypothesis.pert with the replay RCA that forbids selecting B, C, or D from the completed replay. Inventory ADR-0008 acceptance provenance before relying on it. Define paired same-input sharp and strained cases, an actual expression-selectable evidence boundary, distractor-rich controls, multi-turn retained switched decayed and held trajectories, non-ceiling thresholds, reviewer authority, and explicit provider and deployment gates. Do not wire focus into product expression, call a provider, deploy, or reopen production during this task."
+  title "Assess the first Stage outcome and select the next smallest task"
+  description "Read the retained DAF_STAGE_SMOKE_1 outcome before adding work. If deployment, activation binding, schema, provider behavior, or dialogue observation failed, register only the smallest repair or discriminating recheck supported by that evidence. If the observation is sufficient, reconcile docs/character-focus-hypothesis.pert with the replay RCA and define the next causal experiment slice. Do not schedule more Stage battles in advance, treat a stopped or failed smoke as success, implement speculative controls, wire focus into product expression, call a provider, deploy, or reopen production during this task."
   duration 2p
   requires:
     DEV 1
   owner "codex"
+
+task DAF_STAGE_SMOKE_1 LOCAL_WIRING_READY -> STAGE_OBSERVED:
+  title "Deploy and inspect one compact-dialogue Stage battle"
+  description "Use the exact local candidate and perform only the cheap preflight needed to identify its current-main integration path, release eligibility, pending-migration effect, no-traffic Stage target, rollback identity, Stage observer route, and retained fixture. Before each external effect, obtain its exact authorization. Deploy one digest-qualified no-traffic Stage revision with the compact override and execute at most one existing-fixture battle with at most 24 advances. Reuse the ADR-0007 ceiling of 169 physical provider attempts per battle; do not implement ADR-0019 token or USD reservation, a durable budget schema, or a six-run controller. Retain the effective mode, source, deployment identity, provider attempts, advances, reported tokens, elapsed time, retries, fallback and loop outcome. Any failed preflight, deployment failure, provider or schema failure, stop condition, or completed battle ends this slice without automatic retry or replacement. Do not Promote, alter production traffic or settings, or run a second battle."
+  duration 2p
+  status active
+  requires:
+    DEV 1
+  owner "codex"
+  source "docs/adr/0018-dialogue-context-activation-authority.think"
 
 work_event WE-DAF-AUDIT-FINISH-20260903:
   model 1
@@ -149,3 +120,10 @@ work_event WE-DAF-WIRE-FINISH-20260904:
   task DAF_WIRE_COMPACT_LOCAL
   kind finish
   occurred_at 2026-09-04T11:15:51+09:00
+
+work_event WE-DAF-STAGE-SMOKE-1-START-20260904:
+  model 1
+  task DAF_STAGE_SMOKE_1
+  kind start
+  occurred_at 2026-09-04T16:24:49+09:00
+  planned_value 2p
