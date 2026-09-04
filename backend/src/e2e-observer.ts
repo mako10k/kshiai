@@ -6,11 +6,13 @@ import {
   type NarrationStyle,
 } from "@kshiai/shared";
 import * as battlefieldRepo from "./repositories/battlefields.js";
+import * as battlefieldAssetRepo from "./repositories/battlefield-assets-v2.js";
 import * as characterRepo from "./repositories/characters.js";
 import * as characterAssetRepo from "./repositories/character-assets-v2.js";
 import * as narrationStyleRepo from "./repositories/narration-styles.js";
 import * as narrationStyleAssetRepo from "./repositories/narration-style-assets-v2.js";
 import { buildImportedCharacterEnvelopeV2 } from "./services/character-authoring-service.js";
+import { buildImportedBattlefieldEnvelopeV2 } from "./services/battlefield-authoring-service.js";
 import { buildImportedNarrationStyleEnvelopeV2 } from "./services/narration-style-authoring-service.js";
 
 export const E2E_FIXTURE_IDS = {
@@ -286,6 +288,22 @@ async function ensureBattlefield(
     if (existing.ownerUserId !== fixture.ownerUserId || existing.isSystem) {
       throw new Error(`E2E fixture ownership mismatch: ${fixture.id}`);
     }
+    const ready = await battlefieldAssetRepo.getReadyBattlefieldGeneration(
+      fixture.id,
+    );
+    if (ready) return "reused";
+    const retained: BattlefieldPreset = {
+      ...fixture,
+      createdAt: existing.createdAt,
+      visibility: existing.visibility,
+    };
+    await battlefieldAssetRepo.activateImportedBattlefield({
+      preset: retained,
+      envelope: buildImportedBattlefieldEnvelopeV2({
+        preset: retained,
+        attemptId: `e2e-fixture-import:${fixture.id}:v2`,
+      }),
+    });
     return "reused";
   }
   await battlefieldRepo.importPreset(fixture);
@@ -305,10 +323,17 @@ async function ensureNarrationStyle(
     );
     if (ready) return "reused";
   }
+  const retained: NarrationStyle = existing
+    ? {
+        ...fixture,
+        createdAt: existing.createdAt,
+        visibility: existing.visibility,
+      }
+    : fixture;
   await narrationStyleAssetRepo.activateImportedNarrationStyle({
-    style: fixture,
+    style: retained,
     envelope: buildImportedNarrationStyleEnvelopeV2({
-      style: fixture,
+      style: retained,
       attemptId: `e2e-fixture-import:${fixture.id}:v2`,
     }),
   });

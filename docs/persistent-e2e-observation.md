@@ -83,8 +83,11 @@ verification uses `npm run test:e2e-gui` and is not a required merge check.
 
 The job creates the two fixed characters, the rainy-alley battlefield, and the
 causal-observation narrator only when their stable IDs do not exist. A later
-run reuses the existing records without overwriting battle records, ratings,
-or edits. An ownership mismatch or soft-deleted fixed character stops the run
+run reuses the existing records. If a retained fixture lacks a generation that
+satisfies its current V2 readiness contract, provisioning activates one
+deterministic provider-free imported generation while retaining operational
+state such as creation time, visibility, character records, and revision
+history. An ownership mismatch or soft-deleted fixed character stops the run
 instead of silently replacing data.
 
 Every observation creates a new cross-account battle through `/api/battles`,
@@ -94,6 +97,12 @@ is performed on either success or failure, so an incomplete battle remains
 available for diagnosis.
 
 ## Running an observation
+
+The orchestration entrypoint is the manually dispatched GitHub Actions workflow
+**Observe persistent E2E battle**. The `/api/internal/observations/*` endpoints
+inspect retained results; they do not start an observation. This workflow is
+bound to the single revision receiving 100 percent of production traffic and
+does not target a no-traffic Stage revision.
 
 After a release is promoted, select that exact tag in GitHub Actions and run
 **Observe persistent E2E battle** with:
