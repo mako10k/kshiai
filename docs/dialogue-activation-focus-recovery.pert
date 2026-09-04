@@ -67,10 +67,11 @@ task DAF_WIRE_COMPACT_LOCAL ACTIVATION_ADR_ACCEPTED -> LOCAL_WIRING_READY:
   title "Wire compact dialogue activation into new immutable battle snapshots"
   description "Implement only the accepted authority contract. Bind new battles to the effective projection mode, source, settings revision, and content identity; do not reread mutable settings during a battle or migrate existing battles. Preserve action, mechanics, world, rating, narration authority, provider call count, retries, and public privacy. Add precedence, direct-create, legacy, missing-setting, rollback, and no-ordinary-path-drift tests. Pass full local gates and record the exact candidate SHA. Do not deploy."
   duration 3p
-  status active
+  status done
   requires:
     DEV 1
   owner "codex"
+  source "git:4133445b2f144187c955f4487c209d02d895bedb"
 
 task DAF_AUTHORIZE_STAGE LOCAL_WIRING_READY -> STAGE_AUTHORIZED:
   title "Authorize the exact compact-dialogue Stage observation"
@@ -114,3 +115,9 @@ work_event WE-DAF-WIRE-START-20260904:
   kind start
   occurred_at 2026-09-04T10:39:31+09:00
   planned_value 3p
+
+work_event WE-DAF-WIRE-FINISH-20260904:
+  model 1
+  task DAF_WIRE_COMPACT_LOCAL
+  kind finish
+  occurred_at 2026-09-04T11:15:51+09:00
