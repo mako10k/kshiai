@@ -41,14 +41,59 @@ function parseBoolean(value: string | undefined): boolean {
   return value === "1" || value?.toLowerCase() === "true";
 }
 
-function parseDialogueContextProjectionOverride(
+export type DialogueContextProjectionOverride = "legacy" | "compact" | null;
+
+export type DialogueContextProjectionOverrideDeployment = {
+  commitSha: string;
+  artifactRef: string;
+};
+
+export function parseDialogueContextProjectionOverride(
   value: string | undefined,
-): "legacy" | "compact" | null {
+): DialogueContextProjectionOverride {
   const override = value?.trim().toLowerCase() ?? "";
   if (!override) return null;
   if (override === "legacy" || override === "compact") return override;
   throw new Error("DIALOGUE_CONTEXT_PROJECTION_OVERRIDE must be legacy or compact");
 }
+
+export function parseDialogueContextProjectionOverrideDeployment(input: {
+  override: DialogueContextProjectionOverride;
+  commitSha: string | undefined;
+  artifactRef: string | undefined;
+}): DialogueContextProjectionOverrideDeployment | null {
+  const commitSha = input.commitSha?.trim().toLowerCase() ?? "";
+  const artifactRef = input.artifactRef?.trim() ?? "";
+  if (!input.override) {
+    if (commitSha || artifactRef) {
+      throw new Error(
+        "DIALOGUE_CONTEXT_PROJECTION_OVERRIDE deployment identity requires an override",
+      );
+    }
+    return null;
+  }
+  if (!/^[a-f0-9]{40}$/.test(commitSha)) {
+    throw new Error(
+      "DIALOGUE_CONTEXT_PROJECTION_OVERRIDE_COMMIT_SHA must be a full commit SHA",
+    );
+  }
+  if (!/^[^\s]+@sha256:[a-f0-9]{64}$/.test(artifactRef)) {
+    throw new Error(
+      "DIALOGUE_CONTEXT_PROJECTION_OVERRIDE_ARTIFACT_REF must be digest-bound",
+    );
+  }
+  return { commitSha, artifactRef };
+}
+
+const dialogueContextProjectionOverride = parseDialogueContextProjectionOverride(
+  process.env.DIALOGUE_CONTEXT_PROJECTION_OVERRIDE,
+);
+const dialogueContextProjectionOverrideDeployment =
+  parseDialogueContextProjectionOverrideDeployment({
+    override: dialogueContextProjectionOverride,
+    commitSha: process.env.DIALOGUE_CONTEXT_PROJECTION_OVERRIDE_COMMIT_SHA,
+    artifactRef: process.env.DIALOGUE_CONTEXT_PROJECTION_OVERRIDE_ARTIFACT_REF,
+  });
 
 export function parseBattlePacingPolicy(
   value: string | undefined,
@@ -290,7 +335,6 @@ export const config = {
     configured: narrationTaskQueueConfigured,
   },
   /** Revision-local override used only for an isolated staged candidate. */
-  dialogueContextProjectionOverride: parseDialogueContextProjectionOverride(
-    process.env.DIALOGUE_CONTEXT_PROJECTION_OVERRIDE,
-  ),
+  dialogueContextProjectionOverride,
+  dialogueContextProjectionOverrideDeployment,
 };

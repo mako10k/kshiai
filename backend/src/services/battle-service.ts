@@ -201,6 +201,10 @@ import * as charRepo from "../repositories/characters.js";
 import * as styleRepo from "../repositories/narration-styles.js";
 import * as dialoguePipelineRepo from "../repositories/dialogue-pipeline-settings.js";
 import { createAssetGeneration } from "../repositories/asset-generations.js";
+import {
+  bindDialoguePipelineActivation,
+  resolveConfiguredDialoguePipelineActivation,
+} from "./dialogue-pipeline-activation.js";
 import { getReadyCharacterGeneration } from "../repositories/character-assets-v2.js";
 import { getUserAccessProfile } from "../account-access.js";
 import { withBattleLease } from "./distributed-guard.js";
@@ -584,13 +588,6 @@ function normalizePolicies(
   return out;
 }
 
-export function applyDialogueContextProjectionOverride(
-  settings: DialoguePipelineSettings,
-  override: "legacy" | "compact" | null,
-): DialoguePipelineSettings {
-  return override ? { ...settings, contextProjectionMode: override } : settings;
-}
-
 export async function startBattle(input: {
   userId: string;
   /** Stable resource identity supplied by the idempotent create operation. */
@@ -709,12 +706,8 @@ export async function startBattle(input: {
     mine.id,
     opp.id,
   );
-  const dialoguePipelineSnapshot = snapshotDialoguePipelineSettings(
-    applyDialogueContextProjectionOverride(
-      await dialoguePipelineRepo.getDialoguePipelineSettings(),
-      config.dialogueContextProjectionOverride,
-    ),
-  );
+  const { activation: dialogueActivation, snapshot: dialoguePipelineSnapshot } =
+    await resolveConfiguredDialoguePipelineActivation();
   let encounterProposal: BattleEncounterProposal | null = null;
   try {
     encounterProposal = await withTimeout(input.llm.prepareBattleEncounter({
@@ -915,11 +908,11 @@ export async function startBattle(input: {
         contentDigest: battlefieldInstanceGeneration.contentDigest,
         snapshot: battlefield,
       },
-      dialoguePipeline: {
-        generationId: dialogueGeneration.generationId,
-        contentDigest: dialogueGeneration.contentDigest,
-        snapshot: dialoguePipelineSnapshot,
-      },
+      dialoguePipeline: bindDialoguePipelineActivation(
+        dialogueGeneration,
+        dialoguePipelineSnapshot,
+        dialogueActivation,
+      ),
       rules: {
         battleEngine: "battle-engine-v1",
         temporalRules: "initiative-window-v2",
@@ -6115,4 +6108,3 @@ function publicPhaseReceipts(
   }
   return published;
 }
-

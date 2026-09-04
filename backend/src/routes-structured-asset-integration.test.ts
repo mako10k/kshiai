@@ -284,6 +284,19 @@ describe("integrated structured asset cutover", () => {
       bound.assetManifest.narrationStyle.generationId,
       styleGeneration.generationId,
     );
+    assert.equal(
+      bound.assetManifest.dialoguePipeline.activationSource,
+      "default",
+    );
+    assert.equal(
+      bound.assetManifest.dialoguePipeline.overrideDeployment,
+      undefined,
+    );
+    assert.equal(
+      bound.assetManifest.dialoguePipeline.snapshot.contextProjectionMode,
+      "legacy",
+    );
+    assert.equal(bound.assetManifest.dialoguePipeline.snapshot.revision, 0);
 
     const revisedCharacter = await characterAssetRepo.activateCharacterPortraitRevision({
       characterId: mineId,

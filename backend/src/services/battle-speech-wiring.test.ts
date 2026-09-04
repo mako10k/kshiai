@@ -24,7 +24,6 @@ import {
 import {
   acceptCharacterAgentResult,
   advanceCharacterAgents,
-  applyDialogueContextProjectionOverride,
   applyNarratorRecognitionResult,
   applyReflectMemoryWrites,
   buildAftermathNarrativeBlock,
@@ -41,6 +40,7 @@ import {
   toBattlePublic,
   validateCharacterActionProposal,
 } from "./battle-service.js";
+import { resolveDialoguePipelineActivation } from "./dialogue-pipeline-activation.js";
 import { MockLlmProvider } from "../llm/mock.js";
 import { OpenAiCompatibleProvider } from "../llm/openai-compatible.js";
 
@@ -250,17 +250,44 @@ describe("character-authored public speech", () => {
     );
   });
 
-  it("uses a revision-local projection override without mutating admin settings", () => {
+  it("binds normal settings authority and isolated override provenance", () => {
     const settings = {
       ...defaultDialoguePipelineSettings(),
       contextProjectionMode: "legacy" as const,
       revision: 5,
     };
-    const compact = applyDialogueContextProjectionOverride(settings, "compact");
-    assert.equal(compact.contextProjectionMode, "compact");
-    assert.equal(compact.revision, 5);
+    const normal = resolveDialoguePipelineActivation({
+      settings,
+      settingsSource: "persisted_setting",
+      override: null,
+      overrideDeployment: null,
+    });
+    assert.equal(normal.settings, settings);
+    assert.equal(normal.source, "persisted_setting");
+    const overrideDeployment = {
+      commitSha: "a".repeat(40),
+      artifactRef: `example.invalid/kshiai/backend@sha256:${"b".repeat(64)}`,
+    };
+    const compact = resolveDialoguePipelineActivation({
+      settings,
+      settingsSource: "persisted_setting",
+      override: "compact",
+      overrideDeployment,
+    });
+    assert.equal(compact.settings.contextProjectionMode, "compact");
+    assert.equal(compact.settings.revision, 5);
+    assert.equal(compact.source, "deployment_override");
+    assert.deepEqual(compact.overrideDeployment, overrideDeployment);
     assert.equal(settings.contextProjectionMode, "legacy");
-    assert.equal(applyDialogueContextProjectionOverride(settings, null), settings);
+    assert.throws(
+      () => resolveDialoguePipelineActivation({
+        settings,
+        settingsSource: "default",
+        override: "compact",
+        overrideDeployment: null,
+      }),
+      /DIALOGUE_OVERRIDE_DEPLOYMENT_IDENTITY_REQUIRED/,
+    );
   });
 
   it("persists narrator recognition only for subjects in the selected view", () => {
