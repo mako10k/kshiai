@@ -24,6 +24,7 @@ milestone RCA_DIRECTION_ACCEPTED:
 
 milestone LOCAL_LOOP_FIX_ACCEPTED:
   title "Local thread-separation acceptance complete"
+  state reached
 
 milestone STAGING_LOOP_FIX_ACCEPTED:
   title "Fresh staging observations accept compact context"
@@ -39,8 +40,9 @@ task DCL_IMPLEMENT RCA_DIRECTION_ACCEPTED -> LOCAL_LOOP_FIX_ACCEPTED:
   title "Implement typed thread separation and temporal social-appraisal contract"
   description "Change projections and compact inputs; preserve deterministic mechanics, reservation timing, provider count, and durable compatibility. Keep opponent matchup notes separate from battle-private memory, require a standalone compact aftermath reflection, and give present result roles priority over familiar conversation topics. Enforce that same memory separation on the fail-open compact-prologue path. Add regression tests for own/counterpart utterance exclusion, one-path context cardinality, brief trace linkage, prior observed versus current anticipated social effects, social-consequence bearer, continuity-basis compatibility, and matchup-memory lifecycle isolation under both fulfilled and rejected provider results."
   duration 3p
-  status active
+  status done
   owner "codex"
+  source "docs/evidence/dialogue-activation-authority-audit-2026-09-03.md"
   requires:
     DEV 1
 
@@ -74,3 +76,9 @@ work_event WE-491150f3e2a85ac620bc5147976fb8b37727c360dbb41a1ac17398fd190c3b56:
   kind start
   occurred_at 2026-08-10T12:54:56+09:00
   planned_value 3p
+
+work_event WE-DCL-IMPLEMENT-FINISH-EFB3E7F:
+  model 1
+  task DCL_IMPLEMENT
+  kind finish
+  occurred_at 2026-08-10T15:23:25+09:00
