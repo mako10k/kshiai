@@ -113,11 +113,11 @@ task DAF_STAGE_SMOKE_2 RECOVERY_PLAN_COMPLETED -> REPAIRED_STAGE_OBSERVED:
   title "Deploy and inspect one repaired compact-dialogue Stage battle"
   description "Integrate the exact readiness repair through the protected main path, create one annotated release candidate, deploy one digest-qualified no-traffic Stage revision with compact override, and execute at most one retained-fixture battle with at most 24 advances and 169 physical provider attempts. Retain deployment identity, fixture disposition, activation receipt, provider attempts, advances, reported tokens, elapsed time, retries, fallback, dialogue output, and loop outcome. Any failed preflight, CI, deployment, provider, schema, or stop condition ends this slice without retry. Do not Promote, change production traffic or settings, or run a second battle."
   duration 2p
-  status active
+  status done
   requires:
     DEV 1
   owner "codex"
-  source "docs/evidence/dialogue-activation-stage-smoke-2026-09-04.md"
+  source "docs/evidence/dialogue-activation-stage-smoke-2-2026-09-04.md"
 
 work_event WE-DAF-AUDIT-FINISH-20260903:
   model 1
@@ -197,3 +197,9 @@ work_event WE-DAF-STAGE-SMOKE-2-START-20260904:
   kind start
   occurred_at 2026-09-04T19:42:19+09:00
   planned_value 2p
+
+work_event WE-DAF-STAGE-SMOKE-2-FINISH-20260904:
+  model 1
+  task DAF_STAGE_SMOKE_2
+  kind finish
+  occurred_at 2026-09-04T20:26:34+09:00
