@@ -7,8 +7,8 @@ project KSHIAI_DIALOGUE_ACTIVATION_FOCUS_RECOVERY:
   as_of 2026-09-04
   duration_unit point
   velocity 1p/1d
-  target_duration 9p
-  finish RECOVERY_PLAN_COMPLETED
+  target_duration 12p
+  finish REPAIRED_STAGE_OBSERVED
   goal_owner user
   dag_owner user
 
@@ -42,7 +42,8 @@ milestone STAGE_OBSERVED:
   description "One exactly identified no-traffic Stage candidate has produced one retained success, failure, or stopped outcome; this milestone alone does not authorize another battle, Promote, or production activation."
 
 milestone RECOVERY_PLAN_COMPLETED:
-  title "First Stage outcome assessed and next causal task selected"
+  title "Persistent E2E character readiness recovered locally"
+  description "The retained fixture repair passes local regression, type, and build gates. Shared Stage fixtures and deployed revisions remain unchanged until separately authorized."
 
 task DAF_AUDIT NOW -> AUTHORITY_AUDITED:
   title "Audit effective dialogue mode ownership and plan drift"
@@ -78,23 +79,45 @@ task DAF_WIRE_COMPACT_LOCAL ACTIVATION_ADR_ACCEPTED -> LOCAL_WIRING_READY:
 
 
 
-task DAF_REPLAN_FOCUS STAGE_OBSERVED -> RECOVERY_PLAN_COMPLETED:
+task DAF_REPLAN_FOCUS STAGE_OBSERVED -> E2E_FIXTURE_READINESS_REPAIR_SELECTED:
   title "Assess the first Stage outcome and select the next smallest task"
   description "Read the retained DAF_STAGE_SMOKE_1 outcome before adding work. If deployment, activation binding, schema, provider behavior, or dialogue observation failed, register only the smallest repair or discriminating recheck supported by that evidence. If the observation is sufficient, reconcile docs/character-focus-hypothesis.pert with the replay RCA and define the next causal experiment slice. Do not schedule more Stage battles in advance, treat a stopped or failed smoke as success, implement speculative controls, wire focus into product expression, call a provider, deploy, or reopen production during this task."
   duration 2p
+  status done
   requires:
     DEV 1
   owner "codex"
+  source "docs/evidence/dialogue-activation-stage-smoke-2026-09-04.md"
 
 task DAF_STAGE_SMOKE_1 LOCAL_WIRING_READY -> STAGE_OBSERVED:
   title "Deploy and inspect one compact-dialogue Stage battle"
   description "Use the exact local candidate and perform only the cheap preflight needed to identify its current-main integration path, release eligibility, pending-migration effect, no-traffic Stage target, rollback identity, Stage observer route, and retained fixture. Before each external effect, obtain its exact authorization. Deploy one digest-qualified no-traffic Stage revision with the compact override and execute at most one existing-fixture battle with at most 24 advances. Reuse the ADR-0007 ceiling of 169 physical provider attempts per battle; do not implement ADR-0019 token or USD reservation, a durable budget schema, or a six-run controller. Retain the effective mode, source, deployment identity, provider attempts, advances, reported tokens, elapsed time, retries, fallback and loop outcome. Any failed preflight, deployment failure, provider or schema failure, stop condition, or completed battle ends this slice without automatic retry or replacement. Do not Promote, alter production traffic or settings, or run a second battle."
   duration 2p
+  status done
+  requires:
+    DEV 1
+  owner "codex"
+  source "docs/adr/0018-dialogue-context-activation-authority.think; docs/evidence/dialogue-activation-stage-smoke-2026-09-04.md"
+
+task DAF_REPAIR_E2E_FIXTURE_READINESS E2E_FIXTURE_READINESS_REPAIR_SELECTED -> RECOVERY_PLAN_COMPLETED:
+  title "Repair retained E2E character fixture readiness"
+  description "Make the exact persistent observer character fixtures readiness-aware. Reuse a correctly owned, non-deleted fixture only when its current immutable V2 generation is ready under the active compiler and envelope contract. Otherwise append and activate a deterministic LLM-free V2 fixture generation while preserving accumulated operational state such as rating records and opponent memories. Keep ready reuse idempotent, keep listReadyCharacterIds and matchmaking fail closed, and reject ownership or deletion mismatches. Add regression coverage for retained unsupported generations, preserved accumulated state, selector eligibility, and a no-write second ensure. This task is local only: do not mutate shared Stage fixtures, call a provider, deploy, rerun the observer, or change production."
+  duration 1p
+  status done
+  requires:
+    DEV 1
+  owner "codex"
+  source "docs/evidence/dialogue-activation-stage-smoke-2026-09-04.md; docs/adr/0010-structured-selectable-asset-envelope.md"
+
+task DAF_STAGE_SMOKE_2 RECOVERY_PLAN_COMPLETED -> REPAIRED_STAGE_OBSERVED:
+  title "Deploy and inspect one repaired compact-dialogue Stage battle"
+  description "Integrate the exact readiness repair through the protected main path, create one annotated release candidate, deploy one digest-qualified no-traffic Stage revision with compact override, and execute at most one retained-fixture battle with at most 24 advances and 169 physical provider attempts. Retain deployment identity, fixture disposition, activation receipt, provider attempts, advances, reported tokens, elapsed time, retries, fallback, dialogue output, and loop outcome. Any failed preflight, CI, deployment, provider, schema, or stop condition ends this slice without retry. Do not Promote, change production traffic or settings, or run a second battle."
+  duration 2p
   status active
   requires:
     DEV 1
   owner "codex"
-  source "docs/adr/0018-dialogue-context-activation-authority.think"
+  source "docs/evidence/dialogue-activation-stage-smoke-2026-09-04.md"
 
 work_event WE-DAF-AUDIT-FINISH-20260903:
   model 1
@@ -126,4 +149,51 @@ work_event WE-DAF-STAGE-SMOKE-1-START-20260904:
   task DAF_STAGE_SMOKE_1
   kind start
   occurred_at 2026-09-04T16:24:49+09:00
+  planned_value 2p
+
+work_event WE-DAF-STAGE-SMOKE-1-FINISH-20260904:
+  model 1
+  task DAF_STAGE_SMOKE_1
+  kind finish
+  occurred_at 2026-09-04T18:51:02+09:00
+
+work_event WE-DAF-REPLAN-FOCUS-START-20260904:
+  model 1
+  task DAF_REPLAN_FOCUS
+  kind start
+  occurred_at 2026-09-04T19:01:40+09:00
+  planned_value 2p
+
+milestone E2E_FIXTURE_READINESS_REPAIR_SELECTED:
+  title "Smallest E2E fixture readiness repair selected"
+  description "The retained first Stage failure is classified and one local, LLM-free character-fixture readiness repair is selected without authorizing shared-data mutation, deployment, another Stage battle, or production change."
+
+work_event WE-DAF-REPLAN-FOCUS-FINISH-20260904:
+  model 1
+  task DAF_REPLAN_FOCUS
+  kind finish
+  occurred_at 2026-09-04T19:19:13+09:00
+
+work_event WE-DAF-REPAIR-E2E-FIXTURE-READINESS-START-20260904:
+  model 1
+  task DAF_REPAIR_E2E_FIXTURE_READINESS
+  kind start
+  occurred_at 2026-09-04T19:22:37+09:00
+  planned_value 1p
+
+work_event WE-DAF-REPAIR-E2E-FIXTURE-READINESS-FINISH-20260904:
+  model 1
+  task DAF_REPAIR_E2E_FIXTURE_READINESS
+  kind finish
+  occurred_at 2026-09-04T19:29:31+09:00
+
+milestone REPAIRED_STAGE_OBSERVED:
+  title "Repaired compact-dialogue Stage battle observed"
+  description "One exact repaired no-traffic Stage candidate has produced one retained success, failure, or stopped battle outcome. No retry, Promote, production traffic, or persisted dialogue-setting change follows automatically."
+
+work_event WE-DAF-STAGE-SMOKE-2-START-20260904:
+  model 1
+  task DAF_STAGE_SMOKE_2
+  kind start
+  occurred_at 2026-09-04T19:42:19+09:00
   planned_value 2p

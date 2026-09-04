@@ -12,12 +12,6 @@ import {
   type RatingDisplayContext,
   OpponentBattleMemorySchema,
   type OpponentBattleMemory,
-  CharacterGenerationEnvelopeV2Schema,
-  CHARACTER_PROFILE_CLAIM_VALIDATOR_CONTRACT,
-  REQUIRED_CHARACTER_COMPILERS_V2,
-  defaultCharacterDisclosurePolicyV2,
-  legacyCharacterSheetToDefinitionV2,
-  projectCharacterProfileSourceV2,
 } from "@kshiai/shared";
 import type { CharacterReference } from "../llm/types.js";
 import { normalizeCharacterName } from "../character-name-uniqueness.js";
@@ -34,7 +28,6 @@ import {
 import {
   activateAssetGeneration,
   appendAssetGeneration,
-  assetContentDigest,
 } from "./asset-generations.js";
 import {
   getCharacterCompatibility,
@@ -47,6 +40,7 @@ import {
   listLatestAttemptsByCharacterIds,
   reviewStateFromAttempt,
 } from "./owner-notifications.js";
+import { buildImportedCharacterEnvelopeV2 } from "../services/character-authoring-service.js";
 
 async function reviewMarkForCharacter(characterId: string, ownerUserId: string) {
   const latest = await getLatestCharacterAuthoringAttemptForCharacter(
@@ -489,53 +483,9 @@ export async function saveSheet(sheet: CharacterSheet): Promise<void> {
     if (!stored.rows[0]) {
       // Programmatic seed/import of a brand-new character is explicitly marked
       // as an import. Existing rows are never auto-upgraded by this path.
-      const definition = legacyCharacterSheetToDefinitionV2(withRecord);
-      const disclosurePolicy = defaultCharacterDisclosurePolicyV2(definition);
-      const projection = projectCharacterProfileSourceV2(
-        definition,
-        disclosurePolicy,
-      );
-      const projectionDigest = assetContentDigest(projection);
-      const sourceDigest = assetContentDigest(withRecord.narrativeBlurb);
-      const description = withRecord.narrativeBlurb.trim() || withRecord.displayName;
-      const envelope = CharacterGenerationEnvelopeV2Schema.parse({
-        envelopeVersion: 2,
-        definitionSchema: { family: "character", version: 2 },
-        definition,
-        disclosurePolicy,
-        publicPresentation: {
-          description,
-          projectionContractVersion: 2,
-          projectionDigest,
-          descriptionInputDigest: assetContentDigest({ sourceDigest, projectionDigest }),
-          segments: [{
-            id: "imported-profile",
-            text: description.slice(0, 1200),
-            kind: "fact",
-            supportRefs: projection.facts.map((fact) => fact.supportRef).slice(0, 12),
-          }],
-          claimValidation: {
-            contractVersion: 1,
-            validatorContract: CHARACTER_PROFILE_CLAIM_VALIDATOR_CONTRACT,
-            projectionDigest,
-            segments: [{
-              segmentId: "imported-profile",
-              verdict: "supported",
-              supportRefs: projection.facts
-                .map((fact) => fact.supportRef)
-                .slice(0, 12),
-              riskCodes: [],
-            }],
-          },
-        },
-        provenance: {
-          sourceKind: "import",
-          sourceDigest,
-          attemptId: `internal-import:${withRecord.id}`.slice(0, 160),
-          structureGeneratorContract: "legacy-deterministic-import-v2",
-          descriptionGeneratorContract: "trusted-import-profile-v2",
-        },
-        compilerCompatibility: [...REQUIRED_CHARACTER_COMPILERS_V2],
+      const envelope = buildImportedCharacterEnvelopeV2({
+        sheet: withRecord,
+        attemptId: `internal-import:${withRecord.id}`.slice(0, 160),
       });
       importedGeneration = await appendAssetGeneration(connection, {
         assetType: "character",

@@ -76,6 +76,60 @@ export function existingCharacterGenerationResult(
   };
 }
 
+export function buildImportedCharacterEnvelopeV2(input: {
+  sheet: CharacterSheet;
+  attemptId: string;
+}): CharacterGenerationEnvelopeV2 {
+  const definition = legacyCharacterSheetToDefinitionV2(input.sheet);
+  const disclosurePolicy = defaultCharacterDisclosurePolicyV2(definition);
+  const projection = projectCharacterProfileSourceV2(
+    definition,
+    disclosurePolicy,
+  );
+  const projectionDigest = assetContentDigest(projection);
+  const sourceDigest = assetContentDigest(input.sheet.narrativeBlurb);
+  const description = input.sheet.narrativeBlurb.trim() || input.sheet.displayName;
+  return CharacterGenerationEnvelopeV2Schema.parse({
+    envelopeVersion: 2,
+    definitionSchema: { family: "character", version: 2 },
+    definition,
+    disclosurePolicy,
+    publicPresentation: {
+      description,
+      projectionContractVersion: 2,
+      projectionDigest,
+      descriptionInputDigest: assetContentDigest({ sourceDigest, projectionDigest }),
+      segments: [{
+        id: "imported-profile",
+        text: description.slice(0, 1200),
+        kind: "fact",
+        supportRefs: projection.facts.map((fact) => fact.supportRef).slice(0, 12),
+      }],
+      claimValidation: {
+        contractVersion: 1,
+        validatorContract: CHARACTER_PROFILE_CLAIM_VALIDATOR_CONTRACT,
+        projectionDigest,
+        segments: [{
+          segmentId: "imported-profile",
+          verdict: "supported",
+          supportRefs: projection.facts
+            .map((fact) => fact.supportRef)
+            .slice(0, 12),
+          riskCodes: [],
+        }],
+      },
+    },
+    provenance: {
+      sourceKind: "import",
+      sourceDigest,
+      attemptId: input.attemptId,
+      structureGeneratorContract: "legacy-deterministic-import-v2",
+      descriptionGeneratorContract: "trusted-import-profile-v2",
+    },
+    compilerCompatibility: [...REQUIRED_CHARACTER_COMPILERS_V2],
+  });
+}
+
 export function adjustedGenerationResult(
   current: CharacterSheet,
   patch: Awaited<ReturnType<LlmProvider["adjustCharacter"]>>,
