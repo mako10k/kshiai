@@ -14,6 +14,12 @@ const { E2E_FIXTURE_IDS, ensurePersistentE2eFixtures } = await import(
 );
 const characterRepo = await import("./repositories/characters.js");
 const characterAssetRepo = await import("./repositories/character-assets-v2.js");
+const battlefieldRepo = await import("./repositories/battlefields.js");
+const battlefieldAssetRepo = await import("./repositories/battlefield-assets-v2.js");
+const narrationStyleRepo = await import("./repositories/narration-styles.js");
+const narrationStyleAssetRepo = await import(
+  "./repositories/narration-style-assets-v2.js"
+);
 const { createAssetGeneration } = await import("./repositories/asset-generations.js");
 const { getDb, query } = await import("./db.js");
 
@@ -53,6 +59,16 @@ describe("persistent E2E fixtures", () => {
     };
     observer.updatedAt = "2026-08-07T00:01:00.000Z";
     await characterRepo.saveSheet(observer);
+    await battlefieldRepo.updateBattlefieldVisibility(
+      E2E_FIXTURE_IDS.battlefield,
+      "observer",
+      "private",
+    );
+    await narrationStyleRepo.updateNarrationStyleVisibility(
+      E2E_FIXTURE_IDS.narrationStyle,
+      "observer",
+      "private",
+    );
 
     assert.deepEqual(
       await ensurePersistentE2eFixtures({
@@ -98,6 +114,18 @@ describe("persistent E2E fixtures", () => {
       schemaVersion: 2,
       content: { envelopeVersion: 2 },
     });
+    await createAssetGeneration({
+      assetType: "battlefield-preset",
+      assetId: E2E_FIXTURE_IDS.battlefield,
+      schemaVersion: 1,
+      content: { legacy: true },
+    });
+    await createAssetGeneration({
+      assetType: "narration-style",
+      assetId: E2E_FIXTURE_IDS.narrationStyle,
+      schemaVersion: 1,
+      content: { legacy: true },
+    });
     await query(
       `UPDATE character_asset_states
           SET compatibility_status = 'ready', current_generation_id = $2
@@ -110,6 +138,14 @@ describe("persistent E2E fixtures", () => {
         WHERE character_id = $1`,
       [E2E_FIXTURE_IDS.opponentCharacter, opponentUnsupported.generationId],
     );
+    await query(
+      "DELETE FROM battlefield_asset_states WHERE battlefield_id = $1",
+      [E2E_FIXTURE_IDS.battlefield],
+    );
+    await query(
+      "DELETE FROM narration_style_asset_states WHERE narration_style_id = $1",
+      [E2E_FIXTURE_IDS.narrationStyle],
+    );
     assert.equal(
       (await characterAssetRepo.getCharacterCompatibility(
         E2E_FIXTURE_IDS.observerCharacter,
@@ -121,6 +157,18 @@ describe("persistent E2E fixtures", () => {
         E2E_FIXTURE_IDS.opponentCharacter,
       )).reasonCode,
       "invalid_v2_envelope",
+    );
+    assert.equal(
+      (await battlefieldAssetRepo.getBattlefieldCompatibility(
+        E2E_FIXTURE_IDS.battlefield,
+      )).reasonCode,
+      "legacy_schema",
+    );
+    assert.equal(
+      (await narrationStyleAssetRepo.getNarrationStyleCompatibility(
+        E2E_FIXTURE_IDS.narrationStyle,
+      )).reasonCode,
+      "legacy_schema",
     );
 
     assert.deepEqual(
@@ -141,6 +189,12 @@ describe("persistent E2E fixtures", () => {
     assert.ok(await characterAssetRepo.getReadyCharacterGeneration(
       E2E_FIXTURE_IDS.opponentCharacter,
     ));
+    assert.ok(await battlefieldAssetRepo.getReadyBattlefieldGeneration(
+      E2E_FIXTURE_IDS.battlefield,
+    ));
+    assert.ok(await narrationStyleAssetRepo.getReadyNarrationStyleGeneration(
+      E2E_FIXTURE_IDS.narrationStyle,
+    ));
     assert.equal(
       (await characterRepo.getSheet(E2E_FIXTURE_IDS.observerCharacter))?.record?.rating,
       1512,
@@ -150,26 +204,40 @@ describe("persistent E2E fixtures", () => {
         .some((sheet) => sheet.id === E2E_FIXTURE_IDS.opponentCharacter),
       true,
     );
+    assert.equal(
+      (await battlefieldRepo.getPreset(E2E_FIXTURE_IDS.battlefield))?.visibility,
+      "private",
+    );
+    assert.equal(
+      (await narrationStyleRepo.getNarrationStyle(
+        E2E_FIXTURE_IDS.narrationStyle,
+      ))?.visibility,
+      "private",
+    );
 
     const generationCountsBefore = await Promise.all([
-      E2E_FIXTURE_IDS.observerCharacter,
-      E2E_FIXTURE_IDS.opponentCharacter,
-    ].map(async (characterId) => Number((await query<{ count: number }>(
+      ["character", E2E_FIXTURE_IDS.observerCharacter],
+      ["character", E2E_FIXTURE_IDS.opponentCharacter],
+      ["battlefield-preset", E2E_FIXTURE_IDS.battlefield],
+      ["narration-style", E2E_FIXTURE_IDS.narrationStyle],
+    ].map(async ([assetType, assetId]) => Number((await query<{ count: number }>(
       `SELECT COUNT(*) AS count FROM asset_generations
-        WHERE asset_type = 'character' AND asset_id = $1`,
-      [characterId],
+        WHERE asset_type = $1 AND asset_id = $2`,
+      [assetType, assetId],
     )).rows[0]?.count ?? 0)));
     await ensurePersistentE2eFixtures({
       observerUserId: "observer",
       opponentUserId: "opponent",
     });
     const generationCountsAfter = await Promise.all([
-      E2E_FIXTURE_IDS.observerCharacter,
-      E2E_FIXTURE_IDS.opponentCharacter,
-    ].map(async (characterId) => Number((await query<{ count: number }>(
+      ["character", E2E_FIXTURE_IDS.observerCharacter],
+      ["character", E2E_FIXTURE_IDS.opponentCharacter],
+      ["battlefield-preset", E2E_FIXTURE_IDS.battlefield],
+      ["narration-style", E2E_FIXTURE_IDS.narrationStyle],
+    ].map(async ([assetType, assetId]) => Number((await query<{ count: number }>(
       `SELECT COUNT(*) AS count FROM asset_generations
-        WHERE asset_type = 'character' AND asset_id = $1`,
-      [characterId],
+        WHERE asset_type = $1 AND asset_id = $2`,
+      [assetType, assetId],
     )).rows[0]?.count ?? 0)));
     assert.deepEqual(generationCountsAfter, generationCountsBefore);
   });
