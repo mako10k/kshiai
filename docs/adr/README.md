@@ -2,13 +2,31 @@
 
 This directory contains durable records of architectural and product-rule decisions. ADRs explain why a direction was selected; plans and PERT documents explain how and when it will be delivered.
 
+## Authority
+
+- ADR-0001 through ADR-0014 retain their historical Markdown authority until an
+  accepted migration ADR says otherwise.
+- ADR-0015 and later use a same-basename pair. The `.think` file is the
+  authoritative causal and decision record; `.md` is its human-readable
+  projection. Correct disagreements in favor of `.think`.
+- sealgraph state and reports are disposable advisory caches. They are rebuilt
+  from `.think` and referenced original artifacts and never become an authority.
+
 ## Lifecycle
 
-1. Copy `template.md` to the next zero-padded number and a short kebab-case title.
+1. For ADR-0015 and later, create a same-basename `.think` and Markdown pair at
+   the next zero-padded number and a short kebab-case title. Earlier ADRs use the
+   historical Markdown-only form.
 2. Keep the ADR `Proposed` while alternatives or authority are unresolved.
-3. Change it to `Accepted` only when the named decision owner approves the decision.
-4. Link implementation commits and verification evidence without rewriting the original rationale.
-5. Replace an accepted decision with a new ADR, then mark the old ADR `Superseded` and link both records.
+3. Change it to `Accepted` only after the named owner explicitly approves the
+   exact ADR and revision. Record that instruction as `OWNER_ACCEPTANCE` evidence
+   and derive an `ACCEPTANCE` decision in `.think`; mirror the status in Markdown.
+4. Audit a LLMTHINK DSL source directly before acceptance. A missing or
+   incompatible advisory sealgraph does not alter the canonical workflow.
+5. Link implementation commits and verification evidence without rewriting the
+   original rationale.
+6. Replace an accepted decision with a new ADR, then mark the old ADR
+   `Superseded` and link both records.
 
 ## Index
 
@@ -31,3 +49,5 @@ This directory contains durable records of architectural and product-rule decisi
 | [0015](0015-e2e-operator-session-reentry.md) | Accepted | Operator re-enters the real E2E identity for GUI verification |
 | [0016](0016-scene-beats-batched-narration.md) | Accepted | Scene beats batch narration and reserved action sequences |
 | [0017](0017-public-turn-intra-turn-beats.md) | Accepted | Public clock is twelve turns; three beats sit inside each turn |
+| [0018](0018-dialogue-context-activation-authority.md) | Accepted | Use the persisted dialogue setting as normal authority and bind immutable activation-source receipts |
+| [0019](0019-observation-token-and-cost-admission.md) | Proposed | Bound paid observations by exact routes and conservative token/cost reservations before provider dispatch |

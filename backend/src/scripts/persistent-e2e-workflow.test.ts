@@ -36,6 +36,35 @@ describe("persistent E2E workflow contract", () => {
     );
   });
 
+  it("binds isolated dialogue overrides to Stage and rejects them at Promote", () => {
+    const stage = workflow("stage-release.yml");
+    const promote = workflow("promote-release.yml");
+    for (const name of [
+      "DIALOGUE_CONTEXT_PROJECTION_OVERRIDE",
+      "DIALOGUE_CONTEXT_PROJECTION_OVERRIDE_COMMIT_SHA",
+      "DIALOGUE_CONTEXT_PROJECTION_OVERRIDE_ARTIFACT_REF",
+    ]) {
+      assert.match(stage, new RegExp(name));
+      assert.match(promote, new RegExp(name));
+    }
+    assert.match(
+      stage,
+      /DIALOGUE_CONTEXT_PROJECTION_OVERRIDE_COMMIT_SHA=\$GITHUB_SHA/,
+    );
+    assert.match(
+      stage,
+      /DIALOGUE_CONTEXT_PROJECTION_OVERRIDE_ARTIFACT_REF=\$IMAGE_REF/,
+    );
+    assert.match(
+      stage,
+      /--remove-env-vars="DIALOGUE_CONTEXT_PROJECTION_OVERRIDE,DIALOGUE_CONTEXT_PROJECTION_OVERRIDE_COMMIT_SHA,DIALOGUE_CONTEXT_PROJECTION_OVERRIDE_ARTIFACT_REF"/,
+    );
+    assert.match(
+      promote,
+      /Ordinary production revision carries a dialogue override/,
+    );
+  });
+
   it("runs the observer only against a confirmed immutable production revision", () => {
     const observe = workflow("observe-persistent-e2e.yml");
     assert.match(observe, /refs\/tags\/\$RELEASE_TAG/);

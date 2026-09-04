@@ -154,6 +154,15 @@ jobs:
             for (const [name, value] of Object.entries(expected)) {
               if (env.get(name) !== value) throw new Error(`${name} mismatch`);
             }
+            for (const name of [
+              "DIALOGUE_CONTEXT_PROJECTION_OVERRIDE",
+              "DIALOGUE_CONTEXT_PROJECTION_OVERRIDE_COMMIT_SHA",
+              "DIALOGUE_CONTEXT_PROJECTION_OVERRIDE_ARTIFACT_REF",
+            ]) {
+              if (env.has(name)) {
+                throw new Error("Ordinary production revision carries a dialogue override");
+              }
+            }
             const target = new URL(env.get("NARRATION_TASK_TARGET_URL") ?? "");
             const alias = `release-${process.env.RELEASE_TAG.replaceAll(".", "-")}`;
             if (

@@ -10,6 +10,11 @@ import { writeAssetGeneration } from "./asset-generations.js";
 
 const GLOBAL_SETTINGS_ID = "global";
 
+export type DialoguePipelineSettingsResolution = {
+  settings: DialoguePipelineSettings;
+  source: "default" | "persisted_setting";
+};
+
 type SettingsRow = {
   settings_json: unknown;
   revision: number;
@@ -44,10 +49,19 @@ async function readSettings(): Promise<SettingsRow | null> {
   return rows[0] ?? null;
 }
 
-/** Returns the runtime default until an administrator saves an override. */
-export async function getDialoguePipelineSettings(): Promise<DialoguePipelineSettings> {
+/** Resolves both the effective settings and the normal authority that supplied them. */
+export async function resolveDialoguePipelineSettings(): Promise<
+  DialoguePipelineSettingsResolution
+> {
   const row = await readSettings();
-  return row ? parseSettings(row) : defaultDialoguePipelineSettings();
+  return row
+    ? { settings: parseSettings(row), source: "persisted_setting" }
+    : { settings: defaultDialoguePipelineSettings(), source: "default" };
+}
+
+/** Returns the runtime default until an administrator saves a setting. */
+export async function getDialoguePipelineSettings(): Promise<DialoguePipelineSettings> {
+  return (await resolveDialoguePipelineSettings()).settings;
 }
 
 export async function updateDialoguePipelineSettings(input: {

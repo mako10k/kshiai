@@ -1,0 +1,172 @@
+framework ArchitectureDecisionRecord:
+  requires problem and decision
+  requires premise and evidence
+  warns pending
+
+domain ADR0019:
+  description "Bound paid observations before provider dispatch"
+
+problem P1:
+  |
+    ADR-0007 atomically bounds physical provider attempts for an observation,
+    but deliberately leaves token and monetary policy unresolved. The current
+    provider adapter sends battle requests without an explicit completion-token
+    maximum, records only provider-reported total tokens, and records no reliable
+    monetary value for the current xAI path. A stated token or USD ceiling can
+    therefore be exceeded or remain unmeasurable even when the attempt ceiling
+    works correctly.
+
+premise DRIVER_AUTHORITY:
+  |
+    A paid Stage observation must not start an outbound provider attempt unless
+    the exact run, provider route, model, price snapshot, maximum token exposure
+    and maximum monetary exposure are inside the owner-approved envelope.
+
+premise DRIVER_FAIL_CLOSED:
+  |
+    Missing usage, an unpriced fallback, an unbounded request, a stale price
+    snapshot or an exhausted reservation must stop before the next outbound
+    attempt. Unknown token or price evidence must never be replaced with zero.
+
+premise DRIVER_COMPATIBILITY:
+  |
+    The new controls apply only when an explicitly approved observation budget
+    is bound. Ordinary battles and observations without the new contract retain
+    their existing behavior until a separate adoption decision says otherwise.
+
+evidence E_BUDGET_CURRENT:
+  |
+    backend/src/llm/provider-accounting.ts reserves one physical provider
+    attempt atomically before transport, but its durable run and attempt records
+    have no token or monetary reservation fields. ADR-0007 explicitly says a
+    separate conservative token and price policy is still required.
+
+evidence E_ADAPTER_CURRENT:
+  |
+    backend/src/llm/openai-compatible.ts does not set max_tokens or
+    max_completion_tokens for battle Chat Completions. Successful attempts pass
+    only usage.total_tokens into the ledger and do not calculate a price.
+
+evidence E_LIVE_ROUTE:
+  |
+    The 2026-09-04 read-only Cloud Run description of the 100-percent production
+    revision kshiai-api-00116-doz found LLM_PROVIDER=xai, no explicit provider
+    order or model variables, and indirect credential bindings for xAI, OpenAI
+    and Venice. At release commit 4d446e4 the resulting default route is
+    xai,openai,venice, so an unavailable provider can change the billed model
+    during one observation unless the Stage route is frozen.
+
+evidence E_PROVIDER_CONTROLS:
+  |
+    xAI's official Management API documentation says an API key can have model
+    ACLs, QPM and TPM limits; in-flight requests continue when TPM is reached.
+    Its billing documentation also describes team-level prepaid credits and
+    postpaid spending limits. These are useful defense in depth but do not by
+    themselves bind one six-battle application cohort or its already in-flight
+    request. Sources: https://docs.x.ai/developers/management-api-guide,
+    https://docs.x.ai/developers/rest-api-reference/management/auth, and
+    https://docs.x.ai/developers/rest-api-reference/management/billing.
+
+evidence E_PROVIDER_USAGE:
+  |
+    xAI documents separate prompt_tokens, cached_tokens, completion_tokens and
+    total_tokens in Chat Completions usage, and publishes model-specific input,
+    cached-input and output prices with higher long-context bands. Sources:
+    https://docs.x.ai/developers/advanced-api-usage/prompt-caching/usage-and-pricing
+    and https://docs.x.ai/developers/pricing.
+
+premise OPTIONS based_on E_BUDGET_CURRENT, E_ADAPTER_CURRENT, E_PROVIDER_CONTROLS, E_PROVIDER_USAGE:
+  |
+    Considered options are: keep post-response totals and accept possible
+    overspend; rely only on a provider team or key cap; atomically reserve a
+    conservative request envelope in the application in addition to provider
+    defense in depth; or waive the token and cost requirement. Post-response
+    checks cannot prevent the request that crosses the ceiling. Provider-only
+    controls are not cohort-scoped and allow in-flight completion. Waiving the
+    requirement silently weakens DAF_AUTHORIZE_STAGE.
+
+decision D1 based_on P1, DRIVER_AUTHORITY, OPTIONS:
+  |
+    Propose an immutable ObservationBudgetPolicyV1 for each approved paid
+    cohort. It names the cohort and allowed run count, expiry, exact providers
+    and models, price-snapshot digest and effective date, per-request input and
+    completion-token envelopes, physical-attempt ceiling, total reserved-token
+    ceiling and total reserved-USD ceiling. A run cannot bind or replace a
+    policy after its first provider reservation.
+  annotation caveat:
+    "Proposed; exact Stage values remain a later owner authorization."
+
+decision D2 based_on D1, E_LIVE_ROUTE, DRIVER_FAIL_CLOSED:
+  |
+    An approved observation uses only the providers and exact model identifiers
+    listed in its policy. An inherited provider order, alias that can silently
+    retarget, missing model price or fallback outside the list fails before
+    transport. Provider-side key ACL, QPM, TPM, prepaid or spending controls are
+    independently read back when used, but remain defense in depth rather than
+    the application cohort authority.
+  annotation caveat:
+    "Proposed; no provider key or billing setting change is authorized."
+
+decision D3 based_on D1, D2, E_PROVIDER_USAGE, DRIVER_FAIL_CLOSED:
+  |
+    Before each physical outbound attempt, the common observation transport
+    derives a finite conservative token and charge envelope from the frozen
+    request input bound, explicit completion-token maximum, exact model and
+    worst applicable price band. It atomically reserves that envelope together
+    with the ADR-0007 physical attempt. Transport starts only if all three
+    ceilings have room. If a provider-specific token counter cannot prove a
+    conservative input bound including protocol overhead, the policy must use
+    the model's full documented context limit or reject the request.
+  annotation caveat:
+    "Proposed; implementation must prove the bound before any real provider call."
+
+decision D4 based_on D3, DRIVER_FAIL_CLOSED:
+  |
+    Completion records prompt, cached-input, completion, reasoning when
+    separately returned, total tokens, exact price-snapshot identity and the
+    calculated charge. Missing or contradictory usage fails observation
+    acceptance and stops the cohort. Reserved maxima are not released after a
+    crash or unknown outcome; conservative over-reservation is preferred to
+    unbounded retry.
+  annotation caveat:
+    "Proposed; accounting evidence remains internal and sanitized."
+
+decision D5 based_on D1, DRIVER_AUTHORITY:
+  |
+    The Stage observer targets one exact tagged no-traffic Cloud Run revision,
+    verifies its digest and compact deployment-override receipt, and executes
+    the six frozen battles sequentially. Each slot has one predetermined run
+    identity; a stopped or failed slot ends the cohort without replacement.
+    The controller never requires the revision to receive production traffic
+    and never authorizes Promote.
+  annotation caveat:
+    "Proposed; Stage release side effects retain their separate authorization."
+
+decision D6 based_on D1, D2, D3, D4, D5, DRIVER_COMPATIBILITY:
+  |
+    Acceptance of this ADR would authorize only local schema, provider-boundary,
+    Stage-controller and regression-test implementation. It would not authorize
+    a database migration execution, provider or billing mutation, release tag,
+    artifact publication, Stage dispatch, provider call, Promote, production
+    observation or persisted compact-setting write.
+  annotation caveat:
+    "Proposed authority boundary; external actions remain separately gated."
+
+pending OWNER_DECISION:
+  |
+    The product and release owner must accept, revise or reject D1 through D6.
+    Generic continuation does not accept this ADR. If accepted, the exact
+    provider, model, price snapshot, numerical ceilings, six run identities and
+    release artifacts still require the later DAF_AUTHORIZE_STAGE decision.
+
+pending INPUT_BOUND_PROOF:
+  |
+    Local implementation must demonstrate that its request-input token bound is
+    conservative for every allowed provider/model and includes provider-added
+    protocol overhead. If this cannot be proved at a practical ceiling, return
+    to the owner rather than replacing the hard ceiling with a postflight alert.
+
+pending INTEGRATION_BASE:
+  |
+    ADR-0019 is allocated after local ADR-0018. Recheck the next free identity
+    against verified current main before integration.

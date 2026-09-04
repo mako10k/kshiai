@@ -33,6 +33,23 @@ export const DialoguePipelineSettingsSchema = DialoguePipelineValuesSchema.exten
 });
 export type DialoguePipelineSettings = z.infer<typeof DialoguePipelineSettingsSchema>;
 
+export const DialoguePipelineActivationSourceSchema = z.enum([
+  "default",
+  "persisted_setting",
+  "deployment_override",
+]);
+export type DialoguePipelineActivationSource = z.infer<
+  typeof DialoguePipelineActivationSourceSchema
+>;
+
+export const DialoguePipelineOverrideDeploymentSchema = z.object({
+  commitSha: z.string().regex(/^[a-f0-9]{40}$/),
+  artifactRef: z.string().regex(/^[^\s]+@sha256:[a-f0-9]{64}$/),
+}).strict();
+export type DialoguePipelineOverrideDeployment = z.infer<
+  typeof DialoguePipelineOverrideDeploymentSchema
+>;
+
 export const UpdateDialoguePipelineSettingsSchema = DialoguePipelineValuesSchema
   .omit({ schemaVersion: true })
   .extend({

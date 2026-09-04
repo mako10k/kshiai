@@ -16,7 +16,9 @@ after(() => rmSync(tempDir, { recursive: true, force: true }));
 
 describe("dialogue pipeline settings", () => {
   it("uses an auditable runtime default until an administrator saves", async () => {
-    const settings = await settingsRepo.getDialoguePipelineSettings();
+    const resolution = await settingsRepo.resolveDialoguePipelineSettings();
+    const settings = resolution.settings;
+    assert.equal(resolution.source, "default");
     assert.deepEqual(settings, {
       schemaVersion: 1,
       enabled: true,
@@ -80,5 +82,8 @@ describe("dialogue pipeline settings", () => {
       current.psychologyGuidance,
       "相手の反応を受け止め、性格に沿って次の言葉を考える。",
     );
+    const resolution = await settingsRepo.resolveDialoguePipelineSettings();
+    assert.equal(resolution.source, "persisted_setting");
+    assert.equal(resolution.settings.revision, 1);
   });
 });

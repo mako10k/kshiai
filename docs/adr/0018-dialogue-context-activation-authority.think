@@ -1,0 +1,140 @@
+framework ArchitectureDecisionRecord:
+  requires problem and decision
+  requires premise and evidence
+  warns pending
+
+domain ADR0018:
+  description "Dialogue context activation authority and immutable receipts"
+
+problem P1:
+  |
+    Compact dialogue behavior exists, but a new battle's effective projection
+    can come from a persisted operator setting, a runtime default, or a
+    revision-local deployment override. The current battle snapshot records the
+    effective value without recording which authority supplied it. This makes a
+    retained battle insufficient to distinguish normal activation from an
+    isolated release experiment.
+
+premise DRIVER_IMMUTABILITY:
+  |
+    A battle must keep one dialogue projection for its lifetime. Later operator
+    edits or deployment changes must not alter an already-created battle.
+
+premise DRIVER_AUTHORITY:
+  |
+    Normal product activation and an isolated Stage experiment are different
+    state changes. A revision-local override must not silently become a second
+    ordinary production authority.
+
+premise DRIVER_COMPATIBILITY:
+  |
+    Existing battles and legacy records must not be migrated by the activation
+    wiring. Action, mechanics, world state, rating, narration authority,
+    provider counts, retry behavior, and public privacy remain unchanged.
+
+premise OPTIONS:
+  |
+    Considered normal authorities are the code default, the deployment
+    environment, the persisted operator setting, or per-battle selection.
+    Code-default authority cannot express an audited operator choice;
+    environment authority conflates release configuration with product policy;
+    and per-battle selection broadens the product and privacy surface. The
+    persisted operator setting is the narrowest existing normal authority.
+
+evidence E_AUDIT:
+  |
+    The 2026-09-03 DAF audit found that new-battle creation currently applies a
+    non-null deployment override over the persisted global setting, then freezes
+    the effective snapshot. A missing persisted row falls back to legacy. The
+    manifest binds the effective revision and content identity but no source
+    enum or override deployment identity. Source:
+    docs/evidence/dialogue-activation-authority-audit-2026-09-03.md.
+
+evidence E_CURRENT_STATE:
+  |
+    At the audited snapshot, the persisted global setting is legacy revision 5.
+    Release v0.21.7 selected no dialogue override and binds commit 4d446e4,
+    backend image digest
+    sha256:430891fec8dfdefcf298ecfd59ddcf257aac982418788e8589494cde700170ad,
+    Cloud Run revision kshiai-api-00116-doz, and Worker version
+    d76ee358-8a3d-425a-8d07-a528233f6c08. Direct current-live service descriptor
+    readback remains unknown.
+
+decision D1 based_on P1, DRIVER_AUTHORITY, OPTIONS, E_AUDIT:
+  |
+    The persisted global dialogue-pipeline setting is the sole normal activation
+    authority for newly created battles. The code default legacy applies only
+    when no persisted setting exists. An operator write remains a separately
+    authorized external mutation; accepting this ADR alone does not change the
+    setting.
+  annotation caveat:
+    "Accepted; an operator setting write remains separately authorized."
+
+decision D2 based_on D1, DRIVER_AUTHORITY, E_AUDIT:
+  |
+    A deployment override may supersede the normal authority only for an
+    explicitly authorized, immutable, isolated Stage revision and bounded
+    observation. It must be absent from the ordinary production release path and
+    removed after the bounded Stage slice. It cannot authorize Promote or a
+    persisted setting change.
+  annotation caveat:
+    "Accepted; each Stage observation still requires exact authorization."
+
+decision D3 based_on D1, D2, DRIVER_IMMUTABILITY, E_AUDIT:
+  |
+    New battles must bind one immutable dialogue-activation receipt containing
+    the effective projection mode; a source enum distinguishing default,
+    persisted setting, and deployment override; the persisted settings revision
+    and settings generation content identity; and, when an override supplies the
+    value, the deployment commit and immutable artifact or revision identity.
+    All later prologue, combat, and aftermath work consumes that battle-owned
+    receipt without rereading mutable activation inputs.
+  annotation caveat:
+    "Accepted architecture; exact field names and deployment identity injection remain bounded implementation details."
+
+decision D4 based_on D3, DRIVER_COMPATIBILITY:
+  |
+    The receipt applies only to newly created battles after the bounded wiring.
+    Existing battles keep their recorded snapshots and behavior. Legacy battles
+    without a snapshot keep the existing compatibility fallback and remain
+    source-unknown; this ADR does not backfill, migrate, or reinterpret them.
+    Character-focus projection is a separate decision and remains absent from
+    product expression.
+  annotation caveat:
+    "Accepted; no existing-battle backfill or migration is authorized."
+
+decision D5 based_on D1, D2, D3, D4, E_CURRENT_STATE:
+  |
+    Acceptance authorizes only local implementation and regression tests of D1
+    through D4. It does not select compact in the persisted setting, deploy,
+    dispatch Stage, call a provider, promote, observe production, or change
+    character-focus behavior. Each of those actions retains its own explicit
+    gate and immutable target.
+  annotation caveat:
+    "Accepted authority boundary; runtime and external actions remain separately gated."
+
+evidence OWNER_ACCEPTANCE:
+  |
+    On 2026-09-04, the product and release owner replied "良いです。" to the
+    explicit request to record ADR-0018 as Accepted. The approved authoritative
+    draft was docs/adr/0018-dialogue-context-activation-authority.think with
+    SHA-256 b2f9ab7050db187117b508dea553e7c29c0e9e3e63c0f71c931b6393deb7ca1c,
+    covering D1 through D5 and the separately gated runtime boundaries.
+
+decision ACCEPTANCE based_on D1, D2, D3, D4, D5, OWNER_ACCEPTANCE:
+  |
+    ADR-0018 is Accepted at the owner-approved revision identified by
+    OWNER_ACCEPTANCE. D1 through D4 authorize their bounded local implementation
+    and regression tests subject to D5. This acceptance does not authorize an
+    operator setting write, Stage dispatch, provider call, deployment, Promote,
+    production observation, or character-focus change.
+  annotation rationale:
+    "The named decision owner explicitly approved this ADR and exact revision on 2026-09-04."
+
+pending INTEGRATION_BASE:
+  |
+    ADR-0018 was allocated because verified current main at 4d446e4 already uses
+    ADR-0015 through ADR-0017. The namespace was rechecked unchanged on
+    2026-09-04. Before integration, port this pair onto a current-main-based
+    worktree and reconcile the audit branch's divergent ADR-0015 without merging
+    duplicate ADR identities.

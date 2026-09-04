@@ -30,7 +30,11 @@ import {
 import { FreeActionResolutionReceiptSchema } from "./free-action.js";
 import { DramaStateSchema } from "./drama.js";
 import {
+  DialoguePipelineActivationSourceSchema,
+  DialoguePipelineOverrideDeploymentSchema,
   BattleDialoguePipelineSnapshotSchema,
+  type DialoguePipelineActivationSource,
+  type DialoguePipelineOverrideDeployment,
   type BattleDialoguePipelineSnapshot,
 } from "./dialogue-pipeline.js";
 import {
@@ -1841,6 +1845,10 @@ export interface BattleAssetManifest {
     generationId: string;
     contentDigest: string;
     snapshot: BattleDialoguePipelineSnapshot;
+    /** Missing only on battles created before ADR-0018 activation receipts. */
+    activationSource?: DialoguePipelineActivationSource;
+    /** Present only when activationSource is deployment_override. */
+    overrideDeployment?: DialoguePipelineOverrideDeployment;
   };
   rules: {
     battleEngine: string;
@@ -1852,6 +1860,35 @@ export interface BattleAssetManifest {
     narrationStyleRules?: string;
   };
 }
+
+export const BattleDialoguePipelineBindingSchema = z.object({
+  generationId: z.string().min(1),
+  contentDigest: z.string().regex(/^[a-f0-9]{64}$/).optional().default("0".repeat(64)),
+  snapshot: BattleDialoguePipelineSnapshotSchema,
+  activationSource: DialoguePipelineActivationSourceSchema.optional(),
+  overrideDeployment: DialoguePipelineOverrideDeploymentSchema.optional(),
+}).strict().superRefine((binding, context) => {
+  if (
+    binding.activationSource === "deployment_override" &&
+    !binding.overrideDeployment
+  ) {
+    context.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["overrideDeployment"],
+      message: "deployment_override requires immutable deployment identity",
+    });
+  }
+  if (
+    binding.activationSource !== "deployment_override" &&
+    binding.overrideDeployment
+  ) {
+    context.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["overrideDeployment"],
+      message: "override deployment identity requires deployment_override source",
+    });
+  }
+});
 
 export const BattleAssetManifestSchema = z.object({
   schemaVersion: z.literal(1),
@@ -1886,11 +1923,7 @@ export const BattleAssetManifestSchema = z.object({
     contentDigest: z.string().regex(/^[a-f0-9]{64}$/).optional().default("0".repeat(64)),
     snapshot: BattlefieldInstanceSchema,
   }).strict(),
-  dialoguePipeline: z.object({
-    generationId: z.string().min(1),
-    contentDigest: z.string().regex(/^[a-f0-9]{64}$/).optional().default("0".repeat(64)),
-    snapshot: BattleDialoguePipelineSnapshotSchema,
-  }).strict(),
+  dialoguePipeline: BattleDialoguePipelineBindingSchema,
   rules: z.object({
     battleEngine: z.string().min(1),
     temporalRules: z.string().min(1),

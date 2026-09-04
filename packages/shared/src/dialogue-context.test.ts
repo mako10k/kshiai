@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import {
   BattleDialoguePipelineSnapshotSchema,
+  BattleDialoguePipelineBindingSchema,
   CharacterDeepPsycheCompactAdvanceSchema,
   CharacterDeepPsycheDeltaSchema,
   CharacterExpressionBriefSchema,
@@ -137,6 +138,55 @@ describe("dialogue context contracts", () => {
     assert.deepEqual(BattleDialoguePipelineSnapshotSchema.parse(snapshot), snapshot);
     assert.equal(snapshot.revision, 7);
     assert.equal(snapshot.contextProjectionMode, "compact");
+  });
+
+  it("keeps old receipts readable and requires provenance for deployment overrides", () => {
+    const snapshot = snapshotDialoguePipelineSettings(
+      defaultDialoguePipelineSettings(),
+    );
+    const base = {
+      generationId: "dialogue-pipeline:global:g1:test",
+      contentDigest: "a".repeat(64),
+      snapshot,
+    };
+    assert.equal(
+      BattleDialoguePipelineBindingSchema.safeParse(base).success,
+      true,
+    );
+    assert.equal(
+      BattleDialoguePipelineBindingSchema.safeParse({
+        ...base,
+        activationSource: "persisted_setting",
+      }).success,
+      true,
+    );
+    assert.equal(
+      BattleDialoguePipelineBindingSchema.safeParse({
+        ...base,
+        activationSource: "deployment_override",
+      }).success,
+      false,
+    );
+    const overrideDeployment = {
+      commitSha: "b".repeat(40),
+      artifactRef: `example.invalid/kshiai/backend@sha256:${"c".repeat(64)}`,
+    };
+    assert.equal(
+      BattleDialoguePipelineBindingSchema.safeParse({
+        ...base,
+        activationSource: "deployment_override",
+        overrideDeployment,
+      }).success,
+      true,
+    );
+    assert.equal(
+      BattleDialoguePipelineBindingSchema.safeParse({
+        ...base,
+        activationSource: "default",
+        overrideDeployment,
+      }).success,
+      false,
+    );
   });
 
   it("projects only the observer's changed percepts and evidence references", () => {
