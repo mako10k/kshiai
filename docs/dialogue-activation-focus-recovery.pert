@@ -77,9 +77,12 @@ task DAF_AUTHORIZE_STAGE LOCAL_WIRING_READY -> STAGE_AUTHORIZED:
   title "Authorize the exact compact-dialogue Stage observation"
   description "The owner reviews the exact candidate SHA, immutable mode receipt, rollback target, fixed six-battle matrix, provider-operation and token ceilings, cost ceiling, and stop conditions. This authorizes only the stated Stage run and never Promote or production observation."
   duration 1p
+  status blocked
   requires:
     OWNER 1
   owner "user"
+  blocked_reason "Review packet docs/evidence/dialogue-activation-stage-authorization-review-2026-09-04.md lacks an exact release artifact and live rollback readback; the current production-only observer cannot target the no-traffic Stage revision; provider/model/pricing and enforceable token and monetary ceilings are not frozen."
+  source "docs/evidence/dialogue-activation-stage-authorization-review-2026-09-04.md"
 
 task DAF_STAGE_OBSERVE STAGE_AUTHORIZED -> STAGE_OBSERVED:
   title "Stage and inspect six fixed compact-dialogue battles"
