@@ -7,7 +7,7 @@ project KSHIAI_DIALOGUE_ACTIVATION_FOCUS_RECOVERY:
   as_of 2026-09-03
   duration_unit point
   velocity 1p/1d
-  target_duration 10p
+  target_duration 14p
   finish RECOVERY_PLAN_COMPLETED
   goal_owner user
   dag_owner user
@@ -33,6 +33,12 @@ milestone ACTIVATION_ADR_ACCEPTED:
 
 milestone LOCAL_WIRING_READY:
   title "Immutable compact-dialogue activation wiring passes local gates"
+
+milestone STAGE_BUDGET_ADR_ACCEPTED:
+  title "Observation budget authority explicitly accepted"
+
+milestone STAGE_OBSERVER_READY:
+  title "Bounded no-traffic Stage observer passes local gates"
 
 milestone STAGE_AUTHORIZED:
   title "Exact bounded Stage observation explicitly authorized"
@@ -73,15 +79,34 @@ task DAF_WIRE_COMPACT_LOCAL ACTIVATION_ADR_ACCEPTED -> LOCAL_WIRING_READY:
   owner "codex"
   source "git:4133445b2f144187c955f4487c209d02d895bedb"
 
-task DAF_AUTHORIZE_STAGE LOCAL_WIRING_READY -> STAGE_AUTHORIZED:
-  title "Authorize the exact compact-dialogue Stage observation"
-  description "The owner reviews the exact candidate SHA, immutable mode receipt, rollback target, fixed six-battle matrix, provider-operation and token ceilings, cost ceiling, and stop conditions. This authorizes only the stated Stage run and never Promote or production observation."
+task DAF_ACCEPT_STAGE_BUDGET_ADR LOCAL_WIRING_READY -> STAGE_BUDGET_ADR_ACCEPTED:
+  title "Accept or revise ADR-0019 observation budget authority"
+  description "The owner reviews the exact Proposed ADR-0019 decisions for immutable route and price identity, conservative atomic token and USD reservation, usage reconciliation, and the no-traffic six-run controller. Acceptance authorizes only the stated local schema, provider-boundary, controller and fake-provider test work. It does not authorize a migration execution, provider or billing mutation, tag, push, artifact publication, Stage dispatch, provider call, Promote, production observation or persisted dialogue-setting write. Generic continuation does not accept the ADR."
   duration 1p
-  status blocked
+  status planned
   requires:
     OWNER 1
   owner "user"
-  blocked_reason "Review packet docs/evidence/dialogue-activation-stage-authorization-review-2026-09-04.md lacks an exact release artifact and live rollback readback; the current production-only observer cannot target the no-traffic Stage revision; provider/model/pricing and enforceable token and monetary ceilings are not frozen."
+  source "docs/adr/0019-observation-token-and-cost-admission.think"
+
+task DAF_BUILD_STAGE_OBSERVER STAGE_BUDGET_ADR_ACCEPTED -> STAGE_OBSERVER_READY:
+  title "Implement bounded no-traffic Stage observation controls"
+  description "Implement only an accepted ADR-0019: bind immutable provider, model and price policy; reserve conservative token and USD exposure atomically with physical attempts; reconcile usage without turning unknown into zero; bind one exact no-traffic Stage revision; and run six predetermined slots sequentially with stop without replacement. Verify locally with fake providers. Do not execute a migration, mutate provider or billing settings, tag, push, publish, dispatch Stage, call a paid provider, Promote, observe production or write the persisted dialogue setting."
+  duration 3p
+  status planned
+  requires:
+    DEV 1
+  owner "codex"
+  source "docs/adr/0019-observation-token-and-cost-admission.think"
+
+task DAF_AUTHORIZE_STAGE STAGE_OBSERVER_READY -> STAGE_AUTHORIZED:
+  title "Authorize the exact compact-dialogue Stage observation"
+  description "The owner reviews the exact candidate SHA, immutable mode receipt, rollback target, fixed six-battle matrix, provider-operation and token ceilings, cost ceiling, and stop conditions. This authorizes only the stated Stage run and never Promote or production observation."
+  duration 1p
+  status planned
+  requires:
+    OWNER 1
+  owner "user"
   source "docs/evidence/dialogue-activation-stage-authorization-review-2026-09-04.md"
 
 task DAF_STAGE_OBSERVE STAGE_AUTHORIZED -> STAGE_OBSERVED:
