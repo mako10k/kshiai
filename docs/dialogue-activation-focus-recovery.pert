@@ -7,8 +7,8 @@ project KSHIAI_DIALOGUE_ACTIVATION_FOCUS_RECOVERY:
   as_of 2026-09-04
   duration_unit point
   velocity 1p/1d
-  target_duration 10p
-  finish RECOVERY_PLAN_COMPLETED
+  target_duration 12p
+  finish REPAIRED_STAGE_OBSERVED
   goal_owner user
   dag_owner user
 
@@ -103,11 +103,21 @@ task DAF_REPAIR_E2E_FIXTURE_READINESS E2E_FIXTURE_READINESS_REPAIR_SELECTED -> R
   title "Repair retained E2E character fixture readiness"
   description "Make the exact persistent observer character fixtures readiness-aware. Reuse a correctly owned, non-deleted fixture only when its current immutable V2 generation is ready under the active compiler and envelope contract. Otherwise append and activate a deterministic LLM-free V2 fixture generation while preserving accumulated operational state such as rating records and opponent memories. Keep ready reuse idempotent, keep listReadyCharacterIds and matchmaking fail closed, and reject ownership or deletion mismatches. Add regression coverage for retained unsupported generations, preserved accumulated state, selector eligibility, and a no-write second ensure. This task is local only: do not mutate shared Stage fixtures, call a provider, deploy, rerun the observer, or change production."
   duration 1p
-  status planned
+  status done
   requires:
     DEV 1
   owner "codex"
   source "docs/evidence/dialogue-activation-stage-smoke-2026-09-04.md; docs/adr/0010-structured-selectable-asset-envelope.md"
+
+task DAF_STAGE_SMOKE_2 RECOVERY_PLAN_COMPLETED -> REPAIRED_STAGE_OBSERVED:
+  title "Deploy and inspect one repaired compact-dialogue Stage battle"
+  description "Integrate the exact readiness repair through the protected main path, create one annotated release candidate, deploy one digest-qualified no-traffic Stage revision with compact override, and execute at most one retained-fixture battle with at most 24 advances and 169 physical provider attempts. Retain deployment identity, fixture disposition, activation receipt, provider attempts, advances, reported tokens, elapsed time, retries, fallback, dialogue output, and loop outcome. Any failed preflight, CI, deployment, provider, schema, or stop condition ends this slice without retry. Do not Promote, change production traffic or settings, or run a second battle."
+  duration 2p
+  status active
+  requires:
+    DEV 1
+  owner "codex"
+  source "docs/evidence/dialogue-activation-stage-smoke-2026-09-04.md"
 
 work_event WE-DAF-AUDIT-FINISH-20260903:
   model 1
@@ -163,3 +173,27 @@ work_event WE-DAF-REPLAN-FOCUS-FINISH-20260904:
   task DAF_REPLAN_FOCUS
   kind finish
   occurred_at 2026-09-04T19:19:13+09:00
+
+work_event WE-DAF-REPAIR-E2E-FIXTURE-READINESS-START-20260904:
+  model 1
+  task DAF_REPAIR_E2E_FIXTURE_READINESS
+  kind start
+  occurred_at 2026-09-04T19:22:37+09:00
+  planned_value 1p
+
+work_event WE-DAF-REPAIR-E2E-FIXTURE-READINESS-FINISH-20260904:
+  model 1
+  task DAF_REPAIR_E2E_FIXTURE_READINESS
+  kind finish
+  occurred_at 2026-09-04T19:29:31+09:00
+
+milestone REPAIRED_STAGE_OBSERVED:
+  title "Repaired compact-dialogue Stage battle observed"
+  description "One exact repaired no-traffic Stage candidate has produced one retained success, failure, or stopped battle outcome. No retry, Promote, production traffic, or persisted dialogue-setting change follows automatically."
+
+work_event WE-DAF-STAGE-SMOKE-2-START-20260904:
+  model 1
+  task DAF_STAGE_SMOKE_2
+  kind start
+  occurred_at 2026-09-04T19:42:19+09:00
+  planned_value 2p

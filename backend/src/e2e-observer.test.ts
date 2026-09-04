@@ -3,6 +3,7 @@ import { after, describe, it } from "node:test";
 import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { CharacterGenerationEnvelopeV2Schema } from "@kshiai/shared";
 
 const tempDir = mkdtempSync(join(tmpdir(), "kshiai-e2e-observer-test-"));
 process.env.DATABASE_URL = "";
@@ -12,7 +13,9 @@ const { E2E_FIXTURE_IDS, ensurePersistentE2eFixtures } = await import(
   "./e2e-observer.js"
 );
 const characterRepo = await import("./repositories/characters.js");
-const { getDb } = await import("./db.js");
+const characterAssetRepo = await import("./repositories/character-assets-v2.js");
+const { createAssetGeneration } = await import("./repositories/asset-generations.js");
+const { getDb, query } = await import("./db.js");
 
 after(() => rmSync(tempDir, { recursive: true, force: true }));
 
@@ -67,5 +70,107 @@ describe("persistent E2E fixtures", () => {
       (await characterRepo.getSheet(E2E_FIXTURE_IDS.observerCharacter))?.record?.rating,
       1512,
     );
+
+    const observerReady = await characterAssetRepo.getReadyCharacterGeneration(
+      E2E_FIXTURE_IDS.observerCharacter,
+    );
+    const opponentReady = await characterAssetRepo.getReadyCharacterGeneration(
+      E2E_FIXTURE_IDS.opponentCharacter,
+    );
+    assert.ok(observerReady);
+    assert.ok(opponentReady);
+    const observerEnvelope = CharacterGenerationEnvelopeV2Schema.parse(
+      observerReady.content,
+    );
+    const missingCompiler = {
+      ...observerEnvelope,
+      compilerCompatibility: observerEnvelope.compilerCompatibility.slice(1),
+    };
+    const observerUnsupported = await createAssetGeneration({
+      assetType: "character",
+      assetId: E2E_FIXTURE_IDS.observerCharacter,
+      schemaVersion: 2,
+      content: missingCompiler,
+    });
+    const opponentUnsupported = await createAssetGeneration({
+      assetType: "character",
+      assetId: E2E_FIXTURE_IDS.opponentCharacter,
+      schemaVersion: 2,
+      content: { envelopeVersion: 2 },
+    });
+    await query(
+      `UPDATE character_asset_states
+          SET compatibility_status = 'ready', current_generation_id = $2
+        WHERE character_id = $1`,
+      [E2E_FIXTURE_IDS.observerCharacter, observerUnsupported.generationId],
+    );
+    await query(
+      `UPDATE character_asset_states
+          SET compatibility_status = 'ready', current_generation_id = $2
+        WHERE character_id = $1`,
+      [E2E_FIXTURE_IDS.opponentCharacter, opponentUnsupported.generationId],
+    );
+    assert.equal(
+      (await characterAssetRepo.getCharacterCompatibility(
+        E2E_FIXTURE_IDS.observerCharacter,
+      )).reasonCode,
+      "missing_required_compiler",
+    );
+    assert.equal(
+      (await characterAssetRepo.getCharacterCompatibility(
+        E2E_FIXTURE_IDS.opponentCharacter,
+      )).reasonCode,
+      "invalid_v2_envelope",
+    );
+
+    assert.deepEqual(
+      await ensurePersistentE2eFixtures({
+        observerUserId: "observer",
+        opponentUserId: "opponent",
+      }),
+      {
+        observerCharacter: "reused",
+        opponentCharacter: "reused",
+        battlefield: "reused",
+        narrationStyle: "reused",
+      },
+    );
+    assert.ok(await characterAssetRepo.getReadyCharacterGeneration(
+      E2E_FIXTURE_IDS.observerCharacter,
+    ));
+    assert.ok(await characterAssetRepo.getReadyCharacterGeneration(
+      E2E_FIXTURE_IDS.opponentCharacter,
+    ));
+    assert.equal(
+      (await characterRepo.getSheet(E2E_FIXTURE_IDS.observerCharacter))?.record?.rating,
+      1512,
+    );
+    assert.equal(
+      (await characterRepo.listPlayableOpponentSheets("observer"))
+        .some((sheet) => sheet.id === E2E_FIXTURE_IDS.opponentCharacter),
+      true,
+    );
+
+    const generationCountsBefore = await Promise.all([
+      E2E_FIXTURE_IDS.observerCharacter,
+      E2E_FIXTURE_IDS.opponentCharacter,
+    ].map(async (characterId) => Number((await query<{ count: number }>(
+      `SELECT COUNT(*) AS count FROM asset_generations
+        WHERE asset_type = 'character' AND asset_id = $1`,
+      [characterId],
+    )).rows[0]?.count ?? 0)));
+    await ensurePersistentE2eFixtures({
+      observerUserId: "observer",
+      opponentUserId: "opponent",
+    });
+    const generationCountsAfter = await Promise.all([
+      E2E_FIXTURE_IDS.observerCharacter,
+      E2E_FIXTURE_IDS.opponentCharacter,
+    ].map(async (characterId) => Number((await query<{ count: number }>(
+      `SELECT COUNT(*) AS count FROM asset_generations
+        WHERE asset_type = 'character' AND asset_id = $1`,
+      [characterId],
+    )).rows[0]?.count ?? 0)));
+    assert.deepEqual(generationCountsAfter, generationCountsBefore);
   });
 });
