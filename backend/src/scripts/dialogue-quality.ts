@@ -74,6 +74,14 @@ function longestRepeatRun(lines: readonly OrderedSpeech[]): number {
  * Measures text shape only. It is a test-observation aid and is never read by
  * battle resolution, agent action selection, persistence rules, or narration.
  */
+export function assessNarrationDialogueQuality(
+  entries: readonly { narrative: NarrativeBlock | null }[],
+): DialogueQualityMetrics {
+  return assessDialogueQuality(
+    entries.flatMap((entry) => entry.narrative ? [entry.narrative] : []),
+  );
+}
+
 export function assessDialogueQuality(
   log: readonly NarrativeBlock[],
 ): DialogueQualityMetrics {

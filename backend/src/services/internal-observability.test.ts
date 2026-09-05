@@ -66,6 +66,7 @@ describe("internal battle observability", () => {
           sequence: 1,
           phase: "combat",
           toRevision: 1,
+          narrationDeferred: true,
           narrationInput: {
             kind: "combat",
             request: { innerDigests: [{ detail: "private-narration-input" }] },
@@ -274,6 +275,7 @@ describe("internal battle observability", () => {
       combatTurn: null,
       stateRevision: 1,
       inputDigest: "a".repeat(64),
+      narrationDeferred: true,
     }]);
     assert.equal(
       (detail.canonicalCurrent.assetManifest as {

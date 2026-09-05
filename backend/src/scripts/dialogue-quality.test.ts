@@ -1,6 +1,9 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { assessDialogueQuality } from "./dialogue-quality.js";
+import {
+  assessDialogueQuality,
+  assessNarrationDialogueQuality,
+} from "./dialogue-quality.js";
 
 describe("dialogue quality observation", () => {
   it("measures exact repetition, reactions, lexical variety, and response contexts", () => {
@@ -50,6 +53,28 @@ describe("dialogue quality observation", () => {
     assert.equal(gaku?.reactionLines, 1);
     assert.equal(gaku?.nonReactionLinesAfterCounterpartUtterance, 1);
     assert.ok((nagi?.lexicalDiversity ?? 0) > 0);
+  });
+
+  it("scores terminal narration narratives instead of an empty battle log", () => {
+    const emptyLog = assessDialogueQuality([]);
+    const fromNarration = assessNarrationDialogueQuality([{
+      narrative: {
+        turn: 1,
+        narrator: ["間合いが動く。"],
+        speeches: [{ speaker: "ナギ", text: "足音が変わったね。" }],
+      },
+    }, {
+      narrative: null,
+    }, {
+      narrative: {
+        turn: 3,
+        narrator: ["余韻が残る。"],
+        speeches: [{ speaker: "ガク", text: "まだ立つ。" }],
+      },
+    }]);
+    assert.equal(emptyLog.totalLines, 0);
+    assert.equal(fromNarration.totalLines, 2);
+    assert.equal(fromNarration.uniqueLines, 2);
   });
 
   it("returns explicit empty-cohort values", () => {
