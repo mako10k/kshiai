@@ -19,7 +19,7 @@ import {
   ensureAuthUser,
   generateEphemeralPassword,
 } from "../e2e-supabase-admin.js";
-import { assessDialogueQuality } from "./dialogue-quality.js";
+import { assessNarrationDialogueQuality } from "./dialogue-quality.js";
 import {
   PROVIDER_OPERATION_LAYERS,
   PROVIDER_OPERATION_TAXONOMY_REVISION,
@@ -38,6 +38,57 @@ export {
 };
 
 const OBSERVATION_PREFIX = "KSHIAI_E2E_OBSERVATION=";
+
+export function assertPublicNarrationOrder(sequences: readonly number[]): void {
+  if (sequences.length === 0) {
+    throw new Error("Public narration projection is empty");
+  }
+  const seen = new Set<number>();
+  let previous = 0;
+  for (const sequence of sequences) {
+    if (!Number.isInteger(sequence) || sequence < 1) {
+      throw new Error("Public narration sequence is not a positive integer");
+    }
+    if (seen.has(sequence)) {
+      throw new Error("Public narration sequence is not unique");
+    }
+    if (sequence <= previous) {
+      throw new Error("Public narration projection is not strictly increasing");
+    }
+    seen.add(sequence);
+    previous = sequence;
+  }
+}
+
+export function reconcileSparseNarrationProjection(input: {
+  narrationSequences: readonly number[];
+  receipts: readonly {
+    sequence: number;
+    narrationDeferred?: boolean;
+  }[];
+}): void {
+  const bySequence = new Map(
+    input.receipts.map((receipt) => [receipt.sequence, receipt]),
+  );
+  for (const sequence of input.narrationSequences) {
+    const receipt = bySequence.get(sequence);
+    if (!receipt) {
+      throw new Error("Narration row has no canonical phase receipt");
+    }
+    if (receipt.narrationDeferred) {
+      throw new Error("Deferred phase receipt has a narration row");
+    }
+  }
+  for (const receipt of input.receipts) {
+    const narrated = input.narrationSequences.includes(receipt.sequence);
+    if (receipt.narrationDeferred && narrated) {
+      throw new Error("Deferred phase receipt has a narration row");
+    }
+    if (!receipt.narrationDeferred && !narrated) {
+      throw new Error("Non-deferred phase receipt is missing a narration row");
+    }
+  }
+}
 
 type PersistentAccount = {
   email: string;
@@ -423,6 +474,12 @@ async function inspectInternalBattleObservation(input: {
       turnRecordCount?: number;
       canonicalTransitionCount?: number;
     };
+    canonicalCurrent?: {
+      phaseReceipts?: Array<{
+        sequence?: number;
+        narrationDeferred?: boolean;
+      }>;
+    };
     narrationQueue?: Array<{
       sequence?: number;
       status?: string;
@@ -458,10 +515,19 @@ async function inspectInternalBattleObservation(input: {
   )) {
     throw new Error("Narration receipts did not converge to one terminal attempt each");
   }
-  const sequences = narrationQueue.map((entry) => entry.sequence);
-  if (sequences.some((value, index) => value !== index + 1)) {
-    throw new Error("Narration receipt sequence is not contiguous");
-  }
+  const sequences = narrationQueue.map((entry) => Number(entry.sequence));
+  assertPublicNarrationOrder(sequences);
+  reconcileSparseNarrationProjection({
+    narrationSequences: sequences,
+    receipts: (response.canonicalCurrent?.phaseReceipts ?? []).flatMap((receipt) => {
+      const sequence = Number(receipt.sequence);
+      if (!Number.isInteger(sequence) || sequence < 1) return [];
+      return [{
+        sequence,
+        narrationDeferred: receipt.narrationDeferred === true,
+      }];
+    }),
+  });
   return {
     turnRecordCount,
     canonicalTransitionCount,
@@ -487,10 +553,7 @@ async function waitForNarrationConvergence(input: {
       entry.status === "completed" || entry.status === "failed" || entry.status === "cancelled"
     );
     if (terminal) {
-      const sequences = snapshot.entries.map((entry) => entry.sequence);
-      if (sequences.some((value, index) => value !== index + 1)) {
-        throw new Error("Public narration projection is not in contiguous receipt order");
-      }
+      assertPublicNarrationOrder(snapshot.entries.map((entry) => entry.sequence));
       return snapshot;
     }
     await new Promise((resolve) => setTimeout(resolve, 2_000));
@@ -765,7 +828,7 @@ async function main(): Promise<void> {
         advances,
         log: persistedBattle.log,
       },
-      dialogueQuality: assessDialogueQuality(persistedBattle.log),
+      dialogueQuality: assessNarrationDialogueQuality(narration.entries),
     };
     assertSanitizedObservation(observation, targetRevision);
     await persistSanitizedObservation(observation);

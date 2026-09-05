@@ -17,11 +17,13 @@ const assertSanitizedObservation: typeof persistentE2eModule.assertSanitizedObse
 const {
   OBSERVATION_PROVIDER_OPERATION_LAYERS,
   OBSERVATION_PROVIDER_OPERATION_TAXONOMY_REVISION,
+  assertPublicNarrationOrder,
   authorizeObservationProviderBudget,
   generateEphemeralPassword,
   parseBattleAdvanceStream,
   persistSanitizedObservation,
   projectObservationProviderOperations,
+  reconcileSparseNarrationProjection,
   resolveObservationRunId,
   validateProductionApiUrl,
   verifyProviderOperationLedger,
@@ -240,6 +242,40 @@ describe("persistent battle E2E runner", () => {
     ].join("\n"));
     assert.equal(battle.id, "btl-e2e");
     assert.equal(battle.status, "finished");
+  });
+
+  it("accepts sparse strictly increasing narration sequences from a completed beat", () => {
+    assertPublicNarrationOrder([1, 2, 3, 6, 7, 10]);
+    assert.throws(() => assertPublicNarrationOrder([1, 2, 2]), /unique/);
+    assert.throws(() => assertPublicNarrationOrder([1, 3, 2]), /strictly increasing/);
+    assert.throws(() => assertPublicNarrationOrder([]), /empty/);
+    reconcileSparseNarrationProjection({
+      narrationSequences: [1, 2, 3, 6],
+      receipts: [
+        { sequence: 1 },
+        { sequence: 2 },
+        { sequence: 3 },
+        { sequence: 4, narrationDeferred: true },
+        { sequence: 5, narrationDeferred: true },
+        { sequence: 6 },
+      ],
+    });
+    assert.throws(() => reconcileSparseNarrationProjection({
+      narrationSequences: [1, 2, 3],
+      receipts: [
+        { sequence: 1 },
+        { sequence: 2, narrationDeferred: true },
+        { sequence: 3 },
+      ],
+    }), /Deferred phase receipt has a narration row/);
+    assert.throws(() => reconcileSparseNarrationProjection({
+      narrationSequences: [1, 3],
+      receipts: [
+        { sequence: 1 },
+        { sequence: 2 },
+        { sequence: 3 },
+      ],
+    }), /missing a narration row/);
   });
 
   it("rejects an SSE error without a done event", () => {

@@ -270,6 +270,7 @@ export async function getInternalBattleObservation(
       combatTurn: number | null;
       stateRevision: number;
       inputDigest: string | null;
+      narrationDeferred: boolean;
     }>;
     psycheReaction: { a: JsonObject | null; b: JsonObject | null };
     semanticState: unknown | null;
@@ -501,6 +502,7 @@ export async function getInternalBattleObservation(
               combatTurn: asNumber(receipt?.combatTurn),
               stateRevision,
               inputDigest: asString(receipt?.narrationInputDigest),
+              narrationDeferred: receipt?.narrationDeferred === true,
             }];
           })
         : [],

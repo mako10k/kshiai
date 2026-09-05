@@ -15,6 +15,8 @@ import {
   CharacterDeepPsycheUpdateSchema,
   CharacterDeepPsycheAdvanceSchema,
   CharacterDeepPsycheCompactAdvanceSchema,
+  compactDeepPsycheIssueSummaries,
+  decodeCompactDeepPsycheAdvance,
   CharacterIdentitySchema,
   CharacterDefinitionV2Schema,
   CharacterDefinitionLlmFillV2Schema,
@@ -2602,8 +2604,15 @@ Return JSON only: {"delta": {"interior":{"speechAppraisal":{"anticipatedImpact":
             temperature: 0.5,
           },
         );
-        const parsed = CharacterDeepPsycheCompactAdvanceSchema.safeParse(data);
-        if (!parsed.success) throw new Error("Deep psyche returned invalid compact state");
+        const decoded = decodeCompactDeepPsycheAdvance(data);
+        const parsed = CharacterDeepPsycheCompactAdvanceSchema.safeParse(decoded);
+        if (!parsed.success) {
+          console.warn(
+            "[llm] compact psyche rejected",
+            compactDeepPsycheIssueSummaries(decoded),
+          );
+          throw new Error("Deep psyche returned invalid compact state");
+        }
         if (input.phase === "aftermath" && !parsed.data.delta.privateMemory?.trim()) {
           throw new Error("Deep psyche omitted the compact aftermath reflection");
         }

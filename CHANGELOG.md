@@ -5,6 +5,13 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 
 ## [Unreleased]
 
+### Fixed
+
+- Persistent E2E observation accepts sparse scene-beat narration sequences and
+  scores dialogue from terminal narration entries.
+- Compact deep-psyche JSON is decoded to the known envelope before schema
+  parse, and remaining validation failures log Zod path and code only.
+
 ## [0.22.0] - 2026-09-04
 
 ### Added
