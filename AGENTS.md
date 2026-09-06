@@ -19,6 +19,18 @@ Use Node.js 20 or newer and install all workspaces from the repository root:
 
 Follow the existing strict TypeScript style: two-space indentation, double quotes, semicolons, and trailing commas in multiline structures. Use `PascalCase` for React components and types, `camelCase` for functions and variables, and kebab-case filenames such as `battle-engine.ts`. Keep domain-neutral contracts in `@kshiai/shared`; do not duplicate them in frontend or backend code. No standalone formatter is configured, so match the surrounding file and rely on type checking.
 
+### Type escapes
+
+Do not discard the type checker on new code, and do not leave an escape in place on a path whose defect is under repair. Forbidden on those paths: `as any`, `as unknown as`, `Record<string, any>`, `any` annotations, `@ts-ignore`, `@ts-expect-error` without a contract test, and `noImplicitAny: false`.
+
+An escape is allowed only when every condition holds:
+
+1. It is not on a contract type (battle state, engine continuation, world, public DTO, API/Zod schema, or other authoritative snapshot).
+2. The case is individually audited: a short comment names the reason, the alternatives, and the owning file.
+3. A colocated test locks the hole so a later change cannot widen a contract through it.
+
+Do not retrofit every historical escape in one pass. New additions and any path where a defect is found must follow this rule. Contract-related escapes found during a repair must be closed as part of that repair, not recorded as a standing exception.
+
 ## Testing Guidelines
 
 Tests use `node:test` with `node:assert/strict`. Name files `*.test.ts`, colocate them with the module under test, and write behavioral `describe`/`it` descriptions. Add regression coverage for battle rules, ratings, balance, or schema changes. There is no configured coverage threshold; nevertheless, run `npm test` and `npm run typecheck` before submitting.

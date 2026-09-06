@@ -4390,6 +4390,26 @@ export async function buildEnvironmentProcessProposal(input: {
   }
 }
 
+function bindEngineLiveCheckpoint(input: {
+  live: BattleState;
+  causalExecution: BattleState["causalExecution"];
+  causalEngineContinuation: BattleState["causalEngineContinuation"];
+  causalBucketCommit?: BattleState["causalBucketCommit"];
+  causalLaterDecision?: BattleState["causalLaterDecision"];
+}): BattleState {
+  return {
+    ...input.live,
+    causalExecution: input.causalExecution,
+    causalEngineContinuation: input.causalEngineContinuation,
+    ...(input.causalBucketCommit
+      ? { causalBucketCommit: input.causalBucketCommit }
+      : {}),
+    ...(input.causalLaterDecision
+      ? { causalLaterDecision: input.causalLaterDecision }
+      : {}),
+  };
+}
+
 async function advanceTurnWithLease(input: {
   userId: string;
   battleId: string;
@@ -4606,11 +4626,13 @@ async function advanceTurnWithLease(input: {
       engineResolved = resolveTurn(engineInput);
     } else {
       causalExecution = commitCausalExecutionBucket({ execution: causalExecution });
-      state = {
-        ...state,
+      state = bindEngineLiveCheckpoint({
+        live: engineResolved.state,
         causalExecution,
         causalEngineContinuation: engineResolved.engineContinuation,
-      };
+        causalBucketCommit: state.causalBucketCommit,
+        causalLaterDecision: state.causalLaterDecision,
+      });
       if (engineResolved.engineContinuation) {
         await battleRepo.saveBattle(state, {
           sideAUserId: meta.side_a_user_id,
@@ -4629,12 +4651,13 @@ async function advanceTurnWithLease(input: {
       });
     }
     causalExecution = commitCausalExecutionBucket({ execution: causalExecution });
-    state = {
-      ...state,
+    state = bindEngineLiveCheckpoint({
+      live: engineResolved.state,
       causalExecution,
-      causalBucketCommit: firstBucketCommit,
       causalEngineContinuation: engineResolved.engineContinuation,
-    };
+      causalBucketCommit: firstBucketCommit,
+      causalLaterDecision: state.causalLaterDecision,
+    });
     if (engineResolved.engineContinuation) {
       await battleRepo.saveBattle(state, {
         sideAUserId: meta.side_a_user_id,
@@ -4799,11 +4822,13 @@ async function advanceTurnWithLease(input: {
       engineContinuation: engineResolved.engineContinuation,
     });
     causalExecution = commitCausalExecutionBucket({ execution: causalExecution });
-    state = {
-      ...state,
+    state = bindEngineLiveCheckpoint({
+      live: engineResolved.state,
       causalExecution,
       causalEngineContinuation: engineResolved.engineContinuation,
-    };
+      causalBucketCommit: state.causalBucketCommit,
+      causalLaterDecision: state.causalLaterDecision,
+    });
     if (engineResolved.engineContinuation) {
       await battleRepo.saveBattle(state, {
         sideAUserId: meta.side_a_user_id,

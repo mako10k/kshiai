@@ -559,7 +559,7 @@ export function buildBattleTurnRecord(input: {
             status: currentWorldTransition.status,
             operationKinds:
               currentWorldTransition.transition?.operations?.map(
-                (operation: { op: string }) => operation.op,
+                (operation) => operation.op,
               ) ?? [],
           },
         }
@@ -1908,11 +1908,22 @@ export type PreparedSequentialBattleTurnInitiative = PreparedBattleTurnInitiativ
 };
 
 /**
- * Materialize the exact committed mechanics visible at a durable bucket
- * boundary. Semantic/world state remains the caller's last committed snapshot
- * until the service reconciles this bucket; unresolved action placeholders are
- * never exposed through this helper.
+ * Materialize the exact committed engine-owned live snapshot visible at a
+ * durable bucket boundary, including worldState. Unresolved action
+ * placeholders are never exposed through this helper.
  */
+function engineLiveWorldSnapshot(input: {
+  worldState?: BattleTurnEngineContinuation["worldState"];
+  latestWorldTransition?: BattleTurnEngineContinuation["latestWorldTransition"];
+}): Pick<BattleTurnEngineContinuation, "worldState" | "latestWorldTransition"> {
+  return {
+    ...(input.worldState ? { worldState: structuredClone(input.worldState) } : {}),
+    ...(input.latestWorldTransition
+      ? { latestWorldTransition: structuredClone(input.latestWorldTransition) }
+      : {}),
+  };
+}
+
 export function materializeBattleStateAtBucketBoundary(input: {
   state: BattleState;
   continuation: BattleTurnEngineContinuation;
@@ -1930,7 +1941,9 @@ export function materializeBattleStateAtBucketBoundary(input: {
     finisherB: continuation.finisherB
       ? structuredClone(continuation.finisherB)
       : input.state.finisherB,
+    pendingEffects: structuredClone(continuation.pendingEffects),
     latestTemporalResolution: structuredClone(continuation.temporalResolution),
+    ...engineLiveWorldSnapshot(continuation),
   };
 }
 
@@ -2376,10 +2389,13 @@ export function resolveTurn(input: ResolveTurnInput): {
     b: requestedActionB,
   } as const;
   const actionIds = { a: actionAId, b: actionBId } as const;
-  let worldState = input.state.worldState
-    ? structuredClone(input.state.worldState)
-    : undefined;
-  let latestWorldTransition = input.state.latestWorldTransition;
+  let worldState = resumed?.worldState
+    ? structuredClone(resumed.worldState)
+    : input.state.worldState
+      ? structuredClone(input.state.worldState)
+      : undefined;
+  let latestWorldTransition = resumed?.latestWorldTransition
+    ?? input.state.latestWorldTransition;
   const spacingEnabled = input.state.pacingPolicy?.spacingSchemaVersion === 1;
   const causalSituations = {
     a: applyBattleCausalCoefficients({
@@ -2560,7 +2576,6 @@ export function resolveTurn(input: ResolveTurnInput): {
           })
         : null;
       if (planned) {
-        inputAction.targetEvents.push(planned.event);
         if (planned.operations.length > 0 && worldState) {
           const applied = applyBattleWorldTransition({
             state: worldState,
@@ -2587,7 +2602,17 @@ export function resolveTurn(input: ResolveTurnInput): {
                 operations: planned.operations,
               },
             };
+            inputAction.targetEvents.push(planned.event);
+          } else {
+            inputAction.targetEvents.push({
+              type: "reposition",
+              actorName: actor.displayName,
+              actorSide: inputAction.side,
+              summary: `${actor.displayName} は間合いを変えられなかった。`,
+            });
           }
+        } else {
+          inputAction.targetEvents.push(planned.event);
         }
       } else {
         inputAction.targetEvents.push({
@@ -2911,9 +2936,13 @@ export function resolveTurn(input: ResolveTurnInput): {
       mechanicalEvidence,
       pendingEffects,
       defensiveInstrumentMultipliers,
+      ...engineLiveWorldSnapshot({ worldState, latestWorldTransition }),
     });
     return {
-      state: input.state,
+      state: materializeBattleStateAtBucketBoundary({
+        state: input.state,
+        continuation: engineContinuation,
+      }),
       events: engineContinuation.events,
       actions,
       mechanicalEvidence,
@@ -3121,7 +3150,10 @@ export function resolveNextBattleTurnBucket(
       bucket.continuation.temporalResolution.buckets.length
   ) {
     return {
-      state: input.state,
+      state: materializeBattleStateAtBucketBoundary({
+        state: input.state,
+        continuation: bucket.continuation,
+      }),
       events: bucket.continuation.events,
       actions: bucket.continuation.actions,
       mechanicalEvidence: bucket.continuation.mechanicalEvidence,
@@ -3518,13 +3550,7 @@ function applyAction(
   }
 
   if (action.kind === "reposition") {
-    events.push({
-      type: "reposition",
-      actorName: actor.displayName,
-      actorSide: action.actorSide,
-      summary: `${actor.displayName} は間合いを変えようとした。`,
-    });
-    return false;
+    throw new Error("REPOSITION_REQUIRES_WORLD_APPLY");
   }
 
   if (action.kind === "reflect") {

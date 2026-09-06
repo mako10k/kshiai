@@ -1,0 +1,129 @@
+framework ArchitectureDecisionRecord:
+  requires problem and decision
+  requires premise and evidence
+  warns pending
+
+domain ADR0021:
+  description |
+    Engine-owned live state must survive bucket continuation, semantic
+    derive must not clobber fighter world, and TypeScript contract
+    types must not be discarded.
+
+problem P1:
+  |
+    v0.22.0-rc.5 battle btl_2788b1aba227a7ecd768b75270676423 executed
+    38 reposition events and finished HP 109/109 with pairRelations
+    still separate_area updatedTurn 0. ADR-0020 hops ran inside
+    executeAction then vanished at bucket stop. BattleState is an
+    open bag via as any and Record<string, any>, so the compiler
+    cannot require that engine mutations appear on the continuation.
+
+premise DRIVER_CHECKPOINT:
+  |
+    A bucket stop freezes BattleState. Only fields named on the
+    engine continuation are live. The continuation must be the
+    engine-owned live snapshot, not a v0.17 HP allow-list.
+
+premise DRIVER_AUTHORITY:
+  |
+    worldState is server-owned mechanical fact. Fighter placement
+    and the character.a/b pair are engine-owned after a hop.
+    Semantic derive may update environment meaning; it must not
+    restore spawn spacing.
+
+premise DRIVER_TYPES:
+  |
+    Contract types must remain closed TypeScript. Escapes are
+    forbidden on new code and on a path whose defect is under
+    repair, except a non-contract hole that is individually
+    audited and locked by a test.
+
+premise OPTIONS:
+  |
+    Considered options are: append worldState to the continuation
+    allow-list only; fast-forward reposition across the whole band
+    as the diagnosis; or name the engine-owned live snapshot,
+    close the BattleState type escape on this contract, and stop
+    semantic clobber of fighter world. Allow-list-only leaves the
+    next executeAction field to vanish. Time-skip does not explain
+    updatedTurn 0. The live-snapshot plus closed types is the
+    producing repair.
+
+evidence E_BATTLE:
+  |
+    Production v0.22.0-rc.5 battle
+    btl_2788b1aba227a7ecd768b75270676423: wait 34, reposition 38,
+    requested basic_attack 37, world revision 0, pair separate_area
+    updatedTurn 0. RCA
+    docs/v0.22.0-rc.5-reposition-theater-rca.llmthink.dsl and
+    docs/v0.22.0-rc.5-continuation-world-drop-root-rca.llmthink.dsl
+    audited fatal=0.
+
+evidence E_RETURN:
+  |
+    resolveTurn on bucket stop returns state: input.state.
+    BattleTurnEngineContinuationSchema omitted worldState.
+    materializeBattleStateAtBucketBoundary copied combatants, not
+    world. Source: packages/shared/src/battle-engine.ts.
+
+evidence E_TYPES:
+  |
+    BattleStateSchema ended `}) as any`. BattleState was a short
+    explicit bag plus Record<string, any>. sceneBeat and perception
+    frames were any. backend tsconfig set noImplicitAny false.
+    Source: packages/shared/src/battle.ts and backend/tsconfig.json.
+
+evidence E_DERIVE:
+  |
+    deriveBattleWorldTransitionFromSemanticState emits set_placement
+    for character.a/b from semantic labels and set_pair_relation to
+    near or separate_area, ignoring engine in-area ranks.
+
+evidence OWNER_ACCEPTANCE:
+  |
+    On 2026-09-06 the product owner instructed: forbid type escapes
+    going forward; audit and test-lock only non-contract exceptions;
+    do not retrofit every historical escape; new additions and found
+    defects are mandatory; then implement this repair.
+
+decision D1 based_on P1, DRIVER_CHECKPOINT, OPTIONS, E_RETURN, E_BATTLE:
+  |
+    Engine-owned live fields that must survive a bucket stop are
+    combatants, finishers, pendingEffects, situation,
+    defensiveInstrumentMultipliers, worldState, and
+    latestWorldTransition. Continuation carries that snapshot.
+    materialize and finalize restore it. resolveTurn must not return
+    the pre-bucket BattleState after a world mutation.
+
+decision D2 based_on DRIVER_AUTHORITY, E_DERIVE, E_BATTLE:
+  |
+    Semantic derive must not overwrite character.a/b placement or
+    the fighter pair. Environment entities may still sync from
+    semantic locations.
+
+decision D3 based_on DRIVER_TYPES, E_TYPES, OWNER_ACCEPTANCE:
+  |
+    Type escapes are banned on new code and on a repaired defect
+    path. Contract types cannot host an escape. Historical escapes
+    elsewhere stay until found. Annotate BattleStateSchema as
+    ZodType<BattleState>, not any. Name worldState,
+    causalEngineContinuation, latestWorldTransition, and
+    pendingEffects on BattleState so they are not any. TS7056
+    still blocks z.infer of the full schema; remaining unnamed
+    keys stay historically open until a defect names them. A
+    colocated test must fail if the continuation is an open
+    string index or those live fields become any.
+
+decision D4 based_on OPTIONS, E_BATTLE:
+  |
+    Do not replace one-step reposition with a time-skip as this
+    repair. Adjacent spawn plus a landed hop is enough for
+    same_area strikes on a later beat. Compress-to-band remains a
+    later product ADR if long maps still walk.
+
+decision ACCEPTANCE based_on D1, D2, D3, D4, OWNER_ACCEPTANCE:
+  |
+    ADR-0021 is Accepted at this owner-approved revision.
+    Implementation of D1 through D3 is authorized. ADR-0020 remains
+    Accepted; this record amends the checkpoint and type contract,
+    not the reposition kind or substitution reasons.

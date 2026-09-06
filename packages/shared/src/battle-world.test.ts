@@ -429,12 +429,127 @@ describe("server-owned battle world", () => {
       true,
     );
     assert.equal(
+      derived.transition.operations.some((operation) =>
+        operation.op === "set_placement" && operation.entityId === "character.b"
+      ),
+      false,
+    );
+    assert.equal(
       readBattleWorldPair(
         applied.state,
         "character.a",
         "character.b",
       )?.distance,
-      "separate_area",
+      "near",
+    );
+  });
+
+  it("does not restore fighter placement or pair from stale semantic labels", () => {
+    const semantic = createBattleSemanticState({
+      scene: "複数区画の遺跡",
+      sideA: { displayName: "A" },
+      sideB: { displayName: "B" },
+    });
+    semantic.entities["character.b"]!.location = {
+      type: "scene",
+      area: "隣の回廊",
+    };
+    const before = createBattleWorldState({ semanticState: semantic });
+    const hopped = applyBattleWorldTransition({
+      state: before,
+      turn: 1,
+      transition: {
+        baseRevision: before.revision,
+        turn: 1,
+        sourceEventIds: [],
+        operations: [
+          {
+            op: "set_placement",
+            entityId: "character.a",
+            placement: { type: "scene", areaId: "area.2" },
+          },
+          {
+            op: "set_pair_relation",
+            entityAId: "character.a",
+            entityBId: "character.b",
+            distance: "far",
+            sight: "clear",
+            sound: "clear",
+            orientationA: "facing",
+            orientationB: "facing",
+          },
+        ],
+      },
+    });
+    assert.equal(hopped.ok, true);
+    if (!hopped.ok) return;
+    const derived = deriveBattleWorldTransitionFromSemanticState({
+      worldState: hopped.state,
+      semanticState: semantic,
+      turn: 1,
+      sourceEventIds: ["turn-1-move"],
+    });
+    assert.equal(derived.ok, true);
+    if (!derived.ok) return;
+    assert.equal(
+      derived.transition.operations.some((operation) =>
+        operation.op === "set_placement" && operation.entityId === "character.a"
+      ),
+      false,
+    );
+    assert.equal(
+      derived.transition.operations.some((operation) =>
+        operation.op === "set_pair_relation"
+      ),
+      false,
+    );
+  });
+
+  it("does not move an object the engine already placed this turn", () => {
+    const semantic = createBattleSemanticState({
+      scene: "遺跡",
+      obstacles: ["携行できる盾"],
+      sideA: { displayName: "A" },
+      sideB: { displayName: "B" },
+    });
+    const before = createBattleWorldState({ semanticState: semantic });
+    assert.ok(before.entities["obstacle.1"]);
+    const moved = applyBattleWorldTransition({
+      state: before,
+      turn: 1,
+      transition: {
+        baseRevision: before.revision,
+        turn: 1,
+        sourceEventIds: [],
+        operations: [
+          {
+            op: "set_object_state",
+            entityId: "obstacle.1",
+            changes: { portable: true },
+          },
+          {
+            op: "set_placement",
+            entityId: "obstacle.1",
+            placement: { type: "held", holderId: "character.a" },
+          },
+        ],
+      },
+    });
+    assert.equal(moved.ok, true);
+    if (!moved.ok) return;
+    const derived = deriveBattleWorldTransitionFromSemanticState({
+      worldState: moved.state,
+      semanticState: semantic,
+      turn: 1,
+      sourceEventIds: ["turn-1-move"],
+    });
+    assert.equal(derived.ok, true);
+    if (!derived.ok) return;
+    assert.equal(
+      derived.transition.operations.some((operation) =>
+        operation.op === "set_placement" && operation.entityId === "obstacle.1"
+      ),
+      false,
     );
   });
 

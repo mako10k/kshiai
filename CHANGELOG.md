@@ -25,6 +25,11 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
   scores dialogue from terminal narration entries.
 - Compact deep-psyche JSON is decoded to the known envelope before schema
   parse, and remaining validation failures log Zod path and code only.
+- Bucket continuation now carries engine-owned `worldState`, so a reposition
+  hop survives the next beat instead of narrating movement from the spawn
+  snapshot. Advance checkpoints keep that live world on `BattleState`, and
+  semantic derive no longer restores fighter spacing or same-turn engine
+  placements from stale labels.
 
 ### Changed
 
@@ -39,6 +44,11 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
   Application rollback returns new battle creation to v0.21.7 behavior without
   rewriting receipts already bound by v0.22.0. New `pacingPolicy.spacingSchemaVersion`
   is 1; older frozen pacing policies keep the previous miss substitution.
+  In-flight continuations without `worldState` keep the previous discarded-hop
+  behavior until the next full turn. If hops land and matches still look like
+  movement-only, peel prompt-forced reposition, then `target_unlocalized`
+  substitution, then semantic fighter/object guards, in that order
+  (`docs/adr/0021-engine-live-continuation-and-type-escapes.md`).
 
 ## [0.21.7] - 2026-08-16
 
