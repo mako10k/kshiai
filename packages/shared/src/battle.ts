@@ -1824,6 +1824,15 @@ export const BattleTurnEngineContinuationSchema = z.object({
     a: z.number().positive(),
     b: z.number().positive(),
   }).strict(),
+  /** Engine-owned world committed in earlier buckets of this public turn. */
+  worldState: BattleWorldStateSchema.optional(),
+  latestWorldTransition: z.object({
+    turn: z.number().int().nonnegative(),
+    status: z.enum(["applied", "rejected", "skipped"]),
+    fromRevision: z.number().int().nonnegative(),
+    toRevision: z.number().int().nonnegative(),
+    transition: BattleWorldTransitionSchema.nullable(),
+  }).optional(),
 }).strict().superRefine((continuation, context) => {
   if (continuation.nextBucketIndex > continuation.temporalResolution.buckets.length) {
     context.addIssue({
@@ -2404,7 +2413,9 @@ export const BattleStateSchema = z.object({
       message: "latest semantic transition must match semantic state",
     });
   }
-}) as any;
+}) as z.ZodType<BattleState>;
+// TS7056 blocks z.infer of this schema. Named engine-live fields are closed.
+// Remaining keys stay historically open until a defect names them (ADR-0021).
 export type BattleState = {
   id: string;
   status: "active" | "finished";
@@ -2413,6 +2424,9 @@ export type BattleState = {
   sideA: CombatantState;
   sideB: CombatantState;
   worldState?: BattleWorldState;
+  pendingEffects?: BattleTurnEngineContinuation["pendingEffects"];
+  causalEngineContinuation?: BattleTurnEngineContinuation;
+  latestWorldTransition?: BattleTurnEngineContinuation["latestWorldTransition"];
   sceneBeat?: any;
   perceptionFrameA?: any;
   perceptionFrameB?: any;

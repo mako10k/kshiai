@@ -28,7 +28,7 @@ import {
   type BattleState,
 } from "./battle.js";
 import { quantizeCommittedMechanicalEvidence } from "./perception-quantization.js";
-import { applyBattleWorldTransition } from "./battle-world.js";
+import { applyBattleWorldTransition, readBattleWorldPair } from "./battle-world.js";
 
 function sheet(id: string, name: string, hp = 100): CharacterSheet {
   const t = new Date().toISOString();
@@ -1380,6 +1380,119 @@ describe("battle engine", () => {
       reason: "out_of_range",
     });
     assert.equal(resolved.actions[0]?.skippedReason, null);
+    const pair = resolved.state.worldState?.pairRelations[0];
+    assert.ok(pair);
+    assert.notEqual(pair.distance, "far");
+    assert.ok(pair.updatedTurn > 0);
+  });
+
+  it("keeps a hopped world across a durable bucket resume", () => {
+    const a = sheet("a", "アルファ");
+    const b = sheet("b", "ベータ");
+    a.parameters.spd = 20;
+    b.parameters.spd = 5;
+    const state = createBattleState({
+      id: "reposition-bucket-resume",
+      sideA: a,
+      sideB: b,
+      turnLimit: 12,
+      prologuePending: false,
+      battlefield: {
+        sourcePresetId: null,
+        category: "arena",
+        displayName: "三場",
+        scene: "闘技場",
+        narrativeSetup: "三つの場が連なる",
+        terrain: "砂",
+        obstacles: [],
+        conditions: [],
+        coefficients: {},
+        areas: [
+          { id: "area.1", name: "砂地" },
+          { id: "area.2", name: "石畳" },
+          { id: "area.3", name: "中央" },
+        ],
+        entryAreas: { a: "area.1", b: "area.3" },
+        topology: [
+          {
+            id: "e1",
+            fromAreaId: "area.1",
+            toAreaId: "area.2",
+            movement: "open",
+            sight: "clear",
+            sound: "clear",
+          },
+          {
+            id: "e2",
+            fromAreaId: "area.2",
+            toAreaId: "area.3",
+            movement: "open",
+            sight: "clear",
+            sound: "clear",
+          },
+        ],
+      },
+    });
+    state.plannedActionA = { kind: "basic_attack" };
+    state.plannedActionB = { kind: "wait" };
+    const startA = state.worldState!.entities["character.a"]!.placement;
+    const startB = state.worldState!.entities["character.b"]!.placement;
+    assert.equal(startA.type, "scene");
+    assert.equal(startB.type, "scene");
+    assert.notEqual(
+      startA.type === "scene" ? startA.areaId : "",
+      startB.type === "scene" ? startB.areaId : "",
+    );
+    const prepared = prepareSequentialBattleTurnInitiative({
+      state,
+      sideASkills: a.skills,
+      sideBSkills: b.skills,
+    });
+    assert.ok(prepared);
+    const common = {
+      state,
+      sideASkills: a.skills,
+      sideBSkills: b.skills,
+      temporalResolutionOverride: prepared.temporalResolution,
+      executionId: `${state.id}:turn:1`,
+    };
+    const first = resolveNextBattleTurnBucket(common);
+    assert.equal(first.actions[0]?.kind, "reposition");
+    const live = first.engineContinuation?.worldState;
+    assert.ok(live);
+    assert.ok(live.revision > 0);
+    const hopped = live.entities["character.a"]!.placement;
+    assert.equal(hopped.type, "scene");
+    assert.notEqual(
+      hopped.type === "scene" ? hopped.areaId : "",
+      startA.type === "scene" ? startA.areaId : "",
+    );
+    const boundary = materializeBattleStateAtBucketBoundary({
+      state,
+      continuation: first.engineContinuation!,
+    });
+    assert.equal(boundary.worldState?.revision, live.revision);
+    assert.deepEqual(
+      boundary.worldState?.entities["character.a"]?.placement,
+      hopped,
+    );
+    const resumed = resolveNextBattleTurnBucket({
+      ...common,
+      state: boundary,
+      engineContinuation: first.engineContinuation,
+    });
+    assert.equal(resumed.state.worldState?.revision, live.revision);
+    assert.deepEqual(
+      resumed.state.worldState?.entities["character.a"]?.placement,
+      hopped,
+    );
+    assert.equal(
+      readBattleWorldPair(resumed.state.worldState!, "character.a", "character.b")
+        ?.updatedTurn ?? 0,
+      first.engineContinuation?.worldState
+        ? readBattleWorldPair(live, "character.a", "character.b")?.updatedTurn
+        : 0,
+    );
   });
 
   it("keeps defend substitution when spacing schema is unbound", () => {

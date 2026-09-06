@@ -6,6 +6,8 @@
     "outDir": "dist",
     "rootDir": "src",
     "strict": true,
+    // Historical remainder (ADR-0021 / AGENTS.md). Do not rely on this for new
+    // contract code; found defects must close their escapes instead.
     "noImplicitAny": false,
     "skipLibCheck": true,
     "esModuleInterop": true,

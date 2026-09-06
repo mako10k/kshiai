@@ -1141,6 +1141,15 @@ function placementEquals(a: WorldPlacement, b: WorldPlacement): boolean {
  * Converts only structured semantic presence/location changes into a mechanical
  * world transition. Semantic facts and prose are intentionally ignored.
  */
+function keepEngineWorldPlacement(
+  entityId: string,
+  current: BattleWorldEntity,
+  turn: number,
+): boolean {
+  if (entityId === "character.a" || entityId === "character.b") return true;
+  return current.updatedTurn === turn;
+}
+
 export function deriveBattleWorldTransitionFromSemanticState(input: {
   worldState: BattleWorldState;
   semanticState: BattleSemanticState;
@@ -1239,6 +1248,10 @@ export function deriveBattleWorldTransitionFromSemanticState(input: {
 
   for (const [entityId, semantic] of orderedEntities) {
     const current = input.worldState.entities[entityId];
+    if (current && keepEngineWorldPlacement(entityId, current, input.turn)) {
+      desiredPlacement.set(entityId, current.placement);
+      continue;
+    }
     const placement = desiredPlacement.get(entityId) ?? { type: "absent" as const };
     if (!current) {
       const portable = placement.type === "held" || placement.type === "worn";
@@ -1284,54 +1297,16 @@ export function deriveBattleWorldTransitionFromSemanticState(input: {
 
   for (const [entityId, semantic] of orderedEntities.reverse()) {
     const current = input.worldState.entities[entityId];
-    if (current?.active && !semantic.active) {
+    if (
+      current?.active &&
+      !semantic.active &&
+      !keepEngineWorldPlacement(entityId, current, input.turn)
+    ) {
       operations.push({ op: "set_entity_active", entityId, active: false });
     }
   }
 
-  const pair = readBattleWorldPair(
-    input.worldState,
-    "character.a",
-    "character.b",
-  );
-  const placementA = desiredPlacement.get("character.a");
-  const placementB = desiredPlacement.get("character.b");
-  if (pair && placementA && placementB) {
-    const bothPresent = placementA.type !== "absent" && placementB.type !== "absent";
-    const sameArea = bothPresent &&
-      placementA.type === "scene" &&
-      placementB.type === "scene" &&
-      placementA.areaId === placementB.areaId;
-    const desired = {
-      distance: !bothPresent
-        ? "out_of_scene" as const
-        : sameArea
-          ? "near" as const
-          : "separate_area" as const,
-      sight: !bothPresent || !sameArea ? "blocked" as const : "clear" as const,
-      sound: !bothPresent
-        ? "blocked" as const
-        : sameArea
-          ? "clear" as const
-          : "partial" as const,
-      orientationA: bothPresent ? "facing" as const : "indeterminate" as const,
-      orientationB: bothPresent ? "facing" as const : "indeterminate" as const,
-    };
-    if (
-      pair.distance !== desired.distance ||
-      pair.sight !== desired.sight ||
-      pair.sound !== desired.sound ||
-      pair.orientationA !== desired.orientationA ||
-      pair.orientationB !== desired.orientationB
-    ) {
-      operations.push({
-        op: "set_pair_relation",
-        entityAId: "character.a",
-        entityBId: "character.b",
-        ...desired,
-      });
-    }
-  }
+  // Fighter spacing and same-turn engine writes are engine-owned.
 
   const parsed = BattleWorldTransitionSchema.safeParse({
     baseRevision: input.worldState.revision,
