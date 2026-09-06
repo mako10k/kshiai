@@ -26,6 +26,7 @@ const CharacterNormActionKindV2Schema = z.enum([
   "defend",
   "wait",
   "free_action",
+  "reposition",
 ]);
 
 const CompiledCharacterActionNormV2Schema = z.object({

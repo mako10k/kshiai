@@ -5,14 +5,7 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 
 ## [Unreleased]
 
-### Fixed
-
-- Persistent E2E observation accepts sparse scene-beat narration sequences and
-  scores dialogue from terminal narration entries.
-- Compact deep-psyche JSON is decoded to the known envelope before schema
-  parse, and remaining validation failures log Zod path and code only.
-
-## [0.22.0] - 2026-09-04
+## [0.22.0] - 2026-09-06
 
 ### Added
 
@@ -21,6 +14,17 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
   or deployment identity.
 - A release-bound Stage revision can select the compact dialogue projection for
   one isolated observation without changing the persisted product setting.
+- New battles get a dedicated `reposition` action. Out-of-range and unlocalized
+  counterpart strikes substitute to one adjacent-area hop or one in-area
+  distance-rank change toward the requested action's reach band. Existing
+  battles keep rest/defend/wait substitution.
+
+### Fixed
+
+- Persistent E2E observation accepts sparse scene-beat narration sequences and
+  scores dialogue from terminal narration entries.
+- Compact deep-psyche JSON is decoded to the known envelope before schema
+  parse, and remaining validation failures log Zod path and code only.
 
 ### Changed
 
@@ -33,7 +37,8 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 - No database migration. Ordinary production releases do not set the Stage
   dialogue override, and promotion rejects a release that retains it.
   Application rollback returns new battle creation to v0.21.7 behavior without
-  rewriting receipts already bound by v0.22.0.
+  rewriting receipts already bound by v0.22.0. New `pacingPolicy.spacingSchemaVersion`
+  is 1; older frozen pacing policies keep the previous miss substitution.
 
 ## [0.21.7] - 2026-08-16
 

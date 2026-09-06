@@ -757,6 +757,12 @@ export type NarrationTurnBrief = {
   presentationFocus?: NarrationPresentationFocusV1;
 };
 
+export function explainActionResolutionReason(
+  reason: ActionResolutionReason,
+): string {
+  return RESOLUTION_EXPLANATIONS[reason];
+}
+
 const RESOLUTION_EXPLANATIONS: Record<ActionResolutionReason, string> = {
   invalid_intent: "要求された行動の形式が成立しなかった",
   actor_unavailable: "行動者が現在行動できない状態だった",

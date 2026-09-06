@@ -114,7 +114,7 @@ describe("battle encounter and narrator continuity", () => {
     });
     const initial = state.narratorContinuity!;
     assert.equal(
-      initial.a.recognitions.find((item) => item.subjectRef === "opponent")
+      initial.a.recognitions.find((item: { subjectRef: string; recognizedAs?: string }) => item.subjectRef === "opponent")
         ?.recognizedAs,
       "晶",
     );

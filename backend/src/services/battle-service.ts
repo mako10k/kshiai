@@ -18,6 +18,8 @@ import {
   selectNarratorContinuityForFocus,
   buildFinisherWindow,
   buildObserverSafeAvailableActions,
+  explainActionResolutionReason,
+  spacingForConstraints,
   readBattleWorldPair,
   buildMinimalObserverPerception,
   buildCommittedUtteranceEvents,
@@ -187,6 +189,7 @@ import type {
   RefereeFinalState,
   RefereeResult,
   RefereeTurnFact,
+  CharacterActionDecisionContext,
 } from "../llm/types.js";
 import {
   buildPromptMechanicalEvidence,
@@ -1250,7 +1253,7 @@ function characterNormActionKind(
   if (action.kind === "skill") return "skill";
   if (
     action.kind === "defend" || action.kind === "wait" ||
-    action.kind === "free_action"
+    action.kind === "free_action" || action.kind === "reposition"
   ) {
     return action.kind;
   }
@@ -1382,7 +1385,8 @@ function buildCharacterDecisionContext(input: {
           | "defend"
           | "rest"
           | "wait"
-          | "reflect",
+          | "reflect"
+          | "reposition",
         ...(parsed.skillId ? { skillId: parsed.skillId } : {}),
         ...(lastSkill?.name
           ? { name: lastSkill.name }
@@ -1396,6 +1400,8 @@ function buildCharacterDecisionContext(input: {
                 ? { name: "防御" }
                 : parsed.kind === "rest"
                   ? { name: "休息" }
+                  : parsed.kind === "reposition"
+                    ? { name: "間合いを変える" }
                   : {}),
       }
     : null;
@@ -1488,6 +1494,12 @@ function buildCharacterDecisionContext(input: {
           opponentRead: predictedRepeatCount >= 3,
         }
       : undefined,
+    actionFeedback: buildActionFeedback({
+      state: input.state,
+      side: input.side,
+      sheet: input.sheet,
+      perception,
+    }),
   };
   characterDecisionRuleMetadata.set(decision, {
     actionNorm: normResolution?.receipt ?? null,
@@ -1547,7 +1559,12 @@ export function buildLaterBucketActionInput(input: {
 function deterministicLaterBucketFallback(
   decision: Parameters<LlmProvider["decideCharacterAction"]>[0]["decision"],
 ) {
-  const selected = decision.availableActions.find((action) =>
+  const selected = (
+    decision.actionFeedback?.spacing.relation &&
+    decision.actionFeedback.spacing.relation !== "in_band"
+      ? decision.availableActions.find((action) => action.kind === "reposition")
+      : undefined
+  ) ?? decision.availableActions.find((action) =>
     action.kind === "basic_attack"
   ) ?? decision.availableActions.find((action) =>
     action.kind !== "wait" && action.kind !== "reflect"
@@ -1560,17 +1577,105 @@ function deterministicLaterBucketFallback(
   );
 }
 
+function latestResolvedAction(
+  state: BattleState,
+  side: "a" | "b",
+): ResolvedBattleAction | null {
+  const records = state.turnRecords ?? [];
+  for (let index = records.length - 1; index >= 0; index -= 1) {
+    const match = (records[index]?.actions ?? []).find(
+      (action) => action.actorSide === side && action.resolution,
+    );
+    if (match) return match;
+  }
+  return null;
+}
+
+function buildActionFeedback(input: {
+  state: BattleState;
+  side: "a" | "b";
+  sheet: CharacterSheet;
+  perception: NonNullable<BattleState["perceptionFrameA"]>;
+}) {
+  const resolved = latestResolvedAction(input.state, input.side);
+  const requested = resolved?.resolution?.requested;
+  if (!requested || !resolved?.resolution) return undefined;
+  const unlocalized = !["coarse", "clear"].includes(
+    input.perception.counterpart.currentAccess,
+  );
+  const fallbackReach = input.sheet.basicAttack?.constraints ?? {
+    reach: "same_area" as const,
+  };
+  const skill = requested.kind === "skill"
+    ? input.sheet.skills.find((item) => item.id === requested.skillId)
+    : undefined;
+  const constraints = skill?.constraints ?? fallbackReach;
+  const spacing = spacingForConstraints({
+    worldState: input.state.worldState,
+    actorSide: input.side,
+    unlocalized,
+    constraints,
+  });
+  const perceived = input.perception.counterpart.percepts.find(
+    (percept) => percept.distance,
+  )?.distance;
+  const perceivedDistance =
+    perceived === "contact" || perceived === "near" ||
+    perceived === "mid" || perceived === "far"
+      ? perceived
+      : "unknown" as const;
+  const actionName = requested.kind === "skill"
+    ? skill?.name ?? "技"
+    : requested.kind === "basic_attack"
+      ? input.sheet.basicAttack?.name ?? "基本アクション"
+      : requested.kind === "reposition"
+        ? "間合いを変える"
+        : requested.kind;
+  const reason = resolved.resolution.reason;
+  const observerSafeCause = reason
+    ? explainActionResolutionReason(reason)
+    : resolved.resolution.outcome === "accepted"
+      ? "行動は成立した"
+      : "行動は成立しなかった";
+  return {
+    lastRequested: {
+      kind: requested.kind,
+      ...(requested.skillId ? { skillId: requested.skillId } : {}),
+      name: actionName,
+    },
+    lastOutcome: resolved.resolution.outcome,
+    lastReason: reason,
+    observerSafeCause,
+    spacing: {
+      perceivedDistance,
+      lastRequired: {
+        max: String(constraints.reach),
+        actionName,
+      },
+      relation: spacing.relation,
+      correction: spacing.correction,
+    },
+  } satisfies CharacterActionDecisionContext["actionFeedback"];
+}
+
 function characterActionResultSummary(
   events: TurnEvent[],
   side: "a" | "b",
+  resolved?: ResolvedBattleAction | null,
 ): string {
-  return events
+  const resolutionNote = resolved?.resolution
+    ? resolved.resolution.outcome === "substituted" && resolved.resolution.reason
+      ? `${explainActionResolutionReason(resolved.resolution.reason)}。適切な間合いまで位置を変える必要がある。`
+      : resolved.resolution.reason
+        ? explainActionResolutionReason(resolved.resolution.reason)
+        : ""
+    : "";
+  const summaries = events
     .filter((event) => event.actorSide === side || event.targetSides?.includes(side))
     .map((event) => event.summary)
     .filter(Boolean)
-    .slice(-4)
-    .join(" ")
-    .slice(0, 600);
+    .slice(-4);
+  return [resolutionNote, ...summaries].filter(Boolean).join(" ").slice(0, 600);
 }
 
 function deepFreezeConsumerInput<T>(value: T): T {
@@ -1906,8 +2011,16 @@ export async function advanceCharacterAgents(input: {
     ),
     input.after.encounterContext?.social.b.selfReference,
   );
-  previousA.lastActionResult = characterActionResultSummary(input.events, "a");
-  previousB.lastActionResult = characterActionResultSummary(input.events, "b");
+  previousA.lastActionResult = characterActionResultSummary(
+    input.events,
+    "a",
+    input.actions?.find((action) => action.actorSide === "a"),
+  );
+  previousB.lastActionResult = characterActionResultSummary(
+    input.events,
+    "b",
+    input.actions?.find((action) => action.actorSide === "b"),
+  );
   let reactionProjectionA:
     ReturnType<typeof advancePsycheReactionV1>["expressionProjection"] | undefined;
   let reactionProjectionB:

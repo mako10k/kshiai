@@ -1,0 +1,125 @@
+framework ArchitectureDecisionRecord:
+  requires problem and decision
+  requires premise and evidence
+  warns pending
+
+domain ADR0020:
+  description "Dedicated reposition action, appropriate range bands, and engine-first spacing correction"
+
+problem P1:
+  |
+    Production battles that spawn combatants in different battlefield areas
+    lock pairRelations at separate_area and sight blocked. Counterpart
+    strikes substitute to defend, lastActionResult describes the substitute,
+    and speech freezes because the world never changes. There is no
+    first-class spacing action. free_action positioning remains unfinished
+    remaining work and spends an adjudication LLM.
+
+premise DRIVER_DETERMINISM:
+  |
+    Spacing must be a server-owned world transition. It must not require a
+    new provider route, retry, phrase ban, or free_action adjudication call.
+
+premise DRIVER_BAND:
+  |
+    Legal striking distance is an appropriate band, not always-closer.
+    Too close and too far are both illegal. A distant weapon opens; a
+    melee weapon closes.
+
+premise DRIVER_ENGINE_FIRST:
+  |
+    Prompt feedback is secondary. If a model still requests an illegal
+    counterpart strike, the engine substitutes reposition toward that
+    action's band instead of defend.
+
+premise DRIVER_COMPATIBILITY:
+  |
+    Existing battles keep rest/defend/wait substitution. New rules bind
+    only at battle creation. No backfill. Generic line_of_sight_blocked
+    from cover or impaired vision is not treated as a spacing miss.
+
+premise OPTIONS:
+  |
+    Considered options are: finish positioning only through free_action;
+    add a dedicated deterministic reposition action; or keep substituting
+    misses to defend and teach the model in prose. free_action still costs
+    an adjudication LLM and does not yet update pair relations. Prose-only
+    teaching leaves lastActionResult describing defend. Dedicated
+    reposition is the narrowest engine path.
+
+evidence E_PRODUCTION:
+  |
+    v0.22.0-rc.4 revision kshiai-api-00121-cik battle
+    btl_03de9bec1693c9fffce4335cc5ba84b5 finished turn_limit 12, HP 109/109,
+    maxHit 0%. Executed wait 36 and defend 36. Requested basic_attack/skill
+    substituted for target_unlocalized or out_of_range. pairRelations stayed
+    separate_area, sight blocked, updatedTurn 0.
+
+evidence E_COUNTEREXAMPLE:
+  |
+    Stage battle btl_a90676928c9b47d618cc4812ccaf52ce spawned both actors
+    in one area at near with clear sight. Strikes accepted and HP reached
+    90/0. Spacing, not compact dialogue, is the failing layer for the
+    zero-hit matches.
+
+evidence E_WORLD:
+  |
+    docs/battle-world-model.md initializes different areas as separate_area
+    with blocked sight. set_placement and set_pair_relation already exist.
+    docs/battle-free-action-objectives.md lists pair/area updates as
+    remaining work. ActionKind has no reposition member.
+
+evidence E_AUDIT:
+  |
+    llmthink domain KshiaiRepositionAppropriateRangePlanAudit audited the
+    implementation plan at fatal=0. It supported dedicated reposition and
+    engine-first substitution, rejected prompt-only repair, global
+    in-flight substitution, LOS-as-range, and auto-admitting the new kind
+    through existing action norms.
+
+decision D1 based_on P1, OPTIONS, DRIVER_DETERMINISM, E_WORLD, E_AUDIT:
+  |
+    Add ActionKind reposition. One accepted reposition performs at most one
+    adjacent-area hop along frozen battlefield topology, or one in-area
+    distance-rank change. It emits set_placement and/or set_pair_relation
+    through applyBattleWorldTransition. free_action remains improvised
+    object/posture work and is not the spacing primitive.
+
+decision D2 based_on DRIVER_BAND, E_WORLD:
+  |
+    ActionFeasibilityConstraints keep reach as the maximum and gain optional
+    minReach. separate_area and out_of_scene are never in-band for
+    counterpart strikes. Bound snapshots without minReach keep max-only
+    behavior.
+
+decision D3 based_on DRIVER_ENGINE_FIRST, E_PRODUCTION, E_AUDIT:
+  |
+    On battles that bind pacingPolicy.spacingSchemaVersion 1, revalidateCharacterAction
+    substitutes out_of_range and target_unlocalized counterpart intents to
+    reposition toward the requested action's band. Do not map generic
+    line_of_sight_blocked onto reposition. Feed observer-safe actionFeedback
+    into the existing decideCharacterAction and advanceCharacterAgent
+    decision frame. No new provider route.
+
+decision D4 based_on DRIVER_COMPATIBILITY, E_AUDIT:
+  |
+    New pacing policies bind spacingSchemaVersion 1. Missing snapshot
+    keeps rest/defend/wait substitution. lastAction naming, later-bucket
+    fallback, and action-norm candidate mapping must include reposition.
+    One public turn whose first beat is reserved wait can hop twice and
+    share an area at far; a same_area hit may wait until a later beat.
+
+evidence OWNER_ACCEPTANCE:
+  |
+    On 2026-09-06 the product owner approved the audited plan
+    "Reposition action, appropriate range, and failure-driven correction"
+    through plan-mode acceptance, covering D1 through D4, engine-first
+    substitution, optional minReach, battle-owned spacingRules, and the
+    rejected alternatives in E_AUDIT.
+
+decision ACCEPTANCE based_on D1, D2, D3, D4, OWNER_ACCEPTANCE:
+  |
+    ADR-0020 is Accepted at this owner-approved revision. Acceptance
+    authorizes local implementation and regression tests of D1 through D4.
+    It does not authorize deployment, Stage observation, provider calls
+    beyond existing battle routes, or compact-dialogue activation.

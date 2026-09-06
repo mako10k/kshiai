@@ -16,8 +16,12 @@ import type { CharacterPerceptionFrame } from "./perception.js";
 import {
   readBattleWorldPair,
   type BattleWorldState,
-  type WorldDistance,
 } from "./battle-world.js";
+import {
+  reachMaxRank,
+  reachMinRank,
+  inAreaDistanceRank,
+} from "./reposition-transition.js";
 import { deriveBattleActorCausality } from "./battle-causality.js";
 import {
   isSkillOnCooldown,
@@ -51,13 +55,6 @@ export type ActionFeasibilityResult =
 export type RevalidatedCharacterAction = {
   action: BattleAction | null;
   resolution: ActionResolution;
-};
-
-const DISTANCE_RANK: Record<Exclude<WorldDistance, "separate_area" | "out_of_scene">, number> = {
-  contact: 0,
-  near: 1,
-  medium: 2,
-  far: 3,
 };
 
 function characterId(side: "a" | "b"): `character.${"a" | "b"}` {
@@ -110,6 +107,15 @@ function inferredConstraints(
     };
   }
   if (intent.kind === "free_action") {
+    return {
+      reach: "same_area",
+      requiresSight: false,
+      mobility: "limited",
+      requiresSpeech: false,
+      requiresUsableHeldObject: false,
+    };
+  }
+  if (intent.kind === "reposition") {
     return {
       reach: "same_area",
       requiresSight: false,
@@ -211,10 +217,13 @@ function targetWorldFailure(input: {
   ) {
     return "out_of_range";
   }
-  if (input.constraints.reach !== "same_area") {
-    if (DISTANCE_RANK[pair.distance] > DISTANCE_RANK[input.constraints.reach]) {
-      return "out_of_range";
-    }
+  const rank = inAreaDistanceRank(pair.distance);
+  if (rank === null) return "out_of_range";
+  if (rank > reachMaxRank(input.constraints.reach)) {
+    return "out_of_range";
+  }
+  if (rank < reachMinRank(input.constraints.minReach)) {
+    return "out_of_range";
   }
   if (input.constraints.requiresSight) {
     const actorState = deriveBattleActorCausality({
@@ -352,6 +361,14 @@ export function buildObserverSafeAvailableActions(input: {
     { intent: { kind: "rest" }, option: { kind: "rest", name: "休息" } },
     { intent: { kind: "wait" }, option: { kind: "wait", name: "様子を見る" } },
     {
+      intent: { kind: "reposition" },
+      option: {
+        kind: "reposition",
+        name: "間合いを変える",
+        description: "適切な間合いまで一歩動く。攻撃は届く距離でのみ当たる。",
+      },
+    },
+    {
       intent: {
         kind: "reflect",
         reflectionAnalysis: "ここまでの戦況を整理する",
@@ -429,6 +446,7 @@ export function revalidateCharacterAction(input: {
   turn: number;
   worldState?: BattleWorldState;
   perception?: CharacterPerceptionFrame;
+  spacingEnabled?: boolean;
 }): RevalidatedCharacterAction {
   const assess = (intent: CharacterActionIntent) =>
     assessCharacterActionFeasibility({ ...input, intent });
@@ -464,7 +482,13 @@ export function revalidateCharacterAction(input: {
   const maxStamina = input.actor.parameters.maxStamina ?? 0;
   const needsRest = (input.actor.parameters.mp ?? 0) < maxMp ||
     (input.actor.parameters.stamina ?? 0) < maxStamina;
+  const spacingSubstitute = input.spacingEnabled &&
+    (initial.reason === "out_of_range" || initial.reason === "target_unlocalized") &&
+    targetsCounterpart(input.requested, actionSkill(input.requested, input.skills));
   const fallbacks: CharacterActionIntent[] = [
+    ...(spacingSubstitute
+      ? [{ kind: "reposition" as const }]
+      : []),
     ...(needsRest ? [{ kind: "rest" as const }] : []),
     { kind: "defend" },
     { kind: "wait" },

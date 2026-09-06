@@ -51,3 +51,4 @@ This directory contains durable records of architectural and product-rule decisi
 | [0017](0017-public-turn-intra-turn-beats.md) | Accepted | Public clock is twelve turns; three beats sit inside each turn |
 | [0018](0018-dialogue-context-activation-authority.md) | Accepted | Use the persisted dialogue setting as normal authority and bind immutable activation-source receipts |
 | [0019](0019-observation-token-and-cost-admission.md) | Proposed | Bound paid observations by exact routes and conservative token/cost reservations before provider dispatch |
+| [0020](0020-reposition-and-appropriate-range.md) | Accepted | Dedicated reposition action, appropriate range bands, and engine-first spacing correction |

@@ -72,6 +72,13 @@ import {
   buildMinimalObserverPerception,
 } from "./perception-projection.js";
 import { revalidateCharacterAction } from "./action-feasibility.js";
+import {
+  applyBattleWorldTransition,
+} from "./battle-world.js";
+import {
+  planRepositionTransition,
+  spacingForConstraints,
+} from "./reposition-transition.js";
 import { applyBattleCausalCoefficients } from "./battle-causality.js";
 import { resolvePendingEffectSchedule } from "./battle-effects.js";
 import {
@@ -518,7 +525,7 @@ export function buildBattleTurnRecord(input: {
           eventIds: [],
           parameterChanges: { a: {}, b: {} },
           semanticOperationIndexes: semanticOperations.map(
-            (_operation, index) => index,
+            (_operation: unknown, index: number) => index,
           ),
           worldOperationIndexes: [],
         }]
@@ -536,7 +543,7 @@ export function buildBattleTurnRecord(input: {
           parameterChanges: { a: {}, b: {} },
           semanticOperationIndexes: [],
           worldOperationIndexes: worldOperations.map(
-            (_operation, index) => index,
+            (_operation: unknown, index: number) => index,
           ),
         }]
       : []),
@@ -551,8 +558,8 @@ export function buildBattleTurnRecord(input: {
           worldImpact: {
             status: currentWorldTransition.status,
             operationKinds:
-              currentWorldTransition.transition?.operations.map(
-                (operation) => operation.op,
+              currentWorldTransition.transition?.operations?.map(
+                (operation: { op: string }) => operation.op,
               ) ?? [],
           },
         }
@@ -1998,7 +2005,7 @@ function prepareBattleTurnStart(input: ResolveTurnInput): PreparedBattleTurnStar
   const events: TurnEvent[] = [];
   const mechanicalSpans: MechanicalResolutionSpan[] = [];
   const continuingPublicTurn = usesPublicTurnClock(input.state) &&
-    (input.state.sceneBeat?.receiptIds.length ?? 0) > 0;
+    (input.state.sceneBeat?.receiptIds?.length ?? 0) > 0;
   const turn = nextPublicCombatTurn(input.state);
 
   const pacingPolicy = battlePacingPolicyForState(input.state);
@@ -2181,7 +2188,7 @@ function previousResolvedInitiativeOrder(
   state: BattleState,
 ): [BattleTemporalSide, BattleTemporalSide] | null {
   const order = state.latestTemporalResolution?.buckets.flatMap(
-    (bucket) => bucket.actorSides,
+    (bucket: { actorSides: BattleTemporalSide[] }) => bucket.actorSides,
   );
   return order?.length === 2 && order[0] !== order[1]
     ? [order[0]!, order[1]!]
@@ -2369,16 +2376,21 @@ export function resolveTurn(input: ResolveTurnInput): {
     b: requestedActionB,
   } as const;
   const actionIds = { a: actionAId, b: actionBId } as const;
+  let worldState = input.state.worldState
+    ? structuredClone(input.state.worldState)
+    : undefined;
+  let latestWorldTransition = input.state.latestWorldTransition;
+  const spacingEnabled = input.state.pacingPolicy?.spacingSchemaVersion === 1;
   const causalSituations = {
     a: applyBattleCausalCoefficients({
       situation,
-      worldState: input.state.worldState,
+      worldState,
       actorSide: "a",
       targetSide: "b",
     }),
     b: applyBattleCausalCoefficients({
       situation,
-      worldState: input.state.worldState,
+      worldState,
       actorSide: "b",
       targetSide: "a",
     }),
@@ -2472,8 +2484,9 @@ export function resolveTurn(input: ResolveTurnInput): {
     basicAttack: basicAttackFor(side),
     finisher: finisherFor(side),
     turn,
-    worldState: input.state.worldState,
+    worldState,
     perception: perceptionFor(side),
+    spacingEnabled,
   });
   const setResolvedAction = (
     side: BattleTemporalSide,
@@ -2491,6 +2504,7 @@ export function resolveTurn(input: ResolveTurnInput): {
   const executeAction = (inputAction: {
     side: BattleTemporalSide;
     effectiveAction: BattleAction | null;
+    requestedIntent?: CharacterActionIntent;
     currentA: CombatantState;
     currentB: CombatantState;
     targetEvents: TurnEvent[];
@@ -2509,6 +2523,80 @@ export function resolveTurn(input: ResolveTurnInput): {
         actorSide: inputAction.side,
         summary: `${actor.displayName} は意図した行動を成立させられなかった。`,
       });
+      return false;
+    }
+    if (inputAction.effectiveAction.kind === "reposition") {
+      const fallbackConstraints = basicAttackFor(inputAction.side).constraints ?? {
+        reach: "same_area" as const,
+      };
+      const requested = inputAction.requestedIntent;
+      const requestedSkill = requested?.kind === "skill"
+        ? skillsFor(inputAction.side).find((skill) => skill.id === requested.skillId)
+        : undefined;
+      const desired = requested && requested.kind !== "reposition"
+        ? requestedSkill?.constraints ?? fallbackConstraints
+        : fallbackConstraints;
+      const unlocalized = Boolean(
+        perceptionFor(inputAction.side) &&
+        !["coarse", "clear"].includes(
+          perceptionFor(inputAction.side)!.counterpart.currentAccess,
+        ),
+      );
+      const spacing = spacingForConstraints({
+        worldState,
+        actorSide: inputAction.side,
+        unlocalized,
+        constraints: desired,
+      });
+      const planned = worldState
+        ? planRepositionTransition({
+            worldState,
+            actorSide: inputAction.side,
+            actorName: actor.displayName,
+            turn,
+            correction: spacing.correction === "none" ? "close" : spacing.correction,
+            desired,
+            topology: input.state.battlefield?.topology,
+          })
+        : null;
+      if (planned) {
+        inputAction.targetEvents.push(planned.event);
+        if (planned.operations.length > 0 && worldState) {
+          const applied = applyBattleWorldTransition({
+            state: worldState,
+            turn,
+            transition: {
+              baseRevision: worldState.revision,
+              turn,
+              sourceEventIds: [],
+              operations: planned.operations,
+            },
+          });
+          if (applied.ok && applied.changed) {
+            const fromRevision = worldState.revision;
+            worldState = applied.state;
+            latestWorldTransition = {
+              turn,
+              status: "applied",
+              fromRevision,
+              toRevision: applied.state.revision,
+              transition: {
+                baseRevision: fromRevision,
+                turn,
+                sourceEventIds: [],
+                operations: planned.operations,
+              },
+            };
+          }
+        }
+      } else {
+        inputAction.targetEvents.push({
+          type: "reposition",
+          actorName: actor.displayName,
+          actorSide: inputAction.side,
+          summary: `${actor.displayName} は間合いを変えられなかった。`,
+        });
+      }
       return false;
     }
     const damageBand = instrumentBand({
@@ -2646,6 +2734,7 @@ export function resolveTurn(input: ResolveTurnInput): {
         const usedFinisher = executeAction({
           side,
           effectiveAction: effectiveBySide[side] ?? null,
+          requestedIntent: actions[sideIndex(side)]?.resolution?.requested,
           currentA: proposalA,
           currentB: proposalB,
           targetEvents: proposalEvents,
@@ -2714,6 +2803,7 @@ export function resolveTurn(input: ResolveTurnInput): {
     const usedFinisher = executeAction({
       side,
       effectiveAction: result.action,
+      requestedIntent: result.resolution.requested,
       currentA: sideA,
       currentB: sideB,
       targetEvents: actionEvents,
@@ -2929,6 +3019,8 @@ export function resolveTurn(input: ResolveTurnInput): {
     sideA,
     sideB,
     situation,
+    ...(worldState ? { worldState } : {}),
+    ...(latestWorldTransition ? { latestWorldTransition } : {}),
     status,
     winnerSide,
     finishReason,
@@ -3421,6 +3513,16 @@ function applyAction(
       type: "wait",
       actorName: actor.displayName,
       summary: `${actor.displayName} は様子をうかがった。`,
+    });
+    return false;
+  }
+
+  if (action.kind === "reposition") {
+    events.push({
+      type: "reposition",
+      actorName: actor.displayName,
+      actorSide: action.actorSide,
+      summary: `${actor.displayName} は間合いを変えようとした。`,
     });
     return false;
   }

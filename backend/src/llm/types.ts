@@ -123,6 +123,26 @@ export type CharacterActionDecisionContext = {
     effectMultiplier: number;
     opponentRead: boolean;
   };
+  actionFeedback?: {
+    lastRequested: {
+      kind: CharacterActionIntent["kind"];
+      skillId?: string;
+      name?: string;
+    };
+    lastOutcome: "accepted" | "partial" | "substituted" | "failed";
+    lastReason: string | null;
+    observerSafeCause: string;
+    spacing: {
+      perceivedDistance: "contact" | "near" | "mid" | "far" | "unknown";
+      lastRequired?: {
+        min?: string;
+        max: string;
+        actionName: string;
+      };
+      relation: "in_band" | "too_close" | "too_far" | "unlocalized" | "unavailable";
+      correction: "none" | "close" | "open" | "localize";
+    };
+  };
 };
 
 export type CharacterActionDecisionInput = {
