@@ -335,28 +335,31 @@ export function assessCharacterActionFeasibility(input: {
   return { feasible: true };
 }
 
-export function buildObserverSafeAvailableActions(input: {
-  actorSide: "a" | "b";
+type ObserverSafeActionCandidate = {
+  intent: CharacterActionIntent;
+  option: Omit<ObserverSafeAvailableAction, "target">;
+};
+
+function fallbackBasicAttack(): BasicAttackProfile {
+  return {
+    name: "基本アクション",
+    description: "消耗時にも使える、そのキャラクターらしい基本行動。",
+    targetParameter: "hp",
+    scalingParameter: "atk",
+    resistanceParameter: "def",
+    power: 0.75,
+  };
+}
+
+function observerSafeActionCandidates(input: {
   actor: CombatantState;
   sheet: CharacterSheet;
   finisher?: FinisherState;
   turn: number;
-  worldState?: BattleWorldState;
-  perception: CharacterPerceptionFrame;
-}): ObserverSafeAvailableAction[] {
-  const basicAttack = input.sheet.basicAttack ?? {
-    name: "基本アクション",
-    description: "消耗時にも使える、そのキャラクターらしい基本行動。",
-    targetParameter: "hp" as const,
-    scalingParameter: "atk" as const,
-    resistanceParameter: "def" as const,
-    power: 0.75,
-  };
-  const candidates: Array<{
-    intent: CharacterActionIntent;
-    option: Omit<ObserverSafeAvailableAction, "target">;
-  }> = [
-    { intent: { kind: "basic_attack" }, option: { kind: "basic_attack", name: basicAttack.name } },
+  basicAttack: BasicAttackProfile;
+}): ObserverSafeActionCandidate[] {
+  return [
+    { intent: { kind: "basic_attack" }, option: { kind: "basic_attack", name: input.basicAttack.name } },
     { intent: { kind: "defend" }, option: { kind: "defend", name: "防御" } },
     { intent: { kind: "rest" }, option: { kind: "rest", name: "休息" } },
     { intent: { kind: "wait" }, option: { kind: "wait", name: "様子を見る" } },
@@ -409,7 +412,40 @@ export function buildObserverSafeAvailableActions(input: {
       },
     })),
   ];
-  return candidates.flatMap(({ intent, option }) => {
+}
+
+function withObserverSafeTarget(
+  intent: CharacterActionIntent,
+  option: Omit<ObserverSafeAvailableAction, "target">,
+  skills: readonly Skill[],
+  perceivedAs: string,
+): ObserverSafeAvailableAction {
+  const counterpartTarget = targetsCounterpart(intent, actionSkill(intent, skills));
+  return {
+    ...option,
+    target: counterpartTarget
+      ? { kind: "counterpart", perceivedAs }
+      : { kind: "self", perceivedAs: "自分" },
+  };
+}
+
+export function buildObserverSafeAvailableActions(input: {
+  actorSide: "a" | "b";
+  actor: CombatantState;
+  sheet: CharacterSheet;
+  finisher?: FinisherState;
+  turn: number;
+  worldState?: BattleWorldState;
+  perception: CharacterPerceptionFrame;
+}): ObserverSafeAvailableAction[] {
+  const basicAttack = input.sheet.basicAttack ?? fallbackBasicAttack();
+  return observerSafeActionCandidates({
+    actor: input.actor,
+    sheet: input.sheet,
+    finisher: input.finisher,
+    turn: input.turn,
+    basicAttack,
+  }).flatMap(({ intent, option }) => {
     const assessed = assessCharacterActionFeasibility({
       actorSide: input.actorSide,
       intent,
@@ -422,17 +458,12 @@ export function buildObserverSafeAvailableActions(input: {
       perception: input.perception,
     });
     if (!assessed.feasible) return [];
-    const skill = actionSkill(intent, input.sheet.skills);
-    const counterpartTarget = targetsCounterpart(intent, skill);
-    return [{
-      ...option,
-      target: counterpartTarget
-        ? {
-            kind: "counterpart" as const,
-            perceivedAs: input.perception.counterpart.perceivedAs,
-          }
-        : { kind: "self" as const, perceivedAs: "自分" },
-    }];
+    return [withObserverSafeTarget(
+      intent,
+      option,
+      input.sheet.skills,
+      input.perception.counterpart.perceivedAs,
+    )];
   });
 }
 

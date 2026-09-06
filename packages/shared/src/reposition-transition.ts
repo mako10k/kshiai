@@ -4,6 +4,7 @@ import type { CharacterActionIntent, TurnEvent } from "./battle.js";
 import {
   readBattleWorldPair,
   type BattleWorldOperation,
+  type BattleWorldPairView,
   type BattleWorldState,
   type WorldDistance,
 } from "./battle-world.js";
@@ -154,112 +155,128 @@ function nextHop(input: {
   return input.away ? neighbors[0] ?? null : neighbors[0] ?? null;
 }
 
-export function planRepositionTransition(input: {
-  worldState: BattleWorldState;
-  actorSide: "a" | "b";
-  actorName: string;
-  turn: number;
-  correction: SpacingCorrection;
-  desired: Pick<ActionFeasibilityConstraints, "reach" | "minReach">;
-  topology?: readonly BattlefieldTopologyEdge[];
-}): {
+type RepositionPlan = {
   operations: BattleWorldOperation[];
   event: TurnEvent;
   summaryKind: "area_hop" | "rank_change" | "noop";
-} {
-  const actorId = characterId(input.actorSide);
-  const targetId = characterId(counterpartSide(input.actorSide));
-  const actor = input.worldState.entities[actorId];
-  const target = input.worldState.entities[targetId];
-  const noopEvent: TurnEvent = {
-    type: "reposition",
-    actorName: input.actorName,
-    actorSide: input.actorSide,
-    summary: `${input.actorName} は間合いを変えようとしたが、動ける場所がなかった。`,
+};
+
+function repositionNoop(actorName: string, actorSide: "a" | "b"): RepositionPlan {
+  return {
+    operations: [],
+    event: {
+      type: "reposition",
+      actorName,
+      actorSide,
+      summary: `${actorName} は間合いを変えようとしたが、動ける場所がなかった。`,
+    },
+    summaryKind: "noop",
   };
-  if (
-    !actor ||
-    actor.placement.type !== "scene" ||
-    !target ||
-    target.placement.type !== "scene"
-  ) {
-    return { operations: [], event: noopEvent, summaryKind: "noop" };
+}
+
+function planCrossAreaHop(input: {
+  actorId: `character.${"a" | "b"}`;
+  targetId: `character.${"a" | "b"}`;
+  actorAreaId: string;
+  targetAreaId: string;
+  actorName: string;
+  actorSide: "a" | "b";
+  away: boolean;
+  close: boolean;
+  topology: readonly BattlefieldTopologyEdge[];
+}): RepositionPlan {
+  if (!input.close && !input.away) {
+    return repositionNoop(input.actorName, input.actorSide);
   }
-  const pair = readBattleWorldPair(input.worldState, actorId, targetId);
-  const away = input.correction === "open";
-  const close = input.correction === "close" || input.correction === "localize";
-  if (actor.placement.areaId !== target.placement.areaId) {
-    if (!close && !away) {
-      return { operations: [], event: noopEvent, summaryKind: "noop" };
-    }
-    const hop = nextHop({
-      fromAreaId: actor.placement.areaId,
-      targetAreaId: target.placement.areaId,
-      topology: input.topology ?? [],
-      away,
-    });
-    if (!hop) {
-      return { operations: [], event: noopEvent, summaryKind: "noop" };
-    }
-    const sameArea = hop === target.placement.areaId;
-    const operations: BattleWorldOperation[] = [
+  const hop = nextHop({
+    fromAreaId: input.actorAreaId,
+    targetAreaId: input.targetAreaId,
+    topology: input.topology,
+    away: input.away,
+  });
+  if (!hop) {
+    return repositionNoop(input.actorName, input.actorSide);
+  }
+  const sameArea = hop === input.targetAreaId;
+  return {
+    operations: [
       {
         op: "set_placement",
-        entityId: actorId,
+        entityId: input.actorId,
         placement: { type: "scene", areaId: hop },
       },
       {
         op: "set_pair_relation",
-        entityAId: actorId,
-        entityBId: targetId,
+        entityAId: input.actorId,
+        entityBId: input.targetId,
         distance: sameArea ? "far" : "separate_area",
         sight: sameArea ? "clear" : "blocked",
         sound: sameArea ? "clear" : "partial",
         orientationA: "facing",
         orientationB: "facing",
       },
-    ];
-    return {
-      operations,
-      event: {
-        type: "reposition",
-        actorName: input.actorName,
-        actorSide: input.actorSide,
-        summary: sameArea
-          ? `${input.actorName} は相手のいる場へ踏み込み、遠い間合いを取った。`
-          : away
-            ? `${input.actorName} は距離を取るように場を移した。`
-            : `${input.actorName} は間合いを詰めるように場を移した。`,
-      },
-      summaryKind: "area_hop",
-    };
-  }
+    ],
+    event: {
+      type: "reposition",
+      actorName: input.actorName,
+      actorSide: input.actorSide,
+      summary: sameArea
+        ? `${input.actorName} は相手のいる場へ踏み込み、遠い間合いを取った。`
+        : input.away
+          ? `${input.actorName} は距離を取るように場を移した。`
+          : `${input.actorName} は間合いを詰めるように場を移した。`,
+    },
+    summaryKind: "area_hop",
+  };
+}
 
-  const currentRank = pair ? inAreaDistanceRank(pair.distance) : null;
+function nextInAreaRank(
+  currentRank: number,
+  desired: Pick<ActionFeasibilityConstraints, "reach" | "minReach">,
+  away: boolean,
+  close: boolean,
+): number {
+  if (currentRank > reachMaxRank(desired.reach)) return currentRank - 1;
+  if (currentRank < reachMinRank(desired.minReach)) return currentRank + 1;
+  if (away && currentRank < IN_AREA_RANK.far) return currentRank + 1;
+  if (close && currentRank > IN_AREA_RANK.contact) return currentRank - 1;
+  return currentRank;
+}
+
+function planInAreaRankChange(input: {
+  actorId: `character.${"a" | "b"}`;
+  targetId: `character.${"a" | "b"}`;
+  actorName: string;
+  actorSide: "a" | "b";
+  pair: BattleWorldPairView | null;
+  away: boolean;
+  close: boolean;
+  desired: Pick<ActionFeasibilityConstraints, "reach" | "minReach">;
+}): RepositionPlan {
+  const currentRank = input.pair ? inAreaDistanceRank(input.pair.distance) : null;
   if (currentRank === null) {
-    return { operations: [], event: noopEvent, summaryKind: "noop" };
+    return repositionNoop(input.actorName, input.actorSide);
   }
-  const minRank = reachMinRank(input.desired.minReach);
-  const maxRank = reachMaxRank(input.desired.reach);
-  let nextRank = currentRank;
-  if (currentRank > maxRank) nextRank = currentRank - 1;
-  else if (currentRank < minRank) nextRank = currentRank + 1;
-  else if (away && currentRank < IN_AREA_RANK.far) nextRank = currentRank + 1;
-  else if (close && currentRank > IN_AREA_RANK.contact) nextRank = currentRank - 1;
+  const nextRank = nextInAreaRank(
+    currentRank,
+    input.desired,
+    input.away,
+    input.close,
+  );
   if (nextRank === currentRank) {
-    return { operations: [], event: noopEvent, summaryKind: "noop" };
+    return repositionNoop(input.actorName, input.actorSide);
   }
   const nextDistance = RANK_TO_DISTANCE[nextRank]!;
   return {
     operations: [{
       op: "set_pair_relation",
-      entityAId: actorId,
-      entityBId: targetId,
+      entityAId: input.actorId,
+      entityBId: input.targetId,
       distance: nextDistance,
-      sight: pair?.sight === "blocked" ? "clear" : (pair?.sight ?? "clear"),
-      sound: pair?.sound === "blocked" ? "clear" : (pair?.sound ?? "clear"),
-      orientationA: pair?.orientationA ?? "facing",
-      orientationB: pair?.orientationB ?? "facing",
+      sight: input.pair?.sight === "blocked" ? "clear" : (input.pair?.sight ?? "clear"),
+      sound: input.pair?.sound === "blocked" ? "clear" : (input.pair?.sound ?? "clear"),
+      orientationA: input.pair?.orientationA ?? "facing",
+      orientationB: input.pair?.orientationB ?? "facing",
     }],
     event: {
       type: "reposition",
@@ -271,4 +288,52 @@ export function planRepositionTransition(input: {
     },
     summaryKind: "rank_change",
   };
+}
+
+export function planRepositionTransition(input: {
+  worldState: BattleWorldState;
+  actorSide: "a" | "b";
+  actorName: string;
+  turn: number;
+  correction: SpacingCorrection;
+  desired: Pick<ActionFeasibilityConstraints, "reach" | "minReach">;
+  topology?: readonly BattlefieldTopologyEdge[];
+}): RepositionPlan {
+  const actorId = characterId(input.actorSide);
+  const targetId = characterId(counterpartSide(input.actorSide));
+  const actor = input.worldState.entities[actorId];
+  const target = input.worldState.entities[targetId];
+  if (
+    !actor ||
+    actor.placement.type !== "scene" ||
+    !target ||
+    target.placement.type !== "scene"
+  ) {
+    return repositionNoop(input.actorName, input.actorSide);
+  }
+  const away = input.correction === "open";
+  const close = input.correction === "close" || input.correction === "localize";
+  if (actor.placement.areaId !== target.placement.areaId) {
+    return planCrossAreaHop({
+      actorId,
+      targetId,
+      actorAreaId: actor.placement.areaId,
+      targetAreaId: target.placement.areaId,
+      actorName: input.actorName,
+      actorSide: input.actorSide,
+      away,
+      close,
+      topology: input.topology ?? [],
+    });
+  }
+  return planInAreaRankChange({
+    actorId,
+    targetId,
+    actorName: input.actorName,
+    actorSide: input.actorSide,
+    pair: readBattleWorldPair(input.worldState, actorId, targetId),
+    away,
+    close,
+    desired: input.desired,
+  });
 }
