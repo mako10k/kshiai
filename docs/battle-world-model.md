@@ -39,8 +39,9 @@
 | 場面 | 明るさ、騒音、空間密度、移動制約 |
 | 物体 | 運搬、使用可否、排他使用、使用者、遮蔽、移動・感覚への作用 |
 
-2エンティティ間の距離・遮蔽・向きはpair relationとして保持する。pairの格納順は
-entity IDの辞書順だけで正規化し、Side A/Bの優先順位には使わない。
+2エンティティ間の機械的距離と体の向きはpair relationとして保持する。
+`sight` / `sound` は互換用の派生埋めであり、相互認知ではない（ADR-0023）。
+pairの格納順はentity IDの辞書順だけで正規化し、Side A/Bの優先順位には使わない。
 
 ## 3. 初期状態
 
@@ -87,10 +88,13 @@ setupで確立していない `identityKnowledge` は `unknown` のままにす�
 
 | world条件 | access |
 |---|---|
-| present、exposed、contact/near、sight clear、観測者がalert・vision normal | `clear` |
-| partial sight/concealment、medium/far、away、vision impaired、dazed/confused、dimのうち1段階 | `coarse` |
+| present、exposed、contact/near、観測者がalert・vision normal | `clear` |
+| partial concealment、medium/far、away、vision impaired、dazed/confused、dimのうち1段階 | `coarse` |
 | 上記の劣化が複数、またはdark | `trace` |
-| absent/out of scene/separate area、hidden/invisible、sight blocked、観測者がunconscious/incapacitatedまたはvision blocked/absent | `none` |
+| absent/out of scene/separate area、hidden/invisible、観測者がunconscious/incapacitatedまたはvision blocked/absent | `none` |
+
+`pair.sight` / `pair.sound` は互換用の派生埋めであり、正準の相互認知ではない
+（ADR-0023）。投影と物理LOSは器官・露出・配置から決める。
 
 知覚accessと識別知識は独立して扱う。一度識別した相手が遮蔽された場合は
 `currentAccess = none` になっても `identityKnowledge = identified` を保持する。

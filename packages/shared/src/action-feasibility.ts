@@ -191,18 +191,18 @@ function actorWorldFailure(input: {
   return null;
 }
 
+function observerLocalizesCounterpart(
+  frame: CharacterPerceptionFrame,
+): boolean {
+  return frame.counterpart.currentAccess === "coarse" ||
+    frame.counterpart.currentAccess === "clear";
+}
+
 function targetWorldFailure(input: {
   actorSide: "a" | "b";
   worldState?: BattleWorldState;
-  perception?: CharacterPerceptionFrame;
   constraints: ActionFeasibilityConstraints;
 }): ActionResolutionReason | null {
-  if (
-    input.perception &&
-    !["coarse", "clear"].includes(input.perception.counterpart.currentAccess)
-  ) {
-    return "target_unlocalized";
-  }
   if (!input.worldState) return null;
   const actorId = characterId(input.actorSide);
   const targetId = characterId(counterpartSide(input.actorSide));
@@ -231,7 +231,6 @@ function targetWorldFailure(input: {
       actorSide: input.actorSide,
     }).effectiveActorState ?? actor?.actorState;
     if (
-      pair.sight === "blocked" ||
       ["blocked", "absent"].includes(actorState?.vision ?? "blocked") ||
       ["hidden", "invisible"].includes(target.exposure)
     ) {
@@ -253,7 +252,6 @@ export function assessCharacterActionFeasibility(input: {
   finisher?: FinisherState;
   turn: number;
   worldState?: BattleWorldState;
-  perception?: CharacterPerceptionFrame;
 }): ActionFeasibilityResult {
   if (input.intent.kind !== "skill" && (input.intent.skillId || input.intent.useFinisher)) {
     return { feasible: false, reason: "invalid_intent" };
@@ -327,7 +325,6 @@ export function assessCharacterActionFeasibility(input: {
     const targetFailure = targetWorldFailure({
       actorSide: input.actorSide,
       worldState: input.worldState,
-      perception: input.perception,
       constraints,
     });
     if (targetFailure) return { feasible: false, reason: targetFailure };
@@ -455,9 +452,14 @@ export function buildObserverSafeAvailableActions(input: {
       finisher: input.finisher,
       turn: input.turn,
       worldState: input.worldState,
-      perception: input.perception,
     });
     if (!assessed.feasible) return [];
+    if (
+      targetsCounterpart(intent, actionSkill(intent, input.sheet.skills)) &&
+      !observerLocalizesCounterpart(input.perception)
+    ) {
+      return [];
+    }
     return [withObserverSafeTarget(
       intent,
       option,
@@ -476,11 +478,19 @@ export function revalidateCharacterAction(input: {
   finisher?: FinisherState;
   turn: number;
   worldState?: BattleWorldState;
-  perception?: CharacterPerceptionFrame;
   spacingEnabled?: boolean;
 }): RevalidatedCharacterAction {
   const assess = (intent: CharacterActionIntent) =>
-    assessCharacterActionFeasibility({ ...input, intent });
+    assessCharacterActionFeasibility({
+      actorSide: input.actorSide,
+      intent,
+      actor: input.actor,
+      skills: input.skills,
+      basicAttack: input.basicAttack,
+      finisher: input.finisher,
+      turn: input.turn,
+      worldState: input.worldState,
+    });
   const initial = assess(input.requested);
   if (initial.feasible) {
     return {

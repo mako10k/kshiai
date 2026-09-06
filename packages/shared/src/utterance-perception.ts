@@ -211,13 +211,11 @@ function spokenAccess(input: {
     observerState.consciousness === "incapacitated" ||
     observerState.hearing === "blocked" ||
     observerState.hearing === "absent" ||
-    pair?.sound === "blocked" ||
     pair?.distance === "out_of_scene"
   );
   let currentAccess: CurrentAccess = unavailable ? "none" : "clear";
   if (!unavailable && input.worldState && observer && pair && observerState) {
     let penalty = 0;
-    if (pair.sound === "partial") penalty += 1;
     if (pair.distance === "medium") penalty += 1;
     if (pair.distance === "far" || pair.distance === "separate_area") penalty += 2;
     if (observerState.hearing === "impaired") penalty += 1;

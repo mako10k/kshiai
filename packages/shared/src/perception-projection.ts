@@ -974,7 +974,7 @@ function buildWorldCounterpartSlot(input: {
   const unavailable = !observer.active || observer.presence === "absent" ||
     !counterpart.active || counterpart.presence === "absent" ||
     pair.distance === "separate_area" || pair.distance === "out_of_scene" ||
-    pair.sight === "blocked" || counterpart.exposure === "hidden" ||
+    counterpart.exposure === "hidden" ||
     counterpart.exposure === "invisible" || !observerState ||
     observerState.consciousness === "unconscious" ||
     observerState.consciousness === "incapacitated" ||
@@ -984,7 +984,6 @@ function buildWorldCounterpartSlot(input: {
   }
 
   let penalty = 0;
-  if (pair.sight === "partial") penalty += 1;
   if (counterpart.exposure === "partially_concealed") penalty += 1;
   if (pair.distance === "medium" || pair.distance === "far") penalty += 1;
   if (pair.orientationA === "away") penalty += 1;

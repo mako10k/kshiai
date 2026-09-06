@@ -1,0 +1,130 @@
+framework ArchitectureDecisionRecord:
+  requires problem and decision
+  requires premise and evidence
+  warns pending
+
+domain ADR0022:
+  description |
+    Canonical world is unique and viewpoint-free. Two-person cognitive
+    relations live in two observer frames. Physical engine effects are
+    judged only through canonical state.
+
+problem P1:
+  |
+    The battle engine lets observer cognition consent with unique world
+    facts. targetWorldFailure returns target_unlocalized from
+    counterpart.currentAccess before reading placements or mechanical
+    distance. executeAction plans hops from the same access. Production
+    btl_162854a54de03aa54d93918d1b0feae1 therefore labeled 36 physically
+    out-of-area strikes as unlocalized.
+
+premise DRIVER_UNIQUE_WORLD:
+  |
+    Canonical state is the unique viewpoint-free world: placements,
+    topology, body facing, eye direction, organ vision and hearing,
+    exposure, and a mechanical distance band between two placements.
+
+premise DRIVER_TWO_COGNITIONS:
+  |
+    A two-person relation constituted by perception is not unique
+    world. It is mutual cognition and may be two frames, A toward B
+    and B toward A. Those frames may hide counterpart actions from
+    a character. They must not judge physical hits, misses, or hops.
+
+premise DRIVER_PHYSICAL:
+  |
+    Physical effects (range, hops, damage, organ- or exposure-based
+    line of fire) are judged only through canonical state. Mental
+    effects may later read cognitive frames; that routing is not
+    decided here.
+
+premise DRIVER_SCOPE:
+  |
+    This record does not delete pairRelations, ActionKind reposition,
+    or pair.sight/sound fields. It does not fast-forward hops or add
+    a provider call. pair.sight/sound must not be treated as the two
+    cognitive frames; relocating occlusion onto areas or objects is
+    later work.
+
+premise OPTIONS:
+  |
+    Considered options are: leave engine revalidation on the same
+    assess path as observer listing; split listing from canonical
+    revalidation now and leave pair.sight/sound in place; or delete
+    pair.sight/sound in the same slice. Shared assess is the mix-in.
+    Field deletion rewrites projection and init. Split now is the
+    producing repair.
+
+evidence E_OWNER:
+  |
+    On 2026-09-06 the product owner stated the unique-world versus
+    two-cognition principle, allowed body facing and eye direction
+    in unique world, forbade perceptual relations on unique world,
+    required physical effects to go through canonical state, and
+    left mental effects open. The owner then instructed to record
+    that principle as an ADR and to repair the current engine mix-in
+    with an llmthink analysis.
+
+evidence E_CODE:
+  |
+    packages/shared/src/action-feasibility.ts targetWorldFailure
+    returns target_unlocalized when perception access is not coarse
+    or clear. revalidateCharacterAction spreads that perception into
+    assess. packages/shared/src/battle-engine.ts executeAction sets
+    hop unlocalized from the same access. docs/battle-action-feasibility.md
+    draws revalidation from worldState, then says the engine
+    re-evaluates the same rules.
+
+evidence E_BATTLE:
+  |
+    Production v0.22.0-rc.6 battle
+    btl_162854a54de03aa54d93918d1b0feae1 requested counterpart
+    strikes, executed reposition, reason target_unlocalized x36,
+    perception currentAccess none, placements present in two areas.
+    Analysis: docs/canonical-world-and-observer-cognition.llmthink.dsl.
+    Hop noop RCA remains
+    docs/v0.22.0-rc.6-reposition-noop-id-split-rca.llmthink.dsl.
+
+evidence E_AUDIT:
+  |
+    llmthink domain KshiaiCanonicalWorldObserverCognition supported
+    observer-only listing, canonical-only revalidation, keeping
+    mechanical distance and facing in unique world, and deferring
+    pair.sight/sound deletion. It rejected treating this slice as
+    the area-ID hop repair.
+
+decision D1 based_on P1, DRIVER_UNIQUE_WORLD, DRIVER_TWO_COGNITIONS, E_OWNER:
+  |
+    Unique world holds placements, topology, body facing, eye
+    direction, organ vision and hearing, exposure, and mechanical
+    distance. Two-person perceptual relations live only in
+    perceptionFrameA and perceptionFrameB.
+
+decision D2 based_on DRIVER_PHYSICAL, E_CODE, E_BATTLE, OPTIONS:
+  |
+    Observer-safe listing may drop counterpart actions when
+    currentAccess is not coarse or clear, and may label targets
+    with perceivedAs. Engine revalidation, substitution, and hop
+    correction must not read observer frames. Canonical
+    target_unlocalized is missing or out-of-scene placement, or
+    actor delirious. separate_area and in-area rank misses stay
+    out_of_range. ADR-0020 substitution of those reasons to
+    reposition remains.
+
+decision D3 based_on DRIVER_SCOPE, OPTIONS, E_AUDIT:
+  |
+    Do not delete pair.sight/sound in this record. They are not
+    the two cognitive frames. Relocate physical occlusion later.
+    Do not fast-forward hops. Do not peel ADR-0021 substitution.
+
+evidence OWNER_ACCEPTANCE:
+  |
+    On 2026-09-06 the product owner instructed to record this
+    principle as an ADR and to repair the current battle-engine
+    mix-in, with llmthink analysis.
+
+decision ACCEPTANCE based_on D1, D2, D3, OWNER_ACCEPTANCE, E_OWNER:
+  |
+    ADR-0022 is Accepted at this owner-approved revision.
+    Implementation of D1 and D2 in the current engine is
+    authorized. ADR-0020 and ADR-0021 remain Accepted.

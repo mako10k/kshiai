@@ -360,7 +360,7 @@ describe("observer perception projection", () => {
         orientationA: "facing",
         orientationB: "facing",
       }],
-    })), "none");
+    })), "clear");
     assert.equal(project(transition({
       baseRevision: 0,
       turn: 1,

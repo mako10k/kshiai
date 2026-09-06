@@ -2,6 +2,7 @@ import type { ActionReach } from "./character.js";
 import type { ActionFeasibilityConstraints } from "./character.js";
 import type { CharacterActionIntent, TurnEvent } from "./battle.js";
 import {
+  derivedPairOcclusion,
   readBattleWorldPair,
   type BattleWorldOperation,
   type BattleWorldPairView,
@@ -64,6 +65,27 @@ export function inAreaDistanceRank(distance: WorldDistance): number | null {
     return IN_AREA_RANK[distance];
   }
   return null;
+}
+
+export function worldCounterpartUnlocalized(
+  worldState: BattleWorldState | undefined,
+  actorSide: "a" | "b",
+): boolean {
+  if (!worldState) return true;
+  const target = worldState.entities[characterId(counterpartSide(actorSide))];
+  if (
+    !target?.active ||
+    target.presence !== "present" ||
+    target.placement.type !== "scene"
+  ) {
+    return true;
+  }
+  const pair = readBattleWorldPair(
+    worldState,
+    characterId(actorSide),
+    characterId(counterpartSide(actorSide)),
+  );
+  return !pair || pair.distance === "out_of_scene";
 }
 
 export function spacingForConstraints(input: {
@@ -198,6 +220,7 @@ function planCrossAreaHop(input: {
     return repositionNoop(input.actorName, input.actorSide);
   }
   const sameArea = hop === input.targetAreaId;
+  const channels = derivedPairOcclusion({ bothPresent: true, sameArea });
   return {
     operations: [
       {
@@ -210,8 +233,8 @@ function planCrossAreaHop(input: {
         entityAId: input.actorId,
         entityBId: input.targetId,
         distance: sameArea ? "far" : "separate_area",
-        sight: sameArea ? "clear" : "blocked",
-        sound: sameArea ? "clear" : "partial",
+        sight: channels.sight,
+        sound: channels.sound,
         orientationA: "facing",
         orientationB: "facing",
       },
@@ -267,14 +290,15 @@ function planInAreaRankChange(input: {
     return repositionNoop(input.actorName, input.actorSide);
   }
   const nextDistance = RANK_TO_DISTANCE[nextRank]!;
+  const channels = derivedPairOcclusion({ bothPresent: true, sameArea: true });
   return {
     operations: [{
       op: "set_pair_relation",
       entityAId: input.actorId,
       entityBId: input.targetId,
       distance: nextDistance,
-      sight: input.pair?.sight === "blocked" ? "clear" : (input.pair?.sight ?? "clear"),
-      sound: input.pair?.sound === "blocked" ? "clear" : (input.pair?.sound ?? "clear"),
+      sight: channels.sight,
+      sound: channels.sound,
       orientationA: input.pair?.orientationA ?? "facing",
       orientationB: input.pair?.orientationB ?? "facing",
     }],

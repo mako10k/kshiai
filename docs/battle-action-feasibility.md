@@ -43,10 +43,12 @@ self actionは相手情報を必要としない。
 
 ## 再検証と代替
 
-候補選択後に資源、距離、拘束、agency、対象、保持物等が変わり得るため、engineは実行時に
-同じ規則を再度評価する。必殺強化だけが失効して通常skill本体が成立する場合は`partial`、
-選択自体が不成立でもactorが行動可能なら、相手状態を読まない休息・防御・待機から
-`substituted`を選ぶ。actor自身が不在・無意識・非self-directedなら`failed`とする。
+候補生成はobserver frameでcounterpartを局在できるかに加えて正準worldで可否を見る。
+実行時再検証は正準worldだけを見る。observerの`currentAccess`は物理的な命中・外れ・
+移動の判定に使わない（ADR-0022）。必殺強化だけが失効して通常skill本体が成立する場合は
+`partial`、選択自体が不成立でもactorが行動可能なら、相手状態を読まない休息・防御・待機
+（spacing有効時は射程外のcounterpart行動を`reposition`）から`substituted`を選ぶ。
+actor自身が不在・無意識・非self-directedなら`failed`とする。
 
 物体や場面が生む効果量・world transitionは`T_CAUSALITY`で接続済みである。複数bucket間での
 再検証時点と同時mergeは`T_TIMELINE`が担当する。
