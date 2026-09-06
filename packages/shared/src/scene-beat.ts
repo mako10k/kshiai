@@ -30,7 +30,7 @@ export function openSceneBeat(
 }
 
 export function usesPublicTurnClock(state: {
-  sceneBeat?: SceneBeatState;
+  sceneBeat?: { clock?: string } | null;
 }): boolean {
   return state.sceneBeat?.clock === "public-turn";
 }
@@ -38,10 +38,10 @@ export function usesPublicTurnClock(state: {
 /** Next public combat turn. Continuing intra-turn beats keep the same number. */
 export function nextPublicCombatTurn(state: {
   turn: number;
-  sceneBeat?: SceneBeatState;
+  sceneBeat?: { clock?: string; receiptIds?: string[] } | null;
 }): number {
   if (!usesPublicTurnClock(state)) return state.turn + 1;
-  if ((state.sceneBeat?.receiptIds.length ?? 0) > 0) return state.turn;
+  if ((state.sceneBeat?.receiptIds?.length ?? 0) > 0) return state.turn;
   return state.turn + 1;
 }
 
@@ -50,16 +50,16 @@ export function nextCombatTick(state: { combatTick?: number }): number {
 }
 
 export function publicTurnBeatIndex(state: {
-  sceneBeat?: SceneBeatState;
+  sceneBeat?: { receiptIds?: string[] } | null;
 }): number {
-  return (state.sceneBeat?.receiptIds.length ?? 0) + 1;
+  return (state.sceneBeat?.receiptIds?.length ?? 0) + 1;
 }
 
-export function sceneBeatK(state: { sceneBeat?: SceneBeatState }): number {
+export function sceneBeatK(state: { sceneBeat?: { k?: number } | null }): number {
   return state.sceneBeat?.k ?? 1;
 }
 
-export function sceneBeatsEnabled(state: { sceneBeat?: SceneBeatState }): boolean {
+export function sceneBeatsEnabled(state: { sceneBeat?: { k?: number } | null }): boolean {
   return sceneBeatK(state) > 1;
 }
 

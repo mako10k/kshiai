@@ -100,7 +100,7 @@ describe("observer-safe action feasibility", () => {
     assert.equal(far.some((action) => action.kind === "basic_attack"), false);
     assert.deepEqual(
       far.map((action) => action.kind).sort(),
-      ["defend", "free_action", "reflect", "rest", "wait"],
+      ["defend", "free_action", "reflect", "reposition", "rest", "wait"],
     );
     assert.ok(far.some((action) => action.kind === "reflect" && action.name === "戦況を省みる"));
   });
@@ -304,5 +304,117 @@ describe("observer-safe action feasibility", () => {
       actionsA.map((action) => action.kind).sort(),
       actionsB.map((action) => action.kind).sort(),
     );
+  });
+
+  it("lists reposition and substitutes an out-of-range strike when spacing is enabled", () => {
+    const { sideA, state } = setup();
+    const split = structuredClone(state.worldState!);
+    split.pairRelations[0] = {
+      ...split.pairRelations[0]!,
+      distance: "separate_area",
+      sight: "blocked",
+      sound: "partial",
+      updatedTurn: 0,
+    };
+    const listed = buildObserverSafeAvailableActions({
+      actorSide: "a",
+      actor: state.sideA,
+      sheet: sideA,
+      turn: 1,
+      worldState: split,
+      perception: state.perceptionFrameA!,
+    });
+    assert.equal(listed.some((action) => action.kind === "basic_attack"), false);
+    assert.equal(listed.some((action) => action.kind === "reposition"), true);
+
+    const legacy = revalidateCharacterAction({
+      actorSide: "a",
+      requested: { kind: "basic_attack" },
+      actor: state.sideA,
+      skills: [],
+      basicAttack: sideA.basicAttack!,
+      turn: 1,
+      worldState: split,
+      perception: state.perceptionFrameA,
+    });
+    assert.equal(legacy.action?.kind, "defend");
+
+    const enabled = revalidateCharacterAction({
+      actorSide: "a",
+      requested: { kind: "basic_attack" },
+      actor: state.sideA,
+      skills: [],
+      basicAttack: sideA.basicAttack!,
+      turn: 1,
+      worldState: split,
+      perception: state.perceptionFrameA,
+      spacingEnabled: true,
+    });
+    assert.equal(enabled.action?.kind, "reposition");
+    assert.equal(enabled.resolution.outcome, "substituted");
+    assert.equal(enabled.resolution.reason, "out_of_range");
+  });
+
+  it("opens when a strike is too close for its minReach band", () => {
+    const { sideA, state } = setup();
+    const closeWorld = structuredClone(state.worldState!);
+    closeWorld.pairRelations[0]!.distance = "contact";
+    const ranged = {
+      ...sideA.basicAttack!,
+      constraints: {
+        reach: "far" as const,
+        minReach: "medium" as const,
+        requiresSight: false,
+        mobility: "limited" as const,
+        requiresSpeech: false,
+        requiresUsableHeldObject: false,
+      },
+    };
+    const enabled = revalidateCharacterAction({
+      actorSide: "a",
+      requested: { kind: "basic_attack" },
+      actor: state.sideA,
+      skills: [],
+      basicAttack: ranged,
+      turn: 1,
+      worldState: closeWorld,
+      perception: state.perceptionFrameA,
+      spacingEnabled: true,
+    });
+    assert.equal(enabled.action?.kind, "reposition");
+    assert.equal(enabled.resolution.reason, "out_of_range");
+  });
+
+  it("does not substitute generic line-of-sight failure to reposition", () => {
+    const { sideA, state } = setup();
+    const blocked = structuredClone(state.worldState!);
+    blocked.pairRelations[0] = {
+      ...blocked.pairRelations[0]!,
+      distance: "near",
+      sight: "blocked",
+    };
+    const sighted = {
+      ...sideA.basicAttack!,
+      constraints: {
+        reach: "near" as const,
+        requiresSight: true,
+        mobility: "limited" as const,
+        requiresSpeech: false,
+        requiresUsableHeldObject: false,
+      },
+    };
+    const enabled = revalidateCharacterAction({
+      actorSide: "a",
+      requested: { kind: "basic_attack" },
+      actor: state.sideA,
+      skills: [],
+      basicAttack: sighted,
+      turn: 1,
+      worldState: blocked,
+      perception: state.perceptionFrameA,
+      spacingEnabled: true,
+    });
+    assert.equal(enabled.resolution.reason, "line_of_sight_blocked");
+    assert.equal(enabled.action?.kind, "defend");
   });
 });

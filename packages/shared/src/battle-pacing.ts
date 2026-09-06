@@ -21,6 +21,11 @@ export const BattlePacingPolicySchema = z.object({
     "explicit_effects_only",
   ]),
   terminalAdjudication: z.literal("deterministic_engine"),
+  /**
+   * When 1, out-of-range and unlocalized counterpart strikes substitute to
+   * reposition. Absent on legacy frozen policies.
+   */
+  spacingSchemaVersion: z.literal(1).optional(),
 }).strict().superRefine((policy, context) => {
   if (policy.finisherUnlockTurn > policy.turnLimit) {
     context.addIssue({
@@ -72,6 +77,7 @@ export function currentBattlePacingPolicy(turnLimit: number): BattlePacingPolicy
     decisiveDamageCapRatio: 0.26,
     automaticRestoration: "legacy_twenty_percent",
     terminalAdjudication: "deterministic_engine",
+    spacingSchemaVersion: 1,
   });
 }
 
@@ -95,6 +101,7 @@ export const LOCAL_TWELVE_TURN_PACING_CANDIDATE =
     decisiveDamageCapRatio: 0.32,
     automaticRestoration: "explicit_effects_only",
     terminalAdjudication: "deterministic_engine",
+    spacingSchemaVersion: 1,
   });
 
 export function battlePacingPolicyForState(input: {

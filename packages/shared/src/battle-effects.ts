@@ -11,7 +11,7 @@ export function schedulePendingEffect(
 ): BattleState {
   const effect = PendingBattleEffectSchema.parse(rawEffect);
   if (effect.createdTurn !== state.turn) throw new Error("EFFECT_CREATED_TURN_MISMATCH");
-  if ((state.pendingEffects ?? []).some((item) => item.effectId === effect.effectId)) {
+  if ((state.pendingEffects ?? []).some((item: { effectId: string }) => item.effectId === effect.effectId)) {
     throw new Error("DUPLICATE_PENDING_EFFECT_ID");
   }
   if ((state.pendingEffects ?? []).length >= 32) throw new Error("PENDING_EFFECT_LIMIT");

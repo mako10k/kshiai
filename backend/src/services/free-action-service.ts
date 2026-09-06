@@ -878,9 +878,9 @@ export function commitFreeActionAdjudications(input: {
       .map((action) => [action.actorSide, action] as const),
   );
   const simultaneous = state.latestTemporalResolution?.buckets
-    .filter((bucket) => bucket.simultaneous)
-    .some((bucket) => {
-      const roots = bucket.actorSides.flatMap((side) => {
+    .filter((bucket: { simultaneous?: boolean; actorSides: Array<"a" | "b"> }) => bucket.simultaneous)
+    .some((bucket: { simultaneous?: boolean; actorSides: Array<"a" | "b"> }) => {
+      const roots = bucket.actorSides.flatMap((side: "a" | "b") => {
         const action = actionBySide.get(side);
         const proposal = proposals.get(side);
         return action?.executed && proposal?.subject
@@ -890,7 +890,7 @@ export function commitFreeActionAdjudications(input: {
       return new Set(roots).size < roots.length;
     }) ?? false;
   const order = state.latestTemporalResolution?.buckets
-    .flatMap((bucket) => bucket.actorSides) ?? ["a", "b"];
+    .flatMap((bucket: { actorSides: Array<"a" | "b"> }) => bucket.actorSides) ?? ["a", "b"];
   for (const side of order) {
     const action = actionBySide.get(side);
     if (!action || !action.executed) continue;
@@ -1018,8 +1018,9 @@ export function commitFreeActionAdjudications(input: {
       continue;
     }
     if (!root.existingEntityId && !existingPromotion) {
-      const perceived = input.preparation.affordances[side].find((candidate) =>
-        candidate.ref === root.ref
+      const perceived = input.preparation.affordances[side as "a" | "b"].find(
+        (candidate: { ref: string; perceivedAs?: string }) =>
+          candidate.ref === root.ref,
       )?.perceivedAs ?? "対象";
       const entity = promotedEntity({
         state,

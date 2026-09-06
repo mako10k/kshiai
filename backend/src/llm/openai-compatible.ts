@@ -1632,7 +1632,7 @@ verdict=accept and fill=null.`,
             };
           }).filter((issue) => issue.message.length > 0)
         : [];
-      let fill = null;
+      let fill: ReturnType<typeof parseCharacterDefinitionGapFillV2> | null = null;
       if (verdict === "revise" && data.fill) {
         try {
           fill = parseCharacterDefinitionGapFillV2(data.fill);
@@ -2745,7 +2745,8 @@ For free_action, write an open natural-language attempt in description, optional
 For basic_attack, skill, or defend, copy instrumentRef only from a zero-setup opportunityChain continuation for that same action kind. Expected causal potential is qualitative and never guarantees success.
 When decision.varietyPressure is "prefer_change", avoid decision.lastAction if another availableActions entry exists. decision.repetitionPenalty is a deterministic forecast: if you repeat the prior action, expect its stamina cost, reduced effect multiplier, and possible opponent read. Treat it as part of your own prediction before choosing.
 When decision.varietyPressure is "require_change", nextAction MUST differ from decision.lastAction (kind and skillId) whenever another availableActions entry exists. Do not spam wait or the same skill every turn.
-Skills appear in availableActions only when currently legal. Missing skills are on cooldown or otherwise unavailable — never invent them. Prefer a ready skill, basic_attack, defend, rest, wait, free_action, or — when the fight looks unfavorable, the character is cautious/deliberative, or options look thin — reflect. Never choose reflect for short-tempered or impulsive personalities. When choosing reflect, write original reflectionAnalysis and reflectionGuideline in the character's voice (do not copy the availableActions placeholder text).`
+Skills appear in availableActions only when currently legal. Missing skills are on cooldown or otherwise unavailable — never invent them. Prefer a ready skill, basic_attack, defend, rest, wait, free_action, reposition, or — when the fight looks unfavorable, the character is cautious/deliberative, or options look thin — reflect. Never choose reflect for short-tempered or impulsive personalities. When choosing reflect, write original reflectionAnalysis and reflectionGuideline in the character's voice (do not copy the availableActions placeholder text).
+Attacks and skills hit only inside that action's reach band. If decision.actionFeedback.spacing.relation is not in_band, do not repeat the same counterpart strike; choose reposition toward that band. A substituted defend is not the intended act. decision.actionFeedback.observerSafeCause is the server-owned miss reason.`
         : "This is the aftermath reaction phase. The result is already canonical. Omit nextAction, do not plan another turn, and do not reverse or reconsider the result.";
       const data = (await this.chatJson(
         `You maintain one fictional character's private continuity during a confrontation. It may be physical, ranged, technological, psychic, social, comedic, cute, or abstract. Preserve the character's own way of acting and never introduce swords, wounds, or martial language unless supplied by the profile or events.
@@ -2818,7 +2819,7 @@ The narrator may later choose this line's display position and punctuation, but 
     if (!this.client) return this.fallback.decideCharacterAction(input);
     try {
       const data = (await this.chatJson(
-        `Choose one fictional character action from decision.availableActions. This is an action-only stage: do not generate speech, narration, emotion, hidden thoughts, or world facts. Use only the frozen self profile, observer-relative perception, and server-owned decision frame supplied in the input. Copy skillId exactly for a skill. Return JSON only: {"nextAction": object}.\n${CHARACTER_ACTION_PROPOSAL_OUTPUT_RULES}`,
+        `Choose one fictional character action from decision.availableActions. This is an action-only stage: do not generate speech, narration, emotion, hidden thoughts, or world facts. Use only the frozen self profile, observer-relative perception, and server-owned decision frame supplied in the input. Copy skillId exactly for a skill. Attacks hit only inside their reach band; if decision.actionFeedback.spacing.relation is not in_band, choose reposition. Return JSON only: {"nextAction": object}.\n${CHARACTER_ACTION_PROPOSAL_OUTPUT_RULES}`,
         JSON.stringify(input),
         {
           tier: "fast",

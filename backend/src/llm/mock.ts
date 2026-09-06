@@ -1112,7 +1112,12 @@ export class MockLlmProvider implements LlmProvider {
   async decideCharacterAction(
     input: Parameters<LlmProvider["decideCharacterAction"]>[0],
   ): Promise<Awaited<ReturnType<LlmProvider["decideCharacterAction"]>>> {
-    const preferred = input.decision.availableActions.find((action) =>
+    const preferred = (
+      input.decision.actionFeedback?.spacing.relation &&
+      input.decision.actionFeedback.spacing.relation !== "in_band"
+        ? input.decision.availableActions.find((action) => action.kind === "reposition")
+        : undefined
+    ) ?? input.decision.availableActions.find((action) =>
       action.kind === "basic_attack"
     ) ?? input.decision.availableActions.find((action) =>
       action.kind !== "wait" && action.kind !== "reflect"

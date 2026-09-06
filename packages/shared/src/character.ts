@@ -82,7 +82,10 @@ export const ActionFeasibilityConstraintsSchema = z.object({
 }).strict();
 export type ActionFeasibilityConstraints = z.infer<
   typeof ActionFeasibilityConstraintsSchema
->;
+> & {
+  /** Engine-only band floor. Not part of structured-output character JSON. */
+  minReach?: ActionReach | null;
+};
 
 /** Character-specific fallback attack; HP damage is only the default profile. */
 export const BasicAttackProfileSchema = z.object({

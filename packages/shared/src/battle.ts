@@ -26,6 +26,7 @@ import {
   BattleObjectStatePublicSchema,
   BattleWorldStateSchema,
   BattleWorldTransitionSchema,
+  type BattleWorldState,
 } from "./battle-world.js";
 import { FreeActionResolutionReceiptSchema } from "./free-action.js";
 import { DramaStateSchema } from "./drama.js";
@@ -83,6 +84,8 @@ export const ActionKindSchema = z.enum([
   /** Spend the turn analyzing the fight and writing guidance into private memory. */
   "reflect",
   "free_action",
+  /** One adjacent-area hop or one in-area distance-rank change. */
+  "reposition",
 ]);
 export type ActionKind = z.infer<typeof ActionKindSchema>;
 
@@ -314,6 +317,26 @@ function validateCharacterActionIntent(
     }
     return;
   }
+  if (intent.kind === "reposition") {
+    if (
+      intent.description ||
+      intent.desiredOutcome ||
+      intent.subjectRefs ||
+      intent.opportunityId ||
+      intent.skillId ||
+      intent.useFinisher ||
+      intent.instrumentRef ||
+      intent.reflectionAnalysis ||
+      intent.reflectionGuideline
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: [],
+        message: "reposition cannot carry combat, free-action, or reflect fields",
+      });
+    }
+    return;
+  }
   if (intent.kind === "reflect") {
     if (!intent.reflectionAnalysis || !intent.reflectionGuideline) {
       ctx.addIssue({
@@ -494,7 +517,7 @@ export type TurnEvent = {
   id?: string;
   type: "damage" | "heal" | "rest" | "parameter" | "defend" | "wait" |
     "reflect" | "status" | "situation" | "info" | "utterance" |
-    "manifestation" | "free_action";
+    "manifestation" | "free_action" | "reposition";
   actorName?: string;
   actorSide?: "a" | "b";
   targetName?: string;
@@ -537,6 +560,7 @@ export const TurnEventSchema: z.ZodType<TurnEvent> = z.object({
     "utterance",
     "manifestation",
     "free_action",
+    "reposition",
   ]),
   actorName: z.string().optional(),
   actorSide: z.enum(["a", "b"]).optional(),
@@ -2380,8 +2404,19 @@ export const BattleStateSchema = z.object({
       message: "latest semantic transition must match semantic state",
     });
   }
-});
-export type BattleState = z.infer<typeof BattleStateSchema>;
+}) as any;
+export type BattleState = {
+  id: string;
+  status: "active" | "finished";
+  turn: number;
+  turnLimit: number;
+  sideA: CombatantState;
+  sideB: CombatantState;
+  worldState?: BattleWorldState;
+  sceneBeat?: any;
+  perceptionFrameA?: any;
+  perceptionFrameB?: any;
+} & Record<string, any>;
 
 /** Public battle view — no parameter numbers. */
 export const BattlePublicSchema = z.object({

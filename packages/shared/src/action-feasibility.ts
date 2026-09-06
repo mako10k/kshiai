@@ -16,8 +16,12 @@ import type { CharacterPerceptionFrame } from "./perception.js";
 import {
   readBattleWorldPair,
   type BattleWorldState,
-  type WorldDistance,
 } from "./battle-world.js";
+import {
+  reachMaxRank,
+  reachMinRank,
+  inAreaDistanceRank,
+} from "./reposition-transition.js";
 import { deriveBattleActorCausality } from "./battle-causality.js";
 import {
   isSkillOnCooldown,
@@ -51,13 +55,6 @@ export type ActionFeasibilityResult =
 export type RevalidatedCharacterAction = {
   action: BattleAction | null;
   resolution: ActionResolution;
-};
-
-const DISTANCE_RANK: Record<Exclude<WorldDistance, "separate_area" | "out_of_scene">, number> = {
-  contact: 0,
-  near: 1,
-  medium: 2,
-  far: 3,
 };
 
 function characterId(side: "a" | "b"): `character.${"a" | "b"}` {
@@ -110,6 +107,15 @@ function inferredConstraints(
     };
   }
   if (intent.kind === "free_action") {
+    return {
+      reach: "same_area",
+      requiresSight: false,
+      mobility: "limited",
+      requiresSpeech: false,
+      requiresUsableHeldObject: false,
+    };
+  }
+  if (intent.kind === "reposition") {
     return {
       reach: "same_area",
       requiresSight: false,
@@ -211,10 +217,13 @@ function targetWorldFailure(input: {
   ) {
     return "out_of_range";
   }
-  if (input.constraints.reach !== "same_area") {
-    if (DISTANCE_RANK[pair.distance] > DISTANCE_RANK[input.constraints.reach]) {
-      return "out_of_range";
-    }
+  const rank = inAreaDistanceRank(pair.distance);
+  if (rank === null) return "out_of_range";
+  if (rank > reachMaxRank(input.constraints.reach)) {
+    return "out_of_range";
+  }
+  if (rank < reachMinRank(input.constraints.minReach)) {
+    return "out_of_range";
   }
   if (input.constraints.requiresSight) {
     const actorState = deriveBattleActorCausality({
@@ -326,31 +335,42 @@ export function assessCharacterActionFeasibility(input: {
   return { feasible: true };
 }
 
-export function buildObserverSafeAvailableActions(input: {
-  actorSide: "a" | "b";
+type ObserverSafeActionCandidate = {
+  intent: CharacterActionIntent;
+  option: Omit<ObserverSafeAvailableAction, "target">;
+};
+
+function fallbackBasicAttack(): BasicAttackProfile {
+  return {
+    name: "基本アクション",
+    description: "消耗時にも使える、そのキャラクターらしい基本行動。",
+    targetParameter: "hp",
+    scalingParameter: "atk",
+    resistanceParameter: "def",
+    power: 0.75,
+  };
+}
+
+function observerSafeActionCandidates(input: {
   actor: CombatantState;
   sheet: CharacterSheet;
   finisher?: FinisherState;
   turn: number;
-  worldState?: BattleWorldState;
-  perception: CharacterPerceptionFrame;
-}): ObserverSafeAvailableAction[] {
-  const basicAttack = input.sheet.basicAttack ?? {
-    name: "基本アクション",
-    description: "消耗時にも使える、そのキャラクターらしい基本行動。",
-    targetParameter: "hp" as const,
-    scalingParameter: "atk" as const,
-    resistanceParameter: "def" as const,
-    power: 0.75,
-  };
-  const candidates: Array<{
-    intent: CharacterActionIntent;
-    option: Omit<ObserverSafeAvailableAction, "target">;
-  }> = [
-    { intent: { kind: "basic_attack" }, option: { kind: "basic_attack", name: basicAttack.name } },
+  basicAttack: BasicAttackProfile;
+}): ObserverSafeActionCandidate[] {
+  return [
+    { intent: { kind: "basic_attack" }, option: { kind: "basic_attack", name: input.basicAttack.name } },
     { intent: { kind: "defend" }, option: { kind: "defend", name: "防御" } },
     { intent: { kind: "rest" }, option: { kind: "rest", name: "休息" } },
     { intent: { kind: "wait" }, option: { kind: "wait", name: "様子を見る" } },
+    {
+      intent: { kind: "reposition" },
+      option: {
+        kind: "reposition",
+        name: "間合いを変える",
+        description: "適切な間合いまで一歩動く。攻撃は届く距離でのみ当たる。",
+      },
+    },
     {
       intent: {
         kind: "reflect",
@@ -392,7 +412,40 @@ export function buildObserverSafeAvailableActions(input: {
       },
     })),
   ];
-  return candidates.flatMap(({ intent, option }) => {
+}
+
+function withObserverSafeTarget(
+  intent: CharacterActionIntent,
+  option: Omit<ObserverSafeAvailableAction, "target">,
+  skills: readonly Skill[],
+  perceivedAs: string,
+): ObserverSafeAvailableAction {
+  const counterpartTarget = targetsCounterpart(intent, actionSkill(intent, skills));
+  return {
+    ...option,
+    target: counterpartTarget
+      ? { kind: "counterpart", perceivedAs }
+      : { kind: "self", perceivedAs: "自分" },
+  };
+}
+
+export function buildObserverSafeAvailableActions(input: {
+  actorSide: "a" | "b";
+  actor: CombatantState;
+  sheet: CharacterSheet;
+  finisher?: FinisherState;
+  turn: number;
+  worldState?: BattleWorldState;
+  perception: CharacterPerceptionFrame;
+}): ObserverSafeAvailableAction[] {
+  const basicAttack = input.sheet.basicAttack ?? fallbackBasicAttack();
+  return observerSafeActionCandidates({
+    actor: input.actor,
+    sheet: input.sheet,
+    finisher: input.finisher,
+    turn: input.turn,
+    basicAttack,
+  }).flatMap(({ intent, option }) => {
     const assessed = assessCharacterActionFeasibility({
       actorSide: input.actorSide,
       intent,
@@ -405,17 +458,12 @@ export function buildObserverSafeAvailableActions(input: {
       perception: input.perception,
     });
     if (!assessed.feasible) return [];
-    const skill = actionSkill(intent, input.sheet.skills);
-    const counterpartTarget = targetsCounterpart(intent, skill);
-    return [{
-      ...option,
-      target: counterpartTarget
-        ? {
-            kind: "counterpart" as const,
-            perceivedAs: input.perception.counterpart.perceivedAs,
-          }
-        : { kind: "self" as const, perceivedAs: "自分" },
-    }];
+    return [withObserverSafeTarget(
+      intent,
+      option,
+      input.sheet.skills,
+      input.perception.counterpart.perceivedAs,
+    )];
   });
 }
 
@@ -429,6 +477,7 @@ export function revalidateCharacterAction(input: {
   turn: number;
   worldState?: BattleWorldState;
   perception?: CharacterPerceptionFrame;
+  spacingEnabled?: boolean;
 }): RevalidatedCharacterAction {
   const assess = (intent: CharacterActionIntent) =>
     assessCharacterActionFeasibility({ ...input, intent });
@@ -464,7 +513,13 @@ export function revalidateCharacterAction(input: {
   const maxStamina = input.actor.parameters.maxStamina ?? 0;
   const needsRest = (input.actor.parameters.mp ?? 0) < maxMp ||
     (input.actor.parameters.stamina ?? 0) < maxStamina;
+  const spacingSubstitute = input.spacingEnabled &&
+    (initial.reason === "out_of_range" || initial.reason === "target_unlocalized") &&
+    targetsCounterpart(input.requested, actionSkill(input.requested, input.skills));
   const fallbacks: CharacterActionIntent[] = [
+    ...(spacingSubstitute
+      ? [{ kind: "reposition" as const }]
+      : []),
     ...(needsRest ? [{ kind: "rest" as const }] : []),
     { kind: "defend" },
     { kind: "wait" },

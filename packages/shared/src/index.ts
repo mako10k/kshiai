@@ -14,6 +14,7 @@ export * from "./battle-pacing.js";
 export * from "./scene-beat.js";
 export * from "./battle-pacing-observe.js";
 export * from "./action-feasibility.js";
+export * from "./reposition-transition.js";
 export * from "./battle-causality.js";
 export * from "./battle-effects.js";
 export * from "./battle-temporal-rules.js";

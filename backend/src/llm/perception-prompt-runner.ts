@@ -69,7 +69,7 @@ export async function evaluatePerceptionPromptTopologies(input: {
   }
   const callErrors: PerceptionPromptEvaluationReport["callErrors"] = [];
   const evaluateTopology = async (topology: PerceptionPromptTopology) => {
-    const scores = [];
+    const scores: ReturnType<typeof scorePerceptionPromptCandidate>[] = [];
     for (let repetition = 1; repetition <= input.repetitions; repetition += 1) {
       for (const fixture of PERCEPTION_PROMPT_FIXTURES) {
         const candidate = await runCandidate({

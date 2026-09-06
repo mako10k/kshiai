@@ -1372,7 +1372,7 @@ describe("battle engine", () => {
       sideABasicAttack: a.basicAttack,
       sideBBasicAttack: b.basicAttack,
     });
-    assert.equal(resolved.actions[0]?.kind, "defend");
+    assert.equal(resolved.actions[0]?.kind, "reposition");
     assert.equal(resolved.actions[0]?.executed, true);
     assert.deepEqual(resolved.actions[0]?.resolution, {
       requested: { kind: "basic_attack" },
@@ -1380,6 +1380,48 @@ describe("battle engine", () => {
       reason: "out_of_range",
     });
     assert.equal(resolved.actions[0]?.skippedReason, null);
+  });
+
+  it("keeps defend substitution when spacing schema is unbound", () => {
+    const a = sheet("a", "アオ");
+    const b = sheet("b", "クロ");
+    a.basicAttack = {
+      name: "近接の働きかけ",
+      description: "近い相手だけに届く。",
+      targetParameter: "hp",
+      scalingParameter: "atk",
+      resistanceParameter: "def",
+      power: 0.75,
+      constraints: {
+        reach: "near",
+        requiresSight: false,
+        mobility: "limited",
+        requiresSpeech: false,
+        requiresUsableHeldObject: false,
+      },
+    };
+    const state = createBattleState({
+      id: "action-revalidation-legacy",
+      sideA: a,
+      sideB: b,
+      turnLimit: 20,
+      prologuePending: false,
+    });
+    if (state.pacingPolicy) {
+      delete state.pacingPolicy.spacingSchemaVersion;
+    }
+    state.worldState!.pairRelations[0]!.distance = "far";
+    state.plannedActionA = { kind: "basic_attack" };
+    state.plannedActionB = { kind: "wait" };
+    const resolved = resolveTurn({
+      state,
+      sideASkills: a.skills,
+      sideBSkills: b.skills,
+      sideABasicAttack: a.basicAttack,
+      sideBBasicAttack: b.basicAttack,
+    });
+    assert.equal(resolved.actions[0]?.kind, "defend");
+    assert.equal(resolved.actions[0]?.resolution?.reason, "out_of_range");
   });
 
   it("prepares initiative from a cloned post-restoration snapshot", () => {
@@ -1682,7 +1724,7 @@ describe("battle engine", () => {
       sideBSkills: b.skills,
     });
     assert.deepEqual(
-      resolved.state.latestTemporalResolution?.buckets.map((bucket) => bucket.actorSides),
+      resolved.state.latestTemporalResolution?.buckets.map((bucket: { actorSides: Array<"a" | "b"> }) => bucket.actorSides),
       [["b"], ["a"]],
     );
     assert.equal(resolved.actions[1]?.executed, true);
