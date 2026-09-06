@@ -53,3 +53,5 @@ This directory contains durable records of architectural and product-rule decisi
 | [0019](0019-observation-token-and-cost-admission.md) | Proposed | Bound paid observations by exact routes and conservative token/cost reservations before provider dispatch |
 | [0020](0020-reposition-and-appropriate-range.md) | Accepted | Dedicated reposition action, appropriate range bands, and engine-first spacing correction |
 | [0021](0021-engine-live-continuation-and-type-escapes.md) | Accepted | Engine-owned live continuation, closed contract types, and semantic non-clobber of fighter world |
+| [0022](0022-canonical-world-and-observer-cognition.md) | Accepted | Unique world is viewpoint-free; two-person cognition is two frames; physical engine effects read only canonical state |
+| [0023](0023-pair-channels-are-not-unique-cognition.md) | Accepted | pair.sight/sound are not unique cognition; LOS and projection read organ, exposure, and placement |

@@ -30,6 +30,14 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
   snapshot. Advance checkpoints keep that live world on `BattleState`, and
   semantic derive no longer restores fighter spacing or same-turn engine
   placements from stale labels.
+- Engine revalidation and hop correction no longer read observer
+  `currentAccess`. Physically in-band counterpart strikes accept even when a
+  viewpoint cannot localize the other; physically out-of-area strikes
+  substitute as `out_of_range`. Observer-safe action lists still hide
+  counterpart strikes the observer cannot localize (ADR-0022).
+- Engine LOS, visual counterpart projection, and utterance hearing no longer
+  treat `pair.sight` / `pair.sound` as unique mutual cognition. Those keys
+  remain a derived fill from presence and same-area (ADR-0023).
 
 ### Changed
 
@@ -49,6 +57,11 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
   movement-only, peel prompt-forced reposition, then `target_unlocalized`
   substitution, then semantic fighter/object guards, in that order
   (`docs/adr/0021-engine-live-continuation-and-type-escapes.md`).
+  ADR-0022/0023 stop the engine from reading observer `currentAccess` or
+  `pair.sight`/`pair.sound` as authority. In-flight JSON keeps those pair
+  keys. Application rollback to `v0.22.0-rc.6` restores the mix-in. Authored
+  battlefield area IDs still do not match world `area.N` remapping; hops can
+  still noop on slug-id maps.
 
 ## [0.21.7] - 2026-08-16
 

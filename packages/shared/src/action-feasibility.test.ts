@@ -210,7 +210,6 @@ describe("observer-safe action feasibility", () => {
       basicAttack: sideA.basicAttack!,
       turn: 1,
       worldState: world,
-      perception: state.perceptionFrameA,
     });
     assert.equal(revalidated.action?.kind, "defend");
     assert.equal(revalidated.resolution.outcome, "substituted");
@@ -240,7 +239,6 @@ describe("observer-safe action feasibility", () => {
       basicAttack: sideA.basicAttack!,
       turn: 10,
       worldState: state.worldState,
-      perception: state.perceptionFrameA,
     });
     assert.equal(substituted.action?.kind, "rest");
     assert.deepEqual(substituted.resolution, {
@@ -258,7 +256,6 @@ describe("observer-safe action feasibility", () => {
       finisher: { skillId: "costly", skillName: "大技", source: "derived", used: true, usedTurn: 9 },
       turn: 10,
       worldState: state.worldState,
-      perception: state.perceptionFrameA,
     });
     assert.equal(partial.action?.kind, "skill");
     assert.equal(partial.action?.useFinisher, undefined);
@@ -275,7 +272,6 @@ describe("observer-safe action feasibility", () => {
       basicAttack: sideA.basicAttack!,
       turn: 1,
       worldState: unconsciousWorld,
-      perception: state.perceptionFrameA,
     });
     assert.equal(failed.action, null);
     assert.equal(failed.resolution.outcome, "failed");
@@ -335,7 +331,6 @@ describe("observer-safe action feasibility", () => {
       basicAttack: sideA.basicAttack!,
       turn: 1,
       worldState: split,
-      perception: state.perceptionFrameA,
     });
     assert.equal(legacy.action?.kind, "defend");
 
@@ -347,7 +342,6 @@ describe("observer-safe action feasibility", () => {
       basicAttack: sideA.basicAttack!,
       turn: 1,
       worldState: split,
-      perception: state.perceptionFrameA,
       spacingEnabled: true,
     });
     assert.equal(enabled.action?.kind, "reposition");
@@ -378,7 +372,6 @@ describe("observer-safe action feasibility", () => {
       basicAttack: ranged,
       turn: 1,
       worldState: closeWorld,
-      perception: state.perceptionFrameA,
       spacingEnabled: true,
     });
     assert.equal(enabled.action?.kind, "reposition");
@@ -388,8 +381,36 @@ describe("observer-safe action feasibility", () => {
   it("does not substitute generic line-of-sight failure to reposition", () => {
     const { sideA, state } = setup();
     const blocked = structuredClone(state.worldState!);
-    blocked.pairRelations[0] = {
-      ...blocked.pairRelations[0]!,
+    blocked.entities["character.b"]!.exposure = "hidden";
+    const sighted = {
+      ...sideA.basicAttack!,
+      constraints: {
+        reach: "near" as const,
+        requiresSight: true,
+        mobility: "limited" as const,
+        requiresSpeech: false,
+        requiresUsableHeldObject: false,
+      },
+    };
+    const enabled = revalidateCharacterAction({
+      actorSide: "a",
+      requested: { kind: "basic_attack" },
+      actor: state.sideA,
+      skills: [],
+      basicAttack: sighted,
+      turn: 1,
+      worldState: blocked,
+      spacingEnabled: true,
+    });
+    assert.equal(enabled.resolution.reason, "line_of_sight_blocked");
+    assert.equal(enabled.action?.kind, "defend");
+  });
+
+  it("does not treat pair.sight as physical line of sight", () => {
+    const { sideA, state } = setup();
+    const channeled = structuredClone(state.worldState!);
+    channeled.pairRelations[0] = {
+      ...channeled.pairRelations[0]!,
       distance: "near",
       sight: "blocked",
     };
@@ -410,11 +431,69 @@ describe("observer-safe action feasibility", () => {
       skills: [],
       basicAttack: sighted,
       turn: 1,
-      worldState: blocked,
-      perception: state.perceptionFrameA,
+      worldState: channeled,
       spacingEnabled: true,
     });
-    assert.equal(enabled.resolution.reason, "line_of_sight_blocked");
-    assert.equal(enabled.action?.kind, "defend");
+    assert.equal(enabled.action?.kind, "basic_attack");
+    assert.equal(enabled.resolution.outcome, "accepted");
+  });
+
+  it("hides counterpart strikes from an observer who cannot localize them", () => {
+    const { sideA, state } = setup();
+    const unseen = {
+      ...state.perceptionFrameA!,
+      counterpart: {
+        ...state.perceptionFrameA!.counterpart,
+        currentAccess: "none" as const,
+      },
+    };
+    const listed = buildObserverSafeAvailableActions({
+      actorSide: "a",
+      actor: state.sideA,
+      sheet: sideA,
+      turn: 1,
+      worldState: state.worldState,
+      perception: unseen,
+    });
+    assert.equal(listed.some((action) => action.kind === "basic_attack"), false);
+    assert.equal(listed.some((action) => action.kind === "wait"), true);
+  });
+
+  it("revalidates counterpart strikes from unique world without observer frames", () => {
+    const { sideA, state } = setup();
+    const accepted = revalidateCharacterAction({
+      actorSide: "a",
+      requested: { kind: "basic_attack" },
+      actor: state.sideA,
+      skills: [],
+      basicAttack: sideA.basicAttack!,
+      turn: 1,
+      worldState: state.worldState,
+      spacingEnabled: true,
+    });
+    assert.equal(accepted.action?.kind, "basic_attack");
+    assert.equal(accepted.resolution.outcome, "accepted");
+
+    const split = structuredClone(state.worldState!);
+    split.pairRelations[0] = {
+      ...split.pairRelations[0]!,
+      distance: "separate_area",
+      sight: "blocked",
+      sound: "partial",
+      updatedTurn: 0,
+    };
+    const enabled = revalidateCharacterAction({
+      actorSide: "a",
+      requested: { kind: "basic_attack" },
+      actor: state.sideA,
+      skills: [],
+      basicAttack: sideA.basicAttack!,
+      turn: 1,
+      worldState: split,
+      spacingEnabled: true,
+    });
+    assert.equal(enabled.action?.kind, "reposition");
+    assert.equal(enabled.resolution.outcome, "substituted");
+    assert.equal(enabled.resolution.reason, "out_of_range");
   });
 });

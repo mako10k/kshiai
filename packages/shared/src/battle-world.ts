@@ -795,6 +795,20 @@ export type BattleWorldPairView = {
   updatedTurn: number;
 };
 
+/** Derived compatibility fill. Not unique cognition and not LOS authority. */
+export function derivedPairOcclusion(input: {
+  bothPresent: boolean;
+  sameArea: boolean;
+}): { sight: WorldOcclusion; sound: WorldOcclusion } {
+  if (!input.bothPresent) {
+    return { sight: "blocked", sound: "blocked" };
+  }
+  if (!input.sameArea) {
+    return { sight: "blocked", sound: "partial" };
+  }
+  return { sight: "clear", sound: "clear" };
+}
+
 /** Reads a canonical pair without exposing lexical storage order as priority. */
 export function readBattleWorldPair(
   state: BattleWorldState,
@@ -1120,8 +1134,7 @@ export function createBattleWorldState(input: {
         : sameArea
           ? "near"
           : "separate_area",
-      sight: !bothPresent || !sameArea ? "blocked" : "clear",
-      sound: !bothPresent ? "blocked" : sameArea ? "clear" : "partial",
+      ...derivedPairOcclusion({ bothPresent, sameArea }),
       firstOrientation: bothPresent ? "facing" : "indeterminate",
       secondOrientation: bothPresent ? "facing" : "indeterminate",
       updatedTurn: 0,

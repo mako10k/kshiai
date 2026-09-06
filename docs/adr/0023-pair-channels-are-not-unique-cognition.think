@@ -1,0 +1,92 @@
+framework ArchitectureDecisionRecord:
+  requires problem and decision
+  requires premise and evidence
+  warns pending
+
+domain ADR0023:
+  description |
+    pair.sight and pair.sound are not unique two-person cognition.
+    Physical LOS and observer projection read organ, exposure, and
+    placement facts. Stored sight/sound keys remain a derived fill.
+
+problem P1:
+  |
+    ADR-0022 stopped engine revalidation from reading observer
+    frames, but unique world still hosts a mutual sight/sound
+    channel that engine LOS, visual projection, and utterance
+    hearing treat as authority.
+
+premise DRIVER_UNIQUE:
+  |
+    Unique world may hold placements, topology geometry, body
+    facing, organ vision and hearing, exposure, illumination,
+    area noise, object sensory effects, and a mechanical distance
+    band.
+
+premise DRIVER_TWO_FRAMES:
+  |
+    Two-person perceptual relations live only in the two observer
+    frames. A single pair.sight or pair.sound is not those frames
+    and is not unique world cognition.
+
+premise DRIVER_SCOPE:
+  |
+    Do not delete pairRelations, distance, or orientations. Do not
+    drop sight/sound keys from stored JSON in this slice. Do not
+    fast-forward hops. Mental-effect routing stays open.
+
+premise OPTIONS:
+  |
+    Considered options are: leave pair.sight/sound as authority;
+    stop reading them now and keep a derived fill on write; or
+    delete the keys in the same slice. Leaving them as authority
+    keeps the mix-in. Deleting keys rewrites parse of in-flight
+    battles. Stop-reading plus derived fill is the producing
+    repair.
+
+evidence E_OWNER:
+  |
+    On 2026-09-06 the product owner, after ADR-0022, instructed to
+    tidy the remaining mix-in. Analysis:
+    docs/remaining-pair-channel-mix-in.llmthink.dsl.
+
+evidence E_READS:
+  |
+    packages/shared/src/action-feasibility.ts uses pair.sight for
+    line_of_sight_blocked. perception-projection.ts uses pair.sight
+    blocked and partial. utterance-perception.ts uses pair.sound
+    blocked and partial.
+
+evidence E_UNIQUE:
+  |
+    deriveBattleActorCausality already folds object visionEffect and
+    hearingEffect into effectiveActorState. Exposure, organ
+    vision/hearing, illumination, and area noise already exist.
+
+decision D1 based_on P1, DRIVER_UNIQUE, DRIVER_TWO_FRAMES, E_READS:
+  |
+    Engine LOS, visual counterpart projection, and utterance
+    hearing must not read pair.sight or pair.sound. Physical LOS
+    uses organ vision including causality-derived vision, and
+    exposure. Observer visual none uses absence, separate_area,
+    out_of_scene, hidden or invisible, or blocked/absent vision.
+    Hearing uses organ hearing, distance, area noise, and
+    utterance properties.
+
+decision D2 based_on DRIVER_SCOPE, OPTIONS, E_UNIQUE:
+  |
+    Keep pair.distance and orientations. Keep sight/sound keys on
+    the schema as a derived compatibility fill from presence and
+    same-area. They are not authority. Deleting the keys is a
+    later parse migration.
+
+evidence OWNER_ACCEPTANCE:
+  |
+    On 2026-09-06 the product owner instructed to tidy the
+    remaining mix-in after ADR-0022.
+
+decision ACCEPTANCE based_on D1, D2, OWNER_ACCEPTANCE, E_OWNER:
+  |
+    ADR-0023 is Accepted at this owner-approved revision.
+    Implementation of D1 and D2 is authorized. ADR-0020, ADR-0021,
+    and ADR-0022 remain Accepted.

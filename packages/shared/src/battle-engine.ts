@@ -77,6 +77,7 @@ import {
 } from "./battle-world.js";
 import {
   planRepositionTransition,
+  worldCounterpartUnlocalized,
   spacingForConstraints,
 } from "./reposition-transition.js";
 import { applyBattleCausalCoefficients } from "./battle-causality.js";
@@ -2501,7 +2502,6 @@ export function resolveTurn(input: ResolveTurnInput): {
     finisher: finisherFor(side),
     turn,
     worldState,
-    perception: perceptionFor(side),
     spacingEnabled,
   });
   const setResolvedAction = (
@@ -2552,16 +2552,10 @@ export function resolveTurn(input: ResolveTurnInput): {
       const desired = requested && requested.kind !== "reposition"
         ? requestedSkill?.constraints ?? fallbackConstraints
         : fallbackConstraints;
-      const unlocalized = Boolean(
-        perceptionFor(inputAction.side) &&
-        !["coarse", "clear"].includes(
-          perceptionFor(inputAction.side)!.counterpart.currentAccess,
-        ),
-      );
       const spacing = spacingForConstraints({
         worldState,
         actorSide: inputAction.side,
-        unlocalized,
+        unlocalized: worldCounterpartUnlocalized(worldState, inputAction.side),
         constraints: desired,
       });
       const planned = worldState

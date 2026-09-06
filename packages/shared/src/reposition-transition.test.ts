@@ -5,6 +5,7 @@ import { applyBattleWorldTransition } from "./battle-world.js";
 import {
   planRepositionTransition,
   spacingForConstraints,
+  worldCounterpartUnlocalized,
 } from "./reposition-transition.js";
 import type { CharacterSheet } from "./character.js";
 
@@ -142,5 +143,23 @@ describe("reposition transition", () => {
     });
     assert.equal(planned.summaryKind, "rank_change");
     assert.match(planned.event.summary ?? "", /広げた/);
+  });
+
+  it("treats a present scene counterpart as localized in unique world", () => {
+    const state = createBattleState({
+      id: "reposition-localized",
+      sideA: sheet("a", "アルファ"),
+      sideB: sheet("b", "ベータ"),
+      turnLimit: 12,
+      prologuePending: false,
+    });
+    assert.equal(worldCounterpartUnlocalized(state.worldState, "a"), false);
+    const missing = structuredClone(state.worldState!);
+    missing.entities["character.b"]!.presence = "absent";
+    missing.entities["character.b"]!.placement = { type: "absent" };
+    missing.pairRelations[0]!.distance = "out_of_scene";
+    missing.pairRelations[0]!.sight = "blocked";
+    missing.pairRelations[0]!.sound = "blocked";
+    assert.equal(worldCounterpartUnlocalized(missing, "a"), true);
   });
 });
