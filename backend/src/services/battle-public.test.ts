@@ -279,9 +279,18 @@ describe("public battle semantic projection", () => {
         turn: input.turn,
         sourceEventIds: [],
         operations: [{
-          op: "replace",
-          path: "/entities/character.b/location",
-          value: { type: "scene", area: "隣の回廊" },
+          op: "add",
+          path: "/entities/effect.smoke",
+          value: {
+            kind: "effect",
+            label: "煙",
+            location: { type: "scene", area: "隣の回廊" },
+            active: true,
+            createdTurn: 0,
+            updatedTurn: 0,
+            facts: {},
+            visibleTo: ["b"],
+          },
         }],
       },
       worldPatchStatus: "valid",
@@ -306,8 +315,12 @@ describe("public battle semantic projection", () => {
     assert.equal(result.state.latestWorldTransition?.fromRevision, 0);
     assert.equal(result.state.latestWorldTransition?.toRevision, 1);
     assert.equal(
+      result.state.worldState?.entities["effect.smoke"]?.kind,
+      "effect",
+    );
+    assert.equal(
       result.state.worldState?.pairRelations[0]?.distance,
-      "separate_area",
+      "near",
     );
     const publicState = toBattlePublic(result.state, sideA, null, sideB);
     assert.equal("worldState" in publicState, false);
