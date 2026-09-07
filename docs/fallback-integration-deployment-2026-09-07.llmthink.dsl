@@ -28,6 +28,18 @@ evidence E4:
 evidence E5:
   "The latest release is v0.22.0-rc.7 at origin/main, so the next monotonic candidate would be v0.22.0-rc.8 only after the new main commit and its required checks exist."
 
+evidence E6:
+  "Pull request 140 was created at head da1d9dfc294089363ebf48905e13989eebf1d5e4; security, backend-image, and worker passed, while validate failed because the aggregate Lizard metrics exceeded the checked-in baseline: maximum cyclomatic complexity 95 versus 92, maximum function length 739 versus 733, and function-length violation count 68 versus 67."
+
+evidence E7:
+  "An isolated Lizard run on origin/main passes at 67 function-length violations. Comparing violating function identities shows that the net new violation is selectActionFromPolicies, whose expanded structured result changed its measured length from the predecessor's 87 lines to 107; toBattlePublic is byte-identical to main but already exceeds the checked-in maximum, and commitFreeActionAdjudications remains oversized on both revisions."
+
+evidence E8:
+  "After typed extraction, the full repository test suite passes 317 tests, typecheck and production build pass, jscpd passes, and Lizard returns to the allowed 67 function-length violations while reducing maximum complexity to 89 and maximum function length to 706."
+
+premise CI_REPAIR_OPTIONS:
+  "The credible choices are to raise the baseline, extract only the new receipt construction, or structurally reduce both currently reported oversized functions without changing their public behavior."
+
 pending MERGE_EVIDENCE:
   "The pull-request number, final head SHA, required CI conclusions, mergeability, and resulting main SHA do not exist or are not yet established."
 
@@ -51,3 +63,12 @@ decision D2 based_on D1, MERGE_EVIDENCE, AUTHORITY:
 
 decision D3 based_on E3, E4, E5, STAGE_EVIDENCE, AUTHORITY:
   "Do not create v0.22.0-rc.8, dispatch Stage, approve production, or dispatch Promote before their predecessor evidence and exact owner gates are satisfied."
+
+decision D4 based_on E6, E7, CI_REPAIR_OPTIONS:
+  "Reject a baseline increase. Give selectActionFromPolicies named input and result contracts so signature expansion does not make its implementation a new length violation; also retain the behavior-preserving typed extraction of rating settlement and unavailable-adjudication receipt projections because it reduces the two pre-existing maxima touched by validation and this change."
+
+decision D5 based_on D4:
+  "Validate the refactor with focused behavioral tests, the repository typecheck and test suites, and the same Lizard check in an isolated temporary Python environment before updating the pull request."
+
+decision D6 based_on D5, E8:
+  "Commit and push the validated structural repair to pull request 140, then wait for fresh required-check evidence before seeking the exact merge decision."

@@ -1610,7 +1610,7 @@ function ruleMatches(
  * Choose action from multi-selected case policies (LLM-generated).
  * Highest priority matching rule wins; fallback to mixed/balanced.
  */
-export function selectActionFromPolicies(input: {
+export type ActionPolicySelectionInput = {
   policies: BattlePolicyOption[];
   selectedIds: string[];
   actorSide: "a" | "b";
@@ -1627,12 +1627,18 @@ export function selectActionFromPolicies(input: {
   actionRepeatCount?: number;
   /** Observer-safe coarse estimate; omit only for legacy direct callers. */
   foeHpRatio?: number;
-}): {
+};
+
+export type ActionPolicySelection = {
   action: BattleAction;
   sourceLayer: "matching_policy" | "always_policy" | "legacy_stance";
   reason: "matching_policy_selected" | "always_policy_selected" | "no_policy_match";
   selectedPolicyId: string | null;
-} {
+};
+
+export function selectActionFromPolicies(
+  input: ActionPolicySelectionInput,
+): ActionPolicySelection {
   const myHp = hpRatio(input.self);
   const foeHp = input.foeHpRatio ?? hpRatio(input.foe);
   const selected = new Set(input.selectedIds);
@@ -1719,7 +1725,7 @@ export function selectActionFromPolicies(input: {
 }
 
 export function chooseActionFromPolicies(
-  input: Parameters<typeof selectActionFromPolicies>[0],
+  input: ActionPolicySelectionInput,
 ): BattleAction {
   return selectActionFromPolicies(input).action;
 }

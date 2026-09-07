@@ -878,6 +878,29 @@ function receipt(input: FreeActionResolutionReceipt): FreeActionResolutionReceip
   return FreeActionResolutionReceiptSchema.parse(input);
 }
 
+function unavailableAdjudicationReceipt(input: {
+  actionId: string;
+  actorSide: BattleSide;
+  intentText: string;
+  failureSubtype: FreeActionAdjudicationFailure | null;
+}): FreeActionResolutionReceipt {
+  return receipt({
+    actionId: input.actionId,
+    actorSide: input.actorSide,
+    intentText: input.intentText,
+    outcome: "failed",
+    reason: "adjudication_unavailable",
+    ...(input.failureSubtype
+      ? { failureSubtype: input.failureSubtype }
+      : {}),
+    subjectRef: null,
+    canonicalEntityId: null,
+    promotion: "rejected",
+    operationKinds: [],
+    summary: "自由行動の現実判定を確定できなかった。",
+  });
+}
+
 export function commitFreeActionAdjudications(input: {
   beforeState: BattleState;
   resolvedState: BattleState;
@@ -925,20 +948,11 @@ export function commitFreeActionAdjudications(input: {
     const proposal = proposals.get(side);
     if (!proposal) {
       updateActionFailure(actions, side, "free_action_unavailable");
-      receipts.push(receipt({
+      receipts.push(unavailableAdjudicationReceipt({
         actionId: action.id,
         actorSide: side,
         intentText,
-        outcome: "failed",
-        reason: "adjudication_unavailable",
-        ...(input.preparation.adjudicationFailure
-          ? { failureSubtype: input.preparation.adjudicationFailure }
-          : {}),
-        subjectRef: null,
-        canonicalEntityId: null,
-        promotion: "rejected",
-        operationKinds: [],
-        summary: "自由行動の現実判定を確定できなかった。",
+        failureSubtype: input.preparation.adjudicationFailure,
       }));
       continue;
     }

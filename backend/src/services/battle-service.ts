@@ -265,6 +265,50 @@ const characterDecisionRuleMetadata = new WeakMap<
   CharacterDecisionRuleMetadata
 >();
 
+type RatingSettlement = NonNullable<BattleState["ratingSettlement"]>;
+type PublicRatingSettlement = NonNullable<BattlePublic["ratingSettlement"]>;
+
+function toPublicRatingEntry(
+  entry: RatingSettlement["sideA"],
+  population: RatingDisplayContext["public"] | undefined,
+): NonNullable<PublicRatingSettlement["sideA"]> {
+  return {
+    before: ratingForDisplay(entry.before, population),
+    after: ratingForDisplay(entry.after, population),
+    delta: entry.delta,
+    provisionalAfter: entry.provisionalAfter,
+  };
+}
+
+function toPublicRatingSettlement(
+  settlement: BattleState["ratingSettlement"],
+  display: RatingDisplayContext | undefined,
+): BattlePublic["ratingSettlement"] {
+  if (!settlement?.applied) return null;
+  const overall = settlement.overall ?? {
+    sideA: settlement.sideA,
+    sideB: settlement.sideB,
+  };
+  const publicSettlement = settlement.public ?? null;
+  return {
+    applied: settlement.applied,
+    ranked: settlement.ranked,
+    sameOwner: settlement.sameOwner,
+    overall: {
+      sideA: toPublicRatingEntry(overall.sideA, display?.overall),
+      sideB: toPublicRatingEntry(overall.sideB, display?.overall),
+    },
+    public: publicSettlement
+      ? {
+          sideA: toPublicRatingEntry(publicSettlement.sideA, display?.public),
+          sideB: toPublicRatingEntry(publicSettlement.sideB, display?.public),
+        }
+      : null,
+    sideA: toPublicRatingEntry(overall.sideA, display?.overall),
+    sideB: toPublicRatingEntry(overall.sideB, display?.overall),
+  };
+}
+
 export function toBattlePublic(
   state: BattleState,
   mySheet: CharacterSheet,
@@ -365,43 +409,10 @@ export function toBattlePublic(
     narrationStyleName: state.narrationStyle?.displayName,
     priorMatchSummary: state.priorMatchSummary ?? null,
     resultSummary: resultSummary ?? null,
-    ratingSettlement: (() => {
-      const s = state.ratingSettlement;
-      if (!s?.applied) return null;
-      const overall = s.overall ?? { sideA: s.sideA, sideB: s.sideB };
-      const pub = s.public ?? null;
-      const slim = (
-        x: {
-          before: number;
-          after: number;
-          delta: number;
-          provisionalAfter: boolean;
-        },
-        population: RatingDisplayContext["public"] | undefined,
-      ) => ({
-        before: ratingForDisplay(x.before, population),
-        after: ratingForDisplay(x.after, population),
-        delta: x.delta,
-        provisionalAfter: x.provisionalAfter,
-      });
-      return {
-        applied: s.applied,
-        ranked: s.ranked,
-        sameOwner: s.sameOwner,
-        overall: {
-          sideA: slim(overall.sideA, ratingDisplay?.overall),
-          sideB: slim(overall.sideB, ratingDisplay?.overall),
-        },
-        public: pub
-          ? {
-              sideA: slim(pub.sideA, ratingDisplay?.public),
-              sideB: slim(pub.sideB, ratingDisplay?.public),
-            }
-          : null,
-        sideA: slim(overall.sideA, ratingDisplay?.overall),
-        sideB: slim(overall.sideB, ratingDisplay?.overall),
-      };
-    })(),
+    ratingSettlement: toPublicRatingSettlement(
+      state.ratingSettlement,
+      ratingDisplay,
+    ),
   };
 }
 
