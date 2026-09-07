@@ -6,6 +6,7 @@ import { join } from "node:path";
 import {
   createBattleState,
   defaultParameters,
+  defaultBasicAttack,
   openSceneBeat,
   type CharacterSheet,
 } from "@kshiai/shared";
@@ -46,6 +47,7 @@ function sheet(
     appearance: { summary: displayName, visualPrompt: "test" },
     traits: [],
     parameters: defaultParameters({ hp, maxHp: hp }),
+    basicAttack: defaultBasicAttack(),
     skills: [],
     weapon: null,
     armor: null,

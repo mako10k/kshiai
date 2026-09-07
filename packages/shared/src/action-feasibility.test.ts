@@ -5,9 +5,9 @@ import {
   revalidateCharacterAction,
 } from "./action-feasibility.js";
 import { createBattleState } from "./battle-engine.js";
-import type { CharacterSheet } from "./character.js";
+import type { CombatReadyCharacterSheet } from "./character.js";
 
-function sheet(id: string, displayName: string): CharacterSheet {
+function sheet(id: string, displayName: string): CombatReadyCharacterSheet {
   return {
     id,
     ownerUserId: `owner-${id}`,

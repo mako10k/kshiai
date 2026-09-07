@@ -5,6 +5,7 @@ import { join } from "node:path";
 import { after, before, describe, it } from "node:test";
 import {
   defaultParameters,
+  defaultBasicAttack,
   type BattlefieldPreset,
   type CharacterSheet,
   type NarrationStyle,
@@ -67,6 +68,7 @@ function character(input: {
     },
     traits: ["慎重"],
     parameters: defaultParameters(),
+    basicAttack: defaultBasicAttack(),
     skills: [],
     weapon: null,
     armor: null,

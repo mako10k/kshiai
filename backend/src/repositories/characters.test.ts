@@ -3,7 +3,12 @@ import { after, describe, it } from "node:test";
 import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { defaultParameters, defaultRecord, type CharacterSheet } from "@kshiai/shared";
+import {
+  defaultBasicAttack,
+  defaultParameters,
+  defaultRecord,
+  type CharacterSheet,
+} from "@kshiai/shared";
 
 const tempDir = mkdtempSync(join(tmpdir(), "kshiai-character-test-"));
 process.env.DATABASE_URL = "";
@@ -36,6 +41,7 @@ function sheet(id: string, ownerUserId: string, displayName: string): CharacterS
     appearance: { summary: `${displayName}の姿`, visualPrompt: displayName },
     traits: ["勇敢"],
     parameters: defaultParameters(),
+    basicAttack: defaultBasicAttack(),
     skills: [],
     weapon: null,
     armor: null,

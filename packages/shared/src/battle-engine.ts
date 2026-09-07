@@ -32,7 +32,6 @@ import type {
   Parameters as CharacterParameters,
   Skill,
 } from "./character.js";
-import { defaultBasicAttack } from "./character.js";
 import type { BattlefieldInstance } from "./battlefield.js";
 import { clampCoefficientMap, mergeCoefficients } from "./battlefield.js";
 import type { NarrationStyleSnapshot } from "./narration-style.js";
@@ -1905,8 +1904,8 @@ export type ResolveTurnInput = {
   playerAction?: BattleAction;
   sideASkills: Skill[];
   sideBSkills: Skill[];
-  sideABasicAttack?: BasicAttackProfile;
-  sideBBasicAttack?: BasicAttackProfile;
+  sideABasicAttack: BasicAttackProfile;
+  sideBBasicAttack: BasicAttackProfile;
   situationUpdate?: Partial<Situation>;
   /** Supervisor / environment events applied before combat actions. */
   preEvents?: TurnEvent[];
@@ -2609,9 +2608,7 @@ export function resolveTurn(input: ResolveTurnInput): {
     side === "a" ? input.sideASkills : input.sideBSkills;
   const basicAttackFor = (side: BattleTemporalSide) =>
     balanceBasicAttack(
-      side === "a"
-        ? input.sideABasicAttack ?? defaultBasicAttack()
-        : input.sideBBasicAttack ?? defaultBasicAttack(),
+      side === "a" ? input.sideABasicAttack : input.sideBBasicAttack,
     );
   const finisherFor = (side: BattleTemporalSide) =>
     side === "a" ? finisherA : finisherB;

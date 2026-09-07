@@ -6,9 +6,9 @@ import {
   buildSemanticObservationState,
   createBattleState,
   defaultParameters,
-  resolveTurn,
   type CharacterSheet,
 } from "@kshiai/shared";
+import { resolveTurn } from "./battle-engine-test-helper.js";
 import { buildGuardedNarrationCausalProjection } from "./battle-service.js";
 
 function sheet(id: string, displayName: string): CharacterSheet {

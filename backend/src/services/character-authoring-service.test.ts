@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import {
   defaultParameters,
+  defaultBasicAttack,
   type CharacterDefinitionV2,
   type CharacterSheet,
 } from "@kshiai/shared";
@@ -43,6 +44,7 @@ function generatedCharacter(): GenerateCharacterResult {
       },
       traits: ["慎重"],
       parameters: defaultParameters(),
+      basicAttack: defaultBasicAttack(),
       skills: [],
       weapon: null,
       armor: null,

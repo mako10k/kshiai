@@ -4,7 +4,8 @@ import {
   applyBattleCausalCoefficients,
   deriveBattleActorCausality,
 } from "./battle-causality.js";
-import { createBattleState, resolveTurn } from "./battle-engine.js";
+import { createBattleState } from "./battle-engine.js";
+import { resolveTurn } from "./battle-engine-test-helper.js";
 import type { BattleWorldState, WorldObjectState } from "./battle-world.js";
 import { defaultParameters, type CharacterSheet } from "./character.js";
 import { quantizeCommittedMechanicalEvidence } from "./perception-quantization.js";

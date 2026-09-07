@@ -7,7 +7,7 @@ import {
   balanceSkill,
   softenCombatDamage,
 } from "./balance.js";
-import { defaultParameters } from "./character.js";
+import { defaultBasicAttack, defaultParameters } from "./character.js";
 
 describe("balance", () => {
   it("soft-caps extreme parameters", () => {
@@ -27,6 +27,7 @@ describe("balance", () => {
   it("caps peaked mechanics without rewriting LLM-authored prose", () => {
     const sheet = balanceCharacterCombatFields({
       parameters: defaultParameters(),
+      basicAttack: defaultBasicAttack(),
       skills: [
         {
           id: "s1",

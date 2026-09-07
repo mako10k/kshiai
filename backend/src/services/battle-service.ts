@@ -116,7 +116,7 @@ import {
   lockedFocusFromPerspective,
   needsFocusChoice,
   selectDigestsForFocus,
-  defaultBasicAttack,
+  requireCombatReadyCharacterSheet,
   defaultDialoguePipelineSettings,
   snapshotDialoguePipelineSettings,
   DialoguePipelineSettingsSchema,
@@ -852,7 +852,7 @@ export async function startBattle(input: {
   state = {
     ...state,
     assetManifest: {
-      schemaVersion: 1,
+      schemaVersion: 2,
       boundAt: assetBoundAt,
       characters: {
         a: {
@@ -860,6 +860,11 @@ export async function startBattle(input: {
           generationId: mineGeneration.generationId,
           contentDigest: mineGeneration.contentDigest,
           snapshot: mineSnapshot,
+          basicAttackSource: {
+            kind: "character_generation_v2",
+            generationId: mineGeneration.generationId,
+            definitionPath: "capabilities.basicAction",
+          },
           compilerInputsV2: {
             psycheTraits: compileCharacterPsycheTraitsV1(mineEnvelope.definition),
             deepPsyche: {
@@ -891,6 +896,11 @@ export async function startBattle(input: {
           generationId: opponentGeneration.generationId,
           contentDigest: opponentGeneration.contentDigest,
           snapshot: opponentSnapshot,
+          basicAttackSource: {
+            kind: "character_generation_v2",
+            generationId: opponentGeneration.generationId,
+            definitionPath: "capabilities.basicAction",
+          },
           compilerInputsV2: {
             psycheTraits: compileCharacterPsycheTraitsV1(opponentEnvelope.definition),
             deepPsyche: {
@@ -1416,6 +1426,7 @@ function buildCharacterDecisionContext(input: {
   decisionTurn?: number;
   phase?: "prologue" | "turn" | "aftermath";
 }) {
+  const battleSheet = requireCombatReadyCharacterSheet(input.sheet);
   const self = input.side === "a" ? input.state.sideA : input.state.sideB;
   const perception = input.side === "a"
     ? input.state.perceptionFrameA
@@ -1455,7 +1466,7 @@ function buildCharacterDecisionContext(input: {
         ...(lastSkill?.name
           ? { name: lastSkill.name }
           : parsed.kind === "basic_attack"
-            ? { name: input.sheet.basicAttack?.name ?? "基本アクション" }
+            ? { name: battleSheet.basicAttack.name }
             : parsed.kind === "wait"
               ? { name: "様子を見る" }
               : parsed.kind === "reflect"
@@ -1500,7 +1511,7 @@ function buildCharacterDecisionContext(input: {
   const rawAvailableActions = buildObserverSafeAvailableActions({
     actorSide: input.side,
     actor: self,
-    sheet: input.sheet,
+    sheet: battleSheet,
     finisher,
     turn: nextTurn,
     worldState: input.state.worldState,
@@ -1661,13 +1672,14 @@ function buildActionFeedback(input: {
   sheet: CharacterSheet;
   perception: NonNullable<BattleState["perceptionFrameA"]>;
 }) {
+  const battleSheet = requireCombatReadyCharacterSheet(input.sheet);
   const resolved = latestResolvedAction(input.state, input.side);
   const requested = resolved?.resolution?.requested;
   if (!requested || !resolved?.resolution) return undefined;
   const unlocalized = !["coarse", "clear"].includes(
     input.perception.counterpart.currentAccess,
   );
-  const fallbackReach = input.sheet.basicAttack?.constraints ?? {
+  const fallbackReach = battleSheet.basicAttack.constraints ?? {
     reach: "same_area" as const,
   };
   const skill = requested.kind === "skill"
@@ -1691,7 +1703,7 @@ function buildActionFeedback(input: {
   const actionName = requested.kind === "skill"
     ? skill?.name ?? "技"
     : requested.kind === "basic_attack"
-      ? input.sheet.basicAttack?.name ?? "基本アクション"
+      ? battleSheet.basicAttack.name
       : requested.kind === "reposition"
         ? "間合いを変える"
         : requested.kind;
@@ -3543,6 +3555,8 @@ export async function reconcileSemanticState(input: {
   environmentProcessReceipt: EnvironmentProcessReceipt | null;
   environmentEvents: TurnEvent[];
 }> {
+  const battleMine = requireCombatReadyCharacterSheet(input.mine);
+  const battleOpp = requireCombatReadyCharacterSheet(input.opp);
   const environmentProposal = input.environmentProposal ?? null;
   const proposedEnvironmentEvent = environmentProposal
     ? environmentProposalEvent(environmentProposal)
@@ -3766,8 +3780,8 @@ export async function reconcileSemanticState(input: {
             appearanceSummary: input.mine.appearance.summary,
             traits: input.mine.traits,
             basicAttack: {
-              name: input.mine.basicAttack?.name ?? "基本アクション",
-              description: input.mine.basicAttack?.description ?? "そのキャラクターらしい基本行動。",
+              name: battleMine.basicAttack.name,
+              description: battleMine.basicAttack.description,
             },
             skills: input.mine.skills.map(({ id, name, description }) => ({
               id,
@@ -3780,8 +3794,8 @@ export async function reconcileSemanticState(input: {
             appearanceSummary: input.opp.appearance.summary,
             traits: input.opp.traits,
             basicAttack: {
-              name: input.opp.basicAttack?.name ?? "基本アクション",
-              description: input.opp.basicAttack?.description ?? "そのキャラクターらしい基本行動。",
+              name: battleOpp.basicAttack.name,
+              description: battleOpp.basicAttack.description,
             },
             skills: input.opp.skills.map(({ id, name, description }) => ({
               id,
@@ -4153,13 +4167,15 @@ function buildNarrationActionBeats(input: {
   state: BattleState;
 }): NarrationActionBeat[] {
   return input.actions.map((action) => {
-    const sheet = action.actorSide === "a" ? input.mine : input.opp;
+    const sheet = requireCombatReadyCharacterSheet(
+      action.actorSide === "a" ? input.mine : input.opp,
+    );
     const skill = action.skillId
       ? sheet.skills.find((candidate) => candidate.id === action.skillId)
       : null;
     const actionName = skill?.name ?? (
       action.kind === "basic_attack"
-        ? sheet.basicAttack?.name ?? "基本アクション"
+        ? sheet.basicAttack.name
         : action.kind === "defend"
           ? "態勢を整える"
           : action.kind === "rest"
@@ -4172,7 +4188,7 @@ function buildNarrationActionBeats(input: {
     );
     const description = skill?.description ?? (
       action.kind === "basic_attack"
-        ? sheet.basicAttack?.description ?? "そのキャラクターらしい基本行動。"
+        ? sheet.basicAttack.description
         : actionName
     );
     const policies = action.actorSide === "a"
@@ -4634,11 +4650,13 @@ async function advanceTurnWithLease(input: {
   if (!state.policiesB) state.policiesB = [];
   if (!state.selectedPolicyIdsB) state.selectedPolicyIdsB = [];
 
-  const mine = state.assetManifest?.characters.a.snapshot ??
+  const mineSource = state.assetManifest?.characters.a.snapshot ??
     await charRepo.getSheetIncludingDeleted(meta.side_a_character_id);
-  const opp = state.assetManifest?.characters.b.snapshot ??
+  const oppSource = state.assetManifest?.characters.b.snapshot ??
     await charRepo.getSheetIncludingDeleted(meta.side_b_character_id);
-  if (!mine || !opp) throw new Error("CHARACTER_MISSING");
+  if (!mineSource || !oppSource) throw new Error("CHARACTER_MISSING");
+  const mine = requireCombatReadyCharacterSheet(mineSource);
+  const opp = requireCombatReadyCharacterSheet(oppSource);
   const dialoguePipeline = state.dialoguePipelineSnapshot
     ? {
         ...state.dialoguePipelineSnapshot,

@@ -1,10 +1,11 @@
-import type { CharacterSheet } from "@kshiai/shared";
+import type { CharacterSheet, CombatReadyCharacterSheet } from "@kshiai/shared";
 import {
   CharacterSheetSchema,
   defaultRecord,
   ensureRecord,
   ensureRecordOverall,
-  ensureCharacterCombatProperties,
+  hydrateLegacyCharacterCombatProperties,
+  requireCombatReadyCharacterSheet,
   ensureCharacterIdentityProperties,
   summarizeRatingPopulation,
   toPublicCharacter,
@@ -50,10 +51,12 @@ async function reviewMarkForCharacter(characterId: string, ownerUserId: string) 
   return reviewStateFromAttempt(latest);
 }
 
-function parseSheet(json: unknown): CharacterSheet {
+function parseSheet(json: unknown): CombatReadyCharacterSheet {
   const value = typeof json === "string" ? JSON.parse(json) : json;
-  const raw = ensureCharacterIdentityProperties(
-    ensureCharacterCombatProperties(CharacterSheetSchema.parse(value)),
+  const raw = requireCombatReadyCharacterSheet(
+    ensureCharacterIdentityProperties(
+      hydrateLegacyCharacterCombatProperties(CharacterSheetSchema.parse(value)),
+    ),
   );
   if (!raw.record) {
     return { ...raw, record: defaultRecord() };
@@ -214,7 +217,10 @@ export async function listSheetsMissingIdentity(): Promise<CharacterSheet[]> {
     .filter((row) => {
       const value = (typeof row.sheet_json === "string"
         ? JSON.parse(row.sheet_json)
-        : row.sheet_json) as Record<string, unknown>;
+        : row.sheet_json);
+      if (!value || typeof value !== "object" || !("identity" in value)) {
+        return true;
+      }
       return value.identity === undefined || value.identity === null;
     })
     .map((row) => parseSheet(row.sheet_json));
@@ -448,13 +454,15 @@ export async function canViewCharacter(
   return canUserAccessOwner(viewerUserId, sheet.ownerUserId);
 }
 
-export async function getSheet(id: string): Promise<CharacterSheet | null> {
+export async function getSheet(id: string): Promise<CombatReadyCharacterSheet | null> {
   const sheet = await getSheetIncludingDeleted(id);
   if (!sheet || sheet.deletedAt) return null;
   return sheet;
 }
 
-export async function getSheetIncludingDeleted(id: string): Promise<CharacterSheet | null> {
+export async function getSheetIncludingDeleted(
+  id: string,
+): Promise<CombatReadyCharacterSheet | null> {
   const { rows } = await query<{ sheet_json: unknown }>(
     `SELECT sheet_json FROM characters WHERE id = $1`,
     [id],
@@ -465,12 +473,10 @@ export async function getSheetIncludingDeleted(id: string): Promise<CharacterShe
 }
 
 export async function saveSheet(sheet: CharacterSheet): Promise<void> {
-  const withRecord: CharacterSheet = {
-    ...ensureCharacterIdentityProperties(
-      ensureCharacterCombatProperties(sheet),
-    ),
+  const withRecord = requireCombatReadyCharacterSheet({
+    ...ensureCharacterIdentityProperties(requireCombatReadyCharacterSheet(sheet)),
     record: sheet.record ?? defaultRecord(),
-  };
+  });
   const json = JSON.stringify(withRecord);
   await withTransaction(async (connection) => {
     const stored = await connection.query<{ id: string }>(

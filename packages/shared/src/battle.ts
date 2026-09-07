@@ -1,10 +1,12 @@
 import { z } from "zod";
 import { NarrativeBlockSchema, type NarrativeBlock } from "./narrative.js";
 import {
+  CombatReadyCharacterSheetSchema,
   CharacterSheetSchema,
   ParamKeySchema,
   ParametersSchema,
-  type CharacterSheet,
+  hydrateLegacyCharacterCombatProperties,
+  type CombatReadyCharacterSheet,
   type ParamKey,
 } from "./character.js";
 import {
@@ -1959,11 +1961,11 @@ export type BattleTurnEngineContinuation = z.infer<
  * asset generation is archived or hidden from ordinary editors.
  */
 export interface BattleAssetManifest {
-  schemaVersion: 1;
+  schemaVersion: 2;
   boundAt: string;
   characters: {
-    a: { assetId: string; generationId: string; contentDigest: string; snapshot: CharacterSheet; compilerInputsV2?: CharacterBattleCompilerInputsV2 };
-    b: { assetId: string; generationId: string; contentDigest: string; snapshot: CharacterSheet; compilerInputsV2?: CharacterBattleCompilerInputsV2 };
+    a: BattleCharacterAssetBinding;
+    b: BattleCharacterAssetBinding;
   };
   narrationStyle: {
     assetId: string;
@@ -1999,6 +2001,31 @@ export interface BattleAssetManifest {
   };
 }
 
+export const BattleBasicAttackSourceSchema = z.discriminatedUnion("kind", [
+  z.object({
+    kind: z.literal("character_generation_v2"),
+    generationId: z.string().min(1),
+    definitionPath: z.literal("capabilities.basicAction"),
+  }).strict(),
+  z.object({
+    kind: z.enum(["legacy_snapshot", "legacy_default"]),
+    generationId: z.string().min(1),
+    sourceManifestVersion: z.literal(1),
+  }).strict(),
+]);
+export type BattleBasicAttackSource = z.infer<
+  typeof BattleBasicAttackSourceSchema
+>;
+
+export type BattleCharacterAssetBinding = {
+  assetId: string;
+  generationId: string;
+  contentDigest: string;
+  snapshot: CombatReadyCharacterSheet;
+  basicAttackSource: BattleBasicAttackSource;
+  compilerInputsV2?: CharacterBattleCompilerInputsV2;
+};
+
 export const BattleDialoguePipelineBindingSchema = z.object({
   generationId: z.string().min(1),
   contentDigest: z.string().regex(/^[a-f0-9]{64}$/).optional().default("0".repeat(64)),
@@ -2028,29 +2055,33 @@ export const BattleDialoguePipelineBindingSchema = z.object({
   }
 });
 
-export const BattleAssetManifestSchema: z.ZodType<
-  BattleAssetManifest,
-  z.ZodTypeDef,
-  unknown
-> = z.object({
-  schemaVersion: z.literal(1),
+export const BattleCharacterAssetBindingV2Schema = z.object({
+  assetId: z.string(),
+  generationId: z.string().min(1),
+  contentDigest: z.string().regex(/^[a-f0-9]{64}$/).optional().default("0".repeat(64)),
+  snapshot: CombatReadyCharacterSheetSchema,
+  basicAttackSource: BattleBasicAttackSourceSchema,
+  compilerInputsV2: CharacterBattleCompilerInputsV2Schema.optional(),
+}).strict().superRefine((binding, context) => {
+  if (binding.basicAttackSource.generationId !== binding.generationId) {
+    context.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["basicAttackSource", "generationId"],
+      message: "basic attack source must match the bound character generation",
+    });
+  }
+});
+
+const LegacyBattleCharacterAssetBindingV1Schema = z.object({
+  assetId: z.string(),
+  generationId: z.string().min(1),
+  contentDigest: z.string().regex(/^[a-f0-9]{64}$/).optional().default("0".repeat(64)),
+  snapshot: CharacterSheetSchema,
+  compilerInputsV2: CharacterBattleCompilerInputsV2Schema.optional(),
+}).strict();
+
+const BattleAssetManifestSharedSchema = z.object({
   boundAt: z.string(),
-  characters: z.object({
-    a: z.object({
-      assetId: z.string(),
-      generationId: z.string().min(1),
-      contentDigest: z.string().regex(/^[a-f0-9]{64}$/).optional().default("0".repeat(64)),
-      snapshot: CharacterSheetSchema,
-      compilerInputsV2: CharacterBattleCompilerInputsV2Schema.optional(),
-    }).strict(),
-    b: z.object({
-      assetId: z.string(),
-      generationId: z.string().min(1),
-      contentDigest: z.string().regex(/^[a-f0-9]{64}$/).optional().default("0".repeat(64)),
-      snapshot: CharacterSheetSchema,
-      compilerInputsV2: CharacterBattleCompilerInputsV2Schema.optional(),
-    }).strict(),
-  }).strict(),
   narrationStyle: z.object({
     assetId: z.string(),
     generationId: z.string().min(1),
@@ -2076,6 +2107,55 @@ export const BattleAssetManifestSchema: z.ZodType<
     narrationStyleRules: z.string().min(1).optional(),
   }).strict(),
 }).strict();
+
+const BattleAssetManifestV2Schema = BattleAssetManifestSharedSchema.extend({
+  schemaVersion: z.literal(2),
+  characters: z.object({
+    a: BattleCharacterAssetBindingV2Schema,
+    b: BattleCharacterAssetBindingV2Schema,
+  }).strict(),
+}).strict();
+
+const LegacyBattleAssetManifestV1Schema = BattleAssetManifestSharedSchema.extend({
+  schemaVersion: z.literal(1),
+  characters: z.object({
+    a: LegacyBattleCharacterAssetBindingV1Schema,
+    b: LegacyBattleCharacterAssetBindingV1Schema,
+  }).strict(),
+}).strict();
+
+export function upgradeLegacyBattleCharacterBindingV1(
+  binding: z.infer<typeof LegacyBattleCharacterAssetBindingV1Schema>,
+): BattleCharacterAssetBinding {
+  const defaulted = binding.snapshot.basicAttack === undefined;
+  return BattleCharacterAssetBindingV2Schema.parse({
+    ...binding,
+    snapshot: hydrateLegacyCharacterCombatProperties(binding.snapshot),
+    basicAttackSource: {
+      kind: defaulted ? "legacy_default" : "legacy_snapshot",
+      generationId: binding.generationId,
+      sourceManifestVersion: 1,
+    },
+  });
+}
+
+export const BattleAssetManifestSchema: z.ZodType<
+  BattleAssetManifest,
+  z.ZodTypeDef,
+  unknown
+> = z.union([
+  BattleAssetManifestV2Schema,
+  LegacyBattleAssetManifestV1Schema,
+]).transform((manifest) => manifest.schemaVersion === 2
+  ? manifest
+  : BattleAssetManifestV2Schema.parse({
+      ...manifest,
+      schemaVersion: 2,
+      characters: {
+        a: upgradeLegacyBattleCharacterBindingV1(manifest.characters.a),
+        b: upgradeLegacyBattleCharacterBindingV1(manifest.characters.b),
+      },
+    }));
 
 export type BattleSceneBeat = {
   schemaVersion: 1;

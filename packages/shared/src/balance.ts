@@ -6,7 +6,7 @@ import type {
   Parameters,
   Skill,
 } from "./character.js";
-import { defaultBasicAttack, defaultParameters } from "./character.js";
+import { defaultParameters } from "./character.js";
 
 /** Soft ranges so no sheet can hard-stomp every matchup. */
 const PARAM_SOFT: Record<string, { min: number; max: number; soft: number }> = {
@@ -101,9 +101,8 @@ export function balanceParameterDelta<T extends ParameterDelta>(effect: T): T {
 }
 
 export function balanceBasicAttack(
-  raw: BasicAttackProfile | null | undefined,
+  attack: BasicAttackProfile,
 ): BasicAttackProfile {
-  const attack = raw ?? defaultBasicAttack();
   const targetsMaximum = ["maxHp", "maxMp", "maxStamina"].includes(
     attack.targetParameter,
   );
@@ -158,6 +157,7 @@ export function balanceCharacterCombatFields<
     narrativeBlurb?: string;
   },
 >(sheet: T): T {
+  if (!sheet.basicAttack) throw new Error("CHARACTER_BASIC_ATTACK_REQUIRED");
   const parameters = balanceParameters(sheet.parameters);
   const skills = (sheet.skills ?? []).map(balanceSkill);
   const weapon = balanceEquipment(sheet.weapon ?? null);

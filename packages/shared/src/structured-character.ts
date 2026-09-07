@@ -2,13 +2,14 @@ import { z } from "zod";
 import {
   ActionFeasibilityConstraintsSchema,
   CharacterSheetSchema,
+  CombatReadyCharacterSheetSchema,
   CombatFlagsSchema,
   ParamKeySchema,
   ParametersSchema,
-  defaultBasicAttack,
-  ensureCharacterCombatProperties,
+  hydrateLegacyCharacterCombatProperties,
   ensureCharacterIdentityProperties,
   type CharacterSheet,
+  type CombatReadyCharacterSheet,
   type Equipment,
   type Skill,
 } from "./character.js";
@@ -1172,8 +1173,8 @@ function convertLegacyCharacterSheetToDefinitionV2(
   legacy: CharacterSheet,
   deferUnstructuredActionNorms: boolean,
 ): CharacterDefinitionV2 {
-  const sheet = ensureCharacterIdentityProperties(
-    ensureCharacterCombatProperties(CharacterSheetSchema.parse(legacy)),
+  const sheet = hydrateLegacyCharacterCombatProperties(
+    ensureCharacterIdentityProperties(CharacterSheetSchema.parse(legacy)),
   );
   const legacyPrinciples = sheet.decisionProfile?.principles ?? [];
   if (legacyPrinciples.length > 0 && !deferUnstructuredActionNorms) {
@@ -1181,7 +1182,7 @@ function convertLegacyCharacterSheetToDefinitionV2(
       `UNSTRUCTURED_LEGACY_ACTION_NORMS:${legacyPrinciples.map((principle) => principle.id).join(",")}`,
     );
   }
-  const basic = sheet.basicAttack ?? defaultBasicAttack();
+  const basic = sheet.basicAttack;
   const inventory = [
     ...(sheet.weapon ? [itemFromLegacy("weapon", sheet.weapon)] : []),
     ...(sheet.armor ? [itemFromLegacy("armor", sheet.armor)] : []),
@@ -1396,7 +1397,7 @@ export function characterDefinitionV2ToLegacySheet(input: {
   operational?: Partial<Pick<CharacterSheet,
     "visibility" | "record" | "recordOverall" | "improvementMemo" |
     "opponentMemories" | "deletedAt" | "revisionSnapshot">>;
-}): CharacterSheet {
+}): CombatReadyCharacterSheet {
   const { definition } = input;
   const nameValues = (kind: "real_name" | "nickname" | "self_reference" | "epithet") =>
     definition.identity.names.filter((name) => name.kind === kind).map((name) => name.value);
@@ -1425,7 +1426,7 @@ export function characterDefinitionV2ToLegacySheet(input: {
     constraints: action.mechanics.constraints,
   });
   const basic = definition.capabilities.basicAction;
-  return CharacterSheetSchema.parse({
+  return CombatReadyCharacterSheetSchema.parse({
     id: input.characterId,
     ownerUserId: input.ownerUserId,
     displayName: definition.identity.displayName,

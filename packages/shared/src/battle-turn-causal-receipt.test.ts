@@ -5,7 +5,8 @@ import {
   buildNarrationCausalProjection,
   type BuildBattleTurnCausalReceiptInput,
 } from "./battle-turn-causal-receipt.js";
-import { createBattleState, resolveTurn } from "./battle-engine.js";
+import { createBattleState } from "./battle-engine.js";
+import { resolveTurn } from "./battle-engine-test-helper.js";
 import { defaultParameters, type CharacterSheet } from "./character.js";
 import {
   applyTurnSemanticPatch,

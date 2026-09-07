@@ -5,8 +5,9 @@ import {
   captureRevisionSnapshot,
   coalesceNonEmptyList,
   defaultParameters,
-  ensureCharacterCombatProperties,
+  hydrateLegacyCharacterCombatProperties,
   ensureCharacterIdentityProperties,
+  requireCombatReadyCharacterSheet,
   restoreRevisionSnapshot,
   toggleCharacterPortrait,
   toPublicCharacter,
@@ -45,6 +46,14 @@ describe("portrait toggle", () => {
       },
       traits: [],
       parameters: defaultParameters(),
+      basicAttack: {
+        name: "固定基本行動",
+        description: "固定された基本行動。",
+        targetParameter: "hp",
+        scalingParameter: "atk",
+        resistanceParameter: "def",
+        power: 0.75,
+      },
       skills: [],
       weapon: null,
       armor: null,
@@ -132,6 +141,14 @@ describe("character combat extensions", () => {
       appearance: { summary: "test", visualPrompt: "test" },
       traits: [],
       parameters: defaultParameters(),
+      basicAttack: {
+        name: "固定基本行動",
+        description: "固定された基本行動。",
+        targetParameter: "hp",
+        scalingParameter: "atk",
+        resistanceParameter: "def",
+        power: 0.75,
+      },
       skills: [],
       weapon: null,
       armor: null,
@@ -148,7 +165,9 @@ describe("character combat extensions", () => {
       },
       revisionSnapshot: null,
     });
-    const snapshot = toBattleCharacterSnapshot(sheet);
+    const snapshot = toBattleCharacterSnapshot(
+      requireCombatReadyCharacterSheet(sheet),
+    );
     assert.equal(snapshot.visibility, undefined);
     assert.equal(snapshot.record, undefined);
     assert.equal(snapshot.opponentMemories, undefined);
@@ -188,7 +207,7 @@ describe("character combat extensions", () => {
     assert.equal(sheet.basicAttack, undefined);
     assert.equal(sheet.identity, undefined);
     assert.equal(sheet.skills[0]?.effects, undefined);
-    const hydrated = ensureCharacterCombatProperties(sheet);
+    const hydrated = hydrateLegacyCharacterCombatProperties(sheet);
     assert.equal(hydrated.basicAttack?.name, "基本アクション");
     assert.deepEqual(hydrated.skills[0]?.effects, []);
     assert.deepEqual(ensureCharacterIdentityProperties(sheet).identity, {

@@ -5,12 +5,12 @@ import {
   defaultParameters,
   deriveBattleProfileStateOverrides,
   deriveBattleSceneStateFacts,
-  resolveTurn,
   type BattleState,
   type CharacterSheet,
   type FreeActionCanonicalRoot,
   type LatentAffordanceProjection,
 } from "@kshiai/shared";
+import { resolveTurn } from "./battle-engine-test-helper.js";
 import {
   commitFreeActionAdjudications,
   prepareFreeActionsForTurn,

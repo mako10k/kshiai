@@ -5,6 +5,7 @@ import { join } from "node:path";
 import { after, before, describe, it } from "node:test";
 import {
   defaultParameters,
+  defaultBasicAttack,
   type CharacterSheet,
 } from "@kshiai/shared";
 import type {
@@ -91,6 +92,7 @@ function sheet(input: {
     },
     traits: ["慎重"],
     parameters: defaultParameters(),
+    basicAttack: defaultBasicAttack(),
     skills: [],
     weapon: null,
     armor: null,

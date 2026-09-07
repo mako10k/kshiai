@@ -152,7 +152,7 @@ task FPR_P1_COMPATIBILITY_BOUNDARIES P1_ACTION_READY -> P1_READY:
   title "Separate projection seed and basic-attack compatibility boundaries"
   description "For points 14, 18, and 19, narrow the recoverable minimal-perception trigger, distinguish absent legacy semantic seeds from present invalid seeds, and permit deterministic basic attack only at a declared legacy boundary. Reject invalid modern state and retain fallback or generation provenance needed to identify the executed path."
   duration 4p
-  status active
+  status done
   owner "codex"
   source "docs/fallback-point-inventory-2026-09-07.md"
   requires:
@@ -385,3 +385,9 @@ work_event WE-FPR-P1-COMPATIBILITY-START-20260907:
   kind start
   occurred_at 2026-09-07T15:38:30+09:00
   planned_value 4p
+
+work_event WE-FPR-P1-COMPATIBILITY-FINISH-20260907:
+  model 1
+  task FPR_P1_COMPATIBILITY_BOUNDARIES
+  kind finish
+  occurred_at 2026-09-07T18:34:49+09:00

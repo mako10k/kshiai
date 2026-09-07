@@ -1,8 +1,8 @@
 import { z } from "zod";
 import {
   CharacterIdentitySchema,
-  defaultBasicAttack,
   defaultCharacterIdentity,
+  requireCombatReadyCharacterSheet,
   type CharacterSheet,
 } from "./character.js";
 import type { BattleWorldState, WorldPlacement } from "./battle-world.js";
@@ -111,7 +111,7 @@ export function buildCharacterSelfProfileAnchor(
   sheet: CharacterSheet,
   currentStateOverrides: readonly BattleProfileStateOverride[] = [],
 ): CharacterSelfProfileAnchor {
-  const basicAction = sheet.basicAttack ?? defaultBasicAttack();
+  const basicAction = requireCombatReadyCharacterSheet(sheet).basicAttack;
   return deepFreezeProfile(CharacterSelfProfileAnchorSchema.parse({
     schemaVersion: 1,
     displayName: sheet.displayName,

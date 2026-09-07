@@ -6,6 +6,7 @@ import { after, describe, it } from "node:test";
 import {
   CHARACTER_FOCUS_POLICY_V1,
   defaultParameters,
+  defaultBasicAttack,
   type CharacterSheet,
 } from "@kshiai/shared";
 
@@ -39,6 +40,7 @@ function sheet(id: string, displayName: string): CharacterSheet {
     appearance: { summary: displayName, visualPrompt: "test" },
     traits: [],
     parameters: defaultParameters(),
+    basicAttack: defaultBasicAttack(),
     skills: [],
     weapon: null,
     armor: null,

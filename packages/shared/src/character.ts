@@ -284,10 +284,18 @@ export const CharacterSheetSchema = z.object({
   revisionSnapshot: CharacterRevisionSnapshotSchema.optional().nullable(),
 });
 export type CharacterSheet = z.infer<typeof CharacterSheetSchema>;
+export const CombatReadyCharacterSheetSchema = CharacterSheetSchema.extend({
+  basicAttack: BasicAttackProfileSchema,
+});
+export type CombatReadyCharacterSheet = z.infer<
+  typeof CombatReadyCharacterSheetSchema
+>;
 export type { CharacterImprovementMemo };
 
 /** Character fields frozen as authoritative battle input by ADR-0003. */
-export function toBattleCharacterSnapshot(sheet: CharacterSheet): CharacterSheet {
+export function toBattleCharacterSnapshot(
+  sheet: CombatReadyCharacterSheet,
+): CombatReadyCharacterSheet {
   const {
     visibility: _visibility,
     deletedAt: _deletedAt,
@@ -298,7 +306,7 @@ export function toBattleCharacterSnapshot(sheet: CharacterSheet): CharacterSheet
     revisionSnapshot: _revisionSnapshot,
     ...authoritative
   } = sheet;
-  return CharacterSheetSchema.parse({
+  return CombatReadyCharacterSheetSchema.parse({
     ...authoritative,
     // Repository edit clocks are not battle behavior and would otherwise make
     // owner-memory or record-only writes create a new battle generation.
@@ -311,7 +319,7 @@ export function captureRevisionSnapshot(
   sheet: CharacterSheet,
   label = "調整前",
 ): CharacterRevisionSnapshot {
-  const hydrated = ensureCharacterCombatProperties(
+  const hydrated = hydrateLegacyCharacterCombatProperties(
     ensureCharacterIdentityProperties(sheet),
   );
   return CharacterRevisionSnapshotSchema.parse({
@@ -359,7 +367,7 @@ export function restoreRevisionSnapshot(
   sheet: CharacterSheet,
   snapshot: CharacterRevisionSnapshot,
 ): CharacterSheet {
-  return ensureCharacterCombatProperties(
+  return hydrateLegacyCharacterCombatProperties(
     ensureCharacterIdentityProperties({
       ...sheet,
       displayName: snapshot.displayName,
@@ -381,10 +389,16 @@ export function restoreRevisionSnapshot(
   );
 }
 
-/** Fill combat fields introduced after a character was originally saved. */
-export function ensureCharacterCombatProperties(
+/**
+ * Upgrade a persisted legacy sheet at an explicitly named compatibility
+ * boundary: repository read, legacy conversion, legacy revision restore, or
+ * legacy public projection.
+ * Current authoring and battle code must use CombatReadyCharacterSheetSchema
+ * instead of calling this function to conceal a missing basic action.
+ */
+export function hydrateLegacyCharacterCombatProperties(
   sheet: CharacterSheet,
-): CharacterSheet {
+): CombatReadyCharacterSheet {
   const equipment = (value: Equipment | null): Equipment | null =>
     value ? { ...value, effects: value.effects ?? [] } : null;
   return {
@@ -397,6 +411,13 @@ export function ensureCharacterCombatProperties(
     weapon: equipment(sheet.weapon),
     armor: equipment(sheet.armor),
   };
+}
+
+/** Validate current state without introducing a compatibility default. */
+export function requireCombatReadyCharacterSheet(
+  sheet: CharacterSheet,
+): CombatReadyCharacterSheet {
+  return CombatReadyCharacterSheetSchema.parse(sheet);
 }
 
 /** Fill private profile fields introduced after a character was saved. */
@@ -536,9 +557,8 @@ export function toPublicCharacter(
   ratingDisplay?: RatingDisplayContext,
   owner?: { id: string; username: string; displayName: string } | null,
 ): CharacterPublic {
-  sheet = ensureCharacterIdentityProperties(
-    ensureCharacterCombatProperties(sheet),
-  );
+  const combatReady = hydrateLegacyCharacterCombatProperties(sheet);
+  sheet = ensureCharacterIdentityProperties(combatReady);
   const record = ensureRecord(sheet);
   const isOwner = Boolean(viewerUserId && viewerUserId === sheet.ownerUserId);
   return {
@@ -577,9 +597,8 @@ export function toPublicCharacter(
         : undefined,
     },
     traits: sheet.traits,
-    basicAttackName: sheet.basicAttack?.name ?? defaultBasicAttack().name,
-    basicAttackDescription:
-      sheet.basicAttack?.description ?? defaultBasicAttack().description,
+    basicAttackName: combatReady.basicAttack.name,
+    basicAttackDescription: combatReady.basicAttack.description,
     skillNames: sheet.skills.map((s) => s.name),
     skillSummaries: sheet.skills.map((skill) => ({
       name: skill.name,

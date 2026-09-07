@@ -3,15 +3,16 @@ import { describe, it } from "node:test";
 import {
   createBattleState,
   defaultParameters,
+  defaultBasicAttack,
   BattlefieldDefinitionV2Schema,
   compileBattlefieldInstanceV2,
   legacyBattlefieldPresetToDefinitionV2,
   normalizeSupervisor,
-  resolveTurn,
   type BattlefieldInstance,
   type BattlefieldPreset,
   type CharacterSheet,
 } from "@kshiai/shared";
+import { resolveTurn } from "./battle-engine-test-helper.js";
 import { MockLlmProvider } from "../llm/mock.js";
 import {
   buildEnvironmentProcessProposal,
@@ -31,6 +32,7 @@ function sheet(id: string, name: string): CharacterSheet {
     appearance: { summary: `${name}の外見`, visualPrompt: "test" },
     traits: [],
     parameters: defaultParameters(),
+    basicAttack: defaultBasicAttack(),
     skills: [],
     weapon: null,
     armor: null,

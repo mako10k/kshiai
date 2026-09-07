@@ -6,6 +6,7 @@ import { after, before, describe, it } from "node:test";
 import {
   BATTLEFIELD_INSTANCE_COMPILER_V2,
   defaultParameters,
+  defaultBasicAttack,
   type BattlefieldImageBriefV2,
   type BattlefieldInstance,
   type BattlefieldPreset,
@@ -117,6 +118,7 @@ function sheet(input: {
     },
     traits: ["慎重"],
     parameters: defaultParameters(),
+    basicAttack: defaultBasicAttack(),
     skills: [],
     weapon: null,
     armor: null,

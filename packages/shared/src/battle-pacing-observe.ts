@@ -4,7 +4,11 @@ import {
   resolveTurn,
 } from "./battle-engine.js";
 import type { BattleState } from "./battle.js";
-import { defaultParameters, type CharacterSheet } from "./character.js";
+import {
+  defaultBasicAttack,
+  defaultParameters,
+  type CombatReadyCharacterSheet,
+} from "./character.js";
 import type { BattlePacingPolicy } from "./battle-pacing.js";
 
 export type BattlePacingMeasurement = {
@@ -39,7 +43,13 @@ function seeded(seed: number): () => number {
   };
 }
 
-function fixtureSheet(id: string, hp: number, atk: number, def: number, spd: number): CharacterSheet {
+function fixtureSheet(
+  id: string,
+  hp: number,
+  atk: number,
+  def: number,
+  spd: number,
+): CombatReadyCharacterSheet {
   const timestamp = "2026-08-12T00:00:00.000Z";
   return {
     id,
@@ -51,6 +61,7 @@ function fixtureSheet(id: string, hp: number, atk: number, def: number, spd: num
     appearance: { summary: "measurement fixture", visualPrompt: "measurement fixture" },
     traits: [],
     parameters: defaultParameters({ hp, maxHp: hp, atk, def, spd }),
+    basicAttack: defaultBasicAttack(),
     skills: [{
       id: "finisher",
       name: "測定用必殺技",
@@ -170,12 +181,16 @@ export function measureBattlePacing(input: {
         state,
         sideASkills: a.skills,
         sideBSkills: b.skills,
+        sideABasicAttack: a.basicAttack,
+        sideBBasicAttack: b.basicAttack,
         tieDrawSample: random(),
       });
       const resolved = resolveTurn({
         state,
         sideASkills: a.skills,
         sideBSkills: b.skills,
+        sideABasicAttack: a.basicAttack,
+        sideBBasicAttack: b.basicAttack,
         temporalResolutionOverride: initiative?.temporalResolution,
       });
       const hpAfter = (resolved.state.sideA.parameters.hp ?? 0) +

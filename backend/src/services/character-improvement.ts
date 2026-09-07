@@ -1,6 +1,7 @@
 import {
   ensureImprovementMemo,
   getImprovementAnalysisEligibility,
+  requireCombatReadyCharacterSheet,
   type CharacterImprovementMemo,
   type CharacterImprovementPublic,
   type CharacterSheet,
@@ -57,6 +58,7 @@ export async function analyzeCharacterImprovement(input: {
   assistantMessage: string;
 }> {
   const { sheet, llm } = input;
+  const combatReadySheet = requireCombatReadyCharacterSheet(sheet);
   const finishedBattles = await battleRepo.countFinishedBattlesForCharacter(sheet.id);
   const currentMemo = ensureImprovementMemo(sheet.improvementMemo);
   const eligibility = getImprovementAnalysisEligibility(
@@ -82,7 +84,7 @@ export async function analyzeCharacterImprovement(input: {
       traits: sheet.traits,
       narrativeBlurb: sheet.narrativeBlurb,
       skillNames: sheet.skills.map((s) => s.name),
-      basicAttackName: sheet.basicAttack?.name ?? "基本アクション",
+      basicAttackName: combatReadySheet.basicAttack.name,
       weaponName: sheet.weapon?.name ?? null,
       armorName: sheet.armor?.name ?? null,
     },
@@ -119,6 +121,7 @@ export async function generateCharacterImprovementPrompt(input: {
   llm: LlmProvider;
 }): Promise<{ prompt: string; assistantMessage: string }> {
   const { sheet, llm } = input;
+  const combatReadySheet = requireCombatReadyCharacterSheet(sheet);
   const memo = ensureImprovementMemo(sheet.improvementMemo);
   if (memo.strengths.length === 0 && memo.improvements.length === 0) {
     const err = new Error(
@@ -134,7 +137,7 @@ export async function generateCharacterImprovementPrompt(input: {
       traits: sheet.traits,
       narrativeBlurb: sheet.narrativeBlurb,
       skillNames: sheet.skills.map((s) => s.name),
-      basicAttackName: sheet.basicAttack?.name ?? "基本アクション",
+      basicAttackName: combatReadySheet.basicAttack.name,
       weaponName: sheet.weapon?.name ?? null,
       armorName: sheet.armor?.name ?? null,
     },
