@@ -21,7 +21,6 @@ import {
   explainActionResolutionReason,
   spacingForConstraints,
   readBattleWorldPair,
-  buildMinimalObserverPerception,
   buildCommittedUtteranceEvents,
   buildUtterancePerceptionEvidence,
   buildCommittedManifestationNarrativeCuesV2,
@@ -239,6 +238,13 @@ import {
 const FAST_LLM_ENVELOPE_TIMEOUT_MS = 100_000;
 const SHORT_LLM_ENVELOPE_TIMEOUT_MS = 70_000;
 const CHARACTER_DEFINITION_RULE_POLICY_V2 = "character-definition-rules-v2";
+
+class ObserverPerceptionProjectionError extends Error {
+  constructor(message: string) {
+    super(`OBSERVER_PERCEPTION_PROJECTION_INVALID:${message}`);
+    this.name = "ObserverPerceptionProjectionError";
+  }
+}
 
 type CharacterDecisionRuleMetadata = {
   actionNorm: CharacterActionNormResolutionReceiptV2 | null;
@@ -3696,35 +3702,9 @@ export async function reconcileSemanticState(input: {
         perceptionRegistryB: projectedB.registry,
       };
     } catch (error) {
-      console.warn(
-        "[battle] observer perception projection fell back to engine cues",
-        error instanceof Error ? error.message : error,
+      throw new ObserverPerceptionProjectionError(
+        error instanceof Error ? error.message : String(error),
       );
-      const projectedA = buildMinimalObserverPerception({
-        ...projectionBase,
-        observerSide: "a",
-        reserveEvidence: reserveEvidenceA,
-        previousFrame: input.stateBeforeTurn.perceptionFrameA,
-        previousRegistry: input.stateBeforeTurn.perceptionRegistryA,
-        legacyCounterpartIdentified:
-          input.stateBeforeTurn.perceptionRegistryA === undefined,
-      });
-      const projectedB = buildMinimalObserverPerception({
-        ...projectionBase,
-        observerSide: "b",
-        reserveEvidence: reserveEvidenceB,
-        previousFrame: input.stateBeforeTurn.perceptionFrameB,
-        previousRegistry: input.stateBeforeTurn.perceptionRegistryB,
-        legacyCounterpartIdentified:
-          input.stateBeforeTurn.perceptionRegistryB === undefined,
-      });
-      return {
-        ...state,
-        perceptionFrameA: projectedA.frame,
-        perceptionFrameB: projectedB.frame,
-        perceptionRegistryA: projectedA.registry,
-        perceptionRegistryB: projectedB.registry,
-      };
     }
   };
   const commitObservationState = (
@@ -4082,6 +4062,7 @@ export async function reconcileSemanticState(input: {
     };
   } catch (error) {
     if (isProviderOperationAccountingError(error)) throw error;
+    if (error instanceof ObserverPerceptionProjectionError) throw error;
     console.warn(
       "[battle] semantic reconciliation skipped",
       error instanceof Error ? error.message : error,

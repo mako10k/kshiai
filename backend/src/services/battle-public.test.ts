@@ -877,7 +877,7 @@ describe("public battle semantic projection", () => {
     assert.equal(publicJson.includes("perceptionRegistry"), false);
   });
 
-  it("preserves previous registries when projection falls back to engine cues", async () => {
+  it("projects engine cues normally after invalid sensory evidence is rejected", async () => {
     const sideA = sheet("a", "A");
     const sideB = sheet("b", "B");
     const state = createBattleState({
@@ -918,7 +918,7 @@ describe("public battle semantic projection", () => {
         operations: [],
       },
       worldPatchStatus: "valid",
-      // Force sensory validation failure so projection still uses engine cues.
+      // Invalid provider evidence is removed before the normal projection.
       sensoryEvidenceStatus: "valid",
       sensoryEvidence: [{
         evidenceId: "evidence.bad",
@@ -985,6 +985,52 @@ describe("public battle semantic projection", () => {
     assert.equal(
       JSON.stringify(result.state.perceptionFrameA).includes("sourceSet"),
       false,
+    );
+  });
+
+  it("does not normalize an invalid prior perception registry", async () => {
+    const sideA = sheet("invalid-registry-a", "A");
+    const sideB = sheet("invalid-registry-b", "B");
+    const state = createBattleState({
+      id: "invalid-perception-registry",
+      sideA,
+      sideB,
+      turnLimit: 20,
+      prologuePending: false,
+    });
+    assert.ok(state.perceptionRegistryA);
+    state.perceptionRegistryA.nextContactSequence = 0;
+    const resolved = resolveTurn({
+      state,
+      playerAction: { actorSide: "a", kind: "basic_attack" },
+      sideASkills: [],
+      sideBSkills: [],
+    });
+    const llm = new MockLlmProvider();
+    llm.reconcileTurnSemanticState = async (input) => ({
+      patch: {
+        baseRevision: input.before.revision,
+        turn: input.turn,
+        sourceEventIds: [],
+        operations: [],
+      },
+      worldPatchStatus: "valid",
+      sensoryEvidenceStatus: "valid",
+      sensoryEvidence: [],
+    });
+
+    await assert.rejects(
+      reconcileSemanticState({
+        llm,
+        stateBeforeTurn: state,
+        resolvedState: resolved.state,
+        mine: sideA,
+        opp: sideB,
+        actions: resolved.actions,
+        events: resolved.events,
+        mechanicalEvidence: resolved.mechanicalEvidence,
+      }),
+      /OBSERVER_PERCEPTION_PROJECTION_INVALID:.*greater than 0/s,
     );
   });
 
