@@ -182,6 +182,7 @@ task FPR_LOCAL_VERIFY RETENTION_MATRIX_READY -> LOCAL_ACCEPTANCE_READY:
   title "Verify all twenty-one points and prepare exact integration evidence"
   description "Run focused suites, npm test, npm run typecheck, npm run build, and npm run adr:check when an ADR changed. Reconcile every inventory ID to implementation and tests, confirm P0 source correction separately from detection improvement, inspect privacy and immutable-snapshot boundaries, review the branch diff against main, and prepare a local handoff without marking existing WIP complete merely because tests pass."
   duration 2p
+  status done
   owner "codex"
   source "docs/fallback-point-inventory-2026-09-07.md"
   requires:
@@ -191,6 +192,7 @@ task FPR_APPROVE_PUSH LOCAL_ACCEPTANCE_READY -> PUSH_APPROVED:
   title "Approve synchronization of the exact reviewed branch"
   description "The owner reviews the local diff, validation evidence, commit identity, destination remote, and branch name, then explicitly approves or rejects that one push."
   duration 1p
+  status done
   owner "user"
   requires:
     OWNER 1
@@ -199,6 +201,7 @@ task FPR_PUSH_BRANCH PUSH_APPROVED -> BRANCH_SYNCHRONIZED:
   title "Commit synchronize and read back the exact branch"
   description "Create focused local commits without unrelated changes, push only the approved branch through the repository credential route, and independently read back the remote revision. Do not create a pull request in this task."
   duration 1p
+  status active
   owner "codex"
   requires:
     DEV 1
@@ -419,3 +422,36 @@ work_event WE-FPR-RETENTION-MATRIX-FINISH-20260907:
   task FPR_RETENTION_MATRIX
   kind finish
   occurred_at 2026-09-07T19:36:35+09:00
+
+work_event WE-FPR-LOCAL-VERIFY-START-20260907:
+  model 1
+  task FPR_LOCAL_VERIFY
+  kind start
+  occurred_at 2026-09-07T19:45:17+09:00
+  planned_value 2p
+
+work_event WE-FPR-LOCAL-VERIFY-FINISH-20260907:
+  model 1
+  task FPR_LOCAL_VERIFY
+  kind finish
+  occurred_at 2026-09-07T19:55:16+09:00
+
+work_event WE-FPR-APPROVE-PUSH-START-20260907:
+  model 1
+  task FPR_APPROVE_PUSH
+  kind start
+  occurred_at 2026-09-07T20:01:37+09:00
+  planned_value 1p
+
+work_event WE-FPR-APPROVE-PUSH-FINISH-20260907:
+  model 1
+  task FPR_APPROVE_PUSH
+  kind finish
+  occurred_at 2026-09-07T20:01:38+09:00
+
+work_event WE-FPR-PUSH-BRANCH-START-20260907:
+  model 1
+  task FPR_PUSH_BRANCH
+  kind start
+  occurred_at 2026-09-07T20:01:39+09:00
+  planned_value 1p
