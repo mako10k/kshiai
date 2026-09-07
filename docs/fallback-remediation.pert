@@ -102,6 +102,7 @@ task FPR_ACCEPT_CONTRACT INVENTORY_FIXED -> REMEDIATION_CONTRACT_ACCEPTED:
   title "Accept the remediation taxonomy and architectural boundary"
   description "Review the 21-point inventory, P0 through P3 ordering, failure subtypes, compatibility boundaries, receipt fields, immutable-generation rule, and completion evidence. Identify any genuinely new architectural or persistence decision and require an Accepted ADR before its dependent implementation; do not create an ADR when accepted requirements already determine the behavior."
   duration 1p
+  status active
   owner "user"
   source "docs/fallback-point-inventory-2026-09-07.md"
   requires:
@@ -307,3 +308,10 @@ task FPR_POST_REMEDIATION_OBSERVE ASSET_REVISIONS_READY -> FALLBACK_REMEDIATION_
   owner "codex"
   requires:
     DEV 1
+
+work_event WE-FPR-ACCEPT-CONTRACT-START-20260907:
+  model 1
+  task FPR_ACCEPT_CONTRACT
+  kind start
+  occurred_at 2026-09-07T12:59:23+09:00
+  planned_value 1p
