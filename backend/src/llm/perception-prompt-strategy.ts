@@ -8,6 +8,7 @@ import {
   type TurnEvent,
   type TurnSemanticPatch,
 } from "@kshiai/shared";
+import type { ResponseFormatJSONSchema } from "openai/resources/shared";
 
 // The topology fixture matrix remains v10: this slice adds fields to the same
 // reviewed single combined call without changing the combined/split topology.
@@ -25,12 +26,10 @@ export const PERCEPTION_PROMPT_QUALITY_FLOORS = {
 
 export type PerceptionPromptTopology = "combined" | "split";
 
-export type PerceptionPromptResponseFormat = {
-  type: "json_schema";
-  json_schema: {
-    name: string;
+export type PerceptionPromptResponseFormat = ResponseFormatJSONSchema & {
+  json_schema: ResponseFormatJSONSchema["json_schema"] & {
     strict: true;
-    schema: Record<string, unknown>;
+    schema: NonNullable<ResponseFormatJSONSchema["json_schema"]["schema"]>;
   };
 };
 

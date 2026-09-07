@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { NarrativeBlockSchema } from "./narrative.js";
+import { NarrativeBlockSchema, type NarrativeBlock } from "./narrative.js";
 import {
   CharacterSheetSchema,
   ParamKeySchema,
@@ -21,15 +21,22 @@ import {
   BattleSemanticStateSchema,
   SemanticObservationStateSchema,
   TurnSemanticPatchSchema,
+  type BattleSemanticState,
+  type SemanticObservationState,
+  type TurnSemanticPatch,
 } from "./semantic-state.js";
 import {
   BattleObjectStatePublicSchema,
   BattleWorldStateSchema,
   BattleWorldTransitionSchema,
   type BattleWorldState,
+  type BattleWorldTransition,
 } from "./battle-world.js";
-import { FreeActionResolutionReceiptSchema } from "./free-action.js";
-import { DramaStateSchema } from "./drama.js";
+import {
+  FreeActionResolutionReceiptSchema,
+  type FreeActionResolutionReceipt,
+} from "./free-action.js";
+import { DramaStateSchema, type DramaState } from "./drama.js";
 import {
   DialoguePipelineActivationSourceSchema,
   DialoguePipelineOverrideDeploymentSchema,
@@ -40,6 +47,7 @@ import {
 } from "./dialogue-pipeline.js";
 import {
   BattlePacingPolicySchema,
+  type BattlePacingPolicy,
 } from "./battle-pacing.js";
 import {
   CommittedMechanicalEvidenceSetSchema,
@@ -47,12 +55,22 @@ import {
   CharacterPerceptionFrameBSchema,
   ObserverContactRegistryASchema,
   ObserverContactRegistryBSchema,
+  type CharacterPerceptionFrame,
+  type ObserverContactRegistry,
 } from "./perception.js";
-import { BattleTemporalPlanSchema } from "./battle-temporal-rules.js";
-import { CausalTurnExecutionSchema } from "./battle-causal-execution.js";
+import {
+  BattleTemporalPlanSchema,
+  type BattleTemporalPlan,
+} from "./battle-temporal-rules.js";
+import {
+  CausalTurnExecutionSchema,
+  type CausalTurnExecution,
+} from "./battle-causal-execution.js";
 import {
   BattleEncounterContextSchema,
   BattleNarratorContinuitySchema,
+  type BattleEncounterContext,
+  type BattleNarratorContinuity,
 } from "./battle-social.js";
 import {
   CharacterActionNormProgramV2Schema,
@@ -436,6 +454,40 @@ export const ActionResolutionSchema = z.object({
 }).strict();
 export type ActionResolution = z.infer<typeof ActionResolutionSchema>;
 
+export const ActionSelectionReceiptSchema = z.object({
+  plannedActionDisposition: z.enum([
+    "accepted",
+    "absent",
+    "rejected_repetition",
+    "superseded_by_player",
+    "superseded_by_forced_offense",
+  ]),
+  sourceLayer: z.enum([
+    "player_action",
+    "forced_offense",
+    "planned_action",
+    "matching_policy",
+    "always_policy",
+    "legacy_stance",
+  ]),
+  reason: z.enum([
+    "player_override",
+    "passive_streak_break",
+    "planned_action_accepted",
+    "planned_action_repeated",
+    "planned_action_absent",
+    "matching_policy_selected",
+    "always_policy_selected",
+    "no_policy_match",
+  ]),
+  selectedPolicyId: z.string().min(1).max(120).nullable(),
+  opponentInput: z.object({
+    source: z.enum(["not_used", "projected_condition", "unobserved_default"]),
+    condition: z.enum(["steady", "strained", "critical", "incapacitated", "unknown"]),
+  }).strict(),
+}).strict();
+export type ActionSelectionReceipt = z.infer<typeof ActionSelectionReceiptSchema>;
+
 export const ResolvedBattleActionSchema = BattleActionObjectSchema.extend({
   id: z.string().min(1),
   executed: z.boolean(),
@@ -448,6 +500,8 @@ export const ResolvedBattleActionSchema = BattleActionObjectSchema.extend({
     .nullable()
     .default(null),
   resolution: ActionResolutionSchema.optional(),
+  /** Why this request source was selected before feasibility resolution. */
+  selection: ActionSelectionReceiptSchema.optional(),
 }).superRefine(validateCharacterActionIntent);
 export type ResolvedBattleAction = z.infer<
   typeof ResolvedBattleActionSchema
@@ -1517,6 +1571,20 @@ export type CharacterActionProposalValidationReceipt = z.infer<
   typeof CharacterActionProposalValidationReceiptSchema
 >;
 
+export const BattlePipelineInvocationOutcomeSchema = z.object({
+  disposition: z.enum([
+    "accepted",
+    "skipped",
+    "provider_unavailable",
+    "application_rejected",
+  ]),
+  reasonCode: z.string().min(1).max(80),
+  detail: z.string().max(240).nullable(),
+}).strict();
+export type BattlePipelineInvocationOutcome = z.infer<
+  typeof BattlePipelineInvocationOutcomeSchema
+>;
+
 export type EnvironmentProcessProposal = {
   id: string;
   title: string;
@@ -1534,7 +1602,11 @@ export type EnvironmentProcessProposal = {
   };
 };
 
-export const EnvironmentProcessProposalSchema = z.object({
+export const EnvironmentProcessProposalSchema: z.ZodType<
+  EnvironmentProcessProposal,
+  z.ZodTypeDef,
+  unknown
+> = z.object({
   id: z.string().min(1).max(80),
   title: z.string().min(1).max(40),
   summary: z.string().min(1).max(240),
@@ -1554,7 +1626,7 @@ export const EnvironmentProcessProposalSchema = z.object({
     areaRefs: z.array(z.string().min(1).max(80)).max(12),
     objectRefs: z.array(z.string().min(1).max(80)).max(12),
   }).strict().optional(),
-}).strict() as unknown as z.ZodType<EnvironmentProcessProposal>;
+}).strict();
 
 export const EnvironmentProcessReceiptSchema = z.object({
   status: z.enum(["accepted", "rejected", "skipped"]),
@@ -1579,11 +1651,42 @@ export type EnvironmentProcessReceipt = z.infer<
 export const BattlePipelineAgentInvocationTraceSchema = z.object({
   input: z.unknown().nullable(),
   providerStatus: z.enum(["fulfilled", "rejected", "skipped"]),
+  /** Optional only so retained schemaVersion=1 records remain readable. */
+  outcome: BattlePipelineInvocationOutcomeSchema.optional(),
   providerOutput: z.unknown().nullable(),
   actionProposalValidation:
     CharacterActionProposalValidationReceiptSchema.nullable().optional(),
   acceptedOutput: z.unknown().nullable(),
 }).strict();
+
+export const BattleCharacterAgentAcceptedOutputSchema = z.object({
+  state: CharacterAgentStateSchema,
+  nextAction: CharacterActionIntentSchema.nullable(),
+  speech: z.object({
+    side: z.enum(["a", "b"]),
+    speaker: z.string().min(1).max(160),
+    text: z.string().min(1).max(800),
+  }).strict().nullable(),
+  realizedManifestation: CharacterObservableManifestationV2Schema.nullable(),
+}).strict();
+
+const BattleCharacterAgentInvocationTraceSchema =
+  BattlePipelineAgentInvocationTraceSchema.extend({
+    acceptedOutput: BattleCharacterAgentAcceptedOutputSchema,
+  }).strict();
+
+const BattleDeepPsycheInvocationTraceSchema =
+  BattlePipelineAgentInvocationTraceSchema.extend({
+    providerOutput: CharacterDeepPsycheUpdateSchema.extend({
+      delta: CharacterDeepPsycheDeltaSchema.optional(),
+      expressionBrief: CharacterExpressionBriefSchema.optional(),
+      observableManifestations: z.array(
+        CharacterObservableManifestationV2Schema,
+      ).max(2).optional(),
+      narrativeCues: z.array(CharacterNarrativeCueV2Schema).max(2).optional(),
+    }).strict().nullable(),
+    acceptedOutput: CharacterAgentStateSchema,
+  }).strict();
 
 export interface CharacterFocusShadowTraceV1 {
   mode: "shadow";
@@ -1618,10 +1721,12 @@ export const BattleTurnPipelineTraceSchema = z.object({
   }).strict().optional(),
   characterFocus: CharacterFocusShadowTraceV1Schema.optional(),
   environmentProcess: EnvironmentProcessReceiptSchema.optional(),
+  /** Atomic disposition of committed expressions and their observer projections. */
+  committedExpressionProjection: BattlePipelineInvocationOutcomeSchema.optional(),
   characterAgents: z.object({
     phase: z.enum(["prologue", "turn", "aftermath"]),
-    a: BattlePipelineAgentInvocationTraceSchema,
-    b: BattlePipelineAgentInvocationTraceSchema,
+    a: BattleCharacterAgentInvocationTraceSchema,
+    b: BattleCharacterAgentInvocationTraceSchema,
   }).strict().optional(),
   characterDefinitionRules: z.object({
     a: z.object({
@@ -1634,8 +1739,8 @@ export const BattleTurnPipelineTraceSchema = z.object({
     }).strict(),
   }).strict().optional(),
   deepPsyche: z.object({
-    a: BattlePipelineAgentInvocationTraceSchema,
-    b: BattlePipelineAgentInvocationTraceSchema,
+    a: BattleDeepPsycheInvocationTraceSchema,
+    b: BattleDeepPsycheInvocationTraceSchema,
   }).strict().optional(),
   narrator: z.object({
     input: z.unknown().nullable(),
@@ -1923,7 +2028,11 @@ export const BattleDialoguePipelineBindingSchema = z.object({
   }
 });
 
-export const BattleAssetManifestSchema = z.object({
+export const BattleAssetManifestSchema: z.ZodType<
+  BattleAssetManifest,
+  z.ZodTypeDef,
+  unknown
+> = z.object({
   schemaVersion: z.literal(1),
   boundAt: z.string(),
   characters: z.object({
@@ -1966,9 +2075,223 @@ export const BattleAssetManifestSchema = z.object({
     battlefieldDefinitionRules: z.string().min(1).optional(),
     narrationStyleRules: z.string().min(1).optional(),
   }).strict(),
-}).strict() as unknown as z.ZodType<BattleAssetManifest>;
+}).strict();
 
-export const BattleStateSchema = z.object({
+export type BattleSceneBeat = {
+  schemaVersion: 1;
+  k: number;
+  receiptIds: string[];
+  reservedA: CharacterActionIntent[];
+  reservedB: CharacterActionIntent[];
+  clock?: "micro-turn" | "public-turn";
+};
+
+export type BattleLatestSemanticTransition = {
+  turn: number;
+  status: "applied" | "rejected" | "skipped";
+  fromRevision: number;
+  toRevision: number;
+  patch: TurnSemanticPatch | null;
+};
+
+export type BattleLatestWorldTransition = {
+  turn: number;
+  status: "applied" | "rejected" | "skipped";
+  fromRevision: number;
+  toRevision: number;
+  transition: BattleWorldTransition | null;
+};
+
+export type BattleCausalLaterDecision = {
+  schemaVersion: 1;
+  executionId: string;
+  sourceBucketIndex: number;
+  side: "a" | "b";
+  status: "accepted" | "fallback";
+  acceptedAction?: CharacterActionIntent | null;
+  validation: CharacterActionProposalValidationReceipt;
+  provider: string;
+  model: string | null;
+  callCount: number;
+  tokenCount: number | null;
+  estimatedCostUsd: number | null;
+  elapsedMs: number;
+  fallbackReason: string | null;
+  actionNormReceipt?: z.infer<typeof CharacterActionNormResolutionReceiptV2Schema>;
+  relationshipReceipt?: z.infer<typeof CharacterRelationshipResolutionReceiptV2Schema>;
+};
+
+export type BattleFrozenNarrationInput = {
+  schemaVersion: 1;
+  scene: string;
+  perspective: z.infer<typeof NarrationPerspectiveSchema>;
+  participantLabels: { a: string; b: string };
+  winnerSide: "a" | "b" | "draw" | null;
+  finishReason: FinishReason | null;
+  adjudicationReason: string | null;
+  eventFacts: Array<{
+    type: string;
+    actorSide: "a" | "b" | null;
+    targetSides: Array<"a" | "b">;
+    intensity: string | null;
+  }>;
+  characterSpeeches: Array<{ sourceSide: "a" | "b"; text: string }>;
+  assetGenerationIds: {
+    sideA: string | null;
+    sideB: string | null;
+    battlefield: string | null;
+    narrationStyle: string | null;
+  };
+};
+
+export type BattleDeferredNarrationInput = {
+  kind: "prologue" | "combat" | "judgment" | "aftermath";
+  request: {
+    styleInstruction?: string;
+  } & object;
+};
+
+export type BattlePhaseReceipt = {
+  schemaVersion: 1;
+  id: string;
+  sequence: number;
+  operationId: string;
+  phase: "prologue" | "combat" | "judgment" | "aftermath";
+  combatTurn: number | null;
+  fromRevision: number;
+  toRevision: number;
+  committedAt: string;
+  narrationInput?: BattleFrozenNarrationInput | BattleDeferredNarrationInput;
+  narrationInputDigest?: string;
+  narrationDeferred?: boolean;
+};
+
+export type BattleAdvanceOperation = {
+  schemaVersion: 1;
+  operationId: string;
+  expectedRevision: number;
+  status: "active" | "completed";
+  phase: "prologue" | "combat" | "aftermath";
+  startedAt: string;
+  completedAt: string | null;
+  receiptIds: string[];
+};
+
+export type BattleStateBalanceTrace = {
+  combatTurns: number;
+  totalDamageA: number;
+  totalDamageB: number;
+  maxTurnDamageA: number;
+  maxTurnDamageB: number;
+  maxTurnDamageRatioA: number;
+  maxTurnDamageRatioB: number;
+  hitTurns: number;
+  oneShotSuspect: boolean;
+  firstKoCombatTurn: number | null;
+};
+
+export type BattleRatingTrackSide = {
+  characterId: string;
+  before: number;
+  after: number;
+  delta: number;
+  provisionalBefore: boolean;
+  provisionalAfter: boolean;
+  gamesPlayedBefore: number;
+};
+
+export type BattleStateRatingSettlement = {
+  applied: boolean;
+  voided: boolean;
+  ranked: boolean;
+  sameOwner?: boolean;
+  sideA: BattleRatingTrackSide;
+  sideB: BattleRatingTrackSide;
+  overall?: {
+    sideA: BattleRatingTrackSide;
+    sideB: BattleRatingTrackSide;
+  };
+  public?: {
+    sideA: BattleRatingTrackSide;
+    sideB: BattleRatingTrackSide;
+  } | null;
+};
+
+export interface BattleState {
+  id: string;
+  pipelineAuthorityVersion?: 1;
+  status: BattleStatus;
+  turn: number;
+  turnLimit: number;
+  combatTick?: number;
+  pacingPolicy?: BattlePacingPolicy;
+  assetManifest?: BattleAssetManifest;
+  sideA: CombatantState;
+  sideB: CombatantState;
+  stanceA?: BattleStance;
+  stanceB?: BattleStance;
+  policiesA: BattlePolicyOption[];
+  selectedPolicyIdsA: string[];
+  policiesB: BattlePolicyOption[];
+  selectedPolicyIdsB: string[];
+  situation: Situation;
+  battlefield?: BattlefieldInstance;
+  supervisor?: SupervisorState;
+  dramaState?: DramaState;
+  prologuePending: boolean;
+  aftermathPending: boolean;
+  narrationStyle?: NarrationStyleSnapshot;
+  priorMatchSummary?: string | null;
+  openingPlanA?: string;
+  openingPlanB?: string;
+  encounterContext?: BattleEncounterContext;
+  dialoguePipelineSnapshot?: BattleDialoguePipelineSnapshot;
+  narratorContinuity?: BattleNarratorContinuity;
+  agentStateA?: CharacterAgentState;
+  agentStateB?: CharacterAgentState;
+  finisherA?: FinisherState;
+  finisherB?: FinisherState;
+  plannedActionA?: CharacterActionIntent;
+  plannedActionB?: CharacterActionIntent;
+  sceneBeat?: BattleSceneBeat;
+  turnRecords: BattleTurnRecord[];
+  pendingEffects?: PendingBattleEffect[];
+  semanticState?: BattleSemanticState;
+  worldState?: BattleWorldState;
+  observationStateA?: SemanticObservationState;
+  observationStateB?: SemanticObservationState;
+  observationStatePublic?: SemanticObservationState;
+  perceptionFrameA?: CharacterPerceptionFrame;
+  perceptionFrameB?: CharacterPerceptionFrame;
+  perceptionRegistryA?: ObserverContactRegistry;
+  perceptionRegistryB?: ObserverContactRegistry;
+  latestSemanticTransition?: BattleLatestSemanticTransition;
+  latestWorldTransition?: BattleLatestWorldTransition;
+  latestFreeActionReceipts?: FreeActionResolutionReceipt[];
+  latestTemporalResolution?: BattleTemporalPlan;
+  causalExecution?: CausalTurnExecution;
+  causalBucketCommit?: BattleBucketMechanicalCommit;
+  causalEngineContinuation?: BattleTurnEngineContinuation;
+  causalLaterDecision?: BattleCausalLaterDecision;
+  battleRevision?: number;
+  phaseReceiptSequence?: number;
+  phaseReceipts?: BattlePhaseReceipt[];
+  advanceOperation?: BattleAdvanceOperation;
+  balanceTrace?: BattleStateBalanceTrace;
+  log: NarrativeBlock[];
+  winnerSide: "a" | "b" | "draw" | null;
+  finishReason: FinishReason | null;
+  adjudication?: BattleAdjudication;
+  ratingSettlement?: BattleStateRatingSettlement;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export const BattleStateSchema: z.ZodType<
+  BattleState,
+  z.ZodTypeDef,
+  unknown
+> = z.object({
   id: z.string(),
   /** Present after narrator/speech/perception authority migration. */
   pipelineAuthorityVersion: z.literal(1).optional(),
@@ -2041,36 +2364,14 @@ export const BattleStateSchema = z.object({
    * Open scene beat for batched narration and reserved actions (ADR-0016).
    * Missing means legacy one-combat-receipt narration.
    */
-  sceneBeat: z.custom<{
-    schemaVersion: 1;
-    k: number;
-    receiptIds: string[];
-    reservedA: CharacterActionIntent[];
-    reservedB: CharacterActionIntent[];
-    clock?: "micro-turn" | "public-turn";
-  }>((value) => {
-    if (value === undefined) return true;
-    if (!value || typeof value !== "object") return false;
-    const beat = value as {
-      schemaVersion?: unknown;
-      k?: unknown;
-      receiptIds?: unknown;
-      reservedA?: unknown;
-      reservedB?: unknown;
-      clock?: unknown;
-    };
-    const clockOk = beat.clock === undefined ||
-      beat.clock === "micro-turn" ||
-      beat.clock === "public-turn";
-    return beat.schemaVersion === 1 &&
-      typeof beat.k === "number" &&
-      beat.k >= 1 &&
-      beat.k <= 8 &&
-      Array.isArray(beat.receiptIds) &&
-      Array.isArray(beat.reservedA) &&
-      Array.isArray(beat.reservedB) &&
-      clockOk;
-  }).optional(),
+  sceneBeat: z.object({
+    schemaVersion: z.literal(1),
+    k: z.number().int().min(1).max(8),
+    receiptIds: z.array(z.string()),
+    reservedA: z.array(CharacterActionIntentSchema),
+    reservedB: z.array(CharacterActionIntentSchema),
+    clock: z.enum(["micro-turn", "public-turn"]).optional(),
+  }).strict().optional(),
   /** Structured engine transitions; narrative log is presentation only. */
   turnRecords: z.array(BattleTurnRecordSchema).default([]),
   pendingEffects: z.custom<PendingBattleEffect[]>((value) =>
@@ -2413,24 +2714,7 @@ export const BattleStateSchema = z.object({
       message: "latest semantic transition must match semantic state",
     });
   }
-}) as z.ZodType<BattleState>;
-// TS7056 blocks z.infer of this schema. Named engine-live fields are closed.
-// Remaining keys stay historically open until a defect names them (ADR-0021).
-export type BattleState = {
-  id: string;
-  status: "active" | "finished";
-  turn: number;
-  turnLimit: number;
-  sideA: CombatantState;
-  sideB: CombatantState;
-  worldState?: BattleWorldState;
-  pendingEffects?: BattleTurnEngineContinuation["pendingEffects"];
-  causalEngineContinuation?: BattleTurnEngineContinuation;
-  latestWorldTransition?: BattleTurnEngineContinuation["latestWorldTransition"];
-  sceneBeat?: any;
-  perceptionFrameA?: any;
-  perceptionFrameB?: any;
-} & Record<string, any>;
+});
 
 /** Public battle view — no parameter numbers. */
 export const BattlePublicSchema = z.object({

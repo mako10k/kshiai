@@ -102,7 +102,7 @@ task FPR_ACCEPT_CONTRACT INVENTORY_FIXED -> REMEDIATION_CONTRACT_ACCEPTED:
   title "Accept the remediation taxonomy and architectural boundary"
   description "Review the 21-point inventory, P0 through P3 ordering, failure subtypes, compatibility boundaries, receipt fields, immutable-generation rule, and completion evidence. Identify any genuinely new architectural or persistence decision and require an Accepted ADR before its dependent implementation; do not create an ADR when accepted requirements already determine the behavior."
   duration 1p
-  status active
+  status done
   owner "user"
   source "docs/fallback-point-inventory-2026-09-07.md"
   requires:
@@ -112,6 +112,7 @@ task FPR_P0_AUTHORING REMEDIATION_CONTRACT_ACCEPTED -> P0_AUTHORING_READY:
   title "Correct character-authoring fallback producers for points 1 through 4"
   description "Review the existing unaccepted WIP against main, route create and revision through complete generation, restrict gap fill to upgrade, reject missing source while gaps remain, require fully structured action norms, remove prose-to-mechanics and legacy-principle executable conversion, and make invalid review fills terminal with bounded validation detail. Add positive, invalid, legacy, and no-gap regressions without accepting a mock or unchanged base as completion."
   duration 4p
+  status done
   owner "codex"
   source "docs/fallback-point-inventory-2026-09-07.md"
   requires:
@@ -121,6 +122,7 @@ task FPR_P0_AGENT_PIPELINE P0_AUTHORING_READY -> P0_PIPELINE_READY:
   title "Separate provider failure from psyche and agent contract rejection"
   description "For points 8 and 9, define reason-coded transport, timeout, schema, consistency, and acceptance outcomes; retain prior state or no-action continuation only for the accepted failure classes; preserve application-invalid results as explicit defects; and persist enough causal detail to explain why state, speech, or an action proposal was not advanced."
   duration 4p
+  status done
   owner "codex"
   source "docs/fallback-point-inventory-2026-09-07.md"
   requires:
@@ -130,6 +132,7 @@ task FPR_P0_UTTERANCE_PROJECTION P0_PIPELINE_READY -> P0_READY:
   title "Correct committed-utterance perception loss"
   description "For point 15, reproduce the projection failure, correct its producer or input contract, and prevent a stale frame from representing a committed utterance as processed. Persist the failure boundary and add regressions proving the committed utterance reaches each required next frame without leaking inaccessible identity or private state."
   duration 2p
+  status done
   owner "codex"
   source "docs/fallback-point-inventory-2026-09-07.md"
   requires:
@@ -139,6 +142,7 @@ task FPR_P1_ACTION_PROVENANCE P0_READY -> P1_ACTION_READY:
   title "Record conservative action fallback provenance"
   description "For point 10, preserve the accepted policy and stance fallback while recording planned-action disposition, selected fallback layer, reason, and observer-safe input boundary in the durable action receipt. Verify that the receipt explains the selected action without exposing private prompts or hidden opponent state."
   duration 2p
+  status done
   owner "codex"
   source "docs/fallback-point-inventory-2026-09-07.md"
   requires:
@@ -148,6 +152,7 @@ task FPR_P1_COMPATIBILITY_BOUNDARIES P1_ACTION_READY -> P1_READY:
   title "Separate projection seed and basic-attack compatibility boundaries"
   description "For points 14, 18, and 19, narrow the recoverable minimal-perception trigger, distinguish absent legacy semantic seeds from present invalid seeds, and permit deterministic basic attack only at a declared legacy boundary. Reject invalid modern state and retain fallback or generation provenance needed to identify the executed path."
   duration 4p
+  status active
   owner "codex"
   source "docs/fallback-point-inventory-2026-09-07.md"
   requires:
@@ -315,3 +320,68 @@ work_event WE-FPR-ACCEPT-CONTRACT-START-20260907:
   kind start
   occurred_at 2026-09-07T12:59:23+09:00
   planned_value 1p
+
+work_event WE-FPR-ACCEPT-CONTRACT-FINISH-20260907:
+  model 1
+  task FPR_ACCEPT_CONTRACT
+  kind finish
+  occurred_at 2026-09-07T14:48:22+09:00
+
+work_event WE-FPR-P0-AUTHORING-START-20260907:
+  model 1
+  task FPR_P0_AUTHORING
+  kind start
+  occurred_at 2026-09-07T14:49:12+09:00
+  planned_value 4p
+
+work_event WE-FPR-P0-AUTHORING-FINISH-20260907:
+  model 1
+  task FPR_P0_AUTHORING
+  kind finish
+  occurred_at 2026-09-07T15:01:44+09:00
+
+work_event WE-FPR-P0-AGENT-PIPELINE-START-20260907:
+  model 1
+  task FPR_P0_AGENT_PIPELINE
+  kind start
+  occurred_at 2026-09-07T15:02:40+09:00
+  planned_value 4p
+
+work_event WE-FPR-P0-AGENT-PIPELINE-FINISH-20260907:
+  model 1
+  task FPR_P0_AGENT_PIPELINE
+  kind finish
+  occurred_at 2026-09-07T15:12:49+09:00
+
+work_event WE-FPR-P0-UTTERANCE-START-20260907:
+  model 1
+  task FPR_P0_UTTERANCE_PROJECTION
+  kind start
+  occurred_at 2026-09-07T15:13:50+09:00
+  planned_value 2p
+
+work_event WE-FPR-P0-UTTERANCE-FINISH-20260907:
+  model 1
+  task FPR_P0_UTTERANCE_PROJECTION
+  kind finish
+  occurred_at 2026-09-07T15:28:30+09:00
+
+work_event WE-FPR-P1-ACTION-PROVENANCE-START-20260907:
+  model 1
+  task FPR_P1_ACTION_PROVENANCE
+  kind start
+  occurred_at 2026-09-07T15:30:00+09:00
+  planned_value 2p
+
+work_event WE-FPR-P1-ACTION-PROVENANCE-FINISH-20260907:
+  model 1
+  task FPR_P1_ACTION_PROVENANCE
+  kind finish
+  occurred_at 2026-09-07T15:37:30+09:00
+
+work_event WE-FPR-P1-COMPATIBILITY-START-20260907:
+  model 1
+  task FPR_P1_COMPATIBILITY_BOUNDARIES
+  kind start
+  occurred_at 2026-09-07T15:38:30+09:00
+  planned_value 4p

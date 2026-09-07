@@ -6,6 +6,7 @@ import {
 import {
   CharacterDefinitionV2ObjectSchema,
   CharacterDefinitionV2Schema,
+  CharacterActionNormV2Schema,
   LEGACY_SPEECH_UNSPECIFIED,
   RegisteredCharacterConsumerSchema,
   type CharacterDefinitionV2,
@@ -99,7 +100,8 @@ const LLM_ROLES = new Set<string>(LlmRoleSchema.options);
 /**
  * Provider-facing upgrade/create fill. Strings stand in for description
  * objects, every key is required+nullable for strict structured output, and
- * clause/consumer-tag internals are not asked of the model.
+ * consumer-tag internals are not asked of the model. Action norms remain fully
+ * structured because the server must not invent conditions or action selectors.
  */
 export const CharacterDefinitionLlmFillV2Schema = z.object({
   profileBackground: z.array(z.object({
@@ -132,12 +134,7 @@ export const CharacterDefinitionLlmFillV2Schema = z.object({
     selfAwareness: LlmAwarenessSchema,
     priority: z.number().int().min(0).max(100),
   }).strict()).max(24).nullable(),
-  actionNorms: z.array(z.object({
-    id: z.string().min(1).max(120),
-    statement: z.string().min(1).max(320),
-    force: z.enum(["preference", "commitment", "constraint"]),
-    selfAwareness: LlmAwarenessSchema,
-  }).strict()).max(12).nullable(),
+  actionNorms: z.array(CharacterActionNormV2Schema).max(12).nullable(),
   expressionNotes: LlmOptionalTextSchema,
 }).strict();
 export type CharacterDefinitionLlmFillV2 = z.infer<
@@ -150,7 +147,7 @@ function trimText(value: unknown, max: number): string | null {
     return text ? text.slice(0, max) : null;
   }
   if (!value || typeof value !== "object") return null;
-  const text = (value as { text?: unknown }).text;
+  const text = Reflect.get(value, "text");
   return typeof text === "string" ? trimText(text, max) : null;
 }
 
@@ -174,10 +171,10 @@ function uniqueById<T extends { id: string }>(items: T[], prefix: string): T[] {
   });
 }
 
-function asEntryArray(value: unknown): Record<string, unknown>[] | null {
+function asEntryArray(value: unknown): object[] | null {
   if (value == null) return null;
   if (!Array.isArray(value)) return null;
-  return value.filter((entry): entry is Record<string, unknown> =>
+  return value.filter((entry): entry is object =>
     Boolean(entry) && typeof entry === "object" && !Array.isArray(entry));
 }
 
@@ -185,9 +182,8 @@ function speechFromUnknown(
   value: unknown,
 ): { register: string; cadence: string } | null {
   if (!value || typeof value !== "object") return null;
-  const record = value as { register?: unknown; cadence?: unknown };
-  const register = trimText(record.register, 160);
-  const cadence = trimText(record.cadence, 160);
+  const register = trimText(Reflect.get(value, "register"), 160);
+  const cadence = trimText(Reflect.get(value, "cadence"), 160);
   if (!register && !cadence) return null;
   return {
     register: (register ?? cadence) as string,
@@ -217,12 +213,13 @@ function coerceDescription(
     return text ? descriptionFromText(text, tags) : null;
   }
   if (typeof value !== "object") return undefined;
-  const record = value as { text?: unknown; consumerTags?: unknown };
-  if (typeof record.text !== "string") return undefined;
-  const text = record.text.trim();
+  const rawText = Reflect.get(value, "text");
+  if (typeof rawText !== "string") return undefined;
+  const text = rawText.trim();
   if (!text) return null;
-  const tagsIn = Array.isArray(record.consumerTags)
-    ? record.consumerTags.flatMap((tag) => {
+  const consumerTags = Reflect.get(value, "consumerTags");
+  const tagsIn = Array.isArray(consumerTags)
+    ? consumerTags.flatMap((tag) => {
       const parsed = RegisteredCharacterConsumerSchema.safeParse(tag);
       return parsed.success ? [parsed.data] : [];
     }).slice(0, 6)
@@ -234,37 +231,21 @@ function coerceDescription(
   };
 }
 
-function defaultActionNormResponse(
-  statement: string,
-  force: "preference" | "commitment" | "constraint",
-) {
-  return {
-    disposition: force === "constraint" ? "allow_only" as const : "prefer" as const,
-    actionRefs: [] as string[],
-    actionKinds: (force === "constraint" ? ["wait"] : []) as Array<
-      "basic_action" | "skill" | "defend" | "wait" | "free_action"
-    >,
-    tacticTags: [] as string[],
-    statement: statement.slice(0, 320),
-    fallbackActionRef: null,
-  };
-}
-
 function normalizeBackground(value: unknown) {
   const entries = asEntryArray(value);
   if (!entries) return value == null ? null : value;
   return entries.flatMap((entry, index) => {
-    const description = trimText(entry.description, 600);
-    const summary = trimText(entry.summary, 240);
+    const description = trimText(Reflect.get(entry, "description"), 600);
+    const summary = trimText(Reflect.get(entry, "summary"), 240);
     if (!description || !summary) return [];
-    const kind = LlmBackgroundKindSchema.safeParse(entry.kind);
+    const kind = LlmBackgroundKindSchema.safeParse(Reflect.get(entry, "kind"));
     if (!kind.success) return [];
     return [{
-      id: stableId(entry.id, `background-${index + 1}`),
+      id: stableId(Reflect.get(entry, "id"), `background-${index + 1}`),
       kind: kind.data,
       summary,
       description,
-      selfAwareness: awarenessOf(entry.selfAwareness),
+      selfAwareness: awarenessOf(Reflect.get(entry, "selfAwareness")),
     }];
   });
 }
@@ -273,11 +254,11 @@ function normalizeAppearance(value: unknown) {
   const entries = asEntryArray(value);
   if (!entries) return value == null ? null : value;
   return entries.flatMap((entry, index) => {
-    const description = trimText(entry.description, 600);
-    const region = LlmAppearanceRegionSchema.safeParse(entry.region);
+    const description = trimText(Reflect.get(entry, "description"), 600);
+    const region = LlmAppearanceRegionSchema.safeParse(Reflect.get(entry, "region"));
     if (!description || !region.success) return [];
     return [{
-      id: stableId(entry.id, `appearance-${index + 1}`),
+      id: stableId(Reflect.get(entry, "id"), `appearance-${index + 1}`),
       region: region.data,
       description,
     }];
@@ -288,12 +269,12 @@ function normalizeCoreNeeds(value: unknown) {
   const entries = asEntryArray(value);
   if (!entries) return value == null ? null : value;
   return entries.flatMap((entry, index) => {
-    const description = trimText(entry.description, 600);
+    const description = trimText(Reflect.get(entry, "description"), 600);
     if (!description) return [];
     return [{
-      id: stableId(entry.id, `need-${index + 1}`),
+      id: stableId(Reflect.get(entry, "id"), `need-${index + 1}`),
       description,
-      selfAwareness: awarenessOf(entry.selfAwareness),
+      selfAwareness: awarenessOf(Reflect.get(entry, "selfAwareness")),
     }];
   });
 }
@@ -302,64 +283,52 @@ function normalizeSeeds(value: unknown) {
   const entries = asEntryArray(value);
   if (!entries) return value == null ? null : value;
   return entries.flatMap((entry, index) => {
-    const target = entry.target as { kind?: unknown; role?: unknown } | undefined;
-    const role = target?.kind === "role" ? target.role : entry.role;
+    const target = Reflect.get(entry, "target");
+    const role = target && typeof target === "object" &&
+        Reflect.get(target, "kind") === "role"
+      ? Reflect.get(target, "role")
+      : Reflect.get(entry, "role");
     if (typeof role !== "string" || !LLM_ROLES.has(role)) return [];
-    const priority = typeof entry.priority === "number" && Number.isFinite(entry.priority)
-      ? Math.max(0, Math.min(100, Math.round(entry.priority)))
+    const rawPriority = Reflect.get(entry, "priority");
+    const priority = typeof rawPriority === "number" && Number.isFinite(rawPriority)
+      ? Math.max(0, Math.min(100, Math.round(rawPriority)))
       : 10;
-    const kinds = Array.isArray(entry.relationKinds)
-      ? entry.relationKinds.flatMap((kind) => {
+    const relationKinds = Reflect.get(entry, "relationKinds");
+    const kinds = Array.isArray(relationKinds)
+      ? relationKinds.flatMap((kind) => {
         const text = trimText(kind, 80);
         return text ? [text] : [];
       }).slice(0, 6)
       : [];
     return [{
-      id: stableId(entry.id, `rel-${index + 1}`),
+      id: stableId(Reflect.get(entry, "id"), `rel-${index + 1}`),
       role,
       relationKinds: kinds,
-      historySummary: trimText(entry.historySummary, 600),
-      defaultAddress: trimText(entry.defaultAddress, 80),
-      selfAwareness: awarenessOf(entry.selfAwareness),
+      historySummary: trimText(Reflect.get(entry, "historySummary"), 600),
+      defaultAddress: trimText(Reflect.get(entry, "defaultAddress"), 80),
+      selfAwareness: awarenessOf(Reflect.get(entry, "selfAwareness")),
       priority,
     }];
   });
 }
 
-function normalizeLlmNorms(value: unknown) {
-  const entries = asEntryArray(value);
-  if (!entries) return value == null ? null : value;
-  return entries.flatMap((entry, index) => {
-    const response = entry.response as { statement?: unknown } | undefined;
-    const statement = trimText(entry.statement, 320) ??
-      trimText(response?.statement, 320);
-    if (!statement) return [];
-    const force = entry.force === "commitment" || entry.force === "constraint"
-      ? entry.force
-      : "preference";
-    return [{
-      id: stableId(entry.id, `norm-${index + 1}`),
-      statement,
-      force,
-      selfAwareness: awarenessOf(entry.selfAwareness),
-    }];
-  });
-}
-
-function normalizeLlmFillInput(raw: Record<string, unknown>) {
-  const psycheSource = raw.psycheCoreNeeds ?? (
-    raw.psycheDisposition && typeof raw.psycheDisposition === "object"
-      ? (raw.psycheDisposition as { coreNeeds?: unknown }).coreNeeds
+function normalizeLlmFillInput(raw: object) {
+  const psycheDisposition = Reflect.get(raw, "psycheDisposition");
+  const psycheSource = Reflect.get(raw, "psycheCoreNeeds") ?? (
+    psycheDisposition && typeof psycheDisposition === "object"
+      ? Reflect.get(psycheDisposition, "coreNeeds")
       : null
   );
   return {
-    profileBackground: normalizeBackground(raw.profileBackground),
-    appearanceDetails: normalizeAppearance(raw.appearanceDetails),
+    profileBackground: normalizeBackground(Reflect.get(raw, "profileBackground")),
+    appearanceDetails: normalizeAppearance(Reflect.get(raw, "appearanceDetails")),
     psycheCoreNeeds: normalizeCoreNeeds(psycheSource),
-    speech: speechFromUnknown(raw.speech ?? raw.speechPolicy),
-    relationshipSeeds: normalizeSeeds(raw.relationshipSeeds),
-    actionNorms: normalizeLlmNorms(raw.actionNorms),
-    expressionNotes: trimText(raw.expressionNotes, 600),
+    speech: speechFromUnknown(
+      Reflect.get(raw, "speech") ?? Reflect.get(raw, "speechPolicy"),
+    ),
+    relationshipSeeds: normalizeSeeds(Reflect.get(raw, "relationshipSeeds")),
+    actionNorms: Reflect.get(raw, "actionNorms") ?? null,
+    expressionNotes: trimText(Reflect.get(raw, "expressionNotes"), 600),
   };
 }
 
@@ -419,19 +388,7 @@ export function llmFillToGapFillV2(
     }));
   }
   if (fill.actionNorms) {
-    next.actionNorms = uniqueById(fill.actionNorms, "norm").map((entry) => ({
-      id: entry.id,
-      when: {
-        match: "all" as const,
-        clauses: [{ kind: "always" as const, operator: "is" as const, value: "true" }],
-      },
-      response: defaultActionNormResponse(entry.statement, entry.force),
-      priority: 50,
-      force: entry.force,
-      selfAwareness: entry.selfAwareness,
-      exceptions: [],
-      description: null,
-    }));
+    next.actionNorms = fill.actionNorms;
   }
   if (trimText(fill.expressionNotes, 600)) {
     next.expressionNotes = descriptionFromText(fill.expressionNotes ?? "", [
@@ -442,13 +399,21 @@ export function llmFillToGapFillV2(
   return next;
 }
 
-function coerceGapFillObject(raw: Record<string, unknown>): unknown {
-  const next = { ...raw };
+function coerceGapFillObject(raw: object): unknown {
+  const next = {
+    profileBackground: Reflect.get(raw, "profileBackground"),
+    appearanceDetails: Reflect.get(raw, "appearanceDetails"),
+    psycheDisposition: Reflect.get(raw, "psycheDisposition"),
+    speechPolicy: Reflect.get(raw, "speechPolicy"),
+    relationshipSeeds: Reflect.get(raw, "relationshipSeeds"),
+    actionNorms: Reflect.get(raw, "actionNorms"),
+    expressionNotes: Reflect.get(raw, "expressionNotes"),
+  };
   if (Array.isArray(next.profileBackground)) {
     next.profileBackground = next.profileBackground.map((entry) => {
       if (!entry || typeof entry !== "object") return entry;
       const description = coerceDescription(
-        (entry as { description?: unknown }).description,
+        Reflect.get(entry, "description"),
         ["profile-generator", "deep-psyche", "narrator-external"],
       );
       return description === undefined ? entry : { ...entry, description };
@@ -458,19 +423,22 @@ function coerceGapFillObject(raw: Record<string, unknown>): unknown {
     next.appearanceDetails = next.appearanceDetails.map((entry) => {
       if (!entry || typeof entry !== "object") return entry;
       const description = coerceDescription(
-        (entry as { description?: unknown }).description,
+        Reflect.get(entry, "description"),
         ["character-image", "profile-generator"],
       );
       return description === undefined ? entry : { ...entry, description };
     });
   }
   if (next.psycheDisposition && typeof next.psycheDisposition === "object") {
-    const psyche = { ...(next.psycheDisposition as Record<string, unknown>) };
+    const psyche = {
+      coreNeeds: Reflect.get(next.psycheDisposition, "coreNeeds"),
+      description: Reflect.get(next.psycheDisposition, "description"),
+    };
     if (Array.isArray(psyche.coreNeeds)) {
       psyche.coreNeeds = psyche.coreNeeds.map((entry) => {
         if (!entry || typeof entry !== "object") return entry;
         const description = coerceDescription(
-          (entry as { description?: unknown }).description,
+          Reflect.get(entry, "description"),
           ["deep-psyche", "conscious-action"],
         );
         return description === undefined ? entry : { ...entry, description };
@@ -481,31 +449,6 @@ function coerceGapFillObject(raw: Record<string, unknown>): unknown {
       if (description !== undefined) psyche.description = description;
     }
     next.psycheDisposition = psyche;
-  }
-  if (Array.isArray(next.actionNorms)) {
-    next.actionNorms = next.actionNorms.map((entry) => {
-      if (!entry || typeof entry !== "object") return entry;
-      const record = entry as Record<string, unknown>;
-      if (record.response) return entry;
-      const statement = typeof record.statement === "string"
-        ? record.statement
-        : "";
-      if (!statement) return entry;
-      const force = record.force === "commitment" || record.force === "constraint"
-        ? record.force
-        : "preference";
-      return {
-        ...record,
-        when: record.when ?? {
-          match: "all",
-          clauses: [{ kind: "always", operator: "is", value: "true" }],
-        },
-        response: defaultActionNormResponse(statement, force),
-        priority: typeof record.priority === "number" ? record.priority : 50,
-        exceptions: record.exceptions ?? [],
-        description: record.description ?? null,
-      };
-    });
   }
   if ("expressionNotes" in next) {
     const notes = coerceDescription(next.expressionNotes, [
@@ -523,14 +466,13 @@ export function parseCharacterDefinitionGapFillV2(
   const llm = CharacterDefinitionLlmFillV2Schema.safeParse(raw);
   if (llm.success) return llmFillToGapFillV2(llm.data);
   if (raw && typeof raw === "object" && !Array.isArray(raw)) {
-    const record = raw as Record<string, unknown>;
     const normalized = CharacterDefinitionLlmFillV2Schema.safeParse(
-      normalizeLlmFillInput(record),
+      normalizeLlmFillInput(raw),
     );
     if (normalized.success) return llmFillToGapFillV2(normalized.data);
     const strict = CharacterDefinitionGapFillV2Schema.safeParse(raw);
     if (strict.success) return strict.data;
-    return CharacterDefinitionGapFillV2Schema.parse(coerceGapFillObject(record));
+    return CharacterDefinitionGapFillV2Schema.parse(coerceGapFillObject(raw));
   }
   return CharacterDefinitionGapFillV2Schema.parse(raw);
 }

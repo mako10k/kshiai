@@ -104,6 +104,7 @@ import type {
 import { newId } from "../id.js";
 import { MockLlmProvider } from "./mock.js";
 import { retryLlmProviderCall } from "./provider-retry.js";
+import { LlmApplicationResultError } from "./provider-errors.js";
 import {
   executeProviderOperationAttempt,
   isProviderOperationAccountingError,
@@ -123,20 +124,23 @@ const FAST_TIMEOUT_MS = 30_000;
 const ENGINE_TIMEOUT_MS = 60_000;
 const ENGINE_LONG_TIMEOUT_MS = 90_000;
 
-function schemaRecord(value: unknown, label: string): Record<string, unknown> {
+type OpenAiJsonSchema = PerceptionPromptResponseFormat["json_schema"]["schema"];
+const OpenAiJsonSchemaObjectSchema = z.object({}).passthrough();
+
+function schemaObject(value: unknown, label: string): OpenAiJsonSchema {
   if (!value || typeof value !== "object" || Array.isArray(value)) {
     throw new Error(`Character definition response schema lacks ${label}`);
   }
-  return value as Record<string, unknown>;
+  return OpenAiJsonSchemaObjectSchema.parse(value);
 }
 
 function nestedSchema(
-  root: Record<string, unknown>,
+  root: OpenAiJsonSchema,
   ...path: string[]
-): Record<string, unknown> {
+): OpenAiJsonSchema {
   let current = root;
   for (const segment of path) {
-    current = schemaRecord(current[segment], path.join("."));
+    current = schemaObject(Reflect.get(current, segment), path.join("."));
   }
   return current;
 }
@@ -149,10 +153,9 @@ function containsDefinitionReference(
   if (Array.isArray(value)) {
     return value.some((item) => containsDefinitionReference(item, reference));
   }
-  const record = value as Record<string, unknown>;
-  if (record.$ref === reference) return true;
-  return Object.values(record).some((item) =>
-    containsDefinitionReference(item, reference));
+  if (Reflect.get(value, "$ref") === reference) return true;
+  return Object.keys(value).some((key) =>
+    containsDefinitionReference(Reflect.get(value, key), reference));
 }
 
 function characterDefinitionResponseFormat(): PerceptionPromptResponseFormat {
@@ -160,10 +163,10 @@ function characterDefinitionResponseFormat(): PerceptionPromptResponseFormat {
     z.object({ definition: CharacterDefinitionV2Schema }).strict(),
     "character_definition_v2",
   );
-  const schema = structuredClone(generated.json_schema.schema) as Record<
-    string,
-    unknown
-  >;
+  const schema = schemaObject(
+    structuredClone(generated.json_schema.schema),
+    "root",
+  );
   const definitions = nestedSchema(schema, "definitions");
   const constraintProperties = nestedSchema(
     schema,
@@ -186,19 +189,28 @@ function characterDefinitionResponseFormat(): PerceptionPromptResponseFormat {
     "requiresSpeech",
     "requiresUsableHeldObject",
   ]);
-  for (const [name, definition] of Object.entries(definitions)) {
-    const direct = schemaRecord(definition, `definitions.${name}`);
-    if (direct.$ref !== `#/definitions/${name}`) continue;
+  for (const name of Object.keys(definitions)) {
+    const direct = schemaObject(
+      Reflect.get(definitions, name),
+      `definitions.${name}`,
+    );
+    if (Reflect.get(direct, "$ref") !== `#/definitions/${name}`) continue;
     const field = [...constraintFields].find((candidate) =>
       name.endsWith(`_properties_${candidate}`));
     if (!field) {
       throw new Error(`Unsupported self-referenced response schema: ${name}`);
     }
-    definitions[name] = structuredClone(
-      schemaRecord(constraintProperties[field], `constraints.${field}`),
+    Reflect.set(
+      definitions,
+      name,
+      structuredClone(schemaObject(
+        Reflect.get(constraintProperties, field),
+        `constraints.${field}`,
+      )),
     );
   }
-  for (const [name, definition] of Object.entries(definitions)) {
+  for (const name of Object.keys(definitions)) {
+    const definition = Reflect.get(definitions, name);
     if (containsDefinitionReference(definition, `#/definitions/${name}`)) {
       throw new Error(`Self-referenced response schema remains: ${name}`);
     }
@@ -216,6 +228,24 @@ function characterDefinitionResponseFormat(): PerceptionPromptResponseFormat {
 const CHARACTER_DEFINITION_RESPONSE_FORMAT =
   characterDefinitionResponseFormat();
 
+const CharacterDefinitionCandidateEnvelopeSchema = z.object({
+  definition: z.unknown(),
+}).strict();
+
+const CharacterDefinitionFillCandidateEnvelopeSchema = z.object({
+  fill: z.unknown(),
+}).strict();
+
+const CharacterDefinitionReviewEnvelopeSchema = z.object({
+  verdict: z.enum(["accept", "revise"]),
+  issues: z.array(z.object({
+    code: z.string().min(1).max(80),
+    path: z.string().min(1).max(160),
+    message: z.string().min(1).max(320),
+  }).strict()).max(16),
+  fill: z.unknown().nullable(),
+}).strict();
+
 function characterDefinitionFillResponseFormat(): PerceptionPromptResponseFormat {
   const generated = zodResponseFormat(
     z.object({ fill: CharacterDefinitionLlmFillV2Schema }).strict(),
@@ -226,7 +256,7 @@ function characterDefinitionFillResponseFormat(): PerceptionPromptResponseFormat
     json_schema: {
       name: generated.json_schema.name,
       strict: true,
-      schema: schemaRecord(generated.json_schema.schema, "fill schema"),
+      schema: schemaObject(generated.json_schema.schema, "fill schema"),
     },
   };
 }
@@ -236,13 +266,7 @@ const CHARACTER_DEFINITION_FILL_RESPONSE_FORMAT =
 
 function characterDefinitionReviewResponseFormat(): PerceptionPromptResponseFormat {
   const generated = zodResponseFormat(
-    z.object({
-      verdict: z.enum(["accept", "revise"]),
-      issues: z.array(z.object({
-        code: z.string().min(1).max(80),
-        path: z.string().min(1).max(160),
-        message: z.string().min(1).max(320),
-      }).strict()).max(16),
+    CharacterDefinitionReviewEnvelopeSchema.extend({
       fill: CharacterDefinitionLlmFillV2Schema.nullable(),
     }).strict(),
     "character_definition_review_v2",
@@ -252,7 +276,7 @@ function characterDefinitionReviewResponseFormat(): PerceptionPromptResponseForm
     json_schema: {
       name: generated.json_schema.name,
       strict: true,
-      schema: schemaRecord(generated.json_schema.schema, "review schema"),
+      schema: schemaObject(generated.json_schema.schema, "review schema"),
     },
   };
 }
@@ -270,7 +294,7 @@ function battlefieldDefinitionFillResponseFormat(): PerceptionPromptResponseForm
     json_schema: {
       name: generated.json_schema.name,
       strict: true,
-      schema: schemaRecord(generated.json_schema.schema, "battlefield fill schema"),
+      schema: schemaObject(generated.json_schema.schema, "battlefield fill schema"),
     },
   };
 }
@@ -545,7 +569,7 @@ type ProviderConfig = {
   timeoutMultiplier?: number;
 };
 
-type ChatOpts = {
+export type ChatOpts = {
   tier?: LlmTier;
   timeoutMs?: number;
   temperature?: number;
@@ -631,11 +655,12 @@ export class OpenAiCompatibleProvider implements LlmProvider {
 
   private fallbackOrThrow<T>(error: unknown, fallback: () => T): T {
     if (isProviderOperationAccountingError(error)) throw error;
+    if (error instanceof LlmApplicationResultError) throw error;
     if (!this.fallbackOnError) throw error;
     return fallback();
   }
 
-  private async chatJson(
+  protected async chatJson(
     system: string,
     user: string,
     opts?: ChatOpts,
@@ -1370,23 +1395,23 @@ segment texts joined in order, with no additional unsegmented prose.`,
   async generateCharacterDefinitionV2(
     input: GenerateCharacterDefinitionV2Input,
   ) {
-    if (!this.client) return this.fallback.generateCharacterDefinitionV2(input);
-    if (
-      input.sourceKind === "upgrade_description" ||
-      input.sourceKind === "create_instruction" ||
-      input.sourceKind === "revision_instruction"
-    ) {
+    if (!this.client) throw new Error("LLM client not configured");
+    if (input.sourceKind === "upgrade_description") {
       return this.fillCharacterDefinitionGapsV2(input);
     }
     try {
-      const data = await this.chatJson(
+      const data = CharacterDefinitionCandidateEnvelopeSchema.parse(
+        await this.chatJson(
         `You refine a VALID CharacterDefinitionV2 JSON value from an owner source and a
 valid deterministic base. Return JSON only: {"definition": object}.
 
 Keep schemaVersion=2 and preserve all base stable IDs for the same semantic elements.
 The base mechanics, parameters, capability mechanics, item bonuses/effects, identity,
-appearance, and explicit legacy decision principles are authoritative. Do not alter
-them unless the owner source explicitly requests a change and this is not an upgrade.
+and appearance are authoritative. Unstructured action-norm sources are persisted
+prose statements to translate into complete actionNorms; they are not executable
+selectors and must never be mapped mechanically to wait or another default action.
+Do not alter authoritative base fields unless the owner source explicitly requests a
+change and this is not an upgrade.
 
 Use the source to structure only supported characterization into bounded fields:
 - profileBackground entries with stable IDs, kind, summary, description, selfAwareness;
@@ -1407,6 +1432,7 @@ in this immutable definition. Preserve strict bounds and every reference.`,
         JSON.stringify({
           sourceKind: input.sourceKind,
           ownerSource: input.sourceText.slice(0, 8000),
+          unstructuredActionNormSources: input.unstructuredActionNormSources ?? [],
           validBaseDefinition: input.baseDefinition,
         }),
         {
@@ -1416,7 +1442,7 @@ in this immutable definition. Preserve strict bounds and every reference.`,
           temperature: 0.35,
           responseFormat: CHARACTER_DEFINITION_RESPONSE_FORMAT,
         },
-      ) as Record<string, unknown>;
+      ));
       const parsed = CharacterDefinitionV2Schema.safeParse(data.definition);
       if (parsed.success) {
         return restoreAuthoritativeCharacterDefinitionV2(
@@ -1426,15 +1452,16 @@ in this immutable definition. Preserve strict bounds and every reference.`,
         );
       }
 
-      const repaired = await this.chatJson(
+      const repaired = CharacterDefinitionCandidateEnvelopeSchema.parse(
+        await this.chatJson(
         `You repair one rejected CharacterDefinitionV2 candidate. Return JSON only:
 {"definition": object}.
 
 The server will apply the same strict schema again. Return a complete definition,
 not a patch. Correct only the listed validation issues and preserve every valid
 part of the rejected candidate. validBaseDefinition is server-generated and known
-valid: preserve its identity, appearance, mechanics, inventory, loadout, and legacy
-decision principles unless the owner source explicitly requests a change and the
+valid: preserve its identity, appearance, mechanics, inventory, and loadout unless
+the owner source explicitly requests a change and the
 sourceKind is not upgrade_description. Do not add a fact merely to satisfy the
 schema. If optional enrichment cannot be repaired from the owner source, restore
 the corresponding validBaseDefinition value. Do not expose schema commentary in
@@ -1442,6 +1469,7 @@ the definition.`,
         JSON.stringify({
           sourceKind: input.sourceKind,
           ownerSource: input.sourceText.slice(0, 8000),
+          unstructuredActionNormSources: input.unstructuredActionNormSources ?? [],
           validBaseDefinition: input.baseDefinition,
           rejectedDefinition: data.definition,
           validationIssues: parsed.error.issues.map((issue) => ({
@@ -1457,17 +1485,14 @@ the definition.`,
           temperature: 0.2,
           responseFormat: CHARACTER_DEFINITION_RESPONSE_FORMAT,
         },
-      ) as Record<string, unknown>;
+      ));
       return restoreAuthoritativeCharacterDefinitionV2(
         input.baseDefinition,
         CharacterDefinitionV2Schema.parse(repaired.definition),
         input.sourceKind,
       );
     } catch (error) {
-      return this.fallbackOrThrow(
-        error,
-        () => this.fallback.generateCharacterDefinitionV2(input),
-      );
+      throw error;
     }
   }
 
@@ -1475,19 +1500,29 @@ the definition.`,
     input: GenerateCharacterDefinitionV2Input,
   ) {
     const gaps = listCharacterDefinitionGapsV2(input.baseDefinition);
-    if (gaps.length === 0 || !input.sourceText.trim()) {
+    if (gaps.length === 0) {
       return structuredClone(input.baseDefinition);
+    }
+    if (!input.sourceText.trim()) {
+      throw new Error("Character definition gaps require a non-empty owner source");
     }
     const upgrade = input.sourceKind === "upgrade_description";
     try {
-      const data = await this.chatJson(
+      const data = CharacterDefinitionFillCandidateEnvelopeSchema.parse(
+        await this.chatJson(
         `You fill missing structured character fields from an owner source and a
 deterministic base snapshot. Return JSON only: {"fill": object}.
 
 fill keys are required and nullable. Use null to skip a key. Description fields are
-plain Japanese or English strings, not objects. actionNorms need only
-id, statement, force, and selfAwareness. speech needs only register and cadence.
+plain Japanese or English strings, not objects. actionNorms must contain complete
+when, response, priority, force, selfAwareness, exceptions, and description fields.
+Every response must select at least one actionRef, actionKind, or tacticTag. speech needs only register and cadence.
 relationshipSeeds use role names only, never character IDs.
+
+Unstructured action-norm sources are persisted prose statements that must be
+translated into complete actionNorms when that gap is present. They are source
+material, not executable selectors; never map them mechanically to wait or any
+other default action.
 
 Do not regenerate identity, combat, capabilities, inventory, loadout, or numeric psyche
 dynamics. ${upgrade
@@ -1496,6 +1531,7 @@ dynamics. ${upgrade
         JSON.stringify({
           sourceKind: input.sourceKind,
           ownerSource: input.sourceText.slice(0, 6000),
+          unstructuredActionNormSources: input.unstructuredActionNormSources ?? [],
           gaps,
           preserved: characterDefinitionPreservedSnapshotV2(input.baseDefinition),
         }),
@@ -1506,7 +1542,7 @@ dynamics. ${upgrade
           temperature: 0.2,
           responseFormat: CHARACTER_DEFINITION_FILL_RESPONSE_FORMAT,
         },
-      ) as Record<string, unknown>;
+      ));
       try {
         const fill = parseCharacterDefinitionGapFillV2(data.fill ?? {});
         return restoreAuthoritativeCharacterDefinitionV2(
@@ -1522,17 +1558,19 @@ dynamics. ${upgrade
         const firstIssues = firstError instanceof z.ZodError
           ? firstError.issues
           : [{ code: "custom", path: [], message: String(firstError) }];
-        const repaired = await this.chatJson(
+        const repaired = CharacterDefinitionFillCandidateEnvelopeSchema.parse(
+          await this.chatJson(
           `You repair one rejected character definition fill. Return JSON only:
 {"fill": object}.
 
-Use the same fill shape: nullable keys, string descriptions, actionNorms as
-id/statement/force/selfAwareness, speech as register/cadence. Correct only the
+Use the same fill shape: nullable keys, string descriptions, complete structured
+actionNorms, and speech as register/cadence. Correct only the
 listed issues. Do not regenerate identity, combat, capabilities, inventory, or
 loadout. null and [] are valid.`,
           JSON.stringify({
             sourceKind: input.sourceKind,
             ownerSource: input.sourceText.slice(0, 6000),
+            unstructuredActionNormSources: input.unstructuredActionNormSources ?? [],
             rejectedFill: data.fill ?? {},
             validationIssues: firstIssues.map((issue) => ({
               code: "code" in issue ? issue.code : "custom",
@@ -1547,7 +1585,7 @@ loadout. null and [] are valid.`,
             temperature: 0.2,
             responseFormat: CHARACTER_DEFINITION_FILL_RESPONSE_FORMAT,
           },
-        ) as Record<string, unknown>;
+        ));
         try {
           const fill = parseCharacterDefinitionGapFillV2(repaired.fill ?? {});
           return restoreAuthoritativeCharacterDefinitionV2(
@@ -1567,19 +1605,17 @@ loadout. null and [] are valid.`,
         }
       }
     } catch (error) {
-      return this.fallbackOrThrow(
-        error,
-        () => this.fallback.generateCharacterDefinitionV2(input),
-      );
+      throw error;
     }
   }
 
   async reviewCharacterDefinitionV2(
     input: ReviewCharacterDefinitionV2Input,
   ): Promise<ReviewCharacterDefinitionV2Result> {
-    if (!this.client) return this.fallback.reviewCharacterDefinitionV2(input);
+    if (!this.client) throw new Error("LLM client not configured");
     try {
-      const data = await this.chatJson(
+      const data = CharacterDefinitionReviewEnvelopeSchema.parse(
+        await this.chatJson(
         `You review a CharacterDefinitionV2 candidate against the owner source and
 mechanical findings. Return JSON only: {
   "verdict": "accept"|"revise",
@@ -1588,18 +1624,22 @@ mechanical findings. Return JSON only: {
 }
 
 fill uses the same nullable-key shape as generation: string descriptions, speech as
-{register,cadence}, actionNorms as {id,statement,force,selfAwareness}, relationshipSeeds
-as role names only. Use null to skip a key. Do not emit consumerTags, clause trees,
-or numeric dynamics.
+{register,cadence}, complete structured actionNorms, and relationshipSeeds as role
+names only. Use null to skip a key. Do not emit consumerTags or numeric dynamics.
 
 Fix every mechanical finding. Do not change identity, combat, capabilities, inventory,
 loadout, or numeric psyche dynamics. For sourceKind=upgrade_description, do not invent
 missing history, causes, relationships, or capabilities; prefer null or [] over
 fabrication. If the candidate is already faithful and the findings are empty,
-verdict=accept and fill=null.`,
+verdict=accept and fill=null.
+
+Unstructured action-norm sources are persisted prose statements to compare against
+the candidate. They are not executable selectors and must not be mechanically mapped
+to wait or another default action.`,
         JSON.stringify({
           sourceKind: input.sourceKind,
           ownerSource: input.sourceText.slice(0, 6000),
+          unstructuredActionNormSources: input.unstructuredActionNormSources ?? [],
           gaps: input.gaps,
           findings: input.findings,
           preserved: characterDefinitionPreservedSnapshotV2(input.baseDefinition),
@@ -1620,32 +1660,16 @@ verdict=accept and fill=null.`,
           temperature: 0.15,
           responseFormat: CHARACTER_DEFINITION_REVIEW_RESPONSE_FORMAT,
         },
-      ) as Record<string, unknown>;
-      const verdict = data.verdict === "revise" ? "revise" as const : "accept" as const;
-      const issues = Array.isArray(data.issues)
-        ? data.issues.slice(0, 16).map((raw) => {
-            const value = raw as Record<string, unknown>;
-            return {
-              code: String(value.code ?? "review_issue").slice(0, 80),
-              path: String(value.path ?? "definition").slice(0, 160),
-              message: String(value.message ?? "").slice(0, 320),
-            };
-          }).filter((issue) => issue.message.length > 0)
-        : [];
+      ));
+      const verdict = data.verdict;
+      const issues = data.issues;
       let fill: ReturnType<typeof parseCharacterDefinitionGapFillV2> | null = null;
       if (verdict === "revise" && data.fill) {
-        try {
-          fill = parseCharacterDefinitionGapFillV2(data.fill);
-        } catch {
-          fill = null;
-        }
+        fill = parseCharacterDefinitionGapFillV2(data.fill);
       }
       return { verdict, issues, fill };
     } catch (error) {
-      return this.fallbackOrThrow(
-        error,
-        () => this.fallback.reviewCharacterDefinitionV2(input),
-      );
+      throw error;
     }
   }
 
@@ -2607,14 +2631,21 @@ Return JSON only: {"delta": {"interior":{"speechAppraisal":{"anticipatedImpact":
         const decoded = decodeCompactDeepPsycheAdvance(data);
         const parsed = CharacterDeepPsycheCompactAdvanceSchema.safeParse(decoded);
         if (!parsed.success) {
+          const issues = compactDeepPsycheIssueSummaries(decoded);
           console.warn(
             "[llm] compact psyche rejected",
-            compactDeepPsycheIssueSummaries(decoded),
+            issues,
           );
-          throw new Error("Deep psyche returned invalid compact state");
+          throw new LlmApplicationResultError(
+            "schema_invalid",
+            issues.map((issue) => `${issue.path || "(root)"}:${issue.code}`).join(";"),
+          );
         }
         if (input.phase === "aftermath" && !parsed.data.delta.privateMemory?.trim()) {
-          throw new Error("Deep psyche omitted the compact aftermath reflection");
+          throw new LlmApplicationResultError(
+            "consistency_invalid",
+            "delta.privateMemory:required_for_aftermath",
+          );
         }
         return {
           ...CharacterDeepPsycheUpdateSchema.parse({
@@ -2658,7 +2689,14 @@ Return JSON only with privateMemory, currentGoal, emotion, beliefs, observations
         },
       )) as unknown;
       const parsed = CharacterDeepPsycheUpdateSchema.safeParse(data);
-      if (!parsed.success) throw new Error("Deep psyche returned invalid state");
+      if (!parsed.success) {
+        throw new LlmApplicationResultError(
+          "schema_invalid",
+          parsed.error.issues.slice(0, 12).map((issue) =>
+            `${issue.path.map(String).join(".") || "(root)"}:${issue.code}`
+          ).join(";"),
+        );
+      }
       return parsed.data;
     } catch (error) {
       return this.fallbackOrThrow(error, () => this.fallback.advanceCharacterPsyche(input));

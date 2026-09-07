@@ -68,6 +68,8 @@ export type ObserverPerceptionProjectionInput = {
   quantizedMechanicalEvidence: readonly QuantizedMechanicalEvidence[];
   reserveEvidence: readonly ServerOnlyReserveCue[];
   sensoryEvidence: readonly PerceptionEvidence[];
+  /** Evidence that must survive deterministic frame-capacity selection. */
+  priorityEvidenceIds?: readonly string[];
   previousFrame?: CharacterPerceptionFrame;
   previousRegistry?: ObserverContactRegistry;
   legacyCounterpartIdentified?: boolean;
@@ -343,24 +345,62 @@ export function projectObserverPerception(
     input.observerSide,
     input.reserveEvidence,
   );
+  const boundedSlots = boundPerceptionSlots({
+    observerSide: input.observerSide,
+    slots: [self, counterpart, ...otherSlots],
+    priorityEvidenceIds: input.priorityEvidenceIds ?? [],
+  });
+  const [boundedSelf, boundedCounterpart, ...boundedOtherSlots] = boundedSlots;
   const latestDiff = perceptionDiff(
     input.previousFrame,
     input.semanticState.revision,
-    [self, counterpart, ...otherSlots],
+    boundedSlots,
   );
   const frame = frameSchema(input.observerSide).parse({
     schemaVersion: 1,
     observer: { side: input.observerSide, self: "self" },
     turn: input.turn,
     revision: input.semanticState.revision,
-    self,
-    counterpart,
-    others: otherSlots,
+    self: boundedSelf,
+    counterpart: boundedCounterpart,
+    others: boundedOtherSlots,
     qualitativeChanges,
     reserveCues,
     latestDiff,
   });
   return { frame: deepFreeze(frame), registry };
+}
+
+function boundPerceptionSlots(input: {
+  observerSide: BattleSide;
+  slots: PerceptionSlot[];
+  priorityEvidenceIds: readonly string[];
+}): PerceptionSlot[] {
+  const priorityPerceptIds = new Set(input.priorityEvidenceIds.map((evidenceId) =>
+    observerPerceptId(input.observerSide, evidenceId)
+  ));
+  const ranked = input.slots.flatMap((slot, slotIndex) =>
+    slot.percepts.map((percept, perceptIndex) => ({
+      percept,
+      slotIndex,
+      perceptIndex,
+      priority: priorityPerceptIds.has(percept.perceptId) ? 1 : 0,
+    }))
+  ).sort((a, b) =>
+    b.priority - a.priority ||
+    SALIENCE_RANK[b.percept.salience] - SALIENCE_RANK[a.percept.salience] ||
+    a.slotIndex - b.slotIndex ||
+    a.perceptIndex - b.perceptIndex ||
+    a.percept.perceptId.localeCompare(b.percept.perceptId)
+  );
+  const retained = new Set(
+    ranked.slice(0, PERCEPTION_LIMITS.maxPerceptsPerFrame)
+      .map(({ percept }) => percept.perceptId),
+  );
+  return input.slots.map((slot) => ({
+    ...slot,
+    percepts: slot.percepts.filter((percept) => retained.has(percept.perceptId)),
+  }));
 }
 
 /** Engine-only fallback used when full projection itself fails. */

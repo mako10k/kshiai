@@ -6,6 +6,7 @@ import {
   compileCharacterRelationshipProgramV2,
   evaluateCharacterActionNormsV2,
   legacyCharacterSheetToDefinitionV2,
+  prepareLegacyCharacterDefinitionGenerationV2,
   projectCharacterRelationshipDescriptionV2,
   resolveCharacterRelationshipV2,
   type CharacterDefinitionV2,
@@ -126,6 +127,84 @@ const legalActions: CharacterNormActionCandidateV2[] = [{
 }];
 
 describe("CharacterDefinitionV2 deterministic rule compilers", () => {
+  it("rejects an unstructured legacy principle instead of inventing mechanics", () => {
+    assert.throws(
+      () => legacyCharacterSheetToDefinitionV2({
+        ...legacySheet(),
+        decisionProfile: {
+          defaultObjective: {
+            id: "victory",
+            statement: "勝利を目指す",
+            priority: 50,
+          },
+          principles: [{
+            id: "protect-others",
+            statement: "危険なときも他者を守る",
+            priority: 80,
+            force: "constraint",
+          }],
+        },
+      }),
+      /UNSTRUCTURED_LEGACY_ACTION_NORMS:protect-others/,
+    );
+  });
+
+  it("defers legacy principles only through the explicit structured-generation preparation", () => {
+    const principle = {
+      id: "protect-others",
+      statement: "危険なときも他者を守る",
+      priority: 80,
+      force: "constraint" as const,
+    };
+    const prepared = prepareLegacyCharacterDefinitionGenerationV2({
+      ...legacySheet(),
+      decisionProfile: {
+        defaultObjective: {
+          id: "victory",
+          statement: "勝利を目指す",
+          priority: 50,
+        },
+        principles: [principle],
+      },
+    });
+
+    assert.deepEqual(prepared.baseDefinition.actionNorms, []);
+    assert.deepEqual(prepared.unstructuredActionNormSources, [principle]);
+  });
+
+  it("rejects a structured norm whose response selects no actions", () => {
+    const base = legacyCharacterSheetToDefinitionV2(legacySheet());
+    const parsed = CharacterDefinitionV2Schema.safeParse({
+      ...base,
+      actionNorms: [{
+        id: "empty-response",
+        when: {
+          match: "all",
+          clauses: [{ kind: "always", operator: "is", value: "true" }],
+        },
+        response: {
+          disposition: "prefer",
+          actionRefs: [],
+          actionKinds: [],
+          tacticTags: [],
+          statement: "何かを優先する",
+          fallbackActionRef: null,
+        },
+        priority: 50,
+        force: "preference",
+        selfAwareness: "aware",
+        exceptions: [],
+        description: null,
+      }],
+    });
+
+    assert.equal(parsed.success, false);
+    assert.match(
+      parsed.error?.issues.map((issue) => issue.message).join(" ") ?? "",
+      /requires at least one structured action selector/,
+    );
+  });
+
   it("rejects statically contradictory equal-rank constraints", () => {
     const base = legacyCharacterSheetToDefinitionV2(legacySheet());
     assert.equal(CharacterDefinitionV2Schema.safeParse({

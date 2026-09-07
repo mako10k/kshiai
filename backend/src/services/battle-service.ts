@@ -81,8 +81,14 @@ import {
   type BattleEncounterProposal,
   type BattleTurnRecord,
   type BattleTurnPipelineTrace,
+  type BattlePipelineInvocationOutcome,
   type ResolvedBattleAction,
   type CharacterAgentState,
+  type CharacterActionReactionContext,
+  type CharacterConversationContext,
+  type CharacterPerceptionFrame,
+  type BattleSocialView,
+  type CharacterConsciousSelfStaticProjectionV2,
   type CharacterExpressionBrief,
   type CharacterActionProposalValidationReceipt,
   type EnvironmentProcessProposal,
@@ -129,6 +135,7 @@ import {
   parseActionSignature,
   quantizeCommittedMechanicalEvidence,
   projectObserverPerception,
+  PERCEPTION_LIMITS,
   type QuantizedMechanicalEvidence,
   type ServerOnlyReserveCue,
   type NarrationPerceptionView,
@@ -178,10 +185,17 @@ import { config, type BattleCausalNarrationMode } from "../config.js";
 import { newId } from "../id.js";
 import type { LlmProvider } from "../llm/index.js";
 import { isProviderOperationAccountingError } from "../llm/provider-accounting.js";
+import {
+  classifyLlmProviderError,
+  isLlmApplicationResultError,
+} from "../llm/provider-errors.js";
 import type {
   AftermathNarrationResult,
   CharacterDeepPsycheCompactInput,
+  CharacterDeepPsycheAdvance,
+  CharacterDeepPsycheInput,
   CharacterExpressionCompactInput,
+  CharacterExpressionInput,
   CharacterSpeechSource,
   JudgmentNarrationResult,
   NarrationActionBeat,
@@ -190,6 +204,7 @@ import type {
   RefereeResult,
   RefereeTurnFact,
   CharacterActionDecisionContext,
+  CharacterCounterpartKnowledge,
 } from "../llm/types.js";
 import {
   buildPromptMechanicalEvidence,
@@ -976,6 +991,49 @@ async function withTimeout<T>(
   }
 }
 
+function boundedPipelineErrorDetail(error: unknown): string | null {
+  if (isLlmApplicationResultError(error)) return error.detail;
+  if (!error || typeof error !== "object") return null;
+  const value = error as { name?: unknown; code?: unknown; status?: unknown };
+  const parts = [value.name, value.code, value.status]
+    .filter((part) => typeof part === "string" || typeof part === "number")
+    .map((part) => String(part).replace(/[^A-Za-z0-9_.:-]/g, "").slice(0, 40))
+    .filter(Boolean);
+  return parts.length > 0 ? parts.join(":").slice(0, 240) : null;
+}
+
+function rejectedPipelineOutcome(error: unknown): BattlePipelineInvocationOutcome {
+  if (isLlmApplicationResultError(error)) {
+    return {
+      disposition: "application_rejected",
+      reasonCode: error.reason,
+      detail: boundedPipelineErrorDetail(error),
+    };
+  }
+  const reason = classifyLlmProviderError(error);
+  return {
+    disposition: "provider_unavailable",
+    reasonCode: reason === "other" ? "provider_error" : reason,
+    detail: boundedPipelineErrorDetail(error),
+  };
+}
+
+function composeExpressionProjectionEvidence(input: {
+  providerEvidence: readonly PerceptionEvidence[];
+  committedExpressionEvidence: readonly PerceptionEvidence[];
+}): PerceptionEvidence[] {
+  const selected = new Map<string, PerceptionEvidence>();
+  for (const evidence of [
+    ...input.committedExpressionEvidence,
+    ...input.providerEvidence,
+  ]) {
+    if (selected.has(evidence.evidenceId)) continue;
+    selected.set(evidence.evidenceId, evidence);
+    if (selected.size >= PERCEPTION_LIMITS.maxPerceptsPerFrame) break;
+  }
+  return [...selected.values()];
+}
+
 function initialAgentState(
   sheet: CharacterSheet,
   selfReference = sheet.identity?.selfNames[0] ?? null,
@@ -1688,13 +1746,19 @@ function deepFreezeConsumerInput<T>(value: T): T {
   return value;
 }
 
-type CharacterAgentSharedConsumerInput = Omit<
-  Parameters<LlmProvider["advanceCharacterAgent"]>[0],
-  "decision" | "psyche"
-> & {
+type CharacterAgentSharedConsumerInput = {
+  phase: "prologue" | "turn" | "aftermath";
+  character: Parameters<LlmProvider["advanceCharacterAgent"]>[0]["character"];
+  structuredSelf?: CharacterConsciousSelfStaticProjectionV2;
   /** Server-private continuity used only by the preceding deep-psyche stage. */
   psyche: CharacterAgentState;
-  decision?: Parameters<LlmProvider["advanceCharacterAgent"]>[0]["decision"];
+  actionReaction: CharacterActionReactionContext;
+  conversation: CharacterConversationContext;
+  dialoguePipeline?: DialoguePipelineSettings;
+  perception: CharacterPerceptionFrame;
+  social?: BattleSocialView;
+  counterpart?: CharacterCounterpartKnowledge;
+  decision?: CharacterActionDecisionContext;
 };
 
 /** Build the shared, observer-safe input for a psyche then speech/action pair. */
@@ -2152,7 +2216,9 @@ export async function advanceCharacterAgents(input: {
     console.warn("[battle] character agents skipped: no observer-safe action available");
     return { state: refreshNarratorContinuity(stateWithRecord), characterSpeeches: [] };
   }
-  const toPsycheInput = (consumerInput: typeof inputA) => {
+  const toPsycheInput = (
+    consumerInput: typeof inputA,
+  ): CharacterDeepPsycheInput | null => {
     if (!consumerInput) return null;
     // Accepted V1 contract: normal-turn private reaction is deterministic and
     // must not escalate to a provider when features are absent or uncertain.
@@ -2198,7 +2264,7 @@ export async function advanceCharacterAgents(input: {
         ...(consumerInput.social ? { social: consumerInput.social } : {}),
         ...(consumerInput.counterpart ? { counterpart: consumerInput.counterpart } : {}),
       } satisfies CharacterDeepPsycheCompactInput;
-      return compactInput as unknown as Parameters<LlmProvider["advanceCharacterPsyche"]>[0];
+      return compactInput;
     }
     const {
       decision: _decision,
@@ -2373,7 +2439,7 @@ export async function advanceCharacterAgents(input: {
     consumerInput: typeof inputA,
     psyche: CharacterAgentState,
     expressionBrief: CharacterExpressionBrief,
-  ) => {
+  ): CharacterExpressionInput | null => {
     if (!consumerInput) return null;
     if (compactContext) {
       const packet = consumerInput === inputA
@@ -2409,7 +2475,7 @@ export async function advanceCharacterAgents(input: {
         ...(consumerInput.counterpart ? { counterpart: consumerInput.counterpart } : {}),
         ...(consumerInput.decision ? { decision: consumerInput.decision } : {}),
       } satisfies CharacterExpressionCompactInput;
-      return compactInput as unknown as Parameters<LlmProvider["advanceCharacterAgent"]>[0];
+      return compactInput;
     }
     const { dialoguePipeline: _dialoguePipeline, ...speechActionInput } = consumerInput;
     return {
@@ -2439,11 +2505,12 @@ export async function advanceCharacterAgents(input: {
       "[battle] character agents skipped",
       error instanceof Error ? error.message : error,
     );
-    // A failed agent has no authoritative new utterance; retain prior state.
-    return {
-      state: refreshNarratorContinuity(stateWithRecord),
-      characterSpeeches: [],
-    };
+    // Preserve the conservative result, but continue through trace assembly so
+    // an envelope timeout is not indistinguishable from a normal skipped lane.
+    agents = [
+      { status: "rejected", reason: error },
+      { status: "rejected", reason: error },
+    ];
   }
   const agentAccountingFailure = agents.find(
     (result) => result.status === "rejected" &&
@@ -2505,6 +2572,31 @@ export async function advanceCharacterAgents(input: {
         ? "fulfilled" as const
         : "rejected" as const
       : "skipped" as const,
+    outcome: !consumerInput
+      ? {
+          disposition: "skipped" as const,
+          reasonCode: "not_invoked",
+          detail: null,
+        }
+      : providerResult.status === "rejected"
+        ? rejectedPipelineOutcome(providerResult.reason)
+        : !providerOutput
+          ? {
+              disposition: "application_rejected" as const,
+              reasonCode: "consistency_invalid",
+              detail: "fulfilled_without_output",
+            }
+          : accepted.actionProposalValidation?.status === "rejected"
+            ? {
+                disposition: "application_rejected" as const,
+                reasonCode: accepted.actionProposalValidation.reason ?? "proposal_rejected",
+                detail: "speech_accepted_action_rejected",
+              }
+            : {
+                disposition: "accepted" as const,
+                reasonCode: "accepted",
+                detail: null,
+              },
     providerOutput: providerOutput ? structuredClone(providerOutput) : null,
     actionProposalValidation: accepted.actionProposalValidation
       ? structuredClone(accepted.actionProposalValidation)
@@ -2545,6 +2637,20 @@ export async function advanceCharacterAgents(input: {
         ?.relationship?.receipt ?? null,
     },
   };
+  const clonePsycheProviderOutput = (value: CharacterDeepPsycheAdvance) => {
+    const {
+      observableManifestations,
+      narrativeCues,
+      ...stateAndDelta
+    } = structuredClone(value);
+    return {
+      ...stateAndDelta,
+      ...(observableManifestations
+        ? { observableManifestations: [...observableManifestations] }
+        : {}),
+      ...(narrativeCues ? { narrativeCues: [...narrativeCues] } : {}),
+    };
+  };
   const tracePsycheSide = (
     consumerInput: typeof psycheInputA,
     providerResult: typeof psycheResultA,
@@ -2556,8 +2662,27 @@ export async function advanceCharacterAgents(input: {
         ? "fulfilled" as const
         : "rejected" as const
       : "skipped" as const,
+    outcome: !consumerInput
+      ? {
+          disposition: "skipped" as const,
+          reasonCode: "not_invoked",
+          detail: null,
+        }
+      : providerResult.status === "rejected"
+        ? rejectedPipelineOutcome(providerResult.reason)
+        : !providerResult.value
+          ? {
+              disposition: "application_rejected" as const,
+              reasonCode: "consistency_invalid",
+              detail: "fulfilled_without_output",
+            }
+          : {
+              disposition: "accepted" as const,
+              reasonCode: "accepted",
+              detail: null,
+            },
     providerOutput: providerResult.status === "fulfilled" && providerResult.value
-      ? structuredClone(providerResult.value)
+      ? clonePsycheProviderOutput(providerResult.value)
       : null,
     acceptedOutput: structuredClone(acceptedState),
   });
@@ -2580,10 +2705,10 @@ export async function advanceCharacterAgents(input: {
         : "spoken" as const,
     })),
   });
-  const committedSpeechSides = new Set(
+  let committedSpeechSides = new Set(
     utteranceEvents.flatMap((event) => event.actorSide ? [event.actorSide] : []),
   );
-  const characterSpeeches = candidateSpeeches.filter((speech) =>
+  let characterSpeeches = candidateSpeeches.filter((speech) =>
     committedSpeechSides.has(speech.side)
   );
   const eventsWithUtterances = [...input.events, ...utteranceEvents];
@@ -2617,10 +2742,24 @@ export async function advanceCharacterAgents(input: {
     events: manifestationEvents,
     carrierEvidence: speechEvidence,
   });
-  const eventsWithExpressions = [
+  let eventsWithExpressions = [
     ...eventsWithUtterances,
     ...manifestationEvents,
   ];
+  let committedUtteranceEvents = utteranceEvents;
+  let committedSpeechEvidence = speechEvidence;
+  let expressionProjectionOutcome: BattlePipelineInvocationOutcome =
+    utteranceEvents.length === 0 && manifestationEvents.length === 0
+      ? {
+          disposition: "skipped",
+          reasonCode: "no_committed_expression",
+          detail: null,
+        }
+      : {
+          disposition: "skipped",
+          reasonCode: "semantic_unavailable",
+          detail: null,
+        };
   let stateAfterUtterances: BattleState = {
     ...input.after,
     agentStateA: {
@@ -2646,41 +2785,29 @@ export async function advanceCharacterAgents(input: {
         ? acceptedB.nextAction
         : input.after.plannedActionB,
   };
-  stateAfterUtterances.agentStateA = {
-    ...(stateAfterUtterances.agentStateA as CharacterAgentState),
-    conversationHistory: extendConversationHistory({
-      previous: previousA,
-      side: "a",
-      turn: input.after.turn,
-      utteranceEvents,
-      speechEvidence,
-      limit: dialoguePipeline.conversationHistoryLimit,
-    }),
-  };
-  stateAfterUtterances.agentStateB = {
-    ...(stateAfterUtterances.agentStateB as CharacterAgentState),
-    conversationHistory: extendConversationHistory({
-      previous: previousB,
-      side: "b",
-      turn: input.after.turn,
-      utteranceEvents,
-      speechEvidence,
-      limit: dialoguePipeline.conversationHistoryLimit,
-    }),
-  };
-  if (stateAfterUtterances.semanticState) {
+  if (
+    stateAfterUtterances.semanticState &&
+    (utteranceEvents.length > 0 || manifestationEvents.length > 0)
+  ) {
     try {
+      const sensoryEvidence = composeExpressionProjectionEvidence({
+        providerEvidence: input.sensoryEvidence ?? [],
+        committedExpressionEvidence: [
+          ...speechEvidence,
+          ...manifestationEvidence,
+        ],
+      });
       const projectionBase = {
         turn: stateAfterUtterances.turn,
         semanticState: stateAfterUtterances.semanticState,
         worldState: stateAfterUtterances.worldState,
         events: eventsWithExpressions,
         quantizedMechanicalEvidence: input.quantizedMechanicalEvidence ?? [],
-        sensoryEvidence: [
-          ...(input.sensoryEvidence ?? []),
+        sensoryEvidence,
+        priorityEvidenceIds: [
           ...speechEvidence,
           ...manifestationEvidence,
-        ],
+        ].map((evidence) => evidence.evidenceId),
       };
       const projectedA = projectObserverPerception({
         ...projectionBase,
@@ -2690,10 +2817,10 @@ export async function advanceCharacterAgents(input: {
           parameters: stateAfterUtterances.sideA.parameters,
           baseParameters: stateAfterUtterances.sideA.baseParameters,
         }),
-        previousFrame: input.before.perceptionFrameA,
-        previousRegistry: input.before.perceptionRegistryA,
+        previousFrame: input.after.perceptionFrameA,
+        previousRegistry: input.after.perceptionRegistryA,
         legacyCounterpartIdentified:
-          input.before.perceptionRegistryA === undefined,
+          input.after.perceptionRegistryA === undefined,
       });
       const projectedB = projectObserverPerception({
         ...projectionBase,
@@ -2703,10 +2830,10 @@ export async function advanceCharacterAgents(input: {
           parameters: stateAfterUtterances.sideB.parameters,
           baseParameters: stateAfterUtterances.sideB.baseParameters,
         }),
-        previousFrame: input.before.perceptionFrameB,
-        previousRegistry: input.before.perceptionRegistryB,
+        previousFrame: input.after.perceptionFrameB,
+        previousRegistry: input.after.perceptionRegistryB,
         legacyCounterpartIdentified:
-          input.before.perceptionRegistryB === undefined,
+          input.after.perceptionRegistryB === undefined,
       });
       stateAfterUtterances = {
         ...stateAfterUtterances,
@@ -2715,13 +2842,63 @@ export async function advanceCharacterAgents(input: {
         perceptionRegistryA: projectedA.registry,
         perceptionRegistryB: projectedB.registry,
       };
+      expressionProjectionOutcome = {
+        disposition: "accepted",
+        reasonCode: "accepted",
+        detail: null,
+      };
     } catch (error) {
       console.warn(
-        "[battle] committed utterance projection retained prior frame",
+        "[battle] committed expression projection rejected atomically",
         error instanceof Error ? error.message : error,
       );
+      expressionProjectionOutcome = {
+        disposition: "application_rejected",
+        reasonCode: "projection_invalid",
+        detail: boundedPipelineErrorDetail(error),
+      };
+      committedSpeechSides = new Set();
+      characterSpeeches = [];
+      committedUtteranceEvents = [];
+      committedSpeechEvidence = [];
+      eventsWithExpressions = [...input.events];
+      stateAfterUtterances = {
+        ...stateAfterUtterances,
+        perceptionFrameA: input.after.perceptionFrameA,
+        perceptionFrameB: input.after.perceptionFrameB,
+        perceptionRegistryA: input.after.perceptionRegistryA,
+        perceptionRegistryB: input.after.perceptionRegistryB,
+      };
     }
   }
+  stateAfterUtterances.agentStateA = {
+    ...(stateAfterUtterances.agentStateA as CharacterAgentState),
+    lastSpeech: committedSpeechSides.has("a")
+      ? acceptedA.state.lastSpeech
+      : previousA.lastSpeech,
+    conversationHistory: extendConversationHistory({
+      previous: previousA,
+      side: "a",
+      turn: input.after.turn,
+      utteranceEvents: committedUtteranceEvents,
+      speechEvidence: committedSpeechEvidence,
+      limit: dialoguePipeline.conversationHistoryLimit,
+    }),
+  };
+  stateAfterUtterances.agentStateB = {
+    ...(stateAfterUtterances.agentStateB as CharacterAgentState),
+    lastSpeech: committedSpeechSides.has("b")
+      ? acceptedB.state.lastSpeech
+      : previousB.lastSpeech,
+    conversationHistory: extendConversationHistory({
+      previous: previousB,
+      side: "b",
+      turn: input.after.turn,
+      utteranceEvents: committedUtteranceEvents,
+      speechEvidence: committedSpeechEvidence,
+      limit: dialoguePipeline.conversationHistoryLimit,
+    }),
+  };
   const record = existingRecord
     ? {
         ...recordWithFocusShadow,
@@ -2737,6 +2914,7 @@ export async function advanceCharacterAgents(input: {
         pipelineTrace: {
           schemaVersion: 1 as const,
           ...(recordWithFocusShadow.pipelineTrace ?? {}),
+          committedExpressionProjection: expressionProjectionOutcome,
           deepPsyche: psycheTrace,
           characterAgents: characterAgentTrace,
           characterDefinitionRules: definitionRuleTrace,
@@ -2753,6 +2931,7 @@ export async function advanceCharacterAgents(input: {
         pipelineTrace: {
           schemaVersion: 1 as const,
           ...(recordWithFocusShadow.pipelineTrace ?? {}),
+          committedExpressionProjection: expressionProjectionOutcome,
           deepPsyche: psycheTrace,
           characterAgents: characterAgentTrace,
           characterDefinitionRules: definitionRuleTrace,
@@ -5161,10 +5340,9 @@ async function advanceTurnWithLease(input: {
         styleName: next.narrationStyle?.displayName,
       }
     : null;
-  const combatNarrationInput: DeferredNarrationInput = {
-    kind: "combat",
-    request: narrationCallInput ?? {},
-  };
+  const combatNarrationInput: DeferredNarrationInput | null = narrationCallInput
+    ? { kind: "combat", request: narrationCallInput }
+    : null;
   const narrationTurnBrief = narrationView
     ? buildNarrationTurnBrief(narrationView)
     : null;
@@ -5308,7 +5486,9 @@ async function advanceTurnWithLease(input: {
         state: next,
         operationId: input.operationId,
         phases: ["combat"],
-        narrationInputs: { combat: combatNarrationInput },
+        narrationInputs: combatNarrationInput
+          ? { combat: combatNarrationInput }
+          : undefined,
         deferCombatNarration: !closeSceneBeat,
       }),
       closed: closeSceneBeat,
@@ -5475,7 +5655,7 @@ async function advanceTurnWithLease(input: {
         ? ["combat", "judgment"]
         : ["combat"],
       narrationInputs: {
-        combat: combatNarrationInput,
+        ...(combatNarrationInput ? { combat: combatNarrationInput } : {}),
         ...(judgmentNarrationInput ? { judgment: judgmentNarrationInput } : {}),
       },
       deferCombatNarration: !closeSceneBeat,
@@ -5535,9 +5715,15 @@ function buildFrozenNarrationInput(
   };
 }
 
+type DeferredNarrationRequest =
+  | Omit<Parameters<LlmProvider["narrateTurn"]>[0], "onProgress">
+  | Omit<Parameters<LlmProvider["narratePrologue"]>[0], "onProgress">
+  | Omit<Parameters<LlmProvider["narrateAftermath"]>[0], "onProgress">
+  | Parameters<LlmProvider["narrateJudgment"]>[0];
+
 type DeferredNarrationInput = {
   kind: "prologue" | "combat" | "judgment" | "aftermath";
-  request: Record<string, unknown>;
+  request: DeferredNarrationRequest;
 };
 
 export function completeAdvancePhases(input: {
