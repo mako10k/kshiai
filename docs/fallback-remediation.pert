@@ -162,6 +162,7 @@ task FPR_P2_DURABLE_DIAGNOSTICS P1_READY -> P2_READY:
   title "Add bounded durable diagnostics to valid continuation"
   description "For points 5, 7, and 17, retain provider routing, deterministic encounter context, and no-change free-action behavior. Add bounded reason-coded receipts for failed and selected provider, cooldown, encounter source, and free-action provider-versus-schema subtype at existing persistence boundaries without adding providers, retries, controllers, or private output retention."
   duration 3p
+  status done
   owner "codex"
   source "docs/fallback-point-inventory-2026-09-07.md"
   requires:
@@ -391,3 +392,16 @@ work_event WE-FPR-P1-COMPATIBILITY-FINISH-20260907:
   task FPR_P1_COMPATIBILITY_BOUNDARIES
   kind finish
   occurred_at 2026-09-07T18:34:49+09:00
+
+work_event WE-FPR-P2-DURABLE-DIAGNOSTICS-START-20260907:
+  model 1
+  task FPR_P2_DURABLE_DIAGNOSTICS
+  kind start
+  occurred_at 2026-09-07T18:46:42+09:00
+  planned_value 3p
+
+work_event WE-FPR-P2-DURABLE-DIAGNOSTICS-FINISH-20260907:
+  model 1
+  task FPR_P2_DURABLE_DIAGNOSTICS
+  kind finish
+  occurred_at 2026-09-07T19:11:40+09:00

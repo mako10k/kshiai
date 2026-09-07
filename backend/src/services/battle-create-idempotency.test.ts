@@ -18,6 +18,7 @@ process.env.CHARACTER_FOCUS_SHADOW_MODE = "shadow";
 
 const { closeDatabase, query } = await import("../db.js");
 const { MockLlmProvider } = await import("../llm/mock.js");
+const { createFallbackLlmProvider } = await import("../llm/fallback.js");
 const { ensureSystemNarrationStyles } = await import(
   "../repositories/narration-styles.js"
 );
@@ -99,6 +100,25 @@ describe("battle create idempotency", () => {
       [input.battleId],
     );
     const storedState = JSON.parse(stored.rows[0]!.state_json) as {
+      providerRouteReceipts?: Array<{
+        operation?: string;
+        selectedProvider?: string;
+        failures?: Array<{
+          provider?: string;
+          reason?: string;
+          disposition?: string;
+          cooldownMs?: number;
+        }>;
+      }>;
+      encounterContext?: {
+        sourceReceipt?: {
+          source?: string;
+          failureReason?: string | null;
+          providerRoutes?: Array<{
+            selectedProvider?: string;
+          }>;
+        };
+      };
       assetManifest?: {
         rules?: { characterFocus?: string };
         dialoguePipeline?: {
@@ -132,6 +152,11 @@ describe("battle create idempotency", () => {
       storedState.assetManifest?.rules?.characterFocus,
       CHARACTER_FOCUS_POLICY_V1,
     );
+    assert.deepEqual(storedState.encounterContext?.sourceReceipt, {
+      source: "provider",
+      failureReason: null,
+      providerRoutes: [],
+    });
     assert.equal(
       storedState.assetManifest?.dialoguePipeline?.activationSource,
       "default",
@@ -251,6 +276,73 @@ describe("battle create idempotency", () => {
         originalStateAfterSettingsChange.assetManifest?.dialoguePipeline,
       ),
       originalDialogueBinding,
+    );
+
+    const unavailableProvider = new MockLlmProvider();
+    unavailableProvider.prepareBattleEncounter = async () => {
+      throw new Error("timeout:prepareBattleEncounter:1000ms");
+    };
+    const unavailableBattleId = "btl_encounter_fallback_fixture";
+    await startBattle({
+      ...input,
+      battleId: unavailableBattleId,
+      llm: unavailableProvider,
+    });
+    const unavailableStored = await query<{ state_json: string }>(
+      "SELECT state_json FROM battles WHERE id = $1",
+      [unavailableBattleId],
+    );
+    const unavailableState = JSON.parse(
+      unavailableStored.rows[0]!.state_json,
+    ) as typeof storedState;
+    assert.equal(
+      unavailableState.encounterContext?.sourceReceipt?.source,
+      "deterministic_fallback",
+    );
+    assert.equal(
+      unavailableState.encounterContext?.sourceReceipt?.failureReason,
+      "timeout",
+    );
+
+    const unavailablePrimary = new MockLlmProvider();
+    Object.defineProperty(unavailablePrimary, "name", { value: "primary" });
+    unavailablePrimary.prepareBattleEncounter = async () => {
+      throw Object.assign(new Error("getaddrinfo ENOTFOUND"), {
+        code: "ENOTFOUND",
+      });
+    };
+    const selectedSecondary = new MockLlmProvider();
+    Object.defineProperty(selectedSecondary, "name", { value: "secondary" });
+    const routedBattleId = "btl_encounter_routed_fixture";
+    await startBattle({
+      ...input,
+      battleId: routedBattleId,
+      llm: createFallbackLlmProvider(
+        [unavailablePrimary, selectedSecondary],
+        60_000,
+      ),
+    });
+    const routedStored = await query<{ state_json: string }>(
+      "SELECT state_json FROM battles WHERE id = $1",
+      [routedBattleId],
+    );
+    const routedState = JSON.parse(
+      routedStored.rows[0]!.state_json,
+    ) as typeof storedState;
+    assert.equal(
+      routedState.providerRouteReceipts?.[0]?.selectedProvider,
+      "secondary",
+    );
+    assert.deepEqual(routedState.providerRouteReceipts?.[0]?.failures?.[0], {
+      provider: "primary",
+      reason: "dns",
+      disposition: "failed",
+      cooldownMs: 60_000,
+    });
+    assert.equal(
+      routedState.encounterContext?.sourceReceipt?.providerRoutes?.[0]
+        ?.selectedProvider,
+      "secondary",
     );
 
     const exhaustedProvider = new MockLlmProvider();

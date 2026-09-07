@@ -13,6 +13,7 @@ import {
   balanceSkill,
   buildBattleTurnRecord,
   buildBattleEncounterContext,
+  BattleEncounterProposalSchema,
   applyBattleNarratorRecognitionUpdates,
   updateBattleNarratorContinuity,
   selectNarratorContinuityForFocus,
@@ -78,6 +79,7 @@ import {
   type BattleAdjudication,
   type JudgmentPresentationProjection,
   type BattleEncounterProposal,
+  type BattleEncounterSourceReceipt,
   type BattleTurnRecord,
   type BattleTurnPipelineTrace,
   type BattlePipelineInvocationOutcome,
@@ -175,6 +177,7 @@ import {
   type CharacterNormActionCandidateV2,
   type CharacterNormFactV2,
   type CharacterRelationshipResolutionReceiptV2,
+  type LlmProviderRouteReceipt,
 } from "@kshiai/shared";
 import {
   recordBattleFinished,
@@ -183,6 +186,7 @@ import {
 import { config, type BattleCausalNarrationMode } from "../config.js";
 import { newId } from "../id.js";
 import type { LlmProvider } from "../llm/index.js";
+import { withLlmProviderRouteReceiptCapture } from "../llm/fallback.js";
 import { isProviderOperationAccountingError } from "../llm/provider-accounting.js";
 import {
   classifyLlmProviderError,
@@ -733,35 +737,51 @@ export async function startBattle(input: {
   const { activation: dialogueActivation, snapshot: dialoguePipelineSnapshot } =
     await resolveConfiguredDialoguePipelineActivation();
   let encounterProposal: BattleEncounterProposal | null = null;
+  const encounterRouteReceipts: LlmProviderRouteReceipt[] = [];
+  let encounterFailure: NonNullable<
+    BattleEncounterSourceReceipt["failureReason"]
+  > | null = null;
   try {
-    encounterProposal = await withTimeout(input.llm.prepareBattleEncounter({
-      sideA: {
-        displayName: mine.displayName,
-        nicknames: mine.identity?.nicknames ?? [],
-        selfNames: mine.identity?.selfNames ?? [],
-        epithets: mine.identity?.epithets ?? [],
-        traits: mine.traits,
-        narrativeBlurb: mine.narrativeBlurb,
-      },
-      sideB: {
-        displayName: opp.displayName,
-        nicknames: opp.identity?.nicknames ?? [],
-        selfNames: opp.identity?.selfNames ?? [],
-        epithets: opp.identity?.epithets ?? [],
-        traits: opp.traits,
-        narrativeBlurb: opp.narrativeBlurb,
-      },
-      field: {
-        displayName: battlefield.displayName,
-        scene: battlefield.scene,
-        terrain: battlefield.terrain,
-        conditions: battlefield.conditions,
-        narrativeSetup: battlefield.narrativeSetup,
-      },
-      priorMatchSummary,
-    }), FAST_LLM_ENVELOPE_TIMEOUT_MS, "prepareBattleEncounter");
+    const rawEncounterProposal = await withLlmProviderRouteReceiptCapture(
+      encounterRouteReceipts,
+      () => withTimeout(input.llm.prepareBattleEncounter({
+        sideA: {
+          displayName: mine.displayName,
+          nicknames: mine.identity?.nicknames ?? [],
+          selfNames: mine.identity?.selfNames ?? [],
+          epithets: mine.identity?.epithets ?? [],
+          traits: mine.traits,
+          narrativeBlurb: mine.narrativeBlurb,
+        },
+        sideB: {
+          displayName: opp.displayName,
+          nicknames: opp.identity?.nicknames ?? [],
+          selfNames: opp.identity?.selfNames ?? [],
+          epithets: opp.identity?.epithets ?? [],
+          traits: opp.traits,
+          narrativeBlurb: opp.narrativeBlurb,
+        },
+        field: {
+          displayName: battlefield.displayName,
+          scene: battlefield.scene,
+          terrain: battlefield.terrain,
+          conditions: battlefield.conditions,
+          narrativeSetup: battlefield.narrativeSetup,
+        },
+        priorMatchSummary,
+      }), FAST_LLM_ENVELOPE_TIMEOUT_MS, "prepareBattleEncounter"),
+    );
+    const parsedEncounterProposal = BattleEncounterProposalSchema.safeParse(
+      rawEncounterProposal,
+    );
+    if (parsedEncounterProposal.success) {
+      encounterProposal = parsedEncounterProposal.data;
+    } else {
+      encounterFailure = "schema_invalid";
+    }
   } catch (error) {
     if (isProviderOperationAccountingError(error)) throw error;
+    encounterFailure = encounterFailureReason(error);
     console.warn(
       "[battle] encounter proposal unavailable; using deterministic context",
       error instanceof Error ? error.message : error,
@@ -772,6 +792,17 @@ export async function startBattle(input: {
     sideB: opp,
     priorMatchSummary,
     proposal: encounterProposal,
+    sourceReceipt: encounterProposal
+      ? {
+          source: "provider",
+          failureReason: null,
+          providerRoutes: encounterRouteReceipts,
+        }
+      : {
+          source: "deterministic_fallback",
+          failureReason: encounterFailure ?? "other",
+          providerRoutes: encounterRouteReceipts,
+        },
   });
 
   const id = input.battleId ?? newId("btl");
@@ -802,6 +833,9 @@ export async function startBattle(input: {
   state = {
     ...state,
     sceneBeat: openSceneBeat(DEFAULT_SCENE_BEAT_K),
+    ...(encounterRouteReceipts.length > 0
+      ? { providerRouteReceipts: encounterRouteReceipts }
+      : {}),
   };
 
   const assetBoundAt = new Date().toISOString();
@@ -1016,6 +1050,28 @@ function boundedPipelineErrorDetail(error: unknown): string | null {
     .map((part) => String(part).replace(/[^A-Za-z0-9_.:-]/g, "").slice(0, 40))
     .filter(Boolean);
   return parts.length > 0 ? parts.join(":").slice(0, 240) : null;
+}
+
+function encounterFailureReason(
+  error: unknown,
+): NonNullable<BattleEncounterSourceReceipt["failureReason"]> {
+  return isLlmApplicationResultError(error)
+    ? error.reason
+    : classifyLlmProviderError(error);
+}
+
+function appendProviderRouteReceipts(
+  state: BattleState,
+  receipts: readonly LlmProviderRouteReceipt[],
+): BattleState {
+  if (receipts.length === 0) return state;
+  return {
+    ...state,
+    providerRouteReceipts: [
+      ...(state.providerRouteReceipts ?? []),
+      ...receipts,
+    ].slice(-128),
+  };
 }
 
 function rejectedPipelineOutcome(error: unknown): BattlePipelineInvocationOutcome {
@@ -4591,6 +4647,7 @@ async function advanceTurnWithLease(input: {
   battleId: string;
   operationId: string;
   llm: LlmProvider;
+  providerRouteReceipts: LlmProviderRouteReceipt[];
   /** Optional progressive updates (SSE). */
   onProgress?: (event: BattleAdvanceStreamEvent) => void;
 }): Promise<BattlePublic> {
@@ -4679,6 +4736,7 @@ async function advanceTurnWithLease(input: {
       dialoguePipeline,
       emit,
       operationId: input.operationId,
+      providerRouteReceipts: input.providerRouteReceipts,
     });
   }
 
@@ -4693,6 +4751,7 @@ async function advanceTurnWithLease(input: {
       dialoguePipeline,
       emit,
       operationId: input.operationId,
+      providerRouteReceipts: input.providerRouteReceipts,
     });
   }
 
@@ -5492,6 +5551,7 @@ async function advanceTurnWithLease(input: {
       }),
       closed: closeSceneBeat,
     });
+    next = appendProviderRouteReceipts(next, input.providerRouteReceipts);
     await battleRepo.saveBattleWithNarrationOutbox(next, {
       sideAUserId: meta.side_a_user_id,
       sideACharacterId: meta.side_a_character_id,
@@ -5661,6 +5721,7 @@ async function advanceTurnWithLease(input: {
     }),
     closed: closeSceneBeat,
   });
+  next = appendProviderRouteReceipts(next, input.providerRouteReceipts);
 
   await battleRepo.saveBattleWithNarrationOutbox(next, {
     sideAUserId: meta.side_a_user_id,
@@ -5841,6 +5902,7 @@ async function runPrologueTurn(input: {
   dialoguePipeline: DialoguePipelineSettings;
   emit?: (event: BattleAdvanceStreamEvent) => void;
   operationId: string;
+  providerRouteReceipts: LlmProviderRouteReceipt[];
 }): Promise<BattlePublic> {
   const emit = input.emit ?? (() => undefined);
   let state = input.state;
@@ -6036,6 +6098,7 @@ async function runPrologueTurn(input: {
       prologue: { kind: "prologue", request: prologueNarrationRequest },
     },
   });
+  next = appendProviderRouteReceipts(next, input.providerRouteReceipts);
 
   await battleRepo.saveBattleWithNarrationOutbox(next, {
     sideAUserId: input.meta.side_a_user_id,
@@ -6059,6 +6122,7 @@ async function runAftermathTurn(input: {
   dialoguePipeline: DialoguePipelineSettings;
   emit?: (event: BattleAdvanceStreamEvent) => void;
   operationId: string;
+  providerRouteReceipts: LlmProviderRouteReceipt[];
 }): Promise<BattlePublic> {
   const emit = input.emit ?? (() => undefined);
   let state = input.state;
@@ -6288,6 +6352,7 @@ async function runAftermathTurn(input: {
       aftermath: { kind: "aftermath", request: aftermathNarrationRequest },
     },
   });
+  next = appendProviderRouteReceipts(next, input.providerRouteReceipts);
 
   await battleRepo.saveBattleWithNarrationOutbox(next, {
     sideAUserId: input.meta.side_a_user_id,
@@ -6311,10 +6376,15 @@ export async function advanceTurn(input: {
   const meta = await battleRepo.getBattleMeta(input.battleId);
   if (!meta) throw new Error("BATTLE_NOT_FOUND");
   if (meta.side_a_user_id !== input.userId) throw new Error("FORBIDDEN");
-  return withBattleLease(input.battleId, () => advanceTurnWithLease({
-    ...input,
-    operationId: input.operationId ?? `legacy:${newId("advance")}`,
-  }));
+  const providerRouteReceipts: LlmProviderRouteReceipt[] = [];
+  return withLlmProviderRouteReceiptCapture(
+    providerRouteReceipts,
+    () => withBattleLease(input.battleId, () => advanceTurnWithLease({
+      ...input,
+      operationId: input.operationId ?? `legacy:${newId("advance")}`,
+      providerRouteReceipts,
+    })),
+  );
 }
 
 export async function performAction(input: {

@@ -142,6 +142,16 @@ describe("public battle semantic projection", () => {
       committedAt: "2026-08-12T00:00:00.000Z",
       narrationInputDigest: "a".repeat(64),
     }];
+    state.providerRouteReceipts = [{
+      operation: "advanceCharacterAgent",
+      failures: [{
+        provider: "private-provider",
+        reason: "dns",
+        disposition: "failed",
+        cooldownMs: 60_000,
+      }],
+      selectedProvider: "private-secondary",
+    }];
     const publicState = toBattlePublic(state, sideA, null, sideB);
     assert.equal(
       publicState.semanticState?.snapshot.entities["character.a"]?.label,
@@ -154,6 +164,8 @@ describe("public battle semantic projection", () => {
     assert.equal(json.includes("perceptionRegistry"), false);
     assert.equal(json.includes("narratorContinuity"), false);
     assert.equal(json.includes("encounterContext"), false);
+    assert.equal(json.includes("providerRouteReceipts"), false);
+    assert.equal(json.includes("private-provider"), false);
     assert.equal(json.includes("worldState"), false);
     assert.equal(json.includes("hidden.enemy.1"), false);
     assert.equal(json.includes("causalEngineContinuation"), false);

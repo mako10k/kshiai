@@ -75,6 +75,10 @@ import {
   type BattleNarratorContinuity,
 } from "./battle-social.js";
 import {
+  LlmProviderRouteReceiptSchema,
+  type LlmProviderRouteReceipt,
+} from "./provider-route.js";
+import {
   CharacterActionNormProgramV2Schema,
   CharacterActionNormResolutionReceiptV2Schema,
   CharacterRelationshipResolutionReceiptV2Schema,
@@ -2325,6 +2329,8 @@ export interface BattleState {
   openingPlanA?: string;
   openingPlanB?: string;
   encounterContext?: BattleEncounterContext;
+  /** Bounded internal route history; absent on battles saved before diagnostics. */
+  providerRouteReceipts?: LlmProviderRouteReceipt[];
   dialoguePipelineSnapshot?: BattleDialoguePipelineSnapshot;
   narratorContinuity?: BattleNarratorContinuity;
   agentStateA?: CharacterAgentState;
@@ -2427,6 +2433,10 @@ export const BattleStateSchema: z.ZodType<
   openingPlanB: z.string().max(1200).optional(),
   /** Immutable battle-scoped names, relationships, and initial recognition. */
   encounterContext: BattleEncounterContextSchema.optional(),
+  providerRouteReceipts: z
+    .array(LlmProviderRouteReceiptSchema)
+    .max(128)
+    .optional(),
   /** Frozen dialogue-pipeline revision for a battle; never exposed publicly. */
   dialoguePipelineSnapshot: BattleDialoguePipelineSnapshotSchema.optional(),
   /** Reader plus A/B presentation continuity; never character cognition. */
