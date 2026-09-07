@@ -410,6 +410,7 @@ describe("battle semantic state", () => {
       sideB: { displayName: "B", appearanceSummary: "白い外套" },
     });
     assert.equal(initial.revision, 0);
+    assert.equal(initial.initializationSource, "semantic_seed");
     assert.equal(initial.scene.facts.visibility, "low");
     assert.equal(initial.entities["window.north"]?.facts.integrity, "intact");
     assert.equal(
@@ -425,10 +426,66 @@ describe("battle semantic state", () => {
       sideA: { displayName: "A" },
       sideB: { displayName: "B" },
     });
+    assert.equal(initial.initializationSource, "legacy_obstacles");
     assert.equal(initial.entities["obstacle.1"]?.label, "倒木");
     assert.equal(initial.entities["obstacle.2"]?.label, "石壁");
     assert.equal(initial.entities["character.a"]?.kind, "character");
     assert.equal(initial.entities["character.b"]?.kind, "character");
+  });
+
+  it("preserves an intentionally empty structured seed", () => {
+    const initial = createBattleSemanticState({
+      scene: "空の戦場",
+      obstacles: ["旧障害物として扱ってはいけない"],
+      seed: { sceneFacts: {}, entities: {} },
+      sideA: { displayName: "A" },
+      sideB: { displayName: "B" },
+    });
+
+    assert.equal(initial.initializationSource, "semantic_seed");
+    assert.equal(initial.entities["obstacle.1"], undefined);
+  });
+
+  it("rejects a present invalid structured seed", () => {
+    assert.throws(
+      () => createBattleSemanticState({
+        scene: "不正な戦場",
+        seed: {
+          sceneFacts: {},
+          entities: {
+            "bad key": {
+              kind: "object",
+              label: "不正キー",
+              location: { type: "scene", area: "中央" },
+              active: true,
+              facts: {},
+            },
+          },
+        },
+        sideA: { displayName: "A" },
+        sideB: { displayName: "B" },
+      }),
+      /BATTLEFIELD_SEMANTIC_SEED_INVALID:entities\.bad key/,
+    );
+  });
+
+  it("rejects an invalid assembled state instead of returning a minimal state", () => {
+    const oversizedSceneFacts = Object.fromEntries(
+      Array.from({ length: 20 }, (_, index) => [
+        `fact_${index}`,
+        "x".repeat(2000),
+      ]),
+    );
+
+    assert.throws(
+      () => createBattleSemanticState({
+        scene: "過大な戦場",
+        seed: { sceneFacts: oversizedSceneFacts, entities: {} },
+        sideA: { displayName: "A" },
+        sideB: { displayName: "B" },
+      }),
+      /BATTLE_SEMANTIC_STATE_INITIALIZATION_INVALID:invalid_state:semantic state exceeds byte limit/,
+    );
   });
 
   it("projects side-specific current observations and only their latest diff", () => {

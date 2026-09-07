@@ -154,6 +154,8 @@ function semanticReferenceIssue(state: {
 export const BattleSemanticStateSchema = z.object({
   schemaVersion: z.literal(1),
   revision: z.number().int().nonnegative(),
+  /** Optional only so semantic states persisted before provenance remain readable. */
+  initializationSource: z.enum(["semantic_seed", "legacy_obstacles"]).optional(),
   scene: BattleSemanticSceneSchema,
   entities: z.record(SemanticIdSchema, BattleSemanticEntitySchema),
 }).superRefine((state, ctx) => {
@@ -479,11 +481,20 @@ export function createBattleSemanticState(input: {
     initialArea?: string;
   };
 }): BattleSemanticState {
-  const parsedSeed = BattlefieldSemanticSeedSchema.safeParse(input.seed ?? {});
-  const seed = parsedSeed.success ? parsedSeed.data : null;
-  const seedEntities = seed && Object.keys(seed.entities).length > 0
-    ? seed.entities
-    : fallbackFieldEntities(input);
+  const seedAbsent = input.seed === undefined || input.seed === null;
+  const parsedSeed = seedAbsent
+    ? null
+    : BattlefieldSemanticSeedSchema.safeParse(input.seed);
+  if (parsedSeed && !parsedSeed.success) {
+    const issue = parsedSeed.error.issues[0];
+    throw new Error(
+      `BATTLEFIELD_SEMANTIC_SEED_INVALID:${issue?.path.join(".") || "root"}:${issue?.code ?? "unknown"}`,
+    );
+  }
+  const seed = parsedSeed?.data;
+  const seedEntities = seed === undefined
+    ? fallbackFieldEntities(input)
+    : seed.entities;
   const area = boundedText(input.scene, 240) || "scene";
   const areaA = boundedText(input.sideA.initialArea, 240) || area;
   const areaB = boundedText(input.sideB.initialArea, 240) || area;
@@ -516,6 +527,9 @@ export function createBattleSemanticState(input: {
   const candidate: BattleSemanticState = {
     schemaVersion: 1,
     revision: 0,
+    initializationSource: seed === undefined
+      ? "legacy_obstacles"
+      : "semantic_seed",
     scene: {
       summary: boundedText(input.scene, 2000),
       facts: sceneFacts,
@@ -552,34 +566,9 @@ export function createBattleSemanticState(input: {
   };
   const validated = validateBattleSemanticState(candidate);
   if (validated.success) return validated.data;
-  return {
-    schemaVersion: 1,
-    revision: 0,
-    scene: {
-      summary: boundedText(input.scene, 2000),
-      facts: {},
-    },
-    entities: {
-      "character.a": {
-        kind: "character",
-        label: boundedText(input.sideA.displayName, 240) || "side A",
-        location: { type: "scene", area: areaA },
-        active: true,
-        createdTurn: 0,
-        updatedTurn: 0,
-        facts: {},
-      },
-      "character.b": {
-        kind: "character",
-        label: boundedText(input.sideB.displayName, 240) || "side B",
-        location: { type: "scene", area: areaB },
-        active: true,
-        createdTurn: 0,
-        updatedTurn: 0,
-        facts: {},
-      },
-    },
-  };
+  throw new Error(
+    `BATTLE_SEMANTIC_STATE_INITIALIZATION_INVALID:${validated.error.code}:${validated.error.message}`,
+  );
 }
 
 export function escapeJsonPointerSegment(segment: string): string {
