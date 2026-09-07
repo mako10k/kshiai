@@ -28,8 +28,8 @@ evidence E4:
 evidence E5:
   "The uncommitted set is limited to the verification report, its command-line LLMThink record, and the PERT transition that completes FPR_LOCAL_VERIFY."
 
-pending REMOTE_BRANCH:
-  "The destination branch's post-push object identity remains unknown until the authorized push completes and is independently read back."
+evidence REMOTE_BRANCH:
+  "The authorized non-force push created refs/heads/codex/monotony-log-rca, and an independent git ls-remote readback returned d70778c7c16862b4fb2fd4a7030d1c4b3a1ffaa7, equal to local HEAD."
 
 decision D1 based_on P1, AUTHORITY, E1, E2, E4, E5:
   "Record the user's exact push approval in PERT, start FPR_PUSH_BRANCH, commit only the expected verification and lifecycle records, and do not include unrelated changes."
@@ -39,3 +39,6 @@ decision D2 based_on E2, E3, D1, BOUNDARY:
 
 decision D3 based_on READBACK, REMOTE_BRANCH, BOUNDARY:
   "Only after local and remote commit IDs match, complete the PERT synchronization task; commit and push that completion receipt separately so the branch remains fully resumable, then read back the final remote ID."
+
+decision RESULT based_on P1, AUTHORITY, E1, E2, E3, E4, E5, REMOTE_BRANCH, D3, BOUNDARY:
+  "The reviewed branch is synchronized through d70778c; record FPR_PUSH_BRANCH completion in a final focused commit, push that commit without force, verify the final remote ref, and stop before the separate pull-request approval task."

@@ -201,7 +201,7 @@ task FPR_PUSH_BRANCH PUSH_APPROVED -> BRANCH_SYNCHRONIZED:
   title "Commit synchronize and read back the exact branch"
   description "Create focused local commits without unrelated changes, push only the approved branch through the repository credential route, and independently read back the remote revision. Do not create a pull request in this task."
   duration 1p
-  status active
+  status done
   owner "codex"
   requires:
     DEV 1
@@ -455,3 +455,9 @@ work_event WE-FPR-PUSH-BRANCH-START-20260907:
   kind start
   occurred_at 2026-09-07T20:01:39+09:00
   planned_value 1p
+
+work_event WE-FPR-PUSH-BRANCH-FINISH-20260907:
+  model 1
+  task FPR_PUSH_BRANCH
+  kind finish
+  occurred_at 2026-09-07T20:05:02+09:00
