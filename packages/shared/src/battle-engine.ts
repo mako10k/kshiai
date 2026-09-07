@@ -9,6 +9,7 @@ import type {
   CharacterAgentState,
   CharacterAgentStateChange,
   CharacterActionIntent,
+  ActionSelectionReceipt,
   CombatantState,
   FinisherState,
   PolicyBias,
@@ -28,10 +29,9 @@ import type {
   Equipment,
   ParameterDelta,
   ParamKey,
-  Parameters,
+  Parameters as CharacterParameters,
   Skill,
 } from "./character.js";
-import { defaultBasicAttack } from "./character.js";
 import type { BattlefieldInstance } from "./battlefield.js";
 import { clampCoefficientMap, mergeCoefficients } from "./battlefield.js";
 import type { NarrationStyleSnapshot } from "./narration-style.js";
@@ -155,10 +155,10 @@ type MechanicalResolutionSpan = {
   sourceActionId: string | null;
   sourceEffectId: string | null;
   actorSide: "a" | "b" | null;
-  beforeA: Parameters;
-  beforeB: Parameters;
-  afterA: Parameters;
-  afterB: Parameters;
+  beforeA: CharacterParameters;
+  beforeB: CharacterParameters;
+  afterA: CharacterParameters;
+  afterB: CharacterParameters;
   attempts: MechanicalAttempt[];
   eventStart: number;
   eventEnd: number;
@@ -179,11 +179,11 @@ type MechanicalAttemptRecorder = (
   target: CombatantState,
   parameterKey: ParamKey,
   attemptedDelta: number,
-  before: Parameters,
-  after: Parameters,
+  before: CharacterParameters,
+  after: CharacterParameters,
 ) => void;
 
-function parametersSnapshot(combatant: CombatantState): Parameters {
+function parametersSnapshot(combatant: CombatantState): CharacterParameters {
   return { ...combatant.parameters };
 }
 
@@ -191,8 +191,8 @@ function mechanicalResolutionSpan(input: {
   sourceActionId?: string | null;
   sourceEffectId?: string | null;
   actorSide?: "a" | "b" | null;
-  beforeA: Parameters;
-  beforeB: Parameters;
+  beforeA: CharacterParameters;
+  beforeB: CharacterParameters;
   sideA: CombatantState;
   sideB: CombatantState;
   attempts?: MechanicalAttempt[];
@@ -214,7 +214,7 @@ function mechanicalResolutionSpan(input: {
 }
 
 function relativeReferenceValue(
-  parameters: Parameters,
+  parameters: CharacterParameters,
   parameterKey: ParamKey,
 ): number {
   switch (parameterKey) {
@@ -1185,18 +1185,30 @@ function hpRatio(c: CombatantState): number {
   return max > 0 ? hp / max : 0;
 }
 
-function observerSafeFoeHpRatio(
+function observerSafeFoeInput(
   frame: BattleState["perceptionFrameA"] | BattleState["perceptionFrameB"],
   foe: CombatantState,
-): number {
+): {
+  ratio: number;
+  receipt: ActionSelectionReceipt["opponentInput"];
+} {
   if (!frame || !["coarse", "clear"].includes(frame.counterpart.currentAccess)) {
-    return 0.7;
+    return {
+      ratio: 0.7,
+      receipt: { source: "unobserved_default", condition: "unknown" },
+    };
   }
   const condition = perceivedCondition(foe);
-  if (condition === "incapacitated") return 0;
-  if (condition === "critical") return 0.15;
-  if (condition === "strained") return 0.45;
-  return 0.8;
+  return {
+    ratio: condition === "incapacitated"
+      ? 0
+      : condition === "critical"
+        ? 0.15
+        : condition === "strained"
+          ? 0.45
+          : 0.8,
+    receipt: { source: "projected_condition", condition },
+  };
 }
 
 function intentFromBattleAction(action: BattleAction): CharacterActionIntent {
@@ -1285,7 +1297,7 @@ const PARAMETER_LABELS: Record<ParamKey, string> = {
 };
 
 const PARAMETER_KEYS = Object.keys(PARAMETER_LABELS) as ParamKey[];
-function clampCurrentToMaximums(parameters: Parameters): void {
+function clampCurrentToMaximums(parameters: CharacterParameters): void {
   parameters.maxHp = Math.max(1, parameters.maxHp ?? 1);
   parameters.maxMp = Math.max(1, parameters.maxMp ?? 1);
   parameters.maxStamina = Math.max(1, parameters.maxStamina ?? 1);
@@ -1598,7 +1610,7 @@ function ruleMatches(
  * Choose action from multi-selected case policies (LLM-generated).
  * Highest priority matching rule wins; fallback to mixed/balanced.
  */
-export function chooseActionFromPolicies(input: {
+export type ActionPolicySelectionInput = {
   policies: BattlePolicyOption[];
   selectedIds: string[];
   actorSide: "a" | "b";
@@ -1615,7 +1627,18 @@ export function chooseActionFromPolicies(input: {
   actionRepeatCount?: number;
   /** Observer-safe coarse estimate; omit only for legacy direct callers. */
   foeHpRatio?: number;
-}): BattleAction {
+};
+
+export type ActionPolicySelection = {
+  action: BattleAction;
+  sourceLayer: "matching_policy" | "always_policy" | "legacy_stance";
+  reason: "matching_policy_selected" | "always_policy_selected" | "no_policy_match";
+  selectedPolicyId: string | null;
+};
+
+export function selectActionFromPolicies(
+  input: ActionPolicySelectionInput,
+): ActionPolicySelection {
   const myHp = hpRatio(input.self);
   const foeHp = input.foeHpRatio ?? hpRatio(input.foe);
   const selected = new Set(input.selectedIds);
@@ -1659,7 +1682,17 @@ export function chooseActionFromPolicies(input: {
   };
 
   if (matching.length > 0) {
-    return pick(matching[0]!.bias ?? "mixed");
+    const selectedPolicy = matching[0]!;
+    const isAlwaysPolicy = selectedPolicy.triggers?.always === true ||
+      Object.keys(selectedPolicy.triggers ?? {}).length === 0;
+    return {
+      action: pick(selectedPolicy.bias ?? "mixed"),
+      sourceLayer: isAlwaysPolicy ? "always_policy" : "matching_policy",
+      reason: isAlwaysPolicy
+        ? "always_policy_selected"
+        : "matching_policy_selected",
+      selectedPolicyId: selectedPolicy.id,
+    };
   }
 
   // Soft fallback: any always rules, then legacy stance
@@ -1667,18 +1700,34 @@ export function chooseActionFromPolicies(input: {
     .filter((p) => p.triggers?.always || Object.keys(p.triggers ?? {}).length === 0)
     .sort((a, b) => (b.priority ?? 0) - (a.priority ?? 0));
   if (always.length > 0) {
-    return pick(always[0]!.bias ?? "mixed");
+    return {
+      action: pick(always[0]!.bias ?? "mixed"),
+      sourceLayer: "always_policy",
+      reason: "always_policy_selected",
+      selectedPolicyId: always[0]!.id,
+    };
   }
 
-  return chooseActionFromStance({
-    stance: input.legacyStance ?? "balanced",
-    actorSide: input.actorSide,
-    self: input.self,
-    foe: input.foe,
-    skills: input.skills,
-    turn: input.turn,
-    foeHpRatio: foeHp,
-  });
+  return {
+    action: chooseActionFromStance({
+      stance: input.legacyStance ?? "balanced",
+      actorSide: input.actorSide,
+      self: input.self,
+      foe: input.foe,
+      skills: input.skills,
+      turn: input.turn,
+      foeHpRatio: foeHp,
+    }),
+    sourceLayer: "legacy_stance",
+    reason: "no_policy_match",
+    selectedPolicyId: null,
+  };
+}
+
+export function chooseActionFromPolicies(
+  input: ActionPolicySelectionInput,
+): BattleAction {
+  return selectActionFromPolicies(input).action;
 }
 
 /**
@@ -1861,8 +1910,8 @@ export type ResolveTurnInput = {
   playerAction?: BattleAction;
   sideASkills: Skill[];
   sideBSkills: Skill[];
-  sideABasicAttack?: BasicAttackProfile;
-  sideBBasicAttack?: BasicAttackProfile;
+  sideABasicAttack: BasicAttackProfile;
+  sideBBasicAttack: BasicAttackProfile;
   situationUpdate?: Partial<Situation>;
   /** Supervisor / environment events applied before combat actions. */
   preEvents?: TurnEvent[];
@@ -2335,10 +2384,10 @@ export function resolveTurn(input: ResolveTurnInput): {
     return action.kind === avoid.kind;
   };
 
+  const foeInputA = observerSafeFoeInput(input.state.perceptionFrameA, sideB);
+  const foeInputB = observerSafeFoeInput(input.state.perceptionFrameB, sideA);
   const policyA = () =>
-    forceOffense
-      ? { actorSide: "a" as const, kind: "basic_attack" as const }
-      : chooseActionFromPolicies({
+      selectActionFromPolicies({
           policies: input.state.policiesA ?? [],
           selectedIds: input.state.selectedPolicyIdsA ?? [],
           actorSide: "a",
@@ -2350,12 +2399,10 @@ export function resolveTurn(input: ResolveTurnInput): {
           avoidSkillId: varietyA ? avoidA?.skillId : null,
           avoidKind: varietyA ? avoidA?.kind : null,
           actionRepeatCount: drama.repeatedActionA,
-          foeHpRatio: observerSafeFoeHpRatio(input.state.perceptionFrameA, sideB),
+          foeHpRatio: foeInputA.ratio,
         });
   const policyB = () =>
-    forceOffense
-      ? { actorSide: "b" as const, kind: "basic_attack" as const }
-      : chooseActionFromPolicies({
+      selectActionFromPolicies({
           policies: input.state.policiesB ?? [],
           selectedIds: input.state.selectedPolicyIdsB ?? [],
           actorSide: "b",
@@ -2367,27 +2414,122 @@ export function resolveTurn(input: ResolveTurnInput): {
           avoidSkillId: varietyB ? avoidB?.skillId : null,
           avoidKind: varietyB ? avoidB?.kind : null,
           actionRepeatCount: drama.repeatedActionB,
-          foeHpRatio: observerSafeFoeHpRatio(input.state.perceptionFrameB, sideA),
+          foeHpRatio: foeInputB.ratio,
         });
-
-  const requestedActionA = input.playerAction ??
-    (intentMatchesAvoid(plannedActionA, avoidA, varietyA)
-      ? policyA()
-      : plannedActionA
-        ? { actorSide: "a" as const, ...plannedActionA }
-        : policyA());
-
-  const requestedActionB: BattleAction =
-    intentMatchesAvoid(plannedActionB, avoidB, varietyB)
-      ? policyB()
-      : plannedActionB
-        ? { actorSide: "b", ...plannedActionB }
-        : policyB();
+  const unusedOpponentInput: ActionSelectionReceipt["opponentInput"] = {
+    source: "not_used",
+    condition: "unknown",
+  };
+  const policyReceipt = (
+    selected: ReturnType<typeof policyA>,
+    plannedActionDisposition: ActionSelectionReceipt["plannedActionDisposition"],
+    opponentInput: ActionSelectionReceipt["opponentInput"],
+    reason: ActionSelectionReceipt["reason"] = selected.reason,
+  ): ActionSelectionReceipt => ({
+    plannedActionDisposition,
+    sourceLayer: selected.sourceLayer,
+    reason,
+    selectedPolicyId: selected.selectedPolicyId,
+    opponentInput,
+  });
+  let requestedActionA: BattleAction;
+  let selectionA: ActionSelectionReceipt;
+  if (input.playerAction) {
+    requestedActionA = input.playerAction;
+    selectionA = {
+      plannedActionDisposition: plannedActionA ? "superseded_by_player" : "absent",
+      sourceLayer: "player_action",
+      reason: "player_override",
+      selectedPolicyId: null,
+      opponentInput: unusedOpponentInput,
+    };
+  } else if (forceOffense) {
+    requestedActionA = { actorSide: "a", kind: "basic_attack" };
+    selectionA = {
+      plannedActionDisposition: plannedActionA
+        ? "superseded_by_forced_offense"
+        : "absent",
+      sourceLayer: "forced_offense",
+      reason: "passive_streak_break",
+      selectedPolicyId: null,
+      opponentInput: unusedOpponentInput,
+    };
+  } else if (intentMatchesAvoid(plannedActionA, avoidA, varietyA)) {
+    const selected = policyA();
+    requestedActionA = selected.action;
+    selectionA = policyReceipt(
+      selected,
+      "rejected_repetition",
+      foeInputA.receipt,
+      "planned_action_repeated",
+    );
+  } else if (plannedActionA) {
+    requestedActionA = { actorSide: "a", ...plannedActionA };
+    selectionA = {
+      plannedActionDisposition: "accepted",
+      sourceLayer: "planned_action",
+      reason: "planned_action_accepted",
+      selectedPolicyId: null,
+      opponentInput: unusedOpponentInput,
+    };
+  } else {
+    const selected = policyA();
+    requestedActionA = selected.action;
+    selectionA = policyReceipt(
+      selected,
+      "absent",
+      foeInputA.receipt,
+    );
+  }
+  let requestedActionB: BattleAction;
+  let selectionB: ActionSelectionReceipt;
+  if (forceOffense) {
+    requestedActionB = { actorSide: "b", kind: "basic_attack" };
+    selectionB = {
+      plannedActionDisposition: plannedActionB
+        ? "superseded_by_forced_offense"
+        : "absent",
+      sourceLayer: "forced_offense",
+      reason: "passive_streak_break",
+      selectedPolicyId: null,
+      opponentInput: unusedOpponentInput,
+    };
+  } else if (intentMatchesAvoid(plannedActionB, avoidB, varietyB)) {
+    const selected = policyB();
+    requestedActionB = selected.action;
+    selectionB = policyReceipt(
+      selected,
+      "rejected_repetition",
+      foeInputB.receipt,
+      "planned_action_repeated",
+    );
+  } else if (plannedActionB) {
+    requestedActionB = { actorSide: "b", ...plannedActionB };
+    selectionB = {
+      plannedActionDisposition: "accepted",
+      sourceLayer: "planned_action",
+      reason: "planned_action_accepted",
+      selectedPolicyId: null,
+      opponentInput: unusedOpponentInput,
+    };
+  } else {
+    const selected = policyB();
+    requestedActionB = selected.action;
+    selectionB = policyReceipt(
+      selected,
+      "absent",
+      foeInputB.receipt,
+    );
+  }
   const actionAId = `turn-${turn}-action-a`;
   const actionBId = `turn-${turn}-action-b`;
   const requestedActions = {
     a: requestedActionA,
     b: requestedActionB,
+  } as const;
+  const actionSelections = {
+    a: resumed?.actions[0]?.selection ?? selectionA,
+    b: resumed?.actions[1]?.selection ?? selectionB,
   } as const;
   const actionIds = { a: actionAId, b: actionBId } as const;
   let worldState = resumed?.worldState
@@ -2445,6 +2587,7 @@ export function resolveTurn(input: ResolveTurnInput): {
       id: actionAId,
       executed: false,
       skippedReason: "incapacitated_before_action",
+      selection: selectionA,
       resolution: {
         requested: intentFromBattleAction(requestedActionA),
         outcome: "failed",
@@ -2456,6 +2599,7 @@ export function resolveTurn(input: ResolveTurnInput): {
       id: actionBId,
       executed: false,
       skippedReason: "incapacitated_before_action",
+      selection: selectionB,
       resolution: {
         requested: intentFromBattleAction(requestedActionB),
         outcome: "failed",
@@ -2470,9 +2614,7 @@ export function resolveTurn(input: ResolveTurnInput): {
     side === "a" ? input.sideASkills : input.sideBSkills;
   const basicAttackFor = (side: BattleTemporalSide) =>
     balanceBasicAttack(
-      side === "a"
-        ? input.sideABasicAttack ?? defaultBasicAttack()
-        : input.sideBBasicAttack ?? defaultBasicAttack(),
+      side === "a" ? input.sideABasicAttack : input.sideBBasicAttack,
     );
   const finisherFor = (side: BattleTemporalSide) =>
     side === "a" ? finisherA : finisherB;
@@ -2514,6 +2656,7 @@ export function resolveTurn(input: ResolveTurnInput): {
       id: actionIds[side],
       executed: effective !== null,
       skippedReason: effective ? null : "action_infeasible",
+      selection: actionSelections[side],
       resolution: result.resolution,
     };
   };

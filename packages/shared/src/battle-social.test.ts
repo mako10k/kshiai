@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import {
+  BattleEncounterProposalSchema,
   applyBattleNarratorRecognitionUpdates,
   buildBattleEncounterContext,
   buildLegacyBattleEncounterContext,
@@ -44,6 +45,15 @@ function sheet(
 }
 
 describe("battle encounter and narrator continuity", () => {
+  it("rejects incomplete encounter proposals before deterministic fallback", () => {
+    assert.equal(
+      BattleEncounterProposalSchema.safeParse({
+        participants: { a: { battleLabel: "A" } },
+      }).success,
+      false,
+    );
+  });
+
   it("validates battle-label collisions and profile-backed self references", () => {
     const a = sheet("a", "明良", ["アキ"], ["僕", "俺"]);
     const b = sheet("b", "晶", ["アキ"], ["私"]);
@@ -61,8 +71,18 @@ describe("battle encounter and narrator continuity", () => {
             counterpartAddress: "晶さん",
             selfReference: "俺",
           },
-          b: { selfReference: "拙者" },
+          b: {
+            relationshipLabel: "今回対峙する相手",
+            counterpartAddress: "明良",
+            selfReference: "拙者",
+          },
         },
+        openingSummary: "二人が対峙する。",
+      },
+      sourceReceipt: {
+        source: "provider",
+        failureReason: null,
+        providerRoutes: [],
       },
     });
     assert.notEqual(
@@ -72,6 +92,7 @@ describe("battle encounter and narrator continuity", () => {
     assert.equal(context.social.a.selfReference, "俺");
     assert.equal(context.social.b.selfReference, "私");
     assert.equal(context.social.a.initialIdentityKnowledge, "identified");
+    assert.equal(context.sourceReceipt?.source, "provider");
   });
 
   it("updates A and B narrator records together without merging them", () => {

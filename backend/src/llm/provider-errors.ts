@@ -6,6 +6,30 @@ export type LlmProviderFailureReason =
   | "timeout"
   | "other";
 
+export type LlmApplicationResultFailureReason =
+  | "schema_invalid"
+  | "consistency_invalid";
+
+/** A provider call returned, but its result failed the application contract. */
+export class LlmApplicationResultError extends Error {
+  readonly reason: LlmApplicationResultFailureReason;
+  readonly detail: string;
+
+  constructor(reason: LlmApplicationResultFailureReason, detail: string) {
+    const boundedDetail = detail.slice(0, 240);
+    super(`LLM_APPLICATION_RESULT_${reason.toUpperCase()}:${boundedDetail}`);
+    this.name = "LlmApplicationResultError";
+    this.reason = reason;
+    this.detail = boundedDetail;
+  }
+}
+
+export function isLlmApplicationResultError(
+  error: unknown,
+): error is LlmApplicationResultError {
+  return error instanceof LlmApplicationResultError;
+}
+
 const DNS_ERROR_CODES = new Set([
   "EAI_AGAIN",
   "EAI_FAIL",
@@ -114,9 +138,9 @@ function headerValue(headers: unknown, key: string): string | null {
     const value = get.call(headers, key);
     return typeof value === "string" ? value : null;
   }
-  const record = headers as Record<string, unknown>;
-  const value = record[key] ?? record[key.toLowerCase()] ??
-    record[key.toUpperCase()];
+  const value = Reflect.get(headers, key) ??
+    Reflect.get(headers, key.toLowerCase()) ??
+    Reflect.get(headers, key.toUpperCase());
   return typeof value === "string" || typeof value === "number"
     ? String(value)
     : null;

@@ -15,6 +15,7 @@ import {
   type CharacterSheet,
   type DecisionProfile,
   type FreeActionAdjudicationBatch,
+  type FreeActionAdjudicationFailure,
   type FreeActionAdjudicationProposal,
   type FreeActionCanonicalRoot,
   type FreeActionResolutionReceipt,
@@ -28,6 +29,7 @@ import {
 } from "@kshiai/shared";
 import type { LlmProvider } from "../llm/types.js";
 import { isProviderOperationAccountingError } from "../llm/provider-accounting.js";
+import { classifyLlmProviderError } from "../llm/provider-errors.js";
 
 type BattleSide = "a" | "b";
 
@@ -35,7 +37,23 @@ export type FreeActionTurnPreparation = {
   roots: FreeActionCanonicalRoot[];
   affordances: Record<BattleSide, LatentAffordanceProjection[]>;
   adjudication: FreeActionAdjudicationBatch | null;
+  adjudicationFailure: FreeActionAdjudicationFailure | null;
 };
+
+export function parseFreeActionAdjudication(
+  value: unknown,
+): Pick<FreeActionTurnPreparation, "adjudication" | "adjudicationFailure"> {
+  const parsed = FreeActionAdjudicationBatchSchema.safeParse(value);
+  return parsed.success
+    ? { adjudication: parsed.data, adjudicationFailure: null }
+    : {
+        adjudication: null,
+        adjudicationFailure: {
+          category: "application",
+          reason: "schema_invalid",
+        },
+      };
+}
 
 function otherSide(side: BattleSide): BattleSide {
   return side === "a" ? "b" : "a";
@@ -634,7 +652,9 @@ export async function prepareFreeActionsForTurn(input: {
       ? [{ actorSide, intent, perceivedAffordances: affordances[actorSide] }]
       : []
   );
-  if (intents.length === 0) return { roots, affordances, adjudication: null };
+  if (intents.length === 0) {
+    return { roots, affordances, adjudication: null, adjudicationFailure: null };
+  }
   try {
     const result = await input.llm.adjudicateFreeActions({
       turn: input.state.turn + 1,
@@ -652,11 +672,10 @@ export async function prepareFreeActionsForTurn(input: {
       intents,
       canonicalRoots: roots,
     });
-    const parsed = FreeActionAdjudicationBatchSchema.safeParse(result);
     return {
       roots,
       affordances,
-      adjudication: parsed.success ? parsed.data : null,
+      ...parseFreeActionAdjudication(result),
     };
   } catch (error) {
     if (isProviderOperationAccountingError(error)) throw error;
@@ -664,7 +683,15 @@ export async function prepareFreeActionsForTurn(input: {
       "[battle] free-action adjudication unavailable",
       error instanceof Error ? error.message : error,
     );
-    return { roots, affordances, adjudication: null };
+    return {
+      roots,
+      affordances,
+      adjudication: null,
+      adjudicationFailure: {
+        category: "provider",
+        reason: classifyLlmProviderError(error),
+      },
+    };
   }
 }
 
@@ -851,6 +878,29 @@ function receipt(input: FreeActionResolutionReceipt): FreeActionResolutionReceip
   return FreeActionResolutionReceiptSchema.parse(input);
 }
 
+function unavailableAdjudicationReceipt(input: {
+  actionId: string;
+  actorSide: BattleSide;
+  intentText: string;
+  failureSubtype: FreeActionAdjudicationFailure | null;
+}): FreeActionResolutionReceipt {
+  return receipt({
+    actionId: input.actionId,
+    actorSide: input.actorSide,
+    intentText: input.intentText,
+    outcome: "failed",
+    reason: "adjudication_unavailable",
+    ...(input.failureSubtype
+      ? { failureSubtype: input.failureSubtype }
+      : {}),
+    subjectRef: null,
+    canonicalEntityId: null,
+    promotion: "rejected",
+    operationKinds: [],
+    summary: "自由行動の現実判定を確定できなかった。",
+  });
+}
+
 export function commitFreeActionAdjudications(input: {
   beforeState: BattleState;
   resolvedState: BattleState;
@@ -898,17 +948,11 @@ export function commitFreeActionAdjudications(input: {
     const proposal = proposals.get(side);
     if (!proposal) {
       updateActionFailure(actions, side, "free_action_unavailable");
-      receipts.push(receipt({
+      receipts.push(unavailableAdjudicationReceipt({
         actionId: action.id,
         actorSide: side,
         intentText,
-        outcome: "failed",
-        reason: "adjudication_unavailable",
-        subjectRef: null,
-        canonicalEntityId: null,
-        promotion: "rejected",
-        operationKinds: [],
-        summary: "自由行動の現実判定を確定できなかった。",
+        failureSubtype: input.preparation.adjudicationFailure,
       }));
       continue;
     }

@@ -9,18 +9,20 @@ import {
   ensureBattleCompatibilityState,
   ensureBattlePerceptionState,
   ensureBattleWorldState,
-  finalizeBattleTurnExecution,
-  prepareBattleTurnInitiative,
-  prepareBattleTurnExecution,
-  prepareSequentialBattleTurnInitiative,
-  resolveBattleTurnBucket,
-  resolveNextBattleTurnBucket,
   materializeBattleStateAtBucketBoundary,
   materializeBattleTurnStartState,
   committedActionsAtBucketBoundary,
   bindNextBucketDecision,
-  resolveTurn,
 } from "./battle-engine.js";
+import {
+  prepareBattleTurnExecution,
+  prepareBattleTurnInitiative,
+  prepareSequentialBattleTurnInitiative,
+  resolveBattleTurnBucket,
+  resolveNextBattleTurnBucket,
+  resolveTurn,
+  finalizeBattleTurnExecution,
+} from "./battle-engine-test-helper.js";
 import { defaultParameters, type CharacterSheet } from "./character.js";
 import {
   BattleStateSchema,
@@ -87,6 +89,13 @@ describe("battle engine", () => {
     assert.equal(reflectAction?.executed, true);
     assert.equal(reflectAction?.reflectionAnalysis, "相手の間合いが読めない");
     assert.equal(reflectAction?.reflectionGuideline, "次は様子を見てから踏み込む");
+    assert.deepEqual(reflectAction?.selection, {
+      plannedActionDisposition: "accepted",
+      sourceLayer: "planned_action",
+      reason: "planned_action_accepted",
+      selectedPolicyId: null,
+      opponentInput: { source: "not_used", condition: "unknown" },
+    });
     assert.ok(
       resolved.events.some(
         (event) =>
@@ -436,9 +445,12 @@ describe("battle engine", () => {
       ...resolved.state,
       turnRecords: [legacyRecord],
     });
-    const reparsedRecord = reparsed.turnRecords[0] as unknown as Record<string, unknown>;
-    assert.equal("semanticPatch" in reparsedRecord, false);
-    assert.equal("agentStateChangeA" in reparsedRecord, false);
+    const reparsedRecord = reparsed.turnRecords[0]!;
+    assert.equal(Object.prototype.hasOwnProperty.call(reparsedRecord, "semanticPatch"), false);
+    assert.equal(
+      Object.prototype.hasOwnProperty.call(reparsedRecord, "agentStateChangeA"),
+      false,
+    );
     assert.equal(
       "semanticObservation" in reparsed.turnRecords[0]!.cognitionA,
       false,
@@ -764,7 +776,7 @@ describe("battle engine", () => {
       stanceA: "aggressive",
       stanceB: "defensive",
     });
-    const { state: next, events } = resolveTurn({
+    const { state: next, events, actions } = resolveTurn({
       state,
       sideASkills: sheet("a", "A").skills,
       sideBSkills: sheet("b", "B").skills,
@@ -852,16 +864,79 @@ describe("battle engine", () => {
       selectedPolicyIdsB: [attackPolicy.id],
     });
 
-    const { state: next, events } = resolveTurn({
+    const { state: next, events, actions } = resolveTurn({
       state,
       sideASkills: a.skills,
       sideBSkills: b.skills,
     });
 
     assert.equal(events.filter((e) => e.skillName === "基本アクション").length, 2);
+    assert.equal(actions[0]?.selection?.sourceLayer, "always_policy");
+    assert.equal(actions[0]?.selection?.selectedPolicyId, "attack");
     assert.equal(next.sideA.parameters.stamina, 0);
     assert.ok((next.sideA.parameters.hp ?? 100) < 100);
     assert.ok((next.sideB.parameters.hp ?? 100) < 100);
+  });
+
+  it("records repeated planned-action fallback without hidden opponent input", () => {
+    const a = sheet("a", "A");
+    const b = sheet("b", "B");
+    const earlyPolicy = {
+      id: "early-pressure",
+      perspectiveId: "initiative",
+      perspectiveTitle: "働きかけ方",
+      title: "序盤の攻勢",
+      when: "序盤",
+      then: "攻める",
+      bias: "attack" as const,
+      priority: 20,
+      triggers: { earlyTurn: true },
+      defaultSelected: true,
+    };
+    const state = createBattleState({
+      id: "selection-provenance",
+      sideA: a,
+      sideB: b,
+      turnLimit: 20,
+      prologuePending: false,
+      policiesA: [earlyPolicy],
+      selectedPolicyIdsA: [earlyPolicy.id],
+    });
+    state.plannedActionA = { kind: "wait" };
+    state.plannedActionB = { kind: "wait" };
+    state.dramaState = {
+      lastActionSignatureA: "wait:-:0",
+      lastActionSignatureB: null,
+      repeatedActionA: 2,
+      repeatedActionB: 0,
+      turnsSinceLocationChange: 0,
+      turnsSinceEnvironmentBeat: 0,
+      phase: "opening",
+      recentBeatFingerprints: [],
+      lastPublicSpeechA: null,
+      lastPublicSpeechB: null,
+    };
+
+    const result = resolveTurn({
+      state,
+      sideASkills: a.skills,
+      sideBSkills: b.skills,
+    });
+    const receipt = result.actions[0]?.selection;
+    assert.deepEqual(receipt, {
+      plannedActionDisposition: "rejected_repetition",
+      sourceLayer: "matching_policy",
+      reason: "planned_action_repeated",
+      selectedPolicyId: "early-pressure",
+      opponentInput: {
+        source: "projected_condition",
+        condition: "steady",
+      },
+    });
+    const serialized = JSON.stringify(receipt);
+    assert.equal(serialized.includes("parameters"), false);
+    assert.equal(serialized.includes("privateMemory"), false);
+    assert.equal(serialized.includes("prompt"), false);
   });
 
   it("rests and restores resources when even a basic attack is exhausted", () => {
@@ -882,13 +957,15 @@ describe("battle engine", () => {
       stanceB: "aggressive",
     });
 
-    const { state: next, events } = resolveTurn({
+    const { state: next, events, actions } = resolveTurn({
       state,
       sideASkills: a.skills,
       sideBSkills: b.skills,
     });
 
     assert.equal(events.filter((e) => e.type === "rest").length, 2);
+    assert.equal(actions[0]?.selection?.sourceLayer, "legacy_stance");
+    assert.equal(actions[0]?.selection?.reason, "no_policy_match");
     assert.ok((next.sideA.parameters.mp ?? 0) > 0);
     assert.ok((next.sideA.parameters.stamina ?? 0) > 0);
   });
@@ -929,7 +1006,7 @@ describe("battle engine", () => {
       recentHappenings: [],
     };
 
-    const { events } = resolveTurn({
+    const { events, actions } = resolveTurn({
       state,
       sideASkills: a.skills,
       sideBSkills: b.skills,
@@ -937,6 +1014,80 @@ describe("battle engine", () => {
 
     assert.ok(events.some((e) => e.summary.includes("膠着打破")));
     assert.equal(events.filter((e) => e.skillName === "基本アクション").length, 2);
+    assert.equal(actions[0]?.selection?.sourceLayer, "forced_offense");
+    assert.equal(actions[0]?.selection?.reason, "passive_streak_break");
+  });
+
+  it("forces reserved passive agent actions into basic attacks after two passive turns", () => {
+    const a = sheet("a", "A");
+    const b = sheet("b", "B");
+    const state = createBattleState({
+      id: "force-reserved",
+      sideA: a,
+      sideB: b,
+      turnLimit: 20,
+      prologuePending: false,
+    });
+    state.plannedActionA = { kind: "reflect", reflectionAnalysis: "待つ", reflectionGuideline: "待つ" };
+    state.plannedActionB = { kind: "defend" };
+    state.supervisor = {
+      quietTurns: 2,
+      passiveTurns: 2,
+      turnsSinceHappening: 2,
+      lastHpA: 100,
+      lastHpB: 100,
+      happenings: 0,
+      recentHappenings: [],
+    };
+
+    const resolved = resolveTurn({
+      state,
+      sideASkills: a.skills,
+      sideBSkills: b.skills,
+    });
+
+    assert.deepEqual(
+      resolved.actions.map((action) => action.resolution?.requested.kind),
+      ["basic_attack", "basic_attack"],
+    );
+    assert.equal(
+      resolved.events.filter((event) => event.skillName === "基本アクション").length,
+      2,
+    );
+  });
+
+  it("retains an explicit player action when forcing the agent opponent to attack", () => {
+    const a = sheet("a", "A");
+    const b = sheet("b", "B");
+    const state = createBattleState({
+      id: "force-player",
+      sideA: a,
+      sideB: b,
+      turnLimit: 20,
+      prologuePending: false,
+    });
+    state.plannedActionB = { kind: "wait" };
+    state.supervisor = {
+      quietTurns: 2,
+      passiveTurns: 2,
+      turnsSinceHappening: 2,
+      lastHpA: 100,
+      lastHpB: 100,
+      happenings: 0,
+      recentHappenings: [],
+    };
+
+    const resolved = resolveTurn({
+      state,
+      playerAction: { actorSide: "a", kind: "defend" },
+      sideASkills: a.skills,
+      sideBSkills: b.skills,
+    });
+
+    assert.deepEqual(
+      resolved.actions.map((action) => action.resolution?.requested.kind),
+      ["defend", "basic_attack"],
+    );
   });
 
   it("announces the final turn and explains the turn-limit decision", () => {

@@ -6,6 +6,7 @@ import {
   IdentityKnowledgeSchema,
   type CharacterPerceptionFrame,
 } from "./perception.js";
+import { LlmProviderRouteReceiptSchema } from "./provider-route.js";
 
 export const NarratorRecognitionContinuitySchema = z.enum([
   "same_entity",
@@ -68,6 +69,39 @@ export const BattleSocialViewSchema = z.object({
 });
 export type BattleSocialView = z.infer<typeof BattleSocialViewSchema>;
 
+export const BattleEncounterSourceReceiptSchema = z.object({
+  source: z.enum(["provider", "deterministic_fallback"]),
+  failureReason: z.enum([
+    "billing",
+    "dns",
+    "rate_limit",
+    "service_unavailable",
+    "timeout",
+    "other",
+    "schema_invalid",
+    "consistency_invalid",
+  ]).nullable(),
+  providerRoutes: z.array(LlmProviderRouteReceiptSchema).max(8),
+}).strict().superRefine((receipt, ctx) => {
+  if (receipt.source === "provider" && receipt.failureReason !== null) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["failureReason"],
+      message: "provider encounter source cannot carry a terminal failure",
+    });
+  }
+  if (receipt.source === "deterministic_fallback" && receipt.failureReason === null) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["failureReason"],
+      message: "deterministic encounter fallback requires a bounded failure reason",
+    });
+  }
+});
+export type BattleEncounterSourceReceipt = z.infer<
+  typeof BattleEncounterSourceReceiptSchema
+>;
+
 export const BattleEncounterContextSchema = z.object({
   schemaVersion: z.literal(1),
   participants: z.object({
@@ -79,6 +113,8 @@ export const BattleEncounterContextSchema = z.object({
     b: BattleSocialViewSchema,
   }).strict(),
   openingSummary: z.string().max(400),
+  /** Optional only for battle snapshots written before source receipts existed. */
+  sourceReceipt: BattleEncounterSourceReceiptSchema.optional(),
 }).strict().superRefine((context, ctx) => {
   const normalizedLabelA = context.participants.a.battleLabel
     .normalize("NFKC")
@@ -120,25 +156,28 @@ export type BattleEncounterContext = z.infer<
   typeof BattleEncounterContextSchema
 >;
 
-export type BattleEncounterProposal = {
-  participants?: {
-    a?: { battleLabel?: string };
-    b?: { battleLabel?: string };
-  };
-  social?: {
-    a?: {
-      relationshipLabel?: string;
-      counterpartAddress?: string;
-      selfReference?: string | null;
-    };
-    b?: {
-      relationshipLabel?: string;
-      counterpartAddress?: string;
-      selfReference?: string | null;
-    };
-  };
-  openingSummary?: string;
-};
+export const BattleEncounterProposalSchema = z.object({
+  participants: z.object({
+    a: z.object({ battleLabel: z.string().min(1).max(80) }).strict(),
+    b: z.object({ battleLabel: z.string().min(1).max(80) }).strict(),
+  }).strict(),
+  social: z.object({
+    a: z.object({
+      relationshipLabel: z.string().min(1).max(240),
+      counterpartAddress: z.string().min(1).max(80),
+      selfReference: z.string().min(1).max(80).nullable(),
+    }).strict(),
+    b: z.object({
+      relationshipLabel: z.string().min(1).max(240),
+      counterpartAddress: z.string().min(1).max(80),
+      selfReference: z.string().min(1).max(80).nullable(),
+    }).strict(),
+  }).strict(),
+  openingSummary: z.string().min(1).max(800),
+}).strict();
+export type BattleEncounterProposal = z.infer<
+  typeof BattleEncounterProposalSchema
+>;
 
 function boundedText(
   candidate: unknown,
@@ -189,6 +228,7 @@ export function buildBattleEncounterContext(input: {
   sideB: CharacterSheet;
   priorMatchSummary?: string | null;
   proposal?: BattleEncounterProposal | null;
+  sourceReceipt?: BattleEncounterSourceReceipt;
 }): BattleEncounterContext {
   const fallbackA = defaultBattleLabel(input.sideA);
   const fallbackB = defaultBattleLabel(input.sideB);
@@ -268,6 +308,7 @@ export function buildBattleEncounterContext(input: {
         : `${battleLabelA}と${battleLabelB}が互いを認識して対峙する。`,
       400,
     ),
+    ...(input.sourceReceipt ? { sourceReceipt: input.sourceReceipt } : {}),
   });
 }
 

@@ -6,7 +6,8 @@ import {
   currentBattlePacingPolicy,
 } from "./battle-pacing.js";
 import { measureBattlePacing } from "./battle-pacing-observe.js";
-import { createBattleState, resolveTurn } from "./battle-engine.js";
+import { createBattleState } from "./battle-engine.js";
+import { resolveTurn } from "./battle-engine-test-helper.js";
 import { defaultParameters, type CharacterSheet } from "./character.js";
 
 function restorationSheet(id: string): CharacterSheet {

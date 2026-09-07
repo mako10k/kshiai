@@ -9,7 +9,7 @@ import type {
 import type {
   ActionFeasibilityConstraints,
   BasicAttackProfile,
-  CharacterSheet,
+  CombatReadyCharacterSheet,
   Skill,
 } from "./character.js";
 import type { CharacterPerceptionFrame } from "./perception.js";
@@ -337,20 +337,9 @@ type ObserverSafeActionCandidate = {
   option: Omit<ObserverSafeAvailableAction, "target">;
 };
 
-function fallbackBasicAttack(): BasicAttackProfile {
-  return {
-    name: "基本アクション",
-    description: "消耗時にも使える、そのキャラクターらしい基本行動。",
-    targetParameter: "hp",
-    scalingParameter: "atk",
-    resistanceParameter: "def",
-    power: 0.75,
-  };
-}
-
 function observerSafeActionCandidates(input: {
   actor: CombatantState;
-  sheet: CharacterSheet;
+  sheet: CombatReadyCharacterSheet;
   finisher?: FinisherState;
   turn: number;
   basicAttack: BasicAttackProfile;
@@ -429,13 +418,13 @@ function withObserverSafeTarget(
 export function buildObserverSafeAvailableActions(input: {
   actorSide: "a" | "b";
   actor: CombatantState;
-  sheet: CharacterSheet;
+  sheet: CombatReadyCharacterSheet;
   finisher?: FinisherState;
   turn: number;
   worldState?: BattleWorldState;
   perception: CharacterPerceptionFrame;
 }): ObserverSafeAvailableAction[] {
-  const basicAttack = input.sheet.basicAttack ?? fallbackBasicAttack();
+  const basicAttack = input.sheet.basicAttack;
   return observerSafeActionCandidates({
     actor: input.actor,
     sheet: input.sheet,

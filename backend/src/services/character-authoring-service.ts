@@ -11,6 +11,7 @@ import {
   legacyCharacterSheetToDefinitionV2,
   listCharacterDefinitionGapsV2,
   normalizeCharacterDefinitionV2,
+  prepareLegacyCharacterDefinitionGenerationV2,
   projectCharacterProfileSourceV2,
   validateCharacterProfileClaimAssessmentV2,
   validateCharacterPublicPresentationV2,
@@ -210,11 +211,18 @@ export async function buildCharacterGenerationCandidate(input: {
     opponentMemories: input.existing?.opponentMemories,
     visibility: input.existing?.visibility ?? "public",
   };
-  const baseDefinition = legacyCharacterSheetToDefinitionV2(temporary);
+  const prepared = prepareLegacyCharacterDefinitionGenerationV2(temporary);
+  const baseDefinition = prepared.baseDefinition;
+  // Only persisted principles are prior owner-approved source material. The
+  // first-stage generator may emit prose principles, but create/revision
+  // structure is derived from sourceText instead of elevating intermediate
+  // output into authority.
+  const unstructuredActionNormSources = input.existing?.decisionProfile?.principles ?? [];
   await input.reportStatus?.("generating_structure");
   const generatedDefinition = await input.llm.generateCharacterDefinitionV2({
     sourceText: input.sourceText,
     baseDefinition,
+    unstructuredActionNormSources,
     sourceKind: input.sourceKind,
   });
   await input.reportStatus?.("validating_structure");
@@ -227,6 +235,7 @@ export async function buildCharacterGenerationCandidate(input: {
     sourceText: input.sourceText,
     sourceKind: input.sourceKind,
     baseDefinition,
+    unstructuredActionNormSources,
     candidate: firstPass.definition,
     gaps: listCharacterDefinitionGapsV2(baseDefinition),
     findings: firstPass.findings,

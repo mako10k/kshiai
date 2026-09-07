@@ -5,9 +5,9 @@ import {
   revalidateCharacterAction,
 } from "./action-feasibility.js";
 import { createBattleState } from "./battle-engine.js";
-import type { CharacterSheet } from "./character.js";
+import type { CombatReadyCharacterSheet } from "./character.js";
 
-function sheet(id: string, displayName: string): CharacterSheet {
+function sheet(id: string, displayName: string): CombatReadyCharacterSheet {
   return {
     id,
     ownerUserId: `owner-${id}`,
@@ -276,6 +276,116 @@ describe("observer-safe action feasibility", () => {
     assert.equal(failed.action, null);
     assert.equal(failed.resolution.outcome, "failed");
     assert.equal(failed.resolution.reason, "actor_unavailable");
+  });
+
+  it("retains every remaining feasibility reason-to-substitute mapping", () => {
+    const { sideA, state } = setup();
+    const skill = {
+      id: "cooldown-skill",
+      name: "連続技",
+      description: "連続して使えない技。",
+      costMp: 0,
+      costStamina: 0,
+      power: 1,
+      kind: "attack" as const,
+    };
+    const skillUnavailable = revalidateCharacterAction({
+      actorSide: "a",
+      requested: { kind: "skill", skillId: "missing-skill" },
+      actor: state.sideA,
+      skills: [skill],
+      basicAttack: sideA.basicAttack!,
+      turn: 2,
+      worldState: state.worldState,
+    });
+    assert.equal(skillUnavailable.action?.kind, "defend");
+    assert.equal(skillUnavailable.resolution.reason, "skill_unavailable");
+
+    const skillOnCooldown = revalidateCharacterAction({
+      actorSide: "a",
+      requested: { kind: "skill", skillId: skill.id },
+      actor: { ...state.sideA, skillLastUsedTurn: { [skill.id]: 1 } },
+      skills: [skill],
+      basicAttack: sideA.basicAttack!,
+      turn: 2,
+      worldState: state.worldState,
+    });
+    assert.equal(skillOnCooldown.action?.kind, "defend");
+    assert.equal(skillOnCooldown.resolution.reason, "skill_on_cooldown");
+
+    const speechBlockedWorld = structuredClone(state.worldState!);
+    speechBlockedWorld.entities["character.a"]!.actorState!.speech = "blocked";
+    const speechBlocked = revalidateCharacterAction({
+      actorSide: "a",
+      requested: { kind: "basic_attack" },
+      actor: state.sideA,
+      skills: [],
+      basicAttack: {
+        ...sideA.basicAttack!,
+        constraints: {
+          reach: "near",
+          requiresSight: false,
+          mobility: "limited",
+          requiresSpeech: true,
+          requiresUsableHeldObject: false,
+        },
+      },
+      turn: 2,
+      worldState: speechBlockedWorld,
+    });
+    assert.equal(speechBlocked.action?.kind, "defend");
+    assert.equal(speechBlocked.resolution.reason, "speech_blocked");
+
+    const requiredObject = revalidateCharacterAction({
+      actorSide: "a",
+      requested: { kind: "basic_attack" },
+      actor: state.sideA,
+      skills: [],
+      basicAttack: {
+        ...sideA.basicAttack!,
+        constraints: {
+          reach: "near",
+          requiresSight: false,
+          mobility: "limited",
+          requiresSpeech: false,
+          requiresUsableHeldObject: true,
+        },
+      },
+      turn: 2,
+      worldState: state.worldState,
+    });
+    assert.equal(requiredObject.action?.kind, "defend");
+    assert.equal(requiredObject.resolution.reason, "required_object_unavailable");
+
+    const missingTargetWorld = structuredClone(state.worldState!);
+    missingTargetWorld.entities["character.b"]!.active = false;
+    const targetUnavailable = revalidateCharacterAction({
+      actorSide: "a",
+      requested: { kind: "basic_attack" },
+      actor: state.sideA,
+      skills: [],
+      basicAttack: sideA.basicAttack!,
+      turn: 2,
+      worldState: missingTargetWorld,
+      spacingEnabled: true,
+    });
+    assert.equal(targetUnavailable.action?.kind, "defend");
+    assert.equal(targetUnavailable.resolution.reason, "target_unavailable");
+
+    const unlocalizedWorld = structuredClone(state.worldState!);
+    unlocalizedWorld.entities["character.a"]!.actorState!.mentalClarity = "delirious";
+    const targetUnlocalized = revalidateCharacterAction({
+      actorSide: "a",
+      requested: { kind: "basic_attack" },
+      actor: state.sideA,
+      skills: [],
+      basicAttack: sideA.basicAttack!,
+      turn: 2,
+      worldState: unlocalizedWorld,
+      spacingEnabled: true,
+    });
+    assert.equal(targetUnlocalized.action?.kind, "reposition");
+    assert.equal(targetUnlocalized.resolution.reason, "target_unlocalized");
   });
 
   it("produces the same candidate kinds when A and B are swapped", () => {

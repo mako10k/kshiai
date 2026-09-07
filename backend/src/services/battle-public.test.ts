@@ -3,15 +3,16 @@ import { describe, it } from "node:test";
 import {
   createBattleState,
   defaultParameters,
+  defaultBasicAttack,
   BattlefieldDefinitionV2Schema,
   compileBattlefieldInstanceV2,
   legacyBattlefieldPresetToDefinitionV2,
   normalizeSupervisor,
-  resolveTurn,
   type BattlefieldInstance,
   type BattlefieldPreset,
   type CharacterSheet,
 } from "@kshiai/shared";
+import { resolveTurn } from "./battle-engine-test-helper.js";
 import { MockLlmProvider } from "../llm/mock.js";
 import {
   buildEnvironmentProcessProposal,
@@ -31,6 +32,7 @@ function sheet(id: string, name: string): CharacterSheet {
     appearance: { summary: `${name}の外見`, visualPrompt: "test" },
     traits: [],
     parameters: defaultParameters(),
+    basicAttack: defaultBasicAttack(),
     skills: [],
     weapon: null,
     armor: null,
@@ -140,6 +142,16 @@ describe("public battle semantic projection", () => {
       committedAt: "2026-08-12T00:00:00.000Z",
       narrationInputDigest: "a".repeat(64),
     }];
+    state.providerRouteReceipts = [{
+      operation: "advanceCharacterAgent",
+      failures: [{
+        provider: "private-provider",
+        reason: "dns",
+        disposition: "failed",
+        cooldownMs: 60_000,
+      }],
+      selectedProvider: "private-secondary",
+    }];
     const publicState = toBattlePublic(state, sideA, null, sideB);
     assert.equal(
       publicState.semanticState?.snapshot.entities["character.a"]?.label,
@@ -152,6 +164,8 @@ describe("public battle semantic projection", () => {
     assert.equal(json.includes("perceptionRegistry"), false);
     assert.equal(json.includes("narratorContinuity"), false);
     assert.equal(json.includes("encounterContext"), false);
+    assert.equal(json.includes("providerRouteReceipts"), false);
+    assert.equal(json.includes("private-provider"), false);
     assert.equal(json.includes("worldState"), false);
     assert.equal(json.includes("hidden.enemy.1"), false);
     assert.equal(json.includes("causalEngineContinuation"), false);
@@ -260,6 +274,26 @@ describe("public battle semantic projection", () => {
     });
     assert.equal(result.status, "rejected");
     assert.equal(result.state.semanticState, state.semanticState);
+    assert.equal(result.state.worldState, state.worldState);
+    assert.equal(result.state.latestSemanticTransition?.status, "rejected");
+    assert.equal(result.state.latestSemanticTransition?.fromRevision, 0);
+    assert.equal(result.state.latestSemanticTransition?.toRevision, 0);
+    assert.deepEqual(
+      result.state.latestSemanticTransition?.patch,
+      {
+        baseRevision: 0,
+        turn: 0,
+        sourceEventIds: [],
+        operations: [{ op: "remove", path: "/entities/character.a" }],
+      },
+    );
+    assert.deepEqual(result.state.latestWorldTransition, {
+      turn: 0,
+      status: "skipped",
+      fromRevision: 0,
+      toRevision: 0,
+      transition: null,
+    });
   });
 
   it("commits structured semantic location changes through the world boundary", async () => {
@@ -877,7 +911,7 @@ describe("public battle semantic projection", () => {
     assert.equal(publicJson.includes("perceptionRegistry"), false);
   });
 
-  it("preserves previous registries when projection falls back to engine cues", async () => {
+  it("projects engine cues normally after invalid sensory evidence is rejected", async () => {
     const sideA = sheet("a", "A");
     const sideB = sheet("b", "B");
     const state = createBattleState({
@@ -918,7 +952,7 @@ describe("public battle semantic projection", () => {
         operations: [],
       },
       worldPatchStatus: "valid",
-      // Force sensory validation failure so projection still uses engine cues.
+      // Invalid provider evidence is removed before the normal projection.
       sensoryEvidenceStatus: "valid",
       sensoryEvidence: [{
         evidenceId: "evidence.bad",
@@ -985,6 +1019,52 @@ describe("public battle semantic projection", () => {
     assert.equal(
       JSON.stringify(result.state.perceptionFrameA).includes("sourceSet"),
       false,
+    );
+  });
+
+  it("does not normalize an invalid prior perception registry", async () => {
+    const sideA = sheet("invalid-registry-a", "A");
+    const sideB = sheet("invalid-registry-b", "B");
+    const state = createBattleState({
+      id: "invalid-perception-registry",
+      sideA,
+      sideB,
+      turnLimit: 20,
+      prologuePending: false,
+    });
+    assert.ok(state.perceptionRegistryA);
+    state.perceptionRegistryA.nextContactSequence = 0;
+    const resolved = resolveTurn({
+      state,
+      playerAction: { actorSide: "a", kind: "basic_attack" },
+      sideASkills: [],
+      sideBSkills: [],
+    });
+    const llm = new MockLlmProvider();
+    llm.reconcileTurnSemanticState = async (input) => ({
+      patch: {
+        baseRevision: input.before.revision,
+        turn: input.turn,
+        sourceEventIds: [],
+        operations: [],
+      },
+      worldPatchStatus: "valid",
+      sensoryEvidenceStatus: "valid",
+      sensoryEvidence: [],
+    });
+
+    await assert.rejects(
+      reconcileSemanticState({
+        llm,
+        stateBeforeTurn: state,
+        resolvedState: resolved.state,
+        mine: sideA,
+        opp: sideB,
+        actions: resolved.actions,
+        events: resolved.events,
+        mechanicalEvidence: resolved.mechanicalEvidence,
+      }),
+      /OBSERVER_PERCEPTION_PROJECTION_INVALID:.*greater than 0/s,
     );
   });
 

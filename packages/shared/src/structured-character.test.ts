@@ -109,6 +109,21 @@ function richDefinition(): CharacterDefinitionV2 {
 }
 
 describe("CharacterDefinitionV2 projections", () => {
+  it("requires an authored basic action in every modern definition", () => {
+    const definition = richDefinition();
+    const { basicAction: _basicAction, ...capabilities } = definition.capabilities;
+    const parsed = CharacterDefinitionV2Schema.safeParse({
+      ...definition,
+      capabilities,
+    });
+    assert.equal(parsed.success, false);
+    if (!parsed.success) {
+      assert.ok(parsed.error.issues.some((issue) =>
+        issue.path.join(".") === "capabilities.basicAction"
+      ));
+    }
+  });
+
   it("keeps restricted dynamics out of public and private descriptive projections", () => {
     const definition = richDefinition();
     const policy = defaultCharacterDisclosurePolicyV2(definition);

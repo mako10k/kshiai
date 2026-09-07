@@ -6,7 +6,9 @@ import { after, before, describe, it } from "node:test";
 import {
   NARRATION_PROMPT_COMPILER_V2,
   defaultParameters,
+  defaultBasicAttack,
   type CharacterSheet,
+  type NarrationDefinitionV2,
   type NarrationStyle,
 } from "@kshiai/shared";
 
@@ -84,6 +86,7 @@ function sheet(input: {
     },
     traits: ["慎重"],
     parameters: defaultParameters(),
+    basicAttack: defaultBasicAttack(),
     skills: [],
     weapon: null,
     armor: null,
@@ -297,7 +300,7 @@ describe("structured narration route acceptance", () => {
       attemptId: string;
       assetId: string;
       candidate: { id: string; description: string; instruction?: string } | null;
-      definition: { phases: Record<string, unknown>; voice: { register: string } } | null;
+      definition: Pick<NarrationDefinitionV2, "phases" | "voice"> | null;
     };
     assert.ok(createdDraft.candidate);
     assert.equal(createdDraft.definition?.voice.register, "broadcast");

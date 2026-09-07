@@ -2,16 +2,18 @@ import { z } from "zod";
 import {
   ActionFeasibilityConstraintsSchema,
   CharacterSheetSchema,
+  CombatReadyCharacterSheetSchema,
   CombatFlagsSchema,
   ParamKeySchema,
   ParametersSchema,
-  defaultBasicAttack,
-  ensureCharacterCombatProperties,
+  hydrateLegacyCharacterCombatProperties,
   ensureCharacterIdentityProperties,
   type CharacterSheet,
+  type CombatReadyCharacterSheet,
   type Equipment,
   type Skill,
 } from "./character.js";
+import type { DecisionPrinciple } from "./free-action.js";
 import {
   CharacterConsciousSelfStaticProjectionV2Schema,
   CharacterDeepPsycheStaticProjectionV2Schema,
@@ -223,6 +225,17 @@ export const CharacterActionNormV2Schema = z.object({
       code: z.ZodIssueCode.custom,
       message: "allow_only/forbid require constraint; prefer/avoid do not",
       path: ["force"],
+    });
+  }
+  if (
+    norm.response.actionRefs.length === 0 &&
+    norm.response.actionKinds.length === 0 &&
+    norm.response.tacticTags.length === 0
+  ) {
+    context.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "action norm response requires at least one structured action selector",
+      path: ["response"],
     });
   }
 });
@@ -1156,13 +1169,20 @@ function itemFromLegacy(
   } as const;
 }
 
-export function legacyCharacterSheetToDefinitionV2(
+function convertLegacyCharacterSheetToDefinitionV2(
   legacy: CharacterSheet,
+  deferUnstructuredActionNorms: boolean,
 ): CharacterDefinitionV2 {
-  const sheet = ensureCharacterIdentityProperties(
-    ensureCharacterCombatProperties(CharacterSheetSchema.parse(legacy)),
+  const sheet = hydrateLegacyCharacterCombatProperties(
+    ensureCharacterIdentityProperties(CharacterSheetSchema.parse(legacy)),
   );
-  const basic = sheet.basicAttack ?? defaultBasicAttack();
+  const legacyPrinciples = sheet.decisionProfile?.principles ?? [];
+  if (legacyPrinciples.length > 0 && !deferUnstructuredActionNorms) {
+    throw new Error(
+      `UNSTRUCTURED_LEGACY_ACTION_NORMS:${legacyPrinciples.map((principle) => principle.id).join(",")}`,
+    );
+  }
+  const basic = sheet.basicAttack;
   const inventory = [
     ...(sheet.weapon ? [itemFromLegacy("weapon", sheet.weapon)] : []),
     ...(sheet.armor ? [itemFromLegacy("armor", sheet.armor)] : []),
@@ -1177,23 +1197,7 @@ export function legacyCharacterSheetToDefinitionV2(
     ...name,
     description: null,
   }));
-  const actionNorms = (sheet.decisionProfile?.principles ?? []).slice(0, 12).map((principle, index) => ({
-    id: principle.id || `norm-${index + 1}`,
-    when: { match: "all" as const, clauses: [{ kind: "always" as const, operator: "is" as const, value: "true" }] },
-    response: {
-      disposition: principle.force === "constraint" ? "allow_only" as const : "prefer" as const,
-      actionRefs: [] as string[],
-      actionKinds: principle.force === "constraint" ? ["wait" as const] : [],
-      tacticTags: [] as string[],
-      statement: principle.statement.slice(0, 320),
-      fallbackActionRef: null,
-    },
-    priority: Math.max(0, Math.min(100, principle.priority)),
-    force: principle.force,
-    selfAwareness: "aware" as const,
-    exceptions: [],
-    description: null,
-  }));
+  const actionNorms: CharacterDefinitionV2["actionNorms"] = [];
   return CharacterDefinitionV2Schema.parse({
     schemaVersion: 2,
     identity: {
@@ -1293,6 +1297,34 @@ export function legacyCharacterSheetToDefinitionV2(
   });
 }
 
+export function legacyCharacterSheetToDefinitionV2(
+  legacy: CharacterSheet,
+): CharacterDefinitionV2 {
+  return convertLegacyCharacterSheetToDefinitionV2(legacy, false);
+}
+
+export type LegacyCharacterDefinitionGenerationInputV2 = {
+  baseDefinition: CharacterDefinitionV2;
+  unstructuredActionNormSources: DecisionPrinciple[];
+};
+
+/**
+ * Separates legacy prose principles from the deterministic base so an
+ * immediately following structured-generation step can translate them without
+ * inventing executable selectors in this converter.
+ */
+export function prepareLegacyCharacterDefinitionGenerationV2(
+  legacy: CharacterSheet,
+): LegacyCharacterDefinitionGenerationInputV2 {
+  const parsed = CharacterSheetSchema.parse(legacy);
+  return {
+    baseDefinition: convertLegacyCharacterSheetToDefinitionV2(parsed, true),
+    unstructuredActionNormSources: structuredClone(
+      parsed.decisionProfile?.principles ?? [],
+    ),
+  };
+}
+
 export function defaultCharacterDisclosurePolicyV2(
   definition: CharacterDefinitionV2,
 ): AssetDisclosurePolicyV1 {
@@ -1365,7 +1397,7 @@ export function characterDefinitionV2ToLegacySheet(input: {
   operational?: Partial<Pick<CharacterSheet,
     "visibility" | "record" | "recordOverall" | "improvementMemo" |
     "opponentMemories" | "deletedAt" | "revisionSnapshot">>;
-}): CharacterSheet {
+}): CombatReadyCharacterSheet {
   const { definition } = input;
   const nameValues = (kind: "real_name" | "nickname" | "self_reference" | "epithet") =>
     definition.identity.names.filter((name) => name.kind === kind).map((name) => name.value);
@@ -1394,7 +1426,7 @@ export function characterDefinitionV2ToLegacySheet(input: {
     constraints: action.mechanics.constraints,
   });
   const basic = definition.capabilities.basicAction;
-  return CharacterSheetSchema.parse({
+  return CombatReadyCharacterSheetSchema.parse({
     id: input.characterId,
     ownerUserId: input.ownerUserId,
     displayName: definition.identity.displayName,

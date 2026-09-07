@@ -18,7 +18,7 @@ const {
   drainCharacterAuthoringJobs,
   processNextCharacterAuthoringJob,
 } = await import("./character-authoring-jobs.js");
-const { defaultParameters } = await import("@kshiai/shared");
+const { defaultBasicAttack, defaultParameters } = await import("@kshiai/shared");
 
 before(async () => {
   const now = "2026-08-15T00:00:00.000Z";
@@ -94,6 +94,7 @@ describe("character authoring jobs", () => {
       },
       traits: [],
       parameters: defaultParameters(),
+      basicAttack: defaultBasicAttack(),
       skills: [],
       weapon: null,
       armor: null,

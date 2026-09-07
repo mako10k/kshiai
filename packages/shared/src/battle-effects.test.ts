@@ -3,8 +3,8 @@ import { describe, it } from "node:test";
 import {
   buildBattleTurnRecord,
   createBattleState,
-  resolveTurn,
 } from "./battle-engine.js";
+import { resolveTurn } from "./battle-engine-test-helper.js";
 import {
   resolvePendingEffectSchedule,
   schedulePendingEffect,

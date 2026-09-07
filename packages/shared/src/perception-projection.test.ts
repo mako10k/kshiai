@@ -67,7 +67,10 @@ function evidence(input: {
   };
 }
 
-function semanticState(extraEntityIds: string[] = []) {
+function semanticState(
+  extraEntityIds: string[] = [],
+  priorEntitiesInactive = false,
+) {
   return createBattleSemanticState({
     scene: "暗い石造りの広間",
     sideA: { displayName: "観測者アルファ" },
@@ -78,7 +81,7 @@ function semanticState(extraEntityIds: string[] = []) {
         kind: "other" as const,
         label: `存在 ${id}`,
         location: { type: "scene" as const, area: "広間" },
-        active: true,
+        active: !priorEntitiesInactive || id === extraEntityIds.at(-1),
         facts: {},
       }])),
     },
@@ -772,7 +775,7 @@ describe("observer perception projection", () => {
     const projected = projectObserverPerception({
       observerSide: "a",
       turn: 2,
-      semanticState: semanticState(ids),
+      semanticState: semanticState(ids, true),
       events: [],
       quantizedMechanicalEvidence: [],
       reserveEvidence: [],
@@ -817,7 +820,7 @@ describe("observer perception projection", () => {
     const projected = projectObserverPerception({
       observerSide: "a",
       turn: 2,
-      semanticState: semanticState(ids),
+      semanticState: semanticState(ids, true),
       events: [],
       quantizedMechanicalEvidence: [],
       reserveEvidence: [],

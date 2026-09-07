@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import {
   defaultParameters,
+  defaultBasicAttack,
   type CharacterDefinitionV2,
   type CharacterSheet,
 } from "@kshiai/shared";
@@ -43,6 +44,7 @@ function generatedCharacter(): GenerateCharacterResult {
       },
       traits: ["慎重"],
       parameters: defaultParameters(),
+      basicAttack: defaultBasicAttack(),
       skills: [],
       weapon: null,
       armor: null,
@@ -56,11 +58,13 @@ class RecordingClaimProvider extends MockLlmProvider {
   readonly calls: string[] = [];
   claimInput: ValidateCharacterProfileClaimsInput | null = null;
   reviewInput: ReviewCharacterDefinitionV2Input | null = null;
+  definitionInput: GenerateCharacterDefinitionV2Input | null = null;
 
   override async generateCharacterDefinitionV2(
     input: GenerateCharacterDefinitionV2Input,
   ): Promise<CharacterDefinitionV2> {
     this.calls.push("structure");
+    this.definitionInput = structuredClone(input);
     const definition = await super.generateCharacterDefinitionV2(input);
     return {
       ...definition,
@@ -173,12 +177,45 @@ describe("structured character authoring claim validation", () => {
     );
   });
 
+  it("does not elevate first-stage prose principles into persisted action-norm authority", async () => {
+    const generated = generatedCharacter();
+    generated.sheet.decisionProfile = {
+      defaultObjective: {
+        id: "victory",
+        statement: "勝利を目指す",
+        priority: 50,
+      },
+      principles: [{
+        id: "intermediate-wait",
+        statement: "まず待つ",
+        priority: 90,
+        force: "constraint",
+      }],
+    };
+    const provider = new RecordingClaimProvider();
+
+    await buildCharacterGenerationCandidate({
+      llm: provider,
+      attemptId: "attempt-intermediate-principle",
+      characterId: "character-intermediate-principle",
+      ownerUserId: "owner-intermediate-principle",
+      sourceText: "好機には踏み込む剣士",
+      sourceKind: "create_instruction",
+      generated,
+    });
+
+    assert.ok(provider.definitionInput);
+    assert.deepEqual(provider.definitionInput!.baseDefinition.actionNorms, []);
+    assert.deepEqual(provider.definitionInput!.unstructuredActionNormSources, []);
+  });
+
   it("upgrades from the existing sheet and restores drifted mechanics", async () => {
     class DriftingUpgradeProvider extends RecordingClaimProvider {
       override async generateCharacterDefinitionV2(
         input: GenerateCharacterDefinitionV2Input,
       ): Promise<CharacterDefinitionV2> {
         this.calls.push("structure");
+        this.definitionInput = structuredClone(input);
         const definition = await super.generateCharacterDefinitionV2(input);
         return {
           ...definition,
@@ -199,6 +236,19 @@ describe("structured character authoring claim validation", () => {
       ...generatedCharacter().sheet,
       displayName: "灯",
       narrativeBlurb: "火を守る旅人。",
+      decisionProfile: {
+        defaultObjective: {
+          id: "victory",
+          statement: "勝利を目指す",
+          priority: 50,
+        },
+        principles: [{
+          id: "protect-flame",
+          statement: "火を守る",
+          priority: 80,
+          force: "commitment",
+        }],
+      },
     };
     const provider = new DriftingUpgradeProvider();
     const result = await buildCharacterGenerationCandidate({
@@ -213,6 +263,18 @@ describe("structured character authoring claim validation", () => {
     });
 
     assert.ok(provider.calls.includes("review"));
+    assert.deepEqual(provider.definitionInput?.unstructuredActionNormSources, [{
+      id: "protect-flame",
+      statement: "火を守る",
+      priority: 80,
+      force: "commitment",
+    }]);
+    assert.deepEqual(provider.reviewInput?.unstructuredActionNormSources, [{
+      id: "protect-flame",
+      statement: "火を守る",
+      priority: 80,
+      force: "commitment",
+    }]);
     assert.equal(result.envelope.definition.identity.displayName, "灯");
     assert.notEqual(result.envelope.definition.combat.parameters.atk, 99);
     assert.equal(

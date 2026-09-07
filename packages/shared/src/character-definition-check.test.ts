@@ -172,9 +172,23 @@ describe("character definition upgrade checks", () => {
       speech: { register: "丁寧語", cadence: "短く区切る" },
       actionNorms: [{
         id: "ask-first",
-        statement: "まず相手の動きを見る",
+        when: {
+          match: "all",
+          clauses: [{ kind: "always", operator: "is", value: "true" }],
+        },
+        response: {
+          disposition: "prefer",
+          actionRefs: [],
+          actionKinds: ["free_action"],
+          tacticTags: [],
+          statement: "まず相手の動きを見る",
+          fallbackActionRef: null,
+        },
+        priority: 50,
         force: "preference",
         selfAwareness: "aware",
+        exceptions: [],
+        description: null,
       }],
     });
     assert.equal(rejected.success, false);
@@ -209,9 +223,23 @@ describe("character definition upgrade checks", () => {
       }],
       actionNorms: [{
         id: "ask-first",
-        statement: "まず相手の動きを見る",
+        when: {
+          match: "all",
+          clauses: [{ kind: "always", operator: "is", value: "true" }],
+        },
+        response: {
+          disposition: "prefer",
+          actionRefs: [],
+          actionKinds: ["free_action"],
+          tacticTags: [],
+          statement: "まず相手の動きを見る",
+          fallbackActionRef: null,
+        },
+        priority: 50,
         force: "preference",
         selfAwareness: "aware",
+        exceptions: [],
+        description: null,
       }],
       expressionNotes: null,
     });
@@ -235,37 +263,17 @@ describe("character definition upgrade checks", () => {
     );
   });
 
-  it("coerces mixed or incomplete fill objects instead of demanding internals", () => {
-    const fill = parseCharacterDefinitionGapFillV2({
-      appearanceDetails: [{
-        id: "detail-cloak",
-        region: "clothing",
-        description: "赤い外套",
-      }],
-      speechPolicy: { register: "丁寧語" },
-      actionNorms: [{
-        id: "duplicate",
-        statement: "待つ",
-        force: "constraint",
-        selfAwareness: "aware",
-      }, {
-        id: "duplicate",
-        response: { statement: "聞いてから動く" },
-        force: "preference",
-      }],
-    });
-    const base = legacyCharacterSheetToDefinitionV2(legacySheet());
-    const filled = applyCharacterDefinitionGapFillV2(
-      base,
-      fill,
-      "upgrade_description",
+  it("rejects an incomplete action norm instead of inventing its mechanics", () => {
+    assert.throws(
+      () => parseCharacterDefinitionGapFillV2({
+        actionNorms: [{
+          id: "wait-by-default",
+          statement: "待つ",
+          force: "constraint",
+          selfAwareness: "aware",
+        }],
+      }),
+      /Required|Unrecognized key/,
     );
-    assert.equal(filled.appearance.details[0]?.description.text, "赤い外套");
-    assert.equal(filled.speechPolicy.register, "丁寧語");
-    assert.equal(filled.speechPolicy.cadence, "丁寧語");
-    assert.equal(filled.actionNorms.length, 2);
-    assert.notEqual(filled.actionNorms[0]?.id, filled.actionNorms[1]?.id);
-    assert.equal(filled.actionNorms[0]?.response.disposition, "allow_only");
-    assert.equal(filled.actionNorms[1]?.response.statement, "聞いてから動く");
   });
 });

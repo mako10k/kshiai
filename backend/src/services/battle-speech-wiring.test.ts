@@ -1,4 +1,3 @@
-// @ts-nocheck — BattleState declaration emit uses a bounded Record type.
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import {
@@ -12,6 +11,7 @@ import {
   compileCharacterRelationshipProgramV2,
   defaultDialoguePipelineSettings,
   defaultParameters,
+  defaultBasicAttack,
   legacyCharacterSheetToDefinitionV2,
   projectCharacterConsciousSelfV2,
   projectCharacterDeepPsycheV2,
@@ -43,7 +43,11 @@ import {
 } from "./battle-service.js";
 import { resolveDialoguePipelineActivation } from "./dialogue-pipeline-activation.js";
 import { MockLlmProvider } from "../llm/mock.js";
-import { OpenAiCompatibleProvider } from "../llm/openai-compatible.js";
+import { LlmApplicationResultError } from "../llm/provider-errors.js";
+import {
+  OpenAiCompatibleProvider,
+  type ChatOpts,
+} from "../llm/openai-compatible.js";
 
 function enableDeterministicPsyche(state: BattleState): void {
   state.assetManifest = {
@@ -79,6 +83,7 @@ function sheet(
     appearance: { summary: `${displayName}の姿`, visualPrompt: "test" },
     traits: [],
     parameters: defaultParameters(),
+    basicAttack: defaultBasicAttack(),
     skills: [],
     weapon: null,
     armor: null,
@@ -247,6 +252,11 @@ describe("character-authored public speech", () => {
     );
     assert.equal(
       result.state.turnRecords.at(-1)?.pipelineTrace?.deepPsyche?.a.providerStatus,
+      "skipped",
+    );
+    assert.equal(
+      result.state.turnRecords.at(-1)?.pipelineTrace?.characterAgents?.a.outcome
+        ?.disposition,
       "skipped",
     );
   });
@@ -444,6 +454,11 @@ describe("character-authored public speech", () => {
     assert.equal(pipelineTrace?.characterAgents?.phase, "turn");
     assert.equal(pipelineTrace?.characterAgents?.a.providerStatus, "fulfilled");
     assert.equal(pipelineTrace?.characterAgents?.b.providerStatus, "fulfilled");
+    assert.deepEqual(pipelineTrace?.characterAgents?.a.outcome, {
+      disposition: "accepted",
+      reasonCode: "accepted",
+      detail: null,
+    });
     assert.equal(
       (pipelineTrace?.characterAgents?.a.input as { phase?: string } | null)?.phase,
       "turn",
@@ -662,7 +677,8 @@ describe("character-authored public speech", () => {
     });
     const trace = result.state.turnRecords.at(-1)?.pipelineTrace;
     const psycheInput = trace?.deepPsyche?.a.input;
-    const expressionInput = trace?.characterAgents?.a.input as Record<string, unknown>;
+    const expressionInput = trace?.characterAgents?.a.input;
+    assert.ok(expressionInput && typeof expressionInput === "object");
     assert.equal(psycheInput, null);
     assert.equal(trace?.deepPsyche?.a.providerStatus, "skipped");
     assert.equal(result.state.agentStateA?.reactionReceiptV1?.route, "deterministic_no_call");
@@ -675,16 +691,18 @@ describe("character-authored public speech", () => {
     assert.equal(trace?.characterFocus?.mode, "shadow");
     assert.equal(trace?.characterFocus?.a?.packet.effectiveness, "sharp");
     assert.equal(trace?.characterFocus?.a?.receipt.observerSide, "a");
-    assert.equal(expressionInput.contextMode, "compact");
-    assert.ok(expressionInput.expressionBrief);
-    assert.ok(expressionInput.turnObservation);
+    assert.equal(Reflect.get(expressionInput, "contextMode"), "compact");
+    assert.ok(Reflect.get(expressionInput, "expressionBrief"));
+    assert.ok(Reflect.get(expressionInput, "turnObservation"));
     assert.equal("perception" in expressionInput, false);
     assert.equal("compactRecentExchange" in expressionInput, false);
     assert.equal("anchoredExchange" in expressionInput, false);
     assert.equal("characterFocus" in expressionInput, false);
     assert.equal("focusStateV1" in expressionInput, false);
+    const expressionConversation = Reflect.get(expressionInput, "conversation");
+    assert.ok(expressionConversation && typeof expressionConversation === "object");
     assert.equal(
-      "anchoredExchange" in ((expressionInput.conversation as Record<string, unknown>) ?? {}),
+      "anchoredExchange" in expressionConversation,
       true,
     );
     assert.equal(result.state.agentStateA?.dialogueThread?.topic, "");
@@ -762,7 +780,7 @@ describe("character-authored public speech", () => {
     opening.agentStateA!.privateMemory = "この相手への過去方針: 古い計画";
     const provider = new MockLlmProvider();
     provider.advanceCharacterPsyche = async () => {
-      throw new Error("simulated unavailable psyche");
+      throw new Error("timeout:advanceCharacterPsyche:20000ms");
     };
 
     const result = await advanceCharacterAgents({
@@ -781,7 +799,95 @@ describe("character-authored public speech", () => {
     });
 
     assert.equal(result.state.agentStateA?.privateMemory, "");
-    assert.equal(result.state.turnRecords.at(-1)?.pipelineTrace?.deepPsyche?.a.providerStatus, "rejected");
+    const trace = result.state.turnRecords.at(-1)?.pipelineTrace?.deepPsyche?.a;
+    assert.equal(trace?.providerStatus, "rejected");
+    assert.deepEqual(trace?.outcome, {
+      disposition: "provider_unavailable",
+      reasonCode: "timeout",
+      detail: "Error",
+    });
+  });
+
+  it("records deep-psyche schema rejection as an application defect", async () => {
+    const sideA = sheet("a", "アオ", ["私"]);
+    const sideB = sheet("b", "クロ", ["俺"]);
+    const opening = createBattleState({
+      id: "compact-psyche-schema-rejection",
+      sideA,
+      sideB,
+      turnLimit: 20,
+      prologuePending: true,
+    });
+    const provider = new MockLlmProvider();
+    provider.advanceCharacterPsyche = async () => {
+      throw new LlmApplicationResultError(
+        "schema_invalid",
+        "delta.interior.speechAppraisal:invalid_type",
+      );
+    };
+
+    const result = await advanceCharacterAgents({
+      llm: provider,
+      before: opening,
+      after: opening,
+      mine: sideA,
+      opp: sideB,
+      events: [],
+      actions: [],
+      phase: "prologue",
+      dialoguePipeline: {
+        ...defaultDialoguePipelineSettings(),
+        contextProjectionMode: "compact",
+      },
+    });
+
+    assert.deepEqual(
+      result.state.turnRecords.at(-1)?.pipelineTrace?.deepPsyche?.a.outcome,
+      {
+        disposition: "application_rejected",
+        reasonCode: "schema_invalid",
+        detail: "delta.interior.speechAppraisal:invalid_type",
+      },
+    );
+  });
+
+  it("records fulfilled speech with a rejected action as application rejection", async () => {
+    const sideA = sheet("a", "アオ", ["私"]);
+    const sideB = sheet("b", "クロ", ["俺"]);
+    const state = createBattleState({
+      id: "agent-action-application-rejection",
+      sideA,
+      sideB,
+      turnLimit: 20,
+      prologuePending: false,
+    });
+    const provider = new MockLlmProvider();
+    const originalAdvance = provider.advanceCharacterAgent.bind(provider);
+    provider.advanceCharacterAgent = async (input) => ({
+      ...await originalAdvance(input),
+      speech: "まだ見ている。",
+      proposedAction: { kind: "skill", skillId: "missing", unexpected: true },
+    });
+
+    const result = await advanceCharacterAgents({
+      llm: provider,
+      before: state,
+      after: state,
+      mine: sideA,
+      opp: sideB,
+      events: [],
+      actions: [],
+      phase: "turn",
+    });
+    const trace = result.state.turnRecords.at(-1)?.pipelineTrace?.characterAgents?.a;
+
+    assert.equal(trace?.acceptedOutput?.speech?.text, "まだ見ている。");
+    assert.equal(trace?.acceptedOutput?.nextAction, null);
+    assert.deepEqual(trace?.outcome, {
+      disposition: "application_rejected",
+      reasonCode: "schema_invalid",
+      detail: "speech_accepted_action_rejected",
+    });
   });
 
   it("uses initial perception for prologue decisions and reaction-only aftermath", async () => {
@@ -954,7 +1060,9 @@ describe("character-authored public speech", () => {
     const calls: string[] = [];
     const original = provider.advanceCharacterAgent.bind(provider);
     provider.advanceCharacterAgent = async (input) => {
-      calls.push(input.perception.observer.side);
+      calls.push(input.contextMode === "compact"
+        ? input.turnObservation.observerSide
+        : input.perception.observer.side);
       return original(input);
     };
     const result = await advanceCharacterAgents({
@@ -1024,6 +1132,163 @@ describe("character-authored public speech", () => {
     assert.match(heardByB ?? "", new RegExp(actualA));
     assert.doesNotMatch(heardByB ?? "", /公開用の偽台詞|公開ナレータ/);
     assert.equal(next.status, "skipped");
+  });
+
+  it("keeps committed speech within the perception limit and continues from the current registry", async () => {
+    const sideA = sheet("a", "秘密の正準名", ["私"]);
+    const sideB = sheet("b", "クロ", ["俺"]);
+    const before = createBattleState({
+      id: "bounded-expression-projection",
+      sideA,
+      sideB,
+      turnLimit: 20,
+      prologuePending: false,
+    });
+    const event = {
+      id: "event.crowd.1",
+      type: "wait" as const,
+      summary: "周囲がざわめく。",
+    };
+    const sensoryEvidence = Array.from({ length: 32 }, (_, index) => ({
+      evidenceId: `evidence.ambient.${index + 1}`,
+      basisEventIds: [event.id],
+      modality: "sound" as const,
+      phenomenon: `周囲の物音 ${index + 1}`,
+      source: { kind: "ambient" as const },
+      accessBySide: {
+        a: {
+          currentAccess: "clear" as const,
+          identityKnowledge: "unknown" as const,
+          perceivedAs: "周囲の物音",
+          direction: "around" as const,
+          distance: "unknown" as const,
+          occurrenceCertainty: "certain" as const,
+          attributionCertainty: "unknown" as const,
+        },
+        b: {
+          currentAccess: "clear" as const,
+          identityKnowledge: "unknown" as const,
+          perceivedAs: "周囲の物音",
+          direction: "around" as const,
+          distance: "unknown" as const,
+          occurrenceCertainty: "certain" as const,
+          attributionCertainty: "unknown" as const,
+        },
+      },
+      publicAccess: {
+        currentAccess: "clear" as const,
+        identityKnowledge: "unknown" as const,
+        perceivedAs: "周囲の物音",
+        direction: "around" as const,
+        distance: "unknown" as const,
+        occurrenceCertainty: "certain" as const,
+        attributionCertainty: "unknown" as const,
+      },
+    }));
+    const after = {
+      ...before,
+      turn: 1,
+      perceptionFrameA: { ...before.perceptionFrameA!, turn: 1 },
+      perceptionFrameB: {
+        ...before.perceptionFrameB!,
+        turn: 1,
+        counterpart: {
+          ...before.perceptionFrameB!.counterpart,
+          identityKnowledge: "unknown" as const,
+          perceivedAs: "正体不明の相手",
+          apparentIdentity: undefined,
+        },
+      },
+      perceptionRegistryA: {
+        ...before.perceptionRegistryA!,
+        nextContactSequence: 7,
+      },
+      perceptionRegistryB: {
+        ...before.perceptionRegistryB!,
+        nextContactSequence: 9,
+      },
+    };
+
+    const result = await advanceCharacterAgents({
+      llm: new MockLlmProvider(),
+      before,
+      after,
+      mine: sideA,
+      opp: sideB,
+      events: [event],
+      actions: [],
+      sensoryEvidence,
+      activeSides: ["a"],
+    });
+
+    const speech = result.characterSpeeches[0]?.text;
+    assert.ok(speech);
+    assert.equal(
+      result.state.turnRecords.at(-1)?.pipelineTrace
+        ?.committedExpressionProjection?.disposition,
+      "accepted",
+    );
+    assert.equal(result.state.perceptionRegistryA?.nextContactSequence, 7);
+    assert.equal(result.state.perceptionRegistryB?.nextContactSequence, 9);
+    const frameB = JSON.stringify(result.state.perceptionFrameB);
+    assert.match(frameB, new RegExp(speech));
+    assert.equal(frameB.includes("秘密の正準名"), false);
+    const perceptCount = [
+      result.state.perceptionFrameB!.self,
+      result.state.perceptionFrameB!.counterpart,
+      ...result.state.perceptionFrameB!.others,
+    ].flatMap((slot) => slot.percepts).length;
+    assert.equal(perceptCount, 32);
+  });
+
+  it("rejects expression commit atomically when current projection continuity is invalid", async () => {
+    const sideA = sheet("a", "アオ", ["私"]);
+    const sideB = sheet("b", "クロ", ["俺"]);
+    const before = createBattleState({
+      id: "invalid-expression-projection",
+      sideA,
+      sideB,
+      turnLimit: 20,
+      prologuePending: false,
+    });
+    const after = {
+      ...before,
+      turn: 1,
+      perceptionRegistryA: {
+        ...before.perceptionRegistryA!,
+        observerSide: "b" as const,
+      },
+    };
+
+    const result = await advanceCharacterAgents({
+      llm: new MockLlmProvider(),
+      before,
+      after,
+      mine: sideA,
+      opp: sideB,
+      events: [],
+      actions: [],
+      activeSides: ["a"],
+    });
+
+    assert.deepEqual(result.characterSpeeches, []);
+    assert.equal(
+      result.state.turnRecords.at(-1)?.events.some((item) =>
+        item.type === "utterance" || item.type === "manifestation"
+      ),
+      false,
+    );
+    assert.equal(result.state.agentStateA?.lastSpeech, before.agentStateA?.lastSpeech);
+    assert.equal(
+      result.state.turnRecords.at(-1)?.pipelineTrace
+        ?.committedExpressionProjection?.disposition,
+      "application_rejected",
+    );
+    assert.equal(
+      result.state.turnRecords.at(-1)?.pipelineTrace
+        ?.committedExpressionProjection?.reasonCode,
+      "projection_invalid",
+    );
   });
 
   it("keeps character facts authoritative while accepting placement and punctuation", () => {
@@ -1432,21 +1697,25 @@ describe("character-authored public speech", () => {
       phase: "turn",
     });
     assert.ok(consumerInput?.decision);
-    const provider = new OpenAiCompatibleProvider({
+    class InvalidProposalProvider extends OpenAiCompatibleProvider {
+      protected override async chatJson(
+        _system: string,
+        _user: string,
+        _opts?: ChatOpts,
+      ): Promise<unknown> {
+        return {
+          speech: "まだ動ける。",
+          nextAction: { kind: "skill", skillId: "slash", unexpected: true },
+        };
+      }
+    }
+    const provider = new InvalidProposalProvider({
       name: "test-provider",
       apiKey: "test-only",
       baseUrl: "https://example.invalid/v1",
       modelEngine: "test-engine",
       modelFast: "test-fast",
     });
-    const privateProvider = provider as unknown as {
-      chatJson(): Promise<unknown>;
-    };
-    privateProvider.chatJson = async () => ({
-      speech: "まだ動ける。",
-      nextAction: { kind: "skill", skillId: "slash", unexpected: true },
-    });
-
     const providerResult = await provider.advanceCharacterAgent(consumerInput!);
     const accepted = acceptCharacterAgentResult({
       result: providerResult,
@@ -1529,7 +1798,7 @@ describe("character-authored public speech", () => {
   });
 
   it("builds turn-limit input only from committed records", () => {
-    const facts = buildRefereeTurnFacts([{
+    const facts = buildRefereeTurnFacts([BattleTurnRecordSchema.parse({
       turn: 3,
       actions: [{
         id: "turn-3-action-a",
@@ -1578,7 +1847,23 @@ describe("character-authored public speech", () => {
         status: "applied",
         operationKinds: ["set_pair_relation"],
       },
-    } as unknown as Parameters<typeof buildRefereeTurnFacts>[0][number]]);
+      cognitionA: {
+        turn: 3,
+        scene: "test scene",
+        ownCondition: "steady",
+        foeCondition: "strained",
+        parameterChanges: {},
+        observedEvents: [],
+      },
+      cognitionB: {
+        turn: 3,
+        scene: "test scene",
+        ownCondition: "strained",
+        foeCondition: "steady",
+        parameterChanges: { hp: -8 },
+        observedEvents: [],
+      },
+    })]);
 
     assert.deepEqual(facts, [{
       turn: 3,
@@ -1655,6 +1940,16 @@ describe("character-authored public speech", () => {
     });
     assert.equal(fallback.winnerSide, "a");
     assert.equal(fallback.source, "deterministic_fallback");
+    assert.equal(fallback.engineFallbackSide, "a");
+    assert.equal(
+      fallback.reason,
+      "確定した行動、影響、残力を総合して判定した。",
+    );
+    assert.deepEqual(fallback.reasonFacts, [{
+      factor: "overall_effectiveness",
+      favoredSide: "a",
+      statement: "確定した行動、影響、残力を総合して判定した。",
+    }]);
   });
 
   it("commits ordered combat and judgment receipts from frozen canonical facts", () => {

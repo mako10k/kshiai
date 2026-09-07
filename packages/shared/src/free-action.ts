@@ -171,6 +171,33 @@ export type FreeActionAdjudicationBatch = z.infer<
   typeof FreeActionAdjudicationBatchSchema
 >;
 
+export const FreeActionAdjudicationFailureSchema = z.object({
+  category: z.enum(["provider", "application"]),
+  reason: z.enum([
+    "billing",
+    "dns",
+    "rate_limit",
+    "service_unavailable",
+    "timeout",
+    "other",
+    "schema_invalid",
+  ]),
+}).strict().superRefine((failure, ctx) => {
+  if (
+    (failure.category === "application") !==
+      (failure.reason === "schema_invalid")
+  ) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["reason"],
+      message: "application failures must be schema_invalid",
+    });
+  }
+});
+export type FreeActionAdjudicationFailure = z.infer<
+  typeof FreeActionAdjudicationFailureSchema
+>;
+
 export const FreeActionResolutionReceiptSchema = z.object({
   actionId: z.string().min(1).max(120),
   actorSide: z.enum(["a", "b"]),
@@ -185,6 +212,8 @@ export const FreeActionResolutionReceiptSchema = z.object({
     "missing_canonical_root",
     "operation_rejected",
   ]),
+  /** Optional only for receipts written before unavailable subtypes existed. */
+  failureSubtype: FreeActionAdjudicationFailureSchema.optional(),
   subjectRef: z.string().min(1).max(120).nullable(),
   canonicalEntityId: z.string().min(1).max(120).nullable(),
   promotion: z.enum([
@@ -195,7 +224,18 @@ export const FreeActionResolutionReceiptSchema = z.object({
   ]),
   operationKinds: z.array(z.string().min(1).max(80)).max(12),
   summary: z.string().min(1).max(400),
-}).strict();
+}).strict().superRefine((receipt, ctx) => {
+  if (
+    receipt.failureSubtype &&
+    receipt.reason !== "adjudication_unavailable"
+  ) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["failureSubtype"],
+      message: "failure subtype applies only to unavailable adjudication",
+    });
+  }
+});
 export type FreeActionResolutionReceipt = z.infer<
   typeof FreeActionResolutionReceiptSchema
 >;

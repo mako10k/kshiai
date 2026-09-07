@@ -5,14 +5,15 @@ import {
   defaultParameters,
   deriveBattleProfileStateOverrides,
   deriveBattleSceneStateFacts,
-  resolveTurn,
   type BattleState,
   type CharacterSheet,
   type FreeActionCanonicalRoot,
   type LatentAffordanceProjection,
 } from "@kshiai/shared";
+import { resolveTurn } from "./battle-engine-test-helper.js";
 import {
   commitFreeActionAdjudications,
+  parseFreeActionAdjudication,
   prepareFreeActionsForTurn,
   type FreeActionTurnPreparation,
 } from "./free-action-service.js";
@@ -113,6 +114,53 @@ function commit(input: {
 }
 
 describe("free action promotion and adjudication", () => {
+  it("classifies a malformed adjudication as an application schema failure", () => {
+    assert.deepEqual(parseFreeActionAdjudication({ proposals: "invalid" }), {
+      adjudication: null,
+      adjudicationFailure: {
+        category: "application",
+        reason: "schema_invalid",
+      },
+    });
+  });
+
+  it("persists provider failure subtype without changing canonical state", async () => {
+    const { state, mine, opp } = battle();
+    state.plannedActionA = {
+      kind: "free_action",
+      description: "相手へ手を伸ばす",
+      subjectRefs: ["actor:a:counterpart"],
+    };
+    state.plannedActionB = { kind: "wait" };
+    const before = structuredClone(state);
+    const provider = new MockLlmProvider();
+    provider.adjudicateFreeActions = async () => {
+      throw new Error("timeout:adjudicateFreeActions:1000ms");
+    };
+    const preparation = await prepareFreeActionsForTurn({
+      llm: provider,
+      state,
+      mine,
+      opp,
+    });
+    const resolved = resolveTurn({
+      state,
+      sideASkills: mine.skills,
+      sideBSkills: opp.skills,
+    });
+    const result = commit({ before, resolved, preparation });
+
+    assert.deepEqual(preparation.adjudicationFailure, {
+      category: "provider",
+      reason: "timeout",
+    });
+    assert.deepEqual(result.state.worldState, before.worldState);
+    assert.deepEqual(
+      result.state.latestFreeActionReceipts?.[0]?.failureSubtype,
+      preparation.adjudicationFailure,
+    );
+  });
+
   it("adds no adjudication call for standard turns and one batched call for free actions", async () => {
     const { state, mine, opp } = battle();
     const provider = new MockLlmProvider();
@@ -219,6 +267,7 @@ describe("free action promotion and adjudication", () => {
     const result = commit({
       ...turn,
       preparation: {
+        adjudicationFailure: null,
         roots: [],
         affordances: { a: [], b: [] },
         adjudication: {
@@ -270,6 +319,7 @@ describe("free action promotion and adjudication", () => {
     const result = commit({
       ...turn,
       preparation: {
+        adjudicationFailure: null,
         roots: [root],
         affordances: { a: [affordance(root, "石")], b: [] },
         adjudication: {
@@ -332,6 +382,7 @@ describe("free action promotion and adjudication", () => {
     const result = commit({
       ...turn,
       preparation: {
+        adjudicationFailure: null,
         roots: [root],
         affordances: { a: [affordance(root, "赤い帽子")], b: [] },
         adjudication: {
@@ -405,6 +456,7 @@ describe("free action promotion and adjudication", () => {
     const failed = commit({
       ...firstTurn,
       preparation: {
+        adjudicationFailure: null,
         roots: [root],
         affordances: { a: [affordance(root, "石のような物")], b: [] },
         adjudication: {
@@ -456,6 +508,7 @@ describe("free action promotion and adjudication", () => {
     const concretized = commit({
       ...secondTurn,
       preparation: {
+        adjudicationFailure: null,
         roots: [laterRoot],
         affordances: {
           a: [affordance(laterRoot, "石のような物")],

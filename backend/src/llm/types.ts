@@ -48,6 +48,7 @@ import type {
   PerceptionCertainty,
   ParamKey,
   DecisionProfile,
+  DecisionPrinciple,
   TacticalNeedFrame,
   LatentAffordanceProjection,
   OpportunityChain,
@@ -239,6 +240,8 @@ export type CharacterExpressionInput = CharacterExpressionCompactInput | {
   social?: BattleSocialView;
   counterpart?: CharacterCounterpartKnowledge;
   decision?: CharacterActionDecisionContext;
+  expressionBrief?: CharacterExpressionBrief;
+  observableManifestations?: readonly CharacterObservableManifestationV2[];
 };
 
 export type CharacterCounterpartKnowledge = {
@@ -369,6 +372,11 @@ export type GenerateCharacterDefinitionV2Input = {
   sourceText: string;
   /** Valid deterministic base carrying mechanics and stable references. */
   baseDefinition: CharacterDefinitionV2;
+  /**
+   * Persisted prose principles that still require LLM structuring. They are
+   * source material, not executable selectors or constraints by themselves.
+   */
+  unstructuredActionNormSources?: DecisionPrinciple[];
   sourceKind: "create_instruction" | "revision_instruction" |
     "upgrade_description" | "import";
 };
@@ -402,6 +410,7 @@ export type ReviewCharacterDefinitionV2Input = {
   sourceText: string;
   sourceKind: GenerateCharacterDefinitionV2Input["sourceKind"];
   baseDefinition: CharacterDefinitionV2;
+  unstructuredActionNormSources?: DecisionPrinciple[];
   candidate: CharacterDefinitionV2;
   gaps: CharacterDefinitionGapKey[];
   findings: CharacterDefinitionCheckFinding[];
@@ -760,21 +769,9 @@ export interface LlmProvider {
    * stage owns psychological continuity; it never proposes mechanics or public
    * wording.
    */
-  advanceCharacterPsyche(input: {
-    phase: "prologue" | "turn" | "aftermath";
-    character: CharacterSelfProfileAnchor;
-    stableDisposition?: CharacterDeepPsycheStaticProjectionV2;
-    previous: CharacterAgentState;
-    actionReaction: CharacterActionReactionContext;
-    conversation: CharacterConversationContext;
-    dialoguePipeline?: DialoguePipelineSettings;
-    perception: CharacterPerceptionFrame;
-    social?: BattleSocialView;
-    counterpart?: CharacterCounterpartKnowledge;
-    contextMode?: "compact";
-    turnObservation?: TurnObservationPacket;
-    compactRecentExchange?: CharacterConversationEntry[];
-  }): Promise<CharacterDeepPsycheAdvance>;
+  advanceCharacterPsyche(
+    input: CharacterDeepPsycheInput,
+  ): Promise<CharacterDeepPsycheAdvance>;
   /**
    * Choose one bounded action without producing speech or revising psyche.
    * This deliberately has a smaller context than advanceCharacterAgent.
@@ -783,26 +780,7 @@ export interface LlmProvider {
     proposedAction: unknown | null;
   }>;
   /** Advance one character from its frozen observer-relative frame only. */
-  advanceCharacterAgent(input: {
-    phase: "prologue" | "turn" | "aftermath";
-    character: CharacterSelfProfileAnchor;
-    structuredSelf?: CharacterConsciousSelfStaticProjectionV2;
-    psyche: CharacterConsciousPsycheProjection;
-    actionReaction: CharacterActionReactionContext;
-    conversation: CharacterConversationContext;
-    dialoguePipeline?: DialoguePipelineSettings;
-    perception: CharacterPerceptionFrame;
-    social?: BattleSocialView;
-    counterpart?: CharacterCounterpartKnowledge;
-    decision?: CharacterActionDecisionContext;
-    contextMode?: "compact";
-    turnObservation?: TurnObservationPacket;
-    expressionBrief?: CharacterExpressionBrief;
-    observableManifestations?: readonly CharacterObservableManifestationV2[];
-    compactRecentExchange?: CharacterConversationEntry[];
-    anchoredExchange?: CharacterConversationEntry | null;
-    relevantMemory?: string | null;
-  }): Promise<{
+  advanceCharacterAgent(input: CharacterExpressionInput): Promise<{
     /** Echoed committed psyche for compatibility; the server ignores it. */
     state: CharacterAgentState;
     speech: string;

@@ -48,7 +48,19 @@ const CompiledCharacterActionNormV2Schema = z.object({
   exceptions: z.array(z.object({
     clauses: z.array(CharacterNormClauseV2Schema).min(1).max(6),
   }).strict()).max(4),
-}).strict();
+}).strict().superRefine((norm, context) => {
+  if (
+    norm.response.actionRefs.length === 0 &&
+    norm.response.actionKinds.length === 0 &&
+    norm.response.tacticTags.length === 0
+  ) {
+    context.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "compiled action norm requires at least one structured action selector",
+      path: ["response"],
+    });
+  }
+});
 
 export const CharacterActionNormProgramV2Schema = z.object({
   contractVersion: z.literal(2),
