@@ -1,0 +1,309 @@
+# Proposed end-to-end response plan for the fallback-point inventory. Plan edges do not grant execution authority.
+project KSHIAI_FALLBACK_REMEDIATION:
+  version 6
+  title "Correct broken fallback producers and preserve bounded continuation"
+  description "Correct the source mechanisms behind the 21-point character-authoring and battle-runtime fallback inventory, split mixed failure domains, add only missing durable observation, retain contract-preserving fallbacks, release through separately authorized boundaries, and create new immutable character revisions only for an owner-approved affected set."
+  as_of 2026-09-07
+  duration_unit point
+  velocity 1p/1d
+  finish FALLBACK_REMEDIATION_ACCEPTED
+  target_duration 46p
+  goal_owner user
+  dag_owner user
+
+resource DEV:
+  title "Developer"
+  capacity 1
+
+resource OWNER:
+  title "Product and release owner"
+  capacity 1
+
+milestone INVENTORY_FIXED:
+  title "Twenty-one fallback points classified and prioritized"
+  state reached
+
+milestone REMEDIATION_CONTRACT_ACCEPTED:
+  title "Exact remediation and compatibility contract accepted"
+
+milestone P0_AUTHORING_READY:
+  title "P0 character-authoring source defects corrected locally"
+
+milestone P0_PIPELINE_READY:
+  title "P0 psyche and character-agent failure domains separated locally"
+
+milestone P0_READY:
+  title "All P0 source and committed-information defects corrected locally"
+
+milestone P1_ACTION_READY:
+  title "Action fallback provenance complete locally"
+
+milestone P1_READY:
+  title "All P1 mixed compatibility boundaries separated locally"
+
+milestone P2_READY:
+  title "P2 valid-continuation diagnostics complete locally"
+
+milestone RETENTION_MATRIX_READY:
+  title "P3 and development boundaries regression-protected"
+
+milestone LOCAL_ACCEPTANCE_READY:
+  title "Complete local fallback remediation evidence ready"
+
+milestone PUSH_APPROVED:
+  title "Exact branch push approved"
+
+milestone BRANCH_SYNCHRONIZED:
+  title "Exact reviewed branch synchronized and read back"
+
+milestone PR_APPROVED:
+  title "Exact pull request creation approved"
+
+milestone PR_READY:
+  title "Pull request created and checks read back"
+
+milestone MERGE_APPROVED:
+  title "Exact pull request merge approved"
+
+milestone MAIN_INTEGRATED:
+  title "Protected main contains the exact accepted correction"
+
+milestone RELEASE_APPROVED:
+  title "Exact release creation approved"
+
+milestone RELEASE_READY:
+  title "Immutable release identity created and read back"
+
+milestone STAGE_APPROVED:
+  title "Exact no-traffic Stage deployment and observation approved"
+
+milestone STAGE_ACCEPTED:
+  title "Stage evidence accepts the exact release"
+
+milestone PRODUCTION_APPROVED:
+  title "Exact production promotion and observation approved"
+
+milestone PRODUCTION_CODE_ACCEPTED:
+  title "Production code correction and smoke evidence accepted"
+
+milestone AFFECTED_GENERATIONS_IDENTIFIED:
+  title "Affected immutable character generations identified read-only"
+
+milestone ASSET_REVISIONS_APPROVED:
+  title "Exact replacement revision target set approved"
+
+milestone ASSET_REVISIONS_READY:
+  title "Approved new immutable character revisions created and read back"
+
+milestone FALLBACK_REMEDIATION_ACCEPTED:
+  title "Post-remediation battles accept action diversity and fallback contracts"
+
+task FPR_ACCEPT_CONTRACT INVENTORY_FIXED -> REMEDIATION_CONTRACT_ACCEPTED:
+  title "Accept the remediation taxonomy and architectural boundary"
+  description "Review the 21-point inventory, P0 through P3 ordering, failure subtypes, compatibility boundaries, receipt fields, immutable-generation rule, and completion evidence. Identify any genuinely new architectural or persistence decision and require an Accepted ADR before its dependent implementation; do not create an ADR when accepted requirements already determine the behavior."
+  duration 1p
+  owner "user"
+  source "docs/fallback-point-inventory-2026-09-07.md"
+  requires:
+    OWNER 1
+
+task FPR_P0_AUTHORING REMEDIATION_CONTRACT_ACCEPTED -> P0_AUTHORING_READY:
+  title "Correct character-authoring fallback producers for points 1 through 4"
+  description "Review the existing unaccepted WIP against main, route create and revision through complete generation, restrict gap fill to upgrade, reject missing source while gaps remain, require fully structured action norms, remove prose-to-mechanics and legacy-principle executable conversion, and make invalid review fills terminal with bounded validation detail. Add positive, invalid, legacy, and no-gap regressions without accepting a mock or unchanged base as completion."
+  duration 4p
+  owner "codex"
+  source "docs/fallback-point-inventory-2026-09-07.md"
+  requires:
+    DEV 1
+
+task FPR_P0_AGENT_PIPELINE P0_AUTHORING_READY -> P0_PIPELINE_READY:
+  title "Separate provider failure from psyche and agent contract rejection"
+  description "For points 8 and 9, define reason-coded transport, timeout, schema, consistency, and acceptance outcomes; retain prior state or no-action continuation only for the accepted failure classes; preserve application-invalid results as explicit defects; and persist enough causal detail to explain why state, speech, or an action proposal was not advanced."
+  duration 4p
+  owner "codex"
+  source "docs/fallback-point-inventory-2026-09-07.md"
+  requires:
+    DEV 1
+
+task FPR_P0_UTTERANCE_PROJECTION P0_PIPELINE_READY -> P0_READY:
+  title "Correct committed-utterance perception loss"
+  description "For point 15, reproduce the projection failure, correct its producer or input contract, and prevent a stale frame from representing a committed utterance as processed. Persist the failure boundary and add regressions proving the committed utterance reaches each required next frame without leaking inaccessible identity or private state."
+  duration 2p
+  owner "codex"
+  source "docs/fallback-point-inventory-2026-09-07.md"
+  requires:
+    DEV 1
+
+task FPR_P1_ACTION_PROVENANCE P0_READY -> P1_ACTION_READY:
+  title "Record conservative action fallback provenance"
+  description "For point 10, preserve the accepted policy and stance fallback while recording planned-action disposition, selected fallback layer, reason, and observer-safe input boundary in the durable action receipt. Verify that the receipt explains the selected action without exposing private prompts or hidden opponent state."
+  duration 2p
+  owner "codex"
+  source "docs/fallback-point-inventory-2026-09-07.md"
+  requires:
+    DEV 1
+
+task FPR_P1_COMPATIBILITY_BOUNDARIES P1_ACTION_READY -> P1_READY:
+  title "Separate projection seed and basic-attack compatibility boundaries"
+  description "For points 14, 18, and 19, narrow the recoverable minimal-perception trigger, distinguish absent legacy semantic seeds from present invalid seeds, and permit deterministic basic attack only at a declared legacy boundary. Reject invalid modern state and retain fallback or generation provenance needed to identify the executed path."
+  duration 4p
+  owner "codex"
+  source "docs/fallback-point-inventory-2026-09-07.md"
+  requires:
+    DEV 1
+
+task FPR_P2_DURABLE_DIAGNOSTICS P1_READY -> P2_READY:
+  title "Add bounded durable diagnostics to valid continuation"
+  description "For points 5, 7, and 17, retain provider routing, deterministic encounter context, and no-change free-action behavior. Add bounded reason-coded receipts for failed and selected provider, cooldown, encounter source, and free-action provider-versus-schema subtype at existing persistence boundaries without adding providers, retries, controllers, or private output retention."
+  duration 3p
+  owner "codex"
+  source "docs/fallback-point-inventory-2026-09-07.md"
+  requires:
+    DEV 1
+
+task FPR_RETENTION_MATRIX P2_READY -> RETENTION_MATRIX_READY:
+  title "Regression-protect bounded fallbacks and the production mock boundary"
+  description "For point 6 and points 11, 12, 13, 16, 20, and 21, prove production mock fallback remains disabled; later-bucket, feasibility, norm-conflict, semantic no-change, terminal narration, and engine-authoritative adjudication retain their accepted substitutes and receipts. Add only missing regression cases; do not add or remove fallback layers without new evidence."
+  duration 3p
+  owner "codex"
+  source "docs/fallback-point-inventory-2026-09-07.md"
+  requires:
+    DEV 1
+
+task FPR_LOCAL_VERIFY RETENTION_MATRIX_READY -> LOCAL_ACCEPTANCE_READY:
+  title "Verify all twenty-one points and prepare exact integration evidence"
+  description "Run focused suites, npm test, npm run typecheck, npm run build, and npm run adr:check when an ADR changed. Reconcile every inventory ID to implementation and tests, confirm P0 source correction separately from detection improvement, inspect privacy and immutable-snapshot boundaries, review the branch diff against main, and prepare a local handoff without marking existing WIP complete merely because tests pass."
+  duration 2p
+  owner "codex"
+  source "docs/fallback-point-inventory-2026-09-07.md"
+  requires:
+    DEV 1
+
+task FPR_APPROVE_PUSH LOCAL_ACCEPTANCE_READY -> PUSH_APPROVED:
+  title "Approve synchronization of the exact reviewed branch"
+  description "The owner reviews the local diff, validation evidence, commit identity, destination remote, and branch name, then explicitly approves or rejects that one push."
+  duration 1p
+  owner "user"
+  requires:
+    OWNER 1
+
+task FPR_PUSH_BRANCH PUSH_APPROVED -> BRANCH_SYNCHRONIZED:
+  title "Commit synchronize and read back the exact branch"
+  description "Create focused local commits without unrelated changes, push only the approved branch through the repository credential route, and independently read back the remote revision. Do not create a pull request in this task."
+  duration 1p
+  owner "codex"
+  requires:
+    DEV 1
+
+task FPR_APPROVE_PR BRANCH_SYNCHRONIZED -> PR_APPROVED:
+  title "Approve creation of the exact pull request"
+  description "The owner reviews the synchronized revision, target branch, title, body, linked evidence, and declared database, provider, deployment, and asset impacts, then explicitly approves or rejects pull request creation."
+  duration 1p
+  owner "user"
+  requires:
+    OWNER 1
+
+task FPR_OPEN_PR PR_APPROVED -> PR_READY:
+  title "Create the approved pull request and read back checks"
+  description "Create only the approved pull request, read back its URL, head and base revisions, review state, and CI checks, and stop on a mismatch without merging."
+  duration 1p
+  owner "codex"
+  requires:
+    DEV 1
+
+task FPR_APPROVE_MERGE PR_READY -> MERGE_APPROVED:
+  title "Approve merge of the exact reviewed pull request"
+  description "After required reviews and checks pass, the owner explicitly approves or rejects merging the exact pull request revision."
+  duration 1p
+  owner "user"
+  requires:
+    OWNER 1
+
+task FPR_MERGE_READBACK MERGE_APPROVED -> MAIN_INTEGRATED:
+  title "Merge through the protected path and verify main"
+  description "Merge only the approved pull request through the repository protected workflow and independently verify the resulting GitHub main revision and included commits. Do not create a release in this task."
+  duration 1p
+  owner "codex"
+  requires:
+    DEV 1
+
+task FPR_APPROVE_RELEASE MAIN_INTEGRATED -> RELEASE_APPROVED:
+  title "Approve one immutable release candidate"
+  description "The owner reviews the integrated main revision, release notes, schema and migration impact, rollback identity, and artifact validation requirements, then explicitly approves or rejects creating one exact release candidate."
+  duration 1p
+  owner "user"
+  requires:
+    OWNER 1
+
+task FPR_CREATE_RELEASE RELEASE_APPROVED -> RELEASE_READY:
+  title "Create and verify the approved immutable release"
+  description "Create only the approved tag and release artifact, run artifact smoke validation, and read back the tag target, artifact identity, and checksums. Do not deploy it in this task."
+  duration 1p
+  owner "codex"
+  requires:
+    DEV 1
+
+task FPR_APPROVE_STAGE RELEASE_READY -> STAGE_APPROVED:
+  title "Approve exact no-traffic Stage deployment and observation"
+  description "The owner approves or rejects deployment of the exact immutable release to the named no-traffic Stage target and a bounded observation using retained or synthetic fixtures with explicit call, turn, cost, and stop ceilings."
+  duration 1p
+  owner "user"
+  requires:
+    OWNER 1
+
+task FPR_STAGE_VALIDATE STAGE_APPROVED -> STAGE_ACCEPTED:
+  title "Deploy to no-traffic Stage and validate fallback contracts"
+  description "Deploy only the approved release, verify digest and configuration, then run the approved bounded fixtures. Inspect all 21 paths where fixtures apply, action-candidate diversity, norm receipts, provider and application failure separation, perception continuity, fallback reasons, privacy, latency, and cost. Stop without retry or promotion on any contract, provider, schema, or identity failure."
+  duration 2p
+  owner "codex"
+  requires:
+    DEV 1
+
+task FPR_APPROVE_PRODUCTION STAGE_ACCEPTED -> PRODUCTION_APPROVED:
+  title "Approve exact production promotion and smoke"
+  description "The owner reviews Stage evidence, exact release identity, rollback target, affected services, smoke scope, and stop conditions, then explicitly approves or rejects production promotion."
+  duration 1p
+  owner "user"
+  requires:
+    OWNER 1
+
+task FPR_PRODUCTION_DEPLOY PRODUCTION_APPROVED -> PRODUCTION_CODE_ACCEPTED:
+  title "Promote the exact release and verify production code behavior"
+  description "Promote only the approved immutable release, read back deployed identities and configuration, run the approved smoke, and verify no new malformed authoring result or conflated runtime failure is accepted. Rollback or other recovery remains a separate authorization if a stop condition fires."
+  duration 2p
+  owner "codex"
+  requires:
+    DEV 1
+
+task FPR_AUDIT_AFFECTED_GENERATIONS PRODUCTION_CODE_ACCEPTED -> AFFECTED_GENERATIONS_IDENTIFIED:
+  title "Identify affected immutable character generations read-only"
+  description "Query authoritative generation and battle receipts without mutation to identify exact character revision IDs produced by unconditional prose conversion or other corrected authoring fallbacks. Record inclusion evidence, exclusions, owners, current usage, and unknowns; do not infer all legacy assets are affected."
+  duration 2p
+  owner "codex"
+  source "docs/fallback-point-inventory-2026-09-07.md"
+  requires:
+    DEV 1
+
+task FPR_APPROVE_ASSET_REVISIONS AFFECTED_GENERATIONS_IDENTIFIED -> ASSET_REVISIONS_APPROVED:
+  title "Approve the exact replacement revision set"
+  description "The owner reviews every affected generation, proposed owner-source input, expected semantic changes, compatibility impact, and observation set, then approves an exact target list or accepts an evidenced empty set. This task does not authorize in-place mutation."
+  duration 1p
+  owner "user"
+  requires:
+    OWNER 1
+
+task FPR_CREATE_ASSET_REVISIONS ASSET_REVISIONS_APPROVED -> ASSET_REVISIONS_READY:
+  title "Create and verify approved new immutable character revisions"
+  description "For only the approved targets, create new revisions through the corrected authoring path, preserve old immutable generations, validate structured predicates and action selectors against owner sources, and read back revision IDs and active-selection state. Any activation or migration not included in the exact approval remains unchanged."
+  duration 2p
+  owner "codex"
+  requires:
+    DEV 1
+
+task FPR_POST_REMEDIATION_OBSERVE ASSET_REVISIONS_READY -> FALLBACK_REMEDIATION_ACCEPTED:
+  title "Observe corrected battles and accept or reject remediation"
+  description "Run only the separately approved bounded observations for the new revisions and retain battle IDs, immutable asset IDs, available-action cardinality, selected actions, action-norm and fallback receipts, provider status, application rejections, perception continuity, narration fallback, and repeated-action metrics. Accept only when source defects no longer create singleton passive candidates, mixed failures are distinguishable, bounded fallbacks preserve their contracts, and no privacy or mechanics regression appears."
+  duration 2p
+  owner "codex"
+  requires:
+    DEV 1
