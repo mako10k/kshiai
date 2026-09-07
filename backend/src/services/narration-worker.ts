@@ -7,9 +7,14 @@ import {
   type BattleNarrationSnapshot,
   type NarrativeBlock,
 } from "@kshiai/shared";
+import { ZodError } from "zod";
 import { query, withTransaction, type DatabaseConnection } from "../db.js";
 import { newId } from "../id.js";
 import type { LlmProvider } from "../llm/types.js";
+import {
+  classifyLlmProviderError,
+  type LlmProviderFailureReason,
+} from "../llm/provider-errors.js";
 import {
   captureProviderHttpAttempts,
   isProviderOperationAccountingError,
@@ -22,6 +27,20 @@ export const NARRATION_TOTAL_TOKEN_CEILING = 12_000;
 export const NARRATION_PUBLIC_EVENT_RETENTION_DAYS = 30;
 export const NARRATION_ATTEMPT_RETENTION_DAYS = 14;
 
+type NarrationFallbackReason =
+  | LlmProviderFailureReason
+  | "budget_exhausted"
+  | "schema_invalid";
+
+function narrationFallbackReason(
+  error: unknown,
+  budgetExhausted: boolean,
+): NarrationFallbackReason {
+  if (budgetExhausted) return "budget_exhausted";
+  if (error instanceof ZodError) return "schema_invalid";
+  return classifyLlmProviderError(error);
+}
+
 type EntryRow = {
   battle_id: string;
   receipt_id: string;
@@ -32,6 +51,29 @@ type EntryRow = {
   input_digest: string;
   status: "queued" | "generating" | "completed" | "failed" | "cancelled";
   attempt_count: number;
+};
+
+type JudgmentNarrationSource = {
+  winnerName?: unknown;
+  presentationProjection?: unknown;
+  turn?: unknown;
+  scene?: unknown;
+  sideAName?: unknown;
+  sideBName?: unknown;
+  winnerSide?: unknown;
+  recentPublicNarration?: unknown;
+  styleInstruction?: unknown;
+  styleName?: unknown;
+};
+
+type NarrationPublicEventPayload = {
+  turnReceiptId: string;
+  narrationSequence: number;
+  phase: EntryRow["phase"];
+  combatTurn: number | null;
+  status: EntryRow["status"];
+  narrative?: NarrativeBlock;
+  fallbackReason?: NarrationFallbackReason;
 };
 
 export type NarrationGenerationResult = {
@@ -89,7 +131,7 @@ export function createLlmNarrationGenerator(llm: LlmProvider): NarrationGenerato
           speeches: result.speeches,
         };
       } else if (input.kind === "judgment") {
-        const source = input.request as Record<string, unknown>;
+        const source = input.request as JudgmentNarrationSource;
         const winnerName = typeof source.winnerName === "string" &&
             source.winnerName.trim()
           ? source.winnerName.trim()
@@ -175,7 +217,7 @@ async function appendPublicEvent(input: {
   receiptId: string;
   narrationSequence: number;
   kind: "queued" | "started" | "completed" | "failed" | "cancelled";
-  payload: Record<string, unknown>;
+  payload: NarrationPublicEventPayload;
   now: string;
 }): Promise<void> {
   const sequence = await nextEventSequence(input.connection, input.battleId);
@@ -325,9 +367,12 @@ async function renewFencedLease(input: {
 
 function deterministicFallback(entry: EntryRow): NarrativeBlock {
   const parsed = typeof entry.input_json === "string"
-    ? JSON.parse(entry.input_json) as Record<string, unknown>
-    : entry.input_json as Record<string, unknown>;
-  const scene = typeof parsed?.scene === "string" ? parsed.scene : "戦場";
+    ? JSON.parse(entry.input_json) as unknown
+    : entry.input_json;
+  const sceneCandidate = parsed && typeof parsed === "object"
+    ? Reflect.get(parsed, "scene")
+    : null;
+  const scene = typeof sceneCandidate === "string" ? sceneCandidate : "戦場";
   return {
     turn: entry.combat_turn ?? 0,
     narrator: [`${scene}で、確定した局面が静かに刻まれた。`],
@@ -511,7 +556,7 @@ export async function processNextNarration(input: {
 
   const started = Date.now();
   let generated: NarrationGenerationResult | null = null;
-  let errorClass: string | null = null;
+  let fallbackReason: NarrationFallbackReason | null = null;
   let failureHttpAttempts = 0;
   let failureTokenCount: number | null = null;
   let failureEstimatedCostUsd: number | null = null;
@@ -563,7 +608,6 @@ export async function processNextNarration(input: {
     }
   } catch (error) {
     if (isProviderOperationAccountingError(error)) ceilingReached = true;
-    errorClass = error instanceof Error ? error.message.slice(0, 80) : "generation_error";
     const usage = error && typeof error === "object"
       ? error as { httpAttempts?: unknown; tokenCount?: unknown; estimatedCostUsd?: unknown }
       : null;
@@ -576,6 +620,7 @@ export async function processNextNarration(input: {
         priorTokenCount + (failureTokenCount ?? 0) >= NARRATION_TOTAL_TOKEN_CEILING) {
       ceilingReached = true;
     }
+    fallbackReason = narrationFallbackReason(error, ceilingReached);
     generated = null;
   }
   const finishedAt = new Date().toISOString();
@@ -665,7 +710,7 @@ export async function processNextNarration(input: {
         WHERE attempt_id = $1 AND fencing_token = $9`,
       [claimed.attemptId, terminal ? "failed" : "abandoned", failureHttpAttempts,
         failureTokenCount, failureEstimatedCostUsd, elapsedMs,
-        errorClass ?? "generation_error", finishedAt, fence],
+        fallbackReason ?? "other", finishedAt, fence],
     );
     if (!terminal) {
       await connection.query(
@@ -688,7 +733,7 @@ export async function processNextNarration(input: {
               fallback_reason = $4, active_attempt_id = NULL, updated_at = $5
         WHERE battle_id = $1 AND receipt_id = $2 AND active_attempt_id = $6`,
       [input.battleId, claimed.entry.receipt_id, json(fallback),
-        errorClass ?? "generation_error", finishedAt, claimed.attemptId],
+        fallbackReason ?? "other", finishedAt, claimed.attemptId],
     );
     await appendPublicEvent({
       connection,
@@ -703,7 +748,7 @@ export async function processNextNarration(input: {
         combatTurn: claimed.entry.combat_turn,
         status: "failed",
         narrative: fallback,
-        fallbackReason: errorClass ?? "generation_error",
+        fallbackReason: fallbackReason ?? "other",
       },
       now: finishedAt,
     });

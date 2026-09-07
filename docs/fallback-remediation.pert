@@ -172,6 +172,7 @@ task FPR_RETENTION_MATRIX P2_READY -> RETENTION_MATRIX_READY:
   title "Regression-protect bounded fallbacks and the production mock boundary"
   description "For point 6 and points 11, 12, 13, 16, 20, and 21, prove production mock fallback remains disabled; later-bucket, feasibility, norm-conflict, semantic no-change, terminal narration, and engine-authoritative adjudication retain their accepted substitutes and receipts. Add only missing regression cases; do not add or remove fallback layers without new evidence."
   duration 3p
+  status done
   owner "codex"
   source "docs/fallback-point-inventory-2026-09-07.md"
   requires:
@@ -405,3 +406,16 @@ work_event WE-FPR-P2-DURABLE-DIAGNOSTICS-FINISH-20260907:
   task FPR_P2_DURABLE_DIAGNOSTICS
   kind finish
   occurred_at 2026-09-07T19:11:40+09:00
+
+work_event WE-FPR-RETENTION-MATRIX-START-20260907:
+  model 1
+  task FPR_RETENTION_MATRIX
+  kind start
+  occurred_at 2026-09-07T19:21:55+09:00
+  planned_value 3p
+
+work_event WE-FPR-RETENTION-MATRIX-FINISH-20260907:
+  model 1
+  task FPR_RETENTION_MATRIX
+  kind finish
+  occurred_at 2026-09-07T19:36:35+09:00

@@ -274,6 +274,26 @@ describe("public battle semantic projection", () => {
     });
     assert.equal(result.status, "rejected");
     assert.equal(result.state.semanticState, state.semanticState);
+    assert.equal(result.state.worldState, state.worldState);
+    assert.equal(result.state.latestSemanticTransition?.status, "rejected");
+    assert.equal(result.state.latestSemanticTransition?.fromRevision, 0);
+    assert.equal(result.state.latestSemanticTransition?.toRevision, 0);
+    assert.deepEqual(
+      result.state.latestSemanticTransition?.patch,
+      {
+        baseRevision: 0,
+        turn: 0,
+        sourceEventIds: [],
+        operations: [{ op: "remove", path: "/entities/character.a" }],
+      },
+    );
+    assert.deepEqual(result.state.latestWorldTransition, {
+      turn: 0,
+      status: "skipped",
+      fromRevision: 0,
+      toRevision: 0,
+      transition: null,
+    });
   });
 
   it("commits structured semantic location changes through the world boundary", async () => {

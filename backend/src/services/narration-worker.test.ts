@@ -288,6 +288,29 @@ describe("ordered narration worker", () => {
     const terminal = (await listNarrationEvents(battleId))
       .filter((event) => event.kind === "failed" || event.kind === "completed");
     assert.deepEqual(terminal.map((event) => event.kind), ["failed", "completed"]);
+    assert.deepEqual(terminal[0]?.payload, {
+      turnReceiptId: `${battleId}:phase:1`,
+      narrationSequence: 1,
+      phase: "combat",
+      combatTurn: 1,
+      status: "failed",
+      narrative: {
+        turn: 1,
+        narrator: ["fallback-1で、確定した局面が静かに刻まれた。"],
+        speeches: [],
+      },
+      fallbackReason: "other",
+    });
+    assert.doesNotMatch(
+      JSON.stringify(terminal[0]?.payload),
+      /provider_down_private_detail/,
+    );
+    const failedEntry = await query<{ fallback_reason: string }>(
+      `SELECT fallback_reason FROM battle_narration_entries
+        WHERE battle_id = $1 AND receipt_id = $2`,
+      [battleId, `${battleId}:phase:1`],
+    );
+    assert.equal(failedEntry.rows[0]?.fallback_reason, "other");
     const battle = await query<{ revision: number }>(
       "SELECT revision FROM battles WHERE id = $1",
       [battleId],

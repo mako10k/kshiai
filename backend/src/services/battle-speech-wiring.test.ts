@@ -1940,6 +1940,16 @@ describe("character-authored public speech", () => {
     });
     assert.equal(fallback.winnerSide, "a");
     assert.equal(fallback.source, "deterministic_fallback");
+    assert.equal(fallback.engineFallbackSide, "a");
+    assert.equal(
+      fallback.reason,
+      "確定した行動、影響、残力を総合して判定した。",
+    );
+    assert.deepEqual(fallback.reasonFacts, [{
+      factor: "overall_effectiveness",
+      favoredSide: "a",
+      statement: "確定した行動、影響、残力を総合して判定した。",
+    }]);
   });
 
   it("commits ordered combat and judgment receipts from frozen canonical facts", () => {

@@ -4,10 +4,12 @@ import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import {
+  BattleStateSchema,
   createBattleState,
   defaultParameters,
   defaultBasicAttack,
   openSceneBeat,
+  type BattleCausalLaterDecision,
   type CharacterSheet,
 } from "@kshiai/shared";
 
@@ -232,6 +234,61 @@ describe("scene beat narration deferral", () => {
     assert.equal(third.combatBeat, undefined);
     assert.equal(fourth.turn, 2);
     assert.equal(fourth.combatBeat, 1);
+  });
+
+  it("persists a rejected later-bucket proposal and its deterministic choice", async () => {
+    const now = "2026-08-16T00:00:00.000Z";
+    await query(
+      `INSERT INTO users (id, username, password_hash, created_at)
+       VALUES ($1, $2, $3, $4)`,
+      ["later-fallback-owner", "later-fallback-owner", "hash", now],
+    );
+    const sideA = sheet("later-fallback-a", "later-fallback-owner", "甲", 10_000);
+    const sideB = sheet("later-fallback-b", "later-fallback-owner", "乙", 10_000);
+    sideA.parameters.spd = 20;
+    sideB.parameters.spd = 5;
+    for (const character of [sideA, sideB]) {
+      await characterRepo.saveSheet(character);
+    }
+    await ensureSystemNarrationStyles();
+    const llm = new MockLlmProvider();
+    llm.decideCharacterAction = async () => ({
+      proposedAction: { kind: "skill", skillId: "not-listed" },
+    });
+    const created = await startBattle({
+      userId: "later-fallback-owner",
+      battleId: "btl_later_bucket_fallback",
+      myCharacterId: sideA.id,
+      opponentCharacterId: sideB.id,
+      battlefieldMode: "random",
+      llm,
+    });
+
+    let observed: BattleCausalLaterDecision | null = null;
+    for (let step = 1; step <= 6 && observed === null; step += 1) {
+      await advanceTurn({
+        userId: "later-fallback-owner",
+        battleId: created.id,
+        operationId: `op-later-fallback-${step}`,
+        llm,
+      });
+      const stored = await query<{ state_json: string }>(
+        `SELECT state_json FROM battles WHERE id = $1`,
+        [created.id],
+      );
+      observed = BattleStateSchema.parse(
+        JSON.parse(stored.rows[0]?.state_json ?? "{}"),
+      ).causalLaterDecision ?? null;
+    }
+
+    assert.ok(observed);
+    assert.equal(observed.status, "fallback");
+    assert.equal(observed.validation.status, "rejected");
+    assert.equal(observed.validation.reason, "unavailable_action");
+    assert.equal(observed.acceptedAction?.kind, "defend");
+    assert.equal(observed.fallbackReason, "unavailable_action");
+    assert.equal(observed.provider, "mock");
+    assert.equal(observed.callCount, 1);
   });
 
   it("saves the first skip turn after a beat-close semantic patch", async () => {
