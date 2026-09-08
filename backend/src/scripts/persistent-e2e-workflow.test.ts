@@ -101,6 +101,10 @@ describe("persistent E2E workflow contract", () => {
     assert.match(promote, /run\.headSha !== process\.env\.GITHUB_SHA/);
     assert.match(promote, /dialogueProjection: "compact"/);
     assert.match(promote, /dialogueActivationSource: "persisted_setting"/);
+    assert.match(promote, /select-release-rollback-target\.mjs cloud-run/);
+    assert.match(promote, /select-release-rollback-target\.mjs worker/);
+    assert.doesNotMatch(promote, /status\.traffic\[0\]\.revisionName/);
+    assert.match(promote, /node scripts\/smoke-deployment\.mjs/);
   });
 
   it("proves narration and authoring queue OIDC delivery against the staged revision", () => {
