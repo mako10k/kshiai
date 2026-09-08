@@ -88,6 +88,8 @@ describe("persistent E2E workflow contract", () => {
   it("requires exact Compact battle evidence before production promotion", () => {
     const stage = workflow("stage-release.yml");
     const promote = workflow("promote-release.yml");
+    assert.match(stage, /e2e_max_advances:[\s\S]*?default: "24"/);
+    assert.match(stage, /e2e_provider_operation_ceiling:[\s\S]*?default: "169"/);
     assert.match(stage, /alias="stage-\$\{GITHUB_RUN_ID\}-\$\{GITHUB_RUN_ATTEMPT\}"/);
     assert.match(stage, /Exercise the exact staged revision with a dialogue-bound battle/);
     assert.match(stage, /E2E_TARGET_REVISION=\$REVISION/);
