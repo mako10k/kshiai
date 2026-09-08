@@ -279,6 +279,73 @@ export type AuthoringTaskDelivery = {
   deliveryGeneration: number;
 };
 
+type ClaimedAuthoringTask = Exclude<
+  Awaited<ReturnType<typeof claimFamilyAuthoringJob>>,
+  "busy" | "terminal"
+>;
+
+async function runClaimedAuthoringTask(
+  llm: LlmProvider,
+  claimed: ClaimedAuthoringTask,
+): Promise<"acknowledged" | "completed" | "failed" | "retry_queued"> {
+  if (claimed.family === "battlefield") {
+    return runBattlefieldAuthoringJob(
+      llm,
+      claimed.attemptId,
+      claimed.ownerUserId,
+      claimed.executionFence,
+    );
+  }
+  if (claimed.family === "narration_style") {
+    return runNarrationStyleAuthoringJob(
+      llm,
+      claimed.attemptId,
+      claimed.ownerUserId,
+      claimed.executionFence,
+    );
+  }
+  const attempt = await charAssetRepo.getCharacterAuthoringAttempt(
+    claimed.attemptId,
+    claimed.ownerUserId,
+  );
+  if (!attempt || ["succeeded", "discarded", "failed", "expired"].includes(
+    attempt.status,
+  )) {
+    await charAssetRepo.finishCharacterAuthoringJob(
+      claimed.attemptId,
+      "cancelled",
+      claimed.executionFence,
+    );
+    return "acknowledged";
+  }
+  try {
+    await runClaimedAttempt(llm, attempt, claimed.executionFence);
+    const latest = await charAssetRepo.getCharacterAuthoringAttempt(
+      claimed.attemptId,
+      claimed.ownerUserId,
+    );
+    if (latest?.status === "failed") return "failed";
+    await charAssetRepo.finishCharacterAuthoringJob(
+      claimed.attemptId,
+      "completed",
+      claimed.executionFence,
+    );
+    return "completed";
+  } catch (error) {
+    if (error instanceof Error && error.message === "AUTHORING_STALE_FENCE") {
+      return "retry_queued";
+    }
+    const message = error instanceof Error ? error.message : "authoring_failed";
+    await charAssetRepo.failCharacterAuthoringAttempt({
+      attemptId: claimed.attemptId,
+      ownerUserId: claimed.ownerUserId,
+      errorCode: message.slice(0, 120),
+      executionFence: claimed.executionFence,
+    });
+    return "failed";
+  }
+}
+
 export async function processAuthoringTask(input: {
   llm: LlmProvider;
   delivery: AuthoringTaskDelivery;
@@ -316,66 +383,7 @@ export async function processAuthoringTask(input: {
   }, Math.floor(180_000 / 3));
   heartbeat.unref();
   try {
-    let result: CharacterAuthoringJobResult;
-    if (claimed.family === "battlefield") {
-      result = await runBattlefieldAuthoringJob(
-        input.llm,
-        claimed.attemptId,
-        claimed.ownerUserId,
-        claimed.executionFence,
-      );
-    } else if (claimed.family === "narration_style") {
-      result = await runNarrationStyleAuthoringJob(
-        input.llm,
-        claimed.attemptId,
-        claimed.ownerUserId,
-        claimed.executionFence,
-      );
-    } else {
-      const attempt = await charAssetRepo.getCharacterAuthoringAttempt(
-        claimed.attemptId,
-        claimed.ownerUserId,
-      );
-      if (!attempt || ["succeeded", "discarded", "failed", "expired"].includes(
-        attempt.status,
-      )) {
-        await charAssetRepo.finishCharacterAuthoringJob(
-          claimed.attemptId,
-          "cancelled",
-          claimed.executionFence,
-        );
-        return "acknowledged";
-      }
-      try {
-        await runClaimedAttempt(input.llm, attempt, claimed.executionFence);
-        const latest = await charAssetRepo.getCharacterAuthoringAttempt(
-          claimed.attemptId,
-          claimed.ownerUserId,
-        );
-        if (latest?.status === "failed") {
-          result = "failed";
-        } else {
-          await charAssetRepo.finishCharacterAuthoringJob(
-            claimed.attemptId,
-            "completed",
-            claimed.executionFence,
-          );
-          result = "completed";
-        }
-      } catch (error) {
-        if (error instanceof Error && error.message === "AUTHORING_STALE_FENCE") {
-          return "retry_queued";
-        }
-        const message = error instanceof Error ? error.message : "authoring_failed";
-        await charAssetRepo.failCharacterAuthoringAttempt({
-          attemptId: claimed.attemptId,
-          ownerUserId: claimed.ownerUserId,
-          errorCode: message.slice(0, 120),
-          executionFence: claimed.executionFence,
-        });
-        result = "failed";
-      }
-    }
+    const result = await runClaimedAuthoringTask(input.llm, claimed);
     if (leaseFailure) return "retry_queued";
     return result;
   } catch (error) {

@@ -88,6 +88,129 @@ function retainedCompatibilityFixture(input: {
   return { sheet, candidate };
 }
 
+async function insertRetainedCompatibilityFixture(input: {
+  marker: string;
+  ownerUserId: string;
+  characterId: string;
+  attemptId: string;
+}): Promise<void> {
+  const createdAt = new Date().toISOString();
+  const fixture = retainedCompatibilityFixture({
+    characterId: input.characterId,
+    ownerUserId: input.ownerUserId,
+    attemptId: input.attemptId,
+    createdAt,
+  });
+  await query(
+    `INSERT INTO characters (id, owner_user_id, sheet_json, created_at, updated_at)
+     VALUES ($1, $2, $3, $4, $4)`,
+    [input.characterId, input.ownerUserId, JSON.stringify(fixture.sheet), createdAt],
+  );
+  await query(
+    `INSERT INTO character_authoring_attempts
+      (attempt_id, owner_user_id, character_id, kind, idempotency_key,
+       request_digest, source_text, source_digest, status, candidate_json,
+       candidate_digest, assistant_message, created_at, updated_at, expires_at)
+     VALUES ($1, $2, $3, 'revision', $4, $5, $6, $7,
+             'awaiting_owner_acceptance', $8, $9, $10, $11, $11, $12)`,
+    [
+      input.attemptId,
+      input.ownerUserId,
+      input.characterId,
+      `auth-smoke:${input.marker}`,
+      assetContentDigest({ marker: input.marker, kind: "retained-compatibility" }),
+      fixture.sheet.narrativeBlurb,
+      assetContentDigest(fixture.sheet.narrativeBlurb),
+      JSON.stringify(fixture.candidate),
+      assetContentDigest(fixture.candidate),
+      "保持データ互換性を確認してください",
+      createdAt,
+      new Date(Date.now() + 15 * 60_000).toISOString(),
+    ],
+  );
+}
+
+async function smokeAuthenticatedSse(input: {
+  apiBaseUrl: string;
+  accessToken: string;
+  originSecret?: string;
+  marker: string;
+}): Promise<void> {
+  if (process.env.AUTH_SMOKE_SSE !== "1") return;
+  const streamResponse = await fetch(
+    `${input.apiBaseUrl}/api/battles/btl_auth_smoke_missing/advance/stream`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${input.accessToken}`,
+        "Idempotency-Key": `auth-smoke-${input.marker}`,
+        ...(input.originSecret ? { "x-kshiai-origin": input.originSecret } : {}),
+      },
+      signal: AbortSignal.timeout(15_000),
+    },
+  );
+  if (!streamResponse.ok) {
+    const detail = (await streamResponse.text()).slice(0, 200);
+    throw new Error(`Authenticated SSE smoke failed: ${streamResponse.status}: ${detail}`);
+  }
+  if (!streamResponse.headers.get("content-type")?.startsWith("text/event-stream")) {
+    throw new Error("Authenticated SSE smoke returned another content type");
+  }
+  const streamBody = await streamResponse.text();
+  if (!streamBody.includes(": stream-open") ||
+    !streamBody.includes('"type":"error"') ||
+    !streamBody.includes("BATTLE_NOT_FOUND")) {
+    throw new Error("Authenticated SSE smoke returned an incomplete event stream");
+  }
+}
+
+async function cleanupSmokeResources(input: {
+  fixtureAttemptId: string | null;
+  fixtureCharacterId: string | null;
+  applicationUserId: string | null;
+  authUserId: string | null;
+  secretKey: string;
+}): Promise<void> {
+  const cleanupErrors: Error[] = [];
+  const cleanup = async (label: string, action: () => Promise<void>) => {
+    try {
+      await action();
+    } catch (error) {
+      const detail = error instanceof Error ? error.message : String(error);
+      cleanupErrors.push(new Error(`${label}: ${detail}`));
+    }
+  };
+  if (input.fixtureAttemptId) {
+    await cleanup("character attempt cleanup failed", async () => {
+      await query(`DELETE FROM character_authoring_attempts WHERE attempt_id = $1`, [
+        input.fixtureAttemptId,
+      ]);
+    });
+  }
+  if (input.fixtureCharacterId) {
+    await cleanup("character cleanup failed", async () => {
+      await query(`DELETE FROM characters WHERE id = $1`, [input.fixtureCharacterId]);
+    });
+  }
+  if (input.applicationUserId) {
+    await cleanup("application user cleanup failed", async () => {
+      await query(`DELETE FROM users WHERE id = $1`, [input.applicationUserId]);
+    });
+  }
+  if (input.authUserId) {
+    await cleanup("Supabase auth cleanup failed", async () => {
+      const removed = await authRequest(`/admin/users/${input.authUserId}`, input.secretKey, {
+        method: "DELETE",
+      });
+      if (!removed.ok) throw new Error(`HTTP ${removed.status}`);
+    });
+  }
+  await cleanup("database close failed", closeDatabase);
+  if (cleanupErrors.length > 0) {
+    throw new AggregateError(cleanupErrors, "Supabase Auth smoke cleanup incomplete");
+  }
+}
+
 async function main(): Promise<void> {
   const secretKey = required("SUPABASE_SECRET_KEY");
   const publishableKey = required("SUPABASE_PUBLISHABLE_KEY");
@@ -133,73 +256,24 @@ async function main(): Promise<void> {
       const originSecret = process.env.AUTH_SMOKE_ORIGIN_SECRET?.trim();
       fixtureCharacterId = `chr_auth_smoke_${marker}`;
       fixtureAttemptId = `cat_auth_smoke_${marker}`;
-      const createdAt = new Date().toISOString();
-      const fixture = retainedCompatibilityFixture({
-        characterId: fixtureCharacterId,
+      await insertRetainedCompatibilityFixture({
+        marker,
         ownerUserId: applicationUser.id,
+        characterId: fixtureCharacterId,
         attemptId: fixtureAttemptId,
-        createdAt,
       });
-      await query(
-        `INSERT INTO characters (id, owner_user_id, sheet_json, created_at, updated_at)
-         VALUES ($1, $2, $3, $4, $4)`,
-        [fixtureCharacterId, applicationUser.id, JSON.stringify(fixture.sheet), createdAt],
-      );
-      await query(
-        `INSERT INTO character_authoring_attempts
-          (attempt_id, owner_user_id, character_id, kind, idempotency_key,
-           request_digest, source_text, source_digest, status, candidate_json,
-           candidate_digest, assistant_message, created_at, updated_at, expires_at)
-         VALUES ($1, $2, $3, 'revision', $4, $5, $6, $7,
-                 'awaiting_owner_acceptance', $8, $9, $10, $11, $11, $12)`,
-        [
-          fixtureAttemptId,
-          applicationUser.id,
-          fixtureCharacterId,
-          `auth-smoke:${marker}`,
-          assetContentDigest({ marker, kind: "retained-compatibility" }),
-          fixture.sheet.narrativeBlurb,
-          assetContentDigest(fixture.sheet.narrativeBlurb),
-          JSON.stringify(fixture.candidate),
-          assetContentDigest(fixture.candidate),
-          "保持データ互換性を確認してください",
-          createdAt,
-          new Date(Date.now() + 15 * 60_000).toISOString(),
-        ],
-      );
       await smokeAuthenticatedReadSurface({
         apiBaseUrl,
         accessToken: session.access_token,
         originSecret,
         fixtureCharacterId,
       });
-      if (process.env.AUTH_SMOKE_SSE === "1") {
-        const streamResponse = await fetch(
-          `${apiBaseUrl}/api/battles/btl_auth_smoke_missing/advance/stream`,
-          {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${session.access_token}`,
-              "Idempotency-Key": `auth-smoke-${marker}`,
-              ...(originSecret ? { "x-kshiai-origin": originSecret } : {}),
-            },
-            signal: AbortSignal.timeout(15_000),
-          },
-        );
-        if (!streamResponse.ok) {
-          const detail = (await streamResponse.text()).slice(0, 200);
-          throw new Error(`Authenticated SSE smoke failed: ${streamResponse.status}: ${detail}`);
-        }
-        if (!streamResponse.headers.get("content-type")?.startsWith("text/event-stream")) {
-          throw new Error("Authenticated SSE smoke returned another content type");
-        }
-        const streamBody = await streamResponse.text();
-        if (!streamBody.includes(": stream-open") ||
-          !streamBody.includes('"type":"error"') ||
-          !streamBody.includes("BATTLE_NOT_FOUND")) {
-          throw new Error("Authenticated SSE smoke returned an incomplete event stream");
-        }
-      }
+      await smokeAuthenticatedSse({
+        apiBaseUrl,
+        accessToken: session.access_token,
+        originSecret,
+        marker,
+      });
     }
     console.log(
       process.env.AUTH_SMOKE_SSE === "1"
@@ -207,44 +281,13 @@ async function main(): Promise<void> {
         : "Supabase Auth JWT, retained-data reads, and screen API surface smoke passed",
     );
   } finally {
-    const cleanupErrors: Error[] = [];
-    const cleanup = async (label: string, action: () => Promise<void>) => {
-      try {
-        await action();
-      } catch (error) {
-        const detail = error instanceof Error ? error.message : String(error);
-        cleanupErrors.push(new Error(`${label}: ${detail}`));
-      }
-    };
-    if (fixtureAttemptId) {
-      await cleanup("character attempt cleanup failed", async () => {
-        await query(`DELETE FROM character_authoring_attempts WHERE attempt_id = $1`, [
-          fixtureAttemptId,
-        ]);
-      });
-    }
-    if (fixtureCharacterId) {
-      await cleanup("character cleanup failed", async () => {
-        await query(`DELETE FROM characters WHERE id = $1`, [fixtureCharacterId]);
-      });
-    }
-    if (applicationUserId) {
-      await cleanup("application user cleanup failed", async () => {
-        await query(`DELETE FROM users WHERE id = $1`, [applicationUserId]);
-      });
-    }
-    if (authUserId) {
-      await cleanup("Supabase auth cleanup failed", async () => {
-        const removed = await authRequest(`/admin/users/${authUserId}`, secretKey, {
-          method: "DELETE",
-        });
-        if (!removed.ok) throw new Error(`HTTP ${removed.status}`);
-      });
-    }
-    await cleanup("database close failed", closeDatabase);
-    if (cleanupErrors.length > 0) {
-      throw new AggregateError(cleanupErrors, "Supabase Auth smoke cleanup incomplete");
-    }
+    await cleanupSmokeResources({
+      fixtureAttemptId,
+      fixtureCharacterId,
+      applicationUserId,
+      authUserId,
+      secretKey,
+    });
   }
 }
 
