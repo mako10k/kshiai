@@ -256,17 +256,14 @@ jobs:
         id: previous
         run: |
           set -euo pipefail
-          revision="$(gcloud run services describe "$CLOUD_RUN_SERVICE" \
+          service_path="$RUNNER_TEMP/pre-promotion-service.json"
+          gcloud run services describe "$CLOUD_RUN_SERVICE" \
             --project="$GCP_PROJECT" \
             --region="$GCP_REGION" \
-            --format='value(status.traffic[0].revisionName)')"
+            --format=json > "$service_path"
+          revision="$(node scripts/select-release-rollback-target.mjs cloud-run "$service_path")"
           npx wrangler deployments status --config "$WRANGLER_CONFIG" --json > "$RUNNER_TEMP/deployment.json"
-          worker="$(node -e '
-            const deployment = require(process.argv[1]);
-            const active = deployment.versions.find((entry) => entry.percentage === 100);
-            if (!active) throw new Error("No single active Worker version");
-            process.stdout.write(active.version_id);
-          ' "$RUNNER_TEMP/deployment.json")"
+          worker="$(node scripts/select-release-rollback-target.mjs worker "$RUNNER_TEMP/deployment.json")"
           echo "revision=$revision" >> "$GITHUB_OUTPUT"
           echo "worker=$worker" >> "$GITHUB_OUTPUT"
 
