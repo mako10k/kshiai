@@ -52,6 +52,7 @@ task t001 m002 -> m003:
   title "Review and decide requirement v3"
   description "Review the exact requirement candidate against Accepted ADR-0024, including exclusion of lastSpeech from new Compact semantic input and output, content-independent acceptance, unchanged provider count, old-battle compatibility, privacy, and the explicit absence of new IDs, receipts, ledgers, or runtime reuse detection. Accept, revise, or reject that exact requirement snapshot."
   duration 1p
+  status done
   owner "user"
   requires:
     rs002 1
@@ -119,3 +120,9 @@ task t009 m010 -> m011:
   owner "codex"
   requires:
     rs001 1
+
+work_event WE-1227b7e1e114fa09bbab393e7931c57621202927fbcb75f4405ee8632224cd0e:
+  model 1
+  task t001
+  kind finish
+  occurred_at 2026-09-08T22:10:00+09:00

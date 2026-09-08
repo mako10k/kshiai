@@ -1,6 +1,6 @@
 # Minimal Compact expression state and history design
 
-- Status: Proposed design; ADR-0024 accepted, requirement acceptance pending
+- Status: Implementation design; ADR-0024 and requirement v3 accepted
 - Date: 2026-09-08
 - Requirement candidate: `docs/dialogue-expression-realization-requirement-v3.md`
 - Architecture authority: `docs/adr/0024-expression-state-and-utterance-actuals.think`
@@ -119,7 +119,14 @@ automatic retry, or a new failure mode.
   `CharacterAgentState.lastSpeech`.
 - Completed history remains an observer-relative projection of canonical
   utterance events.
-- The existing immutable dialogue-pipeline revision selects V2 for new battles.
+- The existing immutable dialogue-pipeline snapshot's `schemaVersion` is the
+  stable contract selector. A snapshot with `schemaVersion: 1` retains the
+  legacy Compact contract. A snapshot with `schemaVersion: 2` selects the
+  separated state/history and `nextUtterance` contract.
+- Persisted V1 settings and battle snapshots remain parseable and are never
+  reinterpreted as V2. The normal versioned dialogue-settings update and battle
+  binding path creates and records V2; no new policy field, lifecycle entity,
+  receipt, or identifier is introduced.
 
 ### Existing battles and non-Compact processing
 
@@ -169,6 +176,7 @@ validator, quality scorer, provider call, or deployment mechanism is added.
 
 ## 9. Authority boundary
 
-Local implementation begins only after the exact requirement and ADR revisions
-are accepted. Paid replay, Stage activation, and production promotion each
-remain separate later decisions.
+The exact requirement and ADR revisions are accepted. Local implementation is
+authorized by the owner's earlier implementation instruction. Paid replay,
+Stage activation, and production promotion each remain separate later
+decisions.
