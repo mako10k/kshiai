@@ -35,12 +35,12 @@ on:
       e2e_max_advances:
         description: Maximum advances for the staged functional battle
         required: true
-        default: "12"
+        default: "24"
         type: string
       e2e_provider_operation_ceiling:
         description: Maximum provider operations for the staged functional battle
         required: true
-        default: "85"
+        default: "169"
         type: string
       battle_pacing_policy:
         description: Provisional pacing policy frozen into newly created battles
