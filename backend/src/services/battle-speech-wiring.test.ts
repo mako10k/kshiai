@@ -721,6 +721,122 @@ describe("character-authored public speech", () => {
     assert.equal(JSON.stringify(publicState).includes("characterFocus"), false);
   });
 
+  it("separates V2 Compact state from consumed utterance history", async () => {
+    const sideA = sheet("a", "アオ", ["私"]);
+    const sideB = sheet("b", "クロ", ["俺"]);
+    const before = createBattleState({
+      id: "compact-expression-v2",
+      sideA,
+      sideB,
+      turnLimit: 20,
+      prologuePending: false,
+    });
+    before.agentStateA = {
+      ...before.agentStateA!,
+      lastSpeech: "V1互換欄の値",
+      conversationHistory: [{
+        turn: 0,
+        speaker: "self",
+        text: "ここは譲らない。",
+      }],
+    };
+    const provider = new MockLlmProvider();
+    const originalPsyche = provider.advanceCharacterPsyche.bind(provider);
+    const psycheInputs: Parameters<typeof provider.advanceCharacterPsyche>[0][] =
+      [];
+    provider.advanceCharacterPsyche = async (input) => {
+      psycheInputs.push(input);
+      return originalPsyche(input);
+    };
+    const expressionInputs: Parameters<typeof provider.advanceCharacterAgent>[0][] =
+      [];
+    provider.advanceCharacterAgent = async (input) => {
+      expressionInputs.push(input);
+      return {
+        contractVersion: 2,
+        state: before.agentStateA!,
+        nextUtterance: "ここは譲らない。",
+        proposedAction: null,
+        proposedActionStatus: "omitted",
+        realizedManifestation: null,
+      };
+    };
+
+    const result = await advanceCharacterAgents({
+      llm: provider,
+      before,
+      after: {
+        ...before,
+        turn: 1,
+        perceptionFrameA: { ...before.perceptionFrameA!, turn: 1 },
+        perceptionFrameB: { ...before.perceptionFrameB!, turn: 1 },
+      },
+      mine: sideA,
+      opp: sideB,
+      events: [{ id: "event.v2", type: "wait", summary: "両者が構えを保つ。" }],
+      actions: [],
+      activeSides: ["a"],
+      dialoguePipeline: {
+        ...defaultDialoguePipelineSettings(),
+        schemaVersion: 2,
+        contextProjectionMode: "compact",
+      },
+    });
+
+    const psycheInput = psycheInputs[0];
+    assert.ok(psycheInput);
+    assert.equal(psycheInput.contextMode, "compact");
+    if (psycheInput.contextMode !== "compact") {
+      assert.fail("expected Compact psyche input");
+    }
+    assert.equal(psycheInput.contractVersion, 2);
+    if (psycheInput.contractVersion !== 2) {
+      assert.fail("expected Compact V2 psyche input");
+    }
+    assert.equal("previous" in psycheInput, false);
+    assert.equal("conversation" in psycheInput, false);
+    assert.equal("lastSpeech" in psycheInput.expressionState, false);
+    assert.equal("conversationHistory" in psycheInput.expressionState, false);
+    assert.deepEqual(psycheInput.utteranceHistory.recent[0], {
+      sequence: 1,
+      turn: 0,
+      speaker: "self",
+      delivery: "spoken",
+      text: "ここは譲らない。",
+    });
+
+    const expressionInput = expressionInputs[0];
+    assert.ok(expressionInput);
+    assert.equal(expressionInput.contextMode, "compact");
+    if (expressionInput.contextMode !== "compact") {
+      assert.fail("expected Compact expression input");
+    }
+    assert.equal(expressionInput.contractVersion, 2);
+    if (expressionInput.contractVersion !== 2) {
+      assert.fail("expected Compact V2 expression input");
+    }
+    assert.equal("psyche" in expressionInput, false);
+    assert.equal("conversation" in expressionInput, false);
+    assert.equal("expressionBrief" in expressionInput, false);
+    assert.equal("lastSpeech" in expressionInput.expressionState, false);
+    assert.equal("conversationHistory" in expressionInput.expressionState, false);
+    assert.deepEqual(expressionInput.utteranceHistory.recent, [{
+      sequence: 1,
+      turn: 0,
+      speaker: "self",
+      delivery: "spoken",
+      text: "ここは譲らない。",
+    }]);
+    assert.equal(result.characterSpeeches[0]?.text, "ここは譲らない。");
+    assert.equal(result.state.agentStateA?.lastSpeech, "V1互換欄の値");
+    assert.equal(
+      result.state.turnRecords.at(-1)?.events.filter((event) =>
+        event.type === "utterance" && event.actorSide === "a"
+      ).length,
+      1,
+    );
+  });
+
   it("keeps matchup memory separate from compact battle-private memory", async () => {
     const sideA = sheet("a", "アオ", ["私"]);
     const sideB = sheet("b", "クロ", ["俺"]);
@@ -863,11 +979,17 @@ describe("character-authored public speech", () => {
     });
     const provider = new MockLlmProvider();
     const originalAdvance = provider.advanceCharacterAgent.bind(provider);
-    provider.advanceCharacterAgent = async (input) => ({
-      ...await originalAdvance(input),
-      speech: "まだ見ている。",
-      proposedAction: { kind: "skill", skillId: "missing", unexpected: true },
-    });
+    provider.advanceCharacterAgent = async (input) => {
+      const original = await originalAdvance(input);
+      if (original.contractVersion === 2) {
+        throw new Error("unexpected Compact V2 input");
+      }
+      return {
+        ...original,
+        speech: "まだ見ている。",
+        proposedAction: { kind: "skill", skillId: "missing", unexpected: true },
+      };
+    };
 
     const result = await advanceCharacterAgents({
       llm: provider,
@@ -1458,6 +1580,51 @@ describe("character-authored public speech", () => {
     assert.equal(accepted.state.interior, undefined);
     assert.equal(publicSpeeches[0]?.text, "まだ決着ではない。");
     assert.equal(accepted.state.lastSpeech, "まだ決着ではない。");
+  });
+
+  it("accepts a V2 utterance while rejecting only its invalid action", () => {
+    const previous = {
+      privateMemory: "",
+      currentGoal: "構えを保つ",
+      emotion: "平静",
+      beliefs: [],
+      observations: [],
+      speechStyle: "簡潔",
+      selfReference: "私",
+      lastSpeech: "V1互換欄の値",
+    };
+    const accepted = acceptCharacterAgentResult({
+      side: "a",
+      speaker: "A",
+      previous,
+      profile: profile(["私"]),
+      decision: {
+        nextTurn: 2,
+        turnsRemaining: 19,
+        availableActions: [{
+          kind: "wait",
+          name: "様子を見る",
+          target: { kind: "self", perceivedAs: "自分" },
+        }],
+        finisher: null,
+        lastAction: null,
+        actionRepeatCount: 0,
+        varietyPressure: "none",
+      },
+      result: {
+        contractVersion: 2,
+        state: previous,
+        nextUtterance: "ここは譲らない。",
+        proposedAction: null,
+        proposedActionStatus: "invalid",
+        realizedManifestation: null,
+      },
+    });
+
+    assert.equal(accepted.speech?.text, "ここは譲らない。");
+    assert.equal(accepted.actionProposalValidation?.status, "rejected");
+    assert.equal(accepted.actionProposalValidation?.reason, "schema_invalid");
+    assert.equal(accepted.state.lastSpeech, "V1互換欄の値");
   });
 
   it("accepts actual speech but rejects an action outside the server list", () => {

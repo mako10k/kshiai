@@ -141,6 +141,7 @@ describe("mock LLM natural-language handling", () => {
       psyche: { ...agentInput.psyche, selfReference: "俺" },
     });
     assert.equal(corrected.state.selfReference, "わたくし");
+    assert.ok(corrected.speech);
     assert.match(corrected.speech, /わたくし/);
 
     const unknownSelfName = await provider.advanceCharacterAgent({
@@ -156,6 +157,7 @@ describe("mock LLM natural-language handling", () => {
       psyche: { ...agentInput.psyche, selfReference: "私" },
     });
     assert.equal(unknownSelfName.state.selfReference, null);
+    assert.ok(unknownSelfName.speech);
     assert.doesNotMatch(unknownSelfName.speech, /私|俺|僕|わたくし/);
 
     const finisherResult = await provider.advanceCharacterAgent({
@@ -259,6 +261,7 @@ describe("mock LLM natural-language handling", () => {
       semanticState,
       publicObservation: observation,
     });
+    assert.ok(result.speech);
     const narration = await provider.narrateTurn({
       view: buildNarrationTurnView({
         turn: 1,

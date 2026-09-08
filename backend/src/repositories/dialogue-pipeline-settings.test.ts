@@ -52,6 +52,7 @@ describe("dialogue pipeline settings", () => {
       },
     });
     assert.ok(saved);
+    assert.equal(saved.schemaVersion, 2);
     assert.equal(saved.revision, 1);
     assert.equal(saved.conversationHistoryLimit, 20);
     assert.equal(saved.contextProjectionMode, "compact");

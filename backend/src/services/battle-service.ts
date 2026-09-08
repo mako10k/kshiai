@@ -87,6 +87,7 @@ import {
   type CharacterAgentState,
   type CharacterActionReactionContext,
   type CharacterConversationContext,
+  type CharacterConversationEntry,
   type CharacterPerceptionFrame,
   type BattleSocialView,
   type CharacterConsciousSelfStaticProjectionV2,
@@ -195,6 +196,7 @@ import {
 import type {
   AftermathNarrationResult,
   CharacterDeepPsycheCompactInput,
+  CharacterDeepPsycheExpressionStateV2,
   CharacterDeepPsycheAdvance,
   CharacterDeepPsycheInput,
   CharacterExpressionCompactInput,
@@ -208,6 +210,7 @@ import type {
   RefereeTurnFact,
   CharacterActionDecisionContext,
   CharacterCounterpartKnowledge,
+  CharacterUtteranceActualV1,
 } from "../llm/types.js";
 import {
   buildPromptMechanicalEvidence,
@@ -1999,6 +2002,42 @@ function extendConversationHistory(input: {
     .slice(-input.limit);
 }
 
+function projectUtteranceHistory(
+  history: readonly CharacterConversationEntry[],
+  limit: number,
+): { recent: CharacterUtteranceActualV1[] } {
+  const recent = history.slice(-limit);
+  const firstSequence = history.length - recent.length + 1;
+  return {
+    recent: recent.map((entry, index) => ({
+      sequence: firstSequence + index,
+      turn: entry.turn,
+      speaker: entry.speaker,
+      delivery: isStageReaction(entry.text)
+        ? "visible_reaction"
+        : "spoken",
+      text: entry.text,
+    })),
+  };
+}
+
+function projectDeepPsycheExpressionState(
+  state: CharacterAgentState,
+  clearPrivateMemory: boolean,
+): CharacterDeepPsycheExpressionStateV2 {
+  return {
+    privateMemory: clearPrivateMemory ? "" : state.privateMemory,
+    currentGoal: state.currentGoal,
+    emotion: state.emotion,
+    beliefs: [...state.beliefs],
+    observations: [...state.observations],
+    speechStyle: state.speechStyle,
+    interior: structuredClone(state.interior),
+    dialogueThread: structuredClone(state.dialogueThread),
+    battleVolatileMemory: state.battleVolatileMemory,
+  };
+}
+
 
 /**
  * Append reflect notes to battle-volatile memory only.
@@ -2297,6 +2336,8 @@ export async function advanceCharacterAgents(input: {
     phase: input.phase,
   }) : null;
   const compactContext = dialoguePipeline.contextProjectionMode === "compact";
+  const compactContractV2 =
+    compactContext && dialoguePipeline.schemaVersion === 2;
   if (!inputA && !inputB) {
     console.warn("[battle] character agents skipped: no observer-safe action available");
     return { state: refreshNarratorContinuity(stateWithRecord), characterSpeeches: [] };
@@ -2319,6 +2360,40 @@ export async function advanceCharacterAgents(input: {
         consumerInput === inputA ? "a" : "b"
       ].compilerInputsV2;
       const storedMatchupMemory = sheet.opponentMemories?.[counterpartSheet.id];
+      if (compactContractV2) {
+        return {
+          contextMode: "compact",
+          contractVersion: 2,
+          phase: consumerInput.phase,
+          character: consumerInput.character,
+          ...(compilerInputs
+            ? { stableDisposition: compilerInputs.deepPsyche }
+            : {}),
+          expressionState: projectDeepPsycheExpressionState(
+            consumerInput.psyche,
+            consumerInput.phase === "prologue",
+          ),
+          utteranceHistory: projectUtteranceHistory(
+            consumerInput.conversation.history,
+            dialoguePipeline.recentExchangeLimit,
+          ),
+          turnObservation: packet,
+          ...(consumerInput.phase === "prologue" && storedMatchupMemory
+            ? {
+                matchupMemory: {
+                  preBattlePlan: storedMatchupMemory.preBattlePlan,
+                  postBattleReflection: storedMatchupMemory.postBattleReflection,
+                  battleCount: storedMatchupMemory.battleCount,
+                },
+              }
+            : {}),
+          dialoguePipeline: consumerInput.dialoguePipeline,
+          ...(consumerInput.social ? { social: consumerInput.social } : {}),
+          ...(consumerInput.counterpart
+            ? { counterpart: consumerInput.counterpart }
+            : {}),
+        } satisfies CharacterDeepPsycheCompactInput;
+      }
       const compactInput = {
         contextMode: "compact" as const,
         phase: consumerInput.phase,
@@ -2531,6 +2606,46 @@ export async function advanceCharacterAgents(input: {
         ? dialogueProjection?.a
         : dialogueProjection?.b;
       if (!packet) return null;
+      if (compactContractV2) {
+        const focus = consumerInput === inputA
+          ? focusA?.packet ?? null
+          : focusB?.packet ?? null;
+        return {
+          contextMode: "compact",
+          contractVersion: 2,
+          phase: consumerInput.phase,
+          character: consumerInput.character,
+          ...(consumerInput.structuredSelf
+            ? { structuredSelf: consumerInput.structuredSelf }
+            : {}),
+          expressionState: {
+            emotion: psyche.emotion,
+            speechStyle: psyche.speechStyle,
+            selfReference: psyche.selfReference,
+            expressionBrief,
+            focus,
+          },
+          utteranceHistory: projectUtteranceHistory(
+            consumerInput.conversation.history,
+            dialoguePipeline.recentExchangeLimit,
+          ),
+          turnObservation: packet,
+          relevantMemory: dialoguePipeline.relevantMemoryLimit > 0
+            ? [
+                psyche.battleVolatileMemory?.trim(),
+                psyche.privateMemory?.trim(),
+              ].filter(Boolean).join("\n").slice(-240) || null
+            : null,
+          observableManifestations: consumerInput === inputA
+            ? psycheAResult.manifestations
+            : psycheBResult.manifestations,
+          ...(consumerInput.social ? { social: consumerInput.social } : {}),
+          ...(consumerInput.counterpart
+            ? { counterpart: consumerInput.counterpart }
+            : {}),
+          ...(consumerInput.decision ? { decision: consumerInput.decision } : {}),
+        } satisfies CharacterExpressionCompactInput;
+      }
       const compactInput = {
         contextMode: "compact" as const,
         phase: consumerInput.phase,
@@ -3062,6 +3177,7 @@ type CharacterAgentAdvanceResult = Awaited<
  */
 export function validateCharacterActionProposal(input: {
   proposedAction: unknown | null;
+  proposalSchemaInvalid?: boolean;
   decision?: Parameters<LlmProvider["advanceCharacterAgent"]>[0]["decision"];
 }): CharacterActionProposalValidationReceipt {
   const proposedAction = input.proposedAction ?? null;
@@ -3070,6 +3186,14 @@ export function validateCharacterActionProposal(input: {
       status: "omitted",
       reason: "no_decision_context",
       proposedAction,
+      acceptedAction: null,
+    };
+  }
+  if (input.proposalSchemaInvalid) {
+    return {
+      status: "rejected",
+      reason: "schema_invalid",
+      proposedAction: null,
       acceptedAction: null,
     };
   }
@@ -3217,9 +3341,15 @@ export function acceptCharacterAgentResult(input: {
       realizedManifestation: null,
     };
   }
-  const text = coerceCharacterSpeech(input.result.speech);
+  const compactV2 = input.result.contractVersion === 2;
+  const text = coerceCharacterSpeech(compactV2
+    ? input.result.nextUtterance
+    : input.result.speech);
   const actionProposalValidation = validateCharacterActionProposal({
     proposedAction: input.result.proposedAction,
+    proposalSchemaInvalid: input.result.contractVersion === 2
+      ? input.result.proposedActionStatus === "invalid"
+      : false,
     decision: input.decision,
   });
   const nextAction = actionProposalValidation.acceptedAction ?? undefined;
@@ -3227,11 +3357,16 @@ export function acceptCharacterAgentResult(input: {
     (candidate) => candidate.proposal === input.result?.realizedManifestation,
   ) ?? null;
   return {
-    state: {
-      ...input.previous,
-      selfReference,
-      lastSpeech: text,
-    },
+    state: compactV2
+      ? {
+          ...input.previous,
+          selfReference,
+        }
+      : {
+          ...input.previous,
+          selfReference,
+          lastSpeech: text,
+        },
     nextAction,
     actionProposalValidation,
     speech: {

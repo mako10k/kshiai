@@ -69,7 +69,7 @@ export async function updateDialoguePipelineSettings(input: {
   patch: UpdateDialoguePipelineSettings;
 }): Promise<DialoguePipelineSettings | null> {
   const values = DialoguePipelineValuesSchema.parse({
-    schemaVersion: 1,
+    schemaVersion: 2,
     enabled: input.patch.enabled,
     conversationHistoryLimit: input.patch.conversationHistoryLimit,
     contextProjectionMode: input.patch.contextProjectionMode,
