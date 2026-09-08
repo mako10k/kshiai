@@ -61,6 +61,7 @@ task t002 m003 -> m004:
   title "Implement the closed Compact state, history, and next-utterance boundary"
   description "Define closed V2 deep-psyche and expression contracts; provide separate expressionState and observer-safe utteranceHistory fields; exclude lastSpeech and conversationHistory from semantic state; decode nextUtterance without any, arbitrary records, or z.unknown terminal contracts; stop new Compact writes to lastSpeech; and align production and mock adapters. Preserve existing battles, non-Compact behavior, action ownership, narrator separation, and the successful-path expression call count."
   duration 4p
+  status done
   owner "codex"
   requires:
     rs001 1
@@ -69,6 +70,7 @@ task t003 m004 -> m005:
   title "Verify source correction and existing containment"
   description "Add focused fixtures proving separated inputs, closed nextUtterance decoding, exact repeated-text acceptance through the normal path, absence of text comparison, retry, critic, prior-line fallback, or new lifecycle storage, no Compact lastSpeech write, observer privacy, narrator non-feedback, old-policy compatibility, unchanged provider count, and rejection of stale battle revisions. Run focused tests, full tests, typecheck, build, LLMThink audit, and PERT checks."
   duration 2p
+  status done
   owner "codex"
   requires:
     rs001 1
@@ -126,3 +128,15 @@ work_event WE-1227b7e1e114fa09bbab393e7931c57621202927fbcb75f4405ee8632224cd0e:
   task t001
   kind finish
   occurred_at 2026-09-08T22:10:00+09:00
+
+work_event WE-9bb5e4a0fcd970fc9c8a52b250135f24346cfad7bb4145a945427d94d6165111:
+  model 1
+  task t002
+  kind finish
+  occurred_at 2026-09-08T22:49:04+09:00
+
+work_event WE-f2bb6692693356be4484b4513ef71db3dd4adfc452e9d791918fd739aa7c79b8:
+  model 1
+  task t003
+  kind finish
+  occurred_at 2026-09-08T22:50:00+09:00

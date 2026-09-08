@@ -136,7 +136,20 @@ describe("dialogue context contracts", () => {
     };
     const snapshot = snapshotDialoguePipelineSettings(settings);
     assert.deepEqual(BattleDialoguePipelineSnapshotSchema.parse(snapshot), snapshot);
+    assert.equal(snapshot.schemaVersion, 1);
     assert.equal(snapshot.revision, 7);
+    assert.equal(snapshot.contextProjectionMode, "compact");
+  });
+
+  it("selects the revised Compact contract only for V2 snapshots", () => {
+    const snapshot = snapshotDialoguePipelineSettings({
+      ...defaultDialoguePipelineSettings(),
+      schemaVersion: 2,
+      revision: 8,
+      contextProjectionMode: "compact",
+    });
+    assert.deepEqual(BattleDialoguePipelineSnapshotSchema.parse(snapshot), snapshot);
+    assert.equal(snapshot.schemaVersion, 2);
     assert.equal(snapshot.contextProjectionMode, "compact");
   });
 

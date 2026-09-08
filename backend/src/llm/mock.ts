@@ -18,7 +18,6 @@ import {
   type BattleEncounterProposal,
   type CharacterSheet,
   type CharacterIdentity,
-  type CharacterConversationEntry,
 } from "@kshiai/shared";
 import type {
   AdjustBattlefieldResult,
@@ -713,9 +712,12 @@ export class MockLlmProvider implements LlmProvider {
   ): Promise<Awaited<ReturnType<LlmProvider["advanceCharacterPsyche"]>>> {
     if (input.contextMode === "compact") {
       const observation = input.turnObservation!;
-      const recentExchange = (input.conversation as unknown as {
-        recentExchange?: CharacterConversationEntry[];
-      }).recentExchange ?? [];
+      const compactV2 = input.contractVersion === 2;
+      const previous = compactV2 ? input.expressionState : input.previous;
+      const recentExchange = compactV2
+        ? input.utteranceHistory.recent
+        : input.conversation.recentExchange;
+      const hasPriorUtterance = recentExchange.length > 0;
       const event = observation.selfResult[0]?.phenomenon ??
         observation.counterpartResult[0]?.phenomenon ??
         observation.ambientChange[0]?.phenomenon ??
@@ -723,13 +725,13 @@ export class MockLlmProvider implements LlmProvider {
       const counterpartLabel = input.counterpart?.displayName ?? "相手";
       return {
         ...CharacterDeepPsycheUpdateSchema.parse({
-          privateMemory: input.previous.privateMemory,
-          currentGoal: input.previous.currentGoal,
-          emotion: input.previous.emotion,
-          beliefs: input.previous.beliefs,
-          observations: input.previous.observations,
-          speechStyle: input.previous.speechStyle,
-          interior: input.previous.interior,
+          privateMemory: previous.privateMemory,
+          currentGoal: previous.currentGoal,
+          emotion: previous.emotion,
+          beliefs: previous.beliefs,
+          observations: previous.observations,
+          speechStyle: previous.speechStyle,
+          interior: previous.interior,
         }),
         delta: {
           privateMemory: input.phase === "aftermath"
@@ -737,11 +739,11 @@ export class MockLlmProvider implements LlmProvider {
             : event.slice(0, 1200),
           currentGoal: input.phase === "prologue"
             ? `${counterpartLabel}との距離と出方を見極める`
-            : input.previous.currentGoal || `${counterpartLabel}との対決を自分らしく続ける`,
+            : previous.currentGoal || `${counterpartLabel}との対決を自分らしく続ける`,
           emotion: input.phase === "aftermath" ? "余韻" : "集中",
-          observations: [...input.previous.observations.slice(-7), event.slice(0, 240)],
+          observations: [...previous.observations.slice(-7), event.slice(0, 240)],
           dialogueThread: {
-            topic: input.previous.dialogueThread?.topic || counterpartLabel,
+            topic: previous.dialogueThread?.topic || counterpartLabel,
             unresolvedMove: input.phase === "aftermath" ? "" : event.slice(0, 240),
             anchoredExchange: recentExchange.at(-1) ?? null,
           },
@@ -755,7 +757,7 @@ export class MockLlmProvider implements LlmProvider {
               anticipatedImpact: `${counterpartLabel}の出方を別の角度から確かめる`,
               observedImpact: event.slice(0, 240),
               anticipatedSocialCost: "反応を急ぎすぎれば相手の警戒を強める",
-              observedSocialCost: input.previous.lastSpeech
+              observedSocialCost: hasPriorUtterance
                 ? "前の働きかけは相手の注意を大きく動かさなかった"
                 : "まだ言葉の手応えはない",
               anticipatedSocialConsequence: {
@@ -763,20 +765,20 @@ export class MockLlmProvider implements LlmProvider {
                 meaning: "別の角度を急げば、相手との距離を測る余地が狭まる",
               },
               observedSocialConsequence: {
-                bearer: input.previous.lastSpeech ? "relationship" : "self",
-                meaning: input.previous.lastSpeech
+                bearer: hasPriorUtterance ? "relationship" : "self",
+                meaning: hasPriorUtterance
                   ? "前の働きかけだけでは相手との距離を変えられなかった"
                   : "まだ自分の言葉が関係に与えた手応えはない",
               },
               nextApproach: `${counterpartLabel}の出方を別の角度から確かめる`,
-              continuityPosture: input.previous.lastSpeech ? "developing" : "opening",
+              continuityPosture: hasPriorUtterance ? "developing" : "opening",
               continuityBasis: {
-                kind: input.previous.lastSpeech ? "social_reappraisal" : "fresh_leverage",
-                reason: input.previous.lastSpeech
+                kind: hasPriorUtterance ? "social_reappraisal" : "fresh_leverage",
+                reason: hasPriorUtterance
                   ? "直前の反応から別の距離の測り方を選べる"
                   : "初対面の出方を観察できる",
               },
-              continuityDecision: input.previous.lastSpeech ? "reframe" : "advance",
+              continuityDecision: hasPriorUtterance ? "reframe" : "advance",
             },
           },
         },
@@ -784,11 +786,11 @@ export class MockLlmProvider implements LlmProvider {
           sourceThread: observation.selfResult.length > 0
             ? "action_reaction"
             : "conversation_continuation",
-          continuityDecision: input.previous.lastSpeech ? "reframe" : "advance",
+          continuityDecision: hasPriorUtterance ? "reframe" : "advance",
           focus: observation.selfResult.length > 0
             ? ["self_result"]
             : ["counterpart_speech"],
-          observedImpact: input.previous.interior?.speechAppraisal?.observedImpact ?? "",
+          observedImpact: previous.interior?.speechAppraisal?.observedImpact ?? "",
           relationshipMove: input.phase === "aftermath"
             ? "結末を自分の言葉で受け止める"
             : `${counterpartLabel}との距離を保ちながら出方を確かめる`,
@@ -859,10 +861,13 @@ export class MockLlmProvider implements LlmProvider {
   ): Promise<Awaited<ReturnType<LlmProvider["advanceCharacterAgent"]>>> {
     if (input.contextMode === "compact") {
       const observation = input.turnObservation!;
-      const recentExchange = (input.conversation as unknown as {
-        recentExchange?: CharacterConversationEntry[];
-      }).recentExchange ?? [];
-      const selfReference = input.social?.selfReference ?? input.psyche.selfReference;
+      const compactV2 = input.contractVersion === 2;
+      const expressionState = compactV2 ? input.expressionState : input.psyche;
+      const recentExchange = compactV2
+        ? input.utteranceHistory.recent
+        : input.conversation.recentExchange;
+      const selfReference = input.social?.selfReference ??
+        expressionState.selfReference;
       const counterpartLabel = input.counterpart?.displayName ?? "相手";
       const event = observation.selfResult[0]?.phenomenon ??
         observation.counterpartResult[0]?.phenomenon ??
@@ -870,14 +875,36 @@ export class MockLlmProvider implements LlmProvider {
       const speech = input.phase === "aftermath"
         ? selfReference ? `${selfReference}は、この結末を受け止めよう。` : "この結末を受け止めよう。"
         : selfReference ? `${selfReference}は、${event.slice(0, 80)}。` : `${event.slice(0, 80)}。`;
+      if (compactV2) {
+        return {
+          contractVersion: 2,
+          state: {
+            privateMemory: "",
+            currentGoal: "",
+            emotion: expressionState.emotion,
+            beliefs: [],
+            observations: [],
+            speechStyle: expressionState.speechStyle,
+            selfReference: selfReference ?? null,
+            lastSpeech: null,
+            lastActionResult: "",
+            conversationHistory: [],
+            dialogueThread: { topic: "", unresolvedMove: "", anchoredExchange: null },
+          },
+          nextUtterance: speech,
+          proposedAction: null,
+          proposedActionStatus: "omitted",
+          realizedManifestation: null,
+        };
+      }
       return {
         state: {
           privateMemory: "",
           currentGoal: "",
-          emotion: input.psyche.emotion,
+          emotion: expressionState.emotion,
           beliefs: [],
           observations: [],
-          speechStyle: input.psyche.speechStyle,
+          speechStyle: expressionState.speechStyle,
           selfReference: selfReference ?? null,
           lastSpeech: speech,
           lastActionResult: "",

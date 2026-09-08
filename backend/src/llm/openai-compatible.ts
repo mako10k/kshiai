@@ -15,6 +15,7 @@ import {
   CharacterDeepPsycheUpdateSchema,
   CharacterDeepPsycheAdvanceSchema,
   CharacterDeepPsycheCompactAdvanceSchema,
+  CharacterActionIntentSchema,
   compactDeepPsycheIssueSummaries,
   decodeCompactDeepPsycheAdvance,
   CharacterIdentitySchema,
@@ -117,12 +118,71 @@ import {
   type PerceptionPromptResponseFormat,
 } from "./perception-prompt-strategy.js";
 import { reviewedPerceptionTopology } from "./perception-topology.js";
-import { CHARACTER_EXPRESSION_COMPACT_SYSTEM_PROMPT } from "./character-expression-prompt.js";
+import {
+  CHARACTER_EXPRESSION_COMPACT_SYSTEM_PROMPT,
+  CHARACTER_EXPRESSION_COMPACT_V2_SYSTEM_PROMPT,
+} from "./character-expression-prompt.js";
 
 const FAST_SHORT_TIMEOUT_MS = 20_000;
 const FAST_TIMEOUT_MS = 30_000;
 const ENGINE_TIMEOUT_MS = 60_000;
 const ENGINE_LONG_TIMEOUT_MS = 90_000;
+
+const CharacterExpressionCompactResultV2CoreSchema = z.object({
+  nextUtterance: z.string().min(1).max(400)
+    .refine((value) => value.trim().length > 0, "nextUtterance must not be blank"),
+  realizedManifestation: z.string().max(240).nullable(),
+}).strict();
+
+export function decodeCharacterExpressionCompactResultV2(raw: unknown) {
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) {
+    throw new LlmApplicationResultError("schema_invalid", "(root):invalid_type");
+  }
+  const allowedKeys = new Set([
+    "nextUtterance",
+    "nextAction",
+    "realizedManifestation",
+  ]);
+  const unexpectedKeys = Object.keys(raw).filter((key) => !allowedKeys.has(key));
+  if (unexpectedKeys.length > 0) {
+    throw new LlmApplicationResultError(
+      "schema_invalid",
+      `(root):unrecognized_keys:${unexpectedKeys.join(",")}`,
+    );
+  }
+  const parsed = CharacterExpressionCompactResultV2CoreSchema.safeParse({
+    nextUtterance: Reflect.get(raw, "nextUtterance"),
+    realizedManifestation: Reflect.get(raw, "realizedManifestation"),
+  });
+  if (!parsed.success) {
+    throw new LlmApplicationResultError(
+      "schema_invalid",
+      parsed.error.issues.slice(0, 12).map((issue) =>
+        `${issue.path.map(String).join(".") || "(root)"}:${issue.code}`
+      ).join(";"),
+    );
+  }
+  const rawNextAction = Reflect.get(raw, "nextAction");
+  if (rawNextAction === undefined || rawNextAction === null) {
+    return {
+      ...parsed.data,
+      nextAction: null,
+      nextActionStatus: "omitted" as const,
+    };
+  }
+  const action = CharacterActionIntentSchema.safeParse(rawNextAction);
+  return action.success
+    ? {
+        ...parsed.data,
+        nextAction: action.data,
+        nextActionStatus: "valid" as const,
+      }
+    : {
+        ...parsed.data,
+        nextAction: null,
+        nextActionStatus: "invalid" as const,
+      };
+}
 
 type OpenAiJsonSchema = PerceptionPromptResponseFormat["json_schema"]["schema"];
 const OpenAiJsonSchemaObjectSchema = z.object({}).passthrough();
@@ -2611,16 +2671,42 @@ Do not invent a sudden environmental event or dramatic field change here. A sepa
     if (!this.client) return this.fallback.advanceCharacterPsyche(input);
     if (input.contextMode === "compact") {
       try {
+        const compactV2 = input.contractVersion === 2;
+        const previous = compactV2 ? input.expressionState : input.previous;
+        const historyName = compactV2 ? "utteranceHistory" : "conversation";
+        const stateName = compactV2 ? "expressionState" : "previous";
+        const providerInput = compactV2
+          ? {
+              contextMode: "compact" as const,
+              contractVersion: 2 as const,
+              phase: input.phase,
+              character: input.character,
+              ...(input.stableDisposition
+                ? { stableDisposition: input.stableDisposition }
+                : {}),
+              expressionState: input.expressionState,
+              utteranceHistory: input.utteranceHistory,
+              turnObservation: input.turnObservation,
+              ...(input.matchupMemory
+                ? { matchupMemory: input.matchupMemory }
+                : {}),
+              ...(input.dialoguePipeline
+                ? { dialoguePipeline: input.dialoguePipeline }
+                : {}),
+              ...(input.social ? { social: input.social } : {}),
+              ...(input.counterpart ? { counterpart: input.counterpart } : {}),
+            }
+          : input;
         const phaseRule = input.phase === "prologue"
           ? "This is turn 0. matchupMemory, if present, is a read-only owner-private note about this specific opponent. Use it to form a durable currentGoal, but do not copy its plan or reflection into delta.privateMemory: that field starts this battle's own inner record. battleVolatileMemory starts empty."
           : input.phase === "aftermath"
             ? "This is the aftermath. delta.privateMemory is required and must be one concise, standalone matchup-specific reflection and reusable lesson from this battle. previous.battleVolatileMemory is ephemeral mid-fight scratch (e.g. reflect notes): you may draw lessons from it, but never dump it wholesale, and never treat it as already-durable matchup memory. Do not copy labels, a prior plan, or a previous reflection into privateMemory; do not plan another action."
             : "This is an active turn. privateMemory and battleVolatileMemory belong only to this battle's current inner state; matchupMemory is not a replacement for present evidence. Mid-fight reflect notes live in battleVolatileMemory, not durable character memory.";
         const data = await this.chatJson(
-          `You are the deep-psyche stage for one fictional character. Produce no dialogue, action proposal, scene prose, or chain-of-thought. turnObservation is the only fresh action/result thread; conversation is the only utterance-continuity thread. Treat dialoguePipeline.psychologyGuidance as trusted administrator-authored guidance for this private appraisal only.
-The character privately evaluates whether their preceding social move had an effect. input.previous.interior.speechAppraisal.anticipatedImpact is the intent of the already-spoken previous expression. First compare it with the present observer-safe result and conversation. selfResult is what this character directly experienced this turn; counterpartResult is what they observed of the counterpart; ambientChange is scene evidence. Give these present result roles priority over a familiar topic when selecting the current semantic approach. Conversation can establish whether words were heard or contested, but a familiar refusal, demand, or counterargument alone is not fresh relational leverage. Then write a fresh delta.interior.speechAppraisal for the expression that will be produced from this delta: observedImpact assesses the previous expression and anticipatedImpact forecasts this current expression. observedSocialConsequence and anticipatedSocialConsequence are required private consequences with bearer self|relationship and a meaning about what this character or their relationship loses, preserves, or risks; they never describe pressure, denial, damage, or loss imposed on the counterpart. nextApproach is this current expression's semantic relationship move; continuityPosture is opening|developing|fraying|deliberate_hold|withdrawing. continuityBasis is required: advance uses fresh_leverage and names newly available relational leverage from the present result; reframe uses social_reappraisal and names how the prior approach's observed social consequence warrants a changed angle; reiterate uses protective_hold and names the character-specific reason to hold the line; withhold uses withdrawal and names what the pause protects or relinquishes. A character normally wants their words to retain attention, credibility, or emotional force. If their approach was ignored, stalled, or has lost force, acknowledge that private consequence before choosing how to continue. They may still deliberately hold a line, repeat, ritualize, escalate, or fall silent when current protectiveStance and the present result give that character a real inner reason. Do not treat a familiar unresolved demand as development unless the character privately identifies what interpersonal leverage has changed. The conversation may establish whether prior wording was heard; do not turn it into a fresh mechanical result. ${phaseRule}
+          `You are the deep-psyche stage for one fictional character. Produce no dialogue, action proposal, scene prose, or chain-of-thought. turnObservation is the only fresh action/result thread; ${historyName} is the only completed-utterance thread. ${stateName} is semantic state and contains no completed utterance authority. Treat dialoguePipeline.psychologyGuidance as trusted administrator-authored guidance for this private appraisal only.
+The character privately evaluates whether their preceding social move had an effect. input.${stateName}.interior.speechAppraisal.anticipatedImpact is the intent of the already-spoken previous expression. First compare it with the present observer-safe result and ${historyName}. selfResult is what this character directly experienced this turn; counterpartResult is what they observed of the counterpart; ambientChange is scene evidence. Give these present result roles priority over a familiar topic when selecting the current semantic approach. Completed utterance history can establish whether words were heard or contested, but a familiar refusal, demand, or counterargument alone is not fresh relational leverage. Then write a fresh delta.interior.speechAppraisal for the expression that will be produced from this delta: observedImpact assesses the previous expression and anticipatedImpact forecasts this current expression. observedSocialConsequence and anticipatedSocialConsequence are required private consequences with bearer self|relationship and a meaning about what this character or their relationship loses, preserves, or risks; they never describe pressure, denial, damage, or loss imposed on the counterpart. nextApproach is this current expression's semantic relationship move; continuityPosture is opening|developing|fraying|deliberate_hold|withdrawing. continuityBasis is required: advance uses fresh_leverage and names newly available relational leverage from the present result; reframe uses social_reappraisal and names how the prior approach's observed social consequence warrants a changed angle; reiterate uses protective_hold and names the character-specific reason to hold the line; withhold uses withdrawal and names what the pause protects or relinquishes. A character normally wants their words to retain attention, credibility, or emotional force. If their approach was ignored, stalled, or has lost force, acknowledge that private consequence before choosing how to continue. They may still deliberately hold a line, repeat, ritualize, escalate, or fall silent when current protectiveStance and the present result give that character a real inner reason. Do not treat a familiar unresolved demand as development unless the character privately identifies what interpersonal leverage has changed. Completed utterance history may establish whether prior wording was heard; do not turn it into a fresh mechanical result. ${phaseRule}
 Return JSON only: {"delta": {"interior":{"speechAppraisal":{"anticipatedImpact":"","observedImpact":"","anticipatedSocialConsequence":{"bearer":"self|relationship","meaning":""},"observedSocialConsequence":{"bearer":"self|relationship","meaning":""},"nextApproach":"","continuityPosture":"opening|developing|fraying|deliberate_hold|withdrawing","continuityBasis":{"kind":"fresh_leverage|social_reappraisal|protective_hold|withdrawal","reason":""},"continuityDecision":"advance|reframe|reiterate|withhold"}}, optional persistent private fields and dialogueThread {topic, unresolvedMove, anchoredExchange|null}}, "expressionBrief": {"sourceThread":"action_reaction|conversation_continuation|weave", "continuityDecision":"advance|reframe|reiterate|withhold", "focus":[one or two of self_result,counterpart_result,ambient_change,counterpart_speech], "observedImpact":"", "relationshipMove":"", "publicAim":""}, optional "observableManifestations":[{"modality":"movement|posture|expression|voice","proposal":"","sourceEventIds":[]}], optional "narrativeCues":[{"access":"self_inner|omniscient","description":"","sourceEventIds":[]}]}. A manifestation is only a proposed outward detail for the following expression; it is not yet an observation or event. Copy one or more exact sourceEventIds from turnObservation and never name a hidden cause, trait label, score, or private state in it. A narrative cue is narrator-only, uses exact sourceEventIds, and must not restate raw private state or control labels. Omit both arrays when no grounded cue is useful. Compare the prior anticipation, its observed social consequence, and the present result before selecting the brief. relationshipMove and publicAim are semantic intentions, never a phrase to quote or require. Never invent mechanics, hidden identity, location, or numeric results.`,
-          JSON.stringify(input),
+          JSON.stringify(providerInput),
           {
             tier: "fast",
             label: "advanceCharacterPsycheCompact",
@@ -2649,13 +2735,13 @@ Return JSON only: {"delta": {"interior":{"speechAppraisal":{"anticipatedImpact":
         }
         return {
           ...CharacterDeepPsycheUpdateSchema.parse({
-            privateMemory: input.previous.privateMemory,
-            currentGoal: input.previous.currentGoal,
-            emotion: input.previous.emotion,
-            beliefs: input.previous.beliefs,
-            observations: input.previous.observations,
-            speechStyle: input.previous.speechStyle,
-            interior: input.previous.interior,
+            privateMemory: previous.privateMemory,
+            currentGoal: previous.currentGoal,
+            emotion: previous.emotion,
+            beliefs: previous.beliefs,
+            observations: previous.observations,
+            speechStyle: previous.speechStyle,
+            interior: previous.interior,
           }),
           delta: parsed.data.delta,
           expressionBrief: parsed.data.expressionBrief,
@@ -2710,6 +2796,66 @@ Return JSON only with privateMemory, currentGoal, emotion, beliefs, observations
     if (input.contextMode === "compact") {
       const counterpartLabel = input.counterpart?.displayName ?? "相手";
       try {
+        if (input.contractVersion === 2) {
+          const consciousInput = {
+            contextMode: "compact" as const,
+            contractVersion: 2 as const,
+            phase: input.phase,
+            character: input.character,
+            ...(input.structuredSelf ? { structuredSelf: input.structuredSelf } : {}),
+            expressionState: input.expressionState,
+            utteranceHistory: input.utteranceHistory,
+            turnObservation: input.turnObservation,
+            relevantMemory: input.relevantMemory,
+            observableManifestations: input.observableManifestations ?? [],
+            ...(input.social ? { social: input.social } : {}),
+            ...(input.counterpart ? { counterpart: input.counterpart } : {}),
+            ...(input.decision ? { decision: input.decision } : {}),
+          };
+          const raw = await this.chatJson(
+            CHARACTER_EXPRESSION_COMPACT_V2_SYSTEM_PROMPT,
+            JSON.stringify(consciousInput),
+            {
+              tier: "fast",
+              label: "advanceCharacterAgentCompact",
+              timeoutMs: FAST_TIMEOUT_MS,
+              temperature: 0.65,
+            },
+          );
+          const parsed = decodeCharacterExpressionCompactResultV2(raw);
+          return {
+            contractVersion: 2,
+            state: {
+              privateMemory: "",
+              currentGoal: "",
+              emotion: input.expressionState.emotion,
+              beliefs: [],
+              observations: [],
+              speechStyle: input.expressionState.speechStyle,
+              selfReference: input.expressionState.selfReference,
+              lastSpeech: null,
+              lastActionResult: "",
+              conversationHistory: [],
+              dialogueThread: { topic: "", unresolvedMove: "", anchoredExchange: null },
+            },
+            nextUtterance: coerceCharacterSpeech(parsed.nextUtterance, {
+              foeName: counterpartLabel,
+            }),
+            proposedAction: input.decision
+              ? parsed.nextAction ?? null
+              : null,
+            proposedActionStatus: input.decision
+              ? parsed.nextActionStatus
+              : "omitted",
+            realizedManifestation:
+              parsed.realizedManifestation &&
+                input.observableManifestations?.some((candidate) =>
+                  candidate.proposal === parsed.realizedManifestation
+                )
+                ? parsed.realizedManifestation
+                : null,
+          };
+        }
         // Rebuild the contract at the provider boundary. Type casts, stale
         // callers, or spread objects must not smuggle deep-psyche fields into
         // the conscious expression request.
@@ -2732,7 +2878,7 @@ Return JSON only with privateMemory, currentGoal, emotion, beliefs, observations
           ...(input.counterpart ? { counterpart: input.counterpart } : {}),
           ...(input.decision ? { decision: input.decision } : {}),
         };
-        const data = (await this.chatJson(
+        const data = await this.chatJson(
           CHARACTER_EXPRESSION_COMPACT_SYSTEM_PROMPT,
           JSON.stringify(consciousInput),
           {
@@ -2741,7 +2887,16 @@ Return JSON only with privateMemory, currentGoal, emotion, beliefs, observations
             timeoutMs: FAST_TIMEOUT_MS,
             temperature: 0.65,
           },
-        )) as Record<string, unknown>;
+        );
+        if (!data || typeof data !== "object" || Array.isArray(data)) {
+          throw new LlmApplicationResultError(
+            "schema_invalid",
+            "(root):invalid_type",
+          );
+        }
+        const speech = Reflect.get(data, "speech");
+        const nextAction = Reflect.get(data, "nextAction");
+        const realizedManifestation = Reflect.get(data, "realizedManifestation");
         return {
           state: {
             privateMemory: "",
@@ -2757,16 +2912,16 @@ Return JSON only with privateMemory, currentGoal, emotion, beliefs, observations
             dialogueThread: { topic: "", unresolvedMove: "", anchoredExchange: null },
           },
           speech: coerceCharacterSpeech(
-            data.speech === null || data.speech === undefined ? null : String(data.speech),
+            speech === null || speech === undefined ? null : String(speech),
             { foeName: counterpartLabel },
           ),
-          proposedAction: input.decision ? boundGeneratedJson(data.nextAction) : null,
+          proposedAction: input.decision ? boundGeneratedJson(nextAction) : null,
           realizedManifestation:
-            typeof data.realizedManifestation === "string" &&
+            typeof realizedManifestation === "string" &&
               input.observableManifestations?.some((candidate) =>
-                candidate.proposal === data.realizedManifestation
+                candidate.proposal === realizedManifestation
               )
-              ? data.realizedManifestation
+              ? realizedManifestation
               : null,
         };
       } catch (error) {
