@@ -15,6 +15,10 @@ on:
         description: Worker version ID from the successful staging run
         required: true
         type: string
+      stage_run_id:
+        description: Successful Stage run that retained exact Compact battle evidence
+        required: true
+        type: string
       battle_pacing_policy:
         description: Expected policy on the staged Cloud Run revision
         required: true
@@ -29,6 +33,7 @@ on:
         type: string
 
 permissions:
+  actions: read
   checks: read
   contents: write
   id-token: write
@@ -64,12 +69,14 @@ jobs:
           CONFIRMATION: ${{ inputs.confirmation }}
           PACING_POLICY: ${{ inputs.battle_pacing_policy }}
           RELEASE_TAG: ${{ inputs.tag }}
+          STAGE_RUN_ID: ${{ inputs.stage_run_id }}
         run: |
           set -euo pipefail
           test "$GITHUB_ACTOR" = "$GITHUB_REPOSITORY_OWNER"
           test "$GITHUB_REF" = "refs/tags/$RELEASE_TAG"
           test "$CONFIRMATION" = "DEPLOY $RELEASE_TAG"
           [[ "$RELEASE_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?$ ]]
+          [[ "$STAGE_RUN_ID" =~ ^[0-9]+$ ]]
           [[ "$PACING_POLICY" =~ ^(current|candidate-12-v2)$ ]]
 
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -106,15 +113,22 @@ jobs:
           RELEASE_TAG: ${{ inputs.tag }}
           REVISION: ${{ inputs.cloud_run_revision }}
           WORKER_VERSION: ${{ inputs.worker_version }}
+          STAGE_RUN_ID: ${{ inputs.stage_run_id }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           [[ "$REVISION" =~ ^kshiai-api-[a-z0-9-]+$ ]]
           [[ "$WORKER_VERSION" =~ ^[0-9a-f-]{36}$ ]]
           revision_json="$RUNNER_TEMP/staged-revision.json"
+          service_json="$RUNNER_TEMP/staged-service.json"
           gcloud run revisions describe "$REVISION" \
             --project="$GCP_PROJECT" \
             --region="$GCP_REGION" \
             --format=json > "$revision_json"
+          gcloud run services describe "$CLOUD_RUN_SERVICE" \
+            --project="$GCP_PROJECT" \
+            --region="$GCP_REGION" \
+            --format=json > "$service_json"
           image="$(node -e '
             const revision = require(process.argv[1]);
             process.stdout.write(revision.spec?.containers?.[0]?.image ?? "");
@@ -140,8 +154,9 @@ jobs:
             );
             process.stdout.write(entry?.value ?? "");
           ' "$revision_json")"
-          REVISION_JSON="$revision_json" node -e '
+          REVISION_JSON="$revision_json" SERVICE_JSON="$service_json" REVISION="$REVISION" node -e '
             const revision = require(process.env.REVISION_JSON);
+            const service = require(process.env.SERVICE_JSON);
             const env = new Map((revision.spec?.containers?.[0]?.env ?? [])
               .map((entry) => [entry.name, entry.value ?? ""]));
             const expected = {
@@ -164,10 +179,13 @@ jobs:
               }
             }
             const target = new URL(env.get("NARRATION_TASK_TARGET_URL") ?? "");
-            const alias = `release-${process.env.RELEASE_TAG.replaceAll(".", "-")}`;
+            const tagged = (service.status?.traffic ?? []).find((entry) =>
+              entry.revisionName === process.env.REVISION &&
+              entry.url && new URL(entry.url).origin === target.origin
+            );
             if (
               target.protocol !== "https:" ||
-              !target.hostname.startsWith(`${alias}---kshiai-api-`) ||
+              !tagged?.tag ||
               target.pathname !== "/api/internal/narration/task" ||
               env.get("NARRATION_TASK_AUDIENCE") !== target.href
             ) throw new Error("Narration task target is not bound to the staged revision tag");
@@ -190,6 +208,48 @@ jobs:
             const tag = version.annotations?.["workers/tag"];
             if (tag && tag !== process.env.RELEASE_TAG) throw new Error("Worker tag mismatch");
           '
+          evidence_dir="$RUNNER_TEMP/stage-evidence"
+          mkdir -p "$evidence_dir"
+          gh run view "$STAGE_RUN_ID" \
+            --repo "$GITHUB_REPOSITORY" \
+            --json conclusion,event,headSha,workflowName \
+            > "$evidence_dir/stage-run.json"
+          node -e '
+            const run = require(process.argv[1]);
+            if (
+              run.conclusion !== "success" ||
+              run.event !== "workflow_dispatch" ||
+              run.headSha !== process.env.GITHUB_SHA ||
+              run.workflowName !== "Stage release"
+            ) throw new Error("Stage run identity or conclusion mismatch");
+          ' "$evidence_dir/stage-run.json"
+          gh run download "$STAGE_RUN_ID" \
+            --repo "$GITHUB_REPOSITORY" \
+            --name "stage-release-evidence-$STAGE_RUN_ID" \
+            --dir "$evidence_dir"
+          RELEASE_TAG="$RELEASE_TAG" REVISION="$REVISION" WORKER_VERSION="$WORKER_VERSION" \
+            STAGE_RUN_ID="$STAGE_RUN_ID" node -e '
+              const evidence = require(process.argv[1]);
+              const expected = {
+                schemaVersion: 1,
+                stageRunId: process.env.STAGE_RUN_ID,
+                releaseTag: process.env.RELEASE_TAG,
+                commitSha: process.env.GITHUB_SHA,
+                revision: process.env.REVISION,
+                workerVersion: process.env.WORKER_VERSION,
+                dialogueProjection: "compact",
+                dialogueActivationSource: "persisted_setting",
+                verification: "exact_revision_health_and_battle_receipt",
+              };
+              for (const [key, value] of Object.entries(expected)) {
+                if (evidence[key] !== value) {
+                  throw new Error(`Stage evidence mismatch: ${key}`);
+                }
+              }
+              if (!/^kshiai-persistent-e2e-[a-z0-9-]+$/.test(
+                evidence.observationExecution ?? "",
+              )) throw new Error("Stage evidence lacks a battle execution");
+            ' "$evidence_dir/stage-release-evidence.json"
           echo "Verified backend image $image, causal narration mode $mode, pacing policy $pacing_policy, administrator binding, and Worker version $WORKER_VERSION"
 
       - name: Record rollback targets
@@ -232,12 +292,14 @@ jobs:
             --yes
 
       - name: Smoke production
+        env:
+          REVISION: ${{ inputs.cloud_run_revision }}
         run: |
           direct_url="$(gcloud run services describe "$CLOUD_RUN_SERVICE" \
             --project="$GCP_PROJECT" \
             --region="$GCP_REGION" \
             --format='value(status.url)')"
-          node scripts/smoke-deployment.mjs "$PRODUCTION_URL" "$direct_url"
+          node scripts/smoke-deployment.mjs "$PRODUCTION_URL" "$direct_url" "$REVISION"
           gcloud run jobs update "$AUTH_SMOKE_JOB" \
             --project="$GCP_PROJECT" \
             --region="$GCP_REGION" \

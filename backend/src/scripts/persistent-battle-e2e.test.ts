@@ -18,6 +18,7 @@ const {
   OBSERVATION_PROVIDER_OPERATION_LAYERS,
   OBSERVATION_PROVIDER_OPERATION_TAXONOMY_REVISION,
   assertPublicNarrationOrder,
+  assertObservedBackendIdentity,
   authorizeObservationProviderBudget,
   generateEphemeralPassword,
   parseBattleAdvanceStream,
@@ -36,6 +37,16 @@ after(async () => {
 });
 
 describe("persistent battle E2E runner", () => {
+  it("rejects a successful health response from a different backend revision", () => {
+    assert.doesNotThrow(() => assertObservedBackendIdentity(
+      { ok: true, revision: "kshiai-api-00131-test" },
+      "kshiai-api-00131-test",
+    ));
+    assert.throws(() => assertObservedBackendIdentity(
+      { ok: true, revision: "kshiai-api-00130-old" },
+      "kshiai-api-00131-test",
+    ), /revision mismatch/);
+  });
   it("classifies every observation provider operation under one revision", () => {
     assert.equal(
       OBSERVATION_PROVIDER_OPERATION_TAXONOMY_REVISION,

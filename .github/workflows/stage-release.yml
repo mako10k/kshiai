@@ -24,6 +24,24 @@ on:
           - none
           - compact
           - legacy
+      expected_dialogue_projection:
+        description: Dialogue projection that the staged battle must bind
+        required: true
+        default: compact
+        type: choice
+        options:
+          - compact
+          - legacy
+      e2e_max_advances:
+        description: Maximum advances for the staged functional battle
+        required: true
+        default: "12"
+        type: string
+      e2e_provider_operation_ceiling:
+        description: Maximum provider operations for the staged functional battle
+        required: true
+        default: "85"
+        type: string
       battle_pacing_policy:
         description: Provisional pacing policy frozen into newly created battles
         required: true
@@ -48,6 +66,7 @@ env:
   CLOUD_RUN_SERVICE: kshiai-api
   MIGRATION_JOB: kshiai-migrate
   AUTH_SMOKE_JOB: kshiai-auth-smoke
+  E2E_JOB: kshiai-persistent-e2e
   R2_SMOKE_JOB: kshiai-r2-smoke
   IMAGE_REPOSITORY: asia-northeast1-docker.pkg.dev/kshiai/kshiai/backend
   WORKER_NAME: kshiai-web
@@ -63,13 +82,16 @@ jobs:
   stage:
     name: stage-release
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 75
     environment: staging
     steps:
       - name: Validate dispatch authority
         env:
           CAUSAL_NARRATION_MODE: ${{ inputs.battle_causal_narration_mode }}
           DIALOGUE_CONTEXT_PROJECTION_OVERRIDE: ${{ inputs.dialogue_context_projection_override }}
+          EXPECTED_DIALOGUE_PROJECTION: ${{ inputs.expected_dialogue_projection }}
+          E2E_MAX_ADVANCES: ${{ inputs.e2e_max_advances }}
+          E2E_PROVIDER_OPERATION_CEILING: ${{ inputs.e2e_provider_operation_ceiling }}
           PACING_POLICY: ${{ inputs.battle_pacing_policy }}
           RELEASE_TAG: ${{ inputs.tag }}
         run: |
@@ -79,6 +101,12 @@ jobs:
           [[ "$RELEASE_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?$ ]]
           [[ "$CAUSAL_NARRATION_MODE" =~ ^(off|narration_guarded)$ ]]
           [[ "$DIALOGUE_CONTEXT_PROJECTION_OVERRIDE" =~ ^(none|compact|legacy)$ ]]
+          [[ "$EXPECTED_DIALOGUE_PROJECTION" =~ ^(compact|legacy)$ ]]
+          [[ "$E2E_MAX_ADVANCES" =~ ^[0-9]+$ ]]
+          test "$E2E_MAX_ADVANCES" -ge 1
+          test "$E2E_MAX_ADVANCES" -le 30
+          [[ "$E2E_PROVIDER_OPERATION_CEILING" =~ ^[0-9]+$ ]]
+          test "$E2E_PROVIDER_OPERATION_CEILING" -ge 1
           [[ "$PACING_POLICY" =~ ^(current|candidate-12-v2)$ ]]
 
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -185,7 +213,7 @@ jobs:
           RELEASE_TAG: ${{ inputs.tag }}
         run: |
           set -euo pipefail
-          alias="release-${RELEASE_TAG//./-}"
+          alias="stage-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
           service_url="$(gcloud run services describe "$CLOUD_RUN_SERVICE" \
             --project="$GCP_PROJECT" --region="$GCP_REGION" \
             --format='value(status.url)')"
@@ -239,7 +267,7 @@ jobs:
             node --import tsx --test src/llm/provider-accounting.test.ts
           )
 
-      - name: Prove Cloud Tasks OIDC delivery to staged revision
+      - name: Prove narration and authoring Cloud Tasks OIDC delivery
         env:
           BACKEND_URL: ${{ steps.backend.outputs.url }}
         run: |
@@ -266,6 +294,29 @@ jobs:
             sleep 5
           done
           test "$found" = "[narration] task smoke ok $smoke_id"
+
+          authoring_smoke_id="authoring-stage-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          authoring_task_name="authoring-smoke-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          authoring_target_url="${BACKEND_URL%/}/api/internal/authoring/task"
+          gcloud tasks create-http-task "$authoring_task_name" \
+            --project="$GCP_PROJECT" \
+            --location="$GCP_REGION" \
+            --queue="$NARRATION_TASK_QUEUE" \
+            --url="$authoring_target_url" \
+            --method=POST \
+            --header='Content-Type: application/json' \
+            --body-content="{\"smokeId\":\"$authoring_smoke_id\"}" \
+            --oidc-service-account-email="$NARRATION_TASK_SERVICE_ACCOUNT_EMAIL" \
+            --oidc-token-audience="$authoring_target_url"
+          authoring_found=""
+          for _ in {1..24}; do
+            authoring_found="$(gcloud logging read \
+              "resource.type=cloud_run_revision AND resource.labels.revision_name=${{ steps.backend.outputs.revision }} AND textPayload=\"[authoring] task smoke ok $authoring_smoke_id\"" \
+              --project="$GCP_PROJECT" --limit=1 --format='value(textPayload)')"
+            [[ -n "$authoring_found" ]] && break
+            sleep 5
+          done
+          test "$authoring_found" = "[authoring] task smoke ok $authoring_smoke_id"
 
       - name: Build and upload immutable Worker version
         id: worker
@@ -307,7 +358,7 @@ jobs:
               throw new Error("Cloudflare did not enable Worker preview URLs with workers.dev disabled");
             }
           ' "$RUNNER_TEMP/cloudflare-subdomain.json"
-          alias="release-${RELEASE_TAG//./-}"
+          alias="stage-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
           npx wrangler versions upload \
             --config "$WRANGLER_CONFIG" \
             --tag "$RELEASE_TAG" \
@@ -336,7 +387,8 @@ jobs:
         env:
           BACKEND_URL: ${{ steps.backend.outputs.url }}
           PREVIEW_URL: ${{ steps.worker.outputs.preview_url }}
-        run: node scripts/smoke-deployment.mjs "$PREVIEW_URL" "$BACKEND_URL"
+          REVISION: ${{ steps.backend.outputs.revision }}
+        run: node scripts/smoke-deployment.mjs "$PREVIEW_URL" "$BACKEND_URL" "$REVISION"
 
       - name: Verify email auth mapping and SSE through staging
         env:
@@ -360,6 +412,45 @@ jobs:
             --project="$GCP_PROJECT" \
             --region="$GCP_REGION" \
             --wait
+
+      - name: Exercise the exact staged revision with a dialogue-bound battle
+        id: e2e
+        env:
+          DIALOGUE_CONTEXT_PROJECTION_OVERRIDE: ${{ inputs.dialogue_context_projection_override }}
+          EXPECTED_DIALOGUE_PROJECTION: ${{ inputs.expected_dialogue_projection }}
+          IMAGE_REF: ${{ steps.image.outputs.ref }}
+          MAX_ADVANCES: ${{ inputs.e2e_max_advances }}
+          PREVIEW_URL: ${{ steps.worker.outputs.preview_url }}
+          PROVIDER_OPERATION_CEILING: ${{ inputs.e2e_provider_operation_ceiling }}
+          REVISION: ${{ steps.backend.outputs.revision }}
+        run: |
+          set -euo pipefail
+          preview_host="$(node -e 'process.stdout.write(new URL(process.argv[1]).hostname)' "$PREVIEW_URL")"
+          activation_source="persisted_setting"
+          if [[ "$DIALOGUE_CONTEXT_PROJECTION_OVERRIDE" != "none" ]]; then
+            activation_source="deployment_override"
+          fi
+          observation_run_id="stage-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          gcloud run jobs deploy "$E2E_JOB" \
+            --project="$GCP_PROJECT" \
+            --region="$GCP_REGION" \
+            --image="$IMAGE_REF" \
+            --service-account=kshiai-cloud-run@kshiai.iam.gserviceaccount.com \
+            --set-env-vars="NODE_ENV=test,KSHIAI_RUN_E2E_MAIN=1,AUTH_PROVIDER=supabase,MEDIA_STORAGE=local,SUPABASE_URL=$SUPABASE_URL,SUPABASE_JWKS_URL=$SUPABASE_JWKS_URL,E2E_API_URL=$PREVIEW_URL,E2E_ALLOWED_HOSTS=$preview_host,E2E_MAX_ADVANCES=$MAX_ADVANCES,E2E_TARGET_REVISION=$REVISION,E2E_EXPECTED_DIALOGUE_PROJECTION=$EXPECTED_DIALOGUE_PROJECTION,E2E_EXPECTED_DIALOGUE_ACTIVATION_SOURCE=$activation_source,E2E_RUN_ID=$observation_run_id,E2E_OBSERVATION_APPROVED_RUN_ID=$observation_run_id,E2E_PROVIDER_OPERATION_CEILING=$PROVIDER_OPERATION_CEILING" \
+            --set-secrets="DATABASE_URL=kshiai-database-url:latest,SUPABASE_SECRET_KEY=kshiai-supabase-secret-key:latest,SUPABASE_PUBLISHABLE_KEY=kshiai-supabase-publishable-key:latest" \
+            --command=node \
+            --args=backend/dist/scripts/persistent-battle-e2e.js \
+            --max-retries=0 \
+            --task-timeout=25m \
+            --quiet
+          execution="$(gcloud run jobs execute "$E2E_JOB" \
+            --project="$GCP_PROJECT" \
+            --region="$GCP_REGION" \
+            --wait \
+            --format='value(metadata.name)')"
+          [[ "$execution" =~ ^kshiai-persistent-e2e-[a-z0-9-]+$ ]]
+          echo "execution=$execution" >> "$GITHUB_OUTPUT"
+          echo "activation_source=$activation_source" >> "$GITHUB_OUTPUT"
 
       - name: Read public R2 service configuration
         run: |
@@ -403,6 +494,44 @@ jobs:
             --region="$GCP_REGION" \
             --wait
 
+      - name: Record immutable staging evidence
+        env:
+          ACTIVATION_SOURCE: ${{ steps.e2e.outputs.activation_source }}
+          EXECUTION: ${{ steps.e2e.outputs.execution }}
+          EXPECTED_DIALOGUE_PROJECTION: ${{ inputs.expected_dialogue_projection }}
+          RELEASE_TAG: ${{ inputs.tag }}
+          REVISION: ${{ steps.backend.outputs.revision }}
+          WORKER_VERSION: ${{ steps.worker.outputs.version }}
+        run: |
+          node -e '
+            const fs = require("fs");
+            const evidence = {
+              schemaVersion: 1,
+              stageRunId: process.env.GITHUB_RUN_ID,
+              stageRunAttempt: process.env.GITHUB_RUN_ATTEMPT,
+              releaseTag: process.env.RELEASE_TAG,
+              commitSha: process.env.GITHUB_SHA,
+              revision: process.env.REVISION,
+              workerVersion: process.env.WORKER_VERSION,
+              dialogueProjection: process.env.EXPECTED_DIALOGUE_PROJECTION,
+              dialogueActivationSource: process.env.ACTIVATION_SOURCE,
+              observationExecution: process.env.EXECUTION,
+              verification: "exact_revision_health_and_battle_receipt",
+            };
+            fs.writeFileSync(
+              process.argv[1],
+              `${JSON.stringify(evidence, null, 2)}\n`,
+            );
+          ' "$RUNNER_TEMP/stage-release-evidence.json"
+
+      - name: Retain immutable staging evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: stage-release-evidence-${{ github.run_id }}
+          path: ${{ runner.temp }}/stage-release-evidence.json
+          if-no-files-found: error
+          retention-days: 90
+
       - name: Write staging evidence
         env:
           CAUSAL_NARRATION_MODE: ${{ inputs.battle_causal_narration_mode }}
@@ -411,6 +540,9 @@ jobs:
           REVISION: ${{ steps.backend.outputs.revision }}
           WORKER_VERSION: ${{ steps.worker.outputs.version }}
           PREVIEW_URL: ${{ steps.worker.outputs.preview_url }}
+          DIALOGUE_PROJECTION: ${{ inputs.expected_dialogue_projection }}
+          DIALOGUE_ACTIVATION_SOURCE: ${{ steps.e2e.outputs.activation_source }}
+          OBSERVATION_EXECUTION: ${{ steps.e2e.outputs.execution }}
         run: |
           {
             echo "## Release staging passed"
@@ -423,6 +555,10 @@ jobs:
             echo "- Administrator email: \`$ADMIN_EMAILS\`"
             echo "- Worker version: \`$WORKER_VERSION\`"
             echo "- Preview: $PREVIEW_URL"
+            echo "- Dialogue projection: \`$DIALOGUE_PROJECTION\`"
+            echo "- Dialogue activation source: \`$DIALOGUE_ACTIVATION_SOURCE\`"
+            echo "- Staged battle execution: \`$OBSERVATION_EXECUTION\`"
+            echo "- Stage run ID: \`$GITHUB_RUN_ID\`"
             echo
-            echo "Dispatch **Promote release** from \`$RELEASE_TAG\` with the revision and Worker version above."
+            echo "Dispatch **Promote release** from \`$RELEASE_TAG\` with the revision, Worker version, and Stage run ID above."
           } >> "$GITHUB_STEP_SUMMARY"

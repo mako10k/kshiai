@@ -7,6 +7,9 @@ import { ensureSystemPresets } from "./repositories/battlefields.js";
 import { ensureSystemNarrationStyles } from "./repositories/narration-styles.js";
 import { buildRoutes } from "./routes.js";
 import { dispatchPendingNarrationTasks } from "./services/narration-task-dispatch.js";
+import { dispatchPendingAuthoringTasks } from "./services/authoring-task-dispatch.js";
+import { wakeCharacterAuthoringJobs } from "./services/character-authoring-jobs.js";
+import { createLlmProvider } from "./llm/index.js";
 import {
   ORIGIN_VERIFICATION_HEADER,
   verifyOriginSecret,
@@ -15,6 +18,7 @@ import {
 // Ensure DB is ready + system battlefield presets
 await initializeDatabase();
 await Promise.all([ensureSystemPresets(), ensureSystemNarrationStyles()]);
+const runtimeLlm = createLlmProvider();
 try {
   const narrationDispatch = await dispatchPendingNarrationTasks();
   if (narrationDispatch.failed > 0) {
@@ -25,10 +29,25 @@ try {
   // battle mutation. Readiness is not coupled to a transient Cloud Tasks call.
   console.error("[narration] startup task dispatch failed", error);
 }
+try {
+  if (config.authoringTaskQueue.configured) {
+    const authoringDispatch = await dispatchPendingAuthoringTasks();
+    if (authoringDispatch.failed > 0) {
+      console.error("[authoring] startup task dispatch incomplete", authoringDispatch);
+    }
+  } else {
+    wakeCharacterAuthoringJobs(runtimeLlm);
+  }
+} catch (error) {
+  console.error("[authoring] startup task dispatch failed", error);
+}
 
 const app = new Hono();
 app.use("/api/*", async (c, next) => {
-  if (c.req.path === "/api/internal/narration/task") {
+  if (
+    c.req.path === "/api/internal/narration/task" ||
+    c.req.path === "/api/internal/authoring/task"
+  ) {
     await next();
     return;
   }
@@ -50,7 +69,7 @@ app.use(
     credentials: true,
   }),
 );
-app.route("/", buildRoutes());
+app.route("/", buildRoutes({ llm: runtimeLlm }));
 
 app.onError((err, c) => {
   console.error(err);

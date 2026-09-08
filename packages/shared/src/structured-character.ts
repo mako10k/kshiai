@@ -227,17 +227,6 @@ export const CharacterActionNormV2Schema = z.object({
       path: ["force"],
     });
   }
-  if (
-    norm.response.actionRefs.length === 0 &&
-    norm.response.actionKinds.length === 0 &&
-    norm.response.tacticTags.length === 0
-  ) {
-    context.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: "action norm response requires at least one structured action selector",
-      path: ["response"],
-    });
-  }
 });
 export type CharacterActionNormV2 = z.infer<typeof CharacterActionNormV2Schema>;
 
@@ -796,6 +785,13 @@ export function assertCharacterGenerationReadyV2(
   envelope: CharacterGenerationEnvelopeV2,
 ): CharacterGenerationEnvelopeV2 {
   const parsed = CharacterGenerationEnvelopeV2Schema.parse(envelope);
+  if (parsed.definition.actionNorms.some((norm) =>
+    norm.response.actionRefs.length === 0 &&
+    norm.response.actionKinds.length === 0 &&
+    norm.response.tacticTags.length === 0
+  )) {
+    throw new Error("CHARACTER_ACTION_NORM_SELECTOR_MISSING");
+  }
   for (const required of REQUIRED_CHARACTER_COMPILERS_V2) {
     if (!parsed.compilerCompatibility.some((compiler) =>
       compiler.consumer === required.consumer &&

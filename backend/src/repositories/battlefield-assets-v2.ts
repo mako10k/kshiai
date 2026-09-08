@@ -21,9 +21,12 @@ import {
   type AssetGeneration,
 } from "./asset-generations.js";
 import {
-  finishFamilyAuthoringJob,
+  assertFamilyAuthoringFence,
+  assertFamilyAuthoringJobDiscardable,
+  finishFamilyAuthoringJobInTransaction,
   insertFamilyAuthoringJob,
   reopenFamilyAuthoringJob,
+  type AuthoringExecutionFence,
 } from "./family-authoring-jobs.js";
 import { insertOwnerNotification } from "./owner-notifications.js";
 import {
@@ -305,21 +308,32 @@ export async function updateBattlefieldAuthoringStatus(input: {
   ownerUserId: string;
   status: AssetAuthoringAttemptStatus;
   errorCode?: string | null;
+  executionFence?: AuthoringExecutionFence;
 }): Promise<void> {
   AssetAuthoringAttemptStatusSchema.parse(input.status);
-  await query(
-    `UPDATE battlefield_authoring_attempts
-        SET status = $3, error_code = $4, updated_at = $5
-      WHERE attempt_id = $1 AND owner_user_id = $2
-        AND status NOT IN ('succeeded', 'discarded', 'expired', 'failed')`,
-    [
-      input.attemptId,
-      input.ownerUserId,
-      input.status,
-      input.errorCode ?? null,
-      new Date().toISOString(),
-    ],
-  );
+  await withTransaction(async (connection) => {
+    if (input.executionFence) {
+      await assertFamilyAuthoringFence(
+        connection,
+        "battlefield",
+        input.attemptId,
+        input.executionFence,
+      );
+    }
+    await connection.query(
+      `UPDATE battlefield_authoring_attempts
+          SET status = $3, error_code = $4, updated_at = $5
+        WHERE attempt_id = $1 AND owner_user_id = $2
+          AND status NOT IN ('succeeded', 'discarded', 'expired', 'failed')`,
+      [
+        input.attemptId,
+        input.ownerUserId,
+        input.status,
+        input.errorCode ?? null,
+        new Date().toISOString(),
+      ],
+    );
+  });
 }
 
 export async function replaceBattlefieldAuthoringSource(input: {
@@ -361,12 +375,21 @@ export async function saveBattlefieldAuthoringCandidate(input: {
   ownerUserId: string;
   envelope: BattlefieldGenerationEnvelopeV2;
   assistantMessage: string;
+  executionFence?: AuthoringExecutionFence;
 }): Promise<BattlefieldAuthoringAttempt> {
   const envelope = assertBattlefieldGenerationReadyV2(
     BattlefieldGenerationEnvelopeV2Schema.parse(input.envelope),
   );
   const candidateDigest = assetContentDigest(envelope);
   return withTransaction(async (connection) => {
+    if (input.executionFence) {
+      await assertFamilyAuthoringFence(
+        connection,
+        "battlefield",
+        input.attemptId,
+        input.executionFence,
+      );
+    }
     const attempt = await selectAttempt(connection, input.attemptId, input.ownerUserId);
     if (!attempt) throw new Error("AUTHORING_ATTEMPT_NOT_FOUND");
     if (["succeeded", "discarded", "expired"].includes(attempt.status)) {
@@ -416,8 +439,17 @@ export async function failBattlefieldAuthoringAttempt(input: {
   attemptId: string;
   ownerUserId: string;
   errorCode: string;
+  executionFence?: AuthoringExecutionFence;
 }): Promise<void> {
   await withTransaction(async (connection) => {
+    if (input.executionFence) {
+      await assertFamilyAuthoringFence(
+        connection,
+        "battlefield",
+        input.attemptId,
+        input.executionFence,
+      );
+    }
     const attempt = await selectAttempt(connection, input.attemptId, input.ownerUserId);
     if (!attempt) return;
     const updatedAt = new Date().toISOString();
@@ -437,7 +469,13 @@ export async function failBattlefieldAuthoringAttempt(input: {
       createdAt: updatedAt,
       assetType: "battlefield",
     });
-    await finishFamilyAuthoringJob("battlefield", input.attemptId, "cancelled");
+    await finishFamilyAuthoringJobInTransaction(
+      connection,
+      "battlefield",
+      input.attemptId,
+      "cancelled",
+      input.executionFence,
+    );
     if (attempt.kind === "upgrade") {
       await connection.query(
         `UPDATE battlefield_asset_states
@@ -464,6 +502,7 @@ export async function discardBattlefieldAuthoringAttempt(
   return withTransaction(async (connection) => {
     const attempt = await selectAttempt(connection, attemptId, ownerUserId);
     if (!attempt || ["succeeded", "discarded"].includes(attempt.status)) return false;
+    await assertFamilyAuthoringJobDiscardable(connection, "battlefield", attemptId);
     const updatedAt = new Date().toISOString();
     await connection.query(
       `UPDATE battlefield_authoring_attempts
@@ -487,7 +526,12 @@ export async function discardBattlefieldAuthoringAttempt(
         [attempt.battlefieldId, updatedAt, attempt.attemptId],
       );
     }
-    await finishFamilyAuthoringJob("battlefield", attemptId, "cancelled");
+    await finishFamilyAuthoringJobInTransaction(
+      connection,
+      "battlefield",
+      attemptId,
+      "cancelled",
+    );
     return true;
   });
 }

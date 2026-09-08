@@ -14,10 +14,16 @@ const { closeDatabase, query } = await import("../db.js");
 const { MockLlmProvider } = await import("../llm/mock.js");
 const characterRepo = await import("../repositories/characters.js");
 const characterAssetRepo = await import("../repositories/character-assets-v2.js");
+const battlefieldAssetRepo = await import("../repositories/battlefield-assets-v2.js");
+const narrationStyleAssetRepo = await import(
+  "../repositories/narration-style-assets-v2.js"
+);
 const {
   drainCharacterAuthoringJobs,
+  processAuthoringTask,
   processNextCharacterAuthoringJob,
 } = await import("./character-authoring-jobs.js");
+const familyJobs = await import("../repositories/family-authoring-jobs.js");
 const { defaultBasicAttack, defaultParameters } = await import("@kshiai/shared");
 
 before(async () => {
@@ -137,5 +143,297 @@ describe("character authoring jobs", () => {
       workerId: "job-test-single",
     });
     assert.equal(first, "completed");
+  });
+
+  it("delivers one exact job from the environment-global queue", async () => {
+    await query(
+      `INSERT INTO users (id, username, password_hash, created_at)
+       VALUES ($1, $2, 'x', $3)`,
+      ["job-owner-two", "job-owner-two", "2026-09-08T00:00:00.000Z"],
+    );
+    const first = await characterAssetRepo.beginCharacterAuthoringAttempt({
+      ownerUserId: "job-owner",
+      kind: "create",
+      idempotencyKey: "exact-owner-one",
+      requestDigest: "i".repeat(64),
+      sourceText: "owner one",
+      sourceDigest: "j".repeat(64),
+    });
+    const second = await characterAssetRepo.beginCharacterAuthoringAttempt({
+      ownerUserId: "job-owner-two",
+      kind: "create",
+      idempotencyKey: "exact-owner-two",
+      requestDigest: "k".repeat(64),
+      sourceText: "owner two",
+      sourceDigest: "l".repeat(64),
+    });
+    const outbox = await query<{
+      outbox_id: string;
+      family: "character";
+      attempt_id: string;
+      delivery_generation: number;
+    }>(
+      `SELECT outbox_id, family, attempt_id, delivery_generation
+         FROM asset_authoring_outbox
+        WHERE attempt_id = $1`,
+      [second.attempt.attemptId],
+    );
+    const delivery = outbox.rows[0];
+    assert.ok(delivery);
+    const result = await processAuthoringTask({
+      llm: new MockLlmProvider(),
+      workerId: "exact-worker",
+      delivery: {
+        outboxId: delivery.outbox_id,
+        family: delivery.family,
+        attemptId: delivery.attempt_id,
+        deliveryGeneration: Number(delivery.delivery_generation),
+      },
+    });
+    assert.equal(result, "completed");
+    assert.equal(
+      (await characterAssetRepo.getCharacterAuthoringAttempt(
+        first.attempt.attemptId,
+        "job-owner",
+      ))?.status,
+      "pending_structure",
+    );
+    assert.equal(
+      (await characterAssetRepo.getCharacterAuthoringAttempt(
+        second.attempt.attemptId,
+        "job-owner-two",
+      ))?.status,
+      "awaiting_owner_acceptance",
+    );
+    assert.equal(await processAuthoringTask({
+      llm: new MockLlmProvider(),
+      workerId: "exact-worker-duplicate",
+      delivery: {
+        outboxId: delivery.outbox_id,
+        family: delivery.family,
+        attemptId: delivery.attempt_id,
+        deliveryGeneration: Number(delivery.delivery_generation),
+      },
+    }), "acknowledged");
+  });
+
+  it("rejects a stale worker after the exact job is reclaimed", async () => {
+    const attempt = await characterAssetRepo.beginCharacterAuthoringAttempt({
+      ownerUserId: "job-owner",
+      kind: "create",
+      idempotencyKey: "stale-fence-owner",
+      requestDigest: "m".repeat(64),
+      sourceText: "stale fence",
+      sourceDigest: "n".repeat(64),
+    });
+    const firstNow = new Date("2026-09-08T01:00:00.000Z");
+    const first = await familyJobs.claimFamilyAuthoringJob({
+      family: "character",
+      attemptId: attempt.attempt.attemptId,
+      workerId: "worker-old",
+      now: firstNow,
+      cap: 10,
+    });
+    assert.notEqual(first, "busy");
+    assert.notEqual(first, "terminal");
+    if (first === "busy" || first === "terminal") return;
+    const second = await familyJobs.claimFamilyAuthoringJob({
+      family: "character",
+      attemptId: attempt.attempt.attemptId,
+      workerId: "worker-new",
+      now: new Date(firstNow.getTime() + familyJobs.AUTHORING_JOB_CLAIM_MS + 1),
+      cap: 10,
+    });
+    assert.notEqual(second, "busy");
+    assert.notEqual(second, "terminal");
+    if (second === "busy" || second === "terminal") return;
+    assert.ok(second.executionFence.fencingToken > first.executionFence.fencingToken);
+    await assert.rejects(
+      () => characterAssetRepo.updateCharacterAuthoringStatus({
+        attemptId: attempt.attempt.attemptId,
+        ownerUserId: "job-owner",
+        status: "generating_structure",
+        executionFence: first.executionFence,
+      }),
+      /AUTHORING_STALE_FENCE/,
+    );
+    await assert.rejects(
+      () => characterAssetRepo.discardCharacterAuthoringAttempt(
+        attempt.attempt.attemptId,
+        "job-owner",
+      ),
+      /AUTHORING_JOB_CLAIMED/,
+    );
+    assert.equal(
+      (await characterAssetRepo.getCharacterAuthoringAttempt(
+        attempt.attempt.attemptId,
+        "job-owner",
+      ))?.status,
+      "pending_structure",
+    );
+  });
+
+  it("re-arms only stale deliveries without an active lease", async () => {
+    const stale = await characterAssetRepo.beginCharacterAuthoringAttempt({
+      ownerUserId: "job-owner",
+      kind: "create",
+      idempotencyKey: "stale-outbox-pending",
+      requestDigest: "s".repeat(64),
+      sourceText: "stale outbox pending",
+      sourceDigest: "t".repeat(64),
+    });
+    const active = await characterAssetRepo.beginCharacterAuthoringAttempt({
+      ownerUserId: "job-owner-two",
+      kind: "create",
+      idempotencyKey: "stale-outbox-active",
+      requestDigest: "u".repeat(64),
+      sourceText: "stale outbox active",
+      sourceDigest: "v".repeat(64),
+    });
+    const now = new Date("2026-09-08T04:00:00.000Z");
+    const activeClaim = await familyJobs.claimFamilyAuthoringJob({
+      family: "character",
+      attemptId: active.attempt.attemptId,
+      workerId: "active-outbox-worker",
+      now,
+      cap: 10,
+    });
+    assert.notEqual(activeClaim, "busy");
+    assert.notEqual(activeClaim, "terminal");
+    await query(
+      `UPDATE asset_authoring_outbox
+          SET status = 'dispatched', dispatched_at = $2
+        WHERE attempt_id IN ($1, $3)`,
+      [
+        stale.attempt.attemptId,
+        new Date(now.getTime() - familyJobs.AUTHORING_OUTBOX_STALE_MS - 1)
+          .toISOString(),
+        active.attempt.attemptId,
+      ],
+    );
+
+    assert.equal(await familyJobs.recoverStaleAuthoringOutbox(now), 1);
+    const rows = await query<{
+      attempt_id: string;
+      status: string;
+      delivery_generation: number;
+    }>(
+      `SELECT attempt_id, status, delivery_generation
+         FROM asset_authoring_outbox
+        WHERE attempt_id IN ($1, $2)
+        ORDER BY attempt_id`,
+      [stale.attempt.attemptId, active.attempt.attemptId],
+    );
+    const byAttempt = new Map(rows.rows.map((row) => [row.attempt_id, row]));
+    assert.deepEqual(byAttempt.get(stale.attempt.attemptId), {
+      attempt_id: stale.attempt.attemptId,
+      status: "pending",
+      delivery_generation: 1,
+    });
+    assert.deepEqual(byAttempt.get(active.attempt.attemptId), {
+      attempt_id: active.attempt.attemptId,
+      status: "dispatched",
+      delivery_generation: 0,
+    });
+  });
+
+  it("serializes concurrent exact claims against the environment-global cap", async () => {
+    const first = await characterAssetRepo.beginCharacterAuthoringAttempt({
+      ownerUserId: "job-owner",
+      kind: "create",
+      idempotencyKey: "global-cap-first",
+      requestDigest: "w".repeat(64),
+      sourceText: "global cap first",
+      sourceDigest: "x".repeat(64),
+    });
+    const second = await battlefieldAssetRepo.beginBattlefieldAuthoringAttempt({
+      ownerUserId: "job-owner-two",
+      kind: "create",
+      idempotencyKey: "global-cap-second",
+      requestDigest: "y".repeat(64),
+      sourceText: "global cap second",
+      sourceDigest: "z".repeat(64),
+    });
+    const now = new Date("2026-09-09T00:00:00.000Z");
+    const claims = await Promise.all([
+      familyJobs.claimFamilyAuthoringJob({
+        family: "character",
+        attemptId: first.attempt.attemptId,
+        workerId: "global-cap-character",
+        now,
+        cap: 1,
+      }),
+      familyJobs.claimFamilyAuthoringJob({
+        family: "battlefield",
+        attemptId: second.attempt.attemptId,
+        workerId: "global-cap-battlefield",
+        now,
+        cap: 1,
+      }),
+    ]);
+    assert.equal(claims.filter((claim) => claim === "busy").length, 1);
+    assert.equal(claims.filter((claim) =>
+      claim !== "busy" && claim !== "terminal"
+    ).length, 1);
+  });
+
+  it("uses the same exact delivery contract for every authoring family", async () => {
+    const battlefield = await battlefieldAssetRepo.beginBattlefieldAuthoringAttempt({
+      ownerUserId: "job-owner-two",
+      kind: "create",
+      idempotencyKey: "exact-family-battlefield",
+      requestDigest: "o".repeat(64),
+      sourceText: "family battlefield",
+      sourceDigest: "p".repeat(64),
+    });
+    const narration = await narrationStyleAssetRepo.beginNarrationStyleAuthoringAttempt({
+      ownerUserId: "job-owner-two",
+      kind: "create",
+      idempotencyKey: "exact-family-narration",
+      requestDigest: "q".repeat(64),
+      sourceText: "family narration",
+      sourceDigest: "r".repeat(64),
+    });
+    for (const target of [
+      { family: "battlefield" as const, attemptId: battlefield.attempt.attemptId },
+      { family: "narration_style" as const, attemptId: narration.attempt.attemptId },
+    ]) {
+      const outbox = await query<{
+        outbox_id: string;
+        delivery_generation: number;
+      }>(
+        `SELECT outbox_id, delivery_generation
+           FROM asset_authoring_outbox
+          WHERE family = $1 AND attempt_id = $2`,
+        [target.family, target.attemptId],
+      );
+      const delivery = outbox.rows[0];
+      assert.ok(delivery);
+      assert.equal(await processAuthoringTask({
+        llm: new MockLlmProvider(),
+        workerId: `family-worker:${target.family}`,
+        cap: 10,
+        delivery: {
+          outboxId: delivery.outbox_id,
+          family: target.family,
+          attemptId: target.attemptId,
+          deliveryGeneration: Number(delivery.delivery_generation),
+        },
+      }), "completed");
+    }
+    assert.equal(
+      (await battlefieldAssetRepo.getBattlefieldAuthoringAttempt(
+        battlefield.attempt.attemptId,
+        "job-owner-two",
+      ))?.status,
+      "awaiting_owner_acceptance",
+    );
+    assert.equal(
+      (await narrationStyleAssetRepo.getNarrationStyleAuthoringAttempt(
+        narration.attempt.attemptId,
+        "job-owner-two",
+      ))?.status,
+      "awaiting_owner_acceptance",
+    );
   });
 });

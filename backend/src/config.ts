@@ -195,6 +195,18 @@ const narrationTaskQueue = {
   audience: process.env.NARRATION_TASK_AUDIENCE?.trim() ?? "",
 };
 const narrationTaskQueueConfigured = Object.values(narrationTaskQueue).every(Boolean);
+const authoringTaskTargetUrl = narrationTaskQueue.targetUrl
+  ? new URL("/api/internal/authoring/task", narrationTaskQueue.targetUrl).href
+  : "";
+const authoringTaskQueue = {
+  project: narrationTaskQueue.project,
+  location: narrationTaskQueue.location,
+  queue: narrationTaskQueue.queue,
+  targetUrl: authoringTaskTargetUrl,
+  serviceAccountEmail: narrationTaskQueue.serviceAccountEmail,
+  audience: authoringTaskTargetUrl,
+};
+const authoringTaskQueueConfigured = Object.values(authoringTaskQueue).every(Boolean);
 if (
   process.env.NODE_ENV === "production" &&
   parseBattleCausalNarrationMode(process.env.BATTLE_CAUSAL_NARRATION_MODE) ===
@@ -203,6 +215,11 @@ if (
 ) {
   throw new Error(
     "NARRATION_TASK_* settings are required for guarded narration in production",
+  );
+}
+if (process.env.NODE_ENV === "production" && !authoringTaskQueueConfigured) {
+  throw new Error(
+    "NARRATION_TASK_* settings are required for queued authoring in production",
   );
 }
 
@@ -333,6 +350,10 @@ export const config = {
   narrationTaskQueue: {
     ...narrationTaskQueue,
     configured: narrationTaskQueueConfigured,
+  },
+  authoringTaskQueue: {
+    ...authoringTaskQueue,
+    configured: authoringTaskQueueConfigured,
   },
   /** Revision-local override used only for an isolated staged candidate. */
   dialogueContextProjectionOverride,

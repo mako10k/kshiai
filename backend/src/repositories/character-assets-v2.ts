@@ -21,6 +21,15 @@ import {
   type AssetGeneration,
 } from "./asset-generations.js";
 import { insertOwnerNotification } from "./owner-notifications.js";
+import {
+  assertFamilyAuthoringFence,
+  assertFamilyAuthoringJobDiscardable,
+  finishFamilyAuthoringJob,
+  finishFamilyAuthoringJobInTransaction,
+  insertFamilyAuthoringJob,
+  reopenFamilyAuthoringJob,
+  type AuthoringExecutionFence,
+} from "./family-authoring-jobs.js";
 
 export type CharacterAuthoringAttempt = {
   attemptId: string;
@@ -144,6 +153,9 @@ function characterReadinessReason(content: unknown): string | null {
     }
     if (message === "CHARACTER_PROFILE_CLAIM_RECEIPT_MISSING") {
       return "missing_claim_validation";
+    }
+    if (message === "CHARACTER_ACTION_NORM_SELECTOR_MISSING") {
+      return "invalid_action_norm_selector";
     }
     if (message.startsWith("PROFILE_")) return "invalid_claim_validation";
     return "invalid_v2_envelope";
@@ -301,12 +313,12 @@ async function insertCharacterAuthoringJob(
   characterId: string,
   createdAt: string,
 ): Promise<void> {
-  await connection.query(
-    `INSERT INTO character_authoring_jobs
-      (attempt_id, owner_user_id, character_id, status, created_at, updated_at)
-     VALUES ($1, $2, $3, 'pending', $4, $4)`,
-    [attemptId, ownerUserId, characterId, createdAt],
-  );
+  await insertFamilyAuthoringJob(connection, "character", {
+    attemptId,
+    ownerUserId,
+    assetId: characterId,
+    createdAt,
+  });
 }
 
 async function rejectStaleCharacterAuthoring(
@@ -562,94 +574,12 @@ export function getLatestCharacterAuthoringAttemptForCharacter(
   ).then((result) => result.rows[0] ? parseAttempt(result.rows[0]) : null);
 }
 
-export const AUTHORING_JOB_CLAIM_MS = 180_000;
-
-export async function recoverExpiredCharacterAuthoringJobs(
-  now = new Date().toISOString(),
-): Promise<void> {
-  await query(
-    `UPDATE character_authoring_jobs
-        SET status = 'pending', claimed_by = NULL, claimed_until = NULL,
-            updated_at = $1
-      WHERE status = 'claimed' AND claimed_until IS NOT NULL
-        AND claimed_until <= $1`,
-    [now],
-  );
-}
-
-export async function claimNextCharacterAuthoringJob(input: {
-  workerId: string;
-  cap?: number;
-  now?: Date;
-}): Promise<{
-  attemptId: string;
-  ownerUserId: string;
-  characterId: string;
-} | null> {
-  const cap = input.cap ?? 1;
-  const now = input.now ?? new Date();
-  const nowIso = now.toISOString();
-  const claimedUntil = new Date(now.getTime() + AUTHORING_JOB_CLAIM_MS).toISOString();
-  await recoverExpiredCharacterAuthoringJobs(nowIso);
-  return withTransaction(async (connection) => {
-    const running = await connection.query<{ count: number }>(
-      `SELECT COUNT(*) AS count FROM character_authoring_jobs
-        WHERE status = 'claimed'`,
-    );
-    if (Number(running.rows[0]?.count ?? 0) >= cap) return null;
-    const next = await connection.query<{
-      attempt_id: string;
-      owner_user_id: string;
-      character_id: string;
-    }>(
-      `SELECT attempt_id, owner_user_id, character_id
-         FROM character_authoring_jobs candidate
-        WHERE status = 'pending'
-          AND NOT EXISTS (
-            SELECT 1 FROM character_authoring_jobs sibling
-             WHERE sibling.character_id = candidate.character_id
-               AND sibling.status = 'claimed'
-          )
-        ORDER BY created_at ASC
-        LIMIT 1`,
-    );
-    const row = next.rows[0];
-    if (!row) return null;
-    const claimed = await connection.query(
-      `UPDATE character_authoring_jobs
-          SET status = 'claimed', claimed_by = $2, claimed_until = $3,
-              updated_at = $4
-        WHERE attempt_id = $1 AND status = 'pending'`,
-      [row.attempt_id, input.workerId, claimedUntil, nowIso],
-    );
-    if (claimed.rowCount !== 1) return null;
-    return {
-      attemptId: row.attempt_id,
-      ownerUserId: row.owner_user_id,
-      characterId: row.character_id,
-    };
-  });
-}
-
-export async function countOpenCharacterAuthoringJobs(): Promise<number> {
-  const result = await query<{ count: number }>(
-    `SELECT COUNT(*) AS count FROM character_authoring_jobs
-      WHERE status IN ('pending', 'claimed')`,
-  );
-  return Number(result.rows[0]?.count ?? 0);
-}
-
 export async function finishCharacterAuthoringJob(
   attemptId: string,
   status: "completed" | "cancelled",
+  executionFence?: AuthoringExecutionFence,
 ): Promise<void> {
-  await query(
-    `UPDATE character_authoring_jobs
-        SET status = $2, claimed_by = NULL, claimed_until = NULL,
-            updated_at = $3
-      WHERE attempt_id = $1 AND status IN ('pending', 'claimed')`,
-    [attemptId, status, new Date().toISOString()],
-  );
+  await finishFamilyAuthoringJob("character", attemptId, status, executionFence);
 }
 
 export async function updateCharacterAuthoringStatus(input: {
@@ -657,21 +587,32 @@ export async function updateCharacterAuthoringStatus(input: {
   ownerUserId: string;
   status: AssetAuthoringAttemptStatus;
   errorCode?: string | null;
+  executionFence?: AuthoringExecutionFence;
 }): Promise<void> {
   AssetAuthoringAttemptStatusSchema.parse(input.status);
-  await query(
-    `UPDATE character_authoring_attempts
-        SET status = $3, error_code = $4, updated_at = $5
-      WHERE attempt_id = $1 AND owner_user_id = $2
-        AND status NOT IN ('succeeded', 'discarded', 'expired', 'failed')`,
-    [
-      input.attemptId,
-      input.ownerUserId,
-      input.status,
-      input.errorCode ?? null,
-      new Date().toISOString(),
-    ],
-  );
+  await withTransaction(async (connection) => {
+    if (input.executionFence) {
+      await assertFamilyAuthoringFence(
+        connection,
+        "character",
+        input.attemptId,
+        input.executionFence,
+      );
+    }
+    await connection.query(
+      `UPDATE character_authoring_attempts
+          SET status = $3, error_code = $4, updated_at = $5
+        WHERE attempt_id = $1 AND owner_user_id = $2
+          AND status NOT IN ('succeeded', 'discarded', 'expired', 'failed')`,
+      [
+        input.attemptId,
+        input.ownerUserId,
+        input.status,
+        input.errorCode ?? null,
+        new Date().toISOString(),
+      ],
+    );
+  });
 }
 
 export async function replaceCharacterAuthoringSource(input: {
@@ -708,21 +649,12 @@ async function reopenCharacterAuthoringJob(
   attempt: CharacterAuthoringAttempt,
   updatedAt: string,
 ): Promise<void> {
-  const reset = await connection.query(
-    `UPDATE character_authoring_jobs
-        SET status = 'pending', claimed_by = NULL, claimed_until = NULL,
-            updated_at = $2
-      WHERE attempt_id = $1 AND status IN ('completed', 'cancelled')`,
-    [attempt.attemptId, updatedAt],
-  );
-  if (reset.rowCount === 1) return;
-  await connection.query(
-    `INSERT INTO character_authoring_jobs
-      (attempt_id, owner_user_id, character_id, status, created_at, updated_at)
-     VALUES ($1, $2, $3, 'pending', $4, $4)
-     ON CONFLICT (attempt_id) DO NOTHING`,
-    [attempt.attemptId, attempt.ownerUserId, attempt.characterId, updatedAt],
-  );
+  await reopenFamilyAuthoringJob(connection, "character", {
+    attemptId: attempt.attemptId,
+    ownerUserId: attempt.ownerUserId,
+    assetId: attempt.characterId,
+    updatedAt,
+  });
 }
 
 export async function saveCharacterAuthoringCandidate(input: {
@@ -730,6 +662,7 @@ export async function saveCharacterAuthoringCandidate(input: {
   ownerUserId: string;
   envelope: CharacterGenerationEnvelopeV2;
   assistantMessage: string;
+  executionFence?: AuthoringExecutionFence;
 }): Promise<CharacterAuthoringAttempt> {
   const envelope = assertCharacterGenerationReadyV2(
     CharacterGenerationEnvelopeV2Schema.parse(input.envelope),
@@ -737,6 +670,14 @@ export async function saveCharacterAuthoringCandidate(input: {
   const candidateDigest = assetContentDigest(envelope);
   const updatedAt = new Date().toISOString();
   return withTransaction(async (connection) => {
+    if (input.executionFence) {
+      await assertFamilyAuthoringFence(
+        connection,
+        "character",
+        input.attemptId,
+        input.executionFence,
+      );
+    }
     const attempt = await selectAttempt(connection, input.attemptId, input.ownerUserId);
     if (!attempt) throw new Error("AUTHORING_ATTEMPT_NOT_FOUND");
     if (["succeeded", "discarded", "expired"].includes(attempt.status)) {
@@ -786,8 +727,17 @@ export async function failCharacterAuthoringAttempt(input: {
   attemptId: string;
   ownerUserId: string;
   errorCode: string;
+  executionFence?: AuthoringExecutionFence;
 }): Promise<void> {
   await withTransaction(async (connection) => {
+    if (input.executionFence) {
+      await assertFamilyAuthoringFence(
+        connection,
+        "character",
+        input.attemptId,
+        input.executionFence,
+      );
+    }
     const attempt = await selectAttempt(connection, input.attemptId, input.ownerUserId);
     if (!attempt) return;
     const updatedAt = new Date().toISOString();
@@ -824,12 +774,12 @@ export async function failCharacterAuthoringAttempt(input: {
         [attempt.characterId, updatedAt, attempt.attemptId],
       );
     }
-    await connection.query(
-      `UPDATE character_authoring_jobs
-          SET status = 'cancelled', claimed_by = NULL, claimed_until = NULL,
-              updated_at = $2
-        WHERE attempt_id = $1 AND status IN ('pending', 'claimed')`,
-      [input.attemptId, updatedAt],
+    await finishFamilyAuthoringJobInTransaction(
+      connection,
+      "character",
+      input.attemptId,
+      "cancelled",
+      input.executionFence,
     );
   });
 }
@@ -841,6 +791,7 @@ export async function discardCharacterAuthoringAttempt(
   return withTransaction(async (connection) => {
     const attempt = await selectAttempt(connection, attemptId, ownerUserId);
     if (!attempt || ["succeeded", "discarded"].includes(attempt.status)) return false;
+    await assertFamilyAuthoringJobDiscardable(connection, "character", attemptId);
     const updatedAt = new Date().toISOString();
     await connection.query(
       `UPDATE character_authoring_attempts
@@ -864,12 +815,11 @@ export async function discardCharacterAuthoringAttempt(
         [attempt.characterId, updatedAt, attempt.attemptId],
       );
     }
-    await connection.query(
-      `UPDATE character_authoring_jobs
-          SET status = 'cancelled', claimed_by = NULL, claimed_until = NULL,
-              updated_at = $2
-        WHERE attempt_id = $1 AND status IN ('pending', 'claimed')`,
-      [attemptId, updatedAt],
+    await finishFamilyAuthoringJobInTransaction(
+      connection,
+      "character",
+      attemptId,
+      "cancelled",
     );
     return true;
   });

@@ -172,7 +172,7 @@ describe("CharacterDefinitionV2 deterministic rule compilers", () => {
     assert.deepEqual(prepared.unstructuredActionNormSources, [principle]);
   });
 
-  it("rejects a structured norm whose response selects no actions", () => {
+  it("reads a persisted V2 norm but rejects compiling it without selectors", () => {
     const base = legacyCharacterSheetToDefinitionV2(legacySheet());
     const parsed = CharacterDefinitionV2Schema.safeParse({
       ...base,
@@ -198,9 +198,9 @@ describe("CharacterDefinitionV2 deterministic rule compilers", () => {
       }],
     });
 
-    assert.equal(parsed.success, false);
-    assert.match(
-      parsed.error?.issues.map((issue) => issue.message).join(" ") ?? "",
+    assert.equal(parsed.success, true);
+    assert.throws(
+      () => compileCharacterActionNormProgramV2(parsed.data!),
       /requires at least one structured action selector/,
     );
   });

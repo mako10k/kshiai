@@ -5,7 +5,10 @@ import * as battlefieldAssetRepo from "../repositories/battlefield-assets-v2.js"
 import * as narrationStyleAssetRepo from "../repositories/narration-style-assets-v2.js";
 import * as bfRepo from "../repositories/battlefields.js";
 import * as styleRepo from "../repositories/narration-styles.js";
-import { finishFamilyAuthoringJob } from "../repositories/family-authoring-jobs.js";
+import {
+  finishFamilyAuthoringJob,
+  type AuthoringExecutionFence,
+} from "../repositories/family-authoring-jobs.js";
 import type { LlmProvider } from "../llm/types.js";
 import { battlefieldDefinitionV2ToLegacyPreset, narrationDefinitionV2ToLegacyStyle } from "@kshiai/shared";
 
@@ -94,13 +97,19 @@ export async function runBattlefieldAuthoringJob(
   llm: LlmProvider,
   attemptId: string,
   ownerUserId: string,
+  executionFence: AuthoringExecutionFence,
 ): Promise<"completed" | "failed"> {
   const attempt = await battlefieldAssetRepo.getBattlefieldAuthoringAttempt(
     attemptId,
     ownerUserId,
   );
   if (!attempt || ["succeeded", "discarded", "failed", "expired"].includes(attempt.status)) {
-    await finishFamilyAuthoringJob("battlefield", attemptId, "cancelled");
+    await finishFamilyAuthoringJob(
+      "battlefield",
+      attemptId,
+      "cancelled",
+      executionFence,
+    );
     return "failed";
   }
   try {
@@ -108,6 +117,7 @@ export async function runBattlefieldAuthoringJob(
       attemptId,
       ownerUserId,
       status: "generating_structure",
+      executionFence,
     });
     const existing = await bfRepo.getPreset(attempt.battlefieldId);
     const generated = await generatedBattlefieldFromAttempt(llm, attempt, existing);
@@ -126,15 +136,25 @@ export async function runBattlefieldAuthoringJob(
       ownerUserId,
       envelope: candidate.envelope,
       assistantMessage: candidate.assistantMessage,
+      executionFence,
     });
-    await finishFamilyAuthoringJob("battlefield", attemptId, "completed");
+    await finishFamilyAuthoringJob(
+      "battlefield",
+      attemptId,
+      "completed",
+      executionFence,
+    );
     return "completed";
   } catch (error) {
+    if (error instanceof Error && error.message === "AUTHORING_STALE_FENCE") {
+      throw error;
+    }
     const message = error instanceof Error ? error.message : "authoring_failed";
     await battlefieldAssetRepo.failBattlefieldAuthoringAttempt({
       attemptId,
       ownerUserId,
       errorCode: message.slice(0, 120),
+      executionFence,
     });
     return "failed";
   }
@@ -171,13 +191,19 @@ export async function runNarrationStyleAuthoringJob(
   llm: LlmProvider,
   attemptId: string,
   ownerUserId: string,
+  executionFence: AuthoringExecutionFence,
 ): Promise<"completed" | "failed"> {
   const attempt = await narrationStyleAssetRepo.getNarrationStyleAuthoringAttempt(
     attemptId,
     ownerUserId,
   );
   if (!attempt || ["succeeded", "discarded", "failed", "expired"].includes(attempt.status)) {
-    await finishFamilyAuthoringJob("narration_style", attemptId, "cancelled");
+    await finishFamilyAuthoringJob(
+      "narration_style",
+      attemptId,
+      "cancelled",
+      executionFence,
+    );
     return "failed";
   }
   try {
@@ -203,15 +229,25 @@ export async function runNarrationStyleAuthoringJob(
       ownerUserId,
       envelope: candidate.envelope,
       assistantMessage: candidate.assistantMessage,
+      executionFence,
     });
-    await finishFamilyAuthoringJob("narration_style", attemptId, "completed");
+    await finishFamilyAuthoringJob(
+      "narration_style",
+      attemptId,
+      "completed",
+      executionFence,
+    );
     return "completed";
   } catch (error) {
+    if (error instanceof Error && error.message === "AUTHORING_STALE_FENCE") {
+      throw error;
+    }
     const message = error instanceof Error ? error.message : "authoring_failed";
     await narrationStyleAssetRepo.failNarrationStyleAuthoringAttempt({
       attemptId,
       ownerUserId,
       errorCode: message.slice(0, 120),
+      executionFence,
     });
     return "failed";
   }

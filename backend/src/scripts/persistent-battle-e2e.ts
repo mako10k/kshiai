@@ -1,5 +1,6 @@
 import { randomUUID } from "node:crypto";
 import {
+  BattleAssetManifestSchema,
   BattlePublicSchema,
   type BattleListItem,
   type BattleAdvanceStreamEvent,
@@ -101,7 +102,11 @@ type PersistentAccount = {
 type SanitizedObservation = {
   runId: string;
   observedAt: string;
-  target: { revision: string | null };
+  target: {
+    revision: string | null;
+    dialogueProjection: "legacy" | "compact";
+    dialogueActivationSource: "default" | "persisted_setting" | "deployment_override";
+  };
   accounts: { crossAccount: boolean };
   visibility: {
     testRealmSharing: string;
@@ -114,6 +119,24 @@ type SanitizedObservation = {
   };
   [key: string]: unknown;
 };
+
+type BackendHealthIdentity = {
+  ok: true;
+  revision: string;
+};
+
+export function assertObservedBackendIdentity(
+  value: unknown,
+  expectedRevision: string,
+): asserts value is BackendHealthIdentity {
+  if (!value || typeof value !== "object") {
+    throw new Error("Backend health identity is not an object");
+  }
+  const candidate = value as { ok?: unknown; revision?: unknown };
+  if (candidate.ok !== true || candidate.revision !== expectedRevision) {
+    throw new Error("Backend health revision mismatch");
+  }
+}
 
 export type ObservationProviderOperationBudget = {
   encounter: number;
@@ -465,6 +488,8 @@ async function inspectInternalBattleObservation(input: {
   turnRecordCount: number;
   canonicalTransitionCount: number;
   narrationProviderOperations: number;
+  dialogueProjection: "legacy" | "compact";
+  dialogueActivationSource: "default" | "persisted_setting" | "deployment_override";
 }> {
   const response = await apiJson<{
     role?: string;
@@ -475,6 +500,7 @@ async function inspectInternalBattleObservation(input: {
       canonicalTransitionCount?: number;
     };
     canonicalCurrent?: {
+      assetManifest?: unknown;
       phaseReceipts?: Array<{
         sequence?: number;
         narrationDeferred?: boolean;
@@ -507,6 +533,13 @@ async function inspectInternalBattleObservation(input: {
   ) {
     throw new Error("Internal observation API did not expose the retained canonical battle");
   }
+  const manifest = BattleAssetManifestSchema.parse(
+    response.canonicalCurrent?.assetManifest,
+  );
+  const dialogueActivationSource = manifest.dialoguePipeline.activationSource;
+  if (!dialogueActivationSource) {
+    throw new Error("Battle dialogue activation source is missing");
+  }
   const narrationQueue = response.narrationQueue ?? [];
   if (narrationQueue.length === 0 || narrationQueue.some((entry) =>
     !["completed", "failed", "cancelled"].includes(entry.status ?? "") ||
@@ -535,6 +568,8 @@ async function inspectInternalBattleObservation(input: {
       (sum, entry) => sum + (entry.attemptTotals?.httpAttempts ?? 0),
       0,
     ),
+    dialogueProjection: manifest.dialoguePipeline.snapshot.contextProjectionMode,
+    dialogueActivationSource,
   };
 }
 
@@ -644,7 +679,26 @@ async function main(): Promise<void> {
   const publishableKey = required("SUPABASE_PUBLISHABLE_KEY");
   required("DATABASE_URL");
   const runId = resolveObservationRunId(process.env.E2E_RUN_ID);
-  const targetRevision = process.env.E2E_TARGET_REVISION?.trim() || null;
+  const targetRevision = required("E2E_TARGET_REVISION");
+  const expectedDialogueProjection = required("E2E_EXPECTED_DIALOGUE_PROJECTION");
+  if (expectedDialogueProjection !== "legacy" && expectedDialogueProjection !== "compact") {
+    throw new Error("E2E_EXPECTED_DIALOGUE_PROJECTION must be legacy or compact");
+  }
+  const expectedDialogueActivationSource = required(
+    "E2E_EXPECTED_DIALOGUE_ACTIVATION_SOURCE",
+  );
+  if (!["default", "persisted_setting", "deployment_override"].includes(
+    expectedDialogueActivationSource,
+  )) {
+    throw new Error("E2E_EXPECTED_DIALOGUE_ACTIVATION_SOURCE is invalid");
+  }
+  const healthResponse = await fetch(`${apiBaseUrl}/api/health`, {
+    signal: AbortSignal.timeout(30_000),
+  });
+  if (!healthResponse.ok) {
+    throw new Error(`Backend health request failed: ${healthResponse.status}`);
+  }
+  assertObservedBackendIdentity(await healthResponse.json(), targetRevision);
   const maxAdvances = Math.min(
     30,
     Math.max(1, Number(process.env.E2E_MAX_ADVANCES ?? 24)),
@@ -764,6 +818,15 @@ async function main(): Promise<void> {
       apiBaseUrl,
       battleId: persistedBattle.id,
     });
+    if (internalObservability.dialogueProjection !== expectedDialogueProjection) {
+      throw new Error("Observed battle dialogue projection mismatch");
+    }
+    if (
+      internalObservability.dialogueActivationSource !==
+        expectedDialogueActivationSource
+    ) {
+      throw new Error("Observed battle dialogue activation source mismatch");
+    }
     const ledger = await readProviderOperationRun(runId);
     const actualProviderOperations = verifyProviderOperationLedger({
       ledger,
@@ -781,6 +844,8 @@ async function main(): Promise<void> {
       target: {
         apiOrigin: apiBaseUrl,
         revision: targetRevision,
+        dialogueProjection: internalObservability.dialogueProjection,
+        dialogueActivationSource: internalObservability.dialogueActivationSource,
       },
       accounts: {
         observer: { email: observer.email, accountKind: observer.accountKind },

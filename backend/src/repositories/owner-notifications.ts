@@ -1,4 +1,5 @@
 import {
+  AssetAuthoringAttemptStatusSchema,
   type AssetAuthoringAttemptKind,
   type AuthoringAssetType,
   type CharacterReviewState,
@@ -166,18 +167,37 @@ export async function markOwnerNotificationRead(
 export async function listLatestAttemptsByCharacterIds(
   ownerUserId: string,
   characterIds: string[],
-): Promise<Map<string, CharacterAuthoringAttempt>> {
-  const latest = new Map<string, CharacterAuthoringAttempt>();
+): Promise<Map<string, Pick<CharacterAuthoringAttempt, "attemptId" | "status">>> {
+  const latest = new Map<
+    string,
+    Pick<CharacterAuthoringAttempt, "attemptId" | "status">
+  >();
   if (characterIds.length === 0) return latest;
-  const { getLatestCharacterAuthoringAttemptForCharacter } =
-    await import("./character-assets-v2.js");
-  await Promise.all(characterIds.map(async (characterId) => {
-    const attempt = await getLatestCharacterAuthoringAttemptForCharacter(
-      characterId,
-      ownerUserId,
-    );
-    if (attempt) latest.set(characterId, attempt);
-  }));
+  const placeholders = characterIds.map((_, index) => `$${index + 2}`).join(", ");
+  const rows = await query<{
+    character_id: string;
+    attempt_id: string;
+    status: string;
+  }>(
+    `SELECT character_id, attempt_id, status
+       FROM (
+         SELECT character_id, attempt_id, status,
+                ROW_NUMBER() OVER (
+                  PARTITION BY character_id ORDER BY updated_at DESC
+                ) AS latest_rank
+           FROM character_authoring_attempts
+          WHERE owner_user_id = $1
+            AND character_id IN (${placeholders})
+       ) ranked_attempts
+      WHERE latest_rank = 1`,
+    [ownerUserId, ...characterIds],
+  );
+  for (const row of rows.rows) {
+    latest.set(row.character_id, {
+      attemptId: row.attempt_id,
+      status: AssetAuthoringAttemptStatusSchema.parse(row.status),
+    });
+  }
   return latest;
 }
 

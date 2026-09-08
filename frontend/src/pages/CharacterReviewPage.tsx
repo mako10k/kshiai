@@ -81,7 +81,7 @@ export function CharacterReviewPage() {
       failed={review.failed}
       canAccept={review.canAccept}
       status={review.status}
-      error={error}
+      error={error ?? review.acceptanceError}
     >
       {review.canAccept && review.candidate ? (
         <ReviewCandidatePanel
@@ -114,6 +114,18 @@ export function CharacterReviewPage() {
         >
           <CharacterReviewContent current={review.current} candidate={review.candidate} />
         </ReviewCandidatePanel>
+      ) : null}
+      {!review.canAccept && review.candidate ? (
+        <section className="card">
+          <h2>保存済み候補</h2>
+          <p className="muted">
+            この候補は現在の実行条件を満たさないため、内容の確認だけができます。
+          </p>
+          <CharacterReviewContent
+            current={review.current}
+            candidate={review.candidate}
+          />
+        </section>
       ) : null}
     </AssetReviewShell>
   );

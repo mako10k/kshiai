@@ -2,7 +2,12 @@
 
 const publicUrl = process.argv[2]?.replace(/\/$/, "");
 const directUrl = process.argv[3]?.replace(/\/$/, "");
-if (!publicUrl) throw new Error("Usage: smoke-deployment.mjs PUBLIC_URL [DIRECT_URL]");
+const expectedRevision = process.argv[4]?.trim() || null;
+if (!publicUrl) {
+  throw new Error(
+    "Usage: smoke-deployment.mjs PUBLIC_URL [DIRECT_URL] [EXPECTED_REVISION]",
+  );
+}
 
 async function request(url, init) {
   return fetch(url, { ...init, signal: AbortSignal.timeout(20_000) });
@@ -21,6 +26,11 @@ if (!health.ok) throw new Error(`Health smoke failed: ${health.status}`);
 const body = await health.json();
 if (body.ok !== true || body.database !== "postgres" || body.auth !== "supabase") {
   throw new Error(`Unexpected health payload: ${JSON.stringify(body)}`);
+}
+if (expectedRevision && body.revision !== expectedRevision) {
+  throw new Error(
+    `Health revision mismatch: expected ${expectedRevision}, received ${String(body.revision)}`,
+  );
 }
 
 if (directUrl) {

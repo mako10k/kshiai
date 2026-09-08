@@ -75,6 +75,8 @@ describe("persistent E2E workflow contract", () => {
     assert.match(observe, /persistent-battle-e2e\.js/);
     assert.match(observe, /--max-retries=0/);
     assert.match(observe, /E2E_RUN_ID=\$OBSERVATION_RUN_ID/);
+    assert.match(observe, /E2E_EXPECTED_DIALOGUE_PROJECTION=\$EXPECTED_DIALOGUE_PROJECTION/);
+    assert.match(observe, /E2E_EXPECTED_DIALOGUE_ACTIVATION_SOURCE=\$EXPECTED_DIALOGUE_ACTIVATION_SOURCE/);
     assert.match(observe, /provider_operation_ceiling:[\s\S]*?default: "169"/);
     assert.match(observe, /cloud_run_job_exit_success/);
     assert.match(observe, /postgres\.balance_events:persistent_e2e_observation/);
@@ -83,10 +85,26 @@ describe("persistent E2E workflow contract", () => {
     assert.doesNotMatch(observe, /DELETE FROM|admin\/users\/\$.*DELETE/);
   });
 
-  it("proves narration queue OIDC delivery against the staged revision", () => {
+  it("requires exact Compact battle evidence before production promotion", () => {
     const stage = workflow("stage-release.yml");
     const promote = workflow("promote-release.yml");
-    assert.match(stage, /Prove Cloud Tasks OIDC delivery to staged revision/);
+    assert.match(stage, /alias="stage-\$\{GITHUB_RUN_ID\}-\$\{GITHUB_RUN_ATTEMPT\}"/);
+    assert.match(stage, /Exercise the exact staged revision with a dialogue-bound battle/);
+    assert.match(stage, /E2E_TARGET_REVISION=\$REVISION/);
+    assert.match(stage, /exact_revision_health_and_battle_receipt/);
+    assert.match(stage, /stage-release-evidence-\$\{\{ github\.run_id \}\}/);
+    assert.match(promote, /stage_run_id:/);
+    assert.match(promote, /gh run download "\$STAGE_RUN_ID"/);
+    assert.match(promote, /run\.conclusion !== "success"/);
+    assert.match(promote, /run\.headSha !== process\.env\.GITHUB_SHA/);
+    assert.match(promote, /dialogueProjection: "compact"/);
+    assert.match(promote, /dialogueActivationSource: "persisted_setting"/);
+  });
+
+  it("proves narration and authoring queue OIDC delivery against the staged revision", () => {
+    const stage = workflow("stage-release.yml");
+    const promote = workflow("promote-release.yml");
+    assert.match(stage, /Prove narration and authoring Cloud Tasks OIDC delivery/);
     assert.match(stage, /Prove exact narration receipt lifecycle without an LLM/);
     assert.match(stage, /Prove provider attempt accounting without an LLM/);
     assert.match(
@@ -99,7 +117,10 @@ describe("persistent E2E workflow contract", () => {
     );
     assert.match(stage, /gcloud tasks create-http-task/);
     assert.match(stage, /--oidc-service-account-email/);
-    assert.match(stage, /task smoke ok/);
+    assert.match(stage, /\[narration\] task smoke ok/);
+    assert.match(stage, /\[authoring\] task smoke ok/);
+    assert.match(stage, /api\/internal\/authoring\/task/);
+    assert.match(stage, /--oidc-token-audience="\$authoring_target_url"/);
     assert.match(stage, /narration_task_target_url=.*alias/);
     assert.ok(
       stage.indexOf("- name: Apply forward-only migrations") <

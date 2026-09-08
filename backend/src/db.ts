@@ -5,7 +5,7 @@ import { Pool, type PoolClient } from "pg";
 import { config } from "./config.js";
 import { createPostgresConfig } from "./postgres-config.js";
 
-export type DatabaseRow = Record<string, unknown>;
+export type DatabaseRow = object;
 
 export type DatabaseResult<Row extends DatabaseRow> = {
   rows: Row[];
@@ -510,6 +510,7 @@ function ensureSqliteAuthoringJobs(database: SqliteDatabase.Database): void {
       ),
       claimed_by TEXT,
       claimed_until TEXT,
+      fencing_token INTEGER NOT NULL DEFAULT 0,
       created_at TEXT NOT NULL,
       updated_at TEXT NOT NULL
     );
@@ -530,6 +531,7 @@ function ensureSqliteFamilyAuthoringJobs(database: SqliteDatabase.Database): voi
       ),
       claimed_by TEXT,
       claimed_until TEXT,
+      fencing_token INTEGER NOT NULL DEFAULT 0,
       created_at TEXT NOT NULL,
       updated_at TEXT NOT NULL
     );
@@ -545,11 +547,71 @@ function ensureSqliteFamilyAuthoringJobs(database: SqliteDatabase.Database): voi
       ),
       claimed_by TEXT,
       claimed_until TEXT,
+      fencing_token INTEGER NOT NULL DEFAULT 0,
       created_at TEXT NOT NULL,
       updated_at TEXT NOT NULL
     );
     CREATE INDEX IF NOT EXISTS idx_narration_style_authoring_jobs_pending
       ON narration_style_authoring_jobs (status, created_at);
+    CREATE TABLE IF NOT EXISTS asset_authoring_outbox (
+      outbox_id TEXT PRIMARY KEY,
+      family TEXT NOT NULL CHECK (
+        family IN ('character', 'battlefield', 'narration_style')
+      ),
+      attempt_id TEXT NOT NULL,
+      status TEXT NOT NULL CHECK (
+        status IN ('pending', 'dispatched', 'completed')
+      ),
+      delivery_attempts INTEGER NOT NULL DEFAULT 0,
+      delivery_generation INTEGER NOT NULL DEFAULT 0,
+      created_at TEXT NOT NULL,
+      dispatched_at TEXT,
+      UNIQUE (family, attempt_id)
+    );
+    CREATE INDEX IF NOT EXISTS idx_asset_authoring_outbox_pending
+      ON asset_authoring_outbox (status, created_at);
+    CREATE TABLE IF NOT EXISTS asset_authoring_scheduler (
+      scheduler_id TEXT PRIMARY KEY,
+      lock_version INTEGER NOT NULL DEFAULT 0
+    );
+    INSERT INTO asset_authoring_scheduler (scheduler_id, lock_version)
+    VALUES ('environment-global', 0)
+    ON CONFLICT (scheduler_id) DO NOTHING;
+  `);
+  for (const table of [
+    "character_authoring_jobs",
+    "battlefield_authoring_jobs",
+    "narration_style_authoring_jobs",
+  ]) {
+    const columns = database.pragma(`table_info(${table})`) as Array<{ name: string }>;
+    if (!columns.some((column) => column.name === "fencing_token")) {
+      database.exec(
+        `ALTER TABLE ${table} ADD COLUMN fencing_token INTEGER NOT NULL DEFAULT 0`,
+      );
+    }
+  }
+  database.exec(`
+    INSERT INTO asset_authoring_outbox
+      (outbox_id, family, attempt_id, status, created_at)
+    SELECT 'authoring-outbox:character:' || attempt_id,
+           'character', attempt_id, 'pending', created_at
+      FROM character_authoring_jobs
+     WHERE status IN ('pending', 'claimed')
+    ON CONFLICT (family, attempt_id) DO NOTHING;
+    INSERT INTO asset_authoring_outbox
+      (outbox_id, family, attempt_id, status, created_at)
+    SELECT 'authoring-outbox:battlefield:' || attempt_id,
+           'battlefield', attempt_id, 'pending', created_at
+      FROM battlefield_authoring_jobs
+     WHERE status IN ('pending', 'claimed')
+    ON CONFLICT (family, attempt_id) DO NOTHING;
+    INSERT INTO asset_authoring_outbox
+      (outbox_id, family, attempt_id, status, created_at)
+    SELECT 'authoring-outbox:narration_style:' || attempt_id,
+           'narration_style', attempt_id, 'pending', created_at
+      FROM narration_style_authoring_jobs
+     WHERE status IN ('pending', 'claimed')
+    ON CONFLICT (family, attempt_id) DO NOTHING;
   `);
 }
 
@@ -634,8 +696,8 @@ function postgresConnection(client?: PoolClient): DatabaseConnection {
         const acquired = await getPostgresPool().connect();
         try {
           await configurePostgresClient(acquired);
-          const result = await acquired.query<Row>(sql, parameters);
-          return { rows: result.rows, rowCount: result.rowCount ?? 0 };
+      const result = await acquired.query(sql, parameters);
+      return { rows: result.rows as Row[], rowCount: result.rowCount ?? 0 };
         } finally {
           acquired.release();
         }
@@ -644,8 +706,8 @@ function postgresConnection(client?: PoolClient): DatabaseConnection {
   }
   return {
     async query<Row extends DatabaseRow>(sql: string, parameters: unknown[] = []) {
-      const result = await client.query<Row>(sql, parameters);
-      return { rows: result.rows, rowCount: result.rowCount ?? 0 };
+      const result = await client.query(sql, parameters);
+      return { rows: result.rows as Row[], rowCount: result.rowCount ?? 0 };
     },
   };
 }
