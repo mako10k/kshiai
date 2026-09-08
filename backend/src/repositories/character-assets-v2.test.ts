@@ -510,4 +510,58 @@ describe("character authoring V2", () => {
     assert.equal(management.selectable, false);
     assert.equal(management.upgradeAction?.targetSchemaVersion, 2);
   });
+
+  it("reads but does not select a V2 generation with selectorless action norms", async () => {
+    await query(
+      `INSERT INTO users (id, username, password_hash, created_at)
+       VALUES ($1, $2, 'x', $3)
+       ON CONFLICT(id) DO NOTHING`,
+      ["owner-v2", "owner-v2", "2026-08-13T00:00:00.000Z"],
+    );
+    const currentSheet = sheet("selectorless-v2");
+    await characters.saveSheet(currentSheet);
+    const current = await repo.getReadyCharacterGeneration(currentSheet.id);
+    assert.ok(current);
+    const historical = CharacterGenerationEnvelopeV2Schema.parse(current.content);
+    historical.definition.actionNorms = [{
+      id: "historical-selectorless",
+      when: {
+        match: "all",
+        clauses: [{ kind: "always", operator: "is", value: "true" }],
+      },
+      response: {
+        disposition: "prefer",
+        actionRefs: [],
+        actionKinds: [],
+        tacticTags: [],
+        statement: "過去の説明文だけの規範",
+        fallbackActionRef: null,
+      },
+      priority: 50,
+      force: "preference",
+      selfAwareness: "aware",
+      exceptions: [],
+      description: null,
+    }];
+    const historicalGeneration = await createAssetGeneration({
+      assetType: "character",
+      assetId: currentSheet.id,
+      schemaVersion: 2,
+      content: historical,
+    });
+    await query(
+      `UPDATE character_asset_states
+          SET current_generation_id = $2
+        WHERE character_id = $1`,
+      [currentSheet.id, historicalGeneration.generationId],
+    );
+
+    assert.deepEqual(await repo.getCharacterCompatibility(currentSheet.id), {
+      status: "unsupported",
+      schemaVersion: 2,
+      currentGenerationId: historicalGeneration.generationId,
+      reasonCode: "invalid_action_norm_selector",
+    });
+    assert.equal(await repo.getReadyCharacterGeneration(currentSheet.id), null);
+  });
 });

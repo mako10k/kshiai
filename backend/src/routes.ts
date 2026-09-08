@@ -20,6 +20,7 @@ import {
   toPublicPreset,
   balanceCharacterCombatFields,
   CharacterGenerationEnvelopeV2Schema,
+  assertCharacterGenerationReadyV2,
   BattlefieldGenerationEnvelopeV2Schema,
   narrationDefinitionV2ToLegacyStyle,
   characterDefinitionV2ToLegacySheet,
@@ -105,9 +106,15 @@ import { assetContentDigest } from "./repositories/asset-generations.js";
 
 import {
   authoringAcceptedFromAttempt,
+  processAuthoringTask,
   wakeCharacterAuthoringJobs,
 } from "./services/character-authoring-jobs.js";
 import type { LlmProvider } from "./llm/types.js";
+import {
+  dispatchPendingAuthoringTasks,
+  verifyAuthoringTaskAuthorization,
+} from "./services/authoring-task-dispatch.js";
+import type { AuthoringFamily } from "./repositories/family-authoring-jobs.js";
 
 type CharacterPortraitGenerator = typeof import(
   "./services/image-service.js"
@@ -143,6 +150,28 @@ async function wakeNarrationTasks(): Promise<void> {
   } catch (error) {
     console.error("[narration] task dispatch failed", error);
   }
+}
+
+async function wakeAuthoringTasks(llm: LlmProvider): Promise<void> {
+  if (!config.authoringTaskQueue.configured) {
+    // Local/test environments have no managed queue. The command path still
+    // hands work to the detached worker; draft reads never participate.
+    wakeCharacterAuthoringJobs(llm);
+    return;
+  }
+  try {
+    const dispatch = await dispatchPendingAuthoringTasks();
+    if (dispatch.failed > 0) {
+      console.error("[authoring] task dispatch incomplete", dispatch);
+    }
+  } catch (error) {
+    console.error("[authoring] task dispatch failed", error);
+  }
+}
+
+function isAuthoringFamily(value: unknown): value is AuthoringFamily {
+  return value === "character" || value === "battlefield" ||
+    value === "narration_style";
 }
 
 /** Versioned media (?v=) can be cached hard; bare paths revalidate often (iOS Safari). */
@@ -200,6 +229,16 @@ async function characterReviewResponse(
   const candidate = awaiting && !stale
     ? (await characterDraftResponse(attempt, viewerUserId)).character
     : null;
+  let acceptanceError: string | null = null;
+  if (candidate && attempt.candidate) {
+    try {
+      assertCharacterGenerationReadyV2(attempt.candidate);
+    } catch (error) {
+      acceptanceError = error instanceof Error
+        ? error.message
+        : "CHARACTER_CANDIDATE_NOT_READY";
+    }
+  }
   const currentSheet = attempt.kind === "create"
     ? null
     : await charRepo.getSheetIncludingDeleted(attempt.characterId);
@@ -217,7 +256,8 @@ async function characterReviewResponse(
     current,
     latestAttemptId,
     stale,
-    canAccept: Boolean(candidate),
+    canAccept: Boolean(candidate) && acceptanceError === null,
+    acceptanceError,
     failed: attempt.status === "failed"
       ? {
           attemptId: attempt.attemptId,
@@ -374,6 +414,51 @@ export function buildRoutes(options: {
     }
   });
 
+  app.post("/api/internal/authoring/task", async (c) => {
+    if (!await verifyAuthoringTaskAuthorization(c.req.header("Authorization"))) {
+      return c.json({ error: "forbidden" }, 403);
+    }
+    const body = await c.req.json().catch(() => ({})) as {
+      outboxId?: unknown;
+      family?: unknown;
+      attemptId?: unknown;
+      deliveryGeneration?: unknown;
+      smokeId?: unknown;
+    };
+    if (
+      typeof body.smokeId === "string" &&
+      /^[a-zA-Z0-9_-]{8,80}$/.test(body.smokeId)
+    ) {
+      console.info(`[authoring] task smoke ok ${body.smokeId}`);
+      return c.json({ result: "smoke_ok", smokeId: body.smokeId });
+    }
+    if (
+      typeof body.outboxId !== "string" ||
+      !isAuthoringFamily(body.family) ||
+      typeof body.attemptId !== "string" ||
+      typeof body.deliveryGeneration !== "number" ||
+      !Number.isInteger(body.deliveryGeneration) ||
+      body.deliveryGeneration < 0
+    ) {
+      return c.json({ error: "invalid_task" }, 400);
+    }
+    const result = await processAuthoringTask({
+      llm,
+      delivery: {
+        outboxId: body.outboxId,
+        family: body.family,
+        attemptId: body.attemptId,
+        deliveryGeneration: body.deliveryGeneration,
+      },
+      workerId: `cloud-task:${body.outboxId}:${body.deliveryGeneration}`,
+    });
+    if (result === "retry_queued") {
+      return c.json({ result }, 503);
+    }
+    await dispatchPendingAuthoringTasks();
+    return c.json({ result });
+  });
+
   app.get("/api/health", async (c) => {
     await query(`SELECT 1 AS ready`);
     return c.json({
@@ -383,6 +468,7 @@ export function buildRoutes(options: {
       models: llm.models ?? null,
       service: "kshiai",
       database: databaseKind(),
+      revision: process.env.K_REVISION?.trim() || null,
     });
   });
 
@@ -828,7 +914,7 @@ export function buildRoutes(options: {
         draft: await characterDraftResponse(started.attempt, user.id),
       });
     }
-    wakeCharacterAuthoringJobs(llm);
+    await wakeAuthoringTasks(llm);
     return c.json(authoringAcceptedFromAttempt(started.attempt), 202);
   });
 
@@ -853,7 +939,7 @@ export function buildRoutes(options: {
         const message = error instanceof Error ? error.message : "authoring_failed";
         return c.json({ error: "character_authoring_failed", message }, 409);
       }
-      wakeCharacterAuthoringJobs(llm);
+      await wakeAuthoringTasks(llm);
       return c.json(authoringAcceptedFromAttempt(structured), 202);
     }
     return c.json({ error: "not_found" }, 404);
@@ -861,7 +947,6 @@ export function buildRoutes(options: {
 
   authed.get("/character-drafts/latest", async (c) => {
     const user = c.get("user");
-    wakeCharacterAuthoringJobs(llm);
     const structured = await charAssetRepo.getLatestCharacterAuthoringAttempt(user.id);
     if (!structured) {
       return c.json({ draft: null, progress: null, failed: null });
@@ -917,7 +1002,6 @@ export function buildRoutes(options: {
 
   authed.get("/character-drafts/:id", async (c) => {
     const user = c.get("user");
-    wakeCharacterAuthoringJobs(llm);
     const structured = await charAssetRepo.getCharacterAuthoringAttempt(
       c.req.param("id"),
       user.id,
@@ -1020,7 +1104,7 @@ export function buildRoutes(options: {
     if (started.replayed && started.attempt.candidate) {
       return c.json({ draft: await characterDraftResponse(started.attempt, user.id) });
     }
-    wakeCharacterAuthoringJobs(llm);
+    await wakeAuthoringTasks(llm);
     return c.json(authoringAcceptedFromAttempt(started.attempt), 202);
   });
 
@@ -1070,7 +1154,7 @@ export function buildRoutes(options: {
         requiresConfirmation: true,
       });
     }
-    wakeCharacterAuthoringJobs(llm);
+    await wakeAuthoringTasks(llm);
     return c.json({
       ...authoringAcceptedFromAttempt(started.attempt),
       requiresConfirmation: true,
@@ -1650,7 +1734,7 @@ export function buildRoutes(options: {
     if (started.replayed && started.attempt.candidate) {
       return c.json({ draft: await battlefieldDraftResponse(started.attempt) });
     }
-    wakeCharacterAuthoringJobs(llm);
+    await wakeAuthoringTasks(llm);
     return c.json(authoringAcceptedFromAttempt({
       attemptId: started.attempt.attemptId,
       characterId: started.attempt.battlefieldId,
@@ -1661,7 +1745,6 @@ export function buildRoutes(options: {
 
   authed.get("/battlefield-drafts/latest", async (c) => {
     const user = c.get("user");
-    wakeCharacterAuthoringJobs(llm);
     const attempt = await battlefieldAssetRepo.getLatestBattlefieldAuthoringAttempt(
       user.id,
     );
@@ -1699,7 +1782,6 @@ export function buildRoutes(options: {
 
   authed.get("/battlefield-drafts/:id", async (c) => {
     const user = c.get("user");
-    wakeCharacterAuthoringJobs(llm);
     const attempt = await battlefieldAssetRepo.getBattlefieldAuthoringAttempt(
       c.req.param("id"),
       user.id,
@@ -1768,7 +1850,7 @@ export function buildRoutes(options: {
       const message = error instanceof Error ? error.message : "authoring_failed";
       return c.json({ error: "battlefield_authoring_failed", message }, 409);
     }
-    wakeCharacterAuthoringJobs(llm);
+    await wakeAuthoringTasks(llm);
     return c.json(authoringAcceptedFromAttempt({
       attemptId: attempt.attemptId,
       characterId: attempt.battlefieldId,
@@ -1853,7 +1935,7 @@ export function buildRoutes(options: {
     if (started.replayed && started.attempt.candidate) {
       return c.json({ draft: await battlefieldDraftResponse(started.attempt) });
     }
-    wakeCharacterAuthoringJobs(llm);
+    await wakeAuthoringTasks(llm);
     return c.json(authoringAcceptedFromAttempt({
       attemptId: started.attempt.attemptId,
       characterId: started.attempt.battlefieldId,
@@ -1900,7 +1982,7 @@ export function buildRoutes(options: {
         requiresConfirmation: true,
       });
     }
-    wakeCharacterAuthoringJobs(llm);
+    await wakeAuthoringTasks(llm);
     return c.json({
       ...authoringAcceptedFromAttempt({
         attemptId: started.attempt.attemptId,
@@ -2076,7 +2158,7 @@ export function buildRoutes(options: {
     if (started.replayed && started.attempt.candidate) {
       return c.json({ draft: await narrationStyleDraftResponse(started.attempt) });
     }
-    wakeCharacterAuthoringJobs(llm);
+    await wakeAuthoringTasks(llm);
     return c.json(authoringAcceptedFromAttempt({
       attemptId: started.attempt.attemptId,
       characterId: started.attempt.narrationStyleId,
@@ -2087,7 +2169,6 @@ export function buildRoutes(options: {
 
   authed.get("/narration-style-drafts/latest", async (c) => {
     const user = c.get("user");
-    wakeCharacterAuthoringJobs(llm);
     const attempt = await narrationStyleAssetRepo
       .getLatestNarrationStyleAuthoringAttempt(user.id);
     if (!attempt) return c.json({ draft: null, progress: null, failed: null });
@@ -2124,7 +2205,6 @@ export function buildRoutes(options: {
 
   authed.get("/narration-style-drafts/:id", async (c) => {
     const user = c.get("user");
-    wakeCharacterAuthoringJobs(llm);
     const attempt = await narrationStyleAssetRepo.getNarrationStyleAuthoringAttempt(
       c.req.param("id"),
       user.id,
@@ -2243,7 +2323,7 @@ export function buildRoutes(options: {
     if (started.replayed && started.attempt.candidate) {
       return c.json({ draft: await narrationStyleDraftResponse(started.attempt) });
     }
-    wakeCharacterAuthoringJobs(llm);
+    await wakeAuthoringTasks(llm);
     return c.json(authoringAcceptedFromAttempt({
       attemptId: started.attempt.attemptId,
       characterId: started.attempt.narrationStyleId,
@@ -2287,7 +2367,7 @@ export function buildRoutes(options: {
     if (started.replayed && started.attempt.candidate) {
       return c.json({ draft: await narrationStyleDraftResponse(started.attempt) });
     }
-    wakeCharacterAuthoringJobs(llm);
+    await wakeAuthoringTasks(llm);
     return c.json(authoringAcceptedFromAttempt({
       attemptId: started.attempt.attemptId,
       characterId: started.attempt.narrationStyleId,

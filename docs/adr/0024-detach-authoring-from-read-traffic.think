@@ -1,0 +1,157 @@
+framework ArchitectureDecisionRecord:
+  requires problem and decision
+  requires premise and evidence
+  warns pending
+
+domain ADR0024:
+  description "Detach asset authoring execution from read traffic"
+
+problem P1:
+  |
+    The six authenticated draft GET handlers call wakeCharacterAuthoringJobs
+    before reading draft state. That helper claims the oldest pending job across
+    all three asset families and starts provider work in the current Cloud Run
+    process. The queue-wide claim is valid worker behavior, but invoking it from
+    a read makes polling an execution trigger. A pending job also has no durable
+    wake after request loss, process restart, or scale-to-zero. These behaviors
+    contradict ADR-0014 rules 1, 2, and 7.
+
+premise DRIVER_READ_PURITY:
+  |
+    Draft GET routes are projections only. They may authenticate, authorize, and
+    read, but must not claim work, change attempt state, call a provider, or
+    become required for progress.
+
+premise DRIVER_DURABILITY:
+  |
+    An accepted create, revise, or upgrade command must persist both the work and
+    its wake intent atomically. Progress after the command response cannot rely
+    on an in-process promise, later user polling, or a particular process
+    surviving.
+
+premise DRIVER_OWNERSHIP:
+  |
+    The worker queue and provider-capacity admission are global to the deployed
+    environment, not partitioned by user. Once a job is selected, every attempt,
+    candidate, asset, generation, and notification operation must remain bound
+    to that job's persisted owner and entity under a fenced lease. Public or
+    cross-user visibility grants no authoring, activation, deletion, or pointer-
+    move authority.
+
+premise DRIVER_EXISTING_CONTRACT:
+  |
+    ADR-0014 already requires an authoring-owned outbox and fence and forbids
+    sharing narration tables. ADR-0006 supplies the accepted durable Cloud Tasks
+    wake pattern. This ADR completes those requirements for all three authoring
+    families; it does not replace owner acceptance or asset revision authority.
+
+premise OPTIONS:
+  |
+    Considered options are: delete GET wake calls and retain mutation-time
+    fire-and-forget; add a process-local startup drain; dispatch a durable generic
+    wake that lets the environment-global worker claim the next job; or persist
+    one authoring outbox delivery per job and address that job explicitly inside
+    the same environment-global queue. Fire-and-forget and startup-only draining
+    strand work under scale-to-zero or process loss. Generic wake is compatible
+    with the ownership model but makes wake-to-job completion and lost-delivery
+    reconciliation indirect. Exact delivery is proposed for traceable liveness
+    and idempotent recovery, not to create a per-user queue or user authority.
+
+evidence E_ROUTES:
+  |
+    backend/src/routes.ts calls wakeCharacterAuthoringJobs from character,
+    battlefield, and narration-style latest/by-id GET handlers as well as from
+    mutation handlers.
+
+evidence E_WORKER:
+  |
+    backend/src/services/character-authoring-jobs.ts implements wake as an
+    unawaited processNextCharacterAuthoringJob call. That processor invokes
+    claimNextFamilyAuthoringJob without an attempt identity.
+
+evidence E_CLAIM:
+  |
+    backend/src/repositories/family-authoring-jobs.ts unions pending jobs from
+    all three family tables, orders them globally by created_at, and claims the
+    first capacity-eligible row. This is consistent with an environment-global
+    worker queue. Each selected row carries owner_user_id and asset_id into the
+    family runner; ownership safety depends on preserving those values through
+    every repository operation.
+
+evidence E_OWNER_BOUNDARY:
+  |
+    On 2026-09-08 the product owner clarified that the Worker Queue is global to
+    the environment, while one worker target execution must not cross its user
+    boundary. Entities may be visible or usable across users, but authoring and
+    other mutations remain restricted to the entity owner unless a separate
+    explicit operator or system authority applies.
+
+evidence OWNER_ACCEPTANCE:
+  |
+    On 2026-09-08, after the related-ADR consistency review corrected the user-
+    boundary defect in this record, the product owner explicitly approved this
+    revised ADR-0024.
+
+evidence E_DURABLE_PATTERN:
+  |
+    backend/src/services/narration-task-dispatch.ts and
+    backend/src/services/narration-worker.ts implement deterministic Cloud Tasks
+    delivery from a durable narration outbox with delivery generations, OIDC
+    authorization, stale recovery, and fenced exact work.
+
+decision D1 based_on P1, DRIVER_READ_PURITY, E_ROUTES:
+  |
+    Propose removing every authoring wake from the six draft GET handlers and
+    regression-locking them as read-only. Repeated latest and by-id reads must
+    produce zero authoring job claims, attempt transitions, outbox mutations,
+    notifications, and provider calls.
+
+decision D2 based_on DRIVER_DURABILITY, DRIVER_EXISTING_CONTRACT, OPTIONS, E_DURABLE_PATTERN:
+  |
+    Propose an authoring-owned outbox persisted in the same transaction that
+    inserts or reopens a character, battlefield, or narration-style job. Each
+    row records family, attempt ID, delivery generation, pending or dispatched
+    state, delivery attempts, creation time, and dispatch time. It never shares
+    battle_narration_outbox.
+
+decision D3 based_on DRIVER_OWNERSHIP, OPTIONS, E_WORKER, E_CLAIM, E_OWNER_BOUNDARY, D2:
+  |
+    Propose an OIDC-authenticated internal authoring task endpoint whose payload
+    identifies exactly one outbox ID, family, attempt ID, and generation inside
+    the environment-global queue. The handler resolves the owner and entity from
+    persisted job state rather than accepting them from the delivery, then
+    claims that job with a unique worker identity and fenced lease. Exact
+    addressing supplies wake-to-job liveness and idempotency evidence; it does
+    not partition scheduling or grant the triggering request mutation authority.
+    Capacity saturation returns a retryable response for that delivery.
+
+decision D4 based_on D2, D3, DRIVER_DURABILITY:
+  |
+    Propose deterministic Cloud Tasks names from authoring outbox ID and
+    generation. Mutation paths dispatch after commit, application startup scans
+    pending rows, and stale dispatched rows re-arm only when no active matching
+    lease exists. A 409 for the same deterministic name is successful idempotent
+    enqueue; terminal work closes its outbox.
+
+decision D5 based_on DRIVER_EXISTING_CONTRACT, D2, D3, D4:
+  |
+    Propose one authoring worker queue per deployed environment, shared by all
+    users and all three authoring families. Initially reuse the configured Cloud
+    Tasks transport project, location, physical queue, and service account while
+    giving authoring its own target URL, audience, task namespace, outbox,
+    endpoint, and fenced ownership. Sharing transport does not share narration
+    persistence or entity mutation authority. A later dedicated physical queue
+    may isolate throughput without changing the environment-global scheduling or
+    owner-scoped execution contracts.
+
+decision D6 based_on D1, D2, D3, D4, D5:
+  |
+    Acceptance authorizes local schema migration, repositories, dispatcher,
+    endpoint, command-path wake, startup recovery, configuration, workflow
+    checks, and regression tests. It does not authorize migration execution,
+    cloud configuration, push, release, Stage or production deployment.
+
+decision ACCEPTANCE based_on D1, D2, D3, D4, D5, D6, OWNER_ACCEPTANCE:
+  |
+    ADR-0024 is Accepted at this owner-approved revision. Local implementation
+    of D1 through D6 is authorized within the stated external-action boundary.

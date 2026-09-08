@@ -21,8 +21,11 @@ import {
   type AssetGeneration,
 } from "./asset-generations.js";
 import {
-  finishFamilyAuthoringJob,
+  assertFamilyAuthoringFence,
+  assertFamilyAuthoringJobDiscardable,
+  finishFamilyAuthoringJobInTransaction,
   insertFamilyAuthoringJob,
+  type AuthoringExecutionFence,
 } from "./family-authoring-jobs.js";
 import { insertOwnerNotification } from "./owner-notifications.js";
 import {
@@ -256,9 +259,18 @@ export async function saveNarrationStyleAuthoringCandidate(input: {
   ownerUserId: string;
   envelope: NarrationGenerationEnvelopeV2;
   assistantMessage: string;
+  executionFence?: AuthoringExecutionFence;
 }): Promise<NarrationStyleAuthoringAttempt> {
   const envelope = assertNarrationGenerationReadyV2(input.envelope);
   return withTransaction(async (connection) => {
+    if (input.executionFence) {
+      await assertFamilyAuthoringFence(
+        connection,
+        "narration_style",
+        input.attemptId,
+        input.executionFence,
+      );
+    }
     const attempt = await selectAttempt(connection, input.attemptId, input.ownerUserId);
     if (!attempt || ["succeeded", "discarded", "expired"].includes(attempt.status)) {
       throw new Error("AUTHORING_ATTEMPT_NOT_WRITABLE");
@@ -299,8 +311,17 @@ export async function failNarrationStyleAuthoringAttempt(input: {
   attemptId: string;
   ownerUserId: string;
   errorCode: string;
+  executionFence?: AuthoringExecutionFence;
 }): Promise<void> {
   await withTransaction(async (connection) => {
+    if (input.executionFence) {
+      await assertFamilyAuthoringFence(
+        connection,
+        "narration_style",
+        input.attemptId,
+        input.executionFence,
+      );
+    }
     const attempt = await selectAttempt(connection, input.attemptId, input.ownerUserId);
     if (!attempt || ["succeeded", "discarded"].includes(attempt.status)) return;
     const updatedAt = new Date().toISOString();
@@ -335,7 +356,13 @@ export async function failNarrationStyleAuthoringAttempt(input: {
       createdAt: updatedAt,
       assetType: "narration_style",
     });
-    await finishFamilyAuthoringJob("narration_style", input.attemptId, "cancelled");
+    await finishFamilyAuthoringJobInTransaction(
+      connection,
+      "narration_style",
+      input.attemptId,
+      "cancelled",
+      input.executionFence,
+    );
   });
 }
 
@@ -346,6 +373,11 @@ export async function discardNarrationStyleAuthoringAttempt(
   return withTransaction(async (connection) => {
     const attempt = await selectAttempt(connection, attemptId, ownerUserId);
     if (!attempt || ["succeeded", "discarded"].includes(attempt.status)) return false;
+    await assertFamilyAuthoringJobDiscardable(
+      connection,
+      "narration_style",
+      attemptId,
+    );
     const updatedAt = new Date().toISOString();
     await connection.query(
       `UPDATE narration_style_authoring_attempts
@@ -369,7 +401,12 @@ export async function discardNarrationStyleAuthoringAttempt(
         [attempt.narrationStyleId, updatedAt, attempt.attemptId],
       );
     }
-    await finishFamilyAuthoringJob("narration_style", attemptId, "cancelled");
+    await finishFamilyAuthoringJobInTransaction(
+      connection,
+      "narration_style",
+      attemptId,
+      "cancelled",
+    );
     return true;
   });
 }

@@ -21,6 +21,23 @@ on:
         required: true
         default: "169"
         type: string
+      expected_dialogue_projection:
+        description: Dialogue projection the new production battle must bind
+        required: true
+        default: compact
+        type: choice
+        options:
+          - compact
+          - legacy
+      expected_dialogue_activation_source:
+        description: Authority that must have selected the dialogue projection
+        required: true
+        default: persisted_setting
+        type: choice
+        options:
+          - persisted_setting
+          - deployment_override
+          - default
       confirmation:
         description: Type OBSERVE followed by a space and the revision
         required: true
@@ -58,6 +75,8 @@ jobs:
         env:
           CONFIRMATION: ${{ inputs.confirmation }}
           EXPECTED_REVISION: ${{ inputs.expected_revision }}
+          EXPECTED_DIALOGUE_PROJECTION: ${{ inputs.expected_dialogue_projection }}
+          EXPECTED_DIALOGUE_ACTIVATION_SOURCE: ${{ inputs.expected_dialogue_activation_source }}
           MAX_ADVANCES: ${{ inputs.max_advances }}
           PROVIDER_OPERATION_CEILING: ${{ inputs.provider_operation_ceiling }}
           RELEASE_TAG: ${{ inputs.tag }}
@@ -72,6 +91,8 @@ jobs:
           test "$MAX_ADVANCES" -le 30
           [[ "$PROVIDER_OPERATION_CEILING" =~ ^[0-9]+$ ]]
           test "$PROVIDER_OPERATION_CEILING" -ge 1
+          [[ "$EXPECTED_DIALOGUE_PROJECTION" =~ ^(compact|legacy)$ ]]
+          [[ "$EXPECTED_DIALOGUE_ACTIVATION_SOURCE" =~ ^(persisted_setting|deployment_override|default)$ ]]
           test "$CONFIRMATION" = "OBSERVE $EXPECTED_REVISION"
 
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -150,6 +171,8 @@ jobs:
           IMAGE_REF: ${{ steps.target.outputs.image }}
           MAX_ADVANCES: ${{ inputs.max_advances }}
           PROVIDER_OPERATION_CEILING: ${{ inputs.provider_operation_ceiling }}
+          EXPECTED_DIALOGUE_PROJECTION: ${{ inputs.expected_dialogue_projection }}
+          EXPECTED_DIALOGUE_ACTIVATION_SOURCE: ${{ inputs.expected_dialogue_activation_source }}
         run: |
           set -euo pipefail
           gcloud run jobs deploy "$E2E_JOB" \
@@ -157,7 +180,7 @@ jobs:
             --region="$GCP_REGION" \
             --image="$IMAGE_REF" \
             --service-account=kshiai-cloud-run@kshiai.iam.gserviceaccount.com \
-            --set-env-vars="NODE_ENV=test,KSHIAI_RUN_E2E_MAIN=1,AUTH_PROVIDER=supabase,MEDIA_STORAGE=local,SUPABASE_URL=$SUPABASE_URL,SUPABASE_JWKS_URL=$SUPABASE_JWKS_URL,E2E_API_URL=$PRODUCTION_URL,E2E_ALLOWED_HOSTS=kshiai.mk10.org,E2E_MAX_ADVANCES=$MAX_ADVANCES,E2E_TARGET_REVISION=$EXPECTED_REVISION,E2E_RUN_ID=$OBSERVATION_RUN_ID,E2E_OBSERVATION_APPROVED_RUN_ID=$OBSERVATION_RUN_ID,E2E_PROVIDER_OPERATION_CEILING=$PROVIDER_OPERATION_CEILING" \
+            --set-env-vars="NODE_ENV=test,KSHIAI_RUN_E2E_MAIN=1,AUTH_PROVIDER=supabase,MEDIA_STORAGE=local,SUPABASE_URL=$SUPABASE_URL,SUPABASE_JWKS_URL=$SUPABASE_JWKS_URL,E2E_API_URL=$PRODUCTION_URL,E2E_ALLOWED_HOSTS=kshiai.mk10.org,E2E_MAX_ADVANCES=$MAX_ADVANCES,E2E_TARGET_REVISION=$EXPECTED_REVISION,E2E_EXPECTED_DIALOGUE_PROJECTION=$EXPECTED_DIALOGUE_PROJECTION,E2E_EXPECTED_DIALOGUE_ACTIVATION_SOURCE=$EXPECTED_DIALOGUE_ACTIVATION_SOURCE,E2E_RUN_ID=$OBSERVATION_RUN_ID,E2E_OBSERVATION_APPROVED_RUN_ID=$OBSERVATION_RUN_ID,E2E_PROVIDER_OPERATION_CEILING=$PROVIDER_OPERATION_CEILING" \
             --set-secrets="DATABASE_URL=kshiai-database-url:latest,SUPABASE_SECRET_KEY=kshiai-supabase-secret-key:latest,SUPABASE_PUBLISHABLE_KEY=kshiai-supabase-publishable-key:latest" \
             --command=node \
             --args=backend/dist/scripts/persistent-battle-e2e.js \
@@ -176,6 +199,8 @@ jobs:
         env:
           EXECUTION: ${{ steps.execute.outputs.execution }}
           EXPECTED_REVISION: ${{ inputs.expected_revision }}
+          EXPECTED_DIALOGUE_PROJECTION: ${{ inputs.expected_dialogue_projection }}
+          EXPECTED_DIALOGUE_ACTIVATION_SOURCE: ${{ inputs.expected_dialogue_activation_source }}
           RELEASE_TAG: ${{ inputs.tag }}
         run: |
           set -euo pipefail
@@ -186,6 +211,8 @@ jobs:
               observationRunId: process.env.OBSERVATION_RUN_ID,
               releaseTag: process.env.RELEASE_TAG,
               revision: process.env.EXPECTED_REVISION,
+              dialogueProjection: process.env.EXPECTED_DIALOGUE_PROJECTION,
+              dialogueActivationSource: process.env.EXPECTED_DIALOGUE_ACTIVATION_SOURCE,
               execution: process.env.EXECUTION,
               verification: "cloud_run_job_exit_success",
               durableObservation: "postgres.balance_events:persistent_e2e_observation",
@@ -197,6 +224,8 @@ jobs:
               `- Revision: \`${receipt.revision}\`\n` +
               `- Execution: \`${receipt.execution}\`\n` +
               `- Observation run: \`${receipt.observationRunId}\`\n` +
+              `- Dialogue projection: \`${receipt.dialogueProjection}\`\n` +
+              `- Dialogue activation source: \`${receipt.dialogueActivationSource}\`\n` +
               `- Durable observation: \`${receipt.durableObservation}\`\n`);
           ' "$RUNNER_TEMP/e2e-observation-receipt.json"
 

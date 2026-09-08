@@ -522,6 +522,7 @@ export const CharacterAuthoringReviewSchema = AssetAuthoringReviewBaseSchema.ext
   characterId: z.string().min(1).max(80),
   candidate: CharacterPublicSchema.nullable(),
   current: CharacterPublicSchema.nullable(),
+  acceptanceError: z.string().min(1).max(160).nullable(),
 }).strict();
 export type CharacterAuthoringReview = z.infer<typeof CharacterAuthoringReviewSchema>;
 

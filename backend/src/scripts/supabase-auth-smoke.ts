@@ -1,7 +1,15 @@
 import { randomUUID } from "node:crypto";
+import {
+  defaultBasicAttack,
+  defaultParameters,
+  type CharacterSheet,
+} from "@kshiai/shared";
 import { config } from "../config.js";
 import { closeDatabase, query } from "../db.js";
 import { userFromSupabaseAccessToken } from "../auth.js";
+import { assetContentDigest } from "../repositories/asset-generations.js";
+import { buildImportedCharacterEnvelopeV2 } from "../services/character-authoring-service.js";
+import { smokeAuthenticatedReadSurface } from "./authenticated-read-surface-smoke.js";
 
 function required(name: string): string {
   const value = process.env[name]?.trim();
@@ -26,6 +34,60 @@ async function authRequest(
   });
 }
 
+function retainedCompatibilityFixture(input: {
+  characterId: string;
+  ownerUserId: string;
+  attemptId: string;
+  createdAt: string;
+}): { sheet: CharacterSheet; candidate: ReturnType<typeof buildImportedCharacterEnvelopeV2> } {
+  const sheet: CharacterSheet = {
+    id: input.characterId,
+    ownerUserId: input.ownerUserId,
+    displayName: "保持データ互換スモーク",
+    tags: ["auth-smoke"],
+    createdAt: input.createdAt,
+    updatedAt: input.createdAt,
+    appearance: {
+      summary: "互換性確認用の外套",
+      visualPrompt: "compatibility smoke fixture cloak",
+      imageUrl: null,
+    },
+    traits: ["慎重"],
+    parameters: defaultParameters(),
+    basicAttack: defaultBasicAttack(),
+    skills: [],
+    weapon: null,
+    armor: null,
+    combatFlags: { canFight: true, irreversibleIncapacitated: false },
+    narrativeBlurb: "リリース前後で保持データを読めることを確認する一時フィクスチャ。",
+  };
+  const candidate = buildImportedCharacterEnvelopeV2({
+    sheet,
+    attemptId: input.attemptId,
+  });
+  candidate.definition.actionNorms = [{
+    id: "historical-selectorless-norm",
+    when: {
+      match: "all",
+      clauses: [{ kind: "always", operator: "is", value: "true" }],
+    },
+    response: {
+      disposition: "prefer",
+      actionRefs: [],
+      actionKinds: [],
+      tacticTags: [],
+      statement: "旧版では説明文だけでも保存できた行動規範",
+      fallbackActionRef: null,
+    },
+    priority: 50,
+    force: "preference",
+    selfAwareness: "aware",
+    exceptions: [],
+    description: null,
+  }];
+  return { sheet, candidate };
+}
+
 async function main(): Promise<void> {
   const secretKey = required("SUPABASE_SECRET_KEY");
   const publishableKey = required("SUPABASE_PUBLISHABLE_KEY");
@@ -35,6 +97,8 @@ async function main(): Promise<void> {
   const password = `Smoke-${randomUUID()}-9a!`;
   let authUserId: string | null = null;
   let applicationUserId: string | null = null;
+  let fixtureCharacterId: string | null = null;
+  let fixtureAttemptId: string | null = null;
 
   try {
     const created = await authRequest("/admin/users", secretKey, {
@@ -67,21 +131,48 @@ async function main(): Promise<void> {
     const apiBaseUrl = process.env.AUTH_SMOKE_API_URL?.replace(/\/$/, "");
     if (apiBaseUrl) {
       const originSecret = process.env.AUTH_SMOKE_ORIGIN_SECRET?.trim();
-      const apiResponse = await fetch(`${apiBaseUrl}/api/me`, {
-        headers: {
-          Authorization: `Bearer ${session.access_token}`,
-          ...(originSecret ? { "x-kshiai-origin": originSecret } : {}),
-        },
-        signal: AbortSignal.timeout(15_000),
+      fixtureCharacterId = `chr_auth_smoke_${marker}`;
+      fixtureAttemptId = `cat_auth_smoke_${marker}`;
+      const createdAt = new Date().toISOString();
+      const fixture = retainedCompatibilityFixture({
+        characterId: fixtureCharacterId,
+        ownerUserId: applicationUser.id,
+        attemptId: fixtureAttemptId,
+        createdAt,
       });
-      if (!apiResponse.ok) {
-        const detail = (await apiResponse.text()).slice(0, 200);
-        throw new Error(`Authenticated API smoke failed: ${apiResponse.status}: ${detail}`);
-      }
-      const apiBody = await apiResponse.json() as { user?: { id?: string } };
-      if (apiBody.user?.id !== applicationUser.id) {
-        throw new Error("Authenticated API returned another application user");
-      }
+      await query(
+        `INSERT INTO characters (id, owner_user_id, sheet_json, created_at, updated_at)
+         VALUES ($1, $2, $3, $4, $4)`,
+        [fixtureCharacterId, applicationUser.id, JSON.stringify(fixture.sheet), createdAt],
+      );
+      await query(
+        `INSERT INTO character_authoring_attempts
+          (attempt_id, owner_user_id, character_id, kind, idempotency_key,
+           request_digest, source_text, source_digest, status, candidate_json,
+           candidate_digest, assistant_message, created_at, updated_at, expires_at)
+         VALUES ($1, $2, $3, 'revision', $4, $5, $6, $7,
+                 'awaiting_owner_acceptance', $8, $9, $10, $11, $11, $12)`,
+        [
+          fixtureAttemptId,
+          applicationUser.id,
+          fixtureCharacterId,
+          `auth-smoke:${marker}`,
+          assetContentDigest({ marker, kind: "retained-compatibility" }),
+          fixture.sheet.narrativeBlurb,
+          assetContentDigest(fixture.sheet.narrativeBlurb),
+          JSON.stringify(fixture.candidate),
+          assetContentDigest(fixture.candidate),
+          "保持データ互換性を確認してください",
+          createdAt,
+          new Date(Date.now() + 15 * 60_000).toISOString(),
+        ],
+      );
+      await smokeAuthenticatedReadSurface({
+        apiBaseUrl,
+        accessToken: session.access_token,
+        originSecret,
+        fixtureCharacterId,
+      });
       if (process.env.AUTH_SMOKE_SSE === "1") {
         const streamResponse = await fetch(
           `${apiBaseUrl}/api/battles/btl_auth_smoke_missing/advance/stream`,
@@ -112,20 +203,48 @@ async function main(): Promise<void> {
     }
     console.log(
       process.env.AUTH_SMOKE_SSE === "1"
-        ? "Supabase Auth JWT, application-user mapping, and SSE proxy smoke passed"
-        : "Supabase Auth JWT and application-user mapping smoke passed",
+        ? "Supabase Auth JWT, retained-data reads, screen API surface, and SSE proxy smoke passed"
+        : "Supabase Auth JWT, retained-data reads, and screen API surface smoke passed",
     );
   } finally {
+    const cleanupErrors: Error[] = [];
+    const cleanup = async (label: string, action: () => Promise<void>) => {
+      try {
+        await action();
+      } catch (error) {
+        const detail = error instanceof Error ? error.message : String(error);
+        cleanupErrors.push(new Error(`${label}: ${detail}`));
+      }
+    };
+    if (fixtureAttemptId) {
+      await cleanup("character attempt cleanup failed", async () => {
+        await query(`DELETE FROM character_authoring_attempts WHERE attempt_id = $1`, [
+          fixtureAttemptId,
+        ]);
+      });
+    }
+    if (fixtureCharacterId) {
+      await cleanup("character cleanup failed", async () => {
+        await query(`DELETE FROM characters WHERE id = $1`, [fixtureCharacterId]);
+      });
+    }
     if (applicationUserId) {
-      await query(`DELETE FROM users WHERE id = $1`, [applicationUserId]);
+      await cleanup("application user cleanup failed", async () => {
+        await query(`DELETE FROM users WHERE id = $1`, [applicationUserId]);
+      });
     }
     if (authUserId) {
-      const removed = await authRequest(`/admin/users/${authUserId}`, secretKey, {
-        method: "DELETE",
+      await cleanup("Supabase auth cleanup failed", async () => {
+        const removed = await authRequest(`/admin/users/${authUserId}`, secretKey, {
+          method: "DELETE",
+        });
+        if (!removed.ok) throw new Error(`HTTP ${removed.status}`);
       });
-      if (!removed.ok) throw new Error(`Supabase auth cleanup failed: ${removed.status}`);
     }
-    await closeDatabase();
+    await cleanup("database close failed", closeDatabase);
+    if (cleanupErrors.length > 0) {
+      throw new AggregateError(cleanupErrors, "Supabase Auth smoke cleanup incomplete");
+    }
   }
 }
 

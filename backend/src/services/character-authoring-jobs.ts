@@ -2,8 +2,15 @@ import { toAssetAuthoringProgress } from "@kshiai/shared";
 import { findCharacterNameConflict } from "../character-name-uniqueness.js";
 import * as charAssetRepo from "../repositories/character-assets-v2.js";
 import {
+  claimFamilyAuthoringJob,
   claimNextFamilyAuthoringJob,
+  completeAuthoringOutboxDelivery,
   countOpenFamilyAuthoringJobs,
+  deferAuthoringOutboxDelivery,
+  getAuthoringOutboxDelivery,
+  renewFamilyAuthoringFence,
+  type AuthoringExecutionFence,
+  type AuthoringFamily,
 } from "../repositories/family-authoring-jobs.js";
 import {
   runBattlefieldAuthoringJob,
@@ -21,7 +28,11 @@ import {
 
 export type CharacterAuthoringJobResult = "idle" | "completed" | "failed";
 
-function reportStatus(attemptId: string, ownerUserId: string) {
+function reportStatus(
+  attemptId: string,
+  ownerUserId: string,
+  executionFence: AuthoringExecutionFence,
+) {
   return (status: Parameters<
     typeof charAssetRepo.updateCharacterAuthoringStatus
   >[0]["status"]) =>
@@ -29,6 +40,7 @@ function reportStatus(attemptId: string, ownerUserId: string) {
       attemptId,
       ownerUserId,
       status,
+      executionFence,
     });
 }
 
@@ -73,12 +85,14 @@ async function generateCreateSheet(
 async function runClaimedAttempt(
   llm: LlmProvider,
   attempt: charAssetRepo.CharacterAuthoringAttempt,
+  executionFence: AuthoringExecutionFence,
 ): Promise<void> {
   const sourceText = attempt.sourceText ?? "";
   await charAssetRepo.updateCharacterAuthoringStatus({
     attemptId: attempt.attemptId,
     ownerUserId: attempt.ownerUserId,
     status: "generating_structure",
+    executionFence,
   });
   const existing = await charRepo.getSheetIncludingDeleted(attempt.characterId);
   const adjustMessage = lastAuthoringAdjustment(sourceText);
@@ -108,13 +122,18 @@ async function runClaimedAttempt(
           : "create_instruction",
       generated,
       existing,
-      reportStatus: reportStatus(attempt.attemptId, attempt.ownerUserId),
+      reportStatus: reportStatus(
+        attempt.attemptId,
+        attempt.ownerUserId,
+        executionFence,
+      ),
     });
     await charAssetRepo.saveCharacterAuthoringCandidate({
       attemptId: attempt.attemptId,
       ownerUserId: attempt.ownerUserId,
       envelope: candidate.envelope,
       assistantMessage: candidate.assistantMessage,
+      executionFence,
     });
     return;
   }
@@ -125,6 +144,7 @@ async function runClaimedAttempt(
         attemptId: attempt.attemptId,
         ownerUserId: attempt.ownerUserId,
         errorCode: "duplicate_character_name",
+        executionFence,
       });
       return;
     }
@@ -136,13 +156,18 @@ async function runClaimedAttempt(
       sourceText,
       sourceKind: "create_instruction",
       generated: gen,
-      reportStatus: reportStatus(attempt.attemptId, attempt.ownerUserId),
+      reportStatus: reportStatus(
+        attempt.attemptId,
+        attempt.ownerUserId,
+        executionFence,
+      ),
     });
     await charAssetRepo.saveCharacterAuthoringCandidate({
       attemptId: attempt.attemptId,
       ownerUserId: attempt.ownerUserId,
       envelope: candidate.envelope,
       assistantMessage: candidate.assistantMessage,
+      executionFence,
     });
     return;
   }
@@ -164,13 +189,18 @@ async function runClaimedAttempt(
       : "revision_instruction",
     generated,
     existing,
-    reportStatus: reportStatus(attempt.attemptId, attempt.ownerUserId),
+    reportStatus: reportStatus(
+      attempt.attemptId,
+      attempt.ownerUserId,
+      executionFence,
+    ),
   });
   await charAssetRepo.saveCharacterAuthoringCandidate({
     attemptId: attempt.attemptId,
     ownerUserId: attempt.ownerUserId,
     envelope: candidate.envelope,
     assistantMessage: candidate.assistantMessage,
+    executionFence,
   });
 }
 
@@ -185,13 +215,19 @@ export async function processNextCharacterAuthoringJob(input: {
   });
   if (!claimed) return "idle";
   if (claimed.family === "battlefield") {
-    return runBattlefieldAuthoringJob(input.llm, claimed.attemptId, claimed.ownerUserId);
+    return runBattlefieldAuthoringJob(
+      input.llm,
+      claimed.attemptId,
+      claimed.ownerUserId,
+      claimed.executionFence,
+    );
   }
   if (claimed.family === "narration_style") {
     return runNarrationStyleAuthoringJob(
       input.llm,
       claimed.attemptId,
       claimed.ownerUserId,
+      claimed.executionFence,
     );
   }
   const attempt = await charAssetRepo.getCharacterAuthoringAttempt(
@@ -199,29 +235,157 @@ export async function processNextCharacterAuthoringJob(input: {
     claimed.ownerUserId,
   );
   if (!attempt || ["succeeded", "discarded", "failed", "expired"].includes(attempt.status)) {
-    await charAssetRepo.finishCharacterAuthoringJob(claimed.attemptId, "cancelled");
+    await charAssetRepo.finishCharacterAuthoringJob(
+      claimed.attemptId,
+      "cancelled",
+      claimed.executionFence,
+    );
     return "idle";
   }
   try {
-    await runClaimedAttempt(input.llm, attempt);
+    await runClaimedAttempt(input.llm, attempt, claimed.executionFence);
     const latest = await charAssetRepo.getCharacterAuthoringAttempt(
       claimed.attemptId,
       claimed.ownerUserId,
     );
     if (latest?.status === "failed") {
-      await charAssetRepo.finishCharacterAuthoringJob(claimed.attemptId, "completed");
       return "failed";
     }
-    await charAssetRepo.finishCharacterAuthoringJob(claimed.attemptId, "completed");
+    await charAssetRepo.finishCharacterAuthoringJob(
+      claimed.attemptId,
+      "completed",
+      claimed.executionFence,
+    );
     return "completed";
   } catch (error) {
+    if (error instanceof Error && error.message === "AUTHORING_STALE_FENCE") {
+      return "failed";
+    }
     const message = error instanceof Error ? error.message : "authoring_failed";
     await charAssetRepo.failCharacterAuthoringAttempt({
       attemptId: claimed.attemptId,
       ownerUserId: claimed.ownerUserId,
       errorCode: message.slice(0, 120),
+      executionFence: claimed.executionFence,
     });
     return "failed";
+  }
+}
+
+export type AuthoringTaskDelivery = {
+  outboxId: string;
+  family: AuthoringFamily;
+  attemptId: string;
+  deliveryGeneration: number;
+};
+
+export async function processAuthoringTask(input: {
+  llm: LlmProvider;
+  delivery: AuthoringTaskDelivery;
+  workerId: string;
+  cap?: number;
+}): Promise<"acknowledged" | "completed" | "failed" | "retry_queued"> {
+  const active = await getAuthoringOutboxDelivery(input.delivery);
+  if (active === "acknowledged") return active;
+  const claimed = await claimFamilyAuthoringJob({
+    family: input.delivery.family,
+    attemptId: input.delivery.attemptId,
+    workerId: input.workerId,
+    cap: input.cap,
+  });
+  if (claimed === "terminal") {
+    await completeAuthoringOutboxDelivery(input.delivery);
+    return "acknowledged";
+  }
+  if (claimed === "busy") {
+    await deferAuthoringOutboxDelivery(input.delivery);
+    return "retry_queued";
+  }
+
+  let leaseFailure: Error | null = null;
+  const heartbeat = setInterval(() => {
+    void renewFamilyAuthoringFence(
+      claimed.family,
+      claimed.attemptId,
+      claimed.executionFence,
+    ).catch((error) => {
+      leaseFailure = error instanceof Error
+        ? error
+        : new Error("AUTHORING_STALE_FENCE");
+    });
+  }, Math.floor(180_000 / 3));
+  heartbeat.unref();
+  try {
+    let result: CharacterAuthoringJobResult;
+    if (claimed.family === "battlefield") {
+      result = await runBattlefieldAuthoringJob(
+        input.llm,
+        claimed.attemptId,
+        claimed.ownerUserId,
+        claimed.executionFence,
+      );
+    } else if (claimed.family === "narration_style") {
+      result = await runNarrationStyleAuthoringJob(
+        input.llm,
+        claimed.attemptId,
+        claimed.ownerUserId,
+        claimed.executionFence,
+      );
+    } else {
+      const attempt = await charAssetRepo.getCharacterAuthoringAttempt(
+        claimed.attemptId,
+        claimed.ownerUserId,
+      );
+      if (!attempt || ["succeeded", "discarded", "failed", "expired"].includes(
+        attempt.status,
+      )) {
+        await charAssetRepo.finishCharacterAuthoringJob(
+          claimed.attemptId,
+          "cancelled",
+          claimed.executionFence,
+        );
+        return "acknowledged";
+      }
+      try {
+        await runClaimedAttempt(input.llm, attempt, claimed.executionFence);
+        const latest = await charAssetRepo.getCharacterAuthoringAttempt(
+          claimed.attemptId,
+          claimed.ownerUserId,
+        );
+        if (latest?.status === "failed") {
+          result = "failed";
+        } else {
+          await charAssetRepo.finishCharacterAuthoringJob(
+            claimed.attemptId,
+            "completed",
+            claimed.executionFence,
+          );
+          result = "completed";
+        }
+      } catch (error) {
+        if (error instanceof Error && error.message === "AUTHORING_STALE_FENCE") {
+          return "retry_queued";
+        }
+        const message = error instanceof Error ? error.message : "authoring_failed";
+        await charAssetRepo.failCharacterAuthoringAttempt({
+          attemptId: claimed.attemptId,
+          ownerUserId: claimed.ownerUserId,
+          errorCode: message.slice(0, 120),
+          executionFence: claimed.executionFence,
+        });
+        result = "failed";
+      }
+    }
+    if (leaseFailure) return "retry_queued";
+    return result;
+  } catch (error) {
+    if (error instanceof Error && error.message === "AUTHORING_STALE_FENCE") {
+      await deferAuthoringOutboxDelivery(input.delivery);
+      return "retry_queued";
+    }
+    throw error;
+  } finally {
+    clearInterval(heartbeat);
   }
 }
 
@@ -242,8 +406,10 @@ export async function drainCharacterAuthoringJobs(input: {
 }
 
 export function wakeCharacterAuthoringJobs(llm: LlmProvider): void {
-  void processNextCharacterAuthoringJob({ llm }).catch((error) => {
-    console.error("[authoring] job wake failed", error);
+  setImmediate(() => {
+    void processNextCharacterAuthoringJob({ llm }).catch((error) => {
+      console.error("[authoring] job wake failed", error);
+    });
   });
 }
 
