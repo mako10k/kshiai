@@ -56,3 +56,4 @@ This directory contains durable records of architectural and product-rule decisi
 | [0022](0022-canonical-world-and-observer-cognition.md) | Accepted | Unique world is viewpoint-free; two-person cognition is two frames; physical engine effects read only canonical state |
 | [0023](0023-pair-channels-are-not-unique-cognition.md) | Accepted | pair.sight/sound are not unique cognition; LOS and projection read organ, exposure, and placement |
 | [0024](0024-detach-authoring-from-read-traffic.md) | Accepted | Environment-global authoring queue with owner-scoped execution; draft reads have no execution side effects |
+| [0025](0025-expression-state-and-utterance-actuals.md) | Accepted | Separate Compact expression state from completed utterance history, name the current output explicitly, and preserve exact repetition without a reuse classifier |

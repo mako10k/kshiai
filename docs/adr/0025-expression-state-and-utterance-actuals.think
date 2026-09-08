@@ -1,0 +1,107 @@
+framework ArchitectureDecisionRecord:
+  requires problem and decision
+  requires premise and evidence
+  warns pending
+
+domain ADR025:
+  description |
+    Separate Compact semantic state from completed utterance history without
+    adding a second realization lifecycle.
+
+problem p001:
+  |
+    Compact deep psyche still receives lastSpeech inside previous semantic
+    state, and Compact expression returns generic speech. Completed utterance
+    history is therefore not consistently separated from state and current
+    expression across both provider boundaries.
+
+premise pr001:
+  |
+    Equal text is valid as a new occurrence. Correctness does not depend on
+    text inequality, similarity, or a declared reason for repetition.
+
+premise pr002:
+  |
+    ADR-0004 keeps psyche and outward expression separate. ADR-0008 rejects a
+    phrase-ban repair. F-BTL-37 and F-BTL-48 make canonical utterance events
+    authoritative.
+
+premise pr003:
+  |
+    Existing battles retain their immutable contract. Legacy lastSpeech and
+    conversationHistory remain readable for old-policy compatibility.
+
+premise pr004:
+  |
+    The existing battle revision compare-and-save operation is the authoritative
+    at-most-once turn commit boundary.
+
+evidence e001:
+  |
+    CharacterDeepPsycheCompactInput.previous currently includes lastSpeech,
+    while conversation.recentExchange separately carries completed dialogue.
+
+evidence e002:
+  |
+    Compact expression separately receives psyche and conversation fields but
+    decodes a generic speech property through Record<string, unknown> and then
+    acceptCharacterAgentResult writes that text back to state.lastSpeech.
+
+evidence e003:
+  |
+    No branch that selects a prior accepted provider-result object was observed
+    in acceptCharacterAgentResult. Repository tests already verify rejection of
+    a stale battle revision after another advance commits.
+
+decision d001 based_on p001, pr001, pr002, e001, e002:
+  |
+    Compact deep-psyche and expression contracts use separate expressionState
+    and utteranceHistory fields. Semantic state omits lastSpeech and
+    conversationHistory.
+
+decision d002 based_on d001, pr001, e002:
+  |
+    Compact expression output uses nextUtterance and a closed result schema.
+    Every otherwise valid result is accepted without comparing prior text or
+    asking the model to classify repetition.
+
+decision d003 based_on d001, d002, pr004, e003:
+  |
+    Reuse the existing battle revision boundary for at-most-once commitment.
+    Add no opportunity, receipt, provider-operation, utterance-event identifier,
+    secondary idempotency ledger, or runtime cross-opportunity reuse detector.
+
+decision d004 based_on d001, d002, d003, pr003:
+  |
+    New Compact-policy battles stop using lastSpeech as semantic input or new
+    state output. Existing battles and non-Compact processing keep their bound
+    compatibility behavior. No new lifecycle identifier is introduced.
+
+decision d005 based_on d001, d002, d004:
+  |
+    Changed Compact boundaries use closed schemas. any, Record<string, any>,
+    Record<string, unknown>, arbitrary record outputs, and z.unknown as a final
+    contract are prohibited.
+
+evidence OWNER_ACCEPTANCE:
+  |
+    On 2026-09-08, after the branch-local ADR-0024 and its content-independent
+    repetition handling were explained, the product owner instructed,
+    "では、一旦これで固めましょう。" The accepted pre-acceptance .think
+    snapshot had SHA-256
+    bc9232d5fedb951e3f86420d06a2b32f1c6cb48b4d591c56b5ff2ea7910f1a9e.
+
+evidence NAMESPACE_RECONCILIATION:
+  |
+    Fresh integration readback on 2026-09-09 established that current main had
+    already accepted a different ADR-0024 for detached authoring. The Compact
+    expression decision was therefore allocated the next mainline identifier,
+    ADR-0025. Its approved decision content and acceptance digest are unchanged.
+
+decision ACCEPTANCE based_on d001, d002, d003, d004, d005, OWNER_ACCEPTANCE, NAMESPACE_RECONCILIATION:
+  |
+    ADR-0025 retains Accepted status for the owner-approved decision in d001
+    through d005. The identifier change reconciles the mainline namespace and
+    does not change the accepted architecture. It does not itself instruct
+    implementation, provider replay, Stage, production, release, or migration;
+    those remain separate actions under their own authority boundaries.
