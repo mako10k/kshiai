@@ -1,0 +1,121 @@
+# Delivery plan for separated Compact expression state and utterance history.
+project pj001:
+  version 6
+  title "Separate Compact expression state from utterance history"
+  description "Implement Accepted ADR-0024 with separate closed expressionState and utteranceHistory inputs, closed nextUtterance output, content-independent acceptance, and the existing battle revision commit boundary. Add no lifecycle entity, identifier, receipt, reuse detector, similarity gate, critic, retry, or fallback."
+  as_of 2026-09-08
+  duration_unit point
+  velocity 1p/1d
+  finish m011
+  target_duration 14p
+
+resource rs001:
+  title "Developer"
+  capacity 1
+
+resource rs002:
+  title "Product and release owner"
+  capacity 1
+
+milestone m002:
+  title "ADR-0024 accepted"
+  state reached
+
+milestone m003:
+  title "Requirement v3 accepted"
+
+milestone m004:
+  title "Minimal Compact boundary implementation complete"
+
+milestone m005:
+  title "Local source correction and regression evidence complete"
+
+milestone m006:
+  title "Bounded paid provider replay approved"
+
+milestone m007:
+  title "Bounded provider replay complete"
+
+milestone m008:
+  title "Stage deployment approved"
+
+milestone m009:
+  title "Stage behavior observed"
+
+milestone m010:
+  title "Production promotion approved"
+
+milestone m011:
+  title "Production behavior observed and accepted"
+
+task t001 m002 -> m003:
+  title "Review and decide requirement v3"
+  description "Review the exact requirement candidate against Accepted ADR-0024, including exclusion of lastSpeech from new Compact semantic input and output, content-independent acceptance, unchanged provider count, old-battle compatibility, privacy, and the explicit absence of new IDs, receipts, ledgers, or runtime reuse detection. Accept, revise, or reject that exact requirement snapshot."
+  duration 1p
+  owner "user"
+  requires:
+    rs002 1
+
+task t002 m003 -> m004:
+  title "Implement the closed Compact state, history, and next-utterance boundary"
+  description "Define closed V2 deep-psyche and expression contracts; provide separate expressionState and observer-safe utteranceHistory fields; exclude lastSpeech and conversationHistory from semantic state; decode nextUtterance without any, arbitrary records, or z.unknown terminal contracts; stop new Compact writes to lastSpeech; and align production and mock adapters. Preserve existing battles, non-Compact behavior, action ownership, narrator separation, and the successful-path expression call count."
+  duration 4p
+  owner "codex"
+  requires:
+    rs001 1
+
+task t003 m004 -> m005:
+  title "Verify source correction and existing containment"
+  description "Add focused fixtures proving separated inputs, closed nextUtterance decoding, exact repeated-text acceptance through the normal path, absence of text comparison, retry, critic, prior-line fallback, or new lifecycle storage, no Compact lastSpeech write, observer privacy, narrator non-feedback, old-policy compatibility, unchanged provider count, and rejection of stale battle revisions. Run focused tests, full tests, typecheck, build, LLMThink audit, and PERT checks."
+  duration 2p
+  owner "codex"
+  requires:
+    rs001 1
+
+task t004 m005 -> m006:
+  title "Review local evidence and decide bounded paid replay"
+  description "Review the exact implementation commit, local verification, provider and model, fixture revisions, repeat-capable and ordinary-character cases, call and token ceilings, cost ceiling, stop conditions, and retained evidence. Approval authorizes only the named paid replay and does not authorize Stage or production deployment."
+  duration 1p
+  owner "user"
+  requires:
+    rs002 1
+
+task t005 m006 -> m007:
+  title "Run the approved bounded provider replay"
+  description "Run only the approved provider calls and retain inputs, outputs, operation counts, and classification evidence. Confirm that exact repetition is accepted as a current result, not treated as a defect, and that no prior-line fallback, retry, critic, runtime reuse detector, or narrator feedback path is exercised. Do not deploy."
+  duration 1p
+  owner "codex"
+  requires:
+    rs001 1
+
+task t006 m007 -> m008:
+  title "Review replay evidence and decide Stage deployment"
+  description "Review the immutable artifact candidate, bounded replay evidence, affected services, rollback target, Stage smoke scope, and stop conditions. Approval must explicitly identify the Stage action and does not authorize production promotion."
+  duration 1p
+  owner "user"
+  requires:
+    rs002 1
+
+task t007 m008 -> m009:
+  title "Deploy the approved artifact to Stage and run smoke"
+  description "Deploy only the exact approved artifact to Stage, verify the serving revision and Compact contract binding, run production-shaped API smoke, and observe repeat-capable and ordinary-character battles. Stop on fallback, policy drift, privacy loss, narrator feedback, provider-count expansion, stale-result commitment, or contract decode failure."
+  duration 1p
+  owner "codex"
+  requires:
+    rs001 1
+
+task t008 m009 -> m010:
+  title "Review Stage evidence and decide production promotion"
+  description "Review the exact Stage artifact and serving revision, smoke and observation evidence, rollback target, affected services, production smoke scope, and stop conditions. Approval must explicitly target production."
+  duration 1p
+  owner "user"
+  requires:
+    rs002 1
+
+task t009 m010 -> m011:
+  title "Promote the approved artifact and observe production"
+  description "Promote only the exact approved artifact, verify the serving revision and Compact contract binding, run API smoke, and observe repeat-capable and ordinary-character battles. Treat equal text as valid content while separately checking state-history separation, provider count, privacy, narrator non-feedback, stale-save rejection, and the absence of fallback or contract errors."
+  duration 2p
+  owner "codex"
+  requires:
+    rs001 1
