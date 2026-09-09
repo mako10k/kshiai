@@ -9,8 +9,13 @@ import {
   defaultBasicAttack,
   defaultDialoguePipelineSettings,
   defaultParameters,
+  projectObserverPerception,
   type BattleState,
   type CharacterSheet,
+  type PerceptionAccess,
+  type PerceptionEvidence,
+  type SensoryModality,
+  type TurnEvent,
 } from "@kshiai/shared";
 import { config } from "../config.js";
 import {
@@ -199,7 +204,23 @@ const opponent = sheet({
   narrativeBlurb: "静かに距離を保ち、相手の選択を見届ける旅人。",
 });
 
-const scenarios = [{
+type ObservationFixture = {
+  source: "counterpart" | "ambient";
+  modality: SensoryModality;
+  phenomenon: string;
+  perceivedAs: string;
+};
+
+type ScenarioFixture = {
+  id: "ordinary" | "repetitive";
+  character: CharacterSheet;
+  turns: Array<{
+    summary: string;
+    observations: ObservationFixture[];
+  }>;
+};
+
+const scenarios: ScenarioFixture[] = [{
   id: "ordinary" as const,
   character: sheet({
     id: "synthetic-ordinary",
@@ -208,11 +229,41 @@ const scenarios = [{
     traits: ["観察を言葉に反映する", "率直だが考えを更新できる"],
     narrativeBlurb: "場と相手の変化を受けて、率直な言葉を選び直す探索者。",
   }),
-  eventSummaries: [
-    "ミナトは返答せず、足元の水面だけが揺れた。",
-    "ミナトは半歩だけ退き、視線をアカリの手元へ移した。",
-    "遠くの鐘が鳴り、ミナトは初めてアカリへ向き直った。",
-  ],
+  turns: [{
+    summary: "ミナトは返答せず、足元の水面だけが揺れた。",
+    observations: [{
+      source: "counterpart",
+      modality: "vision",
+      phenomenon: "ミナトは口を開かず、こちらを見ている。",
+      perceivedAs: "ミナト",
+    }, {
+      source: "ambient",
+      modality: "vision",
+      phenomenon: "足元の水面だけが揺れた。",
+      perceivedAs: "足元の水面",
+    }],
+  }, {
+    summary: "ミナトは半歩だけ退き、視線をアカリの手元へ移した。",
+    observations: [{
+      source: "counterpart",
+      modality: "vision",
+      phenomenon: "ミナトは半歩だけ退き、視線をこちらの手元へ移した。",
+      perceivedAs: "ミナト",
+    }],
+  }, {
+    summary: "遠くの鐘が鳴り、ミナトは初めてアカリへ向き直った。",
+    observations: [{
+      source: "ambient",
+      modality: "sound",
+      phenomenon: "遠くで鐘が鳴った。",
+      perceivedAs: "遠くの鐘",
+    }, {
+      source: "counterpart",
+      modality: "vision",
+      phenomenon: "ミナトがこちらへ向き直った。",
+      perceivedAs: "ミナト",
+    }],
+  }],
 }, {
   id: "repetitive" as const,
   character: sheet({
@@ -225,12 +276,78 @@ const scenarios = [{
     ],
     narrativeBlurb: "言葉の新奇さより誓いの一貫性を重んじ、同じ宣言を繰り返す守り手。",
   }),
-  eventSummaries: [
-    "ミナトは黙ったまま同じ位置に立っている。",
-    "ミナトは答えず、構えも変えなかった。",
-    "周囲にもミナトにも新しい動きはなかった。",
-  ],
+  turns: [{
+    summary: "ミナトは黙ったまま同じ位置に立っている。",
+    observations: [{
+      source: "counterpart",
+      modality: "vision",
+      phenomenon: "ミナトは黙ったまま同じ位置に立っている。",
+      perceivedAs: "ミナト",
+    }],
+  }, {
+    summary: "ミナトは答えず、構えも変えなかった。",
+    observations: [{
+      source: "counterpart",
+      modality: "vision",
+      phenomenon: "ミナトは答えず、構えも変えていない。",
+      perceivedAs: "ミナト",
+    }],
+  }, {
+    summary: "周囲にもミナトにも新しい動きはなかった。",
+    observations: [{
+      source: "counterpart",
+      modality: "vision",
+      phenomenon: "ミナトは同じ位置と構えを保っている。",
+      perceivedAs: "ミナト",
+    }],
+  }],
 }];
+
+function visibleAccess(perceivedAs: string): PerceptionAccess {
+  return {
+    currentAccess: "clear",
+    identityKnowledge: "identified",
+    perceivedAs,
+    direction: "front",
+    distance: "near",
+    occurrenceCertainty: "certain",
+    attributionCertainty: "certain",
+  };
+}
+
+function unavailableAccess(): PerceptionAccess {
+  return {
+    currentAccess: "none",
+    identityKnowledge: "unknown",
+    perceivedAs: "知覚できない",
+    direction: "unknown",
+    distance: "unknown",
+    occurrenceCertainty: "unknown",
+    attributionCertainty: "unknown",
+  };
+}
+
+function sensoryEvidenceFor(input: {
+  scenarioId: "ordinary" | "repetitive";
+  turn: number;
+  eventId: string;
+  observations: ObservationFixture[];
+}): PerceptionEvidence[] {
+  return input.observations.map((observation, index) => ({
+    evidenceId: `evidence.${input.scenarioId}.${input.turn}.${index + 1}`,
+    basisEventIds: [input.eventId],
+    modality: observation.modality,
+    phenomenon: observation.phenomenon,
+    source: observation.source === "counterpart"
+      ? { kind: "entity", entityId: "character.b" }
+      : { kind: "ambient" },
+    accessBySide: {
+      a: visibleAccess(observation.perceivedAs),
+      b: unavailableAccess(),
+    },
+    publicAccess: unavailableAccess(),
+  }));
+}
 
 function preparedDeepPsycheResponse(turn: number) {
   return {
@@ -513,6 +630,91 @@ function priorUtterances(state: BattleState): number {
   ).length;
 }
 
+function projectReplayTurn(input: {
+  before: BattleState;
+  scenario: ScenarioFixture;
+  turn: number;
+}): {
+  after: BattleState;
+  event: TurnEvent;
+  sensoryEvidence: PerceptionEvidence[];
+} {
+  const fixture = input.scenario.turns[input.turn - 1];
+  if (!fixture || !input.before.semanticState) {
+    throw new Error(
+      `Replay fixture state is incomplete for ${input.scenario.id} turn ${input.turn}`,
+    );
+  }
+  const eventId = `event.${input.scenario.id}.${input.turn}`;
+  const event: TurnEvent = {
+    id: eventId,
+    type: "wait",
+    actorSide: "b",
+    summary: fixture.summary,
+  };
+  const sensoryEvidence = sensoryEvidenceFor({
+    scenarioId: input.scenario.id,
+    turn: input.turn,
+    eventId,
+    observations: fixture.observations,
+  });
+  const project = (observerSide: "a" | "b") =>
+    projectObserverPerception({
+      observerSide,
+      turn: input.turn,
+      semanticState: input.before.semanticState!,
+      worldState: input.before.worldState,
+      events: [event],
+      quantizedMechanicalEvidence: [],
+      reserveEvidence: [],
+      sensoryEvidence,
+      previousFrame: observerSide === "a"
+        ? input.before.perceptionFrameA
+        : input.before.perceptionFrameB,
+      previousRegistry: observerSide === "a"
+        ? input.before.perceptionRegistryA
+        : input.before.perceptionRegistryB,
+      legacyCounterpartIdentified: true,
+    });
+  const projectedA = project("a");
+  const projectedB = project("b");
+  return {
+    after: {
+      ...input.before,
+      turn: input.turn,
+      perceptionFrameA: projectedA.frame,
+      perceptionFrameB: projectedB.frame,
+      perceptionRegistryA: projectedA.registry,
+      perceptionRegistryB: projectedB.registry,
+    },
+    event,
+    sensoryEvidence,
+  };
+}
+
+function assertAcceptedTurn(input: {
+  scenarioId: "ordinary" | "repetitive";
+  turn: number;
+  utterance: string;
+  priorUtteranceCount: number;
+  retainedUtteranceCount: number;
+  psycheStatus: string;
+  expressionStatus: string;
+}): void {
+  if (
+    input.psycheStatus !== "fulfilled" ||
+    input.expressionStatus !== "fulfilled" ||
+    !input.utterance ||
+    input.retainedUtteranceCount !== input.priorUtteranceCount + 1
+  ) {
+    throw new Error(
+      `Application acceptance failed for ${input.scenarioId} turn ${input.turn}: ` +
+        `psyche=${input.psycheStatus} expression=${input.expressionStatus} ` +
+        `utterance=${Boolean(input.utterance)} history=${input.retainedUtteranceCount}`,
+    );
+  }
+}
+
 async function runScenarios(
   provider: OpenAiCompatibleProvider,
 ): Promise<TurnResult[]> {
@@ -539,25 +741,20 @@ async function runScenarios(
     for (let turn = 1; turn <= 3; turn += 1) {
       const before = state;
       const priorUtteranceCount = priorUtterances(before);
-      const after: BattleState = {
-        ...before,
+      const { after, event, sensoryEvidence } = projectReplayTurn({
+        before,
+        scenario,
         turn,
-        perceptionFrameA: { ...before.perceptionFrameA!, turn },
-        perceptionFrameB: { ...before.perceptionFrameB!, turn },
-      };
+      });
       const result = await advanceCharacterAgents({
         llm: provider,
         before,
         after,
         mine: scenario.character,
         opp: opponent,
-        events: [{
-          id: `event.${scenario.id}.${turn}`,
-          type: "wait",
-          actorSide: "b",
-          summary: scenario.eventSummaries[turn - 1]!,
-        }],
+        events: [event],
         actions: [],
+        sensoryEvidence,
         activeSides: ["a"],
         dialoguePipeline,
       });
@@ -579,18 +776,15 @@ async function runScenarios(
         psycheStatus,
         expressionStatus,
       });
-      if (
-        psycheStatus !== "fulfilled" ||
-        expressionStatus !== "fulfilled" ||
-        !utterance ||
-        retainedUtteranceCount !== priorUtteranceCount + 1
-      ) {
-        throw new Error(
-          `Application acceptance failed for ${scenario.id} turn ${turn}: ` +
-            `psyche=${psycheStatus} expression=${expressionStatus} ` +
-            `utterance=${Boolean(utterance)} history=${retainedUtteranceCount}`,
-        );
-      }
+      assertAcceptedTurn({
+        scenarioId: scenario.id,
+        turn,
+        utterance,
+        priorUtteranceCount,
+        retainedUtteranceCount,
+        psycheStatus,
+        expressionStatus,
+      });
     }
   }
   return turns;
@@ -658,6 +852,37 @@ async function main(): Promise<void> {
           .contractVersion ?? null,
       };
     });
+    const ordinaryObservationCoverage = provider.calls
+      .filter((call) => call.label === "advanceCharacterPsycheCompact")
+      .map((call) => JSON.parse(call.user) as {
+        character?: { displayName?: string };
+        turnObservation?: {
+          turn?: number;
+          counterpartResult?: Array<{
+            phenomenon: string;
+            sourceEventIds?: string[];
+          }>;
+          ambientChange?: Array<{
+            phenomenon: string;
+            sourceEventIds?: string[];
+          }>;
+        };
+      })
+      .filter((request) => request.character?.displayName === "アカリ")
+      .map((request) => {
+        const externalItems = [
+          ...(request.turnObservation?.counterpartResult ?? []),
+          ...(request.turnObservation?.ambientChange ?? []),
+        ];
+        return {
+          turn: request.turnObservation?.turn ?? null,
+          externalItemCount: externalItems.length,
+          sourceEventIds: [...new Set(
+            externalItems.flatMap((item) => item.sourceEventIds ?? []),
+          )],
+          phenomena: externalItems.map((item) => item.phenomenon),
+        };
+      });
     const proof = {
       schemaVersion: 1,
       contractDigest,
@@ -669,16 +894,34 @@ async function main(): Promise<void> {
       ),
       calls,
       turns,
+      ordinaryObservationCoverage,
     };
+    const observationCoverageValid = proof.ordinaryObservationCoverage.length ===
+        3 &&
+      proof.ordinaryObservationCoverage.every((coverage) =>
+        coverage.turn !== null &&
+        coverage.externalItemCount > 0 &&
+        coverage.sourceEventIds.includes(`event.ordinary.${coverage.turn}`)
+      );
     if (
       proof.calls.length !== PHYSICAL_REQUEST_CEILING ||
       proof.calls.some((call) =>
         call.inputBytes > INPUT_BYTE_CEILING || call.contractVersion !== 2
       ) ||
       proof.reservedTokens > TOTAL_RESERVED_TOKEN_CEILING ||
-      proof.reservedCostUsd > MONETARY_CEILING_USD
+      proof.reservedCostUsd > MONETARY_CEILING_USD ||
+      !observationCoverageValid
     ) {
-      throw new Error("Preparation proof did not satisfy the frozen contract");
+      throw new Error(
+        "Preparation proof did not satisfy the frozen contract: " +
+          JSON.stringify({
+            callCount: proof.calls.length,
+            reservedTokens: proof.reservedTokens,
+            reservedCostUsd: proof.reservedCostUsd,
+            observationCoverageValid,
+            ordinaryObservationCoverage: proof.ordinaryObservationCoverage,
+          }),
+      );
     }
     await writeAtomic(path.join(outputDir, "prepare-proof.json"), proof);
     console.error(

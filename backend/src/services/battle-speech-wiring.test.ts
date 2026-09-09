@@ -13,6 +13,7 @@ import {
   defaultParameters,
   defaultBasicAttack,
   legacyCharacterSheetToDefinitionV2,
+  observerPerceptId,
   projectCharacterConsciousSelfV2,
   projectCharacterDeepPsycheV2,
   resolveCharacterRelationshipV2,
@@ -562,7 +563,7 @@ describe("character-authored public speech", () => {
         self: {
           ...before.perceptionFrameA!.self,
           percepts: [{
-            perceptId: "percept.a.evidence.hit.1",
+            perceptId: observerPerceptId("a", observedHit.evidenceId),
             modality: "touch" as const,
             phenomenon: observedHit.phenomenon,
             direction: "front" as const,
@@ -575,7 +576,9 @@ describe("character-authored public speech", () => {
         latestDiff: {
           fromRevision: 0,
           toRevision: 1,
-          addedOrUpdatedPerceptIds: ["percept.a.evidence.hit.1"],
+          addedOrUpdatedPerceptIds: [
+            observerPerceptId("a", observedHit.evidenceId),
+          ],
           removedPerceptIds: [],
         },
       },

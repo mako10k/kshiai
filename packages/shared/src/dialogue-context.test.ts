@@ -9,9 +9,13 @@ import {
   DialogueThreadStateSchema,
   TurnObservationPacketSchema,
   buildTurnObservationPacket,
+  createBattleSemanticState,
   defaultDialoguePipelineSettings,
+  observerPerceptId,
+  projectObserverPerception,
   snapshotDialoguePipelineSettings,
   type CharacterPerceptionFrame,
+  type PerceptionEvidence,
 } from "./index.js";
 
 describe("dialogue context contracts", () => {
@@ -214,7 +218,7 @@ describe("dialogue context contracts", () => {
         identityKnowledge: "identified",
         perceivedAs: "自分自身",
         percepts: [{
-          perceptId: "percept.a.evidence.self",
+          perceptId: observerPerceptId("a", "evidence.self"),
           modality: "proprioception",
           phenomenon: "腕に重い衝撃が残る",
           direction: "unknown",
@@ -237,7 +241,7 @@ describe("dialogue context contracts", () => {
       latestDiff: {
         fromRevision: 1,
         toRevision: 2,
-        addedOrUpdatedPerceptIds: ["percept.a.evidence.self"],
+        addedOrUpdatedPerceptIds: [observerPerceptId("a", "evidence.self")],
         removedPerceptIds: [],
       },
     };
@@ -286,6 +290,80 @@ describe("dialogue context contracts", () => {
       sourceEventIds: ["event.self"],
     }]);
     assert.deepEqual(packet.counterpartResult, []);
+  });
+
+  it("retains event provenance across perception projection and packet construction", () => {
+    const semanticState = createBattleSemanticState({
+      scene: "浅い水面の広間",
+      sideA: { displayName: "アカリ" },
+      sideB: { displayName: "ミナト" },
+    });
+    const event = {
+      id: "event.turn.2.move",
+      type: "wait" as const,
+      actorSide: "b" as const,
+      summary: "ミナトが半歩退いた。",
+    };
+    const evidence: PerceptionEvidence = {
+      evidenceId: "evidence.turn.2.move",
+      basisEventIds: [event.id],
+      modality: "vision",
+      phenomenon: "ミナトが半歩退いた。",
+      source: { kind: "entity", entityId: "character.b" },
+      accessBySide: {
+        a: {
+          currentAccess: "clear",
+          identityKnowledge: "identified",
+          perceivedAs: "ミナト",
+          direction: "front",
+          distance: "near",
+          occurrenceCertainty: "certain",
+          attributionCertainty: "certain",
+        },
+        b: {
+          currentAccess: "none",
+          identityKnowledge: "unknown",
+          perceivedAs: "知覚できない",
+          direction: "unknown",
+          distance: "unknown",
+          occurrenceCertainty: "unknown",
+          attributionCertainty: "unknown",
+        },
+      },
+      publicAccess: {
+        currentAccess: "none",
+        identityKnowledge: "unknown",
+        perceivedAs: "知覚できない",
+        direction: "unknown",
+        distance: "unknown",
+        occurrenceCertainty: "unknown",
+        attributionCertainty: "unknown",
+      },
+    };
+    const projection = projectObserverPerception({
+      observerSide: "a",
+      turn: 2,
+      semanticState,
+      events: [event],
+      quantizedMechanicalEvidence: [],
+      reserveEvidence: [],
+      sensoryEvidence: [evidence],
+      legacyCounterpartIdentified: true,
+    });
+    const packet = buildTurnObservationPacket({
+      frame: projection.frame,
+      evidence: [evidence],
+    });
+
+    assert.notEqual(
+      observerPerceptId("a", evidence.evidenceId),
+      `percept.a.${evidence.evidenceId}`,
+    );
+    assert.deepEqual(packet.counterpartResult, [{
+      phenomenon: "ミナトが半歩退いた。",
+      certainty: "certain",
+      sourceEventIds: [event.id],
+    }]);
   });
 
   it("does not carry unobserved evidence into the other observer packet", () => {

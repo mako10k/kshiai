@@ -63,6 +63,18 @@ milestone m014:
 milestone m015:
   title "Second corrected bounded provider replay approved"
 
+milestone m016:
+  title "Observation-starvation investigation recorded"
+
+milestone m017:
+  title "Observer-safe replay input correction locally verified"
+
+milestone m018:
+  title "Observation-input provider replay approved"
+
+milestone m019:
+  title "Observation-input provider replay complete"
+
 task t001 m002 -> m003:
   title "Review and decide requirement v3"
   description "Review the exact requirement candidate against Accepted ADR-0025, including exclusion of lastSpeech from new Compact semantic input and output, content-independent acceptance, unchanged provider count, old-battle compatibility, privacy, and the explicit absence of new IDs, receipts, ledgers, or runtime reuse detection. Accept, revise, or reject that exact requirement snapshot."
@@ -100,7 +112,7 @@ task t004 m005 -> m006:
   requires:
     rs002 1
 
-task t006 m007 -> m008:
+task t006 m019 -> m008:
   title "Review replay evidence and decide Stage deployment"
   description "Review the immutable artifact candidate, bounded replay evidence, affected services, rollback target, Stage smoke scope, and stop conditions. Approval must explicitly identify the Stage action and does not authorize production promotion."
   duration 1p
@@ -179,6 +191,42 @@ task t015 m013 -> m014:
   status done
   owner "codex"
   source "docs/evidence/compact-v2-provider-replay-repair-2026-09-09.md"
+  requires:
+    rs001 1
+
+task t016 m007 -> m016:
+  title "Record observation-starvation investigation"
+  description "Record the retained replay inputs and outputs, distinguish the synthetic fixture cause from unknown production prevalence, identify the projected-percept provenance mismatch found by the network-zero check, and audit the causal record with command-line LLMThink. This investigation does not authorize provider calls or deployment."
+  duration 1p
+  status done
+  owner "codex"
+  source "docs/evidence/compact-v2-observation-starvation-2026-09-09.think"
+  requires:
+    rs001 1
+
+task t017 m016 -> m017:
+  title "Correct observer-safe replay inputs and event provenance"
+  description "Represent every authored synthetic change as bounded PerceptionEvidence, project it through the normal observer path, pass the same evidence to dialogue generation, unify opaque percept-ID derivation for packet provenance, and add a composed regression plus a network-zero per-turn observation assertion. Keep event-summary mining, direct packet injection, schema expansion, and provider calls out of this task."
+  duration 1p
+  status done
+  owner "codex"
+  source "docs/evidence/compact-v2-observation-starvation-2026-09-09.md"
+  requires:
+    rs001 1
+
+task t018 m017 -> m018:
+  title "Review and decide the observation-input provider replay"
+  description "Review the exact implementation commit, network-zero preparation proof, observer-safe ordinary and repeat-capable fixtures, xAI model and request ceilings, cost ceiling, retained evidence, and fail-closed stop conditions. Approval authorizes only the named replay and does not authorize Stage, production, release, or deployment."
+  duration 1p
+  owner "user"
+  requires:
+    rs002 1
+
+task t019 m018 -> m019:
+  title "Run the approved observation-input provider replay once"
+  description "Execute only the approved immutable observation-input replay contract once. Retain requests, responses, observer packet coverage, operation counts, application results, and cost receipt. Stop fail-closed without retry, resume, resend, fallback, judge, deployment, or persistent battle creation."
+  duration 1p
+  owner "codex"
   requires:
     rs001 1
 

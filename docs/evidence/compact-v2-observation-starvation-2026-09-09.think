@@ -1,0 +1,99 @@
+domain CompactV2ObservationStarvation:
+  description |
+    Record the observed replay monotony, distinguish its direct mechanism from
+    broader production hypotheses, and select the bounded correction.
+
+problem P1:
+  |
+    The successful Compact V2 replay satisfied its structural contract, but the
+    ordinary scenario's second and third utterances both reported that the
+    counterpart had not responded.
+
+premise P2:
+  |
+    This replay is synthetic evidence. It can establish the harness inputs and
+    model outputs that were recorded, but cannot by itself establish the cause
+    of production battle monotony.
+
+evidence E1:
+  |
+    The ordinary fixture authored three different event summaries: silence with
+    a water ripple, a half-step and gaze movement, and a bell followed by the
+    counterpart turning toward the character.
+
+evidence E2:
+  |
+    The harness passed each authored summary only as prose on a wait TurnEvent,
+    cloned the preceding perception frames while changing only their turn, and
+    supplied no sensoryEvidence to advanceCharacterAgents.
+
+evidence E3:
+  |
+    The retained run-state shows that ordinary turns two and three reached the
+    psyche provider with only selfResult entries for the preceding utterance.
+    counterpartResult and ambientChange were empty and the packet carried no
+    source event IDs for the authored scene changes.
+
+evidence E4:
+  |
+    On turns two and three the psyche responses repeated nearly the same
+    observedImpact, nextApproach, continuityBasis, relationshipMove, and
+    publicAim. The expression responses then differed only by adding まだ.
+
+evidence E5:
+  |
+    The accepted observation contract derives TurnObservationPacket from a
+    frozen CharacterPerceptionFrame and validated PerceptionEvidence. It
+    intentionally does not mine free-form TurnEvent summaries for character
+    cognition.
+
+evidence E6:
+  |
+    After the fixture was routed through projectObserverPerception, a
+    network-zero preparation check showed that the expected counterpart and
+    ambient phenomena reached every ordinary psyche request, but all of their
+    sourceEventIds were empty. projectObserverPerception creates opaque hashed
+    percept IDs, while buildTurnObservationPacket attempts the evidence lookup
+    using a literal percept.<side>.<evidenceId> string. Existing dialogue tests
+    manually construct that obsolete literal shape instead of composing the
+    real projection and packet builders.
+
+decision D1 based_on P1, P2, E1, E2, E3, E5:
+  |
+    For this replay, the root producing condition is a fixture integration
+    mismatch: authored changes existed only as event-summary prose and were not
+    represented as committed observer-safe sensory evidence. The observation
+    projection therefore correctly omitted them. Production prevalence remains
+    unknown.
+
+decision D2 based_on P2, E3, E4:
+  |
+    The immediate monotony formed upstream of expression. With no new external
+    result, psyche regenerated the same semantic move and expression realized
+    that repeated brief. A separate contributing hypothesis is that an empty
+    counterpartResult encouraged an unsupported non-response inference.
+
+decision D3 based_on D1, D2, E5:
+  |
+    Keep the production observation and privacy contracts unchanged. Correct
+    the replay fixture to create bounded PerceptionEvidence for each authored
+    counterpart or ambient change, project it through projectObserverPerception,
+    and pass the same evidence to advanceCharacterAgents. Never restore prose
+    mining or inject a TurnObservationPacket directly.
+
+decision D4 based_on P2, D3:
+  |
+    Add a network-zero preparation assertion that every ordinary psyche request
+    after setup contains at least one fresh external item bound to the exact
+    synthetic event ID. Record packet coverage in prepare-proof. Full real-model
+    comparison remains a separate paid-call decision.
+
+decision D5 based_on E5, E6:
+  |
+    Treat the percept-to-evidence lookup mismatch as a production-path defect
+    in the existing observation contract, not as a new architecture. Expose
+    one deterministic observerPerceptId helper from perception projection,
+    reuse it in dialogue packet construction, and replace the manually-shaped
+    source-link test with an integration regression that composes projection
+    and packet construction. This restores event provenance without exposing
+    canonical source identity to the character-facing frame.
