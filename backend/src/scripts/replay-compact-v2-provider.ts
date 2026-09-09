@@ -24,9 +24,9 @@ const repositoryRoot = path.resolve(
   "../../..",
 );
 
-const RUN_ID = "compact-v2-provider-replay-repair-2026-09-09-v1";
-const IMPLEMENTATION_SHA = "dfe1c34bcd0d9f4110a0d3b4ca06822fe0db69d7";
-const PREDECESSOR_RUN_ID = "compact-v2-provider-replay-2026-09-09-v1";
+const RUN_ID = "compact-v2-provider-replay-repair-2026-09-09-v2";
+const IMPLEMENTATION_SHA = "3c383ed1b4185a3bcc78c62981a628ea2b24a270";
+const PREDECESSOR_RUN_ID = "compact-v2-provider-replay-repair-2026-09-09-v1";
 const MODEL = "grok-4.3";
 const BASE_URL = "https://api.x.ai/v1";
 const PHYSICAL_REQUEST_CEILING = 18;
@@ -599,7 +599,7 @@ async function runScenarios(
 function parseArgs(args: string[]): { mode: Mode; outputDir: string } {
   let mode: Mode | null = null;
   let outputDir =
-    "docs/evidence/compact-v2-provider-replay-repair-2026-09-09";
+    "docs/evidence/compact-v2-provider-replay-repair-2026-09-09-v2";
   for (let index = 0; index < args.length; index += 1) {
     const arg = args[index];
     if (arg === "--prepare" || arg === "--execute") {
