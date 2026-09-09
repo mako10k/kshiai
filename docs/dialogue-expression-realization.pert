@@ -81,6 +81,9 @@ milestone m018:
 milestone m019:
   title "Observation-input provider replay complete"
 
+milestone m022:
+  title "Observation repair-schema correction locally verified"
+
 task t001 m002 -> m003:
   title "Review and decide requirement v3"
   description "Review the exact requirement candidate against Accepted ADR-0025, including exclusion of lastSpeech from new Compact semantic input and output, content-independent acceptance, unchanged provider count, old-battle compatibility, privacy, and the explicit absence of new IDs, receipts, ledgers, or runtime reuse detection. Accept, revise, or reject that exact requirement snapshot."
@@ -118,7 +121,7 @@ task t004 m005 -> m006:
   requires:
     rs002 1
 
-task t006 m019 -> m008:
+task t006 m022 -> m008:
   title "Review replay evidence and decide Stage deployment"
   description "Review the immutable artifact candidate, bounded replay evidence, affected services, rollback target, Stage smoke scope, and stop conditions. Approval must explicitly identify the Stage action and does not authorize production promotion."
   duration 1p
@@ -255,6 +258,16 @@ task t019 m018 -> m019:
   duration 1p
   owner "codex"
   status done
+  requires:
+    rs001 1
+
+task t022 m019 -> m022:
+  title "Correct the under-specified Compact psyche repair schema"
+  description "Record the failed replay RCA, include the complete speech-appraisal and expression-brief shapes in the independent repair request, add missing-expressionBrief regression coverage, and remove type escapes in the touched repair test boundary. Preserve the consumed run as immutable and require a new run ID and approval for any further provider execution."
+  duration 1p
+  owner "codex"
+  status done
+  source "docs/evidence/compact-v2-observation-repair-schema-rca-2026-09-09.think"
   requires:
     rs001 1
 

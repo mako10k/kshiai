@@ -1,11 +1,25 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
+import { z } from "zod";
 import {
   OpenAiCompatibleProvider,
   type ChatOpts,
 } from "./openai-compatible.js";
 
-function compactV2Input() {
+type CompactPsycheInput = Parameters<
+  OpenAiCompatibleProvider["advanceCharacterPsyche"]
+>[0];
+
+const RepairRequestProbeSchema = z.object({
+  validationIssues: z.array(z.object({
+    path: z.array(z.string()),
+    code: z.string(),
+  })),
+  rejectedSemanticSlice: z.record(z.string(), z.unknown()),
+  writableRoots: z.array(z.string()),
+});
+
+function compactV2Input(): CompactPsycheInput {
   return {
     contextMode: "compact",
     contractVersion: 2,
@@ -143,38 +157,58 @@ function candidate(input?: { anticipatedImpact?: string }) {
   };
 }
 
-function providerWithResponses(responses: unknown[]) {
-  const provider = new OpenAiCompatibleProvider({
-    name: "xai",
-    apiKey: "test-only",
-    baseUrl: "https://example.invalid/v1",
-    modelEngine: "grok-4.3",
-    modelFast: "grok-4.3",
-  });
-  const calls: Array<{ system: string; user: string; opts?: ChatOpts }> = [];
-  (provider as unknown as {
-    chatJson(system: string, user: string, opts?: ChatOpts): Promise<unknown>;
-  }).chatJson = async (system, user, opts) => {
-    calls.push({ system, user, opts });
-    const response = responses[calls.length - 1];
+class StubProvider extends OpenAiCompatibleProvider {
+  readonly calls: Array<{ system: string; user: string; opts?: ChatOpts }> = [];
+
+  constructor(private readonly responses: unknown[]) {
+    super({
+      name: "xai",
+      apiKey: "test-only",
+      baseUrl: "https://example.invalid/v1",
+      modelEngine: "grok-4.3",
+      modelFast: "grok-4.3",
+    });
+  }
+
+  protected override async chatJson(
+    system: string,
+    user: string,
+    opts?: ChatOpts,
+  ): Promise<unknown> {
+    this.calls.push({ system, user, opts });
+    const response = this.responses[this.calls.length - 1];
     if (response === undefined) throw new Error("unexpected provider call");
     return structuredClone(response);
-  };
-  return { provider, calls };
+  }
+}
+
+function providerWithResponses(responses: unknown[]) {
+  const provider = new StubProvider(responses);
+  return { provider, calls: provider.calls };
+}
+
+function requiredCall(
+  calls: Array<{ system: string; user: string; opts?: ChatOpts }>,
+  index: number,
+) {
+  const call = calls[index];
+  assert.ok(call, `provider call ${index + 1} is missing`);
+  return call;
 }
 
 describe("Compact V2 psyche semantic-closure repair", () => {
   it("keeps the valid first-result path to one call and states the non-empty contract", async () => {
     const { provider, calls } = providerWithResponses([candidate()]);
 
-    await provider.advanceCharacterPsyche(compactV2Input() as never);
+    await provider.advanceCharacterPsyche(compactV2Input());
 
     assert.equal(calls.length, 1);
     assert.equal(calls[0]?.opts?.label, "advanceCharacterPsycheCompact");
-    assert.match(calls[0]!.system, /All six strings below are required/);
-    assert.doesNotMatch(calls[0]!.system, /"anticipatedImpact":""/);
+    const firstCall = requiredCall(calls, 0);
+    assert.match(firstCall.system, /All six strings below are required/);
+    assert.doesNotMatch(firstCall.system, /"anticipatedImpact":""/);
     assert.match(
-      calls[0]!.system,
+      firstCall.system,
       /"unresolvedMove": string \(use an empty string when no unresolved move exists\)/,
     );
   });
@@ -198,16 +232,13 @@ describe("Compact V2 psyche semantic-closure repair", () => {
       },
     ]);
 
-    const result = await provider.advanceCharacterPsyche(compactV2Input() as never);
+    const result = await provider.advanceCharacterPsyche(compactV2Input());
 
     assert.equal(calls.length, 2);
     assert.equal(calls[1]?.opts?.label, "advanceCharacterPsycheCompactRepair");
     assert.equal(calls[1]?.opts?.temperature, 0.2);
-    const repairRequest = JSON.parse(calls[1]!.user) as {
-      validationIssues: Array<{ path: string[]; code: string }>;
-      rejectedSemanticSlice: Record<string, unknown>;
-      writableRoots: string[];
-    };
+    const rawRepairRequest: unknown = JSON.parse(requiredCall(calls, 1).user);
+    const repairRequest = RepairRequestProbeSchema.parse(rawRepairRequest);
     assert.ok(repairRequest.validationIssues.some((issue) =>
       issue.path.join(".") ===
         "delta.interior.speechAppraisal.anticipatedImpact" &&
@@ -238,6 +269,37 @@ describe("Compact V2 psyche semantic-closure repair", () => {
     assert.deepEqual(result.narrativeCues, rejected.narrativeCues);
   });
 
+  it("states the complete brief contract when repairing a missing expression brief", async () => {
+    const base = candidate();
+    const rejected = {
+      delta: base.delta,
+      narrativeCues: base.narrativeCues,
+    };
+    const repairedBrief = expressionBrief();
+    const { provider, calls } = providerWithResponses([
+      rejected,
+      {
+        replacement: {
+          speechAppraisal: appraisal(),
+          expressionBrief: repairedBrief,
+        },
+      },
+    ]);
+
+    const result = await provider.advanceCharacterPsyche(compactV2Input());
+
+    assert.equal(calls.length, 2);
+    assert.match(
+      requiredCall(calls, 1).system,
+      /"sourceThread":"action_reaction\|conversation_continuation\|weave"/,
+    );
+    assert.match(
+      requiredCall(calls, 1).system,
+      /"focus":\[one or two of self_result,counterpart_result,ambient_change,counterpart_speech\]/,
+    );
+    assert.deepEqual(result.expressionBrief, repairedBrief);
+  });
+
   it("rejects an unauthorized repair root without a recursive repair", async () => {
     const { provider, calls } = providerWithResponses([
       candidate({ anticipatedImpact: "" }),
@@ -251,7 +313,7 @@ describe("Compact V2 psyche semantic-closure repair", () => {
     ]);
 
     await assert.rejects(
-      provider.advanceCharacterPsyche(compactV2Input() as never),
+      provider.advanceCharacterPsyche(compactV2Input()),
       /repair\.replacement:unrecognized_keys/,
     );
     assert.equal(calls.length, 2);
@@ -269,7 +331,7 @@ describe("Compact V2 psyche semantic-closure repair", () => {
     ]);
 
     await assert.rejects(
-      provider.advanceCharacterPsyche(compactV2Input() as never),
+      provider.advanceCharacterPsyche(compactV2Input()),
       /expressionBrief\.continuityDecision:custom/,
     );
     assert.equal(calls.length, 2);
@@ -287,7 +349,7 @@ describe("Compact V2 psyche semantic-closure repair", () => {
       },
     ]);
 
-    const result = await provider.advanceCharacterPsyche(compactV2Input() as never);
+    const result = await provider.advanceCharacterPsyche(compactV2Input());
 
     assert.deepEqual(result.narrativeCues, []);
   });
@@ -304,7 +366,7 @@ describe("Compact V2 psyche semantic-closure repair", () => {
     const { provider, calls } = providerWithResponses([rejected]);
 
     await assert.rejects(
-      provider.advanceCharacterPsyche(compactV2Input() as never),
+      provider.advanceCharacterPsyche(compactV2Input()),
       /narrativeCues\.0\.sourceEventIds\.0:too_small/,
     );
     assert.equal(calls.length, 1);
