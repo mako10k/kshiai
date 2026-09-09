@@ -139,6 +139,7 @@ task t010 m012 -> m013:
   title "Review and decide the corrected bounded provider replay"
   description "Review the exact corrected implementation dfe1c34bcd0d9f4110a0d3b4ca06822fe0db69d7, Accepted ADR-0025 and ADR-0026, network-zero preparation proof, provider xAI, model grok-4.3, two synthetic scenarios with three turns each, at most eighteen physical Chat Completions requests including at most one bounded psyche repair per turn, token and USD ceilings, fail-closed stop conditions, and retained evidence. Approval authorizes only the new run compact-v2-provider-replay-repair-2026-09-09-v1; it never resumes or resends the immutable failed predecessor and does not authorize Stage, production, release, or a persistent observation battle."
   duration 1p
+  status done
   owner "user"
   source "docs/evidence/compact-v2-provider-replay-repair-2026-09-09/prepare-proof.json"
   requires:
@@ -148,7 +149,9 @@ task t011 m013 -> m007:
   title "Run the corrected bounded provider replay once"
   description "Execute only run compact-v2-provider-replay-repair-2026-09-09-v1 under its frozen contract. Retain every request, response, operation count, application result, and cost receipt. Stop fail-closed on provider, schema, semantic-closure, application, ceiling, or persistence failure; never retry, resume, resend, fall back, judge, deploy, or create a battle."
   duration 1p
+  status suspended
   owner "codex"
+  source "docs/evidence/compact-v2-provider-replay-repair-2026-09-09/run-state.json"
   requires:
     rs001 1
 
@@ -189,3 +192,23 @@ work_event WE-DER-PAID-REPLAY-SUSPEND-20260909:
   kind suspend
   occurred_at 2026-09-09T09:04:04+09:00
   reason "Stopped after the first deep-psyche application schema rejection; immutable replay evidence retained and resending is prohibited."
+
+work_event WE-CORRECTED-REPLAY-START-20260909:
+  model 1
+  task t011
+  kind start
+  occurred_at 2026-09-09T15:55:56+09:00
+  planned_value 1p
+
+work_event WE-CORRECTED-REPLAY-APPROVAL-20260909:
+  model 1
+  task t010
+  kind finish
+  occurred_at 2026-09-09T15:55:00+09:00
+
+work_event WE-CORRECTED-REPLAY-SUSPEND-20260909:
+  model 1
+  task t011
+  kind suspend
+  occurred_at 2026-09-09T15:55:59+09:00
+  reason "Stopped after the first deep-psyche result returned null for string-only dialogueThread.unresolvedMove; one request was retained, expression was blocked, and resending is prohibited."

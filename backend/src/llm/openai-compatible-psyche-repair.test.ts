@@ -173,6 +173,10 @@ describe("Compact V2 psyche semantic-closure repair", () => {
     assert.equal(calls[0]?.opts?.label, "advanceCharacterPsycheCompact");
     assert.match(calls[0]!.system, /All six strings below are required/);
     assert.doesNotMatch(calls[0]!.system, /"anticipatedImpact":""/);
+    assert.match(
+      calls[0]!.system,
+      /"unresolvedMove": string \(use an empty string when no unresolved move exists\)/,
+    );
   });
 
   it("repairs the full semantic closure and preserves unrelated candidate state", async () => {

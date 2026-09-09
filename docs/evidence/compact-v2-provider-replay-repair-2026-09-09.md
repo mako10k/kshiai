@@ -1,5 +1,23 @@
 # Corrected Compact V2 provider replay — approval candidate
 
+## Outcome
+
+The approved run started at 2026-09-09 15:55:56 JST and stopped at 15:55:59
+JST after its first deep-psyche application result. Exactly one physical request
+was sent. It used 1,870 input and 316 output tokens (2,186 total); its reserved
+amount was 10,711 tokens and USD 0.01488875.
+
+The xAI transport succeeded and returned `grok-4.3`, but the application schema
+rejected `delta.dialogueThread.unresolvedMove` because the response used `null`
+where `DialogueThreadStateSchema` requires a string. This issue is outside the
+ADR-0026 appraisal/expression repair eligibility boundary, so no repair request
+was sent. The expression guard then prevented the expression request. No later
+turn or scenario was sent, and the run must not be retried, resumed, or resent.
+
+The immutable state is retained in
+`compact-v2-provider-replay-repair-2026-09-09/run-state.json`. A run receipt is
+absent because the application did not complete.
+
 ## Purpose
 
 This is a new, bounded xAI replay candidate for the Compact V2 implementation
