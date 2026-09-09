@@ -12,10 +12,12 @@ import {
   projectObserverPerception,
   type BattleState,
   type CharacterSheet,
+  type DialoguePipelineSettings,
   type PerceptionAccess,
   type PerceptionEvidence,
   type SensoryModality,
   type TurnEvent,
+  type TurnObservationPacket,
 } from "@kshiai/shared";
 import { config } from "../config.js";
 import {
@@ -155,6 +157,13 @@ function safeError(error: unknown): { name: string; message: string } {
   };
 }
 
+function errorCode(error: unknown): string | null {
+  if (typeof error !== "object" || error === null || !("code" in error)) {
+    return null;
+  }
+  return typeof error.code === "string" ? error.code : null;
+}
+
 async function writeAtomic(filePath: string, value: unknown): Promise<void> {
   const temporary = `${filePath}.tmp`;
   await fs.writeFile(temporary, canonicalJson(value), "utf8");
@@ -223,7 +232,7 @@ type ScenarioFixture = {
 };
 
 const scenarios: ScenarioFixture[] = [{
-  id: "ordinary" as const,
+  id: "ordinary",
   character: sheet({
     id: "synthetic-ordinary",
     displayName: "アカリ",
@@ -267,7 +276,7 @@ const scenarios: ScenarioFixture[] = [{
     }],
   }],
 }, {
-  id: "repetitive" as const,
+  id: "repetitive",
   character: sheet({
     id: "synthetic-repetitive",
     displayName: "レイ",
@@ -398,13 +407,21 @@ function preparedDeepPsycheResponse(turn: number) {
   };
 }
 
+type PrepareRequestContext = {
+  contractVersion: 2;
+  characterDisplayName: string;
+  turnObservation: TurnObservationPacket;
+};
+
 class PrepareProvider extends OpenAiCompatibleProvider {
   readonly calls: Array<{
     label: string;
     system: string;
     user: string;
     temperature: number;
+    context: PrepareRequestContext;
   }> = [];
+  private activeContext: PrepareRequestContext | null = null;
 
   constructor() {
     super({
@@ -417,23 +434,60 @@ class PrepareProvider extends OpenAiCompatibleProvider {
     });
   }
 
+  override async advanceCharacterPsyche(
+    input: Parameters<OpenAiCompatibleProvider["advanceCharacterPsyche"]>[0],
+  ): ReturnType<OpenAiCompatibleProvider["advanceCharacterPsyche"]> {
+    if (input.contextMode !== "compact" || input.contractVersion !== 2) {
+      throw new Error("Prepare replay requires Compact V2 psyche input");
+    }
+    this.activeContext = {
+      contractVersion: input.contractVersion,
+      characterDisplayName: input.character.displayName,
+      turnObservation: input.turnObservation,
+    };
+    try {
+      return await super.advanceCharacterPsyche(input);
+    } finally {
+      this.activeContext = null;
+    }
+  }
+
+  override async advanceCharacterAgent(
+    input: Parameters<OpenAiCompatibleProvider["advanceCharacterAgent"]>[0],
+  ): ReturnType<OpenAiCompatibleProvider["advanceCharacterAgent"]> {
+    if (input.contextMode !== "compact" || input.contractVersion !== 2) {
+      throw new Error("Prepare replay requires Compact V2 expression input");
+    }
+    this.activeContext = {
+      contractVersion: input.contractVersion,
+      characterDisplayName: input.character.displayName,
+      turnObservation: input.turnObservation,
+    };
+    try {
+      return await super.advanceCharacterAgent(input);
+    } finally {
+      this.activeContext = null;
+    }
+  }
+
   protected override async chatJson(
     system: string,
     user: string,
     opts?: ChatOpts,
   ): Promise<unknown> {
     const label = opts?.label ?? "unknown";
+    const context = this.activeContext;
+    if (!context) {
+      throw new Error(`Prepare request context is missing for ${label}`);
+    }
     this.calls.push({
       label,
       system,
       user,
       temperature: opts?.temperature ?? 0,
+      context,
     });
-    const parsed = JSON.parse(user) as {
-      character?: { displayName?: string };
-      turnObservation?: { turn?: number };
-    };
-    const turn = parsed.turnObservation?.turn ?? 1;
+    const turn = context.turnObservation.turn;
     if (label === "advanceCharacterPsycheCompact") {
       const rejected = preparedDeepPsycheResponse(turn);
       rejected.delta.interior.speechAppraisal.anticipatedImpact = "";
@@ -455,10 +509,14 @@ class PrepareProvider extends OpenAiCompatibleProvider {
         "その半歩は見えた。今度は手元ではなく、こちらを見て。",
         "やっと向き合ったね。ここから話そう。",
       ];
+      const ordinaryLine = ordinaryLines[turn - 1];
+      if (!ordinaryLine) {
+        throw new Error(`Prepared expression is missing for turn ${turn}`);
+      }
       return {
-        nextUtterance: parsed.character?.displayName === "レイ"
+        nextUtterance: context.characterDisplayName === "レイ"
           ? "ここは譲らない。"
-          : ordinaryLines[turn - 1]!,
+          : ordinaryLine,
         nextAction: null,
         realizedManifestation: null,
       };
@@ -615,7 +673,8 @@ class LiveProvider extends OpenAiCompatibleProvider {
       record.status = "succeeded";
       record.finishedAt = new Date().toISOString();
       await this.persist();
-      return JSON.parse(content) as unknown;
+      const parsedContent: unknown = JSON.parse(content);
+      return parsedContent;
     } catch (error) {
       record.status = "failed";
       record.finishedAt = new Date().toISOString();
@@ -642,7 +701,8 @@ function projectReplayTurn(input: {
   sensoryEvidence: PerceptionEvidence[];
 } {
   const fixture = input.scenario.turns[input.turn - 1];
-  if (!fixture || !input.before.semanticState) {
+  const semanticState = input.before.semanticState;
+  if (!fixture || !semanticState) {
     throw new Error(
       `Replay fixture state is incomplete for ${input.scenario.id} turn ${input.turn}`,
     );
@@ -664,7 +724,7 @@ function projectReplayTurn(input: {
     projectObserverPerception({
       observerSide,
       turn: input.turn,
-      semanticState: input.before.semanticState!,
+      semanticState,
       worldState: input.before.worldState,
       events: [event],
       quantizedMechanicalEvidence: [],
@@ -721,10 +781,10 @@ async function runScenarios(
   provider: OpenAiCompatibleProvider,
 ): Promise<TurnResult[]> {
   const turns: TurnResult[] = [];
-  const dialoguePipeline = {
+  const dialoguePipeline: DialoguePipelineSettings = {
     ...defaultDialoguePipelineSettings(),
-    schemaVersion: 2 as const,
-    contextProjectionMode: "compact" as const,
+    schemaVersion: 2,
+    contextProjectionMode: "compact",
   };
   for (const scenario of scenarios) {
     let state = createBattleState({
@@ -734,8 +794,11 @@ async function runScenarios(
       turnLimit: 20,
       prologuePending: false,
     });
+    if (!state.agentStateA) {
+      throw new Error(`Initial agent state is missing for ${scenario.id}`);
+    }
     state.agentStateA = {
-      ...state.agentStateA!,
+      ...state.agentStateA,
       speechStyle: scenario.id === "repetitive"
         ? "重要な局面では同じ誓句を短く繰り返す"
         : "観察した変化を短く率直に言葉へ反映する",
@@ -850,34 +913,20 @@ async function main(): Promise<void> {
             INPUT_PRICE_PER_MILLION_USD +
           maxOutputTokens / 1_000_000 * OUTPUT_PRICE_PER_MILLION_USD,
         requestDigest: sha256(`${call.system}\n${call.user}`),
-        contractVersion: (JSON.parse(call.user) as { contractVersion?: number })
-          .contractVersion ?? null,
+        contractVersion: call.context.contractVersion,
       };
     });
     const ordinaryObservationCoverage = provider.calls
       .filter((call) => call.label === "advanceCharacterPsycheCompact")
-      .map((call) => JSON.parse(call.user) as {
-        character?: { displayName?: string };
-        turnObservation?: {
-          turn?: number;
-          counterpartResult?: Array<{
-            phenomenon: string;
-            sourceEventIds?: string[];
-          }>;
-          ambientChange?: Array<{
-            phenomenon: string;
-            sourceEventIds?: string[];
-          }>;
-        };
-      })
-      .filter((request) => request.character?.displayName === "アカリ")
-      .map((request) => {
+      .map((call) => call.context)
+      .filter((context) => context.characterDisplayName === "アカリ")
+      .map((context) => {
         const externalItems = [
-          ...(request.turnObservation?.counterpartResult ?? []),
-          ...(request.turnObservation?.ambientChange ?? []),
+          ...context.turnObservation.counterpartResult,
+          ...context.turnObservation.ambientChange,
         ];
         return {
-          turn: request.turnObservation?.turn ?? null,
+          turn: context.turnObservation.turn,
           externalItemCount: externalItems.length,
           sourceEventIds: [...new Set(
             externalItems.flatMap((item) => item.sourceEventIds ?? []),
@@ -942,7 +991,7 @@ async function main(): Promise<void> {
       "run-state.json already exists; refusing any resend or ambiguous recovery",
     );
   } catch (error) {
-    if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
+    if (errorCode(error) !== "ENOENT") throw error;
   }
   const state: RunState = {
     schemaVersion: 1,

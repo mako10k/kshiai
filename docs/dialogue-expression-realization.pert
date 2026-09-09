@@ -72,6 +72,9 @@ milestone m020:
 milestone m017:
   title "Observer-safe replay input correction locally verified"
 
+milestone m021:
+  title "Replay harness typed-input flow locally verified"
+
 milestone m018:
   title "Observation-input provider replay approved"
 
@@ -227,7 +230,16 @@ task t017 m020 -> m017:
   requires:
     rs001 1
 
-task t018 m017 -> m018:
+task t021 m017 -> m021:
+  title "Remove replay-harness type escapes and redundant JSON parsing"
+  description "Carry typed Compact V2 psyche and expression inputs through PrepareProvider, derive preparation metadata from those values rather than reparsing the serialized provider request, replace non-null assertions with control-flow narrowing, and retain JSON parsing only for the actual external response-string boundary."
+  duration 1p
+  owner "codex"
+  status done
+  requires:
+    rs001 1
+
+task t018 m021 -> m018:
   title "Review and decide the observation-input provider replay"
   description "Review the exact implementation commit, network-zero preparation proof, observer-safe ordinary and repeat-capable fixtures, xAI model and request ceilings, cost ceiling, retained evidence, and fail-closed stop conditions. Approval authorizes only the named replay and does not authorize Stage, production, release, or deployment."
   duration 1p
