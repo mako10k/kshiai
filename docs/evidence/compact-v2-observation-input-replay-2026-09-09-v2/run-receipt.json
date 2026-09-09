@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "runId": "compact-v2-observation-input-replay-2026-09-09-v2",
+  "contractDigest": "af6158962f818c3611525ec23840d28cc1af87be62606cae4bee1fa3af130cae",
+  "status": "succeeded",
+  "physicalRequests": 12,
+  "usage": {
+    "inputTokens": 22188,
+    "outputTokens": 2314,
+    "totalTokens": 24502
+  },
+  "usageCostUsd": 0.03352,
+  "reservedTokens": 118130,
+  "reservedCostUsd": 0.15966249999999998,
+  "utterances": [
+    {
+      "scenario": "ordinary",
+      "turn": 1,
+      "text": "水面が揺れたね。"
+    },
+    {
+      "scenario": "ordinary",
+      "turn": 2,
+      "text": "ミナトが半歩下がって、手元を見てるね。"
+    },
+    {
+      "scenario": "ordinary",
+      "turn": 3,
+      "text": "鐘の音が聞こえたね。"
+    },
+    {
+      "scenario": "repetitive",
+      "turn": 1,
+      "text": "ここは譲らない"
+    },
+    {
+      "scenario": "repetitive",
+      "turn": 2,
+      "text": "ここは譲らない"
+    },
+    {
+      "scenario": "repetitive",
+      "turn": 3,
+      "text": "ここは譲らない"
+    }
+  ],
+  "limitations": [
+    "Synthetic in-memory fixtures only; no database or deployment path was exercised.",
+    "Six successful turns cannot establish statistical conversation-quality improvement.",
+    "Equal utterance text is valid and is not treated as a failure."
+  ]
+}

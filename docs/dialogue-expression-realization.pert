@@ -292,6 +292,7 @@ task t023 m022 -> m023:
 
 task t024 m023 -> m024:
   title "Review and decide corrected observation-input replay v2"
+  status done
   description "Review the failed v1 disposition, repair-schema RCA and correction, exact implementation commit, network-zero preparation proof, xAI model, operation and monetary ceilings, retained evidence, and fail-closed stop conditions. Approval authorizes only the named v2 replay once and never authorizes retrying v1, Stage, production, release, or deployment."
   duration 1p
   owner "user"
@@ -301,6 +302,7 @@ task t024 m023 -> m024:
 
 task t025 m024 -> m025:
   title "Run the approved corrected observation-input replay v2 once"
+  status done
   description "Execute only the separately approved immutable v2 contract once. Retain requests, responses, observation coverage, operation counts, application results, and cost receipt. Stop fail-closed without retry, resume, resend, fallback, judge, deployment, or persistent battle creation."
   duration 1p
   owner "codex"

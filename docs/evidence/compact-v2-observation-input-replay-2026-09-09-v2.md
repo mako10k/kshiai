@@ -65,9 +65,7 @@ Machine-readable evidence is retained in
 
 ## Authority boundary
 
-No provider call has been made for v2. Approval would authorize only one
-execution of the exact run ID and contract digest above. It would not authorize
-any action against v1, another retry after a v2 failure, push, PR, merge,
-release, Stage or production deployment, production promotion, or a persistent
-observation battle.
-
+The owner explicitly approved v2 and instructed execution. That one execution
+succeeded on 2026-09-09 with 12 requests and all six turns accepted. Approval is
+consumed. See `compact-v2-observation-input-replay-2026-09-09-v2-outcome.md`.
+Stage and production deployment remain outside this execution authority.
