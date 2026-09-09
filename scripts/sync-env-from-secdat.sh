@@ -9,23 +9,34 @@ if ! command -v secdat >/dev/null; then
   exit 1
 fi
 
-if ! secdat get XAI_API_KEY --stdout >/dev/null 2>&1; then
+GIT_COMMON_DIR="$(git rev-parse --path-format=absolute --git-common-dir)"
+if [[ "$(basename "$GIT_COMMON_DIR")" != ".git" ]]; then
+  echo "Cannot resolve the main worktree secdat domain" >&2
+  exit 1
+fi
+SECDAT_DIR="$(dirname "$GIT_COMMON_DIR")"
+
+secdat_repo() {
+  secdat --dir "$SECDAT_DIR" "$@"
+}
+
+if ! secdat_repo get XAI_API_KEY --stdout >/dev/null 2>&1; then
   echo "secdat domain is locked or XAI_API_KEY missing." >&2
-  echo "Run: secdat --dir /home/mako10k unlock" >&2
+  echo "Run: secdat --dir $SECDAT_DIR unlock" >&2
   echo "Then re-run: npm run sync:secdat" >&2
   exit 1
 fi
 
-XAI="$(secdat get XAI_API_KEY --stdout)"
+XAI="$(secdat_repo get XAI_API_KEY --stdout)"
 OPENAI=""
-if secdat get OPENAI_API_KEY --stdout >/dev/null 2>&1; then
-  OPENAI="$(secdat get OPENAI_API_KEY --stdout)"
+if secdat_repo get OPENAI_API_KEY --stdout >/dev/null 2>&1; then
+  OPENAI="$(secdat_repo get OPENAI_API_KEY --stdout)"
 fi
 VENICE=""
-if secdat get VENICEAI_API_KEY --stdout >/dev/null 2>&1; then
-  VENICE="$(secdat get VENICEAI_API_KEY --stdout)"
-elif secdat get VENICE_API_KEY --stdout >/dev/null 2>&1; then
-  VENICE="$(secdat get VENICE_API_KEY --stdout)"
+if secdat_repo get VENICEAI_API_KEY --stdout >/dev/null 2>&1; then
+  VENICE="$(secdat_repo get VENICEAI_API_KEY --stdout)"
+elif secdat_repo get VENICE_API_KEY --stdout >/dev/null 2>&1; then
+  VENICE="$(secdat_repo get VENICE_API_KEY --stdout)"
 fi
 
 ENV_FILE="$ROOT/.env"
@@ -89,24 +100,24 @@ DEPLOYMENT_KEYS=(
 )
 SYNCED_DEPLOYMENT_KEYS=()
 for key in "${DEPLOYMENT_KEYS[@]}"; do
-  if secdat get "$key" --stdout >/dev/null 2>&1; then
-    value="$(secdat get "$key" --stdout)"
+  if secdat_repo get "$key" --stdout >/dev/null 2>&1; then
+    value="$(secdat_repo get "$key" --stdout)"
     set_kv "$key" "$value" "$ENV_FILE"
     SYNCED_DEPLOYMENT_KEYS+=("$key")
   fi
 done
 
-if secdat get SUPABASE_URL --stdout >/dev/null 2>&1 &&
-   secdat get SUPABASE_PUBLISHABLE_KEY --stdout >/dev/null 2>&1; then
-  set_kv VITE_SUPABASE_URL "$(secdat get SUPABASE_URL --stdout)" "$ENV_FILE"
+if secdat_repo get SUPABASE_URL --stdout >/dev/null 2>&1 &&
+   secdat_repo get SUPABASE_PUBLISHABLE_KEY --stdout >/dev/null 2>&1; then
+  set_kv VITE_SUPABASE_URL "$(secdat_repo get SUPABASE_URL --stdout)" "$ENV_FILE"
   set_kv VITE_SUPABASE_PUBLISHABLE_KEY \
-    "$(secdat get SUPABASE_PUBLISHABLE_KEY --stdout)" "$ENV_FILE"
+    "$(secdat_repo get SUPABASE_PUBLISHABLE_KEY --stdout)" "$ENV_FILE"
   set_kv AUTH_PROVIDER supabase "$ENV_FILE"
 fi
 
 R2_READY=true
 for key in R2_ACCOUNT_ID R2_ACCESS_KEY_ID R2_SECRET_ACCESS_KEY R2_BUCKET R2_PUBLIC_BASE_URL; do
-  if ! secdat get "$key" --stdout >/dev/null 2>&1; then
+  if ! secdat_repo get "$key" --stdout >/dev/null 2>&1; then
     R2_READY=false
     break
   fi
