@@ -29,9 +29,9 @@ const repositoryRoot = path.resolve(
   "../../..",
 );
 
-const RUN_ID = "compact-v2-provider-replay-repair-2026-09-09-v2";
-const IMPLEMENTATION_SHA = "3c383ed1b4185a3bcc78c62981a628ea2b24a270";
-const PREDECESSOR_RUN_ID = "compact-v2-provider-replay-repair-2026-09-09-v1";
+const RUN_ID = "compact-v2-observation-input-replay-2026-09-09-v1";
+const IMPLEMENTATION_SHA = "73111aa6bd5784b5c74ab5c1d695a8662ba56468";
+const PREDECESSOR_RUN_ID = "compact-v2-provider-replay-repair-2026-09-09-v2";
 const MODEL = "grok-4.3";
 const BASE_URL = "https://api.x.ai/v1";
 const PHYSICAL_REQUEST_CEILING = 18;
@@ -100,9 +100,11 @@ const executionContract = {
   schemaVersion: 1,
   runId: RUN_ID,
   implementationSha: IMPLEMENTATION_SHA,
-  correctiveDecision: "ADR-0026",
+  correctiveDecision: "ADR-0025 and ADR-0026 existing contracts",
   predecessorRunId: PREDECESSOR_RUN_ID,
-  predecessorDisposition: "immutable failed run; never resume or resend",
+  predecessorDisposition: "immutable successful baseline; never modify or resend",
+  observationCorrectionEvidence:
+    "docs/evidence/compact-v2-observation-starvation-2026-09-09.think",
   scope: "in-memory Compact V2 psyche and expression provider replay",
   scenarios: ["ordinary", "repetitive"],
   turnsPerScenario: 3,
@@ -793,7 +795,7 @@ async function runScenarios(
 function parseArgs(args: string[]): { mode: Mode; outputDir: string } {
   let mode: Mode | null = null;
   let outputDir =
-    "docs/evidence/compact-v2-provider-replay-repair-2026-09-09-v2";
+    "docs/evidence/compact-v2-observation-input-replay-2026-09-09-v1";
   for (let index = 0; index < args.length; index += 1) {
     const arg = args[index];
     if (arg === "--prepare" || arg === "--execute") {
