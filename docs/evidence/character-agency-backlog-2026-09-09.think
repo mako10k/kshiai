@@ -1,0 +1,20 @@
+domain CharacterAgencyBacklog:
+  description "Prioritize owner-requested character-driven goals, tactics, and speech effects."
+problem P1:
+  "Record a backlog that reduces rework while delivering observable character agency."
+evidence E1:
+  "Owner requests initial goals derived from character personality and relationship, ability and engine knowledge, adaptive tactics, and speech selected for intended self and counterpart effects."
+evidence E2:
+  "V2 observation replay completed six synthetic turns. Ordinary utterances described current observations; the run does not establish combat decision quality or live repair efficacy."
+evidence E3:
+  "Compact psyche reconstruction omits structuredSelf and decision. Compact expression receives them when present but projects no currentGoal. Current prompts emphasize relationship moves and restrict social consequence bearers to self or relationship."
+premise P2:
+  "A desired effect is not an observed effect. Recipient cognition and the combat engine retain authority over actual reactions and mechanical effects. Counterpart attributes may be used only when known to the character."
+premise P3:
+  "Priority and effort estimates are provisional. Existing character definitions, action norms, revision binding, observation and action validation should be reused after current-fit inspection."
+decision D1 based_on P1, E1, E2, E3, P3:
+  "Record a separate non-executable backlog and link it from the established backlog. Preserve accepted contracts and completed replay evidence."
+decision D2 based_on E1, E3, P2, P3:
+  "Prioritize a narrow vertical slice: derive a character goal from authored traits and known relationship, provide bounded engine-backed own ability and action knowledge, and connect a short tactical intent to action and speech. Establish counterfactual fixtures before judging model output."
+decision D3 based_on E1, E2, P2:
+  "Then add bounded temporal feedback and short-term adaptation, intended speech effects and recipient reactions, evidence-based final-goal changes, and only later new mechanical speech effects. Distinguish strategic effectiveness from wording variety, and local checks from paid provider evidence."

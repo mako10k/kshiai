@@ -4,6 +4,10 @@
 現状スナップショット: `206a1b0fded3054c8f590589ca1316e3cd4cf342` (`origin/HEAD`, `origin/main`, `v0.5.1`)
 状態: **Fit / Gap 基準線（実行状態はPERTで管理）**
 
+2026-09-09のキャラ固有の初期目標、能力・ルール理解、時系列戦術、発話効果の要望は
+[`character-agency-backlog.md`](character-agency-backlog.md) に候補・依存・検証条件として
+整理した。本文の履歴基準線と既存リリース条件を変更するものではない。
+
 2026-08-13 以降の「内部構造化されたキャラ・戦場・ナレーション」と
 「表示用自然言語projection」の分離は、履歴基準線である本文を書き換えず、
 [`structured-domain-assets-backlog.md`](structured-domain-assets-backlog.md) と
