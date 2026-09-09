@@ -1,0 +1,297 @@
+{
+  "schemaVersion": 1,
+  "contractDigest": "af6158962f818c3611525ec23840d28cc1af87be62606cae4bee1fa3af130cae",
+  "networkRequests": 0,
+  "reservedTokens": 175528,
+  "reservedCostUsd": 0.24040999999999998,
+  "calls": [
+    {
+      "ordinal": 1,
+      "label": "advanceCharacterPsycheCompact",
+      "temperature": 0.5,
+      "inputBytes": 8695,
+      "maxOutputTokens": 1200,
+      "reservedTokens": 10919,
+      "reservedCostUsd": 0.015148749999999999,
+      "requestDigest": "4eaf54de0dffa85ebaeb202e7e713db665e1becce783d7b709ba8beb657f4cef",
+      "contractVersion": 2
+    },
+    {
+      "ordinal": 2,
+      "label": "advanceCharacterPsycheCompactRepair",
+      "temperature": 0.2,
+      "inputBytes": 7000,
+      "maxOutputTokens": 1200,
+      "reservedTokens": 9224,
+      "reservedCostUsd": 0.01303,
+      "requestDigest": "093b9ce5b972c89264685cd36d30f4088e49c31917335672e8699ad57adb4d39",
+      "contractVersion": 2
+    },
+    {
+      "ordinal": 3,
+      "label": "advanceCharacterAgentCompact",
+      "temperature": 0.65,
+      "inputBytes": 6598,
+      "maxOutputTokens": 400,
+      "reservedTokens": 8022,
+      "reservedCostUsd": 0.010527500000000002,
+      "requestDigest": "f061d84374add625387322122a009f32b135301d46830b8af5e9849989a5e2fc",
+      "contractVersion": 2
+    },
+    {
+      "ordinal": 4,
+      "label": "advanceCharacterPsycheCompact",
+      "temperature": 0.5,
+      "inputBytes": 9343,
+      "maxOutputTokens": 1200,
+      "reservedTokens": 11567,
+      "reservedCostUsd": 0.01595875,
+      "requestDigest": "86df1f8c4abb7914699cabc2d5b39e3cc9eb96230cfb6311b7004489dd973d09",
+      "contractVersion": 2
+    },
+    {
+      "ordinal": 5,
+      "label": "advanceCharacterPsycheCompactRepair",
+      "temperature": 0.2,
+      "inputBytes": 7673,
+      "maxOutputTokens": 1200,
+      "reservedTokens": 9897,
+      "reservedCostUsd": 0.013871249999999998,
+      "requestDigest": "d29cc5d1b8d73e830eefe3263883b21d2e84334056e2e7054acee33435c5f7f4",
+      "contractVersion": 2
+    },
+    {
+      "ordinal": 6,
+      "label": "advanceCharacterAgentCompact",
+      "temperature": 0.65,
+      "inputBytes": 6620,
+      "maxOutputTokens": 400,
+      "reservedTokens": 8044,
+      "reservedCostUsd": 0.010554999999999998,
+      "requestDigest": "fbe8bd96c3630b264bdb015bf4b96cdb9d3e38fe147fefbc6c2371589467de26",
+      "contractVersion": 2
+    },
+    {
+      "ordinal": 7,
+      "label": "advanceCharacterPsycheCompact",
+      "temperature": 0.5,
+      "inputBytes": 9586,
+      "maxOutputTokens": 1200,
+      "reservedTokens": 11810,
+      "reservedCostUsd": 0.0162625,
+      "requestDigest": "9e7b3637e6163a45fb2a97c82094f0ea6ff8dceee7cd8bf425cd139075bfab3d",
+      "contractVersion": 2
+    },
+    {
+      "ordinal": 8,
+      "label": "advanceCharacterPsycheCompactRepair",
+      "temperature": 0.2,
+      "inputBytes": 7916,
+      "maxOutputTokens": 1200,
+      "reservedTokens": 10140,
+      "reservedCostUsd": 0.014175,
+      "requestDigest": "4d6af4f728f277e51b08ab0592f2e04fb59402d85a908f98095e42bed0973fb3",
+      "contractVersion": 2
+    },
+    {
+      "ordinal": 9,
+      "label": "advanceCharacterAgentCompact",
+      "temperature": 0.65,
+      "inputBytes": 6840,
+      "maxOutputTokens": 400,
+      "reservedTokens": 8264,
+      "reservedCostUsd": 0.01083,
+      "requestDigest": "bbeb373e83bbfa2164dc9b16dec8221e1cccbe1a95542d619268844b95e4063e",
+      "contractVersion": 2
+    },
+    {
+      "ordinal": 10,
+      "label": "advanceCharacterPsycheCompact",
+      "temperature": 0.5,
+      "inputBytes": 8647,
+      "maxOutputTokens": 1200,
+      "reservedTokens": 10871,
+      "reservedCostUsd": 0.01508875,
+      "requestDigest": "555b5e842b024d83a2e390c980a63e37ee179484ae5a2ee662827afad96941a2",
+      "contractVersion": 2
+    },
+    {
+      "ordinal": 11,
+      "label": "advanceCharacterPsycheCompactRepair",
+      "temperature": 0.2,
+      "inputBytes": 6952,
+      "maxOutputTokens": 1200,
+      "reservedTokens": 9176,
+      "reservedCostUsd": 0.012969999999999999,
+      "requestDigest": "515f99fbf9edcccfe238cb278075d90a9a59a12ff7a0d75e28f2583e45993285",
+      "contractVersion": 2
+    },
+    {
+      "ordinal": 12,
+      "label": "advanceCharacterAgentCompact",
+      "temperature": 0.65,
+      "inputBytes": 6601,
+      "maxOutputTokens": 400,
+      "reservedTokens": 8025,
+      "reservedCostUsd": 0.010531249999999999,
+      "requestDigest": "f71f64471bc93c7de3323d4059ac134e12666feac7b3cef32627b8cfdd410a3c",
+      "contractVersion": 2
+    },
+    {
+      "ordinal": 13,
+      "label": "advanceCharacterPsycheCompact",
+      "temperature": 0.5,
+      "inputBytes": 9363,
+      "maxOutputTokens": 1200,
+      "reservedTokens": 11587,
+      "reservedCostUsd": 0.01598375,
+      "requestDigest": "658b19250b219e41bfdcb079ed5e184de141032e425d01942e777f0e64c0841f",
+      "contractVersion": 2
+    },
+    {
+      "ordinal": 14,
+      "label": "advanceCharacterPsycheCompactRepair",
+      "temperature": 0.2,
+      "inputBytes": 7693,
+      "maxOutputTokens": 1200,
+      "reservedTokens": 9917,
+      "reservedCostUsd": 0.01389625,
+      "requestDigest": "237454108df9ce383c4cb96e71bb6ccdb3132df568e9e7ba9c18598e2465bb05",
+      "contractVersion": 2
+    },
+    {
+      "ordinal": 15,
+      "label": "advanceCharacterAgentCompact",
+      "temperature": 0.65,
+      "inputBytes": 6691,
+      "maxOutputTokens": 400,
+      "reservedTokens": 8115,
+      "reservedCostUsd": 0.01064375,
+      "requestDigest": "9c16cb03a082bc149035932c83f0393c88977bfb99242a4d85fb6e58c227bde6",
+      "contractVersion": 2
+    },
+    {
+      "ordinal": 16,
+      "label": "advanceCharacterPsycheCompact",
+      "temperature": 0.5,
+      "inputBytes": 9481,
+      "maxOutputTokens": 1200,
+      "reservedTokens": 11705,
+      "reservedCostUsd": 0.01613125,
+      "requestDigest": "667e76007293295a5c4a8fbcef266c07b78c11a9ed3996c627839253cde95419",
+      "contractVersion": 2
+    },
+    {
+      "ordinal": 17,
+      "label": "advanceCharacterPsycheCompactRepair",
+      "temperature": 0.2,
+      "inputBytes": 7811,
+      "maxOutputTokens": 1200,
+      "reservedTokens": 10035,
+      "reservedCostUsd": 0.01404375,
+      "requestDigest": "c06d8ef678eefb4ec95bcb082db3950949fedfd998dba630ae7725a901aecce4",
+      "contractVersion": 2
+    },
+    {
+      "ordinal": 18,
+      "label": "advanceCharacterAgentCompact",
+      "temperature": 0.65,
+      "inputBytes": 6786,
+      "maxOutputTokens": 400,
+      "reservedTokens": 8210,
+      "reservedCostUsd": 0.010762500000000001,
+      "requestDigest": "ea287c51286f5a7aaea49a587f7d7b88b51c0c8306e5cfdb2e14ea96ca8c7610",
+      "contractVersion": 2
+    }
+  ],
+  "turns": [
+    {
+      "scenario": "ordinary",
+      "turn": 1,
+      "utterance": "水面が揺れた。返事はまだ待つ。",
+      "priorUtteranceCount": 0,
+      "retainedUtteranceCount": 1,
+      "psycheStatus": "fulfilled",
+      "expressionStatus": "fulfilled"
+    },
+    {
+      "scenario": "ordinary",
+      "turn": 2,
+      "utterance": "その半歩は見えた。今度は手元ではなく、こちらを見て。",
+      "priorUtteranceCount": 1,
+      "retainedUtteranceCount": 2,
+      "psycheStatus": "fulfilled",
+      "expressionStatus": "fulfilled"
+    },
+    {
+      "scenario": "ordinary",
+      "turn": 3,
+      "utterance": "やっと向き合ったね。ここから話そう。",
+      "priorUtteranceCount": 2,
+      "retainedUtteranceCount": 3,
+      "psycheStatus": "fulfilled",
+      "expressionStatus": "fulfilled"
+    },
+    {
+      "scenario": "repetitive",
+      "turn": 1,
+      "utterance": "ここは譲らない。",
+      "priorUtteranceCount": 0,
+      "retainedUtteranceCount": 1,
+      "psycheStatus": "fulfilled",
+      "expressionStatus": "fulfilled"
+    },
+    {
+      "scenario": "repetitive",
+      "turn": 2,
+      "utterance": "ここは譲らない。",
+      "priorUtteranceCount": 1,
+      "retainedUtteranceCount": 2,
+      "psycheStatus": "fulfilled",
+      "expressionStatus": "fulfilled"
+    },
+    {
+      "scenario": "repetitive",
+      "turn": 3,
+      "utterance": "ここは譲らない。",
+      "priorUtteranceCount": 2,
+      "retainedUtteranceCount": 3,
+      "psycheStatus": "fulfilled",
+      "expressionStatus": "fulfilled"
+    }
+  ],
+  "ordinaryObservationCoverage": [
+    {
+      "turn": 1,
+      "externalItemCount": 2,
+      "sourceEventIds": [
+        "event.ordinary.1"
+      ],
+      "phenomena": [
+        "ミナトは口を開かず、こちらを見ている。",
+        "足元の水面だけが揺れた。"
+      ]
+    },
+    {
+      "turn": 2,
+      "externalItemCount": 1,
+      "sourceEventIds": [
+        "event.ordinary.2"
+      ],
+      "phenomena": [
+        "ミナトは半歩だけ退き、視線をこちらの手元へ移した。"
+      ]
+    },
+    {
+      "turn": 3,
+      "externalItemCount": 2,
+      "sourceEventIds": [
+        "event.ordinary.3"
+      ],
+      "phenomena": [
+        "ミナトがこちらへ向き直った。",
+        "遠くで鐘が鳴った。"
+      ]
+    }
+  ]
+}

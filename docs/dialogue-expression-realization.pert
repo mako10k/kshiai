@@ -84,6 +84,15 @@ milestone m019:
 milestone m022:
   title "Observation repair-schema correction locally verified"
 
+milestone m023:
+  title "Corrected observation replay v2 prepared"
+
+milestone m024:
+  title "Corrected observation replay v2 approved"
+
+milestone m025:
+  title "Corrected observation replay v2 recorded"
+
 task t001 m002 -> m003:
   title "Review and decide requirement v3"
   description "Review the exact requirement candidate against Accepted ADR-0025, including exclusion of lastSpeech from new Compact semantic input and output, content-independent acceptance, unchanged provider count, old-battle compatibility, privacy, and the explicit absence of new IDs, receipts, ledgers, or runtime reuse detection. Accept, revise, or reject that exact requirement snapshot."
@@ -121,7 +130,7 @@ task t004 m005 -> m006:
   requires:
     rs002 1
 
-task t006 m022 -> m008:
+task t006 m025 -> m008:
   title "Review replay evidence and decide Stage deployment"
   description "Review the immutable artifact candidate, bounded replay evidence, affected services, rollback target, Stage smoke scope, and stop conditions. Approval must explicitly identify the Stage action and does not authorize production promotion."
   duration 1p
@@ -268,6 +277,33 @@ task t022 m019 -> m022:
   owner "codex"
   status done
   source "docs/evidence/compact-v2-observation-repair-schema-rca-2026-09-09.think"
+  requires:
+    rs001 1
+
+task t023 m022 -> m023:
+  title "Prepare corrected observation-input provider replay v2"
+  description "Freeze a new run ID and the repair-schema correction commit, preserve failed v1 as immutable, regenerate the network-zero maximum-repair proof twice, and retain the exact request ceilings, cost ceiling, observer coverage, and fail-closed conditions."
+  duration 1p
+  owner "codex"
+  status done
+  source "docs/evidence/compact-v2-observation-input-replay-2026-09-09-v2/prepare-proof.json"
+  requires:
+    rs001 1
+
+task t024 m023 -> m024:
+  title "Review and decide corrected observation-input replay v2"
+  description "Review the failed v1 disposition, repair-schema RCA and correction, exact implementation commit, network-zero preparation proof, xAI model, operation and monetary ceilings, retained evidence, and fail-closed stop conditions. Approval authorizes only the named v2 replay once and never authorizes retrying v1, Stage, production, release, or deployment."
+  duration 1p
+  owner "user"
+  source "docs/evidence/compact-v2-observation-input-replay-2026-09-09-v2.md"
+  requires:
+    rs002 1
+
+task t025 m024 -> m025:
+  title "Run the approved corrected observation-input replay v2 once"
+  description "Execute only the separately approved immutable v2 contract once. Retain requests, responses, observation coverage, operation counts, application results, and cost receipt. Stop fail-closed without retry, resume, resend, fallback, judge, deployment, or persistent battle creation."
+  duration 1p
+  owner "codex"
   requires:
     rs001 1
 
