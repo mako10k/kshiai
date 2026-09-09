@@ -1,6 +1,6 @@
-# Delivery plan revision 17: exact revision2 directly accepted; V3 local implementation active, formal ADR check unavailable.
+# Delivery plan revision 18: V3 scoped formal ADR check and final local validation passed; legacy ADR/SealGraph toolchain limits remain active.
 project pj001:
-  version 9
+  version 6
   title "Connect character goals, tactics and expression after Compact observation v2"
   description "Implement Accepted ADR-0025 with separate closed expressionState and utteranceHistory inputs, closed nextUtterance output, content-independent acceptance, and the existing battle revision commit boundary. Under Accepted ADR-0026, allow one fail-closed Compact V2 deep-psyche application repair over a server-defined semantic closure; add no expression retry, recursive repair, lifecycle entity, identifier, receipt, reuse detector, similarity gate, critic, or fallback."
   as_of 2026-09-09
@@ -382,7 +382,7 @@ task t028 m027 -> m028:
 task t029 m028 -> m029:
   title "Implement and locally verify the accepted goal-to-action-and-speech slice"
   status active
-  description "V3 A/B/C runtime and D regression are implemented locally: typed opt-in tuple, single conscious goal/intent/action/speech judgment, reaction-only psychology, partial acceptance, later redecision, CAS and seven legacy tags. Full tests, typecheck, build and unchanged Lizard thresholds passed. Required npm adr:check is missing; retain active until the formal check and final review are settled. Original3p is provisional total, not remaining actuals; remaining0.5-1p forecast is unvalidated. See agency-v3-local-verification-2026-09-09.md. No paid execution, setting activation or deployment; local results do not establish real-model quality."
+  description "V3 A/B/C runtime and D regression are implemented locally: typed opt-in tuple, single conscious goal/intent/action/speech judgment, reaction-only psychology, partial acceptance, later redecision, CAS and seven legacy tags. Final full tests, typecheck, build and unchanged Lizard thresholds passed after rebuilding shared exports. Restored npm adr:check passes for changed ADR-0027/0028; its default whole-repository run remains blocked by unmodified 0015-0017/0019 sources that the current LLMThink cannot parse. Current SealGraph only reads format 4; retained format 5 requires an unavailable Go 1.26 build. Retain active without rewriting accepted legacy ADRs or Seal history. See agency-v3-resume-verification-2026-09-09.md. No paid execution, setting activation or deployment; local results do not establish real-model quality."
   duration 3p
   source "docs/character-agency-implementation-plan-v1.md"
   owner "codex"

@@ -4,8 +4,10 @@
 revision 1を0754ca7へcommit後、CA-00の型付きfixture/testを追加して実測した。
 今回V3 runtime・prompt・schemaを追加した。既定設定・実データ・有料API・展開は変更していない。
 CA-00とt027は完了。t028はowner直接承認で通過（新版独立レビュー未実施）。
-t029は必要なadr:checkスクリプトがこのworktreeにないため未完了。
-[今回の実装・検証](evidence/agency-v3-local-verification-2026-09-09.md)に結果と残事項を分離する。
+t029は変更済みADR-0027/0028に対する正式adr:checkと最終ローカル検証を通過したが、
+未変更の旧ADR DSLとformat 5 SealGraph実行環境の限界を残してactiveである。
+[今回の実装・検証](evidence/agency-v3-local-verification-2026-09-09.md)と
+[再開後の検証](evidence/agency-v3-resume-verification-2026-09-09.md)に結果と残事項を分離する。
 
 現在の基準（2026-09-09訂正）: 作者確認ではなく性格・価値観・認知済み関係に照らした目標の妥当性。
 旧要件revision 1のR1はこの指示と衝突するため、その優先規則を現行実装の根拠にしない。
