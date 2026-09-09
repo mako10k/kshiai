@@ -32,7 +32,7 @@ const repositoryRoot = path.resolve(
 );
 
 const RUN_ID = "compact-v2-observation-input-replay-2026-09-09-v1";
-const IMPLEMENTATION_SHA = "73111aa6bd5784b5c74ab5c1d695a8662ba56468";
+const IMPLEMENTATION_SHA = "fe9a7da48425f4bfa75b0da40073e6b600136cb8";
 const PREDECESSOR_RUN_ID = "compact-v2-provider-replay-repair-2026-09-09-v2";
 const MODEL = "grok-4.3";
 const BASE_URL = "https://api.x.ai/v1";

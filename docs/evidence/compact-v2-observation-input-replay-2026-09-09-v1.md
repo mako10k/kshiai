@@ -24,7 +24,7 @@ comparison.
   changed by this candidate.
 
 The implementation is fixed at
-`73111aa6bd5784b5c74ab5c1d695a8662ba56468`.
+`fe9a7da48425f4bfa75b0da40073e6b600136cb8`.
 
 ## Frozen execution contract
 
@@ -40,7 +40,7 @@ The implementation is fixed at
 - Retry, recursive repair, provider fallback, judge, database write,
   deployment, release, and battle creation: prohibited
 - Contract digest:
-  `cd8e87dc7e3191b937d36c1f91282a24c8a1262af27853ed29217ed06a92216f`
+  `2ecafe1a51843fc2b0667a7f075037bcd355644da162079b3c4698617d115399`
 
 Execution is fail-closed. Any provider, model, usage, schema, semantic-closure,
 application, ceiling, or evidence-persistence failure stops the run. An existing
@@ -52,9 +52,9 @@ Preparation forced the maximum one-shot repair path for all six turns and made
 zero network requests:
 
 - 18 prepared calls: six psyche, six bounded psyche repair, six expression
-- 169,800 reserved tokens
-- USD 0.23325 reserved cost
-- 9,563 bytes maximum input size
+- 169,900 reserved tokens
+- USD 0.233375 reserved cost
+- 9,586 bytes maximum input size
 - Six locally accepted application turns
 - Every ordinary turn contained one or more fresh counterpart or ambient items
   linked to its exact `event.ordinary.<turn>` ID

@@ -2,7 +2,7 @@
   "executionContract": {
     "schemaVersion": 1,
     "runId": "compact-v2-observation-input-replay-2026-09-09-v1",
-    "implementationSha": "73111aa6bd5784b5c74ab5c1d695a8662ba56468",
+    "implementationSha": "fe9a7da48425f4bfa75b0da40073e6b600136cb8",
     "correctiveDecision": "ADR-0025 and ADR-0026 existing contracts",
     "predecessorRunId": "compact-v2-provider-replay-repair-2026-09-09-v2",
     "predecessorDisposition": "immutable successful baseline; never modify or resend",
@@ -42,5 +42,5 @@
       "cachedInputDiscountAssumed": false
     }
   },
-  "contractDigest": "cd8e87dc7e3191b937d36c1f91282a24c8a1262af27853ed29217ed06a92216f"
+  "contractDigest": "2ecafe1a51843fc2b0667a7f075037bcd355644da162079b3c4698617d115399"
 }
