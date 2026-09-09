@@ -66,6 +66,9 @@ milestone m015:
 milestone m016:
   title "Observation-starvation investigation recorded"
 
+milestone m020:
+  title "Observation-provenance defect RCA recorded"
+
 milestone m017:
   title "Observer-safe replay input correction locally verified"
 
@@ -196,7 +199,7 @@ task t015 m013 -> m014:
 
 task t016 m007 -> m016:
   title "Record observation-starvation investigation"
-  description "Record the retained replay inputs and outputs, distinguish the synthetic fixture cause from unknown production prevalence, identify the projected-percept provenance mismatch found by the network-zero check, and audit the causal record with command-line LLMThink. This investigation does not authorize provider calls or deployment."
+  description "Record the retained replay inputs and outputs, distinguish the synthetic fixture cause from unknown production prevalence, and audit the causal record with command-line LLMThink. This investigation does not authorize provider calls or deployment."
   duration 1p
   status done
   owner "codex"
@@ -204,13 +207,23 @@ task t016 m007 -> m016:
   requires:
     rs001 1
 
-task t017 m016 -> m017:
+task t020 m016 -> m020:
+  title "Record the independent observation-provenance defect RCA"
+  description "Separate the projected-percept provenance mismatch from the replay fixture RCA. Record its source-producing implementation condition, contributing contract duplication, composed-test escape cause, bounded confirmed impact, unknown production and dialogue-quality impact, corrective action, and recurrence regression."
+  duration 1p
+  status done
+  owner "codex"
+  source "docs/evidence/compact-v2-observation-provenance-rca-2026-09-09.think"
+  requires:
+    rs001 1
+
+task t017 m020 -> m017:
   title "Correct observer-safe replay inputs and event provenance"
   description "Represent every authored synthetic change as bounded PerceptionEvidence, project it through the normal observer path, pass the same evidence to dialogue generation, unify opaque percept-ID derivation for packet provenance, and add a composed regression plus a network-zero per-turn observation assertion. Keep event-summary mining, direct packet injection, schema expansion, and provider calls out of this task."
   duration 1p
   status done
   owner "codex"
-  source "docs/evidence/compact-v2-observation-starvation-2026-09-09.md"
+  source "docs/evidence/compact-v2-observation-provenance-rca-2026-09-09.md"
   requires:
     rs001 1
 

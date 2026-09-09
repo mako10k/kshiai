@@ -1,0 +1,95 @@
+domain CompactV2ObservationProvenance:
+  description |
+    Identify the independent implementation defect that removed committed event
+    provenance between observer perception and the deep-psyche input packet.
+
+problem P1:
+  |
+    Projected sensory phenomena reached TurnObservationPacket, but their
+    sourceEventIds were empty on the normal composed path.
+
+premise P2:
+  |
+    Event provenance can affect deterministic reaction receipts and focus
+    salience. The retained evidence does not establish how often this path ran
+    in production or whether the missing provenance changed dialogue quality.
+
+evidence E1:
+  |
+    projectObserverPerception emitted an opaque percept ID derived by
+    observerPerceptId. Git blame traces that implementation to commit 115e2e04
+    dated 2026-08-04.
+
+evidence E2:
+  |
+    buildTurnObservationPacket reconstructed a different literal
+    percept.<side>.<evidenceId> value when looking up basisEventIds. Git blame
+    traces that lookup to commit 348cb2f5 dated 2026-08-10.
+
+evidence E3:
+  |
+    A network-zero composed-path preparation passed distinct projected
+    counterpart and ambient phenomena into all three ordinary psyche requests,
+    while every resulting sourceEventIds array remained empty before the fix.
+
+evidence E4:
+  |
+    The source-link unit test manually supplied the literal percept ID expected
+    by buildTurnObservationPacket instead of obtaining the frame from
+    projectObserverPerception. It therefore passed without exercising the
+    incompatible producer and consumer together.
+
+evidence E5:
+  |
+    psyche-reaction-policy collects sourceEventIds into its receipt, and
+    character-focus-policy adds evidence-density salience from the number of
+    sourceEventIds. Both still receive the phenomenon text independently.
+
+evidence E6:
+  |
+    Commit 73111aa exports observerPerceptId as the single derivation, reuses it
+    in packet evidence lookup, updates affected fixtures, and adds a composed
+    projection-to-packet regression. The full test suite, typecheck, build, and
+    network-zero preparation passed after that correction.
+
+decision D1 based_on P1, E1, E2, E3:
+  |
+    Root cause: the packet consumer independently reconstructed an obsolete
+    percept-ID representation instead of using the projection producer's opaque
+    ID derivation. The two deterministic representations could not match, so
+    committed basis event IDs were dropped from projected sensory items.
+
+decision D2 based_on P1, E1, E2:
+  |
+    Contributing cause: observerPerceptId was private to the projection module,
+    while the cross-module relationship was represented only as an untyped
+    string convention. This enabled the later consumer to duplicate the
+    contract incorrectly.
+
+decision D3 based_on P1, E3, E4:
+  |
+    Escape cause: the source-link test fabricated a frame using the consumer's
+    expected literal ID and did not compose the real projection producer with
+    packet construction. Unit, type, and build checks therefore exercised a
+    self-consistent test double rather than the actual boundary.
+
+decision D4 based_on P2, E3, E5:
+  |
+    Confirmed impact: projected sensory items lost committed event provenance,
+    reducing receipt provenance and the evidence-density component of focus
+    salience while leaving their phenomenon text available. Production
+    prevalence and dialogue-quality impact remain unknown. This defect did not
+    cause the earlier replay's absent phenomena because that replay supplied no
+    sensory evidence at all.
+
+decision D5 based_on D1, D2, E6:
+  |
+    Corrective action: use observerPerceptId as the single producer and consumer
+    implementation for opaque percept IDs. The source-producing mismatch is
+    corrected in commit 73111aa.
+
+decision D6 based_on D3, E6:
+  |
+    Recurrence prevention: retain a composed regression that projects validated
+    evidence and then builds the observer packet, asserting both the safe
+    phenomenon and its exact committed event provenance.

@@ -47,17 +47,6 @@ evidence E5:
     intentionally does not mine free-form TurnEvent summaries for character
     cognition.
 
-evidence E6:
-  |
-    After the fixture was routed through projectObserverPerception, a
-    network-zero preparation check showed that the expected counterpart and
-    ambient phenomena reached every ordinary psyche request, but all of their
-    sourceEventIds were empty. projectObserverPerception creates opaque hashed
-    percept IDs, while buildTurnObservationPacket attempts the evidence lookup
-    using a literal percept.<side>.<evidenceId> string. Existing dialogue tests
-    manually construct that obsolete literal shape instead of composing the
-    real projection and packet builders.
-
 decision D1 based_on P1, P2, E1, E2, E3, E5:
   |
     For this replay, the root producing condition is a fixture integration
@@ -87,13 +76,3 @@ decision D4 based_on P2, D3:
     after setup contains at least one fresh external item bound to the exact
     synthetic event ID. Record packet coverage in prepare-proof. Full real-model
     comparison remains a separate paid-call decision.
-
-decision D5 based_on E5, E6:
-  |
-    Treat the percept-to-evidence lookup mismatch as a production-path defect
-    in the existing observation contract, not as a new architecture. Expose
-    one deterministic observerPerceptId helper from perception projection,
-    reuse it in dialogue packet construction, and replace the manually-shaped
-    source-link test with an integration regression that composes projection
-    and packet construction. This restores event provenance without exposing
-    canonical source identity to the character-facing frame.
