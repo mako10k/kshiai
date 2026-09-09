@@ -1,0 +1,666 @@
+{
+  "scope": "Post-edit, pre-reseal impact against previous sealed heads; not a pre-edit capture",
+  "sources": [
+    {
+      "ref": "implementation/battle-service",
+      "source": "d15f0e74251ebf6d1e6c79d23791cec636e7a48de9a1a63d3355f0284fe2591b",
+      "impacts": [
+        {
+          "refs": [
+            "plan/agency-implementation"
+          ],
+          "pathCount": 5,
+          "truncated": false
+        },
+        {
+          "refs": [
+            "plan/dialogue-expression"
+          ],
+          "pathCount": 16,
+          "truncated": false
+        },
+        {
+          "refs": [
+            "evidence/agency-ca00"
+          ],
+          "pathCount": 1,
+          "truncated": false
+        },
+        {
+          "refs": [
+            "verification/agency-inventory"
+          ],
+          "pathCount": 1,
+          "truncated": false
+        },
+        {
+          "refs": [
+            "proposal/agency-requirements-v2"
+          ],
+          "pathCount": 1,
+          "truncated": false
+        },
+        {
+          "refs": [
+            "index/adr"
+          ],
+          "pathCount": 2,
+          "truncated": false
+        },
+        {
+          "refs": [
+            "proposal/agency-requirements-v1"
+          ],
+          "pathCount": 1,
+          "truncated": false
+        },
+        {
+          "refs": [
+            "review/agency-requirements-v1"
+          ],
+          "pathCount": 2,
+          "truncated": false
+        },
+        {
+          "refs": [
+            "evidence/adr-0027-implementation-impact"
+          ],
+          "pathCount": 1,
+          "truncated": false
+        },
+        {
+          "refs": [
+            "proposal/adr-0028"
+          ],
+          "pathCount": 2,
+          "truncated": false
+        },
+        {
+          "refs": [
+            "design/agency-responsibility"
+          ],
+          "pathCount": 5,
+          "truncated": false
+        },
+        {
+          "refs": [
+            "projection/adr-0028"
+          ],
+          "pathCount": 2,
+          "truncated": false
+        },
+        {
+          "refs": [
+            "review/agency-requirements-v2-input"
+          ],
+          "pathCount": 1,
+          "truncated": false
+        },
+        {
+          "refs": [
+            "verification/agency-fixtures"
+          ],
+          "pathCount": 1,
+          "truncated": false
+        },
+        {
+          "refs": [
+            "acceptance/agency-requirements-v1"
+          ],
+          "pathCount": 3,
+          "truncated": false
+        },
+        {
+          "refs": [
+            "review/agency-requirements-v1-input"
+          ],
+          "pathCount": 1,
+          "truncated": false
+        },
+        {
+          "refs": [
+            "backlog/character-agency"
+          ],
+          "pathCount": 5,
+          "truncated": false
+        }
+      ]
+    },
+    {
+      "ref": "implementation/dialogue-generation",
+      "source": "f8fd630c0148b08be95139cf9eba9afa6d445d602879ee1a5337c075accb8767",
+      "impacts": [
+        {
+          "refs": [
+            "plan/agency-implementation"
+          ],
+          "pathCount": 5,
+          "truncated": false
+        },
+        {
+          "refs": [
+            "plan/dialogue-expression"
+          ],
+          "pathCount": 16,
+          "truncated": false
+        },
+        {
+          "refs": [
+            "evidence/agency-ca00"
+          ],
+          "pathCount": 1,
+          "truncated": false
+        },
+        {
+          "refs": [
+            "verification/agency-inventory"
+          ],
+          "pathCount": 1,
+          "truncated": false
+        },
+        {
+          "refs": [
+            "proposal/agency-requirements-v2"
+          ],
+          "pathCount": 1,
+          "truncated": false
+        },
+        {
+          "refs": [
+            "index/adr"
+          ],
+          "pathCount": 2,
+          "truncated": false
+        },
+        {
+          "refs": [
+            "proposal/agency-requirements-v1"
+          ],
+          "pathCount": 1,
+          "truncated": false
+        },
+        {
+          "refs": [
+            "review/agency-requirements-v1"
+          ],
+          "pathCount": 2,
+          "truncated": false
+        },
+        {
+          "refs": [
+            "proposal/adr-0028"
+          ],
+          "pathCount": 2,
+          "truncated": false
+        },
+        {
+          "refs": [
+            "design/agency-responsibility"
+          ],
+          "pathCount": 5,
+          "truncated": false
+        },
+        {
+          "refs": [
+            "projection/adr-0028"
+          ],
+          "pathCount": 2,
+          "truncated": false
+        },
+        {
+          "refs": [
+            "review/agency-requirements-v2-input"
+          ],
+          "pathCount": 1,
+          "truncated": false
+        },
+        {
+          "refs": [
+            "verification/agency-fixtures"
+          ],
+          "pathCount": 1,
+          "truncated": false
+        },
+        {
+          "refs": [
+            "acceptance/agency-requirements-v1"
+          ],
+          "pathCount": 3,
+          "truncated": false
+        },
+        {
+          "refs": [
+            "review/agency-requirements-v1-input"
+          ],
+          "pathCount": 1,
+          "truncated": false
+        },
+        {
+          "refs": [
+            "backlog/character-agency"
+          ],
+          "pathCount": 5,
+          "truncated": false
+        }
+      ]
+    },
+    {
+      "ref": "implementation/llm-adapter",
+      "source": "6c2e9e3e526983af768b2a898efbcc34e949d64ed9fb0b1ab875d4b37eb61c5a",
+      "impacts": [
+        {
+          "refs": [
+            "plan/agency-implementation"
+          ],
+          "pathCount": 6,
+          "truncated": false
+        },
+        {
+          "refs": [
+            "plan/dialogue-expression"
+          ],
+          "pathCount": 19,
+          "truncated": false
+        },
+        {
+          "refs": [
+            "evidence/agency-ca00"
+          ],
+          "pathCount": 1,
+          "truncated": false
+        },
+        {
+          "refs": [
+            "verification/agency-inventory"
+          ],
+          "pathCount": 1,
+          "truncated": false
+        },
+        {
+          "refs": [
+            "proposal/agency-requirements-v2"
+          ],
+          "pathCount": 1,
+          "truncated": false
+        },
+        {
+          "refs": [
+            "index/adr"
+          ],
+          "pathCount": 3,
+          "truncated": false
+        },
+        {
+          "refs": [
+            "proposal/agency-requirements-v1"
+          ],
+          "pathCount": 1,
+          "truncated": false
+        },
+        {
+          "refs": [
+            "review/agency-requirements-v1"
+          ],
+          "pathCount": 2,
+          "truncated": false
+        },
+        {
+          "refs": [
+            "evidence/adr-0027-implementation-impact"
+          ],
+          "pathCount": 1,
+          "truncated": false
+        },
+        {
+          "refs": [
+            "proposal/adr-0028"
+          ],
+          "pathCount": 3,
+          "truncated": false
+        },
+        {
+          "refs": [
+            "design/agency-responsibility"
+          ],
+          "pathCount": 6,
+          "truncated": false
+        },
+        {
+          "refs": [
+            "projection/adr-0028"
+          ],
+          "pathCount": 3,
+          "truncated": false
+        },
+        {
+          "refs": [
+            "review/agency-requirements-v2-input"
+          ],
+          "pathCount": 1,
+          "truncated": false
+        },
+        {
+          "refs": [
+            "verification/agency-fixtures"
+          ],
+          "pathCount": 1,
+          "truncated": false
+        },
+        {
+          "refs": [
+            "acceptance/agency-requirements-v1"
+          ],
+          "pathCount": 3,
+          "truncated": false
+        },
+        {
+          "refs": [
+            "review/agency-requirements-v1-input"
+          ],
+          "pathCount": 1,
+          "truncated": false
+        },
+        {
+          "refs": [
+            "backlog/character-agency"
+          ],
+          "pathCount": 6,
+          "truncated": false
+        }
+      ]
+    },
+    {
+      "ref": "implementation/llm-types",
+      "source": "3ac35cc572548ca109a414a0af0b980383f448a773c12e3aa51854a1bd3b83ca",
+      "impacts": [
+        {
+          "refs": [
+            "plan/agency-implementation"
+          ],
+          "pathCount": 1,
+          "truncated": false
+        },
+        {
+          "refs": [
+            "plan/dialogue-expression"
+          ],
+          "pathCount": 3,
+          "truncated": false
+        },
+        {
+          "refs": [
+            "evidence/adr-0027-implementation-impact"
+          ],
+          "pathCount": 1,
+          "truncated": false
+        },
+        {
+          "refs": [
+            "design/agency-responsibility"
+          ],
+          "pathCount": 1,
+          "truncated": false
+        },
+        {
+          "refs": [
+            "backlog/character-agency"
+          ],
+          "pathCount": 1,
+          "truncated": false
+        }
+      ]
+    },
+    {
+      "ref": "implementation/mock-adapter",
+      "source": "fbaa75723a9cb10cd2ef10f7d277f93caa7741ae87d6bd106651cf6b1e4ee531",
+      "impacts": [
+        {
+          "refs": [
+            "plan/agency-implementation"
+          ],
+          "pathCount": 1,
+          "truncated": false
+        },
+        {
+          "refs": [
+            "plan/dialogue-expression"
+          ],
+          "pathCount": 3,
+          "truncated": false
+        },
+        {
+          "refs": [
+            "evidence/adr-0027-implementation-impact"
+          ],
+          "pathCount": 1,
+          "truncated": false
+        },
+        {
+          "refs": [
+            "design/agency-responsibility"
+          ],
+          "pathCount": 1,
+          "truncated": false
+        },
+        {
+          "refs": [
+            "backlog/character-agency"
+          ],
+          "pathCount": 1,
+          "truncated": false
+        }
+      ]
+    },
+    {
+      "ref": "implementation/private-observability",
+      "source": "f4ebef6061bc6f748fea8c8715c38eeffcb9473d8729b220e63b07058436c7af",
+      "impacts": [
+        {
+          "refs": [
+            "plan/agency-implementation"
+          ],
+          "pathCount": 5,
+          "truncated": false
+        },
+        {
+          "refs": [
+            "plan/dialogue-expression"
+          ],
+          "pathCount": 16,
+          "truncated": false
+        },
+        {
+          "refs": [
+            "evidence/agency-ca00"
+          ],
+          "pathCount": 1,
+          "truncated": false
+        },
+        {
+          "refs": [
+            "proposal/agency-requirements-v2"
+          ],
+          "pathCount": 1,
+          "truncated": false
+        },
+        {
+          "refs": [
+            "index/adr"
+          ],
+          "pathCount": 2,
+          "truncated": false
+        },
+        {
+          "refs": [
+            "proposal/agency-requirements-v1"
+          ],
+          "pathCount": 1,
+          "truncated": false
+        },
+        {
+          "refs": [
+            "review/agency-requirements-v1"
+          ],
+          "pathCount": 2,
+          "truncated": false
+        },
+        {
+          "refs": [
+            "proposal/adr-0028"
+          ],
+          "pathCount": 2,
+          "truncated": false
+        },
+        {
+          "refs": [
+            "design/agency-responsibility"
+          ],
+          "pathCount": 5,
+          "truncated": false
+        },
+        {
+          "refs": [
+            "projection/adr-0028"
+          ],
+          "pathCount": 2,
+          "truncated": false
+        },
+        {
+          "refs": [
+            "review/agency-requirements-v2-input"
+          ],
+          "pathCount": 1,
+          "truncated": false
+        },
+        {
+          "refs": [
+            "acceptance/agency-requirements-v1"
+          ],
+          "pathCount": 3,
+          "truncated": false
+        },
+        {
+          "refs": [
+            "review/agency-requirements-v1-input"
+          ],
+          "pathCount": 1,
+          "truncated": false
+        },
+        {
+          "refs": [
+            "backlog/character-agency"
+          ],
+          "pathCount": 5,
+          "truncated": false
+        }
+      ]
+    },
+    {
+      "ref": "implementation/psyche-schema",
+      "source": "77e2e8d6ebe4503d2a86eebb1cc85b4fc0f5af2405b0a135f6163bcd4c6dca08",
+      "impacts": [
+        {
+          "refs": [
+            "plan/agency-implementation"
+          ],
+          "pathCount": 1,
+          "truncated": false
+        },
+        {
+          "refs": [
+            "plan/dialogue-expression"
+          ],
+          "pathCount": 3,
+          "truncated": false
+        },
+        {
+          "refs": [
+            "evidence/adr-0027-implementation-impact"
+          ],
+          "pathCount": 1,
+          "truncated": false
+        },
+        {
+          "refs": [
+            "design/agency-responsibility"
+          ],
+          "pathCount": 1,
+          "truncated": false
+        },
+        {
+          "refs": [
+            "backlog/character-agency"
+          ],
+          "pathCount": 1,
+          "truncated": false
+        }
+      ]
+    },
+    {
+      "ref": "index/adr",
+      "source": "4c23d811ef8892dacc3d1080c1210bc0074f319cbe64484aede79797ba810827",
+      "impacts": []
+    },
+    {
+      "ref": "projection/adr-0028",
+      "source": "aee19ad4904964e2ae01a773766bc3c1f61bcae69d1c5906cd83142d74bc6808",
+      "impacts": [
+        {
+          "refs": [
+            "index/adr"
+          ],
+          "pathCount": 1,
+          "truncated": false
+        }
+      ]
+    },
+    {
+      "ref": "proposal/adr-0028",
+      "source": "95ddf1430f70e8fa649c5cc049827aa6ebf77e7a6ce444fbbb2693d947a740a6",
+      "impacts": [
+        {
+          "refs": [
+            "plan/agency-implementation"
+          ],
+          "pathCount": 1,
+          "truncated": false
+        },
+        {
+          "refs": [
+            "plan/dialogue-expression"
+          ],
+          "pathCount": 3,
+          "truncated": false
+        },
+        {
+          "refs": [
+            "index/adr"
+          ],
+          "pathCount": 1,
+          "truncated": false
+        },
+        {
+          "refs": [
+            "design/agency-responsibility"
+          ],
+          "pathCount": 1,
+          "truncated": false
+        },
+        {
+          "refs": [
+            "projection/adr-0028"
+          ],
+          "pathCount": 1,
+          "truncated": false
+        },
+        {
+          "refs": [
+            "backlog/character-agency"
+          ],
+          "pathCount": 1,
+          "truncated": false
+        }
+      ]
+    }
+  ]
+}

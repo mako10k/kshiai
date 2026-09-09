@@ -1,0 +1,35 @@
+domain AgencyRequirementAcceptance:
+  description "Record exact owner acceptance without changing reviewed requirement bytes."
+problem P1:
+  |
+    The owner states: 要件として承認します。
+evidence E1:
+  |
+    Requirement revision 1 digest remains
+    f733f85a153349e4be28785fef05d93006d057e0e5d507a8423b658f9bb7f444,
+    identical to the reviewed snapshot and owner-visible review input.
+evidence E2:
+  |
+    The independent review is completed, with no established contradiction.
+    Its report returned the unchanged snapshot to step 4 under REVIEW_THEN_DECIDE.
+premise A1:
+  |
+    Owner acceptance is for requirements, not additional contract ADR acceptance,
+    implementation, paid execution, deployment, push or expansion of scope.
+    Review unknowns do not silently amend the accepted text.
+pending U1:
+  |
+    Goal provenance, bounded reaction projection, legacy-field dispositions,
+    generation configuration and accounting need detailed contract work.
+    New implementation and model quality remain unverified.
+premise OPTIONS:
+  |
+    A change the accepted document status inline, which changes reviewed bytes.
+    B preserve its bytes and record exact acceptance separately.
+decision D1 based_on P1, E1, E2, A1, U1, OPTIONS:
+  |
+    Use B: create an acceptance record with exact subject and review digests,
+    owner quote and step-4 ACCEPT disposition. Preserve candidate and original
+    review records as historical snapshots. Record remaining unknowns without
+    making optional findings mandatory. Do not advance the combined ADR gate or
+    perform runtime, Seal, plan, commit or external changes in this acceptance turn.

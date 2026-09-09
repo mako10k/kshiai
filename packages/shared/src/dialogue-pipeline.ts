@@ -27,9 +27,15 @@ export const DialoguePipelineValuesV2Schema =
     schemaVersion: z.literal(2),
   });
 
+export const DialoguePipelineValuesV3Schema =
+  DialoguePipelineCommonValuesSchema.extend({
+    schemaVersion: z.literal(3),
+    contextProjectionMode: z.literal("compact"),
+  });
+
 export const DialoguePipelineValuesSchema = z.discriminatedUnion(
   "schemaVersion",
-  [DialoguePipelineValuesV1Schema, DialoguePipelineValuesV2Schema],
+  [DialoguePipelineValuesV1Schema, DialoguePipelineValuesV2Schema, DialoguePipelineValuesV3Schema],
 );
 export type DialoguePipelineValues = z.infer<typeof DialoguePipelineValuesSchema>;
 
@@ -51,6 +57,7 @@ export const DialoguePipelineSettingsSchema = z.discriminatedUnion(
   [
     DialoguePipelineValuesV1Schema.merge(DialoguePipelineSettingsMetadataSchema),
     DialoguePipelineValuesV2Schema.merge(DialoguePipelineSettingsMetadataSchema),
+    DialoguePipelineValuesV3Schema.merge(DialoguePipelineSettingsMetadataSchema),
   ],
 );
 export type DialoguePipelineSettings = z.infer<typeof DialoguePipelineSettingsSchema>;
@@ -75,6 +82,7 @@ export type DialoguePipelineOverrideDeployment = z.infer<
 export const UpdateDialoguePipelineSettingsSchema =
   DialoguePipelineCommonValuesSchema.extend({
     expectedRevision: z.number().int().nonnegative(),
+    schemaVersion: z.union([z.literal(2), z.literal(3)]).optional(),
   });
 export type UpdateDialoguePipelineSettings = z.infer<
   typeof UpdateDialoguePipelineSettingsSchema
@@ -97,10 +105,26 @@ export const BattleDialoguePipelineSnapshotSchema = z.discriminatedUnion(
     DialoguePipelineValuesV2Schema
       .merge(BattleDialoguePipelineSnapshotMetadataSchema)
       .strict(),
+    DialoguePipelineValuesV3Schema
+      .merge(BattleDialoguePipelineSnapshotMetadataSchema)
+      .strict(),
   ],
 );
 export type BattleDialoguePipelineSnapshot = z.infer<
   typeof BattleDialoguePipelineSnapshotSchema
+>;
+
+/**
+ * ADR-0028: V3 can only bind compact consciousness; default remains V1.
+ */
+export const BattleDialoguePipelineSnapshotV3Schema =
+  DialoguePipelineCommonValuesSchema.extend({
+    schemaVersion: z.literal(3),
+    contextProjectionMode: z.literal("compact"),
+    revision: z.number().int().nonnegative(),
+  }).strict();
+export type BattleDialoguePipelineSnapshotV3 = z.infer<
+  typeof BattleDialoguePipelineSnapshotV3Schema
 >;
 
 export function snapshotDialoguePipelineSettings(
@@ -118,8 +142,8 @@ export function snapshotDialoguePipelineSettings(
   });
 }
 
-export function defaultDialoguePipelineSettings(): DialoguePipelineSettings {
-  return DialoguePipelineSettingsSchema.parse({
+export function defaultDialoguePipelineSettings(): Extract<DialoguePipelineSettings, { schemaVersion: 1 }> {
+  return DialoguePipelineValuesV1Schema.merge(DialoguePipelineSettingsMetadataSchema).parse({
     schemaVersion: 1,
     enabled: true,
     conversationHistoryLimit: 12,

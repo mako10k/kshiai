@@ -1,0 +1,34 @@
+domain AgencyImplementation:
+  description "Accept exact revision2 and implement the agreed conscious agency contract."
+problem P1:
+  "Owner requests revised implementation and shared workday extension to 22:30."
+evidence E1:
+  |
+    Current user explicitly approves the new versions, directs implementation and
+    extends end time to22:30. Requirement v2 hash
+    5a30f561ff4ffdbbcc51ec41e4cc6e989191f51ab191f92f8f94c1c4c3bfda76.
+    ADR0028 revision2 think hash
+    0629f788432b235bbc41f83e86e68d013d3850f58d04d80e313c97b4aa27b50a.
+evidence E2:
+  |
+    Worktimectl has planned_end22:00 today with no pending actions. Matching worktree
+    HEAD0754ca7 is dirty with our prior artifacts, ahead21 of origin/main1cdf210.
+    Runtime currently supports dialogueV1/V2; V3 is not yet connected.
+premise AUTHORITY:
+  |
+    Direct approval of the revised documents and implementation is explicit.
+    Record direct owner acceptance without inventing a second independent review.
+    No paid provider, release, deployment, push or character changes are authorized.
+decision D1 based_on P1, E1, E2, AUTHORITY:
+  |
+    Apply one overtime --until22:30 and read back. Preserve existing worktree.
+    Record exact owner acceptance for requirementv2 and ADRrevision2; retain old
+    snapshots and unperformed-review limitation. Refresh affected Seal dependencies.
+decision D2 based_on D1, E1, E2:
+  |
+    Implement in approved A-B-C-D order with typed schemas, persistence and opt-in
+    binding first, then conscious input/output and deterministic psyche projection,
+    later/partial failures, legacy/privacy/accounting regressions. No origin gates.
+    Use small intermediate tests; new generation must not execute partial legacy
+    routing. If full integration cannot finish in the window, preserve explicit
+    unactivated WIP and exact restart rather than claiming the user outcome.

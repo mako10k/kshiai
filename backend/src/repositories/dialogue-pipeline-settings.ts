@@ -68,25 +68,32 @@ export async function updateDialoguePipelineSettings(input: {
   userId: string;
   patch: UpdateDialoguePipelineSettings;
 }): Promise<DialoguePipelineSettings | null> {
-  const values = DialoguePipelineValuesSchema.parse({
-    schemaVersion: 2,
-    enabled: input.patch.enabled,
-    conversationHistoryLimit: input.patch.conversationHistoryLimit,
-    contextProjectionMode: input.patch.contextProjectionMode,
-    recentExchangeLimit: input.patch.recentExchangeLimit,
-    relevantMemoryLimit: input.patch.relevantMemoryLimit,
-    psychologyGuidance: input.patch.psychologyGuidance.trim(),
-  });
   const updatedAt = new Date().toISOString();
   const nextRevision = input.patch.expectedRevision + 1;
   const next = await withTransaction(async (connection) => {
-    const current = await connection.query<{ revision: number }>(
-      `SELECT revision
+    const current = await connection.query<{ revision: number; settings_json: unknown }>(
+      `SELECT revision, settings_json
        FROM dialogue_pipeline_settings
        WHERE id = $1`,
       [GLOBAL_SETTINGS_ID],
     );
-    const currentRevision = current.rows[0]?.revision;
+    const currentRow = current.rows[0];
+    const currentRevision = currentRow?.revision;
+    if (currentRevision != null && currentRevision !== input.patch.expectedRevision) return null;
+    const storedRaw: unknown = typeof currentRow?.settings_json === "string"
+      ? JSON.parse(currentRow.settings_json)
+      : currentRow?.settings_json;
+    const storedVersion = storedRaw === undefined
+      ? null : DialoguePipelineValuesSchema.parse(storedRaw).schemaVersion;
+    const values = DialoguePipelineValuesSchema.parse({
+      schemaVersion: input.patch.schemaVersion ?? (storedVersion === 3 ? 3 : 2),
+      enabled: input.patch.enabled,
+      conversationHistoryLimit: input.patch.conversationHistoryLimit,
+      contextProjectionMode: input.patch.contextProjectionMode,
+      recentExchangeLimit: input.patch.recentExchangeLimit,
+      relevantMemoryLimit: input.patch.relevantMemoryLimit,
+      psychologyGuidance: input.patch.psychologyGuidance.trim(),
+    });
     if (currentRevision == null) {
       if (input.patch.expectedRevision !== 0) return null;
       try {

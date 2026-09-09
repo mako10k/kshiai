@@ -6,6 +6,8 @@ import type {
   ChatCompletionCreateParamsNonStreaming,
 } from "openai/resources/chat/completions";
 import { z } from "zod";
+import { consciousResult, consciousRequest, consciousLaterRequest, CONSCIOUS_V3_PROMPT } from "./conscious-agency.js";
+import { decodeConsciousOutputV3 } from "@kshiai/shared";
 import {
   BasicAttackProfileSchema,
   BattlefieldSemanticSeedSchema,
@@ -2792,9 +2794,9 @@ Do not invent a sudden environmental event or dramatic field change here. A sepa
             }
           : input;
         // [要修正:PSYCHE-RESPONSIBILITY] 以下のcurrentGoal/表現意図生成指示は既存の
-        // Compact LLM契約で、本来の心理責務ではない。移管先は設計未決のため指示は維持。
-        // [本来の責務:PSYCHE-RESPONSIBILITY] ADR-0004は反応更新を担当させ、知識に
-        // 基づく戦術・発話生成と分離する。docs/lightweight-psyche-adoptable-slice.md §6参照。
+        // Compact V1/V2互換専用。V3はこの呼出をせずconsciousAgencyV1へ判断を受け入れる。
+        // [本来の責務:PSYCHE-RESPONSIBILITY] ADR-0027/0028の心理は有界反応更新。
+        // 旧戦闘の世代固定を守るため旧指示を変更しない。
         const phaseRule = input.phase === "prologue"
           ? "This is turn 0. matchupMemory, if present, is a read-only owner-private note about this specific opponent. Use it to form a durable currentGoal, but do not copy its plan or reflection into delta.privateMemory: that field starts this battle's own inner record. battleVolatileMemory starts empty."
           : input.phase === "aftermath"
@@ -2929,9 +2931,9 @@ Omitted optional replacement roots preserve their rejected values. dialogueThrea
         ? "dialoguePipeline is trusted administrator-authored context. Use its psychologyGuidance only to shape this private appraisal; never mention it publicly."
         : "dialoguePipeline is disabled and must not shape the psychological update.";
       // [要修正:PSYCHE-RESPONSIBILITY] full経路にもopening strategy/currentGoal生成が
-      // 残るが、これを心理モデルへ戦術知識を持たせる根拠にしない。現行promptは維持。
-      // [本来の責務:PSYCHE-RESPONSIBILITY] ADR-0004の心理更新は有界な内的反応。
-      // 目標等の移管先はdocs/lightweight-psyche-adoptable-slice.md §6で未決。
+      // 残るのはV1/V2世代固定の互換性のため。V3からこの経路は呼ばない。
+      // [本来の責務:PSYCHE-RESPONSIBILITY] ADR-0027/0028の心理は有界反応、
+      // 目標・意図・発話は同じ顕在意識。旧promptを新しい責務の根拠にしない。
       const phaseRule = input.phase === "prologue"
         ? "This is turn 0. Form a durable, matchup-specific opening strategy in currentGoal from opponent memory already present in privateMemory, the field, and current perception. battleVolatileMemory starts empty for this match."
         : input.phase === "aftermath"
@@ -2972,6 +2974,15 @@ Return JSON only with privateMemory, currentGoal, emotion, beliefs, observations
     if (input.contextMode === "compact") {
       const counterpartLabel = input.counterpart?.displayName ?? "相手";
       try {
+        if (input.contractVersion === 3) {
+          const prompt = input.phase === "aftermath"
+            ? CONSCIOUS_V3_PROMPT : `${CONSCIOUS_V3_PROMPT}\n${CHARACTER_ACTION_PROPOSAL_OUTPUT_RULES}`;
+          const raw = await this.chatJson(prompt, JSON.stringify(consciousRequest(input)), {
+            tier: "fast", label: "advanceCharacterAgentCompact",
+            timeoutMs: FAST_TIMEOUT_MS, temperature: 0.65,
+          });
+          return consciousResult(raw, input.phase);
+        }
         if (input.contractVersion === 2) {
           const consciousInput = {
             contextMode: "compact" as const,
@@ -3187,6 +3198,17 @@ The narrator may later choose this line's display position and punctuation, but 
   ): Promise<Awaited<ReturnType<LlmProvider["decideCharacterAction"]>>> {
     if (!this.client) return this.fallback.decideCharacterAction(input);
     try {
+      if (input.conscious?.contractVersion === 3) {
+        const raw = await this.chatJson(`${CONSCIOUS_V3_PROMPT}\n${CHARACTER_ACTION_PROPOSAL_OUTPUT_RULES}`, JSON.stringify(consciousLaterRequest(input)), {
+          tier: "fast", label: "decideCharacterAction", timeoutMs: FAST_TIMEOUT_MS, temperature: 0.35,
+        });
+        const consciousOutput = decodeConsciousOutputV3(raw, "later");
+        return {
+          proposedAction: consciousOutput.envelopeValid && consciousOutput.phase === "later" && consciousOutput.nextAction.valid
+            ? consciousOutput.nextAction.value : null,
+          consciousOutput,
+        };
+      }
       const data = (await this.chatJson(
         `Choose one fictional character action from decision.availableActions. This is an action-only stage: do not generate speech, narration, emotion, hidden thoughts, or world facts. Use only the frozen self profile, observer-relative perception, and server-owned decision frame supplied in the input. Copy skillId exactly for a skill. Attacks hit only inside their reach band; if decision.actionFeedback.spacing.relation is not in_band, choose reposition. Return JSON only: {"nextAction": object}.\n${CHARACTER_ACTION_PROPOSAL_OUTPUT_RULES}`,
         JSON.stringify(input),

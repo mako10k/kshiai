@@ -149,6 +149,9 @@ function asString(value: unknown): string | null {
 }
 
 const INTERNAL_PRIVATE_KEYS = new Set([
+  "consciousAgencyV1",
+  "agencyState",
+  "consciousOutput",
   "input",
   "narrationInput",
   "providerOutput",

@@ -1,0 +1,42 @@
+domain AgencyV3Verification:
+  description "Record local verification and reviewed causal propagation without claiming model quality."
+problem P1:
+  |
+    V3 implementation changes shared legacy files and current plan state.
+    Acceptance and new implementation must remain distinguishable from historical
+    requirement snapshots and CA00 baseline observations.
+evidence E_LOCAL:
+  |
+    Local full suite passed 708 tests before adding one real V3 creation test.
+    The added SQLite V3 creation/advance test and two persistence tests pass.
+    Typecheck and build passed. Lizard1.23.0 passed unchanged thresholds after
+    brace-bodied callbacks avoided its cross-function parser mismeasurement.
+    An internal redaction regression was caused by a global facts-key match;
+    it was removed and the immutable asset integration test passed again.
+evidence E_GATES:
+  |
+    npm run adr:check is absent in this worktree. Direct CLI ADR audit succeeded
+    with zero fatal/error/warning, but does not establish that npm gate ran.
+    Exact owner approval exists; a second independent review is unperformed.
+evidence E_IMPACT:
+  |
+    Impact was read against the existing sealed heads of ten changed references.
+    Runtime edits had already begun before this turn's impact capture; do not
+    call that capture pre-edit. No heads had been resealed at capture time.
+    Reachable documents include historical v1 requirement/review/acceptance and
+    CA00 tests, current v2 requirements/ADR, plans, index and old impact report.
+premise BOUNDARY:
+  |
+    A seal is causal traceability, not owner approval, fresh execution or proof
+    of semantic quality. Preserve exact accepted requirement bytes and old run
+    counts. Current legacy regression can support continued applicability of
+    the old baseline contract without saying the old run executed V3.
+decision D1 based_on P1, E_LOCAL, E_GATES, E_IMPACT, BOUNDARY:
+  |
+    Update current plans with direct approval, local implementation and remaining
+    formal-check/review limitations. Keep t029 active while its required checks
+    are incomplete. Record current verification separately from historical runs.
+    Recheck changed code and each impacted document before individual reseal;
+    preserve historical requirement/review bytes and annotate the continued
+    legacy-only applicability at reviewed cause links. Register new V3 artifacts.
+    Do not activate settings, call a paid provider, deploy, commit or push.

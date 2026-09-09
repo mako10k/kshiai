@@ -1,4 +1,8 @@
 import type {
+  AgencyFactV1,
+  ConsciousAgencyV1,
+  ConsciousOutputV3,
+  PsycheReactionProjectionV1,
   BattlefieldInstance,
   BattlefieldPreset,
   BattlePolicyOption,
@@ -155,6 +159,15 @@ export type CharacterActionDecisionInput = {
   perception: CharacterPerceptionFrame;
   /** Server-owned legal choices and qualitative tactical constraints. */
   decision: CharacterActionDecisionContext;
+  conscious?: {
+    contractVersion: 3;
+    phase: "later";
+    agencyState: ConsciousAgencyV1;
+    reaction: { action: PsycheReactionProjectionV1; expression: PsycheReactionProjectionV1 };
+    goalPolicy: string;
+    facts: AgencyFactV1[];
+    utteranceHistory: { recent: CharacterUtteranceActualV1[] };
+  };
 };
 
 export type CharacterUtteranceActualV1 = {
@@ -166,11 +179,10 @@ export type CharacterUtteranceActualV1 = {
 };
 
 // [要修正:PSYCHE-RESPONSIBILITY] currentGoal等の現行配置を、深層心理が目標・戦術を
-// 思考する責務の根拠にしない。既存契約を維持しつつ移管先の設計が必要（下記§6では未決）。
+// 思考する責務の根拠にしない。これはV1/V2互換専用。V3は独立したclosed入力を使用する。
 // [本来の責務:PSYCHE-RESPONSIBILITY] 軽量心理更新は内的反応の状態遷移であり、
 // currentGoal・beliefs・自由文appraisal・ExpressionBriefをV1 reaction policyへ含めない。
-// 参照: docs/adr/0004-versioned-lightweight-psyche-dynamics.md;
-// docs/lightweight-psyche-adoptable-slice.md §6。
+// V3の目標・意図writerと寿命はADR-0028。旧世代を暗黙移行しないためこの型は残す。
 export type CharacterDeepPsycheExpressionStateV2 = Pick<
   CharacterAgentState,
   | "privateMemory"
@@ -289,7 +301,26 @@ export type CharacterExpressionCompactInputV2 = {
 
 export type CharacterExpressionCompactInput =
   | CharacterExpressionCompactInputV1
-  | CharacterExpressionCompactInputV2;
+  | CharacterExpressionCompactInputV2
+  | CharacterExpressionCompactInputV3;
+
+export type CharacterExpressionCompactInputV3 = {
+  contextMode: "compact";
+  contractVersion: 3;
+  phase: "prologue" | "turn" | "aftermath";
+  character: CharacterSelfProfileAnchor;
+  structuredSelf: CharacterConsciousSelfStaticProjectionV2;
+  agencyState: ConsciousAgencyV1;
+  reaction: { action: PsycheReactionProjectionV1; expression: PsycheReactionProjectionV1 };
+  goalPolicy: string;
+  facts: AgencyFactV1[];
+  utteranceHistory: { recent: CharacterUtteranceActualV1[] };
+  turnObservation: TurnObservationPacket;
+  observableManifestations: readonly CharacterObservableManifestationV2[];
+  social?: BattleSocialView;
+  counterpart?: CharacterCounterpartKnowledge;
+  decision?: CharacterActionDecisionContext;
+};
 
 export type CharacterDeepPsycheInput = CharacterDeepPsycheCompactInput | {
   contextMode?: "legacy";
@@ -323,6 +354,16 @@ export type CharacterExpressionInput = CharacterExpressionCompactInput | {
 };
 
 export type CharacterAgentAdvanceResult =
+  | {
+      contractVersion: 3;
+      state: CharacterAgentState;
+      nextUtterance: string | null;
+      speech?: never;
+      proposedAction: CharacterActionIntent | null;
+      proposedActionStatus: "valid" | "invalid" | "omitted";
+      realizedManifestation: string | null;
+      consciousOutput: ConsciousOutputV3;
+    }
   | {
       contractVersion?: 1;
       state: CharacterAgentState;
@@ -875,6 +916,7 @@ export interface LlmProvider {
    */
   decideCharacterAction(input: CharacterActionDecisionInput): Promise<{
     proposedAction: unknown | null;
+    consciousOutput?: ConsciousOutputV3;
   }>;
   /** Advance one character from its frozen observer-relative frame only. */
   advanceCharacterAgent(

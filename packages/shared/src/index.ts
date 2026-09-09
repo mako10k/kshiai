@@ -3,6 +3,7 @@ export * from "./character.js";
 export * from "./character-improvement.js";
 export * from "./rating.js";
 export * from "./battle.js";
+export * from "./conscious-agency.js";
 export * from "./compact-psyche-decode.js";
 export * from "./battle-social.js";
 export * from "./battlefield.js";

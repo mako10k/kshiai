@@ -87,4 +87,33 @@ describe("dialogue pipeline settings", () => {
     assert.equal(resolution.source, "persisted_setting");
     assert.equal(resolution.settings.revision, 1);
   });
+
+  it("opts into V3, preserves it on omission, rejects legacy mode atomically, and permits explicit V2", async () => {
+    const current = await settingsRepo.getDialoguePipelineSettings();
+    const third = await settingsRepo.updateDialoguePipelineSettings({ userId: "operator", patch: {
+      ...current, expectedRevision: current.revision, schemaVersion: 3, contextProjectionMode: "compact",
+    } });
+    assert.ok(third);
+    assert.equal(third.schemaVersion, 3);
+    const { schemaVersion: _version, ...withoutVersion } = third;
+    const preserved = await settingsRepo.updateDialoguePipelineSettings({ userId: "operator", patch: {
+      ...withoutVersion, expectedRevision: third.revision,
+    } });
+    assert.ok(preserved);
+    assert.equal(preserved.schemaVersion, 3);
+    await assert.rejects(settingsRepo.updateDialoguePipelineSettings({ userId: "operator", patch: {
+      ...withoutVersion, expectedRevision: preserved.revision, contextProjectionMode: "legacy",
+    } }));
+    assert.deepEqual(await settingsRepo.getDialoguePipelineSettings(), preserved);
+    const stale = await settingsRepo.updateDialoguePipelineSettings({ userId: "operator", patch: {
+      ...withoutVersion, expectedRevision: third.revision, schemaVersion: 2,
+    } });
+    assert.equal(stale, null);
+    const second = await settingsRepo.updateDialoguePipelineSettings({ userId: "operator", patch: {
+      ...withoutVersion, expectedRevision: preserved.revision, schemaVersion: 2, contextProjectionMode: "legacy",
+    } });
+    assert.ok(second);
+    assert.equal(second.schemaVersion, 2);
+    assert.equal(second.contextProjectionMode, "legacy");
+  });
 });

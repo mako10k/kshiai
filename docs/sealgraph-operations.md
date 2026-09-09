@@ -101,3 +101,33 @@ index（候補・source binding）、cache、logs、locks、tmpはローカル�
 元のローカルデータは削除しない。別checkoutでは登録表v3以降のpathからsourceを
 明示的にbindし直す。正本オブジェクトを再生成して旧履歴に代えない。
 これはローカルcommitであり、push・remote同期・実装承認ではない。
+
+## CA-00実測と要件候補（2026-09-09）
+
+0754ca7のcommit後、登録表は[revision 4](sealgraph-registration-v4.json)へ更新。
+型付きfixture/test、CA-00結果、未承認要件候補、正確なdigestのレビュー入力を追加した。
+変更前impactで計画の下流は責務設計・backlog・PERTの3件。各本文を確認し、
+CA-00完了と未承認契約を分け、専用発話履歴の欠如と直前発話の知覚を区別して更新した。
+残っていた旧進捗文も訂正し、確認済み依存だけに新旧revisionを記録した。
+候補のSealは内容固定であり、requirement lifecycleの受入ではない。
+要件候補の初回owner経路は未選択。追加の契約ADR、runtime変更、課金、pushは未実施。
+
+## 要件承認とADR-0028具体案（2026-09-09）
+
+上記はCA-00直後の履歴。現在は独立要件レビュー後にrevision 1をowner承認済み。
+原本bytesと旧Sealを維持し、レビューと承認記録を別REFとして登録した。
+現行一覧は[登録表v5](sealgraph-registration-v5.json)。ADR-0028の正本と投影はProposedとしてSeal。
+依存する実装計画・設計・backlog・PERTを個別確認し、新旧Causeを記録してresealした。
+詳細な結果と検証限界は[今回の検証記録](evidence/agency-contract-detail-verification-2026-09-09.md)を参照。
+全41参照で原本一致、stale 0、fsck正常。既存ADRの受入やSupersede状態は変更していない。
+補助検証ログと登録表自体を自己参照のSealへ組み込まない。新契約実装とremote同期は未実施。
+
+## 目標判断基準の訂正（2026-09-09）
+
+現在の一覧は[登録表v6](sealgraph-registration-v6.json)。owner指示に基づき作者確認優先を撤回。
+訂正記録、要件revision 2候補、同レビュー入力を追加し、Proposed ADR-0028をrevision 2へ訂正した。
+旧要件・レビュー・受入のbytesは保持するが、訂正されたR1を現行の実装authorityにしない。
+新ADRと計画のCauseを要件v2へ接続し、旧承認の無条件な継承をやめた。
+変更前impactの下流6参照を個別確認してreseal。44参照で原本一致、Stale 0、fsck正常。
+[readback](evidence/agency-goal-correction-readback-2026-09-09.json)に正確な新旧Sealと検証限界を保存。
+新要件／ADRは未承認、runtime変更・commit/pushは未実施。

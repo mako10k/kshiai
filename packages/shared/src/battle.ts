@@ -43,6 +43,7 @@ import {
   DialoguePipelineActivationSourceSchema,
   DialoguePipelineOverrideDeploymentSchema,
   BattleDialoguePipelineSnapshotSchema,
+  BattleDialoguePipelineSnapshotV3Schema,
   type DialoguePipelineActivationSource,
   type DialoguePipelineOverrideDeployment,
   type BattleDialoguePipelineSnapshot,
@@ -843,11 +844,10 @@ export type CharacterSpeechMode = z.infer<typeof CharacterSpeechModeSchema>;
  * Compact, private psychological conclusions that persist across a battle.
  * This is deliberately an appraisal record, not a chain-of-thought transcript.
  * [要修正:PSYCHE-RESPONSIBILITY] この自由文appraisalは既存LLM経路の契約であり、
- * 深層心理全体をLLMの思考担当とする責務定義ではない。移行時に所有境界を整理する。
+ * V1/V2保存互換のため残す。V3の心理入力・戦略writerとしては使わない（ADR-0028）。
  * [本来の責務:PSYCHE-RESPONSIBILITY] ADR-0027では、知覚由来の正規化経験・
  * 固定心理特性・前状態から有界な内的反応を更新する。知識に基づく戦術判断や
- * 発話生成は同じ顕在意識の判断であり、心理反応とは区別する。具体writer・寿命は
- * 要設計（docs/adr/0027-unified-conscious-agency-and-psyche-boundary.md）。
+ * 発話生成は同じ顕在意識の判断。V3の目標・意図はconsciousAgencyV1の受入とCASが所有する。
  */
 export const CharacterDeepPsycheSchema = z.object({
   primaryEmotion: z.string().max(120).default("平静"),
@@ -1150,6 +1150,13 @@ export type CharacterBattleCompilerInputsV2 = z.infer<
   typeof CharacterBattleCompilerInputsV2Schema
 >;
 
+/** V3 uses existing asset snapshots but never passes old psyche free text. */
+export const CharacterBattleCompilerInputsV3Schema =
+  CharacterBattleCompilerInputsV2Schema.omit({ deepPsyche: true }).strict();
+export type CharacterBattleCompilerInputsV3 = z.infer<
+  typeof CharacterBattleCompilerInputsV3Schema
+>;
+
 export const PsycheRelationshipStateV1Schema = z.object({
   trust: PsycheRelationshipValueSchema,
   affiliation: PsycheRelationshipValueSchema,
@@ -1385,6 +1392,50 @@ export type CharacterConversationContext = z.infer<
  * Compact private continuity for a character agent. It stores conclusions and
  * disposition, not a model's step-by-step reasoning.
  */
+function AgencyBasisRefsSchema(maximum: number) {
+  return z.array(z.string().trim().min(1).max(96)).min(1).max(maximum).refine(
+    (refs) => { return new Set(refs).size === refs.length; },
+    { message: "agency basis refs must be unique" },
+  );
+}
+
+/** ADR-0028: semantic grounding, never author-confirmation authority. */
+export const ConsciousGoalV1Schema = z.object({
+  statement: z.string().trim().min(1).max(240),
+  basisRefs: AgencyBasisRefsSchema(6),
+}).strict();
+export type ConsciousGoalV1 = z.infer<typeof ConsciousGoalV1Schema>;
+
+export const ConsciousIntentV1Schema = z.object({
+  aim: z.string().trim().min(1).max(160),
+  basisRefs: AgencyBasisRefsSchema(8),
+  rationale: z.string().trim().min(1).max(240),
+}).strict();
+export type ConsciousIntentV1 = z.infer<typeof ConsciousIntentV1Schema>;
+
+export const ConsciousDecisionV1Schema = z.object({
+  intent: ConsciousIntentV1Schema,
+  action: CharacterActionIntentSchema.nullable(),
+  turn: z.number().int().nonnegative(),
+  phase: z.enum(["prologue", "turn", "later"]),
+}).strict();
+export type ConsciousDecisionV1 = z.infer<typeof ConsciousDecisionV1Schema>;
+
+export const ConsciousAgencyV1Schema = z.object({
+  schemaVersion: z.literal(1),
+  upperGoal: ConsciousGoalV1Schema.nullable(),
+  latestDecision: ConsciousDecisionV1Schema.nullable(),
+}).strict().superRefine((state, context) => {
+  if (state.upperGoal === null && state.latestDecision !== null) {
+    context.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["latestDecision"],
+      message: "an accepted decision requires an initialized goal",
+    });
+  }
+});
+export type ConsciousAgencyV1 = z.infer<typeof ConsciousAgencyV1Schema>;
+
 export const CharacterAgentStateSchema = z.object({
   /**
    * Battle-scoped working conclusions. Aftermath may rewrite this into a
@@ -1415,6 +1466,8 @@ export const CharacterAgentStateSchema = z.object({
   /** Deterministic normal-turn reaction state; private and battle-scoped. */
   reactionStateV1: PsycheReactionStateV1Schema.optional(),
   reactionReceiptV1: PsycheReactionReceiptV1Schema.optional(),
+  /** V3-only private proposals; absence preserves legacy snapshots unchanged. */
+  consciousAgencyV1: ConsciousAgencyV1Schema.optional(),
   /** Deterministic no-effect attention shadow; never exposed publicly. */
   focusStateV1: CharacterFocusStateV1Schema.optional(),
   focusReceiptV1: CharacterFocusTransitionReceiptV1Schema.optional(),
@@ -1984,7 +2037,7 @@ export type BattleTurnEngineContinuation = z.infer<
  * asset generation is archived or hidden from ordinary editors.
  */
 export interface BattleAssetManifest {
-  schemaVersion: 2;
+  schemaVersion: 2 | 3;
   boundAt: string;
   characters: {
     a: BattleCharacterAssetBinding;
@@ -2047,6 +2100,7 @@ export type BattleCharacterAssetBinding = {
   snapshot: CombatReadyCharacterSheet;
   basicAttackSource: BattleBasicAttackSource;
   compilerInputsV2?: CharacterBattleCompilerInputsV2;
+  compilerInputsV3?: CharacterBattleCompilerInputsV3;
 };
 
 export const BattleDialoguePipelineBindingSchema = z.object({
@@ -2147,6 +2201,55 @@ const LegacyBattleAssetManifestV1Schema = BattleAssetManifestSharedSchema.extend
   }).strict(),
 }).strict();
 
+export const BattleCharacterAssetBindingV3Schema = z.object({
+  assetId: z.string(),
+  generationId: z.string().min(1),
+  contentDigest: z.string().regex(/^[a-f0-9]{64}$/),
+  snapshot: CombatReadyCharacterSheetSchema,
+  basicAttackSource: BattleBasicAttackSourceSchema,
+  compilerInputsV3: CharacterBattleCompilerInputsV3Schema,
+}).strict().superRefine((binding, context) => {
+  if (binding.basicAttackSource.generationId !== binding.generationId) {
+    context.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["basicAttackSource", "generationId"],
+      message: "basic attack source must match the bound character generation",
+    });
+  }
+});
+
+const BattleDialoguePipelineBindingV3Schema = z.object({
+  generationId: z.string().min(1),
+  contentDigest: z.string().regex(/^[a-f0-9]{64}$/),
+  snapshot: BattleDialoguePipelineSnapshotV3Schema,
+  activationSource: DialoguePipelineActivationSourceSchema,
+  overrideDeployment: DialoguePipelineOverrideDeploymentSchema.optional(),
+}).strict().superRefine((binding, context) => {
+  if ((binding.activationSource === "deployment_override") !== Boolean(binding.overrideDeployment)) {
+    context.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["overrideDeployment"],
+      message: "deployment override and immutable deployment identity must be paired",
+    });
+  }
+});
+
+/**
+ * Complete frozen V3 tuple. Partial V3 must not route as V2.
+ */
+export const BattleAssetManifestV3Schema = BattleAssetManifestSharedSchema.extend({
+  schemaVersion: z.literal(3),
+  characters: z.object({
+    a: BattleCharacterAssetBindingV3Schema,
+    b: BattleCharacterAssetBindingV3Schema,
+  }).strict(),
+  dialoguePipeline: BattleDialoguePipelineBindingV3Schema,
+  rules: BattleAssetManifestSharedSchema.shape.rules.extend({
+    psycheReaction: z.literal("psyche-reaction-policy-v1"),
+  }).strict(),
+}).strict();
+export type BattleAssetManifestV3 = z.infer<typeof BattleAssetManifestV3Schema>;
+
 export function upgradeLegacyBattleCharacterBindingV1(
   binding: z.infer<typeof LegacyBattleCharacterAssetBindingV1Schema>,
 ): BattleCharacterAssetBinding {
@@ -2167,9 +2270,10 @@ export const BattleAssetManifestSchema: z.ZodType<
   z.ZodTypeDef,
   unknown
 > = z.union([
+  BattleAssetManifestV3Schema,
   BattleAssetManifestV2Schema,
   LegacyBattleAssetManifestV1Schema,
-]).transform((manifest) => manifest.schemaVersion === 2
+]).transform((manifest) => manifest.schemaVersion !== 1
   ? manifest
   : BattleAssetManifestV2Schema.parse({
       ...manifest,

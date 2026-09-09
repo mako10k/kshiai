@@ -1,3 +1,5 @@
+import { mockConsciousResult } from "./conscious-agency.js";
+import { decodeConsciousOutputV3 } from "@kshiai/shared";
 import {
   CATEGORY_LABELS,
   SYSTEM_PRESET_SEEDS,
@@ -860,6 +862,7 @@ export class MockLlmProvider implements LlmProvider {
     input: Parameters<LlmProvider["advanceCharacterAgent"]>[0],
   ): Promise<Awaited<ReturnType<LlmProvider["advanceCharacterAgent"]>>> {
     if (input.contextMode === "compact") {
+      if (input.contractVersion === 3) return mockConsciousResult(input);
       const observation = input.turnObservation!;
       const compactV2 = input.contractVersion === 2;
       const expressionState = compactV2 ? input.expressionState : input.psyche;
@@ -1139,6 +1142,15 @@ export class MockLlmProvider implements LlmProvider {
   async decideCharacterAction(
     input: Parameters<LlmProvider["decideCharacterAction"]>[0],
   ): Promise<Awaited<ReturnType<LlmProvider["decideCharacterAction"]>>> {
+    if (input.conscious?.contractVersion === 3) {
+      return {
+        proposedAction: null,
+        consciousOutput: decodeConsciousOutputV3({
+          intent: { aim: "検証用", rationale: "配線検証", basisRefs: ["ordinary-goal"] },
+          nextAction: null,
+        }, "later"),
+      };
+    }
     const preferred = (
       input.decision.actionFeedback?.spacing.relation &&
       input.decision.actionFeedback.spacing.relation !== "in_band"

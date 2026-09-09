@@ -1,0 +1,61 @@
+domain AgencyContractDetail:
+  description "Detail the accepted agency requirements and preserve Seal evidence."
+problem P1:
+  |
+    Requirement revision 1 is accepted; concrete provenance, reaction projection,
+    writer lifetime, failure precedence, activation and accounting remain to specify.
+evidence E1:
+  |
+    Exact accepted requirement hash is
+    f733f85a153349e4be28785fef05d93006d057e0e5d507a8423b658f9bb7f444.
+    Separate acceptance record preserves original bytes. Independent review completed.
+evidence E2:
+  |
+    Current free-action defaultObjective has no provenance; OpenAI authoring prompts
+    can generate victory defaults in an existing decisionProfile. Presence is not
+    author-explicit evidence. Reaction policy already returns bounded action and
+    expression projections. Dialogue settings writer currently pins schemaVersion 2.
+evidence E3:
+  |
+    The matching checkout is 0754ca7, origin/main 1cdf210, ahead21 behind0 with prior
+    WIP. ADR0028 is locally unallocated. This checkout lacks template.think and
+    npm adr:check, while the primary checkout has the template and a checker that
+    scans only its own directory. Do not claim that checker validates this worktree.
+premise AUTHORITY:
+  |
+    Owner requested concrete design and Seal. Accepted requirements and ADR0027
+    constrain it; new ADR remains Proposed. No runtime implementation, paid call,
+    push or deployment. Preserve accepted requirement bytes and existing ADRs.
+premise OPTIONS:
+  |
+    A infer author intent from profile presence or wording, rejected as ambiguous.
+    B freeze explicit owner-confirmed objective provenance in a new character asset
+    generation content contract, retain V2 definition, and block ambiguous V3 start
+    until resolved; no separate database or tactical planner.
+    C silently call unknown provenance absent, rejected because explicit intent
+    might be erased. For reaction, reuse bounded projections rather than raw state.
+pending LIMITS:
+  |
+    New contract adoption and details require owner approval; actual model quality
+    and provider budgets remain unverified. Existing ADR checker is unavailable in
+    this worktree; direct CLI audits and projection checks must be labeled separately.
+decision D1 based_on P1, E1, E2, AUTHORITY, OPTIONS, LIMITS:
+  |
+    Draft ADR0028 using B, explicit frozen provenance and unknown-start failure,
+    one conscious provider result per normal slot, existing bounded reaction
+    projections and no extra deliberative psyche call. Specify old-field inert
+    states, closed outputs, typed partial acceptance, later fallback and private
+    state boundaries. Keep V1/V2 routes and immutable snapshots intact.
+decision D2 based_on D1, E3, AUTHORITY, LIMITS:
+  |
+    Use the repository Markdown template and read the primary think template as
+    an authoring reference without modifying that checkout. Audit the proposed
+    canonical think via installed CLI before relying on it. Attempt required
+    npm adr:check and report its absence; do not install unrelated governance tooling.
+decision D3 based_on D1, D2, AUTHORITY:
+  |
+    Inspect Seal status and impact before changing registered plans. Register
+    independent review and exact requirement acceptance as distinct evidence, keep
+    the requirement seal immutable, add Proposed ADR and projection, update reviewed
+    design/backlog/PERT to the ADR gate, and reseal each verified dependency only.
+    Record digest, stale scan and fsck. Stop before implementation and ADR acceptance.

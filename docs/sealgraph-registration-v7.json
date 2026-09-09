@@ -1,0 +1,522 @@
+{
+  "revision": 7,
+  "scope": "Exact owner approval and local V3 implementation; historical v1 snapshots retained, formal ADR npm check and model quality remain unverified.",
+  "entries": [
+    {
+      "ref": "adr/psyche-boundary",
+      "path": "docs/adr/0027-unified-conscious-agency-and-psyche-boundary.think",
+      "causes": []
+    },
+    {
+      "ref": "adr/character-focus",
+      "path": "docs/adr/0008-battle-private-character-focus-state.md",
+      "causes": [
+        "adr/psyche-boundary"
+      ]
+    },
+    {
+      "ref": "adr/structured-character",
+      "path": "docs/adr/0011-structured-character-definition.md",
+      "causes": [
+        "adr/psyche-boundary"
+      ]
+    },
+    {
+      "ref": "adr/expression-state",
+      "path": "docs/adr/0025-expression-state-and-utterance-actuals.think",
+      "causes": [
+        "adr/psyche-boundary"
+      ]
+    },
+    {
+      "ref": "projection/adr-0025",
+      "path": "docs/adr/0025-expression-state-and-utterance-actuals.md",
+      "causes": [
+        "adr/expression-state"
+      ]
+    },
+    {
+      "ref": "adr/psyche-repair",
+      "path": "docs/adr/0026-compact-psyche-semantic-closure-repair.think",
+      "causes": [
+        "adr/expression-state"
+      ]
+    },
+    {
+      "ref": "projection/adr-0026",
+      "path": "docs/adr/0026-compact-psyche-semantic-closure-repair.md",
+      "causes": [
+        "adr/psyche-repair"
+      ]
+    },
+    {
+      "ref": "design/psyche-reaction",
+      "path": "docs/lightweight-psyche-reaction-policy.md",
+      "causes": [
+        "adr/psyche-boundary"
+      ]
+    },
+    {
+      "ref": "design/psyche-slice",
+      "path": "docs/lightweight-psyche-adoptable-slice.md",
+      "causes": [
+        "design/psyche-reaction"
+      ]
+    },
+    {
+      "ref": "implementation/psyche-schema",
+      "path": "packages/shared/src/battle.ts",
+      "causes": [
+        "adr/psyche-boundary"
+      ]
+    },
+    {
+      "ref": "implementation/llm-types",
+      "path": "backend/src/llm/types.ts",
+      "causes": [
+        "adr/psyche-boundary",
+        "adr/expression-state"
+      ]
+    },
+    {
+      "ref": "implementation/battle-service",
+      "path": "backend/src/services/battle-service.ts",
+      "causes": [
+        "adr/psyche-boundary",
+        "adr/expression-state",
+        "adr/psyche-repair"
+      ]
+    },
+    {
+      "ref": "implementation/llm-adapter",
+      "path": "backend/src/llm/openai-compatible.ts",
+      "causes": [
+        "adr/psyche-boundary",
+        "adr/expression-state",
+        "adr/psyche-repair"
+      ]
+    },
+    {
+      "ref": "adr/0027",
+      "path": "docs/adr/0027-unified-conscious-agency-and-psyche-boundary.think",
+      "causes": []
+    },
+    {
+      "ref": "projection/adr-0027",
+      "path": "docs/adr/0027-unified-conscious-agency-and-psyche-boundary.md",
+      "causes": [
+        "adr/psyche-boundary"
+      ]
+    },
+    {
+      "ref": "archive/adr-0004",
+      "path": "docs/adr/0004-versioned-lightweight-psyche-dynamics.md",
+      "causes": [
+        "adr/psyche-boundary"
+      ]
+    },
+    {
+      "ref": "implementation/expression-prompt",
+      "path": "backend/src/llm/character-expression-prompt.ts",
+      "causes": [
+        "adr/psyche-boundary",
+        "adr/expression-state"
+      ]
+    },
+    {
+      "ref": "implementation/mock-adapter",
+      "path": "backend/src/llm/mock.ts",
+      "causes": [
+        "adr/psyche-boundary",
+        "adr/expression-state"
+      ]
+    },
+    {
+      "ref": "evidence/adr-0027-implementation-impact",
+      "path": "docs/evidence/adr-0027-implementation-impact-2026-09-09.md",
+      "causes": [
+        "adr/psyche-boundary",
+        "implementation/psyche-schema",
+        "implementation/llm-types",
+        "implementation/battle-service",
+        "implementation/llm-adapter",
+        "implementation/expression-prompt",
+        "implementation/mock-adapter"
+      ]
+    },
+    {
+      "ref": "implementation/conscious-self-projection",
+      "path": "packages/shared/src/structured-character.ts",
+      "causes": [
+        "adr/psyche-boundary"
+      ]
+    },
+    {
+      "ref": "implementation/decision-profile",
+      "path": "backend/src/services/free-action-service.ts",
+      "causes": [
+        "adr/psyche-boundary"
+      ]
+    },
+    {
+      "ref": "implementation/dialogue-generation",
+      "path": "packages/shared/src/dialogue-pipeline.ts",
+      "causes": [
+        "adr/psyche-boundary"
+      ]
+    },
+    {
+      "ref": "implementation/psyche-decoder",
+      "path": "packages/shared/src/compact-psyche-decode.ts",
+      "causes": [
+        "adr/psyche-boundary"
+      ]
+    },
+    {
+      "ref": "implementation/battle-persistence",
+      "path": "backend/src/repositories/battles.ts",
+      "causes": [
+        "adr/psyche-boundary"
+      ]
+    },
+    {
+      "ref": "implementation/operation-taxonomy",
+      "path": "backend/src/llm/provider-operation-taxonomy.ts",
+      "causes": [
+        "adr/psyche-boundary"
+      ]
+    },
+    {
+      "ref": "implementation/private-observability",
+      "path": "backend/src/services/internal-observability.ts",
+      "causes": [
+        "adr/psyche-boundary"
+      ]
+    },
+    {
+      "ref": "implementation/agency-replay-baseline",
+      "path": "backend/src/scripts/replay-compact-v2-provider.ts",
+      "causes": [
+        "adr/psyche-boundary"
+      ]
+    },
+    {
+      "ref": "plan/agency-implementation",
+      "path": "docs/character-agency-implementation-plan-v1.md",
+      "causes": [
+        "adr/psyche-boundary",
+        "implementation/psyche-schema",
+        "implementation/llm-types",
+        "implementation/battle-service",
+        "implementation/llm-adapter",
+        "implementation/expression-prompt",
+        "implementation/mock-adapter",
+        "implementation/conscious-self-projection",
+        "implementation/decision-profile",
+        "implementation/dialogue-generation",
+        "implementation/psyche-decoder",
+        "implementation/battle-persistence",
+        "implementation/operation-taxonomy",
+        "implementation/private-observability",
+        "implementation/agency-replay-baseline",
+        "evidence/agency-ca00",
+        "proposal/adr-0028",
+        "proposal/agency-requirements-v2",
+        "evidence/agency-v3-local"
+      ]
+    },
+    {
+      "ref": "design/agency-responsibility",
+      "path": "docs/character-agency-responsibility-design-v1.md",
+      "causes": [
+        "adr/psyche-boundary",
+        "design/psyche-slice",
+        "adr/expression-state",
+        "adr/psyche-repair",
+        "plan/agency-implementation"
+      ]
+    },
+    {
+      "ref": "backlog/character-agency",
+      "path": "docs/character-agency-backlog.md",
+      "causes": [
+        "design/agency-responsibility"
+      ]
+    },
+    {
+      "ref": "plan/dialogue-expression",
+      "path": "docs/dialogue-expression-realization.pert",
+      "causes": [
+        "design/agency-responsibility",
+        "backlog/character-agency",
+        "plan/agency-implementation",
+        "review/agency-requirements-v2-input"
+      ]
+    },
+    {
+      "ref": "verification/agency-fixtures",
+      "path": "backend/src/services/character-agency-inventory.fixtures.ts",
+      "causes": [
+        "implementation/battle-service",
+        "implementation/llm-adapter",
+        "implementation/conscious-self-projection",
+        "implementation/dialogue-generation"
+      ]
+    },
+    {
+      "ref": "verification/agency-inventory",
+      "path": "backend/src/services/character-agency-inventory.test.ts",
+      "causes": [
+        "verification/agency-fixtures",
+        "implementation/battle-persistence"
+      ]
+    },
+    {
+      "ref": "evidence/agency-ca00",
+      "path": "docs/evidence/character-agency-ca00-inventory-2026-09-09.md",
+      "causes": [
+        "verification/agency-inventory",
+        "implementation/decision-profile",
+        "implementation/operation-taxonomy",
+        "implementation/private-observability"
+      ]
+    },
+    {
+      "ref": "proposal/agency-requirements-v1",
+      "path": "docs/character-agency-requirements-v1.md",
+      "causes": [
+        "adr/psyche-boundary",
+        "adr/expression-state",
+        "adr/psyche-repair",
+        "evidence/agency-ca00"
+      ]
+    },
+    {
+      "ref": "review/agency-requirements-v1-input",
+      "path": "docs/character-agency-requirements-v1-review-input.md",
+      "causes": [
+        "proposal/agency-requirements-v1"
+      ]
+    },
+    {
+      "ref": "review/agency-requirements-v1",
+      "path": "docs/evidence/character-agency-requirements-v1-independent-review-2026-09-09.md",
+      "causes": [
+        "review/agency-requirements-v1-input",
+        "proposal/agency-requirements-v1"
+      ]
+    },
+    {
+      "ref": "acceptance/agency-requirements-v1",
+      "path": "docs/character-agency-requirements-v1-acceptance.md",
+      "causes": [
+        "proposal/agency-requirements-v1",
+        "review/agency-requirements-v1"
+      ]
+    },
+    {
+      "ref": "proposal/adr-0028",
+      "path": "docs/adr/0028-versioned-conscious-agency-contract.think",
+      "causes": [
+        "proposal/agency-requirements-v2",
+        "adr/psyche-boundary",
+        "adr/expression-state",
+        "adr/psyche-repair",
+        "implementation/conscious-self-projection",
+        "implementation/llm-adapter",
+        "evidence/agency-ca00",
+        "acceptance/agency-requirements-v2"
+      ]
+    },
+    {
+      "ref": "projection/adr-0028",
+      "path": "docs/adr/0028-versioned-conscious-agency-contract.md",
+      "causes": [
+        "proposal/adr-0028"
+      ]
+    },
+    {
+      "ref": "index/adr",
+      "path": "docs/adr/README.md",
+      "causes": [
+        "projection/adr-0028"
+      ]
+    },
+    {
+      "ref": "correction/agency-goal-criterion",
+      "path": "docs/evidence/agency-goal-criterion-correction-2026-09-09.md",
+      "causes": []
+    },
+    {
+      "ref": "proposal/agency-requirements-v2",
+      "path": "docs/character-agency-requirements-v2.md",
+      "causes": [
+        "correction/agency-goal-criterion",
+        "proposal/agency-requirements-v1",
+        "adr/psyche-boundary"
+      ]
+    },
+    {
+      "ref": "review/agency-requirements-v2-input",
+      "path": "docs/character-agency-requirements-v2-review-input.md",
+      "causes": [
+        "proposal/agency-requirements-v2"
+      ]
+    },
+    {
+      "ref": "acceptance/agency-requirements-v2",
+      "path": "docs/character-agency-requirements-v2-acceptance.md",
+      "causes": [
+        "proposal/agency-requirements-v2"
+      ]
+    },
+    {
+      "ref": "implementation/conscious-agency",
+      "path": "packages/shared/src/conscious-agency.ts",
+      "causes": [
+        "proposal/adr-0028",
+        "implementation/psyche-schema"
+      ]
+    },
+    {
+      "ref": "implementation/agency-provider-input",
+      "path": "backend/src/llm/conscious-agency.ts",
+      "causes": [
+        "proposal/adr-0028",
+        "implementation/conscious-agency",
+        "implementation/llm-types"
+      ]
+    },
+    {
+      "ref": "implementation/agency-settings",
+      "path": "backend/src/repositories/dialogue-pipeline-settings.ts",
+      "causes": [
+        "proposal/adr-0028",
+        "implementation/dialogue-generation"
+      ]
+    },
+    {
+      "ref": "implementation/agency-activation",
+      "path": "backend/src/services/dialogue-pipeline-activation.ts",
+      "causes": [
+        "proposal/adr-0028",
+        "implementation/dialogue-generation"
+      ]
+    },
+    {
+      "ref": "implementation/psyche-reaction-execution",
+      "path": "packages/shared/src/psyche-reaction-policy.ts",
+      "causes": [
+        "proposal/adr-0028",
+        "implementation/psyche-schema"
+      ]
+    },
+    {
+      "ref": "implementation/shared-exports",
+      "path": "packages/shared/src/index.ts",
+      "causes": [
+        "implementation/conscious-agency"
+      ]
+    },
+    {
+      "ref": "verification/conscious-agency",
+      "path": "packages/shared/src/conscious-agency.test.ts",
+      "causes": [
+        "implementation/conscious-agency"
+      ]
+    },
+    {
+      "ref": "verification/agency-runtime-fixture",
+      "path": "backend/src/services/conscious-agency.fixtures.ts",
+      "causes": [
+        "proposal/adr-0028",
+        "verification/agency-fixtures"
+      ]
+    },
+    {
+      "ref": "verification/agency-runtime",
+      "path": "backend/src/services/conscious-agency-runtime.test.ts",
+      "causes": [
+        "verification/agency-runtime-fixture",
+        "implementation/agency-provider-input",
+        "implementation/battle-service",
+        "implementation/llm-adapter"
+      ]
+    },
+    {
+      "ref": "verification/agency-binding",
+      "path": "backend/src/services/conscious-agency-binding.test.ts",
+      "causes": [
+        "implementation/psyche-schema",
+        "implementation/dialogue-generation"
+      ]
+    },
+    {
+      "ref": "verification/agency-persistence",
+      "path": "backend/src/services/conscious-agency-persistence.test.ts",
+      "causes": [
+        "verification/agency-runtime-fixture",
+        "implementation/conscious-agency",
+        "implementation/battle-persistence",
+        "implementation/battle-service"
+      ]
+    },
+    {
+      "ref": "verification/agency-settings",
+      "path": "backend/src/repositories/dialogue-pipeline-settings.test.ts",
+      "causes": [
+        "implementation/agency-settings"
+      ]
+    },
+    {
+      "ref": "verification/agency-legacy-speech",
+      "path": "backend/src/services/battle-speech-wiring.test.ts",
+      "causes": [
+        "implementation/battle-service",
+        "implementation/llm-types"
+      ]
+    },
+    {
+      "ref": "verification/psyche-reaction",
+      "path": "packages/shared/src/psyche-reaction-policy.test.ts",
+      "causes": [
+        "implementation/psyche-reaction-execution"
+      ]
+    },
+    {
+      "ref": "reasoning/agency-v3-implementation",
+      "path": "docs/evidence/agency-revision2-implementation-2026-09-09.think",
+      "causes": [
+        "acceptance/agency-requirements-v2"
+      ]
+    },
+    {
+      "ref": "reasoning/agency-v3-seal",
+      "path": "docs/evidence/agency-v3-verification-and-seal-2026-09-09.think",
+      "causes": [
+        "reasoning/agency-v3-implementation"
+      ]
+    },
+    {
+      "ref": "evidence/agency-v3-local",
+      "path": "docs/evidence/agency-v3-local-verification-2026-09-09.md",
+      "causes": [
+        "proposal/adr-0028",
+        "acceptance/agency-requirements-v2",
+        "implementation/agency-provider-input",
+        "implementation/agency-settings",
+        "implementation/agency-activation",
+        "implementation/psyche-reaction-execution",
+        "implementation/shared-exports",
+        "verification/conscious-agency",
+        "verification/agency-runtime",
+        "verification/agency-binding",
+        "verification/agency-persistence",
+        "verification/agency-settings",
+        "verification/agency-legacy-speech",
+        "verification/psyche-reaction",
+        "reasoning/agency-v3-seal"
+      ]
+    }
+  ]
+}

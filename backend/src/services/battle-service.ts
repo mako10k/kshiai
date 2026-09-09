@@ -1,3 +1,11 @@
+import type { CharacterActionDecisionInput } from "../llm/types.js";
+import { assertConsciousBinding, boundConsciousCompiler, consciousFacts, consciousReaction, privateBattleGoal, legacyPublicOpeningPlan } from "../llm/conscious-agency.js";
+import {
+  acceptConsciousDecisionV3, initialConsciousAgencyV1, initialPsycheReactionStateV1,
+  CONSCIOUS_GOAL_POLICY_V3, BattleAssetManifestV3Schema, CharacterAgentStateSchema,
+  decodeConsciousOutputV3,
+  type ConsciousOutputV3, type BattleCharacterAssetBinding,
+} from "@kshiai/shared";
 import { randomInt } from "node:crypto";
 import { requestDigest } from "./distributed-guard.js";
 import {
@@ -320,18 +328,19 @@ export function toBattlePublic(
   ratingDisplay?: RatingDisplayContext,
 ): BattlePublic {
   const selected = new Set(state.selectedPolicyIdsA ?? []);
-  const selectedPolicies = (state.policiesA ?? []).filter((p) =>
-    selected.has(p.id),
-  );
+  const selectedPolicies = (state.policiesA ?? []).filter((p) => {
+    return selected.has(p.id);
+  });
 
   const imgFor = (
     combatant: BattleState["sideA"],
     sheet: CharacterSheet | null | undefined,
-  ) =>
-    combatant.imageUrl ??
+  ) => {
+    return combatant.imageUrl ??
     (sheet && sheet.id === combatant.characterId
       ? (sheet.appearance?.imageUrl ?? null)
       : null);
+  };
 
   const sideASheet =
     mySheet.id === state.sideA.characterId ? mySheet : oppSheet;
@@ -1009,13 +1018,13 @@ export async function startBattle(input: {
     },
     dialoguePipelineSnapshot,
     agentStateA: {
-      ...(state.agentStateA as CharacterAgentState),
+      ...CharacterAgentStateSchema.parse(state.agentStateA ?? {}),
       privateMemory: mine.opponentMemories?.[opp.id]
         ? `この相手への過去方針: ${mine.opponentMemories[opp.id]!.preBattlePlan}\n過去の反省: ${mine.opponentMemories[opp.id]!.postBattleReflection}`
         : state.agentStateA?.privateMemory ?? "",
     },
     agentStateB: {
-      ...(state.agentStateB as CharacterAgentState),
+      ...CharacterAgentStateSchema.parse(state.agentStateB ?? {}),
       privateMemory: opp.opponentMemories?.[mine.id]
         ? `この相手への過去方針: ${opp.opponentMemories[mine.id]!.preBattlePlan}\n過去の反省: ${opp.opponentMemories[mine.id]!.postBattleReflection}`
         : state.agentStateB?.privateMemory ?? "",
@@ -1025,6 +1034,30 @@ export async function startBattle(input: {
     updatedAt: new Date().toISOString(),
   };
 
+  if (dialoguePipelineSnapshot.schemaVersion === 3) {
+    if (!state.assetManifest) throw new Error("BATTLE_CONTRACT_MISMATCH");
+    const upgrade = (binding: BattleCharacterAssetBinding) => {
+      const compiler = binding.compilerInputsV2;
+      if (!compiler) throw new Error("BATTLE_CONTRACT_MISMATCH");
+      const { deepPsyche: _legacyPsyche, ...compilerInputsV3 } = compiler;
+      const { compilerInputsV2: _legacyCompiler, ...existing } = binding;
+      return { ...existing, compilerInputsV3 };
+    };
+    state.assetManifest = BattleAssetManifestV3Schema.parse({
+      ...state.assetManifest, schemaVersion: 3,
+      characters: {
+        a: upgrade(state.assetManifest.characters.a),
+        b: upgrade(state.assetManifest.characters.b),
+      },
+    });
+    for (const key of ["agentStateA", "agentStateB"] as const) {
+      state[key] = {
+        ...CharacterAgentStateSchema.parse(state[key] ?? {}),
+        currentGoal: "", beliefs: [], consciousAgencyV1: initialConsciousAgencyV1(),
+        reactionStateV1: initialPsycheReactionStateV1(),
+      };
+    }
+  }
   await battleRepo.saveBattle(state, {
     sideAUserId: input.userId,
     sideACharacterId: mine.id,
@@ -1327,8 +1360,7 @@ export function buildNarratorStructuredCharacterContextsV2(input: {
     carrierEvidence,
   });
   const contextFor = (side: "a" | "b") => {
-    const views = input.state.assetManifest?.characters[side]
-      .compilerInputsV2?.narratorViews;
+    const views = boundConsciousCompiler(input.state.assetManifest?.characters[side])?.narratorViews;
     if (!views) return null;
     const ownInner = (input.focus === "self" && side === "a") ||
       (input.focus === "foe" && side === "b");
@@ -1467,8 +1499,7 @@ function characterNormFacts(input: {
       : null;
     if (pair) facts.push({ kind: "distance_band", value: pair.distance });
   }
-  const relationship = input.state.assetManifest?.characters?.[input.side]
-    .compilerInputsV2?.relationship?.selected;
+  const relationship = boundConsciousCompiler(input.state.assetManifest?.characters?.[input.side])?.relationship?.selected;
   for (const relationshipBand of relationship?.relationKinds ?? []) {
     facts.push({ kind: "relationship_band", value: relationshipBand });
   }
@@ -1587,8 +1618,7 @@ function buildCharacterDecisionContext(input: {
     worldState: input.state.worldState,
     perception,
   });
-  const compilerInputs = input.state.assetManifest?.characters?.[input.side]
-    .compilerInputsV2;
+  const compilerInputs = boundConsciousCompiler(input.state.assetManifest?.characters?.[input.side]);
   const normResolution = compilerInputs?.actionNorms
     ? evaluateCharacterActionNormsV2({
         program: compilerInputs.actionNorms,
@@ -1662,6 +1692,7 @@ export function buildLaterBucketActionInput(input: {
   counterpartSheet?: CharacterSheet;
   side: "a" | "b";
 }): Parameters<LlmProvider["decideCharacterAction"]>[0] | null {
+  if (input.state.assetManifest?.schemaVersion === 3 && !input.state.dialoguePipelineSnapshot?.enabled) return null;
   const perception = input.side === "a"
     ? input.state.perceptionFrameA
     : input.state.perceptionFrameB;
@@ -1672,10 +1703,9 @@ export function buildLaterBucketActionInput(input: {
     phase: "turn",
   });
   if (!decision || decision.availableActions.length === 0) return null;
-  const compilerInputs = input.state.assetManifest?.characters?.[input.side]
-    .compilerInputsV2;
+  const compilerInputs = boundConsciousCompiler(input.state.assetManifest?.characters?.[input.side]);
   const ruleMetadata = characterDecisionRuleMetadata.get(decision);
-  return deepFreezeConsumerInput({
+  const base: CharacterActionDecisionInput = {
     character: buildCharacterSelfProfileAnchor(
       input.sheet,
       deriveBattleProfileStateOverrides({
@@ -1698,7 +1728,19 @@ export function buildLaterBucketActionInput(input: {
       : {}),
     perception: structuredClone(perception),
     decision,
-  });
+  };
+  if (input.state.assetManifest?.schemaVersion !== 3) return deepFreezeConsumerInput(base);
+  const agency = (input.side === "a" ? input.state.agentStateA : input.state.agentStateB);
+  if (!compilerInputs || !base.structuredSelf || !agency?.consciousAgencyV1) throw new Error("BATTLE_CONTRACT_MISMATCH");
+  const packet = buildTurnObservationPacket({ frame: perception });
+  const facts = consciousFacts({ ...base, structuredSelf: base.structuredSelf, turnObservation: packet, goalPolicy: CONSCIOUS_GOAL_POLICY_V3 })
+    .filter((fact) => fact.kind !== "observation");
+  facts.push({ ref: `perception-${input.state.turn}`, kind: "observation", sourcePath: "/perception" });
+  return deepFreezeConsumerInput({ ...base, conscious: {
+    contractVersion: 3, phase: "later", agencyState: structuredClone(agency.consciousAgencyV1),
+    reaction: consciousReaction(agency, compilerInputs), goalPolicy: CONSCIOUS_GOAL_POLICY_V3, facts,
+    utteranceHistory: projectUtteranceHistory((agency.conversationHistory ?? []).filter((entry) => entry.turn === input.state.turn && entry.speaker === "self"), 24),
+  } });
 }
 
 function deterministicLaterBucketFallback(
@@ -1859,6 +1901,7 @@ export function buildCharacterAgentConsumerInput(input: {
   dialoguePipeline?: DialoguePipelineSettings;
   phase?: "prologue" | "turn" | "aftermath";
 }): CharacterAgentSharedConsumerInput | null {
+  if (input.dialoguePipeline?.schemaVersion === 3 && !input.dialoguePipeline.enabled) return null;
   const frame = input.side === "a"
     ? input.state.perceptionFrameA
     : input.state.perceptionFrameB;
@@ -1923,8 +1966,7 @@ export function buildCharacterAgentConsumerInput(input: {
         phase,
       });
   if (decision && decision.availableActions.length === 0) return null;
-  const compilerInputs = input.state.assetManifest?.characters?.[input.side]
-    .compilerInputsV2;
+  const compilerInputs = boundConsciousCompiler(input.state.assetManifest?.characters?.[input.side]);
   const ruleMetadata = decision
     ? characterDecisionRuleMetadata.get(decision)
     : undefined;
@@ -2083,12 +2125,12 @@ export function applyReflectMemoryWrites(
         // durable postBattleReflection after the match, while reflect notes
         // are match-scoped scratch only.
         battleVolatileMemory: memoryBits.join("\n").slice(0, 1200),
-        currentGoal: guideline.slice(0, 240) || agent.currentGoal,
+        currentGoal: state.assetManifest?.schemaVersion === 3 ? agent.currentGoal : guideline.slice(0, 240) || agent.currentGoal,
         observations: [
           ...agent.observations.slice(-6),
           ...(analysis && !observationAlready ? [analysis.slice(0, 240)] : []),
         ].slice(-8),
-        interior: {
+        interior: state.assetManifest?.schemaVersion === 3 ? agent.interior : {
           primaryEmotion: agent.interior?.primaryEmotion ?? agent.emotion ?? "平静",
           concealedEmotion: agent.interior?.concealedEmotion ?? null,
           coreNeed: agent.interior?.coreNeed ?? "",
@@ -2130,6 +2172,8 @@ export async function advanceCharacterAgents(input: {
   const dialoguePipeline = DialoguePipelineSettingsSchema.parse(
     input.dialoguePipeline ?? defaultDialoguePipelineSettings(),
   );
+  const consciousV3 = dialoguePipeline.schemaVersion === 3;
+  assertConsciousBinding(input.after, dialoguePipeline);
   const previousRecords = input.replaceLastRecord
     ? (input.after.turnRecords ?? []).slice(0, -1)
     : input.after.turnRecords ?? [];
@@ -2178,12 +2222,12 @@ export async function advanceCharacterAgents(input: {
     : recordWithoutUtterances;
   const activeSides = new Set(input.activeSides ?? ["a", "b"]);
   // [要修正:PSYCHE-RESPONSIBILITY] この世代・phase分岐を「重要局面ならLLMへ昇格」
-  // という一般ルールと読まない。既存LLM経路と軽量更新の移行境界は別途整理が必要。
-  // [本来の責務:PSYCHE-RESPONSIBILITY] ADR-0004の通常心理更新は有界な反応遷移。
-  // V1適用の通常turnはno-callで、不確実性による自動昇格はしない。現行分岐は維持する。
+  // という一般ルールと読まない。V1/V2のphase挙動は保存互換のため維持する。
+  // [本来の責務:PSYCHE-RESPONSIBILITY] ADR-0028のV3は全phaseで心理LLM no-call。
+  // prologueはゼロ状態、以降は観測による有界反応のみ。laterは追加tickしない。
   const deterministicPsyche =
     input.after.assetManifest?.rules.psycheReaction === PSYCHE_REACTION_POLICY_V1 &&
-    (input.phase ?? "turn") === "turn";
+    (consciousV3 || (input.phase ?? "turn") === "turn");
   const deterministicFocus =
     input.after.assetManifest?.rules.characterFocus === CHARACTER_FOCUS_POLICY_V1 &&
     (input.phase ?? "turn") === "turn";
@@ -2217,27 +2261,27 @@ export async function advanceCharacterAgents(input: {
     ReturnType<typeof advancePsycheReactionV1>["expressionProjection"] | undefined;
   let reactionProjectionB:
     ReturnType<typeof advancePsycheReactionV1>["expressionProjection"] | undefined;
-  if (deterministicPsyche) {
-    if (activeSides.has("a")) {
+  if (deterministicPsyche && (!consciousV3 || input.phase !== "prologue")) {
+    if (activeSides.has("a") && (!consciousV3 || dialogueProjection?.a)) {
       const reaction = advancePsycheReactionV1({
         prior: previousA.reactionStateV1,
         packet: dialogueProjection?.a ?? null,
-        traits: input.after.assetManifest?.characters?.a.compilerInputsV2
+        traits: boundConsciousCompiler(input.after.assetManifest?.characters?.a)
           ?.psycheTraits,
-        relationship: input.after.assetManifest?.characters?.a.compilerInputsV2
+        relationship: boundConsciousCompiler(input.after.assetManifest?.characters?.a)
           ?.relationship?.selected?.dynamics,
       });
       previousA.reactionStateV1 = reaction.state;
       previousA.reactionReceiptV1 = reaction.receipt;
       reactionProjectionA = reaction.expressionProjection;
     }
-    if (activeSides.has("b")) {
+    if (activeSides.has("b") && (!consciousV3 || dialogueProjection?.b)) {
       const reaction = advancePsycheReactionV1({
         prior: previousB.reactionStateV1,
         packet: dialogueProjection?.b ?? null,
-        traits: input.after.assetManifest?.characters?.b.compilerInputsV2
+        traits: boundConsciousCompiler(input.after.assetManifest?.characters?.b)
           ?.psycheTraits,
-        relationship: input.after.assetManifest?.characters?.b.compilerInputsV2
+        relationship: boundConsciousCompiler(input.after.assetManifest?.characters?.b)
           ?.relationship?.selected?.dynamics,
       });
       previousB.reactionStateV1 = reaction.state;
@@ -2349,7 +2393,7 @@ export async function advanceCharacterAgents(input: {
   const toPsycheInput = (
     consumerInput: typeof inputA,
   ): CharacterDeepPsycheInput | null => {
-    if (!consumerInput) return null;
+    if (!consumerInput || consciousV3) return null;
     // Accepted V1 contract: normal-turn private reaction is deterministic and
     // must not escalate to a provider when features are absent or uncertain.
     if (deterministicPsyche && consumerInput.phase === "turn") return null;
@@ -2363,11 +2407,10 @@ export async function advanceCharacterAgents(input: {
       const compilerInputs = input.after.assetManifest?.characters?.[
         consumerInput === inputA ? "a" : "b"
       ].compilerInputsV2;
-      // [要修正:PSYCHE-RESPONSIBILITY] 既存LLMへの記憶・currentGoal入力は移行中の配置。
+      // [要修正:PSYCHE-RESPONSIBILITY] 以下の記憶・currentGoal入力はV1/V2互換専用。
       // decision/structuredSelfがないことを欠陥と推定し、戦術知識をここへ追加しない。
-      // [本来の責務:PSYCHE-RESPONSIBILITY] ADR-0004の心理入力はpsyche-only。
-      // 能力・ルールに基づく行動選択とは分離する。目標等の移管先は
-      // docs/lightweight-psyche-adoptable-slice.md §6で未決。現行payloadは変更しない。
+      // [本来の責務:PSYCHE-RESPONSIBILITY] ADR-0028のV3はこの分岐より前でno-call。
+      // 旧心理自由文をV3のagencyState・知識へ転用しない。旧payloadは世代固定のため残す。
       const storedMatchupMemory = sheet.opponentMemories?.[counterpartSheet.id];
       if (compactContractV2) {
         return {
@@ -2615,6 +2658,29 @@ export async function advanceCharacterAgents(input: {
         ? dialogueProjection?.a
         : dialogueProjection?.b;
       if (!packet) return null;
+      if (consciousV3) {
+        const compiler = boundConsciousCompiler(input.after.assetManifest?.characters[
+          consumerInput === inputA ? "a" : "b"
+        ]);
+        if (!compiler || !consumerInput.structuredSelf || !psyche.consciousAgencyV1) {
+          throw new Error("BATTLE_CONTRACT_MISMATCH");
+        }
+        const base = {
+          contextMode: "compact" as const, contractVersion: 3 as const,
+          phase: consumerInput.phase, character: consumerInput.character,
+          structuredSelf: consumerInput.structuredSelf,
+          agencyState: structuredClone(psyche.consciousAgencyV1),
+          reaction: consciousReaction(psyche, compiler),
+          goalPolicy: CONSCIOUS_GOAL_POLICY_V3,
+          turnObservation: packet,
+          utteranceHistory: projectUtteranceHistory(consumerInput.conversation.history, dialoguePipeline.recentExchangeLimit),
+          observableManifestations: [],
+          ...(consumerInput.social ? { social: consumerInput.social } : {}),
+          ...(consumerInput.counterpart ? { counterpart: consumerInput.counterpart } : {}),
+          ...(consumerInput.decision ? { decision: consumerInput.decision } : {}),
+        };
+        return { ...base, facts: consciousFacts(base) };
+      }
       if (compactContractV2) {
         const focus = consumerInput === inputA
           ? focusA?.packet ?? null
@@ -2628,10 +2694,10 @@ export async function advanceCharacterAgents(input: {
             ? { structuredSelf: consumerInput.structuredSelf }
             : {}),
           // [要修正:PSYCHE-RESPONSIBILITY] currentGoalがこの投影にない事実だけで
-          // 深層心理から直接配線すべきとは決めない。目標・意図の所有と投影は要設計。
+          // 深層心理から直接配線すべきとは決めない。ここはV2保存互換の投影。
           // [本来の責務:PSYCHE-RESPONSIBILITY] ADR-0027では同じ顕在意識が行動・発話を判断。
           // 心理反応は限定投影で受け取り、知識・意図は顕在意識内で共有できる。
-          // ここは既存契約の投影。新schema・writer・寿命の実装は別途設計する。
+          // V3は上の分岐でreactionとagencyStateを共有し、専用受入関数だけが判断を書き込む。
           expressionState: {
             emotion: psyche.emotion,
             speechStyle: psyche.speechStyle,
@@ -2757,6 +2823,7 @@ export async function advanceCharacterAgents(input: {
     preferredSelfReference: input.after.encounterContext?.social.a.selfReference,
     decision: agentInputA?.decision,
     observableManifestations: agentInputA?.observableManifestations,
+    consciousInput: agentInputA?.contextMode === "compact" && agentInputA.contractVersion === 3 ? agentInputA : undefined,
   });
   const acceptedB = acceptCharacterAgentResult({
     result: agentB,
@@ -2773,6 +2840,7 @@ export async function advanceCharacterAgents(input: {
     preferredSelfReference: input.after.encounterContext?.social.b.selfReference,
     decision: agentInputB?.decision,
     observableManifestations: agentInputB?.observableManifestations,
+    consciousInput: agentInputB?.contextMode === "compact" && agentInputB.contractVersion === 3 ? agentInputB : undefined,
   });
   const traceSide = (
     consumerInput: typeof agentInputA,
@@ -2840,14 +2908,14 @@ export async function advanceCharacterAgents(input: {
       actionNorm: inputA?.decision
         ? characterDecisionRuleMetadata.get(inputA.decision)?.actionNorm ?? null
         : null,
-      relationship: input.after.assetManifest?.characters?.a.compilerInputsV2
+      relationship: boundConsciousCompiler(input.after.assetManifest?.characters?.a)
         ?.relationship?.receipt ?? null,
     },
     b: {
       actionNorm: inputB?.decision
         ? characterDecisionRuleMetadata.get(inputB.decision)?.actionNorm ?? null
         : null,
-      relationship: input.after.assetManifest?.characters?.b.compilerInputsV2
+      relationship: boundConsciousCompiler(input.after.assetManifest?.characters?.b)
         ?.relationship?.receipt ?? null,
     },
   };
@@ -3327,6 +3395,7 @@ export function validateCharacterActionProposal(input: {
  * the preceding deep-psyche stage, so this later stage cannot overwrite it.
  */
 export function acceptCharacterAgentResult(input: {
+  consciousInput?: import("../llm/types.js").CharacterExpressionCompactInputV3;
   result: CharacterAgentAdvanceResult | null;
   previous: CharacterAgentState;
   side: "a" | "b";
@@ -3343,7 +3412,8 @@ export function acceptCharacterAgentResult(input: {
         input.profile.identity.selfNames.includes(input.preferredSelfReference))
     ? input.preferredSelfReference
     : canonicalSelfReference(input.profile);
-  if (!input.result) {
+  if (!input.result || (input.consciousInput && input.result.contractVersion !== 3) ||
+      (input.result.contractVersion === 3 && !input.consciousInput)) {
     return {
       state: {
         ...input.previous,
@@ -3355,18 +3425,32 @@ export function acceptCharacterAgentResult(input: {
       realizedManifestation: null,
     };
   }
-  const compactV2 = input.result.contractVersion === 2;
+  const compactV2 = input.result.contractVersion === 2 || input.result.contractVersion === 3;
   const text = coerceCharacterSpeech(compactV2
     ? input.result.nextUtterance
     : input.result.speech);
-  const actionProposalValidation = validateCharacterActionProposal({
+  let actionProposalValidation = validateCharacterActionProposal({
     proposedAction: input.result.proposedAction,
-    proposalSchemaInvalid: input.result.contractVersion === 2
+    proposalSchemaInvalid: input.result.contractVersion === 2 || input.result.contractVersion === 3
       ? input.result.proposedActionStatus === "invalid"
       : false,
     decision: input.decision,
   });
-  const nextAction = actionProposalValidation.acceptedAction ?? undefined;
+  const agencyAcceptance = input.result.contractVersion === 3 && input.consciousInput
+    ? acceptConsciousDecisionV3({
+        previous: input.previous.consciousAgencyV1 ?? initialConsciousAgencyV1(),
+        output: input.result.consciousOutput,
+        facts: input.consciousInput.facts,
+        turn: input.consciousInput.turnObservation.turn,
+        validateAction: (action) => validateCharacterActionProposal({ proposedAction: action, decision: input.decision }).acceptedAction,
+      })
+    : null;
+  if (input.result.contractVersion === 3 && !agencyAcceptance?.acceptedDecision) {
+    actionProposalValidation = { ...actionProposalValidation, status: "rejected", reason: "schema_invalid", acceptedAction: null };
+  }
+  const nextAction = input.result.contractVersion === 3
+    ? agencyAcceptance?.acceptedDecision ? agencyAcceptance.state.latestDecision?.action ?? undefined : undefined
+    : actionProposalValidation.acceptedAction ?? undefined;
   const realizedManifestation = input.observableManifestations?.find(
     (candidate) => candidate.proposal === input.result?.realizedManifestation,
   ) ?? null;
@@ -3375,6 +3459,7 @@ export function acceptCharacterAgentResult(input: {
       ? {
           ...input.previous,
           selfReference,
+          ...(agencyAcceptance ? { consciousAgencyV1: agencyAcceptance.state } : {}),
         }
       : {
           ...input.previous,
@@ -3383,7 +3468,7 @@ export function acceptCharacterAgentResult(input: {
         },
     nextAction,
     actionProposalValidation,
-    speech: {
+    speech: input.result.contractVersion === 3 && input.result.nextUtterance === null ? null : {
       side: input.side,
       speaker: input.speaker,
       text,
@@ -5146,12 +5231,26 @@ async function advanceTurnWithLease(input: {
           const startedAt = Date.now();
           let proposedAction: unknown | null = null;
           let providerFailure: string | null = null;
+          let consciousOutput: ConsciousOutputV3 | undefined;
           try {
-            proposedAction = (await input.llm.decideCharacterAction(laterInput))
-              .proposedAction;
+            const result = await input.llm.decideCharacterAction(laterInput);
+            proposedAction = result.proposedAction;
+            consciousOutput = result.consciousOutput;
           } catch (error) {
             if (isProviderOperationAccountingError(error)) throw error;
             providerFailure = error instanceof Error ? error.message : "provider_error";
+          }
+          if (laterInput.conscious) {
+            const accepted = acceptConsciousDecisionV3({
+              previous: laterInput.conscious.agencyState,
+              output: consciousOutput ?? decodeConsciousOutputV3(null, "later"),
+              facts: laterInput.conscious.facts, turn: boundaryState.turn,
+              validateAction: (action) => validateCharacterActionProposal({ proposedAction: action, decision: laterInput.decision }).acceptedAction,
+            });
+            proposedAction = accepted.acceptedDecision ? accepted.state.latestDecision?.action ?? null : null;
+            const key = laterSide === "a" ? "agentStateA" : "agentStateB";
+            const agent = boundaryState[key];
+            if (agent) boundaryState = { ...boundaryState, [key]: { ...agent, consciousAgencyV1: accepted.state } };
           }
           const validation = validateCharacterActionProposal({
             proposedAction,
@@ -6244,8 +6343,8 @@ async function runPrologueTurn(input: {
 
   let next: BattleState = {
     ...state,
-    openingPlanA: state.agentStateA?.currentGoal?.slice(0, 1200),
-    openingPlanB: state.agentStateB?.currentGoal?.slice(0, 1200),
+    openingPlanA: legacyPublicOpeningPlan(state, "a"),
+    openingPlanB: legacyPublicOpeningPlan(state, "b"),
     turn: 0,
     prologuePending: false,
     updatedAt: new Date().toISOString(),
@@ -6485,14 +6584,14 @@ async function runAftermathTurn(input: {
       charRepo.saveOpponentBattleMemory({
         characterId: input.meta.side_a_character_id,
         opponentId: input.meta.side_b_character_id,
-        preBattlePlan: next.openingPlanA ?? next.agentStateA?.currentGoal ?? "",
+        preBattlePlan: privateBattleGoal(next, "a"),
         postBattleReflection: next.agentStateA?.privateMemory ?? "",
         battledAt: finishedAt,
       }),
       charRepo.saveOpponentBattleMemory({
         characterId: input.meta.side_b_character_id,
         opponentId: input.meta.side_a_character_id,
-        preBattlePlan: next.openingPlanB ?? next.agentStateB?.currentGoal ?? "",
+        preBattlePlan: privateBattleGoal(next, "b"),
         postBattleReflection: next.agentStateB?.privateMemory ?? "",
         battledAt: finishedAt,
       }),

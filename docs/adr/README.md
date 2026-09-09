@@ -62,3 +62,5 @@ This directory contains durable records of architectural and product-rule decisi
 | [0025](0025-expression-state-and-utterance-actuals.md) | Accepted | Separate Compact expression state from completed utterance history, name the current output explicitly, and preserve exact repetition without a reuse classifier |
 | [0026](0026-compact-psyche-semantic-closure-repair.md) | Accepted | Align the Compact psyche prompt and repair one rejected semantic closure without regenerating unrelated state |
 | [0027](0027-unified-conscious-agency-and-psyche-boundary.md) | Accepted | Supersedes ADR-0004: reaction-only psyche, unified conscious action/speech judgment and separate engine adjudication; preserves dynamics and revision safeguards |
+
+| [0028](0028-versioned-conscious-agency-contract.md) | Accepted | Revision 2 corrects goal criterion to personality/relationship fit regardless of authorship; withdraws provenance gates; bounded reaction and typed partial acceptance; no supersession |

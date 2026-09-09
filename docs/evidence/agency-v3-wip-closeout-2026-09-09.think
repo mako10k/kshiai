@@ -1,0 +1,32 @@
+domain AgencyWipCloseout:
+  description "Preserve the current agency work without claiming implementation completion."
+problem P1:
+  |
+    The owner requested a handoff, WIP commit and push, then an end to today's work.
+evidence E1:
+  |
+    Local inspection identifies the existing compact-psyche-repair-integration
+    worktree at 0754ca7 with agency code, tests, documents and Seal objects dirty.
+    Its main credential-domain checkout is /home/katsumata-m/kshiai.
+evidence E2:
+  |
+    The latest verification record reports 709 tests passed before a final prompt
+    adjustment. Formal adr:check is absent. Seal registration and four stale
+    references remain incomplete. The owner did not request completion of them.
+premise P2:
+  |
+    Preserve incomplete state honestly. WIP synchronization is not acceptance,
+    merge, deployment or permission for a paid provider call. Do not modify other
+    worktrees or end a shared workday based solely on repository closeout.
+premise I1:
+  |
+    Inference from E1 and E2: the matching worktree is the continuation location. A handoff must preserve
+    pending verification and Seal work rather than manufacturing completed gates.
+decision D1 based_on P1, E1, E2, P2, I1:
+  |
+    Prefer an explicit WIP handoff and commit on the existing branch over further
+    implementation or leaving unsynchronized work. Verify remote state through
+    the main secdat domain, inspect staged paths for scope and sensitive data,
+    push only this branch without force, read back its SHA and local cleanliness,
+    and finish this task. Leave shared work-time lifecycle unchanged because the
+    requested effects are repository handoff, commit and push.

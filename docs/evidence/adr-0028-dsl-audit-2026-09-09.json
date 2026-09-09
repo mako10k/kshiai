@@ -1,0 +1,1063 @@
+{
+  "thought_id": "docs-adr-0028-versioned-conscious-agency-contract",
+  "id_source": "file",
+  "report": {
+    "engine_version": "0.1.0",
+    "document_id": "docs-adr-0028-versioned-conscious-agency-contract",
+    "generated_at": "2026-09-09T12:29:57.694Z",
+    "summary": {
+      "fatal_count": 0,
+      "error_count": 0,
+      "warning_count": 0,
+      "info_count": 1,
+      "hint_count": 37
+    },
+    "results": [
+      {
+        "issue_id": "ISSUE-001",
+        "category": "contradiction_candidate",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "D1",
+            "role": "decision",
+            "step_id": "S-D1"
+          },
+          {
+            "ref_id": "D2",
+            "role": "decision",
+            "step_id": "S-D2"
+          }
+        ],
+        "message": "D1 と D2 は同一根拠 AUTHORITY, E_CODE を共有しており、緊張関係にある可能性がある。",
+        "rationale": "複数の decision が同じ based_on 参照を共有しているため、観点と結論の整合性を再確認するべきである。",
+        "metadata": {
+          "shared_refs": [
+            "AUTHORITY",
+            "E_CODE"
+          ],
+          "line": 56,
+          "column": 10,
+          "end_column": 12
+        }
+      },
+      {
+        "issue_id": "ISSUE-002",
+        "category": "contradiction_candidate",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "D1",
+            "role": "decision",
+            "step_id": "S-D1"
+          },
+          {
+            "ref_id": "D3",
+            "role": "decision",
+            "step_id": "S-D3"
+          }
+        ],
+        "message": "D1 と D3 は同一根拠 AUTHORITY, E_CODE を共有しており、緊張関係にある可能性がある。",
+        "rationale": "複数の decision が同じ based_on 参照を共有しているため、観点と結論の整合性を再確認するべきである。",
+        "metadata": {
+          "shared_refs": [
+            "AUTHORITY",
+            "E_CODE"
+          ],
+          "line": 56,
+          "column": 10,
+          "end_column": 12
+        }
+      },
+      {
+        "issue_id": "ISSUE-003",
+        "category": "contradiction_candidate",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "D1",
+            "role": "decision",
+            "step_id": "S-D1"
+          },
+          {
+            "ref_id": "D4",
+            "role": "decision",
+            "step_id": "S-D4"
+          }
+        ],
+        "message": "D1 と D4 は同一根拠 AUTHORITY を共有しており、緊張関係にある可能性がある。",
+        "rationale": "複数の decision が同じ based_on 参照を共有しているため、観点と結論の整合性を再確認するべきである。",
+        "metadata": {
+          "shared_refs": [
+            "AUTHORITY"
+          ],
+          "line": 56,
+          "column": 10,
+          "end_column": 12
+        }
+      },
+      {
+        "issue_id": "ISSUE-004",
+        "category": "contradiction_candidate",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "D1",
+            "role": "decision",
+            "step_id": "S-D1"
+          },
+          {
+            "ref_id": "D5",
+            "role": "decision",
+            "step_id": "S-D5"
+          }
+        ],
+        "message": "D1 と D5 は同一根拠 AUTHORITY を共有しており、緊張関係にある可能性がある。",
+        "rationale": "複数の decision が同じ based_on 参照を共有しているため、観点と結論の整合性を再確認するべきである。",
+        "metadata": {
+          "shared_refs": [
+            "AUTHORITY"
+          ],
+          "line": 56,
+          "column": 10,
+          "end_column": 12
+        }
+      },
+      {
+        "issue_id": "ISSUE-005",
+        "category": "contradiction_candidate",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "D1",
+            "role": "decision",
+            "step_id": "S-D1"
+          },
+          {
+            "ref_id": "D6",
+            "role": "decision",
+            "step_id": "S-D6"
+          }
+        ],
+        "message": "D1 と D6 は同一根拠 AUTHORITY を共有しており、緊張関係にある可能性がある。",
+        "rationale": "複数の decision が同じ based_on 参照を共有しているため、観点と結論の整合性を再確認するべきである。",
+        "metadata": {
+          "shared_refs": [
+            "AUTHORITY"
+          ],
+          "line": 56,
+          "column": 10,
+          "end_column": 12
+        }
+      },
+      {
+        "issue_id": "ISSUE-006",
+        "category": "contradiction_candidate",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "D1",
+            "role": "decision",
+            "step_id": "S-D1"
+          },
+          {
+            "ref_id": "D7",
+            "role": "decision",
+            "step_id": "S-D7"
+          }
+        ],
+        "message": "D1 と D7 は同一根拠 AUTHORITY を共有しており、緊張関係にある可能性がある。",
+        "rationale": "複数の decision が同じ based_on 参照を共有しているため、観点と結論の整合性を再確認するべきである。",
+        "metadata": {
+          "shared_refs": [
+            "AUTHORITY"
+          ],
+          "line": 56,
+          "column": 10,
+          "end_column": 12
+        }
+      },
+      {
+        "issue_id": "ISSUE-007",
+        "category": "contradiction_candidate",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "D1",
+            "role": "decision",
+            "step_id": "S-D1"
+          },
+          {
+            "ref_id": "D8",
+            "role": "decision",
+            "step_id": "S-D8"
+          }
+        ],
+        "message": "D1 と D8 は同一根拠 AUTHORITY, E_CODE を共有しており、緊張関係にある可能性がある。",
+        "rationale": "複数の decision が同じ based_on 参照を共有しているため、観点と結論の整合性を再確認するべきである。",
+        "metadata": {
+          "shared_refs": [
+            "AUTHORITY",
+            "E_CODE"
+          ],
+          "line": 56,
+          "column": 10,
+          "end_column": 12
+        }
+      },
+      {
+        "issue_id": "ISSUE-008",
+        "category": "contradiction_candidate",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "D2",
+            "role": "decision",
+            "step_id": "S-D2"
+          },
+          {
+            "ref_id": "D3",
+            "role": "decision",
+            "step_id": "S-D3"
+          }
+        ],
+        "message": "D2 と D3 は同一根拠 AUTHORITY, E_CODE を共有しており、緊張関係にある可能性がある。",
+        "rationale": "複数の decision が同じ based_on 参照を共有しているため、観点と結論の整合性を再確認するべきである。",
+        "metadata": {
+          "shared_refs": [
+            "AUTHORITY",
+            "E_CODE"
+          ],
+          "line": 86,
+          "column": 10,
+          "end_column": 12
+        }
+      },
+      {
+        "issue_id": "ISSUE-009",
+        "category": "contradiction_candidate",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "D2",
+            "role": "decision",
+            "step_id": "S-D2"
+          },
+          {
+            "ref_id": "D4",
+            "role": "decision",
+            "step_id": "S-D4"
+          }
+        ],
+        "message": "D2 と D4 は同一根拠 D1, AUTHORITY を共有しており、緊張関係にある可能性がある。",
+        "rationale": "複数の decision が同じ based_on 参照を共有しているため、観点と結論の整合性を再確認するべきである。",
+        "metadata": {
+          "shared_refs": [
+            "D1",
+            "AUTHORITY"
+          ],
+          "line": 86,
+          "column": 10,
+          "end_column": 12
+        }
+      },
+      {
+        "issue_id": "ISSUE-010",
+        "category": "contradiction_candidate",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "D2",
+            "role": "decision",
+            "step_id": "S-D2"
+          },
+          {
+            "ref_id": "D5",
+            "role": "decision",
+            "step_id": "S-D5"
+          }
+        ],
+        "message": "D2 と D5 は同一根拠 AUTHORITY を共有しており、緊張関係にある可能性がある。",
+        "rationale": "複数の decision が同じ based_on 参照を共有しているため、観点と結論の整合性を再確認するべきである。",
+        "metadata": {
+          "shared_refs": [
+            "AUTHORITY"
+          ],
+          "line": 86,
+          "column": 10,
+          "end_column": 12
+        }
+      },
+      {
+        "issue_id": "ISSUE-011",
+        "category": "contradiction_candidate",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "D2",
+            "role": "decision",
+            "step_id": "S-D2"
+          },
+          {
+            "ref_id": "D6",
+            "role": "decision",
+            "step_id": "S-D6"
+          }
+        ],
+        "message": "D2 と D6 は同一根拠 AUTHORITY を共有しており、緊張関係にある可能性がある。",
+        "rationale": "複数の decision が同じ based_on 参照を共有しているため、観点と結論の整合性を再確認するべきである。",
+        "metadata": {
+          "shared_refs": [
+            "AUTHORITY"
+          ],
+          "line": 86,
+          "column": 10,
+          "end_column": 12
+        }
+      },
+      {
+        "issue_id": "ISSUE-012",
+        "category": "contradiction_candidate",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "D2",
+            "role": "decision",
+            "step_id": "S-D2"
+          },
+          {
+            "ref_id": "D7",
+            "role": "decision",
+            "step_id": "S-D7"
+          }
+        ],
+        "message": "D2 と D7 は同一根拠 AUTHORITY を共有しており、緊張関係にある可能性がある。",
+        "rationale": "複数の decision が同じ based_on 参照を共有しているため、観点と結論の整合性を再確認するべきである。",
+        "metadata": {
+          "shared_refs": [
+            "AUTHORITY"
+          ],
+          "line": 86,
+          "column": 10,
+          "end_column": 12
+        }
+      },
+      {
+        "issue_id": "ISSUE-013",
+        "category": "contradiction_candidate",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "D2",
+            "role": "decision",
+            "step_id": "S-D2"
+          },
+          {
+            "ref_id": "D8",
+            "role": "decision",
+            "step_id": "S-D8"
+          }
+        ],
+        "message": "D2 と D8 は同一根拠 AUTHORITY, E_CODE を共有しており、緊張関係にある可能性がある。",
+        "rationale": "複数の decision が同じ based_on 参照を共有しているため、観点と結論の整合性を再確認するべきである。",
+        "metadata": {
+          "shared_refs": [
+            "AUTHORITY",
+            "E_CODE"
+          ],
+          "line": 86,
+          "column": 10,
+          "end_column": 12
+        }
+      },
+      {
+        "issue_id": "ISSUE-014",
+        "category": "contradiction_candidate",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "D2",
+            "role": "decision",
+            "step_id": "S-D2"
+          },
+          {
+            "ref_id": "D9",
+            "role": "decision",
+            "step_id": "S-D9"
+          }
+        ],
+        "message": "D2 と D9 は同一根拠 D1 を共有しており、緊張関係にある可能性がある。",
+        "rationale": "複数の decision が同じ based_on 参照を共有しているため、観点と結論の整合性を再確認するべきである。",
+        "metadata": {
+          "shared_refs": [
+            "D1"
+          ],
+          "line": 86,
+          "column": 10,
+          "end_column": 12
+        }
+      },
+      {
+        "issue_id": "ISSUE-015",
+        "category": "contradiction_candidate",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "D3",
+            "role": "decision",
+            "step_id": "S-D3"
+          },
+          {
+            "ref_id": "D4",
+            "role": "decision",
+            "step_id": "S-D4"
+          }
+        ],
+        "message": "D3 と D4 は同一根拠 D2, AUTHORITY を共有しており、緊張関係にある可能性がある。",
+        "rationale": "複数の decision が同じ based_on 参照を共有しているため、観点と結論の整合性を再確認するべきである。",
+        "metadata": {
+          "shared_refs": [
+            "D2",
+            "AUTHORITY"
+          ],
+          "line": 105,
+          "column": 10,
+          "end_column": 12
+        }
+      },
+      {
+        "issue_id": "ISSUE-016",
+        "category": "contradiction_candidate",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "D3",
+            "role": "decision",
+            "step_id": "S-D3"
+          },
+          {
+            "ref_id": "D5",
+            "role": "decision",
+            "step_id": "S-D5"
+          }
+        ],
+        "message": "D3 と D5 は同一根拠 AUTHORITY を共有しており、緊張関係にある可能性がある。",
+        "rationale": "複数の decision が同じ based_on 参照を共有しているため、観点と結論の整合性を再確認するべきである。",
+        "metadata": {
+          "shared_refs": [
+            "AUTHORITY"
+          ],
+          "line": 105,
+          "column": 10,
+          "end_column": 12
+        }
+      },
+      {
+        "issue_id": "ISSUE-017",
+        "category": "contradiction_candidate",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "D3",
+            "role": "decision",
+            "step_id": "S-D3"
+          },
+          {
+            "ref_id": "D6",
+            "role": "decision",
+            "step_id": "S-D6"
+          }
+        ],
+        "message": "D3 と D6 は同一根拠 AUTHORITY を共有しており、緊張関係にある可能性がある。",
+        "rationale": "複数の decision が同じ based_on 参照を共有しているため、観点と結論の整合性を再確認するべきである。",
+        "metadata": {
+          "shared_refs": [
+            "AUTHORITY"
+          ],
+          "line": 105,
+          "column": 10,
+          "end_column": 12
+        }
+      },
+      {
+        "issue_id": "ISSUE-018",
+        "category": "contradiction_candidate",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "D3",
+            "role": "decision",
+            "step_id": "S-D3"
+          },
+          {
+            "ref_id": "D7",
+            "role": "decision",
+            "step_id": "S-D7"
+          }
+        ],
+        "message": "D3 と D7 は同一根拠 D2, AUTHORITY を共有しており、緊張関係にある可能性がある。",
+        "rationale": "複数の decision が同じ based_on 参照を共有しているため、観点と結論の整合性を再確認するべきである。",
+        "metadata": {
+          "shared_refs": [
+            "D2",
+            "AUTHORITY"
+          ],
+          "line": 105,
+          "column": 10,
+          "end_column": 12
+        }
+      },
+      {
+        "issue_id": "ISSUE-019",
+        "category": "contradiction_candidate",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "D3",
+            "role": "decision",
+            "step_id": "S-D3"
+          },
+          {
+            "ref_id": "D8",
+            "role": "decision",
+            "step_id": "S-D8"
+          }
+        ],
+        "message": "D3 と D8 は同一根拠 D2, AUTHORITY, E_CODE を共有しており、緊張関係にある可能性がある。",
+        "rationale": "複数の decision が同じ based_on 参照を共有しているため、観点と結論の整合性を再確認するべきである。",
+        "metadata": {
+          "shared_refs": [
+            "D2",
+            "AUTHORITY",
+            "E_CODE"
+          ],
+          "line": 105,
+          "column": 10,
+          "end_column": 12
+        }
+      },
+      {
+        "issue_id": "ISSUE-020",
+        "category": "contradiction_candidate",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "D3",
+            "role": "decision",
+            "step_id": "S-D3"
+          },
+          {
+            "ref_id": "D9",
+            "role": "decision",
+            "step_id": "S-D9"
+          }
+        ],
+        "message": "D3 と D9 は同一根拠 D2 を共有しており、緊張関係にある可能性がある。",
+        "rationale": "複数の decision が同じ based_on 参照を共有しているため、観点と結論の整合性を再確認するべきである。",
+        "metadata": {
+          "shared_refs": [
+            "D2"
+          ],
+          "line": 105,
+          "column": 10,
+          "end_column": 12
+        }
+      },
+      {
+        "issue_id": "ISSUE-021",
+        "category": "contradiction_candidate",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "D4",
+            "role": "decision",
+            "step_id": "S-D4"
+          },
+          {
+            "ref_id": "D5",
+            "role": "decision",
+            "step_id": "S-D5"
+          }
+        ],
+        "message": "D4 と D5 は同一根拠 D3, AUTHORITY を共有しており、緊張関係にある可能性がある。",
+        "rationale": "複数の decision が同じ based_on 参照を共有しているため、観点と結論の整合性を再確認するべきである。",
+        "metadata": {
+          "shared_refs": [
+            "D3",
+            "AUTHORITY"
+          ],
+          "line": 126,
+          "column": 10,
+          "end_column": 12
+        }
+      },
+      {
+        "issue_id": "ISSUE-022",
+        "category": "contradiction_candidate",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "D4",
+            "role": "decision",
+            "step_id": "S-D4"
+          },
+          {
+            "ref_id": "D6",
+            "role": "decision",
+            "step_id": "S-D6"
+          }
+        ],
+        "message": "D4 と D6 は同一根拠 AUTHORITY を共有しており、緊張関係にある可能性がある。",
+        "rationale": "複数の decision が同じ based_on 参照を共有しているため、観点と結論の整合性を再確認するべきである。",
+        "metadata": {
+          "shared_refs": [
+            "AUTHORITY"
+          ],
+          "line": 126,
+          "column": 10,
+          "end_column": 12
+        }
+      },
+      {
+        "issue_id": "ISSUE-023",
+        "category": "contradiction_candidate",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "D4",
+            "role": "decision",
+            "step_id": "S-D4"
+          },
+          {
+            "ref_id": "D7",
+            "role": "decision",
+            "step_id": "S-D7"
+          }
+        ],
+        "message": "D4 と D7 は同一根拠 D2, D3, AUTHORITY を共有しており、緊張関係にある可能性がある。",
+        "rationale": "複数の decision が同じ based_on 参照を共有しているため、観点と結論の整合性を再確認するべきである。",
+        "metadata": {
+          "shared_refs": [
+            "D2",
+            "D3",
+            "AUTHORITY"
+          ],
+          "line": 126,
+          "column": 10,
+          "end_column": 12
+        }
+      },
+      {
+        "issue_id": "ISSUE-024",
+        "category": "contradiction_candidate",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "D4",
+            "role": "decision",
+            "step_id": "S-D4"
+          },
+          {
+            "ref_id": "D8",
+            "role": "decision",
+            "step_id": "S-D8"
+          }
+        ],
+        "message": "D4 と D8 は同一根拠 D2, AUTHORITY を共有しており、緊張関係にある可能性がある。",
+        "rationale": "複数の decision が同じ based_on 参照を共有しているため、観点と結論の整合性を再確認するべきである。",
+        "metadata": {
+          "shared_refs": [
+            "D2",
+            "AUTHORITY"
+          ],
+          "line": 126,
+          "column": 10,
+          "end_column": 12
+        }
+      },
+      {
+        "issue_id": "ISSUE-025",
+        "category": "contradiction_candidate",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "D4",
+            "role": "decision",
+            "step_id": "S-D4"
+          },
+          {
+            "ref_id": "D9",
+            "role": "decision",
+            "step_id": "S-D9"
+          }
+        ],
+        "message": "D4 と D9 は同一根拠 D1, D2, D3 を共有しており、緊張関係にある可能性がある。",
+        "rationale": "複数の decision が同じ based_on 参照を共有しているため、観点と結論の整合性を再確認するべきである。",
+        "metadata": {
+          "shared_refs": [
+            "D1",
+            "D2",
+            "D3"
+          ],
+          "line": 126,
+          "column": 10,
+          "end_column": 12
+        }
+      },
+      {
+        "issue_id": "ISSUE-026",
+        "category": "contradiction_candidate",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "D5",
+            "role": "decision",
+            "step_id": "S-D5"
+          },
+          {
+            "ref_id": "D6",
+            "role": "decision",
+            "step_id": "S-D6"
+          }
+        ],
+        "message": "D5 と D6 は同一根拠 D4, AUTHORITY を共有しており、緊張関係にある可能性がある。",
+        "rationale": "複数の decision が同じ based_on 参照を共有しているため、観点と結論の整合性を再確認するべきである。",
+        "metadata": {
+          "shared_refs": [
+            "D4",
+            "AUTHORITY"
+          ],
+          "line": 146,
+          "column": 10,
+          "end_column": 12
+        }
+      },
+      {
+        "issue_id": "ISSUE-027",
+        "category": "contradiction_candidate",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "D5",
+            "role": "decision",
+            "step_id": "S-D5"
+          },
+          {
+            "ref_id": "D7",
+            "role": "decision",
+            "step_id": "S-D7"
+          }
+        ],
+        "message": "D5 と D7 は同一根拠 D3, D4, AUTHORITY を共有しており、緊張関係にある可能性がある。",
+        "rationale": "複数の decision が同じ based_on 参照を共有しているため、観点と結論の整合性を再確認するべきである。",
+        "metadata": {
+          "shared_refs": [
+            "D3",
+            "D4",
+            "AUTHORITY"
+          ],
+          "line": 146,
+          "column": 10,
+          "end_column": 12
+        }
+      },
+      {
+        "issue_id": "ISSUE-028",
+        "category": "contradiction_candidate",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "D5",
+            "role": "decision",
+            "step_id": "S-D5"
+          },
+          {
+            "ref_id": "D8",
+            "role": "decision",
+            "step_id": "S-D8"
+          }
+        ],
+        "message": "D5 と D8 は同一根拠 AUTHORITY を共有しており、緊張関係にある可能性がある。",
+        "rationale": "複数の decision が同じ based_on 参照を共有しているため、観点と結論の整合性を再確認するべきである。",
+        "metadata": {
+          "shared_refs": [
+            "AUTHORITY"
+          ],
+          "line": 146,
+          "column": 10,
+          "end_column": 12
+        }
+      },
+      {
+        "issue_id": "ISSUE-029",
+        "category": "contradiction_candidate",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "D5",
+            "role": "decision",
+            "step_id": "S-D5"
+          },
+          {
+            "ref_id": "D9",
+            "role": "decision",
+            "step_id": "S-D9"
+          }
+        ],
+        "message": "D5 と D9 は同一根拠 D3, D4, E_BASELINE を共有しており、緊張関係にある可能性がある。",
+        "rationale": "複数の decision が同じ based_on 参照を共有しているため、観点と結論の整合性を再確認するべきである。",
+        "metadata": {
+          "shared_refs": [
+            "D3",
+            "D4",
+            "E_BASELINE"
+          ],
+          "line": 146,
+          "column": 10,
+          "end_column": 12
+        }
+      },
+      {
+        "issue_id": "ISSUE-030",
+        "category": "contradiction_candidate",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "D6",
+            "role": "decision",
+            "step_id": "S-D6"
+          },
+          {
+            "ref_id": "D7",
+            "role": "decision",
+            "step_id": "S-D7"
+          }
+        ],
+        "message": "D6 と D7 は同一根拠 D4, D5, AUTHORITY を共有しており、緊張関係にある可能性がある。",
+        "rationale": "複数の decision が同じ based_on 参照を共有しているため、観点と結論の整合性を再確認するべきである。",
+        "metadata": {
+          "shared_refs": [
+            "D4",
+            "D5",
+            "AUTHORITY"
+          ],
+          "line": 179,
+          "column": 10,
+          "end_column": 12
+        }
+      },
+      {
+        "issue_id": "ISSUE-031",
+        "category": "contradiction_candidate",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "D6",
+            "role": "decision",
+            "step_id": "S-D6"
+          },
+          {
+            "ref_id": "D8",
+            "role": "decision",
+            "step_id": "S-D8"
+          }
+        ],
+        "message": "D6 と D8 は同一根拠 D5, AUTHORITY を共有しており、緊張関係にある可能性がある。",
+        "rationale": "複数の decision が同じ based_on 参照を共有しているため、観点と結論の整合性を再確認するべきである。",
+        "metadata": {
+          "shared_refs": [
+            "D5",
+            "AUTHORITY"
+          ],
+          "line": 179,
+          "column": 10,
+          "end_column": 12
+        }
+      },
+      {
+        "issue_id": "ISSUE-032",
+        "category": "contradiction_candidate",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "D6",
+            "role": "decision",
+            "step_id": "S-D6"
+          },
+          {
+            "ref_id": "D9",
+            "role": "decision",
+            "step_id": "S-D9"
+          }
+        ],
+        "message": "D6 と D9 は同一根拠 D4, D5 を共有しており、緊張関係にある可能性がある。",
+        "rationale": "複数の decision が同じ based_on 参照を共有しているため、観点と結論の整合性を再確認するべきである。",
+        "metadata": {
+          "shared_refs": [
+            "D4",
+            "D5"
+          ],
+          "line": 179,
+          "column": 10,
+          "end_column": 12
+        }
+      },
+      {
+        "issue_id": "ISSUE-033",
+        "category": "contradiction_candidate",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "D7",
+            "role": "decision",
+            "step_id": "S-D7"
+          },
+          {
+            "ref_id": "D8",
+            "role": "decision",
+            "step_id": "S-D8"
+          }
+        ],
+        "message": "D7 と D8 は同一根拠 D2, D5, D6, AUTHORITY を共有しており、緊張関係にある可能性がある。",
+        "rationale": "複数の decision が同じ based_on 参照を共有しているため、観点と結論の整合性を再確認するべきである。",
+        "metadata": {
+          "shared_refs": [
+            "D2",
+            "D5",
+            "D6",
+            "AUTHORITY"
+          ],
+          "line": 215,
+          "column": 10,
+          "end_column": 12
+        }
+      },
+      {
+        "issue_id": "ISSUE-034",
+        "category": "contradiction_candidate",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "D7",
+            "role": "decision",
+            "step_id": "S-D7"
+          },
+          {
+            "ref_id": "D9",
+            "role": "decision",
+            "step_id": "S-D9"
+          }
+        ],
+        "message": "D7 と D9 は同一根拠 D2, D3, D4, D5, D6 を共有しており、緊張関係にある可能性がある。",
+        "rationale": "複数の decision が同じ based_on 参照を共有しているため、観点と結論の整合性を再確認するべきである。",
+        "metadata": {
+          "shared_refs": [
+            "D2",
+            "D3",
+            "D4",
+            "D5",
+            "D6"
+          ],
+          "line": 215,
+          "column": 10,
+          "end_column": 12
+        }
+      },
+      {
+        "issue_id": "ISSUE-035",
+        "category": "contradiction_candidate",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "D8",
+            "role": "decision",
+            "step_id": "S-D8"
+          },
+          {
+            "ref_id": "D9",
+            "role": "decision",
+            "step_id": "S-D9"
+          }
+        ],
+        "message": "D8 と D9 は同一根拠 D2, D5, D6 を共有しており、緊張関係にある可能性がある。",
+        "rationale": "複数の decision が同じ based_on 参照を共有しているため、観点と結論の整合性を再確認するべきである。",
+        "metadata": {
+          "shared_refs": [
+            "D2",
+            "D5",
+            "D6"
+          ],
+          "line": 240,
+          "column": 10,
+          "end_column": 12
+        }
+      },
+      {
+        "issue_id": "ISSUE-036",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "ADR0028",
+            "role": "domain"
+          }
+        ],
+        "message": "domain ADR0028 の description は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 7,
+          "column": 3,
+          "text": "ADR-0028 revision 1: Versioned conscious agency contract. Status Proposed; no supersession.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-037",
+        "category": "semantic_hint",
+        "severity": "info",
+        "target_refs": [
+          {
+            "ref_id": "OWNER_ACCEPTANCE",
+            "role": "pending",
+            "step_id": "S-OWNER_ACCEPTANCE"
+          }
+        ],
+        "message": "pending が存在するため、判断の確定度は下げて表示するべきである。",
+        "metadata": {
+          "line": 283,
+          "column": 9,
+          "end_column": 25
+        }
+      },
+      {
+        "issue_id": "ISSUE-038",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "D1",
+            "role": "decision",
+            "step_id": "S-D1"
+          },
+          {
+            "ref_id": "D2",
+            "role": "decision",
+            "step_id": "S-D2"
+          }
+        ],
+        "message": "D1 と D2 は意味的に近接している可能性がある。",
+        "metadata": {
+          "line": 56,
+          "column": 10,
+          "end_column": 12,
+          "similarity": 0.75,
+          "semantic_distance": 0.25
+        }
+      }
+    ],
+    "query_results": []
+  }
+}

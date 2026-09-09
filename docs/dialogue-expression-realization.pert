@@ -1,4 +1,4 @@
-# Delivery plan revision 13: implementation impact I01-I10 and ordered repair packages; detailed contract acceptance remains pending.
+# Delivery plan revision 17: exact revision2 directly accepted; V3 local implementation active, formal ADR check unavailable.
 project pj001:
   version 9
   title "Connect character goals, tactics and expression after Compact observation v2"
@@ -11,8 +11,8 @@ project pj001:
   # Next scope: responsibility design start, remaining CA-00, CA-01 with minimal CA-02.
   # ADR-0027 psyche-only, unified conscious judgment and engine authority control new scope.
   # Seven PSYCHE-RESPONSIBILITY sites are one migration design, not seven isolated fixes.
-  # Repair plan: docs/character-agency-implementation-plan-v1.md revision 1.
-  # Static inventory is recorded; t026 is not complete until typed payload fixtures and rubric are frozen.
+  # Repair plan: docs/character-agency-implementation-plan-v1.md revision 5.
+  # t026 completed with typed fixtures and rubric; no claim of model-quality improvement.
   # t029-A -> B -> C -> D are internal packages, not additional tasks or earned progress.
   # Plan approval does not accept a new architecture or authorize provider/deployment effects.
 
@@ -353,24 +353,27 @@ task t033 m025 -> m033:
 task t026 m033 -> m026:
   title "CA-00 inventory actual input paths and freeze comparison fixtures"
   description "Use static impact I01-I10 as the baseline, then capture typed actual producer/projection/result/acceptance/persistence payloads across phases and generations. Finish activation and public/redaction path checks. Freeze F01-F08 with allowed action sets, rubric, initial-to-next-state continuity and later-bucket rejection cases. Cover seven tags and psyche invariance under knowledge-only changes. Do not infer psyche knowledge needs from missing decision input or mark static inventory as fixture completion. Re-estimate after inventory; no paid calls."
+  status done
   duration 1p
   owner "codex"
-  source "docs/character-agency-implementation-plan-v1.md"
+  source "docs/evidence/character-agency-ca00-inventory-2026-09-09.md"
   requires:
     rs001 1
 
 task t027 m026 -> m027:
   title "Specify CA-01 with minimal CA-02 and propose the contract decision"
-  description "Under Accepted ADR-0027 revision 1, refine conscious goal/action/speech judgment using CA-00 evidence. Existing advanceCharacterAgent already returns action and utterance; assess reuse before new stages. Specify writers, lifetime, knowledge input, failure behavior, schemas, generation and repair impacts including mock and later-bucket action-only paths. Keep psyche reaction-only, no-call routing and legacy behavior. Author versioned implementation requirements and review input; add another Proposed ADR only for additional contract decisions."
+  description "Owner corrected the criterion to personality/relationship-grounded goal legitimacy regardless of author confirmation. Requirement v2 step1 and Proposed ADR-0028 revision2 are authored. Preserve old accepted/reviewed snapshots as history; withdraw origin attestation, new character envelope and start rejection. This task completes authoring only, not revised acceptance."
+  status done
   duration 2p
-  source "docs/character-agency-implementation-plan-v1.md"
+  source "docs/adr/0028-versioned-conscious-agency-contract.think"
   owner "codex"
   requires:
     rs001 1
 
 task t028 m027 -> m028:
   title "Review and accept the exact first character-agency increment"
-  description "Follow requirement-authority-review for the exact implementation requirement digest and owner route. ADR-0027 revision 1 responsibility is already Accepted; do not ask to accept it again. Review any additional contract ADR against ADR-0027/0025/0026 and record exact approval. Confirm seven-site migration dispositions and psyche/conscious/engine boundaries. Paid execution and deployment remain separate."
+  description "Owner directly accepted exact requirement v2 and ADR-0028 revision2 and directed implementation. Record this direct decision without claiming the unperformed second independent review or preimplementation re-estimate. Old R1 precedence is historical only; no origin gate or new character envelope. Paid execution, setting activation and deployment remain separate."
+  status done
   duration 1p
   owner "user"
   requires:
@@ -378,7 +381,8 @@ task t028 m027 -> m028:
 
 task t029 m028 -> m029:
   title "Implement and locally verify the accepted goal-to-action-and-speech slice"
-  description "Implement only the accepted detailed contract in internal order: A typed state/generation and initialization-acceptance-save-next-input path; B conscious goal/action/utterance judgment, minimal knowledge and mock wiring; C later-bucket redecision and invalid/failed proposal consistency; D legacy/no-call/privacy/accounting regression and seven-tag disposition. Keep owner-authored norms and engine authority. No unjustified casts or internal string round trips. Run focused/full tests, typecheck, build, lizard and required ADR checks. All packages are required before this task completes; local results are not real-model quality evidence."
+  status active
+  description "V3 A/B/C runtime and D regression are implemented locally: typed opt-in tuple, single conscious goal/intent/action/speech judgment, reaction-only psychology, partial acceptance, later redecision, CAS and seven legacy tags. Full tests, typecheck, build and unchanged Lizard thresholds passed. Required npm adr:check is missing; retain active until the formal check and final review are settled. Original3p is provisional total, not remaining actuals; remaining0.5-1p forecast is unvalidated. See agency-v3-local-verification-2026-09-09.md. No paid execution, setting activation or deployment; local results do not establish real-model quality."
   duration 3p
   source "docs/character-agency-implementation-plan-v1.md"
   owner "codex"
