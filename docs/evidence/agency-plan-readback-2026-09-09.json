@@ -1,0 +1,1051 @@
+{
+  "date": "2026-09-09",
+  "scope": "Static impact and repair planning only; not implementation or full payload validation",
+  "before_impact": {
+    "schema": "sealgraph/impact/v2",
+    "source_seal_id": "9485c01886666cf78e93763e27b6b6524e5f200d2bec64be4a45291c13e54956",
+    "assertion_scope": "ALL_OBSERVED",
+    "asserted_by_observer_seal_ids": [],
+    "all_paths": true,
+    "max_paths": 100,
+    "impacts": [
+      {
+        "head_seal_id": "3ba5383f923c43b57fd8b274dad79cd9b8009a5038c5ad427345d95f802d4cde",
+        "refs": [
+          "backlog/character-agency"
+        ],
+        "paths": [
+          {
+            "cause_seal_ids": [
+              "3ba5383f923c43b57fd8b274dad79cd9b8009a5038c5ad427345d95f802d4cde",
+              "9485c01886666cf78e93763e27b6b6524e5f200d2bec64be4a45291c13e54956"
+            ],
+            "matched_revision_seal_id": "9485c01886666cf78e93763e27b6b6524e5f200d2bec64be4a45291c13e54956",
+            "revision_proof": {
+              "seal_ids": [
+                "9485c01886666cf78e93763e27b6b6524e5f200d2bec64be4a45291c13e54956"
+              ],
+              "edges": [],
+              "target_observations": [
+                {
+                  "target_seal": "9485c01886666cf78e93763e27b6b6524e5f200d2bec64be4a45291c13e54956",
+                  "in_scope_previous_states": [
+                    "ASSERTION_SCOPE_ASSERTED"
+                  ],
+                  "in_scope_assertions": [
+                    {
+                      "observer_seal": "3ba5383f923c43b57fd8b274dad79cd9b8009a5038c5ad427345d95f802d4cde",
+                      "observer_provenance": "72e4cc2e9149bad44a54909f96c40a1e65df650aec616e08acc9040f68e5a718",
+                      "target_seal": "9485c01886666cf78e93763e27b6b6524e5f200d2bec64be4a45291c13e54956",
+                      "previous_revision_seal_of_target_seal": [
+                        "f89669cae17cb5b4bdd372dc613947a8ac100740178bd98cf8b3175a7ea22d92"
+                      ],
+                      "messages": [
+                        "Corrected revision 4 responsibility baseline; priority and requested capabilities preserved."
+                      ]
+                    },
+                    {
+                      "observer_seal": "45396d18919168a0982db90e2fa5b9d1fd21767951a688afc2e649a467795a1f",
+                      "observer_provenance": "186b75d65cc5b0eb647769cbff6d24bfac4803f95462b2845aa5c38b3e6ca9d3",
+                      "target_seal": "9485c01886666cf78e93763e27b6b6524e5f200d2bec64be4a45291c13e54956",
+                      "previous_revision_seal_of_target_seal": [
+                        "f89669cae17cb5b4bdd372dc613947a8ac100740178bd98cf8b3175a7ea22d92"
+                      ],
+                      "messages": [
+                        "Corrected delivery revision 12 tasks t027-t029: ADR-0027 accepted, detailed implementation acceptance still pending."
+                      ]
+                    }
+                  ],
+                  "structural_previous_seals": [
+                    "f89669cae17cb5b4bdd372dc613947a8ac100740178bd98cf8b3175a7ea22d92"
+                  ]
+                }
+              ]
+            }
+          }
+        ],
+        "paths_truncated": false
+      },
+      {
+        "head_seal_id": "45396d18919168a0982db90e2fa5b9d1fd21767951a688afc2e649a467795a1f",
+        "refs": [
+          "plan/dialogue-expression"
+        ],
+        "paths": [
+          {
+            "cause_seal_ids": [
+              "45396d18919168a0982db90e2fa5b9d1fd21767951a688afc2e649a467795a1f",
+              "9485c01886666cf78e93763e27b6b6524e5f200d2bec64be4a45291c13e54956"
+            ],
+            "matched_revision_seal_id": "9485c01886666cf78e93763e27b6b6524e5f200d2bec64be4a45291c13e54956",
+            "revision_proof": {
+              "seal_ids": [
+                "9485c01886666cf78e93763e27b6b6524e5f200d2bec64be4a45291c13e54956"
+              ],
+              "edges": [],
+              "target_observations": [
+                {
+                  "target_seal": "9485c01886666cf78e93763e27b6b6524e5f200d2bec64be4a45291c13e54956",
+                  "in_scope_previous_states": [
+                    "ASSERTION_SCOPE_ASSERTED"
+                  ],
+                  "in_scope_assertions": [
+                    {
+                      "observer_seal": "3ba5383f923c43b57fd8b274dad79cd9b8009a5038c5ad427345d95f802d4cde",
+                      "observer_provenance": "72e4cc2e9149bad44a54909f96c40a1e65df650aec616e08acc9040f68e5a718",
+                      "target_seal": "9485c01886666cf78e93763e27b6b6524e5f200d2bec64be4a45291c13e54956",
+                      "previous_revision_seal_of_target_seal": [
+                        "f89669cae17cb5b4bdd372dc613947a8ac100740178bd98cf8b3175a7ea22d92"
+                      ],
+                      "messages": [
+                        "Corrected revision 4 responsibility baseline; priority and requested capabilities preserved."
+                      ]
+                    },
+                    {
+                      "observer_seal": "45396d18919168a0982db90e2fa5b9d1fd21767951a688afc2e649a467795a1f",
+                      "observer_provenance": "186b75d65cc5b0eb647769cbff6d24bfac4803f95462b2845aa5c38b3e6ca9d3",
+                      "target_seal": "9485c01886666cf78e93763e27b6b6524e5f200d2bec64be4a45291c13e54956",
+                      "previous_revision_seal_of_target_seal": [
+                        "f89669cae17cb5b4bdd372dc613947a8ac100740178bd98cf8b3175a7ea22d92"
+                      ],
+                      "messages": [
+                        "Corrected delivery revision 12 tasks t027-t029: ADR-0027 accepted, detailed implementation acceptance still pending."
+                      ]
+                    }
+                  ],
+                  "structural_previous_seals": [
+                    "f89669cae17cb5b4bdd372dc613947a8ac100740178bd98cf8b3175a7ea22d92"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "cause_seal_ids": [
+              "45396d18919168a0982db90e2fa5b9d1fd21767951a688afc2e649a467795a1f",
+              "3ba5383f923c43b57fd8b274dad79cd9b8009a5038c5ad427345d95f802d4cde",
+              "9485c01886666cf78e93763e27b6b6524e5f200d2bec64be4a45291c13e54956"
+            ],
+            "matched_revision_seal_id": "9485c01886666cf78e93763e27b6b6524e5f200d2bec64be4a45291c13e54956",
+            "revision_proof": {
+              "seal_ids": [
+                "9485c01886666cf78e93763e27b6b6524e5f200d2bec64be4a45291c13e54956"
+              ],
+              "edges": [],
+              "target_observations": [
+                {
+                  "target_seal": "9485c01886666cf78e93763e27b6b6524e5f200d2bec64be4a45291c13e54956",
+                  "in_scope_previous_states": [
+                    "ASSERTION_SCOPE_ASSERTED"
+                  ],
+                  "in_scope_assertions": [
+                    {
+                      "observer_seal": "3ba5383f923c43b57fd8b274dad79cd9b8009a5038c5ad427345d95f802d4cde",
+                      "observer_provenance": "72e4cc2e9149bad44a54909f96c40a1e65df650aec616e08acc9040f68e5a718",
+                      "target_seal": "9485c01886666cf78e93763e27b6b6524e5f200d2bec64be4a45291c13e54956",
+                      "previous_revision_seal_of_target_seal": [
+                        "f89669cae17cb5b4bdd372dc613947a8ac100740178bd98cf8b3175a7ea22d92"
+                      ],
+                      "messages": [
+                        "Corrected revision 4 responsibility baseline; priority and requested capabilities preserved."
+                      ]
+                    },
+                    {
+                      "observer_seal": "45396d18919168a0982db90e2fa5b9d1fd21767951a688afc2e649a467795a1f",
+                      "observer_provenance": "186b75d65cc5b0eb647769cbff6d24bfac4803f95462b2845aa5c38b3e6ca9d3",
+                      "target_seal": "9485c01886666cf78e93763e27b6b6524e5f200d2bec64be4a45291c13e54956",
+                      "previous_revision_seal_of_target_seal": [
+                        "f89669cae17cb5b4bdd372dc613947a8ac100740178bd98cf8b3175a7ea22d92"
+                      ],
+                      "messages": [
+                        "Corrected delivery revision 12 tasks t027-t029: ADR-0027 accepted, detailed implementation acceptance still pending."
+                      ]
+                    }
+                  ],
+                  "structural_previous_seals": [
+                    "f89669cae17cb5b4bdd372dc613947a8ac100740178bd98cf8b3175a7ea22d92"
+                  ]
+                }
+              ]
+            }
+          }
+        ],
+        "paths_truncated": false
+      }
+    ]
+  },
+  "new_implementation_sources": [
+    {
+      "ref": "implementation/conscious-self-projection",
+      "path": "packages/shared/src/structured-character.ts",
+      "review": "Reviewed projectCharacterConsciousSelfV2 self-awareness projection for goal input; legacy implementation retained, payload completion pending.",
+      "causes": [
+        "adr/psyche-boundary"
+      ],
+      "seal_id": "1b37e3ef76ffd4675dc0666dc88b13891ac790d10f1bebc4ae0db30ffba7460b"
+    },
+    {
+      "ref": "implementation/decision-profile",
+      "path": "backend/src/services/free-action-service.ts",
+      "review": "Reviewed decisionProfileForSheet explicit profile and victory fallback; retain current rules, author precedence requires detailed design.",
+      "causes": [
+        "adr/psyche-boundary"
+      ],
+      "seal_id": "0d552eb32f756b6cbe070aab49454c2e133a0d965b3e7cf64b7cd59e79f6be4c"
+    },
+    {
+      "ref": "implementation/dialogue-generation",
+      "path": "packages/shared/src/dialogue-pipeline.ts",
+      "review": "Reviewed schemaVersion 1/2 and snapshot settings; new generation planning only, activation branch audit remains pending.",
+      "causes": [
+        "adr/psyche-boundary"
+      ],
+      "seal_id": "f8fd630c0148b08be95139cf9eba9afa6d445d602879ee1a5337c075accb8767"
+    },
+    {
+      "ref": "implementation/psyche-decoder",
+      "path": "packages/shared/src/compact-psyche-decode.ts",
+      "review": "Reviewed legacy delta and brief decoder roots; do not automatically widen to new conscious output or repair closure.",
+      "causes": [
+        "adr/psyche-boundary"
+      ],
+      "seal_id": "504534ac5917cae43210efd2fa55eaef6b33c66dc1290e33442299c5f42715a1"
+    },
+    {
+      "ref": "implementation/battle-persistence",
+      "path": "backend/src/repositories/battles.ts",
+      "review": "Reviewed schema validation, JSON database boundary and expected revision/fence write; reuse pending round-trip fixtures.",
+      "causes": [
+        "adr/psyche-boundary"
+      ],
+      "seal_id": "6152d587ac52d31be41745c4a1a3179d763e5239f2418f01c9fe72e2b75518da"
+    },
+    {
+      "ref": "implementation/operation-taxonomy",
+      "path": "backend/src/llm/provider-operation-taxonomy.ts",
+      "review": "Reviewed current stage classification; compatibility labels are not responsibility ownership and new call topology remains unspecified.",
+      "causes": [
+        "adr/psyche-boundary"
+      ],
+      "seal_id": "172ba316544d2962cb161fafe87087e9707e87b7e8e7500fa76077c443757883"
+    },
+    {
+      "ref": "implementation/private-observability",
+      "path": "backend/src/services/internal-observability.ts",
+      "review": "Reviewed private key and agentState redaction; new field placement requires regression, not full privacy audit completion.",
+      "causes": [
+        "adr/psyche-boundary"
+      ],
+      "seal_id": "f4ebef6061bc6f748fea8c8715c38eeffcb9473d8729b220e63b07058436c7af"
+    },
+    {
+      "ref": "implementation/agency-replay-baseline",
+      "path": "backend/src/scripts/replay-compact-v2-provider.ts",
+      "review": "Reviewed immutable V2 baseline, stage matching and preparation/request caps; no replay run or new contract authorized.",
+      "causes": [
+        "adr/psyche-boundary"
+      ],
+      "seal_id": "909f19a6715f6ca8953ba62c79d58e9db0e196b8cb81f7f9f8e5b22256642015"
+    }
+  ],
+  "plan": [
+    {
+      "ref": "plan/agency-implementation",
+      "path": "docs/character-agency-implementation-plan-v1.md",
+      "causes": [
+        "adr/psyche-boundary",
+        "implementation/psyche-schema",
+        "implementation/llm-types",
+        "implementation/battle-service",
+        "implementation/llm-adapter",
+        "implementation/expression-prompt",
+        "implementation/mock-adapter",
+        "implementation/conscious-self-projection",
+        "implementation/decision-profile",
+        "implementation/dialogue-generation",
+        "implementation/psyche-decoder",
+        "implementation/battle-persistence",
+        "implementation/operation-taxonomy",
+        "implementation/private-observability",
+        "implementation/agency-replay-baseline"
+      ],
+      "new_seal_id": "b63127503c73c7e17d52e9da76c18d532d65992c83a847d9a532c18ccbbaf8ba"
+    },
+    {
+      "ref": "design/agency-responsibility",
+      "path": "docs/character-agency-responsibility-design-v1.md",
+      "causes": [
+        "adr/psyche-boundary",
+        "design/psyche-slice",
+        "adr/expression-state",
+        "adr/psyche-repair",
+        "plan/agency-implementation"
+      ],
+      "old_seal_id": "9485c01886666cf78e93763e27b6b6524e5f200d2bec64be4a45291c13e54956",
+      "new_seal_id": "547e063824ce94eb1d5f69c78bd2fa8455411cc8ca0168cde434f3a20f2fc2a4"
+    },
+    {
+      "ref": "backlog/character-agency",
+      "path": "docs/character-agency-backlog.md",
+      "causes": [
+        "design/agency-responsibility"
+      ],
+      "old_seal_id": "3ba5383f923c43b57fd8b274dad79cd9b8009a5038c5ad427345d95f802d4cde",
+      "new_seal_id": "4f0baae0e6fc29de9e19fd624a493b045384295cb5b1731268cd01743af5330a"
+    },
+    {
+      "ref": "plan/dialogue-expression",
+      "path": "docs/dialogue-expression-realization.pert",
+      "causes": [
+        "design/agency-responsibility",
+        "backlog/character-agency",
+        "plan/agency-implementation"
+      ],
+      "old_seal_id": "45396d18919168a0982db90e2fa5b9d1fd21767951a688afc2e649a467795a1f",
+      "new_seal_id": "69ea97d090e0228fdb45c0ea3955bd95fae6a0dff29f4299b6de9a0570303c7f"
+    }
+  ],
+  "reviewed_reseals": [
+    {
+      "ref": "design/agency-responsibility",
+      "old_seal_id": "9485c01886666cf78e93763e27b6b6524e5f200d2bec64be4a45291c13e54956",
+      "seal_id": "547e063824ce94eb1d5f69c78bd2fa8455411cc8ca0168cde434f3a20f2fc2a4",
+      "material_id": "b414cde5ca436670b2f0d26866c2c68959a7cba470684adcec9f99308cb9a5df",
+      "provenance_id": "f837b968ff3012a9f53ae5d18422251be1eff69a66e29997c4fb3228a11a1a16",
+      "content_blob_id": "c8bc5aa11f0a525654d056bcc595e08eabe0810435e4e69a962112cc626ef41e",
+      "content_bytes": 10488,
+      "attachments": [],
+      "root": false,
+      "draft": false,
+      "cause_links": [
+        {
+          "target_seal": "1ede4f74fa5c98580939051e0276a3a5e05ccddae73793b333f7156af7842ab3",
+          "previous_revision_seal_of_target_seal": [
+            "7d1f51a8a99fdbb64f439085efe4d2d8f58bcc66fba712b0686c45345022567f"
+          ],
+          "messages": [
+            "Corrected revision 2: unified conscious goals, actions and utterances; detailed schemas, writers, lifetimes remain pending."
+          ]
+        },
+        {
+          "target_seal": "2dce4e3a33324a12de69701b67ab12eae7a2b6e7b45491ff923c4bd9bc3b4697",
+          "previous_revision_seal_of_target_seal": [
+            "710e47e1fc0ade17fbd5b4a85f033cb4de3bb9b2857e2a64064e7c3d2d5f16a6"
+          ],
+          "messages": [
+            "Corrected revision 2: unified conscious goals, actions and utterances; detailed schemas, writers, lifetimes remain pending."
+          ]
+        },
+        {
+          "target_seal": "2df2b781a50cf88d8871bc16710753dc55c24cc90f46b143de7b4a6b66a505e8",
+          "previous_revision_seal_of_target_seal": [
+            "0cc7b9166cf7a101dab6e776d833fdc7ef041d847857a89de3cf752f95973931"
+          ],
+          "messages": [
+            "Corrected revision 2: unified conscious goals, actions and utterances; detailed schemas, writers, lifetimes remain pending."
+          ]
+        },
+        {
+          "target_seal": "87d4106035e8b09c667d27d164691b16b93c12c6c683b414097b3763b0c53e5d",
+          "previous_revision_seal_of_target_seal": [
+            "5a65ee9aeb1c0b082985e0e320521d014a7211ff0f4d8e50da4ebc8e10e56957"
+          ],
+          "messages": [
+            "Corrected revision 2: unified conscious goals, actions and utterances; detailed schemas, writers, lifetimes remain pending."
+          ]
+        },
+        {
+          "target_seal": "b63127503c73c7e17d52e9da76c18d532d65992c83a847d9a532c18ccbbaf8ba",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Reviewed repair plan I01-I10 and F01-F08; retain exact contract and experiment gates, no runtime implementation."
+          ]
+        }
+      ]
+    },
+    {
+      "ref": "backlog/character-agency",
+      "old_seal_id": "3ba5383f923c43b57fd8b274dad79cd9b8009a5038c5ad427345d95f802d4cde",
+      "seal_id": "4f0baae0e6fc29de9e19fd624a493b045384295cb5b1731268cd01743af5330a",
+      "material_id": "5695280aca8d62d3ffd2a878cff23103717b8338ba5533c0762f58752cda2ba3",
+      "provenance_id": "20a8a09293f78edec5c0d37bf8622aac3bec3b3a7396fbdd2cfbc4e648f03a59",
+      "content_blob_id": "134fc918d3813a7139c4b2238403639b532d3f2d17a1e352860d4b48be241061",
+      "content_bytes": 12433,
+      "attachments": [],
+      "root": false,
+      "draft": false,
+      "cause_links": [
+        {
+          "target_seal": "547e063824ce94eb1d5f69c78bd2fa8455411cc8ca0168cde434f3a20f2fc2a4",
+          "previous_revision_seal_of_target_seal": [
+            "9485c01886666cf78e93763e27b6b6524e5f200d2bec64be4a45291c13e54956"
+          ],
+          "messages": [
+            "Reviewed planning revision: typed fixtures remain pending, ordered repair packages preserve Accepted ADR scope."
+          ]
+        }
+      ]
+    },
+    {
+      "ref": "plan/dialogue-expression",
+      "old_seal_id": "45396d18919168a0982db90e2fa5b9d1fd21767951a688afc2e649a467795a1f",
+      "seal_id": "69ea97d090e0228fdb45c0ea3955bd95fae6a0dff29f4299b6de9a0570303c7f",
+      "material_id": "90edcc0c3ef46db7cde9740632a7fa1736b563e3f48cc91143c83585d19a2077",
+      "provenance_id": "fae24b70658bf0b24bafbef704b2d55f476360ad90b28ec6bdbbeaa3abd7e850",
+      "content_blob_id": "65c04c6933c8612b089e79c7610c32e974e421aa92932dc8f3c1b75fc3f0bc74",
+      "content_bytes": 23345,
+      "attachments": [],
+      "root": false,
+      "draft": false,
+      "cause_links": [
+        {
+          "target_seal": "4f0baae0e6fc29de9e19fd624a493b045384295cb5b1731268cd01743af5330a",
+          "previous_revision_seal_of_target_seal": [
+            "3ba5383f923c43b57fd8b274dad79cd9b8009a5038c5ad427345d95f802d4cde"
+          ],
+          "messages": [
+            "Reviewed planning revision: typed fixtures remain pending, ordered repair packages preserve Accepted ADR scope."
+          ]
+        },
+        {
+          "target_seal": "547e063824ce94eb1d5f69c78bd2fa8455411cc8ca0168cde434f3a20f2fc2a4",
+          "previous_revision_seal_of_target_seal": [
+            "9485c01886666cf78e93763e27b6b6524e5f200d2bec64be4a45291c13e54956"
+          ],
+          "messages": [
+            "Reviewed planning revision: typed fixtures remain pending, ordered repair packages preserve Accepted ADR scope."
+          ]
+        },
+        {
+          "target_seal": "b63127503c73c7e17d52e9da76c18d532d65992c83a847d9a532c18ccbbaf8ba",
+          "previous_revision_seal_of_target_seal": [],
+          "messages": [
+            "Reviewed repair plan I01-I10 and F01-F08; retain exact contract and experiment gates, no runtime implementation."
+          ]
+        }
+      ]
+    }
+  ],
+  "status": {
+    "schema": "sealgraph/status/v3",
+    "statuses": [
+      {
+        "ref": "adr/0027",
+        "head_seal_id": "87d4106035e8b09c667d27d164691b16b93c12c6c683b414097b3763b0c53e5d",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "docs/adr/0027-unified-conscious-agency-and-psyche-boundary.think",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "adr/character-focus",
+        "head_seal_id": "9c3006ff30fb99fa76fe41bfe2f85033ddbfad9a2f67f7bdfaa7ecda6752d235",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "docs/adr/0008-battle-private-character-focus-state.md",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "adr/expression-state",
+        "head_seal_id": "2dce4e3a33324a12de69701b67ab12eae7a2b6e7b45491ff923c4bd9bc3b4697",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "docs/adr/0025-expression-state-and-utterance-actuals.think",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "adr/psyche-boundary",
+        "head_seal_id": "87d4106035e8b09c667d27d164691b16b93c12c6c683b414097b3763b0c53e5d",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "docs/adr/0027-unified-conscious-agency-and-psyche-boundary.think",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "adr/psyche-repair",
+        "head_seal_id": "1ede4f74fa5c98580939051e0276a3a5e05ccddae73793b333f7156af7842ab3",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "docs/adr/0026-compact-psyche-semantic-closure-repair.think",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "adr/structured-character",
+        "head_seal_id": "a16926e3e7cc0153d24ac2ec61390a382f1a0a95abb1cf73d83af40da60f754e",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "docs/adr/0011-structured-character-definition.md",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "archive/adr-0004",
+        "head_seal_id": "c60f19e3e97fad6e86e0e3c2843ac50392ecf42eb145532e81dbcf4f2f6dc8fa",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "docs/adr/0004-versioned-lightweight-psyche-dynamics.md",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "backlog/character-agency",
+        "head_seal_id": "4f0baae0e6fc29de9e19fd624a493b045384295cb5b1731268cd01743af5330a",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "docs/character-agency-backlog.md",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "design/agency-responsibility",
+        "head_seal_id": "547e063824ce94eb1d5f69c78bd2fa8455411cc8ca0168cde434f3a20f2fc2a4",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "docs/character-agency-responsibility-design-v1.md",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "design/psyche-reaction",
+        "head_seal_id": "c3be1f179e29fc80f45d536c014355ee6abca2698be353e34c4b43e25332e118",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "docs/lightweight-psyche-reaction-policy.md",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "design/psyche-slice",
+        "head_seal_id": "2df2b781a50cf88d8871bc16710753dc55c24cc90f46b143de7b4a6b66a505e8",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "docs/lightweight-psyche-adoptable-slice.md",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "evidence/adr-0027-implementation-impact",
+        "head_seal_id": "762225f2f1dd4de8ca84d296fc37ee534eeed36a71144c0b256e6786d358e1e6",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "docs/evidence/adr-0027-implementation-impact-2026-09-09.md",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "implementation/agency-replay-baseline",
+        "head_seal_id": "909f19a6715f6ca8953ba62c79d58e9db0e196b8cb81f7f9f8e5b22256642015",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "backend/src/scripts/replay-compact-v2-provider.ts",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "implementation/battle-persistence",
+        "head_seal_id": "6152d587ac52d31be41745c4a1a3179d763e5239f2418f01c9fe72e2b75518da",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "backend/src/repositories/battles.ts",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "implementation/battle-service",
+        "head_seal_id": "d15f0e74251ebf6d1e6c79d23791cec636e7a48de9a1a63d3355f0284fe2591b",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "backend/src/services/battle-service.ts",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "implementation/conscious-self-projection",
+        "head_seal_id": "1b37e3ef76ffd4675dc0666dc88b13891ac790d10f1bebc4ae0db30ffba7460b",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "packages/shared/src/structured-character.ts",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "implementation/decision-profile",
+        "head_seal_id": "0d552eb32f756b6cbe070aab49454c2e133a0d965b3e7cf64b7cd59e79f6be4c",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "backend/src/services/free-action-service.ts",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "implementation/dialogue-generation",
+        "head_seal_id": "f8fd630c0148b08be95139cf9eba9afa6d445d602879ee1a5337c075accb8767",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "packages/shared/src/dialogue-pipeline.ts",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "implementation/expression-prompt",
+        "head_seal_id": "c2f4699be7535ea73cfe0f2a533bca647aa143ee6c3bcb59962232115288e97b",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "backend/src/llm/character-expression-prompt.ts",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "implementation/llm-adapter",
+        "head_seal_id": "6c2e9e3e526983af768b2a898efbcc34e949d64ed9fb0b1ab875d4b37eb61c5a",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "backend/src/llm/openai-compatible.ts",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "implementation/llm-types",
+        "head_seal_id": "3ac35cc572548ca109a414a0af0b980383f448a773c12e3aa51854a1bd3b83ca",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "backend/src/llm/types.ts",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "implementation/mock-adapter",
+        "head_seal_id": "fbaa75723a9cb10cd2ef10f7d277f93caa7741ae87d6bd106651cf6b1e4ee531",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "backend/src/llm/mock.ts",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "implementation/operation-taxonomy",
+        "head_seal_id": "172ba316544d2962cb161fafe87087e9707e87b7e8e7500fa76077c443757883",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "backend/src/llm/provider-operation-taxonomy.ts",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "implementation/private-observability",
+        "head_seal_id": "f4ebef6061bc6f748fea8c8715c38eeffcb9473d8729b220e63b07058436c7af",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "backend/src/services/internal-observability.ts",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "implementation/psyche-decoder",
+        "head_seal_id": "504534ac5917cae43210efd2fa55eaef6b33c66dc1290e33442299c5f42715a1",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "packages/shared/src/compact-psyche-decode.ts",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "implementation/psyche-schema",
+        "head_seal_id": "77e2e8d6ebe4503d2a86eebb1cc85b4fc0f5af2405b0a135f6163bcd4c6dca08",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "packages/shared/src/battle.ts",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "plan/agency-implementation",
+        "head_seal_id": "b63127503c73c7e17d52e9da76c18d532d65992c83a847d9a532c18ccbbaf8ba",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "docs/character-agency-implementation-plan-v1.md",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "plan/dialogue-expression",
+        "head_seal_id": "69ea97d090e0228fdb45c0ea3955bd95fae6a0dff29f4299b6de9a0570303c7f",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "docs/dialogue-expression-realization.pert",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "projection/adr-0025",
+        "head_seal_id": "a95dbf64df749d20fda4735d7a3a9c2afb27ac8596764e2bf1b4e90a5a08a740",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "docs/adr/0025-expression-state-and-utterance-actuals.md",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "projection/adr-0026",
+        "head_seal_id": "3f4550a6c52c61a917739cd1bfeb3ac7ff9911a94b6e10e6b3e18b85eb2dd73f",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "docs/adr/0026-compact-psyche-semantic-closure-repair.md",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "projection/adr-0027",
+        "head_seal_id": "eb9ab069a0773222b64bfc78e459c28f72177c4d277d9bbd06f277a7d8d9342a",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "docs/adr/0027-unified-conscious-agency-and-psyche-boundary.md",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      }
+    ]
+  },
+  "stale": {
+    "schema": "sealgraph/stale/v2",
+    "frontier": false,
+    "scan": true,
+    "statuses": []
+  },
+  "fsck": {
+    "schema": "sealgraph/fsck/v2",
+    "result": "ok",
+    "blobs": 181,
+    "seals": 51,
+    "materials": 43,
+    "provenances": 44,
+    "refs": 31,
+    "tags": 0,
+    "active_seals": 43,
+    "historical_or_detached_seal_ids": [
+      "2e01962f814950e1eb0ef05e5a044b1db518f590c1a77ed6a6de2ce200960789",
+      "3ad3ca433f3c456f70d804ef84a28e9c9d01fd31d9a789627a724db8eb9f85ee",
+      "45396d18919168a0982db90e2fa5b9d1fd21767951a688afc2e649a467795a1f",
+      "8fde2f5d542c92512cf8de93e19a821e1f7afdc89aeb3192d8c2f078f062bc6f",
+      "98e31826220432b945be5094e95c479b6254d31913a750207416c877fe81dac4",
+      "b5e7bab122c597365e7679eda0339b84c5b4babb13f55c84791a3687f3d1ce59",
+      "f9bea5f209f6faa669113e54ecc325d18986130a7ff872ad5b57ccde06c676b7",
+      "fa337eb38cc4efa5c5d3eb71d8b87e8a181b001109848ca18008516d855e8ab6"
+    ],
+    "unreferenced_blob_ids": []
+  }
+}

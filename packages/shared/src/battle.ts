@@ -842,8 +842,12 @@ export type CharacterSpeechMode = z.infer<typeof CharacterSpeechModeSchema>;
 /**
  * Compact, private psychological conclusions that persist across a battle.
  * This is deliberately an appraisal record, not a chain-of-thought transcript.
- * Only the deep-psyche LLM stage may update it; speech/action generation reads
- * the committed result as context.
+ * [要修正:PSYCHE-RESPONSIBILITY] この自由文appraisalは既存LLM経路の契約であり、
+ * 深層心理全体をLLMの思考担当とする責務定義ではない。移行時に所有境界を整理する。
+ * [本来の責務:PSYCHE-RESPONSIBILITY] ADR-0027では、知覚由来の正規化経験・
+ * 固定心理特性・前状態から有界な内的反応を更新する。知識に基づく戦術判断や
+ * 発話生成は同じ顕在意識の判断であり、心理反応とは区別する。具体writer・寿命は
+ * 要設計（docs/adr/0027-unified-conscious-agency-and-psyche-boundary.md）。
  */
 export const CharacterDeepPsycheSchema = z.object({
   primaryEmotion: z.string().max(120).default("平静"),

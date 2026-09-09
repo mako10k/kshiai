@@ -2177,6 +2177,10 @@ export async function advanceCharacterAgents(input: {
       }
     : recordWithoutUtterances;
   const activeSides = new Set(input.activeSides ?? ["a", "b"]);
+  // [要修正:PSYCHE-RESPONSIBILITY] この世代・phase分岐を「重要局面ならLLMへ昇格」
+  // という一般ルールと読まない。既存LLM経路と軽量更新の移行境界は別途整理が必要。
+  // [本来の責務:PSYCHE-RESPONSIBILITY] ADR-0004の通常心理更新は有界な反応遷移。
+  // V1適用の通常turnはno-callで、不確実性による自動昇格はしない。現行分岐は維持する。
   const deterministicPsyche =
     input.after.assetManifest?.rules.psycheReaction === PSYCHE_REACTION_POLICY_V1 &&
     (input.phase ?? "turn") === "turn";
@@ -2359,6 +2363,11 @@ export async function advanceCharacterAgents(input: {
       const compilerInputs = input.after.assetManifest?.characters?.[
         consumerInput === inputA ? "a" : "b"
       ].compilerInputsV2;
+      // [要修正:PSYCHE-RESPONSIBILITY] 既存LLMへの記憶・currentGoal入力は移行中の配置。
+      // decision/structuredSelfがないことを欠陥と推定し、戦術知識をここへ追加しない。
+      // [本来の責務:PSYCHE-RESPONSIBILITY] ADR-0004の心理入力はpsyche-only。
+      // 能力・ルールに基づく行動選択とは分離する。目標等の移管先は
+      // docs/lightweight-psyche-adoptable-slice.md §6で未決。現行payloadは変更しない。
       const storedMatchupMemory = sheet.opponentMemories?.[counterpartSheet.id];
       if (compactContractV2) {
         return {
@@ -2618,6 +2627,11 @@ export async function advanceCharacterAgents(input: {
           ...(consumerInput.structuredSelf
             ? { structuredSelf: consumerInput.structuredSelf }
             : {}),
+          // [要修正:PSYCHE-RESPONSIBILITY] currentGoalがこの投影にない事実だけで
+          // 深層心理から直接配線すべきとは決めない。目標・意図の所有と投影は要設計。
+          // [本来の責務:PSYCHE-RESPONSIBILITY] ADR-0027では同じ顕在意識が行動・発話を判断。
+          // 心理反応は限定投影で受け取り、知識・意図は顕在意識内で共有できる。
+          // ここは既存契約の投影。新schema・writer・寿命の実装は別途設計する。
           expressionState: {
             emotion: psyche.emotion,
             speechStyle: psyche.speechStyle,

@@ -1,13 +1,20 @@
-# Delivery plan for separated Compact expression state and utterance history.
+# Delivery plan revision 13: implementation impact I01-I10 and ordered repair packages; detailed contract acceptance remains pending.
 project pj001:
   version 9
-  title "Separate Compact expression state from utterance history"
+  title "Connect character goals, tactics and expression after Compact observation v2"
   description "Implement Accepted ADR-0025 with separate closed expressionState and utteranceHistory inputs, closed nextUtterance output, content-independent acceptance, and the existing battle revision commit boundary. Under Accepted ADR-0026, allow one fail-closed Compact V2 deep-psyche application repair over a server-defined semantic closure; add no expression retry, recursive repair, lifecycle entity, identifier, receipt, reuse detector, similarity gate, critic, or fallback."
   as_of 2026-09-09
   duration_unit point
   velocity 1p/1d
   finish m011
-  target_duration 14p
+  # Increment estimates are provisional; re-estimate after CA-00 and design review.
+  # Next scope: responsibility design start, remaining CA-00, CA-01 with minimal CA-02.
+  # ADR-0027 psyche-only, unified conscious judgment and engine authority control new scope.
+  # Seven PSYCHE-RESPONSIBILITY sites are one migration design, not seven isolated fixes.
+  # Repair plan: docs/character-agency-implementation-plan-v1.md revision 1.
+  # Static inventory is recorded; t026 is not complete until typed payload fixtures and rubric are frozen.
+  # t029-A -> B -> C -> D are internal packages, not additional tasks or earned progress.
+  # Plan approval does not accept a new architecture or authorize provider/deployment effects.
 
 resource rs001:
   title "Developer"
@@ -93,6 +100,27 @@ milestone m024:
 milestone m025:
   title "Corrected observation replay v2 recorded"
 
+milestone m026:
+  title "CA-00 input inventory and comparison fixtures recorded"
+
+milestone m027:
+  title "CA-01 and minimal CA-02 requirements and design proposed"
+
+milestone m028:
+  title "Exact character-agency increment requirements and ADR accepted"
+
+milestone m029:
+  title "Minimal goal-to-action-and-speech increment locally verified"
+
+milestone m030:
+  title "Bounded character-agency comparison prepared"
+
+milestone m031:
+  title "Exact paid character-agency comparison approved"
+
+milestone m032:
+  title "Character-agency comparison evidence recorded"
+
 task t001 m002 -> m003:
   title "Review and decide requirement v3"
   description "Review the exact requirement candidate against Accepted ADR-0025, including exclusion of lastSpeech from new Compact semantic input and output, content-independent acceptance, unchanged provider count, old-battle compatibility, privacy, and the explicit absence of new IDs, receipts, ledgers, or runtime reuse detection. Accept, revise, or reject that exact requirement snapshot."
@@ -130,9 +158,9 @@ task t004 m005 -> m006:
   requires:
     rs002 1
 
-task t006 m025 -> m008:
+task t006 m032 -> m008:
   title "Review replay evidence and decide Stage deployment"
-  description "Review the immutable artifact candidate, bounded replay evidence, affected services, rollback target, Stage smoke scope, and stop conditions. Approval must explicitly identify the Stage action and does not authorize production promotion."
+  description "Review observation v2 and character-agency comparison evidence separately, including goal-dependent action and speech consistency, compatibility and cost. Decide whether the increment meets its predeclared criteria; if not, record findings and replan without deployment. Reassess CA-03..07 priorities without making them automatic release blockers. Review the immutable candidate, affected services, rollback target, Stage smoke scope and stop conditions. Approval must identify the Stage action and does not authorize production promotion."
   duration 1p
   owner "user"
   requires:
@@ -304,6 +332,78 @@ task t025 m024 -> m025:
   title "Run the approved corrected observation-input replay v2 once"
   status done
   description "Execute only the separately approved immutable v2 contract once. Retain requests, responses, observation coverage, operation counts, application results, and cost receipt. Stop fail-closed without retry, resume, resend, fallback, judge, deployment, or persistent battle creation."
+  duration 1p
+  owner "codex"
+  requires:
+    rs001 1
+
+milestone m033:
+  title "Exploratory responsibility design started and seven sites mapped"
+
+task t033 m025 -> m033:
+  title "Start reaction-only psyche and conscious agency responsibility design"
+  description "Record authoritative boundaries, candidate owners, seven annotated implementation sites, initial versus deferred migration and open questions. This completes design initiation only; CA-00 inventory, requirement acceptance and final ADR design remain pending."
+  status done
+  duration 1p
+  owner "codex"
+  source "docs/character-agency-responsibility-design-v1.md"
+  requires:
+    rs001 1
+
+task t026 m033 -> m026:
+  title "CA-00 inventory actual input paths and freeze comparison fixtures"
+  description "Use static impact I01-I10 as the baseline, then capture typed actual producer/projection/result/acceptance/persistence payloads across phases and generations. Finish activation and public/redaction path checks. Freeze F01-F08 with allowed action sets, rubric, initial-to-next-state continuity and later-bucket rejection cases. Cover seven tags and psyche invariance under knowledge-only changes. Do not infer psyche knowledge needs from missing decision input or mark static inventory as fixture completion. Re-estimate after inventory; no paid calls."
+  duration 1p
+  owner "codex"
+  source "docs/character-agency-implementation-plan-v1.md"
+  requires:
+    rs001 1
+
+task t027 m026 -> m027:
+  title "Specify CA-01 with minimal CA-02 and propose the contract decision"
+  description "Under Accepted ADR-0027 revision 1, refine conscious goal/action/speech judgment using CA-00 evidence. Existing advanceCharacterAgent already returns action and utterance; assess reuse before new stages. Specify writers, lifetime, knowledge input, failure behavior, schemas, generation and repair impacts including mock and later-bucket action-only paths. Keep psyche reaction-only, no-call routing and legacy behavior. Author versioned implementation requirements and review input; add another Proposed ADR only for additional contract decisions."
+  duration 2p
+  source "docs/character-agency-implementation-plan-v1.md"
+  owner "codex"
+  requires:
+    rs001 1
+
+task t028 m027 -> m028:
+  title "Review and accept the exact first character-agency increment"
+  description "Follow requirement-authority-review for the exact implementation requirement digest and owner route. ADR-0027 revision 1 responsibility is already Accepted; do not ask to accept it again. Review any additional contract ADR against ADR-0027/0025/0026 and record exact approval. Confirm seven-site migration dispositions and psyche/conscious/engine boundaries. Paid execution and deployment remain separate."
+  duration 1p
+  owner "user"
+  requires:
+    rs002 1
+
+task t029 m028 -> m029:
+  title "Implement and locally verify the accepted goal-to-action-and-speech slice"
+  description "Implement only the accepted detailed contract in internal order: A typed state/generation and initialization-acceptance-save-next-input path; B conscious goal/action/utterance judgment, minimal knowledge and mock wiring; C later-bucket redecision and invalid/failed proposal consistency; D legacy/no-call/privacy/accounting regression and seven-tag disposition. Keep owner-authored norms and engine authority. No unjustified casts or internal string round trips. Run focused/full tests, typecheck, build, lizard and required ADR checks. All packages are required before this task completes; local results are not real-model quality evidence."
+  duration 3p
+  source "docs/character-agency-implementation-plan-v1.md"
+  owner "codex"
+  requires:
+    rs001 1
+
+task t030 m029 -> m030:
+  title "Prepare a bounded control-versus-treatment agency comparison"
+  description "Bind exact candidate and baseline revisions, identical fixtures, provider/model, goal/knowledge/tactical comparisons, predeclared success thresholds, call/token/cost ceilings, stop conditions and retained evidence. Score personality-dependent choices and action/speech consistency separately from wording variety, schema validity and win rate. Separate intended effects from actual effects. Preparation makes no paid calls."
+  duration 1p
+  owner "codex"
+  requires:
+    rs001 1
+
+task t031 m030 -> m031:
+  title "Decide the separately scoped paid agency comparison"
+  description "Accept, revise or reject the exact comparison contract and budget. Prior observation replay approval is not reusable. Approval authorizes only this named comparison, not Stage or production."
+  duration 1p
+  owner "user"
+  requires:
+    rs002 1
+
+task t032 m031 -> m032:
+  title "Execute the approved comparison and record outcome and limitations"
+  description "Execute only the approved comparison within its ceilings and stop conditions. Retain payloads, responses, fixture scores, action validity, costs and failures. Report improvement, no improvement or inconclusive against the frozen criteria without adding unapproved retries or claiming intended speech effects occurred. Preserve negative findings for t006 review and replanning."
   duration 1p
   owner "codex"
   requires:

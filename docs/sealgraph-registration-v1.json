@@ -1,0 +1,22 @@
+{
+  "revision": 1,
+  "scope": "Initial psyche-responsibility impact baseline; not repository-wide coverage",
+  "entries": [
+    {"ref":"adr/psyche-boundary","path":"docs/adr/0004-versioned-lightweight-psyche-dynamics.md","causes":[]},
+    {"ref":"adr/character-focus","path":"docs/adr/0008-battle-private-character-focus-state.md","causes":["adr/psyche-boundary"]},
+    {"ref":"adr/structured-character","path":"docs/adr/0011-structured-character-definition.md","causes":["adr/psyche-boundary"]},
+    {"ref":"adr/expression-state","path":"docs/adr/0025-expression-state-and-utterance-actuals.think","causes":["adr/psyche-boundary"]},
+    {"ref":"projection/adr-0025","path":"docs/adr/0025-expression-state-and-utterance-actuals.md","causes":["adr/expression-state"]},
+    {"ref":"adr/psyche-repair","path":"docs/adr/0026-compact-psyche-semantic-closure-repair.think","causes":["adr/expression-state"]},
+    {"ref":"projection/adr-0026","path":"docs/adr/0026-compact-psyche-semantic-closure-repair.md","causes":["adr/psyche-repair"]},
+    {"ref":"design/psyche-reaction","path":"docs/lightweight-psyche-reaction-policy.md","causes":["adr/psyche-boundary"]},
+    {"ref":"design/psyche-slice","path":"docs/lightweight-psyche-adoptable-slice.md","causes":["design/psyche-reaction"]},
+    {"ref":"design/agency-responsibility","path":"docs/character-agency-responsibility-design-v1.md","causes":["adr/psyche-boundary","design/psyche-slice","adr/expression-state","adr/psyche-repair"]},
+    {"ref":"backlog/character-agency","path":"docs/character-agency-backlog.md","causes":["design/agency-responsibility"]},
+    {"ref":"plan/dialogue-expression","path":"docs/dialogue-expression-realization.pert","causes":["design/agency-responsibility","backlog/character-agency"]},
+    {"ref":"implementation/psyche-schema","path":"packages/shared/src/battle.ts","causes":["adr/psyche-boundary"]},
+    {"ref":"implementation/llm-types","path":"backend/src/llm/types.ts","causes":["adr/psyche-boundary","adr/expression-state"]},
+    {"ref":"implementation/battle-service","path":"backend/src/services/battle-service.ts","causes":["adr/psyche-boundary","adr/expression-state","adr/psyche-repair"]},
+    {"ref":"implementation/llm-adapter","path":"backend/src/llm/openai-compatible.ts","causes":["adr/psyche-boundary","adr/expression-state","adr/psyche-repair"]}
+  ]
+}

@@ -1,0 +1,310 @@
+{
+  "schema": "sealgraph/stale/v2",
+  "frontier": false,
+  "scan": true,
+  "statuses": [
+    {
+      "ref": "adr/character-focus",
+      "head_seal_id": "fa337eb38cc4efa5c5d3eb71d8b87e8a181b001109848ca18008516d855e8ab6",
+      "draft": false,
+      "stale": {
+        "self": false,
+        "direct_target_seal_ids": [
+          "5a65ee9aeb1c0b082985e0e320521d014a7211ff0f4d8e50da4ebc8e10e56957"
+        ],
+        "transitive_paths": []
+      },
+      "sealed_state_labels": [
+        "STALE_DIRECT"
+      ]
+    },
+    {
+      "ref": "adr/expression-state",
+      "head_seal_id": "710e47e1fc0ade17fbd5b4a85f033cb4de3bb9b2857e2a64064e7c3d2d5f16a6",
+      "draft": false,
+      "stale": {
+        "self": false,
+        "direct_target_seal_ids": [
+          "5a65ee9aeb1c0b082985e0e320521d014a7211ff0f4d8e50da4ebc8e10e56957"
+        ],
+        "transitive_paths": []
+      },
+      "sealed_state_labels": [
+        "STALE_DIRECT"
+      ]
+    },
+    {
+      "ref": "adr/psyche-repair",
+      "head_seal_id": "7d1f51a8a99fdbb64f439085efe4d2d8f58bcc66fba712b0686c45345022567f",
+      "draft": false,
+      "stale": {
+        "self": false,
+        "direct_target_seal_ids": [],
+        "transitive_paths": [
+          [
+            "710e47e1fc0ade17fbd5b4a85f033cb4de3bb9b2857e2a64064e7c3d2d5f16a6",
+            "5a65ee9aeb1c0b082985e0e320521d014a7211ff0f4d8e50da4ebc8e10e56957"
+          ]
+        ]
+      },
+      "sealed_state_labels": [
+        "STALE_TRANSITIVE"
+      ]
+    },
+    {
+      "ref": "adr/structured-character",
+      "head_seal_id": "f9bea5f209f6faa669113e54ecc325d18986130a7ff872ad5b57ccde06c676b7",
+      "draft": false,
+      "stale": {
+        "self": false,
+        "direct_target_seal_ids": [
+          "5a65ee9aeb1c0b082985e0e320521d014a7211ff0f4d8e50da4ebc8e10e56957"
+        ],
+        "transitive_paths": []
+      },
+      "sealed_state_labels": [
+        "STALE_DIRECT"
+      ]
+    },
+    {
+      "ref": "backlog/character-agency",
+      "head_seal_id": "2e01962f814950e1eb0ef05e5a044b1db518f590c1a77ed6a6de2ce200960789",
+      "draft": false,
+      "stale": {
+        "self": false,
+        "direct_target_seal_ids": [],
+        "transitive_paths": [
+          [
+            "f89669cae17cb5b4bdd372dc613947a8ac100740178bd98cf8b3175a7ea22d92",
+            "5a65ee9aeb1c0b082985e0e320521d014a7211ff0f4d8e50da4ebc8e10e56957"
+          ],
+          [
+            "f89669cae17cb5b4bdd372dc613947a8ac100740178bd98cf8b3175a7ea22d92",
+            "710e47e1fc0ade17fbd5b4a85f033cb4de3bb9b2857e2a64064e7c3d2d5f16a6",
+            "5a65ee9aeb1c0b082985e0e320521d014a7211ff0f4d8e50da4ebc8e10e56957"
+          ],
+          [
+            "f89669cae17cb5b4bdd372dc613947a8ac100740178bd98cf8b3175a7ea22d92",
+            "0cc7b9166cf7a101dab6e776d833fdc7ef041d847857a89de3cf752f95973931",
+            "51627e4df889c825781c72d3e3cfcdb67a08594ba0803960e5ded9a8fccafa0b",
+            "5a65ee9aeb1c0b082985e0e320521d014a7211ff0f4d8e50da4ebc8e10e56957"
+          ],
+          [
+            "f89669cae17cb5b4bdd372dc613947a8ac100740178bd98cf8b3175a7ea22d92",
+            "7d1f51a8a99fdbb64f439085efe4d2d8f58bcc66fba712b0686c45345022567f",
+            "710e47e1fc0ade17fbd5b4a85f033cb4de3bb9b2857e2a64064e7c3d2d5f16a6",
+            "5a65ee9aeb1c0b082985e0e320521d014a7211ff0f4d8e50da4ebc8e10e56957"
+          ]
+        ]
+      },
+      "sealed_state_labels": [
+        "STALE_TRANSITIVE"
+      ]
+    },
+    {
+      "ref": "design/agency-responsibility",
+      "head_seal_id": "f89669cae17cb5b4bdd372dc613947a8ac100740178bd98cf8b3175a7ea22d92",
+      "draft": false,
+      "stale": {
+        "self": false,
+        "direct_target_seal_ids": [
+          "5a65ee9aeb1c0b082985e0e320521d014a7211ff0f4d8e50da4ebc8e10e56957"
+        ],
+        "transitive_paths": []
+      },
+      "sealed_state_labels": [
+        "STALE_DIRECT"
+      ]
+    },
+    {
+      "ref": "design/psyche-reaction",
+      "head_seal_id": "51627e4df889c825781c72d3e3cfcdb67a08594ba0803960e5ded9a8fccafa0b",
+      "draft": false,
+      "stale": {
+        "self": false,
+        "direct_target_seal_ids": [
+          "5a65ee9aeb1c0b082985e0e320521d014a7211ff0f4d8e50da4ebc8e10e56957"
+        ],
+        "transitive_paths": []
+      },
+      "sealed_state_labels": [
+        "STALE_DIRECT"
+      ]
+    },
+    {
+      "ref": "design/psyche-slice",
+      "head_seal_id": "0cc7b9166cf7a101dab6e776d833fdc7ef041d847857a89de3cf752f95973931",
+      "draft": false,
+      "stale": {
+        "self": false,
+        "direct_target_seal_ids": [],
+        "transitive_paths": [
+          [
+            "51627e4df889c825781c72d3e3cfcdb67a08594ba0803960e5ded9a8fccafa0b",
+            "5a65ee9aeb1c0b082985e0e320521d014a7211ff0f4d8e50da4ebc8e10e56957"
+          ]
+        ]
+      },
+      "sealed_state_labels": [
+        "STALE_TRANSITIVE"
+      ]
+    },
+    {
+      "ref": "implementation/battle-service",
+      "head_seal_id": "cff78d6bfd12473eccdba648cfe552833793d6e184f3127ed18a679dd8e1739c",
+      "draft": false,
+      "stale": {
+        "self": false,
+        "direct_target_seal_ids": [
+          "5a65ee9aeb1c0b082985e0e320521d014a7211ff0f4d8e50da4ebc8e10e56957"
+        ],
+        "transitive_paths": []
+      },
+      "sealed_state_labels": [
+        "STALE_DIRECT"
+      ]
+    },
+    {
+      "ref": "implementation/llm-adapter",
+      "head_seal_id": "d76a724e4ba01ebefc0c1d90625a2ea15da817cd90797b985eed9a17a2059d81",
+      "draft": false,
+      "stale": {
+        "self": false,
+        "direct_target_seal_ids": [
+          "5a65ee9aeb1c0b082985e0e320521d014a7211ff0f4d8e50da4ebc8e10e56957"
+        ],
+        "transitive_paths": []
+      },
+      "sealed_state_labels": [
+        "STALE_DIRECT"
+      ]
+    },
+    {
+      "ref": "implementation/llm-types",
+      "head_seal_id": "6e582ac6079592cf41342e11cd1a600bf4444530fdcf65486ba4b6369f241594",
+      "draft": false,
+      "stale": {
+        "self": false,
+        "direct_target_seal_ids": [
+          "5a65ee9aeb1c0b082985e0e320521d014a7211ff0f4d8e50da4ebc8e10e56957"
+        ],
+        "transitive_paths": []
+      },
+      "sealed_state_labels": [
+        "STALE_DIRECT"
+      ]
+    },
+    {
+      "ref": "implementation/psyche-schema",
+      "head_seal_id": "93be69ab470758d33dbb7cebfe6455aa2543d8d0365431f3f3c6da84a8b6c217",
+      "draft": false,
+      "stale": {
+        "self": false,
+        "direct_target_seal_ids": [
+          "5a65ee9aeb1c0b082985e0e320521d014a7211ff0f4d8e50da4ebc8e10e56957"
+        ],
+        "transitive_paths": []
+      },
+      "sealed_state_labels": [
+        "STALE_DIRECT"
+      ]
+    },
+    {
+      "ref": "plan/dialogue-expression",
+      "head_seal_id": "b5e7bab122c597365e7679eda0339b84c5b4babb13f55c84791a3687f3d1ce59",
+      "draft": false,
+      "stale": {
+        "self": false,
+        "direct_target_seal_ids": [],
+        "transitive_paths": [
+          [
+            "f89669cae17cb5b4bdd372dc613947a8ac100740178bd98cf8b3175a7ea22d92",
+            "5a65ee9aeb1c0b082985e0e320521d014a7211ff0f4d8e50da4ebc8e10e56957"
+          ],
+          [
+            "2e01962f814950e1eb0ef05e5a044b1db518f590c1a77ed6a6de2ce200960789",
+            "f89669cae17cb5b4bdd372dc613947a8ac100740178bd98cf8b3175a7ea22d92",
+            "5a65ee9aeb1c0b082985e0e320521d014a7211ff0f4d8e50da4ebc8e10e56957"
+          ],
+          [
+            "f89669cae17cb5b4bdd372dc613947a8ac100740178bd98cf8b3175a7ea22d92",
+            "710e47e1fc0ade17fbd5b4a85f033cb4de3bb9b2857e2a64064e7c3d2d5f16a6",
+            "5a65ee9aeb1c0b082985e0e320521d014a7211ff0f4d8e50da4ebc8e10e56957"
+          ],
+          [
+            "2e01962f814950e1eb0ef05e5a044b1db518f590c1a77ed6a6de2ce200960789",
+            "f89669cae17cb5b4bdd372dc613947a8ac100740178bd98cf8b3175a7ea22d92",
+            "710e47e1fc0ade17fbd5b4a85f033cb4de3bb9b2857e2a64064e7c3d2d5f16a6",
+            "5a65ee9aeb1c0b082985e0e320521d014a7211ff0f4d8e50da4ebc8e10e56957"
+          ],
+          [
+            "f89669cae17cb5b4bdd372dc613947a8ac100740178bd98cf8b3175a7ea22d92",
+            "0cc7b9166cf7a101dab6e776d833fdc7ef041d847857a89de3cf752f95973931",
+            "51627e4df889c825781c72d3e3cfcdb67a08594ba0803960e5ded9a8fccafa0b",
+            "5a65ee9aeb1c0b082985e0e320521d014a7211ff0f4d8e50da4ebc8e10e56957"
+          ],
+          [
+            "f89669cae17cb5b4bdd372dc613947a8ac100740178bd98cf8b3175a7ea22d92",
+            "7d1f51a8a99fdbb64f439085efe4d2d8f58bcc66fba712b0686c45345022567f",
+            "710e47e1fc0ade17fbd5b4a85f033cb4de3bb9b2857e2a64064e7c3d2d5f16a6",
+            "5a65ee9aeb1c0b082985e0e320521d014a7211ff0f4d8e50da4ebc8e10e56957"
+          ],
+          [
+            "2e01962f814950e1eb0ef05e5a044b1db518f590c1a77ed6a6de2ce200960789",
+            "f89669cae17cb5b4bdd372dc613947a8ac100740178bd98cf8b3175a7ea22d92",
+            "0cc7b9166cf7a101dab6e776d833fdc7ef041d847857a89de3cf752f95973931",
+            "51627e4df889c825781c72d3e3cfcdb67a08594ba0803960e5ded9a8fccafa0b",
+            "5a65ee9aeb1c0b082985e0e320521d014a7211ff0f4d8e50da4ebc8e10e56957"
+          ],
+          [
+            "2e01962f814950e1eb0ef05e5a044b1db518f590c1a77ed6a6de2ce200960789",
+            "f89669cae17cb5b4bdd372dc613947a8ac100740178bd98cf8b3175a7ea22d92",
+            "7d1f51a8a99fdbb64f439085efe4d2d8f58bcc66fba712b0686c45345022567f",
+            "710e47e1fc0ade17fbd5b4a85f033cb4de3bb9b2857e2a64064e7c3d2d5f16a6",
+            "5a65ee9aeb1c0b082985e0e320521d014a7211ff0f4d8e50da4ebc8e10e56957"
+          ]
+        ]
+      },
+      "sealed_state_labels": [
+        "STALE_TRANSITIVE"
+      ]
+    },
+    {
+      "ref": "projection/adr-0025",
+      "head_seal_id": "8fde2f5d542c92512cf8de93e19a821e1f7afdc89aeb3192d8c2f078f062bc6f",
+      "draft": false,
+      "stale": {
+        "self": false,
+        "direct_target_seal_ids": [],
+        "transitive_paths": [
+          [
+            "710e47e1fc0ade17fbd5b4a85f033cb4de3bb9b2857e2a64064e7c3d2d5f16a6",
+            "5a65ee9aeb1c0b082985e0e320521d014a7211ff0f4d8e50da4ebc8e10e56957"
+          ]
+        ]
+      },
+      "sealed_state_labels": [
+        "STALE_TRANSITIVE"
+      ]
+    },
+    {
+      "ref": "projection/adr-0026",
+      "head_seal_id": "3ad3ca433f3c456f70d804ef84a28e9c9d01fd31d9a789627a724db8eb9f85ee",
+      "draft": false,
+      "stale": {
+        "self": false,
+        "direct_target_seal_ids": [],
+        "transitive_paths": [
+          [
+            "7d1f51a8a99fdbb64f439085efe4d2d8f58bcc66fba712b0686c45345022567f",
+            "710e47e1fc0ade17fbd5b4a85f033cb4de3bb9b2857e2a64064e7c3d2d5f16a6",
+            "5a65ee9aeb1c0b082985e0e320521d014a7211ff0f4d8e50da4ebc8e10e56957"
+          ]
+        ]
+      },
+      "sealed_state_labels": [
+        "STALE_TRANSITIVE"
+      ]
+    }
+  ]
+}

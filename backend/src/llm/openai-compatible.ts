@@ -2791,6 +2791,10 @@ Do not invent a sudden environmental event or dramatic field change here. A sepa
               ...(input.counterpart ? { counterpart: input.counterpart } : {}),
             }
           : input;
+        // [要修正:PSYCHE-RESPONSIBILITY] 以下のcurrentGoal/表現意図生成指示は既存の
+        // Compact LLM契約で、本来の心理責務ではない。移管先は設計未決のため指示は維持。
+        // [本来の責務:PSYCHE-RESPONSIBILITY] ADR-0004は反応更新を担当させ、知識に
+        // 基づく戦術・発話生成と分離する。docs/lightweight-psyche-adoptable-slice.md §6参照。
         const phaseRule = input.phase === "prologue"
           ? "This is turn 0. matchupMemory, if present, is a read-only owner-private note about this specific opponent. Use it to form a durable currentGoal, but do not copy its plan or reflection into delta.privateMemory: that field starts this battle's own inner record. battleVolatileMemory starts empty."
           : input.phase === "aftermath"
@@ -2924,6 +2928,10 @@ Omitted optional replacement roots preserve their rejected values. dialogueThrea
       const guidance = input.dialoguePipeline?.enabled
         ? "dialoguePipeline is trusted administrator-authored context. Use its psychologyGuidance only to shape this private appraisal; never mention it publicly."
         : "dialoguePipeline is disabled and must not shape the psychological update.";
+      // [要修正:PSYCHE-RESPONSIBILITY] full経路にもopening strategy/currentGoal生成が
+      // 残るが、これを心理モデルへ戦術知識を持たせる根拠にしない。現行promptは維持。
+      // [本来の責務:PSYCHE-RESPONSIBILITY] ADR-0004の心理更新は有界な内的反応。
+      // 目標等の移管先はdocs/lightweight-psyche-adoptable-slice.md §6で未決。
       const phaseRule = input.phase === "prologue"
         ? "This is turn 0. Form a durable, matchup-specific opening strategy in currentGoal from opponent memory already present in privateMemory, the field, and current perception. battleVolatileMemory starts empty for this match."
         : input.phase === "aftermath"

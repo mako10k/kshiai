@@ -165,6 +165,12 @@ export type CharacterUtteranceActualV1 = {
   text: string;
 };
 
+// [要修正:PSYCHE-RESPONSIBILITY] currentGoal等の現行配置を、深層心理が目標・戦術を
+// 思考する責務の根拠にしない。既存契約を維持しつつ移管先の設計が必要（下記§6では未決）。
+// [本来の責務:PSYCHE-RESPONSIBILITY] 軽量心理更新は内的反応の状態遷移であり、
+// currentGoal・beliefs・自由文appraisal・ExpressionBriefをV1 reaction policyへ含めない。
+// 参照: docs/adr/0004-versioned-lightweight-psyche-dynamics.md;
+// docs/lightweight-psyche-adoptable-slice.md §6。
 export type CharacterDeepPsycheExpressionStateV2 = Pick<
   CharacterAgentState,
   | "privateMemory"

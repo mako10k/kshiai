@@ -1,0 +1,150 @@
+{
+  "date": "2026-09-09",
+  "scope": "initial psyche responsibility baseline; not repository-wide coverage",
+  "source_seal_id": "5a65ee9aeb1c0b082985e0e320521d014a7211ff0f4d8e50da4ebc8e10e56957",
+  "assertion_scope": "ALL_OBSERVED",
+  "impacts": [
+    {
+      "refs": [
+        "design/psyche-slice"
+      ],
+      "head_seal_id": "0cc7b9166cf7a101dab6e776d833fdc7ef041d847857a89de3cf752f95973931",
+      "paths_truncated": false
+    },
+    {
+      "refs": [
+        "backlog/character-agency"
+      ],
+      "head_seal_id": "2e01962f814950e1eb0ef05e5a044b1db518f590c1a77ed6a6de2ce200960789",
+      "paths_truncated": false
+    },
+    {
+      "refs": [
+        "projection/adr-0026"
+      ],
+      "head_seal_id": "3ad3ca433f3c456f70d804ef84a28e9c9d01fd31d9a789627a724db8eb9f85ee",
+      "paths_truncated": false
+    },
+    {
+      "refs": [
+        "design/psyche-reaction"
+      ],
+      "head_seal_id": "51627e4df889c825781c72d3e3cfcdb67a08594ba0803960e5ded9a8fccafa0b",
+      "paths_truncated": false
+    },
+    {
+      "refs": [
+        "implementation/llm-types"
+      ],
+      "head_seal_id": "6e582ac6079592cf41342e11cd1a600bf4444530fdcf65486ba4b6369f241594",
+      "paths_truncated": false
+    },
+    {
+      "refs": [
+        "adr/expression-state"
+      ],
+      "head_seal_id": "710e47e1fc0ade17fbd5b4a85f033cb4de3bb9b2857e2a64064e7c3d2d5f16a6",
+      "paths_truncated": false
+    },
+    {
+      "refs": [
+        "adr/psyche-repair"
+      ],
+      "head_seal_id": "7d1f51a8a99fdbb64f439085efe4d2d8f58bcc66fba712b0686c45345022567f",
+      "paths_truncated": false
+    },
+    {
+      "refs": [
+        "projection/adr-0025"
+      ],
+      "head_seal_id": "8fde2f5d542c92512cf8de93e19a821e1f7afdc89aeb3192d8c2f078f062bc6f",
+      "paths_truncated": false
+    },
+    {
+      "refs": [
+        "implementation/psyche-schema"
+      ],
+      "head_seal_id": "93be69ab470758d33dbb7cebfe6455aa2543d8d0365431f3f3c6da84a8b6c217",
+      "paths_truncated": false
+    },
+    {
+      "refs": [
+        "plan/dialogue-expression"
+      ],
+      "head_seal_id": "b5e7bab122c597365e7679eda0339b84c5b4babb13f55c84791a3687f3d1ce59",
+      "paths_truncated": false
+    },
+    {
+      "refs": [
+        "implementation/battle-service"
+      ],
+      "head_seal_id": "cff78d6bfd12473eccdba648cfe552833793d6e184f3127ed18a679dd8e1739c",
+      "paths_truncated": false
+    },
+    {
+      "refs": [
+        "implementation/llm-adapter"
+      ],
+      "head_seal_id": "d76a724e4ba01ebefc0c1d90625a2ea15da817cd90797b985eed9a17a2059d81",
+      "paths_truncated": false
+    },
+    {
+      "refs": [
+        "design/agency-responsibility"
+      ],
+      "head_seal_id": "f89669cae17cb5b4bdd372dc613947a8ac100740178bd98cf8b3175a7ea22d92",
+      "paths_truncated": false
+    },
+    {
+      "refs": [
+        "adr/structured-character"
+      ],
+      "head_seal_id": "f9bea5f209f6faa669113e54ecc325d18986130a7ff872ad5b57ccde06c676b7",
+      "paths_truncated": false
+    },
+    {
+      "refs": [
+        "adr/character-focus"
+      ],
+      "head_seal_id": "fa337eb38cc4efa5c5d3eb71d8b87e8a181b001109848ca18008516d855e8ab6",
+      "paths_truncated": false
+    }
+  ],
+  "source_matches": [
+    "adr/psyche-boundary",
+    "adr/character-focus",
+    "adr/structured-character",
+    "adr/expression-state",
+    "projection/adr-0025",
+    "adr/psyche-repair",
+    "projection/adr-0026",
+    "design/psyche-reaction",
+    "design/psyche-slice",
+    "design/agency-responsibility",
+    "backlog/character-agency",
+    "plan/dialogue-expression",
+    "implementation/psyche-schema",
+    "implementation/llm-types",
+    "implementation/battle-service",
+    "implementation/llm-adapter"
+  ],
+  "stale": {
+    "schema": "sealgraph/stale/v2",
+    "frontier": false,
+    "scan": true,
+    "statuses": []
+  },
+  "integrity": {
+    "schema": "sealgraph/fsck/v2",
+    "result": "ok",
+    "blobs": 58,
+    "seals": 16,
+    "materials": 16,
+    "provenances": 10,
+    "refs": 16,
+    "tags": 0,
+    "active_seals": 16,
+    "historical_or_detached_seal_ids": [],
+    "unreferenced_blob_ids": []
+  }
+}

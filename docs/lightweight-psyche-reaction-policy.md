@@ -2,7 +2,7 @@
 
 Status: design only; implementation not authorized  
 Date: 2026-08-12  
-Decision basis: [ADR-0004](adr/0004-versioned-lightweight-psyche-dynamics.md)  
+Decision basis: [ADR-0027](adr/0027-unified-conscious-agency-and-psyche-boundary.md)（ADR-0004の心理モデル制約を継承、行動・発話間の隔壁を訂正）
 Related: [Observer-relative battle perception](battle-perception.md), [Battle semantic state](battle-semantic-state.md), [Issue #98 battle pipeline plan](issue-98-battle-pipeline-plan.md)
 
 Initial adoptable subset: [キャラクター反応ポリシー — 初期採用可能スライス](lightweight-psyche-adoptable-slice.md)
@@ -12,7 +12,7 @@ Initial adoptable subset: [キャラクター反応ポリシー — 初期採用
 本書では、現在の実装と将来案を混同しないため、次の語を使う。
 
 - **確認済み**: 現在のコードまたは既存のAccepted ADRから確認できる事項。
-- **決定済み**: ADR-0004でAcceptedとなった設計制約。
+- **決定済み**: ADR-0027で維持・訂正された設計制約。旧ADR-0004の記載は歴史的根拠。
 - **提案**: 実装前の設計候補。APIや保存形式として未確定。
 - **例示**: 議論を具体化するための仮の値・タグ・JSON。互換性契約ではない。
 - **未決**: owner decision、実験、または追加調査が必要な事項。
@@ -73,7 +73,7 @@ canonical mechanics / semantic world
         -> internal reaction distribution
 ```
 
-出力は感情、主観的解釈傾向、行動衝動、活性度、モデル信頼性である。出力は発話、意図、行動、正準世界変更ではなく、それぞれの独立consumerへ渡す補助情報である。
+出力は感情、主観的解釈傾向、行動衝動、活性度、モデル信頼性である。発話・意図・行動そのものではなく、顕在意識へ限定投影で渡す補助情報である。目標・行動・セリフは同じ顕在意識が判断し、正準世界変更はエンジンが確定する。
 
 ## 2. 対象範囲と対象外
 
@@ -108,8 +108,8 @@ canonical mechanics / semantic world
 | --- | --- | --- |
 | 1. 深層心理 | 持続するtrait、baseline、現在のprivate affect、遅い関係傾向 | battle-bound private state |
 | 2. 経験への内的反応 | 今回の経験に対するemotion / interpretation / impulse delta | 本軽量reaction policy |
-| 3. 意図 | 何を目指すか、何を守るか、表現するか抑えるか | 独立character consumer。将来方式は未決 |
-| 4. 行動計画 | available actionsからaction proposalを選ぶ | action consumer + server validation |
+| 3. 意図 | 何を目指すか、何を守るか、表現するか抑えるか | キャラの顕在意識。具体的schemaは未決 |
+| 4. 行動・発話判断 | available actionsと目的に沿って行動・セリフを決める | 同じ顕在意識。候補の検証はserver |
 | 5. 正準裁定 | mechanics、action legality、semantic/world commit、terminal outcome | engine / server / validated reconciliation |
 
 層2は層3・4を強制しない。たとえば`confront=0.8`は対立衝動が強いことを示すだけで、攻撃、威嚇、沈黙、抑制のどれを選ぶかは意図・行動層が、available actionsとキャラクター方針を含めて判断する。
@@ -137,14 +137,13 @@ Lightweight Reaction Policy
         v
 server-owned bounded state update
         |
-        +--> ActionPsycheProjection ----> action consumer
-        +--> ExpressionPsycheProjection -> expression consumer
+        +--> bounded conscious projection -> one conscious character judgment
         +--> private audit receipt
 
-action/expression proposals -> server validation -> canonical adjudication
+conscious judgment -> action/utterance proposals -> server validation -> canonical adjudication
 ```
 
-**決定済み:** private psyche、action、expression、semantic/world adjudication、narrationを、呼出し削減のため一つのLLM contextへ統合しない。
+**決定済み:** 心理反応、顕在意識、正準裁定、ナレーションの権限・可視性を混ぜない。同じ顕在意識内の行動・発話判断は、必要な目標・意図・知識を共有できる。call数とmodule構成は別途設計する。
 
 ### 3.3 既存構成との接続
 
@@ -337,10 +336,10 @@ action/expression proposals -> server validation -> canonical adjudication
 
 ### 5.3 consumer projection
 
-同じreaction outputを全consumerへ渡さない。
+心理内部のraw stateを全処理へ渡さない。顕在意識には限定投影を渡す。
 
 - action projection: relevant impulse、arousal、必要ならinterpretation band。private proseは渡さない。
-- expression projection: outward expressionに関係するemotion band、expression impulse、concealment/regulation結果。action proposalは渡さない。
+- expression projection: outward expressionに関係するemotion band、expression impulse、concealment/regulation結果。行動向けとは情報の種類を区別するが、同じ顕在意識内での利用を相互禁止しない。公開先には私的判断を流さない。
 - administrator projection: model/version、bounded summary、reliability、reason codes。private raw features、embedding、関係詳細の表示権限は別途決める。
 - public / opponent projection: 原則なし。実際に成立した行為・発話だけがperception経路へ戻る。
 
@@ -754,13 +753,13 @@ Gate: broader adoptionは別owner approval。production release、deployment、d
 
 - observer-relative perceptionを唯一のcharacter experience入口とする点は`battle-perception.md`と一致する。
 - private conclusionをpublic DTOへ出さず、canonical mechanicsをserverが所有する点は`battle-semantic-state.md`と一致する。
-- consumer contextを統合しない点、psyche-only normalized embedding、shadow-first、generation bindingはADR-0004と一致する。
+- 心理／顕在／裁定の境界、psyche-only normalized embedding、shadow-first、generation bindingはADR-0027と一致する。
 - active battleがbound generationsを維持する点はADR-0003と一致する。
 
 ### 移行が必要な点
 
 - 現行コメントではdeep-psyche LLMだけが`CharacterDeepPsyche`を更新する。軽量policy採用時はauthority記述とschema migrationが必要。
-- 現行deep-psyche callはprivate deltaと`CharacterExpressionBrief`を同時生成する。本設計のreaction-only責務とは一致せず、意図・expression briefの独立ownerが必要。
+- 現行deep-psyche callはprivate deltaと`CharacterExpressionBrief`を同時生成する。本設計のreaction-only責務とは一致せず、目標・意図・発話を担う顕在意識への移管設計が必要。行動・発話で別の意思を設けない。
 - 現行psyche/relationshipは自由記述中心であり、numeric stateとrelationship authorityがない。
 - 現行`TurnObservationPacket`はobserver-safeだが、NN入力に必要なtyped normalized impactを保証しない。
 - 現行`confidence`はcharacter self-confidenceであり、model reliabilityとは別物である。

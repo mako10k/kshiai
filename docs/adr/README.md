@@ -9,8 +9,11 @@ This directory contains durable records of architectural and product-rule decisi
 - ADR-0015 and later use a same-basename pair. The `.think` file is the
   authoritative causal and decision record; `.md` is its human-readable
   projection. Correct disagreements in favor of `.think`.
-- sealgraph state and reports are disposable advisory caches. They are rebuilt
-  from `.think` and referenced original artifacts and never become an authority.
+- From the owner's 2026-09-09 instruction, retain Sealgraph history for mechanical
+  impact and stale review; see [Seal operations](../sealgraph-operations.md).
+  Original documents remain authoritative. A Seal is not owner acceptance.
+  Do not discard the retained baseline as an advisory cache. Historical
+  disposable projections are not evidence of an existing retained Seal history.
 
 ## Lifecycle
 
@@ -35,7 +38,7 @@ This directory contains durable records of architectural and product-rule decisi
 | [0001](0001-turn-initiative-and-simultaneous-resolution.md) | Accepted | Ordinary turns are sequential; equal initiative reuses prior order or performs one persisted draw |
 | [0002](0002-separate-advance-and-narration-apis.md) | Accepted | Advance commits gameplay and creates an independent asynchronous narration job |
 | [0003](0003-revision-editable-assets-and-bind-battles.md) | Accepted | Battles bind immutable revisions of every editable source asset |
-| [0004](0004-versioned-lightweight-psyche-dynamics.md) | Accepted | Private psyche uses explicit parameters first, then a bounded lightweight neural dynamics model conditioned only on psyche-trait embeddings |
+| [0004](0004-versioned-lightweight-psyche-dynamics.md) | Superseded by 0027 | Historical lightweight psyche decision; dynamics and version safeguards retained by 0027 |
 | [0005](0005-battle-scoped-ordered-narration-stream.md) | Superseded | Battle-scoped ordered narration stream with reconnectable delivery |
 | [0006](0006-terminal-snapshot-narration-delivery.md) | Accepted | Terminal-snapshot narration delivery with durable phase receipts and fenced workers |
 | [0007](0007-provider-operation-ledger-and-observation-ceilings.md) | Accepted | Durable physical provider-attempt accounting and observation ceilings |
@@ -58,3 +61,4 @@ This directory contains durable records of architectural and product-rule decisi
 | [0024](0024-detach-authoring-from-read-traffic.md) | Accepted | Environment-global authoring queue with owner-scoped execution; draft reads have no execution side effects |
 | [0025](0025-expression-state-and-utterance-actuals.md) | Accepted | Separate Compact expression state from completed utterance history, name the current output explicitly, and preserve exact repetition without a reuse classifier |
 | [0026](0026-compact-psyche-semantic-closure-repair.md) | Accepted | Align the Compact psyche prompt and repair one rejected semantic closure without regenerating unrelated state |
+| [0027](0027-unified-conscious-agency-and-psyche-boundary.md) | Accepted | Supersedes ADR-0004: reaction-only psyche, unified conscious action/speech judgment and separate engine adjudication; preserves dynamics and revision safeguards |
