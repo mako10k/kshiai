@@ -24,11 +24,12 @@ const repositoryRoot = path.resolve(
   "../../..",
 );
 
-const RUN_ID = "compact-v2-provider-replay-2026-09-09-v1";
-const IMPLEMENTATION_SHA = "f1ff97735e7bfd42be4c21a0e421bec334052005";
+const RUN_ID = "compact-v2-provider-replay-repair-2026-09-09-v1";
+const IMPLEMENTATION_SHA = "dfe1c34bcd0d9f4110a0d3b4ca06822fe0db69d7";
+const PREDECESSOR_RUN_ID = "compact-v2-provider-replay-2026-09-09-v1";
 const MODEL = "grok-4.3";
 const BASE_URL = "https://api.x.ai/v1";
-const PHYSICAL_REQUEST_CEILING = 12;
+const PHYSICAL_REQUEST_CEILING = 18;
 const TOTAL_RESERVED_TOKEN_CEILING = 300_000;
 const MONETARY_CEILING_USD = 0.5;
 const INPUT_BYTE_CEILING = 20_000;
@@ -37,7 +38,7 @@ const INPUT_PRICE_PER_MILLION_USD = 1.25;
 const OUTPUT_PRICE_PER_MILLION_USD = 2.5;
 
 type Mode = "prepare" | "execute";
-type Stage = "psyche" | "expression";
+type Stage = "psyche" | "psyche_repair" | "expression";
 
 type CallRecord = {
   ordinal: number;
@@ -94,6 +95,9 @@ const executionContract = {
   schemaVersion: 1,
   runId: RUN_ID,
   implementationSha: IMPLEMENTATION_SHA,
+  correctiveDecision: "ADR-0026",
+  predecessorRunId: PREDECESSOR_RUN_ID,
+  predecessorDisposition: "immutable failed run; never resume or resend",
   scope: "in-memory Compact V2 psyche and expression provider replay",
   scenarios: ["ordinary", "repetitive"],
   turnsPerScenario: 3,
@@ -110,7 +114,7 @@ const executionContract = {
   deployment: false,
   inputByteCeiling: INPUT_BYTE_CEILING,
   framingTokenAllowance: FRAMING_TOKEN_ALLOWANCE,
-  outputTokenCeilings: { psyche: 1_200, expression: 400 },
+  outputTokenCeilings: { psyche: 1_200, psycheRepair: 1_200, expression: 400 },
   physicalRequestCeiling: PHYSICAL_REQUEST_CEILING,
   totalReservedTokenCeiling: TOTAL_RESERVED_TOKEN_CEILING,
   monetaryCeilingUsd: MONETARY_CEILING_USD,
@@ -228,7 +232,7 @@ const scenarios = [{
   ],
 }];
 
-function preparedDeepPsycheResponse(turn: number): unknown {
+function preparedDeepPsycheResponse(turn: number) {
   return {
     delta: {
       interior: {
@@ -312,7 +316,19 @@ class PrepareProvider extends OpenAiCompatibleProvider {
     };
     const turn = parsed.turnObservation?.turn ?? 1;
     if (label === "advanceCharacterPsycheCompact") {
-      return preparedDeepPsycheResponse(turn);
+      const rejected = preparedDeepPsycheResponse(turn);
+      rejected.delta.interior.speechAppraisal.anticipatedImpact = "";
+      return rejected;
+    }
+    if (label === "advanceCharacterPsycheCompactRepair") {
+      const repaired = preparedDeepPsycheResponse(turn);
+      return {
+        replacement: {
+          speechAppraisal: repaired.delta.interior.speechAppraisal,
+          expressionBrief: repaired.expressionBrief,
+          dialogueThread: repaired.delta.dialogueThread,
+        },
+      };
     }
     if (label === "advanceCharacterAgentCompact") {
       const ordinaryLines = [
@@ -389,12 +405,14 @@ class LiveProvider extends OpenAiCompatibleProvider {
     const label = opts?.label ?? "unknown";
     const stage: Stage = label === "advanceCharacterPsycheCompact"
       ? "psyche"
-      : label === "advanceCharacterAgentCompact"
-        ? "expression"
-        : (() => {
-          throw new Error(`Unexpected provider stage: ${label}`);
-        })();
-    const maxOutputTokens = stage === "psyche" ? 1_200 : 400;
+      : label === "advanceCharacterPsycheCompactRepair"
+        ? "psyche_repair"
+        : label === "advanceCharacterAgentCompact"
+          ? "expression"
+          : (() => {
+            throw new Error(`Unexpected provider stage: ${label}`);
+          })();
+    const maxOutputTokens = stage === "expression" ? 400 : 1_200;
     const inputBytes = Buffer.byteLength(system, "utf8") +
       Buffer.byteLength(user, "utf8");
     if (inputBytes > INPUT_BYTE_CEILING) {
@@ -580,7 +598,8 @@ async function runScenarios(
 
 function parseArgs(args: string[]): { mode: Mode; outputDir: string } {
   let mode: Mode | null = null;
-  let outputDir = "docs/evidence/compact-v2-provider-replay-2026-09-09";
+  let outputDir =
+    "docs/evidence/compact-v2-provider-replay-repair-2026-09-09";
   for (let index = 0; index < args.length; index += 1) {
     const arg = args[index];
     if (arg === "--prepare" || arg === "--execute") {
@@ -618,9 +637,9 @@ async function main(): Promise<void> {
     const calls = provider.calls.map((call, index) => {
       const inputBytes = Buffer.byteLength(call.system, "utf8") +
         Buffer.byteLength(call.user, "utf8");
-      const maxOutputTokens = call.label === "advanceCharacterPsycheCompact"
-        ? 1_200
-        : 400;
+      const maxOutputTokens = call.label === "advanceCharacterAgentCompact"
+        ? 400
+        : 1_200;
       const reservedTokens = inputBytes + FRAMING_TOKEN_ALLOWANCE +
         maxOutputTokens;
       return {

@@ -1,6 +1,6 @@
 # Delivery plan for separated Compact expression state and utterance history.
 project pj001:
-  version 8
+  version 9
   title "Separate Compact expression state from utterance history"
   description "Implement Accepted ADR-0025 with separate closed expressionState and utteranceHistory inputs, closed nextUtterance output, content-independent acceptance, and the existing battle revision commit boundary. Under Accepted ADR-0026, allow one fail-closed Compact V2 deep-psyche application repair over a server-defined semantic closure; add no expression retry, recursive repair, lifecycle entity, identifier, receipt, reuse detector, similarity gate, critic, or fallback."
   as_of 2026-09-09
@@ -48,6 +48,13 @@ milestone m010:
 
 milestone m011:
   title "Production behavior observed and accepted"
+
+milestone m012:
+  title "ADR-0025 and ADR-0026 integrated candidate locally verified"
+  state reached
+
+milestone m013:
+  title "Corrected bounded provider replay approved"
 
 task t001 m002 -> m003:
   title "Review and decide requirement v3"
@@ -124,6 +131,23 @@ task t009 m010 -> m011:
   title "Promote the approved artifact and observe production"
   description "Promote only the exact approved artifact, verify the serving revision and Compact contract binding, run API smoke, and observe repeat-capable and ordinary-character battles. Treat equal text as valid content while separately checking state-history separation, provider count, privacy, narrator non-feedback, stale-save rejection, and the absence of fallback or contract errors."
   duration 2p
+  owner "codex"
+  requires:
+    rs001 1
+
+task t010 m012 -> m013:
+  title "Review and decide the corrected bounded provider replay"
+  description "Review the exact corrected implementation dfe1c34bcd0d9f4110a0d3b4ca06822fe0db69d7, Accepted ADR-0025 and ADR-0026, network-zero preparation proof, provider xAI, model grok-4.3, two synthetic scenarios with three turns each, at most eighteen physical Chat Completions requests including at most one bounded psyche repair per turn, token and USD ceilings, fail-closed stop conditions, and retained evidence. Approval authorizes only the new run compact-v2-provider-replay-repair-2026-09-09-v1; it never resumes or resends the immutable failed predecessor and does not authorize Stage, production, release, or a persistent observation battle."
+  duration 1p
+  owner "user"
+  source "docs/evidence/compact-v2-provider-replay-repair-2026-09-09/prepare-proof.json"
+  requires:
+    rs002 1
+
+task t011 m013 -> m007:
+  title "Run the corrected bounded provider replay once"
+  description "Execute only run compact-v2-provider-replay-repair-2026-09-09-v1 under its frozen contract. Retain every request, response, operation count, application result, and cost receipt. Stop fail-closed on provider, schema, semantic-closure, application, ceiling, or persistence failure; never retry, resume, resend, fall back, judge, deploy, or create a battle."
+  duration 1p
   owner "codex"
   requires:
     rs001 1
