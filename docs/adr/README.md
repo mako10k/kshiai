@@ -57,3 +57,4 @@ This directory contains durable records of architectural and product-rule decisi
 | [0023](0023-pair-channels-are-not-unique-cognition.md) | Accepted | pair.sight/sound are not unique cognition; LOS and projection read organ, exposure, and placement |
 | [0024](0024-detach-authoring-from-read-traffic.md) | Accepted | Environment-global authoring queue with owner-scoped execution; draft reads have no execution side effects |
 | [0025](0025-expression-state-and-utterance-actuals.md) | Accepted | Separate Compact expression state from completed utterance history, name the current output explicitly, and preserve exact repetition without a reuse classifier |
+| [0026](0026-compact-psyche-semantic-closure-repair.md) | Accepted | Align the Compact psyche prompt and repair one rejected semantic closure without regenerating unrelated state |

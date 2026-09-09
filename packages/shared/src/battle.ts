@@ -960,23 +960,31 @@ export type CharacterDeepPsycheAdvance = z.infer<typeof CharacterDeepPsycheAdvan
  * The server validates its structured presence; its semantic content remains
  * model-authored and is never used as a deterministic phrase rule.
  */
+const CharacterSpeechAppraisalCompactTextSchema = z.string().min(1).max(240)
+  .refine((value) => value.trim().length > 0, "Appraisal text must not be blank");
+
+export const CharacterSpeechAppraisalCompactSchema = CharacterSpeechAppraisalSchema.extend({
+  anticipatedImpact: CharacterSpeechAppraisalCompactTextSchema,
+  observedImpact: CharacterSpeechAppraisalCompactTextSchema,
+  nextApproach: CharacterSpeechAppraisalCompactTextSchema,
+  anticipatedSocialConsequence: CharacterSocialConsequenceSchema.extend({
+    meaning: CharacterSpeechAppraisalCompactTextSchema,
+  }),
+  observedSocialConsequence: CharacterSocialConsequenceSchema.extend({
+    meaning: CharacterSpeechAppraisalCompactTextSchema,
+  }),
+  continuityBasis: CharacterContinuityBasisSchema.extend({
+    reason: CharacterSpeechAppraisalCompactTextSchema,
+  }),
+});
+export type CharacterSpeechAppraisalCompact = z.infer<
+  typeof CharacterSpeechAppraisalCompactSchema
+>;
+
 export const CharacterDeepPsycheCompactAdvanceSchema = z.object({
   delta: CharacterDeepPsycheDeltaSchema.extend({
     interior: CharacterDeepPsycheSchema.partial().extend({
-      speechAppraisal: CharacterSpeechAppraisalSchema.extend({
-        anticipatedImpact: z.string().min(1).max(240),
-        observedImpact: z.string().min(1).max(240),
-        nextApproach: z.string().min(1).max(240),
-        anticipatedSocialConsequence: CharacterSocialConsequenceSchema.extend({
-          meaning: z.string().min(1).max(240),
-        }),
-        observedSocialConsequence: CharacterSocialConsequenceSchema.extend({
-          meaning: z.string().min(1).max(240),
-        }),
-        continuityBasis: CharacterContinuityBasisSchema.extend({
-          reason: z.string().min(1).max(240),
-        }),
-      }),
+      speechAppraisal: CharacterSpeechAppraisalCompactSchema,
     }),
   }),
   expressionBrief: CharacterExpressionBriefSchema,
@@ -998,6 +1006,13 @@ export const CharacterDeepPsycheCompactAdvanceSchema = z.object({
       code: z.ZodIssueCode.custom,
       path: ["delta", "interior", "speechAppraisal", "continuityBasis", "kind"],
       message: "Continuity basis must match the private continuity decision",
+    });
+  }
+  if (value.expressionBrief.continuityDecision !== appraisal.continuityDecision) {
+    context.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["expressionBrief", "continuityDecision"],
+      message: "Expression brief must match the private continuity decision",
     });
   }
 });

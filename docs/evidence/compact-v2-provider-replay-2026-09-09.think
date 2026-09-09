@@ -1,0 +1,118 @@
+domain CompactV2ProviderReplayRca:
+  description "Root-cause analysis of the Compact V2 deep-psyche schema rejection"
+
+problem P1:
+  |
+    Explain what created the rejected Compact V2 deep-psyche result, while
+    separating the observed validation mechanism, the integration root cause,
+    contributing conditions, the escape cause, and unknown model internals.
+
+premise P2:
+  |
+    A later answer from grok-4.3 can analyze the supplied artifacts, but it has
+    no access to the earlier sampling state, hidden activations, server logs, or
+    chain-of-thought. It is retrospective opinion, not direct introspection.
+
+premise P3:
+  |
+    Root cause means the mechanism, decision, assumption, requirement, design,
+    or implementation condition that created the defective integration state.
+    A missing test is an escape cause rather than the source of that state.
+
+evidence E1:
+  |
+    The Compact application schema requires six speech-appraisal strings to
+    contain at least one character: anticipatedImpact, observedImpact,
+    nextApproach, both social-consequence meanings, and continuityBasis.reason.
+
+evidence E2:
+  |
+    The first real grok-4.3 deep-psyche response was complete JSON but contained
+    an empty string in every one of those six fields. The validator reported
+    too_small for all six. Other enums and two expressionBrief intentions were
+    populated, so this was not an empty transport response or JSON decode error.
+
+evidence E3:
+  |
+    The generation prompt semantically asks for a fresh appraisal and calls the
+    consequence and basis fields required. Its immediately following JSON return
+    example nevertheless represents every schema-required string as an empty
+    string and never states that all six values must be non-empty. Thus the
+    producer-facing example and consumer acceptance schema encode different
+    concrete value constraints.
+
+evidence E4:
+  |
+    The supplied turnObservation contained a non-empty counterpartResult that
+    could ground an appraisal. The response used it in expressionBrief.focus and
+    filled relationshipMove and publicAim, while leaving expressionBrief's own
+    observedImpact and all six required appraisal strings empty. Input absence
+    therefore does not explain the complete pattern.
+
+evidence E5:
+  |
+    The response closed its JSON object and used 191 of the allowed 1200 output
+    tokens. This strongly weakens token exhaustion or truncation as the producing
+    cause. Both provider requests returned the expected model and usage metadata.
+
+evidence E6:
+  |
+    In a separately authorized retrospective call, grok-4.3 rated as high the
+    hypothesis that generation treated the six strings as optional or low
+    priority defaults, rated nested complexity as a medium contributor, proposed
+    an explicit non-empty instruction, and labelled rootCauseStatus hypothesis.
+
+evidence E7:
+  |
+    The retrospective answer is partly inaccurate: the original prompt did not
+    explicitly require all six values to be non-empty; ambientChange was empty;
+    expressionBrief.observedImpact was empty; and the answer did not discuss the
+    empty-string return example. These errors prevent treating it as independent
+    proof or increasing the root-cause confidence by itself.
+
+evidence E8:
+  |
+    Local decoder tests used hand-authored valid fixtures whose required strings
+    were already non-empty. They tested decoding and validation but did not test
+    whether a real model follows the prompt's empty-string exemplar.
+
+decision D1 based_on P1, E1, E2:
+  |
+    The immediate rejection mechanism is established: the provider response put
+    empty strings where the application schema enforces minimum length one.
+
+decision D2 based_on P1, P3, E1, E2, E3:
+  |
+    The integration root cause is established as a producer-consumer contract
+    mismatch. The prompt's concrete return example presents values that the
+    downstream schema rejects, without an equally concrete non-empty constraint.
+    This created an accepted generation path whose result could not pass the
+    application contract.
+
+decision D3 based_on P2, E2, E3, E4, E6, E7:
+  |
+    It is a supported medium-confidence inference, not an observed fact, that the
+    empty-string exemplar caused or materially biased this sample toward copying
+    empty defaults. Grok's retrospective agrees with the broader low-priority
+    default hypothesis but cannot reveal the earlier model's internal selection
+    mechanism. That internal mechanism remains unknown.
+
+decision D4 based_on E4, E5:
+  |
+    Missing grounding input, transport failure, wrong model, malformed JSON, and
+    output truncation are not credible primary causes for this observed failure.
+
+decision D5 based_on P3, E8:
+  |
+    The escape cause is that local tests supplied already-valid appraisal strings
+    and therefore did not exercise prompt-to-provider-to-schema compatibility.
+    This explains non-detection, not creation of the contract mismatch.
+
+decision D6 based_on D2, D3, D5:
+  |
+    Corrective work should align the producer prompt with the accepted contract:
+    explicitly require all six values to be non-empty and replace empty-string
+    exemplars with semantic metavariables or a valid example. Recurrence coverage
+    should add a prompt-contract check without weakening the schema. These are
+    proposed actions only; this RCA does not authorize implementation or another
+    paid provider replay.

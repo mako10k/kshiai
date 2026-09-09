@@ -162,8 +162,9 @@ export function projectObservationProviderOperations(
     // one action for each side before expression.
     characterExpression: (maxAdvances * 2) + (combatAdvances * 2),
     // Normal-turn psyche is deterministic, while prologue and aftermath may
-    // each call both isolated character contexts.
-    deepPsyche: 4,
+    // each call both isolated character contexts. Reserve one semantic repair
+    // for every projected Compact psyche operation.
+    deepPsyche: 8,
     // Each combat advance may propose an environment beat and reconcile the
     // committed semantic state.
     environment: combatAdvances * 2,

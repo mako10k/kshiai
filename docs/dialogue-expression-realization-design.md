@@ -1,9 +1,10 @@
 # Minimal Compact expression state and history design
 
-- Status: Implementation design; ADR-0025 and requirement v3 accepted
+- Status: Implementation design; ADR-0025, ADR-0026, and requirement v3 accepted
 - Date: 2026-09-08
 - Requirement candidate: `docs/dialogue-expression-realization-requirement-v3.md`
-- Architecture authority: `docs/adr/0025-expression-state-and-utterance-actuals.think`
+- Architecture authority: `docs/adr/0025-expression-state-and-utterance-actuals.think`;
+  `docs/adr/0026-compact-psyche-semantic-closure-repair.think`
 - Delivery plan: `docs/dialogue-expression-realization.pert`
 
 ## 1. Design result
@@ -22,6 +23,12 @@ completed utteranceHistory ---+                              |
 There is no new opportunity entity, receipt, provider-operation ID, utterance
 ID, or reuse detector. The existing battle revision compare-and-save remains
 the sole at-most-once commit boundary.
+
+ADR-0026 adds one conditional application repair before expression: when a
+decoded Compact V2 deep-psyche result fails inside its declared
+appraisal/expression semantic group, the server may request one closed
+replacement slice, merge it into the rejected candidate, and validate the full
+result. A valid first result still follows the one-call path.
 
 ## 2. Proposed closed contracts
 
@@ -98,17 +105,20 @@ classify repetition intent, or reject similarity. Every otherwise valid
 
 1. Build observer-safe semantic state and completed utterance history as
    separate Compact input fields.
-2. Invoke the existing expression provider once.
-3. Decode the response through the closed V2 result schema.
-4. Accept `nextUtterance` as the current speech source without text comparison.
-5. Assemble the existing canonical turn record.
-6. Save the battle with the existing expected battle revision.
-7. If another worker already committed that revision, reject the stale save;
+2. Invoke deep psyche once. If its decoded V2 result fails only inside the
+   declared appraisal/expression group, request at most one semantic-closure
+   repair, merge allowed roots server-side, and validate the complete result.
+3. Invoke the existing expression provider once.
+4. Decode the response through the closed V2 result schema.
+5. Accept `nextUtterance` as the current speech source without text comparison.
+6. Assemble the existing canonical turn record.
+7. Save the battle with the existing expected battle revision.
+8. If another worker already committed that revision, reject the stale save;
    do not add a second expression-specific ledger.
 
 Provider failure keeps the already-defined no-expression behavior for this
 phase. This design does not add a prior-line fallback, mock-text substitution,
-automatic retry, or a new failure mode.
+transport retry, critic, recursive application repair, or a new commit boundary.
 
 ## 6. State ownership and compatibility
 
@@ -141,13 +151,15 @@ automatic retry, or a new failure mode.
 | --- | --- |
 | `backend/src/llm/types.ts` | Define the closed V2 input/result; omit `lastSpeech` from Compact deep-psyche semantic state |
 | `backend/src/llm/character-expression-prompt.ts` | Name completed `utteranceHistory` and current `nextUtterance`; add no repetition ban |
-| `backend/src/llm/openai-compatible.ts` | Build separated fields and decode the closed V2 result without arbitrary records |
+| `backend/src/llm/openai-compatible.ts` | Build separated fields, align the initial psyche prompt, perform the one closed semantic repair when eligible, and decode the closed V2 result without arbitrary records |
 | `backend/src/services/battle-service.ts` | Build both Compact projections and stop writing Compact speech into `lastSpeech` |
 | `backend/src/llm/mock.ts` | Remove Compact dependence on `previous.lastSpeech` |
-| focused tests | Verify field separation, equal-text acceptance, privacy, closed decode, and existing stale-save behavior |
+| focused tests | Verify field separation, equal-text acceptance, privacy, closed decode, semantic repair scope and limit, and existing stale-save behavior |
 
 No new database table, receipt store, identifier allocator, runtime reuse
-validator, quality scorer, provider call, or deployment mechanism is added.
+validator, quality scorer, normal-path provider call, or deployment mechanism is
+added. A rejected Compact V2 deep-psyche result may produce one separately
+accounted repair call under ADR-0026.
 
 ## 8. Verification matrix
 
@@ -164,7 +176,9 @@ validator, quality scorer, provider call, or deployment mechanism is added.
 - The repository stale-revision test continues to prove that two saves cannot
   commit the same battle revision.
 - No expression-specific ID or idempotency store exists.
-- Provider operation count is unchanged.
+- Valid first-result provider operation count is unchanged. An eligible rejected
+  deep-psyche result records exactly one distinct repair operation; a failed
+  repair does not recurse.
 
 ### Boundaries
 
@@ -176,7 +190,8 @@ validator, quality scorer, provider call, or deployment mechanism is added.
 
 ## 9. Authority boundary
 
-The exact requirement and ADR revisions are accepted. Local implementation is
-authorized by the owner's earlier implementation instruction. Paid replay,
-Stage activation, and production promotion each remain separate later
-decisions.
+The exact requirement and ADR-0025/ADR-0026 revisions are accepted. Local
+implementation is authorized by the owner's implementation instruction. The
+requirement v3 successful expression path remains unchanged; ADR-0026 separately
+owns the conditional deep-psyche application repair. Paid replay, Stage
+activation, and production promotion each remain separate later decisions.

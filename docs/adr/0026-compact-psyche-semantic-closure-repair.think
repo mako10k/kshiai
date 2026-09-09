@@ -1,0 +1,181 @@
+framework ArchitectureDecisionRecord:
+  requires problem and decision
+  requires premise and evidence
+  warns pending
+
+domain ADR0026:
+  description |
+    Correct the Compact V2 psyche prompt contract and allow one bounded
+    semantic-closure repair after an application schema rejection.
+
+problem P1:
+  |
+    Structured provider output is not perfectly reliable. The first real
+    Compact V2 replay returned a complete object with six empty appraisal
+    strings that the consumer schema rejects. Regenerating the whole stage is
+    wasteful, but repairing only reported error paths can leave fields that
+    passed validation semantically inconsistent with the correction.
+
+premise DRIVER_SOURCE:
+  |
+    Correct the producing contract before adding containment. The producer
+    prompt and consumer schema must express the same non-empty requirements.
+
+premise DRIVER_COHERENCE:
+  |
+    A repair scope is the smallest server-defined semantic dependency closure,
+    not merely the validator error paths and not a scope chosen freely by the
+    model. The merged full result remains the acceptance subject.
+
+premise DRIVER_BOUND:
+  |
+    The server owns repair eligibility, writable roots, merge behavior, full
+    revalidation, provider accounting, and the one-attempt limit. Failed repair
+    fails closed and is never recursively repaired.
+
+premise DRIVER_COMPATIBILITY:
+  |
+    ADR-0025 remains authoritative for expression-state/history separation,
+    nextUtterance acceptance, exact-repetition validity, and the existing battle
+    revision commit boundary. A repair is not a critic, similarity classifier,
+    fallback utterance, or second commit lifecycle.
+
+premise OPTIONS:
+  |
+    Considered options are: fail every schema-invalid first result; regenerate
+    the complete psyche output; patch only reported paths; let the model choose
+    arbitrary affected paths; or replace one server-defined semantic closure and
+    revalidate the merged full result. The last option preserves unrelated valid
+    state while allowing necessary dependent values to change.
+
+evidence E_SCHEMA:
+  |
+    CharacterDeepPsycheCompactAdvanceSchema requires six non-empty appraisal
+    strings and enforces continuityBasis.kind from continuityDecision.
+    CharacterExpressionBrief repeats continuityDecision and carries the focus,
+    observed impact, relationship move, and public aim derived from that same
+    appraisal.
+
+evidence E_PROMPT:
+  |
+    The current generation prompt describes required appraisal semantics but its
+    concrete return example renders all six schema-required strings as empty and
+    does not state the non-empty constraint at the return boundary.
+
+evidence E_REPLAY:
+  |
+    The 2026-09-09 grok-4.3 response copied all six empty values, filled other
+    parts of the structure, and failed with too_small. It completed JSON using
+    191 of 1200 output tokens, so truncation is not a credible primary cause.
+
+evidence E_RCA:
+  |
+    The command-line LLMThink RCA audit completed with no findings. It identifies
+    prompt/schema mismatch as the integration root cause, hand-authored valid
+    fixtures as the escape cause, and the model's hidden selection mechanism as
+    unknown. The separate Grok retrospective is supporting hypothesis only.
+
+evidence E_PRECEDENT:
+  |
+    Character-definition generation already uses one bounded application repair
+    with validation issues followed by the same strict schema and fail-closed
+    behavior. Compact psyche currently has transport retry only and no equivalent
+    application repair.
+
+evidence E_OWNER_DIRECTION:
+  |
+    On 2026-09-09 the product owner directed correction in this direction and
+    clarified that the patch must remain minimal but may update fields that had
+    passed schema validation when required for semantic consistency.
+
+decision D1 based_on P1, DRIVER_SOURCE, E_PROMPT, E_REPLAY, E_RCA:
+  |
+    Align the initial Compact V2 deep-psyche producer prompt with the accepted
+    schema. State immediately before the return contract that the six appraisal
+    strings are non-empty, replace empty-string exemplars with semantic value
+    markers that cannot be copied as accepted empty values, and keep the schema
+    strict rather than weakening it.
+
+decision D2 based_on P1, DRIVER_COHERENCE, E_SCHEMA, OPTIONS:
+  |
+    When the first decoded Compact V2 deep-psyche candidate fails application
+    schema validation within the appraisal/expression semantic group, permit one
+    repair response containing complete replacements for speechAppraisal and
+    expressionBrief. It may additionally replace complete dialogueThread,
+    observableManifestations, or narrativeCues values only when the correction
+    changes their meaning. It cannot change other delta fields.
+
+decision D3 based_on D2, DRIVER_COHERENCE, DRIVER_BOUND:
+  |
+    The repair request contains the rejected semantic slice, machine-readable
+    validation issues, a deterministic description of the violated contract,
+    relevant immutable observation and dialogue context, and the exact writable
+    roots. The model returns only the closed repair envelope. The server rejects
+    unexpected roots, merges allowed replacements into the preserved decoded
+    candidate, and runs the normal decoder, complete schema, and all cross-field
+    refinements over the merged result.
+
+decision D4 based_on D2, D3, DRIVER_BOUND, E_PRECEDENT:
+  |
+    Allow at most one application repair per logical Compact psyche result. Use
+    a distinct provider-operation label, lower temperature, normal physical-call
+    accounting, and retain both attempts in observation evidence. Do not repair
+    a non-object root, an error outside the declared semantic group, or a failed
+    repair. Those cases keep the current fail-closed behavior. Provider transport
+    retries remain separate and do not reset the application-repair limit.
+
+decision D5 based_on D1, D2, D3, D4, DRIVER_COMPATIBILITY:
+  |
+    Preserve the normal one-call successful path and every ADR-0025 state,
+    history, expression, repetition, and commit invariant. The repair does not
+    weaken validation, fabricate a fallback result, change an existing battle's
+    bound dialogue contract, or authorize a paid replay, deployment, or release.
+
+decision D6 based_on D1, D2, D3, D4, D5:
+  |
+    Verification must cover no repair on valid first output; exact repair input
+    and writable roots; dependent fields allowed despite prior field validity;
+    rejection of unauthorized roots; merge into preserved unrelated fields;
+    complete revalidation; one-repair maximum; failed-repair closure; distinct
+    provider accounting; and unchanged legacy and normal Compact behavior.
+
+evidence OWNER_ACCEPTANCE:
+  |
+    On 2026-09-09, after the ADR overview, repair flow, semantic closure,
+    boundaries, and tradeoffs were explained, the product owner replied,
+    "OKです。承認します。" The approved pre-acceptance .think snapshot had
+    SHA-256 5a6297a8cf3dbb44422c3a09d0aa27615edbdaff359f0c7c91fc77bb2da90c93.
+
+evidence NAMESPACE_RECONCILIATION:
+  |
+    Fresh integration readback on 2026-09-09 established that current main had
+    already accepted ADR-0024 for detached authoring and allocated ADR-0025 to
+    the prerequisite Compact expression-state decision. This dependent repair
+    decision was therefore allocated ADR-0026. Its approved decision content
+    and acceptance digest are unchanged.
+
+decision ACCEPTANCE based_on D1, D2, D3, D4, D5, D6, OWNER_ACCEPTANCE, NAMESPACE_RECONCILIATION:
+  |
+    ADR-0026 retains Accepted status for this owner-approved revision. Local
+    implementation of D1 through D6 is authorized. The identifier change only
+    reconciles the mainline namespace. Paid provider replay, deployment,
+    release, and changes outside the Compact V2 deep-psyche repair boundary
+    remain separate actions requiring their own authority.
+
+evidence E_IMPLEMENTATION_20260909:
+  |
+    The local implementation aligns the Compact V2 producer contract, adds a
+    closed one-attempt semantic-closure repair, merges only server-declared
+    roots, and revalidates the complete result. Provider-operation taxonomy v2
+    accounts for the repair as deepPsyche and observation projection reserves
+    the possible extra physical attempt. Focused tests, the full test suite,
+    typecheck, build, duplicate detection, and the pinned Lizard complexity gate
+    completed successfully before final readback. No paid provider replay,
+    deployment, or release was performed by this implementation.
+
+decision IMPLEMENTATION_STATUS based_on ACCEPTANCE, E_IMPLEMENTATION_20260909:
+  |
+    D1 through D6 are implemented locally. Existing observation runs remain
+    bound to their recorded taxonomy revision; they are not reinterpreted or
+    resumed under taxonomy v2. A future provider replay or deployment remains a
+    separately authorized action.

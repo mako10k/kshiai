@@ -1,9 +1,9 @@
 # Delivery plan for separated Compact expression state and utterance history.
 project pj001:
-  version 6
+  version 8
   title "Separate Compact expression state from utterance history"
-  description "Implement Accepted ADR-0025 with separate closed expressionState and utteranceHistory inputs, closed nextUtterance output, content-independent acceptance, and the existing battle revision commit boundary. Add no lifecycle entity, identifier, receipt, reuse detector, similarity gate, critic, retry, or fallback."
-  as_of 2026-09-08
+  description "Implement Accepted ADR-0025 with separate closed expressionState and utteranceHistory inputs, closed nextUtterance output, content-independent acceptance, and the existing battle revision commit boundary. Under Accepted ADR-0026, allow one fail-closed Compact V2 deep-psyche application repair over a server-defined semantic closure; add no expression retry, recursive repair, lifecycle entity, identifier, receipt, reuse detector, similarity gate, critic, or fallback."
+  as_of 2026-09-09
   duration_unit point
   velocity 1p/1d
   finish m011
@@ -32,6 +32,7 @@ milestone m005:
 
 milestone m006:
   title "Bounded paid provider replay approved"
+  state reached
 
 milestone m007:
   title "Bounded provider replay complete"
@@ -79,7 +80,9 @@ task t004 m005 -> m006:
   title "Review local evidence and decide bounded paid replay"
   description "Review the exact implementation commit, local verification, provider and model, fixture revisions, repeat-capable and ordinary-character cases, call and token ceilings, cost ceiling, stop conditions, and retained evidence. Approval authorizes only the named paid replay and does not authorize Stage or production deployment."
   duration 1p
+  status done
   owner "user"
+  source "docs/evidence/compact-v2-provider-replay-2026-09-09/prepare-proof.json"
   requires:
     rs002 1
 
@@ -87,7 +90,9 @@ task t005 m006 -> m007:
   title "Run the approved bounded provider replay"
   description "Run only the approved provider calls and retain inputs, outputs, operation counts, and classification evidence. Confirm that exact repetition is accepted as a current result, not treated as a defect, and that no prior-line fallback, retry, critic, runtime reuse detector, or narrator feedback path is exercised. Do not deploy."
   duration 1p
+  status suspended
   owner "codex"
+  source "docs/evidence/compact-v2-provider-replay-2026-09-09.md"
   requires:
     rs001 1
 
@@ -140,3 +145,23 @@ work_event WE-f2bb6692693356be4484b4513ef71db3dd4adfc452e9d791918fd739aa7c79b8:
   task t003
   kind finish
   occurred_at 2026-09-08T22:50:00+09:00
+
+work_event WE-DER-PAID-REPLAY-APPROVAL-20260909:
+  model 1
+  task t004
+  kind finish
+  occurred_at 2026-09-09T08:35:00+09:00
+
+work_event WE-DER-PAID-REPLAY-START-20260909:
+  model 1
+  task t005
+  kind start
+  occurred_at 2026-09-09T09:04:00+09:00
+  planned_value 1p
+
+work_event WE-DER-PAID-REPLAY-SUSPEND-20260909:
+  model 1
+  task t005
+  kind suspend
+  occurred_at 2026-09-09T09:04:04+09:00
+  reason "Stopped after the first deep-psyche application schema rejection; immutable replay evidence retained and resending is prohibited."

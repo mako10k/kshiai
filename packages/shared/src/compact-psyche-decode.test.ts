@@ -109,4 +109,43 @@ describe("compact psyche decoder", () => {
     const issues = compactDeepPsycheIssueSummaries(decoded);
     assert.ok(issues.some((issue) => issue.path.includes("speechAppraisal")));
   });
+
+  it("rejects an expression brief whose continuity decision contradicts the appraisal", () => {
+    const parsed = CharacterDeepPsycheCompactAdvanceSchema.safeParse({
+      ...valid,
+      expressionBrief: {
+        ...valid.expressionBrief,
+        continuityDecision: "advance",
+      },
+    });
+
+    assert.equal(parsed.success, false);
+    if (parsed.success) return;
+    assert.ok(parsed.error.issues.some((issue) =>
+      issue.path.join(".") === "expressionBrief.continuityDecision" &&
+      issue.code === "custom"
+    ));
+  });
+
+  it("rejects whitespace-only required appraisal text", () => {
+    const parsed = CharacterDeepPsycheCompactAdvanceSchema.safeParse({
+      ...valid,
+      delta: {
+        ...valid.delta,
+        interior: {
+          ...valid.delta.interior,
+          speechAppraisal: {
+            ...valid.delta.interior.speechAppraisal,
+            nextApproach: "   ",
+          },
+        },
+      },
+    });
+
+    assert.equal(parsed.success, false);
+    if (parsed.success) return;
+    assert.ok(parsed.error.issues.some((issue) =>
+      issue.path.join(".") === "delta.interior.speechAppraisal.nextApproach"
+    ));
+  });
 });
