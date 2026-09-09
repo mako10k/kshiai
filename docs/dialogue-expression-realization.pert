@@ -100,16 +100,6 @@ task t004 m005 -> m006:
   requires:
     rs002 1
 
-task t005 m006 -> m007:
-  title "Run the approved bounded provider replay"
-  description "Run only the approved provider calls and retain inputs, outputs, operation counts, and classification evidence. Confirm that exact repetition is accepted as a current result, not treated as a defect, and that no prior-line fallback, retry, critic, runtime reuse detector, or narrator feedback path is exercised. Do not deploy."
-  duration 1p
-  status suspended
-  owner "codex"
-  source "docs/evidence/compact-v2-provider-replay-2026-09-09.md"
-  requires:
-    rs001 1
-
 task t006 m007 -> m008:
   title "Review replay evidence and decide Stage deployment"
   description "Review the immutable artifact candidate, bounded replay evidence, affected services, rollback target, Stage smoke scope, and stop conditions. Approval must explicitly identify the Stage action and does not authorize production promotion."
@@ -152,20 +142,11 @@ task t010 m012 -> m013:
   requires:
     rs002 1
 
-task t011 m013 -> m007:
-  title "Run the corrected bounded provider replay once"
-  description "Execute only run compact-v2-provider-replay-repair-2026-09-09-v1 under its frozen contract. Retain every request, response, operation count, application result, and cost receipt. Stop fail-closed on provider, schema, semantic-closure, application, ceiling, or persistence failure; never retry, resume, resend, fall back, judge, deploy, or create a battle."
-  duration 1p
-  status suspended
-  owner "codex"
-  source "docs/evidence/compact-v2-provider-replay-repair-2026-09-09/run-state.json"
-  requires:
-    rs001 1
-
 task t012 m014 -> m015:
   title "Review and decide the second corrected bounded provider replay"
   description "Review implementation 3c383ed1b4185a3bcc78c62981a628ea2b24a270, the immutable failed predecessor, network-zero preparation proof, xAI grok-4.3, two synthetic scenarios with three turns each, at most eighteen physical Chat Completions requests including at most one bounded psyche repair per turn, token and USD ceilings, and fail-closed stop conditions. Approval authorizes only run compact-v2-provider-replay-repair-2026-09-09-v2 and does not authorize Stage, production, release, or a persistent observation battle."
   duration 1p
+  status done
   owner "user"
   source "docs/evidence/compact-v2-provider-replay-repair-2026-09-09-v2/prepare-proof.json"
   requires:
@@ -175,7 +156,29 @@ task t013 m015 -> m007:
   title "Run the second corrected bounded provider replay once"
   description "Execute only run compact-v2-provider-replay-repair-2026-09-09-v2 under its frozen contract. Retain every request, response, operation count, application result, and cost receipt. Stop fail-closed on provider, schema, semantic-closure, application, ceiling, or persistence failure; never retry, resume, resend, fall back, judge, deploy, or create a battle."
   duration 1p
+  status done
   owner "codex"
+  source "docs/evidence/compact-v2-provider-replay-repair-2026-09-09-v2/run-receipt.json"
+  requires:
+    rs001 1
+
+task t014 m006 -> m014:
+  title "Carry the initial failed replay into the corrected candidate"
+  description "Retain the immutable initial failure evidence and complete the accepted ADR-0026 semantic-closure correction without resuming or resending the failed run."
+  duration 1p
+  status done
+  owner "codex"
+  source "docs/evidence/compact-v2-provider-replay-2026-09-09.md"
+  requires:
+    rs001 1
+
+task t015 m013 -> m014:
+  title "Carry the first corrected failure into the clarified candidate"
+  description "Retain the immutable null unresolvedMove failure evidence and clarify the existing strict producer contract without expanding ADR-0026 repair eligibility or resending the failed run."
+  duration 1p
+  status done
+  owner "codex"
+  source "docs/evidence/compact-v2-provider-replay-repair-2026-09-09.md"
   requires:
     rs001 1
 
@@ -203,36 +206,27 @@ work_event WE-DER-PAID-REPLAY-APPROVAL-20260909:
   kind finish
   occurred_at 2026-09-09T08:35:00+09:00
 
-work_event WE-DER-PAID-REPLAY-START-20260909:
-  model 1
-  task t005
-  kind start
-  occurred_at 2026-09-09T09:04:00+09:00
-  planned_value 1p
-
-work_event WE-DER-PAID-REPLAY-SUSPEND-20260909:
-  model 1
-  task t005
-  kind suspend
-  occurred_at 2026-09-09T09:04:04+09:00
-  reason "Stopped after the first deep-psyche application schema rejection; immutable replay evidence retained and resending is prohibited."
-
-work_event WE-CORRECTED-REPLAY-START-20260909:
-  model 1
-  task t011
-  kind start
-  occurred_at 2026-09-09T15:55:56+09:00
-  planned_value 1p
-
 work_event WE-CORRECTED-REPLAY-APPROVAL-20260909:
   model 1
   task t010
   kind finish
   occurred_at 2026-09-09T15:55:00+09:00
 
-work_event WE-CORRECTED-REPLAY-SUSPEND-20260909:
+work_event WE-SECOND-CORRECTED-REPLAY-APPROVAL-20260909:
   model 1
-  task t011
-  kind suspend
-  occurred_at 2026-09-09T15:55:59+09:00
-  reason "Stopped after the first deep-psyche result returned null for string-only dialogueThread.unresolvedMove; one request was retained, expression was blocked, and resending is prohibited."
+  task t012
+  kind finish
+  occurred_at 2026-09-09T16:44:00+09:00
+
+work_event WE-SECOND-CORRECTED-REPLAY-START-20260909:
+  model 1
+  task t013
+  kind start
+  occurred_at 2026-09-09T16:44:25+09:00
+  planned_value 1p
+
+work_event WE-SECOND-CORRECTED-REPLAY-FINISH-20260909:
+  model 1
+  task t013
+  kind finish
+  occurred_at 2026-09-09T16:44:48+09:00

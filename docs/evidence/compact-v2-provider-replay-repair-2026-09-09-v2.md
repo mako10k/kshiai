@@ -1,5 +1,28 @@
 # Second corrected Compact V2 provider replay — approval candidate
 
+## Outcome
+
+The approved run completed successfully from 2026-09-09 16:44:25 to 16:44:48
+JST. All 12 physical requests succeeded with xAI `grok-4.3`: six deep-psyche
+requests and six expression requests. No application repair was needed.
+
+- Usage: 22,050 input + 2,359 output = 24,409 tokens
+- Estimated usage cost: USD 0.03346
+- Reserved before transmission: 117,541 tokens, USD 0.15892625
+- Accepted turns: 6 of 6
+- Psyche application status: fulfilled on every turn
+- Expression application status: fulfilled on every turn
+- Utterance history: advanced exactly once on every turn
+
+The ordinary scenario produced three current expressions. The repeat-capable
+scenario produced `ここは譲らない` on all three turns, and every identical
+utterance was accepted through the same normal path. No prior-line fallback,
+text comparison, retry, critic, or reuse detector was exercised.
+
+The immutable execution state and receipt are retained in
+`compact-v2-provider-replay-repair-2026-09-09-v2/run-state.json` and
+`compact-v2-provider-replay-repair-2026-09-09-v2/run-receipt.json`.
+
 ## Purpose
 
 This candidate verifies the existing strict Compact V2 contract after clarifying
