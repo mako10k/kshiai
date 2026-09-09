@@ -63,9 +63,12 @@ Machine-readable evidence is retained in
 `compact-v2-observation-input-replay-2026-09-09-v1/execution-contract.json` and
 `compact-v2-observation-input-replay-2026-09-09-v1/prepare-proof.json`.
 
-## Authority boundary
+## Execution disposition
 
-No provider call has been made for this run. Approval would authorize only one
-execution of the exact run ID and contract digest above. It would not authorize
-push, PR, merge, release, Stage or production deployment, production promotion,
-or a persistent observation battle.
+The one approved execution was attempted on 2026-09-09 and stopped fail-closed
+after 12 physical requests. It must not be retried, resumed, or resent under the
+existing approval. See
+`compact-v2-observation-input-replay-2026-09-09-v1-outcome.md` for the retained
+result and its limits. No push, PR, merge, release, Stage or production
+deployment, production promotion, or persistent observation battle was
+authorized or performed.
