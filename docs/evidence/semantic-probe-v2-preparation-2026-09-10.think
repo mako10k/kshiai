@@ -1,0 +1,18 @@
+domain SemanticProbeV2Preparation:
+  description "Prepare the corrected B5 real-model experiment without reusing a consumed authorization."
+evidence E1:
+  "Current continuation requires a new run and approval for v2. Prior v1 run consumed one HTTP400 request; its proof, evidence and database are retained. Latest user requests execution of the next task, not exact new paid scope acceptance."
+evidence E2:
+  "Read current source: runner output and provider contract runId still name v1; fixture seed promptIdentity is v1. Corrected migration prompt v2 exists. The runner writes evidence exclusively, binds a complete source/runtime snapshot, isolates SQLite, and accepts an exact proof digest for execution."
+evidence E3:
+  "Current fetched same-name remote and local HEAD are e0f2224, origin/main is 1cdf210. Matching integration worktree has preserved uncommitted B5 and correction work; another main worktree is unrelated. Worktime is working with planned end22:00, about25minutes remaining."
+evidence E4:
+  "Prior turn local verification recorded768tests, typecheck/build/static success and73reviewed reseals, stale0/fsckok. This is prior observed local evidence, not real-provider acceptance or semantic-quality proof."
+premise U1:
+  "New schema API acceptance, natural repairs, semantic preservation, actual usage and cost remain unknown. B6 can follow later but does not answer the unresolved B5 provider experiment."
+premise OPTIONS:
+  "A prepare a new v2 run and exact Japanese review; B silently reuse v1 proof; C bypass the experiment and implement B6; D execute paid v2 before presenting its exact scope. A maintains prior requested early observation and authority; B invalidates evidence; C leaves current validation unanswered; D lacks exact-snapshot owner review."
+decision D1 based_on E1, E2, E3, E4, U1, OPTIONS:
+  "Prepare only a new v2 experiment on the matching dirty worktree. Add a pure fixed v2 run descriptor, pass its run and prompt identity explicitly to seeding, derive new evidence directory and proof contract run identity consistently, preserve old default and all old artifacts. Keep model, six-request andUSD1.50 caps, no retry, no activation unchanged. Test identity and offline six-phase behavior; assess current response and prompt schemas locally before any paid request."
+decision D2 based_on D1, E1, E2:
+  "Record preparation reasoning, obtain impact before edits, update reviewed Seal dependencies and new proof/tests without rewriting historical bytes. Present complete Japanese new execution conditions and differences; exact paid execution waits for owner acceptance of prepared candidate. No production, B6, commit, push or workday stop."

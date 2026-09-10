@@ -1,0 +1,12 @@
+domain ProbeFixtureRca:
+  description "Correct the synthetic probe fixture before any provider execution."
+evidence E1:
+  "Directly calling semanticMigrationProbeSource reports Zod invalid_type at definition.actionNorms.1.response.statement: expected string, received null. No prepare artifact exists and no network call occurred."
+evidence E2:
+  "The new fixture authors statement:null for the executable V2 norm; the existing V2 source schema requires a string. B5's V3 action norms remove that field after semantic migration."
+premise P1:
+  "The authoring assumption confused absent V3 mechanical statement with legal V2 source representation. This authored null created the fixture defect; schema validation only detected it."
+premise OPTIONS:
+  "A relax V2 schema, B remove the mixed case, C supply an actual synthetic V2 preference statement while retaining its selector. C keeps the experiment purpose and existing contract."
+decision D1 based_on E1, E2, P1, OPTIONS:
+  "Adopt C: use the explicit basic-action preference statement. Add a fixture schema regression and continue network-zero preparation. Do not weaken schemas or count this as a production defect. Root cause is new fixture construction with the wrong source-version field assumption; detection is the existing Zod validator."

@@ -8,6 +8,7 @@ import {
 } from "@kshiai/shared";
 import type { GenerateBattlefieldDefinitionV2Input } from "./types.js";
 import type { GenerateCharacterDefinitionV2Input } from "./types.js";
+import { assertXaiResponseSchema } from "./provider-response-schema.js";
 import {
   OpenAiCompatibleProvider,
   type ChatOpts,
@@ -19,37 +20,6 @@ type ChatCall = {
   label: string | undefined;
   responseFormat: unknown;
 };
-
-function definitionReferences(value: unknown): string[] {
-  if (!value || typeof value !== "object") return [];
-  if (Array.isArray(value)) return value.flatMap(definitionReferences);
-  const reference = Reflect.get(value, "$ref");
-  return [
-    ...(typeof reference === "string" && reference.startsWith("#/definitions/")
-      ? [reference.slice("#/definitions/".length)]
-      : []),
-    ...Object.keys(value).flatMap((key) =>
-      definitionReferences(Reflect.get(value, key))),
-  ];
-}
-
-function assertAcyclicDefinitions(definitions: object): void {
-  const visited = new Set<string>();
-  const visiting = new Set<string>();
-  const visit = (name: string) => {
-    if (visited.has(name)) return;
-    assert.equal(visiting.has(name), false, `recursive definition: ${name}`);
-    const definition = Reflect.get(definitions, name);
-    if (definition === undefined) return;
-    visiting.add(name);
-    for (const reference of new Set(definitionReferences(definition))) {
-      visit(reference);
-    }
-    visiting.delete(name);
-    visited.add(name);
-  };
-  for (const name of Object.keys(definitions)) visit(name);
-}
 
 function definitionInput(): GenerateCharacterDefinitionV2Input {
   const baseDefinition = legacyCharacterSheetToDefinitionV2({
@@ -142,6 +112,7 @@ function providerWithResponses(
       user: string,
       opts?: ChatOpts,
     ): Promise<unknown> {
+      if (opts?.responseFormat) assertXaiResponseSchema(opts.responseFormat.json_schema.schema);
       calls.push({
         system,
         user,
@@ -367,7 +338,7 @@ describe("OpenAI-compatible character definition response format", () => {
     assert.ok(schema && typeof schema === "object");
     const definitions = Reflect.get(schema, "definitions");
     assert.ok(definitions && typeof definitions === "object");
-    assertAcyclicDefinitions(definitions);
+    assertXaiResponseSchema(schema);
     const constraintDefinitions = Object.keys(definitions)
       .filter((name) => [
         "reach",

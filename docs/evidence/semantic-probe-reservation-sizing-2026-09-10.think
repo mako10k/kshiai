@@ -1,0 +1,10 @@
+domain ProbeReservationSizing:
+  description "Size the proposed execution envelope from the unchanged real B5 payload."
+evidence E1:
+  "Network-zero diagnostic measured first serialized ChatCompletion body 129069 bytes. B5 targetDefinitionSchema is 60185 bytes, registered paths total 27369 bytes, frozen source 8367 bytes, merged candidate 7270 bytes, response schema 5915 bytes. Proposed 128000-byte limit rejects before transmission."
+premise P1:
+  "The 128000 figure was an unmeasured preparation estimate, not an accepted budget. Its undersizing, not schema corruption or a provider error, caused this local preparation stop. Real later-round payload sizes remain unknown."
+premise OPTIONS:
+  "A remove complete schemas/context; B increase the unapproved limit with arithmetic still below high-context pricing; C use a smaller fixture. B preserves B5 experiment fidelity. A would change the tested prompt; C would lose mixed-rule coverage."
+decision D1 based_on E1, P1, OPTIONS:
+  "Use proposed 180000 serialized bytes plus 2048 framing tokens and 4096 output tokens per call, maximum six calls: at most 1116864 reserved tokens and USD1.4268 at input1.25/output2.50 per million. Set total guards to1120000 and USD1.50. Per-call reserved context186144 remains below200000. Keep model/prompt unchanged; actual usage is still checked. This does not authorize paid execution. Local preparation must exercise all six slots and disclose any future size uncertainty."

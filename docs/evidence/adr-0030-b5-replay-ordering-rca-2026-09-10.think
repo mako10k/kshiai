@@ -1,0 +1,27 @@
+domain B5ReplayOrderingRCA:
+  description "Local replay-identity defect discovered before B5 acceptance."
+evidence E1:
+  "The exact-replay fixture fails at the second request with CHARACTER_MIGRATION_PROVIDER_REQUEST_IDENTITY_DRIFT. Original generation and review succeeded; no second provider call occurred on replay."
+evidence E2:
+  "A reconstruction assertion compares the recorded generation receipt to the first review input. The diff is in registeredTargetPaths: generated object insertion order differs after canonical JSON storage. Candidate field values agree in this assertion."
+evidence E3:
+  "migrationPaths uses Object.entries order. B4 canonicalAssetJson sorts object keys for persistence. Review request digest includes registeredTargetPaths as an ordered array."
+premise A1:
+  "Alternative: ignore the request digest mismatch. This would defeat the accepted frozen-request identity contract."
+premise A2:
+  "Alternative: make path enumeration deterministic before deriving any prompt, policy or identity, and keep digest equality strict."
+decision D1 based_on E1, E2, E3, A1, A2:
+  |
+    Root cause: newly added B5 request construction treated JSON object insertion
+    order as semantic ordering when deriving the registered path array.
+    Contributing condition: B4 canonical persistence legitimately sorts object
+    keys, so replay traverses a different insertion order.
+    Trigger: reconstructing the review after the generation response round trip.
+    Escape: single-pass fixtures do not cross this boundary; this is not the
+    defect-producing cause. The exact-replay fixture caught it before acceptance.
+    Select A2: sort enumerated paths independently of object insertion order
+    and retain exact identity enforcement. Apply to the shared traversal used by
+    source/target registries and derived disclosure. Verify direct round-trip
+    payload/digest equality, complete replay and repaired-response replay.
+premise LIMIT:
+  "This conclusion concerns the new local B5 path traversal only; it does not establish production behavior or a defect in canonical persistence."

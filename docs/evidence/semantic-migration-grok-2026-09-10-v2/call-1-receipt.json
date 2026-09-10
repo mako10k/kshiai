@@ -1,0 +1,112 @@
+{
+  "phase": "receipt",
+  "ordinal": 1,
+  "receipt": {
+    "outcome": "succeeded",
+    "responseDigest": "7dd6fbfcba7543ae544f152d3ca27b3b77697e932e193d63ba81eb2216822ab1",
+    "response": {
+      "schema": "character_semantic_migration_change_set_v1",
+      "operations": [
+        {
+          "operation": "retire_to_capsule",
+          "targetPath": "definition.actionNorms",
+          "sourcePaths": [
+            "definition.actionNorms"
+          ],
+          "value": null,
+          "deferred": null,
+          "explanation": "V2 actionNorms retired to capsule; V3 splits soft statements into consciousGuidance and executable selectors into actionNorms.",
+          "provenance": "retired",
+          "semanticDependants": [
+            "definition.consciousGuidance",
+            "definition.mechanicalConflictFallbacks"
+          ]
+        },
+        {
+          "operation": "synthesize",
+          "targetPath": "definition.consciousGuidance",
+          "sourcePaths": [
+            "definition.actionNorms.0.response.statement",
+            "definition.actionNorms.0.selfAwareness"
+          ],
+          "value": [
+            {
+              "id": "migration-5e91859ab88fce77dccd858c8095c8d8",
+              "applicability": {
+                "match": "all",
+                "clauses": [
+                  {
+                    "kind": "always",
+                    "operator": "is",
+                    "value": "true"
+                  }
+                ]
+              },
+              "statement": "勝利だけに固執せず、相手との攻防を楽しみたい。",
+              "priority": 60,
+              "force": "preference",
+              "selfAwareness": "aware",
+              "exceptions": [],
+              "description": null
+            },
+            {
+              "id": "migration-5e055699026a67aa2fe9a687e3cb5789",
+              "applicability": {
+                "match": "all",
+                "clauses": [
+                  {
+                    "kind": "always",
+                    "operator": "is",
+                    "value": "true"
+                  }
+                ]
+              },
+              "statement": "基本攻撃を優先したい。",
+              "priority": 40,
+              "force": "preference",
+              "selfAwareness": "aware",
+              "exceptions": [],
+              "description": null
+            }
+          ],
+          "deferred": null,
+          "explanation": "Soft statements from V2 actionNorms migrated to V3 consciousGuidance; executable selectors deferred to actionNorms.",
+          "provenance": "source_derived",
+          "semanticDependants": [
+            "definition.actionNorms"
+          ]
+        },
+        {
+          "operation": "defer",
+          "targetPath": "definition.actionNorms",
+          "sourcePaths": [],
+          "value": null,
+          "deferred": {
+            "targetPath": "definition.actionNorms",
+            "reason": "V2 actionNorms contained only soft statements; executable selectors absent in source.",
+            "candidateSourcePaths": [
+              "definition.actionNorms.0.response.actionRefs",
+              "definition.actionNorms.1.response.actionRefs"
+            ],
+            "requiringCapability": {
+              "consumer": "character-action-norms",
+              "version": 3
+            }
+          },
+          "explanation": "No executable selectors present in V2 source; actionNorms deferred pending capability.",
+          "provenance": "deferred",
+          "semanticDependants": []
+        }
+      ],
+      "uncertainties": []
+    },
+    "accounting": {
+      "inputTokens": 26357,
+      "outputTokens": 467,
+      "totalTokens": 26824,
+      "estimatedCostUsd": 0.034113750000000005,
+      "elapsedMs": 4067
+    },
+    "finishedAt": "2026-09-10T12:46:10.895Z"
+  }
+}

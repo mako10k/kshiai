@@ -1,6 +1,6 @@
 # キャラ固有の目的・戦術・発話効果バックログ
 
-作成: 2026-09-09 / revision 14（2026-09-10）/ 状態: ADR-0030 B4のdurable attempt/preservation境界をローカル検証済み、実モデル品質は未判定。
+作成: 2026-09-09 / revision 15（2026-09-10）/ 状態: ADR-0030 B5の意味変更・全体レビュー・限定修正をローカル検証済み、実モデル品質は未判定。
 
 現在の基準（2026-09-09訂正）: 作者確認ではなく性格・価値観・認知済み関係に照らした目標の妥当性。
 旧要件revision 1のR1はこの指示と衝突するため、その優先規則を現行実装の根拠にしない。
@@ -111,9 +111,12 @@ ADR-0028 D4で具体化した案であり、長い思考全文の保存は要求
 [専用PERT](character-semantic-migration.pert)でA1〜A3とB1〜B14を管理する。
 A1のresponse-schema identity修正はローカル検証済みだが、live providerとdeploymentは
 未実施。恒久V2 reader案のADR-0029はRejectedとし、後継ADR-0030 revision 1はowner承認済み。
-B4まで完了し、凍結source/request identity、追記型receipt、restricted preservationは
-SQLiteでローカル検証済み。PostgreSQL migrationの実DB適用は後続gateに残る。次はB5の
-bounded semantic generation/review/repair実装である。provider利用、deployment、本番migration、
+B5まで完了し、凍結source/request identity、追記型receipt、restricted preservationに
+意味変更・全体レビュー・限定修正を接続してローカル検証した。
+[B5検証記録](evidence/adr-0030-b5-local-verification-2026-09-10.md)を参照。
+B4のPostgreSQL隔離スモークは成功したが、本番migrationではなく、先行試行のpublic全体への
+影響は未確定のままである。次はB6の候補受入・append/CAS・replay/rollback実装。
+provider利用、deployment、本番migration、
 candidate acceptance、pointer変更、schema 3 policy有効化はそれぞれ別gateである。
 
 このstreamは、下記の顕在意識主体性`t029`と品質比較`t030`〜`t032`を置き換えない。

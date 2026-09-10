@@ -1,0 +1,19 @@
+domain B5ValidationRefinement:
+  description "Final local validation refinement within accepted B5 scope."
+evidence E1:
+  "Repository Lizard gate passes, but direct Lizard inspection of the new files reports checkOperationPaths CCN18 and the operation schema refinement CCN23. Both are below 100 lines."
+evidence E2:
+  "Accepted R14 requires complete reference integrity. The existing V3 parser reuses V2 background/action checks, while V2 only declares selfReferenceNameId and description sourceSupportRefs shapes without resolving them."
+premise A1:
+  "Alternative: rely only on the aggregate historical Lizard allowance and generic string schema validity."
+premise A2:
+  "Alternative: split the new compound validators into small named policy checks, retaining their behavior, and explicitly resolve migration-generated name/support references against frozen or server-registered identities."
+decision D1 based_on E1, E2, A1, A2:
+  |
+    Choose A2 as local B5 implementation and verification, not a change to
+    existing live V2 contracts. Separate operation payload, provenance, retirement
+    target and repair-scope checks; do not loosen the static baseline. Validate
+    migrated name references and description support IDs against existing or
+    registered inputs, with focused positive/negative fixtures. Existing action,
+    condition, inventory and background reference checks remain reused.
+    Run targeted/full tests and static checks after the refinement.

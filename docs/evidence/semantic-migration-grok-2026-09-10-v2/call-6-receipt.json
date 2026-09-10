@@ -1,0 +1,83 @@
+{
+  "phase": "receipt",
+  "ordinal": 6,
+  "receipt": {
+    "outcome": "succeeded",
+    "responseDigest": "3c6a62e0b5685ad710aedb309646f5588f83ef3e702eabe53903cc1e4b3beab1",
+    "response": {
+      "schema": "character_semantic_consistency_review_v1",
+      "verdict": "repair_required",
+      "findings": [
+        {
+          "code": "missing_actionNorms_executable",
+          "targetPaths": [
+            "definition.actionNorms"
+          ],
+          "sourcePaths": [
+            "definition.actionNorms.0.response.actionRefs",
+            "definition.actionNorms.1.response.actionRefs"
+          ],
+          "explanation": "V2 actionNorms contained executable selectors (actionRefs, actionKinds, tacticTags) that were retired to capsule but never synthesized into V3 actionNorms; consciousGuidance now holds only soft statements.",
+          "semanticDependants": [
+            "definition.consciousGuidance",
+            "definition.mechanicalConflictFallbacks"
+          ]
+        },
+        {
+          "code": "lost_fallback_references",
+          "targetPaths": [
+            "definition.mechanicalConflictFallbacks"
+          ],
+          "sourcePaths": [
+            "definition.actionNorms.0.response.fallbackActionRef",
+            "definition.actionNorms.1.response.fallbackActionRef"
+          ],
+          "explanation": "V2 fallbackActionRef values were deferred but the deferredValues entry only records the deferral; no actual fallback objects were created in mechanicalConflictFallbacks.",
+          "semanticDependants": [
+            "definition.mechanicalConflictFallbacks"
+          ]
+        },
+        {
+          "code": "disclosure_rule_path_drift",
+          "targetPaths": [
+            "disclosurePolicy.rules.4.valuePath",
+            "disclosurePolicy.rules.10.valuePath",
+            "disclosurePolicy.rules.15.valuePath"
+          ],
+          "sourcePaths": [
+            "disclosurePolicy.rules.4.valuePath",
+            "disclosurePolicy.rules.10.valuePath",
+            "disclosurePolicy.rules.15.valuePath"
+          ],
+          "explanation": "Disclosure rules still reference actionNorms.*.response.statement which no longer exists after retirement; consciousGuidance.statement is the new location but is not covered by any disclosure rule.",
+          "semanticDependants": [
+            "disclosurePolicy.rules"
+          ]
+        },
+        {
+          "code": "compilerCompatibility_incomplete",
+          "targetPaths": [
+            "compilerCompatibility"
+          ],
+          "sourcePaths": [
+            "compilerCompatibility"
+          ],
+          "explanation": "V3 compilerCompatibility list omits several consumers present in V2 (psyche-trait-profile, character-conscious-self, character-narrator-view, etc.) while only listing action-norms and mechanical-conflict-fallback.",
+          "semanticDependants": [
+            "compilerCompatibility"
+          ]
+        }
+      ],
+      "summary": "Migration retired V2 actionNorms but failed to populate V3 actionNorms with executable selectors, left fallback references only deferred, and did not update disclosure rules or compilerCompatibility list to match the new V3 structure.",
+      "uncertainties": []
+    },
+    "accounting": {
+      "inputTokens": 27413,
+      "outputTokens": 454,
+      "totalTokens": 27867,
+      "estimatedCostUsd": 0.035401249999999995,
+      "elapsedMs": 4883
+    },
+    "finishedAt": "2026-09-10T12:46:35.929Z"
+  }
+}

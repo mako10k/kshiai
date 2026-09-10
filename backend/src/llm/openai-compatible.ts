@@ -113,6 +113,8 @@ import { newId } from "../id.js";
 import { MockLlmProvider } from "./mock.js";
 import { retryLlmProviderCall } from "./provider-retry.js";
 import { LlmApplicationResultError } from "./provider-errors.js";
+import { assertXaiResponseSchema, ProviderResponseSchemaError } from "./provider-response-schema.js";
+import { characterDefinitionResponseSchema } from "./character-definition-response-schema.js";
 import {
   executeProviderOperationAttempt,
   isProviderOperationAccountingError,
@@ -292,87 +294,14 @@ function schemaObject(value: unknown, label: string): OpenAiJsonSchema {
   return Object.assign(value, OpenAiJsonSchemaObjectSchema.parse(value));
 }
 
-function nestedSchema(
-  root: OpenAiJsonSchema,
-  ...path: string[]
-): OpenAiJsonSchema {
-  let current = root;
-  for (const segment of path) {
-    current = schemaObject(Reflect.get(current, segment), path.join("."));
-  }
-  return current;
-}
-
-function containsDefinitionReference(
-  value: unknown,
-  reference: string,
-): boolean {
-  if (!value || typeof value !== "object") return false;
-  if (Array.isArray(value)) {
-    return value.some((item) => containsDefinitionReference(item, reference));
-  }
-  if (Reflect.get(value, "$ref") === reference) return true;
-  return Object.keys(value).some((key) =>
-    containsDefinitionReference(Reflect.get(value, key), reference));
-}
-
 function characterDefinitionResponseFormat(): PerceptionPromptResponseFormat {
   const generated = zodResponseFormat(
     z.object({ definition: CharacterDefinitionV2Schema }).strict(),
     "character_definition_v2",
   );
-  const schema = schemaObject(
-    structuredClone(generated.json_schema.schema),
-    "root",
+  const schema = characterDefinitionResponseSchema(
+    generated.json_schema.schema, generated.json_schema.name, ["properties", "definition"],
   );
-  const definitions = nestedSchema(schema, "definitions");
-  const constraintProperties = nestedSchema(
-    schema,
-    "properties",
-    "definition",
-    "properties",
-    "capabilities",
-    "properties",
-    "basicAction",
-    "properties",
-    "mechanics",
-    "properties",
-    "constraints",
-    "properties",
-  );
-  const constraintFields = new Set([
-    "reach",
-    "requiresSight",
-    "mobility",
-    "requiresSpeech",
-    "requiresUsableHeldObject",
-  ]);
-  for (const name of Object.keys(definitions)) {
-    const direct = schemaObject(
-      Reflect.get(definitions, name),
-      `definitions.${name}`,
-    );
-    if (Reflect.get(direct, "$ref") !== `#/definitions/${name}`) continue;
-    const field = [...constraintFields].find((candidate) =>
-      name.endsWith(`_properties_${candidate}`));
-    if (!field) {
-      throw new Error(`Unsupported self-referenced response schema: ${name}`);
-    }
-    Reflect.set(
-      definitions,
-      name,
-      structuredClone(schemaObject(
-        Reflect.get(constraintProperties, field),
-        `constraints.${field}`,
-      )),
-    );
-  }
-  for (const name of Object.keys(definitions)) {
-    const definition = Reflect.get(definitions, name);
-    if (containsDefinitionReference(definition, `#/definitions/${name}`)) {
-      throw new Error(`Self-referenced response schema remains: ${name}`);
-    }
-  }
   return {
     type: "json_schema",
     json_schema: {
@@ -812,6 +741,7 @@ export class OpenAiCompatibleProvider implements LlmProvider {
   }
 
   private fallbackOrThrow<T>(error: unknown, fallback: () => T): T {
+    if (error instanceof ProviderResponseSchemaError) throw error;
     if (isProviderOperationAccountingError(error)) throw error;
     if (error instanceof LlmApplicationResultError) throw error;
     if (!this.fallbackOnError) throw error;
@@ -828,6 +758,9 @@ export class OpenAiCompatibleProvider implements LlmProvider {
     }
     if (opts?.onText) {
       return this.chatJsonStream(system, user, opts);
+    }
+    if (this.name === "xai" && opts?.responseFormat) {
+      assertXaiResponseSchema(opts.responseFormat.json_schema.schema);
     }
     const tier: LlmTier = opts?.tier ?? "engine";
     const model = this.modelFor(tier);

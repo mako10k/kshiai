@@ -1,0 +1,20 @@
+domain SemanticProbeV2Readiness:
+  description "Review corrected-run preparation and its explicit dependency impact."
+evidence E1:
+  "E-PROBEV2-001: prepare-proof.json and prepare-result.json under semantic-migration-grok-2026-09-10-v2 bind runv2 and promptv2, proof451cc1c5 snapshotd40eaef0. Readback verifies current source and built-runtime snapshot identical; offline6requests18events, network0, activatedfalse, currentGenerationUnchangedtrue. Bodies128099,125540,141457,125540,141457,125540 bytes, reservedUSD1.06134125."
+evidence E2:
+  "E-PROBEV2-002: npm test exit0,339shared402backend20frontend3deployment5release=769. New identity and transport scope11tests pass. Typecheck, build, jscpd, Lizard1.23.0 pass without changing thresholds; prior Vite chunk warning remains. All6retained response schemas and6target schemas pass shared local-cycle check and allprompt identities arev2."
+evidence E3:
+  "E-PROBEV2-003: secdat exact execute-command dry-run supplies required XAI_API_KEY from main-worktree secret layer with no missing keys; TLS is enabled; no live-start exists. No key value or actual provider authentication was retrieved."
+evidence E4:
+  "E-PROBEV2-004: fresh official xAI grok-4.3 docs confirm input1.25/output2.50USD per million tokens and reasoning none support. Run limits remain6requests,180000UTF8bytes each,4096output tokens,USD1.50 reservation cap,no retries/redirects/fallback/tools,90seconds per request. Current-generation and production exclusions remain."
+evidence E5:
+  "E-PROBEV2-005: pre-edit impact identifies19refs including2changed source files and continuation. Explicit individual review manifest classifies3changed,2compatible and14historical. Old v1 proof/result/HTTP400/acceptance remain byte-identical and consumed; source fixture contents unchanged. Historical prior correction report records768tests and no newrun as an earlier state, not currentv2 verification."
+premise U1:
+  "Live API acceptance, semantic preservation, natural repairs and billing remain unknown. One synthetic character and same-model stateless review do not prove general quality or independent truth. Byte reservations are conservative estimates not a billing guarantee. No exact-v2 paid execution approval yet."
+premise OPTIONS:
+  "Present the bounded new experiment now, defer until B6, or expand cases. The first retains the owner-requested early observation without added cases/cost; deferral delays discovery; expansion adds scope and is not required for initial API acceptance."
+decision C1 based_on E1, E2, E3, E4, U1, OPTIONS:
+  "C-PROBEV2-001 high confidence: new-run local preparation is complete, not live validation. R-PROBEV2-001 derives this only from E1-E4, while U1 remains explicit. Present complete Japanese revision1 for exactv2 proof, differences from consumedv1, risks, alternatives and execution limits. Paid request waits for exact candidate acceptance."
+decision A1 based_on C1, E5:
+  "A-PROBEV2-001 verification-only: record local readiness and Japanese review. For19explicitly reviewed refs, publish changed bytes or preserve historical bytes, update only mapped direct dependencies with explicit previous-old assertions and individual reasons. Register new descriptor,test,reasoning,proof,result,review. Do not claim historical execution used new code. Read back heads, immutable content, stale and fsck, then report approval boundary; no live request, production, B6, commit,push or shared-workday mutation."

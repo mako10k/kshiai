@@ -1,0 +1,154 @@
+[
+  {
+    "ref": "implementation/semantic-probe-fixture",
+    "source": "backend/src/scripts/semantic-migration-probe-fixture.ts",
+    "previousSeal": "c41d55ae5e770b32ffc9647d7cb9caf7f9909e10aad8d887f21847cae3937f81",
+    "previousContent": "a10e3b7cda1cce0a292c46575b19aa59f7220eee5300974f662f50779731b115",
+    "disposition": "changed",
+    "note": "合成キャラ本文は維持し、明示run/promptを渡せるようにする。既定v1は保持。"
+  },
+  {
+    "ref": "reasoning/semantic-probe-result-rca",
+    "source": "docs/evidence/semantic-migration-grok-2026-09-10-v1/result-rca.think",
+    "previousSeal": "1a96eeabd6a89688dac1d251fc23384f9a20908c17f79e60a8f9c480edaf68fd",
+    "previousContent": "d0ce0a23efa2edfbb3afdf1bf7710826e01f4ec230a0238e13a350b627ed3678",
+    "disposition": "historical",
+    "note": "旧実行直後のRCAと未実施候補を当時の記録として保持。是正結果は別資料。"
+  },
+  {
+    "ref": "evidence/semantic-probe-live-result",
+    "source": "docs/evidence/semantic-migration-grok-2026-09-10-v1/live-result.json",
+    "previousSeal": "1b4039e7f4648a226cbeed27ba78d66a3751e3f78330bf1256b485ef7263ba5a",
+    "previousContent": "fff48ab63ffdb8ab8df7927c9696b4857530a52d92c3e03ac52860a78344f688",
+    "disposition": "historical",
+    "note": "旧pending、1要求、usage不明、現在世代不変の事実を保持。"
+  },
+  {
+    "ref": "review/semantic-probe-v1",
+    "source": "docs/evidence/semantic-migration-grok-2026-09-10-v1/owner-review-ja.md",
+    "previousSeal": "362ce2c848a368fc25d957d54ee98ea72a226ecdd0b6348f73c04ed8ce2bb56d",
+    "previousContent": "8af66e093a28e2046001f1efe633aa4b498d79f74b39a718307ba138c08635e9",
+    "disposition": "historical",
+    "note": "旧revision1の提示条件を保持。v2は別の日本語条件全文で承認を求める。"
+  },
+  {
+    "ref": "acceptance/semantic-probe-v1-execution",
+    "source": "docs/evidence/semantic-migration-grok-2026-09-10-v1/execution-acceptance.think",
+    "previousSeal": "4de1e3db19e8e62bdca60ee89aaa29ed298950bee4ec2493628292951e95d746",
+    "previousContent": "b1da30548de63efd35ff37fe7c807c4648df43c98e26115c604648d09756bd50",
+    "disposition": "historical",
+    "note": "消費済みv1のみの承認を保持。v2への権限継承なし。"
+  },
+  {
+    "ref": "evidence/semantic-probe-result-ja",
+    "source": "docs/evidence/semantic-migration-grok-2026-09-10-v1/result-ja.md",
+    "previousSeal": "5758896b7cbe233305132292f94d02834a4183fd6f45c3ea1a36bd815bbb3eee",
+    "previousContent": "75f8fbfcd37ba5d85a5ade1f384c3496b71496195d014faef2a12ae7039a3886",
+    "disposition": "historical",
+    "note": "旧失敗と意味品質未評価の結論を保持。新版成功の証拠にしない。"
+  },
+  {
+    "ref": "evidence/semantic-probe-proof",
+    "source": "docs/evidence/semantic-migration-grok-2026-09-10-v1/prepare-proof.json",
+    "previousSeal": "7a22624897897f3c0db3abb3636d067af673602ad0f7c8ff24fc545f4c142bd2",
+    "previousContent": "ad02b25560fbb84b86ffb25d660fa4defb2f13369acd79af397c51895f9a53cc",
+    "disposition": "historical",
+    "note": "旧v1のa724ae39と502b5ea1の束縛を保持。v2の準備証跡にはしない。"
+  },
+  {
+    "ref": "evidence/semantic-probe-call-1-request",
+    "source": "docs/evidence/semantic-migration-grok-2026-09-10-v1/call-1-before.json",
+    "previousSeal": "7f2bfee1a039a2c241c48086def25597556bce6148cf018105ea4e42f3958c62",
+    "previousContent": "f289273cd2cb7a56fce0fa7396a5d484602d4027252b6c8c5348c420ca62d5f9",
+    "disposition": "historical",
+    "note": "実際に送信した旧再帰スキーマのbytesを保持。新版の要求ではない。"
+  },
+  {
+    "ref": "evidence/semantic-probe-owner-acceptance",
+    "source": "docs/evidence/semantic-migration-grok-2026-09-10-v1/acceptance-ja.md",
+    "previousSeal": "9b115e948b83e34eff8ffc909a1275f1405ab8f261d21ceccae9cbfaf9d3f8e7",
+    "previousContent": "b43e23652a632f08e6dbacc7123dea4f4ba31f781ebf2754bd2870da4ebbd2bd",
+    "disposition": "historical",
+    "note": "旧はいの対象はv1のみ。記録を変更せずv2承認に使用しない。"
+  },
+  {
+    "ref": "evidence/semantic-migration-continuation",
+    "source": "docs/evidence/semantic-migration-continuation-2026-09-10.md",
+    "previousSeal": "a0cbfa91767bf656c8456129c6eb27949e3960eb68f8067fa48890f6bad29564",
+    "previousContent": "9c2e03551f76e8f28caa7cece1016ef2ed467211ca6b2f324f4d00a935b2d346",
+    "disposition": "changed",
+    "note": "v2準備と承認待ちを追記。旧run消費、未確認の意味品質、B6未実装は保持。"
+  },
+  {
+    "ref": "reasoning/semantic-schema-local-verification",
+    "source": "docs/evidence/semantic-schema-local-verification-2026-09-10.think",
+    "previousSeal": "b88f5b21e4c94124843e9d6dd175e25df3c4e9d3faebb93bcecbdcf492780691",
+    "previousContent": "7b023a601b430ac38d234b95266a098b7204739ade8235e73e0e1378d7712a30",
+    "disposition": "historical",
+    "note": "前回768テスト等はその実装段階の検証記録。新run識別子を検証済みとはしない。"
+  },
+  {
+    "ref": "evidence/semantic-probe-offline-result",
+    "source": "docs/evidence/semantic-migration-grok-2026-09-10-v1/prepare-result.json",
+    "previousSeal": "bac514438bf0310f846a5bfcdbcf95d3e7800b30e4962f2d5b74b813c9dd3f4b",
+    "previousContent": "bf34925bae820bc8cc98281b7b70952ea9334c5e84b96771d2c9761dbf4a7a6d",
+    "disposition": "historical",
+    "note": "旧合成6要求18イベントを保持。新版・実モデルの検証と混同しない。"
+  },
+  {
+    "ref": "verification/character-migration-response-schema",
+    "source": "backend/src/llm/character-migration-response-schema.test.ts",
+    "previousSeal": "c58dac5764b9cd3238d68c9baa6ba5f2601b5c4cacf59b853c773e1ff68318f8",
+    "previousContent": "aca09081c222aece6146cb8093924d98a7da06bd1b844f4d93353760c0a4dc3f",
+    "disposition": "compatible",
+    "note": "不変の旧実送信を再現し、汎用JSON投影だけの差分を確認するテストは継続有効。"
+  },
+  {
+    "ref": "verification/semantic-probe-fixture",
+    "source": "backend/src/scripts/semantic-migration-probe-fixture.test.ts",
+    "previousSeal": "ca443e6fdf2c536cccb58dc2f6e398442b5cb6eb8922979689a256f8824a1cbb",
+    "previousContent": "57fce7dbe40c1f969f7f6ccba23d8fd6e125ae812a2dbeb75cae1e6bb69f9338",
+    "disposition": "compatible",
+    "note": "元のselectorなし/ありの合成キャラ検証はそのまま有効。新版identity検証は別テスト。"
+  },
+  {
+    "ref": "reasoning/semantic-probe-readiness",
+    "source": "docs/evidence/semantic-probe-readiness-2026-09-10.think",
+    "previousSeal": "d8aaf99b105734a623c3eb1b468e7756eb428640e54b53be5f48b2eea57da0c3",
+    "previousContent": "82da4d3125e84f2193352e0373909bfb8e01a9206031e6e5e86ccd7874289c76",
+    "disposition": "historical",
+    "note": "旧準備判断と既知制約照合の不足を当時の証拠として保持。新版の判断には再利用しない。"
+  },
+  {
+    "ref": "evidence/semantic-probe-live-start",
+    "source": "docs/evidence/semantic-migration-grok-2026-09-10-v1/live-start.json",
+    "previousSeal": "deaa35ca38fdc40b5898f1e5f1f0e30cdcd7b1fda9f656b75fd0eb98755dfc20",
+    "previousContent": "1de5b7758944eb1f2ab524e45683ac74f59364e2ecbce1e97a45022b66f01bf2",
+    "disposition": "historical",
+    "note": "旧排他開始記録は不変。旧runの再送不可を維持。"
+  },
+  {
+    "ref": "evidence/semantic-schema-root-correction",
+    "source": "docs/evidence/semantic-schema-root-correction-2026-09-10.md",
+    "previousSeal": "f40c85b8d1422adefe0bba63dcdf608c1fdb775afae6c6be39e752bdf3bfaf0f",
+    "previousContent": "a15d85f07a478514c64dbd07672e0b7c798957e009f851e658c98955c88d9582",
+    "disposition": "historical",
+    "note": "前回ローカル是正結果と未再送の境界を保持。今回の準備は新記録へ分離。"
+  },
+  {
+    "ref": "implementation/semantic-probe-runner",
+    "source": "backend/src/scripts/replay-semantic-migration.ts",
+    "previousSeal": "f444e0aa940a1261215df9ba889f1df21f45e88bc909c38c54cda8f7963696d8",
+    "previousContent": "b690f221c5d3b1f707ceae4c15c967dc486187d0e3ce994894889d16a00c3437",
+    "disposition": "changed",
+    "note": "新規v2識別子をoutput、attempt、proofへ一貫適用。旧証跡、予算、隔離、排他、完全一致検査を保持。"
+  },
+  {
+    "ref": "evidence/semantic-probe-call-1-response",
+    "source": "docs/evidence/semantic-migration-grok-2026-09-10-v1/call-1-response.json",
+    "previousSeal": "f7b37435296f05b7edd24e10022bd67c41a54c6a146b8b30a3bdf70d791174f1",
+    "previousContent": "a6effdbc77c348fa25a5dbdd6ecff31ec41d909dd985f87d6d622ef9642d90b3",
+    "disposition": "historical",
+    "note": "HTTP400のraw応答を保持。新runの応答にはしない。"
+  }
+]

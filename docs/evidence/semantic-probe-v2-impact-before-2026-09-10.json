@@ -1,0 +1,1750 @@
+{
+  "impacts": [
+    {
+      "ref": "implementation/semantic-probe-fixture",
+      "source": "c41d55ae5e770b32ffc9647d7cb9caf7f9909e10aad8d887f21847cae3937f81",
+      "impacts": [
+        {
+          "head": "1a96eeabd6a89688dac1d251fc23384f9a20908c17f79e60a8f9c480edaf68fd",
+          "refs": [
+            "reasoning/semantic-probe-result-rca"
+          ],
+          "paths": [
+            [
+              "1a96eeabd6a89688dac1d251fc23384f9a20908c17f79e60a8f9c480edaf68fd",
+              "1b4039e7f4648a226cbeed27ba78d66a3751e3f78330bf1256b485ef7263ba5a",
+              "f7b37435296f05b7edd24e10022bd67c41a54c6a146b8b30a3bdf70d791174f1",
+              "7f2bfee1a039a2c241c48086def25597556bce6148cf018105ea4e42f3958c62",
+              "deaa35ca38fdc40b5898f1e5f1f0e30cdcd7b1fda9f656b75fd0eb98755dfc20",
+              "7a22624897897f3c0db3abb3636d067af673602ad0f7c8ff24fc545f4c142bd2",
+              "f444e0aa940a1261215df9ba889f1df21f45e88bc909c38c54cda8f7963696d8",
+              "c41d55ae5e770b32ffc9647d7cb9caf7f9909e10aad8d887f21847cae3937f81"
+            ],
+            [
+              "1a96eeabd6a89688dac1d251fc23384f9a20908c17f79e60a8f9c480edaf68fd",
+              "1b4039e7f4648a226cbeed27ba78d66a3751e3f78330bf1256b485ef7263ba5a",
+              "f7b37435296f05b7edd24e10022bd67c41a54c6a146b8b30a3bdf70d791174f1",
+              "7f2bfee1a039a2c241c48086def25597556bce6148cf018105ea4e42f3958c62",
+              "deaa35ca38fdc40b5898f1e5f1f0e30cdcd7b1fda9f656b75fd0eb98755dfc20",
+              "4de1e3db19e8e62bdca60ee89aaa29ed298950bee4ec2493628292951e95d746",
+              "362ce2c848a368fc25d957d54ee98ea72a226ecdd0b6348f73c04ed8ce2bb56d",
+              "d8aaf99b105734a623c3eb1b468e7756eb428640e54b53be5f48b2eea57da0c3",
+              "ca443e6fdf2c536cccb58dc2f6e398442b5cb6eb8922979689a256f8824a1cbb",
+              "c41d55ae5e770b32ffc9647d7cb9caf7f9909e10aad8d887f21847cae3937f81"
+            ],
+            [
+              "1a96eeabd6a89688dac1d251fc23384f9a20908c17f79e60a8f9c480edaf68fd",
+              "1b4039e7f4648a226cbeed27ba78d66a3751e3f78330bf1256b485ef7263ba5a",
+              "f7b37435296f05b7edd24e10022bd67c41a54c6a146b8b30a3bdf70d791174f1",
+              "7f2bfee1a039a2c241c48086def25597556bce6148cf018105ea4e42f3958c62",
+              "deaa35ca38fdc40b5898f1e5f1f0e30cdcd7b1fda9f656b75fd0eb98755dfc20",
+              "4de1e3db19e8e62bdca60ee89aaa29ed298950bee4ec2493628292951e95d746",
+              "362ce2c848a368fc25d957d54ee98ea72a226ecdd0b6348f73c04ed8ce2bb56d",
+              "d8aaf99b105734a623c3eb1b468e7756eb428640e54b53be5f48b2eea57da0c3",
+              "bac514438bf0310f846a5bfcdbcf95d3e7800b30e4962f2d5b74b813c9dd3f4b",
+              "7a22624897897f3c0db3abb3636d067af673602ad0f7c8ff24fc545f4c142bd2",
+              "f444e0aa940a1261215df9ba889f1df21f45e88bc909c38c54cda8f7963696d8",
+              "c41d55ae5e770b32ffc9647d7cb9caf7f9909e10aad8d887f21847cae3937f81"
+            ]
+          ],
+          "truncated": false
+        },
+        {
+          "head": "1b4039e7f4648a226cbeed27ba78d66a3751e3f78330bf1256b485ef7263ba5a",
+          "refs": [
+            "evidence/semantic-probe-live-result"
+          ],
+          "paths": [
+            [
+              "1b4039e7f4648a226cbeed27ba78d66a3751e3f78330bf1256b485ef7263ba5a",
+              "f7b37435296f05b7edd24e10022bd67c41a54c6a146b8b30a3bdf70d791174f1",
+              "7f2bfee1a039a2c241c48086def25597556bce6148cf018105ea4e42f3958c62",
+              "deaa35ca38fdc40b5898f1e5f1f0e30cdcd7b1fda9f656b75fd0eb98755dfc20",
+              "7a22624897897f3c0db3abb3636d067af673602ad0f7c8ff24fc545f4c142bd2",
+              "f444e0aa940a1261215df9ba889f1df21f45e88bc909c38c54cda8f7963696d8",
+              "c41d55ae5e770b32ffc9647d7cb9caf7f9909e10aad8d887f21847cae3937f81"
+            ],
+            [
+              "1b4039e7f4648a226cbeed27ba78d66a3751e3f78330bf1256b485ef7263ba5a",
+              "f7b37435296f05b7edd24e10022bd67c41a54c6a146b8b30a3bdf70d791174f1",
+              "7f2bfee1a039a2c241c48086def25597556bce6148cf018105ea4e42f3958c62",
+              "deaa35ca38fdc40b5898f1e5f1f0e30cdcd7b1fda9f656b75fd0eb98755dfc20",
+              "4de1e3db19e8e62bdca60ee89aaa29ed298950bee4ec2493628292951e95d746",
+              "362ce2c848a368fc25d957d54ee98ea72a226ecdd0b6348f73c04ed8ce2bb56d",
+              "d8aaf99b105734a623c3eb1b468e7756eb428640e54b53be5f48b2eea57da0c3",
+              "ca443e6fdf2c536cccb58dc2f6e398442b5cb6eb8922979689a256f8824a1cbb",
+              "c41d55ae5e770b32ffc9647d7cb9caf7f9909e10aad8d887f21847cae3937f81"
+            ],
+            [
+              "1b4039e7f4648a226cbeed27ba78d66a3751e3f78330bf1256b485ef7263ba5a",
+              "f7b37435296f05b7edd24e10022bd67c41a54c6a146b8b30a3bdf70d791174f1",
+              "7f2bfee1a039a2c241c48086def25597556bce6148cf018105ea4e42f3958c62",
+              "deaa35ca38fdc40b5898f1e5f1f0e30cdcd7b1fda9f656b75fd0eb98755dfc20",
+              "4de1e3db19e8e62bdca60ee89aaa29ed298950bee4ec2493628292951e95d746",
+              "362ce2c848a368fc25d957d54ee98ea72a226ecdd0b6348f73c04ed8ce2bb56d",
+              "d8aaf99b105734a623c3eb1b468e7756eb428640e54b53be5f48b2eea57da0c3",
+              "bac514438bf0310f846a5bfcdbcf95d3e7800b30e4962f2d5b74b813c9dd3f4b",
+              "7a22624897897f3c0db3abb3636d067af673602ad0f7c8ff24fc545f4c142bd2",
+              "f444e0aa940a1261215df9ba889f1df21f45e88bc909c38c54cda8f7963696d8",
+              "c41d55ae5e770b32ffc9647d7cb9caf7f9909e10aad8d887f21847cae3937f81"
+            ]
+          ],
+          "truncated": false
+        },
+        {
+          "head": "362ce2c848a368fc25d957d54ee98ea72a226ecdd0b6348f73c04ed8ce2bb56d",
+          "refs": [
+            "review/semantic-probe-v1"
+          ],
+          "paths": [
+            [
+              "362ce2c848a368fc25d957d54ee98ea72a226ecdd0b6348f73c04ed8ce2bb56d",
+              "d8aaf99b105734a623c3eb1b468e7756eb428640e54b53be5f48b2eea57da0c3",
+              "ca443e6fdf2c536cccb58dc2f6e398442b5cb6eb8922979689a256f8824a1cbb",
+              "c41d55ae5e770b32ffc9647d7cb9caf7f9909e10aad8d887f21847cae3937f81"
+            ],
+            [
+              "362ce2c848a368fc25d957d54ee98ea72a226ecdd0b6348f73c04ed8ce2bb56d",
+              "d8aaf99b105734a623c3eb1b468e7756eb428640e54b53be5f48b2eea57da0c3",
+              "bac514438bf0310f846a5bfcdbcf95d3e7800b30e4962f2d5b74b813c9dd3f4b",
+              "7a22624897897f3c0db3abb3636d067af673602ad0f7c8ff24fc545f4c142bd2",
+              "f444e0aa940a1261215df9ba889f1df21f45e88bc909c38c54cda8f7963696d8",
+              "c41d55ae5e770b32ffc9647d7cb9caf7f9909e10aad8d887f21847cae3937f81"
+            ]
+          ],
+          "truncated": false
+        },
+        {
+          "head": "4de1e3db19e8e62bdca60ee89aaa29ed298950bee4ec2493628292951e95d746",
+          "refs": [
+            "acceptance/semantic-probe-v1-execution"
+          ],
+          "paths": [
+            [
+              "4de1e3db19e8e62bdca60ee89aaa29ed298950bee4ec2493628292951e95d746",
+              "362ce2c848a368fc25d957d54ee98ea72a226ecdd0b6348f73c04ed8ce2bb56d",
+              "d8aaf99b105734a623c3eb1b468e7756eb428640e54b53be5f48b2eea57da0c3",
+              "ca443e6fdf2c536cccb58dc2f6e398442b5cb6eb8922979689a256f8824a1cbb",
+              "c41d55ae5e770b32ffc9647d7cb9caf7f9909e10aad8d887f21847cae3937f81"
+            ],
+            [
+              "4de1e3db19e8e62bdca60ee89aaa29ed298950bee4ec2493628292951e95d746",
+              "362ce2c848a368fc25d957d54ee98ea72a226ecdd0b6348f73c04ed8ce2bb56d",
+              "d8aaf99b105734a623c3eb1b468e7756eb428640e54b53be5f48b2eea57da0c3",
+              "bac514438bf0310f846a5bfcdbcf95d3e7800b30e4962f2d5b74b813c9dd3f4b",
+              "7a22624897897f3c0db3abb3636d067af673602ad0f7c8ff24fc545f4c142bd2",
+              "f444e0aa940a1261215df9ba889f1df21f45e88bc909c38c54cda8f7963696d8",
+              "c41d55ae5e770b32ffc9647d7cb9caf7f9909e10aad8d887f21847cae3937f81"
+            ]
+          ],
+          "truncated": false
+        },
+        {
+          "head": "5758896b7cbe233305132292f94d02834a4183fd6f45c3ea1a36bd815bbb3eee",
+          "refs": [
+            "evidence/semantic-probe-result-ja"
+          ],
+          "paths": [
+            [
+              "5758896b7cbe233305132292f94d02834a4183fd6f45c3ea1a36bd815bbb3eee",
+              "1a96eeabd6a89688dac1d251fc23384f9a20908c17f79e60a8f9c480edaf68fd",
+              "1b4039e7f4648a226cbeed27ba78d66a3751e3f78330bf1256b485ef7263ba5a",
+              "f7b37435296f05b7edd24e10022bd67c41a54c6a146b8b30a3bdf70d791174f1",
+              "7f2bfee1a039a2c241c48086def25597556bce6148cf018105ea4e42f3958c62",
+              "deaa35ca38fdc40b5898f1e5f1f0e30cdcd7b1fda9f656b75fd0eb98755dfc20",
+              "7a22624897897f3c0db3abb3636d067af673602ad0f7c8ff24fc545f4c142bd2",
+              "f444e0aa940a1261215df9ba889f1df21f45e88bc909c38c54cda8f7963696d8",
+              "c41d55ae5e770b32ffc9647d7cb9caf7f9909e10aad8d887f21847cae3937f81"
+            ],
+            [
+              "5758896b7cbe233305132292f94d02834a4183fd6f45c3ea1a36bd815bbb3eee",
+              "1a96eeabd6a89688dac1d251fc23384f9a20908c17f79e60a8f9c480edaf68fd",
+              "1b4039e7f4648a226cbeed27ba78d66a3751e3f78330bf1256b485ef7263ba5a",
+              "f7b37435296f05b7edd24e10022bd67c41a54c6a146b8b30a3bdf70d791174f1",
+              "7f2bfee1a039a2c241c48086def25597556bce6148cf018105ea4e42f3958c62",
+              "deaa35ca38fdc40b5898f1e5f1f0e30cdcd7b1fda9f656b75fd0eb98755dfc20",
+              "4de1e3db19e8e62bdca60ee89aaa29ed298950bee4ec2493628292951e95d746",
+              "362ce2c848a368fc25d957d54ee98ea72a226ecdd0b6348f73c04ed8ce2bb56d",
+              "d8aaf99b105734a623c3eb1b468e7756eb428640e54b53be5f48b2eea57da0c3",
+              "ca443e6fdf2c536cccb58dc2f6e398442b5cb6eb8922979689a256f8824a1cbb",
+              "c41d55ae5e770b32ffc9647d7cb9caf7f9909e10aad8d887f21847cae3937f81"
+            ],
+            [
+              "5758896b7cbe233305132292f94d02834a4183fd6f45c3ea1a36bd815bbb3eee",
+              "1a96eeabd6a89688dac1d251fc23384f9a20908c17f79e60a8f9c480edaf68fd",
+              "1b4039e7f4648a226cbeed27ba78d66a3751e3f78330bf1256b485ef7263ba5a",
+              "f7b37435296f05b7edd24e10022bd67c41a54c6a146b8b30a3bdf70d791174f1",
+              "7f2bfee1a039a2c241c48086def25597556bce6148cf018105ea4e42f3958c62",
+              "deaa35ca38fdc40b5898f1e5f1f0e30cdcd7b1fda9f656b75fd0eb98755dfc20",
+              "4de1e3db19e8e62bdca60ee89aaa29ed298950bee4ec2493628292951e95d746",
+              "362ce2c848a368fc25d957d54ee98ea72a226ecdd0b6348f73c04ed8ce2bb56d",
+              "d8aaf99b105734a623c3eb1b468e7756eb428640e54b53be5f48b2eea57da0c3",
+              "bac514438bf0310f846a5bfcdbcf95d3e7800b30e4962f2d5b74b813c9dd3f4b",
+              "7a22624897897f3c0db3abb3636d067af673602ad0f7c8ff24fc545f4c142bd2",
+              "f444e0aa940a1261215df9ba889f1df21f45e88bc909c38c54cda8f7963696d8",
+              "c41d55ae5e770b32ffc9647d7cb9caf7f9909e10aad8d887f21847cae3937f81"
+            ]
+          ],
+          "truncated": false
+        },
+        {
+          "head": "7a22624897897f3c0db3abb3636d067af673602ad0f7c8ff24fc545f4c142bd2",
+          "refs": [
+            "evidence/semantic-probe-proof"
+          ],
+          "paths": [
+            [
+              "7a22624897897f3c0db3abb3636d067af673602ad0f7c8ff24fc545f4c142bd2",
+              "f444e0aa940a1261215df9ba889f1df21f45e88bc909c38c54cda8f7963696d8",
+              "c41d55ae5e770b32ffc9647d7cb9caf7f9909e10aad8d887f21847cae3937f81"
+            ]
+          ],
+          "truncated": false
+        },
+        {
+          "head": "7f2bfee1a039a2c241c48086def25597556bce6148cf018105ea4e42f3958c62",
+          "refs": [
+            "evidence/semantic-probe-call-1-request"
+          ],
+          "paths": [
+            [
+              "7f2bfee1a039a2c241c48086def25597556bce6148cf018105ea4e42f3958c62",
+              "deaa35ca38fdc40b5898f1e5f1f0e30cdcd7b1fda9f656b75fd0eb98755dfc20",
+              "7a22624897897f3c0db3abb3636d067af673602ad0f7c8ff24fc545f4c142bd2",
+              "f444e0aa940a1261215df9ba889f1df21f45e88bc909c38c54cda8f7963696d8",
+              "c41d55ae5e770b32ffc9647d7cb9caf7f9909e10aad8d887f21847cae3937f81"
+            ],
+            [
+              "7f2bfee1a039a2c241c48086def25597556bce6148cf018105ea4e42f3958c62",
+              "deaa35ca38fdc40b5898f1e5f1f0e30cdcd7b1fda9f656b75fd0eb98755dfc20",
+              "4de1e3db19e8e62bdca60ee89aaa29ed298950bee4ec2493628292951e95d746",
+              "362ce2c848a368fc25d957d54ee98ea72a226ecdd0b6348f73c04ed8ce2bb56d",
+              "d8aaf99b105734a623c3eb1b468e7756eb428640e54b53be5f48b2eea57da0c3",
+              "ca443e6fdf2c536cccb58dc2f6e398442b5cb6eb8922979689a256f8824a1cbb",
+              "c41d55ae5e770b32ffc9647d7cb9caf7f9909e10aad8d887f21847cae3937f81"
+            ],
+            [
+              "7f2bfee1a039a2c241c48086def25597556bce6148cf018105ea4e42f3958c62",
+              "deaa35ca38fdc40b5898f1e5f1f0e30cdcd7b1fda9f656b75fd0eb98755dfc20",
+              "4de1e3db19e8e62bdca60ee89aaa29ed298950bee4ec2493628292951e95d746",
+              "362ce2c848a368fc25d957d54ee98ea72a226ecdd0b6348f73c04ed8ce2bb56d",
+              "d8aaf99b105734a623c3eb1b468e7756eb428640e54b53be5f48b2eea57da0c3",
+              "bac514438bf0310f846a5bfcdbcf95d3e7800b30e4962f2d5b74b813c9dd3f4b",
+              "7a22624897897f3c0db3abb3636d067af673602ad0f7c8ff24fc545f4c142bd2",
+              "f444e0aa940a1261215df9ba889f1df21f45e88bc909c38c54cda8f7963696d8",
+              "c41d55ae5e770b32ffc9647d7cb9caf7f9909e10aad8d887f21847cae3937f81"
+            ]
+          ],
+          "truncated": false
+        },
+        {
+          "head": "9b115e948b83e34eff8ffc909a1275f1405ab8f261d21ceccae9cbfaf9d3f8e7",
+          "refs": [
+            "evidence/semantic-probe-owner-acceptance"
+          ],
+          "paths": [
+            [
+              "9b115e948b83e34eff8ffc909a1275f1405ab8f261d21ceccae9cbfaf9d3f8e7",
+              "4de1e3db19e8e62bdca60ee89aaa29ed298950bee4ec2493628292951e95d746",
+              "362ce2c848a368fc25d957d54ee98ea72a226ecdd0b6348f73c04ed8ce2bb56d",
+              "d8aaf99b105734a623c3eb1b468e7756eb428640e54b53be5f48b2eea57da0c3",
+              "ca443e6fdf2c536cccb58dc2f6e398442b5cb6eb8922979689a256f8824a1cbb",
+              "c41d55ae5e770b32ffc9647d7cb9caf7f9909e10aad8d887f21847cae3937f81"
+            ],
+            [
+              "9b115e948b83e34eff8ffc909a1275f1405ab8f261d21ceccae9cbfaf9d3f8e7",
+              "4de1e3db19e8e62bdca60ee89aaa29ed298950bee4ec2493628292951e95d746",
+              "362ce2c848a368fc25d957d54ee98ea72a226ecdd0b6348f73c04ed8ce2bb56d",
+              "d8aaf99b105734a623c3eb1b468e7756eb428640e54b53be5f48b2eea57da0c3",
+              "bac514438bf0310f846a5bfcdbcf95d3e7800b30e4962f2d5b74b813c9dd3f4b",
+              "7a22624897897f3c0db3abb3636d067af673602ad0f7c8ff24fc545f4c142bd2",
+              "f444e0aa940a1261215df9ba889f1df21f45e88bc909c38c54cda8f7963696d8",
+              "c41d55ae5e770b32ffc9647d7cb9caf7f9909e10aad8d887f21847cae3937f81"
+            ]
+          ],
+          "truncated": false
+        },
+        {
+          "head": "a0cbfa91767bf656c8456129c6eb27949e3960eb68f8067fa48890f6bad29564",
+          "refs": [
+            "evidence/semantic-migration-continuation"
+          ],
+          "paths": [
+            [
+              "a0cbfa91767bf656c8456129c6eb27949e3960eb68f8067fa48890f6bad29564",
+              "362ce2c848a368fc25d957d54ee98ea72a226ecdd0b6348f73c04ed8ce2bb56d",
+              "d8aaf99b105734a623c3eb1b468e7756eb428640e54b53be5f48b2eea57da0c3",
+              "ca443e6fdf2c536cccb58dc2f6e398442b5cb6eb8922979689a256f8824a1cbb",
+              "c41d55ae5e770b32ffc9647d7cb9caf7f9909e10aad8d887f21847cae3937f81"
+            ],
+            [
+              "a0cbfa91767bf656c8456129c6eb27949e3960eb68f8067fa48890f6bad29564",
+              "362ce2c848a368fc25d957d54ee98ea72a226ecdd0b6348f73c04ed8ce2bb56d",
+              "d8aaf99b105734a623c3eb1b468e7756eb428640e54b53be5f48b2eea57da0c3",
+              "bac514438bf0310f846a5bfcdbcf95d3e7800b30e4962f2d5b74b813c9dd3f4b",
+              "7a22624897897f3c0db3abb3636d067af673602ad0f7c8ff24fc545f4c142bd2",
+              "f444e0aa940a1261215df9ba889f1df21f45e88bc909c38c54cda8f7963696d8",
+              "c41d55ae5e770b32ffc9647d7cb9caf7f9909e10aad8d887f21847cae3937f81"
+            ],
+            [
+              "a0cbfa91767bf656c8456129c6eb27949e3960eb68f8067fa48890f6bad29564",
+              "f40c85b8d1422adefe0bba63dcdf608c1fdb775afae6c6be39e752bdf3bfaf0f",
+              "b88f5b21e4c94124843e9d6dd175e25df3c4e9d3faebb93bcecbdcf492780691",
+              "c58dac5764b9cd3238d68c9baa6ba5f2601b5c4cacf59b853c773e1ff68318f8",
+              "7f2bfee1a039a2c241c48086def25597556bce6148cf018105ea4e42f3958c62",
+              "deaa35ca38fdc40b5898f1e5f1f0e30cdcd7b1fda9f656b75fd0eb98755dfc20",
+              "7a22624897897f3c0db3abb3636d067af673602ad0f7c8ff24fc545f4c142bd2",
+              "f444e0aa940a1261215df9ba889f1df21f45e88bc909c38c54cda8f7963696d8",
+              "c41d55ae5e770b32ffc9647d7cb9caf7f9909e10aad8d887f21847cae3937f81"
+            ],
+            [
+              "a0cbfa91767bf656c8456129c6eb27949e3960eb68f8067fa48890f6bad29564",
+              "5758896b7cbe233305132292f94d02834a4183fd6f45c3ea1a36bd815bbb3eee",
+              "1a96eeabd6a89688dac1d251fc23384f9a20908c17f79e60a8f9c480edaf68fd",
+              "1b4039e7f4648a226cbeed27ba78d66a3751e3f78330bf1256b485ef7263ba5a",
+              "f7b37435296f05b7edd24e10022bd67c41a54c6a146b8b30a3bdf70d791174f1",
+              "7f2bfee1a039a2c241c48086def25597556bce6148cf018105ea4e42f3958c62",
+              "deaa35ca38fdc40b5898f1e5f1f0e30cdcd7b1fda9f656b75fd0eb98755dfc20",
+              "7a22624897897f3c0db3abb3636d067af673602ad0f7c8ff24fc545f4c142bd2",
+              "f444e0aa940a1261215df9ba889f1df21f45e88bc909c38c54cda8f7963696d8",
+              "c41d55ae5e770b32ffc9647d7cb9caf7f9909e10aad8d887f21847cae3937f81"
+            ],
+            [
+              "a0cbfa91767bf656c8456129c6eb27949e3960eb68f8067fa48890f6bad29564",
+              "f40c85b8d1422adefe0bba63dcdf608c1fdb775afae6c6be39e752bdf3bfaf0f",
+              "b88f5b21e4c94124843e9d6dd175e25df3c4e9d3faebb93bcecbdcf492780691",
+              "c58dac5764b9cd3238d68c9baa6ba5f2601b5c4cacf59b853c773e1ff68318f8",
+              "7f2bfee1a039a2c241c48086def25597556bce6148cf018105ea4e42f3958c62",
+              "deaa35ca38fdc40b5898f1e5f1f0e30cdcd7b1fda9f656b75fd0eb98755dfc20",
+              "4de1e3db19e8e62bdca60ee89aaa29ed298950bee4ec2493628292951e95d746",
+              "362ce2c848a368fc25d957d54ee98ea72a226ecdd0b6348f73c04ed8ce2bb56d",
+              "d8aaf99b105734a623c3eb1b468e7756eb428640e54b53be5f48b2eea57da0c3",
+              "ca443e6fdf2c536cccb58dc2f6e398442b5cb6eb8922979689a256f8824a1cbb",
+              "c41d55ae5e770b32ffc9647d7cb9caf7f9909e10aad8d887f21847cae3937f81"
+            ],
+            [
+              "a0cbfa91767bf656c8456129c6eb27949e3960eb68f8067fa48890f6bad29564",
+              "5758896b7cbe233305132292f94d02834a4183fd6f45c3ea1a36bd815bbb3eee",
+              "1a96eeabd6a89688dac1d251fc23384f9a20908c17f79e60a8f9c480edaf68fd",
+              "1b4039e7f4648a226cbeed27ba78d66a3751e3f78330bf1256b485ef7263ba5a",
+              "f7b37435296f05b7edd24e10022bd67c41a54c6a146b8b30a3bdf70d791174f1",
+              "7f2bfee1a039a2c241c48086def25597556bce6148cf018105ea4e42f3958c62",
+              "deaa35ca38fdc40b5898f1e5f1f0e30cdcd7b1fda9f656b75fd0eb98755dfc20",
+              "4de1e3db19e8e62bdca60ee89aaa29ed298950bee4ec2493628292951e95d746",
+              "362ce2c848a368fc25d957d54ee98ea72a226ecdd0b6348f73c04ed8ce2bb56d",
+              "d8aaf99b105734a623c3eb1b468e7756eb428640e54b53be5f48b2eea57da0c3",
+              "ca443e6fdf2c536cccb58dc2f6e398442b5cb6eb8922979689a256f8824a1cbb",
+              "c41d55ae5e770b32ffc9647d7cb9caf7f9909e10aad8d887f21847cae3937f81"
+            ],
+            [
+              "a0cbfa91767bf656c8456129c6eb27949e3960eb68f8067fa48890f6bad29564",
+              "f40c85b8d1422adefe0bba63dcdf608c1fdb775afae6c6be39e752bdf3bfaf0f",
+              "b88f5b21e4c94124843e9d6dd175e25df3c4e9d3faebb93bcecbdcf492780691",
+              "c58dac5764b9cd3238d68c9baa6ba5f2601b5c4cacf59b853c773e1ff68318f8",
+              "7f2bfee1a039a2c241c48086def25597556bce6148cf018105ea4e42f3958c62",
+              "deaa35ca38fdc40b5898f1e5f1f0e30cdcd7b1fda9f656b75fd0eb98755dfc20",
+              "4de1e3db19e8e62bdca60ee89aaa29ed298950bee4ec2493628292951e95d746",
+              "362ce2c848a368fc25d957d54ee98ea72a226ecdd0b6348f73c04ed8ce2bb56d",
+              "d8aaf99b105734a623c3eb1b468e7756eb428640e54b53be5f48b2eea57da0c3",
+              "bac514438bf0310f846a5bfcdbcf95d3e7800b30e4962f2d5b74b813c9dd3f4b",
+              "7a22624897897f3c0db3abb3636d067af673602ad0f7c8ff24fc545f4c142bd2",
+              "f444e0aa940a1261215df9ba889f1df21f45e88bc909c38c54cda8f7963696d8",
+              "c41d55ae5e770b32ffc9647d7cb9caf7f9909e10aad8d887f21847cae3937f81"
+            ],
+            [
+              "a0cbfa91767bf656c8456129c6eb27949e3960eb68f8067fa48890f6bad29564",
+              "5758896b7cbe233305132292f94d02834a4183fd6f45c3ea1a36bd815bbb3eee",
+              "1a96eeabd6a89688dac1d251fc23384f9a20908c17f79e60a8f9c480edaf68fd",
+              "1b4039e7f4648a226cbeed27ba78d66a3751e3f78330bf1256b485ef7263ba5a",
+              "f7b37435296f05b7edd24e10022bd67c41a54c6a146b8b30a3bdf70d791174f1",
+              "7f2bfee1a039a2c241c48086def25597556bce6148cf018105ea4e42f3958c62",
+              "deaa35ca38fdc40b5898f1e5f1f0e30cdcd7b1fda9f656b75fd0eb98755dfc20",
+              "4de1e3db19e8e62bdca60ee89aaa29ed298950bee4ec2493628292951e95d746",
+              "362ce2c848a368fc25d957d54ee98ea72a226ecdd0b6348f73c04ed8ce2bb56d",
+              "d8aaf99b105734a623c3eb1b468e7756eb428640e54b53be5f48b2eea57da0c3",
+              "bac514438bf0310f846a5bfcdbcf95d3e7800b30e4962f2d5b74b813c9dd3f4b",
+              "7a22624897897f3c0db3abb3636d067af673602ad0f7c8ff24fc545f4c142bd2",
+              "f444e0aa940a1261215df9ba889f1df21f45e88bc909c38c54cda8f7963696d8",
+              "c41d55ae5e770b32ffc9647d7cb9caf7f9909e10aad8d887f21847cae3937f81"
+            ]
+          ],
+          "truncated": false
+        },
+        {
+          "head": "b88f5b21e4c94124843e9d6dd175e25df3c4e9d3faebb93bcecbdcf492780691",
+          "refs": [
+            "reasoning/semantic-schema-local-verification"
+          ],
+          "paths": [
+            [
+              "b88f5b21e4c94124843e9d6dd175e25df3c4e9d3faebb93bcecbdcf492780691",
+              "c58dac5764b9cd3238d68c9baa6ba5f2601b5c4cacf59b853c773e1ff68318f8",
+              "7f2bfee1a039a2c241c48086def25597556bce6148cf018105ea4e42f3958c62",
+              "deaa35ca38fdc40b5898f1e5f1f0e30cdcd7b1fda9f656b75fd0eb98755dfc20",
+              "7a22624897897f3c0db3abb3636d067af673602ad0f7c8ff24fc545f4c142bd2",
+              "f444e0aa940a1261215df9ba889f1df21f45e88bc909c38c54cda8f7963696d8",
+              "c41d55ae5e770b32ffc9647d7cb9caf7f9909e10aad8d887f21847cae3937f81"
+            ],
+            [
+              "b88f5b21e4c94124843e9d6dd175e25df3c4e9d3faebb93bcecbdcf492780691",
+              "c58dac5764b9cd3238d68c9baa6ba5f2601b5c4cacf59b853c773e1ff68318f8",
+              "7f2bfee1a039a2c241c48086def25597556bce6148cf018105ea4e42f3958c62",
+              "deaa35ca38fdc40b5898f1e5f1f0e30cdcd7b1fda9f656b75fd0eb98755dfc20",
+              "4de1e3db19e8e62bdca60ee89aaa29ed298950bee4ec2493628292951e95d746",
+              "362ce2c848a368fc25d957d54ee98ea72a226ecdd0b6348f73c04ed8ce2bb56d",
+              "d8aaf99b105734a623c3eb1b468e7756eb428640e54b53be5f48b2eea57da0c3",
+              "ca443e6fdf2c536cccb58dc2f6e398442b5cb6eb8922979689a256f8824a1cbb",
+              "c41d55ae5e770b32ffc9647d7cb9caf7f9909e10aad8d887f21847cae3937f81"
+            ],
+            [
+              "b88f5b21e4c94124843e9d6dd175e25df3c4e9d3faebb93bcecbdcf492780691",
+              "c58dac5764b9cd3238d68c9baa6ba5f2601b5c4cacf59b853c773e1ff68318f8",
+              "7f2bfee1a039a2c241c48086def25597556bce6148cf018105ea4e42f3958c62",
+              "deaa35ca38fdc40b5898f1e5f1f0e30cdcd7b1fda9f656b75fd0eb98755dfc20",
+              "4de1e3db19e8e62bdca60ee89aaa29ed298950bee4ec2493628292951e95d746",
+              "362ce2c848a368fc25d957d54ee98ea72a226ecdd0b6348f73c04ed8ce2bb56d",
+              "d8aaf99b105734a623c3eb1b468e7756eb428640e54b53be5f48b2eea57da0c3",
+              "bac514438bf0310f846a5bfcdbcf95d3e7800b30e4962f2d5b74b813c9dd3f4b",
+              "7a22624897897f3c0db3abb3636d067af673602ad0f7c8ff24fc545f4c142bd2",
+              "f444e0aa940a1261215df9ba889f1df21f45e88bc909c38c54cda8f7963696d8",
+              "c41d55ae5e770b32ffc9647d7cb9caf7f9909e10aad8d887f21847cae3937f81"
+            ]
+          ],
+          "truncated": false
+        },
+        {
+          "head": "bac514438bf0310f846a5bfcdbcf95d3e7800b30e4962f2d5b74b813c9dd3f4b",
+          "refs": [
+            "evidence/semantic-probe-offline-result"
+          ],
+          "paths": [
+            [
+              "bac514438bf0310f846a5bfcdbcf95d3e7800b30e4962f2d5b74b813c9dd3f4b",
+              "7a22624897897f3c0db3abb3636d067af673602ad0f7c8ff24fc545f4c142bd2",
+              "f444e0aa940a1261215df9ba889f1df21f45e88bc909c38c54cda8f7963696d8",
+              "c41d55ae5e770b32ffc9647d7cb9caf7f9909e10aad8d887f21847cae3937f81"
+            ]
+          ],
+          "truncated": false
+        },
+        {
+          "head": "c58dac5764b9cd3238d68c9baa6ba5f2601b5c4cacf59b853c773e1ff68318f8",
+          "refs": [
+            "verification/character-migration-response-schema"
+          ],
+          "paths": [
+            [
+              "c58dac5764b9cd3238d68c9baa6ba5f2601b5c4cacf59b853c773e1ff68318f8",
+              "7f2bfee1a039a2c241c48086def25597556bce6148cf018105ea4e42f3958c62",
+              "deaa35ca38fdc40b5898f1e5f1f0e30cdcd7b1fda9f656b75fd0eb98755dfc20",
+              "7a22624897897f3c0db3abb3636d067af673602ad0f7c8ff24fc545f4c142bd2",
+              "f444e0aa940a1261215df9ba889f1df21f45e88bc909c38c54cda8f7963696d8",
+              "c41d55ae5e770b32ffc9647d7cb9caf7f9909e10aad8d887f21847cae3937f81"
+            ],
+            [
+              "c58dac5764b9cd3238d68c9baa6ba5f2601b5c4cacf59b853c773e1ff68318f8",
+              "7f2bfee1a039a2c241c48086def25597556bce6148cf018105ea4e42f3958c62",
+              "deaa35ca38fdc40b5898f1e5f1f0e30cdcd7b1fda9f656b75fd0eb98755dfc20",
+              "4de1e3db19e8e62bdca60ee89aaa29ed298950bee4ec2493628292951e95d746",
+              "362ce2c848a368fc25d957d54ee98ea72a226ecdd0b6348f73c04ed8ce2bb56d",
+              "d8aaf99b105734a623c3eb1b468e7756eb428640e54b53be5f48b2eea57da0c3",
+              "ca443e6fdf2c536cccb58dc2f6e398442b5cb6eb8922979689a256f8824a1cbb",
+              "c41d55ae5e770b32ffc9647d7cb9caf7f9909e10aad8d887f21847cae3937f81"
+            ],
+            [
+              "c58dac5764b9cd3238d68c9baa6ba5f2601b5c4cacf59b853c773e1ff68318f8",
+              "7f2bfee1a039a2c241c48086def25597556bce6148cf018105ea4e42f3958c62",
+              "deaa35ca38fdc40b5898f1e5f1f0e30cdcd7b1fda9f656b75fd0eb98755dfc20",
+              "4de1e3db19e8e62bdca60ee89aaa29ed298950bee4ec2493628292951e95d746",
+              "362ce2c848a368fc25d957d54ee98ea72a226ecdd0b6348f73c04ed8ce2bb56d",
+              "d8aaf99b105734a623c3eb1b468e7756eb428640e54b53be5f48b2eea57da0c3",
+              "bac514438bf0310f846a5bfcdbcf95d3e7800b30e4962f2d5b74b813c9dd3f4b",
+              "7a22624897897f3c0db3abb3636d067af673602ad0f7c8ff24fc545f4c142bd2",
+              "f444e0aa940a1261215df9ba889f1df21f45e88bc909c38c54cda8f7963696d8",
+              "c41d55ae5e770b32ffc9647d7cb9caf7f9909e10aad8d887f21847cae3937f81"
+            ]
+          ],
+          "truncated": false
+        },
+        {
+          "head": "ca443e6fdf2c536cccb58dc2f6e398442b5cb6eb8922979689a256f8824a1cbb",
+          "refs": [
+            "verification/semantic-probe-fixture"
+          ],
+          "paths": [
+            [
+              "ca443e6fdf2c536cccb58dc2f6e398442b5cb6eb8922979689a256f8824a1cbb",
+              "c41d55ae5e770b32ffc9647d7cb9caf7f9909e10aad8d887f21847cae3937f81"
+            ]
+          ],
+          "truncated": false
+        },
+        {
+          "head": "d8aaf99b105734a623c3eb1b468e7756eb428640e54b53be5f48b2eea57da0c3",
+          "refs": [
+            "reasoning/semantic-probe-readiness"
+          ],
+          "paths": [
+            [
+              "d8aaf99b105734a623c3eb1b468e7756eb428640e54b53be5f48b2eea57da0c3",
+              "ca443e6fdf2c536cccb58dc2f6e398442b5cb6eb8922979689a256f8824a1cbb",
+              "c41d55ae5e770b32ffc9647d7cb9caf7f9909e10aad8d887f21847cae3937f81"
+            ],
+            [
+              "d8aaf99b105734a623c3eb1b468e7756eb428640e54b53be5f48b2eea57da0c3",
+              "bac514438bf0310f846a5bfcdbcf95d3e7800b30e4962f2d5b74b813c9dd3f4b",
+              "7a22624897897f3c0db3abb3636d067af673602ad0f7c8ff24fc545f4c142bd2",
+              "f444e0aa940a1261215df9ba889f1df21f45e88bc909c38c54cda8f7963696d8",
+              "c41d55ae5e770b32ffc9647d7cb9caf7f9909e10aad8d887f21847cae3937f81"
+            ]
+          ],
+          "truncated": false
+        },
+        {
+          "head": "deaa35ca38fdc40b5898f1e5f1f0e30cdcd7b1fda9f656b75fd0eb98755dfc20",
+          "refs": [
+            "evidence/semantic-probe-live-start"
+          ],
+          "paths": [
+            [
+              "deaa35ca38fdc40b5898f1e5f1f0e30cdcd7b1fda9f656b75fd0eb98755dfc20",
+              "7a22624897897f3c0db3abb3636d067af673602ad0f7c8ff24fc545f4c142bd2",
+              "f444e0aa940a1261215df9ba889f1df21f45e88bc909c38c54cda8f7963696d8",
+              "c41d55ae5e770b32ffc9647d7cb9caf7f9909e10aad8d887f21847cae3937f81"
+            ],
+            [
+              "deaa35ca38fdc40b5898f1e5f1f0e30cdcd7b1fda9f656b75fd0eb98755dfc20",
+              "4de1e3db19e8e62bdca60ee89aaa29ed298950bee4ec2493628292951e95d746",
+              "362ce2c848a368fc25d957d54ee98ea72a226ecdd0b6348f73c04ed8ce2bb56d",
+              "d8aaf99b105734a623c3eb1b468e7756eb428640e54b53be5f48b2eea57da0c3",
+              "ca443e6fdf2c536cccb58dc2f6e398442b5cb6eb8922979689a256f8824a1cbb",
+              "c41d55ae5e770b32ffc9647d7cb9caf7f9909e10aad8d887f21847cae3937f81"
+            ],
+            [
+              "deaa35ca38fdc40b5898f1e5f1f0e30cdcd7b1fda9f656b75fd0eb98755dfc20",
+              "4de1e3db19e8e62bdca60ee89aaa29ed298950bee4ec2493628292951e95d746",
+              "362ce2c848a368fc25d957d54ee98ea72a226ecdd0b6348f73c04ed8ce2bb56d",
+              "d8aaf99b105734a623c3eb1b468e7756eb428640e54b53be5f48b2eea57da0c3",
+              "bac514438bf0310f846a5bfcdbcf95d3e7800b30e4962f2d5b74b813c9dd3f4b",
+              "7a22624897897f3c0db3abb3636d067af673602ad0f7c8ff24fc545f4c142bd2",
+              "f444e0aa940a1261215df9ba889f1df21f45e88bc909c38c54cda8f7963696d8",
+              "c41d55ae5e770b32ffc9647d7cb9caf7f9909e10aad8d887f21847cae3937f81"
+            ]
+          ],
+          "truncated": false
+        },
+        {
+          "head": "f40c85b8d1422adefe0bba63dcdf608c1fdb775afae6c6be39e752bdf3bfaf0f",
+          "refs": [
+            "evidence/semantic-schema-root-correction"
+          ],
+          "paths": [
+            [
+              "f40c85b8d1422adefe0bba63dcdf608c1fdb775afae6c6be39e752bdf3bfaf0f",
+              "b88f5b21e4c94124843e9d6dd175e25df3c4e9d3faebb93bcecbdcf492780691",
+              "c58dac5764b9cd3238d68c9baa6ba5f2601b5c4cacf59b853c773e1ff68318f8",
+              "7f2bfee1a039a2c241c48086def25597556bce6148cf018105ea4e42f3958c62",
+              "deaa35ca38fdc40b5898f1e5f1f0e30cdcd7b1fda9f656b75fd0eb98755dfc20",
+              "7a22624897897f3c0db3abb3636d067af673602ad0f7c8ff24fc545f4c142bd2",
+              "f444e0aa940a1261215df9ba889f1df21f45e88bc909c38c54cda8f7963696d8",
+              "c41d55ae5e770b32ffc9647d7cb9caf7f9909e10aad8d887f21847cae3937f81"
+            ],
+            [
+              "f40c85b8d1422adefe0bba63dcdf608c1fdb775afae6c6be39e752bdf3bfaf0f",
+              "b88f5b21e4c94124843e9d6dd175e25df3c4e9d3faebb93bcecbdcf492780691",
+              "c58dac5764b9cd3238d68c9baa6ba5f2601b5c4cacf59b853c773e1ff68318f8",
+              "7f2bfee1a039a2c241c48086def25597556bce6148cf018105ea4e42f3958c62",
+              "deaa35ca38fdc40b5898f1e5f1f0e30cdcd7b1fda9f656b75fd0eb98755dfc20",
+              "4de1e3db19e8e62bdca60ee89aaa29ed298950bee4ec2493628292951e95d746",
+              "362ce2c848a368fc25d957d54ee98ea72a226ecdd0b6348f73c04ed8ce2bb56d",
+              "d8aaf99b105734a623c3eb1b468e7756eb428640e54b53be5f48b2eea57da0c3",
+              "ca443e6fdf2c536cccb58dc2f6e398442b5cb6eb8922979689a256f8824a1cbb",
+              "c41d55ae5e770b32ffc9647d7cb9caf7f9909e10aad8d887f21847cae3937f81"
+            ],
+            [
+              "f40c85b8d1422adefe0bba63dcdf608c1fdb775afae6c6be39e752bdf3bfaf0f",
+              "b88f5b21e4c94124843e9d6dd175e25df3c4e9d3faebb93bcecbdcf492780691",
+              "c58dac5764b9cd3238d68c9baa6ba5f2601b5c4cacf59b853c773e1ff68318f8",
+              "7f2bfee1a039a2c241c48086def25597556bce6148cf018105ea4e42f3958c62",
+              "deaa35ca38fdc40b5898f1e5f1f0e30cdcd7b1fda9f656b75fd0eb98755dfc20",
+              "4de1e3db19e8e62bdca60ee89aaa29ed298950bee4ec2493628292951e95d746",
+              "362ce2c848a368fc25d957d54ee98ea72a226ecdd0b6348f73c04ed8ce2bb56d",
+              "d8aaf99b105734a623c3eb1b468e7756eb428640e54b53be5f48b2eea57da0c3",
+              "bac514438bf0310f846a5bfcdbcf95d3e7800b30e4962f2d5b74b813c9dd3f4b",
+              "7a22624897897f3c0db3abb3636d067af673602ad0f7c8ff24fc545f4c142bd2",
+              "f444e0aa940a1261215df9ba889f1df21f45e88bc909c38c54cda8f7963696d8",
+              "c41d55ae5e770b32ffc9647d7cb9caf7f9909e10aad8d887f21847cae3937f81"
+            ]
+          ],
+          "truncated": false
+        },
+        {
+          "head": "f444e0aa940a1261215df9ba889f1df21f45e88bc909c38c54cda8f7963696d8",
+          "refs": [
+            "implementation/semantic-probe-runner"
+          ],
+          "paths": [
+            [
+              "f444e0aa940a1261215df9ba889f1df21f45e88bc909c38c54cda8f7963696d8",
+              "c41d55ae5e770b32ffc9647d7cb9caf7f9909e10aad8d887f21847cae3937f81"
+            ]
+          ],
+          "truncated": false
+        },
+        {
+          "head": "f7b37435296f05b7edd24e10022bd67c41a54c6a146b8b30a3bdf70d791174f1",
+          "refs": [
+            "evidence/semantic-probe-call-1-response"
+          ],
+          "paths": [
+            [
+              "f7b37435296f05b7edd24e10022bd67c41a54c6a146b8b30a3bdf70d791174f1",
+              "7f2bfee1a039a2c241c48086def25597556bce6148cf018105ea4e42f3958c62",
+              "deaa35ca38fdc40b5898f1e5f1f0e30cdcd7b1fda9f656b75fd0eb98755dfc20",
+              "7a22624897897f3c0db3abb3636d067af673602ad0f7c8ff24fc545f4c142bd2",
+              "f444e0aa940a1261215df9ba889f1df21f45e88bc909c38c54cda8f7963696d8",
+              "c41d55ae5e770b32ffc9647d7cb9caf7f9909e10aad8d887f21847cae3937f81"
+            ],
+            [
+              "f7b37435296f05b7edd24e10022bd67c41a54c6a146b8b30a3bdf70d791174f1",
+              "7f2bfee1a039a2c241c48086def25597556bce6148cf018105ea4e42f3958c62",
+              "deaa35ca38fdc40b5898f1e5f1f0e30cdcd7b1fda9f656b75fd0eb98755dfc20",
+              "4de1e3db19e8e62bdca60ee89aaa29ed298950bee4ec2493628292951e95d746",
+              "362ce2c848a368fc25d957d54ee98ea72a226ecdd0b6348f73c04ed8ce2bb56d",
+              "d8aaf99b105734a623c3eb1b468e7756eb428640e54b53be5f48b2eea57da0c3",
+              "ca443e6fdf2c536cccb58dc2f6e398442b5cb6eb8922979689a256f8824a1cbb",
+              "c41d55ae5e770b32ffc9647d7cb9caf7f9909e10aad8d887f21847cae3937f81"
+            ],
+            [
+              "f7b37435296f05b7edd24e10022bd67c41a54c6a146b8b30a3bdf70d791174f1",
+              "7f2bfee1a039a2c241c48086def25597556bce6148cf018105ea4e42f3958c62",
+              "deaa35ca38fdc40b5898f1e5f1f0e30cdcd7b1fda9f656b75fd0eb98755dfc20",
+              "4de1e3db19e8e62bdca60ee89aaa29ed298950bee4ec2493628292951e95d746",
+              "362ce2c848a368fc25d957d54ee98ea72a226ecdd0b6348f73c04ed8ce2bb56d",
+              "d8aaf99b105734a623c3eb1b468e7756eb428640e54b53be5f48b2eea57da0c3",
+              "bac514438bf0310f846a5bfcdbcf95d3e7800b30e4962f2d5b74b813c9dd3f4b",
+              "7a22624897897f3c0db3abb3636d067af673602ad0f7c8ff24fc545f4c142bd2",
+              "f444e0aa940a1261215df9ba889f1df21f45e88bc909c38c54cda8f7963696d8",
+              "c41d55ae5e770b32ffc9647d7cb9caf7f9909e10aad8d887f21847cae3937f81"
+            ]
+          ],
+          "truncated": false
+        }
+      ]
+    },
+    {
+      "ref": "implementation/semantic-probe-runner",
+      "source": "f444e0aa940a1261215df9ba889f1df21f45e88bc909c38c54cda8f7963696d8",
+      "impacts": [
+        {
+          "head": "1a96eeabd6a89688dac1d251fc23384f9a20908c17f79e60a8f9c480edaf68fd",
+          "refs": [
+            "reasoning/semantic-probe-result-rca"
+          ],
+          "paths": [
+            [
+              "1a96eeabd6a89688dac1d251fc23384f9a20908c17f79e60a8f9c480edaf68fd",
+              "1b4039e7f4648a226cbeed27ba78d66a3751e3f78330bf1256b485ef7263ba5a",
+              "f7b37435296f05b7edd24e10022bd67c41a54c6a146b8b30a3bdf70d791174f1",
+              "7f2bfee1a039a2c241c48086def25597556bce6148cf018105ea4e42f3958c62",
+              "deaa35ca38fdc40b5898f1e5f1f0e30cdcd7b1fda9f656b75fd0eb98755dfc20",
+              "7a22624897897f3c0db3abb3636d067af673602ad0f7c8ff24fc545f4c142bd2",
+              "f444e0aa940a1261215df9ba889f1df21f45e88bc909c38c54cda8f7963696d8"
+            ],
+            [
+              "1a96eeabd6a89688dac1d251fc23384f9a20908c17f79e60a8f9c480edaf68fd",
+              "1b4039e7f4648a226cbeed27ba78d66a3751e3f78330bf1256b485ef7263ba5a",
+              "f7b37435296f05b7edd24e10022bd67c41a54c6a146b8b30a3bdf70d791174f1",
+              "7f2bfee1a039a2c241c48086def25597556bce6148cf018105ea4e42f3958c62",
+              "deaa35ca38fdc40b5898f1e5f1f0e30cdcd7b1fda9f656b75fd0eb98755dfc20",
+              "4de1e3db19e8e62bdca60ee89aaa29ed298950bee4ec2493628292951e95d746",
+              "362ce2c848a368fc25d957d54ee98ea72a226ecdd0b6348f73c04ed8ce2bb56d",
+              "d8aaf99b105734a623c3eb1b468e7756eb428640e54b53be5f48b2eea57da0c3",
+              "bac514438bf0310f846a5bfcdbcf95d3e7800b30e4962f2d5b74b813c9dd3f4b",
+              "7a22624897897f3c0db3abb3636d067af673602ad0f7c8ff24fc545f4c142bd2",
+              "f444e0aa940a1261215df9ba889f1df21f45e88bc909c38c54cda8f7963696d8"
+            ]
+          ],
+          "truncated": false
+        },
+        {
+          "head": "1b4039e7f4648a226cbeed27ba78d66a3751e3f78330bf1256b485ef7263ba5a",
+          "refs": [
+            "evidence/semantic-probe-live-result"
+          ],
+          "paths": [
+            [
+              "1b4039e7f4648a226cbeed27ba78d66a3751e3f78330bf1256b485ef7263ba5a",
+              "f7b37435296f05b7edd24e10022bd67c41a54c6a146b8b30a3bdf70d791174f1",
+              "7f2bfee1a039a2c241c48086def25597556bce6148cf018105ea4e42f3958c62",
+              "deaa35ca38fdc40b5898f1e5f1f0e30cdcd7b1fda9f656b75fd0eb98755dfc20",
+              "7a22624897897f3c0db3abb3636d067af673602ad0f7c8ff24fc545f4c142bd2",
+              "f444e0aa940a1261215df9ba889f1df21f45e88bc909c38c54cda8f7963696d8"
+            ],
+            [
+              "1b4039e7f4648a226cbeed27ba78d66a3751e3f78330bf1256b485ef7263ba5a",
+              "f7b37435296f05b7edd24e10022bd67c41a54c6a146b8b30a3bdf70d791174f1",
+              "7f2bfee1a039a2c241c48086def25597556bce6148cf018105ea4e42f3958c62",
+              "deaa35ca38fdc40b5898f1e5f1f0e30cdcd7b1fda9f656b75fd0eb98755dfc20",
+              "4de1e3db19e8e62bdca60ee89aaa29ed298950bee4ec2493628292951e95d746",
+              "362ce2c848a368fc25d957d54ee98ea72a226ecdd0b6348f73c04ed8ce2bb56d",
+              "d8aaf99b105734a623c3eb1b468e7756eb428640e54b53be5f48b2eea57da0c3",
+              "bac514438bf0310f846a5bfcdbcf95d3e7800b30e4962f2d5b74b813c9dd3f4b",
+              "7a22624897897f3c0db3abb3636d067af673602ad0f7c8ff24fc545f4c142bd2",
+              "f444e0aa940a1261215df9ba889f1df21f45e88bc909c38c54cda8f7963696d8"
+            ]
+          ],
+          "truncated": false
+        },
+        {
+          "head": "362ce2c848a368fc25d957d54ee98ea72a226ecdd0b6348f73c04ed8ce2bb56d",
+          "refs": [
+            "review/semantic-probe-v1"
+          ],
+          "paths": [
+            [
+              "362ce2c848a368fc25d957d54ee98ea72a226ecdd0b6348f73c04ed8ce2bb56d",
+              "d8aaf99b105734a623c3eb1b468e7756eb428640e54b53be5f48b2eea57da0c3",
+              "bac514438bf0310f846a5bfcdbcf95d3e7800b30e4962f2d5b74b813c9dd3f4b",
+              "7a22624897897f3c0db3abb3636d067af673602ad0f7c8ff24fc545f4c142bd2",
+              "f444e0aa940a1261215df9ba889f1df21f45e88bc909c38c54cda8f7963696d8"
+            ]
+          ],
+          "truncated": false
+        },
+        {
+          "head": "4de1e3db19e8e62bdca60ee89aaa29ed298950bee4ec2493628292951e95d746",
+          "refs": [
+            "acceptance/semantic-probe-v1-execution"
+          ],
+          "paths": [
+            [
+              "4de1e3db19e8e62bdca60ee89aaa29ed298950bee4ec2493628292951e95d746",
+              "362ce2c848a368fc25d957d54ee98ea72a226ecdd0b6348f73c04ed8ce2bb56d",
+              "d8aaf99b105734a623c3eb1b468e7756eb428640e54b53be5f48b2eea57da0c3",
+              "bac514438bf0310f846a5bfcdbcf95d3e7800b30e4962f2d5b74b813c9dd3f4b",
+              "7a22624897897f3c0db3abb3636d067af673602ad0f7c8ff24fc545f4c142bd2",
+              "f444e0aa940a1261215df9ba889f1df21f45e88bc909c38c54cda8f7963696d8"
+            ]
+          ],
+          "truncated": false
+        },
+        {
+          "head": "5758896b7cbe233305132292f94d02834a4183fd6f45c3ea1a36bd815bbb3eee",
+          "refs": [
+            "evidence/semantic-probe-result-ja"
+          ],
+          "paths": [
+            [
+              "5758896b7cbe233305132292f94d02834a4183fd6f45c3ea1a36bd815bbb3eee",
+              "1a96eeabd6a89688dac1d251fc23384f9a20908c17f79e60a8f9c480edaf68fd",
+              "1b4039e7f4648a226cbeed27ba78d66a3751e3f78330bf1256b485ef7263ba5a",
+              "f7b37435296f05b7edd24e10022bd67c41a54c6a146b8b30a3bdf70d791174f1",
+              "7f2bfee1a039a2c241c48086def25597556bce6148cf018105ea4e42f3958c62",
+              "deaa35ca38fdc40b5898f1e5f1f0e30cdcd7b1fda9f656b75fd0eb98755dfc20",
+              "7a22624897897f3c0db3abb3636d067af673602ad0f7c8ff24fc545f4c142bd2",
+              "f444e0aa940a1261215df9ba889f1df21f45e88bc909c38c54cda8f7963696d8"
+            ],
+            [
+              "5758896b7cbe233305132292f94d02834a4183fd6f45c3ea1a36bd815bbb3eee",
+              "1a96eeabd6a89688dac1d251fc23384f9a20908c17f79e60a8f9c480edaf68fd",
+              "1b4039e7f4648a226cbeed27ba78d66a3751e3f78330bf1256b485ef7263ba5a",
+              "f7b37435296f05b7edd24e10022bd67c41a54c6a146b8b30a3bdf70d791174f1",
+              "7f2bfee1a039a2c241c48086def25597556bce6148cf018105ea4e42f3958c62",
+              "deaa35ca38fdc40b5898f1e5f1f0e30cdcd7b1fda9f656b75fd0eb98755dfc20",
+              "4de1e3db19e8e62bdca60ee89aaa29ed298950bee4ec2493628292951e95d746",
+              "362ce2c848a368fc25d957d54ee98ea72a226ecdd0b6348f73c04ed8ce2bb56d",
+              "d8aaf99b105734a623c3eb1b468e7756eb428640e54b53be5f48b2eea57da0c3",
+              "bac514438bf0310f846a5bfcdbcf95d3e7800b30e4962f2d5b74b813c9dd3f4b",
+              "7a22624897897f3c0db3abb3636d067af673602ad0f7c8ff24fc545f4c142bd2",
+              "f444e0aa940a1261215df9ba889f1df21f45e88bc909c38c54cda8f7963696d8"
+            ]
+          ],
+          "truncated": false
+        },
+        {
+          "head": "7a22624897897f3c0db3abb3636d067af673602ad0f7c8ff24fc545f4c142bd2",
+          "refs": [
+            "evidence/semantic-probe-proof"
+          ],
+          "paths": [
+            [
+              "7a22624897897f3c0db3abb3636d067af673602ad0f7c8ff24fc545f4c142bd2",
+              "f444e0aa940a1261215df9ba889f1df21f45e88bc909c38c54cda8f7963696d8"
+            ]
+          ],
+          "truncated": false
+        },
+        {
+          "head": "7f2bfee1a039a2c241c48086def25597556bce6148cf018105ea4e42f3958c62",
+          "refs": [
+            "evidence/semantic-probe-call-1-request"
+          ],
+          "paths": [
+            [
+              "7f2bfee1a039a2c241c48086def25597556bce6148cf018105ea4e42f3958c62",
+              "deaa35ca38fdc40b5898f1e5f1f0e30cdcd7b1fda9f656b75fd0eb98755dfc20",
+              "7a22624897897f3c0db3abb3636d067af673602ad0f7c8ff24fc545f4c142bd2",
+              "f444e0aa940a1261215df9ba889f1df21f45e88bc909c38c54cda8f7963696d8"
+            ],
+            [
+              "7f2bfee1a039a2c241c48086def25597556bce6148cf018105ea4e42f3958c62",
+              "deaa35ca38fdc40b5898f1e5f1f0e30cdcd7b1fda9f656b75fd0eb98755dfc20",
+              "4de1e3db19e8e62bdca60ee89aaa29ed298950bee4ec2493628292951e95d746",
+              "362ce2c848a368fc25d957d54ee98ea72a226ecdd0b6348f73c04ed8ce2bb56d",
+              "d8aaf99b105734a623c3eb1b468e7756eb428640e54b53be5f48b2eea57da0c3",
+              "bac514438bf0310f846a5bfcdbcf95d3e7800b30e4962f2d5b74b813c9dd3f4b",
+              "7a22624897897f3c0db3abb3636d067af673602ad0f7c8ff24fc545f4c142bd2",
+              "f444e0aa940a1261215df9ba889f1df21f45e88bc909c38c54cda8f7963696d8"
+            ]
+          ],
+          "truncated": false
+        },
+        {
+          "head": "9b115e948b83e34eff8ffc909a1275f1405ab8f261d21ceccae9cbfaf9d3f8e7",
+          "refs": [
+            "evidence/semantic-probe-owner-acceptance"
+          ],
+          "paths": [
+            [
+              "9b115e948b83e34eff8ffc909a1275f1405ab8f261d21ceccae9cbfaf9d3f8e7",
+              "4de1e3db19e8e62bdca60ee89aaa29ed298950bee4ec2493628292951e95d746",
+              "362ce2c848a368fc25d957d54ee98ea72a226ecdd0b6348f73c04ed8ce2bb56d",
+              "d8aaf99b105734a623c3eb1b468e7756eb428640e54b53be5f48b2eea57da0c3",
+              "bac514438bf0310f846a5bfcdbcf95d3e7800b30e4962f2d5b74b813c9dd3f4b",
+              "7a22624897897f3c0db3abb3636d067af673602ad0f7c8ff24fc545f4c142bd2",
+              "f444e0aa940a1261215df9ba889f1df21f45e88bc909c38c54cda8f7963696d8"
+            ]
+          ],
+          "truncated": false
+        },
+        {
+          "head": "a0cbfa91767bf656c8456129c6eb27949e3960eb68f8067fa48890f6bad29564",
+          "refs": [
+            "evidence/semantic-migration-continuation"
+          ],
+          "paths": [
+            [
+              "a0cbfa91767bf656c8456129c6eb27949e3960eb68f8067fa48890f6bad29564",
+              "362ce2c848a368fc25d957d54ee98ea72a226ecdd0b6348f73c04ed8ce2bb56d",
+              "d8aaf99b105734a623c3eb1b468e7756eb428640e54b53be5f48b2eea57da0c3",
+              "bac514438bf0310f846a5bfcdbcf95d3e7800b30e4962f2d5b74b813c9dd3f4b",
+              "7a22624897897f3c0db3abb3636d067af673602ad0f7c8ff24fc545f4c142bd2",
+              "f444e0aa940a1261215df9ba889f1df21f45e88bc909c38c54cda8f7963696d8"
+            ],
+            [
+              "a0cbfa91767bf656c8456129c6eb27949e3960eb68f8067fa48890f6bad29564",
+              "f40c85b8d1422adefe0bba63dcdf608c1fdb775afae6c6be39e752bdf3bfaf0f",
+              "b88f5b21e4c94124843e9d6dd175e25df3c4e9d3faebb93bcecbdcf492780691",
+              "c58dac5764b9cd3238d68c9baa6ba5f2601b5c4cacf59b853c773e1ff68318f8",
+              "7f2bfee1a039a2c241c48086def25597556bce6148cf018105ea4e42f3958c62",
+              "deaa35ca38fdc40b5898f1e5f1f0e30cdcd7b1fda9f656b75fd0eb98755dfc20",
+              "7a22624897897f3c0db3abb3636d067af673602ad0f7c8ff24fc545f4c142bd2",
+              "f444e0aa940a1261215df9ba889f1df21f45e88bc909c38c54cda8f7963696d8"
+            ],
+            [
+              "a0cbfa91767bf656c8456129c6eb27949e3960eb68f8067fa48890f6bad29564",
+              "5758896b7cbe233305132292f94d02834a4183fd6f45c3ea1a36bd815bbb3eee",
+              "1a96eeabd6a89688dac1d251fc23384f9a20908c17f79e60a8f9c480edaf68fd",
+              "1b4039e7f4648a226cbeed27ba78d66a3751e3f78330bf1256b485ef7263ba5a",
+              "f7b37435296f05b7edd24e10022bd67c41a54c6a146b8b30a3bdf70d791174f1",
+              "7f2bfee1a039a2c241c48086def25597556bce6148cf018105ea4e42f3958c62",
+              "deaa35ca38fdc40b5898f1e5f1f0e30cdcd7b1fda9f656b75fd0eb98755dfc20",
+              "7a22624897897f3c0db3abb3636d067af673602ad0f7c8ff24fc545f4c142bd2",
+              "f444e0aa940a1261215df9ba889f1df21f45e88bc909c38c54cda8f7963696d8"
+            ],
+            [
+              "a0cbfa91767bf656c8456129c6eb27949e3960eb68f8067fa48890f6bad29564",
+              "f40c85b8d1422adefe0bba63dcdf608c1fdb775afae6c6be39e752bdf3bfaf0f",
+              "b88f5b21e4c94124843e9d6dd175e25df3c4e9d3faebb93bcecbdcf492780691",
+              "c58dac5764b9cd3238d68c9baa6ba5f2601b5c4cacf59b853c773e1ff68318f8",
+              "7f2bfee1a039a2c241c48086def25597556bce6148cf018105ea4e42f3958c62",
+              "deaa35ca38fdc40b5898f1e5f1f0e30cdcd7b1fda9f656b75fd0eb98755dfc20",
+              "4de1e3db19e8e62bdca60ee89aaa29ed298950bee4ec2493628292951e95d746",
+              "362ce2c848a368fc25d957d54ee98ea72a226ecdd0b6348f73c04ed8ce2bb56d",
+              "d8aaf99b105734a623c3eb1b468e7756eb428640e54b53be5f48b2eea57da0c3",
+              "bac514438bf0310f846a5bfcdbcf95d3e7800b30e4962f2d5b74b813c9dd3f4b",
+              "7a22624897897f3c0db3abb3636d067af673602ad0f7c8ff24fc545f4c142bd2",
+              "f444e0aa940a1261215df9ba889f1df21f45e88bc909c38c54cda8f7963696d8"
+            ],
+            [
+              "a0cbfa91767bf656c8456129c6eb27949e3960eb68f8067fa48890f6bad29564",
+              "5758896b7cbe233305132292f94d02834a4183fd6f45c3ea1a36bd815bbb3eee",
+              "1a96eeabd6a89688dac1d251fc23384f9a20908c17f79e60a8f9c480edaf68fd",
+              "1b4039e7f4648a226cbeed27ba78d66a3751e3f78330bf1256b485ef7263ba5a",
+              "f7b37435296f05b7edd24e10022bd67c41a54c6a146b8b30a3bdf70d791174f1",
+              "7f2bfee1a039a2c241c48086def25597556bce6148cf018105ea4e42f3958c62",
+              "deaa35ca38fdc40b5898f1e5f1f0e30cdcd7b1fda9f656b75fd0eb98755dfc20",
+              "4de1e3db19e8e62bdca60ee89aaa29ed298950bee4ec2493628292951e95d746",
+              "362ce2c848a368fc25d957d54ee98ea72a226ecdd0b6348f73c04ed8ce2bb56d",
+              "d8aaf99b105734a623c3eb1b468e7756eb428640e54b53be5f48b2eea57da0c3",
+              "bac514438bf0310f846a5bfcdbcf95d3e7800b30e4962f2d5b74b813c9dd3f4b",
+              "7a22624897897f3c0db3abb3636d067af673602ad0f7c8ff24fc545f4c142bd2",
+              "f444e0aa940a1261215df9ba889f1df21f45e88bc909c38c54cda8f7963696d8"
+            ]
+          ],
+          "truncated": false
+        },
+        {
+          "head": "b88f5b21e4c94124843e9d6dd175e25df3c4e9d3faebb93bcecbdcf492780691",
+          "refs": [
+            "reasoning/semantic-schema-local-verification"
+          ],
+          "paths": [
+            [
+              "b88f5b21e4c94124843e9d6dd175e25df3c4e9d3faebb93bcecbdcf492780691",
+              "c58dac5764b9cd3238d68c9baa6ba5f2601b5c4cacf59b853c773e1ff68318f8",
+              "7f2bfee1a039a2c241c48086def25597556bce6148cf018105ea4e42f3958c62",
+              "deaa35ca38fdc40b5898f1e5f1f0e30cdcd7b1fda9f656b75fd0eb98755dfc20",
+              "7a22624897897f3c0db3abb3636d067af673602ad0f7c8ff24fc545f4c142bd2",
+              "f444e0aa940a1261215df9ba889f1df21f45e88bc909c38c54cda8f7963696d8"
+            ],
+            [
+              "b88f5b21e4c94124843e9d6dd175e25df3c4e9d3faebb93bcecbdcf492780691",
+              "c58dac5764b9cd3238d68c9baa6ba5f2601b5c4cacf59b853c773e1ff68318f8",
+              "7f2bfee1a039a2c241c48086def25597556bce6148cf018105ea4e42f3958c62",
+              "deaa35ca38fdc40b5898f1e5f1f0e30cdcd7b1fda9f656b75fd0eb98755dfc20",
+              "4de1e3db19e8e62bdca60ee89aaa29ed298950bee4ec2493628292951e95d746",
+              "362ce2c848a368fc25d957d54ee98ea72a226ecdd0b6348f73c04ed8ce2bb56d",
+              "d8aaf99b105734a623c3eb1b468e7756eb428640e54b53be5f48b2eea57da0c3",
+              "bac514438bf0310f846a5bfcdbcf95d3e7800b30e4962f2d5b74b813c9dd3f4b",
+              "7a22624897897f3c0db3abb3636d067af673602ad0f7c8ff24fc545f4c142bd2",
+              "f444e0aa940a1261215df9ba889f1df21f45e88bc909c38c54cda8f7963696d8"
+            ]
+          ],
+          "truncated": false
+        },
+        {
+          "head": "bac514438bf0310f846a5bfcdbcf95d3e7800b30e4962f2d5b74b813c9dd3f4b",
+          "refs": [
+            "evidence/semantic-probe-offline-result"
+          ],
+          "paths": [
+            [
+              "bac514438bf0310f846a5bfcdbcf95d3e7800b30e4962f2d5b74b813c9dd3f4b",
+              "7a22624897897f3c0db3abb3636d067af673602ad0f7c8ff24fc545f4c142bd2",
+              "f444e0aa940a1261215df9ba889f1df21f45e88bc909c38c54cda8f7963696d8"
+            ]
+          ],
+          "truncated": false
+        },
+        {
+          "head": "c58dac5764b9cd3238d68c9baa6ba5f2601b5c4cacf59b853c773e1ff68318f8",
+          "refs": [
+            "verification/character-migration-response-schema"
+          ],
+          "paths": [
+            [
+              "c58dac5764b9cd3238d68c9baa6ba5f2601b5c4cacf59b853c773e1ff68318f8",
+              "7f2bfee1a039a2c241c48086def25597556bce6148cf018105ea4e42f3958c62",
+              "deaa35ca38fdc40b5898f1e5f1f0e30cdcd7b1fda9f656b75fd0eb98755dfc20",
+              "7a22624897897f3c0db3abb3636d067af673602ad0f7c8ff24fc545f4c142bd2",
+              "f444e0aa940a1261215df9ba889f1df21f45e88bc909c38c54cda8f7963696d8"
+            ],
+            [
+              "c58dac5764b9cd3238d68c9baa6ba5f2601b5c4cacf59b853c773e1ff68318f8",
+              "7f2bfee1a039a2c241c48086def25597556bce6148cf018105ea4e42f3958c62",
+              "deaa35ca38fdc40b5898f1e5f1f0e30cdcd7b1fda9f656b75fd0eb98755dfc20",
+              "4de1e3db19e8e62bdca60ee89aaa29ed298950bee4ec2493628292951e95d746",
+              "362ce2c848a368fc25d957d54ee98ea72a226ecdd0b6348f73c04ed8ce2bb56d",
+              "d8aaf99b105734a623c3eb1b468e7756eb428640e54b53be5f48b2eea57da0c3",
+              "bac514438bf0310f846a5bfcdbcf95d3e7800b30e4962f2d5b74b813c9dd3f4b",
+              "7a22624897897f3c0db3abb3636d067af673602ad0f7c8ff24fc545f4c142bd2",
+              "f444e0aa940a1261215df9ba889f1df21f45e88bc909c38c54cda8f7963696d8"
+            ]
+          ],
+          "truncated": false
+        },
+        {
+          "head": "d8aaf99b105734a623c3eb1b468e7756eb428640e54b53be5f48b2eea57da0c3",
+          "refs": [
+            "reasoning/semantic-probe-readiness"
+          ],
+          "paths": [
+            [
+              "d8aaf99b105734a623c3eb1b468e7756eb428640e54b53be5f48b2eea57da0c3",
+              "bac514438bf0310f846a5bfcdbcf95d3e7800b30e4962f2d5b74b813c9dd3f4b",
+              "7a22624897897f3c0db3abb3636d067af673602ad0f7c8ff24fc545f4c142bd2",
+              "f444e0aa940a1261215df9ba889f1df21f45e88bc909c38c54cda8f7963696d8"
+            ]
+          ],
+          "truncated": false
+        },
+        {
+          "head": "deaa35ca38fdc40b5898f1e5f1f0e30cdcd7b1fda9f656b75fd0eb98755dfc20",
+          "refs": [
+            "evidence/semantic-probe-live-start"
+          ],
+          "paths": [
+            [
+              "deaa35ca38fdc40b5898f1e5f1f0e30cdcd7b1fda9f656b75fd0eb98755dfc20",
+              "7a22624897897f3c0db3abb3636d067af673602ad0f7c8ff24fc545f4c142bd2",
+              "f444e0aa940a1261215df9ba889f1df21f45e88bc909c38c54cda8f7963696d8"
+            ],
+            [
+              "deaa35ca38fdc40b5898f1e5f1f0e30cdcd7b1fda9f656b75fd0eb98755dfc20",
+              "4de1e3db19e8e62bdca60ee89aaa29ed298950bee4ec2493628292951e95d746",
+              "362ce2c848a368fc25d957d54ee98ea72a226ecdd0b6348f73c04ed8ce2bb56d",
+              "d8aaf99b105734a623c3eb1b468e7756eb428640e54b53be5f48b2eea57da0c3",
+              "bac514438bf0310f846a5bfcdbcf95d3e7800b30e4962f2d5b74b813c9dd3f4b",
+              "7a22624897897f3c0db3abb3636d067af673602ad0f7c8ff24fc545f4c142bd2",
+              "f444e0aa940a1261215df9ba889f1df21f45e88bc909c38c54cda8f7963696d8"
+            ]
+          ],
+          "truncated": false
+        },
+        {
+          "head": "f40c85b8d1422adefe0bba63dcdf608c1fdb775afae6c6be39e752bdf3bfaf0f",
+          "refs": [
+            "evidence/semantic-schema-root-correction"
+          ],
+          "paths": [
+            [
+              "f40c85b8d1422adefe0bba63dcdf608c1fdb775afae6c6be39e752bdf3bfaf0f",
+              "b88f5b21e4c94124843e9d6dd175e25df3c4e9d3faebb93bcecbdcf492780691",
+              "c58dac5764b9cd3238d68c9baa6ba5f2601b5c4cacf59b853c773e1ff68318f8",
+              "7f2bfee1a039a2c241c48086def25597556bce6148cf018105ea4e42f3958c62",
+              "deaa35ca38fdc40b5898f1e5f1f0e30cdcd7b1fda9f656b75fd0eb98755dfc20",
+              "7a22624897897f3c0db3abb3636d067af673602ad0f7c8ff24fc545f4c142bd2",
+              "f444e0aa940a1261215df9ba889f1df21f45e88bc909c38c54cda8f7963696d8"
+            ],
+            [
+              "f40c85b8d1422adefe0bba63dcdf608c1fdb775afae6c6be39e752bdf3bfaf0f",
+              "b88f5b21e4c94124843e9d6dd175e25df3c4e9d3faebb93bcecbdcf492780691",
+              "c58dac5764b9cd3238d68c9baa6ba5f2601b5c4cacf59b853c773e1ff68318f8",
+              "7f2bfee1a039a2c241c48086def25597556bce6148cf018105ea4e42f3958c62",
+              "deaa35ca38fdc40b5898f1e5f1f0e30cdcd7b1fda9f656b75fd0eb98755dfc20",
+              "4de1e3db19e8e62bdca60ee89aaa29ed298950bee4ec2493628292951e95d746",
+              "362ce2c848a368fc25d957d54ee98ea72a226ecdd0b6348f73c04ed8ce2bb56d",
+              "d8aaf99b105734a623c3eb1b468e7756eb428640e54b53be5f48b2eea57da0c3",
+              "bac514438bf0310f846a5bfcdbcf95d3e7800b30e4962f2d5b74b813c9dd3f4b",
+              "7a22624897897f3c0db3abb3636d067af673602ad0f7c8ff24fc545f4c142bd2",
+              "f444e0aa940a1261215df9ba889f1df21f45e88bc909c38c54cda8f7963696d8"
+            ]
+          ],
+          "truncated": false
+        },
+        {
+          "head": "f7b37435296f05b7edd24e10022bd67c41a54c6a146b8b30a3bdf70d791174f1",
+          "refs": [
+            "evidence/semantic-probe-call-1-response"
+          ],
+          "paths": [
+            [
+              "f7b37435296f05b7edd24e10022bd67c41a54c6a146b8b30a3bdf70d791174f1",
+              "7f2bfee1a039a2c241c48086def25597556bce6148cf018105ea4e42f3958c62",
+              "deaa35ca38fdc40b5898f1e5f1f0e30cdcd7b1fda9f656b75fd0eb98755dfc20",
+              "7a22624897897f3c0db3abb3636d067af673602ad0f7c8ff24fc545f4c142bd2",
+              "f444e0aa940a1261215df9ba889f1df21f45e88bc909c38c54cda8f7963696d8"
+            ],
+            [
+              "f7b37435296f05b7edd24e10022bd67c41a54c6a146b8b30a3bdf70d791174f1",
+              "7f2bfee1a039a2c241c48086def25597556bce6148cf018105ea4e42f3958c62",
+              "deaa35ca38fdc40b5898f1e5f1f0e30cdcd7b1fda9f656b75fd0eb98755dfc20",
+              "4de1e3db19e8e62bdca60ee89aaa29ed298950bee4ec2493628292951e95d746",
+              "362ce2c848a368fc25d957d54ee98ea72a226ecdd0b6348f73c04ed8ce2bb56d",
+              "d8aaf99b105734a623c3eb1b468e7756eb428640e54b53be5f48b2eea57da0c3",
+              "bac514438bf0310f846a5bfcdbcf95d3e7800b30e4962f2d5b74b813c9dd3f4b",
+              "7a22624897897f3c0db3abb3636d067af673602ad0f7c8ff24fc545f4c142bd2",
+              "f444e0aa940a1261215df9ba889f1df21f45e88bc909c38c54cda8f7963696d8"
+            ]
+          ],
+          "truncated": false
+        }
+      ]
+    },
+    {
+      "ref": "evidence/semantic-migration-continuation",
+      "source": "a0cbfa91767bf656c8456129c6eb27949e3960eb68f8067fa48890f6bad29564",
+      "impacts": []
+    }
+  ],
+  "entries": [
+    {
+      "ref": "implementation/semantic-probe-fixture",
+      "source": {
+        "path": "backend/src/scripts/semantic-migration-probe-fixture.ts",
+        "baseline": "HEAD",
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "old": {
+        "seal_id": "c41d55ae5e770b32ffc9647d7cb9caf7f9909e10aad8d887f21847cae3937f81",
+        "material_id": "5a18a8c7a4930754e63232b2369167219a81b4df857e8bbdf674c7a908a1c3ed",
+        "provenance_id": "a7ca860717025dd584d3cdb9a3dee4e9c950c589f9673f2f9767bf0cdfc2a448",
+        "content_blob_id": "a10e3b7cda1cce0a292c46575b19aa59f7220eee5300974f662f50779731b115",
+        "content_bytes": 4415,
+        "attachments": [],
+        "root": false,
+        "draft": false,
+        "cause_links": [
+          {
+            "target_seal": "bfaed6488226b313938717644c6510bd1ad9a82a241aa0d2371fdfe919212a94",
+            "previous_revision_seal_of_target_seal": [
+              "3d5aa715b900ed5b2fbc017e055d484d0f910f75b6413e78e04c6104cc7b3213"
+            ],
+            "messages": [
+              "Historical bytes unchanged; current links attest continued interpretation, not original execution under the revised dependency. 旧runId・prompt v1と合成アカリを保持。新版実行用fixtureに黙って差し替えない。"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "ref": "reasoning/semantic-probe-result-rca",
+      "source": {
+        "path": "docs/evidence/semantic-migration-grok-2026-09-10-v1/result-rca.think",
+        "baseline": "HEAD",
+        "relation": "WORKFILE_MATCHES_HEAD"
+      },
+      "old": {
+        "seal_id": "1a96eeabd6a89688dac1d251fc23384f9a20908c17f79e60a8f9c480edaf68fd",
+        "material_id": "0e61a26e3cf62681c532630a60c001be16f319f35489f27e331b21152ebcaa5e",
+        "provenance_id": "1900939dccd51a218324b8f0104442d5b7d3f06799a07c2750e932228195c0c4",
+        "content_blob_id": "d0ce0a23efa2edfbb3afdf1bf7710826e01f4ec230a0238e13a350b627ed3678",
+        "content_bytes": 3054,
+        "attachments": [],
+        "root": false,
+        "draft": false,
+        "cause_links": [
+          {
+            "target_seal": "1b4039e7f4648a226cbeed27ba78d66a3751e3f78330bf1256b485ef7263ba5a",
+            "previous_revision_seal_of_target_seal": [
+              "fd261e7b92c4dc841ac2a2d98a318aa5afb04681c9f7738ea223bf26e0eb9eb2"
+            ],
+            "messages": [
+              "Historical bytes unchanged; current links attest continued interpretation, not original execution under the revised dependency. 初回拒否の原因分類を保持。今回の追加root解析と実装は新しいRCAへ分離。"
+            ]
+          },
+          {
+            "target_seal": "a72b79da27172a9381c1c9245194194373ec3b7a7f12f4a5ca513e0249d25d73",
+            "previous_revision_seal_of_target_seal": [
+              "25f8c1f7b22543bae76b6c8da41d796b629ab7a07ec50d136dc046cd920cc4f1"
+            ],
+            "messages": [
+              "Historical bytes unchanged; current links attest continued interpretation, not original execution under the revised dependency. 初回拒否の原因分類を保持。今回の追加root解析と実装は新しいRCAへ分離。"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "ref": "evidence/semantic-probe-live-result",
+      "source": {
+        "path": "docs/evidence/semantic-migration-grok-2026-09-10-v1/live-result.json",
+        "baseline": "HEAD",
+        "relation": "WORKFILE_MATCHES_HEAD"
+      },
+      "old": {
+        "seal_id": "1b4039e7f4648a226cbeed27ba78d66a3751e3f78330bf1256b485ef7263ba5a",
+        "material_id": "2bcb2c7753985403e21060f7613b86971814c2983f71b27bc2d2cdb4484b7573",
+        "provenance_id": "564e45e59e64c5ab56dd73405dbd08fb15d3b32a839bb4821d06484d166cdafa",
+        "content_blob_id": "fff48ab63ffdb8ab8df7927c9696b4857530a52d92c3e03ac52860a78344f688",
+        "content_bytes": 450101,
+        "attachments": [],
+        "root": false,
+        "draft": false,
+        "cause_links": [
+          {
+            "target_seal": "f7b37435296f05b7edd24e10022bd67c41a54c6a146b8b30a3bdf70d791174f1",
+            "previous_revision_seal_of_target_seal": [
+              "48b58ca4fddaf52b4b6467c9752696564360466f2b70b88c96c3ed176805e9d2"
+            ],
+            "messages": [
+              "Historical bytes unchanged; current links attest continued interpretation, not original execution under the revised dependency. 1要求pending・activated=false・usage不明という実測を保持。新runの結果へ置換しない。"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "ref": "review/semantic-probe-v1",
+      "source": {
+        "path": "docs/evidence/semantic-migration-grok-2026-09-10-v1/owner-review-ja.md",
+        "baseline": "HEAD",
+        "relation": "WORKFILE_MATCHES_HEAD"
+      },
+      "old": {
+        "seal_id": "362ce2c848a368fc25d957d54ee98ea72a226ecdd0b6348f73c04ed8ce2bb56d",
+        "material_id": "b58359758bd426c17cefb7f021d83f305ded8c762979287c064105a63be97621",
+        "provenance_id": "a0441321f8d0d76bdea496dd65be5156af9093958f4ee67fbbe1808783b42ddf",
+        "content_blob_id": "8af66e093a28e2046001f1efe633aa4b498d79f74b39a718307ba138c08635e9",
+        "content_bytes": 8185,
+        "attachments": [],
+        "root": false,
+        "draft": false,
+        "cause_links": [
+          {
+            "target_seal": "d8aaf99b105734a623c3eb1b468e7756eb428640e54b53be5f48b2eea57da0c3",
+            "previous_revision_seal_of_target_seal": [
+              "309ad35ccb1e118e9306900eab627f703c1abb9542daa2b4206dbb5e869601ed"
+            ],
+            "messages": [
+              "Historical bytes unchanged; current links attest continued interpretation, not original execution under the revised dependency. 提示したrevision1・予算・synthetic scopeを保持。消費済みであり新実行に流用不可。"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "ref": "acceptance/semantic-probe-v1-execution",
+      "source": {
+        "path": "docs/evidence/semantic-migration-grok-2026-09-10-v1/execution-acceptance.think",
+        "baseline": "HEAD",
+        "relation": "WORKFILE_MATCHES_HEAD"
+      },
+      "old": {
+        "seal_id": "4de1e3db19e8e62bdca60ee89aaa29ed298950bee4ec2493628292951e95d746",
+        "material_id": "9f78818152616303647ea09390fe9370fc7400acc1bcba320a5f185309f5e39f",
+        "provenance_id": "571c651fe8d733c164ee021984d42f153d4b0f55b8dbb63c693ad8434da10ebf",
+        "content_blob_id": "b1da30548de63efd35ff37fe7c807c4648df43c98e26115c604648d09756bd50",
+        "content_bytes": 1742,
+        "attachments": [],
+        "root": false,
+        "draft": false,
+        "cause_links": [
+          {
+            "target_seal": "362ce2c848a368fc25d957d54ee98ea72a226ecdd0b6348f73c04ed8ce2bb56d",
+            "previous_revision_seal_of_target_seal": [
+              "263834a48d82b94517b06b54e6df0596d11ee62b10ede5047fefe976afb32004"
+            ],
+            "messages": [
+              "Historical bytes unchanged; current links attest continued interpretation, not original execution under the revised dependency. a724ae39の一回限りの実行承認を保持。現在のv2や再送へ継承しない。"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "ref": "evidence/semantic-probe-result-ja",
+      "source": {
+        "path": "docs/evidence/semantic-migration-grok-2026-09-10-v1/result-ja.md",
+        "baseline": "HEAD",
+        "relation": "WORKFILE_MATCHES_HEAD"
+      },
+      "old": {
+        "seal_id": "5758896b7cbe233305132292f94d02834a4183fd6f45c3ea1a36bd815bbb3eee",
+        "material_id": "54c9843ff38897eea7d17025ec3566cc06d053502b0bd12d821550995c284965",
+        "provenance_id": "d52b9d699ee1da875e3c1726b2667cd93076eedb918e0c026bcd49a79f39fe48",
+        "content_blob_id": "75f8fbfcd37ba5d85a5ade1f384c3496b71496195d014faef2a12ae7039a3886",
+        "content_bytes": 3760,
+        "attachments": [],
+        "root": false,
+        "draft": false,
+        "cause_links": [
+          {
+            "target_seal": "1a96eeabd6a89688dac1d251fc23384f9a20908c17f79e60a8f9c480edaf68fd",
+            "previous_revision_seal_of_target_seal": [
+              "a902b8c7bc4d08207b6885d74245174c1bce3b869aa81c2fc145c38c0a5e4e1f"
+            ],
+            "messages": [
+              "Historical bytes unchanged; current links attest continued interpretation, not original execution under the revised dependency. 初回拒否時のRCA・候補・会計不明を履歴として保持。今回の是正結果は継続メモから別記録へ接続。"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "ref": "evidence/semantic-probe-proof",
+      "source": {
+        "path": "docs/evidence/semantic-migration-grok-2026-09-10-v1/prepare-proof.json",
+        "baseline": "HEAD",
+        "relation": "WORKFILE_MATCHES_HEAD"
+      },
+      "old": {
+        "seal_id": "7a22624897897f3c0db3abb3636d067af673602ad0f7c8ff24fc545f4c142bd2",
+        "material_id": "f9822e9107c2a3ce3fbf0aab5c83b1f696cac9574356f1005f56145ce56dde8a",
+        "provenance_id": "3ba15d94ec8f24533b233fc815c02f67b2efd62a6e7b4242fba23348f3d8142e",
+        "content_blob_id": "ad02b25560fbb84b86ffb25d660fa4defb2f13369acd79af397c51895f9a53cc",
+        "content_bytes": 261868,
+        "attachments": [],
+        "root": false,
+        "draft": false,
+        "cause_links": [
+          {
+            "target_seal": "f444e0aa940a1261215df9ba889f1df21f45e88bc909c38c54cda8f7963696d8",
+            "previous_revision_seal_of_target_seal": [
+              "cc11f9f85c2c716a2003bd94aa947856414ef73b1005442478b0d870c05b4706"
+            ],
+            "messages": [
+              "Historical bytes unchanged; current links attest continued interpretation, not original execution under the revised dependency. 旧コード502b5ea1とproof a724ae39の束縛を保持。現在コードとの同一性は成立しない。"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "ref": "evidence/semantic-probe-call-1-request",
+      "source": {
+        "path": "docs/evidence/semantic-migration-grok-2026-09-10-v1/call-1-before.json",
+        "baseline": "HEAD",
+        "relation": "WORKFILE_MATCHES_HEAD"
+      },
+      "old": {
+        "seal_id": "7f2bfee1a039a2c241c48086def25597556bce6148cf018105ea4e42f3958c62",
+        "material_id": "307c36b14bb79259c9525c2566511961a9822a6f259a949cdf01e1f4e067e81c",
+        "provenance_id": "574bcbdc6cfa52f92746c57dcd42f99fd96619d4cd910ddb2c2fe320ec6c3720",
+        "content_blob_id": "f289273cd2cb7a56fce0fa7396a5d484602d4027252b6c8c5348c420ca62d5f9",
+        "content_bytes": 372562,
+        "attachments": [],
+        "root": false,
+        "draft": false,
+        "cause_links": [
+          {
+            "target_seal": "deaa35ca38fdc40b5898f1e5f1f0e30cdcd7b1fda9f656b75fd0eb98755dfc20",
+            "previous_revision_seal_of_target_seal": [
+              "42be3366ef9893b1f3095b37cf51c54da9bd3f7eec02d7b0de0ea9ad14c9754c"
+            ],
+            "messages": [
+              "Historical bytes unchanged; current links attest continued interpretation, not original execution under the revised dependency. 実送信したv1要求を完全保持。新検査の回帰入力として再現し、新版要求として使用しない。"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "ref": "evidence/semantic-probe-owner-acceptance",
+      "source": {
+        "path": "docs/evidence/semantic-migration-grok-2026-09-10-v1/acceptance-ja.md",
+        "baseline": "HEAD",
+        "relation": "WORKFILE_MATCHES_HEAD"
+      },
+      "old": {
+        "seal_id": "9b115e948b83e34eff8ffc909a1275f1405ab8f261d21ceccae9cbfaf9d3f8e7",
+        "material_id": "814bfd0480dabe499773a3dc90ea02bf79fa994af3c963846dabaff4779f9f54",
+        "provenance_id": "b35ab54e00af1076a1719c6c066b2546d4ab7fe6efa9dd5468e121ed22195142",
+        "content_blob_id": "b43e23652a632f08e6dbacc7123dea4f4ba31f781ebf2754bd2870da4ebbd2bd",
+        "content_bytes": 521,
+        "attachments": [],
+        "root": false,
+        "draft": false,
+        "cause_links": [
+          {
+            "target_seal": "4de1e3db19e8e62bdca60ee89aaa29ed298950bee4ec2493628292951e95d746",
+            "previous_revision_seal_of_target_seal": [
+              "6c926929437a32a0cccfbdf60dddcc9bea5d5e329ab170da3f0826086616b984"
+            ],
+            "messages": [
+              "Historical bytes unchanged; current links attest continued interpretation, not original execution under the revised dependency. 旧revision1に対する所有者のはいを保持。内容変更後の実行承認には使えない。"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "ref": "evidence/semantic-migration-continuation",
+      "source": {
+        "path": "docs/evidence/semantic-migration-continuation-2026-09-10.md",
+        "baseline": "HEAD",
+        "relation": "WORKFILE_MATCHES_HEAD"
+      },
+      "old": {
+        "seal_id": "a0cbfa91767bf656c8456129c6eb27949e3960eb68f8067fa48890f6bad29564",
+        "material_id": "967e5ea804402ab5bedab056f2894753b6715d6b344121c2ff8667938f9e6d3c",
+        "provenance_id": "9e27c0ac87d4bf874db6f0974bb865a4dd376793d574db8ec4168412c548fef0",
+        "content_blob_id": "9c2e03551f76e8f28caa7cece1016ef2ed467211ca6b2f324f4d00a935b2d346",
+        "content_bytes": 4971,
+        "attachments": [],
+        "root": false,
+        "draft": false,
+        "cause_links": [
+          {
+            "target_seal": "2d6de55ffe0ee42e057d538450e140a794dac52f70d341c75169a41baefbbe17",
+            "previous_revision_seal_of_target_seal": [
+              "81ecd4289404f317815edb3d463e35863e3069cc7f2f671265355aa6b1cf937a"
+            ],
+            "messages": [
+              "Continuation qualifies public-effect certainty and records owner-reported IPv6 restriction"
+            ]
+          },
+          {
+            "target_seal": "362ce2c848a368fc25d957d54ee98ea72a226ecdd0b6348f73c04ed8ce2bb56d",
+            "previous_revision_seal_of_target_seal": [
+              "263834a48d82b94517b06b54e6df0596d11ee62b10ede5047fefe976afb32004"
+            ],
+            "messages": [
+              "Reviewed current compatibility. 所有者の是正指示後のv2投影、共通検査、768テスト、実LLM未再送と正確な再開点を追記。"
+            ]
+          },
+          {
+            "target_seal": "5758896b7cbe233305132292f94d02834a4183fd6f45c3ea1a36bd815bbb3eee",
+            "previous_revision_seal_of_target_seal": [
+              "50e6af6e00b9a2ae0795812bf4a45098fbc9f889605dee85d2e52fe4a6a0073f"
+            ],
+            "messages": [
+              "Reviewed current compatibility. 所有者の是正指示後のv2投影、共通検査、768テスト、実LLM未再送と正確な再開点を追記。"
+            ]
+          },
+          {
+            "target_seal": "cf4095a7d5a97a9e88fa77455b9d461c93b78a8312416beb5be33eaad76c627b",
+            "previous_revision_seal_of_target_seal": [
+              "42a2c933c21cf5ff5a1f96c31cc84fa8233982c71bbf3c58a80ac9d2b01cd2dc"
+            ],
+            "messages": [
+              "Reviewed current compatibility. 所有者の是正指示後のv2投影、共通検査、768テスト、実LLM未再送と正確な再開点を追記。"
+            ]
+          },
+          {
+            "target_seal": "f40c85b8d1422adefe0bba63dcdf608c1fdb775afae6c6be39e752bdf3bfaf0f",
+            "previous_revision_seal_of_target_seal": [],
+            "messages": [
+              "Reviewed current compatibility. 所有者の是正指示後のv2投影、共通検査、768テスト、実LLM未再送と正確な再開点を追記。"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "ref": "reasoning/semantic-schema-local-verification",
+      "source": {
+        "path": "docs/evidence/semantic-schema-local-verification-2026-09-10.think",
+        "baseline": "HEAD",
+        "relation": "WORKFILE_MATCHES_HEAD"
+      },
+      "old": {
+        "seal_id": "b88f5b21e4c94124843e9d6dd175e25df3c4e9d3faebb93bcecbdcf492780691",
+        "material_id": "506847c5db896874c5641a3fe93562c306ff8a244eec1488bb96306eddbe18a7",
+        "provenance_id": "ceb78af309ac075e10888252e60462e798bf0bb7cb298924257d547d8f9c9e40",
+        "content_blob_id": "7b023a601b430ac38d234b95266a098b7204739ade8235e73e0e1378d7712a30",
+        "content_bytes": 4221,
+        "attachments": [],
+        "root": false,
+        "draft": false,
+        "cause_links": [
+          {
+            "target_seal": "14386dbb68132124aff2700bdfd8e236828868b92abf98ba9e6153c0aba146b3",
+            "previous_revision_seal_of_target_seal": [],
+            "messages": [
+              "CLI audited local verification and bounded impact review; real provider acceptance and semantic quality remain unknown."
+            ]
+          },
+          {
+            "target_seal": "2dbd550e7aa6b1d653e4957998c1cb9b09cf81dccab4b1662c1a04ff9b00b255",
+            "previous_revision_seal_of_target_seal": [],
+            "messages": [
+              "CLI audited local verification and bounded impact review; real provider acceptance and semantic quality remain unknown."
+            ]
+          },
+          {
+            "target_seal": "8120d9e117ed1cd72da4d2432d5c57a0d8ccfa2ab50a73f4bfe0ec01772a7e79",
+            "previous_revision_seal_of_target_seal": [],
+            "messages": [
+              "CLI audited local verification and bounded impact review; real provider acceptance and semantic quality remain unknown."
+            ]
+          },
+          {
+            "target_seal": "b5d40a29de5fb6d21ecaede5c015be1373fc4e4d98a1f7a7ae1f9302c9521c74",
+            "previous_revision_seal_of_target_seal": [],
+            "messages": [
+              "CLI audited local verification and bounded impact review; real provider acceptance and semantic quality remain unknown."
+            ]
+          },
+          {
+            "target_seal": "c58dac5764b9cd3238d68c9baa6ba5f2601b5c4cacf59b853c773e1ff68318f8",
+            "previous_revision_seal_of_target_seal": [],
+            "messages": [
+              "CLI audited local verification and bounded impact review; real provider acceptance and semantic quality remain unknown."
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "ref": "evidence/semantic-probe-offline-result",
+      "source": {
+        "path": "docs/evidence/semantic-migration-grok-2026-09-10-v1/prepare-result.json",
+        "baseline": "HEAD",
+        "relation": "WORKFILE_MATCHES_HEAD"
+      },
+      "old": {
+        "seal_id": "bac514438bf0310f846a5bfcdbcf95d3e7800b30e4962f2d5b74b813c9dd3f4b",
+        "material_id": "2cc85cccf0ea452d9c3c3f38035f61106534b2867bdc45e93964e2431c1056bd",
+        "provenance_id": "42fed56b53f9f83fd13990e3cb26c88b063ec21416e599cce8131ccd2f8595d6",
+        "content_blob_id": "bf34925bae820bc8cc98281b7b70952ea9334c5e84b96771d2c9761dbf4a7a6d",
+        "content_bytes": 2520200,
+        "attachments": [],
+        "root": false,
+        "draft": false,
+        "cause_links": [
+          {
+            "target_seal": "7a22624897897f3c0db3abb3636d067af673602ad0f7c8ff24fc545f4c142bd2",
+            "previous_revision_seal_of_target_seal": [
+              "411e6b0d3bd3c694bb151a9af2b1fa679593e1d6a132f13c226f91573e0f1cb3"
+            ],
+            "messages": [
+              "Historical bytes unchanged; current links attest continued interpretation, not original execution under the revised dependency. 当時の合成6要求18eventを保持。v2や実モデル品質の成功として再認定しない。"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "ref": "verification/character-migration-response-schema",
+      "source": {
+        "path": "backend/src/llm/character-migration-response-schema.test.ts",
+        "baseline": "HEAD",
+        "relation": "WORKFILE_MATCHES_HEAD"
+      },
+      "old": {
+        "seal_id": "c58dac5764b9cd3238d68c9baa6ba5f2601b5c4cacf59b853c773e1ff68318f8",
+        "material_id": "99da8d86fc6bc7f298cda487bf455d0f76a495c665dde5f0591b37976987e95e",
+        "provenance_id": "499ab4a89f49ac3b69c9922c45908b033f2fef2ae0ad20f302143302d66e643e",
+        "content_blob_id": "aca09081c222aece6146cb8093924d98a7da06bd1b844f4d93353760c0a4dc3f",
+        "content_bytes": 2879,
+        "attachments": [],
+        "root": false,
+        "draft": false,
+        "cause_links": [
+          {
+            "target_seal": "1a04b34d372ce3f18447a0acb7c22e93bcd7097561ea587fbcff1b56a674143a",
+            "previous_revision_seal_of_target_seal": [],
+            "messages": [
+              "Compare the retained rejected v1 grammar with the locally verified equivalent v2 projection; historical request remains v1."
+            ]
+          },
+          {
+            "target_seal": "7f2bfee1a039a2c241c48086def25597556bce6148cf018105ea4e42f3958c62",
+            "previous_revision_seal_of_target_seal": [],
+            "messages": [
+              "Compare the retained rejected v1 grammar with the locally verified equivalent v2 projection; historical request remains v1."
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "ref": "verification/semantic-probe-fixture",
+      "source": {
+        "path": "backend/src/scripts/semantic-migration-probe-fixture.test.ts",
+        "baseline": "HEAD",
+        "relation": "WORKFILE_MATCHES_HEAD"
+      },
+      "old": {
+        "seal_id": "ca443e6fdf2c536cccb58dc2f6e398442b5cb6eb8922979689a256f8824a1cbb",
+        "material_id": "e9871cda2263e437587349728f6dd4da709f93a3eee990bcb9d4b34a58f7f31a",
+        "provenance_id": "a46455eb3736150a4ccfbbd6006218a2505ab6c7acacf33fa20b7c7a1b840f1d",
+        "content_blob_id": "57fce7dbe40c1f969f7f6ccba23d8fd6e125ae812a2dbeb75cae1e6bb69f9338",
+        "content_bytes": 827,
+        "attachments": [],
+        "root": false,
+        "draft": false,
+        "cause_links": [
+          {
+            "target_seal": "c41d55ae5e770b32ffc9647d7cb9caf7f9909e10aad8d887f21847cae3937f81",
+            "previous_revision_seal_of_target_seal": [
+              "2951037c6c0b9ac8b0d2f7c8d60b51127edb8a35293c9291b14accdcf7527dff"
+            ],
+            "messages": [
+              "Reviewed current compatibility. 旧v1合成キャラのselectorあり/なしを保持して検証。新runを作成した証拠ではない。"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "ref": "reasoning/semantic-probe-readiness",
+      "source": {
+        "path": "docs/evidence/semantic-probe-readiness-2026-09-10.think",
+        "baseline": "HEAD",
+        "relation": "WORKFILE_MATCHES_HEAD"
+      },
+      "old": {
+        "seal_id": "d8aaf99b105734a623c3eb1b468e7756eb428640e54b53be5f48b2eea57da0c3",
+        "material_id": "d7f02af9070fadeb36dc7c528022fbd32962f78067dfce368de1af7829c6d992",
+        "provenance_id": "bffbb1a77cc3f4726bbd88360d0a9af5b10296d09c2c1758037543a57a86d319",
+        "content_blob_id": "82da4d3125e84f2193352e0373909bfb8e01a9206031e6e5e86ccd7874289c76",
+        "content_bytes": 2576,
+        "attachments": [],
+        "root": false,
+        "draft": false,
+        "cause_links": [
+          {
+            "target_seal": "2913dd8e289d93ea744cbfd59d815c7ebe04f22b64733de34b0a0fabdf0a1a4e",
+            "previous_revision_seal_of_target_seal": [
+              "98bc62e32cc88f6914bb571974f58a55b40e25d58b27eebbd7825d6edd0cfdb5"
+            ],
+            "messages": [
+              "Historical bytes unchanged; current links attest continued interpretation, not original execution under the revised dependency. 旧準備判断の不十分な既知制約照合も証拠として保持。是正済みに書き換えない。"
+            ]
+          },
+          {
+            "target_seal": "bac514438bf0310f846a5bfcdbcf95d3e7800b30e4962f2d5b74b813c9dd3f4b",
+            "previous_revision_seal_of_target_seal": [
+              "bd6962e0a24cd96b16e9a5c8dd0f981ac0863b40aeda51693ad4fd4f01a4d7d2"
+            ],
+            "messages": [
+              "Historical bytes unchanged; current links attest continued interpretation, not original execution under the revised dependency. 旧準備判断の不十分な既知制約照合も証拠として保持。是正済みに書き換えない。"
+            ]
+          },
+          {
+            "target_seal": "ca443e6fdf2c536cccb58dc2f6e398442b5cb6eb8922979689a256f8824a1cbb",
+            "previous_revision_seal_of_target_seal": [
+              "d0d45e05a0b237c2ebe21bc46e1f6cb7dd6509aac69c46111a17b94df7a20246"
+            ],
+            "messages": [
+              "Historical bytes unchanged; current links attest continued interpretation, not original execution under the revised dependency. 旧準備判断の不十分な既知制約照合も証拠として保持。是正済みに書き換えない。"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "ref": "evidence/semantic-probe-live-start",
+      "source": {
+        "path": "docs/evidence/semantic-migration-grok-2026-09-10-v1/live-start.json",
+        "baseline": "HEAD",
+        "relation": "WORKFILE_MATCHES_HEAD"
+      },
+      "old": {
+        "seal_id": "deaa35ca38fdc40b5898f1e5f1f0e30cdcd7b1fda9f656b75fd0eb98755dfc20",
+        "material_id": "cfa36486ea904cc0bba113395d688abead5227c4301882940bccf78f435561e7",
+        "provenance_id": "38a1caa37fc8cf43c9020ade75d4c2af9ceca33fa4211f5a86af7c6c9233fadb",
+        "content_blob_id": "1de5b7758944eb1f2ab524e45683ac74f59364e2ecbce1e97a45022b66f01bf2",
+        "content_bytes": 191,
+        "attachments": [],
+        "root": false,
+        "draft": false,
+        "cause_links": [
+          {
+            "target_seal": "4de1e3db19e8e62bdca60ee89aaa29ed298950bee4ec2493628292951e95d746",
+            "previous_revision_seal_of_target_seal": [
+              "6c926929437a32a0cccfbdf60dddcc9bea5d5e329ab170da3f0826086616b984"
+            ],
+            "messages": [
+              "Historical bytes unchanged; current links attest continued interpretation, not original execution under the revised dependency. 消費済みrunの排他開始記録を保持。同一runを再実行可能にはしない。"
+            ]
+          },
+          {
+            "target_seal": "7a22624897897f3c0db3abb3636d067af673602ad0f7c8ff24fc545f4c142bd2",
+            "previous_revision_seal_of_target_seal": [
+              "411e6b0d3bd3c694bb151a9af2b1fa679593e1d6a132f13c226f91573e0f1cb3"
+            ],
+            "messages": [
+              "Historical bytes unchanged; current links attest continued interpretation, not original execution under the revised dependency. 消費済みrunの排他開始記録を保持。同一runを再実行可能にはしない。"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "ref": "evidence/semantic-schema-root-correction",
+      "source": {
+        "path": "docs/evidence/semantic-schema-root-correction-2026-09-10.md",
+        "baseline": "HEAD",
+        "relation": "WORKFILE_MATCHES_HEAD"
+      },
+      "old": {
+        "seal_id": "f40c85b8d1422adefe0bba63dcdf608c1fdb775afae6c6be39e752bdf3bfaf0f",
+        "material_id": "a42c44ddfee2897c2d7c4d7dac9f9615c199f647834caecf942135b276438231",
+        "provenance_id": "896b626bca878742133e74b0599707f5749aa3cca493dcbffec5b6325d044466",
+        "content_blob_id": "a15d85f07a478514c64dbd07672e0b7c798957e009f851e658c98955c88d9582",
+        "content_bytes": 10896,
+        "attachments": [],
+        "root": false,
+        "draft": false,
+        "cause_links": [
+          {
+            "target_seal": "b5d40a29de5fb6d21ecaede5c015be1373fc4e4d98a1f7a7ae1f9302c9521c74",
+            "previous_revision_seal_of_target_seal": [],
+            "messages": [
+              "Japanese RCA result projection distinguishes source correction, escape prevention, local evidence and unverified live outcome."
+            ]
+          },
+          {
+            "target_seal": "b88f5b21e4c94124843e9d6dd175e25df3c4e9d3faebb93bcecbdcf492780691",
+            "previous_revision_seal_of_target_seal": [],
+            "messages": [
+              "Japanese RCA result projection distinguishes source correction, escape prevention, local evidence and unverified live outcome."
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "ref": "implementation/semantic-probe-runner",
+      "source": {
+        "path": "backend/src/scripts/replay-semantic-migration.ts",
+        "baseline": "HEAD",
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      "old": {
+        "seal_id": "f444e0aa940a1261215df9ba889f1df21f45e88bc909c38c54cda8f7963696d8",
+        "material_id": "ebe3c51b0c368f86f4650d3926489f357fae1f09728c1ab2ddaf7b1724159306",
+        "provenance_id": "a1c9b48bc6b7d6a2808c641ed36d9f3d6d0984c26041eaff8137bd72976ae86a",
+        "content_blob_id": "b690f221c5d3b1f707ceae4c15c967dc486187d0e3ce994894889d16a00c3437",
+        "content_bytes": 7710,
+        "attachments": [],
+        "root": false,
+        "draft": false,
+        "cause_links": [
+          {
+            "target_seal": "3a696e3f59b72ae991eee6d214ebcac839737214a6e826b5d44be1f29821fb08",
+            "previous_revision_seal_of_target_seal": [
+              "32f584f040761b1b9adc9e4cb004e52a2fcb8d03eb458a428740ab5a0072fe68"
+            ],
+            "messages": [
+              "Reviewed current compatibility. 旧proof照合・live-start排他・SQLite隔離を維持。現在コードで旧proofを再利用できない。"
+            ]
+          },
+          {
+            "target_seal": "8b874def72ec814e028bd0529f9053b7158d9f51de464f2b9454ccfafd386273",
+            "previous_revision_seal_of_target_seal": [
+              "1003c1fd9e3a06c42ef3268220503cc500385762371e97aa512b311c613ba859"
+            ],
+            "messages": [
+              "Reviewed current compatibility. 旧proof照合・live-start排他・SQLite隔離を維持。現在コードで旧proofを再利用できない。"
+            ]
+          },
+          {
+            "target_seal": "a72b79da27172a9381c1c9245194194373ec3b7a7f12f4a5ca513e0249d25d73",
+            "previous_revision_seal_of_target_seal": [
+              "25f8c1f7b22543bae76b6c8da41d796b629ab7a07ec50d136dc046cd920cc4f1"
+            ],
+            "messages": [
+              "Reviewed current compatibility. 旧proof照合・live-start排他・SQLite隔離を維持。現在コードで旧proofを再利用できない。"
+            ]
+          },
+          {
+            "target_seal": "c41d55ae5e770b32ffc9647d7cb9caf7f9909e10aad8d887f21847cae3937f81",
+            "previous_revision_seal_of_target_seal": [
+              "2951037c6c0b9ac8b0d2f7c8d60b51127edb8a35293c9291b14accdcf7527dff"
+            ],
+            "messages": [
+              "Reviewed current compatibility. 旧proof照合・live-start排他・SQLite隔離を維持。現在コードで旧proofを再利用できない。"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "ref": "evidence/semantic-probe-call-1-response",
+      "source": {
+        "path": "docs/evidence/semantic-migration-grok-2026-09-10-v1/call-1-response.json",
+        "baseline": "HEAD",
+        "relation": "WORKFILE_MATCHES_HEAD"
+      },
+      "old": {
+        "seal_id": "f7b37435296f05b7edd24e10022bd67c41a54c6a146b8b30a3bdf70d791174f1",
+        "material_id": "1059ba75dcd16ac2fcc23cc8245e4f5609094de878f491cc26a95d5e863380d8",
+        "provenance_id": "01eae537b027e16bec0343fde6a7d6835cb526b2f6de45044048dbf570710d0e",
+        "content_blob_id": "a6effdbc77c348fa25a5dbdd6ecff31ec41d909dd985f87d6d622ef9642d90b3",
+        "content_bytes": 197,
+        "attachments": [],
+        "root": false,
+        "draft": false,
+        "cause_links": [
+          {
+            "target_seal": "7f2bfee1a039a2c241c48086def25597556bce6148cf018105ea4e42f3958c62",
+            "previous_revision_seal_of_target_seal": [
+              "ad0e775c8b0c672ffa5f09fe50c03d5691eda5fc2b5dece1c26886339d030a14"
+            ],
+            "messages": [
+              "Historical bytes unchanged; current links attest continued interpretation, not original execution under the revised dependency. HTTP400の実応答を完全保持。新実装の応答でも新版成功の証拠でもない。"
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "capturedBeforeCodeChange": true,
+  "note": "Initial full impact obtained before code edits; equivalent compact capture retained exact old Seal heads. Paths retained as Seal ID sequences; full proof expansion omitted."
+}

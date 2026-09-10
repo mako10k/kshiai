@@ -1,0 +1,439 @@
+{
+  "schema": "semantic-repair-seal-readback-v1",
+  "date": "2026-09-10",
+  "inspectedExistingRefs": 69,
+  "newRefs": 6,
+  "verifiedHeads": 75,
+  "historicalRefs": 47,
+  "historicalContentPreserved": true,
+  "stale": {
+    "schema": "sealgraph/stale/v2",
+    "frontier": false,
+    "scan": true,
+    "statuses": []
+  },
+  "status": {
+    "refs": 199,
+    "candidates": [],
+    "drafts": [],
+    "sourceDifferences": [
+      {
+        "ref": "projection/adr-0030",
+        "source": {
+          "path": "docs/adr/0030-llm-assisted-character-semantic-migration.md",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+        }
+      },
+      {
+        "ref": "proposal/adr-0030",
+        "source": {
+          "path": "docs/adr/0030-llm-assisted-character-semantic-migration.think",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+        }
+      }
+    ]
+  },
+  "fsck": {
+    "result": "ok",
+    "refs": 199,
+    "seals": 497,
+    "unreferencedBlobs": 0
+  },
+  "verification": {
+    "tests": 778,
+    "addedTests": 9,
+    "typecheck": "passed",
+    "build": "passed",
+    "jscpd": "passed",
+    "lizard": "passed",
+    "adr0030": "passed",
+    "cliAudit": "semantic-repair-verification-final-2026-09-10"
+  },
+  "scope": {
+    "promptIdentity": "character-semantic-migration-prompt-v3",
+    "additionalProviderCalls": 0,
+    "productionChanges": false,
+    "committed": false,
+    "pushed": false,
+    "realModelConvergence": "unverified"
+  },
+  "heads": [
+    {
+      "ref": "implementation/character-migration-context",
+      "seal": "62f5a47d7be4457f5615efff8b12140e4f9962051b1466ef199a0e30cf389ae3",
+      "previous": "4b0cd7cf725c240ebbb8a71f26b7c2db6bd9ad45d13103df60b8fa915cd39bca"
+    },
+    {
+      "ref": "implementation/character-migration-prompts",
+      "seal": "9ca982a4c66effda9dfc574010687be84912aca932e13870aa5236a0117af631",
+      "previous": "97cd7f551747d966acac3a390c20a6578a17d1b2203bbe436bf369ef677993b2"
+    },
+    {
+      "ref": "implementation/character-migration-merge",
+      "seal": "cb463f8e8d960624293be1bbda29b53d8b876765cd206eba6892a95204554c1d",
+      "previous": "ad6ccee788ff3f1ba0b0085a646cc50169198ffb96bc4eae2757d85af057a48e"
+    },
+    {
+      "ref": "implementation/character-migration-requests",
+      "seal": "25ac5f17960ea022c71b285b12b2769da04c9a09e2afebee3e93a5220164c15b",
+      "previous": "5ec3d12eaf03e972ae7e14c85168cd2619f0d28a227f3e1662ad72de14904fbe"
+    },
+    {
+      "ref": "implementation/character-migration-response",
+      "seal": "bc15d456516adc78228ea2e02f6524948f7e8d82a0adf9d84246a2223370d113",
+      "previous": "b007f45b1ea8118f0bdfea8c6656376c03a1115706a126fb62b08a972843256a"
+    },
+    {
+      "ref": "implementation/character-migration-deferred",
+      "seal": "2a8be2109dfaf840470c378f3e876393d572ccf2a1797399d0b5879f8789c4a4",
+      "previous": "c453b73a83401eedb13a0b755ebaa88cb4d5eb4a8428519bfbe2081dbb98813c"
+    },
+    {
+      "ref": "implementation/character-migration-references",
+      "seal": "2b0685f779f091967e47244719a7bcf37e3aab3d5a2aa7c831ab0dc1fb2e881f",
+      "previous": "fce0d65bea72d1800697efb3c11b86ee6e574c32968ac2b79b9d9bbb54f3d7e2"
+    },
+    {
+      "ref": "implementation/character-migration-validation",
+      "seal": "e09d44c1febd7ff44dba0c00e1d3181351cd4cf6c7a4622cc4d26139d8221194",
+      "previous": "06123ef23348ebd97b26a26f6b9b69380cc20544ad2785565ed6e585aef43ab3"
+    },
+    {
+      "ref": "implementation/character-semantic-migration",
+      "seal": "6ca998118dfbaf564e7f5f79c565561da45da449471ebf70b584e7f2eba10e03",
+      "previous": "8b874def72ec814e028bd0529f9053b7158d9f51de464f2b9454ccfafd386273"
+    },
+    {
+      "ref": "verification/character-semantic-migration-generation",
+      "seal": "1b678f7b212ce02186e394ddca71fe3b97fe3df465bf067db3c8ffd2da426d37",
+      "previous": "14386dbb68132124aff2700bdfd8e236828868b92abf98ba9e6153c0aba146b3"
+    },
+    {
+      "ref": "reasoning/adr-0030-b5-local-verification",
+      "seal": "6709f2e0c7b45a1007c7eb097e713dbe5cfd9149b424b0aa4b527330da27501a",
+      "previous": "24b3a98bcf70532d5e4202ddf117f67bfa3189b74fef1676d2a62a25ce5deccf"
+    },
+    {
+      "ref": "evidence/adr-0030-b5-local-verification",
+      "seal": "7ade3075ef16164c81ac224b9ab9adb37d9beb8bc91b459035e8489d337f1000",
+      "previous": "cf4095a7d5a97a9e88fa77455b9d461c93b78a8312416beb5be33eaad76c627b"
+    },
+    {
+      "ref": "reasoning/semantic-probe-preparation",
+      "seal": "e6e4a3f5c577b4dd9b43edbd87bd6fc56da31577db3288d35b32fb64c461d4c6",
+      "previous": "94cf54e0a0fbd0bb3c473b44a26f2687b24d3f80cd02f32b1d631473c38a7466"
+    },
+    {
+      "ref": "plan/character-semantic-migration",
+      "seal": "5933ed84d940ab90eaa233cd29fffecc844df490afb199b440d5d4109d31cce5",
+      "previous": "b3e3836cd7b9a9598c3850fefa82b6c58918bf2cee960329b3a5ee391386efe1"
+    },
+    {
+      "ref": "reasoning/semantic-probe-reservation-sizing",
+      "seal": "dd720629b307ba8e3eaa98420b9ee63b562059c53d8db5c9fcdacb2f21937fac",
+      "previous": "113f5a88fc6987ae28851c09c2ea4f4c8a7c9341235ab81286388b1ec8c76fbb"
+    },
+    {
+      "ref": "implementation/semantic-probe-snapshot",
+      "seal": "a7bfb444bb579605220520a7af2cbd5043eb5889186e757706452aae76f8046e",
+      "previous": "3a696e3f59b72ae991eee6d214ebcac839737214a6e826b5d44be1f29821fb08"
+    },
+    {
+      "ref": "reasoning/semantic-probe-fixture-rca",
+      "seal": "5263946566f9ca41596d338a36bcf0915c02848b8556cf175fb3a4139a894785",
+      "previous": "bfaed6488226b313938717644c6510bd1ad9a82a241aa0d2371fdfe919212a94"
+    },
+    {
+      "ref": "backlog/character-agency",
+      "seal": "974ad5c974352dc4379da60a05b4fde4b892be44c84f56967cfac855c24b41c9",
+      "previous": "c2ec84b27755d86f010e442e564a7e98f66f80a6c095a2f1003d89e2efb5e47d"
+    },
+    {
+      "ref": "implementation/semantic-probe-fixture",
+      "seal": "16ceb51330f39d6f39eaeee2d49f26a12113e5c523087c31c6a675fc7915ae21",
+      "previous": "77aa90c74aacc2e8257fb5f89d094a006e2dd467fa35b5c68cf44f237d374af8"
+    },
+    {
+      "ref": "implementation/semantic-probe-provider",
+      "seal": "75d4461c6fbfe31691db428772aba7ac9acf2b768367ef452d68c8c7c513bce6",
+      "previous": "a72b79da27172a9381c1c9245194194373ec3b7a7f12f4a5ca513e0249d25d73"
+    },
+    {
+      "ref": "plan/dialogue-expression",
+      "seal": "addfd35c9045a6f9311341c480fc9fe01ec046ce45f4149677ed83b2cdfdcfe2",
+      "previous": "de6dead4b1b4080643d82f6b13790af2e591ad4f695191d59be23cca01823e80"
+    },
+    {
+      "ref": "verification/semantic-probe-provider",
+      "seal": "2f9bd4ba6078b415ec1dcfd7dbc9344d255c50d8b24835547b3d2e902d9afb53",
+      "previous": "2913dd8e289d93ea744cbfd59d815c7ebe04f22b64733de34b0a0fabdf0a1a4e"
+    },
+    {
+      "ref": "verification/semantic-probe-fixture",
+      "seal": "97dd4fe6db0f34aeeda1303098ec07cc04c65aea08507eb78d5ce422f4af0809",
+      "previous": "711bd58dc8031702e7329c864e94043e79ddee4c998e3cc8d294d09e2a1faa53"
+    },
+    {
+      "ref": "implementation/semantic-probe-runner",
+      "seal": "bff7a1c6733ae73b03da1ddd8d544afae70b3364e61ca6534624c6b24d5748de",
+      "previous": "c9272a1a2aa37d8e1d11a534554e2bc775ab1ffb8a09bdfe69b3a4fd28c3a0f3"
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-proof",
+      "seal": "3faf94e7b65759a4b4683a20cf83e9afee3b2328edba595cfd1259e02a4552ba",
+      "previous": "19717c12321e1ba496f2af575b5b4d865c3293c1a71b350c9dfb7c481839c963"
+    },
+    {
+      "ref": "evidence/semantic-probe-proof",
+      "seal": "913b5ced9176a9d8ae045f59a5658c51e657b3e6bdadef16f8d20a8ac7df12c7",
+      "previous": "31b10eaf05b7e50c4e99c6986128dc96acf7378c1ba2ca6d186fe846659a7bc2"
+    },
+    {
+      "ref": "verification/semantic-probe-run-v2",
+      "seal": "3163434ee552eb1094e6d92d245a28cebf2c04423e3a970107786ef4a4b842d4",
+      "previous": "43240efd82cfaf3e9b4425fb3dbf83867569bbed2de74bbb306748c99bb92e14"
+    },
+    {
+      "ref": "evidence/semantic-probe-offline-result",
+      "seal": "6e54d1068e17e776f7538c4d5b42c7f683743c4aebf2a453d4ce266145efff30",
+      "previous": "646187c5c7ed8fbdf3e82781ab48d3dd7de379d66956f3e965f81c5230572640"
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-offline-result",
+      "seal": "d7e4c57afff74f7d8a15aad2df5676fda6c349b2313f24900716b3cc0af7e2b3",
+      "previous": "9d2f897e30136860978add8fed1d6e46a63b99d35571aee58dca7ed562793af5"
+    },
+    {
+      "ref": "reasoning/semantic-probe-readiness",
+      "seal": "744289655916f5c972c0cdadacb3ce8d905fd22024c4c42c90642b9003a89601",
+      "previous": "67dad0084f604f6359def39782309999d7c785913c297bc5411f18dae1faa7f7"
+    },
+    {
+      "ref": "reasoning/semantic-probe-v2-readiness",
+      "seal": "0dece17859b249114bea7ce88a4f6cee474b22ade7faee6cc3d799d70962088e",
+      "previous": "6d67fa19677d1d4a01847e9dbbae37a5852a250a80bce4bb88781f79ce49bae0"
+    },
+    {
+      "ref": "review/semantic-probe-v1",
+      "seal": "8e65569b8645e359795381f1042c4fcfdcb02799ab28aadf0e7423f9c3d9e1eb",
+      "previous": "6de5dd3be16f6ca4ed6e258bd3fb8532a1a2b9239fbbaf319fa0a2d3a4cfc875"
+    },
+    {
+      "ref": "review/semantic-probe-v2",
+      "seal": "84fadf0514964f5bd8b58c95d3620dda5f407395ad5548adb0cfdb9c0804bda4",
+      "previous": "e1697e2f38149058e414420329588791c429a786b015c2fe4685d51907db4c88"
+    },
+    {
+      "ref": "acceptance/semantic-probe-v2-execution",
+      "seal": "c997646991098a370a052dea03d67d80227cb632349c9046fb04a0fafeacd81e",
+      "previous": "4bc8b215226314aabfd44820e519e88468448658f646644b1ddd30bf3d08e839"
+    },
+    {
+      "ref": "acceptance/semantic-probe-v1-execution",
+      "seal": "c589fdbb21224d2e3d4d1601baa3a227d86481fe547646f92ab403de0d7e8350",
+      "previous": "5e2df6c64897bdc6f69cf3731336a0e54e2848d913b4d2ca67b1d1ea61aadf5e"
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-owner-acceptance",
+      "seal": "42dd3cd53466792634eb248c81d82ba8c50159709e7ad2991b98915c5ec0383e",
+      "previous": "1e5e29661fdb982bf9719aedac545e09fc104f59f2eb0635743ba50cd7d734e3"
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-live-start",
+      "seal": "5081ebe63cd207628946c2a112af797912e1f14af3353349ca0b0a57d9f0d688",
+      "previous": "6cac140c0d2ebdfcabe7c105a832181b47ede9c6085d58ce58679cda5c99244b"
+    },
+    {
+      "ref": "evidence/semantic-probe-owner-acceptance",
+      "seal": "ccbbadce7b3d5fd9c28f72479fe34b0849107eb1a5b1ee385d6c9f9a865a0980",
+      "previous": "7addc8d0d73d4d520dedf21f6efca10757d2ddd72bb05e37d35770b7073e617e"
+    },
+    {
+      "ref": "evidence/semantic-probe-live-start",
+      "seal": "0527e275e5dd3bf57e7e97e1469b80cda524a3100c3bec2920866171c0bf9b06",
+      "previous": "a287074a4d3a927c876d80b28d4865c1b171798dc07eaa35ccb6ef9a28b750b2"
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-call-1-request",
+      "seal": "ab65185763ec61c1ab0787297f5b2a94d6428b78f3980ddfe699609e00c12d30",
+      "previous": "979d2f08b4b785825dc6478dfde250b9e63a9e0dd624b1ee00c54631af049655"
+    },
+    {
+      "ref": "evidence/semantic-probe-call-1-request",
+      "seal": "860bc00485a9737fcfafd96710dc0d8371f4ade950305fd802ccc48de846c91a",
+      "previous": "bacb0a32669d527edcc0db2ad031913c65aa29cbc9c8f33fb629ddfe88c154e3"
+    },
+    {
+      "ref": "evidence/semantic-probe-call-1-response",
+      "seal": "12fa3c7aa9ea952c2c8df210478b53639acf31849d89a8c2495565f2b510c014",
+      "previous": "249ca8daae7621e89bc9c702572f9d1b35e6898c8617118b30ff03e678399709"
+    },
+    {
+      "ref": "verification/character-migration-response-schema",
+      "seal": "30f01c58b4dda167ac28ac73e62ea1a1084bf3af3750f94614662f5b90966bb9",
+      "previous": "67571970ca85e9dd09e62af32ced0197c93c49e01c7943ab816ac22233c26d4f"
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-call-1-response",
+      "seal": "5a0c8a7f54f807b65dc5917988b061f5d02e0bdd42c03c268fcc0f8b769176e9",
+      "previous": "a45b0b0d8e0b4e1f092c73e9e68aff5042fcf6c577413027172d57180d1a4014"
+    },
+    {
+      "ref": "evidence/semantic-probe-live-result",
+      "seal": "3ca5fee850681423d1a57158761b14e6694e1e3d27d3fca55c9df62e5f15a712",
+      "previous": "780e37896937e1637655d507ee58b06406e9944da3d1346ad3dbc878a1cbd29f"
+    },
+    {
+      "ref": "reasoning/semantic-schema-local-verification",
+      "seal": "ec6a3b42d48e244751aa11d750e3a0b553e2b5e3157148f2813871b70349c50b",
+      "previous": "b5c741be1d1ed8aaf3489bee28173861831ebe1dc625d09a40b1aca438b57f42"
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-call-1-receipt",
+      "seal": "e5ce55d4e883733b7bcd2daf9c5f0d07c7bb73d31d89ab75ff6fd78f89fb9b10",
+      "previous": "d1579712fdb5b21a0511b74ea61781b550dd96567ac94fd4ef09b9ef9e645b94"
+    },
+    {
+      "ref": "evidence/semantic-schema-root-correction",
+      "seal": "9e725188089178b4eccc6549cdd390f6b2b9c8de1e7cb107e1b7413cec7ad788",
+      "previous": "76a48acd3ce2092ccd8e0037ef1c0caf36249764a5684684a6994711dbf54ace"
+    },
+    {
+      "ref": "reasoning/semantic-probe-result-rca",
+      "seal": "f408281bfbc4bcd78fe6b6b129231b2079485faf924aca11c197d935882cbc4f",
+      "previous": "a827c9e75b0d1f36d61231d27dfca6b528a8058e9e8de6eb98737ac0fc0fe704"
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-call-2-request",
+      "seal": "ca45a937ea3609d4c17dc3a4f7a0383f0c7a23206c306fcc983c73e191609b8d",
+      "previous": "c5e93bc285dcb9da0b6ecc795e8e728c32fcd1356c9b447d0126f0f21c958428"
+    },
+    {
+      "ref": "evidence/semantic-probe-result-ja",
+      "seal": "7e11e15615a45176b0cbedbc53a3c02c2c2c318fb00fdbf4b603d513bee6d44e",
+      "previous": "18ad72b0df82eb89c82914ce4aca6be359648923218eb996671d98fedf62737e"
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-call-2-response",
+      "seal": "d73fd67d8b3904efcedf39d1e80151cd02702c91af0d109da51f5e20692c62ff",
+      "previous": "199d37551d27f376b58cc7edbe4a37eb03a83204ac12e20afd8b84a76f3cb13c"
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-call-2-receipt",
+      "seal": "5e164c84f9a56f73b247c218780b0b51a7bc6bd002d2f340de844c29ced20c66",
+      "previous": "308ba15584be135d6d2c1e478cf2c4cba0b6e0ee65f255c8dc637a9fc38a4728"
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-call-3-request",
+      "seal": "964e908838dd2f3085a2e0990637898e417eb85e6c1ce8e1fd32b17cdb2996ee",
+      "previous": "06617e418c7a0dd987e751e2abda978e00e9b038818d05935d52ccc393d11b5d"
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-call-3-response",
+      "seal": "1beb6d386664212d067871cce0341794b0ccbbc908d3e1ba90c8043d8b1e08e0",
+      "previous": "63fd5f4ed6e5a8d748af5f004221c0ae423f23124455de9a12801cc82c4967c4"
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-call-3-receipt",
+      "seal": "1f462806994eef00b0c4ea8ddb26401856ca641add5ad92b4ce80042d74d56b6",
+      "previous": "0f30569abcdae49e15e8f0e83898cd227bbe624d775dd92e831f38e3a0826b15"
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-call-4-request",
+      "seal": "e30b108b89eeeb71c8a5f7b6c565c2f429f1867405798207ff415c34b2bf7b69",
+      "previous": "cc4440d9b3b3ac15cf5eea50f685d5830003af242d872cb33f8a240e4cb2f72c"
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-call-4-response",
+      "seal": "46873f6ffb04631e2d22b554dc8df0d07d461fc2c443dcf05d6a86f8c8260fbe",
+      "previous": "04f430b1a5c9e0bde95e5c77532df3807c70d64d2bec956e523b3ffec7e8b84b"
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-call-4-receipt",
+      "seal": "dad7049af31fe3db8dabe5130962e81379e8d754ad731193372d26083d5b8ee7",
+      "previous": "572591f8e9871c8524e64bebfb851833e7868896e74962d31136a75c98e7e72c"
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-call-5-request",
+      "seal": "70d3692c5bc9af4962b11f489b4eb8d22585dde3fa3bbc14a6ddb5b8a913c7da",
+      "previous": "44ce1526a794ae7d8261db05c3829cf8445301c05ea044016ecce18f130e39de"
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-call-5-response",
+      "seal": "573d25784c373b80b1d24970dcfd42492da3124e36e1c83b6e6db2bdf29543ed",
+      "previous": "7147d0cb1f978a0b5f17cdabca09890f3ef08b4f68d5d99bf5592dbe812b3292"
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-call-5-receipt",
+      "seal": "07e7bff7bc847c16a2caae17ecae531ebeaeb7c529eaa16353232390be622a48",
+      "previous": "6a27c95a6a1b6ab894cbcb8fc156e4af338f3ccc15e0301276389be351a5363e"
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-call-6-request",
+      "seal": "30dc4ac751fcf4f78096d6d41832c70fc4cc2bb31d51d661287616f1f776485c",
+      "previous": "cb7333c1d38932f8f4a45daaa5be17879b4eba5b0d1fb02c25b702253fa2336c"
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-call-6-response",
+      "seal": "615181bcdc4bfea7a8163613ca31030b4f3c66cf563e8903432e45c220d48b4d",
+      "previous": "f7270fc9a78920b0db0ec6d24ddf00cd60dab27cc20fc5990e6da157c94a670f"
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-call-6-receipt",
+      "seal": "62a3d2bb76e041fee150f0c62f0c699a6770ee6137a8bd889b101ece4291e4d5",
+      "previous": "6ff9f43435c1049489d60cd284427d4e18663286089ed56987ba43c6023840d2"
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-live-result",
+      "seal": "1716a9677cee06e2797482562fa04df8a4f17ce36453dd9a06a6ad9993a23839",
+      "previous": "6e381709725a95420ee976f1c40477f428942f3b9cccffed13e1e9d4cb5bab09"
+    },
+    {
+      "ref": "reasoning/semantic-probe-v2-result-rca",
+      "seal": "42b6a5ac70ab8e40e1777ffd9bbae4a0bf2e586e6ce9b85a7184b22a3075c696",
+      "previous": "923e28f2b7ea475c2adc17e7a39435611f379d835bc00582ea8c5de4330b99b5"
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-result-ja",
+      "seal": "8cd09b82e813968c4dbf291553542faf1871656179223789ce989d84fec5b9dd",
+      "previous": "e15dace1cb3001cb7461d9fead4d975db07841011f732f14d477b137af32b4ae"
+    },
+    {
+      "ref": "evidence/semantic-migration-continuation",
+      "seal": "8df76aba5171df3577b3d619ea2ea1a9c9653926a7c8b34f74efb78de0fe5af0",
+      "previous": "603159d5dbf2d775dbc2a7d63daf587a0b3e89987fe0c86d545f9e0ccb973ad6"
+    },
+    {
+      "ref": "reasoning/semantic-repair-implementation",
+      "seal": "9e2431869c78dad12f01307a5d7faadefc4768466886cfcb2c55b64d2754605f",
+      "previous": null
+    },
+    {
+      "ref": "implementation/character-migration-diagnostics",
+      "seal": "50c946a72d12778c5560d13ffc868a64b05d40a0d5bfbce13eb7f189b893392b",
+      "previous": null
+    },
+    {
+      "ref": "verification/character-migration-diagnostics",
+      "seal": "c2929d2b358d52c1a9d26df7552c3116d1db1672d94c78359e31a292389ea98d",
+      "previous": null
+    },
+    {
+      "ref": "reasoning/semantic-repair-verification",
+      "seal": "2fcc731be41c58609ba4fa752a4ebdea1e7e1a14ad8e700fd7e5571126675f87",
+      "previous": null
+    },
+    {
+      "ref": "evidence/semantic-repair-seal-impact",
+      "seal": "97dff25c0429de303141a2bdfd3828d53bd660d67c91c7f2376367d6bef835ef",
+      "previous": null
+    },
+    {
+      "ref": "evidence/semantic-repair-result-ja",
+      "seal": "3c087322e47860a4aed78b570476731098256c8c399a78c508da6fbe0d4ed5a2",
+      "previous": null
+    }
+  ]
+}

@@ -1,0 +1,871 @@
+{
+  "schema": "kshiai.semantic-schema-seal-readback.v1",
+  "date": "2026-09-10",
+  "scope": "Local schema root correction and explicitly reviewed dependency continuation; no live provider request or production change.",
+  "reviewManifest": "docs/evidence/semantic-schema-impact-review-2026-09-10.json",
+  "existingReferences": {
+    "count": 73,
+    "contentUpdated": 9,
+    "contentUnchanged": 64,
+    "rows": [
+      {
+        "event": "reviewed_seal",
+        "ref": "implementation/llm-adapter",
+        "old": "9d87028cbe07239c878273a070fd652540a2a9fc3385feab203d8252c261b2ea",
+        "seal": "6b016f33d3cdbe0396bbe4abd7e300783a2e567b0f58567c93e2e4f2f67fed31",
+        "content": "470eb706c5b9442c6e8abf916fada16aaafb5146d5ffe8429211bb4a4a4683e8",
+        "contentUnchanged": false,
+        "replacedLinks": 0,
+        "candidateCompared": true
+      },
+      {
+        "event": "reviewed_seal",
+        "ref": "verification/agency-fixtures",
+        "old": "1200dd43b4c61854b4391cfdbd3da5ceb4c3713dba3945bfc84032227c992c95",
+        "seal": "aa54c9b013a6c95d7df060d272e62ba2a37aad061c8a5a82cb3aba4a968902c0",
+        "content": "37b5c5f715443d121deefb2f5235988f852c6aefcb6c4983274653d22bd4d86a",
+        "contentUnchanged": true,
+        "replacedLinks": 1,
+        "candidateCompared": true
+      },
+      {
+        "event": "reviewed_seal",
+        "ref": "verification/agency-inventory",
+        "old": "3e63610b5be234634409e4d359ee8dac2b77331bee0b4c474b82a5757cfb5a9b",
+        "seal": "fb5b9622c26b95ace7399bc369baf2775950263084a35f448ddea22f71178ebe",
+        "content": "d066a25e2d4fbf097e8e82fa862da738db734478afbd8ae1fde7abe540682808",
+        "contentUnchanged": true,
+        "replacedLinks": 1,
+        "candidateCompared": true
+      },
+      {
+        "event": "reviewed_seal",
+        "ref": "evidence/agency-ca00",
+        "old": "8d4d432cd86ca2a01c1acf48db3495a7b35ad3e573864003879722845e70e0e3",
+        "seal": "35ccae6c2eb73661ab32c5ad94044e814f2f3518928dc2edc003378b4037828d",
+        "content": "2ce0932d6fe89fff13478aba524a294ebc15ff278b81220a43516a88f15c12a6",
+        "contentUnchanged": true,
+        "replacedLinks": 1,
+        "candidateCompared": true
+      },
+      {
+        "event": "reviewed_seal",
+        "ref": "proposal/agency-requirements-v1",
+        "old": "d0ccbc996da3104b4ce221f1484480f7dc41732e365fb8ee12b409030cee204e",
+        "seal": "a9a302b84eb417cafb209181f9779cc9706343c39fa88466ec5f25ade1b59ee6",
+        "content": "da6b7cabce19a95d5cf7476b7ad07f4eab4a33cd72ee542e5651aa1cc0339b05",
+        "contentUnchanged": true,
+        "replacedLinks": 1,
+        "candidateCompared": true
+      },
+      {
+        "event": "reviewed_seal",
+        "ref": "review/agency-requirements-v1-input",
+        "old": "b4923a34bc163bd647ebc344e8c0b1674daa7530d05260cec2612bee4f7b4b86",
+        "seal": "02a4713d78688b1e5c701cc5a79dd86a389fef9eeb8353da0b6b4c8968a30624",
+        "content": "0b75f51dddee15a5be61148e8da4df7cb484b0de1971b7a42cc14254e62dfc9b",
+        "contentUnchanged": true,
+        "replacedLinks": 1,
+        "candidateCompared": true
+      },
+      {
+        "event": "reviewed_seal",
+        "ref": "review/agency-requirements-v1",
+        "old": "f51cccb3e17ba23d45baa1d3d7f7f050963e3db49001c6b158cb400a25583240",
+        "seal": "6c003704e0162dc18862bf4ea7b19cf4a3a3c895602e0bd50c121a431a1341fd",
+        "content": "1d7cffa0bdeda2d26f8b6f9b5c0b54d4ec28537dc7719319ed2d6aac080751dc",
+        "contentUnchanged": true,
+        "replacedLinks": 2,
+        "candidateCompared": true
+      },
+      {
+        "event": "reviewed_seal",
+        "ref": "acceptance/agency-requirements-v1",
+        "old": "26162771afff1db800dc6fc949401cac3e5bcbf0a150cb8e683bc5e716cb3b99",
+        "seal": "bc54a5e85d05d36f77abd4a35db88f562732f33746ff625bed26b6427f8a9e1f",
+        "content": "48128a0d87ae220cb88bf1e6ba92b1026c5cbeec00703f2411ef43f35dd2387e",
+        "contentUnchanged": true,
+        "replacedLinks": 2,
+        "candidateCompared": true
+      },
+      {
+        "event": "reviewed_seal",
+        "ref": "proposal/agency-requirements-v2",
+        "old": "d96bbd67084aedbd3427f8941d946797bd57cf15f024b362b8165020eb5b58bd",
+        "seal": "7de35811509acbd5078d441441b7e2ffa9ea2c62078cbde5d16090139af817a7",
+        "content": "9d5c3ccc85774c8e363c7c4d310c9705ebcafa63a3a249006e1506ebef5acc13",
+        "contentUnchanged": true,
+        "replacedLinks": 1,
+        "candidateCompared": true
+      },
+      {
+        "event": "reviewed_seal",
+        "ref": "acceptance/agency-requirements-v2",
+        "old": "98b17a55fb2dd2391402f52e2e3e08b0b58ccede7cdd7104fac0d5407902eb72",
+        "seal": "03666fb1e03749c3e4e44d815900e60d266813e62a615709401be9b55f43a3cb",
+        "content": "a8f34245239fd7d645ec9f5fb697bced7a1904e15465bd84aac55afb2eef6f02",
+        "contentUnchanged": true,
+        "replacedLinks": 1,
+        "candidateCompared": true
+      },
+      {
+        "event": "reviewed_seal",
+        "ref": "implementation/character-semantic-change-set",
+        "old": "b821d996f34f8525649f544ff98eb73be2837abe9e1770c709033bd70ec56d05",
+        "seal": "787d83e3eed60e172629a913373cdc072aefd4e3245ec12ddf0dd29ea4bcec31",
+        "content": "c72674b7900ec7013a14a82c5ce4181043989de003cd2040dceef2cee49bd6ef",
+        "contentUnchanged": false,
+        "replacedLinks": 0,
+        "candidateCompared": true
+      },
+      {
+        "event": "reviewed_seal",
+        "ref": "implementation/character-migration-context",
+        "old": "240382dabf9c9d94012bd35c4ab6444b1d6b9129c91bce53bcf745a1e6eecfaa",
+        "seal": "4b0cd7cf725c240ebbb8a71f26b7c2db6bd9ad45d13103df60b8fa915cd39bca",
+        "content": "2bb53006a50d5397c3dd30519a431c9bf95088afa0525085dd808c60872d12a4",
+        "contentUnchanged": false,
+        "replacedLinks": 1,
+        "candidateCompared": true
+      },
+      {
+        "event": "reviewed_seal",
+        "ref": "implementation/character-migration-prompts",
+        "old": "24b875e76fd9e36cc970252a8f222520b7304f1ad595c76ffae8c3bb8c8283da",
+        "seal": "97cd7f551747d966acac3a390c20a6578a17d1b2203bbe436bf369ef677993b2",
+        "content": "8a56117a4c62d9cdbdb66d07eb60a9b1c0710b58f391766820b82a21c8d93696",
+        "contentUnchanged": false,
+        "replacedLinks": 1,
+        "candidateCompared": true
+      },
+      {
+        "event": "reviewed_seal",
+        "ref": "implementation/character-migration-requests",
+        "old": "5e31161be094c66b85b4d0d45a0f240dbc65ef6a56149f3329bc782a8bc09edb",
+        "seal": "5ec3d12eaf03e972ae7e14c85168cd2619f0d28a227f3e1662ad72de14904fbe",
+        "content": "bea95984f93ad10db862e1620da4d99fb265d52c3a17d8cd3674da6f467160bd",
+        "contentUnchanged": true,
+        "replacedLinks": 1,
+        "candidateCompared": true
+      },
+      {
+        "event": "reviewed_seal",
+        "ref": "implementation/character-migration-merge",
+        "old": "7e8c76da23a17fef7b2bf612e282d8d2c266a0eddc8ce107314912ea4c1e7a47",
+        "seal": "ad6ccee788ff3f1ba0b0085a646cc50169198ffb96bc4eae2757d85af057a48e",
+        "content": "a2dfed0d77c470d39a911d0503e9367bbd09ba9f4a277ffc97cf8383f0891998",
+        "contentUnchanged": true,
+        "replacedLinks": 1,
+        "candidateCompared": true
+      },
+      {
+        "event": "reviewed_seal",
+        "ref": "implementation/character-migration-deferred",
+        "old": "1f212c4eeb34b0f471e444719a23ee0b134723e419f8e9d50c58a6d2df14a472",
+        "seal": "c453b73a83401eedb13a0b755ebaa88cb4d5eb4a8428519bfbe2081dbb98813c",
+        "content": "9f82aaee9804cd09acd312242ffcef99ee9645dc15b918127be0eb2663822090",
+        "contentUnchanged": true,
+        "replacedLinks": 1,
+        "candidateCompared": true
+      },
+      {
+        "event": "reviewed_seal",
+        "ref": "implementation/character-migration-references",
+        "old": "6b3bf48e250032903bfe43c17c7a1bd568144aa8f7c97042efd87db7852c0c76",
+        "seal": "fce0d65bea72d1800697efb3c11b86ee6e574c32968ac2b79b9d9bbb54f3d7e2",
+        "content": "f589a61cd901fc3dff741db4813a37787ac88ea5f28b684260bcfb5189baae30",
+        "contentUnchanged": true,
+        "replacedLinks": 1,
+        "candidateCompared": true
+      },
+      {
+        "event": "reviewed_seal",
+        "ref": "implementation/character-migration-validation",
+        "old": "5d363a2a4ae6a79bc509e3b558e012b4560ed33291bb3f9c571182ea4572eda7",
+        "seal": "06123ef23348ebd97b26a26f6b9b69380cc20544ad2785565ed6e585aef43ab3",
+        "content": "5ffc210500abaa3ff9c7593991a545a054f2e025207447807e2e580ed553e0ea",
+        "contentUnchanged": true,
+        "replacedLinks": 2,
+        "candidateCompared": true
+      },
+      {
+        "event": "reviewed_seal",
+        "ref": "implementation/character-migration-response",
+        "old": "823b39a1ac37d107a23a744c9777b9a6eee73ea787e3e9b1dea9751f6daa1c38",
+        "seal": "b007f45b1ea8118f0bdfea8c6656376c03a1115706a126fb62b08a972843256a",
+        "content": "8d26b9b0ea92b31ba9a0f3bd287908c8edaf1b8a9f43d5cd4bc2746bda482239",
+        "contentUnchanged": true,
+        "replacedLinks": 1,
+        "candidateCompared": true
+      },
+      {
+        "event": "reviewed_seal",
+        "ref": "implementation/character-semantic-migration",
+        "old": "1003c1fd9e3a06c42ef3268220503cc500385762371e97aa512b311c613ba859",
+        "seal": "8b874def72ec814e028bd0529f9053b7158d9f51de464f2b9454ccfafd386273",
+        "content": "ccdcf3bde48cda7bba1d0a54591c29b8de78cee4f3c9ff8b5778002cb015fb97",
+        "contentUnchanged": true,
+        "replacedLinks": 3,
+        "candidateCompared": true
+      },
+      {
+        "event": "reviewed_seal",
+        "ref": "proposal/adr-0028",
+        "old": "51f2c881c4783645ed40954889c942aa70c1872bd01a189b7f5fc29a5deaa4a7",
+        "seal": "a50bf967291d021f2430645feb00be3c6a9fb44e20b70413ed9eec4731551b1c",
+        "content": "b5f1933a7cdd8180fdd86f4a97ac432044a949d70b8d41141f10986da2ccc7f9",
+        "contentUnchanged": true,
+        "replacedLinks": 4,
+        "candidateCompared": true
+      },
+      {
+        "event": "reviewed_seal",
+        "ref": "implementation/conscious-agency",
+        "old": "0cf2e1fe371b36cd8954793da8724d66b1ccc1dc3eb9642d9d209f6741524d99",
+        "seal": "8493d5e85f4279fdcbbb75ebfadeeef9b3d07c9c4f0dc5bd54b55c5aae692eab",
+        "content": "292ed77f1c88a7cbca2ec527b76007669efd0657885cda527e408c52527da830",
+        "contentUnchanged": true,
+        "replacedLinks": 1,
+        "candidateCompared": true
+      },
+      {
+        "event": "reviewed_seal",
+        "ref": "implementation/shared-exports",
+        "old": "c264d7c7688fab135426a628d1d73ea36ff7cdf1a7baccc754e890532b585a50",
+        "seal": "b27b5f48be0ae561a3073b077b0c4477fd5df52241766bee07086d5d06af0539",
+        "content": "f062b5d254245436e30788b87409e36924f3a77aa4866c99d5e581b3e859c1e6",
+        "contentUnchanged": true,
+        "replacedLinks": 2,
+        "candidateCompared": true
+      },
+      {
+        "event": "reviewed_seal",
+        "ref": "verification/character-semantic-migration-generation",
+        "old": "4ad1914afebb073e45703983fd82dae4cdd97d0e01ff1f2ac8288967daf8aee1",
+        "seal": "14386dbb68132124aff2700bdfd8e236828868b92abf98ba9e6153c0aba146b3",
+        "content": "fcfbd0bfe4d53cdd7f0a1f1ea602941b1b6abc09c2f96fb3504509be9adda2ae",
+        "contentUnchanged": false,
+        "replacedLinks": 2,
+        "candidateCompared": true
+      },
+      {
+        "event": "reviewed_seal",
+        "ref": "verification/character-semantic-change-set",
+        "old": "c5d9fe414dacd1b4153bb8a015bd241d46edf6e83d73aafa25af48a2b815b213",
+        "seal": "e9391f4f42d62778b9a4fa669ea313c32c66545dd2fa6e335e65f78ffc9bf4e9",
+        "content": "ec812b9cf5aff979c12e1bcb547e628dcda2380ed283e628f49fe12c5950ec1d",
+        "contentUnchanged": true,
+        "replacedLinks": 2,
+        "candidateCompared": true
+      },
+      {
+        "event": "reviewed_seal",
+        "ref": "reasoning/adr-0030-b5-local-verification",
+        "old": "52dd61672a90169c002e75d6b36b0f56160b450dd1bc9f335f63371a1bce73d8",
+        "seal": "24b3a98bcf70532d5e4202ddf117f67bfa3189b74fef1676d2a62a25ce5deccf",
+        "content": "c11ec0506d3f27ff186c694b7c77ae3b88fa486af879986e091b0dc153f8062f",
+        "contentUnchanged": true,
+        "replacedLinks": 2,
+        "candidateCompared": true
+      },
+      {
+        "event": "reviewed_seal",
+        "ref": "evidence/adr-0030-b5-local-verification",
+        "old": "42a2c933c21cf5ff5a1f96c31cc84fa8233982c71bbf3c58a80ac9d2b01cd2dc",
+        "seal": "cf4095a7d5a97a9e88fa77455b9d461c93b78a8312416beb5be33eaad76c627b",
+        "content": "ab6a64526652a0e2b5c4821e6486dc6a6905e10592d8520248f88a4417676805",
+        "contentUnchanged": true,
+        "replacedLinks": 1,
+        "candidateCompared": true
+      },
+      {
+        "event": "reviewed_seal",
+        "ref": "reasoning/semantic-probe-preparation",
+        "old": "af7c5009033532c87098b8fe22d99c65d5d406e030322a5002b460e6e8d979fd",
+        "seal": "94cf54e0a0fbd0bb3c473b44a26f2687b24d3f80cd02f32b1d631473c38a7466",
+        "content": "02cf74a25a112e3fda37ec47db419f26e66267429e97036a80bc2a4d18885aea",
+        "contentUnchanged": true,
+        "replacedLinks": 1,
+        "candidateCompared": true
+      },
+      {
+        "event": "reviewed_seal",
+        "ref": "reasoning/semantic-probe-reservation-sizing",
+        "old": "73652af3e66b0d67d3550aacd22ed2e9d461eccffc3f875eaefcf796bec965e2",
+        "seal": "113f5a88fc6987ae28851c09c2ea4f4c8a7c9341235ab81286388b1ec8c76fbb",
+        "content": "2f9061d9ef2650b03c704325c9732dadc9aa4acf1a2582cd1a4643bdca0e3ec5",
+        "contentUnchanged": true,
+        "replacedLinks": 1,
+        "candidateCompared": true
+      },
+      {
+        "event": "reviewed_seal",
+        "ref": "implementation/semantic-probe-provider",
+        "old": "25f8c1f7b22543bae76b6c8da41d796b629ab7a07ec50d136dc046cd920cc4f1",
+        "seal": "a72b79da27172a9381c1c9245194194373ec3b7a7f12f4a5ca513e0249d25d73",
+        "content": "ef453cf64e531e02784c5b11f78e3e87db4c6c06e7b5c390e0585ef54d69d560",
+        "contentUnchanged": false,
+        "replacedLinks": 2,
+        "candidateCompared": true
+      },
+      {
+        "event": "reviewed_seal",
+        "ref": "verification/semantic-probe-provider",
+        "old": "98bc62e32cc88f6914bb571974f58a55b40e25d58b27eebbd7825d6edd0cfdb5",
+        "seal": "2913dd8e289d93ea744cbfd59d815c7ebe04f22b64733de34b0a0fabdf0a1a4e",
+        "content": "41b54520dbd676b01e0d88a2cdbcd3800c80f0f932ba1d5394abeaf0f250284b",
+        "contentUnchanged": false,
+        "replacedLinks": 1,
+        "candidateCompared": true
+      },
+      {
+        "event": "reviewed_seal",
+        "ref": "reasoning/semantic-probe-fixture-rca",
+        "old": "3d5aa715b900ed5b2fbc017e055d484d0f910f75b6413e78e04c6104cc7b3213",
+        "seal": "bfaed6488226b313938717644c6510bd1ad9a82a241aa0d2371fdfe919212a94",
+        "content": "fa597f6db491235dd372607b64e9b5fdc1f2326ea490842092c0fc3b7590b086",
+        "contentUnchanged": true,
+        "replacedLinks": 1,
+        "candidateCompared": true
+      },
+      {
+        "event": "reviewed_seal",
+        "ref": "implementation/semantic-probe-fixture",
+        "old": "2951037c6c0b9ac8b0d2f7c8d60b51127edb8a35293c9291b14accdcf7527dff",
+        "seal": "c41d55ae5e770b32ffc9647d7cb9caf7f9909e10aad8d887f21847cae3937f81",
+        "content": "a10e3b7cda1cce0a292c46575b19aa59f7220eee5300974f662f50779731b115",
+        "contentUnchanged": true,
+        "replacedLinks": 1,
+        "candidateCompared": true
+      },
+      {
+        "event": "reviewed_seal",
+        "ref": "implementation/semantic-probe-snapshot",
+        "old": "32f584f040761b1b9adc9e4cb004e52a2fcb8d03eb458a428740ab5a0072fe68",
+        "seal": "3a696e3f59b72ae991eee6d214ebcac839737214a6e826b5d44be1f29821fb08",
+        "content": "a1f916a8410ed27e4b851c3797aeb835ef93185e8ae16a4b02ee0db39e35cbd0",
+        "contentUnchanged": true,
+        "replacedLinks": 1,
+        "candidateCompared": true
+      },
+      {
+        "event": "reviewed_seal",
+        "ref": "implementation/semantic-probe-runner",
+        "old": "cc11f9f85c2c716a2003bd94aa947856414ef73b1005442478b0d870c05b4706",
+        "seal": "f444e0aa940a1261215df9ba889f1df21f45e88bc909c38c54cda8f7963696d8",
+        "content": "b690f221c5d3b1f707ceae4c15c967dc486187d0e3ce994894889d16a00c3437",
+        "contentUnchanged": true,
+        "replacedLinks": 4,
+        "candidateCompared": true
+      },
+      {
+        "event": "reviewed_seal",
+        "ref": "evidence/semantic-probe-proof",
+        "old": "411e6b0d3bd3c694bb151a9af2b1fa679593e1d6a132f13c226f91573e0f1cb3",
+        "seal": "7a22624897897f3c0db3abb3636d067af673602ad0f7c8ff24fc545f4c142bd2",
+        "content": "ad02b25560fbb84b86ffb25d660fa4defb2f13369acd79af397c51895f9a53cc",
+        "contentUnchanged": true,
+        "replacedLinks": 1,
+        "candidateCompared": true
+      },
+      {
+        "event": "reviewed_seal",
+        "ref": "evidence/semantic-probe-offline-result",
+        "old": "bd6962e0a24cd96b16e9a5c8dd0f981ac0863b40aeda51693ad4fd4f01a4d7d2",
+        "seal": "bac514438bf0310f846a5bfcdbcf95d3e7800b30e4962f2d5b74b813c9dd3f4b",
+        "content": "bf34925bae820bc8cc98281b7b70952ea9334c5e84b96771d2c9761dbf4a7a6d",
+        "contentUnchanged": true,
+        "replacedLinks": 1,
+        "candidateCompared": true
+      },
+      {
+        "event": "reviewed_seal",
+        "ref": "verification/semantic-probe-fixture",
+        "old": "d0d45e05a0b237c2ebe21bc46e1f6cb7dd6509aac69c46111a17b94df7a20246",
+        "seal": "ca443e6fdf2c536cccb58dc2f6e398442b5cb6eb8922979689a256f8824a1cbb",
+        "content": "57fce7dbe40c1f969f7f6ccba23d8fd6e125ae812a2dbeb75cae1e6bb69f9338",
+        "contentUnchanged": true,
+        "replacedLinks": 1,
+        "candidateCompared": true
+      },
+      {
+        "event": "reviewed_seal",
+        "ref": "reasoning/semantic-probe-readiness",
+        "old": "309ad35ccb1e118e9306900eab627f703c1abb9542daa2b4206dbb5e869601ed",
+        "seal": "d8aaf99b105734a623c3eb1b468e7756eb428640e54b53be5f48b2eea57da0c3",
+        "content": "82da4d3125e84f2193352e0373909bfb8e01a9206031e6e5e86ccd7874289c76",
+        "contentUnchanged": true,
+        "replacedLinks": 3,
+        "candidateCompared": true
+      },
+      {
+        "event": "reviewed_seal",
+        "ref": "review/semantic-probe-v1",
+        "old": "263834a48d82b94517b06b54e6df0596d11ee62b10ede5047fefe976afb32004",
+        "seal": "362ce2c848a368fc25d957d54ee98ea72a226ecdd0b6348f73c04ed8ce2bb56d",
+        "content": "8af66e093a28e2046001f1efe633aa4b498d79f74b39a718307ba138c08635e9",
+        "contentUnchanged": true,
+        "replacedLinks": 1,
+        "candidateCompared": true
+      },
+      {
+        "event": "reviewed_seal",
+        "ref": "acceptance/semantic-probe-v1-execution",
+        "old": "6c926929437a32a0cccfbdf60dddcc9bea5d5e329ab170da3f0826086616b984",
+        "seal": "4de1e3db19e8e62bdca60ee89aaa29ed298950bee4ec2493628292951e95d746",
+        "content": "b1da30548de63efd35ff37fe7c807c4648df43c98e26115c604648d09756bd50",
+        "contentUnchanged": true,
+        "replacedLinks": 1,
+        "candidateCompared": true
+      },
+      {
+        "event": "reviewed_seal",
+        "ref": "verification/character-authoring-response-schema",
+        "old": "aef9ab8f06597a1acf22019b319867d43256c47b41c360fce447ede01f3444a3",
+        "seal": "55e6b1f1e6c5a7794d2f866caef2113a2bc9d50b6c494d35d9e705f594e7e1db",
+        "content": "5c9d59dfbf4706d09d81dd4883149785cea35ca5569f61ed6f6ae4e8db7e5081",
+        "contentUnchanged": false,
+        "replacedLinks": 1,
+        "candidateCompared": true
+      },
+      {
+        "event": "reviewed_seal",
+        "ref": "evidence/character-authoring-response-schema-local-verification",
+        "old": "85bf7dc669ebed6b76b3080bef5372b39a686349db50ffcd8501fa3412c8148c",
+        "seal": "1f675db3c1510c0edee052039199d7f229dcd9a5cd5cd8d0fbbce30c50750309",
+        "content": "1d58f435880a7100da6e9d7f487cf062fe6d975a5eaa0eb8ce29401c76efa757",
+        "contentUnchanged": true,
+        "replacedLinks": 2,
+        "candidateCompared": true
+      },
+      {
+        "event": "reviewed_seal",
+        "ref": "plan/character-semantic-migration",
+        "old": "5b4bf7fcc0bd5df48c82644ff4d7fc434aff35430f9a11743cb483f3f16b66eb",
+        "seal": "b3e3836cd7b9a9598c3850fefa82b6c58918bf2cee960329b3a5ee391386efe1",
+        "content": "3c2377ce90253e1bbb4629e038816c60c2220cb1d15c4f5892ebf7649f13743d",
+        "contentUnchanged": true,
+        "replacedLinks": 2,
+        "candidateCompared": true
+      },
+      {
+        "event": "reviewed_seal",
+        "ref": "implementation/psyche-reaction-execution",
+        "old": "a35763bacd7d294ceeaa0a8b28936d6cf67d30d8c0316c382dfba37ffb701d4a",
+        "seal": "6d0db0f50f6b084af504cca4347d37488b8d154c8253347ada2336bfc23c792a",
+        "content": "996b610baf1fdd42bea7c87f6243336e950479b5704134d59e9483c22e09e1d1",
+        "contentUnchanged": true,
+        "replacedLinks": 1,
+        "candidateCompared": true
+      },
+      {
+        "event": "reviewed_seal",
+        "ref": "verification/psyche-reaction",
+        "old": "06883da775f7e0cb4012e4f126caa5e6737f2a18e38d25a7009b1dc6827b63db",
+        "seal": "fa243942508b7248f32a6048b90b6378820adcb7344d8331c110e529c0ff4e56",
+        "content": "1befce83f6c94ff24c01f6a03b901c060ebf559f4bc2362285f4583acd15d9e8",
+        "contentUnchanged": true,
+        "replacedLinks": 1,
+        "candidateCompared": true
+      },
+      {
+        "event": "reviewed_seal",
+        "ref": "implementation/agency-activation",
+        "old": "0d8ba652bb19814c2b96ad79d766fd655832b427dd8aadd13404a6b9ae18ef03",
+        "seal": "386a1e6735057c113f9eef96e174cd83907ec18f76e9ddab8154e806921b9d2d",
+        "content": "b8f4940c098a9b70685846359fdaf0a5f2b110882c9ef17b25d3c30589d2d3e1",
+        "contentUnchanged": true,
+        "replacedLinks": 1,
+        "candidateCompared": true
+      },
+      {
+        "event": "reviewed_seal",
+        "ref": "implementation/agency-provider-input",
+        "old": "2ae56e755f706798bd2d1f34d8d4edb4c6eb34093190a319776d9895e24c7284",
+        "seal": "b1fb10a248388d04483f620c7b8522672b86baf07cb8f15b651f07b5212ee309",
+        "content": "5df0b60ece0ec8497755ecd9e8c49ba91e602de14ebbbbef555ea5f2c4747ae6",
+        "contentUnchanged": true,
+        "replacedLinks": 2,
+        "candidateCompared": true
+      },
+      {
+        "event": "reviewed_seal",
+        "ref": "verification/agency-runtime-fixture",
+        "old": "18a88473d5cb706d1452839ea964849dd1f9761d241746a81819c900234e3d59",
+        "seal": "1711aa8b3da9dc76ee4e5c93e899c791cafe383698d73d75a6af3d5dd3e3f644",
+        "content": "f7aa286a1b2043aaabe8e6dc8c08edfda814532974f1024cb7444a3e61150d38",
+        "contentUnchanged": true,
+        "replacedLinks": 2,
+        "candidateCompared": true
+      },
+      {
+        "event": "reviewed_seal",
+        "ref": "verification/agency-persistence",
+        "old": "5aa981192e67779788a3c0a651c31cfd0ab1d71a2f3f235bb084e536ffc766a2",
+        "seal": "dc4e65d750d5f886bd9888a076c0266968046de83a6b5c87e9fd1a87aeb05ee3",
+        "content": "693363f7ddfd246f0b9dca6c243f63329f92233063547554ce89cd68f03862a5",
+        "contentUnchanged": true,
+        "replacedLinks": 2,
+        "candidateCompared": true
+      },
+      {
+        "event": "reviewed_seal",
+        "ref": "verification/conscious-agency",
+        "old": "656fea8ef933361ce4b56f9b06994f289e27a5bf7835e52f40251e25e5d59304",
+        "seal": "472724bc63625c6a2fc6b77f8e579eed833686f2380739d98a57bc7e82069e8c",
+        "content": "0fc06d37bc752deb4eb20cca2aa73d0a12dffa32f979c69e611c6c365450f75c",
+        "contentUnchanged": true,
+        "replacedLinks": 1,
+        "candidateCompared": true
+      },
+      {
+        "event": "reviewed_seal",
+        "ref": "reasoning/agency-v3-implementation",
+        "old": "728f1984cbac59f4adceefa9035d9ea24d456853054491aa9a70d02398f1f2b1",
+        "seal": "2ac617cdfd6a0953a2362e48d948aa64d3b7666f952d469fec7b41b361426b63",
+        "content": "4ce35bf9321c41b0f3a6ed5e2eb585a3b42953fa584c00897bf55f0156042566",
+        "contentUnchanged": true,
+        "replacedLinks": 1,
+        "candidateCompared": true
+      },
+      {
+        "event": "reviewed_seal",
+        "ref": "reasoning/agency-v3-seal",
+        "old": "78070b8d80ab45d5a48932fc55fb0247dcfdf171e303b8dc472e7d01d96c7dc8",
+        "seal": "f990c9575e077b6516fddd3303c61dddf5fd2597b4a3649ceb466139296ca573",
+        "content": "5d8d38e79bb886cc4940bc9e1b99923473192bf8535e362e476b82092814e083",
+        "contentUnchanged": true,
+        "replacedLinks": 1,
+        "candidateCompared": true
+      },
+      {
+        "event": "reviewed_seal",
+        "ref": "verification/agency-runtime",
+        "old": "8716ad9483a9d899d301fd8ff054aab6862f3770e7d26660620e44e6a516438d",
+        "seal": "3acfa0c292b310d8982efaba9b0a34fda157108e010347305a98747ead6ae82c",
+        "content": "46c5ae792083493d1375dbabe26bb1c546838d7363fc961eb5e105bc9632f045",
+        "contentUnchanged": true,
+        "replacedLinks": 3,
+        "candidateCompared": true
+      },
+      {
+        "event": "reviewed_seal",
+        "ref": "implementation/agency-settings",
+        "old": "8f06b0802408530c2437a401b7f9dd7a5c419cd98f5371933879f0224161d448",
+        "seal": "2b4fe071c43863c1a6f4fbaf02fcccfade0b0dd2e81a19c4785ad3cf0d29c719",
+        "content": "b5e2282f6eb0e03e4f33ec0e1d2bdc63024b67459d97b281ab8fceb04cd8212d",
+        "contentUnchanged": true,
+        "replacedLinks": 1,
+        "candidateCompared": true
+      },
+      {
+        "event": "reviewed_seal",
+        "ref": "verification/agency-settings",
+        "old": "ac5236d04414846e6aa4a61555b047f56fc9650dafa54eda35d6c96e078075b1",
+        "seal": "b43f32276dcb8ad67c5b936c8d63c388e3f04a7ec0ab834544e8242911dfe584",
+        "content": "ea48dc31870d520c054a9e4b634a361ea87e7aa4952b864b184445dfe025629a",
+        "contentUnchanged": true,
+        "replacedLinks": 1,
+        "candidateCompared": true
+      },
+      {
+        "event": "reviewed_seal",
+        "ref": "evidence/agency-v3-local",
+        "old": "4fae02c1487013238de6d2ed976613f2f717420d0391ec2d4ea2cee5a3eca395",
+        "seal": "efdf02d968835521a1a312b8c17ee346b1b868546000420470e8b6ba41a85dbf",
+        "content": "86bcd751875914cfc84a832a14f7e533cc5e3264e443f42188de3555af6dae2d",
+        "contentUnchanged": true,
+        "replacedLinks": 13,
+        "candidateCompared": true
+      },
+      {
+        "event": "reviewed_seal",
+        "ref": "plan/agency-implementation",
+        "old": "66c8043de1782713768463f9498d81892ceecb370ea8952672d60fedd438bbbe",
+        "seal": "82fc11ec3a7b4c540e7a5e35d2551bf213173537406ab9010d89176e2dc45707",
+        "content": "f0b52b15297cbfe5e06d7e0817c154932cbc33a29d8de048c2da609c8fd4ad5c",
+        "contentUnchanged": true,
+        "replacedLinks": 5,
+        "candidateCompared": true
+      },
+      {
+        "event": "reviewed_seal",
+        "ref": "design/agency-responsibility",
+        "old": "d9e011132cb1f368664c2bcbb39dd8d06bbcf4323b12c14cadbd81187b1dddc4",
+        "seal": "50b82e980d10c6cc959fb8508aa4b5afef09d848ee3cc7ae44541155732e8b71",
+        "content": "f662028a7d47cc7820497d7944d9489453e3c8f4250d821d81b3d6756c7d89bf",
+        "contentUnchanged": true,
+        "replacedLinks": 1,
+        "candidateCompared": true
+      },
+      {
+        "event": "reviewed_seal",
+        "ref": "backlog/character-agency",
+        "old": "7f7b189e5b8a5253688ac061c26be1f842904b5373abb05139150da6053830e9",
+        "seal": "c2ec84b27755d86f010e442e564a7e98f66f80a6c095a2f1003d89e2efb5e47d",
+        "content": "d47022410a1100e931280402949e1492487a7d399bd5261b2bc43e2b6e704347",
+        "contentUnchanged": true,
+        "replacedLinks": 2,
+        "candidateCompared": true
+      },
+      {
+        "event": "reviewed_seal",
+        "ref": "evidence/adr-0027-implementation-impact",
+        "old": "931d598705919e3298c28b1b8c4fcdf8139f13fb184d2d3faff38f4489a92a8b",
+        "seal": "d95baefc787ab6dd0a155d5edd5265564ee34e800de089f1edb45c35bd731f48",
+        "content": "a0641c114c43d61011f8a42cb72bf391e8673de2a7793b9a18184b78cc18f23d",
+        "contentUnchanged": true,
+        "replacedLinks": 1,
+        "candidateCompared": true
+      },
+      {
+        "event": "reviewed_seal",
+        "ref": "evidence/semantic-probe-live-start",
+        "old": "42be3366ef9893b1f3095b37cf51c54da9bd3f7eec02d7b0de0ea9ad14c9754c",
+        "seal": "deaa35ca38fdc40b5898f1e5f1f0e30cdcd7b1fda9f656b75fd0eb98755dfc20",
+        "content": "1de5b7758944eb1f2ab524e45683ac74f59364e2ecbce1e97a45022b66f01bf2",
+        "contentUnchanged": true,
+        "replacedLinks": 2,
+        "candidateCompared": true
+      },
+      {
+        "event": "reviewed_seal",
+        "ref": "evidence/semantic-probe-call-1-request",
+        "old": "ad0e775c8b0c672ffa5f09fe50c03d5691eda5fc2b5dece1c26886339d030a14",
+        "seal": "7f2bfee1a039a2c241c48086def25597556bce6148cf018105ea4e42f3958c62",
+        "content": "f289273cd2cb7a56fce0fa7396a5d484602d4027252b6c8c5348c420ca62d5f9",
+        "contentUnchanged": true,
+        "replacedLinks": 1,
+        "candidateCompared": true
+      },
+      {
+        "event": "reviewed_seal",
+        "ref": "evidence/semantic-probe-call-1-response",
+        "old": "48b58ca4fddaf52b4b6467c9752696564360466f2b70b88c96c3ed176805e9d2",
+        "seal": "f7b37435296f05b7edd24e10022bd67c41a54c6a146b8b30a3bdf70d791174f1",
+        "content": "a6effdbc77c348fa25a5dbdd6ecff31ec41d909dd985f87d6d622ef9642d90b3",
+        "contentUnchanged": true,
+        "replacedLinks": 1,
+        "candidateCompared": true
+      },
+      {
+        "event": "reviewed_seal",
+        "ref": "evidence/semantic-probe-live-result",
+        "old": "fd261e7b92c4dc841ac2a2d98a318aa5afb04681c9f7738ea223bf26e0eb9eb2",
+        "seal": "1b4039e7f4648a226cbeed27ba78d66a3751e3f78330bf1256b485ef7263ba5a",
+        "content": "fff48ab63ffdb8ab8df7927c9696b4857530a52d92c3e03ac52860a78344f688",
+        "contentUnchanged": true,
+        "replacedLinks": 1,
+        "candidateCompared": true
+      },
+      {
+        "event": "reviewed_seal",
+        "ref": "reasoning/semantic-probe-result-rca",
+        "old": "a902b8c7bc4d08207b6885d74245174c1bce3b869aa81c2fc145c38c0a5e4e1f",
+        "seal": "1a96eeabd6a89688dac1d251fc23384f9a20908c17f79e60a8f9c480edaf68fd",
+        "content": "d0ce0a23efa2edfbb3afdf1bf7710826e01f4ec230a0238e13a350b627ed3678",
+        "contentUnchanged": true,
+        "replacedLinks": 2,
+        "candidateCompared": true
+      },
+      {
+        "event": "reviewed_seal",
+        "ref": "evidence/semantic-probe-result-ja",
+        "old": "50e6af6e00b9a2ae0795812bf4a45098fbc9f889605dee85d2e52fe4a6a0073f",
+        "seal": "5758896b7cbe233305132292f94d02834a4183fd6f45c3ea1a36bd815bbb3eee",
+        "content": "75f8fbfcd37ba5d85a5ade1f384c3496b71496195d014faef2a12ae7039a3886",
+        "contentUnchanged": true,
+        "replacedLinks": 1,
+        "candidateCompared": true
+      },
+      {
+        "event": "reviewed_seal",
+        "ref": "evidence/semantic-probe-owner-acceptance",
+        "old": "196845585e566887d1bfc18da51a63f4b72e82468ca74a4ee251945f1d406932",
+        "seal": "9b115e948b83e34eff8ffc909a1275f1405ab8f261d21ceccae9cbfaf9d3f8e7",
+        "content": "b43e23652a632f08e6dbacc7123dea4f4ba31f781ebf2754bd2870da4ebbd2bd",
+        "contentUnchanged": true,
+        "replacedLinks": 1,
+        "candidateCompared": true
+      },
+      {
+        "event": "reviewed_seal",
+        "ref": "projection/adr-0028",
+        "old": "6f7496ceba03ba792e55e90477c09af603426cd2416c6ead31c14f83d66034af",
+        "seal": "63178324745b073c9e7ae86f96c5e6d5ecaad22196e1edd9b8c13341bf2d30ff",
+        "content": "5fdfdf6b0f18c6b41948bf230b4ac12206567dd6cb7ef4f25a7f70f7ea7c26e1",
+        "contentUnchanged": true,
+        "replacedLinks": 1,
+        "candidateCompared": true
+      },
+      {
+        "event": "reviewed_seal",
+        "ref": "index/adr",
+        "old": "fb62c84b24da7687d2d0f6ad17dab614f2c2dbe0511c8cc6bd7e138b6254d2df",
+        "seal": "5aa8bf9c0837ec5fc62823acff771b87c5ba36ca39d62ccecaf5422564225d7e",
+        "content": "ff6425ffe632e2454bd055e8260e924a1a15860495e4444b6f4fce75cb47255d",
+        "contentUnchanged": true,
+        "replacedLinks": 1,
+        "candidateCompared": true
+      },
+      {
+        "event": "reviewed_seal",
+        "ref": "review/agency-requirements-v2-input",
+        "old": "bd0e53b45a2f3d9e9d90b81bae4aec88488cc79a1cf3eeb2597d88aaaf8c03ac",
+        "seal": "5ee497759260e7e4e348f8279206b89a21f7f1b52baa0c632d01a1f96291fc82",
+        "content": "dbddc2e3a4e55b05d166047425b3b3cd6b447e1ad5819dc7eeefe1133c649c0e",
+        "contentUnchanged": true,
+        "replacedLinks": 1,
+        "candidateCompared": true
+      },
+      {
+        "event": "reviewed_seal",
+        "ref": "plan/dialogue-expression",
+        "old": "a0548b4574cc6dce798252a67832454547b306f74fb31e41876aae27d1369d88",
+        "seal": "de6dead4b1b4080643d82f6b13790af2e591ad4f695191d59be23cca01823e80",
+        "content": "5da1433dad600c6812d969884e923fe5be4e87302f7323dc9ebc6f9a6a075bc0",
+        "contentUnchanged": true,
+        "replacedLinks": 5,
+        "candidateCompared": true
+      },
+      {
+        "event": "reviewed_seal",
+        "ref": "evidence/semantic-migration-continuation",
+        "old": "0074601ed377cb960ded5b6b6d05ae6bc0f6851e7cabe7b492f36466d0b32468",
+        "seal": "a0cbfa91767bf656c8456129c6eb27949e3960eb68f8067fa48890f6bad29564",
+        "content": "9c2e03551f76e8f28caa7cece1016ef2ed467211ca6b2f324f4d00a935b2d346",
+        "contentUnchanged": false,
+        "replacedLinks": 3,
+        "candidateCompared": true
+      }
+    ]
+  },
+  "newReferences": [
+    {
+      "event": "new_seal",
+      "ref": "reasoning/semantic-schema-root-correction",
+      "seal": "b5d40a29de5fb6d21ecaede5c015be1373fc4e4d98a1f7a7ae1f9302c9521c74",
+      "content": "77d45473a0615d4545c417a2c70d4651507aec45dff6177b0abcd9732fb82a8d"
+    },
+    {
+      "event": "new_seal",
+      "ref": "implementation/provider-response-schema",
+      "seal": "805f3da3395d75a85a513e34405d436d06171b0af6835a083041f8dc51796479",
+      "content": "d4d9caea03af2a9278e96dafb5f73f66929d33a35f2572210a166773f6c512c8"
+    },
+    {
+      "event": "new_seal",
+      "ref": "implementation/character-definition-response-schema",
+      "seal": "bafd7d79657d9587ade76c02be7fcecbbfa99db0337a13ec63ad6dbe67a0b257",
+      "content": "d0e848a98e9d8a2d7e3fd9826625f807455270f7d94ed4dd354cd015700d50f5"
+    },
+    {
+      "event": "new_seal",
+      "ref": "implementation/character-migration-response-schema",
+      "seal": "1a04b34d372ce3f18447a0acb7c22e93bcd7097561ea587fbcff1b56a674143a",
+      "content": "3f41509a27004c54d5ec96a5cc78eff1e45260520e23c60cba5a510c72e65478"
+    },
+    {
+      "event": "new_seal",
+      "ref": "implementation/perception-evaluation-client",
+      "seal": "459701f889fe1ef1d11fe10716ee3154eaf52e27231024a6596f180c5889efca",
+      "content": "ad1db2adbf02df09b57745aa0cbbae34776f16351438804600b22daf3157d81b"
+    },
+    {
+      "event": "new_seal",
+      "ref": "verification/provider-response-schema",
+      "seal": "2dbd550e7aa6b1d653e4957998c1cb9b09cf81dccab4b1662c1a04ff9b00b255",
+      "content": "736d9e576ecdf7f2bd1aa15fe635ae2895f1e771524e1a09a303af95cf312389",
+      "candidateCompared": true
+    },
+    {
+      "event": "new_seal",
+      "ref": "verification/character-definition-response-schema",
+      "seal": "8120d9e117ed1cd72da4d2432d5c57a0d8ccfa2ab50a73f4bfe0ec01772a7e79",
+      "content": "176cfd8cfb9441f335aaee96bf25a6b745abf43d074c6ed745e215dba1f0b5a3",
+      "candidateCompared": true
+    },
+    {
+      "event": "new_seal",
+      "ref": "verification/character-migration-response-schema",
+      "seal": "c58dac5764b9cd3238d68c9baa6ba5f2601b5c4cacf59b853c773e1ff68318f8",
+      "content": "aca09081c222aece6146cb8093924d98a7da06bd1b844f4d93353760c0a4dc3f",
+      "candidateCompared": true
+    },
+    {
+      "event": "new_seal",
+      "ref": "reasoning/semantic-schema-local-verification",
+      "seal": "b88f5b21e4c94124843e9d6dd175e25df3c4e9d3faebb93bcecbdcf492780691",
+      "content": "7b023a601b430ac38d234b95266a098b7204739ade8235e73e0e1378d7712a30",
+      "candidateCompared": true
+    },
+    {
+      "event": "new_seal",
+      "ref": "evidence/semantic-schema-root-correction",
+      "seal": "f40c85b8d1422adefe0bba63dcdf608c1fdb775afae6c6be39e752bdf3bfaf0f",
+      "content": "a15d85f07a478514c64dbd07672e0b7c798957e009f851e658c98955c88d9582",
+      "candidateCompared": true
+    }
+  ],
+  "stale": {
+    "schema": "sealgraph/stale/v2",
+    "frontier": false,
+    "scan": true,
+    "statuses": []
+  },
+  "status": {
+    "schema": "sealgraph/status/v3",
+    "refCount": 162,
+    "verifiedHeadCount": 83,
+    "candidates": [],
+    "stale": [],
+    "sourceDifferences": [
+      {
+        "ref": "projection/adr-0030",
+        "source": {
+          "path": "docs/adr/0030-llm-assisted-character-semantic-migration.md",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+        }
+      },
+      {
+        "ref": "proposal/adr-0030",
+        "source": {
+          "path": "docs/adr/0030-llm-assisted-character-semantic-migration.think",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+        }
+      }
+    ],
+    "draft": []
+  },
+  "fsck": {
+    "schema": "sealgraph/fsck/v2",
+    "result": "ok",
+    "blobs": 1196,
+    "seals": 371,
+    "materials": 241,
+    "provenances": 343,
+    "refs": 162,
+    "tags": 0,
+    "active_seals": 283,
+    "historical_or_detached_seal_ids": {
+      "count": 88,
+      "sample": [
+        "005412c5811fe0e03cf72504ab9a8b16a56e0ee8950df4487713f64c62a91195",
+        "0074601ed377cb960ded5b6b6d05ae6bc0f6851e7cabe7b492f36466d0b32468"
+      ]
+    },
+    "unreferenced_blob_ids": {
+      "count": 0,
+      "sample": []
+    }
+  },
+  "limitations": [
+    "Historical reseals preserve content bytes and attest continued interpretation, not execution under revised code. Original immutable Seals remain available.",
+    "Two pre-existing ADR-0030 proposal/projection source differences are preserved; accepted authority is not rewritten.",
+    "Some impact was collected after code edits but before resealing; no claim of complete pre-edit impact collection.",
+    "No provider resend, production write, activation, deployment, commit or push in this correction. Actual API acceptance and semantic preservation remain unverified.",
+    "Operational readback is not self-sealed."
+  ]
+}

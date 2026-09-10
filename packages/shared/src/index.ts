@@ -52,6 +52,7 @@ export * from "./battlefield-definition-check.js";
 export * from "./character-definition-rules.js";
 export * from "./character-definition-v3.js";
 export * from "./character-semantic-migration.js";
+export * from "./character-semantic-change-set.js";
 export * from "./character-definition-check.js";
 export * from "./character-manifestation.js";
 export * from "./provider-route.js";

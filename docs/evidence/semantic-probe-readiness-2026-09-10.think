@@ -1,0 +1,18 @@
+domain SemanticProbeReadiness:
+  description "Review preparation evidence and disclose exact paid execution scope."
+evidence E1:
+  "Probe preparation produced a724ae39 proof for code snapshot502b5ea1. Six offline adapter calls have body sizes129069,126165,142427,126165,142427,126165 bytes. Eighteen before/response/receipt events and six durable requests are recorded; current generation is unchanged, activated=false and actual networkRequests=0."
+evidence E2:
+  "Nine new tests pass. Full npm test exit0:339shared,389backend,20frontend,3deployment,5release. Typecheck/build/static pass; Vite existing chunk warning remains. Post-build code/runtime snapshot matches preparation."
+evidence E3:
+  "Secdat dry-run for main-worktree domain supplies required XAI_API_KEY from secret layer with no missing keys; key value was not retrieved. No xAI authentication or model request has occurred."
+evidence E4:
+  "Read source confirms fixed xAI endpoint, strict JSON schema, reasoning none, no redirects/retries, before-call evidence, six-call cap, reservations and usage checks, fresh isolated SQLite, exact proof matching and exclusive live-start lock. Existing B5 source files have not been modified this turn."
+premise U1:
+  "Provider schema acceptance, actual response usage, token reservation conservatism, semantic preservation and natural repair occurrence are unknown. Same-model stateless review does not prove independent truth. One synthetic case cannot prove all six operations, production restoration or quality distribution."
+premise OPTIONS:
+  "A defer until B6; B ask owner to accept this bounded early experiment; C expand cases or force corruptions now. B addresses the requested first observation with limited cost; C adds cost/scope and is not necessary to distinguish initial API/meaning behavior."
+decision C1 based_on E1, E2, E3, E4, U1, OPTIONS:
+  "High-confidence C-PROBE-001: preparation is complete locally, not real-model validation. Adopt B: present Japanese execution conditions, limits, alternatives and unknowns, preserve full proof and source hashes as machine identity, and register implementation/tests/proof with Seal. Ask acceptance for run semantic-migration-grok-2026-09-10-v1, max6 requests and USD1.50 reserved budget. No provider execution before acceptance."
+decision A1 based_on C1, E1, E4:
+  "Record and Seal readiness and append a continuation link after its impact read showed no downstream documents. Do not mark B6 or production gates done, do not change accepted ADRs or the B5 prompt, and do not commit/push absent new authority."

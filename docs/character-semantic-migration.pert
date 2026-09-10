@@ -147,6 +147,8 @@ task cb204 cm203 -> cm204:
 
 task cb205 cm204 -> cm205:
   title "B5 implement bounded semantic generation review and repair"
+  status done
+  source "docs/evidence/adr-0030-b5-local-verification-2026-09-10.md"
   description "Implement six operations, stateless whole-candidate semantic review, expanding repair closure, per-request receipts, full merge revalidation and owner-readable semantic diff with test doubles only."
   duration 2p
   owner "codex"

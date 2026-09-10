@@ -1,0 +1,23 @@
+domain B5SynthesisDisclosure:
+  description "Distinguish newly created values from disclosure of existing private source."
+evidence E1:
+  "The new synthesis fixture supplies a server-allocated profileBackground ID, explicit model_created provenance and no sourcePaths. Structural validation reports disclosure_ceiling_exceeded on its new description."
+evidence E2:
+  "The frozen default V2 disclosure policy already grants profileBackground descriptions to narrator self_inner and omniscient. The source profileBackground array is empty. No rule is added by this operation."
+evidence E3:
+  "Requirements R10-R13 and ADR-0030 D7 allow explicitly identified model-created new fields, while forbidding invented information rights. B5 output is owner-only and never activated. Separate full-source semantic review is required."
+premise A1:
+  "Alternative: reject all disclosed synthesis with no source. This prevents authorized new-field creation even within the frozen field-level disclosure ceiling."
+premise A2:
+  "Alternative: permit explicitly model-created new values, only when the exact source target is absent and sourcePaths is empty, under already existing policy grants. Continue rejecting unsupported transfers or replacement of existing disclosed values."
+decision D1 based_on E1, E2, E3, A1, A2:
+  |
+    The defect-producing assumption in the new validator is that absence of source
+    grants always means new disclosure authority, including creation of an absent
+    value under an already defined field-level grant. Select A2. Retain checks for
+    source-derived private-to-public transfer, modified existing values and new
+    consumerTags. The semantic reviewer must reject falsely claimed model-created
+    provenance when text actually copies private source; structural checks cannot
+    prove semantic provenance. Owner acceptance remains required before use.
+    The new positive synthesis test detected this overrestriction before acceptance;
+    its absence would be an escape cause, not the implementation cause.

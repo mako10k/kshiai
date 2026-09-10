@@ -1,0 +1,68 @@
+{
+  "phase": "receipt",
+  "ordinal": 4,
+  "receipt": {
+    "outcome": "succeeded",
+    "responseDigest": "703f91f37d9a86df6e34a538fa9246ac71fab24da62673bc019bd369d4f5e521",
+    "response": {
+      "schema": "character_semantic_consistency_review_v1",
+      "verdict": "repair_required",
+      "findings": [
+        {
+          "code": "missing_actionNorms_executable",
+          "targetPaths": [
+            "definition.actionNorms"
+          ],
+          "sourcePaths": [
+            "definition.actionNorms.0.response.actionRefs",
+            "definition.actionNorms.1.response.actionRefs"
+          ],
+          "explanation": "V2 actionNorms contained executable selectors (actionRefs, actionKinds, tacticTags) that were retired to capsule but never synthesized into V3 actionNorms; consciousGuidance now holds only soft statements.",
+          "semanticDependants": [
+            "definition.consciousGuidance",
+            "definition.mechanicalConflictFallbacks"
+          ]
+        },
+        {
+          "code": "missing_mechanicalConflictFallbacks",
+          "targetPaths": [
+            "definition.mechanicalConflictFallbacks"
+          ],
+          "sourcePaths": [
+            "definition.actionNorms.0.response.fallbackActionRef",
+            "definition.actionNorms.1.response.fallbackActionRef"
+          ],
+          "explanation": "V2 fallbackActionRef values were not migrated to V3 mechanicalConflictFallbacks; no fallback references remain in the merged candidate.",
+          "semanticDependants": [
+            "definition.actionNorms",
+            "definition.consciousGuidance"
+          ]
+        },
+        {
+          "code": "incomplete_retirement",
+          "targetPaths": [
+            "definition.actionNorms"
+          ],
+          "sourcePaths": [
+            "definition.actionNorms.0.when",
+            "definition.actionNorms.1.when"
+          ],
+          "explanation": "V2 actionNorms contained when-clauses that were retired without preserving their applicability semantics; consciousGuidance now uses generic always-true applicability.",
+          "semanticDependants": [
+            "definition.consciousGuidance"
+          ]
+        }
+      ],
+      "summary": "Migration retired V2 actionNorms but failed to synthesize executable selectors into V3 actionNorms or create mechanicalConflictFallbacks; consciousGuidance contains only soft statements with no executable selectors or fallback references.",
+      "uncertainties": []
+    },
+    "accounting": {
+      "inputTokens": 27062,
+      "outputTokens": 332,
+      "totalTokens": 27394,
+      "estimatedCostUsd": 0.0346575,
+      "elapsedMs": 4128
+    },
+    "finishedAt": "2026-09-10T12:46:25.383Z"
+  }
+}

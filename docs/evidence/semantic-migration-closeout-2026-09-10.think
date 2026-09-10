@@ -1,0 +1,14 @@
+domain SemanticMigrationCloseout:
+  description "Preserve the authorized WIP and restart context without extending implementation scope."
+evidence E1:
+  "Owner explicitly requested handoff creation, WIP commit and push to close this task. Current matching checkout is compact-psyche-repair-integration-kshiai on codex/compact-psyche-repair-integration; primary checkout is separate and must not be changed."
+evidence E2:
+  "Current Git inventory contains semantic migration implementation, regression tests, synthetic provider evidence, continuation documents and their Seal objects and refs. Prior verification completed 778 tests, typecheck, build, jscpd and Lizard; local correction verification audit reported zero findings. Real prompt-v3 provider convergence is unverified."
+evidence E3:
+  "Fresh worktimectl reports working, end null, planned end 22:40 and approximately fourteen minutes remaining, with a shared-workday decision requested. Task-local preservation is authorized independently; no shared-day stop is authorized."
+premise U1:
+  "Remote branch freshness and staged secret or oversized artifact absence require fresh checks before push. Old paid run identities are consumed. Local temporary SQLite files are not durable remote evidence."
+decision D1 based_on E1, E2, E3, U1:
+  "Preserving only local changes would not satisfy the requested remote continuation outcome. Use the matching branch, inspect credential injection and remote state, update the existing Japanese continuation with exact restart and limitations, audit and seal the closeout record, and reseal only reviewed affected refs. Inspect staged paths and sensitive patterns without printing secrets, then commit authorized WIP and push non-forced to the same named branch. Stop on divergent remote or scope uncertainty rather than overwriting unrelated work."
+decision D2 based_on E1, E2, E3, U1:
+  "After push independently compare remote branch revision with local commit and observe worktree status. Do not claim production restoration or real-model improvement. Do not run provider calls, B6 implementation, deployment, database changes, merge, or shared-workday end. Report exact unsynchronized items if preservation fails."

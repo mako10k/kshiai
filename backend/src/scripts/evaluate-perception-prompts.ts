@@ -3,6 +3,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import OpenAI from "openai";
 import { config } from "../config.js";
+import { assertXaiResponseSchema } from "../llm/provider-response-schema.js";
 import {
   evaluatePerceptionPromptTopologies,
   type PerceptionPromptEvaluationClient,
@@ -34,6 +35,7 @@ async function main(): Promise<void> {
   });
   const evaluationClient: PerceptionPromptEvaluationClient = {
     async completeJson(input) {
+      if (args.provider === "xai") assertXaiResponseSchema(input.responseFormat.json_schema.schema);
       const started = Date.now();
       const response = await client.chat.completions.create({
         model,

@@ -1,0 +1,16 @@
+domain SemanticRepairImplementation:
+  description "Local correction under Accepted ADR-0030 D2-D9 and owner request to fix."
+evidence E1:
+  "Previous successful CLI audit semantic-probe-v2-further-rca-2026-09-10 established saved-response replay exact final draft, hidden V2 keys on rejected replacement, whole-review sibling loss through writable-path validation, and required/available capability information asymmetry. Model internal reasons remain unknown."
+evidence E2:
+  "Current source shows v1/v2 prompt identities and immutable request replay. Accepted ADR0030 requires strict V3, all six operations, whole-candidate review, bounded repair and frozen compiler requirements. Existing migrationPreservationEntries archives displaced values without retirement. Active retirement clears values. Source validator receives runtime availability separately from frozen attempt."
+evidence E3:
+  "Worktree /home/katsumata-m/.codex/worktrees/compact-psyche-repair-integration-kshiai HEAD e0f2224 is matching dirty WIP, main credential domain /home/katsumata-m/kshiai verified. Secdat injection dry-run passed. Owner asks local correction, not paid rerun or activation."
+premise U1:
+  "No prompt correction proves real-model convergence. Adding live availability to a frozen attempt would need deliberate snapshot-contract design; availability is not required to migrate source-supported semantic values. Do not silently change persistence schema or old attempts."
+decision C1 based_on E1, E2:
+  "High confidence implementation corrections can restore existing intended contract: preserve valid reviewer findings, permit diagnostic references to complete candidate without granting writes, explain archival versus retirement, and surface strict target errors on rejected fragments. Old schemas need no permissive casts or automatic semantic deletion."
+decision C2 based_on E2, U1:
+  "High confidence prompt must distinguish semantic value construction from runtime readiness. Clarify that frozen required capabilities are not an availability report and do not justify deferring a source-supported value. Mark runtime availability as not supplied rather than fabricating it or assuming unavailable; retain deterministic validation. This removes unsupported availability implication without changing frozen contract."
+decision A1 based_on C1, C2, E3, U1:
+  "Implement versioned prompt v3 with exact target-field guidance, explicit archival without retirement, diagnostic versus writable paths and capability semantics. Keep v1/v2 payload construction and replay behavior unchanged. On v3 only, preserve valid review siblings while retaining invalid diagnostics; keep protected metadata unwritable and repair closure bounded. Add fragment schema findings and detailed conflict feedback rather than silently converting or deleting meanings. Run local behavioral and historical replay regressions, full test/type/build/duplication/Lizard checks, record evidence and review Seal impacts before resealing verified dependants. Fetch via preflighted secdat route and reuse matching branch if unchanged. No provider call, deployment, production write, commit or push. New architecture beyond accepted scope requires owner decision."

@@ -1,0 +1,16 @@
+domain SemanticProbeV2Execution:
+  description "Execute the exact approved synthetic v2 experiment once."
+evidence E1:
+  "Owner replied onegaishimasu to the explicit question approving Japanese v2 revision1, one synthetic Akari, grok-4.3, max6requests, USD1.50 reservation cap, no production changes. Exact proof451cc1c58ba0cf9371af76f220fbd581ef44e7904869c8575232a0ffc167462f binds snapshotd40eaef0."
+evidence E2:
+  "Fresh read-only source/runtime snapshot equals prepared d40eaef03b6e5f8af09cc16e214a3a78a8c42920d12b2e23128738cf0cbfff09. Evidence directory contains only review,prepare-proof,prepare-result; no live-start or call files. TLS is enabled. Shared workday remains working until22:00 with about15minutes available at preflight."
+evidence E3:
+  "Exact execute-command secdat dry-run supplies required XAI_API_KEY from main-worktree secret domain without missing keys. Source runner fixes isolated SQLite before runtime imports, checks exact proof, creates exclusive live-start, limits6physical requests and never automatically resends. Local769tests and six-phase schema validation were completed in preparation."
+premise U1:
+  "API acceptance, natural repair occurrence, semantic preservation, actual usage and cost are unknown. Same-model review is not independent truth. Provider failure or ambiguous receipt stops; it does not authorize correction or another run."
+premise OPTIONS:
+  "Execute this exact accepted run once or defer. No observed source drift or unmet authority condition blocks the accepted bounded observation. Do not modify prompts, add cases, activate or proceed to B6."
+decision C1 based_on E1, E2, E3, U1, OPTIONS:
+  "C-PROBEV2-002 high confidence readiness and authorization only for the exact v2 experiment. Preserve original review as presentation history; record owner acceptance separately."
+decision A1 based_on C1, E1, E2, E3:
+  "A-PROBEV2-002 verification-only: record acceptance, invoke existing exact command once, observe durable events, and preserve all raw results. Audit causal conclusions with CLI before adoption. Seal acceptance and results, inspect continuation impact then append exact outcome. No automatic resend, code fix, production change, B6, commit,push or shared-workday stop."
