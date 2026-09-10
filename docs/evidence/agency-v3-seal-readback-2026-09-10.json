@@ -1,0 +1,1799 @@
+{
+  "date": "2026-09-10",
+  "gitHead": "d22330426cce8159bdc62788ace9964160aa719a",
+  "scope": "Local continuation only; no runtime source changes, paid calls, activation, deployment, commit or push.",
+  "before": {
+    "refs": 47,
+    "planned": 62,
+    "stale": [
+      "backlog/character-agency",
+      "design/agency-responsibility",
+      "plan/agency-implementation",
+      "plan/dialogue-expression"
+    ]
+  },
+  "preEditImpacts": {
+    "plan/agency-implementation": {
+      "schema": "sealgraph/impact/v2",
+      "source_seal_id": "13ed85ff00289937bacff51a7ee6d22f7595de82158652019ee6274a971f3902",
+      "assertion_scope": "ALL_OBSERVED",
+      "asserted_by_observer_seal_ids": [],
+      "all_paths": true,
+      "max_paths": 100,
+      "impacts": [
+        {
+          "head_seal_id": "1d33ed402a9bbb806f72cc1d6d90987c5f9ec84466d491076b8b642712c77990",
+          "refs": [
+            "plan/dialogue-expression"
+          ],
+          "paths": [
+            {
+              "cause_seal_ids": [
+                "1d33ed402a9bbb806f72cc1d6d90987c5f9ec84466d491076b8b642712c77990",
+                "13ed85ff00289937bacff51a7ee6d22f7595de82158652019ee6274a971f3902"
+              ],
+              "matched_revision_seal_id": "13ed85ff00289937bacff51a7ee6d22f7595de82158652019ee6274a971f3902",
+              "revision_proof": {
+                "seal_ids": [
+                  "13ed85ff00289937bacff51a7ee6d22f7595de82158652019ee6274a971f3902"
+                ],
+                "edges": [],
+                "target_observations": [
+                  {
+                    "target_seal": "13ed85ff00289937bacff51a7ee6d22f7595de82158652019ee6274a971f3902",
+                    "in_scope_previous_states": [
+                      "ASSERTION_SCOPE_ASSERTED"
+                    ],
+                    "in_scope_assertions": [
+                      {
+                        "observer_seal": "1d33ed402a9bbb806f72cc1d6d90987c5f9ec84466d491076b8b642712c77990",
+                        "observer_provenance": "ac782c214431baf8ca3aadc57b88b77d5bcc5fa2b68ea5e911ca93fe435576e1",
+                        "target_seal": "13ed85ff00289937bacff51a7ee6d22f7595de82158652019ee6274a971f3902",
+                        "previous_revision_seal_of_target_seal": [
+                          "d9f4b61967611be932e59902bbb94609a15d2272e21b93eb3a769b9e8730c914"
+                        ],
+                        "messages": [
+                          "Reviewed semantic goal criterion correction and withdrawal of author-origin controls; other scope retained."
+                        ]
+                      },
+                      {
+                        "observer_seal": "a92d980353f3707fe6a8c4fd08ca5714d0e5b2ff713e89e96d018a380c64eba3",
+                        "observer_provenance": "3a29d0b43767d38d2bf162d7bdee4a717ed699c08332784b15032707f05612de",
+                        "target_seal": "13ed85ff00289937bacff51a7ee6d22f7595de82158652019ee6274a971f3902",
+                        "previous_revision_seal_of_target_seal": [
+                          "d9f4b61967611be932e59902bbb94609a15d2272e21b93eb3a769b9e8730c914"
+                        ],
+                        "messages": [
+                          "Reviewed semantic goal criterion correction and withdrawal of author-origin controls; other scope retained."
+                        ]
+                      }
+                    ],
+                    "structural_previous_seals": [
+                      "d9f4b61967611be932e59902bbb94609a15d2272e21b93eb3a769b9e8730c914"
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "cause_seal_ids": [
+                "1d33ed402a9bbb806f72cc1d6d90987c5f9ec84466d491076b8b642712c77990",
+                "a92d980353f3707fe6a8c4fd08ca5714d0e5b2ff713e89e96d018a380c64eba3",
+                "13ed85ff00289937bacff51a7ee6d22f7595de82158652019ee6274a971f3902"
+              ],
+              "matched_revision_seal_id": "13ed85ff00289937bacff51a7ee6d22f7595de82158652019ee6274a971f3902",
+              "revision_proof": {
+                "seal_ids": [
+                  "13ed85ff00289937bacff51a7ee6d22f7595de82158652019ee6274a971f3902"
+                ],
+                "edges": [],
+                "target_observations": [
+                  {
+                    "target_seal": "13ed85ff00289937bacff51a7ee6d22f7595de82158652019ee6274a971f3902",
+                    "in_scope_previous_states": [
+                      "ASSERTION_SCOPE_ASSERTED"
+                    ],
+                    "in_scope_assertions": [
+                      {
+                        "observer_seal": "1d33ed402a9bbb806f72cc1d6d90987c5f9ec84466d491076b8b642712c77990",
+                        "observer_provenance": "ac782c214431baf8ca3aadc57b88b77d5bcc5fa2b68ea5e911ca93fe435576e1",
+                        "target_seal": "13ed85ff00289937bacff51a7ee6d22f7595de82158652019ee6274a971f3902",
+                        "previous_revision_seal_of_target_seal": [
+                          "d9f4b61967611be932e59902bbb94609a15d2272e21b93eb3a769b9e8730c914"
+                        ],
+                        "messages": [
+                          "Reviewed semantic goal criterion correction and withdrawal of author-origin controls; other scope retained."
+                        ]
+                      },
+                      {
+                        "observer_seal": "a92d980353f3707fe6a8c4fd08ca5714d0e5b2ff713e89e96d018a380c64eba3",
+                        "observer_provenance": "3a29d0b43767d38d2bf162d7bdee4a717ed699c08332784b15032707f05612de",
+                        "target_seal": "13ed85ff00289937bacff51a7ee6d22f7595de82158652019ee6274a971f3902",
+                        "previous_revision_seal_of_target_seal": [
+                          "d9f4b61967611be932e59902bbb94609a15d2272e21b93eb3a769b9e8730c914"
+                        ],
+                        "messages": [
+                          "Reviewed semantic goal criterion correction and withdrawal of author-origin controls; other scope retained."
+                        ]
+                      }
+                    ],
+                    "structural_previous_seals": [
+                      "d9f4b61967611be932e59902bbb94609a15d2272e21b93eb3a769b9e8730c914"
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "cause_seal_ids": [
+                "1d33ed402a9bbb806f72cc1d6d90987c5f9ec84466d491076b8b642712c77990",
+                "dfd455e7460b54b411433eea8ef62c6ab546f2ed02fdf74ffb3ac1e9531cc16b",
+                "a92d980353f3707fe6a8c4fd08ca5714d0e5b2ff713e89e96d018a380c64eba3",
+                "13ed85ff00289937bacff51a7ee6d22f7595de82158652019ee6274a971f3902"
+              ],
+              "matched_revision_seal_id": "13ed85ff00289937bacff51a7ee6d22f7595de82158652019ee6274a971f3902",
+              "revision_proof": {
+                "seal_ids": [
+                  "13ed85ff00289937bacff51a7ee6d22f7595de82158652019ee6274a971f3902"
+                ],
+                "edges": [],
+                "target_observations": [
+                  {
+                    "target_seal": "13ed85ff00289937bacff51a7ee6d22f7595de82158652019ee6274a971f3902",
+                    "in_scope_previous_states": [
+                      "ASSERTION_SCOPE_ASSERTED"
+                    ],
+                    "in_scope_assertions": [
+                      {
+                        "observer_seal": "1d33ed402a9bbb806f72cc1d6d90987c5f9ec84466d491076b8b642712c77990",
+                        "observer_provenance": "ac782c214431baf8ca3aadc57b88b77d5bcc5fa2b68ea5e911ca93fe435576e1",
+                        "target_seal": "13ed85ff00289937bacff51a7ee6d22f7595de82158652019ee6274a971f3902",
+                        "previous_revision_seal_of_target_seal": [
+                          "d9f4b61967611be932e59902bbb94609a15d2272e21b93eb3a769b9e8730c914"
+                        ],
+                        "messages": [
+                          "Reviewed semantic goal criterion correction and withdrawal of author-origin controls; other scope retained."
+                        ]
+                      },
+                      {
+                        "observer_seal": "a92d980353f3707fe6a8c4fd08ca5714d0e5b2ff713e89e96d018a380c64eba3",
+                        "observer_provenance": "3a29d0b43767d38d2bf162d7bdee4a717ed699c08332784b15032707f05612de",
+                        "target_seal": "13ed85ff00289937bacff51a7ee6d22f7595de82158652019ee6274a971f3902",
+                        "previous_revision_seal_of_target_seal": [
+                          "d9f4b61967611be932e59902bbb94609a15d2272e21b93eb3a769b9e8730c914"
+                        ],
+                        "messages": [
+                          "Reviewed semantic goal criterion correction and withdrawal of author-origin controls; other scope retained."
+                        ]
+                      }
+                    ],
+                    "structural_previous_seals": [
+                      "d9f4b61967611be932e59902bbb94609a15d2272e21b93eb3a769b9e8730c914"
+                    ]
+                  }
+                ]
+              }
+            }
+          ],
+          "paths_truncated": false
+        },
+        {
+          "head_seal_id": "a92d980353f3707fe6a8c4fd08ca5714d0e5b2ff713e89e96d018a380c64eba3",
+          "refs": [
+            "design/agency-responsibility"
+          ],
+          "paths": [
+            {
+              "cause_seal_ids": [
+                "a92d980353f3707fe6a8c4fd08ca5714d0e5b2ff713e89e96d018a380c64eba3",
+                "13ed85ff00289937bacff51a7ee6d22f7595de82158652019ee6274a971f3902"
+              ],
+              "matched_revision_seal_id": "13ed85ff00289937bacff51a7ee6d22f7595de82158652019ee6274a971f3902",
+              "revision_proof": {
+                "seal_ids": [
+                  "13ed85ff00289937bacff51a7ee6d22f7595de82158652019ee6274a971f3902"
+                ],
+                "edges": [],
+                "target_observations": [
+                  {
+                    "target_seal": "13ed85ff00289937bacff51a7ee6d22f7595de82158652019ee6274a971f3902",
+                    "in_scope_previous_states": [
+                      "ASSERTION_SCOPE_ASSERTED"
+                    ],
+                    "in_scope_assertions": [
+                      {
+                        "observer_seal": "1d33ed402a9bbb806f72cc1d6d90987c5f9ec84466d491076b8b642712c77990",
+                        "observer_provenance": "ac782c214431baf8ca3aadc57b88b77d5bcc5fa2b68ea5e911ca93fe435576e1",
+                        "target_seal": "13ed85ff00289937bacff51a7ee6d22f7595de82158652019ee6274a971f3902",
+                        "previous_revision_seal_of_target_seal": [
+                          "d9f4b61967611be932e59902bbb94609a15d2272e21b93eb3a769b9e8730c914"
+                        ],
+                        "messages": [
+                          "Reviewed semantic goal criterion correction and withdrawal of author-origin controls; other scope retained."
+                        ]
+                      },
+                      {
+                        "observer_seal": "a92d980353f3707fe6a8c4fd08ca5714d0e5b2ff713e89e96d018a380c64eba3",
+                        "observer_provenance": "3a29d0b43767d38d2bf162d7bdee4a717ed699c08332784b15032707f05612de",
+                        "target_seal": "13ed85ff00289937bacff51a7ee6d22f7595de82158652019ee6274a971f3902",
+                        "previous_revision_seal_of_target_seal": [
+                          "d9f4b61967611be932e59902bbb94609a15d2272e21b93eb3a769b9e8730c914"
+                        ],
+                        "messages": [
+                          "Reviewed semantic goal criterion correction and withdrawal of author-origin controls; other scope retained."
+                        ]
+                      }
+                    ],
+                    "structural_previous_seals": [
+                      "d9f4b61967611be932e59902bbb94609a15d2272e21b93eb3a769b9e8730c914"
+                    ]
+                  }
+                ]
+              }
+            }
+          ],
+          "paths_truncated": false
+        },
+        {
+          "head_seal_id": "dfd455e7460b54b411433eea8ef62c6ab546f2ed02fdf74ffb3ac1e9531cc16b",
+          "refs": [
+            "backlog/character-agency"
+          ],
+          "paths": [
+            {
+              "cause_seal_ids": [
+                "dfd455e7460b54b411433eea8ef62c6ab546f2ed02fdf74ffb3ac1e9531cc16b",
+                "a92d980353f3707fe6a8c4fd08ca5714d0e5b2ff713e89e96d018a380c64eba3",
+                "13ed85ff00289937bacff51a7ee6d22f7595de82158652019ee6274a971f3902"
+              ],
+              "matched_revision_seal_id": "13ed85ff00289937bacff51a7ee6d22f7595de82158652019ee6274a971f3902",
+              "revision_proof": {
+                "seal_ids": [
+                  "13ed85ff00289937bacff51a7ee6d22f7595de82158652019ee6274a971f3902"
+                ],
+                "edges": [],
+                "target_observations": [
+                  {
+                    "target_seal": "13ed85ff00289937bacff51a7ee6d22f7595de82158652019ee6274a971f3902",
+                    "in_scope_previous_states": [
+                      "ASSERTION_SCOPE_ASSERTED"
+                    ],
+                    "in_scope_assertions": [
+                      {
+                        "observer_seal": "1d33ed402a9bbb806f72cc1d6d90987c5f9ec84466d491076b8b642712c77990",
+                        "observer_provenance": "ac782c214431baf8ca3aadc57b88b77d5bcc5fa2b68ea5e911ca93fe435576e1",
+                        "target_seal": "13ed85ff00289937bacff51a7ee6d22f7595de82158652019ee6274a971f3902",
+                        "previous_revision_seal_of_target_seal": [
+                          "d9f4b61967611be932e59902bbb94609a15d2272e21b93eb3a769b9e8730c914"
+                        ],
+                        "messages": [
+                          "Reviewed semantic goal criterion correction and withdrawal of author-origin controls; other scope retained."
+                        ]
+                      },
+                      {
+                        "observer_seal": "a92d980353f3707fe6a8c4fd08ca5714d0e5b2ff713e89e96d018a380c64eba3",
+                        "observer_provenance": "3a29d0b43767d38d2bf162d7bdee4a717ed699c08332784b15032707f05612de",
+                        "target_seal": "13ed85ff00289937bacff51a7ee6d22f7595de82158652019ee6274a971f3902",
+                        "previous_revision_seal_of_target_seal": [
+                          "d9f4b61967611be932e59902bbb94609a15d2272e21b93eb3a769b9e8730c914"
+                        ],
+                        "messages": [
+                          "Reviewed semantic goal criterion correction and withdrawal of author-origin controls; other scope retained."
+                        ]
+                      }
+                    ],
+                    "structural_previous_seals": [
+                      "d9f4b61967611be932e59902bbb94609a15d2272e21b93eb3a769b9e8730c914"
+                    ]
+                  }
+                ]
+              }
+            }
+          ],
+          "paths_truncated": false
+        }
+      ]
+    },
+    "design/agency-responsibility": {
+      "schema": "sealgraph/impact/v2",
+      "source_seal_id": "a92d980353f3707fe6a8c4fd08ca5714d0e5b2ff713e89e96d018a380c64eba3",
+      "assertion_scope": "ALL_OBSERVED",
+      "asserted_by_observer_seal_ids": [],
+      "all_paths": true,
+      "max_paths": 100,
+      "impacts": [
+        {
+          "head_seal_id": "1d33ed402a9bbb806f72cc1d6d90987c5f9ec84466d491076b8b642712c77990",
+          "refs": [
+            "plan/dialogue-expression"
+          ],
+          "paths": [
+            {
+              "cause_seal_ids": [
+                "1d33ed402a9bbb806f72cc1d6d90987c5f9ec84466d491076b8b642712c77990",
+                "a92d980353f3707fe6a8c4fd08ca5714d0e5b2ff713e89e96d018a380c64eba3"
+              ],
+              "matched_revision_seal_id": "a92d980353f3707fe6a8c4fd08ca5714d0e5b2ff713e89e96d018a380c64eba3",
+              "revision_proof": {
+                "seal_ids": [
+                  "a92d980353f3707fe6a8c4fd08ca5714d0e5b2ff713e89e96d018a380c64eba3"
+                ],
+                "edges": [],
+                "target_observations": [
+                  {
+                    "target_seal": "a92d980353f3707fe6a8c4fd08ca5714d0e5b2ff713e89e96d018a380c64eba3",
+                    "in_scope_previous_states": [
+                      "ASSERTION_SCOPE_ASSERTED"
+                    ],
+                    "in_scope_assertions": [
+                      {
+                        "observer_seal": "1d33ed402a9bbb806f72cc1d6d90987c5f9ec84466d491076b8b642712c77990",
+                        "observer_provenance": "ac782c214431baf8ca3aadc57b88b77d5bcc5fa2b68ea5e911ca93fe435576e1",
+                        "target_seal": "a92d980353f3707fe6a8c4fd08ca5714d0e5b2ff713e89e96d018a380c64eba3",
+                        "previous_revision_seal_of_target_seal": [
+                          "bafbd44403ba5864283695600c887332c0de5a3484ad850a37281852afe966c1"
+                        ],
+                        "messages": [
+                          "Reviewed semantic goal criterion correction and withdrawal of author-origin controls; other scope retained."
+                        ]
+                      },
+                      {
+                        "observer_seal": "dfd455e7460b54b411433eea8ef62c6ab546f2ed02fdf74ffb3ac1e9531cc16b",
+                        "observer_provenance": "32c5f56d7bd8d335d841536fb32e9f27b22aa0e6a1e2661f3ad0e72ac6bece0a",
+                        "target_seal": "a92d980353f3707fe6a8c4fd08ca5714d0e5b2ff713e89e96d018a380c64eba3",
+                        "previous_revision_seal_of_target_seal": [
+                          "bafbd44403ba5864283695600c887332c0de5a3484ad850a37281852afe966c1"
+                        ],
+                        "messages": [
+                          "Reviewed semantic goal criterion correction and withdrawal of author-origin controls; other scope retained."
+                        ]
+                      }
+                    ],
+                    "structural_previous_seals": [
+                      "bafbd44403ba5864283695600c887332c0de5a3484ad850a37281852afe966c1"
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "cause_seal_ids": [
+                "1d33ed402a9bbb806f72cc1d6d90987c5f9ec84466d491076b8b642712c77990",
+                "dfd455e7460b54b411433eea8ef62c6ab546f2ed02fdf74ffb3ac1e9531cc16b",
+                "a92d980353f3707fe6a8c4fd08ca5714d0e5b2ff713e89e96d018a380c64eba3"
+              ],
+              "matched_revision_seal_id": "a92d980353f3707fe6a8c4fd08ca5714d0e5b2ff713e89e96d018a380c64eba3",
+              "revision_proof": {
+                "seal_ids": [
+                  "a92d980353f3707fe6a8c4fd08ca5714d0e5b2ff713e89e96d018a380c64eba3"
+                ],
+                "edges": [],
+                "target_observations": [
+                  {
+                    "target_seal": "a92d980353f3707fe6a8c4fd08ca5714d0e5b2ff713e89e96d018a380c64eba3",
+                    "in_scope_previous_states": [
+                      "ASSERTION_SCOPE_ASSERTED"
+                    ],
+                    "in_scope_assertions": [
+                      {
+                        "observer_seal": "1d33ed402a9bbb806f72cc1d6d90987c5f9ec84466d491076b8b642712c77990",
+                        "observer_provenance": "ac782c214431baf8ca3aadc57b88b77d5bcc5fa2b68ea5e911ca93fe435576e1",
+                        "target_seal": "a92d980353f3707fe6a8c4fd08ca5714d0e5b2ff713e89e96d018a380c64eba3",
+                        "previous_revision_seal_of_target_seal": [
+                          "bafbd44403ba5864283695600c887332c0de5a3484ad850a37281852afe966c1"
+                        ],
+                        "messages": [
+                          "Reviewed semantic goal criterion correction and withdrawal of author-origin controls; other scope retained."
+                        ]
+                      },
+                      {
+                        "observer_seal": "dfd455e7460b54b411433eea8ef62c6ab546f2ed02fdf74ffb3ac1e9531cc16b",
+                        "observer_provenance": "32c5f56d7bd8d335d841536fb32e9f27b22aa0e6a1e2661f3ad0e72ac6bece0a",
+                        "target_seal": "a92d980353f3707fe6a8c4fd08ca5714d0e5b2ff713e89e96d018a380c64eba3",
+                        "previous_revision_seal_of_target_seal": [
+                          "bafbd44403ba5864283695600c887332c0de5a3484ad850a37281852afe966c1"
+                        ],
+                        "messages": [
+                          "Reviewed semantic goal criterion correction and withdrawal of author-origin controls; other scope retained."
+                        ]
+                      }
+                    ],
+                    "structural_previous_seals": [
+                      "bafbd44403ba5864283695600c887332c0de5a3484ad850a37281852afe966c1"
+                    ]
+                  }
+                ]
+              }
+            }
+          ],
+          "paths_truncated": false
+        },
+        {
+          "head_seal_id": "dfd455e7460b54b411433eea8ef62c6ab546f2ed02fdf74ffb3ac1e9531cc16b",
+          "refs": [
+            "backlog/character-agency"
+          ],
+          "paths": [
+            {
+              "cause_seal_ids": [
+                "dfd455e7460b54b411433eea8ef62c6ab546f2ed02fdf74ffb3ac1e9531cc16b",
+                "a92d980353f3707fe6a8c4fd08ca5714d0e5b2ff713e89e96d018a380c64eba3"
+              ],
+              "matched_revision_seal_id": "a92d980353f3707fe6a8c4fd08ca5714d0e5b2ff713e89e96d018a380c64eba3",
+              "revision_proof": {
+                "seal_ids": [
+                  "a92d980353f3707fe6a8c4fd08ca5714d0e5b2ff713e89e96d018a380c64eba3"
+                ],
+                "edges": [],
+                "target_observations": [
+                  {
+                    "target_seal": "a92d980353f3707fe6a8c4fd08ca5714d0e5b2ff713e89e96d018a380c64eba3",
+                    "in_scope_previous_states": [
+                      "ASSERTION_SCOPE_ASSERTED"
+                    ],
+                    "in_scope_assertions": [
+                      {
+                        "observer_seal": "1d33ed402a9bbb806f72cc1d6d90987c5f9ec84466d491076b8b642712c77990",
+                        "observer_provenance": "ac782c214431baf8ca3aadc57b88b77d5bcc5fa2b68ea5e911ca93fe435576e1",
+                        "target_seal": "a92d980353f3707fe6a8c4fd08ca5714d0e5b2ff713e89e96d018a380c64eba3",
+                        "previous_revision_seal_of_target_seal": [
+                          "bafbd44403ba5864283695600c887332c0de5a3484ad850a37281852afe966c1"
+                        ],
+                        "messages": [
+                          "Reviewed semantic goal criterion correction and withdrawal of author-origin controls; other scope retained."
+                        ]
+                      },
+                      {
+                        "observer_seal": "dfd455e7460b54b411433eea8ef62c6ab546f2ed02fdf74ffb3ac1e9531cc16b",
+                        "observer_provenance": "32c5f56d7bd8d335d841536fb32e9f27b22aa0e6a1e2661f3ad0e72ac6bece0a",
+                        "target_seal": "a92d980353f3707fe6a8c4fd08ca5714d0e5b2ff713e89e96d018a380c64eba3",
+                        "previous_revision_seal_of_target_seal": [
+                          "bafbd44403ba5864283695600c887332c0de5a3484ad850a37281852afe966c1"
+                        ],
+                        "messages": [
+                          "Reviewed semantic goal criterion correction and withdrawal of author-origin controls; other scope retained."
+                        ]
+                      }
+                    ],
+                    "structural_previous_seals": [
+                      "bafbd44403ba5864283695600c887332c0de5a3484ad850a37281852afe966c1"
+                    ]
+                  }
+                ]
+              }
+            }
+          ],
+          "paths_truncated": false
+        }
+      ]
+    },
+    "backlog/character-agency": {
+      "schema": "sealgraph/impact/v2",
+      "source_seal_id": "dfd455e7460b54b411433eea8ef62c6ab546f2ed02fdf74ffb3ac1e9531cc16b",
+      "assertion_scope": "ALL_OBSERVED",
+      "asserted_by_observer_seal_ids": [],
+      "all_paths": true,
+      "max_paths": 100,
+      "impacts": [
+        {
+          "head_seal_id": "1d33ed402a9bbb806f72cc1d6d90987c5f9ec84466d491076b8b642712c77990",
+          "refs": [
+            "plan/dialogue-expression"
+          ],
+          "paths": [
+            {
+              "cause_seal_ids": [
+                "1d33ed402a9bbb806f72cc1d6d90987c5f9ec84466d491076b8b642712c77990",
+                "dfd455e7460b54b411433eea8ef62c6ab546f2ed02fdf74ffb3ac1e9531cc16b"
+              ],
+              "matched_revision_seal_id": "dfd455e7460b54b411433eea8ef62c6ab546f2ed02fdf74ffb3ac1e9531cc16b",
+              "revision_proof": {
+                "seal_ids": [
+                  "dfd455e7460b54b411433eea8ef62c6ab546f2ed02fdf74ffb3ac1e9531cc16b"
+                ],
+                "edges": [],
+                "target_observations": [
+                  {
+                    "target_seal": "dfd455e7460b54b411433eea8ef62c6ab546f2ed02fdf74ffb3ac1e9531cc16b",
+                    "in_scope_previous_states": [
+                      "ASSERTION_SCOPE_ASSERTED"
+                    ],
+                    "in_scope_assertions": [
+                      {
+                        "observer_seal": "1d33ed402a9bbb806f72cc1d6d90987c5f9ec84466d491076b8b642712c77990",
+                        "observer_provenance": "ac782c214431baf8ca3aadc57b88b77d5bcc5fa2b68ea5e911ca93fe435576e1",
+                        "target_seal": "dfd455e7460b54b411433eea8ef62c6ab546f2ed02fdf74ffb3ac1e9531cc16b",
+                        "previous_revision_seal_of_target_seal": [
+                          "1cd42023095aabbccb27c5549d020a0c1ef5cb306b140a59682a2368c17e815a"
+                        ],
+                        "messages": [
+                          "Reviewed semantic goal criterion correction and withdrawal of author-origin controls; other scope retained."
+                        ]
+                      }
+                    ],
+                    "structural_previous_seals": [
+                      "1cd42023095aabbccb27c5549d020a0c1ef5cb306b140a59682a2368c17e815a"
+                    ]
+                  }
+                ]
+              }
+            }
+          ],
+          "paths_truncated": false
+        }
+      ]
+    },
+    "plan/dialogue-expression": {
+      "schema": "sealgraph/impact/v2",
+      "source_seal_id": "1d33ed402a9bbb806f72cc1d6d90987c5f9ec84466d491076b8b642712c77990",
+      "assertion_scope": "ALL_OBSERVED",
+      "asserted_by_observer_seal_ids": [],
+      "all_paths": true,
+      "max_paths": 100,
+      "impacts": []
+    }
+  },
+  "reviews": [
+    {
+      "ref": "implementation/agency-settings",
+      "old": null,
+      "head": "542077aca5f08746661505394f893155737afbb9f044f2a709a862fa8a32d6d9",
+      "message": "Reviewed ADR0028 D2: existing transaction and revision CAS retained; explicit 3 requires compact, omitted version preserves stored 3, explicit 2 remains available. JSON conversion remains at the actual database boundary. Local settings regression passed; no live setting changed.",
+      "causes": [
+        {
+          "ref": "proposal/adr-0028",
+          "id": "d49e7b6a1842c109b54a3d294f0b87a5df0d47d14e51d884dd75fffdbdadac5e",
+          "previous": [
+            "95ddf1430f70e8fa649c5cc049827aa6ebf77e7a6ce444fbbb2693d947a740a6"
+          ]
+        },
+        {
+          "ref": "implementation/dialogue-generation",
+          "id": "00ec111cf1ccdb079fa127ae7a7a5c387093a70f1bc610ef971b402cb44c510e",
+          "previous": [
+            "f8fd630c0148b08be95139cf9eba9afa6d445d602879ee1a5337c075accb8767"
+          ]
+        }
+      ]
+    },
+    {
+      "ref": "implementation/agency-activation",
+      "old": null,
+      "head": "04492257e18091b4c5629b7a1f7fe5ded33b5d4d462029849cf32f82e541d164",
+      "message": "Reviewed D2 and ADR0018 compatibility: V3 plus legacy override rejects before creation; compact retains explicit deployment identity and frozen snapshot. Runtime fixture covers rejection; no activation executed.",
+      "causes": [
+        {
+          "ref": "proposal/adr-0028",
+          "id": "d49e7b6a1842c109b54a3d294f0b87a5df0d47d14e51d884dd75fffdbdadac5e",
+          "previous": [
+            "95ddf1430f70e8fa649c5cc049827aa6ebf77e7a6ce444fbbb2693d947a740a6"
+          ]
+        },
+        {
+          "ref": "implementation/dialogue-generation",
+          "id": "00ec111cf1ccdb079fa127ae7a7a5c387093a70f1bc610ef971b402cb44c510e",
+          "previous": [
+            "f8fd630c0148b08be95139cf9eba9afa6d445d602879ee1a5337c075accb8767"
+          ]
+        }
+      ]
+    },
+    {
+      "ref": "implementation/psyche-reaction-execution",
+      "old": null,
+      "head": "acd6b6438db2390a3e1bb4b931a8054bc87f288d27e7744e0e3f69cbf564f23e",
+      "message": "Reviewed D3: extracted pure projection retains thresholds, excludes raw traits from projections and never ticks state. Legacy transition still decays on null; V3 hold is enforced by service routing, not by changing the legacy policy. Projection and V3 missing-input regressions passed.",
+      "causes": [
+        {
+          "ref": "proposal/adr-0028",
+          "id": "d49e7b6a1842c109b54a3d294f0b87a5df0d47d14e51d884dd75fffdbdadac5e",
+          "previous": [
+            "95ddf1430f70e8fa649c5cc049827aa6ebf77e7a6ce444fbbb2693d947a740a6"
+          ]
+        },
+        {
+          "ref": "implementation/psyche-schema",
+          "id": "06dc78a5d230a484b50a1433c84c6ff3c8a387c0c4edbbf3d6e57bf1f79a3fcd",
+          "previous": [
+            "77e2e8d6ebe4503d2a86eebb1cc85b4fc0f5af2405b0a135f6163bcd4c6dca08"
+          ]
+        }
+      ]
+    },
+    {
+      "ref": "implementation/shared-exports",
+      "old": null,
+      "head": "85b5616e39f7faa8bd92e69a0150107c847bcc15da07cce2a91fe578367cd48c",
+      "message": "Reviewed index addition: exports conscious-agency through the existing shared entry point with no runtime writer or alternative contract. Local shared build and consumer-focused tests passed.",
+      "causes": [
+        {
+          "ref": "implementation/conscious-agency",
+          "id": "432d3a74786d9531cc2a0795478207342073334f76fce7dcde972f4df6081577",
+          "previous": []
+        }
+      ]
+    },
+    {
+      "ref": "verification/conscious-agency",
+      "old": null,
+      "head": "418c43f720e87b3b638cfe64f96f1caa2665cd5ef7f9367905f7d3e49b8cb64f",
+      "message": "Reviewed unit assertions for closed state, field-level failure precedence, immutable initialized goal, paired intent/action acceptance, later rejection, old/current refs and independent expression. Local tests passed; same decoded text equality is not model-quality or whole speech-history proof.",
+      "causes": [
+        {
+          "ref": "implementation/conscious-agency",
+          "id": "432d3a74786d9531cc2a0795478207342073334f76fce7dcde972f4df6081577",
+          "previous": []
+        }
+      ]
+    },
+    {
+      "ref": "verification/agency-runtime-fixture",
+      "old": null,
+      "head": "91b269701818a1094e39f4a02171d9367ec16d0c6323d46aa1b8297a76d93d0d",
+      "message": "Reviewed synthetic V3 conversion of CA00 fixture: preserves character bindings, removes old compiler psyche, initializes agency and reaction, and injects legacy privacy markers. Fixture mutation is test setup, not production migration or actual goal-quality evidence.",
+      "causes": [
+        {
+          "ref": "proposal/adr-0028",
+          "id": "d49e7b6a1842c109b54a3d294f0b87a5df0d47d14e51d884dd75fffdbdadac5e",
+          "previous": [
+            "95ddf1430f70e8fa649c5cc049827aa6ebf77e7a6ce444fbbb2693d947a740a6"
+          ]
+        },
+        {
+          "ref": "verification/agency-fixtures",
+          "id": "e6fb588e6d33ccbade81ef04c8e072a0fb7b31368f8c0d7e5fedc0cc86ed9101",
+          "previous": [
+            "b11371cc55e48e206838d3c6afe37a26e6039275b346c1f33765d1fbbe1c770b"
+          ]
+        }
+      ]
+    },
+    {
+      "ref": "verification/agency-runtime",
+      "old": null,
+      "head": "cee2ce95f686d8f41113c248da8d3cee5e5bd0025c5ae7920de4a1f89a9a3eb3",
+      "message": "Reviewed executed network-replaced runtime regressions: active phase routing, no psyche calls, legacy privacy exclusion, goal retained into next judgment, valid speech after rejection, tuple drift, disabled/missing input and later no-tick. Does not test real provider receipts or semantic quality.",
+      "causes": [
+        {
+          "ref": "verification/agency-runtime-fixture",
+          "id": "91b269701818a1094e39f4a02171d9367ec16d0c6323d46aa1b8297a76d93d0d",
+          "previous": []
+        },
+        {
+          "ref": "implementation/agency-provider-input",
+          "id": "1ee9116ed4bbe895e7bf4a0f988c03c420edaada93df5405e5d777a10ecd02d3",
+          "previous": []
+        },
+        {
+          "ref": "implementation/battle-service",
+          "id": "1dea6122496adcda3a8b98c957afaccf8105a72bcc566beac46b7cbeb4b2fdb8",
+          "previous": [
+            "d15f0e74251ebf6d1e6c79d23791cec636e7a48de9a1a63d3355f0284fe2591b"
+          ]
+        },
+        {
+          "ref": "implementation/llm-adapter",
+          "id": "f7b632140aaa001510b22d8907d136024b8a14dac91de23b64ab9c8fb1672dac",
+          "previous": [
+            "6c2e9e3e526983af768b2a898efbcc34e949d64ed9fb0b1ab875d4b37eb61c5a"
+          ]
+        }
+      ]
+    },
+    {
+      "ref": "verification/agency-binding",
+      "old": null,
+      "head": "82718199df8b8f179dcc536294a233bcb9b519ffa36e711169170f91f331ff3e",
+      "message": "Reviewed executed V3 tuple schema tests: existing character generation/digest retained, complete compiler required, mixed dialogue generation/reaction policy rejected, override identity paired and default remains V1. Schema tests are not live activation evidence.",
+      "causes": [
+        {
+          "ref": "implementation/psyche-schema",
+          "id": "06dc78a5d230a484b50a1433c84c6ff3c8a387c0c4edbbf3d6e57bf1f79a3fcd",
+          "previous": [
+            "77e2e8d6ebe4503d2a86eebb1cc85b4fc0f5af2405b0a135f6163bcd4c6dca08"
+          ]
+        },
+        {
+          "ref": "implementation/dialogue-generation",
+          "id": "00ec111cf1ccdb079fa127ae7a7a5c387093a70f1bc610ef971b402cb44c510e",
+          "previous": [
+            "f8fd630c0148b08be95139cf9eba9afa6d445d602879ee1a5337c075accb8767"
+          ]
+        }
+      ]
+    },
+    {
+      "ref": "verification/agency-persistence",
+      "old": null,
+      "head": "3ab985d1aa9ab15922921f3b33351de1457e8bad2c38e77c5c186353c9a25f86",
+      "message": "Reviewed executed temporary-SQLite tests for real V3 creation/advance with Mock, service acceptance through save/reload/second judgment and stale CAS rejection. The third synthetic legacy insertion tests storage only. Private goal is excluded from public DTO; no provider quality claim.",
+      "causes": [
+        {
+          "ref": "verification/agency-runtime-fixture",
+          "id": "91b269701818a1094e39f4a02171d9367ec16d0c6323d46aa1b8297a76d93d0d",
+          "previous": []
+        },
+        {
+          "ref": "implementation/conscious-agency",
+          "id": "432d3a74786d9531cc2a0795478207342073334f76fce7dcde972f4df6081577",
+          "previous": []
+        },
+        {
+          "ref": "implementation/battle-persistence",
+          "id": "6152d587ac52d31be41745c4a1a3179d763e5239f2418f01c9fe72e2b75518da",
+          "previous": []
+        },
+        {
+          "ref": "implementation/battle-service",
+          "id": "1dea6122496adcda3a8b98c957afaccf8105a72bcc566beac46b7cbeb4b2fdb8",
+          "previous": [
+            "d15f0e74251ebf6d1e6c79d23791cec636e7a48de9a1a63d3355f0284fe2591b"
+          ]
+        }
+      ]
+    },
+    {
+      "ref": "verification/agency-settings",
+      "old": null,
+      "head": "514040bdc03cc6289c8d051f39c2275152b377975f2279726d8345c362a2603a",
+      "message": "Reviewed executed settings tests: default V1, persisted V2, V3 opt-in, omitted version retains V3, invalid legacy request is atomic, stale save rejected and explicit V2 downgrade applies to future settings only.",
+      "causes": [
+        {
+          "ref": "implementation/agency-settings",
+          "id": "542077aca5f08746661505394f893155737afbb9f044f2a709a862fa8a32d6d9",
+          "previous": []
+        }
+      ]
+    },
+    {
+      "ref": "verification/agency-legacy-speech",
+      "old": null,
+      "head": "f3ee172553ffb79c9a2237179141de9d9416bfe7f2701499fd0c76ec19a0ef96",
+      "message": "Reviewed the legacy speech fixture delta: explicitly excludes both Compact V2 and V3 before accessing legacy result shape. This is a type-safe legacy regression boundary, not a new V3 quality test; prior full-suite success is historical evidence.",
+      "causes": [
+        {
+          "ref": "implementation/battle-service",
+          "id": "1dea6122496adcda3a8b98c957afaccf8105a72bcc566beac46b7cbeb4b2fdb8",
+          "previous": [
+            "d15f0e74251ebf6d1e6c79d23791cec636e7a48de9a1a63d3355f0284fe2591b"
+          ]
+        },
+        {
+          "ref": "implementation/llm-types",
+          "id": "3c2c8e5eacbfd4102196e6ca92dba66302427e3a7299c9b06805242450dbfc38",
+          "previous": [
+            "3ac35cc572548ca109a414a0af0b980383f448a773c12e3aa51854a1bd3b83ca"
+          ]
+        }
+      ]
+    },
+    {
+      "ref": "verification/psyche-reaction",
+      "old": null,
+      "head": "a0da19b44eb04e31ed21b0f758b0dc87deecf36486e805aac316013a15c2d58f",
+      "message": "Reviewed executed policy tests: pure repeated projection is immutable and agrees with transition output; legacy deterministic certainty/source processing, null decay and inhibition remain. V3 missing-input hold is covered separately at the service boundary.",
+      "causes": [
+        {
+          "ref": "implementation/psyche-reaction-execution",
+          "id": "acd6b6438db2390a3e1bb4b931a8054bc87f288d27e7744e0e3f69cbf564f23e",
+          "previous": []
+        }
+      ]
+    },
+    {
+      "ref": "reasoning/agency-v3-implementation",
+      "old": null,
+      "head": "ff940853639859e8050b8c3ee7cb37620b2f158e791897308385a14aae48bc0a",
+      "message": "Reviewed historical implementation reasoning against exact v2 owner acceptance. Its time, dirty HEAD and preimplementation status describe September 9 only. Preserve original bytes; this Seal does not authorize replaying overtime or implementation effects today.",
+      "causes": [
+        {
+          "ref": "acceptance/agency-requirements-v2",
+          "id": "be1313e0a26940bcba5be537080c779b14b9262d3c709000c627040b1bff79ee",
+          "previous": []
+        }
+      ]
+    },
+    {
+      "ref": "reasoning/agency-v3-seal",
+      "old": null,
+      "head": "40865b1ade306177422639cbc4c81681b4507c672f144e42699ca459ef24b97c",
+      "message": "Reviewed historical verification reasoning: 708-test intermediate count, absent npm gate and post-edit/preseal impact describe the earlier checkpoint. Retain those limits and no quality claim; later 709-test and checker restoration records do not retroactively alter this reasoning.",
+      "causes": [
+        {
+          "ref": "reasoning/agency-v3-implementation",
+          "id": "ff940853639859e8050b8c3ee7cb37620b2f158e791897308385a14aae48bc0a",
+          "previous": []
+        }
+      ]
+    },
+    {
+      "ref": "evidence/agency-v3-local",
+      "old": null,
+      "head": "95e429475dca2f3dc3b7b940a50d60ed7321b57fba1e136d0992897b6de6264c",
+      "message": "Reviewed historical local implementation report against registered code/tests and exact acceptance. Preserve 709-test checkpoint and original absent-check limits; latest remote handoff supersedes progress, not the original evidence. This registration proves traceability, not Grok improvement or all remaining gates.",
+      "causes": [
+        {
+          "ref": "proposal/adr-0028",
+          "id": "d49e7b6a1842c109b54a3d294f0b87a5df0d47d14e51d884dd75fffdbdadac5e",
+          "previous": [
+            "95ddf1430f70e8fa649c5cc049827aa6ebf77e7a6ce444fbbb2693d947a740a6"
+          ]
+        },
+        {
+          "ref": "acceptance/agency-requirements-v2",
+          "id": "be1313e0a26940bcba5be537080c779b14b9262d3c709000c627040b1bff79ee",
+          "previous": []
+        },
+        {
+          "ref": "implementation/agency-provider-input",
+          "id": "1ee9116ed4bbe895e7bf4a0f988c03c420edaada93df5405e5d777a10ecd02d3",
+          "previous": []
+        },
+        {
+          "ref": "implementation/agency-settings",
+          "id": "542077aca5f08746661505394f893155737afbb9f044f2a709a862fa8a32d6d9",
+          "previous": []
+        },
+        {
+          "ref": "implementation/agency-activation",
+          "id": "04492257e18091b4c5629b7a1f7fe5ded33b5d4d462029849cf32f82e541d164",
+          "previous": []
+        },
+        {
+          "ref": "implementation/psyche-reaction-execution",
+          "id": "acd6b6438db2390a3e1bb4b931a8054bc87f288d27e7744e0e3f69cbf564f23e",
+          "previous": []
+        },
+        {
+          "ref": "implementation/shared-exports",
+          "id": "85b5616e39f7faa8bd92e69a0150107c847bcc15da07cce2a91fe578367cd48c",
+          "previous": []
+        },
+        {
+          "ref": "verification/conscious-agency",
+          "id": "418c43f720e87b3b638cfe64f96f1caa2665cd5ef7f9367905f7d3e49b8cb64f",
+          "previous": []
+        },
+        {
+          "ref": "verification/agency-runtime",
+          "id": "cee2ce95f686d8f41113c248da8d3cee5e5bd0025c5ae7920de4a1f89a9a3eb3",
+          "previous": []
+        },
+        {
+          "ref": "verification/agency-binding",
+          "id": "82718199df8b8f179dcc536294a233bcb9b519ffa36e711169170f91f331ff3e",
+          "previous": []
+        },
+        {
+          "ref": "verification/agency-persistence",
+          "id": "3ab985d1aa9ab15922921f3b33351de1457e8bad2c38e77c5c186353c9a25f86",
+          "previous": []
+        },
+        {
+          "ref": "verification/agency-settings",
+          "id": "514040bdc03cc6289c8d051f39c2275152b377975f2279726d8345c362a2603a",
+          "previous": []
+        },
+        {
+          "ref": "verification/agency-legacy-speech",
+          "id": "f3ee172553ffb79c9a2237179141de9d9416bfe7f2701499fd0c76ec19a0ef96",
+          "previous": []
+        },
+        {
+          "ref": "verification/psyche-reaction",
+          "id": "a0da19b44eb04e31ed21b0f758b0dc87deecf36486e805aac316013a15c2d58f",
+          "previous": []
+        },
+        {
+          "ref": "reasoning/agency-v3-seal",
+          "id": "40865b1ade306177422639cbc4c81681b4507c672f144e42699ca459ef24b97c",
+          "previous": []
+        }
+      ]
+    },
+    {
+      "ref": "plan/agency-implementation",
+      "old": "13ed85ff00289937bacff51a7ee6d22f7595de82158652019ee6274a971f3902",
+      "head": "558a6ac76e80bd0fbecf26c41d78b373973ef0df25adebfa72c615601c3997d3",
+      "message": "Reviewed I01-I10 and t029 A-D against accepted revision2, registered runtime/tests and historical CA00. Revision6 distinguishes successful current-PC format5 checks from other-PC limits, retains old ADR syntax/lifecycle blocker and active t029, and links current evidence without treating local tests as model quality.",
+      "causes": [
+        {
+          "ref": "adr/psyche-boundary",
+          "id": "87d4106035e8b09c667d27d164691b16b93c12c6c683b414097b3763b0c53e5d",
+          "previous": [
+            "5a65ee9aeb1c0b082985e0e320521d014a7211ff0f4d8e50da4ebc8e10e56957",
+            "daf55fb5a31b09c0c905b322ada0ccb1ca718103b562ec90d5254f000eebf389"
+          ]
+        },
+        {
+          "ref": "implementation/psyche-schema",
+          "id": "06dc78a5d230a484b50a1433c84c6ff3c8a387c0c4edbbf3d6e57bf1f79a3fcd",
+          "previous": [
+            "77e2e8d6ebe4503d2a86eebb1cc85b4fc0f5af2405b0a135f6163bcd4c6dca08"
+          ]
+        },
+        {
+          "ref": "implementation/llm-types",
+          "id": "3c2c8e5eacbfd4102196e6ca92dba66302427e3a7299c9b06805242450dbfc38",
+          "previous": [
+            "3ac35cc572548ca109a414a0af0b980383f448a773c12e3aa51854a1bd3b83ca"
+          ]
+        },
+        {
+          "ref": "implementation/battle-service",
+          "id": "1dea6122496adcda3a8b98c957afaccf8105a72bcc566beac46b7cbeb4b2fdb8",
+          "previous": [
+            "d15f0e74251ebf6d1e6c79d23791cec636e7a48de9a1a63d3355f0284fe2591b"
+          ]
+        },
+        {
+          "ref": "implementation/llm-adapter",
+          "id": "f7b632140aaa001510b22d8907d136024b8a14dac91de23b64ab9c8fb1672dac",
+          "previous": [
+            "6c2e9e3e526983af768b2a898efbcc34e949d64ed9fb0b1ab875d4b37eb61c5a"
+          ]
+        },
+        {
+          "ref": "implementation/expression-prompt",
+          "id": "c2f4699be7535ea73cfe0f2a533bca647aa143ee6c3bcb59962232115288e97b",
+          "previous": []
+        },
+        {
+          "ref": "implementation/mock-adapter",
+          "id": "dac25ee5bc493fffc7f0dd993dfa00509d012b960d2daf4cfbb249d3ebb63a1a",
+          "previous": [
+            "fbaa75723a9cb10cd2ef10f7d277f93caa7741ae87d6bd106651cf6b1e4ee531"
+          ]
+        },
+        {
+          "ref": "implementation/conscious-self-projection",
+          "id": "1b37e3ef76ffd4675dc0666dc88b13891ac790d10f1bebc4ae0db30ffba7460b",
+          "previous": []
+        },
+        {
+          "ref": "implementation/decision-profile",
+          "id": "0d552eb32f756b6cbe070aab49454c2e133a0d965b3e7cf64b7cd59e79f6be4c",
+          "previous": []
+        },
+        {
+          "ref": "implementation/dialogue-generation",
+          "id": "00ec111cf1ccdb079fa127ae7a7a5c387093a70f1bc610ef971b402cb44c510e",
+          "previous": [
+            "f8fd630c0148b08be95139cf9eba9afa6d445d602879ee1a5337c075accb8767"
+          ]
+        },
+        {
+          "ref": "implementation/psyche-decoder",
+          "id": "504534ac5917cae43210efd2fa55eaef6b33c66dc1290e33442299c5f42715a1",
+          "previous": []
+        },
+        {
+          "ref": "implementation/battle-persistence",
+          "id": "6152d587ac52d31be41745c4a1a3179d763e5239f2418f01c9fe72e2b75518da",
+          "previous": []
+        },
+        {
+          "ref": "implementation/operation-taxonomy",
+          "id": "172ba316544d2962cb161fafe87087e9707e87b7e8e7500fa76077c443757883",
+          "previous": []
+        },
+        {
+          "ref": "implementation/private-observability",
+          "id": "824702a3a7d51b961e494f3cfe71b354eac9fd73635b52e8f72ffa4d1021d4c4",
+          "previous": [
+            "f4ebef6061bc6f748fea8c8715c38eeffcb9473d8729b220e63b07058436c7af"
+          ]
+        },
+        {
+          "ref": "implementation/agency-replay-baseline",
+          "id": "909f19a6715f6ca8953ba62c79d58e9db0e196b8cb81f7f9f8e5b22256642015",
+          "previous": []
+        },
+        {
+          "ref": "evidence/agency-ca00",
+          "id": "a0d966a5ff754f24aa7d29cd24b046dd756e1fa470dbefad752324d9005252b1",
+          "previous": [
+            "2173add4879bfd105d946070b5895c2c1f280450f211cc87ab652c1162fd886f"
+          ]
+        },
+        {
+          "ref": "proposal/adr-0028",
+          "id": "d49e7b6a1842c109b54a3d294f0b87a5df0d47d14e51d884dd75fffdbdadac5e",
+          "previous": [
+            "95ddf1430f70e8fa649c5cc049827aa6ebf77e7a6ce444fbbb2693d947a740a6"
+          ]
+        },
+        {
+          "ref": "proposal/agency-requirements-v2",
+          "id": "a94149096e5cf31c6e9126f3a99ad902dc3d9564b93d9ce436617f98d436aea8",
+          "previous": [
+            "41768031b8d99370bb142b72cb16f4a5e786868200bc674da5fe7663c0d9e2e8"
+          ]
+        },
+        {
+          "ref": "evidence/agency-v3-local",
+          "id": "95e429475dca2f3dc3b7b940a50d60ed7321b57fba1e136d0992897b6de6264c",
+          "previous": []
+        }
+      ]
+    },
+    {
+      "ref": "design/agency-responsibility",
+      "old": "a92d980353f3707fe6a8c4fd08ca5714d0e5b2ff713e89e96d018a380c64eba3",
+      "head": "1c844710781dd4799777d7e2d805de5e8e18a4154c357cad22614bf5c237b0fb",
+      "message": "Reviewed responsibility table and seven legacy tags against Accepted ADR0027/0028 and plan revision6. Preserved psyche/conscious/engine boundaries and marked exploratory unresolved wording as historical; updated current progress references without new architectural authority.",
+      "causes": [
+        {
+          "ref": "adr/psyche-boundary",
+          "id": "87d4106035e8b09c667d27d164691b16b93c12c6c683b414097b3763b0c53e5d",
+          "previous": [
+            "5a65ee9aeb1c0b082985e0e320521d014a7211ff0f4d8e50da4ebc8e10e56957",
+            "daf55fb5a31b09c0c905b322ada0ccb1ca718103b562ec90d5254f000eebf389"
+          ]
+        },
+        {
+          "ref": "design/psyche-slice",
+          "id": "2df2b781a50cf88d8871bc16710753dc55c24cc90f46b143de7b4a6b66a505e8",
+          "previous": [
+            "0cc7b9166cf7a101dab6e776d833fdc7ef041d847857a89de3cf752f95973931"
+          ]
+        },
+        {
+          "ref": "adr/expression-state",
+          "id": "2dce4e3a33324a12de69701b67ab12eae7a2b6e7b45491ff923c4bd9bc3b4697",
+          "previous": [
+            "710e47e1fc0ade17fbd5b4a85f033cb4de3bb9b2857e2a64064e7c3d2d5f16a6"
+          ]
+        },
+        {
+          "ref": "adr/psyche-repair",
+          "id": "1ede4f74fa5c98580939051e0276a3a5e05ccddae73793b333f7156af7842ab3",
+          "previous": [
+            "7d1f51a8a99fdbb64f439085efe4d2d8f58bcc66fba712b0686c45345022567f"
+          ]
+        },
+        {
+          "ref": "plan/agency-implementation",
+          "id": "558a6ac76e80bd0fbecf26c41d78b373973ef0df25adebfa72c615601c3997d3",
+          "previous": [
+            "13ed85ff00289937bacff51a7ee6d22f7595de82158652019ee6274a971f3902"
+          ]
+        }
+      ]
+    },
+    {
+      "ref": "backlog/character-agency",
+      "old": "dfd455e7460b54b411433eea8ef62c6ab546f2ed02fdf74ffb3ac1e9531cc16b",
+      "head": "005412c5811fe0e03cf72504ab9a8b16a56e0ee8950df4487713f64c62a91195",
+      "message": "Reviewed CA00-CA07 priorities and F01-F08 expectations against updated responsibility design. Scope and allowed goal semantics unchanged; current t029 remains active, paid comparison remains future, and actual PERT dialect6/revision19 references corrected.",
+      "causes": [
+        {
+          "ref": "design/agency-responsibility",
+          "id": "1c844710781dd4799777d7e2d805de5e8e18a4154c357cad22614bf5c237b0fb",
+          "previous": [
+            "a92d980353f3707fe6a8c4fd08ca5714d0e5b2ff713e89e96d018a380c64eba3"
+          ]
+        }
+      ]
+    },
+    {
+      "ref": "plan/dialogue-expression",
+      "old": "1d33ed402a9bbb806f72cc1d6d90987c5f9ec84466d491076b8b642712c77990",
+      "head": "45203f06c7c320c76bc756daaf49b12f6d856c6ea21549c446c014bd8989b4bf",
+      "message": "Reviewed PERT revision19 against plan revision6, design revision8 and backlog revision10. Runtime completion is not model-quality acceptance; t029 stays active on old ADR compatibility, t030+ remains unexecuted. Document check passes with only existing milestone closure warnings; explicit new/old plan links retain history.",
+      "causes": [
+        {
+          "ref": "design/agency-responsibility",
+          "id": "1c844710781dd4799777d7e2d805de5e8e18a4154c357cad22614bf5c237b0fb",
+          "previous": [
+            "a92d980353f3707fe6a8c4fd08ca5714d0e5b2ff713e89e96d018a380c64eba3"
+          ]
+        },
+        {
+          "ref": "backlog/character-agency",
+          "id": "005412c5811fe0e03cf72504ab9a8b16a56e0ee8950df4487713f64c62a91195",
+          "previous": [
+            "dfd455e7460b54b411433eea8ef62c6ab546f2ed02fdf74ffb3ac1e9531cc16b"
+          ]
+        },
+        {
+          "ref": "plan/agency-implementation",
+          "id": "558a6ac76e80bd0fbecf26c41d78b373973ef0df25adebfa72c615601c3997d3",
+          "previous": [
+            "13ed85ff00289937bacff51a7ee6d22f7595de82158652019ee6274a971f3902"
+          ]
+        },
+        {
+          "ref": "review/agency-requirements-v2-input",
+          "id": "db600adfc50812d3a2e52c00aa4e951cc69429858851968e51f381d3ccb1263d",
+          "previous": []
+        }
+      ]
+    }
+  ],
+  "after": {
+    "fsck": {
+      "schema": "sealgraph/fsck/v2",
+      "result": "ok",
+      "blobs": 453,
+      "seals": 124,
+      "materials": 107,
+      "provenances": 115,
+      "refs": 62,
+      "tags": 0,
+      "active_seals": 90,
+      "historical_or_detached_seal_ids": [
+        "1cd42023095aabbccb27c5549d020a0c1ef5cb306b140a59682a2368c17e815a",
+        "1d33ed402a9bbb806f72cc1d6d90987c5f9ec84466d491076b8b642712c77990",
+        "2e01962f814950e1eb0ef05e5a044b1db518f590c1a77ed6a6de2ce200960789",
+        "3ad3ca433f3c456f70d804ef84a28e9c9d01fd31d9a789627a724db8eb9f85ee",
+        "3ba5383f923c43b57fd8b274dad79cd9b8009a5038c5ad427345d95f802d4cde",
+        "45396d18919168a0982db90e2fa5b9d1fd21767951a688afc2e649a467795a1f",
+        "4c23d811ef8892dacc3d1080c1210bc0074f319cbe64484aede79797ba810827",
+        "4f0baae0e6fc29de9e19fd624a493b045384295cb5b1731268cd01743af5330a",
+        "547e063824ce94eb1d5f69c78bd2fa8455411cc8ca0168cde434f3a20f2fc2a4",
+        "5ee5da13543fc596b3afb5dc07f313a14d872a5d1d8c60a5db40689c9656b996",
+        "69ea97d090e0228fdb45c0ea3955bd95fae6a0dff29f4299b6de9a0570303c7f",
+        "6e582ac6079592cf41342e11cd1a600bf4444530fdcf65486ba4b6369f241594",
+        "762225f2f1dd4de8ca84d296fc37ee534eeed36a71144c0b256e6786d358e1e6",
+        "7b05f96f566d082a28395180bbca4748d2851e2e4998ce9016b05a0a30e523fd",
+        "8fde2f5d542c92512cf8de93e19a821e1f7afdc89aeb3192d8c2f078f062bc6f",
+        "920974afbb3be371027a628df6c07f46ad0f52f441409d1878420a1c8b2f11fb",
+        "93be69ab470758d33dbb7cebfe6455aa2543d8d0365431f3f3c6da84a8b6c217",
+        "9485c01886666cf78e93763e27b6b6524e5f200d2bec64be4a45291c13e54956",
+        "98e31826220432b945be5094e95c479b6254d31913a750207416c877fe81dac4",
+        "997b3a75d271a12834356027fc299c08107e07aa6dd46a33edd8591ce3d03e2d",
+        "b10ebadada1b4b7cdf1cdcebbae7c9e2439d16ff7e4ea07a5fcc4f5ab1591493",
+        "b5e7bab122c597365e7679eda0339b84c5b4babb13f55c84791a3687f3d1ce59",
+        "b62aaba5c466d31c740e0384c1ce097b1e85fe957a38b8206aa9f6fab3506e7d",
+        "b63127503c73c7e17d52e9da76c18d532d65992c83a847d9a532c18ccbbaf8ba",
+        "be24906f30aa1313c0bf5ed5a658fb50a0137bf2663da685f625cf60699e3681",
+        "c4e28687f61a8507cc2579da2ec97bccbbd38c07684c797db9eb778f9c9f34e0",
+        "cd313d168a27e0325be3c5c275c5f835077f709293fdcde03376c575cfc05932",
+        "cff78d6bfd12473eccdba648cfe552833793d6e184f3127ed18a679dd8e1739c",
+        "d4523cd4dfa83a575e6f20a67b485ea4aef19dc9aee1731e5699343daff1677b",
+        "d76a724e4ba01ebefc0c1d90625a2ea15da817cd90797b985eed9a17a2059d81",
+        "f89669cae17cb5b4bdd372dc613947a8ac100740178bd98cf8b3175a7ea22d92",
+        "f9bea5f209f6faa669113e54ecc325d18986130a7ff872ad5b57ccde06c676b7",
+        "fa337eb38cc4efa5c5d3eb71d8b87e8a181b001109848ca18008516d855e8ab6",
+        "fda6c3bdad5cf33104c6e561a9d11ba41963cd28d277439ff8e549b318b89dde"
+      ],
+      "unreferenced_blob_ids": []
+    },
+    "stale": {
+      "schema": "sealgraph/stale/v2",
+      "frontier": false,
+      "scan": true,
+      "statuses": []
+    },
+    "sourceComparisons": [
+      {
+        "ref": "acceptance/agency-requirements-v1",
+        "head": "beeecf5cf8a19643a5521524dd6db2527f8fd2551fd364e6ef00493ab2a16d0c",
+        "source": {
+          "path": "docs/character-agency-requirements-v1-acceptance.md",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        },
+        "candidate": "NO_CANDIDATE"
+      },
+      {
+        "ref": "acceptance/agency-requirements-v2",
+        "head": "be1313e0a26940bcba5be537080c779b14b9262d3c709000c627040b1bff79ee",
+        "source": {
+          "path": "docs/character-agency-requirements-v2-acceptance.md",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        },
+        "candidate": "NO_CANDIDATE"
+      },
+      {
+        "ref": "adr/0027",
+        "head": "87d4106035e8b09c667d27d164691b16b93c12c6c683b414097b3763b0c53e5d",
+        "source": {
+          "path": "docs/adr/0027-unified-conscious-agency-and-psyche-boundary.think",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        },
+        "candidate": "NO_CANDIDATE"
+      },
+      {
+        "ref": "adr/character-focus",
+        "head": "9c3006ff30fb99fa76fe41bfe2f85033ddbfad9a2f67f7bdfaa7ecda6752d235",
+        "source": {
+          "path": "docs/adr/0008-battle-private-character-focus-state.md",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        },
+        "candidate": "NO_CANDIDATE"
+      },
+      {
+        "ref": "adr/expression-state",
+        "head": "2dce4e3a33324a12de69701b67ab12eae7a2b6e7b45491ff923c4bd9bc3b4697",
+        "source": {
+          "path": "docs/adr/0025-expression-state-and-utterance-actuals.think",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        },
+        "candidate": "NO_CANDIDATE"
+      },
+      {
+        "ref": "adr/psyche-boundary",
+        "head": "87d4106035e8b09c667d27d164691b16b93c12c6c683b414097b3763b0c53e5d",
+        "source": {
+          "path": "docs/adr/0027-unified-conscious-agency-and-psyche-boundary.think",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        },
+        "candidate": "NO_CANDIDATE"
+      },
+      {
+        "ref": "adr/psyche-repair",
+        "head": "1ede4f74fa5c98580939051e0276a3a5e05ccddae73793b333f7156af7842ab3",
+        "source": {
+          "path": "docs/adr/0026-compact-psyche-semantic-closure-repair.think",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        },
+        "candidate": "NO_CANDIDATE"
+      },
+      {
+        "ref": "adr/structured-character",
+        "head": "a16926e3e7cc0153d24ac2ec61390a382f1a0a95abb1cf73d83af40da60f754e",
+        "source": {
+          "path": "docs/adr/0011-structured-character-definition.md",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        },
+        "candidate": "NO_CANDIDATE"
+      },
+      {
+        "ref": "archive/adr-0004",
+        "head": "c60f19e3e97fad6e86e0e3c2843ac50392ecf42eb145532e81dbcf4f2f6dc8fa",
+        "source": {
+          "path": "docs/adr/0004-versioned-lightweight-psyche-dynamics.md",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        },
+        "candidate": "NO_CANDIDATE"
+      },
+      {
+        "ref": "backlog/character-agency",
+        "head": "005412c5811fe0e03cf72504ab9a8b16a56e0ee8950df4487713f64c62a91195",
+        "source": {
+          "path": "docs/character-agency-backlog.md",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        },
+        "candidate": "NO_CANDIDATE"
+      },
+      {
+        "ref": "correction/agency-goal-criterion",
+        "head": "a510105d1b636905e2a3bcfc295c9903ad6d5785057bb06e02ecd30f61700996",
+        "source": {
+          "path": "docs/evidence/agency-goal-criterion-correction-2026-09-09.md",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        },
+        "candidate": "NO_CANDIDATE"
+      },
+      {
+        "ref": "design/agency-responsibility",
+        "head": "1c844710781dd4799777d7e2d805de5e8e18a4154c357cad22614bf5c237b0fb",
+        "source": {
+          "path": "docs/character-agency-responsibility-design-v1.md",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        },
+        "candidate": "NO_CANDIDATE"
+      },
+      {
+        "ref": "design/psyche-reaction",
+        "head": "c3be1f179e29fc80f45d536c014355ee6abca2698be353e34c4b43e25332e118",
+        "source": {
+          "path": "docs/lightweight-psyche-reaction-policy.md",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        },
+        "candidate": "NO_CANDIDATE"
+      },
+      {
+        "ref": "design/psyche-slice",
+        "head": "2df2b781a50cf88d8871bc16710753dc55c24cc90f46b143de7b4a6b66a505e8",
+        "source": {
+          "path": "docs/lightweight-psyche-adoptable-slice.md",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        },
+        "candidate": "NO_CANDIDATE"
+      },
+      {
+        "ref": "evidence/adr-0027-implementation-impact",
+        "head": "e80aa6b584fe14e9616a1b5da622b565b674d9135e02cd5edaa295180ab5764e",
+        "source": {
+          "path": "docs/evidence/adr-0027-implementation-impact-2026-09-09.md",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        },
+        "candidate": "NO_CANDIDATE"
+      },
+      {
+        "ref": "evidence/agency-ca00",
+        "head": "a0d966a5ff754f24aa7d29cd24b046dd756e1fa470dbefad752324d9005252b1",
+        "source": {
+          "path": "docs/evidence/character-agency-ca00-inventory-2026-09-09.md",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        },
+        "candidate": "NO_CANDIDATE"
+      },
+      {
+        "ref": "evidence/agency-v3-local",
+        "head": "95e429475dca2f3dc3b7b940a50d60ed7321b57fba1e136d0992897b6de6264c",
+        "source": {
+          "path": "docs/evidence/agency-v3-local-verification-2026-09-09.md",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        },
+        "candidate": "NO_CANDIDATE"
+      },
+      {
+        "ref": "implementation/agency-activation",
+        "head": "04492257e18091b4c5629b7a1f7fe5ded33b5d4d462029849cf32f82e541d164",
+        "source": {
+          "path": "backend/src/services/dialogue-pipeline-activation.ts",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        },
+        "candidate": "NO_CANDIDATE"
+      },
+      {
+        "ref": "implementation/agency-provider-input",
+        "head": "1ee9116ed4bbe895e7bf4a0f988c03c420edaada93df5405e5d777a10ecd02d3",
+        "source": {
+          "path": "backend/src/llm/conscious-agency.ts",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        },
+        "candidate": "NO_CANDIDATE"
+      },
+      {
+        "ref": "implementation/agency-replay-baseline",
+        "head": "909f19a6715f6ca8953ba62c79d58e9db0e196b8cb81f7f9f8e5b22256642015",
+        "source": {
+          "path": "backend/src/scripts/replay-compact-v2-provider.ts",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        },
+        "candidate": "NO_CANDIDATE"
+      },
+      {
+        "ref": "implementation/agency-settings",
+        "head": "542077aca5f08746661505394f893155737afbb9f044f2a709a862fa8a32d6d9",
+        "source": {
+          "path": "backend/src/repositories/dialogue-pipeline-settings.ts",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        },
+        "candidate": "NO_CANDIDATE"
+      },
+      {
+        "ref": "implementation/battle-persistence",
+        "head": "6152d587ac52d31be41745c4a1a3179d763e5239f2418f01c9fe72e2b75518da",
+        "source": {
+          "path": "backend/src/repositories/battles.ts",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        },
+        "candidate": "NO_CANDIDATE"
+      },
+      {
+        "ref": "implementation/battle-service",
+        "head": "1dea6122496adcda3a8b98c957afaccf8105a72bcc566beac46b7cbeb4b2fdb8",
+        "source": {
+          "path": "backend/src/services/battle-service.ts",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        },
+        "candidate": "NO_CANDIDATE"
+      },
+      {
+        "ref": "implementation/conscious-agency",
+        "head": "432d3a74786d9531cc2a0795478207342073334f76fce7dcde972f4df6081577",
+        "source": {
+          "path": "packages/shared/src/conscious-agency.ts",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        },
+        "candidate": "NO_CANDIDATE"
+      },
+      {
+        "ref": "implementation/conscious-self-projection",
+        "head": "1b37e3ef76ffd4675dc0666dc88b13891ac790d10f1bebc4ae0db30ffba7460b",
+        "source": {
+          "path": "packages/shared/src/structured-character.ts",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        },
+        "candidate": "NO_CANDIDATE"
+      },
+      {
+        "ref": "implementation/decision-profile",
+        "head": "0d552eb32f756b6cbe070aab49454c2e133a0d965b3e7cf64b7cd59e79f6be4c",
+        "source": {
+          "path": "backend/src/services/free-action-service.ts",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        },
+        "candidate": "NO_CANDIDATE"
+      },
+      {
+        "ref": "implementation/dialogue-generation",
+        "head": "00ec111cf1ccdb079fa127ae7a7a5c387093a70f1bc610ef971b402cb44c510e",
+        "source": {
+          "path": "packages/shared/src/dialogue-pipeline.ts",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        },
+        "candidate": "NO_CANDIDATE"
+      },
+      {
+        "ref": "implementation/expression-prompt",
+        "head": "c2f4699be7535ea73cfe0f2a533bca647aa143ee6c3bcb59962232115288e97b",
+        "source": {
+          "path": "backend/src/llm/character-expression-prompt.ts",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        },
+        "candidate": "NO_CANDIDATE"
+      },
+      {
+        "ref": "implementation/llm-adapter",
+        "head": "f7b632140aaa001510b22d8907d136024b8a14dac91de23b64ab9c8fb1672dac",
+        "source": {
+          "path": "backend/src/llm/openai-compatible.ts",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        },
+        "candidate": "NO_CANDIDATE"
+      },
+      {
+        "ref": "implementation/llm-types",
+        "head": "3c2c8e5eacbfd4102196e6ca92dba66302427e3a7299c9b06805242450dbfc38",
+        "source": {
+          "path": "backend/src/llm/types.ts",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        },
+        "candidate": "NO_CANDIDATE"
+      },
+      {
+        "ref": "implementation/mock-adapter",
+        "head": "dac25ee5bc493fffc7f0dd993dfa00509d012b960d2daf4cfbb249d3ebb63a1a",
+        "source": {
+          "path": "backend/src/llm/mock.ts",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        },
+        "candidate": "NO_CANDIDATE"
+      },
+      {
+        "ref": "implementation/operation-taxonomy",
+        "head": "172ba316544d2962cb161fafe87087e9707e87b7e8e7500fa76077c443757883",
+        "source": {
+          "path": "backend/src/llm/provider-operation-taxonomy.ts",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        },
+        "candidate": "NO_CANDIDATE"
+      },
+      {
+        "ref": "implementation/private-observability",
+        "head": "824702a3a7d51b961e494f3cfe71b354eac9fd73635b52e8f72ffa4d1021d4c4",
+        "source": {
+          "path": "backend/src/services/internal-observability.ts",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        },
+        "candidate": "NO_CANDIDATE"
+      },
+      {
+        "ref": "implementation/psyche-decoder",
+        "head": "504534ac5917cae43210efd2fa55eaef6b33c66dc1290e33442299c5f42715a1",
+        "source": {
+          "path": "packages/shared/src/compact-psyche-decode.ts",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        },
+        "candidate": "NO_CANDIDATE"
+      },
+      {
+        "ref": "implementation/psyche-reaction-execution",
+        "head": "acd6b6438db2390a3e1bb4b931a8054bc87f288d27e7744e0e3f69cbf564f23e",
+        "source": {
+          "path": "packages/shared/src/psyche-reaction-policy.ts",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        },
+        "candidate": "NO_CANDIDATE"
+      },
+      {
+        "ref": "implementation/psyche-schema",
+        "head": "06dc78a5d230a484b50a1433c84c6ff3c8a387c0c4edbbf3d6e57bf1f79a3fcd",
+        "source": {
+          "path": "packages/shared/src/battle.ts",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        },
+        "candidate": "NO_CANDIDATE"
+      },
+      {
+        "ref": "implementation/shared-exports",
+        "head": "85b5616e39f7faa8bd92e69a0150107c847bcc15da07cce2a91fe578367cd48c",
+        "source": {
+          "path": "packages/shared/src/index.ts",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        },
+        "candidate": "NO_CANDIDATE"
+      },
+      {
+        "ref": "index/adr",
+        "head": "1dcf2505318a29dcb56d5c7debbb49c8c83efcde30b951f7991c46e3f54eb1db",
+        "source": {
+          "path": "docs/adr/README.md",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        },
+        "candidate": "NO_CANDIDATE"
+      },
+      {
+        "ref": "plan/agency-implementation",
+        "head": "558a6ac76e80bd0fbecf26c41d78b373973ef0df25adebfa72c615601c3997d3",
+        "source": {
+          "path": "docs/character-agency-implementation-plan-v1.md",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        },
+        "candidate": "NO_CANDIDATE"
+      },
+      {
+        "ref": "plan/dialogue-expression",
+        "head": "45203f06c7c320c76bc756daaf49b12f6d856c6ea21549c446c014bd8989b4bf",
+        "source": {
+          "path": "docs/dialogue-expression-realization.pert",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        },
+        "candidate": "NO_CANDIDATE"
+      },
+      {
+        "ref": "projection/adr-0025",
+        "head": "a95dbf64df749d20fda4735d7a3a9c2afb27ac8596764e2bf1b4e90a5a08a740",
+        "source": {
+          "path": "docs/adr/0025-expression-state-and-utterance-actuals.md",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        },
+        "candidate": "NO_CANDIDATE"
+      },
+      {
+        "ref": "projection/adr-0026",
+        "head": "3f4550a6c52c61a917739cd1bfeb3ac7ff9911a94b6e10e6b3e18b85eb2dd73f",
+        "source": {
+          "path": "docs/adr/0026-compact-psyche-semantic-closure-repair.md",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        },
+        "candidate": "NO_CANDIDATE"
+      },
+      {
+        "ref": "projection/adr-0027",
+        "head": "eb9ab069a0773222b64bfc78e459c28f72177c4d277d9bbd06f277a7d8d9342a",
+        "source": {
+          "path": "docs/adr/0027-unified-conscious-agency-and-psyche-boundary.md",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        },
+        "candidate": "NO_CANDIDATE"
+      },
+      {
+        "ref": "projection/adr-0028",
+        "head": "ba0ea4d95a2e1337d392dd4371540e96c4753af335cc2a578a5e0f0b58942192",
+        "source": {
+          "path": "docs/adr/0028-versioned-conscious-agency-contract.md",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        },
+        "candidate": "NO_CANDIDATE"
+      },
+      {
+        "ref": "proposal/adr-0028",
+        "head": "d49e7b6a1842c109b54a3d294f0b87a5df0d47d14e51d884dd75fffdbdadac5e",
+        "source": {
+          "path": "docs/adr/0028-versioned-conscious-agency-contract.think",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        },
+        "candidate": "NO_CANDIDATE"
+      },
+      {
+        "ref": "proposal/agency-requirements-v1",
+        "head": "56e05e2463a665a6bcf3a7f77a84839f8d7c3ff25168f45807acb059b3d573f4",
+        "source": {
+          "path": "docs/character-agency-requirements-v1.md",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        },
+        "candidate": "NO_CANDIDATE"
+      },
+      {
+        "ref": "proposal/agency-requirements-v2",
+        "head": "a94149096e5cf31c6e9126f3a99ad902dc3d9564b93d9ce436617f98d436aea8",
+        "source": {
+          "path": "docs/character-agency-requirements-v2.md",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        },
+        "candidate": "NO_CANDIDATE"
+      },
+      {
+        "ref": "reasoning/agency-v3-implementation",
+        "head": "ff940853639859e8050b8c3ee7cb37620b2f158e791897308385a14aae48bc0a",
+        "source": {
+          "path": "docs/evidence/agency-revision2-implementation-2026-09-09.think",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        },
+        "candidate": "NO_CANDIDATE"
+      },
+      {
+        "ref": "reasoning/agency-v3-seal",
+        "head": "40865b1ade306177422639cbc4c81681b4507c672f144e42699ca459ef24b97c",
+        "source": {
+          "path": "docs/evidence/agency-v3-verification-and-seal-2026-09-09.think",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        },
+        "candidate": "NO_CANDIDATE"
+      },
+      {
+        "ref": "review/agency-requirements-v1",
+        "head": "309384230ccc7992fd63ab31c8391b2bfb501b41c3fb2b25f0207dec2a01565d",
+        "source": {
+          "path": "docs/evidence/character-agency-requirements-v1-independent-review-2026-09-09.md",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        },
+        "candidate": "NO_CANDIDATE"
+      },
+      {
+        "ref": "review/agency-requirements-v1-input",
+        "head": "127e45c83baba9fc68c3987c160e26abb937bb36ebd488f5b2bcd8faaf801de2",
+        "source": {
+          "path": "docs/character-agency-requirements-v1-review-input.md",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        },
+        "candidate": "NO_CANDIDATE"
+      },
+      {
+        "ref": "review/agency-requirements-v2-input",
+        "head": "db600adfc50812d3a2e52c00aa4e951cc69429858851968e51f381d3ccb1263d",
+        "source": {
+          "path": "docs/character-agency-requirements-v2-review-input.md",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        },
+        "candidate": "NO_CANDIDATE"
+      },
+      {
+        "ref": "verification/agency-binding",
+        "head": "82718199df8b8f179dcc536294a233bcb9b519ffa36e711169170f91f331ff3e",
+        "source": {
+          "path": "backend/src/services/conscious-agency-binding.test.ts",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        },
+        "candidate": "NO_CANDIDATE"
+      },
+      {
+        "ref": "verification/agency-fixtures",
+        "head": "e6fb588e6d33ccbade81ef04c8e072a0fb7b31368f8c0d7e5fedc0cc86ed9101",
+        "source": {
+          "path": "backend/src/services/character-agency-inventory.fixtures.ts",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        },
+        "candidate": "NO_CANDIDATE"
+      },
+      {
+        "ref": "verification/agency-inventory",
+        "head": "6fd21c287c3b133227ba12f503d8be6b974b55aff0820c32946d9fd8021afe16",
+        "source": {
+          "path": "backend/src/services/character-agency-inventory.test.ts",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        },
+        "candidate": "NO_CANDIDATE"
+      },
+      {
+        "ref": "verification/agency-legacy-speech",
+        "head": "f3ee172553ffb79c9a2237179141de9d9416bfe7f2701499fd0c76ec19a0ef96",
+        "source": {
+          "path": "backend/src/services/battle-speech-wiring.test.ts",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        },
+        "candidate": "NO_CANDIDATE"
+      },
+      {
+        "ref": "verification/agency-persistence",
+        "head": "3ab985d1aa9ab15922921f3b33351de1457e8bad2c38e77c5c186353c9a25f86",
+        "source": {
+          "path": "backend/src/services/conscious-agency-persistence.test.ts",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        },
+        "candidate": "NO_CANDIDATE"
+      },
+      {
+        "ref": "verification/agency-runtime",
+        "head": "cee2ce95f686d8f41113c248da8d3cee5e5bd0025c5ae7920de4a1f89a9a3eb3",
+        "source": {
+          "path": "backend/src/services/conscious-agency-runtime.test.ts",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        },
+        "candidate": "NO_CANDIDATE"
+      },
+      {
+        "ref": "verification/agency-runtime-fixture",
+        "head": "91b269701818a1094e39f4a02171d9367ec16d0c6323d46aa1b8297a76d93d0d",
+        "source": {
+          "path": "backend/src/services/conscious-agency.fixtures.ts",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        },
+        "candidate": "NO_CANDIDATE"
+      },
+      {
+        "ref": "verification/agency-settings",
+        "head": "514040bdc03cc6289c8d051f39c2275152b377975f2279726d8345c362a2603a",
+        "source": {
+          "path": "backend/src/repositories/dialogue-pipeline-settings.test.ts",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        },
+        "candidate": "NO_CANDIDATE"
+      },
+      {
+        "ref": "verification/conscious-agency",
+        "head": "418c43f720e87b3b638cfe64f96f1caa2665cd5ef7f9367905f7d3e49b8cb64f",
+        "source": {
+          "path": "packages/shared/src/conscious-agency.test.ts",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        },
+        "candidate": "NO_CANDIDATE"
+      },
+      {
+        "ref": "verification/psyche-reaction",
+        "head": "a0da19b44eb04e31ed21b0f758b0dc87deecf36486e805aac316013a15c2d58f",
+        "source": {
+          "path": "packages/shared/src/psyche-reaction-policy.test.ts",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        },
+        "candidate": "NO_CANDIDATE"
+      }
+    ],
+    "registryMissing": []
+  },
+  "limitations": [
+    "Registry v7 coverage only, not proof of all dependencies or semantic validity.",
+    "Old ADR 0015-0017/0019 syntax and lifecycle marker compatibility unresolved; t029 active.",
+    "Other-PC full-suite/build/Lizard evidence is historical; current PC ran shared build and six focused test files.",
+    "Raw local source bindings and cache are not portable canonical history."
+  ]
+}

@@ -1,0 +1,137 @@
+framework SuccessorDeliveryPlan:
+  requires problem and decision
+  requires premise and evidence
+  warns pending
+
+domain CharacterSemanticMigrationSuccessorPlanV1:
+  description "Sequence post-requirement work without conflating the urgent authoring defect, architecture authority, local implementation, paid provider use, or production mutation."
+
+problem P1:
+  |
+    Requirement revision 6 is accepted, but it deliberately leaves the
+    successor architecture, implementation, provider-backed candidate creation,
+    production migration, and readback unapproved. Production also has a
+    separate response-schema identity defect that prevents new character
+    creation, while eight current ready V2 characters remain unselectable.
+
+evidence E_REQUIREMENT:
+  |
+    docs/character-v2-compatibility-requirements-v6.md R1-R25 selects a hybrid
+    LLM-assisted V2-to-V3 semantic migration, forbids permanent V2 reader
+    compatibility, preserves immutable generations and battle bindings, and
+    separates requirement acceptance, ADR acceptance, implementation,
+    deployment, authoring-policy activation, provider execution, production
+    pointer migration, and rollback.
+
+evidence E_ACCEPTANCE:
+  |
+    docs/character-v2-compatibility-requirements-v6-acceptance.md records exact
+    owner acceptance and explicitly retains gaps for successor ADRs, V3 schema,
+    capsule, consumer-scoped compatibility, repair and receipt contracts,
+    implementation, paid provider work, per-asset acceptance, production
+    migration, and readback.
+
+evidence E_CONFLICT:
+  |
+    Proposed ADR-0029 revision 1 selects a permanent V2 compatibility reader.
+    The accepted requirement says it must not be accepted as written and must be
+    revised or replaced before implementation of the semantic migration.
+
+evidence E_PRODUCT_DEFECT:
+  |
+    The current worktree contains a focused response-schema identity correction
+    and regression test in backend/src/llm/openai-compatible.ts and
+    backend/src/llm/openai-compatible-character-definition.test.ts. The accepted
+    requirement classifies this as a necessary but separate authoring defect and
+    requires its output contract to follow the selected schema after cutover.
+
+evidence E_EXISTING_PLAN:
+  |
+    docs/dialogue-expression-realization.pert revision 19 still treats t029 as
+    active and then schedules the conscious-agency comparison. It does not yet
+    represent the newly accepted semantic-migration architecture, implementation,
+    migration rehearsal, owner candidate acceptance, or production restoration.
+
+evidence E_SEAL:
+  |
+    Sealgraph impact from acceptance/character-semantic-migration-v6 currently
+    reports no downstream Seals and stale reports none. This means the new
+    successor plan must explicitly link its accepted-requirement cause; zero
+    stale does not prove that older plans already account for the new requirement.
+
+premise AUTHORITY:
+  |
+    Planning may identify later gates, but it does not itself accept an ADR,
+    authorize provider calls, deploy code, activate schema 3, mutate production
+    generations or pointers, or accept migrated candidates.
+
+premise DELIVERY:
+  |
+    The shortest safe path restores new-character authoring independently, then
+    fixes the architecture contradiction before semantic-migration code. Runtime
+    readers for historical battle bindings must exist before schema-3 cutover,
+    and production candidate generation must wait for deployable dual-version
+    code, dry-run evidence, and a frozen manifest.
+
+premise OPTIONS:
+  |
+    A combine authoring repair, architecture, migration engine, provider calls,
+    and production pointer changes in one task. B serialize every concern even
+    when independent, delaying the authoring repair. C use two coordinated lanes:
+    finish and verify the independent authoring defect first while the migration
+    lane proceeds through ADR, contracts, local implementation, rehearsal, and
+    separately authorized production gates.
+
+pending U1:
+  |
+    The exact successor ADR decomposition, qualified V3 compiler and provenance
+    names, capsule persistence and retention, retry ceilings, semantic-review
+    implementation, authoring-policy storage, provider budget, deployment route,
+    frozen production manifest, and per-asset candidate outcomes remain unknown
+    until their designated tasks and reviews.
+
+decision D1 based_on P1, E_REQUIREMENT, E_ACCEPTANCE, E_PRODUCT_DEFECT, AUTHORITY, DELIVERY, OPTIONS:
+  |
+    Select option C. First close the already-started response-schema correction
+    with focused and full local verification, without calling a provider or
+    claiming live recovery. In parallel planning terms, but not by unauthorized
+    external execution, start the migration lane with a successor ADR package.
+
+decision D2 based_on D1, E_CONFLICT, E_REQUIREMENT, E_ACCEPTANCE, U1:
+  |
+    Make the first migration-lane deliverable a proposed successor architecture
+    that withdraws Proposed ADR-0029 revision 1 and refines ADR-0010 and ADR-0011.
+    It must close the schema, capability, capsule, preservation, change-set,
+    semantic-review and bounded-repair, receipt and idempotency, authoring-policy,
+    migration commit, and rollback choices before implementation. Exact owner
+    acceptance remains a separate gate.
+
+decision D3 based_on D2, E_REQUIREMENT, DELIVERY, U1:
+  |
+    After ADR acceptance, implement in four locally verifiable slices: shared V3
+    contracts and compiler boundaries; durable attempt, request, capsule, and
+    candidate persistence; structural plus semantic repair orchestration and
+    owner-review diff; append-only per-asset activation, replay, drift, and
+    rollback controls. Each slice adds focused tests and Seal links and ends with
+    full typecheck, tests, build, duplication, and Lizard verification before the
+    next effect boundary.
+
+decision D4 based_on D3, E_REQUIREMENT, AUTHORITY, DELIVERY, U1:
+  |
+    After local implementation, deploy and verify dual V2/V3 read compatibility
+    before selecting schema 3. Then run a no-provider, no-write dry-run over a
+    freshly frozen and owner-reviewed eight-generation manifest. Provider-backed
+    candidate generation, owner acceptance of exact per-asset digests, append and
+    compare-and-swap pointer activation, schema-3 authoring-policy activation, and
+    production readback are distinct, sequentially approved tasks with stop and
+    rollback gates.
+
+decision D5 based_on D1, D2, D3, D4, E_EXISTING_PLAN, E_SEAL:
+  |
+    Record a dedicated successor plan rather than rewriting completed conscious-
+    agency history. Update the active PERT and backlog only to add explicit tasks
+    and dependencies, keep t029 completion review and t030-t032 agency quality
+    comparison distinct, link the new plan to the accepted requirement Seal, and
+    review and reseal every impacted planning artifact. The next executable task
+    after plan approval is the local response-schema repair closeout; the next
+    architectural task is the proposed successor ADR package.

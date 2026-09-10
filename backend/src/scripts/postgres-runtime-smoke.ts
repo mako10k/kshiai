@@ -2,10 +2,12 @@ import fs from "node:fs";
 import { fileURLToPath } from "node:url";
 import { Client } from "pg";
 import {
+  defaultBasicAttack,
   defaultParameters,
   defaultRecord,
   type BattleState,
   type CharacterSheet,
+  type CombatReadyCharacterSheet,
 } from "@kshiai/shared";
 import { createPostgresConfig } from "../postgres-config.js";
 
@@ -26,7 +28,7 @@ function character(
   id: string,
   ownerUserId: string,
   displayName: string,
-): CharacterSheet {
+): CombatReadyCharacterSheet {
   const now = new Date().toISOString();
   return {
     id,
@@ -46,6 +48,7 @@ function character(
     appearance: { summary: `${displayName}の姿`, visualPrompt: displayName },
     traits: ["慎重"],
     parameters: defaultParameters(),
+    basicAttack: defaultBasicAttack(),
     skills: [],
     weapon: null,
     armor: null,
@@ -117,6 +120,7 @@ async function main(): Promise<void> {
   let closeDatabase: (() => Promise<void>) | undefined;
   try {
     await administrator.query(`CREATE SCHEMA ${quotedSchema}`);
+    await administrator.query(`SET search_path TO ${quotedSchema}, pg_catalog`);
     await administrator.query(`
       CREATE TABLE ${quotedSchema}.kshiai_schema_migrations (
         name text PRIMARY KEY,

@@ -1,6 +1,6 @@
 # キャラ固有の目的・戦術・発話効果バックログ
 
-作成: 2026-09-09 / revision 9 / 状態: 要件revision 2・ADR-0028 revision 2の直接承認後、V3ローカル実装・検証中。
+作成: 2026-09-09 / revision 14（2026-09-10）/ 状態: ADR-0030 B4のdurable attempt/preservation境界をローカル検証済み、実モデル品質は未判定。
 
 現在の基準（2026-09-09訂正）: 作者確認ではなく性格・価値観・認知済み関係に照らした目標の妥当性。
 旧要件revision 1のR1はこの指示と衝突するため、その優先規則を現行実装の根拠にしない。
@@ -51,8 +51,8 @@
 
 ## 優先順位と依存
 
-責務整理: [設計・実装対応改訂7](character-agency-responsibility-design-v1.md)、
-[実装影響・修正計画revision 5](character-agency-implementation-plan-v1.md)。深層心理は
+責務整理: [設計・実装対応改訂8](character-agency-responsibility-design-v1.md)、
+[実装影響・修正計画revision 6](character-agency-implementation-plan-v1.md)。深層心理は
 反応更新に限定し、能力知識・戦術思考を持たせない。現行currentGoal等の配置を
 本来のownerとはみなさず、CA-01/02で意識的な目標・戦術・発話意図の所有を設計する。
 PSYCHE-RESPONSIBILITYタグ7箇所は一つの移行設計として扱う。Accepted ADR-0027に従い、
@@ -105,7 +105,21 @@ ADR-0028 D4で具体化した案であり、長い思考全文の保存は要求
 
 ## 未確定事項と次の着手点
 
-実行計画: [dialogue-expression-realization.pert](dialogue-expression-realization.pert) 改訂17（DSL版9）。
+### 新規作成復旧とV2→V3意味マイグレーション（別stream）
+
+[後続計画revision 1](character-semantic-migration-successor-plan-v1.md)はowner承認済み。
+[専用PERT](character-semantic-migration.pert)でA1〜A3とB1〜B14を管理する。
+A1のresponse-schema identity修正はローカル検証済みだが、live providerとdeploymentは
+未実施。恒久V2 reader案のADR-0029はRejectedとし、後継ADR-0030 revision 1はowner承認済み。
+B4まで完了し、凍結source/request identity、追記型receipt、restricted preservationは
+SQLiteでローカル検証済み。PostgreSQL migrationの実DB適用は後続gateに残る。次はB5の
+bounded semantic generation/review/repair実装である。provider利用、deployment、本番migration、
+candidate acceptance、pointer変更、schema 3 policy有効化はそれぞれ別gateである。
+
+このstreamは、下記の顕在意識主体性`t029`と品質比較`t030`〜`t032`を置き換えない。
+意味migrationのlocal schema/fixture成功を、キャラの目的・行動・発話品質の改善とは扱わない。
+
+実行計画: [dialogue-expression-realization.pert](dialogue-expression-realization.pert) 改訂19（DSL版6）。
 静的調査I01〜I10に続き、CA-00の実payload採取・比較fixture/採点軸固定を完了した。
 初回実装はt029内で、型・世代・状態経路→顕在判断と知識→後攻再判断と拒否→総合回帰の順。
 旧心理更新・合法性裁定・保存境界は原則再利用し、新機能の移管と回帰確認を区別する。
@@ -115,7 +129,7 @@ ADR-0028 D4で具体化した案であり、長い思考全文の保存は要求
 | t033 | 責務整理の設計開始・7箇所の対応表作成。完了は草案作成まで |
 | t026 | CA-00: 現契約の入力経路・比較fixture・採点軸固定を完了。品質改善は未判定 |
 | t027〜t028 | 新版の作成とowner直接承認を完了。新版の独立レビューは未実施 |
-| t029 | V3を実装し最終ローカル検証済み。変更ADRのadr:checkは通過、未変更の旧DSLとformat 5 SealGraph実行環境が残る |
+| t029 | V3を実装し最終ローカル検証済み。変更ADRのadr:checkは通過。現PCはformat 5を読める。旧ADRの構文・受入表記の互換性問題を残してactive。Seal読戻しは再開記録参照 |
 | t030〜t032 | 比較試験の準備・別途実行承認・実行と結果記録 |
 | t006 | 改善判定とStage可否。未達なら課題を記録して再計画 |
 
@@ -130,7 +144,7 @@ CA-00と設計レビューで見直す。実測工数や納期の確約ではな
 fatal/error/warningはいずれも0。これは旧改訂時の記録。改訂5は
 `agency-impact-repair-plan-2026-09-09`、改訂6は
 `agency-ca00-contract-candidate-2026-09-09`で監査し、fatal/error/warning=0。
-PERTのDSL版9と計画改訂番号17を区別する。
+PERTのDSL版6と計画改訂番号19を区別する。
 
 具体案の確認対象: 初期目標の複数表現と性格・関係との妥当性、相手への
 認知済み属性の範囲、エンジン知識の粒度、戦術継続状態の既存状態への配置、心理反応を

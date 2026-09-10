@@ -1,0 +1,81 @@
+domain ADR0030B4LocalVerification:
+  description "Verify the local durable migration-attempt and preservation implementation."
+
+problem P1:
+  |
+    Accepted ADR-0030 B4 requires frozen source and request identities,
+    append-oriented persistence, restricted bounded preservation, disclosure
+    controls, and crash/retry fixtures without crossing into semantic generation
+    or activation.
+
+evidence E_CONTRACT:
+  |
+    packages/shared/src/character-semantic-migration.ts defines strict JSON-only
+    attempt, natural-source disclosure, request, accounting, receipt, event, and
+    preservation-capsule contracts. It registers two disclosure contracts,
+    requires disclosed paths to exactly match stored fragments, fixes the provider
+    ceiling at six, and fixes the capsule ceiling at 256 KiB.
+
+evidence E_PERSISTENCE:
+  |
+    backend/migrations/0024_character_semantic_migration.sql and the SQLite
+    bootstrap add dedicated immutable attempt and provider-request bases,
+    append-only events, one terminal receipt per provider request, and a separate
+    content-digested capsule table bound to source and target generations.
+    backend/src/repositories/character-semantic-migration.ts verifies source
+    bytes, digest, schema, owner and current pointer before each new or replayed
+    provider request, serializes same-attempt writes, rejects identity drift,
+    and exposes capsule reads only through the registered remigration consumer.
+
+evidence E_FIXTURES:
+  |
+    Six focused SQLite tests verify exact attempt and receipt replay, crash resume
+    from an unreceipted request, failure followed by a separately identified
+    request, six-request enforcement, disclosure rejection, capsule bounds,
+    owner and consumer restrictions, current-pointer preservation, and pointer
+    drift rejection before provider work. The tests make no provider call.
+
+evidence E_GATES:
+  |
+    The final full run passed shared 334, backend 363, frontend 20, deployment 3,
+    and release 5 tests. All workspace typechecks, production builds, duplicate
+    detection, git diff check, and the targeted ADR-0030 check passed. Lizard
+    1.23.0 checked 191 files and 3314 functions within unchanged baselines:
+    complexity 117/121 with max 87/92, length 67/67 with max 707/733, and
+    parameters 5/5 with max 11/11.
+
+evidence E_POSTGRES:
+  |
+    Repository-scoped secdat supplied DATABASE_URL, DIRECT_URL, and
+    SUPABASE_PROJECT_REF without exposing values. DIRECT_URL selected an IPv6
+    route unavailable from this WSL host, while DATABASE_URL passed strict CA
+    verification and reported database CREATE privilege. For this isolated
+    verification invocation only, DATABASE_URL was also supplied as the
+    administrator URL. The live smoke applied every migration including 0024,
+    passed authentication and repository checks, and removed its unique schema.
+    Readback found zero kshiai_smoke schemas and neither B4 table in public.
+
+evidence E_RCA:
+  |
+    Separate command-line LLMTHINK audits with no fatal, error, or warning
+    findings established and corrected three smoke blockers: incomplete
+    namespace isolation for unqualified migration objects, blank optional
+    POSTGRES_CA_CERT_PATH being treated as a real path, and a legacy-compatible
+    smoke fixture omitting the current required basicAttack. The runner now sets
+    its session search_path to the unique schema, blank CA overrides select the
+    bundled verified CA with four regression tests, and new smoke characters are
+    explicitly CombatReadyCharacterSheet values.
+
+premise LIMIT:
+  |
+    Isolated live application does not apply migration 0024 to public or prove a
+    production rollout. These results do not establish B5 semantic operations,
+    provider behavior, candidates, acceptance, activation, policy cutover,
+    production migration, deployment, or restored characters.
+
+decision D1 based_on P1, E_CONTRACT, E_PERSISTENCE, E_FIXTURES, E_GATES, E_POSTGRES, E_RCA, LIMIT:
+  |
+    Treat cb204 B4 as implemented and verified locally plus an isolated live
+    PostgreSQL application. Permit cb205 B5 semantic generation, review, and
+    repair implementation to remain the next plan candidate; preserve production,
+    provider, migration, deployment, and activation gates.

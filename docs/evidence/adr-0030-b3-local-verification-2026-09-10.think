@@ -1,0 +1,49 @@
+domain ADR0030B3LocalVerification:
+  description "Verify the local V3 semantic asset and compiler boundary implementation."
+
+problem P1:
+  |
+    Accepted ADR-0030 B3 requires qualified V3 character-definition and V4
+    compiler boundaries before durable migration or provider orchestration begins.
+
+evidence E_IMPLEMENTATION:
+  |
+    packages/shared/src/character-definition-v3.ts adds CharacterDefinitionV3,
+    selector-required action norms, selector-free conscious guidance, registered
+    mechanical conflict fallback and receipt, qualified compiler capabilities,
+    separate typed deferred values, CharacterBattleCompilerInputsV4,
+    BattleCharacterAssetBindingV4 and character_generation_v3 provenance.
+
+evidence E_BOUNDARY:
+  |
+    Existing CharacterDefinitionV2, CharacterBattleCompilerInputsV3 and
+    BattleCharacterAssetBindingV3 implementations were not changed. The new module
+    contains no database, provider, deployment, pointer, policy or production code.
+
+evidence E_TESTS:
+  |
+    packages/shared/src/character-definition-v3.test.ts verifies V2 readability,
+    V3 selector enforcement, guidance/mechanics separation, registered fallback
+    validation and legal ordering receipt, optional versus required deferral,
+    deferred-value separation, V4 tuple closure and V3 provenance rejection rules.
+    The focused invocation ran all 334 shared tests with zero failures.
+
+evidence E_GATES:
+  |
+    npm test passed shared 334, backend 353, frontend 20, deployment 3 and release
+    5 tests. npm run typecheck passed every workspace. npm run build passed with
+    only the existing Vite chunk-size advisory. npm run static:jscpd passed.
+    Lizard 1.23.0 checked 189 files and 3277 functions within all configured
+    regression ceilings: complexity 116/121, length 67/67 and parameters 5/5.
+
+premise LIMIT:
+  |
+    These local results establish contract behavior with deterministic fixtures.
+    They do not establish migration persistence, provider semantic quality,
+    production compatibility, deployment, activation or restoration of eight assets.
+
+decision D1 based_on P1, E_IMPLEMENTATION, E_BOUNDARY, E_TESTS, E_GATES, LIMIT:
+  |
+    Treat B3 as locally verified and permit B4 durable attempt and preservation
+    implementation to become the next plan gate. Preserve all external and later
+    activation boundaries.

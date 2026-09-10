@@ -1,0 +1,187 @@
+framework ArchitectureDecisionRecord:
+  requires problem and decision
+  requires premise and evidence
+  warns pending
+
+domain ADR0030:
+  description "ADR-0030 revision 1: Versioned LLM-assisted character semantic migration. Status Accepted."
+
+problem P1:
+  |
+    Eight exact ready V2 character generations are excluded from new matches
+    after V2 action-norm meaning was tightened. Accepted requirement revision 6
+    requires migration to strict immutable V3 without a permanent V2 reader,
+    deterministic-only dead end, unrestricted rewrite, or read-time provider call.
+
+premise AUTHORITY:
+  |
+    Accepted ADR-0010 owns immutable generations, persisted attempts, readiness,
+    CAS activation, and read-only battle binding. ADR-0011 owns structured
+    character truth and compiler-specific projections. ADR-0027 and ADR-0028 own
+    conscious judgment, reaction-only psyche, and existing qualified runtime V3
+    identities. Accepted requirement revision 6 authorizes this proposal but not
+    its acceptance, implementation, provider use, deployment, or production work.
+
+premise IDENTITIES:
+  |
+    Bare V3 is already used by BattleAssetManifest schema 3,
+    CharacterBattleCompilerInputsV3, dialogue schema 3, conscious I/O 3, and
+    CharacterAgentState.consciousAgencyV1. New contracts need qualified names and
+    cannot silently change any of those meanings.
+
+evidence E_INCIDENT:
+  |
+    The audited character authoring and selection RCA records nine exact current
+    ready V2 generations, eight rejected by invalid_action_norm_selector with
+    twenty-one selectorless soft entries, and Takumi remaining selectable. Sixteen
+    owner characters have no exact ready V2 state and are outside the operation.
+
+evidence E_REQUIREMENT:
+  |
+    docs/character-v2-compatibility-requirements-v6.md R1-R25 and its exact owner
+    acceptance select bounded LLM-assisted semantic change sets, preservation,
+    consumer-scoped deferral, whole-candidate semantic review, bounded repair,
+    owner acceptance, append-only per-asset activation, and explicit cutover.
+
+evidence E_REJECTED:
+  |
+    ADR-0029 revision 2 records the permanent V2 compatibility-reader proposal as
+    Rejected. Historical V2 bytes and battle bindings remain readable, but no new
+    match-selection exception is introduced.
+
+premise OPTIONS:
+  |
+    A retain a permanent V2 reader. B use deterministic mapping only. C let one
+    unrestricted LLM response rewrite and activate. D use a versioned hybrid:
+    deterministic exact copy, bounded LLM semantic operations, deterministic
+    enforcement, independent semantic review, owner acceptance, and append/CAS.
+
+evidence OWNER_ACCEPTANCE:
+  |
+    On 2026-09-10, after the exact English authoritative think, its Markdown
+    projection, and the complete Japanese review scope were presented with the
+    purpose, differences, decision points, alternatives, risks, and unknowns,
+    the product owner replied ACCEPT for exact ADR-0030 revision 1.
+
+decision D1 based_on P1, AUTHORITY, E_INCIDENT, E_REQUIREMENT, E_REJECTED, OPTIONS:
+  |
+    Propose option D. Refine ADR-0010 and ADR-0011 only for versioned character
+    semantic migration and schema-3 authoring. Preserve their immutable history,
+    validation, confirmation, CAS, read-only binding, and no-provider-in-activation
+    invariants. Preserve ADR-0027 and ADR-0028 runtime responsibility boundaries.
+
+decision D2 based_on D1, IDENTITIES, E_REQUIREMENT:
+  |
+    Add CharacterDefinitionV3. It contains strict executable actionNorms and a
+    separate bounded CharacterConsciousGuidanceV1 collection. Every actionNorm has
+    at least one actionRef, actionKind, or tacticTag. Conscious guidance has stable
+    ID, applicability, statement, priority, preference-or-commitment force,
+    self-awareness, exceptions, and descriptive metadata, but no action selector,
+    restrictive disposition, tactic, or fallback action.
+
+decision D3 based_on D2, IDENTITIES, E_REQUIREMENT:
+  |
+    A migrated mechanical fallback uses CharacterMechanicalConflictFallbackV1,
+    with qualified applicability, ordered registered action references, legality
+    revalidation, and a conflict receipt. V3 battle compilation outputs
+    CharacterBattleCompilerInputsV4 and uses basic-action provenance discriminator
+    character_generation_v3. Existing V2/V3 names retain their current meanings.
+
+decision D4 based_on D2, D3, E_REQUIREMENT:
+  |
+    Define CharacterCompilerCapabilitySetV1 as registered qualified consumer and
+    compiler requirements. Optional unresolved values are represented in a
+    separate bounded CharacterDeferredValueV1 collection with target path, reason,
+    candidate source paths, and requiring capability. Active definition fields do
+    not contain sentinel strings. Compatibility reports supported, blocked, and
+    deferred qualified capabilities; only a required affected capability blocks.
+
+decision D5 based_on D2, D3, D4, E_REQUIREMENT:
+  |
+    Store MigrationPreservationCapsuleV1 in a dedicated restricted persistence
+    record keyed by content digest and bound to source and target generation IDs.
+    It is not inside CharacterDefinitionV3 and no ordinary public, battle, psyche,
+    conscious, narration, image, or authoring compiler can load it. It contains
+    exact displaced paths and canonical values plus operation provenance, is
+    limited to 256 KiB per character, and is retained with the referenced
+    generations. Export or deletion follows the logical asset's existing owner
+    data lifecycle; only a registered future migration consumer may read it.
+
+decision D6 based_on D1, D2, D3, D4, D5, E_REQUIREMENT:
+  |
+    CharacterSemanticMigrationContractV1 freezes one migrationAttemptId over the
+    complete source, permitted natural source, target schema, prompt, response
+    schema, provider route, model, compiler capabilities, and initial request
+    digest. Each invocation has a distinct providerRequestId, parent request,
+    request digest, accounting record, and response or failure receipt. Candidate,
+    target generation, and current pointer identities remain separate.
+
+decision D7 based_on D6, E_REQUIREMENT:
+  |
+    The response identity character_semantic_migration_change_set_v1 returns only
+    copy, move, transform, synthesize, retire_to_capsule, and defer operations.
+    Operations identify target, registered source paths, value or deferred marker,
+    bounded owner explanation, provenance category, and proposed semantic
+    dependants. Server code allocates stable IDs and rejects invented control IDs,
+    runtime facts, information rights, or undisclosed mechanics.
+
+decision D8 based_on D6, D7, E_REQUIREMENT:
+  |
+    Server structural validation computes registered dependencies. A stateless
+    CharacterSemanticConsistencyReviewV1 request receives the frozen source,
+    complete merged candidate, contract, and declared operations, but not hidden
+    model reasoning or conversational state. It may use the same accepted provider
+    and model but is a separately receipted request. Repair closure is the union of
+    structural dependencies, proposed semantic dependants, and reviewer findings.
+
+decision D9 based_on D8, E_REQUIREMENT:
+  |
+    Permit at most two repair rounds after the initial generation. Each round has
+    one bounded CharacterSemanticRepairV1 request followed by one fresh complete-
+    candidate semantic review. Thus one attempt has at most six provider requests:
+    initial generation, initial review, two repair requests, and two re-reviews.
+    A separately accepted execution ceiling may be lower but never higher without
+    a new ADR revision. Every merge receives full structural revalidation.
+
+decision D10 based_on D6, D7, D8, D9, E_REQUIREMENT:
+  |
+    Persist attempts, provider requests, candidates, capsules, owner acceptances,
+    and success receipts in dedicated append-oriented records. A completed attempt
+    replays without provider work or duplicate generation. Requested semantic
+    regeneration creates a new attempt. Provider failure, invalid output, decline,
+    source drift, or pointer drift leaves the current generation unchanged.
+
+decision D11 based_on D10, AUTHORITY, E_REQUIREMENT:
+  |
+    Per asset, one transaction appends the accepted V3 envelope, capsule binding,
+    compatibility state and success receipt, then CAS-moves the current pointer
+    from the frozen source. Assets commit independently. Existing V2 generations
+    and old battle bindings remain byte-readable. Rollback CAS-moves only an
+    affected current pointer to a previously compatible generation and records a
+    new receipt; it never deletes the V3 generation or capsule.
+
+decision D12 based_on D2, D4, D10, D11, AUTHORITY, E_REQUIREMENT:
+  |
+    Store characterDefinitionSchemaVersion in a dedicated revisioned
+    CharacterAuthoringPolicyV1 record with values 2 or 3 and CAS activation. It is
+    not a wall-clock, deployment, dialogue-schema, or environment-variable
+    default. Deploy and verify dual V2/V3 readers and migration resume before
+    selecting 3. After selecting 3, create and ordinary revision emit strict V3;
+    restore, import, derived, and historical upgrade use migration. Policy does not
+    automatically downgrade during per-asset rollback; a later policy reversal
+    requires a new accepted decision.
+
+decision D13 based_on D1, D6, D9, D10, D11, D12, OWNER_ACCEPTANCE:
+  |
+    After exact owner acceptance, implement the accepted successor plan B3-B7
+    locally with focused tests, full test/type/build/duplication/Lizard gates, and
+    Seal impact review. Deployment, provider-backed production generation,
+    candidate acceptance, pointer migration, and policy activation retain their
+    separate B8-B14 gates.
+
+decision ACCEPTANCE based_on OWNER_ACCEPTANCE, D1, D2, D3, D4, D5, D6, D7, D8, D9, D10, D11, D12, D13:
+  |
+    Accept exact ADR-0030 revision 1 and authorize its local successor-plan B3-B7
+    implementation gates. Provider calls, deployment, production reads or writes,
+    candidate acceptance, pointer movement, rollback, and authoring-policy
+    activation remain separately authorized B8-B14 effects.

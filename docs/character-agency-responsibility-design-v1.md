@@ -1,10 +1,12 @@
-# キャラ主体性と心理責務の整理 — 設計・実装対応（改訂7）
+# キャラ主体性と心理責務の整理 — 設計・実装対応（改訂8）
 
 日付: 2026-09-09。状態: ADR-0027の責務とADR-0028 revision 2の具体契約は承認済み。
 対象: CA-00、CA-01＋最小CA-02、PSYCHE-RESPONSIBILITYタグ7箇所。
-実装影響と順序は[修正計画revision 5](character-agency-implementation-plan-v1.md)のI01〜I10、t029-A〜Dへ具体化した。
+実装影響と順序は[修正計画revision 6](character-agency-implementation-plan-v1.md)のI01〜I10、t029-A〜Dへ具体化した。
 本書は実装承認済み要件やADRではない。現行コードの配置は実態の証拠であり、
 本来の責務の根拠にはしない。CA-00は完了。今回のV3実装と残事項は[検証記録](evidence/agency-v3-local-verification-2026-09-09.md)を参照。
+2026-09-10の現PC確認とSeal再開結果は[再開記録](evidence/agency-v3-local-resume-2026-09-10.md)を参照。
+以下§1〜§5の未決表記は設計探索時の履歴であり、現行の具体契約はAccepted ADR-0028 revision 2に従う。
 
 現在の基準（2026-09-09訂正）: 作者確認ではなく性格・価値観・認知済み関係に照らした目標の妥当性。
 旧要件revision 1のR1はこの指示と衝突するため、その優先規則を現行実装の根拠にしない。
@@ -40,7 +42,7 @@
 
 ## 2. 承認済み責務と具体設計の未決事項
 
-この節〜§5の未決表記は設計探索時点の履歴。現行の具体契約はAccepted ADR-0028 revision 2、実装状態は修正計画revision 5を参照する。
+この節〜§5の未決表記は設計探索時点の履歴。現行の具体契約はAccepted ADR-0028 revision 2、実装状態は修正計画revision 6を参照する。
 
 以下はADR-0027の論理的責務であり、新moduleやLLM呼出し数を確定しない。
 

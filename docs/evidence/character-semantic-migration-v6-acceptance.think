@@ -1,0 +1,58 @@
+domain CharacterSemanticMigrationV6Acceptance:
+  description "Record exact Step 4 owner acceptance without changing reviewed requirement bytes."
+
+problem P1:
+  |
+    The owner selected ACCEPT after the completed independent review of exact
+    character semantic migration requirement revision 6.
+
+evidence E_REQUIREMENT:
+  |
+    docs/character-v2-compatibility-requirements-v6.md remains SHA-256
+    c3e19e53c48f159c2c8379c81c645fa64b0293f67694d5880f53c8088de9b6e4
+    and matches Seal da2f3a272a1110efa775f8312a6b0e34462270286538715f187e762ecce28718.
+
+evidence E_INPUT:
+  |
+    The complete Japanese Step 2 review input remains SHA-256
+    47fc18615673c196cbd0e8045f8d772f52e6bb3d09737ceaa3613a8a27910cd8
+    and matches Seal d6773021e83cd3f45027633b32a3d12f8667bd8a677ab545fb8fc5294914af55.
+    The owner selected REVIEW with no added questions.
+
+evidence E_REVIEW:
+  |
+    The completed Step 3 independent review is SHA-256
+    b768e9125bfb2db984536a9917a21ad00594f13b968cfc97ab25248fada54c8b,
+    matches Seal 2881d89d9fc4f9ecba6aedd9ed9c12e1d4e5be50167efd47ec120747452c2a8e,
+    finds no contradiction, and recommends Step 4 ACCEPT.
+
+evidence OWNER_ACCEPTANCE:
+  |
+    On 2026-09-10, after the unchanged requirement, complete Japanese review input,
+    and independent review were presented at Step 4, the product owner replied:
+    ACCEPT.
+
+premise SCOPE:
+  |
+    Acceptance covers only the exact requirement bytes. It does not accept a
+    successor ADR, design or implementation, authorize provider use, deployment or
+    production migration, or establish that all eight characters are restored.
+
+pending U1:
+  |
+    Successor ADR choices, implementation compliance, production provider execution,
+    per-asset acceptance, pointer migration and production readback remain pending.
+
+premise OPTIONS:
+  |
+    A edit the reviewed requirement status, changing accepted bytes. B preserve the
+    reviewed bytes and record exact acceptance in a separate Japanese artifact with
+    its causal evidence.
+
+decision D1 based_on P1, E_REQUIREMENT, E_INPUT, E_REVIEW, OWNER_ACCEPTANCE, SCOPE, U1, OPTIONS:
+  |
+    Use option B. Record Step 4 ACCEPT for the exact revision-6 requirement without
+    editing its bytes. Bind the acceptance record to the requirement, review input,
+    and independent review; preserve all downstream authority boundaries and open
+    proof obligations. Seal the acceptance record under the existing Seal operation
+    instruction and verify source equality, impact, stale status, and fsck.

@@ -287,7 +287,9 @@ function schemaObject(value: unknown, label: string): OpenAiJsonSchema {
   if (!value || typeof value !== "object" || Array.isArray(value)) {
     throw new Error(`Character definition response schema lacks ${label}`);
   }
-  return OpenAiJsonSchemaObjectSchema.parse(value);
+  // Zod object parsing returns a copy. Keep the validated original identity so
+  // response-format normalization mutates the schema that is actually sent.
+  return Object.assign(value, OpenAiJsonSchemaObjectSchema.parse(value));
 }
 
 function nestedSchema(

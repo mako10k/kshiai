@@ -1,0 +1,232 @@
+# Delivery plan revision 1: accepted two-lane recovery and semantic migration gates.
+project csm001:
+  version 6
+  title "Restore character authoring and migrate frozen ready V2 characters to strict V3"
+  description "Execute accepted successor plan revision 1. Lane A closes the independent response-schema defect. Lane B rejects the permanent V2 reader and proceeds through proposed ADR, local implementation, deployment, dry-run, separately approved provider generation, owner candidate acceptance, per-asset append/CAS, readback and explicit schema-3 cutover. No task inherits authority for a later effect."
+  as_of 2026-09-10
+  duration_unit point
+  velocity 1p/1d
+  finish cm114
+
+resource cr001:
+  title "Developer"
+  capacity 1
+
+resource cr002:
+  title "Product and release owner"
+  capacity 1
+
+milestone cm000:
+  title "Successor plan revision 1 accepted"
+  state reached
+
+milestone cm101:
+  title "A1 authoring response-schema correction locally verified"
+  state reached
+
+milestone cm102:
+  title "A2 bounded live-provider verification decided and completed"
+
+milestone cm103:
+  title "A3 new-character creation deployment verified"
+
+milestone cm201:
+  title "B1 successor ADR package proposed"
+
+milestone cm202:
+  title "B2 exact successor ADR package decided"
+
+milestone cm203:
+  title "B3 V3 semantic asset and compiler contracts locally verified"
+
+milestone cm204:
+  title "B4 durable attempts and preservation locally verified"
+
+milestone cm205:
+  title "B5 bounded semantic generation review and repair locally verified"
+
+milestone cm206:
+  title "B6 append replay drift and rollback controls locally verified"
+
+milestone cm207:
+  title "B7 integrated local release gate passed"
+
+milestone cm208:
+  title "B8 dual V2 V3 read support deployed and verified"
+
+milestone cm209:
+  title "B9 exact production manifest and no-write dry-run accepted"
+
+milestone cm210:
+  title "B10 provider-backed migration candidates generated"
+
+milestone cm211:
+  title "B11 exact per-asset candidate set decided"
+
+milestone cm212:
+  title "B12 accepted V3 generations appended and pointers reconciled"
+
+milestone cm213:
+  title "B13 production restoration read back"
+
+milestone cm114:
+  title "B14 strict schema-3 authoring cutover verified"
+
+task ca101 cm000 -> cm101:
+  title "A1 close the local response-schema identity correction"
+  status done
+  description "Preserve the validated provider-facing schema object identity, verify the acyclic definitions regression, run full tests, typecheck, build, duplication and Lizard, and Seal the correction and evidence. No provider call or deployment."
+  duration 1p
+  source "docs/evidence/character-authoring-response-schema-local-verification-2026-09-10.md"
+  owner "codex"
+  requires:
+    cr001 1
+
+task ca102 cm101 -> cm102:
+  title "A2 decide and run one bounded live-provider authoring verification"
+  description "Freeze request and response-schema identity, model route, budget and no-retry rule; obtain separate approval, run only that call, and classify the response without deployment."
+  duration 1p
+  owner "user and codex"
+  requires:
+    cr001 1
+    cr002 1
+
+task ca103 cm102 -> cm103:
+  title "A3 decide deploy and verify new-character creation"
+  description "Obtain separate deployment authority, deploy the exact correction, read back revision and health, exercise the authorized create flow, and preserve rollback readiness."
+  duration 1p
+  owner "user and codex"
+  requires:
+    cr001 1
+    cr002 1
+
+task ca104 cm103 -> cm114:
+  title "Reconcile deployed Lane A authoring state with final V3 cutover"
+  description "At B14, prove the deployed authoring repair is included or superseded by the exact V3 authoring revision and that no temporary V2 response contract is mistaken for final cutover."
+  duration 1p
+  owner "codex"
+  requires:
+    cr001 1
+
+task cb201 cm000 -> cm201:
+  title "B1 reject ADR-0029 direction and propose the successor ADR"
+  status done
+  description "Record ADR-0029 revision 1 as Rejected and author exact paired ADR-0030 files for qualified V3 schema, capability, capsule, semantic change-set, review and repair, receipts, CAS, policy and rollback. Audit and check locally; Proposed is not implementation authority."
+  duration 2p
+  source "docs/adr/0030-llm-assisted-character-semantic-migration.think"
+  owner "codex"
+  requires:
+    cr001 1
+
+task cb202 cm201 -> cm202:
+  title "B2 review and decide the exact successor ADR package"
+  description "Present the complete Japanese review scope, differences, decisions, alternatives, risks and unknowns; accept, revise or reject the exact ADR."
+  duration 1p
+  status done
+  owner "user"
+  requires:
+    cr002 1
+
+task cb203 cm202 -> cm203:
+  title "B3 implement V3 semantic asset and compiler boundaries"
+  description "Implement strict CharacterDefinitionV3, conscious guidance, qualified mechanical fallback, capability-scoped compatibility, deferred values, V4 compiler input and qualified provenance with focused tests."
+  duration 2p
+  status done
+  owner "codex"
+  requires:
+    cr001 1
+
+task cb204 cm203 -> cm204:
+  title "B4 implement durable migration attempts and preservation"
+  description "Implement frozen source/request identities, append-oriented attempt and request records, bounded restricted capsules, disclosure controls and crash/retry fixtures."
+  duration 2p
+  status done
+  owner "codex"
+  requires:
+    cr001 1
+
+task cb205 cm204 -> cm205:
+  title "B5 implement bounded semantic generation review and repair"
+  description "Implement six operations, stateless whole-candidate semantic review, expanding repair closure, per-request receipts, full merge revalidation and owner-readable semantic diff with test doubles only."
+  duration 2p
+  owner "codex"
+  requires:
+    cr001 1
+
+task cb206 cm205 -> cm206:
+  title "B6 implement append CAS replay drift and rollback controls"
+  description "Implement exact candidate acceptance binding, per-asset atomic append and pointer CAS, completed replay idempotency, semantic regeneration identity, drift stops, old-battle reading and receipted rollback fixtures."
+  duration 2p
+  owner "codex"
+  requires:
+    cr001 1
+
+task cb207 cm206 -> cm207:
+  title "B7 pass the integrated local release gate"
+  description "Trace all accepted criteria, cover nine ready fixtures including eight affected and twenty-one soft entries, exclude sixteen no-state characters, and pass full tests, typecheck, build, duplication, Lizard, ADR and Seal checks."
+  duration 1p
+  owner "codex"
+  requires:
+    cr001 1
+
+task cb208 cm207 -> cm208:
+  title "B8 separately approve and deploy dual V2 V3 read support"
+  description "Approve and deploy the exact dual-reader revision without schema-3 activation, verify historical V2, V3 compatibility and migration resume, then read back rollback readiness."
+  duration 1p
+  owner "user and codex"
+  requires:
+    cr001 1
+    cr002 1
+
+task cb209 cm208 -> cm209:
+  title "B9 freeze the exact eight-generation manifest and run no-write dry-run"
+  description "Refresh exact identities, obtain owner manifest review, and report drift, already-complete attempts, expected provider work and ceilings with zero provider calls and zero writes."
+  duration 1p
+  owner "user and codex"
+  requires:
+    cr001 1
+    cr002 1
+
+task cb210 cm209 -> cm210:
+  title "B10 separately approve and generate provider-backed candidates"
+  description "Approve exact provider model route and budget, generate only bounded candidates, retain every request receipt and semantic diff, and leave failures non-current."
+  duration 1p
+  owner "user and codex"
+  requires:
+    cr001 1
+    cr002 1
+
+task cb211 cm210 -> cm211:
+  title "B11 decide exact candidates per asset or exact batch"
+  description "Accept or decline exact candidate digests; keep unresolved and failed assets explicit and do not infer partial acceptance."
+  duration 1p
+  owner "user"
+  requires:
+    cr002 1
+
+task cb212 cm211 -> cm212:
+  title "B12 separately approve append and per-asset pointer CAS"
+  description "Append only accepted V3 generations and receipts, move each pointer by CAS, isolate partial failures, preserve unchanged targets, and read back rollback targets."
+  duration 1p
+  owner "user and codex"
+  requires:
+    cr001 1
+    cr002 1
+
+task cb213 cm212 -> cm213:
+  title "B13 read back restoration and decide schema-3 cutover"
+  description "Verify every target outcome, selector list, battle binding, old battles and capsule non-consumption. Report partial success honestly and present the separate policy decision."
+  duration 1p
+  owner "user and codex"
+  requires:
+    cr001 1
+    cr002 1
+
+task cb214 cm213 -> cm114:
+  title "B14 separately approve activate and verify strict schema-3 authoring"
+  description "Reconcile Lane A deployment, activate the qualified authoring policy by CAS, verify create and revision emit V3 and historical paths use migration, and retain rollback evidence."
+  duration 1p
+  owner "user and codex"
+  requires:
+    cr001 1
+    cr002 1

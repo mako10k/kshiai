@@ -1,9 +1,9 @@
-# Delivery plan revision 18: V3 scoped formal ADR check and final local validation passed; legacy ADR/SealGraph toolchain limits remain active.
+# Delivery plan revision 19: Current PC reads SealGraph format 5; preserve old ADR syntax/lifecycle compatibility boundary and active t029.
 project pj001:
   version 6
   title "Connect character goals, tactics and expression after Compact observation v2"
   description "Implement Accepted ADR-0025 with separate closed expressionState and utteranceHistory inputs, closed nextUtterance output, content-independent acceptance, and the existing battle revision commit boundary. Under Accepted ADR-0026, allow one fail-closed Compact V2 deep-psyche application repair over a server-defined semantic closure; add no expression retry, recursive repair, lifecycle entity, identifier, receipt, reuse detector, similarity gate, critic, or fallback."
-  as_of 2026-09-09
+  as_of 2026-09-10
   duration_unit point
   velocity 1p/1d
   finish m011
@@ -11,7 +11,7 @@ project pj001:
   # Next scope: responsibility design start, remaining CA-00, CA-01 with minimal CA-02.
   # ADR-0027 psyche-only, unified conscious judgment and engine authority control new scope.
   # Seven PSYCHE-RESPONSIBILITY sites are one migration design, not seven isolated fixes.
-  # Repair plan: docs/character-agency-implementation-plan-v1.md revision 5.
+  # Repair plan: docs/character-agency-implementation-plan-v1.md revision 6.
   # t026 completed with typed fixtures and rubric; no claim of model-quality improvement.
   # t029-A -> B -> C -> D are internal packages, not additional tasks or earned progress.
   # Plan approval does not accept a new architecture or authorize provider/deployment effects.
@@ -382,7 +382,7 @@ task t028 m027 -> m028:
 task t029 m028 -> m029:
   title "Implement and locally verify the accepted goal-to-action-and-speech slice"
   status active
-  description "V3 A/B/C runtime and D regression are implemented locally: typed opt-in tuple, single conscious goal/intent/action/speech judgment, reaction-only psychology, partial acceptance, later redecision, CAS and seven legacy tags. Final full tests, typecheck, build and unchanged Lizard thresholds passed after rebuilding shared exports. Restored npm adr:check passes for changed ADR-0027/0028; its default whole-repository run remains blocked by unmodified 0015-0017/0019 sources that the current LLMThink cannot parse. Current SealGraph only reads format 4; retained format 5 requires an unavailable Go 1.26 build. Retain active without rewriting accepted legacy ADRs or Seal history. See agency-v3-resume-verification-2026-09-09.md. No paid execution, setting activation or deployment; local results do not establish real-model quality."
+  description "V3 A/B/C runtime and D regression are implemented locally: typed opt-in tuple, single conscious goal/intent/action/speech judgment, reaction-only psychology, partial acceptance, later redecision, CAS and seven legacy tags. Remote d223304 records final full tests, typecheck, build and unchanged Lizard thresholds passed after shared build. On 2026-09-10 this PC passed focused regression and reads retained SealGraph format 5 without migration. Restored npm adr:check passes for ADR-0027/0028; whole-repository check still fails on old 0015-0017/0019 syntax and lifecycle markers. Keep active pending owner disposition of that compatibility boundary and final completion review; do not rewrite accepted records merely to pass. Per-source Seal review/readback is recorded in agency-v3-local-resume-2026-09-10.md. No paid execution, setting activation or deployment; local results do not establish real-model quality."
   duration 3p
   source "docs/character-agency-implementation-plan-v1.md"
   owner "codex"

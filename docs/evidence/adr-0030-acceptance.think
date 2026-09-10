@@ -1,0 +1,47 @@
+domain ADR0030Acceptance:
+  description "Record the product owner acceptance of exact ADR-0030 revision 1."
+
+problem P1:
+  |
+    ADR-0030 revision 1 was Proposed and implementation remained blocked until
+    exact owner acceptance was recorded in the authoritative think file.
+
+evidence E_TARGET:
+  |
+    The reviewed target was docs/adr/0030-llm-assisted-character-semantic-migration.think
+    revision 1, paired with its Markdown projection and complete Japanese review
+    translation. The Proposed ADR Seal before acceptance was 417496dc4365… and
+    the Japanese review-input Seal was b1cfdf5e9890….
+
+evidence E_REVIEW:
+  |
+    The owner was presented the purpose, material differences, decision points,
+    alternatives, risks, unknowns, and full Japanese review scope for exact
+    ADR-0030 revision 1.
+
+evidence OWNER_ACCEPTANCE:
+  |
+    On 2026-09-10 the product owner replied ACCEPT to the explicit request to
+    decide ADR-0030 revision 1 as ACCEPT, REVISE, or REJECT.
+
+premise SCOPE:
+  |
+    Acceptance authorizes the ADR architectural direction and its local successor
+    implementation gates. It does not itself authorize provider calls, deployment,
+    production reads or writes, candidate acceptance, pointer movement, rollback,
+    or authoring-policy activation; those remain separate gates in the ADR and plan.
+
+premise OPTIONS:
+  |
+    A leave the ADR Proposed despite exact acceptance. B record OWNER_ACCEPTANCE
+    and ACCEPTANCE in the authoritative think, project Accepted status to Markdown
+    and the ADR index, finish PERT task cb202, and Seal the accepted revision and
+    affected dependants.
+
+decision D1 based_on P1, E_TARGET, E_REVIEW, OWNER_ACCEPTANCE, SCOPE, OPTIONS:
+  |
+    Choose B. Preserve every substantive decision of revision 1, add only
+    acceptance evidence and lifecycle decision, update the projection and index,
+    close cb202, audit all changed ADR reasoning, inspect Seal impact, and reseal
+    affected records. Do not begin cb203 or any external action in this acceptance
+    recording step.

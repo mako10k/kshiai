@@ -1,0 +1,107 @@
+framework ArchitectureDecisionRecord:
+  requires problem and decision
+  requires premise and evidence
+  warns pending
+
+domain ADR0029:
+  description "ADR-0029 revision 2: Preserve the rejected revision-1 V2 reader proposal and record its disposition. Status Rejected."
+
+problem P1:
+  |
+    Eight production character generations that were activated as ready V2 now
+    fail read-time eligibility because a nonempty action-selector invariant was
+    added without changing schemaVersion 2 or compiler version 2. Their stored
+    rows remain ready, but match selection returns only the later Takumi generation.
+
+premise AUTHORITY:
+  |
+    ADR-0010 owns immutable generations, explicit readiness and server-side
+    eligibility. ADR-0027 owns one conscious judgment for goal, action and
+    utterance, separate from non-deliberative psyche and engine validation.
+    Requirement candidate revision 1 is at lifecycle step 2 and is not accepted.
+
+premise TERMINOLOGY:
+  |
+    An executable action norm has a structured selector and may rank or constrain
+    actions. A selectorless soft legacy statement can only provide awareness-gated
+    conscious guidance. It is not an engine constraint and is not psyche state.
+
+premise OPTIONS:
+  |
+    A: keep all selectorless V2 generations unsupported and require owner-triggered
+    regeneration. This preserves current strictness but changes already-ready V2
+    meaning and hides eight usable characters. B: restore the recorded compiler-v2
+    soft-guidance interpretation only for an exact already-ready generation while
+    requiring selectors for every new activation. C: rewrite old immutable
+    generations or infer selectors. C violates immutability and invents behavior.
+
+evidence E_PRODUCTION:
+  |
+    Read-only production inspection on 2026-09-10 found nine exact current
+    generations persisted as ready. Current code evaluated Takumi ready and the
+    other eight unsupported with invalid_action_norm_selector. Those eight contain
+    twenty-one selectorless prefer norms, all force preference or commitment and
+    no constraint. Sixteen additional owner characters have no ready V2 state.
+
+evidence E_PATH:
+  |
+    MatchPage requests /api/characters?selectable=true. The route filters the DTO
+    selectable flag. getCharacterCompatibility recomputes readiness with the new
+    selector invariant, and battle binding uses the same strict ready assertion.
+
+evidence E_HISTORY:
+  |
+    The selector requirement and compiler rejection were added under the existing
+    V2 identifiers. Earlier compiler-v2 evaluation let selectorless soft statements
+    contribute consciousStatement while they matched no action and therefore did
+    not change mechanical ranking or exclusions. Current deterministic conversion
+    no longer creates such entries; it defers unstructured principles to authoring.
+
+evidence E_RCA:
+  |
+    docs/character-authoring-selection-rca-2026-09-10.llmthink.dsl identifies the
+    read-time version reinterpretation and terminology debt. Its CLI audit reports
+    fatal 0, error 0 and warning 0. It is reasoning evidence, not owner acceptance.
+
+premise HISTORICAL_OWNER_ACCEPTANCE:
+  |
+    The product owner did not accept requirement candidate revision 1 or ADR-0029
+    revision 1. The later accepted requirement revision 6 rejects a permanent V2
+    compatibility reader and the owner accepted the recommended successor plan
+    that records ADR-0029 as Rejected and creates a new numbered ADR.
+
+decision D1 based_on P1, AUTHORITY, TERMINOLOGY, OPTIONS, E_PRODUCTION, E_HISTORY:
+  |
+    Propose option B. An exact current generation already marked ready may retain
+    compiler-v2 compatibility when every selectorless entry is a soft prefer norm
+    with preference or commitment force. Its statement remains awareness-gated
+    conscious guidance. It never ranks, excludes, forces or fabricates an action.
+
+decision D2 based_on D1, E_PATH, AUTHORITY:
+  |
+    Split persisted V2 compatibility validation from new-activation readiness.
+    Persisted validation checks the V2 envelope, required compiler receipts, claim
+    receipt and internal references, while allowing D1. New activation continues
+    to reject every selectorless action norm. A read never changes readiness state,
+    appends a generation or moves a pointer.
+
+decision D3 based_on D1, D2, TERMINOLOGY:
+  |
+    Compiler-v2 accepts D1 entries only as conscious-only guidance. Selectorless
+    constraints remain invalid. Tests prove that changing only the legacy statement
+    can change the conscious-principle text but cannot change ranked or excluded
+    action keys. Code and diagnostics use the legacy conscious-only qualifier.
+
+decision D4 based_on D2, AUTHORITY, E_PRODUCTION:
+  |
+    Unsupported legacy or no-state rows remain unsupported, so this restores at
+    most the eight observed exact ready V2 generations and does not make all owner
+    characters selectable. No stored bytes are rewritten. A future dedicated
+    conscious-principle field and explicit generation migration require another
+    accepted decision.
+
+decision D5 based_on D1, D2, D3, D4, E_RCA, HISTORICAL_OWNER_ACCEPTANCE:
+  |
+    Reject the revision-1 implementation direction. Preserve D1-D4 as historical
+    proposal content, but do not use it as implementation authority. ADR-0030 is
+    the Proposed successor direction. No V2 reader exception is implemented.

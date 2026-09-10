@@ -11,7 +11,7 @@ export function createPostgresConfig(connectionString: string): ClientConfig {
   for (const parameter of ["sslmode", "sslcert", "sslkey", "sslrootcert"]) {
     connectionUrl.searchParams.delete(parameter);
   }
-  const caPath = process.env.POSTGRES_CA_CERT_PATH ?? bundledSupabaseCaPath;
+  const caPath = process.env.POSTGRES_CA_CERT_PATH?.trim() || bundledSupabaseCaPath;
   return {
     connectionString: connectionUrl.toString(),
     ssl: {

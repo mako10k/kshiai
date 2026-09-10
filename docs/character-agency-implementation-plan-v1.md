@@ -1,11 +1,14 @@
-# ADR-0027 実装影響と修正計画 — revision 5
+# ADR-0027 実装影響と修正計画 — revision 6
 
 2026-09-09。状態: ADR-0028 revision 2承認後のローカル実装・検証中。
 revision 1を0754ca7へcommit後、CA-00の型付きfixture/testを追加して実測した。
 今回V3 runtime・prompt・schemaを追加した。既定設定・実データ・有料API・展開は変更していない。
 CA-00とt027は完了。t028はowner直接承認で通過（新版独立レビュー未実施）。
 t029は変更済みADR-0027/0028に対する正式adr:checkと最終ローカル検証を通過したが、
-未変更の旧ADR DSLとformat 5 SealGraph実行環境の限界を残してactiveである。
+未変更の旧ADR DSLと受入表記の互換性問題を残してactiveである。
+2026-09-10、別PCのd223304を取り込み、このPCではformat 5のstatus/fsck成功を確認した。
+Sealの個別登録・影響先レビューと今回の読戻しは
+[再開記録](evidence/agency-v3-local-resume-2026-09-10.md)を参照。別PCの実行環境制約は現PCへ転用しない。
 [今回の実装・検証](evidence/agency-v3-local-verification-2026-09-09.md)と
 [再開後の検証](evidence/agency-v3-resume-verification-2026-09-09.md)に結果と残事項を分離する。
 
@@ -109,7 +112,8 @@ ADR-0028 revision 2では出典確認経路とCharacterGenerationEnvelopeV3の�
 
 t029-A〜Dは親タスクの内部順序であり、新たなPERT IDや完了実績ではない。
 親t029は全パッケージを満たすまで未完了。3pは元の暫定総量で、実績でも残工数でもない。
-今回のローカル実装後、残りは正式ADRチェックの復旧・最終差分レビュー・検証記録の確定。
+今回のローカル実装後、変更ADRの正式チェック復旧と最終ローカル検証は別PCで実施済み。
+残りは旧ADRの構文・受入表記の互換性に関するowner判断と、t029完了条件の最終確認。
 残り0.5〜1pを暫定予測とするが、実装前再見積りは未実施だったため完了したと遡及記録しない。納期は確約しない。
 旧11pはt033完了を含む当初追加総量。残りと実測工数を混同しない。
 

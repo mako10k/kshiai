@@ -20,6 +20,37 @@ type ChatCall = {
   responseFormat: unknown;
 };
 
+function definitionReferences(value: unknown): string[] {
+  if (!value || typeof value !== "object") return [];
+  if (Array.isArray(value)) return value.flatMap(definitionReferences);
+  const reference = Reflect.get(value, "$ref");
+  return [
+    ...(typeof reference === "string" && reference.startsWith("#/definitions/")
+      ? [reference.slice("#/definitions/".length)]
+      : []),
+    ...Object.keys(value).flatMap((key) =>
+      definitionReferences(Reflect.get(value, key))),
+  ];
+}
+
+function assertAcyclicDefinitions(definitions: object): void {
+  const visited = new Set<string>();
+  const visiting = new Set<string>();
+  const visit = (name: string) => {
+    if (visited.has(name)) return;
+    assert.equal(visiting.has(name), false, `recursive definition: ${name}`);
+    const definition = Reflect.get(definitions, name);
+    if (definition === undefined) return;
+    visiting.add(name);
+    for (const reference of new Set(definitionReferences(definition))) {
+      visit(reference);
+    }
+    visiting.delete(name);
+    visited.add(name);
+  };
+  for (const name of Object.keys(definitions)) visit(name);
+}
+
 function definitionInput(): GenerateCharacterDefinitionV2Input {
   const baseDefinition = legacyCharacterSheetToDefinitionV2({
     id: "character-upgrade-repair",
@@ -313,6 +344,41 @@ describe("OpenAI-compatible character definition repair", () => {
       }),
       /Required|Unrecognized key/,
     );
+  });
+});
+
+describe("OpenAI-compatible character definition response format", () => {
+  it("contains no recursive definitions after constraint normalization", async () => {
+    const input = {
+      ...definitionInput(),
+      sourceKind: "revision_instruction" as const,
+    };
+    const { provider, calls } = providerWithResponses([{
+      definition: input.baseDefinition,
+    }]);
+
+    await provider.generateCharacterDefinitionV2(input);
+
+    const format = calls[0]?.responseFormat;
+    assert.ok(format && typeof format === "object");
+    const jsonSchema = Reflect.get(format, "json_schema");
+    assert.ok(jsonSchema && typeof jsonSchema === "object");
+    const schema = Reflect.get(jsonSchema, "schema");
+    assert.ok(schema && typeof schema === "object");
+    const definitions = Reflect.get(schema, "definitions");
+    assert.ok(definitions && typeof definitions === "object");
+    assertAcyclicDefinitions(definitions);
+    const constraintDefinitions = Object.keys(definitions)
+      .filter((name) => [
+        "reach",
+        "requiresSight",
+        "mobility",
+        "requiresSpeech",
+        "requiresUsableHeldObject",
+      ].some((field) => name.endsWith(`_properties_${field}`)));
+    assert.equal(constraintDefinitions.length, 5);
+    assert.ok(constraintDefinitions.every((name) =>
+      Reflect.get(Reflect.get(definitions, name), "$ref") === undefined));
   });
 });
 
