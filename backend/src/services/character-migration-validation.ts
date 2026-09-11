@@ -5,9 +5,11 @@ import {
   projectCharacterCompilerCompatibilityV1,
   type CharacterCompilerCapabilityV1, type CharacterCompilerCompatibilityV1,
   type CharacterGenerationEnvelopeV3, type CharacterMigrationFinding,
+  type CharacterMigrationJson,
 } from "@kshiai/shared";
 import { assetContentDigest } from "../repositories/asset-generations.js";
 import {
+  CHARACTER_MIGRATION_PROMPT_V4,
   migrationPaths, migrationRead, migrationTargetPaths,
   migrationWrite, pathContains, SEMANTIC_COLLECTIONS, type CharacterMigrationContext,
 } from "./character-migration-context.js";
@@ -112,6 +114,68 @@ function fallbackFindings(
   });
 }
 
+function selectorDigest(norm: {
+  response: { actionRefs: string[]; actionKinds: string[]; tacticTags: string[] };
+}): string {
+  return assetContentDigest({
+    actionRefs: norm.response.actionRefs,
+    actionKinds: norm.response.actionKinds,
+    tacticTags: norm.response.tacticTags,
+  });
+}
+
+function executableNormLineageFindings(
+  context: CharacterMigrationContext, state: CharacterMigrationMerge,
+  candidate: CharacterGenerationEnvelopeV3,
+): CharacterMigrationFinding[] {
+  if (context.attempt.promptIdentity !== CHARACTER_MIGRATION_PROMPT_V4) return [];
+  return context.source.definition.actionNorms.flatMap((sourceNorm, sourceIndex) => {
+    const selected = sourceNorm.response.actionRefs.length +
+      sourceNorm.response.actionKinds.length + sourceNorm.response.tacticTags.length > 0;
+    if (!selected) return [];
+    const sourceRoot = `definition.actionNorms.${sourceIndex}`;
+    const targetIndex = candidate.definition.actionNorms.findIndex((targetNorm) =>
+      selectorDigest(targetNorm) === selectorDigest(sourceNorm));
+    if (targetIndex < 0) {
+      const explicit = state.operations.some((operation) =>
+        pathContains("definition.actionNorms", operation.targetPath) &&
+        operation.sourcePaths.some((path) =>
+          pathContains(sourceRoot, path) || pathContains(path, sourceRoot)));
+      return explicit ? [] : [{ ...migrationFinding("executable_action_norm_missing",
+        "definition.actionNorms",
+        "An executable source norm has no target norm and no explicit target operation derived from that source norm."),
+      sourcePaths: [sourceRoot] }];
+    }
+    const targetRoot = `definition.actionNorms.${targetIndex}`;
+    const targetNorm = candidate.definition.actionNorms[targetIndex];
+    const comparisons = [
+      { field: "when", sourceValue: sourceNorm.when, targetValue: targetNorm.when },
+      { field: "response", sourceValue: {
+        disposition: sourceNorm.response.disposition,
+        actionRefs: sourceNorm.response.actionRefs,
+        actionKinds: sourceNorm.response.actionKinds,
+        tacticTags: sourceNorm.response.tacticTags,
+      }, targetValue: targetNorm.response },
+      { field: "priority", sourceValue: sourceNorm.priority, targetValue: targetNorm.priority },
+      { field: "force", sourceValue: sourceNorm.force, targetValue: targetNorm.force },
+      { field: "exceptions", sourceValue: sourceNorm.exceptions, targetValue: targetNorm.exceptions },
+      { field: "description", sourceValue: sourceNorm.description, targetValue: targetNorm.description },
+    ];
+    return comparisons.flatMap(({ field, sourceValue, targetValue }) => {
+      if (assetContentDigest(sourceValue) === assetContentDigest(targetValue)) return [];
+      const targetPath = `${targetRoot}.${field}`;
+      const operation = [...state.operations].reverse().find((entry) =>
+        pathContains(entry.targetPath, targetPath) || pathContains(targetPath, entry.targetPath));
+      const supported = operation?.sourcePaths.some((path) =>
+        pathContains(sourceRoot, path) || pathContains(path, sourceRoot)) ?? false;
+      return supported ? [] : [{ ...migrationFinding("executable_action_norm_source_mismatch",
+        targetPath,
+        "A changed executable norm field must cite the source norm selected by the target selectors."),
+      sourcePaths: [sourceRoot] }];
+    });
+  });
+}
+
 function ruleMatches(pattern: string, path: string): boolean {
   const normalized = path.replace(/^definition\./, "").replace(/\.text$/, "");
   const patterns = pattern.includes("/") ? pattern.split("/").map((ending, index, all) =>
@@ -127,6 +191,26 @@ function ruleMatches(pattern: string, path: string): boolean {
 function grantKey(rule: CharacterMigrationContext["source"]["disclosurePolicy"]["rules"][number]): string {
   return assetContentDigest({ channel: rule.channel, target: rule.target,
     prerequisites: [...rule.prerequisites].sort() });
+}
+
+function disclosureTextRole(path: string): "statement" | "description" | null {
+  if (path.endsWith(".statement")) return "statement";
+  if (path.endsWith(".description.text")) return "description";
+  return null;
+}
+
+function exactDisclosureSources(
+  context: CharacterMigrationContext,
+  operation: CharacterMigrationMerge["operations"][number],
+  targetPath: string,
+  targetValue: CharacterMigrationJson | undefined,
+): string[] {
+  const targetRole = disclosureTextRole(targetPath);
+  if (!targetRole || typeof targetValue !== "string") return [];
+  return context.sourcePaths.filter((sourcePath) =>
+    disclosureTextRole(sourcePath) === targetRole &&
+    operation.sourcePaths.some((root) => pathContains(root, sourcePath)) &&
+    migrationRead(context.sources, sourcePath) === targetValue);
 }
 
 function disclosureFindings(
@@ -188,10 +272,17 @@ export function carryCharacterMigrationDisclosure(
         !(path.endsWith(".statement") || path.endsWith(".description.text"))) continue;
     const operation = [...state.operations].reverse().find((entry) => pathContains(entry.targetPath, path));
     if (!operation || operation.sourcePaths.length === 0) continue;
-    const candidates = context.source.disclosurePolicy.rules.filter((rule) =>
-      operation.sourcePaths.every((source) => ruleMatches(rule.valuePath, source)));
+    const targetValue = migrationRead(state.candidate, path);
+    const exactSources = exactDisclosureSources(context, operation, path, targetValue);
+    const candidates = context.attempt.promptIdentity === CHARACTER_MIGRATION_PROMPT_V4
+      ? context.source.disclosurePolicy.rules.filter((rule) =>
+        exactSources.some((source) => ruleMatches(rule.valuePath, source)))
+      : context.source.disclosurePolicy.rules.filter((rule) =>
+        operation.sourcePaths.every((source) => ruleMatches(rule.valuePath, source)));
     for (const rule of candidates) {
-      rules.push({ ...rule, valuePath: path.replace(/^definition\./, "").replace(/\.text$/, "") });
+      const carried = { ...rule, valuePath: path.replace(/^definition\./, "").replace(/\.text$/, "") };
+      if (!rules.some((current) => current.valuePath === carried.valuePath &&
+          grantKey(current) === grantKey(carried))) rules.push(carried);
     }
   }
   migrationWrite(state.candidate, "disclosurePolicy", CharacterMigrationJsonSchema.parse({
@@ -223,6 +314,7 @@ export function validateCharacterMigrationCandidate(input: {
     return { candidate: null, findings, compatibility: null };
   }
   findings.push(...fallbackFindings(context, state, parsed.data));
+  findings.push(...executableNormLineageFindings(context, state, parsed.data));
   findings.push(...characterMigrationReferenceFindings({ context, state, candidate: parsed.data }));
   compileCharacterActionNormProgramV3(parsed.data.definition);
   compileCharacterConsciousGuidanceV1(parsed.data.definition);

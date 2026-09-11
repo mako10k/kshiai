@@ -4,12 +4,11 @@ import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { semanticMigrationProbeSnapshot } from "./semantic-migration-probe-snapshot.js";
-import { SEMANTIC_MIGRATION_PROBE_RUN_V2 } from "./semantic-migration-probe-run.js";
+import { SEMANTIC_MIGRATION_PROBE_RUN_V2, type SemanticMigrationProbeRun } from "./semantic-migration-probe-run.js";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "../../..");
-const output = join(root, "docs/evidence", SEMANTIC_MIGRATION_PROBE_RUN_V2.runId);
 
-async function writeNew(name: string, value: unknown) {
+async function writeNew(output: string, name: string, value: unknown) {
   await writeFile(join(output, name), JSON.stringify(value, null, 2) + "\n", { flag: "wx" });
 }
 
@@ -22,7 +21,7 @@ function mode() {
   throw new Error("Use --prepare or --execute FULL_APPROVED_PROOF_DIGEST");
 }
 
-async function main() {
+export async function runSemanticMigrationProbe(run: SemanticMigrationProbeRun = SEMANTIC_MIGRATION_PROBE_RUN_V2) {
   const selected = mode();
   // Set before any repository runtime import: neither ambient nor .env DB settings can win.
   const databaseDirectory = await mkdtemp(join(tmpdir(), "kshiai-semantic-probe-"));
@@ -33,13 +32,14 @@ async function main() {
   const { closeDatabase, databaseKind } = await import("../db.js");
   try {
     assert.equal(databaseKind(), "sqlite");
-    await runProbe(selected, databaseDirectory);
+    await runProbe(selected, databaseDirectory, run);
   } finally {
     await closeDatabase();
   }
 }
 
-async function runProbe(selected: ReturnType<typeof mode>, databaseDirectory: string) {
+async function runProbe(selected: ReturnType<typeof mode>, databaseDirectory: string, run: SemanticMigrationProbeRun) {
+  const output = join(root, "docs/evidence", run.runId);
   const { MIGRATION_PROBE_CONTRACT, createMigrationProbeProvider, migrationProbeReservation } =
     await import("../llm/character-migration-probe-provider.js");
   const { seedSemanticMigrationProbe } = await import("./semantic-migration-probe-fixture.js");
@@ -49,7 +49,7 @@ async function runProbe(selected: ReturnType<typeof mode>, databaseDirectory: st
   const { characterMigrationProviderPayload } = await import("../services/character-migration-prompts.js");
   const { assetContentDigest, getCurrentAssetGeneration } = await import("../repositories/asset-generations.js");
   const { loadCharacterSemanticMigrationWork } = await import("../repositories/character-semantic-migration.js");
-  const attempt = await seedSemanticMigrationProbe(SEMANTIC_MIGRATION_PROBE_RUN_V2);
+  const attempt = await seedSemanticMigrationProbe(run);
   const context = createCharacterMigrationContext(attempt);
   const first = characterMigrationProviderPayload({
     context, state: initialCharacterMigrationMerge(context),
@@ -76,16 +76,16 @@ async function runProbe(selected: ReturnType<typeof mode>, databaseDirectory: st
     assert.ok(process.env.XAI_API_KEY?.trim(), "XAI_API_KEY must be injected");
     assert.notEqual(process.env.NODE_TLS_REJECT_UNAUTHORIZED, "0", "TLS verification must be enabled");
     // Exclusive creation consumes this run even on ambiguous network failure. Never resend.
-    await writeNew("live-start.json", { proofDigest, databaseDirectory, startedAt: new Date().toISOString() });
+    await writeNew(output, "live-start.json", { proofDigest, databaseDirectory, startedAt: new Date().toISOString() });
   } else {
-    await writeNew("prepare-proof.json", proof);
+    await writeNew(output, "prepare-proof.json", proof);
   }
   const events: import("../llm/character-migration-probe-provider.js").MigrationProbeEvent[] = [];
   const provider = createMigrationProbeProvider({
     apiKey: selected.execute ? process.env.XAI_API_KEY ?? "" : "offline-only-not-sent",
     persist: async (event) => {
       events.push(event);
-      if (selected.execute) await writeNew(`call-${event.ordinal}-${event.phase}.json`, event);
+      if (selected.execute) await writeNew(output, `call-${event.ordinal}-${event.phase}.json`, event);
     },
     ...(selected.execute ? {} : { fetcher: offlineTransport }),
   });
@@ -103,7 +103,7 @@ async function runProbe(selected: ReturnType<typeof mode>, databaseDirectory: st
     assert.equal(result.requests.length, 6, "Dry proof must cover all six request slots");
     assert.equal(result.status, "review_required");
   }
-  await writeNew(selected.execute ? "live-result.json" : "prepare-result.json", report);
+  await writeNew(output, selected.execute ? "live-result.json" : "prepare-result.json", report);
   console.log(JSON.stringify({ proofDigest, status: result.status, output,
     networkRequests: report.networkRequests, activated: result.activated }));
 }
@@ -128,7 +128,7 @@ const offlineTransport: typeof fetch = async (_url, init) => {
 };
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-  main().catch(() => {
+  runSemanticMigrationProbe().catch(() => {
     // Never log an exception carrying authorization headers or ambient configuration.
     console.error("Semantic migration probe stopped; inspect retained evidence. No automatic retry.");
     process.exitCode = 1;

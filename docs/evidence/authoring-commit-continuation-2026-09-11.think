@@ -1,0 +1,12 @@
+domain CommitContinuation:
+  description "Preserve current task WIP before successor design."
+evidence OWNER:
+  "Owner explicitly requested commit before proceeding with successor work."
+evidence STATE:
+  "Active linked worktree is compact-psyche-repair-integration-kshiai at 77e448c on codex/compact-psyche-repair-integration. Index is empty. Changes are semantic migration corrections, Ollama probe code/evidence, authoring requirement/review/acceptance documents and their Sealgraph records."
+premise SCOPE:
+  "These are continuation WIP from the user-directed migration and foundation work. A WIP commit preserves them without claiming implementation of newly accepted authoring requirements. No push is requested."
+decision COMMIT based_on OWNER, STATE, SCOPE:
+  "Inspect changed files for accidental secrets/generated data, run local tests and typecheck, then stage only observed task paths and create a WIP preservation commit. Read back commit and remaining status. No reset, branch switch, remote write or paid provider run."
+decision NEXT based_on OWNER, SCOPE:
+  "After commit, inspect accepted foundation v3 and character v5 and existing ADR0010/0011/0014/0030 before drafting a Proposed successor ADR. Preserve old accepted decisions until owner accepts replacement. Do not implement under a Proposed ADR."

@@ -60,11 +60,11 @@ export function parseCharacterMigrationReview(
 
 // Inspect a rejected fragment without applying it or normalizing away old keys.
 // This prevents an overlap finding from hiding the next schema error.
-export function rejectedCharacterMigrationFragmentFindings(input: {
+function characterMigrationFragmentFindings(input: {
   context: CharacterMigrationContext;
   candidate: CharacterMigrationJson;
   operation: CharacterSemanticMigrationOperationV1;
-}): CharacterMigrationFinding[] {
+}, code: string, label: string): CharacterMigrationFinding[] {
   const { operation, context } = input;
   if (!["copy", "move", "transform", "synthesize"].includes(operation.operation)) return [];
   const value = ["copy", "move"].includes(operation.operation)
@@ -77,8 +77,24 @@ export function rejectedCharacterMigrationFragmentFindings(input: {
   return parsed.error.issues.flatMap((issue) => {
     const path = ["definition", ...issue.path].join(".");
     if (!pathContains(operation.targetPath, path)) return [];
-    return [{ code: "rejected_fragment_schema_invalid", targetPaths: [path],
+    return [{ code, targetPaths: [path],
       sourcePaths: operation.sourcePaths, semanticDependants: operation.semanticDependants,
-      explanation: `Rejected ${operation.operation} fragment: ${issue.message}` }];
+      explanation: `${label} ${operation.operation} fragment: ${issue.message}` }];
   });
+}
+
+export function rejectedCharacterMigrationFragmentFindings(input: {
+  context: CharacterMigrationContext;
+  candidate: CharacterMigrationJson;
+  operation: CharacterSemanticMigrationOperationV1;
+}): CharacterMigrationFinding[] {
+  return characterMigrationFragmentFindings(input, "rejected_fragment_schema_invalid", "Rejected");
+}
+
+export function invalidCharacterMigrationFragmentFindings(input: {
+  context: CharacterMigrationContext;
+  candidate: CharacterMigrationJson;
+  operation: CharacterSemanticMigrationOperationV1;
+}): CharacterMigrationFinding[] {
+  return characterMigrationFragmentFindings(input, "operation_fragment_schema_invalid", "Invalid");
 }

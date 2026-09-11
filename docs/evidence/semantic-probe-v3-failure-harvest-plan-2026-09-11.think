@@ -1,0 +1,24 @@
+domain SemanticProbeV3FailureHarvest:
+  description "Convert every retained paid V3 response into reusable offline evidence before another paid provider call."
+evidence E1:
+  "E-PAIDRUN-001: the consumed V3 probe retained six successful HTTP response bodies and six durable parsed receipts. Their provider accounting totals 188276 tokens and estimated USD0.238195; the estimate is not an observed invoice."
+evidence E2:
+  "E-PAIDRUN-002: call1 contained correct consciousGuidance values, a correct executable basic-action norm at source priority40, and a correct basic-action fallback, but its retire and synthesize operations both targeted definition.actionNorms, so the executable norm operation was rejected while nonoverlapping correct fragments survived."
+evidence E3:
+  "E-PAIDRUN-003: calls2,4,and6 mix corroborated and false review claims. Call2 correctly saw the missing executable norm but falsely claimed the existing fallback was absent. Call4 correctly saw the null fallback but falsely rebased the executable norm to priority60 and requested a field that V3 does not contain. Call6 correctly saw fallback loss and priority mismatch, falsely identified disclosurePolicy.rules.4, and correctly identified missing consciousGuidance disclosure."
+evidence E4:
+  "E-PAIDRUN-004: calls3and5 show the propagation mechanism. Call3 correctly restored the executable norm at priority40 but also proposed null for an already-correct fallback. Call5 then proposed an empty fallback array and priority60. The final candidate failed closed and was not activated."
+evidence E5:
+  "E-PAIDRUN-005: V4 local regressions already reject invalid target fragments before mutation, prevent uncorroborated review claims from driving repair, detect executable norm lineage mismatch, and carry exact public statement disclosure per leaf. No live V4 provider execution has occurred."
+premise U1:
+  "Model internals and future output distribution remain unknown. Replaying retained outputs proves handling of observed failures, not that another live response will converge."
+premise U2:
+  "A new paid call is not authorized by this work. Activation, production mutation, commit, push, deployment and Sealgraph source changes are also outside this action."
+decision C1 based_on E1, E2, E3, E4:
+  "C-PAIDRUN-001 high confidence: preserving only the terminal result wastes information because each response contains independently reusable correct fragments, false claims and propagation examples. The six exact receipts should be the fixed failure corpus."
+decision C2 based_on E3, E4, E5, U1:
+  "C-PAIDRUN-002 high confidence: the next paid run should be gated by offline evidence that all six receipts remain parseable, the three generation responses reproduce their observed mutations under V3, and V4 either preserves prior valid values or emits the intended deterministic concern for each observed failure class. This reduces repeated known failure risk but cannot establish live convergence."
+decision C3 based_on E1, U1, U2:
+  "C-PAIDRUN-003 proportional control: one executable corpus regression plus one Japanese evidence ledger is sufficient. Do not create another prompt version, run the provider, or add speculative controls until this bounded gate exposes a concrete gap."
+decision A1 based_on C1, C2, C3:
+  "A-PAIDRUN-001: add an exact-receipt offline regression, document every call's useful output, error, downstream effect, V4 disposition and remaining unknown, run focused and repository validation, and Seal the new or changed artifacts."

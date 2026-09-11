@@ -1,0 +1,24 @@
+domain SemanticProbeV3FailureHarvestVerification:
+  description "Verify that retained paid evidence is executable and that the bounded gate does not claim live V4 convergence."
+evidence E1:
+  "E-PAIDRUN-101: the exact-receipt regression parsed all six retained succeeded receipts, matched the generation-review sequence and all retained review finding codes, and recomputed total accounting as188276 tokens."
+evidence E2:
+  "E-PAIDRUN-102: applying retained generation calls1,3,and5 with V3 semantics reproduced fallback basic-action then null then empty-array, and final priority60."
+evidence E3:
+  "E-PAIDRUN-103: applying the same retained generation calls with V4 semantics preserved fallback basic-action after every call, emitted executable_action_norm_source_mismatch for final priority60, and emitted no candidate_schema_invalid."
+evidence E4:
+  "E-PAIDRUN-104: the first focused test run exposed a missing runtime import for the review schema. The next run exposed that initial-generation evidence correctly omits repairClosure. The subsequent typecheck required explicit succeeded-receipt narrowing. Each harness defect was corrected without a type cast, and the focused regression then passed."
+evidence E5:
+  "E-PAIDRUN-105: final repository validation passed785 tests, all workspace and deployment typechecks, production build with only the existing Vite chunk warning, jscpd, and Lizard1.23.0 thresholds over211 files and3527 functions."
+premise U1:
+  "No provider call, activation, production mutation, prompt V5, Sealgraph source change, commit, push or deployment occurred."
+premise U2:
+  "The corpus contains observed V3 outputs. It does not sample future model output and therefore cannot prove V4 live convergence, token use or price."
+decision C1 based_on E1, E2, E3:
+  "C-PAIDRUN-101 high confidence: the paid V3 outputs now function as an exact executable regression rather than terminal historical prose, and V4 controls the two observed corrupting changes while retaining the semantic priority concern."
+decision C2 based_on E4, E5:
+  "C-PAIDRUN-102 high confidence: the failure-harvest implementation and its evidence loaders satisfy repository validation without unsafe casting; the local harness failures were resolved before acceptance."
+decision C3 based_on E1, E2, E3, U1, U2:
+  "C-PAIDRUN-103 bounded result: known failure replay readiness is established, while authorization and evidence for another paid execution remain absent."
+decision A1 based_on C1, C2, C3:
+  "A-PAIDRUN-101: Seal the exact-receipt regression, harvest ledger, audited plan, verification and updated continuation record. Do not invoke the provider or perform external repository writes."

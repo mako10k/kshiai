@@ -1,0 +1,34 @@
+domain SemanticProbeV3Result:
+  description "Audit the exact consumed v3 run and separate model, application, detection and unresolved design effects."
+evidence E1:
+  "E-PROBEV3-101: live-result records6network requests and statusreview_required; all6HTTP statuses are200 and all6durable receipts succeeded. Candidate and compatibility are null, activatedfalse and currentGenerationUnchangedtrue. The isolated database directory is /tmp/kshiai-semantic-probe-ZEYD4I. No retry occurred."
+evidence E2:
+  "E-PROBEV3-102: provider usage totals185996prompt and2280completion tokens,188276total. Provider response fields report zero reasoning tokens. At the published uncached grok-4.3 rates this is an estimated USD0.238195, not an observed invoice."
+evidence E3:
+  "E-PROBEV3-103: call1 produced correct consciousGuidance priorities60and40, a correct executable basic-action norm priority40, and a correct fallback orderedActionRefs basic-action. In the same response it first retired definition.actionNorms and later synthesized the same target, violating the one-write prompt. The merger applied retirement and rejected the later overlapping actionNorm write, while preserving the other nonoverlapping operations."
+evidence E4:
+  "E-PROBEV3-104: call2 correctly reported the now-missing executable norm but falsely reported that the candidate fallback omitted basic-action; the actual call2 candidate contained orderedActionRefs basic-action. Call3 repaired the norm at priority40, then emitted a transform of the valid fallback to null while saying it was already present."
+evidence E5:
+  "E-PROBEV3-105: call4 correctly observed the fallback null but falsely required executable norm priority60 even though that norm was synthesized from V2 norm1 priority40; it also reported a selfAwareness defect while stating V3 requires no such field. Call5 then changed fallback to an empty array and priority to60. Call6 correctly identified both resulting mismatches, while also making a factually wrong claim that an actionNorm statement rule remained at disclosurePolicy.rules.4; the actual rule at index4 is speechPolicy.description."
+evidence E6:
+  "E-PROBEV3-106: CharacterSemanticMigrationOperationV1 validates operation.value only as generic recursive JSON. checkOperationPaths validates registration and scope, then applyOperation writes transform or synthesize values directly. Target-fragment schema checking exists only for a rejected overlapping V3 operation. Full candidate schema validation occurs after mutation and detected the empty orderedActionRefs array, whose schema requires at least one item."
+evidence E7:
+  "E-PROBEV3-107: the final draft retains both consciousGuidance entries, but contains executable basic-action priority60 and mechanicalConflictFallbacks orderedActionRefs empty. Final findings include candidate_schema_invalid, fallback loss, priority mismatch, one disclosure finding and one review_path_invalid. The last finding arose because the reviewer placed new candidate consciousGuidance paths in sourcePaths, which are restricted to original source paths; valid sibling findings were retained."
+evidence E8:
+  "E-PROBEV3-108: server disclosure migration removes V2 actionNorm statement rules, then carries a rule only when every source path of the operation matches the source grant. The consciousGuidance synthesis cites both publicly disclosed statement paths and undisclosed selfAwareness paths, so no statement rule is carried. Whether preserving public visibility for only the public-derived statement component is required is not settled by this run."
+premise U1:
+  "Model internals are unobserved. The run establishes emitted outputs and deterministic application effects, not why Grok selected them. Same-model review is not independent semantic truth."
+premise U2:
+  "The observed disclosure narrowing is real, but whether it is a defect or the intended no-widening result for mixed-provenance synthesis requires an owner-level contract decision. Do not label it a root cause yet."
+decision C1 based_on E1, E3, E4, E5, E7:
+  "C-PROBEV3-101 high confidence outcome: V3 improved diagnostic retention and produced much of the intended split, but the end-to-end migration did not converge and is not acceptable or activatable."
+decision C2 based_on E4, E6, E7:
+  "C-PROBEV3-102 high confidence root cause of the final structural defect: the application contract accepts a schema-invalid value for a registered transform target and mutates the current candidate before target-fragment validation. Consequently call3 overwrote a valid fallback with null and call5 overwrote it with an empty array; later full validation detected but did not undo the corruption."
+decision C3 based_on E3, E4, E5, U1:
+  "C-PROBEV3-103 high confidence contributing provider and workflow causes: initial overlapping writes caused loss of the otherwise correct actionNorm, and factually unsupported reviewer claims were fed into later repairs. This caused repairs to modify values that were already correct. The reason Grok emitted those claims remains unknown."
+decision C4 based_on E1, E6, E7:
+  "C-PROBEV3-104 high confidence containment and escape classification: fail-closed final validation prevented activation and protected the current generation. Preparation tests did not expose the per-target invalid-repair acceptance path before the paid run; that is an escape cause for pre-run assurance, not the defect-producing root cause."
+decision C5 based_on E5, E7, E8, U2:
+  "C-PROBEV3-105 high confidence mixed result: per-finding review parsing retained valid sibling findings as intended, so the V2 all-or-nothing review-path failure was corrected. Reviewer truthfulness and mixed-provenance disclosure semantics remain separate unresolved concerns."
+decision A1 based_on C1, C2, C3, C4, C5, U1, U2:
+  "A-PROBEV3-101 evidence-only: preserve the consumed run and record a Japanese result. Do not resend, activate, runB6, implement a correction, commit, push or stop the shared workday. The next proposed correction should validate each target fragment before mutation and retain the previous valid value; semantic reviewer grounding and mixed-provenance disclosure need explicit design before implementation."

@@ -1,20 +1,24 @@
 import assert from "node:assert/strict";
 import { after, before, describe, it } from "node:test";
-import { mkdtempSync, rmSync } from "node:fs";
+import { mkdtempSync, readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { dirname, join, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import {
   CHARACTER_SEMANTIC_MIGRATION_CONTRACT_V1,
   CHARACTER_SEMANTIC_MIGRATION_RESPONSE_SCHEMA_V1,
   CharacterGenerationEnvelopeV2Schema, CharacterMigrationJsonSchema,
+  CharacterSemanticConsistencyReviewV1Schema,
   CharacterSemanticMigrationAttemptV1Schema,
   CharacterSemanticMigrationChangeSetV1Schema,
   CharacterSemanticMigrationProviderReceiptV1Schema,
   defaultBasicAttack, defaultParameters,
+  type CharacterMigrationJson,
   type CharacterSemanticMigrationAttemptV1,
   type CharacterSemanticMigrationOperationV1,
   type CharacterSheet,
 } from "@kshiai/shared";
+import { z } from "zod";
 import type { CharacterMigrationProvider, CharacterMigrationProviderCall } from "./character-migration-requests.js";
 import { assertXaiResponseSchema } from "../llm/provider-response-schema.js";
 
@@ -29,7 +33,10 @@ const { characterSemanticMigrationInitialRequestDigest, loadCharacterSemanticMig
   await import("../repositories/character-semantic-migration.js");
 const { buildImportedCharacterEnvelopeV2 } = await import("./character-authoring-service.js");
 const { generateCharacterSemanticMigration } = await import("./character-semantic-migration.js");
-const { createCharacterMigrationContext, migrationRead, migrationWrite } =
+const {
+  CHARACTER_MIGRATION_PROMPT_V3, CHARACTER_MIGRATION_PROMPT_V4,
+  createCharacterMigrationContext, migrationRead, migrationWrite,
+} =
   await import("./character-migration-context.js");
 const { initialCharacterMigrationMerge, mergeCharacterMigrationChangeSet } =
   await import("./character-migration-merge.js");
@@ -38,6 +45,28 @@ const { validateCharacterMigrationCandidate, carryCharacterMigrationDisclosure }
 const { characterMigrationProviderPayload } = await import("./character-migration-prompts.js");
 
 const now = "2026-09-10T09:00:00.000Z";
+const paidProbeEvidence = resolve(dirname(fileURLToPath(import.meta.url)),
+  "../../../docs/evidence/semantic-migration-grok-2026-09-11-v3");
+const PaidProbeProofSchema = z.object({ attempt: CharacterSemanticMigrationAttemptV1Schema });
+const PaidProbeReceiptSchema = z.object({
+  ordinal: z.number().int().min(1).max(6),
+  phase: z.literal("receipt"),
+  receipt: CharacterSemanticMigrationProviderReceiptV1Schema,
+});
+const PaidProbeBeforeSchema = z.object({
+  ordinal: z.number().int().min(1).max(6),
+  phase: z.literal("before"),
+  call: z.object({
+    providerRequestId: z.string().min(1),
+    input: z.object({ repairClosure: z.array(z.string()).optional() }).passthrough(),
+  }).passthrough(),
+});
+
+function readPaidProbeJson(name: string): unknown {
+  const parsed: unknown = JSON.parse(readFileSync(join(paidProbeEvidence, name), "utf8"));
+  return parsed;
+}
+
 const sheet: CharacterSheet = {
   id: "b5-character", ownerUserId: "b5-owner", displayName: "灯",
   tags: [], createdAt: now, updatedAt: now,
@@ -99,6 +128,11 @@ function attempt(id: string): CharacterSemanticMigrationAttemptV1 {
     ] },
     createdAt: now,
   });
+  return { ...base, initialRequestDigest: characterSemanticMigrationInitialRequestDigest(base) };
+}
+
+function versionedAttempt(id: string, promptIdentity: string): CharacterSemanticMigrationAttemptV1 {
+  const base = { ...attempt(id), promptIdentity };
   return { ...base, initialRequestDigest: characterSemanticMigrationInitialRequestDigest(base) };
 }
 
@@ -167,9 +201,95 @@ async function run(id: string, reply: (call: CharacterMigrationProviderCall, ind
 }
 
 describe("B5 bounded semantic migration", () => {
+  it("turns every retained paid V3 response into an executable V4 failure corpus", () => {
+    const proof = PaidProbeProofSchema.parse(readPaidProbeJson("prepare-proof.json"));
+    const receipts = Array.from({ length: 6 }, (_, index) =>
+      PaidProbeReceiptSchema.parse(readPaidProbeJson(`call-${index + 1}-receipt.json`)));
+    const succeeded = receipts.map((entry) => {
+      assert.equal(entry.receipt.outcome, "succeeded", `call ${entry.ordinal} must remain succeeded`);
+      if (entry.receipt.outcome !== "succeeded") assert.fail(`call ${entry.ordinal} failed`);
+      return entry.receipt;
+    });
+    assert.deepEqual(succeeded.map((receipt) =>
+      migrationRead(CharacterMigrationJsonSchema.parse(receipt.response), "schema")), [
+      "character_semantic_migration_change_set_v1",
+      "character_semantic_consistency_review_v1",
+      "character_semantic_migration_change_set_v1",
+      "character_semantic_consistency_review_v1",
+      "character_semantic_migration_change_set_v1",
+      "character_semantic_consistency_review_v1",
+    ]);
+    assert.equal(succeeded.reduce((total, receipt) =>
+      total + receipt.accounting.totalTokens, 0), 188_276);
+
+    const reviewCodes = succeeded.filter((_, index) => index % 2 === 1).map((receipt) => {
+      const parsed = CharacterSemanticConsistencyReviewV1Schema.parse(receipt.response);
+      return parsed.findings.map((finding) => finding.code);
+    });
+    assert.deepEqual(reviewCodes, [
+      ["missing_actionNorms_executable", "disclosure_rule_removed", "fallbackActionRef_lost"],
+      ["missing_fallbackActionRef_migration", "lost_actionNorms_priority",
+        "missing_selfAwareness_in_actionNorms"],
+      ["missing_fallbackActionRef_migration", "actionNorms_priority_mismatch",
+        "disclosurePolicy_actionNorms_removal", "missing_consciousGuidance_disclosure"],
+    ]);
+
+    function replayGeneration(promptIdentity: string) {
+      const { initialRequestDigest: _storedDigest, ...storedAttempt } = proof.attempt;
+      const base = CharacterSemanticMigrationAttemptV1Schema.omit({ initialRequestDigest: true }).parse({
+        ...storedAttempt, promptIdentity,
+      });
+      const input = { ...base,
+        initialRequestDigest: characterSemanticMigrationInitialRequestDigest(base) };
+      const context = createCharacterMigrationContext(input);
+      let state = initialCharacterMigrationMerge(context);
+      const snapshots: CharacterMigrationJson[] = [];
+      for (const ordinal of [1, 3, 5]) {
+        const receipt = succeeded[ordinal - 1];
+        const changeSet = CharacterSemanticMigrationChangeSetV1Schema.parse(receipt.response);
+        const before = PaidProbeBeforeSchema.parse(readPaidProbeJson(`call-${ordinal}-before.json`));
+        const repairClosure = before.call.input.repairClosure;
+        if (ordinal !== 1) assert.ok(repairClosure, `call ${ordinal} repair closure must be retained`);
+        state = mergeCharacterMigrationChangeSet({
+          context, previous: state, changeSet,
+          providerRequestId: before.call.providerRequestId,
+          repairClosure: ordinal === 1 ? null : repairClosure ?? null,
+        });
+        carryCharacterMigrationDisclosure(context, state);
+        snapshots.push(structuredClone(state.candidate));
+      }
+      return { context, state, snapshots };
+    }
+
+    const v3 = replayGeneration(CHARACTER_MIGRATION_PROMPT_V3);
+    assert.deepEqual(migrationRead(v3.snapshots[0],
+      "definition.mechanicalConflictFallbacks.0.orderedActionRefs"), ["basic-action"]);
+    assert.equal(migrationRead(v3.snapshots[1],
+      "definition.mechanicalConflictFallbacks.0.orderedActionRefs"), null);
+    assert.deepEqual(migrationRead(v3.snapshots[2],
+      "definition.mechanicalConflictFallbacks.0.orderedActionRefs"), []);
+    assert.equal(migrationRead(v3.snapshots[2], "definition.actionNorms.0.priority"), 60);
+
+    const v4 = replayGeneration(CHARACTER_MIGRATION_PROMPT_V4);
+    assert.deepEqual(migrationRead(v4.snapshots[0],
+      "definition.mechanicalConflictFallbacks.0.orderedActionRefs"), ["basic-action"]);
+    assert.deepEqual(migrationRead(v4.snapshots[1],
+      "definition.mechanicalConflictFallbacks.0.orderedActionRefs"), ["basic-action"]);
+    assert.deepEqual(migrationRead(v4.snapshots[2],
+      "definition.mechanicalConflictFallbacks.0.orderedActionRefs"), ["basic-action"]);
+    const v4Validation = validateCharacterMigrationCandidate({
+      context: v4.context, state: v4.state,
+      availableCapabilities: v4.context.attempt.compilerCapabilities.required,
+    });
+    assert.ok(v4Validation.findings.some((finding) =>
+      finding.code === "executable_action_norm_source_mismatch" &&
+      finding.targetPaths.includes("definition.actionNorms.0.priority")));
+    assert.equal(v4Validation.findings.some((finding) =>
+      finding.code === "candidate_schema_invalid"), false);
+  });
+
   it("v3 carries valid review feedback through bounded repair and replays without calls", async () => {
-    const base = { ...attempt("v3-review-repair"), promptIdentity: "character-semantic-migration-prompt-v3" };
-    const input = { ...base, initialRequestDigest: characterSemanticMigrationInitialRequestDigest(base) };
+    const input = versionedAttempt("v3-review-repair", CHARACTER_MIGRATION_PROMPT_V3);
     const ops = migratedOperations(input);
     const script = scriptedProvider((call, index) => {
       if (index === 0) return changeSet([ops[0]]);
@@ -208,6 +328,59 @@ describe("B5 bounded semantic migration", () => {
     });
     assert.deepEqual(replay.candidate, result.candidate);
     assert.ok(replay.requests.every((entry) => entry.status === "received" && entry.replayed));
+  });
+
+  it("v4 preserves an uncorroborated review claim without letting it drive repair", async () => {
+    const input = versionedAttempt("v4-unverified-review", CHARACTER_MIGRATION_PROMPT_V4);
+    const operations = migratedOperations(input);
+    const script = scriptedProvider((_, index) => {
+      if (index === 0) return changeSet(operations);
+      return { ...consistentReview(), verdict: "repair_required", findings: [{
+        code: "fallback_missing", targetPaths: ["definition.mechanicalConflictFallbacks"],
+        sourcePaths: ["definition.actionNorms.0.response.fallbackActionRef"],
+        semanticDependants: [], explanation: "The fallback is missing.",
+      }] };
+    });
+    const result = await generateCharacterSemanticMigration({
+      attempt: input, provider: script.provider, availableCapabilities: input.compilerCapabilities.required,
+    });
+    assert.equal(result.status, "review_required");
+    assert.equal(script.calls.length, 2, "an unverified claim must not trigger semantic_repair");
+    assert.deepEqual(result.candidate?.definition.mechanicalConflictFallbacks[0].orderedActionRefs,
+      [source.definition.capabilities.basicAction.id]);
+    assert.ok(result.findings.some((finding) => finding.code === "review_claim_unverified"));
+    assert.ok(result.uncertainties.some((entry) => entry.includes("did not authorize repair")));
+    assert.ok(result.repairClosure.includes("definition.mechanicalConflictFallbacks"));
+  });
+
+  it("v4 keeps review-expanded closure while a server finding drives repair", async () => {
+    const input = versionedAttempt("v4-grounded-review", CHARACTER_MIGRATION_PROMPT_V4);
+    const operations = migratedOperations(input);
+    const script = scriptedProvider((call, index) => {
+      if (index === 0) return changeSet([operations[0]]);
+      if (index === 1) return { ...consistentReview(), verdict: "repair_required", findings: [{
+        code: "fallback_missing", targetPaths: ["definition.mechanicalConflictFallbacks"],
+        sourcePaths: ["definition.actionNorms.0.response.fallbackActionRef"],
+        semanticDependants: ["definition.consciousGuidance"],
+        explanation: "The source fallback is not represented.",
+      }] };
+      if (index === 2) {
+        assert.equal(call.kind, "semantic_repair");
+        const errors = migrationRead(call.input, "errors");
+        assert.ok(Array.isArray(errors));
+        assert.ok(errors.some((finding) => migrationRead(finding, "code") === "fallback_not_accounted"));
+        const closure = migrationRead(call.input, "repairClosure");
+        assert.ok(Array.isArray(closure));
+        assert.ok(closure.includes("definition.consciousGuidance"));
+        return changeSet([operations[1]]);
+      }
+      return consistentReview();
+    });
+    const result = await generateCharacterSemanticMigration({
+      attempt: input, provider: script.provider, availableCapabilities: input.compilerCapabilities.required,
+    });
+    assert.equal(result.status, "awaiting_owner_acceptance", JSON.stringify(result.findings));
+    assert.equal(script.calls.length, 4);
   });
 
   it("versions corrected grammar without changing historical v1 payload construction", () => {
@@ -464,6 +637,73 @@ describe("B5 structural operation boundary", () => {
     assert.ok(validation.findings.some((finding) => finding.code === "source_not_accounted"));
   });
 
+  it("versions pre-apply fragment rejection without changing consumed V3 merge semantics", () => {
+    function repairedState(id: string, promptIdentity: string) {
+      const input = versionedAttempt(id, promptIdentity);
+      const context = createCharacterMigrationContext(input);
+      const previous = mergeCharacterMigrationChangeSet({
+        context, previous: initialCharacterMigrationMerge(context),
+        changeSet: changeSet(migratedOperations(input)),
+        providerRequestId: `${id}-initial`, repairClosure: null,
+      });
+      const next = mergeCharacterMigrationChangeSet({
+        context, previous, providerRequestId: `${id}-repair`, repairClosure: null,
+        changeSet: changeSet([
+          operation("definition.mechanicalConflictFallbacks.0.orderedActionRefs", null, {
+            sourcePaths: ["definition.actionNorms.0.response.fallbackActionRef"],
+            semanticDependants: ["definition.mechanicalConflictFallbacks.0"],
+          }),
+          operation("definition.consciousGuidance.0.priority", 55, {
+            sourcePaths: ["definition.actionNorms.0.priority"],
+          }),
+        ]),
+      });
+      return { context, next };
+    }
+
+    const legacy = repairedState("v3-fragment-replay", CHARACTER_MIGRATION_PROMPT_V3);
+    assert.equal(migrationRead(legacy.next.candidate,
+      "definition.mechanicalConflictFallbacks.0.orderedActionRefs"), null);
+    assert.equal(validateCharacterMigrationCandidate({
+      context: legacy.context, state: legacy.next,
+      availableCapabilities: legacy.context.attempt.compilerCapabilities.required,
+    }).candidate, null);
+
+    const guarded = repairedState("v4-fragment-guard", CHARACTER_MIGRATION_PROMPT_V4);
+    assert.deepEqual(migrationRead(guarded.next.candidate,
+      "definition.mechanicalConflictFallbacks.0.orderedActionRefs"),
+    [source.definition.capabilities.basicAction.id]);
+    assert.equal(migrationRead(guarded.next.candidate,
+      "definition.consciousGuidance.0.priority"), 55);
+    assert.ok(guarded.next.findings.some((finding) =>
+      finding.code === "operation_fragment_schema_invalid" &&
+      finding.targetPaths.includes("definition.mechanicalConflictFallbacks.0.orderedActionRefs")));
+    assert.equal(guarded.next.operations.some((entry) =>
+      entry.targetPath === "definition.mechanicalConflictFallbacks.0.orderedActionRefs" &&
+      entry.value === null), false);
+    const repairPayload = characterMigrationProviderPayload({
+      context: guarded.context, state: guarded.next, kind: "semantic_repair",
+      findings: guarded.next.findings,
+      repairClosure: ["definition.mechanicalConflictFallbacks"],
+    });
+    const errors = migrationRead(repairPayload.input, "errors");
+    assert.ok(Array.isArray(errors));
+    assert.ok(errors.some((finding) =>
+      migrationRead(finding, "code") === "operation_fragment_schema_invalid"));
+    assert.deepEqual(migrationRead(repairPayload.input,
+      "completeMergedCandidate.definition.mechanicalConflictFallbacks.0.orderedActionRefs"),
+    [source.definition.capabilities.basicAction.id]);
+    assert.match(repairPayload.system, /invalid operation is rejected without replacing the prior valid fragment/i);
+
+    const legacyPayload = characterMigrationProviderPayload({
+      context: legacy.context, state: legacy.next, kind: "semantic_repair",
+      findings: legacy.next.findings,
+      repairClosure: ["definition.mechanicalConflictFallbacks"],
+    });
+    assert.doesNotMatch(legacyPayload.system,
+      /invalid operation is rejected without replacing the prior valid fragment/i);
+  });
+
   it("supports verbatim copy/move, explicit retirement and optional deferred values", () => {
     const result = merge("operations", [
       operation("definition.identity.displayName", null, { operation: "copy",
@@ -505,6 +745,90 @@ describe("B5 structural operation boundary", () => {
       context, state, availableCapabilities: context.attempt.compilerCapabilities.required,
     });
     assert.ok(validation.findings.some((finding) => finding.code === "consumer_access_widened"));
+  });
+
+  it("v4 carries exact public text per leaf without treating private awareness as a grant", () => {
+    function migratedRules(promptIdentity: string) {
+      const input = versionedAttempt(`disclosure-${promptIdentity}`, promptIdentity);
+      const context = createCharacterMigrationContext(input);
+      const state = mergeCharacterMigrationChangeSet({
+        context, previous: initialCharacterMigrationMerge(context),
+        changeSet: changeSet(migratedOperations(input)), providerRequestId: "disclosure-request",
+        repairClosure: null,
+      });
+      carryCharacterMigrationDisclosure(context, state);
+      return migrationRead(state.candidate, "disclosurePolicy.rules");
+    }
+    const legacy = migratedRules(CHARACTER_MIGRATION_PROMPT_V3);
+    const guarded = migratedRules(CHARACTER_MIGRATION_PROMPT_V4);
+    assert.ok(Array.isArray(legacy));
+    assert.ok(Array.isArray(guarded));
+    assert.equal(legacy.some((rule) =>
+      migrationRead(rule, "valuePath") === "consciousGuidance.0.statement"), false);
+    assert.equal(guarded.filter((rule) =>
+      migrationRead(rule, "valuePath") === "consciousGuidance.0.statement").length, 3);
+    assert.equal(guarded.some((rule) => {
+      const valuePath = migrationRead(rule, "valuePath");
+      return typeof valuePath === "string" && valuePath.includes("selfAwareness");
+    }), false);
+  });
+
+  it("v4 detects missing executable norms and cross-norm repair provenance", () => {
+    const base = attempt("executable-lineage");
+    const content = CharacterGenerationEnvelopeV2Schema.parse({
+      ...source,
+      definition: {
+        ...source.definition,
+        actionNorms: [
+          { ...source.definition.actionNorms[0], id: "attack-norm", priority: 60,
+            response: { ...source.definition.actionNorms[0].response,
+              actionRefs: [source.definition.capabilities.basicAction.id], fallbackActionRef: null } },
+          { ...source.definition.actionNorms[0], id: "defend-norm", priority: 40,
+            response: { ...source.definition.actionNorms[0].response,
+              actionKinds: ["defend"], fallbackActionRef: null } },
+        ],
+      },
+    });
+    const updated = {
+      ...base, sourceContent: content, sourceContentDigest: assetContentDigest(content),
+      promptIdentity: CHARACTER_MIGRATION_PROMPT_V4,
+    };
+    const input = { ...updated,
+      initialRequestDigest: characterSemanticMigrationInitialRequestDigest(updated) };
+    const context = createCharacterMigrationContext(input);
+    const empty = initialCharacterMigrationMerge(context);
+    const emptyValidation = validateCharacterMigrationCandidate({
+      context, state: empty, availableCapabilities: input.compilerCapabilities.required,
+    });
+    assert.ok(emptyValidation.findings.some((finding) =>
+      finding.code === "executable_action_norm_missing"));
+
+    const norms = content.definition.actionNorms.map((norm, index) => ({
+      id: context.allocatedIds["definition.actionNorms"][index],
+      when: norm.when,
+      response: { disposition: norm.response.disposition, actionRefs: norm.response.actionRefs,
+        actionKinds: norm.response.actionKinds, tacticTags: norm.response.tacticTags },
+      priority: norm.priority, force: norm.force, exceptions: norm.exceptions,
+      description: norm.description,
+    }));
+    const migrated = mergeCharacterMigrationChangeSet({
+      context, previous: empty, providerRequestId: "lineage-initial", repairClosure: null,
+      changeSet: changeSet([operation("definition.actionNorms", norms, {
+        sourcePaths: ["definition.actionNorms"],
+      })]),
+    });
+    const rebased = mergeCharacterMigrationChangeSet({
+      context, previous: migrated, providerRequestId: "lineage-repair", repairClosure: null,
+      changeSet: changeSet([operation("definition.actionNorms.1.priority", 60, {
+        sourcePaths: ["definition.actionNorms.0.priority"],
+      })]),
+    });
+    const validation = validateCharacterMigrationCandidate({
+      context, state: rebased, availableCapabilities: input.compilerCapabilities.required,
+    });
+    assert.ok(validation.findings.some((finding) =>
+      finding.code === "executable_action_norm_source_mismatch" &&
+      finding.targetPaths.includes("definition.actionNorms.1.priority")));
   });
 
   it("synthesizes new private structured content with server IDs and explicit model-created provenance", () => {

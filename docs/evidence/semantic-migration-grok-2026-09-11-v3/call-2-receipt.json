@@ -1,0 +1,66 @@
+{
+  "phase": "receipt",
+  "ordinal": 2,
+  "receipt": {
+    "outcome": "succeeded",
+    "responseDigest": "24f5189acb3dbb0c9f680213c6b35579855068c396d5e352ef5cb6a0b8c6766f",
+    "response": {
+      "schema": "character_semantic_consistency_review_v1",
+      "verdict": "repair_required",
+      "findings": [
+        {
+          "code": "missing_actionNorms_executable",
+          "targetPaths": [
+            "definition.actionNorms"
+          ],
+          "sourcePaths": [
+            "definition.actionNorms.1.response.actionRefs.0"
+          ],
+          "explanation": "V2 actionNorms.1.response.actionRefs contained executable selector 'basic-action' that was not migrated to V3 actionNorms; only consciousGuidance and mechanicalConflictFallbacks were populated.",
+          "semanticDependants": [
+            "definition.actionNorms",
+            "definition.consciousGuidance",
+            "definition.mechanicalConflictFallbacks"
+          ]
+        },
+        {
+          "code": "disclosure_rule_removed",
+          "targetPaths": [
+            "disclosurePolicy.rules.4"
+          ],
+          "sourcePaths": [
+            "definition.actionNorms.0.response.statement",
+            "definition.actionNorms.1.response.statement"
+          ],
+          "explanation": "Disclosure rule exposing actionNorms.*.response.statement was removed during migration; V3 consciousGuidance.statement is not covered by any disclosure rule.",
+          "semanticDependants": [
+            "disclosurePolicy.rules"
+          ]
+        },
+        {
+          "code": "fallbackActionRef_lost",
+          "targetPaths": [
+            "definition.mechanicalConflictFallbacks.0.orderedActionRefs"
+          ],
+          "sourcePaths": [
+            "definition.actionNorms.0.response.fallbackActionRef"
+          ],
+          "explanation": "V2 fallbackActionRef 'basic-action' was synthesized into mechanicalConflictFallbacks but the original V2 actionNorms.0.response.fallbackActionRef value is not preserved in the synthesized entry's orderedActionRefs.",
+          "semanticDependants": [
+            "definition.mechanicalConflictFallbacks"
+          ]
+        }
+      ],
+      "summary": "Migration retired V2 actionNorms but did not create any V3 actionNorms entries with executable selectors; disclosure rules for actionNorms statements were dropped; fallbackActionRef was relocated but its value is not reflected in the synthesized mechanicalConflictFallbacks entry.",
+      "uncertainties": []
+    },
+    "accounting": {
+      "inputTokens": 30440,
+      "outputTokens": 352,
+      "totalTokens": 30792,
+      "estimatedCostUsd": 0.03893,
+      "elapsedMs": 4197
+    },
+    "finishedAt": "2026-09-11T01:56:43.910Z"
+  }
+}

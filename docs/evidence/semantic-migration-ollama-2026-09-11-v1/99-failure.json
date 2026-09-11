@@ -1,0 +1,7 @@
+{
+  "schema": "semantic-migration-ollama-check-failure-v1",
+  "runId": "semantic-migration-ollama-2026-09-11-v1",
+  "failure": "OLLAMA_MIGRATION_CHECK_RECONCILIATION_REQUIRED",
+  "retryPerformed": false,
+  "failedAt": "2026-09-11T06:07:53.013Z"
+}

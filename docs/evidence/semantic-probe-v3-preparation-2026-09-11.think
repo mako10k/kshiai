@@ -1,0 +1,16 @@
+domain SemanticProbeV3Preparation:
+  description "Prepare the next bounded observation under existing ADR0030, without paid execution."
+evidence E_PROBEV3_001:
+  "Owner requests continuing yesterday and supplies start 09:00. Current Japanese handoff requires a distinct prompt-v3 run, exact scope review and separate paid approval. B5 is locally done; B6 remains pending. Product restoration is not proven."
+evidence E_PROBEV3_002:
+  "Fetched HEAD and same-name origin are 77e448c, clean; origin/main 1cdf210 is 25 commits behind HEAD and hosted matching PR list is empty. Reuse this worktree; primary checkout has unrelated dirty work."
+evidence E_PROBEV3_003:
+  "Source replay-semantic-migration.ts binds V2 at entry and seeding, isolates fresh SQLite before runtime import, supports exclusive prepare and live-start artifacts, checks complete source/runtime snapshot. Pure run descriptor file exposes V2; fixture accepts a run parameter. Existing transport limits six calls, USD1.50, no retry or activation."
+evidence E_PROBEV3_004:
+  "Current context and prompts support explicit prompt-v3. Yesterday retained v2 live result is review_required. Corrective report records 778 local tests and explicitly leaves real Grok convergence unknown. No intervening repository changes have removed that observation question."
+premise U_PROBEV3_001:
+  "Current provider prices require verification before proposing paid conditions. Local scripted output does not prove model quality. New run artifacts must not overwrite consumed v1/v2 evidence. The actual availability list is outside this scope."
+decision C_PROBEV3_001 based_on E_PROBEV3_001, E_PROBEV3_002, E_PROBEV3_003, E_PROBEV3_004:
+  "High confidence the next local preparation fits the current request and handoff. B6-first is possible but leaves the requested post-fix model observation unanswered. Reusing consumed identities or sending before exact approval is not acceptable. No new product architecture is required to connect the already implemented v3 prompt to a distinct launcher."
+decision A_PROBEV3_001 based_on C_PROBEV3_001, E_PROBEV3_003, U_PROBEV3_001:
+  "Verification-only proposed action: inspect Seal impact, minimally parameterize the common runner with its V2 default preserved and add a separate fixed V3 entrypoint and descriptor. Add identity coverage; run local tests, typecheck, build and static checks. Prepare one synthetic fresh SQLite run offline, retain exact inputs and snapshot, verify zero network and unchanged current generation. Preserve historical evidence bytes and review affected Seal links before reseal. Stop at a complete Japanese exact-run review; no paid API, production, B6, commit, push or shared-workday end."

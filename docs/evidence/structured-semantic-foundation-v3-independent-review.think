@@ -1,0 +1,24 @@
+domain FoundationV3IndependentReview:
+  description "Independently review exact foundation v3 requirements without editing or accepting them."
+evidence E1:
+  "The read-only SHA256 result for docs/structured-semantic-authoring-foundation-requirements-v3.md equals b5693f6d47e975ea1cb78adaa686185630db5ffc6d52c74f3481ac77511c99da. The v2 baseline hash equals its acceptance record."
+evidence E2:
+  "V3 lines 335-342 require finite cumulative budgets and conservative request bounds; lines 343-352 require bounded domain-informed progress monitoring and permit temporary regressions."
+evidence E3:
+  "V3 lines 353-380 distinguish rejected proposals from corrupt internal state, stop further work and late results, retain compact receipts, forbid silent counter resets, allow explicit source-based retry, and preserve existing ceilings."
+evidence E4:
+  "V3 lines 26-30, 159-160, 242-275 retain sparse generation, focused reconstruction without mandatory context persistence, and all five human-QA conditions. Lines 256-258 make recovery subordinate to safety stops."
+evidence E5:
+  "V3 lines 80-105 and ADR0030 D5 D7 D8 D9 D10 distinguish existing synthesis, bounded whole-review repair, capsule restrictions, immutable attempts, and successor changes. Character v4 explicitly references accepted foundation v2."
+evidence E6:
+  "V3 lines 377-380 and 438-452 explicitly defer numerical ceilings and detector/provider behavior to successor design and testing. Lines 397-407 define safety and domain conformance cases."
+premise P1:
+  "A requirement review assesses internal consistency and authority disposition, not implementation completion or measured real-provider success. Undecided scoped design values need not block acceptance when required before runtime adoption."
+premise P2:
+  "Controlled adapters can exercise cumulative ceilings, stalls, oscillation, valid regression, invalid proposals, corrupt state, late results and explicit retries; such tests cannot establish real-provider convergence or quality."
+decision D1 based_on E1, E2, E3, E4, E5:
+  "No blocking contradiction is identified in this exact candidate. Safety stopping does not weaken the normal generation objective or expand human semantic QA. Recommend ACCEPT to the owner as a requirement decision only."
+decision D2 based_on E6, P1, P2:
+  "Classify numerical bounds, detector false positives and negatives, cancellation accounting and actual success rates as evidence-gap-or-unknown, nonblocking at requirement acceptance but unresolved before runtime adoption. Do not add unrequested criteria."
+decision D3 based_on E1, D1, D2:
+  "The independent review is completed. Follow the owner REVIEW route to Step4; only the owner can ACCEPT, REVISE, or request REREVIEW with changed questions. No edits, implementation, provider calls or Seal changes follow from this review."

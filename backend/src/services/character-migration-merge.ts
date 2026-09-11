@@ -10,10 +10,14 @@ import {
 } from "@kshiai/shared";
 import { assetContentDigest, canonicalAssetJson } from "../repositories/asset-generations.js";
 import {
-  CHARACTER_MIGRATION_PROMPT_V3, characterMigrationRepairClosure, migrationRead, migrationTargetPaths,
-  migrationWrite, pathContains, type CharacterMigrationContext,
+  CHARACTER_MIGRATION_PROMPT_V4, characterMigrationRepairClosure, migrationRead,
+  migrationTargetPaths, migrationWrite, pathContains, usesCharacterMigrationV3Diagnostics,
+  type CharacterMigrationContext,
 } from "./character-migration-context.js";
-import { rejectedCharacterMigrationFragmentFindings } from "./character-migration-diagnostics.js";
+import {
+  invalidCharacterMigrationFragmentFindings,
+  rejectedCharacterMigrationFragmentFindings,
+} from "./character-migration-diagnostics.js";
 
 export type AppliedMigrationOperation = CharacterSemanticMigrationOperationV1 & {
   operationId: string;
@@ -138,15 +142,24 @@ export function mergeCharacterMigrationChangeSet(input: {
     if (touched.some((target) => written.some((path) =>
       pathContains(path, target) || pathContains(target, path)))) {
       state.findings.push(migrationFinding("overlapping_operations", operation.targetPath,
-        context.attempt.promptIdentity === CHARACTER_MIGRATION_PROMPT_V3
+        usesCharacterMigrationV3Diagnostics(context.attempt.promptIdentity)
           ? `Operation ${index} (${operation.operation}) at ${operation.targetPath} conflicts with an earlier write. Submit one replacement; displaced source is preserved automatically, so do not retire then replace. The earlier write remains applied.`
           : "Use one replacement per path in this response; combine dependent changes explicitly."));
-      if (context.attempt.promptIdentity === CHARACTER_MIGRATION_PROMPT_V3) {
+      if (usesCharacterMigrationV3Diagnostics(context.attempt.promptIdentity)) {
         state.findings.push(...rejectedCharacterMigrationFragmentFindings({
           context, candidate: state.candidate, operation,
         }));
       }
       continue;
+    }
+    if (context.attempt.promptIdentity === CHARACTER_MIGRATION_PROMPT_V4) {
+      const findings = invalidCharacterMigrationFragmentFindings({
+        context, candidate: state.candidate, operation,
+      });
+      if (findings.length > 0) {
+        state.findings.push(...findings);
+        continue;
+      }
     }
     const applied = { ...operation, operationId: `operation-${assetContentDigest({
       request: input.providerRequestId, index,

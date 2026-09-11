@@ -1,0 +1,36 @@
+domain SemanticMigrationV4UnresolvedCorrections:
+  description "Correct automatic use of ungrounded semantic-review claims and mixed-provenance disclosure loss within the unused prompt-v4 boundary."
+evidence E1:
+  "E-MIGV4-301: parseCharacterMigrationReview validates the review envelope and registered paths, then returns every path-valid provider finding as an actionable CharacterMigrationFinding without checking whether the candidate and source values support the claim."
+evidence E2:
+  "E-MIGV4-302: character-semantic-migration appends those returned review findings to run.findings, expands repair closure from them, and sends them to the next semantic_repair call. Therefore a path-valid review claim can directly authorize a schema-valid candidate mutation."
+evidence E3:
+  "E-MIGV4-303: saved V3 provider evidence includes a review claim that fallbackActionRef was missing while the complete candidate contained orderedActionRefs basic-action, a later claim that priority forty should be sixty although the executable source norm selected priority forty, and a claim that the old actionNorm disclosure rule remained although the candidate had already removed it. Later repair responses changed valid candidate fields in response to those claims."
+evidence E4:
+  "E-MIGV4-304: carryCharacterMigrationDisclosure currently requires one source disclosure rule to match every sourcePath on the operation. A consciousGuidance operation citing both a public response.statement path and a private selfAwareness path therefore cannot carry the public statement grant, even when the target statement text exactly reuses the public source text."
+evidence E5:
+  "E-MIGV4-305: accepted requirement R13 requires exact public prose reuse to retain or narrow effective disclosure and prohibits widening; R14 requires independent semantic review and full-candidate validation; R15 requires owner-visible effects, uncertainties and provenance without restricted values."
+evidence E6:
+  "E-MIGV4-306: prompt-v4 has no live provider execution, activation, production write, commit or push. V1 through V3 are consumed compatibility identities and must preserve their historical behavior."
+premise U1:
+  "Arbitrary semantic claims cannot be proven from the current review schema because it carries paths and prose but no machine-checkable expected value or assertion kind."
+premise U2:
+  "Some true semantic concerns may remain ungrounded by deterministic server findings. Automatically ignoring them would lose evidence, while automatically repairing them would repeat the observed failure mechanism."
+decision C1 based_on E1, E2, E3, U1:
+  "C-MIGV4-301 high confidence root cause: the orchestrator treats structural path validity as sufficient factual authority for a semantic-review claim, so an unverified LLM assertion becomes an automatic repair instruction."
+decision C2 based_on E4, E5:
+  "C-MIGV4-302 high confidence root cause: disclosure provenance is evaluated at whole-operation granularity instead of target-leaf support granularity, so one private source path suppresses a separately traceable public source grant."
+decision C3 based_on E3:
+  "C-MIGV4-303 contributing cause: repair closure can include semantically related fields, which amplifies a false actionable finding into additional schema-valid changes."
+decision C4 based_on E1, E3:
+  "C-MIGV4-304 escape cause: schema, registered-path and whole-candidate checks prove structure but do not test the factual predicate asserted by review prose, so false claims passed the existing review boundary."
+decision D1 based_on C1, U1, U2, E5, E6:
+  "For prompt-v4 only, provider review findings may expand repair closure as R14 requires but never become repair instructions by themselves. Independently computed server findings remain the only errors sent to automatic repair. Preserve review claims not corroborated by a related server finding as owner-visible concerns; if no server correction remains, stop as review_required instead of mutating the candidate or silently discarding the concern."
+decision D2 based_on C1, E3, E5:
+  "Add a prompt-v4 deterministic executable-action-norm lineage check so the known missing executable norm is independently actionable, and require a target norm operation to cite the source norm selected by its executable selectors. This grounds the true missing-norm concern and detects the observed cross-norm priority rebase without forbidding explicitly declared transformations from the correctly selected source norm."
+decision D3 based_on C2, E5, E6:
+  "For prompt-v4 only, carry disclosure per target text leaf from compatible cited source text leaves whose value is exactly reused and whose source disclosure rule grants access. Expand cited ancestor source paths to registered leaves, do not derive a grant from private selfAwareness, and deduplicate the resulting target rules. Preserve V1 through V3 behavior."
+decision A1 based_on D1, D2, D3:
+  "Implement the V4-only review-grounding, executable-norm lineage and per-leaf disclosure changes; add focused regressions for false review isolation, grounded repair continuity, mixed public/private provenance and V3 compatibility; then run focused tests, the full test suite, typecheck, build, complexity and duplication checks."
+decision A2 based_on A1, E6:
+  "Record verification evidence and Seal every changed implementation, verification and reasoning artifact in kshiai. Do not modify Sealgraph source, invoke a live provider, activate migration, change production, commit, push or deploy."

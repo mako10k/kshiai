@@ -1,0 +1,36 @@
+domain CharacterV3AuthoringRequirementV3:
+  description "Reasoning for generative completion, risk-tiered contradiction handling, and balanced review timing."
+evidence E1:
+  "Revision2 routes unresolved required meaning and contradiction toward focused repair or owner questions, but it does not define sparse input as normal creative space or distinguish minor adaptable contradictions from protected material conflicts."
+evidence E2:
+  "The owner states that character generation normally starts from highly abbreviated information, missing information should normally be generated, minor contradictions may be reconciled through a coherent interpretation or by adapting unimportant traits, and only explicit important irreducible problems should enter human Q and A."
+evidence E3:
+  "Accepted character V2 compatibility requirement revision6 already authorizes synthesize operations for added or changed-role fields and requires source-supported derivation to be distinguished from model-created character material."
+evidence E4:
+  "The owner requires review timing that avoids both late discovery with large rework and early strict gates that prevent progress."
+premise P1:
+  "Explicit owner constraints, identity-defining facts, essential relationships, essential abilities or limitations, runtime mechanics, disclosure rights, ownership, and the requested revision scope require stronger protection than preferences or unspecified creative space."
+premise P2:
+  "A missing fact in create or migration is not itself a contradiction and can normally be completed creatively when no protected constraint or server-owned fact is invented."
+premise P3:
+  "A minor inconsistency can be resolved automatically when one coherent interpretation preserves protected meaning and any changed low-importance trait is recorded for final review."
+premise P4:
+  "Review cost and rework are balanced when cheap local invariants run immediately, semantic skeleton coherence is checked before dependent work fans out, only affected semantic clusters are rechecked after changes, and complete reconciliation occurs before owner review."
+premise P5:
+  "Human Q and A is justified only when an explicit material conflict remains after focused automatic recovery and credible choices would produce materially different protected character meaning."
+premise P6:
+  "Alternative O1 keeps revision2 strict routing and treats missing required meaning and every contradiction as potential owner input; it protects intent but over-questions sparse creative input."
+premise P7:
+  "Alternative O2 defers semantic review until the complete candidate exists; it maximizes local progress but permits avoidable downstream rework."
+premise P8:
+  "Alternative O3 uses generative completion by default, risk-tiered automatic reconciliation, progressive affected-scope checkpoints, and human Q and A only for irreducible protected conflicts."
+decision D1 based_on E2, E3, P1, P2:
+  "Classify input into protected anchors, adaptable preferences, and open creative space; generate missing open or adaptable meaning with explicit provenance instead of treating absence as owner-input failure."
+decision D2 based_on E2, P1, P3:
+  "Automatically reconcile minor contradictions through a coherent interpretation or an explicit low-importance adjustment, while preserving before-after provenance and never silently overriding protected anchors."
+decision D3 based_on E2, P1, P5:
+  "Enter human Q and A only when a problem is explicit, material, affects protected correctness or identity, has materially different credible outcomes, survives focused automatic recovery, and cannot be safely selected or deferred."
+decision D4 based_on E4, P4:
+  "Run immediate local hard validation, one semantic-skeleton checkpoint before downstream fan-out, affected-cluster checks at material dependency changes, and final reconciliation; soft findings enqueue automatic repair rather than blocking each patch."
+decision D5 based_on P6, P7, P8, D1, D2, D3, D4:
+  "Select O3 and create requirement revision3 while preserving revisions1 and2 as historical review snapshots; ADR and implementation remain separately authorized."

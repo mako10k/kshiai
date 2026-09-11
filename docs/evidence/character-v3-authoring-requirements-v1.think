@@ -1,0 +1,25 @@
+domain CharacterV3AuthoringRequirementV1:
+  description "Reasoning for focused V3 character authoring requirement candidate revision1."
+evidence E1:
+  "ADR0010 owns immutable generation, attempt, validation, owner acceptance, CAS activation and read-only battle binding."
+evidence E2:
+  "ADR0014 owns queued authoring and keeps provider work outside submit, read and activation transactions."
+evidence E3:
+  "ADR0011 owns structured character truth and public projection but names V2 as its concrete authoring definition."
+evidence E4:
+  "Accepted migration requirement revision6 and ADR0030 own V3 migration preservation, typed deferral, receipts and bounded repair."
+evidence E5:
+  "ADR0030 D8 requires complete source and candidate in one LLM review, while the owner now requires focused LLM input and output."
+premise P1:
+  "Create, revise and migrate share assembly, validation, review and activation, but their source-accounting obligations differ."
+premise P2:
+  "A server-owned obligation ledger can prove full output without one model understanding or emitting the complete character."
+premise P3:
+  "Cross-field semantics require explicit overlapping dependency lenses rather than isolated field conversion."
+decision D1 based_on E1, E2, E3, E4, P1:
+  "Create a new requirement identity for a common V3 character-authoring core with mode-specific frozen input and obligations."
+decision D2 based_on P2, P3, D1:
+  "Use a reusable transition blueprint, server baseline, obligation ledger, focused work items, resolver-neutral patches, focused semantic lenses and complete deterministic V3 validation."
+decision D3 based_on E5, D2:
+  "Require a successor ADR to replace ADR0030 whole-candidate LLM review; do not reinterpret its accepted text or start implementation from this candidate."
+

@@ -6,7 +6,8 @@ import {
   type CharacterSemanticMigrationProviderRequestV1,
 } from "@kshiai/shared";
 import {
-  CHARACTER_MIGRATION_PROMPT_V1, CHARACTER_MIGRATION_PROMPT_V3,
+  CHARACTER_MIGRATION_PROMPT_V1, CHARACTER_MIGRATION_PROMPT_V4,
+  usesCharacterMigrationV3Diagnostics,
   migrationTargetPaths, type CharacterMigrationContext,
 } from "./character-migration-context.js";
 import { characterMigrationChangeSetResponseSchema } from "../llm/character-migration-response-schema.js";
@@ -46,6 +47,8 @@ const REPAIR_RULES_V3 = [
   "registeredTargetPaths grants definition writes only. registeredReviewPaths permits diagnostic references to the complete candidate, including server-owned metadata; it grants no writes. Report findings at existing candidate paths, and cite removed V2 paths in sourcePaths.",
   "A reviewer must verify each alleged mismatch against actual source and candidate values. Do not assume all V2 norms lack selectors, that conditions changed, or that old disclosure rules remain.",
 ].join("\n");
+const FRAGMENT_RULE_V4 =
+  "Each proposed target fragment is validated before merge. An invalid operation is rejected without replacing the prior valid fragment; repair only the reported operation_fragment_schema_invalid paths and their semantic dependants. Review findings can expand the repair closure but are not repair errors by themselves; without a related independent server finding they are preserved for owner review, so verify each claim against the supplied values before reporting it.";
 
 export type CharacterMigrationProviderPayload = {
   system: string;
@@ -64,7 +67,7 @@ export function characterMigrationProviderPayload(input: {
   // v1 is retained only to reproduce immutable old payloads/receipts. The xAI
   // transport refuses its incompatible grammar; it is never silently upgraded.
   const modern = context.attempt.promptIdentity !== CHARACTER_MIGRATION_PROMPT_V1;
-  const corrected = context.attempt.promptIdentity === CHARACTER_MIGRATION_PROMPT_V3;
+  const corrected = usesCharacterMigrationV3Diagnostics(context.attempt.promptIdentity);
   const changeSchema = modern ? CHANGE_SCHEMA_V2 : CHANGE_SCHEMA;
   const review = kind === "semantic_review" || kind === "semantic_rereview";
   const legacySystem = review ? [
@@ -77,7 +80,11 @@ export function characterMigrationProviderPayload(input: {
       : "Evaluate all affected dependencies, not just schema errors; report exact registered target paths and proposed semantic dependants.",
     "The absence of structural findings does not prove meaning preservation. Return unresolved when evidence is insufficient.",
   ].join("\n") : RULES;
-  const system = corrected ? [legacySystem, REPAIR_RULES_V3].join("\n") : legacySystem;
+  const system = corrected ? [
+    legacySystem,
+    REPAIR_RULES_V3,
+    ...(context.attempt.promptIdentity === CHARACTER_MIGRATION_PROMPT_V4 ? [FRAGMENT_RULE_V4] : []),
+  ].join("\n") : legacySystem;
   const common = {
     contract: context.attempt.migrationContractId,
     promptIdentity: context.attempt.promptIdentity,

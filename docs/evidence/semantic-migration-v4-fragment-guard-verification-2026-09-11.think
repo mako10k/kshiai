@@ -1,0 +1,24 @@
+domain SemanticMigrationV4FragmentGuardVerification:
+  description "Verify the versioned pre-apply fragment guard without overstating semantic-review improvements."
+evidence E1:
+  "E-MIGGUARD-201: prompt-v4 is a new frozen identity. V1,V2,V3 routing remains accepted, and the pre-apply invalid-fragment branch is selected only for prompt-v4. V4 otherwise inherits V3 review diagnostics, source-path closure and repair instructions."
+evidence E2:
+  "E-MIGGUARD-202: the focused regression constructs the same invalid null fallback operation under V3 and V4. V3 retains consumed historical behavior: null is applied and later whole-candidate validation returns no candidate. V4 reports operation_fragment_schema_invalid, retains the prior ordered basic-action fallback, excludes the rejected operation from applied operations, and still applies a valid sibling priority edit."
+evidence E3:
+  "E-MIGGUARD-203: the V4 regression confirms the precise finding is included in the next bounded semantic_repair payload, completeMergedCandidate contains the retained prior fallback, the V4 system prompt explains rejection semantics, and V3 does not receive that new rule."
+evidence E4:
+  "E-MIGGUARD-204: repository validation completed with all780 tests passing, workspace typecheck passing, production build passing, jscpd passing, and Lizard1.23.0 passing repository thresholds over211 files and3501 functions. Vite emitted only the existing chunk-size warning."
+evidence E5:
+  "E-MIGGUARD-205: ADR0030 validates clean when checked directly. The repository-wide ADR check still fails only the pre-existing ADR0015,0016,0017 and0019 issues; ADR0030 itself is clean and Accepted."
+premise U1:
+  "No live provider request, B6 activation, production change, commit or push was performed for V4. Real-model convergence remains unobserved."
+premise U2:
+  "The guard establishes target-fragment structural validity only. A schema-valid but factually false semantic review, and disclosure provenance mixed from public statements and private self-awareness, remain separate unresolved mechanisms."
+decision C1 based_on E1, E2, E3:
+  "C-MIGGUARD-201 high confidence: the defect-producing merge mechanism is corrected for new prompt-v4 attempts because an invalid target fragment no longer replaces the last valid candidate fragment, while valid sibling operations remain independently applicable and repair receives actionable feedback."
+decision C2 based_on E1, E2:
+  "C-MIGGUARD-202 high confidence: replay compatibility is preserved structurally because consumed prompt-v3 behavior is unchanged and the new application semantics require the new prompt-v4 identity."
+decision C3 based_on E4, E5, U1, U2:
+  "C-MIGGUARD-203 bounded completion: local structural correction is verified, but real-LLM convergence, reviewer factual grounding and mixed-provenance disclosure are not corrected or proven by this change."
+decision A1 based_on C1, C2, C3:
+  "A-MIGGUARD-201: record and Seal the V4 implementation, focused regression and Japanese result. Do not claim the wider semantic migration is complete, and do not call a provider, activate, commit, push or deploy."

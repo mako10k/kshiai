@@ -1,0 +1,45 @@
+{
+  "schema": "semantic-migration-ollama-contract-smoke-result-v1",
+  "outcome": "schema_valid",
+  "exactExpected": true,
+  "receipt": {
+    "outcome": "succeeded",
+    "responseDigest": "fa8988d9c34e4d851bcd1eb1df42b47647f51d3197f7935bdf6a91e187167032",
+    "response": {
+      "schema": "character_semantic_migration_change_set_v1",
+      "operations": [
+        {
+          "operation": "transform",
+          "targetPath": "definition.profileBackground",
+          "sourcePaths": [
+            "definition.profileBackground"
+          ],
+          "value": [
+            {
+              "id": "background-1",
+              "summary": "Enjoys tactical duels."
+            }
+          ],
+          "deferred": null,
+          "explanation": "Preserve the supplied meaning in the requested target fragment.",
+          "provenance": "source_derived",
+          "semanticDependants": []
+        }
+      ],
+      "uncertainties": []
+    },
+    "accounting": {
+      "inputTokens": 122,
+      "outputTokens": 136,
+      "totalTokens": 258,
+      "estimatedCostUsd": null,
+      "elapsedMs": 29160
+    },
+    "finishedAt": "2026-09-11T06:25:26.053Z"
+  },
+  "validationIssues": [],
+  "limitations": [
+    "This checks the live native adapter and response contract, not full migration quality.",
+    "It does not establish xAI-equivalent behavior."
+  ]
+}

@@ -1,0 +1,16 @@
+domain CharacterV5Alignment:
+  description "Align pending character requirements with accepted foundation v3."
+evidence E1:
+  "Owner accepted foundation v3 after independent review, then requested continuation."
+evidence E2:
+  "Character v4 adopts foundation v2 F1-F14; it is pending, and R10/R15 use only wording for semantic blocking while R19 covers failed attempts."
+evidence E3:
+  "Foundation v3 F2 requires adapter-defined progress meaning; F15 requires mechanical limits and bounded progress/state integrity controls, preserving source-based retry without mandatory checkpoints."
+premise P1:
+  "Changing only the dependency reference would leave the domain progress contract unspecified. Semantic checkpoint blocking rules must not be interpreted as bypassing mechanical hard stops."
+premise P2:
+  "Character progress can be expressed through existing protected-claim coverage, obligations, lens findings, and dependency resolution without changing character field semantics or runtime psyche responsibilities."
+decision D1 based_on E1, E2, E3, P1, P2:
+  "Author character v5 candidate inheriting exact accepted foundation v3 F1-F15. Add a character progress and safety conformance clause; qualify semantic-only blocking and failed-attempt handling under F15. Preserve other outcomes and existing ceilings."
+decision D2 based_on E1, E2:
+  "Keep v4 and accepted foundation bytes unchanged. Produce complete Japanese translation and self-review with exact identities. Do not implement until the character requirement and required successor ADR gates are accepted."

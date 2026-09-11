@@ -1,0 +1,21 @@
+domain CharacterV3AuthoringRequirementV2:
+  description "Reasoning for recoverable focused V3 character authoring requirement revision2."
+evidence E1:
+  "Revision1 defines focused work items and validation but lacks explicit final source-output reconciliation and persistent Q and A resumption."
+evidence E2:
+  "The owner requires automatic success for most cases and human-inclusive Q and A recovery after automatic recovery fails, rather than terminal NG."
+premise P1:
+  "Automatic success cannot be raised by weakening validation, dropping meaning, fabricating values or overusing deferral."
+premise P2:
+  "Semantic uncertainty is normally a missing authoring decision, while technical and integrity defects need distinct recovery."
+premise P3:
+  "Owner answers must be append-only scoped authority and must not become implicit candidate acceptance."
+decision D1 based_on E1, E2, P1:
+  "Add explicit final input-output semantic reconciliation and block unauthorized contradiction, source loss, unsupported addition and unresolved required meaning."
+decision D2 based_on E2, P1, P2:
+  "Use a bounded automatic recovery cascade, then persist minimal answerable questions instead of terminal semantic rejection."
+decision D3 based_on P2, P3, D2:
+  "Freeze answers into the same attempt, reopen only affected obligations, resume focused processing, and keep final owner acceptance separate."
+decision D4 based_on D1, D2, D3:
+  "Create revision2 as a new Step1 snapshot; preserve revision1 and require separate successor ADR and implementation authority."
+

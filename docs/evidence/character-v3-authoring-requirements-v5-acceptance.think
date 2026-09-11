@@ -1,0 +1,10 @@
+domain CharacterV5Acceptance:
+  description "Record exact character requirement acceptance after independent review."
+evidence OWNER_ACCEPTANCE:
+  "Owner selected ACCEPT after the completed character v5 independent review and its clarification that retry uses retained source in a new attempt."
+evidence SNAPSHOT:
+  "Reviewed English SHA256 is 17596f17d6514d5ada160b9d95453ab2bcb9cee9e4b2d2991acb8238b55ee27b. Independent review reports no blocking finding; accepted foundation v3 is its fixed dependency."
+premise BOUNDARY:
+  "Requirement acceptance does not accept a successor ADR or authorize implementation, evaluation or runtime changes. Existing ceilings remain until accepted successor decisions."
+decision ACCEPTANCE based_on OWNER_ACCEPTANCE, SNAPSHOT, BOUNDARY:
+  "After matching readback, record character requirement revision5 Accepted with unchanged source, translation and review. Preserve numeric and provider validation unknowns and the new-attempt retained-source clarification."

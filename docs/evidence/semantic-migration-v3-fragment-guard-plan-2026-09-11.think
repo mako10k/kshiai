@@ -1,0 +1,28 @@
+domain SemanticMigrationV3FragmentGuard:
+  description "Plan the authorized Sealgraph issue and versioned kshiai correction after the consumed V3 run."
+evidence E1:
+  "E-SEALPERF-101: sealgraph0.1.0-dev+5ae88c7 on WSL2 processed a valid kshiai graph with230refs,584seals and1788blobs. impact on evidence/semantic-migration-continuation produced no impacts but required approximately197seconds. A global stale query produced no output for more than seven minutes and was interrupted. Five targeted status queries executed concurrently returned clean results over approximately90seconds. Long-running commands emitted no progress before their final result."
+evidence E2:
+  "E-SEALPERF-102: GitHub open-issue readback for mako10k/sealgraph returned an empty list. The exact repository secdat dry-run supplied GH_TOKEN from the secret layer with no missing required key."
+evidence E3:
+  "E-SEALPERF-103: /home/katsumata-m/sealgraph is a dirty existing branch at bccf2eb with uncommitted memoization changes in observation_v5.go and revision_graph.go plus a new benchmark test. Those user changes are preserved and are not an authorized implementation target in this task."
+evidence E4:
+  "E-MIGGUARD-101: the audited consumed V3 RCA established that accepted transform values null and empty-array overwrote a previously valid mechanical fallback before full-candidate validation. CharacterSemanticMigrationOperationV1 validates value only as generic JSON; applyOperation writes it directly. Full validation later detects but does not restore the prior valid fragment."
+evidence E5:
+  "E-MIGGUARD-102: accepted requirement R14 says repair receives prior valid fragments and complete candidates are structurally revalidated. ADR0030 says an attempt freezes prompt identity and completed replay performs no provider call or duplicate generation. Existing consumed V1,V2,V3 attempts and receipts must remain reproducible."
+evidence E6:
+  "E-MIGGUARD-103: current prompt-v3 behavior is selected by exact promptIdentity comparisons in context, prompts, merge, diagnostics and review closure. Changing merge semantics under that identity can change replay of the consumed V3 receipts."
+premise U1:
+  "The Sealgraph local WIP has not been validated here and may or may not fully solve impact, stale, status and terminal feedback. The GitHub issue must describe evidence and acceptance criteria without claiming the WIP is complete."
+premise U2:
+  "Target-fragment validation prevents structural corruption but cannot prove semantic truth of a schema-valid reviewer-driven change such as priority40to60. Reviewer grounding remains separate work."
+decision C1 based_on E1, E2, E3, U1:
+  "C-SEALPERF-101 high confidence: publish one GitHub issue for shared Cause-subgraph traversal performance and terminal observability, mention the current-scale measurements and preserve the unrelated local WIP."
+decision C2 based_on E4, E5:
+  "C-MIGGUARD-101 high confidence root correction: before accepting a V4 transform, synthesize, copy or move target value, apply it to a scratch candidate and validate the affected CharacterDefinitionV3 target fragment. If invalid, retain the prior candidate fragment and emit a precise operation_fragment_schema_invalid finding for bounded repair."
+decision C3 based_on E5, E6:
+  "C-MIGGUARD-102 high confidence compatibility constraint: introduce prompt-v4 for the new application semantics and keep prompt-v1,v2,v3 behavior unchanged. V4 inherits V3 diagnostic and repair rules and explicitly tells the model invalid fragments are rejected while valid siblings and prior fragments remain."
+decision A1 based_on C1:
+  "A-SEALPERF-101 authorized external write: create exactly one issue in mako10k/sealgraph, then read it back. Do not edit, commit or push the dirty Sealgraph checkout."
+decision A2 based_on C2, C3:
+  "A-MIGGUARD-101 authorized local implementation: add V4 identity routing, pre-apply target-fragment rejection and focused regressions proving invalid fallback repairs preserve the valid prior fallback, valid sibling operations still apply, the finding enters the next repair input, and V3 replay semantics remain unchanged. Run focused tests, full tests, typecheck, build, jscpd, Lizard, ADR0030 check and Seal impact/reseal. Do not make provider calls, activate, runB6, commit, push or change production."

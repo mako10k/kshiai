@@ -1,0 +1,1791 @@
+{
+  "schema": "semantic-probe-v3-impact-review-v1",
+  "reviewedAt": "2026-09-11",
+  "scope": "54 current refs: 46 historical byte-preserved,4 unchanged verified sources,3 changed run connections,1 appended continuation",
+  "entries": [
+    {
+      "ref": "acceptance/semantic-probe-v1-execution",
+      "path": "docs/evidence/semantic-migration-grok-2026-09-10-v1/execution-acceptance.think",
+      "seal": {
+        "seal_id": "c589fdbb21224d2e3d4d1601baa3a227d86481fe547646f92ab403de0d7e8350",
+        "material_id": "9f78818152616303647ea09390fe9370fc7400acc1bcba320a5f185309f5e39f",
+        "provenance_id": "5c3fac1e6b4a69ee7286b6dda491c7bdb77ecdc078e507300a42f50faab7a806",
+        "content_blob_id": "b1da30548de63efd35ff37fe7c807c4648df43c98e26115c604648d09756bd50",
+        "content_bytes": 1742,
+        "attachments": [],
+        "root": false,
+        "draft": false,
+        "cause_links": [
+          {
+            "target_seal": "8e65569b8645e359795381f1042c4fcfdcb02799ab28aadf0e7423f9c3d9e1eb",
+            "previous_revision_seal_of_target_seal": [
+              "6de5dd3be16f6ca4ed6e258bd3fb8532a1a2b9239fbbaf319fa0a2d3a4cfc875"
+            ],
+            "messages": [
+              "Historical bytes unchanged; current links attest continued interpretation, not original execution under the revised dependency. Historical preparation, acceptance, reasoning or paid-run result retained byte-for-byte; original v1/v2 identity, snapshot, outcome and authorization remain unchanged. This review does not assert a new run or v3 convergence."
+            ]
+          }
+        ]
+      },
+      "disposition": "historical-bytes-preserved",
+      "note": "Original content, dates, run identity, proof and outcomes retained; revised links attest interpretation continuity only, never new execution or approval."
+    },
+    {
+      "ref": "acceptance/semantic-probe-v2-execution",
+      "path": "docs/evidence/semantic-migration-grok-2026-09-10-v2/execution-acceptance.think",
+      "seal": {
+        "seal_id": "c997646991098a370a052dea03d67d80227cb632349c9046fb04a0fafeacd81e",
+        "material_id": "8cc597c17767d38f1e82a2688fcaff8eeb180b4cb5920f4afeede2f2a15c9c19",
+        "provenance_id": "48f6d43a720f48218c995fd83ff735563a6318af3f204afc312ee604f81441ae",
+        "content_blob_id": "79a0b83774c6a2d93906ac9902b3f0e085d86dc754a4e67e16f863a286d8c62d",
+        "content_bytes": 2241,
+        "attachments": [],
+        "root": false,
+        "draft": false,
+        "cause_links": [
+          {
+            "target_seal": "3faf94e7b65759a4b4683a20cf83e9afee3b2328edba595cfd1259e02a4552ba",
+            "previous_revision_seal_of_target_seal": [
+              "19717c12321e1ba496f2af575b5b4d865c3293c1a71b350c9dfb7c481839c963"
+            ],
+            "messages": [
+              "Historical bytes unchanged; current links attest continued interpretation, not original execution under the revised dependency. Historical preparation, acceptance, reasoning or paid-run result retained byte-for-byte; original v1/v2 identity, snapshot, outcome and authorization remain unchanged. This review does not assert a new run or v3 convergence."
+            ]
+          },
+          {
+            "target_seal": "84fadf0514964f5bd8b58c95d3620dda5f407395ad5548adb0cfdb9c0804bda4",
+            "previous_revision_seal_of_target_seal": [
+              "e1697e2f38149058e414420329588791c429a786b015c2fe4685d51907db4c88"
+            ],
+            "messages": [
+              "Historical bytes unchanged; current links attest continued interpretation, not original execution under the revised dependency. Historical preparation, acceptance, reasoning or paid-run result retained byte-for-byte; original v1/v2 identity, snapshot, outcome and authorization remain unchanged. This review does not assert a new run or v3 convergence."
+            ]
+          }
+        ]
+      },
+      "disposition": "historical-bytes-preserved",
+      "note": "Original content, dates, run identity, proof and outcomes retained; revised links attest interpretation continuity only, never new execution or approval."
+    },
+    {
+      "ref": "evidence/semantic-migration-continuation",
+      "path": "docs/evidence/semantic-migration-continuation-2026-09-10.md",
+      "seal": {
+        "seal_id": "7faf2da5f1a5b7416300c0c995ca5ad2a56b910fb3d819f0b63d56828659936f",
+        "material_id": "78655aa56efecb0b8263b1cd81047c9079e7ad12a5599f5c0c3ea98db74e00c3",
+        "provenance_id": "6d228ab9013fd4c9e8095326b2cd4b7e29062bc869b12f8505ec9cb050442859",
+        "content_blob_id": "cbf089429d34fd3dab553accd1abdc07dd41dc37d4055abd25761d781a843fbf",
+        "content_bytes": 11800,
+        "attachments": [],
+        "root": false,
+        "draft": false,
+        "cause_links": [
+          {
+            "target_seal": "2d6de55ffe0ee42e057d538450e140a794dac52f70d341c75169a41baefbbe17",
+            "previous_revision_seal_of_target_seal": [
+              "81ecd4289404f317815edb3d463e35863e3069cc7f2f671265355aa6b1cf937a"
+            ],
+            "messages": [
+              "Continuation qualifies public-effect certainty and records owner-reported IPv6 restriction"
+            ]
+          },
+          {
+            "target_seal": "3c087322e47860a4aed78b570476731098256c8c399a78c508da6fbe0d4ed5a2",
+            "previous_revision_seal_of_target_seal": [],
+            "messages": [
+              "Reviewed current compatibility. Append latest correction, 778-test result and real-model boundary; preserve all prior history and shared workday state."
+            ]
+          },
+          {
+            "target_seal": "5fc9a2fbad51a36c6dd0f208fe719f5f3f6fc0b5aed2c861400a8549618e3037",
+            "previous_revision_seal_of_target_seal": [],
+            "messages": [
+              "Reviewed closeout and exact restart; impact had no downstream refs"
+            ]
+          },
+          {
+            "target_seal": "7ade3075ef16164c81ac224b9ab9adb37d9beb8bc91b459035e8489d337f1000",
+            "previous_revision_seal_of_target_seal": [
+              "cf4095a7d5a97a9e88fa77455b9d461c93b78a8312416beb5be33eaad76c627b"
+            ],
+            "messages": [
+              "Reviewed current compatibility. Append latest correction, 778-test result and real-model boundary; preserve all prior history and shared workday state."
+            ]
+          },
+          {
+            "target_seal": "7e11e15615a45176b0cbedbc53a3c02c2c2c318fb00fdbf4b603d513bee6d44e",
+            "previous_revision_seal_of_target_seal": [
+              "18ad72b0df82eb89c82914ce4aca6be359648923218eb996671d98fedf62737e"
+            ],
+            "messages": [
+              "Reviewed current compatibility. Append latest correction, 778-test result and real-model boundary; preserve all prior history and shared workday state."
+            ]
+          },
+          {
+            "target_seal": "84fadf0514964f5bd8b58c95d3620dda5f407395ad5548adb0cfdb9c0804bda4",
+            "previous_revision_seal_of_target_seal": [
+              "e1697e2f38149058e414420329588791c429a786b015c2fe4685d51907db4c88"
+            ],
+            "messages": [
+              "Reviewed current compatibility. Append latest correction, 778-test result and real-model boundary; preserve all prior history and shared workday state."
+            ]
+          },
+          {
+            "target_seal": "8cd09b82e813968c4dbf291553542faf1871656179223789ce989d84fec5b9dd",
+            "previous_revision_seal_of_target_seal": [
+              "e15dace1cb3001cb7461d9fead4d975db07841011f732f14d477b137af32b4ae"
+            ],
+            "messages": [
+              "Reviewed current compatibility. Append latest correction, 778-test result and real-model boundary; preserve all prior history and shared workday state."
+            ]
+          },
+          {
+            "target_seal": "8e65569b8645e359795381f1042c4fcfdcb02799ab28aadf0e7423f9c3d9e1eb",
+            "previous_revision_seal_of_target_seal": [
+              "6de5dd3be16f6ca4ed6e258bd3fb8532a1a2b9239fbbaf319fa0a2d3a4cfc875"
+            ],
+            "messages": [
+              "Reviewed current compatibility. Append latest correction, 778-test result and real-model boundary; preserve all prior history and shared workday state."
+            ]
+          },
+          {
+            "target_seal": "9e725188089178b4eccc6549cdd390f6b2b9c8de1e7cb107e1b7413cec7ad788",
+            "previous_revision_seal_of_target_seal": [
+              "76a48acd3ce2092ccd8e0037ef1c0caf36249764a5684684a6994711dbf54ace"
+            ],
+            "messages": [
+              "Reviewed current compatibility. Append latest correction, 778-test result and real-model boundary; preserve all prior history and shared workday state."
+            ]
+          }
+        ]
+      },
+      "disposition": "append-current-restart",
+      "note": "Append V3 preparation only; old closure and paid results remain historical."
+    },
+    {
+      "ref": "evidence/semantic-probe-call-1-request",
+      "path": "docs/evidence/semantic-migration-grok-2026-09-10-v1/call-1-before.json",
+      "seal": {
+        "seal_id": "860bc00485a9737fcfafd96710dc0d8371f4ade950305fd802ccc48de846c91a",
+        "material_id": "307c36b14bb79259c9525c2566511961a9822a6f259a949cdf01e1f4e067e81c",
+        "provenance_id": "5732055b7cfc92c98eae95ea5a638c2681ac27594a046d6df011e204227b46aa",
+        "content_blob_id": "f289273cd2cb7a56fce0fa7396a5d484602d4027252b6c8c5348c420ca62d5f9",
+        "content_bytes": 372562,
+        "attachments": [],
+        "root": false,
+        "draft": false,
+        "cause_links": [
+          {
+            "target_seal": "0527e275e5dd3bf57e7e97e1469b80cda524a3100c3bec2920866171c0bf9b06",
+            "previous_revision_seal_of_target_seal": [
+              "a287074a4d3a927c876d80b28d4865c1b171798dc07eaa35ccb6ef9a28b750b2"
+            ],
+            "messages": [
+              "Historical bytes unchanged; current links attest continued interpretation, not original execution under the revised dependency. Historical preparation, acceptance, reasoning or paid-run result retained byte-for-byte; original v1/v2 identity, snapshot, outcome and authorization remain unchanged. This review does not assert a new run or v3 convergence."
+            ]
+          }
+        ]
+      },
+      "disposition": "historical-bytes-preserved",
+      "note": "Original content, dates, run identity, proof and outcomes retained; revised links attest interpretation continuity only, never new execution or approval."
+    },
+    {
+      "ref": "evidence/semantic-probe-call-1-response",
+      "path": "docs/evidence/semantic-migration-grok-2026-09-10-v1/call-1-response.json",
+      "seal": {
+        "seal_id": "12fa3c7aa9ea952c2c8df210478b53639acf31849d89a8c2495565f2b510c014",
+        "material_id": "1059ba75dcd16ac2fcc23cc8245e4f5609094de878f491cc26a95d5e863380d8",
+        "provenance_id": "a9080f905cbed1ffe4b4ae188cdb4a33c3890bc9e362c0322528265cf6610fd3",
+        "content_blob_id": "a6effdbc77c348fa25a5dbdd6ecff31ec41d909dd985f87d6d622ef9642d90b3",
+        "content_bytes": 197,
+        "attachments": [],
+        "root": false,
+        "draft": false,
+        "cause_links": [
+          {
+            "target_seal": "860bc00485a9737fcfafd96710dc0d8371f4ade950305fd802ccc48de846c91a",
+            "previous_revision_seal_of_target_seal": [
+              "bacb0a32669d527edcc0db2ad031913c65aa29cbc9c8f33fb629ddfe88c154e3"
+            ],
+            "messages": [
+              "Historical bytes unchanged; current links attest continued interpretation, not original execution under the revised dependency. Historical preparation, acceptance, reasoning or paid-run result retained byte-for-byte; original v1/v2 identity, snapshot, outcome and authorization remain unchanged. This review does not assert a new run or v3 convergence."
+            ]
+          }
+        ]
+      },
+      "disposition": "historical-bytes-preserved",
+      "note": "Original content, dates, run identity, proof and outcomes retained; revised links attest interpretation continuity only, never new execution or approval."
+    },
+    {
+      "ref": "evidence/semantic-probe-live-result",
+      "path": "docs/evidence/semantic-migration-grok-2026-09-10-v1/live-result.json",
+      "seal": {
+        "seal_id": "3ca5fee850681423d1a57158761b14e6694e1e3d27d3fca55c9df62e5f15a712",
+        "material_id": "2bcb2c7753985403e21060f7613b86971814c2983f71b27bc2d2cdb4484b7573",
+        "provenance_id": "35b853c9647602df6422c82f783c14a8026640b59fc0a61778bf910e9b696307",
+        "content_blob_id": "fff48ab63ffdb8ab8df7927c9696b4857530a52d92c3e03ac52860a78344f688",
+        "content_bytes": 450101,
+        "attachments": [],
+        "root": false,
+        "draft": false,
+        "cause_links": [
+          {
+            "target_seal": "12fa3c7aa9ea952c2c8df210478b53639acf31849d89a8c2495565f2b510c014",
+            "previous_revision_seal_of_target_seal": [
+              "249ca8daae7621e89bc9c702572f9d1b35e6898c8617118b30ff03e678399709"
+            ],
+            "messages": [
+              "Historical bytes unchanged; current links attest continued interpretation, not original execution under the revised dependency. Historical preparation, acceptance, reasoning or paid-run result retained byte-for-byte; original v1/v2 identity, snapshot, outcome and authorization remain unchanged. This review does not assert a new run or v3 convergence."
+            ]
+          }
+        ]
+      },
+      "disposition": "historical-bytes-preserved",
+      "note": "Original content, dates, run identity, proof and outcomes retained; revised links attest interpretation continuity only, never new execution or approval."
+    },
+    {
+      "ref": "evidence/semantic-probe-live-start",
+      "path": "docs/evidence/semantic-migration-grok-2026-09-10-v1/live-start.json",
+      "seal": {
+        "seal_id": "0527e275e5dd3bf57e7e97e1469b80cda524a3100c3bec2920866171c0bf9b06",
+        "material_id": "cfa36486ea904cc0bba113395d688abead5227c4301882940bccf78f435561e7",
+        "provenance_id": "fa6b571578f17867f6b7f6c5b4329bfc9ad030fad896dcfffa6a028b912a2809",
+        "content_blob_id": "1de5b7758944eb1f2ab524e45683ac74f59364e2ecbce1e97a45022b66f01bf2",
+        "content_bytes": 191,
+        "attachments": [],
+        "root": false,
+        "draft": false,
+        "cause_links": [
+          {
+            "target_seal": "913b5ced9176a9d8ae045f59a5658c51e657b3e6bdadef16f8d20a8ac7df12c7",
+            "previous_revision_seal_of_target_seal": [
+              "31b10eaf05b7e50c4e99c6986128dc96acf7378c1ba2ca6d186fe846659a7bc2"
+            ],
+            "messages": [
+              "Historical bytes unchanged; current links attest continued interpretation, not original execution under the revised dependency. Historical preparation, acceptance, reasoning or paid-run result retained byte-for-byte; original v1/v2 identity, snapshot, outcome and authorization remain unchanged. This review does not assert a new run or v3 convergence."
+            ]
+          },
+          {
+            "target_seal": "c589fdbb21224d2e3d4d1601baa3a227d86481fe547646f92ab403de0d7e8350",
+            "previous_revision_seal_of_target_seal": [
+              "5e2df6c64897bdc6f69cf3731336a0e54e2848d913b4d2ca67b1d1ea61aadf5e"
+            ],
+            "messages": [
+              "Historical bytes unchanged; current links attest continued interpretation, not original execution under the revised dependency. Historical preparation, acceptance, reasoning or paid-run result retained byte-for-byte; original v1/v2 identity, snapshot, outcome and authorization remain unchanged. This review does not assert a new run or v3 convergence."
+            ]
+          }
+        ]
+      },
+      "disposition": "historical-bytes-preserved",
+      "note": "Original content, dates, run identity, proof and outcomes retained; revised links attest interpretation continuity only, never new execution or approval."
+    },
+    {
+      "ref": "evidence/semantic-probe-offline-result",
+      "path": "docs/evidence/semantic-migration-grok-2026-09-10-v1/prepare-result.json",
+      "seal": {
+        "seal_id": "6e54d1068e17e776f7538c4d5b42c7f683743c4aebf2a453d4ce266145efff30",
+        "material_id": "2cc85cccf0ea452d9c3c3f38035f61106534b2867bdc45e93964e2431c1056bd",
+        "provenance_id": "77ecc388009f3a65399519f0815f0eca4177295888526356dbe51fb7f2989e17",
+        "content_blob_id": "bf34925bae820bc8cc98281b7b70952ea9334c5e84b96771d2c9761dbf4a7a6d",
+        "content_bytes": 2520200,
+        "attachments": [],
+        "root": false,
+        "draft": false,
+        "cause_links": [
+          {
+            "target_seal": "913b5ced9176a9d8ae045f59a5658c51e657b3e6bdadef16f8d20a8ac7df12c7",
+            "previous_revision_seal_of_target_seal": [
+              "31b10eaf05b7e50c4e99c6986128dc96acf7378c1ba2ca6d186fe846659a7bc2"
+            ],
+            "messages": [
+              "Historical bytes unchanged; current links attest continued interpretation, not original execution under the revised dependency. Historical preparation, acceptance, reasoning or paid-run result retained byte-for-byte; original v1/v2 identity, snapshot, outcome and authorization remain unchanged. This review does not assert a new run or v3 convergence."
+            ]
+          }
+        ]
+      },
+      "disposition": "historical-bytes-preserved",
+      "note": "Original content, dates, run identity, proof and outcomes retained; revised links attest interpretation continuity only, never new execution or approval."
+    },
+    {
+      "ref": "evidence/semantic-probe-owner-acceptance",
+      "path": "docs/evidence/semantic-migration-grok-2026-09-10-v1/acceptance-ja.md",
+      "seal": {
+        "seal_id": "ccbbadce7b3d5fd9c28f72479fe34b0849107eb1a5b1ee385d6c9f9a865a0980",
+        "material_id": "814bfd0480dabe499773a3dc90ea02bf79fa994af3c963846dabaff4779f9f54",
+        "provenance_id": "32ee9b69c88d23ced85c7b58379d68466afa1208982fa19c423f685b271b5dce",
+        "content_blob_id": "b43e23652a632f08e6dbacc7123dea4f4ba31f781ebf2754bd2870da4ebbd2bd",
+        "content_bytes": 521,
+        "attachments": [],
+        "root": false,
+        "draft": false,
+        "cause_links": [
+          {
+            "target_seal": "c589fdbb21224d2e3d4d1601baa3a227d86481fe547646f92ab403de0d7e8350",
+            "previous_revision_seal_of_target_seal": [
+              "5e2df6c64897bdc6f69cf3731336a0e54e2848d913b4d2ca67b1d1ea61aadf5e"
+            ],
+            "messages": [
+              "Historical bytes unchanged; current links attest continued interpretation, not original execution under the revised dependency. Historical preparation, acceptance, reasoning or paid-run result retained byte-for-byte; original v1/v2 identity, snapshot, outcome and authorization remain unchanged. This review does not assert a new run or v3 convergence."
+            ]
+          }
+        ]
+      },
+      "disposition": "historical-bytes-preserved",
+      "note": "Original content, dates, run identity, proof and outcomes retained; revised links attest interpretation continuity only, never new execution or approval."
+    },
+    {
+      "ref": "evidence/semantic-probe-proof",
+      "path": "docs/evidence/semantic-migration-grok-2026-09-10-v1/prepare-proof.json",
+      "seal": {
+        "seal_id": "913b5ced9176a9d8ae045f59a5658c51e657b3e6bdadef16f8d20a8ac7df12c7",
+        "material_id": "f9822e9107c2a3ce3fbf0aab5c83b1f696cac9574356f1005f56145ce56dde8a",
+        "provenance_id": "9b53b81e9e8e7d428d195dbff0075d9ede5b26a7cf48920d41541b85aa26b1d7",
+        "content_blob_id": "ad02b25560fbb84b86ffb25d660fa4defb2f13369acd79af397c51895f9a53cc",
+        "content_bytes": 261868,
+        "attachments": [],
+        "root": false,
+        "draft": false,
+        "cause_links": [
+          {
+            "target_seal": "bff7a1c6733ae73b03da1ddd8d544afae70b3364e61ca6534624c6b24d5748de",
+            "previous_revision_seal_of_target_seal": [
+              "c9272a1a2aa37d8e1d11a534554e2bc775ab1ffb8a09bdfe69b3a4fd28c3a0f3"
+            ],
+            "messages": [
+              "Historical bytes unchanged; current links attest continued interpretation, not original execution under the revised dependency. Historical preparation, acceptance, reasoning or paid-run result retained byte-for-byte; original v1/v2 identity, snapshot, outcome and authorization remain unchanged. This review does not assert a new run or v3 convergence."
+            ]
+          }
+        ]
+      },
+      "disposition": "historical-bytes-preserved",
+      "note": "Original content, dates, run identity, proof and outcomes retained; revised links attest interpretation continuity only, never new execution or approval."
+    },
+    {
+      "ref": "evidence/semantic-probe-result-ja",
+      "path": "docs/evidence/semantic-migration-grok-2026-09-10-v1/result-ja.md",
+      "seal": {
+        "seal_id": "7e11e15615a45176b0cbedbc53a3c02c2c2c318fb00fdbf4b603d513bee6d44e",
+        "material_id": "54c9843ff38897eea7d17025ec3566cc06d053502b0bd12d821550995c284965",
+        "provenance_id": "22123ba16f5345b7c811fcdc3c16b247169948f069e67f1754d6b3f5c7db2760",
+        "content_blob_id": "75f8fbfcd37ba5d85a5ade1f384c3496b71496195d014faef2a12ae7039a3886",
+        "content_bytes": 3760,
+        "attachments": [],
+        "root": false,
+        "draft": false,
+        "cause_links": [
+          {
+            "target_seal": "f408281bfbc4bcd78fe6b6b129231b2079485faf924aca11c197d935882cbc4f",
+            "previous_revision_seal_of_target_seal": [
+              "a827c9e75b0d1f36d61231d27dfca6b528a8058e9e8de6eb98737ac0fc0fe704"
+            ],
+            "messages": [
+              "Historical bytes unchanged; current links attest continued interpretation, not original execution under the revised dependency. Historical preparation, acceptance, reasoning or paid-run result retained byte-for-byte; original v1/v2 identity, snapshot, outcome and authorization remain unchanged. This review does not assert a new run or v3 convergence."
+            ]
+          }
+        ]
+      },
+      "disposition": "historical-bytes-preserved",
+      "note": "Original content, dates, run identity, proof and outcomes retained; revised links attest interpretation continuity only, never new execution or approval."
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-call-1-receipt",
+      "path": "docs/evidence/semantic-migration-grok-2026-09-10-v2/call-1-receipt.json",
+      "seal": {
+        "seal_id": "e5ce55d4e883733b7bcd2daf9c5f0d07c7bb73d31d89ab75ff6fd78f89fb9b10",
+        "material_id": "be8fa88c13c8de17910524c4ddf2fd3c9165fdd304aefdb6bb04a9a8388fda60",
+        "provenance_id": "878efef50044beb0efdd05d85f4c3b4d37c076b2b45cf39a23f17bb2e926b187",
+        "content_blob_id": "587fa9719dac89b294366bd2ba3c882109820f0085003c7ca3535c1bece6d802",
+        "content_bytes": 3834,
+        "attachments": [],
+        "root": false,
+        "draft": false,
+        "cause_links": [
+          {
+            "target_seal": "5a0c8a7f54f807b65dc5917988b061f5d02e0bdd42c03c268fcc0f8b769176e9",
+            "previous_revision_seal_of_target_seal": [
+              "a45b0b0d8e0b4e1f092c73e9e68aff5042fcf6c577413027172d57180d1a4014"
+            ],
+            "messages": [
+              "Historical bytes unchanged; current links attest continued interpretation, not original execution under the revised dependency. Historical preparation, acceptance, reasoning or paid-run result retained byte-for-byte; original v1/v2 identity, snapshot, outcome and authorization remain unchanged. This review does not assert a new run or v3 convergence."
+            ]
+          }
+        ]
+      },
+      "disposition": "historical-bytes-preserved",
+      "note": "Original content, dates, run identity, proof and outcomes retained; revised links attest interpretation continuity only, never new execution or approval."
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-call-1-request",
+      "path": "docs/evidence/semantic-migration-grok-2026-09-10-v2/call-1-before.json",
+      "seal": {
+        "seal_id": "ab65185763ec61c1ab0787297f5b2a94d6428b78f3980ddfe699609e00c12d30",
+        "material_id": "ac27a849f82d59930b57447fc7d05c43727b10e4b5676e5d4b2ddef3b95ec70a",
+        "provenance_id": "1ff297ba50465d2783762b70fc7aa714cfa13671e54eed9544d29fcafe18403d",
+        "content_blob_id": "d980e9da38d852fc0ac2c5e58e6a6afa251662ccf5f91c6d14d46923caad1142",
+        "content_bytes": 369904,
+        "attachments": [],
+        "root": false,
+        "draft": false,
+        "cause_links": [
+          {
+            "target_seal": "5081ebe63cd207628946c2a112af797912e1f14af3353349ca0b0a57d9f0d688",
+            "previous_revision_seal_of_target_seal": [
+              "6cac140c0d2ebdfcabe7c105a832181b47ede9c6085d58ce58679cda5c99244b"
+            ],
+            "messages": [
+              "Historical bytes unchanged; current links attest continued interpretation, not original execution under the revised dependency. Historical preparation, acceptance, reasoning or paid-run result retained byte-for-byte; original v1/v2 identity, snapshot, outcome and authorization remain unchanged. This review does not assert a new run or v3 convergence."
+            ]
+          }
+        ]
+      },
+      "disposition": "historical-bytes-preserved",
+      "note": "Original content, dates, run identity, proof and outcomes retained; revised links attest interpretation continuity only, never new execution or approval."
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-call-1-response",
+      "path": "docs/evidence/semantic-migration-grok-2026-09-10-v2/call-1-response.json",
+      "seal": {
+        "seal_id": "5a0c8a7f54f807b65dc5917988b061f5d02e0bdd42c03c268fcc0f8b769176e9",
+        "material_id": "21642a569edbbcfa7f3db52f4c491f9f990c463b13d8c94658bd3771ba290ee8",
+        "provenance_id": "c1e5a58d5359bdbe8f60189960579135cdf7037e17a13f93819f409552251f06",
+        "content_blob_id": "da3eacbdfcffd12b244ce827381de7138cf4523c942d888de0ea2343544332de",
+        "content_bytes": 3481,
+        "attachments": [],
+        "root": false,
+        "draft": false,
+        "cause_links": [
+          {
+            "target_seal": "ab65185763ec61c1ab0787297f5b2a94d6428b78f3980ddfe699609e00c12d30",
+            "previous_revision_seal_of_target_seal": [
+              "979d2f08b4b785825dc6478dfde250b9e63a9e0dd624b1ee00c54631af049655"
+            ],
+            "messages": [
+              "Historical bytes unchanged; current links attest continued interpretation, not original execution under the revised dependency. Historical preparation, acceptance, reasoning or paid-run result retained byte-for-byte; original v1/v2 identity, snapshot, outcome and authorization remain unchanged. This review does not assert a new run or v3 convergence."
+            ]
+          }
+        ]
+      },
+      "disposition": "historical-bytes-preserved",
+      "note": "Original content, dates, run identity, proof and outcomes retained; revised links attest interpretation continuity only, never new execution or approval."
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-call-2-receipt",
+      "path": "docs/evidence/semantic-migration-grok-2026-09-10-v2/call-2-receipt.json",
+      "seal": {
+        "seal_id": "5e164c84f9a56f73b247c218780b0b51a7bc6bd002d2f340de844c29ced20c66",
+        "material_id": "c85b59f5d85606e930cab0953b91cd1abc0e2531fd0e90579675183f0c161b0e",
+        "provenance_id": "5b09b7da66e7f04a71b44dcbe5b731ef0624ffd50c8df858107f5c1dedb87eca",
+        "content_blob_id": "8ca268852599f9d5c2a0451cc34e6ddcf3ff02e8958739a857c9904e3555c1f4",
+        "content_bytes": 2612,
+        "attachments": [],
+        "root": false,
+        "draft": false,
+        "cause_links": [
+          {
+            "target_seal": "d73fd67d8b3904efcedf39d1e80151cd02702c91af0d109da51f5e20692c62ff",
+            "previous_revision_seal_of_target_seal": [
+              "199d37551d27f376b58cc7edbe4a37eb03a83204ac12e20afd8b84a76f3cb13c"
+            ],
+            "messages": [
+              "Historical bytes unchanged; current links attest continued interpretation, not original execution under the revised dependency. Historical preparation, acceptance, reasoning or paid-run result retained byte-for-byte; original v1/v2 identity, snapshot, outcome and authorization remain unchanged. This review does not assert a new run or v3 convergence."
+            ]
+          }
+        ]
+      },
+      "disposition": "historical-bytes-preserved",
+      "note": "Original content, dates, run identity, proof and outcomes retained; revised links attest interpretation continuity only, never new execution or approval."
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-call-2-request",
+      "path": "docs/evidence/semantic-migration-grok-2026-09-10-v2/call-2-before.json",
+      "seal": {
+        "seal_id": "ca45a937ea3609d4c17dc3a4f7a0383f0c7a23206c306fcc983c73e191609b8d",
+        "material_id": "230d96d42c24bee13029c54d1030d51fabf41442b72673ca013f15d902143605",
+        "provenance_id": "caee1157cc481eaa38af2b32740772d273c89de5386d73b556fa561a15795958",
+        "content_blob_id": "67055aa80387f18d7193e8d8cb896000bdfda03133935a0c0a2ead90876937bb",
+        "content_bytes": 362519,
+        "attachments": [],
+        "root": false,
+        "draft": false,
+        "cause_links": [
+          {
+            "target_seal": "e5ce55d4e883733b7bcd2daf9c5f0d07c7bb73d31d89ab75ff6fd78f89fb9b10",
+            "previous_revision_seal_of_target_seal": [
+              "d1579712fdb5b21a0511b74ea61781b550dd96567ac94fd4ef09b9ef9e645b94"
+            ],
+            "messages": [
+              "Historical bytes unchanged; current links attest continued interpretation, not original execution under the revised dependency. Historical preparation, acceptance, reasoning or paid-run result retained byte-for-byte; original v1/v2 identity, snapshot, outcome and authorization remain unchanged. This review does not assert a new run or v3 convergence."
+            ]
+          }
+        ]
+      },
+      "disposition": "historical-bytes-preserved",
+      "note": "Original content, dates, run identity, proof and outcomes retained; revised links attest interpretation continuity only, never new execution or approval."
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-call-2-response",
+      "path": "docs/evidence/semantic-migration-grok-2026-09-10-v2/call-2-response.json",
+      "seal": {
+        "seal_id": "d73fd67d8b3904efcedf39d1e80151cd02702c91af0d109da51f5e20692c62ff",
+        "material_id": "324bf13a3c5ac6df6952eb0fbe1ca53dc585b597123736b147174e69e0f620c3",
+        "provenance_id": "4a56de002b22f5b000b96a460ded4226f7f4f5bff93522e02662e07466056a86",
+        "content_blob_id": "cab1c92d638f26117852e8efea73e4932b56f87a17b724ef0569f93e696a8296",
+        "content_bytes": 2698,
+        "attachments": [],
+        "root": false,
+        "draft": false,
+        "cause_links": [
+          {
+            "target_seal": "ca45a937ea3609d4c17dc3a4f7a0383f0c7a23206c306fcc983c73e191609b8d",
+            "previous_revision_seal_of_target_seal": [
+              "c5e93bc285dcb9da0b6ecc795e8e728c32fcd1356c9b447d0126f0f21c958428"
+            ],
+            "messages": [
+              "Historical bytes unchanged; current links attest continued interpretation, not original execution under the revised dependency. Historical preparation, acceptance, reasoning or paid-run result retained byte-for-byte; original v1/v2 identity, snapshot, outcome and authorization remain unchanged. This review does not assert a new run or v3 convergence."
+            ]
+          }
+        ]
+      },
+      "disposition": "historical-bytes-preserved",
+      "note": "Original content, dates, run identity, proof and outcomes retained; revised links attest interpretation continuity only, never new execution or approval."
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-call-3-receipt",
+      "path": "docs/evidence/semantic-migration-grok-2026-09-10-v2/call-3-receipt.json",
+      "seal": {
+        "seal_id": "1f462806994eef00b0c4ea8ddb26401856ca641add5ad92b4ce80042d74d56b6",
+        "material_id": "dcdd22946fec44fcd15f5fb94be046d126077d3085281b3c1a01847a6cf64740",
+        "provenance_id": "022b4a033705c57969b050e8f43448efc67791e64eaa6660a5a6a4a6d9f24809",
+        "content_blob_id": "52fe7f284cd04d3c85b6d65017cf678b82d498febb3ae1eda690eda3942fc7d4",
+        "content_bytes": 4308,
+        "attachments": [],
+        "root": false,
+        "draft": false,
+        "cause_links": [
+          {
+            "target_seal": "1beb6d386664212d067871cce0341794b0ccbbc908d3e1ba90c8043d8b1e08e0",
+            "previous_revision_seal_of_target_seal": [
+              "63fd5f4ed6e5a8d748af5f004221c0ae423f23124455de9a12801cc82c4967c4"
+            ],
+            "messages": [
+              "Historical bytes unchanged; current links attest continued interpretation, not original execution under the revised dependency. Historical preparation, acceptance, reasoning or paid-run result retained byte-for-byte; original v1/v2 identity, snapshot, outcome and authorization remain unchanged. This review does not assert a new run or v3 convergence."
+            ]
+          }
+        ]
+      },
+      "disposition": "historical-bytes-preserved",
+      "note": "Original content, dates, run identity, proof and outcomes retained; revised links attest interpretation continuity only, never new execution or approval."
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-call-3-request",
+      "path": "docs/evidence/semantic-migration-grok-2026-09-10-v2/call-3-before.json",
+      "seal": {
+        "seal_id": "964e908838dd2f3085a2e0990637898e417eb85e6c1ce8e1fd32b17cdb2996ee",
+        "material_id": "f61a0a7d899bc11ae7ad74eed73ab26fff6bee0a3fd844af00f67d912ed262d2",
+        "provenance_id": "b82fa501ae46221ee56e3faa2972b5bd5882ee9c821131544f965c558e1dc8a9",
+        "content_blob_id": "4e3e9457285775b163b23fdfc2cdde1146c2119c7827fac6f68b3b10dded9c1a",
+        "content_bytes": 380745,
+        "attachments": [],
+        "root": false,
+        "draft": false,
+        "cause_links": [
+          {
+            "target_seal": "5e164c84f9a56f73b247c218780b0b51a7bc6bd002d2f340de844c29ced20c66",
+            "previous_revision_seal_of_target_seal": [
+              "308ba15584be135d6d2c1e478cf2c4cba0b6e0ee65f255c8dc637a9fc38a4728"
+            ],
+            "messages": [
+              "Historical bytes unchanged; current links attest continued interpretation, not original execution under the revised dependency. Historical preparation, acceptance, reasoning or paid-run result retained byte-for-byte; original v1/v2 identity, snapshot, outcome and authorization remain unchanged. This review does not assert a new run or v3 convergence."
+            ]
+          }
+        ]
+      },
+      "disposition": "historical-bytes-preserved",
+      "note": "Original content, dates, run identity, proof and outcomes retained; revised links attest interpretation continuity only, never new execution or approval."
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-call-3-response",
+      "path": "docs/evidence/semantic-migration-grok-2026-09-10-v2/call-3-response.json",
+      "seal": {
+        "seal_id": "1beb6d386664212d067871cce0341794b0ccbbc908d3e1ba90c8043d8b1e08e0",
+        "material_id": "2ffe098c49fae164fd50b2a849dc2c3fc38cbdb4d6a13420c976eab724951bca",
+        "provenance_id": "917620d7efc7a55d5d5e8d88f596e253ef1e7779c65cf3da065451e0f92df9f5",
+        "content_blob_id": "2a8f1edcbd52ff667931434ba2f2681aead63d02ae52fa3148c6d3805661fb63",
+        "content_bytes": 4567,
+        "attachments": [],
+        "root": false,
+        "draft": false,
+        "cause_links": [
+          {
+            "target_seal": "964e908838dd2f3085a2e0990637898e417eb85e6c1ce8e1fd32b17cdb2996ee",
+            "previous_revision_seal_of_target_seal": [
+              "06617e418c7a0dd987e751e2abda978e00e9b038818d05935d52ccc393d11b5d"
+            ],
+            "messages": [
+              "Historical bytes unchanged; current links attest continued interpretation, not original execution under the revised dependency. Historical preparation, acceptance, reasoning or paid-run result retained byte-for-byte; original v1/v2 identity, snapshot, outcome and authorization remain unchanged. This review does not assert a new run or v3 convergence."
+            ]
+          }
+        ]
+      },
+      "disposition": "historical-bytes-preserved",
+      "note": "Original content, dates, run identity, proof and outcomes retained; revised links attest interpretation continuity only, never new execution or approval."
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-call-4-receipt",
+      "path": "docs/evidence/semantic-migration-grok-2026-09-10-v2/call-4-receipt.json",
+      "seal": {
+        "seal_id": "dad7049af31fe3db8dabe5130962e81379e8d754ad731193372d26083d5b8ee7",
+        "material_id": "76429abb112a44956e363c4245d65530e773169de76e3e0726f23e91fbb82d24",
+        "provenance_id": "863bea177c4105d2a295908642ec0a927794ac7ace4634425dd54d9ffbe8f0f1",
+        "content_blob_id": "5e7ff41a9b52ef837054e2a23e17bd26ff073c8628551ec04f4566612114bb01",
+        "content_bytes": 2705,
+        "attachments": [],
+        "root": false,
+        "draft": false,
+        "cause_links": [
+          {
+            "target_seal": "46873f6ffb04631e2d22b554dc8df0d07d461fc2c443dcf05d6a86f8c8260fbe",
+            "previous_revision_seal_of_target_seal": [
+              "04f430b1a5c9e0bde95e5c77532df3807c70d64d2bec956e523b3ffec7e8b84b"
+            ],
+            "messages": [
+              "Historical bytes unchanged; current links attest continued interpretation, not original execution under the revised dependency. Historical preparation, acceptance, reasoning or paid-run result retained byte-for-byte; original v1/v2 identity, snapshot, outcome and authorization remain unchanged. This review does not assert a new run or v3 convergence."
+            ]
+          }
+        ]
+      },
+      "disposition": "historical-bytes-preserved",
+      "note": "Original content, dates, run identity, proof and outcomes retained; revised links attest interpretation continuity only, never new execution or approval."
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-call-4-request",
+      "path": "docs/evidence/semantic-migration-grok-2026-09-10-v2/call-4-before.json",
+      "seal": {
+        "seal_id": "e30b108b89eeeb71c8a5f7b6c565c2f429f1867405798207ff415c34b2bf7b69",
+        "material_id": "ac2935bd1e32b25c0a334ff4bab1d10b4b6ce1d9da041946eb2576249f4d36b5",
+        "provenance_id": "a27d2fecbca204ca21a9ffdcc83ed2b099a46bbad8a6be650c5398e057bab638",
+        "content_blob_id": "cb2347558699cdefb42bdfdf79c8757a7566fbfce660b823a2d5ae1bcbc57af4",
+        "content_bytes": 366996,
+        "attachments": [],
+        "root": false,
+        "draft": false,
+        "cause_links": [
+          {
+            "target_seal": "1f462806994eef00b0c4ea8ddb26401856ca641add5ad92b4ce80042d74d56b6",
+            "previous_revision_seal_of_target_seal": [
+              "0f30569abcdae49e15e8f0e83898cd227bbe624d775dd92e831f38e3a0826b15"
+            ],
+            "messages": [
+              "Historical bytes unchanged; current links attest continued interpretation, not original execution under the revised dependency. Historical preparation, acceptance, reasoning or paid-run result retained byte-for-byte; original v1/v2 identity, snapshot, outcome and authorization remain unchanged. This review does not assert a new run or v3 convergence."
+            ]
+          }
+        ]
+      },
+      "disposition": "historical-bytes-preserved",
+      "note": "Original content, dates, run identity, proof and outcomes retained; revised links attest interpretation continuity only, never new execution or approval."
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-call-4-response",
+      "path": "docs/evidence/semantic-migration-grok-2026-09-10-v2/call-4-response.json",
+      "seal": {
+        "seal_id": "46873f6ffb04631e2d22b554dc8df0d07d461fc2c443dcf05d6a86f8c8260fbe",
+        "material_id": "e4707f8efa18fddea04864eb4ac525b1e3e10e0221ac05c99d3c664cf72eb13c",
+        "provenance_id": "2ea2ee7b6cebd586212f4972dd98bf0ba713164f0a52899a5de344c1d05de622",
+        "content_blob_id": "f1ca23e81adede969023e27edba52b167bb55d918002b3f25e2d7066add4a1f1",
+        "content_bytes": 2778,
+        "attachments": [],
+        "root": false,
+        "draft": false,
+        "cause_links": [
+          {
+            "target_seal": "e30b108b89eeeb71c8a5f7b6c565c2f429f1867405798207ff415c34b2bf7b69",
+            "previous_revision_seal_of_target_seal": [
+              "cc4440d9b3b3ac15cf5eea50f685d5830003af242d872cb33f8a240e4cb2f72c"
+            ],
+            "messages": [
+              "Historical bytes unchanged; current links attest continued interpretation, not original execution under the revised dependency. Historical preparation, acceptance, reasoning or paid-run result retained byte-for-byte; original v1/v2 identity, snapshot, outcome and authorization remain unchanged. This review does not assert a new run or v3 convergence."
+            ]
+          }
+        ]
+      },
+      "disposition": "historical-bytes-preserved",
+      "note": "Original content, dates, run identity, proof and outcomes retained; revised links attest interpretation continuity only, never new execution or approval."
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-call-5-receipt",
+      "path": "docs/evidence/semantic-migration-grok-2026-09-10-v2/call-5-receipt.json",
+      "seal": {
+        "seal_id": "07e7bff7bc847c16a2caae17ecae531ebeaeb7c529eaa16353232390be622a48",
+        "material_id": "57e20fc511a6d4dbe27e49007f01ba0e8495399196f204e26fddc20b85de5e43",
+        "provenance_id": "24f8982cf508618490ef88b4afcbd2abf721201fc64bdd678f043af50c1008cf",
+        "content_blob_id": "9eaf76a90218c6b30c7fca06dd1909dcb978814a32b6b63df11dbff755a4225d",
+        "content_bytes": 4507,
+        "attachments": [],
+        "root": false,
+        "draft": false,
+        "cause_links": [
+          {
+            "target_seal": "573d25784c373b80b1d24970dcfd42492da3124e36e1c83b6e6db2bdf29543ed",
+            "previous_revision_seal_of_target_seal": [
+              "7147d0cb1f978a0b5f17cdabca09890f3ef08b4f68d5d99bf5592dbe812b3292"
+            ],
+            "messages": [
+              "Historical bytes unchanged; current links attest continued interpretation, not original execution under the revised dependency. Historical preparation, acceptance, reasoning or paid-run result retained byte-for-byte; original v1/v2 identity, snapshot, outcome and authorization remain unchanged. This review does not assert a new run or v3 convergence."
+            ]
+          }
+        ]
+      },
+      "disposition": "historical-bytes-preserved",
+      "note": "Original content, dates, run identity, proof and outcomes retained; revised links attest interpretation continuity only, never new execution or approval."
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-call-5-request",
+      "path": "docs/evidence/semantic-migration-grok-2026-09-10-v2/call-5-before.json",
+      "seal": {
+        "seal_id": "70d3692c5bc9af4962b11f489b4eb8d22585dde3fa3bbc14a6ddb5b8a913c7da",
+        "material_id": "ff4446a522643c01b2fadd215ddce62699a9ee4b39770a9027299c71d757c6ee",
+        "provenance_id": "edbb35eb997dd0c6835009818c8dcf82fb38dc8403128a0b50468d776613d212",
+        "content_blob_id": "3942960c312316729e6d84d34adee11067a655723082deaab54fb4a39b4cd0f9",
+        "content_bytes": 389260,
+        "attachments": [],
+        "root": false,
+        "draft": false,
+        "cause_links": [
+          {
+            "target_seal": "dad7049af31fe3db8dabe5130962e81379e8d754ad731193372d26083d5b8ee7",
+            "previous_revision_seal_of_target_seal": [
+              "572591f8e9871c8524e64bebfb851833e7868896e74962d31136a75c98e7e72c"
+            ],
+            "messages": [
+              "Historical bytes unchanged; current links attest continued interpretation, not original execution under the revised dependency. Historical preparation, acceptance, reasoning or paid-run result retained byte-for-byte; original v1/v2 identity, snapshot, outcome and authorization remain unchanged. This review does not assert a new run or v3 convergence."
+            ]
+          }
+        ]
+      },
+      "disposition": "historical-bytes-preserved",
+      "note": "Original content, dates, run identity, proof and outcomes retained; revised links attest interpretation continuity only, never new execution or approval."
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-call-5-response",
+      "path": "docs/evidence/semantic-migration-grok-2026-09-10-v2/call-5-response.json",
+      "seal": {
+        "seal_id": "573d25784c373b80b1d24970dcfd42492da3124e36e1c83b6e6db2bdf29543ed",
+        "material_id": "505860f9ed0457b880d969c6fc4400447e1f0eda2ebec78f28f756126aa62dce",
+        "provenance_id": "a29fde06b37355ec64d8789b66a44c0f9458cfe768bb61e7591a24ff6a36d75b",
+        "content_blob_id": "4debdb8a0c533a48cfa6fbb0516b523ef21e6d9cd2bdfa5896b079e408293a87",
+        "content_bytes": 4113,
+        "attachments": [],
+        "root": false,
+        "draft": false,
+        "cause_links": [
+          {
+            "target_seal": "70d3692c5bc9af4962b11f489b4eb8d22585dde3fa3bbc14a6ddb5b8a913c7da",
+            "previous_revision_seal_of_target_seal": [
+              "44ce1526a794ae7d8261db05c3829cf8445301c05ea044016ecce18f130e39de"
+            ],
+            "messages": [
+              "Historical bytes unchanged; current links attest continued interpretation, not original execution under the revised dependency. Historical preparation, acceptance, reasoning or paid-run result retained byte-for-byte; original v1/v2 identity, snapshot, outcome and authorization remain unchanged. This review does not assert a new run or v3 convergence."
+            ]
+          }
+        ]
+      },
+      "disposition": "historical-bytes-preserved",
+      "note": "Original content, dates, run identity, proof and outcomes retained; revised links attest interpretation continuity only, never new execution or approval."
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-call-6-receipt",
+      "path": "docs/evidence/semantic-migration-grok-2026-09-10-v2/call-6-receipt.json",
+      "seal": {
+        "seal_id": "62a3d2bb76e041fee150f0c62f0c699a6770ee6137a8bd889b101ece4291e4d5",
+        "material_id": "92d59018bc5a9d743b55c08e8375034895a31eecb092c09049d31d3d8e2ecd5d",
+        "provenance_id": "03078052fb678e69f0b68c964b98acdb731625c13e369b24c83f45483b426542",
+        "content_blob_id": "4a568a5bce38ec0792b050ada1912bfe13e4aced3b5f197a66406cc4e4db0b8a",
+        "content_bytes": 3463,
+        "attachments": [],
+        "root": false,
+        "draft": false,
+        "cause_links": [
+          {
+            "target_seal": "615181bcdc4bfea7a8163613ca31030b4f3c66cf563e8903432e45c220d48b4d",
+            "previous_revision_seal_of_target_seal": [
+              "f7270fc9a78920b0db0ec6d24ddf00cd60dab27cc20fc5990e6da157c94a670f"
+            ],
+            "messages": [
+              "Historical bytes unchanged; current links attest continued interpretation, not original execution under the revised dependency. Historical preparation, acceptance, reasoning or paid-run result retained byte-for-byte; original v1/v2 identity, snapshot, outcome and authorization remain unchanged. This review does not assert a new run or v3 convergence."
+            ]
+          }
+        ]
+      },
+      "disposition": "historical-bytes-preserved",
+      "note": "Original content, dates, run identity, proof and outcomes retained; revised links attest interpretation continuity only, never new execution or approval."
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-call-6-request",
+      "path": "docs/evidence/semantic-migration-grok-2026-09-10-v2/call-6-before.json",
+      "seal": {
+        "seal_id": "30dc4ac751fcf4f78096d6d41832c70fc4cc2bb31d51d661287616f1f776485c",
+        "material_id": "1d13dd98d5cabc93d26161b15d0c878da527a9b4cbf6b74800e11f61f0443e90",
+        "provenance_id": "6f1b8f23ce34f7d41c0433e26e7fa610dd1b01271bb3574e515243c60217b684",
+        "content_blob_id": "693215910c154dea255dfe8a27eeb569fc6ac462b0bcc55eda69beccecb1528d",
+        "content_bytes": 371116,
+        "attachments": [],
+        "root": false,
+        "draft": false,
+        "cause_links": [
+          {
+            "target_seal": "07e7bff7bc847c16a2caae17ecae531ebeaeb7c529eaa16353232390be622a48",
+            "previous_revision_seal_of_target_seal": [
+              "6a27c95a6a1b6ab894cbcb8fc156e4af338f3ccc15e0301276389be351a5363e"
+            ],
+            "messages": [
+              "Historical bytes unchanged; current links attest continued interpretation, not original execution under the revised dependency. Historical preparation, acceptance, reasoning or paid-run result retained byte-for-byte; original v1/v2 identity, snapshot, outcome and authorization remain unchanged. This review does not assert a new run or v3 convergence."
+            ]
+          }
+        ]
+      },
+      "disposition": "historical-bytes-preserved",
+      "note": "Original content, dates, run identity, proof and outcomes retained; revised links attest interpretation continuity only, never new execution or approval."
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-call-6-response",
+      "path": "docs/evidence/semantic-migration-grok-2026-09-10-v2/call-6-response.json",
+      "seal": {
+        "seal_id": "615181bcdc4bfea7a8163613ca31030b4f3c66cf563e8903432e45c220d48b4d",
+        "material_id": "fa66374fec962d146277a5a69086da74eb0604c190279c0ec8f21365ea80bb0f",
+        "provenance_id": "5475300d14463b14f6595a7f5625ec1da2fb7e47a1433629cec03ca1e421abb4",
+        "content_blob_id": "bafb1b6552128dfe7c807569b1e0353b5e417cd39009d4cfba71f954452ca043",
+        "content_bytes": 3421,
+        "attachments": [],
+        "root": false,
+        "draft": false,
+        "cause_links": [
+          {
+            "target_seal": "30dc4ac751fcf4f78096d6d41832c70fc4cc2bb31d51d661287616f1f776485c",
+            "previous_revision_seal_of_target_seal": [
+              "cb7333c1d38932f8f4a45daaa5be17879b4eba5b0d1fb02c25b702253fa2336c"
+            ],
+            "messages": [
+              "Historical bytes unchanged; current links attest continued interpretation, not original execution under the revised dependency. Historical preparation, acceptance, reasoning or paid-run result retained byte-for-byte; original v1/v2 identity, snapshot, outcome and authorization remain unchanged. This review does not assert a new run or v3 convergence."
+            ]
+          }
+        ]
+      },
+      "disposition": "historical-bytes-preserved",
+      "note": "Original content, dates, run identity, proof and outcomes retained; revised links attest interpretation continuity only, never new execution or approval."
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-live-result",
+      "path": "docs/evidence/semantic-migration-grok-2026-09-10-v2/live-result.json",
+      "seal": {
+        "seal_id": "1716a9677cee06e2797482562fa04df8a4f17ce36453dd9a06a6ad9993a23839",
+        "material_id": "3504aea988c4f711b2333e85ca2d323c283c38a922ec00f3e9e5c1f5483ea220",
+        "provenance_id": "caa438631f2029fbe62a94ed4b3607e591cb2f4e2c8663ebf6e4bcca87f274bf",
+        "content_blob_id": "f04ae8541be59e96d4a7e4e000b70235242b34db347e6a9d444c7b105fc116b5",
+        "content_bytes": 2598942,
+        "attachments": [],
+        "root": false,
+        "draft": false,
+        "cause_links": [
+          {
+            "target_seal": "5081ebe63cd207628946c2a112af797912e1f14af3353349ca0b0a57d9f0d688",
+            "previous_revision_seal_of_target_seal": [
+              "6cac140c0d2ebdfcabe7c105a832181b47ede9c6085d58ce58679cda5c99244b"
+            ],
+            "messages": [
+              "Historical bytes unchanged; current links attest continued interpretation, not original execution under the revised dependency. Historical preparation, acceptance, reasoning or paid-run result retained byte-for-byte; original v1/v2 identity, snapshot, outcome and authorization remain unchanged. This review does not assert a new run or v3 convergence."
+            ]
+          },
+          {
+            "target_seal": "62a3d2bb76e041fee150f0c62f0c699a6770ee6137a8bd889b101ece4291e4d5",
+            "previous_revision_seal_of_target_seal": [
+              "6ff9f43435c1049489d60cd284427d4e18663286089ed56987ba43c6023840d2"
+            ],
+            "messages": [
+              "Historical bytes unchanged; current links attest continued interpretation, not original execution under the revised dependency. Historical preparation, acceptance, reasoning or paid-run result retained byte-for-byte; original v1/v2 identity, snapshot, outcome and authorization remain unchanged. This review does not assert a new run or v3 convergence."
+            ]
+          }
+        ]
+      },
+      "disposition": "historical-bytes-preserved",
+      "note": "Original content, dates, run identity, proof and outcomes retained; revised links attest interpretation continuity only, never new execution or approval."
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-live-start",
+      "path": "docs/evidence/semantic-migration-grok-2026-09-10-v2/live-start.json",
+      "seal": {
+        "seal_id": "5081ebe63cd207628946c2a112af797912e1f14af3353349ca0b0a57d9f0d688",
+        "material_id": "782829de772fb5171ac05742a0aeb3f2a02a5c05b75e1adcb320876fc3839d7d",
+        "provenance_id": "b8a15b8e553264f095b8eafe166f79e23012a0246c87b424206bf8c9db477cc6",
+        "content_blob_id": "38a20e08757bec24a5c2b751e408b23c5df79bd2c05952238bed98a93bbf3691",
+        "content_bytes": 191,
+        "attachments": [],
+        "root": false,
+        "draft": false,
+        "cause_links": [
+          {
+            "target_seal": "3faf94e7b65759a4b4683a20cf83e9afee3b2328edba595cfd1259e02a4552ba",
+            "previous_revision_seal_of_target_seal": [
+              "19717c12321e1ba496f2af575b5b4d865c3293c1a71b350c9dfb7c481839c963"
+            ],
+            "messages": [
+              "Historical bytes unchanged; current links attest continued interpretation, not original execution under the revised dependency. Historical preparation, acceptance, reasoning or paid-run result retained byte-for-byte; original v1/v2 identity, snapshot, outcome and authorization remain unchanged. This review does not assert a new run or v3 convergence."
+            ]
+          },
+          {
+            "target_seal": "c997646991098a370a052dea03d67d80227cb632349c9046fb04a0fafeacd81e",
+            "previous_revision_seal_of_target_seal": [
+              "4bc8b215226314aabfd44820e519e88468448658f646644b1ddd30bf3d08e839"
+            ],
+            "messages": [
+              "Historical bytes unchanged; current links attest continued interpretation, not original execution under the revised dependency. Historical preparation, acceptance, reasoning or paid-run result retained byte-for-byte; original v1/v2 identity, snapshot, outcome and authorization remain unchanged. This review does not assert a new run or v3 convergence."
+            ]
+          }
+        ]
+      },
+      "disposition": "historical-bytes-preserved",
+      "note": "Original content, dates, run identity, proof and outcomes retained; revised links attest interpretation continuity only, never new execution or approval."
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-offline-result",
+      "path": "docs/evidence/semantic-migration-grok-2026-09-10-v2/prepare-result.json",
+      "seal": {
+        "seal_id": "d7e4c57afff74f7d8a15aad2df5676fda6c349b2313f24900716b3cc0af7e2b3",
+        "material_id": "1df7bfadd2ed70be63288693d502a99a4f3ad9e13c6c8b21e5a023cc61005e79",
+        "provenance_id": "091c2aa021792abc9f7ba2b304b6e062daaaaffdb1a98cd7a72eb55c66614c33",
+        "content_blob_id": "aa83917a6c9e992943aca1167900116103aac240a800da426632a2888876c9a7",
+        "content_bytes": 2508620,
+        "attachments": [],
+        "root": false,
+        "draft": false,
+        "cause_links": [
+          {
+            "target_seal": "3faf94e7b65759a4b4683a20cf83e9afee3b2328edba595cfd1259e02a4552ba",
+            "previous_revision_seal_of_target_seal": [
+              "19717c12321e1ba496f2af575b5b4d865c3293c1a71b350c9dfb7c481839c963"
+            ],
+            "messages": [
+              "Historical bytes unchanged; current links attest continued interpretation, not original execution under the revised dependency. Historical preparation, acceptance, reasoning or paid-run result retained byte-for-byte; original v1/v2 identity, snapshot, outcome and authorization remain unchanged. This review does not assert a new run or v3 convergence."
+            ]
+          }
+        ]
+      },
+      "disposition": "historical-bytes-preserved",
+      "note": "Original content, dates, run identity, proof and outcomes retained; revised links attest interpretation continuity only, never new execution or approval."
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-owner-acceptance",
+      "path": "docs/evidence/semantic-migration-grok-2026-09-10-v2/acceptance-ja.md",
+      "seal": {
+        "seal_id": "42dd3cd53466792634eb248c81d82ba8c50159709e7ad2991b98915c5ec0383e",
+        "material_id": "e4238111c8f04d19873be652af709b2b44892c40c555642309d39e976e8099e8",
+        "provenance_id": "89110138c8beeaba4405780cb398a19dc3d7f776d3e935bda05f94addce6d527",
+        "content_blob_id": "0975a2d668101bf0a6da0828b56e721203d9f0ed2f437e3555af216f25476bc6",
+        "content_bytes": 705,
+        "attachments": [],
+        "root": false,
+        "draft": false,
+        "cause_links": [
+          {
+            "target_seal": "c997646991098a370a052dea03d67d80227cb632349c9046fb04a0fafeacd81e",
+            "previous_revision_seal_of_target_seal": [
+              "4bc8b215226314aabfd44820e519e88468448658f646644b1ddd30bf3d08e839"
+            ],
+            "messages": [
+              "Historical bytes unchanged; current links attest continued interpretation, not original execution under the revised dependency. Historical preparation, acceptance, reasoning or paid-run result retained byte-for-byte; original v1/v2 identity, snapshot, outcome and authorization remain unchanged. This review does not assert a new run or v3 convergence."
+            ]
+          }
+        ]
+      },
+      "disposition": "historical-bytes-preserved",
+      "note": "Original content, dates, run identity, proof and outcomes retained; revised links attest interpretation continuity only, never new execution or approval."
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-proof",
+      "path": "docs/evidence/semantic-migration-grok-2026-09-10-v2/prepare-proof.json",
+      "seal": {
+        "seal_id": "3faf94e7b65759a4b4683a20cf83e9afee3b2328edba595cfd1259e02a4552ba",
+        "material_id": "11563496980f489652ef9f872cde4e048b6ee3028916b94eba6d288f9ae43748",
+        "provenance_id": "cc0c3dd75b9d7739841113ff261f726567cd01bb9834e99d57e8d00dc610f7fa",
+        "content_blob_id": "4d2cb0805f3b876cc87fddeb2bb449fd09c5efa2865d88c35489ae242b55de3c",
+        "content_bytes": 261789,
+        "attachments": [],
+        "root": false,
+        "draft": false,
+        "cause_links": [
+          {
+            "target_seal": "1fb376cd7d501a49a6341b57b5728b284ad9135a3be150378c4e83aaaa72c3a2",
+            "previous_revision_seal_of_target_seal": [],
+            "messages": [
+              "New unexecuted v2 proof451cc1c5 binds source/runtime snapshotd40eaef0 and exact synthetic scope; not paid authority."
+            ]
+          },
+          {
+            "target_seal": "bff7a1c6733ae73b03da1ddd8d544afae70b3364e61ca6534624c6b24d5748de",
+            "previous_revision_seal_of_target_seal": [
+              "c9272a1a2aa37d8e1d11a534554e2bc775ab1ffb8a09bdfe69b3a4fd28c3a0f3"
+            ],
+            "messages": [
+              "Historical bytes unchanged; current links attest continued interpretation, not original execution under the revised dependency. Historical preparation, acceptance, reasoning or paid-run result retained byte-for-byte; original v1/v2 identity, snapshot, outcome and authorization remain unchanged. This review does not assert a new run or v3 convergence."
+            ]
+          }
+        ]
+      },
+      "disposition": "historical-bytes-preserved",
+      "note": "Original content, dates, run identity, proof and outcomes retained; revised links attest interpretation continuity only, never new execution or approval."
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-result-ja",
+      "path": "docs/evidence/semantic-migration-grok-2026-09-10-v2/result-ja.md",
+      "seal": {
+        "seal_id": "8cd09b82e813968c4dbf291553542faf1871656179223789ce989d84fec5b9dd",
+        "material_id": "c2d3ce9e46a04ad9ec1314eccccc1be25997aeef10c50196c840a4a9e5b4a898",
+        "provenance_id": "50b26e500a1e7b7ef43e138281d575c59044a76891b2245aeb7f6ce150c30954",
+        "content_blob_id": "0f9ccd8df2ee8b3fed119068ee19e447fa4b34ac76bef9d2b6494a28a1d47293",
+        "content_bytes": 6739,
+        "attachments": [],
+        "root": false,
+        "draft": false,
+        "cause_links": [
+          {
+            "target_seal": "42b6a5ac70ab8e40e1777ffd9bbae4a0bf2e586e6ce9b85a7184b22a3075c696",
+            "previous_revision_seal_of_target_seal": [
+              "923e28f2b7ea475c2adc17e7a39435611f379d835bc00582ea8c5de4330b99b5"
+            ],
+            "messages": [
+              "Historical bytes unchanged; current links attest continued interpretation, not original execution under the revised dependency. Historical preparation, acceptance, reasoning or paid-run result retained byte-for-byte; original v1/v2 identity, snapshot, outcome and authorization remain unchanged. This review does not assert a new run or v3 convergence."
+            ]
+          }
+        ]
+      },
+      "disposition": "historical-bytes-preserved",
+      "note": "Original content, dates, run identity, proof and outcomes retained; revised links attest interpretation continuity only, never new execution or approval."
+    },
+    {
+      "ref": "evidence/semantic-repair-result-ja",
+      "path": "docs/evidence/semantic-repair-result-2026-09-10.md",
+      "seal": {
+        "seal_id": "3c087322e47860a4aed78b570476731098256c8c399a78c508da6fbe0d4ed5a2",
+        "material_id": "7d283b0cb0acd8f24d0e59e91eb733120caeef38addea759eb9f2450ac118b56",
+        "provenance_id": "9e93b575ba94f46a8a42b152df0e5cb4e0636e51a75f1f32dc08ce080f443268",
+        "content_blob_id": "7f007b7e4dd73be4e50036790c57e1a868864e4a06bc8f4ea93f9bc8323035ba",
+        "content_bytes": 5799,
+        "attachments": [],
+        "root": false,
+        "draft": false,
+        "cause_links": [
+          {
+            "target_seal": "2fcc731be41c58609ba4fa752a4ebdea1e7e1a14ad8e700fd7e5571126675f87",
+            "previous_revision_seal_of_target_seal": [],
+            "messages": [
+              "Japanese local correction result, evidence, alternatives and limits; no new runtime availability snapshot, live call or production recovery claim."
+            ]
+          },
+          {
+            "target_seal": "97dff25c0429de303141a2bdfd3828d53bd660d67c91c7f2376367d6bef835ef",
+            "previous_revision_seal_of_target_seal": [],
+            "messages": [
+              "Japanese local correction result, evidence, alternatives and limits; no new runtime availability snapshot, live call or production recovery claim."
+            ]
+          }
+        ]
+      },
+      "disposition": "historical-bytes-preserved",
+      "note": "Original content, dates, run identity, proof and outcomes retained; revised links attest interpretation continuity only, never new execution or approval."
+    },
+    {
+      "ref": "evidence/semantic-repair-seal-impact",
+      "path": "docs/evidence/semantic-repair-seal-impact-2026-09-10.md",
+      "seal": {
+        "seal_id": "97dff25c0429de303141a2bdfd3828d53bd660d67c91c7f2376367d6bef835ef",
+        "material_id": "07de47131068810f465c87b8e707d0a8568c3fd9bf3836b36239c05477bf398d",
+        "provenance_id": "5f94b55f7c1c0155864cb06edc0794872160a68b5dc9150088bbefd8718cdf9f",
+        "content_blob_id": "5d217a7b08650b1389dd9d77be222292221ab2d46b7b6af821541ba3e792b95a",
+        "content_bytes": 17542,
+        "attachments": [],
+        "root": false,
+        "draft": false,
+        "cause_links": [
+          {
+            "target_seal": "2fcc731be41c58609ba4fa752a4ebdea1e7e1a14ad8e700fd7e5571126675f87",
+            "previous_revision_seal_of_target_seal": [],
+            "messages": [
+              "Individual impact dispositions for 69 existing refs; preserve historical content and original run interpretation."
+            ]
+          }
+        ]
+      },
+      "disposition": "historical-bytes-preserved",
+      "note": "Original content, dates, run identity, proof and outcomes retained; revised links attest interpretation continuity only, never new execution or approval."
+    },
+    {
+      "ref": "evidence/semantic-schema-root-correction",
+      "path": "docs/evidence/semantic-schema-root-correction-2026-09-10.md",
+      "seal": {
+        "seal_id": "9e725188089178b4eccc6549cdd390f6b2b9c8de1e7cb107e1b7413cec7ad788",
+        "material_id": "a42c44ddfee2897c2d7c4d7dac9f9615c199f647834caecf942135b276438231",
+        "provenance_id": "c91f37690bb9ac6669f6585b0cf131f594d58e4a68b3562e6eec2293ddaac479",
+        "content_blob_id": "a15d85f07a478514c64dbd07672e0b7c798957e009f851e658c98955c88d9582",
+        "content_bytes": 10896,
+        "attachments": [],
+        "root": false,
+        "draft": false,
+        "cause_links": [
+          {
+            "target_seal": "b5d40a29de5fb6d21ecaede5c015be1373fc4e4d98a1f7a7ae1f9302c9521c74",
+            "previous_revision_seal_of_target_seal": [],
+            "messages": [
+              "Japanese RCA result projection distinguishes source correction, escape prevention, local evidence and unverified live outcome."
+            ]
+          },
+          {
+            "target_seal": "ec6a3b42d48e244751aa11d750e3a0b553e2b5e3157148f2813871b70349c50b",
+            "previous_revision_seal_of_target_seal": [
+              "b5c741be1d1ed8aaf3489bee28173861831ebe1dc625d09a40b1aca438b57f42"
+            ],
+            "messages": [
+              "Historical bytes unchanged; current links attest continued interpretation, not original execution under the revised dependency. Historical preparation, acceptance, reasoning or paid-run result retained byte-for-byte; original v1/v2 identity, snapshot, outcome and authorization remain unchanged. This review does not assert a new run or v3 convergence."
+            ]
+          }
+        ]
+      },
+      "disposition": "historical-bytes-preserved",
+      "note": "Original content, dates, run identity, proof and outcomes retained; revised links attest interpretation continuity only, never new execution or approval."
+    },
+    {
+      "ref": "implementation/semantic-probe-fixture",
+      "path": "backend/src/scripts/semantic-migration-probe-fixture.ts",
+      "seal": {
+        "seal_id": "16ceb51330f39d6f39eaeee2d49f26a12113e5c523087c31c6a675fc7915ae21",
+        "material_id": "f49bd28f2564b14f51b735f22ed2ebd2826812bf6c0d39a6844065c9bd86ce2b",
+        "provenance_id": "846d9570216d2d6643b7fdd50d1b928639a029d55b146c7157484d66016e1cc1",
+        "content_blob_id": "975afbad661accbe8c1de9fb61284f5f079cc5567729073e40c828097997d67d",
+        "content_bytes": 4593,
+        "attachments": [],
+        "root": false,
+        "draft": false,
+        "cause_links": [
+          {
+            "target_seal": "1fb376cd7d501a49a6341b57b5728b284ad9135a3be150378c4e83aaaa72c3a2",
+            "previous_revision_seal_of_target_seal": [],
+            "messages": [
+              "Reviewed current compatibility. 合成キャラ本文は維持し、明示run/promptを渡せるようにする。既定v1は保持。"
+            ]
+          },
+          {
+            "target_seal": "5263946566f9ca41596d338a36bcf0915c02848b8556cf175fb3a4139a894785",
+            "previous_revision_seal_of_target_seal": [
+              "bfaed6488226b313938717644c6510bd1ad9a82a241aa0d2371fdfe919212a94"
+            ],
+            "messages": [
+              "Reviewed current compatibility. Synthetic source and v1 default/v2 explicit descriptor unchanged; fixture tests pass."
+            ]
+          }
+        ]
+      },
+      "disposition": "unchanged-verified-source",
+      "note": "Source unchanged; current full tests passed. Dependency revision adds experiment identity only, not contract semantics."
+    },
+    {
+      "ref": "implementation/semantic-probe-run-v2",
+      "path": "backend/src/scripts/semantic-migration-probe-run.ts",
+      "seal": {
+        "seal_id": "1fb376cd7d501a49a6341b57b5728b284ad9135a3be150378c4e83aaaa72c3a2",
+        "material_id": "9fbfc0883f3789af8a2ee0d37a105e55334062a8415f3885dfa237916e6bc241",
+        "provenance_id": "6605f87de3f7dec4099b80d12188e74ad2f9ac66239693bc93de0d298074839a",
+        "content_blob_id": "c9c28219c75c133ffc3bde0e8b6bda0e5ea9fefd47d5342534089d193995d62b",
+        "content_bytes": 370,
+        "attachments": [],
+        "root": false,
+        "draft": false,
+        "cause_links": [
+          {
+            "target_seal": "b301ecf262923c70fc34d616718e535e156d05318b9c873df204f39a4aa8ce1f",
+            "previous_revision_seal_of_target_seal": [],
+            "messages": [
+              "Pure fixed run/prompt identity permits DB isolation before repository runtime imports."
+            ]
+          }
+        ]
+      },
+      "disposition": "changed-run-connection",
+      "note": "Append V3 identity; V2 descriptor remains byte-equivalent as data."
+    },
+    {
+      "ref": "implementation/semantic-probe-runner",
+      "path": "backend/src/scripts/replay-semantic-migration.ts",
+      "seal": {
+        "seal_id": "bff7a1c6733ae73b03da1ddd8d544afae70b3364e61ca6534624c6b24d5748de",
+        "material_id": "9f9ee13ce30e32584fd78f8b101b2c602ef28198fb474d041f4003d968afbfa8",
+        "provenance_id": "390c85cd6175407467b9ddf1592f02416fef28dfffd5aa6ca5fc1fdc459266b9",
+        "content_blob_id": "47ddd5642ec82d72abef584997aab6bb173bed62c0b3a8736510721596991ae4",
+        "content_bytes": 7869,
+        "attachments": [],
+        "root": false,
+        "draft": false,
+        "cause_links": [
+          {
+            "target_seal": "16ceb51330f39d6f39eaeee2d49f26a12113e5c523087c31c6a675fc7915ae21",
+            "previous_revision_seal_of_target_seal": [
+              "77aa90c74aacc2e8257fb5f89d094a006e2dd467fa35b5c68cf44f237d374af8"
+            ],
+            "messages": [
+              "Reviewed current compatibility. Fixed consumed v2 runner remains v2; source proof drift prevents silent reuse; no new live run executed."
+            ]
+          },
+          {
+            "target_seal": "1fb376cd7d501a49a6341b57b5728b284ad9135a3be150378c4e83aaaa72c3a2",
+            "previous_revision_seal_of_target_seal": [],
+            "messages": [
+              "Reviewed current compatibility. 新規v2識別子をoutput、attempt、proofへ一貫適用。旧証跡、予算、隔離、排他、完全一致検査を保持。"
+            ]
+          },
+          {
+            "target_seal": "6ca998118dfbaf564e7f5f79c565561da45da449471ebf70b584e7f2eba10e03",
+            "previous_revision_seal_of_target_seal": [
+              "8b874def72ec814e028bd0529f9053b7158d9f51de464f2b9454ccfafd386273"
+            ],
+            "messages": [
+              "Reviewed current compatibility. Fixed consumed v2 runner remains v2; source proof drift prevents silent reuse; no new live run executed."
+            ]
+          },
+          {
+            "target_seal": "75d4461c6fbfe31691db428772aba7ac9acf2b768367ef452d68c8c7c513bce6",
+            "previous_revision_seal_of_target_seal": [
+              "a72b79da27172a9381c1c9245194194373ec3b7a7f12f4a5ca513e0249d25d73"
+            ],
+            "messages": [
+              "Reviewed current compatibility. Fixed consumed v2 runner remains v2; source proof drift prevents silent reuse; no new live run executed."
+            ]
+          },
+          {
+            "target_seal": "a7bfb444bb579605220520a7af2cbd5043eb5889186e757706452aae76f8046e",
+            "previous_revision_seal_of_target_seal": [
+              "3a696e3f59b72ae991eee6d214ebcac839737214a6e826b5d44be1f29821fb08"
+            ],
+            "messages": [
+              "Reviewed current compatibility. Fixed consumed v2 runner remains v2; source proof drift prevents silent reuse; no new live run executed."
+            ]
+          }
+        ]
+      },
+      "disposition": "changed-run-connection",
+      "note": "Parameterize run/output; direct original entry retains V2; new V3 entry is explicit. Old proof is not executable against changed full snapshot."
+    },
+    {
+      "ref": "reasoning/semantic-migration-closeout",
+      "path": "docs/evidence/semantic-migration-closeout-2026-09-10.think",
+      "seal": {
+        "seal_id": "5fc9a2fbad51a36c6dd0f208fe719f5f3f6fc0b5aed2c861400a8549618e3037",
+        "material_id": "1f79e7ce353fbceade73962f06e0fcad52af8f2280bd4abc4587ed2166c64706",
+        "provenance_id": "1db777707ef6449828236956e1a9ee610e56b54c8476681befeac91019e69f23",
+        "content_blob_id": "405d3307cc3875b5becd1fc08d894b63272440176b6b08d655f82689bf9047d5",
+        "content_bytes": 2215,
+        "attachments": [],
+        "root": false,
+        "draft": false,
+        "cause_links": [
+          {
+            "target_seal": "3c087322e47860a4aed78b570476731098256c8c399a78c508da6fbe0d4ed5a2",
+            "previous_revision_seal_of_target_seal": [],
+            "messages": [
+              "Owner-authorized WIP preservation; real provider convergence remains unverified"
+            ]
+          }
+        ]
+      },
+      "disposition": "historical-bytes-preserved",
+      "note": "Original content, dates, run identity, proof and outcomes retained; revised links attest interpretation continuity only, never new execution or approval."
+    },
+    {
+      "ref": "reasoning/semantic-probe-readiness",
+      "path": "docs/evidence/semantic-probe-readiness-2026-09-10.think",
+      "seal": {
+        "seal_id": "744289655916f5c972c0cdadacb3ce8d905fd22024c4c42c90642b9003a89601",
+        "material_id": "d7f02af9070fadeb36dc7c528022fbd32962f78067dfce368de1af7829c6d992",
+        "provenance_id": "031f3e531430c392ed2f22942bb3364b0fc114a0af3c28706f2fe3809676704c",
+        "content_blob_id": "82da4d3125e84f2193352e0373909bfb8e01a9206031e6e5e86ccd7874289c76",
+        "content_bytes": 2576,
+        "attachments": [],
+        "root": false,
+        "draft": false,
+        "cause_links": [
+          {
+            "target_seal": "2f9bd4ba6078b415ec1dcfd7dbc9344d255c50d8b24835547b3d2e902d9afb53",
+            "previous_revision_seal_of_target_seal": [
+              "2913dd8e289d93ea744cbfd59d815c7ebe04f22b64733de34b0a0fabdf0a1a4e"
+            ],
+            "messages": [
+              "Historical bytes unchanged; current links attest continued interpretation, not original execution under the revised dependency. Historical preparation, acceptance, reasoning or paid-run result retained byte-for-byte; original v1/v2 identity, snapshot, outcome and authorization remain unchanged. This review does not assert a new run or v3 convergence."
+            ]
+          },
+          {
+            "target_seal": "6e54d1068e17e776f7538c4d5b42c7f683743c4aebf2a453d4ce266145efff30",
+            "previous_revision_seal_of_target_seal": [
+              "646187c5c7ed8fbdf3e82781ab48d3dd7de379d66956f3e965f81c5230572640"
+            ],
+            "messages": [
+              "Historical bytes unchanged; current links attest continued interpretation, not original execution under the revised dependency. Historical preparation, acceptance, reasoning or paid-run result retained byte-for-byte; original v1/v2 identity, snapshot, outcome and authorization remain unchanged. This review does not assert a new run or v3 convergence."
+            ]
+          },
+          {
+            "target_seal": "97dd4fe6db0f34aeeda1303098ec07cc04c65aea08507eb78d5ce422f4af0809",
+            "previous_revision_seal_of_target_seal": [
+              "711bd58dc8031702e7329c864e94043e79ddee4c998e3cc8d294d09e2a1faa53"
+            ],
+            "messages": [
+              "Historical bytes unchanged; current links attest continued interpretation, not original execution under the revised dependency. Historical preparation, acceptance, reasoning or paid-run result retained byte-for-byte; original v1/v2 identity, snapshot, outcome and authorization remain unchanged. This review does not assert a new run or v3 convergence."
+            ]
+          }
+        ]
+      },
+      "disposition": "historical-bytes-preserved",
+      "note": "Original content, dates, run identity, proof and outcomes retained; revised links attest interpretation continuity only, never new execution or approval."
+    },
+    {
+      "ref": "reasoning/semantic-probe-result-rca",
+      "path": "docs/evidence/semantic-migration-grok-2026-09-10-v1/result-rca.think",
+      "seal": {
+        "seal_id": "f408281bfbc4bcd78fe6b6b129231b2079485faf924aca11c197d935882cbc4f",
+        "material_id": "0e61a26e3cf62681c532630a60c001be16f319f35489f27e331b21152ebcaa5e",
+        "provenance_id": "e8c28a8986844f56c98f1050986dd9599d9764687e233b30795bc235ea030bf4",
+        "content_blob_id": "d0ce0a23efa2edfbb3afdf1bf7710826e01f4ec230a0238e13a350b627ed3678",
+        "content_bytes": 3054,
+        "attachments": [],
+        "root": false,
+        "draft": false,
+        "cause_links": [
+          {
+            "target_seal": "3ca5fee850681423d1a57158761b14e6694e1e3d27d3fca55c9df62e5f15a712",
+            "previous_revision_seal_of_target_seal": [
+              "780e37896937e1637655d507ee58b06406e9944da3d1346ad3dbc878a1cbd29f"
+            ],
+            "messages": [
+              "Historical bytes unchanged; current links attest continued interpretation, not original execution under the revised dependency. Historical preparation, acceptance, reasoning or paid-run result retained byte-for-byte; original v1/v2 identity, snapshot, outcome and authorization remain unchanged. This review does not assert a new run or v3 convergence."
+            ]
+          },
+          {
+            "target_seal": "75d4461c6fbfe31691db428772aba7ac9acf2b768367ef452d68c8c7c513bce6",
+            "previous_revision_seal_of_target_seal": [
+              "a72b79da27172a9381c1c9245194194373ec3b7a7f12f4a5ca513e0249d25d73"
+            ],
+            "messages": [
+              "Historical bytes unchanged; current links attest continued interpretation, not original execution under the revised dependency. Historical preparation, acceptance, reasoning or paid-run result retained byte-for-byte; original v1/v2 identity, snapshot, outcome and authorization remain unchanged. This review does not assert a new run or v3 convergence."
+            ]
+          }
+        ]
+      },
+      "disposition": "historical-bytes-preserved",
+      "note": "Original content, dates, run identity, proof and outcomes retained; revised links attest interpretation continuity only, never new execution or approval."
+    },
+    {
+      "ref": "reasoning/semantic-probe-v2-readiness",
+      "path": "docs/evidence/semantic-probe-v2-readiness-2026-09-10.think",
+      "seal": {
+        "seal_id": "0dece17859b249114bea7ce88a4f6cee474b22ade7faee6cc3d799d70962088e",
+        "material_id": "59bff3d4302934e2dbaf376e8ea477c8ed8eb59bbe64d20c7db548f2b29a647e",
+        "provenance_id": "2c6ba317863cf64815c4be8faef12d8c28176dcc9e73eac5055fc68acf6769fe",
+        "content_blob_id": "3d68c2708946bbfb2a644b9cae9a73d0bb803e520d65bdb7b08b3b4e427ca7dd",
+        "content_bytes": 3458,
+        "attachments": [],
+        "root": false,
+        "draft": false,
+        "cause_links": [
+          {
+            "target_seal": "3163434ee552eb1094e6d92d245a28cebf2c04423e3a970107786ef4a4b842d4",
+            "previous_revision_seal_of_target_seal": [
+              "43240efd82cfaf3e9b4425fb3dbf83867569bbed2de74bbb306748c99bb92e14"
+            ],
+            "messages": [
+              "Historical bytes unchanged; current links attest continued interpretation, not original execution under the revised dependency. Historical preparation, acceptance, reasoning or paid-run result retained byte-for-byte; original v1/v2 identity, snapshot, outcome and authorization remain unchanged. This review does not assert a new run or v3 convergence."
+            ]
+          },
+          {
+            "target_seal": "b301ecf262923c70fc34d616718e535e156d05318b9c873df204f39a4aa8ce1f",
+            "previous_revision_seal_of_target_seal": [],
+            "messages": [
+              "Audited local readiness,19individual reviews, live unknowns and exact-v2 owner acceptance boundary."
+            ]
+          },
+          {
+            "target_seal": "d7e4c57afff74f7d8a15aad2df5676fda6c349b2313f24900716b3cc0af7e2b3",
+            "previous_revision_seal_of_target_seal": [
+              "9d2f897e30136860978add8fed1d6e46a63b99d35571aee58dca7ed562793af5"
+            ],
+            "messages": [
+              "Historical bytes unchanged; current links attest continued interpretation, not original execution under the revised dependency. Historical preparation, acceptance, reasoning or paid-run result retained byte-for-byte; original v1/v2 identity, snapshot, outcome and authorization remain unchanged. This review does not assert a new run or v3 convergence."
+            ]
+          }
+        ]
+      },
+      "disposition": "historical-bytes-preserved",
+      "note": "Original content, dates, run identity, proof and outcomes retained; revised links attest interpretation continuity only, never new execution or approval."
+    },
+    {
+      "ref": "reasoning/semantic-probe-v2-result-rca",
+      "path": "docs/evidence/semantic-migration-grok-2026-09-10-v2/result-rca.think",
+      "seal": {
+        "seal_id": "42b6a5ac70ab8e40e1777ffd9bbae4a0bf2e586e6ce9b85a7184b22a3075c696",
+        "material_id": "95f1279f8287cc8024a4de2a98aad3ca02628a35c0e4854d16e3d8670bc979d1",
+        "provenance_id": "7761275e694e7ac5ecfb0a0d10975fb8f7757424f4f82fbd5973738dd9479821",
+        "content_blob_id": "44ea6e8b5d8d9bf9c4e9b0d668a7768f3850fe58147f65ffbb4697a112fea75c",
+        "content_bytes": 4707,
+        "attachments": [],
+        "root": false,
+        "draft": false,
+        "cause_links": [
+          {
+            "target_seal": "1716a9677cee06e2797482562fa04df8a4f17ce36453dd9a06a6ad9993a23839",
+            "previous_revision_seal_of_target_seal": [
+              "6e381709725a95420ee976f1c40477f428942f3b9cccffed13e1e9d4cb5bab09"
+            ],
+            "messages": [
+              "Historical bytes unchanged; current links attest continued interpretation, not original execution under the revised dependency. Historical preparation, acceptance, reasoning or paid-run result retained byte-for-byte; original v1/v2 identity, snapshot, outcome and authorization remain unchanged. This review does not assert a new run or v3 convergence."
+            ]
+          },
+          {
+            "target_seal": "6ca998118dfbaf564e7f5f79c565561da45da449471ebf70b584e7f2eba10e03",
+            "previous_revision_seal_of_target_seal": [
+              "8b874def72ec814e028bd0529f9053b7158d9f51de464f2b9454ccfafd386273"
+            ],
+            "messages": [
+              "Historical bytes unchanged; current links attest continued interpretation, not original execution under the revised dependency. Historical preparation, acceptance, reasoning or paid-run result retained byte-for-byte; original v1/v2 identity, snapshot, outcome and authorization remain unchanged. This review does not assert a new run or v3 convergence."
+            ]
+          },
+          {
+            "target_seal": "cb463f8e8d960624293be1bbda29b53d8b876765cd206eba6892a95204554c1d",
+            "previous_revision_seal_of_target_seal": [
+              "ad6ccee788ff3f1ba0b0085a646cc50169198ffb96bc4eae2757d85af057a48e"
+            ],
+            "messages": [
+              "Historical bytes unchanged; current links attest continued interpretation, not original execution under the revised dependency. Historical preparation, acceptance, reasoning or paid-run result retained byte-for-byte; original v1/v2 identity, snapshot, outcome and authorization remain unchanged. This review does not assert a new run or v3 convergence."
+            ]
+          }
+        ]
+      },
+      "disposition": "historical-bytes-preserved",
+      "note": "Original content, dates, run identity, proof and outcomes retained; revised links attest interpretation continuity only, never new execution or approval."
+    },
+    {
+      "ref": "reasoning/semantic-repair-verification",
+      "path": "docs/evidence/semantic-repair-verification-2026-09-10.think",
+      "seal": {
+        "seal_id": "2fcc731be41c58609ba4fa752a4ebdea1e7e1a14ad8e700fd7e5571126675f87",
+        "material_id": "36ebe932011f774dd3d5caea7cd3aebcdf94fc6ea933f065b8a1518514e99c4f",
+        "provenance_id": "3ed469c8a431eb03b2e925795dda3dc3b9440416e99b64b1324efb296d0919ab",
+        "content_blob_id": "1b166bd1ea8fae385717d72201127ca2d3b3dcd2f63f606bc0b06fd8cb8060de",
+        "content_bytes": 3366,
+        "attachments": [],
+        "root": false,
+        "draft": false,
+        "cause_links": [
+          {
+            "target_seal": "1b678f7b212ce02186e394ddca71fe3b97fe3df465bf067db3c8ffd2da426d37",
+            "previous_revision_seal_of_target_seal": [],
+            "messages": [
+              "CLI final audit zero findings; 778 local tests/type/build/static passed, real-model convergence remains unverified."
+            ]
+          },
+          {
+            "target_seal": "9e2431869c78dad12f01307a5d7faadefc4768466886cfcb2c55b64d2754605f",
+            "previous_revision_seal_of_target_seal": [],
+            "messages": [
+              "CLI final audit zero findings; 778 local tests/type/build/static passed, real-model convergence remains unverified."
+            ]
+          },
+          {
+            "target_seal": "c2929d2b358d52c1a9d26df7552c3116d1db1672d94c78359e31a292389ea98d",
+            "previous_revision_seal_of_target_seal": [],
+            "messages": [
+              "CLI final audit zero findings; 778 local tests/type/build/static passed, real-model convergence remains unverified."
+            ]
+          }
+        ]
+      },
+      "disposition": "historical-bytes-preserved",
+      "note": "Original content, dates, run identity, proof and outcomes retained; revised links attest interpretation continuity only, never new execution or approval."
+    },
+    {
+      "ref": "reasoning/semantic-schema-local-verification",
+      "path": "docs/evidence/semantic-schema-local-verification-2026-09-10.think",
+      "seal": {
+        "seal_id": "ec6a3b42d48e244751aa11d750e3a0b553e2b5e3157148f2813871b70349c50b",
+        "material_id": "506847c5db896874c5641a3fe93562c306ff8a244eec1488bb96306eddbe18a7",
+        "provenance_id": "a90520e86d71e5bb41ad9ab875c7288cabdd4894656e3bd34555f313da079af1",
+        "content_blob_id": "7b023a601b430ac38d234b95266a098b7204739ade8235e73e0e1378d7712a30",
+        "content_bytes": 4221,
+        "attachments": [],
+        "root": false,
+        "draft": false,
+        "cause_links": [
+          {
+            "target_seal": "1b678f7b212ce02186e394ddca71fe3b97fe3df465bf067db3c8ffd2da426d37",
+            "previous_revision_seal_of_target_seal": [
+              "14386dbb68132124aff2700bdfd8e236828868b92abf98ba9e6153c0aba146b3"
+            ],
+            "messages": [
+              "Historical bytes unchanged; current links attest continued interpretation, not original execution under the revised dependency. Historical preparation, acceptance, reasoning or paid-run result retained byte-for-byte; original v1/v2 identity, snapshot, outcome and authorization remain unchanged. This review does not assert a new run or v3 convergence."
+            ]
+          },
+          {
+            "target_seal": "2dbd550e7aa6b1d653e4957998c1cb9b09cf81dccab4b1662c1a04ff9b00b255",
+            "previous_revision_seal_of_target_seal": [],
+            "messages": [
+              "CLI audited local verification and bounded impact review; real provider acceptance and semantic quality remain unknown."
+            ]
+          },
+          {
+            "target_seal": "30f01c58b4dda167ac28ac73e62ea1a1084bf3af3750f94614662f5b90966bb9",
+            "previous_revision_seal_of_target_seal": [
+              "67571970ca85e9dd09e62af32ced0197c93c49e01c7943ab816ac22233c26d4f"
+            ],
+            "messages": [
+              "Historical bytes unchanged; current links attest continued interpretation, not original execution under the revised dependency. Historical preparation, acceptance, reasoning or paid-run result retained byte-for-byte; original v1/v2 identity, snapshot, outcome and authorization remain unchanged. This review does not assert a new run or v3 convergence."
+            ]
+          },
+          {
+            "target_seal": "8120d9e117ed1cd72da4d2432d5c57a0d8ccfa2ab50a73f4bfe0ec01772a7e79",
+            "previous_revision_seal_of_target_seal": [],
+            "messages": [
+              "CLI audited local verification and bounded impact review; real provider acceptance and semantic quality remain unknown."
+            ]
+          },
+          {
+            "target_seal": "b5d40a29de5fb6d21ecaede5c015be1373fc4e4d98a1f7a7ae1f9302c9521c74",
+            "previous_revision_seal_of_target_seal": [],
+            "messages": [
+              "CLI audited local verification and bounded impact review; real provider acceptance and semantic quality remain unknown."
+            ]
+          }
+        ]
+      },
+      "disposition": "historical-bytes-preserved",
+      "note": "Original content, dates, run identity, proof and outcomes retained; revised links attest interpretation continuity only, never new execution or approval."
+    },
+    {
+      "ref": "review/semantic-probe-v1",
+      "path": "docs/evidence/semantic-migration-grok-2026-09-10-v1/owner-review-ja.md",
+      "seal": {
+        "seal_id": "8e65569b8645e359795381f1042c4fcfdcb02799ab28aadf0e7423f9c3d9e1eb",
+        "material_id": "b58359758bd426c17cefb7f021d83f305ded8c762979287c064105a63be97621",
+        "provenance_id": "107a28768ceee914168cf2bb07755299d9ae45cd5014884a7d967a3ed3f45a3a",
+        "content_blob_id": "8af66e093a28e2046001f1efe633aa4b498d79f74b39a718307ba138c08635e9",
+        "content_bytes": 8185,
+        "attachments": [],
+        "root": false,
+        "draft": false,
+        "cause_links": [
+          {
+            "target_seal": "744289655916f5c972c0cdadacb3ce8d905fd22024c4c42c90642b9003a89601",
+            "previous_revision_seal_of_target_seal": [
+              "67dad0084f604f6359def39782309999d7c785913c297bc5411f18dae1faa7f7"
+            ],
+            "messages": [
+              "Historical bytes unchanged; current links attest continued interpretation, not original execution under the revised dependency. Historical preparation, acceptance, reasoning or paid-run result retained byte-for-byte; original v1/v2 identity, snapshot, outcome and authorization remain unchanged. This review does not assert a new run or v3 convergence."
+            ]
+          }
+        ]
+      },
+      "disposition": "historical-bytes-preserved",
+      "note": "Original content, dates, run identity, proof and outcomes retained; revised links attest interpretation continuity only, never new execution or approval."
+    },
+    {
+      "ref": "review/semantic-probe-v2",
+      "path": "docs/evidence/semantic-migration-grok-2026-09-10-v2/owner-review-ja.md",
+      "seal": {
+        "seal_id": "84fadf0514964f5bd8b58c95d3620dda5f407395ad5548adb0cfdb9c0804bda4",
+        "material_id": "5b18d7c6b9a1c7c0a0226cd07d342e2f71af2b5022676ee17f47a11e5f8492ce",
+        "provenance_id": "aaea73bad6e30a900588cb5a1c653be8a75712faa491d95cc37dd7ac4602a873",
+        "content_blob_id": "29c9673c39ee5ee5353d651ea6dc171a59f6c725a182547632e35d6b76be1b4d",
+        "content_bytes": 8535,
+        "attachments": [],
+        "root": false,
+        "draft": false,
+        "cause_links": [
+          {
+            "target_seal": "0dece17859b249114bea7ce88a4f6cee474b22ade7faee6cc3d799d70962088e",
+            "previous_revision_seal_of_target_seal": [
+              "6d67fa19677d1d4a01847e9dbbae37a5852a250a80bce4bb88781f79ce49bae0"
+            ],
+            "messages": [
+              "Historical bytes unchanged; current links attest continued interpretation, not original execution under the revised dependency. Historical preparation, acceptance, reasoning or paid-run result retained byte-for-byte; original v1/v2 identity, snapshot, outcome and authorization remain unchanged. This review does not assert a new run or v3 convergence."
+            ]
+          },
+          {
+            "target_seal": "3faf94e7b65759a4b4683a20cf83e9afee3b2328edba595cfd1259e02a4552ba",
+            "previous_revision_seal_of_target_seal": [
+              "19717c12321e1ba496f2af575b5b4d865c3293c1a71b350c9dfb7c481839c963"
+            ],
+            "messages": [
+              "Historical bytes unchanged; current links attest continued interpretation, not original execution under the revised dependency. Historical preparation, acceptance, reasoning or paid-run result retained byte-for-byte; original v1/v2 identity, snapshot, outcome and authorization remain unchanged. This review does not assert a new run or v3 convergence."
+            ]
+          }
+        ]
+      },
+      "disposition": "historical-bytes-preserved",
+      "note": "Original content, dates, run identity, proof and outcomes retained; revised links attest interpretation continuity only, never new execution or approval."
+    },
+    {
+      "ref": "verification/character-migration-diagnostics",
+      "path": "backend/src/services/character-migration-diagnostics.test.ts",
+      "seal": {
+        "seal_id": "c2929d2b358d52c1a9d26df7552c3116d1db1672d94c78359e31a292389ea98d",
+        "material_id": "ee742d0427c916a6f82924d5e52d803958e512d00f51ca89b543b7499fbfe49e",
+        "provenance_id": "f63fa1e8fd4b4cc441a5e7b1343e92dd609893db69bac60b41799c1768407d6e",
+        "content_blob_id": "6e63f0b58ff2a2df83e5b87f76e537f840e4d4ad17bb76261b9b1091803c54c9",
+        "content_bytes": 12229,
+        "attachments": [],
+        "root": false,
+        "draft": false,
+        "cause_links": [
+          {
+            "target_seal": "3faf94e7b65759a4b4683a20cf83e9afee3b2328edba595cfd1259e02a4552ba",
+            "previous_revision_seal_of_target_seal": [],
+            "messages": [
+              "Eight read-only saved-response and strict mixed-migration tests passed. Historical inputs are regression data, not a new provider execution."
+            ]
+          },
+          {
+            "target_seal": "50c946a72d12778c5560d13ffc868a64b05d40a0d5bfbce13eb7f189b893392b",
+            "previous_revision_seal_of_target_seal": [],
+            "messages": [
+              "Eight read-only saved-response and strict mixed-migration tests passed. Historical inputs are regression data, not a new provider execution."
+            ]
+          },
+          {
+            "target_seal": "573d25784c373b80b1d24970dcfd42492da3124e36e1c83b6e6db2bdf29543ed",
+            "previous_revision_seal_of_target_seal": [],
+            "messages": [
+              "Eight read-only saved-response and strict mixed-migration tests passed. Historical inputs are regression data, not a new provider execution."
+            ]
+          },
+          {
+            "target_seal": "9ca982a4c66effda9dfc574010687be84912aca932e13870aa5236a0117af631",
+            "previous_revision_seal_of_target_seal": [],
+            "messages": [
+              "Eight read-only saved-response and strict mixed-migration tests passed. Historical inputs are regression data, not a new provider execution."
+            ]
+          },
+          {
+            "target_seal": "cb463f8e8d960624293be1bbda29b53d8b876765cd206eba6892a95204554c1d",
+            "previous_revision_seal_of_target_seal": [],
+            "messages": [
+              "Eight read-only saved-response and strict mixed-migration tests passed. Historical inputs are regression data, not a new provider execution."
+            ]
+          },
+          {
+            "target_seal": "d73fd67d8b3904efcedf39d1e80151cd02702c91af0d109da51f5e20692c62ff",
+            "previous_revision_seal_of_target_seal": [],
+            "messages": [
+              "Eight read-only saved-response and strict mixed-migration tests passed. Historical inputs are regression data, not a new provider execution."
+            ]
+          }
+        ]
+      },
+      "disposition": "unchanged-verified-source",
+      "note": "Source unchanged; current full tests passed. Dependency revision adds experiment identity only, not contract semantics."
+    },
+    {
+      "ref": "verification/character-migration-response-schema",
+      "path": "backend/src/llm/character-migration-response-schema.test.ts",
+      "seal": {
+        "seal_id": "30f01c58b4dda167ac28ac73e62ea1a1084bf3af3750f94614662f5b90966bb9",
+        "material_id": "99da8d86fc6bc7f298cda487bf455d0f76a495c665dde5f0591b37976987e95e",
+        "provenance_id": "7960a710615c3b9bc5fe4f386fa00b81f0e764ba22af07dd445c65e8951d319b",
+        "content_blob_id": "aca09081c222aece6146cb8093924d98a7da06bd1b844f4d93353760c0a4dc3f",
+        "content_bytes": 2879,
+        "attachments": [],
+        "root": false,
+        "draft": false,
+        "cause_links": [
+          {
+            "target_seal": "1a04b34d372ce3f18447a0acb7c22e93bcd7097561ea587fbcff1b56a674143a",
+            "previous_revision_seal_of_target_seal": [],
+            "messages": [
+              "Compare the retained rejected v1 grammar with the locally verified equivalent v2 projection; historical request remains v1."
+            ]
+          },
+          {
+            "target_seal": "860bc00485a9737fcfafd96710dc0d8371f4ade950305fd802ccc48de846c91a",
+            "previous_revision_seal_of_target_seal": [
+              "bacb0a32669d527edcc0db2ad031913c65aa29cbc9c8f33fb629ddfe88c154e3"
+            ],
+            "messages": [
+              "Reviewed current compatibility. Historical v1 circular schema and v2 corrected grammar tests unchanged and passed."
+            ]
+          }
+        ]
+      },
+      "disposition": "unchanged-verified-source",
+      "note": "Source unchanged; current full tests passed. Dependency revision adds experiment identity only, not contract semantics."
+    },
+    {
+      "ref": "verification/semantic-probe-fixture",
+      "path": "backend/src/scripts/semantic-migration-probe-fixture.test.ts",
+      "seal": {
+        "seal_id": "97dd4fe6db0f34aeeda1303098ec07cc04c65aea08507eb78d5ce422f4af0809",
+        "material_id": "e9871cda2263e437587349728f6dd4da709f93a3eee990bcb9d4b34a58f7f31a",
+        "provenance_id": "12c216e83db9381de351310d7a97c292da50d6c2238d24021499585efbc365df",
+        "content_blob_id": "57fce7dbe40c1f969f7f6ccba23d8fd6e125ae812a2dbeb75cae1e6bb69f9338",
+        "content_bytes": 827,
+        "attachments": [],
+        "root": false,
+        "draft": false,
+        "cause_links": [
+          {
+            "target_seal": "16ceb51330f39d6f39eaeee2d49f26a12113e5c523087c31c6a675fc7915ae21",
+            "previous_revision_seal_of_target_seal": [
+              "77aa90c74aacc2e8257fb5f89d094a006e2dd467fa35b5c68cf44f237d374af8"
+            ],
+            "messages": [
+              "Reviewed current compatibility. Fixture generation/source/persistence boundary tests unchanged and passed."
+            ]
+          }
+        ]
+      },
+      "disposition": "unchanged-verified-source",
+      "note": "Source unchanged; current full tests passed. Dependency revision adds experiment identity only, not contract semantics."
+    },
+    {
+      "ref": "verification/semantic-probe-run-v2",
+      "path": "backend/src/scripts/semantic-migration-probe-run.test.ts",
+      "seal": {
+        "seal_id": "3163434ee552eb1094e6d92d245a28cebf2c04423e3a970107786ef4a4b842d4",
+        "material_id": "ff3519857b79e019ec1cf282d0d07edc14545abed6f893f3dce4737a4db41198",
+        "provenance_id": "af37ba70c386f14bbb761140c6591acdd49991d1a53f1fd6807591ef4c0f27f8",
+        "content_blob_id": "1b59b0ede3575c6350f841a1d22aaa16ac80867368e9cf1f6432579705bed007",
+        "content_bytes": 2533,
+        "attachments": [],
+        "root": false,
+        "draft": false,
+        "cause_links": [
+          {
+            "target_seal": "16ceb51330f39d6f39eaeee2d49f26a12113e5c523087c31c6a675fc7915ae21",
+            "previous_revision_seal_of_target_seal": [
+              "77aa90c74aacc2e8257fb5f89d094a006e2dd467fa35b5c68cf44f237d374af8"
+            ],
+            "messages": [
+              "Reviewed current compatibility. Fixed v2 identity test unchanged and passed; no v3 run descriptor introduced."
+            ]
+          },
+          {
+            "target_seal": "1fb376cd7d501a49a6341b57b5728b284ad9135a3be150378c4e83aaaa72c3a2",
+            "previous_revision_seal_of_target_seal": [],
+            "messages": [
+              "Isolated local test binds v2 identity and corrected prompt, validates first strict request, and preserves synthetic source scope."
+            ]
+          },
+          {
+            "target_seal": "bff7a1c6733ae73b03da1ddd8d544afae70b3364e61ca6534624c6b24d5748de",
+            "previous_revision_seal_of_target_seal": [
+              "c9272a1a2aa37d8e1d11a534554e2bc775ab1ffb8a09bdfe69b3a4fd28c3a0f3"
+            ],
+            "messages": [
+              "Reviewed current compatibility. Fixed v2 identity test unchanged and passed; no v3 run descriptor introduced."
+            ]
+          }
+        ]
+      },
+      "disposition": "changed-run-connection",
+      "note": "Retain V2 fixture test and add one independent V3 identity test; all779 tests passed."
+    }
+  ]
+}

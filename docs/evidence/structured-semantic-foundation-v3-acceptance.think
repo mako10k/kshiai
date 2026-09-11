@@ -1,0 +1,12 @@
+domain FoundationV3Acceptance:
+  description "Record the owner acceptance of unchanged foundation revision 3."
+evidence OWNER_ACCEPTANCE:
+  "After independent review completed with no blocking findings, owner said アクセプト for foundation requirement revision 3."
+evidence SNAPSHOT:
+  "Readback SHA256 b5693f6d47e975ea1cb78adaa686185630db5ffc6d52c74f3481ac77511c99da matches the presented and independently reviewed English candidate."
+evidence REVIEW:
+  "Japanese independent review report is completed and recommends ACCEPT; snapshot SHA256 is 8ebda1183d5879622741fa7c9ae564f65f506584a7eefd339447451ccd471c28."
+premise BOUNDARY:
+  "Step4 ACCEPT establishes only exact requirement authority. Candidate bytes and prior records remain unchanged; implementation and evaluation have separate authority."
+decision ACCEPTANCE based_on OWNER_ACCEPTANCE, SNAPSHOT, REVIEW, BOUNDARY:
+  "Record foundation requirement revision 3 as Accepted, replacing v2 as the foundation requirement baseline. Preserve old artifacts and existing ADR execution ceilings. Record numerical policy and actual provider success as unresolved, and pending character v4 as still referencing v2."

@@ -10,6 +10,10 @@ import { assetContentDigest } from "../repositories/asset-generations.js";
 export const CHARACTER_MIGRATION_PROMPT_V1 = "character-semantic-migration-prompt-v1";
 export const CHARACTER_MIGRATION_PROMPT_V2 = "character-semantic-migration-prompt-v2";
 export const CHARACTER_MIGRATION_PROMPT_V3 = "character-semantic-migration-prompt-v3";
+export const CHARACTER_MIGRATION_PROMPT_V4 = "character-semantic-migration-prompt-v4";
+export function usesCharacterMigrationV3Diagnostics(promptIdentity: string): boolean {
+  return [CHARACTER_MIGRATION_PROMPT_V3, CHARACTER_MIGRATION_PROMPT_V4].includes(promptIdentity);
+}
 export const SEMANTIC_COLLECTIONS = [
   "definition.actionNorms", "definition.consciousGuidance",
   "definition.mechanicalConflictFallbacks",
@@ -90,7 +94,7 @@ export function createCharacterMigrationContext(
   attempt: CharacterSemanticMigrationAttemptV1,
 ): CharacterMigrationContext {
   if (![CHARACTER_MIGRATION_PROMPT_V1, CHARACTER_MIGRATION_PROMPT_V2,
-    CHARACTER_MIGRATION_PROMPT_V3].includes(attempt.promptIdentity)) {
+    CHARACTER_MIGRATION_PROMPT_V3, CHARACTER_MIGRATION_PROMPT_V4].includes(attempt.promptIdentity)) {
     throw new Error("CHARACTER_MIGRATION_PROMPT_IDENTITY_UNSUPPORTED");
   }
   const source = CharacterGenerationEnvelopeV2Schema.parse(attempt.sourceContent);

@@ -1,0 +1,63 @@
+{
+  "phase": "receipt",
+  "ordinal": 4,
+  "receipt": {
+    "outcome": "succeeded",
+    "responseDigest": "009b25b6dd023f58746cd85502e73b8870e890f2593e329470f434c54b9c58c6",
+    "response": {
+      "schema": "character_semantic_consistency_review_v1",
+      "verdict": "repair_required",
+      "findings": [
+        {
+          "code": "missing_fallbackActionRef_migration",
+          "targetPaths": [
+            "definition.mechanicalConflictFallbacks.0.orderedActionRefs"
+          ],
+          "sourcePaths": [
+            "definition.actionNorms.0.response.fallbackActionRef"
+          ],
+          "explanation": "V2 fallbackActionRef 'basic-action' was not migrated into the synthesized mechanicalConflictFallbacks entry; the entry contains null instead of the required array.",
+          "semanticDependants": [
+            "definition.mechanicalConflictFallbacks.0"
+          ]
+        },
+        {
+          "code": "lost_actionNorms_priority",
+          "targetPaths": [
+            "definition.actionNorms.0.priority"
+          ],
+          "sourcePaths": [
+            "definition.actionNorms.0.priority",
+            "definition.actionNorms.1.priority"
+          ],
+          "explanation": "V2 actionNorms priorities (60 and 40) were not preserved in the V3 actionNorms entry; the synthesized entry has priority 40 but the original 60-priority norm was retired without transferring its priority.",
+          "semanticDependants": [
+            "definition.actionNorms.0"
+          ]
+        },
+        {
+          "code": "missing_selfAwareness_in_actionNorms",
+          "targetPaths": [
+            "definition.actionNorms.0"
+          ],
+          "sourcePaths": [
+            "definition.actionNorms.0.selfAwareness",
+            "definition.actionNorms.1.selfAwareness"
+          ],
+          "explanation": "V2 selfAwareness fields were extracted to consciousGuidance but the V3 actionNorms schema requires no selfAwareness field; however the migration removed the field entirely rather than confirming its absence per V3 schema.",
+          "semanticDependants": []
+        }
+      ],
+      "summary": "Migration split V2 actionNorms correctly into consciousGuidance and actionNorms, but the fallbackActionRef value was lost (null instead of [\"basic-action\"]) and the original priority 60 was not carried into the V3 actionNorms entry.",
+      "uncertainties": []
+    },
+    "accounting": {
+      "inputTokens": 31147,
+      "outputTokens": 362,
+      "totalTokens": 31509,
+      "estimatedCostUsd": 0.039838750000000006,
+      "elapsedMs": 5084
+    },
+    "finishedAt": "2026-09-11T01:56:52.557Z"
+  }
+}

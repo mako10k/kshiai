@@ -8,3 +8,8 @@ export const SEMANTIC_MIGRATION_PROBE_RUN_V2 = Object.freeze({
   runId: "semantic-migration-grok-2026-09-10-v2",
   promptIdentity: "character-semantic-migration-prompt-v2",
 });
+
+export const SEMANTIC_MIGRATION_PROBE_RUN_V3 = Object.freeze({
+  runId: "semantic-migration-grok-2026-09-11-v3",
+  promptIdentity: "character-semantic-migration-prompt-v3",
+});

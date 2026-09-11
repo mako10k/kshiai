@@ -1,0 +1,18 @@
+domain SemanticProbeV3Readiness:
+  description "Local probe preparation evidence and bounded Seal review."
+evidence E_PROBEV3_101:
+  "Offline prepare completed for semantic-migration-grok-2026-09-11-v3, proof abfee0cf and snapshot9b9c45bc. Six before/response/receipt sequences,18events,zero network,unchanged current generation,activatedfalse. Each input carries V3 registeredReviewPaths and capabilityAvailability not_supplied_in_frozen_attempt. Request bytes140463..156320, summed reservationUSD1.17402875. Fresh source/shared runtime snapshot matches."
+evidence E_PROBEV3_102:
+  "Full test exit0:shared339,backend412,frontend20,deployment3,release5,total779. Typecheck,build,jscpd,Lizard1.23.0 pass. Targeted ADR0030 check passes. Existing frontend chunk warning remains."
+evidence E_PROBEV3_103:
+  "secdat main-domain XAI_API_KEY dry-run reports secret contribution and final required-key presence, no missing key. TLS-disabled boolean false. No live-start file. Official xAI Grok4.3 page read2026-09-11 retains USD1.25 input/2.50output per million and none reasoning support."
+evidence E_PROBEV3_104:
+  "Seal impact for run descriptor identifies53downstream refs; direct-current cause closure plus source has same54members. Runner impact50 is within this scope. Continuation alone has no downstream. Individually compared bound source bytes with current head content: only run descriptor, common runner and run test differed at comparison; continuation now has a separate reviewed append. Historical content files remain unchanged."
+premise U_PROBEV3_101:
+  "Real-model convergence, natural repair, actual usage and billing remain unknown. Local synthetic response deliberately remains unresolved to exercise six slots. Same-model review is not independent human truth. Runtime availability list was not added. No B6 or production restoration claim."
+decision C_PROBEV3_101 based_on E_PROBEV3_101, E_PROBEV3_102, E_PROBEV3_103, U_PROBEV3_101:
+  "High confidence local preparation is complete; an exact Japanese review may now be presented. This does not authorize paid execution. Historical V2 descriptor/default and saved payload/final-draft reconstruction still pass. Full source snapshot changed so old paid proof cannot be executed with this code."
+decision C_PROBEV3_102 based_on E_PROBEV3_104, E_PROBEV3_102:
+  "High confidence reviewed54ref disposition is bounded: three changed run connections, one appended continuation, remaining code/tests and historical sources unchanged. Historical reseal means interpretation continuity with explicit original identity/outcome preservation, not rerunning, extending approval or replacing old execution snapshots."
+decision A_PROBEV3_101 based_on C_PROBEV3_101, C_PROBEV3_102, E_PROBEV3_104:
+  "Verification-only action: record individual dispositions, update reviewed current links upstream-first, verify prospective heads and readback, add explicit V3 preparation/entry/proof/result/review Seals, and scan stale plus fsck. Keep original history bytes. Present complete Japanese revision1 with tradeoffs and request exact one-run approval. No API, production, B6, commit or push."

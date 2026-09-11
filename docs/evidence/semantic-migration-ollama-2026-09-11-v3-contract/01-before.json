@@ -1,0 +1,843 @@
+{
+  "phase": "before",
+  "call": {
+    "providerRequestId": "ollama-contract-smoke-request-v1",
+    "providerRoute": "http://127.0.0.1:11434/api/chat",
+    "modelIdentity": "qwen2.5:3b",
+    "kind": "initial_generation",
+    "system": "Return exactly one CharacterSemanticMigrationChangeSetV1 JSON object.\nCopy expectedOperation from the user input exactly into operations.\nReturn an empty uncertainties array. Do not add commentary.",
+    "input": {
+      "expectedOperation": {
+        "operation": "transform",
+        "targetPath": "definition.profileBackground",
+        "sourcePaths": [
+          "definition.profileBackground"
+        ],
+        "value": [
+          {
+            "id": "background-1",
+            "summary": "Enjoys tactical duels."
+          }
+        ],
+        "deferred": null,
+        "explanation": "Preserve the supplied meaning in the requested target fragment.",
+        "provenance": "source_derived",
+        "semanticDependants": []
+      }
+    },
+    "responseSchema": {
+      "definitions": {
+        "character_semantic_migration_change_set_v1_properties_operations_items_properties_targetPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240,
+          "pattern": "^[A-Za-z][A-Za-z0-9_]*(\\.[A-Za-z0-9_]+)*$"
+        },
+        "character_semantic_migration_change_set_v1_properties_operations_items_properties_value": {
+          "additionalProperties": true
+        },
+        "character_semantic_migration_change_set_v1": {
+          "type": "object",
+          "properties": {
+            "schema": {
+              "type": "string",
+              "const": "character_semantic_migration_change_set_v1"
+            },
+            "operations": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "operation": {
+                    "type": "string",
+                    "enum": [
+                      "copy",
+                      "move",
+                      "transform",
+                      "synthesize",
+                      "retire_to_capsule",
+                      "defer"
+                    ]
+                  },
+                  "targetPath": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 240,
+                    "pattern": "^[A-Za-z][A-Za-z0-9_]*(\\.[A-Za-z0-9_]+)*$"
+                  },
+                  "sourcePaths": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/definitions/character_semantic_migration_change_set_v1_properties_operations_items_properties_targetPath"
+                    },
+                    "maxItems": 64
+                  },
+                  "value": {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "boolean"
+                      },
+                      {
+                        "type": "number"
+                      },
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "$ref": "#/definitions/character_semantic_migration_change_set_v1_properties_operations_items_properties_value"
+                        }
+                      },
+                      {
+                        "type": "object",
+                        "additionalProperties": {
+                          "$ref": "#/definitions/character_semantic_migration_change_set_v1_properties_operations_items_properties_value"
+                        }
+                      }
+                    ]
+                  },
+                  "deferred": {
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "targetPath": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 240
+                          },
+                          "reason": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 320
+                          },
+                          "candidateSourcePaths": {
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 240
+                            },
+                            "maxItems": 12
+                          },
+                          "requiringCapability": {
+                            "type": "object",
+                            "properties": {
+                              "consumer": {
+                                "type": "string",
+                                "enum": [
+                                  "character-profile",
+                                  "character-profile-claim-validator",
+                                  "battle-mechanics",
+                                  "psyche-trait-profile",
+                                  "character-conscious-self",
+                                  "character-narrator-view",
+                                  "character-image-brief",
+                                  "character-observable-manifestation",
+                                  "character-action-norms",
+                                  "character-mechanical-conflict-fallback",
+                                  "character-relationship"
+                                ]
+                              },
+                              "version": {
+                                "type": "integer",
+                                "exclusiveMinimum": 0
+                              }
+                            },
+                            "required": [
+                              "consumer",
+                              "version"
+                            ],
+                            "additionalProperties": false
+                          }
+                        },
+                        "required": [
+                          "targetPath",
+                          "reason",
+                          "candidateSourcePaths",
+                          "requiringCapability"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "explanation": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 600
+                  },
+                  "provenance": {
+                    "type": "string",
+                    "enum": [
+                      "unchanged",
+                      "source_derived",
+                      "model_created",
+                      "retired",
+                      "deferred"
+                    ]
+                  },
+                  "semanticDependants": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/definitions/character_semantic_migration_change_set_v1_properties_operations_items_properties_targetPath"
+                    },
+                    "maxItems": 64
+                  }
+                },
+                "required": [
+                  "operation",
+                  "targetPath",
+                  "sourcePaths",
+                  "value",
+                  "deferred",
+                  "explanation",
+                  "provenance",
+                  "semanticDependants"
+                ],
+                "additionalProperties": false
+              },
+              "maxItems": 128
+            },
+            "uncertainties": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 400
+              },
+              "maxItems": 16
+            }
+          },
+          "required": [
+            "schema",
+            "operations",
+            "uncertainties"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "type": "object",
+      "properties": {
+        "schema": {
+          "type": "string",
+          "const": "character_semantic_migration_change_set_v1"
+        },
+        "operations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "copy",
+                  "move",
+                  "transform",
+                  "synthesize",
+                  "retire_to_capsule",
+                  "defer"
+                ]
+              },
+              "targetPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 240,
+                "pattern": "^[A-Za-z][A-Za-z0-9_]*(\\.[A-Za-z0-9_]+)*$"
+              },
+              "sourcePaths": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/character_semantic_migration_change_set_v1_properties_operations_items_properties_targetPath"
+                },
+                "maxItems": 64
+              },
+              "value": {
+                "anyOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "boolean"
+                  },
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/definitions/character_semantic_migration_change_set_v1_properties_operations_items_properties_value"
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": {
+                      "$ref": "#/definitions/character_semantic_migration_change_set_v1_properties_operations_items_properties_value"
+                    }
+                  }
+                ]
+              },
+              "deferred": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "targetPath": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 240
+                      },
+                      "reason": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 320
+                      },
+                      "candidateSourcePaths": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 240
+                        },
+                        "maxItems": 12
+                      },
+                      "requiringCapability": {
+                        "type": "object",
+                        "properties": {
+                          "consumer": {
+                            "type": "string",
+                            "enum": [
+                              "character-profile",
+                              "character-profile-claim-validator",
+                              "battle-mechanics",
+                              "psyche-trait-profile",
+                              "character-conscious-self",
+                              "character-narrator-view",
+                              "character-image-brief",
+                              "character-observable-manifestation",
+                              "character-action-norms",
+                              "character-mechanical-conflict-fallback",
+                              "character-relationship"
+                            ]
+                          },
+                          "version": {
+                            "type": "integer",
+                            "exclusiveMinimum": 0
+                          }
+                        },
+                        "required": [
+                          "consumer",
+                          "version"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "required": [
+                      "targetPath",
+                      "reason",
+                      "candidateSourcePaths",
+                      "requiringCapability"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "explanation": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 600
+              },
+              "provenance": {
+                "type": "string",
+                "enum": [
+                  "unchanged",
+                  "source_derived",
+                  "model_created",
+                  "retired",
+                  "deferred"
+                ]
+              },
+              "semanticDependants": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/character_semantic_migration_change_set_v1_properties_operations_items_properties_targetPath"
+                },
+                "maxItems": 64
+              }
+            },
+            "required": [
+              "operation",
+              "targetPath",
+              "sourcePaths",
+              "value",
+              "deferred",
+              "explanation",
+              "provenance",
+              "semanticDependants"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 128
+        },
+        "uncertainties": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 400
+          },
+          "maxItems": 16
+        }
+      },
+      "required": [
+        "schema",
+        "operations",
+        "uncertainties"
+      ],
+      "additionalProperties": false,
+      "$schema": "http://json-schema.org/draft-07/schema#"
+    }
+  },
+  "body": {
+    "model": "qwen2.5:3b",
+    "messages": [
+      {
+        "role": "system",
+        "content": "Return exactly one CharacterSemanticMigrationChangeSetV1 JSON object.\nCopy expectedOperation from the user input exactly into operations.\nReturn an empty uncertainties array. Do not add commentary."
+      },
+      {
+        "role": "user",
+        "content": "{\"expectedOperation\":{\"operation\":\"transform\",\"targetPath\":\"definition.profileBackground\",\"sourcePaths\":[\"definition.profileBackground\"],\"value\":[{\"id\":\"background-1\",\"summary\":\"Enjoys tactical duels.\"}],\"deferred\":null,\"explanation\":\"Preserve the supplied meaning in the requested target fragment.\",\"provenance\":\"source_derived\",\"semanticDependants\":[]}}"
+      }
+    ],
+    "format": {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "type": "string",
+          "const": "character_semantic_migration_change_set_v1"
+        },
+        "operations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "copy",
+                  "move",
+                  "transform",
+                  "synthesize",
+                  "retire_to_capsule",
+                  "defer"
+                ]
+              },
+              "targetPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 240,
+                "pattern": "^[A-Za-z][A-Za-z0-9_]*(\\.[A-Za-z0-9_]+)*$"
+              },
+              "sourcePaths": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/character_semantic_migration_change_set_v1_properties_operations_items_properties_targetPath"
+                },
+                "maxItems": 64
+              },
+              "value": {
+                "anyOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "boolean"
+                  },
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/definitions/character_semantic_migration_change_set_v1_properties_operations_items_properties_value"
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": {
+                      "$ref": "#/definitions/character_semantic_migration_change_set_v1_properties_operations_items_properties_value"
+                    }
+                  }
+                ]
+              },
+              "deferred": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "targetPath": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 240
+                      },
+                      "reason": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 320
+                      },
+                      "candidateSourcePaths": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 240
+                        },
+                        "maxItems": 12
+                      },
+                      "requiringCapability": {
+                        "type": "object",
+                        "properties": {
+                          "consumer": {
+                            "type": "string",
+                            "enum": [
+                              "character-profile",
+                              "character-profile-claim-validator",
+                              "battle-mechanics",
+                              "psyche-trait-profile",
+                              "character-conscious-self",
+                              "character-narrator-view",
+                              "character-image-brief",
+                              "character-observable-manifestation",
+                              "character-action-norms",
+                              "character-mechanical-conflict-fallback",
+                              "character-relationship"
+                            ]
+                          },
+                          "version": {
+                            "type": "integer",
+                            "exclusiveMinimum": 0
+                          }
+                        },
+                        "required": [
+                          "consumer",
+                          "version"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "required": [
+                      "targetPath",
+                      "reason",
+                      "candidateSourcePaths",
+                      "requiringCapability"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "explanation": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 600
+              },
+              "provenance": {
+                "type": "string",
+                "enum": [
+                  "unchanged",
+                  "source_derived",
+                  "model_created",
+                  "retired",
+                  "deferred"
+                ]
+              },
+              "semanticDependants": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/character_semantic_migration_change_set_v1_properties_operations_items_properties_targetPath"
+                },
+                "maxItems": 64
+              }
+            },
+            "required": [
+              "operation",
+              "targetPath",
+              "sourcePaths",
+              "value",
+              "deferred",
+              "explanation",
+              "provenance",
+              "semanticDependants"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 128
+        },
+        "uncertainties": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 400
+          },
+          "maxItems": 16
+        }
+      },
+      "required": [
+        "schema",
+        "operations",
+        "uncertainties"
+      ],
+      "additionalProperties": false,
+      "definitions": {
+        "character_semantic_migration_change_set_v1_properties_operations_items_properties_targetPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240,
+          "pattern": "^[A-Za-z][A-Za-z0-9_]*(\\.[A-Za-z0-9_]+)*$"
+        },
+        "character_semantic_migration_change_set_v1_properties_operations_items_properties_value": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "string"
+            },
+            {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/character_semantic_migration_change_set_v1_properties_operations_items_properties_value"
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": {
+                "$ref": "#/definitions/character_semantic_migration_change_set_v1_properties_operations_items_properties_value"
+              }
+            }
+          ]
+        },
+        "character_semantic_migration_change_set_v1": {
+          "type": "object",
+          "properties": {
+            "schema": {
+              "type": "string",
+              "const": "character_semantic_migration_change_set_v1"
+            },
+            "operations": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "operation": {
+                    "type": "string",
+                    "enum": [
+                      "copy",
+                      "move",
+                      "transform",
+                      "synthesize",
+                      "retire_to_capsule",
+                      "defer"
+                    ]
+                  },
+                  "targetPath": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 240,
+                    "pattern": "^[A-Za-z][A-Za-z0-9_]*(\\.[A-Za-z0-9_]+)*$"
+                  },
+                  "sourcePaths": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/definitions/character_semantic_migration_change_set_v1_properties_operations_items_properties_targetPath"
+                    },
+                    "maxItems": 64
+                  },
+                  "value": {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "boolean"
+                      },
+                      {
+                        "type": "number"
+                      },
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "$ref": "#/definitions/character_semantic_migration_change_set_v1_properties_operations_items_properties_value"
+                        }
+                      },
+                      {
+                        "type": "object",
+                        "additionalProperties": {
+                          "$ref": "#/definitions/character_semantic_migration_change_set_v1_properties_operations_items_properties_value"
+                        }
+                      }
+                    ]
+                  },
+                  "deferred": {
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "targetPath": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 240
+                          },
+                          "reason": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 320
+                          },
+                          "candidateSourcePaths": {
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 240
+                            },
+                            "maxItems": 12
+                          },
+                          "requiringCapability": {
+                            "type": "object",
+                            "properties": {
+                              "consumer": {
+                                "type": "string",
+                                "enum": [
+                                  "character-profile",
+                                  "character-profile-claim-validator",
+                                  "battle-mechanics",
+                                  "psyche-trait-profile",
+                                  "character-conscious-self",
+                                  "character-narrator-view",
+                                  "character-image-brief",
+                                  "character-observable-manifestation",
+                                  "character-action-norms",
+                                  "character-mechanical-conflict-fallback",
+                                  "character-relationship"
+                                ]
+                              },
+                              "version": {
+                                "type": "integer",
+                                "exclusiveMinimum": 0
+                              }
+                            },
+                            "required": [
+                              "consumer",
+                              "version"
+                            ],
+                            "additionalProperties": false
+                          }
+                        },
+                        "required": [
+                          "targetPath",
+                          "reason",
+                          "candidateSourcePaths",
+                          "requiringCapability"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "explanation": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 600
+                  },
+                  "provenance": {
+                    "type": "string",
+                    "enum": [
+                      "unchanged",
+                      "source_derived",
+                      "model_created",
+                      "retired",
+                      "deferred"
+                    ]
+                  },
+                  "semanticDependants": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/definitions/character_semantic_migration_change_set_v1_properties_operations_items_properties_targetPath"
+                    },
+                    "maxItems": 64
+                  }
+                },
+                "required": [
+                  "operation",
+                  "targetPath",
+                  "sourcePaths",
+                  "value",
+                  "deferred",
+                  "explanation",
+                  "provenance",
+                  "semanticDependants"
+                ],
+                "additionalProperties": false
+              },
+              "maxItems": 128
+            },
+            "uncertainties": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 400
+              },
+              "maxItems": 16
+            }
+          },
+          "required": [
+            "schema",
+            "operations",
+            "uncertainties"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "stream": false,
+    "think": false,
+    "keep_alive": "0",
+    "options": {
+      "temperature": 0,
+      "num_ctx": 4096,
+      "num_predict": 512
+    }
+  }
+}

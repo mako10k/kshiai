@@ -3,7 +3,17 @@ import { mkdtemp } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { it } from "node:test";
-import { SEMANTIC_MIGRATION_PROBE_RUN_V2 } from "./semantic-migration-probe-run.js";
+import { SEMANTIC_MIGRATION_PROBE_RUN_V2, SEMANTIC_MIGRATION_PROBE_RUN_V3 } from "./semantic-migration-probe-run.js";
+
+it("keeps V2 unchanged and assigns the corrected prompt an independent V3 run", () => {
+  assert.deepEqual(SEMANTIC_MIGRATION_PROBE_RUN_V2, {
+    runId: "semantic-migration-grok-2026-09-10-v2", promptIdentity: "character-semantic-migration-prompt-v2",
+  });
+  assert.deepEqual(SEMANTIC_MIGRATION_PROBE_RUN_V3, {
+    runId: "semantic-migration-grok-2026-09-11-v3", promptIdentity: "character-semantic-migration-prompt-v3",
+  });
+  assert.notEqual(SEMANTIC_MIGRATION_PROBE_RUN_V3.runId, SEMANTIC_MIGRATION_PROBE_RUN_V2.runId);
+});
 
 it("binds the new run and corrected prompt without reusing the consumed v1 identity", async () => {
   const directory = await mkdtemp(join(tmpdir(), "kshiai-probe-v2-test-"));

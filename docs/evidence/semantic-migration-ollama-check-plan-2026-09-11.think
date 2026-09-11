@@ -1,0 +1,28 @@
+domain SemanticMigrationOllamaCheck:
+  description "Use local Ollama as a low-cost semantic-migration smoke check without substituting it for xAI acceptance evidence."
+evidence E1:
+  "E-OLLAMA-001: local observation reports Ollama0.21.1 at127.0.0.1:11434 with qwen2.5:3b installed. Model metadata reports completion and tools capabilities, Q4_K_M3.1B parameters, and context length32768."
+evidence E2:
+  "E-OLLAMA-002: official Ollama native chat documentation places a JSON Schema directly in request.format, defaults to streaming, and returns message.content plus prompt_eval_count and eval_count. The xAI probe instead sends response_format.json_schema with strict true and receives choices plus usage."
+evidence E3:
+  "E-OLLAMA-003: official Ollama documentation also offers an OpenAI-compatible chat-completions endpoint but marks that compatibility endpoint experimental."
+evidence E4:
+  "E-OLLAMA-004: the existing character migration xAI provider freezes the xAI endpoint, grok-4.3 identity, bearer credential, reasoning_effort, strict response-format envelope, usage fields, price accounting, request budget and no-retry behavior. Reusing it for Ollama would violate its route and response contracts."
+evidence E5:
+  "E-OLLAMA-005: the retained first V3 xAI call used29374 prompt tokens and678 completion tokens. Later rounds reached32194 prompt tokens, so the local32768 context cannot safely represent the existing six-call maximum with a meaningful output reserve."
+premise U1:
+  "Tokenizer counts differ between Grok and qwen2.5. The retained xAI count is a warning, not an exact Ollama count. The actual Ollama response will report its own prompt_eval_count and eval_count."
+premise U2:
+  "A one-call local initial-generation check measures transport, structured-output parsing and rough proposal quality only. It does not prove bounded repair convergence, xAI behavior, production compatibility or owner acceptance."
+premise U3:
+  "The user authorized a local Ollama simple check and an adapter for observed specification differences. No xAI call, model pull, production change, activation, commit, push or deployment is authorized."
+decision C1 based_on E2, E3, E4:
+  "C-OLLAMA-001 high confidence: implement a separate native Ollama adapter behind CharacterMigrationProvider. Do not weaken or retarget the frozen xAI adapter and do not rely on the experimental OpenAI-compatibility envelope."
+decision C2 based_on E1, E5, U1, U2:
+  "C-OLLAMA-002 proportional check: run exactly one V4 initial-generation request with qwen2.5:3b, temperature0, streamfalse, thinkfalse, num_ctx32768, num_predict2048 and keep_alive0. Stop after the receipt; do not enter review or repair rounds."
+decision C3 based_on E2, E4, U2:
+  "C-OLLAMA-003 adapter boundary: translate common provider call fields into native Ollama request format and translate native response and usage into the existing provider receipt. Retain raw events and apply existing response parsing, merge and deterministic validation after the call."
+decision C4 based_on U2, U3:
+  "C-OLLAMA-004 evidence boundary: label the result local smoke only. A pass is not xAI acceptance and a fail is diagnostic evidence rather than authority to create another prompt version or paid run."
+decision A1 based_on C1, C2, C3, C4:
+  "A-OLLAMA-001: add and test the native adapter and one-call isolated checker, execute it once locally, preserve a Japanese result and Seal changed artifacts."
