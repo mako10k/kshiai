@@ -32,7 +32,7 @@ P0、P1、P2、P3の指摘はいずれもない。これはADRのレビュー合
 6. `D9` は内部結果型と公開status文字列を分離し、完全検証後だけレビュー可能にする。
    owner acceptanceは候補とreceiptを固定し、既存のprovider-free CAS activationを保持する。
 7. `D10` は ADR-0030 のうち、全候補をLLMレビュー・再レビューする `D8`/`D9` topologyだけを
-   採用consumerについて置換し、`D2`〜`D7`、`D10`〜`D12`の意味と、現行経路の2 repair / 
+   採用consumerについて置換し、`D2`〜`D7`、`D10`〜`D12`の意味と、現行経路の2 repair /
    6 request上限を維持している。ADR-0010/0011、ADR-0027/0028の責務境界も保持される。
 8. `D11` の具体DTO、patch schema、数値、window、公開API対応、永続化変更、Adapter適合試験の
    後続設計への延期は、今回の判断を曖昧にする欠落ではなく、実装採用前の明示的な後続ゲートである。
