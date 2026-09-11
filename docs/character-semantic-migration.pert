@@ -1,8 +1,8 @@
-# Delivery plan revision 1: accepted two-lane recovery and semantic migration gates.
+# Delivery plan revision 2: insert accepted ADR-0031 D11 design review before B6.
 project csm001:
-  version 6
+  version 7
   title "Restore character authoring and migrate frozen ready V2 characters to strict V3"
-  description "Execute accepted successor plan revision 1. Lane A closes the independent response-schema defect. Lane B rejects the permanent V2 reader and proceeds through proposed ADR, local implementation, deployment, dry-run, separately approved provider generation, owner candidate acceptance, per-asset append/CAS, readback and explicit schema-3 cutover. No task inherits authority for a later effect."
+  description "Execute the accepted two-lane recovery plan as refined by accepted ADR-0031. Before B6 or any focused-kernel implementation, D11 fixes and reviews typed contracts, numeric safety policy, public Q&A mapping, fenced persistence and adapter conformance. Deployment, provider generation, owner candidate acceptance, append/CAS and cutover retain separate gates."
   as_of 2026-09-10
   duration_unit point
   velocity 1p/1d
@@ -44,6 +44,9 @@ milestone cm204:
 
 milestone cm205:
   title "B5 bounded semantic generation review and repair locally verified"
+
+milestone cm215:
+  title "D11 focused authoring kernel implementation design reviewed"
 
 milestone cm206:
   title "B6 append replay drift and rollback controls locally verified"
@@ -155,7 +158,18 @@ task cb205 cm204 -> cm205:
   requires:
     cr001 1
 
-task cb206 cm205 -> cm206:
+task cb215 cm205 -> cm215:
+  title "D11 specify and review the focused authoring kernel implementation design"
+  status done
+  description "Specify exact internal DTO and adapter contracts, bounded proposal schemas, execution-policy numbers, detector and observation-window rules, public retry and owner-Q&A mapping, persistence and execution-fence changes, and three-family conformance. Reconcile completed B3-B5 as current-state inputs rather than new-route conformance. Review and Seal the exact design before implementation; no provider call, runtime adoption, deployment or production effect."
+  duration 2p
+  source "docs/structured-semantic-authoring-kernel-implementation-design-v1.md"
+  owner "codex and user"
+  requires:
+    cr001 1
+    cr002 1
+
+task cb206 cm215 -> cm206:
   title "B6 implement append CAS replay drift and rollback controls"
   description "Implement exact candidate acceptance binding, per-asset atomic append and pointer CAS, completed replay idempotency, semantic regeneration identity, drift stops, old-battle reading and receipted rollback fixtures."
   duration 2p

@@ -1,0 +1,42 @@
+domain StructuredSemanticAuthoringKernelDesignV1Acceptance:
+  description "Record exact owner acceptance of D11 implementation-design revision two without authorizing implementation."
+problem P1:
+  |
+    Determine the lifecycle state and authority boundary after the owner replied
+    ACCEPT to the independently re-reviewed D11 design revision two.
+evidence E_DESIGN:
+  |
+    The reviewed design is Seal
+    c4f8cb366d788d49a5769a7ec3cf2e31d97704a0c9eff17a4e23862330319394.
+    It is implementation-design candidate v1 revision two for PERT task cb215.
+evidence E_REVIEW:
+  |
+    Review Seal d7144b116dec2b708cd8252ae4aea1d1078f3248123e86cd0c87734045aeee89
+    reports PASS with no P0, P1, P2 or P3 findings and recommends ACCEPT of
+    the exact design Seal.
+evidence OWNER_ACCEPTANCE:
+  |
+    On 2026-09-11, immediately after the re-review result was presented, the
+    product owner replied ACCEPT.
+premise ACCEPTED_POINTS:
+  |
+    The accepted design includes its proposed policy defaults of eight provider
+    calls and 500000 micro-USD per attempt, additive projection of owner-answer
+    need onto the legacy failed status, recovery through a new source-reconstructed
+    attempt, and the specified no-progress and cycle thresholds.
+premise BOUNDARY:
+  |
+    Acceptance establishes the exact D11 implementation design and completes its
+    design gate only. It does not authorize implementation, provider calls,
+    evaluation, deployment, production migration, candidate acceptance, pointer
+    or policy activation, rollback, release or successor-task start.
+premise DOWNSTREAM_OBLIGATIONS:
+  |
+    Exact DTO and focused-patch elaboration, durable process-loss takeover, the
+    fifteen-case one-to-one mapping, public owner-Q&A route mapping and runtime
+    evidence remain required at the downstream gates identified by the review.
+decision ACCEPTANCE based_on P1, E_DESIGN, E_REVIEW, OWNER_ACCEPTANCE, ACCEPTED_POINTS, BOUNDARY, DOWNSTREAM_OBLIGATIONS:
+  |
+    Record exact D11 implementation-design revision two as Accepted. Complete
+    PERT task cb215 while leaving cb206 and every later implementation or runtime
+    task unstarted and separately authorized.
