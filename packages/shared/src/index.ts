@@ -56,3 +56,4 @@ export * from "./character-semantic-change-set.js";
 export * from "./character-definition-check.js";
 export * from "./character-manifestation.js";
 export * from "./provider-route.js";
+export * from "./semantic-authoring.js";

@@ -1,6 +1,6 @@
-# Delivery plan revision 2: insert accepted ADR-0031 D11 design review before B6.
+# Delivery plan revision 3: replace legacy B6-B7 with accepted kernel slices 1-5.
 project csm001:
-  version 7
+  version 8
   title "Restore character authoring and migrate frozen ready V2 characters to strict V3"
   description "Execute the accepted two-lane recovery plan as refined by accepted ADR-0031. Before B6 or any focused-kernel implementation, D11 fixes and reviews typed contracts, numeric safety policy, public Q&A mapping, fenced persistence and adapter conformance. Deployment, provider generation, owner candidate acceptance, append/CAS and cutover retain separate gates."
   as_of 2026-09-10
@@ -48,11 +48,20 @@ milestone cm205:
 milestone cm215:
   title "D11 focused authoring kernel implementation design reviewed"
 
+milestone cm216:
+  title "Kernel slice 1 contracts and pure orchestration locally verified"
+
+milestone cm217:
+  title "Kernel slice 2 durable ports locally verified"
+
+milestone cm218:
+  title "Kernel slice 3 character adapter locally verified"
+
 milestone cm206:
-  title "B6 append replay drift and rollback controls locally verified"
+  title "Kernel slice 4 public mapping and conformance locally verified"
 
 milestone cm207:
-  title "B7 integrated local release gate passed"
+  title "Kernel slice 5 integration review passed"
 
 milestone cm208:
   title "B8 dual V2 V3 read support deployed and verified"
@@ -169,17 +178,42 @@ task cb215 cm205 -> cm215:
     cr001 1
     cr002 1
 
-task cb206 cm215 -> cm206:
-  title "B6 implement append CAS replay drift and rollback controls"
-  description "Implement exact candidate acceptance binding, per-asset atomic append and pointer CAS, completed replay idempotency, semantic regeneration identity, drift stops, old-battle reading and receipted rollback fixtures."
+task cb206 cm215 -> cm216:
+  title "Kernel slice 1 implement contracts and pure orchestration"
+  status active
+  description "Implement shared typed contracts, the pure kernel state machine, transactional proposal application, cumulative accounting, bounded progress and cycle detection, and scripted ports. No database, route, provider, adapter or activation behavior."
+  duration 2p
+  owner "codex"
+  requires:
+    cr001 1
+
+task cb216 cm216 -> cm217:
+  title "Kernel slice 2 implement durable ports"
+  description "Implement schema migration, repository codecs, fenced claim, reservation and terminal writes, plus process-loss and replay tests. Preserve family-owned final payload storage and do not wire public routes."
+  duration 2p
+  owner "codex"
+  requires:
+    cr001 1
+
+task cb217 cm217 -> cm218:
+  title "Kernel slice 3 implement the V3 character adapter"
+  description "Bridge reusable V3 and preservation-capsule contracts through focused clusters and lenses, transactional staging and complete final reconciliation without whole-character provider requests."
+  duration 2p
+  owner "codex"
+  requires:
+    cr001 1
+
+task cb218 cm218 -> cm206:
+  title "Kernel slice 4 implement public mapping and conformance"
+  description "Add the compatible owner Q&A and retry DTO and command mapping and run the common black-box conformance fixtures against character plus test-only battlefield and narration adapters. Do not cut over a route."
   duration 2p
   owner "codex"
   requires:
     cr001 1
 
 task cb207 cm206 -> cm207:
-  title "B7 pass the integrated local release gate"
-  description "Trace all accepted criteria, cover nine ready fixtures including eight affected and twenty-one soft entries, exclude sixteen no-state characters, and pass full tests, typecheck, build, duplication, Lizard, ADR and Seal checks."
+  title "Kernel slice 5 pass the integration review"
+  description "Trace ADR-0031 and accepted requirements, pass full tests, typecheck, build, duplication and Lizard checks, complete targeted ADR review, and verify Seal impact, stale state and fsck. Do not wire or activate a real authoring route."
   duration 1p
   owner "codex"
   requires:
