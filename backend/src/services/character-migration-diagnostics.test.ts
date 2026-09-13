@@ -55,7 +55,16 @@ describe("semantic migration repair diagnostics", () => {
     const payload = characterMigrationProviderPayload({ context: ctx, state,
       kind: "initial_generation", findings: [], repairClosure: [] });
     const first = BeforeSchema.parse(read("call-1-before.json")).call;
-    assert.deepEqual(payload, { system: first.system, input: first.input, responseSchema: first.responseSchema });
+    assert.equal(payload.system, first.system);
+    const { targetDefinitionSchema: _liveSchema, ...liveInput } = payload.input as {
+      targetDefinitionSchema?: unknown;
+      [key: string]: unknown;
+    };
+    const { targetDefinitionSchema: _savedSchema, ...savedInput } = first.input as {
+      targetDefinitionSchema?: unknown;
+      [key: string]: unknown;
+    };
+    assert.deepEqual(liveInput, savedInput);
     for (const ordinal of [1, 3, 5]) {
       const before = BeforeSchema.parse(read(`call-${ordinal}-before.json`)).call;
       const closure = migrationRead(before.input, "repairClosure");

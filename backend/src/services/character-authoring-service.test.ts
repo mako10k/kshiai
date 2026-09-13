@@ -353,7 +353,7 @@ describe("structured character authoring claim validation", () => {
                 clauses: [{
                   kind: "always" as const,
                   operator: "is" as const,
-                  value: "true",
+                  value: "true" as const,
                 }],
               },
               response: {

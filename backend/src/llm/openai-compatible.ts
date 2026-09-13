@@ -28,6 +28,7 @@ import {
   CharacterIdentitySchema,
   CharacterDefinitionV2Schema,
   CharacterDefinitionLlmFillV2Schema,
+  characterNormClauseVocabularyPromptV2,
   applyCharacterDefinitionGapFillV2,
   characterDefinitionPreservedSnapshotV2,
   formatDefinitionSchemaIssues,
@@ -1508,6 +1509,7 @@ Use the source to structure only supported characterization into bounded fields:
 - profileBackground entries with stable IDs, kind, summary, description, selfAwareness;
 - psycheDisposition coreNeeds/tendencies and descriptive manifestations;
 - actionNorms with registered clauses, deterministic response, priority and force;
+${characterNormClauseVocabularyPromptV2()}
 - speechPolicy frequency/phasePolicy/reactTo/register/cadence/vocabulary, examples and
   counterexamples (examples are style only, never facts);
 - relationshipSeeds only when an exact logical character ID or supported generic role is
@@ -1556,7 +1558,8 @@ the owner source explicitly requests a change and the
 sourceKind is not upgrade_description. Do not add a fact merely to satisfy the
 schema. If optional enrichment cannot be repaired from the owner source, restore
 the corresponding validBaseDefinition value. Do not expose schema commentary in
-the definition.`,
+the definition.
+${characterNormClauseVocabularyPromptV2()}`,
         JSON.stringify({
           sourceKind: input.sourceKind,
           ownerSource: input.sourceText.slice(0, 8000),
@@ -1609,6 +1612,7 @@ plain Japanese or English strings, not objects. actionNorms must contain complet
 when, response, priority, force, selfAwareness, exceptions, and description fields.
 Every response must select at least one actionRef, actionKind, or tacticTag. speech needs only register and cadence.
 relationshipSeeds use role names only, never character IDs.
+${characterNormClauseVocabularyPromptV2()}
 
 Unstructured action-norm sources are persisted prose statements that must be
 translated into complete actionNorms when that gap is present. They are source
@@ -1657,7 +1661,8 @@ dynamics. ${upgrade
 Use the same fill shape: nullable keys, string descriptions, complete structured
 actionNorms, and speech as register/cadence. Correct only the
 listed issues. Do not regenerate identity, combat, capabilities, inventory, or
-loadout. null and [] are valid.`,
+loadout. null and [] are valid.
+${characterNormClauseVocabularyPromptV2()}`,
           JSON.stringify({
             sourceKind: input.sourceKind,
             ownerSource: input.sourceText.slice(0, 6000),

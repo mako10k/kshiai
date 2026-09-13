@@ -1,9 +1,9 @@
 # Delivery plan revision 3: replace legacy B6-B7 with accepted kernel slices 1-5.
 project csm001:
-  version 13
+  version 15
   title "Restore character authoring and migrate frozen ready V2 characters to strict V3"
   description "Execute the accepted two-lane recovery plan as refined by accepted ADR-0031. Before B6 or any focused-kernel implementation, D11 fixes and reviews typed contracts, numeric safety policy, public Q&A mapping, fenced persistence and adapter conformance. Deployment, provider generation, owner candidate acceptance, append/CAS and cutover retain separate gates."
-  as_of 2026-09-12
+  as_of 2026-09-13
   duration_unit point
   velocity 1p/1d
   finish cm114
@@ -26,6 +26,11 @@ milestone cm101:
 
 milestone cm102:
   title "A2 bounded live-provider verification decided and completed"
+  state reached
+
+milestone cm105:
+  title "A2 follow-up registered action-norm clause vocabulary locally verified"
+  state reached
 
 milestone cm103:
   title "A3 new-character creation deployment verified"
@@ -101,6 +106,8 @@ task ca101 cm000 -> cm101:
 
 task ca102 cm101 -> cm102:
   title "A2 decide and run one bounded live-provider authoring verification"
+  status done
+  source "docs/evidence/character-authoring-a2-live-result-2026-09-13.md"
   description "Freeze request and response-schema identity, model route, budget and no-retry rule; obtain separate approval, run only that call, and classify the response without deployment."
   duration 1p
   owner "user and codex"
@@ -108,7 +115,17 @@ task ca102 cm101 -> cm102:
     cr001 1
     cr002 1
 
-task ca103 cm102 -> cm103:
+task ca105 cm102 -> cm105:
+  title "Close A2 unregistered action-norm event-kind vocabulary locally"
+  status done
+  source "docs/evidence/character-authoring-a2-event-kind-local-verification-2026-09-13.md"
+  description "Keep schemaVersion 2. Encode registered action-norm clause values in the provider-facing grammar, separate speech reactTo from observed_event_kind, map being-addressed to utterance, and add regressions. No provider call or deployment."
+  duration 1p
+  owner "codex"
+  requires:
+    cr001 1
+
+task ca103 cm105 -> cm103:
   title "A3 decide deploy and verify new-character creation"
   description "Obtain separate deployment authority, deploy the exact correction, read back revision and health, exercise the authorized create flow, and preserve rollback readiness."
   duration 1p

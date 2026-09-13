@@ -1,0 +1,34 @@
+{
+  "runId": "character-authoring-a2-2026-09-13",
+  "executedAt": "2026-09-13T07:10:04.745Z",
+  "calls": 1,
+  "classification": "invalid_payload",
+  "httpStatus": 200,
+  "errorName": "schema_mismatch",
+  "errorDetail": "actionNorms.1.when.clauses.0.value:unregistered observed_event_kind value: direct_address",
+  "providerFailureReason": null,
+  "usage": {
+    "promptTokens": 17241,
+    "completionTokens": 2083,
+    "totalTokens": 20201,
+    "estimatedCostUsd": 0.047
+  },
+  "reservation": {
+    "reservedInputTokens": 18377,
+    "reservedOutputTokens": 4096,
+    "reservedCostUsd": 0.0613,
+    "overrun": false
+  },
+  "freeze": {
+    "schemaDigestSha256": "1e41abfa1e19b26596258eebd5597a74a212b483969f320a064f40b4b1e2fac3",
+    "requestDigestSha256": "6107a73749e18bb9f667981d74a89ff8844bccd66d2eb77706620bc8925cab97",
+    "model": "grok-4.5",
+    "label": "generateCharacterDefinitionV2"
+  },
+  "productionEffects": {
+    "deployment": false,
+    "productionDatabase": false,
+    "authoringRoute": false,
+    "schema3Activation": false
+  }
+}

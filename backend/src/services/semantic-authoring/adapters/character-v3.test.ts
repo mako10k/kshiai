@@ -412,7 +412,7 @@ describe("character V3 semantic authoring adapter", () => {
         id: "prefer-basic",
         when: {
           match: "all" as const,
-          clauses: [{ kind: "always" as const, operator: "is" as const, value: "true" }],
+          clauses: [{ kind: "always" as const, operator: "is" as const, value: "true" as const }],
         },
         response: {
           disposition: "prefer" as const,
@@ -482,7 +482,7 @@ describe("character V3 semantic authoring adapter", () => {
       id: "fallback-basic",
       applicability: {
         match: "all" as const,
-        clauses: [{ kind: "always" as const, operator: "is" as const, value: "true" }],
+        clauses: [{ kind: "always" as const, operator: "is" as const, value: "true" as const }],
       },
       orderedActionRefs: [actionId],
       priority: 50,

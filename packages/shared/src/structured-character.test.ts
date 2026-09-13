@@ -2,7 +2,11 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import {
   CharacterDefinitionV2Schema,
+  CharacterNormClauseV2Schema,
+  CHARACTER_NORM_OBSERVED_EVENT_KINDS_V2,
   CHARACTER_PROFILE_CLAIM_VALIDATOR_CONTRACT,
+  CHARACTER_SPEECH_REACT_TO_V2,
+  characterNormClauseVocabularyPromptV2,
   defaultCharacterDisclosurePolicyV2,
   defaultParameters,
   legacyCharacterSheetToDefinitionV2,
@@ -380,5 +384,39 @@ describe("CharacterDefinitionV2 projections", () => {
       ),
       /PROFILE_DESCRIPTION_SEGMENT_MISMATCH/,
     );
+  });
+});
+
+describe("CharacterNormClauseV2 registered vocabularies", () => {
+  it("rejects speech reactTo values as observed_event_kind", () => {
+    const parsed = CharacterNormClauseV2Schema.safeParse({
+      kind: "observed_event_kind",
+      operator: "is",
+      value: "direct_address",
+    });
+    assert.equal(parsed.success, false);
+  });
+
+  it("accepts utterance as the addressed-event kind", () => {
+    const parsed = CharacterNormClauseV2Schema.parse({
+      kind: "observed_event_kind",
+      operator: "is",
+      value: "utterance",
+    });
+    assert.equal(parsed.value, "utterance");
+  });
+
+  it("keeps speech reactTo distinct from observed event kinds", () => {
+    assert.equal(
+      CHARACTER_SPEECH_REACT_TO_V2.includes("direct_address"),
+      true,
+    );
+    assert.equal(
+      (CHARACTER_NORM_OBSERVED_EVENT_KINDS_V2 as readonly string[])
+        .includes("direct_address"),
+      false,
+    );
+    assert.ok(characterNormClauseVocabularyPromptV2().includes("utterance"));
+    assert.ok(characterNormClauseVocabularyPromptV2().includes("direct_address"));
   });
 });
