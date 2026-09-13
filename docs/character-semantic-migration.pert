@@ -1,9 +1,9 @@
 # Delivery plan revision 3: replace legacy B6-B7 with accepted kernel slices 1-5.
 project csm001:
-  version 8
+  version 13
   title "Restore character authoring and migrate frozen ready V2 characters to strict V3"
   description "Execute the accepted two-lane recovery plan as refined by accepted ADR-0031. Before B6 or any focused-kernel implementation, D11 fixes and reviews typed contracts, numeric safety policy, public Q&A mapping, fenced persistence and adapter conformance. Deployment, provider generation, owner candidate acceptance, append/CAS and cutover retain separate gates."
-  as_of 2026-09-10
+  as_of 2026-09-12
   duration_unit point
   velocity 1p/1d
   finish cm114
@@ -50,18 +50,23 @@ milestone cm215:
 
 milestone cm216:
   title "Kernel slice 1 contracts and pure orchestration locally verified"
+  state reached
 
 milestone cm217:
   title "Kernel slice 2 durable ports locally verified"
+  state reached
 
 milestone cm218:
   title "Kernel slice 3 character adapter locally verified"
+  state reached
 
 milestone cm206:
   title "Kernel slice 4 public mapping and conformance locally verified"
+  state reached
 
 milestone cm207:
   title "Kernel slice 5 integration review passed"
+  state reached
 
 milestone cm208:
   title "B8 dual V2 V3 read support deployed and verified"
@@ -180,7 +185,8 @@ task cb215 cm205 -> cm215:
 
 task cb206 cm215 -> cm216:
   title "Kernel slice 1 implement contracts and pure orchestration"
-  status active
+  status done
+  source "docs/evidence/semantic-authoring-kernel-slice1-independent-review-2026-09-12.md"
   description "Implement shared typed contracts, the pure kernel state machine, transactional proposal application, cumulative accounting, bounded progress and cycle detection, and scripted ports. No database, route, provider, adapter or activation behavior."
   duration 2p
   owner "codex"
@@ -189,6 +195,8 @@ task cb206 cm215 -> cm216:
 
 task cb216 cm216 -> cm217:
   title "Kernel slice 2 implement durable ports"
+  status done
+  source "docs/evidence/semantic-authoring-kernel-slice2-independent-review-2026-09-12.md"
   description "Implement schema migration, repository codecs, fenced claim, reservation and terminal writes, plus process-loss and replay tests. Preserve family-owned final payload storage and do not wire public routes."
   duration 2p
   owner "codex"
@@ -197,6 +205,8 @@ task cb216 cm216 -> cm217:
 
 task cb217 cm217 -> cm218:
   title "Kernel slice 3 implement the V3 character adapter"
+  status done
+  source "docs/evidence/semantic-authoring-kernel-slice3-independent-review-2026-09-12.md"
   description "Bridge reusable V3 and preservation-capsule contracts through focused clusters and lenses, transactional staging and complete final reconciliation without whole-character provider requests."
   duration 2p
   owner "codex"
@@ -205,6 +215,8 @@ task cb217 cm217 -> cm218:
 
 task cb218 cm218 -> cm206:
   title "Kernel slice 4 implement public mapping and conformance"
+  status done
+  source "docs/evidence/semantic-authoring-kernel-slice4-independent-review-2026-09-12.md"
   description "Add the compatible owner Q&A and retry DTO and command mapping and run the common black-box conformance fixtures against character plus test-only battlefield and narration adapters. Do not cut over a route."
   duration 2p
   owner "codex"
@@ -213,6 +225,8 @@ task cb218 cm218 -> cm206:
 
 task cb207 cm206 -> cm207:
   title "Kernel slice 5 pass the integration review"
+  status done
+  source "docs/evidence/semantic-authoring-kernel-slice5-integration-review-2026-09-12.md"
   description "Trace ADR-0031 and accepted requirements, pass full tests, typecheck, build, duplication and Lizard checks, complete targeted ADR review, and verify Seal impact, stale state and fsck. Do not wire or activate a real authoring route."
   duration 1p
   owner "codex"

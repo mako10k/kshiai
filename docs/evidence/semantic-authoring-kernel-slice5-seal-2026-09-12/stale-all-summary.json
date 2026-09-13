@@ -1,0 +1,206 @@
+{
+  "schema": "sealgraph/stale/v2",
+  "n": 104,
+  "labels": {
+    "STALE_TRANSITIVE": 88,
+    "STALE_DIRECT": 16,
+    "DRAFT": 8
+  },
+  "stale_direct": [
+    {
+      "ref": "backlog/character-agency",
+      "head_seal_id": "974ad5c974352dc4379da60a05b4fde4b892be44c84f56967cfac855c24b41c9",
+      "labels": [
+        "STALE_DIRECT"
+      ],
+      "draft": false,
+      "direct_target_seal_ids": [
+        "5933ed84d940ab90eaa233cd29fffecc844df490afb199b440d5d4109d31cce5"
+      ]
+    },
+    {
+      "ref": "evidence/semantic-migration-v4-fragment-guard-result-ja",
+      "head_seal_id": "7b40c7c3fa741253dd9bce9f4e0e2b61ceb680374f40034c64a4b9c7e4f639a4",
+      "labels": [
+        "STALE_DIRECT"
+      ],
+      "draft": false,
+      "direct_target_seal_ids": [
+        "8d75e4e5c02abe10870f68666d67cd1ae3d04bb329370d64e90966ac6befc36e"
+      ]
+    },
+    {
+      "ref": "evidence/semantic-probe-v3-proof",
+      "head_seal_id": "bf8e24223ba52b8c18fe1a7eda4086e025d738033e3d48663986b5e44c67c973",
+      "labels": [
+        "STALE_DIRECT"
+      ],
+      "draft": false,
+      "direct_target_seal_ids": [
+        "6ca998118dfbaf564e7f5f79c565561da45da449471ebf70b584e7f2eba10e03",
+        "9ca982a4c66effda9dfc574010687be84912aca932e13870aa5236a0117af631"
+      ]
+    },
+    {
+      "ref": "implementation/semantic-probe-provider",
+      "head_seal_id": "75d4461c6fbfe31691db428772aba7ac9acf2b768367ef452d68c8c7c513bce6",
+      "labels": [
+        "STALE_DIRECT"
+      ],
+      "draft": false,
+      "direct_target_seal_ids": [
+        "25ac5f17960ea022c71b285b12b2769da04c9a09e2afebee3e93a5220164c15b"
+      ]
+    },
+    {
+      "ref": "implementation/semantic-probe-runner",
+      "head_seal_id": "1895548e1b7c8a23909a875bc36c85153af6b0dc5564cb7a0406264aaccc1153",
+      "labels": [
+        "STALE_DIRECT"
+      ],
+      "draft": false,
+      "direct_target_seal_ids": [
+        "6ca998118dfbaf564e7f5f79c565561da45da449471ebf70b584e7f2eba10e03"
+      ]
+    },
+    {
+      "ref": "plan/dialogue-expression",
+      "head_seal_id": "addfd35c9045a6f9311341c480fc9fe01ec046ce45f4149677ed83b2cdfdcfe2",
+      "labels": [
+        "STALE_DIRECT"
+      ],
+      "draft": false,
+      "direct_target_seal_ids": [
+        "5933ed84d940ab90eaa233cd29fffecc844df490afb199b440d5d4109d31cce5"
+      ]
+    },
+    {
+      "ref": "reasoning/adr-0030-b5-local-verification",
+      "head_seal_id": "6709f2e0c7b45a1007c7eb097e713dbe5cfd9149b424b0aa4b527330da27501a",
+      "labels": [
+        "STALE_DIRECT"
+      ],
+      "draft": false,
+      "direct_target_seal_ids": [
+        "1b678f7b212ce02186e394ddca71fe3b97fe3df465bf067db3c8ffd2da426d37"
+      ]
+    },
+    {
+      "ref": "reasoning/semantic-migration-v3-fragment-guard-plan",
+      "head_seal_id": "4dfbfcadd96ebbbe53ff1ee9fb589988d2c0ffdc4b980f44fe1d02e059c6e31c",
+      "labels": [
+        "DRAFT",
+        "STALE_DIRECT"
+      ],
+      "draft": true,
+      "direct_target_seal_ids": [
+        "8d75e4e5c02abe10870f68666d67cd1ae3d04bb329370d64e90966ac6befc36e"
+      ]
+    },
+    {
+      "ref": "reasoning/semantic-migration-v4-fragment-guard-verification",
+      "head_seal_id": "071b3d57662a8409d80f94cf8aea9351d0e6e9d10469188410f685d35ac722a6",
+      "labels": [
+        "STALE_DIRECT"
+      ],
+      "draft": false,
+      "direct_target_seal_ids": [
+        "430a03079ae6e2321e32cd6e67b91d2c921e3ae5d567c6f1ba36194bb19beb63",
+        "5be10c75e8d77517e115ff814c8790a264af55992c9306cde38825527e163650",
+        "8d75e4e5c02abe10870f68666d67cd1ae3d04bb329370d64e90966ac6befc36e"
+      ]
+    },
+    {
+      "ref": "reasoning/semantic-migration-v4-grounding-verification",
+      "head_seal_id": "9a721300a836663f2b10767c56781ef125b076b0a78770bfbf99bbab1034d704",
+      "labels": [
+        "STALE_DIRECT"
+      ],
+      "draft": false,
+      "direct_target_seal_ids": [
+        "a6af029926d45f32e13b8e9fa2dad7663cc846b886c2144e2e1cc5bb7a202c56"
+      ]
+    },
+    {
+      "ref": "reasoning/semantic-migration-v4-unresolved-corrections-plan",
+      "head_seal_id": "bec3cd83227e8f18772ff5ec79cc2634a16f93672c83048ef911094590e5b561",
+      "labels": [
+        "DRAFT",
+        "STALE_DIRECT"
+      ],
+      "draft": true,
+      "direct_target_seal_ids": [
+        "5be10c75e8d77517e115ff814c8790a264af55992c9306cde38825527e163650"
+      ]
+    },
+    {
+      "ref": "reasoning/semantic-probe-v2-result-rca",
+      "head_seal_id": "43282feca5386749145a81b2dfcefc955baaef2e8f7933fb401bdaeae39527c4",
+      "labels": [
+        "STALE_DIRECT"
+      ],
+      "draft": false,
+      "direct_target_seal_ids": [
+        "6ca998118dfbaf564e7f5f79c565561da45da449471ebf70b584e7f2eba10e03",
+        "cb463f8e8d960624293be1bbda29b53d8b876765cd206eba6892a95204554c1d"
+      ]
+    },
+    {
+      "ref": "reasoning/semantic-probe-v3-result-rca",
+      "head_seal_id": "b780a65e9fddd5ddfeb3d803a0e6114c65e8c7444530bc2986ce0f0c299a9949",
+      "labels": [
+        "STALE_DIRECT"
+      ],
+      "draft": false,
+      "direct_target_seal_ids": [
+        "cb463f8e8d960624293be1bbda29b53d8b876765cd206eba6892a95204554c1d",
+        "e09d44c1febd7ff44dba0c00e1d3181351cd4cf6c7a4622cc4d26139d8221194"
+      ]
+    },
+    {
+      "ref": "reasoning/semantic-repair-verification",
+      "head_seal_id": "e55ca798d764bac2b809c4cdd8a83f6eaefccad452ea1aa5f60c0d829255ae8c",
+      "labels": [
+        "STALE_DIRECT"
+      ],
+      "draft": false,
+      "direct_target_seal_ids": [
+        "1b678f7b212ce02186e394ddca71fe3b97fe3df465bf067db3c8ffd2da426d37"
+      ]
+    },
+    {
+      "ref": "reasoning/semantic-schema-local-verification",
+      "head_seal_id": "c22010d7bf3bc6a4703972b15ca78835e8b72c34d0f33b07b19706e439729f93",
+      "labels": [
+        "STALE_DIRECT"
+      ],
+      "draft": false,
+      "direct_target_seal_ids": [
+        "1b678f7b212ce02186e394ddca71fe3b97fe3df465bf067db3c8ffd2da426d37"
+      ]
+    },
+    {
+      "ref": "verification/character-migration-diagnostics",
+      "head_seal_id": "5b7efeca9ff7ff86310b76f24ca144e360dfc342e013b244598ea8455b652dda",
+      "labels": [
+        "STALE_DIRECT"
+      ],
+      "draft": false,
+      "direct_target_seal_ids": [
+        "50c946a72d12778c5560d13ffc868a64b05d40a0d5bfbce13eb7f189b893392b",
+        "9ca982a4c66effda9dfc574010687be84912aca932e13870aa5236a0117af631",
+        "cb463f8e8d960624293be1bbda29b53d8b876765cd206eba6892a95204554c1d"
+      ]
+    }
+  ],
+  "draft_on_stale_refs": [
+    "evidence/semantic-migration-continuation",
+    "evidence/semantic-probe-v3-failure-harvest",
+    "plan/character-semantic-migration",
+    "reasoning/semantic-migration-v3-fragment-guard-plan",
+    "reasoning/semantic-migration-v4-unresolved-corrections-plan",
+    "reasoning/semantic-probe-v3-failure-harvest-plan",
+    "reasoning/semantic-probe-v3-failure-harvest-verification",
+    "verification/semantic-authoring-kernel-wip-handoff-2026-09-11"
+  ]
+}

@@ -1,18 +1,9 @@
-import type { SemanticAuthoringRunStatusV1 } from "@kshiai/shared";
+import {
+  isTerminalSemanticAuthoringStatusV1,
+  type SemanticAuthoringRunStatusV1,
+} from "@kshiai/shared";
 
-const terminalStatuses: ReadonlySet<SemanticAuthoringRunStatusV1> = new Set([
-  "ready_for_review",
-  "needs_owner_answer",
-  "failed",
-  "cancelled",
-  "expired",
-]);
-
-export function isTerminalSemanticAuthoringStatusV1(
-  status: SemanticAuthoringRunStatusV1,
-): boolean {
-  return terminalStatuses.has(status);
-}
+export { isTerminalSemanticAuthoringStatusV1 };
 
 export function transitionSemanticAuthoringRunV1(
   current: SemanticAuthoringRunStatusV1,

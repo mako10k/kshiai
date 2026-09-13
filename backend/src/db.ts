@@ -594,6 +594,7 @@ export function getDb(): SqliteDatabase.Database {
   ensureSqliteAuthoringJobs(sqlite);
   ensureSqliteOwnerNotifications(sqlite);
   ensureSqliteFamilyAuthoringJobs(sqlite);
+  ensureSqliteSemanticAuthoring(sqlite);
   return sqlite;
 }
 
@@ -711,6 +712,97 @@ function ensureSqliteFamilyAuthoringJobs(database: SqliteDatabase.Database): voi
       FROM narration_style_authoring_jobs
      WHERE status IN ('pending', 'claimed')
     ON CONFLICT (family, attempt_id) DO NOTHING;
+  `);
+}
+
+function ensureSqliteSemanticAuthoring(database: SqliteDatabase.Database): void {
+  database.exec(`
+    CREATE TABLE IF NOT EXISTS semantic_authoring_runs (
+      run_id TEXT PRIMARY KEY,
+      attempt_id TEXT NOT NULL UNIQUE,
+      predecessor_run_id TEXT REFERENCES semantic_authoring_runs(run_id),
+      family TEXT NOT NULL CHECK (
+        family IN ('character', 'battlefield-preset', 'narration-style')
+      ),
+      mode TEXT NOT NULL CHECK (mode IN ('create', 'revise', 'migrate')),
+      owner_user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      source_asset_id TEXT NOT NULL,
+      source_generation_id TEXT,
+      source_content_digest TEXT NOT NULL,
+      source_payload_ref TEXT NOT NULL,
+      target_family TEXT NOT NULL CHECK (
+        target_family IN ('character', 'battlefield-preset', 'narration-style')
+      ),
+      target_version INTEGER NOT NULL,
+      adapter_identity TEXT NOT NULL,
+      policy_identity TEXT NOT NULL,
+      pricing_identity TEXT NOT NULL,
+      token_estimator_identity TEXT NOT NULL,
+      expected_current_generation_id TEXT,
+      status TEXT NOT NULL CHECK (status IN (
+        'pending', 'claimed', 'ready_for_review', 'needs_owner_answer',
+        'failed', 'cancelled', 'expired'
+      )),
+      accounting_json TEXT NOT NULL,
+      failure_receipt_json TEXT,
+      fence_owner_id TEXT NOT NULL,
+      fencing_token INTEGER NOT NULL,
+      run_version INTEGER NOT NULL,
+      created_at TEXT NOT NULL,
+      updated_at TEXT NOT NULL
+    );
+    CREATE INDEX IF NOT EXISTS idx_semantic_authoring_runs_owner
+      ON semantic_authoring_runs (owner_user_id, created_at DESC);
+    CREATE TABLE IF NOT EXISTS semantic_authoring_provider_requests (
+      request_id TEXT PRIMARY KEY,
+      run_id TEXT NOT NULL REFERENCES semantic_authoring_runs(run_id) ON DELETE CASCADE,
+      ordinal INTEGER NOT NULL CHECK (ordinal BETWEEN 1 AND 8),
+      reservation_json TEXT NOT NULL,
+      request_digest TEXT NOT NULL,
+      provider_route TEXT NOT NULL,
+      outcome TEXT CHECK (outcome IN ('succeeded', 'failed', 'unknown_consumption')),
+      accounting_json TEXT,
+      created_at TEXT NOT NULL,
+      finished_at TEXT,
+      UNIQUE (run_id, ordinal)
+    );
+    CREATE TABLE IF NOT EXISTS semantic_authoring_questions (
+      question_id TEXT PRIMARY KEY,
+      run_id TEXT NOT NULL REFERENCES semantic_authoring_runs(run_id) ON DELETE CASCADE,
+      question_json TEXT NOT NULL,
+      evidence_json TEXT NOT NULL,
+      resumption_json TEXT NOT NULL,
+      state TEXT NOT NULL CHECK (state IN ('open', 'answered', 'superseded')),
+      created_at TEXT NOT NULL
+    );
+    CREATE TABLE IF NOT EXISTS semantic_authoring_answers (
+      answer_id TEXT PRIMARY KEY,
+      question_id TEXT NOT NULL
+        REFERENCES semantic_authoring_questions(question_id) ON DELETE CASCADE,
+      owner_user_id TEXT NOT NULL REFERENCES users(id),
+      answer_json TEXT NOT NULL,
+      created_at TEXT NOT NULL
+    );
+    CREATE TABLE IF NOT EXISTS semantic_authoring_final_candidates (
+      final_candidate_id TEXT PRIMARY KEY,
+      run_id TEXT NOT NULL UNIQUE
+        REFERENCES semantic_authoring_runs(run_id) ON DELETE CASCADE,
+      digest TEXT NOT NULL,
+      family_payload_ref TEXT NOT NULL,
+      obligation_coverage_json TEXT NOT NULL,
+      reconciliation_receipt_identity TEXT NOT NULL,
+      compiler_receipt_identity TEXT NOT NULL,
+      disclosure_receipt_identity TEXT NOT NULL,
+      expected_current_generation_id TEXT,
+      created_at TEXT NOT NULL
+    );
+    CREATE TABLE IF NOT EXISTS semantic_authoring_commands (
+      owner_user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      command_id TEXT NOT NULL,
+      run_id TEXT NOT NULL REFERENCES semantic_authoring_runs(run_id) ON DELETE CASCADE,
+      created_at TEXT NOT NULL,
+      PRIMARY KEY (owner_user_id, command_id)
+    );
   `);
 }
 

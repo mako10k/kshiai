@@ -1,4 +1,7 @@
-import type { AdapterProgressObservationV1 } from "@kshiai/shared";
+import type {
+  AdapterProgressObservationV1,
+  SemanticAuthoringPolicyV1,
+} from "@kshiai/shared";
 
 export type ProgressConditionV1 =
   | "continue"
@@ -6,7 +9,15 @@ export type ProgressConditionV1 =
   | "stalled_without_progress"
   | "repeated_state_cycle";
 
-function observationsSinceProgress(
+export function appendProgressObservationV1(
+  history: readonly AdapterProgressObservationV1[],
+  observation: AdapterProgressObservationV1,
+  policy: SemanticAuthoringPolicyV1,
+): readonly AdapterProgressObservationV1[] {
+  return [...history, observation].slice(-policy.maxProgressObservations);
+}
+
+export function observationsSinceProgress(
   observations: readonly AdapterProgressObservationV1[],
 ): readonly AdapterProgressObservationV1[] {
   let lastProgress = -1;

@@ -1,24 +1,11 @@
-import type { SemanticAuthoringCapabilityRoleV1 } from "@kshiai/shared";
+import type { SemanticAuthoringCapabilitySessionV1 } from "@kshiai/shared";
 
 export type CapabilityToolNameV1 =
   | "authoring_query_context_v1"
   | "authoring_propose_change_v1"
   | "authoring_submit_review_v1";
 
-export type CapabilitySessionV1 = Readonly<{
-  runId: string;
-  workItemId: string;
-  capabilitySessionId: string;
-  mutationRole: Exclude<SemanticAuthoringCapabilityRoleV1, "query-context">;
-  allowedSelectors: readonly string[];
-  proposalSchemaIdentity: string;
-  writeClosure: readonly string[];
-  expiresAtMs: number;
-  queryInvocationCount: number;
-  mutationInvocationCount: number;
-  mutationSucceeded: boolean;
-  revoked: boolean;
-}>;
+export type CapabilitySessionV1 = SemanticAuthoringCapabilitySessionV1;
 
 export type CapabilityInvocationFailureReasonV1 =
   | "revoked"
@@ -52,6 +39,16 @@ export type CapabilityInvocationV1 =
       tool: "authoring_propose_change_v1" | "authoring_submit_review_v1";
       proposalSchemaIdentity: string;
     }>;
+
+export function expireCapabilitySessionIfNeededV1(
+  session: CapabilitySessionV1,
+  nowMs: number,
+): CapabilitySessionV1 {
+  if (session.revoked || nowMs < session.expiresAtMs) {
+    return session;
+  }
+  return { ...session, revoked: true };
+}
 
 export function visibleCapabilityToolsV1(
   session: CapabilitySessionV1,

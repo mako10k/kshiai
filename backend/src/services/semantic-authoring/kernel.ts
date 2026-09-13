@@ -1,6 +1,7 @@
-export type KernelCandidateStateV1<Candidate, Finding> = Readonly<{
+export type KernelCandidateStateV1<Candidate, Obligation, Finding> = Readonly<{
   candidateRevision: number;
   candidate: Candidate;
+  obligations: ReadonlyMap<string, Obligation>;
   findings: ReadonlyMap<string, Finding>;
 }>;
 
@@ -9,10 +10,11 @@ export type KernelTransactionIssueV1<Finding> = Readonly<{
   finding: Finding;
 }>;
 
-export type KernelStageResultV1<Candidate, Finding> =
+export type KernelStageResultV1<Candidate, Obligation, Finding> =
   | Readonly<{
       accepted: true;
       candidate: Candidate;
+      obligations: ReadonlyMap<string, Obligation>;
       findings: ReadonlyMap<string, Finding>;
     }>
   | Readonly<{
@@ -20,21 +22,21 @@ export type KernelStageResultV1<Candidate, Finding> =
       issue: KernelTransactionIssueV1<Finding>;
     }>;
 
-export type KernelTransactionResultV1<Candidate, Finding> =
+export type KernelTransactionResultV1<Candidate, Obligation, Finding> =
   | Readonly<{
       accepted: true;
-      state: KernelCandidateStateV1<Candidate, Finding>;
+      state: KernelCandidateStateV1<Candidate, Obligation, Finding>;
     }>
   | Readonly<{
       accepted: false;
       reason: "base_candidate_revision_mismatch" | "stage_rejected" | "hard_check_failed";
-      state: KernelCandidateStateV1<Candidate, Finding>;
+      state: KernelCandidateStateV1<Candidate, Obligation, Finding>;
     }>;
 
-function withDeduplicatedIssues<Candidate, Finding>(
-  state: KernelCandidateStateV1<Candidate, Finding>,
+function withDeduplicatedIssues<Candidate, Obligation, Finding>(
+  state: KernelCandidateStateV1<Candidate, Obligation, Finding>,
   issues: readonly KernelTransactionIssueV1<Finding>[],
-): KernelCandidateStateV1<Candidate, Finding> {
+): KernelCandidateStateV1<Candidate, Obligation, Finding> {
   if (issues.length === 0) {
     return state;
   }
@@ -45,21 +47,23 @@ function withDeduplicatedIssues<Candidate, Finding>(
   return { ...state, findings };
 }
 
-export function applyProposalTransactionV1<Candidate, Proposal, Finding>(
-  state: KernelCandidateStateV1<Candidate, Finding>,
+export function applyProposalTransactionV1<Candidate, Obligation, Proposal, Finding>(
+  state: KernelCandidateStateV1<Candidate, Obligation, Finding>,
   baseCandidateRevision: number,
   proposal: Proposal,
   stage: (
     candidate: Candidate,
+    obligations: ReadonlyMap<string, Obligation>,
     findings: ReadonlyMap<string, Finding>,
     proposal: Proposal,
-  ) => KernelStageResultV1<Candidate, Finding>,
+  ) => KernelStageResultV1<Candidate, Obligation, Finding>,
   hardChecks: readonly ((
     candidate: Candidate,
+    obligations: ReadonlyMap<string, Obligation>,
     findings: ReadonlyMap<string, Finding>,
   ) => KernelTransactionIssueV1<Finding> | null)[],
   revisionMismatchIssue: KernelTransactionIssueV1<Finding>,
-): KernelTransactionResultV1<Candidate, Finding> {
+): KernelTransactionResultV1<Candidate, Obligation, Finding> {
   if (baseCandidateRevision !== state.candidateRevision) {
     return {
       accepted: false,
@@ -68,7 +72,9 @@ export function applyProposalTransactionV1<Candidate, Proposal, Finding>(
     };
   }
 
-  const staged = stage(state.candidate, state.findings, proposal);
+  const isolatedObligations = new Map(state.obligations);
+  const isolatedFindings = new Map(state.findings);
+  const staged = stage(state.candidate, isolatedObligations, isolatedFindings, proposal);
   if (!staged.accepted) {
     return {
       accepted: false,
@@ -78,7 +84,7 @@ export function applyProposalTransactionV1<Candidate, Proposal, Finding>(
   }
 
   const issues = hardChecks.flatMap((check) => {
-    const issue = check(staged.candidate, staged.findings);
+    const issue = check(staged.candidate, staged.obligations, staged.findings);
     return issue === null ? [] : [issue];
   });
   if (issues.length > 0) {
@@ -94,6 +100,7 @@ export function applyProposalTransactionV1<Candidate, Proposal, Finding>(
     state: {
       candidateRevision: state.candidateRevision + 1,
       candidate: staged.candidate,
+      obligations: new Map(staged.obligations),
       findings: new Map(staged.findings),
     },
   };
