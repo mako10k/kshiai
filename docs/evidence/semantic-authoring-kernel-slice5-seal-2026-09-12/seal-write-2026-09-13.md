@@ -31,9 +31,33 @@ sqlite-bootstrap（`backend/src/db.ts`）だけ非 draft のまま内容を更�
 
 frontier 3 件は上記のうち accounting、decoder、B4 repository。一括 reseal していない。
 
+## Frontier 継続（同日）
+
+本文が HEAD と一致することを確認した入口だけ reseal した。B5 / probe 連鎖には入っていない。
+
+確認して reseal した REF:
+
+- `implementation/semantic-authoring-accounting-v1`（draft、contracts を継承）
+- `implementation/semantic-authoring-proposal-decoder-v1`（draft、contracts を継承）
+- `implementation/character-semantic-migration-repository`（非 draft、sqlite-bootstrap の追加テーブルは未使用）
+- `verification/semantic-authoring-kernel-foundation-v1` と slice 1 レビュー
+- `plan/character-semantic-migration` の B4 repository Cause
+- `verification/character-semantic-migration-persistence`
+- `verification/postgres-runtime-smoke`
+- `reasoning/adr-0030-b4-local-verification`
+- `evidence/adr-0030-b4-local-verification`
+
+fsck 再読戻し: `result=ok`。blobs 2546、seals 813、refs 348、unreferenced 0。
+
+現在の frontier は `reasoning/adr-0030-b5-action-plan`。B5 資料は未確認のまま残す。
+歴史的 WIP handoff も reseal していない。
+
 ## 詳細
 
 - `status-after-seal.json`
 - `stale-frontier-after-seal.json`
 - `fsck-after-seal-summary.json`
 - `seal-write-2026-09-13-summary.json`（初回 seal ID）
+- `seal-frontier-2026-09-13-summary.json`
+- `stale-frontier-after-frontier-reseal.json`
+- `fsck-after-frontier-reseal-summary.json`

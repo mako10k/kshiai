@@ -1,0 +1,11 @@
+{
+  "selector": "implementation/semantic-authoring-proposal-decoder-v1",
+  "schema": "sealgraph/impact/v2",
+  "source_seal_id": "d7b30f5360e5af7a3103cf09e2f03956e6e71ae2cf66e749f0123ecdb031a9ca",
+  "impact_count": 3,
+  "impact_refs": [
+    "verification/semantic-authoring-kernel-slice1-independent-review-2026-09-12",
+    "verification/semantic-authoring-kernel-foundation-v1",
+    "verification/semantic-authoring-kernel-wip-handoff-2026-09-11"
+  ]
+}

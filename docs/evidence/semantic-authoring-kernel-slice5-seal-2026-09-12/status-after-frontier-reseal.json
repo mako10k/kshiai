@@ -1,0 +1,76 @@
+[
+  {
+    "ref": "implementation/semantic-authoring-accounting-v1",
+    "draft": true,
+    "labels": [
+      "DRAFT"
+    ],
+    "head": "b33b1e386b0868631f896f405064d539f27ba373eb3aa390eb69c1e1dd2ed979"
+  },
+  {
+    "ref": "implementation/semantic-authoring-proposal-decoder-v1",
+    "draft": true,
+    "labels": [
+      "DRAFT"
+    ],
+    "head": "a99eeb5e86497e3b54a65b41a655c01c2a6c403e9808c93f7d707f1491549652"
+  },
+  {
+    "ref": "implementation/character-semantic-migration-repository",
+    "draft": false,
+    "labels": [
+      "SEALED_STATE_CLEAN"
+    ],
+    "head": "271a0474ff563f90592ea32b22596e439a9443bf21a779bcce0417d9f38b4c5b"
+  },
+  {
+    "ref": "verification/character-semantic-migration-persistence",
+    "draft": false,
+    "labels": [
+      "SEALED_STATE_CLEAN"
+    ],
+    "head": "c61a08011d114b46223271cfdd32000faea864f335ff427e0bbf96de478c3876"
+  },
+  {
+    "ref": "verification/postgres-runtime-smoke",
+    "draft": false,
+    "labels": [
+      "SEALED_STATE_CLEAN"
+    ],
+    "head": "2a7d6797779815432a4c122a29dd40dd8008596dac6fec175bdaadcf7a012513"
+  },
+  {
+    "ref": "verification/semantic-authoring-kernel-foundation-v1",
+    "draft": true,
+    "labels": [
+      "DRAFT"
+    ],
+    "head": "261617baf6a89d85a9bcf2a9efd120fbdda743ed5e22e0d8dd9daa6ed21e38ec"
+  },
+  {
+    "ref": "verification/semantic-authoring-kernel-slice1-independent-review-2026-09-12",
+    "draft": true,
+    "labels": [
+      "DRAFT"
+    ],
+    "head": "4009bc281d48ba2dfa7ad8c9b54e3cfe6d57e0cdc68bcd38c460b75fe7455be1"
+  },
+  {
+    "ref": "plan/character-semantic-migration",
+    "draft": true,
+    "labels": [
+      "DRAFT",
+      "STALE_TRANSITIVE"
+    ],
+    "head": "cb3b54d0bb7b71d657c1a766db958758dd3e0dbb1b1c9c9cfa87b59db64a7cd4"
+  },
+  {
+    "ref": "verification/semantic-authoring-kernel-wip-handoff-2026-09-11",
+    "draft": true,
+    "labels": [
+      "DRAFT",
+      "STALE_DIRECT"
+    ],
+    "head": "d45cf1f77de7ce018f26268d7b1097d2cd09dada172bda5f12b60409bc322ba9"
+  }
+]
