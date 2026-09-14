@@ -9,7 +9,10 @@ A2 live 検証、A2 後続の clause 語彙修正、本引継ぎを含む。
 
 ## 計画状態
 
-`docs/character-semantic-migration.pert` は version 15、`as_of 2026-09-13`。
+`docs/character-semantic-migration.pert` は当時 `version 15`、`as_of 2026-09-13`
+と記録した。ただし `version` は計画改訂番号ではなくPERT文法番号であり、15は
+未リリースかつ未定義だった。この誤記は2026-09-14にGrammar 9へ修正し、計画改訂は
+コメントとGit履歴で分離した。
 
 到達済み:
 
@@ -88,8 +91,11 @@ A2 --execute 2回目               拒否（result.json 既存）
 
 ## 再開点
 
-1. owner が `ca103`（A3 デプロイ）か `cb208`（B8 dual read デプロイ）を選ぶ。
-   どちらも別承認。schema-3 と authoring route はまだ切らない。
+1. この時点ではownerが `ca103`（A3デプロイ）か `cb208`（B8 dual read
+   デプロイ）を選ぶ状態だった。その後、ownerは統合A3+B8 Stage候補を選択したため、
+   2026-09-14の計画改訂4で`cc301`統合レビュー、`cc303` merge/tag、`cc302`
+   単一Stage proofの順へ置き換えた。merge、tag、Stage実行は引き続きそれぞれの
+   権限境界を持ち、schema-3とproductionは切らない。
 2. A2 修正後の live 再実行は、新しい freeze と別承認が必要。
 3. B5 Seal frontier を続けるなら `reasoning/adr-0030-b5-action-plan` を読んで
    要訂正／文面不変／未確認に分類する。下流の一括 reseal はしない。

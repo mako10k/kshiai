@@ -1,9 +1,9 @@
-# Delivery plan revision 3: replace legacy B6-B7 with accepted kernel slices 1-5.
+# Delivery plan revision 4: reconcile the integrated A3+B8 Stage delivery path.
 project csm001:
-  version 15
+  version 9
   title "Restore character authoring and migrate frozen ready V2 characters to strict V3"
-  description "Execute the accepted two-lane recovery plan as refined by accepted ADR-0031. Before B6 or any focused-kernel implementation, D11 fixes and reviews typed contracts, numeric safety policy, public Q&A mapping, fenced persistence and adapter conformance. Deployment, provider generation, owner candidate acceptance, append/CAS and cutover retain separate gates."
-  as_of 2026-09-13
+  description "Execute the accepted two-lane recovery plan as refined by accepted ADR-0031 and the owner-selected integrated A3+B8 Stage candidate. Complete review of the exact integrated candidate, separately establish its merged and tagged identity, then use one separately approved Stage proof for corrected V2 creation and dual V2/V3 reads. Provider generation, owner candidate acceptance, append/CAS, schema-3 activation and production promotion remain separate effects."
+  as_of 2026-09-14
   duration_unit point
   velocity 1p/1d
   finish cm114
@@ -76,6 +76,18 @@ milestone cm207:
 milestone cm208:
   title "B8 dual V2 V3 read support deployed and verified"
 
+milestone cm300:
+  title "A3 and B8 local prerequisites joined for integrated delivery"
+
+milestone cm301:
+  title "Integrated A3 B8 Stage candidate review completed"
+
+milestone cm303:
+  title "Integrated A3 B8 revision merged and tagged for Stage"
+
+milestone cm302:
+  title "Combined A3 B8 Stage proof deployed and verified"
+
 milestone cm209:
   title "B9 exact production manifest and no-write dry-run accepted"
 
@@ -125,18 +137,44 @@ task ca105 cm102 -> cm105:
   requires:
     cr001 1
 
-task ca103 cm105 -> cm103:
-  title "A3 decide deploy and verify new-character creation"
-  description "Obtain separate deployment authority, deploy the exact correction, read back revision and health, exercise the authorized create flow, and preserve rollback readiness."
+gate cg301 cm105 -> cm300:
+  reason "The combined Stage candidate requires the locally verified Lane A authoring correction."
+
+task cc301 cm300 -> cm301:
+  title "Complete review of the integrated A3 B8 Stage candidate"
+  description "Reconcile PR review and CI evidence for the exact integrated reader and smoke candidate, retain attributable external blockers explicitly, and produce one merge-ready revision without merging, tagging, deploying or dispatching a provider call."
+  duration 1p
+  owner "codex"
+  requires:
+    cr001 1
+
+task cc303 cm301 -> cm303:
+  title "Separately authorize merge and establish the exact Stage tag"
+  description "Under separate external-write authority, merge the reviewed integrated candidate, create the exact Stage tag, and read back both identities without dispatching Stage or promoting production."
   duration 1p
   owner "user and codex"
   requires:
     cr001 1
     cr002 1
 
-task ca104 cm103 -> cm114:
-  title "Reconcile deployed Lane A authoring state with final V3 cutover"
-  description "At B14, prove the deployed authoring repair is included or superseded by the exact V3 authoring revision and that no temporary V2 response contract is mistaken for final cutover."
+task cc302 cm303 -> cm302:
+  title "Separately approve and run the combined A3 B8 Stage proof"
+  description "Separately approve one Stage deployment of the exact merged and tagged revision that verifies corrected V2 creation and strict historical V2 and non-current V3 reads, then read back health and rollback readiness. Do not activate schema 3 or promote production."
+  duration 1p
+  owner "user and codex"
+  requires:
+    cr001 1
+    cr002 1
+
+gate cg303 cm302 -> cm103:
+  reason "The combined Stage proof supplies the A3 new-character creation deployment evidence."
+
+gate cg304 cm302 -> cm208:
+  reason "The combined Stage proof supplies the B8 dual V2 V3 read deployment evidence."
+
+task ca104 cm103 -> cm213:
+  title "Reconcile deployed Lane A authoring state before final V3 cutover"
+  description "Before B14, prove the deployed authoring repair is included or superseded by the exact V3 authoring revision and that no temporary V2 response contract is mistaken for final cutover."
   duration 1p
   owner "codex"
   requires:
@@ -250,14 +288,8 @@ task cb207 cm206 -> cm207:
   requires:
     cr001 1
 
-task cb208 cm207 -> cm208:
-  title "B8 separately approve and deploy dual V2 V3 read support"
-  description "Approve and deploy the exact dual-reader revision without schema-3 activation, verify historical V2, V3 compatibility and migration resume, then read back rollback readiness."
-  duration 1p
-  owner "user and codex"
-  requires:
-    cr001 1
-    cr002 1
+gate cg302 cm207 -> cm300:
+  reason "The combined Stage candidate requires the locally verified B8 reader and semantic-authoring foundation."
 
 task cb209 cm208 -> cm209:
   title "B9 freeze the exact eight-generation manifest and run no-write dry-run"

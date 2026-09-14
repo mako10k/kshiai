@@ -1,0 +1,116 @@
+framework DecisionAnalysis:
+  requires problem and decision
+  requires premise and evidence
+  warns pending
+
+domain A3B8CandidateReview:
+  description |
+    Independent review of the exact integrated A3 and B8 Stage candidate and
+    its current CI state.
+
+problem P1:
+  |
+    Decide whether commit 898e6dda5a333eb6e2a73785ff665a3d89418da7 is a
+    review-complete integrated A3 and B8 Stage candidate, distinguish candidate
+    defects from repository-wide dependency and base-image drift, and identify
+    the smallest next action without merging, tagging, deploying, activating
+    schema 3, moving a production pointer, or dispatching a provider call.
+
+premise AUTHORITY:
+  |
+    Accepted ADR-0030 requirement R24 requires deployed and verified historical
+    V2 and new V3 reads, migration resume, qualified V3 validation and mixed
+    tuple rejection before schema-3 selection or production migration. The
+    accepted integrated plan selects one exact reader and Stage smoke candidate,
+    keeps the paid A3 smoke opt-in, and leaves merge, tag and Stage dispatch as
+    separate effects.
+
+evidence E_REVISION:
+  |
+    Fresh remote readback on 2026-09-14 found PR 147 open and mergeable with
+    head 898e6dda5a333eb6e2a73785ff665a3d89418da7 matching both local HEAD and
+    origin/codex/compact-psyche-repair-integration. The branch is 34 commits
+    ahead and zero behind origin/main at 1cdf21009dbb8f4099dbb9ca70760320c50be6aa.
+
+evidence E_IMPLEMENTATION:
+  |
+    Review of the thirteen files changed by 898e6dd found strict storage and
+    envelope version dispatch, content-digest and asset-identity checks, separate
+    V3 compiler projections, non-current V3 append, V2-current readback,
+    zero-request migration resume, opt-in A3 create-and-discard, and cleanup.
+    No schema-3 policy activation, current-pointer movement to V3, production
+    promotion, or newly added type escape is present in that commit.
+
+evidence E_LOCAL:
+  |
+    On the exact local HEAD, npm test passed 349 shared, 437 backend, 20
+    frontend, 3 deployment and 5 release tests. npm run typecheck, npm run build,
+    npm run static and git diff --check passed. npm run adr:check exited zero;
+    ADR-0030 and ADR-0031 audited clean, while the previously recorded legacy
+    ADR-0015, 0016, 0017 and 0019 findings remained outside this commit.
+
+evidence E_PR_CI:
+  |
+    GitHub Actions run 34799933363 passed validate and worker but failed security
+    and backend-image. The security job reported newly unaccepted advisories for
+    hono below 4.13.5 and sharp below 0.35.4. The backend image reported Debian
+    libpcre2-8-0 10.42-1 with two HIGH findings fixed by 10.42-1+deb12u1.
+
+evidence E_DRIFT:
+  |
+    Commit 898e6dd changes neither dependency manifests nor backend/Dockerfile.
+    The current lock contains hono 4.12.34, sharp 0.35.2 and wrangler 4.118.0;
+    current published fixed versions observed on 2026-09-14 are hono 4.13.7,
+    sharp 0.35.4 and wrangler 4.131.1. origin/main CI last passed on 2026-09-08,
+    before the 2026-09-14 advisory observations.
+
+premise CAUSAL_CLASSIFICATION:
+  |
+    For the CI failure, the producing system condition is that repository
+    dependency constraints and the runtime image can resolve versions now
+    reported vulnerable. The 2026-09-14 advisory and image database state is
+    the surfacing condition. The prior successful main run predates those
+    observations and is the escape timing, not the defect-producing cause.
+
+premise ALTERNATIVES:
+  |
+    A record both CI failures as external blockers and leave the candidate
+    unchanged; this preserves feature scope but does not yield a green required
+    check. B update Hono and Wrangler so Sharp resolves to its fixed version and
+    refresh Debian runtime packages in this candidate, then rerun all validation;
+    this is bounded and directly removes the observed vulnerable versions but
+    adds repository maintenance to the feature revision. C repair security on a
+    separate main-based change first and later integrate it; this keeps concerns
+    separate but requires another branch, review, merge and integration sequence
+    before PR 147 can become green.
+
+pending U_STAGE:
+  |
+    No live Stage deployment or paid A3 provider smoke has run for this
+    candidate. Local and CI review cannot establish those later effects.
+
+evidence E_CORRECTION:
+  |
+    The bounded correction updated Hono to 4.13.7, Wrangler to 4.131.1 and its
+    transitive Sharp to 0.35.4, and added a targeted Debian runtime upgrade of
+    libpcre2-8-0 before the final image switches to the non-root user. npm audit then reported zero
+    vulnerabilities. All 814 tests, typecheck, build, static checks and
+    git diff --check passed after the correction. ADR check exited zero with the
+    same legacy out-of-scope findings and clean ADR-0030 and ADR-0031 results.
+
+pending U_REMOTE:
+  |
+    Docker is unavailable in the active WSL environment, so the rebuilt runtime
+    package version and both revised GitHub security jobs remain unobserved until
+    this local revision is committed, pushed under separate authority, and CI
+    read back. The correction is not yet remote-verified.
+
+decision D1 based_on P1, AUTHORITY, E_REVISION, E_IMPLEMENTATION, E_LOCAL, E_PR_CI, E_DRIFT, CAUSAL_CLASSIFICATION, ALTERNATIVES, E_CORRECTION, U_STAGE, U_REMOTE:
+  |
+    The integrated A3 and B8 implementation is review-complete with no code
+    defect found in the reviewed scope. Retain the bounded dependency and runtime
+    package correction as part of one local review candidate because it removes
+    the observed vulnerable versions while preserving the functional boundary.
+    Do not mark cc301 done and do not describe PR 147 as merge-ready until a
+    pushed exact revision has passing validate, worker, security and backend-image
+    checks. Merge, tag, Stage and provider effects remain separate and unperformed.

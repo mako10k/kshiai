@@ -13,8 +13,10 @@ character adapter、activation、release、deploymentは変更していない。
 
 ## 今回の計画変更
 
-`docs/character-semantic-migration.pert`をrevision 3／version 8へ更新した。旧B6/B7を、
-次の実装順へ置き換えた。
+`docs/character-semantic-migration.pert`をdelivery plan revision 3として更新した。
+当時は`version 8`とも記録したが、`version`は計画改訂番号ではなくPERT文法番号で
+あり、この扱いは誤りだった。2026-09-14にGrammar 9へ修正し、計画改訂番号を
+コメントとGit履歴へ分離した。旧B6/B7は次の実装順へ置き換えた。
 
 1. `cb206`: 共通contractとpure orchestration（進行中）
 2. `cb216`: durable ports
