@@ -154,11 +154,12 @@ task cc303 cm301 -> cm303:
   title "Separately authorize merge and establish the exact Stage tag"
   description "Under separate external-write authority, merge the reviewed integrated candidate, create the exact Stage tag, and read back both identities without dispatching Stage or promoting production."
   duration 1p
-  status active
+  status done
   owner "user and codex"
   requires:
     cr001 1
     cr002 1
+  source "docs/evidence/a3-b8-integrated-merge-tag-readback-2026-09-14.md"
 
 task cc302 cm303 -> cm302:
   title "Separately approve and run the combined A3 B8 Stage proof"
@@ -366,3 +367,9 @@ work_event WE-b4b78f17b93736501c37b2168e9fc88db553ea0e0e59ad885d3e7585b4d3ede1:
   kind start
   occurred_at 2026-09-14T18:18:25+09:00
   planned_value 1p
+
+work_event WE-119a95a48fc269792ba3863d33c9efd5e58c286dc1d6a1cee21874494367e60f:
+  model 1
+  task cc303
+  kind finish
+  occurred_at 2026-09-14T18:25:28+09:00
