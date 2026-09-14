@@ -42,6 +42,14 @@ on:
         required: true
         default: "169"
         type: string
+      character_create_smoke:
+        description: Run one paid A3 V2 character-create attempt (reviewed maximum 30 provider HTTP attempts)
+        required: true
+        default: "false"
+        type: choice
+        options:
+          - "false"
+          - "true"
       battle_pacing_policy:
         description: Provisional pacing policy frozen into newly created battles
         required: true
@@ -92,6 +100,7 @@ jobs:
           EXPECTED_DIALOGUE_PROJECTION: ${{ inputs.expected_dialogue_projection }}
           E2E_MAX_ADVANCES: ${{ inputs.e2e_max_advances }}
           E2E_PROVIDER_OPERATION_CEILING: ${{ inputs.e2e_provider_operation_ceiling }}
+          CHARACTER_CREATE_SMOKE: ${{ inputs.character_create_smoke }}
           PACING_POLICY: ${{ inputs.battle_pacing_policy }}
           RELEASE_TAG: ${{ inputs.tag }}
         run: |
@@ -103,6 +112,7 @@ jobs:
           [[ "$DIALOGUE_CONTEXT_PROJECTION_OVERRIDE" =~ ^(none|compact|legacy)$ ]]
           [[ "$EXPECTED_DIALOGUE_PROJECTION" =~ ^(compact|legacy)$ ]]
           [[ "$E2E_MAX_ADVANCES" =~ ^[0-9]+$ ]]
+          [[ "$CHARACTER_CREATE_SMOKE" =~ ^(false|true)$ ]]
           test "$E2E_MAX_ADVANCES" -ge 1
           test "$E2E_MAX_ADVANCES" -le 30
           [[ "$E2E_PROVIDER_OPERATION_CEILING" =~ ^[0-9]+$ ]]
@@ -392,6 +402,7 @@ jobs:
 
       - name: Verify email auth mapping and SSE through staging
         env:
+          CHARACTER_CREATE_SMOKE: ${{ inputs.character_create_smoke }}
           IMAGE_REF: ${{ steps.image.outputs.ref }}
           PREVIEW_URL: ${{ steps.worker.outputs.preview_url }}
         run: |
@@ -401,12 +412,12 @@ jobs:
             --region="$GCP_REGION" \
             --image="$IMAGE_REF" \
             --service-account=kshiai-cloud-run@kshiai.iam.gserviceaccount.com \
-            --set-env-vars="NODE_ENV=test,AUTH_PROVIDER=supabase,MEDIA_STORAGE=local,SUPABASE_URL=$SUPABASE_URL,SUPABASE_JWKS_URL=$SUPABASE_JWKS_URL,AUTH_SMOKE_API_URL=$PREVIEW_URL,AUTH_SMOKE_SSE=1" \
+            --set-env-vars="NODE_ENV=test,AUTH_PROVIDER=supabase,MEDIA_STORAGE=local,SUPABASE_URL=$SUPABASE_URL,SUPABASE_JWKS_URL=$SUPABASE_JWKS_URL,AUTH_SMOKE_API_URL=$PREVIEW_URL,AUTH_SMOKE_SSE=1,AUTH_SMOKE_CHARACTER_CREATE=$CHARACTER_CREATE_SMOKE,AUTH_SMOKE_CHARACTER_CREATE_PROVIDER_ATTEMPT_CEILING=30" \
             --set-secrets="DATABASE_URL=kshiai-database-url:latest,SUPABASE_SECRET_KEY=kshiai-supabase-secret-key:latest,SUPABASE_PUBLISHABLE_KEY=kshiai-supabase-publishable-key:latest" \
             --command=node \
             --args=backend/dist/scripts/supabase-auth-smoke.js \
             --max-retries=0 \
-            --task-timeout=10m \
+            --task-timeout=15m \
             --quiet
           gcloud run jobs execute "$AUTH_SMOKE_JOB" \
             --project="$GCP_PROJECT" \
@@ -497,6 +508,7 @@ jobs:
       - name: Record immutable staging evidence
         env:
           ACTIVATION_SOURCE: ${{ steps.e2e.outputs.activation_source }}
+          CHARACTER_CREATE_SMOKE: ${{ inputs.character_create_smoke }}
           EXECUTION: ${{ steps.e2e.outputs.execution }}
           EXPECTED_DIALOGUE_PROJECTION: ${{ inputs.expected_dialogue_projection }}
           RELEASE_TAG: ${{ inputs.tag }}
@@ -516,6 +528,9 @@ jobs:
               dialogueProjection: process.env.EXPECTED_DIALOGUE_PROJECTION,
               dialogueActivationSource: process.env.ACTIVATION_SOURCE,
               observationExecution: process.env.EXECUTION,
+              characterCreateSmoke: process.env.CHARACTER_CREATE_SMOKE === "true",
+              characterCreateProviderAttemptCeiling: 30,
+              characterGenerationReadProbe: "v2_v3_and_migration_resume",
               verification: "exact_revision_health_and_battle_receipt",
             };
             fs.writeFileSync(
@@ -535,6 +550,7 @@ jobs:
       - name: Write staging evidence
         env:
           CAUSAL_NARRATION_MODE: ${{ inputs.battle_causal_narration_mode }}
+          CHARACTER_CREATE_SMOKE: ${{ inputs.character_create_smoke }}
           IMAGE_DIGEST: ${{ steps.image.outputs.digest }}
           RELEASE_TAG: ${{ inputs.tag }}
           REVISION: ${{ steps.backend.outputs.revision }}
@@ -552,6 +568,8 @@ jobs:
             echo "- Backend digest: \`$IMAGE_DIGEST\`"
             echo "- Cloud Run revision: \`$REVISION\`"
             echo "- Causal narration mode: \`$CAUSAL_NARRATION_MODE\`"
+            echo "- A3 character create smoke: \`$CHARACTER_CREATE_SMOKE\` (maximum 30 provider HTTP attempts when enabled)"
+            echo "- B8 character generation read probe: \`v2_v3_and_migration_resume\`"
             echo "- Administrator email: \`$ADMIN_EMAILS\`"
             echo "- Worker version: \`$WORKER_VERSION\`"
             echo "- Preview: $PREVIEW_URL"

@@ -1,0 +1,88 @@
+framework DecisionAnalysis:
+  requires problem and decision
+  requires premise and evidence
+  warns pending
+
+domain A3B8IntegratedStage:
+  description "Audited plan for one combined A3 and B8 Stage candidate without schema-3 activation or production promotion."
+
+problem P1:
+  |
+    Prepare the owner-approved combined A3 and B8 Stage candidate so the exact
+    deployed revision can prove corrected V2 new-character creation and strict
+    V2/V3 generation reads before any schema-3 policy selection or production
+    migration. Keep provider work, pointer movement and production promotion
+    inside their separate authority boundaries.
+
+premise AUTHORITY:
+  |
+    The owner approved proceeding with one combined A3 and B8 Stage candidate
+    after being shown that a narrow A3-only release was not the global optimum.
+    Accepted ADR-0030 and requirement revision 6 preserve immutable generations,
+    version-qualified contracts, no read-time provider calls, and separate
+    provider, pointer, policy, rollback and production-promotion effects.
+
+evidence E_CURRENT:
+  |
+    The current branch contains the corrected V2 authoring response grammar,
+    the V3 migration contracts and persistence, and the focused semantic
+    authoring kernel. The public create route still targets V2. The current
+    character asset repository parses only V2 envelopes, while generic asset
+    storage can retain schema-versioned V2 and V3 generations.
+
+evidence E_STAGE:
+  |
+    The Stage workflow deploys an exact tagged Cloud Run revision without
+    traffic, applies forward-only migrations, builds an immutable Worker
+    preview, and runs temporary authenticated smoke data with cleanup. Its
+    existing smoke proves one retained V2 read but neither an exact V3 read nor
+    migration-work resume, and it does not exercise character creation.
+
+evidence E_PROVIDER_BOUND:
+  |
+    For an empty temporary owner and a prompt that requests no relationship,
+    the create path has one initial generation logical call, one definition
+    call plus at most one schema-repair call, one definition review, one profile
+    generation and one profile validation. Each logical call can contact at
+    most three configured real providers in order; two can fail once as
+    unavailable and the last can make at most three same-provider attempts.
+    Therefore one client create request has a conservative hard maximum of
+    thirty provider HTTP attempts. Actual dollar cost is not fixed by code.
+
+premise ALTERNATIVES:
+  |
+    A deploy the branch and infer compatibility from local tests. B enable V3
+    current selection and battle binding now. C add an exact version-dispatched
+    generation reader plus Stage-only temporary V2/V3 and migration-resume
+    probes, while leaving current selection and schema policy unchanged; add a
+    separately enabled one-request A3 create smoke and require explicit numeric
+    paid-run review immediately before dispatch.
+
+pending U1:
+  |
+    The exact paid dollar amount for the A3 create smoke cannot be guaranteed
+    because provider choice, token use, repair and retry outcomes vary. The
+    operation ceiling and observed result must be reported separately.
+
+pending U2:
+  |
+    Merge, release-tag creation and Stage workflow dispatch remain concrete
+    external writes. Re-read exact revision, required checks and owner authority
+    before each; production promotion is excluded.
+
+decision D1 based_on P1, AUTHORITY, E_CURRENT, E_STAGE, E_PROVIDER_BOUND, ALTERNATIVES, U1, U2:
+  |
+    Choose C. First add and test a strict exact-generation reader that dispatches
+    only on matching storage and envelope versions 2 or 3, validates content
+    digest and version-specific contracts, derives a public legacy-shaped sheet,
+    and compiles the qualified V3 semantic programs without changing any current
+    pointer or readiness policy. Extend the temporary authenticated Stage smoke
+    to prove historical V2 read, non-current V3 read, mixed-tuple rejection,
+    migration attempt load/resume and cleanup with zero provider calls. Add an
+    opt-in A3 API create smoke that makes one client request, polls one attempt,
+    verifies a corrected V2 candidate, discards it and relies on owner deletion
+    for cleanup. Run focused and full local gates, then prepare a reviewable PR.
+    Before any paid A3 dispatch, present the thirty-attempt ceiling, cost
+    uncertainty and cleanup behavior for an exact decision. Do not activate
+    schema 3, move a production character pointer, accept a generated candidate,
+    promote production or silently include another release effect.

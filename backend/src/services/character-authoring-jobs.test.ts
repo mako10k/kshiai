@@ -3,6 +3,7 @@ import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "os";
 import { join } from "node:path";
 import { after, before, describe, it } from "node:test";
+import type { GenerateCharacterInput } from "../llm/types.js";
 
 const directory = mkdtempSync(join(tmpdir(), "kshiai-authoring-jobs-"));
 process.env.DATABASE_URL = "";
@@ -41,6 +42,35 @@ after(async () => {
 });
 
 describe("character authoring jobs", () => {
+  it("omits reference tools when the owner has no characters to reference", async () => {
+    await query(
+      `INSERT INTO users (id, username, password_hash, created_at)
+       VALUES ($1, $2, 'x', $3)`,
+      ["empty-owner", "empty-owner", "2026-09-14T00:00:00.000Z"],
+    );
+    class CapturingProvider extends MockLlmProvider {
+      referenceToolsPresent: boolean | null = null;
+
+      override async generateCharacter(
+        input: GenerateCharacterInput,
+      ) {
+        this.referenceToolsPresent = input.referenceTools !== undefined;
+        return super.generateCharacter(input);
+      }
+    }
+    const provider = new CapturingProvider();
+    await characterAssetRepo.beginCharacterAuthoringAttempt({
+      ownerUserId: "empty-owner",
+      kind: "create",
+      idempotencyKey: "empty-owner-create",
+      requestDigest: "0".repeat(64),
+      sourceText: "最初のキャラクター",
+      sourceDigest: "1".repeat(64),
+    });
+    await drainCharacterAuthoringJobs({ llm: provider, workerId: "empty-owner" });
+    assert.equal(provider.referenceToolsPresent, false);
+  });
+
   it("begins without calling the provider and latest failed hides an older draft", async () => {
     const llm = new MockLlmProvider();
     const first = await characterAssetRepo.beginCharacterAuthoringAttempt({

@@ -401,6 +401,48 @@ async function readRequest(
   return result.rows[0] ? parseRequest(result.rows[0]) : null;
 }
 
+async function nextProviderRequestOrdinal(
+  connection: DatabaseConnection,
+  input: Parameters<typeof recordCharacterSemanticMigrationProviderRequest>[0],
+  attempt: CharacterSemanticMigrationAttemptV1,
+): Promise<number> {
+  const latest = await connection.query<{ request_ordinal: number }>(
+    `SELECT request_ordinal
+       FROM character_semantic_migration_provider_requests
+      WHERE migration_attempt_id = $1
+      ORDER BY request_ordinal DESC
+      LIMIT 1`,
+    [input.migrationAttemptId],
+  );
+  const ordinal = Number(latest.rows[0]?.request_ordinal ?? 0) + 1;
+  if (ordinal > CHARACTER_MIGRATION_PROVIDER_REQUEST_LIMIT) {
+    throw new Error("CHARACTER_MIGRATION_PROVIDER_REQUEST_LIMIT_EXCEEDED");
+  }
+  if (ordinal === 1) {
+    if (input.kind !== "initial_generation" ||
+        input.parentProviderRequestId !== null ||
+        input.requestDigest !== attempt.initialRequestDigest) {
+      throw new Error("CHARACTER_MIGRATION_INITIAL_PROVIDER_REQUEST_INVALID");
+    }
+    return ordinal;
+  }
+  if (!input.parentProviderRequestId) {
+    throw new Error("CHARACTER_MIGRATION_PROVIDER_REQUEST_PARENT_REQUIRED");
+  }
+  const parent = await readRequest(connection, input.parentProviderRequestId);
+  if (!parent || parent.migrationAttemptId !== input.migrationAttemptId) {
+    throw new Error("CHARACTER_MIGRATION_PROVIDER_REQUEST_PARENT_INVALID");
+  }
+  const parentReceipt = await readReceipt(connection, parent.providerRequestId);
+  if (!parentReceipt) {
+    throw new Error("CHARACTER_MIGRATION_PROVIDER_REQUEST_PARENT_PENDING");
+  }
+  if (Date.parse(input.createdAt) < Date.parse(parentReceipt.finishedAt)) {
+    throw new Error("CHARACTER_MIGRATION_PROVIDER_REQUEST_TIME_INVALID");
+  }
+  return ordinal;
+}
+
 export async function recordCharacterSemanticMigrationProviderRequest(input: {
   providerRequestId: string;
   migrationAttemptId: string;
@@ -433,42 +475,7 @@ export async function recordCharacterSemanticMigrationProviderRequest(input: {
       );
       return { request: existing, replayed: true };
     }
-    const latest = await connection.query<{ request_ordinal: number }>(
-      `SELECT request_ordinal
-         FROM character_semantic_migration_provider_requests
-        WHERE migration_attempt_id = $1
-        ORDER BY request_ordinal DESC
-        LIMIT 1`,
-      [input.migrationAttemptId],
-    );
-    const ordinal = Number(latest.rows[0]?.request_ordinal ?? 0) + 1;
-    if (ordinal > CHARACTER_MIGRATION_PROVIDER_REQUEST_LIMIT) {
-      throw new Error("CHARACTER_MIGRATION_PROVIDER_REQUEST_LIMIT_EXCEEDED");
-    }
-    if (ordinal === 1) {
-      if (
-        input.kind !== "initial_generation"
-        || input.parentProviderRequestId !== null
-        || input.requestDigest !== attempt.initialRequestDigest
-      ) {
-        throw new Error("CHARACTER_MIGRATION_INITIAL_PROVIDER_REQUEST_INVALID");
-      }
-    } else {
-      if (!input.parentProviderRequestId) {
-        throw new Error("CHARACTER_MIGRATION_PROVIDER_REQUEST_PARENT_REQUIRED");
-      }
-      const parent = await readRequest(connection, input.parentProviderRequestId);
-      if (!parent || parent.migrationAttemptId !== input.migrationAttemptId) {
-        throw new Error("CHARACTER_MIGRATION_PROVIDER_REQUEST_PARENT_INVALID");
-      }
-      const parentReceipt = await readReceipt(connection, parent.providerRequestId);
-      if (!parentReceipt) {
-        throw new Error("CHARACTER_MIGRATION_PROVIDER_REQUEST_PARENT_PENDING");
-      }
-      if (Date.parse(input.createdAt) < Date.parse(parentReceipt.finishedAt)) {
-        throw new Error("CHARACTER_MIGRATION_PROVIDER_REQUEST_TIME_INVALID");
-      }
-    }
+    const ordinal = await nextProviderRequestOrdinal(connection, input, attempt);
     const request = CharacterSemanticMigrationProviderRequestV1Schema.parse({
       ...input,
       ordinal,

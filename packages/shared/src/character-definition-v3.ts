@@ -5,7 +5,10 @@ import {
   CharacterNarratorProjectionSetV2Schema,
   PsycheTraitProfileV1Schema,
 } from "./battle.js";
-import { CombatReadyCharacterSheetSchema } from "./character.js";
+import {
+  CombatReadyCharacterSheetSchema,
+  type CharacterSheet,
+} from "./character.js";
 import {
   CharacterActionNormProgramV2Schema,
   CharacterRelationshipResolutionV2Schema,
@@ -15,8 +18,10 @@ import {
   CharacterDefinitionV2Schema,
   CharacterDescriptionV2Schema,
   CharacterNormClauseV2Schema,
+  characterDefinitionToLegacySheetProjection,
 } from "./structured-character.js";
 import {
+  type AssetPublicPresentationV2,
   CompilerRequirementSchema,
   assetGenerationEnvelopeV2Schema,
 } from "./structured-assets.js";
@@ -433,6 +438,24 @@ export const CharacterGenerationEnvelopeV3Schema =
 export type CharacterGenerationEnvelopeV3 = z.infer<
   typeof CharacterGenerationEnvelopeV3Schema
 >;
+
+export function characterDefinitionV3ToLegacySheet(input: {
+  characterId: string;
+  ownerUserId: string;
+  definition: CharacterDefinitionV3;
+  publicPresentation: AssetPublicPresentationV2;
+  createdAt: string;
+  updatedAt: string;
+  previousImageUrl?: string | null;
+  operational?: Partial<Pick<CharacterSheet,
+    "visibility" | "record" | "recordOverall" | "improvementMemo" |
+    "opponentMemories" | "deletedAt" | "revisionSnapshot">>;
+}): ReturnType<typeof characterDefinitionToLegacySheetProjection> {
+  return characterDefinitionToLegacySheetProjection({
+    ...input,
+    definition: CharacterDefinitionV3Schema.parse(input.definition),
+  });
+}
 
 const CompiledCharacterActionNormV3Schema = CharacterActionNormV3ObjectSchema
   .omit({ description: true })

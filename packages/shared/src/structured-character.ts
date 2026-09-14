@@ -1311,10 +1311,16 @@ export function defaultCharacterDisclosurePolicyV2(
   });
 }
 
-export function characterDefinitionV2ToLegacySheet(input: {
+export type CharacterDefinitionLegacySheetProjection = Pick<
+  CharacterDefinitionV2,
+  "identity" | "appearance" | "psycheDisposition" | "combat" |
+  "capabilities" | "initialLoadout" | "inventory"
+>;
+
+type CharacterDefinitionLegacySheetInput = {
   characterId: string;
   ownerUserId: string;
-  definition: CharacterDefinitionV2;
+  definition: CharacterDefinitionLegacySheetProjection;
   publicPresentation: AssetPublicPresentationV2;
   createdAt: string;
   updatedAt: string;
@@ -1322,7 +1328,11 @@ export function characterDefinitionV2ToLegacySheet(input: {
   operational?: Partial<Pick<CharacterSheet,
     "visibility" | "record" | "recordOverall" | "improvementMemo" |
     "opponentMemories" | "deletedAt" | "revisionSnapshot">>;
-}): CombatReadyCharacterSheet {
+};
+
+export function characterDefinitionToLegacySheetProjection(
+  input: CharacterDefinitionLegacySheetInput,
+): CombatReadyCharacterSheet {
   const { definition } = input;
   const nameValues = (kind: "real_name" | "nickname" | "self_reference" | "epithet") =>
     definition.identity.names.filter((name) => name.kind === kind).map((name) => name.value);
@@ -1397,5 +1407,16 @@ export function characterDefinitionV2ToLegacySheet(input: {
     combatFlags: definition.combat.flags,
     narrativeBlurb: input.publicPresentation.description,
     ...input.operational,
+  });
+}
+
+export function characterDefinitionV2ToLegacySheet(
+  input: Omit<CharacterDefinitionLegacySheetInput, "definition"> & {
+    definition: CharacterDefinitionV2;
+  },
+): CombatReadyCharacterSheet {
+  return characterDefinitionToLegacySheetProjection({
+    ...input,
+    definition: CharacterDefinitionV2Schema.parse(input.definition),
   });
 }

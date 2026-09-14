@@ -3,11 +3,15 @@ import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { describe, it } from "node:test";
 
-function workflow(name: string): string {
+function repositoryFile(path: string): string {
   return readFileSync(
-    fileURLToPath(new URL(`../../../.github/workflows/${name}`, import.meta.url)),
+    fileURLToPath(new URL(`../../../${path}`, import.meta.url)),
     "utf8",
   );
+}
+
+function workflow(name: string): string {
+  return repositoryFile(`.github/workflows/${name}`);
 }
 
 describe("persistent E2E workflow contract", () => {
@@ -134,5 +138,22 @@ describe("persistent E2E workflow contract", () => {
       "migrations must finish before the new revision can start",
     );
     assert.match(promote, /Narration task target is not bound to the staged revision tag/);
+  });
+
+  it("keeps the paid A3 smoke opt-in and records the B8 read proof", () => {
+    const stage = workflow("stage-release.yml");
+    const authSmoke = repositoryFile("backend/src/scripts/supabase-auth-smoke.ts");
+    assert.match(
+      stage,
+      /character_create_smoke:[\s\S]*?default: "false"[\s\S]*?- "false"[\s\S]*?- "true"/,
+    );
+    assert.match(stage, /AUTH_SMOKE_CHARACTER_CREATE=\$CHARACTER_CREATE_SMOKE/);
+    assert.match(authSmoke, /AUTH_SMOKE_CHARACTER_CREATE !== "true"/);
+    assert.match(
+      stage,
+      /AUTH_SMOKE_CHARACTER_CREATE_PROVIDER_ATTEMPT_CEILING=30/,
+    );
+    assert.match(stage, /characterCreateProviderAttemptCeiling: 30/);
+    assert.match(stage, /characterGenerationReadProbe: "v2_v3_and_migration_resume"/);
   });
 });
