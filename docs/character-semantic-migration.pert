@@ -154,6 +154,7 @@ task cc303 cm301 -> cm303:
   title "Separately authorize merge and establish the exact Stage tag"
   description "Under separate external-write authority, merge the reviewed integrated candidate, create the exact Stage tag, and read back both identities without dispatching Stage or promoting production."
   duration 1p
+  status active
   owner "user and codex"
   requires:
     cr001 1
@@ -358,3 +359,10 @@ work_event WE-874020a4749b11a6eea55b544fc1e23ba3f36bec78863d43c7436c246a61d54b:
   task cc301
   kind finish
   occurred_at 2026-09-14T17:55:24+09:00
+
+work_event WE-b4b78f17b93736501c37b2168e9fc88db553ea0e0e59ad885d3e7585b4d3ede1:
+  model 1
+  task cc303
+  kind start
+  occurred_at 2026-09-14T18:18:25+09:00
+  planned_value 1p
