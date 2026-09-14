@@ -1,8 +1,10 @@
-# Delivery plan revision 4: reconcile the integrated A3+B8 Stage delivery path.
+# Delivery plan revision 6: complete owner interaction, evaluation and production readiness.
+# Authority, requirement coverage and historical disposition:
+# docs/character-semantic-migration-plan-revision-6.md
 project csm001:
   version 9
   title "Restore character authoring and migrate frozen ready V2 characters to strict V3"
-  description "Execute the accepted two-lane recovery plan as refined by accepted ADR-0031 and the owner-selected integrated A3+B8 Stage candidate. Complete review of the exact integrated candidate, separately establish its merged and tagged identity, then use one separately approved Stage proof for corrected V2 creation and dual V2/V3 reads. Provider generation, owner candidate acceptance, append/CAS, schema-3 activation and production promotion remain separate effects."
+  description "Deliver accepted focused create, revise and V2-to-V3 migration through the common kernel, with protected meaning and complete server reconciliation. Connect the real provider and consumer paths before live proof. Preserve failed legacy Stage history without making more V2 repair a prerequisite. Restore the frozen characters and verify strict V3 authoring cutover. Provider work, deployment, candidate acceptance and production activation remain separate effects."
   as_of 2026-09-14
   duration_unit point
   velocity 1p/1d
@@ -31,9 +33,6 @@ milestone cm102:
 milestone cm105:
   title "A2 follow-up registered action-norm clause vocabulary locally verified"
   state reached
-
-milestone cm103:
-  title "A3 new-character creation deployment verified"
 
 milestone cm201:
   title "B1 successor ADR package proposed"
@@ -85,8 +84,17 @@ milestone cm301:
 milestone cm303:
   title "Integrated A3 B8 revision merged and tagged for Stage"
 
-milestone cm302:
-  title "Combined A3 B8 Stage proof deployed and verified"
+milestone cm304:
+  title "Focused create revise and migration connected and locally verified"
+
+milestone cm305:
+  title "Connected focused authoring candidate reviewed and tagged"
+
+milestone cm306:
+  title "Connected focused authoring and dual-read Stage proof verified"
+
+milestone cm307:
+  title "Qualified focused authoring code and dual readers deployed to production"
 
 milestone cm209:
   title "B9 exact production manifest and no-write dry-run accepted"
@@ -161,30 +169,15 @@ task cc303 cm301 -> cm303:
     cr002 1
   source "docs/evidence/a3-b8-integrated-merge-tag-readback-2026-09-14.md"
 
-task cc302 cm303 -> cm302:
-  title "Separately approve and run the combined A3 B8 Stage proof"
-  description "Separately approve one Stage deployment of the exact merged and tagged revision that verifies corrected V2 creation and strict historical V2 and non-current V3 reads, then read back health and rollback readiness. Do not activate schema 3 or promote production."
-  duration 1p
-  status active
-  owner "user and codex"
-  requires:
-    cr001 1
-    cr002 1
-  source "docs/evidence/a3-b8-integrated-stage-failure-2026-09-14.md"
+work cc302:
+  title "Historical failed legacy V2 Stage proof; withdrawn from execution"
+  description "Runs 34828916788 and 34832214571 failed at rc12. This is not completed or accepted work. Original task and start event remain in Git 0d96538 and docs/evidence/a3-b8-integrated-stage-failure-2026-09-14.md. Owner-directed focused integration is now cc304-cc306; do not resume legacy repair from this historical Work."
 
-gate cg303 cm302 -> cm103:
-  reason "The combined Stage proof supplies the A3 new-character creation deployment evidence."
+work_order:
+  cc302
 
-gate cg304 cm302 -> cm208:
-  reason "The combined Stage proof supplies the B8 dual V2 V3 read deployment evidence."
-
-task ca104 cm103 -> cm213:
-  title "Reconcile deployed Lane A authoring state before final V3 cutover"
-  description "Before B14, prove the deployed authoring repair is included or superseded by the exact V3 authoring revision and that no temporary V2 response contract is mistaken for final cutover."
-  duration 1p
-  owner "codex"
-  requires:
-    cr001 1
+gate cg304 cm307 -> cm208:
+  reason "Production reader and connected-code readiness must precede production migration; deployment does not activate schema3 policy or character pointers."
 
 task cb201 cm000 -> cm201:
   title "B1 reject ADR-0029 direction and propose the successor ADR"
@@ -297,6 +290,45 @@ task cb207 cm206 -> cm207:
 gate cg302 cm207 -> cm300:
   reason "The combined Stage candidate requires the locally verified B8 reader and semantic-authoring foundation."
 
+task cc304 cm207 -> cm304:
+  title "Connect focused authoring to real create revise and migration consumers"
+  description "Implement the real provider effect driver and wire the accepted kernel and character adapter into queued create/revise and migration entrypoints. Connect owner-authenticated answer/retry endpoints and UI, safe candidate and mode-specific semantic-diff presentation, and final acceptance without conflating answers with acceptance. Preserve frozen identities, accounting, fences, protected meaning and final reconciliation. Controlled HTTP replies must traverse real API/UI, worker, driver and persistence for all three modes, focused recovery, bounded termination, stale results, answer continuation and source-based retry. Keep new production policy inactive until B14; candidate deployment must preserve current behavior without adding legacy V2 repair. No paid call or deployment. Component-only fixtures cannot complete this task."
+  duration 6p
+  owner "codex"
+  source "docs/character-semantic-migration-plan-revision-6.md"
+  requires:
+    cr001 1
+
+task cc305 cm304 -> cm305:
+  title "Review the connected candidate and establish its new Stage identity"
+  description "Review exact route and owner-interaction evidence, execution policy and rollback against ADR-0031. Carry the former ca104 old/new-path reconciliation here and retain it for B14. Prepare and obtain the existing R20 owner decisions on representative create/revise/migrate corpus, numeric success criteria and evaluation budget before live evaluation; do not invent thresholds. Run repository checks and, under separate external-write authority, establish the new Stage revision/tag. Do not reuse rc12 or change shared infrastructure."
+  duration 1p
+  owner "user and codex"
+  requires:
+    cr001 1
+    cr002 1
+
+gate cg305 cm303 -> cm305:
+  reason "Review the new candidate against the already established historical rc12 identity without requiring the failed legacy Stage to succeed."
+
+task cc306 cm305 -> cm306:
+  title "Verify the connected focused authoring path on Stage"
+  description "Under the separately approved provider route and budget, deploy the connected candidate and evaluate the owner-reviewed R20 corpus through focused create/revise/non-current migration and owner interactions. Measure completion, generated quality, reconciliation, protected-anchor and source preservation, unnecessary/repeated questions, late rework, checkpoint delay, latency, calls, tokens/cost and final semantic correctness against the agreed criteria. Retain failures; smoke success alone is insufficient. Verify historical reads and rollback. No production policy, pointer or traffic change."
+  duration 2p
+  owner "user and codex"
+  requires:
+    cr001 1
+    cr002 1
+
+task cc307 cm306 -> cm307:
+  title "Deploy and read back qualified production code before migration"
+  description "Under separate production-deployment authority, promote the exact Stage-qualified backend and frontend artifacts with required compatible storage changes. Read back production identities, dual V2/V3 readers, connected migration path, owner interaction routes and rollback readiness. Keep current authoring policy and character pointers unchanged. Stop on mismatch; do not substitute policy activation for code deployment. Preserve shared Stage/production infrastructure."
+  duration 1p
+  owner "user and codex"
+  requires:
+    cr001 1
+    cr002 1
+
 task cb209 cm208 -> cm209:
   title "B9 freeze the exact eight-generation manifest and run no-write dry-run"
   description "Refresh exact identities, obtain owner manifest review, and report drift, already-complete attempts, expected provider work and ceilings with zero provider calls and zero writes."
@@ -308,7 +340,7 @@ task cb209 cm208 -> cm209:
 
 task cb210 cm209 -> cm210:
   title "B10 separately approve and generate provider-backed candidates"
-  description "Approve exact provider model route and budget, generate only bounded candidates, retain every request receipt and semantic diff, and leave failures non-current."
+  description "Approve exact provider model route and budget, generate candidates through the same focused migration consumer verified by cc304 and cc306, retain every request receipt and semantic diff, and leave failures non-current. Do not substitute the old whole-candidate generator."
   duration 1p
   owner "user and codex"
   requires:
@@ -343,7 +375,7 @@ task cb213 cm212 -> cm213:
 
 task cb214 cm213 -> cm114:
   title "B14 separately approve activate and verify strict schema-3 authoring"
-  description "Reconcile Lane A deployment, activate the qualified authoring policy by CAS, verify create and revision emit V3 and historical paths use migration, and retain rollback evidence."
+  description "Reuse cc305 old/new-path reconciliation and cc307 production identity evidence, confirm no intervening drift, then separately activate the qualified authoring policy by CAS. Verify real create/revision, owner questions and source-based retries, candidate review/acceptance and strict V3 outcomes; historical paths use the qualified migration route. Retain rollback evidence. This is policy cutover, not a substitute for earlier code deployment or another legacy repair task."
   duration 1p
   owner "user and codex"
   requires:
@@ -376,9 +408,29 @@ work_event WE-119a95a48fc269792ba3863d33c9efd5e58c286dc1d6a1cee21874494367e60f:
   kind finish
   occurred_at 2026-09-14T18:25:28+09:00
 
-work_event WE-ba6d094284559cf32b181dbb1f1659d96e73c86be17232ae4f943147d46c0083:
-  model 1
-  task cc302
-  kind start
-  occurred_at 2026-09-14T18:36:04+09:00
-  planned_value 1p
+milestone_criterion_set CS_FINAL:
+  milestone cm114
+  revision R1
+  commitment sha256:71f824504f11368a17346d862b915a7ebfb701c4424bce0b99921245ac1e3aa3
+  criterion V3_MODES required owner "Create and revise emit strict V3 through focused authoring; V2 migration preserves protected meaning"
+  criterion RESTORATION required owner "Every frozen migration target has a verified outcome and historical battles remain readable"
+
+milestone_criterion_set CS_CONNECTED:
+  milestone cm304
+  revision R2
+  commitment sha256:36a9bcd98dae3d743397e6b7214280383c44acaab3e874b648f2c101563f64ab
+  criterion THREE_MODES required owner "Actual create revise and migration entrypoints invoke the focused provider driver and kernel"
+  criterion RECOVERY required owner "Controlled HTTP failures prove bounded focused recovery and durable candidate or failure with no whole-character request"
+  criterion OWNER_FLOW required owner "Real answer and retry API/UI continue authoring and expose safe candidate semantic diff and separate final acceptance"
+
+milestone_criterion_set CS_EVALUATION:
+  milestone cm306
+  revision R1
+  commitment sha256:d0b8e7f399bf366d8b4c942a51795f3e83df411ce16f84cde2d1958a417b1b79
+  criterion R20 required owner "Owner-reviewed three-mode corpus meets agreed semantic recovery and resource criteria with retained measurements and failures"
+
+milestone_criterion_set CS_PRODUCTION:
+  milestone cm307
+  revision R1
+  commitment sha256:2e7be78ebe9558905296ae9351f6ca4b3b1f261d5baf9a13bc7ab84485aab0e7
+  criterion DEPLOYED required owner "Exact Stage-qualified production backend frontend storage and dual readers verified before pointer or policy mutation"
