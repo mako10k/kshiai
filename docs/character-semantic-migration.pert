@@ -144,9 +144,11 @@ task cc301 cm300 -> cm301:
   title "Complete review of the integrated A3 B8 Stage candidate"
   description "Reconcile PR review and CI evidence for the exact integrated reader and smoke candidate, retain attributable external blockers explicitly, and produce one merge-ready revision without merging, tagging, deploying or dispatching a provider call."
   duration 1p
+  status done
   owner "codex"
   requires:
     cr001 1
+  source "docs/evidence/a3-b8-integrated-stage-review-2026-09-14.md"
 
 task cc303 cm301 -> cm303:
   title "Separately authorize merge and establish the exact Stage tag"
@@ -343,3 +345,16 @@ task cb214 cm213 -> cm114:
   requires:
     cr001 1
     cr002 1
+
+work_event WE-c5f5aabffbd695deaccefe0aaf209b017a3e93af0163f218e25a8ee56e24f186:
+  model 1
+  task cc301
+  kind start
+  occurred_at 2026-09-14T17:53:41+09:00
+  planned_value 1p
+
+work_event WE-874020a4749b11a6eea55b544fc1e23ba3f36bec78863d43c7436c246a61d54b:
+  model 1
+  task cc301
+  kind finish
+  occurred_at 2026-09-14T17:55:24+09:00
