@@ -109,26 +109,7 @@ export function advancePsycheReactionV1(input: {
   next.impulse.approach = clamp(next.emotion.relief * traits.approachTendency / 1000 * (1 - inhibition));
   next.impulse.seekReassurance = clamp(next.emotion.anxiety * Math.max(0, relationship.affiliation + 1000) / 2000 * (1 - inhibition));
 
-  const interpretations = (["adverse", "uncertain", "affiliative"] as const)
-    .filter((key) => next.interpretation[key] >= 334);
-  const impulses = ([
-    ["confront", next.impulse.confront],
-    ["withdraw", next.impulse.withdraw],
-    ["approach", next.impulse.approach],
-    ["seek_reassurance", next.impulse.seekReassurance],
-  ] as const).filter(([, value]) => value >= 334).map(([key]) => key);
-  const actionProjection: PsycheReactionProjectionV1 = {
-    schemaVersion: 1,
-    arousal: band(next.arousal),
-    interpretation: interpretations,
-    impulse: impulses,
-  };
-  const expressionProjection: PsycheReactionProjectionV1 = {
-    ...actionProjection,
-    expressionTendency: traits.expressionRestraint >= 667
-      ? "withhold"
-      : traits.expressionRestraint >= 334 ? "restrained" : "available",
-  };
+  const { actionProjection, expressionProjection } = projectPsycheReactionV1(next, traits);
   const receipt: PsycheReactionReceiptV1 = {
     schemaVersion: 1,
     policyGeneration: PSYCHE_REACTION_POLICY_V1,
@@ -147,4 +128,35 @@ export function advancePsycheReactionV1(input: {
     ],
   };
   return { state: next, actionProjection, expressionProjection, receipt };
+}
+
+/** Pure projection: never advances or decays the private reaction state. */
+export function projectPsycheReactionV1(
+  state: PsycheReactionStateV1,
+  traits: PsycheTraitProfileV1 = NEUTRAL_PSYCHE_TRAITS_V1,
+): {
+  actionProjection: PsycheReactionProjectionV1;
+  expressionProjection: PsycheReactionProjectionV1;
+} {
+  const interpretations = (["adverse", "uncertain", "affiliative"] as const)
+    .filter((key) => state.interpretation[key] >= 334);
+  const impulses = ([
+    ["confront", state.impulse.confront],
+    ["withdraw", state.impulse.withdraw],
+    ["approach", state.impulse.approach],
+    ["seek_reassurance", state.impulse.seekReassurance],
+  ] as const).filter(([, value]) => value >= 334).map(([key]) => key);
+  const actionProjection: PsycheReactionProjectionV1 = {
+    schemaVersion: 1,
+    arousal: band(state.arousal),
+    interpretation: interpretations,
+    impulse: impulses,
+  };
+  const expressionProjection: PsycheReactionProjectionV1 = {
+    ...actionProjection,
+    expressionTendency: traits.expressionRestraint >= 667
+      ? "withhold"
+      : traits.expressionRestraint >= 334 ? "restrained" : "available",
+  };
+  return { actionProjection, expressionProjection };
 }

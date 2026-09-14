@@ -1,0 +1,830 @@
+{
+  "date": "2026-09-09",
+  "scope": "Local registered scope; not runtime implementation completion. Impact paths summarized by count; exact graph retained locally.",
+  "reviewed": [
+    {
+      "ref": "adr/character-focus",
+      "path": "docs/adr/0008-battle-private-character-focus-state.md",
+      "causes": [
+        "adr/psyche-boundary"
+      ],
+      "old_seal_id": "fa337eb38cc4efa5c5d3eb71d8b87e8a181b001109848ca18008516d855e8ab6",
+      "new_seal_id": "9c3006ff30fb99fa76fe41bfe2f85033ddbfad9a2f67f7bdfaa7ecda6752d235",
+      "review": "Reviewed ADR-0008: retain legacy focus no-action-effect, no-call and shadow scope; no authorization to connect focus to new decisions."
+    },
+    {
+      "ref": "adr/structured-character",
+      "path": "docs/adr/0011-structured-character-definition.md",
+      "causes": [
+        "adr/psyche-boundary"
+      ],
+      "old_seal_id": "f9bea5f209f6faa669113e54ecc325d18986130a7ff872ad5b57ccde06c676b7",
+      "new_seal_id": "a16926e3e7cc0153d24ac2ec61390a382f1a0a95abb1cf73d83af40da60f754e",
+      "review": "Reviewed ADR-0011: unified conscious action and expression remain compatible with bounded effects and raw-interior privacy."
+    },
+    {
+      "ref": "adr/expression-state",
+      "path": "docs/adr/0025-expression-state-and-utterance-actuals.think",
+      "causes": [
+        "adr/psyche-boundary"
+      ],
+      "old_seal_id": "710e47e1fc0ade17fbd5b4a85f033cb4de3bb9b2857e2a64064e7c3d2d5f16a6",
+      "new_seal_id": "2dce4e3a33324a12de69701b67ab12eae7a2b6e7b45491ff923c4bd9bc3b4697",
+      "review": "Reviewed ADR-0025: retain expression-state/history separation, identical utterance acceptance, closed schema and revision commit; new ownership not yet implemented."
+    },
+    {
+      "ref": "projection/adr-0025",
+      "path": "docs/adr/0025-expression-state-and-utterance-actuals.md",
+      "causes": [
+        "adr/expression-state"
+      ],
+      "old_seal_id": "8fde2f5d542c92512cf8de93e19a821e1f7afdc89aeb3192d8c2f078f062bc6f",
+      "new_seal_id": "a95dbf64df749d20fda4735d7a3a9c2afb27ac8596764e2bf1b4e90a5a08a740",
+      "review": "Reviewed Markdown against unchanged ADR-0025 canonical decisions; distinct outputs do not imply separate consciousness."
+    },
+    {
+      "ref": "adr/psyche-repair",
+      "path": "docs/adr/0026-compact-psyche-semantic-closure-repair.think",
+      "causes": [
+        "adr/expression-state"
+      ],
+      "old_seal_id": "7d1f51a8a99fdbb64f439085efe4d2d8f58bcc66fba712b0686c45345022567f",
+      "new_seal_id": "1ede4f74fa5c98580939051e0276a3a5e05ccddae73793b333f7156af7842ab3",
+      "review": "Reviewed ADR-0026: retain bounded repair and legacy generation contract; do not automatically migrate repair closure."
+    },
+    {
+      "ref": "projection/adr-0026",
+      "path": "docs/adr/0026-compact-psyche-semantic-closure-repair.md",
+      "causes": [
+        "adr/psyche-repair"
+      ],
+      "old_seal_id": "3ad3ca433f3c456f70d804ef84a28e9c9d01fd31d9a789627a724db8eb9f85ee",
+      "new_seal_id": "3f4550a6c52c61a917739cd1bfeb3ac7ff9911a94b6e10e6b3e18b85eb2dd73f",
+      "review": "Reviewed projection against unchanged ADR-0026 decisions; bounded repair and old-battle compatibility remain."
+    },
+    {
+      "ref": "design/psyche-reaction",
+      "path": "docs/lightweight-psyche-reaction-policy.md",
+      "causes": [
+        "adr/psyche-boundary"
+      ],
+      "old_seal_id": "51627e4df889c825781c72d3e3cfcdb67a08594ba0803960e5ded9a8fccafa0b",
+      "new_seal_id": "c3be1f179e29fc80f45d536c014355ee6abca2698be353e34c4b43e25332e118",
+      "review": "Corrected independent action/expression prohibition to one conscious owner; preserve non-deliberative reaction model and privacy."
+    },
+    {
+      "ref": "design/psyche-slice",
+      "path": "docs/lightweight-psyche-adoptable-slice.md",
+      "causes": [
+        "design/psyche-reaction"
+      ],
+      "old_seal_id": "0cc7b9166cf7a101dab6e776d833fdc7ef041d847857a89de3cf752f95973931",
+      "new_seal_id": "2df2b781a50cf88d8871bc16710753dc55c24cc90f46b143de7b4a6b66a505e8",
+      "review": "Corrected general sharing prohibition; separate projections and no-call remain scoped to legacy V1 compatibility."
+    },
+    {
+      "ref": "design/agency-responsibility",
+      "path": "docs/character-agency-responsibility-design-v1.md",
+      "causes": [
+        "adr/psyche-boundary",
+        "design/psyche-slice",
+        "adr/expression-state",
+        "adr/psyche-repair"
+      ],
+      "old_seal_id": "f89669cae17cb5b4bdd372dc613947a8ac100740178bd98cf8b3175a7ea22d92",
+      "new_seal_id": "9485c01886666cf78e93763e27b6b6524e5f200d2bec64be4a45291c13e54956",
+      "review": "Corrected revision 2: unified conscious goals, actions and utterances; detailed schemas, writers, lifetimes remain pending."
+    },
+    {
+      "ref": "backlog/character-agency",
+      "path": "docs/character-agency-backlog.md",
+      "causes": [
+        "design/agency-responsibility"
+      ],
+      "old_seal_id": "2e01962f814950e1eb0ef05e5a044b1db518f590c1a77ed6a6de2ce200960789",
+      "new_seal_id": "3ba5383f923c43b57fd8b274dad79cd9b8009a5038c5ad427345d95f802d4cde",
+      "review": "Corrected revision 4 responsibility baseline; priority and requested capabilities preserved."
+    },
+    {
+      "ref": "plan/dialogue-expression",
+      "path": "docs/dialogue-expression-realization.pert",
+      "causes": [
+        "design/agency-responsibility",
+        "backlog/character-agency"
+      ],
+      "old_seal_id": "b5e7bab122c597365e7679eda0339b84c5b4babb13f55c84791a3687f3d1ce59",
+      "new_seal_id": "45396d18919168a0982db90e2fa5b9d1fd21767951a688afc2e649a467795a1f",
+      "review": "Corrected delivery revision 12 tasks t027-t029: ADR-0027 accepted, detailed implementation acceptance still pending."
+    },
+    {
+      "ref": "implementation/psyche-schema",
+      "path": "packages/shared/src/battle.ts",
+      "causes": [
+        "adr/psyche-boundary"
+      ],
+      "old_seal_id": "93be69ab470758d33dbb7cebfe6455aa2543d8d0365431f3f3c6da84a8b6c217",
+      "new_seal_id": "77e2e8d6ebe4503d2a86eebb1cc85b4fc0f5af2405b0a135f6163bcd4c6dca08",
+      "review": "Corrected responsibility comments only; legacy schema and runtime unchanged, new owner migration not implemented."
+    },
+    {
+      "ref": "implementation/llm-types",
+      "path": "backend/src/llm/types.ts",
+      "causes": [
+        "adr/psyche-boundary",
+        "adr/expression-state"
+      ],
+      "old_seal_id": "6e582ac6079592cf41342e11cd1a600bf4444530fdcf65486ba4b6369f241594",
+      "new_seal_id": "3ac35cc572548ca109a414a0af0b980383f448a773c12e3aa51854a1bd3b83ca",
+      "review": "Reviewed legacy V1/V2 type comments: reaction excludes deliberative goals; detailed writer and lifetime migration remains pending."
+    },
+    {
+      "ref": "implementation/battle-service",
+      "path": "backend/src/services/battle-service.ts",
+      "causes": [
+        "adr/psyche-boundary",
+        "adr/expression-state",
+        "adr/psyche-repair"
+      ],
+      "old_seal_id": "cff78d6bfd12473eccdba648cfe552833793d6e184f3127ed18a679dd8e1739c",
+      "new_seal_id": "d15f0e74251ebf6d1e6c79d23791cec636e7a48de9a1a63d3355f0284fe2591b",
+      "review": "Corrected independent-consumer comment only; existing routing and payload retained, new architecture not implemented."
+    },
+    {
+      "ref": "implementation/llm-adapter",
+      "path": "backend/src/llm/openai-compatible.ts",
+      "causes": [
+        "adr/psyche-boundary",
+        "adr/expression-state",
+        "adr/psyche-repair"
+      ],
+      "old_seal_id": "d76a724e4ba01ebefc0c1d90625a2ea15da817cd90797b985eed9a17a2059d81",
+      "new_seal_id": "6c2e9e3e526983af768b2a898efbcc34e949d64ed9fb0b1ab875d4b37eb61c5a",
+      "review": "Reviewed legacy prompt responsibility tags; existing runtime prompts retained for compatibility, migration pending."
+    }
+  ],
+  "added": [
+    {
+      "ref": "archive/adr-0004",
+      "path": "docs/adr/0004-versioned-lightweight-psyche-dynamics.md",
+      "causes": [
+        "adr/psyche-boundary"
+      ],
+      "new_seal_id": "c60f19e3e97fad6e86e0e3c2843ac50392ecf42eb145532e81dbcf4f2f6dc8fa",
+      "review": "Historical ADR-0004 preserved with Superseded metadata; original rationale retained and old immutable Seal preserved."
+    },
+    {
+      "ref": "implementation/expression-prompt",
+      "path": "backend/src/llm/character-expression-prompt.ts",
+      "causes": [
+        "adr/psyche-boundary",
+        "adr/expression-state"
+      ],
+      "new_seal_id": "c2f4699be7535ea73cfe0f2a533bca647aa143ee6c3bcb59962232115288e97b",
+      "review": "Reviewed unchanged legacy private-stage expressionBrief instructions; future conscious goal and utterance migration identified, NOT implemented."
+    },
+    {
+      "ref": "implementation/mock-adapter",
+      "path": "backend/src/llm/mock.ts",
+      "causes": [
+        "adr/psyche-boundary",
+        "adr/expression-state"
+      ],
+      "new_seal_id": "fbaa75723a9cb10cd2ef10f7d277f93caa7741ae87d6bd106651cf6b1e4ee531",
+      "review": "Reviewed unchanged legacy Compact mock: observation paraphrase and null action; future schema/wiring migration identified, NOT real-model evidence."
+    },
+    {
+      "ref": "evidence/adr-0027-implementation-impact",
+      "path": "docs/evidence/adr-0027-implementation-impact-2026-09-09.md",
+      "causes": [
+        "adr/psyche-boundary",
+        "implementation/psyche-schema",
+        "implementation/llm-types",
+        "implementation/battle-service",
+        "implementation/llm-adapter",
+        "implementation/expression-prompt",
+        "implementation/mock-adapter"
+      ],
+      "new_seal_id": "762225f2f1dd4de8ca84d296fc37ee534eeed36a71144c0b256e6786d358e1e6",
+      "review": "Read code and documented existing joint output, legacy ownership, state acceptance, later-bucket redecision, proposal rejection and compatibility; no runtime migration."
+    }
+  ],
+  "status": {
+    "schema": "sealgraph/status/v3",
+    "statuses": [
+      {
+        "ref": "adr/0027",
+        "head_seal_id": "87d4106035e8b09c667d27d164691b16b93c12c6c683b414097b3763b0c53e5d",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "docs/adr/0027-unified-conscious-agency-and-psyche-boundary.think",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "adr/character-focus",
+        "head_seal_id": "9c3006ff30fb99fa76fe41bfe2f85033ddbfad9a2f67f7bdfaa7ecda6752d235",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "docs/adr/0008-battle-private-character-focus-state.md",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "adr/expression-state",
+        "head_seal_id": "2dce4e3a33324a12de69701b67ab12eae7a2b6e7b45491ff923c4bd9bc3b4697",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "docs/adr/0025-expression-state-and-utterance-actuals.think",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "adr/psyche-boundary",
+        "head_seal_id": "87d4106035e8b09c667d27d164691b16b93c12c6c683b414097b3763b0c53e5d",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "docs/adr/0027-unified-conscious-agency-and-psyche-boundary.think",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "adr/psyche-repair",
+        "head_seal_id": "1ede4f74fa5c98580939051e0276a3a5e05ccddae73793b333f7156af7842ab3",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "docs/adr/0026-compact-psyche-semantic-closure-repair.think",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "adr/structured-character",
+        "head_seal_id": "a16926e3e7cc0153d24ac2ec61390a382f1a0a95abb1cf73d83af40da60f754e",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "docs/adr/0011-structured-character-definition.md",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "archive/adr-0004",
+        "head_seal_id": "c60f19e3e97fad6e86e0e3c2843ac50392ecf42eb145532e81dbcf4f2f6dc8fa",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "docs/adr/0004-versioned-lightweight-psyche-dynamics.md",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "backlog/character-agency",
+        "head_seal_id": "3ba5383f923c43b57fd8b274dad79cd9b8009a5038c5ad427345d95f802d4cde",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "docs/character-agency-backlog.md",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "design/agency-responsibility",
+        "head_seal_id": "9485c01886666cf78e93763e27b6b6524e5f200d2bec64be4a45291c13e54956",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "docs/character-agency-responsibility-design-v1.md",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "design/psyche-reaction",
+        "head_seal_id": "c3be1f179e29fc80f45d536c014355ee6abca2698be353e34c4b43e25332e118",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "docs/lightweight-psyche-reaction-policy.md",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "design/psyche-slice",
+        "head_seal_id": "2df2b781a50cf88d8871bc16710753dc55c24cc90f46b143de7b4a6b66a505e8",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "docs/lightweight-psyche-adoptable-slice.md",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "evidence/adr-0027-implementation-impact",
+        "head_seal_id": "762225f2f1dd4de8ca84d296fc37ee534eeed36a71144c0b256e6786d358e1e6",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "docs/evidence/adr-0027-implementation-impact-2026-09-09.md",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "implementation/battle-service",
+        "head_seal_id": "d15f0e74251ebf6d1e6c79d23791cec636e7a48de9a1a63d3355f0284fe2591b",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "backend/src/services/battle-service.ts",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "implementation/expression-prompt",
+        "head_seal_id": "c2f4699be7535ea73cfe0f2a533bca647aa143ee6c3bcb59962232115288e97b",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "backend/src/llm/character-expression-prompt.ts",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "implementation/llm-adapter",
+        "head_seal_id": "6c2e9e3e526983af768b2a898efbcc34e949d64ed9fb0b1ab875d4b37eb61c5a",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "backend/src/llm/openai-compatible.ts",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "implementation/llm-types",
+        "head_seal_id": "3ac35cc572548ca109a414a0af0b980383f448a773c12e3aa51854a1bd3b83ca",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "backend/src/llm/types.ts",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "implementation/mock-adapter",
+        "head_seal_id": "fbaa75723a9cb10cd2ef10f7d277f93caa7741ae87d6bd106651cf6b1e4ee531",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "backend/src/llm/mock.ts",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "implementation/psyche-schema",
+        "head_seal_id": "77e2e8d6ebe4503d2a86eebb1cc85b4fc0f5af2405b0a135f6163bcd4c6dca08",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "packages/shared/src/battle.ts",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "plan/dialogue-expression",
+        "head_seal_id": "45396d18919168a0982db90e2fa5b9d1fd21767951a688afc2e649a467795a1f",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "docs/dialogue-expression-realization.pert",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "projection/adr-0025",
+        "head_seal_id": "a95dbf64df749d20fda4735d7a3a9c2afb27ac8596764e2bf1b4e90a5a08a740",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "docs/adr/0025-expression-state-and-utterance-actuals.md",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "projection/adr-0026",
+        "head_seal_id": "3f4550a6c52c61a917739cd1bfeb3ac7ff9911a94b6e10e6b3e18b85eb2dd73f",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "docs/adr/0026-compact-psyche-semantic-closure-repair.md",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "projection/adr-0027",
+        "head_seal_id": "eb9ab069a0773222b64bfc78e459c28f72177c4d277d9bbd06f277a7d8d9342a",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "docs/adr/0027-unified-conscious-agency-and-psyche-boundary.md",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      }
+    ]
+  },
+  "stale": {
+    "schema": "sealgraph/stale/v2",
+    "frontier": false,
+    "scan": true,
+    "statuses": []
+  },
+  "fsck": {
+    "schema": "sealgraph/fsck/v2",
+    "result": "ok",
+    "blobs": 133,
+    "seals": 39,
+    "materials": 31,
+    "provenances": 32,
+    "refs": 22,
+    "tags": 0,
+    "active_seals": 33,
+    "historical_or_detached_seal_ids": [
+      "3ad3ca433f3c456f70d804ef84a28e9c9d01fd31d9a789627a724db8eb9f85ee",
+      "8fde2f5d542c92512cf8de93e19a821e1f7afdc89aeb3192d8c2f078f062bc6f",
+      "98e31826220432b945be5094e95c479b6254d31913a750207416c877fe81dac4",
+      "b5e7bab122c597365e7679eda0339b84c5b4babb13f55c84791a3687f3d1ce59",
+      "f9bea5f209f6faa669113e54ecc325d18986130a7ff872ad5b57ccde06c676b7",
+      "fa337eb38cc4efa5c5d3eb71d8b87e8a181b001109848ca18008516d855e8ab6"
+    ],
+    "unreferenced_blob_ids": []
+  },
+  "impact": {
+    "schema": "sealgraph/impact/v2",
+    "source_seal_id": "87d4106035e8b09c667d27d164691b16b93c12c6c683b414097b3763b0c53e5d",
+    "assertion_scope": "ALL_OBSERVED",
+    "asserted_by_observer_seal_ids": [],
+    "all_paths": true,
+    "max_paths": 100,
+    "impacts": [
+      {
+        "head_seal_id": "1ede4f74fa5c98580939051e0276a3a5e05ccddae73793b333f7156af7842ab3",
+        "refs": [
+          "adr/psyche-repair"
+        ],
+        "paths_truncated": false,
+        "path_count": 1
+      },
+      {
+        "head_seal_id": "2dce4e3a33324a12de69701b67ab12eae7a2b6e7b45491ff923c4bd9bc3b4697",
+        "refs": [
+          "adr/expression-state"
+        ],
+        "paths_truncated": false,
+        "path_count": 1
+      },
+      {
+        "head_seal_id": "2df2b781a50cf88d8871bc16710753dc55c24cc90f46b143de7b4a6b66a505e8",
+        "refs": [
+          "design/psyche-slice"
+        ],
+        "paths_truncated": false,
+        "path_count": 1
+      },
+      {
+        "head_seal_id": "3ac35cc572548ca109a414a0af0b980383f448a773c12e3aa51854a1bd3b83ca",
+        "refs": [
+          "implementation/llm-types"
+        ],
+        "paths_truncated": false,
+        "path_count": 2
+      },
+      {
+        "head_seal_id": "3ba5383f923c43b57fd8b274dad79cd9b8009a5038c5ad427345d95f802d4cde",
+        "refs": [
+          "backlog/character-agency"
+        ],
+        "paths_truncated": false,
+        "path_count": 4
+      },
+      {
+        "head_seal_id": "3f4550a6c52c61a917739cd1bfeb3ac7ff9911a94b6e10e6b3e18b85eb2dd73f",
+        "refs": [
+          "projection/adr-0026"
+        ],
+        "paths_truncated": false,
+        "path_count": 1
+      },
+      {
+        "head_seal_id": "45396d18919168a0982db90e2fa5b9d1fd21767951a688afc2e649a467795a1f",
+        "refs": [
+          "plan/dialogue-expression"
+        ],
+        "paths_truncated": false,
+        "path_count": 8
+      },
+      {
+        "head_seal_id": "6c2e9e3e526983af768b2a898efbcc34e949d64ed9fb0b1ab875d4b37eb61c5a",
+        "refs": [
+          "implementation/llm-adapter"
+        ],
+        "paths_truncated": false,
+        "path_count": 3
+      },
+      {
+        "head_seal_id": "762225f2f1dd4de8ca84d296fc37ee534eeed36a71144c0b256e6786d358e1e6",
+        "refs": [
+          "evidence/adr-0027-implementation-impact"
+        ],
+        "paths_truncated": false,
+        "path_count": 14
+      },
+      {
+        "head_seal_id": "77e2e8d6ebe4503d2a86eebb1cc85b4fc0f5af2405b0a135f6163bcd4c6dca08",
+        "refs": [
+          "implementation/psyche-schema"
+        ],
+        "paths_truncated": false,
+        "path_count": 1
+      },
+      {
+        "head_seal_id": "9485c01886666cf78e93763e27b6b6524e5f200d2bec64be4a45291c13e54956",
+        "refs": [
+          "design/agency-responsibility"
+        ],
+        "paths_truncated": false,
+        "path_count": 4
+      },
+      {
+        "head_seal_id": "9c3006ff30fb99fa76fe41bfe2f85033ddbfad9a2f67f7bdfaa7ecda6752d235",
+        "refs": [
+          "adr/character-focus"
+        ],
+        "paths_truncated": false,
+        "path_count": 1
+      },
+      {
+        "head_seal_id": "a16926e3e7cc0153d24ac2ec61390a382f1a0a95abb1cf73d83af40da60f754e",
+        "refs": [
+          "adr/structured-character"
+        ],
+        "paths_truncated": false,
+        "path_count": 1
+      },
+      {
+        "head_seal_id": "a95dbf64df749d20fda4735d7a3a9c2afb27ac8596764e2bf1b4e90a5a08a740",
+        "refs": [
+          "projection/adr-0025"
+        ],
+        "paths_truncated": false,
+        "path_count": 1
+      },
+      {
+        "head_seal_id": "c2f4699be7535ea73cfe0f2a533bca647aa143ee6c3bcb59962232115288e97b",
+        "refs": [
+          "implementation/expression-prompt"
+        ],
+        "paths_truncated": false,
+        "path_count": 2
+      },
+      {
+        "head_seal_id": "c3be1f179e29fc80f45d536c014355ee6abca2698be353e34c4b43e25332e118",
+        "refs": [
+          "design/psyche-reaction"
+        ],
+        "paths_truncated": false,
+        "path_count": 1
+      },
+      {
+        "head_seal_id": "c60f19e3e97fad6e86e0e3c2843ac50392ecf42eb145532e81dbcf4f2f6dc8fa",
+        "refs": [
+          "archive/adr-0004"
+        ],
+        "paths_truncated": false,
+        "path_count": 1
+      },
+      {
+        "head_seal_id": "d15f0e74251ebf6d1e6c79d23791cec636e7a48de9a1a63d3355f0284fe2591b",
+        "refs": [
+          "implementation/battle-service"
+        ],
+        "paths_truncated": false,
+        "path_count": 3
+      },
+      {
+        "head_seal_id": "eb9ab069a0773222b64bfc78e459c28f72177c4d277d9bbd06f277a7d8d9342a",
+        "refs": [
+          "projection/adr-0027"
+        ],
+        "paths_truncated": false,
+        "path_count": 1
+      },
+      {
+        "head_seal_id": "fbaa75723a9cb10cd2ef10f7d277f93caa7741ae87d6bd106651cf6b1e4ee531",
+        "refs": [
+          "implementation/mock-adapter"
+        ],
+        "paths_truncated": false,
+        "path_count": 2
+      }
+    ]
+  }
+}

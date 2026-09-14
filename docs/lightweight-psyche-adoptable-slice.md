@@ -3,13 +3,16 @@
 Status: owner decision candidate; implementation remains gated
 Date: 2026-08-12  
 Reference model: [軽量NNによる深層心理・内的反応ポリシー設計](lightweight-psyche-reaction-policy.md)  
-Decision constraints: [ADR-0004](adr/0004-versioned-lightweight-psyche-dynamics.md)
+Decision constraints: [ADR-0027](adr/0027-unified-conscious-agency-and-psyche-boundary.md)
+
+2026-09-09責務訂正: 新設計では行動・発話を同じ顕在意識が判断する。
+以下のV1固有schema・projection・回数は既存互換契約であり、顕在意識を分断する恒久制約ではない。
 
 ## 1. 結論
 
 現時点で採用可能なのは、学習済みNNではなく、その前提となる**決定的で計測可能なキャラクター反応ポリシー**である。既存のobserver-relative perceptionを入力境界として再利用し、明示的なtrait、対象別relationship、直前state、正規化されたevent impactから、boundedなreaction deltaを計算する。
 
-このスライスの最優先成果は、通常turnのdeep-psyche処理で使うLLMコストを下げることである。完全なNN化を待たず、決定的policy、呼出しskip、固定小型modelによる軽量LLM経路を組み合わせてよい。ただし、コスト削減のためにpsyche、action、expressionのcontextを統合してはならない。
+このスライスの最優先成果は、通常turnのdeep-psyche処理で使うLLMコストを下げることである。完全なNN化を待たず、決定的policy、呼出しskip、固定小型modelによる軽量LLM経路を組み合わせてよい。ただし、コスト削減のために心理反応・顕在意識・裁定の権限を混ぜない。顕在意識内の行動・発話判断の共有は可能。
 
 初期スライスは次だけを実装対象候補とする。
 
@@ -155,10 +158,10 @@ weight、decay、clampはversioned tableとして管理し、理由別contributi
 - action projectionは、少数のimpulse band、arousal band、adverse/uncertain interpretation bandだけを候補とする。
 - expression projectionは、emotion band、arousal、expression restraint適用後のexpression tendencyだけを候補とする。
 - raw trait、raw relationship、reason contributionをconsumerへ渡さない。
-- actionとexpressionは互いのprojectionやprovider outputを読まない。
+- 旧V1経路のprojectionとprovider契約は互換保持する。新設計では同じ顕在意識が行動・発話に必要な投影・意図を共有できる。raw心理stateの流入や公開先への私的判断漏洩は許さない。
 - public、opponent、narratorにはreaction stateを渡さない。成立したspeech/actionだけが既存perception経路を通る。
 
-現行deep-psyche LLMが生成する`currentGoal`、beliefs、free-text appraisal、`ExpressionBrief`の移管先は未決である。V1 reaction policyへ含めず、現行経路を維持して比較する。
+現行deep-psyche LLMが生成する`currentGoal`、beliefs、free-text appraisal、`ExpressionBrief`はV1 reaction policyへ含めない。ADR-0027に従って目標・戦術・発話判断を顕在意識へ整理し、具体的writer・寿命・互換schemaは設計で確定する。現行経路はそれまで維持する。
 
 ## 7. 初期評価
 
@@ -195,7 +198,7 @@ shadow比較では、現行deep-psyche LLM outputを自動的な正解としな�
 - featureを安全に構築できない場合はprior stateをdimension別にdecayするだけの`hold`を採用し、新しいinterpretationやimpulseを追加しない。
 - optional lightweight-LLM routeはcontract上の拡張点として保持するが、V1 authoritative routeには接続しない。別fixture、固定model、最大1 attempt、予算のowner承認後だけshadowで実行できる。
 - current high-cost psyche LLMはnormal-turn V1のfallbackにしない。rollbackはbattle開始時に固定した旧policy generationへbattle単位で戻す。
-- actionとexpressionは別consumerのまま、それぞれ最大1 application call。reaction policyはcall数を増やさない。
+- 旧V1のaction/expression application call上限は維持する。この経路上の分割を、新設計でも判断主体を分ける要件にしない。新call構成は別途設計・承認し、reaction policyはcall数を増やさない。
 
 ## 8. 初期導入計画
 

@@ -1,0 +1,22 @@
+domain CharacterV5IndependentReview:
+  description "Independent fixed-snapshot Step3 requirement review; not acceptance or implementation."
+problem REVIEW:
+  "Assess whether character requirement revision5 aligns with accepted foundation revision3 and preserves character outcomes from pending revision4."
+premise AUTHORITY:
+  "Owner chose REVIEW, so completed independent review proceeds to Step4 owner decision. Review cannot add requirements or authorize runtime effects."
+evidence SNAPSHOT:
+  "Read SHA256 of candidate 17596f17d6514d5ada160b9d95453ab2bcb9cee9e4b2d2991acb8238b55ee27b, translation d89b730907b118012a6510f2ea700f6c44f5f10d0b7378b47b22cc358ceec544 and foundation b5693f6d47e975ea1cb78adaa686185630db5ffc6d52c74f3481ac77511c99da; all match supplied identities. Foundation acceptance record states Accepted."
+evidence DOMAIN:
+  "R21 lines349-386 inherits F15 budgets, gives phase-aware accounting and recurrence signals to character adapter, permits temporary regression, defers comparator design, and expressly preserves psyche-conscious-engine responsibility. Foundation F2 and F15 supply the same separation. ADR0027 D1-D3 and ADR0028 D1-D4 retain reaction-only psyche and conscious goals with engine authority."
+evidence SAFETY:
+  "R10 lines198-209 and R15 lines278-282 expressly subordinate semantic blocking to F15 and full R16 validation. R19 lines318-323 requires terminal failure for hard stops and unresolved stall or internal corruption. R21 does not require every-step progress."
+evidence PRESERVED:
+  "Full v4-v5 diff leaves R1-R9,R11-R14,R16-R18,R20 and mode completion unchanged. R1/R3/R8/R13 preserve sparse generation, protected anchors and exceptional Q&A. R12/R14 retain source-based new attempts and recorded answers without checkpoint persistence. R17 preserves migration-only access and 256KiB bound, consistent with ADR0030 D5. Authority lines84-89 preserve two repairs/six requests from ADR0030 D9 pending successor ADR."
+evidence TRANSLATION:
+  "Full Japanese scope corresponds to English. Japanese AC17 line385 says 新しい移行元からの再試行, while English AC17 lines461-463 says a new source-based retry; R12 and R19 Japanese text expressly explains reconstruction from retained source in a new attempt."
+premise UNKNOWN:
+  "No runtime or provider validation was performed. Numerical budgets, windows, comparator algorithms, detection precision, generation quality, latency and cost remain successor design/evaluation per R20,R21 and stated risks. These do not establish contradictions in requirement scope."
+premise ALTERNATIVES:
+  "Recommend REVISE if authority or material outcome contradicts the candidate; recommend ACCEPT at Step4 if requirement review completes without blocking contradictions. Optional wording clarification must not become a normative blocker."
+decision RESULT based_on REVIEW, AUTHORITY, SNAPSHOT, DOMAIN, SAFETY, PRESERVED, TRANSLATION, UNKNOWN, ALTERNATIVES:
+  "Review completed; no blocking contradiction found in examined authoritative text. Recommend ACCEPT of unchanged English revision5 at Step4 with actual acceptance reserved to owner. Classify missing operational evidence as evidence-gap-or-unknown and no runtime conformity claim. Classify Japanese AC17 attachment ambiguity as optional-or-future, nonblocking: a Step4 spoken clarification can explain that new qualifies attempt, not a requirement to replace retained source. No required criterion is added. Implementation, provider execution, sealing and candidate edits remain unauthorized."

@@ -1,5 +1,5 @@
 export const PROVIDER_OPERATION_TAXONOMY_REVISION =
-  "battle-provider-operations-v1";
+  "battle-provider-operations-v2";
 
 export const PROVIDER_OPERATION_LAYERS = {
   concretizeBattlefield: "encounter",
@@ -9,6 +9,7 @@ export const PROVIDER_OPERATION_LAYERS = {
   reconcileTurnSemanticState: "environment",
   proposeHappening: "environment",
   advanceCharacterPsycheCompact: "deepPsyche",
+  advanceCharacterPsycheCompactRepair: "deepPsyche",
   advanceCharacterPsyche: "deepPsyche",
   advanceCharacterAgentCompact: "characterExpression",
   advanceCharacterAgent: "characterExpression",

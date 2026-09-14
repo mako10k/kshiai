@@ -1,0 +1,4 @@
+error: sealgraph impact: resolve selector "adr/0031": REF not found: adr/0031
+reason: the selected logical REF has no current repository state
+hint: inspect current state with `sealgraph status` or select an existing REF or explicit Seal selector
+help: sealgraph help impact

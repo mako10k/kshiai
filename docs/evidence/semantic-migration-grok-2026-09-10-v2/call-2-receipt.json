@@ -1,0 +1,66 @@
+{
+  "phase": "receipt",
+  "ordinal": 2,
+  "receipt": {
+    "outcome": "succeeded",
+    "responseDigest": "8b191647472660fc9dbccaf7dc0bad5f789fa261acb8955166c4058a3ac13dd1",
+    "response": {
+      "schema": "character_semantic_consistency_review_v1",
+      "verdict": "repair_required",
+      "findings": [
+        {
+          "code": "missing_actionNorms_executable",
+          "targetPaths": [
+            "definition.actionNorms"
+          ],
+          "sourcePaths": [
+            "definition.actionNorms.0.response.actionRefs",
+            "definition.actionNorms.1.response.actionRefs"
+          ],
+          "explanation": "V2 actionNorms contained executable selectors (actionRefs, actionKinds, tacticTags) that were retired to capsule but never synthesized into V3 actionNorms; consciousGuidance now holds only statements.",
+          "semanticDependants": [
+            "definition.consciousGuidance",
+            "definition.mechanicalConflictFallbacks"
+          ]
+        },
+        {
+          "code": "lost_fallbackActionRef",
+          "targetPaths": [
+            "definition.mechanicalConflictFallbacks"
+          ],
+          "sourcePaths": [
+            "definition.actionNorms.0.response.fallbackActionRef"
+          ],
+          "explanation": "V2 fallbackActionRef 'basic-action' was not migrated to any mechanicalConflictFallbacks entry, leaving no ordered fallback chain for the 'probe-enjoy' preference.",
+          "semanticDependants": [
+            "definition.mechanicalConflictFallbacks"
+          ]
+        },
+        {
+          "code": "widened_disclosure",
+          "targetPaths": [
+            "disclosurePolicy.rules.4.valuePath"
+          ],
+          "sourcePaths": [
+            "definition.actionNorms.0.response.statement",
+            "definition.actionNorms.1.response.statement"
+          ],
+          "explanation": "Disclosure rule still references actionNorms.*.response.statement, but statements now live under consciousGuidance; rule path is stale and may expose unintended fields.",
+          "semanticDependants": [
+            "disclosurePolicy.rules"
+          ]
+        }
+      ],
+      "summary": "Migration retired V2 actionNorms but failed to populate V3 actionNorms with executable selectors and mechanicalConflictFallbacks with the lost fallback reference; disclosure rule path is also stale.",
+      "uncertainties": []
+    },
+    "accounting": {
+      "inputTokens": 26671,
+      "outputTokens": 329,
+      "totalTokens": 27000,
+      "estimatedCostUsd": 0.03416125,
+      "elapsedMs": 3934
+    },
+    "finishedAt": "2026-09-10T12:46:14.971Z"
+  }
+}

@@ -1,0 +1,356 @@
+# Structured semantic authoring foundation — requirement candidate revision 1
+
+- Status: Step 1 candidate; self-review complete; owner review pending
+- Date: 2026-09-11
+- Decision owner: Product owner
+- Scope: reusable authoring for structured selectable assets
+- Initial conformance families: character, battlefield preset, narration style
+- First advanced consumer: V3 character create, revise, and migrate
+- Sources: accepted structured selectable-asset workflow; accepted structured-asset
+  envelope and projection decisions; character V3 authoring requirement candidate
+  revision 3; owner direction to establish a reusable foundation
+
+## Objective
+
+Provide one reusable process that can:
+
+1. create structurally complete data from sparse natural-language or structured input;
+2. project existing structured data into another structure while preserving material
+   meaning; and
+3. prove that the result is structurally valid and not materially inconsistent with
+   frozen input, authorized changes, or protected domain meaning.
+
+The normal outcome is an automatically recovered, validated candidate ready for owner
+review. Missing information normally creates a generation obligation. Minor adaptable
+inconsistencies may be coherently interpreted or adjusted. Human Q&A is reserved for
+explicit, material, irreducible conflicts whose credible resolutions would change
+protected meaning.
+
+The foundation owns process and evidence mechanics. It does not own character,
+battlefield, narration-style, battle-engine, disclosure, or other domain semantics.
+Those remain in versioned domain adapters and accepted domain requirements.
+
+## Authority disposition
+
+### Preserved authority
+
+- Structured definitions remain authoritative over generated descriptions for runtime
+  behavior.
+- Natural-language source remains private authoring provenance and does not itself
+  grant disclosure or runtime authority.
+- Immutable generations, idempotent attempts, owner acceptance, append/CAS activation,
+  and battle binding to an exact generation remain unchanged.
+- Provider work remains outside submit/read/commit transactions and cannot occur during
+  battle selection or battle creation.
+- Disclosure ceilings, audience policy, consumer projections, runtime knowledge, and
+  domain compiler rules remain server-enforced.
+- Each asset family still requires its own accepted schema and domain behavior.
+
+### Authority replaced on acceptance
+
+The accepted structured selectable-asset workflow currently says that an upgrade
+converter must not invent facts absent from its source. This blanket prohibition is
+replaced by a classified synthesis rule:
+
+- a `protected_anchor` must be preserved unless an explicit authorized change applies;
+- an `adaptable_preference` should be preserved when practical but may be interpreted
+  or adjusted to produce a coherent result;
+- `open_creative_space` may be completed with generated meaning; and
+- server-owned facts, mechanics, identifiers, ownership, permissions, disclosure
+  grants, and runtime observations may never be invented by an LLM.
+
+Every generated or adjusted material claim records provenance and its relationship to
+the frozen source. A domain adapter may narrow generation further, but it may not widen
+authority reserved to the server or silently override a protected anchor.
+
+This candidate does not become authority until owner acceptance. Acceptance authorizes
+only the requirement baseline; it does not authorize an ADR, implementation, provider
+call, evaluation, deployment, data migration, candidate activation, or release.
+
+## Required foundation behavior
+
+### F1. Three operation modes
+
+The foundation supports `create`, `revise`, and `migrate` as distinct modes under one
+orchestration model.
+
+- `create` freezes sparse source, allowed references, clarifications, target contract,
+  and policy.
+- `revise` also freezes an immutable source generation, requested change scope, and
+  expected current pointer.
+- `migrate` freezes exact source data, the accepted source-to-target transition,
+  compatibility state, and expected current pointer.
+
+Attempt, work item, question, answer, candidate, immutable generation, and current
+pointer remain separate identities.
+
+### F2. Domain-owned semantic policy
+
+Each domain adapter supplies versioned contracts for:
+
+- source and target schemas and focused schema slices;
+- dependency closure and legal write scope;
+- protected anchors, adaptable preferences, and open creative space;
+- accepted copies, moves, splits, synthesis, retirement, and deferral;
+- identifiers, deterministic defaults, references, and compiler invariants;
+- semantic equivalence, contradiction materiality, and reconciliation lenses;
+- disclosure, consumer projections, and owner-facing review projections.
+
+The foundation must not contain asset-family field paths or infer domain correctness
+without such a contract.
+
+### F3. Claim and obligation accounting
+
+The server records material source claims, requested changes, constraints,
+clarifications, accepted transformations, generated additions, adjustments, conflicts,
+and preservation records with provenance. It tracks every required target and relevant
+source disposition as an obligation with dependencies, resolver, attempts, status, and
+receipts.
+
+Absence ordinarily produces `generate`, not `needs_owner`. Migration never silently
+drops a relevant source value merely because no direct target field exists.
+
+### F4. Focused work and capability exposure
+
+Work is divided by semantic dependency. A work item contains only the relevant source
+claims and fragments, writable target fragments and sliced schema, registered
+references, constraints, allocated identifiers, prior valid results, and current
+findings. It excludes the complete schema, complete candidate, and exhaustive path set.
+
+A stable capability registry describes available operations. The selected Skill or
+orchestrator exposes only the request-scoped query, proposal, validation, and review
+tools needed for the current work item. Tool visibility never grants data access or
+write authority; server authorization is checked independently.
+
+### F5. Resolver-neutral bounded results
+
+Deterministic logic, a focused LLM, an owner answer, or accepted deferral returns a
+common bounded proposal or decision contract. It identifies affected obligations,
+source and target fragments, provenance, semantic dependants, preservation effect,
+uncertainty, and an owner-facing explanation.
+
+An LLM proposes changes only. It cannot directly persist authoritative data, allocate
+stable identifiers, change policy, or write outside the registered dependency closure.
+
+### F6. Transactional patch application
+
+The server applies one proposal transactionally to an in-memory candidate and its
+ledgers. A minimal patch is preferred, but its legal scope includes schema-valid fields
+that must change to restore semantic consistency with the repaired area.
+
+Before replacing valid fragments, the server checks schema, bounds, references,
+domain invariants, authority, disclosure, consumer safety, write scope, preservation,
+and source accounting. An invalid proposal leaves prior valid fragments intact and
+creates a precise repair finding.
+
+### F7. Progressive structural and semantic validation
+
+Validation is proportionate and progressive:
+
+1. immediate hard checks after every patch;
+2. a semantic-skeleton checkpoint before meaning fans out into dependent content;
+3. affected-cluster checks after material dependency changes; and
+4. complete final reconciliation before owner review.
+
+Unchanged valid work is reused. A checkpoint is added only when it prevents a named
+failure path with lower expected cost than the rework it avoids. Whole-object LLM
+review is never the sole correctness oracle.
+
+### F8. Input/output reconciliation
+
+The final result is compared with frozen input, authorized changes, recorded
+interpretations, generated additions, adjustments, retirements, and deferrals.
+Material relationships are classified at least as:
+
+- preserved;
+- authorized change;
+- source-supported synthesis;
+- creative completion;
+- coherent interpretation;
+- low-importance adjustment;
+- valid deferral or preserved retirement;
+- material contradiction;
+- source loss;
+- unsupported material addition; or
+- unresolved material meaning.
+
+Schema validity cannot override a failed semantic reconciliation. The first seven
+classes may be reviewable success states when domain invariants hold. The last four
+require focused repair or, when F10 is satisfied, human Q&A.
+
+### F9. Information-gaining automatic recovery
+
+Before asking a human, the foundation exhausts applicable authorized recovery without
+repeating an unchanged request: deterministic resolution, focused generation or
+classification, cause-classified validation, focused repair with exact errors and
+prior valid fragments, decomposition, another pre-authorized resolver, and
+consumer-scoped typed deferral.
+
+Every retry must add information, narrow the problem, or test a materially different
+alternative. Blind retry, wholesale regeneration, and unapproved provider escalation
+are forbidden.
+
+### F10. Exceptional human Q&A
+
+Human Q&A occurs only when all of the following hold:
+
+1. an explicit problem exists rather than mere missing detail;
+2. it affects a protected anchor, required correctness, or materially defining trait;
+3. credible automatic resolutions have materially different protected outcomes;
+4. focused automatic recovery has been exhausted; and
+5. the result cannot be safely chosen, reconciled, or deferred without owner intent.
+
+A question presents the minimum relevant source and candidate projection, why an
+automatic choice is unsafe, bounded effects of the credible choices, a free-form
+answer path, and the exact work that will resume. An answer is append-only scoped
+authority, not final candidate acceptance.
+
+### F11. Server-controlled completion and activation
+
+Before owner review, the complete candidate passes its strict target schema and all
+registered domain, reference, compiler, disclosure, consumer, preservation,
+accounting, coverage, and reconciliation checks. The server validates the whole
+candidate without sending the whole candidate or schema to an LLM.
+
+Owner acceptance binds the exact candidate and receipts. Append/CAS activation
+performs no provider work. Failure, decline, pointer drift, cancellation, or exhausted
+technical recovery leaves the current immutable generation unchanged.
+
+### F12. Preservation outside active semantics
+
+Changed, retired, or currently unused source meaning that must be retained is stored
+under a restricted, versioned preservation contract. It is available to authorized
+future migration and review, but is not consulted by ordinary runtime, public,
+compiler, or authoring consumers unless an accepted transition explicitly selects it.
+
+Retention, deletion, access, and disclosure rules remain domain and policy decisions;
+the foundation does not convert preservation into indefinite retention authority.
+
+### F13. Compatibility-first adoption
+
+Initial adoption preserves existing public APIs, immutable generation identities,
+authoring attempt identities, current-pointer behavior, battle bindings, and the
+accepted common envelope unless a successor ADR explicitly versions or supersedes
+them. The initial change is an internal orchestration and evidence abstraction, not a
+new externally visible product version.
+
+Character, battlefield preset, and narration style are conformance families. V3
+character authoring is the first advanced consumer. Battle-runtime narration is
+outside the initial lifecycle, although separately designed semantic-claim and
+provenance primitives may later be reused.
+
+### F14. Evidence and tuning
+
+A representative, owner-reviewed corpus measures:
+
+- automatic candidate completion;
+- protected-anchor preservation;
+- generated-information quality and semantic consistency;
+- unresolved material contradiction and source-loss rates;
+- unnecessary human-question rate and questions per recovery;
+- recovery convergence and repeated-request rate;
+- late-review rework and checkpoint blocking time; and
+- provider calls, tokens, latency, and cost.
+
+Numeric gates, corpus composition, model/provider routes, retry budgets, token and cost
+ceilings, and checkpoint budgets require separately reviewed evidence and decisions.
+They are not invented by this requirement candidate.
+
+## Initial conformance contract
+
+The common kernel must demonstrate the same lifecycle contract against character,
+battlefield-preset, and narration-style adapters without embedding family-specific
+paths. Conformance fixtures must cover at least:
+
+1. sparse creation with safe generated completion;
+2. meaning-preserving revision with consequential dependent changes;
+3. source-to-target migration with generated target meaning and source disposition;
+4. structural failure followed by a focused repair that retains prior valid work;
+5. a minor contradiction resolved without human input;
+6. a protected contradiction that cannot be silently overwritten;
+7. final structural validation and input/output semantic reconciliation;
+8. restricted preserved data excluded from ordinary consumers; and
+9. unchanged public API and immutable-generation behavior during internal adoption.
+
+Passing generic conformance does not prove a domain adapter correct. Each family also
+requires its own domain fixtures and accepted schema/behavior authority.
+
+## Alternatives and tradeoffs
+
+### Keep every family-specific workflow
+
+This minimizes immediate abstraction work but preserves duplicated recovery,
+provenance, patch, review, and Q&A behavior. It is not selected.
+
+### Build one universal semantic transformation engine
+
+This maximizes nominal reuse but would move domain meaning into a generic language,
+hide asset-specific correctness, and expand the current delivery scope. It is not
+selected.
+
+### Thin foundation with domain adapters
+
+This adds explicit adapter and conformance contracts but reuses stable process
+mechanics while leaving semantic authority in each domain. It is selected.
+
+## Risks and unknowns
+
+- Existing services may differ in ways not represented by the current shared envelope;
+  extraction must preserve those differences rather than force false uniformity.
+- Importance classification and semantic lenses may under-protect defining meaning or
+  over-protect adaptable material; domain evaluation must measure both errors.
+- Excess capability promotion or checkpoints could recreate prompt and control bloat;
+  successor design must define bounded exposure and removal conditions.
+- Preservation storage can create privacy and retention risk; exact retention and
+  access policy remains unresolved.
+- Numeric quality thresholds and provider-specific behavior remain unresolved pending
+  baseline evidence.
+
+## Acceptance criteria
+
+1. The accepted no-invention upgrade rule is explicitly replaced by classified,
+   provenance-tracked synthesis without permitting invention of protected or
+   server-owned facts.
+2. The foundation owns process/evidence mechanics, while domain adapters own schemas,
+   semantic policy, invariants, and projections.
+3. Create, revise, and migrate use one lifecycle with distinct frozen authority.
+4. Sparse input normally enters generation rather than human Q&A.
+5. LLM work is focused and receives neither the complete schema nor complete candidate.
+6. LLMs produce bounded proposals and cannot directly persist authoritative state.
+7. A repair may update valid fields required for semantic consistency but cannot escape
+   its registered dependency closure.
+8. Structural validation and final input/output semantic reconciliation are both
+   mandatory.
+9. Automatic recovery adds information or tests a different alternative on every
+   retry; blind retry and whole-object regeneration are prohibited.
+10. Human Q&A requires all five F10 conditions and does not imply final acceptance.
+11. Preserved retired information is restricted and excluded from ordinary consumers.
+12. Initial adoption preserves existing public APIs, immutable generations, attempt
+    identities, current pointers, and battle bindings.
+13. Character, battlefield preset, and narration style satisfy common conformance;
+    character V3 remains the first advanced consumer.
+14. Battle-runtime narration is not made part of the initial authoring lifecycle.
+15. Evaluation reports semantic quality, recovery, human intervention, rework, calls,
+    tokens, latency, and cost without inventing numeric gates.
+16. Requirement acceptance remains separate from ADR, implementation, provider,
+    deployment, migration, activation, and release authority.
+
+## Out of scope
+
+- Defining or changing any asset-family field semantics.
+- Generalizing battle-runtime narration into the initial lifecycle.
+- Selecting exact APIs, persistence tables, module paths, patch schemas, status names,
+  Skill format, Tool schemas, provider adapters, or promotion protocol.
+- Selecting numeric thresholds, provider routes, retry budgets, or production policy.
+- Implementing, evaluating with paid/live providers, deploying, migrating production
+  data, activating candidates, moving pointers, rolling back, or releasing.
+
+## Proposed independent-review input
+
+Review whether the candidate cleanly supersedes the conflicting no-invention rule;
+keeps semantic authority in domain adapters; supports sparse generation and
+meaning-preserving transformation without unsafe invention; requires both structural
+and semantic correctness; makes automatic recovery information-gaining and human Q&A
+exceptional; preserves existing external behavior during initial adoption; avoids
+pulling battle-runtime narration or implementation details into the requirement; and
+leaves numeric gates and provider policy explicitly unresolved.

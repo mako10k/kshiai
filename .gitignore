@@ -20,3 +20,9 @@ gha-creds-*.json
 playwright-report/
 test-results/
 e2e/.auth/
+# Sealgraph canonical config/objects/refs are tracked; local runtime state is not.
+.sealgraph/index/
+.sealgraph/cache/
+.sealgraph/logs/
+.sealgraph/locks/
+.sealgraph/tmp/

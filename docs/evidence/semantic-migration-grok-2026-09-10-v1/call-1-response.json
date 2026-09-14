@@ -1,0 +1,6 @@
+{
+  "phase": "response",
+  "ordinal": 1,
+  "httpStatus": 400,
+  "body": "{\"code\":\"invalid-argument\",\"error\":\"Unsupported response format. Self referenced definition are not supported.\"}"
+}

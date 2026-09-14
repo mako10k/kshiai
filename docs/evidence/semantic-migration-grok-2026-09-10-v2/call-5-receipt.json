@@ -1,0 +1,121 @@
+{
+  "phase": "receipt",
+  "ordinal": 5,
+  "receipt": {
+    "outcome": "succeeded",
+    "responseDigest": "d9c7633db57d0c5e2cb603c38e9efce6a20fe7f813b3d78c964d64d6e85e5abc",
+    "response": {
+      "schema": "character_semantic_migration_change_set_v1",
+      "operations": [
+        {
+          "operation": "retire_to_capsule",
+          "targetPath": "definition.actionNorms",
+          "sourcePaths": [
+            "definition.actionNorms"
+          ],
+          "value": null,
+          "deferred": null,
+          "explanation": "V2 actionNorms retired to capsule; V3 splits soft statements into consciousGuidance and executable selectors into actionNorms.",
+          "provenance": "retired",
+          "semanticDependants": [
+            "definition.consciousGuidance",
+            "definition.mechanicalConflictFallbacks"
+          ]
+        },
+        {
+          "operation": "synthesize",
+          "targetPath": "definition.actionNorms",
+          "sourcePaths": [
+            "definition.actionNorms.0.response.actionRefs",
+            "definition.actionNorms.0.response.actionKinds",
+            "definition.actionNorms.0.response.tacticTags",
+            "definition.actionNorms.0.when",
+            "definition.actionNorms.0.priority",
+            "definition.actionNorms.0.force",
+            "definition.actionNorms.0.selfAwareness",
+            "definition.actionNorms.0.exceptions",
+            "definition.actionNorms.0.description",
+            "definition.actionNorms.1.response.actionRefs",
+            "definition.actionNorms.1.response.actionKinds",
+            "definition.actionNorms.1.response.tacticTags",
+            "definition.actionNorms.1.when",
+            "definition.actionNorms.1.priority",
+            "definition.actionNorms.1.force",
+            "definition.actionNorms.1.selfAwareness",
+            "definition.actionNorms.1.exceptions",
+            "definition.actionNorms.1.description"
+          ],
+          "value": [
+            {
+              "id": "migration-0f38102d5e53a42e30c46e0d498d5323",
+              "when": {
+                "match": "all",
+                "clauses": [
+                  {
+                    "kind": "always",
+                    "operator": "is",
+                    "value": "true"
+                  }
+                ]
+              },
+              "response": {
+                "disposition": "prefer",
+                "actionRefs": [
+                  "basic-action"
+                ],
+                "actionKinds": [],
+                "tacticTags": [],
+                "statement": null,
+                "fallbackActionRef": null
+              },
+              "priority": 40,
+              "force": "preference",
+              "selfAwareness": "aware",
+              "exceptions": [],
+              "description": null
+            }
+          ],
+          "deferred": null,
+          "explanation": "Executable selectors from V2 actionNorms synthesized into V3 actionNorms; fallbackActionRef values deferred to mechanicalConflictFallbacks.",
+          "provenance": "source_derived",
+          "semanticDependants": [
+            "definition.mechanicalConflictFallbacks"
+          ]
+        },
+        {
+          "operation": "defer",
+          "targetPath": "definition.mechanicalConflictFallbacks",
+          "sourcePaths": [
+            "definition.actionNorms.0.response.fallbackActionRef",
+            "definition.actionNorms.1.response.fallbackActionRef"
+          ],
+          "value": null,
+          "deferred": {
+            "targetPath": "definition.mechanicalConflictFallbacks",
+            "reason": "V2 fallbackActionRef values require character-mechanical-conflict-fallback capability",
+            "candidateSourcePaths": [
+              "definition.actionNorms.0.response.fallbackActionRef",
+              "definition.actionNorms.1.response.fallbackActionRef"
+            ],
+            "requiringCapability": {
+              "consumer": "character-mechanical-conflict-fallback",
+              "version": 1
+            }
+          },
+          "explanation": "V2 fallbackActionRef values deferred pending character-mechanical-conflict-fallback capability.",
+          "provenance": "deferred",
+          "semanticDependants": []
+        }
+      ],
+      "uncertainties": []
+    },
+    "accounting": {
+      "inputTokens": 28034,
+      "outputTokens": 587,
+      "totalTokens": 28621,
+      "estimatedCostUsd": 0.03651,
+      "elapsedMs": 5444
+    },
+    "finishedAt": "2026-09-10T12:46:30.952Z"
+  }
+}

@@ -1,0 +1,594 @@
+{
+  "schema": "kshiai/semantic-schema-impact-review/v1",
+  "date": "2026-09-10",
+  "scope": "Local schema correction and continued interpretation review; no provider resend or renewed historical approval.",
+  "capture": "Pre-reseal immutable heads; some captures followed code edits. Bounded path truncation did not remove impact membership.",
+  "historicalPolicy": "Preserve exact bytes and immutable old Seals. New Cause messages attest continued interpretation only, never that old code/proof executed the revised implementation.",
+  "audit": "semantic-schema-local-verification-2026-09-10",
+  "entries": [
+    {
+      "ref": "acceptance/agency-requirements-v1",
+      "disposition": "historical",
+      "note": "旧R1の承認事実のみを保持。provider文法是正から旧R1の優先規則を復活・再承認しない。",
+      "source": "docs/character-agency-requirements-v1-acceptance.md",
+      "previousSeal": "26162771afff1db800dc6fc949401cac3e5bcbf0a150cb8e683bc5e716cb3b99",
+      "previousContent": "48128a0d87ae220cb88bf1e6ba92b1026c5cbeec00703f2411ef43f35dd2387e"
+    },
+    {
+      "ref": "acceptance/agency-requirements-v2",
+      "disposition": "historical",
+      "note": "性格・関係に基づく目標妥当性の直接承認を保持。新規LLM実行権限は追加しない。",
+      "source": "docs/character-agency-requirements-v2-acceptance.md",
+      "previousSeal": "98b17a55fb2dd2391402f52e2e3e08b0b58ccede7cdd7104fac0d5407902eb72",
+      "previousContent": "a8f34245239fd7d645ec9f5fb697bced7a1904e15465bd84aac55afb2eef6f02"
+    },
+    {
+      "ref": "acceptance/semantic-probe-v1-execution",
+      "disposition": "historical",
+      "note": "a724ae39の一回限りの実行承認を保持。現在のv2や再送へ継承しない。",
+      "source": "docs/evidence/semantic-migration-grok-2026-09-10-v1/execution-acceptance.think",
+      "previousSeal": "6c926929437a32a0cccfbdf60dddcc9bea5d5e329ab170da3f0826086616b984",
+      "previousContent": "b1da30548de63efd35ff37fe7c807c4648df43c98e26115c604648d09756bd50"
+    },
+    {
+      "ref": "backlog/character-agency",
+      "disposition": "compatible",
+      "note": "目的・戦術・発話効果の要望と実モデル品質未判定は不変。是正を戦術改善へ読み替えない。",
+      "source": "docs/character-agency-backlog.md",
+      "previousSeal": "7f7b189e5b8a5253688ac061c26be1f842904b5373abb05139150da6053830e9",
+      "previousContent": "d47022410a1100e931280402949e1492487a7d399bd5261b2bc43e2b6e704347"
+    },
+    {
+      "ref": "design/agency-responsibility",
+      "disposition": "compatible",
+      "note": "心理反応・顕在意識・エンジンの所有境界は不変。スキーマ変換の共通化は責務移管ではない。",
+      "source": "docs/character-agency-responsibility-design-v1.md",
+      "previousSeal": "d9e011132cb1f368664c2bcbb39dd8d06bbcf4323b12c14cadbd81187b1dddc4",
+      "previousContent": "f662028a7d47cc7820497d7944d9489453e3c8f4250d821d81b3d6756c7d89bf"
+    },
+    {
+      "ref": "evidence/adr-0027-implementation-impact",
+      "disposition": "historical",
+      "note": "当時の静的影響調査と未実装表記を履歴として維持。今回の是正の実績は新記録で分離。",
+      "source": "docs/evidence/adr-0027-implementation-impact-2026-09-09.md",
+      "previousSeal": "931d598705919e3298c28b1b8c4fcdf8139f13fb184d2d3faff38f4489a92a8b",
+      "previousContent": "a0641c114c43d61011f8a42cb72bf391e8673de2a7793b9a18184b78cc18f23d"
+    },
+    {
+      "ref": "evidence/adr-0030-b5-local-verification",
+      "disposition": "historical",
+      "note": "747テスト・B5ローカル実装の当時の証拠は不変。768テスト・v2投影は別記録。",
+      "source": "docs/evidence/adr-0030-b5-local-verification-2026-09-10.md",
+      "previousSeal": "42a2c933c21cf5ff5a1f96c31cc84fa8233982c71bbf3c58a80ac9d2b01cd2dc",
+      "previousContent": "ab6a64526652a0e2b5c4821e6486dc6a6905e10592d8520248f88a4417676805"
+    },
+    {
+      "ref": "evidence/agency-ca00",
+      "disposition": "historical",
+      "note": "旧phase/世代fixtureの基線観測を保持。今回も互換テスト成功だが当時V3を実行したとはしない。",
+      "source": "docs/evidence/character-agency-ca00-inventory-2026-09-09.md",
+      "previousSeal": "8d4d432cd86ca2a01c1acf48db3495a7b35ad3e573864003879722845e70e0e3",
+      "previousContent": "2ce0932d6fe89fff13478aba524a294ebc15ff278b81220a43516a88f15c12a6"
+    },
+    {
+      "ref": "evidence/agency-v3-local",
+      "disposition": "historical",
+      "note": "当時のV3ローカル検証と未測定品質を保持。今回のgrammar検証で旧件数を置換しない。",
+      "source": "docs/evidence/agency-v3-local-verification-2026-09-09.md",
+      "previousSeal": "4fae02c1487013238de6d2ed976613f2f717420d0391ec2d4ea2cee5a3eca395",
+      "previousContent": "86bcd751875914cfc84a832a14f7e533cc5e3264e443f42188de3555af6dae2d"
+    },
+    {
+      "ref": "evidence/character-authoring-response-schema-local-verification",
+      "disposition": "historical",
+      "note": "元のidentity修正実績を保持。今回の共通化は同じ5項目の補正を維持することを再検証した。",
+      "source": "docs/evidence/character-authoring-response-schema-local-verification-2026-09-10.md",
+      "previousSeal": "85bf7dc669ebed6b76b3080bef5372b39a686349db50ffcd8501fa3412c8148c",
+      "previousContent": "1d58f435880a7100da6e9d7f487cf062fe6d975a5eaa0eb8ce29401c76efa757"
+    },
+    {
+      "ref": "evidence/semantic-migration-continuation",
+      "disposition": "changed",
+      "note": "所有者の是正指示後のv2投影、共通検査、768テスト、実LLM未再送と正確な再開点を追記。",
+      "source": "docs/evidence/semantic-migration-continuation-2026-09-10.md",
+      "previousSeal": "0074601ed377cb960ded5b6b6d05ae6bc0f6851e7cabe7b492f36466d0b32468",
+      "previousContent": "1293cda9f3670f072be580169129cc5964303188320e305544271f76341ef06d"
+    },
+    {
+      "ref": "evidence/semantic-probe-call-1-request",
+      "disposition": "historical",
+      "note": "実送信したv1要求を完全保持。新検査の回帰入力として再現し、新版要求として使用しない。",
+      "source": "docs/evidence/semantic-migration-grok-2026-09-10-v1/call-1-before.json",
+      "previousSeal": "ad0e775c8b0c672ffa5f09fe50c03d5691eda5fc2b5dece1c26886339d030a14",
+      "previousContent": "f289273cd2cb7a56fce0fa7396a5d484602d4027252b6c8c5348c420ca62d5f9"
+    },
+    {
+      "ref": "evidence/semantic-probe-call-1-response",
+      "disposition": "historical",
+      "note": "HTTP400の実応答を完全保持。新実装の応答でも新版成功の証拠でもない。",
+      "source": "docs/evidence/semantic-migration-grok-2026-09-10-v1/call-1-response.json",
+      "previousSeal": "48b58ca4fddaf52b4b6467c9752696564360466f2b70b88c96c3ed176805e9d2",
+      "previousContent": "a6effdbc77c348fa25a5dbdd6ecff31ec41d909dd985f87d6d622ef9642d90b3"
+    },
+    {
+      "ref": "evidence/semantic-probe-live-result",
+      "disposition": "historical",
+      "note": "1要求pending・activated=false・usage不明という実測を保持。新runの結果へ置換しない。",
+      "source": "docs/evidence/semantic-migration-grok-2026-09-10-v1/live-result.json",
+      "previousSeal": "fd261e7b92c4dc841ac2a2d98a318aa5afb04681c9f7738ea223bf26e0eb9eb2",
+      "previousContent": "fff48ab63ffdb8ab8df7927c9696b4857530a52d92c3e03ac52860a78344f688"
+    },
+    {
+      "ref": "evidence/semantic-probe-live-start",
+      "disposition": "historical",
+      "note": "消費済みrunの排他開始記録を保持。同一runを再実行可能にはしない。",
+      "source": "docs/evidence/semantic-migration-grok-2026-09-10-v1/live-start.json",
+      "previousSeal": "42be3366ef9893b1f3095b37cf51c54da9bd3f7eec02d7b0de0ea9ad14c9754c",
+      "previousContent": "1de5b7758944eb1f2ab524e45683ac74f59364e2ecbce1e97a45022b66f01bf2"
+    },
+    {
+      "ref": "evidence/semantic-probe-offline-result",
+      "disposition": "historical",
+      "note": "当時の合成6要求18eventを保持。v2や実モデル品質の成功として再認定しない。",
+      "source": "docs/evidence/semantic-migration-grok-2026-09-10-v1/prepare-result.json",
+      "previousSeal": "bd6962e0a24cd96b16e9a5c8dd0f981ac0863b40aeda51693ad4fd4f01a4d7d2",
+      "previousContent": "bf34925bae820bc8cc98281b7b70952ea9334c5e84b96771d2c9761dbf4a7a6d"
+    },
+    {
+      "ref": "evidence/semantic-probe-owner-acceptance",
+      "disposition": "historical",
+      "note": "旧revision1に対する所有者のはいを保持。内容変更後の実行承認には使えない。",
+      "source": "docs/evidence/semantic-migration-grok-2026-09-10-v1/acceptance-ja.md",
+      "previousSeal": "196845585e566887d1bfc18da51a63f4b72e82468ca74a4ee251945f1d406932",
+      "previousContent": "b43e23652a632f08e6dbacc7123dea4f4ba31f781ebf2754bd2870da4ebbd2bd"
+    },
+    {
+      "ref": "evidence/semantic-probe-proof",
+      "disposition": "historical",
+      "note": "旧コード502b5ea1とproof a724ae39の束縛を保持。現在コードとの同一性は成立しない。",
+      "source": "docs/evidence/semantic-migration-grok-2026-09-10-v1/prepare-proof.json",
+      "previousSeal": "411e6b0d3bd3c694bb151a9af2b1fa679593e1d6a132f13c226f91573e0f1cb3",
+      "previousContent": "ad02b25560fbb84b86ffb25d660fa4defb2f13369acd79af397c51895f9a53cc"
+    },
+    {
+      "ref": "evidence/semantic-probe-result-ja",
+      "disposition": "historical",
+      "note": "初回拒否時のRCA・候補・会計不明を履歴として保持。今回の是正結果は継続メモから別記録へ接続。",
+      "source": "docs/evidence/semantic-migration-grok-2026-09-10-v1/result-ja.md",
+      "previousSeal": "50e6af6e00b9a2ae0795812bf4a45098fbc9f889605dee85d2e52fe4a6a0073f",
+      "previousContent": "75f8fbfcd37ba5d85a5ade1f384c3496b71496195d014faef2a12ae7039a3886"
+    },
+    {
+      "ref": "implementation/agency-activation",
+      "disposition": "compatible",
+      "note": "既存戦闘のimmutable設定束縛とopt-in判別は変更なし。共有exportの値契約も不変。",
+      "source": "backend/src/services/dialogue-pipeline-activation.ts",
+      "previousSeal": "0d8ba652bb19814c2b96ad79d766fd655832b427dd8aadd13404a6b9ae18ef03",
+      "previousContent": "b8f4940c098a9b70685846359fdaf0a5f2b110882c9ef17b25d3c30589d2d3e1"
+    },
+    {
+      "ref": "implementation/agency-provider-input",
+      "disposition": "compatible",
+      "note": "顕在意識の入力知識・goal・normal/later結果は変更なし。通常顕在経路はjson_objectのまま。",
+      "source": "backend/src/llm/conscious-agency.ts",
+      "previousSeal": "2ae56e755f706798bd2d1f34d8d4edb4c6eb34093190a319776d9895e24c7284",
+      "previousContent": "5df0b60ece0ec8497755ecd9e8c49ba91e602de14ebbbbef555ea5f2c4747ae6"
+    },
+    {
+      "ref": "implementation/agency-settings",
+      "disposition": "compatible",
+      "note": "設定generationの保存・CAS・世代番号は変更なし。型・既存設定テスト成功。",
+      "source": "backend/src/repositories/dialogue-pipeline-settings.ts",
+      "previousSeal": "8f06b0802408530c2437a401b7f9dd7a5c419cd98f5371933879f0224161d448",
+      "previousContent": "b5e2282f6eb0e03e4f33ec0e1d2bdc63024b67459d97b281ab8fceb04cd8212d"
+    },
+    {
+      "ref": "implementation/character-migration-context",
+      "disposition": "changed",
+      "note": "v1を維持しv2を受理。ID割当・source・baseline・修正影響集合の規則は変更しない。",
+      "source": "backend/src/services/character-migration-context.ts",
+      "previousSeal": "240382dabf9c9d94012bd35c4ab6444b1d6b9129c91bce53bcf745a1e6eecfaa",
+      "previousContent": "37e417e24d1b418cdefe5e5fd1b2ef3396c9835b44dd6345a301c6acda495bc6"
+    },
+    {
+      "ref": "implementation/character-migration-deferred",
+      "disposition": "compatible",
+      "note": "required consumerを回避しないdefer検証は不変。v2経路でも回帰成功。",
+      "source": "backend/src/services/character-migration-deferred.ts",
+      "previousSeal": "1f212c4eeb34b0f471e444719a23ee0b134723e419f8e9d50c58a6d2df14a472",
+      "previousContent": "9f82aaee9804cd09acd312242ffcef99ee9645dc15b918127be0eb2663822090"
+    },
+    {
+      "ref": "implementation/character-migration-merge",
+      "disposition": "compatible",
+      "note": "6操作・型付き値・最小差分・退避・owner diffは不変。構造/意味修正テスト成功。",
+      "source": "backend/src/services/character-migration-merge.ts",
+      "previousSeal": "7e8c76da23a17fef7b2bf612e282d8d2c266a0eddc8ce107314912ea4c1e7a47",
+      "previousContent": "a2dfed0d77c470d39a911d0503e9367bbd09ba9f4a277ffc97cf8383f0891998"
+    },
+    {
+      "ref": "implementation/character-migration-prompts",
+      "disposition": "changed",
+      "note": "v2だけ任意JSONの等価投影とV3の5alias補正を選択。v1のschema生成内容を保持。",
+      "source": "backend/src/services/character-migration-prompts.ts",
+      "previousSeal": "24b875e76fd9e36cc970252a8f222520b7304f1ad595c76ffae8c3bb8c8283da",
+      "previousContent": "c4d6c43708f7e5502f0cf50364d5b9ce2c113de9a055e0afd1aa0503e5547a69"
+    },
+    {
+      "ref": "implementation/character-migration-references",
+      "disposition": "compatible",
+      "note": "登録IDと参照先の整合検証は変更なし。未知ID拒否と支持参照テスト成功。",
+      "source": "backend/src/services/character-migration-references.ts",
+      "previousSeal": "6b3bf48e250032903bfe43c17c7a1bd568144aa8f7c97042efd87db7852c0c76",
+      "previousContent": "f589a61cd901fc3dff741db4813a37787ac88ea5f28b684260bcfb5189baae30"
+    },
+    {
+      "ref": "implementation/character-migration-requests",
+      "disposition": "compatible",
+      "note": "要求ID・digest・receipt・pending再送禁止は不変。v2のprompt identityで初回digestを分離。",
+      "source": "backend/src/services/character-migration-requests.ts",
+      "previousSeal": "5e31161be094c66b85b4d0d45a0f240dbc65ef6a56149f3329bc782a8bc09edb",
+      "previousContent": "bea95984f93ad10db862e1620da4d99fb265d52c3a17d8cd3674da6f467160bd"
+    },
+    {
+      "ref": "implementation/character-migration-response",
+      "disposition": "compatible",
+      "note": "受信後は同じ共有schemaと個別操作検証を使用。出力文法変更で受理境界を緩めない。",
+      "source": "backend/src/services/character-migration-response.ts",
+      "previousSeal": "823b39a1ac37d107a23a744c9777b9a6eee73ea787e3e9b1dea9751f6daa1c38",
+      "previousContent": "8d26b9b0ea92b31ba9a0f3bd287908c8edaf1b8a9f43d5cd4bc2746bda482239"
+    },
+    {
+      "ref": "implementation/character-migration-validation",
+      "disposition": "compatible",
+      "note": "候補V3・compiler・公開範囲・mechanics凍結は不変。schema成功を意味成功としない。",
+      "source": "backend/src/services/character-migration-validation.ts",
+      "previousSeal": "5d363a2a4ae6a79bc509e3b558e012b4560ed33291bb3f9c571182ea4572eda7",
+      "previousContent": "5ffc210500abaa3ff9c7593991a545a054f2e025207447807e2e580ed553e0ea"
+    },
+    {
+      "ref": "implementation/character-semantic-change-set",
+      "disposition": "changed",
+      "note": "コメントだけ訂正。再帰JSONの型・runtime検証・6操作・上限・意味refinementは不変。",
+      "source": "packages/shared/src/character-semantic-change-set.ts",
+      "previousSeal": "b821d996f34f8525649f544ff98eb73be2837abe9e1770c709033bd70ec56d05",
+      "previousContent": "60ae25b756806ae1161a435617301ae39e53eeea4a7288ca1725539226a07e1d"
+    },
+    {
+      "ref": "implementation/character-semantic-migration",
+      "disposition": "compatible",
+      "note": "生成→全体review→最大2修正の順序とactivated=falseは不変。v2で全phaseのgrammarを検査。",
+      "source": "backend/src/services/character-semantic-migration.ts",
+      "previousSeal": "1003c1fd9e3a06c42ef3268220503cc500385762371e97aa512b311c613ba859",
+      "previousContent": "ccdcf3bde48cda7bba1d0a54591c29b8de78cee4f3c9ff8b5778002cb015fb97"
+    },
+    {
+      "ref": "implementation/conscious-agency",
+      "disposition": "compatible",
+      "note": "顕在意識sole-writer、goalの正当性、行動意図・発話の対応契約は不変。全共有テスト成功。",
+      "source": "packages/shared/src/conscious-agency.ts",
+      "previousSeal": "0cf2e1fe371b36cd8954793da8724d66b1ccc1dc3eb9642d9d209f6741524d99",
+      "previousContent": "292ed77f1c88a7cbca2ec527b76007669efd0657885cda527e408c52527da830"
+    },
+    {
+      "ref": "implementation/llm-adapter",
+      "disposition": "changed",
+      "note": "既存5alias補正を共通helperへ移動し、xAI strict送信前の共通検査を追加。他provider・json_object経路は維持。",
+      "source": "backend/src/llm/openai-compatible.ts",
+      "previousSeal": "9d87028cbe07239c878273a070fd652540a2a9fc3385feab203d8252c261b2ea",
+      "previousContent": "32a329b73cc524c66cd5ccd6365d96feabbc776f52fbea4eeb1539332c0caecb"
+    },
+    {
+      "ref": "implementation/psyche-reaction-execution",
+      "disposition": "compatible",
+      "note": "入力直結の心理反応とLLM0callの規則は不変。共有型コメントを知識所有変更とは扱わない。",
+      "source": "packages/shared/src/psyche-reaction-policy.ts",
+      "previousSeal": "a35763bacd7d294ceeaa0a8b28936d6cf67d30d8c0316c382dfba37ffb701d4a",
+      "previousContent": "996b610baf1fdd42bea7c87f6243336e950479b5704134d59e9483c22e09e1d1"
+    },
+    {
+      "ref": "implementation/semantic-probe-fixture",
+      "disposition": "historical",
+      "note": "旧runId・prompt v1と合成アカリを保持。新版実行用fixtureに黙って差し替えない。",
+      "source": "backend/src/scripts/semantic-migration-probe-fixture.ts",
+      "previousSeal": "2951037c6c0b9ac8b0d2f7c8d60b51127edb8a35293c9291b14accdcf7527dff",
+      "previousContent": "a10e3b7cda1cce0a292c46575b19aa59f7220eee5300974f662f50779731b115"
+    },
+    {
+      "ref": "implementation/semantic-probe-provider",
+      "disposition": "changed",
+      "note": "予約計算とfetch前に同じ循環検査を接続。endpoint/model/費用上限/再試行0の契約は不変。",
+      "source": "backend/src/llm/character-migration-probe-provider.ts",
+      "previousSeal": "25f8c1f7b22543bae76b6c8da41d796b629ab7a07ec50d136dc046cd920cc4f1",
+      "previousContent": "52a65aa3d2ef32003838dbaa52a65a2d7a650211dcc4cd2c1daf1d25939de553"
+    },
+    {
+      "ref": "implementation/semantic-probe-runner",
+      "disposition": "compatible",
+      "note": "旧proof照合・live-start排他・SQLite隔離を維持。現在コードで旧proofを再利用できない。",
+      "source": "backend/src/scripts/replay-semantic-migration.ts",
+      "previousSeal": "cc11f9f85c2c716a2003bd94aa947856414ef73b1005442478b0d870c05b4706",
+      "previousContent": "b690f221c5d3b1f707ceae4c15c967dc486187d0e3ce994894889d16a00c3437"
+    },
+    {
+      "ref": "implementation/semantic-probe-snapshot",
+      "disposition": "compatible",
+      "note": "backend/shared sourceとbuilt sharedを束縛する範囲は不変。新helperも現在snapshotへ含まれ旧承認と区別される。",
+      "source": "backend/src/scripts/semantic-migration-probe-snapshot.ts",
+      "previousSeal": "32f584f040761b1b9adc9e4cb004e52a2fcb8d03eb458a428740ab5a0072fe68",
+      "previousContent": "a1f916a8410ed27e4b851c3797aeb835ef93185e8ae16a4b02ee0db39e35cbd0"
+    },
+    {
+      "ref": "implementation/shared-exports",
+      "disposition": "compatible",
+      "note": "export集合は今回変更なし。共有JSONschemaはコメントのみの訂正で公開される型契約は同一。",
+      "source": "packages/shared/src/index.ts",
+      "previousSeal": "c264d7c7688fab135426a628d1d73ea36ff7cdf1a7baccc754e890532b585a50",
+      "previousContent": "f062b5d254245436e30788b87409e36924f3a77aa4866c99d5e581b3e859c1e6"
+    },
+    {
+      "ref": "index/adr",
+      "disposition": "compatible",
+      "note": "ADR-0027/0028/0030等のstatus・所有者承認は変更なし。新たなsupersedeは不要。",
+      "source": "docs/adr/README.md",
+      "previousSeal": "fb62c84b24da7687d2d0f6ad17dab614f2c2dbe0511c8cc6bd7e138b6254d2df",
+      "previousContent": "ff6425ffe632e2454bd055e8260e924a1a15860495e4444b6f4fce75cb47255d"
+    },
+    {
+      "ref": "plan/agency-implementation",
+      "disposition": "compatible",
+      "note": "心理/顕在責務と実モデル評価の未完了を維持。今回のprovider是正でt030等を完了しない。",
+      "source": "docs/character-agency-implementation-plan-v1.md",
+      "previousSeal": "66c8043de1782713768463f9498d81892ceecb370ea8952672d60fedd438bbbe",
+      "previousContent": "f0b52b15297cbfe5e06d7e0817c154932cbc33a29d8de048c2da609c8fd4ad5c"
+    },
+    {
+      "ref": "plan/character-semantic-migration",
+      "disposition": "compatible",
+      "note": "B5ローカル実装とB6以降・本番復旧を分離する計画は維持。追加の課金・CASを開始しない。",
+      "source": "docs/character-semantic-migration.pert",
+      "previousSeal": "5b4bf7fcc0bd5df48c82644ff4d7fc434aff35430f9a11743cb483f3f16b66eb",
+      "previousContent": "3c2377ce90253e1bbb4629e038816c60c2220cb1d15c4f5892ebf7649f13743d"
+    },
+    {
+      "ref": "plan/dialogue-expression",
+      "disposition": "compatible",
+      "note": "親計画の実LLM比較とStage判断は未完了のまま。スキーマ局所是正を改善判定にしない。",
+      "source": "docs/dialogue-expression-realization.pert",
+      "previousSeal": "a0548b4574cc6dce798252a67832454547b306f74fb31e41876aae27d1369d88",
+      "previousContent": "5da1433dad600c6812d969884e923fe5be4e87302f7323dc9ebc6f9a6a075bc0"
+    },
+    {
+      "ref": "projection/adr-0028",
+      "disposition": "historical",
+      "note": "accepted revision2の投影bytesと責務・namespaceを保持。Sealの依存確認は再承認ではない。",
+      "source": "docs/adr/0028-versioned-conscious-agency-contract.md",
+      "previousSeal": "6f7496ceba03ba792e55e90477c09af603426cd2416c6ead31c14f83d66034af",
+      "previousContent": "5fdfdf6b0f18c6b41948bf230b4ac12206567dd6cb7ef4f25a7f70f7ea7c26e1"
+    },
+    {
+      "ref": "proposal/adr-0028",
+      "disposition": "historical",
+      "note": "固定されたADR本文を保持。type/grammar補正はgoal ownershipや世代の設計変更ではない。",
+      "source": "docs/adr/0028-versioned-conscious-agency-contract.think",
+      "previousSeal": "51f2c881c4783645ed40954889c942aa70c1872bd01a189b7f5fc29a5deaa4a7",
+      "previousContent": "b5f1933a7cdd8180fdd86f4a97ac432044a949d70b8d41141f10986da2ccc7f9"
+    },
+    {
+      "ref": "proposal/agency-requirements-v1",
+      "disposition": "historical",
+      "note": "作者由来を優先した旧要件は歴史資料のまま。今回の是正はその規則を有効化しない。",
+      "source": "docs/character-agency-requirements-v1.md",
+      "previousSeal": "d0ccbc996da3104b4ce221f1484480f7dc41732e365fb8ee12b409030cee204e",
+      "previousContent": "da6b7cabce19a95d5cf7476b7ad07f4eab4a33cd72ee542e5651aa1cc0339b05"
+    },
+    {
+      "ref": "proposal/agency-requirements-v2",
+      "disposition": "historical",
+      "note": "性格・関係に照らす新版要件の本文を保持。型の表現変更から新要件を導入しない。",
+      "source": "docs/character-agency-requirements-v2.md",
+      "previousSeal": "d96bbd67084aedbd3427f8941d946797bd57cf15f024b362b8165020eb5b58bd",
+      "previousContent": "9d5c3ccc85774c8e363c7c4d310c9705ebcafa63a3a249006e1506ebef5acc13"
+    },
+    {
+      "ref": "reasoning/adr-0030-b5-local-verification",
+      "disposition": "historical",
+      "note": "当時のB5検証推論と件数を保持。新しいgrammarと768件は別のCLI判断へ記録。",
+      "source": "docs/evidence/adr-0030-b5-local-verification-2026-09-10.think",
+      "previousSeal": "52dd61672a90169c002e75d6b36b0f56160b450dd1bc9f335f63371a1bce73d8",
+      "previousContent": "c11ec0506d3f27ff186c694b7c77ae3b88fa486af879986e091b0dc153f8062f"
+    },
+    {
+      "ref": "reasoning/agency-v3-implementation",
+      "disposition": "historical",
+      "note": "当時の直接承認と実装判断は保持。今回の変更で過去の独立レビュー未実施を埋めない。",
+      "source": "docs/evidence/agency-revision2-implementation-2026-09-09.think",
+      "previousSeal": "728f1984cbac59f4adceefa9035d9ea24d456853054491aa9a70d02398f1f2b1",
+      "previousContent": "4ce35bf9321c41b0f3a6ed5e2eb585a3b42953fa584c00897bf55f0156042566"
+    },
+    {
+      "ref": "reasoning/agency-v3-seal",
+      "disposition": "historical",
+      "note": "当時の検証・Seal適用範囲を保持。今回も歴史証拠を新実験の実績へ昇格しない。",
+      "source": "docs/evidence/agency-v3-verification-and-seal-2026-09-09.think",
+      "previousSeal": "78070b8d80ab45d5a48932fc55fb0247dcfdf171e303b8dc472e7d01d96c7dc8",
+      "previousContent": "5d8d38e79bb886cc4940bc9e1b99923473192bf8535e362e476b82092814e083"
+    },
+    {
+      "ref": "reasoning/semantic-probe-fixture-rca",
+      "disposition": "historical",
+      "note": "旧合成fixture生成時の不整合と是正を保持。新しいprovider grammarのRCAと混同しない。",
+      "source": "docs/evidence/semantic-probe-fixture-rca-2026-09-10.think",
+      "previousSeal": "3d5aa715b900ed5b2fbc017e055d484d0f910f75b6413e78e04c6104cc7b3213",
+      "previousContent": "fa597f6db491235dd372607b64e9b5fdc1f2326ea490842092c0fc3b7590b086"
+    },
+    {
+      "ref": "reasoning/semantic-probe-preparation",
+      "disposition": "historical",
+      "note": "初期の準備判断と未承認の上限案を保持。現在の実行計画として採用しない。",
+      "source": "docs/evidence/semantic-migration-probe-preparation-2026-09-10.think",
+      "previousSeal": "af7c5009033532c87098b8fe22d99c65d5d406e030322a5002b460e6e8d979fd",
+      "previousContent": "02cf74a25a112e3fda37ec47db419f26e66267429e97036a80bc2a4d18885aea"
+    },
+    {
+      "ref": "reasoning/semantic-probe-readiness",
+      "disposition": "historical",
+      "note": "旧準備判断の不十分な既知制約照合も証拠として保持。是正済みに書き換えない。",
+      "source": "docs/evidence/semantic-probe-readiness-2026-09-10.think",
+      "previousSeal": "309ad35ccb1e118e9306900eab627f703c1abb9542daa2b4206dbb5e869601ed",
+      "previousContent": "82da4d3125e84f2193352e0373909bfb8e01a9206031e6e5e86ccd7874289c76"
+    },
+    {
+      "ref": "reasoning/semantic-probe-reservation-sizing",
+      "disposition": "historical",
+      "note": "当時の実測bytesと提案上限を保持。v2の料金・サイズを測定した証拠にはしない。",
+      "source": "docs/evidence/semantic-probe-reservation-sizing-2026-09-10.think",
+      "previousSeal": "73652af3e66b0d67d3550aacd22ed2e9d461eccffc3f875eaefcf796bec965e2",
+      "previousContent": "2f9061d9ef2650b03c704325c9732dadc9aa4acf1a2582cd1a4643bdca0e3ec5"
+    },
+    {
+      "ref": "reasoning/semantic-probe-result-rca",
+      "disposition": "historical",
+      "note": "初回拒否の原因分類を保持。今回の追加root解析と実装は新しいRCAへ分離。",
+      "source": "docs/evidence/semantic-migration-grok-2026-09-10-v1/result-rca.think",
+      "previousSeal": "a902b8c7bc4d08207b6885d74245174c1bce3b869aa81c2fc145c38c0a5e4e1f",
+      "previousContent": "d0ce0a23efa2edfbb3afdf1bf7710826e01f4ec230a0238e13a350b627ed3678"
+    },
+    {
+      "ref": "review/agency-requirements-v1",
+      "disposition": "historical",
+      "note": "旧版への独立評価とG1-G5所見を保持。新版承認や実モデル品質へ継承しない。",
+      "source": "docs/evidence/character-agency-requirements-v1-independent-review-2026-09-09.md",
+      "previousSeal": "f51cccb3e17ba23d45baa1d3d7f7f050963e3db49001c6b158cb400a25583240",
+      "previousContent": "1d7cffa0bdeda2d26f8b6f9b5c0b54d4ec28537dc7719319ed2d6aac080751dc"
+    },
+    {
+      "ref": "review/agency-requirements-v1-input",
+      "disposition": "historical",
+      "note": "当時提示したレビュー範囲と未知を保持。現在の是正承認とは別記録。",
+      "source": "docs/character-agency-requirements-v1-review-input.md",
+      "previousSeal": "b4923a34bc163bd647ebc344e8c0b1674daa7530d05260cec2612bee4f7b4b86",
+      "previousContent": "0b75f51dddee15a5be61148e8da4df7cb484b0de1971b7a42cc14254e62dfc9b"
+    },
+    {
+      "ref": "review/agency-requirements-v2-input",
+      "disposition": "historical",
+      "note": "新版の日本語提示と未知を保持。是正から独立レビュー完了を推定しない。",
+      "source": "docs/character-agency-requirements-v2-review-input.md",
+      "previousSeal": "bd0e53b45a2f3d9e9d90b81bae4aec88488cc79a1cf3eeb2597d88aaaf8c03ac",
+      "previousContent": "dbddc2e3a4e55b05d166047425b3b3cd6b447e1ad5819dc7eeefe1133c649c0e"
+    },
+    {
+      "ref": "review/semantic-probe-v1",
+      "disposition": "historical",
+      "note": "提示したrevision1・予算・synthetic scopeを保持。消費済みであり新実行に流用不可。",
+      "source": "docs/evidence/semantic-migration-grok-2026-09-10-v1/owner-review-ja.md",
+      "previousSeal": "263834a48d82b94517b06b54e6df0596d11ee62b10ede5047fefe976afb32004",
+      "previousContent": "8af66e093a28e2046001f1efe633aa4b498d79f74b39a718307ba138c08635e9"
+    },
+    {
+      "ref": "verification/agency-fixtures",
+      "disposition": "compatible",
+      "note": "旧/新phaseの型付きfixtureを維持。新しいgrammar修正を固定応答の品質改善とはしない。",
+      "source": "backend/src/services/character-agency-inventory.fixtures.ts",
+      "previousSeal": "1200dd43b4c61854b4391cfdbd3da5ceb4c3713dba3945bfc84032227c992c95",
+      "previousContent": "37b5c5f715443d121deefb2f5235988f852c6aefcb6c4983274653d22bd4d86a"
+    },
+    {
+      "ref": "verification/agency-inventory",
+      "disposition": "compatible",
+      "note": "知識/心理入力の棚卸しテストを全体試験で再確認。source契約の追加なし。",
+      "source": "backend/src/services/character-agency-inventory.test.ts",
+      "previousSeal": "3e63610b5be234634409e4d359ee8dac2b77331bee0b4c474b82a5757cfb5a9b",
+      "previousContent": "d066a25e2d4fbf097e8e82fa862da738db734478afbd8ae1fde7abe540682808"
+    },
+    {
+      "ref": "verification/agency-persistence",
+      "disposition": "compatible",
+      "note": "顕在状態の保存・再読込みテストが成功。今回の修正は新しいwriterやDB列を追加しない。",
+      "source": "backend/src/services/conscious-agency-persistence.test.ts",
+      "previousSeal": "5aa981192e67779788a3c0a651c31cfd0ab1d71a2f3f235bb084e536ffc766a2",
+      "previousContent": "693363f7ddfd246f0b9dca6c243f63329f92233063547554ce89cd68f03862a5"
+    },
+    {
+      "ref": "verification/agency-runtime",
+      "disposition": "compatible",
+      "note": "V3実行のno-call・採用・公開除去の回帰成功。実LLM結果ではない。",
+      "source": "backend/src/services/conscious-agency-runtime.test.ts",
+      "previousSeal": "8716ad9483a9d899d301fd8ff054aab6862f3770e7d26660620e44e6a516438d",
+      "previousContent": "46c5ae792083493d1375dbabe26bb1c546838d7363fc961eb5e105bc9632f045"
+    },
+    {
+      "ref": "verification/agency-runtime-fixture",
+      "disposition": "compatible",
+      "note": "V3合成fixtureの値を変更しない。型/ビルド/利用側テストで互換確認。",
+      "source": "backend/src/services/conscious-agency.fixtures.ts",
+      "previousSeal": "18a88473d5cb706d1452839ea964849dd1f9761d241746a81819c900234e3d59",
+      "previousContent": "f7aa286a1b2043aaabe8e6dc8c08edfda814532974f1024cb7444a3e61150d38"
+    },
+    {
+      "ref": "verification/agency-settings",
+      "disposition": "compatible",
+      "note": "世代設定とimmutable束縛のテスト成功。設定activationは実施しない。",
+      "source": "backend/src/repositories/dialogue-pipeline-settings.test.ts",
+      "previousSeal": "ac5236d04414846e6aa4a61555b047f56fc9650dafa54eda35d6c96e078075b1",
+      "previousContent": "ea48dc31870d520c054a9e4b634a361ea87e7aa4952b864b184445dfe025629a"
+    },
+    {
+      "ref": "verification/character-authoring-response-schema",
+      "disposition": "changed",
+      "note": "既存全出力formatへ共通循環検査を適用。以前の5制約の補正回帰を維持。",
+      "source": "backend/src/llm/openai-compatible-character-definition.test.ts",
+      "previousSeal": "aef9ab8f06597a1acf22019b319867d43256c47b41c360fce447ede01f3444a3",
+      "previousContent": "f47e412259c968749e0eab4af37f9e9b40dded5828b7e913abcadefa4434cb29"
+    },
+    {
+      "ref": "verification/character-semantic-change-set",
+      "disposition": "compatible",
+      "note": "共有6操作・型検証・refinementは不変。全共有テスト339件成功。",
+      "source": "packages/shared/src/character-semantic-change-set.test.ts",
+      "previousSeal": "c5d9fe414dacd1b4153bb8a015bd241d46edf6e83d73aafa25af48a2b815b213",
+      "previousContent": "ec812b9cf5aff979c12e1bcb547e628dcda2380ed283e628f49fe12c5950ec1d"
+    },
+    {
+      "ref": "verification/character-semantic-migration-generation",
+      "disposition": "changed",
+      "note": "v2を標準fixtureとし、v1維持と出力/移行先grammarを全phaseで検証。",
+      "source": "backend/src/services/character-semantic-migration.test.ts",
+      "previousSeal": "4ad1914afebb073e45703983fd82dae4cdd97d0e01ff1f2ac8288967daf8aee1",
+      "previousContent": "8f04e2b5ebf43a887799e829fe3a0be8f3b471646d763bad99e9994b3ee7b8d7"
+    },
+    {
+      "ref": "verification/conscious-agency",
+      "disposition": "compatible",
+      "note": "goal/intent/action受入の純粋型ロジックを再確認。任意JSON文法の修正とは独立。",
+      "source": "packages/shared/src/conscious-agency.test.ts",
+      "previousSeal": "656fea8ef933361ce4b56f9b06994f289e27a5bf7835e52f40251e25e5d59304",
+      "previousContent": "0fc06d37bc752deb4eb20cca2aa73d0a12dffa32f979c69e611c6c365450f75c"
+    },
+    {
+      "ref": "verification/psyche-reaction",
+      "disposition": "compatible",
+      "note": "入力反応・保持・射影の既存テスト成功。LLM知識判断を心理へ追加していない。",
+      "source": "packages/shared/src/psyche-reaction-policy.test.ts",
+      "previousSeal": "06883da775f7e0cb4012e4f126caa5e6737f2a18e38d25a7009b1dc6827b63db",
+      "previousContent": "1befce83f6c94ff24c01f6a03b901c060ebf559f4bc2362285f4583acd15d9e8"
+    },
+    {
+      "ref": "verification/semantic-probe-fixture",
+      "disposition": "compatible",
+      "note": "旧v1合成キャラのselectorあり/なしを保持して検証。新runを作成した証拠ではない。",
+      "source": "backend/src/scripts/semantic-migration-probe-fixture.test.ts",
+      "previousSeal": "d0d45e05a0b237c2ebe21bc46e1f6cb7dd6509aac69c46111a17b94df7a20246",
+      "previousContent": "57fce7dbe40c1f969f7f6ccba23d8fd6e125ae812a2dbeb75cae1e6bb69f9338"
+    },
+    {
+      "ref": "verification/semantic-probe-provider",
+      "disposition": "changed",
+      "note": "保存済み不正文法をfetch/event前に拒否する回帰を追加。usage不明を0にしない従来試験も維持。",
+      "source": "backend/src/llm/character-migration-probe-provider.test.ts",
+      "previousSeal": "98bc62e32cc88f6914bb571974f58a55b40e25d58b27eebbd7825d6edd0cfdb5",
+      "previousContent": "2dd1d4564f25eb00488274b59340d8294028cc481d6dbd15c19e0c3ffcd141a8"
+    }
+  ]
+}

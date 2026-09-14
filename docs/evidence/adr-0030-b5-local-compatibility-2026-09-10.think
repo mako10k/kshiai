@@ -1,0 +1,12 @@
+domain B5LocalCompatibility:
+  description "Bounded implementation compatibility correction."
+evidence E1:
+  "Backend tsconfig target is ES2022. Typecheck reports TS2550 for two newly added Array.findLast calls in character-migration-validation.ts."
+premise P1:
+  "The required behavior is last matching operation, not a new JavaScript runtime or TypeScript target."
+premise A1:
+  "Alternative: raise the compiler target globally; this broadens an unrelated contract."
+premise A2:
+  "Alternative: reverse a copied array and use find, retaining source order and ES2022 compatibility."
+decision D1 based_on E1, P1, A1, A2:
+  "The new use of a library method outside the configured target produced this compile-time incompatibility. Choose A2 at both new sites; retain the compiler target. Typecheck is detection evidence, not the defect cause. No production state is involved."

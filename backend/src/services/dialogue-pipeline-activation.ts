@@ -1,4 +1,5 @@
 import {
+  DialoguePipelineSettingsSchema,
   snapshotDialoguePipelineSettings,
   type BattleAssetManifest,
   type DialoguePipelineActivationSource,
@@ -30,11 +31,14 @@ export function resolveDialoguePipelineActivation(input: {
   if (!input.overrideDeployment) {
     throw new Error("DIALOGUE_OVERRIDE_DEPLOYMENT_IDENTITY_REQUIRED");
   }
+  if (input.settings.schemaVersion === 3 && input.override === "legacy") {
+    throw new Error("BATTLE_CONTRACT_MISMATCH");
+  }
   return {
-    settings: {
+    settings: DialoguePipelineSettingsSchema.parse({
       ...input.settings,
-      contextProjectionMode: input.override,
-    },
+      contextProjectionMode: input.settings.schemaVersion === 3 ? "compact" : input.override,
+    }),
     source: "deployment_override",
     overrideDeployment: input.overrideDeployment,
   };

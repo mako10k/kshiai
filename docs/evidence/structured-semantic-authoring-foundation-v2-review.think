@@ -1,0 +1,28 @@
+domain FoundationRevision2Review:
+  description "Review unchanged revision2 against owner clarifications and accepted source contracts."
+evidence E1:
+  "Owner explicitly requests independent review. Candidate SHA256 df4536be8bed752c81164687112041286ebfefc7869fb80e6952f5839e0b556a matches the fixed revision."
+evidence E2:
+  "Specific prior-contract disposition maps revision6 R14 and ADR0030 D8/D9 to focused lenses and server reconciliation, retains current two-repair/six-request ceilings pending successor decisions, and distinguishes pending character revision3."
+evidence E3:
+  "F9 permits failed attempts and new explicitly requested source-based retries, retains source identity and failure reason, rechecks drift, and does not require persistent intermediate context. F10 permits answer-driven source reconstruction."
+evidence E4:
+  "Owner explicitly permits failure with retry and rejects mandatory intermediate-context persistence. Preservation data may be read by a migrator during migration."
+evidence E5:
+  "F12 restricts reads to authorized migrators during migration; the specific disposition preserves ADR0030 D5 capsule bounds, access, and retention."
+premise P1:
+  "The prior recovery recommendation requiring persistent resumable checkpoints was stronger than the owner requirement; E3 satisfies the clarified recovery outcome without that machinery."
+premise P2:
+  "Recomputing work after failure can cost more but is an explicitly disclosed tradeoff, not a new requirement contradiction."
+premise P3:
+  "Exact provider budgets and API identity design remain downstream decisions, while existing contracts continue until explicit successor adoption."
+decision D1 based_on E2, E3, E4, E5, P1, P2, P3:
+  "Parent source checks support closure of prior three findings at requirement level; implementation and real-model convergence are unverified."
+decision D2 based_on E1, D1:
+  "Combine independent findings with these checks before issuing a completed review recommendation. Preserve candidate bytes and persist separate Japanese review and draft provenance."
+evidence E6:
+  "Independent reviewer foundation_v2_independent_review completed the unchanged snapshot, found all three prior findings closed, and recommends ACCEPT. CLI audit fatal/error/warning/info zero; fifteen hints concern formatting and nearby decisions."
+premise P4:
+  "Japanese F11 uses need-not wording while F4 and acceptance criterion5 explicitly exclude complete schema and candidate; record as nonblocking editorial observation, not a requirement contradiction."
+decision D3 based_on E6, D1, P4:
+  "Record completed review with recommendation ACCEPT at Step4; no owner acceptance or implementation is performed."

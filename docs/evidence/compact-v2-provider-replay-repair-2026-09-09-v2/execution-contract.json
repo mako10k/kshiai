@@ -1,0 +1,45 @@
+{
+  "executionContract": {
+    "schemaVersion": 1,
+    "runId": "compact-v2-provider-replay-repair-2026-09-09-v2",
+    "implementationSha": "3c383ed1b4185a3bcc78c62981a628ea2b24a270",
+    "correctiveDecision": "ADR-0026",
+    "predecessorRunId": "compact-v2-provider-replay-repair-2026-09-09-v1",
+    "predecessorDisposition": "immutable failed run; never resume or resend",
+    "scope": "in-memory Compact V2 psyche and expression provider replay",
+    "scenarios": [
+      "ordinary",
+      "repetitive"
+    ],
+    "turnsPerScenario": 3,
+    "provider": "xai",
+    "model": "grok-4.3",
+    "baseUrl": "https://api.x.ai/v1",
+    "api": "chat.completions",
+    "reasoningEffort": "none",
+    "serial": true,
+    "retry": false,
+    "providerFallback": false,
+    "judge": false,
+    "databaseWrites": false,
+    "deployment": false,
+    "inputByteCeiling": 20000,
+    "framingTokenAllowance": 1024,
+    "outputTokenCeilings": {
+      "psyche": 1200,
+      "psycheRepair": 1200,
+      "expression": 400
+    },
+    "physicalRequestCeiling": 18,
+    "totalReservedTokenCeiling": 300000,
+    "monetaryCeilingUsd": 0.5,
+    "priceSnapshot": {
+      "checkedAt": "2026-09-09",
+      "source": "https://docs.x.ai/developers/models/grok-4.3",
+      "inputUsdPerMillion": 1.25,
+      "outputUsdPerMillion": 2.5,
+      "cachedInputDiscountAssumed": false
+    }
+  },
+  "contractDigest": "7bc4f2ef9e8c04a733c491737667a6d7542ab924de5615a67bf61ade413a56a0"
+}

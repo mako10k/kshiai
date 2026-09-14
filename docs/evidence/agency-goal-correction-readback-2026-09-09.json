@@ -1,0 +1,966 @@
+{
+  "scope": "Goal criterion correction; Proposed ADR0028 revision2 and requirement v2 step1. No runtime change.",
+  "old_heads": {
+    "acceptance/agency-requirements-v1": "cd313d168a27e0325be3c5c275c5f835077f709293fdcde03376c575cfc05932",
+    "adr/0027": "87d4106035e8b09c667d27d164691b16b93c12c6c683b414097b3763b0c53e5d",
+    "adr/character-focus": "9c3006ff30fb99fa76fe41bfe2f85033ddbfad9a2f67f7bdfaa7ecda6752d235",
+    "adr/expression-state": "2dce4e3a33324a12de69701b67ab12eae7a2b6e7b45491ff923c4bd9bc3b4697",
+    "adr/psyche-boundary": "87d4106035e8b09c667d27d164691b16b93c12c6c683b414097b3763b0c53e5d",
+    "adr/psyche-repair": "1ede4f74fa5c98580939051e0276a3a5e05ccddae73793b333f7156af7842ab3",
+    "adr/structured-character": "a16926e3e7cc0153d24ac2ec61390a382f1a0a95abb1cf73d83af40da60f754e",
+    "archive/adr-0004": "c60f19e3e97fad6e86e0e3c2843ac50392ecf42eb145532e81dbcf4f2f6dc8fa",
+    "backlog/character-agency": "1cd42023095aabbccb27c5549d020a0c1ef5cb306b140a59682a2368c17e815a",
+    "design/agency-responsibility": "bafbd44403ba5864283695600c887332c0de5a3484ad850a37281852afe966c1",
+    "design/psyche-reaction": "c3be1f179e29fc80f45d536c014355ee6abca2698be353e34c4b43e25332e118",
+    "design/psyche-slice": "2df2b781a50cf88d8871bc16710753dc55c24cc90f46b143de7b4a6b66a505e8",
+    "evidence/adr-0027-implementation-impact": "762225f2f1dd4de8ca84d296fc37ee534eeed36a71144c0b256e6786d358e1e6",
+    "evidence/agency-ca00": "2173add4879bfd105d946070b5895c2c1f280450f211cc87ab652c1162fd886f",
+    "implementation/agency-replay-baseline": "909f19a6715f6ca8953ba62c79d58e9db0e196b8cb81f7f9f8e5b22256642015",
+    "implementation/battle-persistence": "6152d587ac52d31be41745c4a1a3179d763e5239f2418f01c9fe72e2b75518da",
+    "implementation/battle-service": "d15f0e74251ebf6d1e6c79d23791cec636e7a48de9a1a63d3355f0284fe2591b",
+    "implementation/conscious-self-projection": "1b37e3ef76ffd4675dc0666dc88b13891ac790d10f1bebc4ae0db30ffba7460b",
+    "implementation/decision-profile": "0d552eb32f756b6cbe070aab49454c2e133a0d965b3e7cf64b7cd59e79f6be4c",
+    "implementation/dialogue-generation": "f8fd630c0148b08be95139cf9eba9afa6d445d602879ee1a5337c075accb8767",
+    "implementation/expression-prompt": "c2f4699be7535ea73cfe0f2a533bca647aa143ee6c3bcb59962232115288e97b",
+    "implementation/llm-adapter": "6c2e9e3e526983af768b2a898efbcc34e949d64ed9fb0b1ab875d4b37eb61c5a",
+    "implementation/llm-types": "3ac35cc572548ca109a414a0af0b980383f448a773c12e3aa51854a1bd3b83ca",
+    "implementation/mock-adapter": "fbaa75723a9cb10cd2ef10f7d277f93caa7741ae87d6bd106651cf6b1e4ee531",
+    "implementation/operation-taxonomy": "172ba316544d2962cb161fafe87087e9707e87b7e8e7500fa76077c443757883",
+    "implementation/private-observability": "f4ebef6061bc6f748fea8c8715c38eeffcb9473d8729b220e63b07058436c7af",
+    "implementation/psyche-decoder": "504534ac5917cae43210efd2fa55eaef6b33c66dc1290e33442299c5f42715a1",
+    "implementation/psyche-schema": "77e2e8d6ebe4503d2a86eebb1cc85b4fc0f5af2405b0a135f6163bcd4c6dca08",
+    "index/adr": "b62aaba5c466d31c740e0384c1ce097b1e85fe957a38b8206aa9f6fab3506e7d",
+    "plan/agency-implementation": "d9f4b61967611be932e59902bbb94609a15d2272e21b93eb3a769b9e8730c914",
+    "plan/dialogue-expression": "be24906f30aa1313c0bf5ed5a658fb50a0137bf2663da685f625cf60699e3681",
+    "projection/adr-0025": "a95dbf64df749d20fda4735d7a3a9c2afb27ac8596764e2bf1b4e90a5a08a740",
+    "projection/adr-0026": "3f4550a6c52c61a917739cd1bfeb3ac7ff9911a94b6e10e6b3e18b85eb2dd73f",
+    "projection/adr-0027": "eb9ab069a0773222b64bfc78e459c28f72177c4d277d9bbd06f277a7d8d9342a",
+    "projection/adr-0028": "920974afbb3be371027a628df6c07f46ad0f52f441409d1878420a1c8b2f11fb",
+    "proposal/adr-0028": "d56356883a1c8e8dfa43345db82c3dbf64d80a3dc650d33c37af80cd71686720",
+    "proposal/agency-requirements-v1": "669946bfb5eff943cece9714620639ca322a688a5c5d2436e9912c170bc92af5",
+    "review/agency-requirements-v1": "6af32e2849fe238ea677e0808a730d8b1c4194e16718634784d75ff3cd27ed25",
+    "review/agency-requirements-v1-input": "cf8701eb015a5a2079ef5f974537f523bce8cfa5e4a455a5b4645ef659452024",
+    "verification/agency-fixtures": "b11371cc55e48e206838d3c6afe37a26e6039275b346c1f33765d1fbbe1c770b",
+    "verification/agency-inventory": "279678af0f71aaceda4a91ca43fa061d038877464a072c8b85bb3f375cec7dee"
+  },
+  "status": {
+    "schema": "sealgraph/status/v3",
+    "statuses": [
+      {
+        "ref": "acceptance/agency-requirements-v1",
+        "head_seal_id": "cd313d168a27e0325be3c5c275c5f835077f709293fdcde03376c575cfc05932",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "docs/character-agency-requirements-v1-acceptance.md",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "adr/0027",
+        "head_seal_id": "87d4106035e8b09c667d27d164691b16b93c12c6c683b414097b3763b0c53e5d",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "docs/adr/0027-unified-conscious-agency-and-psyche-boundary.think",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "adr/character-focus",
+        "head_seal_id": "9c3006ff30fb99fa76fe41bfe2f85033ddbfad9a2f67f7bdfaa7ecda6752d235",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "docs/adr/0008-battle-private-character-focus-state.md",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "adr/expression-state",
+        "head_seal_id": "2dce4e3a33324a12de69701b67ab12eae7a2b6e7b45491ff923c4bd9bc3b4697",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "docs/adr/0025-expression-state-and-utterance-actuals.think",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "adr/psyche-boundary",
+        "head_seal_id": "87d4106035e8b09c667d27d164691b16b93c12c6c683b414097b3763b0c53e5d",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "docs/adr/0027-unified-conscious-agency-and-psyche-boundary.think",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "adr/psyche-repair",
+        "head_seal_id": "1ede4f74fa5c98580939051e0276a3a5e05ccddae73793b333f7156af7842ab3",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "docs/adr/0026-compact-psyche-semantic-closure-repair.think",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "adr/structured-character",
+        "head_seal_id": "a16926e3e7cc0153d24ac2ec61390a382f1a0a95abb1cf73d83af40da60f754e",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "docs/adr/0011-structured-character-definition.md",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "archive/adr-0004",
+        "head_seal_id": "c60f19e3e97fad6e86e0e3c2843ac50392ecf42eb145532e81dbcf4f2f6dc8fa",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "docs/adr/0004-versioned-lightweight-psyche-dynamics.md",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "backlog/character-agency",
+        "head_seal_id": "dfd455e7460b54b411433eea8ef62c6ab546f2ed02fdf74ffb3ac1e9531cc16b",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "docs/character-agency-backlog.md",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "correction/agency-goal-criterion",
+        "head_seal_id": "a510105d1b636905e2a3bcfc295c9903ad6d5785057bb06e02ecd30f61700996",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "docs/evidence/agency-goal-criterion-correction-2026-09-09.md",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "design/agency-responsibility",
+        "head_seal_id": "a92d980353f3707fe6a8c4fd08ca5714d0e5b2ff713e89e96d018a380c64eba3",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "docs/character-agency-responsibility-design-v1.md",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "design/psyche-reaction",
+        "head_seal_id": "c3be1f179e29fc80f45d536c014355ee6abca2698be353e34c4b43e25332e118",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "docs/lightweight-psyche-reaction-policy.md",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "design/psyche-slice",
+        "head_seal_id": "2df2b781a50cf88d8871bc16710753dc55c24cc90f46b143de7b4a6b66a505e8",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "docs/lightweight-psyche-adoptable-slice.md",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "evidence/adr-0027-implementation-impact",
+        "head_seal_id": "762225f2f1dd4de8ca84d296fc37ee534eeed36a71144c0b256e6786d358e1e6",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "docs/evidence/adr-0027-implementation-impact-2026-09-09.md",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "evidence/agency-ca00",
+        "head_seal_id": "2173add4879bfd105d946070b5895c2c1f280450f211cc87ab652c1162fd886f",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "docs/evidence/character-agency-ca00-inventory-2026-09-09.md",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "implementation/agency-replay-baseline",
+        "head_seal_id": "909f19a6715f6ca8953ba62c79d58e9db0e196b8cb81f7f9f8e5b22256642015",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "backend/src/scripts/replay-compact-v2-provider.ts",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "implementation/battle-persistence",
+        "head_seal_id": "6152d587ac52d31be41745c4a1a3179d763e5239f2418f01c9fe72e2b75518da",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "backend/src/repositories/battles.ts",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "implementation/battle-service",
+        "head_seal_id": "d15f0e74251ebf6d1e6c79d23791cec636e7a48de9a1a63d3355f0284fe2591b",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "backend/src/services/battle-service.ts",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "implementation/conscious-self-projection",
+        "head_seal_id": "1b37e3ef76ffd4675dc0666dc88b13891ac790d10f1bebc4ae0db30ffba7460b",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "packages/shared/src/structured-character.ts",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "implementation/decision-profile",
+        "head_seal_id": "0d552eb32f756b6cbe070aab49454c2e133a0d965b3e7cf64b7cd59e79f6be4c",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "backend/src/services/free-action-service.ts",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "implementation/dialogue-generation",
+        "head_seal_id": "f8fd630c0148b08be95139cf9eba9afa6d445d602879ee1a5337c075accb8767",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "packages/shared/src/dialogue-pipeline.ts",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "implementation/expression-prompt",
+        "head_seal_id": "c2f4699be7535ea73cfe0f2a533bca647aa143ee6c3bcb59962232115288e97b",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "backend/src/llm/character-expression-prompt.ts",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "implementation/llm-adapter",
+        "head_seal_id": "6c2e9e3e526983af768b2a898efbcc34e949d64ed9fb0b1ab875d4b37eb61c5a",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "backend/src/llm/openai-compatible.ts",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "implementation/llm-types",
+        "head_seal_id": "3ac35cc572548ca109a414a0af0b980383f448a773c12e3aa51854a1bd3b83ca",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "backend/src/llm/types.ts",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "implementation/mock-adapter",
+        "head_seal_id": "fbaa75723a9cb10cd2ef10f7d277f93caa7741ae87d6bd106651cf6b1e4ee531",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "backend/src/llm/mock.ts",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "implementation/operation-taxonomy",
+        "head_seal_id": "172ba316544d2962cb161fafe87087e9707e87b7e8e7500fa76077c443757883",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "backend/src/llm/provider-operation-taxonomy.ts",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "implementation/private-observability",
+        "head_seal_id": "f4ebef6061bc6f748fea8c8715c38eeffcb9473d8729b220e63b07058436c7af",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "backend/src/services/internal-observability.ts",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "implementation/psyche-decoder",
+        "head_seal_id": "504534ac5917cae43210efd2fa55eaef6b33c66dc1290e33442299c5f42715a1",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "packages/shared/src/compact-psyche-decode.ts",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "implementation/psyche-schema",
+        "head_seal_id": "77e2e8d6ebe4503d2a86eebb1cc85b4fc0f5af2405b0a135f6163bcd4c6dca08",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "packages/shared/src/battle.ts",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "index/adr",
+        "head_seal_id": "4c23d811ef8892dacc3d1080c1210bc0074f319cbe64484aede79797ba810827",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "docs/adr/README.md",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "plan/agency-implementation",
+        "head_seal_id": "13ed85ff00289937bacff51a7ee6d22f7595de82158652019ee6274a971f3902",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "docs/character-agency-implementation-plan-v1.md",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "plan/dialogue-expression",
+        "head_seal_id": "1d33ed402a9bbb806f72cc1d6d90987c5f9ec84466d491076b8b642712c77990",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "docs/dialogue-expression-realization.pert",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "projection/adr-0025",
+        "head_seal_id": "a95dbf64df749d20fda4735d7a3a9c2afb27ac8596764e2bf1b4e90a5a08a740",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "docs/adr/0025-expression-state-and-utterance-actuals.md",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "projection/adr-0026",
+        "head_seal_id": "3f4550a6c52c61a917739cd1bfeb3ac7ff9911a94b6e10e6b3e18b85eb2dd73f",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "docs/adr/0026-compact-psyche-semantic-closure-repair.md",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "projection/adr-0027",
+        "head_seal_id": "eb9ab069a0773222b64bfc78e459c28f72177c4d277d9bbd06f277a7d8d9342a",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "docs/adr/0027-unified-conscious-agency-and-psyche-boundary.md",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "projection/adr-0028",
+        "head_seal_id": "aee19ad4904964e2ae01a773766bc3c1f61bcae69d1c5906cd83142d74bc6808",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "docs/adr/0028-versioned-conscious-agency-contract.md",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "proposal/adr-0028",
+        "head_seal_id": "95ddf1430f70e8fa649c5cc049827aa6ebf77e7a6ce444fbbb2693d947a740a6",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "docs/adr/0028-versioned-conscious-agency-contract.think",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "proposal/agency-requirements-v1",
+        "head_seal_id": "669946bfb5eff943cece9714620639ca322a688a5c5d2436e9912c170bc92af5",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "docs/character-agency-requirements-v1.md",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "proposal/agency-requirements-v2",
+        "head_seal_id": "41768031b8d99370bb142b72cb16f4a5e786868200bc674da5fe7663c0d9e2e8",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "docs/character-agency-requirements-v2.md",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "review/agency-requirements-v1",
+        "head_seal_id": "6af32e2849fe238ea677e0808a730d8b1c4194e16718634784d75ff3cd27ed25",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "docs/evidence/character-agency-requirements-v1-independent-review-2026-09-09.md",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "review/agency-requirements-v1-input",
+        "head_seal_id": "cf8701eb015a5a2079ef5f974537f523bce8cfa5e4a455a5b4645ef659452024",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "docs/character-agency-requirements-v1-review-input.md",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "review/agency-requirements-v2-input",
+        "head_seal_id": "b10ebadada1b4b7cdf1cdcebbae7c9e2439d16ff7e4ea07a5fcc4f5ab1591493",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "docs/character-agency-requirements-v2-review-input.md",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "verification/agency-fixtures",
+        "head_seal_id": "b11371cc55e48e206838d3c6afe37a26e6039275b346c1f33765d1fbbe1c770b",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "backend/src/services/character-agency-inventory.fixtures.ts",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "verification/agency-inventory",
+        "head_seal_id": "279678af0f71aaceda4a91ca43fa061d038877464a072c8b85bb3f375cec7dee",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "backend/src/services/character-agency-inventory.test.ts",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      }
+    ]
+  },
+  "stale": {
+    "schema": "sealgraph/stale/v2",
+    "frontier": false,
+    "scan": true,
+    "statuses": []
+  },
+  "fsck": {
+    "schema": "sealgraph/fsck/v2",
+    "result": "ok",
+    "blobs": 301,
+    "seals": 82,
+    "materials": 73,
+    "provenances": 73,
+    "refs": 44,
+    "tags": 0,
+    "active_seals": 61,
+    "historical_or_detached_seal_ids": [
+      "2e01962f814950e1eb0ef05e5a044b1db518f590c1a77ed6a6de2ce200960789",
+      "3ad3ca433f3c456f70d804ef84a28e9c9d01fd31d9a789627a724db8eb9f85ee",
+      "3ba5383f923c43b57fd8b274dad79cd9b8009a5038c5ad427345d95f802d4cde",
+      "45396d18919168a0982db90e2fa5b9d1fd21767951a688afc2e649a467795a1f",
+      "4f0baae0e6fc29de9e19fd624a493b045384295cb5b1731268cd01743af5330a",
+      "547e063824ce94eb1d5f69c78bd2fa8455411cc8ca0168cde434f3a20f2fc2a4",
+      "5ee5da13543fc596b3afb5dc07f313a14d872a5d1d8c60a5db40689c9656b996",
+      "69ea97d090e0228fdb45c0ea3955bd95fae6a0dff29f4299b6de9a0570303c7f",
+      "7b05f96f566d082a28395180bbca4748d2851e2e4998ce9016b05a0a30e523fd",
+      "8fde2f5d542c92512cf8de93e19a821e1f7afdc89aeb3192d8c2f078f062bc6f",
+      "9485c01886666cf78e93763e27b6b6524e5f200d2bec64be4a45291c13e54956",
+      "98e31826220432b945be5094e95c479b6254d31913a750207416c877fe81dac4",
+      "997b3a75d271a12834356027fc299c08107e07aa6dd46a33edd8591ce3d03e2d",
+      "b5e7bab122c597365e7679eda0339b84c5b4babb13f55c84791a3687f3d1ce59",
+      "b62aaba5c466d31c740e0384c1ce097b1e85fe957a38b8206aa9f6fab3506e7d",
+      "be24906f30aa1313c0bf5ed5a658fb50a0137bf2663da685f625cf60699e3681",
+      "d4523cd4dfa83a575e6f20a67b485ea4aef19dc9aee1731e5699343daff1677b",
+      "f89669cae17cb5b4bdd372dc613947a8ac100740178bd98cf8b3175a7ea22d92",
+      "f9bea5f209f6faa669113e54ecc325d18986130a7ff872ad5b57ccde06c676b7",
+      "fa337eb38cc4efa5c5d3eb71d8b87e8a181b001109848ca18008516d855e8ab6",
+      "fda6c3bdad5cf33104c6e561a9d11ba41963cd28d277439ff8e549b318b89dde"
+    ],
+    "unreferenced_blob_ids": []
+  },
+  "verification": {
+    "pert": {
+      "exit": 0,
+      "ok": true,
+      "diagnostics": {
+        "PTDAG-208": 38,
+        "PTMAC-102": 32
+      }
+    },
+    "adrCheck": {
+      "chunk_id": "a01247",
+      "wall_time_seconds": 0.000006932,
+      "exit_code": 1,
+      "original_token_count": 58,
+      "output": "npm error Missing script: \"adr:check\"\nnpm error\nnpm error To see a list of scripts, run:\nnpm error   npm run\nnpm error A complete log of this run can be found in: /home/katsumata-m/.npm/_logs/2026-09-09T12_42_20_920Z-debug-0.log\n"
+    },
+    "diff": {
+      "chunk_id": "1beef7",
+      "wall_time_seconds": 0.000006243,
+      "exit_code": 0,
+      "original_token_count": 0,
+      "output": ""
+    },
+    "hash": {
+      "chunk_id": "193eff",
+      "wall_time_seconds": 0.000005715,
+      "exit_code": 0,
+      "original_token_count": 114,
+      "output": "f733f85a153349e4be28785fef05d93006d057e0e5d507a8423b658f9bb7f444  docs/character-agency-requirements-v1.md\n5a30f561ff4ffdbbcc51ec41e4cc6e989191f51ab191f92f8f94c1c4c3bfda76  docs/character-agency-requirements-v2.md\n0629f788432b235bbc41f83e86e68d013d3850f58d04d80e313c97b4aa27b50a  docs/adr/0028-versioned-conscious-agency-contract.think\nb00df70befff7f3ea576c7d837aab55f0378917b31ef9fcba6015a353db5c058  docs/adr/0028-versioned-conscious-agency-contract.md\n"
+    },
+    "time": {
+      "chunk_id": "5b039b",
+      "wall_time_seconds": 0.000014294,
+      "exit_code": 0,
+      "original_token_count": 338,
+      "output": "{\"message\": \"No work-time action is required.\", \"repo_action\": \"none\", \"required_action\": \"none\", \"required_actions\": [], \"schema\": \"worktimectl.agent-status.v1\", \"status\": {\"actual_overtime_seconds\": 14841, \"break_seconds\": 3600, \"credited_work_seconds\": 43641, \"date\": \"2026-09-09\", \"end\": null, \"needs_overtime_extension\": false, \"needs_overtime_registration\": false, \"nominal_end\": \"2026-09-09T17:35:00+09:00\", \"overtime_notice_seconds\": 900, \"overtime_seconds\": 15900, \"planned_end\": \"2026-09-09T22:00:00+09:00\", \"presence_seconds\": 47241, \"remaining_seconds\": 1058, \"repository\": {\"approaching_end\": false, \"approaching_message\": null, \"buffer_starts_at\": \"2026-09-09T22:00:00+09:00\", \"conditions\": [], \"configured\": false, \"daily_conditions\": [], \"date\": \"2026-09-09\", \"end_buffer_seconds\": null, \"end_conditions\": [], \"end_conditions_satisfied\": null, \"is_git_repository\": true, \"path\": \"/home/katsumata-m/.codex/worktrees/compact-psyche-repair-integration-kshiai\", \"requested_path\": \"/home/katsumata-m/.codex/worktrees/compact-psyche-repair-integration-kshiai\", \"schema\": \"worktimectl.repo-status.v1\", \"settings_configured\": false}, \"schema\": \"worktimectl.status.v1\", \"standard_end_time\": null, \"standard_start_time\": null, \"standard_work_seconds\": 28800, \"start\": \"2026-09-09T08:35:00+09:00\", \"state\": \"working\", \"timezone\": \"Asia/Tokyo\"}}\n"
+    }
+  }
+}

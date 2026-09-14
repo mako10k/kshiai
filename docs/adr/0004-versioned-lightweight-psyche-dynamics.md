@@ -1,6 +1,8 @@
 # ADR-0004: Versioned lightweight psyche dynamics
 
-- Status: Accepted
+- Status: Superseded
+- Superseded by: [ADR-0027](0027-unified-conscious-agency-and-psyche-boundary.md), accepted 2026-09-09.
+- Historical record: the rationale below is unchanged. ADR-0027 replaces the action/expression separation rule and preserves the specified dynamics and version safeguards.
 - Date: 2026-08-12
 - Decision owner: Product owner
 - Related: GitHub Issue #98; ADR-0002; ADR-0003; `docs/dialogue-context-projection.pert`; `docs/battle-semantic-state.md`

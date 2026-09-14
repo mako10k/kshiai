@@ -1,0 +1,36 @@
+domain SemanticMigrationOllamaSchemaRca:
+  description "Explain the first local Ollama smoke request failure and select an adapter correction without weakening the authoritative received-value schema."
+evidence E1:
+  "E-OLLAMA-RCA-001 observed: the sole local POST to Ollama0.21.1 /api/chat returned HTTP500 with the exact body error 'invalid JSON schema in format'. No model content or token accounting was returned and no retry occurred."
+evidence E2:
+  "E-OLLAMA-RCA-002 observed: the retained request.format contains a generic-JSON definition represented as the typeless object {additionalProperties:true}; it is referenced from both array-item and object-additional-value branches."
+evidence E3:
+  "E-OLLAMA-RCA-003 reproduced: Ollama v0.21.1's tagged json-schema-to-grammar.cpp, compiled locally against the retained format, reports 'Unrecognized schema: {additionalProperties:true}' twice and exits unsuccessfully."
+evidence E4:
+  "E-OLLAMA-RCA-004 source observation: the tagged converter's object branch accepts schemas with properties or additionalProperties not equal to true; its later generic-object branch accepts an empty schema or explicit type object. A typeless schema containing only additionalProperties true reaches the unrecognized-schema error."
+evidence E5:
+  "E-OLLAMA-RCA-005 reproduced alternative: the same tagged converter successfully converts the original recursive generic-JSON definition emitted from the shared Zod contract, preserving null, boolean, number, string, recursively nested array and recursively nested object alternatives."
+evidence E6:
+  "E-OLLAMA-RCA-006 existing design: the xAI response-schema projection replaces only the recursive generic-JSON definition with {additionalProperties:true}, because xAI rejects circular references while the shared recursive Zod schema remains the authoritative received-value validator."
+premise U1:
+  "The live Ollama server hides converter detail behind a generic HTTP error. The exact tagged-source reproduction establishes the rejected schema mechanism but does not establish whether a future Ollama release will retain it."
+premise U2:
+  "The first HTTP request reached schema conversion but returned before model content and token accounting. Whether Ollama performed any unreported internal work before rejection is unknown."
+premise H1:
+  "The request failed because the Ollama native API envelope differs from the documented format field."
+premise H2:
+  "The request failed because Ollama0.21.1's embedded grammar converter rejects the xAI-specific typeless generic-JSON projection."
+premise H3:
+  "The request failed because targetPath patterns or another unrelated JSON Schema keyword are unsupported."
+decision C1 based_on E1, E2, E3, E4:
+  "C-OLLAMA-RCA-001 high confidence root cause: H2. The adapter passed an xAI-specific generic-JSON projection into Ollama; Ollama0.21.1's embedded converter rejects that exact typeless additionalProperties form before generation."
+decision C2 based_on E1, E3, E5:
+  "C-OLLAMA-RCA-002 alternatives: H1 is contradicted by reaching the format converter, and H3 is not needed to explain the exact reproduced failure because replacing the generic-JSON representation with the original recursive schema makes the complete retained schema convert successfully."
+decision C3 based_on E5, E6, U1:
+  "C-OLLAMA-RCA-003 corrective action: keep the xAI projection unchanged and make the Ollama adapter restore only the proven generic-JSON definition to its shared-contract recursive representation. Assert the exact expected input before replacement so future drift fails closed."
+decision C4 based_on E1, E3, E5, U2:
+  "C-OLLAMA-RCA-004 verification: unit-test the exact projection restoration and run the tagged offline converter against the adapted schema. A fresh one-request local smoke may then test actual inference; label it a new corrected run, not a retry hidden inside the failed run."
+decision C5 based_on E6:
+  "C-OLLAMA-RCA-005 escape cause: adapter tests covered envelope translation and receipt mapping but did not exercise Ollama0.21.1's grammar converter against the complete response schema. Add an exact schema-projection regression; do not describe this test gap as the defect-producing root cause."
+decision A1 based_on C3, C4, C5:
+  "A-OLLAMA-RCA-001: implement the bounded Ollama schema projection, add exact tests, retain the first failure as evidence, and use a new run ID for one corrected local inference attempt."

@@ -1,0 +1,208 @@
+[
+  {
+    "ref": "implementation/semantic-authoring-contracts-v1",
+    "draft": true,
+    "labels": [
+      "DRAFT"
+    ],
+    "head": "4401a049e80c7cae5720168ea924461b6b6a0fdb0014940b4e629a56c9e44bf6"
+  },
+  {
+    "ref": "implementation/semantic-authoring-public-contracts-v1",
+    "draft": true,
+    "labels": [
+      "DRAFT"
+    ],
+    "head": "a9e6eab35564a2491b13c41319acb0a020f112c671d6a2203f19a38a772f4fad"
+  },
+  {
+    "ref": "implementation/semantic-authoring-character-contracts-v1",
+    "draft": true,
+    "labels": [
+      "DRAFT"
+    ],
+    "head": "64bf845a8a9854316b594dfffa21bee9e1d535c602dee6a78939f2b0daff2ed1"
+  },
+  {
+    "ref": "implementation/semantic-authoring-shared-export-v1",
+    "draft": true,
+    "labels": [
+      "DRAFT"
+    ],
+    "head": "732d2eae7927c3eb132a3e3a513b13d3dae9bd5fc42b5bfffe3a7f939d21461c"
+  },
+  {
+    "ref": "implementation/semantic-authoring-kernel-v1",
+    "draft": true,
+    "labels": [
+      "DRAFT"
+    ],
+    "head": "a9661841a26cc806e1daafa77aaee3efd11901749f9a27c5922ebc37085797e8"
+  },
+  {
+    "ref": "implementation/semantic-authoring-capability-session-v1",
+    "draft": true,
+    "labels": [
+      "DRAFT"
+    ],
+    "head": "6af1f88967b9bab42da52983feecf27a95abd5a541b0e8653b809f9c6527d5e0"
+  },
+  {
+    "ref": "implementation/semantic-authoring-progress-monitor-v1",
+    "draft": true,
+    "labels": [
+      "DRAFT"
+    ],
+    "head": "9df440ed0406fbfd1d00df6bdf9c92254457fec11f2d26e407648c97e32d02d9"
+  },
+  {
+    "ref": "implementation/semantic-authoring-run-state-v1",
+    "draft": true,
+    "labels": [
+      "DRAFT"
+    ],
+    "head": "9a76181383b6b2c8351d360e46dd07a49bdc203047df3e4bd327acd8e176def7"
+  },
+  {
+    "ref": "implementation/semantic-authoring-accounting-v1",
+    "draft": true,
+    "labels": [
+      "DRAFT",
+      "STALE_DIRECT"
+    ],
+    "head": "e09ed9c26e12c2be0ee7831aedc641e09373b6bc9d1a323e193a054a67d5fe65"
+  },
+  {
+    "ref": "implementation/semantic-authoring-proposal-decoder-v1",
+    "draft": true,
+    "labels": [
+      "DRAFT",
+      "STALE_DIRECT"
+    ],
+    "head": "d7b30f5360e5af7a3103cf09e2f03956e6e71ae2cf66e749f0123ecdb031a9ca"
+  },
+  {
+    "ref": "implementation/semantic-authoring-ports-v1",
+    "draft": true,
+    "labels": [
+      "DRAFT"
+    ],
+    "head": "4538f35e64283292b1c985cb50bd3c9b0f9d859606a34a938c2af6f9cc54830d"
+  },
+  {
+    "ref": "implementation/semantic-authoring-scripted-ports-v1",
+    "draft": true,
+    "labels": [
+      "DRAFT"
+    ],
+    "head": "38812c78db6a1e4980bb52e35c283639accf67ce35b96273a4a1dbab9f53fe67"
+  },
+  {
+    "ref": "implementation/semantic-authoring-orchestration-v1",
+    "draft": true,
+    "labels": [
+      "DRAFT"
+    ],
+    "head": "05acf640575472e3bf007fd8fa37398c6cfdb94b288aa83667f915041fc0f9fc"
+  },
+  {
+    "ref": "implementation/semantic-authoring-public-mapping-v1",
+    "draft": true,
+    "labels": [
+      "DRAFT"
+    ],
+    "head": "97d3e3be7d7ccfceec31eba40ca3e761d40f99b40d85337039ca4837c4e2f85c"
+  },
+  {
+    "ref": "implementation/semantic-authoring-character-adapter-v1",
+    "draft": true,
+    "labels": [
+      "DRAFT"
+    ],
+    "head": "867edcce7249adf1f713ac8b6460681659df05bc034ac09237348f16f6cfebc3"
+  },
+  {
+    "ref": "implementation/semantic-authoring-family-conformance-v1",
+    "draft": true,
+    "labels": [
+      "DRAFT"
+    ],
+    "head": "7ff757f111a5ad7b0c1b5143712288ae8e81926d1ac2dd5e6a80796c4b7a8858"
+  },
+  {
+    "ref": "implementation/semantic-authoring-repository-v1",
+    "draft": true,
+    "labels": [
+      "DRAFT"
+    ],
+    "head": "48ba7e651f347cca09ee738d07307722bc701a7def82e967b10791b7fe6c21d6"
+  },
+  {
+    "ref": "implementation/semantic-authoring-sqlite-migration-v1",
+    "draft": true,
+    "labels": [
+      "DRAFT"
+    ],
+    "head": "554bf7405e134fcaf4b7efde668319c60fb6ec2769090dd93213be11969b31a8"
+  },
+  {
+    "ref": "implementation/character-semantic-migration-sqlite-bootstrap",
+    "draft": false,
+    "labels": [
+      "SEALED_STATE_CLEAN"
+    ],
+    "head": "bbe0776593d3d34117075dcb94672ae5d447642d2fc44fb59feadd912a035185"
+  },
+  {
+    "ref": "implementation/character-semantic-migration-repository",
+    "draft": false,
+    "labels": [
+      "STALE_DIRECT"
+    ],
+    "head": "84f00d81f6f421c016566531c481cff8835fcf741229150bf2b582bda781399e"
+  },
+  {
+    "ref": "verification/semantic-authoring-kernel-foundation-v1",
+    "draft": true,
+    "labels": [
+      "DRAFT",
+      "STALE_TRANSITIVE"
+    ],
+    "head": "3101dcae92f8de5c71ba5507f533d9379dd43bc6c32972cab8aef04f34c175f4"
+  },
+  {
+    "ref": "verification/semantic-authoring-kernel-slice1-independent-review-2026-09-12",
+    "draft": true,
+    "labels": [
+      "DRAFT",
+      "STALE_TRANSITIVE"
+    ],
+    "head": "2f6fd733261d1d1f5f020eb8734bac22997454a760010a3c51909aa589fa12ac"
+  },
+  {
+    "ref": "verification/semantic-authoring-kernel-slice5-integration-review-2026-09-12",
+    "draft": true,
+    "labels": [
+      "DRAFT"
+    ],
+    "head": "9b6b5fff9841f4f7095d39305c4af2af4bffb9d5ee32a67f9057199325ea4a65"
+  },
+  {
+    "ref": "verification/semantic-authoring-kernel-wip-handoff-2026-09-11",
+    "draft": true,
+    "labels": [
+      "DRAFT",
+      "STALE_DIRECT"
+    ],
+    "head": "d45cf1f77de7ce018f26268d7b1097d2cd09dada172bda5f12b60409bc322ba9"
+  },
+  {
+    "ref": "plan/character-semantic-migration",
+    "draft": true,
+    "labels": [
+      "DRAFT",
+      "STALE_TRANSITIVE"
+    ],
+    "head": "a84234a5c3b597e63390f2d501ada4815e25bbda73cf3677df5f0988a5658eea"
+  }
+]

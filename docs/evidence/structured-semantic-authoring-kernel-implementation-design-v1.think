@@ -1,0 +1,94 @@
+domain StructuredSemanticAuthoringKernelDesignV1:
+  description "Reasoning for ADR0031 D11 implementation-design candidate revision2."
+problem P1:
+  |
+    Fix implementation contracts that make focused structured semantic authoring
+    typed, bounded, recoverable and reusable without activating a runtime route.
+evidence E1:
+  |
+    Accepted ADR0031 D1 through D11 assign orchestration to a thin kernel, domain
+    meaning to adapters, effects to ports, and require exact contracts, numbers,
+    public mapping, fencing and conformance before runtime adoption.
+evidence E2:
+  |
+    Foundation v3 F5 through F15 and character v5 R6 through R19 require
+    adapter-owned focused proposals, transactional staging, complete server
+    reconciliation, exceptional five-condition Q&A, source-based retry, cumulative
+    resource limits, bounded stall and cycle detection, and trusted-state failure.
+evidence E3:
+  |
+    Current code supplies typed V3 character and migration records, a six-request
+    whole-candidate migration loop, family queues and fencing. These are reusable
+    seams but do not implement the accepted focused-kernel topology.
+evidence E4:
+  |
+    Corrected review of revision one found two substantive conflicts: its cluster-one-
+    only skeleton ordering could not meet character R10 before fan-out, and its
+    model-writable set_portrait operation conflicted with character R7 stable-ID
+    authority. The owner selected REVISE for those two findings only.
+premise C1:
+  |
+    Current public APIs, current-route limits, immutable generations and activation
+    behavior must remain unchanged until later implementation and cutover decisions.
+premise U1:
+  |
+    Provider quality, actual token economics, database DDL details, frontend layout,
+    and runtime conformance are unverified. The proposed numerical policy and public
+    compatibility mapping require owner review.
+decision D1 based_on P1, E1, E2, E3, C1, U1:
+  |
+    Use generic TypeScript kernel state with adapter-concrete source, candidate,
+    obligation, work, proposal, finding, question, answer and final types. Decode
+    unknown only at external boundaries and forbid JSON-string internal round trips
+    and unchecked casts.
+decision D2 based_on P1, E1, E2, C1:
+  |
+    Use server-registered Skill descriptors and work-item sessions exposing at most
+    one bounded context query and one proposal or review Tool. Keep full schema and
+    candidate server-side. Use adapter-owned closed proposal unions instead of
+    generic JSON Patch. Bind common envelope cardinalities and text bounds, derive
+    small writable character operations directly to CharacterDefinitionV3 member
+    schemas, forbid a general cluster-five candidate write and model-writable portrait
+    binding, and allow at most eight conflict-free operations inside the session
+    cluster and computed semantic closure while the complete proposal stays within
+    six KiB.
+decision D3 based_on P1, E1, E2, U1:
+  |
+    Propose semantic_authoring_policy_v1 with one concurrent request, eight LLM
+    calls, forty-eight counted steps, 240 seconds per attempt, 60 seconds per call,
+    6000 input and 1500 output tokens per call, 32000 cumulative input, 8000
+    cumulative output, 500000 micro-USD estimated cost, eight progress observations
+    and two strategy changes. Bind pricing and token-estimator identities and preserve
+    the existing six-call route until a later cutover.
+decision D4 based_on P1, E1, E2, U1:
+  |
+    Trigger information-gaining recovery after four no-progress steps and fail after
+    three further no-progress steps. Detect three equal states in six observations
+    and A-B-A-B in four. Allow adapter-declared temporary regressions for three
+    observations without resetting resource or unresolved-cluster history.
+decision D5 based_on P1, E1, E2, C1, U1:
+  |
+    Keep public attempt status values unchanged. Project needs-owner-answer as legacy
+    failed plus AUTHORING_OWNER_ANSWER_REQUIRED and an additive ownerInteraction.
+    Always append the answer and create a new source-reconstructed attempt rather
+    than preserving a suspended checkpoint. Keep cancelled and expired as distinct
+    control terminal states, and bind command replay to an exact request digest.
+decision D6 based_on P1, E1, E2, E3, C1:
+  |
+    Persist common run, request/accounting, question/answer and final-candidate
+    metadata while family ports store typed final payloads. Every mutation compares
+    owner, fencing token and run version. Process or lease loss fails the claimed run
+    with unknown reservations retained; late results cannot mutate candidate state.
+decision D7 based_on P1, E1, E2, C1:
+  |
+    Require black-box kernel conformance for character, battlefield and narration
+    adapters, but wire only the character adapter in a later separately authorized
+    runtime slice. Insert this reviewed design gate before the existing B6 task.
+decision D8 based_on P1, E1, E2, E4, C1:
+  |
+    Define the character semantic-skeleton phase across cluster one and only the
+    server-designated essential ability or limit and key-relationship claim slices
+    from clusters two and three. Permit their focused operations before the checkpoint,
+    then fan out remaining dependent work only after passage. Keep portrait binding
+    outside the model operation union and preserve it from server authority unless a
+    separately authorized server operation changes it.

@@ -1,0 +1,37 @@
+{
+  "runId": "character-authoring-a2-2026-09-13",
+  "provider": "xai",
+  "endpoint": "https://api.x.ai/v1/chat/completions",
+  "model": "grok-4.5",
+  "label": "generateCharacterDefinitionV2",
+  "sourceKind": "create_instruction",
+  "maxCalls": 1,
+  "retry": {
+    "sdkMaxRetries": 0,
+    "rateLimitRetries": 0,
+    "serviceUnavailableRetries": 0,
+    "definitionRepairFollowUp": false,
+    "fallbackOnError": false
+  },
+  "timeoutMs": 90000,
+  "temperature": 0.35,
+  "schemaName": "character_definition_v2",
+  "schemaDigestSha256": "1e41abfa1e19b26596258eebd5597a74a212b483969f320a064f40b4b1e2fac3",
+  "requestDigestSha256": "6107a73749e18bb9f667981d74a89ff8844bccd66d2eb77706620bc8925cab97",
+  "serializedRequestBytes": 65314,
+  "reservedInputTokens": 18377,
+  "reservedOutputTokens": 4096,
+  "reservedCostUsd": 0.0613,
+  "maxReservedUsd": 0.75,
+  "rates": {
+    "inputUsdPerMillion": 2,
+    "outputUsdPerMillion": 6,
+    "source": "xAI grok-4.5 list rate as of 2026-09-12; reservation is not an invoice"
+  },
+  "productionEffects": {
+    "deployment": false,
+    "productionDatabase": false,
+    "authoringRoute": false,
+    "schema3Activation": false
+  }
+}

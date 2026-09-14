@@ -8,6 +8,7 @@ import {
 } from "@kshiai/shared";
 import type { GenerateBattlefieldDefinitionV2Input } from "./types.js";
 import type { GenerateCharacterDefinitionV2Input } from "./types.js";
+import { assertXaiResponseSchema } from "./provider-response-schema.js";
 import {
   OpenAiCompatibleProvider,
   type ChatOpts,
@@ -111,6 +112,7 @@ function providerWithResponses(
       user: string,
       opts?: ChatOpts,
     ): Promise<unknown> {
+      if (opts?.responseFormat) assertXaiResponseSchema(opts.responseFormat.json_schema.schema);
       calls.push({
         system,
         user,
@@ -315,6 +317,96 @@ describe("OpenAI-compatible character definition repair", () => {
     );
   });
 });
+
+describe("OpenAI-compatible character definition response format", () => {
+  it("contains no recursive definitions after constraint normalization", async () => {
+    const input = {
+      ...definitionInput(),
+      sourceKind: "revision_instruction" as const,
+    };
+    const { provider, calls } = providerWithResponses([{
+      definition: input.baseDefinition,
+    }]);
+
+    await provider.generateCharacterDefinitionV2(input);
+
+    const format = calls[0]?.responseFormat;
+    assert.ok(format && typeof format === "object");
+    const jsonSchema = Reflect.get(format, "json_schema");
+    assert.ok(jsonSchema && typeof jsonSchema === "object");
+    const schema = Reflect.get(jsonSchema, "schema");
+    assert.ok(schema && typeof schema === "object");
+    const definitions = Reflect.get(schema, "definitions");
+    assert.ok(definitions && typeof definitions === "object");
+    assertXaiResponseSchema(schema);
+    const constraintDefinitions = Object.keys(definitions)
+      .filter((name) => [
+        "reach",
+        "requiresSight",
+        "mobility",
+        "requiresSpeech",
+        "requiresUsableHeldObject",
+      ].some((field) => name.endsWith(`_properties_${field}`)));
+    assert.equal(constraintDefinitions.length, 5);
+    assert.ok(constraintDefinitions.every((name) =>
+      Reflect.get(Reflect.get(definitions, name), "$ref") === undefined));
+  });
+
+  it("encodes observed_event_kind enums without speech reactTo values", async () => {
+    const input = {
+      ...definitionInput(),
+      sourceKind: "revision_instruction" as const,
+    };
+    const { provider, calls } = providerWithResponses([{
+      definition: input.baseDefinition,
+    }]);
+    await provider.generateCharacterDefinitionV2(input);
+    const format = calls[0]?.responseFormat;
+    assert.ok(format && typeof format === "object");
+    const jsonSchema = Reflect.get(format, "json_schema");
+    assert.ok(jsonSchema && typeof jsonSchema === "object");
+    const schema = Reflect.get(jsonSchema, "schema");
+    assertXaiResponseSchema(schema);
+    const eventValues = observedEventKindEnums(schema);
+    assert.ok(eventValues.includes("utterance"));
+    assert.equal(eventValues.includes("direct_address"), false);
+    assert.ok(calls[0]?.system.includes("observed_event_kind=utterance"));
+  });
+});
+
+function observedEventKindEnums(node: unknown): string[] {
+  const found: string[] = [];
+  const visit = (value: unknown): void => {
+    if (!value || typeof value !== "object") return;
+    if (Array.isArray(value)) {
+      for (const item of value) visit(item);
+      return;
+    }
+    const record = value as Record<string, unknown>;
+    const properties = record.properties;
+    if (properties && typeof properties === "object" && !Array.isArray(properties)) {
+      const kind = Reflect.get(properties, "kind");
+      const clauseValue = Reflect.get(properties, "value");
+      const kindEnum = kind && typeof kind === "object"
+        ? Reflect.get(kind, "enum") ?? Reflect.get(kind, "const")
+        : undefined;
+      const kinds = kindEnum === "observed_event_kind"
+        ? ["observed_event_kind"]
+        : Array.isArray(kindEnum) ? kindEnum : [];
+      if (kinds.includes("observed_event_kind") && clauseValue && typeof clauseValue === "object") {
+        const values = Reflect.get(clauseValue, "enum");
+        if (Array.isArray(values)) {
+          for (const item of values) {
+            if (typeof item === "string") found.push(item);
+          }
+        }
+      }
+    }
+    for (const child of Object.values(record)) visit(child);
+  };
+  visit(node);
+  return found;
+}
 
 function battlefieldInput(): GenerateBattlefieldDefinitionV2Input {
   return {

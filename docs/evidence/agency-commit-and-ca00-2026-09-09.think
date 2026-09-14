@@ -1,0 +1,53 @@
+domain CommitThenAgencyInventory:
+  description "Commit reviewed planning WIP before executing the next authorized plan tasks."
+
+problem P1:
+  |
+    The owner requests a commit first, then execution of the reviewed repair plan.
+    t026 is next: typed actual payload inventory and comparison fixture freezing.
+premise P2:
+  |
+    ADR-0027 responsibility is accepted, detailed contracts remain unaccepted.
+    Authority includes local commit and plan execution up to the next owner gate,
+    not push, paid provider use, deployment or unaccepted runtime redesign.
+evidence E1:
+  |
+    Refreshed repository state: matching worktree and branch at c63c526, origin/main
+    1cdf210, twenty ahead and zero behind. Current WIP is the prior ADR acceptance,
+    comment tags, impact plans and Seal records, with 31 clean REF and fsck ok.
+evidence E2:
+  |
+    Sealgraph storage-format specifies config, immutable objects and REF manifests
+    as canonical; index/source bindings, logs, locks and caches must not be tracked.
+    Current graph has only relative local bindings. Its sources are repository
+    documents/code, not paid-run response payloads or credentials.
+evidence E3:
+  |
+    Existing battle-speech-wiring tests and replay harness exercise real projection
+    through Mock/OpenAI-compatible test doubles. Existing old helpers contain
+    assertions, so new inventory fixtures must use typed construction rather than
+    copy unchecked casts.
+premise OPTIONS:
+  |
+    A: Commit the entire .sealgraph tree, including runtime state. Rejected by
+    storage contract. B: Commit canonical graph and reviewed WIP with local runtime
+    exclusions, then use network-zero typed boundary fixtures. C: Implement new
+    runtime schema immediately; outside pending contract acceptance.
+pending U1:
+  |
+    Actual typed inventory, complete phase/generation matrix, feasible action sets
+    and detailed goal-writer schemas are not yet established. New behavior quality
+    and paid comparison remain unverified.
+decision D1 based_on P1, P2, E1, E2, OPTIONS:
+  |
+    Add narrow graph runtime ignores, document the canonical commit boundary,
+    inspect staged paths/content and commit the reviewed WIP locally. Verify
+    committed object inventory and Git head before opening CA-00 edits.
+decision D2 based_on P1, P2, E3, U1, OPTIONS:
+  |
+    Execute t026 using safe test doubles, actual projection/acceptance functions
+    and typed fixture variants, not paid calls or runtime contract changes.
+    Establish F01-F08 input variants and acceptance rubric; distinguish baseline
+    observed gaps from treatment goals. Test, document, update/reseal the reviewed
+    plan state only when completion evidence exists. Continue detailed design
+    under the lifecycle rules, stopping at exact owner acceptance if required.

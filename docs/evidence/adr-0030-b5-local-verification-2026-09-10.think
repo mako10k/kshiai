@@ -1,0 +1,40 @@
+domain B5LocalVerification:
+  description "Close the accepted B5 local generation/review/repair implementation only."
+evidence E_CSM_101:
+  "Current targeted tests: 22 passed, including all six operations, explicit model-created synthesis, valid-sibling retention, schema-valid semantic-dependant repair, complete stateless rereview, non-ready source exclusion, fallback preservation, reference/disclosure checks, deferred consumer scope, six-request stop, failed/pending outcomes and exact replay."
+evidence E_CSM_102:
+  "Full local validation after code refinement: shared339/backend380/frontend20/deployment3/release5, all passed; typecheck and build passed. Static duplication and unchanged Lizard baseline passed: 202 files/3458 functions. Direct new-file Lizard scan has no CCN>15 or length>100 warnings. Vite retains the existing large-chunk advisory."
+evidence E_CSM_103:
+  "Targeted ADR-0030 check passed. Full ADR check failed on unchanged 0015,0016,0017,0019. git diff HEAD for these four files and check-adrs.mjs is empty. The existing agency implementation plan already records old ADR syntax/acceptance compatibility as unresolved."
+evidence E_CSM_104:
+  "Before resealing, impact of shared exports reaches agency-v3-local evidence, agency implementation plan, responsibility design, agency backlog and dialogue plan. Migration-plan impact reaches backlog and dialogue plan. B5 adds only a shared export plus new files; it does not edit existing battle, psyche, authoring or public-read runtime paths."
+premise C_CSM_101:
+  "High confidence from E_CSM_101 and E_CSM_102: B5 local protocol behavior is implemented and verified. Test doubles do not establish real-model quality or production restoration."
+premise C_CSM_102:
+  "High confidence from E_CSM_103: ADR-0030 authority is checked, but the repository-wide ADR gate is not green. Do not mark B7 or the agency task complete."
+premise R_CSM_101:
+  "From E_CSM_104: the additive export does not change existing responsibility ownership or executed battle calls. Preserve historical evidence text/metrics and update reviewed causal links; change only current B5 progress descriptions."
+premise A1:
+  "Alternative: call the whole recovery complete or rewrite legacy ADR acceptance to make the global check green. Neither is supported or authorized."
+premise A2:
+  "Alternative: record B5 local completion, retain the global ADR blocker and production unknowns, update the existing local plan and reviewed Seal links, and leave B6 activation machinery and later external gates separate."
+decision D1 based_on E_CSM_101, E_CSM_102, E_CSM_103, E_CSM_104, C_CSM_101, C_CSM_102, R_CSM_101, A1, A2:
+  |
+    Select A2. A-CSM-101 (implementation permitted, executed) references
+    C-CSM-101: local B5 code/tests are complete. A-CSM-102 (implementation
+    permitted, proposed) references C-CSM-101 and C-CSM-102: record evidence,
+    mark only cb205 done, update current backlog/continuation state, individually
+    seal new modules/tests/reasoning and reseal the reviewed impact chain.
+    Read back Seal status/fsck and validate PERT. Keep existing historical
+    counts, ADR acceptances, runtime settings and all current pointers unchanged.
+    B6 remains the next local task: exact owner-candidate acceptance binding,
+    append/capsule/receipt transaction and CAS/replay/rollback controls are not
+    implemented by the B5 service, which always returns activated=false.
+premise LIMIT:
+  |
+    No live provider, production DB, deployment, pointer activation, authoring
+    policy change, commit or push is performed in B5. Existing IPv6 limitation,
+    earlier PostgreSQL public-impact uncertainty and old ADR compatibility remain.
+    availableCapabilities is an explicit caller-supplied local capability inventory,
+    not proof of deployed compiler availability. The provider port returns only
+    structured content plus accounting, not hidden provider reasoning.

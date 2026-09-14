@@ -1,5 +1,9 @@
 import { z } from "zod";
 import type { CharacterDefinitionV2 } from "./structured-character.js";
+import {
+  CHARACTER_NORM_OBSERVED_EVENT_KINDS_V2,
+  CHARACTER_NORM_RELATIONSHIP_BANDS_V2,
+} from "./character-norm-clause-v2.js";
 
 const StableIdSchema = z.string().min(1).max(120);
 
@@ -303,32 +307,12 @@ const ORDERED_FACT_VALUES: Partial<Record<
 
 const RESOURCE_BANDS = ["empty", "critical", "low", "taxed", "ready", "full"];
 const RESOURCE_KEYS = ["hp", "mp", "stamina", "focus"];
-const REGISTERED_RELATIONSHIP_BANDS = new Set([
-  "stranger",
-  "ally",
-  "rival",
-  "enemy",
-  "mentor",
-  "student",
-  "family",
-  "protected_person",
-  "other",
-]);
-const REGISTERED_EVENT_KINDS = new Set([
-  "damage",
-  "heal",
-  "rest",
-  "parameter",
-  "defend",
-  "wait",
-  "reflect",
-  "status",
-  "situation",
-  "info",
-  "utterance",
-  "manifestation",
-  "free_action",
-]);
+const REGISTERED_RELATIONSHIP_BANDS = new Set<string>(
+  CHARACTER_NORM_RELATIONSHIP_BANDS_V2,
+);
+const REGISTERED_EVENT_KINDS = new Set<string>(
+  CHARACTER_NORM_OBSERVED_EVENT_KINDS_V2,
+);
 
 function orderedValuesFor(
   kind: z.infer<typeof CharacterNormClauseKindV2Schema>,

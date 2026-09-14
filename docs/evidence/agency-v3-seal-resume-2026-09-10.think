@@ -1,0 +1,33 @@
+domain AgencySealResume:
+  description "Complete bounded Seal traceability while retaining unresolved ADR compatibility."
+problem P1:
+  "Resume t029 after the remote verification handoff without claiming model improvement."
+evidence E1:
+  |
+    Fetched d223304 is now the clean local HEAD. Its runtime source is unchanged
+    from 9cb73b3. On this PC Seal status and fsck succeed for format 5 with 47 refs.
+    Registry v7 lists 62 planned refs and 15 are absent. Four existing refs are stale.
+evidence E2:
+  |
+    The restored whole ADR checker fails for 0015/0016/0017 top-level syntax and
+    required acceptance markers; 0019 fails premise syntax and Proposed markers.
+    ADR0027 and ADR0028 passed the same run. These are separate compatibility and
+    lifecycle evidence questions, not permission to rewrite accepted decisions.
+evidence E3:
+  |
+    The remote handoff reports full 709 tests, typecheck, build, Lizard and 41 focused
+    tests passing on unchanged runtime. These are other-PC records, not this run.
+premise B1:
+  |
+    Existing approved Seal operations require per-document review, explicit Cause
+    assertions, preserved history, source readback and no automatic downstream repair.
+    Source registration is evidence bookkeeping, not completion or owner acceptance.
+decision D1 based_on P1, E1, E2, E3, B1:
+  |
+    Run bounded focused verification locally. Review each of the 15 pending sources
+    and their accepted dependencies, register only reviewed refs individually, then
+    review and reseal the four affected current plans with exact revision links.
+    Record this PC tool success and persistent ADR-wide failures separately.
+    Keep t029 active and defer any old-ADR conversion to an explicit owner decision.
+    Do not activate settings, make provider calls, deploy, commit or push.
+

@@ -1,0 +1,13 @@
+{
+  "schema": "sealgraph/fsck/v2",
+  "result": "ok",
+  "blobs": 2526,
+  "seals": 803,
+  "materials": 495,
+  "provenances": 733,
+  "refs": 348,
+  "tags": 0,
+  "active_seals": 623,
+  "unreferenced_blob_count": 0,
+  "historical_or_detached_count": 180
+}

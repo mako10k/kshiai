@@ -1,0 +1,59 @@
+domain AgencyContractCandidate:
+  description "Use observed CA-00 boundaries to author an unaccepted first conscious-agency contract."
+problem P1:
+  |
+    The accepted responsibility must become an implementable goal-action-utterance contract
+    without treating the existing private goal writer as normative.
+premise A1:
+  |
+    ADR-0027 revision 1 fixes logical ownership. ADR-0025 and ADR-0026 own existing
+    Compact V2 separation, partial action acceptance and psyche-only repair. The
+    owner authorized commit then plan execution, not new-contract acceptance.
+evidence E1:
+  |
+    CA-00 typed adapter fixtures pass 16 cases. All npm tests and typecheck pass.
+    A stored private goal survives actual SQLite save/reload and revision conflict,
+    but is absent from Compact V2 conscious input. The provider result uses an empty
+    goal and acceptance preserves the prior goal. No paid/network request occurred.
+evidence E2:
+  |
+    Personality and known relationship reach structuredSelf; ability description
+    reaches character.basicAction; MP and distance affect allowed candidates.
+    The fallback decisionProfile objective remains victory even for enjoyment traits.
+    Later action input has no goal or dedicated history, but percepts include
+    the just-committed utterance. Ability-only change preserves reaction state.
+premise OPTIONS:
+  |
+    A: Add goal text alone to V2, rejected because writer, initialization and generation
+    remain unresolved. B: Separate new frozen generation, reuse existing conscious
+    call for initial goal plus action and speech, retain bounded state and old routes.
+    C: Add an independent planner and goal store, deferred due extra calls and writers.
+pending U1:
+  |
+    This baseline does not prove model quality or every production branch. Comparative
+    model thresholds and budget remain later work. Exact new-contract owner acceptance,
+    independent review and any resulting contract ADR are pending.
+decision D1 based_on P1, A1, E1, E2, OPTIONS, U1:
+  |
+    Propose B only as a versioned requirement candidate. One conscious owner creates
+    an initial upper goal using explicit author objective when present, otherwise
+    personality and known relationship, with victory only a default. Keep author
+    prohibitions mandatory. Upper goal is fixed for this first slice; short intent
+    changes each decision. Separate intended from committed action/effects.
+decision D2 based_on D1, A1, U1:
+  |
+    Propose new-generation psyche as bounded deterministic reaction with no new
+    important-moment trigger; legacy phase routing remains unchanged. Retain existing
+    call surfaces, make later redecision share the accepted goal and actual utterance
+    facts, and add no new expression repair call. Invalid goal cannot initialize;
+    schema-valid speech may survive an invalid action. Failed intent is not persisted
+    as an accepted action. Exact bounds and failure combinations belong in the
+    candidate for owner review, not runtime implementation.
+decision D3 based_on D1, D2, E1, E2, U1:
+  |
+    Record CA-00 fixtures and rubric, distinguish measured baseline from treatment
+    criteria, correct the no-speech overstatement, and complete inventory only for
+    that bounded scope. Draft requirement and exact-digest review input under
+    requirement-authority-review step 1. Update plan evidence and reviewed Seal
+    dependencies. Stop for first owner review; do not independently review or accept
+    the candidate, create a contract ADR prematurely, push or use a paid provider.

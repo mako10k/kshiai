@@ -9,6 +9,7 @@ import type {
   PerceptionEvidence,
   PerceptionSlot,
 } from "./perception.js";
+import { observerPerceptId } from "./perception-projection.js";
 
 const certaintyRank: Record<PerceptionCertainty, number> = {
   certain: 0,
@@ -39,7 +40,9 @@ function sourceEventIdsForPercept(input: {
   evidence: readonly PerceptionEvidence[];
 }): string[] {
   const ids = input.evidence
-    .filter((item) => input.perceptId === `percept.${input.side}.${item.evidenceId}`)
+    .filter((item) =>
+      input.perceptId === observerPerceptId(input.side, item.evidenceId)
+    )
     .flatMap((item) => item.basisEventIds)
     .slice(0, 8);
   return [...new Set(ids)];

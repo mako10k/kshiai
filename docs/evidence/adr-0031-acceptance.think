@@ -1,0 +1,29 @@
+domain ADR0031Acceptance:
+  description "Record exact owner acceptance of ADR0031 revision1 without widening implementation authority."
+problem P1:
+  "Determine the lifecycle state and authority boundary after the owner replied ACCEPT to the reviewed ADR0031 revision1."
+evidence E_SNAPSHOT:
+  |
+    The pre-acceptance authoritative ADR0031 revision1 SHA-256 was
+    cf623039913261e5735166f91ad07aa82d6640393614f82cbadc47a1e2367e16.
+    Its complete Japanese review scope and Markdown projection were presented.
+evidence E_REVIEW:
+  |
+    The independent internal and related-ADR review returned PASS with no P0,
+    P1, P2 or P3 findings. It retained exact DTOs, numeric policy, detector
+    rules, public mappings, implementation conformance and provider evidence as
+    downstream unknowns.
+evidence OWNER_ACCEPTANCE:
+  |
+    On 2026-09-11 the product owner replied ACCEPT to the explicit ACCEPT or
+    REVISE choice for exact ADR0031 revision1 after the review presentation.
+premise BOUNDARY:
+  |
+    The ADR and its review distinguish architecture acceptance from
+    implementation, provider use, evaluation, deployment, migration,
+    activation, rollback, release and prior-ADR lifecycle changes.
+decision ACCEPTANCE based_on P1, E_SNAPSHOT, E_REVIEW, OWNER_ACCEPTANCE, BOUNDARY:
+  |
+    Record ADR0031 revision1 as Accepted. Authorize preparation and review of
+    the D11 implementation design only. Retain separate authority gates for
+    implementation and every other excluded effect.

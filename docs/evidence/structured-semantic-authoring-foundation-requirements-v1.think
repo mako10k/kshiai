@@ -1,0 +1,56 @@
+domain StructuredSemanticAuthoringFoundationRequirementV1:
+  description "Reasoning for a reusable structured semantic authoring foundation with domain-owned meaning."
+evidence E1:
+  "The accepted structured selectable-asset workflow already applies one authoring pipeline to character, battlefield preset, narration style, and future selectable assets."
+evidence E2:
+  "Shared contracts already define the three asset families, common generation envelopes, authoring attempt kinds and statuses, compatibility, disclosure, public presentation, and claim validation."
+evidence E3:
+  "The three family authoring services repeat generation, projection, description, validation, and immutable-envelope assembly, while common runners and job repositories already share part of their orchestration."
+evidence E4:
+  "The owner identifies a reusable pattern: sparse structured generation, meaning-preserving projection to another structure, and structural plus input-relative semantic validation."
+evidence E5:
+  "The owner selects a separate reusable foundation, with character V3 retained as the first advanced consumer, and directs that the remaining decisions be fixed sequentially."
+evidence E6:
+  "The accepted upgrade workflow forbids facts absent from its source, while character V3 requirement candidate revision 3 requires generation of target meaning absent from V2 under provenance and protected-anchor constraints."
+premise P1:
+  "The conflict in E6 must be resolved at requirement authority before a dependent foundation design or implementation can be authorized."
+premise P2:
+  "A blanket no-invention rule is too strict for sparse creation and schema migration, but unrestricted synthesis could overwrite identity or fabricate server-owned facts."
+premise P3:
+  "Protected anchors, adaptable preferences, open creative space, provenance, and domain policy distinguish permitted synthesis from unsafe invention."
+premise P4:
+  "Stable orchestration and evidence mechanics can be shared only if schemas, dependency closure, semantic equivalence, materiality, invariants, and disclosure remain domain-owned."
+premise P5:
+  "A focused LLM proposal followed by server-controlled transactional validation preserves authority better than either whole-object generation or direct model persistence."
+premise P6:
+  "Automatic recovery is useful only when each retry adds evidence, narrows scope, or tests a different alternative; otherwise it is blind repetition."
+premise P7:
+  "Human Q and A should be exceptional because sparse input is expected, but protected conflicts with materially different outcomes require owner authority."
+premise P8:
+  "Preserving existing public contracts while extracting an internal kernel reduces compatibility risk and avoids an unneeded external version change."
+premise P9:
+  "Character, battlefield preset, and narration style provide three existing conformance families; battle-runtime narration has different output and latency semantics and need not enter the initial lifecycle."
+premise P10:
+  "Numeric success gates require baseline evidence and cannot be established from architecture preference alone."
+premise P11:
+  "Alternative O1 retains family-specific workflows and their duplicated recovery mechanics."
+premise P12:
+  "Alternative O2 creates a universal semantic transformation engine and risks hiding domain correctness behind premature abstraction."
+premise P13:
+  "Alternative O3 creates a thin process and evidence foundation with versioned domain adapters and common conformance tests."
+decision D1 based_on E6, P1, P2, P3:
+  "On acceptance, replace the blanket no-invention upgrade rule with classified, provenance-tracked synthesis that preserves protected anchors and reserves server-owned facts and authority."
+decision D2 based_on E1, E2, E3, E4, P4, P11, P12, P13:
+  "Select O3: share lifecycle, focused work, patch, validation, recovery, provenance, review, and activation mechanics while keeping semantic correctness in domain adapters."
+decision D3 based_on P5:
+  "Require resolver-neutral bounded proposals and server-controlled transactional application; an LLM cannot directly persist authoritative data or escape registered dependency closure."
+decision D4 based_on P6, P7:
+  "Require information-gaining automatic recovery and enter human Q and A only for explicit material irreducible protected conflicts after focused recovery."
+decision D5 based_on P8:
+  "Preserve existing public APIs, immutable generation identities, attempt identities, current-pointer behavior, and battle bindings during initial internal adoption."
+decision D6 based_on P9:
+  "Use character, battlefield preset, and narration style as conformance families, retain character V3 as the first advanced consumer, and exclude battle-runtime narration from the initial lifecycle."
+decision D7 based_on P10:
+  "Name semantic quality, recovery, intervention, rework, call, token, latency, and cost measures now, but defer numeric gates until baseline evidence and owner review exist."
+decision D8 based_on E5, D1, D2, D3, D4, D5, D6, D7:
+  "Create requirement candidate revision 1 for owner review; ADR, implementation, provider work, evaluation, deployment, migration, activation, and release remain separately unauthorized."

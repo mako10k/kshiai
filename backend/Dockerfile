@@ -35,6 +35,9 @@ ENV NODE_ENV=production \
   POSTGRES_CA_CERT_PATH=/app/infra/supabase-ca-2021.crt
 
 WORKDIR /app
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends --only-upgrade libpcre2-8-0 \
+  && rm -rf /var/lib/apt/lists/*
 COPY --from=dependencies --chown=node:node /app/node_modules node_modules
 COPY --from=dependencies --chown=node:node /app/backend/package.json backend/package.json
 COPY --from=dependencies --chown=node:node /app/packages/shared/package.json packages/shared/package.json

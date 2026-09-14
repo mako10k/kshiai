@@ -1,0 +1,84 @@
+domain CompactPsycheRepairSchemaFailure:
+  description |
+    Identify why the approved replay stopped when bounded semantic repair could
+    not recover a malformed Compact V2 expression brief.
+
+problem P1:
+  |
+    The repeat-capable third turn returned expressionBrief under delta. The one
+    permitted repair then returned appraisal fields in
+    replacement.expressionBrief and failed strict application validation.
+
+premise P2:
+  |
+    Structured provider output is not guaranteed. The bounded repair call must
+    contain the complete contract needed to construct every required
+    replacement object without relying on hidden chat history.
+
+evidence E1:
+  |
+    The initial Compact V2 system prompt explicitly states that expressionBrief
+    is a top-level sibling of delta and gives all field names, enum values, and
+    focus cardinality.
+
+evidence E2:
+  |
+    The failed initial provider response placed expressionBrief under delta.
+    Decoding removed that unrecognized delta field and application validation
+    reported top-level expressionBrief as required.
+
+evidence E3:
+  |
+    The repair call is a separate Chat Completions request. Its system prompt
+    said only expressionBrief complete object and did not state the six field
+    names, enum domains, focus cardinality, or value types.
+
+evidence E4:
+  |
+    The repair request carried rejectedSemanticSlice.expressionBrief as null,
+    so the request contained neither a valid example nor the missing object
+    contract. It did include the invalid path and writable root.
+
+evidence E5:
+  |
+    The repair response copied speech-appraisal-shaped fields into
+    replacement.expressionBrief. Strict repair validation rejected sourceThread
+    and focus types and unrecognized appraisal keys.
+
+evidence E6:
+  |
+    Existing repair tests supplied an already valid expressionBrief object as
+    a mocked repair response. They did not require the repair prompt to contain
+    the expressionBrief schema and did not cover recovery from a missing brief.
+
+evidence E7:
+  |
+    The correction adds the complete replacement object contract to the repair
+    prompt and a missing-expressionBrief regression. The focused backend suite,
+    backend typecheck, lizard, and DSL audit pass after the correction.
+
+decision D1 based_on P1, P2, E1, E2:
+  |
+    Initial defect cause: this provider sample violated the explicit top-level
+    output contract. The model-internal reason for that deviation is unknown.
+
+decision D2 based_on P1, P2, E3, E4, E5:
+  |
+    Root cause of bounded-repair failure: the independent repair request omitted
+    the required expressionBrief structural contract while the rejected slice
+    contained no brief to preserve. The repair request was under-specified for
+    the required replacement and produced an invalid shape.
+
+decision D3 based_on E6:
+  |
+    Escape cause: mocked repair tests injected a valid replacement directly and
+    verified merge behavior, but did not test the prompt contract or the
+    missing-expressionBrief repair case.
+
+decision D4 based_on D2, D3, E7:
+  |
+    Corrective action: include the complete speechAppraisal and expressionBrief
+    shapes in the repair system prompt and retain regression coverage for prompt
+    completeness and recovery from a missing expressionBrief. Any new provider
+    replay must use a new immutable run ID and separate approval.
+

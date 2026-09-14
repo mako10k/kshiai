@@ -1,0 +1,16 @@
+domain SemanticProbeExecution:
+  description "Execute the exact owner-approved synthetic probe once."
+evidence E1:
+  "Owner replied yes after Japanese review revision1: grok-4.3, one synthetic mixed character, at most six ChatCompletion requests, output4096 each, reserved USD1.50, no production or activation."
+evidence E2:
+  "Fresh readback: code snapshot matches prepared502b5ea1; no live-start or call files exist; TLS is not disabled. HEAD and matching remote e0f2224, main1cdf210. Existing dirty B5/probe files are preserved. Worktimectl has no required actions before22:00."
+evidence E3:
+  "Secdat dry-run for exact command supplies XAI_API_KEY from main domain secret layer with no missing required keys. Existing runner verifies full proof a724ae3946f0cf38d1402599922478e0ac6b4f9dcb8b075393008909bc062da3, uses isolated SQLite, locks live-start and never retries."
+premise U1:
+  "API schema acceptance, meaning preservation and natural repair occurrence are unknown. Any transport/accounting/identity failure stops without resend. A failure is not authorization to modify or retry."
+premise OPTIONS:
+  "Execute exact accepted run once or defer. No observed mismatch blocks execution; changing prompts or expanding cases would invalidate approval."
+decision C1 based_on E1, E2, E3, U1, OPTIONS:
+  "High-confidence authorization and readiness for this bounded experiment only. Record acceptance, invoke the exact existing command once, inspect durable outputs, and retain source-cause hypotheses as unknown until CLI audit."
+decision A1 based_on C1, E1:
+  "Execute once and preserve results with Seal; no production, B6, commit/push, hidden retries, new model calls or fixes. Separate API observations, semantic results and unknowns."

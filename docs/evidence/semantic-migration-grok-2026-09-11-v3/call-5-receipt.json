@@ -1,0 +1,48 @@
+{
+  "phase": "receipt",
+  "ordinal": 5,
+  "receipt": {
+    "outcome": "succeeded",
+    "responseDigest": "51070d86287d1624546c5fda0b91213c3ff0c8e0346c84653d19affb416075e0",
+    "response": {
+      "schema": "character_semantic_migration_change_set_v1",
+      "operations": [
+        {
+          "operation": "transform",
+          "targetPath": "definition.mechanicalConflictFallbacks.0.orderedActionRefs",
+          "sourcePaths": [
+            "definition.actionNorms.0.response.fallbackActionRef"
+          ],
+          "value": [],
+          "deferred": null,
+          "explanation": "V2 fallbackActionRef 'basic-action' migrated as empty array per V3 schema; null replaced with required array.",
+          "provenance": "source_derived",
+          "semanticDependants": [
+            "definition.mechanicalConflictFallbacks.0"
+          ]
+        },
+        {
+          "operation": "transform",
+          "targetPath": "definition.actionNorms.0.priority",
+          "sourcePaths": [
+            "definition.actionNorms.0.priority"
+          ],
+          "value": 60,
+          "deferred": null,
+          "explanation": "V2 priority 60 restored to V3 actionNorms entry from retired V2 norm.",
+          "provenance": "source_derived",
+          "semanticDependants": []
+        }
+      ],
+      "uncertainties": []
+    },
+    "accounting": {
+      "inputTokens": 32194,
+      "outputTokens": 180,
+      "totalTokens": 32374,
+      "estimatedCostUsd": 0.0406925,
+      "elapsedMs": 2620
+    },
+    "finishedAt": "2026-09-11T01:56:55.520Z"
+  }
+}

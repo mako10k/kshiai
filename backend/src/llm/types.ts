@@ -1,4 +1,8 @@
 import type {
+  AgencyFactV1,
+  ConsciousAgencyV1,
+  ConsciousOutputV3,
+  PsycheReactionProjectionV1,
   BattlefieldInstance,
   BattlefieldPreset,
   BattlePolicyOption,
@@ -65,6 +69,7 @@ import type {
   CharacterNarrativeCueV2,
   CharacterNarratorStaticProjectionV2,
   CharacterObservableManifestationV2,
+  CharacterFocusPacketV1,
   AssetClaimRiskCode,
   BattlefieldDefinitionV2,
   BattlefieldEvolutionAffordanceV2,
@@ -154,10 +159,46 @@ export type CharacterActionDecisionInput = {
   perception: CharacterPerceptionFrame;
   /** Server-owned legal choices and qualitative tactical constraints. */
   decision: CharacterActionDecisionContext;
+  conscious?: {
+    contractVersion: 3;
+    phase: "later";
+    agencyState: ConsciousAgencyV1;
+    reaction: { action: PsycheReactionProjectionV1; expression: PsycheReactionProjectionV1 };
+    goalPolicy: string;
+    facts: AgencyFactV1[];
+    utteranceHistory: { recent: CharacterUtteranceActualV1[] };
+  };
 };
 
-export type CharacterDeepPsycheCompactInput = {
+export type CharacterUtteranceActualV1 = {
+  sequence: number;
+  turn: number;
+  speaker: "self" | "counterpart";
+  delivery: "spoken" | "visible_reaction";
+  text: string;
+};
+
+// [要修正:PSYCHE-RESPONSIBILITY] currentGoal等の現行配置を、深層心理が目標・戦術を
+// 思考する責務の根拠にしない。これはV1/V2互換専用。V3は独立したclosed入力を使用する。
+// [本来の責務:PSYCHE-RESPONSIBILITY] 軽量心理更新は内的反応の状態遷移であり、
+// currentGoal・beliefs・自由文appraisal・ExpressionBriefをV1 reaction policyへ含めない。
+// V3の目標・意図writerと寿命はADR-0028。旧世代を暗黙移行しないためこの型は残す。
+export type CharacterDeepPsycheExpressionStateV2 = Pick<
+  CharacterAgentState,
+  | "privateMemory"
+  | "currentGoal"
+  | "emotion"
+  | "beliefs"
+  | "observations"
+  | "speechStyle"
+  | "interior"
+  | "dialogueThread"
+  | "battleVolatileMemory"
+>;
+
+export type CharacterDeepPsycheCompactInputV1 = {
   contextMode: "compact";
+  contractVersion?: 1;
   phase: "prologue" | "turn" | "aftermath";
   character: CharacterSelfProfileAnchor;
   stableDisposition?: CharacterDeepPsycheStaticProjectionV2;
@@ -180,6 +221,29 @@ export type CharacterDeepPsycheCompactInput = {
   counterpart?: CharacterCounterpartKnowledge;
 };
 
+export type CharacterDeepPsycheCompactInputV2 = {
+  contextMode: "compact";
+  contractVersion: 2;
+  phase: "prologue" | "turn" | "aftermath";
+  character: CharacterSelfProfileAnchor;
+  stableDisposition?: CharacterDeepPsycheStaticProjectionV2;
+  expressionState: CharacterDeepPsycheExpressionStateV2;
+  utteranceHistory: { recent: CharacterUtteranceActualV1[] };
+  turnObservation: TurnObservationPacket;
+  matchupMemory?: {
+    preBattlePlan: string;
+    postBattleReflection: string;
+    battleCount: number;
+  };
+  dialoguePipeline?: DialoguePipelineSettings;
+  social?: BattleSocialView;
+  counterpart?: CharacterCounterpartKnowledge;
+};
+
+export type CharacterDeepPsycheCompactInput =
+  | CharacterDeepPsycheCompactInputV1
+  | CharacterDeepPsycheCompactInputV2;
+
 export type CharacterDeepPsycheAdvance =
   CharacterDeepPsycheUpdate & {
     delta?: CharacterDeepPsycheDelta;
@@ -194,8 +258,9 @@ export type CharacterConsciousPsycheProjection = Pick<
   "emotion" | "speechStyle" | "selfReference"
 >;
 
-export type CharacterExpressionCompactInput = {
+export type CharacterExpressionCompactInputV1 = {
   contextMode: "compact";
+  contractVersion?: 1;
   phase: "prologue" | "turn" | "aftermath";
   character: CharacterSelfProfileAnchor;
   structuredSelf?: CharacterConsciousSelfStaticProjectionV2;
@@ -208,6 +273,50 @@ export type CharacterExpressionCompactInput = {
   relevantMemory: string | null;
   expressionBrief: CharacterExpressionBrief;
   observableManifestations?: readonly CharacterObservableManifestationV2[];
+  social?: BattleSocialView;
+  counterpart?: CharacterCounterpartKnowledge;
+  decision?: CharacterActionDecisionContext;
+};
+
+export type CharacterExpressionStateV2 = CharacterConsciousPsycheProjection & {
+  expressionBrief: CharacterExpressionBrief;
+  focus: CharacterFocusPacketV1 | null;
+};
+
+export type CharacterExpressionCompactInputV2 = {
+  contextMode: "compact";
+  contractVersion: 2;
+  phase: "prologue" | "turn" | "aftermath";
+  character: CharacterSelfProfileAnchor;
+  structuredSelf?: CharacterConsciousSelfStaticProjectionV2;
+  expressionState: CharacterExpressionStateV2;
+  utteranceHistory: { recent: CharacterUtteranceActualV1[] };
+  turnObservation: TurnObservationPacket;
+  relevantMemory: string | null;
+  observableManifestations?: readonly CharacterObservableManifestationV2[];
+  social?: BattleSocialView;
+  counterpart?: CharacterCounterpartKnowledge;
+  decision?: CharacterActionDecisionContext;
+};
+
+export type CharacterExpressionCompactInput =
+  | CharacterExpressionCompactInputV1
+  | CharacterExpressionCompactInputV2
+  | CharacterExpressionCompactInputV3;
+
+export type CharacterExpressionCompactInputV3 = {
+  contextMode: "compact";
+  contractVersion: 3;
+  phase: "prologue" | "turn" | "aftermath";
+  character: CharacterSelfProfileAnchor;
+  structuredSelf: CharacterConsciousSelfStaticProjectionV2;
+  agencyState: ConsciousAgencyV1;
+  reaction: { action: PsycheReactionProjectionV1; expression: PsycheReactionProjectionV1 };
+  goalPolicy: string;
+  facts: AgencyFactV1[];
+  utteranceHistory: { recent: CharacterUtteranceActualV1[] };
+  turnObservation: TurnObservationPacket;
+  observableManifestations: readonly CharacterObservableManifestationV2[];
   social?: BattleSocialView;
   counterpart?: CharacterCounterpartKnowledge;
   decision?: CharacterActionDecisionContext;
@@ -243,6 +352,35 @@ export type CharacterExpressionInput = CharacterExpressionCompactInput | {
   expressionBrief?: CharacterExpressionBrief;
   observableManifestations?: readonly CharacterObservableManifestationV2[];
 };
+
+export type CharacterAgentAdvanceResult =
+  | {
+      contractVersion: 3;
+      state: CharacterAgentState;
+      nextUtterance: string | null;
+      speech?: never;
+      proposedAction: CharacterActionIntent | null;
+      proposedActionStatus: "valid" | "invalid" | "omitted";
+      realizedManifestation: string | null;
+      consciousOutput: ConsciousOutputV3;
+    }
+  | {
+      contractVersion?: 1;
+      state: CharacterAgentState;
+      speech: string;
+      nextUtterance?: never;
+      proposedAction: unknown | null;
+      realizedManifestation?: string | null;
+    }
+  | {
+      contractVersion: 2;
+      state: CharacterAgentState;
+      nextUtterance: string;
+      speech?: never;
+      proposedAction: CharacterActionIntent | null;
+      proposedActionStatus: "valid" | "invalid" | "omitted";
+      realizedManifestation?: string | null;
+    };
 
 export type CharacterCounterpartKnowledge = {
   displayName: string;
@@ -778,17 +916,12 @@ export interface LlmProvider {
    */
   decideCharacterAction(input: CharacterActionDecisionInput): Promise<{
     proposedAction: unknown | null;
+    consciousOutput?: ConsciousOutputV3;
   }>;
   /** Advance one character from its frozen observer-relative frame only. */
-  advanceCharacterAgent(input: CharacterExpressionInput): Promise<{
-    /** Echoed committed psyche for compatibility; the server ignores it. */
-    state: CharacterAgentState;
-    speech: string;
-    /** Bounded model-authored candidate. Only the battle service may accept it. */
-    proposedAction: unknown | null;
-    /** Exact echo of one supplied proposal; the server still owns commitment. */
-    realizedManifestation?: string | null;
-  }>;
+  advanceCharacterAgent(
+    input: CharacterExpressionInput,
+  ): Promise<CharacterAgentAdvanceResult>;
   /**
    * Fluid perspective only: pick turn focus from thin summary digests.
    * Must not receive detail digests.

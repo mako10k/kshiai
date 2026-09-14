@@ -1,0 +1,22 @@
+domain FoundationRuntimeSafety:
+  description "Specify mechanical safety in a new requirement candidate, without runtime changes."
+evidence E1:
+  "Owner requested safeguards for excessive automated turns, stagnation or oscillation, and broken generation state, then authorized the proposed revision."
+evidence E2:
+  "Current foundation v2 F6 specifies transactional rejection, F9 informative recovery and failed-attempt retry, F14 budgets with numeric decisions deferred; it does not explicitly require progress-window or internal-ledger consistency monitoring."
+evidence E3:
+  "Accepted foundation v2 preserves existing ADR0030 ceilings and does not mandate intermediate context persistence. Pending character v4 references foundation v2."
+premise P1:
+  "Hard attempt budgets must include subwork and recovery; otherwise decomposition could bypass the ceiling."
+premise P2:
+  "A valid repair may temporarily increase findings; single-step monotonicity would conflict with semantic dependency repair."
+premise P3:
+  "Rejected provider proposals are distinct from corruption of trusted candidate and accounting state; a rejected proposal can be repaired without trusting a corrupt state."
+premise P4:
+  "Domain progress signals are not a proof of semantic success; final reconciliation remains required."
+decision D1 based_on E1, E2, E3, P1:
+  "Create foundation v3 candidate with enforced finite attempt resource limits, bounded progress and cycle monitoring, and trusted-state consistency checks; preserve current ceilings pending successor design."
+decision D2 based_on P2, P3, P4, E3:
+  "Use bounded windows and domain-supplied progress evidence, not LLM self-rating or mandatory per-step improvement. Ordinary invalid proposals use existing repair; hard exhaustion or untrusted internal state ends further execution with a compact failure receipt and explicit source-based retry, without required checkpoint persistence."
+decision D3 based_on D1, D2, E3:
+  "Retain accepted v2 and pending character v4 unchanged, document dependency alignment after v3 acceptance, produce complete Japanese translation and draft Seals. Numeric thresholds and detailed algorithms remain unknown pending design; no implementation or external provider call is authorized."

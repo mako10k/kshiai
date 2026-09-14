@@ -3,10 +3,28 @@ import { describe, it } from "node:test";
 import {
   advancePsycheReactionV1,
   initialPsycheReactionStateV1,
+  projectPsycheReactionV1,
   NEUTRAL_PSYCHE_TRAITS_V1,
 } from "./psyche-reaction-policy.js";
 
 describe("deterministic psyche reaction policy V1", () => {
+  it("projects repeatedly without advancing state and retains the transition projection formula", () => {
+    const prior = initialPsycheReactionStateV1();
+    prior.arousal = 700;
+    prior.impulse.withdraw = 400;
+    prior.interpretation.uncertain = 600;
+    const saved = structuredClone(prior);
+    const first = projectPsycheReactionV1(prior);
+    assert.deepEqual(first, projectPsycheReactionV1(prior));
+    assert.deepEqual(prior, saved);
+    assert.equal(first.actionProjection.arousal, "high");
+    assert.deepEqual(first.actionProjection.impulse, ["withdraw"]);
+    assert.equal(first.expressionProjection.expressionTendency, "restrained");
+    const advanced = advancePsycheReactionV1({ prior, packet: null });
+    const projected = projectPsycheReactionV1(advanced.state);
+    assert.deepEqual(projected.actionProjection, advanced.actionProjection);
+    assert.deepEqual(projected.expressionProjection, advanced.expressionProjection);
+  });
   it("is deterministic and uses only structured certainty and source IDs", () => {
     const packet = {
       schemaVersion: 1 as const,

@@ -9,8 +9,11 @@ This directory contains durable records of architectural and product-rule decisi
 - ADR-0015 and later use a same-basename pair. The `.think` file is the
   authoritative causal and decision record; `.md` is its human-readable
   projection. Correct disagreements in favor of `.think`.
-- sealgraph state and reports are disposable advisory caches. They are rebuilt
-  from `.think` and referenced original artifacts and never become an authority.
+- From the owner's 2026-09-09 instruction, retain Sealgraph history for mechanical
+  impact and stale review; see [Seal operations](../sealgraph-operations.md).
+  Original documents remain authoritative. A Seal is not owner acceptance.
+  Do not discard the retained baseline as an advisory cache. Historical
+  disposable projections are not evidence of an existing retained Seal history.
 
 ## Lifecycle
 
@@ -35,7 +38,7 @@ This directory contains durable records of architectural and product-rule decisi
 | [0001](0001-turn-initiative-and-simultaneous-resolution.md) | Accepted | Ordinary turns are sequential; equal initiative reuses prior order or performs one persisted draw |
 | [0002](0002-separate-advance-and-narration-apis.md) | Accepted | Advance commits gameplay and creates an independent asynchronous narration job |
 | [0003](0003-revision-editable-assets-and-bind-battles.md) | Accepted | Battles bind immutable revisions of every editable source asset |
-| [0004](0004-versioned-lightweight-psyche-dynamics.md) | Accepted | Private psyche uses explicit parameters first, then a bounded lightweight neural dynamics model conditioned only on psyche-trait embeddings |
+| [0004](0004-versioned-lightweight-psyche-dynamics.md) | Superseded by 0027 | Historical lightweight psyche decision; dynamics and version safeguards retained by 0027 |
 | [0005](0005-battle-scoped-ordered-narration-stream.md) | Superseded | Battle-scoped ordered narration stream with reconnectable delivery |
 | [0006](0006-terminal-snapshot-narration-delivery.md) | Accepted | Terminal-snapshot narration delivery with durable phase receipts and fenced workers |
 | [0007](0007-provider-operation-ledger-and-observation-ceilings.md) | Accepted | Durable physical provider-attempt accounting and observation ceilings |
@@ -56,3 +59,10 @@ This directory contains durable records of architectural and product-rule decisi
 | [0022](0022-canonical-world-and-observer-cognition.md) | Accepted | Unique world is viewpoint-free; two-person cognition is two frames; physical engine effects read only canonical state |
 | [0023](0023-pair-channels-are-not-unique-cognition.md) | Accepted | pair.sight/sound are not unique cognition; LOS and projection read organ, exposure, and placement |
 | [0024](0024-detach-authoring-from-read-traffic.md) | Accepted | Environment-global authoring queue with owner-scoped execution; draft reads have no execution side effects |
+| [0025](0025-expression-state-and-utterance-actuals.md) | Accepted | Separate Compact expression state from completed utterance history, name the current output explicitly, and preserve exact repetition without a reuse classifier |
+| [0026](0026-compact-psyche-semantic-closure-repair.md) | Accepted | Align the Compact psyche prompt and repair one rejected semantic closure without regenerating unrelated state |
+| [0027](0027-unified-conscious-agency-and-psyche-boundary.md) | Accepted | Supersedes ADR-0004: reaction-only psyche, unified conscious action/speech judgment and separate engine adjudication; preserves dynamics and revision safeguards |
+| [0028](0028-versioned-conscious-agency-contract.md) | Accepted | Revision 2 corrects goal criterion to personality/relationship fit regardless of authorship; withdraws provenance gates; bounded reaction and typed partial acceptance; no supersession |
+| [0029](0029-preserve-v2-soft-guidance-compatibility.md) | Rejected | Historical proposal for permanent V2 conscious-only compatibility; replaced as direction by proposed ADR-0030 |
+| [0030](0030-llm-assisted-character-semantic-migration.md) | Accepted | Migrate frozen V2 characters to strict V3 through bounded LLM semantic change sets, deterministic validation, owner review, and append/CAS |
+| [0031](0031-focused-structured-semantic-authoring-kernel.md) | Accepted | Thin typed authoring kernel, domain adapters, focused capabilities, bounded recovery and mechanical safety; clause-level refinement of existing authoring contracts |

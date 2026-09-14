@@ -131,6 +131,105 @@ export function getDb(): SqliteDatabase.Database {
       ON character_authoring_attempts (owner_user_id, updated_at DESC);
     CREATE INDEX IF NOT EXISTS idx_character_authoring_character
       ON character_authoring_attempts (character_id, updated_at DESC);
+    CREATE TABLE IF NOT EXISTS character_semantic_migration_attempts (
+      migration_attempt_id TEXT PRIMARY KEY,
+      owner_user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      character_id TEXT NOT NULL,
+      source_generation_id TEXT NOT NULL REFERENCES asset_generations(generation_id),
+      source_schema_version INTEGER NOT NULL CHECK (source_schema_version = 2),
+      source_content_json TEXT NOT NULL,
+      source_content_digest TEXT NOT NULL,
+      natural_source_json TEXT,
+      natural_source_digest TEXT,
+      natural_source_disclosure_contract_id TEXT,
+      allowed_source_paths_json TEXT,
+      target_schema_version INTEGER NOT NULL CHECK (target_schema_version = 3),
+      migration_contract_id TEXT NOT NULL,
+      prompt_identity TEXT NOT NULL,
+      response_schema_identity TEXT NOT NULL,
+      provider_route TEXT NOT NULL,
+      model_identity TEXT NOT NULL,
+      compiler_capabilities_json TEXT NOT NULL,
+      initial_request_digest TEXT NOT NULL,
+      created_at TEXT NOT NULL,
+      CHECK (
+        (natural_source_json IS NULL
+          AND natural_source_digest IS NULL
+          AND natural_source_disclosure_contract_id IS NULL
+          AND allowed_source_paths_json IS NULL)
+        OR
+        (natural_source_json IS NOT NULL
+          AND natural_source_digest IS NOT NULL
+          AND natural_source_disclosure_contract_id IS NOT NULL
+          AND allowed_source_paths_json IS NOT NULL)
+      )
+    );
+    CREATE INDEX IF NOT EXISTS idx_character_semantic_migration_attempt_asset
+      ON character_semantic_migration_attempts (character_id, created_at DESC);
+    CREATE TABLE IF NOT EXISTS character_semantic_migration_events (
+      migration_attempt_id TEXT NOT NULL
+        REFERENCES character_semantic_migration_attempts(migration_attempt_id)
+        ON DELETE CASCADE,
+      event_sequence INTEGER NOT NULL CHECK (event_sequence > 0),
+      event_type TEXT NOT NULL CHECK (event_type IN (
+        'attempt_started', 'provider_request_recorded',
+        'provider_request_succeeded', 'provider_request_failed'
+      )),
+      subject_id TEXT NOT NULL,
+      details_json TEXT NOT NULL,
+      created_at TEXT NOT NULL,
+      PRIMARY KEY (migration_attempt_id, event_sequence)
+    );
+    CREATE TABLE IF NOT EXISTS character_semantic_migration_provider_requests (
+      provider_request_id TEXT PRIMARY KEY,
+      migration_attempt_id TEXT NOT NULL
+        REFERENCES character_semantic_migration_attempts(migration_attempt_id)
+        ON DELETE CASCADE,
+      parent_provider_request_id TEXT
+        REFERENCES character_semantic_migration_provider_requests(provider_request_id),
+      request_ordinal INTEGER NOT NULL CHECK (request_ordinal BETWEEN 1 AND 6),
+      request_kind TEXT NOT NULL CHECK (request_kind IN (
+        'initial_generation', 'semantic_review', 'semantic_repair', 'semantic_rereview'
+      )),
+      request_digest TEXT NOT NULL,
+      created_at TEXT NOT NULL,
+      UNIQUE (migration_attempt_id, request_ordinal)
+    );
+    CREATE TABLE IF NOT EXISTS character_semantic_migration_provider_receipts (
+      provider_request_id TEXT PRIMARY KEY
+        REFERENCES character_semantic_migration_provider_requests(provider_request_id)
+        ON DELETE CASCADE,
+      outcome TEXT NOT NULL CHECK (outcome IN ('succeeded', 'failed')),
+      response_digest TEXT,
+      response_json TEXT,
+      failure_code TEXT,
+      failure_detail TEXT,
+      accounting_json TEXT NOT NULL,
+      finished_at TEXT NOT NULL,
+      CHECK (
+        (outcome = 'succeeded'
+          AND response_digest IS NOT NULL
+          AND response_json IS NOT NULL
+          AND failure_code IS NULL
+          AND failure_detail IS NULL)
+        OR
+        (outcome = 'failed'
+          AND response_digest IS NULL
+          AND response_json IS NULL
+          AND failure_code IS NOT NULL)
+      )
+    );
+    CREATE TABLE IF NOT EXISTS character_migration_preservation_capsules (
+      capsule_digest TEXT PRIMARY KEY,
+      migration_attempt_id TEXT NOT NULL
+        REFERENCES character_semantic_migration_attempts(migration_attempt_id),
+      source_generation_id TEXT NOT NULL REFERENCES asset_generations(generation_id),
+      target_generation_id TEXT NOT NULL REFERENCES asset_generations(generation_id),
+      capsule_json TEXT NOT NULL,
+      byte_length INTEGER NOT NULL CHECK (byte_length > 0 AND byte_length <= 262144),
+      created_at TEXT NOT NULL,
+      UNIQUE (migration_attempt_id, target_generation_id)
+    );
     CREATE TABLE IF NOT EXISTS battlefield_asset_states (
       battlefield_id TEXT PRIMARY KEY,
       compatibility_status TEXT NOT NULL CHECK (
@@ -495,6 +594,7 @@ export function getDb(): SqliteDatabase.Database {
   ensureSqliteAuthoringJobs(sqlite);
   ensureSqliteOwnerNotifications(sqlite);
   ensureSqliteFamilyAuthoringJobs(sqlite);
+  ensureSqliteSemanticAuthoring(sqlite);
   return sqlite;
 }
 
@@ -612,6 +712,97 @@ function ensureSqliteFamilyAuthoringJobs(database: SqliteDatabase.Database): voi
       FROM narration_style_authoring_jobs
      WHERE status IN ('pending', 'claimed')
     ON CONFLICT (family, attempt_id) DO NOTHING;
+  `);
+}
+
+function ensureSqliteSemanticAuthoring(database: SqliteDatabase.Database): void {
+  database.exec(`
+    CREATE TABLE IF NOT EXISTS semantic_authoring_runs (
+      run_id TEXT PRIMARY KEY,
+      attempt_id TEXT NOT NULL UNIQUE,
+      predecessor_run_id TEXT REFERENCES semantic_authoring_runs(run_id),
+      family TEXT NOT NULL CHECK (
+        family IN ('character', 'battlefield-preset', 'narration-style')
+      ),
+      mode TEXT NOT NULL CHECK (mode IN ('create', 'revise', 'migrate')),
+      owner_user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      source_asset_id TEXT NOT NULL,
+      source_generation_id TEXT,
+      source_content_digest TEXT NOT NULL,
+      source_payload_ref TEXT NOT NULL,
+      target_family TEXT NOT NULL CHECK (
+        target_family IN ('character', 'battlefield-preset', 'narration-style')
+      ),
+      target_version INTEGER NOT NULL,
+      adapter_identity TEXT NOT NULL,
+      policy_identity TEXT NOT NULL,
+      pricing_identity TEXT NOT NULL,
+      token_estimator_identity TEXT NOT NULL,
+      expected_current_generation_id TEXT,
+      status TEXT NOT NULL CHECK (status IN (
+        'pending', 'claimed', 'ready_for_review', 'needs_owner_answer',
+        'failed', 'cancelled', 'expired'
+      )),
+      accounting_json TEXT NOT NULL,
+      failure_receipt_json TEXT,
+      fence_owner_id TEXT NOT NULL,
+      fencing_token INTEGER NOT NULL,
+      run_version INTEGER NOT NULL,
+      created_at TEXT NOT NULL,
+      updated_at TEXT NOT NULL
+    );
+    CREATE INDEX IF NOT EXISTS idx_semantic_authoring_runs_owner
+      ON semantic_authoring_runs (owner_user_id, created_at DESC);
+    CREATE TABLE IF NOT EXISTS semantic_authoring_provider_requests (
+      request_id TEXT PRIMARY KEY,
+      run_id TEXT NOT NULL REFERENCES semantic_authoring_runs(run_id) ON DELETE CASCADE,
+      ordinal INTEGER NOT NULL CHECK (ordinal BETWEEN 1 AND 8),
+      reservation_json TEXT NOT NULL,
+      request_digest TEXT NOT NULL,
+      provider_route TEXT NOT NULL,
+      outcome TEXT CHECK (outcome IN ('succeeded', 'failed', 'unknown_consumption')),
+      accounting_json TEXT,
+      created_at TEXT NOT NULL,
+      finished_at TEXT,
+      UNIQUE (run_id, ordinal)
+    );
+    CREATE TABLE IF NOT EXISTS semantic_authoring_questions (
+      question_id TEXT PRIMARY KEY,
+      run_id TEXT NOT NULL REFERENCES semantic_authoring_runs(run_id) ON DELETE CASCADE,
+      question_json TEXT NOT NULL,
+      evidence_json TEXT NOT NULL,
+      resumption_json TEXT NOT NULL,
+      state TEXT NOT NULL CHECK (state IN ('open', 'answered', 'superseded')),
+      created_at TEXT NOT NULL
+    );
+    CREATE TABLE IF NOT EXISTS semantic_authoring_answers (
+      answer_id TEXT PRIMARY KEY,
+      question_id TEXT NOT NULL
+        REFERENCES semantic_authoring_questions(question_id) ON DELETE CASCADE,
+      owner_user_id TEXT NOT NULL REFERENCES users(id),
+      answer_json TEXT NOT NULL,
+      created_at TEXT NOT NULL
+    );
+    CREATE TABLE IF NOT EXISTS semantic_authoring_final_candidates (
+      final_candidate_id TEXT PRIMARY KEY,
+      run_id TEXT NOT NULL UNIQUE
+        REFERENCES semantic_authoring_runs(run_id) ON DELETE CASCADE,
+      digest TEXT NOT NULL,
+      family_payload_ref TEXT NOT NULL,
+      obligation_coverage_json TEXT NOT NULL,
+      reconciliation_receipt_identity TEXT NOT NULL,
+      compiler_receipt_identity TEXT NOT NULL,
+      disclosure_receipt_identity TEXT NOT NULL,
+      expected_current_generation_id TEXT,
+      created_at TEXT NOT NULL
+    );
+    CREATE TABLE IF NOT EXISTS semantic_authoring_commands (
+      owner_user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      command_id TEXT NOT NULL,
+      run_id TEXT NOT NULL REFERENCES semantic_authoring_runs(run_id) ON DELETE CASCADE,
+      created_at TEXT NOT NULL,
+      PRIMARY KEY (owner_user_id, command_id)
+    );
   `);
 }
 

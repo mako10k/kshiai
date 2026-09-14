@@ -1,0 +1,41 @@
+domain CSMB5Implementation:
+  description "B5 local implementation decision, based on current accepted contracts."
+problem P1:
+  "Implement plan cb205 without activation or live provider use."
+evidence E_CSM_001:
+  "ADR-0030 Accepted revision 1 D7-D10 and requirements v6 R10-R15 specify six operations, server registered IDs, full candidate review, expanding repair closure, two repair rounds and six receipted requests. User now instructs proceeding."
+evidence E_CSM_002:
+  "Current HEAD e0f2224 equals fetched same-name origin branch; worktree clean. Shared CharacterDefinitionV3 and deferred/capability schemas exist. B4 repository exports begin attempt, request/receipt append and work replay; first digest is frozen initial material. Plan cb205 is not done."
+evidence E_CSM_003:
+  "V2 content is a generation envelope with definition, disclosurePolicy and publicPresentation. V3 splits executable actionNorms, consciousGuidance and mechanicalConflictFallbacks. Existing action/condition schemas validate references; source descriptions contain consumerTags, which are not authority. Existing public-presentation validation is projection based."
+premise C_CSM_001:
+  "High confidence, directly supported by E_CSM_001 and E_CSM_002: B5 remains needed and local implementation with test doubles is authorized; activation, deployment and live model calls are not."
+premise R_CSM_001:
+  "From E_CSM_001 and E_CSM_003: registered source/target paths and server ID pools can constrain model operations; structural validity cannot prove semantic equivalence, so a separate whole-candidate review and owner-visible uncertainty remain necessary."
+premise A1:
+  "Alternative: arbitrary JSON patch and schema-only retry. Simpler but insufficient for source accounting, ID, disclosure and semantic-dependant requirements."
+premise A2:
+  "Alternative: deterministic-only migration. Smaller but contradicts accepted model-assisted meaning allocation and synthesis."
+premise A3:
+  "Alternative: typed six-operation change sets on server registered definition paths, deterministic unchanged baseline, protected mechanics/disclosure checks, typed whole-candidate reviewer and bounded durable orchestration. This matches B5 and preserves B6 activation separation."
+decision D1 based_on P1, E_CSM_001, E_CSM_002, E_CSM_003, C_CSM_001, R_CSM_001, A1, A2, A3:
+  |
+    Select A3. A-CSM-001 (implementation permitted, proposed) references
+    C-CSM-001 and its direct evidence. Implement strict response and review
+    schemas, registered paths and stable-ID pools, six operation merge and
+    preservation/diff outputs, dependency closure and full candidate validation.
+    Reuse unchanged source envelope fields by default; do not silently generate
+    public prose, widen disclosure/consumer access or invent mechanics.
+    Provide generation/review/repair prompts without chain-of-thought and an
+    explicit injected provider port tested with local doubles only. Persist
+    each request before invoking its provider and each response before using it.
+    Reconstruct from receipts without re-calling completed requests; an ambiguous
+    pending request is reported, never blindly resent. Revalidate after each
+    merged repair, allow semantic dependants beyond invalid paths, and stop
+    after two repairs or six requests. Return a review candidate and bounded
+    owner diff, never activate. Test malformed responses, source coverage,
+    references, rights, fallback preservation, semantic repair, limits,
+    exact replay and failures. Run targeted then full validation and inspect
+    Seal impact before documenting and sealing verified work.
+premise LIMIT:
+  "Local doubles prove protocol behavior, not semantic model quality, production restoration, B6 atomic activation or deployed compiler availability. Public prose regeneration and production calls are not exercised. The earlier PostgreSQL public-impact uncertainty remains unresolved and is outside this local implementation."

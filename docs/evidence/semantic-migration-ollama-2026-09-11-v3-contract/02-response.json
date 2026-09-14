@@ -1,0 +1,5 @@
+{
+  "phase": "response",
+  "httpStatus": 200,
+  "body": "{\"model\":\"qwen2.5:3b\",\"created_at\":\"2026-09-11T06:25:26.019000896Z\",\"message\":{\"role\":\"assistant\",\"content\":\"{\\n  \\\"schema\\\": \\\"character_semantic_migration_change_set_v1\\\",\\n  \\\"operations\\\": [\\n    {\\n      \\\"operation\\\": \\\"transform\\\",\\n      \\\"targetPath\\\": \\\"definition.profileBackground\\\",\\n      \\\"sourcePaths\\\": [\\\"definition.profileBackground\\\"],\\n      \\\"value\\\": [\\n        {\\n          \\\"id\\\": \\\"background-1\\\",\\n          \\\"summary\\\": \\\"Enjoys tactical duels.\\\"\\n        }\\n      ],\\n      \\\"deferred\\\": null,\\n      \\\"explanation\\\": \\\"Preserve the supplied meaning in the requested target fragment.\\\",\\n      \\\"provenance\\\": \\\"source_derived\\\",\\n      \\\"semanticDependants\\\": []\\n    }\\n  ],\\n  \\\"uncertainties\\\": []\\n}\"},\"done\":true,\"done_reason\":\"stop\",\"total_duration\":29087027795,\"load_duration\":3853067646,\"prompt_eval_count\":122,\"prompt_eval_duration\":4167291229,\"eval_count\":136,\"eval_duration\":15922261572}"
+}

@@ -1,0 +1,58 @@
+{
+  "commit": "a44b3d4",
+  "ids": {
+    "implementation/semantic-authoring-contracts-v1": {
+      "old": "d03772a8d79bfa9ce0e6cbe7e940277d82b8c6a199cf4bed145feb6cacc8f0a6",
+      "new": "4401a049e80c7cae5720168ea924461b6b6a0fdb0014940b4e629a56c9e44bf6"
+    },
+    "implementation/semantic-authoring-shared-export-v1": {
+      "old": "72f759963098549de2efed757ce956a85b3a786137ac900abfd1da7dd6888f72",
+      "new": "8e02eb4ae1f0b3cf39028d2299391785d3531dd6730eaec2b9277527d09dcf8b"
+    },
+    "implementation/semantic-authoring-kernel-v1": {
+      "old": "9e32b9dd1e4e7592770dda9c95546a1744e25de32e60fa2cea2fb4ea3f5c3a98",
+      "new": "147ea2e42fc8139afa334ec0dda8e5e57a055e8be0cad1dd8b5e1628a8e0ae9b"
+    },
+    "implementation/semantic-authoring-capability-session-v1": {
+      "old": "6c0fdf122a2b1d5cbe887c179ce56360550f6e4eecac19a648053c81a2b21e9b",
+      "new": "ed5acdb12806188317811f59f0450c75ff63cf51fef04cb39ec1dbb7686f7cc3"
+    },
+    "implementation/semantic-authoring-progress-monitor-v1": {
+      "old": "85a35fa06b345fcdaa4cebc68c84e3c75db2fd1b38a999940ef084b21c9794fa",
+      "new": "23dc54308394f605164021f3ef12b002d9eff8709b268d55ad2f366f5987b7a9"
+    },
+    "implementation/semantic-authoring-run-state-v1": {
+      "old": "fb5b59779c1ee265e4f30ead9b8dda185c17e77ecd3204933541d16724132cf6",
+      "new": "b21ba400b9794563d80be9ac1fdbdb27c46ae11c41804e83709e1ddbde133a15"
+    },
+    "verification/semantic-authoring-kernel-foundation-v1": {
+      "old": "4e49f54c2ba7e7e0f8236767a1674b09397f0553ab8c69bf900ab97cd484aa62",
+      "new": "b4f38e6704b9f0e4ae38450061c590629351495385b2eb416efdadbfac1ca324"
+    },
+    "plan/character-semantic-migration": {
+      "old": "13763362c4a312883f905c8ed54912805207a2dcc7ecea99286070d87017fff0",
+      "new": "a84234a5c3b597e63390f2d501ada4815e25bbda73cf3677df5f0988a5658eea"
+    },
+    "implementation/character-semantic-migration-sqlite-bootstrap": {
+      "old": "8c0f4665552c7a879fe29765fbb015dfacc27185f24771f24759b88b28e3ebb9"
+    },
+    "implementation/semantic-authoring-accounting-v1": {
+      "old": "e09ed9c26e12c2be0ee7831aedc641e09373b6bc9d1a323e193a054a67d5fe65"
+    },
+    "implementation/semantic-authoring-proposal-decoder-v1": {
+      "old": "d7b30f5360e5af7a3103cf09e2f03956e6e71ae2cf66e749f0123ecdb031a9ca"
+    },
+    "implementation/semantic-authoring-orchestration-v1": {
+      "new": "1d8e4c13676b20e4e3d5e41f073c7c1a1d574221defa21969dd4a57daa7151b3"
+    },
+    "implementation/semantic-authoring-public-mapping-v1": {
+      "new": "97d3e3be7d7ccfceec31eba40ca3e761d40f99b40d85337039ca4837c4e2f85c"
+    },
+    "implementation/semantic-authoring-character-adapter-v1": {
+      "new": "867edcce7249adf1f713ac8b6460681659df05bc034ac09237348f16f6cfebc3"
+    },
+    "verification/semantic-authoring-conformance-v1": {
+      "new": "94cfb2de58862b64d05dda3c8b8d9ba12ea0c50c79a8ea4b26877926ef250cf1"
+    }
+  }
+}

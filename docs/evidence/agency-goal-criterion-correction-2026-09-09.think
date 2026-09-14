@@ -1,0 +1,41 @@
+domain GoalCorrection:
+  description "Correct the goal criterion without changing runtime."
+problem P1:
+  |
+    Proposed ADR0028 rev1 confuses goal appropriateness with owner provenance.
+evidence E1:
+  |
+    Owner now explicitly states that author confirmation does not matter;
+    a goal must be legitimate in light of character personality and relationship.
+evidence E2:
+  |
+    Requirement v1 R1 makes author-explicit defaultObjective binding; ADR0028
+    D1 adds envelopeV3, owner reconfirmation and unknown-origin start rejection.
+    ADR status is Proposed. Existing immutable V1/V2 contracts remain unchanged.
+premise BOUNDARY:
+  |
+    Owner requests ADR correction or supersession. Document correction and its
+    dependencies are in scope, not runtime, paid execution or publication.
+    New requirement bytes cannot inherit old review or acceptance.
+decision D1 based_on P1, E1, E2, BOUNDARY:
+  |
+    Correct Proposed ADR0028 as revision 2, not supersede an Accepted ADR.
+    Preserve old content via Seal history and a correction record. Create requirement
+    v2 candidate plus exact review input at step1, retaining v1 as historical accepted
+    bytes but explicitly naming its conflicting R1 as displaced by the current owner
+    instruction. Do not claim v2 or ADR acceptance or run independent review.
+decision D2 based_on D1, E1:
+  |
+    Goal derivation evaluates personality, values and known counterpart relationship
+    in the existing conscious call, regardless of source or owner confirmation.
+    Existing objective text is context, not privileged authority. Victory is ordinary
+    fallback where compatible. Keep engine prohibitions and immutable battle binding.
+    Remove origin fields, new character envelope, reconfirmation UI and origin-block
+    errors. Goal basis/rationale and F01/F02 semantic quality evaluation remain;
+    reference validation alone cannot prove semantic legitimacy. No new critic call.
+decision D3 based_on D1, D2:
+  |
+    Inspect Seal impact before changes, update affected design/plan/PERT and tests
+    planned for provenance into semantic-fit cases. Preserve historical reviews,
+    acceptance and evidence as snapshots. Reseal only inspected active dependencies,
+    verify original bytes, stale scan and fsck. Stop at requirement/ADR review gates.

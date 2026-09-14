@@ -1,0 +1,16 @@
+domain FoundationRevision2Acceptance:
+  description "Record owner acceptance of exact reviewed revision2 and identify next aligned requirement task."
+evidence OWNER_ACCEPTANCE:
+  "After completed independent review recommended ACCEPT, owner stated: 承認します。次のタスクを教えて"
+evidence SNAPSHOT:
+  "English revision2 digest df4536be8bed752c81164687112041286ebfefc7869fb80e6952f5839e0b556a matches reviewed candidate. Review digest b1a768d6d8e7da50a01ebd2c661af6690c223adb84f22557625df5fe41ab6ed5."
+evidence CURRENT_CHARACTER:
+  "Pending character requirement revision3 R14 requires same-attempt affected-only resumption and R19 prohibits ordinary technical failed termination. Foundation revision2 expressly permits failed attempts with new source-based retries and identifies these clauses for later alignment."
+premise P1:
+  "Acceptance applies to the exact reviewed requirement, not implementation or runtime activation. Recording it separately preserves candidate bytes and review history."
+premise P2:
+  "A focused successor character requirement must align recovery and preservation with the accepted foundation before dependent domain architecture is designed."
+decision ACCEPTANCE based_on OWNER_ACCEPTANCE, SNAPSHOT, P1:
+  "Record foundation requirement revision2 as Accepted through a separate owner acceptance record identifying exact candidate and review."
+decision NEXT based_on CURRENT_CHARACTER, P2, ACCEPTANCE:
+  "Recommend character authoring requirement revision4: reference the accepted foundation, align R14/R19 and migrator-only preservation access, retain character-specific semantic constraints and mode completion criteria, provide Japanese scope and review evidence. Do not execute this next task on an information request."

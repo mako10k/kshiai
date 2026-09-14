@@ -1,0 +1,463 @@
+# Delivery plan revision 19: Current PC reads SealGraph format 5; preserve old ADR syntax/lifecycle compatibility boundary and active t029.
+project pj001:
+  version 6
+  title "Connect character goals, tactics and expression after Compact observation v2"
+  description "Implement Accepted ADR-0025 with separate closed expressionState and utteranceHistory inputs, closed nextUtterance output, content-independent acceptance, and the existing battle revision commit boundary. Under Accepted ADR-0026, allow one fail-closed Compact V2 deep-psyche application repair over a server-defined semantic closure; add no expression retry, recursive repair, lifecycle entity, identifier, receipt, reuse detector, similarity gate, critic, or fallback."
+  as_of 2026-09-10
+  duration_unit point
+  velocity 1p/1d
+  finish m011
+  # Increment estimates are provisional; re-estimate after CA-00 and design review.
+  # Next scope: responsibility design start, remaining CA-00, CA-01 with minimal CA-02.
+  # ADR-0027 psyche-only, unified conscious judgment and engine authority control new scope.
+  # Seven PSYCHE-RESPONSIBILITY sites are one migration design, not seven isolated fixes.
+  # Repair plan: docs/character-agency-implementation-plan-v1.md revision 6.
+  # t026 completed with typed fixtures and rubric; no claim of model-quality improvement.
+  # t029-A -> B -> C -> D are internal packages, not additional tasks or earned progress.
+  # Plan approval does not accept a new architecture or authorize provider/deployment effects.
+
+resource rs001:
+  title "Developer"
+  capacity 1
+
+resource rs002:
+  title "Product and release owner"
+  capacity 1
+
+milestone m002:
+  title "ADR-0025 accepted"
+  state reached
+
+milestone m003:
+  title "Requirement v3 accepted"
+
+milestone m004:
+  title "Minimal Compact boundary implementation complete"
+
+milestone m005:
+  title "Local source correction and regression evidence complete"
+
+milestone m006:
+  title "Bounded paid provider replay approved"
+  state reached
+
+milestone m007:
+  title "Bounded provider replay complete"
+
+milestone m008:
+  title "Stage deployment approved"
+
+milestone m009:
+  title "Stage behavior observed"
+
+milestone m010:
+  title "Production promotion approved"
+
+milestone m011:
+  title "Production behavior observed and accepted"
+
+milestone m012:
+  title "ADR-0025 and ADR-0026 integrated candidate locally verified"
+  state reached
+
+milestone m013:
+  title "Corrected bounded provider replay approved"
+
+milestone m014:
+  title "Dialogue-thread producer contract clarified and locally verified"
+  state reached
+
+milestone m015:
+  title "Second corrected bounded provider replay approved"
+
+milestone m016:
+  title "Observation-starvation investigation recorded"
+
+milestone m020:
+  title "Observation-provenance defect RCA recorded"
+
+milestone m017:
+  title "Observer-safe replay input correction locally verified"
+
+milestone m021:
+  title "Replay harness typed-input flow locally verified"
+
+milestone m018:
+  title "Observation-input provider replay approved"
+
+milestone m019:
+  title "Observation-input provider replay complete"
+
+milestone m022:
+  title "Observation repair-schema correction locally verified"
+
+milestone m023:
+  title "Corrected observation replay v2 prepared"
+
+milestone m024:
+  title "Corrected observation replay v2 approved"
+
+milestone m025:
+  title "Corrected observation replay v2 recorded"
+
+milestone m026:
+  title "CA-00 input inventory and comparison fixtures recorded"
+
+milestone m027:
+  title "CA-01 and minimal CA-02 requirements and design proposed"
+
+milestone m028:
+  title "Exact character-agency increment requirements and ADR accepted"
+
+milestone m029:
+  title "Minimal goal-to-action-and-speech increment locally verified"
+
+milestone m030:
+  title "Bounded character-agency comparison prepared"
+
+milestone m031:
+  title "Exact paid character-agency comparison approved"
+
+milestone m032:
+  title "Character-agency comparison evidence recorded"
+
+task t001 m002 -> m003:
+  title "Review and decide requirement v3"
+  description "Review the exact requirement candidate against Accepted ADR-0025, including exclusion of lastSpeech from new Compact semantic input and output, content-independent acceptance, unchanged provider count, old-battle compatibility, privacy, and the explicit absence of new IDs, receipts, ledgers, or runtime reuse detection. Accept, revise, or reject that exact requirement snapshot."
+  duration 1p
+  status done
+  owner "user"
+  requires:
+    rs002 1
+
+task t002 m003 -> m004:
+  title "Implement the closed Compact state, history, and next-utterance boundary"
+  description "Define closed V2 deep-psyche and expression contracts; provide separate expressionState and observer-safe utteranceHistory fields; exclude lastSpeech and conversationHistory from semantic state; decode nextUtterance without any, arbitrary records, or z.unknown terminal contracts; stop new Compact writes to lastSpeech; and align production and mock adapters. Preserve existing battles, non-Compact behavior, action ownership, narrator separation, and the successful-path expression call count."
+  duration 4p
+  status done
+  owner "codex"
+  requires:
+    rs001 1
+
+task t003 m004 -> m005:
+  title "Verify source correction and existing containment"
+  description "Add focused fixtures proving separated inputs, closed nextUtterance decoding, exact repeated-text acceptance through the normal path, absence of text comparison, retry, critic, prior-line fallback, or new lifecycle storage, no Compact lastSpeech write, observer privacy, narrator non-feedback, old-policy compatibility, unchanged provider count, and rejection of stale battle revisions. Run focused tests, full tests, typecheck, build, LLMThink audit, and PERT checks."
+  duration 2p
+  status done
+  owner "codex"
+  requires:
+    rs001 1
+
+task t004 m005 -> m006:
+  title "Review local evidence and decide bounded paid replay"
+  description "Review the exact implementation commit, local verification, provider and model, fixture revisions, repeat-capable and ordinary-character cases, call and token ceilings, cost ceiling, stop conditions, and retained evidence. Approval authorizes only the named paid replay and does not authorize Stage or production deployment."
+  duration 1p
+  status done
+  owner "user"
+  source "docs/evidence/compact-v2-provider-replay-2026-09-09/prepare-proof.json"
+  requires:
+    rs002 1
+
+task t006 m032 -> m008:
+  title "Review replay evidence and decide Stage deployment"
+  description "Review observation v2 and character-agency comparison evidence separately, including goal-dependent action and speech consistency, compatibility and cost. Decide whether the increment meets its predeclared criteria; if not, record findings and replan without deployment. Reassess CA-03..07 priorities without making them automatic release blockers. Review the immutable candidate, affected services, rollback target, Stage smoke scope and stop conditions. Approval must identify the Stage action and does not authorize production promotion."
+  duration 1p
+  owner "user"
+  requires:
+    rs002 1
+
+task t007 m008 -> m009:
+  title "Deploy the approved artifact to Stage and run smoke"
+  description "Deploy only the exact approved artifact to Stage, verify the serving revision and Compact contract binding, run production-shaped API smoke, and observe repeat-capable and ordinary-character battles. Stop on fallback, policy drift, privacy loss, narrator feedback, provider-count expansion, stale-result commitment, or contract decode failure."
+  duration 1p
+  owner "codex"
+  requires:
+    rs001 1
+
+task t008 m009 -> m010:
+  title "Review Stage evidence and decide production promotion"
+  description "Review the exact Stage artifact and serving revision, smoke and observation evidence, rollback target, affected services, production smoke scope, and stop conditions. Approval must explicitly target production."
+  duration 1p
+  owner "user"
+  requires:
+    rs002 1
+
+task t009 m010 -> m011:
+  title "Promote the approved artifact and observe production"
+  description "Promote only the exact approved artifact, verify the serving revision and Compact contract binding, run API smoke, and observe repeat-capable and ordinary-character battles. Treat equal text as valid content while separately checking state-history separation, provider count, privacy, narrator non-feedback, stale-save rejection, and the absence of fallback or contract errors."
+  duration 2p
+  owner "codex"
+  requires:
+    rs001 1
+
+task t010 m012 -> m013:
+  title "Review and decide the corrected bounded provider replay"
+  description "Review the exact corrected implementation dfe1c34bcd0d9f4110a0d3b4ca06822fe0db69d7, Accepted ADR-0025 and ADR-0026, network-zero preparation proof, provider xAI, model grok-4.3, two synthetic scenarios with three turns each, at most eighteen physical Chat Completions requests including at most one bounded psyche repair per turn, token and USD ceilings, fail-closed stop conditions, and retained evidence. Approval authorizes only the new run compact-v2-provider-replay-repair-2026-09-09-v1; it never resumes or resends the immutable failed predecessor and does not authorize Stage, production, release, or a persistent observation battle."
+  duration 1p
+  status done
+  owner "user"
+  source "docs/evidence/compact-v2-provider-replay-repair-2026-09-09/prepare-proof.json"
+  requires:
+    rs002 1
+
+task t012 m014 -> m015:
+  title "Review and decide the second corrected bounded provider replay"
+  description "Review implementation 3c383ed1b4185a3bcc78c62981a628ea2b24a270, the immutable failed predecessor, network-zero preparation proof, xAI grok-4.3, two synthetic scenarios with three turns each, at most eighteen physical Chat Completions requests including at most one bounded psyche repair per turn, token and USD ceilings, and fail-closed stop conditions. Approval authorizes only run compact-v2-provider-replay-repair-2026-09-09-v2 and does not authorize Stage, production, release, or a persistent observation battle."
+  duration 1p
+  status done
+  owner "user"
+  source "docs/evidence/compact-v2-provider-replay-repair-2026-09-09-v2/prepare-proof.json"
+  requires:
+    rs002 1
+
+task t013 m015 -> m007:
+  title "Run the second corrected bounded provider replay once"
+  description "Execute only run compact-v2-provider-replay-repair-2026-09-09-v2 under its frozen contract. Retain every request, response, operation count, application result, and cost receipt. Stop fail-closed on provider, schema, semantic-closure, application, ceiling, or persistence failure; never retry, resume, resend, fall back, judge, deploy, or create a battle."
+  duration 1p
+  status done
+  owner "codex"
+  source "docs/evidence/compact-v2-provider-replay-repair-2026-09-09-v2/run-receipt.json"
+  requires:
+    rs001 1
+
+task t014 m006 -> m014:
+  title "Carry the initial failed replay into the corrected candidate"
+  description "Retain the immutable initial failure evidence and complete the accepted ADR-0026 semantic-closure correction without resuming or resending the failed run."
+  duration 1p
+  status done
+  owner "codex"
+  source "docs/evidence/compact-v2-provider-replay-2026-09-09.md"
+  requires:
+    rs001 1
+
+task t015 m013 -> m014:
+  title "Carry the first corrected failure into the clarified candidate"
+  description "Retain the immutable null unresolvedMove failure evidence and clarify the existing strict producer contract without expanding ADR-0026 repair eligibility or resending the failed run."
+  duration 1p
+  status done
+  owner "codex"
+  source "docs/evidence/compact-v2-provider-replay-repair-2026-09-09.md"
+  requires:
+    rs001 1
+
+task t016 m007 -> m016:
+  title "Record observation-starvation investigation"
+  description "Record the retained replay inputs and outputs, distinguish the synthetic fixture cause from unknown production prevalence, and audit the causal record with command-line LLMThink. This investigation does not authorize provider calls or deployment."
+  duration 1p
+  status done
+  owner "codex"
+  source "docs/evidence/compact-v2-observation-starvation-2026-09-09.think"
+  requires:
+    rs001 1
+
+task t020 m016 -> m020:
+  title "Record the independent observation-provenance defect RCA"
+  description "Separate the projected-percept provenance mismatch from the replay fixture RCA. Record its source-producing implementation condition, contributing contract duplication, composed-test escape cause, bounded confirmed impact, unknown production and dialogue-quality impact, corrective action, and recurrence regression."
+  duration 1p
+  status done
+  owner "codex"
+  source "docs/evidence/compact-v2-observation-provenance-rca-2026-09-09.think"
+  requires:
+    rs001 1
+
+task t017 m020 -> m017:
+  title "Correct observer-safe replay inputs and event provenance"
+  description "Represent every authored synthetic change as bounded PerceptionEvidence, project it through the normal observer path, pass the same evidence to dialogue generation, unify opaque percept-ID derivation for packet provenance, and add a composed regression plus a network-zero per-turn observation assertion. Keep event-summary mining, direct packet injection, schema expansion, and provider calls out of this task."
+  duration 1p
+  status done
+  owner "codex"
+  source "docs/evidence/compact-v2-observation-provenance-rca-2026-09-09.md"
+  requires:
+    rs001 1
+
+task t021 m017 -> m021:
+  title "Remove replay-harness type escapes and redundant JSON parsing"
+  description "Carry typed Compact V2 psyche and expression inputs through PrepareProvider, derive preparation metadata from those values rather than reparsing the serialized provider request, replace non-null assertions with control-flow narrowing, and retain JSON parsing only for the actual external response-string boundary."
+  duration 1p
+  owner "codex"
+  status done
+  requires:
+    rs001 1
+
+task t018 m021 -> m018:
+  title "Review and decide the observation-input provider replay"
+  description "Review the exact implementation commit, network-zero preparation proof, observer-safe ordinary and repeat-capable fixtures, xAI model and request ceilings, cost ceiling, retained evidence, and fail-closed stop conditions. Approval authorizes only the named replay and does not authorize Stage, production, release, or deployment."
+  duration 1p
+  owner "user"
+  status done
+  source "docs/evidence/compact-v2-observation-input-replay-2026-09-09-v1/prepare-proof.json"
+  requires:
+    rs002 1
+
+task t019 m018 -> m019:
+  title "Run the approved observation-input provider replay once"
+  description "Execute only the approved immutable observation-input replay contract once. Retain requests, responses, observer packet coverage, operation counts, application results, and cost receipt. Stop fail-closed without retry, resume, resend, fallback, judge, deployment, or persistent battle creation."
+  duration 1p
+  owner "codex"
+  status done
+  requires:
+    rs001 1
+
+task t022 m019 -> m022:
+  title "Correct the under-specified Compact psyche repair schema"
+  description "Record the failed replay RCA, include the complete speech-appraisal and expression-brief shapes in the independent repair request, add missing-expressionBrief regression coverage, and remove type escapes in the touched repair test boundary. Preserve the consumed run as immutable and require a new run ID and approval for any further provider execution."
+  duration 1p
+  owner "codex"
+  status done
+  source "docs/evidence/compact-v2-observation-repair-schema-rca-2026-09-09.think"
+  requires:
+    rs001 1
+
+task t023 m022 -> m023:
+  title "Prepare corrected observation-input provider replay v2"
+  description "Freeze a new run ID and the repair-schema correction commit, preserve failed v1 as immutable, regenerate the network-zero maximum-repair proof twice, and retain the exact request ceilings, cost ceiling, observer coverage, and fail-closed conditions."
+  duration 1p
+  owner "codex"
+  status done
+  source "docs/evidence/compact-v2-observation-input-replay-2026-09-09-v2/prepare-proof.json"
+  requires:
+    rs001 1
+
+task t024 m023 -> m024:
+  title "Review and decide corrected observation-input replay v2"
+  status done
+  description "Review the failed v1 disposition, repair-schema RCA and correction, exact implementation commit, network-zero preparation proof, xAI model, operation and monetary ceilings, retained evidence, and fail-closed stop conditions. Approval authorizes only the named v2 replay once and never authorizes retrying v1, Stage, production, release, or deployment."
+  duration 1p
+  owner "user"
+  source "docs/evidence/compact-v2-observation-input-replay-2026-09-09-v2.md"
+  requires:
+    rs002 1
+
+task t025 m024 -> m025:
+  title "Run the approved corrected observation-input replay v2 once"
+  status done
+  description "Execute only the separately approved immutable v2 contract once. Retain requests, responses, observation coverage, operation counts, application results, and cost receipt. Stop fail-closed without retry, resume, resend, fallback, judge, deployment, or persistent battle creation."
+  duration 1p
+  owner "codex"
+  requires:
+    rs001 1
+
+milestone m033:
+  title "Exploratory responsibility design started and seven sites mapped"
+
+task t033 m025 -> m033:
+  title "Start reaction-only psyche and conscious agency responsibility design"
+  description "Record authoritative boundaries, candidate owners, seven annotated implementation sites, initial versus deferred migration and open questions. This completes design initiation only; CA-00 inventory, requirement acceptance and final ADR design remain pending."
+  status done
+  duration 1p
+  owner "codex"
+  source "docs/character-agency-responsibility-design-v1.md"
+  requires:
+    rs001 1
+
+task t026 m033 -> m026:
+  title "CA-00 inventory actual input paths and freeze comparison fixtures"
+  description "Use static impact I01-I10 as the baseline, then capture typed actual producer/projection/result/acceptance/persistence payloads across phases and generations. Finish activation and public/redaction path checks. Freeze F01-F08 with allowed action sets, rubric, initial-to-next-state continuity and later-bucket rejection cases. Cover seven tags and psyche invariance under knowledge-only changes. Do not infer psyche knowledge needs from missing decision input or mark static inventory as fixture completion. Re-estimate after inventory; no paid calls."
+  status done
+  duration 1p
+  owner "codex"
+  source "docs/evidence/character-agency-ca00-inventory-2026-09-09.md"
+  requires:
+    rs001 1
+
+task t027 m026 -> m027:
+  title "Specify CA-01 with minimal CA-02 and propose the contract decision"
+  description "Owner corrected the criterion to personality/relationship-grounded goal legitimacy regardless of author confirmation. Requirement v2 step1 and Proposed ADR-0028 revision2 are authored. Preserve old accepted/reviewed snapshots as history; withdraw origin attestation, new character envelope and start rejection. This task completes authoring only, not revised acceptance."
+  status done
+  duration 2p
+  source "docs/adr/0028-versioned-conscious-agency-contract.think"
+  owner "codex"
+  requires:
+    rs001 1
+
+task t028 m027 -> m028:
+  title "Review and accept the exact first character-agency increment"
+  description "Owner directly accepted exact requirement v2 and ADR-0028 revision2 and directed implementation. Record this direct decision without claiming the unperformed second independent review or preimplementation re-estimate. Old R1 precedence is historical only; no origin gate or new character envelope. Paid execution, setting activation and deployment remain separate."
+  status done
+  duration 1p
+  owner "user"
+  requires:
+    rs002 1
+
+task t029 m028 -> m029:
+  title "Implement and locally verify the accepted goal-to-action-and-speech slice"
+  status active
+  description "V3 A/B/C runtime and D regression are implemented locally: typed opt-in tuple, single conscious goal/intent/action/speech judgment, reaction-only psychology, partial acceptance, later redecision, CAS and seven legacy tags. Remote d223304 records final full tests, typecheck, build and unchanged Lizard thresholds passed after shared build. On 2026-09-10 this PC passed focused regression and reads retained SealGraph format 5 without migration. Restored npm adr:check passes for ADR-0027/0028; whole-repository check still fails on old 0015-0017/0019 syntax and lifecycle markers. Keep active pending owner disposition of that compatibility boundary and final completion review; do not rewrite accepted records merely to pass. Per-source Seal review/readback is recorded in agency-v3-local-resume-2026-09-10.md. No paid execution, setting activation or deployment; local results do not establish real-model quality."
+  duration 3p
+  source "docs/character-agency-implementation-plan-v1.md"
+  owner "codex"
+  requires:
+    rs001 1
+
+task t030 m029 -> m030:
+  title "Prepare a bounded control-versus-treatment agency comparison"
+  description "Bind exact candidate and baseline revisions, identical fixtures, provider/model, goal/knowledge/tactical comparisons, predeclared success thresholds, call/token/cost ceilings, stop conditions and retained evidence. Score personality-dependent choices and action/speech consistency separately from wording variety, schema validity and win rate. Separate intended effects from actual effects. Preparation makes no paid calls."
+  duration 1p
+  owner "codex"
+  requires:
+    rs001 1
+
+task t031 m030 -> m031:
+  title "Decide the separately scoped paid agency comparison"
+  description "Accept, revise or reject the exact comparison contract and budget. Prior observation replay approval is not reusable. Approval authorizes only this named comparison, not Stage or production."
+  duration 1p
+  owner "user"
+  requires:
+    rs002 1
+
+task t032 m031 -> m032:
+  title "Execute the approved comparison and record outcome and limitations"
+  description "Execute only the approved comparison within its ceilings and stop conditions. Retain payloads, responses, fixture scores, action validity, costs and failures. Report improvement, no improvement or inconclusive against the frozen criteria without adding unapproved retries or claiming intended speech effects occurred. Preserve negative findings for t006 review and replanning."
+  duration 1p
+  owner "codex"
+  requires:
+    rs001 1
+
+work_event WE-1227b7e1e114fa09bbab393e7931c57621202927fbcb75f4405ee8632224cd0e:
+  model 1
+  task t001
+  kind finish
+  occurred_at 2026-09-08T22:10:00+09:00
+
+work_event WE-9bb5e4a0fcd970fc9c8a52b250135f24346cfad7bb4145a945427d94d6165111:
+  model 1
+  task t002
+  kind finish
+  occurred_at 2026-09-08T22:49:04+09:00
+
+work_event WE-f2bb6692693356be4484b4513ef71db3dd4adfc452e9d791918fd739aa7c79b8:
+  model 1
+  task t003
+  kind finish
+  occurred_at 2026-09-08T22:50:00+09:00
+
+work_event WE-DER-PAID-REPLAY-APPROVAL-20260909:
+  model 1
+  task t004
+  kind finish
+  occurred_at 2026-09-09T08:35:00+09:00
+
+work_event WE-CORRECTED-REPLAY-APPROVAL-20260909:
+  model 1
+  task t010
+  kind finish
+  occurred_at 2026-09-09T15:55:00+09:00
+
+work_event WE-SECOND-CORRECTED-REPLAY-APPROVAL-20260909:
+  model 1
+  task t012
+  kind finish
+  occurred_at 2026-09-09T16:44:00+09:00
+
+work_event WE-SECOND-CORRECTED-REPLAY-START-20260909:
+  model 1
+  task t013
+  kind start
+  occurred_at 2026-09-09T16:44:25+09:00
+  planned_value 1p
+
+work_event WE-SECOND-CORRECTED-REPLAY-FINISH-20260909:
+  model 1
+  task t013
+  kind finish
+  occurred_at 2026-09-09T16:44:48+09:00

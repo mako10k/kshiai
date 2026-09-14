@@ -50,7 +50,7 @@ describe("persistent battle E2E runner", () => {
   it("classifies every observation provider operation under one revision", () => {
     assert.equal(
       OBSERVATION_PROVIDER_OPERATION_TAXONOMY_REVISION,
-      "battle-provider-operations-v1",
+      "battle-provider-operations-v2",
     );
     assert.deepEqual(OBSERVATION_PROVIDER_OPERATION_LAYERS, {
       concretizeBattlefield: "encounter",
@@ -60,6 +60,7 @@ describe("persistent battle E2E runner", () => {
       reconcileTurnSemanticState: "environment",
       proposeHappening: "environment",
       advanceCharacterPsycheCompact: "deepPsyche",
+      advanceCharacterPsycheCompactRepair: "deepPsyche",
       advanceCharacterPsyche: "deepPsyche",
       advanceCharacterAgentCompact: "characterExpression",
       advanceCharacterAgent: "characterExpression",
@@ -78,16 +79,16 @@ describe("persistent battle E2E runner", () => {
     assert.deepEqual(projected, {
       encounter: 2,
       characterExpression: 44,
-      deepPsyche: 4,
+      deepPsyche: 8,
       environment: 20,
       narration: 14,
       referee: 1,
-      total: 85,
+      total: 89,
     });
     assert.throws(() => authorizeObservationProviderBudget({
       runId: "run-1",
       approvedRunId: "run-2",
-      ceiling: 85,
+      ceiling: 89,
       projected,
     }), /exactly match/);
     assert.throws(() => authorizeObservationProviderBudget({
@@ -99,7 +100,7 @@ describe("persistent battle E2E runner", () => {
     authorizeObservationProviderBudget({
       runId: "run-1",
       approvedRunId: "run-1",
-      ceiling: 85,
+      ceiling: 89,
       projected,
     });
   });
@@ -109,7 +110,7 @@ describe("persistent battle E2E runner", () => {
       runId: "run-ledger",
       battleId: "battle-ledger",
       battleObservationRunId: "run-ledger",
-      taxonomyRevision: "battle-provider-operations-v1",
+      taxonomyRevision: "battle-provider-operations-v2",
       approvedAttemptCeiling: 5,
       reservedAttempts: 3,
       status: "active",

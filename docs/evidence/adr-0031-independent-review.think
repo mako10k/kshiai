@@ -1,0 +1,18 @@
+domain ADR0031IndependentReview:
+  description "Independent proportional ADR-internal and related-ADR review of exact ADR0031 revision1."
+problem P1:
+  "Determine whether exact ADR0031 revision1 is internally complete and compatible with accepted foundation v3, character v5, and ADR0010, ADR0011, ADR0014, ADR0024, ADR0027, ADR0028, ADR0030, without treating deferred implementation conformance or numeric policy as current blockers."
+evidence E_DIGEST:
+  "Read-only sha256sum of docs/adr/0031-focused-structured-semantic-authoring-kernel.think is cf623039913261e5735166f91ad07aa82d6640393614f82cbadc47a1e2367e16; lines 2 and 58-59 identify revision1 Proposed with owner acceptance pending."
+evidence E_REQUIREMENTS:
+  "Foundation v3 lines 32-34, 133-193, 208-286 and 330-380 allocate domain semantics to adapters, require focused scoped proposals, transactional partial patch handling, complete reconciliation, exceptional five-condition Q&A, and cumulative finite safety with bounded stall/cycle and trusted-state termination. Character v5 lines 28-30, 159-212, 223-331 and 347-386 specialize these without whole-character LLM input and preserve source-based retry and runtime responsibility. Acceptance records fix digests and explicitly defer numeric policy and implementation."
+evidence E_ADRS:
+  "ADR0010 lines 66-108 preserves immutable generations, structure-first authoring, provider-free CAS activation and read-only binding; ADR0011 lines 138-178 preserves bounded projections and owner hold; ADR0014 lines 41-49 and ADR0024 think lines 102-156 preserve queued pure-read durable fenced execution; ADR0027 think lines 56-118 and ADR0028 think lines 66-87 preserve conscious, psyche and engine ownership; ADR0030 think lines 73-172 define D2-D12 schema, identity, provenance, whole-candidate review, ceilings, persistence, activation and policy."
+evidence E_CANDIDATE:
+  "ADR0031 think D1-D9 lines 14-48 allocate kernel, adapter and port responsibilities; define typed internal contracts and scoped Skill-to-Tool exposure; require atomic proposals and complete server reconciliation; preserve five-condition Q&A, fenced process-loss failure, cumulative finite limits, bounded progress history, trusted-state termination, typed results and provider-free owner activation. D10 lines 50-52 replaces only ADR0030 D8-D9 whole-candidate model topology for adopters while preserving D2-D7 and D10-D12 meanings and existing-route ceilings. D11 lines 54-56 defers exact DTOs, numbers, detector rules, public mapping, persistence changes and adapter conformance before adoption."
+premise SCOPE:
+  "Repository implementation conformance and numerical policy are explicitly subsequent stages. Missing implementation detail is not a current blocker unless the architecture leaves incompatible choices that downstream design cannot reconcile. Review does not accept the ADR or authorize changes."
+premise U1:
+  "Actual implementation and provider convergence are unverified and intentionally outside this review. Post-acceptance status-link mechanics for affected prior ADRs are lifecycle bookkeeping, not a contradiction in the clause-level decision."
+decision D1 based_on P1, E_DIGEST, E_REQUIREMENTS, E_ADRS, E_CANDIDATE, SCOPE, U1:
+  "No internal or related-ADR contradiction was found that prevents the current architecture decision. D1-D11 preserve accepted responsibilities and safety invariants, and D10 identifies both replaced topology and retained clauses. Exact wire schemas, numerical limits, detection windows, public retry/Q&A mapping and implementation conformance remain valid downstream obligations, not current findings. Verdict PASS with no P0-P3 findings; owner acceptance remains pending and separate."

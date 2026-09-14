@@ -1,0 +1,302 @@
+framework ArchitectureDecisionRecord:
+  requires problem and decision
+  requires premise and evidence
+  warns pending
+
+domain ADR0028:
+  description "ADR-0028 revision 2: Versioned conscious agency contract. Status Accepted; no supersession."
+
+problem P1:
+  |
+    Accepted requirement revision 1 needs executable boundaries for goal legitimacy,
+    reaction projection, state ownership, partial acceptance and immutable activation.
+    A goal field alone cannot fix the current missing goal-to-conscious-input path.
+
+premise AUTHORITY:
+  |
+    Owner correction on 2026-09-09: author confirmation is irrelevant; goal
+    legitimacy depends on character personality and known counterpart relationships.
+    Requirement v1 remains an exact historical accepted snapshot, but its R1
+    author-explicit precedence is no longer the current goal criterion.
+    docs/character-agency-requirements-v2.md records the corrected candidate at step1,
+    not inherited acceptance. ADR0027 retains psyche/conscious/engine ownership;
+    ADR0025/0026 retain old V2 contracts, ADR0011 structured assets and action norms,
+    ADR0018 activation. This revision supersedes no Accepted ADR.
+
+premise OPTIONS:
+  |
+    Revision1 chose author-confirmed provenance and unknown-origin blocking.
+    That choice answered the wrong question and is withdrawn.
+    Revision2 proposes goal derivation within the existing conscious call from
+    personality, values, known relationships and current context, independent of
+    who authored or confirmed a suggested objective. No origin attestation or
+    extra critic is required. Victory remains the ordinary compatible fallback.
+
+evidence E_OWNER_CORRECTION:
+  |
+    Owner stated: 作者が確認した目標かどうかは問題ない。
+    単に、キャラ性格と相手などの関係性から、正当な目標かどうかがポイントです。
+    The subsequent semantic criterion is a correction, not revision1's original intent.
+
+evidence E_REVIEW:
+  |
+    Independent review report docs/evidence/character-agency-requirements-v1-independent-review-2026-09-09.md
+    reviewed only requirement v1, not this correction. Its provenance suggestion is
+    historical, not a current requirement. Other remaining gaps are
+    bounded reaction projection, detailed generation/accounting and untested quality.
+
+evidence E_CODE:
+  |
+    free-action-service.ts decisionProfileForSheet injects victory when profile is absent.
+    openai-compatible.ts authoring prompts also permit generated victory profiles.
+    DecisionProfileSchema lacks origin metadata. That absence does not require
+    author confirmation, a new envelope or blocked battle creation.
+    psyche-reaction-policy.ts returns actionProjection and expressionProjection.
+    dialogue-pipeline-settings.ts currently writes schemaVersion 2. provider retry
+    permits at most two total retries; the accounting taxonomy includes both
+    advanceCharacterAgentCompact and decideCharacterAction under characterExpression.
+
+evidence E_BASELINE:
+  |
+    CA-00 docs/evidence/character-agency-ca00-inventory-2026-09-09.md verifies the
+    actual adapter boundary, SQLite goal retention and CAS, but goal absence in
+    conscious input; later perception carries the already-spoken line. This is
+    synthetic baseline evidence, not proof of Grok improvement or V3 implementation.
+
+decision D1 based_on P1, AUTHORITY, OPTIONS, E_CODE, E_OWNER_CORRECTION:
+  |
+    A legitimate upper goal is justified by the bound character personality, values,
+    known counterpart relationship and situation. The same conscious call derives it.
+    Authorship and owner confirmation do not make a goal legitimate or illegitimate.
+    Existing defaultObjective text, if present in the bound definition, is suggested
+    goal context, not a privileged constraint. Even an explicitly supplied objective
+    must be assessed for fit; generated goals are not rejected merely for being generated.
+    Where no more fitting goal follows, winning is the ordinary fallback, not a
+    value that overrides enjoying combat or protecting a known counterpart.
+    Existing action prohibitions remain engine constraints; distinguish them from
+    descriptive objective text. Do not infer unknown counterpart attributes.
+    Reuse existing character envelope and definition revisions and bind their
+    snapshots/digests in the V3 battle contract. Remove agencyObjectiveV1,
+    objectiveAuthority, CharacterGenerationEnvelopeV3 and owner reconfirmation.
+    No AGENCY_OBJECTIVE_PROVENANCE_REQUIRED error or origin-based start rejection.
+    Absent origin metadata is not missing personality data and is not a failure.
+    Prompt and fixtures judge semantic fit with allowed goal/action sets, not exact
+    wording, source identity, victory alone or proof of author approval.
+    Existing goal basisRefs link the relevant context. Schema/ref validity alone
+    does not prove semantic fit; no deterministic semantic oracle or extra critic
+    call is introduced. Actual model quality remains to be evaluated.
+
+decision D2 based_on D1, AUTHORITY, E_CODE:
+  |
+    New BattleAssetManifest schemaVersion 3 binds dialogue schemaVersion 3 with
+    contextProjectionMode compact, character generation digests and compilerInputsV3,
+    plus psyche-reaction-policy-v1. Keep manifest/dialogue V1/V2 decoders unchanged.
+    Runtime selects on the complete frozen discriminator tuple; missing or mixed
+    V3 bindings fail BATTLE_CONTRACT_MISMATCH, never route to legacy implicitly.
+    No current setting or mutable character is reread during battle execution.
+    Extend existing settings update request with optional schemaVersion 2|3.
+    Omitted version preserves persisted 3, otherwise keeps the existing write-2
+    behavior. Explicit 3 requires compact. Explicit 2 allows the existing modes.
+    Preserve expectedRevision CAS and same-transaction settings generation creation.
+    Incompatible legacy mode against V3 is rejected, not silently downgraded.
+    Default settings remain unchanged. V3 plus a legacy deployment override fails
+    before battle creation; no environment switch may upgrade an existing tuple.
+    ADR0018 persisted-setting authority and isolated override identity stay in force.
+    Selecting V3 globally or deploying remains separately
+    authorized; authoring this ADR does not execute any of those changes.
+
+decision D3 based_on D2, AUTHORITY, E_CODE:
+  |
+    V3 private reaction state uses existing bounded ReactionStateV1 and fixed traits.
+    Prologue initializes initialPsycheReactionStateV1 without inventing an observation.
+    Turn and aftermath apply the existing deterministic policy once at their existing
+    phase commit boundary to validated normalized experience. Missing features never
+    escalate to an LLM. Missing input keeps the last valid state; real empty input may
+    decay normally. Projection must not invoke another transition or decay.
+    Extract a pure projection helper preserving the existing V1 projection formula.
+    Each V3 conscious input, including later redecision, receives reaction:
+    {action:PsycheReactionProjectionV1, expression:PsycheReactionProjectionV1}.
+    Fields are schemaVersion 1, arousal low|medium|high, interpretation max3 of
+    adverse|uncertain|affiliative, impulse max4 of
+    confront|withdraw|approach|seek_reassurance. Expression additionally requires
+    expressionTendency withhold|restrained|available. These are tendencies, not
+    forced action or forced silence. No raw traits, scores or transition evidence
+    enter conscious input. Server-only transition evidence keeps its existing owner.
+    Later redecision reads the last reaction projection without another reaction tick.
+    Psyche receives no ability metadata, plan, utterance proposal or engine knowledge.
+    Future special-moment LLM and direct conscious regulation remain unspecified.
+
+decision D4 based_on D1, D2, D3, AUTHORITY:
+  |
+    CharacterAgentState.consciousAgencyV1 is closed:
+    {schemaVersion:1, upperGoal:Goal|null, latestDecision:Decision|null}.
+    Goal={statement:nonblank 1..240, basisRefs:unique nonempty refs 1..6}.
+    Intent={aim:nonblank 1..160, basisRefs:unique nonempty refs 1..8,
+    rationale:nonblank 1..240}.
+    Decision={intent:Intent, action:existing validated Action|null,
+    turn:server integer >=0, phase:prologue|turn|later}.
+    All strings use trim then Zod UTF-16 string length; refs max96.
+    Initialize both nullable fields to null only for a new V3 battle.
+    Conscious output is the sole goal/intent proposer; the acceptance function is
+    the sole writer, persisted only under the existing battle revision CAS.
+    Upper goal is set once, then immutable for this slice. Latest decision is the
+    latest accepted proposal, not executed result; no new event/operation ID or ledger.
+    Subsequent judgment receives it explicitly as previous accepted proposal.
+    Engine fallbacks never reuse it as their own intent. Existing rejection/phase
+    evidence, current perception and current candidate list distinguish actual results.
+    No narration/opponent/provider convenience state may write this object.
+
+decision D5 based_on D3, D4, AUTHORITY, E_BASELINE:
+  |
+    V3 normal input is closed and includes contractVersion:3, phase, character
+    self-profile, structuredSelf, reaction, agencyState, goalPolicy, facts,
+    turnObservation, utteranceHistory, observableManifestations, social and
+    counterpart when permitted, and decision in prologue/turn only.
+    Keep self-reference and voice from the bound conscious-self profile, not old
+    private psyche prose. goalPolicy states semantic-fit derivation from personality,
+    values, known relationship and context, with ordinary compatible victory fallback.
+    Existing objective text is non-privileged context; owner-confirmation flags are absent. structuredSelf includes known relationship only.
+    Facts are max128 closed {ref, kind, sourcePath} entries. kind is
+    suggested_objective|value|relationship|default_objective|ability|reserve|observation|candidate.
+    sourcePath is a server-constructed JSON pointer into an allowlisted part of this
+    frozen input, never an arbitrary model path or private server object. ref is
+    unique, <=96 chars, deterministically assigned within this input. Immutable
+    goal-source refs remain stable across calls of the bound battle; current fact
+    refs are valid only for that input. Do not truncate mandatory rules to fit a
+    bound; overflow fails input construction before dispatch with a recorded error.
+    Goal basis refs accept only first four kinds. Intent refs may use all kinds.
+    Acceptance checks membership/kind, not inferred semantic truth. No hidden
+    counterpart fact, numeric hidden trait or narrator text is added via this table.
+    Previously accepted goal/intent refs are historical context, not current facts;
+    do not revalidate old refs against a new observation set or treat them as fresh.
+    Utterance history contains only already-committed, observer-permitted occurrences.
+    Keep existing history window; identical text is legal. Never use lastSpeech
+    as new semantic input or persist a new lastSpeech write.
+    Later input includes contractVersion:3, phase:later, character, structuredSelf,
+    reaction, agencyState, goalPolicy, facts, current perception, decision and
+    committed self utterances in the current phase. It shares goal and intent
+    with normal consciousness but neither re-speaks nor declares execution.
+    No new manifestation generator is introduced: only eligible existing validated
+    observer-safe proposals may be offered, otherwise the list is empty. Realization
+    is exact membership in that list; private causes or new bodily effects are illegal.
+
+decision D6 based_on D4, D5, AUTHORITY:
+  |
+    Closed prologue/turn response requires exactly initialGoal, intent, nextAction,
+    nextUtterance, realizedManifestation. initialGoal is Goal when uninitialized and
+    null when initialized. intent is Intent; nextAction is existing action proposal
+    or null; nextUtterance and realizedManifestation retain existing value domains
+    and utterance coercion/validation, with null speech legal as in the requirement.
+    Closed aftermath response has only nextUtterance and realizedManifestation.
+    Closed later response has only intent and nextAction; it cannot write the goal.
+    No unrestricted record/unknown final contract, unjustified casts or internal
+    stringify/reparse. Untrusted JSON is parsed once at the network boundary,
+    then safe-decoded field by field into a typed acceptance result.
+    Envelope object shape, extra keys and phase-forbidden keys are checked
+    first; an invalid envelope rejects all proposals. Missing required fields are
+    per-field failures so independent valid speech may still be accepted.
+    An initialized goal with a non-null replacement is a goal-field failure; keep
+    old goal and reject dependent intent/action for that response.
+    Precedence after a valid envelope:
+    - invalid/missing initial goal: keep uninitialized, reject intent/action;
+    - valid new goal with invalid intent: accept only goal, independently check speech;
+    - valid intent with invalid/unavailable action: reject that intent/action pair;
+      goal may still initialize and valid speech may still commit;
+    - null action with valid intent: accept a speech-only decision;
+    - later rejected/missing action or invalid intent: use existing deterministic
+      fallback, not old intent; goal and last accepted proposal remain unchanged;
+    - aftermath: no goal/intent/action update, independent expression validation.
+    Validate realization against eligible proposals independently; absence/invalid
+    realization cannot invent an event. Invalid speech does not by itself reject
+    an otherwise valid action/intent. Physical speech blocking prevents a speech-only
+    intent from being recorded as a realized utterance; a decision is still only intent.
+    Commit resulting state and actual speech at the existing atomic revision boundary.
+    CAS conflict adopts none of that save. No acceptance success claims for failed saves.
+    Initial-goal failure may be retried in the next ordinary prologue/turn slot only,
+    not via an immediate new application call. No new expression/semantic repair;
+    ADR0026 repair stays exclusively on old V2 psyche contracts.
+
+decision D7 based_on D2, D3, D4, D5, D6, AUTHORITY:
+  |
+    V3 currentGoal, beliefs, interior appraisal and ExpressionBrief are legacy-only:
+    initialize compatibility fields to their old neutral shape, do not give them
+    new strategic writers, and never read them as V3 conscious meaning.
+    Goal is consciousAgencyV1.upperGoal; current tactical appraisal/brief is Intent,
+    not a copied old speechAppraisal or publicAim. Frozen unknown legacy beliefs
+    are not migrated. Legacy V1/V2 keeps its existing writers and phase behavior.
+    Executed reflect action may still append battleVolatileMemory through its
+    existing engine writer; it must not overwrite V3 upperGoal or intent through
+    currentGoal/interior side effects. Its observer-safe result enters next judgment
+    as an executed result, not a new strategic state writer.
+    Postbattle reflection reads the accepted V3 goal and committed action/speech
+    evidence instead of stale currentGoal. No new character-memory write is added.
+    Private memory and matchup memory remain in existing storage/lifecycle, but old
+    psyche free text is not read into V3; new long-term memory selection is deferred.
+    Canonical conversation history remains written by utterance commitment.
+    Focus shadow remains no-effect, excluded from action authority.
+    Seven tags: battle.ts psyche schema and llm/types psyche input remain legacy;
+    deterministicPsyche dispatch gains explicit V3 no-call phase routing; stored
+    matchup-memory projection is old-only; expressionState projection gets V3
+    reaction/agency input; Compact psyche goal instructions become old-only; full
+    psyche instructions remain old-only. Retained tags name their generation and
+    reason. Do not delete all tags as proof of completed migration.
+
+decision D8 based_on D2, D5, D6, AUTHORITY, E_CODE:
+  |
+    Reuse provider surfaces advanceCharacterAgent for V3 prologue/turn/aftermath
+    and decideCharacterAction for eligible later redecision. Keep operation labels
+    advanceCharacterAgentCompact and decideCharacterAction, taxonomy v2 layer
+    characterExpression; labels are compatibility names, not distinct minds.
+    Each eligible normal phase uses one logical conscious call per active side;
+    later phase at most one logical redecision. Disabled/ineligible slots use zero.
+    All V3 psyche phases use zero LLM calls. No critic/planner/application-repair call.
+    Preserve existing transport retry policy: max2 retries total (rate-limit max2,
+    service-unavailable max1 within that total), at most3 physical attempts per
+    logical slot. Timeout or ineligible failure adds no new retry category.
+    Provider admission/call/token/cost accounting includes every physical attempt.
+    Do not reinterpret old runs; future replay binds exact contract and taxonomy,
+    and reserves these worst-case attempts before paid approval.
+    Public DTOs, narrator inputs and opponent inputs exclude agencyState, facts,
+    private goal context and rationale except actual permitted expression.
+    Internal default observability redacts the new state, existing private bindings and
+    raw inputs/results; explicitly authorized raw access keeps its existing gate.
+
+decision D9 based_on D1, D2, D3, D4, D5, D6, D7, D8, E_REVIEW, E_BASELINE:
+  |
+    Implement only after exact ADR acceptance in t029-A then B then C then D.
+    A covers typed battle generation with existing character snapshots, state initialization/save/reload/CAS
+    and opt-in validation; B pure reaction projection, conscious knowledge and closed
+    adapter/mock; C later and partial failures; D legacy/privacy/accounting/7 tags.
+    Add same personality/relationship with different authorship or confirmation
+    and require identical allowed-goal sets. Add changed personality/relationship
+    with fixed suggested objective and verify the appropriate goal/action sets change.
+    Include explicit victory conflicting with enjoying combat or protecting a known
+    counterpart; source status must not force victory. No unknown-origin start block.
+    Add pure-projection no-tick and side-specific phase tests, unknown vs empty input,
+    goal persistence over two judgments, current/historical ref separation, complete
+    failure precedence, unavailable actions, repeated speech and observer privacy.
+    Check V3 settings omitted/explicit version, mixed tuples, legacy override rejection,
+    disabled slots, transport-attempt accounting and legacy/no-call regressions.
+    Reuse F01-F08 allowed action sets and rubric; do not report fixed-response success
+    as real-model improvement. t030 defines thresholds/ceilings; t031 approves paid
+    execution. No publication, deployment, setting write or old-battle migration here.
+    Costs are larger conscious inputs and battle-generation/acceptance code paths,
+    not new character envelopes or author-confirmation UI. Benefits are connected
+    character-grounded goal/action/speech judgment, not proven model improvement.
+    Keep the 3p implementation estimate provisional until contract review; removing
+    provenance work is not evidence that the remaining work takes exactly 3p.
+
+evidence OWNER_ACCEPTANCE:
+  |
+    On 2026-09-09 owner stated: 新版で承認、実装を進めて。終了時間は２２：３０に延長
+    Exact approved ADR0028 revision2 think SHA256 before this acceptance annotation:
+    0629f788432b235bbc41f83e86e68d013d3850f58d04d80e313c97b4aa27b50a.
+    Requirement v2 SHA256:
+    5a30f561ff4ffdbbcc51ec41e4cc6e989191f51ab191f92f8f94c1c4c3bfda76.
+    This is direct owner approval, not a claim of a second independent review.
+
+decision ACCEPTANCE based_on OWNER_ACCEPTANCE:
+  |
+    Accept exact ADR0028 revision2 D1-D9 and permit its local implementation.
+    Preserve V1/V2, semantic goal fit and no author-origin gate.
+    Paid execution, settings activation, deployment and publication remain separate.

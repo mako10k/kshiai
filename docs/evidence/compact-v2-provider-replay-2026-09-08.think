@@ -1,0 +1,60 @@
+domain CompactV2Replay:
+  description "Bounded real-provider verification of commit f1ff977"
+problem P1:
+  |
+    Determine whether actual xAI responses work with the implemented Compact V2
+    separation and ordinary and intentionally repetitive synthetic characters.
+evidence E1:
+  |
+    The owner explicitly requested execution after the description of paid
+    provider replay. HEAD is f1ff97735e7bfd42be4c21a0e421bec334052005.
+    The branch has 15 unique commits and origin main has 4. GitHub main was
+    read as 1cdf21009dbb8f4099dbb9ca70760320c50be6aa. No integration is required
+    to test the exact implementation. One unrelated untracked v2 review remains.
+evidence E2:
+  |
+    Source exposes protected chatJson in OpenAiCompatibleProvider. Its public
+    psyche and expression methods build real prompts and decode actual results.
+    advanceCharacterAgents owns V2 projection and canonical utterance acceptance.
+    Existing tests build synthetic battle states without remote database use.
+evidence E3:
+  |
+    The existing xAI fast model default is grok-4.3. Official model documentation
+    read this turn lists input USD 1.25 and output USD 2.50 per million tokens
+    and supports reasoning none. Repository secdat injection preflight confirms
+    XAI_API_KEY exists without reading its value. Worktime ends at 23:30 JST.
+premise P2:
+  |
+    A small replay subclass may override only transport to impose completion,
+    request count and monetary limits, persist evidence and disable retries.
+    Production prompts, decoders, projections and acceptance remain executed.
+    This tests in-memory character stages, not deployed configuration or DB save.
+premise P3:
+  |
+    Six sequential synthetic character turns across two characters can expose
+    integration failures but cannot establish statistical quality improvement or
+    prove the model's internal interpretation. Equal text is valid, not a failure.
+decision D1 based_on P1, E1, E2, E3, P2, P3:
+  |
+    Reuse the existing worktree and perform at most twelve physical requests:
+    deep psyche then expression, three turns for each of two synthetic profiles.
+    Use xAI grok-4.3 at the real prompt temperatures, reasoning none, JSON object.
+    Each input may be at most 20000 UTF8 bytes plus 1024 framing token allowance,
+    output at most 1200 tokens for psyche and 400 for expression.
+    Reserve each input and output worst-case cost before sending, cap aggregate
+    reserved cost at USD 0.50 and aggregate token allowance at 300000.
+    Use serial requests and original phase deadlines, stop on any transport,
+    decode, unexpected model, missing usage, or application fallback failure.
+    Do not retry, replace failed responses, or call a judge.
+    Save synthetic requests and responses locally; record the actual count,
+    usage, contract checks and limitations. No deployment or production writes.
+
+evidence E4:
+  |
+    Before any paid request or harness implementation, the owner deferred this
+    work until tomorrow and requested handoff, WIP commit and push.
+
+decision D2 based_on D1, E4:
+  |
+    D1 is retained preparation only. Do not execute the replay today.
+    Preserve it with the handoff and recheck current inputs when work resumes.

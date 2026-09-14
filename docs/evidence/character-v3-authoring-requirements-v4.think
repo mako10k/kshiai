@@ -1,0 +1,20 @@
+domain CharacterAuthoringRevision4:
+  description "Align character-specific authoring requirements with accepted foundation revision2."
+evidence E1:
+  "Owner accepted foundation revision2 and instructed execution of the next character revision4 alignment task."
+evidence E2:
+  "Foundation accepted digest df4536be8bed752c81164687112041286ebfefc7869fb80e6952f5839e0b556a permits failed attempts, new source-based retries, no mandatory intermediate context, and migrator-only preserved-data reads."
+evidence E3:
+  "Character revision3 is pending. R14 requires same-attempt resumption; R19 disallows ordinary technical failed completion; R13 unconditionally continues when semantic-question conditions are false."
+premise P1:
+  "R14 and R19 alone are not the full similarity scope: R12 retry wording, R13 continuation, R10/AC11 reuse, and R17 preservation must also distinguish live repair from a new reconstructed attempt."
+premise P2:
+  "Shared lifecycle can be inherited by exact foundation revision reference while character-specific importance, skeleton, lenses, preservation, and completion criteria remain explicit."
+premise P3:
+  "Source-based retry may recompute work but still uses focused LLM requests. It must not weaken semantic reconciliation or create indefinite paid retry."
+decision D1 based_on E1, E2, E3, P1:
+  "Create character requirement revision4, preserving revision3, and align R12/R13/R14/R19 plus affected acceptance criteria with failed-attempt source reconstruction."
+decision D2 based_on E2, P2, P3:
+  "Reference all foundation F1-F14, retain all character-specific outcomes and current execution ceilings, and restrict preservation reads to migrators during migration."
+decision D3 based_on D1, D2:
+  "Create complete Japanese translation and revision3 traceability mapping, audit and draft-seal candidate and review input. Leave independent review, acceptance and implementation as later lifecycle steps."

@@ -61,7 +61,7 @@ async function generateCreateSheet(
       await charRepo.listOwnedCharacterReservedNames(ownerUserId);
     const candidate = await llm.generateCharacter({
       prompt,
-      referenceTools,
+      ...(promptReservedNames.length > 0 ? { referenceTools } : {}),
       reservedNames: promptReservedNames,
       rejectedNames,
     });
@@ -82,6 +82,56 @@ async function generateCreateSheet(
   return null;
 }
 
+async function rerunCandidateAdjustment(input: {
+  llm: LlmProvider;
+  attempt: charAssetRepo.CharacterAuthoringAttempt;
+  sourceText: string;
+  existing: Awaited<ReturnType<typeof charRepo.getSheetIncludingDeleted>>;
+  executionFence: AuthoringExecutionFence;
+}): Promise<boolean> {
+  const adjustMessage = lastAuthoringAdjustment(input.sourceText);
+  if (!input.attempt.candidate || !adjustMessage) return false;
+  const current = sheetFromAuthoringCandidate({
+    characterId: input.attempt.characterId,
+    ownerUserId: input.attempt.ownerUserId,
+    createdAt: input.attempt.createdAt,
+    updatedAt: input.attempt.updatedAt,
+    candidate: input.attempt.candidate,
+    existing: input.existing,
+  });
+  const generated = adjustedGenerationResult(
+    current,
+    await input.llm.adjustCharacter(current, adjustMessage),
+  );
+  const candidate = await buildCharacterGenerationCandidate({
+    llm: input.llm,
+    attemptId: input.attempt.attemptId,
+    characterId: input.attempt.characterId,
+    ownerUserId: input.attempt.ownerUserId,
+    sourceText: input.sourceText,
+    sourceKind: input.attempt.kind === "upgrade"
+      ? "upgrade_description"
+      : input.attempt.kind === "revision"
+        ? "revision_instruction"
+        : "create_instruction",
+    generated,
+    existing: input.existing,
+    reportStatus: reportStatus(
+      input.attempt.attemptId,
+      input.attempt.ownerUserId,
+      input.executionFence,
+    ),
+  });
+  await charAssetRepo.saveCharacterAuthoringCandidate({
+    attemptId: input.attempt.attemptId,
+    ownerUserId: input.attempt.ownerUserId,
+    envelope: candidate.envelope,
+    assistantMessage: candidate.assistantMessage,
+    executionFence: input.executionFence,
+  });
+  return true;
+}
+
 async function runClaimedAttempt(
   llm: LlmProvider,
   attempt: charAssetRepo.CharacterAuthoringAttempt,
@@ -95,48 +145,13 @@ async function runClaimedAttempt(
     executionFence,
   });
   const existing = await charRepo.getSheetIncludingDeleted(attempt.characterId);
-  const adjustMessage = lastAuthoringAdjustment(sourceText);
-  if (attempt.candidate && adjustMessage) {
-    const current = sheetFromAuthoringCandidate({
-      characterId: attempt.characterId,
-      ownerUserId: attempt.ownerUserId,
-      createdAt: attempt.createdAt,
-      updatedAt: attempt.updatedAt,
-      candidate: attempt.candidate,
-      existing,
-    });
-    const generated = adjustedGenerationResult(
-      current,
-      await llm.adjustCharacter(current, adjustMessage),
-    );
-    const candidate = await buildCharacterGenerationCandidate({
-      llm,
-      attemptId: attempt.attemptId,
-      characterId: attempt.characterId,
-      ownerUserId: attempt.ownerUserId,
-      sourceText,
-      sourceKind: attempt.kind === "upgrade"
-        ? "upgrade_description"
-        : attempt.kind === "revision"
-          ? "revision_instruction"
-          : "create_instruction",
-      generated,
-      existing,
-      reportStatus: reportStatus(
-        attempt.attemptId,
-        attempt.ownerUserId,
-        executionFence,
-      ),
-    });
-    await charAssetRepo.saveCharacterAuthoringCandidate({
-      attemptId: attempt.attemptId,
-      ownerUserId: attempt.ownerUserId,
-      envelope: candidate.envelope,
-      assistantMessage: candidate.assistantMessage,
-      executionFence,
-    });
-    return;
-  }
+  if (await rerunCandidateAdjustment({
+    llm,
+    attempt,
+    sourceText,
+    existing,
+    executionFence,
+  })) return;
   if (attempt.kind === "create") {
     const gen = await generateCreateSheet(llm, attempt.ownerUserId, sourceText);
     if (!gen) {

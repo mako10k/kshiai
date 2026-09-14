@@ -1,0 +1,7 @@
+{
+  "schema": "semantic-migration-ollama-check-start-v1",
+  "runId": "semantic-migration-ollama-2026-09-11-v1",
+  "scope": "One local V4 initial-generation request; no review, repair, retry, activation, or xAI call.",
+  "retainedInput": "semantic-migration-grok-2026-09-11-v3/prepare-proof.json",
+  "startedAt": "2026-09-11T06:07:47.589Z"
+}

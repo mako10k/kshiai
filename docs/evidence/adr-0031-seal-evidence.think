@@ -1,0 +1,8 @@
+domain ADR0031SealEvidence:
+  description "Record the proposed ADR without changing accepted runtime decisions."
+evidence E1:
+  "Owner requested post-commit continuation and retained Seal operations. ADR0031 targeted check passes; all-ADR check reports errors in unchanged 0015,0016,0017,0019."
+evidence E2:
+  "Read-only impact of proposal/adr-0030 reports 218 reachable heads; this is an impact candidate set, not 218 confirmed needed changes. ADR0030 is not modified."
+decision D1 based_on E1,E2:
+  "Record verification and impact candidates. Draft-seal new acceptance dependency, ADR0031 source/projection/translation/verification and update the reviewed index entry only. Do not bulk reseal downstream records or repair unrelated ADRs. Report the repository-wide check failure separately from targeted success."

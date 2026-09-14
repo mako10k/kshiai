@@ -1,0 +1,32 @@
+domain CompactReplayHandoff:
+  description "Preserve approved work for tomorrow"
+problem P1:
+  "The owner deferred provider replay to tomorrow and requested handoff, WIP commit and push."
+evidence E1:
+  |
+    Current matching worktree is monotony-log-rca-kshiai on codex/monotony-log-rca
+    at f1ff97735e7bfd42be4c21a0e421bec334052005. No paid request was sent.
+    Only an old untracked v2 review input and this turn's replay reasoning are
+    untracked. GitHub has no matching branch ref. Main is 1cdf210.
+evidence E2:
+  |
+    The older v2 input proposes lifecycle IDs prohibited by accepted v3.
+    It is historical WIP, not the accepted requirement. Preserving it with an
+    explicit historical banner avoids both data loss and authority confusion.
+    Main checkout has separate unrelated edits; they are outside this handoff.
+evidence E3:
+  |
+    Main repository secdat GH_TOKEN secret injection dry-run succeeded.
+    HTTPS remote is https://github.com/mako10k/kshiai.git. No Git credential
+    helper was returned by local config inspection. gh authenticated API reads
+    succeeded under the required injection route.
+decision D1 based_on P1, E1, E2, E3:
+  |
+    Stop paid replay preparations after a truthful handoff record. Retain the
+    preliminary replay reasoning, label historical v2 WIP as non-normative,
+    document exact commits, verification limits, pending harness and resume
+    point. Make one WIP documentation commit and non-force push this exact
+    branch via secdat. Use a command-scoped gh credential helper for this
+    authorized push without changing persistent Git config. Verify server
+    branch SHA equals local HEAD and inspect remaining local changes.
+    Do not end the shared workday because the instruction targets this task.

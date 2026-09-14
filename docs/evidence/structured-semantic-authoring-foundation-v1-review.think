@@ -1,0 +1,36 @@
+domain FoundationReviewParent:
+  description "Review fixed foundation revision1 without editing candidate."
+evidence E1:
+  "Candidate digest is b519d368672338d682b9b34c8a442bbd3279f157a46c08b11e579ef1e1caa79d and owner selected REVIEW."
+evidence E2:
+  "Candidate authority section replaces the legacy no-invention rule but does not identify ADR-0030 D8/D9 or accepted compatibility requirement revision6 R14 as changed."
+evidence E3:
+  "Accepted ADR-0030 D8 sends complete merged candidate to LLM review; D9 caps two repair rounds and six requests. Accepted revision6 already permits synthesis and R14 names independent whole-candidate semantic review."
+evidence E4:
+  "Candidate F4/F11 exclude whole candidate and schema from LLM calls; F14 leaves retry budgets undecided."
+evidence E5:
+  "Candidate F9 requires information-gaining recovery and F10 restricts human questions to irreducible protected conflicts. F11 only preserves current generation after exhausted technical recovery."
+evidence E6:
+  "Character revision3 R14 requires same-attempt affected-only resumption and R19 distinguishes recoverable technical failure from terminal outcomes. User explicitly requires recovery instead of ending at NG."
+premise P1:
+  "A future successor ADR could resolve E2-E4, but the candidate needs a disposition map so acceptance does not silently inherit incompatible requirements."
+premise P2:
+  "Preserving current generation protects data but does not specify what happens to an unfinished attempt after budget exhaustion or provider outage."
+premise P3:
+  "The absence of a recovery transition is an evidence or contract gap, not proof that current code terminates attempts."
+decision D1 based_on E1, E2, E3, E4, P1:
+  "Report a high-priority authority contradiction requiring explicit preserve/supersede treatment. Do not represent synthesis as newly authorized for characters."
+decision D2 based_on E5, E6, P2, P3:
+  "Report a high-priority recovery contract gap: specify resumable technical suspension and answer-driven affected-scope continuation without treating technical outages as semantic owner questions."
+decision D3 based_on D1, D2:
+  "Recommend REVISE after independent review. Preserve candidate bytes and persist only separate review evidence."
+evidence E7:
+  "Independent reviewer completed review of the unchanged snapshot and independently reported the authority conflict, technical recovery gap, and preservation access ambiguity; CLI audit had zero fatal, error, or warning findings."
+evidence E8:
+  "ADR-0030 D5 permits capsule reads only by a registered future migration consumer and retains capsules with referenced generations. Candidate F12 permits authorized future migration and review, while delegating retention and access to domain policy."
+premise P4:
+  "F12 may preserve stricter character policy through its adapter; therefore ambiguity is established but an actual disclosure violation is not."
+decision D4 based_on E8, P4:
+  "Report a medium-priority policy-applicability gap and request explicit preservation of existing character capsule access and retention restrictions."
+decision D5 based_on E1, E7, D1, D2, D3, D4:
+  "Persist a completed Japanese review report with three classified findings, unchanged candidate identity, REVIEW route to Step4, and recommendation REVISE. Preserve review provenance under draft Seals without changing candidate authority."

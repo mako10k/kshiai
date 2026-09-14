@@ -1,0 +1,30 @@
+domain SemanticMigrationV4GroundingVerification:
+  description "Verify the V4 review-grounding and per-leaf disclosure corrections without claiming real-provider convergence."
+evidence E1:
+  "E-MIGV4-401: prompt-v4 review claims now contribute target paths and semantic dependants to repair closure, but only independently computed server findings are sent as automatic repair errors. Uncorroborated review claims are preserved as review_claim_unverified owner concerns and stop review_required when no server correction remains."
+evidence E2:
+  "E-MIGV4-402: a focused regression supplied a schema-valid false fallback-missing review after a candidate already contained ordered basic-action fallback. The run stopped after two calls, retained the fallback, made no semantic_repair call, exposed review_claim_unverified and retained the review-expanded closure."
+evidence E3:
+  "E-MIGV4-403: another regression omitted the fallback so deterministic validation emitted fallback_not_accounted. The review added consciousGuidance to closure, the repair request contained the server finding rather than the provider claim, rereview completed, and the run reached awaiting_owner_acceptance in four calls."
+evidence E4:
+  "E-MIGV4-404: V4 deterministic lineage regressions detect an executable source norm with no explicit target representation and detect a priority change on a defend-selected norm when the repair cites the different attack-selected source norm."
+evidence E5:
+  "E-MIGV4-405: per-leaf disclosure regression shows consumed V3 retains no consciousGuidance statement rule for the mixed operation, while V4 carries exactly three existing grants for the exact public statement and creates no selfAwareness rule."
+evidence E6:
+  "E-MIGV4-406: all784 tests passed; workspace and deployment typechecks passed; production build passed with only the existing Vite chunk warning; jscpd passed; Lizard1.23.0 passed repository thresholds over211 files and3527 functions; git diff check passed."
+evidence E7:
+  "E-MIGV4-407: the implementation branches only on prompt-v4 for review grounding, executable-norm lineage and per-leaf disclosure. V1 through V3 compatibility behavior remains unchanged, and no Sealgraph source was modified."
+premise U1:
+  "No live provider execution, activation, production mutation, commit, push or deployment was performed. Real-model convergence is not established by local scripted regressions."
+premise U2:
+  "A purely semantic claim without a related server finding remains owner-review evidence rather than an automatic mutation command. Exact-text provenance does not automatically publish a paraphrase."
+decision C1 based_on E1, E2, E3:
+  "C-MIGV4-401 high confidence: the observed automatic-corruption path is corrected because provider review prose no longer enters the repair error set, while R14 review-derived closure expansion is retained."
+decision C2 based_on E4:
+  "C-MIGV4-402 high confidence: the known true missing executable norm is independently actionable and the observed cross-norm priority rebase is detected from selector-bound source lineage."
+decision C3 based_on E5, E7:
+  "C-MIGV4-403 high confidence: exact public statement provenance is separated from private self-awareness for V4 without changing consumed V3 behavior or widening disclosure."
+decision C4 based_on E6, U1, U2:
+  "C-MIGV4-404 bounded completion: local correction and repository compatibility are verified; real-provider convergence and automatic resolution of ungrounded semantic judgment remain unproven by design."
+decision A1 based_on C1, C2, C3, C4:
+  "A-MIGV4-401: Seal the changed V4 implementation, tests, RCA plan, verification and Japanese result in kshiai. Do not change Sealgraph source, invoke a provider, activate, commit, push or deploy."

@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 1,
+  "runId": "compact-v2-provider-replay-2026-09-09-v1",
+  "contractDigest": "41ea5bd353046bc19193c98d8bba8678fac555d7c0711e68917846e4a71566ed",
+  "status": "failed",
+  "stopReason": "ordinary turn 1 compact deep-psyche application schema rejection",
+  "physicalRequests": 2,
+  "stages": {
+    "psyche": {
+      "transport": "succeeded",
+      "application": "rejected"
+    },
+    "expression": {
+      "transport": "succeeded",
+      "application": "fulfilled"
+    }
+  },
+  "usage": {
+    "inputTokens": 3320,
+    "outputTokens": 222,
+    "totalTokens": 3542
+  },
+  "usageCostUsd": 0.004705,
+  "reservedTokens": 17743,
+  "reservedCostUsd": 0.02417875,
+  "responseModels": [
+    "grok-4.3"
+  ],
+  "acceptedUtterance": "ミナトの位置をはっきりと捉えた。",
+  "applicationFailure": {
+    "reason": "schema_invalid",
+    "paths": [
+      "delta.interior.speechAppraisal.anticipatedImpact:too_small",
+      "delta.interior.speechAppraisal.observedImpact:too_small",
+      "delta.interior.speechAppraisal.anticipatedSocialConsequence.meaning:too_small",
+      "delta.interior.speechAppraisal.observedSocialConsequence.meaning:too_small",
+      "delta.interior.speechAppraisal.nextApproach:too_small",
+      "delta.interior.speechAppraisal.continuityBasis.reason:too_small"
+    ]
+  },
+  "retryPerformed": false,
+  "remainingRequestsSent": false,
+  "artifacts": {
+    "runStateSha256": "897665d091ddc73e7aa18d225bc14055a70d8e1516f9d76b4475ff2704f011b4",
+    "prepareProofSha256": "3ff0448680f626926840501a05276ba4cf9577243a6da2563e18d52811fd61b1",
+    "executionContractSha256": "762c3ca9efcb01da1c47b3b7e36caa2b0cb15b542e6fa831cb7043a9367a103d"
+  },
+  "limitations": [
+    "The repetitive-character scenario was not reached.",
+    "The run does not establish statistical conversation quality.",
+    "The run does not exercise a deployment, database, or production path."
+  ]
+}

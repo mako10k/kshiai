@@ -1,0 +1,368 @@
+# Delivery plan revision 4: reconcile the integrated A3+B8 Stage delivery path.
+project csm001:
+  version 9
+  title "Restore character authoring and migrate frozen ready V2 characters to strict V3"
+  description "Execute the accepted two-lane recovery plan as refined by accepted ADR-0031 and the owner-selected integrated A3+B8 Stage candidate. Complete review of the exact integrated candidate, separately establish its merged and tagged identity, then use one separately approved Stage proof for corrected V2 creation and dual V2/V3 reads. Provider generation, owner candidate acceptance, append/CAS, schema-3 activation and production promotion remain separate effects."
+  as_of 2026-09-14
+  duration_unit point
+  velocity 1p/1d
+  finish cm114
+
+resource cr001:
+  title "Developer"
+  capacity 1
+
+resource cr002:
+  title "Product and release owner"
+  capacity 1
+
+milestone cm000:
+  title "Successor plan revision 1 accepted"
+  state reached
+
+milestone cm101:
+  title "A1 authoring response-schema correction locally verified"
+  state reached
+
+milestone cm102:
+  title "A2 bounded live-provider verification decided and completed"
+  state reached
+
+milestone cm105:
+  title "A2 follow-up registered action-norm clause vocabulary locally verified"
+  state reached
+
+milestone cm103:
+  title "A3 new-character creation deployment verified"
+
+milestone cm201:
+  title "B1 successor ADR package proposed"
+
+milestone cm202:
+  title "B2 exact successor ADR package decided"
+
+milestone cm203:
+  title "B3 V3 semantic asset and compiler contracts locally verified"
+
+milestone cm204:
+  title "B4 durable attempts and preservation locally verified"
+
+milestone cm205:
+  title "B5 bounded semantic generation review and repair locally verified"
+
+milestone cm215:
+  title "D11 focused authoring kernel implementation design reviewed"
+
+milestone cm216:
+  title "Kernel slice 1 contracts and pure orchestration locally verified"
+  state reached
+
+milestone cm217:
+  title "Kernel slice 2 durable ports locally verified"
+  state reached
+
+milestone cm218:
+  title "Kernel slice 3 character adapter locally verified"
+  state reached
+
+milestone cm206:
+  title "Kernel slice 4 public mapping and conformance locally verified"
+  state reached
+
+milestone cm207:
+  title "Kernel slice 5 integration review passed"
+  state reached
+
+milestone cm208:
+  title "B8 dual V2 V3 read support deployed and verified"
+
+milestone cm300:
+  title "A3 and B8 local prerequisites joined for integrated delivery"
+
+milestone cm301:
+  title "Integrated A3 B8 Stage candidate review completed"
+
+milestone cm303:
+  title "Integrated A3 B8 revision merged and tagged for Stage"
+
+milestone cm302:
+  title "Combined A3 B8 Stage proof deployed and verified"
+
+milestone cm209:
+  title "B9 exact production manifest and no-write dry-run accepted"
+
+milestone cm210:
+  title "B10 provider-backed migration candidates generated"
+
+milestone cm211:
+  title "B11 exact per-asset candidate set decided"
+
+milestone cm212:
+  title "B12 accepted V3 generations appended and pointers reconciled"
+
+milestone cm213:
+  title "B13 production restoration read back"
+
+milestone cm114:
+  title "B14 strict schema-3 authoring cutover verified"
+
+task ca101 cm000 -> cm101:
+  title "A1 close the local response-schema identity correction"
+  status done
+  description "Preserve the validated provider-facing schema object identity, verify the acyclic definitions regression, run full tests, typecheck, build, duplication and Lizard, and Seal the correction and evidence. No provider call or deployment."
+  duration 1p
+  source "docs/evidence/character-authoring-response-schema-local-verification-2026-09-10.md"
+  owner "codex"
+  requires:
+    cr001 1
+
+task ca102 cm101 -> cm102:
+  title "A2 decide and run one bounded live-provider authoring verification"
+  status done
+  source "docs/evidence/character-authoring-a2-live-result-2026-09-13.md"
+  description "Freeze request and response-schema identity, model route, budget and no-retry rule; obtain separate approval, run only that call, and classify the response without deployment."
+  duration 1p
+  owner "user and codex"
+  requires:
+    cr001 1
+    cr002 1
+
+task ca105 cm102 -> cm105:
+  title "Close A2 unregistered action-norm event-kind vocabulary locally"
+  status done
+  source "docs/evidence/character-authoring-a2-event-kind-local-verification-2026-09-13.md"
+  description "Keep schemaVersion 2. Encode registered action-norm clause values in the provider-facing grammar, separate speech reactTo from observed_event_kind, map being-addressed to utterance, and add regressions. No provider call or deployment."
+  duration 1p
+  owner "codex"
+  requires:
+    cr001 1
+
+gate cg301 cm105 -> cm300:
+  reason "The combined Stage candidate requires the locally verified Lane A authoring correction."
+
+task cc301 cm300 -> cm301:
+  title "Complete review of the integrated A3 B8 Stage candidate"
+  description "Reconcile PR review and CI evidence for the exact integrated reader and smoke candidate, retain attributable external blockers explicitly, and produce one merge-ready revision without merging, tagging, deploying or dispatching a provider call."
+  duration 1p
+  status done
+  owner "codex"
+  requires:
+    cr001 1
+  source "docs/evidence/a3-b8-integrated-stage-review-2026-09-14.md"
+
+task cc303 cm301 -> cm303:
+  title "Separately authorize merge and establish the exact Stage tag"
+  description "Under separate external-write authority, merge the reviewed integrated candidate, create the exact Stage tag, and read back both identities without dispatching Stage or promoting production."
+  duration 1p
+  status active
+  owner "user and codex"
+  requires:
+    cr001 1
+    cr002 1
+
+task cc302 cm303 -> cm302:
+  title "Separately approve and run the combined A3 B8 Stage proof"
+  description "Separately approve one Stage deployment of the exact merged and tagged revision that verifies corrected V2 creation and strict historical V2 and non-current V3 reads, then read back health and rollback readiness. Do not activate schema 3 or promote production."
+  duration 1p
+  owner "user and codex"
+  requires:
+    cr001 1
+    cr002 1
+
+gate cg303 cm302 -> cm103:
+  reason "The combined Stage proof supplies the A3 new-character creation deployment evidence."
+
+gate cg304 cm302 -> cm208:
+  reason "The combined Stage proof supplies the B8 dual V2 V3 read deployment evidence."
+
+task ca104 cm103 -> cm213:
+  title "Reconcile deployed Lane A authoring state before final V3 cutover"
+  description "Before B14, prove the deployed authoring repair is included or superseded by the exact V3 authoring revision and that no temporary V2 response contract is mistaken for final cutover."
+  duration 1p
+  owner "codex"
+  requires:
+    cr001 1
+
+task cb201 cm000 -> cm201:
+  title "B1 reject ADR-0029 direction and propose the successor ADR"
+  status done
+  description "Record ADR-0029 revision 1 as Rejected and author exact paired ADR-0030 files for qualified V3 schema, capability, capsule, semantic change-set, review and repair, receipts, CAS, policy and rollback. Audit and check locally; Proposed is not implementation authority."
+  duration 2p
+  source "docs/adr/0030-llm-assisted-character-semantic-migration.think"
+  owner "codex"
+  requires:
+    cr001 1
+
+task cb202 cm201 -> cm202:
+  title "B2 review and decide the exact successor ADR package"
+  description "Present the complete Japanese review scope, differences, decisions, alternatives, risks and unknowns; accept, revise or reject the exact ADR."
+  duration 1p
+  status done
+  owner "user"
+  requires:
+    cr002 1
+
+task cb203 cm202 -> cm203:
+  title "B3 implement V3 semantic asset and compiler boundaries"
+  description "Implement strict CharacterDefinitionV3, conscious guidance, qualified mechanical fallback, capability-scoped compatibility, deferred values, V4 compiler input and qualified provenance with focused tests."
+  duration 2p
+  status done
+  owner "codex"
+  requires:
+    cr001 1
+
+task cb204 cm203 -> cm204:
+  title "B4 implement durable migration attempts and preservation"
+  description "Implement frozen source/request identities, append-oriented attempt and request records, bounded restricted capsules, disclosure controls and crash/retry fixtures."
+  duration 2p
+  status done
+  owner "codex"
+  requires:
+    cr001 1
+
+task cb205 cm204 -> cm205:
+  title "B5 implement bounded semantic generation review and repair"
+  status done
+  source "docs/evidence/adr-0030-b5-local-verification-2026-09-10.md"
+  description "Implement six operations, stateless whole-candidate semantic review, expanding repair closure, per-request receipts, full merge revalidation and owner-readable semantic diff with test doubles only."
+  duration 2p
+  owner "codex"
+  requires:
+    cr001 1
+
+task cb215 cm205 -> cm215:
+  title "D11 specify and review the focused authoring kernel implementation design"
+  status done
+  description "Specify exact internal DTO and adapter contracts, bounded proposal schemas, execution-policy numbers, detector and observation-window rules, public retry and owner-Q&A mapping, persistence and execution-fence changes, and three-family conformance. Reconcile completed B3-B5 as current-state inputs rather than new-route conformance. Review and Seal the exact design before implementation; no provider call, runtime adoption, deployment or production effect."
+  duration 2p
+  source "docs/structured-semantic-authoring-kernel-implementation-design-v1.md"
+  owner "codex and user"
+  requires:
+    cr001 1
+    cr002 1
+
+task cb206 cm215 -> cm216:
+  title "Kernel slice 1 implement contracts and pure orchestration"
+  status done
+  source "docs/evidence/semantic-authoring-kernel-slice1-independent-review-2026-09-12.md"
+  description "Implement shared typed contracts, the pure kernel state machine, transactional proposal application, cumulative accounting, bounded progress and cycle detection, and scripted ports. No database, route, provider, adapter or activation behavior."
+  duration 2p
+  owner "codex"
+  requires:
+    cr001 1
+
+task cb216 cm216 -> cm217:
+  title "Kernel slice 2 implement durable ports"
+  status done
+  source "docs/evidence/semantic-authoring-kernel-slice2-independent-review-2026-09-12.md"
+  description "Implement schema migration, repository codecs, fenced claim, reservation and terminal writes, plus process-loss and replay tests. Preserve family-owned final payload storage and do not wire public routes."
+  duration 2p
+  owner "codex"
+  requires:
+    cr001 1
+
+task cb217 cm217 -> cm218:
+  title "Kernel slice 3 implement the V3 character adapter"
+  status done
+  source "docs/evidence/semantic-authoring-kernel-slice3-independent-review-2026-09-12.md"
+  description "Bridge reusable V3 and preservation-capsule contracts through focused clusters and lenses, transactional staging and complete final reconciliation without whole-character provider requests."
+  duration 2p
+  owner "codex"
+  requires:
+    cr001 1
+
+task cb218 cm218 -> cm206:
+  title "Kernel slice 4 implement public mapping and conformance"
+  status done
+  source "docs/evidence/semantic-authoring-kernel-slice4-independent-review-2026-09-12.md"
+  description "Add the compatible owner Q&A and retry DTO and command mapping and run the common black-box conformance fixtures against character plus test-only battlefield and narration adapters. Do not cut over a route."
+  duration 2p
+  owner "codex"
+  requires:
+    cr001 1
+
+task cb207 cm206 -> cm207:
+  title "Kernel slice 5 pass the integration review"
+  status done
+  source "docs/evidence/semantic-authoring-kernel-slice5-integration-review-2026-09-12.md"
+  description "Trace ADR-0031 and accepted requirements, pass full tests, typecheck, build, duplication and Lizard checks, complete targeted ADR review, and verify Seal impact, stale state and fsck. Do not wire or activate a real authoring route."
+  duration 1p
+  owner "codex"
+  requires:
+    cr001 1
+
+gate cg302 cm207 -> cm300:
+  reason "The combined Stage candidate requires the locally verified B8 reader and semantic-authoring foundation."
+
+task cb209 cm208 -> cm209:
+  title "B9 freeze the exact eight-generation manifest and run no-write dry-run"
+  description "Refresh exact identities, obtain owner manifest review, and report drift, already-complete attempts, expected provider work and ceilings with zero provider calls and zero writes."
+  duration 1p
+  owner "user and codex"
+  requires:
+    cr001 1
+    cr002 1
+
+task cb210 cm209 -> cm210:
+  title "B10 separately approve and generate provider-backed candidates"
+  description "Approve exact provider model route and budget, generate only bounded candidates, retain every request receipt and semantic diff, and leave failures non-current."
+  duration 1p
+  owner "user and codex"
+  requires:
+    cr001 1
+    cr002 1
+
+task cb211 cm210 -> cm211:
+  title "B11 decide exact candidates per asset or exact batch"
+  description "Accept or decline exact candidate digests; keep unresolved and failed assets explicit and do not infer partial acceptance."
+  duration 1p
+  owner "user"
+  requires:
+    cr002 1
+
+task cb212 cm211 -> cm212:
+  title "B12 separately approve append and per-asset pointer CAS"
+  description "Append only accepted V3 generations and receipts, move each pointer by CAS, isolate partial failures, preserve unchanged targets, and read back rollback targets."
+  duration 1p
+  owner "user and codex"
+  requires:
+    cr001 1
+    cr002 1
+
+task cb213 cm212 -> cm213:
+  title "B13 read back restoration and decide schema-3 cutover"
+  description "Verify every target outcome, selector list, battle binding, old battles and capsule non-consumption. Report partial success honestly and present the separate policy decision."
+  duration 1p
+  owner "user and codex"
+  requires:
+    cr001 1
+    cr002 1
+
+task cb214 cm213 -> cm114:
+  title "B14 separately approve activate and verify strict schema-3 authoring"
+  description "Reconcile Lane A deployment, activate the qualified authoring policy by CAS, verify create and revision emit V3 and historical paths use migration, and retain rollback evidence."
+  duration 1p
+  owner "user and codex"
+  requires:
+    cr001 1
+    cr002 1
+
+work_event WE-c5f5aabffbd695deaccefe0aaf209b017a3e93af0163f218e25a8ee56e24f186:
+  model 1
+  task cc301
+  kind start
+  occurred_at 2026-09-14T17:53:41+09:00
+  planned_value 1p
+
+work_event WE-874020a4749b11a6eea55b544fc1e23ba3f36bec78863d43c7436c246a61d54b:
+  model 1
+  task cc301
+  kind finish
+  occurred_at 2026-09-14T17:55:24+09:00
+
+work_event WE-b4b78f17b93736501c37b2168e9fc88db553ea0e0e59ad885d3e7585b4d3ede1:
+  model 1
+  task cc303
+  kind start
+  occurred_at 2026-09-14T18:18:25+09:00
+  planned_value 1p

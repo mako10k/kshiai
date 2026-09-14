@@ -1,0 +1,26 @@
+domain SemanticMigrationOllamaContractSmoke:
+  description "Replace the over-sized local full-migration attempt with a bounded adapter contract smoke that matches the user's simple-check objective."
+evidence E1:
+  "E-OLLAMA-SMOKE-001 observed: corrected run v2 passed Ollama schema conversion, loaded qwen2.5:3b with a32768 context on CPU, and remained in one /api/chat request until the180-second client timeout. It returned no response body or token accounting."
+evidence E2:
+  "E-OLLAMA-SMOKE-002 observed: the retained v2 native request is143952 serialized bytes, including123062 characters of user input and5915 characters of response schema."
+evidence E3:
+  "E-OLLAMA-SMOKE-003 observed: v2 used the complete V4 initial-migration context, including repeated source, baseline, registered paths and allocated IDs. This is materially broader than an adapter transport and structured-output smoke."
+evidence E4:
+  "E-OLLAMA-SMOKE-004 verified: the corrected adapter schema passes Ollama0.21.1's tagged offline grammar converter; adapter unit tests and backend typecheck pass."
+premise U1:
+  "The exact share of v2 latency attributable to prompt tokenization, prompt evaluation, grammar processing or output generation is unknown because cancellation returned no server metrics."
+premise U2:
+  "A small contract smoke can verify native request mapping, live schema acceptance, JSON receipt mapping and the no-retry boundary. It cannot evaluate full semantic migration quality or xAI equivalence."
+premise U3:
+  "The user requested Local Ollama as a simple check and permitted an Adapter for specification differences. No requirement was given to complete the full six-round migration locally."
+decision C1 based_on E1, E2, E3, U1, U3:
+  "C-OLLAMA-SMOKE-001: do not increase the full-run timeout or send the same large workload again. The observed workload is not a proportional simple check, and the latency mechanism remains partially unknown."
+decision C2 based_on E4, U2, U3:
+  "C-OLLAMA-SMOKE-002: add a separate tiny live contract-smoke entrypoint that uses the real migration response schema and asks for one fixed source-supported transform operation. Keep its result explicitly separate from semantic-quality evidence."
+decision C3 based_on U2:
+  "C-OLLAMA-SMOKE-003: allow exactly one request, temperature0, streamfalse, thinkfalse, context4096, output512 and timeout180 seconds. Retain before, response, receipt and parsed-schema result; never retry automatically."
+decision C4 based_on E1, E2, U1, U2:
+  "C-OLLAMA-SMOKE-004: preserve both earlier failures. v1 establishes an adapter schema incompatibility and v2 establishes that full V4 migration is not suitable for the current local simple-check budget; neither is erased by a contract-smoke pass."
+decision A1 based_on C1, C2, C3, C4:
+  "A-OLLAMA-SMOKE-001: implement and unit-check the isolated contract-smoke input, execute it once as v3, and report the bounded result without claiming full migration validation."

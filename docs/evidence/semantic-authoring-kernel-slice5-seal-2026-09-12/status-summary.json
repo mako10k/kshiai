@@ -1,0 +1,30 @@
+{
+  "schema": "sealgraph/status/v3",
+  "cli": "sealgraph 0.1.0-dev+c23aa34",
+  "n_refs": 324,
+  "labels": {
+    "SEALED_STATE_CLEAN": 137,
+    "DRAFT": 91,
+    "STALE_TRANSITIVE": 88,
+    "STALE_DIRECT": 16
+  },
+  "draft_flag": 91,
+  "stale_direct_refs": [
+    "backlog/character-agency",
+    "evidence/semantic-migration-v4-fragment-guard-result-ja",
+    "evidence/semantic-probe-v3-proof",
+    "implementation/semantic-probe-provider",
+    "implementation/semantic-probe-runner",
+    "plan/dialogue-expression",
+    "reasoning/adr-0030-b5-local-verification",
+    "reasoning/semantic-migration-v3-fragment-guard-plan",
+    "reasoning/semantic-migration-v4-fragment-guard-verification",
+    "reasoning/semantic-migration-v4-grounding-verification",
+    "reasoning/semantic-migration-v4-unresolved-corrections-plan",
+    "reasoning/semantic-probe-v2-result-rca",
+    "reasoning/semantic-probe-v3-result-rca",
+    "reasoning/semantic-repair-verification",
+    "reasoning/semantic-schema-local-verification",
+    "verification/character-migration-diagnostics"
+  ]
+}

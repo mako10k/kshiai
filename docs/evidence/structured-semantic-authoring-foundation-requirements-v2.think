@@ -1,0 +1,20 @@
+domain FoundationRevision2:
+  description "Revise foundation requirements after independent review and owner correction."
+evidence E1:
+  "Owner permits failed attempts followed by retry, considers persisted migration context heavy, and restricts preserved-data reads to migrators during migration."
+evidence E2:
+  "Independent review found missing disposition for accepted ADR0030 D8/D9 and revision6 R14, and ambiguity in technical recovery and capsule access."
+premise P1:
+  "Retryability does not require checkpoint continuation. A new explicitly requested attempt can reconstruct context from retained source and applicable authority."
+premise P2:
+  "Failure reason and request accounting must distinguish infrastructure retry from unchanged invalid-output repetition; no durable intermediate candidate or LLM context is required."
+premise P3:
+  "Accepted character synthesis already exists; new foundation must preserve it, map whole-candidate review to focused lenses, and leave old execution ceilings effective until accepted successor changes them."
+decision D1 based_on E1, P1, P2:
+  "Specify terminal failed attempts with explicit new-attempt retry, retained source and failure reason, source drift checks, no required checkpoint persistence, and no automatic paid restart."
+decision D2 based_on E1, E2:
+  "Restrict capsule reads to authorized migrators during migration; retain existing character retention limits and no separate review-reader grant."
+decision D3 based_on E2, P3:
+  "Add exact authority disposition for revision6 R9/R14 and ADR0030 D5/D8/D9/D10. Preserve idempotent historical attempts and distinguish pending character revision3 from authority."
+decision D4 based_on D1, D2, D3:
+  "Create revision2 English candidate and complete Japanese translation, retain revision1, audit and draft-seal new documents; no implementation or requirement acceptance."

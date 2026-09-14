@@ -1,0 +1,79 @@
+domain AgencyRepairPlanning:
+  description "Plan the accepted ADR-0027 implementation impact, without runtime changes."
+
+problem P1:
+  |
+    User requests an implementation impact inventory and repair plan after accepting
+    ADR-0027 revision 1. Existing seals record legacy implementation, not completion.
+
+premise P2:
+  |
+    Preserve ADR-0027 reaction-only psyche and one conscious character, old battle
+    generations, engine authority, privacy, no-call and ADR-0025/0026 compatibility.
+    The current instruction authorizes investigation and local plan documentation,
+    not implementation, paid experiments, deployment or remote writes.
+
+evidence E1:
+  |
+    Accepted ADR-0027 and the prior acceptance-and-reseal report distinguish
+    responsibility acceptance from pending schema, writer, lifetime and generation.
+    Current sealgraph contains 22 REF and prior readback had zero stale references.
+
+evidence E2:
+  |
+    Current types.ts separates CharacterDeepPsycheExpressionStateV2 containing
+    currentGoal from CharacterExpressionStateV2 containing emotion, brief and focus.
+    openai-compatible.ts generates goals in private phase instructions and already
+    returns utterance plus action from advanceCharacterAgent.
+
+evidence E3:
+  |
+    battle-service.ts builds observer-safe available actions with bound action norms,
+    decisionProfile, tacticalNeed and feedback. It has later-bucket action-only
+    redecision and accepted-action validation. Compact state acceptance preserves
+    previous state; extending provider output alone cannot persist a new goal.
+
+evidence E4:
+  |
+    Existing plan t026 includes actual-payload fixtures, t027 detailed contracts,
+    t028 exact acceptance, t029 implementation, t030-t032 bounded comparison.
+    Current branch c63c526 is 20 ahead and zero behind freshly fetched origin/main
+    1cdf210; related WIP and graph are retained.
+
+decision I1 based_on E2, E3:
+  |
+    Most likely repair surfaces are goal/intent ownership, state flow, knowledge
+    projection and redecision consistency, not merging two currently separate calls.
+    This is an implementation impact inference, not a proven cause of all monotony.
+
+pending U1:
+  |
+    Concrete field schemas, new generation discriminator, author-goal precedence,
+    malformed joint-output handling, full runtime payload fixtures and empirical
+    thresholds remain unresolved. No new quality or latency result exists.
+
+premise A1:
+  |
+    Add goals to the existing expression input alone. This misses the writer,
+    acceptance, persistence and later-bucket path and does not satisfy the goal.
+
+premise A2:
+  |
+    Inventory producers, projections, consumers, state writes and generation paths;
+    plan a typed vertical conscious-goal/action/utterance slice plus compatibility
+    tests using existing calls where feasible. Defer broad effects and NN work.
+
+decision D1 based_on P1, P2, E1, E2, E3, E4, I1, A1, A2:
+  |
+    Use A2 to update local impact and repair-plan documents and existing PERT,
+    preserving t026 as incomplete until real payload fixtures and rubric are frozen.
+    Review source-file evidence, classify mandatory changes versus compatibility
+    regression-only surfaces, and map each repair package to acceptance criteria.
+    Perform impact before editing sealed plans, then individually reseal reviewed
+    changed documents and their affected dependents with previous assertions.
+
+decision D2 based_on P2, E1, U1:
+  |
+    Keep concrete contract acceptance and paid execution as later gates. Do not
+    change accepted ADR text, runtime, prompts, schemas or task completion falsely.
+    Declare uninspected paths and missing validation tooling as limitations.

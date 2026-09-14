@@ -1,0 +1,20 @@
+domain SemanticMigrationProbe:
+  description "Prepare a bounded real-provider B5 experiment without paid execution."
+evidence E1:
+  "Current worktree is the matching dirty B5 branch at e0f2224; remote branch equals HEAD and main is 1cdf210. B5 exposes a typed provider port and uses durable requests, independent review, at most six calls, and activated=false."
+evidence E2:
+  "Existing compact replay uses maxRetries=0, pre-call byte/token/cost reservation, persisted request evidence, and exact model checks. Its battle fixtures and old casts are not suitable for the migration port."
+evidence E3:
+  "Accepted ADR-0030 D6-D9 permits separate receipted semantic review and two repairs, with no activation. User authorized preparation followed by disclosure of model, synthetic input and ceilings before paid execution."
+evidence E4:
+  "Official xAI grok-4.3 page checked 2026-09-10 lists structured output, none reasoning, input USD1.25 and output USD2.50 per million tokens, and higher rates above 200K context."
+premise P1:
+  "Real schema acceptance, semantic preservation and repair effectiveness remain unknown. Local tests cannot prove them. Current experiment must not access production character data or DB."
+premise P2:
+  "A broad B6 implementation is unnecessary for B5 protocol observation. Reuse the existing port and persistence in a fresh isolated SQLite DB. Retain the DB locally and synthetic sanitized request/response artifacts. No normal runtime route."
+premise OPTIONS:
+  "A wait for B6; B unrestricted production migration; C prepare one synthetic mixed soft/executable/fallback fixture with unchanged B5 prompts and a six-call xAI ChatCompletion boundary. C provides earlier evidence without asset activation."
+decision C1 based_on E1, E2, E3, E4, P1, P2, OPTIONS:
+  "C is suitable for preparation only, high confidence from the port and accepted boundary. Add an isolated CLI, fixed transport identity, no retry or redirects, bounded output, input byte reservation including schema, conservative framing allowance, and durable run lock before first paid call. Unknown usage or transport outcome terminates the run without fabricated accounting."
+decision A1 based_on C1, E3:
+  "Implement and locally test C. Proposed ceiling: six requests, 128000 serialized request bytes plus 2048 framing tokens per request, 4096 output tokens per request, 810000 reserved total tokens and USD1.25 maximum reserved cost, 90-second request timeout. Use official standard rates while keeping context below 200K; reservations are conservative estimates not an invoice guarantee. Compare real usage with reservations and stop on mismatch. Prepare exact inputs/prompts and code snapshot identity; execute only after separate owner acceptance. Keep B6 and production unresolved."

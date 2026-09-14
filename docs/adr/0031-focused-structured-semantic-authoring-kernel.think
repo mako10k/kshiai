@@ -1,0 +1,75 @@
+domain ADR0031:
+  description "ADR-0031 revision 1: Focused structured semantic authoring kernel. Status Accepted."
+problem P1:
+  "Accepted foundation v3 and character v5 require focused generative authoring with semantic reconciliation and mechanical safety, not the old whole-candidate request topology."
+evidence E1:
+  "Foundation v3 acceptance fixes SHA256 b5693f6d47e975ea1cb78adaa686185630db5ffc6d52c74f3481ac77511c99da; character v5 acceptance fixes 17596f17d6514d5ada160b9d95453ab2bcb9cee9e4b2d2991acb8238b55ee27b."
+evidence E2:
+  "ADR0030 D8 and D9 prescribe complete-candidate semantic review and two repairs/six requests. ADR0010/0011 own immutable structured authority and projections; ADR0014/0024 own queued fenced execution. Existing services have distinct authoring and migration entrypoints."
+premise OPTIONS:
+  "Keep family-specific loops, use a universal transformation language, or use a thin typed kernel and domain adapters. The accepted requirements select the last; this ADR specifies process boundaries, not a new domain schema."
+premise LIMITS:
+  "Typed wire details, numerical policy and actual provider convergence remain later design/evaluation decisions. Existing execution must not change merely because this proposal exists."
+
+decision D1 based_on P1, E1, E2, OPTIONS, LIMITS:
+  |
+    Adopt a thin typed orchestration kernel, domain adapters, and effect ports. The kernel owns scheduling, obligations, proposal transactions, evidence, progress observation and termination. Adapters own schemas, protected meaning, dependency closure, focused projections, semantic lenses and completion. Ports own provider transport, clock/accounting and owner-fenced persistence. No character field paths or battle-runtime cognition policy belong in the kernel.
+
+decision D2 based_on P1, E1, E2, OPTIONS, LIMITS:
+  |
+    Introduce internal SemanticAuthoringRunV1 and SemanticAuthoringAdapterV1 contract families, not public asset/schema version names. A run binds operation mode, immutable input identities, target/policy/adapter versions, expected pointer, owner and execution fence. Keep candidate and fragment types generic but concrete per adapter; decode unknown JSON only at external boundaries. Internal calls pass TypeScript values, not JSON-string round trips or unchecked casts. Separate typed proposals, findings, questions, accepted answers and terminal results.
+
+decision D3 based_on P1, E1, E2, OPTIONS, LIMITS:
+  |
+    A versioned Skill descriptor names the objective, legal operation roles and how to request a focused capability. A server registry maps these to typed handlers and sliced schemas. Keep discovery metadata small; expose only the current work item's needed tools and revoke exposure at work-item end. Discovery and promotion consume step budget. Visibility never grants authorization. Queries are read-only; update tools only propose patches. The full schema/candidate remains server-side and cannot leak through a query-all or cumulative context assembly.
+
+decision D4 based_on P1, E1, E2, OPTIONS, LIMITS:
+  |
+    Freeze source and classify protected anchors, adaptable preferences and creative space; build the deterministic baseline and obligation graph. Resolve focused semantic clusters, first establish the character skeleton before dependent fan-out, then recheck affected clusters. A proposal names base candidate revision, registered write closure, source claims, effects, semantic dependants and provenance. Stage candidate plus ledgers, validate authority, fragment/reference constraints and accounting, then apply atomically. Reject stale or invalid proposals without partial application. Candidate-wide final schema, compiler, disclosure, coverage and input/output reconciliation remain mandatory; lenses see only relevant projections.
+
+decision D5 based_on P1, E1, E2, OPTIONS, LIMITS:
+  |
+    A repair may change already schema-valid dependent fields. Findings carry inspected claim references, affected scope, observed discrepancy and uncertainty; a resolver cannot manufacture facts or authority through a finding. Semantic discrepancies may need focused model assessment rather than deterministic proof alone, but the server checks references and authority and requires final reconciliation. Use informative repair, decomposition or a pre-authorized alternative within limits. Missing information normally generates values. Only the five accepted Q&A conditions permit an owner semantic question; retain scoped answers and return to automatic work, in a live run or explicit new attempt.
+
+decision D6 based_on P1, E1, E2, OPTIONS, LIMITS:
+  |
+    Preserve ADR0014/0024 queued commands, pure reads, durable wake and owner-fenced worker execution. Keep run scratch state, intermediate candidates and bounded monitoring history in memory; persist frozen source, identity, required provider receipts and failure reasons, questions/answers, and final review candidates under existing retention rules. Terminal attempts replay without provider work. On process/lease loss, do not restart a claimed run with empty counters: fail it through fenced recovery using retained receipts and conservatively account unknown in-flight usage. Delivery retries before a run is claimed may requeue normally. Explicit owner retry creates a new attempt and rechecks source/pointer drift; it does not require new source content or full-context checkpoints.
+
+decision D7 based_on P1, E1, E2, OPTIONS, LIMITS:
+  |
+    All LLM planning, tools, validation/review, repairs and decomposition share an immutable per-attempt execution policy and cumulative accounting. Require finite LLM-call, step, elapsed-time, input/output, token and cost limits before admitting a run; no unlimited default. Admit work using conservative reservations including outstanding requests and bounded outputs, settle known usage without refunding unknown consumption to zero, and check deadlines at scheduling and application boundaries. Provider/model changes require the frozen policy to permit them. Stop new work at exhaustion, fence out late results and cancel outstanding requests where supported; cancellation is not a guarantee of zero charge.
+
+decision D8 based_on P1, E1, E2, OPTIONS, LIMITS:
+  |
+    Use a bounded phase-aware history of adapter-supplied obligation/claim coverage, material findings and normalized relevant states. Ignore prose-only drift as progress. The adapter defines semantic equivalence; the kernel detects no-progress windows and repeated/alternating states and permits policy-bounded changes of recovery strategy, not unlimited repetition. Useful temporary regressions remain legal. Phase changes may select another observation basis but never reset resource counters or hide a recurring unresolved cluster. Check candidate/ledger/reference and transition consistency at mutation boundaries. An invalid proposal retains trusted state; corrupted trusted control state terminates without model repair.
+
+decision D9 based_on P1, E1, E2, OPTIONS, LIMITS:
+  |
+    Return distinct internal results for ready-for-review, needs-owner-answer and failed, with typed receipts; these are not new public status strings. Only fully validated candidates become reviewable. Owner acceptance binds exact candidate and receipts; existing append/CAS activation remains provider-free and preserves historical generations and battle bindings. Stop receipts record category, accounting, relevant findings and source identity, not hidden chain-of-thought. Technical failure alone is not semantic Q&A. Preservation remains outside active semantics, readable only by authorized migrators during migration, with the existing character 256 KiB and owner lifecycle rules.
+
+decision D10 based_on P1, E1, E2, OPTIONS, LIMITS:
+  |
+    For consumers adopting this design after required contract decisions, replace ADR0030 D8 whole-candidate model review and D9 whole-candidate re-review topology with focused lenses and server reconciliation. Preserve D2-D5 schema/consumer/capsule meanings, D6 identity freezing, D7 provenance/authority, D10 durable terminal records, D11 activation and D12 policy/cutover. Refine D10 so durable intermediate run context is not mandatory. Current two-repair/six-request ceilings remain for existing execution; a different numeric policy requires a separately accepted successor decision before new-route execution. ADR0010/0011 structure-before-public-profile and disclosure rules remain; classified synthesis replaces deterministic-only/no-invention restrictions only in the accepted requirement scope. ADR0014/0024 delivery and ADR0027/0028 runtime responsibilities remain. No old ADR is marked Superseded while this is Proposed.
+
+decision D11 based_on P1, E1, E2, OPTIONS, LIMITS:
+  |
+    Character V3 create/revise/migrate is the first advanced adapter; character, battlefield and narration-style fixtures must exercise the same kernel without family paths. Preserve existing APIs and generation/compiler identities. Before runtime adoption, specify exact typed DTO/patch schemas, execution-policy numbers and detector/window rules, public retry/Q&A mapping, persistence/fence changes and adapter conformance in a reviewed implementation design. Those decisions cannot relax this ADR or accepted requirements. Test with controlled ports first: sparse synthesis, protected conflicts, dependency repair, cycles with cosmetic drift, valid temporary regressions, late/stale writes, process loss, no read-triggered work, source-based retry, capsule non-leakage and activation drift. Actual model quality/convergence needs separately approved provider evidence.
+
+evidence OWNER_ACCEPTANCE:
+  |
+    On 2026-09-11, after the exact English authoritative think, its Markdown
+    projection, the complete Japanese review scope, and an independent PASS
+    review with no P0-P3 findings were presented with differences, decision
+    points, alternatives, risks, unknowns, and explicit ACCEPT or REVISE
+    choices, the product owner replied ACCEPT for exact ADR0031 revision1 whose
+    pre-acceptance authoritative SHA-256 was
+    cf623039913261e5735166f91ad07aa82d6640393614f82cbadc47a1e2367e16.
+
+decision ACCEPTANCE based_on OWNER_ACCEPTANCE, D1, D2, D3, D4, D5, D6, D7, D8, D9, D10, D11:
+  |
+    Accept exact ADR0031 revision1 as the architecture decision. Acceptance
+    authorizes the subsequent reviewed implementation-design gate named in D11,
+    but does not itself authorize implementation, provider calls, evaluation,
+    deployment, production migration, candidate or asset acceptance, pointer or
+    policy activation, rollback, release, or changes to prior ADR lifecycle
+    statuses.

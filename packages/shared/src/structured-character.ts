@@ -30,6 +30,25 @@ import {
   type AssetDisclosurePolicyV1,
   type AssetPublicPresentationV2,
 } from "./structured-assets.js";
+import {
+  CHARACTER_SPEECH_REACT_TO_V2,
+  CharacterNormClauseV2Schema,
+  type CharacterNormClauseV2,
+} from "./character-norm-clause-v2.js";
+
+export {
+  CHARACTER_NORM_ALWAYS_VALUES_V2,
+  CHARACTER_NORM_BATTLE_PHASES_V2,
+  CHARACTER_NORM_CONDITION_BANDS_V2,
+  CHARACTER_NORM_DISTANCE_BANDS_V2,
+  CHARACTER_NORM_OBSERVED_EVENT_KINDS_V2,
+  CHARACTER_NORM_RELATIONSHIP_BANDS_V2,
+  CHARACTER_NORM_RESOURCE_BAND_VALUES_V2,
+  CHARACTER_SPEECH_REACT_TO_V2,
+  CharacterNormClauseV2Schema,
+  characterNormClauseVocabularyPromptV2,
+  type CharacterNormClauseV2,
+} from "./character-norm-clause-v2.js";
 
 export const CHARACTER_DEFINITION_SCHEMA_VERSION = 2 as const;
 export const LEGACY_SPEECH_UNSPECIFIED = "既存プロフィールからは特定しない";
@@ -103,90 +122,6 @@ export const CharacterRelationshipTargetV2Schema = z.discriminatedUnion(
 );
 export type CharacterRelationshipTargetV2 = z.infer<
   typeof CharacterRelationshipTargetV2Schema
->;
-
-export const CharacterNormClauseV2Schema = z.object({
-  kind: z.enum([
-    "always",
-    "battle_phase",
-    "self_condition",
-    "counterpart_condition",
-    "resource_band",
-    "distance_band",
-    "relationship_band",
-    "observed_event_kind",
-  ]),
-  operator: z.enum(["is", "is_not", "at_least", "at_most"]),
-  value: z.string().min(1).max(120),
-}).strict().superRefine((clause, context) => {
-  const values = {
-    always: ["true"],
-    battle_phase: ["prologue", "turn", "aftermath"],
-    self_condition: ["steady", "strained", "critical", "incapacitated"],
-    counterpart_condition: ["steady", "strained", "critical", "incapacitated"],
-    resource_band: ["empty", "critical", "low", "taxed", "ready", "full"]
-      .flatMap((band) => ["hp", "mp", "stamina", "focus"]
-        .map((resource) => `${resource}:${band}`)),
-    distance_band: [
-      "contact",
-      "near",
-      "medium",
-      "far",
-      "separate_area",
-      "out_of_scene",
-    ],
-    relationship_band: [
-      "stranger",
-      "ally",
-      "rival",
-      "enemy",
-      "mentor",
-      "student",
-      "family",
-      "protected_person",
-      "other",
-    ],
-    observed_event_kind: [
-      "damage",
-      "heal",
-      "rest",
-      "parameter",
-      "defend",
-      "wait",
-      "reflect",
-      "status",
-      "situation",
-      "info",
-      "utterance",
-      "manifestation",
-      "free_action",
-    ],
-  } as const;
-  if (!(values[clause.kind] as readonly string[]).includes(clause.value)) {
-    context.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: `unregistered ${clause.kind} value: ${clause.value}`,
-      path: ["value"],
-    });
-  }
-  if (
-    (clause.operator === "at_least" || clause.operator === "at_most") &&
-    ![
-      "self_condition",
-      "counterpart_condition",
-      "resource_band",
-      "distance_band",
-    ].includes(clause.kind)
-  ) {
-    context.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: `${clause.operator} is unavailable for ${clause.kind}`,
-      path: ["operator"],
-    });
-  }
-});
-export type CharacterNormClauseV2 = z.infer<
-  typeof CharacterNormClauseV2Schema
 >;
 
 export const CharacterActionNormV2Schema = z.object({
@@ -360,13 +295,7 @@ export const CharacterDefinitionV2ObjectSchema = z.object({
       turn: z.enum(["avoid", "allow", "prefer"]),
       aftermath: z.enum(["avoid", "allow", "prefer"]),
     }).strict(),
-    reactTo: z.array(z.enum([
-      "direct_address",
-      "self_impact",
-      "counterpart_impact",
-      "ambient_change",
-      "relationship_shift",
-    ])).max(5),
+    reactTo: z.array(z.enum(CHARACTER_SPEECH_REACT_TO_V2)).max(5),
     silenceRules: z.array(z.object({
       id: StableIdSchema,
       clauses: z.array(CharacterNormClauseV2Schema).min(1).max(6),
@@ -1382,10 +1311,16 @@ export function defaultCharacterDisclosurePolicyV2(
   });
 }
 
-export function characterDefinitionV2ToLegacySheet(input: {
+export type CharacterDefinitionLegacySheetProjection = Pick<
+  CharacterDefinitionV2,
+  "identity" | "appearance" | "psycheDisposition" | "combat" |
+  "capabilities" | "initialLoadout" | "inventory"
+>;
+
+type CharacterDefinitionLegacySheetInput = {
   characterId: string;
   ownerUserId: string;
-  definition: CharacterDefinitionV2;
+  definition: CharacterDefinitionLegacySheetProjection;
   publicPresentation: AssetPublicPresentationV2;
   createdAt: string;
   updatedAt: string;
@@ -1393,7 +1328,11 @@ export function characterDefinitionV2ToLegacySheet(input: {
   operational?: Partial<Pick<CharacterSheet,
     "visibility" | "record" | "recordOverall" | "improvementMemo" |
     "opponentMemories" | "deletedAt" | "revisionSnapshot">>;
-}): CombatReadyCharacterSheet {
+};
+
+export function characterDefinitionToLegacySheetProjection(
+  input: CharacterDefinitionLegacySheetInput,
+): CombatReadyCharacterSheet {
   const { definition } = input;
   const nameValues = (kind: "real_name" | "nickname" | "self_reference" | "epithet") =>
     definition.identity.names.filter((name) => name.kind === kind).map((name) => name.value);
@@ -1468,5 +1407,16 @@ export function characterDefinitionV2ToLegacySheet(input: {
     combatFlags: definition.combat.flags,
     narrativeBlurb: input.publicPresentation.description,
     ...input.operational,
+  });
+}
+
+export function characterDefinitionV2ToLegacySheet(
+  input: Omit<CharacterDefinitionLegacySheetInput, "definition"> & {
+    definition: CharacterDefinitionV2;
+  },
+): CombatReadyCharacterSheet {
+  return characterDefinitionToLegacySheetProjection({
+    ...input,
+    definition: CharacterDefinitionV2Schema.parse(input.definition),
   });
 }

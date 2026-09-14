@@ -1,0 +1,75 @@
+{
+  "phase": "receipt",
+  "ordinal": 3,
+  "receipt": {
+    "outcome": "succeeded",
+    "responseDigest": "b1967075d9b9670fcc9f5f783a7aa759238063e1ea6a7db91b424826190ca314",
+    "response": {
+      "schema": "character_semantic_migration_change_set_v1",
+      "operations": [
+        {
+          "operation": "synthesize",
+          "targetPath": "definition.actionNorms",
+          "sourcePaths": [
+            "definition.actionNorms.1.response.actionRefs.0"
+          ],
+          "value": [
+            {
+              "id": "migration-5e34199af410bf3c5bed14f56bc4ec6d",
+              "when": {
+                "match": "all",
+                "clauses": [
+                  {
+                    "kind": "always",
+                    "operator": "is",
+                    "value": "true"
+                  }
+                ]
+              },
+              "response": {
+                "disposition": "prefer",
+                "actionRefs": [
+                  "basic-action"
+                ],
+                "actionKinds": [],
+                "tacticTags": []
+              },
+              "priority": 40,
+              "force": "preference",
+              "exceptions": [],
+              "description": null
+            }
+          ],
+          "deferred": null,
+          "explanation": "V2 executable selector 'basic-action' migrated to V3 actionNorms entry.",
+          "provenance": "source_derived",
+          "semanticDependants": [
+            "definition.consciousGuidance",
+            "definition.mechanicalConflictFallbacks"
+          ]
+        },
+        {
+          "operation": "transform",
+          "targetPath": "definition.mechanicalConflictFallbacks.0.orderedActionRefs",
+          "sourcePaths": [
+            "definition.actionNorms.0.response.fallbackActionRef"
+          ],
+          "value": null,
+          "deferred": null,
+          "explanation": "V2 fallbackActionRef 'basic-action' already present in synthesized mechanicalConflictFallbacks entry.",
+          "provenance": "source_derived",
+          "semanticDependants": []
+        }
+      ],
+      "uncertainties": []
+    },
+    "accounting": {
+      "inputTokens": 31491,
+      "outputTokens": 259,
+      "totalTokens": 31750,
+      "estimatedCostUsd": 0.040011250000000005,
+      "elapsedMs": 3169
+    },
+    "finishedAt": "2026-09-11T01:56:47.286Z"
+  }
+}

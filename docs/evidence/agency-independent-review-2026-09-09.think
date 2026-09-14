@@ -1,0 +1,33 @@
+domain AgencyIndependentReview:
+  description "Review the owner-approved immutable requirement snapshot, without accepting or changing it."
+problem P1:
+  |
+    Owner approved the offered REVIEW_THEN_DECIDE route and requested review.
+premise A1:
+  |
+    This authorizes independent review, not requirement acceptance, implementation,
+    new ADR, Seal mutation, push, paid provider use or revision of candidate text.
+evidence E1:
+  |
+    Current requirement revision 1 SHA256 is
+    f733f85a153349e4be28785fef05d93006d057e0e5d507a8423b658f9bb7f444,
+    matching the owner-visible review input. Its six questions and scope are readable.
+evidence E2:
+  |
+    Matching worktree remains on 0754ca7 with prior CA-00 and proposal WIP.
+    requirement-authority-review mandates immutable step 3 review and classified
+    findings, followed by owner disposition at step 4.
+pending U1:
+  |
+    Independent review findings and source-contract consistency are not yet established.
+premise OPTIONS:
+  |
+    A review exact snapshot with independent context and verify findings against sources.
+    B accept or modify the requirement now, rejected because authority is only for review.
+decision D1 based_on P1, A1, E1, E2, U1, OPTIONS:
+  |
+    Delegate a read-only independent review of the exact candidate and review input,
+    without author conclusions. In parallel verify source authorities and snapshot
+    identities locally. Record owner route and final classified report separately
+    from the unchanged candidate. Do not promote optional scope to contradictions.
+    Return completed or not-reviewable report for second owner review; no auto revision.

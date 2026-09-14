@@ -1,0 +1,153 @@
+framework ArchitectureDecisionRecord:
+  requires problem and decision
+  requires premise and evidence
+  warns pending
+
+domain ADR0027:
+  description "ADR-0027 revision 1: Unified conscious agency and reaction-only psyche. Status Accepted. Supersedes ADR-0004; decision content D1-D8 is unchanged from the approved proposal."
+
+problem P1:
+  |
+    ADR-0004 separates action selection and outward expression as independent
+    consumers that cannot share raw inputs or outputs. That written constraint
+    fragments the owner-requested conscious agency which coherently decides
+    what the character does and says. Its origin as an authoring mistake is
+    unverified; this record corrects the requirement mismatch without rewriting
+    the historical rationale or pretending the old wording meant something else.
+
+premise DRIVERS:
+  |
+    Keep non-deliberative affect dynamics distinct from conscious judgment and
+    canonical adjudication. Protect observer-relative privacy and immutable
+    battle contracts. Processing stages do not define separate conscious agents.
+
+premise OPTIONS:
+  |
+    A: Retain independent action and expression judgments and add coordination;
+    possible but introduces an unnecessary separation constraint for this goal.
+    B: Use one conscious decision authority for goals, action and utterance,
+    separate from psyche transitions and engine validation; proposed.
+    C: Merge psyche, consciousness, world adjudication and narration into one
+    unrestricted context; rejected because it mixes authority and visibility.
+
+evidence E_OWNER:
+  |
+    The owner states that both action and speech belong to the character's
+    conscious awareness; psyche should be an input-driven non-deliberative
+    reaction model, with LLM use only in bounded special circumstances. The
+    owner requests a superseding ADR, prechange impact and retained Seal history.
+    This is authoring direction, not acceptance of the exact bytes of revision 1.
+
+evidence E_SOURCE:
+  |
+    docs/adr/0004-versioned-lightweight-psyche-dynamics.md explicitly forbids
+    mutual action/expression raw-context sharing in Stable component boundaries.
+    docs/lightweight-psyche-adoptable-slice.md section 6 leaves migration of
+    currentGoal, beliefs, free-text appraisal and ExpressionBrief undecided.
+
+evidence E_BASELINE:
+  |
+    Prechange Seal adr/psyche-boundary is
+    5a65ee9aeb1c0b082985e0e320521d014a7211ff0f4d8e50da4ebc8e10e56957.
+    docs/evidence/sealgraph-psyche-baseline-2026-09-09.json records 16 initial
+    sources, 15 downstream impact heads, no path truncation, source agreement,
+    no initial stale and successful fsck. Coverage is not repository-wide.
+
+decision D1 based_on P1, DRIVERS, OPTIONS, E_OWNER, E_SOURCE:
+  |
+    Propose one character conscious authority that derives an upper objective
+    from authored personality, values and known relationship, assesses own
+    abilities, resources, permitted engine knowledge and observed experience,
+    and coherently decides short-term intent, action and utterance. Speech is
+    an act of this consciousness, not a separate will. Shared conscious intent
+    and task-relevant knowledge are permitted within its private boundary.
+    Neither one LLM call nor a specific module topology is required.
+
+decision D2 based_on D1, DRIVERS, E_SOURCE:
+  |
+    Psyche consumes validated normalized experience, bound psyche traits and
+    prior private reaction state; it emits bounded affect/interpretation/impulse
+    state and transition evidence. It does not reason over ability specifications,
+    choose strategy, author speech or directly change world outcomes. Conscious
+    judgment receives an explicit bounded projection of reaction state. Realized
+    acts return via observer-safe experience. Separation is not total information
+    isolation. Direct conscious regulation of psyche is not specified here.
+
+decision D3 based_on D1, D2, DRIVERS:
+  |
+    The engine separately receives action and utterance proposals, validates
+    legality, identity, visibility and applicable constraints, and commits actual
+    results under existing rules. Separate receivers are not separate character
+    minds. Desired speech effects do not directly change the counterpart's psyche
+    or mechanics; recipient reaction and engine outcomes keep their owners.
+    Public/narrator/opponent outputs exclude private goals and reasoning except
+    what the character actually expresses and the observer may perceive.
+
+decision D4 based_on D1, D2, D3, E_SOURCE, E_BASELINE:
+  |
+    Upon acceptance this ADR supersedes ADR-0004's governing decision, replacing
+    the action-versus-expression independence and mutual-input/output ban with
+    the boundary in D1-D3. Preserve ADR-0004's Initial explicit model, Learned
+    target model, Psyche-only character embedding and Version and battle binding
+    sections by reference to the exact prechange Seal in E_BASELINE, including
+    normalization, excluded non-psyche material, bounded modulation, inspectable
+    traits, shadow/calibration/privacy/replay acceptance and deterministic
+    fallback. Action-facing and expression-facing tendencies may remain distinct
+    data, but do not require distinct conscious owners. Research references remain
+    non-adopted candidates. No model training or adoption is authorized here.
+
+decision D5 based_on D2, D4, DRIVERS:
+  |
+    Preserve generation-specific routing: authoritative V1 normal-turn psyche
+    remains no-call; missing features do not trigger LLM escalation. Existing
+    prologue/aftermath and old-generation paths remain compatible. Special-moment
+    LLM use is an extension to define by trigger, responsibility, inputs, maximum
+    calls, cost, failure and revision binding before separate approval. This ADR
+    neither invents a trigger nor claims existing phases fully implement that wish.
+
+decision D6 based_on D1, D2, D3, D4, D5, E_SOURCE:
+  |
+    New implementation must specify unique writers/lifetimes for currentGoal,
+    beliefs, appraisal and ExpressionBrief, conscious output schemas and explicit
+    engine receivers. Initial migration covers CA-01/minimal CA-02 and dispositions
+    for all seven PSYCHE-RESPONSIBILITY sites; full-path/old-battle compatibility
+    may remain explicitly deferred rather than silently changed. ADR-0025/0026
+    history, repetition, commit and bounded repair rules remain authoritative for
+    their bound contracts; do not extend their repair closure by implication.
+    Detailed new schemas, generations and call topology require the planned design
+    and acceptance. This ADR does not itself authorize runtime changes or rollout.
+
+decision D7 based_on D1, D2, D3, D4, D5, D6:
+  |
+    Verify goal-dependent coherent action/speech, character and known-relationship
+    differences, and lawful knowledge use. With identical psyche traits, prior
+    state and normalized experience, changing ability metadata must not alter
+    psyche transitions. Verify privacy, boundedness, generation/replay compatibility,
+    no-call ceilings and engine ownership separately. Contract tests do not prove
+    live-model behavioral improvement; paid evaluation is separately authorized.
+
+decision D8 based_on D4, D6, E_BASELINE:
+  |
+    While Proposed, seal this candidate under a separate proposal REF linked to
+    the prechange Seal, without advancing adr/psyche-boundary. After exact owner
+    acceptance, preserve the old Seal, mark ADR-0004 Superseded with the successor
+    link, continue the logical boundary REF with explicit reviewed revision
+    assertions, and inspect stale/impact under recorded assertion scope. Review
+    each affected document before relinking or resealing; stale is not automatic
+    permission to edit Accepted decisions. Unregistered dependencies remain unknown.
+
+evidence OWNER_ACCEPTANCE:
+  |
+    On 2026-09-09, after the ADR-0004 versus ADR-0027 comparison, the owner said
+    OKです。承認します。 The approved ADR-0027 revision 1 preacceptance SHA256 is
+    74606d5bb31688b42c2ed228268e1f8d7976caac59fd328443f04949f054f055.
+    The earlier request authorizes impact review, document correction and
+    individual resealing. Runtime implementation and paid execution remain separate.
+
+decision ACCEPTANCE based_on D1, D2, D3, D4, D5, D6, D7, D8, OWNER_ACCEPTANCE:
+  |
+    ADR-0027 revision 1 is Accepted and supersedes ADR-0004. D1-D8 retain their
+    owner-approved wording; proposal/acceptance phase descriptions are historical
+    conditions now resolved by this decision. Apply the documented responsibility
+    correction and reviewed provenance succession. Detailed schemas, call topology,
+    runtime migration and rollout remain subject to D5-D7 and the delivery plan.

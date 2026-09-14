@@ -5,8 +5,7 @@ import { z } from "zod";
  * the pre-speech deep-psyche stage only; deterministic combat and canonical
  * facts never read this as a mechanical rule.
  */
-export const DialoguePipelineValuesSchema = z.object({
-  schemaVersion: z.literal(1),
+const DialoguePipelineCommonValuesSchema = z.object({
   enabled: z.boolean().default(true),
   conversationHistoryLimit: z.number().int().min(4).max(24).default(12),
   /** Which input projection new battles should snapshot for their dialogue calls. */
@@ -17,6 +16,27 @@ export const DialoguePipelineValuesSchema = z.object({
   relevantMemoryLimit: z.number().int().min(0).max(2).default(1),
   psychologyGuidance: z.string().min(1).max(3_000),
 });
+
+export const DialoguePipelineValuesV1Schema =
+  DialoguePipelineCommonValuesSchema.extend({
+    schemaVersion: z.literal(1),
+  });
+
+export const DialoguePipelineValuesV2Schema =
+  DialoguePipelineCommonValuesSchema.extend({
+    schemaVersion: z.literal(2),
+  });
+
+export const DialoguePipelineValuesV3Schema =
+  DialoguePipelineCommonValuesSchema.extend({
+    schemaVersion: z.literal(3),
+    contextProjectionMode: z.literal("compact"),
+  });
+
+export const DialoguePipelineValuesSchema = z.discriminatedUnion(
+  "schemaVersion",
+  [DialoguePipelineValuesV1Schema, DialoguePipelineValuesV2Schema, DialoguePipelineValuesV3Schema],
+);
 export type DialoguePipelineValues = z.infer<typeof DialoguePipelineValuesSchema>;
 
 export const DEFAULT_DIALOGUE_PSYCHOLOGY_GUIDANCE = [
@@ -26,11 +46,20 @@ export const DEFAULT_DIALOGUE_PSYCHOLOGY_GUIDANCE = [
   "反復や沈黙そのものを選んでよい。その選択は内面の理由と、相手や場への手応えに結びつける。",
 ].join("\n");
 
-export const DialoguePipelineSettingsSchema = DialoguePipelineValuesSchema.extend({
+const DialoguePipelineSettingsMetadataSchema = z.object({
   revision: z.number().int().nonnegative().default(0),
   updatedAt: z.string().datetime().nullable().default(null),
   updatedBy: z.string().max(64).nullable().default(null),
 });
+
+export const DialoguePipelineSettingsSchema = z.discriminatedUnion(
+  "schemaVersion",
+  [
+    DialoguePipelineValuesV1Schema.merge(DialoguePipelineSettingsMetadataSchema),
+    DialoguePipelineValuesV2Schema.merge(DialoguePipelineSettingsMetadataSchema),
+    DialoguePipelineValuesV3Schema.merge(DialoguePipelineSettingsMetadataSchema),
+  ],
+);
 export type DialoguePipelineSettings = z.infer<typeof DialoguePipelineSettingsSchema>;
 
 export const DialoguePipelineActivationSourceSchema = z.enum([
@@ -50,10 +79,10 @@ export type DialoguePipelineOverrideDeployment = z.infer<
   typeof DialoguePipelineOverrideDeploymentSchema
 >;
 
-export const UpdateDialoguePipelineSettingsSchema = DialoguePipelineValuesSchema
-  .omit({ schemaVersion: true })
-  .extend({
+export const UpdateDialoguePipelineSettingsSchema =
+  DialoguePipelineCommonValuesSchema.extend({
     expectedRevision: z.number().int().nonnegative(),
+    schemaVersion: z.union([z.literal(2), z.literal(3)]).optional(),
   });
 export type UpdateDialoguePipelineSettings = z.infer<
   typeof UpdateDialoguePipelineSettingsSchema
@@ -63,22 +92,46 @@ export type UpdateDialoguePipelineSettings = z.infer<
  * Battle-owned dialogue context policy. Operator edits apply to later battles;
  * an active battle consumes this snapshot rather than rereading global settings.
  */
-export const BattleDialoguePipelineSnapshotSchema = DialoguePipelineValuesSchema
-  .omit({ schemaVersion: true })
-  .extend({
-    schemaVersion: z.literal(1),
-    revision: z.number().int().nonnegative(),
-  })
-  .strict();
+const BattleDialoguePipelineSnapshotMetadataSchema = z.object({
+  revision: z.number().int().nonnegative(),
+});
+
+export const BattleDialoguePipelineSnapshotSchema = z.discriminatedUnion(
+  "schemaVersion",
+  [
+    DialoguePipelineValuesV1Schema
+      .merge(BattleDialoguePipelineSnapshotMetadataSchema)
+      .strict(),
+    DialoguePipelineValuesV2Schema
+      .merge(BattleDialoguePipelineSnapshotMetadataSchema)
+      .strict(),
+    DialoguePipelineValuesV3Schema
+      .merge(BattleDialoguePipelineSnapshotMetadataSchema)
+      .strict(),
+  ],
+);
 export type BattleDialoguePipelineSnapshot = z.infer<
   typeof BattleDialoguePipelineSnapshotSchema
+>;
+
+/**
+ * ADR-0028: V3 can only bind compact consciousness; default remains V1.
+ */
+export const BattleDialoguePipelineSnapshotV3Schema =
+  DialoguePipelineCommonValuesSchema.extend({
+    schemaVersion: z.literal(3),
+    contextProjectionMode: z.literal("compact"),
+    revision: z.number().int().nonnegative(),
+  }).strict();
+export type BattleDialoguePipelineSnapshotV3 = z.infer<
+  typeof BattleDialoguePipelineSnapshotV3Schema
 >;
 
 export function snapshotDialoguePipelineSettings(
   settings: DialoguePipelineSettings,
 ): BattleDialoguePipelineSnapshot {
   return BattleDialoguePipelineSnapshotSchema.parse({
-    schemaVersion: 1,
+    schemaVersion: settings.schemaVersion,
     enabled: settings.enabled,
     conversationHistoryLimit: settings.conversationHistoryLimit,
     contextProjectionMode: settings.contextProjectionMode,
@@ -89,8 +142,8 @@ export function snapshotDialoguePipelineSettings(
   });
 }
 
-export function defaultDialoguePipelineSettings(): DialoguePipelineSettings {
-  return DialoguePipelineSettingsSchema.parse({
+export function defaultDialoguePipelineSettings(): Extract<DialoguePipelineSettings, { schemaVersion: 1 }> {
+  return DialoguePipelineValuesV1Schema.merge(DialoguePipelineSettingsMetadataSchema).parse({
     schemaVersion: 1,
     enabled: true,
     conversationHistoryLimit: 12,

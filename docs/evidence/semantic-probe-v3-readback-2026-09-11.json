@@ -1,0 +1,286 @@
+{
+  "schema": "semantic-probe-v3-seal-readback-v1",
+  "verifiedAt": "2026-09-11",
+  "refs": [
+    {
+      "ref": "implementation/semantic-probe-run-v2",
+      "head": "301efaa022e7acdf75f693e63be60edaf0b6f21b91e0ad45e8481ac69fd3b19d"
+    },
+    {
+      "ref": "implementation/semantic-probe-fixture",
+      "head": "ffea6a372a97c0e61f65a6f95058a82aa47c196c4b310828de787667db3d20e7"
+    },
+    {
+      "ref": "implementation/semantic-probe-runner",
+      "head": "1895548e1b7c8a23909a875bc36c85153af6b0dc5564cb7a0406264aaccc1153"
+    },
+    {
+      "ref": "verification/semantic-probe-fixture",
+      "head": "1df02561eec7227d7733926769d3d17f0363e2512b0f086c8f6276cf5f829477"
+    },
+    {
+      "ref": "evidence/semantic-probe-proof",
+      "head": "c42abb475f5389acb1f4eac5253f8eeb58938fafdf62e8c0e19724ae587b94ef"
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-proof",
+      "head": "637db6f730c6a0f88e1cf818359062683a0e438690fadbfef857b44d6d7f209b"
+    },
+    {
+      "ref": "verification/semantic-probe-run-v2",
+      "head": "36d7e34bc0c2197bd9a1225fc23511ec91f7931bf2ca796c9b9c672dd921ae1c"
+    },
+    {
+      "ref": "evidence/semantic-probe-offline-result",
+      "head": "ba185555e47d103d865b032ecc45dd552ab12eab55d66666e02704e9494664cb"
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-offline-result",
+      "head": "5b97af25e859859ea8b6af7bd5a0cb0d66c2b7bc27ea3aa1605570a6d5be9b5f"
+    },
+    {
+      "ref": "reasoning/semantic-probe-readiness",
+      "head": "493d6dc9b67186a03603812c7a4ee0cab213e6eb0e17b1d6f0d25dc071432964"
+    },
+    {
+      "ref": "reasoning/semantic-probe-v2-readiness",
+      "head": "870c99a3448bcf7e3b94a23684ae1dbf6556744dee9bdbd0e0a2b69d906bbbcb"
+    },
+    {
+      "ref": "review/semantic-probe-v1",
+      "head": "1d76eaf7ce4131b5398e4a48925d5df2b02b2c4128cf75697404722475a7d9a6"
+    },
+    {
+      "ref": "review/semantic-probe-v2",
+      "head": "1d3ea9cdfe912bdda88aff6c34c55e52dfef9e49471f265c2acb8abcd71d5f2b"
+    },
+    {
+      "ref": "acceptance/semantic-probe-v1-execution",
+      "head": "f6d8fb30f57a10f58c6da1702f3ed3b2cbe84edd159fea40240a25ba377070cf"
+    },
+    {
+      "ref": "acceptance/semantic-probe-v2-execution",
+      "head": "7ae83063a772599183654245c29e630239343619492fe7f769516d9309cfba2a"
+    },
+    {
+      "ref": "evidence/semantic-probe-live-start",
+      "head": "5307f3f5c0feb60c1d3f00c7c82f7a0c1004b5eea444a27a92ea869e56383167"
+    },
+    {
+      "ref": "evidence/semantic-probe-owner-acceptance",
+      "head": "c848795a9b1990271202af6eda68ed27d7bf78864ea1e090d72a87576af291a8"
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-live-start",
+      "head": "aeb70e6dbb10f832053059235426c2c2c895da3804f6fa17dd057ec3e57c7642"
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-owner-acceptance",
+      "head": "63a2537f826afdb430d32478c9cf1e70b89f65ddec84339968ea06302d8a7bd8"
+    },
+    {
+      "ref": "evidence/semantic-probe-call-1-request",
+      "head": "fbe225033c67ac9a87cd54c86cc180ae92e07d22b4657357b789466968eb4e78"
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-call-1-request",
+      "head": "f91f3421a3831e7fd0af2a779a1a26890ef90b06b071bf269a5c33afcb8229c1"
+    },
+    {
+      "ref": "evidence/semantic-probe-call-1-response",
+      "head": "82257ba3c42c89afcb9c6cdc6a7cc0fabda8c543e469e2d0c7c934e649f661a2"
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-call-1-response",
+      "head": "f9313deb1cf34832c6d26f35beaca6e674d0a854ed065931961fb1b3a768b3e0"
+    },
+    {
+      "ref": "verification/character-migration-response-schema",
+      "head": "ac8588221e6f8826d62cc2a52d4ead4f16cd196a205be1c82c3b8112a9cfa160"
+    },
+    {
+      "ref": "evidence/semantic-probe-live-result",
+      "head": "5a6b689253bb48223bca7185f6d012b42aeaa1a7dafc49f469374862cd958dc4"
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-call-1-receipt",
+      "head": "e86593b1e24ad53ca2905943315da800b1f441632316f2198032f16562cbbf02"
+    },
+    {
+      "ref": "reasoning/semantic-schema-local-verification",
+      "head": "c22010d7bf3bc6a4703972b15ca78835e8b72c34d0f33b07b19706e439729f93"
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-call-2-request",
+      "head": "d7a8b6e1683e1579d49c25ba0e836a581611c7cb6d083d5c4a6839717d5f26f7"
+    },
+    {
+      "ref": "evidence/semantic-schema-root-correction",
+      "head": "9c154c5e1b6ea1ff9c65b3420c3fd767df11a994cab6436ec596ae6f441ca13a"
+    },
+    {
+      "ref": "reasoning/semantic-probe-result-rca",
+      "head": "dc36e17214085dff4bfeccecb15a255376c0b28af152492e06cae62b917c3a64"
+    },
+    {
+      "ref": "evidence/semantic-probe-result-ja",
+      "head": "6360dbc00e472be63647f3b8c47edc862e0da2457e10a6cc59811e10b891bc38"
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-call-2-response",
+      "head": "99e916355fa70bbeb1842c86632b2426fbecf207445632dbe690c3af61a08088"
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-call-2-receipt",
+      "head": "3af84fc8fbb5dd4aad469622ae69f5828d5ddc80942da8fd8710de74a94c0e95"
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-call-3-request",
+      "head": "3e4b7e3a3c4b4678b7c0379ede7d520ff90bb5425cad845a3fc53b7dd99b7f27"
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-call-3-response",
+      "head": "a398761c3c17413d9d6a95968109dc5227addb36999f4c36c57240a32e58cd2c"
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-call-3-receipt",
+      "head": "f444c613dfc1629fc8d4835a3992ee64a92165889b1d023b506419449c5043ed"
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-call-4-request",
+      "head": "4b26671e72644e8fc59a18b7c323410ea2efd872d286d7540f5430f53a2b73b9"
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-call-4-response",
+      "head": "d34d6baf555bee6e5fcbbe0d3f6ac43439f8fefd3b46e44ac5cdc5d65334be5b"
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-call-4-receipt",
+      "head": "223b7ff9a14d667b295318f93983096bd9348fc64f3174bc8f2ad7a7c830f516"
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-call-5-request",
+      "head": "7af00f84907a0897cc70327209383f13ed7659c93694cbb61a56d0c20843cef6"
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-call-5-response",
+      "head": "bd9ebfba39b6d28d523d8060003187357cd2d34a292e1ce3b7370cc02a99a079"
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-call-5-receipt",
+      "head": "5e87aaf909fde14c051614d59ef888d4a351aa89d74ca0599bffacddc2faab7c"
+    },
+    {
+      "ref": "verification/character-migration-diagnostics",
+      "head": "5b7efeca9ff7ff86310b76f24ca144e360dfc342e013b244598ea8455b652dda"
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-call-6-request",
+      "head": "a2efa113bdcde41c81b134ac7954ef113362282b338f77648bff7d1e58496c7a"
+    },
+    {
+      "ref": "reasoning/semantic-repair-verification",
+      "head": "e55ca798d764bac2b809c4cdd8a83f6eaefccad452ea1aa5f60c0d829255ae8c"
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-call-6-response",
+      "head": "0eb5a6779dd10647c2535f14077030ab453657aef3f8d5fb44b1e380c7b57f42"
+    },
+    {
+      "ref": "evidence/semantic-repair-seal-impact",
+      "head": "a0d87a7b016cb8fbf7bd28b68a82f4adc1aff99da2f97e691decae5b12e35c2c"
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-call-6-receipt",
+      "head": "7f2daf32d2f1127ff0429f8a345880f367d89b5938b09e0189263204b05c5274"
+    },
+    {
+      "ref": "evidence/semantic-repair-result-ja",
+      "head": "a3e0956c9437935e4fc5c4944a87efb14d724177c321bc636fd9b21ea05165cd"
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-live-result",
+      "head": "4a4213c063bb03618946ad3feb8451fd5c45d9d4f0f3e4dacec41b7b0b9efc64"
+    },
+    {
+      "ref": "reasoning/semantic-migration-closeout",
+      "head": "1eda4ac382bd37e65958ec80f3ab10af5ce4fd41dd3ffa562f34a484df29fa13"
+    },
+    {
+      "ref": "reasoning/semantic-probe-v2-result-rca",
+      "head": "43282feca5386749145a81b2dfcefc955baaef2e8f7933fb401bdaeae39527c4"
+    },
+    {
+      "ref": "evidence/semantic-probe-v2-result-ja",
+      "head": "dd7448cff83146eaa286439ff72220e504008dcb622e0b0d2dd8e346294669e1"
+    },
+    {
+      "ref": "reasoning/semantic-probe-v3-preparation",
+      "head": "e0eb618c00df1ffa0d255be95fbf70f83d442a1e29b3b4d9e2283aa14ab1aa45"
+    },
+    {
+      "ref": "implementation/semantic-probe-runner-v3",
+      "head": "fff319f1ff1bd761b5d7ab4708d9f91ca210eb81e30e92b0529fa959e45a1c9c"
+    },
+    {
+      "ref": "evidence/semantic-probe-v3-proof",
+      "head": "bf8e24223ba52b8c18fe1a7eda4086e025d738033e3d48663986b5e44c67c973"
+    },
+    {
+      "ref": "evidence/semantic-probe-v3-offline-result",
+      "head": "8873625e0b073841895bd25efc81082036e9ed80338d7e5b6e1f232180b352f9"
+    },
+    {
+      "ref": "evidence/semantic-probe-v3-impact-review",
+      "head": "067333f939e1f42f9e8a8b8eb4499afc821f3a9e7b398860a58088660d4ea4dd"
+    },
+    {
+      "ref": "reasoning/semantic-probe-v3-readiness",
+      "head": "78ff1811c7150ab791246541da71d6fa509dfc9325bd371e30d1531689bf2f59"
+    },
+    {
+      "ref": "review/semantic-probe-v3",
+      "head": "e00644a6450db889f9071b8c85f0f534a3a6e7764d2f72e2b4674e386cc38edb"
+    },
+    {
+      "ref": "evidence/semantic-migration-continuation",
+      "head": "8b78149970df258f4b7cac7c13086fc91f3f7bbc2ae916d0ac6420f5ea842e19"
+    }
+  ],
+  "fsck": {
+    "result": "ok",
+    "refs": 207,
+    "seals": 560,
+    "unreferenced": []
+  },
+  "status": {
+    "refs": 207,
+    "expected": 61,
+    "mismatches": [],
+    "candidates": [],
+    "drafts": [],
+    "sources": [
+      {
+        "ref": "projection/adr-0030",
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      },
+      {
+        "ref": "proposal/adr-0030",
+        "relation": "WORKFILE_DIFFERS_FROM_HEAD"
+      }
+    ]
+  },
+  "stale": {
+    "schema": "sealgraph/stale/v2",
+    "frontier": false,
+    "scan": true,
+    "statuses": []
+  },
+  "historicalSourceChanges": 0,
+  "sourceRuntimeSnapshotMatches": true,
+  "liveStarted": false,
+  "notes": [
+    "Old proposal/projection ADR0030 source differences predate this task and are preserved; accepted ADR0030 check passes.",
+    "Readback artifact is a receipt, not its own Seal source."
+  ]
+}

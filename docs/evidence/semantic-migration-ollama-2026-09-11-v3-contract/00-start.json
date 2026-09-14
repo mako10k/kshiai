@@ -1,0 +1,6 @@
+{
+  "schema": "semantic-migration-ollama-contract-smoke-start-v1",
+  "runId": "semantic-migration-ollama-2026-09-11-v3-contract",
+  "scope": "One tiny local adapter contract request; not a full semantic migration.",
+  "startedAt": "2026-09-11T06:24:56.811Z"
+}

@@ -1,0 +1,43 @@
+domain CharacterSemanticMigrationSuccessorPlanV1Acceptance:
+  description "Record owner acceptance of the exact recommended successor plan without authorizing its separately gated external effects."
+
+problem P1:
+  |
+    The owner reviewed the complete Japanese translation of successor plan
+    revision 1 and instructed that the recommended route proceed.
+
+evidence E_PLAN:
+  |
+    docs/character-semantic-migration-successor-plan-v1.md is the sealed exact
+    English plan candidate. It recommends two coordinated lanes, rejection of
+    Proposed ADR-0029 revision 1, a new successor ADR package, local A1 before
+    provider or deployment work, and distinct B1-B14 authority gates.
+
+evidence E_REVIEW:
+  |
+    docs/evidence/character-semantic-migration-successor-plan-v1-owner-review-ja.md
+    is the sealed complete Japanese review translation presented with overview,
+    differences, decision points, alternatives, risks, and unknowns.
+
+evidence OWNER_ACCEPTANCE:
+  |
+    On 2026-09-10, after that review presentation, the product owner replied:
+    推奨で進めてください。
+
+premise SCOPE:
+  |
+    The instruction accepts the recommended plan and authorizes local plan
+    integration, A1 local correction closeout, and B1 proposed ADR authoring. It
+    does not accept the future ADR package or authorize provider use, deployment,
+    production reads or writes, policy activation, or candidate acceptance.
+
+pending U1:
+  |
+    Every effect explicitly reserved in plan A2, A3, B2, and B8-B14 retains its
+    own evidence and owner-decision boundary.
+
+decision D1 based_on P1, E_PLAN, E_REVIEW, OWNER_ACCEPTANCE, SCOPE, U1:
+  |
+    Preserve the sealed plan bytes and record exact plan acceptance separately.
+    Integrate its task dependencies into planning artifacts, execute A1 locally,
+    and author B1 as Proposed while retaining all later gates.

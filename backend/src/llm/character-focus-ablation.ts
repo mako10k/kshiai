@@ -9,7 +9,7 @@ import {
   type ServerOnlyReserveCue,
 } from "@kshiai/shared";
 import { CHARACTER_EXPRESSION_COMPACT_SYSTEM_PROMPT } from "./character-expression-prompt.js";
-import type { CharacterExpressionCompactInput } from "./types.js";
+import type { CharacterExpressionCompactInputV1 } from "./types.js";
 
 export const CHARACTER_FOCUS_ABLATION_INPUT_REVISION =
   "character-focus-expression-ablation-v1";
@@ -292,7 +292,7 @@ function continuityFor(fixture: CharacterFocusFixtureV1):
 function compactInputFor(
   scenario: CharacterFocusAblationScenario,
   fixture: CharacterFocusFixtureV1,
-): CharacterExpressionCompactInput {
+): CharacterExpressionCompactInputV1 {
   const character = CHARACTER_FOCUS_ABLATION_PROFILES[scenario.profileId];
   const continuityDecision = continuityFor(fixture);
   const hasFreshEvidence = scenario.freshEvidenceEligible;
@@ -423,7 +423,7 @@ export function characterFocusAblationReviewContext(outputId: string): {
     item.scenarioCode === request.scenarioCode
   )!;
   const fixture = fixtureById(request.fixtureId);
-  const parsedInput = JSON.parse(request.user) as CharacterExpressionCompactInput;
+  const parsedInput = JSON.parse(request.user) as CharacterExpressionCompactInputV1;
   return {
     outputId,
     scenarioCode: scenario.scenarioCode,

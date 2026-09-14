@@ -1466,7 +1466,10 @@ function contactSequence(contactId: string): number {
   return Number(contactId.split(".").at(-1) ?? 0);
 }
 
-function observerPerceptId(side: BattleSide, evidenceId: string): string {
+export function observerPerceptId(
+  side: BattleSide,
+  evidenceId: string,
+): string {
   let hash = 14_695_981_039_346_656_037n;
   for (let index = 0; index < evidenceId.length; index += 1) {
     hash ^= BigInt(evidenceId.charCodeAt(index));

@@ -1,0 +1,18 @@
+domain SemanticRepairVerification:
+  description "Local implementation verification and Seal impact disposition under ADR0030."
+evidence E1:
+  "CLI plan audit semantic-repair-implementation-2026-09-10 passed with zero findings. New prompt identity v3 preserves v1/v2 construction. New diagnostic registry covers candidate envelope, does not change writable definition registry. Review parsing retains valid siblings and invalid diagnostics, never turns invalid review into consistent."
+evidence E2:
+  "npm typecheck completed all workspaces and deployment. npm test exit0: shared339, backend411, frontend20, deployment3, release5 =778; nine added tests. npm build and static exit0 including jscpd and Lizard1.23.0. Existing frontend chunk-size warning remains. No paid provider invocation."
+evidence E3:
+  "Regression tests reconstruct saved v2 initial payload and final draft exactly, surface V2 keys on overlap-rejected synthesis, prove source archival without retirement, reject metadata writes, retain malformed/nonexistent-path sibling feedback, accept strict mixed source migration with two guidance entries, one executable norm and one fallback while preserving original source; and finish scripted v3 repair in four requests with no-call replay and activatedfalse."
+evidence E4:
+  "Seal impact inspections for context/prompts/merge/service/verification identify 69 current refs in context upstream closure including source itself. Retained v1/v2 execution proofs and receipts describe old runs, not new implementation success. Source code and request histories remain linked by old immutable Seals until individually reviewed revisions."
+premise U1:
+  "Local scripted tests establish integration behavior, not real Grok convergence. Model internal reasons remain unknown. Prompt states runtime availability is not supplied and required capabilities are not unavailable capabilities; no availability snapshot was added to frozen persistence contract. B6 and production restoration remain unfinished."
+decision C1 based_on E1, E2, E3:
+  "High confidence local correction removes valid-review information loss and separates diagnostic read scope from write permission. Fragment validation improves detection of rejected V2 shape; archival/retirement and capability wording clarify source semantics without silently changing values or accepted six operations. This does not establish all model-response root causes corrected."
+decision C2 based_on E3, E4, U1:
+  "High confidence historical artifacts must remain byte-identical and interpreted as original outcomes. Re-sealing reviewed links is compatibility review, not evidence those old paid calls ran under v3. Current plans retain B5 test-double completion and B6 pending; append latest corrective handoff rather than rewriting historical results."
+decision A1 based_on C1, C2, E4, U1:
+  "Record Japanese result and append continuation. Compare each impact material to source, classify changed code/test/handoff, unchanged current implementation/plans, or historical evidence. Reseal only reviewed refs upstream-first; preserve historical bytes and annotate interpretation. Add separate new correction reasoning/implementation/test/result refs. Validate fsck/status; report residual stale or unverified work instead of automatic bulk endorsement. Do not run provider, commit/push, deploy or alter database."

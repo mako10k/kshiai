@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "runId": "compact-v2-provider-replay-repair-2026-09-09-v2",
+  "contractDigest": "7bc4f2ef9e8c04a733c491737667a6d7542ab924de5615a67bf61ade413a56a0",
+  "status": "succeeded",
+  "physicalRequests": 12,
+  "usage": {
+    "inputTokens": 22050,
+    "outputTokens": 2359,
+    "totalTokens": 24409
+  },
+  "usageCostUsd": 0.033460000000000004,
+  "reservedTokens": 117541,
+  "reservedCostUsd": 0.15892625,
+  "utterances": [
+    {
+      "scenario": "ordinary",
+      "turn": 1,
+      "text": "ミナトが同じ場に立っている。"
+    },
+    {
+      "scenario": "ordinary",
+      "turn": 2,
+      "text": "相手からの反応がない。"
+    },
+    {
+      "scenario": "ordinary",
+      "turn": 3,
+      "text": "相手からの反応がまだない。"
+    },
+    {
+      "scenario": "repetitive",
+      "turn": 1,
+      "text": "ここは譲らない"
+    },
+    {
+      "scenario": "repetitive",
+      "turn": 2,
+      "text": "ここは譲らない"
+    },
+    {
+      "scenario": "repetitive",
+      "turn": 3,
+      "text": "ここは譲らない"
+    }
+  ],
+  "limitations": [
+    "Synthetic in-memory fixtures only; no database or deployment path was exercised.",
+    "Six successful turns cannot establish statistical conversation-quality improvement.",
+    "Equal utterance text is valid and is not treated as a failure."
+  ]
+}

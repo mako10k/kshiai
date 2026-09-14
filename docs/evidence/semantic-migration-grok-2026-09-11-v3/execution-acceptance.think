@@ -1,0 +1,10 @@
+domain SemanticProbeV3Execution:
+  description "Record the owner's exact authorization for the consumed synthetic v3 experiment."
+evidence E1:
+  "Owner replied hai to Japanese owner-review revision1 for semantic-migration-grok-2026-09-11-v3: one synthetic Akari, grok-4.3, at most6requests, USD1.50reservation cap, no retry, no production activation, noB6, no commit and no push. Proof digest prefix abfee0cf and snapshot prefix9b9c45bc identify the reviewed candidate."
+evidence E2:
+  "Immediately before execution the prepared proof and snapshot matched, no live-start existed, TLS remained enabled, and the exact secdat dry-run supplied required XAI_API_KEY without exposing its value."
+premise U1:
+  "Authorization covered exactly one execution. It did not authorize a resend, product correction, B6, production mutation, commit, push or shared-workday stop."
+decision A1 based_on E1, E2, U1:
+  "Execute the reviewed v3 experiment once, preserve raw evidence, and never resend this consumed run. Causal conclusions require a separate successful command-line LLMThink audit."

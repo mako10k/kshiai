@@ -1,0 +1,22 @@
+domain SemanticMigrationOllamaVerification:
+  description "Verify the bounded native Ollama adapter and distinguish contract-smoke evidence from full semantic-migration evidence."
+evidence E1:
+  "E-OLLAMA-VERIFY-001: adapter tests5of5, backend typecheck and the exact Ollama0.21.1 tagged offline grammar conversion pass after restoring only the recursive generic-JSON definition."
+evidence E2:
+  "E-OLLAMA-VERIFY-002: v1 retains HTTP500 and exact rejected request; v2 retains the143952-byte full request and no terminal response after the180-second client timeout. Neither run was retried automatically."
+evidence E3:
+  "E-OLLAMA-VERIFY-003: v3-contract made one native request and returned HTTP200 with done_reason stop,122 input tokens,136 output tokens,258 total tokens and29160ms adapter elapsed time."
+evidence E4:
+  "E-OLLAMA-VERIFY-004: v3 response passes CharacterSemanticMigrationChangeSetV1Schema with zero issues and exactly equals the requested single operation and empty uncertainties."
+premise U1:
+  "The v3 fixture is intentionally small. It does not execute createCharacterMigrationContext, merge, deterministic full-candidate validation, semantic review or bounded repair."
+premise U2:
+  "The v2 latency phase split is unknown because cancellation returned no response metrics."
+decision C1 based_on E1, E3, E4:
+  "C-OLLAMA-VERIFY-001 high confidence: the native Adapter contract works for a bounded live request, including route mapping, Ollama-specific schema projection, JSON parsing, receipt accounting and strict shared response validation."
+decision C2 based_on E2, U2:
+  "C-OLLAMA-VERIFY-002: the full V4 initial payload is not accepted as a current simple-check workflow under the180-second budget. Do not assert a finer latency root cause or silently extend and resend it."
+decision C3 based_on E3, E4, U1:
+  "C-OLLAMA-VERIFY-003 evidence boundary: classify v3 as a local adapter contract smoke only, not proof of full migration quality, xAI equivalence or repair convergence."
+decision A1 based_on C1, C2, C3:
+  "A-OLLAMA-VERIFY-001: retain the Adapter and small contract smoke as the local precheck, preserve all three run records, and require separate evidence for any later full-model claim."

@@ -1,0 +1,5 @@
+{
+  "phase": "response",
+  "httpStatus": 500,
+  "body": "{\"error\":\"invalid JSON schema in format\"}"
+}

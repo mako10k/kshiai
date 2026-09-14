@@ -1,0 +1,18 @@
+domain SemanticProbeResult:
+  description "Audit the observed rejection without retrying the consumed run."
+evidence E1:
+  "Live-result records one attempted network request, pending, activated=false and currentGenerationUnchanged=true. call-1-response HTTP400 body is: Unsupported response format. Self referenced definition are not supported. No usage, generated response or terminal accounting receipt was supplied."
+evidence E2:
+  "Retained response_format schema contains self-references in value.anyOf array.items and object.additionalProperties to definitions.character_semantic_migration_change_set_v1_properties_operations_items_properties_value; that definition contains the same references."
+evidence E3:
+  "Shared CharacterMigrationJsonSchema uses z.lazy recursive arrays and records. Operation.value uses it. character-migration-prompts serializes that schema with zodResponseFormat; the probe sends it unchanged as strict json_schema."
+evidence E4:
+  "Preparation tested an injected HTTP transport and server validation, not xAI schema acceptance; this limitation was disclosed. The reserved first-call cost was USD0.17413625, not an actual charge. SQLite path is /tmp/kshiai-semantic-probe-Me4suO."
+premise ALTERNATIVES:
+  "Schema self-recursion rejection matches both explicit HTTP400 and exact submitted references. Content semantics, token exhaustion or model reasoning are not evidenced causes of this pre-generation failure. Other unsupported schema features may still surface after correction; no absence of additional problems is claimed."
+decision ROOT based_on E1, E2, E3, ALTERNATIVES:
+  "C-PROBE-002 high confidence: the failure-producing integration choice was directly reusing the recursively typed generic JSON value schema as the provider strict-output grammar, whose submitted self-reference is rejected by this xAI endpoint. Recursive application typing is not inherently a defect; the incompatible boundary projection is. Library serialization preserves the recurrence and the adapter forwards it. This is not a model meaning-preservation failure."
+decision ESCAPE based_on E4, ROOT:
+  "Local fake transport did not enforce provider grammar restrictions; this explains why local checks passed, not what created the incompatible schema. Paid probe detected it at its first request. No generation, review or repair quality has been observed."
+decision ACTION based_on ROOT, ESCAPE, E1, E4:
+  "Record the consumed run and audit; preserve raw HTTP evidence and isolated DB, seal artifacts and update continuation. Do not retry, change schemas or claim zero cost. Report actual usage/cost unknown and reservation separately. Candidate correction for later approval is a provider-compatible nonrecursive projection derived from allowed typed target fields, retaining typed internal values and full server validation. A JSON-string workaround or relaxed output mode would be a separate design choice, not an automatic fix. Add provider grammar regression with any future correction; it does not itself fix the source boundary."

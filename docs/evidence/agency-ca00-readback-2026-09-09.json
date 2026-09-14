@@ -1,0 +1,201 @@
+{
+  "schema": "kshiai.agency-ca00-readback.v1",
+  "date": "2026-09-09",
+  "initial_commit": "0754ca7d796b481a51f39723d1e331c46ce470ff",
+  "execution_changes": "local uncommitted; no push, paid calls or runtime-contract changes",
+  "tests": {
+    "total": 670,
+    "passed": 670,
+    "failed": 0,
+    "new_inventory_cases": 16,
+    "final_inventory_rerun_passed": 16,
+    "typecheck": "passed",
+    "lizard": "passed baseline with 185 files and 3207 functions"
+  },
+  "hashes": {
+    "fixture": "de4ca08be06dc5c937e983c309b9366512f91f8daa24cd0adc679f48ee65811a",
+    "test": "dc29579eb5d8c56d626557b6ddc2c68f8654a01b023c91341733b2e71eb16f36",
+    "requirement": "f733f85a153349e4be28785fef05d93006d057e0e5d507a8423b658f9bb7f444"
+  },
+  "planning": {
+    "t026": "done - bounded current-contract inventory and rubric",
+    "t027": "active - candidate authored, first owner review route missing",
+    "t028": "not accepted",
+    "pert_ok": true,
+    "warnings": [
+      {
+        "code": "PTDAG-208",
+        "disposition": "Retained completed history; no DAG history removal authorized."
+      },
+      {
+        "code": "PTMAC-102",
+        "disposition": "Milestone acceptance criterion sets are not declared in PERT; document-level checks are not owner acceptance. Do not fabricate acceptance."
+      }
+    ]
+  },
+  "sealgraph": {
+    "registration": "docs/sealgraph-registration-v4.json",
+    "refs": 36,
+    "seals": 63,
+    "stale": 0,
+    "fsck": "ok",
+    "all_bound_sources_match": true,
+    "heads": [
+      {
+        "ref": "adr/0027",
+        "seal": "87d4106035e8b09c667d27d164691b16b93c12c6c683b414097b3763b0c53e5d"
+      },
+      {
+        "ref": "adr/character-focus",
+        "seal": "9c3006ff30fb99fa76fe41bfe2f85033ddbfad9a2f67f7bdfaa7ecda6752d235"
+      },
+      {
+        "ref": "adr/expression-state",
+        "seal": "2dce4e3a33324a12de69701b67ab12eae7a2b6e7b45491ff923c4bd9bc3b4697"
+      },
+      {
+        "ref": "adr/psyche-boundary",
+        "seal": "87d4106035e8b09c667d27d164691b16b93c12c6c683b414097b3763b0c53e5d"
+      },
+      {
+        "ref": "adr/psyche-repair",
+        "seal": "1ede4f74fa5c98580939051e0276a3a5e05ccddae73793b333f7156af7842ab3"
+      },
+      {
+        "ref": "adr/structured-character",
+        "seal": "a16926e3e7cc0153d24ac2ec61390a382f1a0a95abb1cf73d83af40da60f754e"
+      },
+      {
+        "ref": "archive/adr-0004",
+        "seal": "c60f19e3e97fad6e86e0e3c2843ac50392ecf42eb145532e81dbcf4f2f6dc8fa"
+      },
+      {
+        "ref": "backlog/character-agency",
+        "seal": "fda6c3bdad5cf33104c6e561a9d11ba41963cd28d277439ff8e549b318b89dde"
+      },
+      {
+        "ref": "design/agency-responsibility",
+        "seal": "c4e28687f61a8507cc2579da2ec97bccbbd38c07684c797db9eb778f9c9f34e0"
+      },
+      {
+        "ref": "design/psyche-reaction",
+        "seal": "c3be1f179e29fc80f45d536c014355ee6abca2698be353e34c4b43e25332e118"
+      },
+      {
+        "ref": "design/psyche-slice",
+        "seal": "2df2b781a50cf88d8871bc16710753dc55c24cc90f46b143de7b4a6b66a505e8"
+      },
+      {
+        "ref": "evidence/adr-0027-implementation-impact",
+        "seal": "762225f2f1dd4de8ca84d296fc37ee534eeed36a71144c0b256e6786d358e1e6"
+      },
+      {
+        "ref": "evidence/agency-ca00",
+        "seal": "2173add4879bfd105d946070b5895c2c1f280450f211cc87ab652c1162fd886f"
+      },
+      {
+        "ref": "implementation/agency-replay-baseline",
+        "seal": "909f19a6715f6ca8953ba62c79d58e9db0e196b8cb81f7f9f8e5b22256642015"
+      },
+      {
+        "ref": "implementation/battle-persistence",
+        "seal": "6152d587ac52d31be41745c4a1a3179d763e5239f2418f01c9fe72e2b75518da"
+      },
+      {
+        "ref": "implementation/battle-service",
+        "seal": "d15f0e74251ebf6d1e6c79d23791cec636e7a48de9a1a63d3355f0284fe2591b"
+      },
+      {
+        "ref": "implementation/conscious-self-projection",
+        "seal": "1b37e3ef76ffd4675dc0666dc88b13891ac790d10f1bebc4ae0db30ffba7460b"
+      },
+      {
+        "ref": "implementation/decision-profile",
+        "seal": "0d552eb32f756b6cbe070aab49454c2e133a0d965b3e7cf64b7cd59e79f6be4c"
+      },
+      {
+        "ref": "implementation/dialogue-generation",
+        "seal": "f8fd630c0148b08be95139cf9eba9afa6d445d602879ee1a5337c075accb8767"
+      },
+      {
+        "ref": "implementation/expression-prompt",
+        "seal": "c2f4699be7535ea73cfe0f2a533bca647aa143ee6c3bcb59962232115288e97b"
+      },
+      {
+        "ref": "implementation/llm-adapter",
+        "seal": "6c2e9e3e526983af768b2a898efbcc34e949d64ed9fb0b1ab875d4b37eb61c5a"
+      },
+      {
+        "ref": "implementation/llm-types",
+        "seal": "3ac35cc572548ca109a414a0af0b980383f448a773c12e3aa51854a1bd3b83ca"
+      },
+      {
+        "ref": "implementation/mock-adapter",
+        "seal": "fbaa75723a9cb10cd2ef10f7d277f93caa7741ae87d6bd106651cf6b1e4ee531"
+      },
+      {
+        "ref": "implementation/operation-taxonomy",
+        "seal": "172ba316544d2962cb161fafe87087e9707e87b7e8e7500fa76077c443757883"
+      },
+      {
+        "ref": "implementation/private-observability",
+        "seal": "f4ebef6061bc6f748fea8c8715c38eeffcb9473d8729b220e63b07058436c7af"
+      },
+      {
+        "ref": "implementation/psyche-decoder",
+        "seal": "504534ac5917cae43210efd2fa55eaef6b33c66dc1290e33442299c5f42715a1"
+      },
+      {
+        "ref": "implementation/psyche-schema",
+        "seal": "77e2e8d6ebe4503d2a86eebb1cc85b4fc0f5af2405b0a135f6163bcd4c6dca08"
+      },
+      {
+        "ref": "plan/agency-implementation",
+        "seal": "5edfe0393dee08dbb1f01f23eb3f086a19505637b67ab4f8a865f1bb84323fe2"
+      },
+      {
+        "ref": "plan/dialogue-expression",
+        "seal": "7b05f96f566d082a28395180bbca4748d2851e2e4998ce9016b05a0a30e523fd"
+      },
+      {
+        "ref": "projection/adr-0025",
+        "seal": "a95dbf64df749d20fda4735d7a3a9c2afb27ac8596764e2bf1b4e90a5a08a740"
+      },
+      {
+        "ref": "projection/adr-0026",
+        "seal": "3f4550a6c52c61a917739cd1bfeb3ac7ff9911a94b6e10e6b3e18b85eb2dd73f"
+      },
+      {
+        "ref": "projection/adr-0027",
+        "seal": "eb9ab069a0773222b64bfc78e459c28f72177c4d277d9bbd06f277a7d8d9342a"
+      },
+      {
+        "ref": "proposal/agency-requirements-v1",
+        "seal": "669946bfb5eff943cece9714620639ca322a688a5c5d2436e9912c170bc92af5"
+      },
+      {
+        "ref": "review/agency-requirements-v1-input",
+        "seal": "cf8701eb015a5a2079ef5f974537f523bce8cfa5e4a455a5b4645ef659452024"
+      },
+      {
+        "ref": "verification/agency-fixtures",
+        "seal": "b11371cc55e48e206838d3c6afe37a26e6039275b346c1f33765d1fbbe1c770b"
+      },
+      {
+        "ref": "verification/agency-inventory",
+        "seal": "279678af0f71aaceda4a91ca43fa061d038877464a072c8b85bb3f375cec7dee"
+      }
+    ]
+  },
+  "review": {
+    "path": "docs/character-agency-requirements-v1-review-input.md",
+    "stage": "step 1 complete, step 2 pending",
+    "proposed_route": "REVIEW_THEN_DECIDE",
+    "independent_review": "not run"
+  },
+  "limitations": [
+    "Mock/adapter fixture results are not Grok quality results.",
+    "New generation, privacy and failure-combination behavior is not implemented or accepted.",
+    "No paid comparison, publication, deployment or shared-workday change."
+  ]
+}

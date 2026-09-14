@@ -1,0 +1,72 @@
+domain ADR0030B4ActionPlan:
+  description "Choose the bounded local implementation shape for ADR-0030 B4 durable attempts and preservation."
+
+problem P1:
+  |
+    Accepted ADR-0030 and plan task cb204 require durable frozen migration
+    attempts, individually identified provider requests, restricted bounded
+    preservation capsules, disclosure controls, and crash/retry fixtures before
+    semantic generation and repair orchestration are implemented.
+
+evidence E_REQUIREMENT:
+  |
+    ADR-0030 D5, D6 and D10 require a 256 KiB content-digested capsule outside
+    ordinary compilers, immutable attempt identity over source and provider
+    inputs, distinct providerRequestId receipts, and replay without duplicate
+    provider work. Requirement R9 says provider failure leaves the current
+    generation unchanged and the attempt retryable.
+
+evidence E_SEQUENCE:
+  |
+    Plan cb204 precedes cb205 semantic change-set generation and repair, cb206
+    structural enforcement, cb207 semantic review, and cb208 owner acceptance.
+    B4 therefore must not invent or deliver those later behaviors.
+
+evidence E_CURRENT:
+  |
+    The repository already has immutable asset_generations, CAS activation, a
+    SQLite bootstrap schema in backend/src/db.ts, ordered PostgreSQL migrations,
+    transaction helpers, canonical JSON hashing, and isolated SQLite repository
+    tests. It has no character semantic migration attempt, provider-request, or
+    preservation-capsule tables or repository.
+
+premise P_BOUNDARY:
+  |
+    B4 is local implementation only. It does not authorize provider calls,
+    production data writes, V3 generation activation, authoring-policy cutover,
+    deployment, or migration of any character.
+
+premise P_APPEND:
+  |
+    Append-oriented persistence is most directly represented by immutable base
+    records and separate append-only event or receipt records. Updating a single
+    status or response column would obscure crash and retry history.
+
+premise A1:
+  "Alternative: extend character_authoring_attempts with migration columns and mutable status fields."
+
+premise A2:
+  "Alternative: add dedicated immutable attempt and provider-request records, append-only events and receipts, and a separately restricted capsule repository."
+
+premise A3:
+  "Alternative: define schemas and in-memory fixtures only, deferring physical persistence."
+
+decision D1 based_on P1, E_REQUIREMENT, E_SEQUENCE, E_CURRENT, P_BOUNDARY, P_APPEND, A1, A2, A3:
+  |
+    Select A2. Add shared strict schemas for frozen attempt inputs, disclosure
+    grants, request identity, receipts, events, and preservation capsules. Add a
+    forward-only PostgreSQL migration and matching SQLite bootstrap tables. Add
+    one repository that inserts immutable attempt and request bases, appends
+    events and one terminal receipt per request, replays exact identities,
+    rejects identity drift, enforces the six-request ceiling and 256 KiB capsule
+    limit, and exposes capsule reads only through the registered future-migration
+    consumer API. Verify exact replay, crash resume, failure retry, disclosure
+    rejection, capsule bounds, and absence of asset-generation/current-pointer
+    writes. Do not add semantic operations, provider invocation, candidate merge,
+    owner acceptance, activation, or policy cutover in B4.
+
+premise LIMIT:
+  |
+    Passing local fixtures will establish storage and retry mechanics only. It
+    will not establish provider semantic quality, complete migration validation,
+    production migration safety, deployment readiness, or restored characters.
