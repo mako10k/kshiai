@@ -170,6 +170,7 @@ task cc302 cm303 -> cm302:
   requires:
     cr001 1
     cr002 1
+  source "docs/evidence/a3-b8-integrated-stage-failure-2026-09-14.md"
 
 gate cg303 cm302 -> cm103:
   reason "The combined Stage proof supplies the A3 new-character creation deployment evidence."
