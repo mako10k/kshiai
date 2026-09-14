@@ -165,6 +165,7 @@ task cc302 cm303 -> cm302:
   title "Separately approve and run the combined A3 B8 Stage proof"
   description "Separately approve one Stage deployment of the exact merged and tagged revision that verifies corrected V2 creation and strict historical V2 and non-current V3 reads, then read back health and rollback readiness. Do not activate schema 3 or promote production."
   duration 1p
+  status active
   owner "user and codex"
   requires:
     cr001 1
@@ -373,3 +374,10 @@ work_event WE-119a95a48fc269792ba3863d33c9efd5e58c286dc1d6a1cee21874494367e60f:
   task cc303
   kind finish
   occurred_at 2026-09-14T18:25:28+09:00
+
+work_event WE-ba6d094284559cf32b181dbb1f1659d96e73c86be17232ae4f943147d46c0083:
+  model 1
+  task cc302
+  kind start
+  occurred_at 2026-09-14T18:36:04+09:00
+  planned_value 1p
