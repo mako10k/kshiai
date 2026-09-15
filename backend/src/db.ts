@@ -803,6 +803,13 @@ function ensureSqliteSemanticAuthoring(database: SqliteDatabase.Database): void 
       created_at TEXT NOT NULL,
       PRIMARY KEY (owner_user_id, command_id)
     );
+    CREATE TABLE IF NOT EXISTS character_focused_authoring_payloads (
+      run_id TEXT PRIMARY KEY REFERENCES semantic_authoring_runs(run_id) ON DELETE CASCADE,
+      source_json TEXT NOT NULL,
+      result_json TEXT,
+      created_at TEXT NOT NULL,
+      finished_at TEXT
+    );
   `);
 }
 

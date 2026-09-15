@@ -228,6 +228,7 @@ export async function renewFamilyAuthoringFence(
   family: AuthoringFamily,
   attemptId: string,
   executionFence: AuthoringExecutionFence,
+  leaseDurationMs = AUTHORING_JOB_CLAIM_MS,
   now = new Date(),
 ): Promise<void> {
   const spec = FAMILY[family];
@@ -242,7 +243,7 @@ export async function renewFamilyAuthoringFence(
       attemptId,
       executionFence.workerId,
       executionFence.fencingToken,
-      new Date(now.getTime() + AUTHORING_JOB_CLAIM_MS).toISOString(),
+      new Date(now.getTime() + leaseDurationMs).toISOString(),
       nowIso,
     ],
   );
@@ -280,6 +281,7 @@ export async function claimNextFamilyAuthoringJob(input: {
   workerId: string;
   cap?: number;
   now?: Date;
+  leaseDurationMs?: number;
 }): Promise<{
   family: AuthoringFamily;
   attemptId: string;
@@ -290,7 +292,11 @@ export async function claimNextFamilyAuthoringJob(input: {
   const cap = input.cap ?? 1;
   const now = input.now ?? new Date();
   const nowIso = now.toISOString();
-  const claimedUntil = new Date(now.getTime() + AUTHORING_JOB_CLAIM_MS).toISOString();
+  const leaseDurationMs = input.leaseDurationMs ?? AUTHORING_JOB_CLAIM_MS;
+  if (!Number.isSafeInteger(leaseDurationMs) || leaseDurationMs <= 0) {
+    throw new Error("AUTHORING_JOB_LEASE_INVALID");
+  }
+  const claimedUntil = new Date(now.getTime() + leaseDurationMs).toISOString();
   await recoverExpiredFamilyAuthoringJobs(nowIso);
   return withTransaction(async (connection) => {
     await lockEnvironmentAuthoringScheduler(connection);
@@ -372,11 +378,16 @@ export async function claimFamilyAuthoringJob(input: {
   workerId: string;
   cap?: number;
   now?: Date;
+  leaseDurationMs?: number;
 }): Promise<"busy" | "terminal" | ExactAuthoringJobClaim> {
   const cap = input.cap ?? 1;
   const now = input.now ?? new Date();
   const nowIso = now.toISOString();
-  const claimedUntil = new Date(now.getTime() + AUTHORING_JOB_CLAIM_MS).toISOString();
+  const leaseDurationMs = input.leaseDurationMs ?? AUTHORING_JOB_CLAIM_MS;
+  if (!Number.isSafeInteger(leaseDurationMs) || leaseDurationMs <= 0) {
+    throw new Error("AUTHORING_JOB_LEASE_INVALID");
+  }
+  const claimedUntil = new Date(now.getTime() + leaseDurationMs).toISOString();
   await recoverExpiredFamilyAuthoringJobs(nowIso);
   return withTransaction(async (connection) => {
     await lockEnvironmentAuthoringScheduler(connection);

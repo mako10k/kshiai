@@ -20,18 +20,23 @@ import {
   type CharacterDefinitionV3,
   type CharacterProposalPayloadV1,
   type MigrationPreservationCapsuleV1,
+  type ProposalProvenanceV1,
   type SemanticAuthoringAdapterV1,
   type SemanticAuthoringModeV1,
   type SemanticProposalV1,
   type SourceDispositionDecisionV1,
 } from "@kshiai/shared";
 import { createHash } from "node:crypto";
+import { buildCharacterMigrationSourceLedgerV1, characterClaimValueV1,
+  characterSourceCopyMatchesV1, characterSourceDispositionSatisfiedV1, splitCharacterV2NormV1,
+  type CharacterSourceClaimV1 } from "./character-source-ledger.js";
 
 export type CharacterAuthoringSourceV1 =
   | Readonly<{ kind: "create"; naturalText: string }>
   | Readonly<{
       kind: "revise";
       definition: CharacterDefinitionV3;
+      naturalText?: string;
       requestedCluster: "skeleton" | "mechanics" | "relationship-expression" | "appearance";
     }>
   | Readonly<{
@@ -45,6 +50,7 @@ export type CharacterObligationV1 = Readonly<{
   required: boolean;
   cluster: "skeleton" | "mechanics" | "relationship-expression" | "appearance" | "ledger";
   resolved: boolean;
+  sourceClaim?: CharacterSourceClaimV1;
 }>;
 
 export type CharacterFindingV1 = Readonly<{
@@ -90,6 +96,8 @@ const ledgerProposalSchema = createSemanticProposalV1Schema(
 const mechanicsOps = new Set([
   "set_action_semantics",
   "set_inventory_semantics",
+  "upsert_conscious_guidance",
+  "remove_conscious_guidance",
   "upsert_action_norm",
   "remove_action_norm",
   "upsert_mechanical_fallback",
@@ -390,11 +398,14 @@ function v2ToCharacterV3(definition: unknown): CharacterDefinitionV3 | null {
   if (!parsed.success) {
     return null;
   }
-  const { schemaVersion: _schemaVersion, actionNorms: _actionNorms, ...stable } = parsed.data;
+  const { schemaVersion: _schemaVersion, actionNorms, ...stable } = parsed.data;
   const converted = CharacterDefinitionV3Schema.safeParse({
     ...stable,
     schemaVersion: 3,
-    actionNorms: [],
+    actionNorms: actionNorms.flatMap((norm) => {
+      const { compatible } = splitCharacterV2NormV1(norm);
+      return compatible.success ? [compatible.data] : [];
+    }),
     consciousGuidance: [],
     mechanicalConflictFallbacks: [],
   });
@@ -438,14 +449,31 @@ function claimIsResolved(candidate: CharacterDefinitionV3, obligationId: string)
 function refreshClaimObligations(
   candidate: CharacterDefinitionV3,
   obligations: ReadonlyMap<string, CharacterObligationV1>,
+  sourceDispositions?: ReadonlyMap<string, SourceDispositionDecisionV1>,
+  provenance?: ReadonlyMap<string, readonly ProposalProvenanceV1[]>,
+  preserveExisting = true,
 ): Map<string, CharacterObligationV1> {
   const next = new Map(obligations);
+  const provenanceEntries = provenance ? [...provenance.values()].flat() : [];
   for (const [id, item] of next) {
+    if (item.sourceClaim) {
+      const decision = sourceDispositions?.get(item.sourceClaim.sourceClaimId);
+      const resolved = decision
+        ? characterSourceDispositionSatisfiedV1(candidate, item.sourceClaim, decision, provenanceEntries)
+        : characterSourceCopyMatchesV1(candidate, item.sourceClaim)
+          || (preserveExisting && item.resolved);
+      next.set(id, { ...item, resolved });
+      continue;
+    }
     if (item.cluster === "ledger") {
       continue;
     }
     next.set(id, { ...item, resolved: claimIsResolved(candidate, id) });
   }
+  const sourceItems = [...next.values()].filter((item) => item.sourceClaim);
+  const aggregate = next.get("source-disposition");
+  if (aggregate) next.set("source-disposition", { ...aggregate,
+    resolved: sourceItems.length > 0 && sourceItems.every((item) => item.resolved) });
   return next;
 }
 
@@ -460,6 +488,7 @@ function keyBelongsToCluster(
   if (cluster === "mechanics") {
     return key === "mechanics"
       || key.startsWith("actionNorms:")
+      || key.startsWith("consciousGuidance:")
       || key.startsWith("mechanicalConflictFallbacks:")
       || key.startsWith("capabilities:actions:")
       || key.startsWith("inventory:");
@@ -655,6 +684,8 @@ function decodeCharacterSource(value: unknown) {
             kind: "revise" as const,
             definition: parsed.data,
             requestedCluster: cluster,
+            ...("naturalText" in value && typeof value.naturalText === "string"
+              ? { naturalText: value.naturalText } : {}),
           },
         }
       : { accepted: false as const };
@@ -817,23 +848,50 @@ function stageLedgerProposal(
     candidate: CharacterDefinitionV3;
     obligations: ReadonlyMap<string, CharacterObligationV1>;
     findings: ReadonlyMap<string, CharacterFindingV1>;
+    provenance?: ReadonlyMap<string, readonly ProposalProvenanceV1[]>;
+    sourceDispositions?: ReadonlyMap<string, SourceDispositionDecisionV1>;
     proposal: CharacterProposalV1;
   }>,
 ) {
   const payload = input.proposal.payload;
   if (payload.kind === "classify_source_disposition") {
-    const sourceDispositions = new Map<string, SourceDispositionDecisionV1>();
-    for (const decision of payload.decisions) {
-      sourceDispositions.set(decision.sourceClaimId, decision);
+    const sourceDispositions = new Map(input.sourceDispositions);
+    const provenance = new Map(input.provenance);
+    for (const entry of input.proposal.provenance) {
+      provenance.set(entry.targetClaimId, [...(provenance.get(entry.targetClaimId) ?? []), entry]);
     }
-    const covered = sourceDispositions.has("identity.displayName")
-      || sourceDispositions.size > 0;
+    const obligations = new Map(input.obligations);
+    for (const decision of payload.decisions) {
+      const item = obligations.get(`source:${decision.sourceClaimId}`);
+      const claim = item?.sourceClaim;
+      if (!claim || decision.targetClaimIds.some((id) => characterClaimValueV1(input.candidate, id) === undefined)) {
+        return { accepted: false as const, findingKey: "source-disposition",
+          finding: { code: "source-claim-unregistered", explanation: "Disposition must name registered source and existing target claims." } };
+      }
+      if (decision.disposition === "preserve" && (decision.targetClaimIds.length !== 1
+        || decision.targetClaimIds[0] !== claim.targetClaimId
+        || !characterSourceCopyMatchesV1(input.candidate, claim))) {
+        return { accepted: false as const, findingKey: "source-disposition",
+          finding: { code: "source-copy-mismatch", explanation: "Claimed preservation differs from the frozen source." } };
+      }
+      sourceDispositions.set(decision.sourceClaimId, decision);
+      obligations.set(item.obligationId, { ...item,
+        resolved: characterSourceDispositionSatisfiedV1(
+          input.candidate,
+          claim,
+          decision,
+          input.proposal.provenance,
+        ) });
+    }
     return {
       accepted: true as const,
       candidate: input.candidate,
-      obligations: covered
-        ? resolveObligation(input.obligations, "source-disposition")
-        : input.obligations,
+      obligations: refreshClaimObligations(
+        input.candidate,
+        obligations,
+        sourceDispositions,
+        provenance,
+      ),
       findings: input.findings,
       sourceDispositions,
     };
@@ -914,6 +972,8 @@ function stageCharacterProposal(
     candidate: CharacterDefinitionV3;
     obligations: ReadonlyMap<string, CharacterObligationV1>;
     findings: ReadonlyMap<string, CharacterFindingV1>;
+    provenance?: ReadonlyMap<string, readonly ProposalProvenanceV1[]>;
+    sourceDispositions?: ReadonlyMap<string, SourceDispositionDecisionV1>;
     proposal: CharacterProposalV1;
   }>,
 ) {
@@ -991,10 +1051,23 @@ function stageCharacterProposal(
       finding: { code: "protected-mechanics", explanation: "portrait and combat are not model-writable" },
     };
   }
+  const stagedProvenance = new Map(input.provenance);
+  for (const entry of input.proposal.provenance) {
+    stagedProvenance.set(entry.targetClaimId, [
+      ...(stagedProvenance.get(entry.targetClaimId) ?? []),
+      entry,
+    ]);
+  }
   return {
     accepted: true as const,
     candidate,
-    obligations: refreshClaimObligations(candidate, input.obligations),
+    obligations: refreshClaimObligations(
+      candidate,
+      input.obligations,
+      input.sourceDispositions,
+      stagedProvenance,
+      false,
+    ),
     findings: input.findings,
   };
 }
@@ -1004,10 +1077,18 @@ function finalizeCharacterCandidate(
     candidate: CharacterDefinitionV3;
     obligations: ReadonlyMap<string, CharacterObligationV1>;
     findings: ReadonlyMap<string, CharacterFindingV1>;
+    provenance?: ReadonlyMap<string, readonly ProposalProvenanceV1[]>;
+    sourceDispositions?: ReadonlyMap<string, SourceDispositionDecisionV1>;
   }>,
 ) {
   const findings = new Map(input.findings);
-  let obligations = refreshClaimObligations(input.candidate, input.obligations);
+  let obligations = refreshClaimObligations(
+    input.candidate,
+    input.obligations,
+    input.sourceDispositions,
+    input.provenance,
+    false,
+  );
   const lenses = ["compiler", "disclosure", "cross-reference", "source-consistency", "authority"] as const;
   for (const lens of lenses) {
     if (runCharacterLens(lens, input.candidate) === "pass") {
@@ -1030,7 +1111,7 @@ function finalizeCharacterCandidate(
   return {
     accepted: true as const,
     finalCandidate: parsed.data,
-    finalCandidateDigest: digestCandidate(parsed.data),
+    finalCandidateDigest: createHash("sha256").update(JSON.stringify(parsed.data)).digest("hex"),
     obligationCoverage: {
       resolvedRequiredObligationCount: [...obligations.values()].filter((item) => item.required && item.resolved).length,
       requiredObligationCount: [...obligations.values()].filter((item) => item.required).length,
@@ -1061,14 +1142,28 @@ export function createCharacterSemanticAuthoringAdapterV3(): SemanticAuthoringAd
         : source.kind === "migrate"
           ? v2ToCharacterV3(source.definition) ?? scaffoldCharacterV3()
           : scaffoldCharacterV3();
-      return {
-        candidate,
-        obligations: baselineObligations(
+      const obligations = baselineObligations(
           candidate,
           mode,
           source.kind === "revise" ? source.requestedCluster : undefined,
-        ),
-      };
+        );
+      if (source.kind !== "migrate") return { candidate, obligations };
+      const ledger = buildCharacterMigrationSourceLedgerV1(source.definition, candidate, source.capsule);
+      for (const claim of ledger.claims) {
+        const id = `source:${claim.sourceClaimId}`;
+        obligations.set(id, { ...obligation(id, "ledger", ledger.sourceDispositions.has(claim.sourceClaimId)),
+          sourceClaim: claim });
+      }
+      const refreshed = refreshClaimObligations(candidate, obligations);
+      const changedRoleMeaningRemains = ledger.claims.some((claim) =>
+        claim.sourceClaimId.endsWith(":legacyMeaning")
+          && !ledger.sourceDispositions.has(claim.sourceClaimId));
+      if (changedRoleMeaningRemains) {
+        const mechanics = refreshed.get("mechanics");
+        if (mechanics) refreshed.set("mechanics", { ...mechanics, resolved: false });
+      }
+      return { candidate, obligations: refreshed,
+        provenance: ledger.provenance, sourceDispositions: ledger.sourceDispositions };
     },
     selectWork: selectCharacterWork,
     describeCapabilities: describeCharacterCapabilities,

@@ -1,0 +1,100 @@
+domain StructuredSemanticAuthoringKernelDesignV1Revision5Review:
+  description "Corrected independent evidence-chain review of exact D11 design candidate revision five."
+problem P1:
+  |
+    Determine whether revision five closes the revision-four findings and satisfies the
+    accepted design-level contract for information-gaining provider recovery without
+    adding an unaccepted semantic-exactness or proof-protocol requirement.
+evidence E1:
+  |
+    Exact review subject Seal
+    69c9c98937d7d610384823ae339ea464724f6e983d8b5500d3aef6942945a240
+    matches the workfile SHA256
+    426470047d0e380de90624192b9db71d3f30788fa44423ed0710f9cb1e6cdba4.
+evidence E2:
+  |
+    Revision five lines 543 through 560 makes eligibility precede admission, maps zero,
+    consumed, and no-basis recovery to provider_transport_unavailable, maps otherwise-
+    eligible resource admission failure to resource_exhausted with exhausted dimensions
+    and accounting, and retains timeout evidence on both paths.
+evidence E3:
+  |
+    Revision five lines 772 through 781 requires separate fixture cases and outcomes for
+    zero, consumed, no-basis, resource admission, late result, and blind replay.
+evidence E4:
+  |
+    Accepted foundation revision three F8 lines 210 through 228 permits source-supported
+    synthesis, creative completion, coherent interpretation, low-importance adjustment,
+    valid deferral, and preserved retirement as reviewable semantic-migration outcomes
+    when domain invariants hold.
+evidence E5:
+  |
+    Accepted foundation revision three F9 lines 232 through 255 separately requires every
+    retry to add information, narrow the problem, or test a materially different
+    alternative; forbids blind retry; and permits repetition after transport conditions
+    change. Lines 375 through 378 say execution safeguards constrain runaway execution,
+    not permitted synthesis, and leave detector details to successor design and tests.
+evidence E6:
+  |
+    Revision five lines 531 through 557 requires the server to establish exactly one
+    truthful typed recoveryBasis before paid admission, disallows a model assertion as
+    the basis, rejects recovery when no truthful basis exists, and assigns a distinct
+    request identity to an admitted recovery.
+evidence E7:
+  |
+    Accepted ADR0031 D11 requires exact typed DTO and patch schemas, execution-policy
+    numbers, detector and window rules, public mapping, persistence and fence changes,
+    adapter conformance, and controlled-port source-based retry tests. It does not state
+    that design acceptance requires a general formal proof algebra for semantic
+    materiality or the additional evidence subtypes proposed by the original review.
+evidence E8:
+  |
+    The original revision-five review P1 required a server-owned materiality verifier,
+    exact admissible evidence semantics, post-timeout route binding, canonical digest
+    scope, and extra metadata-only and stale-evidence fixtures as design-acceptance
+    blockers.
+evidence E9:
+  |
+    After the migration and retry requirements were independently rechecked, the product
+    owner instructed revision of this review under the corrected distinction. This
+    instruction authorizes correction of the review record but is not evidence for the
+    technical interpretation and does not accept the design.
+premise C1:
+  |
+    Semantic-migration output exactness and retry admission are different concerns.
+    Classified generative migration can coexist with strict target schema, protected
+    domain invariants, reconciliation, and bounded execution controls.
+premise C2:
+  |
+    Unequal digests alone do not prove material information gain, but that observation
+    identifies a possible implementation hazard rather than a current design
+    contradiction when the design already requires a truthful server-owned basis,
+    rejects its absence, and requires no-blind-replay conformance evidence.
+premise C3:
+  |
+    Turning that possible implementation hazard into a new exact proof protocol and a
+    current P1 blocker adds a control not established by the accepted requirement or a
+    concrete unresolved design outcome. This is AP007 Control Accretion.
+premise U1:
+  |
+    Runtime implementation conformance, provider behavior, and the implementation's
+    actual treatment of incidental digest drift remain unverified and outside this
+    design review.
+decision D1 based_on P1, E2, E3:
+  |
+    Revision five closes both revision-four P1 findings: failure classification,
+    no-basis terminalization, retained receipt and matching fixture expectations are now
+    explicit.
+decision D2 based_on P1, E4, E5, E6, E7, E8, C1, C2, C3:
+  |
+    Do not adopt the original revision-five P1 finding. Its requested verifier and
+    evidence protocol may be considered during implementation, but current evidence does
+    not make them design-acceptance requirements. The finding confused permitted
+    generative migration semantics with the separate behavioral prohibition on blind
+    retry and promoted an optional elaboration into a blocker.
+decision D3 based_on P1, D1, D2, E9, U1:
+  |
+    Report PASS for exact revision five with no P0 through P3 findings. Preserve runtime
+    F9 conformance as an implementation verification obligation. Do not infer design
+    acceptance, implementation, provider execution, PERT resumption, route cutover,
+    deployment, production effects, pointer or policy activation, rollback, or release.

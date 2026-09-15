@@ -1,0 +1,26 @@
+domain Cc304MigrationSpeechProjection:
+  description "Resolve the focused migration stop at initial relationship-expression work without relaxing resource policy."
+evidence E1:
+  "The owner upgrade entrypoint registered mode migrate and the controlled HTTP provider received skeleton and mechanics work before the attempt stopped."
+evidence E2:
+  "The next prepared work was relationship-expression with estimated input 6464 against the existing 6000 per-call limit, so no third provider request was sent."
+evidence E3:
+  "The relationship-expression operation contract was already narrowed to replace_speech_policy because the candidate still had the legacy unspecified speech register."
+evidence E4:
+  "The focusedFields projection nevertheless included both speechPolicy and relationshipSeeds for source and candidate, although the skeleton step had already satisfied the relationship seed obligation."
+evidence E5:
+  "The accepted focused-authoring design limits each request to the active mutation closure and does not authorize a numeric execution-policy change."
+evidence E6:
+  "After removing relationshipSeeds from initial-speech projection, the unchanged request still measured 6192; its frozen-source speech projection was 601 bytes and its candidate speech projection was 503 bytes."
+premise P1:
+  "The stop is produced by projecting resolved relationship data outside the only legal mutation in the active work, which adds irrelevant source and candidate material to the request."
+premise P2:
+  "When initialSpeech is the unresolved relationship-expression work, speechPolicy is the required source and candidate projection; relationshipSeeds remain protected in trusted state and are not writable by that request."
+premise P3:
+  "Ordinary relationship revision that legally exposes relationship-seed operations must retain the broader projection."
+premise P4:
+  "For migration initial-speech work, no preceding legal operation can mutate speechPolicy; when the server verifies frozen-source speechPolicy equals the current candidate projection, sending both copies adds no distinct authority or work context."
+decision D1 based_on E1, E2, E3, E4, E5, E6, P1, P2, P3, P4:
+  "For relationship-expression work whose operation contract is initial speech only, project only speechPolicy. In migrate mode, when frozen source and candidate speech projections are equal, send the candidate once and a source-equals-candidate marker with the frozen generation identity. Otherwise retain both projections. Keep the broader fields for other relationship work and the 6000-token policy unchanged."
+decision D2 based_on E1, E2, E5, P2:
+  "Repeat the same owner upgrade, queue, worker, controlled HTTP provider, result persistence, review, and unchanged-pointer path; do not replace the route input with a smaller fixture merely to obtain a passing test."

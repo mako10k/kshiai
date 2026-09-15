@@ -1,0 +1,91 @@
+domain StructuredSemanticAuthoringKernelDesignV1Revision3Review:
+  description "Evidence-chain review of exact D11 design candidate revision three."
+problem P1:
+  |
+    Determine whether revision three is complete enough to accept against ADR-0032,
+    foundation requirement v3, character requirement v5, and its own closed run and
+    request state contracts. Distinguish an acceptance-blocking missing transition
+    from implementation detail that can remain in a later slice.
+evidence E1:
+  |
+    ADR-0032 lines 42 through 55 separates provider transport timeout, worker lease,
+    semantic progress, and cumulative resource ceilings. It states that a provider
+    timeout does not terminate the whole attempt only when one accepted bounded
+    recovery remains within all other budgets and fence rules.
+evidence E2:
+  |
+    Foundation v3 F9 lines 242 through 258 permits provider outage or exhausted
+    authorized execution budget to end an attempt as failed, requires retained source
+    and failure reason, and makes all automatic recovery subordinate to F15 limits.
+evidence E3:
+  |
+    Foundation v3 F15 lines 360 through 373 requires terminal stop, no further provider
+    work or late-result application after terminal failure, bounded outstanding work,
+    a compact failure receipt, and an explicit new attempt for retry.
+evidence E4:
+  |
+    Revision three lines 523 through 529 records provider_transport_timeout and permits
+    another call only when the frozen policy allows one recovery, cumulative admission
+    succeeds, the worker fence is current, and the strategy is not a blind replay.
+    It does not define the run transition when any of those conditions is false.
+evidence E5:
+  |
+    Revision three lines 596 through 612 declares a closed durable state machine and
+    accepts provider completion only while the same fence owns a nonterminal run and
+    the request is outstanding. The timeout clause does not state that the timed-out
+    request ceases to be outstanding before a recovery request is scheduled.
+evidence E6:
+  |
+    Revision three lines 614 through 626 fully defines the analogous process or worker
+    lease loss path: fence, account unknown consumption, append failure evidence, move
+    to failed with a recoverable technical outcome and resumption recipe, and reject
+    late application. No corresponding provider-timeout terminal or replacement-request
+    transition is specified.
+evidence E7:
+  |
+    Revision three lines 728 through 736 requires a parameterized conformance fixture
+    for provider timeout with zero and one recovery and late results, but a fixture
+    cannot select a missing normative state transition without defining product and
+    persistence behavior itself.
+premise C1:
+  |
+    A closed state-machine design must define a legal next state for every admitted
+    outcome that affects whether provider work may continue and whether a late result
+    may mutate trusted state. Otherwise implementation or tests must invent the
+    externally material failure and retry contract.
+premise C2:
+  |
+    Exact timeout values and recovery count may remain undecided under ADR-0032, but
+    the behavior for both allowed policy values and for exhausted or inadmissible
+    recovery must be defined before implementation authority can rely on the design.
+premise U1:
+  |
+    No runtime execution was performed. Provider convergence, numeric timeout fitness,
+    and the exact accepted transport policy remain unknown and are outside this review.
+decision D1 based_on P1, E1, E4, C2:
+  |
+    Revision three correctly removes a whole-attempt elapsed-time termination rule and
+    separates the provider and worker policies, so ADR-0032's boundary architecture is
+    represented.
+decision D2 based_on P1, E4, E5, E6, C1:
+  |
+    The provider-timeout path is incomplete. With zero recovery, exhausted recovery,
+    failed admission, or a stale worker fence, the design defines neither a terminal
+    run transition nor the failure receipt and resumption path. When recovery is
+    admitted, it also does not close or fence the timed-out request before scheduling
+    its replacement, leaving late-result eligibility ambiguous.
+decision D3 based_on P1, E2, E3, E7, D2:
+  |
+    The omission is an acceptance-blocking contract defect rather than downstream DDL
+    or DTO detail: F9 and F15 require failure, retention, stop, late-result rejection,
+    and explicit new-attempt retry semantics, while the planned fixture cannot
+    authoritatively invent them.
+decision D4 based_on P1, D1, D3, U1:
+  |
+    Report REVISE with one P1 finding for exact revision three. Require a provider-
+    timeout transition that atomically terminalizes the timed-out request, defines the
+    same-run replacement request identity and late-result fence when recovery is
+    admitted, and otherwise moves the run to failed with a recoverable technical
+    outcome, retained receipt/accounting, and an owner-triggered new-run recipe. Do not
+    modify the design or infer implementation, provider, cutover, or deployment
+    authority from this review.

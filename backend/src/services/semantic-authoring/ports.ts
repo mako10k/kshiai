@@ -84,10 +84,7 @@ function outstandingTimedOut<C, O, F, W, Q, FC>(
     return true;
   }
   const elapsed = Math.max(0, ports.clock.nowMs() - dispatchedAtMs);
-  return (
-    elapsed >= reservation.elapsedMs ||
-    state.accounting.elapsedMs + elapsed >= state.policy.maxAttemptElapsedMs
-  );
+  return elapsed >= reservation.elapsedMs;
 }
 
 function abandonOutstanding<C, O, F, W, Q, FC>(

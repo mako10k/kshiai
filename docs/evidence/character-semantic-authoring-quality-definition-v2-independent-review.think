@@ -1,0 +1,34 @@
+domain QualityDefinitionV2IndependentReview:
+  description "Review fixed quality definition revision 2 against revision 1 findings and accepted sources."
+evidence E1:
+  "The owner selected REVIEW without added questions for revision 2 SHA256 b1e738829933a77a955cca7d39a8ed2d930f84ca74b45c8062514c16b078d4b2."
+evidence E2:
+  "Revision 2 section 6.2 requires every new snapshot to receive current disposition for every in-scope claim, prohibits prior review-status carryover, permits evidence reuse only after source, assumption, dependency and measurement-condition current-fit, and limits fresh checks to affected claims while reopening dependency or contradiction impacts."
+evidence E3:
+  "Revision 2 section 3 removes waived from claim results, prohibits reviewers from waiving required claims, assigns non-applicable material to fixed scope and out-of-scope findings, and returns required-claim changes to the originating authority."
+evidence E4:
+  "Revision 2 section 5 declares QV01 through QM01 to be claim templates and says each review input records all eight section 3 fields before review. The same paragraph says the result is recorded only after review."
+evidence E5:
+  "Section 3 field eight is result handling and enumerates only conforming, nonconforming and indeterminate. It defines no pre-review unevaluated value and does not distinguish a result slot or allowed result vocabulary from the actual post-review result."
+evidence E6:
+  "The mechanical diff from revision 1 leaves quality definitions, profile criteria, unresolved numerical values, scope, and external names unchanged outside the three reviewed corrections and revision provenance."
+premise P1:
+  "Revision 2 closes revision 1 F1 when every new snapshot receives current claim disposition and only evidence execution, not review status, is reused after a current-fit check."
+premise P2:
+  "Revision 2 closes revision 1 F2 by removing waiver rather than creating unowned exception authority."
+premise P3:
+  "A review input cannot contain an actual post-review result before review. It may contain the allowed result vocabulary and an unevaluated slot, while the review report records the result."
+premise P4:
+  "Requiring all eight fields before review while forbidding the eighth result until after review is an internal contradiction unless field eight is split into pre-review result contract and post-review result."
+premise P5:
+  "Explicit later numerical unknowns remain nonblocking for the vocabulary definition and cannot be invented by the reviewer."
+decision D1 based_on E1, E2, P1:
+  "Classify revision 1 F1 as closed."
+decision D2 based_on E1, E3, P2:
+  "Classify revision 1 F2 as closed."
+decision D3 based_on E1, E4, E5, P3, P4:
+  "Classify revision 1 F3 as not fully closed and identify one material internal contradiction: pre-review completion of all eight fields conflicts with post-review-only recording of field-eight result."
+decision D4 based_on E1, E6, P5:
+  "Classify unchanged quality definitions, optional-improvement boundary, accepted authority, namespace disposition and explicit later numeric unknowns as conforming or retained evidence gaps rather than new blockers."
+decision D5 based_on E1, E2, E3, E4, E5, E6, D1, D2, D3, D4:
+  "Complete Step 3 without editing revision 2. Report one narrow contradiction, recommend REVISE to define seven pre-review claim inputs plus an unevaluated result slot and three post-review outcomes, and preserve all later-effect authority boundaries."

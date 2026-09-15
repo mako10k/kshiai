@@ -1,0 +1,115 @@
+framework Review:
+  requires problem and premise and evidence and decision
+  warns pending
+
+problem P:
+  |
+    Make the shared focused authoring execution real rather than leave pure
+    components whose only callers are tests. Preserve the accepted cc304 outcome.
+premise AUTH:
+  |
+    After disclosure that common execution and the character adapter remain
+    incomplete, the owner instructed correction. This authorizes local common
+    runtime and consumer implementation, not paid calls or production activation.
+evidence CODE:
+  |
+    The common orchestration has start select apply and finalize, and durable
+    repositories have claimed runs reservation settlement and terminal records.
+    No non-test caller currently drives them. Existing worker calls legacy V2.
+    Character adapter omits revision text and has placeholder question behavior.
+evidence CONTRACT:
+  |
+    Accepted ADR0031 and design revision2 require a generic typed kernel, effect
+    ports, frozen source, scoped requests, cumulative limits, owner fences,
+    source-based retries, final reconciliation and separate owner acceptance.
+    The accepted new policy allows eight calls and USD0.50 per attempt. Current
+    production behavior and shared Stage infrastructure remain unchanged.
+pending LIMITS:
+  |
+    Actual model convergence and owner acceptance are not established locally.
+    Completion of all API UI and migration obligations may span work sessions;
+    no component completion or test pass can close cc304 on its own.
+decision IMPLEMENT based_on P, AUTH, CODE, CONTRACT, LIMITS:
+  |
+    Implement the actual asynchronous shared execution driver with HTTP provider
+    transport and durable reservation/terminal handling, consumed by a character
+    application service and queued worker rather than test-only composition.
+    Correct the new adapter's missing source/recovery behavior along that path.
+    Keep the old V2 WIP untouched and do not switch production policy. Verify
+    actual consumer execution with controlled local HTTP and database readback,
+    including invalid output recovery and terminal replay with no extra calls.
+    Prefer this to another legacy parser patch or an additional review control.
+    Keep cc304 incomplete until all three owner-facing paths meet its criteria.
+
+evidence RECOVERY_STATE:
+  |
+    orchestration decode rejection inserts issues.proposalRejected into findings.
+    A subsequent valid proposal passes existing findings into stageProposal.
+    The character adapter returns those findings unchanged from staging and
+    reconciliation, and finalization rejects any remaining finding.
+decision RECOVERY_FIX based_on RECOVERY_STATE, CONTRACT, IMPLEMENT:
+  |
+    The transient decoder finding is retained after its condition is gone on
+    this path. Resolve only the kernel-owned proposal decode issue after a valid
+    accepted transaction, not domain semantic findings. Verify with malformed
+    then valid HTTP proposals traversing the same runtime and durable storage.
+    This is a local recovery mechanism, not an RCA of earlier agent behavior.
+
+evidence RUNTIME_INPUT:
+  |
+    The context projector supplies operation names without operation value schemas.
+    The HTTP driver discards provider usage and settles every response as 1500
+    output tokens; cumulative output policy is 8000. Resource guards reject equality
+    after delivery, including the eighth admitted response. Registration does not
+    compare source mode or frozen definition to the parent command and generation.
+decision RUNTIME_CORRECTION based_on RUNTIME_INPUT, CONTRACT, IMPLEMENT:
+  |
+    Supply only active operation contracts, decode optional provider usage bounded
+    by its reservation, and retain full reservation when usage is absent or invalid.
+    Permit applying an already admitted response at the call or token ceiling;
+    new admission still rejects a request that exceeds policy. Keep wall and step
+    limits. Bind source kind and source generation to the queued owner command.
+    These remove observed runtime mismatches; actual model quality remains unknown.
+
+evidence SERIALIZATION:
+  |
+    The focused speech request contains 1041 operation-contract bytes, 2000 shared
+    schema-definition bytes and 752 candidate bytes. Counting the HTTP JSON body
+    again includes escaped quotes around the already serialized context, yielding
+    7316 reserved tokens. The provider receives system and user message contents
+    rather than those wire escaping characters as model input.
+decision MESSAGE_BOUND based_on SERIALIZATION, CONTRACT, RUNTIME_CORRECTION:
+  |
+    Retain the one-token-per-UTF8-byte bound on system and user message contents
+    plus the framing allowance. Continue bounding the entire HTTP body separately
+    with maxInputBytesPerCall. Compress repeated prompt guidance without removing
+    operation contracts. Do not lower the policy limits or assume four bytes/token.
+
+evidence TERMINAL_INPUT:
+  |
+    The new worker binding validates source and current pointer before claiming
+    the common run. Exceptions there are caught by the legacy worker, marking
+    the parent failed but leaving the common run pending. Source retry requires
+    a failed common run and therefore cannot resume such a parent.
+decision TERMINAL_CORRECTION based_on TERMINAL_INPUT, CONTRACT, IMPLEMENT:
+  |
+    Claim first and persist a typed pre-dispatch failure in the same common and
+    family terminal transaction for invalid source, pointer drift or unavailable
+    provider. Keep all usage zero when no dispatch occurred. Do not retry errors
+    or move the source pointer. This fixes lifecycle inconsistency, not detection.
+
+evidence LEDGER_FLOW:
+  |
+    stageLedgerProposal creates a new sourceDispositions map for each proposal.
+    Its input has no prior disposition map. Orchestration assigns that returned
+    map to nextDispositions instead of merging prior entries. adapterView returns
+    only candidate obligations and findings. Terminal identity omits the ledgers,
+    while family storage receives only the terminal result.
+decision RETAIN_LEDGER based_on LEDGER_FLOW, CONTRACT, IMPLEMENT:
+  |
+    Merge successfully staged disposition deltas into the prior ledger. Supply
+    the provenance and disposition ledgers to adapter reconciliation/finalization
+    views and retain their serializable entries in terminal results. Existing
+    in-memory map values remain model proposals, not proof of source meaning.
+    This corrects replacement and omission of recorded data, without claiming
+    semantic validation or implementing a new character meaning contract.

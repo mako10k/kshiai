@@ -1,0 +1,92 @@
+domain ADR0033:
+  description "ADR-0033 revision 1: Runtime config is not durable run identity. Status Accepted."
+
+problem P1:
+  |
+    Decide whether provider transport and worker execution Config revisions must be
+    part of durable semantic-authoring run identity when recovery creates a new run.
+
+evidence E1:
+  |
+    Accepted foundation requirements allow a failed attempt to terminate and an
+    explicit retry to reconstruct a new attempt from source. Intermediate model or
+    worker checkpoint persistence is not required.
+
+evidence E2:
+  |
+    Accepted design revision five ends the current run after process or worker-lease
+    loss and makes owner retry create a new run, but also proposes two additional
+    durable configuration revision identity fields.
+
+evidence E3:
+  |
+    Current WIP selects one provider transport configuration and one worker execution
+    configuration at startup. The two proposed independent run columns do not exist.
+
+evidence E4:
+  |
+    ADR0032 requires separate provider and worker time controls, fenced late-result
+    rejection, and distinct technical outcomes. It does not require a later attempt to
+    replay the expired run's worker configuration.
+
+evidence OWNER_DIRECTION:
+  |
+    On 2026-09-15, after the distinction between nonpersistent worker state and a
+    persisted configuration identity was explained, the product owner instructed that
+    strict management be relaxed, the plan revised, and the next task proposed.
+
+premise REQUIRED_DURABILITY:
+  |
+    Source and target identity, provider request lifecycle, reservations, receipts,
+    monotonic accounting, fencing, questions and answers, technical outcomes, and final
+    candidate metadata directly protect durable correctness.
+
+premise OPTIONS:
+  |
+    Persist two configuration revision identities; persist complete configuration
+    snapshots; or keep transport and worker values in startup runtime configuration
+    while persisting only correctness-bearing facts.
+
+pending U1:
+  |
+    No accepted compliance, billing, exact-replay, or service-level requirement has
+    been identified that independently requires durable worker Config history.
+
+evidence REVIEW_RESULT:
+  |
+    Formal review of exact ADR0033 revision one and conforming implementation-design
+    revision six reports PASS with no P0 through P3 findings. The review reasoning
+    SHA256 is cdd328284fd76310ef28dfaff0f59c2e7cf559828c738a3a71c85839be1567d3.
+
+evidence OWNER_ACCEPTANCE:
+  |
+    On 2026-09-15, immediately after the PASS result and complete Japanese review scope
+    were presented, the product owner replied "ACCEPT". The reviewed pre-acceptance
+    ADR SHA256 was ae8b736857b59188880acbf397e2da941caf5c102539b2410ddd7011fd1f529a,
+    and the conforming implementation-design revision-six SHA256 was
+    a0f2ba909d3c71fb7de2235bd84125b420663f6f8b5400c4236eaf92e832ebff.
+
+decision D1 based_on P1, E1, E2, E3, E4, OWNER_DIRECTION, REQUIRED_DURABILITY, OPTIONS, U1:
+  |
+    Propose startup runtime configuration without transport or worker configuration
+    revision identities or snapshots in SemanticAuthoringRunV1. Preserve every durable
+    correctness-bearing fact named in REQUIRED_DURABILITY.
+
+decision D2 based_on D1, E1, E4:
+  |
+    Same-run provider transport recovery may use immutable configuration held by the
+    live execution. Process or worker-lease loss ends that run; explicit retry creates
+    a new source-reconstructed run under the configuration active for the new execution.
+
+decision D3 based_on D1, D2, U1:
+  |
+    Permit bounded operational telemetry for diagnosis without making it a replay
+    contract or semantic-correctness condition. Any future exact-replay or compliance
+    requirement needs a separately accepted persistence decision.
+
+decision ACCEPTANCE based_on REVIEW_RESULT, OWNER_ACCEPTANCE, D1, D2, D3:
+  |
+    Accept exact ADR0033 revision one and the conforming implementation-design revision
+    six persistence direction. This acceptance does not select exact Config values or
+    authorize implementation, commit, push, provider calls, deployment, migration,
+    activation, rollback, or release.

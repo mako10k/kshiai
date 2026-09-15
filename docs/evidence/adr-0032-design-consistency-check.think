@@ -1,0 +1,52 @@
+domain ADR0032DesignConsistencyCheck:
+  description "Check the historical D11 implementation design against accepted ADR0032."
+problem P1:
+  |
+    Identify which design clauses remain current and which cannot govern implementation
+    after ADR0032 acceptance.
+evidence E1:
+  |
+    Accepted ADR0032 separates transport, worker, semantic-progress and cumulative
+    resource controls, removes fixed whole-attempt wall clock as semantic termination,
+    and leaves exact provider and worker values pending later acceptance.
+evidence E2:
+  |
+    Design section 7.1 sets an attempt elapsed maximum of 240 seconds and one provider
+    call maximum of 60 seconds, then states that all dimensions are hard maxima and the
+    first exhausted dimension stops new work.
+evidence E3:
+  |
+    Design section 7.2 requires each provider reservation's elapsed allowance to fit
+    the remaining whole-attempt elapsed limit.
+evidence E4:
+  |
+    The corrected design-acceptance record preserves revision two as a historical
+    reviewed snapshot but removes activation authority from the concrete numerical
+    execution policy and time-based termination semantics pending a successor ADR.
+evidence E5:
+  |
+    The remaining design sections define typed kernel and adapter boundaries, focused
+    work, protected meaning, cumulative non-time accounting, progress detection,
+    persistence, fencing, owner review and separate activation authority, all retained
+    by ADR0032 D5.
+premise C1:
+  |
+    A historical reviewed snapshot may remain unchanged, but superseded clauses cannot
+    be used as the current implementation specification merely because the file retains
+    its old text.
+decision D1 based_on P1, E1, E2, E3, E4, C1:
+  |
+    Classify the design as partially inconsistent with current authority. Section 7.1's
+    240-second whole-attempt limit, 60-second provider literal and all-dimensions hard-max
+    statement, plus section 7.2's whole-attempt elapsed reservation composition, are
+    superseded and must be revised before implementation relies on this design.
+decision D2 based_on P1, E1, E4, E5, C1:
+  |
+    Retain the design's non-time architecture as applicable subject to ADR0032. Do not
+    classify the whole design as rejected and do not infer replacement time values.
+decision D3 based_on P1, D1, D2:
+  |
+    Record the inconsistency without editing the historical design in this check-only
+    scope. The next design revision must remove whole-attempt semantic expiry, separate
+    provider and worker boundaries, preserve the other budgets, and keep exact time
+    values pending their named evidence and owner decision.

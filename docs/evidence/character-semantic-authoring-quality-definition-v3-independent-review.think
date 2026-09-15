@@ -1,0 +1,30 @@
+domain DeliveryQualityDefinitionV3IndependentReview:
+  description "Independently review exact quality definition revision 3 after the owner selected REVIEW."
+evidence E1:
+  "The candidate digest is 2cb49ea4151c2dbc6816f3187a114a221580c6e024694c56fc46e13853ff1cff and matches the digest presented at Step 2."
+evidence E2:
+  "The owner selected REVIEW without adding questions after revision 3 was presented."
+evidence E3:
+  "Revision 3 defines seven pre-review inputs and a result slot initialized as unevaluated, and permits only the review report to finalize that slot as conforming, nonconforming, or indeterminate."
+evidence E4:
+  "Revision 3 says a missing input is not invented by the reviewer and produces an indeterminate review result."
+evidence E5:
+  "Direct revision 2 to revision 3 comparison shows unchanged prior-authority scope, quality definitions, profile rows, review finding classifications, review completion conditions, and optional-improvement treatment."
+evidence E6:
+  "The three referenced requirement files match the SHA256 values in their Accepted records, and ADR0031 contains Accepted status plus explicit owner acceptance."
+evidence E7:
+  "Revision 3 leaves corpus composition, outcome rates, latency thresholds, token and cost limits, and Stage observation values unresolved for a separate owner decision."
+premise P1:
+  "The revision 2 contradiction is closed if the review input contains no actual result and the review report alone changes an unevaluated slot to one of the three result values."
+premise P2:
+  "Unchanged bytes with matching accepted dependencies and no new contradictory evidence may reuse the revision 2 current-fit disposition, while every in-scope acceptance criterion still receives a current revision 3 disposition."
+premise P3:
+  "An explicitly retained numeric unknown is an evidence gap for later evaluation, not a contradiction in this definition candidate and not authority for a reviewer to choose the number."
+decision D1 based_on E1, E2, E3, E4, P1:
+  "Complete Step 3 for the exact revision 3 snapshot. Classify the revision 2 timing contradiction as closed and record no contradiction in revision 3."
+decision D2 based_on E5, E6, P2:
+  "Record all twelve acceptance criteria as conforming and record the unchanged quality definitions, prior authority, external namespace boundary, review completion rule, and no-waiver rule as conforming current dispositions."
+decision D3 based_on E7, P3:
+  "Retain the numeric and corpus items as a nonblocking evidence gap for later evaluation. Do not add thresholds or broaden the requirement."
+decision D4 based_on E1, E2, D1, D2, D3:
+  "Report the independent review as completed and recommend ACCEPT at Step 4. Do not accept or edit the candidate and do not authorize ADR, plan, implementation, commit, push, provider work, deployment, activation, or production operations."

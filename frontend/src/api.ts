@@ -62,6 +62,7 @@ export type AuthoringAcceptedResponse = {
 };
 
 export type LatestAuthoringResponse<TDraft> = {
+  reviewAttemptId?: string;
   draft: TDraft | null;
   progress: AssetAuthoringProgress | null;
   failed: {
@@ -581,6 +582,7 @@ export const api = {
     }),
   latestCharacterDraft: () =>
     request<{
+      reviewAttemptId?: string;
       draft: {
         id: string;
         character: CharacterPublic;

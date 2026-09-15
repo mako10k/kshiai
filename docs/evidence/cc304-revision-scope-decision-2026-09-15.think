@@ -1,0 +1,20 @@
+domain Cc304RevisionScopeDecision:
+  description "Identify the missing authority for connecting natural-language revision commands to focused V3 work."
+evidence E1:
+  "The existing owner POST /characters/:id/chat contract accepts only one natural-language message and currently registers no focused revision source."
+evidence E2:
+  "The focused character adapter accepts revise source only when it already contains one requestedCluster from skeleton, mechanics, relationship-expression, or appearance."
+evidence E3:
+  "Accepted character requirement R2 freezes the requested change and expected pointer, and R3 treats requested revision scope as a protected anchor that cannot be silently inferred beyond its resolved scope."
+evidence E4:
+  "The accepted adapter proposal union and current implementation design define candidate and ledger work after cluster selection but define no scope-resolution work item, response schema, or multi-cluster revision contract."
+evidence E5:
+  "Adding an owner-visible cluster selector changes the request and UI contract; keyword classification can misroute valid natural language; provider-assisted classification adds a new typed operation, accounting step, and failure behavior."
+premise P1:
+  "None of the three mechanisms is a behavior-preserving implementation detail, and current code or convenience cannot choose an externally visible revision-scope contract."
+premise P2:
+  "Connecting revision with a hard-coded or test-only cluster would satisfy route invocation while violating the accepted requested-scope authority and would not deliver the natural-language revision outcome."
+decision D1 based_on E1, E2, E3, E4, E5, P1, P2:
+  "Do not connect the revision route until the product owner selects the scope-resolution contract. Present three distinct options: explicit owner-selected cluster or clusters, a bounded provider-assisted scope work item inside the common runtime, or a separately specified hybrid that asks only when scope remains materially ambiguous."
+decision D2 based_on E1, E2, E3, E4, E5, P1:
+  "Recommend the bounded provider-assisted scope work item because it preserves the existing natural-language owner interaction and routes schema failure through the common typed recovery and accounting infrastructure, while disclosing that it consumes budget and requires an accepted contract revision before implementation."

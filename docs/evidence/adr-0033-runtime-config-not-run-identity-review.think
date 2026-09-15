@@ -1,0 +1,64 @@
+domain ADR0033Review:
+  description "Formal review of ADR0033 revision one and implementation-design revision six."
+
+problem P1:
+  |
+    Determine whether removing provider transport and worker execution Config revision
+    identities or snapshots from durable run identity breaks accepted retry,
+    accounting, fencing, late-result, technical-outcome, or time-boundary contracts.
+
+evidence E1:
+  |
+    The reviewed authoritative ADR0033 SHA256 is
+    ae8b736857b59188880acbf397e2da941caf5c102539b2410ddd7011fd1f529a.
+
+evidence E2:
+  |
+    The reviewed implementation-design revision-six SHA256 is
+    a0f2ba909d3c71fb7de2235bd84125b420663f6f8b5400c4236eaf92e832ebff.
+
+evidence E3:
+  |
+    Accepted foundation requirements permit a failed attempt to end and an explicit
+    retry to create a new attempt reconstructed from retained source and applicable
+    authorized input. They do not require intermediate candidate, context, or checkpoint
+    persistence.
+
+evidence E4:
+  |
+    Accepted ADR0032 requires separate provider transport and worker execution time
+    controls, monotonic accounting, fenced rejection of late results, and typed technical
+    outcomes. It leaves exact values and exact runtime policy acceptance pending.
+
+evidence E5:
+  |
+    Design revision six removes both Config identities from SemanticAuthoringRunV1 but
+    retains source identity, semantic policy, pricing and token-estimator identities,
+    provider request identity and state, reservations, receipts, monotonic accounting,
+    execution fencing, technical outcomes, predecessor linkage, and source-based new-run
+    reconstruction.
+
+evidence E6:
+  |
+    One independent reviewer and the primary review found no P0 through P3 defect. Both
+    verified that the supplied candidate digests remained unchanged after review.
+
+premise C1:
+  |
+    A new retry run need not reproduce an old execution Config unless an accepted exact
+    replay, compliance, billing, or service-level requirement says otherwise. No such
+    accepted requirement was identified in the reviewed scope.
+
+pending U1:
+  |
+    The implementation must retain a durable claim or expiry fact sufficient to decide
+    worker-lease expiry after restart without consulting a changed runtime Config. Exact
+    DDL belongs to the implementation slice, so this does not require a Config identity
+    or snapshot and is not a current design blocker.
+
+decision D1 based_on P1, E1, E2, E3, E4, E5, E6, C1, U1:
+  |
+    Complete REVIEW with PASS and no P0, P1, P2, or P3 findings. Carry U1 as an
+    implementation-stage verification obligation. This review is not owner acceptance
+    and does not authorize implementation, commit, push, provider calls, deployment,
+    migration, activation, or release.

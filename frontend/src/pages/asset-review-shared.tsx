@@ -228,6 +228,12 @@ export async function pollLatestAuthoring<TDraft extends { id: string }>(
 ): Promise<AssetAuthoringProgress | null> {
   const result = await latest();
   const tracked = handlers.trackedAttemptId;
+  if (result.reviewAttemptId && (!tracked || result.reviewAttemptId === tracked)) {
+    handlers.setResumeInFlight(false);
+    handlers.setError(null);
+    handlers.onReady(result.reviewAttemptId);
+    return null;
+  }
   if (result.failed && (!tracked || result.failed.attemptId === tracked)) {
     handlers.setResumeInFlight(false);
     handlers.setError(result.failed.errorCode ?? "生成に失敗しました");

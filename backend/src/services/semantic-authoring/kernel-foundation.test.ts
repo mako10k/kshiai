@@ -53,8 +53,6 @@ const policy: SemanticAuthoringPolicyV1 = {
   maxConcurrentProviderRequests: 1,
   maxLlmCalls: 8,
   maxCountedSteps: 48,
-  maxAttemptElapsedMs: 240_000,
-  maxProviderCallElapsedMs: 60_000,
   maxInputTokensPerCall: 6_000,
   maxInputBytesPerCall: 24_576,
   maxOutputTokensPerCall: 1_500,
@@ -123,6 +121,16 @@ describe("semantic authoring resource admission", () => {
       reservation({ requestId: "next", costMicroUsd: 30_000 }),
     );
     assert.deepEqual(result, { admitted: false, exhausted: "cost" });
+  });
+
+  it("does not reinterpret measured elapsed time as a whole-attempt budget", () => {
+    const result = admitSemanticAuthoringReservation(
+      policy,
+      { ...zeroAccounting, elapsedMs: Number.MAX_SAFE_INTEGER },
+      [],
+      reservation({ elapsedMs: Number.MAX_SAFE_INTEGER }),
+    );
+    assert.deepEqual(result, { admitted: true });
   });
 
   it("allows only one outstanding provider request by default", () => {
@@ -622,6 +630,11 @@ describe("semantic authoring kernel state and resolver results", () => {
       ...identity,
       kind: "needs_owner_answer",
       question: "Which protected name is intended?",
+      evidence: {
+        explicitProblemClaimIds: ["name"], materialProtectedImpactClaimIds: ["name"],
+        materiallyDifferentOutcomeClaimIds: ["name"], exhaustedRecoveryFindingKeys: ["finding-1"],
+        unsafeAutomaticResolutionClaimIds: ["name"],
+      },
       resumption: {
         predecessorRunId: run.runId,
         predecessorAttemptId: run.attemptId,
@@ -1047,6 +1060,40 @@ describe("semantic authoring pure orchestration", () => {
     const finished = selectSemanticAuthoringWorkV1(applied.state, adapter, workIds("2"));
     assert.equal(finished.status, "terminal");
     assert.equal(finished.state.terminalResult?.kind, "ready_for_review");
+  });
+
+  it("retains disposition batches through finalization and JSON terminal persistence", () => {
+    const base = createScriptedAdapter({ remainingWork: 2, finalizePass: true,
+      ask: false, materialProgress: true, rejectStage: false });
+    const adapter: ScriptedAdapter = {
+      ...base,
+      stageProposal(input) {
+        const staged = base.stageProposal(input);
+        if (!staged.accepted) return staged;
+        const sourceClaimId = input.proposal.payload.value;
+        return { ...staged, sourceDispositions: new Map([[sourceClaimId, {
+          sourceClaimId, disposition: "preserve", targetClaimIds: ["identity"], rationale: "Preserved.",
+        }]]) };
+      },
+      finalize(input) {
+        assert.deepEqual([...input.sourceDispositions!.keys()], ["first", "second"]);
+        assert.ok(input.provenance?.size);
+        return base.finalize(input);
+      },
+    };
+    let current = startState(adapter);
+    for (const value of ["first", "second"]) {
+      const selected = selectSemanticAuthoringWorkV1(current, adapter, workIds(value));
+      current = applySemanticAuthoringProposalV1(selected.state, adapter,
+        boundProposal(selected.state, value), 1_000, issues).state;
+    }
+    const finished = selectSemanticAuthoringWorkV1(current, adapter, workIds("done"));
+    assert.equal(finished.state.terminalResult?.kind, "ready_for_review");
+    const ledger = finished.state.terminalResult?.sourceLedger;
+    assert.ok(ledger);
+    assert.deepEqual(ledger.sourceDispositions.map((entry) => entry.sourceClaimId), ["first", "second"]);
+    assert.ok(ledger.provenance.length);
+    assert.deepEqual(JSON.parse(JSON.stringify(ledger)), ledger);
   });
 
   it("retains the trusted candidate when staging is rejected", () => {

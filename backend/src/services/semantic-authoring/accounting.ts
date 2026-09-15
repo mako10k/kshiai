@@ -11,13 +11,11 @@ export type ReservationAdmissionV1 =
       exhausted:
         | "concurrency"
         | "llm_calls"
-        | "elapsed"
         | "input_tokens"
         | "output_tokens"
         | "cost"
         | "per_call_input"
-        | "per_call_output"
-        | "per_call_elapsed";
+        | "per_call_output";
     }>;
 
 export type CountedStepResultV1 =
@@ -62,28 +60,17 @@ export function admitSemanticAuthoringReservation(
   ) {
     return { admitted: false, exhausted: "per_call_output" };
   }
-  if (requested.elapsedMs > policy.maxProviderCallElapsedMs) {
-    return { admitted: false, exhausted: "per_call_elapsed" };
-  }
-
   const reserved = outstanding.reduce(
     (sum, reservation) => ({
       inputTokens: sum.inputTokens + reservation.inputTokens,
       outputTokens: sum.outputTokens + reservation.outputTokens,
       costMicroUsd: sum.costMicroUsd + reservation.costMicroUsd,
-      elapsedMs: sum.elapsedMs + reservation.elapsedMs,
     }),
-    { inputTokens: 0, outputTokens: 0, costMicroUsd: 0, elapsedMs: 0 },
+    { inputTokens: 0, outputTokens: 0, costMicroUsd: 0 },
   );
 
   if (accounting.llmCalls + outstanding.length + 1 > policy.maxLlmCalls) {
     return { admitted: false, exhausted: "llm_calls" };
-  }
-  if (
-    accounting.elapsedMs + reserved.elapsedMs + requested.elapsedMs >
-    policy.maxAttemptElapsedMs
-  ) {
-    return { admitted: false, exhausted: "elapsed" };
   }
   if (
     accounting.inputTokens + reserved.inputTokens + requested.inputTokens >

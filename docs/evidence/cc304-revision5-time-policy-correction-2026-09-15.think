@@ -1,0 +1,24 @@
+domain Cc304Revision5TimePolicyCorrection:
+  description "Remove superseded time semantics without selecting undecided production values."
+evidence E1:
+  "Accepted implementation-design revision 5 defines provider transport timeout and worker lease as separate explicitly identified policies with no design default and forbids a whole-attempt semantic deadline."
+evidence E2:
+  "Before this correction, SemanticAuthoringPolicyV1 and its runtime fixed a 240000 millisecond whole-attempt deadline and a 60000 millisecond provider timeout."
+evidence E3:
+  "The corrected runtime removes elapsed time from cumulative admission and orchestration termination, takes provider timeout only from ProviderTransportPolicyV1, and passes WorkerExecutionPolicyV1 lease duration through focused claim, renewal, and heartbeat."
+evidence E4:
+  "Focused environment configuration now requires both policy identities, route or platform identities, and positive safe-integer durations; the focused worker rejects missing policy before claim."
+evidence E5:
+  "Same-run transport recovery is not implemented, so selecting one recovery fails closed instead of pretending conformance."
+evidence E6:
+  "Controlled semantic authoring, focused owner-worker, and authoring job suites pass 82 of 82 tests; shared, backend, frontend, and deployment typechecks pass."
+premise P1:
+  "Controlled fixture durations are test inputs and do not establish production policy values."
+premise P2:
+  "The legacy family-authoring default remains for legacy routes, while configured focused execution cannot inherit it implicitly."
+pending U1:
+  "Exact production timeout, worker lease, and zero-or-one recovery policy remain unselected and require later evidence and owner acceptance."
+pending U2:
+  "Transport and worker policy identities are explicit runtime configuration but are not yet persisted as independent fields in SemanticAuthoringRunV1."
+decision D1 based_on E1, E2, E3, E4, E5, E6, P1, P2, U1, U2:
+  "Retain this as a local cc304 source correction. Do not activate or deploy it, do not claim complete Revision 5 recovery conformance, and next persist the independently frozen policy identities before implementing optional same-run recovery."
