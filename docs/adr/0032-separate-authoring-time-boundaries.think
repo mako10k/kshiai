@@ -1,0 +1,94 @@
+domain ADR0032:
+  description "ADR-0032 revision 1: Separate authoring time boundaries. Status Accepted."
+problem P1:
+  |
+    Decide how focused semantic authoring should contain elapsed time without
+    terminating useful work solely because one unsupported wall-clock literal expires.
+evidence E1:
+  |
+    Accepted ADR0031 D7 requires finite elapsed-time containment but D10 and D11 leave
+    exact numerical policy to a separately accepted successor decision.
+evidence E2:
+  |
+    Historical D11 design revision two proposed eight calls, 60 seconds per provider
+    call and 240 seconds per attempt. Eight worst-case calls require 480 seconds before
+    local orchestration, so those maxima do not compose.
+evidence E3:
+  |
+    Current non-normative WIP uses a wall clock beginning at worker execution. It
+    terminates at 240 seconds despite semantic progress and terminates the whole run
+    after one provider exchange reaches its 60-second reservation.
+evidence E4:
+  |
+    No reviewed evidence establishes representative provider latency percentiles,
+    normal focused-call counts, the owner-visible wait budget, or the deployment
+    platform deadline for these numerical values.
+evidence OWNER_DIRECTION:
+  |
+    On 2026-09-15, after the behavior and missing authority were presented, the product
+    owner identified time-based termination as the main concern and instructed that it
+    be corrected.
+premise DRIVERS:
+  |
+    Preserve finite cost and repetition containment, do not confuse transport or worker
+    expiry with semantic invalidity, avoid discarding useful progress, and do not select
+    a replacement number without workload and platform evidence.
+premise OPTIONS:
+  |
+    Retain the historical literals; remove every time control; or separate provider
+    transport timeout, worker execution boundary, semantic no-progress termination and
+    cumulative resource ceilings while leaving exact time values pending evidence.
+pending U1:
+  |
+    Provider latency distribution, normal focused call count, owner-visible wait budget,
+    hosting deadline, recovery cost and exact replacement values remain undecided.
+evidence REVIEW_RESULT:
+  |
+    Formal review of exact ADR0032 revision one reports PASS with no P0 through P3
+    findings and recommends ACCEPT. The review reasoning SHA256 is
+    a343bd98f862d7e7f484134ff201ff8c0ae88d8f3590c3af72260426b5ddda6a.
+evidence OWNER_ACCEPTANCE:
+  |
+    On 2026-09-15, immediately after the exact revision one PASS review and its
+    complete Japanese scope were presented with ACCEPT or REVISE choices, the
+    product owner replied "ACCEPT". The pre-acceptance authoritative SHA256 was
+    c9e8ee12edd8f57d796ab389958c8a8f741011fd853b49662f265291bbdb8409.
+decision D1 based_on P1, E1, E2, E3, E4, OWNER_DIRECTION, DRIVERS, OPTIONS, U1:
+  |
+    Propose separating four controls. A route-specific provider transport timeout
+    bounds one exchange. A worker execution boundary controls one worker lease. Semantic
+    no-progress and repeated-state detection determine whether automatic reasoning is
+    stalled. Call, step, token and cost ceilings bound cumulative resource consumption.
+decision D2 based_on P1, E2, E3, E4, DRIVERS, U1:
+  |
+    Propose removing a fixed whole-attempt wall-clock expiry as a semantic termination
+    condition. Productive progress must not be declared failed solely because a shared
+    elapsed-time literal expires. A worker boundary may stop dispatch, fence late
+    results and preserve a recoverable technical outcome, but cannot claim semantic
+    failure or silently restart consumption.
+decision D3 based_on P1, E3, DRIVERS, U1:
+  |
+    Propose treating provider timeout as a typed transport outcome. It may consume the
+    recorded reservation. It does not automatically terminate the entire attempt when
+    one explicitly accepted bounded recovery remains within call, token, cost,
+    no-progress and fence constraints.
+decision D4 based_on P1, E1, E4, OWNER_DIRECTION, U1:
+  |
+    Keep exact provider and worker time values undecided until the target route and
+    platform are named, representative focused requests are measured, an owner-visible
+    wait budget is defined, and the product owner accepts the exact policy revision.
+    Until then semantic_authoring_policy_v1 is not activation authority.
+decision D5 based_on P1, E1, D1, D2, D3, D4:
+  |
+    If accepted, this ADR refines ADR0031 D7 only for elapsed-time semantics. It retains
+    all other ADR0031 boundaries, including finite non-time resource limits, monotonic
+    accounting, fenced late-result rejection, focused work, owner review and separate
+    rollout authority. It does not authorize implementation, provider calls,
+    deployment, route selection or production activation.
+decision ACCEPTANCE based_on REVIEW_RESULT, OWNER_ACCEPTANCE, D1, D2, D3, D4, D5:
+  |
+    Accept exact ADR0032 revision one as the time-boundary architecture. Supersede
+    ADR0031 as the lifecycle container while retaining all ADR0031 decisions except
+    the D7 elapsed-time semantics refined by D1 through D5. This acceptance does not
+    select exact time values or authorize design correction, implementation, provider
+    calls, deployment, route selection, policy activation, commit or push.

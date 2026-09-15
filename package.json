@@ -15,7 +15,8 @@
     "build": "npm run build --workspace=@kshiai/shared && npm run build --workspace=backend && npm run build --workspace=frontend",
     "typecheck": "npm run typecheck --workspaces --if-present && npm run typecheck:deployment",
     "typecheck:deployment": "tsc -p infra/cloudflare-worker/tsconfig.json",
-    "test": "npm run test --workspaces --if-present && npm run test:deployment && npm run test:release",
+    "test": "node scripts/test-authority.mjs",
+    "test:inventory": "node scripts/test-authority.mjs --list",
     "test:deployment": "node --import tsx --test infra/cloudflare-worker/src/**/*.test.ts",
     "test:release": "node --test scripts/*.test.mjs",
     "build:worker": "npm run build --workspace=@kshiai/shared && npm run build --workspace=frontend && wrangler deploy --config infra/cloudflare-worker/wrangler.jsonc --dry-run",
@@ -26,7 +27,8 @@
     "static:lizard": "python3 scripts/check-lizard.py",
     "lint": "npm run typecheck && npm run static",
     "sync:secdat": "bash scripts/sync-env-from-secdat.sh",
-    "test:e2e-gui": "playwright test",
+    "test:e2e-gui": "node scripts/test-authority.mjs --e2e",
+    "test:e2e-inventory": "node scripts/test-authority.mjs --e2e --list",
     "e2e-gui:session": "tsx scripts/e2e-gui-session.ts"
   },
   "engines": {

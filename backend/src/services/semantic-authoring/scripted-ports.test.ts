@@ -19,8 +19,6 @@ const policy: SemanticAuthoringPolicyV1 = {
   maxConcurrentProviderRequests: 1,
   maxLlmCalls: 8,
   maxCountedSteps: 48,
-  maxAttemptElapsedMs: 240_000,
-  maxProviderCallElapsedMs: 60_000,
   maxInputTokensPerCall: 6_000,
   maxInputBytesPerCall: 24_576,
   maxOutputTokensPerCall: 1_500,

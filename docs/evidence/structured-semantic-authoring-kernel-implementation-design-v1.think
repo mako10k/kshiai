@@ -1,14 +1,15 @@
 domain StructuredSemanticAuthoringKernelDesignV1:
-  description "Reasoning for ADR0031 D11 implementation-design candidate revision2."
+  description "Reasoning for accepted implementation-design revision6 as refined by accepted ADR0032 and ADR0033."
 problem P1:
   |
     Fix implementation contracts that make focused structured semantic authoring
     typed, bounded, recoverable and reusable without activating a runtime route.
 evidence E1:
   |
-    Accepted ADR0031 D1 through D11 assign orchestration to a thin kernel, domain
-    meaning to adapters, effects to ports, and require exact contracts, numbers,
-    public mapping, fencing and conformance before runtime adoption.
+    Accepted ADR0032 incorporates unaffected ADR0031 decisions. Those decisions assign
+    orchestration to a thin kernel, domain meaning to adapters, effects to ports, and
+    require exact contracts, bounded resources, public mapping, fencing and conformance
+    before runtime adoption.
 evidence E2:
   |
     Foundation v3 F5 through F15 and character v5 R6 through R19 require
@@ -26,6 +27,45 @@ evidence E4:
     only skeleton ordering could not meet character R10 before fan-out, and its
     model-writable set_portrait operation conflicted with character R7 stable-ID
     authority. The owner selected REVISE for those two findings only.
+evidence E5:
+  |
+    Accepted ADR0032 removes fixed whole-attempt wall clock as a semantic termination
+    condition, separates provider transport, worker execution, semantic progress and
+    cumulative resources, and leaves exact provider and worker time values pending
+    route, platform, measurement, owner wait budget and exact policy acceptance.
+evidence E6:
+  |
+    Exact review of revision three found one P1 defect: provider timeout did not close
+    the timed-out request before replacement and did not define the run transition when
+    zero recovery, exhausted recovery, failed admission, or lost fence prevents another
+    provider call. The owner instructed REVISE.
+evidence E7:
+  |
+    Exact review of revision four found two P1 defects: failed cumulative-resource
+    admission was mislabeled as provider transport unavailability, and the current-
+    fence path with no truthful recovery basis had no terminal transition. The owner
+    instructed REVISE.
+evidence E8:
+  |
+    Accepted foundation requirements allow failed attempts to end and explicit retry
+    to reconstruct a new attempt from source without persisting intermediate model or
+    worker checkpoints.
+evidence E9:
+  |
+    On 2026-09-15 the product owner instructed relaxation after the proposed durable
+    transport and worker Config identities were compared with stateless new-run retry.
+evidence E10:
+  |
+    Formal review of exact design revision six and ADR0033 revision one reports PASS
+    with no P0 through P3 findings. The review reasoning SHA256 is
+    cdd328284fd76310ef28dfaff0f59c2e7cf559828c738a3a71c85839be1567d3.
+evidence OWNER_ACCEPTANCE_REV6:
+  |
+    On 2026-09-15, immediately after the PASS result and complete Japanese review scope
+    were presented, the product owner replied "ACCEPT". The reviewed design Markdown
+    SHA256 was a0f2ba909d3c71fb7de2235bd84125b420663f6f8b5400c4236eaf92e832ebff,
+    and this authoritative reasoning SHA256 before acceptance was
+    69eb577b09356a3806fd08325a9c73b78e6c864aa78e2947c489dff706b69f6d.
 premise C1:
   |
     Current public APIs, current-route limits, immutable generations and activation
@@ -33,8 +73,9 @@ premise C1:
 premise U1:
   |
     Provider quality, actual token economics, database DDL details, frontend layout,
-    and runtime conformance are unverified. The proposed numerical policy and public
-    compatibility mapping require owner review.
+    and runtime conformance are unverified. Exact provider timeout, worker lease and
+    bounded transport-recovery settings remain undecided. The public compatibility
+    mapping requires owner review.
 decision D1 based_on P1, E1, E2, E3, C1, U1:
   |
     Use generic TypeScript kernel state with adapter-concrete source, candidate,
@@ -52,13 +93,17 @@ decision D2 based_on P1, E1, E2, C1:
     binding, and allow at most eight conflict-free operations inside the session
     cluster and computed semantic closure while the complete proposal stays within
     six KiB.
-decision D3 based_on P1, E1, E2, U1:
+decision D3 based_on P1, E1, E2, E5, E8, E9, U1:
   |
     Propose semantic_authoring_policy_v1 with one concurrent request, eight LLM
-    calls, forty-eight counted steps, 240 seconds per attempt, 60 seconds per call,
-    6000 input and 1500 output tokens per call, 32000 cumulative input, 8000
-    cumulative output, 500000 micro-USD estimated cost, eight progress observations
-    and two strategy changes. Bind pricing and token-estimator identities and preserve
+    calls, forty-eight counted steps, 6000 input and 1500 output tokens per call,
+    32000 cumulative input, 8000 cumulative output, 500000 micro-USD estimated cost,
+    eight progress observations and two strategy changes. Bind pricing and
+    token-estimator identities. Use separate route-specific provider transport Config
+    and platform-specific worker lease Config, with positive millisecond values and zero
+    or one transport recovery selected only by a later exact accepted policy. Keep each
+    selected Config immutable for one live execution, but do not persist its generation
+    or snapshot as run identity. Do not create a whole-attempt elapsed budget. Preserve
     the existing six-call route until a later cutover.
 decision D4 based_on P1, E1, E2, U1:
   |
@@ -73,12 +118,27 @@ decision D5 based_on P1, E1, E2, C1, U1:
     Always append the answer and create a new source-reconstructed attempt rather
     than preserving a suspended checkpoint. Keep cancelled and expired as distinct
     control terminal states, and bind command replay to an exact request digest.
-decision D6 based_on P1, E1, E2, E3, C1:
+decision D6 based_on P1, E1, E2, E3, E5, E6, E7, E8, E9, C1:
   |
     Persist common run, request/accounting, question/answer and final-candidate
     metadata while family ports store typed final payloads. Every mutation compares
-    owner, fencing token and run version. Process or lease loss fails the claimed run
-    with unknown reservations retained; late results cannot mutate candidate state.
+    owner, fencing token and run version. Provider timeout atomically terminalizes the
+    old request under the current fence, retains its receipt and maximum reservation,
+    and rejects its late result for candidate mutation. An admitted same-run recovery
+    uses a new request identity and records its changed condition or materially
+    different authorized request, derived by the server rather than asserted by the
+    model. Under a current fence, zero recovery, consumed recovery, or absence of a
+    truthful recovery basis fails the run with a recoverable provider-transport
+    technical outcome. Only an otherwise-eligible recovery proceeds to resource
+    admission; failed admission preserves the matching resource_exhausted outcome and
+    exact exhausted dimensions. Both failure paths retain the timeout receipt,
+    monotonic accounting and an owner new-run recipe. A handler that lost the fence
+    writes nothing; the recovery owner applies process-or-lease-loss handling. Neither
+    condition asserts semantic failure or resets accounting. Do not persist provider
+    transport or worker execution Config generations or snapshots in the common run.
+    A live same-run transport recovery uses its already selected immutable Config;
+    process or lease loss ends the current run and a later explicit retry creates a new
+    source-reconstructed run under then-current Config.
 decision D7 based_on P1, E1, E2, C1:
   |
     Require black-box kernel conformance for character, battlefield and narration
@@ -92,3 +152,11 @@ decision D8 based_on P1, E1, E2, E4, C1:
     then fan out remaining dependent work only after passage. Keep portrait binding
     outside the model operation union and preserve it from server authority unless a
     separately authorized server operation changes it.
+decision ACCEPTANCE_REV6 based_on P1, E1, E2, E5, E8, E9, E10, OWNER_ACCEPTANCE_REV6, D1, D2, D3, D4, D5, D6, D7, D8:
+  |
+    Accept exact implementation-design revision six as the current design snapshot,
+    superseding revision five only as the current design-acceptance target. Preserve
+    undecided exact Config values and the implementation-stage obligation to retain a
+    durable claim or expiry fact sufficient for lease-expiry recovery. This acceptance
+    does not authorize implementation, commit, push, provider calls, deployment,
+    migration, activation, rollback, or release.

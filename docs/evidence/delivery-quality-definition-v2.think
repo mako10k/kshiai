@@ -1,0 +1,22 @@
+domain DeliveryQualityDefinitionV2:
+  description "Revise quality definition revision 1 only for the three completed-review findings."
+evidence E1:
+  "The owner selected REVISE at Step 4 after review of revision 1 SHA256 3a7380e50ec4aedf8cf6bc730031adbb0a7bbc34820e9b6f0f49590ff0b1931f."
+evidence E2:
+  "Finding F1 identifies conflict between impact-only recheck wording and the lifecycle rule that changed requirement bytes create a new revision with no inherited review status."
+evidence E3:
+  "Finding F2 identifies undefined authority and evidence for the waived claim result."
+evidence E4:
+  "Finding F3 identifies that profile rows do not state how each review instance completes the common eight claim fields."
+premise P1:
+  "A new snapshot must receive current disposition for every in-scope claim, while unchanged evidence may be reused only after a current-fit check and fresh test execution may remain impact-scoped."
+premise P2:
+  "Removing waived is smaller and less authority-expanding than designing a waiver system. A desired exception can be expressed by changing the governing requirement through its own owner decision rather than allowing a reviewer to waive it."
+premise P3:
+  "The delivery profile should be declared as claim templates. The review input must instantiate all eight fields before review, using accepted sources or owner decisions and leaving missing values indeterminate."
+premise P4:
+  "Revision must preserve the accepted quality dimensions, explicit numerical unknowns, nonblocking optional improvements, and no-new-review-process boundary."
+decision D1 based_on E1, E2, E3, E4, P1, P2, P3, P4:
+  "Create requirement candidate revision 2 from revision 1 without editing revision 1 or its review. Replace four claim results with conforming, nonconforming, and indeterminate; classify non-applicable material through fixed scope rather than waiver. Define profile rows as templates requiring eight-field instantiation. Require complete current disposition for every new snapshot, allow evidence reuse only after current-fit check, and limit fresh check execution to affected claims."
+decision D2 based_on E1, E2, E3, E4, P4:
+  "Keep all other definitions, profile criteria, unresolved numerical values, accepted-source dispositions, external names, and later-effect authority unchanged. Produce a new digest and new Step 2 review input. Do not mutate PERT, implementation, commit, push, deploy, or activate."

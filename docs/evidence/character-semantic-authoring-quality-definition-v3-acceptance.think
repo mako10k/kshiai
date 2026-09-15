@@ -1,0 +1,16 @@
+domain DeliveryQualityDefinitionV3Acceptance:
+  description "Record owner acceptance of the exact reviewed quality definition revision 3 snapshot."
+evidence E1:
+  "The exact candidate digest is 2cb49ea4151c2dbc6816f3187a114a221580c6e024694c56fc46e13853ff1cff."
+evidence E2:
+  "The independent review for that digest is completed, reports no contradiction, records all twelve acceptance criteria as conforming, and recommends ACCEPT."
+evidence E3:
+  "After the review result was presented, the product owner explicitly instructed ACCEPT and to proceed."
+premise P1:
+  "Requirement lifecycle Step 4 permits ACCEPT for an unchanged candidate after a completed review routed from REVIEW."
+premise P2:
+  "Acceptance covers only the exact requirement bytes and does not authorize later plan, implementation, commit, push, provider, deployment, activation, or production effects."
+decision D1 based_on E1, E2, E3, P1:
+  "Accept exact quality definition revision 3 identified by digest 2cb49ea4151c2dbc6816f3187a114a221580c6e024694c56fc46e13853ff1cff and record Step 4 completion without changing the candidate or review."
+decision D2 based_on E3, P2:
+  "After recording acceptance, inspect the current PERT and repository evidence to select the next in-scope work. Treat the accepted definition as the review vocabulary and sufficiency baseline, not as proof that implementation or evaluation is complete."

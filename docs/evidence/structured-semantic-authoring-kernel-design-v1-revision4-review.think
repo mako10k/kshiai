@@ -1,0 +1,82 @@
+domain StructuredSemanticAuthoringKernelDesignV1Revision4Review:
+  description "Evidence-chain review of exact D11 design candidate revision four."
+problem P1:
+  |
+    Determine whether revision four closes every provider-timeout recovery branch while
+    preserving accepted resource-outcome and information-gaining-recovery semantics.
+evidence E1:
+  |
+    Exact review subject Seal 7bfc10a07b45203279dc44605df0c4f21c3da1a31dd4776a769c10544907229b
+    matches the workfile whose SHA256 is
+    559c8bce9165b51a3aa274c701ee17aee3fe97a96652601cb8b2f7fc71537594.
+evidence E2:
+  |
+    Revision four lines 523 through 540 atomically moves a timed-out request out of
+    outstanding, rejects late application, gives an admitted recovery a distinct
+    identity, and requires exactly one typed recoveryBasis. This resolves the original
+    request-fencing portion of the revision-three finding.
+evidence E3:
+  |
+    Revision four lines 470 through 478 says exhaustion of a cumulative-resource
+    dimension stops new work and returns the matching bounded-resource outcome.
+evidence E4:
+  |
+    Revision four lines 542 through 545 maps failed cumulative-resource admission for
+    transport recovery to provider_transport_unavailable rather than the matching
+    bounded-resource outcome.
+evidence E5:
+  |
+    Foundation v3 F15 lines 335 through 342 forbids new work when the required budget
+    is unavailable. Its safe-stop contract lines 360 through 366 requires the failure
+    receipt to identify the stop category and consumed budget. ADR-0032 lines 90 through
+    91 requires call, token and cost ceilings to terminate their own failure modes.
+evidence E6:
+  |
+    Revision four lines 531 through 540 permits recovery only with a typed basis proving
+    a changed transport condition or materially different authorized request. Lines
+    542 through 549 define terminal behavior for zero policy, consumed recovery, failed
+    resource admission, and lost fence, but not for inability to establish either
+    recovery basis while the current fence and budgets remain valid.
+evidence E7:
+  |
+    Foundation v3 F9 lines 232 through 258 forbids unchanged blind retry, permits
+    infrastructure retry after conditions change, and allows an attempt to fail after
+    applicable recovery is exhausted.
+evidence E8:
+  |
+    Revision four lines 758 through 765 says the fixture covers inadmissible recovery
+    and no-recovery technical failure, but a fixture cannot choose whether the missing
+    no-basis branch is provider failure, another recovery, or another state transition.
+premise C1:
+  |
+    A failure category controls diagnostics and source-based retry evidence. Replacing a
+    resource-exhaustion category with a provider-unavailability category loses the
+    accepted reason even if both share the durable run state failed.
+premise C2:
+  |
+    A closed recovery design must state the next transition when an explicit scheduling
+    precondition cannot be met; tests cannot supply missing normative behavior.
+premise U1:
+  |
+    Numeric timeout fitness, route behavior, and runtime implementation remain
+    unverified and are outside this document review.
+decision D1 based_on P1, E2:
+  |
+    Revision four resolves the revision-three late-result and replacement-request
+    identity defect.
+decision D2 based_on P1, E3, E4, E5, C1:
+  |
+    Mapping failed cumulative-resource admission to provider_transport_unavailable is
+    a direct internal and F15/ADR-0032 contract conflict. The run must retain the timeout
+    receipt but terminate with the matching bounded-resource outcome and consumed-budget
+    evidence.
+decision D3 based_on P1, E6, E7, E8, C2:
+  |
+    The no-valid-recoveryBasis branch remains undefined. When the current fence remains
+    valid but neither accepted basis can be established, the same attempt cannot
+    schedule a blind retry and must reach an explicit recoverable technical failure and
+    owner new-run recipe rather than remain claimed without work.
+decision D4 based_on P1, E1, D1, D2, D3, U1:
+  |
+    Report REVISE with two P1 findings for exact revision four. Do not modify the design
+    or infer implementation, provider, cutover, or deployment authority from review.

@@ -1,0 +1,56 @@
+domain SemanticAuthoringDesignRevision3SelfCheck:
+  description "Check design candidate v1 revision three against accepted ADR0032 without accepting it."
+problem P1:
+  |
+    Determine whether revision three removes the identified time-boundary inconsistency
+    while preserving unaffected accepted design contracts.
+evidence E1:
+  |
+    The authoritative design candidate SHA256 is
+    49181675114f6ced237ced68a335aa1e1edbb0eaa788379f0d6c09dc36a3e6f1.
+    It identifies revision three and accepted ADR0032 as its current architectural
+    authority.
+evidence E2:
+  |
+    Section 7 no longer declares a whole-attempt elapsed maximum or a provider timeout
+    literal. It excludes time from cumulative attempt budgeting and retains the call,
+    step, token, byte, cost, progress-history, and recovery-strategy maxima.
+evidence E3:
+  |
+    Sections 3.1 and 7 bind separate provider transport and worker execution policy
+    identities. Provider timeout is a typed transport outcome; worker lease expiry is a
+    recoverable technical outcome; neither is semantic failure or a whole-attempt
+    semantic deadline.
+evidence E4:
+  |
+    Provider timeout recovery is bounded to zero or one by a frozen route policy and
+    remains unavailable until its exact value and time values satisfy ADR0032 evidence
+    and owner-acceptance conditions. All recovery retains monotonic resource accounting
+    and current fencing.
+evidence E5:
+  |
+    The full Japanese projection SHA256 is
+    31274ece3bc4b4540f5369941ad24ce0756854077d6b8b0d4b1e011d290e60d5
+    and carries the same revision, contracts, pending values, and authority boundary.
+evidence E6:
+  |
+    Current non-normative runtime WIP still contains maxAttemptElapsedMs 240000,
+    maxProviderCallElapsedMs 60000, attempt elapsed admission, and whole-attempt
+    termination. The design explicitly excludes implementation and activation.
+premise C1:
+  |
+    A self-check can establish internal traceability but cannot substitute for the fresh
+    independent review and exact owner acceptance required by the design lifecycle.
+decision D1 based_on P1, E1, E2, E3, E4:
+  |
+    Revision three corrects the four time-policy inconsistencies identified by the
+    ADR0032 consistency check without weakening the retained non-time controls.
+decision D2 based_on P1, E1, E5:
+  |
+    The English authority and complete Japanese review projection are aligned for the
+    corrected scope.
+decision D3 based_on P1, E6, C1:
+  |
+    Keep cc304 suspended. Runtime WIP is not yet conforming and must not be corrected or
+    resumed until revision three receives fresh independent review and exact owner
+    acceptance. This self-check is not that review or acceptance.

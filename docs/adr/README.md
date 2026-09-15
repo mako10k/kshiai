@@ -65,4 +65,6 @@ This directory contains durable records of architectural and product-rule decisi
 | [0028](0028-versioned-conscious-agency-contract.md) | Accepted | Revision 2 corrects goal criterion to personality/relationship fit regardless of authorship; withdraws provenance gates; bounded reaction and typed partial acceptance; no supersession |
 | [0029](0029-preserve-v2-soft-guidance-compatibility.md) | Rejected | Historical proposal for permanent V2 conscious-only compatibility; replaced as direction by proposed ADR-0030 |
 | [0030](0030-llm-assisted-character-semantic-migration.md) | Accepted | Migrate frozen V2 characters to strict V3 through bounded LLM semantic change sets, deterministic validation, owner review, and append/CAS |
-| [0031](0031-focused-structured-semantic-authoring-kernel.md) | Accepted | Thin typed authoring kernel, domain adapters, focused capabilities, bounded recovery and mechanical safety; clause-level refinement of existing authoring contracts |
+| [0031](0031-focused-structured-semantic-authoring-kernel.md) | Superseded by 0032 | Thin typed authoring kernel retained by 0032 except for its elapsed-time semantics |
+| [0032](0032-separate-authoring-time-boundaries.md) | Accepted | Separate provider, worker, semantic-progress and cumulative-resource time boundaries; exact values remain undecided |
+| [0033](0033-runtime-config-not-run-identity.md) | Accepted | Keep provider transport and worker execution Config generations out of durable run identity; retain correctness-bearing fences, requests, accounting and outcomes |

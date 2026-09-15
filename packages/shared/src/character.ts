@@ -523,6 +523,13 @@ export const CharacterAuthoringReviewSchema = AssetAuthoringReviewBaseSchema.ext
   candidate: CharacterPublicSchema.nullable(),
   current: CharacterPublicSchema.nullable(),
   acceptanceError: z.string().min(1).max(160).nullable(),
+  sourceRetryAvailable: z.boolean().optional(),
+  semanticCandidateReview: z.object({
+    schemaVersion: z.literal(3),
+    fields: z.array(z.object({ key: z.string(), label: z.string(),
+      source: z.string().nullable(), candidate: z.string() }).strict()),
+    limitation: z.string(),
+  }).strict().nullable().optional(),
 }).strict();
 export type CharacterAuthoringReview = z.infer<typeof CharacterAuthoringReviewSchema>;
 

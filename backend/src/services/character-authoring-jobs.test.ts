@@ -3,7 +3,7 @@ import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "os";
 import { join } from "node:path";
 import { after, before, describe, it } from "node:test";
-import type { GenerateCharacterInput } from "../llm/types.js";
+import type { GenerateCharacterInput, GenerateCharacterDefinitionV2Input } from "../llm/types.js";
 
 const directory = mkdtempSync(join(tmpdir(), "kshiai-authoring-jobs-"));
 process.env.DATABASE_URL = "";
@@ -13,6 +13,7 @@ process.env.LLM_PROVIDER = "mock";
 
 const { closeDatabase, query } = await import("../db.js");
 const { MockLlmProvider } = await import("../llm/mock.js");
+const { OpenAiCompatibleProvider } = await import("../llm/openai-compatible.js");
 const characterRepo = await import("../repositories/characters.js");
 const characterAssetRepo = await import("../repositories/character-assets-v2.js");
 const battlefieldAssetRepo = await import("../repositories/battlefield-assets-v2.js");
@@ -42,6 +43,54 @@ after(async () => {
 });
 
 describe("character authoring jobs", () => {
+  for (const repairSucceeds of [true, false]) {
+    it(`persists ${repairSucceeds ? "only the repaired candidate" : "failure without a candidate"} through worker and real definition transport`, async (t) => {
+      let httpCalls = 0;
+      let validReply = "";
+      t.mock.method(globalThis, "fetch", async () => {
+        httpCalls++;
+        assert.ok(httpCalls <= 2, "recovery must not loop");
+        return Response.json({ choices: [{ message: { content:
+          httpCalls === 2 && repairSucceeds ? validReply : '{"definition": {,' } }],
+        usage: { total_tokens: 17 } });
+      });
+      // Only unrelated generation/review/profile stages are fixtures. The worker,
+      // structure service, SDK, JSON decoder, repair and persistence stay real.
+      class ConnectedDefinitionProvider extends MockLlmProvider {
+        readonly definitionProvider = new OpenAiCompatibleProvider({ name: "xai",
+          apiKey: "test-only", baseUrl: "https://example.invalid/v1",
+          modelEngine: "test", modelFast: "test" });
+
+        override async generateCharacterDefinitionV2(input: GenerateCharacterDefinitionV2Input) {
+          const repaired = structuredClone(input.baseDefinition);
+          repaired.speechPolicy.register = "落ち着いた丁寧語";
+          validReply = JSON.stringify({ definition: repaired });
+          return this.definitionProvider.generateCharacterDefinitionV2(input);
+        }
+      }
+      const begin = await characterAssetRepo.beginCharacterAuthoringAttempt({
+        ownerUserId: "job-owner", kind: "create",
+        idempotencyKey: `connected-repair-${repairSucceeds}`,
+        requestDigest: "1".repeat(64), sourceDigest: "2".repeat(64),
+        sourceText: "落ち着いた丁寧語で話す観測者",
+      });
+      await drainCharacterAuthoringJobs({ llm: new ConnectedDefinitionProvider(),
+        workerId: `connected-repair-${repairSucceeds}` });
+      const stored = await characterAssetRepo.getCharacterAuthoringAttempt(
+        begin.attempt.attemptId, "job-owner",
+      );
+      assert.equal(httpCalls, 2);
+      assert.equal(stored?.status, repairSucceeds ? "awaiting_owner_acceptance" : "failed");
+      if (repairSucceeds) {
+        assert.equal(stored?.candidate?.definition.speechPolicy.register, "落ち着いた丁寧語");
+        assert.equal(stored?.candidate?.definition.schemaVersion, 2);
+      } else {
+        assert.equal(stored?.candidate, null);
+      }
+      assert.equal(stored?.resultGenerationId, null, "repair does not activate a generation");
+    });
+  }
+
   it("omits reference tools when the owner has no characters to reference", async () => {
     await query(
       `INSERT INTO users (id, username, password_hash, created_at)

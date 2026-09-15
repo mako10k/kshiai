@@ -5,6 +5,8 @@ import {
   CreateBattleRequestSchema,
   GenerateBattlefieldRequestSchema,
   GenerateCharacterRequestSchema,
+  OwnerRetryCommandV1Schema,
+  SemanticAuthoringAcceptedV1Schema,
   GenerateNarrationStyleRequestSchema,
   GeneratePoliciesRequestSchema,
   AddFriendRequestSchema,
@@ -57,6 +59,7 @@ import {
 } from "./llm/provider-accounting.js";
 import * as charRepo from "./repositories/characters.js";
 import * as charAssetRepo from "./repositories/character-assets-v2.js";
+import { readCharacterFocusedAuthoringReviewV3 } from "./services/character-focused-authoring.js";
 import * as battlefieldAssetRepo from "./repositories/battlefield-assets-v2.js";
 import * as narrationStyleAssetRepo from "./repositories/narration-style-assets-v2.js";
 import * as battleRepo from "./repositories/battles.js";
@@ -225,6 +228,7 @@ async function characterReviewResponse(
   );
   const latestAttemptId = latest?.attemptId ?? attempt.attemptId;
   const stale = latestAttemptId !== attempt.attemptId;
+  const focusedReview = await readCharacterFocusedAuthoringReviewV3(attempt.attemptId, viewerUserId);
   const awaiting = attempt.status === "awaiting_owner_acceptance" && Boolean(attempt.candidate);
   const candidate = awaiting && !stale
     ? (await characterDraftResponse(attempt, viewerUserId)).character
@@ -267,7 +271,10 @@ async function characterReviewResponse(
           updatedAt: attempt.updatedAt,
         }
       : null,
-    progress: toAssetAuthoringProgress(attempt.kind, attempt.status, attempt.attemptId),
+    ...(focusedReview ? { ...focusedReview,
+      sourceRetryAvailable: !stale && focusedReview.sourceRetryAvailable } : {}),
+    progress: focusedReview?.semanticCandidateReview ? null
+      : toAssetAuthoringProgress(attempt.kind, attempt.status, attempt.attemptId),
   };
 }
 
@@ -896,9 +903,15 @@ export function buildRoutes(options: {
         ownerUserId: user.id,
         kind: "create",
         idempotencyKey: `character-create:${idempotencyKey}`,
-        requestDigest: assetContentDigest({ prompt: body.prompt }),
+        requestDigest: assetContentDigest({ prompt: body.prompt,
+          ...(llm.semanticAuthoringProvider ? { authoringPolicy: "semantic_authoring_policy_v1",
+            pricingIdentity: llm.semanticAuthoringProvider.pricingIdentity } : {}) }),
         sourceText: body.prompt,
         sourceDigest,
+        ...(llm.semanticAuthoringProvider ? { focused: {
+          source: { kind: "create" as const, naturalText: body.prompt },
+          pricingIdentity: llm.semanticAuthoringProvider.pricingIdentity,
+        } } : {}),
       });
     } catch (error) {
       const message = error instanceof Error ? error.message : "authoring_failed";
@@ -916,6 +929,25 @@ export function buildRoutes(options: {
     }
     await wakeAuthoringTasks(llm);
     return c.json(authoringAcceptedFromAttempt(started.attempt), 202);
+  });
+
+  authed.post("/authoring/attempts/:attemptId/retries", async (c) => {
+    const user = c.get("user");
+    const body = OwnerRetryCommandV1Schema.parse(await c.req.json());
+    if (!llm.semanticAuthoringProvider) return c.json({ error: "focused_authoring_unavailable" }, 409);
+    try {
+      const started = await charAssetRepo.retryCharacterFocusedAuthoringV3({
+        ownerUserId: user.id, predecessorAttemptId: c.req.param("attemptId"), commandId: body.commandId,
+        pricingIdentity: llm.semanticAuthoringProvider.pricingIdentity,
+      });
+      await wakeAuthoringTasks(llm);
+      return c.json(SemanticAuthoringAcceptedV1Schema.parse({
+        ...authoringAcceptedFromAttempt(started.attempt), predecessorAttemptId: c.req.param("attemptId"),
+      }), 202);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "AUTHORING_RETRY_FAILED";
+      return c.json({ error: message }, message === "AUTHORING_ATTEMPT_NOT_FOUND" ? 404 : 409);
+    }
   });
 
   authed.post("/character-drafts/:id/chat", async (c) => {
@@ -951,10 +983,15 @@ export function buildRoutes(options: {
     if (!structured) {
       return c.json({ draft: null, progress: null, failed: null });
     }
+    const focused = await readCharacterFocusedAuthoringReviewV3(structured.attemptId, user.id);
+    if (focused?.semanticCandidateReview) {
+      return c.json({ draft: null, progress: null, failed: null, reviewAttemptId: structured.attemptId });
+    }
     if (structured.status === "failed") {
       return c.json({
         draft: null,
         progress: null,
+        ...(focused?.sourceRetryAvailable ? { reviewAttemptId: structured.attemptId } : {}),
         failed: {
           attemptId: structured.attemptId,
           characterId: structured.characterId,
@@ -1072,9 +1109,27 @@ export function buildRoutes(options: {
       return c.json({ error: "not_found" }, 404);
     }
     const compatibility = await charAssetRepo.getCharacterCompatibility(sheet.id);
-    if (compatibility.status === "ready") {
+    const semanticProvider = llm.semanticAuthoringProvider;
+    const focusedMigration = semanticProvider && compatibility.status === "ready"
+      && compatibility.schemaVersion === 2
+      ? await charAssetRepo.getReadyCharacterGeneration(sheet.id)
+      : null;
+    if (compatibility.status === "ready" && !focusedMigration) {
       return c.json({ error: "already_current" }, 409);
     }
+    const migrationDefinition = focusedMigration
+      ? CharacterGenerationEnvelopeV2Schema.safeParse(focusedMigration.content)
+      : null;
+    if (focusedMigration && !migrationDefinition?.success) {
+      return c.json({ error: "upgrade_start_failed" }, 409);
+    }
+    const focusedInput = focusedMigration && migrationDefinition?.success && semanticProvider ? {
+      generation: focusedMigration,
+      registration: {
+        source: { kind: "migrate" as const, definition: migrationDefinition.data.definition, capsule: null },
+        pricingIdentity: semanticProvider.pricingIdentity,
+      },
+    } : null;
     const idempotencyKey = readIdempotencyKey(c.req.header("Idempotency-Key"));
     if (!idempotencyKey) return c.json({ error: "idempotency_key_required" }, 400);
     const sourceText = sheet.narrativeBlurb;
@@ -1087,9 +1142,17 @@ export function buildRoutes(options: {
         characterId: sheet.id,
         kind: "upgrade",
         idempotencyKey: `character-upgrade:${sheet.id}:${idempotencyKey}`,
-        requestDigest: assetContentDigest({ characterId: sheet.id, sourceText }),
+        requestDigest: assetContentDigest(focusedInput ? {
+          characterId: sheet.id,
+          sourceGenerationId: focusedInput.generation.generationId,
+          sourceContentDigest: focusedInput.generation.contentDigest,
+          targetSchemaVersion: 3,
+          authoringPolicy: "semantic_authoring_policy_v1",
+          pricingIdentity: focusedInput.registration.pricingIdentity,
+        } : { characterId: sheet.id, sourceText }),
         sourceText,
-        sourceDigest: assetContentDigest(sourceText),
+        sourceDigest: focusedInput?.generation.contentDigest ?? assetContentDigest(sourceText),
+        ...(focusedInput ? { focused: focusedInput.registration } : {}),
       });
     } catch (error) {
       const message = error instanceof Error ? error.message : "upgrade_start_failed";

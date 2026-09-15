@@ -1,7 +1,8 @@
 import { useNavigate } from "react-router-dom";
+import { useRef } from "react";
 import type { CharacterAuthoringReview, CharacterPublic } from "@kshiai/shared";
 import { api } from "../api";
-import { getCharacterReview } from "../authoring-api";
+import { getCharacterReview, retryCharacterAuthoring } from "../authoring-api";
 import { useAssetReview } from "../hooks/useAssetReview";
 import {
   AssetReviewShell,
@@ -63,6 +64,7 @@ function CharacterReviewContent(props: { candidate: CharacterPublic; current: Ch
 
 export function CharacterReviewPage() {
   const nav = useNavigate();
+  const retryCommand = useRef<{ attemptId: string; commandId: string } | null>(null);
   const {
     review, error, busy, draftMessage, setDraftMessage, setBusy, setError, setReview,
   } = useAssetReview(getCharacterReview);
@@ -83,6 +85,32 @@ export function CharacterReviewPage() {
       status={review.status}
       error={error ?? review.acceptanceError}
     >
+      {review.sourceRetryAvailable && !review.stale ? (
+        <section className="card">
+          <p>失敗時の候補を流用せず、保存済みの元情報から新しい試行を開始します。</p>
+          <button disabled={busy} onClick={() => runReviewAction(setBusy, setError, async () => {
+            if (retryCommand.current?.attemptId !== review.attemptId) {
+              retryCommand.current = { attemptId: review.attemptId, commandId: crypto.randomUUID() };
+            }
+            const accepted = await retryCharacterAuthoring(review.attemptId, retryCommand.current.commandId);
+            nav(`/reviews/${accepted.attemptId}`);
+            setReview(await getCharacterReview(accepted.attemptId));
+          }, "再試行に失敗しました")}>元情報から再試行</button>
+        </section>
+      ) : null}
+      {review.semanticCandidateReview ? (
+        <section className="card">
+          <h2>保存済みの構造化候補（V3）</h2>
+          <p>{review.semanticCandidateReview.limitation}</p>
+          {review.semanticCandidateReview.fields.map((field) => (
+            <details key={field.key}>
+              <summary>{field.label}{field.source !== null && field.source !== field.candidate ? "（変更あり）" : ""}</summary>
+              {field.source !== null ? <><h4>元の内容</h4><pre style={{ whiteSpace: "pre-wrap", overflowWrap: "anywhere" }}>{field.source}</pre></> : null}
+              <h4>候補</h4><pre style={{ whiteSpace: "pre-wrap", overflowWrap: "anywhere" }}>{field.candidate}</pre>
+            </details>
+          ))}
+        </section>
+      ) : null}
       {review.canAccept && review.candidate ? (
         <ReviewCandidatePanel
           assistantMessage={review.assistantMessage}

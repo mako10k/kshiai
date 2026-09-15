@@ -1,11 +1,11 @@
-# Delivery plan revision 6: complete owner interaction, evaluation and production readiness.
+# Delivery plan revision 7: relax runtime Config persistence and return to owner-visible authoring.
 # Authority, requirement coverage and historical disposition:
-# docs/character-semantic-migration-plan-revision-6.md
+# docs/character-semantic-migration-plan-revision-7.md
 project csm001:
   version 9
   title "Restore character authoring and migrate frozen ready V2 characters to strict V3"
   description "Deliver accepted focused create, revise and V2-to-V3 migration through the common kernel, with protected meaning and complete server reconciliation. Connect the real provider and consumer paths before live proof. Preserve failed legacy Stage history without making more V2 repair a prerequisite. Restore the frozen characters and verify strict V3 authoring cutover. Provider work, deployment, candidate acceptance and production activation remain separate effects."
-  as_of 2026-09-14
+  as_of 2026-09-15
   duration_unit point
   velocity 1p/1d
   finish cm114
@@ -71,6 +71,13 @@ milestone cm206:
 milestone cm207:
   title "Kernel slice 5 integration review passed"
   state reached
+
+milestone cm308:
+  title "Semantic authoring time boundaries corrected and accepted"
+  state reached
+
+milestone cm309:
+  title "Runtime Config persistence relaxation reviewed and accepted"
 
 milestone cm208:
   title "B8 dual V2 V3 read support deployed and verified"
@@ -290,18 +297,47 @@ task cb207 cm206 -> cm207:
 gate cg302 cm207 -> cm300:
   reason "The combined Stage candidate requires the locally verified B8 reader and semantic-authoring foundation."
 
+task cc308 cm207 -> cm308:
+  title "Correct and accept semantic authoring time-boundary policy"
+  description "Correct the overbroad D11 numeric-policy acceptance interpretation and review exact ADR-0032. Separate provider transport timeout, worker execution boundary, semantic no-progress termination and cumulative call token and cost limits. Do not select replacement time literals without the named route, platform deadline, representative latency evidence and owner-visible wait budget. Preserve existing runtime code as non-normative WIP; no provider call, deployment or activation."
+  duration 1p
+  status done
+  owner "user and codex"
+  source "docs/adr/0032-separate-authoring-time-boundaries.think"
+  requires:
+    cr001 1
+    cr002 1
+
 task cc304 cm207 -> cm304:
   title "Connect focused authoring to real create revise and migration consumers"
-  description "Implement the real provider effect driver and wire the accepted kernel and character adapter into queued create/revise and migration entrypoints. Connect owner-authenticated answer/retry endpoints and UI, safe candidate and mode-specific semantic-diff presentation, and final acceptance without conflating answers with acceptance. Preserve frozen identities, accounting, fences, protected meaning and final reconciliation. Controlled HTTP replies must traverse real API/UI, worker, driver and persistence for all three modes, focused recovery, bounded termination, stale results, answer continuation and source-based retry. Keep new production policy inactive until B14; candidate deployment must preserve current behavior without adding legacy V2 repair. No paid call or deployment. Component-only fixtures cannot complete this task."
+  description "After exact ADR-0032 acceptance and owner acceptance of proposed ADR-0033 plus conforming implementation-design revision 6, implement the real provider effect driver and wire the accepted kernel and character adapter into queued create/revise and migration entrypoints. Connect owner-authenticated answer/retry endpoints and UI, safe candidate and mode-specific semantic-diff presentation, and final acceptance without conflating answers with acceptance. Preserve source, target, adapter, semantic-resource, pricing and token-estimator identities plus accounting, request lifecycle, receipts, fences, protected meaning and final reconciliation. Treat provider transport and worker execution values as startup runtime Config; do not add a durable Config registry, snapshot, generation identity or Config-only migration. Controlled HTTP replies must traverse real API/UI, worker, driver and persistence for all three modes, focused recovery, bounded termination, stale results, answer continuation and source-based new-run retry. Do not reinstate the unsupported 60-second provider or 240-second whole-attempt semantics. Keep new production policy inactive until B14; candidate deployment must preserve current behavior without adding legacy V2 repair. No paid call or deployment. Component-only fixtures cannot complete this task."
   duration 6p
+  status suspended
   owner "codex"
-  source "docs/character-semantic-migration-plan-revision-6.md"
+  source "docs/character-semantic-migration-plan-revision-7.md"
   requires:
     cr001 1
 
+gate cg308 cm308 -> cm304:
+  reason "Focused route connection cannot complete until the semantic authoring time-boundary decision is accepted."
+
+task cc309 cm308 -> cm309:
+  title "Review and decide the runtime Config persistence relaxation"
+  description "Review exact proposed ADR-0033 revision 1 and implementation-design revision 6 only for the owner-directed relaxation. Confirm that transport and worker Config generations are not durable run identity, process or lease loss ends the current run, explicit retry reconstructs a new run, and request lifecycle accounting fencing technical outcomes and candidate records remain durable. Accept or revise the exact snapshot without implementation, provider calls, deployment or activation."
+  duration 1p
+  status done
+  owner "user and codex"
+  source "docs/adr/0033-runtime-config-not-run-identity.think"
+  requires:
+    cr001 1
+    cr002 1
+
+gate cg309 cm309 -> cm304:
+  reason "Focused route connection cannot complete against the superseded persistence clause; accept or revise the exact relaxation before resuming implementation."
+
 task cc305 cm304 -> cm305:
   title "Review the connected candidate and establish its new Stage identity"
-  description "Review exact route and owner-interaction evidence, execution policy and rollback against ADR-0031. Carry the former ca104 old/new-path reconciliation here and retain it for B14. Prepare and obtain the existing R20 owner decisions on representative create/revise/migrate corpus, numeric success criteria and evaluation budget before live evaluation; do not invent thresholds. Run repository checks and, under separate external-write authority, establish the new Stage revision/tag. Do not reuse rc12 or change shared infrastructure."
+  description "Review exact route and owner-interaction evidence, execution policy and rollback against ADR-0032 and the accepted disposition of ADR-0033. Carry the former ca104 old/new-path reconciliation here and retain it for B14. Prepare and obtain the existing R20 owner decisions on representative create/revise/migrate corpus, numeric success criteria and evaluation budget before live evaluation; do not invent thresholds. Run repository checks and, under separate external-write authority, establish the new Stage revision/tag. Do not reuse rc12 or change shared infrastructure."
   duration 1p
   owner "user and codex"
   requires:
@@ -434,3 +470,49 @@ milestone_criterion_set CS_PRODUCTION:
   revision R1
   commitment sha256:2e7be78ebe9558905296ae9351f6ca4b3b1f261d5baf9a13bc7ab84485aab0e7
   criterion DEPLOYED required owner "Exact Stage-qualified production backend frontend storage and dual readers verified before pointer or policy mutation"
+
+work_event WE_CC304_START:
+  model 1
+  task cc304
+  kind start
+  occurred_at 2026-09-14T21:10:00+09:00
+  planned_value 6p
+
+work_event WE_CC304_SUSPEND_TIME_POLICY:
+  model 1
+  task cc304
+  kind suspend
+  occurred_at 2026-09-15T13:44:08+09:00
+  reason "Discovered unsupported provider and whole-attempt time semantics; preserve WIP and resolve ADR-0032 before resuming route connection."
+
+work_event WE_CC308_START:
+  model 1
+  task cc308
+  kind start
+  occurred_at 2026-09-15T13:45:32+09:00
+  planned_value 1p
+
+work_event WE_CC308_FINISH:
+  model 1
+  task cc308
+  kind finish
+  occurred_at 2026-09-15T14:01:33+09:00
+
+work_event WE_CC304_RESUME_DESIGN_REV5:
+  model 1
+  task cc304
+  kind resume
+  occurred_at 2026-09-15T16:31:37+09:00
+
+work_event WE_CC304_SUSPEND_CONFIG_PERSISTENCE:
+  model 1
+  task cc304
+  kind suspend
+  occurred_at 2026-09-15T17:57:06+09:00
+  reason "Owner-directed relaxation removes transport and worker Config generations from durable run identity; review exact ADR-0033 and design revision 6 before resuming connection work."
+
+work_event WE_CC309_FINISH:
+  model 1
+  task cc309
+  kind finish
+  occurred_at 2026-09-15T18:24:59+09:00

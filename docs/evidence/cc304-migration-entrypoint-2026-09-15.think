@@ -1,0 +1,26 @@
+domain Cc304MigrationEntrypoint:
+  description "Connect focused V2-to-V3 migration to an existing real owner entrypoint without activating schema-3 policy."
+evidence E1:
+  "PERT cc304 is active and CS_CONNECTED THREE_MODES requires actual create, revise, and migration entrypoints to invoke the focused provider driver and kernel."
+evidence E2:
+  "The changed-role migration currently succeeds through the real queue, worker, HTTP driver, and persistence only after the test calls beginCharacterAuthoringAttempt directly."
+evidence E3:
+  "The existing owner-authenticated POST /characters/:id/upgrade route is the established character upgrade entrypoint, but it returns already_current for every ready V2 generation before registering focused migration."
+evidence E4:
+  "The accepted migration requirement selects exact ready V2 generation identities for semantic migration and keeps owner acceptance, generation append, pointer CAS, provider approval, deployment, and schema-3 policy activation separate."
+evidence E5:
+  "The route already receives an optional semanticAuthoringProvider selected only by explicit candidate configuration; without it, existing V2 create and upgrade behavior remains on the legacy path."
+evidence E6:
+  "Characters without an exact ready V2 generation are outside the bounded V2-to-V3 migration operation and retain their existing authoring or legacy upgrade path."
+premise P1:
+  "A new public endpoint would introduce an externally visible contract without requirement authority, while an uncalled repository helper would repeat the current implemented-but-not-connected defect."
+premise P2:
+  "Routing an exact ready V2 generation through the existing upgrade command only when the focused provider is configured satisfies the established entrypoint and preserves the default inactive behavior."
+premise P3:
+  "The route must freeze the current generation definition and identity into the same transaction-bound command, and source or pointer drift must fail before provider dispatch."
+premise P4:
+  "The focused result must remain a non-current review candidate: this connection does not authorize confirmation, append, pointer movement, paid calls, deployment, or policy activation."
+decision D1 based_on E1, E2, E3, E4, E5, E6, P1, P2, P3, P4:
+  "Modify the existing character upgrade route so an explicitly configured focused provider routes an exact ready schema-2 current generation into mode migrate with its frozen definition and current-generation identity. Preserve all existing behavior for no-state, unsupported, non-V2, and provider-disabled requests."
+decision D2 based_on E2, E3, E4, P3, P4:
+  "Exercise the owner-authenticated upgrade HTTP command, real family queue, focused worker, controlled HTTP provider, durable source ledger, and owner review readback in one migration scenario. Verify the original pointer is unchanged and final confirmation remains unavailable."

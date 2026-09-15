@@ -39,8 +39,6 @@ export type SemanticAuthoringPolicyV1 = Readonly<{
   maxConcurrentProviderRequests: 1;
   maxLlmCalls: 8;
   maxCountedSteps: 48;
-  maxAttemptElapsedMs: 240_000;
-  maxProviderCallElapsedMs: 60_000;
   maxInputTokensPerCall: 6_000;
   maxInputBytesPerCall: 24_576;
   maxOutputTokensPerCall: 1_500;
@@ -52,6 +50,19 @@ export type SemanticAuthoringPolicyV1 = Readonly<{
   maxRecoveryStrategyChanges: 2;
   pricingIdentity: string;
   tokenEstimatorIdentity: string;
+}>;
+
+export type ProviderTransportPolicyV1 = Readonly<{
+  identity: string;
+  routeIdentity: string;
+  timeoutMs: number;
+  maxRecoveriesPerWorkItem: 0 | 1;
+}>;
+
+export type WorkerExecutionPolicyV1 = Readonly<{
+  identity: string;
+  platformIdentity: string;
+  leaseDurationMs: number;
 }>;
 
 export type SemanticAuthoringAccountingV1 = Readonly<{
@@ -201,12 +212,16 @@ export type SemanticAuthoringDecodeResultV1<Value> =
 export type SemanticAuthoringBaselineV1<Candidate, Obligation> = Readonly<{
   candidate: Candidate;
   obligations: ReadonlyMap<string, Obligation>;
+  provenance?: ReadonlyMap<string, readonly ProposalProvenanceV1[]>;
+  sourceDispositions?: ReadonlyMap<string, SourceDispositionDecisionV1>;
 }>;
 
 export type SemanticAuthoringAdapterStateViewV1<Candidate, Obligation, Finding> = Readonly<{
   candidate: Candidate;
   obligations: ReadonlyMap<string, Obligation>;
   findings: ReadonlyMap<string, Finding>;
+  provenance?: ReadonlyMap<string, readonly ProposalProvenanceV1[]>;
+  sourceDispositions?: ReadonlyMap<string, SourceDispositionDecisionV1>;
 }>;
 
 export type SemanticAuthoringWorkSelectionV1<WorkItem> =
@@ -229,6 +244,8 @@ export type SemanticAuthoringStageProposalInputV1<
   candidate: Candidate;
   obligations: ReadonlyMap<string, Obligation>;
   findings: ReadonlyMap<string, Finding>;
+  provenance?: ReadonlyMap<string, readonly ProposalProvenanceV1[]>;
+  sourceDispositions?: ReadonlyMap<string, SourceDispositionDecisionV1>;
   proposal: Proposal;
 }>;
 
@@ -374,6 +391,10 @@ export type SemanticAuthoringResultIdentityV1 = Readonly<{
   policyIdentity: string;
   adapterIdentity: string;
   accounting: SemanticAuthoringAccountingV1;
+  sourceLedger?: Readonly<{
+    provenance: readonly ProposalProvenanceV1[];
+    sourceDispositions: readonly SourceDispositionDecisionV1[];
+  }>;
 }>;
 
 export type SemanticAuthoringFailureCategoryV1 =
@@ -412,6 +433,7 @@ export type SemanticAuthoringResolverResultV1<FinalCandidate, Question> =
   | Readonly<SemanticAuthoringResultIdentityV1 & {
       kind: "needs_owner_answer";
       question: Question;
+      evidence: SemanticAuthoringOwnerQuestionEvidenceV1;
       resumption: SemanticAuthoringResumptionRecipeV1;
     }>
   | Readonly<SemanticAuthoringResultIdentityV1 & {

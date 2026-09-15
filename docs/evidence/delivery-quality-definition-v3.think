@@ -1,0 +1,18 @@
+domain DeliveryQualityDefinitionV3:
+  description "Revise quality definition revision 2 only for the pre-review and post-review result timing contradiction."
+evidence E1:
+  "The owner selected REVISE at Step 4 after independent review of revision 2."
+evidence E2:
+  "Revision 2 requires all eight claim fields in the review input before review, while its eighth field is the actual result and it separately requires that result to be recorded only after review."
+evidence E3:
+  "The revision 2 independent review recommends seven pre-review inputs, an unevaluated result slot, and assignment of conforming, nonconforming, or indeterminate only in the review report."
+premise P1:
+  "A review input can define everything needed to evaluate a claim without asserting the result that the review is meant to determine."
+premise P2:
+  "The smallest complete correction is to separate seven pre-review input fields from a result slot initialized as unevaluated, then finalize that slot to exactly one of the existing three outcomes after review."
+premise P3:
+  "Revision must preserve all quality definitions, profile criteria, no-waiver rule, current-snapshot disposition rule, current-fit evidence reuse, impact-scoped fresh checks, nonblocking optional improvements, unresolved numerical values, accepted-source boundaries, and later-effect authority."
+decision D1 based_on E1, E2, E3, P1, P2:
+  "Create requirement candidate revision 3 from revision 2. Define seven required pre-review inputs and a result slot initialized as unevaluated. Require the review report to replace unevaluated with conforming, nonconforming, or indeterminate."
+decision D2 based_on E1, E3, P3:
+  "Make no other normative change. Produce a new digest and Step 2 review input, preserve revisions 1 and 2 and their reviews, and do not mutate PERT, implementation, commit, push, deploy, activate, or production state."

@@ -1,0 +1,51 @@
+domain SemanticAuthoringDesignRevision5SelfCheck:
+  description "Check revision five against the two revision-four P1 findings without accepting it."
+problem P1:
+  |
+    Determine whether revision five preserves the matching cumulative-resource outcome
+    and closes the no-valid-recovery-basis path without choosing pending numeric policy
+    or changing unrelated architecture.
+evidence E0:
+  |
+    The exact English revision-five candidate SHA256 is
+    426470047d0e380de90624192b9db71d3f30788fa44423ed0710f9cb1e6cdba4.
+    Its complete Japanese projection SHA256 is
+    7130a67b9e13521d072c7c10cb5d3c1d4bb2bcf08268322b22765ac4596434a0.
+evidence E1:
+  |
+    Revision five section 7.2 makes transport-recovery eligibility precede cumulative-
+    resource admission. Zero recovery, consumed recovery, and absence of a truthful
+    server-derived recovery basis terminate as recoverable provider transport
+    unavailability with distinct reasons and an owner new-run recipe.
+evidence E2:
+  |
+    Revision five section 7.2 performs cumulative-resource admission only for an
+    otherwise-eligible recovery. Failed admission terminates as resource_exhausted,
+    identifies every exhausted cumulative dimension and consumed or retained-reservation
+    accounting, and is explicitly not relabeled as provider unavailability.
+evidence E3:
+  |
+    Both failure branches retain the source timeout receipt and monotonic accounting,
+    do not assert semantic invalidity, and do not reset or start another attempt.
+evidence E4:
+  |
+    Revision five section 10 parameterizes zero, consumed, no-basis, and otherwise-
+    eligible resource-admission failure. It requires the first three to reach provider
+    transport unavailability, the fourth to reach resource_exhausted with exact
+    dimensions and accounting, and all paths to reject blind replay.
+premise C1:
+  |
+    This self-check does not provide fresh independent review or exact owner acceptance.
+premise U1:
+  |
+    Exact provider timeout, worker lease, and selection of zero or one transport
+    recovery remain pending under ADR-0032.
+decision D1 based_on P1, E0, E1, E2, E3, E4:
+  |
+    Revision five closes both revision-four P1 findings with deterministic transition
+    precedence and matching conformance obligations.
+decision D2 based_on P1, E1, E2, C1, U1:
+  |
+    Keep cc304 suspended and present exact revision five for fresh independent REVIEW.
+    Do not infer design acceptance, implementation, route activation, or numeric-policy
+    selection from this self-check.
