@@ -257,28 +257,37 @@ describe("focused authoring through the real owner command and worker", () => {
     assert.equal(attempt?.resultGenerationId, null);
   });
 
-  it("keeps the revision instruction through the real worker and saves a focused candidate", async () => {
+  it("routes an appearance revision from the real owner HTTP command to a non-current review candidate", async () => {
     seen = []; behavior = "repair";
     const now = new Date().toISOString();
+    const characterId = "focused-revise-character";
     const fixture = await new MockLlmProvider().generateCharacter({ prompt: "revision fixture" });
     await query(`INSERT INTO characters (id, owner_user_id, sheet_json, created_at, updated_at)
-      VALUES ($1, $2, $3, $4, $4)`, ["focused-revise-character", "focused-owner", JSON.stringify({
-        ...fixture.sheet, id: "focused-revise-character", ownerUserId: "focused-owner", createdAt: now, updatedAt: now,
+      VALUES ($1, $2, $3, $4, $4)`, [characterId, "focused-owner", JSON.stringify({
+        ...fixture.sheet, id: characterId, ownerUserId: "focused-owner", createdAt: now, updatedAt: now,
       }), now]);
     const original = await generations.createAssetGeneration({ assetType: "character",
-      assetId: "focused-revise-character", schemaVersion: 3, content: { definition: complete } });
-    const started = await attempts.beginCharacterAuthoringAttempt({ ownerUserId: "focused-owner", kind: "revision",
-      characterId: "focused-revise-character",
-      idempotencyKey: "focused-revision-source", requestDigest: "r".repeat(64), sourceDigest: "s".repeat(64),
-      sourceText: "外套を青に変更", focused: { pricingIdentity: "controlled-prices-v1",
-        source: { kind: "revise", definition: complete, requestedCluster: "appearance", naturalText: "外套を青に変更" } } });
-    const outcome = await processNextCharacterAuthoringJob({ llm: llm(), workerId: "focused-revise-worker" });
-    assert.equal(outcome, "completed");
+      assetId: characterId, schemaVersion: 3, content: { definition: complete } });
+    await query(`INSERT INTO character_asset_states
+      (character_id, compatibility_status, current_generation_id, active_attempt_id, reason_code, updated_at)
+      VALUES ($1, 'ready', $2, NULL, NULL, $3)`, [characterId, original.generationId, now]);
+    const provider = llm();
+    const app = buildRoutes({ llm: provider, controlledCharacterRevisionCluster: "appearance" });
+    const response = await app.request(`/api/characters/${characterId}/chat`, {
+      method: "POST",
+      headers: { Cookie: "kshiai_session=focused-session", "Content-Type": "application/json",
+        "Idempotency-Key": "focused-revision-source" },
+      body: JSON.stringify({ message: "外套を青に変更" }),
+    });
+    assert.equal(response.status, 202, await response.clone().text());
+    const accepted = z.object({ attemptId: z.string() }).parse(await response.json());
+    await drainCharacterAuthoringJobs({ llm: provider, workerId: "focused-revise-worker" });
     assert.equal(seen[0]?.source.instruction, "外套を青に変更");
+    assert.equal(seen[0]?.work.cluster, "appearance");
     assert.equal(seen[1]?.proposal.baseCandidateRevision, 0, "invalid reply did not change the candidate");
     assert.ok(seen[1]?.findings.some(([key]) => key === "kernel:proposal"));
     const saved = await query<{ result_json: unknown }>(`SELECT p.result_json FROM character_focused_authoring_payloads p
-      JOIN semantic_authoring_runs r ON r.run_id = p.run_id WHERE r.attempt_id = $1`, [started.attempt.attemptId]);
+      JOIN semantic_authoring_runs r ON r.run_id = p.run_id WHERE r.attempt_id = $1`, [accepted.attemptId]);
     const raw = saved.rows[0]?.result_json;
     const result = z.object({ kind: z.literal("ready_for_review"), finalCandidate: CharacterDefinitionV3Schema,
       sourceLedger: z.object({ provenance: z.array(z.object({ targetClaimId: z.string() })).min(1),
@@ -286,9 +295,17 @@ describe("focused authoring through the real owner command and worker", () => {
       .parse(typeof raw === "string" ? JSON.parse(raw) : raw);
     assert.equal(result.finalCandidate.appearance.publicSummary, "青い外套");
     assert.deepEqual(result.finalCandidate.combat, complete.combat);
-    assert.equal((await generations.getCurrentAssetGeneration("character", "focused-revise-character"))?.generationId,
+    const reviewResponse = await app.request(`/api/character-drafts/${accepted.attemptId}`, {
+      headers: { Cookie: "kshiai_session=focused-session" },
+    });
+    assert.equal(reviewResponse.status, 200);
+    const review = CharacterAuthoringReviewSchema.parse(await reviewResponse.json());
+    assert.equal(review.canAccept, false, "focused review remains separate from final acceptance");
+    assert.ok(review.semanticCandidateReview?.fields.some((field) => field.key === "appearance"
+      && field.source?.includes("赤い外套") && field.candidate.includes("青い外套")));
+    assert.equal((await generations.getCurrentAssetGeneration("character", characterId))?.generationId,
       original.generationId, "review candidate does not move the immutable source pointer");
-    assert.equal((await attempts.getCharacterAuthoringAttempt(started.attempt.attemptId, "focused-owner"))?.resultGenerationId, null);
+    assert.equal((await attempts.getCharacterAuthoringAttempt(accepted.attemptId, "focused-owner"))?.resultGenerationId, null);
   });
 
   it("carries changed-role migration meaning through the real worker into a review candidate", async () => {

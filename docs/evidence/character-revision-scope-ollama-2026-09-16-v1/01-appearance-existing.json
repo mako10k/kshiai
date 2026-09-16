@@ -1,0 +1,21 @@
+{
+  "schema": "character-revision-scope-ollama-case-v1",
+  "runId": "character-revision-scope-ollama-2026-09-16-v1",
+  "case": {
+    "caseId": "appearance-existing",
+    "origin": "existing-test",
+    "request": "外套を青に変更",
+    "expectation": {
+      "kind": "resolved",
+      "clusters": [
+        "appearance"
+      ]
+    }
+  },
+  "passed": false,
+  "error": {
+    "name": "ZodError",
+    "message": "[\n  {\n    \"code\": \"custom\",\n    \"message\": \"alternatives must have materially different scopes\",\n    \"path\": [\n      \"result\"\n    ]\n  }\n]"
+  },
+  "retryPerformed": false
+}

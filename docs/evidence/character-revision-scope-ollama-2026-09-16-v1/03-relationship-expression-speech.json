@@ -1,0 +1,42 @@
+{
+  "schema": "character-revision-scope-ollama-case-v1",
+  "runId": "character-revision-scope-ollama-2026-09-16-v1",
+  "case": {
+    "caseId": "relationship-expression-speech",
+    "origin": "controlled-synthetic",
+    "request": "口調を丁寧にして、相手を『あなた』と呼ぶようにして",
+    "expectation": {
+      "kind": "resolved",
+      "clusters": [
+        "relationship-expression"
+      ]
+    }
+  },
+  "candidate": {
+    "kind": "resolved",
+    "clusters": [
+      "relationship-expression"
+    ],
+    "evidence": [
+      {
+        "sourceQuote": "口調を丁寧にして、相手を『あなた』と呼ぶようにして。",
+        "clusters": [
+          "relationship-expression"
+        ]
+      }
+    ]
+  },
+  "rawContent": "{\n  \"result\": {\n    \"kind\": \"resolved\",\n    \"clusters\": [\n      \"relationship-expression\"\n    ]\n  , \"evidence\": [\n      {\"sourceQuote\":\"口調を丁寧にして、相手を『あなた』と呼ぶようにして。\",\"clusters\":[\"relationship-expression\"]}\n    ]\n  }\n}",
+  "evaluation": {
+    "outcome": "invalid",
+    "reason": "ungrounded_source_quote"
+  },
+  "passed": false,
+  "accounting": {
+    "inputTokens": 240,
+    "outputTokens": 74,
+    "elapsedMs": 24618,
+    "providerDurationNs": 24608049138,
+    "estimatedCostUsd": 0
+  }
+}

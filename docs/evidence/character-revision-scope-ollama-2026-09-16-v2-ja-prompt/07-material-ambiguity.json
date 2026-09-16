@@ -1,0 +1,55 @@
+{
+  "schema": "character-revision-scope-ollama-case-v1",
+  "runId": "character-revision-scope-ollama-2026-09-16-v2-ja-prompt",
+  "case": {
+    "caseId": "material-ambiguity",
+    "origin": "controlled-synthetic",
+    "request": "もっと鋭い感じにして",
+    "expectation": {
+      "kind": "ambiguous",
+      "alternativeScopes": [
+        [
+          "appearance"
+        ],
+        [
+          "mechanics"
+        ]
+      ]
+    }
+  },
+  "candidate": {
+    "kind": "ambiguous",
+    "sourceQuote": "[もっと][鋭い感じ]",
+    "unsafeReason": "変更の範囲が不十分で、どの領域を変更するか不明",
+    "alternatives": [
+      {
+        "id": "url1",
+        "clusters": [
+          "skeleton"
+        ],
+        "effect": "[もっと][鋭い感じ]に表名や核心的な目標を変える"
+      },
+      {
+        "id": "url2",
+        "clusters": [
+          "mechanics"
+        ],
+        "effect": "[もっと][鋭い感じ]で行動選択規範や戦闘行動の指針を変える"
+      }
+    ]
+  },
+  "rawContent": "{\n  \"result\": {\n    \"kind\": \"ambiguous\",\n    \"sourceQuote\": \"[もっと][鋭い感じ]\",\n    \"unsafeReason\": \"変更の範囲が不十分で、どの領域を変更するか不明\"\n  , \"alternatives\": [\n      {\n        \"id\": \"url1\",\n        \"clusters\": [\n          \"skeleton\"\n        ]\n      ,\n        \"effect\": \"[もっと][鋭い感じ]に表名や核心的な目標を変える\"\n      },\n      {\n        \"id\": \"url2\",\n        \"clusters\": [\n          \"mechanics\"\n        ]\n      ,\n        \"effect\": \"[もっと][鋭い感じ]で行動選択規範や戦闘行動の指針を変える\"\n      }\n    ]\n  }\n}",
+  "validationIssues": [],
+  "evaluation": {
+    "outcome": "invalid",
+    "reason": "ungrounded_source_quote"
+  },
+  "passed": false,
+  "accounting": {
+    "inputTokens": 353,
+    "outputTokens": 188,
+    "elapsedMs": 34785,
+    "providerDurationNs": 34779735201,
+    "estimatedCostUsd": 0
+  }
+}

@@ -18,12 +18,17 @@ export function isStale(status) {
 }
 
 export function classifyTest(entry, status) {
-  if (!status) return { state: "disabled", reason: "missing_ref" };
+  if (!status || status.error || !status.head_seal_id) {
+    return { state: "disabled", reason: "missing_ref" };
+  }
   if (status.local_source?.path !== entry.path) {
     return { state: "disabled", reason: "missing_or_wrong_source_binding" };
   }
   if (status.local_source.relation !== "WORKFILE_MATCHES_HEAD") {
     return { state: "disabled", reason: "source_diverged" };
+  }
+  if (!status.cause_links?.length) {
+    return { state: "disabled", reason: "missing_basis" };
   }
   if (isStale(status)) return { state: "disabled", reason: "stale" };
   return { state: "active", reason: "current" };
@@ -55,7 +60,7 @@ function discoverTests(suite) {
 function loadInventory() {
   const path = join(scriptsDir, "test-authority-inventory.json");
   const inventory = JSON.parse(readFileSync(path, "utf8"));
-  if (inventory.schema !== "kshiai/test-authority-inventory/v1") {
+  if (inventory.schema !== "kshiai/test-authority-inventory/v2") {
     throw new Error(`unsupported test authority inventory: ${inventory.schema}`);
   }
   const paths = inventory.tests.map((entry) => entry.path);
@@ -77,14 +82,24 @@ async function loadSealGraphStatus(configuredTests) {
   const staleRefs = new Set(staleOutput.split("\n").filter(Boolean));
   return Promise.all(configuredTests.map(async (entry) => {
     try {
-      const { stdout } = await execFileAsync(
-        "sealgraph",
-        ["source", "compare", entry.ref, "--format", "json"],
-        { cwd: repositoryRoot, maxBuffer: 1024 * 1024 },
-      );
-      const comparison = JSON.parse(stdout);
+      const [comparisonResult, showResult] = await Promise.all([
+        execFileAsync(
+          "sealgraph",
+          ["source", "compare", entry.ref, "--format", "json"],
+          { cwd: repositoryRoot, maxBuffer: 1024 * 1024 },
+        ),
+        execFileAsync(
+          "sealgraph",
+          ["show", entry.ref, "--format", "json"],
+          { cwd: repositoryRoot, maxBuffer: 4 * 1024 * 1024 },
+        ),
+      ]);
+      const comparison = JSON.parse(comparisonResult.stdout);
+      const shown = JSON.parse(showResult.stdout);
       return {
         ref: entry.ref,
+        head_seal_id: shown.seal.seal_id,
+        cause_links: shown.seal.cause_links,
         stale: staleRefs.has(entry.ref),
         local_source: { path: comparison.path, relation: comparison.relation },
       };
@@ -100,7 +115,7 @@ export function buildInventory(testPaths, configuredTests, statuses) {
   return testPaths.map((absolutePath) => {
     const path = relative(repositoryRoot, absolutePath).replaceAll("\\", "/");
     const entry = configByPath.get(path);
-    if (!entry) return { path, state: "active", reason: "ungoverned", ref: null };
+    if (!entry) return { path, state: "disabled", reason: "unsealed", ref: null };
     return { path, ref: entry.ref, ...classifyTest(entry, statusByRef.get(entry.ref)) };
   });
 }
@@ -119,13 +134,13 @@ async function main() {
   const disabled = inventory.filter((entry) => entry.state === "disabled");
   const active = inventory.filter((entry) => entry.state === "active");
   const summary = {
-    schema: "kshiai/test-authority-selection/v1",
+    schema: "kshiai/test-authority-selection/v2",
     suite,
     discovered: inventory.length,
     active: active.length,
     disabled: disabled.length,
-    governed: inventory.filter((entry) => entry.ref).length,
-    ungoverned: inventory.filter((entry) => !entry.ref).length,
+    sealed: inventory.filter((entry) => entry.ref).length,
+    unsealed: inventory.filter((entry) => !entry.ref).length,
     tests: inventory,
   };
   if (listOnly) {
@@ -134,11 +149,6 @@ async function main() {
   }
   for (const entry of disabled) {
     process.stderr.write(`DISABLED ${entry.path} ref=${entry.ref} reason=${entry.reason}\n`);
-  }
-  if (summary.ungoverned) {
-    process.stderr.write(
-      `UNGOVERNED count=${summary.ungoverned}; results are executed but are not SealGraph validity evidence\n`,
-    );
   }
   if (suite === "e2e") {
     process.exitCode = active.length

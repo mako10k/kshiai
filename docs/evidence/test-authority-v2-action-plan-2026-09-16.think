@@ -1,0 +1,64 @@
+domain TEST_AUTHORITY_V2:
+  description "Decision gate for repository-wide Seal-based test authority."
+
+problem P1:
+  |
+    Decide the next authorized change after the owner established that an unsealed
+    test has no adequate stated basis, and that a sealed test is evidence only for
+    the exact Cause revision on which its verification Seal depends.
+
+evidence E1:
+  |
+    On 2026-09-16 the product owner confirmed that tests without a Seal are invalid
+    as evidence, and that a sealed test becomes invalid for a later/current claim
+    when its basis is stale or progresses, while remaining valid for its original
+    historical basis.
+
+evidence E2:
+  |
+    scripts/test-authority.mjs currently classifies discovered tests absent from
+    scripts/test-authority-inventory.json as active with reason ungoverned and runs
+    them, while warning that their results are not SealGraph validity evidence.
+
+evidence E3:
+  |
+    The same selector already disables configured verification REFs for missing or
+    wrong source binding, source divergence, and direct or transitive SealGraph
+    staleness. SealGraph defines staleness from immutable Seals plus current REF
+    heads, so historical Seals are not erased by later REF progress.
+
+evidence E4:
+  |
+    Repository guidance requires a review-gate or user-confirmed operational
+    decision to be recorded in an ADR, and requires ADR-0015 and later to remain
+    Proposed until the decision owner approves the exact ADR revision.
+
+premise SCOPE:
+  |
+    Preserve all test files and historical Seals. Change only current evidence
+    eligibility and its reporting. Do not commit, push, deploy, or activate external
+    systems in this slice.
+
+premise OPTIONS:
+  |
+    Implement immediately without an ADR; infer acceptance of an unseen ADR revision;
+    or draft the exact Proposed ADR and its Japanese review projection, then wait for
+    exact-revision acceptance before changing the selector and sealing verification.
+
+pending U1:
+  |
+    The owner has confirmed the policy semantics but has not yet reviewed a named
+    ADR-0034 revision and its complete wording.
+
+decision D1 based_on P1, E1, E2, E3, E4, SCOPE, OPTIONS, U1:
+  |
+    Draft ADR-0034 revision one as Proposed and present its complete Japanese review
+    scope. Do not change test selection or create implementation and verification
+    Seals until the owner explicitly accepts that exact revision.
+
+decision D2 based_on D1, E1, E2, E3, SCOPE:
+  |
+    After exact-revision acceptance, change unlisted tests from active/ungoverned to
+    disabled/unsealed, retain the existing source and staleness gates, report exact
+    current evidence eligibility without deleting historical validity, and seal the
+    selector verification against the accepted authority.

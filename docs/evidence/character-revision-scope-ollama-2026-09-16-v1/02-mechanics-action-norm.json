@@ -1,0 +1,49 @@
+{
+  "schema": "character-revision-scope-ollama-case-v1",
+  "runId": "character-revision-scope-ollama-2026-09-16-v1",
+  "case": {
+    "caseId": "mechanics-action-norm",
+    "origin": "controlled-synthetic",
+    "request": "戦闘では相手の隙を待ってから反撃するようにして",
+    "expectation": {
+      "kind": "resolved",
+      "clusters": [
+        "mechanics"
+      ]
+    }
+  },
+  "candidate": {
+    "kind": "ambiguous",
+    "sourceQuote": "戦闘では相手の隙を待ってから反撃するようにして",
+    "unsafeReason": "The provided text is in Japanese and describes a behavior, which could be interpreted as either mechanics or relationship-expression. It does not clearly specify if it should change the 'mechanics' scope or the 'relationship-expression' scope.",
+    "alternatives": [
+      {
+        "id": "mechanics",
+        "clusters": [
+          "mechanics"
+        ],
+        "effect": "The character will be more cautious and strategic in combat, waiting for opportunities before attacking."
+      },
+      {
+        "id": "relationship-expression",
+        "clusters": [
+          "relationship-expression"
+        ],
+        "effect": "The character's behavior towards others during battles will change to a more patient and strategic approach, mirroring their own actions in combat."
+      }
+    ]
+  },
+  "rawContent": "{\n  \"result\": {\n    \"kind\": \"ambiguous\",\n    \"sourceQuote\": \"戦闘では相手の隙を待ってから反撃するようにして\",\n    \"unsafeReason\": \"The provided text is in Japanese and describes a behavior, which could be interpreted as either mechanics or relationship-expression. It does not clearly specify if it should change the 'mechanics' scope or the 'relationship-expression' scope.\",\n    \"alternatives\": [\n      {\n        \"id\": \"mechanics\",\n        \"clusters\": [\"mechanics\"]\n     \t,\n        \"effect\": \"The character will be more cautious and strategic in combat, waiting for opportunities before attacking.\"\n      },\n      {\n        \"id\": \"relationship-expression\",\n        \"clusters\": [\"relationship-expression\"],\n        \"effect\": \"The character's behavior towards others during battles will change to a more patient and strategic approach, mirroring their own actions in combat.\"\n      }\n    ]\n  }\n}",
+  "evaluation": {
+    "outcome": "invalid",
+    "reason": "unexpected_ambiguity"
+  },
+  "passed": false,
+  "accounting": {
+    "inputTokens": 241,
+    "outputTokens": 213,
+    "elapsedMs": 46179,
+    "providerDurationNs": 46169912674,
+    "estimatedCostUsd": 0
+  }
+}

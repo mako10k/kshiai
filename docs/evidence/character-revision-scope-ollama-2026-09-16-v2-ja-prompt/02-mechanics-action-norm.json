@@ -1,0 +1,45 @@
+{
+  "schema": "character-revision-scope-ollama-case-v1",
+  "runId": "character-revision-scope-ollama-2026-09-16-v2-ja-prompt",
+  "case": {
+    "caseId": "mechanics-action-norm",
+    "origin": "controlled-synthetic",
+    "request": "戦闘では相手の隙を待ってから反撃するようにして",
+    "expectation": {
+      "kind": "resolved",
+      "clusters": [
+        "mechanics"
+      ]
+    }
+  },
+  "candidate": {
+    "kind": "resolved",
+    "clusters": [
+      "mechanics"
+    ],
+    "evidence": [
+      {
+        "sourceQuote": "戦闘では相手の隙を待ってから反撃するようにして",
+        "clusters": [
+          "mechanics"
+        ]
+      }
+    ]
+  },
+  "rawContent": "{\n  \"result\": {\n    \"kind\": \"resolved\",\n    \"clusters\": [\n      \"mechanics\"\n    ],\n    \"evidence\": [\n      {\n        \"sourceQuote\": \"戦闘では相手の隙を待ってから反撃するようにして\"\n      , \"clusters\": [\"mechanics\"]\n      }\n    ]\n  }\n}",
+  "validationIssues": [],
+  "evaluation": {
+    "outcome": "single_cluster",
+    "clusters": [
+      "mechanics"
+    ]
+  },
+  "passed": true,
+  "accounting": {
+    "inputTokens": 366,
+    "outputTokens": 87,
+    "elapsedMs": 30185,
+    "providerDurationNs": 30172037081,
+    "estimatedCostUsd": 0
+  }
+}

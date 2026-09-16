@@ -1,0 +1,31 @@
+{
+  "schema": "character-revision-scope-offline-grounding-reconciliation-v1",
+  "sourceRunId": "character-revision-scope-ollama-2026-09-16-v3-ja-few-shot",
+  "sourceSummary": {
+    "path": "docs/evidence/character-revision-scope-ollama-2026-09-16-v3-ja-few-shot/99-summary.json",
+    "sha256": "b162ae690ac029fab526ed634d9d4f1ffacba180db36168fb5376068c2816a3f",
+    "originalPassed": 7,
+    "originalFailed": 1
+  },
+  "reevaluatedCase": {
+    "caseId": "relationship-expression-speech",
+    "path": "docs/evidence/character-revision-scope-ollama-2026-09-16-v3-ja-few-shot/03-relationship-expression-speech.json",
+    "sha256": "b94ef8758e8270179d821cb05cd76d06cc55f310d5efdc151eb3dd55062b58fd",
+    "originalOutcome": {
+      "outcome": "invalid",
+      "reason": "ungrounded_source_quote"
+    },
+    "offlineOutcome": {
+      "outcome": "single_cluster",
+      "clusters": [
+        "relationship-expression"
+      ]
+    }
+  },
+  "changedEvaluationRule": "Grounding comparison ignores only Japanese decorative quotation marks U+300C, U+300D, U+300E, and U+300F. It still requires the remaining normalized quote to be a contiguous substring and does not accept arbitrary paraphrase.",
+  "providerRequests": 0,
+  "originalEvidenceMutated": false,
+  "counterfactualPassed": 8,
+  "counterfactualFailed": 0,
+  "conclusionBoundary": "Offline development reconciliation only. It does not convert the original 7-of-8 run into product acceptance or authorize public-route connection."
+}

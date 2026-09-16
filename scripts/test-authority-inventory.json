@@ -1,6 +1,6 @@
 {
-  "schema": "kshiai/test-authority-inventory/v1",
-  "scope": "common structured authoring and character semantic migration",
+  "schema": "kshiai/test-authority-inventory/v2",
+  "scope": "repository-wide Seal-based test authority and previously inventoried structured authoring verification",
   "tests": [
     { "path": "backend/src/llm/character-definition-response-schema.test.ts", "ref": "verification/character-definition-response-schema" },
     { "path": "backend/src/llm/character-migration-ollama-provider.test.ts", "ref": "verification/character-migration-ollama-adapter" },
@@ -21,6 +21,7 @@
     { "path": "backend/src/services/semantic-authoring/scripted-ports.test.ts", "ref": "verification/semantic-authoring-scripted-ports-v1" },
     { "path": "e2e/character-focused-review.spec.ts", "ref": "verification/character-focused-review-e2e-v1" },
     { "path": "packages/shared/src/character-semantic-authoring.test.ts", "ref": "verification/semantic-authoring-character-contracts-v1" },
-    { "path": "packages/shared/src/semantic-authoring.test.ts", "ref": "verification/semantic-authoring-shared-contracts-v1" }
+    { "path": "packages/shared/src/semantic-authoring.test.ts", "ref": "verification/semantic-authoring-shared-contracts-v1" },
+    { "path": "scripts/test-authority.test.mjs", "ref": "verification/test-authority-selector-v2" }
   ]
 }

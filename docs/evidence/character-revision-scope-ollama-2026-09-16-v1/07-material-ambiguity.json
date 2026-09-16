@@ -1,0 +1,54 @@
+{
+  "schema": "character-revision-scope-ollama-case-v1",
+  "runId": "character-revision-scope-ollama-2026-09-16-v1",
+  "case": {
+    "caseId": "material-ambiguity",
+    "origin": "controlled-synthetic",
+    "request": "もっと鋭い感じにして",
+    "expectation": {
+      "kind": "ambiguous",
+      "alternativeScopes": [
+        [
+          "appearance"
+        ],
+        [
+          "mechanics"
+        ]
+      ]
+    }
+  },
+  "candidate": {
+    "kind": "ambiguous",
+    "sourceQuote": "もっと鋭い感じにして",
+    "unsafeReason": "The request is in Japanese and does not specify which character's revision scope to change, leaving multiple interpretations possible.",
+    "alternatives": [
+      {
+        "id": "user1",
+        "clusters": [
+          "skeleton"
+        ],
+        "effect": "Change only the skeleton of one fictional character."
+      },
+      {
+        "id": "user2",
+        "clusters": [
+          "mechanics"
+        ],
+        "effect": "Change only the mechanics (action-choice norms, battle-behavior guidance, and mechanical fallbacks) of one fictional character."
+      }
+    ]
+  },
+  "rawContent": "{\n  \"result\": {\n    \"kind\": \"ambiguous\",\n    \"sourceQuote\": \"もっと鋭い感じにして\",\n    \"unsafeReason\": \"The request is in Japanese and does not specify which character's revision scope to change, leaving multiple interpretations possible.\",\n    \"alternatives\": [\n      {\n        \"id\": \"user1\",\n        \"clusters\": [\"skeleton\"],\n        \"effect\": \"Change only the skeleton of one fictional character.\"\n      },\n      {\n        \"id\": \"user2\",\n        \"clusters\": [\"mechanics\"],\n        \"effect\": \"Change only the mechanics (action-choice norms, battle-behavior guidance, and mechanical fallbacks) of one fictional character.\"\n      }\n    ]\n  }\n}",
+  "evaluation": {
+    "outcome": "invalid",
+    "reason": "ambiguous_alternatives_mismatch"
+  },
+  "passed": false,
+  "accounting": {
+    "inputTokens": 228,
+    "outputTokens": 162,
+    "elapsedMs": 26791,
+    "providerDurationNs": 26785895683,
+    "estimatedCostUsd": 0
+  }
+}

@@ -1,0 +1,54 @@
+{
+  "schema": "character-revision-scope-ollama-case-v1",
+  "runId": "character-revision-scope-ollama-2026-09-16-v3-ja-few-shot",
+  "case": {
+    "caseId": "cross-skeleton-appearance",
+    "origin": "controlled-synthetic",
+    "request": "表示名をナギに変え、外套を白にして",
+    "expectation": {
+      "kind": "resolved",
+      "clusters": [
+        "skeleton",
+        "appearance"
+      ]
+    }
+  },
+  "candidate": {
+    "kind": "resolved",
+    "clusters": [
+      "skeleton",
+      "appearance"
+    ],
+    "evidence": [
+      {
+        "sourceQuote": "表示名をナギに変え",
+        "clusters": [
+          "skeleton"
+        ]
+      },
+      {
+        "sourceQuote": "外套を白にして",
+        "clusters": [
+          "appearance"
+        ]
+      }
+    ]
+  },
+  "rawContent": "{\"result\":{\"kind\":\"resolved\",\"clusters\":[\"skeleton\",\"appearance\"],\"evidence\":[{\"sourceQuote\":\"表示名をナギに変え\",\"clusters\":[\"skeleton\"]},{\"sourceQuote\":\"外套を白にして\",\"clusters\":[\"appearance\"]}]}}",
+  "validationIssues": [],
+  "evaluation": {
+    "outcome": "cross_cluster",
+    "clusters": [
+      "skeleton",
+      "appearance"
+    ]
+  },
+  "passed": true,
+  "accounting": {
+    "inputTokens": 711,
+    "outputTokens": 49,
+    "elapsedMs": 36226,
+    "providerDurationNs": 36219859310,
+    "estimatedCostUsd": 0
+  }
+}

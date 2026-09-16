@@ -1,0 +1,49 @@
+{
+  "schema": "character-revision-scope-ollama-case-v1",
+  "runId": "character-revision-scope-ollama-2026-09-16-v3-ja-few-shot",
+  "case": {
+    "caseId": "relationship-expression-speech",
+    "origin": "controlled-synthetic",
+    "request": "口調を丁寧にして、相手を『あなた』と呼ぶようにして",
+    "expectation": {
+      "kind": "resolved",
+      "clusters": [
+        "relationship-expression"
+      ]
+    }
+  },
+  "candidate": {
+    "kind": "resolved",
+    "clusters": [
+      "relationship-expression"
+    ],
+    "evidence": [
+      {
+        "sourceQuote": "丁寧にして",
+        "clusters": [
+          "relationship-expression"
+        ]
+      },
+      {
+        "sourceQuote": "あなたと呼ぶようにして",
+        "clusters": [
+          "relationship-expression"
+        ]
+      }
+    ]
+  },
+  "rawContent": "{\"result\":{\"kind\":\"resolved\",\"clusters\":[\"relationship-expression\"],\"evidence\":[{\"sourceQuote\":\"丁寧にして\",\"clusters\":[\"relationship-expression\"]},{\"sourceQuote\":\"あなたと呼ぶようにして\",\"clusters\":[\"relationship-expression\"]}]}}",
+  "validationIssues": [],
+  "evaluation": {
+    "outcome": "invalid",
+    "reason": "ungrounded_source_quote"
+  },
+  "passed": false,
+  "accounting": {
+    "inputTokens": 717,
+    "outputTokens": 46,
+    "elapsedMs": 35394,
+    "providerDurationNs": 35386692782,
+    "estimatedCostUsd": 0
+  }
+}

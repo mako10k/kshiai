@@ -21,6 +21,7 @@ import {
   toPublicNarrationStyle,
   toPublicPreset,
   balanceCharacterCombatFields,
+  CharacterDefinitionV3Schema,
   CharacterGenerationEnvelopeV2Schema,
   assertCharacterGenerationReadyV2,
   BattlefieldGenerationEnvelopeV2Schema,
@@ -105,7 +106,10 @@ import {
   dispatchPendingNarrationTasks,
   verifyNarrationTaskAuthorization,
 } from "./services/narration-task-dispatch.js";
-import { assetContentDigest } from "./repositories/asset-generations.js";
+import {
+  assetContentDigest,
+  getCurrentAssetGeneration,
+} from "./repositories/asset-generations.js";
 
 import {
   authoringAcceptedFromAttempt,
@@ -355,6 +359,8 @@ export function buildRoutes(options: {
   llm?: LlmProvider;
   generateCharacterPortrait?: CharacterPortraitGenerator;
   generateBattlefieldImage?: BattlefieldImageGenerator;
+  /** Local controlled trial only; omission preserves the generic revision route. */
+  controlledCharacterRevisionCluster?: "appearance";
 } = {}) {
   const app = new Hono();
   const llm = options.llm ?? createLlmProvider();
@@ -1179,12 +1185,30 @@ export function buildRoutes(options: {
     if (!sheet || sheet.ownerUserId !== user.id) {
       return c.json({ error: "not_found" }, 404);
     }
-    const compatibility = await charAssetRepo.getCharacterCompatibility(sheet.id);
-    if (compatibility.status !== "ready") {
-      return c.json({
-        error: "character_upgrade_required",
-        message: "先に「このキャラを最新版に更新」を実行してください。",
-      }, 409);
+    const controlledCluster = options.controlledCharacterRevisionCluster;
+    const semanticProvider = controlledCluster ? llm.semanticAuthoringProvider : undefined;
+    if (controlledCluster && !semanticProvider) {
+      return c.json({ error: "focused_authoring_unavailable" }, 409);
+    }
+    const focusedRevision = semanticProvider
+      ? await getCurrentAssetGeneration("character", sheet.id)
+      : null;
+    const focusedDefinition = focusedRevision?.schemaVersion === 3
+      && typeof focusedRevision.content === "object"
+      && focusedRevision.content !== null
+      ? CharacterDefinitionV3Schema.safeParse(Reflect.get(focusedRevision.content, "definition"))
+      : null;
+    if (controlledCluster && (!focusedRevision || !focusedDefinition?.success)) {
+      return c.json({ error: "revision_start_failed" }, 409);
+    }
+    if (!controlledCluster) {
+      const compatibility = await charAssetRepo.getCharacterCompatibility(sheet.id);
+      if (compatibility.status !== "ready") {
+        return c.json({
+          error: "character_upgrade_required",
+          message: "先に「このキャラを最新版に更新」を実行してください。",
+        }, 409);
+      }
     }
     const idempotencyKey = readIdempotencyKey(c.req.header("Idempotency-Key"));
     if (!idempotencyKey) return c.json({ error: "idempotency_key_required" }, 400);
@@ -1197,9 +1221,22 @@ export function buildRoutes(options: {
         characterId: sheet.id,
         kind: "revision",
         idempotencyKey: `character-revision:${sheet.id}:${idempotencyKey}`,
-        requestDigest: assetContentDigest({ characterId: sheet.id, message: body.message }),
+        requestDigest: assetContentDigest(focusedRevision && semanticProvider ? {
+          characterId: sheet.id,
+          message: body.message,
+          sourceGenerationId: focusedRevision.generationId,
+          sourceContentDigest: focusedRevision.contentDigest,
+          requestedCluster: controlledCluster,
+          authoringPolicy: "semantic_authoring_policy_v1",
+          pricingIdentity: semanticProvider.pricingIdentity,
+        } : { characterId: sheet.id, message: body.message }),
         sourceText: body.message,
         sourceDigest: assetContentDigest(body.message),
+        ...(focusedRevision && focusedDefinition?.success && semanticProvider && controlledCluster ? { focused: {
+          source: { kind: "revise" as const, definition: focusedDefinition.data,
+            requestedCluster: controlledCluster, naturalText: body.message },
+          pricingIdentity: semanticProvider.pricingIdentity,
+        } } : {}),
       });
     } catch (error) {
       const message = error instanceof Error ? error.message : "revision_start_failed";

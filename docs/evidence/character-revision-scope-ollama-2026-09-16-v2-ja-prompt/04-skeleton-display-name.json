@@ -1,0 +1,45 @@
+{
+  "schema": "character-revision-scope-ollama-case-v1",
+  "runId": "character-revision-scope-ollama-2026-09-16-v2-ja-prompt",
+  "case": {
+    "caseId": "skeleton-display-name",
+    "origin": "controlled-synthetic",
+    "request": "表示名をナギに変更",
+    "expectation": {
+      "kind": "resolved",
+      "clusters": [
+        "skeleton"
+      ]
+    }
+  },
+  "candidate": {
+    "kind": "resolved",
+    "clusters": [
+      "skeleton"
+    ],
+    "evidence": [
+      {
+        "sourceQuote": "表示名をナギに変更",
+        "clusters": [
+          "skeleton"
+        ]
+      }
+    ]
+  },
+  "rawContent": "{\n  \"result\": {\n    \"kind\": \"resolved\",\n    \"clusters\": [\n      \"skeleton\"\n    ]\n  , \"evidence\": [\n      {\n        \"sourceQuote\": \"表示名をナギに変更\"\n      , \"clusters\": [\"skeleton\"]\n      }\n    ]\n  }\n}",
+  "validationIssues": [],
+  "evaluation": {
+    "outcome": "single_cluster",
+    "clusters": [
+      "skeleton"
+    ]
+  },
+  "passed": true,
+  "accounting": {
+    "inputTokens": 355,
+    "outputTokens": 74,
+    "elapsedMs": 27670,
+    "providerDurationNs": 27664369069,
+    "estimatedCostUsd": 0
+  }
+}

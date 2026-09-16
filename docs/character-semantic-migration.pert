@@ -1,11 +1,11 @@
-# Delivery plan revision 7: relax runtime Config persistence and return to owner-visible authoring.
+# Delivery plan revision 8: use current test evidence and sequence safe functional trials.
 # Authority, requirement coverage and historical disposition:
-# docs/character-semantic-migration-plan-revision-7.md
+# docs/character-semantic-migration-plan-revision-8-proposal.md
 project csm001:
   version 9
   title "Restore character authoring and migrate frozen ready V2 characters to strict V3"
   description "Deliver accepted focused create, revise and V2-to-V3 migration through the common kernel, with protected meaning and complete server reconciliation. Connect the real provider and consumer paths before live proof. Preserve failed legacy Stage history without making more V2 repair a prerequisite. Restore the frozen characters and verify strict V3 authoring cutover. Provider work, deployment, candidate acceptance and production activation remain separate effects."
-  as_of 2026-09-15
+  as_of 2026-09-16
   duration_unit point
   velocity 1p/1d
   finish cm114
@@ -78,6 +78,18 @@ milestone cm308:
 
 milestone cm309:
   title "Runtime Config persistence relaxation reviewed and accepted"
+
+milestone cm310:
+  title "Seal-based current test authority enforced"
+
+milestone cm311:
+  title "One safe focused revise candidate traverses the real local path"
+
+milestone cm312:
+  title "Focused create extends the verified common path"
+
+milestone cm313:
+  title "Focused migration extends the verified common path"
 
 milestone cm208:
   title "B8 dual V2 V3 read support deployed and verified"
@@ -308,18 +320,55 @@ task cc308 cm207 -> cm308:
     cr001 1
     cr002 1
 
-task cc304 cm207 -> cm304:
-  title "Connect focused authoring to real create revise and migration consumers"
-  description "After exact ADR-0032 acceptance and owner acceptance of proposed ADR-0033 plus conforming implementation-design revision 6, implement the real provider effect driver and wire the accepted kernel and character adapter into queued create/revise and migration entrypoints. Connect owner-authenticated answer/retry endpoints and UI, safe candidate and mode-specific semantic-diff presentation, and final acceptance without conflating answers with acceptance. Preserve source, target, adapter, semantic-resource, pricing and token-estimator identities plus accounting, request lifecycle, receipts, fences, protected meaning and final reconciliation. Treat provider transport and worker execution values as startup runtime Config; do not add a durable Config registry, snapshot, generation identity or Config-only migration. Controlled HTTP replies must traverse real API/UI, worker, driver and persistence for all three modes, focused recovery, bounded termination, stale results, answer continuation and source-based new-run retry. Do not reinstate the unsupported 60-second provider or 240-second whole-attempt semantics. Keep new production policy inactive until B14; candidate deployment must preserve current behavior without adding legacy V2 repair. No paid call or deployment. Component-only fixtures cannot complete this task."
-  duration 6p
-  status suspended
+task cc310 cm207 -> cm310:
+  title "Enforce ADR-0034 current test evidence selection"
+  description "Disable every discovered test without a mapped verification Seal, explicit Cause, exact source match and current dependency chain. Preserve historical Seals and disabled files. Seal only this selector implementation, its inventory and its own verification against accepted ADR-0034; do not bulk reseal tests or use aggregate green status as completion."
+  duration 1p
+  status done
   owner "codex"
-  source "docs/character-semantic-migration-plan-revision-7.md"
+  source "docs/adr/0034-seal-based-test-authority.think"
   requires:
     cr001 1
 
-gate cg308 cm308 -> cm304:
-  reason "Focused route connection cannot complete until the semantic authoring time-boundary decision is accepted."
+task cc304 cm310 -> cm311:
+  title "Connect one safe focused revise candidate through the real local path"
+  description "Resume only after the revised plan is accepted. Connect one unambiguous appearance revise request through the real local API or UI, worker, controlled provider driver, common kernel, character adapter, persistence and owner-visible semantic diff. Produce a non-current review candidate and prove that the current character revision and pointer do not change. Preserve accepted identities, accounting, request lifecycle, receipts, fences and protected meaning. Do not perform final acceptance, create, migration, paid provider calls, deployment, policy activation or unrelated recovery expansion. Component-only fixtures cannot complete this task."
+  duration 6p
+  status active
+  owner "codex"
+  source "docs/character-semantic-migration-plan-revision-8-proposal.md"
+  requires:
+    cr001 1
+
+task cc311 cm311 -> cm312:
+  title "Extend the verified focused path to create"
+  description "After the revise result is owner-visible and functionally acceptable, reuse the current common path for one focused create candidate. Verify only create-specific input, persistence and review differences; keep the candidate non-current and perform no paid call, deployment, policy activation or migration."
+  duration 1p
+  owner "codex"
+  source "docs/character-semantic-migration-plan-revision-8-proposal.md"
+  requires:
+    cr001 1
+
+task cc312 cm312 -> cm313:
+  title "Extend the verified focused path to migration"
+  description "After create and revise expose the working common path, connect V2-to-V3 migration through that path. Preserve accepted minimum protected meaning and reconciliation obligations, but add only migration work justified by observed results; do not front-load broad revision-scope rules or use unsealed experiments as evidence. No paid call, deployment, candidate acceptance or policy activation."
+  duration 1p
+  owner "codex"
+  source "docs/character-semantic-migration-plan-revision-8-proposal.md"
+  requires:
+    cr001 1
+
+task cc313 cm313 -> cm304:
+  title "Complete bounded recovery and owner interaction for all three local modes"
+  description "Complete only the remaining controlled HTTP failures, bounded recovery, answer/retry continuation, safe mode-specific semantic diff and separate final-acceptance boundary required by CS_CONNECTED across revise, create and migration. Retain failures and current Seal evidence for the exact paths; do not expand into Stage, paid provider, deployment or activation work."
+  duration 1p
+  owner "codex"
+  source "docs/character-semantic-migration-plan-revision-8-proposal.md"
+  requires:
+    cr001 1
+
+gate cg308 cm308 -> cm311:
+  reason "The first focused functional path cannot complete until the semantic authoring time-boundary decision is accepted."
 
 task cc309 cm308 -> cm309:
   title "Review and decide the runtime Config persistence relaxation"
@@ -332,8 +381,8 @@ task cc309 cm308 -> cm309:
     cr001 1
     cr002 1
 
-gate cg309 cm309 -> cm304:
-  reason "Focused route connection cannot complete against the superseded persistence clause; accept or revise the exact relaxation before resuming implementation."
+gate cg309 cm309 -> cm311:
+  reason "The first focused functional path cannot complete against the superseded persistence clause; accepted ADR-0033 and design revision 6 remain governing."
 
 task cc305 cm304 -> cm305:
   title "Review the connected candidate and establish its new Stage identity"
@@ -376,7 +425,7 @@ task cb209 cm208 -> cm209:
 
 task cb210 cm209 -> cm210:
   title "B10 separately approve and generate provider-backed candidates"
-  description "Approve exact provider model route and budget, generate candidates through the same focused migration consumer verified by cc304 and cc306, retain every request receipt and semantic diff, and leave failures non-current. Do not substitute the old whole-candidate generator."
+  description "Approve exact provider model route and budget, generate candidates through the same focused migration consumer verified by cc312 and cc306, retain every request receipt and semantic diff, and leave failures non-current. Do not substitute the old whole-candidate generator."
   duration 1p
   owner "user and codex"
   requires:
@@ -516,3 +565,9 @@ work_event WE_CC309_FINISH:
   task cc309
   kind finish
   occurred_at 2026-09-15T18:24:59+09:00
+
+work_event WE_CC304_RESUME_REVISION8:
+  model 1
+  task cc304
+  kind resume
+  occurred_at 2026-09-16T11:43:21+09:00
