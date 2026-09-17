@@ -69,3 +69,4 @@ This directory contains durable records of architectural and product-rule decisi
 | [0032](0032-separate-authoring-time-boundaries.md) | Accepted | Separate provider, worker, semantic-progress and cumulative-resource time boundaries; exact values remain undecided |
 | [0033](0033-runtime-config-not-run-identity.md) | Accepted | Keep provider transport and worker execution Config generations out of durable run identity; retain correctness-bearing fences, requests, accounting and outcomes |
 | [0034](0034-seal-based-test-authority.md) | Accepted | Require source-matched verification Seals with explicit current Causes for authoritative test evidence while preserving historical validity |
+| [0036](0036-propagate-draft-test-evidence.md) | Accepted | Treat test results backed by draft verification or Causes as draft evidence, not authoritative current pass/fail |
