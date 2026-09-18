@@ -1,7 +1,7 @@
 # First V3 character Stage-battle trial: local connection gap
 
 - Checked: 2026-09-18 against `origin/main` at `afcba30`.
-- Owner outcome: try a V3 character in a real Stage battle. A new character is an allowed first source; full V2 migration is not the trial's completion condition.
+- Owner outcome: try V3 characters in a real Stage battle. The owner selected two new V3 characters for this first trial and excluded V3-versus-V2; full V2 migration is not the trial's completion condition.
 - This is a local implementation survey, not a decision to deploy, activate a character, call a provider, or start a Stage battle.
 
 ## Local candidate outcome
@@ -14,16 +14,33 @@ projection and claim receipt are internally consistent, but the claim receipt
 is self-declared rather than independent editorial review. The candidate is
 not exported by the shared package or stored in Stage.
 
-Local observations: 3 dedicated tests and all 352 shared tests passed; full
-repository typecheck passed after building the shared package. The dedicated
-test reaches `CharacterBattleCompilerInputsV4Schema` but not a complete
+`packages/shared/src/v3-stage-trial-second-candidate.ts` adds a distinct
+second candidate (潮騒の記録士・リオ). Compared with Neva's cautious defense, Rio's
+norms favor acting on an observed situation change while steady and using a
+defensive note only in a critical condition. Both remain local source-code
+fixtures, not registered Stage characters. Rio's claim receipt has the same
+self-declared review limit.
+
+Local observations after the second addition: 3 dedicated tests per candidate
+and all 355 shared tests passed; full repository typecheck passed after building
+the shared package. The dedicated tests reach
+`CharacterBattleCompilerInputsV4Schema` but not a complete
 `BattleCharacterAssetBindingV4` or battle execution. The candidate and test
 have exact source-bound SealGraph refs
 `implementation/v3-stage-trial-candidate` and
-`verification/v3-stage-trial-candidate`; both are **draft** because their
-authoring-v5 authority Cause is still draft. Their scoped statuses are clean
-and `sealgraph fsck` reports `ok`. These facts are local structural evidence,
-not accepted authoring or Stage-play evidence.
+`verification/v3-stage-trial-candidate`. The second candidate and test have
+corresponding refs `implementation/v3-stage-trial-second-candidate` and
+`verification/v3-stage-trial-second-candidate`. All four are **draft** because
+their authoring-v5 authority Cause is still draft. Their scoped statuses are
+clean and `sealgraph fsck` reports `ok`. These facts are local structural
+evidence, not accepted authoring or Stage-play evidence.
+
+The root `npm test` run did not pass: shared tests passed, then backend tests
+reported that the `better-sqlite3` native binding could not be located in this
+worktree's dependency installation. The long-running backend suite was
+interrupted after those failures; frontend tests in the same run passed.
+This is a verification limit, not evidence of a V3 Stage battle defect or
+success.
 
 ## What exists
 
@@ -37,13 +54,13 @@ Strict `CharacterDefinitionV3` and `CharacterGenerationEnvelopeV3` parsing, V3 c
 | Ready/read/select | `getCharacterCompatibility` and `getReadyCharacterGeneration` in `character-assets-v2.ts` require current schema 2. `listReadyCharacterIds` selects only schema 2. Public character DTOs use that readiness for `selectable`. | Capability-scoped current V3 readiness and selector/read-model behavior for the trial character. Historical V2 behavior stays readable; listing/search/battle must not generate or migrate as a side effect. |
 | Battle creation and frozen binding | `backend/src/services/battle-service.ts` `startBattle` loads two V2-ready generations, parses two V2 envelopes, and freezes `character_generation_v2` plus `compilerInputsV2` in the manifest. | Bind the exact V3 generation, content digest, V3 basic-action source, and `CharacterBattleCompilerInputsV4` into an immutable battle. The current `BattleAssetManifestV3` in `packages/shared/src/battle.ts` denotes the dialogue V3 tuple but still contains V2 character-generation provenance; it cannot simply be relabeled as character V3. |
 | Battle consumers and persistence | `boundConsciousCompiler` in `backend/src/llm/conscious-agency.ts` returns V2/V3 compiler inputs, while battle-service consumers read `compilerInputsV2` or `compilerInputsV3`. The shared battle manifest union supports versions 1–3, not a binding that contains compiler inputs V4. | Admit the V3 character compiler through the actual decision/narration/mechanics consumers, persist/reload the new immutable tuple, and verify a full Stage battle. A schema-only pass or an isolated V3 read is insufficient. |
-| Stage use | Existing A3/B8 plan task `cc302` verifies corrected V2 creation and historical V2/non-current V3 reads. `.github/workflows/stage-release.yml` dispatches from an exact annotated tag and runs deployment and existing smokes. | Separately approve and deploy a revision containing the V3 trial path, register a trial character, verify selectable/current/bound identities, then have the owner try a real Stage battle. No production promotion follows automatically. |
+| Stage use | Existing A3/B8 plan task `cc302` verifies corrected V2 creation and historical V2/non-current V3 reads. `.github/workflows/stage-release.yml` dispatches from an exact annotated tag and runs deployment and existing smokes. | Separately approve and deploy a revision containing the V3 trial path, register both trial characters, verify selectable/current/bound identities, then have the owner try a real Stage battle. No production promotion follows automatically. |
 
-## Dependencies and open choice
+## Dependencies and trial boundary
 
-The local candidate and battle-path implementation can be investigated independently. Actual Stage use needs both a V3 current/selection path and a V3 battle-bound path, followed by deployment and observed play. Full eight-character migration, provider-backed migration generation, and production schema-3 authoring cutover are not demonstrated predecessors of this first Stage trial.
+The local candidates and battle-path implementation can be investigated independently. Actual Stage use needs both a V3 current/selection path and a V3 battle-bound path, followed by deployment and observed play. Full eight-character migration, provider-backed migration generation, and production schema-3 authoring cutover are not demonstrated predecessors of this first Stage trial.
 
-One design choice remains open: whether the first battle pairs one new V3 character with a V2 opponent, or uses two V3 characters. The current manifest contracts do not establish either mixed-version or all-V3 runtime binding. Choose from the least implementation work consistent with the accepted V3 compiler/provenance contracts; do not claim either path is already supported.
+The first battle uses two new V3 characters, per the owner's 2026-09-18 direction. V3-versus-V2 mixed binding is outside this first-trial scope. The current manifest contracts do not yet establish all-V3 runtime binding; the owner direction removes a mixed-version requirement but does not by itself make the battle path usable.
 
 ## Evidence boundary
 
