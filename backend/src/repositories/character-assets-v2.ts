@@ -22,9 +22,11 @@ import {
   type AssetGeneration,
 } from "./asset-generations.js";
 import { insertOwnerNotification } from "./owner-notifications.js";
-import { registerCharacterFocusedAuthoringV3 } from "../services/character-focused-authoring.js";
-import type { CharacterAuthoringSourceV1 } from "../services/semantic-authoring/adapters/character-v3.js";
+import { registerCharacterFocusedAuthoringV3,
+  type CharacterFocusedRegistrationSourceV1 } from "../services/character-focused-authoring.js";
 import { createCharacterSemanticAuthoringAdapterV3 } from "../services/semantic-authoring/adapters/character-v3.js";
+import { decodeUnresolvedCharacterRevisionSourceV1 } from
+  "../services/semantic-authoring/character-revision-scope-source.js";
 import {
   assertFamilyAuthoringFence,
   assertFamilyAuthoringJobDiscardable,
@@ -405,7 +407,7 @@ async function insertNewAuthoringAttempt(
     sourceText: string;
     sourceDigest: string;
     ttlMs?: number;
-    focused?: { source: CharacterAuthoringSourceV1; pricingIdentity: string;
+    focused?: { source: CharacterFocusedRegistrationSourceV1; pricingIdentity: string;
       predecessorRunId?: string; commandId?: string };
   },
 ): Promise<CharacterAuthoringAttempt> {
@@ -521,7 +523,7 @@ export async function beginCharacterAuthoringAttempt(input: {
   sourceText: string;
   sourceDigest: string;
   ttlMs?: number;
-  focused?: { source: CharacterAuthoringSourceV1; pricingIdentity: string };
+  focused?: { source: CharacterFocusedRegistrationSourceV1; pricingIdentity: string };
 }): Promise<{ attempt: CharacterAuthoringAttempt; replayed: boolean }> {
   if (!input.idempotencyKey.trim() || input.idempotencyKey.length > 200) {
     throw new Error("INVALID_IDEMPOTENCY_KEY");
@@ -573,16 +575,18 @@ export async function retryCharacterFocusedAuthoringV3(input: {
     if ((pointer.rows[0]?.generation_id ?? null) !== row.expected_current_generation_id) {
       throw new Error("FOCUSED_CHARACTER_POINTER_DRIFT");
     }
-    const decoded = createCharacterSemanticAuthoringAdapterV3().decodeFrozenSource(
-      typeof row.source_json === "string" ? JSON.parse(row.source_json) : row.source_json);
-    if (!decoded.accepted || !predecessor.sourceText
-      || assetContentDigest(decoded.value) !== row.source_content_digest) {
+    const rawSource = typeof row.source_json === "string" ? JSON.parse(row.source_json) : row.source_json;
+    const decoded = createCharacterSemanticAuthoringAdapterV3().decodeFrozenSource(rawSource);
+    const pendingScope = decodeUnresolvedCharacterRevisionSourceV1(rawSource);
+    const source = pendingScope ?? (decoded.accepted ? decoded.value : null);
+    if (!source || !predecessor.sourceText
+      || assetContentDigest(source) !== row.source_content_digest) {
       throw new Error("FOCUSED_CHARACTER_SOURCE_INVALID");
     }
     const attempt = await insertNewAuthoringAttempt(connection, {
       ownerUserId: input.ownerUserId, characterId: predecessor.characterId, kind: predecessor.kind,
       idempotencyKey, requestDigest, sourceText: predecessor.sourceText, sourceDigest: predecessor.sourceDigest,
-      focused: { source: decoded.value, pricingIdentity: row.pricing_identity,
+      focused: { source, pricingIdentity: row.pricing_identity,
         predecessorRunId: row.run_id, commandId: input.commandId },
     });
     return { attempt, replayed: false };

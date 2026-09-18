@@ -361,6 +361,8 @@ export function buildRoutes(options: {
   generateBattlefieldImage?: BattlefieldImageGenerator;
   /** Local controlled trial only; omission preserves the generic revision route. */
   controlledCharacterRevisionCluster?: "appearance";
+  /** Local owner-command trial; scope is inferred inside its counted worker attempt. */
+  enableCharacterRevisionScopeTrial?: boolean;
 } = {}) {
   const app = new Hono();
   const llm = options.llm ?? createLlmProvider();
@@ -1186,8 +1188,9 @@ export function buildRoutes(options: {
       return c.json({ error: "not_found" }, 404);
     }
     const controlledCluster = options.controlledCharacterRevisionCluster;
-    const semanticProvider = controlledCluster ? llm.semanticAuthoringProvider : undefined;
-    if (controlledCluster && !semanticProvider) {
+    const scopedTrial = options.enableCharacterRevisionScopeTrial === true;
+    const semanticProvider = controlledCluster || scopedTrial ? llm.semanticAuthoringProvider : undefined;
+    if ((controlledCluster || scopedTrial) && !semanticProvider) {
       return c.json({ error: "focused_authoring_unavailable" }, 409);
     }
     const focusedRevision = semanticProvider
@@ -1198,10 +1201,10 @@ export function buildRoutes(options: {
       && focusedRevision.content !== null
       ? CharacterDefinitionV3Schema.safeParse(Reflect.get(focusedRevision.content, "definition"))
       : null;
-    if (controlledCluster && (!focusedRevision || !focusedDefinition?.success)) {
+    if ((controlledCluster || scopedTrial) && (!focusedRevision || !focusedDefinition?.success)) {
       return c.json({ error: "revision_start_failed" }, 409);
     }
-    if (!controlledCluster) {
+    if (!controlledCluster && !scopedTrial) {
       const compatibility = await charAssetRepo.getCharacterCompatibility(sheet.id);
       if (compatibility.status !== "ready") {
         return c.json({
@@ -1226,15 +1229,19 @@ export function buildRoutes(options: {
           message: body.message,
           sourceGenerationId: focusedRevision.generationId,
           sourceContentDigest: focusedRevision.contentDigest,
-          requestedCluster: controlledCluster,
+          requestedCluster: controlledCluster ?? "provider_resolved",
           authoringPolicy: "semantic_authoring_policy_v1",
           pricingIdentity: semanticProvider.pricingIdentity,
         } : { characterId: sheet.id, message: body.message }),
         sourceText: body.message,
         sourceDigest: assetContentDigest(body.message),
-        ...(focusedRevision && focusedDefinition?.success && semanticProvider && controlledCluster ? { focused: {
-          source: { kind: "revise" as const, definition: focusedDefinition.data,
-            requestedCluster: controlledCluster, naturalText: body.message },
+        ...(focusedRevision && focusedDefinition?.success && semanticProvider
+          && (controlledCluster || scopedTrial) ? { focused: {
+          source: controlledCluster
+            ? { kind: "revise" as const, definition: focusedDefinition.data,
+              requestedCluster: controlledCluster, naturalText: body.message }
+            : { kind: "revise_pending_scope" as const,
+              definition: focusedDefinition.data, naturalText: body.message },
           pricingIdentity: semanticProvider.pricingIdentity,
         } } : {}),
       });

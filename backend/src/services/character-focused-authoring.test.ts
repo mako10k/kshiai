@@ -62,6 +62,8 @@ const contextSchema = z.object({
 });
 type Context = z.infer<typeof contextSchema>;
 let seen: Context[] = [];
+let scopeSeen: string[] = [];
+let scopeBehavior: "appearance" | "ambiguous" | "multi" | "invalid" = "appearance";
 let behavior: "invalid" | "complete" | "repair" | "unavailable" = "invalid";
 let endpoint = "";
 let lastPreparedSize = 0;
@@ -112,11 +114,35 @@ const server = createServer(async (req, res) => {
     let text = "";
     for await (const part of req) text += String(part);
     const body = z.object({ model: z.string(), messages: z.array(z.object({ content: z.string() })) }).parse(JSON.parse(text));
-    const context = contextSchema.parse(JSON.parse(body.messages[1]!.content));
+    const contextValue: unknown = JSON.parse(body.messages[1]!.content);
+    const scopeInput = z.object({ request: z.string() }).strict().safeParse(contextValue);
+    if (scopeInput.success) {
+      scopeSeen.push(scopeInput.data.request);
+      const content = scopeBehavior === "appearance"
+        ? { result: { kind: "resolved", clusters: ["appearance"],
+          evidence: [{ sourceQuote: "外套を青に変更", clusters: ["appearance"] }] } }
+        : scopeBehavior === "invalid"
+          ? { result: { kind: "resolved", clusters: ["unrecognized"],
+            evidence: [{ sourceQuote: "外套を青に変更", clusters: ["unrecognized"] }] } }
+        : scopeBehavior === "multi"
+          ? { result: { kind: "resolved", clusters: ["appearance", "mechanics"], evidence: [
+            { sourceQuote: "外套を青に変更", clusters: ["appearance"] },
+            { sourceQuote: "戦い方も変えて", clusters: ["mechanics"] }] } }
+          : { result: { kind: "ambiguous", sourceQuote: "印象", unsafeReason: "対象が不明", alternatives: [
+            { id: "appearance", clusters: ["appearance"], effect: "外見を変える" },
+            { id: "mechanics", clusters: ["mechanics"], effect: "戦い方を変える" }] } };
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ model: body.model, choices: [{ finish_reason: "stop",
+        message: { content: JSON.stringify(content) } }],
+      usage: { prompt_tokens: 100, completion_tokens: 50 } }));
+      return;
+    }
+    const context = contextSchema.parse(contextValue);
     seen.push(context);
     // The durable reservation must exist BEFORE the real HTTP server sees a request.
     const receipts = await runs.listSemanticAuthoringRequestsV1(context.proposal.runId);
-    assert.equal(receipts.length, seen.length);
+    assert.ok(receipts.length >= seen.filter((item) =>
+      item.proposal.runId === context.proposal.runId).length);
     assert.equal(receipts.at(-1)?.outcome, null);
     if (behavior === "unavailable") { res.writeHead(503).end(); return; }
     const invalid = behavior === "invalid" || (behavior === "repair" && seen.length === 1);
@@ -258,7 +284,7 @@ describe("focused authoring through the real owner command and worker", () => {
   });
 
   it("routes an appearance revision from the real owner HTTP command to a non-current review candidate", async () => {
-    seen = []; behavior = "repair";
+    seen = []; scopeSeen = []; scopeBehavior = "appearance"; behavior = "repair";
     const now = new Date().toISOString();
     const characterId = "focused-revise-character";
     const fixture = await new MockLlmProvider().generateCharacter({ prompt: "revision fixture" });
@@ -272,7 +298,7 @@ describe("focused authoring through the real owner command and worker", () => {
       (character_id, compatibility_status, current_generation_id, active_attempt_id, reason_code, updated_at)
       VALUES ($1, 'ready', $2, NULL, NULL, $3)`, [characterId, original.generationId, now]);
     const provider = llm();
-    const app = buildRoutes({ llm: provider, controlledCharacterRevisionCluster: "appearance" });
+    const app = buildRoutes({ llm: provider, enableCharacterRevisionScopeTrial: true });
     const response = await app.request(`/api/characters/${characterId}/chat`, {
       method: "POST",
       headers: { Cookie: "kshiai_session=focused-session", "Content-Type": "application/json",
@@ -282,6 +308,7 @@ describe("focused authoring through the real owner command and worker", () => {
     assert.equal(response.status, 202, await response.clone().text());
     const accepted = z.object({ attemptId: z.string() }).parse(await response.json());
     await drainCharacterAuthoringJobs({ llm: provider, workerId: "focused-revise-worker" });
+    assert.deepEqual(scopeSeen, ["外套を青に変更"]);
     assert.equal(seen[0]?.source.instruction, "外套を青に変更");
     assert.equal(seen[0]?.work.cluster, "appearance");
     assert.equal(seen[1]?.proposal.baseCandidateRevision, 0, "invalid reply did not change the candidate");
@@ -306,6 +333,67 @@ describe("focused authoring through the real owner command and worker", () => {
     assert.equal((await generations.getCurrentAssetGeneration("character", characterId))?.generationId,
       original.generationId, "review candidate does not move the immutable source pointer");
     assert.equal((await attempts.getCharacterAuthoringAttempt(accepted.attemptId, "focused-owner"))?.resultGenerationId, null);
+    const registered = await query<{ run_id: string; resolved_source_json: unknown }>(
+      `SELECT r.run_id, p.resolved_source_json FROM semantic_authoring_runs r
+        JOIN character_focused_authoring_payloads p ON p.run_id = r.run_id
+        WHERE r.attempt_id = $1`, [accepted.attemptId]);
+    const runId = registered.rows[0]?.run_id;
+    assert.ok(runId);
+    assert.equal(z.object({ requestedCluster: z.literal("appearance") }).parse(
+      typeof registered.rows[0]?.resolved_source_json === "string"
+        ? JSON.parse(registered.rows[0].resolved_source_json) : registered.rows[0]?.resolved_source_json,
+    ).requestedCluster, "appearance");
+    const requests = await runs.listSemanticAuthoringRequestsV1(runId);
+    assert.equal(requests.length, seen.length + 1, "scope shares the same recorded attempt");
+    assert.equal(requests[0]?.outcome, "succeeded");
+    assert.equal((await runs.getSemanticAuthoringRunV1(runId))?.accounting.llmCalls,
+      requests.length, "scope request consumes the same cumulative ceiling");
+  });
+
+  it("does not generate a candidate for ambiguous, multi-area, or invalid scope", async () => {
+    const fixture = await new MockLlmProvider().generateCharacter({ prompt: "scope refusal fixture" });
+    for (const scopeCase of [
+      { behavior: "ambiguous" as const, message: "印象を変えて" },
+      { behavior: "multi" as const, message: "外套を青に変更、戦い方も変えて" },
+      { behavior: "invalid" as const, message: "外套を青に変更" },
+    ]) {
+      seen = []; scopeSeen = []; scopeBehavior = scopeCase.behavior; behavior = "complete";
+      const now = new Date().toISOString();
+      const characterId = `focused-scope-${scopeCase.behavior}`;
+      await query(`INSERT INTO characters (id, owner_user_id, sheet_json, created_at, updated_at)
+        VALUES ($1, $2, $3, $4, $4)`, [characterId, "focused-owner", JSON.stringify({
+          ...fixture.sheet, id: characterId, ownerUserId: "focused-owner", createdAt: now, updatedAt: now,
+        }), now]);
+      const original = await generations.createAssetGeneration({ assetType: "character",
+        assetId: characterId, schemaVersion: 3, content: { definition: complete } });
+      await query(`INSERT INTO character_asset_states
+        (character_id, compatibility_status, current_generation_id, active_attempt_id, reason_code, updated_at)
+        VALUES ($1, 'ready', $2, NULL, NULL, $3)`, [characterId, original.generationId, now]);
+      const provider = llm();
+      const app = buildRoutes({ llm: provider, enableCharacterRevisionScopeTrial: true });
+      const response = await app.request(`/api/characters/${characterId}/chat`, {
+        method: "POST", headers: { Cookie: "kshiai_session=focused-session",
+          "Content-Type": "application/json", "Idempotency-Key": `scope-${scopeCase.behavior}` },
+        body: JSON.stringify({ message: scopeCase.message }),
+      });
+      assert.equal(response.status, 202, await response.clone().text());
+      const accepted = z.object({ attemptId: z.string() }).parse(await response.json());
+      await drainCharacterAuthoringJobs({ llm: provider, workerId: `scope-${scopeCase.behavior}-worker` });
+      assert.deepEqual(scopeSeen, [scopeCase.message]);
+      assert.equal(seen.length, 0, "rejected scope must not dispatch candidate generation");
+      assert.equal((await attempts.getCharacterAuthoringAttempt(accepted.attemptId, "focused-owner"))?.status,
+        "failed");
+      assert.equal((await generations.getCurrentAssetGeneration("character", characterId))?.generationId,
+        original.generationId);
+      const run = await query<{ run_id: string }>(
+        `SELECT run_id FROM semantic_authoring_runs WHERE attempt_id = $1`, [accepted.attemptId]);
+      const runId = run.rows[0]?.run_id;
+      assert.ok(runId);
+      const requests = await runs.listSemanticAuthoringRequestsV1(runId);
+      assert.equal(requests.length, 1);
+      assert.equal(requests[0]?.outcome, "failed");
+      assert.equal((await runs.getSemanticAuthoringRunV1(runId))?.accounting.llmCalls, 1);
+    }
   });
 
   it("carries changed-role migration meaning through the real worker into a review candidate", async () => {

@@ -502,7 +502,7 @@ export async function settleSemanticAuthoringRequestV1(
     }
     const measuredElapsedMs = input.measuredElapsedMs;
     if (measuredElapsedMs !== undefined && (!Number.isSafeInteger(measuredElapsedMs)
-      || measuredElapsedMs < 0 || measuredElapsedMs > request.reservation.elapsedMs)) {
+      || measuredElapsedMs < 0)) {
       throw new Error("SEMANTIC_AUTHORING_INVALID_ELAPSED_RECEIPT");
     }
     const usage = input.measuredUsage;

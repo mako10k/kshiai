@@ -401,6 +401,7 @@ export type SemanticAuthoringFailureCategoryV1 =
   | "stalled_without_progress"
   | "repeated_state_cycle"
   | "resource_exhausted"
+  | "provider_transport_unavailable"
   | "trusted_state_corrupt"
   | "process_or_lease_lost"
   | "technical_failure"
@@ -408,6 +409,7 @@ export type SemanticAuthoringFailureCategoryV1 =
 
 export type SemanticAuthoringFailureReceiptV1 = Readonly<{
   category: SemanticAuthoringFailureCategoryV1;
+  transportReason?: "policy_disallows_recovery" | "no_admissible_recovery_basis";
   accounting: SemanticAuthoringAccountingV1;
   relevantFindingKeys: readonly string[];
   sourceIdentity: SemanticAuthoringRunV1["sourceIdentity"];
@@ -620,11 +622,13 @@ export const SemanticAuthoringFailureReceiptV1Schema = z.object({
     "stalled_without_progress",
     "repeated_state_cycle",
     "resource_exhausted",
+    "provider_transport_unavailable",
     "trusted_state_corrupt",
     "process_or_lease_lost",
     "technical_failure",
     "bounded_semantic_failure",
   ]),
+  transportReason: z.enum(["policy_disallows_recovery", "no_admissible_recovery_basis"]).optional(),
   accounting: SemanticAuthoringAccountingV1Schema,
   relevantFindingKeys: uniqueArray(SemanticAuthoringIdV1Schema, 0, 24),
   sourceIdentity: z.object({
@@ -651,6 +655,7 @@ export const SemanticAuthoringResumptionRecipeV1Schema = z.object({
 export type SemanticAuthoringProviderRequestOutcomeV1 =
   | "succeeded"
   | "failed"
+  | "provider_transport_timeout"
   | "unknown_consumption";
 
 export type SemanticAuthoringDurableRunV1 = Readonly<{

@@ -1,0 +1,88 @@
+domain ADR0035:
+  description "ADR-0035 revision 2 proposal: resolve character revision scope from the owner's request."
+
+problem P1:
+  |
+    The accepted character requirements freeze each revision's resolved change scope,
+    but the ordinary natural-language command has no scope-resolution step. The
+    existing appearance path is selected only by a test-only buildRoutes option.
+
+evidence E1:
+  |
+    Character requirement v5 R2/R3 protects the requested revision scope and lets
+    the owner's request outrank old V3 only within its resolved scope. Foundation v3
+    F1 freezes that scope. The accepted design revision 6 opens the requested cluster
+    and its registered dependants, but does not resolve the scope from the request.
+
+evidence E2:
+  |
+    The owner clarified that the product function should not be fixed to appearance:
+    fixing the scope as a test condition is acceptable, while the function should
+    follow the request and the accepted cc304 trial order. The owner instructed
+    progress after the distinction and next step were stated. This is direction for
+    a candidate, not acceptance of this exact ADR revision.
+
+evidence E3:
+  |
+    The current POST /api/characters/:id/chat body contains only message. A
+    controlledCharacterRevisionCluster appearance option selects the focused route
+    in tests; production route construction does not supply it. Existing
+    revision-scope replay code is evaluation-only unsealed WIP, not product authority.
+
+premise SCOPE:
+  |
+    Cc304 plan revision 8 calls for one clear appearance revision through the local
+    API or UI, worker, controlled provider driver, persistence and owner review.
+    It ends at a non-current candidate and excludes final acceptance, paid calls,
+    deployment, create, migration and pointer activation.
+
+premise OPTIONS:
+  |
+    An owner-selected field would move scope interpretation to the user and make
+    test control a product interaction. A fixed appearance route would misroute
+    other requests. A bounded provider-assisted scope work item preserves the
+    message-only interaction but adds one operation, accounting and failure path.
+
+decision D1 based_on P1, E1, E2, E3, SCOPE, OPTIONS:
+  |
+    Propose keeping the ordinary owner message-only request. When focused V3 revise
+    is enabled, a bounded provider-assisted scope work item proposes the requested
+    semantic cluster from that natural-language message. The server validates the
+    proposal within the attempt's bounded accounting, then freezes the resolved
+    cluster with the immutable source and request before any character proposal.
+    No mandatory owner-facing cluster selector or
+    product-wide appearance constant is added. The test may inject appearance as a
+    controlled condition, but that cannot prove scope resolution.
+
+decision D2 based_on D1, E1, E3, SCOPE:
+  |
+    For the first cc304 trial, admit only a clear single-cluster request. If scope
+    is ambiguous, invalid, or spans multiple independent clusters, do not guess,
+    silently fall back to generic revision, or create a focused candidate. An invalid
+    response is a technical failure, not an owner question. Ambiguity may ask the
+    owner only under accepted R13 conditions; otherwise it is a bounded failure.
+    A multi-cluster request is not handled by this first trial. The exact public
+    result shapes are successor design decisions before route wiring; this trial
+    does not define eventual complete product behavior for these cases.
+
+decision D3 based_on D1, D2, SCOPE:
+  |
+    Exercise one clear appearance-text request with a local controlled provider
+    response through the ordinary owner HTTP command and existing focused worker,
+    kernel, adapter, persistence and review diff. Keep the current V3 generation
+    and pointer unchanged. The face image, final acceptance and other modes are out
+    of this trial. A diagnostic fixed-scope test and unsealed replay results are not
+    acceptance evidence for the natural-language step.
+
+evidence OWNER_ACCEPTANCE:
+  |
+    On 2026-09-16, after the complete Japanese review scope and exact ADR-0035
+    revision 2 were presented with the explicit question whether to accept it,
+    the product owner replied: 進めてください. The reviewed source snapshot was
+    cf0bc31584850e8d5b08226158a7b18325df011e5a452dac5c30aad1ccfe7c9a.
+
+decision ACCEPTANCE based_on D1, D2, D3, OWNER_ACCEPTANCE:
+  |
+    Accept ADR-0035 revision 2 exactly as reviewed. This authorizes the local
+    cc304 implementation slice within D1-D3 and does not authorize paid provider
+    calls, final candidate acceptance, pointer movement, deployment, or release.

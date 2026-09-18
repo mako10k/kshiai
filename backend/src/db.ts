@@ -760,7 +760,7 @@ function ensureSqliteSemanticAuthoring(database: SqliteDatabase.Database): void 
       reservation_json TEXT NOT NULL,
       request_digest TEXT NOT NULL,
       provider_route TEXT NOT NULL,
-      outcome TEXT CHECK (outcome IN ('succeeded', 'failed', 'unknown_consumption')),
+      outcome TEXT CHECK (outcome IN ('succeeded', 'failed', 'unknown_consumption', 'provider_transport_timeout')),
       accounting_json TEXT,
       created_at TEXT NOT NULL,
       finished_at TEXT,
@@ -806,11 +806,46 @@ function ensureSqliteSemanticAuthoring(database: SqliteDatabase.Database): void 
     CREATE TABLE IF NOT EXISTS character_focused_authoring_payloads (
       run_id TEXT PRIMARY KEY REFERENCES semantic_authoring_runs(run_id) ON DELETE CASCADE,
       source_json TEXT NOT NULL,
+      resolved_source_json TEXT,
       result_json TEXT,
       created_at TEXT NOT NULL,
       finished_at TEXT
     );
   `);
+  const focusedColumns = database.pragma("table_info(character_focused_authoring_payloads)") as Array<{
+    name: string;
+  }>;
+  if (!focusedColumns.some((column) => column.name === "resolved_source_json")) {
+    database.exec("ALTER TABLE character_focused_authoring_payloads ADD COLUMN resolved_source_json TEXT");
+  }
+  const requestTable = database.prepare(
+    "SELECT sql FROM sqlite_master WHERE type = 'table' AND name = 'semantic_authoring_provider_requests'",
+  ).get() as { sql: string } | undefined;
+  if (requestTable && !requestTable.sql.includes("'provider_transport_timeout'")) {
+    database.transaction(() => {
+      database.exec(`
+        CREATE TABLE semantic_authoring_provider_requests_next (
+          request_id TEXT PRIMARY KEY,
+          run_id TEXT NOT NULL REFERENCES semantic_authoring_runs(run_id) ON DELETE CASCADE,
+          ordinal INTEGER NOT NULL CHECK (ordinal BETWEEN 1 AND 8),
+          reservation_json TEXT NOT NULL,
+          request_digest TEXT NOT NULL,
+          provider_route TEXT NOT NULL,
+          outcome TEXT CHECK (outcome IN ('succeeded', 'failed', 'unknown_consumption', 'provider_transport_timeout')),
+          accounting_json TEXT,
+          created_at TEXT NOT NULL,
+          finished_at TEXT,
+          UNIQUE (run_id, ordinal)
+        );
+        INSERT INTO semantic_authoring_provider_requests_next
+          SELECT request_id, run_id, ordinal, reservation_json, request_digest,
+            provider_route, outcome, accounting_json, created_at, finished_at
+          FROM semantic_authoring_provider_requests;
+        DROP TABLE semantic_authoring_provider_requests;
+        ALTER TABLE semantic_authoring_provider_requests_next RENAME TO semantic_authoring_provider_requests;
+      `);
+    })();
+  }
 }
 
 function ensureSqliteOwnerNotifications(database: SqliteDatabase.Database): void {

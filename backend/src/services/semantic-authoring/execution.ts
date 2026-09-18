@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import type {
   SemanticAuthoringAdapterV1,
+  SemanticAuthoringAccountingV1,
   SemanticAuthoringPolicyV1,
   ProviderTransportPolicyV1,
   SemanticAuthoringReservationV1,
@@ -49,7 +50,7 @@ export interface FocusedProviderTransportV1 {
 export interface SemanticAuthoringExecutionPersistenceV1<FinalCandidate, Question> {
   // These operations must check the current owner fence. No send precedes reserve.
   reserve(request: PreparedFocusedRequestV1): Promise<boolean>;
-  settle(requestId: string, outcome: "received" | "invalid" | "failed", elapsedMs?: number,
+  settle(requestId: string, outcome: "received" | "invalid" | "failed" | "provider_transport_timeout", elapsedMs?: number,
     usage?: FocusedUsageV1): Promise<boolean>;
   owns(): Promise<boolean>;
   finish(result: SemanticAuthoringResolverResultV1<FinalCandidate, Question>): Promise<boolean>;
@@ -70,6 +71,7 @@ export async function executeSemanticAuthoringV1<S, C, O, W, P, F, Q, A, FC>(inp
   persistence: SemanticAuthoringExecutionPersistenceV1<FC, Q>;
   project(state: SemanticAuthoringStateV1<C, O, F, W, Q, FC>, source: S): FocusedProviderRequestV1;
   issues: SemanticAuthoringKernelIssuesV1<F>;
+  initialAccounting?: SemanticAuthoringAccountingV1;
   nowMs?: () => number;
 }): Promise<SemanticAuthoringExecutionOutcomeV1<FC, Q>> {
   const { adapter, policy, provider, persistence } = input;
@@ -79,9 +81,16 @@ export async function executeSemanticAuthoringV1<S, C, O, W, P, F, Q, A, FC>(inp
     || policy.tokenEstimatorIdentity !== provider.tokenEstimatorIdentity) {
     throw new Error("SEMANTIC_AUTHORING_PROVIDER_IDENTITY_MISMATCH");
   }
+  if (!Number.isSafeInteger(provider.transportPolicy.timeoutMs)
+    || provider.transportPolicy.timeoutMs <= 0
+    || ![0, 1].includes(provider.transportPolicy.maxRecoveriesPerWorkItem)) {
+    throw new Error("SEMANTIC_AUTHORING_INVALID_TRANSPORT_POLICY");
+  }
   const started = startSemanticAuthoringV1(adapter, input.run, policy, input.frozenSource);
   if (!started.accepted) return { status: "invalid_source" };
-  let state = started.state;
+  let state = input.initialAccounting
+    ? { ...started.state, accounting: input.initialAccounting }
+    : started.state;
   const nowMs = input.nowMs ?? Date.now;
   const beganAt = nowMs();
   const dispatches = new Map<string, number>();
@@ -89,6 +98,8 @@ export async function executeSemanticAuthoringV1<S, C, O, W, P, F, Q, A, FC>(inp
     clock: { nowMs },
     accounting: { admit: admitSemanticAuthoringReservation },
     provider: {
+      timeoutMs: provider.transportPolicy.timeoutMs,
+      maxRecoveriesPerWorkItem: provider.transportPolicy.maxRecoveriesPerWorkItem,
       recordDispatch: (request, at) => { dispatches.set(request.requestId, at); },
       dispatchedAtMs: (id) => dispatches.get(id) ?? null,
       abandon: (id) => { dispatches.delete(id); },
@@ -127,6 +138,7 @@ export async function executeSemanticAuthoringV1<S, C, O, W, P, F, Q, A, FC>(inp
     if (!await persistence.reserve(request)) return { status: "lost_ownership" };
     const dispatchedAt = nowMs();
     let reply: FocusedProviderReplyV1;
+    let timedOut = false;
     try {
       // Enforce the deadline even if an injected/provider transport ignores cancellation.
       const controller = new AbortController();
@@ -136,8 +148,9 @@ export async function executeSemanticAuthoringV1<S, C, O, W, P, F, Q, A, FC>(inp
           provider.exchange(request, controller.signal),
           new Promise<never>((_resolve, reject) => {
             timer = setTimeout(() => {
+              timedOut = true;
               controller.abort(); reject(new Error("SEMANTIC_AUTHORING_TIMEOUT"));
-            }, request.reservation.elapsedMs);
+            }, provider.transportPolicy.timeoutMs);
           }),
         ]);
       } finally {
@@ -146,15 +159,32 @@ export async function executeSemanticAuthoringV1<S, C, O, W, P, F, Q, A, FC>(inp
       }
     } catch {
       // Ambiguous consumption is never retried or refunded to zero.
-      if (!await persistence.settle(request.reservation.requestId, "failed")) {
+      if (!await persistence.settle(request.reservation.requestId,
+        timedOut ? "provider_transport_timeout" : "failed",
+        Math.max(0, nowMs() - dispatchedAt))) {
         return { status: "lost_ownership" };
       }
-      fail("technical_failure"); break;
+      if (timedOut) {
+        state = failSemanticAuthoringV1(state, "provider_transport_unavailable",
+          provider.transportPolicy.maxRecoveriesPerWorkItem === 0
+            ? "policy_disallows_recovery" : "no_admissible_recovery_basis",
+          Math.max(0, nowMs() - dispatchedAt)).state;
+      } else {
+        fail("technical_failure");
+      }
+      break;
     }
     if (!await persistence.owns()) return { status: "lost_ownership" };
     const delivery = acceptSemanticAuthoringDeliveryV1(state, request.reservation.requestId, ports);
     state = delivery.state;
     if (delivery.status !== "accepted") {
+      if (delivery.status === "terminal") {
+        const timedOutAtDelivery = state.terminalResult?.kind === "failed"
+          && state.terminalResult.receipt.category === "provider_transport_unavailable";
+        if (!await persistence.settle(request.reservation.requestId,
+          timedOutAtDelivery ? "provider_transport_timeout" : "failed",
+          Math.max(0, nowMs() - dispatchedAt))) return { status: "lost_ownership" };
+      }
       if (!state.terminalResult) fail("resource_exhausted");
       break;
     }
@@ -174,7 +204,7 @@ export async function executeSemanticAuthoringV1<S, C, O, W, P, F, Q, A, FC>(inp
         costMicroUsd: state.accounting.costMicroUsd - reserved.costMicroUsd + trustedUsage.costMicroUsd,
       } : {}),
       // Time is observed locally. Missing/invalid usage keeps the full reservation.
-      elapsedMs: Math.max(0, nowMs() - beganAt),
+      elapsedMs: (input.initialAccounting?.elapsedMs ?? 0) + Math.max(0, nowMs() - beganAt),
     } };
     let proposal: unknown = null;
     if (Buffer.byteLength(reply.content, "utf8") <= policy.maxOutputBytesPerCall) {

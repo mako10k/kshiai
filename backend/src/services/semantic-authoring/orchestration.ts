@@ -129,6 +129,7 @@ function clearWork<C, O, F, W, Q, FC>(
 
 export function chargeOutstandingReservationV1<C, O, F, W, Q, FC>(
   state: AuthoringState<C, O, F, W, Q, FC>,
+  measuredElapsedMs?: number,
 ): AuthoringState<C, O, F, W, Q, FC> {
   const reservation = state.outstandingReservation;
   if (!reservation) {
@@ -140,7 +141,7 @@ export function chargeOutstandingReservationV1<C, O, F, W, Q, FC>(
     accounting: {
       llmCalls: state.accounting.llmCalls + 1,
       countedSteps: state.accounting.countedSteps,
-      elapsedMs: state.accounting.elapsedMs + reservation.elapsedMs,
+      elapsedMs: state.accounting.elapsedMs + (measuredElapsedMs ?? reservation.elapsedMs),
       inputTokens: state.accounting.inputTokens + reservation.inputTokens,
       outputTokens: state.accounting.outputTokens + reservation.outputTokens,
       costMicroUsd: state.accounting.costMicroUsd + reservation.costMicroUsd,
@@ -177,13 +178,16 @@ function terminate<C, O, F, W, Q, FC>(
 export function failSemanticAuthoringV1<C, O, F, W, Q, FC>(
   state: AuthoringState<C, O, F, W, Q, FC>,
   category: SemanticAuthoringFailureCategoryV1,
+  transportReason?: "policy_disallows_recovery" | "no_admissible_recovery_basis",
+  measuredElapsedMs?: number,
 ): SemanticAuthoringOrchestrationV1<C, O, F, W, Q, FC> {
-  const charged = chargeOutstandingReservationV1(state);
+  const charged = chargeOutstandingReservationV1(state, measuredElapsedMs);
   return terminate(charged, {
     ...resultIdentity(charged),
     kind: "failed",
     receipt: {
       category,
+      ...(transportReason ? { transportReason } : {}),
       accounting: charged.accounting,
       relevantFindingKeys: [...charged.findings.keys()],
       sourceIdentity: charged.run.sourceIdentity,

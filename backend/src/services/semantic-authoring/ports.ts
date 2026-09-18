@@ -28,6 +28,8 @@ export interface SemanticAuthoringAccountingPortV1 {
 }
 
 export interface SemanticAuthoringProviderPortV1 {
+  readonly timeoutMs: number;
+  readonly maxRecoveriesPerWorkItem: 0 | 1;
   recordDispatch(
     reservation: SemanticAuthoringReservationV1,
     dispatchedAtMs: number,
@@ -84,7 +86,7 @@ function outstandingTimedOut<C, O, F, W, Q, FC>(
     return true;
   }
   const elapsed = Math.max(0, ports.clock.nowMs() - dispatchedAtMs);
-  return elapsed >= reservation.elapsedMs;
+  return elapsed >= ports.provider.timeoutMs;
 }
 
 function abandonOutstanding<C, O, F, W, Q, FC>(
@@ -95,6 +97,15 @@ function abandonOutstanding<C, O, F, W, Q, FC>(
   if (reservation) {
     ports.provider.abandon(reservation.requestId);
   }
+}
+
+function measuredOutstandingElapsed<C, O, F, W, Q, FC>(
+  state: SemanticAuthoringStateV1<C, O, F, W, Q, FC>,
+  ports: SemanticAuthoringPortsV1,
+): number | undefined {
+  const requestId = state.outstandingReservation?.requestId;
+  const dispatchedAt = requestId ? ports.provider.dispatchedAtMs(requestId) : null;
+  return dispatchedAt === null ? undefined : Math.max(0, ports.clock.nowMs() - dispatchedAt);
 }
 
 export function scheduleSemanticAuthoringReservationV1<C, O, F, W, Q, FC>(
@@ -131,12 +142,16 @@ export function expireOutstandingSemanticAuthoringV1<C, O, F, W, Q, FC>(
     return { status: "terminal", state };
   }
   const controlFailure = semanticAuthoringControlFailureV1(state);
-  if (state.outstandingReservation && (controlFailure || outstandingTimedOut(state, ports))) {
+  const timedOut = outstandingTimedOut(state, ports);
+  if (state.outstandingReservation && (controlFailure || timedOut)) {
+    const elapsedMs = measuredOutstandingElapsed(state, ports);
     abandonOutstanding(state, ports);
-    return failSemanticAuthoringV1(
-      state,
-      controlFailure ?? "resource_exhausted",
-    );
+    const timeoutFailure = timedOut && controlFailure !== "trusted_state_corrupt";
+    return failSemanticAuthoringV1(state,
+      timeoutFailure ? "provider_transport_unavailable" : controlFailure!,
+      !timeoutFailure ? undefined : ports.provider.maxRecoveriesPerWorkItem === 0
+        ? "policy_disallows_recovery" : "no_admissible_recovery_basis",
+      elapsedMs);
   }
   const guarded = guardSemanticAuthoringRunningV1(state);
   if (guarded) {
@@ -161,9 +176,16 @@ export function acceptSemanticAuthoringDeliveryV1<C, O, F, W, Q, FC>(
     return { status: "rejected", reason: "not_outstanding", state };
   }
   const controlFailure = semanticAuthoringControlFailureV1(state);
-  if (controlFailure || outstandingTimedOut(state, ports)) {
+  const timedOut = outstandingTimedOut(state, ports);
+  if (controlFailure || timedOut) {
+    const elapsedMs = measuredOutstandingElapsed(state, ports);
     abandonOutstanding(state, ports);
-    return failSemanticAuthoringV1(state, controlFailure ?? "resource_exhausted");
+    const timeoutFailure = timedOut && controlFailure !== "trusted_state_corrupt";
+    return failSemanticAuthoringV1(state,
+      timeoutFailure ? "provider_transport_unavailable" : controlFailure!,
+      !timeoutFailure ? undefined : ports.provider.maxRecoveriesPerWorkItem === 0
+        ? "policy_disallows_recovery" : "no_admissible_recovery_basis",
+      elapsedMs);
   }
   ports.provider.abandon(requestId);
   return { status: "accepted", state: chargeOutstandingReservationV1(state) };

@@ -1,11 +1,17 @@
-# Delivery plan revision 8: use current test evidence and sequence safe functional trials.
-# Authority, requirement coverage and historical disposition:
-# docs/character-semantic-migration-plan-revision-8-proposal.md
+# Delivery plan revision 10: owner-authorized outcome-sized planning update.
+# Current revision record: docs/character-semantic-migration-plan-revision-10.md
+# Revision 9 acceptance and product completion criteria remain governing.
+# Report by outcomes; retain internal task IDs, trial order and separate execution authority.
+# M1: cs316 Seal health (unestimated Work; cc304 explicitly suspended until reconciled).
+# M2: cc304 -> cc311 -> cc312 -> cc315 local migration readiness.
+# M3: cc305 -> cc314 one actual Stage game using a migrated V3 character.
+# M4: cc313 -> cc306 -> cc307 -> cb209-cb214 evaluation, restoration and final cutover.
+# Historical done/reached fields are not renewed current evidence by this revision.
 project csm001:
   version 9
   title "Restore character authoring and migrate frozen ready V2 characters to strict V3"
-  description "Deliver accepted focused create, revise and V2-to-V3 migration through the common kernel, with protected meaning and complete server reconciliation. Connect the real provider and consumer paths before live proof. Preserve failed legacy Stage history without making more V2 repair a prerequisite. Restore the frozen characters and verify strict V3 authoring cutover. Provider work, deployment, candidate acceptance and production activation remain separate effects."
-  as_of 2026-09-16
+  description "First enable an owner-visible Stage game trial using an exact V2 character migrated to V3 through the common structured foundation; infer revise scope from the natural-language request. This is an interim user outcome, not final restoration or production cutover. Continue separately to the accepted three-mode evaluation, frozen-character restoration and strict V3 authoring cutover. Preserve protected meaning and complete server reconciliation. Provider work, deployment, candidate acceptance and pointer activation require separate authority."
+  as_of 2026-09-17
   duration_unit point
   velocity 1p/1d
   finish cm114
@@ -91,6 +97,9 @@ milestone cm312:
 milestone cm313:
   title "Focused migration extends the verified common path"
 
+milestone cm315:
+  title "One migration path is locally ready for a Stage game trial"
+
 milestone cm208:
   title "B8 dual V2 V3 read support deployed and verified"
 
@@ -108,6 +117,9 @@ milestone cm304:
 
 milestone cm305:
   title "Connected focused authoring candidate reviewed and tagged"
+
+milestone cm314:
+  title "One migrated V2 character is playable as V3 on Stage"
 
 milestone cm306:
   title "Connected focused authoring and dual-read Stage proof verified"
@@ -192,7 +204,12 @@ work cc302:
   title "Historical failed legacy V2 Stage proof; withdrawn from execution"
   description "Runs 34828916788 and 34832214571 failed at rc12. This is not completed or accepted work. Original task and start event remain in Git 0d96538 and docs/evidence/a3-b8-integrated-stage-failure-2026-09-14.md. Owner-directed focused integration is now cc304-cc306; do not resume legacy repair from this historical Work."
 
+work cs316:
+  title "M1 Restore current Seal authority before continuing migration integration"
+  description "Owner-directed all-Seal health recovery. Upstream requirements, ADRs and accepted design are repaired in the recorded limited scope; plan, implementation and test consumers remain to reconcile. Classify current use, historical evidence and unaccepted proposals; map current claims to exact upstream Seals and check source bindings and semantic fit with individual Luna reviews. Preserve historical Seals and original proof scope; do not require historical stale or draft counts to reach zero. Present new roots for owner review together and keep other existing approval boundaries. Remaining effort is unknown, so this is unestimated Work rather than a fabricated-duration task. Current cc304 suspended status enforces the hold; Work alone is not a strict DAG prerequisite. Completion evidence and inventory are in docs/evidence/seal-health-recovery-2026-09-17.md. This plan edit does not complete recovery or admit any test."
+
 work_order:
+  cs316
   cc302
 
 gate cg304 cm307 -> cm208:
@@ -331,16 +348,19 @@ task cc310 cm207 -> cm310:
     cr001 1
 
 task cc304 cm310 -> cm311:
+  tags [M2_LOCAL_MIGRATION]
   title "Connect one safe focused revise candidate through the real local path"
-  description "Resume only after the revised plan is accepted. Connect one unambiguous appearance revise request through the real local API or UI, worker, controlled provider driver, common kernel, character adapter, persistence and owner-visible semantic diff. Produce a non-current review candidate and prove that the current character revision and pointer do not change. Preserve accepted identities, accounting, request lifecycle, receipts, fences and protected meaning. Do not perform final acceptance, create, migration, paid provider calls, deployment, policy activation or unrelated recovery expansion. Component-only fixtures cannot complete this task."
+  description "Connect one clear single-area natural-language appearance revise request through the normal owner HTTP entrypoint, provider-assisted bounded scope resolution under accepted ADR-0035, worker, controlled provider driver, common kernel, character adapter, persistence and owner-visible semantic diff. Record and count the scope-resolution call in the same attempt and freeze the server-validated scope before candidate generation. Produce a non-current review candidate without changing the current generation or pointer. Fixed-scope tests alone do not prove this route. Do not perform final acceptance, create, migration, paid provider calls, deployment, policy activation or unrelated recovery expansion."
   duration 6p
-  status active
+  status suspended
+  # M1 cs316 is incomplete. Preserve WIP; reassess current authority before resuming.
   owner "codex"
-  source "docs/character-semantic-migration-plan-revision-8-proposal.md"
+  source "docs/character-semantic-migration-plan-revision-10.md"
   requires:
     cr001 1
 
 task cc311 cm311 -> cm312:
+  tags [M2_LOCAL_MIGRATION]
   title "Extend the verified focused path to create"
   description "After the revise result is owner-visible and functionally acceptable, reuse the current common path for one focused create candidate. Verify only create-specific input, persistence and review differences; keep the candidate non-current and perform no paid call, deployment, policy activation or migration."
   duration 1p
@@ -350,6 +370,7 @@ task cc311 cm311 -> cm312:
     cr001 1
 
 task cc312 cm312 -> cm313:
+  tags [M2_LOCAL_MIGRATION]
   title "Extend the verified focused path to migration"
   description "After create and revise expose the working common path, connect V2-to-V3 migration through that path. Preserve accepted minimum protected meaning and reconciliation obligations, but add only migration work justified by observed results; do not front-load broad revision-scope rules or use unsealed experiments as evidence. No paid call, deployment, candidate acceptance or policy activation."
   duration 1p
@@ -358,9 +379,20 @@ task cc312 cm312 -> cm313:
   requires:
     cr001 1
 
-task cc313 cm313 -> cm304:
+task cc315 cm313 -> cm315:
+  tags [M2_LOCAL_MIGRATION]
+  title "Connect only the owner flow needed for one Stage migration trial"
+  description "Through the real local owner HTTP and worker path, verify one exact V2 source can produce a strict V3 migration candidate, the owner can review and accept that exact candidate, and the resulting generation can be selected by a Stage-scoped pointer without changing production or historical battle bindings. Preserve the accepted migration source accounting and rejection behavior. Do not require all unobserved create and revise recovery branches or the representative R20 corpus before this one trial. This is local readiness only: no provider charge, Stage deployment, data migration or pointer write."
+  duration 1p
+  owner "codex"
+  source "docs/character-semantic-migration-plan-revision-10.md"
+  requires:
+    cr001 1
+
+task cc313 cm314 -> cm304:
+  tags [M4_EVALUATION_RESTORATION]
   title "Complete bounded recovery and owner interaction for all three local modes"
-  description "Complete only the remaining controlled HTTP failures, bounded recovery, answer/retry continuation, safe mode-specific semantic diff and separate final-acceptance boundary required by CS_CONNECTED across revise, create and migration. Retain failures and current Seal evidence for the exact paths; do not expand into Stage, paid provider, deployment or activation work."
+  description "After the first Stage game-use trial, complete only the remaining controlled HTTP failures, bounded recovery, answer/retry continuation, safe mode-specific semantic diff and separate final-acceptance boundary required by CS_CONNECTED across revise, create and migration. Retain failures and current Seal evidence for the exact paths; do not expand into paid provider or production activation work. Do not treat the earlier one-case Stage trial as full three-mode conformance."
   duration 1p
   owner "codex"
   source "docs/character-semantic-migration-plan-revision-8-proposal.md"
@@ -384,9 +416,10 @@ task cc309 cm308 -> cm309:
 gate cg309 cm309 -> cm311:
   reason "The first focused functional path cannot complete against the superseded persistence clause; accepted ADR-0033 and design revision 6 remain governing."
 
-task cc305 cm304 -> cm305:
-  title "Review the connected candidate and establish its new Stage identity"
-  description "Review exact route and owner-interaction evidence, execution policy and rollback against ADR-0032 and the accepted disposition of ADR-0033. Carry the former ca104 old/new-path reconciliation here and retain it for B14. Prepare and obtain the existing R20 owner decisions on representative create/revise/migrate corpus, numeric success criteria and evaluation budget before live evaluation; do not invent thresholds. Run repository checks and, under separate external-write authority, establish the new Stage revision/tag. Do not reuse rc12 or change shared infrastructure."
+task cc305 cm315 -> cm305:
+  tags [M3_STAGE_GAME_USE]
+  title "Review the one-case Stage trial candidate and establish its Stage identity"
+  description "Review exact route, owner interaction, Stage trial source identity, provider route and bounded budget, execution policy, rollback and stop conditions. Carry former ca104 old/new-path reconciliation and retain it for B14. Run repository checks and, under separate external-write authority, establish the new Stage revision/tag. Do not make the later R20 corpus evaluation a prerequisite for one Stage game-use trial. Do not reuse rc12 or change shared infrastructure."
   duration 1p
   owner "user and codex"
   requires:
@@ -396,9 +429,21 @@ task cc305 cm304 -> cm305:
 gate cg305 cm303 -> cm305:
   reason "Review the new candidate against the already established historical rc12 identity without requiring the failed legacy Stage to succeed."
 
-task cc306 cm305 -> cm306:
+task cc314 cm305 -> cm314:
+  tags [M3_STAGE_GAME_USE]
+  title "Try one migrated V2 character in an actual Stage game"
+  description "After separate approval of exact Stage revision, one owner-selected V2 source, provider route and budget, owner candidate acceptance, Stage-only pointer activation and rollback, deploy the qualified one-case trial route and migrate that one source to a strict V3 generation. Read back the migration receipt and exact current Stage generation, then use that generation in one real Stage game path. Verify the game binds the V3 generation and old generations and historical battles remain readable. A non-current review candidate, scripted fixture or passing test alone does not satisfy this outcome. Stop without copying production data, changing production policy or pointers, or silently retrying any failed external step. If no eligible Stage V2 source or activation route exists, report the missing prerequisite rather than substituting a simulated trial."
+  duration 1p
+  owner "user and codex"
+  source "docs/character-semantic-migration-plan-revision-10.md"
+  requires:
+    cr001 1
+    cr002 1
+
+task cc306 cm304 -> cm306:
+  tags [M4_EVALUATION_RESTORATION]
   title "Verify the connected focused authoring path on Stage"
-  description "Under the separately approved provider route and budget, deploy the connected candidate and evaluate the owner-reviewed R20 corpus through focused create/revise/non-current migration and owner interactions. Measure completion, generated quality, reconciliation, protected-anchor and source preservation, unnecessary/repeated questions, late rework, checkpoint delay, latency, calls, tokens/cost and final semantic correctness against the agreed criteria. Retain failures; smoke success alone is insufficient. Verify historical reads and rollback. No production policy, pointer or traffic change."
+  description "After the first actual Stage game-use trial, prepare and obtain the existing R20 owner decisions on the representative create/revise/migrate corpus, numeric success criteria and evaluation budget. Under separate provider and Stage authority, evaluate the owner-reviewed R20 corpus through focused create/revise/non-current migration and owner interactions. Measure completion, generated quality, reconciliation, protected-anchor and source preservation, unnecessary/repeated questions, late rework, checkpoint delay, latency, calls, tokens/cost and final semantic correctness against the agreed criteria. Retain failures; a first successful game alone does not prove broad three-mode readiness. Verify historical reads and rollback. No production policy, pointer or traffic change."
   duration 2p
   owner "user and codex"
   requires:
@@ -406,6 +451,7 @@ task cc306 cm305 -> cm306:
     cr002 1
 
 task cc307 cm306 -> cm307:
+  tags [M4_EVALUATION_RESTORATION]
   title "Deploy and read back qualified production code before migration"
   description "Under separate production-deployment authority, promote the exact Stage-qualified backend and frontend artifacts with required compatible storage changes. Read back production identities, dual V2/V3 readers, connected migration path, owner interaction routes and rollback readiness. Keep current authoring policy and character pointers unchanged. Stop on mismatch; do not substitute policy activation for code deployment. Preserve shared Stage/production infrastructure."
   duration 1p
@@ -415,6 +461,7 @@ task cc307 cm306 -> cm307:
     cr002 1
 
 task cb209 cm208 -> cm209:
+  tags [M4_EVALUATION_RESTORATION]
   title "B9 freeze the exact eight-generation manifest and run no-write dry-run"
   description "Refresh exact identities, obtain owner manifest review, and report drift, already-complete attempts, expected provider work and ceilings with zero provider calls and zero writes."
   duration 1p
@@ -424,6 +471,7 @@ task cb209 cm208 -> cm209:
     cr002 1
 
 task cb210 cm209 -> cm210:
+  tags [M4_EVALUATION_RESTORATION]
   title "B10 separately approve and generate provider-backed candidates"
   description "Approve exact provider model route and budget, generate candidates through the same focused migration consumer verified by cc312 and cc306, retain every request receipt and semantic diff, and leave failures non-current. Do not substitute the old whole-candidate generator."
   duration 1p
@@ -433,6 +481,7 @@ task cb210 cm209 -> cm210:
     cr002 1
 
 task cb211 cm210 -> cm211:
+  tags [M4_EVALUATION_RESTORATION]
   title "B11 decide exact candidates per asset or exact batch"
   description "Accept or decline exact candidate digests; keep unresolved and failed assets explicit and do not infer partial acceptance."
   duration 1p
@@ -441,6 +490,7 @@ task cb211 cm210 -> cm211:
     cr002 1
 
 task cb212 cm211 -> cm212:
+  tags [M4_EVALUATION_RESTORATION]
   title "B12 separately approve append and per-asset pointer CAS"
   description "Append only accepted V3 generations and receipts, move each pointer by CAS, isolate partial failures, preserve unchanged targets, and read back rollback targets."
   duration 1p
@@ -450,6 +500,7 @@ task cb212 cm211 -> cm212:
     cr002 1
 
 task cb213 cm212 -> cm213:
+  tags [M4_EVALUATION_RESTORATION]
   title "B13 read back restoration and decide schema-3 cutover"
   description "Verify every target outcome, selector list, battle binding, old battles and capsule non-consumption. Report partial success honestly and present the separate policy decision."
   duration 1p
@@ -459,6 +510,7 @@ task cb213 cm212 -> cm213:
     cr002 1
 
 task cb214 cm213 -> cm114:
+  tags [M4_EVALUATION_RESTORATION]
   title "B14 separately approve activate and verify strict schema-3 authoring"
   description "Reuse cc305 old/new-path reconciliation and cc307 production identity evidence, confirm no intervening drift, then separately activate the qualified authoring policy by CAS. Verify real create/revision, owner questions and source-based retries, candidate review/acceptance and strict V3 outcomes; historical paths use the qualified migration route. Retain rollback evidence. This is policy cutover, not a substitute for earlier code deployment or another legacy repair task."
   duration 1p
@@ -513,6 +565,19 @@ milestone_criterion_set CS_EVALUATION:
   revision R1
   commitment sha256:d0b8e7f399bf366d8b4c942a51795f3e83df411ce16f84cde2d1958a417b1b79
   criterion R20 required owner "Owner-reviewed three-mode corpus meets agreed semantic recovery and resource criteria with retained measurements and failures"
+
+milestone_criterion_set CS_STAGE_TRIAL:
+  milestone cm314
+  revision R1
+  commitment sha256:10f3a41aaf93880f0a80b03d238c745b27366d3b0d690b4032ba0603f7a5d633
+  criterion GAME_USE required owner "One owner-accepted V3 generation migrated from an exact V2 source is selected and used in a real Stage game, which binds that V3 generation"
+  criterion PRESERVATION required owner "Stage migration and pointer receipts identify exact source and target, historical generations and battles remain readable, and production identities and pointers are unchanged"
+
+milestone_criterion_set CS_REVISE_SCOPE:
+  milestone cm311
+  revision R1
+  commitment sha256:d4b47586e1e0908ba925bd4ddc620024f0827cfa4ac3ea5ea34595ed3f5ad57d
+  criterion NATURAL_SCOPE required owner "Normal owner natural-language revise request resolves one clear semantic scope through a counted provider-assisted work item before candidate generation; a fixed appearance test alone does not satisfy this"
 
 milestone_criterion_set CS_PRODUCTION:
   milestone cm307
@@ -571,3 +636,10 @@ work_event WE_CC304_RESUME_REVISION8:
   task cc304
   kind resume
   occurred_at 2026-09-16T11:43:21+09:00
+
+work_event WE_CC304_HOLD_REVISION10:
+  model 1
+  task cc304
+  kind suspend
+  occurred_at 2026-09-17T19:29:37+09:00
+  reason "Record the owner-authorized revision10 planning hold while M1 Seal recovery is incomplete. This is the observed recording time, not a reconstructed original interruption time. Preserve WIP; no elapsed effort assertion or implementation cancellation."

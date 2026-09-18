@@ -898,10 +898,12 @@ function stageLedgerProposal(
   }
   if (payload.kind === "propose_deferral") {
     return {
-      accepted: true as const,
-      candidate: input.candidate,
-      obligations: input.obligations,
-      findings: input.findings,
+      accepted: false as const,
+      findingKey: "deferral",
+      finding: {
+        code: "deferral-not-registered",
+        explanation: "No character obligation is registered for consumer-scoped deferral.",
+      },
     };
   }
   if (payload.kind !== "submit_lens_review") {

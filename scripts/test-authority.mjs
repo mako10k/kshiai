@@ -18,7 +18,7 @@ export function isStale(status) {
 }
 
 export function classifyTest(entry, status) {
-  if (!status || status.error || !status.head_seal_id) {
+  if (!status || status.error || !/^[0-9a-f]{64}$/.test(status.head_seal_id)) {
     return { state: "disabled", reason: "missing_ref" };
   }
   if (status.local_source?.path !== entry.path) {
@@ -27,10 +27,14 @@ export function classifyTest(entry, status) {
   if (status.local_source.relation !== "WORKFILE_MATCHES_HEAD") {
     return { state: "disabled", reason: "source_diverged" };
   }
-  if (!status.cause_links?.length) {
+  if (!Array.isArray(status.cause_links)
+    || !status.cause_links.length
+    || !status.cause_links.every((link) => /^[0-9a-f]{64}$/.test(link?.target_seal))) {
     return { state: "disabled", reason: "missing_basis" };
   }
   if (isStale(status)) return { state: "disabled", reason: "stale" };
+  if (status.draft_basis === true) return { state: "provisional", reason: "draft_basis" };
+  if (status.draft_basis !== false) return { state: "disabled", reason: "missing_basis" };
   return { state: "active", reason: "current" };
 }
 
@@ -102,6 +106,8 @@ async function loadSealGraphStatus(configuredTests) {
         cause_links: shown.seal.cause_links,
         stale: staleRefs.has(entry.ref),
         local_source: { path: comparison.path, relation: comparison.relation },
+        // Non-draft publication requires every reachable Cause to be non-draft.
+        draft_basis: shown.seal.draft,
       };
     } catch (error) {
       return { ref: entry.ref, error: String(error) };
@@ -120,6 +126,20 @@ export function buildInventory(testPaths, configuredTests, statuses) {
   });
 }
 
+export function summarizeInventory(suite, inventory) {
+  return {
+    schema: "kshiai/test-authority-selection/v2",
+    suite,
+    discovered: inventory.length,
+    active: inventory.filter((entry) => entry.state === "active").length,
+    provisional: inventory.filter((entry) => entry.state === "provisional").length,
+    disabled: inventory.filter((entry) => entry.state === "disabled").length,
+    sealed: inventory.filter((entry) => entry.ref).length,
+    unsealed: inventory.filter((entry) => !entry.ref).length,
+    tests: inventory,
+  };
+}
+
 function run(command, args) {
   const result = spawnSync(command, args, { cwd: repositoryRoot, stdio: "inherit" });
   return result.status ?? 1;
@@ -132,23 +152,18 @@ async function main() {
   const statuses = await loadSealGraphStatus(configured.tests);
   const inventory = buildInventory(discoverTests(suite), configured.tests, statuses);
   const disabled = inventory.filter((entry) => entry.state === "disabled");
+  const provisional = inventory.filter((entry) => entry.state === "provisional");
   const active = inventory.filter((entry) => entry.state === "active");
-  const summary = {
-    schema: "kshiai/test-authority-selection/v2",
-    suite,
-    discovered: inventory.length,
-    active: active.length,
-    disabled: disabled.length,
-    sealed: inventory.filter((entry) => entry.ref).length,
-    unsealed: inventory.filter((entry) => !entry.ref).length,
-    tests: inventory,
-  };
+  const summary = summarizeInventory(suite, inventory);
   if (listOnly) {
     process.stdout.write(`${JSON.stringify(summary, null, 2)}\n`);
     return;
   }
   for (const entry of disabled) {
     process.stderr.write(`DISABLED ${entry.path} ref=${entry.ref} reason=${entry.reason}\n`);
+  }
+  for (const entry of provisional) {
+    process.stderr.write(`PROVISIONAL ${entry.path} ref=${entry.ref} reason=${entry.reason}\n`);
   }
   if (suite === "e2e") {
     process.exitCode = active.length

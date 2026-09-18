@@ -109,7 +109,7 @@ function claimedState(
 
 describe("scripted semantic authoring ports", () => {
   it("rejects a reservation that would exhaust cost before dispatch", () => {
-    const ports = createScriptedSemanticAuthoringPortsV1({ nowMs: 0, fence });
+    const ports = createScriptedSemanticAuthoringPortsV1({ nowMs: 0, fence, timeoutMs: 60_000, maxRecoveriesPerWorkItem: 0 });
     const result = scheduleSemanticAuthoringReservationV1(
       claimedState({
         accounting: { ...zeroAccounting, costMicroUsd: 480_000 },
@@ -126,8 +126,8 @@ describe("scripted semantic authoring ports", () => {
     assert.equal(ports.provider.dispatchedAtMs("request-1"), null);
   });
 
-  it("times out an outstanding request, charges the reservation, and ignores a late result", () => {
-    const ports = createScriptedSemanticAuthoringPortsV1({ nowMs: 1_000, fence });
+  it("uses the route timeout, charges the reservation, and ignores a late result", () => {
+    const ports = createScriptedSemanticAuthoringPortsV1({ nowMs: 1_000, fence, timeoutMs: 2_000, maxRecoveriesPerWorkItem: 0 });
     const scheduled = scheduleSemanticAuthoringReservationV1(
       claimedState(),
       reservation(),
@@ -138,15 +138,17 @@ describe("scripted semantic authoring ports", () => {
       assert.fail("reservation was not scheduled");
     }
 
-    ports.advanceMs(60_000);
+    ports.advanceMs(2_000);
     const expired = expireOutstandingSemanticAuthoringV1(scheduled.state, ports);
     assert.equal(expired.status, "terminal");
     assert.equal(expired.state.terminalResult?.kind, "failed");
     if (expired.state.terminalResult?.kind !== "failed") {
       assert.fail("timeout did not fail the run");
     }
-    assert.equal(expired.state.terminalResult.receipt.category, "resource_exhausted");
+    assert.equal(expired.state.terminalResult.receipt.category, "provider_transport_unavailable");
+    assert.equal(expired.state.terminalResult.receipt.transportReason, "policy_disallows_recovery");
     assert.equal(expired.state.accounting.llmCalls, 1);
+    assert.equal(expired.state.accounting.elapsedMs, 2_000);
     assert.equal(expired.state.accounting.costMicroUsd, 50_000);
     assert.equal(expired.state.outstandingReservation, null);
     assert.equal("outcome" in expired.state, false);
@@ -167,7 +169,7 @@ describe("scripted semantic authoring ports", () => {
   });
 
   it("accepts an in-time delivery only while the same fence owns the outstanding request", () => {
-    const ports = createScriptedSemanticAuthoringPortsV1({ nowMs: 1_000, fence });
+    const ports = createScriptedSemanticAuthoringPortsV1({ nowMs: 1_000, fence, timeoutMs: 60_000, maxRecoveriesPerWorkItem: 0 });
     const scheduled = scheduleSemanticAuthoringReservationV1(
       claimedState(),
       reservation(),
@@ -178,7 +180,7 @@ describe("scripted semantic authoring ports", () => {
       assert.fail("reservation was not scheduled");
     }
 
-    const stale = createScriptedSemanticAuthoringPortsV1({ nowMs: 1_000, fence });
+    const stale = createScriptedSemanticAuthoringPortsV1({ nowMs: 1_000, fence, timeoutMs: 60_000, maxRecoveriesPerWorkItem: 0 });
     stale.provider.recordDispatch(reservation(), 1_000);
     stale.replaceFence({ ownerId: "owner-1", fencingToken: 2, runVersion: 1 });
     const mismatched = acceptSemanticAuthoringDeliveryV1(
@@ -212,7 +214,7 @@ describe("scripted semantic authoring ports", () => {
   });
 
   it("fails trusted-state corruption before dispatch or delivery", () => {
-    const ports = createScriptedSemanticAuthoringPortsV1({ nowMs: 0, fence });
+    const ports = createScriptedSemanticAuthoringPortsV1({ nowMs: 0, fence, timeoutMs: 60_000, maxRecoveriesPerWorkItem: 0 });
     const corrupt = claimedState({ candidateRevision: -1 });
     const scheduled = scheduleSemanticAuthoringReservationV1(
       corrupt,
@@ -231,7 +233,7 @@ describe("scripted semantic authoring ports", () => {
     assert.equal(scheduled.state.outstandingReservation, null);
     assert.equal(ports.provider.dispatchedAtMs("request-1"), null);
 
-    const livePorts = createScriptedSemanticAuthoringPortsV1({ nowMs: 0, fence });
+    const livePorts = createScriptedSemanticAuthoringPortsV1({ nowMs: 0, fence, timeoutMs: 60_000, maxRecoveriesPerWorkItem: 0 });
     const live = scheduleSemanticAuthoringReservationV1(
       claimedState(),
       reservation(),
@@ -262,7 +264,7 @@ describe("scripted semantic authoring ports", () => {
   });
 
   it("charges an outstanding reservation when expire hits step exhaustion", () => {
-    const ports = createScriptedSemanticAuthoringPortsV1({ nowMs: 0, fence });
+    const ports = createScriptedSemanticAuthoringPortsV1({ nowMs: 0, fence, timeoutMs: 60_000, maxRecoveriesPerWorkItem: 0 });
     const scheduled = scheduleSemanticAuthoringReservationV1(
       claimedState(),
       reservation(),

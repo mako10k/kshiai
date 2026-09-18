@@ -11,17 +11,17 @@
     { "path": "backend/src/llm/semantic-authoring-provider.test.ts", "ref": "verification/semantic-authoring-provider-v1" },
     { "path": "backend/src/repositories/character-semantic-migration.test.ts", "ref": "verification/character-semantic-migration-persistence" },
     { "path": "backend/src/repositories/semantic-authoring.test.ts", "ref": "verification/semantic-authoring-repository-v1" },
-    { "path": "backend/src/services/character-focused-authoring.test.ts", "ref": "verification/character-focused-authoring-v1" },
+    { "path": "backend/src/services/character-focused-authoring.test.ts", "ref": "verification/character-focused-authoring-request-scope-v1" },
     { "path": "backend/src/services/character-migration-diagnostics.test.ts", "ref": "verification/character-migration-diagnostics" },
     { "path": "backend/src/services/character-semantic-migration.test.ts", "ref": "verification/character-semantic-migration-generation" },
     { "path": "backend/src/services/semantic-authoring/adapters/character-v3.test.ts", "ref": "verification/semantic-authoring-character-adapter-v1" },
     { "path": "backend/src/services/semantic-authoring/conformance.test.ts", "ref": "verification/semantic-authoring-conformance-v1" },
-    { "path": "backend/src/services/semantic-authoring/kernel-foundation.test.ts", "ref": "verification/semantic-authoring-kernel-foundation-v1" },
+    { "path": "backend/src/services/semantic-authoring/kernel-foundation.test.ts", "ref": "verification/semantic-authoring-kernel-foundation-v1-current" },
     { "path": "backend/src/services/semantic-authoring/public-mapping.test.ts", "ref": "verification/semantic-authoring-public-mapping-v1" },
     { "path": "backend/src/services/semantic-authoring/scripted-ports.test.ts", "ref": "verification/semantic-authoring-scripted-ports-v1" },
     { "path": "e2e/character-focused-review.spec.ts", "ref": "verification/character-focused-review-e2e-v1" },
     { "path": "packages/shared/src/character-semantic-authoring.test.ts", "ref": "verification/semantic-authoring-character-contracts-v1" },
-    { "path": "packages/shared/src/semantic-authoring.test.ts", "ref": "verification/semantic-authoring-shared-contracts-v1" },
+    { "path": "packages/shared/src/semantic-authoring.test.ts", "ref": "verification/semantic-authoring-shared-contracts-v1-current" },
     { "path": "scripts/test-authority.test.mjs", "ref": "verification/test-authority-selector-v2" }
   ]
 }

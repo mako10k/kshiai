@@ -46,6 +46,20 @@ function envelope(
 describe("character V3 semantic authoring adapter", () => {
   const adapter = createCharacterSemanticAuthoringAdapterV3();
 
+  it("rejects deferral when no consumer-scoped obligation is registered", () => {
+    const baseline = adapter.buildBaseline({ kind: "create", naturalText: "青いコート" }, "create");
+    const proposal = envelope(baseline.candidate, {
+      kind: "propose_deferral",
+      obligationIds: ["appearance"],
+      resolution: "generate-later",
+      reason: "Add details later.",
+    }, ["appearance"]);
+    const staged = adapter.stageProposal({ ...baseline, findings: new Map(), proposal });
+    assert.equal(staged.accepted, false);
+    if (staged.accepted) assert.fail("unregistered deferral was accepted");
+    assert.equal(staged.finding.code, "deferral-not-registered");
+  });
+
   it("copies executable V2 fragments and keeps each changed-role claim unresolved", () => {
     const base = adapter.buildBaseline({ kind: "create", naturalText: "source" }, "create").candidate;
     const { consciousGuidance: _guidance, mechanicalConflictFallbacks: _fallbacks, ...stable } = base;

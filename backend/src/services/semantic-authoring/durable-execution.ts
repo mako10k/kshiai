@@ -37,7 +37,8 @@ export function createDurableSemanticAuthoringExecutionV1<FC, Q>(input: {
     async settle(requestId, outcome, measuredElapsedMs, measuredUsage) {
       const written = await repository.settleSemanticAuthoringRequestV1({
         runId: input.run.runId, requestId, fence,
-        outcome: outcome === "received" ? "succeeded" : "failed",
+        outcome: outcome === "received" ? "succeeded"
+          : outcome === "provider_transport_timeout" ? "provider_transport_timeout" : "failed",
         finishedAt: now(), measuredElapsedMs, measuredUsage,
       });
       return written.accepted && await owns(true);
