@@ -105,6 +105,20 @@ ADR-0028 D4で具体化した案であり、長い思考全文の保存は要求
 
 ## 未確定事項と次の着手点
 
+### 当面の優先目標: 新規V3キャラ同士をStageで実戦する
+
+オーナーは、NevaとRioという新規V3キャラ2体を使った最初のV3対V3 Stage実戦を
+優先する。実行順・資源・未到達gateは[専用PERT](character-v3-stage-trial.pert)で管理する。
+ローカルの2候補fixtureは存在するが、Stage登録・選択やV4対戦への結合は未完了である。
+登録経路と対戦結合は独立した作業枝とし、両方が揃ってからローカル統合を検証する。
+V3対V2、既存8体の移行、schema 3 cutoverは、この最初の実戦の前提にしない。
+Stageのdeployment、キャラ登録・activation、実戦はそれぞれ別の到達点であり、
+この計画の記載だけで外部書き込みを認可しない。
+
+従来の[移行PERT](character-semantic-migration.pert)の履歴は維持し、進行中だった
+`cc303`を2026-09-18に休止した。移行を中止・完了した意味ではなく、再開は
+オーナーが改めて選択した場合に限る。旧移行計画の8p見込みはStage実戦の見込みではない。
+
 ### 新規作成復旧とV2→V3意味マイグレーション（別stream）
 
 [後続計画revision 1](character-semantic-migration-successor-plan-v1.md)はowner承認済み。
@@ -115,7 +129,8 @@ B5まで完了し、凍結source/request identity、追記型receipt、restricte
 意味変更・全体レビュー・限定修正を接続してローカル検証した。
 [B5検証記録](evidence/adr-0030-b5-local-verification-2026-09-10.md)を参照。
 B4のPostgreSQL隔離スモークは成功したが、本番migrationではなく、先行試行のpublic全体への
-影響は未確定のままである。次はB6の候補受入・append/CAS・replay/rollback実装。
+影響は未確定のままである。以下のB6以降の記述は移行streamの履歴と残作業であり、
+現在の最優先着手を示さない。
 provider利用、deployment、本番migration、
 candidate acceptance、pointer変更、schema 3 policy有効化はそれぞれ別gateである。
 

@@ -1,0 +1,118 @@
+# Existing .pert plans should normally be maintained through perttool commands; direct DSL editing bypasses goal/DAG owner-confirmation checks.
+project V3_STAGE_TRIAL:
+  version 4
+  title "First two-character V3 Stage battle trial"
+  description "Owner outcome: actually try a real Stage battle between two newly created V3 characters, Neva and Rio. Initial evidence is local draft fixtures at commit 25a273a; this is not owner content acceptance or Stage readiness. V3-versus-V2, eight-character migration, provider-backed generation, production promotion, and schema-3 cutover are not first-trial prerequisites. Registration/selectability, immutable V4 battle binding and consumers, integration, reviewed release identity, Stage deployment, Stage character activation, and observed play remain distinct. Every external write needs separate authority. The 1p/1d velocity is a provisional planning scenario inherited from csm001, not observed throughput for this path; external waits are excluded."
+  as_of 2026-09-18
+  duration_unit point
+  velocity 1p/1d
+  finish VST_PLAYED
+  goal_owner user
+  dag_owner user
+
+milestone VST_LOCAL_CANDIDATES:
+  title "Two local V3 candidate fixtures exist"
+  state reached
+
+resource DEV:
+  title "Developer"
+  capacity 1
+
+resource OWNER:
+  title "Product and release owner"
+  capacity 1
+
+milestone VST_CURRENT:
+  title "Both V3 characters are registered and selectable locally"
+
+milestone VST_BOUND:
+  title "V4 battle binds immutable V3 character revisions locally"
+
+milestone VST_WIRED:
+  title "Registration and battle paths are ready to integrate"
+
+milestone VST_LOCAL_BATTLE:
+  title "Neva versus Rio completes a local V3 battle"
+
+milestone VST_RELEASE:
+  title "Exact trial release candidate is reviewed and identified"
+
+milestone VST_STAGE_DEPLOYED:
+  title "Trial release is deployed to Stage and read back"
+
+milestone VST_STAGE_READY:
+  title "Both V3 characters are available in Stage"
+
+milestone VST_PLAYED:
+  title "Owner has tried a real V3-versus-V3 Stage battle"
+
+task vt101 VST_LOCAL_CANDIDATES -> VST_CURRENT:
+  title "Make immutable V3 revisions registrable and selectable locally"
+  description "Use the accepted V3 authoring contract to register Neva and Rio as immutable revisions, activate/read them, and expose both in the local character selection path. Verify the real registration and read model rather than fixture-only compilation. Do not require V2 migration or provider-backed generation for this trial."
+  estimate:
+    optimistic 2p
+    most_likely 3p
+    pessimistic 4p
+  requires:
+    DEV 1
+  source "Owner decision: first Stage trial is a battle between two new V3 characters; docs/character-v3-authoring-requirements-v5-acceptance.md; docs/adr/0031-focused-structured-semantic-authoring-kernel.md"
+
+task vt102 VST_LOCAL_CANDIDATES -> VST_BOUND:
+  title "Bind V3 revisions to V4 battle creation and consumers"
+  description "At battle creation bind immutable V3 revision IDs and snapshots, persist/reload the binding, and make V4 battle execution and presentation consume those snapshots. Verify a V3-versus-V3 battle without a V2 participant. Keep both character revisions fixed for the long-running battle."
+  estimate:
+    optimistic 3p
+    most_likely 4p
+    pessimistic 5p
+  requires:
+    DEV 1
+  source "Owner decision: V3-versus-V3 Stage trial; repository AGENTS.md immutable revision binding rule"
+
+gate vg101 VST_CURRENT -> VST_WIRED:
+  reason "Local integration needs registered, selectable V3 characters"
+
+gate vg102 VST_BOUND -> VST_WIRED:
+  reason "Local integration needs immutable V3 battle binding and consumers"
+
+task vt103 VST_WIRED -> VST_LOCAL_BATTLE:
+  title "Complete one local Neva-versus-Rio battle end to end"
+  description "Exercise registration, selection, creation, execution, reload, and visible result through the real local path. Confirm both participants are V3 and record exact revision and battle IDs. This is local integration evidence, not Stage acceptance."
+  estimate:
+    optimistic 1p
+    most_likely 2p
+    pessimistic 3p
+  requires:
+    DEV 1
+  source "Owner decision: try V3 characters in a real Stage battle; local integration prerequisite"
+
+task vt104 VST_LOCAL_BATTLE -> VST_RELEASE:
+  title "Review and identify the exact trial release candidate"
+  description "Review the local trial evidence, freeze an exact code and character revision identity, and obtain the separate approval needed for any merge or release write. Record the selected revision and remaining risks. Plan inclusion does not authorize push, merge, or release."
+  duration 1p
+  requires:
+    OWNER 1
+  source "Owner Stage-trial decision; release identity and approval boundary"
+
+task vt105 VST_RELEASE -> VST_STAGE_DEPLOYED:
+  title "Deploy the authorized trial candidate to Stage and read it back"
+  description "After separate deployment authorization, apply the exact reviewed release to Stage once and read back the deployed identity and service health. Stage deployment is not implied by completing local integration."
+  duration 1p
+  requires:
+    DEV 1
+  source "Owner Stage-trial decision; separate Stage deployment authority"
+
+task vt106 VST_STAGE_DEPLOYED -> VST_STAGE_READY:
+  title "Register and activate both V3 characters in Stage"
+  description "After separate Stage-data authorization, register and activate exact immutable revisions for Neva and Rio, verify both selectable, and read back IDs and revisions. No V2 migration or existing-character rewrite."
+  duration 1p
+  requires:
+    DEV 1
+  source "Owner decision: two new V3 characters for first Stage trial; Stage data write boundary"
+
+task vt107 VST_STAGE_READY -> VST_PLAYED:
+  title "Try and observe one real V3-versus-V3 Stage battle"
+  description "Owner plays Neva against Rio through the Stage user path; record exact battle and character revision IDs and observed result or blocker. This observed use, not a green local test or deployment, completes the first-trial outcome."
+  duration 1p
+  requires:
+    OWNER 1
+  source "Owner accepted goal: try V3 characters in Stage practice"

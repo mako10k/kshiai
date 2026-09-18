@@ -154,7 +154,7 @@ task cc303 cm301 -> cm303:
   title "Separately authorize merge and establish the exact Stage tag"
   description "Under separate external-write authority, merge the reviewed integrated candidate, create the exact Stage tag, and read back both identities without dispatching Stage or promoting production."
   duration 1p
-  status active
+  status suspended
   owner "user and codex"
   requires:
     cr001 1
@@ -366,3 +366,10 @@ work_event WE-b4b78f17b93736501c37b2168e9fc88db553ea0e0e59ad885d3e7585b4d3ede1:
   kind start
   occurred_at 2026-09-14T18:18:25+09:00
   planned_value 1p
+
+work_event WE-70c80382576906f8b855e5798faf66f07ed25a7a7c584018cffca9d3dc8e92c4:
+  model 1
+  task cc303
+  kind suspend
+  occurred_at 2026-09-18T20:35:14+09:00
+  reason "Owner deferred the migration delivery while prioritizing the first V3-versus-V3 Stage trial; retain cc303 history and resume only after explicit re-selection"
