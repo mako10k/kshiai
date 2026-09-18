@@ -1,6 +1,8 @@
+import { createHash } from "node:crypto";
 import {
   CharacterDefinitionV3Schema,
   CharacterGenerationEnvelopeV3Schema,
+  CharacterBattleCompilerInputsV4Schema,
   compileCharacterActionNormProgramV3,
   compileCharacterConsciousGuidanceV1,
   compileCharacterMechanicalConflictFallbacksV1,
@@ -9,12 +11,57 @@ import {
   type CharacterGenerationEnvelopeV3,
 } from "./index.js";
 import { defaultBasicAttack, defaultParameters } from "./character.js";
+import {
+  projectCharacterConsciousSelfV2,
+  projectCharacterProfileSourceV2,
+  validateCharacterProfileClaimAssessmentV2,
+  type CharacterDefinitionV2,
+} from "./structured-character.js";
 
 const description = (text: string, sourceSupportRefs: string[]) => ({
   text,
   consumerTags: ["profile-generator" as const, "battle-mechanics" as const],
   sourceSupportRefs,
 });
+
+function canonicalJson(value: unknown): string {
+  if (Array.isArray(value)) return `[${value.map(canonicalJson).join(",")}]`;
+  if (value && typeof value === "object") {
+    return `{${Object.entries(value as Record<string, unknown>)
+      .filter(([, item]) => item !== undefined)
+      .sort(([left], [right]) => left.localeCompare(right))
+      .map(([key, item]) => `${JSON.stringify(key)}:${canonicalJson(item)}`)
+      .join(",")}}`;
+  }
+  return JSON.stringify(value);
+}
+
+function digest(value: unknown): string {
+  return createHash("sha256").update(canonicalJson(value)).digest("hex");
+}
+
+function v3ToProfileDefinitionV2(definition: CharacterDefinitionV3): CharacterDefinitionV2 {
+  const {
+    schemaVersion: _schemaVersion,
+    actionNorms,
+    consciousGuidance: _consciousGuidance,
+    mechanicalConflictFallbacks: _mechanicalConflictFallbacks,
+    ...stable
+  } = definition;
+  return {
+    ...stable,
+    schemaVersion: 2,
+    actionNorms: actionNorms.map((norm) => ({
+      ...norm,
+      response: {
+        ...norm.response,
+        statement: norm.description?.text ?? `action norm ${norm.id}`,
+        fallbackActionRef: null,
+      },
+      selfAwareness: "aware" as const,
+    })),
+  };
+}
 
 /**
  * A new, local-only V3 candidate for a future Stage trial.
@@ -23,18 +70,25 @@ const description = (text: string, sourceSupportRefs: string[]) => ({
  * provider.  The export is a deterministic fixture for schema/compiler tests.
  */
 export function createV3StageTrialCandidate(): CharacterGenerationEnvelopeV3 {
-  const source = legacyCharacterSheetToDefinitionV2({
-    id: "stage-trial-neva",
-    ownerUserId: "local-stage-trial-owner",
+  const manualSource = {
+    candidateId: "stage-trial-neva",
     displayName: "夜航の灯守・ネヴァ",
     tags: ["new-v3-candidate", "lantern-keeper", "observant"],
+    traits: ["静かな観察者", "危機では大胆", "約束を守る"],
+    narrativeBlurb: "夜道の灯を絶やさず、相手の焦りが見えるまで歩みを止めない。",
+  };
+  const source = legacyCharacterSheetToDefinitionV2({
+    id: manualSource.candidateId,
+    ownerUserId: "local-stage-trial-owner",
+    displayName: manualSource.displayName,
+    tags: manualSource.tags,
     createdAt: "2026-09-18T00:00:00.000Z",
     updatedAt: "2026-09-18T00:00:00.000Z",
     appearance: {
       summary: "濃紺の外套と、風を含んだ小さな灯籠を携えた旅人。",
       visualPrompt: "a solitary lantern keeper in a navy travel cloak at night",
     },
-    traits: ["静かな観察者", "危機では大胆", "約束を守る"],
+    traits: manualSource.traits,
     parameters: defaultParameters({ hp: 108, maxHp: 108, mp: 36, maxMp: 36, atk: 11, def: 12, spd: 9, focus: 15 }),
     basicAttack: {
       ...defaultBasicAttack(),
@@ -65,7 +119,7 @@ export function createV3StageTrialCandidate(): CharacterGenerationEnvelopeV3 {
     weapon: null,
     armor: null,
     combatFlags: { canFight: true, irreversibleIncapacitated: false },
-    narrativeBlurb: "夜道の灯を絶やさず、相手の焦りが見えるまで歩みを止めない。",
+    narrativeBlurb: manualSource.narrativeBlurb,
   });
   const { schemaVersion: _schemaVersion, actionNorms: _legacyNorms, ...stable } = source;
   const basicActionId = stable.capabilities.basicAction.id;
@@ -196,30 +250,58 @@ export function createV3StageTrialCandidate(): CharacterGenerationEnvelopeV3 {
     ],
   });
 
+  const disclosurePolicy = {
+    version: 1 as const,
+    rules: [
+      { valuePath: "identity.displayName", channel: "profile" as const, target: { kind: "public" as const }, prerequisites: ["identified" as const] },
+      { valuePath: "profileBackground.*.description", channel: "profile" as const, target: { kind: "public" as const }, prerequisites: ["identified" as const] },
+      { valuePath: "psycheDisposition.tendencies.*.manifestationDescription", channel: "narrator" as const, target: { kind: "narrator" as const, perspective: "external" as const }, prerequisites: ["observed" as const] },
+    ],
+  };
+  const profileProjection = projectCharacterProfileSourceV2(
+    v3ToProfileDefinitionV2(definition),
+    disclosurePolicy,
+  );
+  const projectionDigest = digest(profileProjection);
+  const sourceDigest = digest(manualSource);
+  const descriptionSegments = [
+    { id: "identity", text: "夜航の灯守・ネヴァ", kind: "fact" as const, supportRefs: ["identity.displayName"] },
+    { id: "role", text: "夜航路の灯守として、迷う旅人に目印を残してきた。", kind: "fact" as const, supportRefs: ["profileBackground.background-night-route"] },
+  ];
+  const publicDescription = descriptionSegments.map((segment) => segment.text).join("\n\n");
+  const publicPresentation = {
+    description: publicDescription,
+    projectionContractVersion: 2,
+    projectionDigest,
+    descriptionInputDigest: digest({ sourceDigest, projectionDigest }),
+    segments: descriptionSegments,
+    claimValidation: {
+      contractVersion: 1 as const,
+      validatorContract: "character-profile-claim-validator-v1",
+      projectionDigest,
+      segments: descriptionSegments.map((segment) => ({
+        segmentId: segment.id,
+        verdict: "supported" as const,
+        supportRefs: segment.supportRefs,
+        riskCodes: [],
+      })),
+    },
+  };
+  validateCharacterProfileClaimAssessmentV2(
+    profileProjection,
+    publicPresentation,
+    publicPresentation.claimValidation,
+  );
+
   return CharacterGenerationEnvelopeV3Schema.parse({
     envelopeVersion: 2,
     definitionSchema: { family: "character", version: 3 },
     definition,
-    disclosurePolicy: {
-      version: 1,
-      rules: [
-        { valuePath: "identity.displayName", channel: "profile", target: { kind: "public" }, prerequisites: ["identified"] },
-        { valuePath: "psycheDisposition.tendencies.0.manifestationDescription", channel: "narrator", target: { kind: "narrator", perspective: "external" }, prerequisites: ["observed"] },
-      ],
-    },
-    publicPresentation: {
-      description: "夜航の灯守・ネヴァ。相手の流れを見極め、灯を絶やさず戦う旅人。",
-      projectionContractVersion: 2,
-      projectionDigest: "1".repeat(64),
-      descriptionInputDigest: "2".repeat(64),
-      segments: [
-        { id: "identity", text: "夜航の灯守・ネヴァ", kind: "fact", supportRefs: ["identity.displayName"] },
-        { id: "role", text: "灯を絶やさず戦う旅人", kind: "flavor", supportRefs: ["profileBackground.0"] },
-      ],
-    },
+    disclosurePolicy,
+    publicPresentation,
     provenance: {
       sourceKind: "create_instruction",
-      sourceDigest: "3".repeat(64),
+      sourceDigest,
       attemptId: "local-stage-trial-neva-v3",
       structureGeneratorContract: "local-manual-v3-candidate-2026-09-18",
       descriptionGeneratorContract: "local-manual-public-presentation-2026-09-18",
@@ -239,9 +321,21 @@ export function createV3StageTrialCandidate(): CharacterGenerationEnvelopeV3 {
 
 export function compileV3StageTrialCandidate(candidate: CharacterDefinitionV3 =
   createV3StageTrialCandidate().definition) {
+  const profileDefinition = v3ToProfileDefinitionV2(candidate);
+  const actionNorms = compileCharacterActionNormProgramV3(candidate);
+  const consciousGuidance = compileCharacterConsciousGuidanceV1(candidate);
+  const mechanicalConflictFallbacks =
+    compileCharacterMechanicalConflictFallbacksV1(candidate);
   return {
-    actionNorms: compileCharacterActionNormProgramV3(candidate),
-    consciousGuidance: compileCharacterConsciousGuidanceV1(candidate),
-    mechanicalConflictFallbacks: compileCharacterMechanicalConflictFallbacksV1(candidate),
+    actionNorms,
+    consciousGuidance,
+    mechanicalConflictFallbacks,
+    compilerInputsV4: CharacterBattleCompilerInputsV4Schema.parse({
+      psycheTraits: profileDefinition.psycheDisposition.dynamics,
+      consciousSelf: projectCharacterConsciousSelfV2(profileDefinition),
+      actionNorms,
+      consciousGuidance,
+      mechanicalConflictFallbacks,
+    }),
   };
 }

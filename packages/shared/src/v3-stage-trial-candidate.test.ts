@@ -21,6 +21,14 @@ describe("new V3 Stage trial candidate", () => {
     assert.ok(envelope.definition.capabilities.skills.length >= 2);
     assert.equal(envelope.compilerCompatibility.some((entry) =>
       entry.consumer === "battle-mechanics" && entry.version === 3), true);
+    assert.notEqual(envelope.provenance.sourceDigest, "3".repeat(64));
+    assert.notEqual(envelope.publicPresentation.projectionDigest, "1".repeat(64));
+    assert.notEqual(envelope.publicPresentation.descriptionInputDigest, "2".repeat(64));
+    assert.equal(
+      envelope.publicPresentation.description,
+      envelope.publicPresentation.segments.map((segment) => segment.text).join("\n\n"),
+    );
+    assert.equal(envelope.publicPresentation.claimValidation?.segments.length, 2);
   });
 
   it("compiles each V3 semantic program without adding V2-only fields", () => {
@@ -32,6 +40,9 @@ describe("new V3 Stage trial candidate", () => {
     assert.equal(compiled.consciousGuidance.contractVersion, 1);
     assert.equal(compiled.consciousGuidance.entries[0]?.statement.includes("帰る余地"), true);
     assert.equal(compiled.mechanicalConflictFallbacks.entries[0]?.orderedActionRefs[0], "skill-wick-guard");
+    assert.equal(compiled.compilerInputsV4.actionNorms.contractVersion, 3);
+    assert.equal(compiled.compilerInputsV4.consciousSelf.contractVersion, 2);
+    assert.equal(compiled.compilerInputsV4.psycheTraits.expressionRestraint, 700);
   });
 
   it("rejects a selectorless or unreferenced fallback mutation", () => {
