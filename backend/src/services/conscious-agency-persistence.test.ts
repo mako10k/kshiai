@@ -60,6 +60,7 @@ describe("ADR-0028 private agency state persistence", () => {
     assert.ok(final?.agentStateA?.consciousAgencyV1?.upperGoal);
     assert.ok(consciousCalls >= 4);
     assert.equal(final.dialoguePipelineSnapshot?.schemaVersion, 3);
+    assert.ok(final.assetManifest?.schemaVersion === 3);
     assert.equal(final.assetManifest?.characters.a.compilerInputsV2, undefined);
     assert.ok(final.assetManifest?.characters.a.compilerInputsV3);
   });

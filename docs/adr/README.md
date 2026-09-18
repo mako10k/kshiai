@@ -66,3 +66,4 @@ This directory contains durable records of architectural and product-rule decisi
 | [0029](0029-preserve-v2-soft-guidance-compatibility.md) | Rejected | Historical proposal for permanent V2 conscious-only compatibility; replaced as direction by proposed ADR-0030 |
 | [0030](0030-llm-assisted-character-semantic-migration.md) | Accepted | Migrate frozen V2 characters to strict V3 through bounded LLM semantic change sets, deterministic validation, owner review, and append/CAS |
 | [0031](0031-focused-structured-semantic-authoring-kernel.md) | Accepted | Thin typed authoring kernel, domain adapters, focused capabilities, bounded recovery and mechanical safety; clause-level refinement of existing authoring contracts |
+| [0032](0032-bind-v3-characters-to-versioned-battles.md) | Accepted | Bind two V3 character generations in a distinct immutable battle manifest without changing historical manifest meanings |

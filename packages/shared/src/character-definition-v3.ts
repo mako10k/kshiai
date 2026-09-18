@@ -2,16 +2,19 @@ import { z } from "zod";
 import {
   CharacterBattleCompilerInputsV3Schema,
   CharacterConsciousSelfStaticProjectionV2Schema,
-  CharacterNarratorProjectionSetV2Schema,
   PsycheTraitProfileV1Schema,
-} from "./battle.js";
+} from "./battle-character-compiler.js";
 import {
   CombatReadyCharacterSheetSchema,
   type CharacterSheet,
 } from "./character.js";
 import {
   CharacterActionNormProgramV2Schema,
+  CharacterNormFactV2Schema,
   CharacterRelationshipResolutionV2Schema,
+  compileCharacterRelationshipProgramV2,
+  resolveCharacterRelationshipV2,
+  type CharacterNormFactV2,
 } from "./character-definition-rules.js";
 import {
   CharacterDefinitionV2ObjectSchema,
@@ -19,6 +22,10 @@ import {
   CharacterDescriptionV2Schema,
   CharacterNormClauseV2Schema,
   characterDefinitionToLegacySheetProjection,
+  compileCharacterPsycheTraitsV1,
+  projectCharacterConsciousSelfV2,
+  projectCharacterNarratorViewsV2,
+  type CharacterDefinitionV2,
 } from "./structured-character.js";
 import {
   type AssetPublicPresentationV2,
@@ -470,6 +477,36 @@ export type CharacterActionNormProgramV3 = z.infer<
   typeof CharacterActionNormProgramV3Schema
 >;
 
+export const CharacterNormActionCandidateV3Schema = z.object({
+  actionKey: z.string().min(1).max(160),
+  actionRef: StableIdSchema.nullable(),
+  actionKind: CharacterActionKindV3Schema.nullable(),
+  tacticTags: z.array(z.string().min(1).max(80)).max(8),
+}).strict();
+export type CharacterNormActionCandidateV3 = z.infer<
+  typeof CharacterNormActionCandidateV3Schema
+>;
+
+export const CharacterActionNormResolutionReceiptV3Schema = z.object({
+  contractVersion: z.literal(3),
+  status: z.enum(["no_applicable_norm", "applied", "character_norm_conflict"]),
+  applicableNormIds: z.array(StableIdSchema).max(12),
+  exceptedNormIds: z.array(StableIdSchema).max(12),
+  constraintNormIds: z.array(StableIdSchema).max(12),
+  excludedActionKeys: z.array(z.string().min(1).max(160)).max(32),
+  rankedActionKeys: z.array(z.string().min(1).max(160)).max(32),
+  conflict: z.object({
+    normIds: z.array(StableIdSchema).max(12),
+    fallbackId: StableIdSchema.nullable(),
+    legalityCheckedActionRefs: z.array(StableIdSchema).max(8),
+    rejectedActionRefs: z.array(StableIdSchema).max(8),
+    selectedActionRef: StableIdSchema.nullable(),
+  }).strict().nullable(),
+}).strict();
+export type CharacterActionNormResolutionReceiptV3 = z.infer<
+  typeof CharacterActionNormResolutionReceiptV3Schema
+>;
+
 export const CharacterConsciousGuidanceProgramV1Schema = z.object({
   contractVersion: z.literal(1),
   entries: z.array(CharacterConsciousGuidanceV1Schema).max(12),
@@ -479,6 +516,9 @@ export const CharacterMechanicalConflictFallbackProgramV1Schema = z.object({
   contractVersion: z.literal(1),
   entries: z.array(CharacterMechanicalConflictFallbackV1Schema).max(8),
 }).strict();
+export type CharacterMechanicalConflictFallbackProgramV1 = z.infer<
+  typeof CharacterMechanicalConflictFallbackProgramV1Schema
+>;
 
 export const CharacterBattleCompilerInputsV4Schema =
   CharacterBattleCompilerInputsV3Schema.omit({ actionNorms: true })
@@ -586,6 +626,297 @@ export function resolveCharacterMechanicalConflictFallbackV1(input: {
   });
 }
 
+const V3_NORM_FORCE_RANK = {
+  constraint: 3,
+  commitment: 2,
+  preference: 1,
+} as const;
+
+const V3_ORDERED_FACT_VALUES: Record<string, readonly string[] | undefined> = {
+  battle_phase: ["prologue", "turn", "aftermath"],
+  self_condition: ["steady", "strained", "critical", "incapacitated"],
+  counterpart_condition: ["steady", "strained", "critical", "incapacitated"],
+  distance_band: [
+    "contact",
+    "near",
+    "medium",
+    "far",
+    "separate_area",
+    "out_of_scene",
+  ],
+};
+
+const V3_RESOURCE_BANDS = ["empty", "critical", "low", "taxed", "ready", "full"];
+const V3_RESOURCE_KEYS = new Set(["hp", "mp", "stamina", "focus"]);
+
+function v3OrderedValues(kind: string, value: string): readonly string[] | null {
+  if (kind !== "resource_band") return V3_ORDERED_FACT_VALUES[kind] ?? null;
+  const separator = value.indexOf(":");
+  const resource = separator < 0 ? "" : value.slice(0, separator);
+  return V3_RESOURCE_KEYS.has(resource)
+    ? V3_RESOURCE_BANDS.map((band) => `${resource}:${band}`)
+    : null;
+}
+
+function v3ClauseMatches(
+  clause: CharacterActionNormV3["when"]["clauses"][number],
+  facts: readonly CharacterNormFactV2[],
+): boolean {
+  if (clause.kind === "always") {
+    return clause.operator === "is" && clause.value === "true";
+  }
+  const matching = facts.filter((fact) => fact.kind === clause.kind);
+  if (clause.operator === "is") {
+    return matching.some((fact) => fact.value === clause.value);
+  }
+  if (clause.operator === "is_not") {
+    return matching.length > 0 && matching.every((fact) => fact.value !== clause.value);
+  }
+  const ordered = v3OrderedValues(clause.kind, clause.value);
+  const expected = ordered?.indexOf(clause.value) ?? -1;
+  if (expected < 0) return false;
+  return matching.some((fact) => {
+    const actual = ordered?.indexOf(fact.value) ?? -1;
+    return actual >= 0 && (clause.operator === "at_least"
+      ? actual >= expected
+      : actual <= expected);
+  });
+}
+
+function v3ClausesMatch(
+  clauses: readonly CharacterActionNormV3["when"]["clauses"][number][],
+  match: "all" | "any",
+  facts: readonly CharacterNormFactV2[],
+): boolean {
+  return match === "all"
+    ? clauses.every((clause) => v3ClauseMatches(clause, facts))
+    : clauses.some((clause) => v3ClauseMatches(clause, facts));
+}
+
+function v3ActionMatches(
+  action: CharacterNormActionCandidateV3,
+  norm: CharacterActionNormProgramV3["norms"][number],
+): boolean {
+  return Boolean(
+    (action.actionRef && norm.response.actionRefs.includes(action.actionRef)) ||
+    (action.actionKind && norm.response.actionKinds.includes(action.actionKind)) ||
+    action.tacticTags.some((tag) => norm.response.tacticTags.includes(tag)),
+  );
+}
+
+function v3CompareNorms(
+  left: CharacterActionNormProgramV3["norms"][number],
+  right: CharacterActionNormProgramV3["norms"][number],
+): number {
+  return V3_NORM_FORCE_RANK[right.force] - V3_NORM_FORCE_RANK[left.force] ||
+    right.priority - left.priority ||
+    right.when.clauses.length - left.when.clauses.length ||
+    left.id.localeCompare(right.id);
+}
+
+function v3CompareActions(
+  left: CharacterNormActionCandidateV3,
+  right: CharacterNormActionCandidateV3,
+  norms: readonly CharacterActionNormProgramV3["norms"][number][],
+  originalIndex: ReadonlyMap<string, number>,
+): number {
+  for (const norm of norms) {
+    const leftSignal = v3ActionMatches(left, norm)
+      ? norm.response.disposition === "prefer" ? 1 : -1
+      : 0;
+    const rightSignal = v3ActionMatches(right, norm)
+      ? norm.response.disposition === "prefer" ? 1 : -1
+      : 0;
+    if (leftSignal !== rightSignal) return rightSignal - leftSignal;
+  }
+  return (originalIndex.get(left.actionKey) ?? 0) -
+    (originalIndex.get(right.actionKey) ?? 0);
+}
+
+/**
+ * Resolves V3 mechanical action norms. Conscious guidance is intentionally not
+ * input to this evaluator; ADR-0030 keeps it out of action selection.
+ */
+export function evaluateCharacterActionNormsV3(input: {
+  program: CharacterActionNormProgramV3;
+  mechanicalConflictFallbacks: CharacterMechanicalConflictFallbackProgramV1;
+  facts: readonly CharacterNormFactV2[];
+  legalActions: readonly CharacterNormActionCandidateV3[];
+}): {
+  actions: CharacterNormActionCandidateV3[];
+  receipt: CharacterActionNormResolutionReceiptV3;
+} {
+  const program = CharacterActionNormProgramV3Schema.parse(input.program);
+  const fallbacks = CharacterMechanicalConflictFallbackProgramV1Schema.parse(
+    input.mechanicalConflictFallbacks,
+  );
+  const facts = z.array(CharacterNormFactV2Schema).max(64).parse(input.facts);
+  const legalActions = z.array(CharacterNormActionCandidateV3Schema).max(32)
+    .refine(
+      (actions) => new Set(actions.map((action) => action.actionKey)).size ===
+        actions.length,
+      "character norm action keys must be unique",
+    )
+    .parse(input.legalActions);
+  const excepted = new Set<string>();
+  const applicable = program.norms.filter((norm) => {
+    if (!v3ClausesMatch(norm.when.clauses, norm.when.match, facts)) return false;
+    const hasException = norm.exceptions.some((exception) =>
+      v3ClausesMatch(exception.clauses, "all", facts)
+    );
+    if (hasException) excepted.add(norm.id);
+    return !hasException;
+  }).sort(v3CompareNorms);
+  const constraints = applicable.filter((norm) => norm.force === "constraint");
+  let remaining = [...legalActions];
+  for (const norm of constraints) {
+    remaining = norm.response.disposition === "allow_only"
+      ? remaining.filter((action) => v3ActionMatches(action, norm))
+      : remaining.filter((action) => !v3ActionMatches(action, norm));
+  }
+  const conflict = legalActions.length > 0 && remaining.length === 0 &&
+    constraints.length > 0;
+  let conflictReceipt: CharacterActionNormResolutionReceiptV3["conflict"] = null;
+  if (conflict) {
+    const fallback = fallbacks.entries
+      .filter((entry) => v3ClausesMatch(
+        entry.applicability.clauses,
+        entry.applicability.match,
+        facts,
+      ))
+      .sort((left, right) => right.priority - left.priority ||
+        left.id.localeCompare(right.id))[0];
+    if (fallback) {
+      const fallbackReceipt = resolveCharacterMechanicalConflictFallbackV1({
+        fallback,
+        legalActionRefs: legalActions.flatMap((action) =>
+          action.actionRef ? [action.actionRef] : []),
+      });
+      const selectedAction = fallbackReceipt.selectedActionRef
+        ? legalActions.find((action) =>
+          action.actionRef === fallbackReceipt.selectedActionRef
+        ) ?? null
+        : null;
+      remaining = selectedAction ? [selectedAction] : [];
+      conflictReceipt = {
+        normIds: constraints.map((norm) => norm.id),
+        fallbackId: fallbackReceipt.fallbackId,
+        legalityCheckedActionRefs: fallbackReceipt.legalityCheckedActionRefs,
+        rejectedActionRefs: fallbackReceipt.rejectedActionRefs,
+        selectedActionRef: fallbackReceipt.selectedActionRef,
+      };
+    } else {
+      conflictReceipt = {
+        normIds: constraints.map((norm) => norm.id),
+        fallbackId: null,
+        legalityCheckedActionRefs: [],
+        rejectedActionRefs: [],
+        selectedActionRef: null,
+      };
+    }
+  }
+  const softNorms = applicable.filter((norm) => norm.force !== "constraint");
+  const originalIndex = new Map(
+    legalActions.map((action, index) => [action.actionKey, index]),
+  );
+  const ranked = remaining.sort((left, right) =>
+    v3CompareActions(left, right, softNorms, originalIndex));
+  const retained = new Set(ranked.map((action) => action.actionKey));
+  return {
+    actions: ranked,
+    receipt: CharacterActionNormResolutionReceiptV3Schema.parse({
+      contractVersion: 3,
+      status: conflict
+        ? "character_norm_conflict"
+        : applicable.length > 0 ? "applied" : "no_applicable_norm",
+      applicableNormIds: applicable.map((norm) => norm.id),
+      exceptedNormIds: [...excepted].sort(),
+      constraintNormIds: constraints.map((norm) => norm.id),
+      excludedActionKeys: legalActions
+        .filter((action) => !retained.has(action.actionKey))
+        .map((action) => action.actionKey),
+      rankedActionKeys: ranked.map((action) => action.actionKey),
+      conflict: conflictReceipt,
+    }),
+  };
+}
+
+function v3StableProjectionDefinition(
+  definition: CharacterDefinitionV3,
+): CharacterDefinitionV2 {
+  const {
+    schemaVersion: _schemaVersion,
+    actionNorms: _actionNorms,
+    consciousGuidance: _consciousGuidance,
+    mechanicalConflictFallbacks: _mechanicalConflictFallbacks,
+    ...stable
+  } = definition;
+  return CharacterDefinitionV2Schema.parse({
+    ...stable,
+    schemaVersion: 2,
+    actionNorms: [],
+  });
+}
+
+/**
+ * Compiles the V4 member that a V3 battle manifest freezes. Narrator views and
+ * relationship resolution remain optional because their inputs require a
+ * disclosure policy and counterpart context that this generic compiler lacks.
+ */
+export function compileCharacterBattleCompilerInputsV4(
+  input: {
+    definition: CharacterDefinitionV3;
+    counterpartCharacterAssetId?: string;
+    relationshipRoles?: Parameters<typeof resolveCharacterRelationshipV2>[0]["relationshipRoles"];
+    disclosurePolicy?: Parameters<typeof projectCharacterNarratorViewsV2>[1];
+  },
+): CharacterBattleCompilerInputsV4 {
+  const parsed = CharacterDefinitionV3Schema.parse(input.definition);
+  const stable = v3StableProjectionDefinition(parsed);
+  const relationship = input.counterpartCharacterAssetId
+    ? resolveCharacterRelationshipV2({
+      program: compileCharacterRelationshipProgramV2(stable),
+      counterpartCharacterAssetId: input.counterpartCharacterAssetId,
+      relationshipRoles: input.relationshipRoles,
+    })
+    : undefined;
+  return CharacterBattleCompilerInputsV4Schema.parse({
+    psycheTraits: compileCharacterPsycheTraitsV1(stable),
+    consciousSelf: CharacterConsciousSelfStaticProjectionV2Schema.parse({
+      ...projectCharacterConsciousSelfV2(stable),
+      actionPrinciples: parsed.consciousGuidance
+        .filter((guidance) => guidance.selfAwareness !== "unaware")
+        .map((guidance) => guidance.selfAwareness === "partial"
+          ? guidance.statement.slice(0, 160)
+          : guidance.statement),
+    }),
+    actionNorms: compileCharacterActionNormProgramV3(parsed),
+    consciousGuidance: compileCharacterConsciousGuidanceV1(parsed),
+    mechanicalConflictFallbacks:
+      compileCharacterMechanicalConflictFallbacksV1(parsed),
+    ...(input.disclosurePolicy
+      ? { narratorViews: projectCharacterNarratorViewsV2(stable, input.disclosurePolicy) }
+      : {}),
+    ...(relationship ? { relationship } : {}),
+  });
+}
+
+export function resolveRegisteredCharacterMechanicalConflictFallbackV1(input: {
+  program: CharacterMechanicalConflictFallbackProgramV1;
+  fallbackId: string;
+  legalActionRefs: readonly string[];
+}): z.infer<typeof CharacterMechanicalConflictReceiptV1Schema> {
+  const program = CharacterMechanicalConflictFallbackProgramV1Schema.parse(input.program);
+  const fallback = program.entries.find((entry) => entry.id === input.fallbackId);
+  if (!fallback) {
+    throw new Error(`unknown registered mechanical fallback: ${input.fallbackId}`);
+  }
+  return resolveCharacterMechanicalConflictFallbackV1({
+    fallback,
+    legalActionRefs: [...input.legalActionRefs],
+  });
+}
+
 export function createCharacterGenerationV3BasicAttackSource(input: {
   generationId: string;
 }) {
@@ -595,10 +926,3 @@ export function createCharacterGenerationV3BasicAttackSource(input: {
     definitionPath: "capabilities.basicAction",
   });
 }
-
-export const CharacterBattleCompilerInputComponentsV4Schema = z.object({
-  psycheTraits: PsycheTraitProfileV1Schema,
-  consciousSelf: CharacterConsciousSelfStaticProjectionV2Schema,
-  narratorViews: CharacterNarratorProjectionSetV2Schema.optional(),
-  relationship: CharacterRelationshipResolutionV2Schema.optional(),
-}).strict();

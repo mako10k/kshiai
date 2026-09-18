@@ -1,0 +1,103 @@
+domain ADR0032:
+  description "ADR-0032 revision 1: Bind V3 characters to versioned battles. Status Proposed."
+
+problem P1:
+  |
+    The first V3-versus-V3 Stage trial requires new battles to freeze two V3
+    character generations and carry their V4 compiler inputs through reload and
+    all battle consumers. The existing startBattle path and manifest versions do
+    not represent that tuple.
+
+evidence E1:
+  |
+    Accepted ADR-0010 requires battle creation to read and bind exact compatible
+    current generations without authoring writes. Accepted ADR-0030 defines
+    CharacterBattleCompilerInputsV4 and character_generation_v3 provenance.
+    Accepted ADR-0028 binds the complete dialogue-V3 compact projection,
+    activation and psyche-reaction tuple and rejects mixed discriminators.
+
+evidence E2:
+  |
+    At revision 067cb01, battle-service startBattle parses V2 envelopes and
+    records character_generation_v2 and compilerInputsV2. Its manifest version
+    3 upgrade changes the dialogue tuple while retaining V2 character sources.
+
+evidence E3:
+  |
+    The owner selected two new V3 characters for the first Stage trial and
+    excluded a V3-versus-V2 first battle. PERT vt101 owns registration and
+    selection; vt102 owns battle binding and consumers; vt103 joins both.
+
+premise OPTIONS:
+  |
+    Relabel manifest V3 as V3-character data, add a mixed-version union, or add
+    one distinct all-V3 manifest variant. Relabeling changes historical meaning;
+    mixed-version execution adds behavior the first trial does not need.
+
+premise U1:
+  |
+    Before owner acceptance, this proposed manifest and consumer contract did
+    not authorize implementation of its new persisted version. Stage writes
+    remain separately authorized.
+
+pending U2:
+  |
+    The V3 generation reader currently reports compatibility but does not
+    itself reject blocked current generations. vt101 must supply and test the
+    current-pointer/readiness boundary and the exact battle-required capability
+    set before integrated creation can be claimed.
+
+evidence OWNER_ACCEPTANCE:
+  |
+    On 2026-09-18, after the exact English authoritative think, Markdown
+    projection, complete Japanese review scope, alternatives, risks and
+    unknowns were presented, the product owner replied ACCEPT for ADR-0032
+    revision 1. The pre-acceptance authoritative SHA-256 was
+    39fa661060cba238014836fca416ff819d80ce0c3b85ba9a60c7e08e6e8ce3ed.
+
+decision D1 based_on P1, E1, E2, E3, OPTIONS, U1, U2:
+  |
+    Propose a distinct BattleAssetManifestV4 for battles created with two V3
+    character generations. Each side uses BattleCharacterAssetBindingV4: exact
+    asset/generation identity, content digest, immutable combat-ready snapshot,
+    character_generation_v3 basic-action provenance, and
+    CharacterBattleCompilerInputsV4. Preserve ADR-0028's dialogue schema-3
+    compact projection, activation identity, psyche-reaction-policy-v1,
+    exact character digests and complete-tuple discrimination. The character
+    compiler member advances from V3 to V4; other frozen asset/rule identities
+    remain bound.
+
+decision D2 based_on P1, E1, E2, E3, OPTIONS, U1, U2:
+  |
+    Creation reads the current V3 generation for each character through the
+    compatible current-pointer and readiness contract supplied by vt101, and
+    fails closed for missing, mismatched, blocked-capability, or mixed-version
+    generations. The exact battle-required capability set must match the V4
+    consumers and be verified with vt101 before integrated creation. It does
+    not append a generation, move a current pointer, invoke authoring, or
+    silently convert a V2 character. Binding preparation may be implemented
+    independently, but complete local creation proof waits for vt101.
+
+decision D3 based_on P1, E1, E2, E3, OPTIONS, U1, U2:
+  |
+    Battle execution, retry, reload, narration, presentation and observation
+    consume the frozen V4 tuple. Execute V3 action norms as action selectors;
+    keep conscious guidance out of the mechanical selector; apply registered
+    fallback only after legality revalidation with its conflict receipt, as
+    required by ADR-0030. Do not coerce V4 inputs to a V2/V3 norm program or
+    reread mutable current character data as an authoritative input.
+
+decision D4 based_on P1, E1, E2, E3, OPTIONS, U1, U2:
+  |
+    Parse and persist the new variant without changing the meaning of existing
+    manifest versions 1-3. Existing battles remain on their recorded manifest;
+    no automatic migration or rebinding occurs. This decision covers the first
+    all-V3 trial only and does not decide mixed-version battles, V2 migration,
+    provider generation, Stage activation, or production promotion.
+
+decision ACCEPTANCE based_on OWNER_ACCEPTANCE, D1, D2, D3, D4:
+  |
+    Accept exact ADR-0032 revision 1 as the all-V3 battle manifest and
+    consumer decision. This authorizes implementation within vt102, but does
+    not authorize Stage writes, release, mixed-version behavior, V2 migration,
+    or a claim that local or Stage battle execution is complete.

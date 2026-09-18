@@ -12,6 +12,7 @@ function manifestV3() {
   const { state } = createInventoryFixture();
   const old = state.assetManifest;
   assert.ok(old);
+  assert.ok(old.schemaVersion !== 4);
   function character(side: "a" | "b") {
     const binding = old!.characters[side];
     const input = binding.compilerInputsV2;

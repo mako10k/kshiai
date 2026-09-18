@@ -74,6 +74,8 @@ describe("CA-00 existing agency boundary inventory (not model quality)", () => {
   it("F05 changes conscious ability knowledge but not deterministic reaction", async () => {
     const control = await runInventory();
     const changed = await runInventory("ability_text");
+    assert.ok(control.state.assetManifest?.schemaVersion !== 4);
+    assert.ok(changed.state.assetManifest?.schemaVersion !== 4);
     assert.deepEqual(control.state.assetManifest?.characters.a.compilerInputsV2?.psycheTraits,
       changed.state.assetManifest?.characters.a.compilerInputsV2?.psycheTraits);
     assert.deepEqual(control.result.state.agentStateA?.reactionStateV1, changed.result.state.agentStateA?.reactionStateV1);

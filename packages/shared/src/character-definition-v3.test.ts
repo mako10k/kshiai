@@ -9,6 +9,7 @@ import {
   CharacterDefinitionV3Schema,
   CharacterGenerationEnvelopeV3Schema,
   compileCharacterActionNormProgramV3,
+  compileCharacterBattleCompilerInputsV4,
   compileCharacterConsciousGuidanceV1,
   compileCharacterMechanicalConflictFallbacksV1,
   compileCharacterPsycheTraitsV1,
@@ -19,6 +20,7 @@ import {
   projectCharacterCompilerCompatibilityV1,
   projectCharacterConsciousSelfV2,
   requireCombatReadyCharacterSheet,
+  evaluateCharacterActionNormsV3,
   resolveCharacterMechanicalConflictFallbackV1,
   type CharacterDefinitionV3,
   type CharacterSheet,
@@ -173,6 +175,106 @@ describe("ADR-0030 V3 character semantic boundaries", () => {
         orderedActionRefs: ["invented-action"],
       }],
     }).success, false);
+  });
+
+  it("evaluates V3 norms without converting them to V2 and records a legal fallback", () => {
+    const base = definitionV3();
+    const basicActionRef = base.capabilities.basicAction.id;
+    const definition = CharacterDefinitionV3Schema.parse({
+      ...base,
+      actionNorms: [
+        {
+          id: "allow-basic",
+          when: {
+            match: "all",
+            clauses: [{ kind: "always", operator: "is", value: "true" }],
+          },
+          response: {
+            disposition: "allow_only",
+            actionRefs: [basicActionRef],
+            actionKinds: [],
+            tacticTags: [],
+          },
+          priority: 90,
+          force: "constraint",
+          exceptions: [],
+          description: null,
+        },
+        {
+          id: "forbid-basic",
+          when: {
+            match: "all",
+            clauses: [{ kind: "always", operator: "is", value: "true" }],
+          },
+          response: {
+            disposition: "forbid",
+            actionRefs: [basicActionRef],
+            actionKinds: [],
+            tacticTags: [],
+          },
+          priority: 80,
+          force: "constraint",
+          exceptions: [],
+          description: null,
+        },
+      ],
+      mechanicalConflictFallbacks: [{
+        ...base.mechanicalConflictFallbacks[0]!,
+        applicability: {
+          match: "all",
+          clauses: [{ kind: "always", operator: "is", value: "true" }],
+        },
+        orderedActionRefs: [basicActionRef],
+      }],
+    });
+    const result = evaluateCharacterActionNormsV3({
+      program: compileCharacterActionNormProgramV3(definition),
+      mechanicalConflictFallbacks:
+        compileCharacterMechanicalConflictFallbacksV1(definition),
+      facts: [],
+      legalActions: [{
+        actionKey: "basic",
+        actionRef: basicActionRef,
+        actionKind: "basic_action",
+        tacticTags: [],
+      }],
+    });
+
+    assert.deepEqual(result.actions.map((action) => action.actionKey), ["basic"]);
+    assert.deepEqual(result.receipt, {
+      contractVersion: 3,
+      status: "character_norm_conflict",
+      applicableNormIds: ["allow-basic", "forbid-basic"],
+      exceptedNormIds: [],
+      constraintNormIds: ["allow-basic", "forbid-basic"],
+      excludedActionKeys: [],
+      rankedActionKeys: ["basic"],
+      conflict: {
+        normIds: ["allow-basic", "forbid-basic"],
+        fallbackId: "fallback-basic",
+        legalityCheckedActionRefs: [basicActionRef],
+        rejectedActionRefs: [],
+        selectedActionRef: basicActionRef,
+      },
+    });
+  });
+
+  it("compiles generic V4 inputs from V3 without treating action norms as conscious text", () => {
+    const definition = definitionV3();
+    const inputs = compileCharacterBattleCompilerInputsV4({
+      definition,
+      counterpartCharacterAssetId: "opponent-v3",
+      relationshipRoles: ["rival"],
+    });
+
+    assert.equal(inputs.actionNorms.contractVersion, 3);
+    assert.equal(inputs.consciousGuidance.entries.length, 1);
+    assert.equal(inputs.mechanicalConflictFallbacks.entries.length, 1);
+    assert.deepEqual(inputs.consciousSelf.actionPrinciples, [
+      "勝敗だけでなく、相手との攻防を楽しむ",
+    ]);
+    assert.equal(inputs.relationship?.receipt.counterpartCharacterAssetId, "opponent-v3");
+    assert.equal(inputs.narratorViews, undefined);
   });
 
   it("reports optional deferral without blocking an unrelated required capability", () => {

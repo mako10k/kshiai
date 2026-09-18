@@ -1,6 +1,6 @@
 # Existing .pert plans should normally be maintained through perttool commands; direct DSL editing bypasses goal/DAG owner-confirmation checks.
 project V3_STAGE_TRIAL:
-  version 4
+  version 5
   title "First two-character V3 Stage battle trial"
   description "Owner outcome: actually try a real Stage battle between two newly created V3 characters, Neva and Rio. Initial evidence is local draft fixtures at commit 25a273a; this is not owner content acceptance or Stage readiness. V3-versus-V2, eight-character migration, provider-backed generation, production promotion, and schema-3 cutover are not first-trial prerequisites. Registration/selectability, immutable V4 battle binding and consumers, integration, reviewed release identity, Stage deployment, Stage character activation, and observed play remain distinct. Every external write needs separate authority. The 1p/1d velocity is a provisional planning scenario inherited from csm001, not observed throughput for this path; external waits are excluded."
   as_of 2026-09-18
@@ -64,6 +64,7 @@ task vt102 VST_LOCAL_CANDIDATES -> VST_BOUND:
     optimistic 3p
     most_likely 4p
     pessimistic 5p
+  status suspended
   requires:
     DEV 1
   source "Owner decision: V3-versus-V3 Stage trial; repository AGENTS.md immutable revision binding rule"
@@ -116,3 +117,17 @@ task vt107 VST_STAGE_READY -> VST_PLAYED:
   requires:
     OWNER 1
   source "Owner accepted goal: try V3 characters in Stage practice"
+
+work_event WE-3dbb3f38bb58d449f8ada5eae4068f5083f38cf6283bd0712c034a25db3ca26c:
+  model 1
+  task vt102
+  kind start
+  occurred_at 2026-09-18T21:04:09+09:00
+  planned_value 4p
+
+work_event WE-b6b08595934599b49d01ed1c80431459974f9cd32338618fe52cec503a6f326e:
+  model 1
+  task vt102
+  kind suspend
+  occurred_at 2026-09-18T21:53:00+09:00
+  reason "Shared workday ends at 22:00; V4 full-consumer regression remains"
