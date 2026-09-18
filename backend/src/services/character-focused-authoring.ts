@@ -1,6 +1,8 @@
 import { randomUUID } from "node:crypto";
+import { isDeepStrictEqual } from "node:util";
 import { z } from "zod";
-import { CharacterDefinitionV3Schema, type CharacterAuthoringReview,
+import { CharacterCompilerCompatibilityV1Schema, CharacterDeferredValueV1Schema,
+  CharacterDefinitionV3Schema, type CharacterAuthoringReview,
   type CharacterDefinitionV3, type SemanticAuthoringRunV1 } from "@kshiai/shared";
 import { query, withTransaction, type DatabaseConnection } from "../db.js";
 import type { LlmProvider } from "../llm/types.js";
@@ -9,7 +11,8 @@ import { assertFamilyAuthoringFence, finishFamilyAuthoringJobInTransaction,
   type AuthoringExecutionFence } from "../repositories/family-authoring-jobs.js";
 import * as runs from "../repositories/semantic-authoring.js";
 import { createCharacterSemanticAuthoringAdapterV3,
-  type CharacterAuthoringSourceV1 } from "./semantic-authoring/adapters/character-v3.js";
+  type CharacterAuthoringSourceV1, type CharacterMigrationReviewCandidateV1 } from "./semantic-authoring/adapters/character-v3.js";
+import { buildCharacterMigrationSourceLedgerV1 } from "./semantic-authoring/adapters/character-source-ledger.js";
 import { projectFocusedCharacterWorkV1 } from "./semantic-authoring/adapters/character-context.js";
 import { createDurableSemanticAuthoringExecutionV1 } from "./semantic-authoring/durable-execution.js";
 import { executeSemanticAuthoringV1 } from "./semantic-authoring/execution.js";
@@ -61,6 +64,12 @@ export async function registerCharacterFocusedAuthoringV3(connection: DatabaseCo
     || input.sourceGenerationId !== input.expectedCurrentGenerationId
     || (source.kind !== "migrate" && command.source_text !== source.naturalText)) {
     throw new Error("FOCUSED_CHARACTER_COMMAND_MISMATCH");
+  }
+  if (source.kind === "migrate" && source.capsule
+    && (source.capsule.migrationAttemptId !== input.attemptId
+      || source.capsule.sourceGenerationId !== input.sourceGenerationId
+      || source.capsule.targetGenerationId === input.sourceGenerationId)) {
+    throw new Error("FOCUSED_CHARACTER_CAPSULE_IDENTITY_MISMATCH");
   }
   if (source.kind !== "create") {
     const generation = await connection.query<{ content_json: unknown; schema_version: number }>(
@@ -137,7 +146,8 @@ export async function runCharacterFocusedAuthoringJobV3(input: {
     new Date().toISOString());
   if (!claimed.accepted) return "failed";
   const run = claimed.value;
-  const persistence = createDurableSemanticAuthoringExecutionV1<CharacterDefinitionV3, string>({
+  const persistence = createDurableSemanticAuthoringExecutionV1<
+    CharacterDefinitionV3 | CharacterMigrationReviewCandidateV1, string>({
     run, familyPayloadRef: `character-focused:${runId}`,
     async persistFamilyResult(connection, result) {
       await assertFamilyAuthoringFence(connection, "character", input.attemptId, input.executionFence);
@@ -261,9 +271,23 @@ export async function readCharacterFocusedAuthoringReviewV3(attemptId: string, o
       WHERE r.attempt_id = $1 AND r.owner_user_id = $2`, [attemptId, ownerUserId]);
   const row = found.rows[0];
   if (!row) return null;
-  const ready = z.object({ kind: z.literal("ready_for_review"), finalCandidate: CharacterDefinitionV3Schema })
+  const migrationReviewCandidate = z.object({ kind: z.literal("migration_review_candidate_v1"),
+    definition: CharacterDefinitionV3Schema, deferredValues: z.array(CharacterDeferredValueV1Schema),
+    compatibility: CharacterCompilerCompatibilityV1Schema.nullable(),
+    pendingPreservation: z.array(z.object({ sourceClaimId: z.string(), originalValue: z.unknown(),
+      disposition: z.enum(["discard-as-nonmaterial", "defer"]), rationale: z.string() }).strict()),
+  }).strict();
+  const ready = z.object({ kind: z.literal("ready_for_review"),
+    finalCandidate: z.union([CharacterDefinitionV3Schema, migrationReviewCandidate]),
+    sourceLedger: z.object({ sourceDispositions: z.array(z.object({
+      sourceClaimId: z.string(), disposition: z.string(), rationale: z.string(),
+    }).passthrough()) }).passthrough().optional() })
     .safeParse(typeof row.result_json === "string" ? JSON.parse(row.result_json) : row.result_json);
   if (!ready.success) return { sourceRetryAvailable: row.status === "failed", semanticCandidateReview: null };
+  const parsedMigrationCandidate = migrationReviewCandidate.safeParse(ready.data.finalCandidate);
+  const migrationCandidate = parsedMigrationCandidate.success ? parsedMigrationCandidate.data : null;
+  const definition = CharacterDefinitionV3Schema.parse(
+    migrationCandidate?.definition ?? ready.data.finalCandidate);
   const raw = typeof row.source_json === "string" ? JSON.parse(row.source_json) : row.source_json;
   const pending = decodeUnresolvedCharacterRevisionSourceV1(raw);
   const resolutionRaw = row.resolved_source_json;
@@ -279,6 +303,33 @@ export async function readCharacterFocusedAuthoringReviewV3(attemptId: string, o
   if (!decoded.accepted) throw new Error("FOCUSED_CHARACTER_SOURCE_INVALID");
   const source = decoded.value.kind === "create" ? {} : decoded.value.definition;
   const sourceFields = new Map(Object.entries(z.record(z.unknown()).parse(source)));
+  const sourceClaims = decoded.value.kind === "migrate"
+    ? new Map(buildCharacterMigrationSourceLedgerV1(decoded.value.definition, definition,
+      decoded.value.capsule, decoded.value.requiredCapabilities ?? null).claims
+      .map((claim) => [claim.sourceClaimId, claim]))
+    : new Map<string, ReturnType<typeof buildCharacterMigrationSourceLedgerV1>["claims"][number]>();
+  const pendingCopies = new Map(migrationCandidate?.pendingPreservation.map((entry) =>
+    [entry.sourceClaimId, entry]) ?? []);
+  const pendingCopyVerified = (sourceClaimId: string) => {
+    const claim = sourceClaims.get(sourceClaimId);
+    const copy = pendingCopies.get(sourceClaimId);
+    return Boolean(claim && copy && isDeepStrictEqual(copy.originalValue, claim.original));
+  };
+  const sourceDispositions = decoded.value.kind === "migrate"
+    ? (ready.data.sourceLedger?.sourceDispositions ?? []).map((decision) => ({
+      sourceClaimId: decision.sourceClaimId,
+      disposition: decision.disposition,
+      rationale: decision.rationale,
+      capsuleCopyVerified: decision.disposition === "discard-as-nonmaterial"
+        || decision.disposition === "preserve-in-capsule"
+        ? sourceClaims.get(decision.sourceClaimId)?.capsuleCopyAvailable === true : null,
+      pendingCopyVerified: decision.disposition === "discard-as-nonmaterial"
+        ? pendingCopyVerified(decision.sourceClaimId) : null,
+      preservedOriginal: sourceClaims.get(decision.sourceClaimId)?.capsuleCopyAvailable === true
+        || pendingCopyVerified(decision.sourceClaimId)
+        ? JSON.stringify(sourceClaims.get(decision.sourceClaimId)?.original, null, 2) : null,
+    }))
+    : [];
   const labels: Record<string, string> = { schemaVersion: "定義版", identity: "人物設定",
     profileBackground: "背景", psycheDisposition: "心理傾向", capabilities: "能力・行動",
     relationshipSeeds: "関係性", speechPolicy: "話し方", appearance: "外見",
@@ -287,11 +338,37 @@ export async function readCharacterFocusedAuthoringReviewV3(attemptId: string, o
     initialLoadout: "初期装備", combat: "戦闘設定" };
   return { sourceRetryAvailable: false, semanticCandidateReview: {
     schemaVersion: 3,
-    fields: Object.entries(ready.data.finalCandidate).map(([key, value]) => ({
+    fields: Object.entries(definition).map(([key, value]) => ({
       key, label: labels[key] ?? key,
       source: sourceFields.has(key) ? JSON.stringify(sourceFields.get(key), null, 2) : null,
       candidate: JSON.stringify(value, null, 2),
     })),
+    sourceDispositions,
+    pendingPreservation: migrationCandidate?.pendingPreservation.map((entry) => ({
+      sourceClaimId: entry.sourceClaimId,
+      disposition: entry.disposition,
+      rationale: entry.rationale,
+      exactSourceCopyVerified: pendingCopyVerified(entry.sourceClaimId),
+      originalValue: pendingCopyVerified(entry.sourceClaimId)
+        ? JSON.stringify(entry.originalValue, null, 2) : null,
+    })) ?? [],
+    deferredValues: migrationCandidate?.deferredValues.map((value) => ({
+      targetPath: value.targetPath,
+      reason: value.reason,
+      candidateSourcePaths: value.candidateSourcePaths,
+      requiringCapability: `${value.requiringCapability.consumer}@${value.requiringCapability.version}`,
+    })) ?? [],
+    compatibility: migrationCandidate?.compatibility ? {
+      status: migrationCandidate.compatibility.status,
+      deferred: migrationCandidate.compatibility.deferred.map((entry) => ({
+        capability: `${entry.capability.consumer}@${entry.capability.version}`,
+        targetPaths: entry.targetPaths,
+      })),
+      blocked: migrationCandidate.compatibility.blocked.map((entry) => ({
+        capability: `${entry.capability.consumer}@${entry.capability.version}`,
+        reasonCode: entry.reasonCode,
+      })),
+    } : null,
     limitation: "構造化候補を保存しました。意味・公開範囲の検証と最終採用の接続は未完了です。現在の世代は変更していません。",
   } };
 }

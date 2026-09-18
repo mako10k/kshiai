@@ -109,6 +109,69 @@ export function CharacterReviewPage() {
               <h4>候補</h4><pre style={{ whiteSpace: "pre-wrap", overflowWrap: "anywhere" }}>{field.candidate}</pre>
             </details>
           ))}
+          {review.semanticCandidateReview.sourceDispositions?.length ? (
+            <section>
+              <h3>V2 元データの扱い</h3>
+              {review.semanticCandidateReview.sourceDispositions.map((decision) => (
+                <details key={decision.sourceClaimId}>
+                  <summary>{decision.sourceClaimId} — {decision.disposition}</summary>
+                  <p>{decision.rationale}</p>
+                  {decision.capsuleCopyVerified !== null ? (
+                    <p>正式カプセル内の完全一致コピー: {decision.capsuleCopyVerified ? "確認済み" : "未確認"}</p>
+                  ) : null}
+                  {decision.pendingCopyVerified !== null ? (
+                    <p>候補段階の未コミットコピー: {decision.pendingCopyVerified ? "元データと完全一致" : "不一致"}</p>
+                  ) : null}
+                  {decision.preservedOriginal !== null ? (
+                    <><h4>保持した V2 の値</h4><pre style={{ whiteSpace: "pre-wrap", overflowWrap: "anywhere" }}>
+                      {decision.preservedOriginal}
+                    </pre></>
+                  ) : null}
+                </details>
+              ))}
+            </section>
+          ) : null}
+          {review.semanticCandidateReview.pendingPreservation?.length ? (
+            <section>
+              <h3>正式カプセルへの保持予定（未コミット）</h3>
+              {review.semanticCandidateReview.pendingPreservation.map((entry) => (
+                <details key={entry.sourceClaimId}>
+                  <summary>{entry.sourceClaimId} — {entry.disposition}</summary>
+                  <p>{entry.rationale}</p>
+                  <p>元データとの完全一致: {entry.exactSourceCopyVerified ? "確認済み" : "未確認"}</p>
+                  {entry.originalValue !== null ? <pre style={{ whiteSpace: "pre-wrap", overflowWrap: "anywhere" }}>
+                    {entry.originalValue}
+                  </pre> : null}
+                </details>
+              ))}
+            </section>
+          ) : null}
+          {review.semanticCandidateReview.deferredValues?.length ? (
+            <section>
+              <h3>後で解決する値</h3>
+              <p>元データのコピーを保持することと、V3 側の値を延期することは別です。保持した元データは、延期した機能で自動使用されません。</p>
+              {review.semanticCandidateReview.deferredValues.map((value) => (
+                <details key={value.targetPath}>
+                  <summary>{value.targetPath} — {value.requiringCapability}</summary>
+                  <p>{value.reason}</p>
+                  <p>元データ: {value.candidateSourcePaths.join(", ")}</p>
+                </details>
+              ))}
+            </section>
+          ) : null}
+          {review.semanticCandidateReview.compatibility ? (
+            <section>
+              <h3>候補段階の互換性</h3>
+              <p>必要なコンシューマーの検証が未完了のため、利用可能とは判定していません。</p>
+              <p>状態: {review.semanticCandidateReview.compatibility.status}</p>
+              {review.semanticCandidateReview.compatibility.deferred.map((entry) => (
+                <p key={entry.capability}>延期: {entry.capability} — {entry.targetPaths.join(", ")}</p>
+              ))}
+              {review.semanticCandidateReview.compatibility.blocked.map((entry) => (
+                <p key={entry.capability}>未確認: {entry.capability} — {entry.reasonCode}</p>
+              ))}
+            </section>
+          ) : null}
         </section>
       ) : null}
       {review.canAccept && review.candidate ? (

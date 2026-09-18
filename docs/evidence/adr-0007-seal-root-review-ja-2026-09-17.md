@@ -1,6 +1,8 @@
 # ADR-0007 既存Accepted本文のroot登録レビュー — 2026-09-17
 
-状態: 本人レビュー待ち。新rootを公開していない。
+状態: 2026-09-18、本人が「登録を承認する」と回答し、記載した原文不変rootを公開済み。本文・コード・テストadmissionは変更していない。
+
+公開readback: `acceptance/adr-0007-existing-baseline` = `6c982de4ffcb50602b855449b797a1c9cbec2668023186e732128b4ab7da0057`。source一致、非draft・非stale、`sealgraph fsck` はok。以下の候補説明はレビュー時点の資料として保持する。
 
 ## 今回の判断対象
 

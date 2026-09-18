@@ -12,10 +12,11 @@ import {
   CharacterDefinitionV2Schema,
 } from "@kshiai/shared";
 import {
+  buildCharacterMigrationReviewCandidateV1,
   createCharacterSemanticAuthoringAdapterV3,
   type CharacterProposalV1,
 } from "./character-v3.js";
-import { splitCharacterV2NormV1 } from "./character-source-ledger.js";
+import { buildCharacterMigrationSourceLedgerV1, splitCharacterV2NormV1 } from "./character-source-ledger.js";
 
 function envelope(
   candidate: CharacterDefinitionV3,
@@ -165,15 +166,18 @@ describe("character V3 semantic authoring adapter", () => {
   it("closes a changed-role source claim only when an exact capsule copy exists", () => {
     const createBase = adapter.buildBaseline({ kind: "create", naturalText: "source" }, "create").candidate;
     const { consciousGuidance: _guidance, mechanicalConflictFallbacks: _fallbacks, ...stable } = createBase;
-    const definition = CharacterDefinitionV2Schema.parse({ ...stable, schemaVersion: 2, actionNorms: [{
+    const definition = CharacterDefinitionV2Schema.parse({ ...stable,
+      identity: { ...stable.identity, displayName: "火を守る人" },
+      schemaVersion: 2, actionNorms: [{
       id: "protect", when: { match: "all", clauses: [{ kind: "always", operator: "is", value: "true" }] },
       response: { disposition: "prefer", actionRefs: [createBase.capabilities.basicAction.id], actionKinds: [],
-        tacticTags: [], statement: "守り続ける", fallbackActionRef: createBase.capabilities.basicAction.id },
+        tacticTags: [], statement: "守り続ける", fallbackActionRef: null },
       selfAwareness: "aware", priority: 50, force: "preference", exceptions: [], description: null,
     }] });
     const sourceClaimId = "actionNorms:protect:legacyMeaning";
-    const preservedValue = { statement: "守り続ける", selfAwareness: "aware",
-      fallbackActionRef: createBase.capabilities.basicAction.id };
+    const preservedValue = { statement: "守り続ける", selfAwareness: "aware", fallbackActionRef: null };
+    const optionalCapabilities = { contractVersion: 1 as const,
+      required: [{ consumer: "battle-mechanics" as const, version: 3 }] };
     const capsule = {
       capsuleVersion: 1 as const,
       migrationAttemptId: "attempt-1",
@@ -183,7 +187,8 @@ describe("character V3 semantic authoring adapter", () => {
         provenanceCategory: "retired" as const }],
       createdAt: "2026-09-15T00:00:00.000Z",
     };
-    const baseline = adapter.buildBaseline({ kind: "migrate", definition, capsule }, "migrate");
+    const baseline = adapter.buildBaseline({ kind: "migrate", definition, capsule,
+      requiredCapabilities: optionalCapabilities }, "migrate");
     const proposal: CharacterProposalV1 = {
       ...envelope(baseline.candidate, { kind: "classify_source_disposition", decisions: [{
         sourceClaimId,
@@ -201,11 +206,180 @@ describe("character V3 semantic authoring adapter", () => {
     if (!staged.accepted) assert.fail("capsule disposition rejected");
     assert.equal(staged.obligations.get(`source:${sourceClaimId}`)?.resolved, true);
 
-    const withoutCapsule = adapter.buildBaseline({ kind: "migrate", definition, capsule: null }, "migrate");
+    const withoutCapsule = adapter.buildBaseline({ kind: "migrate", definition, capsule: null,
+      requiredCapabilities: optionalCapabilities }, "migrate");
     const rejected = adapter.stageProposal({ ...withoutCapsule, findings: new Map(), proposal });
     assert.equal(rejected.accepted, true);
     if (!rejected.accepted) assert.fail("well-formed unresolved capsule disposition rejected");
     assert.equal(rejected.obligations.get(`source:${sourceClaimId}`)?.resolved, false);
+  });
+
+  it("resolves discard-as-nonmaterial only for an exact frozen capsule copy", () => {
+    const createBase = adapter.buildBaseline({ kind: "create", naturalText: "source" }, "create").candidate;
+    const { consciousGuidance: _guidance, mechanicalConflictFallbacks: _fallbacks, ...stable } = createBase;
+    const definition = CharacterDefinitionV2Schema.parse({ ...stable, schemaVersion: 2, actionNorms: [{
+      id: "protect", when: { match: "all", clauses: [{ kind: "always", operator: "is", value: "true" }] },
+      response: { disposition: "prefer", actionRefs: [createBase.capabilities.basicAction.id], actionKinds: [],
+        tacticTags: [], statement: "守り続ける", fallbackActionRef: null },
+      selfAwareness: "aware", priority: 50, force: "preference", exceptions: [], description: null,
+    }] });
+    const sourceClaimId = "actionNorms:protect:legacyMeaning";
+    const preservedValue = { statement: "守り続ける", selfAwareness: "aware", fallbackActionRef: null };
+    const optionalCapabilities = { contractVersion: 1 as const,
+      required: [{ consumer: "battle-mechanics" as const, version: 3 }] };
+    const capsule = {
+      capsuleVersion: 1 as const,
+      migrationAttemptId: "attempt-1",
+      sourceGenerationId: "generation-v2",
+      targetGenerationId: "generation-v3",
+      entries: [{ sourcePath: sourceClaimId, value: preservedValue, operationId: "retire-1",
+        provenanceCategory: "retired" as const }],
+      createdAt: "2026-09-15T00:00:00.000Z",
+    };
+    const makeProposal = (baseline: ReturnType<typeof adapter.buildBaseline>): CharacterProposalV1 => ({
+      ...envelope(baseline.candidate, { kind: "classify_source_disposition", decisions: [{
+        sourceClaimId, disposition: "discard-as-nonmaterial", targetClaimIds: [],
+        rationale: "Retained only as an exact frozen source copy.",
+      }] }, [`source:${sourceClaimId}`]),
+      proposalSchemaIdentity: CHARACTER_LEDGER_PROPOSAL_SCHEMA_V1,
+      workItemId: "work-ledger",
+      sourceClaimIds: [sourceClaimId],
+      provenance: [],
+    });
+
+    const exactBaseline = adapter.buildBaseline({ kind: "migrate", definition, capsule,
+      requiredCapabilities: optionalCapabilities }, "migrate");
+    const exact = adapter.stageProposal({ ...exactBaseline, findings: new Map(), proposal: makeProposal(exactBaseline) });
+    assert.equal(exact.accepted, true);
+    if (!exact.accepted) assert.fail("exact discard disposition rejected");
+    assert.equal(exact.obligations.get(`source:${sourceClaimId}`)?.resolved, true);
+
+    const absentBaseline = adapter.buildBaseline({ kind: "migrate", definition, capsule: null,
+      requiredCapabilities: optionalCapabilities }, "migrate");
+    const absent = adapter.stageProposal({ ...absentBaseline, findings: new Map(), proposal: makeProposal(absentBaseline) });
+    assert.equal(absent.accepted, true);
+    if (!absent.accepted) assert.fail("well-formed absent-capsule discard rejected");
+    assert.equal(absent.obligations.get(`source:${sourceClaimId}`)?.resolved, true);
+    assert.deepEqual(absent.obligations.get(`source:${sourceClaimId}`)?.pendingPreservation,
+      { sourceClaimId, originalValue: preservedValue, disposition: "discard-as-nonmaterial",
+        rationale: "Retained only as an exact frozen source copy." });
+    const pending = absent.obligations.get(`source:${sourceClaimId}`)?.pendingPreservation;
+    assert.ok(pending);
+    const pendingReview = buildCharacterMigrationReviewCandidateV1({
+      definition: absent.candidate, requiredCapabilities: null, deferredValues: [],
+      pendingPreservation: [pending],
+    });
+    assert.deepEqual(pendingReview.pendingPreservation, [pending]);
+    assert.equal(pendingReview.compatibility, null);
+
+    const mismatchedBaseline = adapter.buildBaseline({ kind: "migrate", definition, requiredCapabilities: optionalCapabilities, capsule: {
+      ...capsule, entries: [{ ...capsule.entries[0], value: { ...preservedValue, statement: "別の内容" } }],
+    } }, "migrate");
+    const mismatched = adapter.stageProposal({ ...mismatchedBaseline, findings: new Map(), proposal: makeProposal(mismatchedBaseline) });
+    assert.equal(mismatched.accepted, true);
+    if (!mismatched.accepted) assert.fail("well-formed mismatched-capsule discard rejected");
+    assert.equal(mismatched.obligations.get(`source:${sourceClaimId}`)?.resolved, false);
+
+    const required = buildCharacterMigrationSourceLedgerV1(definition, exactBaseline.candidate,
+      capsule, { contractVersion: 1, required: [{ consumer: "character-conscious-self", version: 3 }] });
+    assert.equal(required.claims.find((claim) => claim.sourceClaimId === sourceClaimId)
+      ?.nonmaterialDiscardEligible, false);
+    assert.equal(required.claims.find((claim) => claim.sourceClaimId === "combat")
+      ?.nonmaterialDiscardEligible, false);
+
+    const withFallback = CharacterDefinitionV2Schema.parse({ ...definition, actionNorms: [{
+      ...definition.actionNorms[0], response: { ...definition.actionNorms[0].response,
+        fallbackActionRef: createBase.capabilities.basicAction.id },
+    }] });
+    const fallbackLedger = buildCharacterMigrationSourceLedgerV1(withFallback, exactBaseline.candidate,
+      capsule, optionalCapabilities);
+    assert.equal(fallbackLedger.claims.find((claim) => claim.sourceClaimId === sourceClaimId)
+      ?.nonmaterialDiscardEligible, false);
+  });
+
+  it("accepts only optional registered legacy meaning deferral and retains it across refresh", () => {
+    const createBase = adapter.buildBaseline({ kind: "create", naturalText: "source" }, "create").candidate;
+    const { consciousGuidance: _guidance, mechanicalConflictFallbacks: _fallbacks, ...stable } = createBase;
+    const sourceClaimId = "actionNorms:protect:legacyMeaning";
+    const definition = CharacterDefinitionV2Schema.parse({ ...stable,
+      identity: { ...stable.identity, displayName: "火を守る人" },
+      schemaVersion: 2, actionNorms: [{
+      id: "protect", when: { match: "all", clauses: [{ kind: "always", operator: "is", value: "true" }] },
+      response: { disposition: "prefer", actionRefs: [createBase.capabilities.basicAction.id], actionKinds: [],
+        tacticTags: [], statement: "守り続ける", fallbackActionRef: null },
+      selfAwareness: "aware", priority: 50, force: "preference", exceptions: [], description: null,
+    }] });
+    const capsule = {
+      capsuleVersion: 1 as const,
+      migrationAttemptId: "attempt-1",
+      sourceGenerationId: "generation-v2",
+      targetGenerationId: "generation-v3",
+      entries: [{ sourcePath: sourceClaimId, value: { statement: "守り続ける", selfAwareness: "aware",
+        fallbackActionRef: null }, operationId: "retire-1", provenanceCategory: "retired" as const }],
+      createdAt: "2026-09-15T00:00:00.000Z",
+    };
+    const optionalCapabilities = { contractVersion: 1 as const,
+      required: [{ consumer: "battle-mechanics" as const, version: 3 }] };
+    const requiredCapabilities = { contractVersion: 1 as const,
+      required: [{ consumer: "character-conscious-self" as const, version: 3 }] };
+    const makeProposal = (baseline: ReturnType<typeof adapter.buildBaseline>): CharacterProposalV1 => ({
+      ...envelope(baseline.candidate, { kind: "propose_deferral", obligationIds: [`source:${sourceClaimId}`],
+        resolution: "generate-later", reason: "Conscious guidance is optional for this frozen compiler set." },
+      [`source:${sourceClaimId}`]),
+      proposalSchemaIdentity: CHARACTER_LEDGER_PROPOSAL_SCHEMA_V1,
+      workItemId: "work-ledger",
+      sourceClaimIds: [sourceClaimId],
+      provenance: [],
+    });
+
+    const optionalBaseline = adapter.buildBaseline({ kind: "migrate", definition, capsule,
+      requiredCapabilities: optionalCapabilities }, "migrate");
+    const accepted = adapter.stageProposal({ ...optionalBaseline, findings: new Map(), proposal: makeProposal(optionalBaseline) });
+    assert.equal(accepted.accepted, true);
+    if (!accepted.accepted) assert.fail("optional deferral rejected");
+    const deferred = accepted.obligations.get(`source:${sourceClaimId}`);
+    assert.equal(deferred?.resolved, true);
+    assert.deepEqual(deferred?.deferredValue, {
+      targetPath: "definition.consciousGuidance.protect",
+      reason: "Conscious guidance is optional for this frozen compiler set.",
+      candidateSourcePaths: ["definition.actionNorms"],
+      requiringCapability: { consumer: "character-conscious-self", version: 3 },
+    });
+    const refreshed = adapter.stageProposal({ ...accepted, proposal: {
+      ...makeProposal(optionalBaseline), payload: { kind: "submit_lens_review", lens: "compiler",
+        findingIds: [], verdict: "pass" },
+    } });
+    assert.equal(refreshed.accepted, true);
+    if (!refreshed.accepted) assert.fail("refresh rejected");
+    assert.equal(refreshed.obligations.get(`source:${sourceClaimId}`)?.resolved, true);
+    assert.deepEqual(refreshed.obligations.get(`source:${sourceClaimId}`)?.deferredValue,
+      deferred?.deferredValue);
+    const reviewCandidate = buildCharacterMigrationReviewCandidateV1({
+      definition: refreshed.candidate, requiredCapabilities: optionalCapabilities,
+      deferredValues: deferred?.deferredValue ? [deferred.deferredValue] : [],
+    });
+    assert.deepEqual(reviewCandidate.deferredValues, [deferred?.deferredValue]);
+    assert.ok(reviewCandidate.compatibility);
+    assert.equal(reviewCandidate.compatibility.status, "blocked");
+    assert.equal(reviewCandidate.compatibility.deferred[0]?.capability.consumer,
+      "character-conscious-self");
+
+    const requiredBaseline = adapter.buildBaseline({ kind: "migrate", definition, capsule,
+      requiredCapabilities }, "migrate");
+    const required = adapter.stageProposal({ ...requiredBaseline, findings: new Map(), proposal: makeProposal(requiredBaseline) });
+    assert.equal(required.accepted, false);
+    if (required.accepted) assert.fail("required deferral accepted");
+    assert.equal(required.finding.code, "deferral-not-eligible");
+
+    const absentCapsuleBaseline = adapter.buildBaseline({ kind: "migrate", definition,
+      requiredCapabilities: optionalCapabilities, capsule: null }, "migrate");
+    const absentCapsule = adapter.stageProposal({ ...absentCapsuleBaseline, findings: new Map(),
+      proposal: makeProposal(absentCapsuleBaseline) });
+    assert.equal(absentCapsule.accepted, true);
+    if (!absentCapsule.accepted) assert.fail("pending exact-copy deferral rejected");
+    assert.equal(absentCapsule.obligations.get(`source:${sourceClaimId}`)?.resolved, true);
+    assert.deepEqual(absentCapsule.obligations.get(`source:${sourceClaimId}`)?.pendingPreservation?.originalValue,
+      capsule.entries[0].value);
   });
 
   it("builds a create baseline and requires skeleton work first", () => {

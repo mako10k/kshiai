@@ -2,7 +2,7 @@
 # Current revision record: docs/character-semantic-migration-plan-revision-10.md
 # Revision 9 acceptance and product completion criteria remain governing.
 # Report by outcomes; retain internal task IDs, trial order and separate execution authority.
-# M1: cs316 Seal health (unestimated Work; cc304 explicitly suspended until reconciled).
+# M1: cs316 Seal health and approved bounded migration-adapter correction (unestimated Work; cc304 suspended).
 # M2: cc304 -> cc311 -> cc312 -> cc315 local migration readiness.
 # M3: cc305 -> cc314 one actual Stage game using a migrated V3 character.
 # M4: cc313 -> cc306 -> cc307 -> cb209-cb214 evaluation, restoration and final cutover.
@@ -206,7 +206,7 @@ work cc302:
 
 work cs316:
   title "M1 Restore current Seal authority before continuing migration integration"
-  description "Owner-directed all-Seal health recovery. Upstream requirements, ADRs and accepted design are repaired in the recorded limited scope; plan, implementation and test consumers remain to reconcile. Classify current use, historical evidence and unaccepted proposals; map current claims to exact upstream Seals and check source bindings and semantic fit with individual Luna reviews. Preserve historical Seals and original proof scope; do not require historical stale or draft counts to reach zero. Present new roots for owner review together and keep other existing approval boundaries. Remaining effort is unknown, so this is unestimated Work rather than a fabricated-duration task. Current cc304 suspended status enforces the hold; Work alone is not a strict DAG prerequisite. Completion evidence and inventory are in docs/evidence/seal-health-recovery-2026-09-17.md. This plan edit does not complete recovery or admit any test."
+  description "Owner-directed all-Seal health recovery and separately approved bounded local focused V2-to-V3 migration correction. Reconcile current plan, implementation and test Seal consumers with exact Accepted authority. In the focused candidate stage, require exact V2 source preservation before nonmaterial discard; register only consumer-optional typed deferral and carry it into private candidate storage, compatibility and owner review. Do not invent a current V3 required-consumer set, treat pending preservation as a generation-bound capsule, activate a candidate, move a pointer, run paid provider calls, deploy, or claim migration complete. Full capsule binding and atomic owner-accepted migration commit remain later authorized work. Preserve historical Seals and original proof scope; do not require historical stale or draft counts to reach zero. Remaining effort is unknown. Keep cc304 suspended while M1 recovery is incomplete. Completion evidence and inventory are in docs/evidence/seal-health-recovery-2026-09-17.md. This edit does not complete recovery or admit a test."
 
 work_order:
   cs316

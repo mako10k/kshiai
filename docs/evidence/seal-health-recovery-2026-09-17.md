@@ -4,6 +4,10 @@
 
 ## 最新の再開位置: M1下流consumer照合
 
+2026-09-18 のREF用途分類は [差分記録](seal-health-disposition-2026-09-18.md) に続けた。09-17の415件台帳は当時のsnapshotとして保持し、現在の全件完了とは扱わない。選別器の合成テストと実inventoryの根拠を分離した。V3 reader投影に続き、旧V3 schema Sealのsource不一致とchange-setの古いCauseは限定レビュー・改訂Sealで解消し、それぞれの旧Sealは履歴として保持した。さらにV2移行の初期source ledger・adapter migrate部分・typed character contractだけを別目的で限定Sealした。adapter全体のrevise/deferral/progress適合と旧portのbounded recovery適合はHOLD。本人承認したADR-0007の原文不変rootを公開し、source一致・非draft・非staleを確認した。V3定義全体の意味適合や移行主経路の完了は未確認。
+
+2026-09-18 の続行結果は [cs316 実装・テストの由来照合](cs316-implementation-test-seal-reconciliation-2026-09-18.md)。timeout周辺の保存層・scripted portとテスト2件を現行の非draft根拠に結び付け、characterとconformanceのテスト2件はdraftとして登録した。その後、V3 schema と旧change-setの限定テスト2件を別目的の非draft検証REFに結び付けた。現在のinventory選別はactive 9/provisional 3/disabled 144。cs316全体とcc304は未完了のまま。以下の「最新」は以前の段階の記録として保持する。
+
 最新の続行結果は [実行制御・adapter・関連テストの照合記録](seal-health-execution-consumers-2026-09-17.md)。kernel/orchestrationの限定source適合と、共通基盤テスト2件をLuna照合後にcurrent登録した。inventory2mappingとselector検証の根拠も更新。アプリ・テスト本文は変更せず、45件と選別器9件が成功。正式選別はactive5/provisional1/disabled150。
 
 現行適合へ昇格しないものも特定した。通信portのtimeout→resource_exhausted分類はdesign7.2と不一致。キャラadapterのdeferral記録等は未完了で、型契約が参照するV3 schemaはsource不一致、change-setはstale。保留事項は上記記録に観測・未確認を分けて記載した。これらのコード・期待値は修正していない。M1全体は未完了、cc304はsuspended、ADR-0007 rootは未公開。通常の根拠照合は継続範囲だが、コード修正や新rootは今回の実行範囲外。

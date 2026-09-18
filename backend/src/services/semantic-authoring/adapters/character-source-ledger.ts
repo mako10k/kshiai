@@ -1,6 +1,6 @@
 import { isDeepStrictEqual } from "node:util";
 import { CharacterDefinitionV2Schema, CharacterActionNormV3Schema,
-  type CharacterActionNormV2, type CharacterDefinitionV3,
+  type CharacterActionNormV2, type CharacterCompilerCapabilitySetV1, type CharacterDefinitionV3,
   type MigrationPreservationCapsuleV1, type ProposalProvenanceV1,
   type SourceDispositionDecisionV1 } from "@kshiai/shared";
 
@@ -11,6 +11,8 @@ export type CharacterSourceClaimV1 = Readonly<{
   original: unknown;
   expectedCopy: unknown;
   capsuleCopyAvailable: boolean;
+  capsuleEntryPresent: boolean;
+  nonmaterialDiscardEligible: boolean;
 }>;
 
 export function splitCharacterV2NormV1(norm: CharacterActionNormV2) {
@@ -80,6 +82,7 @@ export function characterSourceDispositionSatisfiedV1(
   claim: CharacterSourceClaimV1,
   decision: SourceDispositionDecisionV1,
   provenance: readonly ProposalProvenanceV1[],
+  pendingExactCopyAvailable = false,
 ): boolean {
   if (decision.sourceClaimId !== claim.sourceClaimId) return false;
   if (decision.disposition === "preserve") {
@@ -90,7 +93,12 @@ export function characterSourceDispositionSatisfiedV1(
   if (decision.disposition === "preserve-in-capsule") {
     return decision.targetClaimIds.length === 0 && claim.capsuleCopyAvailable;
   }
-  if (decision.disposition === "discard-as-nonmaterial") return false;
+  if (decision.disposition === "discard-as-nonmaterial") {
+    return decision.targetClaimIds.length === 0
+      && decision.rationale.trim().length > 0
+      && (claim.capsuleCopyAvailable || pendingExactCopyAvailable)
+      && claim.nonmaterialDiscardEligible;
+  }
   if (decision.targetClaimIds.length === 0) return false;
   const targetsAreProvenanced = decision.targetClaimIds.every((targetClaimId) =>
     characterClaimValueV1(candidate, targetClaimId) !== undefined
@@ -124,12 +132,22 @@ export function buildCharacterMigrationSourceLedgerV1(
   definition: unknown,
   candidate: CharacterDefinitionV3,
   capsule: MigrationPreservationCapsuleV1 | null = null,
+  requiredCapabilities: CharacterCompilerCapabilitySetV1 | null = null,
 ) {
   const source = CharacterDefinitionV2Schema.parse(definition);
   const claims: CharacterSourceClaimV1[] = [];
-  const addClaim = (claim: Omit<CharacterSourceClaimV1, "capsuleCopyAvailable">) => {
+  const consciousSelfRequired = !requiredCapabilities || requiredCapabilities.required.some((capability) =>
+    capability.consumer === "character-conscious-self" && capability.version === 3);
+  const addClaim = (claim: Omit<CharacterSourceClaimV1, "capsuleCopyAvailable" | "capsuleEntryPresent" | "nonmaterialDiscardEligible">) => {
+    const legacy = claim.original as { fallbackActionRef?: unknown } | null;
     claims.push({ ...claim, capsuleCopyAvailable: capsule?.entries.some((entry) =>
-      entry.sourcePath === claim.sourceClaimId && isDeepStrictEqual(entry.value, claim.original)) ?? false });
+      entry.sourcePath === claim.sourceClaimId && isDeepStrictEqual(entry.value, claim.original)) ?? false,
+    capsuleEntryPresent: capsule?.entries.some((entry) => entry.sourcePath === claim.sourceClaimId) ?? false,
+    nonmaterialDiscardEligible: !consciousSelfRequired
+      && claim.sourceClaimId.startsWith("actionNorms:")
+      && claim.sourceClaimId.endsWith(":legacyMeaning")
+      && typeof legacy === "object" && legacy !== null
+      && legacy.fallbackActionRef === null });
   };
   const exact = (claimId: string, value: unknown, expectedCopy: unknown = value) =>
     addClaim({ sourceClaimId: claimId, targetClaimId: claimId, original: value, expectedCopy });
