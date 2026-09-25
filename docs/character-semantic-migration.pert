@@ -11,7 +11,7 @@ project csm001:
   version 9
   title "Restore character authoring and migrate frozen ready V2 characters to strict V3"
   description "First enable an owner-visible Stage game trial using an exact V2 character migrated to V3 through the common structured foundation; infer revise scope from the natural-language request. This is an interim user outcome, not final restoration or production cutover. Continue separately to the accepted three-mode evaluation, frozen-character restoration and strict V3 authoring cutover. Preserve protected meaning and complete server reconciliation. Provider work, deployment, candidate acceptance and pointer activation require separate authority."
-  as_of 2026-09-17
+  as_of 2026-09-25
   duration_unit point
   velocity 1p/1d
   finish cm114
@@ -519,6 +519,19 @@ task cb214 cm213 -> cm114:
     cr001 1
     cr002 1
 
+task cs317 cm310 -> cm311:
+  title "Reconcile the dirty primary checkout before M1 continuation"
+  description "After exact user approval, restore docs/adr/README.md, docs/dialogue-activation-focus-recovery.pert, and docs/dialogue-context-loop-fix.pert to the verified branch versions; remove the four untracked duplicates for ADR-0018, the activation audit DSL, and its evidence report; then read back clean status. Do not change branches, commits, remotes, or other worktrees. This repository-reconciliation task is an additional prerequisite for cm311 and reduces WIP ambiguity, but does not complete cs316, resume or complete cc304, or deliver V2-to-V3 migration."
+  estimate:
+    optimistic 0.01p
+    most_likely 0.02p
+    pessimistic 0.04p
+  status done
+  requires:
+    cr001 1
+  owner "codex"
+  tags [M1_REPOSITORY_RECONCILIATION]
+
 work_event WE-c5f5aabffbd695deaccefe0aaf209b017a3e93af0163f218e25a8ee56e24f186:
   model 1
   task cc301
@@ -643,3 +656,16 @@ work_event WE_CC304_HOLD_REVISION10:
   kind suspend
   occurred_at 2026-09-17T19:29:37+09:00
   reason "Record the owner-authorized revision10 planning hold while M1 Seal recovery is incomplete. This is the observed recording time, not a reconstructed original interruption time. Preserve WIP; no elapsed effort assertion or implementation cancellation."
+
+work_event WE_CS317_START_20260925:
+  model 1
+  task cs317
+  kind start
+  occurred_at 2026-09-25T10:47:36+09:00
+  planned_value 13/600p
+
+work_event WE_CS317_FINISH_20260925:
+  model 1
+  task cs317
+  kind finish
+  occurred_at 2026-09-25T10:48:26+09:00
