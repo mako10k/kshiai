@@ -1,0 +1,26 @@
+domain DeliveryQualityDefinitionV1:
+  description "Define bounded quality vocabulary and review sufficiency for the character semantic authoring delivery."
+evidence E1:
+  "Accepted foundation revision 3 F14 and character revision 5 R20 enumerate quality and resource measurements but explicitly leave numeric success thresholds, corpus composition, and checkpoint budgets to later owner decisions."
+evidence E2:
+  "Accepted foundation revision 3 F13 preserves public APIs, immutable generations, attempt identities, current pointers, and battle bindings during initial adoption, while accepted compatibility revision 6 specifies historical V2 and migration behavior in greater detail."
+evidence E3:
+  "Current migration plan revision 6 uses terms including safe candidate, compatibility storage, Stage evaluation, latency, cost, rollback, and review without one shared definition of those dimensions or one review termination rule."
+evidence E4:
+  "The owner reports that ambiguous review viewpoints become unbounded requests to make the result better. This is a reported operational effect, not independent proof of its complete cause."
+premise P1:
+  "A review claim is decidable only when it names the protected outcome, evaluated subject and boundary, measure or invariant, comparison or threshold, evidence method, and allowed disposition."
+premise P2:
+  "Safety, compatibility, performance, reliability, security and user value are distinct dimensions. Passing one does not imply another, and a generic statement that a change is safer or better is not a decision criterion."
+premise P3:
+  "A common vocabulary alone is too abstract, while task-specific definitions alone duplicate meanings and permit drift. A reusable definition layer plus a delivery-specific profile keeps meanings stable and thresholds contextual."
+premise P4:
+  "A missing threshold cannot be treated as failure or success. It remains an explicit owner decision, and review must not manufacture a stricter criterion from optional improvement."
+premise P5:
+  "Review sufficiency should classify evidence against accepted criteria; it should not add a new process gate or reopen unchanged accepted scope without new contradictory evidence."
+decision D1 based_on E1, E2, E3, E4, P1, P2, P3, P4, P5:
+  "Author a Japanese requirement candidate revision 1 with two layers: stable definitions for quality dimensions and a character semantic authoring profile. Define claim fields, finite dispositions, delta-review rules, and termination conditions. Preserve accepted requirements and leave missing numeric thresholds as conspicuous owner decisions."
+decision D2 based_on E1, E2, E3, P2, P4:
+  "Treat safety as bounded risk of named harm, compatibility as interoperability for a named direction and version matrix, and performance as measured time, capacity and resource consumption under a named workload. Keep reliability, recoverability, security/privacy, user value and maintainability separate so none is laundered through safety."
+decision D3 based_on E1, E2, E3, E4, P4, P5:
+  "Do not edit accepted requirements, the active PERT plan, implementation, deployment state, or external records in this step. Present the exact candidate and independent-review input for owner route selection under the requirement lifecycle."

@@ -1,11 +1,14 @@
-# Focused structured semantic authoring kernel — implementation design candidate v1, revision 2
+# Focused structured semantic authoring kernel — accepted implementation design v1, revision 6
 
-- Status: Revised design candidate; corrected review findings addressed; fresh review pending
-- Date: 2026-09-11
-- Authority: accepted ADR-0031 revision 1, accepted foundation requirement v3,
-  and accepted character authoring requirement v5
-- PERT task: `cb215`
-- Scope: exact pre-implementation contracts required by ADR-0031 D11
+- Status: Accepted
+- Date: 2026-09-15
+- Authority: accepted ADR-0032 revision 1, which incorporates unaffected ADR-0031
+  decisions; accepted foundation requirement v3; accepted character authoring
+  requirement v5; and accepted ADR-0033 revision 1
+- PERT lineage: completed design task `cb215`; revision 5 is a prerequisite for
+  suspended connection task `cc304`
+- Scope: exact pre-implementation contracts required by ADR-0031 D11 as refined by
+  ADR-0032
 - Excludes: implementation, provider calls, evaluation, deployment, production
   migration, candidate acceptance, pointer or policy activation, rollback, release
 
@@ -444,17 +447,15 @@ long-lived suspended lease and complies with source-based retry.
 
 ## 7. Exact execution and progress policy
 
-### 7.1 Initial new-route policy
+### 7.1 Initial new-route cumulative-resource policy
 
-`semantic_authoring_policy_v1` has these immutable per-attempt maxima:
+`semantic_authoring_policy_v1` has these immutable per-attempt non-time maxima:
 
 | Limit | Value |
 | --- | ---: |
 | Concurrent provider requests | 1 |
 | LLM calls | 8 |
 | Counted orchestration/tool steps | 48 |
-| Attempt elapsed time | 240 seconds |
-| One provider call elapsed time | 60 seconds |
 | Input per provider call | 6,000 tokens and 24 KiB |
 | Output per provider call | 1,500 tokens and 6 KiB |
 | Cumulative input | 32,000 tokens |
@@ -463,15 +464,48 @@ long-lived suspended lease and complies with source-based retry.
 | Progress history | 8 observations |
 | Recovery-strategy changes | 2 |
 
-All dimensions are hard maxima; the first exhausted dimension stops new work.
-The typed policy stores token and byte values as nonnegative integers, elapsed values
-as integer milliseconds, and cost as `maxCostMicroUsd: 500_000`; it does not use a
-floating-point currency field. It binds an immutable provider pricing identity and
+These cumulative-resource dimensions are hard maxima; exhaustion stops new work and
+returns the matching bounded-resource outcome. The typed policy stores token and byte
+values as nonnegative integers and cost as `maxCostMicroUsd: 500_000`; it does not use
+a floating-point currency field. It binds an immutable provider pricing identity and
 token-estimator identity. Provider execution additionally requires an approved route
 whose pricing/accounting can enforce that identity and cap. When a provider tokenizer
 is unavailable, admission uses UTF-8 byte count as a conservative one-token-per-byte
-upper bound. Unknown token or cost usage retains the full reservation.
-Cancellation does not refund a reservation without a final provider receipt.
+upper bound. Unknown token or cost usage retains the full reservation. Cancellation
+does not refund a reservation without a final provider receipt.
+
+Time is not another cumulative attempt-budget dimension. Two separately identified
+configuration contracts bind it to the failure mode and platform that they control:
+
+```ts
+type ProviderTransportConfigV1 = Readonly<{
+  routeIdentity: string;
+  timeoutMs: number;
+  maxRecoveriesPerWorkItem: 0 | 1;
+}>;
+
+type WorkerExecutionConfigV1 = Readonly<{
+  platformIdentity: string;
+  leaseDurationMs: number;
+}>;
+```
+
+The millisecond fields are positive safe integers. They have no design default. The
+selected objects are immutable for one live execution, but their Config generation or
+snapshot is not part of durable run identity. Their exact values, and whether the transport
+Config permits zero or one recovery, remain undecided until the route, platform,
+representative latency measurements, owner-visible wait budget, and exact policy
+revision are accepted. A provider transport Config cannot be reused for the worker
+lease, and neither Config can create a whole-attempt semantic deadline.
+
+Durable correctness does not depend on replaying these Config values. The repository
+persists request identity and lifecycle, reservations and receipts, monotonic
+accounting, the execution fence, technical outcomes, and the source-based resumption
+recipe. A live same-run transport recovery uses its already selected immutable Config.
+Process or worker-lease loss fails the current run; an explicit owner retry creates a
+new run under the Config active for that new execution. Route, platform, timeout, and
+lease may appear in bounded operational telemetry, but no common Config registry,
+snapshot, or revision ID is required by this design.
 
 This policy raises the possible new-route call count above the current-route six-call
 ceiling. It becomes effective only if this exact design is separately accepted and a
@@ -480,15 +514,65 @@ Current execution remains capped at six.
 
 A counted step is one work selection, model-visible query, proposal/review submission,
 proposal staging, semantic lens execution, or recovery-strategy transition. Pure
-inner schema checks are not separate steps, but consume elapsed time. Discovery and
-Tool promotion count as the work-selection step; repeated discovery counts again.
+inner schema checks are not separate steps. Discovery and Tool promotion count as the
+work-selection step; repeated discovery counts again.
 
-### 7.2 Reservation
+### 7.2 Reservation and time-boundary outcomes
 
-Before scheduling a call, reserve its configured maximum input, output, cost, and
-elapsed allowance. Admission requires the reservation to fit every remaining attempt
-limit. Settle only from a trusted receipt. An absent, late, or ambiguous receipt
-remains fully charged. Reservations and settled usage are monotonic.
+Before scheduling a call, reserve its configured maximum input, output, and cost.
+Admission requires the reservation to fit every remaining cumulative-resource limit.
+Settle only from a trusted receipt. An absent, late, or ambiguous receipt remains fully
+charged. Call count, reservations, and settled usage are monotonic across transport
+timeout, worker expiry, cancellation, and recovery.
+
+A provider timeout produces a typed `provider_transport_timeout` transport receipt.
+Under the current `ownerId`, `fencingToken`, and `runVersion`, one compare-and-set moves
+the request from `outstanding` to terminal `timed_out`, consumes its call count, and
+retains unknown token or cost reservations at their reserved maximum. Any later
+completion for that request may add a safely recordable transport receipt but cannot
+apply a proposal or otherwise mutate candidate state. The timeout does not by itself
+produce semantic invalidity or impose a whole-attempt deadline.
+
+The kernel may schedule another provider call for the same work item only after that
+terminalization and while the worker fence remains current. It first determines
+transport-recovery eligibility without reserving more paid work. Eligibility requires
+the frozen transport policy to permit one recovery that has not been consumed and the
+server to construct exactly one truthful `recoveryBasis`: either
+`{ kind: "transport_condition_changed"; evidenceRef: string }` or
+`{ kind: "materially_different_request"; priorRequestDigest: string;
+requestDigest: string }`. The server derives the former from retained trusted transport
+evidence and the latter from the authorized request digests; a model assertion cannot
+establish either basis. This makes the recovery information-gaining rather than a blind
+replay of an ambiguously completed request.
+
+The transition order under a current fence is normative:
+
+1. A policy with zero recovery, an already consumed recovery, or no truthful
+   `recoveryBasis` moves the run to `failed` with a typed recoverable
+   `provider_transport_unavailable` technical outcome. Its reason is respectively
+   `policy_disallows_recovery`, `transport_recovery_consumed`, or
+   `no_admissible_recovery_basis`.
+2. Otherwise the kernel attempts cumulative-resource admission for the new call and
+   recovery-strategy transition. Failed admission moves the run to `failed` with the
+   matching `resource_exhausted` bounded-resource outcome. Its receipt identifies every
+   exhausted cumulative dimension and the consumed and retained-reservation accounting;
+   it is not relabeled as provider unavailability.
+3. Only successful admission consumes one strategy change and creates a distinct
+   request identity with `recoveryOfRequestId` pointing to the timed-out request and
+   the established `recoveryBasis`.
+
+Both failure branches retain the source timeout receipt and monotonic accounting and
+provide an owner-triggered new-run resumption recipe. Neither asserts semantic failure,
+automatically resets, or starts another attempt. If the timeout handler no longer owns
+the current fence, it performs no request, run, or candidate write; the recovery owner
+applies the process-or-lease-loss transition in section 8.3.
+
+Worker lease expiry stops new dispatch. The recovery owner fences the expired worker,
+rejects late results for application, retains safely recordable transport receipts,
+and records a typed recoverable technical outcome. It does not label the candidate or
+reasoning semantically invalid. Recovery after a claimed run expires is an owner retry
+that creates a new run under section 8; delivery failure before claim may instead
+requeue. Expiry never resets accounting.
 
 ### 7.3 Progress and cycle detection
 
@@ -562,16 +646,22 @@ and a `predecessorRunId`; it never changes the old terminal row back to pending.
 
 Claiming a queued run returns `ownerId`, monotonic `fencingToken`, and
 `runVersion`. Every mutation requires all three in its compare predicate and
-increments `runVersion`. Provider reservations are recorded before transport.
-Provider completion is accepted only while the same fence owns a nonterminal run and
-the request is outstanding.
+increments `runVersion`. Provider request state is closed to
+`reserved | outstanding | completed | timed_out | cancelled`; `reserved` may become
+`outstanding` or `cancelled`, and `outstanding` may become `completed`, `timed_out`, or
+`cancelled`. The last three are terminal.
+Provider reservations are recorded before transport. Provider completion is accepted
+only while the same fence owns a nonterminal run and the request is `outstanding`.
+Every same-run transport recovery has a new request identity; terminal request
+identities are never reopened or reused.
 
-On process or lease loss after claim:
+On process or worker-lease loss after claim:
 
 1. the recovery owner fences the old token;
 2. records outstanding reservations as unknown consumption;
 3. appends `process_or_lease_lost` failure evidence;
-4. moves the run to `failed`;
+4. moves the run to `failed` with a recoverable technical outcome and resumption
+   recipe, without asserting semantic failure;
 5. rejects every late response for application while retaining its transport receipt
    when safely recordable.
 
@@ -581,7 +671,8 @@ and outbox entry; repeated command identity replays the same new run.
 
 ### 8.4 Family persistence
 
-The common persistence port owns run, accounting, question, and fence records.
+The common persistence port owns run, accounting, question, and fence records. It does
+not own provider-transport or worker-execution Config revisions or snapshots.
 The adapter's family port owns frozen source lookup and final candidate storage.
 Activation remains the existing family-specific append/CAS transaction and is not a
 kernel operation. The kernel therefore cannot move a current pointer.
@@ -679,11 +770,21 @@ slice. They must use real domain schemas and compilers, and the kernel test must
 branch on family. This demonstrates process reuse but does not activate those family
 routes.
 
-Required common fixtures cover all 15 foundation conformance cases, including:
-focused repair retaining valid work, protected Q&A, source-based retry, cumulative
-limits, cosmetic no-progress, repeated and alternating states, useful temporary
-regression, invalid proposal rollback, trusted-state corruption, timeout, late result,
-capsule exclusion, and unchanged activation behavior.
+Required common fixtures retain the 15 foundation conformance categories: focused
+repair retaining valid work, protected Q&A, source-based retry, cumulative limits,
+cosmetic no-progress, repeated and alternating states, useful temporary regression,
+invalid proposal rollback, trusted-state corruption, time-boundary and late-result
+handling, capsule exclusion, and unchanged activation behavior. The former generic
+timeout coverage becomes one parameterized time-boundary fixture covering provider
+transport timeout with zero and one permitted recovery, consumed recovery, absence of
+a truthful recovery basis, cumulative-resource admission failure, lost-fence ownership,
+worker-lease expiry, and a late result from the original request. It must prove that the
+timed-out request is terminal before a distinct replacement request is admitted, a late
+original result cannot mutate the candidate, zero/consumed/no-basis paths reach
+`provider_transport_unavailable`, otherwise-eligible resource-admission failure reaches
+`resource_exhausted` with exact exhausted dimensions and accounting, both preserve the
+source timeout receipt, neither is relabeled as semantic invalidity, no blind replay is
+scheduled, and no whole-attempt elapsed deadline exists.
 
 ## 11. Implementation slices and gates
 
@@ -695,7 +796,8 @@ capsule exclusion, and unchanged activation behavior.
    lenses, final reconciliation, no whole-character provider request.
 4. **Public mapping and conformance:** additive Q&A/retry DTOs and commands; three
    adapter conformance fixtures; no route cutover.
-5. **Integration review:** trace ADR-0031 and accepted requirements; full tests,
+5. **Integration review:** trace ADR-0032, retained ADR-0031 decisions, and accepted
+   requirements; full tests,
    typecheck, build, duplication, Lizard, targeted ADR check, Seal impact/stale/fsck.
 
 Each slice requires focused review and evidence. Only after all five pass may a later
@@ -736,8 +838,10 @@ common lifecycle metadata plus family-owned typed final storage.
 
 ## 13. Risks, unknowns, and review questions
 
-- USD 0.50 and 8 calls are design candidates, not provider-quality evidence. Are these
-  acceptable hard maxima for the first new route?
+- Accepted ADR-0033 and this revision remove transport and worker Config generation IDs
+  from durable run identity.
+- Exact provider timeout, worker lease, and bounded transport-recovery values remain
+  undecided until the evidence and acceptance conditions in ADR-0032 are met.
 - Mapping owner Q&A to legacy public `failed` is compatible but imprecise for old
   clients. Is additive compatibility preferred over a versioned new public status?
 - Always creating a new attempt after an answer may repeat cost. Is the simpler
@@ -751,20 +855,25 @@ common lifecycle metadata plus family-owned typed final storage.
 
 ## 14. Acceptance boundary
 
-Owner acceptance must identify this exact revision after independent review. Acceptance
-authorizes local implementation slices 1-5 only when the owner separately instructs
-implementation. It does not authorize provider calls, route cutover, deployment,
-production reads or writes, asset acceptance, pointer/policy activation, rollback, or
-release.
+Formal review of the exact pre-acceptance revision reported PASS with no P0 through P3
+findings. On 2026-09-15, after that result and the complete Japanese review scope were
+presented, the product owner replied `ACCEPT`. The reviewed pre-acceptance SHA-256 was
+`a0f2ba909d3c71fb7de2235bd84125b420663f6f8b5400c4236eaf92e832ebff`.
+
+Acceptance does not itself authorize local implementation. It does not authorize
+provider calls, route cutover, deployment, production reads or writes, asset acceptance,
+pointer/policy activation, rollback, release, commit, or push.
 
 ## 15. Self-review evidence
 
-The review traced every ADR-0031 D11 predecessor to this candidate:
+The review traced every retained ADR-0031 D11 predecessor and the ADR-0032 correction
+to this candidate:
 
 | D11 subject | Candidate section |
 | --- | --- |
 | exact typed DTO and focused patch schemas | 3, 4, 5, 9 |
-| execution-policy numbers | 7.1 and 7.2 |
+| cumulative execution-policy numbers | 7.1 and 7.2 |
+| separated provider and worker time boundaries | 7.1, 7.2, and 8.2 |
 | detector and window rules | 7.3 |
 | public retry and Q&A mapping | 9 |
 | persistence and fence changes | 8 |
@@ -781,7 +890,26 @@ corrected review: the skeleton checkpoint now spans its required focused cross-c
 claims, and portrait binding is server-owned. Exact DTO elaboration, process-loss
 takeover detail, the fifteen-case trace matrix, and complete public Q&A field
 projection remain tracked downstream completion obligations rather than reasons for
-this revision. `git diff --check` and command-line LLMThink audit are required again
-after the final edit. The numerical maxima, additive legacy-failure projection,
-new-attempt Q&A recovery, and detector thresholds remain explicit owner decision
-points rather than self-approved product policy.
+revision 2. Revision 3 removes the unsupported 240-second whole-attempt deadline and
+60-second provider literal, separates provider transport and worker lease policy
+identities, preserves monotonic resource accounting, and distinguishes technical
+expiry from semantic failure as required by ADR-0032. Revision 4 corrects the
+revision-3 review finding by closing the provider-request lifecycle, assigning a new
+identity to an admitted same-run recovery, rejecting the original late result for
+application, defining recoverable technical failure when recovery cannot be admitted,
+and leaving lost-fence recovery to the current recovery owner. Revision 5 corrects the
+two revision-4 review findings by defining eligibility-before-admission precedence,
+making absence of a truthful recovery basis exhaust transport recovery, and preserving
+`resource_exhausted` for an otherwise-eligible call whose cumulative-resource admission
+fails. `git diff --check` and
+command-line LLMThink audit are required again after the final edit. Exact time-policy
+values and whether zero or one recovery is selected require a later exact owner
+acceptance; the
+additive legacy-failure projection, new-attempt Q&A recovery, and detector thresholds
+remain explicit owner decision points rather than self-approved product policy.
+Revision 6 applies the owner's persistence-relaxation direction: provider transport
+and worker execution values are runtime Config, not durable run identity. It retains
+fences, provider request state, receipts, accounting, technical outcomes, and
+source-based new-run retry. Exact revision-6 review reported PASS with no P0 through P3
+findings, and the owner accepted it with ADR-0033 on 2026-09-15. It replaces revision 5
+only as the current accepted design snapshot.

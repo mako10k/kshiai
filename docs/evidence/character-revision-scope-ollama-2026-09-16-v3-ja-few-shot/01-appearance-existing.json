@@ -1,0 +1,45 @@
+{
+  "schema": "character-revision-scope-ollama-case-v1",
+  "runId": "character-revision-scope-ollama-2026-09-16-v3-ja-few-shot",
+  "case": {
+    "caseId": "appearance-existing",
+    "origin": "existing-test",
+    "request": "外套を青に変更",
+    "expectation": {
+      "kind": "resolved",
+      "clusters": [
+        "appearance"
+      ]
+    }
+  },
+  "candidate": {
+    "kind": "resolved",
+    "clusters": [
+      "appearance"
+    ],
+    "evidence": [
+      {
+        "sourceQuote": "外套を青に変更",
+        "clusters": [
+          "appearance"
+        ]
+      }
+    ]
+  },
+  "rawContent": "{\"result\":{\"kind\":\"resolved\",\"clusters\":[\"appearance\"],\"evidence\":[{\"sourceQuote\":\"外套を青に変更\",\"clusters\":[\"appearance\"]}]}}",
+  "validationIssues": [],
+  "evaluation": {
+    "outcome": "single_cluster",
+    "clusters": [
+      "appearance"
+    ]
+  },
+  "passed": true,
+  "accounting": {
+    "inputTokens": 705,
+    "outputTokens": 31,
+    "elapsedMs": 36885,
+    "providerDurationNs": 36842460928,
+    "estimatedCostUsd": 0
+  }
+}

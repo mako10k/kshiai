@@ -1,0 +1,62 @@
+{
+  "schema": "character-revision-scope-ollama-case-v1",
+  "runId": "character-revision-scope-ollama-2026-09-16-v3-ja-few-shot",
+  "case": {
+    "caseId": "material-ambiguity",
+    "origin": "controlled-synthetic",
+    "request": "もっと鋭い感じにして",
+    "expectation": {
+      "kind": "ambiguous",
+      "alternativeScopes": [
+        [
+          "appearance"
+        ],
+        [
+          "mechanics"
+        ]
+      ]
+    }
+  },
+  "candidate": {
+    "kind": "ambiguous",
+    "sourceQuote": "もっと鋭い感じにして",
+    "unsafeReason": "外見と戦い方では変更される意味が異なる",
+    "alternatives": [
+      {
+        "id": "appearance",
+        "clusters": [
+          "appearance"
+        ],
+        "effect": "見た目を鋭い感じにする"
+      },
+      {
+        "id": "mechanics",
+        "clusters": [
+          "mechanics"
+        ],
+        "effect": "戦い方を鋭い感じにする"
+      }
+    ]
+  },
+  "rawContent": "{\"result\":{\"kind\":\"ambiguous\",\"sourceQuote\":\"もっと鋭い感じにして\",\"unsafeReason\":\"外見と戦い方では変更される意味が異なる\",\"alternatives\":[{\"id\":\"appearance\",\"clusters\":[\"appearance\"],\"effect\":\"見た目を鋭い感じにする\"},{\"id\":\"mechanics\",\"clusters\":[\"mechanics\"],\"effect\":\"戦い方を鋭い感じにする\"}]}}",
+  "validationIssues": [],
+  "evaluation": {
+    "outcome": "ambiguous",
+    "alternativeScopes": [
+      [
+        "appearance"
+      ],
+      [
+        "mechanics"
+      ]
+    ]
+  },
+  "passed": true,
+  "accounting": {
+    "inputTokens": 705,
+    "outputTokens": 85,
+    "elapsedMs": 42640,
+    "providerDurationNs": 42632283563,
+    "estimatedCostUsd": 0
+  }
+}

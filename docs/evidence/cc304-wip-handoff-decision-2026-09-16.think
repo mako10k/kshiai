@@ -1,0 +1,74 @@
+domain CC304_WIP_HANDOFF:
+  description "Bounded handoff, one WIP commit, and one verified branch push before interruption."
+
+problem P1:
+  |
+    Preserve the exact resumable state of the accepted revision-8 planning,
+    Seal-based test-authority implementation, retained revision-scope experiments,
+    and the active cc304 controlled revise trial, without advancing product authority
+    or losing the distinction between diagnostic and current evidence.
+
+evidence E1:
+  |
+    The owner explicitly instructed Codex to interrupt here after creating handoff
+    material, making one WIP commit, and pushing it. The established interpretation
+    of that instruction is an exact restart point and limits, one intended WIP commit,
+    one push, remote-SHA readback, and then stop.
+
+evidence E2:
+  |
+    After a canonical secdat-routed fetch, local HEAD and
+    origin/codex/compact-psyche-repair-integration both resolve to
+    475ff90a5a7ac42645d2ccdd7f02d9f8f8fda23c with ahead and behind counts zero.
+    The linked worktree is the matching active worktree and the main checkout
+    /home/katsumata-m/kshiai owns the repository secdat domain.
+
+evidence E3:
+  |
+    The dirty worktree contains the accepted ADR-0034 test-authority selector and
+    Seals, accepted plan revision 8 and PERT transition, preserved unsealed
+    revision-scope/Ollama experiments, and the cc304 controlled appearance-revise
+    implementation, diagnostic test, exact draft/stale Seals, and evidence records.
+    These changes share the same decision history and must remain visibly WIP.
+
+evidence E4:
+  |
+    The final local checks report current-authority npm tests passing, typecheck
+    passing, PERT document check passing with pre-existing warnings, SealGraph fsck
+    result ok, and the cc304 decision audit with no fatal, error, or warning. The
+    focused-authoring file separately passed 7 diagnostic tests but its verification
+    Seal is STALE_TRANSITIVE and the selector correctly excludes it from current
+    evidence.
+
+evidence E5:
+  |
+    No paid provider call, deployment, policy activation, final acceptance, merge,
+    release, production mutation, current-character pointer movement, or workday-end
+    record is part of the preserved WIP. Ignored secrets, environment files, database
+    data, generated dist output, and user media are not listed as tracked changes.
+
+premise SCOPE:
+  |
+    The WIP commit may preserve all repository changes already present in this
+    dedicated task worktree plus the exact handoff record. It must not rewrite,
+    discard, rebase, merge, activate, accept, or reinterpret any preserved artifact.
+
+premise REMOTE_WRITE:
+  |
+    Push exactly the resulting local branch tip to the existing same-named remote
+    branch through the verified secdat route. Do not retry an ambiguous push. Read
+    the remote ref back independently and require it to equal the local commit.
+
+pending U1:
+  |
+    The final WIP commit SHA is determined only after the handoff file is staged and
+    committed. The handoff can identify the restart point as the branch tip containing
+    itself; the exact SHA belongs in the post-commit and remote readback report.
+
+decision D1 based_on P1, E1, E2, E3, E4, E5, SCOPE, REMOTE_WRITE, U1:
+  |
+    Create one complete Japanese handoff that records the pre-WIP base, preserved
+    change groups, validations, exact Seal limitations, unperformed actions, and
+    restart gate. Review the full staged inventory, create one sentence-case WIP
+    commit, push the current branch once to its existing remote branch, read back the
+    remote SHA, and then perform no further repository work.

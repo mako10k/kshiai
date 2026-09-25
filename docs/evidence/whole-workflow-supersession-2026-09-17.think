@@ -1,0 +1,16 @@
+domain WholeWorkflowSupersession:
+  description "Determine the bounded change for the owner's whole-document supersession instruction."
+evidence OWNER_DIRECTION:
+  "Owner explicitly instructs supersede the entire structured-asset-authoring-workflow document and check every affected consumer because clause-limited reliance cannot currently be distinguished."
+evidence ROOT_STATE:
+  "The document is Accepted and its current root Seal is a Cause ancestor of 115 current REF heads."
+evidence CURRENT_AUTHORITY:
+  "Accepted ADR0010 and ADR0011-0014 govern present families; accepted foundation revision 3 and accepted character revision 5 govern newer authoring semantics."
+evidence GAP:
+  "The old document explicitly includes future selectable authored families; current accepted sources found do not explicitly authorize that same future-family scope."
+premise BOUNDARY:
+  "Supersession withdraws the old document as a whole. Historical evidence and Seals remain; structural reachability is a review obligation, not proof every dependent claim is wrong."
+premise LIMIT:
+  "Do not invent successor product semantics, automatically promote downstream drafts, or rewrite historical Accepted ADR rationale."
+decision D1 based_on OWNER_DIRECTION, ROOT_STATE, CURRENT_AUTHORITY, GAP, BOUNDARY, LIMIT:
+  "Mark the old document Superseded as a whole with the owner instruction and no clause-level survival. Record an all-115 downstream review inventory, classify present-family successor anchors and the unresolved future-family boundary, and do not declare any dependent REF current until individually checked. Preserve old immutable Seal history; perform no automatic re-Seal or acceptance promotion."

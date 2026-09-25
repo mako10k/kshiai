@@ -1,0 +1,28 @@
+domain Cc304QualityBaselineResume:
+  description "Select the next value-bearing cc304 implementation after accepting the quality definition."
+evidence E1:
+  "PERT document check succeeds, both schedules place active cc304 first on the critical path, and no other task is eligible before cc304 completion."
+evidence E2:
+  "The cc304 recovery record says changed-role V2 source meaning still requires focused generation, semantic reconciliation, and preservation before migration can complete."
+evidence E3:
+  "The accepted implementation design requires cluster-five source disposition to update typed ledgers only and forbids general candidate writes in that phase."
+evidence E4:
+  "The current adapter marks every non-copy source disposition unresolved and finalization refreshes source obligations solely by exact-copy equality, without consulting accumulated disposition, provenance, or capsule evidence."
+evidence E5:
+  "The current migration baseline preserves V2 legacy action-norm meaning as an unresolved source claim and keeps the original current generation unchanged on failure."
+evidence E6:
+  "Quality definition revision 3 is accepted and requires current claims to be judged against fixed user value, correctness, safety, compatibility, and review-sufficiency criteria rather than test count."
+premise P1:
+  "The task remains currently fit because its stated user outcome and accepted requirement boundaries match both the active code path and the documented incomplete migration behavior."
+premise P2:
+  "A valid transformed or capsule-preserved source claim cannot close while the adapter equates resolution only with byte-for-byte copy; that state model is the defect-producing condition."
+premise P3:
+  "The smallest requirement-preserving correction is disposition-aware source resolution that validates exact copy, target existence, source-linked provenance, and exact capsule preservation without allowing ledger work to mutate the candidate."
+premise P4:
+  "A positive real adapter execution for a transformed or capsule-preserved claim is verification of the behavior, while tests alone are not the delivered outcome and cannot complete cc304."
+decision D1 based_on E1, E2, E3, E4, E5, P1, P2, P3:
+  "Continue active cc304 in the existing worktree. Implement disposition-aware source-obligation reconciliation in the character adapter and keep candidate mutation in focused skeleton or cluster operations."
+decision D2 based_on E4, E5, P3:
+  "Require preserve to match the frozen value, changed-role dispositions to name existing targets with source-linked non-generated provenance, and preserve-in-capsule to match an exact frozen capsule entry. Keep unsupported source removal unresolved."
+decision D3 based_on E6, P4:
+  "Verify the actual adapter transition and finalization behavior plus affected regressions, then report remaining create, revise, migration, owner-QA, and final-envelope gaps without marking cc304 complete. Do not call a provider, deploy, activate, commit, or push."

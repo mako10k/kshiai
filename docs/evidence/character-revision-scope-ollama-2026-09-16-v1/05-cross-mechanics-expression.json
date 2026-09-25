@@ -1,0 +1,52 @@
+{
+  "schema": "character-revision-scope-ollama-case-v1",
+  "runId": "character-revision-scope-ollama-2026-09-16-v1",
+  "case": {
+    "caseId": "cross-mechanics-expression",
+    "origin": "controlled-synthetic",
+    "request": "戦い方を荒々しくし、口調もぶっきらぼうに",
+    "expectation": {
+      "kind": "resolved",
+      "clusters": [
+        "mechanics",
+        "relationship-expression"
+      ]
+    }
+  },
+  "candidate": {
+    "kind": "ambiguous",
+    "sourceQuote": "[戦い方を] 荒々しくし、[口調も] ぶっきらぼうに",
+    "unsafeReason": "Selected 'mechanics' could change the meaning of action-choice norms and battle-behavior guidance.",
+    "alternatives": [
+      {
+        "id": "user_selected_mechanics",
+        "clusters": [
+          "mechanics"
+        ],
+        "effect": "Change how the character behaves during battles to be more rough and uncivilized."
+      },
+      {
+        "id": "user_did_not_select_mechanics",
+        "clusters": [
+          "skeleton",
+          "relationship-expression",
+          "appearance"
+        ],
+        "effect": "Maintain current behavior, speech register, address style, relationship expression, and appearance for the character during battles."
+      }
+    ]
+  },
+  "rawContent": "{\n  \"result\": {\n    \"kind\": \"ambiguous\",\n    \"sourceQuote\": \"[戦い方を] 荒々しくし、[口調も] ぶっきらぼうに\",\n    \"unsafeReason\": \"Selected 'mechanics' could change the meaning of action-choice norms and battle-behavior guidance.\",\n    \"alternatives\": [\n      {\n        \"id\": \"user_selected_mechanics\",\n        \"clusters\": [\"mechanics\"],\n        \"effect\": \"Change how the character behaves during battles to be more rough and uncivilized.\"\n      },\n      {\n        \"id\": \"user_did_not_select_mechanics\",\n        \"clusters\": [\"skeleton\", \"relationship-expression\", \"appearance\"],\n        \"effect\": \"Maintain current behavior, speech register, address style, relationship expression, and appearance for the character during battles.\"\n      }\n    ]\n  }\n}",
+  "evaluation": {
+    "outcome": "invalid",
+    "reason": "ungrounded_source_quote"
+  },
+  "passed": false,
+  "accounting": {
+    "inputTokens": 241,
+    "outputTokens": 203,
+    "elapsedMs": 36330,
+    "providerDurationNs": 36323132921,
+    "estimatedCostUsd": 0
+  }
+}

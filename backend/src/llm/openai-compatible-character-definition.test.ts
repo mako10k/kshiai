@@ -9,6 +9,7 @@ import {
 import type { GenerateBattlefieldDefinitionV2Input } from "./types.js";
 import type { GenerateCharacterDefinitionV2Input } from "./types.js";
 import { assertXaiResponseSchema } from "./provider-response-schema.js";
+import { ProviderJsonSyntaxError } from "./provider-json.js";
 import {
   OpenAiCompatibleProvider,
   type ChatOpts,
@@ -20,6 +21,81 @@ type ChatCall = {
   label: string | undefined;
   responseFormat: unknown;
 };
+
+describe("character definition recovery through SDK HTTP decoding", () => {
+  for (const sourceKind of ["create_instruction", "revision_instruction", "import"] as const) {
+    for (const failure of ["syntax", "envelope", "definition"] as const) {
+      it(`repairs ${failure} once for ${sourceKind} without bypassing decoding`, async (t) => {
+        const input = { ...definitionInput(), sourceKind };
+        const repaired = structuredClone(input.baseDefinition);
+        repaired.psycheDisposition.dynamics.adverseSensitivity = 731;
+        repaired.speechPolicy.register = "落ち着いた丁寧語";
+        const broken = failure === "syntax" ? '{"definition": {,'
+          : failure === "envelope" ? '{"unexpected":true}'
+          : '{"definition":{"schemaVersion":2}}';
+        let calls = 0;
+        const bodies: string[] = [];
+        t.mock.method(globalThis, "fetch", async (_url: unknown, init: RequestInit) => {
+          bodies.push(String(init.body));
+          calls++;
+          assert.ok(calls <= 2, "no third generation or blind syntax retry");
+          return Response.json({ choices: [{ message: { content: calls === 1
+            ? broken : JSON.stringify({ definition: repaired }) } }],
+          usage: { total_tokens: 17 } });
+        });
+        const provider = new OpenAiCompatibleProvider({ name: "xai", apiKey: "test-only",
+          baseUrl: "https://example.invalid/v1", modelEngine: "test", modelFast: "test" });
+        const result = await provider.generateCharacterDefinitionV2(input);
+        assert.equal(calls, 2);
+        assert.equal(result.speechPolicy.register, "落ち着いた丁寧語");
+        assert.equal(result.psycheDisposition.dynamics.adverseSensitivity,
+          input.baseDefinition.psycheDisposition.dynamics.adverseSensitivity);
+        assert.deepEqual(result.identity, input.baseDefinition.identity);
+        assert.match(bodies[1], /You repair one rejected/);
+        assert.match(bodies[1], /validationIssues/);
+        if (failure === "syntax") assert.match(bodies[1], /invalid_json/);
+      });
+    }
+  }
+
+  for (const second of ['{"definition": {,', '{"wrong":true}', '{"definition":{}}']) {
+    it(`fails closed after one rejected repair: ${second}`, async (t) => {
+      let calls = 0;
+      t.mock.method(globalThis, "fetch", async () => {
+        calls++;
+        return Response.json({ choices: [{ message: { content: calls === 1
+          ? '{"definition": {,' : second } }], usage: { total_tokens: 17 } });
+      });
+      const provider = new OpenAiCompatibleProvider({ name: "xai", apiKey: "test-only",
+        baseUrl: "https://example.invalid/v1", modelEngine: "test", modelFast: "test", fallbackOnError: true });
+      await assert.rejects(provider.generateCharacterDefinitionV2({
+        ...definitionInput(), sourceKind: "create_instruction",
+      }));
+      assert.equal(calls, 2);
+    });
+  }
+
+  it("does not reinterpret HTTP authentication failure as a repairable candidate", async (t) => {
+    let calls = 0;
+    t.mock.method(globalThis, "fetch", async () => {
+      calls++;
+      return Response.json({ error: { message: "Unauthorized" } }, { status: 401 });
+    });
+    const provider = new OpenAiCompatibleProvider({ name: "xai", apiKey: "test-only",
+      baseUrl: "https://example.invalid/v1", modelEngine: "test", modelFast: "test" });
+    await assert.rejects(provider.generateCharacterDefinitionV2({
+      ...definitionInput(), sourceKind: "create_instruction",
+    }), /401/);
+    assert.equal(calls, 1);
+  });
+
+  it("keeps malformed candidate text bounded and out of diagnostic serialization", () => {
+    const error = new ProviderJsonSyntaxError("private candidate".repeat(2000));
+    assert.equal(error.rejectedText.length, 16000);
+    assert.doesNotMatch(String(error), /private candidate/);
+    assert.doesNotMatch(JSON.stringify(error), /private candidate/);
+  });
+});
 
 function definitionInput(): GenerateCharacterDefinitionV2Input {
   const baseDefinition = legacyCharacterSheetToDefinitionV2({

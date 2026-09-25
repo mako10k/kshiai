@@ -1,11 +1,13 @@
 # ADR-0031: Focused structured semantic authoring kernel
 
-- Status: Accepted
+- Status: Superseded
+- Superseded by: [ADR-0032](0032-separate-authoring-time-boundaries.md)
 - Revision: 1
 - Date: 2026-09-11
 - Decision owner: Product owner
 - Authority: same-basename .think; this Markdown is its human-readable projection.
-- Related: accepted foundation requirement v3 and character requirement v5; ADR-0010, 0011, 0014, 0024, 0027, 0028, 0030.
+- Related: accepted foundation requirement v3 and character requirement v5; ADR-0010,
+  0011, 0014, 0024, 0027, 0028, 0030; superseded by ADR-0032.
 - Decision scope: kernel architecture and prior-contract disposition; not runtime rollout.
 
 ## Context
@@ -124,3 +126,10 @@ Implementation remains separately authorized. Existing PERT execution milestones
 not marked complete or repurposed by this acceptance. No provider call, evaluation,
 deployment, production migration, candidate or asset acceptance, pointer or policy
 activation, rollback, release, or prior-ADR lifecycle change is authorized.
+
+## Supersession
+
+On 2026-09-15 the product owner accepted ADR-0032 revision 1. ADR-0032 supersedes this
+ADR as the lifecycle container and replaces only D7 elapsed-time semantics. D1 through
+D6, D8 through D11, and the non-time portions of D7 remain incorporated by ADR-0032 D5.
+This historical record and its original decisions are otherwise unchanged.

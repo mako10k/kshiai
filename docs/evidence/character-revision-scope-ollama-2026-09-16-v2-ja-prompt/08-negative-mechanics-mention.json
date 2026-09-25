@@ -1,0 +1,51 @@
+{
+  "schema": "character-revision-scope-ollama-case-v1",
+  "runId": "character-revision-scope-ollama-2026-09-16-v2-ja-prompt",
+  "case": {
+    "caseId": "negative-mechanics-mention",
+    "origin": "controlled-synthetic",
+    "request": "外套を赤にして。戦い方は変えない",
+    "expectation": {
+      "kind": "resolved",
+      "clusters": [
+        "appearance"
+      ]
+    }
+  },
+  "candidate": {
+    "kind": "ambiguous",
+    "sourceQuote": "[外套を赤にして。戦い方は変えない]",
+    "unsafeReason": "skeleton, mechanics, appearance의 변경이 포함되어 있음",
+    "alternatives": [
+      {
+        "id": "text1",
+        "clusters": [
+          "appearance"
+        ],
+        "effect": "キャラクターの外套を赤く塗装する"
+      },
+      {
+        "id": "text2",
+        "clusters": [
+          "mechanics",
+          "appearance"
+        ],
+        "effect": "戦い方については変更하지만、キャラクターの外套を赤く塗装한다."
+      }
+    ]
+  },
+  "rawContent": "{\n  \"result\": {\n    \"kind\": \"ambiguous\",\n    \"sourceQuote\": \"[外套を赤にして。戦い方は変えない]\",\n    \"unsafeReason\": \"skeleton, mechanics, appearance의 변경이 포함되어 있음\"\n  , \"alternatives\": [\n      { \"id\": \"text1\", \"clusters\": [\"appearance\"], \"effect\": \"キャラクターの外套を赤く塗装する\" },\n      { \"id\": \"text2\", \"clusters\": [\"mechanics\", \"appearance\"], \"effect\": \"戦い方については変更하지만、キャラクターの外套を赤く塗装한다.\" }\n    ]\n  }\n}",
+  "validationIssues": [],
+  "evaluation": {
+    "outcome": "invalid",
+    "reason": "ungrounded_source_quote"
+  },
+  "passed": false,
+  "accounting": {
+    "inputTokens": 358,
+    "outputTokens": 161,
+    "elapsedMs": 32434,
+    "providerDurationNs": 32426189682,
+    "estimatedCostUsd": 0
+  }
+}

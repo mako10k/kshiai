@@ -1,0 +1,83 @@
+domain ADR0034:
+  description "ADR-0034 revision 1: Seal-based current test authority. Status Accepted."
+
+problem P1:
+  |
+    Define when a repository test is valid evidence for a current claim without
+    destroying its historical validity for the exact basis it originally verified.
+
+evidence E1:
+  |
+    On 2026-09-16 the product owner stated that a test without a Seal has no
+    adequately stated basis and is invalid, and that a sealed test is evidence only
+    for the basis named by that Seal. If that basis becomes stale or progresses, the
+    test is invalid beyond that basis while remaining valid for its original basis.
+
+evidence E2:
+  |
+    scripts/test-authority.mjs currently runs every discovered test absent from its
+    inventory as active with reason ungoverned, even though it warns that those
+    results are not SealGraph validity evidence.
+
+evidence E3:
+  |
+    The current selector already disables inventoried verification REFs when the REF
+    is missing, its local source binding is missing or wrong, the test workfile
+    differs from the sealed source, or the verification REF is directly or
+    transitively stale.
+
+premise AUTHORITY_DIRECTION:
+  |
+    A verification Seal is downstream evidence. It must identify the exact governing
+    basis through Cause Links and cannot create, relax, replace, or accept that basis.
+
+premise HISTORICAL_IDENTITY:
+  |
+    SealGraph Seals and their Cause Links are immutable. A later REF head changes
+    which evidence is current but does not erase the old verification Seal or change
+    the exact historical basis for which it was created.
+
+premise SCOPE:
+  |
+    This decision governs repository test evidence selection. It does not delete test
+    files, assert that disabled behavior is wrong, or by itself authorize resealing,
+    acceptance, commit, push, release, deployment, or production change.
+
+premise OPTIONS:
+  |
+    Continue running unsealed tests as aggregate pass/fail evidence; treat an existing
+    Seal as permanently current; or require a source-matched verification Seal with
+    explicit Causes whose current dependency chain is not stale.
+
+evidence OWNER_ACCEPTANCE:
+  |
+    On 2026-09-16, immediately after exact ADR0034 revision one and its complete
+    Japanese review translation were presented, the product owner replied
+    "ACCEPTします。計画を再検討". The reviewed pre-acceptance authoritative think
+    SHA256 was 8602baf182a786e28d16a87c4cce707bc3b904a746e0b668851587ada65ebbdc.
+
+decision D1 based_on P1, E1, E2, E3, AUTHORITY_DIRECTION, HISTORICAL_IDENTITY, SCOPE, OPTIONS:
+  |
+    Propose that a test is valid evidence for a current claim only when it is mapped
+    to an existing verification REF, the REF head Seal is source-bound to that exact
+    test file, the workfile matches the sealed content, the Seal has at least one
+    explicit Cause Link to its governing basis, and neither the verification Seal nor
+    any required Cause path is stale relative to current REF heads.
+
+decision D2 based_on D1, E1, AUTHORITY_DIRECTION:
+  |
+    Propose that a test missing any D1 condition be disabled in the authoritative
+    repository test selection. It may be run only as explicitly non-authoritative
+    diagnostic work, and its result must not be cited as current pass or fail evidence.
+
+decision D3 based_on D1, D2, E1, HISTORICAL_IDENTITY:
+  |
+    Propose that stale or progressed Causes invalidate the test only for claims beyond
+    its recorded basis. Preserve the immutable verification Seal as historical
+    evidence for the exact original Cause generation; do not rewrite or delete it.
+
+decision ACCEPTANCE based_on D1, D2, D3, OWNER_ACCEPTANCE:
+  |
+    Accept exact ADR0034 revision one. Reconsider the implementation plan before
+    changing the selector. This acceptance does not authorize bulk resealing, commit,
+    push, provider calls, deployment, migration, activation, or production change.

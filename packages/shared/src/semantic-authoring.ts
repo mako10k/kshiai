@@ -39,8 +39,6 @@ export type SemanticAuthoringPolicyV1 = Readonly<{
   maxConcurrentProviderRequests: 1;
   maxLlmCalls: 8;
   maxCountedSteps: 48;
-  maxAttemptElapsedMs: 240_000;
-  maxProviderCallElapsedMs: 60_000;
   maxInputTokensPerCall: 6_000;
   maxInputBytesPerCall: 24_576;
   maxOutputTokensPerCall: 1_500;
@@ -52,6 +50,19 @@ export type SemanticAuthoringPolicyV1 = Readonly<{
   maxRecoveryStrategyChanges: 2;
   pricingIdentity: string;
   tokenEstimatorIdentity: string;
+}>;
+
+export type ProviderTransportPolicyV1 = Readonly<{
+  identity: string;
+  routeIdentity: string;
+  timeoutMs: number;
+  maxRecoveriesPerWorkItem: 0 | 1;
+}>;
+
+export type WorkerExecutionPolicyV1 = Readonly<{
+  identity: string;
+  platformIdentity: string;
+  leaseDurationMs: number;
 }>;
 
 export type SemanticAuthoringAccountingV1 = Readonly<{
@@ -201,12 +212,16 @@ export type SemanticAuthoringDecodeResultV1<Value> =
 export type SemanticAuthoringBaselineV1<Candidate, Obligation> = Readonly<{
   candidate: Candidate;
   obligations: ReadonlyMap<string, Obligation>;
+  provenance?: ReadonlyMap<string, readonly ProposalProvenanceV1[]>;
+  sourceDispositions?: ReadonlyMap<string, SourceDispositionDecisionV1>;
 }>;
 
 export type SemanticAuthoringAdapterStateViewV1<Candidate, Obligation, Finding> = Readonly<{
   candidate: Candidate;
   obligations: ReadonlyMap<string, Obligation>;
   findings: ReadonlyMap<string, Finding>;
+  provenance?: ReadonlyMap<string, readonly ProposalProvenanceV1[]>;
+  sourceDispositions?: ReadonlyMap<string, SourceDispositionDecisionV1>;
 }>;
 
 export type SemanticAuthoringWorkSelectionV1<WorkItem> =
@@ -229,6 +244,8 @@ export type SemanticAuthoringStageProposalInputV1<
   candidate: Candidate;
   obligations: ReadonlyMap<string, Obligation>;
   findings: ReadonlyMap<string, Finding>;
+  provenance?: ReadonlyMap<string, readonly ProposalProvenanceV1[]>;
+  sourceDispositions?: ReadonlyMap<string, SourceDispositionDecisionV1>;
   proposal: Proposal;
 }>;
 
@@ -374,12 +391,17 @@ export type SemanticAuthoringResultIdentityV1 = Readonly<{
   policyIdentity: string;
   adapterIdentity: string;
   accounting: SemanticAuthoringAccountingV1;
+  sourceLedger?: Readonly<{
+    provenance: readonly ProposalProvenanceV1[];
+    sourceDispositions: readonly SourceDispositionDecisionV1[];
+  }>;
 }>;
 
 export type SemanticAuthoringFailureCategoryV1 =
   | "stalled_without_progress"
   | "repeated_state_cycle"
   | "resource_exhausted"
+  | "provider_transport_unavailable"
   | "trusted_state_corrupt"
   | "process_or_lease_lost"
   | "technical_failure"
@@ -387,6 +409,7 @@ export type SemanticAuthoringFailureCategoryV1 =
 
 export type SemanticAuthoringFailureReceiptV1 = Readonly<{
   category: SemanticAuthoringFailureCategoryV1;
+  transportReason?: "policy_disallows_recovery" | "no_admissible_recovery_basis";
   accounting: SemanticAuthoringAccountingV1;
   relevantFindingKeys: readonly string[];
   sourceIdentity: SemanticAuthoringRunV1["sourceIdentity"];
@@ -412,6 +435,7 @@ export type SemanticAuthoringResolverResultV1<FinalCandidate, Question> =
   | Readonly<SemanticAuthoringResultIdentityV1 & {
       kind: "needs_owner_answer";
       question: Question;
+      evidence: SemanticAuthoringOwnerQuestionEvidenceV1;
       resumption: SemanticAuthoringResumptionRecipeV1;
     }>
   | Readonly<SemanticAuthoringResultIdentityV1 & {
@@ -598,11 +622,13 @@ export const SemanticAuthoringFailureReceiptV1Schema = z.object({
     "stalled_without_progress",
     "repeated_state_cycle",
     "resource_exhausted",
+    "provider_transport_unavailable",
     "trusted_state_corrupt",
     "process_or_lease_lost",
     "technical_failure",
     "bounded_semantic_failure",
   ]),
+  transportReason: z.enum(["policy_disallows_recovery", "no_admissible_recovery_basis"]).optional(),
   accounting: SemanticAuthoringAccountingV1Schema,
   relevantFindingKeys: uniqueArray(SemanticAuthoringIdV1Schema, 0, 24),
   sourceIdentity: z.object({
@@ -629,6 +655,7 @@ export const SemanticAuthoringResumptionRecipeV1Schema = z.object({
 export type SemanticAuthoringProviderRequestOutcomeV1 =
   | "succeeded"
   | "failed"
+  | "provider_transport_timeout"
   | "unknown_consumption";
 
 export type SemanticAuthoringDurableRunV1 = Readonly<{

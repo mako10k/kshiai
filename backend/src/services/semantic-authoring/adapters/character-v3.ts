@@ -1,12 +1,15 @@
 import {
   CHARACTER_AUTHORING_ADAPTER_IDENTITY_V1,
   CHARACTER_CLUSTER_PROPOSAL_SCHEMA_V1,
+  CHARACTER_MIGRATION_CAPSULE_MAX_BYTES,
   CHARACTER_LEDGER_PROPOSAL_SCHEMA_V1,
   CHARACTER_SKELETON_PROPOSAL_SCHEMA_V1,
   CharacterClusterPayloadV1Schema,
+  CharacterCompilerCapabilitySetV1Schema,
   CharacterDefinitionV2Schema,
   CharacterDefinitionV3Schema,
   CharacterLedgerPayloadV1Schema,
+  projectCharacterCompilerCompatibilityV1,
   CharacterSkeletonPayloadV1Schema,
   LEGACY_SPEECH_UNSPECIFIED,
   MigrationPreservationCapsuleV1Schema,
@@ -17,34 +20,141 @@ import {
   legacyCharacterSheetToDefinitionV2,
   type AdapterProgressObservationV1,
   type CharacterCandidateOperationV1,
+  type CharacterCompilerCapabilitySetV1,
+  type CharacterCompilerCompatibilityV1,
   type CharacterDefinitionV3,
+  type CharacterDeferredValueV1,
   type CharacterProposalPayloadV1,
   type MigrationPreservationCapsuleV1,
+  type ProposalProvenanceV1,
   type SemanticAuthoringAdapterV1,
   type SemanticAuthoringModeV1,
   type SemanticProposalV1,
   type SourceDispositionDecisionV1,
 } from "@kshiai/shared";
 import { createHash } from "node:crypto";
+import { isDeepStrictEqual } from "node:util";
+import { buildCharacterMigrationSourceLedgerV1, characterClaimValueV1,
+  characterSourceCopyMatchesV1, characterSourceDispositionSatisfiedV1, splitCharacterV2NormV1,
+  type CharacterSourceClaimV1 } from "./character-source-ledger.js";
+import { registeredCharacterSourceDeferralV1 } from "./character-deferral.js";
+import { canonicalPendingPreservationJson } from "./pending-preservation-json.js";
 
 export type CharacterAuthoringSourceV1 =
   | Readonly<{ kind: "create"; naturalText: string }>
   | Readonly<{
       kind: "revise";
       definition: CharacterDefinitionV3;
+      naturalText?: string;
       requestedCluster: "skeleton" | "mechanics" | "relationship-expression" | "appearance";
     }>
   | Readonly<{
       kind: "migrate";
       definition: unknown;
       capsule: MigrationPreservationCapsuleV1 | null;
+      requiredCapabilities?: CharacterCompilerCapabilitySetV1;
     }>;
+
+export type CharacterMigrationReviewCandidateV1 = Readonly<{
+  kind: "migration_review_candidate_v1";
+  definition: CharacterDefinitionV3;
+  deferredValues: readonly CharacterDeferredValueV1[];
+  compatibility: CharacterCompilerCompatibilityV1 | null;
+  pendingPreservation: readonly CharacterPendingPreservationV1[];
+}>;
+
+export type CharacterPendingPreservationV1 = Readonly<{
+  sourceClaimId: string;
+  originalValue: unknown;
+  contentDigest: string;
+  disposition: "discard-as-nonmaterial" | "defer";
+  rationale: string;
+}>;
+
+function pendingPreservationDigest(value: unknown): string {
+  return createHash("sha256").update(canonicalPendingPreservationJson(value)).digest("hex");
+}
+
+function pendingPreservationByteLength(
+  entries: readonly CharacterPendingPreservationV1[],
+): number {
+  return Buffer.byteLength(canonicalPendingPreservationJson(entries), "utf8");
+}
+
+function pendingPreservationWithinLimit(
+  entries: readonly CharacterPendingPreservationV1[],
+): boolean {
+  return pendingPreservationByteLength(entries) <= CHARACTER_MIGRATION_CAPSULE_MAX_BYTES;
+}
+
+function pendingPreservationDigestsMatch(
+  entries: readonly CharacterPendingPreservationV1[],
+): boolean {
+  return entries.every((entry) =>
+    entry.contentDigest === pendingPreservationDigest(entry.originalValue));
+}
+
+function pendingPreservationEntries(
+  obligations: ReadonlyMap<string, CharacterObligationV1>,
+): CharacterPendingPreservationV1[] {
+  return [...obligations.values()]
+    .flatMap((item) => item.pendingPreservation ? [item.pendingPreservation] : []);
+}
+
+function pendingPreservationForClaim(input: {
+  sourceClaimId: string;
+  originalValue: unknown;
+  disposition: CharacterPendingPreservationV1["disposition"];
+  rationale: string;
+}): CharacterPendingPreservationV1 {
+  const originalValue = structuredClone(input.originalValue);
+  return {
+    sourceClaimId: input.sourceClaimId,
+    originalValue,
+    contentDigest: pendingPreservationDigest(originalValue),
+    disposition: input.disposition,
+    rationale: input.rationale,
+  };
+}
+
+export function buildCharacterMigrationReviewCandidateV1(input: {
+  definition: CharacterDefinitionV3;
+  requiredCapabilities: CharacterCompilerCapabilitySetV1 | null;
+  deferredValues: readonly CharacterDeferredValueV1[];
+  pendingPreservation?: readonly CharacterPendingPreservationV1[];
+}): CharacterMigrationReviewCandidateV1 {
+  const pendingPreservation = input.pendingPreservation ?? [];
+  if (!pendingPreservationDigestsMatch(pendingPreservation)) {
+    throw new Error("PENDING_PRESERVATION_DIGEST_MISMATCH");
+  }
+  if (!pendingPreservationWithinLimit(pendingPreservation)) {
+    throw new Error("PENDING_PRESERVATION_TOO_LARGE");
+  }
+  return {
+    kind: "migration_review_candidate_v1",
+    definition: input.definition,
+    deferredValues: input.deferredValues,
+    pendingPreservation,
+    compatibility: input.requiredCapabilities ? projectCharacterCompilerCompatibilityV1({
+      required: input.requiredCapabilities,
+      available: [],
+      deferredValues: [...input.deferredValues],
+      blocked: input.requiredCapabilities.required.map((capability) => ({
+        capability, reasonCode: "candidate_stage_consumer_validation_pending",
+      })),
+    }) : null,
+  };
+}
 
 export type CharacterObligationV1 = Readonly<{
   obligationId: string;
   required: boolean;
   cluster: "skeleton" | "mechanics" | "relationship-expression" | "appearance" | "ledger";
   resolved: boolean;
+  sourceClaim?: CharacterSourceClaimV1;
+  deferredValue?: CharacterDeferredValueV1;
+  pendingPreservation?: CharacterPendingPreservationV1;
+  requiredCapabilities?: CharacterCompilerCapabilitySetV1 | null;
 }>;
 
 export type CharacterFindingV1 = Readonly<{
@@ -90,6 +200,8 @@ const ledgerProposalSchema = createSemanticProposalV1Schema(
 const mechanicsOps = new Set([
   "set_action_semantics",
   "set_inventory_semantics",
+  "upsert_conscious_guidance",
+  "remove_conscious_guidance",
   "upsert_action_norm",
   "remove_action_norm",
   "upsert_mechanical_fallback",
@@ -390,11 +502,14 @@ function v2ToCharacterV3(definition: unknown): CharacterDefinitionV3 | null {
   if (!parsed.success) {
     return null;
   }
-  const { schemaVersion: _schemaVersion, actionNorms: _actionNorms, ...stable } = parsed.data;
+  const { schemaVersion: _schemaVersion, actionNorms, ...stable } = parsed.data;
   const converted = CharacterDefinitionV3Schema.safeParse({
     ...stable,
     schemaVersion: 3,
-    actionNorms: [],
+    actionNorms: actionNorms.flatMap((norm) => {
+      const { compatible } = splitCharacterV2NormV1(norm);
+      return compatible.success ? [compatible.data] : [];
+    }),
     consciousGuidance: [],
     mechanicalConflictFallbacks: [],
   });
@@ -438,14 +553,37 @@ function claimIsResolved(candidate: CharacterDefinitionV3, obligationId: string)
 function refreshClaimObligations(
   candidate: CharacterDefinitionV3,
   obligations: ReadonlyMap<string, CharacterObligationV1>,
+  sourceDispositions?: ReadonlyMap<string, SourceDispositionDecisionV1>,
+  provenance?: ReadonlyMap<string, readonly ProposalProvenanceV1[]>,
+  preserveExisting = true,
 ): Map<string, CharacterObligationV1> {
   const next = new Map(obligations);
+  const provenanceEntries = provenance ? [...provenance.values()].flat() : [];
   for (const [id, item] of next) {
+    if (item.sourceClaim) {
+      const decision = sourceDispositions?.get(item.sourceClaim.sourceClaimId);
+      const pendingExactCopyAvailable = item.pendingPreservation?.sourceClaimId === item.sourceClaim.sourceClaimId
+        && isDeepStrictEqual(item.pendingPreservation.originalValue, item.sourceClaim.original)
+        && item.pendingPreservation.contentDigest === pendingPreservationDigest(item.sourceClaim.original);
+      const resolved = item.deferredValue
+        ? item.sourceClaim.capsuleCopyAvailable || pendingExactCopyAvailable
+        : decision
+        ? characterSourceDispositionSatisfiedV1(candidate, item.sourceClaim, decision,
+          provenanceEntries, pendingExactCopyAvailable)
+        : characterSourceCopyMatchesV1(candidate, item.sourceClaim)
+          || (preserveExisting && item.resolved);
+      next.set(id, { ...item, resolved });
+      continue;
+    }
     if (item.cluster === "ledger") {
       continue;
     }
     next.set(id, { ...item, resolved: claimIsResolved(candidate, id) });
   }
+  const sourceItems = [...next.values()].filter((item) => item.sourceClaim);
+  const aggregate = next.get("source-disposition");
+  if (aggregate) next.set("source-disposition", { ...aggregate,
+    resolved: sourceItems.length > 0 && sourceItems.every((item) => item.resolved) });
   return next;
 }
 
@@ -460,6 +598,7 @@ function keyBelongsToCluster(
   if (cluster === "mechanics") {
     return key === "mechanics"
       || key.startsWith("actionNorms:")
+      || key.startsWith("consciousGuidance:")
       || key.startsWith("mechanicalConflictFallbacks:")
       || key.startsWith("capabilities:actions:")
       || key.startsWith("inventory:");
@@ -629,13 +768,7 @@ function skeletonComplete(obligations: ReadonlyMap<string, CharacterObligationV1
     .every((item) => item.resolved);
 }
 
-function decodeCharacterSource(value: unknown) {
-  if (typeof value !== "object" || value === null || !("kind" in value)) {
-    return { accepted: false as const };
-  }
-  if (value.kind === "create" && "naturalText" in value && typeof value.naturalText === "string") {
-    return { accepted: true as const, value: { kind: "create" as const, naturalText: value.naturalText } };
-  }
+function decodeReviseCharacterSource(value: Record<string, unknown>) {
   if (value.kind === "revise" && "definition" in value && "requestedCluster" in value) {
     const parsed = CharacterDefinitionV3Schema.safeParse(value.definition);
     const requested = value.requestedCluster;
@@ -655,10 +788,16 @@ function decodeCharacterSource(value: unknown) {
             kind: "revise" as const,
             definition: parsed.data,
             requestedCluster: cluster,
+            ...("naturalText" in value && typeof value.naturalText === "string"
+              ? { naturalText: value.naturalText } : {}),
           },
         }
       : { accepted: false as const };
   }
+  return { accepted: false as const };
+}
+
+function decodeMigrateCharacterSource(value: Record<string, unknown>) {
   if (value.kind === "migrate" && "definition" in value) {
     const parsed = CharacterDefinitionV2Schema.safeParse(value.definition);
     if (!parsed.success) {
@@ -671,16 +810,38 @@ function decodeCharacterSource(value: unknown) {
     if (capsuleValue != null && (capsule === null || !capsule.success)) {
       return { accepted: false as const };
     }
+    const requiredCapabilitiesValue = "requiredCapabilities" in value
+      ? value.requiredCapabilities : undefined;
+    const requiredCapabilities = requiredCapabilitiesValue === undefined
+      ? undefined
+      : CharacterCompilerCapabilitySetV1Schema.safeParse(requiredCapabilitiesValue);
+    if (requiredCapabilitiesValue !== undefined && !requiredCapabilities?.success) {
+      return { accepted: false as const };
+    }
     return {
       accepted: true as const,
       value: {
         kind: "migrate" as const,
         definition: parsed.data,
         capsule: capsule && capsule.success ? capsule.data : null,
+        ...(requiredCapabilities && requiredCapabilities.success
+          ? { requiredCapabilities: requiredCapabilities.data } : {}),
       },
     };
   }
   return { accepted: false as const };
+}
+
+function decodeCharacterSource(value: unknown) {
+  if (typeof value !== "object" || value === null || !("kind" in value)) {
+    return { accepted: false as const };
+  }
+  if (value.kind === "create" && "naturalText" in value && typeof value.naturalText === "string") {
+    return { accepted: true as const, value: { kind: "create" as const, naturalText: value.naturalText } };
+  }
+  const source = value as Record<string, unknown>;
+  const revised = decodeReviseCharacterSource(source);
+  return revised.accepted ? revised : decodeMigrateCharacterSource(source);
 }
 
 function selectCharacterWork(
@@ -812,59 +973,145 @@ function resolveObligation(
   return next;
 }
 
-function stageLedgerProposal(
-  input: Readonly<{
-    candidate: CharacterDefinitionV3;
-    obligations: ReadonlyMap<string, CharacterObligationV1>;
-    findings: ReadonlyMap<string, CharacterFindingV1>;
-    proposal: CharacterProposalV1;
-  }>,
-) {
-  const payload = input.proposal.payload;
-  if (payload.kind === "classify_source_disposition") {
-    const sourceDispositions = new Map<string, SourceDispositionDecisionV1>();
-    for (const decision of payload.decisions) {
-      sourceDispositions.set(decision.sourceClaimId, decision);
+type CharacterProposalStageInput = Readonly<{
+  candidate: CharacterDefinitionV3;
+  obligations: ReadonlyMap<string, CharacterObligationV1>;
+  findings: ReadonlyMap<string, CharacterFindingV1>;
+  provenance?: ReadonlyMap<string, readonly ProposalProvenanceV1[]>;
+  sourceDispositions?: ReadonlyMap<string, SourceDispositionDecisionV1>;
+  proposal: CharacterProposalV1;
+}>;
+
+function sourceDispositionDecisionError(input: CharacterProposalStageInput,
+  decision: SourceDispositionDecisionV1, claim: CharacterSourceClaimV1 | undefined) {
+  if (!claim || decision.targetClaimIds.some((id) => characterClaimValueV1(input.candidate, id) === undefined)) {
+    return { code: "source-claim-unregistered",
+      explanation: "Disposition must name registered source and existing target claims." };
+  }
+  if (decision.disposition === "preserve" && (decision.targetClaimIds.length !== 1
+    || decision.targetClaimIds[0] !== claim.targetClaimId
+    || !characterSourceCopyMatchesV1(input.candidate, claim))) {
+    return { code: "source-copy-mismatch", explanation: "Claimed preservation differs from the frozen source." };
+  }
+  if (decision.disposition === "discard-as-nonmaterial"
+    && (decision.targetClaimIds.length !== 0 || decision.rationale.trim().length === 0)) {
+    return { code: "invalid-discard-disposition",
+      explanation: "Discard requires a nonempty rationale and no target claims." };
+  }
+  return null;
+}
+
+function dispositionPendingPreservation(decision: SourceDispositionDecisionV1,
+  item: CharacterObligationV1, claim: CharacterSourceClaimV1) {
+  if (decision.disposition !== "discard-as-nonmaterial") return undefined;
+  if (!claim.nonmaterialDiscardEligible || claim.capsuleCopyAvailable || claim.capsuleEntryPresent) {
+    return item.pendingPreservation;
+  }
+  return pendingPreservationForClaim({ sourceClaimId: claim.sourceClaimId,
+    originalValue: claim.original, disposition: "discard-as-nonmaterial", rationale: decision.rationale });
+}
+
+function stageSourceDispositionProposal(input: CharacterProposalStageInput,
+  payload: Extract<CharacterProposalV1["payload"], { kind: "classify_source_disposition" }>) {
+  const sourceDispositions = new Map(input.sourceDispositions);
+  const provenance = new Map(input.provenance);
+  for (const entry of input.proposal.provenance) {
+    provenance.set(entry.targetClaimId, [...(provenance.get(entry.targetClaimId) ?? []), entry]);
+  }
+  const obligations = new Map(input.obligations);
+  for (const decision of payload.decisions) {
+    const item = obligations.get(`source:${decision.sourceClaimId}`);
+    const claim = item?.sourceClaim;
+    const error = sourceDispositionDecisionError(input, decision, claim);
+    if (error || !claim || !item) return { accepted: false as const,
+      findingKey: "source-disposition", finding: error ?? { code: "source-claim-unregistered",
+        explanation: "Disposition must name a registered source claim obligation." } };
+    const pendingPreservation = dispositionPendingPreservation(decision, item, claim);
+    const pendingExactCopyAvailable = pendingPreservation?.sourceClaimId === claim.sourceClaimId
+      && isDeepStrictEqual(pendingPreservation.originalValue, claim.original)
+      && pendingPreservation.contentDigest === pendingPreservationDigest(claim.original);
+    sourceDispositions.set(decision.sourceClaimId, decision);
+    obligations.set(item.obligationId, { ...item, pendingPreservation, deferredValue: undefined,
+      resolved: characterSourceDispositionSatisfiedV1(input.candidate, claim, decision,
+        input.proposal.provenance, pendingExactCopyAvailable) });
+  }
+  if (!pendingPreservationWithinLimit(pendingPreservationEntries(obligations))) {
+    return { accepted: false as const, findingKey: "pending-preservation-limit-exceeded",
+      finding: { code: "pending-preservation-limit-exceeded",
+        explanation: "Pending preservation exceeds the 256 KiB aggregate limit." } };
+  }
+  return { accepted: true as const, candidate: input.candidate,
+    obligations: refreshClaimObligations(input.candidate, obligations, sourceDispositions, provenance),
+    findings: input.findings, sourceDispositions };
+}
+
+function findDeferralObligation(obligations: ReadonlyMap<string, CharacterObligationV1>, obligationId: string) {
+  return obligations.get(obligationId) ?? obligations.get(`source:${obligationId}`);
+}
+
+function deferralPendingPreservation(item: CharacterObligationV1, reason: string) {
+  const claim = item.sourceClaim;
+  if (!claim || claim.capsuleCopyAvailable || claim.capsuleEntryPresent || !claim.nonmaterialDiscardEligible) {
+    return item.pendingPreservation;
+  }
+  return pendingPreservationForClaim({ sourceClaimId: claim.sourceClaimId,
+    originalValue: claim.original, disposition: "defer", rationale: reason });
+}
+
+function stageDeferralProposal(input: CharacterProposalStageInput,
+  payload: Extract<CharacterProposalV1["payload"], { kind: "propose_deferral" }>) {
+  const deferred = new Map(input.obligations);
+  const deferredValues: CharacterDeferredValueV1[] = [];
+  for (const obligationId of payload.obligationIds) {
+    const item = findDeferralObligation(deferred, obligationId);
+    if (!item?.sourceClaim) return { accepted: false as const, findingKey: "deferral",
+      finding: { code: "deferral-not-registered",
+        explanation: "Deferral must name a registered source claim obligation." } };
+    if (input.sourceDispositions?.get(item.sourceClaim.sourceClaimId)?.disposition === "discard-as-nonmaterial") {
+      return { accepted: false as const, findingKey: "deferral",
+        finding: { code: "deferral-not-eligible",
+          explanation: "Discard and deferral cannot classify the same source claim." } };
     }
-    const covered = sourceDispositions.has("identity.displayName")
-      || sourceDispositions.size > 0;
-    return {
-      accepted: true as const,
-      candidate: input.candidate,
-      obligations: covered
-        ? resolveObligation(input.obligations, "source-disposition")
-        : input.obligations,
-      findings: input.findings,
-      sourceDispositions,
-    };
+    const pendingPreservation = deferralPendingPreservation(item, payload.reason);
+    const pendingExactCopyAvailable = pendingPreservation?.sourceClaimId === item.sourceClaim.sourceClaimId
+      && isDeepStrictEqual(pendingPreservation.originalValue, item.sourceClaim.original)
+      && pendingPreservation.contentDigest === pendingPreservationDigest(item.sourceClaim.original);
+    const value = registeredCharacterSourceDeferralV1({ claim: item.sourceClaim,
+      requiredCapabilities: item.requiredCapabilities ?? null, reason: payload.reason, pendingExactCopyAvailable });
+    if (!value) return { accepted: false as const, findingKey: "deferral",
+      finding: { code: "deferral-not-eligible",
+        explanation: "Source claim is not eligible for the registered optional deferral." } };
+    deferredValues.push(value);
+    deferred.set(item.obligationId, { ...item, resolved: true, deferredValue: value, pendingPreservation });
   }
-  if (payload.kind === "propose_deferral") {
-    return {
-      accepted: true as const,
-      candidate: input.candidate,
-      obligations: input.obligations,
-      findings: input.findings,
-    };
+  if (!pendingPreservationWithinLimit(pendingPreservationEntries(deferred))) {
+    return { accepted: false as const, findingKey: "pending-preservation-limit-exceeded",
+      finding: { code: "pending-preservation-limit-exceeded",
+        explanation: "Pending preservation exceeds the 256 KiB aggregate limit." } };
   }
-  if (payload.kind !== "submit_lens_review") {
-    return null;
-  }
+  return { accepted: true as const, candidate: input.candidate,
+    obligations: refreshClaimObligations(input.candidate, deferred, input.sourceDispositions, input.provenance),
+    findings: input.findings, deferredValues };
+}
+
+function stageLensProposal(input: CharacterProposalStageInput,
+  payload: Extract<CharacterProposalV1["payload"], { kind: "submit_lens_review" }>) {
   const serverVerdict = runCharacterLens(payload.lens, input.candidate);
   const findings = new Map(input.findings);
-  if (payload.verdict !== serverVerdict) {
-    findings.set(`lens:${payload.lens}`, {
-      code: "lens-disagreement",
-      explanation: `server ${serverVerdict} disagrees with submitted ${payload.verdict}`,
-    });
-  }
-  return {
-    accepted: true as const,
-    candidate: input.candidate,
-    obligations: serverVerdict === "pass"
-      ? resolveObligation(input.obligations, `lens:${payload.lens}`)
-      : input.obligations,
-    findings,
-  };
+  if (payload.verdict !== serverVerdict) findings.set(`lens:${payload.lens}`, {
+    code: "lens-disagreement",
+    explanation: `server ${serverVerdict} disagrees with submitted ${payload.verdict}`,
+  });
+  return { accepted: true as const, candidate: input.candidate,
+    obligations: serverVerdict === "pass" ? resolveObligation(input.obligations, `lens:${payload.lens}`)
+      : input.obligations, findings };
+}
+
+function stageLedgerProposal(input: CharacterProposalStageInput) {
+  const payload = input.proposal.payload;
+  if (payload.kind === "classify_source_disposition") return stageSourceDispositionProposal(input, payload);
+  if (payload.kind === "propose_deferral") return stageDeferralProposal(input, payload);
+  return payload.kind === "submit_lens_review" ? stageLensProposal(input, payload) : null;
 }
 
 function rejectUnregisteredRepair(
@@ -909,11 +1156,51 @@ function rejectUnregisteredRepair(
   return null;
 }
 
+function characterProposalScopeError(input: CharacterProposalStageInput,
+  payload: Exclude<CharacterProposalV1["payload"], { kind: "classify_source_disposition"
+    | "propose_deferral" | "submit_lens_review" }>) {
+  const operations = payload.operations;
+  if (payload.kind === "set_skeleton") {
+    const registered = skeletonRequiredClaimIds(input.candidate);
+    for (const operation of operations) {
+      const key = characterOperationTargetKeyV1(operation);
+      if (!clusterOneOps.has(operation.op) && !registeredClaimAllows(registered, key)) {
+        return { accepted: false as const, findingKey: "skeleton-closure",
+          finding: { code: "skeleton-closure", explanation: `cross-cluster ${key} is not registered` } };
+      }
+    }
+  }
+  if ((payload.kind === "complete_cluster" || payload.kind === "repair_cluster")
+    && !operationsMatchCluster(payload.cluster, operations)) {
+    return { accepted: false as const, findingKey: "cluster-mismatch",
+      finding: { code: "cluster-mismatch", explanation: "operation outside named cluster" } };
+  }
+  return payload.kind === "repair_cluster" ? rejectUnregisteredRepair(payload.cluster, input, operations) : null;
+}
+
+function applyCharacterProposalOperations(candidate: CharacterDefinitionV3,
+  operations: readonly CharacterCandidateOperationV1[]) {
+  let nextCandidate = candidate;
+  for (const operation of operations) {
+    const next = applyOperation(nextCandidate, operation);
+    if (!next) return { accepted: false as const, operation: operation.op };
+    nextCandidate = next;
+  }
+  return { accepted: true as const, candidate: nextCandidate };
+}
+
+function protectedCharacterFieldsMatch(before: CharacterDefinitionV3, after: CharacterDefinitionV3) {
+  return JSON.stringify(after.appearance.portrait) === JSON.stringify(before.appearance.portrait)
+    && JSON.stringify(after.combat) === JSON.stringify(before.combat);
+}
+
 function stageCharacterProposal(
   input: Readonly<{
     candidate: CharacterDefinitionV3;
     obligations: ReadonlyMap<string, CharacterObligationV1>;
     findings: ReadonlyMap<string, CharacterFindingV1>;
+    provenance?: ReadonlyMap<string, readonly ProposalProvenanceV1[]>;
+    sourceDispositions?: ReadonlyMap<string, SourceDispositionDecisionV1>;
     proposal: CharacterProposalV1;
   }>,
 ) {
@@ -933,70 +1220,64 @@ function stageCharacterProposal(
       finding: { code: "ledger", explanation: "ledger proposal was not staged" },
     };
   }
-  const operations = payload.operations;
-  if (payload.kind === "set_skeleton") {
-    const registered = skeletonRequiredClaimIds(input.candidate);
-    for (const operation of operations) {
-      const key = characterOperationTargetKeyV1(operation);
-      if (!clusterOneOps.has(operation.op) && !registeredClaimAllows(registered, key)) {
-        return {
-          accepted: false as const,
-          findingKey: "skeleton-closure",
-          finding: { code: "skeleton-closure", explanation: `cross-cluster ${key} is not registered` },
-        };
-      }
-    }
-  }
-  if (
-    (payload.kind === "complete_cluster" || payload.kind === "repair_cluster")
-    && !operationsMatchCluster(payload.cluster, operations)
-  ) {
-    return {
-      accepted: false as const,
-      findingKey: "cluster-mismatch",
-      finding: { code: "cluster-mismatch", explanation: "operation outside named cluster" },
-    };
-  }
-  if (payload.kind === "repair_cluster") {
-    const rejected = rejectUnregisteredRepair(
-      payload.cluster,
-      input,
-      operations,
-    );
-    if (rejected) {
-      return rejected;
-    }
-  }
-  let candidate = input.candidate;
-  const portrait = candidate.appearance.portrait;
-  const combat = candidate.combat;
-  for (const operation of operations) {
-    const next = applyOperation(candidate, operation);
-    if (!next) {
-      return {
-        accepted: false as const,
-        findingKey: "stage",
-        finding: { code: "stage", explanation: `cannot apply ${operation.op}` },
-      };
-    }
-    candidate = next;
-  }
-  if (
-    JSON.stringify(candidate.appearance.portrait) !== JSON.stringify(portrait)
-    || JSON.stringify(candidate.combat) !== JSON.stringify(combat)
-  ) {
+  const rejected = characterProposalScopeError(input, payload);
+  if (rejected) return rejected;
+  const staged = applyCharacterProposalOperations(input.candidate, payload.operations);
+  if (!staged.accepted) return { accepted: false as const, findingKey: "stage",
+    finding: { code: "stage", explanation: `cannot apply ${staged.operation}` } };
+  const candidate = staged.candidate;
+  if (!protectedCharacterFieldsMatch(input.candidate, candidate)) {
     return {
       accepted: false as const,
       findingKey: "protected-mechanics",
       finding: { code: "protected-mechanics", explanation: "portrait and combat are not model-writable" },
     };
   }
+  const stagedProvenance = new Map(input.provenance);
+  for (const entry of input.proposal.provenance) {
+    stagedProvenance.set(entry.targetClaimId, [
+      ...(stagedProvenance.get(entry.targetClaimId) ?? []),
+      entry,
+    ]);
+  }
   return {
     accepted: true as const,
     candidate,
-    obligations: refreshClaimObligations(candidate, input.obligations),
+    obligations: refreshClaimObligations(
+      candidate,
+      input.obligations,
+      input.sourceDispositions,
+      stagedProvenance,
+      false,
+    ),
     findings: input.findings,
   };
+}
+
+function applyFinalCharacterLenses(candidate: CharacterDefinitionV3,
+  initialObligations: ReadonlyMap<string, CharacterObligationV1>, findings: Map<string, CharacterFindingV1>) {
+  let obligations = new Map(initialObligations);
+  const lenses = ["compiler", "disclosure", "cross-reference", "source-consistency", "authority"] as const;
+  for (const lens of lenses) {
+    if (runCharacterLens(lens, candidate) === "pass") {
+      obligations = resolveObligation(obligations, `lens:${lens}`);
+    } else {
+      findings.set(`lens:${lens}`, { code: "lens-failed", explanation: `${lens} repair required` });
+    }
+  }
+  return obligations;
+}
+
+function validatePendingPreservation(pending: readonly CharacterPendingPreservationV1[],
+  findings: Map<string, CharacterFindingV1>) {
+  if (!pendingPreservationWithinLimit(pending)) findings.set("pending-preservation-limit-exceeded", {
+    code: "pending-preservation-limit-exceeded",
+    explanation: "Pending preservation exceeds the 256 KiB aggregate limit.",
+  });
+  if (!pendingPreservationDigestsMatch(pending)) findings.set("pending-preservation-digest-mismatch", {
+    code: "pending-preservation-digest-mismatch",
+    explanation: "Pending preservation content digest does not match the retained value.",
+  });
 }
 
 function finalizeCharacterCandidate(
@@ -1004,33 +1285,50 @@ function finalizeCharacterCandidate(
     candidate: CharacterDefinitionV3;
     obligations: ReadonlyMap<string, CharacterObligationV1>;
     findings: ReadonlyMap<string, CharacterFindingV1>;
+    provenance?: ReadonlyMap<string, readonly ProposalProvenanceV1[]>;
+    sourceDispositions?: ReadonlyMap<string, SourceDispositionDecisionV1>;
   }>,
 ) {
   const findings = new Map(input.findings);
-  let obligations = refreshClaimObligations(input.candidate, input.obligations);
-  const lenses = ["compiler", "disclosure", "cross-reference", "source-consistency", "authority"] as const;
-  for (const lens of lenses) {
-    if (runCharacterLens(lens, input.candidate) === "pass") {
-      obligations = resolveObligation(obligations, `lens:${lens}`);
-    } else {
-      findings.set(`lens:${lens}`, {
-        code: "lens-failed",
-        explanation: `${lens} repair required`,
-      });
-    }
-  }
+  let obligations = refreshClaimObligations(
+    input.candidate,
+    input.obligations,
+    input.sourceDispositions,
+    input.provenance,
+    false,
+  );
+  obligations = applyFinalCharacterLenses(input.candidate, obligations, findings);
   const parsed = CharacterDefinitionV3Schema.safeParse(input.candidate);
   const unresolved = [...obligations.values()].filter((item) => item.required && !item.resolved);
+  const deferredValues = [...obligations.values()]
+    .flatMap((item) => item.deferredValue ? [item.deferredValue] : []);
+  const pendingPreservation = pendingPreservationEntries(obligations);
+  const requiredCapabilities = [...obligations.values()]
+    .find((item) => item.sourceClaim && item.requiredCapabilities)?.requiredCapabilities;
+  if (deferredValues.length > 0 && !requiredCapabilities) {
+    findings.set("deferred-value-output-contract", {
+      code: "deferred-value-output-contract",
+      explanation: "Deferred values require a frozen current-consumer registration.",
+    });
+  }
+  validatePendingPreservation(pendingPreservation, findings);
   if (!parsed.success || unresolved.length > 0 || findings.size > 0) {
     if (!findings.has("incomplete") && unresolved.length > 0) {
       findings.set("incomplete", { code: "incomplete", explanation: "required claims remain unresolved" });
     }
     return { accepted: false as const, findings };
   }
+  const finalCandidate: CharacterDefinitionV3 | CharacterMigrationReviewCandidateV1 =
+    deferredValues.length > 0 || pendingPreservation.length > 0
+      ? buildCharacterMigrationReviewCandidateV1({
+        definition: parsed.data, requiredCapabilities: requiredCapabilities ?? null,
+        deferredValues, pendingPreservation,
+      })
+      : parsed.data;
   return {
     accepted: true as const,
-    finalCandidate: parsed.data,
-    finalCandidateDigest: digestCandidate(parsed.data),
+    finalCandidate,
+    finalCandidateDigest: createHash("sha256").update(JSON.stringify(finalCandidate)).digest("hex"),
     obligationCoverage: {
       resolvedRequiredObligationCount: [...obligations.values()].filter((item) => item.required && item.resolved).length,
       requiredObligationCount: [...obligations.values()].filter((item) => item.required).length,
@@ -1050,7 +1348,7 @@ export function createCharacterSemanticAuthoringAdapterV3(): SemanticAuthoringAd
   CharacterFindingV1,
   string,
   string,
-  CharacterDefinitionV3
+  CharacterDefinitionV3 | CharacterMigrationReviewCandidateV1
 > {
   return {
     identity: CHARACTER_AUTHORING_ADAPTER_IDENTITY_V1,
@@ -1061,14 +1359,29 @@ export function createCharacterSemanticAuthoringAdapterV3(): SemanticAuthoringAd
         : source.kind === "migrate"
           ? v2ToCharacterV3(source.definition) ?? scaffoldCharacterV3()
           : scaffoldCharacterV3();
-      return {
-        candidate,
-        obligations: baselineObligations(
+      const obligations = baselineObligations(
           candidate,
           mode,
           source.kind === "revise" ? source.requestedCluster : undefined,
-        ),
-      };
+        );
+      if (source.kind !== "migrate") return { candidate, obligations };
+      const ledger = buildCharacterMigrationSourceLedgerV1(source.definition, candidate, source.capsule,
+        source.requiredCapabilities ?? null);
+      for (const claim of ledger.claims) {
+        const id = `source:${claim.sourceClaimId}`;
+        obligations.set(id, { ...obligation(id, "ledger", ledger.sourceDispositions.has(claim.sourceClaimId)),
+          sourceClaim: claim, requiredCapabilities: source.requiredCapabilities ?? null });
+      }
+      const refreshed = refreshClaimObligations(candidate, obligations);
+      const changedRoleMeaningRemains = ledger.claims.some((claim) =>
+        claim.sourceClaimId.endsWith(":legacyMeaning")
+          && !ledger.sourceDispositions.has(claim.sourceClaimId));
+      if (changedRoleMeaningRemains) {
+        const mechanics = refreshed.get("mechanics");
+        if (mechanics) refreshed.set("mechanics", { ...mechanics, resolved: false });
+      }
+      return { candidate, obligations: refreshed,
+        provenance: ledger.provenance, sourceDispositions: ledger.sourceDispositions };
     },
     selectWork: selectCharacterWork,
     describeCapabilities: describeCharacterCapabilities,

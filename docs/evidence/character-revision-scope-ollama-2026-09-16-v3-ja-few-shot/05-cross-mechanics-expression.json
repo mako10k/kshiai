@@ -1,0 +1,54 @@
+{
+  "schema": "character-revision-scope-ollama-case-v1",
+  "runId": "character-revision-scope-ollama-2026-09-16-v3-ja-few-shot",
+  "case": {
+    "caseId": "cross-mechanics-expression",
+    "origin": "controlled-synthetic",
+    "request": "戦い方を荒々しくし、口調もぶっきらぼうに",
+    "expectation": {
+      "kind": "resolved",
+      "clusters": [
+        "mechanics",
+        "relationship-expression"
+      ]
+    }
+  },
+  "candidate": {
+    "kind": "resolved",
+    "clusters": [
+      "mechanics",
+      "relationship-expression"
+    ],
+    "evidence": [
+      {
+        "sourceQuote": "戦い方を荒々しくし",
+        "clusters": [
+          "mechanics"
+        ]
+      },
+      {
+        "sourceQuote": "口調もぶっきらぼうに",
+        "clusters": [
+          "relationship-expression"
+        ]
+      }
+    ]
+  },
+  "rawContent": "{\"result\":{\"kind\":\"resolved\",\"clusters\":[\"mechanics\",\"relationship-expression\"],\"evidence\":[{\"sourceQuote\":\"戦い方を荒々しくし\",\"clusters\":[\"mechanics\"]},{\"sourceQuote\":\"口調もぶっきらぼうに\",\"clusters\":[\"relationship-expression\"]}]}}",
+  "validationIssues": [],
+  "evaluation": {
+    "outcome": "cross_cluster",
+    "clusters": [
+      "mechanics",
+      "relationship-expression"
+    ]
+  },
+  "passed": true,
+  "accounting": {
+    "inputTokens": 718,
+    "outputTokens": 60,
+    "elapsedMs": 38018,
+    "providerDurationNs": 38011340641,
+    "estimatedCostUsd": 0
+  }
+}

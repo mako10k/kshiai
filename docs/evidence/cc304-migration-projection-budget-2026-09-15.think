@@ -1,0 +1,24 @@
+domain Cc304MigrationProjectionBudget:
+  description "Choose a requirement-preserving response to the changed-role migration request exceeding the per-call input budget."
+evidence E1:
+  "The real HTTP worker path stopped before provider dispatch with resource_exhausted: estimated input 6261 tokens against maxInputTokensPerCall 6000, and the controlled provider observed no request."
+evidence E2:
+  "The captured request-part estimates were operationContract 1619 tokens and schemaDefinitions 1790 tokens, while the active work item was the mechanics cluster forced open by unresolved legacy action-norm meaning."
+evidence E3:
+  "The mechanics operation contract currently exposes seven mutation kinds whenever an action norm already exists, including removal and unrelated action-semantics operations."
+evidence E4:
+  "The unresolved changed-role migration claim can be represented only by conscious guidance and, when the legacy source names a fallback action, a mechanical fallback; an action norm write is additionally needed only when the candidate has no executable norm."
+evidence E5:
+  "The accepted quality definition does not authorize changing numeric execution-policy limits, and the accepted implementation direction requires focused work to expose only the bounded mutation closure needed for that work."
+premise P1:
+  "The observed stop is produced by projecting a broader mechanics mutation schema than the active changed-role migration work can use, not by a provider schema-compliance response."
+premise P2:
+  "Increasing maxInputTokensPerCall would change a separately governed numeric policy and would leave the projection broader than the active work requires."
+premise P3:
+  "Restricting only changed-role migration mechanics work to upsert_conscious_guidance, upsert_mechanical_fallback, and conditionally upsert_action_norm preserves the accepted functional outcome while reducing irrelevant request material."
+premise P4:
+  "The restriction must be selected from unresolved source-claim state rather than from test fixtures or free-text instructions, so ordinary create, revise, and other mechanics work retain their existing operation closure."
+decision D1 based_on E1, E2, E3, E4, E5, P1, P2, P3, P4:
+  "Do not relax the execution policy. Detect active changed-role migration mechanics work from its unresolved legacyMeaning source obligation and project only its required upsert operations, adding upsert_action_norm only when no executable norm exists."
+decision D2 based_on E1, E5, P3, P4:
+  "Verify that the real worker request now stays within the existing 6000-token limit, reaches the controlled provider, and produces the changed-role ready-for-review result; retain any new failure as evidence rather than weakening the contract."

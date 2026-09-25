@@ -1,0 +1,36 @@
+domain Cc304MigrationSourceCollectionPreservation:
+  description "Explain and correct the real owner-route migration failure after V3-only collection synthesis."
+evidence E1:
+  "The owner upgrade route registered a migrate run from the exact ready V2 generation, and the controlled HTTP provider completed skeleton, mechanics, relationship-expression, compiler, disclosure, and cross-reference work in six calls."
+evidence E2:
+  "The persisted terminal receipt was bounded_semantic_failure with only the incomplete finding after final reconciliation; it was not a provider, schema, token, cost, or call-limit failure."
+evidence E3:
+  "The frozen V2 source had empty actionNorms and relationshipSeeds, and the server-created initial migration ledger marked both collection claims preserve because the initial V3 projection also had empty collections."
+evidence E4:
+  "The accepted V3 completion obligations require at least one action norm and relationship seed, and the completed provider work appended one generated entry to each collection without altering any pre-existing source element."
+evidence E5:
+  "characterSourceCopyMatchesV1 compares every claim value with expectedCopy using whole-value deep equality, so an empty source collection no longer matches a candidate collection after a generated V3 entry is appended."
+evidence E6:
+  "Intermediate refreshes retain an already resolved source claim when no explicit disposition is supplied, but final reconciliation disables that retention and therefore exposes the whole-collection mismatch only at the end."
+evidence E7:
+  "Changing collection equality to frozen-element containment passed its isolated checks but the same owner-route run still ended incomplete, because psycheDisposition and speechPolicy remained top-level preserve claims while focused operations changed their registered nested or whole targets."
+evidence E8:
+  "The accepted character adapter operation catalog addresses background, psyche, action, inventory, relationship, speech, and appearance claims at stable operation-target granularity rather than as top-level V2 objects."
+evidence E9:
+  "After operation-target claims were implemented, the owner-route receipt showed speechPolicy with both preserved and derived provenance but only its original preserve disposition; no source-disposition work was selected before final incomplete failure."
+evidence E10:
+  "The shared adapter state view and finalization input include provenance and sourceDispositions, but SemanticAuthoringStageProposalInputV1 omits both and stageAdapterProposal passes only candidate, obligations, findings, and proposal."
+evidence E11:
+  "Character candidate staging refreshes source obligations without ledger state and retains any previously resolved claim, so a changed preserve claim cannot become selectable until finalization reruns with the ledger and disables retention."
+premise P1:
+  "A source claim must be no broader than the registered target whose copy, transform, split, merge, retirement, or deferral can be independently reconciled. An empty collection contributes no source value claim, while each existing stable-ID element remains an exact claim."
+premise P2:
+  "Stable fields with a whole-target operation remain whole-value claims; stable-ID collections and composite objects with nested operations require claims aligned to those target paths. Protected non-writable values still require exact claims."
+premise P3:
+  "The defect-producing condition is the migration ledger creating top-level V2 claims that do not match the accepted focused operation targets; whole-value equality is only the observable failure mechanism. The late final refresh is a separate contributing and escape condition."
+premise P4:
+  "A stage transaction cannot correctly reconcile source obligations unless the adapter receives the trusted ledger state that governs those obligations; retaining the prior boolean is not a substitute for that state."
+decision D1 based_on E1, E2, E3, E4, E5, E6, E7, E8, E9, E10, E11, P1, P2, P3, P4:
+  "Keep the operation-target claim correction and remove the collection-containment workaround. Extend the shared stage input with the existing provenance and source-disposition maps, pass them from orchestration, and have character staging recompute source obligations against those maps and proposal provenance without retaining stale resolved booleans. V3-only additions have no invented V2 source claim; actual changes to an existing claim become focused disposition work before finalization."
+decision D2 based_on E1, E2, E6, E7, E8, E9, E10, E11, P3, P4:
+  "Repeat the actual owner upgrade route and worker path after the source-ledger correction. Do not treat the regression check or the controlled provider as deployment, live-provider quality, activation, or owner acceptance evidence."

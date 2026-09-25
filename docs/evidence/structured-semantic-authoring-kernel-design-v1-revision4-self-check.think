@@ -1,0 +1,50 @@
+domain SemanticAuthoringDesignRevision4SelfCheck:
+  description "Check revision four against the sole revision-three P1 finding without accepting it."
+problem P1:
+  |
+    Determine whether revision four closes provider-timeout request and run transitions
+    without choosing pending numeric policy or changing unrelated architecture.
+evidence E0:
+  |
+    The exact English revision-four candidate SHA256 is
+    559c8bce9165b51a3aa274c701ee17aee3fe97a96652601cb8b2f7fc71537594.
+    Its complete Japanese projection SHA256 is
+    b830a65bfe35387e96438eb28774d3dd3505903793e0598c02ec8c1a5949e83b.
+evidence E1:
+  |
+    Revision four section 7.2 requires a current-fence compare-and-set from outstanding
+    to timed_out before recovery, retains the receipt and maximum reservation, and
+    rejects a late old result for candidate mutation.
+evidence E2:
+  |
+    Revision four section 7.2 gives admitted same-run recovery a distinct request
+    identity and recoveryOfRequestId, consumes a strategy change, and records exactly
+    one typed recovery basis for a changed transport condition or materially different
+    authorized request.
+evidence E3:
+  |
+    Revision four section 7.2 maps zero, consumed, or inadmissible recovery under the
+    current fence to failed with provider_transport_unavailable, retained source,
+    receipt/accounting, and an owner new-run recipe. A stale handler writes nothing and
+    delegates to the current recovery owner's process-or-lease-loss transition.
+evidence E4:
+  |
+    Revision four section 8.3 closes provider request state to reserved, outstanding,
+    completed, timed_out, and cancelled and prohibits reopening terminal identities.
+evidence E5:
+  |
+    Revision four section 10 requires the parameterized fixture to prove zero and one
+    recovery, exhausted or inadmissible recovery, lost-fence ownership, original late
+    result rejection, technical-versus-semantic separation, and absence of an attempt
+    elapsed deadline.
+premise C1:
+  |
+    This self-check does not provide fresh independent review or exact owner acceptance.
+decision D1 based_on P1, E0, E1, E2, E3, E4, E5:
+  |
+    Revision four closes the provider-timeout transition identified by the revision-
+    three P1 finding and makes its fixture verify rather than invent the state contract.
+decision D2 based_on P1, E2, E3, C1:
+  |
+    Exact timeout values and selection of zero or one recovery remain pending under
+    ADR-0032. Keep cc304 suspended and present revision four for fresh REVIEW.

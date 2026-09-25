@@ -1,0 +1,131 @@
+{
+  "schema": "character-revision-scope-ollama-replay-summary-v1",
+  "runId": "character-revision-scope-ollama-2026-09-16-v3-ja-few-shot",
+  "completedAt": "2026-09-16T01:11:44.538Z",
+  "requestsAttempted": 8,
+  "passed": 7,
+  "failed": 1,
+  "inputTokens": 5691,
+  "outputTokens": 383,
+  "elapsedMs": 299633,
+  "results": [
+    {
+      "caseId": "appearance-existing",
+      "passed": true,
+      "evaluation": {
+        "outcome": "single_cluster",
+        "clusters": [
+          "appearance"
+        ]
+      },
+      "inputTokens": 705,
+      "outputTokens": 31,
+      "elapsedMs": 36885,
+      "error": null
+    },
+    {
+      "caseId": "mechanics-action-norm",
+      "passed": true,
+      "evaluation": {
+        "outcome": "single_cluster",
+        "clusters": [
+          "mechanics"
+        ]
+      },
+      "inputTokens": 718,
+      "outputTokens": 48,
+      "elapsedMs": 36349,
+      "error": null
+    },
+    {
+      "caseId": "relationship-expression-speech",
+      "passed": false,
+      "evaluation": {
+        "outcome": "invalid",
+        "reason": "ungrounded_source_quote"
+      },
+      "inputTokens": 717,
+      "outputTokens": 46,
+      "elapsedMs": 35394,
+      "error": null
+    },
+    {
+      "caseId": "skeleton-display-name",
+      "passed": true,
+      "evaluation": {
+        "outcome": "single_cluster",
+        "clusters": [
+          "skeleton"
+        ]
+      },
+      "inputTokens": 707,
+      "outputTokens": 35,
+      "elapsedMs": 38292,
+      "error": null
+    },
+    {
+      "caseId": "cross-mechanics-expression",
+      "passed": true,
+      "evaluation": {
+        "outcome": "cross_cluster",
+        "clusters": [
+          "mechanics",
+          "relationship-expression"
+        ]
+      },
+      "inputTokens": 718,
+      "outputTokens": 60,
+      "elapsedMs": 38018,
+      "error": null
+    },
+    {
+      "caseId": "cross-skeleton-appearance",
+      "passed": true,
+      "evaluation": {
+        "outcome": "cross_cluster",
+        "clusters": [
+          "skeleton",
+          "appearance"
+        ]
+      },
+      "inputTokens": 711,
+      "outputTokens": 49,
+      "elapsedMs": 36226,
+      "error": null
+    },
+    {
+      "caseId": "material-ambiguity",
+      "passed": true,
+      "evaluation": {
+        "outcome": "ambiguous",
+        "alternativeScopes": [
+          [
+            "appearance"
+          ],
+          [
+            "mechanics"
+          ]
+        ]
+      },
+      "inputTokens": 705,
+      "outputTokens": 85,
+      "elapsedMs": 42640,
+      "error": null
+    },
+    {
+      "caseId": "negative-mechanics-mention",
+      "passed": true,
+      "evaluation": {
+        "outcome": "single_cluster",
+        "clusters": [
+          "appearance"
+        ]
+      },
+      "inputTokens": 710,
+      "outputTokens": 29,
+      "elapsedMs": 35829,
+      "error": null
+    }
+  ],
+  "conclusionBoundary": "Development experiment only; no production or product acceptance claim."
+}

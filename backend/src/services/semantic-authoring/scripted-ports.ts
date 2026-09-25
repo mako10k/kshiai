@@ -24,6 +24,8 @@ export function createScriptedSemanticAuthoringPortsV1(
   initial: Readonly<{
     nowMs: number;
     fence: SemanticAuthoringRunV1["executionFence"];
+    timeoutMs: number;
+    maxRecoveriesPerWorkItem: 0 | 1;
   }>,
 ): ScriptedSemanticAuthoringPortsV1 {
   let nowMs = initial.nowMs;
@@ -31,6 +33,8 @@ export function createScriptedSemanticAuthoringPortsV1(
   const requests = new Map<string, DispatchedRequestV1>();
 
   const provider: SemanticAuthoringProviderPortV1 = {
+    timeoutMs: initial.timeoutMs,
+    maxRecoveriesPerWorkItem: initial.maxRecoveriesPerWorkItem,
     recordDispatch(reservation, dispatchedAtMs) {
       requests.set(reservation.requestId, {
         reservation,

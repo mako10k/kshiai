@@ -483,6 +483,8 @@ export async function settleSemanticAuthoringRequestV1(
     fence: SemanticAuthoringRunV1["executionFence"];
     outcome: Exclude<SemanticAuthoringProviderRequestOutcomeV1, "unknown_consumption">;
     finishedAt: string;
+    measuredElapsedMs?: number;
+    measuredUsage?: Readonly<{ inputTokens: number; outputTokens: number; costMicroUsd: number }>;
   }>,
 ): Promise<SemanticAuthoringFenceWriteV1<SemanticAuthoringProviderRequestRecordV1>> {
   return transactWrite(async (connection) => {
@@ -498,7 +500,22 @@ export async function settleSemanticAuthoringRequestV1(
     if (!request || request.outcome !== null) {
       abortWrite("not_outstanding");
     }
-    const accounting = chargeReservation(current.accounting, request.reservation);
+    const measuredElapsedMs = input.measuredElapsedMs;
+    if (measuredElapsedMs !== undefined && (!Number.isSafeInteger(measuredElapsedMs)
+      || measuredElapsedMs < 0)) {
+      throw new Error("SEMANTIC_AUTHORING_INVALID_ELAPSED_RECEIPT");
+    }
+    const usage = input.measuredUsage;
+    if (usage && (![usage.inputTokens, usage.outputTokens, usage.costMicroUsd]
+      .every((value) => Number.isSafeInteger(value) && value >= 0)
+      || usage.inputTokens > request.reservation.inputTokens
+      || usage.outputTokens > request.reservation.outputTokens
+      || usage.costMicroUsd > request.reservation.costMicroUsd)) {
+      throw new Error("SEMANTIC_AUTHORING_INVALID_USAGE_RECEIPT");
+    }
+    const settledReservation = { ...request.reservation, ...usage,
+      ...(measuredElapsedMs === undefined ? {} : { elapsedMs: measuredElapsedMs }) };
+    const accounting = chargeReservation(current.accounting, settledReservation);
     await casClaimedRun(connection, input.runId, input.fence, input.finishedAt, { accounting });
     const settled = await connection.query<RequestRow>(
       `UPDATE semantic_authoring_provider_requests
@@ -510,7 +527,7 @@ export async function settleSemanticAuthoringRequestV1(
       [
         input.requestId,
         input.outcome,
-        encodeJson(reservationAccounting(request.reservation)),
+        encodeJson(reservationAccounting(settledReservation)),
         input.finishedAt,
       ],
     );
@@ -552,6 +569,7 @@ export async function writeSemanticAuthoringTerminalV1(
       expectedCurrentGenerationId: string | null;
     }>;
     updatedAt: string;
+    persistFamilyResult?: (connection: DatabaseConnection) => Promise<void>;
   }>,
 ): Promise<SemanticAuthoringFenceWriteV1<SemanticAuthoringDurableRunV1>> {
   return transactWrite(async (connection) => {
@@ -567,6 +585,8 @@ export async function writeSemanticAuthoringTerminalV1(
       failureReceipt: input.failureReceipt,
     });
     await closeOutstandingRequests(connection, input.runId, input.updatedAt);
+    // The family payload and common terminal receipt commit or roll back together.
+    await input.persistFamilyResult?.(connection);
     if (input.question) {
       SemanticAuthoringOwnerQuestionEvidenceV1Schema.parse(input.question.evidence);
       SemanticAuthoringResumptionRecipeV1Schema.parse(input.question.resumption);

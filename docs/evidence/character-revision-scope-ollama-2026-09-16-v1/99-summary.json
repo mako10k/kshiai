@@ -1,0 +1,115 @@
+{
+  "schema": "character-revision-scope-ollama-replay-summary-v1",
+  "runId": "character-revision-scope-ollama-2026-09-16-v1",
+  "completedAt": "2026-09-16T00:55:05.338Z",
+  "requestsAttempted": 8,
+  "passed": 1,
+  "failed": 7,
+  "inputTokens": 1647,
+  "outputTokens": 986,
+  "elapsedMs": 204712,
+  "results": [
+    {
+      "caseId": "appearance-existing",
+      "passed": false,
+      "evaluation": null,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "elapsedMs": 0,
+      "error": {
+        "name": "ZodError",
+        "message": "[\n  {\n    \"code\": \"custom\",\n    \"message\": \"alternatives must have materially different scopes\",\n    \"path\": [\n      \"result\"\n    ]\n  }\n]"
+      }
+    },
+    {
+      "caseId": "mechanics-action-norm",
+      "passed": false,
+      "evaluation": {
+        "outcome": "invalid",
+        "reason": "unexpected_ambiguity"
+      },
+      "inputTokens": 241,
+      "outputTokens": 213,
+      "elapsedMs": 46179,
+      "error": null
+    },
+    {
+      "caseId": "relationship-expression-speech",
+      "passed": false,
+      "evaluation": {
+        "outcome": "invalid",
+        "reason": "ungrounded_source_quote"
+      },
+      "inputTokens": 240,
+      "outputTokens": 74,
+      "elapsedMs": 24618,
+      "error": null
+    },
+    {
+      "caseId": "skeleton-display-name",
+      "passed": true,
+      "evaluation": {
+        "outcome": "single_cluster",
+        "clusters": [
+          "skeleton"
+        ]
+      },
+      "inputTokens": 230,
+      "outputTokens": 68,
+      "elapsedMs": 20539,
+      "error": null
+    },
+    {
+      "caseId": "cross-mechanics-expression",
+      "passed": false,
+      "evaluation": {
+        "outcome": "invalid",
+        "reason": "ungrounded_source_quote"
+      },
+      "inputTokens": 241,
+      "outputTokens": 203,
+      "elapsedMs": 36330,
+      "error": null
+    },
+    {
+      "caseId": "cross-skeleton-appearance",
+      "passed": false,
+      "evaluation": {
+        "outcome": "invalid",
+        "reason": "missing_expected_cluster",
+        "missingClusters": [
+          "appearance"
+        ]
+      },
+      "inputTokens": 234,
+      "outputTokens": 70,
+      "elapsedMs": 17563,
+      "error": null
+    },
+    {
+      "caseId": "material-ambiguity",
+      "passed": false,
+      "evaluation": {
+        "outcome": "invalid",
+        "reason": "ambiguous_alternatives_mismatch"
+      },
+      "inputTokens": 228,
+      "outputTokens": 162,
+      "elapsedMs": 26791,
+      "error": null
+    },
+    {
+      "caseId": "negative-mechanics-mention",
+      "passed": false,
+      "evaluation": {
+        "outcome": "invalid",
+        "reason": "unexpected_ambiguity"
+      },
+      "inputTokens": 233,
+      "outputTokens": 196,
+      "elapsedMs": 32692,
+      "error": null
+    }
+  ],
+  "conclusionBoundary": "Development experiment only; no production or product acceptance claim."
+}

@@ -1,0 +1,57 @@
+{
+  "schema": "character-revision-scope-ollama-case-v1",
+  "runId": "character-revision-scope-ollama-2026-09-16-v2-ja-prompt",
+  "case": {
+    "caseId": "appearance-existing",
+    "origin": "existing-test",
+    "request": "外套を青に変更",
+    "expectation": {
+      "kind": "resolved",
+      "clusters": [
+        "appearance"
+      ]
+    }
+  },
+  "candidate": {
+    "kind": "ambiguous",
+    "sourceQuote": "[外套を青に変更]",
+    "unsafeReason": "変更要求が不明確で、どの領域に影響を与えるか特定できない。",
+    "alternatives": [
+      {
+        "id": "user_skeleton",
+        "clusters": [
+          "skeleton"
+        ],
+        "effect": "外套の色を青に変更"
+      },
+      {
+        "id": "user_mechanics",
+        "clusters": [
+          "mechanics"
+        ],
+        "effect": "何も変更しない"
+      },
+      {
+        "id": "user_appearance",
+        "clusters": [
+          "appearance"
+        ],
+        "effect": "外套の色を青に変更"
+      }
+    ]
+  },
+  "rawContent": "{\n  \"result\": {\n    \"kind\": \"ambiguous\",\n    \"sourceQuote\": \"[外套を青に変更]\",\n    \"unsafeReason\": \"変更要求が不明確で、どの領域に影響を与えるか特定できない。\"\n  , \"alternatives\": [\n      {\"id\": \"user_skeleton\", \"clusters\": [\"skeleton\"] , \"effect\": \"外套の色を青に変更\"},\n      {\"id\": \"user_mechanics\", \"clusters\": [\"mechanics\"], \"effect\": \"何も変更しない\"},\n      {\"id\": \"user_appearance\", \"clusters\": [\"appearance\"], \"effect\": \"外套の色を青に変更\"}\n    ]\n  }\n}",
+  "validationIssues": [],
+  "evaluation": {
+    "outcome": "invalid",
+    "reason": "ungrounded_source_quote"
+  },
+  "passed": false,
+  "accounting": {
+    "inputTokens": 353,
+    "outputTokens": 171,
+    "elapsedMs": 46605,
+    "providerDurationNs": 46550349910,
+    "estimatedCostUsd": 0
+  }
+}

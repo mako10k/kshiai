@@ -1,0 +1,67 @@
+framework Resume:
+  requires problem and premise and evidence and decision
+  warns pending
+
+problem P:
+  "Resume the interrupted cc304 implementation without losing WIP or substituting tests for delivered behavior."
+premise AUTH:
+  "The owner explicitly requested recovery and continuation on 2026-09-15. Local implementation is authorized; deployment, production activation, paid provider calls and remote writes are not included."
+evidence LOCAL:
+  "The existing compact-psyche-repair-integration worktree remains at ea8a24f with the runtime, service, provider, UI and ledger changes present as uncommitted files. The separate primary checkout contains unrelated dirty work. Git common directory is /home/katsumata-m/kshiai/.git. GitHub HTTPS helper uses gh auth git-credential. The main secdat domain dry-run supplies secret GH_TOKEN with no missing requirements."
+evidence CONTRACT:
+  "The accepted foundation v3 and plan revision6 require create/revise/migrate through the focused shared runtime, preservation, semantic reconciliation, owner Q&A and separate final acceptance. The WIP document marks these incomplete and preserves old V2 WIP."
+pending CURRENT:
+  "Current remote refs and interruption survival of runtime checks are not yet verified. No full capability completion can be inferred from yesterday's tests. User-reported shutdown cause is not independently diagnosed."
+decision RECOVER based_on P, AUTH, LOCAL, CONTRACT, CURRENT:
+  "Refresh remote refs through the verified secdat route, reconcile unique commits, and reuse the matching dirty worktree if no conflicting changes are observed. Do not reset, clean, merge or create a new worktree. Re-run bounded type and real-runtime checks for the interrupted ledger change, then inspect accepted domain contracts and the actual migration consumer to choose the next incomplete functional path. Keep all unrelated WIP and accepted completion criteria unchanged."
+
+evidence MIGRATION_CODE:
+  |
+    character-v3.ts v2ToCharacterV3 replaces every V2 actionNorm with an empty array.
+    The exact structural difference is established in NORM_CONTRACT below.
+    baselineObligations creates one source-disposition
+    obligation. stageLedgerProposal resolves it for any nonempty disposition map.
+    The common start discards possible baseline provenance and disposition ledgers.
+    The focused projector supplies only active source fields, while final results now
+    preserve the kernel ledger. Local runtime checks after recovery passed 46 cases.
+evidence MIGRATION_AUTHORITY:
+  |
+    Character requirements v5 R4/R5 require deterministic copies and accounting for
+    every relevant source. R15/R16 require semantic reconciliation beyond schema.
+    Accepted kernel design section5 permits exact copies and bounded disposition
+    proposals, not blanket deletion or one-claim completion. The old upgrade HTTP
+    endpoint still targets legacy readiness and is not a qualified V3 cutover route.
+pending SEMANTICS:
+  |
+    Exact equality establishes only copying, not the full semantic reconciliation
+    of transformed values. Importance classification, Q&A, capsule creation and
+    final owner acceptance remain unfinished and cannot be silently approximated.
+evidence NORM_CONTRACT:
+  |
+    Further inspection of structured-character.ts shows V2 norms require statement,
+    fallbackActionRef and selfAwareness. Strict V3 rejects those members; no complete
+    V2 norm is directly valid V3. The earlier phrase V3-valid V2 norm is therefore
+    inaccurate. The unchanged executable fragment can be copied after separating
+    the three retired/changed-role values, which must stay unresolved source claims.
+decision NORM_BLUEPRINT based_on NORM_CONTRACT, MIGRATION_AUTHORITY, SEMANTICS:
+  |
+    Correct the earlier assumption before relying on it. Decode the executable
+    fragment against strict V3, preserve it when valid, and retain statement,
+    fallbackActionRef and selfAwareness together in a separate unresolved source
+    claim. A selectorless fragment remains unresolved too. Do not label omission
+    of these values a successful copy, or invent a mapping of their meaning.
+decision SOURCE_ACCOUNTING based_on CONTRACT, MIGRATION_CODE, MIGRATION_AUTHORITY, SEMANTICS:
+  |
+    Continue the migration prerequisite in the active domain adapter: preserve the
+    compatible executable fragments specified by NORM_BLUEPRINT, record exact-copy source claims
+    and their receipts, and create separate obligations for all remaining source
+    claims. Preserve baseline ledgers through the generic runtime. Disposition
+    batches must reference registered source claims and existing target claims;
+    claimed preservation must equal the frozen source. Do not resolve the complete
+    source ledger from one arbitrary decision. Re-open previously preserved claims
+    when a later patch changes their values, retaining frozen source for repair.
+    Expose only the active bounded source claims through the actual projector and
+    persist the resulting ledgers via the actual worker. Keep transformations
+    lacking final semantic evidence unresolved at completion; do not call this a
+    substitute for semantic reconciliation or enable any public or production route.
+    This advances the source-to-candidate path rather than patching the old parser.

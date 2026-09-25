@@ -1,0 +1,184 @@
+{
+  "schema": "kshiai.seal-source-matches.v1",
+  "matches": [
+    {
+      "ref": "implementation/semantic-authoring-battlefield-conformance-v1",
+      "head": "3ff45396301e8b45a8118bbb06cda6a7ee17e42b07ad5f7a171c40801005ebb4",
+      "sha256": "d967296ee577eb33300458e4d2a5135a1e5fc34a19ac3c57a607b74408876ba6",
+      "matches": [
+        "backend/src/services/semantic-authoring/adapters/battlefield-conformance.ts"
+      ],
+      "restored_source": "backend/src/services/semantic-authoring/adapters/battlefield-conformance.ts",
+      "readback_relation": "WORKFILE_MATCHES_HEAD",
+      "mapping_evidence": "Exact SHA256 match"
+    },
+    {
+      "ref": "implementation/semantic-authoring-character-adapter-v1",
+      "head": "867edcce7249adf1f713ac8b6460681659df05bc034ac09237348f16f6cfebc3",
+      "sha256": "3824da3fd5fc4bb70130500dd664f3a76544708963a31dcb1d3993378668561d",
+      "matches": [],
+      "restored_source": "backend/src/services/semantic-authoring/adapters/character-v3.ts",
+      "readback_relation": "WORKFILE_DIFFERS_FROM_HEAD",
+      "mapping_evidence": "Original add --content-file receipt in seal-write-2026-09-13.jsonl"
+    },
+    {
+      "ref": "implementation/semantic-authoring-character-contracts-v1",
+      "head": "64bf845a8a9854316b594dfffa21bee9e1d535c602dee6a78939f2b0daff2ed1",
+      "sha256": "165c032b29401e3c4b8e234e5d26c3c1d67b65bec00b47b801d682a514bb350b",
+      "matches": [
+        "packages/shared/src/character-semantic-authoring.ts"
+      ],
+      "restored_source": "packages/shared/src/character-semantic-authoring.ts",
+      "readback_relation": "WORKFILE_MATCHES_HEAD",
+      "mapping_evidence": "Exact SHA256 match"
+    },
+    {
+      "ref": "implementation/semantic-authoring-family-conformance-v1",
+      "head": "7ff757f111a5ad7b0c1b5143712288ae8e81926d1ac2dd5e6a80796c4b7a8858",
+      "sha256": "dac65edb552b541dcacb6e68543f69a5beb6351e8838a7d802065d6ea4c6cc60",
+      "matches": [
+        "backend/src/services/semantic-authoring/adapters/family-conformance.ts"
+      ],
+      "restored_source": "backend/src/services/semantic-authoring/adapters/family-conformance.ts",
+      "readback_relation": "WORKFILE_MATCHES_HEAD",
+      "mapping_evidence": "Exact SHA256 match"
+    },
+    {
+      "ref": "implementation/semantic-authoring-narration-conformance-v1",
+      "head": "12e58f0a43aac45ff10284aa5d7eee2337c85fc4f697bdc5733a037ec5f4081d",
+      "sha256": "9428ef31f2f3d83601e6fa2a316199169625207ae3be320336c07f2cf36351e0",
+      "matches": [
+        "backend/src/services/semantic-authoring/adapters/narration-conformance.ts"
+      ],
+      "restored_source": "backend/src/services/semantic-authoring/adapters/narration-conformance.ts",
+      "readback_relation": "WORKFILE_MATCHES_HEAD",
+      "mapping_evidence": "Exact SHA256 match"
+    },
+    {
+      "ref": "implementation/semantic-authoring-orchestration-v1",
+      "head": "05acf640575472e3bf007fd8fa37398c6cfdb94b288aa83667f915041fc0f9fc",
+      "sha256": "311746d5a3e169b430f16ec1d2a3e5cfcffb054b89950a3f6346197a92263285",
+      "matches": [],
+      "restored_source": "backend/src/services/semantic-authoring/orchestration.ts",
+      "readback_relation": "WORKFILE_DIFFERS_FROM_HEAD",
+      "mapping_evidence": "Original add --content-file receipt in seal-write-2026-09-13.jsonl"
+    },
+    {
+      "ref": "implementation/semantic-authoring-ports-v1",
+      "head": "4538f35e64283292b1c985cb50bd3c9b0f9d859606a34a938c2af6f9cc54830d",
+      "sha256": "82227b9ea749b9d08f37ad32f8ee80819b552c9cefb59c6295b73bfec191cf19",
+      "matches": [],
+      "restored_source": "backend/src/services/semantic-authoring/ports.ts",
+      "readback_relation": "WORKFILE_DIFFERS_FROM_HEAD",
+      "mapping_evidence": "Original add --content-file receipt in seal-write-2026-09-13.jsonl"
+    },
+    {
+      "ref": "implementation/semantic-authoring-public-contracts-v1",
+      "head": "a9e6eab35564a2491b13c41319acb0a020f112c671d6a2203f19a38a772f4fad",
+      "sha256": "a2e8f0716481a75ed52d223c806c3dc045071af5b93e66ccf8a59578efff96f5",
+      "matches": [
+        "packages/shared/src/semantic-authoring-public.ts"
+      ],
+      "restored_source": "packages/shared/src/semantic-authoring-public.ts",
+      "readback_relation": "WORKFILE_MATCHES_HEAD",
+      "mapping_evidence": "Exact SHA256 match"
+    },
+    {
+      "ref": "implementation/semantic-authoring-public-mapping-v1",
+      "head": "97d3e3be7d7ccfceec31eba40ca3e761d40f99b40d85337039ca4837c4e2f85c",
+      "sha256": "5a761f2d7cf65ec60b2d4284207f734f41a6c022bc22d5d2c8ac39309299b368",
+      "matches": [
+        "backend/src/services/semantic-authoring/public-mapping.ts"
+      ],
+      "restored_source": "backend/src/services/semantic-authoring/public-mapping.ts",
+      "readback_relation": "WORKFILE_MATCHES_HEAD",
+      "mapping_evidence": "Exact SHA256 match"
+    },
+    {
+      "ref": "implementation/semantic-authoring-repository-v1",
+      "head": "48ba7e651f347cca09ee738d07307722bc701a7def82e967b10791b7fe6c21d6",
+      "sha256": "ea447c4a0496e94b264ab532a2305e635ace7a0272415a34d9a176f19c7b7246",
+      "matches": [],
+      "restored_source": "backend/src/repositories/semantic-authoring.ts",
+      "readback_relation": "WORKFILE_DIFFERS_FROM_HEAD",
+      "mapping_evidence": "Original add --content-file receipt in seal-write-2026-09-13.jsonl"
+    },
+    {
+      "ref": "implementation/semantic-authoring-scripted-ports-v1",
+      "head": "38812c78db6a1e4980bb52e35c283639accf67ce35b96273a4a1dbab9f53fe67",
+      "sha256": "237860aa549f5ec400b4fe0543a13a6d58be1b74b8db409e17afd97a6460a0bf",
+      "matches": [
+        "backend/src/services/semantic-authoring/scripted-ports.ts"
+      ],
+      "restored_source": "backend/src/services/semantic-authoring/scripted-ports.ts",
+      "readback_relation": "WORKFILE_MATCHES_HEAD",
+      "mapping_evidence": "Exact SHA256 match"
+    },
+    {
+      "ref": "implementation/semantic-authoring-sqlite-migration-v1",
+      "head": "554bf7405e134fcaf4b7efde668319c60fb6ec2769090dd93213be11969b31a8",
+      "sha256": "b6b53172d7fefa01bb695324c3faf7e4dfd562c16873f60f107b5e7c221b6f0a",
+      "matches": [
+        "backend/migrations/0025_semantic_authoring_runs.sql"
+      ],
+      "restored_source": "backend/migrations/0025_semantic_authoring_runs.sql",
+      "readback_relation": "WORKFILE_MATCHES_HEAD",
+      "mapping_evidence": "Exact SHA256 match"
+    },
+    {
+      "ref": "verification/semantic-authoring-kernel-slice1-independent-review-2026-09-12",
+      "head": "4009bc281d48ba2dfa7ad8c9b54e3cfe6d57e0cdc68bcd38c460b75fe7455be1",
+      "sha256": "66af7bccf740f9943b04c082f578cbceffc9be7f895e27dc8bd11e1515c5221f",
+      "matches": [
+        "docs/evidence/semantic-authoring-kernel-slice1-independent-review-2026-09-12.md"
+      ],
+      "restored_source": "docs/evidence/semantic-authoring-kernel-slice1-independent-review-2026-09-12.md",
+      "readback_relation": "WORKFILE_MATCHES_HEAD",
+      "mapping_evidence": "Exact SHA256 match"
+    },
+    {
+      "ref": "verification/semantic-authoring-kernel-slice2-independent-review-2026-09-12",
+      "head": "d8352c564f03d38cb1bc7af9abdb336558c6eb18f192405a4c5540059d29791e",
+      "sha256": "eeec13f9a9c351734a5993bafaf42c41e6133a44a163c13a5e560c49cbc9f593",
+      "matches": [
+        "docs/evidence/semantic-authoring-kernel-slice2-independent-review-2026-09-12.md"
+      ],
+      "restored_source": "docs/evidence/semantic-authoring-kernel-slice2-independent-review-2026-09-12.md",
+      "readback_relation": "WORKFILE_MATCHES_HEAD",
+      "mapping_evidence": "Exact SHA256 match"
+    },
+    {
+      "ref": "verification/semantic-authoring-kernel-slice3-independent-review-2026-09-12",
+      "head": "46ea0c8349145439c4c796b6b4e10501fa8f5788e4445a5071e1db45bb0f0c93",
+      "sha256": "85f3e5b4e02e283412444f1b538f6bbf65a5e43985c43dbb58fe0301cb290f32",
+      "matches": [
+        "docs/evidence/semantic-authoring-kernel-slice3-independent-review-2026-09-12.md"
+      ],
+      "restored_source": "docs/evidence/semantic-authoring-kernel-slice3-independent-review-2026-09-12.md",
+      "readback_relation": "WORKFILE_MATCHES_HEAD",
+      "mapping_evidence": "Exact SHA256 match"
+    },
+    {
+      "ref": "verification/semantic-authoring-kernel-slice4-independent-review-2026-09-12",
+      "head": "8b45f1cf7b0ff38d3d351086f85633bb474b8e46854fe6cfe2d4baccd92d385c",
+      "sha256": "d38a9fa9fa1bfe5ff6a7836120b5a797ef4bc338c09b6bf3c865d482977f2a98",
+      "matches": [
+        "docs/evidence/semantic-authoring-kernel-slice4-independent-review-2026-09-12.md"
+      ],
+      "restored_source": "docs/evidence/semantic-authoring-kernel-slice4-independent-review-2026-09-12.md",
+      "readback_relation": "WORKFILE_MATCHES_HEAD",
+      "mapping_evidence": "Exact SHA256 match"
+    },
+    {
+      "ref": "verification/semantic-authoring-kernel-slice5-integration-review-2026-09-12",
+      "head": "9b6b5fff9841f4f7095d39305c4af2af4bffb9d5ee32a67f9057199325ea4a65",
+      "sha256": "42357020baf7420b833dde06089c348ceb7690cc8019d398a3bccde9c7ce7af4",
+      "matches": [
+        "docs/evidence/semantic-authoring-kernel-slice5-integration-review-2026-09-12.md"
+      ],
+      "restored_source": "docs/evidence/semantic-authoring-kernel-slice5-integration-review-2026-09-12.md",
+      "readback_relation": "WORKFILE_MATCHES_HEAD",
+      "mapping_evidence": "Exact SHA256 match"
+    }
+  ]
+}

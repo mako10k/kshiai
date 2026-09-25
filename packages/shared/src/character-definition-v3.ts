@@ -283,6 +283,22 @@ export type CharacterCompilerCapabilitySetV1 = z.infer<
   typeof CharacterCompilerCapabilitySetV1Schema
 >;
 
+/** The only compiler required by the focused V2-to-V3 upgrade path. */
+export const CHARACTER_BATTLE_MECHANICS_CAPABILITY_SET_V3: CharacterCompilerCapabilitySetV1 =
+  CharacterCompilerCapabilitySetV1Schema.parse({
+    contractVersion: 1,
+    required: [{ consumer: "battle-mechanics", version: 3 }],
+  });
+
+export function isCharacterBattleMechanicsCapabilitySetV3(
+  value: unknown,
+): value is CharacterCompilerCapabilitySetV1 {
+  const parsed = CharacterCompilerCapabilitySetV1Schema.safeParse(value);
+  return parsed.success && parsed.data.required.length === 1 &&
+    parsed.data.required[0]?.consumer === "battle-mechanics" &&
+    parsed.data.required[0]?.version === 3;
+}
+
 export const CharacterDeferredValueV1Schema = z.object({
   targetPath: z.string().min(1).max(240),
   reason: z.string().min(1).max(320),

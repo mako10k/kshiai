@@ -1,6 +1,6 @@
 # Structured selectable-asset authoring workflow
 
-- Status: Accepted product workflow and common architecture; family schemas remain gated
+- Status: Superseded in full on 2026-09-17 by product-owner direction
 - Date: 2026-08-13
 - Decision owner: Product owner
 - Applies to: characters, battlefield presets, narration styles, and future
@@ -10,6 +10,15 @@
   [proposed common envelope](structured-asset-envelope-design.md),
   [ADR-0010](adr/0010-structured-selectable-asset-envelope.md),
   [ADR-0003](adr/0003-revision-editable-assets-and-bind-battles.md)
+
+> Historical record only. No clause of this document remains an independently
+> applicable requirement, including clauses that other Accepted artifacts also
+> express. For the three currently named asset families, consult their current
+> Accepted requirements and ADRs independently. This supersession does not
+> decide whether or how the former future-family scope continues. Every
+> downstream Cause of this document requires review; the [impact record](evidence/structured-asset-workflow-whole-supersession-impact-2026-09-17.md)
+> records the review scope and open decisions. The text below is preserved as
+> historical evidence, not as a partial source of current authority.
 
 ## One workflow
 

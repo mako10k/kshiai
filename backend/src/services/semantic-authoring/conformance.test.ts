@@ -36,6 +36,7 @@ import {
   scheduleSemanticAuthoringReservationV1,
 } from "./ports.js";
 import { createScriptedSemanticAuthoringPortsV1 } from "./scripted-ports.js";
+import { executeSemanticAuthoringV1 } from "./execution.js";
 import { classifyProgressCondition } from "./progress-monitor.js";
 
 const familyProposalSchema = createSemanticProposalV1Schema(
@@ -56,8 +57,6 @@ const policy: SemanticAuthoringPolicyV1 = {
   maxConcurrentProviderRequests: 1,
   maxLlmCalls: 8,
   maxCountedSteps: 48,
-  maxAttemptElapsedMs: 240_000,
-  maxProviderCallElapsedMs: 60_000,
   maxInputTokensPerCall: 6_000,
   maxInputBytesPerCall: 24_576,
   maxOutputTokensPerCall: 1_500,
@@ -484,7 +483,7 @@ describe("semantic authoring adapter conformance", () => {
 
   it("F14 timeout charges the reservation and ignores a late result", () => {
     const fence = { ownerId: "owner-1", fencingToken: 1, runVersion: 1 };
-    const ports = createScriptedSemanticAuthoringPortsV1({ nowMs: 1_000, fence });
+    const ports = createScriptedSemanticAuthoringPortsV1({ nowMs: 1_000, fence, timeoutMs: 60_000, maxRecoveriesPerWorkItem: 0 });
     const adapter = createBattlefieldConformanceAdapter();
     const started = startSemanticAuthoringV1(
       adapter,
@@ -536,6 +535,55 @@ describe("semantic authoring adapter conformance", () => {
     assert.equal(expired.status, "terminal");
     const late = acceptSemanticAuthoringDeliveryV1(expired.state, "request-1", ports);
     assert.equal(late.status, "rejected");
+  });
+
+  it("records the route timeout through asynchronous execution without replaying the call", async () => {
+    const adapter = createBattlefieldConformanceAdapter();
+    const settlements: string[] = [];
+    const outcome = await executeSemanticAuthoringV1({
+      adapter,
+      run: {
+        runId: "run-async-timeout", attemptId: "attempt-async-timeout",
+        family: "battlefield-preset", mode: "create", ownerUserId: "owner-1",
+        sourceIdentity: { assetId: "asset-1", generationId: null, contentDigest: "a".repeat(64) },
+        targetContract: { family: "battlefield-preset", version: 2 },
+        adapterIdentity: adapter.identity, policyIdentity: policy.identity,
+        pricingIdentity: "pricing-v1", tokenEstimatorIdentity: "bytes-upper-bound-v1",
+        expectedCurrentGenerationId: null,
+        executionFence: { ownerId: "owner-1", fencingToken: 1, runVersion: 1 },
+      },
+      policy,
+      frozenSource: { kind: "create", naturalText: "森" },
+      provider: {
+        pricingIdentity: "pricing-v1", tokenEstimatorIdentity: "bytes-upper-bound-v1",
+        transportPolicy: { identity: "route-test", routeIdentity: "scripted", timeoutMs: 1,
+          maxRecoveriesPerWorkItem: 0 },
+        prepare(_focused, requestId) {
+          return { body: "{}", providerRoute: "scripted", reservation: {
+            requestId, inputTokens: 1_000, inputBytes: 4_000, outputTokens: 500,
+            outputBytes: 2_000, costMicroUsd: 50_000, elapsedMs: 60_000,
+          } };
+        },
+        exchange: async () => new Promise<never>(() => {}),
+      },
+      persistence: {
+        reserve: async () => true,
+        settle: async (_requestId, status) => { settlements.push(status); return true; },
+        owns: async () => true,
+        finish: async () => true,
+      },
+      project: () => ({ system: "focused", context: "森" }),
+      issues,
+    });
+    assert.equal(outcome.status, "saved");
+    if (outcome.status !== "saved") assert.fail("timeout result was not saved");
+    assert.equal(outcome.result.kind, "failed");
+    if (outcome.result.kind !== "failed") assert.fail("timeout did not fail the run");
+    assert.equal(outcome.result.receipt.category, "provider_transport_unavailable");
+    assert.equal(outcome.result.receipt.transportReason, "policy_disallows_recovery");
+    assert.equal(outcome.result.accounting.llmCalls, 1);
+    assert.equal(outcome.result.accounting.costMicroUsd, 50_000);
+    assert.deepEqual(settlements, ["provider_transport_timeout"]);
   });
 
   it("F15 failure receipts support source-based retry without answering a question", () => {

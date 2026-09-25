@@ -10,6 +10,7 @@ import {
   type AssetCompatibility,
   type CharacterGenerationEnvelopeV2,
   type CharacterSheet,
+  OwnerRetryCommandV1Schema,
 } from "@kshiai/shared";
 import { query, withTransaction, type DatabaseConnection } from "../db.js";
 import { newId } from "../id.js";
@@ -21,6 +22,11 @@ import {
   type AssetGeneration,
 } from "./asset-generations.js";
 import { insertOwnerNotification } from "./owner-notifications.js";
+import { registerCharacterFocusedAuthoringV3,
+  type CharacterFocusedRegistrationSourceV1 } from "../services/character-focused-authoring.js";
+import { createCharacterSemanticAuthoringAdapterV3 } from "../services/semantic-authoring/adapters/character-v3.js";
+import { decodeUnresolvedCharacterRevisionSourceV1 } from
+  "../services/semantic-authoring/character-revision-scope-source.js";
 import {
   assertFamilyAuthoringFence,
   assertFamilyAuthoringJobDiscardable,
@@ -401,6 +407,8 @@ async function insertNewAuthoringAttempt(
     sourceText: string;
     sourceDigest: string;
     ttlMs?: number;
+    focused?: { source: CharacterFocusedRegistrationSourceV1; pricingIdentity: string;
+      predecessorRunId?: string; commandId?: string };
   },
 ): Promise<CharacterAuthoringAttempt> {
   const characterId = input.characterId ?? newId("chr");
@@ -494,6 +502,15 @@ async function insertNewAuthoringAttempt(
   );
   const attempt = await selectAttempt(connection, attemptId, input.ownerUserId);
   if (!attempt) throw new Error("AUTHORING_ATTEMPT_INSERT_FAILED");
+  if (input.focused) {
+    await registerCharacterFocusedAuthoringV3(connection, {
+      attemptId, ownerUserId: input.ownerUserId, characterId,
+      sourceGenerationId: attempt.expectedGenerationId,
+      expectedCurrentGenerationId: attempt.expectedGenerationId,
+      source: input.focused.source, pricingIdentity: input.focused.pricingIdentity, createdAt,
+      predecessorRunId: input.focused.predecessorRunId, commandId: input.focused.commandId,
+    });
+  }
   return attempt;
 }
 
@@ -506,6 +523,7 @@ export async function beginCharacterAuthoringAttempt(input: {
   sourceText: string;
   sourceDigest: string;
   ttlMs?: number;
+  focused?: { source: CharacterFocusedRegistrationSourceV1; pricingIdentity: string };
 }): Promise<{ attempt: CharacterAuthoringAttempt; replayed: boolean }> {
   if (!input.idempotencyKey.trim() || input.idempotencyKey.length > 200) {
     throw new Error("INVALID_IDEMPOTENCY_KEY");
@@ -522,6 +540,56 @@ export async function beginCharacterAuthoringAttempt(input: {
       attempt: await insertNewAuthoringAttempt(connection, input),
       replayed: false,
     };
+  });
+}
+
+/** Retry from frozen source, never from an intermediate/failed candidate. */
+export async function retryCharacterFocusedAuthoringV3(input: {
+  ownerUserId: string; predecessorAttemptId: string; commandId: string; pricingIdentity: string;
+}): Promise<{ attempt: CharacterAuthoringAttempt; replayed: boolean }> {
+  OwnerRetryCommandV1Schema.parse({ commandId: input.commandId });
+  return withTransaction(async (connection) => {
+    const predecessor = await selectAttempt(connection, input.predecessorAttemptId, input.ownerUserId);
+    if (!predecessor) throw new Error("AUTHORING_ATTEMPT_NOT_FOUND");
+    const requestDigest = assetContentDigest({ operation: "retry", ownerUserId: input.ownerUserId,
+      predecessorAttemptId: input.predecessorAttemptId, commandId: input.commandId });
+    const idempotencyKey = `semantic-command:${input.commandId}`;
+    const replay = await replayExistingAttempt(connection, input.ownerUserId, idempotencyKey, requestDigest);
+    if (replay) return replay;
+    const result = await connection.query<{ run_id: string; status: string; source_json: unknown;
+      pricing_identity: string; expected_current_generation_id: string | null; source_content_digest: string }>(
+      `SELECT r.run_id, r.status, r.pricing_identity, r.expected_current_generation_id,
+        r.source_content_digest, p.source_json
+        FROM semantic_authoring_runs r JOIN character_focused_authoring_payloads p ON p.run_id = r.run_id
+        WHERE r.attempt_id = $1 AND r.owner_user_id = $2`,
+      [input.predecessorAttemptId, input.ownerUserId]);
+    const row = result.rows[0];
+    if (!row || row.status !== "failed" || predecessor.status !== "failed") {
+      throw new Error("AUTHORING_RETRY_NOT_ALLOWED");
+    }
+    if (row.pricing_identity !== input.pricingIdentity) throw new Error("FOCUSED_CHARACTER_PROVIDER_IDENTITY_MISMATCH");
+    await rejectStaleCharacterAuthoring(connection, predecessor.characterId, input.ownerUserId, predecessor.attemptId);
+    const pointer = await connection.query<{ generation_id: string }>(
+      `SELECT generation_id FROM asset_current_generations WHERE asset_type = 'character' AND asset_id = $1`,
+      [predecessor.characterId]);
+    if ((pointer.rows[0]?.generation_id ?? null) !== row.expected_current_generation_id) {
+      throw new Error("FOCUSED_CHARACTER_POINTER_DRIFT");
+    }
+    const rawSource = typeof row.source_json === "string" ? JSON.parse(row.source_json) : row.source_json;
+    const decoded = createCharacterSemanticAuthoringAdapterV3().decodeFrozenSource(rawSource);
+    const pendingScope = decodeUnresolvedCharacterRevisionSourceV1(rawSource);
+    const source = pendingScope ?? (decoded.accepted ? decoded.value : null);
+    if (!source || !predecessor.sourceText
+      || assetContentDigest(source) !== row.source_content_digest) {
+      throw new Error("FOCUSED_CHARACTER_SOURCE_INVALID");
+    }
+    const attempt = await insertNewAuthoringAttempt(connection, {
+      ownerUserId: input.ownerUserId, characterId: predecessor.characterId, kind: predecessor.kind,
+      idempotencyKey, requestDigest, sourceText: predecessor.sourceText, sourceDigest: predecessor.sourceDigest,
+      focused: { source, pricingIdentity: row.pricing_identity,
+        predecessorRunId: row.run_id, commandId: input.commandId },
+    });
+    return { attempt, replayed: false };
   });
 }
 

@@ -1,0 +1,122 @@
+{
+  "schema": "character-revision-scope-ollama-replay-summary-v1",
+  "runId": "character-revision-scope-ollama-2026-09-16-v2-ja-prompt",
+  "completedAt": "2026-09-16T01:04:01.016Z",
+  "requestsAttempted": 8,
+  "passed": 3,
+  "failed": 5,
+  "inputTokens": 2875,
+  "outputTokens": 903,
+  "elapsedMs": 262277,
+  "results": [
+    {
+      "caseId": "appearance-existing",
+      "passed": false,
+      "evaluation": {
+        "outcome": "invalid",
+        "reason": "ungrounded_source_quote"
+      },
+      "inputTokens": 353,
+      "outputTokens": 171,
+      "elapsedMs": 46605,
+      "error": null
+    },
+    {
+      "caseId": "mechanics-action-norm",
+      "passed": true,
+      "evaluation": {
+        "outcome": "single_cluster",
+        "clusters": [
+          "mechanics"
+        ]
+      },
+      "inputTokens": 366,
+      "outputTokens": 87,
+      "elapsedMs": 30185,
+      "error": null
+    },
+    {
+      "caseId": "relationship-expression-speech",
+      "passed": true,
+      "evaluation": {
+        "outcome": "single_cluster",
+        "clusters": [
+          "relationship-expression"
+        ]
+      },
+      "inputTokens": 365,
+      "outputTokens": 67,
+      "elapsedMs": 32263,
+      "error": null
+    },
+    {
+      "caseId": "skeleton-display-name",
+      "passed": true,
+      "evaluation": {
+        "outcome": "single_cluster",
+        "clusters": [
+          "skeleton"
+        ]
+      },
+      "inputTokens": 355,
+      "outputTokens": 74,
+      "elapsedMs": 27670,
+      "error": null
+    },
+    {
+      "caseId": "cross-mechanics-expression",
+      "passed": false,
+      "evaluation": {
+        "outcome": "invalid",
+        "reason": "missing_expected_cluster",
+        "missingClusters": [
+          "relationship-expression"
+        ]
+      },
+      "inputTokens": 366,
+      "outputTokens": 77,
+      "elapsedMs": 30944,
+      "error": null
+    },
+    {
+      "caseId": "cross-skeleton-appearance",
+      "passed": false,
+      "evaluation": {
+        "outcome": "invalid",
+        "reason": "missing_expected_cluster",
+        "missingClusters": [
+          "appearance"
+        ]
+      },
+      "inputTokens": 359,
+      "outputTokens": 78,
+      "elapsedMs": 27391,
+      "error": null
+    },
+    {
+      "caseId": "material-ambiguity",
+      "passed": false,
+      "evaluation": {
+        "outcome": "invalid",
+        "reason": "ungrounded_source_quote"
+      },
+      "inputTokens": 353,
+      "outputTokens": 188,
+      "elapsedMs": 34785,
+      "error": null
+    },
+    {
+      "caseId": "negative-mechanics-mention",
+      "passed": false,
+      "evaluation": {
+        "outcome": "invalid",
+        "reason": "ungrounded_source_quote"
+      },
+      "inputTokens": 358,
+      "outputTokens": 161,
+      "elapsedMs": 32434,
+      "error": null
+    }
+  ],
+  "conclusionBoundary": "Development experiment only; no production or product acceptance claim."
+}

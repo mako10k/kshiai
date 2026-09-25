@@ -10,6 +10,7 @@ import type {
   SemanticAuthoringRunV1,
   SemanticAuthoringStateV1,
   SemanticProposalV1,
+  SourceDispositionDecisionV1,
 } from "@kshiai/shared";
 import { countSemanticAuthoringStepV1 } from "./accounting.js";
 import {
@@ -84,12 +85,16 @@ function adapterView<C, O, F>(
     candidate: C;
     obligations: ReadonlyMap<string, O>;
     findings: ReadonlyMap<string, F>;
+    provenance: ReadonlyMap<string, readonly ProposalProvenanceV1[]>;
+    sourceDispositions: ReadonlyMap<string, SourceDispositionDecisionV1>;
   }>,
 ) {
   return {
     candidate: state.candidate,
     obligations: state.obligations,
     findings: state.findings,
+    provenance: state.provenance,
+    sourceDispositions: state.sourceDispositions,
   };
 }
 
@@ -103,6 +108,10 @@ function resultIdentity<C, O, F, W, Q, FC>(
     policyIdentity: state.run.policyIdentity,
     adapterIdentity: state.run.adapterIdentity,
     accounting: state.accounting,
+    sourceLedger: {
+      provenance: [...state.provenance.values()].flat(),
+      sourceDispositions: [...state.sourceDispositions.values()],
+    },
   };
 }
 
@@ -120,6 +129,7 @@ function clearWork<C, O, F, W, Q, FC>(
 
 export function chargeOutstandingReservationV1<C, O, F, W, Q, FC>(
   state: AuthoringState<C, O, F, W, Q, FC>,
+  measuredElapsedMs?: number,
 ): AuthoringState<C, O, F, W, Q, FC> {
   const reservation = state.outstandingReservation;
   if (!reservation) {
@@ -131,7 +141,7 @@ export function chargeOutstandingReservationV1<C, O, F, W, Q, FC>(
     accounting: {
       llmCalls: state.accounting.llmCalls + 1,
       countedSteps: state.accounting.countedSteps,
-      elapsedMs: state.accounting.elapsedMs + reservation.elapsedMs,
+      elapsedMs: state.accounting.elapsedMs + (measuredElapsedMs ?? reservation.elapsedMs),
       inputTokens: state.accounting.inputTokens + reservation.inputTokens,
       outputTokens: state.accounting.outputTokens + reservation.outputTokens,
       costMicroUsd: state.accounting.costMicroUsd + reservation.costMicroUsd,
@@ -168,13 +178,16 @@ function terminate<C, O, F, W, Q, FC>(
 export function failSemanticAuthoringV1<C, O, F, W, Q, FC>(
   state: AuthoringState<C, O, F, W, Q, FC>,
   category: SemanticAuthoringFailureCategoryV1,
+  transportReason?: "policy_disallows_recovery" | "no_admissible_recovery_basis",
+  measuredElapsedMs?: number,
 ): SemanticAuthoringOrchestrationV1<C, O, F, W, Q, FC> {
-  const charged = chargeOutstandingReservationV1(state);
+  const charged = chargeOutstandingReservationV1(state, measuredElapsedMs);
   return terminate(charged, {
     ...resultIdentity(charged),
     kind: "failed",
     receipt: {
       category,
+      ...(transportReason ? { transportReason } : {}),
       accounting: charged.accounting,
       relevantFindingKeys: [...charged.findings.keys()],
       sourceIdentity: charged.run.sourceIdentity,
@@ -229,11 +242,10 @@ function resourceExhausted<C, O, F, W, Q, FC>(
 ): boolean {
   return (
     state.accounting.countedSteps >= state.policy.maxCountedSteps ||
-    state.accounting.elapsedMs >= state.policy.maxAttemptElapsedMs ||
-    state.accounting.llmCalls >= state.policy.maxLlmCalls ||
-    state.accounting.costMicroUsd >= state.policy.maxCostMicroUsd ||
-    state.accounting.inputTokens >= state.policy.maxCumulativeInputTokens ||
-    state.accounting.outputTokens >= state.policy.maxCumulativeOutputTokens
+    state.accounting.llmCalls > state.policy.maxLlmCalls ||
+    state.accounting.costMicroUsd > state.policy.maxCostMicroUsd ||
+    state.accounting.inputTokens > state.policy.maxCumulativeInputTokens ||
+    state.accounting.outputTokens > state.policy.maxCumulativeOutputTokens
   );
 }
 
@@ -417,8 +429,8 @@ export function startSemanticAuthoringV1<S, C, O, W, Payload, F, Q, A, FC>(
       candidate: baseline.candidate,
       obligations: new Map(baseline.obligations),
       findings: new Map(),
-      provenance: new Map(),
-      sourceDispositions: new Map(),
+      provenance: new Map(baseline.provenance),
+      sourceDispositions: new Map(baseline.sourceDispositions),
       accounting: {
         llmCalls: 0,
         countedSteps: 0,
@@ -470,6 +482,7 @@ function finalizeOrAsk<S, C, O, W, Payload, F, Q, A, FC>(
       ...resultIdentity(withFindings),
       kind: "needs_owner_answer",
       question: assessment.question,
+      evidence: assessment.evidence,
       resumption: {
         predecessorRunId: withFindings.run.runId,
         predecessorAttemptId: withFindings.run.attemptId,
@@ -552,11 +565,15 @@ function stageAdapterProposal<S, C, O, W, Payload, F, Q, A, FC>(
   obligations: ReadonlyMap<string, O>,
   findings: ReadonlyMap<string, F>,
   proposal: SemanticProposalV1<Payload>,
+  provenance: ReadonlyMap<string, readonly ProposalProvenanceV1[]>,
+  sourceDispositions: ReadonlyMap<string, SourceDispositionDecisionV1>,
 ) {
   const staged = adapter.stageProposal({
     candidate,
     obligations,
     findings,
+    provenance,
+    sourceDispositions,
     proposal,
   });
   if (!staged.accepted) {
@@ -712,9 +729,14 @@ export function applySemanticAuthoringProposalV1<S, C, O, W, Payload, F, Q, A, F
       obligations,
       findings,
       stagedProposal,
+      counted.state.provenance,
+      counted.state.sourceDispositions,
     );
     if (staged.accepted && staged.sourceDispositions) {
-      nextDispositions = staged.sourceDispositions;
+      nextDispositions = new Map([
+        ...nextDispositions,
+        ...staged.sourceDispositions,
+      ]);
     }
     return staged;
   };
@@ -786,13 +808,19 @@ export function applySemanticAuthoringProposalV1<S, C, O, W, Payload, F, Q, A, F
     affectedObligationIds: proposal.affectedObligationIds,
     declaredSemanticDependantIds: proposal.declaredSemanticDependantIds,
   });
+  const reconciledFindings = new Map(reconciled.findings);
+  // A valid committed replacement resolves this kernel-owned decoder failure.
+  // Domain findings are not cleared merely because JSON now parses.
+  if (reconciledFindings.get(issues.proposalRejected.key) === issues.proposalRejected.finding) {
+    reconciledFindings.delete(issues.proposalRejected.key);
+  }
   const applied = observeProgress(
     {
       ...recorded,
       candidateRevision: transaction.state.candidateRevision,
       candidate: transaction.state.candidate,
       obligations: transaction.state.obligations,
-      findings: reconciled.findings,
+      findings: reconciledFindings,
       provenance: mergeProvenance(counted.state.provenance, proposal.provenance),
       sourceDispositions: nextDispositions,
     },

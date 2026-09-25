@@ -1,0 +1,93 @@
+domain ADR0036:
+  description "ADR-0036 revision 1: draft test evidence follows draft Causes. Status Accepted."
+
+problem P1:
+  |
+    ADR-0034 defines source-matched, Cause-linked, non-stale test evidence but does
+    not specify the evidence status when the verification Seal or a required Cause
+    is draft. The current selector labels such tests active/current and includes
+    their results in the authoritative aggregate.
+
+evidence E1:
+  |
+    Accepted ADR-0034 revision 1 lists a verification REF, exact source binding,
+    matching workfile bytes, explicit governing Cause Links, and a non-stale
+    required chain. It does not mention draft status.
+
+evidence E2:
+  |
+    On 2026-09-16 scripts/test-authority.mjs did not inspect the draft flag. Two
+    of its five active unit tests had draft verification Seals. This is a local
+    observation, not a claim about future inventory counts.
+
+evidence E3:
+  |
+    SealGraph defines draft as explicit provisional sealing. Its normal
+    non-draft publication requires every direct and reachable Cause target to
+    be a non-draft active revision leaf. A source match and absence of stale
+    paths do not by themselves remove provisional status.
+
+evidence OWNER_DIRECTION:
+  |
+    On 2026-09-16 the product owner stated that test results based on draft
+    grounds are themselves draft, then instructed creation of an ADR that
+    clarifies ADR-0034 draft treatment. This directs the subject of this
+    proposal but is not acceptance of this exact ADR revision.
+
+premise AUTHORITY_DIRECTION:
+  |
+    A selector and a passing test provide downstream evidence only. Neither can
+    establish acceptance or finality of a draft governing Cause.
+
+premise SCOPE:
+  |
+    This decision concerns the status and authoritative aggregation of
+    repository test results. It does not judge whether tested behavior is
+    correct, amend source requirements, accept draft authority artifacts,
+    require wholesale resealing, or authorize implementation or release.
+
+premise OPTIONS:
+  |
+    Keep draft-backed results labeled current; exclude draft-backed tests from
+    authoritative selection while permitting explicitly labeled diagnostic
+    execution; or add a new normal suite state that executes draft tests but
+    separately aggregates provisional outcomes. The middle option is the
+    smallest change that prevents provisional results from being reported as
+    final without adding a new aggregate execution contract.
+
+decision D1 based_on P1, E1, E3, OWNER_DIRECTION, AUTHORITY_DIRECTION:
+  |
+    Propose that a test result is draft evidence when its verification Seal is
+    draft or any required direct or transitive Cause Seal is draft. Source match
+    and non-staleness do not promote that result to final current evidence.
+
+decision D2 based_on D1, E2, OPTIONS, SCOPE:
+  |
+    Propose that the authoritative selector report such a test as provisional
+    with reason draft_basis and exclude it from the authoritative pass/fail
+    aggregate. It may still be run by an explicit diagnostic command, whose
+    pass or fail is reported as draft evidence for the exact recorded basis.
+    This decision does not require a new diagnostic command or UI.
+
+decision D3 based_on D1, D2, E1, AUTHORITY_DIRECTION:
+  |
+    Propose that ADR-0034 missing-Seal, wrong-source, changed-source, missing-
+    Cause, and stale conditions retain their existing disabled treatment. A
+    stale or otherwise invalid chain is not made usable by labeling it draft.
+    Immutable historical Seals remain evidence only for their exact original
+    grounds. A later non-draft result needs a reviewed new verification Seal
+    against the applicable non-draft current Cause chain; no automatic promotion.
+
+evidence OWNER_ACCEPTANCE:
+  |
+    On 2026-09-17, after exact ADR-0036 revision 1 and its complete Japanese
+    review scope were presented, the product owner replied "はい。受け入れます。"
+    to the question asking whether to accept that exact revision. The reviewed
+    pre-acceptance authoritative .think SHA-256 was
+    811c9beff686909ebac00233aaf47b4f9149cd96c55ce4541a337de5220f20d4.
+
+decision ACCEPTANCE based_on D1, D2, D3, OWNER_ACCEPTANCE:
+  |
+    Accept exact ADR-0036 revision 1 as a supplement to Accepted ADR-0034.
+    This acceptance does not itself authorize selector implementation, Seal
+    promotion, commit, push, deployment, or cc304 completion.

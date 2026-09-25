@@ -1,42 +1,135 @@
 domain StructuredSemanticAuthoringKernelDesignV1Acceptance:
-  description "Record exact owner acceptance of D11 implementation-design revision two without authorizing implementation."
+  description "Record exact owner acceptance of D11 implementation-design revision five without broadening execution authority."
 problem P1:
   |
-    Determine the lifecycle state and authority boundary after the owner replied
-    ACCEPT to the independently re-reviewed D11 design revision two.
-evidence E_DESIGN:
+    Determine the lifecycle state and authority boundary after the owner received exact
+    D11 design revision five following its corrected independent PASS review and
+    instructed continuation.
+evidence E_HISTORICAL_DESIGN:
   |
-    The reviewed design is Seal
-    c4f8cb366d788d49a5769a7ec3cf2e31d97704a0c9eff17a4e23862330319394.
-    It is implementation-design candidate v1 revision two for PERT task cb215.
-evidence E_REVIEW:
+    Design Seal c4f8cb366d788d49a5769a7ec3cf2e31d97704a0c9eff17a4e23862330319394
+    is the historical D11 implementation-design revision two accepted on 2026-09-11.
+evidence E_HISTORICAL_REVIEW:
   |
-    Review Seal d7144b116dec2b708cd8252ae4aea1d1078f3248123e86cd0c87734045aeee89
-    reports PASS with no P0, P1, P2 or P3 findings and recommends ACCEPT of
-    the exact design Seal.
-evidence OWNER_ACCEPTANCE:
+    Historical review Seal d7144b116dec2b708cd8252ae4aea1d1078f3248123e86cd0c87734045aeee89
+    reported PASS for exact revision two.
+evidence E_HISTORICAL_ACCEPTANCE:
   |
-    On 2026-09-11, immediately after the re-review result was presented, the
-    product owner replied ACCEPT.
-premise ACCEPTED_POINTS:
+    On 2026-09-11, immediately after the revision-two re-review result was presented,
+    the product owner replied ACCEPT. That acceptance completed the historical cb215
+    design gate but did not authorize implementation or external effects.
+premise HISTORICAL_ACCEPTANCE_INTERPRETATION:
   |
-    The accepted design includes its proposed policy defaults of eight provider
-    calls and 500000 micro-USD per attempt, additive projection of owner-answer
-    need onto the legacy failed status, recovery through a new source-reconstructed
-    attempt, and the specified no-progress and cycle thresholds.
+    The historical record originally interpreted the bundled ACCEPT as separate
+    authority for eight provider calls, 500000 micro-USD per attempt, 240 seconds per
+    attempt, 60 seconds per provider call, additive projection of owner-answer need onto
+    the legacy failed status, source-reconstructed recovery, and progress thresholds.
+evidence OWNER_AUTHORITY_CORRECTION:
+  |
+    On 2026-09-15, after the numerical limits and their effects were presented, the
+    product owner stated that the limits were new information, identified time-based
+    termination in particular as too strict, and instructed correction.
+evidence E_ADR0032:
+  |
+    Accepted ADR0032 replaces unsupported provider-call and whole-attempt elapsed
+    deadlines while preserving the non-time execution controls of ADR0031. It is the
+    governing time-boundary correction for design revision five.
+premise CORRECTED_POLICY_AUTHORITY:
+  |
+    The 2026-09-11 bundled ACCEPT is not authority to activate the rejected 60-second
+    provider or 240-second whole-attempt semantics. Revision-five acceptance incorporates
+    accepted ADR0032 and does not revive those historical values.
+evidence E_DESIGN_REV5:
+  |
+    The exact received implementation-design revision five is Seal
+    69c9c98937d7d610384823ae339ea464724f6e983d8b5500d3aef6942945a240
+    and workfile SHA256
+    426470047d0e380de90624192b9db71d3f30788fa44423ed0710f9cb1e6cdba4.
+evidence E_REVIEW_REV5:
+  |
+    Corrected independent review Seal
+    fc58bf3b2f9aaa9e6a0ac95ef21941c2523efc222aadec75c3bfa0626a44a1be
+    reports PASS with no P0, P1, P2, or P3 findings. It does not require semantic-exact
+    migration or an unaccepted formal materiality-proof protocol.
+evidence OWNER_ACCEPTANCE_REV5:
+  |
+    On 2026-09-15, immediately after the corrected PASS result and correction scope were
+    presented, the product owner instructed continuation and stated that the design is
+    received. This binds acceptance to exact design revision five and its corrected
+    review, not to a future revision or implementation result.
+evidence OWNER_CONTINUATION:
+  |
+    The same 2026-09-15 instruction explicitly requested continuation. This is separate
+    authority to resume the already selected local cc304 task after recording acceptance;
+    it does not authorize paid provider calls, deployment, activation, or cc305.
 premise BOUNDARY:
   |
-    Acceptance establishes the exact D11 implementation design and completes its
-    design gate only. It does not authorize implementation, provider calls,
-    evaluation, deployment, production migration, candidate acceptance, pointer
-    or policy activation, rollback, release or successor-task start.
+    Acceptance establishes exact D11 implementation-design revision five and completes
+    its current design gate. It does not by itself authorize implementation, provider
+    calls, evaluation, deployment, production migration, candidate acceptance, pointer
+    or policy activation, rollback, release, or successor-task start. OWNER_CONTINUATION
+    authorizes only the separately bounded local cc304 continuation already selected in
+    the accepted plan.
 premise DOWNSTREAM_OBLIGATIONS:
   |
-    Exact DTO and focused-patch elaboration, durable process-loss takeover, the
-    fifteen-case one-to-one mapping, public owner-Q&A route mapping and runtime
-    evidence remain required at the downstream gates identified by the review.
-decision ACCEPTANCE based_on P1, E_DESIGN, E_REVIEW, OWNER_ACCEPTANCE, ACCEPTED_POINTS, BOUNDARY, DOWNSTREAM_OBLIGATIONS:
+    Runtime F9 conformance, real create/revise/migrate route connection, authenticated
+    answer and retry behavior, complete candidate reconciliation, controlled HTTP and UI
+    evidence, provider quality evaluation, Stage proof, deployment, production migration,
+    pointer changes, and final schema-three cutover remain at their named downstream
+    gates. Design acceptance is not evidence that these outcomes are complete.
+decision HISTORICAL_ACCEPTANCE based_on P1, E_HISTORICAL_DESIGN, E_HISTORICAL_REVIEW, E_HISTORICAL_ACCEPTANCE:
   |
-    Record exact D11 implementation-design revision two as Accepted. Complete
-    PERT task cb215 while leaving cb206 and every later implementation or runtime
-    task unstarted and separately authorized.
+    Preserve D11 implementation-design revision two as the historical accepted snapshot
+    and keep its review and acceptance evidence available in immutable history.
+decision POLICY_AUTHORITY_CORRECTION based_on OWNER_AUTHORITY_CORRECTION, HISTORICAL_ACCEPTANCE_INTERPRETATION, E_ADR0032, CORRECTED_POLICY_AUTHORITY:
+  |
+    Preserve the prior authority correction. The rejected provider and whole-attempt
+    elapsed deadlines are not reactivated by revision-five acceptance.
+decision ACCEPTANCE_REV5 based_on P1, E_ADR0032, E_DESIGN_REV5, E_REVIEW_REV5, OWNER_ACCEPTANCE_REV5, BOUNDARY, DOWNSTREAM_OBLIGATIONS:
+  |
+    Accept exact D11 implementation-design revision five as the current reviewed design
+    snapshot. This supersedes revision two only as the current design-acceptance target;
+    it does not change the lifecycle status of ADR0031 or ADR0032 and does not claim
+    implementation, provider, deployment, migration, activation, or release completion.
+decision RESUME_CC304 based_on OWNER_CONTINUATION, ACCEPTANCE_REV5, BOUNDARY, DOWNSTREAM_OBLIGATIONS:
+  |
+    Resume only the already selected cc304 local implementation and verification task.
+    Retain its existing exclusions and require separate authority for external effects
+    and successor tasks.
+evidence E_DESIGN_REV6:
+  |
+    The reviewed implementation-design revision-six Markdown SHA256 is
+    a0f2ba909d3c71fb7de2235bd84125b420663f6f8b5400c4236eaf92e832ebff,
+    and its authoritative reasoning SHA256 before acceptance is
+    69eb577b09356a3806fd08325a9c73b78e6c864aa78e2947c489dff706b69f6d.
+evidence E_ADR0033_REV1:
+  |
+    The reviewed ADR0033 revision-one authoritative SHA256 is
+    ae8b736857b59188880acbf397e2da941caf5c102539b2410ddd7011fd1f529a.
+evidence E_REVIEW_REV6:
+  |
+    Formal review reasoning SHA256
+    cdd328284fd76310ef28dfaff0f59c2e7cf559828c738a3a71c85839be1567d3
+    reports PASS with no P0 through P3 findings for ADR0033 revision one and design
+    revision six.
+evidence OWNER_ACCEPTANCE_REV6:
+  |
+    On 2026-09-15, immediately after the PASS result, complete Japanese review scope,
+    and explicit statement that ACCEPT would receive both ADR0033 revision one and
+    design revision six, the product owner replied "ACCEPT".
+premise REV6_BOUNDARY:
+  |
+    Revision-six acceptance replaces revision five only as the current accepted design
+    snapshot. It keeps exact provider timeout, worker lease, and bounded transport-
+    recovery values undecided and does not authorize implementation, commit, push,
+    provider calls, deployment, migration, activation, rollback, or release.
+premise REV6_IMPLEMENTATION_OBLIGATION:
+  |
+    Implementation must retain a durable claim or expiry fact sufficient to decide
+    worker-lease expiry after restart without requiring a durable Config identity or
+    Config snapshot.
+decision ACCEPTANCE_REV6 based_on E_DESIGN_REV6, E_ADR0033_REV1, E_REVIEW_REV6, OWNER_ACCEPTANCE_REV6, REV6_BOUNDARY, REV6_IMPLEMENTATION_OBLIGATION:
+  |
+    Accept exact implementation-design revision six as the current design snapshot in
+    conformance with accepted ADR0033 revision one. Preserve revision five as immutable
+    history and retain the stated authority boundary and implementation obligation.

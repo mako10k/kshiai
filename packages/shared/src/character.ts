@@ -523,6 +523,27 @@ export const CharacterAuthoringReviewSchema = AssetAuthoringReviewBaseSchema.ext
   candidate: CharacterPublicSchema.nullable(),
   current: CharacterPublicSchema.nullable(),
   acceptanceError: z.string().min(1).max(160).nullable(),
+  sourceRetryAvailable: z.boolean().optional(),
+  semanticCandidateReview: z.object({
+    schemaVersion: z.literal(3),
+    fields: z.array(z.object({ key: z.string(), label: z.string(),
+      source: z.string().nullable(), candidate: z.string() }).strict()),
+    sourceDispositions: z.array(z.object({
+      sourceClaimId: z.string(), disposition: z.string(), rationale: z.string(),
+      capsuleCopyVerified: z.boolean().nullable(),
+      pendingCopyVerified: z.boolean().nullable(),
+    }).strict()).optional(),
+    pendingPreservation: z.array(z.object({ sourceClaimId: z.string(),
+      disposition: z.enum(["discard-as-nonmaterial", "defer"]), rationale: z.string(),
+      exactSourceCopyVerified: z.boolean() }).strict()).optional(),
+    deferredValues: z.array(z.object({ targetPath: z.string(), reason: z.string(),
+      candidateSourcePaths: z.array(z.string()), requiringCapability: z.string() }).strict()).optional(),
+    compatibility: z.object({ status: z.enum(["ready", "blocked"]),
+      deferred: z.array(z.object({ capability: z.string(), targetPaths: z.array(z.string()) }).strict()),
+      blocked: z.array(z.object({ capability: z.string(), reasonCode: z.string() }).strict()),
+    }).strict().nullable().optional(),
+    limitation: z.string(),
+  }).strict().nullable().optional(),
 }).strict();
 export type CharacterAuthoringReview = z.infer<typeof CharacterAuthoringReviewSchema>;
 

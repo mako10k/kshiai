@@ -3,12 +3,29 @@ import { after, before, describe, it } from "node:test";
 import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import SqliteDatabase from "better-sqlite3";
 import type { SemanticAuthoringRunV1 } from "@kshiai/shared";
 
 const directory = mkdtempSync(join(tmpdir(), "kshiai-semantic-authoring-"));
 process.env.DATABASE_URL = "";
 process.env.AUTH_PROVIDER = "legacy";
 process.env.DATABASE_PATH = join(directory, "authoring.db");
+
+const legacyDatabase = new SqliteDatabase(process.env.DATABASE_PATH);
+legacyDatabase.exec(`CREATE TABLE semantic_authoring_provider_requests (
+  request_id TEXT PRIMARY KEY,
+  run_id TEXT NOT NULL REFERENCES semantic_authoring_runs(run_id) ON DELETE CASCADE,
+  ordinal INTEGER NOT NULL CHECK (ordinal BETWEEN 1 AND 8),
+  reservation_json TEXT NOT NULL,
+  request_digest TEXT NOT NULL,
+  provider_route TEXT NOT NULL,
+  outcome TEXT CHECK (outcome IN ('succeeded', 'failed', 'unknown_consumption')),
+  accounting_json TEXT,
+  created_at TEXT NOT NULL,
+  finished_at TEXT,
+  UNIQUE (run_id, ordinal)
+);`);
+legacyDatabase.close();
 
 const { closeDatabase, query } = await import("../db.js");
 const authoring = await import("./semantic-authoring.js");
@@ -61,6 +78,13 @@ after(async () => {
 });
 
 describe("semantic authoring durable ports", () => {
+  it("upgrades the previous SQLite request constraint before timeout settlement", async () => {
+    const table = await query<{ sql: string }>(
+      "SELECT sql FROM sqlite_master WHERE type = 'table' AND name = 'semantic_authoring_provider_requests'",
+    );
+    assert.match(table.rows[0]?.sql ?? "", /provider_transport_timeout/);
+  });
+
   it("claims a pending run and records a reservation only under the live fence", async () => {
     const pending = await authoring.insertPendingSemanticAuthoringRunV1({
       run: runInput("run-claim", "attempt-claim"),
@@ -173,6 +197,43 @@ describe("semantic authoring durable ports", () => {
     const afterLate = await authoring.getSemanticAuthoringRunV1("run-loss");
     assert.equal(afterLate?.status, "failed");
     assert.equal(afterLate?.accounting.llmCalls, 1);
+  });
+
+  it("records a transport timeout once and retains unknown usage at the reserved maximum", async () => {
+    await authoring.insertPendingSemanticAuthoringRunV1({
+      run: runInput("run-timeout", "attempt-timeout"),
+      sourcePayloadRef: "family:character:asset-1:source",
+      predecessorRunId: null,
+      createdAt: now,
+    });
+    const claimed = await authoring.claimSemanticAuthoringRunV1("run-timeout", "worker-timeout", now);
+    assert.equal(claimed.accepted, true);
+    if (!claimed.accepted) assert.fail("timeout claim failed");
+    const reserved = await authoring.writeSemanticAuthoringReservationV1({
+      runId: "run-timeout", fence: claimed.value.executionFence,
+      reservation: { ...reservation, requestId: "request-timeout" },
+      requestDigest: "f".repeat(64), providerRoute: "scripted-route", createdAt: now,
+    });
+    assert.equal(reserved.accepted, true);
+    if (!reserved.accepted) assert.fail("timeout reservation failed");
+    const settled = await authoring.settleSemanticAuthoringRequestV1({
+      runId: "run-timeout", requestId: "request-timeout",
+      fence: (await authoring.getSemanticAuthoringRunV1("run-timeout"))!.executionFence,
+      outcome: "provider_transport_timeout", finishedAt: later, measuredElapsedMs: 90_000,
+    });
+    assert.equal(settled.accepted, true);
+    if (!settled.accepted) assert.fail("timeout settlement failed");
+    assert.equal(settled.value.outcome, "provider_transport_timeout");
+    assert.equal(settled.value.accounting?.costMicroUsd, reservation.costMicroUsd);
+    const run = await authoring.getSemanticAuthoringRunV1("run-timeout");
+    assert.equal(run?.accounting.llmCalls, 1);
+    assert.equal(run?.accounting.elapsedMs, 90_000);
+    const late = await authoring.settleSemanticAuthoringRequestV1({
+      runId: "run-timeout", requestId: "request-timeout",
+      fence: run!.executionFence, outcome: "succeeded", finishedAt: later,
+    });
+    assert.equal(late.accepted, false);
+    assert.equal(late.accepted ? "" : late.reason, "not_outstanding");
   });
 
   it("replays the same owner command identity to the same pending run", async () => {

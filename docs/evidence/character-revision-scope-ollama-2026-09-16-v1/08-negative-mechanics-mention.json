@@ -1,0 +1,50 @@
+{
+  "schema": "character-revision-scope-ollama-case-v1",
+  "runId": "character-revision-scope-ollama-2026-09-16-v1",
+  "case": {
+    "caseId": "negative-mechanics-mention",
+    "origin": "controlled-synthetic",
+    "request": "外套を赤にして。戦い方は変えない",
+    "expectation": {
+      "kind": "resolved",
+      "clusters": [
+        "appearance"
+      ]
+    }
+  },
+  "candidate": {
+    "kind": "ambiguous",
+    "sourceQuote": "外套を赤にして。戦い方は変えない",
+    "unsafeReason": "Two materially different scope interpretations remain: changing only the appearance or changing both appearance and mechanics.",
+    "alternatives": [
+      {
+        "id": "user_chosen_appearance_only",
+        "clusters": [
+          "appearance"
+        ],
+        "effect": "Only the character's visible appearance will be changed to a red coat, while maintaining the same battle behavior."
+      },
+      {
+        "id": "user_chosen_both_appearance_and_mechanics",
+        "clusters": [
+          "appearance",
+          "mechanics"
+        ],
+        "effect": "The character's visible appearance will be changed to a red coat and their battle behavior will also be changed, while maintaining the same core goals or needs."
+      }
+    ]
+  },
+  "rawContent": "{\n  \"result\": {\n    \"kind\": \"ambiguous\",\n    \"sourceQuote\": \"外套を赤にして。戦い方は変えない\",\n    \"unsafeReason\": \"Two materially different scope interpretations remain: changing only the appearance or changing both appearance and mechanics.\",\n    \"alternatives\": [\n      {\n        \"id\": \"user_chosen_appearance_only\",\n        \"clusters\": [\"appearance\"],\n        \"effect\": \"Only the character's visible appearance will be changed to a red coat, while maintaining the same battle behavior.\"\n      },\n      {\n        \"id\": \"user_chosen_both_appearance_and_mechanics\",\n        \"clusters\": [\"appearance\", \"mechanics\"],\n        \"effect\": \"The character's visible appearance will be changed to a red coat and their battle behavior will also be changed, while maintaining the same core goals or needs.\"\n      }\n    ]\n  }\n}",
+  "evaluation": {
+    "outcome": "invalid",
+    "reason": "unexpected_ambiguity"
+  },
+  "passed": false,
+  "accounting": {
+    "inputTokens": 233,
+    "outputTokens": 196,
+    "elapsedMs": 32692,
+    "providerDurationNs": 32687245569,
+    "estimatedCostUsd": 0
+  }
+}

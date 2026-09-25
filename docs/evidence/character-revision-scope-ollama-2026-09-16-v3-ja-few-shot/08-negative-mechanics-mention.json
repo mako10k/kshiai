@@ -1,0 +1,45 @@
+{
+  "schema": "character-revision-scope-ollama-case-v1",
+  "runId": "character-revision-scope-ollama-2026-09-16-v3-ja-few-shot",
+  "case": {
+    "caseId": "negative-mechanics-mention",
+    "origin": "controlled-synthetic",
+    "request": "外套を赤にして。戦い方は変えない",
+    "expectation": {
+      "kind": "resolved",
+      "clusters": [
+        "appearance"
+      ]
+    }
+  },
+  "candidate": {
+    "kind": "resolved",
+    "clusters": [
+      "appearance"
+    ],
+    "evidence": [
+      {
+        "sourceQuote": "外套を赤にして",
+        "clusters": [
+          "appearance"
+        ]
+      }
+    ]
+  },
+  "rawContent": "{\"result\":{\"kind\":\"resolved\",\"clusters\":[\"appearance\"],\"evidence\":[{\"sourceQuote\":\"外套を赤にして\",\"clusters\":[\"appearance\"]}]}}",
+  "validationIssues": [],
+  "evaluation": {
+    "outcome": "single_cluster",
+    "clusters": [
+      "appearance"
+    ]
+  },
+  "passed": true,
+  "accounting": {
+    "inputTokens": 710,
+    "outputTokens": 29,
+    "elapsedMs": 35829,
+    "providerDurationNs": 35823245610,
+    "estimatedCostUsd": 0
+  }
+}

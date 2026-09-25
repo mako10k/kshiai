@@ -1,0 +1,18 @@
+domain FoundationV3AcceptedSnapshotRef:
+  description "Decide whether to record the exact owner-accepted foundation v3 requirement as a current non-draft SealGraph REF."
+evidence OWNER_SCOPE:
+  "The owner requested a new basis after whole-document supersession, approved the newly presented owner-decision root, and previously requested one-by-one Luna review before promotion."
+evidence ACCEPTED_REVISION:
+  "The owner acceptance record identifies the exact unchanged foundation v3 requirement SHA-256 b5693f6d47e975ea1cb78adaa686185630db5ffc6d52c74f3481ac77511c99da and explains that the candidate heading is historical."
+evidence CURRENT_ROOT:
+  "Seal d53bc670bd6f0889a13f229a2f7583e2d76f5acb4fe7fd43a6391827355a657d is a clean, non-draft root bound to the owner acceptance record."
+evidence HISTORICAL_WORDING:
+  "The exact accepted v3 text refers in the present tense to the former accepted workflow; the owner has since superseded that workflow as a whole."
+evidence INDEPENDENT_REVIEW:
+  "A read-only Luna review concluded that a separate fixed-content requirement REF linked to the owner-decision root is semantically valid if the old-workflow reference is explicitly historical and future-family scope remains undecided."
+premise DIRECTION:
+  "A downstream requirement-snapshot REF may cite its owner acceptance root; the old workflow must not become a live Cause or regain authority."
+premise LIMIT:
+  "The new REF records only the already-accepted exact requirement snapshot. It cannot revise the text, authorize future-family scope, admit tests, or promote any other downstream REF."
+decision D1 based_on OWNER_SCOPE, ACCEPTED_REVISION, CURRENT_ROOT, HISTORICAL_WORDING, INDEPENDENT_REVIEW, DIRECTION, LIMIT:
+  "Create one non-draft source-bound requirement REF for the exact unchanged v3 text, with the owner-decision root as its sole Cause and an explicit message that former-workflow present-tense wording is historical after whole supersession. Verify source identity, Cause direction, draft and stale state, and graph integrity. Leave all other downstream REF heads unchanged."

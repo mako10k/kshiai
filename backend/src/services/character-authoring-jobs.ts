@@ -18,6 +18,7 @@ import {
 } from "./family-authoring-runners.js";
 import * as charRepo from "../repositories/characters.js";
 import type { LlmProvider } from "../llm/types.js";
+import { runCharacterFocusedAuthoringJobV3 } from "./character-focused-authoring.js";
 import {
   adjustedGenerationResult,
   buildCharacterGenerationCandidate,
@@ -224,9 +225,16 @@ export async function processNextCharacterAuthoringJob(input: {
   workerId?: string;
   cap?: number;
 }): Promise<CharacterAuthoringJobResult> {
+  const workerPolicy = input.llm.semanticAuthoringProvider
+    ? input.llm.semanticAuthoringWorkerPolicy
+    : undefined;
+  if (input.llm.semanticAuthoringProvider && !workerPolicy) {
+    throw new Error("SEMANTIC_AUTHORING_WORKER_POLICY_REQUIRED");
+  }
   const claimed = await claimNextFamilyAuthoringJob({
     workerId: input.workerId ?? "authoring-worker",
     cap: input.cap,
+    leaseDurationMs: workerPolicy?.leaseDurationMs,
   });
   if (!claimed) return "idle";
   if (claimed.family === "battlefield") {
@@ -258,6 +266,11 @@ export async function processNextCharacterAuthoringJob(input: {
     return "idle";
   }
   try {
+    const focused = await runCharacterFocusedAuthoringJobV3({
+      llm: input.llm, attemptId: claimed.attemptId, ownerUserId: claimed.ownerUserId,
+      executionFence: claimed.executionFence,
+    });
+    if (focused) return focused;
     await runClaimedAttempt(input.llm, attempt, claimed.executionFence);
     const latest = await charAssetRepo.getCharacterAuthoringAttempt(
       claimed.attemptId,
@@ -334,6 +347,11 @@ async function runClaimedAuthoringTask(
     return "acknowledged";
   }
   try {
+    const focused = await runCharacterFocusedAuthoringJobV3({
+      llm, attemptId: claimed.attemptId, ownerUserId: claimed.ownerUserId,
+      executionFence: claimed.executionFence,
+    });
+    if (focused) return focused;
     await runClaimedAttempt(llm, attempt, claimed.executionFence);
     const latest = await charAssetRepo.getCharacterAuthoringAttempt(
       claimed.attemptId,
@@ -367,6 +385,12 @@ export async function processAuthoringTask(input: {
   workerId: string;
   cap?: number;
 }): Promise<"acknowledged" | "completed" | "failed" | "retry_queued"> {
+  const workerPolicy = input.llm.semanticAuthoringProvider
+    ? input.llm.semanticAuthoringWorkerPolicy
+    : undefined;
+  if (input.llm.semanticAuthoringProvider && !workerPolicy) {
+    throw new Error("SEMANTIC_AUTHORING_WORKER_POLICY_REQUIRED");
+  }
   const active = await getAuthoringOutboxDelivery(input.delivery);
   if (active === "acknowledged") return active;
   const claimed = await claimFamilyAuthoringJob({
@@ -374,6 +398,7 @@ export async function processAuthoringTask(input: {
     attemptId: input.delivery.attemptId,
     workerId: input.workerId,
     cap: input.cap,
+    leaseDurationMs: workerPolicy?.leaseDurationMs,
   });
   if (claimed === "terminal") {
     await completeAuthoringOutboxDelivery(input.delivery);
@@ -390,12 +415,13 @@ export async function processAuthoringTask(input: {
       claimed.family,
       claimed.attemptId,
       claimed.executionFence,
+      workerPolicy?.leaseDurationMs,
     ).catch((error) => {
       leaseFailure = error instanceof Error
         ? error
         : new Error("AUTHORING_STALE_FENCE");
     });
-  }, Math.floor(180_000 / 3));
+  }, Math.floor((workerPolicy?.leaseDurationMs ?? 180_000) / 3));
   heartbeat.unref();
   try {
     const result = await runClaimedAuthoringTask(input.llm, claimed);

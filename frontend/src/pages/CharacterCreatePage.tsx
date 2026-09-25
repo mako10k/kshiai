@@ -32,6 +32,10 @@ export function CharacterCreatePage() {
   useEffect(() => {
     void api.latestCharacterDraft()
       .then((result) => {
+        if (result.reviewAttemptId) {
+          nav(`/reviews/${result.reviewAttemptId}`);
+          return;
+        }
         if (result.failed) {
           setError(result.failed.errorCode ?? "生成に失敗しました");
           return;

@@ -1,0 +1,36 @@
+domain QualityDefinitionV1IndependentReview:
+  description "Review the fixed quality definition revision 1 against accepted sources and the selected REVIEW route."
+evidence E1:
+  "The owner selected REVIEW without adding questions for candidate docs/character-semantic-authoring-quality-definition-v1.md at SHA256 3a7380e50ec4aedf8cf6bc730031adbb0a7bbc34820e9b6f0f49590ff0b1931f."
+evidence E2:
+  "Accepted source digests match their acceptance records: foundation v3 b5693f6d, character v5 17596f17, and V2 compatibility v6 c3e19e53. ADR0031 is Accepted and preserves existing APIs, identities, limits, activation, and historical generation behavior."
+evidence E3:
+  "The candidate separates user value, correctness, safety, security and privacy, compatibility, performance and efficiency, reliability and availability, recoverability and reversibility, and maintainability. It defines four finding classes and four claim results and says review may complete with nonconformance or indeterminate results."
+evidence E4:
+  "Candidate section 6.2 requires every in-scope claim and finding to receive a result or classification for the fixed snapshot, but then says that after correction only affected claims are rechecked and unchanged accepted scope is not reopened."
+evidence E5:
+  "The requirement review lifecycle says any requirement-text change creates a new revision and restarts at step 1, prior review status is not preserved across changed bytes, and independent review covers the exact owner-reviewed snapshot and review input."
+evidence E6:
+  "The candidate includes waived as a claim result but does not identify who may waive a required claim, the evidence needed, or whether waiver changes acceptance authority."
+evidence E7:
+  "Candidate section 3 requires eight fields for each decidable quality claim. Section 5 profile rows provide attribute, subject and criterion but do not themselves provide all boundaries, evidence methods, or dispositions, and do not expressly say each review instance must complete the missing fields."
+evidence E8:
+  "The candidate expressly leaves corpus composition, reliability rates, latency percentiles and limits, token and cost evaluation limits, and Stage observation values unresolved and forbids reviewers from inventing them."
+premise P1:
+  "Reusing evidence for an unchanged claim can be efficient, but carrying a prior claim result into a changed requirement snapshot without a current-fit disposition would preserve review status across changed bytes."
+premise P2:
+  "An undefined waiver authority can turn a required quality claim into an untraceable exception and therefore leaves the review result contract incomplete."
+premise P3:
+  "A profile may legitimately be a set of templates, but the document must state how the common eight-field contract is instantiated before a reviewer can decide those profile claims."
+premise P4:
+  "Explicitly unresolved numerical values are evidence gaps for later evaluation, not contradictions in this definition candidate and not permission for optional improvement to become blocking."
+decision D1 based_on E1, E2, E3, E4, E5, P1:
+  "Classify the impact-only recheck rule as a material contradiction with the requirement lifecycle for changed requirement bytes. The candidate can retain delta execution only if every new snapshot receives a current complete disposition and reused evidence passes a current-fit check."
+decision D2 based_on E1, E3, E6, P2:
+  "Classify missing waiver authority and evidence as a material unresolved contract gap."
+decision D3 based_on E1, E3, E7, P3:
+  "Classify profile instantiation of the eight required fields as a moderate unresolved contract gap rather than assuming omitted fields."
+decision D4 based_on E1, E3, E8, P4:
+  "Classify numeric corpus, reliability, latency, cost, and observation values as explicit later evidence gaps, nonblocking for defining the vocabulary and not silently accepted."
+decision D5 based_on E1, E2, E3, E4, E5, E6, E7, E8, D1, D2, D3, D4:
+  "Complete the independent review without editing the candidate. Report one contradiction, two material evidence gaps, explicit later numeric unknowns, and no namespace or accepted-source conflict elsewhere. Recommend REVISE at Step 4; acceptance remains the owner's decision and authorizes no plan, implementation, deployment, or activation effect."

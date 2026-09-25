@@ -1,10 +1,11 @@
-# 部分構造化意味作成基盤 — 実装設計候補v1 revision 2 全文日本語訳
+# 部分構造化意味作成基盤 — 受理済み実装設計v1 revision 6 全文日本語訳
 
-- 状態: 改訂設計候補、訂正版レビュー指摘対応済み、再レビュー待ち
-- 日付: 2026-09-11
-- 根拠: 受理済みADR-0031 revision 1、基盤要件v3、キャラクタ作成要件v5
-- PERT task: `cb215`
-- 範囲: ADR-0031 D11が実装前に要求する正確な契約
+- 状態: 受理済み
+- 日付: 2026-09-15
+- 根拠: ADR-0031の影響を受けない判断を取り込んだ受理済みADR-0032 revision 1、
+  基盤要件v3、キャラクタ作成要件v5、受理済みADR-0033 revision 1
+- PERT系譜: 完了済み設計task `cb215`。revision 6は現在の受理済み設計snapshot
+- 範囲: ADR-0032で修正されたADR-0031 D11の実装前の正確な契約
 - 対象外: 実装、provider呼出、評価、deployment、本番migration、candidate受理、
   pointer/policy activation、rollback、release
 
@@ -371,17 +372,15 @@ owner回答後は必ず新しい明示attemptで再開する。待機中のmemor
 
 ## 7. 正確な実行・進捗policy
 
-### 7.1 初期新route policy
+### 7.1 初期新route累積資源policy
 
-`semantic_authoring_policy_v1`のattemptごとのhard上限:
+`semantic_authoring_policy_v1`のattemptごとの時間以外のhard上限:
 
 | 上限 | 値 |
 | --- | ---: |
 | 同時provider request | 1 |
 | LLM call | 8 |
 | 計数対象の制御・Tool step | 48 |
-| attempt経過時間 | 240秒 |
-| 1 provider call経過時間 | 60秒 |
 | 1 call入力 | 6,000 tokenかつ24 KiB |
 | 1 call出力 | 1,500 tokenかつ6 KiB |
 | 累積入力 | 32,000 token |
@@ -390,25 +389,97 @@ owner回答後は必ず新しい明示attemptで再開する。待機中のmemor
 | 進捗履歴 | 8観測 |
 | 回復strategy変更 | 2 |
 
-最初に枯渇したdimensionで新規作業を停止する。型付きpolicyはtoken/byteを非負整数、
-時間を整数millisecond、費用を`maxCostMicroUsd: 500_000`で持ち、浮動小数currencyを
-使わない。immutableなprovider pricing identityとtoken estimator identityを束縛する。
-provider実行にはそのidentityと上限を強制できる認可済みrouteが別途必要。provider tokenizerが
-ない場合、UTF-8 byte数を1 byteあたり1 tokenという保守的上界に使う。token/cost不明は
-全予約を保持し、final receiptなしのcancelでは返却しない。
+これらの累積資源dimensionはhard上限であり、枯渇時は新規作業を停止して対応する
+bounded-resource outcomeを返す。型付きpolicyはtoken/byteを非負整数、費用を
+`maxCostMicroUsd: 500_000`で持ち、浮動小数currencyを使わない。immutableなprovider
+pricing identityとtoken estimator identityを束縛する。provider実行にはそのidentityと上限を
+強制できる認可済みrouteが別途必要。provider tokenizerがない場合、UTF-8 byte数を
+1 byteあたり1 tokenという保守的上界に使う。token/cost不明は全予約を保持し、final receipt
+なしのcancelでは返却しない。
+
+時間はattempt累積budgetのdimensionにしない。次の独立した設定契約が、制御対象となる
+failure modeとplatformへ時間を束縛する。
+
+```ts
+type ProviderTransportConfigV1 = Readonly<{
+  routeIdentity: string;
+  timeoutMs: number;
+  maxRecoveriesPerWorkItem: 0 | 1;
+}>;
+
+type WorkerExecutionConfigV1 = Readonly<{
+  platformIdentity: string;
+  leaseDurationMs: number;
+}>;
+```
+
+millisecond fieldは正のsafe integerとする。設計defaultを持たない。選択したobjectは一つのlive実行中は
+immutableだが、そのConfig世代またはsnapshotはdurable run identityに含めない。
+正確な値とtransport Configが0回または1回の回復を許すかは、route、platform、代表latency測定、
+ownerが許容する待ち時間budget、exact policy revisionが受理されるまで未決とする。provider
+transport Configをworker leaseへ流用してはならず、どちらもattempt全体の意味的deadlineを
+作ってはならない。
+
+durableな正しさは、これらのConfig値のreplayに依存しない。repositoryはrequest identityとlifecycle、
+reservationとreceipt、単調なaccounting、execution fence、technical outcome、source-based resumption
+recipeを永続化する。liveな同一run transport recoveryは選択済みimmutable Configを使う。processまたは
+worker lease喪失は現在runをfailedにし、ownerの明示retryがその時点のConfigで新runを作る。
+route、platform、timeout、leaseはboundedな運用telemetryへ記録できるが、共通Config registry、
+snapshot、revision IDを必須にしない。
 
 新routeのcall上限8は現行6より大きい。本設計が別途受理され、後続実装/cutoverが
 `semantic_authoring_policy_v1`を選択した場合だけ有効。現行実行は6のまま。
 
 work選択、model query、proposal/review提出、proposal staging、意味lens実行、
-回復strategy遷移を各1 stepと数える。内部schema checkは個別stepにしないが時間を消費する。
+回復strategy遷移を各1 stepと数える。内部schema checkは個別stepにしない。
 discovery/Tool公開はwork選択stepに含み、反復discoveryは再加算する。
 
-### 7.2 予約
+### 7.2 予約と時間境界outcome
 
-call schedule前に最大入力・出力・費用・時間を予約し、全残上限に収まる場合だけ受付する。
-trusted receiptだけで精算し、欠落・遅延・曖昧receiptは全額使用扱いを保つ。予約・確定使用量は
+call schedule前に最大入力・出力・費用を予約し、残るすべての累積資源上限に収まる場合だけ
+受付する。trusted receiptだけで精算し、欠落・遅延・曖昧receiptは全額使用扱いを保つ。
+call count、予約、確定使用量はtransport timeout、worker expiry、cancel、recoveryをまたいで
 単調増加とする。
+
+provider timeoutは型付き`provider_transport_timeout` transport receiptを作る。現在の
+`ownerId`、`fencingToken`、`runVersion`の下で、1回のcompare-and-setによりrequestを
+`outstanding`からterminalの`timed_out`へ移し、call countを消費し、token/costが不明なら
+予約最大値を保持する。そのrequestの後着completionは、安全に記録可能なtransport receiptを
+追加できるが、proposal適用その他のcandidate mutationはできない。timeoutそれ自体は意味的
+無効性を作らず、attempt全体のdeadlineにもならない。
+
+同じwork itemへの別provider callは、この終端化後かつworker fenceが現行の間に限りschedule
+できる。追加の有償作業を予約する前にtransport recovery適格性を判定する。適格であるには、固定
+transport policyがまだ消費されていない1回のrecoveryを許し、serverが正確に1つの真実な
+`recoveryBasis`として`{ kind: "transport_condition_changed"; evidenceRef: string }`または
+`{ kind: "materially_different_request"; priorRequestDigest: string; requestDigest: string }`を持つ。
+前者は保持されたtrusted transport証拠から、後者は認可済みrequest digestからserverが導出する。
+modelの主張ではどちらの根拠も成立しない。これにより、曖昧完了requestのblind replayではなく
+情報増加型recoveryであることを記録する。
+
+現行fence下の遷移順序は規範的に次の通りとする。
+
+1. recovery 0のpolicy、recovery消費済み、または真実な`recoveryBasis`なしの場合、runを型付きの
+   回復可能な`provider_transport_unavailable`技術outcomeを持つ`failed`へ移す。理由はそれぞれ
+   `policy_disallows_recovery`、`transport_recovery_consumed`、
+   `no_admissible_recovery_basis`とする。
+2. それ以外では新callとrecovery strategy遷移の累積資源admissionを試みる。admission失敗は、
+   対応する`resource_exhausted`有限資源outcomeを持つ`failed`へ移す。そのreceiptは枯渇した
+   累積dimensionをすべて特定し、消費済み・保持予約accountingを示す。provider unavailableへ
+   読み替えない。
+3. admission成功時だけstrategy changeを1回消費し、timeout済みrequestを指す
+   `recoveryOfRequestId`と確立済み`recoveryBasis`を持つ別request identityを作る。
+
+両failure分岐ともsource timeout receiptと単調accountingを保持し、owner起動の新run再開recipeを
+提供する。どちらも意味failureを主張せず、自動でresetまたは別attemptを開始しない。timeout
+handlerが現行fenceの所有権を既に失っている場合、request、run、candidateのいずれにも書き込まず、
+現在のrecovery ownerがsection 8.3のprocess/lease loss遷移を適用する。
+
+worker lease expiryは新規dispatchを止める。recovery ownerは期限切れworkerをfenceし、遅延結果の
+適用を拒否し、安全に記録可能なtransport receiptを保持し、型付きの回復可能な技術outcomeを
+記録する。candidateやreasoningを意味的に不正としない。claim済みrunのexpiry後の回復は、
+section 8に従って新runを作るowner retryである。claim前のdelivery failureだけは代わりに
+requeueできる。expiryでaccountingをresetしない。
 
 ### 7.3 進捗・循環検出
 
@@ -459,12 +530,18 @@ durable run stateは
 ### 8.3 Fence rule
 
 claimは`ownerId`、単調増加`fencingToken`、`runVersion`を返す。全mutationは3つを
-compare条件にしてrunVersionを増やす。provider予約はtransport前に保存する。provider完了は
-同じfenceがnonterminal runを所有しrequestがoutstandingの場合だけ適用する。
+compare条件にしてrunVersionを増やす。provider request状態は
+`reserved | outstanding | completed | timed_out | cancelled`に閉じる。`reserved`だけが
+`outstanding`または`cancelled`へ遷移でき、`outstanding`は`completed`、`timed_out`、`cancelled`
+のいずれかへ遷移できる。後ろ3つはterminalである。
+provider予約はtransport前に保存する。provider完了は同じfenceがnonterminal runを所有し、
+requestが`outstanding`の場合だけ適用する。同一run内transport recoveryは常に新しいrequest
+identityを持ち、terminal request identityを再openまたは再利用しない。
 
-claim後のprocess/lease喪失では、recovery ownerが旧tokenをfenceし、outstanding予約を
-unknown消費として記録し、`process_or_lease_lost`証拠をappendし、runをfailedへ移す。
-遅延responseは適用拒否し、安全に記録可能ならtransport receiptだけ保持する。
+claim後のprocess/worker lease喪失では、recovery ownerが旧tokenをfenceし、outstanding予約を
+unknown消費として記録し、`process_or_lease_lost`証拠をappendする。runは意味failureを主張しない
+回復可能な技術outcomeと再開recipeを持つfailedへ移す。遅延responseは適用拒否し、安全に
+記録可能ならtransport receiptだけ保持する。
 
 claim前のdelivery failureだけ再queueできる。read routeはclaim/recovery/retry/provider呼出を
 しない。owner retry/answer commandは新runとoutboxを同transactionで作り、同じcommand
@@ -472,7 +549,8 @@ identityの反復は同じrunをreplayする。
 
 ### 8.4 Family persistence
 
-共通persistence Portはrun、accounting、question、fenceを所有する。Adapterのfamily Portは
+共通persistence Portはrun、accounting、question、fenceを所有する。provider transportまたは
+worker execution Configのrevision・snapshotは所有しない。Adapterのfamily Portは
 frozen source取得とfinal candidate保存を所有する。activationは既存family別append/CASで、
 kernel operationではない。したがってkernelはcurrent pointerを動かせない。
 
@@ -553,9 +631,18 @@ authoring-accepted shapeに新attempt IDを加えて返す。candidate acceptanc
 初期sliceの戦場・ナレーションAdapterはscripted/test-onlyでよいが、実domain schema/compilerを
 使い、kernel testはfamily分岐しない。これはprocess再利用を示すがrouteを有効化しない。
 
-基盤15 conformance caseすべてを対象にし、valid work保持repair、protected Q&A、source retry、
+基盤15 conformance categoryを維持し、valid work保持repair、protected Q&A、source retry、
 累積上限、文章だけの無進捗、反復/A-B循環、一時後退、invalid proposal rollback、
-trusted-state破損、timeout、late result、capsule除外、activation不変を含める。
+trusted-state破損、時間境界・late result、capsule除外、activation不変を対象にする。従来の
+generic timeout coverageは、provider transport timeoutで回復許可0回と1回、消費済みrecovery、
+真実なrecovery basisなし、累積資源admission失敗、fence所有権喪失、worker lease expiry、
+元requestからのlate resultを扱う1つのparameterized時間境界fixtureへ置き換える。別identityの
+代替requestをadmitする前にtimeout済みrequestがterminalになること、元requestのlate resultが
+candidateを変更できないこと、0回/消費済み/根拠なし経路が`provider_transport_unavailable`へ、
+それ以外は適格だが資源admission失敗の経路が正確な枯渇dimension・accountingを伴う
+`resource_exhausted`へ到達すること、両者がsource timeout receiptを保持すること、意味的無効へ
+読み替えないこと、blind replayをscheduleしないこと、attempt全体のelapsed deadlineが存在しない
+ことを証明する。
 
 ## 11. 実装sliceとgate
 
@@ -566,8 +653,8 @@ trusted-state破損、timeout、late result、capsule除外、activation不変�
 3. **Character Adapter**: V3/capsule再利用、部分cluster/lens、final reconciliation、
    全character provider requestなし。
 4. **公開mapping・conformance**: additive Q&A/retry DTO/command、3 Adapter fixture、cutoverなし。
-5. **integration review**: ADR/要件trace、全test/typecheck/build/duplication/Lizard、
-   targeted ADR check、Seal impact/stale/fsck。
+5. **integration review**: ADR-0032、維持されたADR-0031判断、受理済み要件をtraceし、
+   全test/typecheck/build/duplication/Lizard、targeted ADR check、Seal impact/stale/fsck。
 
 各sliceでfocused review・証拠を要求する。5つ合格後だけ実route接続を後続判断として提案できる。
 provider評価はcontrolled Port安定後の別承認とする。
@@ -587,7 +674,9 @@ provider評価はcontrolled Port安定後の別承認とする。
 
 ## 13. リスク、未知、レビュー論点
 
-- USD 0.50・8 callは設計候補でprovider品質証拠ではない。初期新routeのhard上限として妥当か。
+- 受理済みADR-0033と本revisionはtransport/worker Config世代IDをdurable run identityから外す。
+- 正確なprovider timeout、worker lease、有限transport recovery値は、ADR-0032の証拠・受理条件を
+  満たすまで未決である。
 - owner Q&Aをlegacy公開`failed`へ写すのは互換的だが旧clientには不正確。versioned statusより
   additive互換を優先するか。
 - 回答後に常に新attemptを作ると費用を再消費しうる。checkpointより単純なsource-based
@@ -598,19 +687,23 @@ provider評価はcontrolled Port安定後の別承認とする。
 
 ## 14. 受理境界
 
-Owner acceptanceは独立review後のこのexact revisionを指定する必要がある。Acceptance後も、
-local実装slice 1〜5の実行にはownerの別の実装指示が必要。本設計はprovider call、route cutover、
-deployment、本番read/write、asset acceptance、pointer/policy activation、rollback、releaseを
+正確な受理前revisionの正式reviewはP0〜P3指摘なしでPASSした。2026-09-15、その結果と完全な
+日本語review範囲の提示後、製品オーナーは`ACCEPT`と回答した。review済み受理前SHA-256は
+`a0f2ba909d3c71fb7de2235bd84125b420663f6f8b5400c4236eaf92e832ebff`である。
+
+Acceptanceだけではlocal実装を認可しない。本設計はprovider call、route cutover、deployment、
+本番read/write、asset acceptance、pointer/policy activation、rollback、release、commit、pushを
 認可しない。
 
 ## 15. 自己レビュー証拠
 
-ADR-0031 D11の各前提を本候補へtraceした。
+維持されたADR-0031 D11の各前提とADR-0032訂正を本候補へtraceした。
 
 | D11対象 | 候補section |
 | --- | --- |
 | 正確なtyped DTO・focused patch schema | 3、4、5、9 |
-| execution-policy数値 | 7.1、7.2 |
+| 累積execution-policy数値 | 7.1、7.2 |
+| 分離したprovider・worker時間境界 | 7.1、7.2、8.2 |
 | detector・window rule | 7.3 |
 | 公開retry・Q&A mapping | 9 |
 | persistence・fence変更 | 8 |
@@ -622,7 +715,21 @@ member、既存公開attempt-status literal、公開attempt IDの80文字上限�
 ID/response形状という4つの重要な曖昧さを訂正してから独立review待ちとした。revision 2では、
 訂正版reviewの実質的指摘2件も訂正した。skeleton checkpointは必要なfocused cross-cluster claimを
 含み、portrait bindingはserver所有とした。Exact DTO詳細、process-loss takeover詳細、15 caseの
-trace matrix、公開Q&A field projection全体は、このrevisionの理由ではなく、追跡対象の後続完了条件
-として維持する。最終edit後に`git diff --check`とcommand-line LLMThink auditを再実行する。
-数値上限、legacy failureへのadditive projection、Q&Aのnew-attempt回復、detector thresholdは
-self-approvalせず、明示的なowner判断点として残す。
+trace matrix、公開Q&A field projection全体はrevision 2の理由ではなく、追跡対象の後続完了条件
+として維持する。revision 3では未裏付けのattempt全体240秒deadlineとprovider 60秒literalを削除し、
+provider transportとworker leaseのpolicy identityを分離し、単調な資源accountingを維持し、
+ADR-0032に従って技術expiryと意味failureを区別した。revision 4ではrevision 3 review指摘を訂正し、
+provider request lifecycleを閉じ、同一run内でadmitしたrecoveryに新identityを割り当て、元requestの
+late result適用を拒否し、recoveryをadmitできない場合の回復可能な技術failureを定義し、fence喪失時の
+回復を現在のrecovery ownerへ委ねた。revision 5ではrevision 4 review指摘2件を訂正し、
+eligibility-before-admissionの優先順序を定義し、真実なrecovery basisがない場合をtransport recovery
+exhaustionとし、それ以外は適格なcallの累積資源admissionが失敗した場合は`resource_exhausted`を
+維持した。最終edit後に`git diff --check`とcommand-line LLMThink auditを
+再実行する。正確なtime-policy値とrecovery 0/1のどちらを選ぶかは後続のexact owner acceptanceを
+必要とする。legacy failureへのadditive projection、Q&Aのnew-attempt
+回復、detector thresholdはself-approvalせず、明示的なowner判断点として残す。
+revision 6は、provider transportとworker executionの値をdurable run identityではなくruntime Config
+として扱うというオーナーの緩和指示を反映する。fence、provider request state、receipt、accounting、
+technical outcome、source-based新run retryは維持する。正確なrevision 6 reviewはP0〜P3指摘なしで
+PASSし、オーナーは2026-09-15にADR-0033とともに受理した。revision 5を置き換えるのは現在の
+受理済み設計snapshotとしてだけである。

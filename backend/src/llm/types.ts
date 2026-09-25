@@ -741,6 +741,8 @@ export type RefereeFinalState = {
 
 export interface LlmProvider {
   readonly name: string;
+  readonly semanticAuthoringProvider?: import("../services/semantic-authoring/execution.js").FocusedProviderTransportV1;
+  readonly semanticAuthoringWorkerPolicy?: import("@kshiai/shared").WorkerExecutionPolicyV1;
   /** Optional dual-tier model ids for diagnostics. */
   readonly models?: { engine: string; fast: string };
   generateCharacter(input: GenerateCharacterInput): Promise<GenerateCharacterResult>;

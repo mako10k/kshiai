@@ -1,0 +1,97 @@
+domain PLAN_RECONSIDERATION:
+  description "Reconsider test-authority enablement and cc304 ordering after ADR-0034 acceptance."
+
+problem P1:
+  |
+    Reorder the next repository work so that it delivers observable safe functionality
+    without turning migration exactness or test-passing into the objective.
+
+evidence E1:
+  |
+    On 2026-09-16 the owner accepted exact ADR0034 revision one and instructed that
+    the plan be reconsidered.
+
+evidence E2:
+  |
+    The owner previously lowered the priority of migration accuracy and strictness,
+    described competing approaches as a trial order, and instructed work to proceed
+    from a functionally safe option.
+
+evidence E3:
+  |
+    Current cc304 is one six-point task combining create, revise, migration, owner
+    answer and retry, API and UI, worker and provider driver, persistence, several
+    recovery scenarios, and three-mode completion evidence.
+
+evidence E4:
+  |
+    Current test selection discovers 156 unit/deployment/release tests. It classifies
+    137 unsealed tests as active ungoverned, 16 inventoried tests as disabled, and
+    only 3 inventoried tests as current. ADR0034 requires unsealed tests to be disabled
+    as current evidence.
+
+evidence E5:
+  |
+    The dirty worktree contains an unsealed local revision-scope classifier, tests,
+    Ollama adapter, replay script, and three result directories. They are preserved
+    WIP but cannot establish a current plan choice under ADR0034.
+
+evidence E6:
+  |
+    The accepted design and current revision-seven plan already separate candidate
+    generation and review from final acceptance, deployment, policy activation, and
+    production migration. A controlled provider reply can traverse API or UI, worker,
+    driver, persistence and review without a paid call or current-character mutation.
+
+premise VALUE:
+  |
+    The intended near-term value is an owner-visible working authoring path. More
+    migration classification rules, fixtures, or resealed tests do not provide that
+    value unless they remove a demonstrated blocker in the selected path.
+
+premise SAFETY:
+  |
+    The first functional trial must be local, reversible, preserve current character
+    state, create only a review candidate, perform no paid call or deployment, and
+    keep final acceptance as a separate action.
+
+premise AUTHORITY:
+  |
+    Only source-matched non-stale verification Seals with explicit Causes can be cited
+    as current test evidence. This does not authorize bulk resealing or rewriting
+    upstream requirements around tests.
+
+premise OPTIONS:
+  |
+    Resume cc304 unchanged; first repair or seal the broad historical test suite; or
+    establish the ADR0034 selector and then run one bounded revise path through the
+    real local boundaries before choosing create and migration extensions from the
+    observed result.
+
+decision D1 based_on P1, E1, E2, E3, E4, E5, E6, VALUE, SAFETY, AUTHORITY, OPTIONS:
+  |
+    Do not resume cc304 unchanged and do not bulk-repair or bulk-seal tests. First
+    implement only the ADR0034 selector and its own downstream verification so later
+    pass or fail claims have an explicit current basis.
+
+decision D2 based_on D1, E2, E3, E6, VALUE, SAFETY:
+  |
+    Propose splitting cc304. The first functional slice is one owner-visible revise
+    request that produces a non-current review candidate through the real local API or
+    UI, worker, controlled provider driver, persistence and semantic diff. It performs
+    no final acceptance, paid call, deployment, policy activation, or migration.
+
+decision D3 based_on D2, E2, E5, VALUE:
+  |
+    Judge the next order from the observed revise result. Extend to create when the
+    common route works. Leave migration and its lower-priority exactness work until
+    after create and revise expose a concrete remaining need. Preserve the unsealed
+    scope experiment only as non-authoritative WIP; do not use its pass counts to
+    choose or justify the path.
+
+decision D4 based_on D1, D2, D3, AUTHORITY:
+  |
+    Seal only verification directly needed for each selected slice after checking its
+    exact Cause and source. Do not make aggregate green status, stale-test repair, or
+    Seal count a completion criterion. Completion is the observable functional outcome
+    plus current evidence for that exact outcome.

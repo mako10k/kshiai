@@ -1,0 +1,96 @@
+domain CC304_FOCUSED_REVISE:
+  description "Resume decision for one safe focused revise candidate through the real local path."
+
+problem P1:
+  |
+    Decide the smallest authorized implementation that resumes cc304 under accepted
+    plan revision 8 without returning to broad three-mode completion, migration
+    strictness work, or aggregate-test green status.
+
+evidence E1:
+  |
+    On 2026-09-16 the owner explicitly requested resumption of cc304. Accepted plan
+    revision 8 defines cc304 as one unambiguous appearance revise request through the
+    real local API or UI, worker, controlled provider driver, common kernel, character
+    adapter, persistence, and owner-visible semantic diff, producing a non-current
+    candidate without final acceptance, create, migration, paid provider calls,
+    deployment, or policy activation.
+
+evidence E2:
+  |
+    Current branch codex/compact-psyche-repair-integration and its fetched remote REF
+    both resolve to 475ff90a5a7ac42645d2ccdd7f02d9f8f8fda23c with ahead and behind
+    counts zero. The matching dirty worktree contains the accepted ADR-0034 selector
+    slice and pre-existing revision-scope experiments, which must be preserved.
+
+evidence E3:
+  |
+    backend/src/routes.ts currently starts POST /characters/:id/chat revision attempts
+    without a focused source. In contrast, create and migration routes register a
+    focused source when the explicitly configured semantic provider exists. Therefore
+    the public revision command still falls through to the legacy adjustment path.
+
+evidence E4:
+  |
+    backend/src/services/character-focused-authoring.ts, character-authoring-jobs.ts,
+    the character V3 adapter, durable execution, HTTP provider, review reader, and
+    frontend CharacterReviewPage already connect a registered focused run through the
+    worker and expose a stored non-activatable semantic candidate review.
+
+evidence E5:
+  |
+    backend/src/services/character-focused-authoring.test.ts contains a controlled
+    loopback HTTP provider and a repository-level revise test, but it does not start
+    revise through POST /characters/:id/chat. Under ADR-0034 its existing verification
+    REF is source-diverged, so the current file is not valid current evidence until the
+    revised exact source is reviewed and sealed against its implementation Causes.
+
+evidence E6:
+  |
+    The accepted implementation design revision 6 requires routes and workers to call
+    the application service, preserves current generation and pointer behavior, and
+    makes ready_for_review a stored candidate rather than activation. The cc304 plan
+    further limits this slice to appearance revise and controlled local reply.
+
+evidence E7:
+  |
+    POST /characters/:id/chat is a generic revision command whose existing UI accepts
+    changes outside appearance. Treating every request as requestedCluster appearance
+    whenever a semantic provider exists would silently change generic product semantics.
+    The current compatibility reader also intentionally recognizes ready V2 envelopes,
+    not a general V3 authoring cutover. Neither broad change is authorized by cc304.
+
+premise SCOPE:
+  |
+    Preserve current character revision and pointer. Do not implement final acceptance,
+    create, migration, paid provider calls, deployment, Stage identity, policy
+    activation, broad recovery, or the unsealed revision-scope experiments.
+
+premise TEST_AUTHORITY:
+  |
+    Diagnostic execution may reveal implementation facts but cannot establish current
+    verification. Only the exact revised test source, with explicit downstream Causes
+    to the changed implementation and current governing basis, may become current
+    evidence.
+
+pending U1:
+  |
+    The exact code change remains subject to current-file inspection and type checking;
+    any newly exposed contract decision or need to mutate final acceptance must stop
+    this slice rather than be inferred.
+
+decision D1 based_on P1, E1, E2, E3, E4, E5, E6, E7, SCOPE, TEST_AUTHORITY, U1:
+  |
+    Resume cc304 in the PERT history, then add an explicit local controlled-trial
+    buildRoutes option that wires only the selected appearance revision request to a
+    frozen current V3 definition and requestedCluster appearance. The ordinary runtime
+    build and every request without that option retain the legacy route; do not change
+    generic revision semantics or the repository-wide compatibility contract.
+
+decision D2 based_on D1, E4, E5, E6, SCOPE, TEST_AUTHORITY:
+  |
+    Extend the controlled loopback test so the revise case starts at the real HTTP
+    command, traverses the worker and provider, reads the owner-visible review route,
+    and proves the current generation pointer and result generation remain unchanged.
+    After implementation checks, seal only the exact changed implementation and this
+    verification against their applicable current Causes; do not bulk reseal.

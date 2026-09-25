@@ -1,0 +1,89 @@
+domain ADR0032Review:
+  description "Formal review of exact ADR0032 revision 1. Candidate status remains Proposed."
+problem P1:
+  |
+    Determine whether the candidate coherently corrects unsupported elapsed-time
+    semantics without weakening accepted accounting, fencing, retry authority or
+    ADR lifecycle requirements.
+evidence E1:
+  |
+    The reviewed authoritative candidate SHA256 is
+    c9e8ee12edd8f57d796ab389958c8a8f741011fd853b49662f265291bbdb8409.
+evidence E2:
+  |
+    ADR0032 D1 separates provider transport timeout, worker execution boundary,
+    semantic progress termination and cumulative non-time resource ceilings.
+evidence E3:
+  |
+    ADR0032 D2 rejects whole-attempt wall clock as semantic failure, prohibits silent
+    consumption restart, and D5 explicitly retains all ADR0031 boundaries other than
+    the stated D7 elapsed-time refinement.
+evidence E4:
+  |
+    Accepted ADR0031 D6 requires process or lease loss to terminalize the claimed run
+    through fenced recovery with conservative in-flight accounting; an explicit owner
+    retry creates a new attempt. ADR0031 D9 distinguishes technical from semantic
+    failure.
+evidence E5:
+  |
+    ADR0032 D3 permits continuation after provider timeout only when an explicitly
+    accepted bounded recovery remains, and D4 with U1 keeps the recovery policy, cost
+    and exact values pending a later evidence-backed owner decision.
+evidence E6:
+  |
+    ADR0032 D4 denies activation authority until exact route, platform, evidence and
+    policy are accepted. D5 separately denies implementation, provider calls,
+    deployment, route selection and production activation.
+evidence E7:
+  |
+    Repository ADR rules require an accepted ADR that changes ADR0031 to mark ADR0031
+    Superseded with a link. ADR0032 is still Proposed, and ADR0031 D10 expressly says
+    no old ADR is marked Superseded while the successor is Proposed.
+evidence E8:
+  |
+    Command-line audit of ADR0032 reports zero fatal, error and warning findings; its
+    one information item is the deliberately pending owner acceptance.
+premise C1:
+  |
+    D5's retention clause resolves D2 under ADR0031 D6 and D9: a worker-boundary event
+    may preserve a recoverable technical receipt but cannot resume the same claimed run
+    or reset consumption. Owner retry remains a new attempt.
+premise C2:
+  |
+    D3 is a guarded extension point, not retry authority. With no separately accepted
+    bounded recovery, the condition is false and the candidate authorizes no automatic
+    retry or extra paid call.
+premise C3:
+  |
+    Deferring exact time values is coherent because the candidate fixes the boundary
+    meanings, records the missing evidence, and expressly blocks activation until the
+    numerical policy is separately accepted.
+premise C4:
+  |
+    The required ADR0031 Superseded status and reciprocal link are acceptance-time
+    lifecycle effects. They must accompany a later acceptance record, but need not
+    mutate either ADR while ADR0032 remains Proposed.
+pending L1:
+  |
+    This review was performed in the current task by the same agent because no
+    independent or delegated reviewer was requested. It is a formal content review,
+    not identity-independent corroboration.
+decision D1 based_on P1, E1, E2, E3, E4, C1:
+  |
+    Record no P0 through P3 finding for worker-boundary semantics. Same-attempt resume
+    would contradict the retained contract, so it is not authorized by this candidate.
+decision D2 based_on P1, E1, E5, E6, C2, C3:
+  |
+    Record no P0 through P3 finding for provider timeout or missing numeric values.
+    The exact recovery and numerical policy remain later owner decisions and cannot be
+    inferred during implementation.
+decision D3 based_on P1, E1, E7, C4:
+  |
+    Record no candidate finding for lifecycle status while Proposed. If the owner later
+    accepts this exact revision, the acceptance transaction must mark ADR0031
+    Superseded, link it to ADR0032, and preserve its retained decisions through D5.
+decision D4 based_on P1, E1, E8, D1, D2, D3, L1:
+  |
+    Complete REVIEW with PASS, zero P0-P3 findings, and recommend owner ACCEPT for the
+    exact revision. Do not accept or edit the candidate and do not authorize code,
+    provider, deployment, activation, commit or push effects.

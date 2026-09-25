@@ -1,5 +1,5 @@
 domain ADR0031:
-  description "ADR-0031 revision 1: Focused structured semantic authoring kernel. Status Accepted."
+  description "ADR-0031 revision 1: Focused structured semantic authoring kernel. Status Superseded by ADR0032."
 problem P1:
   "Accepted foundation v3 and character v5 require focused generative authoring with semantic reconciliation and mechanical safety, not the old whole-candidate request topology."
 evidence E1:
@@ -73,3 +73,18 @@ decision ACCEPTANCE based_on OWNER_ACCEPTANCE, D1, D2, D3, D4, D5, D6, D7, D8, D
     deployment, production migration, candidate or asset acceptance, pointer or
     policy activation, rollback, release, or changes to prior ADR lifecycle
     statuses.
+
+evidence SUPERSEDED_BY_ADR0032:
+  |
+    On 2026-09-15, the product owner accepted exact ADR0032 revision one whose
+    pre-acceptance SHA256 was
+    c9e8ee12edd8f57d796ab389958c8a8f741011fd853b49662f265291bbdb8409.
+    ADR0032 D5 retains ADR0031 boundaries other than the replaced D7 elapsed-time
+    semantics.
+
+decision SUPERSESSION based_on SUPERSEDED_BY_ADR0032, ACCEPTANCE:
+  |
+    Mark ADR0031 Superseded by ADR0032 as the lifecycle container. Preserve D1 through
+    D6 and D8 through D11, and preserve the non-time portions of D7, through ADR0032
+    D5. Use ADR0032 D1 through D4 for elapsed-time semantics. This status change does
+    not itself authorize implementation, provider calls, deployment or activation.
