@@ -2,7 +2,7 @@
 # Current revision record: docs/character-semantic-migration-plan-revision-10.md
 # Revision 9 acceptance and product completion criteria remain governing.
 # Report by outcomes; retain internal task IDs, trial order and separate execution authority.
-# M1: cs316 Seal health and approved bounded migration-adapter correction (completed Work; cc304 active).
+# M1: cs316 Seal health and approved bounded migration-adapter correction (completed Work; cc304 completed, owner acceptance pending).
 # M2: cc304 -> cc311 -> cc312 -> cc315 local migration readiness.
 # M3: cc305 -> cc314 one actual Stage game using a migrated V3 character.
 # M4: cc313 -> cc306 -> cc307 -> cb209-cb214 evaluation, restoration and final cutover.
@@ -352,7 +352,7 @@ task cc304 cm310 -> cm311:
   title "Connect one safe focused revise candidate through the real local path"
   description "Connect one clear single-area natural-language appearance revise request through the normal owner HTTP entrypoint, provider-assisted bounded scope resolution under accepted ADR-0035, worker, controlled provider driver, common kernel, character adapter, persistence and owner-visible semantic diff. Record and count the scope-resolution call in the same attempt and freeze the server-validated scope before candidate generation. Produce a non-current review candidate without changing the current generation or pointer. Fixed-scope tests alone do not prove this route. Do not perform final acceptance, create, migration, paid provider calls, deployment, policy activation or unrelated recovery expansion."
   duration 6p
-  status active
+  status done
   # CS316 is merged and read back. The owner authorized resumption after current-fit review on 2026-09-25.
   owner "codex"
   source "docs/character-semantic-migration-plan-revision-10.md"
@@ -675,3 +675,9 @@ work_event WE-7dcf44be460ed1148bbc6c934b4e50546c8ad9ad3f2d951c6ce2bb89a233ccc9:
   task cc304
   kind resume
   occurred_at 2026-09-25T17:29:16+09:00
+
+work_event WE_CC304_FINISH_20260925:
+  model 1
+  task cc304
+  kind finish
+  occurred_at 2026-09-25T19:34:20+09:00
