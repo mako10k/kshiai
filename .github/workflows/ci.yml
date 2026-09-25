@@ -43,6 +43,8 @@ jobs:
             "github.com/mako10k/sealgraph/cmd/sealgraph@${SEALGRAPH_COMMIT}"
           echo "${runner_bin}" >> "${GITHUB_PATH}"
           "${runner_bin}/sealgraph" --version
+      - name: Prepare test authority runtime
+        run: node scripts/prepare-test-authority-runtime.mjs
       - run: npm ci
       - run: python3 -m pip install --disable-pip-version-check --requirement requirements-static.txt
       - run: npm run build
