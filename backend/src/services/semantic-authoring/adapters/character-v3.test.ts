@@ -18,6 +18,7 @@ import {
   createCharacterSemanticAuthoringAdapterV3,
   type CharacterProposalV1,
 } from "./character-v3.js";
+import { canonicalPendingPreservationJson } from "./pending-preservation-json.js";
 import { buildCharacterMigrationSourceLedgerV1, splitCharacterV2NormV1 } from "./character-source-ledger.js";
 
 function envelope(
@@ -47,6 +48,10 @@ function envelope(
 }
 
 describe("character V3 semantic authoring adapter", () => {
+  it("preserves the pending-copy digest ordering used by stored candidates", () => {
+    assert.equal(canonicalPendingPreservationJson({ 2: "two", 10: "ten" }),
+      "{\"10\":\"ten\",\"2\":\"two\"}");
+  });
   const adapter = createCharacterSemanticAuthoringAdapterV3();
 
   it("rejects deferral when no consumer-scoped obligation is registered", () => {

@@ -1111,39 +1111,41 @@ export function buildRoutes(options: {
       : c.json({ error: "not_found" }, 404);
   });
 
+  async function prepareFocusedUpgrade(characterId: string) {
+    const compatibility = await charAssetRepo.getCharacterCompatibility(characterId);
+    const semanticProvider = llm.semanticAuthoringProvider;
+    const generation = semanticProvider && compatibility.status === "ready" && compatibility.schemaVersion === 2
+      ? await charAssetRepo.getReadyCharacterGeneration(characterId) : null;
+    if (compatibility.status === "ready" && !generation) return { error: "already_current" as const };
+    const parsed = generation ? CharacterGenerationEnvelopeV2Schema.safeParse(generation.content) : null;
+    if (generation && !parsed?.success) return { error: "upgrade_start_failed" as const };
+    const focusedInput = generation && parsed?.success && semanticProvider ? {
+      generation,
+      registration: { source: { kind: "migrate" as const, definition: parsed.data.definition,
+        capsule: null, requiredCapabilities: CHARACTER_BATTLE_MECHANICS_CAPABILITY_SET_V3 },
+      pricingIdentity: semanticProvider.pricingIdentity },
+    } : null;
+    return { focusedInput };
+  }
+
+  function authoringStartFailure(error: unknown, fallback: "upgrade_start_failed" | "revision_start_failed") {
+    const message = error instanceof Error ? error.message : fallback;
+    const mapped: Record<string, { error: string; status: 400 | 409 }> = {
+      AUTHORING_IDEMPOTENCY_CONFLICT: { error: "idempotency_key_conflict", status: 409 },
+      AUTHORING_ALREADY_IN_PROGRESS: { error: "request_in_progress", status: 409 },
+    };
+    return mapped[message] ?? { error: fallback, status: 400 as const };
+  }
+
   authed.post("/characters/:id/upgrade", async (c) => {
     const user = c.get("user");
     const sheet = await charRepo.getSheet(c.req.param("id"));
     if (!sheet || sheet.ownerUserId !== user.id) {
       return c.json({ error: "not_found" }, 404);
     }
-    const compatibility = await charAssetRepo.getCharacterCompatibility(sheet.id);
-    const semanticProvider = llm.semanticAuthoringProvider;
-    const focusedMigration = semanticProvider && compatibility.status === "ready"
-      && compatibility.schemaVersion === 2
-      ? await charAssetRepo.getReadyCharacterGeneration(sheet.id)
-      : null;
-    if (compatibility.status === "ready" && !focusedMigration) {
-      return c.json({ error: "already_current" }, 409);
-    }
-    const migrationDefinition = focusedMigration
-      ? CharacterGenerationEnvelopeV2Schema.safeParse(focusedMigration.content)
-      : null;
-    if (focusedMigration && !migrationDefinition?.success) {
-      return c.json({ error: "upgrade_start_failed" }, 409);
-    }
-    const focusedInput = focusedMigration && migrationDefinition?.success && semanticProvider ? {
-      generation: focusedMigration,
-      registration: {
-        source: {
-          kind: "migrate" as const,
-          definition: migrationDefinition.data.definition,
-          capsule: null,
-          requiredCapabilities: CHARACTER_BATTLE_MECHANICS_CAPABILITY_SET_V3,
-        },
-        pricingIdentity: semanticProvider.pricingIdentity,
-      },
-    } : null;
+    const prepared = await prepareFocusedUpgrade(sheet.id);
+    if (prepared.error) return c.json({ error: prepared.error }, 409);
+    const focusedInput = prepared.focusedInput;
     const idempotencyKey = readIdempotencyKey(c.req.header("Idempotency-Key"));
     if (!idempotencyKey) return c.json({ error: "idempotency_key_required" }, 400);
     const sourceText = sheet.narrativeBlurb;
@@ -1169,14 +1171,8 @@ export function buildRoutes(options: {
         ...(focusedInput ? { focused: focusedInput.registration } : {}),
       });
     } catch (error) {
-      const message = error instanceof Error ? error.message : "upgrade_start_failed";
-      if (message === "AUTHORING_IDEMPOTENCY_CONFLICT") {
-        return c.json({ error: "idempotency_key_conflict" }, 409);
-      }
-      if (message === "AUTHORING_ALREADY_IN_PROGRESS") {
-        return c.json({ error: "request_in_progress" }, 409);
-      }
-      return c.json({ error: "upgrade_start_failed" }, 400);
+      const failure = authoringStartFailure(error, "upgrade_start_failed");
+      return c.json({ error: failure.error }, failure.status);
     }
     if (started.replayed && started.attempt.candidate) {
       return c.json({ draft: await characterDraftResponse(started.attempt, user.id) });
@@ -1184,6 +1180,28 @@ export function buildRoutes(options: {
     await wakeAuthoringTasks(llm);
     return c.json(authoringAcceptedFromAttempt(started.attempt), 202);
   });
+
+  async function prepareFocusedRevision(sheet: CharacterSheet, controlledCluster:
+    typeof options.controlledCharacterRevisionCluster, scopedTrial: boolean) {
+    const semanticProvider = controlledCluster || scopedTrial ? llm.semanticAuthoringProvider : undefined;
+    if ((controlledCluster || scopedTrial) && !semanticProvider) return { error: "focused_authoring_unavailable" as const };
+    const generation = semanticProvider ? await getCurrentAssetGeneration("character", sheet.id) : null;
+    const definition = parseFocusedRevisionDefinition(generation);
+    if ((controlledCluster || scopedTrial) && (!generation || !definition?.success)) {
+      return { error: "revision_start_failed" as const };
+    }
+    if (!controlledCluster && !scopedTrial) {
+      const compatibility = await charAssetRepo.getCharacterCompatibility(sheet.id);
+      if (compatibility.status !== "ready") return { error: "character_upgrade_required" as const };
+    }
+    return { semanticProvider, generation, definition };
+  }
+
+  function parseFocusedRevisionDefinition(generation: Awaited<ReturnType<typeof getCurrentAssetGeneration>>) {
+    if (generation?.schemaVersion !== 3 || typeof generation.content !== "object"
+      || generation.content === null) return null;
+    return CharacterDefinitionV3Schema.safeParse(Reflect.get(generation.content, "definition"));
+  }
 
   authed.post("/characters/:id/chat", async (c) => {
     const user = c.get("user");
@@ -1195,30 +1213,11 @@ export function buildRoutes(options: {
     }
     const controlledCluster = options.controlledCharacterRevisionCluster;
     const scopedTrial = options.enableCharacterRevisionScopeTrial === true;
-    const semanticProvider = controlledCluster || scopedTrial ? llm.semanticAuthoringProvider : undefined;
-    if ((controlledCluster || scopedTrial) && !semanticProvider) {
-      return c.json({ error: "focused_authoring_unavailable" }, 409);
-    }
-    const focusedRevision = semanticProvider
-      ? await getCurrentAssetGeneration("character", sheet.id)
-      : null;
-    const focusedDefinition = focusedRevision?.schemaVersion === 3
-      && typeof focusedRevision.content === "object"
-      && focusedRevision.content !== null
-      ? CharacterDefinitionV3Schema.safeParse(Reflect.get(focusedRevision.content, "definition"))
-      : null;
-    if ((controlledCluster || scopedTrial) && (!focusedRevision || !focusedDefinition?.success)) {
-      return c.json({ error: "revision_start_failed" }, 409);
-    }
-    if (!controlledCluster && !scopedTrial) {
-      const compatibility = await charAssetRepo.getCharacterCompatibility(sheet.id);
-      if (compatibility.status !== "ready") {
-        return c.json({
-          error: "character_upgrade_required",
-          message: "先に「このキャラを最新版に更新」を実行してください。",
-        }, 409);
-      }
-    }
+    const prepared = await prepareFocusedRevision(sheet, controlledCluster, scopedTrial);
+    if (prepared.error === "character_upgrade_required") return c.json({ error: prepared.error,
+      message: "先に「このキャラを最新版に更新」を実行してください。" }, 409);
+    if (prepared.error) return c.json({ error: prepared.error }, 409);
+    const { semanticProvider, generation: focusedRevision, definition: focusedDefinition } = prepared;
     const idempotencyKey = readIdempotencyKey(c.req.header("Idempotency-Key"));
     if (!idempotencyKey) return c.json({ error: "idempotency_key_required" }, 400);
     let started: Awaited<ReturnType<
@@ -1252,14 +1251,8 @@ export function buildRoutes(options: {
         } } : {}),
       });
     } catch (error) {
-      const message = error instanceof Error ? error.message : "revision_start_failed";
-      if (message === "AUTHORING_IDEMPOTENCY_CONFLICT") {
-        return c.json({ error: "idempotency_key_conflict" }, 409);
-      }
-      if (message === "AUTHORING_ALREADY_IN_PROGRESS") {
-        return c.json({ error: "request_in_progress" }, 409);
-      }
-      return c.json({ error: "revision_start_failed" }, 400);
+      const failure = authoringStartFailure(error, "revision_start_failed");
+      return c.json({ error: failure.error }, failure.status);
     }
     if (started.replayed && started.attempt.candidate) {
       return c.json({

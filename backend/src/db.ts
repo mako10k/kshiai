@@ -715,8 +715,7 @@ function ensureSqliteFamilyAuthoringJobs(database: SqliteDatabase.Database): voi
   `);
 }
 
-function ensureSqliteSemanticAuthoring(database: SqliteDatabase.Database): void {
-  database.exec(`
+const semanticAuthoringSchemaSql = `
     CREATE TABLE IF NOT EXISTS semantic_authoring_runs (
       run_id TEXT PRIMARY KEY,
       attempt_id TEXT NOT NULL UNIQUE,
@@ -811,7 +810,10 @@ function ensureSqliteSemanticAuthoring(database: SqliteDatabase.Database): void 
       created_at TEXT NOT NULL,
       finished_at TEXT
     );
-  `);
+  `;
+
+function ensureSqliteSemanticAuthoring(database: SqliteDatabase.Database): void {
+  database.exec(semanticAuthoringSchemaSql);
   const focusedColumns = database.pragma("table_info(character_focused_authoring_payloads)") as Array<{
     name: string;
   }>;

@@ -38,6 +38,7 @@ import { buildCharacterMigrationSourceLedgerV1, characterClaimValueV1,
   characterSourceCopyMatchesV1, characterSourceDispositionSatisfiedV1, splitCharacterV2NormV1,
   type CharacterSourceClaimV1 } from "./character-source-ledger.js";
 import { registeredCharacterSourceDeferralV1 } from "./character-deferral.js";
+import { canonicalPendingPreservationJson } from "./pending-preservation-json.js";
 
 export type CharacterAuthoringSourceV1 =
   | Readonly<{ kind: "create"; naturalText: string }>
@@ -69,22 +70,6 @@ export type CharacterPendingPreservationV1 = Readonly<{
   disposition: "discard-as-nonmaterial" | "defer";
   rationale: string;
 }>;
-
-function canonicalPendingPreservationJson(value: unknown): string {
-  if (Array.isArray(value)) {
-    return `[${value.map(canonicalPendingPreservationJson).join(",")}]`;
-  }
-  if (value && typeof value === "object") {
-    const entries = Object.entries(value as Record<string, unknown>)
-      .filter(([, item]) => item !== undefined)
-      .sort(([left], [right]) => left.localeCompare(right));
-    return `{${entries.map(([key, item]) =>
-      `${JSON.stringify(key)}:${canonicalPendingPreservationJson(item)}`).join(",")}}`;
-  }
-  const serialized = JSON.stringify(value);
-  if (serialized === undefined) throw new Error("PENDING_PRESERVATION_NOT_JSON");
-  return serialized;
-}
 
 function pendingPreservationDigest(value: unknown): string {
   return createHash("sha256").update(canonicalPendingPreservationJson(value)).digest("hex");
@@ -783,13 +768,7 @@ function skeletonComplete(obligations: ReadonlyMap<string, CharacterObligationV1
     .every((item) => item.resolved);
 }
 
-function decodeCharacterSource(value: unknown) {
-  if (typeof value !== "object" || value === null || !("kind" in value)) {
-    return { accepted: false as const };
-  }
-  if (value.kind === "create" && "naturalText" in value && typeof value.naturalText === "string") {
-    return { accepted: true as const, value: { kind: "create" as const, naturalText: value.naturalText } };
-  }
+function decodeReviseCharacterSource(value: Record<string, unknown>) {
   if (value.kind === "revise" && "definition" in value && "requestedCluster" in value) {
     const parsed = CharacterDefinitionV3Schema.safeParse(value.definition);
     const requested = value.requestedCluster;
@@ -815,6 +794,10 @@ function decodeCharacterSource(value: unknown) {
         }
       : { accepted: false as const };
   }
+  return { accepted: false as const };
+}
+
+function decodeMigrateCharacterSource(value: Record<string, unknown>) {
   if (value.kind === "migrate" && "definition" in value) {
     const parsed = CharacterDefinitionV2Schema.safeParse(value.definition);
     if (!parsed.success) {
@@ -847,6 +830,18 @@ function decodeCharacterSource(value: unknown) {
     };
   }
   return { accepted: false as const };
+}
+
+function decodeCharacterSource(value: unknown) {
+  if (typeof value !== "object" || value === null || !("kind" in value)) {
+    return { accepted: false as const };
+  }
+  if (value.kind === "create" && "naturalText" in value && typeof value.naturalText === "string") {
+    return { accepted: true as const, value: { kind: "create" as const, naturalText: value.naturalText } };
+  }
+  const source = value as Record<string, unknown>;
+  const revised = decodeReviseCharacterSource(source);
+  return revised.accepted ? revised : decodeMigrateCharacterSource(source);
 }
 
 function selectCharacterWork(
@@ -978,160 +973,145 @@ function resolveObligation(
   return next;
 }
 
-function stageLedgerProposal(
-  input: Readonly<{
-    candidate: CharacterDefinitionV3;
-    obligations: ReadonlyMap<string, CharacterObligationV1>;
-    findings: ReadonlyMap<string, CharacterFindingV1>;
-    provenance?: ReadonlyMap<string, readonly ProposalProvenanceV1[]>;
-    sourceDispositions?: ReadonlyMap<string, SourceDispositionDecisionV1>;
-    proposal: CharacterProposalV1;
-  }>,
-) {
-  const payload = input.proposal.payload;
-  if (payload.kind === "classify_source_disposition") {
-    const sourceDispositions = new Map(input.sourceDispositions);
-    const provenance = new Map(input.provenance);
-    for (const entry of input.proposal.provenance) {
-      provenance.set(entry.targetClaimId, [...(provenance.get(entry.targetClaimId) ?? []), entry]);
-    }
-    const obligations = new Map(input.obligations);
-    for (const decision of payload.decisions) {
-      const item = obligations.get(`source:${decision.sourceClaimId}`);
-      const claim = item?.sourceClaim;
-      if (!claim || decision.targetClaimIds.some((id) => characterClaimValueV1(input.candidate, id) === undefined)) {
-        return { accepted: false as const, findingKey: "source-disposition",
-          finding: { code: "source-claim-unregistered", explanation: "Disposition must name registered source and existing target claims." } };
-      }
-      if (decision.disposition === "preserve" && (decision.targetClaimIds.length !== 1
-        || decision.targetClaimIds[0] !== claim.targetClaimId
-        || !characterSourceCopyMatchesV1(input.candidate, claim))) {
-        return { accepted: false as const, findingKey: "source-disposition",
-          finding: { code: "source-copy-mismatch", explanation: "Claimed preservation differs from the frozen source." } };
-      }
-      if (decision.disposition === "discard-as-nonmaterial"
-        && (decision.targetClaimIds.length !== 0 || decision.rationale.trim().length === 0)) {
-        return { accepted: false as const, findingKey: "source-disposition",
-          finding: { code: "invalid-discard-disposition", explanation: "Discard requires a nonempty rationale and no target claims." } };
-      }
-      const pendingPreservation = decision.disposition === "discard-as-nonmaterial"
-        && claim.nonmaterialDiscardEligible && !claim.capsuleCopyAvailable && !claim.capsuleEntryPresent
-        ? pendingPreservationForClaim({ sourceClaimId: claim.sourceClaimId,
-          originalValue: claim.original, disposition: "discard-as-nonmaterial", rationale: decision.rationale })
-        : decision.disposition === "discard-as-nonmaterial" ? item.pendingPreservation : undefined;
-      const pendingExactCopyAvailable = pendingPreservation?.sourceClaimId === claim.sourceClaimId
-        && isDeepStrictEqual(pendingPreservation.originalValue, claim.original)
-        && pendingPreservation.contentDigest === pendingPreservationDigest(claim.original);
-      sourceDispositions.set(decision.sourceClaimId, decision);
-      obligations.set(item.obligationId, { ...item, pendingPreservation, deferredValue: undefined,
-        resolved: characterSourceDispositionSatisfiedV1(
-          input.candidate,
-          claim,
-          decision,
-          input.proposal.provenance,
-          pendingExactCopyAvailable,
-        ) });
-    }
-    if (!pendingPreservationWithinLimit(pendingPreservationEntries(obligations))) {
-      return { accepted: false as const, findingKey: "pending-preservation-limit-exceeded",
-        finding: { code: "pending-preservation-limit-exceeded",
-          explanation: "Pending preservation exceeds the 256 KiB aggregate limit." } };
-    }
-    return {
-      accepted: true as const,
-      candidate: input.candidate,
-      obligations: refreshClaimObligations(
-        input.candidate,
-        obligations,
-        sourceDispositions,
-        provenance,
-      ),
-      findings: input.findings,
-      sourceDispositions,
-    };
+type CharacterProposalStageInput = Readonly<{
+  candidate: CharacterDefinitionV3;
+  obligations: ReadonlyMap<string, CharacterObligationV1>;
+  findings: ReadonlyMap<string, CharacterFindingV1>;
+  provenance?: ReadonlyMap<string, readonly ProposalProvenanceV1[]>;
+  sourceDispositions?: ReadonlyMap<string, SourceDispositionDecisionV1>;
+  proposal: CharacterProposalV1;
+}>;
+
+function sourceDispositionDecisionError(input: CharacterProposalStageInput,
+  decision: SourceDispositionDecisionV1, claim: CharacterSourceClaimV1 | undefined) {
+  if (!claim || decision.targetClaimIds.some((id) => characterClaimValueV1(input.candidate, id) === undefined)) {
+    return { code: "source-claim-unregistered",
+      explanation: "Disposition must name registered source and existing target claims." };
   }
-  if (payload.kind === "propose_deferral") {
-    const deferred = new Map(input.obligations);
-    const deferredValues: CharacterDeferredValueV1[] = [];
-    for (const obligationId of payload.obligationIds) {
-      const item = deferred.get(obligationId) ?? deferred.get(`source:${obligationId}`);
-      if (!item?.sourceClaim) {
-        return {
-          accepted: false as const,
-          findingKey: "deferral",
-          finding: {
-            code: "deferral-not-registered",
-            explanation: "Deferral must name a registered source claim obligation.",
-          },
-        };
-      }
-      if (input.sourceDispositions?.get(item.sourceClaim.sourceClaimId)?.disposition
-        === "discard-as-nonmaterial") {
-        return { accepted: false as const, findingKey: "deferral",
-          finding: { code: "deferral-not-eligible",
-            explanation: "Discard and deferral cannot classify the same source claim." } };
-      }
-      const pendingPreservation = !item.sourceClaim.capsuleCopyAvailable
-        && !item.sourceClaim.capsuleEntryPresent && item.sourceClaim.nonmaterialDiscardEligible
-        ? pendingPreservationForClaim({ sourceClaimId: item.sourceClaim.sourceClaimId,
-          originalValue: item.sourceClaim.original, disposition: "defer", rationale: payload.reason })
-        : item.pendingPreservation;
-      const pendingExactCopyAvailable = pendingPreservation?.sourceClaimId === item.sourceClaim.sourceClaimId
-        && isDeepStrictEqual(pendingPreservation.originalValue, item.sourceClaim.original)
-        && pendingPreservation.contentDigest === pendingPreservationDigest(item.sourceClaim.original);
-      const value = registeredCharacterSourceDeferralV1({
-        claim: item.sourceClaim,
-        requiredCapabilities: item.requiredCapabilities ?? null,
-        reason: payload.reason,
-        pendingExactCopyAvailable,
-      });
-      if (!value) {
-        return {
-          accepted: false as const,
-          findingKey: "deferral",
-          finding: {
-            code: "deferral-not-eligible",
-            explanation: "Source claim is not eligible for the registered optional deferral.",
-          },
-        };
-      }
-      deferredValues.push(value);
-      deferred.set(item.obligationId, { ...item, resolved: true, deferredValue: value,
-        pendingPreservation });
-    }
-    if (!pendingPreservationWithinLimit(pendingPreservationEntries(deferred))) {
-      return { accepted: false as const, findingKey: "pending-preservation-limit-exceeded",
-        finding: { code: "pending-preservation-limit-exceeded",
-          explanation: "Pending preservation exceeds the 256 KiB aggregate limit." } };
-    }
-    return {
-      accepted: true as const,
-      candidate: input.candidate,
-      obligations: refreshClaimObligations(input.candidate, deferred, input.sourceDispositions,
-        input.provenance),
-      findings: input.findings,
-      deferredValues,
-    };
+  if (decision.disposition === "preserve" && (decision.targetClaimIds.length !== 1
+    || decision.targetClaimIds[0] !== claim.targetClaimId
+    || !characterSourceCopyMatchesV1(input.candidate, claim))) {
+    return { code: "source-copy-mismatch", explanation: "Claimed preservation differs from the frozen source." };
   }
-  if (payload.kind !== "submit_lens_review") {
-    return null;
+  if (decision.disposition === "discard-as-nonmaterial"
+    && (decision.targetClaimIds.length !== 0 || decision.rationale.trim().length === 0)) {
+    return { code: "invalid-discard-disposition",
+      explanation: "Discard requires a nonempty rationale and no target claims." };
   }
+  return null;
+}
+
+function dispositionPendingPreservation(decision: SourceDispositionDecisionV1,
+  item: CharacterObligationV1, claim: CharacterSourceClaimV1) {
+  if (decision.disposition !== "discard-as-nonmaterial") return undefined;
+  if (!claim.nonmaterialDiscardEligible || claim.capsuleCopyAvailable || claim.capsuleEntryPresent) {
+    return item.pendingPreservation;
+  }
+  return pendingPreservationForClaim({ sourceClaimId: claim.sourceClaimId,
+    originalValue: claim.original, disposition: "discard-as-nonmaterial", rationale: decision.rationale });
+}
+
+function stageSourceDispositionProposal(input: CharacterProposalStageInput,
+  payload: Extract<CharacterProposalV1["payload"], { kind: "classify_source_disposition" }>) {
+  const sourceDispositions = new Map(input.sourceDispositions);
+  const provenance = new Map(input.provenance);
+  for (const entry of input.proposal.provenance) {
+    provenance.set(entry.targetClaimId, [...(provenance.get(entry.targetClaimId) ?? []), entry]);
+  }
+  const obligations = new Map(input.obligations);
+  for (const decision of payload.decisions) {
+    const item = obligations.get(`source:${decision.sourceClaimId}`);
+    const claim = item?.sourceClaim;
+    const error = sourceDispositionDecisionError(input, decision, claim);
+    if (error || !claim || !item) return { accepted: false as const,
+      findingKey: "source-disposition", finding: error ?? { code: "source-claim-unregistered",
+        explanation: "Disposition must name a registered source claim obligation." } };
+    const pendingPreservation = dispositionPendingPreservation(decision, item, claim);
+    const pendingExactCopyAvailable = pendingPreservation?.sourceClaimId === claim.sourceClaimId
+      && isDeepStrictEqual(pendingPreservation.originalValue, claim.original)
+      && pendingPreservation.contentDigest === pendingPreservationDigest(claim.original);
+    sourceDispositions.set(decision.sourceClaimId, decision);
+    obligations.set(item.obligationId, { ...item, pendingPreservation, deferredValue: undefined,
+      resolved: characterSourceDispositionSatisfiedV1(input.candidate, claim, decision,
+        input.proposal.provenance, pendingExactCopyAvailable) });
+  }
+  if (!pendingPreservationWithinLimit(pendingPreservationEntries(obligations))) {
+    return { accepted: false as const, findingKey: "pending-preservation-limit-exceeded",
+      finding: { code: "pending-preservation-limit-exceeded",
+        explanation: "Pending preservation exceeds the 256 KiB aggregate limit." } };
+  }
+  return { accepted: true as const, candidate: input.candidate,
+    obligations: refreshClaimObligations(input.candidate, obligations, sourceDispositions, provenance),
+    findings: input.findings, sourceDispositions };
+}
+
+function findDeferralObligation(obligations: ReadonlyMap<string, CharacterObligationV1>, obligationId: string) {
+  return obligations.get(obligationId) ?? obligations.get(`source:${obligationId}`);
+}
+
+function deferralPendingPreservation(item: CharacterObligationV1, reason: string) {
+  const claim = item.sourceClaim;
+  if (!claim || claim.capsuleCopyAvailable || claim.capsuleEntryPresent || !claim.nonmaterialDiscardEligible) {
+    return item.pendingPreservation;
+  }
+  return pendingPreservationForClaim({ sourceClaimId: claim.sourceClaimId,
+    originalValue: claim.original, disposition: "defer", rationale: reason });
+}
+
+function stageDeferralProposal(input: CharacterProposalStageInput,
+  payload: Extract<CharacterProposalV1["payload"], { kind: "propose_deferral" }>) {
+  const deferred = new Map(input.obligations);
+  const deferredValues: CharacterDeferredValueV1[] = [];
+  for (const obligationId of payload.obligationIds) {
+    const item = findDeferralObligation(deferred, obligationId);
+    if (!item?.sourceClaim) return { accepted: false as const, findingKey: "deferral",
+      finding: { code: "deferral-not-registered",
+        explanation: "Deferral must name a registered source claim obligation." } };
+    if (input.sourceDispositions?.get(item.sourceClaim.sourceClaimId)?.disposition === "discard-as-nonmaterial") {
+      return { accepted: false as const, findingKey: "deferral",
+        finding: { code: "deferral-not-eligible",
+          explanation: "Discard and deferral cannot classify the same source claim." } };
+    }
+    const pendingPreservation = deferralPendingPreservation(item, payload.reason);
+    const pendingExactCopyAvailable = pendingPreservation?.sourceClaimId === item.sourceClaim.sourceClaimId
+      && isDeepStrictEqual(pendingPreservation.originalValue, item.sourceClaim.original)
+      && pendingPreservation.contentDigest === pendingPreservationDigest(item.sourceClaim.original);
+    const value = registeredCharacterSourceDeferralV1({ claim: item.sourceClaim,
+      requiredCapabilities: item.requiredCapabilities ?? null, reason: payload.reason, pendingExactCopyAvailable });
+    if (!value) return { accepted: false as const, findingKey: "deferral",
+      finding: { code: "deferral-not-eligible",
+        explanation: "Source claim is not eligible for the registered optional deferral." } };
+    deferredValues.push(value);
+    deferred.set(item.obligationId, { ...item, resolved: true, deferredValue: value, pendingPreservation });
+  }
+  if (!pendingPreservationWithinLimit(pendingPreservationEntries(deferred))) {
+    return { accepted: false as const, findingKey: "pending-preservation-limit-exceeded",
+      finding: { code: "pending-preservation-limit-exceeded",
+        explanation: "Pending preservation exceeds the 256 KiB aggregate limit." } };
+  }
+  return { accepted: true as const, candidate: input.candidate,
+    obligations: refreshClaimObligations(input.candidate, deferred, input.sourceDispositions, input.provenance),
+    findings: input.findings, deferredValues };
+}
+
+function stageLensProposal(input: CharacterProposalStageInput,
+  payload: Extract<CharacterProposalV1["payload"], { kind: "submit_lens_review" }>) {
   const serverVerdict = runCharacterLens(payload.lens, input.candidate);
   const findings = new Map(input.findings);
-  if (payload.verdict !== serverVerdict) {
-    findings.set(`lens:${payload.lens}`, {
-      code: "lens-disagreement",
-      explanation: `server ${serverVerdict} disagrees with submitted ${payload.verdict}`,
-    });
-  }
-  return {
-    accepted: true as const,
-    candidate: input.candidate,
-    obligations: serverVerdict === "pass"
-      ? resolveObligation(input.obligations, `lens:${payload.lens}`)
-      : input.obligations,
-    findings,
-  };
+  if (payload.verdict !== serverVerdict) findings.set(`lens:${payload.lens}`, {
+    code: "lens-disagreement",
+    explanation: `server ${serverVerdict} disagrees with submitted ${payload.verdict}`,
+  });
+  return { accepted: true as const, candidate: input.candidate,
+    obligations: serverVerdict === "pass" ? resolveObligation(input.obligations, `lens:${payload.lens}`)
+      : input.obligations, findings };
+}
+
+function stageLedgerProposal(input: CharacterProposalStageInput) {
+  const payload = input.proposal.payload;
+  if (payload.kind === "classify_source_disposition") return stageSourceDispositionProposal(input, payload);
+  if (payload.kind === "propose_deferral") return stageDeferralProposal(input, payload);
+  return payload.kind === "submit_lens_review" ? stageLensProposal(input, payload) : null;
 }
 
 function rejectUnregisteredRepair(
@@ -1176,6 +1156,44 @@ function rejectUnregisteredRepair(
   return null;
 }
 
+function characterProposalScopeError(input: CharacterProposalStageInput,
+  payload: Exclude<CharacterProposalV1["payload"], { kind: "classify_source_disposition"
+    | "propose_deferral" | "submit_lens_review" }>) {
+  const operations = payload.operations;
+  if (payload.kind === "set_skeleton") {
+    const registered = skeletonRequiredClaimIds(input.candidate);
+    for (const operation of operations) {
+      const key = characterOperationTargetKeyV1(operation);
+      if (!clusterOneOps.has(operation.op) && !registeredClaimAllows(registered, key)) {
+        return { accepted: false as const, findingKey: "skeleton-closure",
+          finding: { code: "skeleton-closure", explanation: `cross-cluster ${key} is not registered` } };
+      }
+    }
+  }
+  if ((payload.kind === "complete_cluster" || payload.kind === "repair_cluster")
+    && !operationsMatchCluster(payload.cluster, operations)) {
+    return { accepted: false as const, findingKey: "cluster-mismatch",
+      finding: { code: "cluster-mismatch", explanation: "operation outside named cluster" } };
+  }
+  return payload.kind === "repair_cluster" ? rejectUnregisteredRepair(payload.cluster, input, operations) : null;
+}
+
+function applyCharacterProposalOperations(candidate: CharacterDefinitionV3,
+  operations: readonly CharacterCandidateOperationV1[]) {
+  let nextCandidate = candidate;
+  for (const operation of operations) {
+    const next = applyOperation(nextCandidate, operation);
+    if (!next) return { accepted: false as const, operation: operation.op };
+    nextCandidate = next;
+  }
+  return { accepted: true as const, candidate: nextCandidate };
+}
+
+function protectedCharacterFieldsMatch(before: CharacterDefinitionV3, after: CharacterDefinitionV3) {
+  return JSON.stringify(after.appearance.portrait) === JSON.stringify(before.appearance.portrait)
+    && JSON.stringify(after.combat) === JSON.stringify(before.combat);
+}
+
 function stageCharacterProposal(
   input: Readonly<{
     candidate: CharacterDefinitionV3;
@@ -1202,58 +1220,13 @@ function stageCharacterProposal(
       finding: { code: "ledger", explanation: "ledger proposal was not staged" },
     };
   }
-  const operations = payload.operations;
-  if (payload.kind === "set_skeleton") {
-    const registered = skeletonRequiredClaimIds(input.candidate);
-    for (const operation of operations) {
-      const key = characterOperationTargetKeyV1(operation);
-      if (!clusterOneOps.has(operation.op) && !registeredClaimAllows(registered, key)) {
-        return {
-          accepted: false as const,
-          findingKey: "skeleton-closure",
-          finding: { code: "skeleton-closure", explanation: `cross-cluster ${key} is not registered` },
-        };
-      }
-    }
-  }
-  if (
-    (payload.kind === "complete_cluster" || payload.kind === "repair_cluster")
-    && !operationsMatchCluster(payload.cluster, operations)
-  ) {
-    return {
-      accepted: false as const,
-      findingKey: "cluster-mismatch",
-      finding: { code: "cluster-mismatch", explanation: "operation outside named cluster" },
-    };
-  }
-  if (payload.kind === "repair_cluster") {
-    const rejected = rejectUnregisteredRepair(
-      payload.cluster,
-      input,
-      operations,
-    );
-    if (rejected) {
-      return rejected;
-    }
-  }
-  let candidate = input.candidate;
-  const portrait = candidate.appearance.portrait;
-  const combat = candidate.combat;
-  for (const operation of operations) {
-    const next = applyOperation(candidate, operation);
-    if (!next) {
-      return {
-        accepted: false as const,
-        findingKey: "stage",
-        finding: { code: "stage", explanation: `cannot apply ${operation.op}` },
-      };
-    }
-    candidate = next;
-  }
-  if (
-    JSON.stringify(candidate.appearance.portrait) !== JSON.stringify(portrait)
-    || JSON.stringify(candidate.combat) !== JSON.stringify(combat)
-  ) {
+  const rejected = characterProposalScopeError(input, payload);
+  if (rejected) return rejected;
+  const staged = applyCharacterProposalOperations(input.candidate, payload.operations);
+  if (!staged.accepted) return { accepted: false as const, findingKey: "stage",
+    finding: { code: "stage", explanation: `cannot apply ${staged.operation}` } };
+  const candidate = staged.candidate;
+  if (!protectedCharacterFieldsMatch(input.candidate, candidate)) {
     return {
       accepted: false as const,
       findingKey: "protected-mechanics",
@@ -1281,6 +1254,32 @@ function stageCharacterProposal(
   };
 }
 
+function applyFinalCharacterLenses(candidate: CharacterDefinitionV3,
+  initialObligations: ReadonlyMap<string, CharacterObligationV1>, findings: Map<string, CharacterFindingV1>) {
+  let obligations = new Map(initialObligations);
+  const lenses = ["compiler", "disclosure", "cross-reference", "source-consistency", "authority"] as const;
+  for (const lens of lenses) {
+    if (runCharacterLens(lens, candidate) === "pass") {
+      obligations = resolveObligation(obligations, `lens:${lens}`);
+    } else {
+      findings.set(`lens:${lens}`, { code: "lens-failed", explanation: `${lens} repair required` });
+    }
+  }
+  return obligations;
+}
+
+function validatePendingPreservation(pending: readonly CharacterPendingPreservationV1[],
+  findings: Map<string, CharacterFindingV1>) {
+  if (!pendingPreservationWithinLimit(pending)) findings.set("pending-preservation-limit-exceeded", {
+    code: "pending-preservation-limit-exceeded",
+    explanation: "Pending preservation exceeds the 256 KiB aggregate limit.",
+  });
+  if (!pendingPreservationDigestsMatch(pending)) findings.set("pending-preservation-digest-mismatch", {
+    code: "pending-preservation-digest-mismatch",
+    explanation: "Pending preservation content digest does not match the retained value.",
+  });
+}
+
 function finalizeCharacterCandidate(
   input: Readonly<{
     candidate: CharacterDefinitionV3;
@@ -1298,17 +1297,7 @@ function finalizeCharacterCandidate(
     input.provenance,
     false,
   );
-  const lenses = ["compiler", "disclosure", "cross-reference", "source-consistency", "authority"] as const;
-  for (const lens of lenses) {
-    if (runCharacterLens(lens, input.candidate) === "pass") {
-      obligations = resolveObligation(obligations, `lens:${lens}`);
-    } else {
-      findings.set(`lens:${lens}`, {
-        code: "lens-failed",
-        explanation: `${lens} repair required`,
-      });
-    }
-  }
+  obligations = applyFinalCharacterLenses(input.candidate, obligations, findings);
   const parsed = CharacterDefinitionV3Schema.safeParse(input.candidate);
   const unresolved = [...obligations.values()].filter((item) => item.required && !item.resolved);
   const deferredValues = [...obligations.values()]
@@ -1322,18 +1311,7 @@ function finalizeCharacterCandidate(
       explanation: "Deferred values require a frozen current-consumer registration.",
     });
   }
-  if (!pendingPreservationWithinLimit(pendingPreservation)) {
-    findings.set("pending-preservation-limit-exceeded", {
-      code: "pending-preservation-limit-exceeded",
-      explanation: "Pending preservation exceeds the 256 KiB aggregate limit.",
-    });
-  }
-  if (!pendingPreservationDigestsMatch(pendingPreservation)) {
-    findings.set("pending-preservation-digest-mismatch", {
-      code: "pending-preservation-digest-mismatch",
-      explanation: "Pending preservation content digest does not match the retained value.",
-    });
-  }
+  validatePendingPreservation(pendingPreservation, findings);
   if (!parsed.success || unresolved.length > 0 || findings.size > 0) {
     if (!findings.has("incomplete") && unresolved.length > 0) {
       findings.set("incomplete", { code: "incomplete", explanation: "required claims remain unresolved" });

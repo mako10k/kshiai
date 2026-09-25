@@ -24,51 +24,36 @@ export function splitCharacterV2NormV1(norm: CharacterActionNormV2) {
 }
 
 export function characterClaimValueV1(candidate: CharacterDefinitionV3, claimId: string): unknown {
-  if (claimId.startsWith("actionNorms:")) {
-    return candidate.actionNorms.find((norm) => norm.id === claimId.slice("actionNorms:".length));
-  }
-  if (claimId.startsWith("consciousGuidance:")) {
-    return candidate.consciousGuidance.find((entry) =>
-      entry.id === claimId.slice("consciousGuidance:".length));
-  }
-  if (claimId.startsWith("mechanicalConflictFallbacks:")) {
-    return candidate.mechanicalConflictFallbacks.find((entry) =>
-      entry.id === claimId.slice("mechanicalConflictFallbacks:".length));
+  const exactValues: Record<string, unknown> = {
+    "psycheDisposition:dynamicsVersion": candidate.psycheDisposition.dynamicsVersion,
+    "psycheDisposition:dynamics": candidate.psycheDisposition.dynamics,
+    "psycheDisposition:description": candidate.psycheDisposition.description,
+    "appearance:publicSummary": candidate.appearance.publicSummary,
+    "appearance:visualPrompt": candidate.appearance.visualPrompt,
+    "appearance:portrait": candidate.appearance.portrait,
+  };
+  if (Object.prototype.hasOwnProperty.call(exactValues, claimId)) return exactValues[claimId];
+  const collections = [
+    ["actionNorms:", candidate.actionNorms],
+    ["consciousGuidance:", candidate.consciousGuidance],
+    ["mechanicalConflictFallbacks:", candidate.mechanicalConflictFallbacks],
+    ["inventory:", candidate.inventory],
+    ["profileBackground:", candidate.profileBackground],
+    ["psycheDisposition:coreNeeds:", candidate.psycheDisposition.coreNeeds],
+    ["psycheDisposition:tendencies:", candidate.psycheDisposition.tendencies],
+    ["relationshipSeeds:", candidate.relationshipSeeds],
+    ["appearance:details:", candidate.appearance.details],
+  ] as const;
+  const collection = collections.find(([prefix]) => claimId.startsWith(prefix));
+  if (collection) {
+    const [prefix, entries] = collection;
+    return entries.find((entry) => entry.id === claimId.slice(prefix.length));
   }
   if (claimId.startsWith("capabilities:actions:")) {
     const id = claimId.slice("capabilities:actions:".length);
     return candidate.capabilities.basicAction.id === id
       ? candidate.capabilities.basicAction
       : candidate.capabilities.skills.find((entry) => entry.id === id);
-  }
-  if (claimId.startsWith("inventory:")) {
-    return candidate.inventory.find((entry) => entry.id === claimId.slice("inventory:".length));
-  }
-  if (claimId.startsWith("profileBackground:")) {
-    return candidate.profileBackground.find((entry) =>
-      entry.id === claimId.slice("profileBackground:".length));
-  }
-  if (claimId.startsWith("psycheDisposition:coreNeeds:")) {
-    return candidate.psycheDisposition.coreNeeds.find((entry) =>
-      entry.id === claimId.slice("psycheDisposition:coreNeeds:".length));
-  }
-  if (claimId.startsWith("psycheDisposition:tendencies:")) {
-    return candidate.psycheDisposition.tendencies.find((entry) =>
-      entry.id === claimId.slice("psycheDisposition:tendencies:".length));
-  }
-  if (claimId === "psycheDisposition:dynamicsVersion") return candidate.psycheDisposition.dynamicsVersion;
-  if (claimId === "psycheDisposition:dynamics") return candidate.psycheDisposition.dynamics;
-  if (claimId === "psycheDisposition:description") return candidate.psycheDisposition.description;
-  if (claimId.startsWith("relationshipSeeds:")) {
-    return candidate.relationshipSeeds.find((entry) =>
-      entry.id === claimId.slice("relationshipSeeds:".length));
-  }
-  if (claimId === "appearance:publicSummary") return candidate.appearance.publicSummary;
-  if (claimId === "appearance:visualPrompt") return candidate.appearance.visualPrompt;
-  if (claimId === "appearance:portrait") return candidate.appearance.portrait;
-  if (claimId.startsWith("appearance:details:")) {
-    return candidate.appearance.details.find((entry) =>
-      entry.id === claimId.slice("appearance:details:".length));
   }
   return Object.entries(candidate).find(([key]) => key === claimId)?.[1];
 }
@@ -85,20 +70,8 @@ export function characterSourceDispositionSatisfiedV1(
   pendingExactCopyAvailable = false,
 ): boolean {
   if (decision.sourceClaimId !== claim.sourceClaimId) return false;
-  if (decision.disposition === "preserve") {
-    return decision.targetClaimIds.length === 1
-      && decision.targetClaimIds[0] === claim.targetClaimId
-      && characterSourceCopyMatchesV1(candidate, claim);
-  }
-  if (decision.disposition === "preserve-in-capsule") {
-    return decision.targetClaimIds.length === 0 && claim.capsuleCopyAvailable;
-  }
-  if (decision.disposition === "discard-as-nonmaterial") {
-    return decision.targetClaimIds.length === 0
-      && decision.rationale.trim().length > 0
-      && (claim.capsuleCopyAvailable || pendingExactCopyAvailable)
-      && claim.nonmaterialDiscardEligible;
-  }
+  const immediate = immediateDispositionResult(candidate, claim, decision, pendingExactCopyAvailable);
+  if (immediate !== undefined) return immediate;
   if (decision.targetClaimIds.length === 0) return false;
   const targetsAreProvenanced = decision.targetClaimIds.every((targetClaimId) =>
     characterClaimValueV1(candidate, targetClaimId) !== undefined
@@ -107,6 +80,24 @@ export function characterSourceDispositionSatisfiedV1(
         && entry.method !== "generated"),
   );
   if (!targetsAreProvenanced) return false;
+  return legacyMeaningDispositionSatisfied(candidate, claim, decision);
+}
+
+function immediateDispositionResult(candidate: CharacterDefinitionV3, claim: CharacterSourceClaimV1,
+  decision: SourceDispositionDecisionV1, pendingExactCopyAvailable: boolean): boolean | undefined {
+  if (decision.disposition === "preserve") return decision.targetClaimIds.length === 1
+    && decision.targetClaimIds[0] === claim.targetClaimId && characterSourceCopyMatchesV1(candidate, claim);
+  if (decision.disposition === "preserve-in-capsule") {
+    return decision.targetClaimIds.length === 0 && claim.capsuleCopyAvailable;
+  }
+  if (decision.disposition === "discard-as-nonmaterial") return decision.targetClaimIds.length === 0
+    && decision.rationale.trim().length > 0 && (claim.capsuleCopyAvailable || pendingExactCopyAvailable)
+    && claim.nonmaterialDiscardEligible;
+  return undefined;
+}
+
+function legacyMeaningDispositionSatisfied(candidate: CharacterDefinitionV3, claim: CharacterSourceClaimV1,
+  decision: SourceDispositionDecisionV1): boolean {
   if (!claim.sourceClaimId.endsWith(":legacyMeaning")) return true;
   if (typeof claim.original !== "object" || claim.original === null) return false;
   const legacy = claim.original as { statement?: unknown; selfAwareness?: unknown; fallbackActionRef?: unknown };
@@ -126,6 +117,60 @@ export function characterSourceDispositionSatisfiedV1(
       && "orderedActionRefs" in target && Array.isArray(target.orderedActionRefs)
       && target.orderedActionRefs.includes(legacy.fallbackActionRef);
   });
+}
+
+function addCharacterMigrationClaims(source: ReturnType<typeof CharacterDefinitionV2Schema.parse>,
+  exact: (claimId: string, value: unknown, expectedCopy?: unknown) => void) {
+  exact("schemaVersion", source.schemaVersion, 3);
+  exact("identity", source.identity);
+  exact("appearance:publicSummary", source.appearance.publicSummary);
+  for (const detail of source.appearance.details) exact(`appearance:details:${detail.id}`, detail);
+  exact("appearance:visualPrompt", source.appearance.visualPrompt);
+  exact("appearance:portrait", source.appearance.portrait);
+  for (const background of source.profileBackground) exact(`profileBackground:${background.id}`, background);
+  exact("psycheDisposition:dynamicsVersion", source.psycheDisposition.dynamicsVersion);
+  exact("psycheDisposition:dynamics", source.psycheDisposition.dynamics);
+  for (const need of source.psycheDisposition.coreNeeds) exact(`psycheDisposition:coreNeeds:${need.id}`, need);
+  for (const tendency of source.psycheDisposition.tendencies) {
+    exact(`psycheDisposition:tendencies:${tendency.id}`, tendency);
+  }
+  exact("psycheDisposition:description", source.psycheDisposition.description);
+  for (const norm of source.actionNorms) {
+    const split = splitCharacterV2NormV1(norm);
+    exact(`actionNorms:${norm.id}`, split.executable);
+    exact(`actionNorms:${norm.id}:legacyMeaning`, split.legacyMeaning);
+  }
+  exact("speechPolicy", source.speechPolicy);
+  for (const relationship of source.relationshipSeeds) exact(`relationshipSeeds:${relationship.id}`, relationship);
+  exact("combat", source.combat);
+  exact(`capabilities:actions:${source.capabilities.basicAction.id}`, source.capabilities.basicAction);
+  for (const skill of source.capabilities.skills) exact(`capabilities:actions:${skill.id}`, skill);
+  for (const item of source.inventory) exact(`inventory:${item.id}`, item);
+  exact("initialLoadout", source.initialLoadout);
+  exact("expressionNotes", source.expressionNotes);
+}
+
+function inferCharacterMigrationDispositions(candidate: CharacterDefinitionV3, claims: readonly CharacterSourceClaimV1[]) {
+  const sourceDispositions = new Map<string, SourceDispositionDecisionV1>();
+  const provenance = new Map<string, readonly ProposalProvenanceV1[]>();
+  for (const claim of claims) {
+    const matches = characterSourceCopyMatchesV1(candidate, claim);
+    if (!matches && !claim.capsuleCopyAvailable) continue;
+    if (claim.capsuleCopyAvailable && !matches) {
+      sourceDispositions.set(claim.sourceClaimId, { sourceClaimId: claim.sourceClaimId,
+        disposition: "preserve-in-capsule", targetClaimIds: [],
+        rationale: "Server-verified exact copy in the frozen migration preservation capsule." });
+      continue;
+    }
+    const transformsVersion = claim.sourceClaimId === "schemaVersion";
+    sourceDispositions.set(claim.sourceClaimId, { sourceClaimId: claim.sourceClaimId,
+      disposition: transformsVersion ? "transform" : "preserve", targetClaimIds: [claim.targetClaimId],
+      rationale: transformsVersion ? "Accepted V2-to-V3 version transition."
+        : "Server-verified exact copy from frozen V2 source." });
+    provenance.set(claim.targetClaimId, [{ targetClaimId: claim.targetClaimId,
+      sourceClaimIds: [claim.sourceClaimId], method: transformsVersion ? "derived" : "preserved" }]);
+  }
+  return { sourceDispositions, provenance };
 }
 
 export function buildCharacterMigrationSourceLedgerV1(
@@ -151,57 +196,7 @@ export function buildCharacterMigrationSourceLedgerV1(
   };
   const exact = (claimId: string, value: unknown, expectedCopy: unknown = value) =>
     addClaim({ sourceClaimId: claimId, targetClaimId: claimId, original: value, expectedCopy });
-  exact("schemaVersion", source.schemaVersion, 3);
-  exact("identity", source.identity);
-  exact("appearance:publicSummary", source.appearance.publicSummary);
-  for (const detail of source.appearance.details) exact(`appearance:details:${detail.id}`, detail);
-  exact("appearance:visualPrompt", source.appearance.visualPrompt);
-  exact("appearance:portrait", source.appearance.portrait);
-  for (const background of source.profileBackground) exact(`profileBackground:${background.id}`, background);
-  exact("psycheDisposition:dynamicsVersion", source.psycheDisposition.dynamicsVersion);
-  exact("psycheDisposition:dynamics", source.psycheDisposition.dynamics);
-  for (const need of source.psycheDisposition.coreNeeds) {
-    exact(`psycheDisposition:coreNeeds:${need.id}`, need);
-  }
-  for (const tendency of source.psycheDisposition.tendencies) {
-    exact(`psycheDisposition:tendencies:${tendency.id}`, tendency);
-  }
-  exact("psycheDisposition:description", source.psycheDisposition.description);
-  for (const norm of source.actionNorms) {
-    const split = splitCharacterV2NormV1(norm);
-    exact(`actionNorms:${norm.id}`, split.executable);
-    exact(`actionNorms:${norm.id}:legacyMeaning`, split.legacyMeaning);
-  }
-  exact("speechPolicy", source.speechPolicy);
-  for (const relationship of source.relationshipSeeds) exact(`relationshipSeeds:${relationship.id}`, relationship);
-  exact("combat", source.combat);
-  exact(`capabilities:actions:${source.capabilities.basicAction.id}`, source.capabilities.basicAction);
-  for (const skill of source.capabilities.skills) exact(`capabilities:actions:${skill.id}`, skill);
-  for (const item of source.inventory) exact(`inventory:${item.id}`, item);
-  exact("initialLoadout", source.initialLoadout);
-  exact("expressionNotes", source.expressionNotes);
-  const sourceDispositions = new Map<string, SourceDispositionDecisionV1>();
-  const provenance = new Map<string, readonly ProposalProvenanceV1[]>();
-  for (const claim of claims) {
-    if (!characterSourceCopyMatchesV1(candidate, claim) && !claim.capsuleCopyAvailable) continue;
-    if (claim.capsuleCopyAvailable && !characterSourceCopyMatchesV1(candidate, claim)) {
-      sourceDispositions.set(claim.sourceClaimId, {
-        sourceClaimId: claim.sourceClaimId,
-        disposition: "preserve-in-capsule",
-        targetClaimIds: [],
-        rationale: "Server-verified exact copy in the frozen migration preservation capsule.",
-      });
-      continue;
-    }
-    sourceDispositions.set(claim.sourceClaimId, {
-      sourceClaimId: claim.sourceClaimId,
-      disposition: claim.sourceClaimId === "schemaVersion" ? "transform" : "preserve",
-      targetClaimIds: [claim.targetClaimId],
-      rationale: claim.sourceClaimId === "schemaVersion"
-        ? "Accepted V2-to-V3 version transition." : "Server-verified exact copy from frozen V2 source.",
-    });
-    provenance.set(claim.targetClaimId, [{ targetClaimId: claim.targetClaimId,
-      sourceClaimIds: [claim.sourceClaimId], method: claim.sourceClaimId === "schemaVersion" ? "derived" : "preserved" }]);
-  }
+  addCharacterMigrationClaims(source, exact);
+  const { sourceDispositions, provenance } = inferCharacterMigrationDispositions(candidate, claims);
   return { claims, sourceDispositions, provenance };
 }

@@ -128,13 +128,8 @@ function passed(
     : "cross_cluster");
 }
 
-async function main(): Promise<void> {
-  if (cases.length !== REVISION_SCOPE_OLLAMA_REPLAY_CONTRACT_V1.maxRequests) {
-    throw new Error("REVISION_SCOPE_REPLAY_CASE_COUNT_DRIFT");
-  }
-  await mkdir(outputDirectory);
-  const format = revisionScopeOllamaFormatV1();
-  const contract = {
+function replayContract(format: ReturnType<typeof revisionScopeOllamaFormatV1>) {
+  return {
     schema: "character-revision-scope-ollama-replay-contract-v1",
     runId,
     scope: "Local non-production revision-scope classification only.",
@@ -159,6 +154,15 @@ async function main(): Promise<void> {
       "This run does not authorize route connection, budget changes, or product acceptance.",
     ],
   };
+}
+
+async function main(): Promise<void> {
+  if (cases.length !== REVISION_SCOPE_OLLAMA_REPLAY_CONTRACT_V1.maxRequests) {
+    throw new Error("REVISION_SCOPE_REPLAY_CASE_COUNT_DRIFT");
+  }
+  await mkdir(outputDirectory);
+  const format = revisionScopeOllamaFormatV1();
+  const contract = replayContract(format);
   await writeNew("00-contract.json", {
     ...contract,
     contractDigestSha256: digest(contract),

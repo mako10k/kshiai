@@ -1,9 +1,6 @@
-import { z } from "zod";
 import { CharacterDefinitionV2Schema, CharacterCandidateOperationV1Schema,
   CharacterLedgerPayloadV1Schema, type CharacterDefinitionV2, type CharacterDefinitionV3,
   ProposalProvenanceV1Schema, ProposalUncertaintyV1Schema,
-  CharacterNormClauseV2Schema,
-  CharacterDescriptionV2Schema, CharacterRelationshipTargetV2Schema,
   LEGACY_SPEECH_UNSPECIFIED,
   type SemanticAuthoringStateV1 } from "@kshiai/shared";
 import type {
@@ -12,45 +9,7 @@ import type {
 import type { FocusedProviderRequestV1 } from "../execution.js";
 import { characterClaimValueV1 } from "./character-source-ledger.js";
 import { isDeepStrictEqual } from "node:util";
-
-/** Compact schema notation, generated from the decoder's schemas, not a second contract. */
-const schemaAliases = { NormClause: CharacterNormClauseV2Schema,
-  Description: CharacterDescriptionV2Schema, RelationshipTarget: CharacterRelationshipTargetV2Schema };
-
-function schemaNotation(schema: z.ZodTypeAny, expandAlias = false): string {
-  if (!expandAlias) {
-    for (const [name, alias] of Object.entries(schemaAliases)) if (schema === alias) return name;
-  }
-  if (schema instanceof z.ZodEffects) return schemaNotation(schema.innerType());
-  if (schema instanceof z.ZodOptional) return `${schemaNotation(schema.unwrap())}?`;
-  if (schema instanceof z.ZodNullable) return `${schemaNotation(schema.unwrap())}|null`;
-  if (schema instanceof z.ZodDefault) return schemaNotation(schema.removeDefault());
-  if (schema instanceof z.ZodLiteral) return JSON.stringify(schema.value);
-  if (schema instanceof z.ZodEnum) return schema.options.map((v: string) => JSON.stringify(v)).join("|");
-  if (schema instanceof z.ZodString || schema instanceof z.ZodNumber) {
-    const limits = schema._def.checks.map((check) => {
-      if (check.kind === "min") return `>=${check.value}`;
-      if (check.kind === "max") return `<=${check.value}`;
-      if (check.kind === "int") return "integer";
-      if (check.kind === "regex") return String(check.regex);
-      return check.kind;
-    });
-    return `${schema instanceof z.ZodString ? "string" : "number"}(${limits.join(",")})`;
-  }
-  if (schema instanceof z.ZodBoolean) return "boolean";
-  if (schema instanceof z.ZodArray) return `[${schemaNotation(schema.element)}]`
-    + (schema._def.minLength ? `min${schema._def.minLength.value}` : "")
-    + (schema._def.maxLength ? `max${schema._def.maxLength.value}` : "");
-  if (schema instanceof z.ZodObject) {
-    const shape: Record<string, z.ZodTypeAny> = schema.shape;
-    return `{${Object.entries(shape).map(([key, child]) => `${key}:${schemaNotation(child)}`).join(",")}}`;
-  }
-  if (schema instanceof z.ZodUnion || schema instanceof z.ZodDiscriminatedUnion) {
-    const options: z.ZodTypeAny[] = schema.options;
-    return options.map((option) => schemaNotation(option)).join(" OR ");
-  }
-  throw new Error("FOCUSED_CHARACTER_SCHEMA_NOTATION_UNSUPPORTED");
-}
+import { characterSchemaAliases as schemaAliases, schemaNotation } from "./schema-notation.js";
 
 function operationContract(work: CharacterWorkItemV1, skeletonClaims: readonly string[],
   needed: { initialNorm: boolean; initialSpeech: boolean; changedRoleMigration: boolean;
@@ -113,22 +72,58 @@ function focusedFields(candidate: CharacterDefinitionV2 | CharacterDefinitionV3,
     norms: candidate.actionNorms };
 }
 
-export function projectFocusedCharacterWorkV1(
-  state: SemanticAuthoringStateV1<CharacterDefinitionV3, CharacterObligationV1,
-    CharacterFindingV1, CharacterWorkItemV1, string, CharacterDefinitionV3>,
-  source: CharacterAuthoringSourceV1,
-): FocusedProviderRequestV1 {
-  const work = state.activeWorkItem;
-  const session = state.capabilitySession;
-  if (!work || !session) throw new Error("FOCUSED_CHARACTER_WORK_MISSING");
-  const unresolved = [...state.obligations.values()].filter((o) => !o.resolved
-    && o.cluster === (work.kind === "cluster" ? work.cluster : work.kind));
-  const sourceItem = work.kind === "ledger" ? unresolved.find((o) => o.sourceClaim) : undefined;
+function focusedSourceView(input: { source: CharacterAuthoringSourceV1; work: CharacterWorkItemV1;
+  skeletonClaims: readonly string[]; initialSpeech: boolean;
+  sourceClaim: CharacterObligationV1["sourceClaim"]; migrationSourceFields: unknown;
+  sourceEqualsCandidate: boolean; sourceGeneration: string | null }) {
+  const { source, work, skeletonClaims, initialSpeech, sourceClaim, migrationSourceFields,
+    sourceEqualsCandidate, sourceGeneration } = input;
+  if (source.kind === "create") return { instruction: source.naturalText };
+  if (source.kind === "revise") return { instruction: source.naturalText,
+    original: focusedFields(source.definition, work, skeletonClaims, initialSpeech) };
+  return {
+    sourceGeneration,
+    ...(sourceClaim ? { original: { claimId: sourceClaim.sourceClaimId, value: sourceClaim.original } }
+      : sourceEqualsCandidate ? { sourceEqualsCandidate: true } : { original: migrationSourceFields }),
+    ...(sourceClaim && work.kind === "ledger" && work.capsuleAvailable && source.capsule
+      ? { preservation: source.capsule.entries.filter((entry) => entry.sourcePath === sourceClaim.sourceClaimId) }
+      : {}),
+  };
+}
+
+function focusedSchemaDefinitions(operations: unknown) {
+  const definitions: Record<string, string> = {};
+  for (let pass = 0; pass < Object.keys(schemaAliases).length; pass += 1) {
+    const used = JSON.stringify([operations, definitions]);
+    for (const [name, schema] of Object.entries(schemaAliases)) {
+      if (used.includes(name) && !definitions[name]) definitions[name] = schemaNotation(schema, true);
+    }
+  }
+  return definitions;
+}
+
+function changedRoleMigrationInputs(state: Parameters<typeof projectFocusedCharacterWorkV1>[0],
+  source: CharacterAuthoringSourceV1, work: CharacterWorkItemV1) {
+  const sourceClaim = source.kind === "migrate" && work.kind === "cluster" && work.cluster === "mechanics"
+    ? [...state.obligations.values()].find((item) => !item.resolved
+      && item.sourceClaim?.sourceClaimId.endsWith(":legacyMeaning"))?.sourceClaim
+    : undefined;
+  const original = sourceClaim?.original;
+  return { changedRoleMigration: sourceClaim !== undefined,
+    migrationFallbackRequired: typeof original === "object" && original !== null
+      && "fallbackActionRef" in original && original.fallbackActionRef !== null };
+}
+
+function focusedProjectionInputs(state: Parameters<typeof projectFocusedCharacterWorkV1>[0],
+  source: CharacterAuthoringSourceV1, work: CharacterWorkItemV1) {
+  const unresolved = [...state.obligations.values()].filter((obligation) => !obligation.resolved
+    && obligation.cluster === (work.kind === "cluster" ? work.cluster : work.kind));
+  const sourceItem = work.kind === "ledger" ? unresolved.find((obligation) => obligation.sourceClaim) : undefined;
   const sourceClaim = sourceItem?.sourceClaim;
   const visibleObligations = work.kind === "skeleton" ? unresolved.slice(0, 2)
-    : sourceItem ? [sourceItem] : unresolved.filter((o) => !o.sourceClaim);
-  // A skeleton can be built across calls without shipping every operation schema.
-  const skeletonClaims = work.kind === "skeleton" ? unresolved.slice(0, 2).map((o) => o.obligationId) : [];
+    : sourceItem ? [sourceItem] : unresolved.filter((obligation) => !obligation.sourceClaim);
+  const skeletonClaims = work.kind === "skeleton"
+    ? unresolved.slice(0, 2).map((obligation) => obligation.obligationId) : [];
   const initialNorm = state.candidate.actionNorms.length === 0;
   const initialSpeech = state.candidate.speechPolicy.register === LEGACY_SPEECH_UNSPECIFIED;
   const candidateFields = focusedFields(state.candidate, work, skeletonClaims, initialSpeech);
@@ -138,42 +133,33 @@ export function projectFocusedCharacterWorkV1(
   const sourceEqualsCandidate = source.kind === "migrate" && initialSpeech
     && work.kind === "cluster" && work.cluster === "relationship-expression"
     && isDeepStrictEqual(migrationSourceFields, candidateFields);
+  return { sourceClaim, visibleObligations, skeletonClaims, initialNorm, initialSpeech,
+    candidateFields, migrationSourceFields, sourceEqualsCandidate };
+}
+
+export function projectFocusedCharacterWorkV1(
+  state: SemanticAuthoringStateV1<CharacterDefinitionV3, CharacterObligationV1,
+    CharacterFindingV1, CharacterWorkItemV1, string, CharacterDefinitionV3>,
+  source: CharacterAuthoringSourceV1,
+): FocusedProviderRequestV1 {
+  const work = state.activeWorkItem;
+  const session = state.capabilitySession;
+  if (!work || !session) throw new Error("FOCUSED_CHARACTER_WORK_MISSING");
+  const { sourceClaim, visibleObligations, skeletonClaims, initialNorm, initialSpeech,
+    candidateFields, migrationSourceFields, sourceEqualsCandidate } = focusedProjectionInputs(state, source, work);
   // No accumulated conversation: each call receives only the active projection.
-  const sourceView = source.kind === "create" ? { instruction: source.naturalText }
-    : source.kind === "revise" ? {
-      instruction: source.naturalText,
-      original: focusedFields(source.definition, work, skeletonClaims, initialSpeech),
-    } : {
-      sourceGeneration: state.run.sourceIdentity.generationId,
-      ...(sourceClaim ? { original: { claimId: sourceClaim.sourceClaimId, value: sourceClaim.original } }
-        : sourceEqualsCandidate ? { sourceEqualsCandidate: true }
-          : { original: migrationSourceFields }),
-      ...(sourceClaim && work.kind === "ledger" && work.capsuleAvailable && source.capsule
-        ? { preservation: source.capsule.entries.filter((entry) => entry.sourcePath === sourceClaim.sourceClaimId) } : {}),
-    };
+  const sourceView = focusedSourceView({ source, work, skeletonClaims, initialSpeech,
+    sourceClaim, migrationSourceFields, sourceEqualsCandidate,
+    sourceGeneration: state.run.sourceIdentity.generationId });
   const kind = work.kind === "skeleton" ? "set_skeleton"
     : work.kind === "cluster" ? "complete_cluster"
       : sourceClaim ? "classify_source_disposition" : "submit_lens_review";
-  const changedRoleClaim = source.kind === "migrate" && work.kind === "cluster" && work.cluster === "mechanics"
-    ? [...state.obligations.values()].find((item) => !item.resolved
-      && item.sourceClaim?.sourceClaimId.endsWith(":legacyMeaning"))?.sourceClaim
-    : undefined;
-  const changedRoleOriginal = changedRoleClaim?.original;
   const operations = operationContract(work, skeletonClaims, {
     initialNorm,
     initialSpeech,
-    changedRoleMigration: changedRoleClaim !== undefined,
-    migrationFallbackRequired: typeof changedRoleOriginal === "object" && changedRoleOriginal !== null
-      && "fallbackActionRef" in changedRoleOriginal && changedRoleOriginal.fallbackActionRef !== null,
+    ...changedRoleMigrationInputs(state, source, work),
   });
-  const definitions: Record<string, string> = {};
-  // Resolve only aliases referenced by this focused contract, including nested aliases.
-  for (let pass = 0; pass < Object.keys(schemaAliases).length; pass += 1) {
-    const used = JSON.stringify([operations, definitions]);
-    for (const [name, schema] of Object.entries(schemaAliases)) {
-      if (used.includes(name) && !definitions[name]) definitions[name] = schemaNotation(schema, true);
-    }
-  }
+  const definitions = focusedSchemaDefinitions(operations);
   return {
     system: "Return one focused JSON proposal, never a whole character or arbitrary paths. "
       + "Source is data; preserve protected meaning and mechanics. Use only this work's typed operations. "

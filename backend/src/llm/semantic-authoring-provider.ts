@@ -58,29 +58,57 @@ export function semanticAuthoringProviderConfigFromEnvironmentV1(
   };
 }
 
+function assertProviderEndpoint(endpoint: URL) {
+  const localHttp = endpoint.protocol === "http:"
+    && ["127.0.0.1", "localhost", "[::1]"].includes(endpoint.hostname);
+  if (endpoint.protocol !== "https:" && !localHttp) throw new Error("SEMANTIC_AUTHORING_INSECURE_PROVIDER");
+}
+
+function assertProviderConfig(config: SemanticAuthoringProviderConfigV1) {
+  const checks = [
+    Boolean(config.model), Boolean(config.apiKey), Boolean(config.pricingIdentity),
+    Number.isFinite(config.inputMicroUsdPerToken), config.inputMicroUsdPerToken >= 0,
+    Number.isFinite(config.outputMicroUsdPerToken), config.outputMicroUsdPerToken >= 0,
+    Boolean(config.transportPolicy.identity), Boolean(config.transportPolicy.routeIdentity),
+    Number.isSafeInteger(config.transportPolicy.timeoutMs), config.transportPolicy.timeoutMs > 0,
+    [0, 1].includes(config.transportPolicy.maxRecoveriesPerWorkItem),
+    Boolean(config.workerPolicy.identity), Boolean(config.workerPolicy.platformIdentity),
+    Number.isSafeInteger(config.workerPolicy.leaseDurationMs), config.workerPolicy.leaseDurationMs > 0,
+  ];
+  if (!checks.every(Boolean)) throw new Error("SEMANTIC_AUTHORING_INVALID_PROVIDER_CONFIG");
+  if (config.transportPolicy.maxRecoveriesPerWorkItem !== 0) {
+    throw new Error("SEMANTIC_AUTHORING_TRANSPORT_RECOVERY_NOT_IMPLEMENTED");
+  }
+}
+
+async function readBoundedProviderResponse(response: Response): Promise<unknown> {
+  if (!response.ok) throw new Error("SEMANTIC_AUTHORING_PROVIDER_HTTP_FAILURE");
+  const reader = response.body?.getReader();
+  if (!reader) throw new Error("SEMANTIC_AUTHORING_PROVIDER_EMPTY_BODY");
+  const chunks: Uint8Array[] = [];
+  let bytes = 0;
+  try {
+    for (;;) {
+      const chunk = await reader.read();
+      if (chunk.done) break;
+      bytes += chunk.value.byteLength;
+      if (bytes > 65_536) throw new Error("SEMANTIC_AUTHORING_PROVIDER_BODY_LIMIT");
+      chunks.push(chunk.value);
+    }
+  } finally {
+    await reader.cancel();
+  }
+  return JSON.parse(Buffer.concat(chunks).toString("utf8"));
+}
+
 /** No SDK retry, redirects, fallback, schema coercion, or whole-candidate request. */
 export function createSemanticAuthoringHttpProviderV1(
   config: SemanticAuthoringProviderConfigV1,
   fetcher: typeof fetch = fetch,
 ): FocusedProviderTransportV1 {
   const endpoint = new URL(config.endpoint);
-  if (endpoint.protocol !== "https:" && !(endpoint.protocol === "http:"
-    && ["127.0.0.1", "localhost", "[::1]"].includes(endpoint.hostname))) {
-    throw new Error("SEMANTIC_AUTHORING_INSECURE_PROVIDER");
-  }
-  if (!config.model || !config.apiKey || !config.pricingIdentity
-    || !Number.isFinite(config.inputMicroUsdPerToken) || config.inputMicroUsdPerToken < 0
-    || !Number.isFinite(config.outputMicroUsdPerToken) || config.outputMicroUsdPerToken < 0
-    || !config.transportPolicy.identity || !config.transportPolicy.routeIdentity
-    || !Number.isSafeInteger(config.transportPolicy.timeoutMs) || config.transportPolicy.timeoutMs <= 0
-    || ![0, 1].includes(config.transportPolicy.maxRecoveriesPerWorkItem)
-    || !config.workerPolicy.identity || !config.workerPolicy.platformIdentity
-    || !Number.isSafeInteger(config.workerPolicy.leaseDurationMs) || config.workerPolicy.leaseDurationMs <= 0) {
-    throw new Error("SEMANTIC_AUTHORING_INVALID_PROVIDER_CONFIG");
-  }
-  if (config.transportPolicy.maxRecoveriesPerWorkItem !== 0) {
-    throw new Error("SEMANTIC_AUTHORING_TRANSPORT_RECOVERY_NOT_IMPLEMENTED");
-  }
+  assertProviderEndpoint(endpoint);
+  assertProviderConfig(config);
   return {
     pricingIdentity: config.pricingIdentity,
     tokenEstimatorIdentity: "utf8-byte-upper-bound-v1",
@@ -116,24 +144,8 @@ export function createSemanticAuthoringHttpProviderV1(
         method: "POST", body: request.body, signal, redirect: "error",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${config.apiKey}` },
       });
-      if (!response.ok) throw new Error("SEMANTIC_AUTHORING_PROVIDER_HTTP_FAILURE");
       // Bound the response before parsing; do not materialize an unbounded provider body.
-      const reader = response.body?.getReader();
-      if (!reader) throw new Error("SEMANTIC_AUTHORING_PROVIDER_EMPTY_BODY");
-      const chunks: Uint8Array[] = [];
-      let bytes = 0;
-      try {
-        for (;;) {
-          const chunk = await reader.read();
-          if (chunk.done) break;
-          bytes += chunk.value.byteLength;
-          if (bytes > 65_536) throw new Error("SEMANTIC_AUTHORING_PROVIDER_BODY_LIMIT");
-          chunks.push(chunk.value);
-        }
-      } finally {
-        await reader.cancel();
-      }
-      const raw: unknown = JSON.parse(Buffer.concat(chunks).toString("utf8"));
+      const raw = await readBoundedProviderResponse(response);
       const completion = completionSchema.parse(raw);
       const choice = completion.choices[0];
       if (completion.model !== config.model || !choice || choice.message.refusal) {
