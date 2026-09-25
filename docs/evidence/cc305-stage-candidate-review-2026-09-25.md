@@ -80,3 +80,22 @@ route、source、provider、budget、execution、rollback、stop condition の�
 commit が未確定なので Stage identity はまだ成立しない。`cc305` は完了にせず、この不足を次の
 計画判断へ渡す。今回の作業はローカル文書・PERT更新だけで、push、PR、merge、tag、workflow
 dispatch、provider call、Stage/production mutation は含まない。
+
+## velocity 観測
+
+`cc311`、`cc312`、`cc315` はそれぞれ start 時の planned value が `1p` で、finish 時の
+active time は `3/16h`、`89/1800h`、`67/225h` である。`perttool project
+observe-velocity` に同じ task/event を渡した結果は次のとおり。
+
+- active-date throughput: `3p/1d`
+- elapsed-hour throughput: `10800p/2809h`（開始 19:51:27、終了 20:38:16）
+- effort productivity: `432/77 p/person-hour`（合計 `77/144h`、32分05秒）
+
+日数予測には `3p/1d` を暫定採用し、残り12pを4実働日とした。標本は3 task・1日だけで、
+Stage操作や外部判断待ちを含まない。次の完了taskを追加するたび再観測する。
+
+インストール済み perttool 0.11.0/0.11.1 は、このGrammar 9文書を直接 velocity 観測すると
+history層で `unsupported_source_version` を返す。今回は上記task/eventとproject identityだけを
+一時Grammar 6観測文書へそのまま投影し、perttool 0.11.0の3候補がすべてavailableになることを
+確認した。手計算値を perttool の推測結果として扱ってはいない。`cc305` の開始 20:59:22、
+suspend 21:04:54 の5分32秒は未完了区間なので、完了velocity標本には加えていない。
