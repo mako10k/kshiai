@@ -1,0 +1,134 @@
+# Existing .pert plans should normally be maintained through perttool commands; direct DSL editing bypasses goal/DAG owner-confirmation checks.
+project V3_STAGE_TRIAL:
+  version 5
+  title "First two-character V3 Stage battle trial"
+  description "Owner outcome: first play a real Stage battle between two newly created V3 characters, Neva and Rio. Local candidate fixtures exist but are not registered or Stage-accepted. V2-versus-V3 mixed battle and V2 migration are outside this first trial; the exact V2-to-V3 migration trial remains a later csm001 goal. vt101-vt107 cover local registration and selectability, immutable V4 battle binding and consumers, integration, release review, Stage deployment and character activation, and observed owner play. Every external write has separate authority. Declared 3p/1d is a conditional transfer of three completed same-day local csm001 tasks, not observed V3 Stage throughput; external waits are excluded and actuals must refresh it."
+  as_of 2026-09-25
+  duration_unit point
+  velocity 3p/1d
+  finish VST_PLAYED
+  goal_owner user
+  dag_owner user
+
+milestone VST_LOCAL_CANDIDATES:
+  title "Two local V3 candidate fixtures exist"
+  description "Neva and Rio deterministic local V3 fixtures exist on codex/v3-stage-trial-candidate at 77ed6a0; they are not integrated into this checkout, registered, owner content accepted, or available on Stage."
+  state reached
+
+resource DEV:
+  title "Developer"
+  capacity 1
+
+resource OWNER:
+  title "Product and release owner"
+  capacity 1
+
+milestone VST_CURRENT:
+  title "Both V3 characters are registered and selectable locally"
+
+milestone VST_BOUND:
+  title "V4 battle binds immutable V3 character revisions locally"
+
+milestone VST_WIRED:
+  title "Registration and battle paths are ready to integrate"
+
+milestone VST_LOCAL_BATTLE:
+  title "Neva versus Rio completes a local V3 battle"
+
+milestone VST_RELEASE:
+  title "Exact trial release candidate is reviewed and identified"
+
+milestone VST_STAGE_DEPLOYED:
+  title "Trial release is deployed to Stage and read back"
+
+milestone VST_STAGE_READY:
+  title "Both V3 characters are available in Stage"
+
+milestone VST_PLAYED:
+  title "Owner has tried a real V3-versus-V3 Stage battle"
+
+task vt101 VST_LOCAL_CANDIDATES -> VST_CURRENT:
+  title "Make immutable V3 revisions registrable and selectable locally"
+  description "Use the accepted V3 authoring contract to register Neva and Rio as immutable revisions, activate/read them, and expose both in the local character selection path. Verify the real registration and read model rather than fixture-only compilation. Do not require V2 migration or provider-backed generation for this trial."
+  estimate:
+    optimistic 2p
+    most_likely 3p
+    pessimistic 4p
+  requires:
+    DEV 1
+  source "Owner decision: first Stage trial uses two new V3 characters; accepted character V3 authoring requirements revision 5"
+
+task vt102 VST_LOCAL_CANDIDATES -> VST_BOUND:
+  title "Bind V3 revisions to V4 battle creation and consumers"
+  description "Bind immutable current V3 revision IDs and snapshots at V4 battle creation, persist and reload the binding, and make V4 execution and presentation consume those snapshots through a full V3-versus-V3 battle. Reject mixed V2-V3 creation. Preserve existing V2 historical meaning. Reconcile the older vt102 WIP and its ADR-0032 identity with current accepted architecture before treating that WIP as merge-ready; no Stage-readiness claim from its partial tests."
+  estimate:
+    optimistic 3p
+    most_likely 4p
+    pessimistic 5p
+  status suspended
+  requires:
+    DEV 1
+  source "Owner decision: V3-versus-V3 first Stage trial; repository immutable revision binding rule; current architecture identity reconciliation pending"
+
+gate vg101 VST_CURRENT -> VST_WIRED:
+  reason "Local integration needs registered, selectable V3 characters"
+
+gate vg102 VST_BOUND -> VST_WIRED:
+  reason "Local integration needs immutable V3 battle binding and consumers"
+
+task vt103 VST_WIRED -> VST_LOCAL_BATTLE:
+  title "Complete one local Neva-versus-Rio battle end to end"
+  description "Exercise registration, selection, creation, execution, reload, and visible result through the real local path. Confirm both participants are V3 and record exact revision and battle IDs. This is local integration evidence, not Stage acceptance."
+  estimate:
+    optimistic 1p
+    most_likely 2p
+    pessimistic 3p
+  requires:
+    DEV 1
+  source "Owner decision: try V3 characters in a real Stage battle; local integration prerequisite"
+
+task vt104 VST_LOCAL_BATTLE -> VST_RELEASE:
+  title "Review and identify the exact trial release candidate"
+  description "Review the local trial evidence, freeze an exact code and character revision identity, and obtain the separate approval needed for any merge or release write. Record the selected revision and remaining risks. Plan inclusion does not authorize push, merge, or release."
+  duration 1p
+  requires:
+    OWNER 1
+  source "Owner Stage-trial decision; release identity and approval boundary"
+
+task vt105 VST_RELEASE -> VST_STAGE_DEPLOYED:
+  title "Deploy the authorized trial candidate to Stage and read it back"
+  description "After separate deployment authorization, apply the exact reviewed release to Stage once and read back the deployed identity and service health. Stage deployment is not implied by completing local integration."
+  duration 1p
+  requires:
+    DEV 1
+  source "Owner Stage-trial decision; separate Stage deployment authority"
+
+task vt106 VST_STAGE_DEPLOYED -> VST_STAGE_READY:
+  title "Register and activate both V3 characters in Stage"
+  description "After separate Stage-data authorization, register and activate exact immutable revisions for Neva and Rio, verify both selectable, and read back IDs and revisions. No V2 migration or existing-character rewrite."
+  duration 1p
+  requires:
+    DEV 1
+  source "Owner decision: two new V3 characters for first Stage trial; Stage data write boundary"
+
+task vt107 VST_STAGE_READY -> VST_PLAYED:
+  title "Try and observe one real V3-versus-V3 Stage battle"
+  description "Owner plays Neva against Rio through the Stage user path; record exact battle and character revision IDs and observed result or blocker. This observed use, not a green local test or deployment, completes the first-trial outcome."
+  duration 1p
+  requires:
+    OWNER 1
+  source "Owner accepted goal: try V3 characters in Stage practice"
+
+work_event WE-3dbb3f38bb58d449f8ada5eae4068f5083f38cf6283bd0712c034a25db3ca26c:
+  model 1
+  task vt102
+  kind start
+  occurred_at 2026-09-18T21:04:09+09:00
+  planned_value 4p
+
+work_event WE-b6b08595934599b49d01ed1c80431459974f9cd32338618fe52cec503a6f326e:
+  model 1
+  task vt102
+  kind suspend
+  occurred_at 2026-09-18T21:53:00+09:00
+  reason "Shared workday ends at 22:00; V4 full-consumer regression remains"

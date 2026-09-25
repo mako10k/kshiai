@@ -1,16 +1,16 @@
-# Delivery plan revision 10: owner-authorized outcome-sized planning update.
-# Current revision record: docs/character-semantic-migration-plan-revision-10.md
-# Revision 9 acceptance and product completion criteria remain governing.
-# Report by outcomes; retain internal task IDs, trial order and separate execution authority.
+# Delivery plan revision 11: owner-confirmed first V3-only Stage trial scope.
+# Current revision record: docs/character-semantic-migration-plan-revision-11.md
+# Revision 9/10 records remain historical; CS_STAGE_TRIAL R2 is the current first-trial criterion.
+# Report by outcomes; retain historical task events and separate execution authority.
 # M1: cs316 Seal health and approved bounded migration-adapter correction (completed Work; cc304 completed, owner acceptance pending).
 # M2: cc304 -> cc311 -> cc312 -> cc315 local migration readiness.
-# M3: cc305 -> cc314 one actual Stage game using a migrated V3 character.
-# M4: cc313 -> cc306 -> cc307 -> cb209-cb214 evaluation, restoration and final cutover.
+# M3: cc305 -> cc314 first Neva-versus-Rio V3-only Stage game; child vt101-vt107 once.
+# M4: cc316 later exact V2-to-V3 Stage use -> cc313 -> cc306 -> cc307 -> cb209-cb214.
 # Historical done/reached fields are not renewed current evidence by this revision.
 project csm001:
   version 9
   title "Restore character authoring and migrate frozen ready V2 characters to strict V3"
-  description "First enable an owner-visible Stage game trial using an exact V2 character migrated to V3 through the common structured foundation; infer revise scope from the natural-language request. This is an interim user outcome, not final restoration or production cutover. Continue separately to the accepted three-mode evaluation, frozen-character restoration and strict V3 authoring cutover. Preserve protected meaning and complete server reconciliation. Provider work, deployment, candidate acceptance and pointer activation require separate authority."
+  description "First Stage trial: owner plays a real Neva-versus-Rio battle using two newly created V3 characters; V2-versus-V3 mixed battle and V2 migration are outside that first trial. The exact V2-to-V3 migration goal remains a downstream stage before broad evaluation and production restoration. Preserve the common structured foundation, protected meaning, source accounting, natural-language revise-scope inference and separate external-write authorities."
   as_of 2026-09-25
   duration_unit point
   velocity 3p/1d
@@ -117,10 +117,10 @@ milestone cm304:
   title "Focused create revise and migration connected and locally verified"
 
 milestone cm305:
-  title "Connected focused authoring candidate reviewed and tagged"
+  title "V3-only Neva and Rio Stage trial route and prerequisites reviewed"
 
 milestone cm314:
-  title "One migrated V2 character is playable as V3 on Stage"
+  title "Owner has played a real Stage battle between Neva and Rio, both new V3 characters"
 
 milestone cm306:
   title "Connected focused authoring and dual-read Stage proof verified"
@@ -393,7 +393,7 @@ task cc315 cm313 -> cm315:
   requires:
     cr001 1
 
-task cc313 cm314 -> cm304:
+task cc313 cm316 -> cm304:
   tags [M4_EVALUATION_RESTORATION]
   title "Complete bounded recovery and owner interaction for all three local modes"
   description "After the first Stage game-use trial, complete only the remaining controlled HTTP failures, bounded recovery, answer/retry continuation, safe mode-specific semantic diff and separate final-acceptance boundary required by CS_CONNECTED across revise, create and migration. Retain failures and current Seal evidence for the exact paths; do not expand into paid provider or production activation work. Do not treat the earlier one-case Stage trial as full three-mode conformance."
@@ -420,27 +420,28 @@ task cc309 cm308 -> cm309:
 gate cg309 cm309 -> cm311:
   reason "The first focused functional path cannot complete against the superseded persistence clause; accepted ADR-0033 and design revision 6 remain governing."
 
-task cc305 cm315 -> cm305:
+task cc305 cm317 -> cm305:
   status suspended
   tags [M3_STAGE_GAME_USE]
-  title "Review the one-case Stage trial candidate and establish its Stage identity"
-  description "Review exact route, owner interaction, Stage trial source identity, provider route and bounded budget, execution policy, rollback and stop conditions. Carry former ca104 old/new-path reconciliation and retain it for B14. Run repository checks and, under separate external-write authority, establish the new Stage revision/tag. Do not make the later R20 corpus evaluation a prerequisite for one Stage game-use trial. Do not reuse rc12 or change shared infrastructure."
+  title "Review the V3-only Neva and Rio Stage trial route"
+  description "Review the exact local Neva and Rio fixture identities, V3 registration and selectability, V4 battle binding and all consumers, release and Stage route, owner play gate, stop and recovery conditions. Establish the current gaps and the work needed to make an exact release candidate; vt104 later freezes the exact release identity after local integration. Do not require a V2 source, V2 migration, focused migration provider, candidate acceptance, or V2-versus-V3 mixed battle for this first trial. This is a local review only, with external release and Stage writes separately authorized."
   duration 1p
   owner "user and codex"
   requires:
     cr001 1
     cr002 1
+  source "Owner-confirmed first Stage trial: Neva versus Rio, two new V3 characters; docs/character-v3-stage-trial.pert"
 
 gate cg305 cm303 -> cm305:
   reason "Review the new candidate against the already established historical rc12 identity without requiring the failed legacy Stage to succeed."
 
 task cc314 cm305 -> cm314:
   tags [M3_STAGE_GAME_USE]
-  title "Try one migrated V2 character in an actual Stage game"
-  description "After separate approval of exact Stage revision, one owner-selected V2 source, provider route and budget, owner candidate acceptance, Stage-only pointer activation and rollback, deploy the qualified one-case trial route and migrate that one source to a strict V3 generation. Read back the migration receipt and exact current Stage generation, then use that generation in one real Stage game path. Verify the game binds the V3 generation and old generations and historical battles remain readable. A non-current review candidate, scripted fixture or passing test alone does not satisfy this outcome. Stop without copying production data, changing production policy or pointers, or silently retrying any failed external step. If no eligible Stage V2 source or activation route exists, report the missing prerequisite rather than substituting a simulated trial."
-  duration 1p
+  title "Try Neva versus Rio in an actual V3-only Stage battle"
+  description "Roll up the delegated V3_STAGE_TRIAL path vt101-vt107 exactly once: register and select both new V3 immutable revisions, complete V4 binding and every required consumer, prove a full local battle, review exact release identity, deploy under separate authority, activate both Stage characters under separate authority, and observe owner play in one real Stage V3-versus-V3 battle. Record bound generation IDs and readback. Exclude V2-versus-V3 mixed play and V2 migration from this first-trial completion claim. A fixture, green test, deployment, or unplayed battle does not complete it. The 13p duration is the existing child-plan resource schedule roll-up, not additional effort on top of vt101-vt107; external waits are excluded."
+  duration 13p
   owner "user and codex"
-  source "docs/character-semantic-migration-plan-revision-10.md"
+  source "Owner-confirmed first Stage trial; V3_STAGE_TRIAL vt101-vt107 resource schedule 13p on 2026-09-25"
   requires:
     cr001 1
     cr002 1
@@ -517,7 +518,7 @@ task cb213 cm212 -> cm213:
 task cb214 cm213 -> cm114:
   tags [M4_EVALUATION_RESTORATION]
   title "B14 separately approve activate and verify strict schema-3 authoring"
-  description "Reuse cc305 old/new-path reconciliation and cc307 production identity evidence, confirm no intervening drift, then separately activate the qualified authoring policy by CAS. Verify real create/revision, owner questions and source-based retries, candidate review/acceptance and strict V3 outcomes; historical paths use the qualified migration route. Retain rollback evidence. This is policy cutover, not a substitute for earlier code deployment or another legacy repair task."
+  description "Reuse cc316 migration old/new-path reconciliation and cc307 production identity evidence, confirm no intervening drift, then separately activate the qualified authoring policy by CAS. Verify real create/revision, owner questions and source-based retries, candidate review/acceptance and strict V3 outcomes; historical paths use the qualified migration route. Retain rollback evidence. This is policy cutover, not a substitute for earlier code deployment or another legacy repair task."
   duration 1p
   owner "user and codex"
   requires:
@@ -536,6 +537,17 @@ task cs317 cm310 -> cm311:
     cr001 1
   owner "codex"
   tags [M1_REPOSITORY_RECONCILIATION]
+
+task cc316 cm314 -> cm316:
+  title "Try one exact V2-to-V3 migration in a later Stage game"
+  description "After the V3-only first trial and local migration readiness, select one exact owner-approved V2 source, establish provider route and budget, accept its strict V3 candidate, activate a Stage-only pointer with reviewed recovery, and use that immutable generation in a separate real Stage game. Carry the former cc305 old/new-path reconciliation into this migration trial and retain it for B14. Read back migration receipt, source and target generations, battle binding and historical reads. Do not require or implement V2-versus-V3 mixed battle; use a compatible V3 opponent. Stage, provider and pointer writes need separate authority. The provisional 1p comes from the prior cc314 task estimate and must be updated from actual work."
+  duration 1p
+  requires:
+    cr001 1
+    cr002 1
+  owner "user and codex"
+  tags [M4_EVALUATION_RESTORATION]
+  source "Owner-confirmed 2026-09-25: retain V2-to-V3 migration as a downstream goal after Neva-versus-Rio first trial"
 
 work_event WE-c5f5aabffbd695deaccefe0aaf209b017a3e93af0163f218e25a8ee56e24f186:
   model 1
@@ -583,14 +595,6 @@ milestone_criterion_set CS_EVALUATION:
   revision R1
   commitment sha256:d0b8e7f399bf366d8b4c942a51795f3e83df411ce16f84cde2d1958a417b1b79
   criterion R20 required owner "Owner-reviewed three-mode corpus meets agreed semantic recovery and resource criteria with retained measurements and failures"
-
-milestone_criterion_set CS_STAGE_TRIAL:
-  milestone cm314
-  revision R1
-  commitment sha256:10f3a41aaf93880f0a80b03d238c745b27366d3b0d690b4032ba0603f7a5d633
-  criterion GAME_USE required owner "One owner-accepted V3 generation migrated from an exact V2 source is selected and used in a real Stage game, which binds that V3 generation"
-  criterion PRESERVATION required owner "Stage migration and pointer receipts identify exact source and target, historical generations and battles remain readable, and production identities and pointers are unchanged"
-
 milestone_criterion_set CS_REVISE_SCOPE:
   milestone cm311
   revision R1
@@ -745,3 +749,28 @@ work_event WE_CC305_SUSPEND_STAGE_IDENTITY_20260925:
   kind suspend
   occurred_at 2026-09-25T21:04:54+09:00
   reason "Local candidate review completed; exact Stage source, focused provider identity, V3 battle binding, post-acceptance rollback, and exact release commit remain unestablished."
+
+milestone cm317:
+  title "Neva and Rio exist as two local new V3 candidate fixtures"
+  description "Neva and Rio deterministic local V3 fixtures exist on codex/v3-stage-trial-candidate at 77ed6a0; they are not yet integrated into this checkout, registered, owner content accepted, or available on Stage."
+  state reached
+
+milestone cm316:
+  title "One exact V2 source has been migrated to V3 and used in a later real Stage game"
+
+gate cg316 cm315 -> cm316:
+  reason "The later exact V2-to-V3 Stage migration trial also needs the already locally prepared migration and owner path."
+
+milestone_criterion_set CS_STAGE_TRIAL:
+  milestone cm314
+  revision R2
+  commitment sha256:c0d9f55224bcba13739ad0ed47d8c3734bb48a2a4632bd9d8853c3a349b5a5f5
+  criterion GAME_USE required owner "Owner plays one real Stage battle between new V3 characters Neva and Rio and readback proves the battle bound both exact immutable V3 revisions"
+  criterion PRESERVATION required owner "No V2-V3 mixed battle or V2 migration is counted in this first trial; historical battles remain readable and production identities and pointers remain unchanged"
+
+milestone_criterion_set CS_MIGRATED_STAGE_TRIAL:
+  milestone cm316
+  revision R1
+  commitment sha256:0c462379b49b3b0fc1c49cf4bef6d18e1cef16d93990be6e80a42d1d3eac8fdf
+  criterion GAME_USE required owner "One owner-accepted strict V3 generation migrated from an exact V2 source is selected and used in a separate real Stage game with a compatible V3 opponent, and that game binds the exact immutable generation"
+  criterion PRESERVATION required owner "Migration and Stage pointer receipts identify exact source and target, historical generations and battles remain readable, and production identities and pointers are unchanged"
