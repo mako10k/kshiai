@@ -61,7 +61,8 @@ import {
 } from "./llm/provider-accounting.js";
 import * as charRepo from "./repositories/characters.js";
 import * as charAssetRepo from "./repositories/character-assets-v2.js";
-import { readCharacterFocusedAuthoringReviewV3 } from "./services/character-focused-authoring.js";
+import { readCharacterFocusedAuthoringReviewV3,
+  readCharacterFocusedMigrationActivationV3 } from "./services/character-focused-authoring.js";
 import * as battlefieldAssetRepo from "./repositories/battlefield-assets-v2.js";
 import * as narrationStyleAssetRepo from "./repositories/narration-style-assets-v2.js";
 import * as battleRepo from "./repositories/battles.js";
@@ -234,6 +235,19 @@ async function characterReviewResponse(
   const latestAttemptId = latest?.attemptId ?? attempt.attemptId;
   const stale = latestAttemptId !== attempt.attemptId;
   const focusedReview = await readCharacterFocusedAuthoringReviewV3(attempt.attemptId, viewerUserId);
+  let focusedAcceptanceError: string | null = null;
+  let focusedCanAccept = false;
+  if (attempt.status === "awaiting_owner_acceptance" && focusedReview?.semanticCandidateReview) {
+    try {
+      focusedCanAccept = Boolean(
+        await readCharacterFocusedMigrationActivationV3(attempt.attemptId, viewerUserId),
+      );
+    } catch (error) {
+      focusedAcceptanceError = error instanceof Error
+        ? error.message
+        : "FOCUSED_CHARACTER_MIGRATION_NOT_READY";
+    }
+  }
   const awaiting = attempt.status === "awaiting_owner_acceptance" && Boolean(attempt.candidate);
   const candidate = awaiting && !stale
     ? (await characterDraftResponse(attempt, viewerUserId)).character
@@ -265,8 +279,9 @@ async function characterReviewResponse(
     current,
     latestAttemptId,
     stale,
-    canAccept: Boolean(candidate) && acceptanceError === null,
-    acceptanceError,
+    canAccept: !stale && ((Boolean(candidate) && acceptanceError === null)
+      || (focusedCanAccept && focusedAcceptanceError === null)),
+    acceptanceError: acceptanceError ?? focusedAcceptanceError,
     failed: attempt.status === "failed"
       ? {
           attemptId: attempt.attemptId,

@@ -2,9 +2,14 @@ import {
   AssetAuthoringAttemptKindSchema,
   AssetAuthoringAttemptStatusSchema,
   AssetCompatibilitySchema,
+  CHARACTER_BATTLE_MECHANICS_CAPABILITY_SET_V3,
+  CharacterCompilerCapabilityV1Schema,
   CharacterGenerationEnvelopeV2Schema,
+  CharacterGenerationEnvelopeV3Schema,
   assertCharacterGenerationReadyV2,
   characterDefinitionV2ToLegacySheet,
+  characterDefinitionV3ToLegacySheet,
+  projectCharacterCompilerCompatibilityV1,
   type AssetAuthoringAttemptKind,
   type AssetAuthoringAttemptStatus,
   type AssetCompatibility,
@@ -23,6 +28,7 @@ import {
 } from "./asset-generations.js";
 import { insertOwnerNotification } from "./owner-notifications.js";
 import { registerCharacterFocusedAuthoringV3,
+  readCharacterFocusedMigrationActivationV3,
   type CharacterFocusedRegistrationSourceV1 } from "../services/character-focused-authoring.js";
 import { createCharacterSemanticAuthoringAdapterV3 } from "../services/semantic-authoring/adapters/character-v3.js";
 import { decodeUnresolvedCharacterRevisionSourceV1 } from
@@ -147,6 +153,19 @@ function parseGeneration(row: GenerationRow): AssetGeneration {
 }
 
 function characterReadinessReason(content: unknown): string | null {
+  const v3 = CharacterGenerationEnvelopeV3Schema.safeParse(content);
+  if (v3.success) {
+    const compatibility = projectCharacterCompilerCompatibilityV1({
+      required: CHARACTER_BATTLE_MECHANICS_CAPABILITY_SET_V3,
+      available: v3.data.compilerCompatibility.map((capability) =>
+        CharacterCompilerCapabilityV1Schema.parse(capability)),
+      deferredValues: v3.data.deferredValues.values,
+      blocked: [],
+    });
+    return compatibility.status === "ready"
+      ? null
+      : "missing_required_compiler";
+  }
   try {
     assertCharacterGenerationReadyV2(
       CharacterGenerationEnvelopeV2Schema.parse(content),
@@ -944,7 +963,123 @@ export async function activateCharacterAuthoringAttempt(input: {
       };
     }
     if (attempt.status !== "awaiting_owner_acceptance" || !attempt.candidate) {
-      throw new Error("AUTHORING_NOT_AWAITING_ACCEPTANCE");
+      const focused = await readCharacterFocusedMigrationActivationV3(
+        attempt.attemptId,
+        input.ownerUserId,
+        connection,
+      );
+      if (!focused || attempt.status !== "awaiting_owner_acceptance") {
+        throw new Error("AUTHORING_NOT_AWAITING_ACCEPTANCE");
+      }
+      await rejectStaleCharacterAuthoring(
+        connection,
+        attempt.characterId,
+        input.ownerUserId,
+        attempt.attemptId,
+      );
+      if (Date.parse(attempt.expiresAt) <= Date.now()) {
+        throw new Error("AUTHORING_ATTEMPT_EXPIRED");
+      }
+      if (attempt.expectedGenerationId !== focused.expectedCurrentGenerationId) {
+        throw new Error("FOCUSED_CHARACTER_MIGRATION_POINTER_IDENTITY_MISMATCH");
+      }
+      const sourceResult = await connection.query<GenerationRow>(
+        `SELECT asset_type, asset_id, generation, generation_id, schema_version,
+                content_json, content_digest, created_at
+           FROM asset_generations
+          WHERE generation_id = $1 AND asset_type = 'character' AND asset_id = $2`,
+        [focused.expectedCurrentGenerationId, attempt.characterId],
+      );
+      const sourceGeneration = sourceResult.rows[0]
+        ? parseGeneration(sourceResult.rows[0])
+        : null;
+      if (!sourceGeneration || sourceGeneration.schemaVersion !== 2
+        || sourceGeneration.contentDigest !== attempt.expectedContentDigest) {
+        throw new Error("FOCUSED_CHARACTER_MIGRATION_SOURCE_GENERATION_MISMATCH");
+      }
+      const sourceEnvelope = CharacterGenerationEnvelopeV2Schema.parse(
+        sourceGeneration.content,
+      );
+      const currentSheetResult = await connection.query<{ sheet_json: unknown }>(
+        `SELECT sheet_json FROM characters WHERE id = $1`,
+        [attempt.characterId],
+      );
+      const currentSheet = currentSheetResult.rows[0]
+        ? (typeof currentSheetResult.rows[0].sheet_json === "string"
+            ? JSON.parse(currentSheetResult.rows[0].sheet_json)
+            : currentSheetResult.rows[0].sheet_json) as CharacterSheet
+        : null;
+      if (!currentSheet || currentSheet.ownerUserId !== input.ownerUserId) {
+        throw new Error("CHARACTER_OWNER_MISMATCH");
+      }
+      const updatedAt = new Date().toISOString();
+      const envelope = CharacterGenerationEnvelopeV3Schema.parse({
+        ...sourceEnvelope,
+        definitionSchema: { family: "character", version: 3 },
+        definition: focused.definition,
+        provenance: {
+          ...sourceEnvelope.provenance,
+          attemptId: attempt.attemptId,
+          structureGeneratorContract: focused.adapterIdentity,
+        },
+        compilerCompatibility:
+          CHARACTER_BATTLE_MECHANICS_CAPABILITY_SET_V3.required,
+        deferredValues: {
+          contractVersion: 1,
+          values: focused.deferredValues,
+        },
+      });
+      const sheet = characterDefinitionV3ToLegacySheet({
+        characterId: attempt.characterId,
+        ownerUserId: input.ownerUserId,
+        definition: envelope.definition,
+        publicPresentation: envelope.publicPresentation,
+        createdAt: currentSheet.createdAt,
+        updatedAt,
+        previousImageUrl: currentSheet.appearance.previousImageUrl,
+        operational: {
+          visibility: currentSheet.visibility,
+          record: currentSheet.record,
+          recordOverall: currentSheet.recordOverall,
+          improvementMemo: currentSheet.improvementMemo,
+          opponentMemories: currentSheet.opponentMemories,
+          deletedAt: currentSheet.deletedAt,
+          revisionSnapshot: currentSheet.revisionSnapshot,
+        },
+      });
+      const generation = await appendAssetGeneration(connection, {
+        assetType: "character",
+        assetId: attempt.characterId,
+        schemaVersion: 3,
+        content: envelope,
+        createdAt: updatedAt,
+      });
+      await activateAssetGeneration(
+        connection,
+        generation,
+        focused.expectedCurrentGenerationId,
+        updatedAt,
+      );
+      await connection.query(
+        `UPDATE characters SET sheet_json = $2, updated_at = $3 WHERE id = $1`,
+        [sheet.id, JSON.stringify(sheet), updatedAt],
+      );
+      await connection.query(
+        `UPDATE character_asset_states
+            SET compatibility_status = 'ready', current_generation_id = $2,
+                active_attempt_id = NULL, reason_code = NULL, updated_at = $3
+          WHERE character_id = $1`,
+        [attempt.characterId, generation.generationId, updatedAt],
+      );
+      await connection.query(
+        `UPDATE character_authoring_attempts
+            SET status = 'succeeded', candidate_digest = $3,
+                result_generation_id = $4, source_text = NULL, updated_at = $5
+          WHERE attempt_id = $1 AND owner_user_id = $2`,
+        [attempt.attemptId, input.ownerUserId, focused.candidateDigest,
+          generation.generationId, updatedAt],
+      );
+      return { kind: "activated" as const, value: { sheet, generation } };
     }
     await rejectStaleCharacterAuthoring(
       connection,
@@ -1093,8 +1228,8 @@ export async function getCharacterCompatibility(
   }
   const row = state.rows[0];
   if (row.compatibility_status === "ready" &&
-      (!current || current.schemaVersion !== 2 ||
-       current.generationId !== row.current_generation_id)) {
+      (!current || ![2, 3].includes(current.schemaVersion)
+       || current.generationId !== row.current_generation_id)) {
     return AssetCompatibilitySchema.parse({
       status: "unsupported",
       schemaVersion: current?.schemaVersion ?? null,

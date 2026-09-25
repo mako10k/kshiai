@@ -1,10 +1,13 @@
-import { randomUUID } from "node:crypto";
+import { createHash, randomUUID } from "node:crypto";
 import { isDeepStrictEqual } from "node:util";
 import { z } from "zod";
-import { CharacterCompilerCompatibilityV1Schema, CharacterDeferredValueV1Schema,
+import { CHARACTER_BATTLE_MECHANICS_CAPABILITY_SET_V3,
+  CharacterCompilerCompatibilityV1Schema, CharacterDeferredValueV1Schema,
   CharacterDefinitionV3Schema, type CharacterAuthoringReview,
   isCharacterBattleMechanicsCapabilitySetV3,
-  type CharacterDefinitionV3, type SemanticAuthoringRunV1 } from "@kshiai/shared";
+  projectCharacterCompilerCompatibilityV1,
+  type CharacterDefinitionV3, type SemanticAuthoringRunV1,
+  type SourceDispositionDecisionV1 } from "@kshiai/shared";
 import { query, withTransaction, type DatabaseConnection } from "../db.js";
 import type { LlmProvider } from "../llm/types.js";
 import { assetContentDigest, getCurrentAssetGeneration } from "../repositories/asset-generations.js";
@@ -13,7 +16,8 @@ import { assertFamilyAuthoringFence, finishFamilyAuthoringJobInTransaction,
 import * as runs from "../repositories/semantic-authoring.js";
 import { createCharacterSemanticAuthoringAdapterV3,
   type CharacterAuthoringSourceV1, type CharacterMigrationReviewCandidateV1 } from "./semantic-authoring/adapters/character-v3.js";
-import { buildCharacterMigrationSourceLedgerV1 } from "./semantic-authoring/adapters/character-source-ledger.js";
+import { buildCharacterMigrationSourceLedgerV1,
+  characterSourceDispositionSatisfiedV1 } from "./semantic-authoring/adapters/character-source-ledger.js";
 import { projectFocusedCharacterWorkV1 } from "./semantic-authoring/adapters/character-context.js";
 import { createDurableSemanticAuthoringExecutionV1 } from "./semantic-authoring/durable-execution.js";
 import { executeSemanticAuthoringV1, type FocusedProviderTransportV1,
@@ -346,9 +350,16 @@ const migrationReviewCandidateSchema = z.object({ kind: z.literal("migration_rev
 
 const focusedReadyReviewSchema = z.object({ kind: z.literal("ready_for_review"),
   finalCandidate: z.union([CharacterDefinitionV3Schema, migrationReviewCandidateSchema]),
+  finalCandidateDigest: z.string().regex(/^[a-f0-9]{64}$/),
+  expectedCurrentGenerationId: z.string().nullable(),
   sourceLedger: z.object({ sourceDispositions: z.array(z.object({
-    sourceClaimId: z.string(), disposition: z.string(), rationale: z.string(),
-  }).passthrough()) }).passthrough().optional(),
+    sourceClaimId: z.string(), disposition: z.enum(["preserve", "transform", "split", "merge",
+      "supersede", "discard-as-nonmaterial", "preserve-in-capsule"]),
+    targetClaimIds: z.array(z.string()), rationale: z.string(),
+  }).strict()), provenance: z.array(z.object({
+    targetClaimId: z.string(), sourceClaimIds: z.array(z.string()),
+    method: z.enum(["preserved", "derived", "generated"]),
+  }).strict()) }).strict().optional(),
 });
 
 function decodeFocusedReviewSource(row: { source_json: unknown; resolved_source_json: unknown | null }) {
@@ -399,6 +410,108 @@ function migrationCompatibilityReview(candidate: z.infer<typeof migrationReviewC
       capability: `${entry.capability.consumer}@${entry.capability.version}`, targetPaths: entry.targetPaths })),
     blocked: candidate.compatibility.blocked.map((entry) => ({
       capability: `${entry.capability.consumer}@${entry.capability.version}`, reasonCode: entry.reasonCode })),
+  };
+}
+
+export type CharacterFocusedMigrationActivationV3 = Readonly<{
+  definition: CharacterDefinitionV3;
+  deferredValues: z.infer<typeof CharacterDeferredValueV1Schema>[];
+  candidateDigest: string;
+  expectedCurrentGenerationId: string;
+  adapterIdentity: string;
+}>;
+
+/**
+ * Revalidate the exact terminal migration candidate at the owner-acceptance
+ * boundary. This read grants no acceptance and performs no pointer mutation.
+ */
+export async function readCharacterFocusedMigrationActivationV3(
+  attemptId: string,
+  ownerUserId: string,
+  connection?: DatabaseConnection,
+): Promise<CharacterFocusedMigrationActivationV3 | null> {
+  const execute = connection
+    ? connection.query.bind(connection)
+    : query;
+  const found = await execute<{ status: string; mode: string; adapter_identity: string;
+    expected_current_generation_id: string | null; source_content_digest: string;
+    source_json: unknown; resolved_source_json: unknown | null; result_json: unknown }>(
+    `SELECT r.status, r.mode, r.adapter_identity, r.expected_current_generation_id,
+            r.source_content_digest, p.source_json, p.resolved_source_json, p.result_json
+       FROM semantic_authoring_runs r
+       JOIN character_focused_authoring_payloads p ON p.run_id = r.run_id
+      WHERE r.attempt_id = $1 AND r.owner_user_id = $2`,
+    [attemptId, ownerUserId],
+  );
+  const row = found.rows[0];
+  if (!row) return null;
+  if (row.status !== "ready_for_review" || row.mode !== "migrate") {
+    throw new Error("FOCUSED_CHARACTER_MIGRATION_NOT_READY");
+  }
+  const ready = focusedReadyReviewSchema.parse(
+    typeof row.result_json === "string" ? JSON.parse(row.result_json) : row.result_json,
+  );
+  if (!row.expected_current_generation_id
+    || ready.expectedCurrentGenerationId !== row.expected_current_generation_id) {
+    throw new Error("FOCUSED_CHARACTER_MIGRATION_POINTER_IDENTITY_MISMATCH");
+  }
+  const sourceInput = decodeFocusedReviewSource(row);
+  const decoded = createCharacterSemanticAuthoringAdapterV3().decodeFrozenSource(sourceInput);
+  if (!decoded.accepted || decoded.value.kind !== "migrate"
+    || !isCharacterBattleMechanicsCapabilitySetV3(decoded.value.requiredCapabilities)
+    || assetContentDigest(decoded.value) !== row.source_content_digest) {
+    throw new Error("FOCUSED_CHARACTER_MIGRATION_SOURCE_MISMATCH");
+  }
+  const candidateDigest = createHash("sha256")
+    .update(JSON.stringify(ready.finalCandidate)).digest("hex");
+  if (candidateDigest !== ready.finalCandidateDigest) {
+    throw new Error("FOCUSED_CHARACTER_MIGRATION_CANDIDATE_DIGEST_MISMATCH");
+  }
+  const wrapped = migrationReviewCandidateSchema.safeParse(ready.finalCandidate);
+  const definition = CharacterDefinitionV3Schema.parse(
+    wrapped.success ? wrapped.data.definition : ready.finalCandidate,
+  );
+  const deferredValues = wrapped.success ? wrapped.data.deferredValues : [];
+  if (wrapped.success && wrapped.data.pendingPreservation.length > 0) {
+    throw new Error("FOCUSED_CHARACTER_MIGRATION_PRESERVATION_PENDING");
+  }
+  const compatibility = projectCharacterCompilerCompatibilityV1({
+    required: CHARACTER_BATTLE_MECHANICS_CAPABILITY_SET_V3,
+    available: CHARACTER_BATTLE_MECHANICS_CAPABILITY_SET_V3.required,
+    deferredValues,
+    blocked: [],
+  });
+  if (compatibility.status !== "ready") {
+    throw new Error("FOCUSED_CHARACTER_MIGRATION_CONSUMER_BLOCKED");
+  }
+  const ledger = buildCharacterMigrationSourceLedgerV1(
+    decoded.value.definition,
+    definition,
+    decoded.value.capsule,
+    decoded.value.requiredCapabilities ?? null,
+  );
+  const decisions = new Map<string, SourceDispositionDecisionV1>(
+    (ready.sourceLedger?.sourceDispositions ?? [])
+      .map((decision) => [decision.sourceClaimId, decision]),
+  );
+  const provenance = ready.sourceLedger?.provenance ?? [];
+  if (ledger.claims.some((claim) => {
+    const decision = decisions.get(claim.sourceClaimId);
+    return !decision || !characterSourceDispositionSatisfiedV1(
+      definition,
+      claim,
+      decision,
+      provenance,
+    );
+  })) {
+    throw new Error("FOCUSED_CHARACTER_MIGRATION_SOURCE_ACCOUNTING_INVALID");
+  }
+  return {
+    definition,
+    deferredValues,
+    candidateDigest,
+    expectedCurrentGenerationId: row.expected_current_generation_id,
+    adapterIdentity: row.adapter_identity,
   };
 }
 
