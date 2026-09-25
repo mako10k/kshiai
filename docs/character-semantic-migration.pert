@@ -360,7 +360,7 @@ task cc304 cm310 -> cm311:
     cr001 1
 
 task cc311 cm311 -> cm312:
-  status active
+  status done
   tags [M2_LOCAL_MIGRATION]
   title "Extend the verified focused path to create"
   description "After the revise result is owner-visible and functionally acceptable, reuse the current common path for one focused create candidate. Verify only create-specific input, persistence and review differences; keep the candidate non-current and perform no paid call, deployment, policy activation or migration."
@@ -689,3 +689,11 @@ work_event WE_CC311_START_20260925:
   kind start
   occurred_at 2026-09-25T19:51:27+09:00
   planned_value 1p
+
+work_event WE_CC311_FINISH_20260925:
+  model 1
+  task cc311
+  kind finish
+  occurred_at 2026-09-25T20:02:42+09:00
+  active_time 0.1875h
+  effort 0.1875ph
