@@ -13,7 +13,7 @@ project csm001:
   description "First enable an owner-visible Stage game trial using an exact V2 character migrated to V3 through the common structured foundation; infer revise scope from the natural-language request. This is an interim user outcome, not final restoration or production cutover. Continue separately to the accepted three-mode evaluation, frozen-character restoration and strict V3 authoring cutover. Preserve protected meaning and complete server reconciliation. Provider work, deployment, candidate acceptance and pointer activation require separate authority."
   as_of 2026-09-25
   duration_unit point
-  velocity 1p/1d
+  velocity 3p/1d
   finish cm114
 
 resource cr001:
@@ -421,6 +421,7 @@ gate cg309 cm309 -> cm311:
   reason "The first focused functional path cannot complete against the superseded persistence clause; accepted ADR-0033 and design revision 6 remain governing."
 
 task cc305 cm315 -> cm305:
+  status active
   tags [M3_STAGE_GAME_USE]
   title "Review the one-case Stage trial candidate and establish its Stage identity"
   description "Review exact route, owner interaction, Stage trial source identity, provider route and bounded budget, execution policy, rollback and stop conditions. Carry former ca104 old/new-path reconciliation and retain it for B14. Run repository checks and, under separate external-write authority, establish the new Stage revision/tag. Do not make the later R20 corpus evaluation a prerequisite for one Stage game-use trial. Do not reuse rc12 or change shared infrastructure."
@@ -730,3 +731,10 @@ work_event WE_CC315_FINISH_20260925:
   occurred_at 2026-09-25T20:38:16+09:00
   active_time 67/225h
   effort 67/225ph
+
+work_event WE_CC305_START_20260925:
+  model 1
+  task cc305
+  kind start
+  occurred_at 2026-09-25T20:59:22+09:00
+  planned_value 1p
