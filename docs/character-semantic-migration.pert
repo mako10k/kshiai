@@ -382,6 +382,7 @@ task cc312 cm312 -> cm313:
     cr001 1
 
 task cc315 cm313 -> cm315:
+  status active
   tags [M2_LOCAL_MIGRATION]
   title "Connect only the owner flow needed for one Stage migration trial"
   description "Through the real local owner HTTP and worker path, verify one exact V2 source can produce a strict V3 migration candidate, the owner can review and accept that exact candidate, and the resulting generation can be selected by a Stage-scoped pointer without changing production or historical battle bindings. Preserve the accepted migration source accounting and rejection behavior. Do not require all unobserved create and revise recovery branches or the representative R20 corpus before this one trial. This is local readiness only: no provider charge, Stage deployment, data migration or pointer write."
@@ -713,3 +714,10 @@ work_event WE_CC312_FINISH_20260925:
   occurred_at 2026-09-25T20:12:28+09:00
   active_time 89/1800h
   effort 89/1800ph
+
+work_event WE_CC315_START_20260925:
+  model 1
+  task cc315
+  kind start
+  occurred_at 2026-09-25T20:20:24+09:00
+  planned_value 1p
