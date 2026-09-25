@@ -371,6 +371,7 @@ task cc311 cm311 -> cm312:
     cr001 1
 
 task cc312 cm312 -> cm313:
+  status active
   tags [M2_LOCAL_MIGRATION]
   title "Extend the verified focused path to migration"
   description "After create and revise expose the working common path, connect V2-to-V3 migration through that path. Preserve accepted minimum protected meaning and reconciliation obligations, but add only migration work justified by observed results; do not front-load broad revision-scope rules or use unsealed experiments as evidence. No paid call, deployment, candidate acceptance or policy activation."
@@ -697,3 +698,10 @@ work_event WE_CC311_FINISH_20260925:
   occurred_at 2026-09-25T20:02:42+09:00
   active_time 0.1875h
   effort 0.1875ph
+
+work_event WE_CC312_START_20260925:
+  model 1
+  task cc312
+  kind start
+  occurred_at 2026-09-25T20:09:30+09:00
+  planned_value 1p
