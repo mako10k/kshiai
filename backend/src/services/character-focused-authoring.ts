@@ -3,6 +3,7 @@ import { isDeepStrictEqual } from "node:util";
 import { z } from "zod";
 import { CharacterCompilerCompatibilityV1Schema, CharacterDeferredValueV1Schema,
   CharacterDefinitionV3Schema, type CharacterAuthoringReview,
+  isCharacterBattleMechanicsCapabilitySetV3,
   type CharacterDefinitionV3, type SemanticAuthoringRunV1 } from "@kshiai/shared";
 import { query, withTransaction, type DatabaseConnection } from "../db.js";
 import type { LlmProvider } from "../llm/types.js";
@@ -47,6 +48,10 @@ export async function registerCharacterFocusedAuthoringV3(connection: DatabaseCo
   }
   const source = pendingScope ?? (decoded.accepted ? decoded.value : null);
   if (!source) throw new Error("FOCUSED_CHARACTER_SOURCE_INVALID");
+  if (source.kind === "migrate" &&
+    !isCharacterBattleMechanicsCapabilitySetV3(source.requiredCapabilities)) {
+    throw new Error("FOCUSED_CHARACTER_CAPABILITY_SET_INVALID");
+  }
   const attempt = await connection.query<{ owner_user_id: string; character_id: string; status: string;
     kind: string; expected_generation_id: string | null; source_text: string | null }>(
     `SELECT owner_user_id, character_id, status, kind, expected_generation_id, source_text
@@ -275,6 +280,7 @@ export async function readCharacterFocusedAuthoringReviewV3(attemptId: string, o
     definition: CharacterDefinitionV3Schema, deferredValues: z.array(CharacterDeferredValueV1Schema),
     compatibility: CharacterCompilerCompatibilityV1Schema.nullable(),
     pendingPreservation: z.array(z.object({ sourceClaimId: z.string(), originalValue: z.unknown(),
+      contentDigest: z.string().regex(/^[a-f0-9]{64}$/),
       disposition: z.enum(["discard-as-nonmaterial", "defer"]), rationale: z.string() }).strict()),
   }).strict();
   const ready = z.object({ kind: z.literal("ready_for_review"),
@@ -301,7 +307,9 @@ export async function readCharacterFocusedAuthoringReviewV3(attemptId: string, o
     : raw;
   const decoded = createCharacterSemanticAuthoringAdapterV3().decodeFrozenSource(sourceInput);
   if (!decoded.accepted) throw new Error("FOCUSED_CHARACTER_SOURCE_INVALID");
-  const source = decoded.value.kind === "create" ? {} : decoded.value.definition;
+  const source = decoded.value.kind === "migrate" || decoded.value.kind === "create"
+    ? {}
+    : decoded.value.definition;
   const sourceFields = new Map(Object.entries(z.record(z.unknown()).parse(source)));
   const sourceClaims = decoded.value.kind === "migrate"
     ? new Map(buildCharacterMigrationSourceLedgerV1(decoded.value.definition, definition,
@@ -313,7 +321,8 @@ export async function readCharacterFocusedAuthoringReviewV3(attemptId: string, o
   const pendingCopyVerified = (sourceClaimId: string) => {
     const claim = sourceClaims.get(sourceClaimId);
     const copy = pendingCopies.get(sourceClaimId);
-    return Boolean(claim && copy && isDeepStrictEqual(copy.originalValue, claim.original));
+    return Boolean(claim && copy && isDeepStrictEqual(copy.originalValue, claim.original)
+      && copy.contentDigest === assetContentDigest(claim.original));
   };
   const sourceDispositions = decoded.value.kind === "migrate"
     ? (ready.data.sourceLedger?.sourceDispositions ?? []).map((decision) => ({
@@ -325,9 +334,6 @@ export async function readCharacterFocusedAuthoringReviewV3(attemptId: string, o
         ? sourceClaims.get(decision.sourceClaimId)?.capsuleCopyAvailable === true : null,
       pendingCopyVerified: decision.disposition === "discard-as-nonmaterial"
         ? pendingCopyVerified(decision.sourceClaimId) : null,
-      preservedOriginal: sourceClaims.get(decision.sourceClaimId)?.capsuleCopyAvailable === true
-        || pendingCopyVerified(decision.sourceClaimId)
-        ? JSON.stringify(sourceClaims.get(decision.sourceClaimId)?.original, null, 2) : null,
     }))
     : [];
   const labels: Record<string, string> = { schemaVersion: "定義版", identity: "人物設定",
@@ -349,8 +355,6 @@ export async function readCharacterFocusedAuthoringReviewV3(attemptId: string, o
       disposition: entry.disposition,
       rationale: entry.rationale,
       exactSourceCopyVerified: pendingCopyVerified(entry.sourceClaimId),
-      originalValue: pendingCopyVerified(entry.sourceClaimId)
-        ? JSON.stringify(entry.originalValue, null, 2) : null,
     })) ?? [],
     deferredValues: migrationCandidate?.deferredValues.map((value) => ({
       targetPath: value.targetPath,

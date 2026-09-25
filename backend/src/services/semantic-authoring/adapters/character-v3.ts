@@ -1,6 +1,7 @@
 import {
   CHARACTER_AUTHORING_ADAPTER_IDENTITY_V1,
   CHARACTER_CLUSTER_PROPOSAL_SCHEMA_V1,
+  CHARACTER_MIGRATION_CAPSULE_MAX_BYTES,
   CHARACTER_LEDGER_PROPOSAL_SCHEMA_V1,
   CHARACTER_SKELETON_PROPOSAL_SCHEMA_V1,
   CharacterClusterPayloadV1Schema,
@@ -64,9 +65,72 @@ export type CharacterMigrationReviewCandidateV1 = Readonly<{
 export type CharacterPendingPreservationV1 = Readonly<{
   sourceClaimId: string;
   originalValue: unknown;
+  contentDigest: string;
   disposition: "discard-as-nonmaterial" | "defer";
   rationale: string;
 }>;
+
+function canonicalPendingPreservationJson(value: unknown): string {
+  if (Array.isArray(value)) {
+    return `[${value.map(canonicalPendingPreservationJson).join(",")}]`;
+  }
+  if (value && typeof value === "object") {
+    const entries = Object.entries(value as Record<string, unknown>)
+      .filter(([, item]) => item !== undefined)
+      .sort(([left], [right]) => left.localeCompare(right));
+    return `{${entries.map(([key, item]) =>
+      `${JSON.stringify(key)}:${canonicalPendingPreservationJson(item)}`).join(",")}}`;
+  }
+  const serialized = JSON.stringify(value);
+  if (serialized === undefined) throw new Error("PENDING_PRESERVATION_NOT_JSON");
+  return serialized;
+}
+
+function pendingPreservationDigest(value: unknown): string {
+  return createHash("sha256").update(canonicalPendingPreservationJson(value)).digest("hex");
+}
+
+function pendingPreservationByteLength(
+  entries: readonly CharacterPendingPreservationV1[],
+): number {
+  return Buffer.byteLength(canonicalPendingPreservationJson(entries), "utf8");
+}
+
+function pendingPreservationWithinLimit(
+  entries: readonly CharacterPendingPreservationV1[],
+): boolean {
+  return pendingPreservationByteLength(entries) <= CHARACTER_MIGRATION_CAPSULE_MAX_BYTES;
+}
+
+function pendingPreservationDigestsMatch(
+  entries: readonly CharacterPendingPreservationV1[],
+): boolean {
+  return entries.every((entry) =>
+    entry.contentDigest === pendingPreservationDigest(entry.originalValue));
+}
+
+function pendingPreservationEntries(
+  obligations: ReadonlyMap<string, CharacterObligationV1>,
+): CharacterPendingPreservationV1[] {
+  return [...obligations.values()]
+    .flatMap((item) => item.pendingPreservation ? [item.pendingPreservation] : []);
+}
+
+function pendingPreservationForClaim(input: {
+  sourceClaimId: string;
+  originalValue: unknown;
+  disposition: CharacterPendingPreservationV1["disposition"];
+  rationale: string;
+}): CharacterPendingPreservationV1 {
+  const originalValue = structuredClone(input.originalValue);
+  return {
+    sourceClaimId: input.sourceClaimId,
+    originalValue,
+    contentDigest: pendingPreservationDigest(originalValue),
+    disposition: input.disposition,
+    rationale: input.rationale,
+  };
+}
 
 export function buildCharacterMigrationReviewCandidateV1(input: {
   definition: CharacterDefinitionV3;
@@ -74,11 +138,18 @@ export function buildCharacterMigrationReviewCandidateV1(input: {
   deferredValues: readonly CharacterDeferredValueV1[];
   pendingPreservation?: readonly CharacterPendingPreservationV1[];
 }): CharacterMigrationReviewCandidateV1 {
+  const pendingPreservation = input.pendingPreservation ?? [];
+  if (!pendingPreservationDigestsMatch(pendingPreservation)) {
+    throw new Error("PENDING_PRESERVATION_DIGEST_MISMATCH");
+  }
+  if (!pendingPreservationWithinLimit(pendingPreservation)) {
+    throw new Error("PENDING_PRESERVATION_TOO_LARGE");
+  }
   return {
     kind: "migration_review_candidate_v1",
     definition: input.definition,
     deferredValues: input.deferredValues,
-    pendingPreservation: input.pendingPreservation ?? [],
+    pendingPreservation,
     compatibility: input.requiredCapabilities ? projectCharacterCompilerCompatibilityV1({
       required: input.requiredCapabilities,
       available: [],
@@ -507,7 +578,8 @@ function refreshClaimObligations(
     if (item.sourceClaim) {
       const decision = sourceDispositions?.get(item.sourceClaim.sourceClaimId);
       const pendingExactCopyAvailable = item.pendingPreservation?.sourceClaimId === item.sourceClaim.sourceClaimId
-        && isDeepStrictEqual(item.pendingPreservation.originalValue, item.sourceClaim.original);
+        && isDeepStrictEqual(item.pendingPreservation.originalValue, item.sourceClaim.original)
+        && item.pendingPreservation.contentDigest === pendingPreservationDigest(item.sourceClaim.original);
       const resolved = item.deferredValue
         ? item.sourceClaim.capsuleCopyAvailable || pendingExactCopyAvailable
         : decision
@@ -944,11 +1016,12 @@ function stageLedgerProposal(
       }
       const pendingPreservation = decision.disposition === "discard-as-nonmaterial"
         && claim.nonmaterialDiscardEligible && !claim.capsuleCopyAvailable && !claim.capsuleEntryPresent
-        ? { sourceClaimId: claim.sourceClaimId, originalValue: structuredClone(claim.original),
-          disposition: "discard-as-nonmaterial" as const, rationale: decision.rationale }
+        ? pendingPreservationForClaim({ sourceClaimId: claim.sourceClaimId,
+          originalValue: claim.original, disposition: "discard-as-nonmaterial", rationale: decision.rationale })
         : decision.disposition === "discard-as-nonmaterial" ? item.pendingPreservation : undefined;
       const pendingExactCopyAvailable = pendingPreservation?.sourceClaimId === claim.sourceClaimId
-        && isDeepStrictEqual(pendingPreservation.originalValue, claim.original);
+        && isDeepStrictEqual(pendingPreservation.originalValue, claim.original)
+        && pendingPreservation.contentDigest === pendingPreservationDigest(claim.original);
       sourceDispositions.set(decision.sourceClaimId, decision);
       obligations.set(item.obligationId, { ...item, pendingPreservation, deferredValue: undefined,
         resolved: characterSourceDispositionSatisfiedV1(
@@ -958,6 +1031,11 @@ function stageLedgerProposal(
           input.proposal.provenance,
           pendingExactCopyAvailable,
         ) });
+    }
+    if (!pendingPreservationWithinLimit(pendingPreservationEntries(obligations))) {
+      return { accepted: false as const, findingKey: "pending-preservation-limit-exceeded",
+        finding: { code: "pending-preservation-limit-exceeded",
+          explanation: "Pending preservation exceeds the 256 KiB aggregate limit." } };
     }
     return {
       accepted: true as const,
@@ -995,12 +1073,12 @@ function stageLedgerProposal(
       }
       const pendingPreservation = !item.sourceClaim.capsuleCopyAvailable
         && !item.sourceClaim.capsuleEntryPresent && item.sourceClaim.nonmaterialDiscardEligible
-        ? { sourceClaimId: item.sourceClaim.sourceClaimId,
-          originalValue: structuredClone(item.sourceClaim.original),
-          disposition: "defer" as const, rationale: payload.reason }
+        ? pendingPreservationForClaim({ sourceClaimId: item.sourceClaim.sourceClaimId,
+          originalValue: item.sourceClaim.original, disposition: "defer", rationale: payload.reason })
         : item.pendingPreservation;
       const pendingExactCopyAvailable = pendingPreservation?.sourceClaimId === item.sourceClaim.sourceClaimId
-        && isDeepStrictEqual(pendingPreservation.originalValue, item.sourceClaim.original);
+        && isDeepStrictEqual(pendingPreservation.originalValue, item.sourceClaim.original)
+        && pendingPreservation.contentDigest === pendingPreservationDigest(item.sourceClaim.original);
       const value = registeredCharacterSourceDeferralV1({
         claim: item.sourceClaim,
         requiredCapabilities: item.requiredCapabilities ?? null,
@@ -1020,6 +1098,11 @@ function stageLedgerProposal(
       deferredValues.push(value);
       deferred.set(item.obligationId, { ...item, resolved: true, deferredValue: value,
         pendingPreservation });
+    }
+    if (!pendingPreservationWithinLimit(pendingPreservationEntries(deferred))) {
+      return { accepted: false as const, findingKey: "pending-preservation-limit-exceeded",
+        finding: { code: "pending-preservation-limit-exceeded",
+          explanation: "Pending preservation exceeds the 256 KiB aggregate limit." } };
     }
     return {
       accepted: true as const,
@@ -1230,14 +1313,25 @@ function finalizeCharacterCandidate(
   const unresolved = [...obligations.values()].filter((item) => item.required && !item.resolved);
   const deferredValues = [...obligations.values()]
     .flatMap((item) => item.deferredValue ? [item.deferredValue] : []);
-  const pendingPreservation = [...obligations.values()]
-    .flatMap((item) => item.pendingPreservation ? [item.pendingPreservation] : []);
+  const pendingPreservation = pendingPreservationEntries(obligations);
   const requiredCapabilities = [...obligations.values()]
     .find((item) => item.sourceClaim && item.requiredCapabilities)?.requiredCapabilities;
   if (deferredValues.length > 0 && !requiredCapabilities) {
     findings.set("deferred-value-output-contract", {
       code: "deferred-value-output-contract",
       explanation: "Deferred values require a frozen current-consumer registration.",
+    });
+  }
+  if (!pendingPreservationWithinLimit(pendingPreservation)) {
+    findings.set("pending-preservation-limit-exceeded", {
+      code: "pending-preservation-limit-exceeded",
+      explanation: "Pending preservation exceeds the 256 KiB aggregate limit.",
+    });
+  }
+  if (!pendingPreservationDigestsMatch(pendingPreservation)) {
+    findings.set("pending-preservation-digest-mismatch", {
+      code: "pending-preservation-digest-mismatch",
+      explanation: "Pending preservation content digest does not match the retained value.",
     });
   }
   if (!parsed.success || unresolved.length > 0 || findings.size > 0) {

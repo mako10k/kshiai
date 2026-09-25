@@ -122,26 +122,18 @@ export function CharacterReviewPage() {
                   {decision.pendingCopyVerified !== null ? (
                     <p>候補段階の未コミットコピー: {decision.pendingCopyVerified ? "元データと完全一致" : "不一致"}</p>
                   ) : null}
-                  {decision.preservedOriginal !== null ? (
-                    <><h4>保持した V2 の値</h4><pre style={{ whiteSpace: "pre-wrap", overflowWrap: "anywhere" }}>
-                      {decision.preservedOriginal}
-                    </pre></>
-                  ) : null}
                 </details>
               ))}
             </section>
           ) : null}
           {review.semanticCandidateReview.pendingPreservation?.length ? (
             <section>
-              <h3>正式カプセルへの保持予定（未コミット）</h3>
+              <h3>保留中の保持（未コミット）</h3>
               {review.semanticCandidateReview.pendingPreservation.map((entry) => (
                 <details key={entry.sourceClaimId}>
                   <summary>{entry.sourceClaimId} — {entry.disposition}</summary>
                   <p>{entry.rationale}</p>
                   <p>元データとの完全一致: {entry.exactSourceCopyVerified ? "確認済み" : "未確認"}</p>
-                  {entry.originalValue !== null ? <pre style={{ whiteSpace: "pre-wrap", overflowWrap: "anywhere" }}>
-                    {entry.originalValue}
-                  </pre> : null}
                 </details>
               ))}
             </section>

@@ -1,9 +1,11 @@
 import assert from "node:assert/strict";
+import { createHash } from "node:crypto";
 import { describe, it } from "node:test";
 import {
   CHARACTER_AUTHORING_ADAPTER_IDENTITY_V1,
   CHARACTER_CLUSTER_PROPOSAL_SCHEMA_V1,
   CHARACTER_LEDGER_PROPOSAL_SCHEMA_V1,
+  CHARACTER_MIGRATION_CAPSULE_MAX_BYTES,
   CHARACTER_SKELETON_PROPOSAL_SCHEMA_V1,
   defaultBasicAttack,
   defaultParameters,
@@ -262,7 +264,10 @@ describe("character V3 semantic authoring adapter", () => {
     assert.equal(absent.obligations.get(`source:${sourceClaimId}`)?.resolved, true);
     assert.deepEqual(absent.obligations.get(`source:${sourceClaimId}`)?.pendingPreservation,
       { sourceClaimId, originalValue: preservedValue, disposition: "discard-as-nonmaterial",
-        rationale: "Retained only as an exact frozen source copy." });
+        rationale: "Retained only as an exact frozen source copy.",
+        contentDigest: createHash("sha256").update(
+          JSON.stringify({ fallbackActionRef: null, selfAwareness: "aware", statement: "守り続ける" }),
+        ).digest("hex") });
     const pending = absent.obligations.get(`source:${sourceClaimId}`)?.pendingPreservation;
     assert.ok(pending);
     const pendingReview = buildCharacterMigrationReviewCandidateV1({
@@ -380,6 +385,30 @@ describe("character V3 semantic authoring adapter", () => {
     assert.equal(absentCapsule.obligations.get(`source:${sourceClaimId}`)?.resolved, true);
     assert.deepEqual(absentCapsule.obligations.get(`source:${sourceClaimId}`)?.pendingPreservation?.originalValue,
       capsule.entries[0].value);
+  });
+
+  it("rejects pending preservation whose aggregate content exceeds 256 KiB", () => {
+    const definition = adapter.buildBaseline({ kind: "create", naturalText: "source" }, "create").candidate;
+    const originalValue = "x".repeat(Math.floor(CHARACTER_MIGRATION_CAPSULE_MAX_BYTES / 2));
+    const contentDigest = createHash("sha256").update(JSON.stringify(originalValue)).digest("hex");
+    assert.throws(() => buildCharacterMigrationReviewCandidateV1({
+      definition,
+      requiredCapabilities: null,
+      deferredValues: [],
+      pendingPreservation: [{
+        sourceClaimId: "restricted-source-a",
+        originalValue,
+        contentDigest,
+        disposition: "defer",
+        rationale: "Retain the exact source outside the candidate definition.",
+      }, {
+        sourceClaimId: "restricted-source-b",
+        originalValue,
+        contentDigest,
+        disposition: "defer",
+        rationale: "Retain the exact source outside the candidate definition.",
+      }],
+    }), /PENDING_PRESERVATION_TOO_LARGE/);
   });
 
   it("builds a create baseline and requires skeleton work first", () => {

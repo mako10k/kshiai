@@ -1,21 +1,28 @@
 import assert from "node:assert/strict";
+import { createHash } from "node:crypto";
 import { after, before, describe, it } from "node:test";
 import { createServer } from "node:http";
 import { mkdtempSync, rmSync } from "node:fs";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 import { z } from "zod";
-import { CharacterDefinitionV3Schema, CharacterAuthoringReviewSchema,
-  SemanticAuthoringAcceptedV1Schema, CharacterDefinitionV2Schema,
-  type CharacterProposalPayloadV1 } from "@kshiai/shared";
-import { createCharacterSemanticAuthoringAdapterV3 } from "./semantic-authoring/adapters/character-v3.js";
-import { createSemanticAuthoringHttpProviderV1 } from "../llm/semantic-authoring-provider.js";
+import type { CharacterProposalPayloadV1 } from "@kshiai/shared";
 
 const directory = mkdtempSync(join(tmpdir(), "kshiai-focused-consumer-"));
 process.env.DATABASE_URL = "";
 process.env.DATABASE_PATH = join(directory, "test.db");
 process.env.AUTH_PROVIDER = "legacy";
 process.env.LLM_PROVIDER = "mock";
+const { CHARACTER_BATTLE_MECHANICS_CAPABILITY_SET_V3, CharacterDefinitionV3Schema,
+  CharacterAuthoringReviewSchema, CharacterGenerationEnvelopeV2Schema,
+  defaultCharacterDisclosurePolicyV2, projectCharacterProfileSourceV2,
+  SemanticAuthoringAcceptedV1Schema, CharacterDefinitionV2Schema } = await import("@kshiai/shared");
+const { createCharacterSemanticAuthoringAdapterV3 } = await import(
+  "./semantic-authoring/adapters/character-v3.js"
+);
+const { createSemanticAuthoringHttpProviderV1 } = await import(
+  "../llm/semantic-authoring-provider.js"
+);
 const { query, closeDatabase } = await import("../db.js");
 const { MockLlmProvider } = await import("../llm/mock.js");
 const { buildRoutes } = await import("../routes.js");
@@ -64,7 +71,7 @@ type Context = z.infer<typeof contextSchema>;
 let seen: Context[] = [];
 let scopeSeen: string[] = [];
 let scopeBehavior: "appearance" | "ambiguous" | "multi" | "invalid" = "appearance";
-let behavior: "invalid" | "complete" | "repair" | "unavailable" = "invalid";
+let behavior: "invalid" | "complete" | "defer" | "repair" | "unavailable" = "invalid";
 let endpoint = "";
 let lastPreparedSize = 0;
 let lastPreparedParts = "";
@@ -96,6 +103,14 @@ function payload(context: Context): CharacterProposalPayloadV1 {
       operations: [{ op: "set_appearance_summary", value: "青い外套" }] };
   }
   const unresolved = context.obligations[0]?.obligationId;
+  if (behavior === "defer" && unresolved?.endsWith(":legacyMeaning")) {
+    return {
+      kind: "propose_deferral",
+      obligationIds: [unresolved],
+      resolution: "generate-later",
+      reason: "Conscious guidance is optional for the frozen battle mechanics consumer.",
+    };
+  }
   if (unresolved?.startsWith("source:")) return { kind: "classify_source_disposition",
     decisions: [{ sourceClaimId: unresolved.slice("source:".length), disposition: "transform",
       targetClaimIds: unresolved === "source:speechPolicy"
@@ -222,7 +237,9 @@ before(async () => {
   endpoint = `http://127.0.0.1:${address.port}/v1/chat/completions`;
 });
 after(async () => {
-  await new Promise<void>((resolve, reject) => server.close((error) => error ? reject(error) : resolve()));
+  if (server.listening) {
+    await new Promise<void>((resolve, reject) => server.close((error) => error ? reject(error) : resolve()));
+  }
   await closeDatabase(); rmSync(directory, { recursive: true, force: true });
 });
 
@@ -414,7 +431,10 @@ describe("focused authoring through the real owner command and worker", () => {
     const started = await attempts.beginCharacterAuthoringAttempt({ ownerUserId: "focused-owner", kind: "upgrade",
       characterId, idempotencyKey: "focused-migration-source", requestDigest: "m".repeat(64),
       sourceText: "frozen migration", sourceDigest: "n".repeat(64),
-      focused: { pricingIdentity: "controlled-prices-v1", source: { kind: "migrate", definition: source, capsule: null } } });
+      focused: { pricingIdentity: "controlled-prices-v1", source: {
+        kind: "migrate", definition: source, capsule: null,
+        requiredCapabilities: CHARACTER_BATTLE_MECHANICS_CAPABILITY_SET_V3,
+      } } });
     const migrationOutcome = await processNextCharacterAuthoringJob({ llm: llm(), workerId: "focused-migration-worker" });
     const migrationAttempt = await attempts.getCharacterAuthoringAttempt(
       started.attempt.attemptId,
@@ -454,9 +474,16 @@ describe("focused authoring through the real owner command and worker", () => {
       createdAt: now, updatedAt: now };
     await query(`INSERT INTO characters (id, owner_user_id, sheet_json, created_at, updated_at)
       VALUES ($1, $2, $3, $4, $4)`, [characterId, "focused-owner", JSON.stringify(sheet), now]);
-    const envelope = buildImportedCharacterEnvelopeV2({ sheet, attemptId: "focused-route-import" });
+    const frozenLegacyStatement = "frozen V2 restricted meaning";
+    const imported = buildImportedCharacterEnvelopeV2({ sheet, attemptId: "focused-route-import" });
+    const envelope = CharacterDefinitionV2Schema.parse({
+      ...imported.definition,
+      actionNorms: imported.definition.actionNorms.map((norm, index) => index === 0
+        ? { ...norm, response: { ...norm.response, statement: frozenLegacyStatement } }
+        : norm),
+    });
     const original = await generations.createAssetGeneration({ assetType: "character", assetId: characterId,
-      schemaVersion: 2, content: envelope });
+      schemaVersion: 2, content: { ...imported, definition: envelope } });
     await query(`INSERT INTO character_asset_states
       (character_id, compatibility_status, current_generation_id, active_attempt_id, reason_code, updated_at)
       VALUES ($1, 'ready', $2, NULL, NULL, $3)`, [characterId, original.generationId, now]);
@@ -470,7 +497,7 @@ describe("focused authoring through the real owner command and worker", () => {
     const accepted = z.object({ attemptId: z.string() }).parse(await response.json());
     await drainCharacterAuthoringJobs({ llm: provider, workerId: "focused-migration-route-worker" });
     const attempt = await attempts.getCharacterAuthoringAttempt(accepted.attemptId, "focused-owner");
-    const terminal = await query<{ result_json: unknown }>(`SELECT p.result_json
+    const terminal = await query<{ result_json: unknown; source_json: unknown }>(`SELECT p.result_json, p.source_json
       FROM character_focused_authoring_payloads p JOIN semantic_authoring_runs r ON r.run_id = p.run_id
       WHERE r.attempt_id = $1`, [accepted.attemptId]);
     const terminalValue = typeof terminal.rows[0]?.result_json === "string"
@@ -497,15 +524,153 @@ describe("focused authoring through the real owner command and worker", () => {
       `SELECT mode, expected_current_generation_id FROM semantic_authoring_runs WHERE attempt_id = $1`,
       [accepted.attemptId]);
     assert.deepEqual(run.rows[0], { mode: "migrate", expected_current_generation_id: original.generationId });
+    const frozenSource = z.object({ kind: z.literal("migrate"), requiredCapabilities: z.unknown() }).parse(
+      typeof terminal.rows[0]?.source_json === "string"
+        ? JSON.parse(terminal.rows[0].source_json) : terminal.rows[0]?.source_json,
+    );
+    assert.deepEqual(frozenSource.requiredCapabilities, CHARACTER_BATTLE_MECHANICS_CAPABILITY_SET_V3);
     assert.ok(seen.length > 0, "the configured focused HTTP provider must receive migration work");
     assert.ok(seen.some((context) => context.work.kind === "ledger"
       && context.obligations.some((item) => item.obligationId === "source:speechPolicy")));
     assert.equal((await generations.getCurrentAssetGeneration("character", characterId))?.generationId,
       original.generationId);
+    const restrictedOriginalValue = { hiddenMeaning: "owner-only retained source" };
+    const redactedCandidate = {
+      ...terminalValue,
+      finalCandidate: {
+        kind: "migration_review_candidate_v1",
+        definition: result.finalCandidate,
+        deferredValues: [],
+        compatibility: null,
+        pendingPreservation: [{
+          sourceClaimId: "restricted-source",
+          originalValue: restrictedOriginalValue,
+          contentDigest: createHash("sha256").update(
+            JSON.stringify(restrictedOriginalValue),
+          ).digest("hex"),
+          disposition: "defer",
+          rationale: "Keep the exact source for a later consumer.",
+        }],
+      },
+    };
+    await query(`UPDATE character_focused_authoring_payloads SET result_json = $2
+      WHERE run_id IN (SELECT run_id FROM semantic_authoring_runs WHERE attempt_id = $1)`,
+    [accepted.attemptId, JSON.stringify(redactedCandidate)]);
+    const reviewResponse = await app.request(`/api/character-drafts/${accepted.attemptId}`, {
+      headers: { Cookie: "kshiai_session=focused-session" },
+    });
+    assert.equal(reviewResponse.status, 200);
+    const reviewText = await reviewResponse.text();
+    assert.equal(reviewText.includes("owner-only retained source"), false);
+    assert.equal(reviewText.includes(frozenLegacyStatement), false,
+      "frozen V2 source values are not disclosed by migration review fields");
+    const review = CharacterAuthoringReviewSchema.parse(JSON.parse(reviewText));
+    assert.deepEqual(review.semanticCandidateReview?.pendingPreservation, [{
+      sourceClaimId: "restricted-source",
+      disposition: "defer",
+      rationale: "Keep the exact source for a later consumer.",
+      exactSourceCopyVerified: false,
+    }]);
     const confirm = await app.request(`/api/characters/${accepted.attemptId}/confirm`, {
       method: "POST", headers: { Cookie: "kshiai_session=focused-session" },
     });
     assert.equal(confirm.status, 409, "a focused V3 migration candidate cannot activate through the V2 command");
+    assert.equal((await generations.getCurrentAssetGeneration("character", characterId))?.generationId,
+      original.generationId, "review and rejected activation leave the current pointer unchanged");
+  });
+
+  it("carries an optional legacy meaning deferral through the real upgrade route", async () => {
+    seen = []; preparedSizes = []; behavior = "defer";
+    const now = new Date().toISOString();
+    const generated = await new MockLlmProvider().generateCharacter({ prompt: "route deferral source" });
+    const characterId = "focused-migration-deferral-route-character";
+    const sheet = { ...generated.sheet, id: characterId, ownerUserId: "focused-owner",
+      createdAt: now, updatedAt: now };
+    await query(`INSERT INTO characters (id, owner_user_id, sheet_json, created_at, updated_at)
+      VALUES ($1, $2, $3, $4, $4)`, [characterId, "focused-owner", JSON.stringify(sheet), now]);
+    const imported = buildImportedCharacterEnvelopeV2({ sheet, attemptId: "focused-route-deferral-import" });
+    const { consciousGuidance: _guidance, mechanicalConflictFallbacks: _fallbacks, ...stable } = complete;
+    const definition = CharacterDefinitionV2Schema.parse({
+      ...stable,
+      schemaVersion: 2,
+      actionNorms: complete.actionNorms.map((norm) => ({
+        ...norm,
+        selfAwareness: "aware",
+        response: {
+          ...norm.response,
+          statement: "Keep this only for a later conscious consumer.",
+          fallbackActionRef: null,
+        },
+      })),
+    });
+    const deferredNormId = definition.actionNorms[0]!.id;
+    const disclosurePolicy = defaultCharacterDisclosurePolicyV2(definition);
+    const projection = projectCharacterProfileSourceV2(definition, disclosurePolicy);
+    const projectionDigest = generations.assetContentDigest(projection);
+    const sourceDigest = generations.assetContentDigest(sheet.narrativeBlurb);
+    const supportRefs = projection.facts.map((fact) => fact.supportRef).slice(0, 12);
+    const migrationEnvelope = CharacterGenerationEnvelopeV2Schema.parse({
+      ...imported,
+      definition,
+      disclosurePolicy,
+      publicPresentation: {
+        ...imported.publicPresentation,
+        projectionDigest,
+        descriptionInputDigest: generations.assetContentDigest({ sourceDigest, projectionDigest }),
+        segments: [{
+          ...imported.publicPresentation.segments[0]!,
+          supportRefs,
+        }],
+        claimValidation: {
+          ...imported.publicPresentation.claimValidation,
+          projectionDigest,
+          segments: [{
+            ...imported.publicPresentation.claimValidation!.segments[0]!,
+            supportRefs,
+          }],
+        },
+      },
+    });
+    const original = await generations.createAssetGeneration({ assetType: "character", assetId: characterId,
+      schemaVersion: 2, content: migrationEnvelope });
+    await query(`INSERT INTO character_asset_states
+      (character_id, compatibility_status, current_generation_id, active_attempt_id, reason_code, updated_at)
+      VALUES ($1, 'ready', $2, NULL, NULL, $3)`, [characterId, original.generationId, now]);
+    const provider = llm();
+    const app = buildRoutes({ llm: provider });
+    const response = await app.request(`/api/characters/${characterId}/upgrade`, {
+      method: "POST",
+      headers: { Cookie: "kshiai_session=focused-session", "Idempotency-Key": "focused-migration-deferral-route" },
+    });
+    assert.equal(response.status, 202);
+    const accepted = z.object({ attemptId: z.string() }).parse(await response.json());
+    await drainCharacterAuthoringJobs({ llm: provider, workerId: "focused-migration-deferral-route-worker" });
+    const terminal = await query<{ result_json: unknown }>(`SELECT p.result_json
+      FROM character_focused_authoring_payloads p JOIN semantic_authoring_runs r ON r.run_id = p.run_id
+      WHERE r.attempt_id = $1`, [accepted.attemptId]);
+    const attempt = await attempts.getCharacterAuthoringAttempt(accepted.attemptId, "focused-owner");
+    assert.ok(terminal.rows[0]?.result_json, `status=${attempt?.status}, error=${attempt?.errorCode}, calls=${seen.length}`);
+    const terminalValue = typeof terminal.rows[0]?.result_json === "string"
+      ? JSON.parse(terminal.rows[0].result_json) : terminal.rows[0]?.result_json;
+    const result = z.object({
+      kind: z.literal("ready_for_review"),
+      finalCandidate: z.object({
+        kind: z.literal("migration_review_candidate_v1"),
+        deferredValues: z.array(z.object({ targetPath: z.string(), reason: z.string(),
+          candidateSourcePaths: z.array(z.string()), requiringCapability: z.object({
+            consumer: z.string(), version: z.number(),
+          }) })),
+      }),
+    }).parse(terminalValue);
+    assert.deepEqual(result.finalCandidate.deferredValues, [{
+      targetPath: `definition.consciousGuidance.${deferredNormId}`,
+      reason: "Conscious guidance is optional for the frozen battle mechanics consumer.",
+      candidateSourcePaths: ["definition.actionNorms"],
+      requiringCapability: { consumer: "character-conscious-self", version: 3 },
+    }]);
+    assert.equal(attempt?.status, "awaiting_owner_acceptance");
+    assert.equal((await generations.getCurrentAssetGeneration("character", characterId))?.generationId,
+      original.generationId, "optional deferral never activates or moves the current pointer");
   });
 
   it("retries a failed owner command from the same source with a new attempt and idempotent replay", async () => {

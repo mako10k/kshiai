@@ -21,6 +21,7 @@ import {
   toPublicNarrationStyle,
   toPublicPreset,
   balanceCharacterCombatFields,
+  CHARACTER_BATTLE_MECHANICS_CAPABILITY_SET_V3,
   CharacterDefinitionV3Schema,
   CharacterGenerationEnvelopeV2Schema,
   assertCharacterGenerationReadyV2,
@@ -1134,7 +1135,12 @@ export function buildRoutes(options: {
     const focusedInput = focusedMigration && migrationDefinition?.success && semanticProvider ? {
       generation: focusedMigration,
       registration: {
-        source: { kind: "migrate" as const, definition: migrationDefinition.data.definition, capsule: null },
+        source: {
+          kind: "migrate" as const,
+          definition: migrationDefinition.data.definition,
+          capsule: null,
+          requiredCapabilities: CHARACTER_BATTLE_MECHANICS_CAPABILITY_SET_V3,
+        },
         pricingIdentity: semanticProvider.pricingIdentity,
       },
     } : null;
