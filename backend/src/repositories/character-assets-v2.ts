@@ -915,6 +915,7 @@ export async function discardCharacterAuthoringAttempt(
 export async function activateCharacterAuthoringAttempt(input: {
   attemptId: string;
   ownerUserId: string;
+  allowFocusedMigrationActivation?: boolean;
 }): Promise<{ sheet: CharacterSheet; generation: AssetGeneration }> {
   const result = await withTransaction(async (connection) => {
     const attempt = await selectAttempt(connection, input.attemptId, input.ownerUserId);
@@ -963,6 +964,9 @@ export async function activateCharacterAuthoringAttempt(input: {
       };
     }
     if (attempt.status !== "awaiting_owner_acceptance" || !attempt.candidate) {
+      if (!input.allowFocusedMigrationActivation) {
+        throw new Error("FOCUSED_CHARACTER_MIGRATION_ACTIVATION_DISABLED");
+      }
       const focused = await readCharacterFocusedMigrationActivationV3(
         attempt.attemptId,
         input.ownerUserId,

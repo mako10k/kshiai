@@ -227,6 +227,7 @@ async function characterSheetForAttempt(
 async function characterReviewResponse(
   attempt: charAssetRepo.CharacterAuthoringAttempt,
   viewerUserId: string,
+  enableCharacterMigrationAcceptanceTrial = false,
 ) {
   const latest = await charAssetRepo.getLatestCharacterAuthoringAttemptForCharacter(
     attempt.characterId,
@@ -238,14 +239,18 @@ async function characterReviewResponse(
   let focusedAcceptanceError: string | null = null;
   let focusedCanAccept = false;
   if (attempt.status === "awaiting_owner_acceptance" && focusedReview?.semanticCandidateReview) {
-    try {
-      focusedCanAccept = Boolean(
-        await readCharacterFocusedMigrationActivationV3(attempt.attemptId, viewerUserId),
-      );
-    } catch (error) {
-      focusedAcceptanceError = error instanceof Error
-        ? error.message
-        : "FOCUSED_CHARACTER_MIGRATION_NOT_READY";
+    if (!enableCharacterMigrationAcceptanceTrial) {
+      focusedAcceptanceError = "FOCUSED_CHARACTER_MIGRATION_ACTIVATION_DISABLED";
+    } else {
+      try {
+        focusedCanAccept = Boolean(
+          await readCharacterFocusedMigrationActivationV3(attempt.attemptId, viewerUserId),
+        );
+      } catch (error) {
+        focusedAcceptanceError = error instanceof Error
+          ? error.message
+          : "FOCUSED_CHARACTER_MIGRATION_NOT_READY";
+      }
     }
   }
   const awaiting = attempt.status === "awaiting_owner_acceptance" && Boolean(attempt.candidate);
@@ -379,6 +384,8 @@ export function buildRoutes(options: {
   controlledCharacterRevisionCluster?: "appearance";
   /** Local owner-command trial; scope is inferred inside its counted worker attempt. */
   enableCharacterRevisionScopeTrial?: boolean;
+  /** Local-only acceptance trial; omission prevents focused migration pointer mutation. */
+  enableCharacterMigrationAcceptanceTrial?: boolean;
 } = {}) {
   const app = new Hono();
   const llm = options.llm ?? createLlmProvider();
@@ -1068,7 +1075,11 @@ export function buildRoutes(options: {
       user.id,
     );
     if (!structured) return c.json({ error: "not_found" }, 404);
-    return c.json(await characterReviewResponse(structured, user.id));
+    return c.json(await characterReviewResponse(
+      structured,
+      user.id,
+      options.enableCharacterMigrationAcceptanceTrial === true,
+    ));
   });
 
   authed.post("/characters/:id/confirm", async (c) => {
@@ -1099,6 +1110,8 @@ export function buildRoutes(options: {
         const activated = await charAssetRepo.activateCharacterAuthoringAttempt({
           attemptId: structured.attemptId,
           ownerUserId: user.id,
+          allowFocusedMigrationActivation:
+            options.enableCharacterMigrationAcceptanceTrial === true,
         });
         return c.json({
           character: await charRepo.toPublicCharacterForViewer(

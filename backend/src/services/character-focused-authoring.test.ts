@@ -535,6 +535,29 @@ describe("focused authoring through the real owner command and worker", () => {
       && context.obligations.some((item) => item.obligationId === "source:speechPolicy")));
     assert.equal((await generations.getCurrentAssetGeneration("character", characterId))?.generationId,
       original.generationId);
+    const defaultReviewResponse = await app.request(`/api/character-drafts/${accepted.attemptId}`, {
+      headers: { Cookie: "kshiai_session=focused-session" },
+    });
+    const defaultReview = CharacterAuthoringReviewSchema.parse(await defaultReviewResponse.json());
+    assert.equal(defaultReview.canAccept, false);
+    assert.equal(
+      defaultReview.acceptanceError,
+      "FOCUSED_CHARACTER_MIGRATION_ACTIVATION_DISABLED",
+    );
+    const defaultConfirm = await app.request(`/api/characters/${accepted.attemptId}/confirm`, {
+      method: "POST", headers: { Cookie: "kshiai_session=focused-session" },
+    });
+    assert.equal(defaultConfirm.status, 409);
+    assert.match(
+      (await defaultConfirm.json() as { message: string }).message,
+      /FOCUSED_CHARACTER_MIGRATION_ACTIVATION_DISABLED/,
+    );
+    assert.equal((await generations.getCurrentAssetGeneration("character", characterId))?.generationId,
+      original.generationId, "normal runtime leaves the current pointer unchanged");
+    const trialApp = buildRoutes({
+      llm: provider,
+      enableCharacterMigrationAcceptanceTrial: true,
+    });
     const restrictedOriginalValue = { hiddenMeaning: "owner-only retained source" };
     const redactedCandidate = {
       ...terminalValue,
@@ -557,7 +580,7 @@ describe("focused authoring through the real owner command and worker", () => {
     await query(`UPDATE character_focused_authoring_payloads SET result_json = $2
       WHERE run_id IN (SELECT run_id FROM semantic_authoring_runs WHERE attempt_id = $1)`,
     [accepted.attemptId, JSON.stringify(redactedCandidate)]);
-    const reviewResponse = await app.request(`/api/character-drafts/${accepted.attemptId}`, {
+    const reviewResponse = await trialApp.request(`/api/character-drafts/${accepted.attemptId}`, {
       headers: { Cookie: "kshiai_session=focused-session" },
     });
     assert.equal(reviewResponse.status, 200);
@@ -577,7 +600,7 @@ describe("focused authoring through the real owner command and worker", () => {
       rationale: "Keep the exact source for a later consumer.",
       exactSourceCopyVerified: false,
     }]);
-    const confirm = await app.request(`/api/characters/${accepted.attemptId}/confirm`, {
+    const confirm = await trialApp.request(`/api/characters/${accepted.attemptId}/confirm`, {
       method: "POST", headers: { Cookie: "kshiai_session=focused-session" },
     });
     assert.equal(confirm.status, 409);
@@ -627,7 +650,10 @@ describe("focused authoring through the real owner command and worker", () => {
       VALUES ($1, 'ready', $2, NULL, NULL, $3)`,
     [characterId, sourceGeneration.generationId, now]);
     const provider = llm();
-    const app = buildRoutes({ llm: provider });
+    const app = buildRoutes({
+      llm: provider,
+      enableCharacterMigrationAcceptanceTrial: true,
+    });
     const upgrade = await app.request(`/api/characters/${characterId}/upgrade`, {
       method: "POST",
       headers: {
@@ -737,7 +763,10 @@ describe("focused authoring through the real owner command and worker", () => {
       VALUES ($1, 'ready', $2, NULL, NULL, $3)`,
     [characterId, sourceGeneration.generationId, now]);
     const provider = llm();
-    const app = buildRoutes({ llm: provider });
+    const app = buildRoutes({
+      llm: provider,
+      enableCharacterMigrationAcceptanceTrial: true,
+    });
     const upgrade = await app.request(`/api/characters/${characterId}/upgrade`, {
       method: "POST",
       headers: {
