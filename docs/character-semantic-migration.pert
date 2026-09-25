@@ -2,7 +2,7 @@
 # Current revision record: docs/character-semantic-migration-plan-revision-10.md
 # Revision 9 acceptance and product completion criteria remain governing.
 # Report by outcomes; retain internal task IDs, trial order and separate execution authority.
-# M1: cs316 Seal health and approved bounded migration-adapter correction (unestimated Work; cc304 suspended).
+# M1: cs316 Seal health and approved bounded migration-adapter correction (completed Work; cc304 active).
 # M2: cc304 -> cc311 -> cc312 -> cc315 local migration readiness.
 # M3: cc305 -> cc314 one actual Stage game using a migrated V3 character.
 # M4: cc313 -> cc306 -> cc307 -> cb209-cb214 evaluation, restoration and final cutover.
@@ -206,7 +206,7 @@ work cc302:
 
 work cs316:
   title "M1 Restore current Seal authority before continuing migration integration"
-  description "Owner-directed all-Seal health recovery and bounded local focused V2-to-V3 migration correction. On 2026-09-25 the owner confirmed that the real upgrade path freezes exactly battle-mechanics@3 as its required consumer set for this slice. Reconcile current plan, implementation and test Seal consumers with exact Accepted authority. Require exact V2 source preservation before nonmaterial discard; register only consumer-optional typed deferral; carry its disposition, verification and effects into private candidate compatibility and owner review without exposing restricted original values. Bound pending preservation to an aggregate 256 KiB and content-digest each exact copy, but do not treat it as a formal generation-bound capsule. Thread the frozen consumer set through the upgrade attempt and verify route-level deferral reachability plus no pointer or activation write. Do not activate a candidate, move a pointer, run paid provider calls, deploy, or claim migration complete. Full capsule binding and atomic owner-accepted migration commit remain later authorized work. Preserve historical Seals and original proof scope; do not require historical stale or draft counts to reach zero. As of 2026-09-25, remaining internal effort is estimated at 6-10 active hours for implementation, targeted and full verification, bounded Seal readback/reseal, commit, synchronization and review handoff; basis is the observed 5h20 nearby 2026-09-18 WIP window plus the newly identified route, privacy and bounds corrections. With one developer and an 8-hour weekday, conditional internal completion is 2026-09-25 18:00 through 2026-09-28 14:00 JST when work continues without a new defect or external wait. Keep cc304 suspended while M1 recovery is incomplete. Completion evidence and inventory are in docs/evidence/seal-health-recovery-2026-09-17.md. This update records the authorized scope and estimate; it does not complete recovery or admit a test."
+  description "Owner-directed all-Seal health recovery and bounded local focused V2-to-V3 migration correction. On 2026-09-25 the owner fixed the real upgrade path required consumer set to exactly battle-mechanics@3 for this slice. The bounded implementation is merged to remote main at fb9cd04a5825da1e4647e6922356f3f1dad24032: exact changed V2 source values are retained privately with SHA-256 digests and an aggregate 256 KiB limit; optional legacy meaning can defer only against that frozen consumer set; restricted original values are omitted from owner review; and the real upgrade route reaches a non-current review candidate without pointer or activation writes. The governed 112-test suite, typecheck, lint, build, SealGraph fsck, pull-request checks and post-merge main CI passed. Current-purpose plan, implementation, verification and inventory REFs were read back outside the stale frontier. This completes the authorized CS316 implementation slice and leaves zero internal implementation work for this slice. Realized end-user value remains zero because no candidate was accepted, activated or deployed; the verified contribution is local readiness for later owner and Stage flow. Do not activate a candidate, move a pointer, run paid provider calls, deploy, or claim migration complete. Full generation-bound capsule binding and atomic owner-accepted migration commit remain later authorized work. Preserve historical Seals and original proof scope; historical stale or draft counts need not reach zero. On 2026-09-25, after the merged-state and current-fit review was presented, the owner authorized this PERT reconciliation and resumption of cc304. The historical cc304 controlled trial remains stale evidence and does not complete the current task."
 
 work_order:
   cs316
@@ -352,8 +352,8 @@ task cc304 cm310 -> cm311:
   title "Connect one safe focused revise candidate through the real local path"
   description "Connect one clear single-area natural-language appearance revise request through the normal owner HTTP entrypoint, provider-assisted bounded scope resolution under accepted ADR-0035, worker, controlled provider driver, common kernel, character adapter, persistence and owner-visible semantic diff. Record and count the scope-resolution call in the same attempt and freeze the server-validated scope before candidate generation. Produce a non-current review candidate without changing the current generation or pointer. Fixed-scope tests alone do not prove this route. Do not perform final acceptance, create, migration, paid provider calls, deployment, policy activation or unrelated recovery expansion."
   duration 6p
-  status suspended
-  # M1 cs316 is incomplete. Preserve WIP; reassess current authority before resuming.
+  status active
+  # CS316 is merged and read back. The owner authorized resumption after current-fit review on 2026-09-25.
   owner "codex"
   source "docs/character-semantic-migration-plan-revision-10.md"
   requires:
@@ -669,3 +669,9 @@ work_event WE_CS317_FINISH_20260925:
   task cs317
   kind finish
   occurred_at 2026-09-25T10:48:26+09:00
+
+work_event WE-7dcf44be460ed1148bbc6c934b4e50546c8ad9ad3f2d951c6ce2bb89a233ccc9:
+  model 1
+  task cc304
+  kind resume
+  occurred_at 2026-09-25T17:29:16+09:00
