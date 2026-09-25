@@ -421,7 +421,7 @@ gate cg309 cm309 -> cm311:
   reason "The first focused functional path cannot complete against the superseded persistence clause; accepted ADR-0033 and design revision 6 remain governing."
 
 task cc305 cm315 -> cm305:
-  status active
+  status suspended
   tags [M3_STAGE_GAME_USE]
   title "Review the one-case Stage trial candidate and establish its Stage identity"
   description "Review exact route, owner interaction, Stage trial source identity, provider route and bounded budget, execution policy, rollback and stop conditions. Carry former ca104 old/new-path reconciliation and retain it for B14. Run repository checks and, under separate external-write authority, establish the new Stage revision/tag. Do not make the later R20 corpus evaluation a prerequisite for one Stage game-use trial. Do not reuse rc12 or change shared infrastructure."
@@ -738,3 +738,10 @@ work_event WE_CC305_START_20260925:
   kind start
   occurred_at 2026-09-25T20:59:22+09:00
   planned_value 1p
+
+work_event WE_CC305_SUSPEND_STAGE_IDENTITY_20260925:
+  model 1
+  task cc305
+  kind suspend
+  occurred_at 2026-09-25T21:04:54+09:00
+  reason "Local candidate review completed; exact Stage source, focused provider identity, V3 battle binding, post-acceptance rollback, and exact release commit remain unestablished."
