@@ -50,3 +50,7 @@ Editable domain assets must be revisioned. Battles and other long-running workfl
 ## Commit & Pull Request Guidelines
 
 Recent commits use short, imperative, sentence-case subjects (for example, `Improve battle flow...`). Keep each commit focused. Pull requests should summarize behavior and architecture changes, list validation commands, link relevant issues or `docs/plan.pert` work, and include screenshots for visible UI changes. Call out database, environment, provider, or deployment impacts explicitly. Never commit `.env`, API keys, SQLite data, generated `dist/`, or user media.
+
+### Branch and worktree lifecycle
+
+Before creating a branch or worktree, run `npm run branches:preflight -- --new codex/<work-key>`, inspect local and remote state, and reuse an existing branch for the same task. Resolve uncommitted and unpushed work promptly. If isolation is necessary despite existing work, state the reason in the task handoff and rerun the preflight with `--reason "..."`; the preflight is read-only and an exception does not authorize a merge or discard. After review and merge, verify the remote result, then remove redundant local branches and worktrees whose unique work has been accounted for. Keep unfinished or unrelated work until its disposition is verified.
