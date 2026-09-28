@@ -24,6 +24,13 @@ if (reason && !proposed) usage();
 const root = git(["rev-parse", "--show-toplevel"]);
 const localBranches = new Set(git(["for-each-ref", "--format=%(refname:short)", "refs/heads"], root).split("\n"));
 const originBranches = new Set(git(["for-each-ref", "--format=%(refname:short)", "refs/remotes/origin"], root).split("\n"));
+const branchStates = [...localBranches].filter(Boolean).map((name) => {
+  if (!originBranches.has(`origin/${name}`)) return { name, ahead: null, behind: null };
+  const counts = git(["rev-list", "--left-right", "--count", `refs/remotes/origin/${name}...refs/heads/${name}`], root)
+    .split(/\s+/)
+    .map(Number);
+  return { name, behind: counts[0], ahead: counts[1] };
+});
 const blocks = git(["worktree", "list", "--porcelain"], root).split(/\n\s*\n/);
 const worktrees = blocks.map((block) => {
   const path = block.match(/^worktree (.+)$/m)?.[1];
@@ -48,6 +55,11 @@ for (const item of worktrees) {
   const sync = item.ahead === null ? "no matching origin ref" : `${item.ahead} local commit(s) ahead of origin`;
   console.log(`${item.branch}: ${item.path} | ${item.dirty ? "dirty" : "clean"} | ${sync}`);
 }
+const unresolved = branchStates.filter((item) => item.ahead === null || item.ahead > 0);
+for (const item of unresolved) {
+  const sync = item.ahead === null ? "no matching origin ref" : `${item.ahead} ahead / ${item.behind} behind origin`;
+  console.log(`Unresolved local ref: ${item.name} | ${sync}`);
+}
 
 if (!proposed) process.exit(0);
 
@@ -60,10 +72,8 @@ try {
 if (localBranches.has(proposed)) blockers.push(`branch already exists: ${proposed}`);
 if (originBranches.has(`origin/${proposed}`)) blockers.push(`origin branch already exists: ${proposed}`);
 if (worktrees.some((item) => item.dirty)) blockers.push("a worktree has uncommitted changes");
-if (worktrees.some((item) => item.ahead !== null && item.ahead > 0)) blockers.push("an active branch has unpushed commits");
-if (worktrees.some((item) => item.branch !== "(detached)" && item.ahead === null)) {
-  blockers.push("an active branch has no matching origin ref");
-}
+if (unresolved.some((item) => item.ahead !== null)) blockers.push("local branches have commits not on their matching origin refs");
+if (unresolved.some((item) => item.ahead === null)) blockers.push("local branches have no matching origin refs");
 if (worktrees.filter((item) => item.branch !== "main" && item.branch !== "(detached)").length > 1) {
   blockers.push("multiple non-main worktrees are active");
 }
