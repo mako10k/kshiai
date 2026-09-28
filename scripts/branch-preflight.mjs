@@ -23,6 +23,7 @@ if (reason && !proposed) usage();
 
 const root = git(["rev-parse", "--show-toplevel"]);
 const localBranches = new Set(git(["for-each-ref", "--format=%(refname:short)", "refs/heads"], root).split("\n"));
+const originBranches = new Set(git(["for-each-ref", "--format=%(refname:short)", "refs/remotes/origin"], root).split("\n"));
 const blocks = git(["worktree", "list", "--porcelain"], root).split(/\n\s*\n/);
 const worktrees = blocks.map((block) => {
   const path = block.match(/^worktree (.+)$/m)?.[1];
@@ -51,7 +52,13 @@ for (const item of worktrees) {
 if (!proposed) process.exit(0);
 
 const blockers = [];
+try {
+  git(["check-ref-format", "--branch", proposed], root);
+} catch {
+  blockers.push(`invalid branch name: ${proposed}`);
+}
 if (localBranches.has(proposed)) blockers.push(`branch already exists: ${proposed}`);
+if (originBranches.has(`origin/${proposed}`)) blockers.push(`origin branch already exists: ${proposed}`);
 if (worktrees.some((item) => item.dirty)) blockers.push("a worktree has uncommitted changes");
 if (worktrees.some((item) => item.ahead !== null && item.ahead > 0)) blockers.push("an active branch has unpushed commits");
 if (worktrees.some((item) => item.branch !== "(detached)" && item.ahead === null)) {
@@ -66,7 +73,7 @@ if (blockers.length === 0) {
 }
 console.error(`New branch ${proposed} requires disposition:`);
 for (const blocker of blockers) console.error(`- ${blocker}`);
-if (blockers.some((blocker) => blocker.startsWith("branch already exists"))) process.exit(1);
+if (blockers.some((blocker) => blocker.startsWith("branch already exists") || blocker.startsWith("origin branch already exists") || blocker.startsWith("invalid branch name"))) process.exit(1);
 if (!reason) {
   console.error("Reuse or finish existing work first. For a necessary isolated branch, rerun with --reason and record that reason in the task handoff.");
   process.exit(1);
