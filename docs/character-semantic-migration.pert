@@ -556,7 +556,7 @@ task cc318 cm317 -> cm318:
     optimistic 0.5p
     most_likely 1p
     pessimistic 2p
-  status planned
+  status done
   requires:
     cr001 1
   owner "user and codex"
@@ -794,3 +794,16 @@ milestone cm318:
 
 gate cg318 cm318 -> cm305:
   reason "Finish the owner-requested source-to-real-path contradiction audit before closing cc305 Stage-route review or advancing cc314 delegated trial."
+
+work_event WE-61aa281bd27155a735230dfbafd8be36cdf53d4ccd0cda40c14ec0ba18e12f4b:
+  model 1
+  task cc318
+  kind start
+  occurred_at 2026-09-28T14:08:20+09:00
+  planned_value 13/12p
+
+work_event WE-929c0f86c36c60b2e1dd6f7379b21553493c79dae94ab3f228633816290a3932:
+  model 1
+  task cc318
+  kind finish
+  occurred_at 2026-09-28T14:27:46+09:00
