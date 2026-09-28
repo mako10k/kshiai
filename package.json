@@ -27,6 +27,7 @@
     "static:lizard": "python3 scripts/check-lizard.py",
     "lint": "npm run typecheck && npm run static",
     "sync:secdat": "bash scripts/sync-env-from-secdat.sh",
+    "branches:preflight": "node scripts/branch-preflight.mjs",
     "test:e2e-gui": "node scripts/test-authority.mjs --e2e",
     "test:e2e-inventory": "node scripts/test-authority.mjs --e2e --list",
     "e2e-gui:session": "tsx scripts/e2e-gui-session.ts"
