@@ -2,8 +2,8 @@
 project V3_STAGE_TRIAL:
   version 5
   title "First two-character V3 Stage battle trial"
-  description "Owner outcome: first play a real Stage battle between two newly created V3 characters, Neva and Rio. Local candidate fixtures exist but are not registered or Stage-accepted. V2-versus-V3 mixed battle and V2 migration are outside this first trial; the exact V2-to-V3 migration trial remains a later csm001 goal. vt101-vt107 cover local registration and selectability, immutable V4 battle binding and consumers, integration, release review, Stage deployment and character activation, and observed owner play. Every external write has separate authority. Declared 3p/1d is a conditional transfer of three completed same-day local csm001 tasks, not observed V3 Stage throughput; external waits are excluded and actuals must refresh it."
-  as_of 2026-09-25
+  description "Owner outcome: first real Stage battle between two newly created V3 characters, Neva and Rio. New battle creation is V3-by-V3 only. Before Stage game use, pre-cutover unfinished battles are physically discarded through a coordinated cutover; finished history remains readable. vt101-vt107 cover registration, immutable binding, integration, release, deployment, activation and owner play; vt108 covers Stage data cutover. The prior 13p resource baseline excluded vt108 and possible vt102 lifecycle expansion. Current vt108 1/2/4p is provisional expert judgment pending Stage inventory; 3p/1d comes from three completed small local tasks, not V3 battle throughput. External approvals and waits remain separate."
+  as_of 2026-09-28
   duration_unit point
   velocity 3p/1d
   finish VST_PLAYED
@@ -59,8 +59,8 @@ task vt101 VST_LOCAL_CANDIDATES -> VST_CURRENT:
   source "Owner decision: first Stage trial uses two new V3 characters; accepted character V3 authoring requirements revision 5"
 
 task vt102 VST_LOCAL_CANDIDATES -> VST_BOUND:
-  title "Bind V3 revisions to V4 battle creation and consumers"
-  description "Bind immutable current V3 revision IDs and snapshots at V4 battle creation, persist and reload the binding, and make V4 execution and presentation consume those snapshots through a full V3-versus-V3 battle. Reject mixed V2-V3 creation. Preserve existing V2 historical meaning. Reconcile the older vt102 WIP and its ADR-0032 identity with current accepted architecture before treating that WIP as merge-ready; no Stage-readiness claim from its partial tests."
+  title "Bind V3 revisions and centralize battle lifecycle"
+  description "Implement V3-by-V3 creation only, binding both exact immutable generations, digests and combat snapshots. Centralize create, get/list, advance, replay and discard eligibility in a narrow BattleLifecycle boundary; cover normal HTTP, SSE, action alias, state replay, narration and worker effects. Build the physical-deletion cutover mechanism and local verification while retaining finished historical records. Reconcile older vt102 WIP and ADR-0032 identity with accepted architecture; an Accepted successor ADR and accepted cutover requirement govern implementation."
   estimate:
     optimistic 3p
     most_likely 4p
@@ -68,7 +68,7 @@ task vt102 VST_LOCAL_CANDIDATES -> VST_BOUND:
   status suspended
   requires:
     DEV 1
-  source "Owner decision: V3-versus-V3 first Stage trial; repository immutable revision binding rule; current architecture identity reconciliation pending"
+  source "Owner V3-only and physical-deletion decisions 2026-09-28; docs/battle-lifecycle-boundary-design-v1.md Proposed; ADR acceptance pending"
 
 gate vg101 VST_CURRENT -> VST_WIRED:
   reason "Local integration needs registered, selectable V3 characters"
@@ -78,7 +78,7 @@ gate vg102 VST_BOUND -> VST_WIRED:
 
 task vt103 VST_WIRED -> VST_LOCAL_BATTLE:
   title "Complete one local Neva-versus-Rio battle end to end"
-  description "Exercise registration, selection, creation, execution, reload, and visible result through the real local path. Confirm both participants are V3 and record exact revision and battle IDs. This is local integration evidence, not Stage acceptance."
+  description "Exercise Neva and Rio through registration, selection, V3-by-V3 creation, execution, reload and visible result on the real local path. Verify V2-by-V2 and mixed new creation are rejected; both immutable revisions remain bound after editing; cutover deletes only pre-cutover unfinished fixtures and invalidates HTTP/state replay and worker continuation while finished history stays readable. Record exact IDs and evidence."
   estimate:
     optimistic 1p
     most_likely 2p
@@ -97,7 +97,7 @@ task vt104 VST_LOCAL_BATTLE -> VST_RELEASE:
 
 task vt105 VST_RELEASE -> VST_STAGE_DEPLOYED:
   title "Deploy the authorized trial candidate to Stage and read it back"
-  description "After separate deployment authorization, apply the exact reviewed release to Stage once and read back the deployed identity and service health. Stage deployment is not implied by completing local integration."
+  description "Under separate deployment authority, apply the exact reviewed release to Stage and read back identity and service health. The release procedure fixes the control that coordinates V3-only creation availability with vt108 physical deletion at one cutover point, including ordering, concurrency, interruption budget and recovery before any Stage write."
   duration 1p
   requires:
     DEV 1
@@ -113,11 +113,22 @@ task vt106 VST_STAGE_DEPLOYED -> VST_STAGE_READY:
 
 task vt107 VST_STAGE_READY -> VST_PLAYED:
   title "Try and observe one real V3-versus-V3 Stage battle"
-  description "Owner plays Neva against Rio through the Stage user path; record exact battle and character revision IDs and observed result or blocker. This observed use, not a green local test or deployment, completes the first-trial outcome."
+  description "Owner plays Neva against Rio through the Stage user path after vt108 cutover and vt106 activation. Record exact battle and character revision IDs and observed result; read back that finished historical battles remain readable and old unfinished battles have been discarded. Observed use completes this first-trial outcome."
   duration 1p
   requires:
     OWNER 1
   source "Owner accepted goal: try V3 characters in Stage practice"
+
+task vt108 VST_STAGE_DEPLOYED -> VST_CUTOVER:
+  title "Discard pre-cutover unfinished Stage battles"
+  description "After separate Stage-data authority and reviewed cutover ordering, inventory pre-cutover unfinished battles and related rows, freeze exact targets and recovery evidence, physically delete targets with idempotency and worker replay invalidation at one cutover point, and read back all affected surfaces. Record the point at which V3-only creation becomes available. Finished battles and character generations remain intact. The 1/2/4p range is an expert provisional estimate pending Stage inventory; external authorization wait is separate."
+  estimate:
+    optimistic 1p
+    most_likely 2p
+    pessimistic 4p
+  requires:
+    DEV 1
+  source "Owner 2026-09-28 accepted physical-deletion plan; docs/character-v3-battle-cutover-requirements-v1.md; inventory pending"
 
 work_event WE-3dbb3f38bb58d449f8ada5eae4068f5083f38cf6283bd0712c034a25db3ca26c:
   model 1
@@ -132,3 +143,10 @@ work_event WE-b6b08595934599b49d01ed1c80431459974f9cd32338618fe52cec503a6f326e:
   kind suspend
   occurred_at 2026-09-18T21:53:00+09:00
   reason "Shared workday ends at 22:00; V4 full-consumer regression remains"
+
+milestone VST_CUTOVER:
+  title "Pre-cutover unfinished Stage battles discarded"
+  description "Exact pre-cutover unfinished targets are physically removed, replay and worker paths are read back, finished history remains readable, and the V3-only cutover point is recorded."
+
+gate vg108 VST_CUTOVER -> VST_STAGE_READY:
+  reason "Stage readiness requires verified disposal of pre-cutover unfinished battles and finished-history readback."
