@@ -549,6 +549,19 @@ task cc316 cm314 -> cm316:
   tags [M4_EVALUATION_RESTORATION]
   source "Owner-confirmed 2026-09-25: retain V2-to-V3 migration as a downstream goal after Neva-versus-Rio first trial"
 
+task cc318 cm317 -> cm318:
+  title "Audit V3-only battle cutover requirements against real paths"
+  description "Read only: recover the owner's V2-new-battle retirement, V3-only new creation and immutable historical continuation conditions; map each to the exact accepted requirement/ADR and to cc305, cc314, vt101 and vt102. Inspect current own-character and opponent/random selection, direct battle-create API and idempotent replay, saved-battle turn/retry/presentation, and available evidence for manifest-less historical battles. Produce one evidence-linked discrepancy table classifying observed, contradicted and unknown behavior, the earliest downstream artifact needing correction, affected tests, and the smallest owner decision where a governing boundary is absent. Do not alter requirements, implementation code, battle data, Stage or production as part of this task. The 0.5/1/2p estimate is a provisional relative judgment against existing 1p cc305 review, not measured throughput; revise after observed actuals."
+  estimate:
+    optimistic 0.5p
+    most_likely 1p
+    pessimistic 2p
+  status planned
+  requires:
+    cr001 1
+  owner "user and codex"
+  source "Owner 2026-09-28 request to PERT-ize read-only inconsistency audit; V3-only new battles, retired V2 new battles, historical fixed-revision continuation"
+
 work_event WE-c5f5aabffbd695deaccefe0aaf209b017a3e93af0163f218e25a8ee56e24f186:
   model 1
   task cc301
@@ -774,3 +787,10 @@ milestone_criterion_set CS_MIGRATED_STAGE_TRIAL:
   commitment sha256:0c462379b49b3b0fc1c49cf4bef6d18e1cef16d93990be6e80a42d1d3eac8fdf
   criterion GAME_USE required owner "One owner-accepted strict V3 generation migrated from an exact V2 source is selected and used in a separate real Stage game with a compatible V3 opponent, and that game binds the exact immutable generation"
   criterion PRESERVATION required owner "Migration and Stage pointer receipts identify exact source and target, historical generations and battles remain readable, and production identities and pointers are unchanged"
+
+milestone cm318:
+  title "V3-only new-battle cutover impact is mapped"
+  description "A read-only, source-backed discrepancy table identifies the governing owner decision, accepted requirement and ADR coverage, csm001/vt101/vt102 ownership, current UI and API selection/creation paths, saved-battle continuation paths, observed contradictions and unknown legacy cases. It identifies the smallest correction scope and owner decisions without accepting a changed requirement or implementing a fix."
+
+gate cg318 cm318 -> cm305:
+  reason "Finish the owner-requested source-to-real-path contradiction audit before closing cc305 Stage-route review or advancing cc314 delegated trial."
