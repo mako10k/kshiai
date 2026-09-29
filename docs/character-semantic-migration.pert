@@ -1,17 +1,17 @@
-# Delivery plan revision 12: V3-only Stage cutover with physical disposal of unfinished battles.
-# Current revision record: docs/character-semantic-migration-plan-revision-12.md
+# Delivery plan revision 13: completed fixture scope, remaining authoring, and exact design handoff.
+# Current revision record: docs/character-semantic-migration-plan-revision-13.md
 # Revision 9/10/11 records remain historical; CS_STAGE_TRIAL R3 is the current first-trial criterion.
 # Report by outcomes; retain historical task events and separate execution authority.
 # M1: cs316 Seal health and approved bounded migration-adapter correction (completed Work; cc304 completed, owner acceptance pending).
 # M2: cc304 -> cc311 -> cc312 -> cc315 local migration readiness.
-# M3: cc305 -> cc314 first Neva-versus-Rio V3-only Stage game; child vt101-vt108 once.
+# M3: cc305 -> cc319 -> cc314 first V3 Stage game; child vt102-vt111 remaining work once.
 # M4: cc316 later exact V2-to-V3 Stage use -> cc313 -> cc306 -> cc307 -> cb209-cb214.
 # Historical done/reached fields are not renewed current evidence by this revision.
 project csm001:
   version 9
   title "Restore character authoring and migrate frozen ready V2 characters to strict V3"
-  description "First Stage trial: owner plays Neva against Rio using two newly created immutable V3 characters. New battle creation uses V3-by-V3 only. The Stage cutover physically discards pre-cutover unfinished battles, invalidates their replay and worker effects, and preserves finished history. The later exact V2-to-V3 migration trial remains downstream before broad evaluation and production restoration. Parent cc314 rolls up child V3_STAGE_TRIAL vt101-vt108 once; vt108 1/2/4p is provisional expert judgment pending Stage inventory, while vt102 expansion remains a separate re-estimation input. Preserve the common structured foundation, protected meaning, source accounting, natural-language revise-scope inference and separate external-write authorities."
-  as_of 2026-09-28
+  description "Current revision: docs/character-semantic-migration-plan-revision-13.md. First outcome is owner play of new immutable V3 Neva versus Rio on Stage. V3-only new creation, physical disposal of pre-cutover unfinished battles and readable finished history remain owner decisions. cc305 prepares the exact implementation package; cm319 records its separate exact owner acceptance, joining at cm305. Child VST_CONTRACT_READY receives this explicit handoff. cc314 rolls up remaining child work once, including vt109 accepted registration. Later V2-to-V3 migration and broad evaluation remain downstream. Historical small-task velocity is conditional; no calibrated hourly or dated forecast is claimed."
+  as_of 2026-09-29
   duration_unit point
   velocity 3p/1d
   finish cm114
@@ -117,7 +117,8 @@ milestone cm304:
   title "Focused create revise and migration connected and locally verified"
 
 milestone cm305:
-  title "V3-only Neva and Rio Stage trial route and prerequisites reviewed"
+  title "Accepted V3 trial implementation basis ready for child handoff"
+  description "Join prepared package, exact owner acceptance, historical release comparison and impact audit. Copy exact accepted identities to child VST_CONTRACT_READY before resuming vt102 or starting vt109."
 
 milestone cm314:
   title "Owner has played a real Stage battle between Neva and Rio, both new V3 characters"
@@ -420,16 +421,15 @@ task cc309 cm308 -> cm309:
 gate cg309 cm309 -> cm311:
   reason "The first focused functional path cannot complete against the superseded persistence clause; accepted ADR-0033 and design revision 6 remain governing."
 
-task cc305 cm317 -> cm305:
-  status suspended
+task cc305 cm317 -> cm320:
+  status done
   tags [M3_STAGE_GAME_USE]
-  title "Review the V3-only Neva and Rio Stage trial route"
-  description "Review exact Neva and Rio V3 candidate identities, registration and selectability, V4 binding and consumers, the narrow BattleLifecycle boundary, and the V3-only creation rule including V2-by-V2 and mixed rejection. Identify pre-cutover unfinished-battle targets and related records, physical-deletion and replay/worker invalidation gaps, finished-history preservation, accepted requirement and successor ADR gates, release identity, Stage cutover ordering, recovery and owner play. Record the smallest read-only inventory and updated vt102/vt108 estimates before release review. This task is local planning and review; Stage data, merge and deployment use separate authority."
+  title "Prepare the V3 trial requirement, ADR and lifecycle design package"
+  description "Reconcile the already-decided V3-only creation, immutable generations, physical disposal of unfinished old battles and readable finished history into the exact successor requirement/ADR/design package. Map actual creation, read, advance, replay, narration and worker paths; identify remaining accepted V3 registration in vt109. Record local schema inventory, cutover ordering and recovery design, provisional vt102/vt108 estimates and Stage inventory unknowns. Preparation and independent review complete this task; cm319 records separate owner acceptance. Stage writes, merge and deployment retain separate authority."
   duration 1p
-  owner "user and codex"
+  owner "codex"
   requires:
     cr001 1
-    cr002 1
   source "Owner 2026-09-28 approved physical-deletion plan and narrow BattleLifecycle method; child V3_STAGE_TRIAL"
 
 gate cg305 cm303 -> cm305:
@@ -438,10 +438,10 @@ gate cg305 cm303 -> cm305:
 task cc314 cm305 -> cm314:
   tags [M3_STAGE_GAME_USE]
   title "Try Neva versus Rio in an actual V3-only Stage battle"
-  description "Roll up delegated V3_STAGE_TRIAL vt101-vt108 exactly once: register and select Neva and Rio immutable V3 revisions, complete V3-only V4 binding and lifecycle consumers, prove a full local battle, review exact release identity, deploy under separate authority, physically discard pre-cutover unfinished Stage battles under separate data authority with replay/worker invalidation and finished-history readback, activate both Stage characters, and observe one real V3-by-V3 Stage game. Read back both bound generation IDs. The child resource schedule is 91/6p including provisional vt108 13/6p; this task is a roll-up rather than extra effort. vt102 expansion and external waits remain to be re-estimated after inventory."
-  duration 91/6p
+  description "Roll up remaining V3_STAGE_TRIAL work exactly once: accepted-contract readback vt111, immutable binding vt102, completed authoring registration vt109, lifecycle/cutover vt110, local integration vt103 and separately authorized release/deploy/data/owner play vt104-vt108. Child resource schedule 931/60p is conditional on accepted handoff and suspended work resumption; external waits excluded. New estimates are provisional; historical partial vt101 timing is not full throughput."
+  duration 931/60p
   owner "user and codex"
-  source "Owner 2026-09-28 physical-deletion plan; V3_STAGE_TRIAL vt101-vt108 resource schedule 91/6p, vt108 provisional"
+  source "Plan revision 13; perttool 0.11.1 child resource analysis 931/60p; owner review counted separately once as cc319."
   requires:
     cr001 1
     cr002 1
@@ -561,6 +561,15 @@ task cc318 cm317 -> cm318:
     cr001 1
   owner "user and codex"
   source "Owner 2026-09-28 request to PERT-ize read-only inconsistency audit; V3-only new battles, retired V2 new battles, historical fixed-revision continuation"
+
+task cc319 cm320 -> cm319:
+  title "Review and accept the exact V3 implementation package"
+  description "Owner decides on the prepared exact successor requirement/ADR/design package after independent review. Review preserves established V3-only, immutable revision and old unfinished-battle physical disposal decisions. Provisional 1p covers review work; external wait is unknown. Acceptance is recorded only from an explicit owner decision on the exact candidate."
+  duration 1p
+  requires:
+    cr002 1
+  owner "user"
+  source "Accepted ADR implementation rule; user request to correct PERT then proceed"
 
 work_event WE-c5f5aabffbd695deaccefe0aaf209b017a3e93af0163f218e25a8ee56e24f186:
   model 1
@@ -757,7 +766,7 @@ work_event WE_CC305_SUSPEND_STAGE_IDENTITY_20260925:
 
 milestone cm317:
   title "Neva and Rio exist as two local new V3 candidate fixtures"
-  description "Neva and Rio deterministic local V3 fixtures exist on codex/v3-stage-trial-candidate at 77ed6a0; they are not yet integrated into this checkout, registered, owner content accepted, or available on Stage."
+  description "Neva and Rio V3 candidate fixtures are integrated in cc304 at 0585527 and locally direct-registered for diagnostics. Exact accepted authoring lifecycle remains vt109; Stage activation remains vt106."
   state reached
 
 milestone cm316:
@@ -805,3 +814,31 @@ milestone_criterion_set CS_FINAL:
   commitment sha256:1b8710238212739fac9dbd3d0c6878649c9668e0bd11dac6a5d559a575f3ba1f
   criterion V3_MODES required owner "Create and revise emit strict V3 through focused authoring; V2 migration preserves protected meaning"
   criterion RESTORATION required owner "Every frozen migration target has a verified outcome; finished historical battles remain readable and pre-cutover unfinished battles were discarded at the applicable V3-only cutover"
+
+milestone cm320:
+  title "V3 trial implementation package prepared for exact review"
+  description "cc305 produces evidence-linked requirement, successor ADR, lifecycle design and plan estimates; preparation is distinct from owner acceptance."
+  state planned
+
+milestone cm319:
+  title "Exact V3 cutover implementation package accepted by owner"
+  description "Record exact requirement/ADR/design versions and owner acceptance. Established V3-only, immutable revisions, unfinished-battle disposal and finished-history decisions remain fixed."
+  state planned
+
+gate cg319 cm319 -> cm305:
+  reason "Exact owner acceptance governs successor implementation; known product decisions remain fixed."
+
+gate cg320 cm320 -> cm305:
+  reason "The concrete reviewed package and current plan must exist before handoff."
+
+work_event WE-a1e8c7a733e4317ca4fa46e4d3ebb2675811c9c9097f79fd98b3cff3283e3e5c:
+  model 1
+  task cc305
+  kind resume
+  occurred_at 2026-09-29T20:16:06+09:00
+
+work_event WE-8ba0004e7e01f3fc217e263ede2d1a5b5d929412f0d53244c2d8a6be7e61d312:
+  model 1
+  task cc305
+  kind finish
+  occurred_at 2026-09-29T20:34:15+09:00

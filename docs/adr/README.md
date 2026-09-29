@@ -89,3 +89,4 @@ current check.
 | [0036](0036-propagate-draft-test-evidence.md) | Accepted | Treat test results backed by draft verification or Causes as draft evidence, not authoritative current pass/fail |
 | [0037](0037-append-only-narration-fragments.md) | Rejected | Historical unaccepted Fragment proposal replaced by the broader 0038 candidate |
 | [0038](0038-narration-fragment-commit-and-result-reveal.md) | Proposed | Reveal results after Fragment commit or confirmed Narration error; timebox old-history migration to 30 minutes |
+| [0039](0039-v3-battle-lifecycle-and-cutover.md) | Proposed | Bind new V3-only battles; centralize lifecycle, separate insert/update, physically discard old unfinished battles with minimal ID receipts |

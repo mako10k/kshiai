@@ -1,5 +1,7 @@
 # 対戦ライフサイクル境界 — 設計候補 revision 1
 
+> 2026-09-29: 現在のレビュー対象は [revision 2](battle-lifecycle-boundary-design-v2.md)。本版の「物理削除方式未決」と見積りは当時の記録。後発の所有者決定をrevision 2と計画revision 13へ反映した。
+
 - 状態: Proposed（設計レビュー用。要件・ADR の受入または実装許可ではない）
 - 日付: 2026-09-28
 - 対象コード: `codex/cc304-focused-revise` の `082cb9b`

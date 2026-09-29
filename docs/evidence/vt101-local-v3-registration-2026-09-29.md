@@ -1,5 +1,7 @@
 # vt101 local V3 registration evidence (2026-09-29)
 
+> Completion correction (2026-09-29): this evidence proves only the local direct-registration fixture slice at `0585527`. The original vt101 accepted-authoring obligation includes exact candidate review and owner confirmation; it remains as vt109 in [plan revision 13](../character-semantic-migration-plan-revision-13.md). `VST_CURRENT` is planned again. The recorded 9m22s interval covers part of the earlier work and is not evidence of full authoring delivery throughput. Observations below remain historical evidence within their stated local scope.
+
 ## Scope and authority
 
 The vt101 child task covers the local registration and selection prerequisite for the Neva-versus-Rio Stage trial. The owner requested execution on the existing `codex/cc304-focused-revise` branch. Accepted V3 authoring requirement revision 5 and ADR-0010 govern V3 structure, immutable generations, compatibility, and pointer activation. This exercise uses fixed local trial content and a synthetic local SQLite owner. It is not owner acceptance of the exact character content, general provider-backed V3 creation, battle binding, Stage activation, or release.

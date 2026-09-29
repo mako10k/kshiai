@@ -1,0 +1,136 @@
+domain ADR0039:
+  description "ADR-0039 revision 1. Proposed. V3-only immutable Battle binding and a narrow lifecycle with physical cutover."
+
+problem P1:
+  |
+    The mainline ADR-0032 concerns authoring time boundaries, while preserved
+    branch 77ed6a0 contains a different accepted ADR-0032 for V4 Battle binding.
+    Its existing-Battle preservation clauses conflict for unfinished targets with the later owner decision to
+    physically discard old unfinished battles. Current routes, replay and
+    persistence distribute eligibility and can return or recreate a deleted Battle.
+
+evidence OWNER:
+  |
+    The owner fixed new V3-versus-V3 battles, required battle-mechanics@3 only,
+    immutable character revisions, physical disposal of old unfinished battles,
+    readable finished history, and the narrow Battle domain/lifecycle direction.
+    The owner requires minimum final program complexity and at most 30 minutes
+    total migration work before proposing deletion or other alternatives.
+    The current instruction prioritizes canonical PERT correction, then next work.
+
+evidence UPSTREAM:
+  |
+    Accepted ADR-0010 requires immutable envelope binding and persisted atomic
+    authoring activation. Accepted V3 authoring requirements v5 R18 requires exact
+    candidate review and owner confirmation. Accepted ADR-0007 preserves physical
+    provider-attempt accounting. Proposed cutover requirements v2 records the fixed
+    owner behavior; ADR-0038 remains a separate Proposed Narration contract.
+
+evidence CODE:
+  |
+    At 0585527 routes.ts creates deterministic Battle IDs from owner/scope/key/hash
+    and returns cached HTTP responses before Battle existence checks.
+    repositories/battles.ts writeBattle uses INSERT ON CONFLICT even for advances;
+    its update-only fence cannot protect the missing-row insertion branch.
+    db.ts has cascade and non-cascade narration tables, independent accounting
+    rows and idempotency rows without a Battle foreign key.
+
+evidence HISTORICAL:
+  |
+    Preserved 77ed6a01b9f6bea8d68702ab53839ef45ee78efd has accepted
+    docs/adr/0032-bind-v3-characters-to-versioned-battles.think with SHA256
+    0436026338e7decb420232950eaaaf9c11d3195b9b7834ad2f9ec4fe9199c625.
+    It introduces V4 binding and full-consumer verification, retains V1-V3 meanings,
+    says existing battles are not migrated, and says V2/dialogue-V3 continue unchanged.
+    ADR-0010 Decision retains recorded legacy manifests; Compatibility keeps
+    existing version-1 battles readable on embedded snapshots. Neither explicitly
+    distinguishes finished from unfinished. Mainline ADR-0032 is a separate decision.
+
+premise C1:
+  |
+    One pure BattleBinding contract plus narrow lifecycle use cases can share
+    eligibility and retry invariants without relocating the engine into a giant
+    class. Binding must cover the full execution/presentation tuple, not fixtures.
+premise C2:
+  |
+    Physical deletion needs durable rejection of a deterministic old create ID,
+    update-only advance saves, and worker/replay existence checks. A minimal
+    deletion receipt stores only Battle ID and cutover identity, not old state.
+    It also covers an old creation key whose HTTP receipt is missing. Merely
+    deleting HTTP rows would permit deterministic recreation.
+
+premise OPTIONS:
+  |
+    A whole-engine class rewrite increases unrelated change surface. Per-route
+    checks repeat rules. A narrow lifecycle retains engine/repository adapters.
+    Retained inactive old Battle records add old state/read behavior. Minimal
+    deletion receipts add a table and lookup but keep the old Battle body deleted.
+    A new creation-key epoch could prevent replay but adds a client protocol and
+    cutover-token distribution. Prefer minimal receipts and quiescent cutover.
+
+decision D1 based_on P1, OWNER, UPSTREAM, HISTORICAL, C1:
+  |
+    Propose distinct BattleAssetManifestV4 for two V3 character generations and
+    CharacterBattleCompilerInputsV4, preserving exact IDs/digests/snapshots and
+    the complete dialogue/rule/compiler discriminator. Ready selection requires
+    only battle-mechanics@3; schema/privacy validity remains independently checked.
+    Creation reads accepted current generations; execution and all consumers use
+    frozen inputs. V1-V3 retain historical meanings for finished read-only history.
+
+decision D2 based_on CODE, C1, C2, OPTIONS:
+  |
+    Propose pure Battle eligibility/binding rules, small BattleLifecycle use cases
+    and narrow storage/compiler/replay/narration ports. HTTP/SSE/action adapters
+    share advance. Create exclusively inserts a fresh non-discarded ID; advance
+    exclusively updates an existing row with revision and lease fence. Authorize
+    existence/eligibility before any cached replay or narration delivery.
+    Add minimal discarded Battle ID/cutover receipts atomically with deletion.
+    Old create IDs return an unavailable response, including missing HTTP cache.
+    Missing/deleted worker targets end normally without generation or publication.
+
+decision D3 based_on OWNER, CODE, UPSTREAM, C2:
+  |
+    Propose one quiescent cutover: close game ingress and task dispatch, drain or
+    stop old workers/revisions, freeze exact unfinished targets and recovery
+    snapshot, transact deletion and receipts, read back, then expose V3-only.
+    Delete Battle bodies, presentations, narration input/public events/outbox and
+    HTTP replay bodies of targets. Retain immutable asset generations, finished
+    history, provider accounting and balance accounting as historical audit.
+    Resolve any retained active accounting run as failed after draining. Accounting
+    data supplies no continuation. A late already-sent provider completion may
+    settle accounting, but creates no new provider call or public Battle output.
+    Rollback before exposure restores a coherent snapshot with ingress closed;
+    after exposure use a reviewed forward recovery to preserve new V3 work.
+
+decision D4 based_on OWNER, UPSTREAM, HISTORICAL, D1:
+  |
+    On exact acceptance, for cutover-requirement R3 targets only (created before
+    cutover and not finished at cutover), replace ADR-0010 Decision's existing
+    legacy-manifest retention and Compatibility's existing-Battle readability,
+    and preserved ADR-0032 Decision 4's non-migration/preservation plus its
+    Consequences' unchanged continuation, with physical disposal. Finished history,
+    immutable binding and authoring obligations retain their recorded meanings.
+    Current mainline authoring-time ADR-0032 is unchanged. Record this historical
+    collision by path/hash, not by replacing its unrelated file.
+    Finished-history migration, if required, shares the owner's 30-minute total
+    budget with ADR-0038; overrun routes a concrete alternative to the owner.
+    The first V3 trial does not implement or accept ADR-0038 Fragment semantics.
+
+decision VERIFY based_on D1, D2, D3, D4:
+  |
+    vt102 proves V3 creation, immutable full-consumer execution/reload/retry.
+    vt109 independently follows already Accepted R18 and ADR-0010/0014 to prove
+    exact review/confirmation and atomic activation across storage contracts; its
+    implementation does not wait for this ADR acceptance. vt110 proves deletion, deterministic old-key rejection, stale save
+    conflict, HTTP/SSE/action/state replay, delayed worker and read-only finished
+    history. vt103 exercises the real local user path. Stage inventory, exact
+    release, interruption/recovery budget and data authority belong to vt104-vt108.
+    Schema tests or a fixture importer alone do not complete these obligations.
+
+pending OWNER_ACCEPTANCE:
+  |
+    Exact revision 1 awaits owner acceptance through cc319. Fixed V3-only,
+    immutable revision, physical deletion and finished-history decisions remain
+    settled. The new architectural choice is narrow lifecycle plus minimal
+    deletion receipts, insert/update separation and quiescent cutover. No data
+    deletion, deployment, merge, or successor implementation is implied here.
