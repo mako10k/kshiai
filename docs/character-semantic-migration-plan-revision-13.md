@@ -1,5 +1,7 @@
 # V3 Stage 初回試行の計画適正化 — revision 13
 
+> 2026-09-29 進捗更新: vt109 正式登録を完了し、実測velocityと親子の残作業を更新しました。[現在の実測・見通し・次工程](evidence/vt109-registration-2026-09-29.md)を参照してください。以下の見積りはrevision 13作成時の記録です。
+
 - 日付: 2026-09-29
 - 根拠: オーナー「次をお願いします。ただし、PERTでの計画適正化を最優先に実行」
 - 正本: [親PERT](character-semantic-migration.pert)、[子PERT](character-v3-stage-trial.pert)。本書は変更理由と読み方を記録する。

@@ -1,3 +1,5 @@
+/** R: Adapt authenticated HTTP requests to application operations. */
+import { candidateToSheet, assertCharacterCandidateReady, fixedCandidateOwnerReview } from "./services/character-authoring-candidate.js";
 import { Hono } from "hono";
 import {
   BattlefieldChatRequestSchema,
@@ -202,11 +204,9 @@ async function characterSheetForAttempt(
   if (!attempt.candidate) throw new Error("AUTHORING_CANDIDATE_MISSING");
   const existing = await charRepo.getSheetIncludingDeleted(attempt.characterId);
   const now = attempt.updatedAt;
-  return characterDefinitionV2ToLegacySheet({
+  return candidateToSheet(attempt.candidate, {
     characterId: attempt.characterId,
     ownerUserId: attempt.ownerUserId,
-    definition: attempt.candidate.definition,
-    publicPresentation: attempt.candidate.publicPresentation,
     createdAt: existing?.createdAt ?? attempt.createdAt,
     updatedAt: now,
     previousImageUrl: existing?.appearance.previousImageUrl,
@@ -260,7 +260,13 @@ async function characterReviewResponse(
   let acceptanceError: string | null = null;
   if (candidate && attempt.candidate) {
     try {
-      assertCharacterGenerationReadyV2(attempt.candidate);
+      assertCharacterCandidateReady(attempt.candidate);
+      if (Date.parse(attempt.expiresAt) <= Date.now()) throw new Error("AUTHORING_ATTEMPT_EXPIRED");
+      if (attempt.candidate.definitionSchema.version === 3
+        && (attempt.candidate.provenance.attemptId !== attempt.attemptId
+          || attempt.candidate.provenance.sourceDigest !== attempt.sourceDigest)) {
+        throw new Error("AUTHORING_CANDIDATE_PROVENANCE_MISMATCH");
+      }
     } catch (error) {
       acceptanceError = error instanceof Error
         ? error.message
@@ -298,6 +304,8 @@ async function characterReviewResponse(
       : null,
     ...(focusedReview ? { ...focusedReview,
       sourceRetryAvailable: !stale && focusedReview.sourceRetryAvailable } : {}),
+    candidateDigest: attempt.candidateDigest,
+    ...(attempt.candidate ? fixedCandidateOwnerReview(attempt.candidate, attempt.sourceText) : {}),
     progress: focusedReview?.semanticCandidateReview ? null
       : toAssetAuthoringProgress(attempt.kind, attempt.status, attempt.attemptId),
   };
@@ -1093,7 +1101,7 @@ export function buildRoutes(options: {
         const preview = await characterSheetForAttempt(structured);
         const reservedNames = await charRepo.listOwnedCharacterReservedNames(
           user.id,
-          structured.kind === "create" ? undefined : structured.characterId,
+          structured.characterId,
         );
         const conflict = findCharacterNameConflict(
           [preview.displayName, preview.identity?.realName],
@@ -1107,7 +1115,11 @@ export function buildRoutes(options: {
         }
       }
       try {
+        const body: unknown = await c.req.json().catch(() => null);
+        const candidateDigest = body && typeof body === "object" && "candidateDigest" in body
+          && typeof body.candidateDigest === "string" ? body.candidateDigest : undefined;
         const activated = await charAssetRepo.activateCharacterAuthoringAttempt({
+          candidateDigest,
           attemptId: structured.attemptId,
           ownerUserId: user.id,
           allowFocusedMigrationActivation:

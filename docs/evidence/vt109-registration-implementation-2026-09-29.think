@@ -1,0 +1,68 @@
+domain VT109:
+  description "Implement the accepted fixed V3 candidate review-to-activation path on existing cc304."
+problem P1:
+  |
+    vt101 only directly imported SQLite fixtures. Ordinary persisted attempt,
+    preview and confirm paths parse V2 envelopes. The accepted R18 review and
+    atomic activation obligation remains in vt109, now runnable in canonical PERT.
+evidence E1:
+  |
+    Source 11a89da has V2-only candidate types, save validation, preview projection
+    and append schemaVersion in character-assets-v2.ts/routes.ts. Existing
+    CharacterReviewPage can render structured V3 review fields. Existing current
+    generation selection already reads V3 readiness. Fixed importer bypasses review.
+evidence E2:
+  |
+    Owner now says proceed in order. Accepted V3 authoring v5 SHA256
+    17596f17d6514d5ada160b9d95453ab2bcb9cee9e4b2d2991acb8238b55ee27b
+    R18 and ADR0010/0014 require persisted exact owner-reviewed candidates,
+    no provider in confirmation and atomic append/CAS. Child PERT selects vt109.
+premise OPTIONS:
+  |
+    A new import-only activation API repeats the bypass. Reuse existing attempts,
+    owner review route/UI and transaction, with a properly parsed V2/V3 envelope
+    union and V3 content/digest confirmation. Keep V2 battle readers unchanged;
+    explicit V3 ready read serves registration until vt102 governs Battle consumers.
+premise UNKNOWNS:
+  |
+    Inspect PostgreSQL harness availability and worker job closing before choosing
+    exact tests. Paid provider generation, Stage data and new Battle architecture
+    remain separate tasks. Existing focused generated-V3 general mode completion
+    remains downstream; this task delivers the fixed-candidate registration path.
+decision D1 based_on P1, E1, E2, OPTIONS, UNKNOWNS:
+  |
+    Start vt109 with actual timestamp. Validate and project persisted candidates
+    in one narrow pure module. Extend ordinary save/review/activate to V3,
+    binding exact reviewed digest, guarding stale/terminal/CAS paths and preserving
+    V2 tests. Prepare fixed Neva/Rio candidates atomically as review-waiting attempts
+    with finished generation jobs; command prepares, owner UI confirms. Provide
+    complete structured owner review and digest in existing review DTO/UI without
+    frontend refactor. Use shared transaction abstraction on SQLite/Postgres.
+    Test prepare/review/confirm/select and retries/conflicts/rollback/unauthorized
+    actions through real routes and DBs; record limitations honestly. Verify before
+    completion, then update canonical remaining estimates from measured actuals.
+evidence E3:
+  |
+    The independent review identified missing source comparison and fixture-local
+    attempt provenance. The revised implementation persists the original source,
+    verifies its digest, binds provenance to the actual attempt, and displays source
+    and added details. The reviewer closed both INSIDE findings. Diagnostic SQLite
+    tests cover real owner routes, digest rejection, duplicate replay, decline,
+    expiry and rollback. PostgreSQL server binaries and a configured test target
+    are absent; PostgreSQL runtime behavior remains unobserved.
+premise TEST_AUTHORITY:
+  |
+    ADR0034 requires exact source-bound verification Seals and current Causes.
+    Direct test success alone is diagnostic. Review the final implementation and
+    source manifest, link the verification to Accepted R18 and ADR0010/0014 plus
+    ADR0034, then run the selected tests. This records conformance evidence and
+    does not accept a new requirement or architecture.
+decision D2 based_on D1, E3, TEST_AUTHORITY:
+  |
+    Publish a bounded local implementation manifest and verification basis for
+    vt109, leaving old verification generations historical. Run the canonical
+    test selector and exact UI tests, then finish vt109 only after passing checks.
+    Record measured actual duration and let perttool observe velocity for vt109
+    alone; exclude vt101 partial timing from throughput. Use tool-produced
+    remaining-path estimates and disclose the single-task sample and absent PG
+    runtime evidence. Keep new Battle implementation pending the cc319 decision.

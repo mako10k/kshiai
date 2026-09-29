@@ -1,4 +1,5 @@
 /** R: Define the deterministic Neva V3 trial candidate and its compiler inputs. */
+import { v3ToProfileDefinitionV2 } from "../services/character-v3-profile-adapter.js";
 import { createHash } from "node:crypto";
 import {
   CharacterBattleCompilerInputsV4Schema,
@@ -15,7 +16,6 @@ import {
   validateCharacterProfileClaimAssessmentV2,
   type CharacterDefinitionV3,
   type CharacterGenerationEnvelopeV3,
-  type CharacterDefinitionV2,
 } from "@kshiai/shared";
 
 const description = (text: string, sourceSupportRefs: string[]) => ({
@@ -40,28 +40,6 @@ function digest(value: unknown): string {
   return createHash("sha256").update(canonicalJson(value)).digest("hex");
 }
 
-function v3ToProfileDefinitionV2(definition: CharacterDefinitionV3): CharacterDefinitionV2 {
-  const {
-    schemaVersion: _schemaVersion,
-    actionNorms,
-    consciousGuidance: _consciousGuidance,
-    mechanicalConflictFallbacks: _mechanicalConflictFallbacks,
-    ...stable
-  } = definition;
-  return {
-    ...stable,
-    schemaVersion: 2,
-    actionNorms: actionNorms.map((norm) => ({
-      ...norm,
-      response: {
-        ...norm.response,
-        statement: norm.description?.text ?? `action norm ${norm.id}`,
-        fallbackActionRef: null,
-      },
-      selfAwareness: "aware" as const,
-    })),
-  };
-}
 
 /**
  * A new, local-only V3 candidate for a future Stage trial.
@@ -69,14 +47,18 @@ function v3ToProfileDefinitionV2(definition: CharacterDefinitionV3): CharacterDe
  * This is deliberately not registered, activated, persisted, or sent to a
  * provider.  The export is a deterministic fixture for schema/compiler tests.
  */
-export function createV3StageTrialCandidate(): CharacterGenerationEnvelopeV3 {
-  const manualSource = {
+export function createV3StageTrialSource() {
+  return {
     candidateId: "stage-trial-neva",
     displayName: "夜航の灯守・ネヴァ",
     tags: ["new-v3-candidate", "lantern-keeper", "observant"],
     traits: ["静かな観察者", "危機では大胆", "約束を守る"],
     narrativeBlurb: "夜道の灯を絶やさず、相手の焦りが見えるまで歩みを止めない。",
   };
+}
+
+export function createV3StageTrialCandidate(): CharacterGenerationEnvelopeV3 {
+  const manualSource = createV3StageTrialSource();
   const source = legacyCharacterSheetToDefinitionV2({
     id: manualSource.candidateId,
     ownerUserId: "local-stage-trial-owner",

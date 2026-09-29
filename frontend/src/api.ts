@@ -1,3 +1,4 @@
+/** R: Provide typed frontend access to the application API. */
 import type {
   BattlefieldPresetPublic,
   BattleAdvanceStreamEvent,
@@ -597,10 +598,12 @@ export const api = {
         updatedAt: string;
       } | null;
     }>("/api/character-drafts/latest"),
-  confirmCharacterDraft: (id: string) =>
+  confirmCharacterDraft: (id: string, candidateDigest?: string | null) =>
     request<{ character: CharacterPublic; assistantMessage: string }>(
       `/api/characters/${id}/confirm`,
-      { method: "POST" },
+      candidateDigest === undefined
+        ? { method: "POST" }
+        : { method: "POST", body: JSON.stringify({ candidateDigest }) },
     ),
   discardCharacterDraft: (id: string) =>
     request<{ ok: boolean }>(`/api/character-drafts/${id}`, {

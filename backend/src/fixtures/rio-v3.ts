@@ -1,4 +1,5 @@
 /** R: Define the deterministic Rio V3 trial candidate and its compiler inputs. */
+import { v3ToProfileDefinitionV2 } from "../services/character-v3-profile-adapter.js";
 import { createHash } from "node:crypto";
 import {
   CharacterBattleCompilerInputsV4Schema,
@@ -15,7 +16,6 @@ import {
   validateCharacterProfileClaimAssessmentV2,
   type CharacterDefinitionV3,
   type CharacterGenerationEnvelopeV3,
-  type CharacterDefinitionV2,
 } from "@kshiai/shared";
 
 const description = (text: string, sourceSupportRefs: string[]) => ({
@@ -40,38 +40,20 @@ function digest(value: unknown): string {
   return createHash("sha256").update(canonicalJson(value)).digest("hex");
 }
 
-function v3ToProfileDefinitionV2(definition: CharacterDefinitionV3): CharacterDefinitionV2 {
-  const {
-    schemaVersion: _schemaVersion,
-    actionNorms,
-    consciousGuidance: _consciousGuidance,
-    mechanicalConflictFallbacks: _mechanicalConflictFallbacks,
-    ...stable
-  } = definition;
-  return {
-    ...stable,
-    schemaVersion: 2,
-    actionNorms: actionNorms.map((norm) => ({
-      ...norm,
-      response: {
-        ...norm.response,
-        statement: norm.description?.text ?? `action norm ${norm.id}`,
-        fallbackActionRef: null,
-      },
-      selfAwareness: "aware" as const,
-    })),
-  };
-}
 
 /** A second original, local-only V3 fixture for a future V3-vs-V3 Stage trial. */
-export function createV3StageTrialSecondCandidate(): CharacterGenerationEnvelopeV3 {
-  const manualSource = {
+export function createV3StageTrialSecondSource() {
+  return {
     candidateId: "stage-trial-rio",
     displayName: "潮騒の記録士・リオ",
     tags: ["new-v3-candidate", "tide-scribe", "adaptive"],
     traits: ["変化を記録する", "機を待つ", "仲間の動きを読む"],
     narrativeBlurb: "潮の変化を読み、戦場の流れを短い記録に変えて次の一手を選ぶ。",
   };
+}
+
+export function createV3StageTrialSecondCandidate(): CharacterGenerationEnvelopeV3 {
+  const manualSource = createV3StageTrialSecondSource();
   const source = legacyCharacterSheetToDefinitionV2({
     id: manualSource.candidateId,
     ownerUserId: "local-stage-trial-owner",

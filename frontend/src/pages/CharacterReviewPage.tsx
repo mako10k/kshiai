@@ -1,3 +1,4 @@
+/** R: Present owner-safe character authoring review and confirmation actions. */
 import { useNavigate } from "react-router-dom";
 import { useRef } from "react";
 import type { CharacterAuthoringReview, CharacterPublic } from "@kshiai/shared";
@@ -124,7 +125,9 @@ function CandidateCompatibility(props: {
   compatibility: NonNullable<NonNullable<CharacterAuthoringReview["semanticCandidateReview"]>["compatibility"]>;
 }) {
   return <section><h3>候補段階の互換性</h3>
-    <p>必要なコンシューマーの検証が未完了のため、利用可能とは判定していません。</p>
+    <p>{props.compatibility.status === "ready"
+      ? "必要なコンシューマー要件を満たしています。"
+      : "必要なコンシューマー要件をまだ満たしていません。"}</p>
     <p>状態: {props.compatibility.status}</p>
     {props.compatibility.deferred.map((entry) =>
       <p key={entry.capability}>延期: {entry.capability} — {entry.targetPaths.join(", ")}</p>)}
@@ -179,7 +182,7 @@ export function CharacterReviewPage() {
           assistantMessage={review.assistantMessage}
           confirmLabel={confirmLabels[review.kind]}
           busy={busy}
-          chat={review.kind === "create" ? {
+          chat={review.kind === "create" && review.canEditCandidate !== false ? {
             value: draftMessage,
             placeholder: "例: もっと防御寄りに。髪色を暗い赤に。",
             busy,
@@ -195,7 +198,7 @@ export function CharacterReviewPage() {
             },
           } : undefined}
           onConfirm={() => runReviewAction(setBusy, setError, async () => {
-            const res = await api.confirmCharacterDraft(review.attemptId);
+            const res = await api.confirmCharacterDraft(review.attemptId, review.candidateDigest);
             nav(`/characters/${res.character.id}`);
           }, "確定に失敗しました")}
           onDiscard={() => runReviewAction(setBusy, setError, async () => {

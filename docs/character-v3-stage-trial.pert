@@ -2,10 +2,10 @@
 project V3_STAGE_TRIAL:
   version 5
   title "First two-character V3 Stage battle trial"
-  description "Current plan correction: docs/character-semantic-migration-plan-revision-13.md. Owner outcome remains a real Neva-versus-Rio V3 Stage battle, immutable revisions, physical disposal of pre-cutover unfinished battles and readable finished history. vt101 records only the completed local direct-registration fixture slice; vt109 carries its original remaining accepted authoring obligation. VST_CONTRACT_READY is the explicit handoff from parent cm305. Estimates for vt109 and expanded lifecycle vt110 are provisional scope judgments, updated at their first measured completion checkpoint. Historical 3p/1d is a limited small-task observation, not calibrated V3 delivery throughput; external waits and working calendar remain separate."
+  description "Current scope: docs/character-semantic-migration-plan-revision-13.md. vt109 fixed V3 candidate review, exact confirmation and activation completed locally on 2026-09-29; evidence: docs/evidence/vt109-registration-2026-09-29.md. Velocity uses perttool declared elapsed throughput for vt109 only, 20:48:57-21:20:47. One registration task is a provisional sample; vt101 partial timing is excluded. External owner/deployment waits and calendar allocation are separate. New Battle implementation follows cc319 acceptance and vt111 handoff."
   as_of 2026-09-29
   duration_unit point
-  velocity 3p/1d
+  velocity 780p/191h
   finish VST_PLAYED
   goal_owner user
   dag_owner user
@@ -26,7 +26,7 @@ resource OWNER:
 milestone VST_CURRENT:
   title "Accepted V3 revisions register and select through the reusable authoring path"
   description "Exact candidate review and owner confirmation bind receipts and content digest; immutable append and CAS activation with rollback and readback work through the SQLite/PostgreSQL repository contract. Neva and Rio fixed candidates can exercise the same path locally; real Stage activation belongs to vt106."
-  state planned
+  state reached
 
 milestone VST_BOUND:
   title "Immutable V3 battle lifecycle and local cutover verified"
@@ -140,6 +140,7 @@ task vt109 VST_LOCAL_FIXTURE -> VST_CURRENT:
     optimistic 1p
     most_likely 2p
     pessimistic 4p
+  status done
   requires:
     DEV 1
   source "Accepted character-v3-authoring-requirements-v5 R18; ADR-0010/0014. Existing implementation authority; independent of proposed battle cutover ADR-0039."
@@ -217,3 +218,16 @@ milestone VST_REVISION_BOUND:
 
 gate vg110 VST_CONTRACT_READY -> VST_REVISION_BOUND:
   reason "Exact accepted contract is required for binding completion; historical suspended vt102 resumes only after vt111 handoff."
+
+work_event WE-e3f59fa897372624bf518f1c624547754d067f35e9ca72058f5303edd3db8054:
+  model 1
+  task vt109
+  kind start
+  occurred_at 2026-09-29T20:48:57+09:00
+  planned_value 13/6p
+
+work_event WE-9c9e9a2fb77b468bd200fd66191577e149195c92362a9ce208c66cabb1fdc863:
+  model 1
+  task vt109
+  kind finish
+  occurred_at 2026-09-29T21:20:47+09:00

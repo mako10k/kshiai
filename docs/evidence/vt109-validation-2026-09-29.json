@@ -1,0 +1,83 @@
+{
+  "schema": "kshiai/vt109-validation/v1",
+  "observed_on": "2026-09-29",
+  "typecheck": "passed",
+  "npm_test": {
+    "result": "passed",
+    "active_files": 12,
+    "provisional_files": 2,
+    "disabled_files": 146,
+    "test_counts_by_group": [
+      95,
+      13,
+      9
+    ],
+    "total": 117
+  },
+  "e2e": {
+    "command": "npm run test:e2e-gui",
+    "result": "passed",
+    "tests": 3,
+    "active_files": 1,
+    "disabled_files": 1,
+    "browser": "local chromium-1223 explicit executable"
+  },
+  "sqlite_cli_readback": {
+    "attempts": 2,
+    "status": "awaiting_owner_acceptance",
+    "currentGenerations": 0,
+    "idempotentCliReplay": true
+  },
+  "source_comparison": {
+    "unit": {
+      "schema": "sealgraph/source-compare/v1",
+      "ref": "verification/vt109-fixed-v3-registration-20260929",
+      "path": "backend/src/repositories/local-v3-trial-characters.test.ts",
+      "baseline": "HEAD",
+      "baseline_content": {
+        "store": "native",
+        "type": "blob",
+        "object_id": "76fdb83e034e7ba7e7e83935d2d9aad86de51868eac96e2d53b5e403e225f3eb"
+      },
+      "workfile_content": {
+        "store": "native",
+        "type": "blob",
+        "object_id": "76fdb83e034e7ba7e7e83935d2d9aad86de51868eac96e2d53b5e403e225f3eb",
+        "bytes": 12891
+      },
+      "relation": "WORKFILE_MATCHES_HEAD"
+    },
+    "ui": {
+      "schema": "sealgraph/source-compare/v1",
+      "ref": "verification/vt109-fixed-v3-registration-ui-20260929",
+      "path": "e2e/character-focused-review.spec.ts",
+      "baseline": "HEAD",
+      "baseline_content": {
+        "store": "native",
+        "type": "blob",
+        "object_id": "4ac6e6552e1ee4e1ac25865359d3999bbae059bbc1cc7729721a54e6d9c161f0"
+      },
+      "workfile_content": {
+        "store": "native",
+        "type": "blob",
+        "object_id": "4ac6e6552e1ee4e1ac25865359d3999bbae059bbc1cc7729721a54e6d9c161f0",
+        "bytes": 5665
+      },
+      "relation": "WORKFILE_MATCHES_HEAD"
+    }
+  },
+  "sealgraph_fsck": "ok",
+  "llmthink_audit": {
+    "fatal_count": 0,
+    "error_count": 0,
+    "warning_count": 0,
+    "info_count": 0,
+    "hint_count": 2
+  },
+  "postgres_runtime": "unobserved: server binaries and configured test target unavailable",
+  "diagnostic_regressions": {
+    "tests": 20,
+    "result": "passed",
+    "meaning": "Includes old V2/focused tests as diagnostic checks; current authoritative set is selected by npm test."
+  }
+}

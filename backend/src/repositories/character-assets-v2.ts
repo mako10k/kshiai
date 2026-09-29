@@ -1,4 +1,5 @@
 /** R: Manage character authoring attempts, immutable generations, and readiness. */
+import { parseCharacterCandidate, assertCharacterCandidateReady, candidateToSheet, type CharacterAuthoringCandidate } from "../services/character-authoring-candidate.js";
 import {
   AssetAuthoringAttemptKindSchema,
   AssetAuthoringAttemptStatusSchema,
@@ -6,6 +7,7 @@ import {
   CHARACTER_BATTLE_MECHANICS_CAPABILITY_SET_V3,
   CharacterCompilerCapabilityV1Schema,
   CharacterGenerationEnvelopeV2Schema,
+  CharacterSheetSchema,
   CharacterGenerationEnvelopeV3Schema,
   assertCharacterGenerationReadyV2,
   characterDefinitionV2ToLegacySheet,
@@ -18,7 +20,7 @@ import {
   type CharacterSheet,
   OwnerRetryCommandV1Schema,
 } from "@kshiai/shared";
-import { query, withTransaction, type DatabaseConnection } from "../db.js";
+import { databaseKind, query, withTransaction, type DatabaseConnection } from "../db.js";
 import { newId } from "../id.js";
 import {
   activateAssetGeneration,
@@ -56,7 +58,7 @@ export type CharacterAuthoringAttempt = {
   expectedGenerationId: string | null;
   expectedContentDigest: string | null;
   status: AssetAuthoringAttemptStatus;
-  candidate: CharacterGenerationEnvelopeV2 | null;
+  candidate: CharacterAuthoringCandidate | null;
   candidateDigest: string | null;
   assistantMessage: string;
   errorCode: string | null;
@@ -127,7 +129,7 @@ function parseAttempt(row: AttemptRow): CharacterAuthoringAttempt {
     status: AssetAuthoringAttemptStatusSchema.parse(row.status),
     candidate: rawCandidate == null
       ? null
-      : CharacterGenerationEnvelopeV2Schema.parse(rawCandidate),
+      : parseCharacterCandidate(rawCandidate),
     candidateDigest: row.candidate_digest,
     assistantMessage: row.assistant_message,
     errorCode: row.error_code,
@@ -711,6 +713,10 @@ export async function replaceCharacterAuthoringSource(input: {
 }): Promise<void> {
   const updatedAt = new Date().toISOString();
   await withTransaction(async (connection) => {
+    const current = await selectAttempt(connection, input.attemptId, input.ownerUserId);
+    if (current?.candidate && CharacterGenerationEnvelopeV3Schema.safeParse(current.candidate).success) {
+      throw new Error("FIXED_V3_CANDIDATE_REQUIRES_NEW_ATTEMPT");
+    }
     const result = await connection.query(
       `UPDATE character_authoring_attempts
           SET source_text = $3, source_digest = $4,
@@ -745,19 +751,20 @@ async function reopenCharacterAuthoringJob(
   });
 }
 
-export async function saveCharacterAuthoringCandidate(input: {
+type SaveCandidateInput = {
   attemptId: string;
   ownerUserId: string;
-  envelope: CharacterGenerationEnvelopeV2;
+  envelope: CharacterAuthoringCandidate;
   assistantMessage: string;
   executionFence?: AuthoringExecutionFence;
-}): Promise<CharacterAuthoringAttempt> {
-  const envelope = assertCharacterGenerationReadyV2(
-    CharacterGenerationEnvelopeV2Schema.parse(input.envelope),
-  );
+};
+export async function saveCharacterAuthoringCandidate(input: SaveCandidateInput): Promise<CharacterAuthoringAttempt> {
+  return withTransaction((connection) => saveCandidateInTransaction(connection, input));
+}
+async function saveCandidateInTransaction(connection: DatabaseConnection, input: SaveCandidateInput): Promise<CharacterAuthoringAttempt> {
+  const envelope = assertCharacterCandidateReady(input.envelope);
   const candidateDigest = assetContentDigest(envelope);
   const updatedAt = new Date().toISOString();
-  return withTransaction(async (connection) => {
     if (input.executionFence) {
       await assertFamilyAuthoringFence(
         connection,
@@ -770,6 +777,11 @@ export async function saveCharacterAuthoringCandidate(input: {
     if (!attempt) throw new Error("AUTHORING_ATTEMPT_NOT_FOUND");
     if (["succeeded", "discarded", "expired"].includes(attempt.status)) {
       throw new Error("AUTHORING_ATTEMPT_TERMINAL");
+    }
+    if (CharacterGenerationEnvelopeV3Schema.safeParse(envelope).success
+      && (envelope.provenance.attemptId !== attempt.attemptId
+        || envelope.provenance.sourceDigest !== attempt.sourceDigest)) {
+      throw new Error("AUTHORING_CANDIDATE_PROVENANCE_MISMATCH");
     }
     const savedRow = await connection.query(
       `UPDATE character_authoring_attempts
@@ -807,6 +819,40 @@ export async function saveCharacterAuthoringCandidate(input: {
     }
     const saved = await selectAttempt(connection, input.attemptId, input.ownerUserId);
     if (!saved) throw new Error("AUTHORING_ATTEMPT_SAVE_FAILED");
+    return saved;
+}
+
+/** Persist a supplied create candidate and retire its generation job atomically. */
+export async function prepareCharacterCreateCandidate(input: {
+  ownerUserId: string; characterId: string; idempotencyKey: string;
+  envelope: CharacterAuthoringCandidate;
+  source: Record<string, unknown>;
+}): Promise<CharacterAuthoringAttempt> {
+  if (!input.idempotencyKey.trim() || input.idempotencyKey.length > 200) throw new Error("INVALID_IDEMPOTENCY_KEY");
+  const envelope = assertCharacterCandidateReady(input.envelope);
+  const sourceDigest = assetContentDigest(input.source);
+  if (envelope.provenance.sourceDigest !== sourceDigest) throw new Error("AUTHORING_SOURCE_DIGEST_MISMATCH");
+  const requestDigest = assetContentDigest({ characterId: input.characterId, envelope, sourceDigest });
+  return withTransaction(async (connection) => {
+    if (databaseKind() === "postgres") await connection.query(
+      `SELECT pg_advisory_xact_lock(hashtext($1))`,
+      [`character-create-candidate:${input.ownerUserId}:${input.idempotencyKey}`]);
+    const owner = await connection.query<{ id: string }>(`SELECT id FROM users WHERE id = $1`, [input.ownerUserId]);
+    if (!owner.rows[0]) throw new Error("TRIAL_OWNER_NOT_FOUND");
+    const replay = await replayExistingAttempt(connection, input.ownerUserId, input.idempotencyKey, requestDigest);
+    if (replay) return replay.attempt;
+    const attempt = await insertNewAuthoringAttempt(connection, {
+      ownerUserId: input.ownerUserId, characterId: input.characterId, kind: "create",
+      idempotencyKey: input.idempotencyKey, requestDigest,
+      sourceText: JSON.stringify(input.source), sourceDigest,
+    });
+    const saved = await saveCandidateInTransaction(connection, {
+      attemptId: attempt.attemptId, ownerUserId: input.ownerUserId,
+      envelope: parseCharacterCandidate({ ...envelope,
+        provenance: { ...envelope.provenance, attemptId: attempt.attemptId } }),
+      assistantMessage: "固定V3候補の全設定を確認して登録してください。",
+    });
+    await finishFamilyAuthoringJobInTransaction(connection, "character", attempt.attemptId, "completed");
     return saved;
   });
 }
@@ -917,10 +963,19 @@ export async function activateCharacterAuthoringAttempt(input: {
   attemptId: string;
   ownerUserId: string;
   allowFocusedMigrationActivation?: boolean;
+  candidateDigest?: string;
 }): Promise<{ sheet: CharacterSheet; generation: AssetGeneration }> {
   const result = await withTransaction(async (connection) => {
+    // Serialize duplicate confirmations before reading the candidate or appending a generation.
+    if (databaseKind() === "postgres") await connection.query(
+      `SELECT attempt_id FROM character_authoring_attempts WHERE attempt_id = $1 AND owner_user_id = $2 FOR UPDATE`,
+      [input.attemptId, input.ownerUserId]);
     const attempt = await selectAttempt(connection, input.attemptId, input.ownerUserId);
     if (!attempt) throw new Error("AUTHORING_ATTEMPT_NOT_FOUND");
+    if (attempt.candidate && CharacterGenerationEnvelopeV3Schema.safeParse(attempt.candidate).success
+      && (!input.candidateDigest || input.candidateDigest !== attempt.candidateDigest)) {
+      throw new Error("AUTHORING_REVIEW_DIGEST_MISMATCH");
+    }
     if (attempt.status === "succeeded" && attempt.resultGenerationId) {
       const generationResult = await connection.query<{
         asset_type: string;
@@ -942,27 +997,19 @@ export async function activateCharacterAuthoringAttempt(input: {
       if (!generationResult.rows[0] || !sheetResult.rows[0]) {
         throw new Error("AUTHORING_RESULT_MISSING");
       }
-      const row = generationResult.rows[0];
-      return {
-        kind: "activated" as const,
-        value: {
-          sheet: (typeof sheetResult.rows[0].sheet_json === "string"
-            ? JSON.parse(sheetResult.rows[0].sheet_json)
-            : sheetResult.rows[0].sheet_json) as CharacterSheet,
-          generation: {
-            assetType: row.asset_type,
-            assetId: row.asset_id,
-            generation: Number(row.generation),
-            generationId: row.generation_id,
-            schemaVersion: Number(row.schema_version),
-            content: typeof row.content_json === "string"
-              ? JSON.parse(row.content_json)
-              : row.content_json,
-            contentDigest: row.content_digest,
-            createdAt: row.created_at,
-          },
-        },
-      };
+      const generation = parseGeneration(generationResult.rows[0]);
+      const current = CharacterSheetSchema.parse(typeof sheetResult.rows[0].sheet_json === "string"
+        ? JSON.parse(sheetResult.rows[0].sheet_json) : sheetResult.rows[0].sheet_json);
+      const sheet = candidateToSheet(parseCharacterCandidate(generation.content), {
+        characterId: attempt.characterId, ownerUserId: input.ownerUserId,
+        createdAt: current.createdAt, updatedAt: generation.createdAt,
+        previousImageUrl: current.appearance.previousImageUrl,
+        operational: { visibility: current.visibility, record: current.record,
+          recordOverall: current.recordOverall, improvementMemo: current.improvementMemo,
+          opponentMemories: current.opponentMemories, deletedAt: current.deletedAt,
+          revisionSnapshot: current.revisionSnapshot },
+      });
+      return { kind: "activated" as const, value: { sheet, generation } };
     }
     if (attempt.status !== "awaiting_owner_acceptance" || !attempt.candidate) {
       if (!input.allowFocusedMigrationActivation) {
@@ -1010,9 +1057,9 @@ export async function activateCharacterAuthoringAttempt(input: {
         [attempt.characterId],
       );
       const currentSheet = currentSheetResult.rows[0]
-        ? (typeof currentSheetResult.rows[0].sheet_json === "string"
+        ? CharacterSheetSchema.parse(typeof currentSheetResult.rows[0].sheet_json === "string"
             ? JSON.parse(currentSheetResult.rows[0].sheet_json)
-            : currentSheetResult.rows[0].sheet_json) as CharacterSheet
+            : currentSheetResult.rows[0].sheet_json)
         : null;
       if (!currentSheet || currentSheet.ownerUserId !== input.ownerUserId) {
         throw new Error("CHARACTER_OWNER_MISMATCH");
@@ -1119,7 +1166,12 @@ export async function activateCharacterAuthoringAttempt(input: {
       }
       return { kind: "expired" as const };
     }
-    assertCharacterGenerationReadyV2(attempt.candidate);
+    assertCharacterCandidateReady(attempt.candidate);
+    if (CharacterGenerationEnvelopeV3Schema.safeParse(attempt.candidate).success
+      && (attempt.candidate.provenance.attemptId !== attempt.attemptId
+        || attempt.candidate.provenance.sourceDigest !== attempt.sourceDigest)) {
+      throw new Error("AUTHORING_CANDIDATE_PROVENANCE_MISMATCH");
+    }
     if (assetContentDigest(attempt.candidate) !== attempt.candidateDigest) {
       throw new Error("AUTHORING_CANDIDATE_DIGEST_MISMATCH");
     }
@@ -1128,9 +1180,9 @@ export async function activateCharacterAuthoringAttempt(input: {
       [attempt.characterId],
     );
     const currentSheet = currentSheetResult.rows[0]
-      ? (typeof currentSheetResult.rows[0].sheet_json === "string"
+      ? CharacterSheetSchema.parse(typeof currentSheetResult.rows[0].sheet_json === "string"
           ? JSON.parse(currentSheetResult.rows[0].sheet_json)
-          : currentSheetResult.rows[0].sheet_json) as CharacterSheet
+          : currentSheetResult.rows[0].sheet_json)
       : null;
     if (currentSheet && currentSheet.ownerUserId !== input.ownerUserId) {
       throw new Error("CHARACTER_OWNER_MISMATCH");
@@ -1142,11 +1194,9 @@ export async function activateCharacterAuthoringAttempt(input: {
         WHERE attempt_id = $1 AND owner_user_id = $2`,
       [attempt.attemptId, input.ownerUserId, updatedAt],
     );
-    const sheet = characterDefinitionV2ToLegacySheet({
+    const sheet = candidateToSheet(attempt.candidate, {
       characterId: attempt.characterId,
       ownerUserId: input.ownerUserId,
-      definition: attempt.candidate.definition,
-      publicPresentation: attempt.candidate.publicPresentation,
       createdAt: currentSheet?.createdAt ?? attempt.createdAt,
       updatedAt,
       previousImageUrl: currentSheet?.appearance.previousImageUrl,
@@ -1165,7 +1215,7 @@ export async function activateCharacterAuthoringAttempt(input: {
     const generation = await appendAssetGeneration(connection, {
       assetType: "character",
       assetId: attempt.characterId,
-      schemaVersion: 2,
+      schemaVersion: attempt.candidate.definitionSchema.version,
       content: attempt.candidate,
       createdAt: updatedAt,
     });

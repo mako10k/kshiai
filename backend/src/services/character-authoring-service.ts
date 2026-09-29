@@ -1,3 +1,5 @@
+/** R: Prepare legacy character generation and authoring previews. */
+import { candidateToSheet, type CharacterAuthoringCandidate } from "./character-authoring-candidate.js";
 import {
   AssetPublicPresentationV2Schema,
   CharacterGenerationEnvelopeV2Schema,
@@ -33,14 +35,12 @@ export function sheetFromAuthoringCandidate(input: {
   ownerUserId: string;
   createdAt: string;
   updatedAt: string;
-  candidate: CharacterGenerationEnvelopeV2;
+  candidate: CharacterAuthoringCandidate;
   existing?: CharacterSheet | null;
 }): CharacterSheet {
-  return characterDefinitionV2ToLegacySheet({
+  return candidateToSheet(input.candidate, {
     characterId: input.characterId,
     ownerUserId: input.ownerUserId,
-    definition: input.candidate.definition,
-    publicPresentation: input.candidate.publicPresentation,
     createdAt: input.existing?.createdAt ?? input.createdAt,
     updatedAt: input.updatedAt,
     previousImageUrl: input.existing?.appearance.previousImageUrl,

@@ -10,10 +10,10 @@
 project csm001:
   version 9
   title "Restore character authoring and migrate frozen ready V2 characters to strict V3"
-  description "Current revision: docs/character-semantic-migration-plan-revision-13.md. First outcome is owner play of new immutable V3 Neva versus Rio on Stage. V3-only new creation, physical disposal of pre-cutover unfinished battles and readable finished history remain owner decisions. cc305 prepares the exact implementation package; cm319 records its separate exact owner acceptance, joining at cm305. Child VST_CONTRACT_READY receives this explicit handoff. cc314 rolls up remaining child work once, including vt109 accepted registration. Later V2-to-V3 migration and broad evaluation remain downstream. Historical small-task velocity is conditional; no calibrated hourly or dated forecast is claimed."
+  description "Current scope: docs/character-semantic-migration-plan-revision-13.md; measured progress: docs/evidence/vt109-registration-2026-09-29.md. First outcome is owner play of new immutable V3 Neva versus Rio on Stage. V3-only new creation, physical disposal of pre-cutover unfinished battles and readable finished history remain fixed. cc319 records owner acceptance of the exact package; vt111 receives the handoff. vt109 completed locally and cc314 rolls up remaining child work once. Later V2-to-V3 migration and broad evaluation remain downstream. Velocity is the single vt109 elapsed-time observation from perttool; owner wait and calendar allocation remain separate."
   as_of 2026-09-29
   duration_unit point
-  velocity 3p/1d
+  velocity 780p/191h
   finish cm114
 
 resource cr001:
@@ -438,10 +438,10 @@ gate cg305 cm303 -> cm305:
 task cc314 cm305 -> cm314:
   tags [M3_STAGE_GAME_USE]
   title "Try Neva versus Rio in an actual V3-only Stage battle"
-  description "Roll up remaining V3_STAGE_TRIAL work exactly once: accepted-contract readback vt111, immutable binding vt102, completed authoring registration vt109, lifecycle/cutover vt110, local integration vt103 and separately authorized release/deploy/data/owner play vt104-vt108. Child resource schedule 931/60p is conditional on accepted handoff and suspended work resumption; external waits excluded. New estimates are provisional; historical partial vt101 timing is not full throughput."
-  duration 931/60p
+  description "Remaining V3_STAGE_TRIAL work once after vt109 completion: vt111 accepted handoff, vt102 immutable binding, vt110 lifecycle/cutover, vt103 local integration, and separately authorized release/deploy/data/owner play vt104-vt108. Child resource makespan 267/20p; conditional on accepted handoff and suspended work resumption. External waits excluded. Registration-only single-task velocity is provisional."
+  duration 13.35p
   owner "user and codex"
-  source "Plan revision 13; perttool 0.11.1 child resource analysis 931/60p; owner review counted separately once as cc319."
+  source "Plan revision 13; 2026-09-29 vt109 completion; perttool 0.11.1 child resource analysis 267/20p; owner review counted separately as cc319."
   requires:
     cr001 1
     cr002 1

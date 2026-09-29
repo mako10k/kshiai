@@ -1,3 +1,4 @@
+/** R: Verify owner review display and exact confirmation/retry requests in the browser. */
 import { expect, test } from "@playwright/test";
 import type { CharacterAuthoringReview } from "@kshiai/shared";
 import { e2eGuiMe } from "./fixtures/battle";
@@ -62,4 +63,36 @@ test("keeps the same owner command after an ambiguous response and opens the new
   await expect(page).toHaveURL(/\/reviews\/focused-next$/);
   expect(commands).toHaveLength(2);
   expect(commands[1]).toBe(commands[0]);
+});
+
+test("confirms a fixed V3 candidate with the exact reviewed digest and exposes its complete review", async ({ page }) => {
+  const { createV3StageTrialCandidate } = await import("../backend/src/fixtures/neva-v3");
+  const { characterDefinitionV3ToLegacySheet, toPublicCharacter } = await import("@kshiai/shared");
+  const envelope = createV3StageTrialCandidate();
+  const character = toPublicCharacter(characterDefinitionV3ToLegacySheet({
+    characterId: "fixed-neva", ownerUserId: e2eGuiMe.user.id,
+    definition: envelope.definition, publicPresentation: envelope.publicPresentation,
+    createdAt: "2026-09-29T00:00:00.000Z", updatedAt: "2026-09-29T00:00:00.000Z",
+  }), e2eGuiMe.user.id);
+  const digest = "50edf23389df253762378ba622537cff3d86722f613693b6a92796a7624d307f";
+  await page.route("**/api/character-drafts/focused-review", (route) => route.fulfill({ json: {
+    ...base, status: "awaiting_owner_acceptance", candidate: character, canAccept: true,
+    candidateDigest: digest, canEditCandidate: false,
+    semanticCandidateReview: { schemaVersion: 3,
+      fields: [{ key: "definition", label: "人物・能力・行動規範の全設定", source: null,
+        candidate: JSON.stringify(envelope.definition) }],
+      compatibility: { status: "ready", deferred: [], blocked: [] }, limitation: "固定入力の全設定を確定します。",
+    },
+  } }));
+  await page.route("**/api/characters/focused-review/confirm", (route) => {
+    expect(route.request().postDataJSON()).toEqual({ candidateDigest: digest });
+    return route.fulfill({ json: { character } });
+  });
+  await page.goto("/reviews/focused-review");
+  await expect(page.getByText("人物・能力・行動規範の全設定", { exact: true })).toBeVisible();
+  await expect(page.getByPlaceholder("例: もっと防御寄りに。髪色を暗い赤に。")).toHaveCount(0);
+  const submitted = page.waitForRequest("**/api/characters/focused-review/confirm");
+  await page.getByRole("button", { name: "確定して保存" }).click();
+  await submitted;
+  await expect(page).toHaveURL(/\/characters\/fixed-neva$/);
 });
