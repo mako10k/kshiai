@@ -49,7 +49,7 @@ Editable domain assets must be revisioned. Battles and other long-running workfl
 
 ## Plan alignment before task execution
 
-Before executing a development task, identify its accepted goal, current canonical PERT task, governing requirement and ADR, scope, dependencies, and completion condition. Compare them with the work about to run. Do not execute a task whose purpose or scope conflicts with the current plan. If the plan is stale or contradicts a later owner decision, use read-only investigation to locate the difference, revise the appropriate upstream artifact and canonical PERT through their authorized processes, and validate the updated plan before resuming execution. A PERT `next` result, old branch, or prior recommendation does not override this rule or supply execution authority.
+Before executing a development task, identify its accepted goal, current canonical PERT task, governing requirement and ADR, scope, dependencies, and completion condition. If the planned task and current owner-approved outcome differ, establish the governing decision and update the canonical PERT scope, dependencies, completion condition, and estimate to match it. Check the updated document, precedence and resource schedules, and next-task result; then carry out the aligned task under its existing execution authority. Never execute the stale, mismatched task or treat discovery of the mismatch as completion. Return an unresolved product decision to the owner through its upstream lifecycle while continuing independent authorized work. A PERT `next` result, old branch, or prior recommendation does not supply execution authority.
 
 ## Commit & Pull Request Guidelines
 
