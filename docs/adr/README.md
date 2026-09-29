@@ -31,6 +31,22 @@ This directory contains durable records of architectural and product-rule decisi
 6. Replace an accepted decision with a new ADR, then mark the old ADR
    `Superseded` and link both records.
 
+## Historical checker exceptions
+
+`npm run adr:check` explicitly excludes the unchanged ADR-0015, ADR-0016,
+ADR-0017, and ADR-0019 source/projection pairs from **current** LLMTHINK DSL
+and acceptance-marker checks. ADR-0015 through ADR-0017 are Accepted records
+written before the current DSL and formal marker convention. ADR-0019 is a
+historical Proposed record with legacy premise syntax. Their recorded statuses
+remain as shown in the index; an exception is not a new acceptance decision.
+
+The exception registry in `scripts/adr-historical-exceptions.mjs` pins both
+files of each pair by SHA-256 and prints the exclusion reason during checking.
+Pair existence and Markdown status syntax are still checked. Any change to a
+pinned file invalidates its exception until that snapshot is reviewed and the
+exception is removed or deliberately updated. All other ADRs receive the full
+current check.
+
 ## Index
 
 | ADR | Status | Decision |
@@ -71,3 +87,5 @@ This directory contains durable records of architectural and product-rule decisi
 | [0034](0034-seal-based-test-authority.md) | Accepted | Require source-matched verification Seals with explicit current Causes for authoritative test evidence while preserving historical validity |
 | [0035](0035-resolve-revision-scope-from-request.md) | Accepted | Resolve request-specific character revision scope from natural language before focused work |
 | [0036](0036-propagate-draft-test-evidence.md) | Accepted | Treat test results backed by draft verification or Causes as draft evidence, not authoritative current pass/fail |
+| [0037](0037-append-only-narration-fragments.md) | Rejected | Historical unaccepted Fragment proposal replaced by the broader 0038 candidate |
+| [0038](0038-narration-fragment-commit-and-result-reveal.md) | Proposed | Reveal results after Fragment commit or confirmed Narration error; timebox old-history migration to 30 minutes |
