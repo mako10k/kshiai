@@ -31,6 +31,22 @@ This directory contains durable records of architectural and product-rule decisi
 6. Replace an accepted decision with a new ADR, then mark the old ADR
    `Superseded` and link both records.
 
+## Historical checker exceptions
+
+`npm run adr:check` explicitly excludes the unchanged ADR-0015, ADR-0016,
+ADR-0017, and ADR-0019 source/projection pairs from **current** LLMTHINK DSL
+and acceptance-marker checks. ADR-0015 through ADR-0017 are Accepted records
+written before the current DSL and formal marker convention. ADR-0019 is a
+historical Proposed record with legacy premise syntax. Their recorded statuses
+remain as shown in the index; an exception is not a new acceptance decision.
+
+The exception registry in `scripts/adr-historical-exceptions.mjs` pins both
+files of each pair by SHA-256 and prints the exclusion reason during checking.
+Pair existence and Markdown status syntax are still checked. Any change to a
+pinned file invalidates its exception until that snapshot is reviewed and the
+exception is removed or deliberately updated. All other ADRs receive the full
+current check.
+
 ## Index
 
 | ADR | Status | Decision |

@@ -1,7 +1,9 @@
+// R: Validate ADR source/projection pairs against their applicable audit era.
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 import { basename, dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { classifyHistoricalAdr } from "./adr-historical-exceptions.mjs";
 
 const repositoryRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const adrDirectory = join(repositoryRoot, "docs", "adr");
@@ -47,6 +49,16 @@ for (const name of canonicalFiles) {
 
   if (!status) {
     failures.push(`${relativeThinkPath}: Markdown projection has no recognized Status`);
+  }
+
+  const historical = classifyHistoricalAdr(name, source, markdown, status);
+  if (historical.kind === "changed") {
+    failures.push(`${relativeThinkPath}: ${historical.reason}`);
+    continue;
+  }
+  if (historical.kind === "historical") {
+    console.log(`${relativeThinkPath}: historical exception; current DSL and acceptance-marker checks excluded; ${historical.reason}`);
+    continue;
   }
 
   const hasOwnerAcceptance = /^evidence OWNER_ACCEPTANCE:/m.test(source);
