@@ -1,0 +1,22 @@
+# ADR-0038 revision 3 審査記録
+
+- 対象: [ADR-0038 revision 3](../adr/0038-narration-fragment-commit-and-result-reveal.md)（コミット `66dedb9`）
+- 正本 `.think` SHA-256: `17ea06b0871eea24e26118d4597665662d26cfd54b789468bc275cb07e30398a`
+- Markdown SHA-256: `1acbce3e05a943e5b88a938b12dd1e26d4ea3a1d1d6e2042affdf02dd7f178a0`
+- 審査範囲: revision 2→3 の移行方針、その変更が既存対戦への適用範囲に与える影響。[ADR-0006](../adr/0006-terminal-snapshot-narration-delivery.md)、[ADR-0016](../adr/0016-scene-beats-batched-narration.md)、[ADR-0017](../adr/0017-public-turn-intra-turn-beats.md)の既決条件を参照。実装の適合性審査とデータ変更は対象外。
+- 独立審査: `PASS_WITH_FINDINGS`。審査前後に両 digest が一致し、対象 ADR に変更はない。
+
+## 現段階と後続段階
+
+ADR 段階では、Fragment・Battle 正史・表示の責務、結果表示条件、旧方式から切り替える範囲とオーナーが決めるデータ適用方針を扱う。基本・詳細設計には cut 条件、公開識別子、保存スキーマ、自動リトライ回数と状態表現、移行手順を渡す。例えば「旧進行中 Battle を切替対象に含めるか」は版範囲の決定であり、DB カラム名は後続設計である。
+
+## 原審査所見と採否
+
+1. **P2 / BOUNDARY_DISPUTE — 旧進行中 Battle の適用範囲。** revision 3 は完了済み履歴の一回限りの移行を第一候補とし、30分の総作業上限と超過時のオーナー判断を記録した（[ADR 本文](../adr/0038-narration-fragment-commit-and-result-reveal.md)、[移行調査](adr-0038-migration-feasibility-2026-09-29.md)）。一方、切替時に進行中の旧 Battle を移行するか破棄するかは、この候補に定義されていない。過去のオーナー指示には「過去の途中の対戦は破棄」があるが、その対象と今回の切替時点の Battle 集合が同一かは未確認。**主担当の判定:** 所見を維持し、具体的な対象集合と作用をオーナーへ返す。現 ADR は Proposed のままにする。データ操作の承認としては扱わない。
+2. **P3 / OUTSIDE — エラー確定・手動リトライの内部表現。** revision 2 審査で、確定エラーと一時失敗を区別する状態、手動リトライの回復、durable な表示位置の表現を後続の基本・詳細設計へ渡した。revision 3 はこの結論を変更していない。**主担当の判定:** 後続設計へ送る。結果カードの外部動作は ADR 本文で決まっている。
+
+## 移行可能性と判断待ち
+
+[移行調査](adr-0038-migration-feasibility-2026-09-29.md)で、旧 receipt 記録に新 Fragment の被覆・メモリ・終局叙述検証の独立項目がないことを確認した。実データの件数・形状は未観測であり、30分以内の完全移行を保証できない。旧本文を検証なしで新 Fragment と見なす案と、恒久的な二重実行は採用しない。30分を超える見込みなら、旧 Battle の書き出し後の消去・初期化を、履歴・キャラクター別検索・過去対戦参照への影響とともにオーナーへ示す。消去対象、保持先、復元方法は実行前に確定する。
+
+この審査は ADR の Acceptance、既存データの移行、消去、配備を行っていない。
