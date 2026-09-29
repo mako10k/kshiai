@@ -1,7 +1,8 @@
 # ADR-0039: V3対戦の不変リビジョンとライフサイクル・切替境界
 
-- Status: Proposed
+- Status: Accepted
 - Revision: 1
+- Acceptance: [所有者受入記録](../evidence/cc319-owner-acceptance-2026-09-29.md)
 - Date: 2026-09-29
 - Decision owner: プロダクトオーナー
 - Authority: 同名 `.think` が判断の正本。本書は日本語の投影。
@@ -33,7 +34,7 @@
 | **本体削除＋IDだけの削除記録（推奨）** | 同じ旧キーによる再作成まで識別できる | 小さな記録表と照合が増える |
 | 作成キーへ切替epochを追加 | 旧キーを新APIで識別できる | クライアント契約とtoken配布が増える |
 
-## Decision（採用候補）
+## Decision（採用）
 
 ### D1 リビジョン固定
 

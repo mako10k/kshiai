@@ -160,11 +160,10 @@ task vt111 VST_LOCAL_FIXTURE -> VST_CONTRACT_READY:
   title "Read back the parent accepted implementation package"
   description "Read back exact accepted requirement/ADR/design identities from parent cm305 and record the child handoff. Provisional 0.1p covers only this synchronization action; owner review is counted once as parent cc319. External waiting duration is unknown and excluded from point schedules."
   duration 0.1p
-  status blocked
+  status done
   requires:
     DEV 1
-  blocked_reason "Await parent cc305 package preparation and cc319 exact owner review; established product decisions stay fixed."
-  source "Parent cm305 acceptance handoff; no duplicate effort"
+  source "docs/evidence/vt111-accepted-handoff-2026-09-29.json; exact accepted files read back; cc319 owner acceptance recorded separately"
 
 work_event WE-3dbb3f38bb58d449f8ada5eae4068f5083f38cf6283bd0712c034a25db3ca26c:
   model 1
@@ -208,7 +207,7 @@ milestone VST_LOCAL_FIXTURE:
 milestone VST_CONTRACT_READY:
   title "Exact cutover requirement and successor ADR/design accepted"
   description "External handoff: record reached only from parent cm305 with exact accepted requirement, successor ADR and governing design identities."
-  state planned
+  state reached
 
 
 
@@ -231,3 +230,16 @@ work_event WE-9c9e9a2fb77b468bd200fd66191577e149195c92362a9ce208c66cabb1fdc863:
   task vt109
   kind finish
   occurred_at 2026-09-29T21:20:47+09:00
+
+work_event WE-95de8d8a6424662d2a788f3a34f0427ed3fb9324c282453aea444224f70d0d19:
+  model 1
+  task vt111
+  kind start
+  occurred_at 2026-09-29T21:38:14+09:00
+  planned_value 0.1p
+
+work_event WE-83949ccb0e29145ed682683cdc752d23e14cb2ca07b29b42b1790b41f1b8ee51:
+  model 1
+  task vt111
+  kind finish
+  occurred_at 2026-09-29T21:38:16+09:00

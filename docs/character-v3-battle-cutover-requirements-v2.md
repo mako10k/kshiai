@@ -1,6 +1,6 @@
 # V3新規対戦切替 — 要件候補 revision 2
 
-- 状態: Proposed（正確な候補一式の受入はcc319で記録）
+- 状態: Accepted（[cc319所有者受入記録](evidence/cc319-owner-acceptance-2026-09-29.md)）
 - 日付: 2026-09-29
 - 決定者: プロダクトオーナー
 - 前版: [revision 1](character-v3-battle-cutover-requirements-v1.md)

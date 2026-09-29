@@ -1,5 +1,5 @@
 domain ADR0039:
-  description "ADR-0039 revision 1. Proposed. V3-only immutable Battle binding and a narrow lifecycle with physical cutover."
+  description "ADR-0039 revision 1. Accepted. V3-only immutable Battle binding and a narrow lifecycle with physical cutover."
 
 problem P1:
   |
@@ -23,7 +23,7 @@ evidence UPSTREAM:
     Accepted ADR-0010 requires immutable envelope binding and persisted atomic
     authoring activation. Accepted V3 authoring requirements v5 R18 requires exact
     candidate review and owner confirmation. Accepted ADR-0007 preserves physical
-    provider-attempt accounting. Proposed cutover requirements v2 records the fixed
+    provider-attempt accounting. Accepted cutover requirements v2 records the fixed
     owner behavior; ADR-0038 remains a separate Proposed Narration contract.
 
 evidence CODE:
@@ -127,10 +127,11 @@ decision VERIFY based_on D1, D2, D3, D4:
     release, interruption/recovery budget and data authority belong to vt104-vt108.
     Schema tests or a fixture importer alone do not complete these obligations.
 
-pending OWNER_ACCEPTANCE:
+evidence OWNER_ACCEPTANCE:
   |
-    Exact revision 1 awaits owner acceptance through cc319. Fixed V3-only,
-    immutable revision, physical deletion and finished-history decisions remain
-    settled. The new architectural choice is narrow lifecycle plus minimal
-    deletion receipts, insert/update separation and quiescent cutover. No data
-    deletion, deployment, merge, or successor implementation is implied here.
+    On 2026-09-29 the owner explicitly accepted the exact requirement v2,
+    ADR0039 revision 1 and lifecycle design v2 package presented in this chat.
+    The answer was: この候補一式を採用して進める（推奨）.
+    docs/evidence/cc319-owner-acceptance-2026-09-29.md preserves the four
+    submitted SHA256 identities and the limited D4 replacement scope.
+    The subsequent handoff instruction keeps vt102 suspended for continuation.

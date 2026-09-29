@@ -60,7 +60,7 @@ current check.
 | [0007](0007-provider-operation-ledger-and-observation-ceilings.md) | Accepted | Durable physical provider-attempt accounting and observation ceilings |
 | [0008](0008-battle-private-character-focus-state.md) | Accepted | Battle-private character focus state selected from perceived deltas and modulated by existing focus bands |
 | [0009](0009-separate-adjudication-from-judgment-presentation.md) | Accepted | Adjudication commits mechanically; judgment presentation is a derived read model |
-| [0010](0010-structured-selectable-asset-envelope.md) | Accepted | Selectable assets share one immutable envelope and persisted authoring attempts |
+| [0010](0010-structured-selectable-asset-envelope.md) | Accepted | Selectable assets share one immutable envelope and persisted authoring attempts; pre-cutover unfinished-battle preservation only is superseded by 0039 D4 |
 | [0011](0011-structured-character-definition.md) | Accepted | Character truth is a structured definition with derived audience projections |
 | [0012](0012-structured-battlefield-definition.md) | Accepted | Battlefield presets, compiled instances, and live world state stay separate |
 | [0013](0013-structured-narration-definition.md) | Accepted | Narration styles compile into phase-specific policy |
@@ -89,4 +89,4 @@ current check.
 | [0036](0036-propagate-draft-test-evidence.md) | Accepted | Treat test results backed by draft verification or Causes as draft evidence, not authoritative current pass/fail |
 | [0037](0037-append-only-narration-fragments.md) | Rejected | Historical unaccepted Fragment proposal replaced by the broader 0038 candidate |
 | [0038](0038-narration-fragment-commit-and-result-reveal.md) | Proposed | Reveal results after Fragment commit or confirmed Narration error; timebox old-history migration to 30 minutes |
-| [0039](0039-v3-battle-lifecycle-and-cutover.md) | Proposed | Bind new V3-only battles; centralize lifecycle, separate insert/update, physically discard old unfinished battles with minimal ID receipts |
+| [0039](0039-v3-battle-lifecycle-and-cutover.md) | Accepted | Bind new V3-only battles; centralize lifecycle, separate insert/update, physically discard old unfinished battles with minimal ID receipts |

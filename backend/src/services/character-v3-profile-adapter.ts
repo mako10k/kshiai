@@ -23,4 +23,3 @@ export function v3ToProfileDefinitionV2(definition: CharacterDefinitionV3): Char
     })),
   };
 }
-

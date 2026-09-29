@@ -1,6 +1,6 @@
 # 対戦ライフサイクル — 基本・詳細設計候補 revision 2
 
-- 状態: Proposed
+- 状態: Accepted（[cc319所有者受入記録](evidence/cc319-owner-acceptance-2026-09-29.md)）
 - 日付: 2026-09-29
 - 上位: [切替要件revision 2](character-v3-battle-cutover-requirements-v2.md)、[ADR-0039 revision 1](adr/0039-v3-battle-lifecycle-and-cutover.md)。受入済みauthoring R18、ADR-0010/0007を継承。
 - 前版: [revision 1](battle-lifecycle-boundary-design-v1.md)。本候補が現在のレビュー対象。旧版の「物理削除方式未決」と旧見積りは歴史的記述。

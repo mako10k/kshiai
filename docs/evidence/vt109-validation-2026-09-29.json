@@ -79,5 +79,10 @@
     "tests": 20,
     "result": "passed",
     "meaning": "Includes old V2/focused tests as diagnostic checks; current authoritative set is selected by npm test."
+  },
+  "closeout_rerun": {
+    "npm_test": "passed: 117 tests",
+    "e2e": "passed: 3 tests",
+    "change": "EOF whitespace normalization only; proof identities refreshed"
   }
 }
