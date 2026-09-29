@@ -32,6 +32,8 @@ if (canonicalFiles.length === 0) {
 }
 
 const failures = [];
+let auditedCount = 0;
+let historicalCount = 0;
 
 for (const name of canonicalFiles) {
   const thinkPath = join(adrDirectory, name);
@@ -57,6 +59,7 @@ for (const name of canonicalFiles) {
     continue;
   }
   if (historical.kind === "historical") {
+    historicalCount += 1;
     console.log(`${relativeThinkPath}: historical exception; current DSL and acceptance-marker checks excluded; ${historical.reason}`);
     continue;
   }
@@ -99,6 +102,7 @@ for (const name of canonicalFiles) {
     continue;
   }
 
+  auditedCount += 1;
   console.log(`${relativeThinkPath}: LLMTHINK audit clean; projection status=${status}`);
 }
 
@@ -106,5 +110,5 @@ if (failures.length > 0) {
   console.error(failures.join("\n\n"));
   process.exitCode = 1;
 } else {
-  console.log(`ADR checks passed for ${canonicalFiles.length} canonical file(s)`);
+  console.log(`ADR checks passed: ${auditedCount} current file(s) audited; ${historicalCount} pinned historical file(s) excluded`);
 }
