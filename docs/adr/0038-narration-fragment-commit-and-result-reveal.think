@@ -1,5 +1,5 @@
 domain ADR0038:
-  description "ADR-0038 revision 3: fragment commit, result reveal, and bounded old-data migration. Status Proposed."
+  description "ADR-0038 revision 4: fragment commit, result reveal, and prior active-Battle discard. Status Proposed."
 
 problem P1:
   |
@@ -47,6 +47,14 @@ evidence OWNER_MIGRATION_RULE:
     decision criterion, favored migration, capped total migration work at
     30 minutes, and requested a deletion or other proposal if the cap would
     be exceeded.
+
+evidence OWNER_OLD_ACTIVE_DISCARD:
+  |
+    Earlier in this conversation the owner directed that past in-progress
+    Battles be discarded because continuation would require wasteful extra
+    implementation. They allowed physical deletion if it simplifies the
+    result. The owner has now confirmed this was an existing decision,
+    not a new choice for ADR-0038.
 
 evidence OLD_DATA_GAP:
   |
@@ -142,13 +150,17 @@ decision D4 based_on D1, D2, D3, PRIOR_AUTHORITY, SCOPE:
     The existing requirement candidate revision 1 predates the later owner
     decisions and must be reconciled in its own lifecycle before delivery.
 
-decision D5 based_on D1, D3, OWNER_MIGRATION_RULE, OLD_DATA_GAP, SCOPE:
+decision D5 based_on D1, D3, OWNER_MIGRATION_RULE, OWNER_OLD_ACTIVE_DISCARD, OLD_DATA_GAP, SCOPE:
   |
     Propose one Fragment runtime after cutover. Favor one-time conversion of
     old completed Battle history only if live inventory, mapping, conversion
-    and verification together fit a 30-minute work limit. No current
-    evidence certifies that bound. Do not classify receipt prose as a fully
-    validated Fragment without support. If conversion cannot fit, stop and
+    and verification together fit a 30-minute work limit. Discard old
+    in-progress Battles at cutover; they are not migration candidates and
+    cannot resume under the new runtime. Exact physical cleanup is an
+    execution-stage plan, not a new product-scope question. No current
+    evidence certifies the migration bound. Do not classify receipt prose as
+    a fully validated Fragment without support. If conversion cannot fit,
+    stop and
     submit a concrete export-and-removal or other lower-complexity option to
     the owner with its effects on history and character/matchup consumers.
     No deletion or data migration is authorized by this proposal. Do not
@@ -157,12 +169,13 @@ decision D5 based_on D1, D3, OWNER_MIGRATION_RULE, OLD_DATA_GAP, SCOPE:
 pending OWNER_ACCEPTANCE:
   |
     The product owner must review and explicitly accept, revise or reject
-    exact ADR-0038 revision 3. This proposal does not alter Accepted
+    exact ADR-0038 revision 4. This proposal does not alter Accepted
     ADR-0006 or ADR-0016 or authorize implementation or release.
 
 pending CONTRACT_AND_APPLICATION:
   |
     Public Fragment identity and source-receipt mapping, exact cut policy,
-    narrator-memory fields, other user-facing surfaces, actual old-data
-    disposition, existing clients, and full-page provisional recovery require
+    narrator-memory fields, other user-facing surfaces, completed-history
+    disposition if migration exceeds the cap, existing clients, and full-page
+    provisional recovery require
     later owner or design decisions at their applicable phase.
