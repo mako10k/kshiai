@@ -72,4 +72,4 @@ This directory contains durable records of architectural and product-rule decisi
 | [0035](0035-resolve-revision-scope-from-request.md) | Accepted | Resolve request-specific character revision scope from natural language before focused work |
 | [0036](0036-propagate-draft-test-evidence.md) | Accepted | Treat test results backed by draft verification or Causes as draft evidence, not authoritative current pass/fail |
 | [0037](0037-append-only-narration-fragments.md) | Rejected | Historical unaccepted Fragment proposal replaced by the broader 0038 candidate |
-| [0038](0038-narration-fragment-commit-and-result-reveal.md) | Proposed | Separate Battle commit, immutable Fragment commit, and terminal-result reveal clocks |
+| [0038](0038-narration-fragment-commit-and-result-reveal.md) | Proposed | Reveal the terminal result after its Narration Fragment commits or Narration error is confirmed, while preserving manual retry |

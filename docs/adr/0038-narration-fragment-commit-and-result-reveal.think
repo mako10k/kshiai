@@ -1,5 +1,5 @@
 domain ADR0038:
-  description "ADR-0038 revision 1: fragment commit and result reveal clocks. Status Proposed."
+  description "ADR-0038 revision 2: fragment commit, confirmed error, and result reveal clocks. Status Proposed."
 
 problem P1:
   |
@@ -32,7 +32,14 @@ evidence OWNER_REVEAL:
     result-card display only after the Fragment narrating the terminal
     outcome commits. They clarified that an earlier use of 'every' was a
     typo. They authorized recording the three clocks and result-card rule
-    in a new ADR candidate, leaving terminal Narration failure unresolved.
+    in a new ADR candidate. The initial candidate left terminal Narration
+    failure unresolved.
+
+evidence OWNER_ERROR_RULE:
+  |
+    On 2026-09-29 the owner decided that a confirmed Narration error,
+    including automatic retry-limit exhaustion, also permits result reveal.
+    Manual retry of the error remains available.
 
 evidence PRIOR_AUTHORITY:
   |
@@ -86,16 +93,24 @@ decision D2 based_on D1, OWNER_PIPELINE:
     retains the prior committed prefix and retries the same blocked slot with
     the same bound input. A retry may generate different text and chunks.
     The prior ADR-0037 visible retry and terminal-failure display rules carry
-    forward; exact retry count and exhaustion recovery remain open.
+    forward. After an automatic retry limit or another confirmed Narration
+    error, manual retry remains available at the blocked slot.
+    Exact automatic retry count remains for detailed design.
 
-decision D3 based_on D1, D2, OWNER_REVEAL, PRIOR_AUTHORITY:
+decision D3 based_on D1, D2, OWNER_REVEAL, OWNER_ERROR_RULE, PRIOR_AUTHORITY:
   |
     Propose three independent positions: canonical Battle commit, Narration
     Fragment commit, and user presentation reveal. Battle may reach a terminal
-    result before Narration finishes. The result card is revealed once only
-    when a committed Fragment references the terminal result and its validated
-    content actually presents that outcome. Source coverage alone is not the
-    reveal condition.
+    result before Narration finishes. After that canonical result commits,
+    reveal the result card on the first of two confirmed conditions: a
+    committed Fragment references the terminal result and its validated
+    content actually presents that outcome; or Narration progression toward
+    the terminal outcome reaches a durable confirmed error at a blocked
+    Fragment, such as automatic retry exhaustion.
+    Source coverage alone and a transient failed attempt do not reveal the
+    result. Reveal is monotone and once per Battle: a subsequent manual retry
+    does not hide or duplicate the card, and may still commit the blocked
+    Fragment.
     Provisional Streaming may appear before its Fragment commits, but it does
     not release the result card. No Narration status or reveal state changes
     canonical winner, turn, Beat, rating or Battle events.
@@ -114,14 +129,8 @@ decision D4 based_on D1, D2, D3, PRIOR_AUTHORITY, SCOPE:
 pending OWNER_ACCEPTANCE:
   |
     The product owner must review and explicitly accept, revise or reject
-    exact ADR-0038 revision 1. This proposal does not alter Accepted
+    exact ADR-0038 revision 2. This proposal does not alter Accepted
     ADR-0006 or ADR-0016 or authorize implementation or release.
-
-pending TERMINAL_NARRATION_FAILURE:
-  |
-    If no Fragment covering the terminal result can be committed after
-    retries, the rule for releasing the result card remains undecided. Do not
-    invent a fallback Fragment, permanent hidden result or exception event.
 
 pending CONTRACT_AND_APPLICATION:
   |
