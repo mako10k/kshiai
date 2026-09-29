@@ -12,7 +12,7 @@ project V3_STAGE_TRIAL:
 
 milestone VST_LOCAL_CANDIDATES:
   title "Two local V3 candidate fixtures exist"
-  description "Neva and Rio deterministic local V3 fixtures exist on codex/v3-stage-trial-candidate at 77ed6a0; they are not integrated into this checkout, registered, owner content accepted, or available on Stage."
+  description "Neva and Rio deterministic V3 content originated on codex/v3-stage-trial-candidate at 77ed6a0 and was integrated into cc304 for vt101. Exact owner content acceptance and Stage registration remain separate."
   state reached
 
 resource DEV:
@@ -25,6 +25,8 @@ resource OWNER:
 
 milestone VST_CURRENT:
   title "Both V3 characters are registered and selectable locally"
+  description "Neva and Rio registered as immutable ready V3 generations in explicit local SQLite and observed through owner and candidate selection APIs; see docs/evidence/vt101-local-v3-registration-2026-09-29.md. Owner content acceptance and Stage activation remain separate."
+  state reached
 
 milestone VST_BOUND:
   title "V4 battle binds immutable V3 character revisions locally"
@@ -54,6 +56,7 @@ task vt101 VST_LOCAL_CANDIDATES -> VST_CURRENT:
     optimistic 2p
     most_likely 3p
     pessimistic 4p
+  status done
   requires:
     DEV 1
   source "Owner decision: first Stage trial uses two new V3 characters; accepted character V3 authoring requirements revision 5"
@@ -150,3 +153,16 @@ milestone VST_CUTOVER:
 
 gate vg108 VST_CUTOVER -> VST_STAGE_READY:
   reason "Stage readiness requires verified disposal of pre-cutover unfinished battles and finished-history readback."
+
+work_event WE-c9a8d59814806938e3b8f831e1a97ec451d76d153171e71d25434ac1499dea28:
+  model 1
+  task vt101
+  kind start
+  occurred_at 2026-09-29T19:26:58+09:00
+  planned_value 3p
+
+work_event WE-b18765f1a4e0a2700c27623dccb5f712cf8f77540822504facd8f110a61d05b3:
+  model 1
+  task vt101
+  kind finish
+  occurred_at 2026-09-29T19:36:20+09:00

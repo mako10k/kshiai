@@ -20,7 +20,8 @@
     "smoke:postgres-runtime": "tsx src/scripts/postgres-runtime-smoke.ts",
     "smoke:supabase-auth": "tsx src/scripts/supabase-auth-smoke.ts",
     "observe:persistent-e2e": "KSHIAI_RUN_E2E_MAIN=1 tsx src/scripts/persistent-battle-e2e.ts",
-    "migrate:legacy-account": "tsx src/scripts/migrate-legacy-account.ts"
+    "migrate:legacy-account": "tsx src/scripts/migrate-legacy-account.ts",
+    "register:v3-stage-trial": "tsx src/scripts/register-v3-stage-trial.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1101.0",

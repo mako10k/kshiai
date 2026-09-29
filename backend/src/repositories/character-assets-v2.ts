@@ -1,3 +1,4 @@
+/** R: Manage character authoring attempts, immutable generations, and readiness. */
 import {
   AssetAuthoringAttemptKindSchema,
   AssetAuthoringAttemptStatusSchema,
@@ -1580,7 +1581,7 @@ export async function listReadyCharacterIds(
         AND c.generation_id = s.current_generation_id
        JOIN asset_generations g ON g.generation_id = c.generation_id
       WHERE s.compatibility_status = 'ready'
-        AND g.schema_version = 2
+        AND g.schema_version IN (2, 3)
         AND s.character_id IN (${placeholders})`,
     characterIds,
   );
