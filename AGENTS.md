@@ -47,6 +47,10 @@ Record material architectural and product-rule decisions as ADRs under `docs/adr
 
 Editable domain assets must be revisioned. Battles and other long-running workflows bind immutable asset revision IDs and snapshots at creation; they must not reread a mutable current character, narration style, battlefield, or policy definition during execution. Corrections create a new revision, while existing battles remain on their recorded revisions unless an explicit migration ADR defines otherwise.
 
+## Plan alignment before task execution
+
+Before executing a development task, identify its accepted goal, current canonical PERT task, governing requirement and ADR, scope, dependencies, and completion condition. Compare them with the work about to run. Do not execute a task whose purpose or scope conflicts with the current plan. If the plan is stale or contradicts a later owner decision, use read-only investigation to locate the difference, revise the appropriate upstream artifact and canonical PERT through their authorized processes, and validate the updated plan before resuming execution. A PERT `next` result, old branch, or prior recommendation does not override this rule or supply execution authority.
+
 ## Commit & Pull Request Guidelines
 
 Recent commits use short, imperative, sentence-case subjects (for example, `Improve battle flow...`). Keep each commit focused. Pull requests should summarize behavior and architecture changes, list validation commands, link relevant issues or `docs/plan.pert` work, and include screenshots for visible UI changes. Call out database, environment, provider, or deployment impacts explicitly. Never commit `.env`, API keys, SQLite data, generated `dist/`, or user media.
