@@ -100,5 +100,31 @@
       "authority_checker_tests_passed": 9
     },
     "review": "one independent PASS_WITH_FINDINGS; two P2 inside findings corrected by primary agent, no claim of a second independent full review"
+  },
+  "velocity_observation": {
+    "command": "perttool project observe-velocity docs/character-semantic-migration.pert --task cc305 --evidence declared --format json",
+    "observed_commit": "1a43a8eb259b3f6dea14aeb24c256a4b31ef5824",
+    "history_status": "incomplete",
+    "cause_codes": [
+      "unsupported_source_version"
+    ],
+    "candidates": [
+      {
+        "measure": "elapsed_hour_throughput",
+        "state": "unavailable",
+        "adoptable_velocity_token": null
+      },
+      {
+        "measure": "active_date_throughput",
+        "state": "unavailable",
+        "adoptable_velocity_token": null
+      },
+      {
+        "measure": "effort_productivity",
+        "state": "unavailable",
+        "adoptable_velocity_token": null
+      }
+    ],
+    "next_measurement": "Record vt109 start/finish in child grammar 5, then observe completed-work velocity with perttool; keep parent recorded event timestamps intact."
   }
 }
