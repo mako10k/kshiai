@@ -71,3 +71,4 @@ This directory contains durable records of architectural and product-rule decisi
 | [0034](0034-seal-based-test-authority.md) | Accepted | Require source-matched verification Seals with explicit current Causes for authoritative test evidence while preserving historical validity |
 | [0035](0035-resolve-revision-scope-from-request.md) | Accepted | Resolve request-specific character revision scope from natural language before focused work |
 | [0036](0036-propagate-draft-test-evidence.md) | Accepted | Treat test results backed by draft verification or Causes as draft evidence, not authoritative current pass/fail |
+| [0037](0037-append-only-narration-fragments.md) | Proposed | Append immutable Narration Fragments after completed generation while displaying attempt-scoped provisional Streaming and retry state |

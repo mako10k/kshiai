@@ -1,0 +1,89 @@
+domain ADR0037:
+  description "ADR-0037 revision 1: append-only committed narration fragments and provisional streaming. Status Proposed."
+
+problem P1:
+  |
+    Accepted ADR-0006 publishes narrator prose only as a validated terminal
+    snapshot and keeps provider progress private. The product owner now directs
+    provisional Streaming display, visible retry, and immutable Fragment-level
+    Commit. The public prose decisions conflict and need an explicit successor.
+
+evidence OWNER_DIRECTION:
+  |
+    On 2026-09-29 the owner described a Battle with one logical Narration,
+    immutable Fragments accumulating within it, and a Fragment committed only
+    after its Streaming is received successfully to completion. The owner also
+    directed that a failed attempt retains its partial display, displays a
+    retrying message when retry is scheduled, and replaces that display when
+    the first content chunk of the new attempt arrives. The owner said the
+    attempt need not reproduce the same Streaming and Narration success or
+    failure does not alter Battle canonical history. The subsequent request
+    to fix these decisions in design and policy authorizes drafting this ADR,
+    not acceptance of its exact revision.
+
+evidence PRIOR_AUTHORITY:
+  |
+    Accepted ADR-0006 chose terminal-snapshot-only prose over public partial
+    prose with visible reset. It also specifies receipt identity, ordered
+    finite battle delivery, durable cursor and outbox, at-least-once delivery,
+    fixed canonical input, worker fencing, and Battle advance independence.
+    Accepted ADR-0016 and ADR-0017 define existing Beat and Turn clocks.
+
+premise SCOPE:
+  |
+    This proposal changes the representation and public presentation of
+    Narration prose and its generation attempts. It does not change Battle
+    canonical facts, Turn or Beat semantics, queue provider, authorization,
+    worker fencing, release, production data, or acceptance of this ADR.
+    Application to existing and in-progress battles and clients remains an
+    owner decision before migration or implementation is specified.
+
+premise OPTIONS:
+  |
+    Keep ADR-0006 terminal-only prose, which preserves simple historical
+    replay but fails the new Streaming direction; stream mutable cumulative
+    prose, which allows fast display but lacks immutable Fragment Commit; or
+    show attempt-scoped provisional chunks and append a completed immutable
+    Fragment per slot, which meets the owner direction with additional client
+    attempt-state and recovery rules.
+
+decision D1 based_on P1, OWNER_DIRECTION, PRIOR_AUTHORITY, OPTIONS:
+  |
+    Propose the third option. One logical Narration belongs to each Battle and
+    accumulates zero or more ordered committed Fragments. The complete text,
+    order, and source references of each committed Fragment are immutable.
+    Attempt chunks are provisional and never become a Fragment merely because
+    they were displayed. A Fragment is committed only after successful source
+    completion and durable atomic storage. One slot can have at most one
+    committed Fragment even when attempts or deliveries repeat.
+
+decision D2 based_on D1, OWNER_DIRECTION:
+  |
+    Propose that a failed attempt leaves its provisional display visible.
+    A scheduled retry adds a retrying indication. Starting the new attempt
+    does not clear the prior display; its first content chunk clears the
+    previous provisional display and indication for that slot before showing
+    new chunks. If retries end without Commit, retain provisional text and
+    show terminal failure. Attempt replay and chunk identity across attempts
+    are not required. A committed Fragment replaces provisional display with
+    its complete authoritative text.
+
+decision D3 based_on D1, D2, PRIOR_AUTHORITY, SCOPE:
+  |
+    Propose superseding only ADR-0006's terminal-only/public-prose-private
+    progress and terminal-block replacement choices. Retain its canonical
+    Battle advance independence, immutable input, public receipt identity and battle-local
+    ordering, physically finite authenticated reconnectable stream, durable
+    cursor and outbox, at-least-once delivery, queue wake-up, and fencing
+    decisions. Distinguish transport failure from generation failure; reconnect
+    reads committed Fragments. Retain ADR-0016/0017 Turn and Beat meaning.
+    Beat-to-Fragment cardinality, provisional recovery after full page reload,
+    and adoption scope remain undecided.
+
+pending OWNER_ACCEPTANCE:
+  |
+    The product owner must review and explicitly accept, revise, or reject
+    this exact ADR-0037 revision. Drafting it does not supersede ADR-0006 or
+    authorize implementation, migration, release, or deployment. The
+    application boundary for existing battles and clients requires its own
+    explicit owner decision before dependent implementation planning.
