@@ -1,5 +1,5 @@
 domain ADR0038:
-  description "ADR-0038 revision 2: fragment commit, confirmed error, and result reveal clocks. Status Proposed."
+  description "ADR-0038 revision 3: fragment commit, result reveal, and bounded old-data migration. Status Proposed."
 
 problem P1:
   |
@@ -40,6 +40,22 @@ evidence OWNER_ERROR_RULE:
     On 2026-09-29 the owner decided that a confirmed Narration error,
     including automatic retry-limit exhaustion, also permits result reveal.
     Manual retry of the error remains available.
+
+evidence OWNER_MIGRATION_RULE:
+  |
+    On 2026-09-29 the owner made minimum final program complexity the
+    decision criterion, favored migration, capped total migration work at
+    30 minutes, and requested a deletion or other proposal if the cap would
+    be exceeded.
+
+evidence OLD_DATA_GAP:
+  |
+    Current receipt-keyed narration and presentation rows do not store
+    distinct Fragment coverage, narrator-memory transitions, or validated
+    terminal-outcome narration. Existing Battle records also feed history,
+    character search and prior-matchup views. Actual persisted data size and
+    shape remain unobserved. The 2026-09-29 migration feasibility note
+    records exact paths and the bounded read-only assessment.
 
 evidence PRIOR_AUTHORITY:
   |
@@ -126,15 +142,27 @@ decision D4 based_on D1, D2, D3, PRIOR_AUTHORITY, SCOPE:
     The existing requirement candidate revision 1 predates the later owner
     decisions and must be reconciled in its own lifecycle before delivery.
 
+decision D5 based_on D1, D3, OWNER_MIGRATION_RULE, OLD_DATA_GAP, SCOPE:
+  |
+    Propose one Fragment runtime after cutover. Favor one-time conversion of
+    old completed Battle history only if live inventory, mapping, conversion
+    and verification together fit a 30-minute work limit. No current
+    evidence certifies that bound. Do not classify receipt prose as a fully
+    validated Fragment without support. If conversion cannot fit, stop and
+    submit a concrete export-and-removal or other lower-complexity option to
+    the owner with its effects on history and character/matchup consumers.
+    No deletion or data migration is authorized by this proposal. Do not
+    retain a permanent dual runtime solely to avoid the owner decision.
+
 pending OWNER_ACCEPTANCE:
   |
     The product owner must review and explicitly accept, revise or reject
-    exact ADR-0038 revision 2. This proposal does not alter Accepted
+    exact ADR-0038 revision 3. This proposal does not alter Accepted
     ADR-0006 or ADR-0016 or authorize implementation or release.
 
 pending CONTRACT_AND_APPLICATION:
   |
     Public Fragment identity and source-receipt mapping, exact cut policy,
-    narrator-memory fields, other user-facing surfaces, existing Battle and
-    client handling, and full-page provisional recovery require later owner
-    or design decisions at their applicable phase.
+    narrator-memory fields, other user-facing surfaces, actual old-data
+    disposition, existing clients, and full-page provisional recovery require
+    later owner or design decisions at their applicable phase.

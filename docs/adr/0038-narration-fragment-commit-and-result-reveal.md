@@ -1,7 +1,7 @@
 # ADR-0038: Narration Fragment の確定と結果表示の進行位置
 
 - Status: Proposed
-- Revision: 2
+- Revision: 3
 - Date: 2026-09-29
 - Decision owner: Product owner
 - Replaces proposal: [ADR-0037](0037-append-only-narration-fragments.md)
@@ -58,7 +58,9 @@ Battle の正史の Commit、Narration Fragment の Commit、利用者への表�
 
 ## Compatibility and migration
 
-既存・進行中 Battle、完了履歴、旧クライアントへの適用時点と読戻しは未決である。結果カード以外の画面・履歴・通知で終局情報をいつ表示するかも別途定める。公開 Fragment の識別子と receipt 参照、ナレータメモリの最小項目、cut 条件、全ページ再読込後の途中表示は基本設計以降で決める。要件候補 revision 1 は後続のオーナー決定を反映してから審査する。production データ変更と release / deployment は別の権限境界に置く。
+最終的なプログラムの複雑さを最小化するため、切替後は一つの Fragment 実行方式を目指す。既存の完了済み Battle 記録は一回限りの移行を第一候補とし、実データ調査・対応付け・変換・検証を含む総作業時間を**30分以内**とする。現行の receipt 単位の保存内容には Fragment の source coverage、ナレータメモリ遷移、終局を実際に語った検証結果が独立して記録されておらず、現時点で30分以内の完全移行は裏付けられない（[移行可能性の調査](../evidence/adr-0038-migration-feasibility-2026-09-29.md)）。旧本文を検証なしに新 Fragment と扱わない。上限内の成立を確認できない場合は、旧 Battle の書き出しと消去・初期化など、履歴・キャラクター別検索・過去対戦参照への影響を明示した具体案をオーナーへ示す。恒久的な新旧二重実行は時間超過だけで採用しない。実データの移行・消去と旧クライアントへの適用は別途決定する。
+
+結果カード以外の画面・履歴・通知で終局情報をいつ表示するかも別途定める。公開 Fragment の識別子と receipt 参照、ナレータメモリの最小項目、cut 条件、全ページ再読込後の途中表示は基本設計以降で決める。要件候補 revision 1 は後続のオーナー決定を反映してから審査する。production データ変更と release / deployment は別の権限境界に置く。
 
 ## Verification
 
@@ -72,7 +74,7 @@ Battle の正史の Commit、Narration Fragment の Commit、利用者への表�
 
 ## Open owner decisions
 
-- 既存 Battle・完了履歴・クライアントへの適用範囲、および結果カード以外の公開面の表示時点。
+- 30分以内の実データ移行が成立しない場合の旧 Battle 記録の処置、旧クライアントへの適用範囲、および結果カード以外の公開面の表示時点。
 - 公開 Fragment 識別子と既存 receipt の対応。詳細設計のイベント名・DB 配置・再試行回数は後続へ渡す。
 
 ## Implementation references
