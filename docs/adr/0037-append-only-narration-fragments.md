@@ -1,10 +1,12 @@
 # ADR-0037: Append-only Narration Fragments and provisional Streaming
 
-- Status: Proposed
+- Status: Rejected
 - Date: 2026-09-29
 - Decision owner: Product owner
 - Related: [要件候補 revision 1](../narration-fragment-requirements-v1.md), [設計候補 revision 1](../narration-fragment-stream-design-v1.md), [ADR-0006](0006-terminal-snapshot-narration-delivery.md), [ADR-0016](0016-scene-beats-batched-narration.md), [ADR-0017](0017-public-turn-intra-turn-beats.md)
 - Authoritative record: [0037-append-only-narration-fragments.think](0037-append-only-narration-fragments.think)
+
+この ADR は一度も Accepted になっていない。オーナーの後続指示により、過去の候補として保存し、現在の審査候補は ADR-0038 とする。以下の提案内容は履歴であり、Accepted ADR-0006/0016 の効力を変更しない。
 
 ## Context
 
