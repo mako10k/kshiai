@@ -1,5 +1,7 @@
+// R: Authenticate application users and maintain their sessions and identity mappings.
 import bcrypt from "bcryptjs";
-import { createRemoteJWKSet, jwtVerify, type JWTPayload } from "jose";
+import { createSupabaseIdentityVerifier, type SupabaseIdentity } from "./services/supabase-identity.js";
+export type { SupabaseIdentity } from "./services/supabase-identity.js";
 import type { Context, Next } from "hono";
 import { getCookie, setCookie, deleteCookie } from "hono/cookie";
 import type { UserPublic } from "@kshiai/shared";
@@ -18,32 +20,9 @@ export { adminIdentityMatches } from "./account-access.js";
 
 const COOKIE = "kshiai_session";
 const SESSION_DAYS = 14;
-let supabaseJwks: ReturnType<typeof createRemoteJWKSet> | null = null;
+const verifySupabaseIdentity = createSupabaseIdentityVerifier(config);
 
 export type AuthUser = UserPublic;
-
-export type SupabaseIdentity = {
-  subject: string;
-  email: string | null;
-  displayName: string | null;
-};
-
-function identityFromClaims(payload: JWTPayload): SupabaseIdentity | null {
-  if (typeof payload.sub !== "string" || payload.role !== "authenticated") {
-    return null;
-  }
-  const metadata = payload.user_metadata;
-  const displayName = metadata && typeof metadata === "object"
-    ? ["full_name", "name", "user_name"]
-      .map((key) => (metadata as Record<string, unknown>)[key])
-      .find((value): value is string => typeof value === "string" && value.trim().length > 0) ?? null
-    : null;
-  return {
-    subject: payload.sub,
-    email: typeof payload.email === "string" ? payload.email : null,
-    displayName,
-  };
-}
 
 function usernameForIdentity(identity: SupabaseIdentity, attempt: number): string {
   const emailName = identity.email?.split("@")[0] ?? "";
@@ -105,23 +84,13 @@ export async function ensureSupabaseUser(
 export async function userFromSupabaseAccessToken(
   token: string | undefined,
 ): Promise<AuthUser | null> {
-  if (!token || !config.supabaseJwksUrl || !config.supabaseUrl) return null;
+  const identity = await verifySupabaseIdentity(token);
+  if (!identity) return null;
   try {
-    supabaseJwks ??= createRemoteJWKSet(new URL(config.supabaseJwksUrl));
-    const { payload } = await jwtVerify(token, supabaseJwks, {
-      algorithms: ["ES256"],
-      issuer: `${config.supabaseUrl}/auth/v1`,
-      audience: "authenticated",
-    });
-    const identity = identityFromClaims(payload);
-    return identity ? ensureSupabaseUser(identity) : null;
+    return await ensureSupabaseUser(identity);
   } catch (error) {
-    console.warn(
-      "[auth] Supabase access token rejected",
-      error instanceof Error
-        ? (error as Error & { code?: string }).code ?? error.name
-        : "invalid_token",
-    );
+    console.warn("[auth] Supabase user mapping rejected",
+      error instanceof Error ? error.name : "mapping_failed");
     return null;
   }
 }

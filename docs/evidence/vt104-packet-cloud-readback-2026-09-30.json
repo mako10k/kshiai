@@ -1,0 +1,476 @@
+{
+  "observed_at": "2026-09-30T18:22:21+09:00",
+  "scope": "selected cloud metadata read only; not writer drain proof",
+  "service": {
+    "exit": 0,
+    "data": {
+      "metadata": {
+        "generation": 144
+      },
+      "status": {
+        "latestCreatedRevisionName": "kshiai-api-00144-hir",
+        "latestReadyRevisionName": "kshiai-api-00144-hir",
+        "traffic": [
+          {
+            "revisionName": "kshiai-api-00004-qiw",
+            "tag": "release-v0-1-6",
+            "url": "https://release-v0-1-6---kshiai-api-crpgn6evfa-an.a.run.app"
+          },
+          {
+            "revisionName": "kshiai-api-00005-poz",
+            "tag": "release-v0-1-7",
+            "url": "https://release-v0-1-7---kshiai-api-crpgn6evfa-an.a.run.app"
+          },
+          {
+            "revisionName": "kshiai-api-00006-quk",
+            "tag": "release-v0-1-8",
+            "url": "https://release-v0-1-8---kshiai-api-crpgn6evfa-an.a.run.app"
+          },
+          {
+            "revisionName": "kshiai-api-00007-cam",
+            "tag": "release-v0-1-9",
+            "url": "https://release-v0-1-9---kshiai-api-crpgn6evfa-an.a.run.app"
+          },
+          {
+            "revisionName": "kshiai-api-00009-cek",
+            "tag": "release-v0-1-10",
+            "url": "https://release-v0-1-10---kshiai-api-crpgn6evfa-an.a.run.app"
+          },
+          {
+            "revisionName": "kshiai-api-00011-lek",
+            "tag": "release-v0-2-0",
+            "url": "https://release-v0-2-0---kshiai-api-crpgn6evfa-an.a.run.app"
+          },
+          {
+            "revisionName": "kshiai-api-00013-jaj",
+            "tag": "release-v0-3-0",
+            "url": "https://release-v0-3-0---kshiai-api-crpgn6evfa-an.a.run.app"
+          },
+          {
+            "revisionName": "kshiai-api-00015-bem",
+            "tag": "release-v0-4-0",
+            "url": "https://release-v0-4-0---kshiai-api-crpgn6evfa-an.a.run.app"
+          },
+          {
+            "revisionName": "kshiai-api-00017-pas",
+            "tag": "release-v0-5-0",
+            "url": "https://release-v0-5-0---kshiai-api-crpgn6evfa-an.a.run.app"
+          },
+          {
+            "revisionName": "kshiai-api-00019-qiv",
+            "tag": "release-v0-5-1",
+            "url": "https://release-v0-5-1---kshiai-api-crpgn6evfa-an.a.run.app"
+          },
+          {
+            "revisionName": "kshiai-api-00021-sul",
+            "tag": "release-v0-6-0",
+            "url": "https://release-v0-6-0---kshiai-api-crpgn6evfa-an.a.run.app"
+          },
+          {
+            "revisionName": "kshiai-api-00023-qun",
+            "tag": "release-v0-6-1",
+            "url": "https://release-v0-6-1---kshiai-api-crpgn6evfa-an.a.run.app"
+          },
+          {
+            "revisionName": "kshiai-api-00025-lov",
+            "tag": "release-v0-7-0",
+            "url": "https://release-v0-7-0---kshiai-api-crpgn6evfa-an.a.run.app"
+          },
+          {
+            "revisionName": "kshiai-api-00027-bix",
+            "tag": "release-v0-7-1",
+            "url": "https://release-v0-7-1---kshiai-api-crpgn6evfa-an.a.run.app"
+          },
+          {
+            "revisionName": "kshiai-api-00029-gub",
+            "tag": "release-v0-7-2",
+            "url": "https://release-v0-7-2---kshiai-api-crpgn6evfa-an.a.run.app"
+          },
+          {
+            "revisionName": "kshiai-api-00030-fun",
+            "tag": "trial-v0-7-2-off",
+            "url": "https://trial-v0-7-2-off---kshiai-api-crpgn6evfa-an.a.run.app"
+          },
+          {
+            "revisionName": "kshiai-api-00032-giy",
+            "tag": "release-v0-8-0",
+            "url": "https://release-v0-8-0---kshiai-api-crpgn6evfa-an.a.run.app"
+          },
+          {
+            "revisionName": "kshiai-api-00034-wuf",
+            "tag": "release-v0-8-1",
+            "url": "https://release-v0-8-1---kshiai-api-crpgn6evfa-an.a.run.app"
+          },
+          {
+            "revisionName": "kshiai-api-00036-yew",
+            "tag": "release-v0-9-0",
+            "url": "https://release-v0-9-0---kshiai-api-crpgn6evfa-an.a.run.app"
+          },
+          {
+            "revisionName": "kshiai-api-00038-xed",
+            "tag": "release-v0-10-0",
+            "url": "https://release-v0-10-0---kshiai-api-crpgn6evfa-an.a.run.app"
+          },
+          {
+            "revisionName": "kshiai-api-00041-huf",
+            "tag": "release-v0-11-0",
+            "url": "https://release-v0-11-0---kshiai-api-crpgn6evfa-an.a.run.app"
+          },
+          {
+            "revisionName": "kshiai-api-00043-xen",
+            "tag": "release-v0-11-1",
+            "url": "https://release-v0-11-1---kshiai-api-crpgn6evfa-an.a.run.app"
+          },
+          {
+            "revisionName": "kshiai-api-00045-dez",
+            "tag": "release-v0-12-0",
+            "url": "https://release-v0-12-0---kshiai-api-crpgn6evfa-an.a.run.app"
+          },
+          {
+            "revisionName": "kshiai-api-00047-mag",
+            "tag": "release-v0-12-1",
+            "url": "https://release-v0-12-1---kshiai-api-crpgn6evfa-an.a.run.app"
+          },
+          {
+            "revisionName": "kshiai-api-00048-fiw",
+            "tag": "release-v0-12-2",
+            "url": "https://release-v0-12-2---kshiai-api-crpgn6evfa-an.a.run.app"
+          },
+          {
+            "revisionName": "kshiai-api-00050-hef",
+            "tag": "release-v0-13-0",
+            "url": "https://release-v0-13-0---kshiai-api-crpgn6evfa-an.a.run.app"
+          },
+          {
+            "revisionName": "kshiai-api-00052-mof",
+            "tag": "release-v0-13-1",
+            "url": "https://release-v0-13-1---kshiai-api-crpgn6evfa-an.a.run.app"
+          },
+          {
+            "revisionName": "kshiai-api-00054-wil",
+            "tag": "release-v0-13-2",
+            "url": "https://release-v0-13-2---kshiai-api-crpgn6evfa-an.a.run.app"
+          },
+          {
+            "revisionName": "kshiai-api-00056-vuk",
+            "tag": "release-v0-13-3",
+            "url": "https://release-v0-13-3---kshiai-api-crpgn6evfa-an.a.run.app"
+          },
+          {
+            "revisionName": "kshiai-api-00058-der",
+            "tag": "release-v0-13-4",
+            "url": "https://release-v0-13-4---kshiai-api-crpgn6evfa-an.a.run.app"
+          },
+          {
+            "revisionName": "kshiai-api-00060-tid",
+            "tag": "release-v0-13-5",
+            "url": "https://release-v0-13-5---kshiai-api-crpgn6evfa-an.a.run.app"
+          },
+          {
+            "revisionName": "kshiai-api-00062-zub",
+            "tag": "release-v0-13-6",
+            "url": "https://release-v0-13-6---kshiai-api-crpgn6evfa-an.a.run.app"
+          },
+          {
+            "revisionName": "kshiai-api-00064-pin",
+            "tag": "release-v0-13-7",
+            "url": "https://release-v0-13-7---kshiai-api-crpgn6evfa-an.a.run.app"
+          },
+          {
+            "revisionName": "kshiai-api-00066-ded",
+            "tag": "release-v0-14-0",
+            "url": "https://release-v0-14-0---kshiai-api-crpgn6evfa-an.a.run.app"
+          },
+          {
+            "revisionName": "kshiai-api-00068-dej",
+            "tag": "release-v0-14-1",
+            "url": "https://release-v0-14-1---kshiai-api-crpgn6evfa-an.a.run.app"
+          },
+          {
+            "revisionName": "kshiai-api-00070-puh",
+            "tag": "release-v0-14-2",
+            "url": "https://release-v0-14-2---kshiai-api-crpgn6evfa-an.a.run.app"
+          },
+          {
+            "revisionName": "kshiai-api-00071-bep",
+            "tag": "release-v0-14-3",
+            "url": "https://release-v0-14-3---kshiai-api-crpgn6evfa-an.a.run.app"
+          },
+          {
+            "revisionName": "kshiai-api-00072-kaf",
+            "tag": "release-v0-14-4",
+            "url": "https://release-v0-14-4---kshiai-api-crpgn6evfa-an.a.run.app"
+          },
+          {
+            "revisionName": "kshiai-api-00073-web",
+            "tag": "release-v0-14-5",
+            "url": "https://release-v0-14-5---kshiai-api-crpgn6evfa-an.a.run.app"
+          },
+          {
+            "revisionName": "kshiai-api-00074-hik",
+            "tag": "release-v0-14-6",
+            "url": "https://release-v0-14-6---kshiai-api-crpgn6evfa-an.a.run.app"
+          },
+          {
+            "revisionName": "kshiai-api-00075-vij",
+            "tag": "release-v0-14-7",
+            "url": "https://release-v0-14-7---kshiai-api-crpgn6evfa-an.a.run.app"
+          },
+          {
+            "revisionName": "kshiai-api-00076-fal",
+            "tag": "release-v0-14-8",
+            "url": "https://release-v0-14-8---kshiai-api-crpgn6evfa-an.a.run.app"
+          },
+          {
+            "revisionName": "kshiai-api-00078-jip",
+            "tag": "release-v0-15-0",
+            "url": "https://release-v0-15-0---kshiai-api-crpgn6evfa-an.a.run.app"
+          },
+          {
+            "revisionName": "kshiai-api-00080-tah",
+            "tag": "release-v0-16-0",
+            "url": "https://release-v0-16-0---kshiai-api-crpgn6evfa-an.a.run.app"
+          },
+          {
+            "revisionName": "kshiai-api-00082-ceg",
+            "tag": "release-v0-17-0",
+            "url": "https://release-v0-17-0---kshiai-api-crpgn6evfa-an.a.run.app"
+          },
+          {
+            "revisionName": "kshiai-api-00085-juz",
+            "tag": "release-v0-17-1",
+            "url": "https://release-v0-17-1---kshiai-api-crpgn6evfa-an.a.run.app"
+          },
+          {
+            "revisionName": "kshiai-api-00087-vek",
+            "tag": "release-v0-17-2",
+            "url": "https://release-v0-17-2---kshiai-api-crpgn6evfa-an.a.run.app"
+          },
+          {
+            "revisionName": "kshiai-api-00088-guy",
+            "tag": "release-v0-17-3",
+            "url": "https://release-v0-17-3---kshiai-api-crpgn6evfa-an.a.run.app"
+          },
+          {
+            "revisionName": "kshiai-api-00090-luh",
+            "tag": "release-v0-17-4",
+            "url": "https://release-v0-17-4---kshiai-api-crpgn6evfa-an.a.run.app"
+          },
+          {
+            "revisionName": "kshiai-api-00092-nez",
+            "tag": "release-v0-18-0",
+            "url": "https://release-v0-18-0---kshiai-api-crpgn6evfa-an.a.run.app"
+          },
+          {
+            "revisionName": "kshiai-api-00093-pof",
+            "tag": "release-v0-18-1",
+            "url": "https://release-v0-18-1---kshiai-api-crpgn6evfa-an.a.run.app"
+          },
+          {
+            "revisionName": "kshiai-api-00095-yup",
+            "tag": "release-v0-19-0",
+            "url": "https://release-v0-19-0---kshiai-api-crpgn6evfa-an.a.run.app"
+          },
+          {
+            "revisionName": "kshiai-api-00096-bup",
+            "tag": "release-v0-19-1",
+            "url": "https://release-v0-19-1---kshiai-api-crpgn6evfa-an.a.run.app"
+          },
+          {
+            "revisionName": "kshiai-api-00098-zer",
+            "tag": "release-v0-20-0",
+            "url": "https://release-v0-20-0---kshiai-api-crpgn6evfa-an.a.run.app"
+          },
+          {
+            "revisionName": "kshiai-api-00100-yeh",
+            "tag": "release-v0-20-1",
+            "url": "https://release-v0-20-1---kshiai-api-crpgn6evfa-an.a.run.app"
+          },
+          {
+            "revisionName": "kshiai-api-00102-yot",
+            "tag": "release-v0-21-0",
+            "url": "https://release-v0-21-0---kshiai-api-crpgn6evfa-an.a.run.app"
+          },
+          {
+            "revisionName": "kshiai-api-00104-jif",
+            "tag": "release-v0-21-1",
+            "url": "https://release-v0-21-1---kshiai-api-crpgn6evfa-an.a.run.app"
+          },
+          {
+            "revisionName": "kshiai-api-00106-suw",
+            "tag": "release-v0-21-2",
+            "url": "https://release-v0-21-2---kshiai-api-crpgn6evfa-an.a.run.app"
+          },
+          {
+            "revisionName": "kshiai-api-00108-cad",
+            "tag": "release-v0-21-3",
+            "url": "https://release-v0-21-3---kshiai-api-crpgn6evfa-an.a.run.app"
+          },
+          {
+            "revisionName": "kshiai-api-00110-jev",
+            "tag": "release-v0-21-4",
+            "url": "https://release-v0-21-4---kshiai-api-crpgn6evfa-an.a.run.app"
+          },
+          {
+            "revisionName": "kshiai-api-00112-zuk",
+            "tag": "release-v0-21-5",
+            "url": "https://release-v0-21-5---kshiai-api-crpgn6evfa-an.a.run.app"
+          },
+          {
+            "revisionName": "kshiai-api-00114-lel",
+            "tag": "release-v0-21-6",
+            "url": "https://release-v0-21-6---kshiai-api-crpgn6evfa-an.a.run.app"
+          },
+          {
+            "revisionName": "kshiai-api-00116-doz",
+            "tag": "release-v0-21-7",
+            "url": "https://release-v0-21-7---kshiai-api-crpgn6evfa-an.a.run.app"
+          },
+          {
+            "revisionName": "kshiai-api-00118-ziv",
+            "tag": "release-v0-22-0-rc-1",
+            "url": "https://release-v0-22-0-rc-1---kshiai-api-crpgn6evfa-an.a.run.app"
+          },
+          {
+            "revisionName": "kshiai-api-00119-tov",
+            "tag": "release-v0-22-0-rc-2",
+            "url": "https://release-v0-22-0-rc-2---kshiai-api-crpgn6evfa-an.a.run.app"
+          },
+          {
+            "revisionName": "kshiai-api-00120-dog",
+            "tag": "release-v0-22-0-rc-3",
+            "url": "https://release-v0-22-0-rc-3---kshiai-api-crpgn6evfa-an.a.run.app"
+          },
+          {
+            "revisionName": "kshiai-api-00121-cik",
+            "tag": "release-v0-22-0-rc-4",
+            "url": "https://release-v0-22-0-rc-4---kshiai-api-crpgn6evfa-an.a.run.app"
+          },
+          {
+            "revisionName": "kshiai-api-00123-wis",
+            "tag": "release-v0-22-0-rc-5",
+            "url": "https://release-v0-22-0-rc-5---kshiai-api-crpgn6evfa-an.a.run.app"
+          },
+          {
+            "revisionName": "kshiai-api-00125-pac",
+            "tag": "release-v0-22-0-rc-6",
+            "url": "https://release-v0-22-0-rc-6---kshiai-api-crpgn6evfa-an.a.run.app"
+          },
+          {
+            "revisionName": "kshiai-api-00127-son",
+            "tag": "release-v0-22-0-rc-7",
+            "url": "https://release-v0-22-0-rc-7---kshiai-api-crpgn6evfa-an.a.run.app"
+          },
+          {
+            "revisionName": "kshiai-api-00130-gon",
+            "tag": "release-v0-22-0-rc-8",
+            "url": "https://release-v0-22-0-rc-8---kshiai-api-crpgn6evfa-an.a.run.app"
+          },
+          {
+            "revisionName": "kshiai-api-00134-lat",
+            "tag": "stage-34190862914-1",
+            "url": "https://stage-34190862914-1---kshiai-api-crpgn6evfa-an.a.run.app"
+          },
+          {
+            "revisionName": "kshiai-api-00135-fet",
+            "tag": "stage-34192114298-1",
+            "url": "https://stage-34192114298-1---kshiai-api-crpgn6evfa-an.a.run.app"
+          },
+          {
+            "revisionName": "kshiai-api-00136-xov",
+            "tag": "stage-34193720564-1",
+            "url": "https://stage-34193720564-1---kshiai-api-crpgn6evfa-an.a.run.app"
+          },
+          {
+            "revisionName": "kshiai-api-00137-sok",
+            "tag": "stage-34194827062-1",
+            "url": "https://stage-34194827062-1---kshiai-api-crpgn6evfa-an.a.run.app"
+          },
+          {
+            "percent": 100,
+            "revisionName": "kshiai-api-00141-vis",
+            "tag": "stage-34201323064-1",
+            "url": "https://stage-34201323064-1---kshiai-api-crpgn6evfa-an.a.run.app"
+          },
+          {
+            "revisionName": "kshiai-api-00143-suz",
+            "tag": "stage-34828916788-1",
+            "url": "https://stage-34828916788-1---kshiai-api-crpgn6evfa-an.a.run.app"
+          },
+          {
+            "revisionName": "kshiai-api-00144-hir",
+            "tag": "stage-34832214571-1",
+            "url": "https://stage-34832214571-1---kshiai-api-crpgn6evfa-an.a.run.app"
+          }
+        ]
+      }
+    },
+    "failure": null
+  },
+  "queue": {
+    "exit": 0,
+    "data": {
+      "name": "projects/kshiai/locations/asia-northeast1/queues/kshiai-narration",
+      "state": "RUNNING"
+    },
+    "failure": null
+  },
+  "jobs": {
+    "exit": 0,
+    "data": [
+      {
+        "metadata": {
+          "name": "kshiai-auth-smoke"
+        },
+        "status": {
+          "latestCreatedExecution": {
+            "completionStatus": "EXECUTION_FAILED",
+            "completionTimestamp": "2026-09-14T10:22:46.710237Z",
+            "creationTimestamp": "2026-09-14T10:20:37.647809Z",
+            "name": "kshiai-auth-smoke-cd2l6"
+          }
+        }
+      },
+      {
+        "metadata": {
+          "name": "kshiai-migrate"
+        },
+        "status": {
+          "latestCreatedExecution": {
+            "completionStatus": "EXECUTION_SUCCEEDED",
+            "completionTimestamp": "2026-09-14T10:19:00.715338Z",
+            "creationTimestamp": "2026-09-14T10:18:44.993880Z",
+            "name": "kshiai-migrate-qphwp"
+          }
+        }
+      },
+      {
+        "metadata": {
+          "name": "kshiai-persistent-e2e"
+        },
+        "status": {
+          "latestCreatedExecution": {
+            "completionStatus": "EXECUTION_SUCCEEDED",
+            "completionTimestamp": "2026-09-08T09:04:03.033833Z",
+            "creationTimestamp": "2026-09-08T09:01:11.585294Z",
+            "name": "kshiai-persistent-e2e-kckwr"
+          }
+        }
+      },
+      {
+        "metadata": {
+          "name": "kshiai-r2-smoke"
+        },
+        "status": {
+          "latestCreatedExecution": {
+            "completionStatus": "EXECUTION_SUCCEEDED",
+            "completionTimestamp": "2026-09-08T07:57:57.237109Z",
+            "creationTimestamp": "2026-09-08T07:57:36.286675Z",
+            "name": "kshiai-r2-smoke-6n94b"
+          }
+        }
+      }
+    ],
+    "failure": null
+  }
+}

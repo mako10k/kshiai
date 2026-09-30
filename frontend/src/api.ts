@@ -375,7 +375,7 @@ async function currentAccessToken(): Promise<string | undefined> {
 
 export const api = {
   health: () => request<{ ok: boolean; llm: string }>("/api/health"),
-  me: () => request<{ user: UserPublic }>("/api/me"),
+  me: () => request<{ user: UserPublic; reviewConfirmOnly?: boolean }>("/api/me"),
   /** Operator balance metrics (aggregates; no combat effect). */
   balanceSummary: (limit?: number) =>
     request<{

@@ -1,0 +1,10 @@
+domain CLOSEOUT:
+  description "Pause vt104 work and synchronize approved WIP handoff."
+evidence OWNER:
+  "Owner explicitly says going home, interrupt work, create handoff, WIP commit and push, then finish."
+evidence BASELINE:
+  "Current matching task worktree branch codex/cc304-focused-revise is dirty, HEADf58ac2f, fresh origin branch ahead1/behind0. GH_TOKEN secret-only dry-run passes and configured HTTPS helper uses gh auth git-credential. Candidate files271 have no detected forbidden secret paths or scanned key/token patterns. Child check/analyze/next succeed with warnings."
+pending PARTIAL:
+  "Rescope child task/project updates applied, milestone/gate/parent updates not applied because milestone CLI rejected --actor in preview. Historical vt104 planned_value requires preserving1p; rejected estimate mutation made no task change. New ADR0042 remains Proposed; cloud/DB/workflow untouched."
+decision HANDOFF based_on OWNER, BASELINE, PARTIAL:
+  "Document exact completed and remaining work, source/test bounds and next authorized checkpoint. Stage matching task WIP code/docs/SealGraph without secrets; inspect staged diff; commit honest WIP and push current branch through secdat. Independently compare remote tip to local HEAD, verify clean status. No merge/deploy/task completion or shared workday mutation."

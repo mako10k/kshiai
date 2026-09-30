@@ -1,0 +1,15 @@
+{
+  "scope": "isolated PG17 full disposable-schema runtime adapter; trial admission fixture only",
+  "database": "vt104_stage_smoke_4161633",
+  "schema": "kshiai_smoke_vt104_exact",
+  "exit": 0,
+  "output": "{\"schema\":\"kshiai_smoke_vt104_exact\",\"scriptDigest\":\"c56d7c5d19940deddf58c5075396c35e390b28ea8317d7238a3a96ce4d75c108\",\"migrationsDigest\":\"48546c8d8a6fc7bea876d799932586a0bea29df19f55ee2eb31a0f861ea42dfc\",\"executionDigest\":\"11010ce59e6b8f824a36bfbe8ae09f1007f57e1e2fe85265b560a9974268ca56\",\"receiptDigest\":\"d6018c95a9745eff507b6054ddc26c1e0fd51e4aeff30ee8b85a1b2e6063594e\"}\n",
+  "permits": [
+    {
+      "binding_operation_id": "stage-smoke:pg17-full-runtime:postgres",
+      "state": "settled",
+      "result_digest": "d6018c95a9745eff507b6054ddc26c1e0fd51e4aeff30ee8b85a1b2e6063594e"
+    }
+  ],
+  "residualSchema": []
+}

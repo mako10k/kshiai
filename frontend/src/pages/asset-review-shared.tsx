@@ -1,3 +1,4 @@
+// R: Render shared candidate review content and permitted review actions.
 import type { FormEvent, ReactNode } from "react";
 import { Link } from "react-router-dom";
 import type { AssetAuthoringProgress } from "@kshiai/shared";
@@ -121,7 +122,7 @@ export function ReviewCandidatePanel(props: {
   confirmLabel: string;
   busy: boolean;
   onConfirm: () => void;
-  onDiscard: () => void;
+  onDiscard?: () => void;
   children: ReactNode;
 }) {
   return (
@@ -143,16 +144,16 @@ export function ReviewActions(props: {
   confirmLabel: string;
   busy: boolean;
   onConfirm: () => void;
-  onDiscard: () => void;
+  onDiscard?: () => void;
 }) {
   return (
     <div className="row" style={{ marginTop: "0.75rem" }}>
       <button className="btn primary" type="button" disabled={props.busy} onClick={props.onConfirm}>
         {props.confirmLabel}
       </button>
-      <button className="btn ghost danger" type="button" disabled={props.busy} onClick={props.onDiscard}>
+      {props.onDiscard ? <button className="btn ghost danger" type="button" disabled={props.busy} onClick={props.onDiscard}>
         破棄
-      </button>
+      </button> : null}
     </div>
   );
 }

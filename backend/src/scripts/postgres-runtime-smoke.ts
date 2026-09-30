@@ -1,3 +1,4 @@
+// R: Verify PostgreSQL runtime repositories in one disposable schema and remove that schema.
 import fs from "node:fs";
 import { fileURLToPath } from "node:url";
 import { Client } from "pg";
@@ -109,8 +110,8 @@ async function main(): Promise<void> {
   assertProjectTarget(directUrl, projectRef);
   assertProjectTarget(runtimeUrl, projectRef);
 
-  const schema = `kshiai_smoke_${process.pid}_${Date.now()}`;
-  if (!/^kshiai_smoke_[0-9_]+$/.test(schema)) {
+  const schema = process.env.STAGE_SMOKE_FIXED_SCHEMA?.trim() || `kshiai_smoke_${process.pid}_${Date.now()}`;
+  if (!/^kshiai_smoke_[a-z0-9_]{1,40}$/.test(schema)) {
     throw new Error("Unsafe smoke schema name");
   }
   const quotedSchema = `"${schema}"`;
@@ -118,8 +119,25 @@ async function main(): Promise<void> {
   await administrator.connect();
 
   let closeDatabase: (() => Promise<void>) | undefined;
+  let createdSchema = false;
   try {
+    if (process.env.CUTOVER_ID || process.env.CUTOVER_ARTIFACT_ID) {
+      const ledgerSchema = process.env.STAGE_SMOKE_LEDGER_SCHEMA?.trim() || "public";
+      if (!/^[a-z_][a-z0-9_]{0,62}$/.test(ledgerSchema)) throw new Error("Unsafe ledger schema");
+      requireEnvironment("STAGE_SMOKE_FIXED_SCHEMA");
+      const permitted = await administrator.query(
+        `SELECT p.permit_id FROM "${ledgerSchema}".cutover_operation_permits p
+         JOIN "${ledgerSchema}".cutover_control_active c ON c.cutover_id=p.cutover_id
+         WHERE p.cutover_id=$1 AND c.artifact_id=$2 AND p.binding_operation_id=$3
+           AND p.request_digest=$4 AND p.state='sending'
+           AND p.background_kind='stage-smoke:postgres' AND p.operation_kind='background'`,
+        [requireEnvironment("CUTOVER_ID"), requireEnvironment("CUTOVER_ARTIFACT_ID"),
+          requireEnvironment("STAGE_SMOKE_PARENT_BINDING"), requireEnvironment("STAGE_SMOKE_PARENT_DIGEST")],
+      );
+      if (permitted.rows.length !== 1) throw new Error("Exact sending parent smoke permit required");
+    }
     await administrator.query(`CREATE SCHEMA ${quotedSchema}`);
+    createdSchema = true;
     await administrator.query(`SET search_path TO ${quotedSchema}, pg_catalog`);
     await administrator.query(`
       CREATE TABLE ${quotedSchema}.kshiai_schema_migrations (
@@ -231,7 +249,7 @@ async function main(): Promise<void> {
     console.log("PostgreSQL runtime smoke passed");
   } finally {
     if (closeDatabase) await closeDatabase().catch(() => undefined);
-    await administrator.query(`DROP SCHEMA IF EXISTS ${quotedSchema} CASCADE`);
+    if (createdSchema) await administrator.query(`DROP SCHEMA ${quotedSchema} CASCADE`);
     await administrator.end();
   }
 }

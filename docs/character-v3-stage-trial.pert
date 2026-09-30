@@ -2,7 +2,7 @@
 project V3_STAGE_TRIAL:
   version 5
   title "First two-character V3 Stage battle trial"
-  description "Scope: docs/character-semantic-migration-plan-revision-13.md. vt109/vt102/vt110/vt103 complete locally. Velocity25p/17h is one vt103 elapsed sample, not person effort. vt104 prepared candidate0.23.0 and original Neva/Rio; owner selected shared production stopped-cutover proposal upper30min. No execution approval. Controls/restore rehearsal, measured feasibility, content selection and exact release approval pending. Evidence: docs/evidence/vt104-release-candidate-review-2026-09-30.md."
+  description "Current owner policy: unreleased production/Stage shared environment; first Google-owner V3 game use. Requirements v3 supersede first-trial legacy compatibility/history preservation, email and backup/restore gates. Preserve new V3 correctness and owner authentication. vt104 minimal deployment/detail candidate -> vt105 deployment -> vt106 authoring and vt108 old unfinished disposal -> vt107 observed game. Remaining internal estimates vt1040.5-1.5h, Stage1.75-5h low; external waits separate. Actual local tests retained without claiming Stage pass. Existing measured velocity25p/17h is one declared elapsed sample, not person effort. docs/character-v3-battle-cutover-requirements-v3.md; owner unreleased shared-environment policy and plan correction 2026-09-30; docs/evidence/vt104-unreleased-trial-rescope-2026-09-30.md"
   as_of 2026-09-29
   duration_unit point
   velocity 25p/17h
@@ -92,48 +92,57 @@ task vt103 VST_WIRED -> VST_LOCAL_BATTLE:
   source "Owner decision: try V3 characters in a real Stage battle; local integration prerequisite"
 
 task vt104 VST_LOCAL_BATTLE -> VST_RELEASE:
-  title "Review and identify the exact trial release candidate"
-  description "Review the local trial evidence, freeze an exact code and character revision identity, and obtain the separate approval needed for any merge or release write. Record the selected revision and remaining risks. Plan inclusion does not authorize push, merge, or release."
+  title "Prepare the minimal unreleased V3 trial candidate"
+  description "Freeze current source and exact Neva/Rio candidates; detail the smallest workflow/control integration for Google ownership and V3 play. Remove email, snapshot/restore and legacy history compatibility prerequisites. Reuse verified local code. No requirement for public production promotion or backup resource creation; concrete implementation and external execution remain separately scoped."
   duration 1p
   status suspended
   requires:
-    OWNER 1
-  source "Owner requested vt104; selected shared-production stopped cutover preparation with upper30-minute proposal. Evidence: docs/evidence/vt104-release-candidate-review-2026-09-30.md and vt104-shared-production-cutover-proposal-2026-09-30.md. Exact candidate/content approval, controls/restore proof and release authority remain pending."
+    DEV 1
+  source "docs/character-v3-battle-cutover-requirements-v3.md; owner unreleased shared-environment policy and plan correction 2026-09-30; docs/evidence/vt104-unreleased-trial-rescope-2026-09-30.md"
 
 task vt105 VST_RELEASE -> VST_STAGE_DEPLOYED:
-  title "Deploy the authorized trial candidate to Stage and read it back"
-  description "Under separate deployment authority, apply the exact reviewed release to Stage and read back identity and service health. The release procedure fixes the control that coordinates V3-only creation availability with vt108 physical deletion at one cutover point, including ordering, concurrency, interruption budget and recovery before any Stage write."
-  duration 1p
+  title "Deploy the V3 candidate to the unreleased shared environment"
+  description "Deploy the exact authorized trial candidate and read back source/image/revision, startup/DB and actual Google/ownership routes. Use required runtime schema only. Determine old writer/queue coordination from new battle correctness, without legacy availability, snapshot restore or production-promotion proof as trial acceptance."
+  estimate:
+    optimistic 0.5p
+    most_likely 1p
+    pessimistic 2p
   requires:
     DEV 1
-  source "Owner Stage-trial decision; separate Stage deployment authority"
+  source "docs/character-v3-battle-cutover-requirements-v3.md; owner unreleased shared-environment policy and plan correction 2026-09-30; docs/evidence/vt104-unreleased-trial-rescope-2026-09-30.md"
 
 task vt106 VST_STAGE_DEPLOYED -> VST_STAGE_READY:
-  title "Register and activate both V3 characters in Stage"
-  description "After separate Stage-data authorization, register and activate exact immutable revisions for Neva and Rio, verify both selectable, and read back IDs and revisions. No V2 migration or existing-character rewrite."
-  duration 1p
+  title "Confirm and activate Neva and Rio for Google owner"
+  description "Use Google owner ordinary review/confirm to append/activate the exact two immutable V3 generations and read back ownership and selection. Existing V2 characters are outside first-trial migration. Exact external owner/data action scope is retained."
+  estimate:
+    optimistic 0.25p
+    most_likely 0.5p
+    pessimistic 1p
   requires:
     DEV 1
-  source "Owner decision: two new V3 characters for first Stage trial; Stage data write boundary"
+  source "docs/character-v3-battle-cutover-requirements-v3.md; owner unreleased shared-environment policy and plan correction 2026-09-30; docs/evidence/vt104-unreleased-trial-rescope-2026-09-30.md"
 
 task vt107 VST_STAGE_READY -> VST_PLAYED:
-  title "Try and observe one real V3-versus-V3 Stage battle"
-  description "Owner plays Neva against Rio through the Stage user path after vt108 cutover and vt106 activation. Record exact battle and character revision IDs and observed result; read back that finished historical battles remain readable and old unfinished battles have been discarded. Observed use completes this first-trial outcome."
-  duration 1p
+  title "Observe Google owner complete one V3 battle"
+  description "Owner logs in with Google, selects own Neva and Rio, creates/advances/reloads a real V3 battle and observes result. Record battle/generation/deployment IDs. Legacy finished-history readability, email and backup/restore are outside this initial acceptance."
+  estimate:
+    optimistic 0.25p
+    most_likely 0.5p
+    pessimistic 1p
   requires:
     OWNER 1
-  source "Owner accepted goal: try V3 characters in Stage practice"
+  source "docs/character-v3-battle-cutover-requirements-v3.md; owner unreleased shared-environment policy and plan correction 2026-09-30; docs/evidence/vt104-unreleased-trial-rescope-2026-09-30.md"
 
 task vt108 VST_STAGE_DEPLOYED -> VST_CUTOVER:
-  title "Discard pre-cutover unfinished Stage battles"
-  description "After separate Stage-data authority and reviewed cutover ordering, inventory pre-cutover unfinished battles and related rows, freeze exact targets and recovery evidence, physically delete targets with idempotency and worker replay invalidation at one cutover point, and read back all affected surfaces. Record the point at which V3-only creation becomes available. Finished battles and character generations remain intact. The 1/2/4p range is an expert provisional estimate pending Stage inventory; external authorization wait is separate."
+  title "Dispose of old unfinished battles for the V3 trial"
+  description "Retain the already chosen pre-cutover unfinished disposal target. Inventory exact affected rows and old writers; execute only authorized deletion and independently read back target removal and V3-only availability. Backup, restore R and finished-history compatibility are not blockers. No blanket DB/user/history reset is authorized."
   estimate:
-    optimistic 1p
-    most_likely 2p
-    pessimistic 4p
+    optimistic 0.25p
+    most_likely 0.5p
+    pessimistic 1p
   requires:
     DEV 1
-  source "Owner physical-deletion decision; docs/character-v3-battle-cutover-requirements-v2.md and ADR-0039 candidate; Stage inventory and exact execution authority belong to release preparation."
+  source "docs/character-v3-battle-cutover-requirements-v3.md; owner unreleased shared-environment policy and plan correction 2026-09-30; docs/evidence/vt104-unreleased-trial-rescope-2026-09-30.md"
 
 task vt109 VST_LOCAL_FIXTURE -> VST_CURRENT:
   title "Complete V3 candidate review, confirmation and activation"
@@ -300,3 +309,68 @@ work_event vt104-preparation-suspend-20260930:
   kind suspend
   occurred_at 2026-09-30T14:59:43+09:00
   reason "Preparation review packet frozen; pending exact candidate/content review, stopped controls and recovery proof, separate release authority. No cloud/data writes or task completion."
+
+work_event vt104-rehearsal-resume-20260930:
+  model 1
+  task vt104
+  kind resume
+  occurred_at 2026-09-30T15:12:47+09:00
+
+work_event vt104-control-review-suspend-20260930:
+  model 1
+  task vt104
+  kind suspend
+  occurred_at 2026-09-30T15:40:25+09:00
+  reason "PG17 synthetic rehearsal observed successful; Proposed ADR0040/detail candidate submitted for owner decision. New control implementation awaits Accepted direction. No cloud/data/remote writes."
+
+work_event vt104-control-implementation-resume-20260930:
+  model 1
+  task vt104
+  kind resume
+  occurred_at 2026-09-30T15:44:57+09:00
+
+work_event vt104-control-local-suspend-20260930:
+  model 1
+  task vt104
+  kind suspend
+  occurred_at 2026-09-30T18:06:50+09:00
+  reason "Accepted control local implementation and isolated verification complete; recovery release content owner inputs remain pending; no external actions."
+
+work_event vt104-execution-packet-resume-20260930:
+  model 1
+  task vt104
+  kind resume
+  occurred_at 2026-09-30T18:22:19+09:00
+
+work_event vt104-execution-packet-suspend-20260930:
+  model 1
+  task vt104
+  kind suspend
+  occurred_at 2026-09-30T18:32:12+09:00
+  reason "Prepared concrete non-executable packet, exact owner/content/cloud readbacks and smoke closure findings; storage real recovery release artifacts and adapter acceptance path remain unresolved; no external writes."
+
+work_event vt104-smoke-local-resume-20260930:
+  model 1
+  task vt104
+  kind resume
+  occurred_at 2026-09-30T18:44:04+09:00
+
+work_event vt104-smoke-and-key-preparation-suspend-20260930:
+  model 1
+  task vt104
+  kind suspend
+  occurred_at 2026-09-30T20:29:13+09:00
+  reason "Local bounded Stage adapters and source-bound verification complete, owner-selected ADR0041 policy and synthetic age/key procedure prepared. Await exact owner key primary/backup and existing email account; workflow integration and real recovery/artifact packet remain. vt104 not complete; no production/GitHub writes."
+
+work_event vt104-owner-key-registration-resume-20260930:
+  model 1
+  task vt104
+  kind resume
+  occurred_at 2026-09-30T20:32:35+09:00
+
+work_event vt104-owner-key-registration-suspend-20260930:
+  model 1
+  task vt104
+  kind suspend
+  occurred_at 2026-09-30T20:41:32+09:00
+  reason "Owner-authorized secdat key registration and public/roundtrip readback complete. Pending existing-email input and actual recovery/artifact/workflow packet; vt104 incomplete, no production/GitHub writes."

@@ -90,3 +90,7 @@ current check.
 | [0037](0037-append-only-narration-fragments.md) | Rejected | Historical unaccepted Fragment proposal replaced by the broader 0038 candidate |
 | [0038](0038-narration-fragment-commit-and-result-reveal.md) | Proposed | Reveal results after Fragment commit or confirmed Narration error; timebox old-history migration to 30 minutes |
 | [0039](0039-v3-battle-lifecycle-and-cutover.md) | Accepted | Bind new V3-only battles; centralize lifecycle, separate insert/update, physically discard old unfinished battles with minimal ID receipts |
+| [0040](0040-shared-cutover-runtime-control.md) | Accepted | Keep exact release revision through durable cutover control; bounded owner trial and forward recovery after first V3 creation |
+| [0041](0041-cutover-snapshot-protection.md) | Accepted | Protect shared-cutover snapshots with owner public-key encryption, dedicated Tokyo GCS, 30-day minimum retention and 7-day soft delete |
+
+| [0042](0042-unreleased-v3-trial-scope.md) | Proposed | Owner-confirmed unreleased-trial policy; concrete workflow/control integration candidate |

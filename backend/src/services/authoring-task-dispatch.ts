@@ -1,4 +1,5 @@
-import { createHash } from "node:crypto";
+// R: Admit and deliver asset-authoring outbox work to the configured task queue.
+import { createHash, randomUUID } from "node:crypto";
 import { createRemoteJWKSet, jwtVerify } from "jose";
 import { config } from "../config.js";
 import {
@@ -6,6 +7,10 @@ import {
   recoverStaleAuthoringOutbox,
   type AuthoringOutboxDelivery,
 } from "../repositories/family-authoring-jobs.js";
+import {
+  cutoverAllowsGeneralWork,
+  runCutoverBackgroundOperation,
+} from "./cutover-admission.js";
 
 const googleJwks = createRemoteJWKSet(
   new URL("https://www.googleapis.com/oauth2/v3/certs"),
@@ -28,7 +33,7 @@ async function metadataAccessToken(fetchImpl: Fetch): Promise<string> {
   return body.access_token;
 }
 
-export async function enqueueAuthoringTask(
+async function enqueueAuthoringTaskRaw(
   delivery: AuthoringOutboxDelivery,
   fetchImpl: Fetch = fetch,
 ): Promise<void> {
@@ -69,13 +74,33 @@ export async function enqueueAuthoringTask(
   }
 }
 
+export async function enqueueAuthoringTask(
+  delivery: AuthoringOutboxDelivery,
+  fetchImpl: Fetch = fetch,
+): Promise<void> {
+  return runCutoverBackgroundOperation({
+    operationId:
+      `authoring-enqueue:${delivery.outboxId}:${delivery.deliveryGeneration}`,
+    kind: "authoring-dispatch",
+  }, () => enqueueAuthoringTaskRaw(delivery, fetchImpl));
+}
+
 export async function dispatchPendingAuthoringTasks(limit = 20): Promise<{
   delivered: number;
   failed: number;
 }> {
   if (!config.authoringTaskQueue.configured) return { delivered: 0, failed: 0 };
-  await recoverStaleAuthoringOutbox();
-  return dispatchAuthoringOutbox((delivery) => enqueueAuthoringTask(delivery), limit);
+  if (!await cutoverAllowsGeneralWork()) return { delivered: 0, failed: 0 };
+  return runCutoverBackgroundOperation({
+    operationId: `authoring-dispatch:${randomUUID()}`,
+    kind: "authoring-dispatch",
+  }, async () => {
+    await recoverStaleAuthoringOutbox();
+    return dispatchAuthoringOutbox(
+      (delivery) => enqueueAuthoringTaskRaw(delivery),
+      limit,
+    );
+  });
 }
 
 export async function verifyAuthoringTaskAuthorization(

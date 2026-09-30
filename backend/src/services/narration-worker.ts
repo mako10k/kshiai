@@ -21,6 +21,10 @@ import {
   isProviderOperationAccountingError,
   withBattleProviderOperationContext,
 } from "../llm/provider-accounting.js";
+import {
+  cutoverNarrationBattleIds,
+  runCutoverBackgroundOperation,
+} from "./cutover-admission.js";
 
 export const NARRATION_WORKER_MAX_ATTEMPTS = 2;
 export const NARRATION_TOTAL_HTTP_ATTEMPTS = 4;
@@ -384,7 +388,7 @@ function deterministicFallback(entry: EntryRow): NarrativeBlock {
   };
 }
 
-export async function processNextNarration(input: {
+type ProcessNarrationInput = {
   battleId: string;
   receiptId?: string;
   outboxId?: string;
@@ -393,7 +397,19 @@ export async function processNextNarration(input: {
   generator: NarrationGenerator;
   now?: Date;
   leaseMs?: number;
-}): Promise<"idle" | "acknowledged" | "deferred" | "completed" | "retry_queued" | "failed"> {
+};
+
+type NarrationWorkerResult =
+  | "idle"
+  | "acknowledged"
+  | "deferred"
+  | "completed"
+  | "retry_queued"
+  | "failed";
+
+async function processNextNarrationCore(
+  input: ProcessNarrationInput,
+): Promise<NarrationWorkerResult> {
   const existingBattle = await query("SELECT 1 FROM battles WHERE id = $1", [input.battleId]);
   if (existingBattle.rowCount === 0) return "acknowledged";
   const nowDate = input.now ?? new Date();
@@ -796,6 +812,19 @@ export async function processNextNarration(input: {
   });
 }
 
+export async function processNextNarration(
+  input: ProcessNarrationInput,
+): Promise<NarrationWorkerResult> {
+  const operationId = input.outboxId && input.deliveryGeneration !== undefined
+    ? `narration-worker:${input.outboxId}:${input.deliveryGeneration}`
+    : `narration-worker:${newId("operation")}`;
+  return runCutoverBackgroundOperation({
+    operationId,
+    kind: "narration-worker",
+    battleId: input.battleId,
+  }, () => processNextNarrationCore(input));
+}
+
 export type NarrationOutboxDelivery = {
   outboxId: string;
   battleId: string;
@@ -806,14 +835,22 @@ export type NarrationOutboxDelivery = {
 export async function recoverStaleNarrationOutbox(
   now = new Date(),
   staleMs = 5 * 60 * 1000,
+  battleIds?: readonly string[],
 ): Promise<number> {
+  if (battleIds?.length === 0) return 0;
   const cutoff = new Date(now.getTime() - Math.max(60_000, staleMs)).toISOString();
+  const battleFilter = battleIds
+    ? `AND battle_narration_outbox.battle_id IN (${battleIds.map(
+      (_, index) => `$${index + 3}`,
+    ).join(", ")})`
+    : "";
   const recovered = await query(
     `UPDATE battle_narration_outbox
         SET status = 'pending', dispatched_at = NULL,
             delivery_generation = delivery_generation + 1
       WHERE status = 'dispatched'
         AND dispatched_at <= $1
+        ${battleFilter}
         AND EXISTS (
           SELECT 1
             FROM battle_narration_entries entry
@@ -834,7 +871,7 @@ export async function recoverStaleNarrationOutbox(
                ))
              )
         )`,
-    [cutoff, now.toISOString()],
+    [cutoff, now.toISOString(), ...(battleIds ?? [])],
   );
   return recovered.rowCount;
 }
@@ -842,7 +879,15 @@ export async function recoverStaleNarrationOutbox(
 export async function dispatchNarrationOutbox(
   dispatcher: (delivery: NarrationOutboxDelivery) => Promise<void>,
   limit = 20,
+  battleIds?: readonly string[],
 ): Promise<{ delivered: number; failed: number }> {
+  if (battleIds?.length === 0) return { delivered: 0, failed: 0 };
+  const battleFilter = battleIds
+    ? `AND outbox.battle_id IN (${battleIds.map(
+      (_, index) => `$${index + 1}`,
+    ).join(", ")})`
+    : "";
+  const limitParameter = (battleIds?.length ?? 0) + 1;
   const pending = await query<{
     outbox_id: string;
     battle_id: string;
@@ -856,6 +901,7 @@ export async function dispatchNarrationOutbox(
          ON entry.battle_id = outbox.battle_id
         AND entry.receipt_id = outbox.receipt_id
       WHERE outbox.status = 'pending'
+        ${battleFilter}
         AND entry.status IN ('queued', 'generating')
         AND NOT EXISTS (
           SELECT 1 FROM battle_narration_entries earlier
@@ -864,8 +910,8 @@ export async function dispatchNarrationOutbox(
              AND earlier.status IN ('queued', 'generating')
         )
       ORDER BY outbox.created_at, outbox.outbox_id
-      LIMIT $1`,
-    [Math.max(1, Math.min(100, Math.trunc(limit)))],
+      LIMIT $${limitParameter}`,
+    [...(battleIds ?? []), Math.max(1, Math.min(100, Math.trunc(limit)))],
   );
   let delivered = 0;
   let failed = 0;
@@ -897,11 +943,20 @@ export async function dispatchNarrationOutbox(
   return { delivered, failed };
 }
 
-export async function nextNarrationBattleId(): Promise<string | null> {
+export async function nextNarrationBattleId(
+  battleIds?: readonly string[],
+): Promise<string | null> {
+  if (battleIds?.length === 0) return null;
+  const battleFilter = battleIds
+    ? `AND entry.battle_id IN (${battleIds.map(
+      (_, index) => `$${index + 1}`,
+    ).join(", ")})`
+    : "";
   const result = await query<{ battle_id: string }>(
     `SELECT battle_id
        FROM battle_narration_entries entry
       WHERE status IN ('queued', 'generating')
+        ${battleFilter}
         AND NOT EXISTS (
           SELECT 1 FROM battle_narration_entries earlier
            WHERE earlier.battle_id = entry.battle_id
@@ -910,6 +965,7 @@ export async function nextNarrationBattleId(): Promise<string | null> {
         )
       ORDER BY updated_at, battle_id
       LIMIT 1`,
+    battleIds ? [...battleIds] : [],
   );
   return result.rows[0]?.battle_id ?? null;
 }
@@ -919,7 +975,8 @@ export async function processNextNarrationAcrossBattles(input: {
   generator: NarrationGenerator;
   leaseMs?: number;
 }): Promise<"idle" | "acknowledged" | "deferred" | "completed" | "retry_queued" | "failed"> {
-  const battleId = await nextNarrationBattleId();
+  const allowedBattleIds = await cutoverNarrationBattleIds();
+  const battleId = await nextNarrationBattleId(allowedBattleIds ?? undefined);
   if (!battleId) return "idle";
   return withBattleProviderOperationContext(
     battleId,

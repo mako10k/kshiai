@@ -1,3 +1,4 @@
+// R: Fence, meter, and persist each physical external-provider attempt.
 import { AsyncLocalStorage } from "node:async_hooks";
 import { isDeepStrictEqual } from "node:util";
 import { query, withTransaction } from "../db.js";
@@ -6,6 +7,14 @@ import {
   providerOperationLayer,
   type ProviderOperationLayer,
 } from "./provider-operation-taxonomy.js";
+import {
+  assertCutoverProviderBattle,
+  beginCutoverOperation,
+  currentCutoverBattleId,
+  currentCutoverControl,
+  cutoverRequestDigest,
+  CutoverUnavailableError,
+} from "../services/cutover-admission.js";
 
 export const OBSERVATION_RUN_HEADER = "X-Kshiai-Observation-Run-Id";
 
@@ -42,6 +51,17 @@ function providerErrorClass(error: unknown): string {
   return (parts.join(":") || "ProviderError").slice(0, 80);
 }
 
+function hasProviderResponse(error: unknown): boolean {
+  let candidate = error;
+  for (let depth = 0; depth < 4 && candidate && typeof candidate === "object"; depth += 1) {
+    const record = candidate as Record<string, unknown>;
+    if (typeof record.status === "number" && Number.isInteger(record.status) &&
+        record.status >= 100 && record.status <= 599) return true;
+    candidate = record.cause;
+  }
+  return false;
+}
+
 export function parseObservationRunId(value: string | undefined): string | null {
   const runId = value?.trim();
   if (!runId) return null;
@@ -49,6 +69,7 @@ export function parseObservationRunId(value: string | undefined): string | null 
 }
 
 export function isProviderOperationAccountingError(error: unknown): boolean {
+  if (error instanceof CutoverUnavailableError) return true;
   const message = error instanceof Error ? error.message : "";
   return /^(?:PROVIDER_(?:OPERATION|ATTEMPT)_|OBSERVATION_RUN_)/.test(message);
 }
@@ -266,7 +287,12 @@ async function completeProviderOperationAttempt(input: {
   estimatedCostUsd: number | null;
   elapsedMs: number;
   errorClass: string | null;
-}): Promise<void> {
+}): Promise<{
+  status: "succeeded" | "failed";
+  tokenCount: number | null;
+  estimatedCostUsd: number | null;
+  errorClass: string | null;
+}> {
   const updated = await query(
     `UPDATE provider_operation_attempts
         SET status = $4, token_count = $5, estimated_cost_usd = $6,
@@ -278,6 +304,36 @@ async function completeProviderOperationAttempt(input: {
       input.errorClass?.slice(0, 80) ?? null, new Date().toISOString()],
   );
   if (updated.rowCount !== 1) throw new Error("PROVIDER_ATTEMPT_COMPLETION_CONFLICT");
+  const readback = await query<{
+    status: string;
+    token_count: number | null;
+    estimated_cost_usd: number | null;
+    error_class: string | null;
+  }>(
+    `SELECT status, token_count, estimated_cost_usd, error_class
+       FROM provider_operation_attempts
+      WHERE run_id = $1 AND logical_call_id = $2 AND attempt_ordinal = $3`,
+    [input.context.runId, input.logicalCallId, input.attemptOrdinal],
+  );
+  const row = readback.rows[0];
+  const tokenCount = row?.token_count === null || row?.token_count === undefined
+    ? null
+    : Number(row.token_count);
+  const estimatedCostUsd = row?.estimated_cost_usd === null ||
+      row?.estimated_cost_usd === undefined
+    ? null
+    : Number(row.estimated_cost_usd);
+  if (!row || row.status !== input.status || tokenCount !== input.tokenCount ||
+      estimatedCostUsd !== input.estimatedCostUsd ||
+      row.error_class !== (input.errorClass?.slice(0, 80) ?? null)) {
+    throw new Error("PROVIDER_ATTEMPT_COMPLETION_READBACK_MISMATCH");
+  }
+  return {
+    status: input.status,
+    tokenCount,
+    estimatedCostUsd,
+    errorClass: row.error_class,
+  };
 }
 
 export async function executeProviderOperationAttempt<T>(input: {
@@ -293,17 +349,56 @@ export async function executeProviderOperationAttempt<T>(input: {
   };
 }): Promise<T> {
   const context = currentProviderOperationContext();
-  if (context) {
-    const reservation = await reserveProviderOperationAttempt({
-      context,
-      logicalCallId: input.logicalCallId,
-      attemptOrdinal: input.attemptOrdinal,
-      operation: input.operation,
-      provider: input.provider,
-      model: input.model,
-    });
-    if (!reservation.reserved) throw new Error("PROVIDER_ATTEMPT_ALREADY_RECORDED");
+  const control = await currentCutoverControl();
+  const battleId = context?.battleId ?? currentCutoverBattleId();
+  const requestDigest = cutoverRequestDigest({
+    operation: input.operation,
+    provider: input.provider,
+    model: input.model,
+    battleId,
+  });
+  let bindingOperationId =
+    `provider:${context?.runId ?? "unbound"}:${input.logicalCallId}:${input.attemptOrdinal}`;
+  if (control?.phase === "trial") {
+    if (!battleId) throw new CutoverUnavailableError();
+    const binding = control.policy.trialBindings?.requests.find((request) =>
+      request.kind === "provider" && request.method === "PROVIDER" &&
+      request.path === input.operation && request.requestDigest === requestDigest &&
+      request.battleId === battleId
+    );
+    if (!binding) throw new CutoverUnavailableError();
+    await assertCutoverProviderBattle(control, battleId);
+    bindingOperationId = binding.bindingOperationId;
   }
+  const cutover = await beginCutoverOperation({
+    bindingOperationId,
+    kind: "provider",
+    actorId: control?.phase === "trial" ? control.policy.ownerUserId : "runtime",
+    requestDigest,
+    method: "PROVIDER",
+    path: input.operation,
+    ...(battleId ? { battleId } : {}),
+  });
+  try {
+    if (context) {
+      const reservation = await reserveProviderOperationAttempt({
+        context,
+        logicalCallId: input.logicalCallId,
+        attemptOrdinal: input.attemptOrdinal,
+        operation: input.operation,
+        provider: input.provider,
+        model: input.model,
+      });
+      if (!reservation.reserved) throw new Error("PROVIDER_ATTEMPT_ALREADY_RECORDED");
+    }
+  } catch (error) {
+    await cutover.finish("settled", cutoverRequestDigest({
+      outcome: "rejected-before-provider-send",
+      errorClass: providerErrorClass(error),
+    }));
+    throw error;
+  }
+
   const capture = attemptCapture.getStore();
   if (capture) capture.httpAttempts += 1;
   const started = Date.now();
@@ -311,33 +406,74 @@ export async function executeProviderOperationAttempt<T>(input: {
   try {
     value = await input.action();
   } catch (error) {
-    if (context) {
-      await completeProviderOperationAttempt({
+    const errorClass = providerErrorClass(error);
+    if (!hasProviderResponse(error)) {
+      try {
+        if (context) {
+          await completeProviderOperationAttempt({
+            context,
+            logicalCallId: input.logicalCallId,
+            attemptOrdinal: input.attemptOrdinal,
+            status: "failed",
+            tokenCount: null,
+            estimatedCostUsd: null,
+            elapsedMs: Math.max(0, Date.now() - started),
+            errorClass,
+          });
+        }
+      } catch (accountingError) {
+        await cutover.finish("indeterminate");
+        throw accountingError;
+      }
+      await cutover.finish("indeterminate");
+      throw error;
+    }
+    const pendingDigest = cutoverRequestDigest({
+      outcome: "provider-response-failure",
+      operation: input.operation,
+      errorClass,
+    });
+    await cutover.markAccountingPending(pendingDigest);
+    const receipt = context
+      ? await completeProviderOperationAttempt({
+          context,
+          logicalCallId: input.logicalCallId,
+          attemptOrdinal: input.attemptOrdinal,
+          status: "failed",
+          tokenCount: null,
+          estimatedCostUsd: null,
+          elapsedMs: Math.max(0, Date.now() - started),
+          errorClass,
+        })
+      : { status: "failed" as const, tokenCount: null, estimatedCostUsd: null, errorClass };
+    await cutover.finish("settled", cutoverRequestDigest(receipt));
+    throw error;
+  }
+
+  const usage = input.usage?.(value) ?? {};
+  const pendingDigest = cutoverRequestDigest({
+    outcome: "provider-response-success",
+    operation: input.operation,
+  });
+  await cutover.markAccountingPending(pendingDigest);
+  const receipt = context
+    ? await completeProviderOperationAttempt({
         context,
         logicalCallId: input.logicalCallId,
         attemptOrdinal: input.attemptOrdinal,
-        status: "failed",
-        tokenCount: null,
-        estimatedCostUsd: null,
+        status: "succeeded",
+        tokenCount: usage.tokenCount ?? null,
+        estimatedCostUsd: usage.estimatedCostUsd ?? null,
         elapsedMs: Math.max(0, Date.now() - started),
-        errorClass: providerErrorClass(error),
-      });
-    }
-    throw error;
-  }
-  if (context) {
-    const usage = input.usage?.(value) ?? {};
-    await completeProviderOperationAttempt({
-      context,
-      logicalCallId: input.logicalCallId,
-      attemptOrdinal: input.attemptOrdinal,
-      status: "succeeded",
-      tokenCount: usage.tokenCount ?? null,
-      estimatedCostUsd: usage.estimatedCostUsd ?? null,
-      elapsedMs: Math.max(0, Date.now() - started),
-      errorClass: null,
-    });
-  }
+        errorClass: null,
+      })
+    : {
+        status: "succeeded" as const,
+        tokenCount: usage.tokenCount ?? null,
+        estimatedCostUsd: usage.estimatedCostUsd ?? null,
+        errorClass: null,
+      };
+  await cutover.finish("settled", cutoverRequestDigest(receipt));
   return value;
 }
 

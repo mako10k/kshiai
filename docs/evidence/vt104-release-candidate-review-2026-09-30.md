@@ -8,7 +8,7 @@
 
 現在はローカル証拠、正確なコード・キャラクター候補、停止・回復手順、残るリスク、merge/releaseの別途判断を審査する。コードの選定はStage配備・データ削除・キャラクター登録の許可とは別である。例えばV2で新規対戦できない互換性変更は現在の判断対象、実際のStage battle IDと所有者のプレイ結果はvt107の証拠である。
 
-vt105は承認された候補の実配備とidentity/health読戻し、vt108は正確なStage対象・snapshot・停止収束・物理削除・保持集合の読戻し、vt106は本物の所有者による二体の候補確認と登録、vt107は実プレイを担当する。実queueと所有者の停止上限30分は確認済みだが、停止control・snapshot復元手段・30分成立の事前検証は未達で、後続へ暗黙に免除しない。
+vt105は承認された候補の実配備とidentity/health読戻し、vt108は正確なStage対象・snapshot・停止収束・物理削除・保持集合の読戻し、vt106は本物の所有者による二体の候補確認と登録、vt107は実プレイを担当する。実queueと所有者の停止上限30分は確認済みだが、停止control・本番snapshot復元手段・30分成立の事前検証は未達。PG17合成DBの隔離rehearsalは成功済みで、後続へ暗黙に免除しない。
 
 ## 固定した候補
 
@@ -21,7 +21,7 @@ vt105は承認された候補の実配備とidentity/health読戻し、vt108は�
 - 全ファイルidentity：[source candidate JSON](vt104-source-candidate-2026-09-30.json)。treeはHEADに列挙された実行コード・設定・試験・CHANGELOGだけを重ねたローカルオブジェクト。最新のPERTやvt103/vt104資料は別証拠であり、treeに含まれる旧資料を現在の正本へ読み替えない。
 - これはrelease commitではない。mainへの統合、exact commit上の四必須CIチェック、annotated tag、backend image digest、Worker version、Cloud Run revisionは未確定。版や停止controlを修正したらmanifestを更新し、その候補を再確認する。
 
-HEAD以後のvt103差分は、plain-text V3編集候補レビューとexact baseline比較の修正、単体試験、Neva/Rioの実ブラウザ結合試験と専用config、test authority登録。vt104差分は版・changelogと本資料だけで、Stage workflowの動作を変更していない。main以後にはV3登録、対戦binding、参加資格、INSERT/UPDATE分離、cutover/会計、関連設計・証拠が含まれる。branch全体のCI/統合レビューをvt103だけで代用しない。Narration Fragment ADR-0038はProposedのままで、今回の候補選定はその採否を変更しない。
+HEAD以後のvt103差分は、plain-text V3編集候補レビューとexact baseline比較の修正、単体試験、Neva/Rioの実ブラウザ結合試験と専用config、test authority登録。vt104差分は版・changelogと準備資料・Proposed ADR-0040/detail候補・合成PG17rehearsal証拠で、Stage workflowの動作を変更していない。main以後にはV3登録、対戦binding、参加資格、INSERT/UPDATE分離、cutover/会計、関連設計・証拠が含まれる。branch全体のCI/統合レビューをvt103だけで代用しない。Narration Fragment ADR-0038はProposedのままで、今回の候補選定はその採否を変更しない。
 
 ### NevaとRioの内容
 
@@ -78,8 +78,7 @@ vt103のactive試験は19files/140cases成功、対象6cases成功、browser 1ca
 
 元の選択肢は専用Stage DB/queue/jobへの隔離と共有production切替だった。隔離案は今回選択されていない。既存workflowのそのまま実行はV3-only smokeと停止controlの不一致があるため採用しない。
 
-推奨する次の準備はsnapshot/restoreの隔離rehearsalとstartup/旧tag/dispatcher停止controlの検証である。実データsnapshot取得・本番復元、control実装の正確なfile set、外部writeは必要な対象・影響・許可を別途固定する。0.23.0コードと元のNeva/Rioの内容選定も未受入である。
-
+ADR-0040 revision 1と詳細設計は所有者受入済みで、許可されたlocal control実装・隔離検証を行った（[検証・引継](vt104-cutover-control-local-2026-09-30.md)）。合成PG17のdump/restoreと新controlのPG17試験は成功し、本番回復手段/時間は未検証。次は実snapshot/forward recovery方法、保護保存先、正確な30分packetの固定である。元のNeva/Rioの内容選定、exact main/四CI/artifacts、外部writeの承認は別途。0.23.0は候補versionのままで、新control追加前の526-path runtime manifestを現行コードの証拠として再利用しない。
 停止日時、exact main commit/tag/artifacts、四CI、最終削除対象と最大writes、実測回復時間が揃った後に、merge/release・本番promotion・停止・データ操作の正確な候補を提示する。今の準備方針からこれらの実行を推測しない。
 
 別途承認が必要な根拠はvt104正本descriptionの `obtain the separate approval needed for any merge or release write` と `Plan inclusion does not authorize push, merge, or release`、およびAccepted設計の停止切替条件である。実行依頼を所有者の内容acceptanceや外部write承認へ読み替えない。
@@ -90,6 +89,14 @@ vt104の測定開始は13:44:30 JST。準備区間は終端にcanonical suspend�
 
 vt103のelapsed一標本からobserve-velocityした25p/17hを子PERTは保持し、異なる配備control作業へ高確度で転用しない。子PERTの資源schedule残37/6p、換算約4.193 elapsed h、親残103/6p/既存velocity換算約4.204 elapsed hは参考で、agent工数や承認待ちを表さない。新しく確認したworkflow不足による追加作業量は所有者の資源境界判断後に正本PERTへ反映する候補であり、先にAccepted範囲を変更しない。
 
-内部agent工数の暫定見積もり（低確度）：vt104残1–2.5時間＝control準備0.5–1.25＋回復手段準備/レビュー0.5–1.25。Stage試行cc314残3–7時間＝vt104＋後続control/smoke・配備/削除/登録/プレイ証拠2–4.5。親csm001残6–14時間＝Stage＋後続評価/移行準備3–7。これはagent概算であり、実績や受入済みdurationの上書きではない。所有者判断・外部待ち時間は未知で、全体完了日は未算出。
+内部agent工数の暫定見積もり（低確度）：vt104準備残1.25–3.5時間＝実回復方法/packet0.75–2＋release/content固定とreview準備0.5–1.5。Stage試行cc314残3.25–8時間＝準備＋後続smoke・配備/削除/登録/プレイ証拠2–4.5。親csm001残6.25–15時間＝Stage＋後続評価/移行準備3–7。これはagent概算であり、実績や受入済みdurationの上書きではない。所有者判断・外部待ちは未知で、全体完了日は未算出。
+再認証・準備方針・30分上限の選択は解消済み。次checkpointはlocal検証の凍結後、実回復方法・保護保存先とexecution packetの未確定入力を揃える時点。vt104は未完了で、vt105以降の実行を開始していない。
 
-再認証・準備方針・30分上限の選択は解消済み。次checkpointは2026-09-30の候補レビュー後、回復手段とcontrol候補の準備範囲を確定する時点。vt104は未完了で、vt105以降の実行を開始していない。
+## 継続区間の追加証拠
+
+[PG17合成rehearsal](vt104-pg17-rehearsal-result-2026-09-30.json)はmigration前後dump/restore、全public table行・columns/defaults/constraints/effective ACL/RLS/index/sequence readbackと18件cutover/168件finished保持に成功。元ACLの格納表現差は[初回比較失敗](vt104-pg17-initial-comparison-failure-2026-09-30.json)へ残した。新control/APIを追加し、現行sourceと検証範囲は[local検証・引継](vt104-cutover-control-local-2026-09-30.md)へ分離した。旧526-path候補は歴史的なbaselineである。StageのSSE確認は新V3データを作るため、その時点以後はsnapshot全上書き回復を自動選択しない。
+
+
+## 18:22以後の準備照合による範囲訂正
+
+[最新execution packet](vt104-execution-packet-2026-09-30.md)でowner user IDとGoogle連携、二候補digest、fresh cloud metadataを照合した。local実装完了・残0の記述はcontrol本体/HTTP/provider/task/UIの試験済み範囲に限る。Accepted detailが要求するPG/Auth/R2等Stage smokeのpermit接続とworkflow統合は未完了で、全Stage受入の実装完了とは扱わない。既存email smokeの別user provision/V2 fixtureとowner限定trialの適合は詳細化が必要。vt104残2.25–5.5、Stage残4.25–10、親残7.25–17 agent時間（低信頼度、外部待ち別）。現候補migrationは0030追加で0026–0030の5本。上記過去観測・見積りを最新候補と混同しない。

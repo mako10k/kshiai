@@ -1,0 +1,23 @@
+{
+  "scope": "synthetic 1MiB fixture; not an owner key or real snapshot/recovery timing",
+  "tool": {
+    "package": "age",
+    "version": "1.1.1-1ubuntu0.24.04.3",
+    "packageSha256": "22ed034e16d8a7662d94dbb8d9f644f01284c6d87bc6b619903e38ba91125337",
+    "repositoryIndexSha256": "79157b04fc0a6215024d429fc4a05fc62ee97fff9c6dfe6a243c48d4b6c3f127",
+    "inReleaseSha256": "26595c8ad9f164726bf86e327182ffe44ae16fe434abd1ac8ef210ef19f7947c",
+    "inReleaseSignature": "gpgv Ubuntu archive keyring passed",
+    "systemInstalled": false
+  },
+  "roundtripSha256": "63a18a46530cd90f9b6f60c9270c1b8ead4df2395ef3c47e7006789ecf163de0",
+  "bytes": 1048627,
+  "encryptedBytes": 1049083,
+  "roundtrip": "passed",
+  "wrongKey": "rejected",
+  "tamper": "rejected",
+  "fixtureSeconds": {
+    "encrypt": 0.01539756700367434,
+    "decrypt": 0.026633255998604
+  },
+  "privateFixtureKeysPersisted": false
+}

@@ -96,3 +96,42 @@ test("confirms a fixed V3 candidate with the exact reviewed digest and exposes i
   await submitted;
   await expect(page).toHaveURL(/\/characters\/fixed-neva$/);
 });
+
+test("restricts closed owner review to confirmation and stays on the exact review after saving", async ({ page }) => {
+  const { createV3StageTrialCandidate } = await import("../backend/src/fixtures/neva-v3");
+  const { characterDefinitionV3ToLegacySheet, toPublicCharacter } = await import("@kshiai/shared");
+  const envelope = createV3StageTrialCandidate();
+  const character = toPublicCharacter(characterDefinitionV3ToLegacySheet({
+    characterId: "fixed-neva", ownerUserId: e2eGuiMe.user.id,
+    definition: envelope.definition, publicPresentation: envelope.publicPresentation,
+    createdAt: "2026-09-29T00:00:00.000Z", updatedAt: "2026-09-29T00:00:00.000Z",
+  }), e2eGuiMe.user.id);
+  await page.route("**/api/me", (route) => route.fulfill({ json: { ...e2eGuiMe, reviewConfirmOnly: true } }));
+  let confirmed = false;
+  const digest = "50edf23389df253762378ba622537cff3d86722f613693b6a92796a7624d307f";
+  await page.route("**/api/character-drafts/focused-review", (route) => route.fulfill({ json: {
+    ...base, status: confirmed ? "accepted" : "awaiting_owner_acceptance", candidate: character, canAccept: !confirmed, reviewConfirmOnly: true,
+    candidateDigest: digest, canEditCandidate: false,
+    semanticCandidateReview: { schemaVersion: 3,
+      fields: [{ key: "definition", label: "人物・能力・行動規範の全設定", source: null,
+        candidate: JSON.stringify(envelope.definition) }],
+      compatibility: { status: "ready", deferred: [], blocked: [] }, limitation: "固定入力の全設定を確定します。",
+    },
+  } }));
+  await page.route("**/api/characters/focused-review/confirm", (route) => {
+    confirmed = true;
+    expect(route.request().postDataJSON()).toEqual({ candidateDigest: digest });
+    return route.fulfill({ json: { character } });
+  });
+  await page.goto("/reviews/focused-review");
+  await expect(page.getByText("人物・能力・行動規範の全設定", { exact: true })).toBeVisible();
+  await expect(page.getByPlaceholder("例: もっと防御寄りに。髪色を暗い赤に。")).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "破棄", exact: true })).toHaveCount(0);
+  await expect(page.getByRole("navigation", { name: "主要ナビゲーション" })).toHaveCount(0);
+  await expect(page.getByText("切替準備中は、この内容の確認と確定だけができます。")).toBeVisible();
+  const submitted = page.waitForRequest("**/api/characters/focused-review/confirm");
+  await page.getByRole("button", { name: "確定して保存" }).click();
+  await submitted;
+  await expect(page).toHaveURL(/\/reviews\/focused-review$/);
+  await expect(page.getByRole("button", { name: "確定して保存" })).toHaveCount(0);
+});

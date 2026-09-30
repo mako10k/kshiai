@@ -591,6 +591,9 @@ async function runAuthenticatedApiSmoke(input: {
 }
 
 async function main(): Promise<void> {
+  if (config.cutover) {
+    throw new Error("Use stage-auth-smoke with an exact existing-account manifest during a cutover");
+  }
   const secretKey = required("SUPABASE_SECRET_KEY");
   const publishableKey = required("SUPABASE_PUBLISHABLE_KEY");
   required("DATABASE_URL");

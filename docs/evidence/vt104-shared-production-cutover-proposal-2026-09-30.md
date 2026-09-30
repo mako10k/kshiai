@@ -48,7 +48,9 @@ migration適用済み26本（最後0025）のchecksumは現在のソースと全
 
 選ぶ回復方法は、閉鎖/収束後の共有PostgreSQLの整合したsnapshotを、release artifact/Gitから分離したowner管理の保護領域へ一つ保存し、隔離環境で復元/件数/hashを読み戻す方法。credential・session token等をrelease artifactに含めない。外部保存先へ無断uploadしない。保存先、暗号化/アクセス制御、保持期間、取得/復元コマンド、復元先identity、実測時間は実行前に固定する。
 
-現serverは17.6、ローカルpg_dumpは16.15であり、そのまま17のbackup用には採用しない。DockerのWSL統合も利用できなかった。PostgreSQL17対応のclient/runtimeを隔離した準備領域へ用意するか、ownerが使えるSupabase backup/restore手段を選んで、復元を試験する必要がある。取得済みのhash一覧はsnapshotではなく、復元可能と主張しない。
+現serverは17.6、ローカルpg_dumpは16.15であり、そのまま17のbackup用には採用しない。DockerのWSL統合も利用できなかった。その後、公式PGDGの署名付きmetadataとpackage SHA256を検証し、PostgreSQL17.11 client/serverを一時領域へ展開した。合成DBで全migration、dump/restore、cutover保持のrehearsalが成功した（[結果](vt104-pg17-rehearsal-result-2026-09-30.json)）。システムへのinstallationや本番snapshot取得は行わず、local serverは停止した。これは本番role/extension/byte規模/取得経路/復元時間の証拠ではない。実snapshot/restore手段の最終固定は依然必要。取得済みのhash一覧はsnapshotではなく、復元可能と主張しない。
+
+controlの責務・状態・外部契約は[Accepted ADR-0040 revision 1](../adr/0040-shared-cutover-runtime-control.md)と[Accepted詳細設計](../cutover-runtime-control-design-proposed.md)へ固定した。[所有者受入](vt104-control-owner-acceptance-2026-09-30.md)に従いlocal実装・隔離試験を実施した。env-only mode切替は使わず、immutable cutover/artifact identityとDB control append/CASで同じdeployment revisionを保つ。実cloudでのreadbackは別途。
 
 未確定な実snapshotはvt108の前提であり、所有者の「30分案」からその取得・本番復元の許可は推測しない。回復rehearsalと停止controlの検証が済むまで、停止/削除の実行packetは未完成である。
 
@@ -63,7 +65,7 @@ migration適用済み26本（最後0025）のchecksumは現在のソースと全
 - T+20までに全開放条件が揃わなければ、予め承認された回復分岐へ進む。回復操作をその場で即興の許可へ読み替えない。
 - 削除前の中止は旧traffic/tag/scaling/queue設定へ戻す候補。migration後は旧imageのschema互換性を確認する。
 - 削除後・game開放前はexact snapshot/target/receiptの回復候補を使用し、finished/generation/accountingを保全する。本番restoreそのものもexact許可対象。
-- game開放後の問題は新V3データを保持する前進復旧を基本とする。全DBを旧snapshotへ戻して新しいV3対戦や他データを失わせない。
+- operator限定Stage trialも最初のgame開放である。trial開始後を含め、game開放後の問題は新V3データを保持する前進復旧を基本とする。全DBを旧snapshotへ戻して新しいV3対戦や他データを失わせない。
 
 ## 切替と開放の最終packet
 
@@ -77,8 +79,13 @@ operator限定のStage確認・プレイは公開開放ではない。公開開�
 
 ## 許可対象の最大writesと残る入力
 
-実行packetで最終値を固定する。現在の上限案は、queue pause/resume各1、old tags clear1、scaling stop/reopen各1、candidate Stage deploy1、backend production traffic switch1、Worker exact-version production promotion1、migration job deploy/execute各1、cutover job deploy/execute各1、fixed character preparation2、owner confirm2。DB削除はfrozen transaction1回で対象/従属数はそのplanの正確な値、receiptは対象IDだけ。protected production承認/typed confirmationを実行packetに明示する。operator限定Stage受入と公開route smokeは別々の検証対象とする。Worker shared設定write、task retarget、snapshotの外部保存、回復branchは未確定なので上限を埋めるまで実行しない。曖昧なwrite結果ではread-only調査へ戻り、新IDで再送しない。
+実行packetで最終値を固定する。現在の上限案は、queue pause/resume各1、old tags clear1、scaling stop/reopen各1、candidate Stage deploy1、backend production traffic switch1、Worker exact-version production promotion1、migration job deploy/execute各1、cutover job deploy/execute各1、fixed character preparation2、owner confirm2。DB削除はfrozen transaction1回で対象/従属数はそのplanの正確な値、receiptは対象IDだけ。新controlのappend/CAS writesはinitialize closed・stopped barrier・trial・openの最大4 revision案（回復時のclosed/reconcileは実行packetで別途定量化）とし、permit/receipt行数は固定smokeの最大operation数に基づき実行packetで定量化する。未確定のまま実行しない。protected production承認/typed confirmationを実行packetに明示する。operator限定Stage受入と公開route smokeは別々の検証対象とする。Worker shared設定write、task retarget、snapshotの外部保存、回復branchは未確定なので上限を埋めるまで実行しない。曖昧なwrite結果ではread-only調査へ戻り、新IDで再送しない。
 
-未達：control実装/閉包試験、PostgreSQL17対応snapshot/restore rehearsal、停止30分の実測成立、HTTP idempotency対象件数、全writer/Worker live状態、operator/二体のowner identity、exact main commitと四CI/artifacts、ownerの候補/merge/release/停止/データ操作の別途許可。
+local control実装・閉包試験とPG17合成snapshot/restore rehearsalは確認済み（[local証拠](vt104-cutover-control-local-2026-09-30.md)）。未達：実snapshot/復元・forward recovery手段と停止30分の実測成立、HTTP idempotency対象件数、全writer/Worker live状態、operator/二体のowner identity、exact main commitと四CI/artifacts、ownerの候補/merge/release/停止/データ操作の別途許可。
 
-vt104は準備資料・暫定inventoryができた段階で未完了。vt105/vt108の実行を開始しない。次の最小作業はsnapshot/restore手段を確定して隔離rehearsal時間を測り、同時に既存startup/tag入口を閉じるcontrol候補を詳細化して、30分packetを更新すること。内部準備の残は1–2.5 agent時間、低確度（control0.5–1.25＋recovery0.5–1.25）。所有者のreview/外部待ち時間は別。
+vt104は未完了で、vt105/vt108の外部実行は開始していない。次は実snapshot/forward recovery手段・保護保存先・時間を固定し、exact owner/candidate/release/CI/artifactと30分execution packetを揃える。内部準備残1.25–3.5 agent時間（低確度）：実回復方法/packet0.75–2＋release/content固定とreview準備0.5–1.5。所有者判断・外部待ちは別。ローカル実装の完了は本番停止・migration・削除・配備・promotion・GitHub writeの許可ではない。
+
+
+## 18:22以後の準備照合による範囲訂正
+
+[最新execution packet](vt104-execution-packet-2026-09-30.md)でowner user IDとGoogle連携、二候補digest、fresh cloud metadataを照合した。local実装完了・残0の記述はcontrol本体/HTTP/provider/task/UIの試験済み範囲に限る。Accepted detailが要求するPG/Auth/R2等Stage smokeのpermit接続とworkflow統合は未完了で、全Stage受入の実装完了とは扱わない。既存email smokeの別user provision/V2 fixtureとowner限定trialの適合は詳細化が必要。vt104残2.25–5.5、Stage残4.25–10、親残7.25–17 agent時間（低信頼度、外部待ち別）。現候補migrationは0030追加で0026–0030の5本。上記過去観測・見積りを最新候補と混同しない。

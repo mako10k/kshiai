@@ -1,0 +1,14 @@
+{
+  "schema": "kshiai/vt104-snapshot-policy-owner-acceptance/v1",
+  "recordedAt": "2026-09-30T20:21:42.986676+09:00",
+  "observation": "direct user question replies",
+  "questionCommonPolicy": "dedicated Tokyo GCS bucket; minimum30day retention;7day soft delete after deletion",
+  "questionOptions": {
+    "1": "owner public-key encryption before upload",
+    "2": "Google managed encryption allowing inherited GCP service-account reads"
+  },
+  "answer": "① owner公開鍵で事前暗号化（推奨）",
+  "subsequentKeyRequest": "新規鍵の作成を準備",
+  "acceptedScope": "storage protection/retention policy and local new-key preparation",
+  "executionScope": "exact key/resource creation, capture/export/restore and production operations remain separate execution packet decisions"
+}

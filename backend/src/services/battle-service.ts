@@ -658,6 +658,8 @@ export async function startBattle(input: {
   userId: string;
   /** Stable resource identity supplied by the idempotent create operation. */
   battleId?: string;
+  /** Trial admission requires this immutable pair before provider or persistence work. */
+  expectedCharacterGenerationIds?: readonly [string, string];
   myCharacterId: string;
   opponentCharacterId: string;
   battlefieldPresetId?: string;
@@ -682,6 +684,12 @@ export async function startBattle(input: {
         existingMeta.side_b_character_id !== input.opponentCharacterId
       ) {
         throw new Error("BATTLE_CREATE_IDENTITY_CONFLICT");
+      }
+      if (input.expectedCharacterGenerationIds &&
+          (existing.assetManifest?.schemaVersion !== 4 ||
+           existing.assetManifest.characters.a.generationId !== input.expectedCharacterGenerationIds[0] ||
+           existing.assetManifest.characters.b.generationId !== input.expectedCharacterGenerationIds[1])) {
+        throw new Error("CUTOVER_TRIAL_GENERATION_MISMATCH");
       }
       const existingMine = existing.assetManifest?.characters.a.snapshot ??
         await charRepo.getSheetIncludingDeleted(existingMeta.side_a_character_id);
@@ -710,6 +718,11 @@ export async function startBattle(input: {
   const v3Participants = { mine: mineEligibility.participant, opponent: opponentEligibility.participant };
   const mineGeneration = v3Participants.mine.generation;
   const opponentGeneration = v3Participants.opponent.generation;
+  if (input.expectedCharacterGenerationIds &&
+      (mineGeneration.generationId !== input.expectedCharacterGenerationIds[0] ||
+       opponentGeneration.generationId !== input.expectedCharacterGenerationIds[1])) {
+    throw new Error("CUTOVER_TRIAL_GENERATION_MISMATCH");
+  }
   const mine = v3Participants.mine.sheet;
   const opp = v3Participants.opponent.sheet;
 

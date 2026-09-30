@@ -3,12 +3,12 @@
   "status": "proposed-not-a-release",
   "version": "0.23.0",
   "proposed_future_tag": "v0.23.0-rc.1",
-  "base_head": "fba69f387f058b17f2b49fcd07c61ae4ccc5d493",
+  "base_head": "f58ac2f6e676f9eab486c98787908ee69f7bc60f",
   "remote_main": "e31c487dadbe784022e5cfde80d3314ce45485b9",
-  "git_tree": "308a31cecc24f08612a368c339b93a2442fb696a",
+  "git_tree": "8c7218e1cf9650b059429937b6c78e6dbb6062b1",
   "tree_scope": "HEAD complete tree overlaid only with listed executable/config/test source and CHANGELOG paths; current vt103/vt104 docs are separate evidence; no branch or real index changed",
   "manifest_algorithm": "sha256 of compact sort_keys JSON entries",
-  "manifest_sha256": "45dde4ef7384b4ea8c6ec7700b37118616770c5db778c65ae1e3cce18597eab5",
+  "manifest_sha256": "6a7e05dbaf89c3f637305ddd5245ed474bab53cdb6d743140fbe1308c49a954d",
   "entries": [
     {
       "path": ".dockerignore",
@@ -211,6 +211,11 @@
       "sha256": "932895ea9df2cc8a495af10e78cc5a6545abb183b79b550eab9d930653188aa7"
     },
     {
+      "path": "backend/migrations/0030_cutover_control.sql",
+      "bytes": 3342,
+      "sha256": "69edbd1b97380e39cfead7ebdfea4d7bc3a5cee420c2166254ef636f1556ff4e"
+    },
+    {
       "path": "backend/package.json",
       "bytes": 1887,
       "sha256": "738c59ddd8679297503e9d7607b3e5cd572225a771e538ae5bc80a5630991420"
@@ -232,8 +237,8 @@
     },
     {
       "path": "backend/src/auth.ts",
-      "bytes": 9612,
-      "sha256": "8666b6fea35204fbfd21a2d943c394a4aa53142beec73ee7556fd5f11d1dbeae"
+      "bytes": 8688,
+      "sha256": "5be4f91e95f27f0e8dd2417e25a18ae91c4ec835a1ace52b336c58b46ff59709"
     },
     {
       "path": "backend/src/character-name-uniqueness.test.ts",
@@ -252,13 +257,23 @@
     },
     {
       "path": "backend/src/config.ts",
-      "bytes": 13387,
-      "sha256": "8eee5b7679c67e07bc750903ed25a0c54d3fa9dd7fb12cbe3e3a360cb9e79dea"
+      "bytes": 14235,
+      "sha256": "f84898ab2893f9d5a98922171b1c16ac1d7e407d8e404eac79c9f2eea537ab96"
+    },
+    {
+      "path": "backend/src/cutover-config.test.ts",
+      "bytes": 841,
+      "sha256": "f2080cc93e097e561e184405c75583ed04d3be84203008caed0bce470fdda13c"
+    },
+    {
+      "path": "backend/src/cutover-startup.test.ts",
+      "bytes": 3352,
+      "sha256": "c63af346165bb3e2b62b318b5c502e818d7be297ca9194e788d5c362c949c77c"
     },
     {
       "path": "backend/src/db.ts",
-      "bytes": 40621,
-      "sha256": "725ae8b77d1194e44c3cea17c9458f42458d04b6fd5c8e83fef958806dc35501"
+      "bytes": 43780,
+      "sha256": "285dbf2d705cfaa96fe4901ca523957547de8651491dcdaf4c747aa193e80cc0"
     },
     {
       "path": "backend/src/e2e-observer.test.ts",
@@ -317,8 +332,8 @@
     },
     {
       "path": "backend/src/index.ts",
-      "bytes": 2954,
-      "sha256": "a94dfd462d47250611130bd98c9ccdbfdaac3cca497c68b4d0c6c7a5c1e7a333"
+      "bytes": 3469,
+      "sha256": "8baf4d43ef60e59669b1af1dd3c7c8714761556f98edd69a51e7aeace8a85984"
     },
     {
       "path": "backend/src/llm/character-definition-response-schema.test.ts",
@@ -497,13 +512,13 @@
     },
     {
       "path": "backend/src/llm/provider-accounting.test.ts",
-      "bytes": 10582,
-      "sha256": "7f6d056537c4638aaab5fd30bc435682ce6ea784df6669a99b18aa456a57d5ce"
+      "bytes": 18260,
+      "sha256": "64c400959229fde553739be8a5d87c193ffd9d95d4915d3fbf2989e01296c8d6"
     },
     {
       "path": "backend/src/llm/provider-accounting.ts",
-      "bytes": 15816,
-      "sha256": "963bf1880d3078e7cecc368d6d31ba7987ebc224b82bdb42ae6cef24c95f0e31"
+      "bytes": 20792,
+      "sha256": "5c5465b99ed5c58b7dbbe92691c8dda51466bcd0b04a66d838e7fd52b2353181"
     },
     {
       "path": "backend/src/llm/provider-config.test.ts",
@@ -701,6 +716,16 @@
       "sha256": "884481ff6323d90af655ca8dfe27e3fe421e070eaec389c036dd016b32ab7c6e"
     },
     {
+      "path": "backend/src/repositories/cutover-control.test.ts",
+      "bytes": 16846,
+      "sha256": "10e2d983b544c28f05b227f6ef5fc119c41f69847877bd3c9d3100c854bdd5c8"
+    },
+    {
+      "path": "backend/src/repositories/cutover-control.ts",
+      "bytes": 34753,
+      "sha256": "36ce861089fc19d260524669ffc79f1d6526ec571437319721d7f284924a10b3"
+    },
+    {
       "path": "backend/src/repositories/dialogue-pipeline-settings.test.ts",
       "bytes": 5039,
       "sha256": "2873dad08c18196dad4cdbc4d99d0d34df219eddb8c84d8666ed35fbceb55b63"
@@ -776,6 +801,16 @@
       "sha256": "0de9c8d86ca6b8287b1eb1124ea450d7084b0d393bef3af59aeeb3022475ff2e"
     },
     {
+      "path": "backend/src/routes-cutover-confirm.test.ts",
+      "bytes": 8997,
+      "sha256": "885e56e0917a52d5b0de116a957751e6226c4d4ab5cddaa653cb32a09d4d0840"
+    },
+    {
+      "path": "backend/src/routes-cutover-http.test.ts",
+      "bytes": 7668,
+      "sha256": "8cbe5d9025b50a21cb88e07afebaab5458b928f11e34986dc20b4612d3541c45"
+    },
+    {
       "path": "backend/src/routes-e2e-session.test.ts",
       "bytes": 2926,
       "sha256": "6b0e0e9cce9a80c957598543e457958701b31a183f8b294a8df36dc8b1e5d440"
@@ -802,8 +837,8 @@
     },
     {
       "path": "backend/src/routes.ts",
-      "bytes": 113959,
-      "sha256": "cb26c9da2bc18cc7b0c410204925c142bf8799a113526e2e2ad38420d867f9a9"
+      "bytes": 118821,
+      "sha256": "2cea2a1f8d07487424368cf495799de2df243915a6ac03a1e2fdbb63e7398c70"
     },
     {
       "path": "backend/src/scripts/aggregate-character-focus-reviews.ts",
@@ -861,6 +896,16 @@
       "sha256": "71de5120c5d47241041cdd747f179b28978c3fd94bc8dc7b4b8931c7529e11e8"
     },
     {
+      "path": "backend/src/scripts/cutover-control.test.ts",
+      "bytes": 5986,
+      "sha256": "35cd39c98dcaa1091463fa90332f0e2a025b6913097dba06c482af0169e7a3ea"
+    },
+    {
+      "path": "backend/src/scripts/cutover-control.ts",
+      "bytes": 9148,
+      "sha256": "7636d80411190789fe464b1af18a9ab490e761408c6a0d015b11f588bc45b140"
+    },
+    {
       "path": "backend/src/scripts/dialogue-quality.test.ts",
       "bytes": 3135,
       "sha256": "0b25b468ed443b0ca4f1dfac639b5c5c3a98d55e72f7dc6d01be491c1441c18a"
@@ -912,13 +957,13 @@
     },
     {
       "path": "backend/src/scripts/postgres-runtime-smoke.ts",
-      "bytes": 8337,
-      "sha256": "29b1e6dc59cf806c2d1e536bd6e2b0c912abcbfe64d8bc3474ef132d4ad6d6ca"
+      "bytes": 9618,
+      "sha256": "c56d7c5d19940deddf58c5075396c35e390b28ea8317d7238a3a96ce4d75c108"
     },
     {
       "path": "backend/src/scripts/r2-smoke.ts",
-      "bytes": 1491,
-      "sha256": "4267ba22f0ffcb95d2d114d796170e6ac67d672e57160c11a97cb22678eff69c"
+      "bytes": 2591,
+      "sha256": "05ffb5a48bce46db58ca7bb1013a0e703c00b3f18caf916b7051ae0762e9ec47"
     },
     {
       "path": "backend/src/scripts/register-v3-stage-trial.ts",
@@ -991,14 +1036,39 @@
       "sha256": "dc96b33c23596a0b9f1a83cde530f480c73275a4f3503e89d7e2770a1f26e403"
     },
     {
+      "path": "backend/src/scripts/stage-auth-smoke.test.ts",
+      "bytes": 6110,
+      "sha256": "fe9a9e53897140ae5bb293619ef1c79c4d93faf28cebb1bf599a0ebc3af51b02"
+    },
+    {
+      "path": "backend/src/scripts/stage-auth-smoke.ts",
+      "bytes": 3519,
+      "sha256": "373610c0243005299395bfb1e91014399312b42428f914090d5e5ca95ae36bab"
+    },
+    {
+      "path": "backend/src/scripts/stage-http-smoke.ts",
+      "bytes": 1623,
+      "sha256": "86a93de305e5b6fc6d512dd455859c57d9a151ec767413c6a886597e3da64cf0"
+    },
+    {
+      "path": "backend/src/scripts/stage-postgres-smoke.ts",
+      "bytes": 4493,
+      "sha256": "4ad3a76897326a3090b2684b6621aac5d9dfe60b6931292d513308ee54c6a761"
+    },
+    {
+      "path": "backend/src/scripts/stage-v3-smoke.ts",
+      "bytes": 2133,
+      "sha256": "e56335daf72bc76388015e49b0ee2fc016f9c476e59a7453f9b69cd2bbc6086c"
+    },
+    {
       "path": "backend/src/scripts/supabase-auth-smoke.test.ts",
       "bytes": 2447,
       "sha256": "64502fe6439dc3930239b779495ca6cc095d796408d6c80d4061c4f246626625"
     },
     {
       "path": "backend/src/scripts/supabase-auth-smoke.ts",
-      "bytes": 23247,
-      "sha256": "d04ab8501bc00506bb3390a4ac8130284180ef216ad36cf6f639bd277ea8faf1"
+      "bytes": 23377,
+      "sha256": "fa1d3c86adf896ea5b1eea3bc5efb738b12f5ec02f00e46dd14c9d03e81937e1"
     },
     {
       "path": "backend/src/services/authoring-task-dispatch.test.ts",
@@ -1007,8 +1077,8 @@
     },
     {
       "path": "backend/src/services/authoring-task-dispatch.ts",
-      "bytes": 3326,
-      "sha256": "267e253c050c2b7aa632cd777b5e54a924486faff396cc805556f76038f84195"
+      "bytes": 4133,
+      "sha256": "8ac610e548ebcaf71d2e917aea2d48ef75caac96dc6cbbaf9d0fac5cea9c271d"
     },
     {
       "path": "backend/src/services/balance-observe.ts",
@@ -1057,8 +1127,8 @@
     },
     {
       "path": "backend/src/services/battle-service.ts",
-      "bytes": 241682,
-      "sha256": "136dc2ee01239bc9e5b11abb7a0a1afb3833be3db5fb35e3c57ba0fb7a28241c"
+      "bytes": 242505,
+      "sha256": "ff9a87929ace2bbf1a20da5c05de63a688b4d270e999d2abf08d0eb642cc72f6"
     },
     {
       "path": "backend/src/services/battle-speech-wiring.test.ts",
@@ -1097,8 +1167,8 @@
     },
     {
       "path": "backend/src/services/character-authoring-jobs.ts",
-      "bytes": 15044,
-      "sha256": "4cc0a036142b0a9f50b5f03346c87ab251938b1da1b35aac5281a097b09e99cd"
+      "bytes": 16200,
+      "sha256": "d5ac64397f81421228f2714cb5c8955a797856002bb6c5c440011e3a5c453042"
     },
     {
       "path": "backend/src/services/character-authoring-service.test.ts",
@@ -1211,6 +1281,46 @@
       "sha256": "46c307d406e47a414372b8033c9b0a9df27524854810befe1252d0f49521900b"
     },
     {
+      "path": "backend/src/services/cutover-admission.test.ts",
+      "bytes": 3904,
+      "sha256": "7634cd2249f191fca60f357bfed79f5d8adf23eee3e0c47a9fad8e681ed1bd9f"
+    },
+    {
+      "path": "backend/src/services/cutover-admission.ts",
+      "bytes": 9629,
+      "sha256": "d716a314bdf0f8072aa7ca1ee6ad99fbfe6b31b2cdddfe639713a889a4ab7701"
+    },
+    {
+      "path": "backend/src/services/cutover-background-dispatch.test.ts",
+      "bytes": 6305,
+      "sha256": "e26787b291685c5b9aa88d66a30063e7f8d1644b7ff89a96f09251a7b32b99b7"
+    },
+    {
+      "path": "backend/src/services/cutover-http-admission.test.ts",
+      "bytes": 2483,
+      "sha256": "2f1664b3cdf3b22b6b911063e6425b278c0640e48f88b988d1a6d066c43067ca"
+    },
+    {
+      "path": "backend/src/services/cutover-http-admission.ts",
+      "bytes": 14150,
+      "sha256": "ae83eb70a1602f4a36bef59fb8b4e806fcc790f46cc06753357bbdca1f820ceb"
+    },
+    {
+      "path": "backend/src/services/cutover-stage-smoke.test.ts",
+      "bytes": 11657,
+      "sha256": "6c42690f08e65d0073162f80d1696d5505f53e0a1b2b11eeff459e30b11c1339"
+    },
+    {
+      "path": "backend/src/services/cutover-stage-smoke.ts",
+      "bytes": 3779,
+      "sha256": "4c825b725c47e53f0c27a1473877017cbdcea50d712fc3248645caeaad74d3bc"
+    },
+    {
+      "path": "backend/src/services/cutover-trial-dispatch.test.ts",
+      "bytes": 19874,
+      "sha256": "ecd2df4e7d6e0eab4bbea634216c3525a12284b8c63e0c3d3b9522ca2fb5f250"
+    },
+    {
       "path": "backend/src/services/dialogue-pipeline-activation.ts",
       "bytes": 2721,
       "sha256": "37cae40cbe581864bf06203153a45c6aa2c7bae1f635f77712e1b8bef337573b"
@@ -1292,18 +1402,18 @@
     },
     {
       "path": "backend/src/services/narration-task-dispatch.ts",
-      "bytes": 3391,
-      "sha256": "4db23f3f571eeb0b0dc6a1b2b537678f0fc9e9432b1d756455e998aad8767c77"
+      "bytes": 4879,
+      "sha256": "0d3099ff9bce0f2973bd22d14715aaa3e1d19cf673ea300cdfda47a24fde7552"
     },
     {
       "path": "backend/src/services/narration-worker.test.ts",
-      "bytes": 21971,
-      "sha256": "6a7cb172cd5f3343ab3956d04769c96fe26bd72884a4431132e7c339e2a6f5a7"
+      "bytes": 25200,
+      "sha256": "51992c99afed9cade27e98f63fc261ed48e694074f540688dcf5e7754d18f1fe"
     },
     {
       "path": "backend/src/services/narration-worker.ts",
-      "bytes": 43209,
-      "sha256": "fc95fcd9a1a905e7748405467b2d311c1e1b465525f89bc3bd54e940563041db"
+      "bytes": 44941,
+      "sha256": "0e6645062dd1e35d804cfceb83e8fa279664b8b51cbe69d45d3a3f670369bc2d"
     },
     {
       "path": "backend/src/services/r2-storage.test.ts",
@@ -1491,6 +1601,41 @@
       "sha256": "712e5edf90cb2b899e1188dba76b75e4e33bceb916097786251786680ba694a4"
     },
     {
+      "path": "backend/src/services/stage-auth-smoke.ts",
+      "bytes": 2356,
+      "sha256": "1c421a93f9553c5d800e046383bccceb0ed7ccb58f0fcfed5a93dc5ff3de78cf"
+    },
+    {
+      "path": "backend/src/services/stage-http-smoke.ts",
+      "bytes": 2643,
+      "sha256": "5b619bae5e0e2caa3374c54615193837ba8e3906a63372589e56fb3f1a1243d4"
+    },
+    {
+      "path": "backend/src/services/stage-r2-smoke.ts",
+      "bytes": 1681,
+      "sha256": "53c7b4848800114e3be9f83553d50b65e955fec23151d53fcc6b07b5bc853136"
+    },
+    {
+      "path": "backend/src/services/stage-smoke-manifest.ts",
+      "bytes": 524,
+      "sha256": "2a91a987e8517ed7523191ccf0fe45c89f27e5e12f30fe484130afe195d0e348"
+    },
+    {
+      "path": "backend/src/services/stage-v3-smoke.ts",
+      "bytes": 5414,
+      "sha256": "c4f00d74feffe0ac9016a6d2494a252cb7001b85f4621059526edf3e31b865e2"
+    },
+    {
+      "path": "backend/src/services/supabase-identity.test.ts",
+      "bytes": 2204,
+      "sha256": "8385ac673b34cef8dd7b640a5401c519b275acf13bf5446287903b2ea5df67a5"
+    },
+    {
+      "path": "backend/src/services/supabase-identity.ts",
+      "bytes": 1524,
+      "sha256": "b7f441f85250fb198295e882015a9d2b842a73517d324da710fe45c3994f3f1f"
+    },
+    {
       "path": "backend/src/services/v3-battle-creation.test.ts",
       "bytes": 21995,
       "sha256": "8ef481e5fe072ef7b9d924064d1ddcffe4db555f6e4ba1ab683ca9f7ddca212b"
@@ -1507,8 +1652,8 @@
     },
     {
       "path": "e2e/character-focused-review.spec.ts",
-      "bytes": 5665,
-      "sha256": "0e6990ed59a48bdb47060d66fd2f83db1be723e76c38fd5727ddd12d3fa17370"
+      "bytes": 8384,
+      "sha256": "cab0fb2f9c751bc0bacfb91f9e7ed3fc9a53509c32b4b922ccec26c67e5a57ba"
     },
     {
       "path": "e2e/fixtures/battle.ts",
@@ -1562,18 +1707,18 @@
     },
     {
       "path": "frontend/src/App.tsx",
-      "bytes": 6098,
-      "sha256": "4eb95ccbf3e6820d7fe49098352b4ec1910195137949c79dd061a2cee01bf4eb"
+      "bytes": 6286,
+      "sha256": "5339210aea145ec9d2c97db1d8dfb4bab920db42624b35b3d03c868f5010a68a"
     },
     {
       "path": "frontend/src/api.ts",
-      "bytes": 32545,
-      "sha256": "c3ba4ca86aac1ccfca97f6c0e95219aa3a970ae30c63b8f2c47a4409fb0f6d1f"
+      "bytes": 32574,
+      "sha256": "f6b3b4232438036056c65599c63ec2bc809d9fa11481aca361c4f3eecb7e03cb"
     },
     {
       "path": "frontend/src/auth.tsx",
-      "bytes": 4504,
-      "sha256": "3ab63d9aaea664d17bffc458727ccbe2842b56759bf5638bf2655578a98e7207"
+      "bytes": 4806,
+      "sha256": "a0457b99af19fb31d7ec9d78531d92e3b768e70b038cf6797f2c55f406da89d4"
     },
     {
       "path": "frontend/src/authenticated-fetch.test.ts",
@@ -1752,8 +1897,8 @@
     },
     {
       "path": "frontend/src/pages/CharacterReviewPage.tsx",
-      "bytes": 10398,
-      "sha256": "0033618076ea2303e0e2b7aad00d6816407678bcefab1c5551a6f7fc68576c0a"
+      "bytes": 10788,
+      "sha256": "4c75dd4af45363d554a133df82b933da5c14ccba492e2fe958468111cef79433"
     },
     {
       "path": "frontend/src/pages/CharactersPage.tsx",
@@ -1817,8 +1962,8 @@
     },
     {
       "path": "frontend/src/pages/asset-review-shared.tsx",
-      "bytes": 7058,
-      "sha256": "2df6c0fdc6e9ca0304fb64a9e237c29934fa47fbc8e17711a004dca095fa0a47"
+      "bytes": 7162,
+      "sha256": "895d1c01fd14eaeb2db79384563daf93fa0bfb8f4637070d5eb9a51f504a5908"
     },
     {
       "path": "frontend/src/styles.css",
@@ -2217,8 +2362,8 @@
     },
     {
       "path": "packages/shared/src/character.ts",
-      "bytes": 24383,
-      "sha256": "5ff039f183b8a45b6e7b34a15f2a817ce9c9aa7f9bbf8f9e900787cbeb89de0d"
+      "bytes": 24524,
+      "sha256": "cfaf17cf30266a55256ccacc5878194d2a70dfe1971fe40b719c44d1b1533d90"
     },
     {
       "path": "packages/shared/src/compact-psyche-decode.test.ts",
@@ -2612,8 +2757,8 @@
     },
     {
       "path": "scripts/test-authority-inventory.json",
-      "bytes": 4503,
-      "sha256": "ee1195536c6f7eb616231c80dc87093012433c8a01674600a7de40a1d734b810"
+      "bytes": 7532,
+      "sha256": "4f0b345e3fcc4edf8b8d2f2fa731b570504e19f2f0e04dfa92bbd159e09fe51a"
     },
     {
       "path": "scripts/test-authority.mjs",

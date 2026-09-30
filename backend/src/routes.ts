@@ -128,6 +128,19 @@ import {
   verifyAuthoringTaskAuthorization,
 } from "./services/authoring-task-dispatch.js";
 import type { AuthoringFamily } from "./repositories/family-authoring-jobs.js";
+import {
+  cutoverHttpAdmission,
+  existingUserFromRequest,
+} from "./services/cutover-http-admission.js";
+import {
+  assertCutoverTrialBattle,
+  currentCutoverControl,
+  cutoverRequestDigest,
+  resolveCutoverNarrationTaskOperation,
+  withCutoverBattleCreation,
+  CutoverUnavailableError,
+  runCutoverOperation,
+} from "./services/cutover-admission.js";
 
 type CharacterPortraitGenerator = typeof import(
   "./services/image-service.js"
@@ -230,6 +243,7 @@ async function characterReviewResponse(
   attempt: charAssetRepo.CharacterAuthoringAttempt,
   viewerUserId: string,
   enableCharacterMigrationAcceptanceTrial = false,
+  reviewConfirmOnly = false,
 ) {
   const latest = await charAssetRepo.getLatestCharacterAuthoringAttemptForCharacter(
     attempt.characterId,
@@ -312,6 +326,8 @@ async function characterReviewResponse(
     ...(attempt.candidate ? fixedCandidateOwnerReview(attempt.candidate, attempt.sourceText, {
       kind: attempt.kind, currentCandidate: reviewBaseline?.content,
     }) : {}),
+    reviewConfirmOnly,
+    ...(reviewConfirmOnly ? { canEditCandidate: false, sourceRetryAvailable: false } : {}),
     progress: focusedReview?.semanticCandidateReview ? null
       : toAssetAuthoringProgress(attempt.kind, attempt.status, attempt.attemptId),
   };
@@ -412,6 +428,9 @@ export function buildRoutes(options: {
       (await import("./services/image-service.js"))
         .generateAndStoreBattlefieldImage(...args));
 
+  // This must precede auth/register/login and the mounted authenticated router.
+  app.use("/api/*", cutoverHttpAdmission);
+
   app.post("/api/internal/narration/task", async (c) => {
     if (!await verifyNarrationTaskAuthorization(c.req.header("Authorization"))) {
       return c.json({ error: "forbidden" }, 403);
@@ -427,8 +446,22 @@ export function buildRoutes(options: {
       typeof body.smokeId === "string" &&
       /^[a-zA-Z0-9_-]{8,80}$/.test(body.smokeId)
     ) {
-      console.info(`[narration] task smoke ok ${body.smokeId}`);
-      return c.json({ result: "smoke_ok", smokeId: body.smokeId });
+      try {
+        return await runCutoverOperation({
+          bindingOperationId: `narration-smoke:${body.smokeId}`,
+          kind: "task", method: "POST", path: "/api/internal/narration/task",
+          requestDigest: cutoverRequestDigest(body),
+          actorId: (await currentCutoverControl())?.policy.ownerUserId ?? "runtime",
+        }, async () => {
+          console.info(`[narration] task smoke ok ${body.smokeId}`);
+          return c.json({ result: "smoke_ok", smokeId: body.smokeId });
+        });
+      } catch (error) {
+        if (error instanceof CutoverUnavailableError) {
+          return c.json({ error: "cutover_unavailable" }, 503, { "Cache-Control": "no-store" });
+        }
+        throw error;
+      }
     }
     if (
       typeof body.battleId !== "string" ||
@@ -441,8 +474,13 @@ export function buildRoutes(options: {
       return c.json({ error: "invalid_task" }, 400);
     }
     try {
-      const result = await withBattleProviderOperationContext(
-        body.battleId,
+      const operation = await resolveCutoverNarrationTaskOperation({
+        deliveryOperationId: `task:${body.outboxId}:${body.deliveryGeneration}`,
+        requestDigest: cutoverRequestDigest(body),
+        battleId: body.battleId,
+      });
+      const result = await runCutoverOperation(operation, () => withBattleProviderOperationContext(
+        body.battleId as string,
         () => processNextNarration({
           battleId: body.battleId as string,
           receiptId: body.receiptId as string,
@@ -451,13 +489,16 @@ export function buildRoutes(options: {
           ownerId: `cloud-task:${body.outboxId}:${body.deliveryGeneration}`,
           generator: createLlmNarrationGenerator(llm),
         }),
-      );
+      ));
       if (result === "retry_queued") {
         return c.json({ result }, 503);
       }
       await dispatchPendingNarrationTasks();
       return c.json({ result });
     } catch (error) {
+      if (error instanceof CutoverUnavailableError) {
+        return c.json({ error: "cutover_unavailable" }, 503, { "Cache-Control": "no-store" });
+      }
       const message = error instanceof Error ? error.message : "error";
       if (message === "NARRATION_LEASE_BUSY" || message === "NARRATION_CLAIM_CONFLICT") {
         return c.json({ error: message.toLowerCase() }, 503);
@@ -481,8 +522,22 @@ export function buildRoutes(options: {
       typeof body.smokeId === "string" &&
       /^[a-zA-Z0-9_-]{8,80}$/.test(body.smokeId)
     ) {
-      console.info(`[authoring] task smoke ok ${body.smokeId}`);
-      return c.json({ result: "smoke_ok", smokeId: body.smokeId });
+      try {
+        return await runCutoverOperation({
+          bindingOperationId: `authoring-smoke:${body.smokeId}`,
+          kind: "task", method: "POST", path: "/api/internal/authoring/task",
+          requestDigest: cutoverRequestDigest(body),
+          actorId: (await currentCutoverControl())?.policy.ownerUserId ?? "runtime",
+        }, async () => {
+          console.info(`[authoring] task smoke ok ${body.smokeId}`);
+          return c.json({ result: "smoke_ok", smokeId: body.smokeId });
+        });
+      } catch (error) {
+        if (error instanceof CutoverUnavailableError) {
+          return c.json({ error: "cutover_unavailable" }, 503, { "Cache-Control": "no-store" });
+        }
+        throw error;
+      }
     }
     if (
       typeof body.outboxId !== "string" ||
@@ -494,16 +549,36 @@ export function buildRoutes(options: {
     ) {
       return c.json({ error: "invalid_task" }, 400);
     }
-    const result = await processAuthoringTask({
-      llm,
-      delivery: {
-        outboxId: body.outboxId,
-        family: body.family,
-        attemptId: body.attemptId,
-        deliveryGeneration: body.deliveryGeneration,
-      },
-      workerId: `cloud-task:${body.outboxId}:${body.deliveryGeneration}`,
-    });
+    const taskOutboxId = body.outboxId;
+    const taskFamily = body.family;
+    const taskAttemptId = body.attemptId;
+    const taskDeliveryGeneration = body.deliveryGeneration;
+    let result: Awaited<ReturnType<typeof processAuthoringTask>>;
+    try {
+      result = await runCutoverOperation({
+        bindingOperationId: `task:${taskOutboxId}:${taskDeliveryGeneration}`,
+        kind: "task",
+        method: "POST",
+        path: "/api/internal/authoring/task",
+        requestDigest: cutoverRequestDigest(body),
+        actorId: (await currentCutoverControl())?.policy.ownerUserId ?? "runtime",
+        backgroundKind: taskFamily,
+      }, () => processAuthoringTask({
+        llm,
+        delivery: {
+          outboxId: taskOutboxId,
+          family: taskFamily,
+          attemptId: taskAttemptId,
+          deliveryGeneration: taskDeliveryGeneration,
+        },
+        workerId: `cloud-task:${taskOutboxId}:${taskDeliveryGeneration}`,
+      }));
+    } catch (error) {
+      if (error instanceof CutoverUnavailableError) {
+        return c.json({ error: "cutover_unavailable" }, 503, { "Cache-Control": "no-store" });
+      }
+      throw error;
+    }
     if (result === "retry_queued") {
       return c.json({ result }, 503);
     }
@@ -601,13 +676,29 @@ export function buildRoutes(options: {
   });
 
   app.get("/api/me", async (c) => {
-    const user = await userFromRequest(c);
+    let control: Awaited<ReturnType<typeof currentCutoverControl>>;
+    try {
+      control = await currentCutoverControl();
+    } catch (error) {
+      if (error instanceof CutoverUnavailableError) {
+        return c.json({ error: "cutover_unavailable" }, 503, { "Cache-Control": "no-store" });
+      }
+      throw error;
+    }
+    const user = control && control.phase !== "open"
+      ? await existingUserFromRequest(c)
+      : await userFromRequest(c);
     if (!user) return c.json({ error: "unauthorized" }, 401);
-    return c.json({ user: await publicUserWithAccess(user) });
+    return c.json({
+      user: await publicUserWithAccess(user),
+      ...(control && control.phase !== "open" ? { reviewConfirmOnly: true } : {}),
+    });
   });
 
   const authed = new Hono();
-  authed.use("*", requireUser);
+  authed.use("*", async (c, next) => {
+    return c.get("user") ? next() : requireUser(c, next);
+  });
 
   /**
    * Balance observability summary (aggregates only).
@@ -1090,10 +1181,12 @@ export function buildRoutes(options: {
       user.id,
     );
     if (!structured) return c.json({ error: "not_found" }, 404);
+    const cutoverControl = await currentCutoverControl();
     return c.json(await characterReviewResponse(
       structured,
       user.id,
       options.enableCharacterMigrationAcceptanceTrial === true,
+      Boolean(cutoverControl && cutoverControl.phase !== "open"),
     ));
   });
 
@@ -1140,6 +1233,9 @@ export function buildRoutes(options: {
           assistantMessage: "構造化設定と公開プロフィールを確定して保存しました。",
         });
       } catch (error) {
+        if (error instanceof CutoverUnavailableError) {
+          return c.json({ error: "cutover_unavailable" }, 503, { "Cache-Control": "no-store" });
+        }
         const message = error instanceof Error ? error.message : "activation_failed";
         return c.json({ error: "character_activation_failed", message }, 409);
       }
@@ -2592,11 +2688,16 @@ export function buildRoutes(options: {
     if (idempotency.kind === "replay") return c.json(idempotency.response);
     let operationCompleted = false;
     try {
-      const start = () => startBattle({
+      const admissionControl = c.get("cutoverControl");
+      const expectedCharacterGenerationIds = admissionControl?.phase === "trial"
+        ? admissionControl.policy.trialBindings?.generationIds
+        : undefined;
+      const create = () => startBattle({
         userId: user.id,
         battleId,
         myCharacterId: body.myCharacterId,
         opponentCharacterId: body.opponentCharacterId,
+        expectedCharacterGenerationIds,
         battlefieldPresetId: body.battlefieldPresetId,
         battlefieldMode: body.battlefieldMode,
         stance: body.stance,
@@ -2605,6 +2706,10 @@ export function buildRoutes(options: {
         narrationStyleId: body.narrationStyleId,
         llm,
       });
+      const start = () => expectedCharacterGenerationIds
+        ? withCutoverBattleCreation({ battleId, ownerUserId: user.id,
+            generationIds: expectedCharacterGenerationIds }, create)
+        : create();
       const battle = observationRunId
         ? await (async () => {
             const access = await getUserAccessProfile(user.id);
@@ -2619,6 +2724,10 @@ export function buildRoutes(options: {
             return withProviderOperationContext(context, start);
           })()
         : await start();
+      const cutoverControl = c.get("cutoverControl");
+      if (cutoverControl?.phase === "trial") {
+        await assertCutoverTrialBattle(cutoverControl, battle.id);
+      }
       operationCompleted = true;
       const response = { battle };
       await completeIdempotentRequest({
@@ -2641,9 +2750,12 @@ export function buildRoutes(options: {
       }
       const msg = e instanceof Error ? e.message : "error";
       console.error("[battles] startBattle failed", msg, e);
+      if (msg === "CUTOVER_TRIAL_GENERATION_MISMATCH" || msg === "cutover_unavailable") c.header("Cache-Control", "no-store");
       return c.json(
         { error: msg.toLowerCase(), message: msg },
-        msg === "OBSERVATION_RUN_FORBIDDEN"
+        msg === "CUTOVER_TRIAL_GENERATION_MISMATCH" || msg === "cutover_unavailable"
+          ? 503
+          : msg === "OBSERVATION_RUN_FORBIDDEN"
           ? 403
           : msg.includes("UPGRADE_REQUIRED") || msg.includes("V3_CAPABILITY_BLOCKED")
             ? 409

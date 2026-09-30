@@ -1,0 +1,10 @@
+{
+  "kind": "strict catalog representation mismatch",
+  "table": "character_focused_authoring_payloads",
+  "field": "relacl",
+  "source": "explicit owner-only ACL",
+  "restored": "NULL ACL",
+  "contents_and_indexes_matched": true,
+  "followup": "effective ACL and owner/RLS/constraints/indexes comparison; anon/authenticated privilege denial checked",
+  "production_effect": false
+}

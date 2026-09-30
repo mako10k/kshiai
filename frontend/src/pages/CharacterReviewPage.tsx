@@ -163,7 +163,8 @@ export function CharacterReviewPage() {
       status={review.status}
       error={error ?? review.acceptanceError}
     >
-      {review.sourceRetryAvailable && !review.stale ? (
+      {review.reviewConfirmOnly ? <p className="muted">切替準備中は、この内容の確認と確定だけができます。</p> : null}
+      {review.sourceRetryAvailable && !review.stale && !review.reviewConfirmOnly ? (
         <section className="card">
           <p>失敗時の候補を流用せず、保存済みの元情報から新しい試行を開始します。</p>
           <button disabled={busy} onClick={() => runReviewAction(setBusy, setError, async () => {
@@ -182,7 +183,7 @@ export function CharacterReviewPage() {
           assistantMessage={review.assistantMessage}
           confirmLabel={confirmLabels[review.kind]}
           busy={busy}
-          chat={review.kind === "create" && review.canEditCandidate !== false ? {
+          chat={review.kind === "create" && review.canEditCandidate !== false && !review.reviewConfirmOnly ? {
             value: draftMessage,
             placeholder: "例: もっと防御寄りに。髪色を暗い赤に。",
             busy,
@@ -199,9 +200,13 @@ export function CharacterReviewPage() {
           } : undefined}
           onConfirm={() => runReviewAction(setBusy, setError, async () => {
             const res = await api.confirmCharacterDraft(review.attemptId, review.candidateDigest);
-            nav(`/characters/${res.character.id}`);
+            if (review.reviewConfirmOnly) {
+              setReview(await getCharacterReview(review.attemptId));
+            } else {
+              nav(`/characters/${res.character.id}`);
+            }
           }, "確定に失敗しました")}
-          onDiscard={() => runReviewAction(setBusy, setError, async () => {
+          onDiscard={review.reviewConfirmOnly ? undefined : () => runReviewAction(setBusy, setError, async () => {
             await api.discardCharacterDraft(review.attemptId);
             nav(backPath(review));
           }, "破棄に失敗しました")}

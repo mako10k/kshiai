@@ -1,0 +1,35 @@
+{
+  "schema": "kshiai/vt104-owner-key-secdat-registration/v1",
+  "observedAt": "2026-09-30T20:36:38.505957+09:00",
+  "authority": "direct user instruction secdat \u306b\u767b\u9332\u3057\u3066\u304f\u3060\u3055\u3044",
+  "domain": "/home/katsumata-m/kshiai",
+  "store": "snapshot-recovery",
+  "privateKeyName": "VT104_SNAPSHOT_AGE_IDENTITY",
+  "publicKeyName": "VT104_SNAPSHOT_AGE_RECIPIENT",
+  "privateSecretId": "076baf57-9965-4d7f-9a2b-547aa8a83e37",
+  "publicRecipient": "age13fe88lnaq2mrhhcg7vhl4cdkkkemrnpkqhn8zzvqm5p5jfk0zursnvr6j8",
+  "recipientSha256": "01fc096b14c4e73d4afeee5e03ca65b8d34616a1753e6d1076b6e6ee29c7d3c5",
+  "writes": [
+    "store-create",
+    "empty-store-v2-migrate",
+    "VT104_SNAPSHOT_AGE_IDENTITY-set",
+    "VT104_SNAPSHOT_AGE_RECIPIENT-set"
+  ],
+  "maximumWrites": 4,
+  "readback": {
+    "publicRecipientMatches": true,
+    "storedIdentityRoundtrip": true,
+    "defaultStoreContainsKeys": false,
+    "privateIdentityPlaintextFileWritten": false,
+    "privateIdentityPrinted": false
+  },
+  "attrs": {
+    "VT104_SNAPSHOT_AGE_IDENTITY": "key_visibility=unlocked\nvalue_access=unlocked\nbulk_select=exclude",
+    "VT104_SNAPSHOT_AGE_RECIPIENT": "key_visibility=always\nvalue_access=always\nbulk_select=exclude"
+  },
+  "fixtureCipherSha256": "4ec557bbd45d1f8dc99949b4dc059dd850d63825283cf8f3e141c4805c34a0fe",
+  "independentSecdatBackup": "not observed; registration is primary only; recovery bundle/master-key backup remains separate owner-managed input",
+  "productionWrites": 0,
+  "githubWrites": 0,
+  "secdatFsckV2": "ok"
+}

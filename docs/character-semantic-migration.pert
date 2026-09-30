@@ -442,7 +442,7 @@ task cc314 cm305 -> cm314:
   description "Delegates remaining V3 Stage trial to docs/character-v3-stage-trial.pert. vt102, vt109, vt110 and vt103 local joined browser integration are done; remaining child resource work is 37/6p. Next vt104 prepares the exact release and stopped cutover/readback procedure; Stage deployment/data activation/owner play remain separately authorized. Local evidence docs/evidence/vt103-local-integration-2026-09-30.md."
   duration 37/6p
   owner "user and codex"
-  source "docs/evidence/vt103-local-integration-2026-09-30.md; child perttool resource makespan37/6p; vt103 local joined-path evidence; accepted cc319 unchanged"
+  source "Child docs/character-v3-stage-trial.pert vt104: local core plus eight Stage smoke adapters and isolated tests validated, Accepted ADR0041 snapshot policy selected, owner-key preparation ready. Workflow integration, actual recovery R, key/email resource inputs, exact release/CI/artifacts and separately approved Stage/production actions remain. Local evidence: docs/evidence/vt104-stage-smoke-detail-2026-09-30.md. Parent outcome remains owner real V3 Stage play."
   requires:
     cr001 1
     cr002 1

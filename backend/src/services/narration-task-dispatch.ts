@@ -1,4 +1,5 @@
-import { createHash } from "node:crypto";
+// R: Admit and deliver narration outbox work to the configured task queue.
+import { createHash, randomUUID } from "node:crypto";
 import { createRemoteJWKSet, jwtVerify } from "jose";
 import { config } from "../config.js";
 import {
@@ -6,6 +7,10 @@ import {
   recoverStaleNarrationOutbox,
   type NarrationOutboxDelivery,
 } from "./narration-worker.js";
+import {
+  cutoverNarrationBattleIds,
+  runCutoverBackgroundOperation,
+} from "./cutover-admission.js";
 
 const googleJwks = createRemoteJWKSet(
   new URL("https://www.googleapis.com/oauth2/v3/certs"),
@@ -28,7 +33,7 @@ async function metadataAccessToken(fetchImpl: Fetch): Promise<string> {
   return body.access_token;
 }
 
-export async function enqueueNarrationTask(
+async function enqueueNarrationTaskRaw(
   delivery: NarrationOutboxDelivery,
   fetchImpl: Fetch = fetch,
 ): Promise<void> {
@@ -70,13 +75,52 @@ export async function enqueueNarrationTask(
   }
 }
 
+export async function enqueueNarrationTask(
+  delivery: NarrationOutboxDelivery,
+  fetchImpl: Fetch = fetch,
+): Promise<void> {
+  return runCutoverBackgroundOperation({
+    operationId:
+      `narration-enqueue:${delivery.outboxId}:${delivery.deliveryGeneration}`,
+    kind: "narration-dispatch",
+    battleId: delivery.battleId,
+  }, () => enqueueNarrationTaskRaw(delivery, fetchImpl));
+}
+
 export async function dispatchPendingNarrationTasks(limit = 20): Promise<{
   delivered: number;
   failed: number;
 }> {
   if (!config.narrationTaskQueue.configured) return { delivered: 0, failed: 0 };
-  await recoverStaleNarrationOutbox();
-  return dispatchNarrationOutbox((delivery) => enqueueNarrationTask(delivery), limit);
+  const battleIds = await cutoverNarrationBattleIds();
+  const dispatchForBattle = (
+    dispatchLimit: number,
+    battleId?: string,
+  ) => runCutoverBackgroundOperation({
+    operationId: `narration-dispatch:${randomUUID()}`,
+    kind: "narration-dispatch",
+    ...(battleId ? { battleId } : {}),
+  }, async () => {
+    const filter = battleId ? [battleId] : undefined;
+    await recoverStaleNarrationOutbox(new Date(), 5 * 60 * 1000, filter);
+    return dispatchNarrationOutbox(
+      (delivery) => enqueueNarrationTaskRaw(delivery),
+      dispatchLimit,
+      filter,
+    );
+  });
+  if (battleIds === null) return dispatchForBattle(limit);
+  let delivered = 0;
+  let failed = 0;
+  let remaining = Math.max(1, Math.min(100, Math.trunc(limit)));
+  for (const battleId of battleIds) {
+    if (remaining === 0) break;
+    const result = await dispatchForBattle(remaining, battleId);
+    delivered += result.delivered;
+    failed += result.failed;
+    remaining -= result.delivered + result.failed;
+  }
+  return { delivered, failed };
 }
 
 export async function verifyNarrationTaskAuthorization(

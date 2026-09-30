@@ -1,0 +1,28 @@
+domain VT104_KEY:
+  description "Register a new owner snapshot age key in the existing kshiai secdat domain."
+evidence OWNER:
+  "After selecting owner public-key snapshot encryption and requesting new-key creation preparation, owner explicitly replied secdat に登録してください to the primary/recovery storage question."
+evidence DOMAIN:
+  "Exact registered domain /home/katsumata-m/kshiai is unlocked with wrapped master key present. Store list contains only default. Planned VT104_SNAPSHOT_AGE_IDENTITY and RECIPIENT are absent. Existing sync-env script uses an explicit key whitelist and normal runtime/GitHub exec uses default namespace."
+evidence TOOL:
+  "Signed Ubuntu age1.1.1 package verified; synthetic encrypt/decrypt hash equality and wrong-key/tamper rejection pass. age-keygen stdout can be captured privately; -y derives recipient from stdin. secdat set supports stdin, secret/public storage, bulk exclusion, dry-run plans."
+premise AUTHORITY:
+  "Owner request authorizes local new-key registration. Use existing exact domain, a new snapshot-recovery namespace, and two named keys; do not change domain passphrase, existing key identities, app env or cloud resources. Local namespace selection is the narrow internal storage choice for the requested registration."
+premise CONTROL:
+  "Maximum persistent writes3: one namespace create, one private identity secret set, one public recipient set. Both bulk-excluded and explicitly selected by recovery scripts. Capture private key and decrypted readback only in process memory; never print or put into argv/repo/plaintext key file. Refuse existing namespace/key conflicts rather than overwrite. After an ambiguous mutation inspect exact metadata/readback once, no new ID retry."
+pending BACKUP:
+  "Independent backup of secdat encrypted store/master-key recovery is not proven by registration; keep backup as a separate exact owner-managed input. Actual production snapshot/capture/restore remains unperformed."
+decision REGISTER based_on OWNER, DOMAIN, TOOL, AUTHORITY, CONTROL, BACKUP:
+  "Create snapshot-recovery namespace, privately generate age identity, dry-run and set named identity/recipient once, derive public recipient from independent decrypted readback, encrypt/decrypt synthetic data using stored identity, and read attributes/object metadata. Report only recipient, secret UUID and digests. Update packet primary to secdat and keep independent recovery proof pending."
+
+evidence EMPTY_STORE_FORMAT:
+  "New snapshot-recovery namespace creation succeeded. First secret-set dry-run failed before write: mutation planning requires v2. Migration dry-run confirms v1 namespace has0 entries/secret objects/public/encrypted values and0 issues; both planned keys remain absent."
+premise FORMAT_REPAIR:
+  "Convert only this new empty namespace to v2, then dry-run/set the two keys. Maximum persistent mutations4 total including earlier namespace creation, empty-format migration and two key sets. Existing namespace/domain credential configuration stays outside target."
+decision CONTINUE_REGISTRATION based_on REGISTER, EMPTY_STORE_FORMAT, FORMAT_REPAIR, OWNER:
+  "Migrate the new empty namespace after successful preview, then generate/register key once. Previous dry-run failure persisted no identity. Read exact metadata on any ambiguous write and keep public-only receipt."
+
+evidence REGISTERED:
+  "At20:36 JST, v2 snapshot-recovery store contains owner identity and recipient. Fresh get-derived public recipient matches; decrypt via private pipe returns exact synthetic plaintext; normal default store lacks both key names. Four local mutations completed, no production/GitHub write and no plaintext identity file/log."
+decision REGISTERED_READBACK based_on REGISTERED, OWNER, CONTROL:
+  "Freeze actual public recipient/domain/store/secret-object metadata in packet and treat secdat as primary. Preserve independent backup and real recovery R as separate unverified prerequisites, not registration results."

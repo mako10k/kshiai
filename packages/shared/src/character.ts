@@ -520,6 +520,8 @@ export const CharacterPublicSchema = z.object({
 export type CharacterPublic = z.infer<typeof CharacterPublicSchema>;
 
 export const CharacterAuthoringReviewSchema = AssetAuthoringReviewBaseSchema.extend({
+  /** This owner may inspect and confirm the fixed candidate, but cannot edit or discard it. */
+  reviewConfirmOnly: z.boolean().optional(),
   characterId: z.string().min(1).max(80),
   candidate: CharacterPublicSchema.nullable(),
   candidateDigest: z.string().nullable().optional(),

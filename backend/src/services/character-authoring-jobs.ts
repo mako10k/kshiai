@@ -1,3 +1,5 @@
+// R: Admit and execute durable asset-authoring jobs under their execution fences.
+import { randomUUID } from "node:crypto";
 import { toAssetAuthoringProgress } from "@kshiai/shared";
 import { findCharacterNameConflict } from "../character-name-uniqueness.js";
 import * as charAssetRepo from "../repositories/character-assets-v2.js";
@@ -26,6 +28,10 @@ import {
   lastAuthoringAdjustment,
   sheetFromAuthoringCandidate,
 } from "./character-authoring-service.js";
+import {
+  cutoverAllowsGeneralWork,
+  runCutoverBackgroundOperation,
+} from "./cutover-admission.js";
 
 export type CharacterAuthoringJobResult = "idle" | "completed" | "failed";
 
@@ -220,7 +226,7 @@ async function runClaimedAttempt(
   });
 }
 
-export async function processNextCharacterAuthoringJob(input: {
+async function processNextCharacterAuthoringJobCore(input: {
   llm: LlmProvider;
   workerId?: string;
   cap?: number;
@@ -298,6 +304,17 @@ export async function processNextCharacterAuthoringJob(input: {
     });
     return "failed";
   }
+}
+
+export async function processNextCharacterAuthoringJob(input: {
+  llm: LlmProvider;
+  workerId?: string;
+  cap?: number;
+}): Promise<CharacterAuthoringJobResult> {
+  return runCutoverBackgroundOperation({
+    operationId: `authoring-worker:${randomUUID()}`,
+    kind: "authoring-worker",
+  }, () => processNextCharacterAuthoringJobCore(input));
 }
 
 export type AuthoringTaskDelivery = {
@@ -379,7 +396,7 @@ async function runClaimedAuthoringTask(
   }
 }
 
-export async function processAuthoringTask(input: {
+async function processAuthoringTaskCore(input: {
   llm: LlmProvider;
   delivery: AuthoringTaskDelivery;
   workerId: string;
@@ -438,12 +455,26 @@ export async function processAuthoringTask(input: {
   }
 }
 
+export async function processAuthoringTask(input: {
+  llm: LlmProvider;
+  delivery: AuthoringTaskDelivery;
+  workerId: string;
+  cap?: number;
+}): Promise<"acknowledged" | "completed" | "failed" | "retry_queued"> {
+  return runCutoverBackgroundOperation({
+    operationId:
+      `authoring-worker:${input.delivery.outboxId}:${input.delivery.deliveryGeneration}`,
+    kind: "authoring-worker",
+  }, () => processAuthoringTaskCore(input));
+}
+
 export async function drainCharacterAuthoringJobs(input: {
   llm: LlmProvider;
   workerId?: string;
   cap?: number;
   limit?: number;
 }): Promise<void> {
+  if (!await cutoverAllowsGeneralWork()) return;
   const deadline = Date.now() + 10_000;
   for (let i = 0; i < (input.limit ?? 32) && Date.now() < deadline; i += 1) {
     const result = await processNextCharacterAuthoringJob(input);
@@ -456,7 +487,10 @@ export async function drainCharacterAuthoringJobs(input: {
 
 export function wakeCharacterAuthoringJobs(llm: LlmProvider): void {
   setImmediate(() => {
-    void processNextCharacterAuthoringJob({ llm }).catch((error) => {
+    void cutoverAllowsGeneralWork().then((allowed) => {
+      if (!allowed) return;
+      return processNextCharacterAuthoringJob({ llm });
+    }).catch((error) => {
       console.error("[authoring] job wake failed", error);
     });
   });
