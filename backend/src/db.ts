@@ -1,3 +1,4 @@
+// R: Provide SQLite and PostgreSQL connections and transactional schema initialization.
 import fs from "node:fs";
 import path from "node:path";
 import SqliteDatabase from "better-sqlite3";
@@ -312,6 +313,10 @@ export function getDb(): SqliteDatabase.Database {
       ON narration_style_authoring_attempts (owner_user_id, updated_at DESC);
     CREATE INDEX IF NOT EXISTS idx_narration_style_authoring_asset
       ON narration_style_authoring_attempts (narration_style_id, updated_at DESC);
+    CREATE TABLE IF NOT EXISTS battle_discard_receipts (
+      battle_id TEXT PRIMARY KEY,
+      cutover_id TEXT NOT NULL
+    );
     CREATE TABLE IF NOT EXISTS battles (
       id TEXT PRIMARY KEY,
       state_json TEXT NOT NULL,

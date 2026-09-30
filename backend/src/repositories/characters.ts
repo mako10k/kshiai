@@ -1,3 +1,4 @@
+// R: Persist character catalogs and project authorized owner and opponent views.
 import type { CharacterSheet, CombatReadyCharacterSheet } from "@kshiai/shared";
 import {
   CharacterSheetSchema,
@@ -35,12 +36,12 @@ import {
   getInFlightCharacterAuthoringAttempt,
   getLatestCharacterAuthoringAttemptForCharacter,
   getReadyCharacterGenerationHistory,
-  listReadyCharacterIds,
 } from "./character-assets-v2.js";
 import {
   listLatestAttemptsByCharacterIds,
   reviewStateFromAttempt,
 } from "./owner-notifications.js";
+import { filterEligibleBattleParticipants } from "../services/battle-participation-eligibility.js";
 import { buildImportedCharacterEnvelopeV2 } from "../services/character-authoring-service.js";
 
 async function reviewMarkForCharacter(characterId: string, ownerUserId: string) {
@@ -279,9 +280,10 @@ function clampPage(limit?: number, offset?: number) {
 export async function listCharactersForUser(
   userId: string,
   q?: string,
-  page?: { limit?: number; offset?: number },
+  page?: { limit?: number; offset?: number; battleEligibleOnly?: boolean },
 ): Promise<CharacterListPage> {
   let sheets = (await listOwnedSheets(userId)).filter(isActive);
+  if (page?.battleEligibleOnly) sheets = await filterEligibleBattleParticipants(sheets);
   if (q?.trim()) {
     const needle = q.trim().toLowerCase();
     sheets = sheets.filter(
@@ -317,7 +319,7 @@ export async function listCharactersForUser(
       return {
         ...toPublicCharacter(sheet, userId, ratingDisplay),
         compatibility,
-        selectable: compatibility.status === "ready",
+        selectable: page?.battleEligibleOnly === true || compatibility.status === "ready",
         upgradeAction: compatibility.status === "ready"
           ? null
           : { label: "このキャラを最新版に更新", targetSchemaVersion: 2 },
@@ -427,8 +429,7 @@ export async function listPlayableOpponentSheets(
   }
   const map = new Map(sheets.map((s) => [s.id, s]));
   const unique = [...map.values()];
-  const readyIds = await listReadyCharacterIds(unique.map((sheet) => sheet.id));
-  return unique.filter((sheet) => readyIds.has(sheet.id));
+  return filterEligibleBattleParticipants(unique);
 }
 
 export async function updateCharacterVisibility(

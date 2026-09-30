@@ -5,7 +5,7 @@ project V3_STAGE_TRIAL:
   description "Current scope: docs/character-semantic-migration-plan-revision-13.md. vt109 fixed V3 candidate review, exact confirmation and activation completed locally on 2026-09-29; evidence: docs/evidence/vt109-registration-2026-09-29.md. Velocity uses perttool declared elapsed throughput for vt109 only, 20:48:57-21:20:47. One registration task is a provisional sample; vt101 partial timing is excluded. External owner/deployment waits and calendar allocation are separate. New Battle implementation follows cc319 acceptance and vt111 handoff."
   as_of 2026-09-29
   duration_unit point
-  velocity 780p/191h
+  velocity 1300p/451h
   finish VST_PLAYED
   goal_owner user
   dag_owner user
@@ -68,7 +68,7 @@ task vt102 VST_LOCAL_CANDIDATES -> VST_REVISION_BOUND:
     optimistic 3p
     most_likely 4p
     pessimistic 5p
-  status suspended
+  status done
   requires:
     DEV 1
   source "Owner immutable revision decisions; exact successor contract via VST_CONTRACT_READY. Historical estimate retained for original binding/consumer slice; expanded lifecycle/cutover is vt110."
@@ -152,6 +152,7 @@ task vt110 VST_REVISION_BOUND -> VST_BOUND:
     optimistic 0.5p
     most_likely 1p
     pessimistic 2p
+  status done
   requires:
     DEV 1
   source "Owner approved narrow lifecycle and physical deletion; exact successor ADR/design prerequisite; plan revision 13"
@@ -243,3 +244,29 @@ work_event WE-83949ccb0e29145ed682683cdc752d23e14cb2ca07b29b42b1790b41f1b8ee51:
   task vt111
   kind finish
   occurred_at 2026-09-29T21:38:16+09:00
+
+work_event WE-71b720e00b4218addf8fa7941779460a900ac4df673454ac4c0797b7845183a5:
+  model 1
+  task vt102
+  kind resume
+  occurred_at 2026-09-30T10:09:28+09:00
+
+work_event WE-55d1574aaf96c953f5371c60854d248a79d3aa46523aca52295c32914bd41b4f:
+  model 1
+  task vt102
+  kind finish
+  occurred_at 2026-09-30T10:40:08+09:00
+
+work_event WE-a4749c02721d06214e3852836689bb2d6e931b9fc7afc516fab94f6c6e805e58:
+  model 1
+  task vt110
+  kind start
+  occurred_at 2026-09-30T11:08:20+09:00
+  planned_value 13/12p
+
+work_event WE-d8d4ea6efba4772af758dcda1af7ae3426160f975c3dcddbae9639faf691d615:
+  model 1
+  task vt110
+  kind finish
+  occurred_at 2026-09-30T11:30:53+09:00
+  active_time 451/1200h

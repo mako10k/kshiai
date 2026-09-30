@@ -1,3 +1,4 @@
+// R: Persist and read battle state with creation and fenced revision updates.
 import type { BattleListItem, BattleState } from "@kshiai/shared";
 import {
   BattleStateSchema,
@@ -27,6 +28,41 @@ export async function saveBattle(
   await writeBattle({ query }, state, meta);
 }
 
+/** UPDATE-only alias retained for existing advancement callers. */
+export const updateExistingBattle = saveBattle;
+
+export async function isBattleDiscarded(id: string): Promise<boolean> {
+  const result = await query("SELECT 1 FROM battle_discard_receipts WHERE battle_id = $1", [id]);
+  return result.rowCount !== 0;
+}
+
+export async function insertNewBattle(
+  state: BattleState,
+  meta: { sideAUserId: string; sideACharacterId: string; sideBCharacterId: string },
+): Promise<"created" | "conflict"> {
+  const validated = BattleStateSchema.parse(state);
+  if (validated.sideA.characterId !== meta.sideACharacterId ||
+      validated.sideB.characterId !== meta.sideBCharacterId) throw new Error("BATTLE_CONTRACT_MISMATCH");
+  const context = currentProviderOperationContext();
+  if (context && context.battleId !== state.id) throw new Error("PROVIDER_OPERATION_BATTLE_SCOPE_MISMATCH");
+  return withTransaction(async (connection) => {
+    const discarded = await connection.query(
+      "SELECT 1 FROM battle_discard_receipts WHERE battle_id = $1", [state.id],
+    );
+    if (discarded.rowCount !== 0) throw new Error("BATTLE_NOT_FOUND");
+    const inserted = await connection.query(
+      `INSERT INTO battles (id, state_json, side_a_user_id, side_a_character_id,
+          side_b_character_id, created_at, updated_at, revision, observation_run_id)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+       ON CONFLICT (id) DO NOTHING RETURNING id`,
+      [state.id, JSON.stringify(validated), meta.sideAUserId, meta.sideACharacterId,
+        meta.sideBCharacterId, state.createdAt, state.updatedAt,
+        state.battleRevision ?? 0, context?.runId ?? null],
+    );
+    return inserted.rowCount === 1 ? "created" : "conflict";
+  });
+}
+
 async function writeBattle(
   connection: DatabaseConnection,
   state: BattleState,
@@ -54,42 +90,28 @@ async function writeBattle(
   }
   const observationRunId = providerContext?.runId ?? null;
   const result = await connection.query<{ id: string }>(
-    `INSERT INTO battles
-      (id, state_json, side_a_user_id, side_a_character_id, side_b_character_id,
-       created_at, updated_at, revision, observation_run_id)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $9, $13)
-     ON CONFLICT (id) DO UPDATE
-       SET state_json = EXCLUDED.state_json,
-           updated_at = EXCLUDED.updated_at,
-           revision = EXCLUDED.revision
-       WHERE battles.revision = $8
-         AND (battles.observation_run_id = EXCLUDED.observation_run_id OR
-              (battles.observation_run_id IS NULL AND EXCLUDED.observation_run_id IS NULL))
-         AND (CAST($10 AS TEXT) IS NULL OR EXISTS (
-           SELECT 1 FROM battle_leases lease
-            WHERE lease.battle_id = $1
-              AND lease.owner_id = $10
-              AND lease.fencing_token = $11
-              AND lease.expires_at > $12
-         ))
-     RETURNING id`,
-    [
-      state.id,
-      json,
-      meta.sideAUserId,
-      meta.sideACharacterId,
-      meta.sideBCharacterId,
-      state.createdAt,
-      state.updatedAt,
-      expectedRevision,
-      nextRevision,
-      fence?.ownerId ?? null,
-      fence?.fencingToken ?? null,
-      new Date().toISOString(),
-      observationRunId,
-    ],
+    `UPDATE battles
+        SET state_json = $2, updated_at = $7, revision = $9
+      WHERE id = $1 AND revision = $8 AND created_at = $6
+        AND side_a_user_id = $3 AND side_a_character_id = $4
+        AND side_b_character_id = $5
+        AND (observation_run_id = $13 OR
+             (observation_run_id IS NULL AND CAST($13 AS TEXT) IS NULL))
+        AND (CAST($10 AS TEXT) IS NULL OR EXISTS (
+          SELECT 1 FROM battle_leases lease
+           WHERE lease.battle_id = $1 AND lease.owner_id = $10
+             AND lease.fencing_token = $11 AND lease.expires_at > $12
+        ))
+      RETURNING id`,
+    [state.id, json, meta.sideAUserId, meta.sideACharacterId,
+      meta.sideBCharacterId, state.createdAt, state.updatedAt,
+      expectedRevision, nextRevision, fence?.ownerId ?? null,
+      fence?.fencingToken ?? null, new Date().toISOString(), observationRunId],
   );
-  if (result.rowCount !== 1) throw new Error("BATTLE_REVISION_CONFLICT");
+  if (result.rowCount !== 1) {
+    const exists = await connection.query("SELECT 1 FROM battles WHERE id = $1", [state.id]);
+    throw new Error(exists.rowCount === 0 ? "BATTLE_NOT_FOUND" : "BATTLE_REVISION_CONFLICT");
+  }
 }
 
 export async function saveBattleWithNarrationOutbox(

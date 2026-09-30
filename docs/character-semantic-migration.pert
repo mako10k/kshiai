@@ -439,10 +439,10 @@ gate cg305 cm303 -> cm305:
 task cc314 cm305 -> cm314:
   tags [M3_STAGE_GAME_USE]
   title "Try Neva versus Rio in an actual V3-only Stage battle"
-  description "Remaining V3_STAGE_TRIAL work once after vt109 and vt111 completion: vt102 immutable binding, vt110 lifecycle/cutover, vt103 local integration, then separately authorized release/deploy/data/owner play vt104-vt108. Child resource makespan 13.25p, conditional on suspended vt102 resumption. External waits excluded; single registration-task velocity is provisional."
-  duration 13.25p
+  description "Remaining V3_STAGE_TRIAL after vt102 binding and vt110 lifecycle completion: vt103 formal local Neva/Rio integration, then separately authorized release/deploy/data/owner play vt104-vt108. Child resource makespan 49/6p from 2026-09-30 perttool readback. Child velocity now uses measured vt110 elapsed/active interval 451/1200h and start baseline13/12p; parent keeps its older registration-only velocity as a distinct low-confidence reference because later evaluation/migration differs. External waits and person-effort conversion are excluded."
+  duration 49/6p
   owner "user and codex"
-  source "docs/evidence/cc319-owner-acceptance-2026-09-29.md; docs/evidence/vt111-accepted-handoff-2026-09-29.json; child perttool resource analysis 53/4p"
+  source "docs/evidence/vt110-implementation-2026-09-30.md; child perttool resource makespan49/6p; vt110 velocity observation; accepted cc319 unchanged"
   requires:
     cr001 1
     cr002 1

@@ -9,7 +9,7 @@ process.env.DATABASE_URL = "";
 process.env.AUTH_PROVIDER = "legacy";
 process.env.DATABASE_PATH = join(tempDir, "test.db");
 
-const { saveBattle, getBattle, listBattlesForUser, searchCharacterBattleHistory, countFinishedBattlesForCharacter, getCharacterBattleDetail } =
+const { insertNewBattle, saveBattle, getBattle, listBattlesForUser, searchCharacterBattleHistory, countFinishedBattlesForCharacter, getCharacterBattleDetail } =
   await import("./battles.js");
 const { query } = await import("../db.js");
 const { saveBattlePresentation } = await import("./battle-presentations.js");
@@ -124,7 +124,7 @@ describe("character battle history tools", () => {
   const opponentId = "chr_opp";
 
   it("indexes finished battles and supports search/detail", async () => {
-    await saveBattle(
+    await insertNewBattle(
       makeFinishedBattle({
         id: "bat_1",
         characterId,
@@ -150,7 +150,7 @@ describe("character battle history tools", () => {
       narrative: { turn: 1, narrator: ["read-model narration"], speeches: [] },
       createdAt: new Date().toISOString(),
     });
-    await saveBattle(
+    await insertNewBattle(
       makeFinishedBattle({
         id: "bat_2",
         characterId,
@@ -215,7 +215,7 @@ describe("character battle history tools", () => {
       }),
       battleRevision: 0,
     } satisfies BattleState;
-    await saveBattle(base, meta);
+    await insertNewBattle(base, meta);
 
     const startedAt = new Date().toISOString();
     const stale = {

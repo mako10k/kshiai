@@ -1,4 +1,5 @@
 /** R: Adapt authenticated HTTP requests to application operations. */
+import { readBattleAccess } from "./services/battle-lifecycle-access.js";
 import { candidateToSheet, assertCharacterCandidateReady, fixedCandidateOwnerReview } from "./services/character-authoring-candidate.js";
 import { Hono } from "hono";
 import {
@@ -724,6 +725,7 @@ export function buildRoutes(options: {
     const page = await charRepo.listCharactersForUser(user.id, q, {
       limit: Number.isFinite(limit) ? limit : 20,
       offset: Number.isFinite(offset) ? offset : 0,
+      battleEligibleOnly: c.req.query("selectable") === "true",
     });
     if (c.req.query("selectable") === "true") {
       const characters = page.characters.filter((character) => character.selectable);
@@ -2558,6 +2560,9 @@ export function buildRoutes(options: {
       key: idempotencyKey,
       requestHash: createRequestHash,
     }).slice(0, 32)}`;
+    if (await battleRepo.isBattleDiscarded(battleId)) {
+      return c.json({ error: "not_found" }, 404);
+    }
     let observationRunId: string | null;
     try {
       observationRunId = parseObservationRunId(
@@ -2635,8 +2640,10 @@ export function buildRoutes(options: {
         { error: msg.toLowerCase(), message: msg },
         msg === "OBSERVATION_RUN_FORBIDDEN"
           ? 403
-          : msg.includes("UPGRADE_REQUIRED")
+          : msg.includes("UPGRADE_REQUIRED") || msg.includes("V3_CAPABILITY_BLOCKED")
             ? 409
+          : msg === "BATTLE_NOT_FOUND"
+            ? 404
           : msg.includes("NOT_FOUND") || msg.includes("FORBIDDEN")
             ? 400
             : msg.includes("PROVIDER_OPERATION_")
@@ -2675,10 +2682,8 @@ export function buildRoutes(options: {
   });
 
   async function authorizeBattleNarration(battleId: string, userId: string) {
-    const meta = await battleRepo.getBattleMeta(battleId);
-    if (!meta) return "not_found" as const;
-    if (meta.side_a_user_id !== userId) return "forbidden" as const;
-    return meta;
+    const access = await readBattleAccess(battleId, userId);
+    return access.kind === "available" ? access.meta : access.kind;
   }
 
   authed.get("/battles/:id/narration", async (c) => {
@@ -2755,10 +2760,12 @@ export function buildRoutes(options: {
   authed.get("/battles/:id", async (c) => {
     const user = c.get("user");
     const id = c.req.param("id");
-    const meta = await battleRepo.getBattleMeta(id);
+    const access = await readBattleAccess(id, user.id);
+    if (access.kind === "not_found") return c.json({ error: "not_found" }, 404);
+    if (access.kind === "forbidden") return c.json({ error: "forbidden" }, 403);
+    const meta = access.meta;
     const state = await battleRepo.getBattle(id);
-    if (!meta || !state) return c.json({ error: "not_found" }, 404);
-    if (meta.side_a_user_id !== user.id) return c.json({ error: "forbidden" }, 403);
+    if (!state) return c.json({ error: "not_found" }, 404);
     const mine = state.assetManifest?.characters.a.snapshot ??
       await charRepo.getSheetIncludingDeleted(meta.side_a_character_id);
     if (!mine) return c.json({ error: "not_found" }, 404);
@@ -2778,6 +2785,12 @@ export function buildRoutes(options: {
     if (!idempotencyKey) {
       return c.json({ error: "idempotency_key_required" }, 400);
     }
+    if (await battleRepo.isBattleDiscarded(battleId)) {
+      return c.json({ error: "not_found" }, 404);
+    }
+    const access = await readBattleAccess(battleId, user.id);
+    if (access.kind === "not_found") return c.json({ error: "not_found" }, 404);
+    if (access.kind === "forbidden") return c.json({ error: "forbidden" }, 403);
     const scope = `battle-advance:${battleId}`;
     const idempotency = await beginIdempotentRequest({
       userId: user.id,
@@ -2869,6 +2882,12 @@ export function buildRoutes(options: {
     if (!idempotencyKey) {
       return c.json({ error: "idempotency_key_required" }, 400);
     }
+    if (await battleRepo.isBattleDiscarded(battleId)) {
+      return c.json({ error: "not_found" }, 404);
+    }
+    const access = await readBattleAccess(battleId, user.id);
+    if (access.kind === "not_found") return c.json({ error: "not_found" }, 404);
+    if (access.kind === "forbidden") return c.json({ error: "forbidden" }, 403);
     const scope = `battle-advance:${battleId}`;
     const idempotency = await beginIdempotentRequest({
       userId: user.id,
@@ -2995,6 +3014,12 @@ export function buildRoutes(options: {
     if (!idempotencyKey) {
       return c.json({ error: "idempotency_key_required" }, 400);
     }
+    if (await battleRepo.isBattleDiscarded(battleId)) {
+      return c.json({ error: "not_found" }, 404);
+    }
+    const access = await readBattleAccess(battleId, user.id);
+    if (access.kind === "not_found") return c.json({ error: "not_found" }, 404);
+    if (access.kind === "forbidden") return c.json({ error: "forbidden" }, 403);
     const scope = `battle-advance:${battleId}`;
     const idempotency = await beginIdempotentRequest({
       userId: user.id,

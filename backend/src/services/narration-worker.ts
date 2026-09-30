@@ -1,3 +1,4 @@
+// R: Generate and publish ordered narration from committed battle inputs under lease fences.
 import {
   JudgmentPresentationProjectionSchema,
   NarrativeBlockSchema,
@@ -324,7 +325,7 @@ async function acquireFencedLease(input: {
     const result = await connection.query<{ fencing_token: number }>(
       `INSERT INTO battle_narration_leases
         (battle_id, owner_id, fencing_token, expires_at, updated_at)
-       VALUES ($1, $2, 1, $3, $4)
+       SELECT $1, $2, 1, $3, $4 WHERE EXISTS (SELECT 1 FROM battles WHERE id = $1)
        ON CONFLICT (battle_id) DO UPDATE
          SET owner_id = EXCLUDED.owner_id,
              fencing_token = battle_narration_leases.fencing_token + 1,
@@ -336,7 +337,10 @@ async function acquireFencedLease(input: {
       [input.battleId, input.ownerId, input.expiresAt, input.now],
     );
     const token = result.rows[0]?.fencing_token;
-    if (token === undefined) throw new Error("NARRATION_LEASE_BUSY");
+    if (token === undefined) {
+      if ((await connection.query("SELECT 1 FROM battles WHERE id = $1", [input.battleId])).rowCount === 0) throw new Error("BATTLE_NOT_FOUND");
+      throw new Error("NARRATION_LEASE_BUSY");
+    }
     return Number(token);
   });
 }
@@ -390,6 +394,8 @@ export async function processNextNarration(input: {
   now?: Date;
   leaseMs?: number;
 }): Promise<"idle" | "acknowledged" | "deferred" | "completed" | "retry_queued" | "failed"> {
+  const existingBattle = await query("SELECT 1 FROM battles WHERE id = $1", [input.battleId]);
+  if (existingBattle.rowCount === 0) return "acknowledged";
   const nowDate = input.now ?? new Date();
   const now = nowDate.toISOString();
   if (input.receiptId && input.outboxId && input.deliveryGeneration !== undefined) {
@@ -435,12 +441,13 @@ export async function processNextNarration(input: {
   const expiresAt = new Date(
     nowDate.getTime() + (input.leaseMs ?? 60_000),
   ).toISOString();
-  const fence = await acquireFencedLease({
-    battleId: input.battleId,
-    ownerId: input.ownerId,
-    now,
-    expiresAt,
-  });
+  let fence: number;
+  try {
+    fence = await acquireFencedLease({ battleId: input.battleId, ownerId: input.ownerId, now, expiresAt });
+  } catch (error) {
+    if (error instanceof Error && error.message === "BATTLE_NOT_FOUND") return "acknowledged";
+    throw error;
+  }
   const claimed = await withTransaction(async (connection) => {
     if (input.receiptId && input.outboxId && input.deliveryGeneration !== undefined) {
       const delivery = await connection.query<{
@@ -556,6 +563,7 @@ export async function processNextNarration(input: {
 
   const started = Date.now();
   let generated: NarrationGenerationResult | null = null;
+  let returnedGeneration: NarrationGenerationResult | null = null;
   let fallbackReason: NarrationFallbackReason | null = null;
   let failureHttpAttempts = 0;
   let failureTokenCount: number | null = null;
@@ -594,6 +602,7 @@ export async function processNextNarration(input: {
         remainingTokens: NARRATION_TOTAL_TOKEN_CEILING - priorTokenCount,
       },
     );
+    returnedGeneration = generated;
     NarrativeBlockSchema.parse(generated.narrative);
     const totalHttpAttempts = priorHttpAttempts + generated.httpAttempts;
     const totalTokenCount = priorTokenCount +
@@ -611,11 +620,11 @@ export async function processNextNarration(input: {
     const usage = error && typeof error === "object"
       ? error as { httpAttempts?: unknown; tokenCount?: unknown; estimatedCostUsd?: unknown }
       : null;
-    failureHttpAttempts = typeof usage?.httpAttempts === "number" ? usage.httpAttempts : 0;
-    failureTokenCount = typeof usage?.tokenCount === "number" ? usage.tokenCount : null;
-    failureEstimatedCostUsd = typeof usage?.estimatedCostUsd === "number"
+    failureHttpAttempts = returnedGeneration?.httpAttempts ?? (typeof usage?.httpAttempts === "number" ? usage.httpAttempts : 0);
+    failureTokenCount = returnedGeneration?.tokenCount ?? (typeof usage?.tokenCount === "number" ? usage.tokenCount : null);
+    failureEstimatedCostUsd = returnedGeneration?.estimatedCostUsd ?? (typeof usage?.estimatedCostUsd === "number"
       ? usage.estimatedCostUsd
-      : null;
+      : null);
     if (priorHttpAttempts + failureHttpAttempts >= NARRATION_TOTAL_HTTP_ATTEMPTS ||
         priorTokenCount + (failureTokenCount ?? 0) >= NARRATION_TOTAL_TOKEN_CEILING) {
       ceilingReached = true;
@@ -626,6 +635,23 @@ export async function processNextNarration(input: {
   const finishedAt = new Date().toISOString();
   const elapsedMs = Math.max(0, Date.now() - started);
   return withTransaction(async (connection) => {
+    const exists = await connection.query("SELECT 1 FROM battles WHERE id = $1", [input.battleId]);
+    if (exists.rowCount === 0) {
+      await connection.query(
+        `UPDATE battle_narration_attempts
+            SET status = $2, provider = $3, model = $4, route = $5,
+                http_attempts = $6, token_count = $7, estimated_cost_usd = $8,
+                elapsed_ms = $9, finished_at = $10, fallback_reason = $11
+          WHERE attempt_id = $1 AND fencing_token = $12`,
+        [claimed.attemptId, generated ? "completed" : "failed",
+          returnedGeneration?.provider ?? "unavailable", returnedGeneration?.model ?? null,
+          returnedGeneration?.route ?? "deterministic", generated?.httpAttempts ?? failureHttpAttempts,
+          generated?.tokenCount ?? failureTokenCount,
+          generated?.estimatedCostUsd ?? failureEstimatedCostUsd,
+          elapsedMs, finishedAt, fallbackReason, fence],
+      );
+      return "acknowledged";
+    }
     const lease = await connection.query<{ fencing_token: number }>(
       `SELECT fencing_token FROM battle_narration_leases
         WHERE battle_id = $1 AND owner_id = $2
@@ -703,14 +729,15 @@ export async function processNextNarration(input: {
     const terminal = ceilingReached || attempts >= NARRATION_WORKER_MAX_ATTEMPTS;
     await connection.query(
       `UPDATE battle_narration_attempts
-          SET status = $2, provider = 'unavailable', route = 'deterministic',
+          SET status = $2, provider = $10, model = $11, route = $12,
               http_attempts = $3, token_count = $4, estimated_cost_usd = $5,
               elapsed_ms = $6, fallback_reason = $7, error_class = $7,
               finished_at = $8
         WHERE attempt_id = $1 AND fencing_token = $9`,
       [claimed.attemptId, terminal ? "failed" : "abandoned", failureHttpAttempts,
         failureTokenCount, failureEstimatedCostUsd, elapsedMs,
-        fallbackReason ?? "other", finishedAt, fence],
+        fallbackReason ?? "other", finishedAt, fence, returnedGeneration?.provider ?? "unavailable",
+        returnedGeneration?.model ?? null, returnedGeneration?.route ?? "deterministic"],
     );
     if (!terminal) {
       await connection.query(

@@ -174,7 +174,7 @@ async function main(): Promise<void> {
     }
 
     const state = battle(sideA, sideB);
-    await battles.saveBattle(state, {
+    await battles.insertNewBattle(state, {
       sideAUserId: user.id,
       sideACharacterId: sideA.id,
       sideBCharacterId: sideB.id,

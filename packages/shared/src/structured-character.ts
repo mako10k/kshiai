@@ -1,3 +1,4 @@
+// R: Validate and project versioned structured character definitions.
 import { z } from "zod";
 import {
   ActionFeasibilityConstraintsSchema,
@@ -20,7 +21,7 @@ import {
   CharacterNarratorProjectionSetV2Schema,
   PsycheTraitProfileV1Schema,
   type CharacterNarratorStaticProjectionV2,
-} from "./battle.js";
+} from "./battle-character-compiler.js";
 import {
   AssetClaimValidationReceiptV1Schema,
   AssetDisclosurePolicyV1Schema,

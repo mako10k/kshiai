@@ -15,7 +15,7 @@ process.env.DATABASE_PATH = join(temporaryDirectory, "state.db");
 const { createInventoryFixture } = await import("./character-agency-inventory.fixtures.js");
 const { createConsciousFixture } = await import("./conscious-agency.fixtures.js");
 const { MockLlmProvider } = await import("../llm/mock.js");
-const { saveBattle, getBattle } = await import("../repositories/battles.js");
+const { insertNewBattle, saveBattle, getBattle } = await import("../repositories/battles.js");
 const { closeDatabase, query } = await import("../db.js");
 const { toBattlePublic, advanceCharacterAgents, startBattle, advanceTurn } = await import("./battle-service.js");
 const characterRepo = await import("../repositories/characters.js");
@@ -70,7 +70,7 @@ describe("ADR-0028 private agency state persistence", () => {
     const first = await advanceCharacterAgents({ llm, before: fixture.state, after: structuredClone(fixture.state),
       mine: fixture.mine, opp: fixture.opp, events: [], actions: [], activeSides: ["a"], dialoguePipeline: fixture.settings, phase: "prologue" });
     const metadata = { sideAUserId: "inventory-owner", sideACharacterId: "a", sideBCharacterId: "b", expectedRevision: 0 };
-    await saveBattle(first.state, metadata);
+    await insertNewBattle(first.state, metadata);
     const loaded = await getBattle(first.state.id);
     assert.ok(loaded?.agentStateA?.consciousAgencyV1?.upperGoal);
     assert.equal(loaded.assetManifest?.schemaVersion, 3);
@@ -106,7 +106,7 @@ describe("ADR-0028 private agency state persistence", () => {
     const metadata = {
       sideAUserId: "inventory-owner", sideACharacterId: "a", sideBCharacterId: "b", expectedRevision: 0,
     };
-    await saveBattle(state, metadata);
+    await insertNewBattle(state, metadata);
     const loaded = await getBattle(state.id);
     assert.ok(loaded?.agentStateA?.consciousAgencyV1);
     assert.deepEqual(loaded.agentStateA.consciousAgencyV1, first.state);

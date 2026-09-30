@@ -1,0 +1,16 @@
+domain CLOSEOUT:
+  description "Resumeable scoped WIP handoff and synchronization."
+evidence AUTHORITY:
+  "User explicitly requests current handoff, WIP commit if dirty, and push existing work."
+evidence STATE:
+  "Linked cc304-focused-revise-kshiai worktree on codex/cc304-focused-revise contains vt102 and vt110 source, tests, PERT and provenance changes; baseline 4a898d058609b163d1783e0d6ec1a932de7f3317."
+evidence VALIDATION:
+  "Final source passed typecheck, active npm tests 138 cases, targeted 11 cases, SQLite/PostgreSQL storage 6 cases each, receipt engine 47 cases, SealGraph fsck and diff check."
+premise BOUNDARY:
+  "Only these in-scope changes and closeout documents are committed. Existing branch is pushed once without force; no release, deployment, PR, merge or live data operation."
+pending REMAINDER:
+  "Formal Neva/Rio vt103 and separately authorized Stage execution remain; tests do not establish Stage usability."
+premise ALTERNATIVES:
+  "Leaving dirty work or a local-only commit fails the requested synchronization. A new branch or deployment expands scope without need."
+decision SYNC based_on AUTHORITY, STATE, VALIDATION, BOUNDARY, ALTERNATIVES:
+  "Write current handoff, check scoped staged paths, commit WIP, push frozen commit to existing branch, independently read remote SHA and compare local HEAD, then verify both worktrees and shared worktime."

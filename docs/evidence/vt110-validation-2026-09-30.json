@@ -1,0 +1,67 @@
+{
+  "schema": "kshiai/vt110-validation/v1",
+  "date": "2026-09-30",
+  "authority": "Accepted cc319 package unchanged",
+  "test_selection": "TEST_SELECTION suite=unit active=18 provisional=2 disabled=146",
+  "npm_case_counts": [
+    105,
+    24,
+    9
+  ],
+  "targeted": {
+    "passed": 11,
+    "failed": 0
+  },
+  "postgres": {
+    "version": "16.15",
+    "passed": 6,
+    "failed": 0,
+    "isolated": true,
+    "tls_verified": true,
+    "system_installed": false
+  },
+  "typecheck": "passed-all-workspaces-and-deployment",
+  "review": "no-concrete-inside-remaining-findings",
+  "source_manifest": "vt110-implementation-source-2026-09-30.json",
+  "worktree": "/home/katsumata-m/.codex/worktrees/cc304-focused-revise-kshiai",
+  "no_external_write": true,
+  "effort_measured": false,
+  "logs_sha256": {
+    "/tmp/vt110-targeted.log": "49b78ef3bad282bc7b21927208d1829bf4d61a443d9f0fd132db90cd9a21024a",
+    "/tmp/vt110-pg-final.log": "63c005a03116ae180f635395a6e4a48236d4a4d579ccc6bb6189b4273ebbe9fe",
+    "/tmp/vt110-typecheck-final2.log": "9b0a460c9ec64d1ebb02bc2b0b62656b840ee24c652ccfbf1a764dcd7472b4ab",
+    "/tmp/vt110-npm-test-final.log": "8d5ba8a4501e5a5bffd42e7200949cae99dcc129c09368389bc957d63fea64e2",
+    "/tmp/vt110-zero-after.log": "f47493957ea6b1f830264caa2f2b381030f4b8ddbbc6a8f12594a46b095f911b"
+  },
+  "npm_total_cases": 138,
+  "npm_failed": 0,
+  "sealgraph_fsck": "ok",
+  "git_diff_check": "passed",
+  "postgres_runtime": "stopped-after-verification",
+  "task_actuals": {
+    "start": "2026-09-30T11:08:20+09:00",
+    "finish": "2026-09-30T11:30:53+09:00",
+    "active_time_hours": "451/1200",
+    "effort": null
+  },
+  "remaining_internal_effort_agent_hours": {
+    "vt110": [
+      0,
+      0
+    ],
+    "vt103": [
+      0.5,
+      1.5
+    ],
+    "stage_trial": [
+      1.75,
+      4.5
+    ],
+    "parent_csm001": [
+      4.75,
+      11.5
+    ],
+    "confidence": "low",
+    "basis": "explicit task assumptions in implementation report, not measured actuals"
+  }
+}

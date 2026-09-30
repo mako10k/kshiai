@@ -2,6 +2,12 @@
   "schema": "kshiai/test-authority-inventory/v2",
   "scope": "repository-wide Seal-based test authority and previously inventoried structured authoring verification",
   "tests": [
+    { "path": "backend/src/services/battle-participation-eligibility.test.ts", "ref": "verification/vt110-eligibility-20260930" },
+    { "path": "backend/src/repositories/battle-lifecycle-storage.test.ts", "ref": "verification/vt110-storage-20260930" },
+    { "path": "packages/shared/src/battle-receipt-zero-net.test.ts", "ref": "verification/vt110-zero-net-receipt-20260930" },
+    { "path": "backend/src/services/v3-battle-creation.test.ts", "ref": "verification/vt102-v3-battle-paths-20260930" },
+    { "path": "packages/shared/src/character-battle-compiler-v4.test.ts", "ref": "verification/vt102-v4-compiler-20260930" },
+    { "path": "packages/shared/src/battle-action-norm-gate.test.ts", "ref": "verification/vt102-engine-norm-gate-20260930" },
     { "path": "backend/src/llm/character-definition-response-schema.test.ts", "ref": "verification/character-definition-response-schema" },
     { "path": "backend/src/llm/character-migration-ollama-provider.test.ts", "ref": "verification/character-migration-ollama-adapter" },
     { "path": "backend/src/llm/character-migration-probe-provider.test.ts", "ref": "verification/semantic-probe-provider" },
