@@ -1,0 +1,81 @@
+{
+  "schema": "kshiai/vt103-local-integration/v1",
+  "seed": 103,
+  "provider": "MockLlmProvider",
+  "database": "disposable SQLite",
+  "registrations": [
+    {
+      "characterId": "vt103-neva",
+      "attemptId": "cat_3e71d92a133af35fd08636b0",
+      "generationId": "character:vt103-neva:g1:9c430ff390de2a8a",
+      "digest": "9c430ff390de2a8a2e0b06f8fa3fadece2f2c6e7b127fbf4398b5eefd98bf23f"
+    },
+    {
+      "characterId": "vt103-rio",
+      "attemptId": "cat_04904da28c6b1b1949399698",
+      "generationId": "character:vt103-rio:g1:b6a9db68c3f66fe3",
+      "digest": "b6a9db68c3f66fe30f09a8231c35239b5380f9459eadf4eeb4ac6f36baa00c04"
+    }
+  ],
+  "edits": [
+    {
+      "characterId": "vt103-neva",
+      "attemptId": "cat_43ad1b8f766637026265764d",
+      "generationId": "character:vt103-neva:g2:0cabf335cdd17e48",
+      "digest": "0cabf335cdd17e484dbc475e09e0767a4e6f424c74077e63020588347996c277"
+    },
+    {
+      "characterId": "vt103-rio",
+      "attemptId": "cat_0f3db51559d315a2c9e53aa9",
+      "generationId": "character:vt103-rio:g2:bc1fe3bb27811a6a",
+      "digest": "bc1fe3bb27811a6a0f26d9519a26d37c6b65537e556b8f7124780f3e134060f7"
+    }
+  ],
+  "battleId": "btl_538122adf2eae30e0aeecad4c732b30f",
+  "turn": 8,
+  "status": "finished",
+  "aftermathPending": false,
+  "winnerSide": "a",
+  "resultText": "夜航の灯守・ネヴァ の勝利",
+  "advances": 22,
+  "narrationEntries": 10,
+  "cutover": {
+    "cutoverId": "vt103-local-cutover",
+    "cutoverAt": "2026-09-30T04:24:12.217Z",
+    "targets": [
+      {
+        "id": "btl_303298486d3a3dbf7169a09cc0176901",
+        "stateDigest": "fc79758b6b498ad513e05b649afb21db3d159fbb2d4912fe3b6634b788d70272"
+      }
+    ],
+    "finished": [
+      {
+        "id": "btl_538122adf2eae30e0aeecad4c732b30f",
+        "stateDigest": "d894bd12b59de9ddea2bb8d97efc345c13e710af1e0d8696e47cea4f288e0612"
+      }
+    ],
+    "relatedCounts": {
+      "battle_leases": 0,
+      "battle_presentations": 0,
+      "battle_narration_entries": 1,
+      "battle_narration_leases": 0,
+      "battle_narration_retention": 0,
+      "battle_narration_events": 1,
+      "battle_narration_outbox": 1,
+      "idempotency_keys": 4
+    },
+    "inventoryDigest": "cf3f4ed3e1dc635934d88647642ead99230d5efba1bf202e9d458755112f7f01",
+    "planDigest": "1d95d6641bf71bed0a9eb4d83038e843aed2611d81072df6eecb56804dbb3556"
+  },
+  "discarded": {
+    "kind": "discarded",
+    "discardedIds": [
+      "btl_303298486d3a3dbf7169a09cc0176901"
+    ],
+    "finishedIds": [
+      "btl_538122adf2eae30e0aeecad4c732b30f"
+    ]
+  },
+  "finishedRetained": true,
+  "browserErrors": []
+}

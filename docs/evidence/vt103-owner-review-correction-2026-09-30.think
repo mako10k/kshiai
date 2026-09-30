@@ -1,0 +1,14 @@
+domain OWNER_REVIEW:
+  description "Preserve mode-specific V3 owner review for revision input."
+evidence FAILURE:
+  "Joined real HTTP revision review returned 500: JSON.parse rejected plain Japanese revision source in fixedCandidateOwnerReview line 50."
+evidence SOURCE:
+  "All persisted V3 candidates use the fixed-create review helper; it parses sourceText as JSON unconditionally and labels every mode as new creation. beginCharacterAuthoringAttempt accepts sourceText string and revision kind."
+premise AUTHORITY:
+  "Accepted authoring v5 R18 requires complete safe mode-specific semantic diff including requested/consequential revision changes; lifecycle design requires immutable edits and exact confirmation. User requests this same local integration path."
+premise ALTERNATIVES:
+  "Changing only the test source to JSON avoids the trigger but leaves legitimate revision strings and incorrect creation-mode presentation. Broad provider-generation work is outside vt103. Correct only review interpretation and frozen baseline display."
+pending UNKNOWN:
+  "Full provider-based V3 revision generation and Stage owner interaction are downstream and not tested here. Original fixed candidates used JSON sources, so former registration-only tests did not expose the plain-source trigger."
+decision CORRECT based_on FAILURE, SOURCE, AUTHORITY, ALTERNATIVES:
+  "Treat unparsed input as its original source string. For revision review read the attempt expected immutable generation and display its field values against the complete candidate, with revision labels. Keep digest/receipts and append/CAS unchanged. Verify plain source, exact frozen baseline, browser confirmation and existing fixed-create registration tests."

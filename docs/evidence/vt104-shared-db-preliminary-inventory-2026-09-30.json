@@ -1,0 +1,1539 @@
+{
+  "schema": "kshiai/vt104-preliminary-shared-db-inventory/v1",
+  "status": "observed-not-a-stopped-cutover-plan",
+  "scope": "current production and Stage shared DB connection",
+  "target": {
+    "hostname": "aws-0-ap-northeast-1.pooler.supabase.com",
+    "port": "5432",
+    "database": "postgres",
+    "secretRef": "projects/kshiai/secrets/kshiai-database-url/versions/1"
+  },
+  "guard": {
+    "database": "postgres",
+    "read_only": "on",
+    "isolation": "repeatable read",
+    "observed_at": "2026-09-30T05:27:37.555Z",
+    "server_version": "17.6"
+  },
+  "tls": "rejectUnauthorized true; tracked Supabase Root 2021 CA; ambient override set to 1",
+  "secret_payload_persisted": false,
+  "write_queries": false,
+  "battleCount": 186,
+  "targets": [
+    {
+      "id": "btl_095f5c85f90a7c7c778d2016",
+      "status": "active",
+      "stateDigest": "d2aca81d1b6100310a48d212990d2f818bcb0c27041f891b8537feb5ca1cf8c3",
+      "createdAt": "2026-08-04T22:30:41.789Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_19fcced350f5b0cf614b3d0d",
+      "status": "active",
+      "stateDigest": "6dec18362cc6605db35ebcedeb28dea9ba748c044e520ef46457e5c02dd25e1f",
+      "createdAt": "2026-08-06T13:25:29.837Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_24c74337891570eefed4730a",
+      "status": "active",
+      "stateDigest": "4cd2bfe64cdaba54342ba1cff4e0986656561d7c2e2ab0ad2e5b6c67bc0b95c0",
+      "createdAt": "2026-08-10T08:39:40.135Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_2d56593940804c0ddfb03fe6",
+      "status": "active",
+      "stateDigest": "87db35c46cb97163bff7b62abfe0dcce81631c614b49c9a72b3b43f6e7496ca9",
+      "createdAt": "2026-08-02T06:55:02.522Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_3607e7ff5f7029664a002a4d",
+      "status": "active",
+      "stateDigest": "3107b159899bba34ced8e04b6125053dfcf72c8e2ad80bf4cbafd5fa747b835d",
+      "createdAt": "2026-08-10T07:05:37.217Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_36c8a0d65f8c77e653994c9d",
+      "status": "active",
+      "stateDigest": "df6f2cb88526b9c13cae845fbcd1adf0bea3d49fbc09bda8c6128c982a2a3455",
+      "createdAt": "2026-08-11T07:32:19.324Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_56dc24097af7ec8f08072d61",
+      "status": "active",
+      "stateDigest": "4d8a03dfb2766385d1e675055b64094dc2b5ec8cde114b43e1fea96785aa219f",
+      "createdAt": "2026-08-07T13:29:20.751Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_699d215033ccd07557633a159e7455d3",
+      "status": "active",
+      "stateDigest": "d15722ee4ba6943c0a24e7f3c8d95873e799cf7d9f233474b5a1dca8e5facec1",
+      "createdAt": "2026-09-08T05:36:02.876Z",
+      "manifestVersion": 2
+    },
+    {
+      "id": "btl_73b54f4fd4c608454b1464c0",
+      "status": "active",
+      "stateDigest": "0f38bd23a5b4250090e9c9685ce080f1daf7bef337029a0a78353d8c13343afb",
+      "createdAt": "2026-08-05T13:21:53.895Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_7f23a0f256c8a968a00ff81f",
+      "status": "active",
+      "stateDigest": "812af698dfb6ec77d55c9cd05edb2979f7d87f74e6d2441614864d2952152fe3",
+      "createdAt": "2026-08-02T07:19:36.195Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_817945726ca518b9c0556b1a",
+      "status": "active",
+      "stateDigest": "7c39ed9c0063488d820acbb83ff9699c34620e8645207d7bbd8a0042af727ae6",
+      "createdAt": "2026-08-11T09:50:36.116Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_8a0292cc274d18c3b45512f2661578c0",
+      "status": "active",
+      "stateDigest": "551e8f1abd868962799d0596b59f57bbe704b4ea2b9c522edbe64eb996286771",
+      "createdAt": "2026-08-12T11:50:24.390Z",
+      "manifestVersion": 1
+    },
+    {
+      "id": "btl_cce166a328f8ef399ede33f0",
+      "status": "active",
+      "stateDigest": "4565c3776a05c2ea2ebf28ffd59571e6bd12efb679ed338b3a3742d32ce6473f",
+      "createdAt": "2026-08-10T06:51:42.243Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_cce692455ac46d05dac86cbf",
+      "status": "active",
+      "stateDigest": "b140bd56cfb5c6e70b182464d0003991bd6ffd9f57b3e910a82272dbcd2df2ee",
+      "createdAt": "2026-08-12T10:22:16.685Z",
+      "manifestVersion": 1
+    },
+    {
+      "id": "btl_d18dd16bf82ddf162c8d73a689fc7c52",
+      "status": "active",
+      "stateDigest": "0a94a09a62887a31f2de977dd792b9e1730e32ca312a4c07e72e2fc527f4bc7b",
+      "createdAt": "2026-09-08T05:55:45.179Z",
+      "manifestVersion": 2
+    },
+    {
+      "id": "btl_e0c549480fa32e20e8a1b46b",
+      "status": "active",
+      "stateDigest": "036a73254537ec994066cb60bcae9284e82524ce79236398bd27ab6ba16620b1",
+      "createdAt": "2026-08-03T13:28:45.467Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_ed82deca4f50f45b0c36f658",
+      "status": "active",
+      "stateDigest": "91df4921cfc450a12fa7c04fe0459e1c82c00dcf0de8d0f7bc44168824e74cce",
+      "createdAt": "2026-08-06T13:11:53.279Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_f597bbea7aa2193a62d1af0c",
+      "status": "active",
+      "stateDigest": "aa86d3e7b59aab0553f23de08e3b8f858360a632d953f9635e251af7bb0aca10",
+      "createdAt": "2026-08-06T13:34:49.862Z",
+      "manifestVersion": null
+    }
+  ],
+  "finished": [
+    {
+      "id": "btl_03da078a3011a53dbb5cde76",
+      "status": "finished",
+      "stateDigest": "6ec485c9898720f294f1e7b92b8db230099e37ec15f2a7bde3b75faaabd33ad5",
+      "createdAt": "2026-08-07T06:58:25.956Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_03de9bec1693c9fffce4335cc5ba84b5",
+      "status": "finished",
+      "stateDigest": "7828773bf47e2fb7785d2fe5b5651ad3d785d8d8b522fd2e07faec6d451d0463",
+      "createdAt": "2026-09-05T21:14:22.337Z",
+      "manifestVersion": 1
+    },
+    {
+      "id": "btl_07c5c4c5e7cd8934d75cb9ef",
+      "status": "finished",
+      "stateDigest": "675da3f9261b5718066d767ced444c6640739646088f9fe382e9c4aab60afab2",
+      "createdAt": "2026-08-07T12:42:51.370Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_09d336ce06cb289b34f39285",
+      "status": "finished",
+      "stateDigest": "cb992e87c8011d594626b540402df491fa1b790615ac8b0cc5d05b8c33ca7bfa",
+      "createdAt": "2026-08-03T02:50:04.754Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_0b4444b5f75387c255f38ba3",
+      "status": "finished",
+      "stateDigest": "9040c4392d5750ff913ec2ad6e1e1e282dd227b9feb4cabc081bcbc3d17d5da2",
+      "createdAt": "2026-08-04T08:31:20.737Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_0c19c361b6d8127610c1c5b3",
+      "status": "finished",
+      "stateDigest": "e95ca8b1ce507fd7eee3e1daf643173a3fb6221b8d6bffac858c89e53c87ccff",
+      "createdAt": "2026-08-07T12:32:33.948Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_0d5b276e48bc7f8e5c50b7370395ade7",
+      "status": "finished",
+      "stateDigest": "e3f619a64353158c7a28f3e68c5c715ce923315f3115e59020602b753a57271c",
+      "createdAt": "2026-09-04T23:45:57.029Z",
+      "manifestVersion": 1
+    },
+    {
+      "id": "btl_0ddf37bf253d6ff0d0f1d6b5",
+      "status": "finished",
+      "stateDigest": "7b04889739fb0193c03395e2d609d3dbcf56e5236fa910c27c360e56fbf497c5",
+      "createdAt": "2026-08-05T05:35:57.527Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_0ff3008e3404e460ee475b74",
+      "status": "finished",
+      "stateDigest": "f0bec9e6ee87a9f2d8a8dbce859ddec33d049f24ede32107dc32f664c685a758",
+      "createdAt": "2026-08-09T13:44:02.467Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_110abc14230b4738d5e41955",
+      "status": "finished",
+      "stateDigest": "b81699e49ebe49a1f1a119804c7b92dfa9e7926fa33be340b3e9682385b176bd",
+      "createdAt": "2026-08-02T07:15:36.119Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_117fef9131fafd921c99339a",
+      "status": "finished",
+      "stateDigest": "a348eea9655869eb7ec619a65cf5ab8b13b09c172e65a5fee221a3a522cc4b2f",
+      "createdAt": "2026-08-05T03:49:49.535Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_1438d3a53ba67fa05d0bc178",
+      "status": "finished",
+      "stateDigest": "f54325bb6782652cc73f2f5f3daa8bdd1e311ef18110e48c13ed0fdf3da6475c",
+      "createdAt": "2026-08-10T05:38:12.571Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_162854a54de03aa54d93918d1b0feae1",
+      "status": "finished",
+      "stateDigest": "e7903c7c8928c2f465e129997325195e0423e8777bf94bcb99a1f56e5284e5d4",
+      "createdAt": "2026-09-06T07:33:28.565Z",
+      "manifestVersion": 1
+    },
+    {
+      "id": "btl_180f05351fb2e2fba3f38a8c",
+      "status": "finished",
+      "stateDigest": "fb2be1d24d68ef94cdd09608070383250dd6432559e5ea0b406399df5fa2636e",
+      "createdAt": "2026-08-05T13:44:58.387Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_18b8f8539d2ecea2c9e5d156",
+      "status": "finished",
+      "stateDigest": "70f494ba735a2299756350807ee2e5ca895062c6d8544bbb6ce9181dce2d4015",
+      "createdAt": "2026-08-02T08:37:58.055Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_19dcf0ea770b6263943c2703",
+      "status": "finished",
+      "stateDigest": "7b405bedf7a518a0411d8d55ff9fce8532db7257257014a490e4e62bc1b449f8",
+      "createdAt": "2026-08-07T08:26:06.755Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_1b055da122a1569dab7e474f",
+      "status": "finished",
+      "stateDigest": "52a796787ace5f265bd949d884bae63430b527f9965a4987382488a07fdae87c",
+      "createdAt": "2026-08-09T08:03:04.192Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_1c7c17512017786e0807cd9b",
+      "status": "finished",
+      "stateDigest": "d73058988ce7fef2b709994d122cbfcef484a14ca78f20b809bd1ba9e37363ba",
+      "createdAt": "2026-08-02T20:07:53.013Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_1cff06042f5ab5d2f13307b8",
+      "status": "finished",
+      "stateDigest": "bdcedcc63f6085fa218c483d93dbfe04e29030d9839f6a90fe206509dde2dbea",
+      "createdAt": "2026-08-10T12:38:31.767Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_1d2e1c07881b1b5afd6b27a5",
+      "status": "finished",
+      "stateDigest": "eb386b012e4da5652218c8a8ff6238a190b29e1cf82ed809c10d62cc6a3ccaa3",
+      "createdAt": "2026-08-05T05:48:21.930Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_20458bdc1dbcba0b58cc115a08aa5c79",
+      "status": "finished",
+      "stateDigest": "6692a76ad7b96a8115bac7a7d42c6d620c568496f9138889a338df0fb87e323a",
+      "createdAt": "2026-08-16T07:41:33.709Z",
+      "manifestVersion": 1
+    },
+    {
+      "id": "btl_23bece2e64f27bee30f36394",
+      "status": "finished",
+      "stateDigest": "2dd6bca0fb19501a5afd618f993b3b19da06298dd2fc3593000d038a6e50432f",
+      "createdAt": "2026-08-10T07:13:26.868Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_2561fb1e28e3eb2340b76179",
+      "status": "finished",
+      "stateDigest": "14bcf8eebc5c10219858f4ccf360ae00f4c70c9b7a8f5ac0e20a0e97e8b75d2d",
+      "createdAt": "2026-08-02T14:06:01.680Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_257ed4fc62959b4a408280c9",
+      "status": "finished",
+      "stateDigest": "8a081d651954dad3bf575e6314387760f15392a1f585ba94ec3d20c417bfb7cf",
+      "createdAt": "2026-08-02T08:42:41.404Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_270470cad1ca6c60c55a5952",
+      "status": "finished",
+      "stateDigest": "970bb56b468e9a05c2b8bb7b9c59ffb412d700888b167972fb417b87184b96d2",
+      "createdAt": "2026-08-10T06:01:20.216Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_2709bb16bf3de195f137bad5",
+      "status": "finished",
+      "stateDigest": "28f714bdef75834c03219591eeb280a71712990f139b25c322ddcc547dd85e74",
+      "createdAt": "2026-08-05T13:30:10.747Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_2738569bab5b1f4f1f2336b4",
+      "status": "finished",
+      "stateDigest": "400918b07422f723ca8a3b296cb635baf44038745cb1e684497d0d89bf9cc257",
+      "createdAt": "2026-08-03T02:02:48.500Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_2788b1aba227a7ecd768b75270676423",
+      "status": "finished",
+      "stateDigest": "4d8c8f1deebee8936b4a9b3813a484326e439bca9846ddd602b45cf2e2ea7796",
+      "createdAt": "2026-09-06T00:38:01.926Z",
+      "manifestVersion": 1
+    },
+    {
+      "id": "btl_2d773da09f72573ad35d5f11",
+      "status": "finished",
+      "stateDigest": "70b3d666656d993ab91844d7c6c5dbba1059177be361f7b6030f7fcd51be5ce9",
+      "createdAt": "2026-08-10T04:56:25.667Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_2ebb4a2db8bf1f05be97ae6d",
+      "status": "finished",
+      "stateDigest": "e85c554bac5f744360a6aaa423cd0a0ac455e157b90e37275c72a5d5cba5bccd",
+      "createdAt": "2026-08-09T10:07:09.810Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_302c03bd00bb5964b1d258cfe0e91c5e",
+      "status": "finished",
+      "stateDigest": "e132827238c898adfe903573ae5f8a3c2067af9dba2116f2ea76f4197fbdb287",
+      "createdAt": "2026-09-07T13:24:50.616Z",
+      "manifestVersion": 2
+    },
+    {
+      "id": "btl_303c9a5985f2f59e2accff8e",
+      "status": "finished",
+      "stateDigest": "f148d228ad3615f8cbf1891cfe8fd4df9c5e410de5dcf28d54fdae9062a6825d",
+      "createdAt": "2026-08-04T06:19:36.036Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_30a88e539b9fa6e4ae32200e",
+      "status": "finished",
+      "stateDigest": "9be79436563b4fa19b23f43c0cc7f70113550faaaa5f08995ecbdd72608e4a3e",
+      "createdAt": "2026-08-07T04:38:20.684Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_325f52fd98ddb05e12c51d45",
+      "status": "finished",
+      "stateDigest": "c9e68503d7608a5a8c463734319cb3d07f322c14ab0bb241c83b408a2477fd3e",
+      "createdAt": "2026-08-02T09:27:14.430Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_33358daf1aacdb70756873fd",
+      "status": "finished",
+      "stateDigest": "0bca2013595c7e1491d5d52d9455796a306b2d28168e13f9ced6d9af16ae0c59",
+      "createdAt": "2026-08-03T21:55:22.945Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_333c47ae1ca98c1d529e272d",
+      "status": "finished",
+      "stateDigest": "a0b3309866f528dae0308c6aeee42ce341ee8b77914a8f8865c297a744ec7cd9",
+      "createdAt": "2026-08-11T11:15:23.739Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_34fbbd0ad03246163fe68591",
+      "status": "finished",
+      "stateDigest": "6aa41ec8c0cf1629614d6858a1ee0c4cf97b04ad0b6e584c7053b56a842d52c3",
+      "createdAt": "2026-08-09T22:12:13.635Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_358f3387a17a4d0004e8209f",
+      "status": "finished",
+      "stateDigest": "c07c8e379e9e05dad65c6d5003f82007413b306a7e8c83a23ca122cb62890dca",
+      "createdAt": "2026-08-02T10:04:40.583Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_36799d8015e9c9ca18c65852",
+      "status": "finished",
+      "stateDigest": "9250245208492a42860c05e626ead584e3a8bcb159f6b23816e61f4519e8489a",
+      "createdAt": "2026-08-02T20:12:26.097Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_37a54391249e873b46eda2c8",
+      "status": "finished",
+      "stateDigest": "7a3f579d5774b3b3d51e0c928417f87b98619f4932dcb7cb1c918285975a2707",
+      "createdAt": "2026-08-02T10:53:55.906Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_39ad0fa80d94b23fc1db08f5",
+      "status": "finished",
+      "stateDigest": "30f8d17b047282de0914cd4c7b2688d705b6605111777cbd954273e3f90ad5d3",
+      "createdAt": "2026-08-10T03:25:19.486Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_3ca5e517a56b00cf4dc88759",
+      "status": "finished",
+      "stateDigest": "3cf6f0c9631288fbb934ec0b24b703aac7bc14f83cc341c2f1aa5ea24a290d48",
+      "createdAt": "2026-08-09T08:48:49.637Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_3ffdcb3096a2cc4441b112bf",
+      "status": "finished",
+      "stateDigest": "7499a6ea56ad3046a1f2c0e6f6a97b85453e2321595e04f5e6fd77ed1147928d",
+      "createdAt": "2026-08-10T07:38:39.746Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_42085ad499be0cb5480a2d0fc4207a15",
+      "status": "finished",
+      "stateDigest": "6665e6db72bf47fa2a94fb4830a216befd7993222a44b644056764f1a82a4d16",
+      "createdAt": "2026-09-06T10:55:11.946Z",
+      "manifestVersion": 1
+    },
+    {
+      "id": "btl_42121ef0fd4c5b473774be33",
+      "status": "finished",
+      "stateDigest": "2b0540a40c608a5b798ab250628711f1a79bb7b3cfe8f4120962049928dfb9d4",
+      "createdAt": "2026-08-04T14:21:34.272Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_42544094466b9400992e0b3e",
+      "status": "finished",
+      "stateDigest": "ad466231c86f7317a5f82081070b1a5e0300f384b90cf720bf2e7aaf025fb885",
+      "createdAt": "2026-08-04T06:13:30.830Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_435b20d5c6dd8d3c2f735abd",
+      "status": "finished",
+      "stateDigest": "673c0d5a1c0e6d57c27ce6a667e01291c066edb4dc63d950095251712f43e86f",
+      "createdAt": "2026-08-02T14:33:25.242Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_442a384a57ea0952f0d215d4",
+      "status": "finished",
+      "stateDigest": "0de53974edaebea0565a77f109b36a0810dfb6d088a1172a6ed2cd5930b56025",
+      "createdAt": "2026-08-07T09:35:16.461Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_444ad43e0abfcf9d5789cabef8821549",
+      "status": "finished",
+      "stateDigest": "68c00c898efbaba783a24a8cf394ecec295cc97ce487eef5242fb49d78bf09af",
+      "createdAt": "2026-08-12T11:44:31.953Z",
+      "manifestVersion": 1
+    },
+    {
+      "id": "btl_46e4a8f1570b5ddfc15bc61f",
+      "status": "finished",
+      "stateDigest": "2280367a48c193496dac6bb2e0001f707cb83a18a41b87f422de8d637e0ba53d",
+      "createdAt": "2026-08-03T04:08:18.701Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_47b6911ca6732efc5c226aff",
+      "status": "finished",
+      "stateDigest": "fbddd37e2bab0ba98974d84bc6e3d37a5292d7c4f7030088c47a724cf805f112",
+      "createdAt": "2026-08-04T10:25:47.482Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_48588fa4fb7e47a7e1837f3c",
+      "status": "finished",
+      "stateDigest": "0033e814a61d83f59a72a479986029743b0689445fda89aa07b43ed33718959a",
+      "createdAt": "2026-08-04T00:52:13.381Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_4b54698ebe8d86f3f5c2abf0",
+      "status": "finished",
+      "stateDigest": "0d610cb67dff832fd571dc8d122b87baacd4ebdb9172d158742deadd6cebe63d",
+      "createdAt": "2026-08-04T14:42:04.947Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_4f42628dae3a28a16cf348a7",
+      "status": "finished",
+      "stateDigest": "034d79ebb79ba372fbfff936ef32c10a45c347952074a9222335031c22b52d54",
+      "createdAt": "2026-08-02T22:52:40.600Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_4f89460a5d5b00da72bc20858c60cf31",
+      "status": "finished",
+      "stateDigest": "ccbaf3d71e4e1a1f8ad921376d79e92a931e364ea2fcd5b840e825e523e2f185",
+      "createdAt": "2026-09-08T06:18:56.850Z",
+      "manifestVersion": 2
+    },
+    {
+      "id": "btl_511ef34297e5425f2048ff34",
+      "status": "finished",
+      "stateDigest": "0caada2c638a8c5686e65674d9d320e92bbd168c86ba2e82bf438368bafe31a5",
+      "createdAt": "2026-08-02T11:47:59.504Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_545cc95a2128928e900539f3",
+      "status": "finished",
+      "stateDigest": "3f7406ea9340c1d4d1d419387d3e0e0d1cff52590f90f5de0f6d9c3fea5c47d0",
+      "createdAt": "2026-08-02T09:39:45.355Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_5b708220ceeea16c27bab82a",
+      "status": "finished",
+      "stateDigest": "2cf641ff4ca508e212378bcad6426ea69a7dd2970378ecfdb6efe9c5dcc28f0d",
+      "createdAt": "2026-08-02T08:41:47.995Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_5da64c914bcc82d79d5e4b0b",
+      "status": "finished",
+      "stateDigest": "631c0933b9a3417465700662a699fb86896468637f1aa3b8b2d72f7b96dcf9d8",
+      "createdAt": "2026-08-02T12:55:43.998Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_5efc47d110dcb1c5c3cf358c",
+      "status": "finished",
+      "stateDigest": "1492007d5b204440918523d252a6842918663e9f159f49eb79042fcea10bc874",
+      "createdAt": "2026-08-02T12:07:04.878Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_61a3813224347611d54e5948",
+      "status": "finished",
+      "stateDigest": "40c35e75ef09e48f6e9be3cb8257d1aefdca2cd49f5479d79e861011e92a98d9",
+      "createdAt": "2026-08-11T12:12:05.262Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_6200ceadbe418b4a8ed85852",
+      "status": "finished",
+      "stateDigest": "57d4020a0bc0fa6a9eaf47e61a4f32571052a15223fb8b8be8df269527c3bd48",
+      "createdAt": "2026-08-05T20:46:51.615Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_620134398908ebf2bca22012",
+      "status": "finished",
+      "stateDigest": "40b2fa659f04ac8678f7e49565127f961ea06dc4d82147ce87fd118b250ee88e",
+      "createdAt": "2026-08-02T12:44:05.258Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_63cca8262e69645da95cc318",
+      "status": "finished",
+      "stateDigest": "864f88fc20725a22f0826a6b445b11cab17d2157e5da805a8ca17c28ad71b032",
+      "createdAt": "2026-08-03T03:31:01.942Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_66bda3c8798250c942930de6",
+      "status": "finished",
+      "stateDigest": "38c270629f1a7de0cf6ce7e24de790d0a42b98e133885fd30fbf638a58ade9be",
+      "createdAt": "2026-08-09T12:28:45.879Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_672ebd71721aa17a58e7043f6398769a",
+      "status": "finished",
+      "stateDigest": "33e0246aa285415c799d201741943da80ef8aeb4eea08307e64a2b7a12c0783e",
+      "createdAt": "2026-08-16T10:43:39.102Z",
+      "manifestVersion": 1
+    },
+    {
+      "id": "btl_6b9f875f80ceb78b50c68a07",
+      "status": "finished",
+      "stateDigest": "ea772d0d29a532933af0a2e319040c80538da69c24ac57dfbbb7e2223a0e0be8",
+      "createdAt": "2026-08-02T09:21:51.084Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_70a6785f464ca9c534ab3edeb29fa53f",
+      "status": "finished",
+      "stateDigest": "ac0add3cea0094a740ed37c0addf77ab43700f589a6bd56098355efd26def581",
+      "createdAt": "2026-09-04T13:07:54.650Z",
+      "manifestVersion": 1
+    },
+    {
+      "id": "btl_72bbc0ce65b40cc7ee290931",
+      "status": "finished",
+      "stateDigest": "f5291dd4a5350d5e2dbd0ef5c6c9b11b708c370078b433ffb010f1a0edbb7d71",
+      "createdAt": "2026-08-07T10:04:49.687Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_75b22788f0711f09f5c7c339c7f5a527",
+      "status": "finished",
+      "stateDigest": "05920184f7d824a7ad684e0d2d1a98c0178d7d4ab196a5428d3204a8b6fd06d2",
+      "createdAt": "2026-08-16T12:10:11.247Z",
+      "manifestVersion": 1
+    },
+    {
+      "id": "btl_75bc48f1469c912e05797691",
+      "status": "finished",
+      "stateDigest": "c51059faf099e021a180400167475a0c88cb090b0e2eea5f3cfe9018a0b2addf",
+      "createdAt": "2026-08-04T20:53:57.323Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_789e9a0ca5cee1b827106d3c",
+      "status": "finished",
+      "stateDigest": "0f643bf50522367c4f777e8f1dd5a11a4f8434ff9d1f62acdb24ab42a99b9ae8",
+      "createdAt": "2026-08-05T05:40:32.639Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_7ab76541d0066818515d353f",
+      "status": "finished",
+      "stateDigest": "bc14b185b001efaa723c0d667c1d949a84febdfef25ebef7dc203229b60cce6f",
+      "createdAt": "2026-08-10T08:25:50.915Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_7c29a60f1623ab2ddda85fa1",
+      "status": "finished",
+      "stateDigest": "9940d82c01fc712384ad9998d876e9b4cd5013d686eb5592bd874be7f6e09d3f",
+      "createdAt": "2026-08-11T07:34:04.075Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_7d440c99a239221ed396a2d1",
+      "status": "finished",
+      "stateDigest": "34e0acbcef44eb4aa47f5fab4a9f54cd5bc7f87c4172a402cee2827d9d2bd557",
+      "createdAt": "2026-08-07T13:36:44.118Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_7ddad899b87c8f79a07290c2",
+      "status": "finished",
+      "stateDigest": "5307f84d0dc9d265821b7cc89e2e32d12b4520ca83a5270bdf5355f9618e404f",
+      "createdAt": "2026-08-09T10:13:56.868Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_8038f5557af774f02f66cfb6",
+      "status": "finished",
+      "stateDigest": "02ca73f26f29fc761438455c0358a5a26158bccc6fe140176857a9da1b650077",
+      "createdAt": "2026-08-10T05:19:38.096Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_827fd29af6b267440f5ea7ad",
+      "status": "finished",
+      "stateDigest": "97eeae788fb7c9f3243bf4571b12cdae5ebf49e4700bc7a8aa34e43352ac137c",
+      "createdAt": "2026-08-02T13:04:55.066Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_82d6f506b0c511723eb98f4f",
+      "status": "finished",
+      "stateDigest": "1c4c60c2680ba17e65822c0a4ce6c0858104f6b0bcb6e08c7b78d061fca27baa",
+      "createdAt": "2026-08-04T03:17:58.834Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_835c17c68ca69b7540320e6e",
+      "status": "finished",
+      "stateDigest": "23f3c8e9428f63a3b78cfe075881ffe375416ad8d414ae5ea5f0dd541ca5da5c",
+      "createdAt": "2026-08-04T03:25:57.516Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_8436097523e713a3b8df0970",
+      "status": "finished",
+      "stateDigest": "3ef58d3ebe33f6e35a441aa1ce16cdb355baee72f6972e532f848e28888a1985",
+      "createdAt": "2026-08-03T14:49:39.068Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_85a6e128fdba9fc15d30d1e4de62238c",
+      "status": "finished",
+      "stateDigest": "4dd6ec25a6a2a104e21f6c53b2586475225787a89aa54cd4c44c30c4e9614f96",
+      "createdAt": "2026-08-13T01:35:56.405Z",
+      "manifestVersion": 1
+    },
+    {
+      "id": "btl_85d8c18a36b063ab9f356922",
+      "status": "finished",
+      "stateDigest": "d1f9fbe3853f6883f19e02fb47b83e19eab36da03a274e7ce96fd8ea4e93ef06",
+      "createdAt": "2026-08-09T09:42:23.947Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_8605083667567c723fcf13c0b52a777d",
+      "status": "finished",
+      "stateDigest": "cc500348da4cc88b8aca57a4f1590f476916d9ccc55b28bdfd0f8b67bc34182c",
+      "createdAt": "2026-09-06T10:51:19.156Z",
+      "manifestVersion": 1
+    },
+    {
+      "id": "btl_87ba1ea8c640dbba4b2b0ad6",
+      "status": "finished",
+      "stateDigest": "ea89d365f65d41bd71ef77f28cf8e2ec3ba7876f9255e1b6d4fcce680ad8a575",
+      "createdAt": "2026-08-07T13:50:13.214Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_8b7e4107ee77f945eed4d49ab98c5b5e",
+      "status": "finished",
+      "stateDigest": "46296ed3a2c0f76c8006cf7d4b349e724387b0b3b3a376d36f0df1a39d4fd886",
+      "createdAt": "2026-09-08T06:34:22.042Z",
+      "manifestVersion": 2
+    },
+    {
+      "id": "btl_8bc3c46764b161ab93d593d4",
+      "status": "finished",
+      "stateDigest": "36c45305c1d550ee1db767828a35f8eab3953e94351ec45c06c6d03a380b8858",
+      "createdAt": "2026-08-04T13:28:02.418Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_8e6cf443ce579f21cf946bf3",
+      "status": "finished",
+      "stateDigest": "40859b8b27a3849d4a5d54ba6de295d45c3a004574c69cc96d863bb8e60d8233",
+      "createdAt": "2026-08-09T23:36:27.422Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_9067d61f809540d7059b603d",
+      "status": "finished",
+      "stateDigest": "9a642ba3b1f7838a3264f1f80391616a1ea235fa40c95c4e8600375918c8ff1b",
+      "createdAt": "2026-08-05T15:36:26.128Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_9334aaf91fc4e2567598bf6b",
+      "status": "finished",
+      "stateDigest": "74525ed9ff4da69c9f28cc39939e1f7666a73a51c11a5d1edc600cf39ea7021f",
+      "createdAt": "2026-08-03T05:00:42.638Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_94653cf2ff595b61c329334d21a2e4c1",
+      "status": "finished",
+      "stateDigest": "f7dd90c711ba7b9753d7f817bc4cf5140aa7957e84d26d0a65435dfa8563c700",
+      "createdAt": "2026-08-16T05:36:51.215Z",
+      "manifestVersion": 1
+    },
+    {
+      "id": "btl_96b00cd86b9da891b0b230bb",
+      "status": "finished",
+      "stateDigest": "988a8772ed4802ae8c64951693b7e3f85be0ccfa5798d6a6a34e0e8087a2daee",
+      "createdAt": "2026-08-07T00:25:12.210Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_978f0e58c512f49ff4193619aca4e362",
+      "status": "finished",
+      "stateDigest": "945237c4d9bc097b7c8fbb5cebec96d7308fea65ebb82ccac01ce80ff76691d2",
+      "createdAt": "2026-09-07T13:13:21.476Z",
+      "manifestVersion": 2
+    },
+    {
+      "id": "btl_97b1a6809cb42ac7b83daa3b",
+      "status": "finished",
+      "stateDigest": "853be8bc70121ab866f579578e87fbb71b68448259bbaa2b9d2db897b7bd759c",
+      "createdAt": "2026-08-02T20:53:11.443Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_97b7f7b749fc89b68697fedd",
+      "status": "finished",
+      "stateDigest": "4176e2c5378c2e16ff57b09008d19d6d53f41082587e8d6926e91a1ac642b6f1",
+      "createdAt": "2026-08-02T07:52:13.200Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_980b04710c8fc78484907791",
+      "status": "finished",
+      "stateDigest": "1d71a42af467fe6da7bc6185d167846045ccbd1c0d658ce037864ed9abef7bc8",
+      "createdAt": "2026-08-03T04:15:19.656Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_9a06a05d753d61497dbc4437",
+      "status": "finished",
+      "stateDigest": "57e66ec3f4a61c4c6b732c5f9b7919407145115d70ef18f350f5f2c528df24e9",
+      "createdAt": "2026-08-10T06:16:14.260Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_9c7e05fae4c9bfb80d3b6229",
+      "status": "finished",
+      "stateDigest": "3dbeb3e06ccbeab6d55722d32549493addb0e7eb0f40e2c21f18409fd7f3e378",
+      "createdAt": "2026-08-10T07:07:59.633Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_9d1c945105d023bec07a317d",
+      "status": "finished",
+      "stateDigest": "996e833fd26241d423abcf06a8e148c83dfc1176d586be430d683cf9635a25e5",
+      "createdAt": "2026-08-04T22:08:50.782Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_9ee5073381cad0627cd2545b",
+      "status": "finished",
+      "stateDigest": "345623b6376b8c9260ff2769813cdcc284b08e1943f69ab5648bd64068c8a8f7",
+      "createdAt": "2026-08-03T00:46:59.150Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_a1873fd4475df22acd4235e9",
+      "status": "finished",
+      "stateDigest": "67c78d3bd7200ccc082cb2efc53faf509301159e947fcef8bfa7a87c07e11685",
+      "createdAt": "2026-08-05T09:35:35.283Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_a241f4a52465c0028a9861ec",
+      "status": "finished",
+      "stateDigest": "7bf7c94946eb74bf82d3f960106ad39bd76bdb6694966ce1ac220281905dc8d5",
+      "createdAt": "2026-08-03T02:41:03.001Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_a60df154e18e132b68e57594",
+      "status": "finished",
+      "stateDigest": "32d64e8c0c43e19043fedc0abc8e793be7298552d2df9f8f761e8075915f9bd1",
+      "createdAt": "2026-08-02T14:31:22.847Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_a7369bf08ec7223d06019a5d",
+      "status": "finished",
+      "stateDigest": "09022a59e37799855ed617ef79afdfe29e9fbdfa49a7a4bbdc7cc395942591a2",
+      "createdAt": "2026-08-10T01:52:55.530Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_a90676928c9b47d618cc4812ccaf52ce",
+      "status": "finished",
+      "stateDigest": "bfd64c1445d00f45313000a31db4c2f6c3c66eec0aef3bfc51e134e8cebd332e",
+      "createdAt": "2026-09-04T12:26:48.914Z",
+      "manifestVersion": 1
+    },
+    {
+      "id": "btl_aa15077cd54071ea77e72f88",
+      "status": "finished",
+      "stateDigest": "aa3b441b35e92440b7a50eef4d64e8b253b4f0828659de1878f78e10ebf9bd39",
+      "createdAt": "2026-08-05T10:27:59.222Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_aafa35dec675bc15cbabeade",
+      "status": "finished",
+      "stateDigest": "8a2f3c4c30249b7013a5d90e1d9227a5dee6a2afaf02b892f4fc4b0a5cf5f45d",
+      "createdAt": "2026-08-02T20:27:49.011Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_ab115b2ea0c636a464c64749",
+      "status": "finished",
+      "stateDigest": "b18779ced092ec300fb795c4ca31b8f49a5237949df0b1ba14808ca78a7c5caf",
+      "createdAt": "2026-08-04T21:28:56.357Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_ab2a5d9e1c161517ed019e0d5e3e4e83",
+      "status": "finished",
+      "stateDigest": "9ab03d29de2b35fb085d77e1e55ceb17fb04e4b0ae16a468fcd1efc420778d11",
+      "createdAt": "2026-08-14T08:36:06.497Z",
+      "manifestVersion": 1
+    },
+    {
+      "id": "btl_abc4aaecae5f859cc4536c17",
+      "status": "finished",
+      "stateDigest": "2aef2f2c62824296b4b06a3ed3c573eb14150723156b59f88ddf9fbef77a86e9",
+      "createdAt": "2026-08-04T03:43:37.228Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_ad5f0987e35b30392bc6a955",
+      "status": "finished",
+      "stateDigest": "832d0ad7e4a17268bab0ddd477c8add62c36cf1b7ef2ff92516e67ffef671a2f",
+      "createdAt": "2026-08-11T07:02:21.395Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_ad8619d0e5ab4c5c17772756",
+      "status": "finished",
+      "stateDigest": "33a1172cab671a658cd6a6b712892daafac8f21300103858e3978a7f96781698",
+      "createdAt": "2026-08-03T04:45:17.133Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_ae501048b247f19e8877a37a",
+      "status": "finished",
+      "stateDigest": "fdc912dcb13b65476708b3ac6f14e5521c5c6d0b01438ce1dc4af955b904664e",
+      "createdAt": "2026-08-03T22:54:35.377Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_af75e8960c3d2561521831a0",
+      "status": "finished",
+      "stateDigest": "943d92a677248edac3b902e56908858cd5c3c53594a4fce99662685e6afe2675",
+      "createdAt": "2026-08-03T02:53:14.524Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_b26a0d35a99fd5bd2188855722a804c8",
+      "status": "finished",
+      "stateDigest": "5ba20295249955219468ea084a4f2f18e09b51e2b3b122c46a32cd75da0d9a8f",
+      "createdAt": "2026-09-06T09:02:44.209Z",
+      "manifestVersion": 1
+    },
+    {
+      "id": "btl_b407a7ef4fc08af9638e3cb5",
+      "status": "finished",
+      "stateDigest": "2abd57d9fc7441b16dbee687ad45f6f894d12653887b374ceeeb15b4cec62206",
+      "createdAt": "2026-08-10T04:14:25.374Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_b4714199911ac2f014ef05e0",
+      "status": "finished",
+      "stateDigest": "cd4d052e89031f5f6baebd7f27cdf042af241879886595c0d37e759cc546be9d",
+      "createdAt": "2026-08-03T14:58:17.512Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_b587a29e4e783f96e5f13761",
+      "status": "finished",
+      "stateDigest": "9428c73db834d65d00edda15f68cad7d7b09f7944f1a52aef5395fe806e2b0f3",
+      "createdAt": "2026-08-04T21:07:10.527Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_b732257d4a5e700551db92fca801fb9f",
+      "status": "finished",
+      "stateDigest": "2a54929dbf7723aba9e9dc31a5b1a82dc754cd6d8fd1f37ec613cac7fbd9ab31",
+      "createdAt": "2026-09-05T13:57:38.256Z",
+      "manifestVersion": 1
+    },
+    {
+      "id": "btl_b768c1d14179f1a5246b65d4",
+      "status": "finished",
+      "stateDigest": "6d3005ee8189b24e74bc25d3414196b4f438dd52a4d15d4659d1973a5316601a",
+      "createdAt": "2026-08-02T09:04:07.270Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_b7695984a3017dd6ccce843f",
+      "status": "finished",
+      "stateDigest": "97de235f8c5afc56ff8116432a4f5ee7d3f71f629d386cbb67ace45cc7c9b4b1",
+      "createdAt": "2026-08-02T13:34:07.328Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_b86fb788b6afa5c25ef60166",
+      "status": "finished",
+      "stateDigest": "6e8b5ff0245395cb1aac4f49aa7cf744773d0fdbb46566b358e5e2248f7ff499",
+      "createdAt": "2026-08-09T12:04:49.044Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_b8dccd087f961df8fcad01cf",
+      "status": "finished",
+      "stateDigest": "a40746ddce62f35901f14d9ffe9f773830d37458f097a3b181012ace2ee381b8",
+      "createdAt": "2026-08-05T13:11:16.992Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_ba129cc29c24452546b8c408",
+      "status": "finished",
+      "stateDigest": "9b3f2f678bef6220035d6f7394cfe706dfebc635051f1cd490da8a13fe3bf13a",
+      "createdAt": "2026-08-05T15:51:04.879Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_bb6512d7ae592b7f365972a1",
+      "status": "finished",
+      "stateDigest": "0bbb8f6a373567cd77e145945b916efc7f6c2e9640c5eb72687d1b8538b81f02",
+      "createdAt": "2026-08-10T06:34:38.220Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_bdc8bd7c4df5c9766dbb68a4b86a7419",
+      "status": "finished",
+      "stateDigest": "9859715978d50a5489ae7d171e3eee8e91004aa231abb61935a5a114024bf528",
+      "createdAt": "2026-08-13T00:07:14.491Z",
+      "manifestVersion": 1
+    },
+    {
+      "id": "btl_bf1e15a641133c552e1414c7",
+      "status": "finished",
+      "stateDigest": "8822122c3cd4b2f2207fc3df5a3cb94f7571d0aec142fdabecc025bd832e7ad7",
+      "createdAt": "2026-08-06T13:43:40.746Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_bf292204f8e1d6a7bc8ddc217a9577d0",
+      "status": "finished",
+      "stateDigest": "f19d4d240777fec433ab258a836d1851fcd24ce98117a89ae593d64b84209464",
+      "createdAt": "2026-08-16T02:48:11.354Z",
+      "manifestVersion": 1
+    },
+    {
+      "id": "btl_c05ed977cb2f89f0cc8e7eabb1b07093",
+      "status": "finished",
+      "stateDigest": "10551809b127de22af7ae26820f92446a03ab1d27092e7742a5ee0a51b12f585",
+      "createdAt": "2026-09-05T13:46:04.606Z",
+      "manifestVersion": 1
+    },
+    {
+      "id": "btl_c182d2b7e85e26e19e318174",
+      "status": "finished",
+      "stateDigest": "e3fcd633a79ee4e0560985e748404b9b67196cd1833db228905d74e3e77f46e1",
+      "createdAt": "2026-08-04T03:10:39.900Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_c1d31e991842ddb3166f4065",
+      "status": "finished",
+      "stateDigest": "e20b34be1998910f0e7b25fa4d2c393e25a6d235421da7386be72afb681aba10",
+      "createdAt": "2026-08-03T22:26:38.476Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_c90728d1ad6b951ef06df7fb",
+      "status": "finished",
+      "stateDigest": "d64d645f1aa682bcb4681a18e4a3f9a234c86307e8fa2ed0a196aa2f122d5df5",
+      "createdAt": "2026-08-05T21:15:49.313Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_c9fef830f7e2037ac823b30c",
+      "status": "finished",
+      "stateDigest": "8b872234dd7857f1a070c45a3032b5939667e3638a0b621a5da48f50a4331d46",
+      "createdAt": "2026-08-02T13:53:31.960Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_cb99ce1c4dbb6f0c8de415b9",
+      "status": "finished",
+      "stateDigest": "15c7a2068037e4de26cc84d4e8c3296af5f152944de911ba089a1b861f3a627d",
+      "createdAt": "2026-08-10T07:27:26.313Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_cd96ee41c6eb27e61128faa7",
+      "status": "finished",
+      "stateDigest": "d872297e1c50eaa16629fb57494a14d50faafe64ccbde5a69ce6ff68fe5ea627",
+      "createdAt": "2026-08-02T11:25:35.460Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_cecae82d929edd2f329088d1",
+      "status": "finished",
+      "stateDigest": "16695478eabdd3423cf2768b5feb990341d324c9c0179d57f0908206a9199a75",
+      "createdAt": "2026-08-07T06:01:25.104Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_cffec230c49854f66ec6407a",
+      "status": "finished",
+      "stateDigest": "f8fac54c99b2f5749d89de4842118939513741ed037531110ccda135e20ca3ea",
+      "createdAt": "2026-08-03T23:19:37.868Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_d365324016ba0bfaa2baecf554118c38",
+      "status": "finished",
+      "stateDigest": "3c7ff725311d10018b9a7d1b7885e79a0425937b26f5f0756318b70cb8eae0f0",
+      "createdAt": "2026-08-16T01:24:44.465Z",
+      "manifestVersion": 1
+    },
+    {
+      "id": "btl_d4fe7269569bb12029ea2659",
+      "status": "finished",
+      "stateDigest": "618334b11e46a06fdfdf6b2d7f6a062c125459c9bbb34bc016ffadb1ca6e06e0",
+      "createdAt": "2026-08-03T05:09:19.237Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_d726e7a8c689c71ac03ff983",
+      "status": "finished",
+      "stateDigest": "762670cebd1523515a6663122da04c3ec18acadc059773fe0bebdf253175a09d",
+      "createdAt": "2026-08-02T10:21:16.967Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_d98efef4e7048c1f02a6e355",
+      "status": "finished",
+      "stateDigest": "fe7116e8b7329c7f745752b37bb727cad53b262bcafe304ec1fef9a462c5daa0",
+      "createdAt": "2026-08-05T20:33:04.022Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_dd13f068aa04f9149f9b202a",
+      "status": "finished",
+      "stateDigest": "317a147a6d3193b1656c804f5b61a53e25af1ee8731eaacdbebe2e2c6045889a",
+      "createdAt": "2026-08-02T11:44:48.921Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_ddd2ea4156374b605e45195a",
+      "status": "finished",
+      "stateDigest": "3c1a247d0ddf21e16119abf4dfef9b1db85c65c4b31e0b52802548de504c51c2",
+      "createdAt": "2026-08-02T13:02:36.880Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_de9645e5a8f98a0cc6898538f5b2a027",
+      "status": "finished",
+      "stateDigest": "b20a71c623f31efd6974d1feb187f96df0f2a5e70eadb0cfa80c4cbf2981607f",
+      "createdAt": "2026-09-08T07:55:37.211Z",
+      "manifestVersion": 2
+    },
+    {
+      "id": "btl_e1da4c7d8c8dc8c92e3748389ef912b4",
+      "status": "finished",
+      "stateDigest": "508e06507492d8436831056e2190b6043a2899598de0e1501f26ca2477e103ff",
+      "createdAt": "2026-09-07T13:07:27.113Z",
+      "manifestVersion": 2
+    },
+    {
+      "id": "btl_e2c83f9f2f7739e77e37c5ec",
+      "status": "finished",
+      "stateDigest": "10b271bf17888d3e7e27c3c2059a087a10456ed48c43dd3cd0dd771c5e424921",
+      "createdAt": "2026-08-05T10:35:01.905Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_e3add4296af2f0e103a506a6",
+      "status": "finished",
+      "stateDigest": "2ea8f4339d16bdaf571c198f9b271c9d1ca96f2b19200be09dedea79d15f3407",
+      "createdAt": "2026-08-04T22:03:03.111Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_e5a5f35d1bef7f99cff0f4a8",
+      "status": "finished",
+      "stateDigest": "8d3be465b6b3f3bfe8c762fcefdf5e8e2dcad65e509db93fc3f3ddb8e5c94ef1",
+      "createdAt": "2026-08-03T02:44:52.686Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_e65047620f239490645556a7",
+      "status": "finished",
+      "stateDigest": "3f490a338346fe5f6c09fc64be4a40039759bf92cc104f72605d1910cc24c57e",
+      "createdAt": "2026-08-09T12:52:51.443Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_e66802e0241fa6e06ef51462",
+      "status": "finished",
+      "stateDigest": "8edace4f53e99cd8a866327e6927feb24b47a7def546eb0cb20e08f66d52a570",
+      "createdAt": "2026-08-03T21:45:35.480Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_e6c1f92f890b461d62f614f5",
+      "status": "finished",
+      "stateDigest": "33ee70b16a49a7788fb25432076f13a72a70071acd4843a4512a6f81b630fec3",
+      "createdAt": "2026-08-09T07:40:27.857Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_e6eaafb3a0757d45865b8436800907c5",
+      "status": "finished",
+      "stateDigest": "d281801c4020997809be8b9cd5d9be828d4e8a099d1d8e8be77d8953d12c74af",
+      "createdAt": "2026-09-08T09:01:35.340Z",
+      "manifestVersion": 2
+    },
+    {
+      "id": "btl_e9b0bb43051c3cba8c5c0602",
+      "status": "finished",
+      "stateDigest": "3391a2dd08a9b0cd49860308ae9f604792d153aba76d24a765c175db03911b93",
+      "createdAt": "2026-08-04T03:34:10.514Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_ea24847bf13d365377971abc",
+      "status": "finished",
+      "stateDigest": "d12815443a4b53567c2f8c56fb2974d2c325af70b0e990d136bdeee4e0d22a2f",
+      "createdAt": "2026-08-07T12:51:34.126Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_ebfc97e6a2627fa59b7a68ce",
+      "status": "finished",
+      "stateDigest": "74b758fcb604490779412b694f7f002321ff553cb22c096db5664828ce7c848e",
+      "createdAt": "2026-08-11T13:35:07.799Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_f01fb2d2a0b7547a00a4c8b0",
+      "status": "finished",
+      "stateDigest": "b52699da470cee121c148d6915be26ad62501c07c7f75153f3c0f34620c899aa",
+      "createdAt": "2026-08-07T13:14:24.259Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_f41f9711e80f27be2176b919",
+      "status": "finished",
+      "stateDigest": "de81a8da38006d1fc23120754ce6918fe3a883151728ce51ec6ba228ff1cdcb3",
+      "createdAt": "2026-08-09T09:37:09.813Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_f50963b53c445f4c9c53b61d",
+      "status": "finished",
+      "stateDigest": "de7097ff2c4af9e4b9e8824ed95e0eb52997d345733cfea813955a2f8a1070f4",
+      "createdAt": "2026-08-03T21:36:30.928Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_f6ec16a7ef133f16083ef822",
+      "status": "finished",
+      "stateDigest": "205f70463c445cd996546ef70227b3a5abc0016ae62c838498bc297c75f743ce",
+      "createdAt": "2026-08-02T14:04:26.194Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_f72e26ab530c96f9643e7bde",
+      "status": "finished",
+      "stateDigest": "9f70d1e2a111e54869f53f63790d85d3218edc6873db059f4ffd557097bba752",
+      "createdAt": "2026-08-04T00:57:12.795Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_f7742fb9ed4f42062f371b8f",
+      "status": "finished",
+      "stateDigest": "8419fac4f06dd8aae382e6f71a8d63776407a05af81d79df88ebb9356b95c8cf",
+      "createdAt": "2026-08-09T23:03:01.887Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_f89639ad7a036ce7b2f6d4f1",
+      "status": "finished",
+      "stateDigest": "854befe1866ba8f5a547bfbcf18b94c3d34ae122afe1d861db8bb7e7c37a47c2",
+      "createdAt": "2026-08-09T05:48:24.320Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_fbf2a90b0d4ec64f2126e10c",
+      "status": "finished",
+      "stateDigest": "c3addee531cfa89e6c7f2fbd5913bb2a713cbb1fb682c85cbe05436a0b3b46a4",
+      "createdAt": "2026-08-02T13:29:57.462Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_fc8aaadb611dd334fc645b10",
+      "status": "finished",
+      "stateDigest": "f0e3875c5f0137a02b6b999df11d77e9fee87f6ecc7150a002ab25ff85f9e72b",
+      "createdAt": "2026-08-03T05:04:20.574Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_fcd31c594fc8ac2454c25dca",
+      "status": "finished",
+      "stateDigest": "74471610ee9581361b6b94acdb8a014bc3323e0b834156dc2f53895a7e512e2b",
+      "createdAt": "2026-08-04T05:23:17.817Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_fdad569f54082b7981f9704f",
+      "status": "finished",
+      "stateDigest": "8373bd1db07a04a6466d29803126b086d79a6f4ed37d2c45e439165fc4416e65",
+      "createdAt": "2026-08-07T10:52:42.955Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_febd401dd5b071045061f751",
+      "status": "finished",
+      "stateDigest": "06a703e50f5795449d185afc5d5de862761a5f102b0c6869dd32e068d2cd2296",
+      "createdAt": "2026-08-05T01:39:31.165Z",
+      "manifestVersion": null
+    },
+    {
+      "id": "btl_ff24e1a286b34e94cc52b9e1",
+      "status": "finished",
+      "stateDigest": "4e8fcf90169642b588c9a67cfa836371011d78a84e73d8d90566b6faea6ffe14",
+      "createdAt": "2026-08-03T05:27:07.623Z",
+      "manifestVersion": null
+    }
+  ],
+  "unknown": [],
+  "relatedCounts": {
+    "battle_leases": 1,
+    "battle_presentations": 28,
+    "battle_narration_entries": 28,
+    "battle_narration_leases": 2,
+    "battle_narration_retention": 0,
+    "battle_narration_events": 84,
+    "battle_narration_outbox": 28
+  },
+  "accounting": {
+    "battle_narration_attempts": [
+      {
+        "status": "abandoned",
+        "count": 14
+      },
+      {
+        "status": "completed",
+        "count": 349
+      },
+      {
+        "status": "failed",
+        "count": 13
+      }
+    ],
+    "provider_operation_runs": [
+      {
+        "status": "completed",
+        "count": 9
+      },
+      {
+        "status": "failed",
+        "count": 4
+      }
+    ],
+    "provider_operation_attempts": [
+      {
+        "status": "failed",
+        "count": 2
+      },
+      {
+        "status": "succeeded",
+        "count": 636
+      }
+    ]
+  },
+  "retainedCounts": {
+    "asset_generations": 345,
+    "asset_current_generations": 70,
+    "balance_events": 267,
+    "users": 5,
+    "characters": 49
+  },
+  "generationVersions": [
+    {
+      "asset_type": "battlefield-instance",
+      "schema_version": 1,
+      "count": 32
+    },
+    {
+      "asset_type": "battlefield-preset",
+      "schema_version": 1,
+      "count": 1
+    },
+    {
+      "asset_type": "battlefield-preset",
+      "schema_version": 2,
+      "count": 9
+    },
+    {
+      "asset_type": "character",
+      "schema_version": 1,
+      "count": 4
+    },
+    {
+      "asset_type": "character",
+      "schema_version": 2,
+      "count": 18
+    },
+    {
+      "asset_type": "character",
+      "schema_version": 3,
+      "count": 2
+    },
+    {
+      "asset_type": "dialogue-pipeline",
+      "schema_version": 1,
+      "count": 6
+    },
+    {
+      "asset_type": "narration-style",
+      "schema_version": 1,
+      "count": 2
+    },
+    {
+      "asset_type": "narration-style",
+      "schema_version": 2,
+      "count": 271
+    }
+  ],
+  "migrations": [
+    {
+      "name": "0001_initial_postgres.sql",
+      "checksum": "30fabcf25a4442cac55c660c797a25fcca008d7160e6f09641ff587f5e44d407"
+    },
+    {
+      "name": "0002_runtime_constraints.sql",
+      "checksum": "2ff8251980c0047c8265caa2d35344cb16087d011f534af8f267c8396ae7b816"
+    },
+    {
+      "name": "0003_distributed_runtime.sql",
+      "checksum": "94b2f064c13b6f5ddc9a849399985856923a846d65c5bdb3271ec2e71a238ef9"
+    },
+    {
+      "name": "0004_supabase_auth.sql",
+      "checksum": "b307ba23db805389007e3000f537c846bc7137b6d8e2de05830304861354fbd3"
+    },
+    {
+      "name": "0005_normalize_legacy_battlefields.sql",
+      "checksum": "8bf75eb28ab4596f2f8a656ca128a12b5ba6971c710080918166b7881ef3ae39"
+    },
+    {
+      "name": "0006_character_drafts.sql",
+      "checksum": "658f63bea247bfc67d8dbf773d0a63ba2affe344fc2e5aae5d8535d109c250e4"
+    },
+    {
+      "name": "0007_account_kind.sql",
+      "checksum": "a8780c43eb02e0669941a8248bb70f114927c9cd1aeb1bfa8c90f2901128f96b"
+    },
+    {
+      "name": "0007_friendships.sql",
+      "checksum": "95b3b4e91905784d09d8600c6818deba7564148a34916e3ebff17b4738444e67"
+    },
+    {
+      "name": "0008_developer_account_kind.sql",
+      "checksum": "b76b70b30bff2c814c17d5e573733ab9fe5b1124c7ad7c55e565a4d1aa142e8d"
+    },
+    {
+      "name": "0009_dialogue_pipeline_settings.sql",
+      "checksum": "f8772ec5626f05925752c35e34060cb42ae6c534c008aee68af62dc67d53a432"
+    },
+    {
+      "name": "0010_user_public_profile.sql",
+      "checksum": "995f77450abb33c8446bd7bb06d02cae694fdcde89c0b8e7c0f3b01c8d640d4e"
+    },
+    {
+      "name": "0011_asset_generations.sql",
+      "checksum": "10dcf9a2c4f363df6831191f1d0f379b5725b12f6e7bc339e45e74cc11c9a50b"
+    },
+    {
+      "name": "0012_battle_revision.sql",
+      "checksum": "3e84524968a2c56ea035008d782876b3f675ecf6ecc15fca5c9c5110ceaa5b05"
+    },
+    {
+      "name": "0013_battle_presentations.sql",
+      "checksum": "035b53e705aef027eb795ebed01009a254aba0e135153a82d825d5b8b350fdf2"
+    },
+    {
+      "name": "0014_ordered_narration_worker.sql",
+      "checksum": "845d0d3e75bd69c46ce85444422d9f68729692fec8a37fc88a98dbe8f9aa7f68"
+    },
+    {
+      "name": "0015_pipeline_recovery_fencing.sql",
+      "checksum": "87f22d6f1762c1304a67d91415fbfafcbf52cccdb6e778ece0e810802c47d9ee"
+    },
+    {
+      "name": "0016_provider_operation_accounting.sql",
+      "checksum": "3395d47d2cda0291a1658730731d04667ec6993af27fa2175a65f2459a5e79fb"
+    },
+    {
+      "name": "0017_structured_character_assets.sql",
+      "checksum": "b3ca027b4bbee51cb3db5e016efc7c1b7b85d6c8157da9594d6a7c48bf0349c1"
+    },
+    {
+      "name": "0018_structured_battlefield_assets.sql",
+      "checksum": "56c6511aba48b7b97b22561d64b882b51c4f4b9fed9aef4d7a6d7c14ee910fb2"
+    },
+    {
+      "name": "0019_structured_narration_assets.sql",
+      "checksum": "3eae1ea325d3976ec10f37cc2c8404e3ae2cddb102e3afda894ad3ccca482685"
+    },
+    {
+      "name": "0020_character_authoring_jobs.sql",
+      "checksum": "b8a6b2472a709305d4b0c0e06caba57b538f05cbe87abca1d8d1b455c4fdf5f6"
+    },
+    {
+      "name": "0021_owner_notifications.sql",
+      "checksum": "573c64ed06e9f5cb7a47be417711ad0118822bbe39c3c72a2ee064d01f5c4b68"
+    },
+    {
+      "name": "0022_family_authoring_jobs.sql",
+      "checksum": "a99240ef1e1e7ce850c570aaa8869a7dda39182eaa51b5f02decaec8d064e131"
+    },
+    {
+      "name": "0023_authoring_dispatch.sql",
+      "checksum": "7c2af337df18d4c5487cd99d6a04e8cefce14d1c079c2ae306ea90b5f084cae7"
+    },
+    {
+      "name": "0024_character_semantic_migration.sql",
+      "checksum": "e4fd60311ab5ade4fd6d3cf03eba27d951ad7d225237585bdde663752ccb0c6f"
+    },
+    {
+      "name": "0025_semantic_authoring_runs.sql",
+      "checksum": "b6b53172d7fefa01bb695324c3faf7e4dfd562c16873f60f107b5e7c221b6f0a"
+    }
+  ],
+  "missingTables": [
+    "battle_discard_receipts"
+  ],
+  "finishedSetHash": "86e543133c13152857e0a9e1810d097c6a51a3ffe85f775a1f534ca508ebbb1d",
+  "limits": "No writers stopped, no recovery snapshot, no operator execution authority. These IDs/hashes/counts are preliminary and must be refrozen after approved stop. idempotency and live provider drain require separate stopped-cutover checks."
+}

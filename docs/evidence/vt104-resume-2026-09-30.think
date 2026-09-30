@@ -1,0 +1,42 @@
+domain RELEASE_REVIEW:
+  description "Prepare the exact V3 Stage trial candidate and owner decision."
+evidence REQUEST:
+  "User requests execution of vt104. Canonical task requires local evidence review, exact code and character identity, risks and separate merge/release approval."
+evidence START:
+  "Existing cc304 worktree HEAD fba69f387f058b17f2b49fcd07c61ae4ccc5d493 tracks remote 0/0 after credential-routed fetch. Origin main e31c487dadbe784022e5cfde80d3314ce45485b9, no matching PR. Dirty scope is vt103 evidence and repair."
+evidence LOCAL:
+  "vt103 browser Neva/Rio completion, immutable generations, transport replay, physical deletion and finished retention pass; provider is Mock and local SQLite. Full tests and typecheck passed."
+premise AUTHORITY:
+  "Preparation and canonical task measurement are authorized. Merge, push, tags, deployment, provider calls and Stage data mutations need separately bound owner authority."
+premise CONTRACT:
+  "Accepted lifecycle design requires exact release and stopped entry/workers, recovery snapshot and physical cutover readback before entry reopening. Release process requires main, PR, four exact-commit checks and immutable artifacts."
+premise ALTERNATIVES:
+  "Old HEAD alone omits vt103. Tagging a dirty branch fails release identity rules. Freeze a complete source tree and exact original Neva/Rio candidate bytes locally, build it and document the path to the later release commit."
+evidence VERSION:
+  "Release rules require a minor bump for incompatible pre-1.0 behavior. Current workspace versions are 0.22.0; remote v0.23 tags are absent at observation. Propose 0.23.0 packages and dated changelog, future v0.23.0-rc.1 tag still uncreated and separately authorized."
+evidence CLOUD:
+  "After user-reported gcloud reauthentication, bounded Cloud Run/queue/task/secret-version metadata reads succeed. Production traffic is 100 percent revision kshiai-api-00141-vis; latest Stage is kshiai-api-00144-hir. Both refer to kshiai-database-url latest and kshiai-narration; only enabled secret version 1 exists. Queue is RUNNING, current limited task list empty. No gate-name env is configured."
+pending LIVE:
+  "At the initial metadata-only observation DB endpoint/inventory and stop budget were unknown; later INVENTORY and WINDOW resolve those parts. All writer closure, Worker routes, measured stop feasibility and restore proof remain unknown. Shared connection configuration is observed; Stage-only physical deletion isolation is not established."
+evidence OWNER_ROUTE:
+  "Owner explicitly selects preparation of the shared production stopped cutover proposal. This changes the proposal boundary from undecided isolation to current production service/shared DB/queue. It does not authorize stop, deploy, migration or deletion."
+premise ROUTE:
+  "Prepare the shared production proposal under Accepted R1-R5 and stopped cutover design. Read the bound database credential version 1 into process memory only; never print, persist or include credentials in artifacts. Use a credential-correct TLS-verified single REPEATABLE READ READ ONLY transaction, bounded by connection/statement timeout, to observe inventory/counts/status/hashes and active accounting metadata. Do not import application DB initialization, write provider calls, create users or export private state."
+evidence TLS_ROUTE:
+  "Initial read fails SELF_SIGNED_CERT_IN_CHAIN before SQL. Repository has tracked infra/supabase-ca-2021.crt, valid 2021-2031, certificate SHA256 fingerprint 807025AD50D4ED219D2C9C7D299C004F824EB00CF7F65AFEF607D07B72E6CAFA. Use that established CA with rejectUnauthorized true and hostname verification for one corrected bounded read."
+evidence INVENTORY:
+  "Corrected TLS read with tracked CA succeeds on shared PostgreSQL17.6 in REPEATABLE READ READ ONLY. 186 battles: active18 finished168 unknown0; asset generations345; current pointers70. Applied26 migration checksums match; pending0026-0029. 82 old revisions have min0/request timeout300. Queue task list currently empty; Scheduler read fails SERVICE_DISABLED, not evidence of no jobs."
+evidence WINDOW:
+  "Owner selects preparation of an upper30-minute stopped shared-production proposal. Start/end execution time and operations remain unapproved."
+premise STOP_ROUTE:
+  "Propose queue pause plus all-old-tag closure and manual service scaling0; official Cloud Run docs document disable0 and tagged revision exceptions. Desired settings are not runtime quiescence. Preserve traffic/tag/config/image baseline; require instance/request/provider/accounting readback. Do not execute these writes."
+premise OPEN_ROUTE:
+  "Shared production cannot reopen the old V2 writer after a V3 cutover. Reopening on the new candidate is a production promotion, requiring exact artifacts, Stage acceptance, protected production approval and separate typed confirmation under existing release rules. The proposed30-minute window must include this path and recovery, not treat Stage no-traffic deploy as production authority."
+premise ALLOCATION:
+  "Do snapshot/restore rehearsal and artifact/CI preparation before T0. Reserve measured recovery time inside30 minutes; prohibit irreversible deletion if recovery time or writer closure is unknown. Current recovery is unverified, local pg_dump16 cannot be the17 backup route and WSL Docker is unavailable."
+premise LOCAL_FREEZE:
+  "vt104 exact code identity is authorized preparation. Freeze only in-scope vt103 and vt104 changes as one reversible local WIP commit on existing codex/cc304-focused-revise after status/path/hash checks; no main update, push, PR, tag or release. Preserve the precommit source manifest and report the resulting commit SHA independently."
+pending RECOVERY:
+  "The DB endpoint may be unreachable or TLS verification may fail; retain failed read as unknown and do not weaken transport verification. Snapshot recovery, operator control and measured interruption feasibility are still preparation gates."
+decision PREPARE based_on REQUEST, START, LOCAL, AUTHORITY, CONTRACT, ALTERNATIVES, VERSION, CLOUD, OWNER_ROUTE, ROUTE, TLS_ROUTE, INVENTORY, WINDOW, STOP_ROUTE, OPEN_ROUTE, ALLOCATION, LOCAL_FREEZE:
+  "Preserve dirty work, measure vt104, prepare local 0.23.0 version/changelog metadata, freeze a local source tree plus character payloads, build and review release/cutover gaps. Produce a complete Japanese owner review with exact candidate and unresolved gates, then freeze one in-scope local WIP commit; no external write or self-approval."

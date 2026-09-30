@@ -1,0 +1,181 @@
+{
+  "schema": "kshiai/vt104-migration-preflight/v1",
+  "source": "shared DB read-only transaction",
+  "applied": [
+    {
+      "name": "0001_initial_postgres.sql",
+      "recorded": "30fabcf25a4442cac55c660c797a25fcca008d7160e6f09641ff587f5e44d407",
+      "local": "30fabcf25a4442cac55c660c797a25fcca008d7160e6f09641ff587f5e44d407",
+      "match": true
+    },
+    {
+      "name": "0002_runtime_constraints.sql",
+      "recorded": "2ff8251980c0047c8265caa2d35344cb16087d011f534af8f267c8396ae7b816",
+      "local": "2ff8251980c0047c8265caa2d35344cb16087d011f534af8f267c8396ae7b816",
+      "match": true
+    },
+    {
+      "name": "0003_distributed_runtime.sql",
+      "recorded": "94b2f064c13b6f5ddc9a849399985856923a846d65c5bdb3271ec2e71a238ef9",
+      "local": "94b2f064c13b6f5ddc9a849399985856923a846d65c5bdb3271ec2e71a238ef9",
+      "match": true
+    },
+    {
+      "name": "0004_supabase_auth.sql",
+      "recorded": "b307ba23db805389007e3000f537c846bc7137b6d8e2de05830304861354fbd3",
+      "local": "b307ba23db805389007e3000f537c846bc7137b6d8e2de05830304861354fbd3",
+      "match": true
+    },
+    {
+      "name": "0005_normalize_legacy_battlefields.sql",
+      "recorded": "8bf75eb28ab4596f2f8a656ca128a12b5ba6971c710080918166b7881ef3ae39",
+      "local": "8bf75eb28ab4596f2f8a656ca128a12b5ba6971c710080918166b7881ef3ae39",
+      "match": true
+    },
+    {
+      "name": "0006_character_drafts.sql",
+      "recorded": "658f63bea247bfc67d8dbf773d0a63ba2affe344fc2e5aae5d8535d109c250e4",
+      "local": "658f63bea247bfc67d8dbf773d0a63ba2affe344fc2e5aae5d8535d109c250e4",
+      "match": true
+    },
+    {
+      "name": "0007_account_kind.sql",
+      "recorded": "a8780c43eb02e0669941a8248bb70f114927c9cd1aeb1bfa8c90f2901128f96b",
+      "local": "a8780c43eb02e0669941a8248bb70f114927c9cd1aeb1bfa8c90f2901128f96b",
+      "match": true
+    },
+    {
+      "name": "0007_friendships.sql",
+      "recorded": "95b3b4e91905784d09d8600c6818deba7564148a34916e3ebff17b4738444e67",
+      "local": "95b3b4e91905784d09d8600c6818deba7564148a34916e3ebff17b4738444e67",
+      "match": true
+    },
+    {
+      "name": "0008_developer_account_kind.sql",
+      "recorded": "b76b70b30bff2c814c17d5e573733ab9fe5b1124c7ad7c55e565a4d1aa142e8d",
+      "local": "b76b70b30bff2c814c17d5e573733ab9fe5b1124c7ad7c55e565a4d1aa142e8d",
+      "match": true
+    },
+    {
+      "name": "0009_dialogue_pipeline_settings.sql",
+      "recorded": "f8772ec5626f05925752c35e34060cb42ae6c534c008aee68af62dc67d53a432",
+      "local": "f8772ec5626f05925752c35e34060cb42ae6c534c008aee68af62dc67d53a432",
+      "match": true
+    },
+    {
+      "name": "0010_user_public_profile.sql",
+      "recorded": "995f77450abb33c8446bd7bb06d02cae694fdcde89c0b8e7c0f3b01c8d640d4e",
+      "local": "995f77450abb33c8446bd7bb06d02cae694fdcde89c0b8e7c0f3b01c8d640d4e",
+      "match": true
+    },
+    {
+      "name": "0011_asset_generations.sql",
+      "recorded": "10dcf9a2c4f363df6831191f1d0f379b5725b12f6e7bc339e45e74cc11c9a50b",
+      "local": "10dcf9a2c4f363df6831191f1d0f379b5725b12f6e7bc339e45e74cc11c9a50b",
+      "match": true
+    },
+    {
+      "name": "0012_battle_revision.sql",
+      "recorded": "3e84524968a2c56ea035008d782876b3f675ecf6ecc15fca5c9c5110ceaa5b05",
+      "local": "3e84524968a2c56ea035008d782876b3f675ecf6ecc15fca5c9c5110ceaa5b05",
+      "match": true
+    },
+    {
+      "name": "0013_battle_presentations.sql",
+      "recorded": "035b53e705aef027eb795ebed01009a254aba0e135153a82d825d5b8b350fdf2",
+      "local": "035b53e705aef027eb795ebed01009a254aba0e135153a82d825d5b8b350fdf2",
+      "match": true
+    },
+    {
+      "name": "0014_ordered_narration_worker.sql",
+      "recorded": "845d0d3e75bd69c46ce85444422d9f68729692fec8a37fc88a98dbe8f9aa7f68",
+      "local": "845d0d3e75bd69c46ce85444422d9f68729692fec8a37fc88a98dbe8f9aa7f68",
+      "match": true
+    },
+    {
+      "name": "0015_pipeline_recovery_fencing.sql",
+      "recorded": "87f22d6f1762c1304a67d91415fbfafcbf52cccdb6e778ece0e810802c47d9ee",
+      "local": "87f22d6f1762c1304a67d91415fbfafcbf52cccdb6e778ece0e810802c47d9ee",
+      "match": true
+    },
+    {
+      "name": "0016_provider_operation_accounting.sql",
+      "recorded": "3395d47d2cda0291a1658730731d04667ec6993af27fa2175a65f2459a5e79fb",
+      "local": "3395d47d2cda0291a1658730731d04667ec6993af27fa2175a65f2459a5e79fb",
+      "match": true
+    },
+    {
+      "name": "0017_structured_character_assets.sql",
+      "recorded": "b3ca027b4bbee51cb3db5e016efc7c1b7b85d6c8157da9594d6a7c48bf0349c1",
+      "local": "b3ca027b4bbee51cb3db5e016efc7c1b7b85d6c8157da9594d6a7c48bf0349c1",
+      "match": true
+    },
+    {
+      "name": "0018_structured_battlefield_assets.sql",
+      "recorded": "56c6511aba48b7b97b22561d64b882b51c4f4b9fed9aef4d7a6d7c14ee910fb2",
+      "local": "56c6511aba48b7b97b22561d64b882b51c4f4b9fed9aef4d7a6d7c14ee910fb2",
+      "match": true
+    },
+    {
+      "name": "0019_structured_narration_assets.sql",
+      "recorded": "3eae1ea325d3976ec10f37cc2c8404e3ae2cddb102e3afda894ad3ccca482685",
+      "local": "3eae1ea325d3976ec10f37cc2c8404e3ae2cddb102e3afda894ad3ccca482685",
+      "match": true
+    },
+    {
+      "name": "0020_character_authoring_jobs.sql",
+      "recorded": "b8a6b2472a709305d4b0c0e06caba57b538f05cbe87abca1d8d1b455c4fdf5f6",
+      "local": "b8a6b2472a709305d4b0c0e06caba57b538f05cbe87abca1d8d1b455c4fdf5f6",
+      "match": true
+    },
+    {
+      "name": "0021_owner_notifications.sql",
+      "recorded": "573c64ed06e9f5cb7a47be417711ad0118822bbe39c3c72a2ee064d01f5c4b68",
+      "local": "573c64ed06e9f5cb7a47be417711ad0118822bbe39c3c72a2ee064d01f5c4b68",
+      "match": true
+    },
+    {
+      "name": "0022_family_authoring_jobs.sql",
+      "recorded": "a99240ef1e1e7ce850c570aaa8869a7dda39182eaa51b5f02decaec8d064e131",
+      "local": "a99240ef1e1e7ce850c570aaa8869a7dda39182eaa51b5f02decaec8d064e131",
+      "match": true
+    },
+    {
+      "name": "0023_authoring_dispatch.sql",
+      "recorded": "7c2af337df18d4c5487cd99d6a04e8cefce14d1c079c2ae306ea90b5f084cae7",
+      "local": "7c2af337df18d4c5487cd99d6a04e8cefce14d1c079c2ae306ea90b5f084cae7",
+      "match": true
+    },
+    {
+      "name": "0024_character_semantic_migration.sql",
+      "recorded": "e4fd60311ab5ade4fd6d3cf03eba27d951ad7d225237585bdde663752ccb0c6f",
+      "local": "e4fd60311ab5ade4fd6d3cf03eba27d951ad7d225237585bdde663752ccb0c6f",
+      "match": true
+    },
+    {
+      "name": "0025_semantic_authoring_runs.sql",
+      "recorded": "b6b53172d7fefa01bb695324c3faf7e4dfd562c16873f60f107b5e7c221b6f0a",
+      "local": "b6b53172d7fefa01bb695324c3faf7e4dfd562c16873f60f107b5e7c221b6f0a",
+      "match": true
+    }
+  ],
+  "pending": [
+    {
+      "name": "0026_character_focused_authoring_payloads.sql",
+      "sha256": "1ab70354148824ab090fbdb89f698b8a0fa5b613514c9ab8aaef5854a4d8bde5"
+    },
+    {
+      "name": "0027_character_revision_scope_resolution.sql",
+      "sha256": "64e92425e05e2ef7268becc55fb2537baafb4d6ecf26afee4adc8c76aacfe7e3"
+    },
+    {
+      "name": "0028_semantic_authoring_provider_timeout.sql",
+      "sha256": "c510ee0d86d4c7dbc8e9854716ab5b52def7a697afd435d4cf9972989be06b8f"
+    },
+    {
+      "name": "0029_battle_discard_receipts.sql",
+      "sha256": "932895ea9df2cc8a495af10e78cc5a6545abb183b79b550eab9d930653188aa7"
+    }
+  ],
+  "migration_applied": false
+}

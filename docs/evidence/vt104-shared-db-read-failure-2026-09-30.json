@@ -1,0 +1,8 @@
+{
+  "schema": "kshiai/vt104-read-failure/v1",
+  "method": "TLS-verified PostgreSQL read-only inventory",
+  "errorName": "Error",
+  "errorCode": "SELF_SIGNED_CERT_IN_CHAIN",
+  "message": "Read failed; no endpoint/data/absence claims; do not weaken TLS or retry mutation",
+  "writes": false
+}

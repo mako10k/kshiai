@@ -2,10 +2,10 @@
 project V3_STAGE_TRIAL:
   version 5
   title "First two-character V3 Stage battle trial"
-  description "Current scope: docs/character-semantic-migration-plan-revision-13.md. vt109 fixed V3 candidate review, exact confirmation and activation completed locally on 2026-09-29; evidence: docs/evidence/vt109-registration-2026-09-29.md. Velocity uses perttool declared elapsed throughput for vt109 only, 20:48:57-21:20:47. One registration task is a provisional sample; vt101 partial timing is excluded. External owner/deployment waits and calendar allocation are separate. New Battle implementation follows cc319 acceptance and vt111 handoff."
+  description "Scope: docs/character-semantic-migration-plan-revision-13.md. vt109/vt102/vt110/vt103 complete locally. Velocity25p/17h is one vt103 elapsed sample, not person effort. vt104 prepared candidate0.23.0 and original Neva/Rio; owner selected shared production stopped-cutover proposal upper30min. No execution approval. Controls/restore rehearsal, measured feasibility, content selection and exact release approval pending. Evidence: docs/evidence/vt104-release-candidate-review-2026-09-30.md."
   as_of 2026-09-29
   duration_unit point
-  velocity 1300p/451h
+  velocity 25p/17h
   finish VST_PLAYED
   goal_owner user
   dag_owner user
@@ -86,6 +86,7 @@ task vt103 VST_WIRED -> VST_LOCAL_BATTLE:
     optimistic 1p
     most_likely 2p
     pessimistic 3p
+  status done
   requires:
     DEV 1
   source "Owner decision: try V3 characters in a real Stage battle; local integration prerequisite"
@@ -94,9 +95,10 @@ task vt104 VST_LOCAL_BATTLE -> VST_RELEASE:
   title "Review and identify the exact trial release candidate"
   description "Review the local trial evidence, freeze an exact code and character revision identity, and obtain the separate approval needed for any merge or release write. Record the selected revision and remaining risks. Plan inclusion does not authorize push, merge, or release."
   duration 1p
+  status suspended
   requires:
     OWNER 1
-  source "Owner Stage-trial decision; release identity and approval boundary"
+  source "Owner requested vt104; selected shared-production stopped cutover preparation with upper30-minute proposal. Evidence: docs/evidence/vt104-release-candidate-review-2026-09-30.md and vt104-shared-production-cutover-proposal-2026-09-30.md. Exact candidate/content approval, controls/restore proof and release authority remain pending."
 
 task vt105 VST_RELEASE -> VST_STAGE_DEPLOYED:
   title "Deploy the authorized trial candidate to Stage and read it back"
@@ -270,3 +272,31 @@ work_event WE-d8d4ea6efba4772af758dcda1af7ae3426160f975c3dcddbae9639faf691d615:
   kind finish
   occurred_at 2026-09-30T11:30:53+09:00
   active_time 451/1200h
+
+work_event WE-40429682c2062a866b9ce28cf356bf4859cd473661ee18c9ffae3f42baa35e16:
+  model 1
+  task vt103
+  kind start
+  occurred_at 2026-09-30T12:04:42+09:00
+  planned_value 2p
+
+work_event WE-80dba942f7d13c29023137e2612d9edc4ad406824a5d2db34e75077f04ddc351:
+  model 1
+  task vt103
+  kind finish
+  occurred_at 2026-09-30T13:26:18+09:00
+  active_time 1.36h
+
+work_event vt104-start-20260930:
+  model 1
+  task vt104
+  kind start
+  occurred_at 2026-09-30T13:44:30+09:00
+  planned_value 1p
+
+work_event vt104-preparation-suspend-20260930:
+  model 1
+  task vt104
+  kind suspend
+  occurred_at 2026-09-30T14:59:43+09:00
+  reason "Preparation review packet frozen; pending exact candidate/content review, stopped controls and recovery proof, separate release authority. No cloud/data writes or task completion."

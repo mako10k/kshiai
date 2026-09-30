@@ -2,6 +2,8 @@
   "schema": "kshiai/test-authority-inventory/v2",
   "scope": "repository-wide Seal-based test authority and previously inventoried structured authoring verification",
   "tests": [
+    { "path": "backend/src/services/character-authoring-candidate.test.ts", "ref": "verification/vt103-owner-review-20260930" },
+    { "path": "e2e/v3-local-integration.spec.ts", "ref": "verification/vt103-local-integration-20260930" },
     { "path": "backend/src/services/battle-participation-eligibility.test.ts", "ref": "verification/vt110-eligibility-20260930" },
     { "path": "backend/src/repositories/battle-lifecycle-storage.test.ts", "ref": "verification/vt110-storage-20260930" },
     { "path": "packages/shared/src/battle-receipt-zero-net.test.ts", "ref": "verification/vt110-zero-net-receipt-20260930" },

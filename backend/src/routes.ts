@@ -113,6 +113,7 @@ import {
 } from "./services/narration-task-dispatch.js";
 import {
   assetContentDigest,
+  getAssetGeneration,
   getCurrentAssetGeneration,
 } from "./repositories/asset-generations.js";
 
@@ -280,6 +281,8 @@ async function characterReviewResponse(
   const current = currentSheet
     ? await charRepo.toPublicCharacterForViewer(currentSheet, viewerUserId)
     : null;
+  const reviewBaseline = attempt.kind === "revision" && attempt.expectedGenerationId
+    ? await getAssetGeneration(attempt.expectedGenerationId) : null;
   return {
     attemptId: attempt.attemptId,
     characterId: attempt.characterId,
@@ -306,7 +309,9 @@ async function characterReviewResponse(
     ...(focusedReview ? { ...focusedReview,
       sourceRetryAvailable: !stale && focusedReview.sourceRetryAvailable } : {}),
     candidateDigest: attempt.candidateDigest,
-    ...(attempt.candidate ? fixedCandidateOwnerReview(attempt.candidate, attempt.sourceText) : {}),
+    ...(attempt.candidate ? fixedCandidateOwnerReview(attempt.candidate, attempt.sourceText, {
+      kind: attempt.kind, currentCandidate: reviewBaseline?.content,
+    }) : {}),
     progress: focusedReview?.semanticCandidateReview ? null
       : toAssetAuthoringProgress(attempt.kind, attempt.status, attempt.attemptId),
   };
