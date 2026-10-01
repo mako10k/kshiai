@@ -239,42 +239,38 @@ async function characterSheetForAttempt(
   });
 }
 
-async function characterReviewResponse(
+async function focusedReviewAcceptance(
   attempt: charAssetRepo.CharacterAuthoringAttempt,
   viewerUserId: string,
-  enableCharacterMigrationAcceptanceTrial = false,
-  reviewConfirmOnly = false,
+  enableCharacterMigrationAcceptanceTrial: boolean,
+  hasSemanticCandidateReview: boolean,
 ) {
-  const latest = await charAssetRepo.getLatestCharacterAuthoringAttemptForCharacter(
-    attempt.characterId,
-    attempt.ownerUserId,
-  );
-  const latestAttemptId = latest?.attemptId ?? attempt.attemptId;
-  const stale = latestAttemptId !== attempt.attemptId;
-  const focusedReview = await readCharacterFocusedAuthoringReviewV3(attempt.attemptId, viewerUserId);
-  let focusedAcceptanceError: string | null = null;
-  let focusedCanAccept = false;
-  if (attempt.status === "awaiting_owner_acceptance" && focusedReview?.semanticCandidateReview) {
+  let error: string | null = null;
+  let canAccept = false;
+  if (attempt.status === "awaiting_owner_acceptance" && hasSemanticCandidateReview) {
     if (!enableCharacterMigrationAcceptanceTrial) {
-      focusedAcceptanceError = "FOCUSED_CHARACTER_MIGRATION_ACTIVATION_DISABLED";
+      error = "FOCUSED_CHARACTER_MIGRATION_ACTIVATION_DISABLED";
     } else {
       try {
-        focusedCanAccept = Boolean(
+        canAccept = Boolean(
           await readCharacterFocusedMigrationActivationV3(attempt.attemptId, viewerUserId),
         );
-      } catch (error) {
-        focusedAcceptanceError = error instanceof Error
-          ? error.message
+      } catch (failure) {
+        error = failure instanceof Error
+          ? failure.message
           : "FOCUSED_CHARACTER_MIGRATION_NOT_READY";
       }
     }
   }
-  const awaiting = attempt.status === "awaiting_owner_acceptance" && Boolean(attempt.candidate);
-  const candidate = awaiting && !stale
-    ? (await characterDraftResponse(attempt, viewerUserId)).character
-    : null;
+  return { error, canAccept };
+}
+
+function candidateReviewAcceptanceError(
+  attempt: charAssetRepo.CharacterAuthoringAttempt,
+  hasCandidate: boolean,
+): string | null {
   let acceptanceError: string | null = null;
-  if (candidate && attempt.candidate) {
+  if (hasCandidate && attempt.candidate) {
     try {
       assertCharacterCandidateReady(attempt.candidate);
       if (Date.parse(attempt.expiresAt) <= Date.now()) throw new Error("AUTHORING_ATTEMPT_EXPIRED");
@@ -289,6 +285,55 @@ async function characterReviewResponse(
         : "CHARACTER_CANDIDATE_NOT_READY";
     }
   }
+  return acceptanceError;
+}
+
+function failedCharacterReview(attempt: charAssetRepo.CharacterAuthoringAttempt) {
+  return attempt.status === "failed"
+      ? {
+          attemptId: attempt.attemptId,
+          characterId: attempt.characterId,
+          kind: attempt.kind,
+          errorCode: attempt.errorCode,
+          updatedAt: attempt.updatedAt,
+        }
+      : null;
+}
+
+function characterReviewOwnerMetadata(
+  attempt: charAssetRepo.CharacterAuthoringAttempt,
+  currentCandidate: unknown,
+) {
+  return attempt.candidate ? fixedCandidateOwnerReview(attempt.candidate, attempt.sourceText, {
+    kind: attempt.kind, currentCandidate,
+  }) : {};
+}
+
+function isCurrentReviewCandidate(attempt: charAssetRepo.CharacterAuthoringAttempt, stale: boolean): boolean {
+  return attempt.status === "awaiting_owner_acceptance" && Boolean(attempt.candidate) && !stale;
+}
+
+async function characterReviewResponse(
+  attempt: charAssetRepo.CharacterAuthoringAttempt,
+  viewerUserId: string,
+  enableCharacterMigrationAcceptanceTrial = false,
+  reviewConfirmOnly = false,
+) {
+  const latest = await charAssetRepo.getLatestCharacterAuthoringAttemptForCharacter(
+    attempt.characterId,
+    attempt.ownerUserId,
+  );
+  const latestAttemptId = latest?.attemptId ?? attempt.attemptId;
+  const stale = latestAttemptId !== attempt.attemptId;
+  const focusedReview = await readCharacterFocusedAuthoringReviewV3(attempt.attemptId, viewerUserId);
+  const focusedAcceptance = await focusedReviewAcceptance(
+    attempt, viewerUserId, enableCharacterMigrationAcceptanceTrial,
+    Boolean(focusedReview?.semanticCandidateReview),
+  );
+  const candidate = isCurrentReviewCandidate(attempt, stale)
+    ? (await characterDraftResponse(attempt, viewerUserId)).character
+    : null;
+  const acceptanceError = candidateReviewAcceptanceError(attempt, Boolean(candidate));
   const currentSheet = attempt.kind === "create"
     ? null
     : await charRepo.getSheetIncludingDeleted(attempt.characterId);
@@ -309,23 +354,13 @@ async function characterReviewResponse(
     latestAttemptId,
     stale,
     canAccept: !stale && ((Boolean(candidate) && acceptanceError === null)
-      || (focusedCanAccept && focusedAcceptanceError === null)),
-    acceptanceError: acceptanceError ?? focusedAcceptanceError,
-    failed: attempt.status === "failed"
-      ? {
-          attemptId: attempt.attemptId,
-          characterId: attempt.characterId,
-          kind: attempt.kind,
-          errorCode: attempt.errorCode,
-          updatedAt: attempt.updatedAt,
-        }
-      : null,
+      || (focusedAcceptance.canAccept && focusedAcceptance.error === null)),
+    acceptanceError: acceptanceError ?? focusedAcceptance.error,
+    failed: failedCharacterReview(attempt),
     ...(focusedReview ? { ...focusedReview,
       sourceRetryAvailable: !stale && focusedReview.sourceRetryAvailable } : {}),
     candidateDigest: attempt.candidateDigest,
-    ...(attempt.candidate ? fixedCandidateOwnerReview(attempt.candidate, attempt.sourceText, {
-      kind: attempt.kind, currentCandidate: reviewBaseline?.content,
-    }) : {}),
+    ...characterReviewOwnerMetadata(attempt, reviewBaseline?.content),
     reviewConfirmOnly,
     ...(reviewConfirmOnly ? { canEditCandidate: false, sourceRetryAvailable: false } : {}),
     progress: focusedReview?.semanticCandidateReview ? null

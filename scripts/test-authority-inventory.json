@@ -205,6 +205,10 @@
     {
       "path": "scripts/verify-v3-trial-evidence.test.mjs",
       "ref": "verification/vt104-trial-evidence-20261001"
+    },
+    {
+      "path": "backend/src/services/narration-worker-accounting.test.ts",
+      "ref": "verification/vt104-narration-accounting-20261001"
     }
   ]
 }

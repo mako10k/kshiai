@@ -425,6 +425,52 @@ export type CharacterFocusedMigrationActivationV3 = Readonly<{
  * Revalidate the exact terminal migration candidate at the owner-acceptance
  * boundary. This read grants no acceptance and performs no pointer mutation.
  */
+type FocusedMigrationRow = {
+  status: string; mode: string; adapter_identity: string;
+  expected_current_generation_id: string | null; source_content_digest: string;
+  source_json: unknown; resolved_source_json: unknown | null; result_json: unknown;
+};
+
+function activationMigrationSource(row: FocusedMigrationRow) {
+  const sourceInput = decodeFocusedReviewSource(row);
+  const decoded = createCharacterSemanticAuthoringAdapterV3().decodeFrozenSource(sourceInput);
+  if (!decoded.accepted || decoded.value.kind !== "migrate"
+    || !isCharacterBattleMechanicsCapabilitySetV3(decoded.value.requiredCapabilities)
+    || assetContentDigest(decoded.value) !== row.source_content_digest) {
+    throw new Error("FOCUSED_CHARACTER_MIGRATION_SOURCE_MISMATCH");
+  }
+  return decoded.value;
+}
+
+function assertMigrationSourceAccounting(
+  source: ReturnType<typeof activationMigrationSource>,
+  definition: z.infer<typeof CharacterDefinitionV3Schema>,
+  ready: z.infer<typeof focusedReadyReviewSchema>,
+): void {
+  const ledger = buildCharacterMigrationSourceLedgerV1(
+    source.definition,
+    definition,
+    source.capsule,
+    source.requiredCapabilities ?? null,
+  );
+  const decisions = new Map<string, SourceDispositionDecisionV1>(
+    (ready.sourceLedger?.sourceDispositions ?? [])
+      .map((decision) => [decision.sourceClaimId, decision]),
+  );
+  const provenance = ready.sourceLedger?.provenance ?? [];
+  if (ledger.claims.some((claim) => {
+    const decision = decisions.get(claim.sourceClaimId);
+    return !decision || !characterSourceDispositionSatisfiedV1(
+      definition,
+      claim,
+      decision,
+      provenance,
+    );
+  })) {
+    throw new Error("FOCUSED_CHARACTER_MIGRATION_SOURCE_ACCOUNTING_INVALID");
+  }
+}
+
 export async function readCharacterFocusedMigrationActivationV3(
   attemptId: string,
   ownerUserId: string,
@@ -455,13 +501,7 @@ export async function readCharacterFocusedMigrationActivationV3(
     || ready.expectedCurrentGenerationId !== row.expected_current_generation_id) {
     throw new Error("FOCUSED_CHARACTER_MIGRATION_POINTER_IDENTITY_MISMATCH");
   }
-  const sourceInput = decodeFocusedReviewSource(row);
-  const decoded = createCharacterSemanticAuthoringAdapterV3().decodeFrozenSource(sourceInput);
-  if (!decoded.accepted || decoded.value.kind !== "migrate"
-    || !isCharacterBattleMechanicsCapabilitySetV3(decoded.value.requiredCapabilities)
-    || assetContentDigest(decoded.value) !== row.source_content_digest) {
-    throw new Error("FOCUSED_CHARACTER_MIGRATION_SOURCE_MISMATCH");
-  }
+  const source = activationMigrationSource(row);
   const candidateDigest = createHash("sha256")
     .update(JSON.stringify(ready.finalCandidate)).digest("hex");
   if (candidateDigest !== ready.finalCandidateDigest) {
@@ -484,28 +524,7 @@ export async function readCharacterFocusedMigrationActivationV3(
   if (compatibility.status !== "ready") {
     throw new Error("FOCUSED_CHARACTER_MIGRATION_CONSUMER_BLOCKED");
   }
-  const ledger = buildCharacterMigrationSourceLedgerV1(
-    decoded.value.definition,
-    definition,
-    decoded.value.capsule,
-    decoded.value.requiredCapabilities ?? null,
-  );
-  const decisions = new Map<string, SourceDispositionDecisionV1>(
-    (ready.sourceLedger?.sourceDispositions ?? [])
-      .map((decision) => [decision.sourceClaimId, decision]),
-  );
-  const provenance = ready.sourceLedger?.provenance ?? [];
-  if (ledger.claims.some((claim) => {
-    const decision = decisions.get(claim.sourceClaimId);
-    return !decision || !characterSourceDispositionSatisfiedV1(
-      definition,
-      claim,
-      decision,
-      provenance,
-    );
-  })) {
-    throw new Error("FOCUSED_CHARACTER_MIGRATION_SOURCE_ACCOUNTING_INVALID");
-  }
+  assertMigrationSourceAccounting(source, definition, ready);
   return {
     definition,
     deferredValues,

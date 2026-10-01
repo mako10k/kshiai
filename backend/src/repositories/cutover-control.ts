@@ -242,51 +242,66 @@ async function verifyTrialConfirmations(
     const receiptId = bindings.ownerConfirmationReceiptIds[index];
     const generationId = bindings.generationIds[index];
     if (!candidate || !receiptId || !generationId) throw new CutoverControlStorageError("RECEIPTS_REQUIRED");
-    const result = await connection.query<PermitRow & {
-      attempt_owner_user_id: string;
-      character_id: string;
-      attempt_candidate_digest: string | null;
-      attempt_status: string;
-      result_generation_id: string | null;
-      character_owner_user_id: string;
-      generation_asset_type: string;
-      generation_asset_id: string;
-      current_generation_id: string;
-    }>(
-      `SELECT p.*,
-              a.owner_user_id AS attempt_owner_user_id,
-              a.character_id,
-              a.candidate_digest AS attempt_candidate_digest,
-              a.status AS attempt_status,
-              a.result_generation_id,
-              c.owner_user_id AS character_owner_user_id,
-              g.asset_type AS generation_asset_type,
-              g.asset_id AS generation_asset_id,
-              cg.generation_id AS current_generation_id
-       FROM cutover_operation_permits p
-       JOIN character_authoring_attempts a ON a.attempt_id=p.owner_attempt_id
-       JOIN characters c ON c.id=a.character_id
-       JOIN asset_generations g ON g.generation_id=a.result_generation_id
-       JOIN asset_current_generations cg
-         ON cg.asset_type=g.asset_type AND cg.asset_id=g.asset_id AND cg.generation_id=g.generation_id
-       WHERE p.permit_id=$1 AND p.cutover_id=$2`,
-      [receiptId, control.cutoverId],
-    );
-    const row = result.rows[0];
-    const exactPath = `/api/characters/${candidate.attemptId}/confirm`;
-    if (!row || row.state !== "settled" || row.operation_kind !== "http" || row.method !== "POST" ||
-        row.path !== exactPath || row.actor_id !== control.policy.ownerUserId ||
-        row.owner_attempt_id !== candidate.attemptId || row.candidate_digest !== candidate.candidateDigest ||
-        row.attempt_owner_user_id !== control.policy.ownerUserId ||
-        row.character_owner_user_id !== control.policy.ownerUserId ||
-        row.attempt_candidate_digest !== candidate.candidateDigest || row.attempt_status !== "succeeded" ||
-        row.result_generation_id !== generationId || row.generation_asset_type !== "character" ||
-        row.generation_asset_id !== row.character_id || row.current_generation_id !== generationId ||
-        !Sha256.safeParse(row.request_digest).success || !row.result_digest ||
-        !Sha256.safeParse(row.result_digest).success) {
-      throw new CutoverControlStorageError("RECEIPTS_REQUIRED");
-    }
+    const row = await confirmationReceiptRow(connection, control.cutoverId, receiptId);
+    if (!validConfirmationRow(row, control, candidate, generationId)) throw new CutoverControlStorageError("RECEIPTS_REQUIRED");
   }
+}
+
+type ConfirmationRow = PermitRow & {
+  attempt_owner_user_id: string; character_id: string; attempt_candidate_digest: string | null;
+  attempt_status: string; result_generation_id: string | null; character_owner_user_id: string;
+  generation_asset_type: string; generation_asset_id: string; current_generation_id: string;
+};
+
+async function confirmationReceiptRow(connection: DatabaseConnection, cutoverId: string, receiptId: string): Promise<ConfirmationRow | undefined> {
+  const result = await connection.query<ConfirmationRow>(
+    `SELECT p.*,
+            a.owner_user_id AS attempt_owner_user_id,
+            a.character_id,
+            a.candidate_digest AS attempt_candidate_digest,
+            a.status AS attempt_status,
+            a.result_generation_id,
+            c.owner_user_id AS character_owner_user_id,
+            g.asset_type AS generation_asset_type,
+            g.asset_id AS generation_asset_id,
+            cg.generation_id AS current_generation_id
+     FROM cutover_operation_permits p
+     JOIN character_authoring_attempts a ON a.attempt_id=p.owner_attempt_id
+     JOIN characters c ON c.id=a.character_id
+     JOIN asset_generations g ON g.generation_id=a.result_generation_id
+     JOIN asset_current_generations cg
+       ON cg.asset_type=g.asset_type AND cg.asset_id=g.asset_id AND cg.generation_id=g.generation_id
+     WHERE p.permit_id=$1 AND p.cutover_id=$2`, [receiptId, cutoverId],
+  );
+  return result.rows[0];
+}
+
+function validConfirmationRow(
+  row: ConfirmationRow | undefined,
+  control: CutoverControl,
+  candidate: z.infer<typeof OwnerCandidateSchema>,
+  generationId: string,
+): boolean {
+  return Boolean(row && validConfirmationPermit(row, control, candidate) &&
+    validConfirmationAttempt(row, control, candidate) && validConfirmationGeneration(row, generationId) &&
+    Sha256.safeParse(row.request_digest).success && row.result_digest && Sha256.safeParse(row.result_digest).success);
+}
+
+function validConfirmationPermit(row: ConfirmationRow, control: CutoverControl, candidate: z.infer<typeof OwnerCandidateSchema>): boolean {
+  return row.state === "settled" && row.operation_kind === "http" && row.method === "POST" &&
+    row.path === `/api/characters/${candidate.attemptId}/confirm` && row.actor_id === control.policy.ownerUserId &&
+    row.owner_attempt_id === candidate.attemptId && row.candidate_digest === candidate.candidateDigest;
+}
+
+function validConfirmationAttempt(row: ConfirmationRow, control: CutoverControl, candidate: z.infer<typeof OwnerCandidateSchema>): boolean {
+  return row.attempt_owner_user_id === control.policy.ownerUserId &&
+    row.character_owner_user_id === control.policy.ownerUserId &&
+    row.attempt_candidate_digest === candidate.candidateDigest && row.attempt_status === "succeeded";
+}
+
+function validConfirmationGeneration(row: ConfirmationRow, generationId: string): boolean {
+  return row.result_generation_id === generationId && row.generation_asset_type === "character" &&
+    row.generation_asset_id === row.character_id && row.current_generation_id === generationId;
 }
 
 export async function initializeCutoverControl(input: {
@@ -345,19 +360,24 @@ function isExactTransitionReplay(
   const prior = controlFromRow(row);
   if (prior.artifactId !== input.artifactId || prior.operatorId !== input.operatorId ||
       row.previous_revision !== input.expectedRevision || prior.phase !== input.toPhase) return false;
-  if (input.toPhase === "trial") {
-    return input.stageAcceptance === undefined && input.productionReceipt === undefined &&
-      input.trialBindings !== undefined &&
-      isDeepStrictEqual(prior.policy.trialBindings, TrialBindingsSchema.parse(input.trialBindings));
-  }
-  if (input.toPhase === "open") {
-    return input.trialBindings === undefined && input.stageAcceptance !== undefined &&
-      input.productionReceipt !== undefined &&
-      isDeepStrictEqual(prior.policy.stageAcceptance, StageAcceptanceSchema.parse(input.stageAcceptance)) &&
-      prior.policy.productionReceipt === Receipt.parse(input.productionReceipt);
-  }
-  return input.trialBindings === undefined && input.stageAcceptance === undefined &&
-    input.productionReceipt === undefined;
+  if (input.toPhase === "trial") return isTrialReplay(prior, input);
+  if (input.toPhase === "open") return isOpenReplay(prior, input);
+  return isClosedReplay(input);
+}
+
+function isTrialReplay(prior: CutoverControl, input: Parameters<typeof isExactTransitionReplay>[1]): boolean {
+  return input.stageAcceptance === undefined && input.productionReceipt === undefined &&
+    input.trialBindings !== undefined && isDeepStrictEqual(prior.policy.trialBindings, TrialBindingsSchema.parse(input.trialBindings));
+}
+
+function isOpenReplay(prior: CutoverControl, input: Parameters<typeof isExactTransitionReplay>[1]): boolean {
+  return input.trialBindings === undefined && input.stageAcceptance !== undefined && input.productionReceipt !== undefined &&
+    isDeepStrictEqual(prior.policy.stageAcceptance, StageAcceptanceSchema.parse(input.stageAcceptance)) &&
+    prior.policy.productionReceipt === Receipt.parse(input.productionReceipt);
+}
+
+function isClosedReplay(input: Parameters<typeof isExactTransitionReplay>[1]): boolean {
+  return input.trialBindings === undefined && input.stageAcceptance === undefined && input.productionReceipt === undefined;
 }
 
 export async function transitionCutoverControl(input: {
@@ -382,31 +402,7 @@ export async function transitionCutoverControl(input: {
     }
     if (current.revision !== input.expectedRevision) return { kind: "conflict", control: current };
     if (current.phase === input.toPhase) throw new CutoverControlStorageError("INVALID_TRANSITION");
-    const policy: CutoverControlPolicy = { ...current.policy };
-    if (input.toPhase === "trial") {
-      if (current.phase !== "closed" || !current.stoppedBarrierReceiptId || !input.trialBindings) {
-        throw new CutoverControlStorageError("RECEIPTS_REQUIRED");
-      }
-      const bindings = TrialBindingsSchema.parse(input.trialBindings);
-      if (bindings.stoppedBarrierReceiptId !== current.stoppedBarrierReceiptId) {
-        throw new CutoverControlStorageError("RECEIPTS_REQUIRED");
-      }
-      if ((await activePermits(connection, input.cutoverId)).length !== 0) {
-        throw new CutoverControlStorageError("RECEIPTS_REQUIRED");
-      }
-      await verifyTrialConfirmations(connection, current, bindings);
-      policy.trialBindings = bindings;
-    } else if (input.toPhase === "open") {
-      if (current.phase !== "trial" || !input.stageAcceptance || !input.productionReceipt) {
-        throw new CutoverControlStorageError("RECEIPTS_REQUIRED");
-      }
-      const receipts = StageAcceptanceSchema.parse(input.stageAcceptance);
-      if (!allStageReceipts(receipts)) throw new CutoverControlStorageError("RECEIPTS_REQUIRED");
-      policy.stageAcceptance = receipts;
-      policy.productionReceipt = Receipt.parse(input.productionReceipt);
-    } else if (input.toPhase !== "closed") {
-      throw new CutoverControlStorageError("INVALID_TRANSITION");
-    }
+    const policy = await transitionPolicy(connection, current, input);
     const revision = current.revision + 1;
     const createdAt = new Date().toISOString();
     const recoveryMode = current.phase === "trial" || current.recoveryMode === "forward-only"
@@ -434,6 +430,50 @@ export async function transitionCutoverControl(input: {
   });
 }
 
+async function transitionPolicy(
+  connection: DatabaseConnection,
+  current: CutoverControl,
+  input: Parameters<typeof transitionCutoverControl>[0],
+): Promise<CutoverControlPolicy> {
+  const policy: CutoverControlPolicy = { ...current.policy };
+  if (input.toPhase === "trial") return applyTrialPolicy(connection, current, input, policy);
+  if (input.toPhase === "open") return applyOpenPolicy(current, input, policy);
+  if (input.toPhase === "closed") return policy;
+  throw new CutoverControlStorageError("INVALID_TRANSITION");
+}
+
+async function applyTrialPolicy(
+  connection: DatabaseConnection,
+  current: CutoverControl,
+  input: Parameters<typeof transitionCutoverControl>[0],
+  policy: CutoverControlPolicy,
+): Promise<CutoverControlPolicy> {
+  if (current.phase !== "closed" || !current.stoppedBarrierReceiptId || !input.trialBindings) {
+    throw new CutoverControlStorageError("RECEIPTS_REQUIRED");
+  }
+  const bindings = TrialBindingsSchema.parse(input.trialBindings);
+  if (bindings.stoppedBarrierReceiptId !== current.stoppedBarrierReceiptId) throw new CutoverControlStorageError("RECEIPTS_REQUIRED");
+  if ((await activePermits(connection, input.cutoverId)).length !== 0) throw new CutoverControlStorageError("RECEIPTS_REQUIRED");
+  await verifyTrialConfirmations(connection, current, bindings);
+  policy.trialBindings = bindings;
+  return policy;
+}
+
+function applyOpenPolicy(
+  current: CutoverControl,
+  input: Parameters<typeof transitionCutoverControl>[0],
+  policy: CutoverControlPolicy,
+): CutoverControlPolicy {
+  if (current.phase !== "trial" || !input.stageAcceptance || !input.productionReceipt) {
+    throw new CutoverControlStorageError("RECEIPTS_REQUIRED");
+  }
+  const receipts = StageAcceptanceSchema.parse(input.stageAcceptance);
+  if (!allStageReceipts(receipts)) throw new CutoverControlStorageError("RECEIPTS_REQUIRED");
+  policy.stageAcceptance = receipts;
+  policy.productionReceipt = Receipt.parse(input.productionReceipt);
+  return policy;
+}
+
 export type ReserveRejectReason =
   | "control_revision_changed" | "not_admitted" | "request_mismatch"
   | "quota_exhausted" | "already_active";
@@ -447,6 +487,23 @@ function matchesTrialRequest(input: ReserveInput, request: z.infer<typeof TrialR
   return input.bindingOperationId === request.bindingOperationId && input.kind === request.kind &&
     input.requestDigest === request.requestDigest && input.method === request.method && input.path === request.path &&
     input.battleId === request.battleId && input.backgroundKind === request.backgroundKind;
+}
+function samePermitRequest(prior: CutoverPermit, input: ReserveInput): boolean {
+  return samePermitCore(prior, input) && samePermitRoute(prior, input) && samePermitOwnership(prior, input);
+}
+
+function samePermitCore(prior: CutoverPermit, input: ReserveInput): boolean {
+  return prior.controlRevision === input.controlRevision && prior.requestDigest === input.requestDigest &&
+    prior.actorId === input.actorId && prior.kind === input.kind;
+}
+
+function samePermitRoute(prior: CutoverPermit, input: ReserveInput): boolean {
+  return prior.method === (input.method ?? null) && prior.path === (input.path ?? null) &&
+    prior.battleId === (input.battleId ?? null) && prior.backgroundKind === (input.backgroundKind ?? null);
+}
+
+function samePermitOwnership(prior: CutoverPermit, input: ReserveInput): boolean {
+  return prior.ownerAttemptId === (input.ownerAttemptId ?? null) && prior.candidateDigest === (input.candidateDigest ?? null);
 }
 function isClosedConfirm(control: CutoverControl, input: ReserveInput): boolean {
   if (input.kind !== "http" || input.actorId !== control.policy.ownerUserId || input.method !== "POST" ||
@@ -462,6 +519,58 @@ async function permitByAttempt(connection: DatabaseConnection, input: ReserveInp
   );
   return result.rows[0] ? permitFromRow(result.rows[0]) : null;
 }
+
+function reserveAdmission(control: CutoverControl, input: ReserveInput): number | ReserveRejectReason | null {
+  if (control.phase === "closed") return isClosedConfirm(control, input) ? null : "not_admitted";
+  if (control.phase !== "trial") return null;
+  const binding = control.policy.trialBindings?.requests.find((request) => matchesTrialRequest(input, request));
+  if (!binding || input.actorId !== control.policy.ownerUserId || !validTrialWork(control, input)) return "not_admitted";
+  return binding.maximumReservations;
+}
+
+function validTrialWork(control: CutoverControl, input: ReserveInput): boolean {
+  if (input.kind !== "task" && input.kind !== "background") return true;
+  if (isBoundedStageSmoke(input)) return true;
+  return Boolean(input.battleId && control.policy.taskBattleIds.includes(input.battleId) &&
+    (!input.backgroundKind || input.backgroundKind.toLowerCase().includes("narration")));
+}
+
+async function activeReservationCount(connection: DatabaseConnection, input: ReserveInput): Promise<number> {
+  const active = await connection.query<{ count: number | string }>(
+    `SELECT COUNT(*) AS count FROM cutover_operation_permits
+     WHERE cutover_id=$1 AND binding_operation_id=$2
+     AND state IN ('reserved-not-sent','sending','result-accounting-pending','indeterminate')`,
+    [input.cutoverId, input.bindingOperationId],
+  );
+  return Number(active.rows[0]?.count ?? 0);
+}
+
+async function reservationCount(connection: DatabaseConnection, input: ReserveInput): Promise<number> {
+  const result = await connection.query<{ count: number | string }>(
+    `SELECT COUNT(*) AS count FROM cutover_operation_permits
+     WHERE cutover_id=$1 AND binding_operation_id=$2 AND state <> 'cancelled-before-send'`,
+    [input.cutoverId, input.bindingOperationId],
+  );
+  return Number(result.rows[0]?.count ?? 0);
+}
+
+async function insertReservedPermit(connection: DatabaseConnection, control: CutoverControl, input: ReserveInput): Promise<CutoverPermit> {
+  const permitId = createHash("sha256").update(`${input.cutoverId}\0${input.bindingOperationId}\0${input.reservationAttemptId}`).digest("hex");
+  const now = new Date().toISOString();
+  await connection.query(
+    `INSERT INTO cutover_operation_permits
+     (permit_id,cutover_id,control_revision,binding_operation_id,reservation_attempt_id,request_digest,actor_id,operation_kind,method,path,battle_id,background_kind,owner_attempt_id,candidate_digest,state,result_digest,reconciliation_receipt_id,reconciliation_operation_id,reconciliation_operator_id,created_at,updated_at)
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,'reserved-not-sent',NULL,NULL,NULL,NULL,$15,$15)`,
+    [permitId, input.cutoverId, control.revision, input.bindingOperationId, input.reservationAttemptId,
+      input.requestDigest, input.actorId, input.kind, input.method ?? null, input.path ?? null,
+      input.battleId ?? null, input.backgroundKind ?? null, input.ownerAttemptId ?? null,
+      input.candidateDigest ?? null, now],
+  );
+  const permit = await permitByAttempt(connection, input);
+  if (!permit) throw new CutoverControlStorageError("CONTROL_CORRUPT");
+  return permit;
+}
+
 export async function reserveCutoverOperation(input: ReserveInput): Promise<
   | { kind: "reserved"; permit: CutoverPermit }
   | { kind: "settled_replay"; permit: CutoverPermit }
@@ -474,61 +583,17 @@ export async function reserveCutoverOperation(input: ReserveInput): Promise<
     requireIdentity(control, input.cutoverId, input.artifactId);
     const prior = await permitByAttempt(connection, input);
     if (prior) {
-      const same = prior.controlRevision === input.controlRevision &&
-        prior.requestDigest === input.requestDigest && prior.actorId === input.actorId &&
-        prior.kind === input.kind && prior.method === (input.method ?? null) &&
-        prior.path === (input.path ?? null) && prior.battleId === (input.battleId ?? null) &&
-        prior.backgroundKind === (input.backgroundKind ?? null) &&
-        prior.ownerAttemptId === (input.ownerAttemptId ?? null) &&
-        prior.candidateDigest === (input.candidateDigest ?? null);
-      if (!same) return { kind: "rejected", reason: "request_mismatch", permit: prior };
+      if (!samePermitRequest(prior, input)) return { kind: "rejected", reason: "request_mismatch", permit: prior };
       return prior.state === "settled"
         ? { kind: "settled_replay", permit: prior }
         : { kind: "rejected", reason: "already_active", permit: prior };
     }
     if (control.revision !== input.controlRevision) return { kind: "rejected", reason: "control_revision_changed" };
-    let maximumReservations: number | null = null;
-    if (control.phase === "closed") {
-      if (!isClosedConfirm(control, input)) return { kind: "rejected", reason: "not_admitted" };
-    } else if (control.phase === "trial") {
-      const binding = control.policy.trialBindings?.requests.find((request) => matchesTrialRequest(input, request));
-      if (!binding || input.actorId !== control.policy.ownerUserId) return { kind: "rejected", reason: "not_admitted" };
-      if ((input.kind === "task" || input.kind === "background") &&
-          !isBoundedStageSmoke(input) &&
-          (!input.battleId || !control.policy.taskBattleIds.includes(input.battleId) ||
-           (input.backgroundKind && !input.backgroundKind.toLowerCase().includes("narration")))) {
-        return { kind: "rejected", reason: "not_admitted" };
-      }
-      maximumReservations = binding.maximumReservations;
-    }
-    const active = await connection.query<{ count: number | string }>(
-      `SELECT COUNT(*) AS count FROM cutover_operation_permits
-       WHERE cutover_id=$1 AND binding_operation_id=$2
-       AND state IN ('reserved-not-sent','sending','result-accounting-pending','indeterminate')`,
-      [input.cutoverId, input.bindingOperationId],
-    );
-    if (Number(active.rows[0]?.count ?? 0) > 0) return { kind: "rejected", reason: "already_active" };
-    if (maximumReservations !== null) {
-      const count = await connection.query<{ count: number | string }>(
-        `SELECT COUNT(*) AS count FROM cutover_operation_permits
-         WHERE cutover_id=$1 AND binding_operation_id=$2 AND state <> 'cancelled-before-send'`,
-        [input.cutoverId, input.bindingOperationId],
-      );
-      if (Number(count.rows[0]?.count ?? 0) >= maximumReservations) return { kind: "rejected", reason: "quota_exhausted" };
-    }
-    const permitId = createHash("sha256").update(`${input.cutoverId}\0${input.bindingOperationId}\0${input.reservationAttemptId}`).digest("hex");
-    const now = new Date().toISOString();
-    await connection.query(
-      `INSERT INTO cutover_operation_permits
-       (permit_id,cutover_id,control_revision,binding_operation_id,reservation_attempt_id,request_digest,actor_id,operation_kind,method,path,battle_id,background_kind,owner_attempt_id,candidate_digest,state,result_digest,reconciliation_receipt_id,reconciliation_operation_id,reconciliation_operator_id,created_at,updated_at)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,'reserved-not-sent',NULL,NULL,NULL,NULL,$15,$15)`,
-      [permitId, input.cutoverId, control.revision, input.bindingOperationId, input.reservationAttemptId,
-        input.requestDigest, input.actorId, input.kind, input.method ?? null, input.path ?? null,
-        input.battleId ?? null, input.backgroundKind ?? null, input.ownerAttemptId ?? null,
-        input.candidateDigest ?? null, now],
-    );
-    const permit = await permitByAttempt(connection, input);
-    if (!permit) throw new CutoverControlStorageError("CONTROL_CORRUPT");
+    const admission = reserveAdmission(control, input);
+    if (typeof admission === "string") return { kind: "rejected", reason: admission };
+    if (await activeReservationCount(connection, input) > 0) return { kind: "rejected", reason: "already_active" };
+    if (admission !== null && await reservationCount(connection, input) >= admission) return { kind: "rejected", reason: "quota_exhausted" };
+    const permit = await insertReservedPermit(connection, control, input);
     return { kind: "reserved", permit };
   });
 }

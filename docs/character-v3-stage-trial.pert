@@ -93,7 +93,7 @@ task vt103 VST_WIRED -> VST_LOCAL_BATTLE:
 
 task vt104 VST_LOCAL_BATTLE -> VST_RELEASE:
   title "Prepare the minimal unreleased V3 trial candidate"
-  description "Accepted design v1 option1 local workflow/validator/testing complete. Frozen local source563 paths; current source needs authorized synchronization and exact hosted tag/prepare artifact. Remaining exact execution packet: live writer/queue/DB/backlog, required migration names and numeric secret versions, Google redirect and paid budget readbacks. No email/snapshot/legacy compatibility/public promotion prerequisites. Residual internal effort0.5-1.25 agent h low; local success is not deployed game evidence. Registration PR151 created; security CI blocks on existing undici7.29.0. Exact two-manifest7.29.1 candidate locally passes audit0/build/worker/typecheck/tests112; owner scope extension pending. Cloud readback inventory18unfinished and22outbox including14finished; no cloud writes. Latest checkpoint docs/evidence/vt104-registration-blocker-and-fix-2026-10-01.md."
+  description "Owner complexity-normalization instruction executed with unchanged baseline: CC119/121 max77/92 excess1357/1369; length66/67 excess6247/7390; params5/5. Node22 lint/build/tests228 and affected direct checks pass. PR151 merged933e6ae; hosted workflow registered. Current source569 paths has aggregate6edaf6c7; prepare needs exact hosted source/fourCI/annotated tag authority. Existing disabled idempotency/agency tests fail same capability guard before/after. No trial cloud/DB/login/provider writes. Remaining vt104 internal0.5-1.5 agent h low; prelogin1-3h, first trial1.75-5h, parentcsm0014.75-12h low, external waits separate. Checkpoint docs/evidence/vt104-complexity-normalization-result-2026-10-01.md."
   duration 1p
   status suspended
   requires:
@@ -426,3 +426,29 @@ work_event vt104-registration-ci-suspend-20261001:
   kind suspend
   occurred_at 2026-10-01T11:38:27+09:00
   reason "Approved single-file registration branch pushed and PR151 created; three CI checks passed, security blocked on existing undici7.29.0 advisories. Exact two-manifest7.29.1 candidate passes local audit0/build/worker/typecheck/tests112; await scope extension before adding it to PR. Cloud reauthentication readback succeeds; inventory18unfinished,22outbox including14finished; no cloud/DB/provider writes. Measured review-closeout interval only; registration earlier not assigned invented effort."
+
+work_event vt104-registered-source-resume-20261001:
+  model 1
+  task vt104
+  kind resume
+  occurred_at 2026-10-01T11:48:59+09:00
+
+work_event vt104-static-owner-review-20261001:
+  model 1
+  task vt104
+  kind suspend
+  occurred_at 2026-10-01T12:08:52+09:00
+  reason "Registered workflow merged;226 tests pass;Lizard gate fails;static baseline candidate awaits owner route;no trial deployment."
+
+work_event vt104-complexity-resume-20261001:
+  model 1
+  task vt104
+  kind resume
+  occurred_at 2026-10-01T15:00:05+09:00
+
+work_event vt104-complexity-verified-20261001:
+  model 1
+  task vt104
+  kind suspend
+  occurred_at 2026-10-01T15:20:58+09:00
+  reason "Complexity normalization complete: unchanged lint/build/tests228 pass. Remaining exact hosted source/fourCI/tag/prepare and execution packet; no trial cloud/DB/login writes."

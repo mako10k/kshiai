@@ -12,6 +12,7 @@ import {
 } from "@kshiai/shared";
 import { randomInt } from "node:crypto";
 import { requestDigest } from "./distributed-guard.js";
+import { projectBattlePublic } from "./battle-public-projection.js";
 import {
   BattlePolicyOptionSchema,
   BattleAdjudicationSchema,
@@ -70,7 +71,6 @@ import {
   isPassiveTurn,
   isQuietTurn,
   normalizeSupervisor,
-  ratingForDisplay,
   resolveNextBattleTurnBucket,
   materializeBattleStateAtBucketBoundary,
   materializeBattleTurnStartState,
@@ -80,14 +80,13 @@ import {
   shouldInjectHappening,
   stanceLabel,
   summarizeSelectedPolicies,
-  selectPolicyIdsByPerspective,
-  projectPublicObjectStates,
-  toPublicInstance,
   toPublicPolicyOption,
+  selectPolicyIdsByPerspective,
   type BattlePolicyOption,
   type BattlePublic,
   type BattleStance,
   type BattleState,
+  type RatingDisplayContext,
   type BattleAdjudication,
   type JudgmentPresentationProjection,
   type BattleEncounterProposal,
@@ -126,7 +125,6 @@ import {
   type NarrationFocus,
   type NarrationPerspective,
   type NarratorRecognitionUpdate,
-  type RatingDisplayContext,
   buildInnerDigest,
   lockedFocusFromPerspective,
   needsFocusChoice,
@@ -236,7 +234,10 @@ import {
 } from "../llm/perception-evidence.js";
 import * as battleRepo from "../repositories/battles.js";
 import { readBattleAccess } from "./battle-lifecycle-access.js";
-import { resolveBattleParticipantEligibility } from "./battle-participation-eligibility.js";
+import {
+  resolveBattleParticipantEligibility,
+  type BattleParticipantEligibility,
+} from "./battle-participation-eligibility.js";
 import * as presentationRepo from "../repositories/battle-presentations.js";
 import * as bfRepo from "../repositories/battlefields.js";
 import * as charRepo from "../repositories/characters.js";
@@ -291,50 +292,6 @@ const characterDecisionRuleMetadata = new WeakMap<
   CharacterDecisionRuleMetadata
 >();
 
-type RatingSettlement = NonNullable<BattleState["ratingSettlement"]>;
-type PublicRatingSettlement = NonNullable<BattlePublic["ratingSettlement"]>;
-
-function toPublicRatingEntry(
-  entry: RatingSettlement["sideA"],
-  population: RatingDisplayContext["public"] | undefined,
-): NonNullable<PublicRatingSettlement["sideA"]> {
-  return {
-    before: ratingForDisplay(entry.before, population),
-    after: ratingForDisplay(entry.after, population),
-    delta: entry.delta,
-    provisionalAfter: entry.provisionalAfter,
-  };
-}
-
-function toPublicRatingSettlement(
-  settlement: BattleState["ratingSettlement"],
-  display: RatingDisplayContext | undefined,
-): BattlePublic["ratingSettlement"] {
-  if (!settlement?.applied) return null;
-  const overall = settlement.overall ?? {
-    sideA: settlement.sideA,
-    sideB: settlement.sideB,
-  };
-  const publicSettlement = settlement.public ?? null;
-  return {
-    applied: settlement.applied,
-    ranked: settlement.ranked,
-    sameOwner: settlement.sameOwner,
-    overall: {
-      sideA: toPublicRatingEntry(overall.sideA, display?.overall),
-      sideB: toPublicRatingEntry(overall.sideB, display?.overall),
-    },
-    public: publicSettlement
-      ? {
-          sideA: toPublicRatingEntry(publicSettlement.sideA, display?.public),
-          sideB: toPublicRatingEntry(publicSettlement.sideB, display?.public),
-        }
-      : null,
-    sideA: toPublicRatingEntry(overall.sideA, display?.overall),
-    sideB: toPublicRatingEntry(overall.sideB, display?.overall),
-  };
-}
-
 export function toBattlePublic(
   state: BattleState,
   mySheet: CharacterSheet,
@@ -342,105 +299,7 @@ export function toBattlePublic(
   oppSheet?: CharacterSheet | null,
   ratingDisplay?: RatingDisplayContext,
 ): BattlePublic {
-  const selected = new Set(state.selectedPolicyIdsA ?? []);
-  const selectedPolicies = (state.policiesA ?? []).filter((p) => {
-    return selected.has(p.id);
-  });
-
-  const imgFor = (
-    combatant: BattleState["sideA"],
-    sheet: CharacterSheet | null | undefined,
-  ) => {
-    return combatant.imageUrl ??
-    (sheet && sheet.id === combatant.characterId
-      ? (sheet.appearance?.imageUrl ?? null)
-      : null);
-  };
-
-  const sideASheet =
-    mySheet.id === state.sideA.characterId ? mySheet : oppSheet;
-  const sideBSheet =
-    mySheet.id === state.sideB.characterId ? mySheet : oppSheet;
-
-  return {
-    id: state.id,
-    status: state.status,
-    turn: state.turn,
-    turnLimit: state.turnLimit,
-    ...(usesPublicTurnClock(state) &&
-    (state.sceneBeat?.receiptIds.length ?? 0) > 0
-      ? {
-          combatBeat: state.sceneBeat?.receiptIds.length,
-          combatBeatsPerTurn: sceneBeatK(state),
-        }
-      : {}),
-    sideA: {
-      characterId: state.sideA.characterId,
-      displayName: state.sideA.displayName,
-      canFight: state.sideA.canFight,
-      imageUrl: imgFor(state.sideA, sideASheet),
-    },
-    sideB: {
-      characterId: state.sideB.characterId,
-      displayName: state.sideB.displayName,
-      canFight: state.sideB.canFight,
-      imageUrl: imgFor(state.sideB, sideBSheet),
-    },
-    policies: selectedPolicies.map(toPublicPolicyOption),
-    policySummary: summarizeSelectedPolicies(
-      state.policiesA,
-      state.selectedPolicyIdsA,
-    ),
-    opponentPolicySummary: summarizeSelectedPolicies(
-      state.policiesB,
-      state.selectedPolicyIdsB,
-    ),
-    stanceA: state.stanceA,
-    stanceALabel: state.stanceA ? stanceLabel(state.stanceA) : undefined,
-    stanceB: state.stanceB,
-    stanceBLabel: state.stanceB ? stanceLabel(state.stanceB) : undefined,
-    scene: state.situation.scene,
-    situationNotes: state.situation.notes,
-    battlefield: state.battlefield
-      ? toPublicInstance(state.battlefield)
-      : null,
-    semanticState: state.observationStatePublic ?? null,
-    objectStates: projectPublicObjectStates({
-      worldState: state.worldState,
-      participantLabels: {
-        a: state.sideA.displayName,
-        b: state.sideB.displayName,
-      },
-    }),
-    pendingEffects: (state.pendingEffects ?? []).flatMap((effect) =>
-      effect.visibility === "public_when_scheduled"
-        ? [{
-            effectId: effect.effectId,
-            targetSide: effect.targetSide,
-            parameterKey: effect.payload.parameterKey,
-            direction: effect.payload.delta < 0 ? "loss" as const : "gain" as const,
-            trigger: effect.trigger.kind === "due_turn"
-              ? { kind: "due_turn" as const, dueTurn: effect.trigger.dueTurn }
-              : { kind: "target_hp_at_most_percent" as const },
-            expiresTurn: effect.expiresTurn,
-          }]
-        : []
-    ),
-    log: state.log,
-    receipts: publicPhaseReceipts(state.phaseReceipts),
-    availableActions: [],
-    winnerSide: state.winnerSide,
-    finishReason: state.finishReason,
-    aftermathPending: Boolean(state.aftermathPending),
-    prologuePending: Boolean(state.prologuePending),
-    narrationStyleName: state.narrationStyle?.displayName,
-    priorMatchSummary: state.priorMatchSummary ?? null,
-    resultSummary: resultSummary ?? null,
-    ratingSettlement: toPublicRatingSettlement(
-      state.ratingSettlement,
-      ratingDisplay,
-    ),
-  };
+  return projectBattlePublic(state, mySheet, resultSummary, oppSheet, ratingDisplay);
 }
 
 export async function toBattlePublicForViewer(
@@ -549,6 +408,20 @@ function charPublicCtx(sheet: CharacterSheet) {
   };
 }
 
+async function fieldPresetForPolicyGeneration(input: {
+  userId: string;
+  battlefieldPresetId?: string;
+}): Promise<BattlefieldPreset | null> {
+  if (!input.battlefieldPresetId) {
+    return (await bfRepo.pickRandomSystemPreset())?.preset ?? null;
+  }
+  const source = await bfRepo.getReadyPresetForUser(
+    input.battlefieldPresetId,
+    input.userId,
+  );
+  return source?.preset ?? null;
+}
+
 export async function generateMatchPolicies(input: {
   userId: string;
   myCharacterId: string;
@@ -578,22 +451,7 @@ export async function generateMatchPolicies(input: {
     throw new Error("OPPONENT_NOT_FOUND");
   }
 
-  let fieldPreset: BattlefieldPreset | null = null;
-  if (input.battlefieldMode === "preset" && input.battlefieldPresetId) {
-    const source = await bfRepo.getReadyPresetForUser(
-      input.battlefieldPresetId,
-      input.userId,
-    );
-    fieldPreset = source?.preset ?? null;
-  } else if (input.battlefieldPresetId) {
-    const source = await bfRepo.getReadyPresetForUser(
-      input.battlefieldPresetId,
-      input.userId,
-    );
-    fieldPreset = source?.preset ?? null;
-  } else {
-    fieldPreset = (await bfRepo.pickRandomSystemPreset())?.preset ?? null;
-  }
+  const fieldPreset = await fieldPresetForPolicyGeneration(input);
   if (input.battlefieldPresetId && !fieldPreset) {
     const accessible = await bfRepo.getPresetForUser(
       input.battlefieldPresetId,
@@ -654,7 +512,7 @@ function normalizePolicies(
   return out;
 }
 
-export async function startBattle(input: {
+type StartBattleInput = {
   userId: string;
   /** Stable resource identity supplied by the idempotent create operation. */
   battleId?: string;
@@ -669,36 +527,61 @@ export async function startBattle(input: {
   selectedPolicyIds?: string[];
   narrationStyleId?: string;
   llm: LlmProvider;
-}): Promise<BattlePublic> {
-  if (input.battleId) {
-    if (await battleRepo.isBattleDiscarded(input.battleId)) throw new Error("BATTLE_NOT_FOUND");
-    const [existing, existingMeta] = await Promise.all([
-      battleRepo.getBattle(input.battleId),
-      battleRepo.getBattleMeta(input.battleId),
-    ]);
-    if (existing || existingMeta) {
-      if (
-        !existing || !existingMeta ||
-        existingMeta.side_a_user_id !== input.userId ||
-        existingMeta.side_a_character_id !== input.myCharacterId ||
-        existingMeta.side_b_character_id !== input.opponentCharacterId
-      ) {
-        throw new Error("BATTLE_CREATE_IDENTITY_CONFLICT");
-      }
-      if (input.expectedCharacterGenerationIds &&
-          (existing.assetManifest?.schemaVersion !== 4 ||
-           existing.assetManifest.characters.a.generationId !== input.expectedCharacterGenerationIds[0] ||
-           existing.assetManifest.characters.b.generationId !== input.expectedCharacterGenerationIds[1])) {
-        throw new Error("CUTOVER_TRIAL_GENERATION_MISMATCH");
-      }
-      const existingMine = existing.assetManifest?.characters.a.snapshot ??
-        await charRepo.getSheetIncludingDeleted(existingMeta.side_a_character_id);
-      const existingOpp = existing.assetManifest?.characters.b.snapshot ??
-        await charRepo.getSheetIncludingDeleted(existingMeta.side_b_character_id);
-      if (!existingMine || !existingOpp) throw new Error("CHARACTER_MISSING");
-      return toBattlePublicForViewer(existing, existingMine, null, existingOpp);
-    }
+};
+
+async function replayExistingBattle(
+  input: StartBattleInput,
+): Promise<BattlePublic | null> {
+  if (!input.battleId) return null;
+  if (await battleRepo.isBattleDiscarded(input.battleId)) {
+    throw new Error("BATTLE_NOT_FOUND");
   }
+  const [existing, existingMeta] = await Promise.all([
+    battleRepo.getBattle(input.battleId),
+    battleRepo.getBattleMeta(input.battleId),
+  ]);
+  if (!existing && !existingMeta) return null;
+  if (
+    !existing || !existingMeta ||
+    existingMeta.side_a_user_id !== input.userId ||
+    existingMeta.side_a_character_id !== input.myCharacterId ||
+    existingMeta.side_b_character_id !== input.opponentCharacterId
+  ) {
+    throw new Error("BATTLE_CREATE_IDENTITY_CONFLICT");
+  }
+  if (input.expectedCharacterGenerationIds &&
+      (existing.assetManifest?.schemaVersion !== 4 ||
+       existing.assetManifest.characters.a.generationId !== input.expectedCharacterGenerationIds[0] ||
+       existing.assetManifest.characters.b.generationId !== input.expectedCharacterGenerationIds[1])) {
+    throw new Error("CUTOVER_TRIAL_GENERATION_MISMATCH");
+  }
+  const existingMine = existing.assetManifest?.characters.a.snapshot ??
+    await charRepo.getSheetIncludingDeleted(existingMeta.side_a_character_id);
+  const existingOpp = existing.assetManifest?.characters.b.snapshot ??
+    await charRepo.getSheetIncludingDeleted(existingMeta.side_b_character_id);
+  if (!existingMine || !existingOpp) throw new Error("CHARACTER_MISSING");
+  return toBattlePublicForViewer(existing, existingMine, null, existingOpp);
+}
+
+type ResolvedBattleParticipants = {
+  mine: ReadyBattleParticipant["sheet"];
+  opp: ReadyBattleParticipant["sheet"];
+  mineGeneration: ReadyBattleParticipant["generation"];
+  opponentGeneration: ResolvedBattleParticipants["mineGeneration"];
+  v3Participants: {
+    mine: ReadyBattleParticipant;
+    opponent: ReadyBattleParticipant;
+  };
+};
+
+type ReadyBattleParticipant = Extract<
+  BattleParticipantEligibility,
+  { status: "ready" }
+>["participant"];
+
+async function resolveBattleParticipants(
+  input: StartBattleInput,
+): Promise<ResolvedBattleParticipants> {
   const currentMine = await charRepo.getSheet(input.myCharacterId);
   const currentOpp = await charRepo.getSheet(input.opponentCharacterId);
   if (!currentMine || currentMine.ownerUserId !== input.userId) {
@@ -723,8 +606,25 @@ export async function startBattle(input: {
        opponentGeneration.generationId !== input.expectedCharacterGenerationIds[1])) {
     throw new Error("CUTOVER_TRIAL_GENERATION_MISMATCH");
   }
-  const mine = v3Participants.mine.sheet;
-  const opp = v3Participants.opponent.sheet;
+  return {
+    mine: v3Participants.mine.sheet,
+    opp: v3Participants.opponent.sheet,
+    mineGeneration,
+    opponentGeneration,
+    v3Participants,
+  };
+}
+
+export async function startBattle(input: StartBattleInput): Promise<BattlePublic> {
+  const replay = await replayExistingBattle(input);
+  if (replay) return replay;
+  const {
+    mine,
+    opp,
+    mineGeneration,
+    opponentGeneration,
+    v3Participants,
+  } = await resolveBattleParticipants(input);
 
   const resolvedBattlefield = await resolveBattlefieldInstance({
     battlefieldPresetId: input.battlefieldPresetId,

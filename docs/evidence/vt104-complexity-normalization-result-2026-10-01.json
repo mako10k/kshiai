@@ -1,0 +1,193 @@
+{
+  "schema": "kshiai/complexity-normalization-evidence/v1",
+  "base_commit": "b9af55e3cf69477dc103d3e70cf5fc45959f34f2",
+  "source_aggregate_sha256": "6edaf6c726a6154f5534100ce0c4d955a1d9e3ad299847d0ec50a9514d6c2dfa",
+  "source_paths": 569,
+  "node": "22.22.3",
+  "before": {
+    "cc": {
+      "count": 134,
+      "max": 96,
+      "excess": 1623
+    },
+    "length": {
+      "count": 72,
+      "max": 639,
+      "excess": 7571
+    }
+  },
+  "after": {
+    "cc": {
+      "count": 119,
+      "max": 77,
+      "excess": 1357
+    },
+    "length": {
+      "count": 66,
+      "max": 585,
+      "excess": 6247
+    },
+    "params": {
+      "count": 5,
+      "max": 11,
+      "excess": 10
+    }
+  },
+  "unchanged_baseline_sha256": "28d1c0cf25aefa3eed352f7ee4e35577165da45932e544d67871e8c05b206821",
+  "checks": {
+    "lint": "pass",
+    "typecheck": "pass",
+    "build": "pass",
+    "authority_tests": {
+      "pass": 228,
+      "fail": 0
+    },
+    "character_direct": {
+      "pass": 27,
+      "fail": 0
+    },
+    "cutover_direct": {
+      "pass": 18,
+      "fail": 0
+    },
+    "battle_public_direct": {
+      "pass": 15,
+      "fail": 0
+    },
+    "narration_direct": {
+      "pass": 16,
+      "fail": 0
+    },
+    "fixture_json_bytes_equal": true
+  },
+  "disabled_test_comparison": {
+    "tests": [
+      "backend/src/services/battle-create-idempotency.test.ts",
+      "backend/src/services/conscious-agency-persistence.test.ts"
+    ],
+    "before": {
+      "pass": 2,
+      "fail": 2
+    },
+    "after": {
+      "pass": 2,
+      "fail": 2
+    },
+    "failure": "MY_CHARACTER_V3_CAPABILITY_BLOCKED",
+    "interpretation": "Same capability rejection reproduced at baseline; no game acceptance claim."
+  },
+  "logs": [
+    {
+      "check": "lint",
+      "sha256": "e464847c8a1c604eb5463b24dd40c956baf1cb3ede37e9e22649f5a33cae36d5"
+    },
+    {
+      "check": "tests",
+      "sha256": "7158f51bad08252ddd04e0b02b87b115f81f8454283b1e566e5527aa74d0d133"
+    },
+    {
+      "check": "build",
+      "sha256": "5a206df282834ac2eb4b46c56c428a78bf650ba52c690f18019ae9f63388b03b"
+    },
+    {
+      "check": "character_direct",
+      "sha256": "e8b59bd7ab0c734df1559654c5d8610b5080c3cff4bd6609b79b8f6d951c53eb"
+    },
+    {
+      "check": "baseline_disabled_failures",
+      "sha256": "f2bc8e0109ee8621bca404505f86d7f029536366ff9d2c81a12f34c00b5a6cb7"
+    },
+    {
+      "check": "current_disabled_failures",
+      "sha256": "6f51001c191a9ebcf4fedffd828294168f4d5ef5bae0c6ac60cbbfa02de999f1"
+    }
+  ],
+  "provenance": {
+    "statuses": [
+      {
+        "ref": "implementation/vt104-unreleased-trial-local-20261001",
+        "head_seal_id": "ba7134b678cb624b4b97129d58f2a9428563ff3d3045421a85aad16d4f2203f5",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "docs/evidence/vt104-unreleased-trial-source-2026-10-01.json",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "verification/vt104-trial-evidence-20261001",
+        "head_seal_id": "f5b8aeb204d487979d7a864b3190f76fa473c939110fd75d4bcdee4d57fc9c90",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "scripts/verify-v3-trial-evidence.test.mjs",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "verification/vt104-trial-workflow-local-20261001",
+        "head_seal_id": "341625b8dbc89d299550396bd1cbc67c46ae215ee83c693c2b4309837e99b2b9",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "docs/evidence/vt104-workflow-local-validation-2026-10-01.py",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      },
+      {
+        "ref": "verification/vt104-narration-accounting-20261001",
+        "head_seal_id": "832a2a22f9a292aa0b2be44885a2207080b51ca183f17e688d394e0f55285f84",
+        "candidate_to_head": "NO_CANDIDATE",
+        "draft": false,
+        "stale": {
+          "self": false,
+          "direct_target_seal_ids": [],
+          "transitive_paths": []
+        },
+        "sealed_state_labels": [
+          "SEALED_STATE_CLEAN"
+        ],
+        "local_source": {
+          "path": "backend/src/services/narration-worker-accounting.test.ts",
+          "baseline": "HEAD",
+          "relation": "WORKFILE_MATCHES_HEAD"
+        }
+      }
+    ]
+  },
+  "fsck": "ok",
+  "audit_summary": {
+    "fatal_count": 0,
+    "error_count": 0,
+    "warning_count": 0,
+    "info_count": 0,
+    "hint_count": 6
+  }
+}
