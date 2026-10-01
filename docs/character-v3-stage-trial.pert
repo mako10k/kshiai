@@ -2,7 +2,7 @@
 project V3_STAGE_TRIAL:
   version 5
   title "First two-character V3 Stage battle trial"
-  description "Current owner policy: unreleased production/Stage shared environment; first Google-owner V3 game use. Requirements v3 supersede first-trial legacy compatibility/history preservation, email and backup/restore gates. Preserve new V3 correctness and owner authentication. vt104 minimal deployment/detail candidate -> vt105 deployment -> vt106 authoring and vt108 old unfinished disposal -> vt107 observed game. Remaining internal estimates vt1040.5-1.25h, Stage1.75-4.75h low; external waits separate. Actual local tests retained without claiming Stage pass. Existing measured velocity25p/17h is one declared elapsed sample, not person effort. docs/character-v3-battle-cutover-requirements-v3.md; owner unreleased shared-environment policy and plan correction 2026-09-30; docs/evidence/vt104-unreleased-trial-rescope-2026-09-30.md Registration PR151 created; security CI blocks on existing undici7.29.0. Exact two-manifest7.29.1 candidate locally passes audit0/build/worker/typecheck/tests112; owner scope extension pending. Cloud readback inventory18unfinished and22outbox including14finished; no cloud writes. Latest checkpoint docs/evidence/vt104-registration-blocker-and-fix-2026-10-01.md."
+  description "Current owner policy: unreleased production/Stage shared environment; first Google-owner V3 game use. Requirements v3 defer first-trial legacy compatibility/history preservation,email andbackup/restore gates. Preserve newV3 correctness andcurrentGoogle authentication. Accepted requirements/design govern vt104 preparation,vt105 deployment,vt106 ordinary owner confirmation,vt108 exact oldunfinished disposal andvt107 realgame observation. Registration PR151 merged; initial disposal repair accepted/implemented; RC2 source4ab1971 withsuccessfulCI4 andprepare36857282507/image2e7051ec. No sharedDB/runtime/authwrites. ActualGoogleV3 value notyet realized. Fresh pooler readonly inventory18unfinished168finished14finishedoutbox; GCP directURL reachability,next exactstop/deploy scope unverified. Owner closeout instruction21:10, handoff docs/handoff-v3-trial-rc2-2026-10-01.md. Provisional remaining internal agent estimates vt1040.25-1h,prelogin1-3.25h,firsttrial1.75-5.25h,parentcsm0014.75-12.25h low; externalwaits separate. Existingvelocity25p/17h elapsedonly; do not convert it into personeffort."
   as_of 2026-09-29
   duration_unit point
   velocity 25p/17h
@@ -93,12 +93,12 @@ task vt103 VST_WIRED -> VST_LOCAL_BATTLE:
 
 task vt104 VST_LOCAL_BATTLE -> VST_RELEASE:
   title "Prepare the minimal unreleased V3 trial candidate"
-  description "Operational candidate docs/evidence/vt104-operational-packet-2026-10-01.md and fresh inventory prepared. RC4f3/v0.23.0-rc.1/image43d084 remain frozen. Live78 tags, queueRUNNING empty, active18 finished168 battles, completed-entry outbox22:14finished8active, pending migrations0026-0030, all secret versions1. Accepted no-snapshot policy conflicts with snapshot-required discard helper; receipt table0029 missing before discard while workflow requires zero unfinished before migration. Successor design/local repair decision pending; no cloud/DB/queue/auth/provider writes. vt104 remains incomplete. Updated remaining internal agent estimates vt1040.75-2h, prelogin1-3.25h, firsttrial1.75-5.25h, parentcsm0014.75-12.25h low; external waits separate."
+  description "RC2 source4ab19719ef7fa61cdfb8571c4579c3c64cc96dfb, CI36856943670 fourchecks success, prepare36857282507/cloudBuild8b93a707/image2e7051ec independentlyverified. Owner-approved snapshot-free trial preparation and receipt bootstrap implemented;234selected tests,type/static/build andcompiledPG17 thirteenchecks passed. Shared pooler readonly preview18unfinished168finished14finishedoutbox; local directURL ENETUNREACH, GCP image DB reachability unobserved. No shared stop/disposal/deploy/authwrites. vt104 remains incomplete pending proposed pre-stop GCP readonly probe and exact execution packet. Owner requests closeout by21:10; handoff docs/handoff-v3-trial-rc2-2026-10-01.md. Remaining agent estimates vt1040.25-1h, prelogin1-3.25h, firsttrial1.75-5.25h, parentcsm0014.75-12.25h low; external waits separate."
   duration 1p
   status suspended
   requires:
     DEV 1
-  source "docs/unreleased-v3-trial-design-v1.md; docs/evidence/vt104-execution-candidate-2026-10-01.md; docs/evidence/vt104-unreleased-trial-source-2026-10-01.json"
+  source "docs/unreleased-v3-trial-design-v1.md; docs/unreleased-v3-trial-disposal-design-v2-proposed.md; docs/evidence/vt104-hosted-prepare-rc2-2026-10-01.json; docs/handoff-v3-trial-rc2-2026-10-01.md"
 
 task vt105 VST_RELEASE -> VST_STAGE_DEPLOYED:
   title "Deploy the V3 candidate to the unreleased shared environment"
@@ -491,3 +491,16 @@ work_event vt104-disposal-local-verified-20261001:
   kind suspend
   occurred_at 2026-10-01T20:37:00+09:00
   reason "Approved local no-snapshot repair and isolated PostgreSQL17 13-check rehearsal complete; existing RC remains unchanged. Await exact new CI/RC/runtime transition authority; deployed Google V3 proof remains open."
+
+work_event vt104-rc2-prepare-resume-20261001:
+  model 1
+  task vt104
+  kind resume
+  occurred_at 2026-10-01T20:41:31+09:00
+
+work_event vt104-rc2-closeout-20261001:
+  model 1
+  task vt104
+  kind suspend
+  occurred_at 2026-10-01T21:00:49+09:00
+  reason "Owner asked all active threads to stop at a convenient point, handoff, commit and push by21:10JST. RC2 preparation complete; exact prestop GCP DBprobe and real deployment remain unapproved/unverified. Shared workday unchanged."
