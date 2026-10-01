@@ -10,7 +10,7 @@
 project csm001:
   version 9
   title "Restore character authoring and migrate frozen ready V2 characters to strict V3"
-  description "Current scope: docs/character-semantic-migration-plan-revision-13.md; measured progress: docs/evidence/vt109-registration-2026-09-29.md. First outcome is owner play of new immutable V3 Neva versus Rio on Stage. V3-only new creation, physical disposal of pre-cutover unfinished battles and readable finished history remain fixed. cc319 records owner acceptance of the exact package; vt111 receives the handoff. vt109 completed locally and cc314 rolls up remaining child work once. Later V2-to-V3 migration and broad evaluation remain downstream. Velocity is the single vt109 elapsed-time observation from perttool; owner wait and calendar allocation remain separate."
+  description "Current first-trial authority: docs/character-v3-battle-cutover-requirements-v3.md. Owner Google login, normal Neva/Rio review/confirm, selection, immutable V3 battle advance/reload/result in unreleased shared production/Stage. cc314 delegates remaining child work once. Exact old unfinished disposal remains; legacy history/compatibility, migration, email, snapshot/restore and public promotion are deferred first-trial obligations. Later authoring/migration/evaluation remain downstream. Child provisional effort1.5-4.25 agent h plus downstream3-7 = parent4.5-11.25 agent h, low confidence; external approvals/owner wait separate. Historical local done evidence is not deployed outcome."
   as_of 2026-09-29
   duration_unit point
   velocity 780p/191h
@@ -439,10 +439,10 @@ gate cg305 cm303 -> cm305:
 task cc314 cm305 -> cm314:
   tags [M3_STAGE_GAME_USE]
   title "Try Neva versus Rio in an actual V3-only Stage battle"
-  description "Delegates remaining V3 Stage trial to docs/character-v3-stage-trial.pert. vt102, vt109, vt110 and vt103 local joined browser integration are done; remaining child resource work is 37/6p. Next vt104 prepares the exact release and stopped cutover/readback procedure; Stage deployment/data activation/owner play remain separately authorized. Local evidence docs/evidence/vt103-local-integration-2026-09-30.md."
-  duration 37/6p
+  description "Delegates remaining first Google-owner V3 trial once to docs/character-v3-stage-trial.pert: vt104 local workflow/validator completed, exact synchronization/execution packet remaining, vt105 authorized deployment, vt106 usual owner review/confirm and vt108 exact old unfinished disposal, vt107 observed advance/reload/result. Prior local vt102/vt109/vt110/vt103 evidence remains local. Legacy compatibility/email/snapshot/restore/public promotion are deferred under requirements v3. Child remaining resource work89/24p; provisional internal effort1.5-4.25 agent h, low confidence; external execution/owner waits separate."
+  duration 89/24p
   owner "user and codex"
-  source "Child docs/character-v3-stage-trial.pert vt104: local core plus eight Stage smoke adapters and isolated tests validated, Accepted ADR0041 snapshot policy selected, owner-key preparation ready. Workflow integration, actual recovery R, key/email resource inputs, exact release/CI/artifacts and separately approved Stage/production actions remain. Local evidence: docs/evidence/vt104-stage-smoke-detail-2026-09-30.md. Parent outcome remains owner real V3 Stage play."
+  source "docs/character-v3-battle-cutover-requirements-v3.md; docs/evidence/vt104-unreleased-trial-rescope-2026-09-30.md; docs/evidence/vt104-wip-handoff-2026-09-30.md"
   requires:
     cr001 1
     cr002 1

@@ -1,0 +1,12 @@
+domain IMPLEMENTATION:
+  description "Implement accepted initial V3 trial option1 locally."
+evidence OWNER:
+  "User replied yes to concrete design v1 option1 and exact workflow/evidence-validator local file set. Acceptance includes usual authenticated preview access."
+evidence SOURCE:
+  "Normal runtime exists without CUTOVER variables. Existing stage release image/tag/Worker pattern can be reused; old writer/backlog must be checked before normal startup."
+premise LIMIT:
+  "Local workflow/validator/tests/docs/PERT only. No actual dispatch, GitHub write, cloud change, DB disposal, paid provider call or general promotion. Preserve existing work."
+pending EXECUTION:
+  "Frozen packet needs exact targets, secrets, queue/writer/disposal readback and cost ceilings. Workflow must consume reviewed preflight evidence and live checks, not mint success assertions."
+decision IMPLEMENT based_on OWNER, SOURCE, LIMIT, EXECUTION:
+  "Record acceptance, resume vt104, implement dedicated workflow with immutable image preparation before shared-stop deployment, exact packet source/image/target checks, startup preflight, no-traffic/CUTOVER removal and Worker preview. Separate preparation receipt from real Google/V3 game receipt. Verify behavior locally and retain execution unknowns."

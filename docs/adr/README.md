@@ -93,4 +93,4 @@ current check.
 | [0040](0040-shared-cutover-runtime-control.md) | Accepted | Keep exact release revision through durable cutover control; bounded owner trial and forward recovery after first V3 creation |
 | [0041](0041-cutover-snapshot-protection.md) | Accepted | Protect shared-cutover snapshots with owner public-key encryption, dedicated Tokyo GCS, 30-day minimum retention and 7-day soft delete |
 
-| [0042](0042-unreleased-v3-trial-scope.md) | Proposed | Owner-confirmed unreleased-trial policy; concrete workflow/control integration candidate |
+| [0042](0042-unreleased-v3-trial-scope.md) | Accepted | Use an ordinary authenticated preview for the unreleased first V3 trial; defer legacy compatibility, email, snapshot and public promotion |

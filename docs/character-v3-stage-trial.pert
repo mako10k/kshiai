@@ -2,7 +2,7 @@
 project V3_STAGE_TRIAL:
   version 5
   title "First two-character V3 Stage battle trial"
-  description "Current owner policy: unreleased production/Stage shared environment; first Google-owner V3 game use. Requirements v3 supersede first-trial legacy compatibility/history preservation, email and backup/restore gates. Preserve new V3 correctness and owner authentication. vt104 minimal deployment/detail candidate -> vt105 deployment -> vt106 authoring and vt108 old unfinished disposal -> vt107 observed game. Remaining internal estimates vt1040.5-1.5h, Stage1.75-5h low; external waits separate. Actual local tests retained without claiming Stage pass. Existing measured velocity25p/17h is one declared elapsed sample, not person effort. docs/character-v3-battle-cutover-requirements-v3.md; owner unreleased shared-environment policy and plan correction 2026-09-30; docs/evidence/vt104-unreleased-trial-rescope-2026-09-30.md"
+  description "Current owner policy: unreleased production/Stage shared environment; first Google-owner V3 game use. Requirements v3 supersede first-trial legacy compatibility/history preservation, email and backup/restore gates. Preserve new V3 correctness and owner authentication. vt104 minimal deployment/detail candidate -> vt105 deployment -> vt106 authoring and vt108 old unfinished disposal -> vt107 observed game. Remaining internal estimates vt1040.25-0.75h, Stage1.5-4.25h low; external waits separate. Actual local tests retained without claiming Stage pass. Existing measured velocity25p/17h is one declared elapsed sample, not person effort. docs/character-v3-battle-cutover-requirements-v3.md; owner unreleased shared-environment policy and plan correction 2026-09-30; docs/evidence/vt104-unreleased-trial-rescope-2026-09-30.md"
   as_of 2026-09-29
   duration_unit point
   velocity 25p/17h
@@ -93,12 +93,12 @@ task vt103 VST_WIRED -> VST_LOCAL_BATTLE:
 
 task vt104 VST_LOCAL_BATTLE -> VST_RELEASE:
   title "Prepare the minimal unreleased V3 trial candidate"
-  description "Freeze current source and exact Neva/Rio candidates; detail the smallest workflow/control integration for Google ownership and V3 play. Remove email, snapshot/restore and legacy history compatibility prerequisites. Reuse verified local code. No requirement for public production promotion or backup resource creation; concrete implementation and external execution remain separately scoped."
+  description "Accepted design v1 option1 local workflow/validator/testing complete. Frozen local source563 paths; current source needs authorized synchronization and exact hosted tag/prepare artifact. Remaining exact execution packet: live writer/queue/DB/backlog, required migration names and numeric secret versions, Google redirect and paid budget readbacks. No email/snapshot/legacy compatibility/public promotion prerequisites. Residual internal effort0.25-0.75 agent h low; local success is not deployed game evidence."
   duration 1p
   status suspended
   requires:
     DEV 1
-  source "docs/character-v3-battle-cutover-requirements-v3.md; owner unreleased shared-environment policy and plan correction 2026-09-30; docs/evidence/vt104-unreleased-trial-rescope-2026-09-30.md"
+  source "docs/unreleased-v3-trial-design-v1.md; docs/evidence/vt104-execution-candidate-2026-10-01.md; docs/evidence/vt104-unreleased-trial-source-2026-10-01.json"
 
 task vt105 VST_RELEASE -> VST_STAGE_DEPLOYED:
   title "Deploy the V3 candidate to the unreleased shared environment"
@@ -193,10 +193,10 @@ work_event WE-b6b08595934599b49d01ed1c80431459974f9cd32338618fe52cec503a6f326e:
 
 milestone VST_CUTOVER:
   title "Pre-cutover unfinished Stage battles discarded"
-  description "Exact pre-cutover unfinished targets are physically removed, replay and worker paths are read back, finished history remains readable, and the V3-only cutover point is recorded."
+  description "Exact pre-cutover unfinished targets are physically removed; replay and worker paths are read back and the V3-only cutover identity is recorded. Requirements v3 R3-R5 defer finished-history compatibility and snapshot/restore proof from initial-trial acceptance."
 
 gate vg108 VST_CUTOVER -> VST_STAGE_READY:
-  reason "Stage readiness requires verified disposal of pre-cutover unfinished battles and finished-history readback."
+  reason "Initial Google-owner V3 trial requires verified disposal of the exact pre-cutover unfinished set and prevention of old execution/recreation. Finished-history readability and snapshot/restore are deferred under requirements v3 R3-R5."
 
 work_event WE-c9a8d59814806938e3b8f831e1a97ec451d76d153171e71d25434ac1499dea28:
   model 1
@@ -374,3 +374,42 @@ work_event vt104-owner-key-registration-suspend-20260930:
   kind suspend
   occurred_at 2026-09-30T20:41:32+09:00
   reason "Owner-authorized secdat key registration and public/roundtrip readback complete. Pending existing-email input and actual recovery/artifact/workflow packet; vt104 incomplete, no production/GitHub writes."
+
+work_event vt104-plan-detail-resume-20261001:
+  model 1
+  task vt104
+  kind resume
+  occurred_at 2026-10-01T09:59:20+09:00
+
+work_event vt104-specific-design-suspend-20261001:
+  model 1
+  task vt104
+  kind suspend
+  occurred_at 2026-10-01T10:05:16+09:00
+  reason "Canonical plan alignment and concrete design v1 prepared and audited; npm test206 and typecheck pass. Await owner selection of normal-runtime preview access versus owner-only dynamic mode under Proposed ADR0042. No implementation/cloud/remote writes."
+
+work_event vt104-accepted-implementation-resume-20261001:
+  model 1
+  task vt104
+  kind resume
+  occurred_at 2026-10-01T10:24:45+09:00
+
+work_event vt104-unreleased-local-suspend-20261001:
+  model 1
+  task vt104
+  kind suspend
+  occurred_at 2026-10-01T10:44:11+09:00
+  reason "Accepted option1 local workflow and current sealed validator/guard verification completed. Await exact candidate synchronization and execution packet. No cloud/GitHub/DB/paid actions."
+
+work_event vt104-prelogin-resume-20261001:
+  model 1
+  task vt104
+  kind resume
+  occurred_at 2026-10-01T11:07:33+09:00
+
+work_event vt104-prelogin-registration-suspend-20261001:
+  model 1
+  task vt104
+  kind suspend
+  occurred_at 2026-10-01T11:09:46+09:00
+  reason "Accepted source checked and scoped GitHub synchronization prepared. Hosted workflow absent on default main; exact single-file registration candidate requires owner decision. Local GCP readbacks require reauthentication; cloud state unknown. No prepare/deploy/DB/paid action; vt104 remains unfinished."

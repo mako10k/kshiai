@@ -201,6 +201,10 @@
     {
       "path": "backend/src/scripts/stage-auth-smoke.test.ts",
       "ref": "verification/vt104-stage-auth-cli-20260930"
+    },
+    {
+      "path": "scripts/verify-v3-trial-evidence.test.mjs",
+      "ref": "verification/vt104-trial-evidence-20261001"
     }
   ]
 }

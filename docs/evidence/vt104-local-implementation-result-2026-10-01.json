@@ -1,0 +1,70 @@
+{
+  "at": "2026-10-01T10:47:41+09:00",
+  "sourceAggregate": "8b4b84783e617cac1fe1ec42ca1dfc1da937070c532e2904e0d02253417cfa00",
+  "sourcePaths": 563,
+  "npmTest": {
+    "passed": 226,
+    "components": [
+      173,
+      24,
+      29
+    ],
+    "failed": 0,
+    "selection": {
+      "active": 38,
+      "provisional": 2,
+      "disabled": 141
+    }
+  },
+  "typecheck": "passed",
+  "workflowGuardChecks": {
+    "passed": 28,
+    "failed": 0,
+    "scope": "Extracted local guards and SQL doubles; no cloud execution",
+    "cases": [
+      "valid exact packet accepted",
+      "source mismatch rejected",
+      "target mismatch rejected",
+      "mutable image rejected",
+      "expired window rejected",
+      "widened writes rejected",
+      "latest secret rejected",
+      "unexpected token rejected",
+      "wrong packet hash rejected",
+      "valid packet restored",
+      "prepared artifact tuple verified",
+      "other source prepared run rejected",
+      "lookalike workflow path rejected",
+      "failed preparation run rejected",
+      "prepared artifact image mismatch rejected",
+      "zero backlog permits migration and readback",
+      "unreviewed migration blocks before schema mutation",
+      "battles nonempty blocks before migration",
+      "provider_operation_runs nonempty blocks before migration",
+      "provider_operation_attempts nonempty blocks before migration",
+      "battle_narration_attempts nonempty blocks before migration",
+      "battle_narration_entries nonempty blocks before migration",
+      "battle_narration_outbox nonempty blocks before migration",
+      "asset_authoring_outbox nonempty blocks before migration",
+      "character_authoring_jobs nonempty blocks before migration",
+      "battlefield_authoring_jobs nonempty blocks before migration",
+      "narration_style_authoring_jobs nonempty blocks before migration",
+      "workflow structure and all shell/JS syntax pass"
+    ]
+  },
+  "adr0042": "Accepted check passed",
+  "sealgraphFsck": "ok",
+  "scope": "Local conformance evidence; no cloud, paid provider, DB mutation or remote writes",
+  "measurement": {
+    "task": "vt104",
+    "resume": "2026-10-01T10:24:45+09:00",
+    "suspend": "2026-10-01T10:44:11+09:00",
+    "observedIntervalSeconds": 1166,
+    "personEffort": "unavailable; interval includes tool waits and overlapping agents",
+    "completeTask": "false; exact synchronization/execution packet remains",
+    "nextCheckpoint": "next authorized vt104 source/packet completion; 0.25-0.75 agent h low confidence"
+  },
+  "diagnosticFailures": [
+    "An initial unlink was rejected because it would remove the last Cause. Added the reviewed replacement Cause before removing the older target; final provenance checked."
+  ]
+}

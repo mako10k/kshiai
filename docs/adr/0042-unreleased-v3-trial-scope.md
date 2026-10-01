@@ -1,9 +1,9 @@
 # ADR-0042: 未リリース共用環境の初回V3試行を優先する
 
-- Status: Proposed
+- Status: Accepted
 - Date: 2026-09-30
 - Decision owner: user
-- Authority: 基本方針は[要件v3](../character-v3-battle-cutover-requirements-v3.md)の所有者指示で確定済み。本ADRの具体的なworkflow/control配分は候補。
+- Authority: 具体設計v1 option1と指定file setは2026-10-01の所有者回答「はい。よいです。」で受入済み（[hash記録](../evidence/vt104-design-owner-acceptance-2026-10-01.json)）。基本方針は[要件v3](../character-v3-battle-cutover-requirements-v3.md)の所有者指示で確定済み。本ADRの具体方式は詳細設計v1 option1に確定。
 - Related: vt104–vt108 / cc314 / csm001、ADR-0039 D3/D4、ADR-0040、ADR-0041、release_process flow5–7
 
 ## Context
@@ -24,7 +24,7 @@ C1: 未リリース環境でGoogleログインからV3実対戦までを優先�
 
 ## Decision
 
-候補option1。具体的なworkflow file set、runtime control遷移との接続、配備identityの固定・実試験をvt104で詳細化する。一般公開のpromotionと初回の共用環境試行を区別する。詳細候補の受入前に実装を変更しない。所有者の基本方針自体の再承認は求めない。
+受入済みoption1の具体化は[詳細設計v1](../unreleased-v3-trial-design-v1.md)。初回試行専用workflowでCUTOVER二環境変数を明示除去した通常runtimeをno-traffic tagとWorker version previewへ配備し、既存Supabase認証・所有権・V3 binding・会計を使う。preview URLを知る他の認証済利用者も既存認可の範囲でアクセス可能であり、owner限定controlの追加を望む場合はoption2の別詳細化へ進む。旧writer/queue停止・旧unfinished処分を新runtime起動の前へ置き、startupの旧pending仕事を事前照合する。変更候補は新規v3-trial workflowと専用evidence validator/test。従来stage/promote/rollbackとcontrolコードは保持する。一般公開のpromotionと初回の共用環境試行を区別する。2026-10-01の受入により指定file setのローカル実装・試験へ進む。外部実行は別のexact packet対象である。所有者の基本方針自体の再承認は求めない。
 
 ## Consequences
 
@@ -40,4 +40,4 @@ exact source/deployment identity、Google login/ownership、通常review/confirm
 
 ## Implementation references
 
-未実装。現在の作用は文書と正本PERTの再修正のみ。[修正計画](../evidence/vt104-unreleased-trial-rescope-2026-09-30.md)。
+ローカル実装・検証済み（2026-10-01、実cloud未実行）。.github/workflows/v3-trial.ymlと専用evidence validator/testを追加し、受入設計・source manifest・検証Causeを接続した。2026-10-01に[具体file set・作用順・代替案・リスク・未知・検証出口](../unreleased-v3-trial-design-v1.md)を用意した。今回の作用は承認済みローカル実装・試験、関連文書・正本PERT・検証provenanceの更新。外部実行は未実施。[修正計画](../evidence/vt104-unreleased-trial-rescope-2026-09-30.md)。
