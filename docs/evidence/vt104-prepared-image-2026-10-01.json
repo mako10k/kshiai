@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "commitSha": "4f3aaa7f0556644b10c51d27f94d57401572cea2",
+  "releaseTag": "v0.23.0-rc.1",
+  "imageRef": "asia-northeast1-docker.pkg.dev/kshiai/kshiai/backend@sha256:43d084a20629758a6157170350fb287678c38790d8e6008c1f1e8b417757f1aa",
+  "runId": "36841952094"
+}

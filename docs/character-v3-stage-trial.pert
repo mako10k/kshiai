@@ -93,7 +93,7 @@ task vt103 VST_WIRED -> VST_LOCAL_BATTLE:
 
 task vt104 VST_LOCAL_BATTLE -> VST_RELEASE:
   title "Prepare the minimal unreleased V3 trial candidate"
-  description "Owner complexity-normalization instruction executed with unchanged baseline: CC119/121 max77/92 excess1357/1369; length66/67 excess6247/7390; params5/5. Node22 lint/build/tests228 and affected direct checks pass. PR151 merged933e6ae; hosted workflow registered. Current source569 paths has aggregate6edaf6c7; prepare needs exact hosted source/fourCI/annotated tag authority. Existing disabled idempotency/agency tests fail same capability guard before/after. No trial cloud/DB/login/provider writes. Remaining vt104 internal0.5-1.5 agent h low; prelogin1-3h, first trial1.75-5h, parentcsm0014.75-12h low, external waits separate. Checkpoint docs/evidence/vt104-complexity-normalization-result-2026-10-01.md. Correction: suspend-event228 claim at15:20 was premature; provenance-refresh run executed208. Final rerun after refs updated executed175+24+29=228,fail0; historical reason retained as prior report, detailed correction in checkpoint."
+  description "Hosted source4f3aaa7 verified: Draft PR152, fourCI36841509755 successful on same SHA, annotated v0.23.0-rc.1 remote tag object/peeled source match; prepare36841952094 success. Artifact11152410082, CloudBuild9c3b3f04 SUCCESS and ArtifactRegistry match image sha25643d084a2...5757f1aa. No merge/Release/runtime/DB/Worker/queue/Google/paid LLM actions. Current step complete; exact operational packet remains. Remaining vt1040.25-0.75 agent h, prelogin0.5-2h, firsttrial1.25-4h, parentcsm0014.25-11h low, external waits separate. RC source4f3 stays frozen while handoff metadata may advance branch HEAD. Checkpoint docs/evidence/vt104-hosted-prepare-2026-10-01.md."
   duration 1p
   status suspended
   requires:
@@ -452,3 +452,16 @@ work_event vt104-complexity-verified-20261001:
   kind suspend
   occurred_at 2026-10-01T15:20:58+09:00
   reason "Complexity normalization complete: unchanged lint/build/tests228 pass. Remaining exact hosted source/fourCI/tag/prepare and execution packet; no trial cloud/DB/login writes."
+
+work_event vt104-hosted-prepare-resume-20261001:
+  model 1
+  task vt104
+  kind resume
+  occurred_at 2026-10-01T18:15:32+09:00
+
+work_event vt104-hosted-prepare-verified-20261001:
+  model 1
+  task vt104
+  kind suspend
+  occurred_at 2026-10-01T18:32:51+09:00
+  reason "CI/annotated RC/prepare complete at exact4f3 source and matching artifact/build/registry image. Operational execution packet remains; no runtime deployment."

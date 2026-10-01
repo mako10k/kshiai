@@ -1,0 +1,18 @@
+domain TRIAL_PREPARATION:
+  description "Freeze current owner-authorized V3 source, check hosted CI and prepare one immutable image."
+evidence OWNER:
+  "Owner approved the disclosed next sequence: CI PR for4f3aaa7, RC tag and registered prepare workflow, without deployment."
+evidence SOURCE:
+  "Existing cc304 source4f3aaa7 is clean and synchronized. Unchanged lint/build and228 tests pass; frozen569-path manifest6edaf6c7. Main workflow registration933e6ae is independently verified."
+premise BOUNDS:
+  "One draft PR to main for CI only, no merge. One annotatedv0.23.0-rc.1 tag at4f3aaa7 if absent. After four successful required checks one prepare dispatch from that tag. CloudBuild1/source upload/image artifact/GitHub artifact only; no CloudRun/Worker/DB/queue/Google/provider mutation. No blind retries on ambiguous writes."
+pending GATES:
+  "Fresh existingPR/tag readback and exact hosted source check identities must succeed. Workflow requires dated0.23.0 changelog, four matching check runs and actor=repositoryowner. Scheduled workday ends18:42 with five-minute closeout buffer."
+premise ALTERNATIVE:
+  "Reuse an existing exact-source PR/tag if present. On CI failure inspect and fix only actual in-scope defect; keep updatedsource visible and rerun affected required checks before tagging. Stop dependent prepare on unresolved check or source mismatch."
+decision PREPARE based_on OWNER, SOURCE, BOUNDS, GATES, ALTERNATIVE:
+  "Perform readback gates, create exact draft CI PR and attach it, verify four checks, create/read annotated tag and dispatch prepareonce; read run/artifact/image identity and report remaining deployment gate. Preserve handoff within current work window; ask before overtime if necessary."
+evidence PREPARED:
+  "Exactsource4f3 four hosted checks succeeded, RC annotatedtag object50023ca1 peeled4f3, prepare36841952094 succeeded. GitHubartifact11152410082, GCPbuild9c3b3f04 SUCCESS and ArtifactRegistry all agree image sha25643d084a2...5757f1aa. Deploy/DB/Worker/queue steps skipped."
+decision RECORD based_on OWNER, BOUNDS, PREPARED:
+  "Record immutable source/tag/run/artifact/build/image receipt and current proof, preserve RC4f3 while committing only handoff metadata, suspend partialvt104 at operational packet boundary, and independently read synchronized branch. Do not deploy or accept game readiness."
