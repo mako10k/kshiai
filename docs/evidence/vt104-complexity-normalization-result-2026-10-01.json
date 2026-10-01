@@ -83,7 +83,7 @@
     },
     {
       "check": "tests",
-      "sha256": "7158f51bad08252ddd04e0b02b87b115f81f8454283b1e566e5527aa74d0d133"
+      "sha256": "7342f7393dff623ad2a681df924571d4805da0041d951d55d9bc96e50f97434b"
     },
     {
       "check": "build",
@@ -189,5 +189,16 @@
     "warning_count": 0,
     "info_count": 0,
     "hint_count": 6
+  },
+  "prior_provenance_refresh_run": {
+    "executed_tests": 208,
+    "excluded_tests": 20,
+    "reason": "Two script verification refs were stale during implementation source refresh; corrected refs restored selection.",
+    "interpretation": "Previous228 claim was premature;final rerun below covers all39 active files."
+  },
+  "selection": {
+    "active": 39,
+    "provisional": 2,
+    "disabled": 141
   }
 }

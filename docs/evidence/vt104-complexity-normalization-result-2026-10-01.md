@@ -14,6 +14,8 @@
 
 公開戦闘データを専用projectionへ分け、戦闘開始のreplay/participant解決を区分した。切替受付はauth/trial/responseを分け、control repositoryの許可・遷移・receipt検証を整理した。ナレーションは取得/claim/生成会計/結果公開を区分し、character authoringは新規対象検査/有効化済み結果/移行/期限切れ/候補検証を区分した。fixtureハッシュ生成は共通化し、Neva/Rioの全生成JSONは変更前後でバイト一致した。
 
+証跡更新中の途中runでは20件のscript検査がstaleによって選択から外れ、実行208件だった。228件という途中報告を訂正した。verificationを現在の実装Sealへ更新した後、全39 activeファイルのテストを再実行し、最終175+24+29=228件・失敗0を確認した。provisional2、disabled141は通常の選択対象外のまま。
+
 Node22.22.3でnpm run lint（全型検査・重複検査・複雑度検査）、npm testの228件、npm run buildが成功。変更した処理の直接検査もcharacter27件、cutover18件、公開戦闘15件、ナレーション16件成功。直接検査は通常テストと重複するため合計に加算しない。新規provider会計の2テストをinventory/verificationへ登録した。独立の差分レビューでは、外部動作、処理順序、SQL/transaction、型契約の回帰を検出しなかった。統合中の参加者型の広がりは、combat-ready sheet型への修正後に全検査した。ビルドの既存chunk size警告は残る。
 
 選択対象外のbattle-create-idempotency/conscious-agency-persistence計4件は、前後とも2成功・2失敗。整理前b9af55eでも同じMY_CHARACTER_V3_CAPABILITY_BLOCKEDが再現した。これを今回の回帰や、実対戦の成功証拠とは扱わない。別途対戦証拠の取得が必要。
