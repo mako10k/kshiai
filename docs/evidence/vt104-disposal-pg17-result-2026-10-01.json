@@ -1,0 +1,71 @@
+{
+  "observedAt": "2026-10-01T11:35:11.584Z",
+  "PostgreSQL": "17.11",
+  "node": "v22.22.3",
+  "target": {
+    "host": "127.0.0.1",
+    "port": 55443,
+    "database": "vt104_trial_disposal_1790854497206_916211"
+  },
+  "synthetic": true,
+  "sharedCloudDatabaseWrites": 0,
+  "checks": [
+    {
+      "name": "read-only preview with receipt table absent,18targets/168finished/14outbox",
+      "passed": true
+    },
+    {
+      "name": "expired stop policy",
+      "passed": true
+    },
+    {
+      "name": "frozen finished-outbox generation drift",
+      "passed": true
+    },
+    {
+      "name": "active provider fails quiescence",
+      "passed": true
+    },
+    {
+      "name": "nonexpired battle lease blocks before receipt bootstrap",
+      "passed": true
+    },
+    {
+      "name": "receipt table without required primary key",
+      "passed": true
+    },
+    {
+      "name": "rollback includes receipt bootstrap and finished-outbox updates",
+      "passed": true
+    },
+    {
+      "name": "exact18 discard+14accounting,finished168/users preserved",
+      "passed": true
+    },
+    {
+      "name": "independent CLI readback and no-write replay",
+      "passed": true
+    },
+    {
+      "name": "unexpected post-apply pending outbox rejects replay",
+      "passed": true
+    },
+    {
+      "name": "unexpected post-apply pending outbox rejects readback",
+      "passed": true
+    },
+    {
+      "name": "finished-state drift rejected on independent readback",
+      "passed": true
+    },
+    {
+      "name": "formal forward migrations0026-0030 succeed after bootstrap without earlyledger",
+      "passed": true
+    }
+  ],
+  "finishedPreserved": 168,
+  "discardedSynthetic": 18,
+  "accountedSynthetic": 14,
+  "migration0029": "932895ea9df2cc8a495af10e78cc5a6545abb183b79b550eab9d930653188aa7",
+  "limitation": "Local synthetic PostgreSQL proof; no deployed startup/Google/real V3 battle or shared database disposal proof."
+}

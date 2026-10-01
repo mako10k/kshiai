@@ -1,0 +1,14 @@
+domain IMPLEMENTATION:
+  description "Implement owner-approved initial-trial disposal correction while preserving current authentication."
+evidence OWNER:
+  "Owner quoted snapshot-required discard and missing receipt schema/order contradiction, then explicitly approved. Prior disclosed local scope includes detailed design, trial-only disposal/preparation entry, frozen finished-outbox accounting, tests and canonical progress. No cloud/DB actual disposal/deploy writes in this approval."
+evidence CURRENT:
+  "Worktree72f67ea plus in-scope docs/progress; RC4f3/image43d remains frozen. Local auth/proxy8 tests pass. Current source regular cutover requires snapshot and receipt table, shared DB lacks0029."
+premise CONTRACT:
+  "Accepted requirementsR3 omit snapshot as trial gate; R4 forbids broad data/user deletion authority; R5 maintains real V3, ownership/auth/secret/accounting. New explicit trial entry uses exact frozen plan, receipt bootstrap and finished outbox accounting; old snapshot entry remains unchanged."
+pending DELIVERY:
+  "New source requires fresh identity/CI/prepare before cloud execution. Real stopping/18battle deletion/14outbox account/deployment/callback/provider remain separate exact scopes. Local PostgreSQL17 process must be freshly bound and disposable DB created without replacement."
+premise ALTERNATIVE:
+  "Do not manufacture snapshotidentity or duplicate disposal SQL outside repository. Use existing migrationasset0029 only for compatible transactional bootstrap; preserve ledger ordering. If implementation exposes contract contradiction return to design before dependent changes."
+decision CODE based_on OWNER, CURRENT, CONTRACT, DELIVERY, ALTERNATIVE:
+  "Record accepted design identity; one writer for repository/preparation module/tests, root for strict operator CLI/tests/integration. Run bounded meaningful SQLite/PostgreSQL17 tests, then standard checks; preserve credentials and unfinished state, report full goal still requires deployed owner path."

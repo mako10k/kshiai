@@ -1,0 +1,20 @@
+✔ extracts a signed identity without any application database dependency (13.37659ms)
+✔ rejects wrong issuer, audience, role and absent subject (8.333582ms)
+✔ rejects a token signed by a different key and missing configuration (2.709339ms)
+▶ authenticatedFetch
+  ✔ adds the current access token to requests including SSE posts (24.892859ms)
+  ✔ preserves an explicitly supplied authorization header (0.41423ms)
+✔ authenticatedFetch (26.768661ms)
+▶ Cloudflare frontend worker
+  ✔ serves non-API requests from static assets (28.787502ms)
+  ✔ proxies API method, body, query, and protected origin headers (3.525925ms)
+  ✔ fails closed when the backend binding is incomplete (1.020153ms)
+✔ Cloudflare frontend worker (35.25181ms)
+ℹ tests 8
+ℹ suites 2
+ℹ pass 8
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 319.132807

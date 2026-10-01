@@ -65,7 +65,7 @@ async function matchingIdempotency(connection: DatabaseConnection, ids: Set<stri
     return ids.has(id) || ids.has(responseBattleId(row.response_json) ?? "");
   });
 }
-async function buildPlan(connection: DatabaseConnection, input: { cutoverId: string; cutoverAt: string }): Promise<BattleCutoverPlan> {
+export async function buildBattleCutoverPlanInTransaction(connection: DatabaseConnection, input: { cutoverId: string; cutoverAt: string }): Promise<BattleCutoverPlan> {
   if (!input.cutoverId || !Number.isFinite(Date.parse(input.cutoverAt))) throw new Error("BATTLE_CUTOVER_INPUT_INVALID");
   const rows = await inventory(connection);
   const targets: BattleCutoverPlan["targets"] = [];
@@ -87,18 +87,52 @@ async function buildPlan(connection: DatabaseConnection, input: { cutoverId: str
   return { ...base, planDigest: digest(base) };
 }
 export async function planBattleCutover(input: { cutoverId: string; cutoverAt: string }): Promise<BattleCutoverPlan> {
-  return withTransaction((connection) => buildPlan(connection, input));
+  return withTransaction((connection) => buildBattleCutoverPlanInTransaction(connection, input));
 }
-export async function discardBattleCutover(input: {
+export type BattleCutoverResult = { kind: "discarded" | "replayed"; discardedIds: string[]; finishedIds: string[] };
+export type BattleCutoverAuthorization =
+  | { kind: "recovery-snapshot"; identity: string }
+  | { kind: "unreleased-initial-v3-trial"; ownerDecisionIdentity: string; oldWritersClosedReceiptId: string };
+
+export async function verifyBattleCutoverReadbackInTransaction(
+  connection: DatabaseConnection,
+  plan: BattleCutoverPlan,
+): Promise<void> {
+  const ids = plan.targets.map((target) => target.id);
+  const recorded = (await connection.query<{ battle_id: string }>(
+    "SELECT battle_id FROM battle_discard_receipts WHERE cutover_id = $1 ORDER BY battle_id", [plan.cutoverId],
+  )).rows.map((row) => row.battle_id);
+  if (ids.length > 0 && JSON.stringify(recorded) !== JSON.stringify(ids)) throw new Error("BATTLE_CUTOVER_REPLAY_CONFLICT");
+  for (const id of ids) {
+    if ((await connection.query("SELECT 1 FROM battles WHERE id = $1", [id])).rowCount !== 0) throw new Error("BATTLE_CUTOVER_READBACK_FAILED");
+  }
+  if (Object.values(await counts(connection, ids)).some((count) => count !== 0) ||
+      (await matchingIdempotency(connection, new Set(ids))).length !== 0) throw new Error("BATTLE_CUTOVER_READBACK_FAILED");
+  const remaining = await inventory(connection);
+  for (const expected of plan.finished) {
+    const row = remaining.find((value) => value.id === expected.id);
+    if (!row || status(row) !== "finished" || digest(stateValue(row)) !== expected.stateDigest) throw new Error("BATTLE_CUTOVER_HISTORY_CHANGED");
+  }
+  for (const id of ids) {
+    if ((await connection.query("SELECT 1 FROM provider_operation_runs WHERE battle_id = $1 AND status = 'active'", [id])).rowCount !== 0 ||
+        (await connection.query("SELECT 1 FROM battle_narration_attempts WHERE battle_id = $1 AND status = 'generating'", [id])).rowCount !== 0) throw new Error("BATTLE_CUTOVER_READBACK_FAILED");
+  }
+}
+
+export async function discardBattleCutoverInTransaction(connection: DatabaseConnection, input: {
   plan: BattleCutoverPlan;
   operatorId: string;
   stopped: boolean;
-  recoverySnapshotIdentity: string;
-}): Promise<{ kind: "discarded" | "replayed"; discardedIds: string[]; finishedIds: string[] }> {
-  if (!input.operatorId || !input.stopped || !input.recoverySnapshotIdentity) throw new Error("BATTLE_CUTOVER_PRECONDITION_REQUIRED");
+  authorization: BattleCutoverAuthorization;
+}): Promise<BattleCutoverResult> {
+  if (!input.operatorId || !input.stopped ||
+      (input.authorization.kind === "recovery-snapshot" && !input.authorization.identity) ||
+      (input.authorization.kind === "unreleased-initial-v3-trial" &&
+       (!input.authorization.ownerDecisionIdentity || !input.authorization.oldWritersClosedReceiptId))) {
+    throw new Error("BATTLE_CUTOVER_PRECONDITION_REQUIRED");
+  }
   const { planDigest, ...base } = input.plan;
   if (digest(base) !== planDigest) throw new Error("BATTLE_CUTOVER_PLAN_DIGEST_MISMATCH");
-  return withTransaction(async (connection) => {
     const ids = input.plan.targets.map((target) => target.id);
     const recorded = await connection.query<{ battle_id: string; cutover_id: string }>(
       "SELECT battle_id, cutover_id FROM battle_discard_receipts WHERE cutover_id = $1 ORDER BY battle_id", [input.plan.cutoverId],
@@ -106,7 +140,7 @@ export async function discardBattleCutover(input: {
     // A frozen empty set has no write identity to persist. Read back its empty
     // target predicate and retained rows; later post-cutover creations are unrelated.
     if (ids.length === 0) {
-      const current = await buildPlan(connection, { cutoverId: input.plan.cutoverId, cutoverAt: input.plan.cutoverAt });
+      const current = await buildBattleCutoverPlanInTransaction(connection, { cutoverId: input.plan.cutoverId, cutoverAt: input.plan.cutoverAt });
       if (current.targets.length !== 0) throw new Error("BATTLE_CUTOVER_PLAN_STALE");
       for (const expected of input.plan.finished) {
         if (!current.finished.some((row) => row.id === expected.id && row.stateDigest === expected.stateDigest)) throw new Error("BATTLE_CUTOVER_HISTORY_CHANGED");
@@ -114,24 +148,10 @@ export async function discardBattleCutover(input: {
       return { kind: "replayed", discardedIds: [], finishedIds: input.plan.finished.map((row) => row.id) };
     }
     if (recorded.rowCount > 0) {
-      if (JSON.stringify(recorded.rows.map((row) => row.battle_id)) !== JSON.stringify(ids)) throw new Error("BATTLE_CUTOVER_REPLAY_CONFLICT");
-      for (const id of ids) {
-        if ((await connection.query("SELECT 1 FROM battles WHERE id = $1", [id])).rowCount !== 0) throw new Error("BATTLE_CUTOVER_READBACK_FAILED");
-      }
-      if (Object.values(await counts(connection, ids)).some((count) => count !== 0) ||
-          (await matchingIdempotency(connection, new Set(ids))).length !== 0) throw new Error("BATTLE_CUTOVER_READBACK_FAILED");
-      const remaining = await inventory(connection);
-      for (const expected of input.plan.finished) {
-        const row = remaining.find((value) => value.id === expected.id);
-        if (!row || status(row) !== "finished" || digest(stateValue(row)) !== expected.stateDigest) throw new Error("BATTLE_CUTOVER_HISTORY_CHANGED");
-      }
-      for (const id of ids) {
-        if ((await connection.query("SELECT 1 FROM provider_operation_runs WHERE battle_id = $1 AND status = 'active'", [id])).rowCount !== 0 ||
-            (await connection.query("SELECT 1 FROM battle_narration_attempts WHERE battle_id = $1 AND status = 'generating'", [id])).rowCount !== 0) throw new Error("BATTLE_CUTOVER_READBACK_FAILED");
-      }
+      await verifyBattleCutoverReadbackInTransaction(connection, input.plan);
       return { kind: "replayed", discardedIds: ids, finishedIds: input.plan.finished.map((row) => row.id) };
     }
-    const current = await buildPlan(connection, { cutoverId: input.plan.cutoverId, cutoverAt: input.plan.cutoverAt });
+    const current = await buildBattleCutoverPlanInTransaction(connection, { cutoverId: input.plan.cutoverId, cutoverAt: input.plan.cutoverAt });
     if (current.planDigest !== input.plan.planDigest) throw new Error("BATTLE_CUTOVER_PLAN_STALE");
     const idempotency = await matchingIdempotency(connection, new Set(ids));
     for (const row of idempotency) {
@@ -151,5 +171,18 @@ export async function discardBattleCutover(input: {
       if (!row || status(row) !== "finished" || digest(stateValue(row)) !== expected.stateDigest) throw new Error("BATTLE_CUTOVER_HISTORY_CHANGED");
     }
     return { kind: "discarded", discardedIds: ids, finishedIds: input.plan.finished.map((row) => row.id) };
-  });
+}
+
+export async function discardBattleCutover(input: {
+  plan: BattleCutoverPlan;
+  operatorId: string;
+  stopped: boolean;
+  recoverySnapshotIdentity: string;
+}): Promise<BattleCutoverResult> {
+  return withTransaction((connection) => discardBattleCutoverInTransaction(connection, {
+    plan: input.plan,
+    operatorId: input.operatorId,
+    stopped: input.stopped,
+    authorization: { kind: "recovery-snapshot", identity: input.recoverySnapshotIdentity },
+  }));
 }

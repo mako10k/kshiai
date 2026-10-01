@@ -93,7 +93,7 @@ task vt103 VST_WIRED -> VST_LOCAL_BATTLE:
 
 task vt104 VST_LOCAL_BATTLE -> VST_RELEASE:
   title "Prepare the minimal unreleased V3 trial candidate"
-  description "Hosted source4f3aaa7 verified: Draft PR152, fourCI36841509755 successful on same SHA, annotated v0.23.0-rc.1 remote tag object/peeled source match; prepare36841952094 success. Artifact11152410082, CloudBuild9c3b3f04 SUCCESS and ArtifactRegistry match image sha25643d084a2...5757f1aa. No merge/Release/runtime/DB/Worker/queue/Google/paid LLM actions. Current step complete; exact operational packet remains. Remaining vt1040.25-0.75 agent h, prelogin0.5-2h, firsttrial1.25-4h, parentcsm0014.25-11h low, external waits separate. RC source4f3 stays frozen while handoff metadata may advance branch HEAD. Checkpoint docs/evidence/vt104-hosted-prepare-2026-10-01.md."
+  description "Operational candidate docs/evidence/vt104-operational-packet-2026-10-01.md and fresh inventory prepared. RC4f3/v0.23.0-rc.1/image43d084 remain frozen. Live78 tags, queueRUNNING empty, active18 finished168 battles, completed-entry outbox22:14finished8active, pending migrations0026-0030, all secret versions1. Accepted no-snapshot policy conflicts with snapshot-required discard helper; receipt table0029 missing before discard while workflow requires zero unfinished before migration. Successor design/local repair decision pending; no cloud/DB/queue/auth/provider writes. vt104 remains incomplete. Updated remaining internal agent estimates vt1040.75-2h, prelogin1-3.25h, firsttrial1.75-5.25h, parentcsm0014.75-12.25h low; external waits separate."
   duration 1p
   status suspended
   requires:
@@ -465,3 +465,29 @@ work_event vt104-hosted-prepare-verified-20261001:
   kind suspend
   occurred_at 2026-10-01T18:32:51+09:00
   reason "CI/annotated RC/prepare complete at exact4f3 source and matching artifact/build/registry image. Operational execution packet remains; no runtime deployment."
+
+work_event vt104-packet-resume-20261001:
+  model 1
+  task vt104
+  kind resume
+  occurred_at 2026-10-01T19:58:25+09:00
+
+work_event vt104-packet-design-boundary-20261001:
+  model 1
+  task vt104
+  kind suspend
+  occurred_at 2026-10-01T20:03:27+09:00
+  reason "Read-only operational candidate complete; exact no-snapshot disposal and receipt bootstrap successor design await owner decision."
+
+work_event vt104-disposal-implementation-resume-20261001:
+  model 1
+  task vt104
+  kind resume
+  occurred_at 2026-10-01T20:12:44+09:00
+
+work_event vt104-disposal-local-verified-20261001:
+  model 1
+  task vt104
+  kind suspend
+  occurred_at 2026-10-01T20:37:00+09:00
+  reason "Approved local no-snapshot repair and isolated PostgreSQL17 13-check rehearsal complete; existing RC remains unchanged. Await exact new CI/RC/runtime transition authority; deployed Google V3 proof remains open."

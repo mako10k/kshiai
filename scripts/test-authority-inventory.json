@@ -209,6 +209,14 @@
     {
       "path": "backend/src/services/narration-worker-accounting.test.ts",
       "ref": "verification/vt104-narration-accounting-20261001"
+    },
+    {
+      "path": "backend/src/repositories/unreleased-trial-preparation.test.ts",
+      "ref": "verification/vt104-trial-disposal-20261001"
+    },
+    {
+      "path": "backend/src/scripts/prepare-unreleased-v3-trial.test.ts",
+      "ref": "verification/vt104-trial-disposal-cli-20261001"
     }
   ]
 }
