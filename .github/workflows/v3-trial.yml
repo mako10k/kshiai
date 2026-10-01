@@ -1,0 +1,438 @@
+# R: Prepare immutable V3 trial artifacts or deploy one reviewed ordinary-runtime preview candidate.
+name: Initial V3 trial
+
+on:
+  workflow_dispatch:
+    inputs:
+      phase:
+        description: Prepare an image before shared stopping, or deploy an exact reviewed packet
+        required: true
+        type: choice
+        options: [prepare, deploy]
+      tag:
+        description: Existing annotated release tag; dispatch from this same tag
+        required: true
+        type: string
+      execution_packet:
+        description: For deploy only, credential-free JSON with exact targets, readbacks, secret versions and write bounds
+        required: false
+        type: string
+      packet_sha256:
+        description: For deploy only, SHA256 of the exact UTF-8 execution_packet input
+        required: false
+        type: string
+
+permissions:
+  actions: read
+  checks: read
+  contents: read
+  id-token: write
+
+concurrency:
+  group: release-staging
+  cancel-in-progress: false
+
+env:
+  GCP_PROJECT: kshiai
+  GCP_REGION: asia-northeast1
+  CLOUD_RUN_SERVICE: kshiai-api
+  MIGRATION_JOB: kshiai-v3-trial-preflight
+  IMAGE_REPOSITORY: asia-northeast1-docker.pkg.dev/kshiai/kshiai/backend
+  WORKER_NAME: kshiai-web
+  WRANGLER_CONFIG: infra/cloudflare-worker/wrangler.jsonc
+  SUPABASE_URL: https://cvrbhpkfqkpqdegxfrlq.supabase.co
+  NARRATION_TASK_QUEUE: kshiai-narration
+  NARRATION_TASK_SERVICE_ACCOUNT_EMAIL: kshiai-cloud-run@kshiai.iam.gserviceaccount.com
+
+jobs:
+  trial:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    environment: staging
+    steps:
+      - name: Validate owner dispatch
+        env:
+          RELEASE_TAG: ${{ inputs.tag }}
+        run: |
+          set -euo pipefail
+          test "$GITHUB_ACTOR" = "$GITHUB_REPOSITORY_OWNER"
+          test "$GITHUB_REF" = "refs/tags/$RELEASE_TAG"
+          [[ "$RELEASE_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?$ ]]
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.tag }}
+          fetch-depth: 0
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - name: Verify source release and required checks
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ inputs.tag }}
+        run: |
+          node scripts/verify-release.mjs "$RELEASE_TAG"
+          node scripts/verify-required-checks.mjs
+
+      - name: Validate reviewed execution packet before cloud authentication
+        if: inputs.phase == 'deploy'
+        env:
+          PACKET_JSON: ${{ inputs.execution_packet }}
+          PACKET_SHA256: ${{ inputs.packet_sha256 }}
+          RELEASE_TAG: ${{ inputs.tag }}
+        run: |
+          node --input-type=module <<'JS'
+          import fs from "node:fs";
+          import { createHash } from "node:crypto";
+          const raw = process.env.PACKET_JSON;
+          const digest = createHash("sha256").update(raw ?? "").digest("hex");
+          if (!/^[a-f0-9]{64}$/.test(process.env.PACKET_SHA256 ?? "") || digest !== process.env.PACKET_SHA256) throw new Error("Packet digest mismatch");
+          const p = JSON.parse(raw);
+          const assert = (ok, reason) => { if (!ok) throw new Error(reason); };
+          const keys = ["schemaVersion", "commitSha", "releaseTag", "imageRef", "prepareRunId", "targets", "stoppedAt", "expiresAt", "cutoverId", "cutoverAt", "disposalReceiptId", "oldWritersClosedReceiptId", "directUrlSecretVersion", "pendingMigrations", "secretVersions", "maximumWrites", "providerBudgetReceiptId"];
+          assert(Object.keys(p).every(key => keys.includes(key)) && keys.every(key => Object.hasOwn(p, key)), "Unexpected or missing packet fields");
+          assert(p.schemaVersion === 1 && p.commitSha === process.env.GITHUB_SHA && p.releaseTag === process.env.RELEASE_TAG, "Packet source mismatch");
+          assert(typeof p.imageRef === "string" && new RegExp("^" + process.env.IMAGE_REPOSITORY + "@sha256:[a-f0-9]{64}$").test(p.imageRef), "Image must be the exact prepared digest");
+          assert(/^[1-9][0-9]*$/.test(String(p.prepareRunId)), "Prepared run ID required");
+          const expected = { project: process.env.GCP_PROJECT, region: process.env.GCP_REGION, service: process.env.CLOUD_RUN_SERVICE, job: process.env.MIGRATION_JOB, queue: process.env.NARRATION_TASK_QUEUE, worker: process.env.WORKER_NAME };
+          assert(JSON.stringify(Object.entries(p.targets).sort()) === JSON.stringify(Object.entries(expected).sort()), "Packet target mismatch");
+          for (const name of ["cutoverId", "disposalReceiptId", "oldWritersClosedReceiptId", "providerBudgetReceiptId"]) assert(typeof p[name] === "string" && /^[A-Za-z0-9_.:-]{1,200}$/.test(p[name]), "Invalid receipt identity");
+          const start = Date.parse(p.stoppedAt), expiry = Date.parse(p.expiresAt), cutover = Date.parse(p.cutoverAt);
+          assert(Number.isFinite(start) && Number.isFinite(expiry) && Number.isFinite(cutover) && cutover <= start && start <= Date.now() && Date.now() < expiry && expiry - start <= 1800000, "Shared stop window expired or invalid");
+          assert(/^[1-9][0-9]*$/.test(String(p.directUrlSecretVersion)), "Explicit DIRECT_URL version required");
+          assert(Array.isArray(p.pendingMigrations) && p.pendingMigrations.every(x => typeof x === "string" && /^[0-9]{4}_[a-z0-9_]+\.sql$/.test(x)) && new Set(p.pendingMigrations).size === p.pendingMigrations.length, "Explicit required migration list missing or invalid");
+          assert(Array.isArray(p.secretVersions) && p.secretVersions.length > 0, "Secret bindings missing");
+          for (const x of p.secretVersions) assert(Object.keys(x).sort().join() === "env,name,version" && /^[A-Z][A-Z0-9_]*$/.test(x.env) && /^kshiai-[a-z0-9-]+$/.test(x.name) && /^[1-9][0-9]*$/.test(String(x.version)), "Invalid secret reference; never supply secret values");
+          assert(new Set(p.secretVersions.map(x => x.env)).size === p.secretVersions.length, "Duplicate secret binding");
+          const bounds = { jobDeploy: 1, jobExecute: 1, backendDeploy: 1, workerUpload: 1, queueResume: 1 };
+          assert(JSON.stringify(Object.entries(p.maximumWrites).sort()) === JSON.stringify(Object.entries(bounds).sort()), "Write bounds differ");
+          fs.writeFileSync(process.env.RUNNER_TEMP + "/v3-trial-packet.json", raw);
+          fs.appendFileSync(process.env.GITHUB_ENV, `IMAGE_REF=${p.imageRef}\nDIRECT_URL_VERSION=${p.directUrlSecretVersion}\nPACKET_DIGEST=${digest}\nSTOP_DEADLINE=${p.expiresAt}\n`);
+          JS
+
+      - name: Bind the packet to an independently read prepared artifact
+        if: inputs.phase == 'deploy'
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          node --input-type=module <<'JS'
+          import fs from "node:fs";
+          import { execFileSync } from "node:child_process";
+          const packet = JSON.parse(fs.readFileSync(process.env.RUNNER_TEMP + "/v3-trial-packet.json", "utf8"));
+          const base = `https://api.github.com/repos/${process.env.GITHUB_REPOSITORY}`;
+          const get = async path => {
+            const r = await fetch(base + path, {headers:{Authorization:`Bearer ${process.env.GITHUB_TOKEN}`,Accept:"application/vnd.github+json"},signal:AbortSignal.timeout(30000)});
+            if (!r.ok) throw new Error("Prepared artifact read failed");
+            return r;
+          };
+          const run = await (await get(`/actions/runs/${packet.prepareRunId}`)).json();
+          if (run.head_sha !== process.env.GITHUB_SHA || run.event !== "workflow_dispatch" || run.conclusion !== "success" || run.path?.split("@")[0] !== ".github/workflows/v3-trial.yml") throw new Error("Prepared run source or workflow mismatch");
+          const listing = await (await get(`/actions/runs/${packet.prepareRunId}/artifacts?per_page=100`)).json();
+          const matches = listing.artifacts.filter(x => x.name === `v3-trial-image-${packet.prepareRunId}` && !x.expired);
+          if (matches.length !== 1) throw new Error("Prepared image artifact missing or ambiguous");
+          const archive = await get(`/actions/artifacts/${matches[0].id}/zip`);
+          const archivePath = process.env.RUNNER_TEMP + "/v3-trial-image.zip";
+          fs.writeFileSync(archivePath, Buffer.from(await archive.arrayBuffer()));
+          const receipt = JSON.parse(execFileSync("unzip", ["-p",archivePath,"v3-trial-image.json"], {encoding:"utf8"}));
+          if (receipt.schemaVersion !== 1 || receipt.runId !== String(packet.prepareRunId) || receipt.commitSha !== packet.commitSha || receipt.releaseTag !== packet.releaseTag || receipt.imageRef !== packet.imageRef) throw new Error("Prepared artifact identity mismatch");
+          JS
+
+      - uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3
+        with:
+          project_id: ${{ env.GCP_PROJECT }}
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GCP_DEPLOY_SERVICE_ACCOUNT }}
+      - uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db # v3
+
+      - name: Build immutable backend image
+        if: inputs.phase == 'prepare'
+        id: image
+        run: |
+          set -euo pipefail
+          image_tag="$IMAGE_REPOSITORY:$GITHUB_SHA"
+          build_id="$(gcloud builds submit . \
+            --project="$GCP_PROJECT" \
+            --region="$GCP_REGION" \
+            --gcs-source-staging-dir=gs://kshiai_cloudbuild/source \
+            --async \
+            --format='value(id)' \
+            --config=infra/cloudbuild.backend.yaml \
+            --substitutions="_IMAGE=$image_tag")"
+          test -n "$build_id"
+          status=""
+          for _attempt in {1..180}; do
+            status="$(gcloud builds describe "$build_id" \
+              --project="$GCP_PROJECT" \
+              --region="$GCP_REGION" \
+              --format='value(status)')"
+            case "$status" in
+              SUCCESS) break ;;
+              FAILURE|INTERNAL_ERROR|TIMEOUT|CANCELLED|EXPIRED)
+                echo "Cloud Build $build_id ended with $status" >&2
+                exit 1
+                ;;
+            esac
+            sleep 5
+          done
+          test "$status" = "SUCCESS"
+          gcloud builds describe "$build_id" --project="$GCP_PROJECT" --region="$GCP_REGION" --format=json > "$RUNNER_TEMP/v3-image-build.json"
+          digest="$(IMAGE_TAG="$image_tag" node -e '
+            const build = JSON.parse(require("fs").readFileSync(process.argv[1], "utf8"));
+            const images = build.results?.images?.filter(x => x.name === process.env.IMAGE_TAG) ?? [];
+            if (build.status !== "SUCCESS" || images.length !== 1 || !/^sha256:[a-f0-9]{64}$/.test(images[0].digest)) throw new Error("Exact build image result missing");
+            process.stdout.write(images[0].digest);
+          ' "$RUNNER_TEMP/v3-image-build.json")"
+          test -n "$digest"
+          echo "ref=$IMAGE_REPOSITORY@$digest" >> "$GITHUB_OUTPUT"
+          echo "digest=$digest" >> "$GITHUB_OUTPUT"
+
+      - name: Retain prepared image identity
+        if: inputs.phase == 'prepare'
+        env:
+          IMAGE_REF: ${{ steps.image.outputs.ref }}
+          RELEASE_TAG: ${{ inputs.tag }}
+        run: |
+          node -e 'require("fs").writeFileSync(process.env.RUNNER_TEMP + "/v3-trial-image.json", JSON.stringify({schemaVersion:1,commitSha:process.env.GITHUB_SHA,releaseTag:process.env.RELEASE_TAG,imageRef:process.env.IMAGE_REF,runId:process.env.GITHUB_RUN_ID}, null, 2) + "\n")'
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        if: inputs.phase == 'prepare'
+        with:
+          name: v3-trial-image-${{ github.run_id }}
+          path: ${{ runner.temp }}/v3-trial-image.json
+          if-no-files-found: error
+
+      - name: Read live stopped writer and queue state
+        if: inputs.phase == 'deploy'
+        run: |
+          set -euo pipefail
+          gcloud run services describe "$CLOUD_RUN_SERVICE" --project="$GCP_PROJECT" --region="$GCP_REGION" --format=json > "$RUNNER_TEMP/v3-service-before.json"
+          gcloud tasks queues describe "$NARRATION_TASK_QUEUE" --project="$GCP_PROJECT" --location="$GCP_REGION" --format=json > "$RUNNER_TEMP/v3-queue-before.json"
+          gcloud tasks list --queue="$NARRATION_TASK_QUEUE" --project="$GCP_PROJECT" --location="$GCP_REGION" --format=json > "$RUNNER_TEMP/v3-tasks-before.json"
+          node <<'JS'
+          const fs = require("fs");
+          const read = name => JSON.parse(fs.readFileSync(process.env.RUNNER_TEMP + name, "utf8"));
+          const service = read("/v3-service-before.json"), queue = read("/v3-queue-before.json"), tasks = read("/v3-tasks-before.json"), packet = read("/v3-trial-packet.json");
+          if (queue.state !== "PAUSED" || tasks.length !== 0) throw new Error("Queue must be paused and empty before normal runtime startup");
+          if (service.metadata?.annotations?.["run.googleapis.com/scalingMode"] !== "manual" || service.metadata?.annotations?.["run.googleapis.com/manualInstanceCount"] !== "0" || service.status?.traffic?.some(x => x.tag)) throw new Error("Old service requires manual zero and no live tagged writers");
+          const inherited = service.spec.template.spec.containers[0].env.filter(x => x.valueFrom?.secretKeyRef);
+          if (inherited.length !== packet.secretVersions.length || inherited.some(x => !packet.secretVersions.some(y => y.env === x.name && y.name === x.valueFrom.secretKeyRef.name))) throw new Error("Packet must pin every inherited secret without replacing identities");
+          fs.appendFileSync(process.env.GITHUB_ENV, `RUNTIME_SECRET_BINDINGS=${packet.secretVersions.map(x => `${x.env}=${x.name}:${x.version}`).join(",")}\n`);
+          JS
+
+      - name: Verify DB quiescence and required schema in the exact image
+        if: inputs.phase == 'deploy'
+        run: |
+          set -euo pipefail
+          # This job reads exact startup prerequisites before any migration or API startup.
+          preflight_source="$(node --input-type=module <<'JS'
+          import { readFileSync } from "node:fs";
+          const p = JSON.parse(readFileSync(process.env.RUNNER_TEMP + "/v3-trial-packet.json", "utf8"));
+          const source = `
+            (async () => {
+              const { createPostgresClient, applyPostgresMigrations, checkPostgresMigrations } = await import("./backend/dist/scripts/postgres-migrations.js");
+              const client = createPostgresClient(process.env.DIRECT_URL);
+              await client.connect();
+              try {
+                const predicates = [
+                  ["battles", "created_at < $1 AND COALESCE(state_json::jsonb->>'status','') <> 'finished'", [${JSON.stringify(p.cutoverAt)}]],
+                  ["provider_operation_runs", "status='active'", []],
+                  ["provider_operation_attempts", "status='reserved'", []],
+                  ["battle_narration_attempts", "status='generating'", []],
+                  ["battle_narration_entries", "status IN ('queued','generating')", []],
+                  ["asset_authoring_outbox", "status IN ('pending','dispatched')", []],
+                  ["battle_narration_outbox", "status IN ('pending','dispatched')", []],
+                  ["character_authoring_jobs", "status IN ('pending','claimed')", []],
+                  ["battlefield_authoring_jobs", "status IN ('pending','claimed')", []],
+                  ["narration_style_authoring_jobs", "status IN ('pending','claimed')", []]
+                ];
+                for (const [table, predicate, params] of predicates) {
+                  const exists = await client.query("SELECT to_regclass($1) AS table_name", ["public." + table]);
+                  if (!exists.rows[0].table_name) { if (table === "battles") throw new Error("Missing battle inventory"); continue; }
+                  const result = await client.query("SELECT count(*) AS count FROM " + table + " WHERE " + predicate, params);
+                  if (Number(result.rows[0].count) !== 0) throw new Error("Startup prerequisite not empty: " + table);
+                }
+              } finally { await client.end(); }
+              const planned = await checkPostgresMigrations(process.env.DIRECT_URL);
+              if (JSON.stringify([...planned.pending].sort()) !== JSON.stringify(${JSON.stringify([...p.pendingMigrations].sort())})) throw new Error("Pending migrations differ from reviewed packet");
+              await applyPostgresMigrations(process.env.DIRECT_URL);
+              const checked = await checkPostgresMigrations(process.env.DIRECT_URL);
+              if (checked.pending.length !== 0) throw new Error("Migration readback incomplete");
+              console.log("V3_TRIAL_PREFLIGHT_AND_SCHEMA_OK");
+            })().catch(error => { console.error(error.message); process.exitCode = 1; });`;
+          process.stdout.write(Buffer.from(source).toString("base64"));
+          JS
+          )"
+          node -e 'if (Date.now() + 900000 >= Date.parse(process.env.STOP_DEADLINE)) throw new Error("Insufficient shared-stop window before job mutation")'
+          gcloud run jobs deploy "$MIGRATION_JOB" \
+            --project="$GCP_PROJECT" --region="$GCP_REGION" --image="$IMAGE_REF" \
+            --service-account=kshiai-cloud-run@kshiai.iam.gserviceaccount.com \
+            --set-secrets="DIRECT_URL=kshiai-direct-url:$DIRECT_URL_VERSION" \
+            --set-env-vars="TRIAL_PREFLIGHT_SOURCE=$preflight_source" \
+            --command=node --args="^|^-e|eval(Buffer.from(process.env.TRIAL_PREFLIGHT_SOURCE,'base64').toString('utf8'))" \
+            --max-retries=0 --task-timeout=3m --quiet
+          timeout 240s gcloud run jobs execute "$MIGRATION_JOB" --project="$GCP_PROJECT" --region="$GCP_REGION" --wait
+
+      - name: Deploy ordinary-runtime tagged revision without traffic
+        if: inputs.phase == 'deploy'
+        id: backend
+        run: |
+          set -euo pipefail
+          node -e 'if (Date.now() + 600000 >= Date.parse(process.env.STOP_DEADLINE)) throw new Error("Insufficient shared-stop window for deployment and readback")'
+          alias="v3-trial-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          service_url="$(gcloud run services describe "$CLOUD_RUN_SERVICE" --project="$GCP_PROJECT" --region="$GCP_REGION" --format='value(status.url)')"
+          target="https://${alias}---${service_url#https://}/api/internal/narration/task"
+          timeout 300s gcloud run deploy "$CLOUD_RUN_SERVICE" \
+            --project="$GCP_PROJECT" --region="$GCP_REGION" --image="$IMAGE_REF" \
+            --no-traffic --tag="$alias" \
+            --update-secrets="$RUNTIME_SECRET_BINDINGS" \
+            --remove-env-vars=CUTOVER_ID,CUTOVER_ARTIFACT_ID \
+            --update-env-vars="NARRATION_TASK_PROJECT=$GCP_PROJECT,NARRATION_TASK_LOCATION=$GCP_REGION,NARRATION_TASK_QUEUE=$NARRATION_TASK_QUEUE,NARRATION_TASK_TARGET_URL=$target,NARRATION_TASK_SERVICE_ACCOUNT_EMAIL=$NARRATION_TASK_SERVICE_ACCOUNT_EMAIL,NARRATION_TASK_AUDIENCE=$target" \
+            --quiet
+          gcloud run services describe "$CLOUD_RUN_SERVICE" --project="$GCP_PROJECT" --region="$GCP_REGION" --format=json > "$RUNNER_TEMP/v3-service-after.json"
+          ALIAS="$alias" node <<'JS'
+          const fs = require("fs");
+          const service = JSON.parse(fs.readFileSync(process.env.RUNNER_TEMP + "/v3-service-after.json", "utf8"));
+          const t = service.status.traffic.find(x => x.tag === process.env.ALIAS);
+          if (!t?.url || !t?.revisionName || (t.percent ?? 0) !== 0) throw new Error("Candidate tag readback failed");
+          fs.appendFileSync(process.env.GITHUB_OUTPUT, `url=${t.url}\nrevision=${t.revisionName}\n`);
+          JS
+          revision="$(node -p 'JSON.parse(require("fs").readFileSync(process.env.RUNNER_TEMP + "/v3-service-after.json")).status.traffic.find(x => x.tag === process.argv[1]).revisionName' "$alias")"
+          gcloud run revisions describe "$revision" --project="$GCP_PROJECT" --region="$GCP_REGION" --format=json > "$RUNNER_TEMP/v3-revision.json"
+          node <<'JS'
+          const fs = require("fs");
+          const revision = JSON.parse(fs.readFileSync(process.env.RUNNER_TEMP + "/v3-revision.json", "utf8"));
+          const container = revision.spec.containers[0];
+          if (container.env.some(x => x.name === "CUTOVER_ID" || x.name === "CUTOVER_ARTIFACT_ID")) throw new Error("CUTOVER variables remain");
+          if (revision.status.imageDigest !== process.env.IMAGE_REF) throw new Error("Backend image readback differs");
+          const before = JSON.parse(fs.readFileSync(process.env.RUNNER_TEMP + "/v3-service-before.json", "utf8"));
+          const after = JSON.parse(fs.readFileSync(process.env.RUNNER_TEMP + "/v3-service-after.json", "utf8"));
+          const traffic = s => JSON.stringify(s.status.traffic.filter(x => (x.percent ?? 0) > 0).map(x => [x.revisionName,x.percent]).sort());
+          if (traffic(before) !== traffic(after)) throw new Error("Public traffic changed");
+          JS
+
+      - name: Build and upload immutable Worker version
+        if: inputs.phase == 'deploy'
+        id: worker
+        env:
+          BACKEND_URL: ${{ steps.backend.outputs.url }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          RELEASE_TAG: ${{ inputs.tag }}
+          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.SUPABASE_PUBLISHABLE_KEY }}
+          VITE_SUPABASE_URL: ${{ env.SUPABASE_URL }}
+          WRANGLER_OUTPUT_FILE_PATH: ${{ runner.temp }}/wrangler-output.jsonl
+        run: |
+          set -euo pipefail
+          npm run build --workspace=@kshiai/shared
+          npm run build --workspace=frontend
+          node scripts/verify-frontend-auth-build.mjs frontend/dist
+          npx wrangler whoami --json > "$RUNNER_TEMP/cloudflare-whoami.json"
+          # shellcheck disable=SC2016
+          cloudflare_account_id="$(node -e '
+            const fs = require("fs");
+            const identity = JSON.parse(fs.readFileSync(process.argv[1], "utf8"));
+            if (!identity.loggedIn || identity.accounts?.length !== 1) {
+              throw new Error("Expected the deployment token to resolve exactly one Cloudflare account");
+            }
+            process.stdout.write(identity.accounts[0].id);
+          ' "$RUNNER_TEMP/cloudflare-whoami.json")"
+          [[ "$cloudflare_account_id" =~ ^[a-f0-9]{32}$ ]]
+          curl --fail-with-body --silent --show-error \
+            --output "$RUNNER_TEMP/cloudflare-subdomain.json" \
+            --header "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+            "https://api.cloudflare.com/client/v4/accounts/$cloudflare_account_id/workers/scripts/$WORKER_NAME/subdomain"
+          node -e '
+            const response = JSON.parse(require("fs").readFileSync(process.argv[1], "utf8"));
+            if (!response.success || response.result?.enabled !== false || response.result?.previews_enabled !== true) {
+              throw new Error("Preview configuration differs; propose an exact separately approved change");
+            }
+          ' "$RUNNER_TEMP/cloudflare-subdomain.json"
+          alias="v3-trial-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          node -e 'if (Date.now() + 180000 >= Date.parse(process.env.STOP_DEADLINE)) throw new Error("Insufficient shared-stop window before Worker upload")'
+          timeout 120s npx wrangler versions upload \
+            --config "$WRANGLER_CONFIG" \
+            --tag "$RELEASE_TAG" \
+            --message "Release $RELEASE_TAG from $GITHUB_SHA" \
+            --preview-alias "$alias" \
+            --var "BACKEND_ORIGIN:$BACKEND_URL" \
+            --strict
+          # shellcheck disable=SC2016
+          node -e '
+            const fs = require("fs");
+            const events = fs.readFileSync(process.env.WRANGLER_OUTPUT_FILE_PATH, "utf8")
+              .trim().split("\n").map(JSON.parse);
+            const upload = events.findLast((event) => event.type === "version-upload");
+            if (!upload?.version_id) throw new Error("Wrangler did not record a version ID");
+            const previewUrl = new URL(upload.preview_url);
+            if (previewUrl.protocol !== "https:" || !previewUrl.hostname.endsWith(".workers.dev")) {
+              throw new Error("Wrangler did not record a valid version preview URL");
+            }
+            fs.appendFileSync(
+              process.env.GITHUB_OUTPUT,
+              `version=${upload.version_id}\npreview_url=${previewUrl.href}\n`,
+            );
+          '
+
+      - name: Read back the uploaded Worker binding
+        if: inputs.phase == 'deploy'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          BACKEND_URL: ${{ steps.backend.outputs.url }}
+          WORKER_VERSION: ${{ steps.worker.outputs.version }}
+        run: |
+          set -euo pipefail
+          npx wrangler versions view "$WORKER_VERSION" --config "$WRANGLER_CONFIG" --json > "$RUNNER_TEMP/v3-worker-readback.json"
+          node <<'JS'
+          const fs = require("fs");
+          const version = JSON.parse(fs.readFileSync(process.env.RUNNER_TEMP + "/v3-worker-readback.json", "utf8"));
+          if (version.id !== process.env.WORKER_VERSION || !version.resources?.bindings?.some(x => x.name === "BACKEND_ORIGIN" && x.type === "plain_text" && x.text === process.env.BACKEND_URL)) throw new Error("Worker version binding differs");
+          JS
+
+      - name: Verify preparation through the actual edge
+        if: inputs.phase == 'deploy'
+        env:
+          BACKEND_URL: ${{ steps.backend.outputs.url }}
+          PREVIEW_URL: ${{ steps.worker.outputs.preview_url }}
+          REVISION: ${{ steps.backend.outputs.revision }}
+          WORKER_VERSION: ${{ steps.worker.outputs.version }}
+          RELEASE_TAG: ${{ inputs.tag }}
+        run: |
+          set -euo pipefail
+          node scripts/smoke-deployment.mjs "$PREVIEW_URL" "$BACKEND_URL" "$REVISION"
+          node --input-type=module <<'JS'
+          import fs from "node:fs";
+          const health = await fetch(process.env.PREVIEW_URL + "/api/health", {signal:AbortSignal.timeout(20000)});
+          const body = await health.json();
+          const direct = await fetch(process.env.BACKEND_URL + "/api/health", {redirect:"error",signal:AbortSignal.timeout(20000)});
+          const evidence = {schemaVersion:1,evidenceClass:"actual",kind:"preparation",
+            identity:{commitSha:process.env.GITHUB_SHA,imageRef:process.env.IMAGE_REF,revision:process.env.REVISION,workerVersion:process.env.WORKER_VERSION,previewUrl:process.env.PREVIEW_URL,releaseTag:process.env.RELEASE_TAG},
+            startup:{ok:health.ok && body.ok === true,database:body.database,auth:body.auth,revision:body.revision},
+            directProtection:{status:direct.status},worker:{backendUrl:process.env.BACKEND_URL,version:process.env.WORKER_VERSION},preflight:{packetDigest:process.env.PACKET_DIGEST}};
+          fs.writeFileSync(process.env.RUNNER_TEMP + "/v3-trial-preparation.json", JSON.stringify(evidence,null,2) + "\n");
+          JS
+          node scripts/verify-v3-trial-evidence.mjs "$RUNNER_TEMP/v3-trial-preparation.json" --mode preparation
+
+      - name: Resume empty narration queue for the new candidate
+        if: inputs.phase == 'deploy'
+        run: |
+          set -euo pipefail
+          node -e 'if (Date.now() >= Date.parse(process.env.STOP_DEADLINE)) throw new Error("Shared-stop window expired")'
+          gcloud tasks list --queue="$NARRATION_TASK_QUEUE" --project="$GCP_PROJECT" --location="$GCP_REGION" --format=json > "$RUNNER_TEMP/v3-tasks-resume.json"
+          node -e 'if (JSON.parse(require("fs").readFileSync(process.argv[1],"utf8")).length !== 0) throw new Error("Unexpected queued tasks; do not resume")' "$RUNNER_TEMP/v3-tasks-resume.json"
+          gcloud tasks queues resume "$NARRATION_TASK_QUEUE" --project="$GCP_PROJECT" --location="$GCP_REGION"
+          gcloud tasks queues describe "$NARRATION_TASK_QUEUE" --project="$GCP_PROJECT" --location="$GCP_REGION" --format='value(state)' | grep -Fx RUNNING
+
+      - name: Retain actual preparation receipt
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        if: inputs.phase == 'deploy'
+        with:
+          name: v3-trial-preparation-${{ github.run_id }}
+          path: ${{ runner.temp }}/v3-trial-preparation.json
+          if-no-files-found: error
+      - name: Show owner trial continuation
+        if: inputs.phase == 'deploy'
+        env:
+          PREVIEW_URL: ${{ steps.worker.outputs.preview_url }}
+        run: |
+          echo "V3 preview prepared: $PREVIEW_URL" >> "$GITHUB_STEP_SUMMARY"
+          echo "Next: Google login, ordinary Neva/Rio review/confirm, selection, advance/SSE/reload/result. Validate a separately observed game receipt; preparation is not game completion." >> "$GITHUB_STEP_SUMMARY"
