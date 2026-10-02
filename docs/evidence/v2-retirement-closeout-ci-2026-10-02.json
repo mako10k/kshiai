@@ -1,0 +1,29 @@
+{
+  "observedAt": "2026-10-02T11:25:25.685250+00:00",
+  "headSha": "a0e5f47d986ae8f0e87e10c6e434a405f7ad49bc",
+  "runId": 37000442643,
+  "status": "completed",
+  "conclusion": "success",
+  "jobs": [
+    {
+      "name": "security",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "backend-image",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "worker",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "validate",
+      "status": "completed",
+      "conclusion": "success"
+    }
+  ]
+}
