@@ -9,6 +9,7 @@ import {
   CHARACTER_SEMANTIC_REMIGRATION_CONSUMER_V1,
   CharacterSemanticMigrationAttemptV1Schema,
   type CharacterSemanticMigrationAttemptV1,
+  type CharacterCompilerCapabilitySetV1,
 } from "@kshiai/shared";
 
 const directory = mkdtempSync(join(tmpdir(), "kshiai-semantic-migration-"));
@@ -89,8 +90,8 @@ function attemptInput(
     modelIdentity: "grok-test-model",
     compilerCapabilities: {
       contractVersion: 1 as const,
-      required: [{ consumer: "battle-mechanics" as const, version: 3 }],
-    },
+      required: [{ consumer: "battle-mechanics", version: 3 }],
+    } satisfies CharacterCompilerCapabilitySetV1,
     createdAt: now,
   };
   return CharacterSemanticMigrationAttemptV1Schema.parse({

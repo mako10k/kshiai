@@ -64,6 +64,7 @@ task skills CAPABILITIES -> SKILLS:
   title "Audit skill identifier compatibility and repair safe producers"
   description "Owner authorizes sequential contract repair and deployment on 2026-10-03; ADR0045 and ADR0046 govern; completion requires preservation and rejection tests before downstream execution. Estimate is provisional internal effort excluding external waits."
   duration 1h
+  status done
   requires:
     DEV 1
 

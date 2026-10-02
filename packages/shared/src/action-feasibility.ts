@@ -29,9 +29,7 @@ import {
   skillCooldownTurns,
 } from "./skill-cooldown.js";
 
-export type ObserverSafeAvailableAction = {
-  kind: CharacterActionIntent["kind"];
-  skillId?: string;
+type ObserverSafeAvailableActionFields = {
   name: string;
   description?: string;
   skillKind?: Skill["kind"];
@@ -46,6 +44,14 @@ export type ObserverSafeAvailableAction = {
     kind: "self" | "counterpart";
     perceivedAs: string;
   };
+};
+
+type ObserverSafeAvailableActionOption = Omit<ObserverSafeAvailableActionFields, "target"> & (
+  | { kind: "skill"; skillId: string }
+  | { kind: Exclude<CharacterActionIntent["kind"], "skill">; skillId?: never }
+);
+export type ObserverSafeAvailableAction = ObserverSafeAvailableActionOption & {
+  target: ObserverSafeAvailableActionFields["target"];
 };
 
 export type ActionFeasibilityResult =
@@ -333,11 +339,12 @@ export function assessCharacterActionFeasibility(input: {
 }
 
 type ObserverSafeActionCandidate =
-  | { intent: CharacterActionIntent; option: Omit<ObserverSafeAvailableAction, "target"> }
+  | { intent: CharacterActionIntent; option: ObserverSafeAvailableActionOption }
   | {
       intent: null;
-      option: Omit<ObserverSafeAvailableAction, "target" | "kind"> & {
+      option: Omit<ObserverSafeAvailableActionFields, "target"> & {
         kind: "free_action" | "reflect";
+        skillId?: never;
       };
     };
 
@@ -403,7 +410,7 @@ function observerSafeActionCandidates(input: {
 
 function withObserverSafeTarget(
   intent: CharacterActionIntent,
-  option: Omit<ObserverSafeAvailableAction, "target">,
+  option: ObserverSafeAvailableActionOption,
   skills: readonly Skill[],
   perceivedAs: string,
 ): ObserverSafeAvailableAction {

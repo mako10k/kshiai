@@ -10,6 +10,7 @@ import {
   defaultBasicAttack,
   defaultParameters,
   type CharacterSheet,
+  type CharacterCompilerCapabilitySetV1,
 } from "@kshiai/shared";
 import { config } from "../config.js";
 import { closeDatabase, query } from "../db.js";
@@ -183,7 +184,7 @@ function buildVersion3SmokeEnvelope(input: {
   });
 }
 
-const requiredV3Capabilities = {
+const requiredV3Capabilities: CharacterCompilerCapabilitySetV1 = {
   contractVersion: 1 as const,
   required: [{ consumer: "battle-mechanics" as const, version: 3 }],
 };
