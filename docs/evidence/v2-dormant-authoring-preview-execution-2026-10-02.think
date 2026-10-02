@@ -1,0 +1,10 @@
+domain FINAL_V2_PREVIEW:
+  description "Build and verify the dormant-authoring retirement before public cutover."
+evidence OWNER:
+  "Ownergoal requires completeV2 ordinarywrite retirement with display/explicitV3migration retained; necessarybuild/deploy/pushCI authorized. Mainagent soleexternalexecutor."
+evidence GATES:
+  "Sourcefce86a53434f5561baa70fb567cd2196cb92ba17 verifiedorigin; CI36997454018 fourjobs success.260currentauthority tests/typecheck/static success. Independentdelta review finds no productV2write bypass. DeprecatedV2success tests disabled/unsealed underacceptedADR0034; currentdirectretirement tests active/current. Cleanexport npmci/publicauth build/dryrun succeed; all9frontendfiles equal existingverifiedWorker84fcfed4. Currentpreview revision09e9 healthy."
+premise BOUNDS:
+  "One e2medium1200second CloudBuild fromfrozenfce86 toexistingkshiai registry. Afterbuild/source/registryproof andfreshDBqueue/service gates, oneno-traffic revisionkshiai-api-v2-retired-fce86a5 preservesenv/secretpins/resources/serviceaccount andtagv2-retire-458af76. ExistingWorker84fc no upload because9assets byteidentical. Onetimeoldpreviewtag retarget afterhealthyreadback. NoDBschema/datarepair/provideractivation/paidLLM/characterchange/authwrite/release/merge. Publiccutover separately frozen afterreadback tothissameverifiedrevision andexistingWorker. Startupmetadataeffects retainexistingbehavior; build/runtimecosts."
+decision EXECUTE based_on OWNER, GATES, BOUNDS:
+  "Executeonebuild now. Observehandle toterminal, verifyuploadedsourcefiles/provenance/digest, thenfreshbaseline gates beforeonepreviewdeploy andoldtagretarget. Currentpubliccandidate09e9 superseded andnotexecuted; updatefinalpublicpacket onlyafternewpreview verified. Anyambiguouswrite isreadbackbefore retry. Remaininginternal15-30agentminutes lowconfidence, externalCI/buildwait separate."

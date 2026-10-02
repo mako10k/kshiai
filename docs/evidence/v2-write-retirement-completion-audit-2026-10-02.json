@@ -1,0 +1,179 @@
+{
+  "thought_id": "docs-evidence-v2-write-retirement-completion-2026-10-02",
+  "id_source": "file",
+  "report": {
+    "engine_version": "0.1.0",
+    "document_id": "docs-evidence-v2-write-retirement-completion-2026-10-02",
+    "generated_at": "2026-10-02T11:19:23.776Z",
+    "summary": {
+      "fatal_count": 0,
+      "error_count": 0,
+      "warning_count": 0,
+      "info_count": 0,
+      "hint_count": 7
+    },
+    "results": [
+      {
+        "issue_id": "ISSUE-001",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "V2_WRITE_COMPLETION",
+            "role": "domain"
+          }
+        ],
+        "message": "domain V2_WRITE_COMPLETION の description は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 2,
+          "column": 3,
+          "text": "Audit the owner's complete ordinary V2 write retirement goal against current source and deployed state.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-002",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "AUTHORITY",
+            "role": "evidence",
+            "step_id": "S-AUTHORITY"
+          }
+        ],
+        "message": "evidence AUTHORITY は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 4,
+          "column": 3,
+          "text": "Owner goal1 complete ordinaryV2create/update retirement with reads; prior explicit V3migration exception; Accepted ADR0043 preserves historical reads and narrow battleaccounting. Goal2 originpush/CI and goal3 necessarydeployment authorized. Broader parent V3 authoring acceptance not included.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-003",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "SOURCE",
+            "role": "evidence",
+            "step_id": "S-SOURCE"
+          }
+        ],
+        "message": "evidence SOURCE は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 6,
+          "column": 3,
+          "text": "Exact fce86a5 source is originverified and CI36997454018 fourjobs success. 260currentauthority Node tests/typecheck/static pass. Boundary tests enumerate9ordinaryroutes, V2saveSheet create/update, genericappend/write/activation including persistedidentity, oldV2candidateconfirmation, dormantbuilderproviderzeroaccess and3repoops, queuedoldrun earlyfailure and nofallback. Independent product writerinventory/deltareview found no remaining reachable ordinaryV2writer. Current tests are active/current; archivedV2success tests disabled/unsealed.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-004",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "READS",
+            "role": "evidence",
+            "step_id": "S-READS"
+          }
+        ],
+        "message": "evidence READS は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 8,
+          "column": 3,
+          "text": "CurrentV2GET and exactoldbattle snapshot with accesscontrol/missingmismatchfail/no mutablefallback are tested, including currentV3 afteroldV2 battle. Frontendhistoricalview hideswrites. Historycharactername explicitlink confirmed byowner; MikiV2readonly confirmed byowner. ValidatedV3activation and V2toV3source exception retained. Providerunavailable UI button removed and regression passed.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-005",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "RUNTIME",
+            "role": "evidence",
+            "step_id": "S-RUNTIME"
+          }
+        ],
+        "message": "evidence RUNTIME は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 10,
+          "column": 3,
+          "text": "Fresh CloudRun revisiondescribe exactdigest53a038 sourcefce86, public100 andbothtags newrevision. CloudBuilded11SUCCESSsource5729filesidentity verified. Worker84fcpublic100 same9assets; freshcanonicalandpreview9hashesmatch, health200 samefce86 revision andWorkerheader. FullSupabase configunchanged. Recoverymanual0→automatic oneadditionalwrite, spec/traffic unchanged. Independentrecoveryreview PASS. No paidLLM, migration, delete, merge,release orjob execution.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-006",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "LIMITS",
+            "role": "premise",
+            "step_id": "S-LIMITS"
+          }
+        ],
+        "message": "premise LIMITS は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 12,
+          "column": 3,
+          "text": "No destructive productionPOST needed: isolated behavioral tests prove rejection and dataunchanged and deployedsource identity bindsbehavior. Userreportedreads and tested immutable profile paths plusservedfrontend establishrequestedreadpath, withoutclaiming fullhistoricalbattle replay. Current sourceCI coversproduct, evidencecommit needsownoriginreadback/CI. Canonicalfollow-onPERTproposal remainsunaccepted; no owneracceptancefabrication and broaderparent remainsopen.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-007",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "CONFORMANCE",
+            "role": "decision",
+            "step_id": "S-CONFORMANCE"
+          }
+        ],
+        "message": "decision CONFORMANCE は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 14,
+          "column": 3,
+          "text": "Requirementmatrix completion-md and public-result-json coverall threegoalitems and referencedAcceptedADR43 clauses. Product/runtime requirements proven; remainingrequiredwork is scoped evidencecommit/push/readback and exactreceiptCI. Mark goalcomplete only after those succeed, with remainingfunctionalwork0. Do not convert broaderV3availability or oldplannedmilestone into an extra goal or claim it complete.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      }
+    ],
+    "query_results": []
+  }
+}
