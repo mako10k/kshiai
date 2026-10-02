@@ -19,7 +19,11 @@ describe("migration provider projection without recursive grammar", () => {
         import.meta.url), "utf8")),
     );
     const old = zodResponseFormat(CharacterSemanticMigrationProviderGrammarV1Schema, NAME).json_schema.schema;
-    assert.deepEqual(old, evidence.call.responseSchema);
+    // ADR0046 narrows only the deferred compiler-pair grammar. Retained probe
+    // evidence is immutable; every other field still matches its old grammar.
+    const withoutCapabilityPairs = (schema: unknown) => JSON.stringify(schema,
+      (key, value: unknown) => key === "requiringCapability" ? "registered-capability-pairs" : value);
+    assert.equal(withoutCapabilityPairs(old), withoutCapabilityPairs(evidence.call.responseSchema));
     assert.throws(() => assertXaiResponseSchema(old), /circular reference/);
     const projected = characterMigrationChangeSetResponseSchema();
     assert.doesNotThrow(() => assertXaiResponseSchema(projected));
