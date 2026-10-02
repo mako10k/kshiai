@@ -12,14 +12,15 @@ export function v3ToProfileDefinitionV2(definition: CharacterDefinitionV3): Char
   return {
     ...stable,
     schemaVersion: 2,
-    actionNorms: actionNorms.map((norm) => ({
-      ...norm,
-      response: {
-        ...norm.response,
+    actionNorms: actionNorms.map((norm): CharacterDefinitionV2["actionNorms"][number] => {
+      const sharedResponse = {
         statement: norm.description?.text ?? `action norm ${norm.id}`,
         fallbackActionRef: null,
-      },
-      selfAwareness: "aware" as const,
-    })),
+      };
+      if (norm.force === "constraint") {
+        return { ...norm, response: { ...norm.response, ...sharedResponse }, selfAwareness: "aware" };
+      }
+      return { ...norm, response: { ...norm.response, ...sharedResponse }, selfAwareness: "aware" };
+    }),
   };
 }

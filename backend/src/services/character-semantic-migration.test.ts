@@ -11,6 +11,7 @@ import {
   CharacterSemanticConsistencyReviewV1Schema,
   CharacterSemanticMigrationAttemptV1Schema,
   CharacterSemanticMigrationChangeSetV1Schema,
+  CharacterSemanticMigrationOperationV1Schema,
   CharacterSemanticMigrationProviderReceiptV1Schema,
   defaultBasicAttack, defaultParameters,
   type CharacterMigrationJson,
@@ -140,12 +141,12 @@ function operation(
   targetPath: string, value: unknown,
   overrides: Partial<CharacterSemanticMigrationOperationV1> = {},
 ): CharacterSemanticMigrationOperationV1 {
-  return {
+  return CharacterSemanticMigrationOperationV1Schema.parse({
     operation: "transform", targetPath, sourcePaths: ["definition.actionNorms"],
     value: CharacterMigrationJsonSchema.parse(value), deferred: null,
     explanation: "旧規範の意味を顕在意識と機械的fallbackに分離する。",
     provenance: "source_derived", semanticDependants: [], ...overrides,
-  };
+  });
 }
 function changeSet(operations: CharacterSemanticMigrationOperationV1[]) {
   return CharacterSemanticMigrationChangeSetV1Schema.parse({

@@ -42,6 +42,7 @@ task migration NORMS -> MIGRATION:
   title "Migration operation provenance and payload ownership"
   description "Owner authorizes sequential contract repair and deployment on 2026-10-03; ADR0045 and ADR0046 govern; completion requires preservation and rejection tests before downstream execution. Estimate is provisional internal effort excluding external waits."
   duration 1h
+  status done
   requires:
     DEV 1
 

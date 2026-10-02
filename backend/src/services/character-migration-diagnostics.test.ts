@@ -99,10 +99,14 @@ describe("semantic migration repair diagnostics", () => {
     assert.equal(result.findings.length, 2);
     assert.ok(!migrationTargetPaths(ctx.baseline).includes("disclosurePolicy.rules"));
     const sample = CharacterSemanticMigrationChangeSetV1Schema.parse(response(1)).operations[0];
+    assert.ok(sample && sample.deferred === null);
+    const [sourcePath, ...remainingSourcePaths] = sample.sourcePaths;
+    assert.ok(sourcePath);
     const state = mergeCharacterMigrationChangeSet({ context: ctx,
       previous: initialCharacterMigrationMerge(ctx), repairClosure: null, providerRequestId: "protected",
       changeSet: { schema: "character_semantic_migration_change_set_v1", uncertainties: [],
         operations: [{ ...sample, operation: "transform", provenance: "source_derived",
+          deferred: sample.deferred, sourcePaths: [sourcePath, ...remainingSourcePaths],
           targetPath: "disclosurePolicy.rules", value: [], semanticDependants: [] }] } });
     assert.equal(state.findings[0]?.code, "operation_path_invalid");
     assert.deepEqual(state.candidate, ctx.baseline);
