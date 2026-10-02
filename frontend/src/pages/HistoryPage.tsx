@@ -1,3 +1,4 @@
+/** R: Present owned battle history and links to its immutable character profiles. */
 import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import type { BattleListItem } from "@kshiai/shared";
@@ -187,7 +188,7 @@ export function HistoryPage() {
                     <div className="history-vs-row">
                       {b.sideACharacterId ? (
                         <Link
-                          to={`/characters/${b.sideACharacterId}`}
+                          to={`/characters/${b.sideACharacterId}?battleId=${encodeURIComponent(b.id)}`}
                           className="history-mini-face"
                           aria-label={`${b.sideAName} の詳細`}
                         >
@@ -220,7 +221,7 @@ export function HistoryPage() {
                       </button>
                       {b.sideBCharacterId ? (
                         <Link
-                          to={`/characters/${b.sideBCharacterId}`}
+                          to={`/characters/${b.sideBCharacterId}?battleId=${encodeURIComponent(b.id)}`}
                           className="history-mini-face"
                           aria-label={`${b.sideBName} の詳細`}
                         >

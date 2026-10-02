@@ -1,5 +1,32 @@
 /** R: Resolve a character's immutable battle-bound snapshot without current-asset fallback. */
-import type { BattleCharacterAssetBinding, CombatReadyCharacterSheet } from "@kshiai/shared";
+import { CombatReadyCharacterSheetSchema, type BattleCharacterAssetBinding, type CombatReadyCharacterSheet } from "@kshiai/shared";
+import { z } from "zod";
+
+const historicalBindingSchema = z.object({
+  assetId: z.string().min(1),
+  generationId: z.string().min(1),
+  snapshot: CombatReadyCharacterSheetSchema,
+});
+const historicalBattleSchema = z.object({
+  sideA: z.object({ characterId: z.string().min(1) }),
+  sideB: z.object({ characterId: z.string().min(1) }),
+  assetManifest: z.object({
+    characters: z.object({ a: historicalBindingSchema, b: historicalBindingSchema }),
+  }),
+});
+
+/** Display validates frozen profiles independently of executable compiler inputs. */
+export function resolveHistoricalCharacterViewFromJson(
+  raw: unknown,
+  characterId: string,
+): HistoricalCharacterView | null {
+  let value: unknown = raw;
+  if (typeof raw === "string") {
+    try { value = JSON.parse(raw); } catch { return null; }
+  }
+  const parsed = historicalBattleSchema.safeParse(value);
+  return parsed.success ? resolveHistoricalCharacterView(parsed.data, characterId) : null;
+}
 
 type HistoricalBinding = Pick<BattleCharacterAssetBinding, "assetId" | "generationId" | "snapshot">;
 export interface HistoricalCharacterBattle {

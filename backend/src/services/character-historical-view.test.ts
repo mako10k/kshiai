@@ -2,7 +2,7 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { defaultBasicAttack, defaultParameters, requireCombatReadyCharacterSheet, type CombatReadyCharacterSheet } from "@kshiai/shared";
-import { resolveHistoricalCharacterView, type HistoricalCharacterBattle } from "./character-historical-view.js";
+import { resolveHistoricalCharacterView, resolveHistoricalCharacterViewFromJson, type HistoricalCharacterBattle } from "./character-historical-view.js";
 const createdAt = "2026-09-14T00:00:00.000Z";
 function sheet(): CombatReadyCharacterSheet {
   return requireCombatReadyCharacterSheet({
@@ -39,6 +39,30 @@ function battle(): HistoricalCharacterBattle {
     } } };
 }
 describe("historical character view", () => {
+  it("reads validated frozen profiles without interpreting obsolete compiler fields", () => {
+    const bound = battle();
+    assert.ok(bound.assetManifest);
+    const raw = { ...bound, assetManifest: { characters: {
+      ...bound.assetManifest.characters,
+      a: { ...bound.assetManifest.characters.a, compilerInputsV2: { actionNorms: { norms: [{ response: {} }] } } },
+    } } };
+    const result = resolveHistoricalCharacterViewFromJson(JSON.stringify(raw), sheet().id);
+    assert.equal(result?.sheet.displayName, "版別読取");
+    assert.equal(result?.generationId, "character:old-v2");
+  });
+  it("rejects malformed stored profiles without supplying current-character replacements", () => {
+    const bound = battle();
+    assert.ok(bound.assetManifest);
+    for (const snapshot of [null, {}, { ...sheet(), displayName: "" }, { ...sheet(), id: "wrong" }]) {
+      const raw = { ...bound, assetManifest: { characters: {
+        ...bound.assetManifest.characters,
+        a: { ...bound.assetManifest.characters.a, snapshot },
+      } } };
+      assert.equal(resolveHistoricalCharacterViewFromJson(raw, sheet().id), null);
+    }
+    assert.equal(resolveHistoricalCharacterViewFromJson("{", sheet().id), null);
+    assert.equal(resolveHistoricalCharacterViewFromJson({ sideA: bound.sideA, sideB: bound.sideB }, sheet().id), null);
+  });
   it("returns the old V2 snapshot despite a later current migration", () => {
     const bound = battle();
     const currentV3 = { ...sheet(), displayName: "new V3 name" };

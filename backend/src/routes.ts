@@ -1,4 +1,4 @@
-import { resolveHistoricalCharacterView } from "./services/character-historical-view.js";
+import { getHistoricalBattleCharacter } from "./repositories/battle-historical-characters.js";
 import { assertCharacterV3UpdateTarget } from "./services/character-update-policy.js";
 /** R: Adapt authenticated HTTP requests to application operations. */
 import { readBattleAccess } from "./services/battle-lifecycle-access.js";
@@ -1052,10 +1052,9 @@ export function buildRoutes(options: {
     if (battleId) {
       const access = await readBattleAccess(battleId, user.id);
       if (access.kind !== "available") return c.json({ error: "not_found" }, 404);
-      const battle = await battleRepo.getBattle(battleId);
       const current = await charRepo.getSheetIncludingDeleted(c.req.param("id"));
-      if (!battle || !current || !(await charRepo.canViewCharacter(user.id, current))) return c.json({ error: "not_found" }, 404);
-      const historical = resolveHistoricalCharacterView(battle, current.id);
+      if (!current || !(await charRepo.canViewCharacter(user.id, current))) return c.json({ error: "not_found" }, 404);
+      const historical = await getHistoricalBattleCharacter(battleId, current.id);
       if (!historical) return c.json({ error: "historical_character_unavailable" }, 404);
       const character = await charRepo.toPublicCharacterForViewer(historical.sheet, user.id);
       const generation = await getAssetGeneration(historical.generationId);

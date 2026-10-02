@@ -34,6 +34,31 @@ before(async () => {
 });
 after(async () => { await closeDatabase(); rmSync(directory, { recursive: true, force: true }); });
 describe("V2 display without ordinary writes", () => {
+  it("serves the bound old profile despite invalid executable battle data and retains access controls", async () => {
+    const stored = await getSheet(id);
+    assert.ok(stored);
+    const { getCurrentAssetGeneration } = await import("../repositories/asset-generations.js");
+    const generation = await getCurrentAssetGeneration("character", id);
+    assert.ok(generation);
+    const bound = { ...stored, displayName: "対戦当時の旧キャラ" };
+    const state = { sideA: { characterId: id }, sideB: { characterId: "other" }, assetManifest: { characters: {
+      a: { assetId: id, generationId: generation.generationId, snapshot: bound, compilerInputsV2: { invalid: true } },
+      b: { assetId: "other", generationId: "other-generation", snapshot: { ...bound, id: "other" } },
+    } } };
+    const raw = JSON.stringify(state);
+    await query("INSERT INTO battles (id,state_json,side_a_user_id,side_a_character_id,side_b_character_id,created_at,updated_at) VALUES ($1,$2,$3,$4,$5,$6,$6)",
+      ["old-display-battle", raw, owner, id, "other", stored.createdAt]);
+    const response = await app.request(`/api/characters/${id}?battleId=old-display-battle`, { headers });
+    assert.equal(response.status, 200);
+    const profile = await response.json();
+    assert.equal(profile.character.displayName, bound.displayName);
+    assert.equal(profile.character.selectable, false);
+    assert.equal(profile.character.upgradeAction, null);
+    assert.equal(profile.isOwner, false);
+    await query("UPDATE battles SET side_a_user_id=$1 WHERE id=$2", ["another-owner", "old-display-battle"]);
+    assert.equal((await app.request(`/api/characters/${id}?battleId=old-display-battle`, { headers })).status, 404);
+    assert.deepEqual((await query("SELECT state_json FROM battles WHERE id=$1", ["old-display-battle"])).rows, [{state_json:raw}]);
+  });
   it("keeps current old-version display available", async () => {
     const r = await app.request(`/api/characters/${id}`, { headers });
     assert.equal(r.status, 200); const b = await r.json();
