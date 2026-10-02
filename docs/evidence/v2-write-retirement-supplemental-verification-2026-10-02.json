@@ -1,0 +1,21 @@
+{
+  "recordedAt": "2026-10-02T07:58:11.612166+00:00",
+  "runtimeSourceCommit": "458af76a306b222133a383d5bbdc6eecb197b7a9",
+  "productSourceDelta": false,
+  "delta": "One additional old snapshot/current V3 profile regression, evidence and seals only",
+  "testSeal": "06e558f70ab61e034b96b12cde33e856aa2a0f1b0868bb3dd0b16ce36b906265",
+  "passed": 254,
+  "failed": 0,
+  "activeTestFiles": 46,
+  "provisionalTestFiles": 2,
+  "typecheckExitCode": 0,
+  "staticExitCode": 0,
+  "imageBuildSubmissionCount": 1,
+  "imageRef": "asia-northeast1-docker.pkg.dev/kshiai/kshiai/backend@sha256:e439d1ef3e2845ea203d171ede921e5a6da5be8c61f47f3ef3a13b285dbbc397",
+  "limitation": "Image is from runtime-source SHA458af76; added regression is not part of that image. Current HTTP runtime source files are unchanged. Deployment and user login remain unverified.",
+  "remainingInternalAgentHours": [
+    1,
+    1.5
+  ],
+  "estimateConfidence": "low"
+}

@@ -1,0 +1,148 @@
+{
+  "observedAt": "2026-10-02T07:17:38.877Z",
+  "projectRef": "cvrbhpkfqkpqdegxfrlq",
+  "schema": "public",
+  "transactionReadOnly": "on",
+  "counts": {
+    "battle_narration_outbox": {
+      "total": 345,
+      "byStatus": [
+        {
+          "status": "completed",
+          "count": 345
+        }
+      ]
+    },
+    "battle_narration_entries": {
+      "total": 345,
+      "byStatus": [
+        {
+          "status": "completed",
+          "count": 332
+        },
+        {
+          "status": "failed",
+          "count": 13
+        }
+      ]
+    },
+    "asset_authoring_outbox": {
+      "total": 7,
+      "byStatus": [
+        {
+          "status": "completed",
+          "count": 7
+        }
+      ]
+    },
+    "character_authoring_jobs": {
+      "total": 15,
+      "byStatus": [
+        {
+          "status": "completed",
+          "count": 12
+        },
+        {
+          "status": "cancelled",
+          "count": 3
+        }
+      ]
+    },
+    "battlefield_authoring_jobs": {
+      "total": 3,
+      "byStatus": [
+        {
+          "status": "completed",
+          "count": 2
+        },
+        {
+          "status": "cancelled",
+          "count": 1
+        }
+      ]
+    },
+    "narration_style_authoring_jobs": {
+      "total": 3,
+      "byStatus": [
+        {
+          "status": "completed",
+          "count": 2
+        },
+        {
+          "status": "cancelled",
+          "count": 1
+        }
+      ]
+    },
+    "battle_narration_attempts": {
+      "total": 387,
+      "byStatus": [
+        {
+          "status": "failed",
+          "count": 13
+        },
+        {
+          "status": "completed",
+          "count": 360
+        },
+        {
+          "status": "abandoned",
+          "count": 14
+        }
+      ]
+    },
+    "battle_leases": {
+      "total": 0,
+      "byStatus": null
+    },
+    "battle_narration_leases": {
+      "total": 1,
+      "byStatus": null
+    },
+    "provider_operation_runs": {
+      "total": 13,
+      "byStatus": [
+        {
+          "status": "failed",
+          "count": 4
+        },
+        {
+          "status": "completed",
+          "count": 9
+        }
+      ]
+    },
+    "provider_operation_attempts": {
+      "total": 638,
+      "byStatus": [
+        {
+          "status": "succeeded",
+          "count": 636
+        },
+        {
+          "status": "failed",
+          "count": 2
+        }
+      ]
+    },
+    "cutover_control_active": {
+      "total": 0,
+      "byStatus": null
+    }
+  },
+  "narrationLiveLeases": {
+    "live_count": 0,
+    "latest_expiry": null,
+    "server_now": "2026-10-02T07:17:38.794Z"
+  },
+  "currentCharacterVersions": [
+    {
+      "schema_version": 2,
+      "count": 11
+    },
+    {
+      "schema_version": 3,
+      "count": 5
+    }
+  ]
+}

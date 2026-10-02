@@ -1,4 +1,4 @@
-/** R: Verify ordinary HTTP updates reject V2 before authoring or changing saved data. */
+/** R: Verify V2 character display and V3-only ordinary write boundaries. */
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
 import { fileURLToPath } from "node:url";
@@ -132,4 +132,18 @@ describe("V2 display without ordinary writes", () => {
     const result = await assets.activateCharacterAuthoringAttempt({attemptId:attempt.attemptId,ownerUserId:owner,candidateDigest:attempt.candidateDigest ?? undefined});
     assert.equal(result.generation.schemaVersion,3);
   });
+  it("keeps a bound V2 profile independent of the owner's current V3 generation", async () => {
+    const old = await getSheet(id);
+    assert.ok(old);
+    const snapshot = { ...old, id: "new-v3", displayName: "旧V2の名前",
+      appearance: { ...old.appearance, previousImageUrl: "https://example.test/bound-previous.png" },
+      revisionSnapshot: undefined };
+    const { toPublicCharacterForViewer } = await import("../repositories/characters.js");
+    const profile = await toPublicCharacterForViewer(snapshot, owner);
+    assert.equal(profile.displayName, snapshot.displayName);
+    assert.equal(profile.appearance.previousImageUrl, snapshot.appearance.previousImageUrl);
+    assert.equal(profile.revisionSavedAt, null);
+    assert.equal(profile.revisionLabel, null);
+  });
+
 });
