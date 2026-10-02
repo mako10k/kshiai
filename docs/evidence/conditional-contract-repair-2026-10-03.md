@@ -42,3 +42,24 @@ production判断の説明、参照、分析、規範disposition、移行valueを
 ログは/tmp/kshiai-conditional-{final-build,final-typecheck,static,adr,focused-tests,governed-tests}.log。
 デプロイ結果は別のreceiptに記録する。正式リリース、main統合、DB migration、
 実ユーザーの有料試合進行確認は、このローカル検証の達成とは区別する。
+
+## デプロイreadback
+
+- 配置source: `98f4c4fa80733b52a7aa16ca4b931ec3335d7498`。
+- GitHub CI [37027361469](https://github.com/mako10k/kshiai/actions/runs/37027361469): validate/security/backend-image/worker全成功。
+- Cloud Build: `393dee9f-7069-4161-93d4-d6b148af22ba` SUCCESS。
+- Backend digest: `sha256:806621954aaa839f5fb80da91fcf625d6d1475b87a50fa4cf6291a2afd4ee060`。
+- Cloud Run: `kshiai-api-contract-98f4c4f`、公開100%。
+- Worker: `46c49e30-a740-40b9-ac4e-c46ab15d8ede`、公開100%。
+- 公開root200、health ok、新revision、Worker runtime header、frontend9assetsのSHA256一致。
+- 既存のruntime設定、Secret参照、auth/model、Worker binding型・名を維持。
+  gcloudの実行バージョン注記だけ587.0.0から578.0.0に変化。runtime設定変更ではない。
+- 対象revisionのseverityERROR以上のログは観測時点15分窓で0件。
+- 追加provider transport回帰3件も成功。
+- 実ユーザーの認証付きadvance／有料LLM実行は未実施。今回の確認を実試合完走とは扱わない。
+
+詳細は[配置receipt](conditional-contract-deployment-result-2026-10-03.json)。
+旧V3-only artifact/tagは保存。必要時の復旧候補は旧revision
+`kshiai-api-v2-retired-fce86a5`とWorker `84fcfed4-05a9-404e-b836-e2eebeb584d3`。
+復旧しても元の行動不具合は再導入されるので、原因とartifactを確認してから判断する。
+配置後の記録コミットは文書のみであり、配置sourceSHAと区別する。
