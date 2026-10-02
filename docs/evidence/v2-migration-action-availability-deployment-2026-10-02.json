@@ -1,0 +1,92 @@
+{
+  "sourceSha": "09e9efab04c2e72a05f2472757bda643b03dbdfa",
+  "ciRun": 36995065736,
+  "ciFourJobs": "success",
+  "imageDigest": "sha256:1d7a6683b00d878f06af525ad453517463adec3a67baddd6dba0346b8d3693a7",
+  "buildId": "783e9d36-7120-43a9-a886-1b8f339efdb2",
+  "sourceProof": {
+    "sourceSha": "09e9efab04c2e72a05f2472757bda643b03dbdfa",
+    "uploadedFilesMatched": 5720,
+    "buildId": "783e9d36-7120-43a9-a886-1b8f339efdb2",
+    "source": {
+      "storageSource": {
+        "bucket": "kshiai_cloudbuild",
+        "generation": "1790936777605888",
+        "object": "source/1790936768.315917-e866d9a1b295495db6277504191997c6.tgz"
+      }
+    },
+    "sourceProvenance": {
+      "fileHashes": {
+        "gs://kshiai_cloudbuild/source/1790936768.315917-e866d9a1b295495db6277504191997c6.tgz#1790936777605888": {
+          "fileHash": [
+            {
+              "type": "MD5",
+              "value": "f5B9v3DEyV7RAjwLycsLRg=="
+            },
+            {
+              "type": "SHA256",
+              "value": "U9fHDpkjXkbsinsQAmxilD1RBJ_y9scUSkiZyifSFBM="
+            }
+          ]
+        }
+      },
+      "resolvedStorageSource": {
+        "bucket": "kshiai_cloudbuild",
+        "generation": "1790936777605888",
+        "object": "source/1790936768.315917-e866d9a1b295495db6277504191997c6.tgz"
+      }
+    },
+    "imageDigest": "sha256:1d7a6683b00d878f06af525ad453517463adec3a67baddd6dba0346b8d3693a7",
+    "buildStatus": "SUCCESS"
+  },
+  "workerReadback": {
+    "version": "84fcfed4-05a9-404e-b836-e2eebeb584d3",
+    "assetsMatched": 9,
+    "health": {
+      "ok": true,
+      "llm": "fallback:xai>openai>venice",
+      "auth": "supabase",
+      "models": {
+        "engine": "grok-4.5",
+        "fast": "grok-4.3"
+      },
+      "service": "kshiai",
+      "database": "postgres",
+      "revision": "kshiai-api-v2-actions-09e9efa"
+    },
+    "bindingsPreserved": true,
+    "publicDeploymentManifestUnchanged": true
+  },
+  "cloudRunTraffic": [
+    {
+      "percent": 100,
+      "revisionName": "kshiai-api-00141-vis"
+    },
+    {
+      "revisionName": "kshiai-api-v2-actions-09e9efa",
+      "tag": "v2-retire-458af76",
+      "url": "https://v2-retire-458af76---kshiai-api-crpgn6evfa-an.a.run.app"
+    },
+    {
+      "revisionName": "kshiai-api-v2-actions-09e9efa",
+      "tag": "v3-trial-36954429062-1",
+      "url": "https://v3-trial-36954429062-1---kshiai-api-crpgn6evfa-an.a.run.app"
+    }
+  ],
+  "writes": {
+    "build": 1,
+    "backendDeploy": 1,
+    "workerUpload": 1,
+    "oldTagRetarget": 1,
+    "authPatch": 0,
+    "characterMigration": 0
+  },
+  "tests": {
+    "node": 258,
+    "browser": 1,
+    "typecheck": "pass",
+    "static": "pass"
+  },
+  "goalComplete": false,
+  "remaining": "Completion audit including public environment version and all retained reachable runtime writers; user-visible button correction deployed to current preview"
+}

@@ -1,0 +1,10 @@
+domain MIGRATION_ACTION_PREVIEW:
+  description "Deploy the fixed unavailable-action display correction to the existing preview."
+evidence OWNER:
+  "Owner permits necessary image creation, deployments and normal origin push/CI. Preserve V2 display, retire ordinary V2 writes, and retain explicit V3 migration exceptions."
+evidence GATES:
+  "Fixed source09e9efab04c2e72a05f2472757bda643b03dbdfa matches origin; CI36995065736 four jobs success.258 Node tests, typecheck/static and one browser regression pass. Clean archive frontend builds, auth configuration verification and strict Worker dry-run pass. Fresh read-only shared DB has no active authoring/outbox/provider work, no live battle leases; Cloud Tasks empty."
+premise BOUNDS:
+  "One executor. One e2-medium Cloud Build maximum1200seconds using clean fixed archive and existing projectkshiai registry; build costs. One no-traffic Cloud Run revisionkshiai-api-v2-actions-09e9efa inasia-northeast1 using resulting verified digest and existing env/service account/CPU1/memory512Mi, updating tagv2-retire-458af76. One matching kshiai-web Worker upload inaccountaa22d9ebf49d126306d9aac2d842584d to existing preview alias, preserve required bindings. One oldtrialtag retarget after healthy readback. Startup metadata effects retain existing behavior. Zero auth PATCH, no character migrations, paid LLM, deletion, DB schema changes, release or merge. Public deployment and100percent old production routing remain for this preview correction; broader goal completion still requires environment-scope audit."
+decision EXECUTE based_on OWNER, GATES, BOUNDS:
+  "Build once from fixed source, verify Cloud Build source and registry digest, deploy one revision and Worker version, verify nine served assets and revision health, then retarget old preview tag once. Read back all writes; ambiguous output must be observed before retry. Existing service baseline readyv2-history-960a995 and Worker latested0742ba remain required preconditions. Return to audit if state changes. Internal remaining15-30minutes low-confidence; external build waits separate."
