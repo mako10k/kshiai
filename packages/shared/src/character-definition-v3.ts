@@ -229,50 +229,20 @@ export const CharacterDefinitionV3Schema = CharacterDefinitionV3ObjectSchema
   });
 export type CharacterDefinitionV3 = z.infer<typeof CharacterDefinitionV3Schema>;
 
-const REGISTERED_CHARACTER_COMPILER_CAPABILITY_PAIRS_V1 = [
-  ["character-profile", 2],
-  ["character-profile-claim-validator", 1],
-  ["battle-mechanics", 3],
-  ["psyche-trait-profile", 1],
-  ["character-conscious-self", 3],
-  ["character-narrator-view", 2],
-  ["character-image-brief", 2],
-  ["character-observable-manifestation", 2],
-  ["character-action-norms", 3],
-  ["character-mechanical-conflict-fallback", 1],
-  ["character-relationship", 2],
-] as const;
-
-const RegisteredCharacterCompilerConsumerV1Schema = z.enum([
-  "character-profile",
-  "character-profile-claim-validator",
-  "battle-mechanics",
-  "psyche-trait-profile",
-  "character-conscious-self",
-  "character-narrator-view",
-  "character-image-brief",
-  "character-observable-manifestation",
-  "character-action-norms",
-  "character-mechanical-conflict-fallback",
-  "character-relationship",
+/** Registered pairs are the runtime and static source of truth. */
+export const CharacterCompilerCapabilityV1Schema = z.discriminatedUnion("consumer", [
+  z.object({ consumer: z.literal("character-profile"), version: z.literal(2) }).strict(),
+  z.object({ consumer: z.literal("character-profile-claim-validator"), version: z.literal(1) }).strict(),
+  z.object({ consumer: z.literal("battle-mechanics"), version: z.literal(3) }).strict(),
+  z.object({ consumer: z.literal("psyche-trait-profile"), version: z.literal(1) }).strict(),
+  z.object({ consumer: z.literal("character-conscious-self"), version: z.literal(3) }).strict(),
+  z.object({ consumer: z.literal("character-narrator-view"), version: z.literal(2) }).strict(),
+  z.object({ consumer: z.literal("character-image-brief"), version: z.literal(2) }).strict(),
+  z.object({ consumer: z.literal("character-observable-manifestation"), version: z.literal(2) }).strict(),
+  z.object({ consumer: z.literal("character-action-norms"), version: z.literal(3) }).strict(),
+  z.object({ consumer: z.literal("character-mechanical-conflict-fallback"), version: z.literal(1) }).strict(),
+  z.object({ consumer: z.literal("character-relationship"), version: z.literal(2) }).strict(),
 ]);
-
-export const CharacterCompilerCapabilityV1Schema = z.object({
-  consumer: RegisteredCharacterCompilerConsumerV1Schema,
-  version: z.number().int().positive(),
-}).strict().superRefine((capability, context) => {
-  const registered = REGISTERED_CHARACTER_COMPILER_CAPABILITY_PAIRS_V1.some(
-    ([consumer, version]) =>
-      consumer === capability.consumer && version === capability.version,
-  );
-  if (!registered) {
-    context.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: `unregistered character compiler capability: ${capability.consumer}@${capability.version}`,
-      path: ["version"],
-    });
-  }
-});
 export type CharacterCompilerCapabilityV1 = z.infer<
   typeof CharacterCompilerCapabilityV1Schema
 >;

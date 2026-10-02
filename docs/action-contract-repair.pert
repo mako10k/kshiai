@@ -53,6 +53,7 @@ task capabilities MIGRATION -> CAPABILITIES:
   title "Registered compiler pairs and skeleton phase subset"
   description "Owner authorizes sequential contract repair and deployment on 2026-10-03; ADR0045 and ADR0046 govern; completion requires preservation and rejection tests before downstream execution. Estimate is provisional internal effort excluding external waits."
   duration 1h
+  status done
   requires:
     DEV 1
 
