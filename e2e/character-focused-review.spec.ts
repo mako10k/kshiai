@@ -1,4 +1,4 @@
-/** R: Verify owner review display and exact confirmation/retry requests in the browser. */
+/** R: Verify browser affordances and requests for permitted character authoring and review. */
 import { expect, test } from "@playwright/test";
 import type { CharacterAuthoringReview } from "@kshiai/shared";
 import { e2eGuiMe } from "./fixtures/battle";
@@ -134,4 +134,22 @@ test("restricts closed owner review to confirmation and stays on the exact revie
   await submitted;
   await expect(page).toHaveURL(/\/reviews\/focused-review$/);
   await expect(page.getByRole("button", { name: "確定して保存" })).toHaveCount(0);
+});
+
+test("keeps an owned V2 profile readable without advertising unavailable migration or ordinary editors", async ({ page }) => {
+  const { createV3StageTrialCandidate } = await import("../backend/src/fixtures/neva-v3");
+  const { characterDefinitionV3ToLegacySheet, toPublicCharacter } = await import("@kshiai/shared");
+  const envelope = createV3StageTrialCandidate();
+  const character = { ...toPublicCharacter(characterDefinitionV3ToLegacySheet({
+    characterId: "read-only-character", ownerUserId: e2eGuiMe.user.id,
+    definition: envelope.definition, publicPresentation: envelope.publicPresentation,
+    createdAt: "2026-09-14T00:00:00Z", updatedAt: "2026-09-14T00:00:00Z",
+  }), e2eGuiMe.user.id), compatibility: { status: "ready", schemaVersion: 2, currentGenerationId: "old-generation", reasonCode: null },
+    selectable: false, upgradeAction: null };
+  await page.route("**/api/characters/read-only-character", (route) => route.fulfill({ json: { character, isOwner: true } }));
+  await page.goto("/characters/read-only-character");
+  await expect(page.getByText("現在、自動でV3へ移行する機能は利用できません。この旧版は閲覧できます。", { exact: true })).toBeVisible();
+  await expect(page.getByRole("button", { name: "このキャラをV3へ移行" })).toHaveCount(0);
+  await expect(page.getByRole("heading", { name: "改善提案（戦績コーチ）" })).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "削除", exact: true })).toHaveCount(0);
 });

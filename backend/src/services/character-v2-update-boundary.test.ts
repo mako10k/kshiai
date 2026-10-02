@@ -63,7 +63,14 @@ describe("V2 display without ordinary writes", () => {
     const r = await app.request(`/api/characters/${id}`, { headers });
     assert.equal(r.status, 200); const b = await r.json();
     assert.equal(b.character.displayName, "旧キャラ"); assert.equal(b.character.selectable, false);
-    assert.equal(b.character.upgradeAction.targetSchemaVersion, 3);
+    assert.equal(b.character.upgradeAction, null);
+  });
+  it("does not advertise unavailable migration or create an attempt when it is requested", async () => {
+    const before = (await query("SELECT attempt_id FROM character_authoring_attempts")).rows;
+    const response = await app.request(`/api/characters/${id}/upgrade`, { method: "POST", headers, body: "{}" });
+    assert.equal(response.status, 409);
+    assert.equal((await response.json()).error, "focused_authoring_unavailable");
+    assert.deepEqual((await query("SELECT attempt_id FROM character_authoring_attempts")).rows, before);
   });
   it("rejects every ordinary owner mutation before creating attempts or changing the row", async () => {
     const original = await query("SELECT sheet_json FROM characters WHERE id=$1", [id]);

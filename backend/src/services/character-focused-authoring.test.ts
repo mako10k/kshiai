@@ -1,3 +1,4 @@
+/** R: Verify focused character candidate preparation and gated owner acceptance. */
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import { after, before, describe, it } from "node:test";
@@ -561,6 +562,16 @@ describe("focused authoring through the real owner command and worker", () => {
       llm: provider,
       enableCharacterMigrationAcceptanceTrial: true,
     });
+    const defaultProfile = await app.request(`/api/characters/${characterId}`, {
+      headers: { Cookie: "kshiai_session=focused-session" },
+    });
+    assert.equal(defaultProfile.status, 200);
+    assert.equal((await defaultProfile.json()).character.upgradeAction, null);
+    const enabledProfile = await trialApp.request(`/api/characters/${characterId}`, {
+      headers: { Cookie: "kshiai_session=focused-session" },
+    });
+    assert.equal(enabledProfile.status, 200);
+    assert.equal((await enabledProfile.json()).character.upgradeAction.targetSchemaVersion, 3);
     const restrictedOriginalValue = { hiddenMeaning: "owner-only retained source" };
     const redactedCandidate = {
       ...terminalValue,

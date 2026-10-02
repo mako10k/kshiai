@@ -428,6 +428,9 @@ export function CharacterDetailPage() {
               {busy ? "更新案を作成中…" : character.upgradeAction.label}
             </button>
           ) : null}
+          {isOwner && character.compatibility?.schemaVersion === 2 && !character.upgradeAction && (
+            <p className="muted">現在、自動でV3へ移行する機能は利用できません。この旧版は閲覧できます。</p>
+          )}
         </div>
       )}
       <AuthoringProgressNotice

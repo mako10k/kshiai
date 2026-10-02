@@ -1,0 +1,12 @@
+{
+  "observedAt": "2026-10-02T10:21:51.805101+00:00",
+  "scope": "Reflect existing provider and activation gates in current character upgradeAction; explain unavailable migration; preserve V2 display and existing controlled candidate preparation",
+  "nodeTests": 258,
+  "typecheck": "pass",
+  "static": "pass",
+  "browserRegression": "1 passed: owned V2 display, unavailable migration hidden, ordinary editors absent",
+  "e2eAuthorityInventory": "pass",
+  "ownerHistoricalNavigation": "opened, user report",
+  "runtimeApplied": false,
+  "remaining": "Exact-source CI and necessary preview deployment/readback; goal completion audit"
+}

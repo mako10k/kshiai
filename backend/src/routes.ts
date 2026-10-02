@@ -1069,8 +1069,11 @@ export function buildRoutes(options: {
     if (!sheet || !(await charRepo.canViewCharacter(user.id, sheet))) {
       return c.json({ error: "not_found" }, 404);
     }
+    const character = await charRepo.toPublicCharacterForViewer(sheet, user.id);
+    const migrationAvailable = Boolean(llm.semanticAuthoringProvider)
+      && options.enableCharacterMigrationAcceptanceTrial === true;
     return c.json({
-      character: await charRepo.toPublicCharacterForViewer(sheet, user.id),
+      character: { ...character, upgradeAction: migrationAvailable ? character.upgradeAction : null },
       isOwner: sheet.ownerUserId === user.id,
     });
   });
