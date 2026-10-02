@@ -1,9 +1,10 @@
+/** R: Verify V3-only character job admission and durable delivery, fencing, and family concurrency. */
 import assert from "node:assert/strict";
 import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "os";
 import { join } from "node:path";
 import { after, before, describe, it } from "node:test";
-import type { GenerateCharacterInput, GenerateCharacterDefinitionV2Input } from "../llm/types.js";
+import type { GenerateCharacterInput } from "../llm/types.js";
 
 const directory = mkdtempSync(join(tmpdir(), "kshiai-authoring-jobs-"));
 process.env.DATABASE_URL = "";
@@ -11,10 +12,9 @@ process.env.AUTH_PROVIDER = "legacy";
 process.env.DATABASE_PATH = join(directory, "jobs.db");
 process.env.LLM_PROVIDER = "mock";
 
+const { saveHistoricalCharacterFixture } = await import("../testing/historical-character-fixtures.js");
 const { closeDatabase, query } = await import("../db.js");
 const { MockLlmProvider } = await import("../llm/mock.js");
-const { OpenAiCompatibleProvider } = await import("../llm/openai-compatible.js");
-const characterRepo = await import("../repositories/characters.js");
 const characterAssetRepo = await import("../repositories/character-assets-v2.js");
 const battlefieldAssetRepo = await import("../repositories/battlefield-assets-v2.js");
 const narrationStyleAssetRepo = await import(
@@ -43,55 +43,19 @@ after(async () => {
 });
 
 describe("character authoring jobs", () => {
-  for (const repairSucceeds of [true, false]) {
-    it(`persists ${repairSucceeds ? "only the repaired candidate" : "failure without a candidate"} through worker and real definition transport`, async (t) => {
-      let httpCalls = 0;
-      let validReply = "";
-      t.mock.method(globalThis, "fetch", async () => {
-        httpCalls++;
-        assert.ok(httpCalls <= 2, "recovery must not loop");
-        return Response.json({ choices: [{ message: { content:
-          httpCalls === 2 && repairSucceeds ? validReply : '{"definition": {,' } }],
-        usage: { total_tokens: 17 } });
-      });
-      // Only unrelated generation/review/profile stages are fixtures. The worker,
-      // structure service, SDK, JSON decoder, repair and persistence stay real.
-      class ConnectedDefinitionProvider extends MockLlmProvider {
-        readonly definitionProvider = new OpenAiCompatibleProvider({ name: "xai",
-          apiKey: "test-only", baseUrl: "https://example.invalid/v1",
-          modelEngine: "test", modelFast: "test" });
+  it("rejects ordinary V2 job registration before creating a queued attempt", async () => {
+    const before = await query<{ count: number }>("SELECT COUNT(*) AS count FROM character_authoring_attempts");
+    for (const kind of ["create", "revision", "upgrade"] as const) {
+      await assert.rejects(() => characterAssetRepo.beginCharacterAuthoringAttempt({
+        ownerUserId: "job-owner", kind, idempotencyKey: `obsolete-v2-${kind}`,
+        requestDigest: "1".repeat(64), sourceDigest: "2".repeat(64), sourceText: "旧生成",
+      }), /CHARACTER_V3_AUTHORING_REQUIRED/);
+    }
+    const after = await query<{ count: number }>("SELECT COUNT(*) AS count FROM character_authoring_attempts");
+    assert.equal(Number(after.rows[0]?.count), Number(before.rows[0]?.count));
+  });
 
-        override async generateCharacterDefinitionV2(input: GenerateCharacterDefinitionV2Input) {
-          const repaired = structuredClone(input.baseDefinition);
-          repaired.speechPolicy.register = "落ち着いた丁寧語";
-          validReply = JSON.stringify({ definition: repaired });
-          return this.definitionProvider.generateCharacterDefinitionV2(input);
-        }
-      }
-      const begin = await characterAssetRepo.beginCharacterAuthoringAttempt({
-        ownerUserId: "job-owner", kind: "create",
-        idempotencyKey: `connected-repair-${repairSucceeds}`,
-        requestDigest: "1".repeat(64), sourceDigest: "2".repeat(64),
-        sourceText: "落ち着いた丁寧語で話す観測者",
-      });
-      await drainCharacterAuthoringJobs({ llm: new ConnectedDefinitionProvider(),
-        workerId: `connected-repair-${repairSucceeds}` });
-      const stored = await characterAssetRepo.getCharacterAuthoringAttempt(
-        begin.attempt.attemptId, "job-owner",
-      );
-      assert.equal(httpCalls, 2);
-      assert.equal(stored?.status, repairSucceeds ? "awaiting_owner_acceptance" : "failed");
-      if (repairSucceeds) {
-        assert.equal(stored?.candidate?.definition.speechPolicy.register, "落ち着いた丁寧語");
-        assert.equal(stored?.candidate?.definition.schemaVersion, 2);
-      } else {
-        assert.equal(stored?.candidate, null);
-      }
-      assert.equal(stored?.resultGenerationId, null, "repair does not activate a generation");
-    });
-  }
-
-  it("omits reference tools when the owner has no characters to reference", async () => {
+  it("does not invoke legacy character generation without a V3 authoring source", async () => {
     await query(
       `INSERT INTO users (id, username, password_hash, created_at)
        VALUES ($1, $2, 'x', $3)`,
@@ -109,6 +73,7 @@ describe("character authoring jobs", () => {
     }
     const provider = new CapturingProvider();
     await characterAssetRepo.beginCharacterAuthoringAttempt({
+      targetSchemaVersion: 3,
       ownerUserId: "empty-owner",
       kind: "create",
       idempotencyKey: "empty-owner-create",
@@ -117,12 +82,14 @@ describe("character authoring jobs", () => {
       sourceDigest: "1".repeat(64),
     });
     await drainCharacterAuthoringJobs({ llm: provider, workerId: "empty-owner" });
-    assert.equal(provider.referenceToolsPresent, false);
+    assert.equal(provider.referenceToolsPresent, null);
+    assert.equal((await characterAssetRepo.getLatestCharacterAuthoringAttempt("empty-owner"))?.errorCode, "CHARACTER_V3_AUTHORING_REQUIRED");
   });
 
-  it("begins without calling the provider and latest failed hides an older draft", async () => {
+  it("queues explicit V3 attempts and persists failure without legacy fallback or a candidate", async () => {
     const llm = new MockLlmProvider();
     const first = await characterAssetRepo.beginCharacterAuthoringAttempt({
+      targetSchemaVersion: 3,
       ownerUserId: "job-owner",
       kind: "create",
       idempotencyKey: "job-create-ok",
@@ -136,7 +103,10 @@ describe("character authoring jobs", () => {
       first.attempt.attemptId,
       "job-owner",
     );
-    assert.equal(ready?.status, "awaiting_owner_acceptance");
+    assert.equal(ready?.status, "failed");
+    assert.equal(ready?.errorCode, "CHARACTER_V3_AUTHORING_REQUIRED");
+    assert.equal(ready?.candidate, null);
+    assert.equal(ready?.resultGenerationId, null);
 
     class FailProvider extends MockLlmProvider {
       override async generateCharacter(): Promise<never> {
@@ -144,6 +114,7 @@ describe("character authoring jobs", () => {
       }
     }
     await characterAssetRepo.beginCharacterAuthoringAttempt({
+      targetSchemaVersion: 3,
       ownerUserId: "job-owner",
       kind: "create",
       idempotencyKey: "job-create-fail",
@@ -159,13 +130,13 @@ describe("character authoring jobs", () => {
       "job-owner",
     );
     assert.equal(latest?.status, "failed");
-    assert.equal(latest?.errorCode, "JOB_PROVIDER_FAIL");
+    assert.equal(latest?.errorCode, "CHARACTER_V3_AUTHORING_REQUIRED");
     assert.equal(latest?.candidate, null);
   });
 
   it("does not claim a second job for the same character", async () => {
     const now = "2026-08-15T00:00:00.000Z";
-    await characterRepo.saveSheet({
+    await saveHistoricalCharacterFixture({
       id: "job-ready-char",
       ownerUserId: "job-owner",
       displayName: "準備済み",
@@ -197,6 +168,7 @@ describe("character authoring jobs", () => {
       ["job-ready-char", now],
     );
     await characterAssetRepo.beginCharacterAuthoringAttempt({
+      targetSchemaVersion: 3,
       ownerUserId: "job-owner",
       characterId: "job-ready-char",
       kind: "upgrade",
@@ -207,6 +179,7 @@ describe("character authoring jobs", () => {
     });
     await assert.rejects(
       () => characterAssetRepo.beginCharacterAuthoringAttempt({
+        targetSchemaVersion: 3,
         ownerUserId: "job-owner",
         characterId: "job-ready-char",
         kind: "upgrade",
@@ -221,7 +194,7 @@ describe("character authoring jobs", () => {
       llm: new MockLlmProvider(),
       workerId: "job-test-single",
     });
-    assert.equal(first, "completed");
+    assert.equal(first, "failed");
   });
 
   it("delivers one exact job from the environment-global queue", async () => {
@@ -231,6 +204,7 @@ describe("character authoring jobs", () => {
       ["job-owner-two", "job-owner-two", "2026-09-08T00:00:00.000Z"],
     );
     const first = await characterAssetRepo.beginCharacterAuthoringAttempt({
+      targetSchemaVersion: 3,
       ownerUserId: "job-owner",
       kind: "create",
       idempotencyKey: "exact-owner-one",
@@ -239,6 +213,7 @@ describe("character authoring jobs", () => {
       sourceDigest: "j".repeat(64),
     });
     const second = await characterAssetRepo.beginCharacterAuthoringAttempt({
+      targetSchemaVersion: 3,
       ownerUserId: "job-owner-two",
       kind: "create",
       idempotencyKey: "exact-owner-two",
@@ -269,7 +244,7 @@ describe("character authoring jobs", () => {
         deliveryGeneration: Number(delivery.delivery_generation),
       },
     });
-    assert.equal(result, "completed");
+    assert.equal(result, "failed");
     assert.equal(
       (await characterAssetRepo.getCharacterAuthoringAttempt(
         first.attempt.attemptId,
@@ -282,8 +257,9 @@ describe("character authoring jobs", () => {
         second.attempt.attemptId,
         "job-owner-two",
       ))?.status,
-      "awaiting_owner_acceptance",
+      "failed",
     );
+    assert.equal((await characterAssetRepo.getCharacterAuthoringAttempt(second.attempt.attemptId, "job-owner-two"))?.errorCode, "CHARACTER_V3_AUTHORING_REQUIRED");
     assert.equal(await processAuthoringTask({
       llm: new MockLlmProvider(),
       workerId: "exact-worker-duplicate",
@@ -298,6 +274,7 @@ describe("character authoring jobs", () => {
 
   it("rejects a stale worker after the exact job is reclaimed", async () => {
     const attempt = await characterAssetRepo.beginCharacterAuthoringAttempt({
+      targetSchemaVersion: 3,
       ownerUserId: "job-owner",
       kind: "create",
       idempotencyKey: "stale-fence-owner",
@@ -354,6 +331,7 @@ describe("character authoring jobs", () => {
 
   it("re-arms only stale deliveries without an active lease", async () => {
     const stale = await characterAssetRepo.beginCharacterAuthoringAttempt({
+      targetSchemaVersion: 3,
       ownerUserId: "job-owner",
       kind: "create",
       idempotencyKey: "stale-outbox-pending",
@@ -362,6 +340,7 @@ describe("character authoring jobs", () => {
       sourceDigest: "t".repeat(64),
     });
     const active = await characterAssetRepo.beginCharacterAuthoringAttempt({
+      targetSchemaVersion: 3,
       ownerUserId: "job-owner-two",
       kind: "create",
       idempotencyKey: "stale-outbox-active",
@@ -418,6 +397,7 @@ describe("character authoring jobs", () => {
 
   it("serializes concurrent exact claims against the environment-global cap", async () => {
     const first = await characterAssetRepo.beginCharacterAuthoringAttempt({
+      targetSchemaVersion: 3,
       ownerUserId: "job-owner",
       kind: "create",
       idempotencyKey: "global-cap-first",

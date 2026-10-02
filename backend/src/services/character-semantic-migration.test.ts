@@ -28,7 +28,7 @@ process.env.AUTH_PROVIDER = "legacy";
 process.env.DATABASE_PATH = join(directory, "migration.db");
 const { closeDatabase, query } = await import("../db.js");
 const { assetContentDigest, createAssetGeneration, getCurrentAssetGeneration } =
-  await import("../repositories/asset-generations.js");
+  await import("../testing/historical-asset-generations.js");
 const { characterSemanticMigrationInitialRequestDigest, loadCharacterSemanticMigrationWork } =
   await import("../repositories/character-semantic-migration.js");
 const { buildImportedCharacterEnvelopeV2 } = await import("./character-authoring-service.js");

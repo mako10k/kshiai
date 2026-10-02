@@ -1,3 +1,4 @@
+import { saveCharacterBattleAccounting } from "../repositories/character-battle-accounting.js";
 import {
   applyElo,
   ensureRecord,
@@ -137,8 +138,8 @@ export async function settleBattleRating(state: BattleState): Promise<BattleStat
     publicB = pB.snap;
   }
 
-  await charRepo.saveSheet(nextA);
-  await charRepo.saveSheet(nextB);
+  await saveCharacterBattleAccounting(nextA);
+  await saveCharacterBattleAccounting(nextB);
 
   const settlement = {
     applied: true,

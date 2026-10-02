@@ -94,3 +94,5 @@ current check.
 | [0041](0041-cutover-snapshot-protection.md) | Accepted | Protect shared-cutover snapshots with owner public-key encryption, dedicated Tokyo GCS, 30-day minimum retention and 7-day soft delete |
 
 | [0042](0042-unreleased-v3-trial-scope.md) | Accepted | Use an ordinary authenticated preview for the unreleased first V3 trial; defer legacy compatibility, email, snapshot and public promotion |
+
+- [0043: V3 character updates with historical V2 display](0043-v3-character-updates-with-historical-v2-display.md) — Accepted; ordinary V3 writes, retained V2 read and migration source.

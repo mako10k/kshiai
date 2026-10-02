@@ -1,3 +1,4 @@
+import { assertCharacterV3UpdateTarget, assertCharacterV3WriteCandidate } from "../services/character-update-policy.js";
 /** R: Manage character authoring attempts, immutable generations, and readiness. */
 import { parseCharacterCandidate, assertCharacterCandidateReady, candidateToSheet, type CharacterAuthoringCandidate } from "../services/character-authoring-candidate.js";
 import {
@@ -274,6 +275,7 @@ async function commitDerivedCharacterGeneration(input: {
   if (input.current.generation.generationId !== input.expectedGenerationId) {
     throw new Error("ASSET_CURRENT_GENERATION_DRIFT");
   }
+  assertCharacterV3WriteCandidate(input.envelope);
   const envelope = assertCharacterGenerationReadyV2(
     CharacterGenerationEnvelopeV2Schema.parse(input.envelope),
   );
@@ -575,10 +577,17 @@ export async function beginCharacterAuthoringAttempt(input: {
   sourceText: string;
   sourceDigest: string;
   ttlMs?: number;
+  targetSchemaVersion?: 3;
   focused?: { source: CharacterFocusedRegistrationSourceV1; pricingIdentity: string };
 }): Promise<{ attempt: CharacterAuthoringAttempt; replayed: boolean }> {
   if (!input.idempotencyKey.trim() || input.idempotencyKey.length > 200) {
     throw new Error("INVALID_IDEMPOTENCY_KEY");
+  }
+  if (!input.focused && input.targetSchemaVersion !== 3) {
+    throw new Error("CHARACTER_V3_AUTHORING_REQUIRED");
+  }
+  if (input.kind === "revision" && input.characterId) {
+    await assertCharacterV3UpdateTarget(input.characterId);
   }
   return withTransaction(async (connection) => {
     const replayed = await replayExistingAttempt(
@@ -749,6 +758,7 @@ export async function replaceCharacterAuthoringSource(input: {
   const updatedAt = new Date().toISOString();
   await withTransaction(async (connection) => {
     const current = await selectAttempt(connection, input.attemptId, input.ownerUserId);
+    if (current?.candidate) assertCharacterV3WriteCandidate(current.candidate);
     if (current?.candidate && CharacterGenerationEnvelopeV3Schema.safeParse(current.candidate).success) {
       throw new Error("FIXED_V3_CANDIDATE_REQUIRES_NEW_ATTEMPT");
     }
@@ -797,6 +807,7 @@ export async function saveCharacterAuthoringCandidate(input: SaveCandidateInput)
   return withTransaction((connection) => saveCandidateInTransaction(connection, input));
 }
 async function saveCandidateInTransaction(connection: DatabaseConnection, input: SaveCandidateInput): Promise<CharacterAuthoringAttempt> {
+  assertCharacterV3WriteCandidate(input.envelope);
   const envelope = assertCharacterCandidateReady(input.envelope);
   const candidateDigest = assetContentDigest(envelope);
   const updatedAt = new Date().toISOString();
@@ -1242,6 +1253,7 @@ export async function activateCharacterAuthoringAttempt(input: CharacterActivati
       [input.attemptId, input.ownerUserId]);
     const attempt = await selectAttempt(connection, input.attemptId, input.ownerUserId);
     if (!attempt) throw new Error("AUTHORING_ATTEMPT_NOT_FOUND");
+    if (attempt.candidate) assertCharacterV3WriteCandidate(attempt.candidate);
     if (attempt.candidate && CharacterGenerationEnvelopeV3Schema.safeParse(attempt.candidate).success
       && (!input.candidateDigest || input.candidateDigest !== attempt.candidateDigest)) {
       throw new Error("AUTHORING_REVIEW_DIGEST_MISMATCH");
@@ -1395,74 +1407,6 @@ export async function getReadyCharacterGeneration(
     CharacterGenerationEnvelopeV2Schema.parse(current.content),
   );
   return current;
-}
-
-export async function activateImportedCharacter(input: {
-  sheet: CharacterSheet;
-  envelope: CharacterGenerationEnvelopeV2;
-}): Promise<AssetGeneration> {
-  const envelope = assertCharacterGenerationReadyV2(input.envelope);
-  return withTransaction(async (connection) => {
-    const current = await connection.query<{ generation_id: string }>(
-      `SELECT generation_id FROM asset_current_generations
-        WHERE asset_type = 'character' AND asset_id = $1`,
-      [input.sheet.id],
-    );
-    const sheet = characterDefinitionV2ToLegacySheet({
-      characterId: input.sheet.id,
-      ownerUserId: input.sheet.ownerUserId,
-      definition: envelope.definition,
-      publicPresentation: envelope.publicPresentation,
-      createdAt: input.sheet.createdAt,
-      updatedAt: input.sheet.updatedAt,
-      previousImageUrl: input.sheet.appearance.previousImageUrl,
-      operational: {
-        visibility: input.sheet.visibility,
-        record: input.sheet.record,
-        recordOverall: input.sheet.recordOverall,
-        improvementMemo: input.sheet.improvementMemo,
-        opponentMemories: input.sheet.opponentMemories,
-        deletedAt: input.sheet.deletedAt,
-        revisionSnapshot: input.sheet.revisionSnapshot,
-      },
-    });
-    const generation = await appendAssetGeneration(connection, {
-      assetType: "character",
-      assetId: sheet.id,
-      schemaVersion: 2,
-      content: envelope,
-      createdAt: sheet.updatedAt,
-    });
-    await connection.query(
-      `INSERT INTO characters (id, owner_user_id, sheet_json, created_at, updated_at)
-       VALUES ($1, $2, $3, $4, $5)
-       ON CONFLICT (id) DO UPDATE
-         SET owner_user_id = EXCLUDED.owner_user_id,
-             sheet_json = EXCLUDED.sheet_json,
-             updated_at = EXCLUDED.updated_at`,
-      [sheet.id, sheet.ownerUserId, JSON.stringify(sheet), sheet.createdAt, sheet.updatedAt],
-    );
-    await activateAssetGeneration(
-      connection,
-      generation,
-      current.rows[0]?.generation_id ?? null,
-      sheet.updatedAt,
-    );
-    await connection.query(
-      `INSERT INTO character_asset_states
-        (character_id, compatibility_status, current_generation_id,
-         active_attempt_id, reason_code, updated_at)
-       VALUES ($1, 'ready', $2, NULL, NULL, $3)
-       ON CONFLICT (character_id) DO UPDATE
-         SET compatibility_status = 'ready',
-             current_generation_id = EXCLUDED.current_generation_id,
-             active_attempt_id = NULL,
-             reason_code = NULL,
-             updated_at = EXCLUDED.updated_at`,
-      [sheet.id, generation.generationId, sheet.updatedAt],
-    );
-    return generation;
-  });
 }
 
 export type CharacterGenerationHistory = {

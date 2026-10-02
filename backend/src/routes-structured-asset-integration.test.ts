@@ -17,6 +17,7 @@ process.env.AUTH_PROVIDER = "legacy";
 process.env.DATABASE_PATH = join(directory, "routes.db");
 process.env.LLM_PROVIDER = "mock";
 
+const { saveHistoricalCharacterFixture } = await import("./testing/historical-character-fixtures.js");
 const { closeDatabase, query } = await import("./db.js");
 const { MockLlmProvider } = await import("./llm/mock.js");
 const characterRepo = await import("./repositories/characters.js");
@@ -144,12 +145,12 @@ before(async () => {
       developerId,
     ],
   );
-  await characterRepo.saveSheet(character({
+  await saveHistoricalCharacterFixture(character({
     id: mineId,
     ownerUserId: ownerId,
     displayName: "統合自キャラ",
   }));
-  await characterRepo.saveSheet(character({
+  await saveHistoricalCharacterFixture(character({
     id: opponentId,
     ownerUserId: opponentOwnerId,
     displayName: "統合相手キャラ",

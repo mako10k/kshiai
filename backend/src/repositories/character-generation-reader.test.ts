@@ -6,7 +6,7 @@ import {
   defaultParameters,
   type CharacterSheet,
 } from "@kshiai/shared";
-import { assetContentDigest, type AssetGeneration } from "./asset-generations.js";
+import { assetContentDigest, type AssetGeneration } from "../testing/historical-asset-generations.js";
 import { buildImportedCharacterEnvelopeV2 } from "../services/character-authoring-service.js";
 import { readCharacterGeneration } from "./character-generation-reader.js";
 

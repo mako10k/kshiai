@@ -537,9 +537,9 @@ export const api = {
         body: JSON.stringify({ visibility }),
       },
     ),
-  getCharacter: (id: string) =>
+  getCharacter: (id: string, battleId?: string) =>
     request<{ character: CharacterPublic; isOwner: boolean }>(
-      `/api/characters/${id}`,
+      `/api/characters/${id}${battleId ? `?battleId=${encodeURIComponent(battleId)}` : ""}`,
     ),
   listCharacterBattles: (
     id: string,

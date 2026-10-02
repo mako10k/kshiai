@@ -16,6 +16,7 @@ process.env.AUTH_PROVIDER = "legacy";
 process.env.DATABASE_PATH = join(temporaryDirectory, "create.db");
 process.env.CHARACTER_FOCUS_SHADOW_MODE = "shadow";
 
+const { saveHistoricalCharacterFixture } = await import("../testing/historical-character-fixtures.js");
 const { closeDatabase, query } = await import("../db.js");
 const { MockLlmProvider } = await import("../llm/mock.js");
 const { createFallbackLlmProvider } = await import("../llm/fallback.js");
@@ -23,8 +24,7 @@ const { ensureSystemNarrationStyles } = await import(
   "../repositories/narration-styles.js"
 );
 const { startBattle } = await import("./battle-service.js");
-const characterRepo = await import("../repositories/characters.js");
-const assetGenerationRepo = await import("../repositories/asset-generations.js");
+const assetGenerationRepo = await import("../testing/historical-asset-generations.js");
 const dialoguePipelineRepo = await import(
   "../repositories/dialogue-pipeline-settings.js"
 );
@@ -66,7 +66,7 @@ describe("battle create idempotency", () => {
     const sideA = sheet("create-a", "A");
     const sideB = sheet("create-b", "B");
     for (const character of [sideA, sideB]) {
-      await characterRepo.saveSheet(character);
+      await saveHistoricalCharacterFixture(character);
     }
     await ensureSystemNarrationStyles();
     const provider = new MockLlmProvider();

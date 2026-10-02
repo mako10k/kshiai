@@ -1,0 +1,55 @@
+thought_id: tmp-v2-update-removal
+id_source: file
+status: draft
+draft: thoughts/tmp-v2-update-removal/draft.think
+latest_audit: thoughts/tmp-v2-update-removal/audits/2026-10-02T05-18-53.330Z.json
+next: reuse this thought_id with thought show/history/reflect/delete or dsl audit --id
+document: tmp-v2-update-removal
+engine: 0.1.0
+summary: fatal=0 error=0 warning=0 info=0 hint=4
+
+issues:
+- [hint] semantic_hint: domain V2_BOUNDARY の description は 1 行の quoted text が長いため、block text に変えると読みやすい。 (V2_BOUNDARY)
+  rationale: 長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。
+  suggestion: 長い 1 行本文を block text へ分割し、意味の切れ目で改行する。
+  syntax_help: llmthink dsl help syntax detail
+  syntax_guidance:
+    長い本文は block text を使い、意味の切れ目で改行する。
+    例:
+    problem P1:
+      |
+        1 行目の説明
+        2 行目の説明
+- [hint] semantic_hint: evidence OWNER は 1 行の quoted text が長いため、block text に変えると読みやすい。 (OWNER)
+  rationale: 長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。
+  suggestion: 長い 1 行本文を block text へ分割し、意味の切れ目で改行する。
+  syntax_help: llmthink dsl help syntax detail
+  syntax_guidance:
+    長い本文は block text を使い、意味の切れ目で改行する。
+    例:
+    problem P1:
+      |
+        1 行目の説明
+        2 行目の説明
+- [hint] semantic_hint: evidence INVENTORY は 1 行の quoted text が長いため、block text に変えると読みやすい。 (INVENTORY)
+  rationale: 長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。
+  suggestion: 長い 1 行本文を block text へ分割し、意味の切れ目で改行する。
+  syntax_help: llmthink dsl help syntax detail
+  syntax_guidance:
+    長い本文は block text を使い、意味の切れ目で改行する。
+    例:
+    problem P1:
+      |
+        1 行目の説明
+        2 行目の説明
+- [hint] semantic_hint: decision IMPLEMENT は 1 行の quoted text が長いため、block text に変えると読みやすい。 (IMPLEMENT)
+  rationale: 長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。
+  suggestion: 長い 1 行本文を block text へ分割し、意味の切れ目で改行する。
+  syntax_help: llmthink dsl help syntax detail
+  syntax_guidance:
+    長い本文は block text を使い、意味の切れ目で改行する。
+    例:
+    problem P1:
+      |
+        1 行目の説明
+        2 行目の説明

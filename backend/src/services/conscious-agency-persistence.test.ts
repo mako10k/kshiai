@@ -12,13 +12,13 @@ const temporaryDirectory = mkdtempSync(join(tmpdir(), "kshiai-agency-state-"));
 process.env.DATABASE_URL = "";
 process.env.AUTH_PROVIDER = "legacy";
 process.env.DATABASE_PATH = join(temporaryDirectory, "state.db");
+const { saveHistoricalCharacterFixture } = await import("../testing/historical-character-fixtures.js");
 const { createInventoryFixture } = await import("./character-agency-inventory.fixtures.js");
 const { createConsciousFixture } = await import("./conscious-agency.fixtures.js");
 const { MockLlmProvider } = await import("../llm/mock.js");
 const { insertNewBattle, saveBattle, getBattle } = await import("../repositories/battles.js");
 const { closeDatabase, query } = await import("../db.js");
 const { toBattlePublic, advanceCharacterAgents, startBattle, advanceTurn } = await import("./battle-service.js");
-const characterRepo = await import("../repositories/characters.js");
 const settingsRepo = await import("../repositories/dialogue-pipeline-settings.js");
 const { ensureSystemNarrationStyles } = await import("../repositories/narration-styles.js");
 
@@ -32,8 +32,8 @@ describe("ADR-0028 private agency state persistence", () => {
     const fixture = createConsciousFixture();
     await query(`INSERT INTO users (id, username, password_hash, created_at) VALUES ($1, $2, $3, $4)`,
       ["inventory-owner", "agency-owner", "test", new Date().toISOString()]);
-    await characterRepo.saveSheet(fixture.mine);
-    await characterRepo.saveSheet(fixture.opp);
+    await saveHistoricalCharacterFixture(fixture.mine);
+    await saveHistoricalCharacterFixture(fixture.opp);
     await ensureSystemNarrationStyles();
     await settingsRepo.updateDialoguePipelineSettings({ userId: "inventory-owner", patch: {
       ...fixture.settings, schemaVersion: 3, expectedRevision: 0,

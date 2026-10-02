@@ -15,12 +15,12 @@ process.env.AUTH_PROVIDER = "legacy";
 process.env.DATABASE_PATH = join(directory, "cutover-trial-dispatch.db");
 process.env.LLM_PROVIDER = "mock";
 
+const { saveHistoricalCharacterFixture } = await import("../testing/historical-character-fixtures.js");
 const { config } = await import("../config.js");
 const { closeDatabase, query } = await import("../db.js");
 const { MockLlmProvider } = await import("../llm/mock.js");
 const providerAccounting = await import("../llm/provider-accounting.js");
-const characterRepo = await import("../repositories/characters.js");
-const generationRepo = await import("../repositories/asset-generations.js");
+const generationRepo = await import("../testing/historical-asset-generations.js");
 const settingsRepo = await import("../repositories/dialogue-pipeline-settings.js");
 const { ensureSystemNarrationStyles } = await import(
   "../repositories/narration-styles.js"
@@ -97,8 +97,8 @@ describe("configured trial narration dispatch", () => {
     );
     fixture.mine.ownerUserId = "trial-owner";
     fixture.opp.ownerUserId = "trial-owner";
-    await characterRepo.saveSheet(fixture.mine);
-    await characterRepo.saveSheet(fixture.opp);
+    await saveHistoricalCharacterFixture(fixture.mine);
+    await saveHistoricalCharacterFixture(fixture.opp);
     const generationA = await generationRepo.createAssetGeneration({
       assetType: "character",
       assetId: fixture.mine.id,

@@ -8,10 +8,9 @@ import {
 import * as battlefieldRepo from "./repositories/battlefields.js";
 import * as battlefieldAssetRepo from "./repositories/battlefield-assets-v2.js";
 import * as characterRepo from "./repositories/characters.js";
-import * as characterAssetRepo from "./repositories/character-assets-v2.js";
 import * as narrationStyleRepo from "./repositories/narration-styles.js";
 import * as narrationStyleAssetRepo from "./repositories/narration-style-assets-v2.js";
-import { buildImportedCharacterEnvelopeV2 } from "./services/character-authoring-service.js";
+import { assertCharacterV3UpdateTarget } from "./services/character-update-policy.js";
 import { buildImportedBattlefieldEnvelopeV2 } from "./services/battlefield-authoring-service.js";
 import { buildImportedNarrationStyleEnvelopeV2 } from "./services/narration-style-authoring-service.js";
 
@@ -239,45 +238,13 @@ function narrationStyleFixture(ownerUserId: string, now: string): NarrationStyle
   };
 }
 
-async function ensureCharacter(
-  fixture: CharacterSheet,
-): Promise<"created" | "reused"> {
+async function ensureCharacter(fixture: CharacterSheet): Promise<"created" | "reused"> {
   const existing = await characterRepo.getSheetIncludingDeleted(fixture.id);
-  if (existing) {
-    if (existing.ownerUserId !== fixture.ownerUserId) {
-      throw new Error(`E2E fixture ownership mismatch: ${fixture.id}`);
-    }
-    if (existing.deletedAt) {
-      throw new Error(`E2E fixture was soft-deleted: ${fixture.id}`);
-    }
-    const ready = await characterAssetRepo.getReadyCharacterGeneration(fixture.id);
-    if (ready) return "reused";
-    const retained: CharacterSheet = {
-      ...fixture,
-      createdAt: existing.createdAt,
-      visibility: existing.visibility,
-      record: existing.record,
-      recordOverall: existing.recordOverall,
-      improvementMemo: existing.improvementMemo,
-      opponentMemories: existing.opponentMemories,
-      deletedAt: existing.deletedAt,
-      revisionSnapshot: existing.revisionSnapshot,
-      appearance: {
-        ...fixture.appearance,
-        previousImageUrl: existing.appearance.previousImageUrl,
-      },
-    };
-    await characterAssetRepo.activateImportedCharacter({
-      sheet: retained,
-      envelope: buildImportedCharacterEnvelopeV2({
-        sheet: retained,
-        attemptId: `e2e-fixture-import:${fixture.id}:v2`,
-      }),
-    });
-    return "reused";
+  if (!existing || existing.ownerUserId !== fixture.ownerUserId || existing.deletedAt) {
+    throw new Error(`E2E_V3_CHARACTER_FIXTURE_REQUIRED: ${fixture.id}`);
   }
-  await characterRepo.saveSheet(fixture);
-  return "created";
+  await assertCharacterV3UpdateTarget(existing.id);
+  return "reused";
 }
 
 async function ensureBattlefield(
@@ -361,13 +328,11 @@ export async function ensurePersistentE2eFixtures(input: {
   });
   const battlefield = battlefieldFixture(input.observerUserId, now);
   const narrationStyle = narrationStyleFixture(input.observerUserId, now);
-  const [observerResult, opponentResult, battlefieldResult, narrationResult] =
-    await Promise.all([
-      ensureCharacter(observerCharacter),
-      ensureCharacter(opponentCharacter),
-      ensureBattlefield(battlefield),
-      ensureNarrationStyle(narrationStyle),
-    ]);
+  const observerResult = await ensureCharacter(observerCharacter);
+  const opponentResult = await ensureCharacter(opponentCharacter);
+  const [battlefieldResult, narrationResult] = await Promise.all([
+    ensureBattlefield(battlefield), ensureNarrationStyle(narrationStyle),
+  ]);
   return {
     observerCharacter: observerResult,
     opponentCharacter: opponentResult,

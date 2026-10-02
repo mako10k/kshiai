@@ -1,3 +1,5 @@
+import { CharacterGenerationEnvelopeV3Schema } from "@kshiai/shared";
+// R: Store immutable asset generations and admit only V3 character writes.
 import { createHash } from "node:crypto";
 import {
   databaseKind,
@@ -74,6 +76,9 @@ export async function writeAssetGeneration(
     createdAt?: string;
   },
 ): Promise<AssetGeneration> {
+  if (input.assetType === "character" && (input.schemaVersion !== 3 || !CharacterGenerationEnvelopeV3Schema.safeParse(input.content).success)) {
+    throw new Error("CHARACTER_V3_WRITE_REQUIRED");
+  }
   const contentJson = canonicalAssetJson(input.content);
   const contentDigest = assetContentDigest(input.content);
   if (databaseKind() === "postgres") {
@@ -158,6 +163,9 @@ export async function appendAssetGeneration(
     createdAt?: string;
   },
 ): Promise<AssetGeneration> {
+  if (input.assetType === "character" && (input.schemaVersion !== 3 || !CharacterGenerationEnvelopeV3Schema.safeParse(input.content).success)) {
+    throw new Error("CHARACTER_V3_WRITE_REQUIRED");
+  }
   const contentJson = canonicalAssetJson(input.content);
   const contentDigest = assetContentDigest(input.content);
   if (databaseKind() === "postgres") {
@@ -226,6 +234,25 @@ export async function activateAssetGeneration(
   expectedGenerationId: string | null,
   updatedAt = new Date().toISOString(),
 ): Promise<void> {
+  if (generation.assetType === "character" && (generation.schemaVersion !== 3 || !CharacterGenerationEnvelopeV3Schema.safeParse(generation.content).success)) {
+    throw new Error("CHARACTER_V3_WRITE_REQUIRED");
+  }
+  if (generation.assetType === "character") {
+    const { rows } = await connection.query<Parameters<typeof parseRow>[0]>(
+      `SELECT asset_type, asset_id, generation, generation_id, schema_version,
+        content_json, content_digest, created_at FROM asset_generations WHERE generation_id = $1`,
+      [generation.generationId]);
+    const stored = rows[0] ? parseRow(rows[0]) : null;
+    if (!stored || stored.assetType !== "character" || stored.schemaVersion !== 3
+      || !CharacterGenerationEnvelopeV3Schema.safeParse(stored.content).success) {
+      throw new Error("CHARACTER_V3_WRITE_REQUIRED");
+    }
+    if (stored.assetId !== generation.assetId || stored.generation !== generation.generation
+      || stored.contentDigest !== generation.contentDigest
+      || stored.contentDigest !== assetContentDigest(generation.content)) {
+      throw new Error("ASSET_GENERATION_IDENTITY_MISMATCH");
+    }
+  }
   const current = await connection.query<{ generation_id: string }>(
     `SELECT generation_id FROM asset_current_generations
       WHERE asset_type = $1 AND asset_id = $2`,

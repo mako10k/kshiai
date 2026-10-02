@@ -19,9 +19,9 @@ process.env.AUTH_PROVIDER = "legacy";
 process.env.DATABASE_PATH = join(directory, "routes.db");
 process.env.LLM_PROVIDER = "mock";
 
+const { saveHistoricalCharacterFixture } = await import("./testing/historical-character-fixtures.js");
 const { closeDatabase, query } = await import("./db.js");
 const { MockLlmProvider } = await import("./llm/mock.js");
-const characterRepo = await import("./repositories/characters.js");
 const battlefieldRepo = await import("./repositories/battlefields.js");
 const battlefieldAssetRepo = await import(
   "./repositories/battlefield-assets-v2.js"
@@ -191,12 +191,12 @@ before(async () => {
      VALUES ($1, $2, $3, $4)`,
     [sessionToken, "route-owner", now, "2099-08-15T00:00:00.000Z"],
   );
-  await characterRepo.saveSheet(sheet({
+  await saveHistoricalCharacterFixture(sheet({
     id: "route-battlefield-mine",
     ownerUserId: "route-owner",
     displayName: "戦場検証自キャラ",
   }));
-  await characterRepo.saveSheet(sheet({
+  await saveHistoricalCharacterFixture(sheet({
     id: "route-battlefield-opponent",
     ownerUserId: "route-opponent",
     displayName: "戦場検証相手",

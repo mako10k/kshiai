@@ -18,9 +18,9 @@ process.env.AUTH_PROVIDER = "legacy";
 process.env.DATABASE_PATH = join(directory, "routes.db");
 process.env.LLM_PROVIDER = "mock";
 
+const { saveHistoricalCharacterFixture } = await import("./testing/historical-character-fixtures.js");
 const { closeDatabase, query } = await import("./db.js");
 const { MockLlmProvider } = await import("./llm/mock.js");
-const characterRepo = await import("./repositories/characters.js");
 const narrationRepo = await import("./repositories/narration-styles.js");
 const narrationAssetRepo = await import(
   "./repositories/narration-style-assets-v2.js"
@@ -154,12 +154,12 @@ before(async () => {
      VALUES ($1, $2, $3, $4)`,
     [sessionToken, "narration-route-owner", now, "2099-08-15T00:00:00.000Z"],
   );
-  await characterRepo.saveSheet(sheet({
+  await saveHistoricalCharacterFixture(sheet({
     id: "narration-route-mine",
     ownerUserId: "narration-route-owner",
     displayName: "語り検証自キャラ",
   }));
-  await characterRepo.saveSheet(sheet({
+  await saveHistoricalCharacterFixture(sheet({
     id: "narration-route-opponent",
     ownerUserId: "narration-route-opponent",
     displayName: "語り検証相手",

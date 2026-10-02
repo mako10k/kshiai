@@ -24,7 +24,7 @@ const {
   createAssetGeneration,
   getCurrentAssetGeneration,
   getAssetGeneration,
-} = await import("./asset-generations.js");
+} = await import("../testing/historical-asset-generations.js");
 const migration = await import("./character-semantic-migration.js");
 
 const now = "2026-09-10T09:00:00.000Z";

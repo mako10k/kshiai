@@ -1,3 +1,4 @@
+/** R: Present a battle and links to its bound character views. */
 import type { RefObject } from "react";
 import { Link } from "react-router-dom";
 import {
@@ -92,7 +93,7 @@ export function BattlePageView(input: {
           <div className="battle-faces-inner">
             <Link
               className="battle-face battle-face-link"
-              to={`/characters/${battle.sideA.characterId}`}
+              to={`/characters/${battle.sideA.characterId}?battleId=${encodeURIComponent(battle.id)}`}
             >
               {imgA ? (
                 <img src={imgA} alt={battle.sideA.displayName} />
@@ -107,7 +108,7 @@ export function BattlePageView(input: {
             </div>
             <Link
               className="battle-face battle-face-link"
-              to={`/characters/${battle.sideB.characterId}`}
+              to={`/characters/${battle.sideB.characterId}?battleId=${encodeURIComponent(battle.id)}`}
             >
               {imgB ? (
                 <img src={imgB} alt={battle.sideB.displayName} />
@@ -289,7 +290,7 @@ export function BattlePageView(input: {
             <div className="battle-winner-row battle-winner-draw">
               <Link
                 className="battle-face battle-face-sm battle-face-link"
-                to={`/characters/${battle.sideA.characterId}`}
+                to={`/characters/${battle.sideA.characterId}?battleId=${encodeURIComponent(battle.id)}`}
               >
                 {imgA ? (
                   <img src={imgA} alt={battle.sideA.displayName} />
@@ -299,7 +300,7 @@ export function BattlePageView(input: {
               </Link>
               <Link
                 className="battle-face battle-face-sm battle-face-link"
-                to={`/characters/${battle.sideB.characterId}`}
+                to={`/characters/${battle.sideB.characterId}?battleId=${encodeURIComponent(battle.id)}`}
               >
                 {imgB ? (
                   <img src={imgB} alt={battle.sideB.displayName} />
@@ -315,7 +316,7 @@ export function BattlePageView(input: {
             <div className="battle-winner-row">
               <Link
                 className="battle-face battle-face-winner battle-face-link"
-                to={`/characters/${winner.characterId}`}
+                to={`/characters/${winner.characterId}?battleId=${encodeURIComponent(battle.id)}`}
               >
                 {imgWinner ? (
                   <img src={imgWinner} alt={winner.displayName} />

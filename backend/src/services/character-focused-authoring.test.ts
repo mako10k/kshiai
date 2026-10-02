@@ -17,6 +17,7 @@ const { CHARACTER_BATTLE_MECHANICS_CAPABILITY_SET_V3, CharacterDefinitionV3Schem
   CharacterAuthoringReviewSchema, CharacterGenerationEnvelopeV2Schema,
   defaultCharacterDisclosurePolicyV2, projectCharacterProfileSourceV2,
   SemanticAuthoringAcceptedV1Schema, CharacterDefinitionV2Schema } = await import("@kshiai/shared");
+const { activateHistoricalCharacterFixtureV2 } = await import("../testing/historical-character-fixtures.js");
 const { createCharacterSemanticAuthoringAdapterV3 } = await import(
   "./semantic-authoring/adapters/character-v3.js"
 );
@@ -29,9 +30,11 @@ const { buildRoutes } = await import("../routes.js");
 const { processNextCharacterAuthoringJob, drainCharacterAuthoringJobs } = await import("./character-authoring-jobs.js");
 const attempts = await import("../repositories/character-assets-v2.js");
 const runs = await import("../repositories/semantic-authoring.js");
-const generations = await import("../repositories/asset-generations.js");
+const generations = await import("../testing/historical-asset-generations.js");
 const generationReader = await import("../repositories/character-generation-reader.js");
 const { buildImportedCharacterEnvelopeV2 } = await import("./character-authoring-service.js");
+
+const { createV3StageTrialCandidate } = await import("../fixtures/neva-v3.js");
 
 const scaffold = createCharacterSemanticAuthoringAdapterV3().buildBaseline(
   { kind: "create", naturalText: "fixture" }, "create").candidate;
@@ -311,7 +314,7 @@ describe("focused authoring through the real owner command and worker", () => {
         ...fixture.sheet, id: characterId, ownerUserId: "focused-owner", createdAt: now, updatedAt: now,
       }), now]);
     const original = await generations.createAssetGeneration({ assetType: "character",
-      assetId: characterId, schemaVersion: 3, content: { definition: complete } });
+      assetId: characterId, schemaVersion: 3, content: { ...createV3StageTrialCandidate(), definition: complete } });
     await query(`INSERT INTO character_asset_states
       (character_id, compatibility_status, current_generation_id, active_attempt_id, reason_code, updated_at)
       VALUES ($1, 'ready', $2, NULL, NULL, $3)`, [characterId, original.generationId, now]);
@@ -383,7 +386,7 @@ describe("focused authoring through the real owner command and worker", () => {
           ...fixture.sheet, id: characterId, ownerUserId: "focused-owner", createdAt: now, updatedAt: now,
         }), now]);
       const original = await generations.createAssetGeneration({ assetType: "character",
-        assetId: characterId, schemaVersion: 3, content: { definition: complete } });
+        assetId: characterId, schemaVersion: 3, content: { ...createV3StageTrialCandidate(), definition: complete } });
       await query(`INSERT INTO character_asset_states
         (character_id, compatibility_status, current_generation_id, active_attempt_id, reason_code, updated_at)
         VALUES ($1, 'ready', $2, NULL, NULL, $3)`, [characterId, original.generationId, now]);
@@ -786,7 +789,7 @@ describe("focused authoring through the real owner command and worker", () => {
         attemptId: "focused-pointer-drift-concurrent",
       },
     });
-    const concurrent = await attempts.activateImportedCharacter({
+    const concurrent = await activateHistoricalCharacterFixtureV2({
       sheet,
       envelope: concurrentEnvelope,
     });

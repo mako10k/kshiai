@@ -21,10 +21,10 @@ process.env.DATABASE_URL = "";
 process.env.AUTH_PROVIDER = "legacy";
 process.env.DATABASE_PATH = join(temporaryDirectory, "v3-battle.db");
 
+const { saveHistoricalCharacterFixture } = await import("../testing/historical-character-fixtures.js");
 const { closeDatabase, query, withTransaction } = await import("../db.js");
 const { MockLlmProvider } = await import("../llm/mock.js");
-const characterRepo = await import("../repositories/characters.js");
-const generationRepo = await import("../repositories/asset-generations.js");
+const generationRepo = await import("../testing/historical-asset-generations.js");
 const settingsRepo = await import("../repositories/dialogue-pipeline-settings.js");
 const { ensureSystemNarrationStyles } = await import("../repositories/narration-styles.js");
 const { createConsciousFixture } = await import("./conscious-agency.fixtures.js");
@@ -78,8 +78,8 @@ describe("ADR-0039 V3 character battle binding", () => {
       "INSERT INTO users (id, username, password_hash, created_at) VALUES ($1, $2, $3, $4)",
       ["inventory-owner", "v3-battle-owner", "test", new Date().toISOString()],
     );
-    await characterRepo.saveSheet(fixture.mine);
-    await characterRepo.saveSheet(fixture.opp);
+    await saveHistoricalCharacterFixture(fixture.mine);
+    await saveHistoricalCharacterFixture(fixture.opp);
     const previousA = await generationRepo.getCurrentAssetGeneration("character", fixture.mine.id);
     const previousB = await generationRepo.getCurrentAssetGeneration("character", fixture.opp.id);
     assert.ok(previousA);
@@ -296,7 +296,7 @@ describe("ADR-0039 V3 character battle binding", () => {
     assert.equal(conflictTrace?.contractVersion, 3);
     assert.ok(conflictTrace && "conflict" in conflictTrace && conflictTrace.conflict);
 
-    await characterRepo.saveSheet({ ...fixture.mine, displayName: "MUTATED_CURRENT_NAME" });
+    await saveHistoricalCharacterFixture({ ...fixture.mine, displayName: "MUTATED_CURRENT_NAME" });
     let finalState: BattleState = advanced;
     for (let step = 0; step < 120 && (finalState.status !== "finished" || finalState.aftermathPending); step += 1) {
       await advanceTurn({ userId: "inventory-owner", battleId: created.id,

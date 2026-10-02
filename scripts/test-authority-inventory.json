@@ -217,6 +217,26 @@
     {
       "path": "backend/src/scripts/prepare-unreleased-v3-trial.test.ts",
       "ref": "verification/vt104-trial-disposal-cli-20261001"
+    },
+    {
+      "path": "backend/src/services/character-update-policy.test.ts",
+      "ref": "verification/character-v3-update-policy-20261002"
+    },
+    {
+      "path": "backend/src/services/character-v2-update-boundary.test.ts",
+      "ref": "verification/character-v2-write-retirement-20261002"
+    },
+    {
+      "path": "backend/src/services/character-historical-view.test.ts",
+      "ref": "verification/character-historical-view-20261002"
+    },
+    {
+      "path": "backend/src/e2e-observer.test.ts",
+      "ref": "verification/observer-v3-only-20261002"
+    },
+    {
+      "path": "backend/src/repositories/asset-generations.test.ts",
+      "ref": "verification/immutable-generic-generation-current-20261002"
     }
   ]
 }
