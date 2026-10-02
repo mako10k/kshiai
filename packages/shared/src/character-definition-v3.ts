@@ -67,27 +67,30 @@ const CharacterActionNormV3ObjectSchema = z.object({
   description: CharacterDescriptionV2Schema.nullable(),
 }).strict();
 
-export const CharacterActionNormV3Schema = CharacterActionNormV3ObjectSchema
-  .superRefine((norm, context) => {
-    const selectorCount = norm.response.actionRefs.length +
-      norm.response.actionKinds.length + norm.response.tacticTags.length;
-    if (selectorCount === 0) {
-      context.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: "V3 action norm requires at least one action selector",
-        path: ["response"],
-      });
-    }
-    const restrictive = norm.response.disposition === "allow_only" ||
-      norm.response.disposition === "forbid";
-    if (restrictive !== (norm.force === "constraint")) {
-      context.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: "allow_only/forbid require constraint; prefer/avoid do not",
-        path: ["force"],
-      });
-    }
-  });
+export const CharacterActionNormV3Schema = z.discriminatedUnion("force", [
+  CharacterActionNormV3ObjectSchema.extend({
+    force: z.enum(["preference", "commitment"]),
+    response: CharacterActionNormV3ObjectSchema.shape.response.extend({
+      disposition: z.enum(["prefer", "avoid"]),
+    }),
+  }),
+  CharacterActionNormV3ObjectSchema.extend({
+    force: z.literal("constraint"),
+    response: CharacterActionNormV3ObjectSchema.shape.response.extend({
+      disposition: z.enum(["allow_only", "forbid"]),
+    }),
+  }),
+]).superRefine((norm, context) => {
+  const selectorCount = norm.response.actionRefs.length +
+    norm.response.actionKinds.length + norm.response.tacticTags.length;
+  if (selectorCount === 0) {
+    context.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "V3 action norm requires at least one action selector",
+      path: ["response"],
+    });
+  }
+});
 export type CharacterActionNormV3 = z.infer<typeof CharacterActionNormV3Schema>;
 
 export const CharacterConsciousGuidanceV1Schema = z.object({

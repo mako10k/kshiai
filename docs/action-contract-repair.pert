@@ -20,6 +20,7 @@ task events COMMITTED -> EVENTS:
   title "Turn event variants preserve payload and source ownership"
   description "Owner authorizes sequential contract repair and deployment on 2026-10-03; ADR0045 and ADR0046 govern; completion requires preservation and rejection tests before downstream execution. Estimate is provisional internal effort excluding external waits."
   duration 1h
+  status done
   requires:
     DEV 1
 
@@ -30,6 +31,7 @@ task norms EVENTS -> NORMS:
   title "V3 norm force and response compatibility"
   description "Owner authorizes sequential contract repair and deployment on 2026-10-03; ADR0045 and ADR0046 govern; completion requires preservation and rejection tests before downstream execution. Estimate is provisional internal effort excluding external waits."
   duration 1h
+  status done
   requires:
     DEV 1
 

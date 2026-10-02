@@ -65,23 +65,23 @@ function legacySheet(id = "character-self"): CharacterSheet {
 
 function alwaysNorm(input: {
   id: string;
-  disposition: "prefer" | "avoid" | "allow_only" | "forbid";
-  force: "preference" | "commitment" | "constraint";
   priority: number;
   actionRefs?: string[];
   actionKinds?: Array<"basic_action" | "skill" | "defend" | "wait" | "free_action">;
   fallbackActionRef?: string | null;
   awareness?: "unaware" | "partial" | "aware";
   exceptions?: CharacterDefinitionV2["actionNorms"][number]["exceptions"];
-}): CharacterDefinitionV2["actionNorms"][number] {
-  return {
+} & (
+  | { force: "preference" | "commitment"; disposition: "prefer" | "avoid" }
+  | { force: "constraint"; disposition: "allow_only" | "forbid" }
+)): CharacterDefinitionV2["actionNorms"][number] {
+  const common = {
     id: input.id,
     when: {
-      match: "all",
-      clauses: [{ kind: "always", operator: "is", value: "true" }],
+      match: "all" as const,
+      clauses: [{ kind: "always" as const, operator: "is" as const, value: "true" as const }],
     },
     response: {
-      disposition: input.disposition,
       actionRefs: input.actionRefs ?? [],
       actionKinds: input.actionKinds ?? [],
       tacticTags: [],
@@ -89,11 +89,14 @@ function alwaysNorm(input: {
       fallbackActionRef: input.fallbackActionRef ?? null,
     },
     priority: input.priority,
-    force: input.force,
     selfAwareness: input.awareness ?? "aware",
     exceptions: input.exceptions ?? [],
     description: null,
   };
+  if (input.force === "constraint") {
+    return { ...common, force: input.force, response: { ...common.response, disposition: input.disposition } };
+  }
+  return { ...common, force: input.force, response: { ...common.response, disposition: input.disposition } };
 }
 
 function definitionWith(input: {
