@@ -91,6 +91,32 @@ describe("V2 display without ordinary writes", () => {
     assert.deepEqual((await query("SELECT sheet_json FROM characters WHERE id=$1", [id])).rows, before);
     assert.equal((await query("SELECT id FROM characters WHERE id=$1", ["forbidden-new-v2"])).rows.length, 0);
   });
+  it("retires dormant V2 provider generation before touching the provider or reporting work", async () => {
+    const { buildCharacterGenerationCandidate } = await import("./character-authoring-service.js");
+    const sheet = await getSheet(id);
+    assert.ok(sheet);
+    const retiredProvider = new Proxy(llm, {
+      get() { throw new Error("provider_must_not_be_touched"); },
+    });
+    let statuses = 0;
+    await assert.rejects(buildCharacterGenerationCandidate({
+      llm: retiredProvider, attemptId: "retired-attempt", characterId: id,
+      ownerUserId: owner, sourceText: "変更", sourceKind: "revision_instruction",
+      generated: { sheet, assistantMessage: "旧候補" }, existing: sheet,
+      reportStatus: async () => { statuses += 1; },
+    }), /LEGACY_CHARACTER_AUTHORING_RETIRED/);
+    assert.equal(statuses, 0);
+  });
+  it("retires direct legacy portrait and restore operations before looking up a character", async () => {
+    const before = (await query("SELECT generation_id FROM asset_generations WHERE asset_type='character'")).rows;
+    const input = { characterId: "does-not-exist", ownerUserId: owner,
+      expectedGenerationId: "old-generation", operationId: "retired-operation" };
+    await assert.rejects(assets.activateCharacterPortraitRevision({ ...input,
+      mediaId: "media", mediaRevisionId: "media-revision", sourceDigest: "source" }), /CHARACTER_UPDATE_UNAVAILABLE/);
+    await assert.rejects(assets.toggleCharacterPortraitGeneration(input), /CHARACTER_UPDATE_UNAVAILABLE/);
+    await assert.rejects(assets.restorePreviousCharacterGeneration(input), /CHARACTER_UPDATE_UNAVAILABLE/);
+    assert.deepEqual((await query("SELECT generation_id FROM asset_generations WHERE asset_type='character'")).rows, before);
+  });
   it("rejects legacy generation writes through the real generic repository", async () => {
     const store = await import("../repositories/asset-generations.js");
     const { withTransaction } = await import("../db.js");

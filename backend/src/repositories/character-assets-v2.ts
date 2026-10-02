@@ -1,5 +1,5 @@
-import { assertCharacterV3UpdateTarget, assertCharacterV3WriteCandidate } from "../services/character-update-policy.js";
 /** R: Manage character authoring attempts, immutable generations, and readiness. */
+import { assertCharacterV3UpdateTarget, assertCharacterV3WriteCandidate } from "../services/character-update-policy.js";
 import { parseCharacterCandidate, assertCharacterCandidateReady, candidateToSheet, type CharacterAuthoringCandidate } from "../services/character-authoring-candidate.js";
 import {
   AssetAuthoringAttemptKindSchema,
@@ -11,7 +11,6 @@ import {
   CharacterSheetSchema,
   CharacterGenerationEnvelopeV3Schema,
   assertCharacterGenerationReadyV2,
-  characterDefinitionV2ToLegacySheet,
   characterDefinitionV3ToLegacySheet,
   projectCharacterCompilerCompatibilityV1,
   type AssetAuthoringAttemptKind,
@@ -102,12 +101,6 @@ type GenerationRow = {
   created_at: string | Date;
 };
 
-type ReadyCurrentCharacter = {
-  sheet: CharacterSheet;
-  generation: AssetGeneration;
-  envelope: CharacterGenerationEnvelopeV2;
-};
-
 function iso(value: string | Date): string {
   return value instanceof Date ? value.toISOString() : value;
 }
@@ -191,149 +184,12 @@ function characterReadinessReason(content: unknown): string | null {
   }
 }
 
-async function selectReadyCurrentCharacter(
-  connection: DatabaseConnection,
-  characterId: string,
-  ownerUserId: string,
-): Promise<ReadyCurrentCharacter> {
-  const result = await connection.query<GenerationRow & { sheet_json: unknown }>(
-    `SELECT g.asset_type, g.asset_id, g.generation, g.generation_id,
-            g.schema_version, g.content_json, g.content_digest, g.created_at,
-            ch.sheet_json
-       FROM characters ch
-       JOIN character_asset_states s
-         ON s.character_id = ch.id
-        AND s.compatibility_status = 'ready'
-       JOIN asset_current_generations c
-         ON c.asset_type = 'character'
-        AND c.asset_id = ch.id
-        AND c.generation_id = s.current_generation_id
-       JOIN asset_generations g ON g.generation_id = c.generation_id
-      WHERE ch.id = $1 AND ch.owner_user_id = $2 AND g.schema_version = 2`,
-    [characterId, ownerUserId],
-  );
-  const row = result.rows[0];
-  if (!row) throw new Error("CHARACTER_V2_NOT_READY");
-  const generation = parseGeneration(row);
-  return {
-    sheet: (typeof row.sheet_json === "string"
-      ? JSON.parse(row.sheet_json)
-      : row.sheet_json) as CharacterSheet,
-    generation,
-    envelope: assertCharacterGenerationReadyV2(
-      CharacterGenerationEnvelopeV2Schema.parse(generation.content),
-    ),
-  };
-}
-
-async function selectPriorV2Generations(
-  connection: DatabaseConnection,
-  characterId: string,
-  beforeGeneration: number,
-): Promise<Array<AssetGeneration & { content: CharacterGenerationEnvelopeV2 }>> {
-  const result = await connection.query<GenerationRow>(
-    `SELECT asset_type, asset_id, generation, generation_id, schema_version,
-            content_json, content_digest, created_at
-       FROM asset_generations
-      WHERE asset_type = 'character' AND asset_id = $1
-        AND schema_version = 2 AND generation < $2
-      ORDER BY generation DESC
-      LIMIT 100`,
-    [characterId, beforeGeneration],
-  );
-  return result.rows.flatMap((row) => {
-    const generation = parseGeneration(row);
-    try {
-      return [{
-        ...generation,
-        content: assertCharacterGenerationReadyV2(
-          CharacterGenerationEnvelopeV2Schema.parse(generation.content),
-        ),
-      }];
-    } catch {
-      return [];
-    }
-  });
-}
-
 function samePortrait(
   left: CharacterGenerationEnvelopeV2["definition"]["appearance"]["portrait"],
   right: CharacterGenerationEnvelopeV2["definition"]["appearance"]["portrait"],
 ): boolean {
   return left?.mediaId === right?.mediaId &&
     left?.revisionId === right?.revisionId;
-}
-
-async function commitDerivedCharacterGeneration(input: {
-  connection: DatabaseConnection;
-  current: ReadyCurrentCharacter;
-  expectedGenerationId: string;
-  envelope: CharacterGenerationEnvelopeV2;
-  previousImageUrl?: string | null;
-  updatedAt: string;
-}): Promise<{ sheet: CharacterSheet; generation: AssetGeneration }> {
-  if (input.current.generation.generationId !== input.expectedGenerationId) {
-    throw new Error("ASSET_CURRENT_GENERATION_DRIFT");
-  }
-  assertCharacterV3WriteCandidate(input.envelope);
-  const envelope = assertCharacterGenerationReadyV2(
-    CharacterGenerationEnvelopeV2Schema.parse(input.envelope),
-  );
-  const generation = await appendAssetGeneration(input.connection, {
-    assetType: "character",
-    assetId: input.current.sheet.id,
-    schemaVersion: 2,
-    content: envelope,
-    createdAt: input.updatedAt,
-  });
-  const currentSheet = input.current.sheet;
-  const sheet = characterDefinitionV2ToLegacySheet({
-    characterId: currentSheet.id,
-    ownerUserId: currentSheet.ownerUserId,
-    definition: envelope.definition,
-    publicPresentation: envelope.publicPresentation,
-    createdAt: currentSheet.createdAt,
-    updatedAt: input.updatedAt,
-    previousImageUrl: input.previousImageUrl !== undefined
-      ? input.previousImageUrl
-      : currentSheet.appearance.previousImageUrl,
-    operational: {
-      visibility: currentSheet.visibility,
-      record: currentSheet.record,
-      recordOverall: currentSheet.recordOverall,
-      improvementMemo: currentSheet.improvementMemo,
-      opponentMemories: currentSheet.opponentMemories,
-      deletedAt: currentSheet.deletedAt,
-      revisionSnapshot: currentSheet.revisionSnapshot,
-    },
-  });
-  await input.connection.query(
-    `UPDATE characters
-        SET sheet_json = $3, updated_at = $4
-      WHERE id = $1 AND owner_user_id = $2`,
-    [sheet.id, sheet.ownerUserId, JSON.stringify(sheet), input.updatedAt],
-  );
-  await activateAssetGeneration(
-    input.connection,
-    generation,
-    input.expectedGenerationId,
-    input.updatedAt,
-  );
-  const state = await input.connection.query(
-    `UPDATE character_asset_states
-        SET current_generation_id = $2, active_attempt_id = NULL,
-            reason_code = NULL, updated_at = $3
-      WHERE character_id = $1 AND compatibility_status = 'ready'
-        AND current_generation_id = $4`,
-    [
-      sheet.id,
-      generation.generationId,
-      input.updatedAt,
-      input.expectedGenerationId,
-    ],
-  );
-  if (state.rowCount !== 1) throw new Error("ASSET_CURRENT_GENERATION_DRIFT");
-  return { sheet, generation };
 }
 
 async function insertCharacterAuthoringJob(
@@ -1480,43 +1336,7 @@ export async function activateCharacterPortraitRevision(input: {
   mediaRevisionId: string;
   sourceDigest: string;
 }): Promise<{ sheet: CharacterSheet; generation: AssetGeneration }> {
-  return withTransaction(async (connection) => {
-    const current = await selectReadyCurrentCharacter(
-      connection,
-      input.characterId,
-      input.ownerUserId,
-    );
-    const updatedAt = new Date().toISOString();
-    const envelope = CharacterGenerationEnvelopeV2Schema.parse({
-      ...current.envelope,
-      definition: {
-        ...current.envelope.definition,
-        appearance: {
-          ...current.envelope.definition.appearance,
-          portrait: {
-            mediaId: input.mediaId,
-            revisionId: input.mediaRevisionId,
-          },
-        },
-      },
-      provenance: {
-        ...current.envelope.provenance,
-        sourceKind: "media_revision",
-        sourceDigest: input.sourceDigest,
-        attemptId: `media:${input.operationId}`.slice(0, 160),
-        structureGeneratorContract: "character-media-revision-v2",
-      },
-    });
-    return commitDerivedCharacterGeneration({
-      connection,
-      current,
-      expectedGenerationId: input.expectedGenerationId,
-      envelope,
-      previousImageUrl:
-        current.envelope.definition.appearance.portrait?.mediaId ?? null,
-      updatedAt,
-    });
-  });
+  throw new Error("CHARACTER_UPDATE_UNAVAILABLE");
 }
 
 export async function toggleCharacterPortraitGeneration(input: {
@@ -1525,60 +1345,7 @@ export async function toggleCharacterPortraitGeneration(input: {
   expectedGenerationId: string;
   operationId: string;
 }): Promise<{ sheet: CharacterSheet; generation: AssetGeneration }> {
-  return withTransaction(async (connection) => {
-    const current = await selectReadyCurrentCharacter(
-      connection,
-      input.characterId,
-      input.ownerUserId,
-    );
-    if (current.generation.generationId !== input.expectedGenerationId) {
-      throw new Error("ASSET_CURRENT_GENERATION_DRIFT");
-    }
-    const currentPortrait = current.envelope.definition.appearance.portrait;
-    if (!currentPortrait) throw new Error("NO_CURRENT_CHARACTER_PORTRAIT");
-    const prior = await selectPriorV2Generations(
-      connection,
-      input.characterId,
-      current.generation.generation,
-    );
-    const target = prior.find((generation) => {
-      const portrait = generation.content.definition.appearance.portrait;
-      return portrait != null && !samePortrait(currentPortrait, portrait);
-    });
-    const targetPortrait = target?.content.definition.appearance.portrait;
-    if (!targetPortrait) throw new Error("NO_PREVIOUS_CHARACTER_PORTRAIT");
-    const updatedAt = new Date().toISOString();
-    const sourceDigest = assetContentDigest({
-      operation: "toggle_character_portrait",
-      fromGenerationId: current.generation.generationId,
-      targetGenerationId: target!.generationId,
-    });
-    const envelope = CharacterGenerationEnvelopeV2Schema.parse({
-      ...current.envelope,
-      definition: {
-        ...current.envelope.definition,
-        appearance: {
-          ...current.envelope.definition.appearance,
-          portrait: targetPortrait,
-        },
-      },
-      provenance: {
-        ...current.envelope.provenance,
-        sourceKind: "media_revision",
-        sourceDigest,
-        attemptId: `media-toggle:${input.operationId}`.slice(0, 160),
-        structureGeneratorContract: "character-media-revision-v2",
-      },
-    });
-    return commitDerivedCharacterGeneration({
-      connection,
-      current,
-      expectedGenerationId: input.expectedGenerationId,
-      envelope,
-      previousImageUrl: currentPortrait.mediaId,
-      updatedAt,
-    });
-  });
+  throw new Error("CHARACTER_UPDATE_UNAVAILABLE");
 }
 
 export async function restorePreviousCharacterGeneration(input: {
@@ -1587,49 +1354,7 @@ export async function restorePreviousCharacterGeneration(input: {
   expectedGenerationId: string;
   operationId: string;
 }): Promise<{ sheet: CharacterSheet; generation: AssetGeneration }> {
-  return withTransaction(async (connection) => {
-    const current = await selectReadyCurrentCharacter(
-      connection,
-      input.characterId,
-      input.ownerUserId,
-    );
-    if (current.generation.generationId !== input.expectedGenerationId) {
-      throw new Error("ASSET_CURRENT_GENERATION_DRIFT");
-    }
-    const prior = await selectPriorV2Generations(
-      connection,
-      input.characterId,
-      current.generation.generation,
-    );
-    const target = prior[0];
-    if (!target) throw new Error("NO_PREVIOUS_CHARACTER_GENERATION");
-    const updatedAt = new Date().toISOString();
-    const sourceDigest = assetContentDigest({
-      operation: "restore_character_generation",
-      fromGenerationId: current.generation.generationId,
-      targetGenerationId: target.generationId,
-    });
-    const envelope = CharacterGenerationEnvelopeV2Schema.parse({
-      ...target.content,
-      provenance: {
-        ...target.content.provenance,
-        sourceKind: "restore_revision",
-        sourceDigest,
-        attemptId: `restore:${input.operationId}`.slice(0, 160),
-        structureGeneratorContract: "character-generation-restore-v2",
-        descriptionGeneratorContract: "character-generation-restore-v2",
-      },
-    });
-    return commitDerivedCharacterGeneration({
-      connection,
-      current,
-      expectedGenerationId: input.expectedGenerationId,
-      envelope,
-      previousImageUrl:
-        current.envelope.definition.appearance.portrait?.mediaId ?? null,
-      updatedAt,
-    });
-  });
+  throw new Error("CHARACTER_UPDATE_UNAVAILABLE");
 }
 
 export async function listReadyCharacterIds(

@@ -1,0 +1,133 @@
+{
+  "thought_id": "docs-evidence-v2-dormant-authoring-retirement-2026-10-02",
+  "id_source": "file",
+  "report": {
+    "engine_version": "0.1.0",
+    "document_id": "docs-evidence-v2-dormant-authoring-retirement-2026-10-02",
+    "generated_at": "2026-10-02T10:42:40.743Z",
+    "summary": {
+      "fatal_count": 0,
+      "error_count": 0,
+      "warning_count": 0,
+      "info_count": 0,
+      "hint_count": 5
+    },
+    "results": [
+      {
+        "issue_id": "ISSUE-001",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "DORMANT_V2_AUTHORING_RETIREMENT",
+            "role": "domain"
+          }
+        ],
+        "message": "domain DORMANT_V2_AUTHORING_RETIREMENT の description は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 2,
+          "column": 3,
+          "text": "Remove remaining executable legacy V2 candidate generation and derived update bodies.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-002",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "OWNER",
+            "role": "evidence",
+            "step_id": "S-OWNER"
+          }
+        ],
+        "message": "evidence OWNER は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 4,
+          "column": 3,
+          "text": "Accepted ADR0043 and current owner goal require complete ordinary V2 character create/update retirement, preserving display and explicit V3 migration. Necessary local corrections, originpush/CI, imagebuild and deployments authorized.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-003",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "REVIEW",
+            "role": "evidence",
+            "step_id": "S-REVIEW"
+          }
+        ],
+        "message": "evidence REVIEW は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 6,
+          "column": 3,
+          "text": "Independent writer audit finds no HTTP/queued V2 write bypass, but buildCharacterGenerationCandidate remains exported and calls V2 providers to produce a V2 candidate. Three exported portrait/toggle/restore methods still query V2 state and construct derived V2 envelopes before the central V3 guard rejects persistence. They have no current product route call site; handlers already reject. Old success tests are historical authority and not current accepted V2-write expectations.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-004",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "SCOPE",
+            "role": "premise",
+            "step_id": "S-SCOPE"
+          }
+        ],
+        "message": "premise SCOPE は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 8,
+          "column": 3,
+          "text": "Retire these four old runtime operations at their callable boundary with deterministic unavailable errors before provider/DB work. Remove their unused private V2 writer helpers and provider-generation body, including the obsolete contract-related cast inside the removed selecthelper. Preserve public signatures for archived test compilation, V2 immutable readers, deterministic historical-source import representation, explicit V3 migration/activation and separate battle accounting. Do not rewrite unrelated migration/import/isolated historical smoke harnesses or revive their V2 product-writer behavior.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-005",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "IMPLEMENT",
+            "role": "decision",
+            "step_id": "S-IMPLEMENT"
+          }
+        ],
+        "message": "decision IMPLEMENT は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 10,
+          "column": 3,
+          "text": "Replace old provider builder body with LEGACY_CHARACTER_AUTHORING_RETIRED rejection; replace three old repository mutation bodies with CHARACTER_UPDATE_UNAVAILABLE rejection. Add current authority-bound behavioral regression calling each directly (missing ID must still get retired error), checking no provider/status work or row/generation/attempt changes. Keep historicalread/V3positive tests. Run full selectedtests/typecheck/static, refresh changed testSeal preserving Causes, freeze/pushCI/build once. Supersede the09e9 publiccandidate before any publicwrite; deploy only newverifiedsource with matchingfrontend. No placeholder delivered: these functions intentionally decline retired capabilities already disallowed by accepted ownerbehavior.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      }
+    ],
+    "query_results": []
+  }
+}
