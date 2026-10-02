@@ -1,0 +1,188 @@
+{
+  "thought_id": "docs-evidence-v2-history-visible-links-2026-10-02",
+  "id_source": "file",
+  "report": {
+    "engine_version": "0.1.0",
+    "document_id": "docs-evidence-v2-history-visible-links-2026-10-02",
+    "generated_at": "2026-10-02T09:51:31.103Z",
+    "summary": {
+      "fatal_count": 0,
+      "error_count": 0,
+      "warning_count": 0,
+      "info_count": 0,
+      "hint_count": 7
+    },
+    "results": [
+      {
+        "issue_id": "ISSUE-001",
+        "category": "contradiction_candidate",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "CAUSE",
+            "role": "decision",
+            "step_id": "S-CAUSE"
+          },
+          {
+            "ref_id": "FIX",
+            "role": "decision",
+            "step_id": "S-FIX"
+          }
+        ],
+        "message": "CAUSE と FIX は同一根拠 OBSERVED を共有しており、緊張関係にある可能性がある。",
+        "rationale": "複数の decision が同じ based_on 参照を共有しているため、観点と結論の整合性を再確認するべきである。",
+        "metadata": {
+          "shared_refs": [
+            "OBSERVED"
+          ],
+          "line": 7,
+          "column": 10,
+          "end_column": 15
+        }
+      },
+      {
+        "issue_id": "ISSUE-002",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "OWNER",
+            "role": "evidence",
+            "step_id": "S-OWNER"
+          }
+        ],
+        "message": "evidence OWNER は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 4,
+          "column": 3,
+          "text": "Owner reports direct historical profile link opens but history screen has no discoverable link. Accepted ADR0043 requires battle-linked immutable character display.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-003",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "OBSERVED",
+            "role": "evidence",
+            "step_id": "S-OBSERVED"
+          }
+        ],
+        "message": "evidence OBSERVED は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 6,
+          "column": 3,
+          "text": "Screenshot shows empty portrait boxes and character names within a disabled battle-open button. Current HistoryPage only links tiny portrait boxes; names remain inside the disabled button whenever record requires review. Historical API returned200 and both saved snapshots validate.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-004",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "CAUSE",
+            "role": "decision",
+            "step_id": "S-CAUSE"
+          }
+        ],
+        "message": "decision CAUSE は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 8,
+          "column": 3,
+          "text": "Character navigation is presented as portrait-only affordances while visible names inherit battle-execution unavailability. This prevents a discoverable profile path despite the profile itself being readable. Alternative stale browser version is unknown but does not remove the current-source affordance defect.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-005",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "BOUNDS",
+            "role": "premise",
+            "step_id": "S-BOUNDS"
+          }
+        ],
+        "message": "premise BOUNDS は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 10,
+          "column": 3,
+          "text": "Keep battle resume/view validation restrictions and character write guards. No DB changes, backend image build, auth changes or public promotion. Necessary preview deployment and origin push/CI are permitted by owner goal.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-006",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "FIX",
+            "role": "decision",
+            "step_id": "S-FIX"
+          }
+        ],
+        "message": "decision FIX は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 12,
+          "column": 3,
+          "text": "Render each available character name as a visibly underlined Link carrying the exact battleId, outside the disabled battle-open button. Retain portrait links. Build fixed frontend, verify actual rendered history with missing images and degraded state, run typecheck/static/CI. Upload one fixed frontend Worker version to existing preview alias only after gates; backend960a995 stays fixed. Preserve other bindings and public Worker deployment. This closes the ordinary user navigation gap without supplying invalid executable battle state. Remaining internal20-40min low-confidence estimate; owner verification waits separate.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-007",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "CAUSE",
+            "role": "decision",
+            "step_id": "S-CAUSE"
+          },
+          {
+            "ref_id": "FIX",
+            "role": "decision",
+            "step_id": "S-FIX"
+          }
+        ],
+        "message": "CAUSE と FIX は意味的に近接している可能性がある。",
+        "metadata": {
+          "line": 7,
+          "column": 10,
+          "end_column": 15,
+          "similarity": 0.731,
+          "semantic_distance": 0.269,
+          "embedding_provider": "ollama",
+          "embedding_model": "nomic-embed-text"
+        }
+      }
+    ],
+    "query_results": []
+  }
+}

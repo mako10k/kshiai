@@ -237,6 +237,10 @@
     {
       "path": "backend/src/repositories/asset-generations.test.ts",
       "ref": "verification/immutable-generic-generation-current-20261002"
+    },
+    {
+      "path": "e2e/history-character-navigation.spec.ts",
+      "ref": "verification/history-character-navigation-20261002"
     }
   ]
 }

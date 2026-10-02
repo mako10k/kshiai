@@ -207,18 +207,23 @@ export function HistoryPage() {
                           )}
                         </span>
                       )}
-                      <button
-                        type="button"
-                        className="history-vs-btn"
-                        onClick={() => openBattle(b)}
-                        disabled={b.integrityStatus === "degraded"}
-                      >
-                        <strong className="history-vs">
-                          {b.sideAName}
-                          <span className="muted"> vs </span>
-                          {b.sideBName}
-                        </strong>
-                      </button>
+                      <strong className="history-vs" style={{ flex: 1, minWidth: 0 }}>
+                        {b.sideACharacterId ? (
+                          <Link
+                            to={`/characters/${b.sideACharacterId}?battleId=${encodeURIComponent(b.id)}`}
+                            style={{ textDecoration: "underline", textUnderlineOffset: "0.2em" }}
+                            aria-label={`${b.sideAName} の当時の詳細`}
+                          >{b.sideAName}</Link>
+                        ) : b.sideAName}
+                        <span className="muted"> vs </span>
+                        {b.sideBCharacterId ? (
+                          <Link
+                            to={`/characters/${b.sideBCharacterId}?battleId=${encodeURIComponent(b.id)}`}
+                            style={{ textDecoration: "underline", textUnderlineOffset: "0.2em" }}
+                            aria-label={`${b.sideBName} の当時の詳細`}
+                          >{b.sideBName}</Link>
+                        ) : b.sideBName}
+                      </strong>
                       {b.sideBCharacterId ? (
                         <Link
                           to={`/characters/${b.sideBCharacterId}?battleId=${encodeURIComponent(b.id)}`}
