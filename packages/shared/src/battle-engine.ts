@@ -21,6 +21,7 @@ import type {
 } from "./battle.js";
 import {
   CharacterActionIntentSchema,
+  projectCharacterActionIntent,
   BattleTurnEngineContinuationSchema,
   clampCoefficient,
   isCombatantDown,
@@ -1229,22 +1230,7 @@ function observerSafeFoeInput(
 }
 
 function intentFromBattleAction(action: BattleAction): CharacterActionIntent {
-  return {
-    kind: action.kind,
-    ...(action.skillId ? { skillId: action.skillId } : {}),
-    ...(action.useFinisher ? { useFinisher: true } : {}),
-    ...(action.description ? { description: action.description } : {}),
-    ...(action.desiredOutcome ? { desiredOutcome: action.desiredOutcome } : {}),
-    ...(action.subjectRefs ? { subjectRefs: action.subjectRefs } : {}),
-    ...(action.instrumentRef ? { instrumentRef: action.instrumentRef } : {}),
-    ...(action.opportunityId ? { opportunityId: action.opportunityId } : {}),
-    ...(action.reflectionAnalysis
-      ? { reflectionAnalysis: action.reflectionAnalysis }
-      : {}),
-    ...(action.reflectionGuideline
-      ? { reflectionGuideline: action.reflectionGuideline }
-      : {}),
-  };
+  return projectCharacterActionIntent(action);
 }
 
 const INSTRUMENT_MULTIPLIER: Record<WorldCausalBand, number> = {

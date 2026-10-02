@@ -317,151 +317,118 @@ export function selectPolicyIdsByPerspective(
   });
 }
 
-const CharacterActionIntentObjectSchema = z.object({
-  kind: ActionKindSchema,
+const actionIntentFields = {
   skillId: z.string().optional(),
   /** Activate the one-use finisher attached to this skill when legal. */
   useFinisher: z.boolean().optional(),
-  /** Natural-language attempt. It never asserts that the action succeeded. */
-  description: z.string().min(1).max(600).optional(),
-  desiredOutcome: z.string().min(1).max(400).optional(),
-  subjectRefs: z.array(z.string().min(1).max(120)).max(4).optional(),
+  description: z.never().optional(),
+  desiredOutcome: z.never().optional(),
+  subjectRefs: z.never().optional(),
   /** Observer-local reference to a held/worn object used by a standard action. */
   instrumentRef: z.string().min(1).max(120).optional(),
-  /** Optional control reference for a projected multi-turn opportunity. */
+  opportunityId: z.never().optional(),
+  reflectionAnalysis: z.never().optional(),
+  reflectionGuideline: z.never().optional(),
+};
+
+const standardActionIntentSchema = z.object({
+  ...actionIntentFields,
+  kind: z.enum(["basic_attack", "skill", "defend"]),
+}).strict();
+const passiveActionIntentSchema = z.object({
+  ...actionIntentFields,
+  kind: z.enum(["rest", "wait"]),
+  instrumentRef: z.never().optional(),
+}).strict();
+const repositionActionIntentSchema = z.object({
+  ...actionIntentFields,
+  kind: z.literal("reposition"),
+  skillId: z.never().optional(),
+  useFinisher: z.never().optional(),
+  instrumentRef: z.never().optional(),
+}).strict();
+const freeActionIntentSchema = z.object({
+  ...actionIntentFields,
+  kind: z.literal("free_action"),
+  /** A natural-language attempt, never authority that the action succeeded. */
+  description: z.string().min(1).max(600),
+  desiredOutcome: z.string().min(1).max(400).optional(),
+  /** References supplied by the observer-grounded decision, not capability labels. */
+  subjectRefs: z.tuple([z.string().min(1).max(120)])
+    .rest(z.string().min(1).max(120))
+    .refine((refs) => refs.length <= 4, "free actions may reference at most four subjects"),
   opportunityId: z.string().min(1).max(120).optional(),
-  /** Reflect-only: situation analysis written into private memory. */
-  reflectionAnalysis: z.string().min(1).max(400).optional(),
-  /** Reflect-only: forward action guideline written into private memory/goal. */
-  reflectionGuideline: z.string().min(1).max(400).optional(),
+  skillId: z.never().optional(),
+  useFinisher: z.never().optional(),
+  instrumentRef: z.never().optional(),
+}).strict();
+const reflectActionIntentSchema = z.object({
+  ...actionIntentFields,
+  kind: z.literal("reflect"),
+  /** Character-authored analysis and guideline for private battle memory. */
+  reflectionAnalysis: z.string().min(1).max(400),
+  reflectionGuideline: z.string().min(1).max(400),
+  skillId: z.never().optional(),
+  useFinisher: z.never().optional(),
+  instrumentRef: z.never().optional(),
 }).strict();
 
-type CharacterActionIntentObject = z.infer<
-  typeof CharacterActionIntentObjectSchema
->;
-
-function validateCharacterActionIntent(
-  intent: CharacterActionIntentObject,
-  ctx: z.RefinementCtx,
-): void {
-  if (intent.kind === "free_action") {
-    if (!intent.description) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: ["description"],
-        message: "free actions require a natural-language description",
-      });
-    }
-    if (!intent.subjectRefs?.length) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: ["subjectRefs"],
-        message: "free actions require at least one observer-safe subject reference",
-      });
-    }
-    if (intent.skillId || intent.useFinisher || intent.instrumentRef) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: [],
-        message: "free actions cannot carry skill, finisher, or instrument authority",
-      });
-    }
-    if (intent.reflectionAnalysis || intent.reflectionGuideline) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: [],
-        message: "free actions cannot carry reflect memory fields",
-      });
-    }
-    return;
-  }
-  if (intent.kind === "reposition") {
-    if (
-      intent.description ||
-      intent.desiredOutcome ||
-      intent.subjectRefs ||
-      intent.opportunityId ||
-      intent.skillId ||
-      intent.useFinisher ||
-      intent.instrumentRef ||
-      intent.reflectionAnalysis ||
-      intent.reflectionGuideline
-    ) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: [],
-        message: "reposition cannot carry combat, free-action, or reflect fields",
-      });
-    }
-    return;
-  }
-  if (intent.kind === "reflect") {
-    if (!intent.reflectionAnalysis || !intent.reflectionGuideline) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: ["reflectionAnalysis"],
-        message: "reflect requires analysis and guideline text",
-      });
-    }
-    if (
-      intent.description ||
-      intent.desiredOutcome ||
-      intent.subjectRefs ||
-      intent.opportunityId ||
-      intent.skillId ||
-      intent.useFinisher ||
-      intent.instrumentRef
-    ) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: [],
-        message: "reflect cannot carry combat or free-action authority fields",
-      });
-    }
-    return;
-  }
-  if (
-    intent.description ||
-    intent.desiredOutcome ||
-    intent.subjectRefs ||
-    intent.opportunityId
-  ) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      path: [],
-      message: "only free actions may carry open attempt fields",
-    });
-  }
-  if (intent.reflectionAnalysis || intent.reflectionGuideline) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      path: [],
-      message: "only reflect may carry reflection memory fields",
-    });
-  }
-  if (
-    intent.instrumentRef &&
-    !["basic_attack", "skill", "defend"].includes(intent.kind)
-  ) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      path: ["instrumentRef"],
-      message: "this action kind cannot use an instrument",
-    });
-  }
+/** One structural contract for intents, engine actions and resolved snapshots. */
+function actionIntentVariants<Shape extends z.ZodRawShape>(extra: Shape) {
+  return [
+    standardActionIntentSchema.extend(extra),
+    passiveActionIntentSchema.extend(extra),
+    repositionActionIntentSchema.extend(extra),
+    freeActionIntentSchema.extend(extra),
+    reflectActionIntentSchema.extend(extra),
+  ] as const;
 }
 
-export const CharacterActionIntentSchema = CharacterActionIntentObjectSchema
-  .superRefine(validateCharacterActionIntent);
+export const CharacterActionIntentSchema = z.discriminatedUnion(
+  "kind", [...actionIntentVariants({})],
+);
 export type CharacterActionIntent = z.infer<typeof CharacterActionIntentSchema>;
 
-const BattleActionObjectSchema = CharacterActionIntentObjectSchema.extend({
-  actorSide: z.enum(["a", "b"]),
-});
-
-export const BattleActionSchema = BattleActionObjectSchema
-  .superRefine(validateCharacterActionIntent);
+export const BattleActionSchema = z.discriminatedUnion("kind", [
+  ...actionIntentVariants({ actorSide: z.enum(["a", "b"]) }),
+]);
 export type BattleAction = z.infer<typeof BattleActionSchema>;
+
+/** Preserve branch-specific payloads when projecting execution back to intent. */
+export function projectCharacterActionIntent(action: BattleAction): CharacterActionIntent {
+  switch (action.kind) {
+    case "free_action":
+      return {
+        kind: action.kind,
+        description: action.description,
+        subjectRefs: [...action.subjectRefs],
+        ...(action.desiredOutcome !== undefined ? { desiredOutcome: action.desiredOutcome } : {}),
+        ...(action.opportunityId !== undefined ? { opportunityId: action.opportunityId } : {}),
+      };
+    case "reflect":
+      return {
+        kind: action.kind,
+        reflectionAnalysis: action.reflectionAnalysis,
+        reflectionGuideline: action.reflectionGuideline,
+      };
+    case "reposition":
+      return { kind: action.kind };
+    case "rest":
+    case "wait":
+      return {
+        kind: action.kind,
+        ...(action.skillId !== undefined ? { skillId: action.skillId } : {}),
+        ...(action.useFinisher !== undefined ? { useFinisher: action.useFinisher } : {}),
+      };
+    default:
+      return {
+        kind: action.kind,
+        ...(action.skillId !== undefined ? { skillId: action.skillId } : {}),
+        ...(action.useFinisher !== undefined ? { useFinisher: action.useFinisher } : {}),
+        ...(action.instrumentRef !== undefined ? { instrumentRef: action.instrumentRef } : {}),
+      };
+  }
+}
 
 export const ActionResolutionReasonSchema = z.enum([
   "invalid_intent",
@@ -530,21 +497,21 @@ export const ActionSelectionReceiptSchema = z.object({
 }).strict();
 export type ActionSelectionReceipt = z.infer<typeof ActionSelectionReceiptSchema>;
 
-export const ResolvedBattleActionSchema = BattleActionObjectSchema.extend({
-  id: z.string().min(1),
-  executed: z.boolean(),
-  skippedReason: z
-    .enum([
+export const ResolvedBattleActionSchema = z.discriminatedUnion("kind", [
+  ...actionIntentVariants({
+    actorSide: z.enum(["a", "b"]),
+    id: z.string().min(1),
+    executed: z.boolean(),
+    skippedReason: z.enum([
       "incapacitated_before_action",
       "battle_inactive",
       "action_infeasible",
-    ])
-    .nullable()
-    .default(null),
-  resolution: ActionResolutionSchema.optional(),
-  /** Why this request source was selected before feasibility resolution. */
-  selection: ActionSelectionReceiptSchema.optional(),
-}).superRefine(validateCharacterActionIntent);
+    ]).nullable().default(null),
+    resolution: ActionResolutionSchema.optional(),
+    /** Why this request source was selected before feasibility resolution. */
+    selection: ActionSelectionReceiptSchema.optional(),
+  }),
+]);
 export type ResolvedBattleAction = z.infer<
   typeof ResolvedBattleActionSchema
 >;

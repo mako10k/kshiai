@@ -96,3 +96,5 @@ current check.
 | [0042](0042-unreleased-v3-trial-scope.md) | Accepted | Use an ordinary authenticated preview for the unreleased first V3 trial; defer legacy compatibility, email, snapshot and public promotion |
 
 - [0043: V3 character updates with historical V2 display](0043-v3-character-updates-with-historical-v2-display.md) — Accepted; ordinary V3 writes, retained V2 read and migration source.
+- [0044: Discriminated action intent contracts](0044-discriminated-action-intent-contracts.md) — Superseded by 0045; retain the withdrawn fallback sketch as history.
+- [0045: Preserve action intent producer values](0045-preserve-action-intent-producer-values.md) — Accepted; structural action contracts and value-preserving projections, without synthetic fallback judgment.

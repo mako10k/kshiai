@@ -84,7 +84,7 @@ function targetsCounterpart(
 }
 
 function inferredConstraints(
-  intent: CharacterActionIntent,
+  intent: Pick<CharacterActionIntent, "kind">,
   skill: Skill | null,
   basicAttack: BasicAttackProfile,
 ): ActionFeasibilityConstraints {
@@ -332,10 +332,14 @@ export function assessCharacterActionFeasibility(input: {
   return { feasible: true };
 }
 
-type ObserverSafeActionCandidate = {
-  intent: CharacterActionIntent;
-  option: Omit<ObserverSafeAvailableAction, "target">;
-};
+type ObserverSafeActionCandidate =
+  | { intent: CharacterActionIntent; option: Omit<ObserverSafeAvailableAction, "target"> }
+  | {
+      intent: null;
+      option: Omit<ObserverSafeAvailableAction, "target" | "kind"> & {
+        kind: "free_action" | "reflect";
+      };
+    };
 
 function observerSafeActionCandidates(input: {
   actor: CombatantState;
@@ -358,11 +362,7 @@ function observerSafeActionCandidates(input: {
       },
     },
     {
-      intent: {
-        kind: "reflect",
-        reflectionAnalysis: "ここまでの戦況を整理する",
-        reflectionGuideline: "次の一手の方針を立てる",
-      },
+      intent: null,
       option: {
         kind: "reflect",
         name: "戦況を省みる",
@@ -371,7 +371,8 @@ function observerSafeActionCandidates(input: {
       },
     },
     {
-      intent: { kind: "free_action", description: "場面へ現実的に働きかける" },
+      // Listing a capability does not invent an observer reference or an intent.
+      intent: null,
       option: {
         kind: "free_action",
         name: "自由行動",
@@ -432,6 +433,18 @@ export function buildObserverSafeAvailableActions(input: {
     turn: input.turn,
     basicAttack,
   }).flatMap(({ intent, option }) => {
+    if (intent === null) {
+      const failure = actorWorldFailure({
+        actorSide: input.actorSide,
+        actor: input.actor,
+        worldState: input.worldState,
+        constraints: inferredConstraints({ kind: option.kind }, null, basicAttack),
+      });
+      return failure ? [] : [{
+        ...option,
+        target: { kind: "self" as const, perceivedAs: "自分" },
+      }];
+    }
     const assessed = assessCharacterActionFeasibility({
       actorSide: input.actorSide,
       intent,

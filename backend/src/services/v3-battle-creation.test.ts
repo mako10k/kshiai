@@ -14,6 +14,7 @@ import {
   prepareSequentialBattleTurnInitiative,
   materializeBattleStateAtBucketBoundary,
   type CharacterSheet,
+  type CharacterActionIntent,
 } from "@kshiai/shared";
 
 const temporaryDirectory = mkdtempSync(join(tmpdir(), "kshiai-v3-battle-"));
@@ -214,7 +215,8 @@ describe("ADR-0039 V3 character battle binding", () => {
     const action = advanced.turnRecords?.flatMap((record) => record.actions)[0];
     assert.ok(action);
     const reflected = applyReflectMemoryWrites(advanced, [{
-      ...action, actorSide: "a", kind: "reflect", executed: true,
+      id: action.id, skippedReason: action.skippedReason,
+      actorSide: "a", kind: "reflect", executed: true,
       reflectionAnalysis: "frozen-reflect-analysis", reflectionGuideline: "must-not-replace-goal",
     }]);
     assert.deepEqual(reflected.agentStateA?.consciousAgencyV1, advanced.agentStateA.consciousAgencyV1);
@@ -398,4 +400,80 @@ describe("ADR-0039 V3 character battle binding", () => {
       /OPPONENT_CHARACTER_V3_CAPABILITY_BLOCKED/,
     );
   });
+
+  it("advances a V4 battle whose frozen norms allow only free actions", async () => {
+    const fixture = createConsciousFixture();
+    fixture.mine.id = "free-only-self";
+    fixture.opp.id = "free-only-counterpart";
+    fixture.opp.visibility = "public";
+    await saveHistoricalCharacterFixture(fixture.mine);
+    await saveHistoricalCharacterFixture(fixture.opp);
+    const freeOnly = envelopeV3(fixture.mine);
+    freeOnly.definition.actionNorms = [{
+      id: "only-free-action",
+      when: { match: "all", clauses: [{ kind: "always", operator: "is", value: "true" }] },
+      response: { disposition: "allow_only", actionRefs: [], actionKinds: ["free_action"], tacticTags: [] },
+      priority: 90, force: "constraint", exceptions: [], description: null,
+    }];
+    const generation = await generationRepo.createAssetGeneration({
+      assetType: "character", assetId: fixture.mine.id, schemaVersion: 3,
+      content: CharacterGenerationEnvelopeV3Schema.parse(freeOnly),
+    });
+    await generationRepo.createAssetGeneration({
+      assetType: "character", assetId: fixture.opp.id, schemaVersion: 3,
+      content: envelopeV3(fixture.opp),
+    });
+    const llm = new MockLlmProvider();
+    const originalAgent = llm.advanceCharacterAgent.bind(llm);
+    const emitted: { characterName: string; action: CharacterActionIntent }[] = [];
+    llm.advanceCharacterAgent = async (input) => {
+      const result = await originalAgent(input);
+      const output = "consciousOutput" in result ? result.consciousOutput : null;
+      const subject = input.decision?.affordances?.[0];
+      if (!subject || !output?.envelopeValid || output.phase === "aftermath" ||
+          !input.decision?.availableActions.some((candidate) => candidate.kind === "free_action")) {
+        return result;
+      }
+      // Explicit fixture judgment: execution must preserve these exact supplied values.
+      const action: CharacterActionIntent = {
+        kind: "free_action", description: "観測した対象の位置を確かめる",
+        subjectRefs: [subject.ref], desiredOutcome: "位置関係を把握する",
+      };
+      emitted.push({ characterName: input.character.displayName, action });
+      return { ...result, proposedAction: action, proposedActionStatus: "valid",
+        consciousOutput: { ...output, nextAction: { valid: true, value: action } } };
+    };
+    const created = await startBattle({
+      userId: "inventory-owner", battleId: "v3-free-only-regression",
+      myCharacterId: fixture.mine.id, opponentCharacterId: fixture.opp.id,
+      battlefieldMode: "random", llm,
+    });
+    const before = await getBattle(created.id);
+    assert.ok(before);
+    assert.equal(before.assetManifest?.characters.a.generationId, generation.generationId);
+    let after = before;
+    for (let step = 0; step < 6; step += 1) {
+      await advanceTurn({ userId: "inventory-owner", battleId: created.id,
+        operationId: `free-only-${step}`, llm });
+      const saved = await getBattle(created.id);
+      assert.ok(saved);
+      after = saved;
+      if (after.turnRecords?.some((record) => record.actions.some((action) =>
+        action.actorSide === "a" && action.kind === "free_action"
+      ))) break;
+    }
+    const action = after.turnRecords?.flatMap((record) => record.actions)
+      .find((candidate) => candidate.actorSide === "a" && candidate.kind === "free_action");
+    assert.ok(action && action.kind === "free_action");
+    assert.ok(action.description);
+    assert.ok(action.subjectRefs.length > 0);
+    const supplied = emitted.find((entry) => entry.characterName === fixture.mine.displayName)?.action;
+    assert.ok(supplied && supplied.kind === "free_action");
+    assert.equal(action.description, supplied.description);
+    assert.deepEqual(action.subjectRefs, supplied.subjectRefs);
+    assert.equal(action.desiredOutcome, supplied.desiredOutcome);
+    assert.deepEqual(after.assetManifest, before.assetManifest);
+    assert.ok((after.battleRevision ?? 0) > (before.battleRevision ?? 0));
+  });
+
 });

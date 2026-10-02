@@ -6,6 +6,7 @@ import {
   WorldExposureSchema,
   WorldPlacementSchema,
   applyBattleWorldTransition,
+  projectCharacterActionIntent,
   readBattleWorldPair,
   type BattleState,
   type BattleWorldEntity,
@@ -862,13 +863,7 @@ function updateActionFailure(
   const action = actions.find((candidate) => candidate.actorSide === side);
   if (!action || action.kind !== "free_action") return;
   action.resolution = {
-    requested: action.resolution?.requested ?? {
-      kind: "free_action",
-      description: action.description ?? "自由な試み",
-      ...(action.desiredOutcome ? { desiredOutcome: action.desiredOutcome } : {}),
-      ...(action.subjectRefs ? { subjectRefs: action.subjectRefs } : {}),
-      ...(action.opportunityId ? { opportunityId: action.opportunityId } : {}),
-    },
+    requested: action.resolution?.requested ?? projectCharacterActionIntent(action),
     outcome: "failed",
     reason,
   };

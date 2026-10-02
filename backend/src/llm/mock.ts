@@ -1,3 +1,4 @@
+import { buildDeterministicActionFallback } from "../services/character-action-fallback.js";
 import { mockConsciousResult } from "./conscious-agency.js";
 import { decodeConsciousOutputV3 } from "@kshiai/shared";
 import {
@@ -19,6 +20,7 @@ import {
   type BattlePolicyOption,
   type BattleEncounterProposal,
   type CharacterSheet,
+  type CharacterActionIntent,
   type CharacterIdentity,
 } from "@kshiai/shared";
 import type {
@@ -1082,6 +1084,32 @@ export class MockLlmProvider implements LlmProvider {
               : "観察した弱点に合わせて次の一手を選ぶ"
         )
       : "";
+    let proposedAction: CharacterActionIntent | null = buildDeterministicActionFallback({
+      ...input.decision,
+      availableActions: [preferred],
+    });
+    const [firstPrerequisite, ...remainingPrerequisites] = setupAttack?.prerequisites ?? [];
+    if (preferred.kind === "reflect") {
+      proposedAction = {
+        kind: "reflect",
+        reflectionAnalysis: reflectionAnalysis || "ここまでの戦況を整理する",
+        reflectionGuideline: reflectionGuideline || "次の一手の方針を立てる",
+      };
+    } else if (setupAttack && firstPrerequisite && preferred.kind === "free_action") {
+      proposedAction = {
+        kind: "free_action",
+        description: firstPrerequisite.description,
+        desiredOutcome: setupAttack.expectedProgress,
+        subjectRefs: [firstPrerequisite.subjectRef, ...remainingPrerequisites.map((item) => item.subjectRef)],
+        opportunityId: setupAttack.id,
+      };
+    } else if (proposedAction?.kind === "skill" && finisherAction && preferred.finisherCandidate) {
+      proposedAction = { ...proposedAction, useFinisher: true };
+    } else if (proposedAction?.kind === "defend" && urgentDefense && readyDefense) {
+      proposedAction = { ...proposedAction, instrumentRef: readyDefense.continuation.instrumentRef };
+    } else if (proposedAction?.kind === "basic_attack" && !urgentDefense && readyAttack) {
+      proposedAction = { ...proposedAction, instrumentRef: readyAttack.continuation.instrumentRef };
+    }
     return {
       state: {
         privateMemory: event.slice(0, 1200),
@@ -1095,33 +1123,7 @@ export class MockLlmProvider implements LlmProvider {
         lastSpeech: speech,
       },
       speech,
-      proposedAction: preferred.kind === "reflect"
-        ? {
-            kind: "reflect" as const,
-            reflectionAnalysis: reflectionAnalysis || "ここまでの戦況を整理する",
-            reflectionGuideline: reflectionGuideline || "次の一手の方針を立てる",
-          }
-        : setupAttack && preferred.kind === "free_action"
-        ? {
-            kind: "free_action" as const,
-            description: setupAttack.prerequisites[0]?.description ??
-              "使えそうな物を準備する",
-            desiredOutcome: setupAttack.expectedProgress,
-            subjectRefs: setupAttack.prerequisites.map((item) => item.subjectRef),
-            opportunityId: setupAttack.id,
-          }
-        : {
-            kind: preferred.kind,
-            ...(preferred.skillId ? { skillId: preferred.skillId } : {}),
-            ...(finisherAction && preferred.finisherCandidate
-              ? { useFinisher: true }
-              : {}),
-            ...(urgentDefense && readyDefense && preferred.kind === "defend"
-              ? { instrumentRef: readyDefense.continuation.instrumentRef }
-              : !urgentDefense && readyAttack && preferred.kind === "basic_attack"
-                ? { instrumentRef: readyAttack.continuation.instrumentRef }
-                : {}),
-          },
+      proposedAction,
       realizedManifestation: null,
     };
   }
@@ -1151,22 +1153,7 @@ export class MockLlmProvider implements LlmProvider {
         }, "later"),
       };
     }
-    const preferred = (
-      input.decision.actionFeedback?.spacing.relation &&
-      input.decision.actionFeedback.spacing.relation !== "in_band"
-        ? input.decision.availableActions.find((action) => action.kind === "reposition")
-        : undefined
-    ) ?? input.decision.availableActions.find((action) =>
-      action.kind === "basic_attack"
-    ) ?? input.decision.availableActions.find((action) =>
-      action.kind !== "wait" && action.kind !== "reflect"
-    ) ?? input.decision.availableActions[0];
-    if (!preferred) return { proposedAction: null };
-    return {
-      proposedAction: preferred.kind === "skill"
-        ? { kind: "skill", skillId: preferred.skillId }
-        : { kind: preferred.kind },
-    };
+    return { proposedAction: buildDeterministicActionFallback(input.decision) };
   }
 
   async chooseNarrationFocus(input: {

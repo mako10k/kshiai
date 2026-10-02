@@ -1,3 +1,4 @@
+import { buildDeterministicActionFallback } from "./character-action-fallback.js";
 // R: Coordinate battle creation and turn execution using bound assets and committed state.
 import type { CharacterActionDecisionInput } from "../llm/types.js";
 import { assertConsciousBinding, boundConsciousCompiler, consciousFacts, consciousReaction, isV4ConsciousCompiler, privateBattleGoal, legacyPublicOpeningPlan } from "../llm/conscious-agency.js";
@@ -18,6 +19,7 @@ import {
   BattleAdjudicationSchema,
   JudgmentPresentationProjectionSchema,
   CharacterActionIntentSchema,
+  type CharacterActionIntent,
   accumulateBattleBalanceTrace,
   advanceSupervisorClock,
   applyBattleWorldTransition,
@@ -1617,34 +1619,13 @@ export function buildLaterBucketActionInput(input: {
   } });
 }
 
-function deterministicLaterBucketFallback(
-  decision: Parameters<LlmProvider["decideCharacterAction"]>[0]["decision"],
-) {
-  const selected = (
-    decision.actionFeedback?.spacing.relation &&
-    decision.actionFeedback.spacing.relation !== "in_band"
-      ? decision.availableActions.find((action) => action.kind === "reposition")
-      : undefined
-  ) ?? decision.availableActions.find((action) =>
-    action.kind === "basic_attack"
-  ) ?? decision.availableActions.find((action) =>
-    action.kind !== "wait" && action.kind !== "reflect"
-  ) ?? decision.availableActions[0];
-  if (!selected) return null;
-  return CharacterActionIntentSchema.parse(
-    selected.kind === "skill"
-      ? { kind: "skill", skillId: selected.skillId }
-      : { kind: selected.kind },
-  );
-}
-
 function buildEngineNormConstraint(input: Parameters<typeof buildCharacterDecisionContext>[0]) {
   if (input.state.assetManifest?.schemaVersion !== 4) return undefined;
   const decision = buildCharacterDecisionContext(input);
   if (!decision) throw new Error("BATTLE_CONTRACT_MISMATCH");
   return {
     allowedActionKeys: decision.availableActions.map(characterNormActionKey),
-    fallback: deterministicLaterBucketFallback(decision) ?? CharacterActionIntentSchema.parse({ kind: "wait" }),
+    fallback: buildDeterministicActionFallback(decision) ?? ({ kind: "wait" } satisfies CharacterActionIntent),
   };
 }
 
@@ -5152,7 +5133,7 @@ async function advanceTurnWithLease(input: {
           });
           const fallback = validation.acceptedAction
             ? null
-            : deterministicLaterBucketFallback(laterInput.decision);
+            : buildDeterministicActionFallback(laterInput.decision);
           const acceptedAction = validation.acceptedAction ?? fallback;
           const laterRuleMetadata = characterDecisionRuleMetadata.get(
             laterInput.decision,
