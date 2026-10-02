@@ -1,0 +1,84 @@
+# Existing .pert plans should normally be maintained through perttool commands; direct DSL editing bypasses goal/DAG owner-confirmation checks.
+project ACTION_CONTRACT_REPAIR:
+  version 1
+  title "Preserve producer values and align conditional contracts"
+  duration_unit hour
+  finish DEPLOYED
+
+milestone COMMITTED:
+  title "Action intent repair committed fefbb5a"
+  state reached
+
+resource DEV:
+  title "Developer"
+  capacity 1
+
+milestone EVENTS:
+  title "Turn event variants preserve payload and source ownership"
+
+task events COMMITTED -> EVENTS:
+  title "Turn event variants preserve payload and source ownership"
+  description "Owner authorizes sequential contract repair and deployment on 2026-10-03; ADR0045 and ADR0046 govern; completion requires preservation and rejection tests before downstream execution. Estimate is provisional internal effort excluding external waits."
+  duration 1h
+  requires:
+    DEV 1
+
+milestone NORMS:
+  title "V3 norm force and response compatibility"
+
+task norms EVENTS -> NORMS:
+  title "V3 norm force and response compatibility"
+  description "Owner authorizes sequential contract repair and deployment on 2026-10-03; ADR0045 and ADR0046 govern; completion requires preservation and rejection tests before downstream execution. Estimate is provisional internal effort excluding external waits."
+  duration 1h
+  requires:
+    DEV 1
+
+milestone MIGRATION:
+  title "Migration operation provenance and payload ownership"
+
+task migration NORMS -> MIGRATION:
+  title "Migration operation provenance and payload ownership"
+  description "Owner authorizes sequential contract repair and deployment on 2026-10-03; ADR0045 and ADR0046 govern; completion requires preservation and rejection tests before downstream execution. Estimate is provisional internal effort excluding external waits."
+  duration 1h
+  requires:
+    DEV 1
+
+milestone CAPABILITIES:
+  title "Registered compiler pairs and skeleton phase subset"
+
+task capabilities MIGRATION -> CAPABILITIES:
+  title "Registered compiler pairs and skeleton phase subset"
+  description "Owner authorizes sequential contract repair and deployment on 2026-10-03; ADR0045 and ADR0046 govern; completion requires preservation and rejection tests before downstream execution. Estimate is provisional internal effort excluding external waits."
+  duration 1h
+  requires:
+    DEV 1
+
+milestone SKILLS:
+  title "Audit skill identifier compatibility and repair safe producers"
+
+task skills CAPABILITIES -> SKILLS:
+  title "Audit skill identifier compatibility and repair safe producers"
+  description "Owner authorizes sequential contract repair and deployment on 2026-10-03; ADR0045 and ADR0046 govern; completion requires preservation and rejection tests before downstream execution. Estimate is provisional internal effort excluding external waits."
+  duration 1h
+  requires:
+    DEV 1
+
+milestone VALIDATED:
+  title "Build typecheck governed and focused regressions committed"
+
+task validation SKILLS -> VALIDATED:
+  title "Build typecheck governed and focused regressions committed"
+  description "Owner authorizes sequential contract repair and deployment on 2026-10-03; ADR0045 and ADR0046 govern; completion requires preservation and rejection tests before downstream execution. Estimate is provisional internal effort excluding external waits."
+  duration 1h
+  requires:
+    DEV 1
+
+milestone DEPLOYED:
+  title "Exact committed runtime deployed and public health read back"
+
+task deployment VALIDATED -> DEPLOYED:
+  title "Exact committed runtime deployed and public health read back"
+  description "Owner authorizes sequential contract repair and deployment on 2026-10-03; ADR0045 and ADR0046 govern; completion requires preservation and rejection tests before downstream execution. Estimate is provisional internal effort excluding external waits."
+  duration 1h
+  requires:
+    DEV 1

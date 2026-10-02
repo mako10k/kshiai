@@ -576,38 +576,7 @@ export const SituationSchema = z.object({
 });
 export type Situation = z.infer<typeof SituationSchema>;
 
-export type TurnEvent = {
-  id?: string;
-  type: "damage" | "heal" | "rest" | "parameter" | "defend" | "wait" |
-    "reflect" | "status" | "situation" | "info" | "utterance" |
-    "manifestation" | "free_action" | "reposition";
-  actorName?: string;
-  actorSide?: "a" | "b";
-  targetName?: string;
-  targetSides?: Array<"a" | "b">;
-  sourceActionId?: string;
-  sourceEffectId?: string;
-  skillName?: string;
-  parameterKey?: ParamKey;
-  parameterDirection?: "loss" | "gain";
-  intensity?: "minor" | "moderate" | "heavy" | "critical";
-  utterance?: {
-    text: string;
-    delivery: "spoken" | "visible_reaction";
-    volume: "quiet" | "normal" | "loud";
-    articulation: "clear" | "impaired";
-    language: string;
-  };
-  manifestation?: {
-    modality: "movement" | "posture" | "expression" | "voice";
-    description: string;
-    sourceEventIds: string[];
-    carrierEventId: string;
-  };
-  summary: string;
-};
-
-export const TurnEventSchema: z.ZodType<TurnEvent> = z.object({
+const TurnEventObjectSchema = z.object({
   id: z.string().min(1).optional(),
   type: z.enum([
     "damage",
@@ -652,45 +621,44 @@ export const TurnEventSchema: z.ZodType<TurnEvent> = z.object({
     carrierEventId: z.string().min(1).max(120),
   }).strict().optional(),
   summary: z.string(),
-}).superRefine((event, ctx) => {
-  if (event.sourceActionId && event.sourceEffectId) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      path: ["sourceEffectId"],
-      message: "an event cannot have both action and scheduled-effect sources",
-    });
-  }
-  if (event.type === "utterance") {
-    if (!event.id || !event.actorSide || !event.utterance) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: ["utterance"],
-        message: "utterance events require id, actorSide, and utterance payload",
-      });
-    }
-  } else if (event.utterance !== undefined) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      path: ["utterance"],
-      message: "only utterance events may carry an utterance payload",
-    });
-  }
-  if (event.type === "manifestation") {
-    if (!event.id || !event.actorSide || !event.manifestation) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: ["manifestation"],
-        message: "manifestation events require id, actorSide, and manifestation payload",
-      });
-    }
-  } else if (event.manifestation !== undefined) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      path: ["manifestation"],
-      message: "only manifestation events may carry a manifestation payload",
-    });
-  }
 });
+
+const ordinaryTurnEventSchema = TurnEventObjectSchema.extend({
+  type: z.enum([
+    "damage", "heal", "rest", "parameter", "defend", "wait", "reflect",
+    "status", "situation", "info", "free_action", "reposition",
+  ]),
+  utterance: z.never().optional(),
+  manifestation: z.never().optional(),
+});
+const utteranceTurnEventSchema = TurnEventObjectSchema.extend({
+  type: z.literal("utterance"),
+  id: TurnEventObjectSchema.shape.id.unwrap(),
+  actorSide: TurnEventObjectSchema.shape.actorSide.unwrap(),
+  utterance: TurnEventObjectSchema.shape.utterance.unwrap(),
+  manifestation: z.never().optional(),
+});
+const manifestationTurnEventSchema = TurnEventObjectSchema.extend({
+  type: z.literal("manifestation"),
+  id: TurnEventObjectSchema.shape.id.unwrap(),
+  actorSide: TurnEventObjectSchema.shape.actorSide.unwrap(),
+  utterance: z.never().optional(),
+  manifestation: TurnEventObjectSchema.shape.manifestation.unwrap(),
+});
+
+export const TurnEventSchema = z.discriminatedUnion("type", [
+  ordinaryTurnEventSchema, utteranceTurnEventSchema, manifestationTurnEventSchema,
+]).and(z.union([
+  z.object({
+    sourceActionId: TurnEventObjectSchema.shape.sourceActionId,
+    sourceEffectId: z.never().optional(),
+  }),
+  z.object({
+    sourceActionId: z.never().optional(),
+    sourceEffectId: TurnEventObjectSchema.shape.sourceEffectId,
+  }),
+]));
+export type TurnEvent = z.infer<typeof TurnEventSchema>;
 
 export const PendingBattleEffectSchema = z.object({
   schemaVersion: z.literal(1),

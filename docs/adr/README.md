@@ -98,3 +98,5 @@ current check.
 - [0043: V3 character updates with historical V2 display](0043-v3-character-updates-with-historical-v2-display.md) — Accepted; ordinary V3 writes, retained V2 read and migration source.
 - [0044: Discriminated action intent contracts](0044-discriminated-action-intent-contracts.md) — Superseded by 0045; retain the withdrawn fallback sketch as history.
 - [0045: Preserve action intent producer values](0045-preserve-action-intent-producer-values.md) — Accepted; structural action contracts and value-preserving projections, without synthetic fallback judgment.
+
+- [ADR-0046: 既存の条件付き契約を型と実行時で一致させる](0046-align-conditional-contracts.md) — Accepted

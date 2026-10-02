@@ -223,7 +223,8 @@ describe("battle turn causal receipt", () => {
     const dangling = buildBattleTurnCausalReceipt({
       ...input,
       events: input.events.map((event, index) =>
-        index === 0 ? { ...event, sourceActionId: "missing-action" } : event
+        index === 0 && event.sourceEffectId === undefined
+          ? { ...event, sourceActionId: "missing-action" } : event
       ),
     });
     assert.equal(dangling.ok, false);
