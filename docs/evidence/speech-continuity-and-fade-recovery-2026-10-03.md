@@ -16,4 +16,13 @@ Frontend speech reveal state, stagger timers, visibility filtering, the fade cla
 
 Two bounded real-model decisions reused the latest match's frozen turn8 inputs without mutation. Both completed with one logical generation call and zero structural errors. Side A chose null; side B replied to the counterpart's slippery-ground observation with a concrete suggestion. Neither returned the previously repeated exact line. This is a two-decision continuity probe, not a full-match quality acceptance or full action-feasibility proof. No additional live match was created.
 
-Private inputs and probe artifacts: `/tmp/kshiai-repeat-fade-inspect`. They are not committed. Deployment completion will be recorded after exact-source CI, origin/Worker preview checks and public readback.
+Private inputs and probe artifacts: `/tmp/kshiai-repeat-fade-inspect`. They are not committed. Deployment completion is recorded below.
+
+
+## Deployment
+
+Source `9ce565dd9522c281320ed50697ddf41839ebab91`: [CI37118400242](https://github.com/mako10k/kshiai/actions/runs/37118400242) passed all four jobs. Cloud Build `8fc4655b-35e7-4512-9871-5633f3130fcb` succeeded; image digest `sha256:163bfb5e36cf32f1e50eab1c9347ac65deb5351985366a332994b5c8d16e9170` is deployed as `kshiai-api-speech-9ce565d`, 100% traffic. Runtime configuration excluding image compares equal before/after; tagged origin and Worker preview health passed before promotion.
+
+Worker version `48e290c4-fca2-4132-9428-bec0ff216163`, deployment `643b03bb-fd4f-4610-bc4e-9af805af7ebe`, is at 100%, with the new tagged backend origin and required secret binding. Public smoke passed. All nine public frontend files match verified local SHA-256 values, and public JS/CSS contain neither speech fade class nor keyframe. A bounded15-minute ERROR log query returned zero entries; the inspected finished battle state remains unchanged. This verifies deployment and fade-code removal, not a newly completed live match. Previous compatible backend/Worker: `kshiai-api-recovery-5726fc4` / `8bfd14fe-4bc1-4c81-a139-9387d123ea12`. No rollback was performed. Temporary local verification server was stopped.
+
+See the [sanitized receipt](speech-continuity-and-fade-recovery-2026-10-03.json).

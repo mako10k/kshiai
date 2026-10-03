@@ -1,0 +1,63 @@
+{
+  "sourceCommit": "9ce565dd9522c281320ed50697ddf41839ebab91",
+  "ci": {
+    "id": 37118400242,
+    "conclusion": "success",
+    "jobs": 4
+  },
+  "cloudBuild": {
+    "id": "8fc4655b-35e7-4512-9871-5633f3130fcb",
+    "status": "SUCCESS",
+    "imageDigest": "sha256:163bfb5e36cf32f1e50eab1c9347ac65deb5351985366a332994b5c8d16e9170"
+  },
+  "cloudRun": {
+    "revision": "kshiai-api-speech-9ce565d",
+    "trafficPercent": 100,
+    "runtimeConfigurationEqual": true,
+    "previewHealthPassed": true
+  },
+  "worker": {
+    "version": "48e290c4-fca2-4132-9428-bec0ff216163",
+    "deployment": "643b03bb-fd4f-4610-bc4e-9af805af7ebe",
+    "trafficPercent": 100,
+    "previewHealthPassed": true
+  },
+  "public": {
+    "smokePassed": true,
+    "artifactCount": 9,
+    "sha256Matched": true,
+    "speechFadeAbsent": true,
+    "boundedErrorLogCount": 0
+  },
+  "verification": {
+    "governedUnitPassed": 215,
+    "active": 40,
+    "provisional": 2,
+    "disabled": 154,
+    "directDynamicPassed": 12,
+    "directBrowserPassed": 3,
+    "build": "passed",
+    "typecheck": "passed",
+    "static": "passed",
+    "baselineChanged": false
+  },
+  "frozenProbe": {
+    "battleId": "btl_d5ac2372aceca61f7a8f53b8949ebddc",
+    "turn": 8,
+    "logicalDecisions": 2,
+    "callsPerDecision": [
+      1,
+      1
+    ],
+    "structuralErrors": 0,
+    "sideA": "null",
+    "sideB": "reply to counterpart slippery-ground observation",
+    "fullMatchAcceptance": false,
+    "fullActionFeasibilityClaim": false,
+    "battleStateUnchanged": true
+  },
+  "previousCompatibleRuntime": {
+    "cloudRun": "kshiai-api-recovery-5726fc4",
+    "worker": "8bfd14fe-4bc1-4c81-a139-9387d123ea12"
+  }
+}
