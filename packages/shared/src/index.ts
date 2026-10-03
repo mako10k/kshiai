@@ -61,3 +61,4 @@ export * from "./semantic-authoring.js";
 export * from "./semantic-authoring-public.js";
 
 export * from "./conscious-dynamic.js";
+export * from "./character-profile-v3.js";

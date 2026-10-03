@@ -1,14 +1,13 @@
 /** R: Validate and project persisted character candidates for owner review and activation. */
 import {
   CharacterGenerationEnvelopeV2Schema, CharacterGenerationEnvelopeV3Schema,
-  projectCharacterProfileSourceV2, validateCharacterProfileClaimAssessmentV2,
+  projectCharacterProfileSourceV3, validateCharacterProfileClaimAssessmentV2,
   assertCharacterGenerationReadyV2, characterDefinitionV2ToLegacySheet,
   characterDefinitionV3ToLegacySheet, CHARACTER_BATTLE_MECHANICS_CAPABILITY_SET_V3,
   CharacterCompilerCapabilityV1Schema, projectCharacterCompilerCompatibilityV1,
   type CharacterGenerationEnvelopeV2, type CharacterGenerationEnvelopeV3,
 } from "@kshiai/shared";
 
-import { v3ToProfileDefinitionV2 } from "./character-v3-profile-adapter.js";
 import { assetContentDigest } from "../repositories/asset-generations.js";
 
 export type CharacterAuthoringCandidate = CharacterGenerationEnvelopeV2 | CharacterGenerationEnvelopeV3;
@@ -28,7 +27,7 @@ export function assertCharacterCandidateReady(value: unknown): CharacterAuthorin
   if (!v3.success) return assertCharacterGenerationReadyV2(CharacterGenerationEnvelopeV2Schema.parse(value));
   if (candidateCompatibility(v3.data).status !== "ready") throw new Error("CHARACTER_REQUIRED_COMPILER_MISSING:battle-mechanics@3");
   const envelope = v3.data;
-  const projection = projectCharacterProfileSourceV2(v3ToProfileDefinitionV2(envelope.definition), envelope.disclosurePolicy);
+  const projection = projectCharacterProfileSourceV3(envelope.definition, envelope.disclosurePolicy);
   if (!envelope.publicPresentation.claimValidation) throw new Error("CHARACTER_PROFILE_CLAIM_RECEIPT_MISSING");
   if (assetContentDigest(projection) !== envelope.publicPresentation.projectionDigest) throw new Error("PROFILE_PROJECTION_DIGEST_MISMATCH");
   validateCharacterProfileClaimAssessmentV2(projection, envelope.publicPresentation, envelope.publicPresentation.claimValidation);
