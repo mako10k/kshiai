@@ -1,0 +1,326 @@
+{
+  "verifiedAt": "2026-10-03T07:55:05.196Z",
+  "total": 51,
+  "validV3": 51,
+  "migrated": 48,
+  "remaining": 0,
+  "existingV3Unchanged": 3,
+  "historicalGenerationsPreserved": 18,
+  "deletedPreserved": 16,
+  "operationalFieldsPreservedByRegistrationTransaction": true,
+  "liveBattleUpdatesAllowed": true,
+  "sourceReceiptsVerified": true,
+  "results": [
+    {
+      "id": "chr_01b96bec683f1c64d469aa97",
+      "status": "committed",
+      "generationId": "character:chr_01b96bec683f1c64d469aa97:g1:47c52a014689f1d0",
+      "candidateDigest": "47c52a014689f1d05f4a1f575848f9e887145241acee54f09ecd83d7dac9d58c"
+    },
+    {
+      "id": "chr_038239ed1cc9b96a4a075caf",
+      "status": "committed",
+      "generationId": "character:chr_038239ed1cc9b96a4a075caf:g1:4213be05a0480e9e",
+      "candidateDigest": "4213be05a0480e9ef1fb297efca2ab5442fd710d89de2f0eaf699e63f91d9a3a"
+    },
+    {
+      "id": "chr_04ea9ae4540dcac988d4282f",
+      "status": "committed",
+      "generationId": "character:chr_04ea9ae4540dcac988d4282f:g2:8b22151e394f30a5",
+      "candidateDigest": "8b22151e394f30a5497ddf10cfd7e5df651b265b178a0660d80ee5e12b0a1cc1"
+    },
+    {
+      "id": "chr_062b14902b377064f11524c7",
+      "status": "committed",
+      "generationId": "character:chr_062b14902b377064f11524c7:g1:77568ef29e47bcef",
+      "candidateDigest": "77568ef29e47bcef7c637d3feb4dae0708552482a31f3c9594e8e652dd5c3ace"
+    },
+    {
+      "id": "chr_12f69781435ed1a9dcb99aa8",
+      "status": "committed",
+      "generationId": "character:chr_12f69781435ed1a9dcb99aa8:g1:0f86f449c52ce18e",
+      "candidateDigest": "0f86f449c52ce18e87496aa9c572ef8978ab77dc04078c68a7c5e58a2e319392"
+    },
+    {
+      "id": "chr_1ebaca86316dc78a1bb414bc",
+      "status": "committed",
+      "generationId": "character:chr_1ebaca86316dc78a1bb414bc:g1:02e580d2b03760b6",
+      "candidateDigest": "02e580d2b03760b62a12d3ea6163eacbe88e915a68113445c920923a8b4a4880"
+    },
+    {
+      "id": "chr_333e877cb555bd1442a45464",
+      "status": "committed",
+      "generationId": "character:chr_333e877cb555bd1442a45464:g1:7c8df2854eb52e00",
+      "candidateDigest": "7c8df2854eb52e00308f955a81ebd8d9e01534cd393e498a66839985135a17a2"
+    },
+    {
+      "id": "chr_3369cb8c5a1db6655604ece3",
+      "status": "committed",
+      "generationId": "character:chr_3369cb8c5a1db6655604ece3:g1:18401cdd5ef1af07",
+      "candidateDigest": "18401cdd5ef1af07711ec06506fbfc1e16cad29a5c15d8ce9cee8898ed894ed0"
+    },
+    {
+      "id": "chr_41828a6595c8433f3ca2fc5e",
+      "status": "committed",
+      "generationId": "character:chr_41828a6595c8433f3ca2fc5e:g1:8cdfe19f701121c4",
+      "candidateDigest": "8cdfe19f701121c446d916db1e831471cfb9b5af24485d718a4f589b095ac684"
+    },
+    {
+      "id": "chr_4189d0ce37b04a2e75c36c1d",
+      "status": "committed",
+      "generationId": "character:chr_4189d0ce37b04a2e75c36c1d:g1:60dd3c6c829a5aba",
+      "candidateDigest": "60dd3c6c829a5aba17bbe1da1df502f3ba45f3be42eaea91e347f8ff9ab3b833"
+    },
+    {
+      "id": "chr_44e2ad7d48227115ebad2587",
+      "status": "committed",
+      "generationId": "character:chr_44e2ad7d48227115ebad2587:g1:a035801f081186d2",
+      "candidateDigest": "a035801f081186d20e244938fb27b3fd841798e325e05d0a39b8e883c812e4e4"
+    },
+    {
+      "id": "chr_4ad6895807052234749adccf",
+      "status": "committed",
+      "generationId": "character:chr_4ad6895807052234749adccf:g2:fcaff6ff3e45be97",
+      "candidateDigest": "fcaff6ff3e45be97232cd2cbbf502ea8d3dfd8022b5480f0c78b28af63d36d98"
+    },
+    {
+      "id": "chr_4becae9c41374529709e8115",
+      "status": "committed",
+      "generationId": "character:chr_4becae9c41374529709e8115:g3:e3e1994af20d160c",
+      "candidateDigest": "e3e1994af20d160c5f545e20048b92b78c26b0662f84f426fd5a73f1054c5765"
+    },
+    {
+      "id": "chr_5165a487d48df218a014b8ce",
+      "status": "committed",
+      "generationId": "character:chr_5165a487d48df218a014b8ce:g1:df44e9de90522832",
+      "candidateDigest": "df44e9de905228324cd8bc0b0d2da6a617c6173f6d9df9167cb18f7e8b6d8c04"
+    },
+    {
+      "id": "chr_519a6e824efa63e3947ef4db",
+      "status": "committed",
+      "generationId": "character:chr_519a6e824efa63e3947ef4db:g1:df081e3cc62f250a",
+      "candidateDigest": "df081e3cc62f250ab25835dd48424cbed9fa711e066c69694a83cd596e4db73c"
+    },
+    {
+      "id": "chr_54ad35927540bb646a4b3ae2",
+      "status": "committed",
+      "generationId": "character:chr_54ad35927540bb646a4b3ae2:g1:b4da263d7395469e",
+      "candidateDigest": "b4da263d7395469e5570c88f308c4d4f2b3531e89b4d72e8fe73dad97a6c46b9"
+    },
+    {
+      "id": "chr_56012266c3ecd8308d21e91f",
+      "status": "committed",
+      "generationId": "character:chr_56012266c3ecd8308d21e91f:g1:5c75ba0ba2a30f1b",
+      "candidateDigest": "5c75ba0ba2a30f1b7d70e02de446cfe2a6ab53d920e5c7ae84c69f6635beddc9"
+    },
+    {
+      "id": "chr_57d59e106350815bd469c7bf",
+      "status": "committed",
+      "generationId": "character:chr_57d59e106350815bd469c7bf:g1:9d32ec0ccdcd74de",
+      "candidateDigest": "9d32ec0ccdcd74ded285291af9a487074bc6c00b91b8656134ecb4c1d368e02c"
+    },
+    {
+      "id": "chr_58bf0c8169eec9dec6546f18",
+      "status": "committed",
+      "generationId": "character:chr_58bf0c8169eec9dec6546f18:g3:c0ffd93b575cd3c7",
+      "candidateDigest": "c0ffd93b575cd3c7a0e31b399dfa1c4db301690fc53b3b988d8c247d5cc77cc3"
+    },
+    {
+      "id": "chr_605b3964f7129fde9e789917",
+      "status": "committed",
+      "generationId": "character:chr_605b3964f7129fde9e789917:g1:f630e82ac64b3587",
+      "candidateDigest": "f630e82ac64b35876f577fdf360b5ff20d607819d85f7cb4b85c4b28105562ae"
+    },
+    {
+      "id": "chr_6a72bae3cd2a0e2fc0f2b784",
+      "status": "committed",
+      "generationId": "character:chr_6a72bae3cd2a0e2fc0f2b784:g1:9602ca11f756fd45",
+      "candidateDigest": "9602ca11f756fd454f66241952fa04389412ea9ee9fa041e9d7781e1d78938a6"
+    },
+    {
+      "id": "chr_740afa65141f962e8e7382f8",
+      "status": "committed",
+      "generationId": "character:chr_740afa65141f962e8e7382f8:g1:105a75cbfaa63f5a",
+      "candidateDigest": "105a75cbfaa63f5a8df6d252c6a6b04f3f340dea9e91726d52399610901c4577"
+    },
+    {
+      "id": "chr_7ec732f747607b3373c7cf93",
+      "status": "committed",
+      "generationId": "character:chr_7ec732f747607b3373c7cf93:g1:96e8ddb00f45c5e9",
+      "candidateDigest": "96e8ddb00f45c5e925ccfabd999b389f5ad55b6c41f3d0b8c63c5d94d9497c38"
+    },
+    {
+      "id": "chr_8702b2457096688f52702aaa",
+      "status": "committed",
+      "generationId": "character:chr_8702b2457096688f52702aaa:g1:00e1a3bce5163e4a",
+      "candidateDigest": "00e1a3bce5163e4ae80ea3125c106fd0514eba0b480e4ed3f884dfb7f96824e5"
+    },
+    {
+      "id": "chr_9cab8f0bc6f8e5cb7e79f278",
+      "status": "committed",
+      "generationId": "character:chr_9cab8f0bc6f8e5cb7e79f278:g1:00d2ee1d68745fb5",
+      "candidateDigest": "00d2ee1d68745fb5abc906773426b078fdf9a1f1c7954fd1beda39bf8f768707"
+    },
+    {
+      "id": "chr_a6fa7977c6beaae06823e0f6",
+      "status": "committed",
+      "generationId": "character:chr_a6fa7977c6beaae06823e0f6:g2:6248e92caf7d635b",
+      "candidateDigest": "6248e92caf7d635b44bd15f6f9a9500bb23e02d3be98a4ae71e522b3dd477d94"
+    },
+    {
+      "id": "chr_ad5eeb119cee86a02b009d52",
+      "status": "committed",
+      "generationId": "character:chr_ad5eeb119cee86a02b009d52:g1:90ff52e6832f69f6",
+      "candidateDigest": "90ff52e6832f69f6395bf1eb40f54a6382c1aaed0e34243a0dab7d95d64824c8"
+    },
+    {
+      "id": "chr_b0892bd7c0daa1ef6e7ab548",
+      "status": "committed",
+      "generationId": "character:chr_b0892bd7c0daa1ef6e7ab548:g3:0add2d8618db9cb7",
+      "candidateDigest": "0add2d8618db9cb780964da2ca8f3665336258f8a3e1a948d5667dc007ea4555"
+    },
+    {
+      "id": "chr_b3c05c08280a249dd9394b03",
+      "status": "committed",
+      "generationId": "character:chr_b3c05c08280a249dd9394b03:g1:7987ef01e97b4aab",
+      "candidateDigest": "7987ef01e97b4aab214b875f35fd3264afba16fa8d8db23ef82bad9c90a9a53e"
+    },
+    {
+      "id": "chr_b4a7b8919132a579db05d0d5",
+      "status": "committed",
+      "generationId": "character:chr_b4a7b8919132a579db05d0d5:g1:d91e87a74d3c8dc8",
+      "candidateDigest": "d91e87a74d3c8dc8e907e0a592e4105736f4bfb8b4aa8242e135ad6479754ad8"
+    },
+    {
+      "id": "chr_bacedd2443809e90e60477a7",
+      "status": "committed",
+      "generationId": "character:chr_bacedd2443809e90e60477a7:g1:90d4040c27215854",
+      "candidateDigest": "90d4040c272158546386dd92e185531c3592c445e70fe6789b32a28cb6c5626c"
+    },
+    {
+      "id": "chr_ce5dc556af60dcec2e8d318f",
+      "status": "committed",
+      "generationId": "character:chr_ce5dc556af60dcec2e8d318f:g1:fc063c51b31216d0",
+      "candidateDigest": "fc063c51b31216d02e0f2f6110ba4a3db9f4ddba68d618e07d1b2642ad17a4a7"
+    },
+    {
+      "id": "chr_cf5cc9a1657fe69d8c8f656b",
+      "status": "committed",
+      "generationId": "character:chr_cf5cc9a1657fe69d8c8f656b:g3:49c8548230d0d768",
+      "candidateDigest": "49c8548230d0d768dc38d1aab6946c406ef1845df033d9592279eb79bccbd679"
+    },
+    {
+      "id": "chr_d23c9c6085521709403d44de",
+      "status": "committed",
+      "generationId": "character:chr_d23c9c6085521709403d44de:g1:423d85cdcfce7b3d",
+      "candidateDigest": "423d85cdcfce7b3d3ba44fd599afafbd088bbc4b751652e967fe2f00f5736ff2"
+    },
+    {
+      "id": "chr_e23beafa7937cc1cb6017fb1",
+      "status": "committed",
+      "generationId": "character:chr_e23beafa7937cc1cb6017fb1:g1:8e975c21269c380b",
+      "candidateDigest": "8e975c21269c380b7b38f4e5139755e93f474cc9195c9b04e2390c1b4ca11d69"
+    },
+    {
+      "id": "chr_e2e_codex_observer",
+      "status": "committed",
+      "generationId": "character:chr_e2e_codex_observer:g1:5ae72bcf1fa2ea39",
+      "candidateDigest": "5ae72bcf1fa2ea395a4e0bb1a6035733ce74057f9196c14234aa0e5f9dddf225"
+    },
+    {
+      "id": "chr_e2e_codex_opponent",
+      "status": "committed",
+      "generationId": "character:chr_e2e_codex_opponent:g1:f80d7eb4ce585307",
+      "candidateDigest": "f80d7eb4ce5853073e514f015dbf703997c0bcf99bd7aa552bd1aaee90220de4"
+    },
+    {
+      "id": "chr_e2e_dialogue_gaku",
+      "status": "committed",
+      "generationId": "character:chr_e2e_dialogue_gaku:g4:1b71a028a31b5d46",
+      "candidateDigest": "1b71a028a31b5d4643f17ace659d70f36e166208ec370891520694e5e83835f0"
+    },
+    {
+      "id": "chr_e2e_dialogue_nagi",
+      "status": "committed",
+      "generationId": "character:chr_e2e_dialogue_nagi:g4:2624b32e675fafb0",
+      "candidateDigest": "2624b32e675fafb087a9485d0bafda99a7d757d5d1956b3a8c149b7835838599"
+    },
+    {
+      "id": "chr_e720ac9476ac96b3e19c8284",
+      "status": "committed",
+      "generationId": "character:chr_e720ac9476ac96b3e19c8284:g1:03535e32aadc90fc",
+      "candidateDigest": "03535e32aadc90fc74b4dbeda9bafd27fbae0ec00d6dba4ced815e38a6e84914"
+    },
+    {
+      "id": "chr_eba21a72344d71c3a9a93919",
+      "status": "committed",
+      "generationId": "character:chr_eba21a72344d71c3a9a93919:g2:43afcbcc14d789dd",
+      "candidateDigest": "43afcbcc14d789dd43e73ad59997c5cb99fb1e15846761527dc97cde3acc3348"
+    },
+    {
+      "id": "chr_f003b057fe1a1616d683d5da",
+      "status": "committed",
+      "generationId": "character:chr_f003b057fe1a1616d683d5da:g1:888d803124720b09",
+      "candidateDigest": "888d803124720b09ae44aa24adda316520ada243b8f7a712a01be70b837f6a7a"
+    },
+    {
+      "id": "chr_f4e4cdcf0cf177d4d221f3c6",
+      "status": "committed",
+      "generationId": "character:chr_f4e4cdcf0cf177d4d221f3c6:g2:435c12393f71f00d",
+      "candidateDigest": "435c12393f71f00d69b25cf73ff1fed46237fe946d39e40bbe2463b3f317f48d"
+    },
+    {
+      "id": "chr_f702e08178b0c933bc0b287a",
+      "status": "committed",
+      "generationId": "character:chr_f702e08178b0c933bc0b287a:g1:d00057de9253478a",
+      "candidateDigest": "d00057de9253478a71ccdbba55e8481948a329a0b111c53f342e04e98d4e6424"
+    },
+    {
+      "id": "focused-migration-character",
+      "status": "committed",
+      "generationId": "character:focused-migration-character:g2:877d93fee85f39e5",
+      "candidateDigest": "877d93fee85f39e516634f2e6c770073bef3ac9ab8e1fb7a43a49f339c70b6a1"
+    },
+    {
+      "id": "focused-migration-route-character",
+      "status": "committed",
+      "generationId": "character:focused-migration-route-character:g2:a115877784f59b97",
+      "candidateDigest": "a115877784f59b97a03ce41c1239d4ae95f3ab96dd4d2c02094b7c7f68cac412"
+    },
+    {
+      "id": "focused-revise-character",
+      "status": "committed",
+      "generationId": "character:focused-revise-character:g2:f36146a7a8f5c6f4",
+      "candidateDigest": "f36146a7a8f5c6f4cb43e0709bcdad7282ecc29ff7e0d89a34078edddbb5cc11"
+    },
+    {
+      "id": "focused-scope-ambiguous",
+      "status": "committed",
+      "generationId": "character:focused-scope-ambiguous:g2:49d14636881e070f",
+      "candidateDigest": "49d14636881e070f0253e0d2b1f938be50bf3fdda31a78033f0cee439f9ed99f"
+    }
+  ],
+  "replay": {
+    "count": 48,
+    "allReplayed": true
+  },
+  "runtime": {
+    "sourceCommit": "c341bfd9fec37aecb4af483b1447d2c493bcf4ca",
+    "cloudRunRevision": "kshiai-api-profile-c341bfd",
+    "workerVersion": "40f39b55-0661-4114-88bc-97faa4baeb13",
+    "publicSmoke": "passed",
+    "recentErrorLog": {
+      "window": "15 minutes",
+      "entries": 0
+    }
+  },
+  "approvedSemanticException": {
+    "characterId": "chr_062b14902b377064f11524c7",
+    "ruleId": "gekirin_fury",
+    "change": "legacy force constraint to conscious commitment; original statement and priority preserved"
+  },
+  "cli": {
+    "receipts": 134,
+    "estimatedCostUSD": 4.17275608
+  }
+}

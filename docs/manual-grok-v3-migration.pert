@@ -1,5 +1,5 @@
 project MANUAL_GROK_V3_MIGRATION:
-  version 2
+  version 3
   title "Owner-directed migration of every remaining character"
   description "Canonical scope for owner instruction 2026-10-03 all remaining characters via manual Grok CLI; ADR0043 manual migration and ADR0048 public guidance projection. Includes original export, actual conversion and independent review, validator deployment, transactional V3 revisions and readback. No old M2 or trial-only execution limits apply to this new explicit authority."
   duration_unit hour
@@ -52,5 +52,6 @@ task registration CANDIDATES -> COMPLETE:
   title "Dry-run transactional registration then commit and read back all revisions"
   description "Existing immutable append and CAS functions; private original and actual operator receipts; live operational fields and historical generations preserved; remaining non-V3 count zero; replay adds no duplicate."
   duration 0.25h
+  status done
   requires:
     DEV 1
