@@ -1,3 +1,5 @@
+import { dynamicAgentResult } from "./conscious-dynamic.js";
+import { decodeConsciousOutputV4 } from "@kshiai/shared";
 import { buildDeterministicActionFallback } from "../services/character-action-fallback.js";
 import { mockConsciousResult } from "./conscious-agency.js";
 import { decodeConsciousOutputV3 } from "@kshiai/shared";
@@ -864,6 +866,12 @@ export class MockLlmProvider implements LlmProvider {
     input: Parameters<LlmProvider["advanceCharacterAgent"]>[0],
   ): Promise<Awaited<ReturnType<LlmProvider["advanceCharacterAgent"]>>> {
     if (input.contextMode === "compact") {
+      if (input.contractVersion === 4) {
+        const ref = input.facts.find((fact) => fact.kind === "value")?.ref;
+        return dynamicAgentResult(decodeConsciousOutputV4({
+          ...(input.agencyState.upperGoal === null && ref ? { initialGoal: { statement: "検証用の目標", basisRefs: [ref] } } : {}),
+        }, input.phase));
+      }
       if (input.contractVersion === 3) return mockConsciousResult(input);
       const observation = input.turnObservation!;
       const compactV2 = input.contractVersion === 2;
@@ -1144,6 +1152,12 @@ export class MockLlmProvider implements LlmProvider {
   async decideCharacterAction(
     input: Parameters<LlmProvider["decideCharacterAction"]>[0],
   ): Promise<Awaited<ReturnType<LlmProvider["decideCharacterAction"]>>> {
+    if (input.conscious?.contractVersion === 4) {
+      const pickedAction = buildDeterministicActionFallback(input.decision);
+      const ref = input.conscious.facts[0]?.ref;
+      const output = decodeConsciousOutputV4({ intent: ref ? { aim: "検証用の選択", basisRefs: [ref] } : null, nextAction: pickedAction }, "later");
+      return { proposedAction: pickedAction, consciousOutput: output };
+    }
     if (input.conscious?.contractVersion === 3) {
       return {
         proposedAction: null,

@@ -1,5 +1,6 @@
 // R: Verify V3 generation binding across real SQLite battle operations.
 import assert from "node:assert/strict";
+import { dynamicAgentResult, runConsciousGeneration } from "../llm/conscious-dynamic.js";
 import { after, describe, it } from "node:test";
 import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -118,7 +119,7 @@ describe("ADR-0039 V3 character battle binding", () => {
     const originalAgent = llm.advanceCharacterAgent.bind(llm);
     llm.advanceCharacterAgent = async (input) => {
       assert.equal(input.contextMode, "compact");
-      assert.equal(input.contractVersion, 3);
+      assert.equal(input.contractVersion, 4);
       consciousCalls += 1;
       return originalAgent(input);
     };
@@ -209,7 +210,7 @@ describe("ADR-0039 V3 character battle binding", () => {
     assert.equal(read.status, 200);
     assert.ok(consciousCalls >= 4);
     const advanced = await getBattle(created.id);
-    assert.ok(advanced?.agentStateA?.consciousAgencyV1?.upperGoal);
+    assert.ok(advanced?.agentStateA?.consciousAgencyV2?.upperGoal);
     assert.ok((advanced.turnRecords?.length ?? 0) > 0);
 
     const action = advanced.turnRecords?.flatMap((record) => record.actions)[0];
@@ -219,7 +220,7 @@ describe("ADR-0039 V3 character battle binding", () => {
       actorSide: "a", kind: "reflect", executed: true,
       reflectionAnalysis: "frozen-reflect-analysis", reflectionGuideline: "must-not-replace-goal",
     }]);
-    assert.deepEqual(reflected.agentStateA?.consciousAgencyV1, advanced.agentStateA.consciousAgencyV1);
+    assert.deepEqual(reflected.agentStateA?.consciousAgencyV2, advanced.agentStateA.consciousAgencyV2);
     assert.equal(reflected.agentStateA?.currentGoal, advanced.agentStateA.currentGoal);
     assert.ok(reflected.agentStateA?.battleVolatileMemory?.includes("frozen-reflect-analysis"));
 
@@ -428,9 +429,10 @@ describe("ADR-0039 V3 character battle binding", () => {
     const emitted: { characterName: string; action: CharacterActionIntent }[] = [];
     llm.advanceCharacterAgent = async (input) => {
       const result = await originalAgent(input);
-      const output = "consciousOutput" in result ? result.consciousOutput : null;
+      if (result.contractVersion !== 4 || input.contextMode !== "compact" || input.contractVersion !== 4) return result;
+      const output = result.consciousOutput;
       const subject = input.decision?.affordances?.[0];
-      if (!subject || !output?.envelopeValid || output.phase === "aftermath" ||
+      if (!subject || output.phase === "aftermath" ||
           !input.decision?.availableActions.some((candidate) => candidate.kind === "free_action")) {
         return result;
       }
@@ -441,7 +443,9 @@ describe("ADR-0039 V3 character battle binding", () => {
       };
       emitted.push({ characterName: input.character.displayName, action });
       return { ...result, proposedAction: action, proposedActionStatus: "valid",
-        consciousOutput: { ...output, nextAction: { valid: true, value: action } } };
+        consciousOutput: { ...output,
+          intent: { valid: true, value: { aim: "対象の位置を確かめる", basisRefs: [input.facts[0]!.ref] } },
+          nextAction: { valid: true, value: action } } };
     };
     const created = await startBattle({
       userId: "inventory-owner", battleId: "v3-free-only-regression",
@@ -474,6 +478,50 @@ describe("ADR-0039 V3 character battle binding", () => {
     assert.equal(action.desiredOutcome, supplied.desiredOutcome);
     assert.deepEqual(after.assetManifest, before.assetManifest);
     assert.ok((after.battleRevision ?? 0) > (before.battleRevision ?? 0));
+  });
+
+  it("reserves repair durably without committing unfinished phase state and does not reset on reload", async () => {
+    const latest = await query<{ id: string }>("SELECT id FROM battles ORDER BY created_at DESC LIMIT 1", []);
+    assert.ok(latest.rows[0]);
+    const saved = await getBattle(latest.rows[0].id);
+    assert.ok(saved?.agentStateA?.consciousAgencyV2?.upperGoal && saved.assetManifest);
+    const llm = new MockLlmProvider();
+    const requestedFields: string[][] = [];
+    llm.advanceCharacterAgent = async (input) => {
+      assert.ok(input.contextMode === "compact" && input.contractVersion === 4);
+      return dynamicAgentResult(await runConsciousGeneration(input, input, async (_system, user, opts) => {
+        const body = JSON.parse(user);
+        requestedFields.push(Object.keys(opts.responseFormat?.json_schema.schema.properties ?? {}));
+        return body.repair ? { nextUtterance: "修復した発言。" } : { nextUtterance: 9 };
+      }));
+    };
+    const invoke = (state: BattleState) => advanceCharacterAgents({ llm, before: state, after: structuredClone(state),
+      mine: state.assetManifest!.characters.a.snapshot, opp: state.assetManifest!.characters.b.snapshot,
+      dialoguePipeline: { ...createConsciousFixture().settings, ...state.dialoguePipelineSnapshot },
+      events: [], actions: [], activeSides: ["a"], phase: "turn" });
+    const first = await invoke(saved);
+    assert.deepEqual(requestedFields.at(-1), ["nextUtterance"]);
+    assert.ok(first.characterSpeeches.some((s) => s.text === "修復した発言。"));
+    const reloaded = await getBattle(saved.id);
+    assert.ok(reloaded);
+    assert.equal(reloaded.consciousRepairReservations?.length, 1);
+    assert.deepEqual(reloaded.agentStateA, saved.agentStateA);
+    assert.deepEqual(reloaded.turnRecords, saved.turnRecords);
+    assert.equal(reloaded.battleRevision, saved.battleRevision);
+    assert.equal(reloaded.turn, saved.turn);
+    const calls = requestedFields.length;
+    await invoke(reloaded);
+    assert.equal(requestedFields.length, calls + 1);
+    await assert.rejects(import("../repositories/battles.js").then((repo) => repo.reserveConsciousRepair({
+      battleId: saved.id, key: "stale-reservation", expectedRevision: (saved.battleRevision ?? 0) - 1,
+    })), /BATTLE_REVISION_CONFLICT/);
+    const repo = await import("../repositories/battles.js");
+    const guard = await import("./distributed-guard.js");
+    await guard.withBattleLease(saved.id, async () => {
+      await query("UPDATE battle_leases SET fencing_token = fencing_token + 1 WHERE battle_id = $1", [saved.id]);
+      await assert.rejects(repo.reserveConsciousRepair({ battleId: saved.id, key: "lost-fence-reservation", expectedRevision: saved.battleRevision ?? 0 }), /BATTLE_REVISION_CONFLICT/);
+    });
+    assert.equal((await getBattle(saved.id))?.consciousRepairReservations?.length, 1);
   });
 
 });

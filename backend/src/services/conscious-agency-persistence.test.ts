@@ -28,7 +28,7 @@ after(async () => {
 });
 
 describe("ADR-0028 private agency state persistence", () => {
-  it("creates and advances a real bound V3 battle with no psyche LLM calls", async () => {
+  it("keeps retired legacy characters blocked from new battle creation", async () => {
     const fixture = createConsciousFixture();
     await query(`INSERT INTO users (id, username, password_hash, created_at) VALUES ($1, $2, $3, $4)`,
       ["inventory-owner", "agency-owner", "test", new Date().toISOString()]);
@@ -47,21 +47,12 @@ describe("ADR-0028 private agency state persistence", () => {
       consciousCalls += 1;
       return original(input);
     };
-    const created = await startBattle({ userId: "inventory-owner", battleId: "agency-created-v3",
-      myCharacterId: fixture.mine.id, opponentCharacterId: fixture.opp.id, battlefieldMode: "random", llm });
-    const initial = await getBattle(created.id);
-    assert.equal(initial?.assetManifest?.schemaVersion, 3);
-    assert.equal(initial?.agentStateA?.consciousAgencyV1?.upperGoal, null);
-    assert.equal(initial?.agentStateA?.currentGoal, "");
-    for (let step = 1; step <= 4; step += 1) {
-      await advanceTurn({ userId: "inventory-owner", battleId: created.id, operationId: `agency-step-${step}`, llm });
-    }
-    const final = await getBattle(created.id);
-    assert.ok(final?.agentStateA?.consciousAgencyV1?.upperGoal);
-    assert.ok(consciousCalls >= 4);
-    assert.equal(final.dialoguePipelineSnapshot?.schemaVersion, 3);
-    assert.equal(final.assetManifest?.characters.a.compilerInputsV2, undefined);
-    assert.ok(final.assetManifest?.characters.a.compilerInputsV3);
+    // ADR-0039 retires legacy characters from new creation; the next tests
+    // exercise historical V3 persistence directly without changing that gate.
+    await assert.rejects(startBattle({ userId: "inventory-owner", battleId: "agency-created-v3",
+      myCharacterId: fixture.mine.id, opponentCharacterId: fixture.opp.id, battlefieldMode: "random", llm }), /MY_CHARACTER_V3_CAPABILITY_BLOCKED/);
+    assert.equal(await getBattle("agency-created-v3"), null);
+    assert.equal(consciousCalls, 0);
   });
   it("runs V3 service acceptance, SQLite reload, second judgment and stale-save rejection together", async () => {
     const fixture = createConsciousFixture();

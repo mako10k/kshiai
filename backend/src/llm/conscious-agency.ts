@@ -29,7 +29,7 @@ export function privateBattleGoal(state: BattleState, side: "a" | "b"): string {
   const agent = side === "a" ? state.agentStateA : state.agentStateB;
   const schemaVersion = state.assetManifest?.schemaVersion;
   if (schemaVersion === 3 || schemaVersion === 4) {
-    return agent?.consciousAgencyV1?.upperGoal?.statement ?? "";
+    return agent?.consciousAgencyV2?.upperGoal?.statement ?? agent?.consciousAgencyV1?.upperGoal?.statement ?? "";
   }
   return (side === "a" ? state.openingPlanA : state.openingPlanB) ?? agent?.currentGoal ?? "";
 }
@@ -58,8 +58,10 @@ export function assertConsciousBinding(state: BattleState, settings: DialoguePip
   if (!stored || keys.some((key) => expected[key] !== actual[key] || expected[key] !== stored[key])) {
     throw new Error("BATTLE_CONTRACT_MISMATCH");
   }
-  if (!state.agentStateA?.consciousAgencyV1 || !state.agentStateB?.consciousAgencyV1 ||
-      !state.agentStateA.reactionStateV1 || !state.agentStateB.reactionStateV1) {
+  const dynamic = state.assetManifest?.schemaVersion === 4 && state.assetManifest.consciousOutputContract === "dynamic-v4";
+  if (!(dynamic ? state.agentStateA?.consciousAgencyV2 : state.agentStateA?.consciousAgencyV1) ||
+      !(dynamic ? state.agentStateB?.consciousAgencyV2 : state.agentStateB?.consciousAgencyV1) ||
+      !state.agentStateA?.reactionStateV1 || !state.agentStateB?.reactionStateV1) {
     throw new Error("BATTLE_CONTRACT_MISMATCH");
   }
 }
@@ -80,7 +82,7 @@ export function consciousRequest(input: CharacterExpressionCompactInputV3): Char
 
 export function consciousLaterRequest(input: CharacterActionDecisionInput) {
   const context = input.conscious;
-  if (!context) throw new Error("BATTLE_CONTRACT_MISMATCH");
+  if (!context || context.contractVersion !== 3 || context.agencyState.schemaVersion !== 1) throw new Error("BATTLE_CONTRACT_MISMATCH");
   return {
     contractVersion: 3, phase: "later", character: input.character,
     structuredSelf: input.structuredSelf, perception: input.perception, decision: input.decision,

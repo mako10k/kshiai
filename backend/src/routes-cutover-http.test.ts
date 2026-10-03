@@ -9,8 +9,8 @@ import { Hono } from "hono";
 test("closed HTTP routes block public auth/media and preserve owner /api/me auth", async () => {
   const directory = await fs.mkdtemp(path.join(os.tmpdir(), "kshiai-cutover-http-"));
   process.env.NODE_ENV = "test";
-  delete process.env.DATABASE_URL;
-  delete process.env.DIRECT_URL;
+  process.env.DATABASE_URL = "";
+  process.env.DIRECT_URL = "";
   process.env.AUTH_PROVIDER = "legacy";
   process.env.LLM_PROVIDER = "mock";
   process.env.DATABASE_PATH = path.join(directory, "test.db");

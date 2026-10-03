@@ -1275,6 +1275,29 @@ export const ConsciousIntentV1Schema = z.object({
 }).strict();
 export type ConsciousIntentV1 = z.infer<typeof ConsciousIntentV1Schema>;
 
+/** ADR-0047: new frozen generation; historical V1 rationale remains required. */
+export const ConsciousIntentV2Schema = ConsciousIntentV1Schema.omit({ rationale: true });
+export type ConsciousIntentV2 = z.infer<typeof ConsciousIntentV2Schema>;
+export type ConsciousAgencyV2 = {
+  schemaVersion: 2;
+  upperGoal: ConsciousGoalV1 | null;
+  latestDecision: { intent: ConsciousIntentV2; action: CharacterActionIntent | null; turn: number; phase: "prologue" | "turn" | "later" } | null;
+};
+export const ConsciousAgencyV2Schema: z.ZodType<ConsciousAgencyV2> = z.object({
+  schemaVersion: z.literal(2),
+  upperGoal: ConsciousGoalV1Schema.nullable(),
+  latestDecision: z.object({
+    intent: ConsciousIntentV2Schema,
+    action: CharacterActionIntentSchema.nullable(),
+    turn: z.number().int().nonnegative(),
+    phase: z.enum(["prologue", "turn", "later"]),
+  }).strict().nullable(),
+}).strict().superRefine((state, context) => {
+  if (state.upperGoal === null && state.latestDecision !== null) {
+    context.addIssue({ code: z.ZodIssueCode.custom, path: ["latestDecision"], message: "decision requires a goal" });
+  }
+});
+
 export const ConsciousDecisionV1Schema = z.object({
   intent: ConsciousIntentV1Schema,
   action: CharacterActionIntentSchema.nullable(),
@@ -1330,6 +1353,7 @@ export const CharacterAgentStateSchema = z.object({
   reactionReceiptV1: PsycheReactionReceiptV1Schema.optional(),
   /** V3-only private proposals; absence preserves legacy snapshots unchanged. */
   consciousAgencyV1: ConsciousAgencyV1Schema.optional(),
+  consciousAgencyV2: ConsciousAgencyV2Schema.optional(),
   /** Deterministic no-effect attention shadow; never exposed publicly. */
   focusStateV1: CharacterFocusStateV1Schema.optional(),
   focusReceiptV1: CharacterFocusTransitionReceiptV1Schema.optional(),
@@ -1487,6 +1511,9 @@ export type JudgmentPresentationProjection = z.infer<
 >;
 
 export const CharacterActionProposalRejectionReasonSchema = z.enum([
+  "goal_invalid",
+  "intent_invalid",
+  "action_required",
   "no_decision_context",
   "missing_proposal",
   "schema_invalid",
@@ -1904,8 +1931,7 @@ export type BattleTurnEngineContinuation = z.infer<
  * battle independent from mutable current-asset rows, including after an
  * asset generation is archived or hidden from ordinary editors.
  */
-export interface BattleAssetManifest {
-  schemaVersion: 2 | 3 | 4;
+interface BattleAssetManifestFields {
   boundAt: string;
   characters: {
     a: BattleCharacterAssetBinding;
@@ -1944,6 +1970,12 @@ export interface BattleAssetManifest {
     narrationStyleRules?: string;
   };
 }
+
+/** The dynamic output binding belongs only to a complete V4 manifest. */
+export type BattleAssetManifest = BattleAssetManifestFields & (
+  | { schemaVersion: 2 | 3; consciousOutputContract?: never }
+  | { schemaVersion: 4; consciousOutputContract?: "dynamic-v4" }
+);
 
 export const BattleBasicAttackSourceSchema = z.discriminatedUnion("kind", [
   z.object({
@@ -2131,6 +2163,8 @@ export const BattleAssetManifestV4Schema = BattleAssetManifestSharedSchema.exten
     a: BattleCharacterAssetBindingV4Schema,
     b: BattleCharacterAssetBindingV4Schema,
   }).strict(),
+  /** Absence preserves historical ADR-0028 outputs. */
+  consciousOutputContract: z.literal("dynamic-v4").optional(),
   /** ADR-0028 keeps the complete compact dialogue schema-3 tuple. */
   dialoguePipeline: BattleDialoguePipelineBindingV3Schema,
   rules: BattleAssetManifestSharedSchema.shape.rules.extend({
@@ -2377,6 +2411,7 @@ export interface BattleState {
   causalExecution?: CausalTurnExecution;
   causalBucketCommit?: BattleBucketMechanicalCommit;
   causalEngineContinuation?: BattleTurnEngineContinuation;
+  consciousRepairReservations?: string[];
   causalLaterDecision?: BattleCausalLaterDecision;
   battleRevision?: number;
   phaseReceiptSequence?: number;
@@ -2570,6 +2605,7 @@ export const BattleStateSchema: z.ZodType<
   /** Pure-engine state required to resume after the durable bucket commit. */
   causalEngineContinuation: BattleTurnEngineContinuationSchema.optional(),
   /** Privacy-safe receipt for the isolated decision made after a bucket commit. */
+  consciousRepairReservations: z.array(z.string().min(1)).optional(),
   causalLaterDecision: z.object({
     schemaVersion: z.literal(1),
     executionId: z.string().min(1),
@@ -2754,7 +2790,18 @@ export const BattleStateSchema: z.ZodType<
     .optional(),
   createdAt: z.string(),
   updatedAt: z.string(),
-}).superRefine((state, ctx) => {
+ }).superRefine((state, ctx) => {
+  const dynamic = state.assetManifest?.schemaVersion === 4 && state.assetManifest.consciousOutputContract === "dynamic-v4";
+  for (const side of ["agentStateA", "agentStateB"] as const) {
+    const agent = state[side];
+    if (dynamic ? !agent?.consciousAgencyV2 || Boolean(agent.consciousAgencyV1) : Boolean(agent?.consciousAgencyV2)) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: [side], message: "conscious state must match frozen output contract" });
+    }
+  }
+  const reservations = state.consciousRepairReservations ?? [];
+  if (new Set(reservations).size !== reservations.length) {
+    ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["consciousRepairReservations"], message: "repair reservations must be unique" });
+  }
   const effectIds = (state.pendingEffects ?? []).map((effect) => effect.effectId);
   if (new Set(effectIds).size !== effectIds.length) {
     ctx.addIssue({

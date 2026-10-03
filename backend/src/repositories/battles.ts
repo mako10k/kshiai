@@ -28,6 +28,28 @@ export async function saveBattle(
   await writeBattle({ query }, state, meta);
 }
 
+/** Reserve domain repair without checkpointing an unfinished phase as canonical state. */
+export async function reserveConsciousRepair(input: { battleId: string; key: string; expectedRevision: number }): Promise<{ reserved: boolean; keys: string[] }> {
+  return withTransaction(async (connection) => {
+    const result = await connection.query<{ state_json: unknown; side_a_user_id: string; side_a_character_id: string; side_b_character_id: string }>(
+      `SELECT state_json, side_a_user_id, side_a_character_id, side_b_character_id FROM battles WHERE id = $1${config.databaseUrl ? " FOR UPDATE" : ""}`,
+      [input.battleId],
+    );
+    const row = result.rows[0];
+    if (!row) throw new Error("BATTLE_NOT_FOUND");
+    const state = BattleStateSchema.parse(typeof row.state_json === "string" ? JSON.parse(row.state_json) : row.state_json);
+    if ((state.battleRevision ?? 0) !== input.expectedRevision) throw new Error("BATTLE_REVISION_CONFLICT");
+    const keys = state.consciousRepairReservations ?? [];
+    if (keys.includes(input.key)) return { reserved: false, keys };
+    const nextKeys = [...keys, input.key];
+    await writeBattle(connection, { ...state, consciousRepairReservations: nextKeys }, {
+      sideAUserId: row.side_a_user_id, sideACharacterId: row.side_a_character_id, sideBCharacterId: row.side_b_character_id,
+      expectedRevision: input.expectedRevision,
+    });
+    return { reserved: true, keys: nextKeys };
+  });
+}
+
 /** UPDATE-only alias retained for existing advancement callers. */
 export const updateExistingBattle = saveBattle;
 

@@ -1,3 +1,4 @@
+import { runConsciousGeneration, dynamicAgentResult, dynamicLaterInput } from "./conscious-dynamic.js";
 import OpenAI from "openai";
 import { zodResponseFormat } from "openai/helpers/zod";
 import type {
@@ -2932,6 +2933,9 @@ Return JSON only with privateMemory, currentGoal, emotion, beliefs, observations
     if (input.contextMode === "compact") {
       const counterpartLabel = input.counterpart?.displayName ?? "相手";
       try {
+        if (input.contractVersion === 4) {
+          return dynamicAgentResult(await runConsciousGeneration(input, input, this.chatJson.bind(this)));
+        }
         if (input.contractVersion === 3) {
           const prompt = input.phase === "aftermath"
             ? CONSCIOUS_V3_PROMPT : `${CONSCIOUS_V3_PROMPT}\n${CHARACTER_ACTION_PROPOSAL_OUTPUT_RULES}`;
@@ -3156,6 +3160,10 @@ The narrator may later choose this line's display position and punctuation, but 
   ): Promise<Awaited<ReturnType<LlmProvider["decideCharacterAction"]>>> {
     if (!this.client) return this.fallback.decideCharacterAction(input);
     try {
+      if (input.conscious?.contractVersion === 4) {
+        const consciousOutput = await runConsciousGeneration(dynamicLaterInput(input), input, this.chatJson.bind(this));
+        return { proposedAction: consciousOutput.nextAction.valid ? consciousOutput.nextAction.value : null, consciousOutput };
+      }
       if (input.conscious?.contractVersion === 3) {
         const raw = await this.chatJson(`${CONSCIOUS_V3_PROMPT}\n${CHARACTER_ACTION_PROPOSAL_OUTPUT_RULES}`, JSON.stringify(consciousLaterRequest(input)), {
           tier: "fast", label: "decideCharacterAction", timeoutMs: FAST_TIMEOUT_MS, temperature: 0.35,

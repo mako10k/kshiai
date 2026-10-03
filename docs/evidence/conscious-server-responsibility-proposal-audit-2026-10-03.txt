@@ -1,0 +1,9 @@
+thought_id: docs-adr-0047-phase-scoped-conscious-output-and-mechanical-completion
+id_source: file
+status: draft
+draft: thoughts/docs-adr-0047-phase-scoped-conscious-output-and-mechanical-completion/draft.think
+latest_audit: thoughts/docs-adr-0047-phase-scoped-conscious-output-and-mechanical-completion/audits/2026-10-03T05-06-04.010Z.json
+next: reuse this thought_id with thought show/history/reflect/delete or dsl audit --id
+document: docs-adr-0047-phase-scoped-conscious-output-and-mechanical-completion
+engine: 0.1.0
+summary: fatal=0 error=0 warning=0 info=0 hint=0

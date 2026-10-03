@@ -1,8 +1,10 @@
+import { bindConsciousGenerationControl } from "../llm/conscious-dynamic.js";
 import { buildDeterministicActionFallback } from "./character-action-fallback.js";
 // R: Coordinate battle creation and turn execution using bound assets and committed state.
 import type { CharacterActionDecisionInput } from "../llm/types.js";
 import { assertConsciousBinding, boundConsciousCompiler, consciousFacts, consciousReaction, isV4ConsciousCompiler, privateBattleGoal, legacyPublicOpeningPlan } from "../llm/conscious-agency.js";
 import {
+  acceptConsciousDecisionV4, initialConsciousAgencyV2, decodeConsciousOutputV4, type ConsciousOutputV4,
   acceptConsciousDecisionV3, initialConsciousAgencyV1, initialPsycheReactionStateV1,
   CONSCIOUS_GOAL_POLICY_V3, BattleAssetManifestV3Schema, BattleAssetManifestV4Schema,
   CharacterAgentStateSchema,
@@ -799,6 +801,7 @@ export async function startBattle(input: StartBattleInput): Promise<BattlePublic
       ...state,
       assetManifest: BattleAssetManifestV4Schema.parse({
         schemaVersion: 4,
+        consciousOutputContract: "dynamic-v4",
         boundAt: assetBoundAt,
         characters: {
           a: {
@@ -862,7 +865,7 @@ export async function startBattle(input: StartBattleInput): Promise<BattlePublic
         ...CharacterAgentStateSchema.parse(state.agentStateA ?? {}),
         currentGoal: "",
         beliefs: [],
-        consciousAgencyV1: initialConsciousAgencyV1(),
+        consciousAgencyV2: initialConsciousAgencyV2(),
         reactionStateV1: initialPsycheReactionStateV1(),
         privateMemory: mine.opponentMemories?.[opp.id]
           ? `この相手への過去方針: ${mine.opponentMemories[opp.id]!.preBattlePlan}\n過去の反省: ${mine.opponentMemories[opp.id]!.postBattleReflection}`
@@ -872,7 +875,7 @@ export async function startBattle(input: StartBattleInput): Promise<BattlePublic
         ...CharacterAgentStateSchema.parse(state.agentStateB ?? {}),
         currentGoal: "",
         beliefs: [],
-        consciousAgencyV1: initialConsciousAgencyV1(),
+        consciousAgencyV2: initialConsciousAgencyV2(),
         reactionStateV1: initialPsycheReactionStateV1(),
         privateMemory: opp.opponentMemories?.[mine.id]
           ? `この相手への過去方針: ${opp.opponentMemories[mine.id]!.preBattlePlan}\n過去の反省: ${opp.opponentMemories[mine.id]!.postBattleReflection}`
@@ -900,6 +903,20 @@ export async function startBattle(input: StartBattleInput): Promise<BattlePublic
     }
     return toBattlePublicForViewer(state, mine, null, opp);
   }
+}
+
+const repairCheckpointWrites = new WeakMap<BattleState, Promise<void>>();
+async function reserveConsciousRepair(state: BattleState, key: string): Promise<boolean> {
+  let reserved = false;
+  const pending = (repairCheckpointWrites.get(state) ?? Promise.resolve()).then(async () => {
+    if (state.consciousRepairReservations?.includes(key)) return;
+    const result = await battleRepo.reserveConsciousRepair({ battleId: state.id, key, expectedRevision: state.battleRevision ?? 0 });
+    state.consciousRepairReservations = result.keys;
+    reserved = result.reserved;
+  });
+  repairCheckpointWrites.set(state, pending);
+  await pending;
+  return reserved;
 }
 
 async function withTimeout<T>(
@@ -1607,16 +1624,23 @@ export function buildLaterBucketActionInput(input: {
     return deepFreezeConsumerInput(base);
   }
   const agency = (input.side === "a" ? input.state.agentStateA : input.state.agentStateB);
-  if (!compilerInputs || !base.structuredSelf || !agency?.consciousAgencyV1) throw new Error("BATTLE_CONTRACT_MISMATCH");
+  const dynamic = input.state.assetManifest?.schemaVersion === 4 && input.state.assetManifest.consciousOutputContract === "dynamic-v4";
+  const agencyState = dynamic ? agency?.consciousAgencyV2 : agency?.consciousAgencyV1;
+  if (!compilerInputs || !base.structuredSelf || !agencyState || !agency) throw new Error("BATTLE_CONTRACT_MISMATCH");
   const packet = buildTurnObservationPacket({ frame: perception });
   const facts = consciousFacts({ ...base, structuredSelf: base.structuredSelf, turnObservation: packet, goalPolicy: CONSCIOUS_GOAL_POLICY_V3 })
     .filter((fact) => fact.kind !== "observation");
   facts.push({ ref: `perception-${input.state.turn}`, kind: "observation", sourcePath: "/perception" });
-  return deepFreezeConsumerInput({ ...base, conscious: {
-    contractVersion: 3, phase: "later", agencyState: structuredClone(agency.consciousAgencyV1),
+  const context = {
+    phase: "later" as const,
     reaction: consciousReaction(agency, compilerInputs), goalPolicy: CONSCIOUS_GOAL_POLICY_V3, facts,
     utteranceHistory: projectUtteranceHistory((agency.conversationHistory ?? []).filter((entry) => entry.turn === input.state.turn && entry.speaker === "self"), 24),
-  } });
+  };
+  if (dynamic && agencyState.schemaVersion === 2) return deepFreezeConsumerInput({ ...base,
+    conscious: { ...context, contractVersion: 4, agencyState: structuredClone(agencyState) } });
+  if (!dynamic && agencyState.schemaVersion === 1) return deepFreezeConsumerInput({ ...base,
+    conscious: { ...context, contractVersion: 3, agencyState: structuredClone(agencyState) } });
+  throw new Error("BATTLE_CONTRACT_MISMATCH");
 }
 
 function buildEngineNormConstraint(input: Parameters<typeof buildCharacterDecisionContext>[0]) {
@@ -2533,14 +2557,15 @@ export async function advanceCharacterAgents(input: {
         const compiler = boundConsciousCompiler(input.after.assetManifest?.characters[
           consumerInput === inputA ? "a" : "b"
         ]);
-        if (!compiler || !consumerInput.structuredSelf || !psyche.consciousAgencyV1) {
+        const dynamic = input.after.assetManifest?.schemaVersion === 4 && input.after.assetManifest.consciousOutputContract === "dynamic-v4";
+        if (!compiler || !consumerInput.structuredSelf || !(dynamic ? psyche.consciousAgencyV2 : psyche.consciousAgencyV1)) {
           throw new Error("BATTLE_CONTRACT_MISMATCH");
         }
         const base = {
           contextMode: "compact" as const, contractVersion: 3 as const,
           phase: consumerInput.phase, character: consumerInput.character,
           structuredSelf: consumerInput.structuredSelf,
-          agencyState: structuredClone(psyche.consciousAgencyV1),
+          agencyState: structuredClone(psyche.consciousAgencyV1 ?? initialConsciousAgencyV1()),
           reaction: consciousReaction(psyche, compiler),
           goalPolicy: CONSCIOUS_GOAL_POLICY_V3,
           turnObservation: packet,
@@ -2550,7 +2575,8 @@ export async function advanceCharacterAgents(input: {
           ...(consumerInput.counterpart ? { counterpart: consumerInput.counterpart } : {}),
           ...(consumerInput.decision ? { decision: consumerInput.decision } : {}),
         };
-        return { ...base, facts: consciousFacts(base) };
+        const prepared = { ...base, facts: consciousFacts(base) };
+        return dynamic && psyche.consciousAgencyV2 ? { ...prepared, contractVersion: 4 as const, agencyState: structuredClone(psyche.consciousAgencyV2) } : prepared;
       }
       if (compactContractV2) {
         const focus = consumerInput === inputA
@@ -2644,6 +2670,12 @@ export async function advanceCharacterAgents(input: {
   };
   const agentInputA = toSpeechActionInput(inputA, psycheA, psycheAResult.expressionBrief);
   const agentInputB = toSpeechActionInput(inputB, psycheB, psycheBResult.expressionBrief);
+  for (const [agentInput, side] of [[agentInputA, "a"], [agentInputB, "b"]] as const) {
+    if (agentInput?.contextMode === "compact" && agentInput.contractVersion === 4) bindConsciousGenerationControl(agentInput, {
+      reserveRepair: () => reserveConsciousRepair(input.after, `${input.after.id}:${input.phase ?? "turn"}:${input.after.turn}:${side}`),
+      validateAction: (action) => validateCharacterActionProposal({ proposedAction: action, decision: agentInput.decision }).reason,
+    });
+  }
   let agents;
   try {
     agents = await withTimeout(Promise.allSettled([
@@ -2694,7 +2726,7 @@ export async function advanceCharacterAgents(input: {
     preferredSelfReference: input.after.encounterContext?.social.a.selfReference,
     decision: agentInputA?.decision,
     observableManifestations: agentInputA?.observableManifestations,
-    consciousInput: agentInputA?.contextMode === "compact" && agentInputA.contractVersion === 3 ? agentInputA : undefined,
+    consciousInput: agentInputA?.contextMode === "compact" && (agentInputA.contractVersion === 3 || agentInputA.contractVersion === 4) ? agentInputA : undefined,
   });
   const acceptedB = acceptCharacterAgentResult({
     result: agentB,
@@ -2711,7 +2743,7 @@ export async function advanceCharacterAgents(input: {
     preferredSelfReference: input.after.encounterContext?.social.b.selfReference,
     decision: agentInputB?.decision,
     observableManifestations: agentInputB?.observableManifestations,
-    consciousInput: agentInputB?.contextMode === "compact" && agentInputB.contractVersion === 3 ? agentInputB : undefined,
+    consciousInput: agentInputB?.contextMode === "compact" && (agentInputB.contractVersion === 3 || agentInputB.contractVersion === 4) ? agentInputB : undefined,
   });
   const traceSide = (
     consumerInput: typeof agentInputA,
@@ -2739,6 +2771,8 @@ export async function advanceCharacterAgents(input: {
               reasonCode: "consistency_invalid",
               detail: "fulfilled_without_output",
             }
+          : providerOutput.contractVersion === 4 && providerOutput.consciousOutput.errors.length > 0
+            ? { disposition: "application_rejected" as const, reasonCode: providerOutput.consciousOutput.errors[0]!.code, detail: "partial_output_rejected" }
           : accepted.actionProposalValidation?.status === "rejected"
             ? {
                 disposition: "application_rejected" as const,
@@ -3266,7 +3300,7 @@ export function validateCharacterActionProposal(input: {
  * the preceding deep-psyche stage, so this later stage cannot overwrite it.
  */
 export function acceptCharacterAgentResult(input: {
-  consciousInput?: import("../llm/types.js").CharacterExpressionCompactInputV3;
+  consciousInput?: import("../llm/types.js").CharacterExpressionCompactInputV3 | import("../llm/types.js").CharacterExpressionCompactInputV4;
   result: CharacterAgentAdvanceResult | null;
   previous: CharacterAgentState;
   side: "a" | "b";
@@ -3283,8 +3317,8 @@ export function acceptCharacterAgentResult(input: {
         input.profile.identity.selfNames.includes(input.preferredSelfReference))
     ? input.preferredSelfReference
     : canonicalSelfReference(input.profile);
-  if (!input.result || (input.consciousInput && input.result.contractVersion !== 3) ||
-      (input.result.contractVersion === 3 && !input.consciousInput)) {
+  if (!input.result || (input.consciousInput && input.result.contractVersion !== input.consciousInput.contractVersion) ||
+      ((input.result.contractVersion === 3 || input.result.contractVersion === 4) && !input.consciousInput)) {
     return {
       state: {
         ...input.previous,
@@ -3296,17 +3330,23 @@ export function acceptCharacterAgentResult(input: {
       realizedManifestation: null,
     };
   }
-  const compactV2 = input.result.contractVersion === 2 || input.result.contractVersion === 3;
+  const compactV2 = input.result.contractVersion === 2 || input.result.contractVersion === 3 || input.result.contractVersion === 4;
   const text = coerceCharacterSpeech(compactV2
     ? input.result.nextUtterance
     : input.result.speech);
   let actionProposalValidation = validateCharacterActionProposal({
     proposedAction: input.result.proposedAction,
-    proposalSchemaInvalid: input.result.contractVersion === 2 || input.result.contractVersion === 3
+    proposalSchemaInvalid: input.result.contractVersion === 2 || input.result.contractVersion === 3 || input.result.contractVersion === 4
       ? input.result.proposedActionStatus === "invalid"
       : false,
     decision: input.decision,
   });
+  const dynamicAcceptance = input.result.contractVersion === 4 && input.consciousInput?.contractVersion === 4
+    ? acceptConsciousDecisionV4({
+        previous: input.previous.consciousAgencyV2 ?? initialConsciousAgencyV2(), output: input.result.consciousOutput,
+        facts: input.consciousInput.facts, turn: input.consciousInput.turnObservation.turn,
+        validateAction: (action) => validateCharacterActionProposal({ proposedAction: action, decision: input.decision }).acceptedAction,
+      }) : null;
   const agencyAcceptance = input.result.contractVersion === 3 && input.consciousInput
     ? acceptConsciousDecisionV3({
         previous: input.previous.consciousAgencyV1 ?? initialConsciousAgencyV1(),
@@ -3319,7 +3359,17 @@ export function acceptCharacterAgentResult(input: {
   if (input.result.contractVersion === 3 && !agencyAcceptance?.acceptedDecision) {
     actionProposalValidation = { ...actionProposalValidation, status: "rejected", reason: "schema_invalid", acceptedAction: null };
   }
-  const nextAction = input.result.contractVersion === 3
+  if (dynamicAcceptance && !dynamicAcceptance.failure && input.result.contractVersion === 4 && input.result.proposedAction === null && input.result.proposedActionStatus === "omitted") {
+    actionProposalValidation = { ...actionProposalValidation, status: "omitted", reason: null, acceptedAction: null };
+  }
+  if (dynamicAcceptance?.failure) {
+    actionProposalValidation = { ...actionProposalValidation, status: "rejected",
+      reason: ["goal_invalid", "goal_replacement"].includes(dynamicAcceptance.failure) ? "goal_invalid"
+        : dynamicAcceptance.failure === "intent_invalid" ? "intent_invalid" : dynamicAcceptance.failure === "action_required" ? "action_required" : actionProposalValidation.reason ?? "schema_invalid", acceptedAction: null };
+  }
+  const nextAction = input.result.contractVersion === 4
+    ? dynamicAcceptance?.acceptedDecision ? dynamicAcceptance.state.latestDecision?.action ?? undefined : undefined
+    : input.result.contractVersion === 3
     ? agencyAcceptance?.acceptedDecision ? agencyAcceptance.state.latestDecision?.action ?? undefined : undefined
     : actionProposalValidation.acceptedAction ?? undefined;
   const realizedManifestation = input.observableManifestations?.find(
@@ -3331,6 +3381,7 @@ export function acceptCharacterAgentResult(input: {
           ...input.previous,
           selfReference,
           ...(agencyAcceptance ? { consciousAgencyV1: agencyAcceptance.state } : {}),
+          ...(dynamicAcceptance ? { consciousAgencyV2: dynamicAcceptance.state } : {}),
         }
       : {
           ...input.previous,
@@ -3339,7 +3390,7 @@ export function acceptCharacterAgentResult(input: {
         },
     nextAction,
     actionProposalValidation,
-    speech: input.result.contractVersion === 3 && input.result.nextUtterance === null ? null : {
+    speech: (input.result.contractVersion === 3 || input.result.contractVersion === 4) && input.result.nextUtterance === null ? null : {
       side: input.side,
       speaker: input.speaker,
       text,
@@ -5103,10 +5154,19 @@ async function advanceTurnWithLease(input: {
             intent: priorDecision.acceptedAction,
           });
         } else {
+          const laterDecisionKey = `${causalExecution.executionId}:later:${causalExecution.bucketIndex}:${laterSide}`;
+          if (laterInput.conscious?.contractVersion === 4) bindConsciousGenerationControl(laterInput, {
+            reserveRepair: async () => {
+              const reserved = await reserveConsciousRepair(boundaryState, laterDecisionKey);
+              state = { ...state, consciousRepairReservations: boundaryState.consciousRepairReservations };
+              return reserved;
+            },
+            validateAction: (action) => validateCharacterActionProposal({ proposedAction: action, decision: laterInput.decision }).reason,
+          });
           const startedAt = Date.now();
           let proposedAction: unknown | null = null;
           let providerFailure: string | null = null;
-          let consciousOutput: ConsciousOutputV3 | undefined;
+          let consciousOutput: ConsciousOutputV3 | ConsciousOutputV4 | undefined;
           try {
             const result = await input.llm.decideCharacterAction(laterInput);
             proposedAction = result.proposedAction;
@@ -5115,10 +5175,20 @@ async function advanceTurnWithLease(input: {
             if (isProviderOperationAccountingError(error)) throw error;
             providerFailure = error instanceof Error ? error.message : "provider_error";
           }
-          if (laterInput.conscious) {
+          if (laterInput.conscious?.contractVersion === 4 && laterInput.conscious.agencyState.schemaVersion === 2) {
+            const output = consciousOutput && "contractVersion" in consciousOutput ? consciousOutput : decodeConsciousOutputV4(null, "later");
+            const accepted = acceptConsciousDecisionV4({ previous: laterInput.conscious.agencyState, output,
+              facts: laterInput.conscious.facts, turn: boundaryState.turn,
+              validateAction: (action) => validateCharacterActionProposal({ proposedAction: action, decision: laterInput.decision }).acceptedAction });
+            proposedAction = accepted.acceptedDecision ? accepted.state.latestDecision?.action ?? null : null;
+            if (accepted.failure) providerFailure = accepted.failure;
+            const key = laterSide === "a" ? "agentStateA" : "agentStateB";
+            const agent = boundaryState[key];
+            if (agent) boundaryState = { ...boundaryState, [key]: { ...agent, consciousAgencyV2: accepted.state } };
+          } else if (laterInput.conscious?.contractVersion === 3 && laterInput.conscious.agencyState.schemaVersion === 1) {
             const accepted = acceptConsciousDecisionV3({
               previous: laterInput.conscious.agencyState,
-              output: consciousOutput ?? decodeConsciousOutputV3(null, "later"),
+              output: consciousOutput && !("contractVersion" in consciousOutput) ? consciousOutput : decodeConsciousOutputV3(null, "later"),
               facts: laterInput.conscious.facts, turn: boundaryState.turn,
               validateAction: (action) => validateCharacterActionProposal({ proposedAction: action, decision: laterInput.decision }).acceptedAction,
             });
@@ -5158,7 +5228,7 @@ async function advanceTurnWithLease(input: {
               validation,
               provider: input.llm.name,
               model: input.llm.models?.fast ?? null,
-              callCount: 1,
+              callCount: consciousOutput && "contractVersion" in consciousOutput ? consciousOutput.generationTrace.calls || 1 : 1,
               tokenCount: null,
               estimatedCostUsd: null,
               elapsedMs: Math.max(0, Date.now() - startedAt),

@@ -1,7 +1,7 @@
 import type {
   AgencyFactV1,
   ConsciousAgencyV1,
-  ConsciousOutputV3,
+  ConsciousOutputV3, ConsciousOutputV4, ConsciousAgencyV2,
   PsycheReactionProjectionV1,
   BattlefieldInstance,
   BattlefieldPreset,
@@ -160,14 +160,12 @@ export type CharacterActionDecisionInput = {
   /** Server-owned legal choices and qualitative tactical constraints. */
   decision: CharacterActionDecisionContext;
   conscious?: {
-    contractVersion: 3;
     phase: "later";
-    agencyState: ConsciousAgencyV1;
     reaction: { action: PsycheReactionProjectionV1; expression: PsycheReactionProjectionV1 };
     goalPolicy: string;
     facts: AgencyFactV1[];
     utteranceHistory: { recent: CharacterUtteranceActualV1[] };
-  };
+  } & ({ contractVersion: 3; agencyState: ConsciousAgencyV1 } | { contractVersion: 4; agencyState: ConsciousAgencyV2 });
 };
 
 export type CharacterUtteranceActualV1 = {
@@ -302,7 +300,8 @@ export type CharacterExpressionCompactInputV2 = {
 export type CharacterExpressionCompactInput =
   | CharacterExpressionCompactInputV1
   | CharacterExpressionCompactInputV2
-  | CharacterExpressionCompactInputV3;
+  | CharacterExpressionCompactInputV3
+  | CharacterExpressionCompactInputV4;
 
 export type CharacterExpressionCompactInputV3 = {
   contextMode: "compact";
@@ -320,6 +319,11 @@ export type CharacterExpressionCompactInputV3 = {
   social?: BattleSocialView;
   counterpart?: CharacterCounterpartKnowledge;
   decision?: CharacterActionDecisionContext;
+};
+
+export type CharacterExpressionCompactInputV4 = Omit<CharacterExpressionCompactInputV3, "contractVersion" | "agencyState"> & {
+  contractVersion: 4;
+  agencyState: ConsciousAgencyV2;
 };
 
 export type CharacterDeepPsycheInput = CharacterDeepPsycheCompactInput | {
@@ -354,6 +358,16 @@ export type CharacterExpressionInput = CharacterExpressionCompactInput | {
 };
 
 export type CharacterAgentAdvanceResult =
+  | {
+      contractVersion: 4;
+      state: CharacterAgentState;
+      nextUtterance: string | null;
+      speech?: never;
+      proposedAction: CharacterActionIntent | null;
+      proposedActionStatus: "valid" | "invalid" | "omitted";
+      realizedManifestation: string | null;
+      consciousOutput: ConsciousOutputV4;
+    }
   | {
       contractVersion: 3;
       state: CharacterAgentState;
@@ -918,7 +932,7 @@ export interface LlmProvider {
    */
   decideCharacterAction(input: CharacterActionDecisionInput): Promise<{
     proposedAction: unknown | null;
-    consciousOutput?: ConsciousOutputV3;
+    consciousOutput?: ConsciousOutputV3 | ConsciousOutputV4;
   }>;
   /** Advance one character from its frozen observer-relative frame only. */
   advanceCharacterAgent(
