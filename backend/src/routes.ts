@@ -1581,7 +1581,7 @@ export function buildRoutes(options: {
     const user = c.get("user");
     const id = c.req.param("id");
     const sheet = await charRepo.getSheet(id);
-    if (!sheet || sheet.ownerUserId !== user.id || sheet.deletedAt) {
+    if (!isOwnedLivePortraitCharacter(sheet, user.id)) {
       return c.json({ error: "not_found" }, 404);
     }
     const compatibility = await charAssetRepo.getCharacterCompatibility(id);
@@ -1650,7 +1650,7 @@ export function buildRoutes(options: {
   authed.post("/characters/:id/image", async (c) => {
     const user = c.get("user");
     const sheet = await charRepo.getSheet(c.req.param("id"));
-    if (!sheet || sheet.ownerUserId !== user.id || sheet.deletedAt) {
+    if (!isOwnedLivePortraitCharacter(sheet, user.id)) {
       return c.json({ error: "not_found" }, 404);
     }
 
@@ -3200,4 +3200,8 @@ async function performCharacterPortraitGeneration(input: {
       return { response: { error: "image_generation_failed", message, quota },
         status: message === "ASSET_CURRENT_GENERATION_DRIFT" ? 409 as const : 502 as const };
     }
+}
+
+function isOwnedLivePortraitCharacter(sheet: CharacterSheet | null, ownerUserId: string): sheet is CharacterSheet {
+  return sheet !== null && sheet.ownerUserId === ownerUserId && !sheet.deletedAt;
 }

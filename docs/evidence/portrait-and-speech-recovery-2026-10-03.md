@@ -18,6 +18,10 @@ The portrait HTTP test uses a stub image provider, verifies exact appearance-onl
 
 Four bounded real-model decisions reused the frozen latest-match inputs without modifying the match: two prologue inputs and two turn-one inputs. Makoto produced speech in both; Neva explicitly chose null in both. Final turn-one outputs have no structural errors. The first Neva prologue probe had an unknown intent ref, which motivated restoring exact grounding-ref instructions. These probes establish that actual speech can be generated through the changed adapter; they do not establish balanced speech frequency or completed full-match quality. No real portrait provider call was performed.
 
+A local Chromium run with fixture API responses verified owner V3 generation button and its POST handler, and absence of the control for non-owners, historical battle views and V2. Screenshot: `/tmp/kshiai-regression-inspect/portrait-owner-ui.png`. This is local UI verification, not production authentication/provider acceptance.
+
+Initial CI run 37109626154 rejected the final deletion guard on the existing complexity count threshold. The owned/live portrait predicate was extracted without changing admission behavior; the static check and scoped portrait tests then passed again. No baseline threshold was relaxed and that rejected artifact was not promoted.
+
 ## Deployment
 
 Pending exact-source image build, preview checks and promotion. Private diagnostic artifacts are under `/tmp/kshiai-regression-inspect`; character inputs and raw provider details are not committed.
