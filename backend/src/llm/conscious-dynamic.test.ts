@@ -41,6 +41,25 @@ describe("dynamic provider boundary (no network or live quality claims)", () => 
     assert.deepEqual(result.nextAction, { valid: true, value: { kind: "skill", skillId: "bound-skill" } });
     assert.deepEqual(result.errors, []);
   });
+  it("keeps character speech guidance phase scoped and accepts chosen speech and silence independently", async () => {
+    const i = input();
+    const turnPrompt = generationPrompt(generationPlan(i));
+    assert.match(turnPrompt, /structuredSelf\.speech/);
+    assert.match(turnPrompt, /selecting a combat action does not imply silence/i);
+    assert.match(turnPrompt, /Choose null when silence fits/);
+    for (const utterance of ["その間合い、試させてもらう。", null]) {
+      const output = await runConsciousGeneration(i, i, async (_system, user) => {
+        const request = JSON.parse(user);
+        assert.deepEqual(request.context.structuredSelf.speech, i.structuredSelf.speech);
+        assert.deepEqual(request.context.utteranceHistory, i.utteranceHistory);
+        return { intent, nextAction: { choiceKey: "choice-0" }, nextUtterance: utterance };
+      });
+      assert.deepEqual(output.nextUtterance, { valid: true, value: utterance });
+      assert.deepEqual(output.errors, []);
+    }
+    const laterPrompt = generationPrompt(generationPlan({ ...i, phase: "later" }));
+    assert.doesNotMatch(laterPrompt, /structuredSelf\.speech|Choose one Japanese public utterance/);
+  });
   it("repairs speech only, preserves action and blocks out-of-target overwrites", async () => {
     const i = input(); let calls = 0, reservations = 0;
     bindConsciousGenerationControl(i, { reserveRepair: async () => { reservations++; return true; }, validateAction: () => null });

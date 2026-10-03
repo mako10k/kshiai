@@ -185,10 +185,10 @@ export async function toPublicCharacterForViewer(
       ? {
           appearance: {
             ...dto.appearance,
-            previousImageUrl: previousPortrait?.mediaId ?? null,
+            previousImageUrl: previousPortrait?.mediaId ?? dto.appearance.previousImageUrl ?? null,
           },
           canToggleImage: Boolean(currentPortrait && previousPortrait),
-          canRestoreRevision: history.previous != null,
+          canRestoreRevision: false,
           revisionSavedAt: history.previous ? history.current.createdAt : null,
           revisionLabel: history.previous ? "直前の確定世代" : null,
         }

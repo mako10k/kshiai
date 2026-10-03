@@ -165,6 +165,7 @@ export function CharacterDetailPage() {
         setIsOwner(owner && !battleId);
         setAuthoringProgress(c.authoringProgress ?? null);
         if (owner && !battleId && c.compatibility?.schemaVersion === 3) {
+          void reloadQuota(id);
           void reloadImprovement(id);
         } else {
           setImprovement(null);
@@ -290,6 +291,32 @@ export function CharacterDetailPage() {
     if (!confirm("削除しますか？")) return;
     await api.deleteCharacter(id);
     nav("/characters");
+  }
+
+  async function onImage() {
+    if (!id || !canEdit) return;
+    if (quota && !quota.allowed) {
+      setError(quotaHint(quota));
+      return;
+    }
+    setImageBusy(true);
+    setError(null);
+    try {
+      const res = await api.generateImage(id);
+      setCharacter(res.character);
+      setAssistant(res.note ?? "画像を更新しました");
+      if (res.quota) setQuota(res.quota);
+      else void reloadQuota(id);
+    } catch (err) {
+      if (err instanceof ApiError) {
+        if (err.quota) setQuota(err.quota);
+        setError(err.message);
+      } else {
+        setError(err instanceof Error ? err.message : "failed");
+      }
+    } finally {
+      setImageBusy(false);
+    }
   }
 
   async function onToggleImage() {
@@ -637,6 +664,12 @@ export function CharacterDetailPage() {
                 相手にする
               </Link>
             ) : null}
+            {canEdit && (
+              <button className="btn" type="button" disabled={imageBusy || busy || imageBlocked}
+                onClick={() => void onImage()} title={quotaHint(quota)}>
+                {imageBusy ? "顔画像を生成中…" : character.appearance.imageUrl ? "顔画像を再生成" : "顔画像を生成"}
+              </button>
+            )}
             {canEdit && (
               <button
                 className="btn danger"

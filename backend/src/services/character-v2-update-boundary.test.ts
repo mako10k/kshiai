@@ -107,13 +107,13 @@ describe("V2 display without ordinary writes", () => {
     }), /LEGACY_CHARACTER_AUTHORING_RETIRED/);
     assert.equal(statuses, 0);
   });
-  it("retires direct legacy portrait and restore operations before looking up a character", async () => {
+  it("rejects V2 portrait writes and keeps full restore unavailable", async () => {
     const before = (await query("SELECT generation_id FROM asset_generations WHERE asset_type='character'")).rows;
-    const input = { characterId: "does-not-exist", ownerUserId: owner,
+    const input = { characterId: id, ownerUserId: owner,
       expectedGenerationId: "old-generation", operationId: "retired-operation" };
     await assert.rejects(assets.activateCharacterPortraitRevision({ ...input,
-      mediaId: "media", mediaRevisionId: "media-revision", sourceDigest: "source" }), /CHARACTER_UPDATE_UNAVAILABLE/);
-    await assert.rejects(assets.toggleCharacterPortraitGeneration(input), /CHARACTER_UPDATE_UNAVAILABLE/);
+      mediaId: "media", mediaRevisionId: "media-revision", sourceDigest: "source" }), /CHARACTER_V3_NOT_READY/);
+    await assert.rejects(assets.toggleCharacterPortraitGeneration(input), /CHARACTER_V3_NOT_READY/);
     await assert.rejects(assets.restorePreviousCharacterGeneration(input), /CHARACTER_UPDATE_UNAVAILABLE/);
     assert.deepEqual((await query("SELECT generation_id FROM asset_generations WHERE asset_type='character'")).rows, before);
   });

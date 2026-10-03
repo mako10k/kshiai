@@ -17,6 +17,7 @@ import {
   type AssetAuthoringAttemptStatus,
   type AssetCompatibility,
   type CharacterGenerationEnvelopeV2,
+  type CharacterGenerationEnvelopeV3,
   type CharacterSheet,
   OwnerRetryCommandV1Schema,
 } from "@kshiai/shared";
@@ -1254,20 +1255,23 @@ export async function getReadyCharacterGeneration(
   characterId: string,
 ): Promise<AssetGeneration | null> {
   const compatibility = await getCharacterCompatibility(characterId);
-  if (compatibility.status !== "ready" || compatibility.schemaVersion !== 2) {
+  if (compatibility.status !== "ready" || ![2, 3].includes(compatibility.schemaVersion ?? 0)) {
     return null;
   }
   const current = await getCurrentAssetGeneration("character", characterId);
   if (!current) return null;
-  assertCharacterGenerationReadyV2(
-    CharacterGenerationEnvelopeV2Schema.parse(current.content),
-  );
+  if (current.schemaVersion === 2) {
+    assertCharacterGenerationReadyV2(CharacterGenerationEnvelopeV2Schema.parse(current.content));
+  } else {
+    try { assertCharacterCandidateReady(CharacterGenerationEnvelopeV3Schema.parse(current.content)); }
+    catch { return null; } // Invalid claim receipts cannot authorize image-provider work or break profile display.
+  }
   return current;
 }
 
 export type CharacterGenerationHistory = {
-  current: AssetGeneration & { content: CharacterGenerationEnvelopeV2 };
-  previous: (AssetGeneration & { content: CharacterGenerationEnvelopeV2 }) | null;
+  current: AssetGeneration & { content: CharacterGenerationEnvelopeV3 };
+  previous: (AssetGeneration & { content: CharacterGenerationEnvelopeV3 }) | null;
   previousPortrait: {
     generationId: string;
     mediaId: string;
@@ -1279,19 +1283,17 @@ export async function getReadyCharacterGenerationHistory(
   characterId: string,
 ): Promise<CharacterGenerationHistory | null> {
   const currentGeneration = await getReadyCharacterGeneration(characterId);
-  if (!currentGeneration) return null;
+  if (!currentGeneration || currentGeneration.schemaVersion !== 3) return null;
   const current = {
     ...currentGeneration,
-    content: assertCharacterGenerationReadyV2(
-      CharacterGenerationEnvelopeV2Schema.parse(currentGeneration.content),
-    ),
+    content: CharacterGenerationEnvelopeV3Schema.parse(assertCharacterCandidateReady(currentGeneration.content)),
   };
   const prior = await query<GenerationRow>(
     `SELECT asset_type, asset_id, generation, generation_id, schema_version,
             content_json, content_digest, created_at
        FROM asset_generations
       WHERE asset_type = 'character' AND asset_id = $1
-        AND schema_version = 2 AND generation < $2
+        AND schema_version = 3 AND generation < $2
       ORDER BY generation DESC
       LIMIT 100`,
     [characterId, current.generation],
@@ -1300,9 +1302,7 @@ export async function getReadyCharacterGenerationHistory(
     try {
       return [{
         ...generation,
-        content: assertCharacterGenerationReadyV2(
-          CharacterGenerationEnvelopeV2Schema.parse(generation.content),
-        ),
+        content: CharacterGenerationEnvelopeV3Schema.parse(assertCharacterCandidateReady(generation.content)),
       }];
     } catch {
       return [];
@@ -1336,7 +1336,43 @@ export async function activateCharacterPortraitRevision(input: {
   mediaRevisionId: string;
   sourceDigest: string;
 }): Promise<{ sheet: CharacterSheet; generation: AssetGeneration }> {
-  throw new Error("CHARACTER_UPDATE_UNAVAILABLE");
+  return withTransaction(async (connection) => {
+    const current = await selectReadyPortraitCharacter(
+      connection,
+      input.characterId,
+      input.ownerUserId,
+    );
+    const updatedAt = new Date().toISOString();
+    const envelope = CharacterGenerationEnvelopeV3Schema.parse({
+      ...current.envelope,
+      definition: {
+        ...current.envelope.definition,
+        appearance: {
+          ...current.envelope.definition.appearance,
+          portrait: {
+            mediaId: input.mediaId,
+            revisionId: input.mediaRevisionId,
+          },
+        },
+      },
+      provenance: {
+        ...current.envelope.provenance,
+        sourceKind: "media_revision",
+        sourceDigest: input.sourceDigest,
+        attemptId: `media:${input.operationId}`.slice(0, 160),
+        structureGeneratorContract: "character-media-revision-v3",
+      },
+    });
+    return commitPortraitGeneration({
+      connection,
+      current,
+      expectedGenerationId: input.expectedGenerationId,
+      envelope,
+      previousImageUrl:
+        current.envelope.definition.appearance.portrait?.mediaId ?? null,
+      updatedAt,
+    });
+  });
 }
 
 export async function toggleCharacterPortraitGeneration(input: {
@@ -1345,7 +1381,60 @@ export async function toggleCharacterPortraitGeneration(input: {
   expectedGenerationId: string;
   operationId: string;
 }): Promise<{ sheet: CharacterSheet; generation: AssetGeneration }> {
-  throw new Error("CHARACTER_UPDATE_UNAVAILABLE");
+  return withTransaction(async (connection) => {
+    const current = await selectReadyPortraitCharacter(
+      connection,
+      input.characterId,
+      input.ownerUserId,
+    );
+    if (current.generation.generationId !== input.expectedGenerationId) {
+      throw new Error("ASSET_CURRENT_GENERATION_DRIFT");
+    }
+    const currentPortrait = current.envelope.definition.appearance.portrait;
+    if (!currentPortrait) throw new Error("NO_CURRENT_CHARACTER_PORTRAIT");
+    const prior = await selectPriorPortraitGenerations(
+      connection,
+      input.characterId,
+      current.generation.generation,
+    );
+    const target = prior.find((generation) => {
+      const portrait = generation.content.definition.appearance.portrait;
+      return portrait != null && !samePortrait(currentPortrait, portrait);
+    });
+    const targetPortrait = target?.content.definition.appearance.portrait;
+    if (!targetPortrait) throw new Error("NO_PREVIOUS_CHARACTER_PORTRAIT");
+    const updatedAt = new Date().toISOString();
+    const sourceDigest = assetContentDigest({
+      operation: "toggle_character_portrait",
+      fromGenerationId: current.generation.generationId,
+      targetGenerationId: target!.generationId,
+    });
+    const envelope = CharacterGenerationEnvelopeV3Schema.parse({
+      ...current.envelope,
+      definition: {
+        ...current.envelope.definition,
+        appearance: {
+          ...current.envelope.definition.appearance,
+          portrait: targetPortrait,
+        },
+      },
+      provenance: {
+        ...current.envelope.provenance,
+        sourceKind: "media_revision",
+        sourceDigest,
+        attemptId: `media-toggle:${input.operationId}`.slice(0, 160),
+        structureGeneratorContract: "character-media-revision-v3",
+      },
+    });
+    return commitPortraitGeneration({
+      connection,
+      current,
+      expectedGenerationId: input.expectedGenerationId,
+      envelope,
+      previousImageUrl: currentPortrait.mediaId,
+      updatedAt,
+    });
+  });
 }
 
 export async function restorePreviousCharacterGeneration(input: {
@@ -1383,4 +1472,59 @@ export async function listReadyCharacterIds(
     ) == null
       ? [row.character_id]
       : []));
+}
+
+type ReadyPortraitCharacter = {
+  sheet: CharacterSheet;
+  generation: AssetGeneration;
+  envelope: CharacterGenerationEnvelopeV3;
+};
+async function selectReadyPortraitCharacter(connection: DatabaseConnection, characterId: string, ownerUserId: string): Promise<ReadyPortraitCharacter> {
+  if (databaseKind() === "postgres") {
+    await connection.query("SELECT pg_advisory_xact_lock(hashtext($1), hashtext($2))", ["character", characterId]);
+  }
+  const found = await connection.query<{ sheet_json: unknown }>(
+    `SELECT sheet_json FROM characters WHERE id=$1 AND owner_user_id=$2${databaseKind() === "postgres" ? " FOR UPDATE" : ""}`,
+    [characterId, ownerUserId],
+  );
+  if (!found.rows[0]) throw new Error("CHARACTER_OWNER_MISMATCH");
+  const raw = found.rows[0].sheet_json;
+  const sheet = CharacterSheetSchema.parse(typeof raw === "string" ? JSON.parse(raw) : raw);
+  if (sheet.deletedAt) throw new Error("CHARACTER_DELETED");
+  const rows = await connection.query<GenerationRow>(`SELECT g.* FROM asset_generations g JOIN asset_current_generations c ON c.generation_id=g.generation_id JOIN character_asset_states s ON s.character_id=c.asset_id AND s.current_generation_id=g.generation_id WHERE c.asset_type='character' AND c.asset_id=$1 AND s.compatibility_status='ready' AND s.active_attempt_id IS NULL AND g.schema_version=3`, [characterId]);
+  if (!rows.rows[0]) throw new Error("CHARACTER_V3_NOT_READY");
+  await rejectBusyCharacterAuthoring(connection, characterId, ownerUserId, "revision");
+  const generation = parseGeneration(rows.rows[0]);
+  const envelope = CharacterGenerationEnvelopeV3Schema.parse(generation.content);
+  assertCharacterCandidateReady(envelope);
+  return { sheet, generation, envelope };
+}
+async function selectPriorPortraitGenerations(connection: DatabaseConnection, characterId: string, beforeGeneration: number) {
+  const rows = await connection.query<GenerationRow>(`SELECT * FROM asset_generations WHERE asset_type='character' AND asset_id=$1 AND schema_version=3 AND generation<$2 ORDER BY generation DESC LIMIT 100`, [characterId, beforeGeneration]);
+  return rows.rows.flatMap((row) => {
+    const generation = parseGeneration(row);
+    const parsed = CharacterGenerationEnvelopeV3Schema.safeParse(generation.content);
+    return parsed.success ? [{ ...generation, content: parsed.data }] : [];
+  });
+}
+async function commitPortraitGeneration(input: {
+  connection: DatabaseConnection; current: ReadyPortraitCharacter; expectedGenerationId: string;
+  envelope: CharacterGenerationEnvelopeV3; previousImageUrl: string | null; updatedAt: string;
+}): Promise<{ sheet: CharacterSheet; generation: AssetGeneration }> {
+  if (input.current.generation.generationId !== input.expectedGenerationId) throw new Error("ASSET_CURRENT_GENERATION_DRIFT");
+  assertCharacterCandidateReady(input.envelope);
+  const current = input.current.sheet;
+  const sheet = characterDefinitionV3ToLegacySheet({ characterId: current.id, ownerUserId: current.ownerUserId,
+    definition: input.envelope.definition, publicPresentation: input.envelope.publicPresentation,
+    createdAt: current.createdAt, updatedAt: input.updatedAt, previousImageUrl: input.previousImageUrl,
+    operational: { visibility: current.visibility, record: current.record, recordOverall: current.recordOverall,
+      improvementMemo: current.improvementMemo, opponentMemories: current.opponentMemories,
+      deletedAt: current.deletedAt, revisionSnapshot: current.revisionSnapshot } });
+  const generation = await appendAssetGeneration(input.connection, { assetType: "character", assetId: current.id,
+    schemaVersion: 3, content: input.envelope, createdAt: input.updatedAt });
+  await activateAssetGeneration(input.connection, generation, input.expectedGenerationId, input.updatedAt);
+  await input.connection.query("UPDATE characters SET sheet_json=$2,updated_at=$3 WHERE id=$1", [current.id, JSON.stringify(sheet), input.updatedAt]);
+  const state = await input.connection.query(`UPDATE character_asset_states SET current_generation_id=$2,reason_code=NULL,updated_at=$3 WHERE character_id=$1 AND current_generation_id=$4 AND compatibility_status='ready' AND active_attempt_id IS NULL`, [current.id, generation.generationId, input.updatedAt, input.expectedGenerationId]);
+  if (state.rowCount !== 1) throw new Error("ASSET_CURRENT_GENERATION_DRIFT");
+  return { sheet, generation };
 }

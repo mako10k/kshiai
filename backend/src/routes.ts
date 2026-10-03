@@ -29,12 +29,13 @@ import {
   CHARACTER_BATTLE_MECHANICS_CAPABILITY_SET_V3,
   CharacterDefinitionV3Schema,
   CharacterGenerationEnvelopeV2Schema,
+  CharacterGenerationEnvelopeV3Schema,
   assertCharacterGenerationReadyV2,
   BattlefieldGenerationEnvelopeV2Schema,
   narrationDefinitionV2ToLegacyStyle,
   characterDefinitionV2ToLegacySheet,
   battlefieldDefinitionV2ToLegacyPreset,
-  projectCharacterImageBriefV2,
+  projectCharacterImageBriefV3,
   projectBattlefieldImageBriefV2,
   toAssetAuthoringProgress,
   type BattlefieldPreset,
@@ -1577,11 +1578,160 @@ export function buildRoutes(options: {
    * Does not consume image-gen quota.
    */
   authed.post("/characters/:id/image/toggle", async (c) => {
-    return c.json({ error: "character_update_unavailable", message: "この更新経路はV3に未対応です。" }, 409);
+    const user = c.get("user");
+    const id = c.req.param("id");
+    const sheet = await charRepo.getSheet(id);
+    if (!sheet || sheet.ownerUserId !== user.id || sheet.deletedAt) {
+      return c.json({ error: "not_found" }, 404);
+    }
+    const compatibility = await charAssetRepo.getCharacterCompatibility(id);
+    if (compatibility.status !== "ready" || compatibility.schemaVersion !== 3) {
+      return c.json({
+        error: "character_upgrade_required",
+        message: "このキャラを最新版に更新してから顔画像を変更してください。",
+      }, 409);
+    }
+    const readyGeneration = await charAssetRepo.getReadyCharacterGeneration(id);
+    if (!readyGeneration) {
+      return c.json({ error: "character_upgrade_required" }, 409);
+    }
+    const idempotencyKey = readIdempotencyKey(c.req.header("Idempotency-Key"));
+    if (!idempotencyKey) {
+      return c.json({ error: "idempotency_key_required" }, 400);
+    }
+    const scope = `character-portrait-toggle:${id}`;
+    const operation = await beginIdempotentRequest({
+      userId: user.id,
+      scope,
+      key: idempotencyKey,
+      requestHash: requestDigest({ characterId: id, operation: "toggle" }),
+    });
+    if (operation.kind === "conflict") {
+      return c.json({ error: "idempotency_key_conflict" }, 409);
+    }
+    if (operation.kind === "processing") {
+      return c.json({ error: "request_in_progress" }, 409);
+    }
+    if (operation.kind === "replay") return c.json(operation.response);
+    try {
+      const toggled = await charAssetRepo.toggleCharacterPortraitGeneration({
+        characterId: id,
+        ownerUserId: user.id,
+        expectedGenerationId: readyGeneration.generationId,
+        operationId: idempotencyKey,
+      });
+      const response = {
+        character: await charRepo.toPublicCharacterForViewer(toggled.sheet, user.id),
+        assistantMessage: "顔画像を新しい世代として切り替えました。",
+      };
+      await completeIdempotentRequest({
+        userId: user.id,
+        scope,
+        key: idempotencyKey,
+        ownerId: operation.ownerId,
+        response,
+      });
+      return c.json(response);
+    } catch (error) {
+      await abandonIdempotentRequest({
+        userId: user.id,
+        scope,
+        key: idempotencyKey,
+        ownerId: operation.ownerId,
+      });
+      const message = error instanceof Error ? error.message : "toggle_failed";
+      return c.json(
+        { error: message.toLowerCase(), message },
+        message === "NO_PREVIOUS_CHARACTER_PORTRAIT" ? 400 : 409,
+      );
+    }
   });
 
   authed.post("/characters/:id/image", async (c) => {
-    return c.json({ error: "character_update_unavailable", message: "この更新経路はV3に未対応です。" }, 409);
+    const user = c.get("user");
+    const sheet = await charRepo.getSheet(c.req.param("id"));
+    if (!sheet || sheet.ownerUserId !== user.id || sheet.deletedAt) {
+      return c.json({ error: "not_found" }, 404);
+    }
+
+    const extra = await readPortraitAdjustment(() => c.req.json<unknown>());
+
+    const compatibility = await charAssetRepo.getCharacterCompatibility(sheet.id);
+    if (compatibility.status !== "ready" || compatibility.schemaVersion !== 3) {
+      return c.json({
+        error: "character_upgrade_required",
+        message: "このキャラを最新版に更新してから顔画像を生成してください。",
+      }, 409);
+    }
+    const readyGeneration = await charAssetRepo.getReadyCharacterGeneration(sheet.id);
+    if (!readyGeneration) {
+      return c.json({ error: "character_upgrade_required" }, 409);
+    }
+    if (await charAssetRepo.getInFlightCharacterAuthoringAttempt(sheet.id, user.id)) {
+      return c.json({ error: "authoring_already_in_progress" }, 409);
+    }
+    const imageIdempotencyKey = readIdempotencyKey(
+      c.req.header("Idempotency-Key"),
+    );
+    if (!imageIdempotencyKey) {
+      return c.json({ error: "idempotency_key_required" }, 400);
+    }
+    const imageScope = `character-portrait-generate:${sheet.id}`;
+    const imageOperation = await beginIdempotentRequest({
+      userId: user.id,
+      scope: imageScope,
+      key: imageIdempotencyKey,
+      requestHash: requestDigest({
+        characterId: sheet.id,
+        operation: "generate",
+        extra: extra ?? null,
+      }),
+    });
+    if (imageOperation.kind === "conflict") {
+      return c.json({ error: "idempotency_key_conflict" }, 409);
+    }
+    if (imageOperation.kind === "processing") {
+      return c.json({ error: "request_in_progress" }, 409);
+    }
+    if (imageOperation.kind === "replay") return c.json(imageOperation.response);
+    const mediaRevisionId = `img-${assetContentDigest({
+      characterId: sheet.id,
+      generationId: readyGeneration.generationId,
+      key: imageIdempotencyKey,
+    }).slice(0, 24)}`;
+
+    const { getImageGenQuota, pruneImageGenEvents } =
+      await import("./services/image-quota.js");
+    try {
+      await pruneImageGenEvents();
+    } catch {
+      /* non-fatal */
+    }
+
+    const quotaBefore = await getImageGenQuota(sheet.id);
+    if (!quotaBefore.allowed) {
+      await abandonIdempotentRequest({
+        userId: user.id,
+        scope: imageScope,
+        key: imageIdempotencyKey,
+        ownerId: imageOperation.ownerId,
+      });
+      return c.json(
+        {
+          error: "rate_limited",
+          message: `顔生成の上限です。${quotaBefore.message}`,
+          quota: quotaBefore,
+        },
+        429,
+      );
+    }
+
+    const outcome = await performCharacterPortraitGeneration({
+      sheet, userId: user.id, extra, readyGeneration, mediaRevisionId, quotaBefore,
+      imageScope, imageIdempotencyKey, operationOwnerId: imageOperation.ownerId,
+      generateCharacterPortrait,
+    });
+    return c.json(outcome.response, outcome.status);
   });
 
   authed.get("/match/candidates", async (c) => {
@@ -2931,4 +3081,123 @@ export function buildRoutes(options: {
 
   app.route("/api", authed);
   return app;
+}
+
+async function readPortraitAdjustment(readBody: () => Promise<unknown>): Promise<string | undefined> {
+  try {
+    const raw = await readBody();
+    if (raw && typeof raw === "object" && !Array.isArray(raw)) {
+      const extra: unknown = Reflect.get(raw, "extra");
+      if (typeof extra === "string" && extra.trim()) return extra.trim();
+    }
+  } catch { /* Empty body is allowed. */ }
+  return undefined;
+}
+async function performCharacterPortraitGeneration(input: {
+  sheet: CharacterSheet; userId: string; extra: string | undefined;
+  readyGeneration: import("./repositories/asset-generations.js").AssetGeneration;
+  mediaRevisionId: string; quotaBefore: import("./services/image-quota.js").ImageGenQuota;
+  imageScope: string; imageIdempotencyKey: string; operationOwnerId: string;
+  generateCharacterPortrait: CharacterPortraitGenerator;
+}) {
+  const { sheet, userId, extra, readyGeneration, mediaRevisionId, quotaBefore,
+    imageScope, imageIdempotencyKey, operationOwnerId, generateCharacterPortrait } = input;
+  const { recordImageGenEvent } = await import("./services/image-quota.js");
+    let quotaRecorded = false;
+    let lastQuota = quotaBefore;
+    let immutableRevisionCommitted = false;
+    try {
+      const { logImageEvent } = await import(
+        "./services/image-service.js"
+      );
+      logImageEvent({
+        phase: "route_hit",
+        characterId: sheet.id,
+        userId: userId,
+        hasExtra: Boolean(extra),
+        quota: quotaBefore,
+      });
+      const result = await generateCharacterPortrait(
+        sheet,
+        extra,
+        undefined,
+        mediaRevisionId,
+        projectCharacterImageBriefV3(
+          CharacterGenerationEnvelopeV3Schema.parse(
+            readyGeneration.content,
+          ).definition,
+        ),
+      );
+      // Count attempt after we actually hit the image pipeline (ok or soft-fallback)
+      const quota = await recordImageGenEvent({
+        userId: userId,
+        characterId: sheet.id,
+        ok: result.ok,
+      });
+      quotaRecorded = true;
+      lastQuota = quota;
+      const saved = await charAssetRepo.activateCharacterPortraitRevision({
+        characterId: sheet.id,
+        ownerUserId: userId,
+        expectedGenerationId: readyGeneration.generationId,
+        operationId: imageIdempotencyKey,
+        mediaId: result.url,
+        mediaRevisionId,
+        sourceDigest: assetContentDigest({
+          characterId: sheet.id,
+          extra: extra ?? null,
+          mediaId: result.url,
+          mediaRevisionId,
+        }),
+      }).then((activated) => {
+        immutableRevisionCommitted = true;
+        return activated.sheet;
+      });
+      const response = {
+        character: await charRepo.toPublicCharacterForViewer(saved, userId),
+        note: result.note,
+        ok: result.ok,
+        quota,
+      };
+      await completeIdempotentRequest({
+        userId: userId,
+        scope: imageScope,
+        key: imageIdempotencyKey,
+        ownerId: operationOwnerId,
+        response,
+      });
+      return { response, status: 200 as const };
+    } catch (e) {
+      const message = e instanceof Error ? e.message : String(e);
+      console.error("[characters/image]", message);
+      try {
+        const { logImageEvent } = await import("./services/image-service.js");
+        logImageEvent({
+          phase: "route_error",
+          ok: false,
+          characterId: sheet.id,
+          error: message,
+        });
+      } catch {
+        /* ignore */
+      }
+      if (!immutableRevisionCommitted) {
+        await abandonIdempotentRequest({
+          userId: userId,
+          scope: imageScope,
+          key: imageIdempotencyKey,
+          ownerId: operationOwnerId,
+        });
+      }
+      // Hard failure still consumes a slot when no earlier attempt was recorded.
+      const quota = quotaRecorded
+        ? lastQuota
+        : await recordImageGenEvent({
+            userId: userId,
+            characterId: sheet.id,
+            ok: false,
+          });
+      return { response: { error: "image_generation_failed", message, quota },
+        status: message === "ASSET_CURRENT_GENERATION_DRIFT" ? 409 as const : 502 as const };
+    }
 }
