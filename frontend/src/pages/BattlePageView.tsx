@@ -1,3 +1,4 @@
+/** R: Present a battle and links to its bound character views. */
 import type { RefObject } from "react";
 import { Link } from "react-router-dom";
 import {
@@ -7,9 +8,9 @@ import {
   type BattleAdvancePhase,
   type BattleNarrationEntryPublic,
   type BattlePublic,
-  type SpeechLine,
+  type NarrativeBlock,
 } from "@kshiai/shared";
-import { battleProgressText, battleStoryBlocks } from "../battle-screen";
+import { battleProgressText, battleStoryBlocks, type BattleStoryBlock } from "../battle-screen";
 import { mediaSrc } from "../media";
 
 export function BattlePageView(input: {
@@ -22,7 +23,6 @@ export function BattlePageView(input: {
   paused: boolean;
   isResume: boolean;
   logEnd: RefObject<HTMLDivElement | null>;
-  speechesVisibleForBlock: (blockKey: string, speeches: SpeechLine[]) => SpeechLine[];
   onTogglePaused: () => void;
   onRetryAdvance: () => void;
   onScrollToLatest: () => void;
@@ -37,7 +37,6 @@ export function BattlePageView(input: {
     paused,
     isResume,
     logEnd,
-    speechesVisibleForBlock,
   } = input;
   const bf = battle.battlefield;
   const finished = battle.status === "finished";
@@ -92,7 +91,7 @@ export function BattlePageView(input: {
           <div className="battle-faces-inner">
             <Link
               className="battle-face battle-face-link"
-              to={`/characters/${battle.sideA.characterId}`}
+              to={`/characters/${battle.sideA.characterId}?battleId=${encodeURIComponent(battle.id)}`}
             >
               {imgA ? (
                 <img src={imgA} alt={battle.sideA.displayName} />
@@ -107,7 +106,7 @@ export function BattlePageView(input: {
             </div>
             <Link
               className="battle-face battle-face-link"
-              to={`/characters/${battle.sideB.characterId}`}
+              to={`/characters/${battle.sideB.characterId}?battleId=${encodeURIComponent(battle.id)}`}
             >
               {imgB ? (
                 <img src={imgB} alt={battle.sideB.displayName} />
@@ -205,47 +204,7 @@ export function BattlePageView(input: {
       <div className="panel">
         <h2>物語</h2>
         <div className="log">
-          {story.map((block) => (
-            <div
-              className={`log-block${block.streaming ? " log-block-streaming" : ""}`}
-              key={block.key}
-              aria-live={block.streaming ? "polite" : undefined}
-            >
-              <div className="muted" style={{ fontSize: "0.8rem" }}>
-                — {block.heading}{block.streaming ? "（ナレーション待機中）" : ""} —
-              </div>
-              {block.narrative
-                ? narrativeEntries({
-                    ...block.narrative,
-                    speeches: speechesVisibleForBlock(
-                      block.key,
-                      block.narrative.speeches,
-                    ),
-                  }).map((entry) =>
-                    entry.kind === "narrator" ? (
-                      <p
-                        key={`n-${entry.narratorLine}`}
-                        style={{ margin: "0.25rem 0" }}
-                      >
-                        {entry.text}
-                      </p>
-                    ) : (
-                      <p
-                        key={`s-${entry.speechLine}`}
-                        className="speaker speech-enter"
-                        style={{ margin: "0.25rem 0" }}
-                      >
-                        {formatSpeech(entry.speech)}
-                      </p>
-                    )
-                  )
-                : (
-                    <p className="muted" style={{ margin: "0.25rem 0" }}>
-                      {block.pendingText}
-                    </p>
-                  )}
-            </div>
-          ))}
+          {story.map((block) => <StoryBlock key={block.key} block={block} />)}
           <div ref={logEnd} className="battle-log-end" />
         </div>
       </div>
@@ -289,7 +248,7 @@ export function BattlePageView(input: {
             <div className="battle-winner-row battle-winner-draw">
               <Link
                 className="battle-face battle-face-sm battle-face-link"
-                to={`/characters/${battle.sideA.characterId}`}
+                to={`/characters/${battle.sideA.characterId}?battleId=${encodeURIComponent(battle.id)}`}
               >
                 {imgA ? (
                   <img src={imgA} alt={battle.sideA.displayName} />
@@ -299,7 +258,7 @@ export function BattlePageView(input: {
               </Link>
               <Link
                 className="battle-face battle-face-sm battle-face-link"
-                to={`/characters/${battle.sideB.characterId}`}
+                to={`/characters/${battle.sideB.characterId}?battleId=${encodeURIComponent(battle.id)}`}
               >
                 {imgB ? (
                   <img src={imgB} alt={battle.sideB.displayName} />
@@ -315,7 +274,7 @@ export function BattlePageView(input: {
             <div className="battle-winner-row">
               <Link
                 className="battle-face battle-face-winner battle-face-link"
-                to={`/characters/${winner.characterId}`}
+                to={`/characters/${winner.characterId}?battleId=${encodeURIComponent(battle.id)}`}
               >
                 {imgWinner ? (
                   <img src={imgWinner} alt={winner.displayName} />
@@ -466,5 +425,38 @@ export function BattlePageView(input: {
         </button>
       ) : null}
     </>
+  );
+}
+
+/** Arrived narration and speech are rendered in their recorded order immediately. */
+function BattleNarrative({ narrative }: { narrative: NarrativeBlock }) {
+  return narrativeEntries(narrative).map((entry) => (
+    entry.kind === "narrator" ? (
+      <p key={`n-${entry.narratorLine}`} style={{ margin: "0.25rem 0" }}>
+        {entry.text}
+      </p>
+    ) : (
+      <p key={`s-${entry.speechLine}`} className="speaker" style={{ margin: "0.25rem 0" }}>
+        {formatSpeech(entry.speech)}
+      </p>
+    )
+  ));
+}
+
+function StoryBlock({ block }: { block: BattleStoryBlock }) {
+  return (
+    <div
+      className={`log-block${block.streaming ? " log-block-streaming" : ""}`}
+      aria-live={block.streaming ? "polite" : undefined}
+    >
+      <div className="muted" style={{ fontSize: "0.8rem" }}>
+        — {block.heading}{block.streaming ? "（ナレーション待機中）" : ""} —
+      </div>
+      {block.narrative ? (
+        <BattleNarrative narrative={block.narrative} />
+      ) : (
+        <p className="muted" style={{ margin: "0.25rem 0" }}>{block.pendingText}</p>
+      )}
+    </div>
   );
 }

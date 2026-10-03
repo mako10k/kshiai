@@ -1,0 +1,72 @@
+{
+  "scope": "project kshiai read-only bucket/IAM/predefined role observation",
+  "existingBuckets": [
+    {
+      "location": "US",
+      "name": "kshiai_cloudbuild",
+      "public_access_prevention": "inherited",
+      "uniform_bucket_level_access": false
+    }
+  ],
+  "potentialStorageReaders": [
+    {
+      "role": "roles/cloudbuild.builds.builder",
+      "members": [
+        "serviceAccount:639316264814@cloudbuild.gserviceaccount.com"
+      ],
+      "storagePermissions": [
+        "storage.objects.create",
+        "storage.objects.delete",
+        "storage.objects.get",
+        "storage.objects.list"
+      ]
+    },
+    {
+      "role": "roles/cloudbuild.serviceAgent",
+      "members": [
+        "serviceAccount:service-639316264814@gcp-sa-cloudbuild.iam.gserviceaccount.com"
+      ],
+      "storagePermissions": [
+        "storage.objects.create",
+        "storage.objects.delete",
+        "storage.objects.get",
+        "storage.objects.list"
+      ]
+    },
+    {
+      "role": "roles/containerregistry.ServiceAgent",
+      "members": [
+        "serviceAccount:service-639316264814@containerregistry.iam.gserviceaccount.com"
+      ],
+      "storagePermissions": [
+        "storage.objects.get",
+        "storage.objects.getIamPolicy",
+        "storage.objects.list"
+      ]
+    },
+    {
+      "role": "roles/run.serviceAgent",
+      "members": [
+        "serviceAccount:service-639316264814@serverless-robot-prod.iam.gserviceaccount.com"
+      ],
+      "storagePermissions": [
+        "storage.buckets.update",
+        "storage.objects.create",
+        "storage.objects.delete",
+        "storage.objects.get",
+        "storage.objects.list"
+      ]
+    },
+    {
+      "role": "roles/storage.objectViewer",
+      "members": [
+        "serviceAccount:639316264814-compute@developer.gserviceaccount.com"
+      ],
+      "storagePermissions": [
+        "storage.objects.get",
+        "storage.objects.list"
+      ]
+    }
+  ],
+  "limits": "Does not prove owner-only plaintext access or actual new bucket IAM; owner/editor implicit privilege included in candidate reasoning. No resource creation."
+}

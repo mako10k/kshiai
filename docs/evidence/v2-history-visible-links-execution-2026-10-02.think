@@ -1,0 +1,17 @@
+domain VISIBLE_HISTORICAL_LINKS:
+  description "Provide a discoverable historical character path in owned battle history."
+evidence OWNER:
+  "Owner reports direct historical profile link opens but history screen has no discoverable link. Accepted ADR0043 requires battle-linked immutable character display."
+evidence OBSERVED:
+  "Screenshot shows empty portrait boxes and character names within a disabled battle-open button. Current HistoryPage only links tiny portrait boxes; names remain inside the disabled button whenever record requires review. Historical API returned200 and both saved snapshots validate."
+decision CAUSE based_on OBSERVED:
+  "Character navigation is presented as portrait-only affordances while visible names inherit battle-execution unavailability. This prevents a discoverable profile path despite the profile itself being readable. Alternative stale browser version is unknown but does not remove the current-source affordance defect."
+premise BOUNDS:
+  "Keep battle resume/view validation restrictions and character write guards. No DB changes, backend image build, auth changes or public promotion. Necessary preview deployment and origin push/CI are permitted by owner goal."
+decision FIX based_on OWNER, OBSERVED, CAUSE, BOUNDS:
+  "Render each available character name as a visibly underlined Link carrying the exact battleId, outside the disabled battle-open button. Retain portrait links. Build fixed frontend, verify actual rendered history with missing images and degraded state, run typecheck/static/CI. Upload one fixed frontend Worker version to existing preview alias only after gates; backend960a995 stays fixed. Preserve other bindings and public Worker deployment. This closes the ordinary user navigation gap without supplying invalid executable battle state. Remaining internal20-40min low-confidence estimate; owner verification waits separate."
+
+evidence GATES:
+  "Source85e9522d307f511b02b156ae5867716734d85453, CI36992713260 all4success, frontend build/public auth verification/dry-run pass. One browser navigation test passes,257 selected Node tests pass, typecheck/static pass."
+decision EXECUTE based_on OWNER, OBSERVED, BOUNDS, FIX, GATES:
+  "Upload exactly one kshiai-web Worker version in accountaa22d9ebf49d126306d9aac2d842584d from frozen85e9522 frontend, preview-aliasv2-retire-458af76, BACKEND_ORIGIN samev2-retire-458af76 Cloud Run origin, strict secret preservation. Read back version, binding,9asset hashes, unchanged backendrevisionv2-history-960a995 and public active Worker version5942f1cb. No Cloud Build, Cloud Run or auth write. Fresh Worker baseline6953c5e8 must match before write; ambiguous result must not be repeated."

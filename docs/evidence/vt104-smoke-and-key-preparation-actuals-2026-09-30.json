@@ -1,0 +1,35 @@
+{
+  "schema": "kshiai/vt104-local-preparation-observation/v1",
+  "task": "vt104",
+  "startAt": "2026-09-30T18:44:04+09:00",
+  "suspendAt": "2026-09-30T20:29:13+09:00",
+  "measurement": "observed continuous task interval elapsed; includes tool waits and dialogue; not person effort",
+  "elapsedSeconds": 6309.123998,
+  "personEffort": null,
+  "completedSubscope": [
+    "eight bounded local Stage adapters",
+    "source-bound selected tests206/typecheck/build/PG17",
+    "owner-selected snapshot policy ADR0041",
+    "synthetic encryption verification and new-key procedure"
+  ],
+  "taskCompleted": false,
+  "remainingInternalHours": {
+    "vt104": [
+      1.75,
+      4.5
+    ],
+    "Stage_cc314": [
+      3.75,
+      9
+    ],
+    "parent_csm001": [
+      6.75,
+      16
+    ]
+  },
+  "confidence": "low",
+  "scopeArithmetic": "workflow1-2h + real recovery/resources/owner/release candidate0.75-2.5h = vt104; downstream2-4.5h = Stage; further3-7h = parent",
+  "velocity": "vt103 declared elapsed2p/1.36h=25p/17h observed; unsuitable direct operational preparation conversion; declared plan already uses this limited sample",
+  "missingMeasurement": "vt104 complete sequence and person-effort input; no invented actual effort",
+  "nextCheckpoint": "2026-09-30T21:00:00+09:00 conditional on owner key/email inputs arriving and a resumed authorized local phase; observe start/stop and rerun project observe-velocity at the next measurable task completion"
+}

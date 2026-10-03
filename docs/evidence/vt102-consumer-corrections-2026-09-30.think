@@ -1,0 +1,42 @@
+domain CONFLICT:
+  description "Determine whether current accepted sources settle an unresolved V3 norm conflict."
+evidence SCHEMA:
+  |
+    V3 norm evaluator returns zero legal actions and character_norm_conflict when
+    no applicable registered legal fallback resolves the restriction conflict.
+    Backend now preserves this receipt while skipping the empty provider lane.
+evidence ENGINE:
+  |
+    The engine retains static policy selection and forceOffense/basic_attack paths.
+    The normal turn uses this engine after agent decision generation. The inspected
+    binding contract does not state a response for an unresolved empty action set.
+premise AUTHORITY:
+  |
+    ADR0030 requires legality revalidation and conflict receipts. R2/ADR0039 D1
+    require fixed compiler behavior, not permission to invent a turn-consuming
+    no-op or a new external failure/retry contract.
+premise HISTORICAL_UNKNOWN:
+  |
+    At the initial check the producing runtime behavior and governing clause
+    were unknown. ACCEPTED_OUTCOME below resolves this historical unknown.
+decision INITIAL_CHECK based_on SCHEMA, ENGINE, AUTHORITY:
+  |
+    The initial check kept vt102 incomplete until conflict behavior was evidenced.
+    Continue authorized local tests and immutable-binding verification.
+    If sources do not settle the behavior, present the exact alternatives to the
+    owner before dependent runtime changes. No deployment or remote writes.
+evidence ACCEPTED_OUTCOME:
+  |
+    Accepted ADR0011 Action and relationship semantics defines unexpected runtime
+    empty-set behavior: declared legal fallback or wait, with a conflict receipt.
+    Accepted requirement v6 R3 allows awareness-gated conscious guidance only
+    when applicable; ADR0030 preserves those applicable boundaries.
+decision CORRECT based_on SCHEMA, ENGINE, AUTHORITY, ACCEPTED_OUTCOME:
+  |
+    Preserve the frozen qualified programs. Overlay guidance statements using
+    current facts, applicability, exceptions and awareness. Gate every engine
+    action substitution against the V4 norm result and use its legal fallback
+    or specified wait for an empty set. Recompute for later temporal boundaries.
+    Preserve the conflict receipt even when the provider lane is skipped.
+    Verify forced offense and exact skill rejection without rewriting legacy
+    battles or accepting downstream lifecycle/Stage completion.

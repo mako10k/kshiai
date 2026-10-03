@@ -1,0 +1,10 @@
+{
+  "ownerReport": "Direct link opens; history navigation missing",
+  "fix": "Visible underlined names link to exact battleId outside disabled battle-open control",
+  "targetedBrowserTest": "1 pass, missing portraits plus degraded battle; exact profile request and destination verified",
+  "selectedNodeTests": 257,
+  "typecheck": "pass",
+  "static": "pass",
+  "runtimeApplied": false,
+  "backendSourceRetained": "960a9958a25f7770755fea9119627e18a461f851"
+}

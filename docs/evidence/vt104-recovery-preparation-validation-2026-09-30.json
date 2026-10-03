@@ -1,0 +1,14 @@
+{
+  "syntax_check": "passed",
+  "git_diff_check": "passed",
+  "runtime_526_hashes": "unchanged",
+  "sealgraph_fsck": "ok",
+  "plan_checks": "parent/child document, both schedules and next passed; existing warnings retained",
+  "cloud_writes": false,
+  "production_data_access_this_interval": false,
+  "remote_writes": false,
+  "local_server_stopped": true,
+  "owner_adr_acceptance": false,
+  "vt104_done": false,
+  "verification_authority": "local observation only; new rehearsal is not authoritative verification Seal"
+}

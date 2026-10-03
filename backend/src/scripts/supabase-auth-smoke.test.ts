@@ -16,7 +16,7 @@ const {
   smokeVersionedCharacterReads,
 } = await import("./supabase-auth-smoke.js");
 const { getCurrentAssetGeneration } = await import(
-  "../repositories/asset-generations.js"
+  "../testing/historical-asset-generations.js"
 );
 
 const ownerUserId = "versioned-smoke-owner";

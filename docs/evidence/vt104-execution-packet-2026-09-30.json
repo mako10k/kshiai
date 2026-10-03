@@ -1,0 +1,213 @@
+{
+  "schema": "kshiai/vt104-execution-packet/v1",
+  "status": "local-smoke-adapters-verified-execution-inputs-pending",
+  "execution_authorized": false,
+  "production_mutation_count_this_session": 0,
+  "github_write_count_this_session": 0,
+  "owner": {
+    "email": "mako10k@mk10.org",
+    "userId": "usr_568b632d7ad86cfe3e356171",
+    "google_link": "direct auth.identities SELECT confirmed",
+    "contentAccepted": false
+  },
+  "release": {
+    "candidateVersion": "0.23.0",
+    "localHead": "f58ac2f6e676f9eab486c98787908ee69f7bc60f",
+    "remoteMain": "e31c487dadbe784022e5cfde80d3314ce45485b9",
+    "sourceAggregate": "6a7e05dbaf89c3f637305ddd5245ed474bab53cdb6d743140fbe1308c49a954d",
+    "releaseCommit": null,
+    "requiredChecks": {
+      "validate": null,
+      "security": null,
+      "backend-image": null,
+      "worker": null
+    },
+    "tag": null,
+    "backendDigest": null,
+    "cloudRunRevision": null,
+    "workerVersion": null,
+    "matchingPullRequests": [],
+    "headChecksReadback": "HTTP422 No commit found; local HEAD is not hosted; not a CI pass"
+  },
+  "characters": [
+    {
+      "name": "neva",
+      "proposedCharacterId": "stage-trial-neva-736a5e323e94f501",
+      "candidateDigest": "50edf23389df253762378ba622537cff3d86722f613693b6a92796a7624d307f",
+      "sourceDigest": "70d125debd01ebc5bbf201b4610000b2bd87c9e39e27063f5ba00f31d3d3d2b3",
+      "attemptId": null,
+      "generationId": null,
+      "confirmationPermitId": null
+    },
+    {
+      "name": "rio",
+      "proposedCharacterId": "stage-trial-rio-736a5e323e94f501",
+      "candidateDigest": "a9ee9fda59bb0bdb1b8d77bbff300dac57ef372dfb41e1786e67691635c38252",
+      "sourceDigest": "615856b5b7d26d10ad812e0e78c040778ee4e138c3f26a3f190a786168832e7e",
+      "attemptId": null,
+      "generationId": null,
+      "confirmationPermitId": null
+    }
+  ],
+  "snapshot": {
+    "protectedStore": null,
+    "encryption": null,
+    "accessPrincipals": null,
+    "retention": null,
+    "archiveIdentity": null,
+    "archiveDigest": null,
+    "restoreTarget": null,
+    "measuredSnapshotSeconds": null,
+    "measuredRestoreSeconds": null,
+    "measuredForwardRecoverySeconds": null,
+    "proposedProtectedStore": "gs://kshiai-cutover-snapshots-639316264814/vt104/<frozen-cutover-id>/pretrial/",
+    "candidateStatus": "Owner selected pre-encryption option; Accepted ADR0041; exact resources/key/recovery execution pending",
+    "selectedPolicy": {
+      "region": "asia-northeast1",
+      "class": "Standard",
+      "encryption": "owner age public-recipient before upload plus Google managed at-rest/TLS",
+      "retentionMinimumDays": 30,
+      "retentionLocked": false,
+      "lifecycleDeleteAgeDays": 30,
+      "softDeleteDays": 7,
+      "ownerRecipient": "age13fe88lnaq2mrhhcg7vhl4cdkkkemrnpkqhn8zzvqm5p5jfk0zursnvr6j8",
+      "identityProtectedStore": {
+        "provider": "secdat",
+        "domain": "/home/katsumata-m/kshiai",
+        "store": "snapshot-recovery",
+        "key": "VT104_SNAPSHOT_AGE_IDENTITY",
+        "secretId": "076baf57-9965-4d7f-9a2b-547aa8a83e37"
+      },
+      "identityRecoveryCopy": null
+    },
+    "keyPreparation": "docs/evidence/vt104-owner-key-preparation-2026-09-30.md",
+    "keyStatus": "Owner-authorized new age key registered in secdat; stored identity public readback and synthetic roundtrip passed; independent secdat recovery backup/real restore remain packet prerequisites",
+    "keyRegistrationReceipt": "docs/evidence/vt104-owner-key-secdat-registration-2026-09-30.json"
+  },
+  "stop": {
+    "upperSeconds": 1800,
+    "startAt": null,
+    "queue": "projects/kshiai/locations/asia-northeast1/queues/kshiai-narration",
+    "oldTagsObserved": 78,
+    "writerDrainReceipt": null,
+    "providerAccountingReadback": null,
+    "allExecutionsReadback": null,
+    "workerVersionRouteReadback": null
+  },
+  "stageReceipts": {
+    "health": null,
+    "postgres": null,
+    "email": null,
+    "google": null,
+    "ownership": null,
+    "r2": null,
+    "sse": null,
+    "directProtection": null
+  },
+  "trial": {
+    "bindings": null,
+    "requestAttemptCeilings": null,
+    "providerPhysicalAttemptCeiling": null,
+    "smokeResourcePrefix": null,
+    "cutoverReadbackReceipt": null,
+    "stoppedBarrierReceipt": null
+  },
+  "writesUpperCandidate": {
+    "queuePause": 1,
+    "queueResume": 1,
+    "clearOldTags": 1,
+    "scalingStop": 1,
+    "scalingReopen": 1,
+    "stageBackendDeploy": 1,
+    "productionBackendTraffic": 1,
+    "workerPromotion": 1,
+    "migrationJobDeploy": 1,
+    "migrationJobExecute": 1,
+    "cutoverJobDeploy": 1,
+    "cutoverJobExecute": 1,
+    "candidatePrepare": 2,
+    "ownerConfirm": 2,
+    "normalControlRevisions": 4,
+    "deletionTransaction": 1,
+    "deletionExactCounts": null,
+    "workerSharedSettings": null,
+    "taskRetarget": null,
+    "permitRows": null,
+    "recoveryBranchWrites": null,
+    "note": "not execution approval; unresolved max effects block execution"
+  },
+  "migrationCandidate": [
+    "0026_character_focused_authoring_payloads.sql",
+    "0027_character_revision_scope_resolution.sql",
+    "0028_semantic_authoring_provider_timeout.sql",
+    "0029_battle_discard_receipts.sql",
+    "0030_cutover_control.sql"
+  ],
+  "recovery": {
+    "beforeTrial": "exact separately approved snapshot branch only; image rollback does not revert DDL/deletion",
+    "afterTrial": "forward-only preserving new V3 data; exact repair steps and measured upper bound still required",
+    "R_seconds": null,
+    "deleteLatestStartFormula": "1800 - max(measured pretrial restore, measured posttrial forward recovery) - verified readback/open allowance"
+  },
+  "fileInventory": [
+    {
+      "path": "backend/src/scripts/postgres-runtime-smoke.ts",
+      "sha256": "29b1e6dc59cf806c2d1e536bd6e2b0c912abcbfe64d8bc3474ef132d4ad6d6ca"
+    },
+    {
+      "path": "backend/src/scripts/supabase-auth-smoke.ts",
+      "sha256": "d04ab8501bc00506bb3390a4ac8130284180ef216ad36cf6f639bd277ea8faf1"
+    },
+    {
+      "path": "backend/src/scripts/r2-smoke.ts",
+      "sha256": "4267ba22f0ffcb95d2d114d796170e6ac67d672e57160c11a97cb22678eff69c"
+    },
+    {
+      "path": "backend/src/scripts/persistent-battle-e2e.ts",
+      "sha256": "e9f0cd78732e28e327715432f16f496a47f866f48157ebea85071be9928e1ab6"
+    },
+    {
+      "path": "backend/src/scripts/authenticated-read-surface-smoke.ts",
+      "sha256": "8d55f2b47c2af911cc5f34f3ef145ff30a57b994638f97af0ba721de965a8584"
+    },
+    {
+      "path": "scripts/smoke-deployment.mjs",
+      "sha256": "4cbc34fd8b8b13a911b58d8058fef7ccdd5f1d5ac29992f2b607242587c4a910"
+    },
+    {
+      "path": ".github/workflows/stage-release.yml",
+      "sha256": "018e0a7b61aa0b641d57734f6511b6e139985d7c03ae912cf9cded0db05c7027"
+    },
+    {
+      "path": ".github/workflows/promote-release.yml",
+      "sha256": "caa7b9ef2c0eab375820422de456dd95ba967229d6674d0b72e2ce434f72f161"
+    },
+    {
+      "path": "backend/src/services/cutover-http-admission.ts",
+      "sha256": "c071c30f1a8e3b78f7288d241d4ac1c143fe3aefe44a8bf6d011d32d313cd06e"
+    },
+    {
+      "path": "backend/src/services/cutover-admission.ts",
+      "sha256": "d716a314bdf0f8072aa7ca1ee6ad99fbfe6b31b2cdddfe639713a889a4ab7701"
+    }
+  ],
+  "blockingInputs": [
+    "exact smoke adapter closure and permitted auth acceptance path",
+    "protected snapshot store controls",
+    "real restore/forward recovery target and measured bound",
+    "owner candidate content acceptance then actual normal confirmation receipts",
+    "main release commit and four CI passes and immutable artifacts",
+    "all writer and Worker readbacks",
+    "exact operation quotas and recovery max writes",
+    "separate external execution approvals"
+  ],
+  "nextCheckpoint": "review smoke adapter inventory and resolve acceptance path without expanding fixed-owner trial",
+  "localSmokeImplementation": {
+    "scope": "local conformance only; live Stage receipts remain null",
+    "detail": "docs/evidence/vt104-stage-smoke-detail-2026-09-30.md",
+    "workflowCandidate": "docs/evidence/vt104-workflow-integration-candidate-2026-09-30.md",
+    "snapshotCandidate": "docs/evidence/vt104-snapshot-storage-candidate-2026-09-30.md",
+    "acceptanceKinds": 8,
+    "liveStageCompleted": false
+  }
+}

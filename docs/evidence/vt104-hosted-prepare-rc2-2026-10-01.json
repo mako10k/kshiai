@@ -1,0 +1,71 @@
+{
+  "schema": "kshiai/hosted-trial-preparation-evidence/v1",
+  "observed_at": "2026-10-01T11:53:28.746838+00:00",
+  "claim": "source-tag-prepared-image-identity-only",
+  "source": {
+    "commit_sha": "4ab19719ef7fa61cdfb8571c4579c3c64cc96dfb",
+    "bounded_repair_manifest": "docs/evidence/vt104-trial-disposal-source-2026-10-01.json",
+    "implementation_seal": "1a4f6e9dfacdcbecf8feecd75fa347af0ed759ceb0ae6bd430fca99a3162b6cf"
+  },
+  "owner_authority": {
+    "response": "承認：CI・RC・prepareまで",
+    "scope": "one branch push; exact-sourceCI4; annotatedRC2 creation/push; oneprepare-only CloudBuild/image save; no shared stop/disposal/deploy/authwrites"
+  },
+  "ci": {
+    "run_id": "36856943670",
+    "url": "https://github.com/mako10k/kshiai/actions/runs/36856943670",
+    "source": "4ab19719ef7fa61cdfb8571c4579c3c64cc96dfb",
+    "checks": [
+      {
+        "name": "security",
+        "conclusion": "success",
+        "status": "completed"
+      },
+      {
+        "name": "worker",
+        "conclusion": "success",
+        "status": "completed"
+      },
+      {
+        "name": "validate",
+        "conclusion": "success",
+        "status": "completed"
+      },
+      {
+        "name": "backend-image",
+        "conclusion": "success",
+        "status": "completed"
+      }
+    ]
+  },
+  "release": {
+    "tag": "v0.23.0-rc.2",
+    "annotated_tag_oid": "1b2ab0145ced1b7f0a8ecf27e9b1126b8047e7ff",
+    "peeled_source": "4ab19719ef7fa61cdfb8571c4579c3c64cc96dfb",
+    "rc1_moved": false
+  },
+  "prepare": {
+    "run_id": "36857282507",
+    "url": "https://github.com/mako10k/kshiai/actions/runs/36857282507",
+    "status": "completed",
+    "conclusion": "success",
+    "image_ref": "asia-northeast1-docker.pkg.dev/kshiai/kshiai/backend@sha256:2e7051ec6395d36a27124ace0cad8d032bbb6b47878509339b05ce27c679c056",
+    "cloud_build_id": "8b93a707-31bd-470c-9cbe-e68870086fa3",
+    "cloud_build_status": "SUCCESS",
+    "artifact_registry_digest": "sha256:2e7051ec6395d36a27124ace0cad8d032bbb6b47878509339b05ce27c679c056",
+    "shared_runtime_steps_skipped": true
+  },
+  "authentication_settings_changed": false,
+  "shared_database_writes": 0,
+  "owner_additional_writer_report": {
+    "response": "していない",
+    "scope": "no personal developer server or other chat requested database updates",
+    "method": "user-reported; does not replace cloud checks"
+  },
+  "realized_user_value": "not yet usable deployed Google V3 experience",
+  "remaining": [
+    "exact stop/disposal/migration/deployment scope",
+    "actualpreviewcallback if necessary",
+    "Google owner Neva/Rio confirmation and actual battle proof"
+  ]
+}

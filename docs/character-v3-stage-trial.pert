@@ -1,0 +1,506 @@
+# Existing .pert plans should normally be maintained through perttool commands; direct DSL editing bypasses goal/DAG owner-confirmation checks.
+project V3_STAGE_TRIAL:
+  version 5
+  title "First two-character V3 Stage battle trial"
+  description "Current owner policy: unreleased production/Stage shared environment; first Google-owner V3 game use. Requirements v3 defer first-trial legacy compatibility/history preservation,email andbackup/restore gates. Preserve newV3 correctness andcurrentGoogle authentication. Accepted requirements/design govern vt104 preparation,vt105 deployment,vt106 ordinary owner confirmation,vt108 exact oldunfinished disposal andvt107 realgame observation. Registration PR151 merged; initial disposal repair accepted/implemented; RC2 source4ab1971 withsuccessfulCI4 andprepare36857282507/image2e7051ec. No sharedDB/runtime/authwrites. ActualGoogleV3 value notyet realized. Fresh pooler readonly inventory18unfinished168finished14finishedoutbox; GCP directURL reachability,next exactstop/deploy scope unverified. Owner closeout instruction21:10, handoff docs/handoff-v3-trial-rc2-2026-10-01.md. Provisional remaining internal agent estimates vt1040.25-1h,prelogin1-3.25h,firsttrial1.75-5.25h,parentcsm0014.75-12.25h low; externalwaits separate. Existingvelocity25p/17h elapsedonly; do not convert it into personeffort."
+  as_of 2026-09-29
+  duration_unit point
+  velocity 25p/17h
+  finish VST_PLAYED
+  goal_owner user
+  dag_owner user
+
+milestone VST_LOCAL_CANDIDATES:
+  title "Two local V3 candidate fixtures exist"
+  description "Neva and Rio deterministic V3 content originated on codex/v3-stage-trial-candidate at 77ed6a0 and was integrated into cc304 for vt101. Exact owner content acceptance and Stage registration remain separate."
+  state reached
+
+resource DEV:
+  title "Developer"
+  capacity 1
+
+resource OWNER:
+  title "Product and release owner"
+  capacity 1
+
+milestone VST_CURRENT:
+  title "Accepted V3 revisions register and select through the reusable authoring path"
+  description "Exact candidate review and owner confirmation bind receipts and content digest; immutable append and CAS activation with rollback and readback work through the SQLite/PostgreSQL repository contract. Neva and Rio fixed candidates can exercise the same path locally; real Stage activation belongs to vt106."
+  state reached
+
+milestone VST_BOUND:
+  title "Immutable V3 battle lifecycle and local cutover verified"
+
+milestone VST_WIRED:
+  title "Registration and battle paths are ready to integrate"
+
+milestone VST_LOCAL_BATTLE:
+  title "Neva versus Rio completes a local V3 battle"
+
+milestone VST_RELEASE:
+  title "Exact trial release candidate is reviewed and identified"
+
+milestone VST_STAGE_DEPLOYED:
+  title "Trial release is deployed to Stage and read back"
+
+milestone VST_STAGE_READY:
+  title "Both V3 characters are available in Stage"
+
+milestone VST_PLAYED:
+  title "Owner has tried a real V3-versus-V3 Stage battle"
+
+task vt101 VST_LOCAL_CANDIDATES -> VST_LOCAL_FIXTURE:
+  title "Verify local direct registration and selection of V3 trial fixtures"
+  description "Correction on 2026-09-29: completed scope is the SQLite-only direct importer and fixture selection checks at 0585527. Preserve historical events as recorded partial intervals. The original accepted candidate-review/owner-confirm/activation obligation is carried by vt109; original 2/3/4p remains historical and is not a new completed-throughput observation."
+  estimate:
+    optimistic 2p
+    most_likely 3p
+    pessimistic 4p
+  status done
+  requires:
+    DEV 1
+  source "docs/evidence/vt101-local-v3-registration-2026-09-29.md; plan revision 13 completion correction"
+
+task vt102 VST_LOCAL_CANDIDATES -> VST_REVISION_BOUND:
+  title "Bind V3 revisions through all real battle consumers"
+  description "Complete immutable V3-by-V3 binding, exact generation IDs/digests/compiler inputs and combat snapshots through HTTP, SSE, action, state replay, narration and worker consumers. Preserve historical 3/4/5p and recorded start value 4p. Reconcile historical WIP with the exact accepted successor contract. Centralized lifecycle/cutover expansion is separately vt110; full integration requires both. Resume requires parent cm305 acceptance handoff in vt111; historical suspended start source is retained because perttool requires it already reached."
+  estimate:
+    optimistic 3p
+    most_likely 4p
+    pessimistic 5p
+  status done
+  requires:
+    DEV 1
+  source "Owner immutable revision decisions; exact successor contract via VST_CONTRACT_READY. Historical estimate retained for original binding/consumer slice; expanded lifecycle/cutover is vt110."
+
+gate vg101 VST_CURRENT -> VST_WIRED:
+  reason "Local integration needs registered, selectable V3 characters"
+
+gate vg102 VST_BOUND -> VST_WIRED:
+  reason "Local integration needs immutable V3 battle binding and consumers"
+
+task vt103 VST_WIRED -> VST_LOCAL_BATTLE:
+  title "Complete one local Neva-versus-Rio battle end to end"
+  description "Exercise Neva and Rio through registration, selection, V3-by-V3 creation, execution, reload and visible result on the real local path. Verify V2-by-V2 and mixed new creation are rejected; both immutable revisions remain bound after editing; cutover deletes only pre-cutover unfinished fixtures and invalidates HTTP/state replay and worker continuation while finished history stays readable. Record exact IDs and evidence."
+  estimate:
+    optimistic 1p
+    most_likely 2p
+    pessimistic 3p
+  status done
+  requires:
+    DEV 1
+  source "Owner decision: try V3 characters in a real Stage battle; local integration prerequisite"
+
+task vt104 VST_LOCAL_BATTLE -> VST_RELEASE:
+  title "Prepare the minimal unreleased V3 trial candidate"
+  description "RC2 source4ab19719ef7fa61cdfb8571c4579c3c64cc96dfb, CI36856943670 fourchecks success, prepare36857282507/cloudBuild8b93a707/image2e7051ec independentlyverified. Owner-approved snapshot-free trial preparation and receipt bootstrap implemented;234selected tests,type/static/build andcompiledPG17 thirteenchecks passed. Shared pooler readonly preview18unfinished168finished14finishedoutbox; local directURL ENETUNREACH, GCP image DB reachability unobserved. No shared stop/disposal/deploy/authwrites. vt104 remains incomplete pending proposed pre-stop GCP readonly probe and exact execution packet. Owner requests closeout by21:10; handoff docs/handoff-v3-trial-rc2-2026-10-01.md. Remaining agent estimates vt1040.25-1h, prelogin1-3.25h, firsttrial1.75-5.25h, parentcsm0014.75-12.25h low; external waits separate."
+  duration 1p
+  status suspended
+  requires:
+    DEV 1
+  source "docs/unreleased-v3-trial-design-v1.md; docs/unreleased-v3-trial-disposal-design-v2-proposed.md; docs/evidence/vt104-hosted-prepare-rc2-2026-10-01.json; docs/handoff-v3-trial-rc2-2026-10-01.md"
+
+task vt105 VST_RELEASE -> VST_STAGE_DEPLOYED:
+  title "Deploy the V3 candidate to the unreleased shared environment"
+  description "Deploy the exact authorized trial candidate and read back source/image/revision, startup/DB and actual Google/ownership routes. Use required runtime schema only. Determine old writer/queue coordination from new battle correctness, without legacy availability, snapshot restore or production-promotion proof as trial acceptance."
+  estimate:
+    optimistic 0.5p
+    most_likely 1p
+    pessimistic 2p
+  requires:
+    DEV 1
+  source "docs/character-v3-battle-cutover-requirements-v3.md; owner unreleased shared-environment policy and plan correction 2026-09-30; docs/evidence/vt104-unreleased-trial-rescope-2026-09-30.md"
+
+task vt106 VST_STAGE_DEPLOYED -> VST_STAGE_READY:
+  title "Confirm and activate Neva and Rio for Google owner"
+  description "Use Google owner ordinary review/confirm to append/activate the exact two immutable V3 generations and read back ownership and selection. Existing V2 characters are outside first-trial migration. Exact external owner/data action scope is retained."
+  estimate:
+    optimistic 0.25p
+    most_likely 0.5p
+    pessimistic 1p
+  requires:
+    DEV 1
+  source "docs/character-v3-battle-cutover-requirements-v3.md; owner unreleased shared-environment policy and plan correction 2026-09-30; docs/evidence/vt104-unreleased-trial-rescope-2026-09-30.md"
+
+task vt107 VST_STAGE_READY -> VST_PLAYED:
+  title "Observe Google owner complete one V3 battle"
+  description "Owner logs in with Google, selects own Neva and Rio, creates/advances/reloads a real V3 battle and observes result. Record battle/generation/deployment IDs. Legacy finished-history readability, email and backup/restore are outside this initial acceptance."
+  estimate:
+    optimistic 0.25p
+    most_likely 0.5p
+    pessimistic 1p
+  requires:
+    OWNER 1
+  source "docs/character-v3-battle-cutover-requirements-v3.md; owner unreleased shared-environment policy and plan correction 2026-09-30; docs/evidence/vt104-unreleased-trial-rescope-2026-09-30.md"
+
+task vt108 VST_STAGE_DEPLOYED -> VST_CUTOVER:
+  title "Dispose of old unfinished battles for the V3 trial"
+  description "Retain the already chosen pre-cutover unfinished disposal target. Inventory exact affected rows and old writers; execute only authorized deletion and independently read back target removal and V3-only availability. Backup, restore R and finished-history compatibility are not blockers. No blanket DB/user/history reset is authorized."
+  estimate:
+    optimistic 0.25p
+    most_likely 0.5p
+    pessimistic 1p
+  requires:
+    DEV 1
+  source "docs/character-v3-battle-cutover-requirements-v3.md; owner unreleased shared-environment policy and plan correction 2026-09-30; docs/evidence/vt104-unreleased-trial-rescope-2026-09-30.md"
+
+task vt109 VST_LOCAL_FIXTURE -> VST_CURRENT:
+  title "Complete V3 candidate review, confirmation and activation"
+  description "Fulfil the original remaining vt101 accepted authoring obligation: persist exact fixed Neva/Rio V3 candidates in the reusable authoring path, expose review, accept the reviewed candidate and receipts, append immutable generations and CAS activate, and read/select through common SQLite/PostgreSQL contracts. Test decline, duplicate confirmation, drift/conflict, rollback and readback. Local tests use a synthetic owner; exact Stage owner/data actions remain vt106. Provider generation and broad three-mode evaluation stay downstream. Provisional 1/2/4p reflects reuse of existing authoring lifecycle plus V3 type/activation/read-contract work; re-estimate after first complete candidate-confirmation test."
+  estimate:
+    optimistic 1p
+    most_likely 2p
+    pessimistic 4p
+  status done
+  requires:
+    DEV 1
+  source "Accepted character-v3-authoring-requirements-v5 R18; ADR-0010/0014. Existing implementation authority; independent of proposed battle cutover ADR-0039."
+
+task vt110 VST_REVISION_BOUND -> VST_BOUND:
+  title "Centralize V3 battle eligibility and physical cutover"
+  description "Complete the expanded lifecycle/cutover obligation: share V3-only participation eligibility across owner selection, opponent/random/auto pools and direct create API; centralize create/read/advance/replay/discard; physically delete old unfinished battles and related continuation data; prevent deterministic recreation and late worker/save effects while retaining finished history. Verify SQLite/PostgreSQL storage contracts. Provisional 0.5/1/2p assumes reuse of vt102 adapters and transactions; update at the first deletion/replay test. Stage execution is vt108."
+  estimate:
+    optimistic 0.5p
+    most_likely 1p
+    pessimistic 2p
+  status done
+  requires:
+    DEV 1
+  source "Owner approved narrow lifecycle and physical deletion; exact successor ADR/design prerequisite; plan revision 13"
+
+task vt111 VST_LOCAL_FIXTURE -> VST_CONTRACT_READY:
+  title "Read back the parent accepted implementation package"
+  description "Read back exact accepted requirement/ADR/design identities from parent cm305 and record the child handoff. Provisional 0.1p covers only this synchronization action; owner review is counted once as parent cc319. External waiting duration is unknown and excluded from point schedules."
+  duration 0.1p
+  status done
+  requires:
+    DEV 1
+  source "docs/evidence/vt111-accepted-handoff-2026-09-29.json; exact accepted files read back; cc319 owner acceptance recorded separately"
+
+work_event WE-3dbb3f38bb58d449f8ada5eae4068f5083f38cf6283bd0712c034a25db3ca26c:
+  model 1
+  task vt102
+  kind start
+  occurred_at 2026-09-18T21:04:09+09:00
+  planned_value 4p
+
+work_event WE-b6b08595934599b49d01ed1c80431459974f9cd32338618fe52cec503a6f326e:
+  model 1
+  task vt102
+  kind suspend
+  occurred_at 2026-09-18T21:53:00+09:00
+  reason "Shared workday ends at 22:00; V4 full-consumer regression remains"
+
+milestone VST_CUTOVER:
+  title "Pre-cutover unfinished Stage battles discarded"
+  description "Exact pre-cutover unfinished targets are physically removed; replay and worker paths are read back and the V3-only cutover identity is recorded. Requirements v3 R3-R5 defer finished-history compatibility and snapshot/restore proof from initial-trial acceptance."
+
+gate vg108 VST_CUTOVER -> VST_STAGE_READY:
+  reason "Initial Google-owner V3 trial requires verified disposal of the exact pre-cutover unfinished set and prevention of old execution/recreation. Finished-history readability and snapshot/restore are deferred under requirements v3 R3-R5."
+
+work_event WE-c9a8d59814806938e3b8f831e1a97ec451d76d153171e71d25434ac1499dea28:
+  model 1
+  task vt101
+  kind start
+  occurred_at 2026-09-29T19:26:58+09:00
+  planned_value 3p
+
+work_event WE-b18765f1a4e0a2700c27623dccb5f712cf8f77540822504facd8f110a61d05b3:
+  model 1
+  task vt101
+  kind finish
+  occurred_at 2026-09-29T19:36:20+09:00
+
+milestone VST_LOCAL_FIXTURE:
+  title "Local direct-registration fixture slice verified"
+  description "SQLite fixture registration and selection APIs verified at 0585527; original accepted authoring lifecycle remains in vt109. vt101 historical timing is a partial interval, not full delivery throughput."
+  state reached
+
+milestone VST_CONTRACT_READY:
+  title "Exact cutover requirement and successor ADR/design accepted"
+  description "External handoff: record reached only from parent cm305 with exact accepted requirement, successor ADR and governing design identities."
+  state reached
+
+
+
+
+milestone VST_REVISION_BOUND:
+  title "Immutable V3 revisions and consumers locally verified"
+
+gate vg110 VST_CONTRACT_READY -> VST_REVISION_BOUND:
+  reason "Exact accepted contract is required for binding completion; historical suspended vt102 resumes only after vt111 handoff."
+
+work_event WE-e3f59fa897372624bf518f1c624547754d067f35e9ca72058f5303edd3db8054:
+  model 1
+  task vt109
+  kind start
+  occurred_at 2026-09-29T20:48:57+09:00
+  planned_value 13/6p
+
+work_event WE-9c9e9a2fb77b468bd200fd66191577e149195c92362a9ce208c66cabb1fdc863:
+  model 1
+  task vt109
+  kind finish
+  occurred_at 2026-09-29T21:20:47+09:00
+
+work_event WE-95de8d8a6424662d2a788f3a34f0427ed3fb9324c282453aea444224f70d0d19:
+  model 1
+  task vt111
+  kind start
+  occurred_at 2026-09-29T21:38:14+09:00
+  planned_value 0.1p
+
+work_event WE-83949ccb0e29145ed682683cdc752d23e14cb2ca07b29b42b1790b41f1b8ee51:
+  model 1
+  task vt111
+  kind finish
+  occurred_at 2026-09-29T21:38:16+09:00
+
+work_event WE-71b720e00b4218addf8fa7941779460a900ac4df673454ac4c0797b7845183a5:
+  model 1
+  task vt102
+  kind resume
+  occurred_at 2026-09-30T10:09:28+09:00
+
+work_event WE-55d1574aaf96c953f5371c60854d248a79d3aa46523aca52295c32914bd41b4f:
+  model 1
+  task vt102
+  kind finish
+  occurred_at 2026-09-30T10:40:08+09:00
+
+work_event WE-a4749c02721d06214e3852836689bb2d6e931b9fc7afc516fab94f6c6e805e58:
+  model 1
+  task vt110
+  kind start
+  occurred_at 2026-09-30T11:08:20+09:00
+  planned_value 13/12p
+
+work_event WE-d8d4ea6efba4772af758dcda1af7ae3426160f975c3dcddbae9639faf691d615:
+  model 1
+  task vt110
+  kind finish
+  occurred_at 2026-09-30T11:30:53+09:00
+  active_time 451/1200h
+
+work_event WE-40429682c2062a866b9ce28cf356bf4859cd473661ee18c9ffae3f42baa35e16:
+  model 1
+  task vt103
+  kind start
+  occurred_at 2026-09-30T12:04:42+09:00
+  planned_value 2p
+
+work_event WE-80dba942f7d13c29023137e2612d9edc4ad406824a5d2db34e75077f04ddc351:
+  model 1
+  task vt103
+  kind finish
+  occurred_at 2026-09-30T13:26:18+09:00
+  active_time 1.36h
+
+work_event vt104-start-20260930:
+  model 1
+  task vt104
+  kind start
+  occurred_at 2026-09-30T13:44:30+09:00
+  planned_value 1p
+
+work_event vt104-preparation-suspend-20260930:
+  model 1
+  task vt104
+  kind suspend
+  occurred_at 2026-09-30T14:59:43+09:00
+  reason "Preparation review packet frozen; pending exact candidate/content review, stopped controls and recovery proof, separate release authority. No cloud/data writes or task completion."
+
+work_event vt104-rehearsal-resume-20260930:
+  model 1
+  task vt104
+  kind resume
+  occurred_at 2026-09-30T15:12:47+09:00
+
+work_event vt104-control-review-suspend-20260930:
+  model 1
+  task vt104
+  kind suspend
+  occurred_at 2026-09-30T15:40:25+09:00
+  reason "PG17 synthetic rehearsal observed successful; Proposed ADR0040/detail candidate submitted for owner decision. New control implementation awaits Accepted direction. No cloud/data/remote writes."
+
+work_event vt104-control-implementation-resume-20260930:
+  model 1
+  task vt104
+  kind resume
+  occurred_at 2026-09-30T15:44:57+09:00
+
+work_event vt104-control-local-suspend-20260930:
+  model 1
+  task vt104
+  kind suspend
+  occurred_at 2026-09-30T18:06:50+09:00
+  reason "Accepted control local implementation and isolated verification complete; recovery release content owner inputs remain pending; no external actions."
+
+work_event vt104-execution-packet-resume-20260930:
+  model 1
+  task vt104
+  kind resume
+  occurred_at 2026-09-30T18:22:19+09:00
+
+work_event vt104-execution-packet-suspend-20260930:
+  model 1
+  task vt104
+  kind suspend
+  occurred_at 2026-09-30T18:32:12+09:00
+  reason "Prepared concrete non-executable packet, exact owner/content/cloud readbacks and smoke closure findings; storage real recovery release artifacts and adapter acceptance path remain unresolved; no external writes."
+
+work_event vt104-smoke-local-resume-20260930:
+  model 1
+  task vt104
+  kind resume
+  occurred_at 2026-09-30T18:44:04+09:00
+
+work_event vt104-smoke-and-key-preparation-suspend-20260930:
+  model 1
+  task vt104
+  kind suspend
+  occurred_at 2026-09-30T20:29:13+09:00
+  reason "Local bounded Stage adapters and source-bound verification complete, owner-selected ADR0041 policy and synthetic age/key procedure prepared. Await exact owner key primary/backup and existing email account; workflow integration and real recovery/artifact packet remain. vt104 not complete; no production/GitHub writes."
+
+work_event vt104-owner-key-registration-resume-20260930:
+  model 1
+  task vt104
+  kind resume
+  occurred_at 2026-09-30T20:32:35+09:00
+
+work_event vt104-owner-key-registration-suspend-20260930:
+  model 1
+  task vt104
+  kind suspend
+  occurred_at 2026-09-30T20:41:32+09:00
+  reason "Owner-authorized secdat key registration and public/roundtrip readback complete. Pending existing-email input and actual recovery/artifact/workflow packet; vt104 incomplete, no production/GitHub writes."
+
+work_event vt104-plan-detail-resume-20261001:
+  model 1
+  task vt104
+  kind resume
+  occurred_at 2026-10-01T09:59:20+09:00
+
+work_event vt104-specific-design-suspend-20261001:
+  model 1
+  task vt104
+  kind suspend
+  occurred_at 2026-10-01T10:05:16+09:00
+  reason "Canonical plan alignment and concrete design v1 prepared and audited; npm test206 and typecheck pass. Await owner selection of normal-runtime preview access versus owner-only dynamic mode under Proposed ADR0042. No implementation/cloud/remote writes."
+
+work_event vt104-accepted-implementation-resume-20261001:
+  model 1
+  task vt104
+  kind resume
+  occurred_at 2026-10-01T10:24:45+09:00
+
+work_event vt104-unreleased-local-suspend-20261001:
+  model 1
+  task vt104
+  kind suspend
+  occurred_at 2026-10-01T10:44:11+09:00
+  reason "Accepted option1 local workflow and current sealed validator/guard verification completed. Await exact candidate synchronization and execution packet. No cloud/GitHub/DB/paid actions."
+
+work_event vt104-prelogin-resume-20261001:
+  model 1
+  task vt104
+  kind resume
+  occurred_at 2026-10-01T11:07:33+09:00
+
+work_event vt104-prelogin-registration-suspend-20261001:
+  model 1
+  task vt104
+  kind suspend
+  occurred_at 2026-10-01T11:09:46+09:00
+  reason "Accepted source checked and scoped GitHub synchronization prepared. Hosted workflow absent on default main; exact single-file registration candidate requires owner decision. Local GCP readbacks require reauthentication; cloud state unknown. No prepare/deploy/DB/paid action; vt104 remains unfinished."
+
+work_event vt104-registration-review-resume-20261001:
+  model 1
+  task vt104
+  kind resume
+  occurred_at 2026-10-01T11:32:22+09:00
+
+work_event vt104-registration-ci-suspend-20261001:
+  model 1
+  task vt104
+  kind suspend
+  occurred_at 2026-10-01T11:38:27+09:00
+  reason "Approved single-file registration branch pushed and PR151 created; three CI checks passed, security blocked on existing undici7.29.0 advisories. Exact two-manifest7.29.1 candidate passes local audit0/build/worker/typecheck/tests112; await scope extension before adding it to PR. Cloud reauthentication readback succeeds; inventory18unfinished,22outbox including14finished; no cloud/DB/provider writes. Measured review-closeout interval only; registration earlier not assigned invented effort."
+
+work_event vt104-registered-source-resume-20261001:
+  model 1
+  task vt104
+  kind resume
+  occurred_at 2026-10-01T11:48:59+09:00
+
+work_event vt104-static-owner-review-20261001:
+  model 1
+  task vt104
+  kind suspend
+  occurred_at 2026-10-01T12:08:52+09:00
+  reason "Registered workflow merged;226 tests pass;Lizard gate fails;static baseline candidate awaits owner route;no trial deployment."
+
+work_event vt104-complexity-resume-20261001:
+  model 1
+  task vt104
+  kind resume
+  occurred_at 2026-10-01T15:00:05+09:00
+
+work_event vt104-complexity-verified-20261001:
+  model 1
+  task vt104
+  kind suspend
+  occurred_at 2026-10-01T15:20:58+09:00
+  reason "Complexity normalization complete: unchanged lint/build/tests228 pass. Remaining exact hosted source/fourCI/tag/prepare and execution packet; no trial cloud/DB/login writes."
+
+work_event vt104-hosted-prepare-resume-20261001:
+  model 1
+  task vt104
+  kind resume
+  occurred_at 2026-10-01T18:15:32+09:00
+
+work_event vt104-hosted-prepare-verified-20261001:
+  model 1
+  task vt104
+  kind suspend
+  occurred_at 2026-10-01T18:32:51+09:00
+  reason "CI/annotated RC/prepare complete at exact4f3 source and matching artifact/build/registry image. Operational execution packet remains; no runtime deployment."
+
+work_event vt104-packet-resume-20261001:
+  model 1
+  task vt104
+  kind resume
+  occurred_at 2026-10-01T19:58:25+09:00
+
+work_event vt104-packet-design-boundary-20261001:
+  model 1
+  task vt104
+  kind suspend
+  occurred_at 2026-10-01T20:03:27+09:00
+  reason "Read-only operational candidate complete; exact no-snapshot disposal and receipt bootstrap successor design await owner decision."
+
+work_event vt104-disposal-implementation-resume-20261001:
+  model 1
+  task vt104
+  kind resume
+  occurred_at 2026-10-01T20:12:44+09:00
+
+work_event vt104-disposal-local-verified-20261001:
+  model 1
+  task vt104
+  kind suspend
+  occurred_at 2026-10-01T20:37:00+09:00
+  reason "Approved local no-snapshot repair and isolated PostgreSQL17 13-check rehearsal complete; existing RC remains unchanged. Await exact new CI/RC/runtime transition authority; deployed Google V3 proof remains open."
+
+work_event vt104-rc2-prepare-resume-20261001:
+  model 1
+  task vt104
+  kind resume
+  occurred_at 2026-10-01T20:41:31+09:00
+
+work_event vt104-rc2-closeout-20261001:
+  model 1
+  task vt104
+  kind suspend
+  occurred_at 2026-10-01T21:00:49+09:00
+  reason "Owner asked all active threads to stop at a convenient point, handoff, commit and push by21:10JST. RC2 preparation complete; exact prestop GCP DBprobe and real deployment remain unapproved/unverified. Shared workday unchanged."

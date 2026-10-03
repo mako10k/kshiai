@@ -1,6 +1,7 @@
 # ADR-0028: 世代固定された顕在意識の目標・行動・発話契約
 
-- Status: Accepted
+- Status: Superseded
+- Superseded by: [ADR-0047](0047-phase-scoped-conscious-output-and-mechanical-completion.md) for new dynamic-v4 battles. Historical pinned V3 outputs and state continue under this recorded contract.
 - Revision: 2
 - Date: 2026-09-09
 - Supersedes: なし

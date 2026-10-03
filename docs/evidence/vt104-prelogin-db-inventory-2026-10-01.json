@@ -1,0 +1,378 @@
+{
+  "observedAt": "2026-10-01T02:31:58.004Z",
+  "secretReference": "kshiai-database-url:1",
+  "tables": {
+    "battles": {
+      "exists": true,
+      "count": 18
+    },
+    "provider_operation_runs": {
+      "exists": true,
+      "count": 0
+    },
+    "provider_operation_attempts": {
+      "exists": true,
+      "count": 0
+    },
+    "battle_narration_attempts": {
+      "exists": true,
+      "count": 0
+    },
+    "battle_narration_entries": {
+      "exists": true,
+      "count": 0
+    },
+    "asset_authoring_outbox": {
+      "exists": true,
+      "count": 0
+    },
+    "battle_narration_outbox": {
+      "exists": true,
+      "count": 22
+    },
+    "character_authoring_jobs": {
+      "exists": true,
+      "count": 0
+    },
+    "battlefield_authoring_jobs": {
+      "exists": true,
+      "count": 0
+    },
+    "narration_style_authoring_jobs": {
+      "exists": true,
+      "count": 0
+    }
+  },
+  "unfinished": [
+    {
+      "id": "btl_2d56593940804c0ddfb03fe6",
+      "created_at": "2026-08-02T06:55:02.522Z",
+      "status": "active"
+    },
+    {
+      "id": "btl_7f23a0f256c8a968a00ff81f",
+      "created_at": "2026-08-02T07:19:36.195Z",
+      "status": "active"
+    },
+    {
+      "id": "btl_e0c549480fa32e20e8a1b46b",
+      "created_at": "2026-08-03T13:28:45.467Z",
+      "status": "active"
+    },
+    {
+      "id": "btl_095f5c85f90a7c7c778d2016",
+      "created_at": "2026-08-04T22:30:41.789Z",
+      "status": "active"
+    },
+    {
+      "id": "btl_73b54f4fd4c608454b1464c0",
+      "created_at": "2026-08-05T13:21:53.895Z",
+      "status": "active"
+    },
+    {
+      "id": "btl_ed82deca4f50f45b0c36f658",
+      "created_at": "2026-08-06T13:11:53.279Z",
+      "status": "active"
+    },
+    {
+      "id": "btl_19fcced350f5b0cf614b3d0d",
+      "created_at": "2026-08-06T13:25:29.837Z",
+      "status": "active"
+    },
+    {
+      "id": "btl_f597bbea7aa2193a62d1af0c",
+      "created_at": "2026-08-06T13:34:49.862Z",
+      "status": "active"
+    },
+    {
+      "id": "btl_56dc24097af7ec8f08072d61",
+      "created_at": "2026-08-07T13:29:20.751Z",
+      "status": "active"
+    },
+    {
+      "id": "btl_cce166a328f8ef399ede33f0",
+      "created_at": "2026-08-10T06:51:42.243Z",
+      "status": "active"
+    },
+    {
+      "id": "btl_3607e7ff5f7029664a002a4d",
+      "created_at": "2026-08-10T07:05:37.217Z",
+      "status": "active"
+    },
+    {
+      "id": "btl_24c74337891570eefed4730a",
+      "created_at": "2026-08-10T08:39:40.135Z",
+      "status": "active"
+    },
+    {
+      "id": "btl_36c8a0d65f8c77e653994c9d",
+      "created_at": "2026-08-11T07:32:19.324Z",
+      "status": "active"
+    },
+    {
+      "id": "btl_817945726ca518b9c0556b1a",
+      "created_at": "2026-08-11T09:50:36.116Z",
+      "status": "active"
+    },
+    {
+      "id": "btl_cce692455ac46d05dac86cbf",
+      "created_at": "2026-08-12T10:22:16.685Z",
+      "status": "active"
+    },
+    {
+      "id": "btl_8a0292cc274d18c3b45512f2661578c0",
+      "created_at": "2026-08-12T11:50:24.390Z",
+      "status": "active"
+    },
+    {
+      "id": "btl_699d215033ccd07557633a159e7455d3",
+      "created_at": "2026-09-08T05:36:02.876Z",
+      "status": "active"
+    },
+    {
+      "id": "btl_d18dd16bf82ddf162c8d73a689fc7c52",
+      "created_at": "2026-09-08T05:55:45.179Z",
+      "status": "active"
+    }
+  ],
+  "narrationOutbox": [
+    {
+      "outbox_id": "outbox:btl_444ad43e0abfcf9d5789cabef8821549:btl_444ad43e0abfcf9d5789cabef8821549:phase:1",
+      "battle_id": "btl_444ad43e0abfcf9d5789cabef8821549",
+      "status": "dispatched",
+      "battle_status": "finished"
+    },
+    {
+      "outbox_id": "outbox:btl_444ad43e0abfcf9d5789cabef8821549:btl_444ad43e0abfcf9d5789cabef8821549:phase:10",
+      "battle_id": "btl_444ad43e0abfcf9d5789cabef8821549",
+      "status": "dispatched",
+      "battle_status": "finished"
+    },
+    {
+      "outbox_id": "outbox:btl_444ad43e0abfcf9d5789cabef8821549:btl_444ad43e0abfcf9d5789cabef8821549:phase:11",
+      "battle_id": "btl_444ad43e0abfcf9d5789cabef8821549",
+      "status": "dispatched",
+      "battle_status": "finished"
+    },
+    {
+      "outbox_id": "outbox:btl_444ad43e0abfcf9d5789cabef8821549:btl_444ad43e0abfcf9d5789cabef8821549:phase:12",
+      "battle_id": "btl_444ad43e0abfcf9d5789cabef8821549",
+      "status": "dispatched",
+      "battle_status": "finished"
+    },
+    {
+      "outbox_id": "outbox:btl_444ad43e0abfcf9d5789cabef8821549:btl_444ad43e0abfcf9d5789cabef8821549:phase:13",
+      "battle_id": "btl_444ad43e0abfcf9d5789cabef8821549",
+      "status": "dispatched",
+      "battle_status": "finished"
+    },
+    {
+      "outbox_id": "outbox:btl_444ad43e0abfcf9d5789cabef8821549:btl_444ad43e0abfcf9d5789cabef8821549:phase:14",
+      "battle_id": "btl_444ad43e0abfcf9d5789cabef8821549",
+      "status": "dispatched",
+      "battle_status": "finished"
+    },
+    {
+      "outbox_id": "outbox:btl_444ad43e0abfcf9d5789cabef8821549:btl_444ad43e0abfcf9d5789cabef8821549:phase:2",
+      "battle_id": "btl_444ad43e0abfcf9d5789cabef8821549",
+      "status": "dispatched",
+      "battle_status": "finished"
+    },
+    {
+      "outbox_id": "outbox:btl_444ad43e0abfcf9d5789cabef8821549:btl_444ad43e0abfcf9d5789cabef8821549:phase:3",
+      "battle_id": "btl_444ad43e0abfcf9d5789cabef8821549",
+      "status": "dispatched",
+      "battle_status": "finished"
+    },
+    {
+      "outbox_id": "outbox:btl_444ad43e0abfcf9d5789cabef8821549:btl_444ad43e0abfcf9d5789cabef8821549:phase:4",
+      "battle_id": "btl_444ad43e0abfcf9d5789cabef8821549",
+      "status": "dispatched",
+      "battle_status": "finished"
+    },
+    {
+      "outbox_id": "outbox:btl_444ad43e0abfcf9d5789cabef8821549:btl_444ad43e0abfcf9d5789cabef8821549:phase:5",
+      "battle_id": "btl_444ad43e0abfcf9d5789cabef8821549",
+      "status": "dispatched",
+      "battle_status": "finished"
+    },
+    {
+      "outbox_id": "outbox:btl_444ad43e0abfcf9d5789cabef8821549:btl_444ad43e0abfcf9d5789cabef8821549:phase:6",
+      "battle_id": "btl_444ad43e0abfcf9d5789cabef8821549",
+      "status": "dispatched",
+      "battle_status": "finished"
+    },
+    {
+      "outbox_id": "outbox:btl_444ad43e0abfcf9d5789cabef8821549:btl_444ad43e0abfcf9d5789cabef8821549:phase:7",
+      "battle_id": "btl_444ad43e0abfcf9d5789cabef8821549",
+      "status": "dispatched",
+      "battle_status": "finished"
+    },
+    {
+      "outbox_id": "outbox:btl_444ad43e0abfcf9d5789cabef8821549:btl_444ad43e0abfcf9d5789cabef8821549:phase:8",
+      "battle_id": "btl_444ad43e0abfcf9d5789cabef8821549",
+      "status": "dispatched",
+      "battle_status": "finished"
+    },
+    {
+      "outbox_id": "outbox:btl_444ad43e0abfcf9d5789cabef8821549:btl_444ad43e0abfcf9d5789cabef8821549:phase:9",
+      "battle_id": "btl_444ad43e0abfcf9d5789cabef8821549",
+      "status": "dispatched",
+      "battle_status": "finished"
+    },
+    {
+      "outbox_id": "outbox:btl_8a0292cc274d18c3b45512f2661578c0:btl_8a0292cc274d18c3b45512f2661578c0:phase:1",
+      "battle_id": "btl_8a0292cc274d18c3b45512f2661578c0",
+      "status": "dispatched",
+      "battle_status": "active"
+    },
+    {
+      "outbox_id": "outbox:btl_8a0292cc274d18c3b45512f2661578c0:btl_8a0292cc274d18c3b45512f2661578c0:phase:2",
+      "battle_id": "btl_8a0292cc274d18c3b45512f2661578c0",
+      "status": "dispatched",
+      "battle_status": "active"
+    },
+    {
+      "outbox_id": "outbox:btl_8a0292cc274d18c3b45512f2661578c0:btl_8a0292cc274d18c3b45512f2661578c0:phase:3",
+      "battle_id": "btl_8a0292cc274d18c3b45512f2661578c0",
+      "status": "dispatched",
+      "battle_status": "active"
+    },
+    {
+      "outbox_id": "outbox:btl_8a0292cc274d18c3b45512f2661578c0:btl_8a0292cc274d18c3b45512f2661578c0:phase:4",
+      "battle_id": "btl_8a0292cc274d18c3b45512f2661578c0",
+      "status": "dispatched",
+      "battle_status": "active"
+    },
+    {
+      "outbox_id": "outbox:btl_8a0292cc274d18c3b45512f2661578c0:btl_8a0292cc274d18c3b45512f2661578c0:phase:5",
+      "battle_id": "btl_8a0292cc274d18c3b45512f2661578c0",
+      "status": "dispatched",
+      "battle_status": "active"
+    },
+    {
+      "outbox_id": "outbox:btl_8a0292cc274d18c3b45512f2661578c0:btl_8a0292cc274d18c3b45512f2661578c0:phase:6",
+      "battle_id": "btl_8a0292cc274d18c3b45512f2661578c0",
+      "status": "dispatched",
+      "battle_status": "active"
+    },
+    {
+      "outbox_id": "outbox:btl_cce692455ac46d05dac86cbf:btl_cce692455ac46d05dac86cbf:phase:1",
+      "battle_id": "btl_cce692455ac46d05dac86cbf",
+      "status": "dispatched",
+      "battle_status": "active"
+    },
+    {
+      "outbox_id": "outbox:btl_cce692455ac46d05dac86cbf:btl_cce692455ac46d05dac86cbf:phase:2",
+      "battle_id": "btl_cce692455ac46d05dac86cbf",
+      "status": "dispatched",
+      "battle_status": "active"
+    }
+  ],
+  "migrations": [
+    {
+      "name": "0001_initial_postgres.sql",
+      "checksum": "30fabcf25a4442cac55c660c797a25fcca008d7160e6f09641ff587f5e44d407"
+    },
+    {
+      "name": "0002_runtime_constraints.sql",
+      "checksum": "2ff8251980c0047c8265caa2d35344cb16087d011f534af8f267c8396ae7b816"
+    },
+    {
+      "name": "0003_distributed_runtime.sql",
+      "checksum": "94b2f064c13b6f5ddc9a849399985856923a846d65c5bdb3271ec2e71a238ef9"
+    },
+    {
+      "name": "0004_supabase_auth.sql",
+      "checksum": "b307ba23db805389007e3000f537c846bc7137b6d8e2de05830304861354fbd3"
+    },
+    {
+      "name": "0005_normalize_legacy_battlefields.sql",
+      "checksum": "8bf75eb28ab4596f2f8a656ca128a12b5ba6971c710080918166b7881ef3ae39"
+    },
+    {
+      "name": "0006_character_drafts.sql",
+      "checksum": "658f63bea247bfc67d8dbf773d0a63ba2affe344fc2e5aae5d8535d109c250e4"
+    },
+    {
+      "name": "0007_account_kind.sql",
+      "checksum": "a8780c43eb02e0669941a8248bb70f114927c9cd1aeb1bfa8c90f2901128f96b"
+    },
+    {
+      "name": "0007_friendships.sql",
+      "checksum": "95b3b4e91905784d09d8600c6818deba7564148a34916e3ebff17b4738444e67"
+    },
+    {
+      "name": "0008_developer_account_kind.sql",
+      "checksum": "b76b70b30bff2c814c17d5e573733ab9fe5b1124c7ad7c55e565a4d1aa142e8d"
+    },
+    {
+      "name": "0009_dialogue_pipeline_settings.sql",
+      "checksum": "f8772ec5626f05925752c35e34060cb42ae6c534c008aee68af62dc67d53a432"
+    },
+    {
+      "name": "0010_user_public_profile.sql",
+      "checksum": "995f77450abb33c8446bd7bb06d02cae694fdcde89c0b8e7c0f3b01c8d640d4e"
+    },
+    {
+      "name": "0011_asset_generations.sql",
+      "checksum": "10dcf9a2c4f363df6831191f1d0f379b5725b12f6e7bc339e45e74cc11c9a50b"
+    },
+    {
+      "name": "0012_battle_revision.sql",
+      "checksum": "3e84524968a2c56ea035008d782876b3f675ecf6ecc15fca5c9c5110ceaa5b05"
+    },
+    {
+      "name": "0013_battle_presentations.sql",
+      "checksum": "035b53e705aef027eb795ebed01009a254aba0e135153a82d825d5b8b350fdf2"
+    },
+    {
+      "name": "0014_ordered_narration_worker.sql",
+      "checksum": "845d0d3e75bd69c46ce85444422d9f68729692fec8a37fc88a98dbe8f9aa7f68"
+    },
+    {
+      "name": "0015_pipeline_recovery_fencing.sql",
+      "checksum": "87f22d6f1762c1304a67d91415fbfafcbf52cccdb6e778ece0e810802c47d9ee"
+    },
+    {
+      "name": "0016_provider_operation_accounting.sql",
+      "checksum": "3395d47d2cda0291a1658730731d04667ec6993af27fa2175a65f2459a5e79fb"
+    },
+    {
+      "name": "0017_structured_character_assets.sql",
+      "checksum": "b3ca027b4bbee51cb3db5e016efc7c1b7b85d6c8157da9594d6a7c48bf0349c1"
+    },
+    {
+      "name": "0018_structured_battlefield_assets.sql",
+      "checksum": "56c6511aba48b7b97b22561d64b882b51c4f4b9fed9aef4d7a6d7c14ee910fb2"
+    },
+    {
+      "name": "0019_structured_narration_assets.sql",
+      "checksum": "3eae1ea325d3976ec10f37cc2c8404e3ae2cddb102e3afda894ad3ccca482685"
+    },
+    {
+      "name": "0020_character_authoring_jobs.sql",
+      "checksum": "b8a6b2472a709305d4b0c0e06caba57b538f05cbe87abca1d8d1b455c4fdf5f6"
+    },
+    {
+      "name": "0021_owner_notifications.sql",
+      "checksum": "573c64ed06e9f5cb7a47be417711ad0118822bbe39c3c72a2ee064d01f5c4b68"
+    },
+    {
+      "name": "0022_family_authoring_jobs.sql",
+      "checksum": "a99240ef1e1e7ce850c570aaa8869a7dda39182eaa51b5f02decaec8d064e131"
+    },
+    {
+      "name": "0023_authoring_dispatch.sql",
+      "checksum": "7c2af337df18d4c5487cd99d6a04e8cefce14d1c079c2ae306ea90b5f084cae7"
+    },
+    {
+      "name": "0024_character_semantic_migration.sql",
+      "checksum": "e4fd60311ab5ade4fd6d3cf03eba27d951ad7d225237585bdde663752ccb0c6f"
+    },
+    {
+      "name": "0025_semantic_authoring_runs.sql",
+      "checksum": "b6b53172d7fefa01bb695324c3faf7e4dfd562c16873f60f107b5e7c221b6f0a"
+    }
+  ]
+}

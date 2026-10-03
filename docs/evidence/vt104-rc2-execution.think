@@ -1,0 +1,14 @@
+domain PREPARE:
+  description "Deliver immutable repaired V3 trial image before the shared transition."
+evidence OWNER:
+  "Owner explicitly approved exact4ab1971 push, CI4 gates, new annotatedv0.23.0-rc.2 creation/push andoneprepare-only workflow with disclosedGCPbuildcost. No liveDB/service/auth transition."
+evidence READBACK:
+  "Remote branch4ab19719ef7fa61cdfb8571c4579c3c64cc96dfb verified; CI36856943670 in_progress withsameSHA. RC2 remoteabsent beforewrite; RC1 remains4f3. Localsource234tests and13PGchecks passed."
+premise GATES:
+  "Require CIvalidate/security/backend-image/worker success onexactSHA beforetag; annotatedtag SHAreadback beforedispatch; prepareexacttag once; run/artifactsource anddigest independentreadback; do not retryambiguouswrites."
+pending UNKNOWN:
+  "HostedCI outcome,newbuildresult,image digest unknown; meaningfulGoogleV3 proof stillrequireslaterexactruntimeauthority."
+premise OPTIONS:
+  "NewRC preservesexistingRC1; prepareonly avoidssharedstop beforeartifactready. Failedgate retains source andresult,blocksdependentstep."
+decision EXECUTE based_on OWNER, READBACK, GATES, UNKNOWN, OPTIONS:
+  "Observe sameCI handle; after4checksfreezeRC2 at4ab1971, dispatchprepare once, verifynewrun/result. Keep currentauthentication andsharedruntime untouched; recordcanonicalmeasurement andremaininggoal."

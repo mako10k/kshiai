@@ -183,25 +183,6 @@ export const CharacterCandidateOperationV1Schema = z.discriminatedUnion("op", [
 
 export type CharacterCandidateOperationV1 = z.infer<typeof CharacterCandidateOperationV1Schema>;
 
-const skeletonOps = [
-  "replace_identity",
-  "upsert_background",
-  "remove_background",
-  "replace_psyche_dynamics",
-  "upsert_core_need",
-  "remove_core_need",
-  "upsert_tendency",
-  "remove_tendency",
-  "set_psyche_description",
-  "upsert_conscious_guidance",
-  "remove_conscious_guidance",
-  "set_action_semantics",
-  "set_inventory_semantics",
-  "upsert_action_norm",
-  "upsert_mechanical_fallback",
-  "upsert_relationship_seed",
-] as const;
-
 export function characterOperationTargetKeyV1(operation: CharacterCandidateOperationV1): string {
   switch (operation.op) {
     case "replace_identity":
@@ -257,15 +238,24 @@ export function characterOperationTargetKeyV1(operation: CharacterCandidateOpera
   }
 }
 
-export const CharacterSkeletonPhaseOperationV1Schema = CharacterCandidateOperationV1Schema
-  .superRefine((operation, context) => {
-    if (!(skeletonOps as readonly string[]).includes(operation.op)) {
-      context.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: "operation is outside the skeleton phase union",
-      });
-    }
-  });
+export const CharacterSkeletonPhaseOperationV1Schema = z.discriminatedUnion("op", [
+  CharacterReplaceIdentityV1Schema,
+  CharacterUpsertBackgroundV1Schema,
+  CharacterRemoveBackgroundV1Schema,
+  CharacterReplacePsycheDynamicsV1Schema,
+  CharacterUpsertCoreNeedV1Schema,
+  CharacterRemoveCoreNeedV1Schema,
+  CharacterUpsertTendencyV1Schema,
+  CharacterRemoveTendencyV1Schema,
+  CharacterSetPsycheDescriptionV1Schema,
+  CharacterUpsertConsciousGuidanceV1Schema,
+  CharacterRemoveConsciousGuidanceV1Schema,
+  CharacterSetActionSemanticsV1Schema,
+  CharacterSetInventorySemanticsV1Schema,
+  CharacterUpsertActionNormV1Schema,
+  CharacterUpsertMechanicalFallbackV1Schema,
+  CharacterUpsertRelationshipSeedV1Schema,
+]);
 
 export const SourceDispositionDecisionV1Schema = z.object({
   sourceClaimId: IdSchema,

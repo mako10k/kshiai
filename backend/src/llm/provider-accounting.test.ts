@@ -1,3 +1,4 @@
+// R: Verify physical provider attempt accounting and cutover permit outcomes.
 import assert from "node:assert/strict";
 import { after, describe, it } from "node:test";
 import { mkdtempSync, rmSync } from "node:fs";
@@ -10,8 +11,11 @@ process.env.AUTH_PROVIDER = "legacy";
 process.env.DATABASE_PATH = join(temporaryDirectory, "provider-accounting.db");
 
 const { closeDatabase, getDb } = await import("../db.js");
+const { config } = await import("../config.js");
+const cutoverControl = await import("../repositories/cutover-control.js");
 const accounting = await import("./provider-accounting.js");
 const { OpenAiCompatibleProvider } = await import("./openai-compatible.js");
+getDb({ initializeSchema: true });
 
 after(async () => {
   await closeDatabase();
@@ -48,7 +52,212 @@ async function createRun(
   return { runId, battleId, observerUserId };
 }
 
+async function withOpenCutover<T>(
+  suffix: string,
+  ownerUserId: string,
+  action: (cutoverId: string) => Promise<T>,
+): Promise<T> {
+  const priorCutover = config.cutover;
+  const cutoverId = `provider-cutover-${suffix}`;
+  const artifactId = `provider-artifact-${suffix}`;
+  await cutoverControl.initializeCutoverControl({
+    phase: "closed",
+    operationId: `initialize-${suffix}`,
+    operatorId: "operator",
+    policy: {
+      cutoverId,
+      artifactId,
+      ownerUserId,
+      ownerCandidates: [
+        { attemptId: `${suffix}-candidate-a`, candidateDigest: "a".repeat(64) },
+        { attemptId: `${suffix}-candidate-b`, candidateDigest: "b".repeat(64) },
+      ],
+      trialBindings: null,
+      taskBattleIds: [],
+      stageAcceptance: {
+        health: null,
+        postgres: null,
+        email: null,
+        google: null,
+        ownership: null,
+        r2: null,
+        sse: null,
+        directProtection: null,
+      },
+      productionReceipt: null,
+    },
+  });
+  getDb().prepare(
+    "UPDATE cutover_control_revisions SET phase = 'open' WHERE cutover_id = ?",
+  ).run(cutoverId);
+  config.cutover = { cutoverId, artifactId };
+  try {
+    return await action(cutoverId);
+  } finally {
+    config.cutover = priorCutover;
+    getDb().prepare("DELETE FROM cutover_operation_permits WHERE cutover_id = ?")
+      .run(cutoverId);
+    getDb().prepare("DELETE FROM cutover_control_active WHERE cutover_id = ?")
+      .run(cutoverId);
+    getDb().prepare("DELETE FROM cutover_control_revisions WHERE cutover_id = ?")
+      .run(cutoverId);
+  }
+}
+
+function permitState(bindingOperationId: string): string | undefined {
+  return (getDb().prepare(
+    `SELECT state FROM cutover_operation_permits
+      WHERE binding_operation_id = ? ORDER BY created_at DESC LIMIT 1`,
+  ).get(bindingOperationId) as { state?: string } | undefined)?.state;
+}
+
 describe("provider operation accounting", () => {
+  it("rejects a configured closed provider attempt before accounting or transport", async () => {
+    const context = await createRun("cutover-closed", 1);
+    const priorCutover = config.cutover;
+    const cutoverId = "provider-cutover-closed";
+    const artifactId = "provider-artifact-closed";
+    config.cutover = { cutoverId, artifactId };
+    await cutoverControl.initializeCutoverControl({
+      phase: "closed",
+      operationId: "initialize-provider-closed",
+      operatorId: "operator",
+      policy: {
+        cutoverId,
+        artifactId,
+        ownerUserId: context.observerUserId,
+        ownerCandidates: [
+          { attemptId: "candidate-a", candidateDigest: "a".repeat(64) },
+          { attemptId: "candidate-b", candidateDigest: "b".repeat(64) },
+        ],
+        trialBindings: null,
+        taskBattleIds: [],
+        stageAcceptance: {
+          health: null,
+          postgres: null,
+          email: null,
+          google: null,
+          ownership: null,
+          r2: null,
+          sse: null,
+          directProtection: null,
+        },
+        productionReceipt: null,
+      },
+    });
+    let transportCalls = 0;
+    try {
+      await assert.rejects(
+        accounting.withProviderOperationContext(context, () =>
+          accounting.executeProviderOperationAttempt({
+            logicalCallId: "closed-logical-call",
+            attemptOrdinal: 1,
+            operation: "narrateTurn",
+            provider: "fake",
+            model: "fake-fast",
+            action: async () => {
+              transportCalls += 1;
+              return { usage: 1 };
+            },
+          })),
+        /cutover_unavailable/,
+      );
+      assert.equal(transportCalls, 0);
+      const summary = await accounting.readProviderOperationRun(context.runId);
+      assert.equal(summary.reservedAttempts, 0);
+      assert.deepEqual(summary.attempts, []);
+    } finally {
+      getDb().prepare("DELETE FROM cutover_operation_permits WHERE cutover_id = ?")
+        .run(cutoverId);
+      getDb().prepare("DELETE FROM cutover_control_active WHERE cutover_id = ?")
+        .run(cutoverId);
+      getDb().prepare("DELETE FROM cutover_control_revisions WHERE cutover_id = ?")
+        .run(cutoverId);
+      config.cutover = priorCutover;
+    }
+  });
+
+  it("settles a known HTTP provider failure after failed-accounting readback", async () => {
+    const context = await createRun("known-http-failure", 1);
+    await withOpenCutover("known-http-failure", context.observerUserId, async () => {
+      await assert.rejects(
+        accounting.withProviderOperationContext(context, () =>
+          accounting.executeProviderOperationAttempt({
+            logicalCallId: "known-http-call",
+            attemptOrdinal: 1,
+            operation: "narrateTurn",
+            provider: "fake",
+            model: "fake-fast",
+            action: async () => {
+              throw Object.assign(new Error("service unavailable"), { status: 503 });
+            },
+          })),
+        /service unavailable/,
+      );
+      assert.equal(
+        permitState(`provider:${context.runId}:known-http-call:1`),
+        "settled",
+      );
+      const summary = await accounting.readProviderOperationRun(context.runId);
+      assert.deepEqual(summary.attempts.map((attempt) => attempt.status), ["failed"]);
+    });
+  });
+
+  it("keeps an ambiguous timeout indeterminate after failed-accounting readback", async () => {
+    const context = await createRun("ambiguous-timeout", 1);
+    await withOpenCutover("ambiguous-timeout", context.observerUserId, async () => {
+      await assert.rejects(
+        accounting.withProviderOperationContext(context, () =>
+          accounting.executeProviderOperationAttempt({
+            logicalCallId: "timeout-call",
+            attemptOrdinal: 1,
+            operation: "narrateTurn",
+            provider: "fake",
+            model: "fake-fast",
+            action: async () => {
+              throw Object.assign(new Error("request timed out"), { name: "TimeoutError" });
+            },
+          })),
+        /request timed out/,
+      );
+      assert.equal(
+        permitState(`provider:${context.runId}:timeout-call:1`),
+        "indeterminate",
+      );
+      const summary = await accounting.readProviderOperationRun(context.runId);
+      assert.deepEqual(summary.attempts.map((attempt) => attempt.status), ["failed"]);
+    });
+  });
+
+  it("retains accounting-pending when a successful response cannot be persisted", async () => {
+    const context = await createRun("accounting-write-failure", 1);
+    await withOpenCutover("accounting-write-failure", context.observerUserId, async () => {
+      await assert.rejects(
+        accounting.withProviderOperationContext(context, () =>
+          accounting.executeProviderOperationAttempt({
+            logicalCallId: "write-failure-call",
+            attemptOrdinal: 1,
+            operation: "narrateTurn",
+            provider: "fake",
+            model: "fake-fast",
+            action: async () => {
+              getDb().prepare(
+                `DELETE FROM provider_operation_attempts
+                  WHERE run_id = ? AND logical_call_id = ? AND attempt_ordinal = ?`,
+              ).run(context.runId, "write-failure-call", 1);
+              return { tokenCount: 11 };
+            },
+            usage: (value) => ({ tokenCount: value.tokenCount }),
+          })),
+        /PROVIDER_ATTEMPT_COMPLETION_CONFLICT/,
+      );
+      assert.equal(
+        permitState(`provider:${context.runId}:write-failure-call:1`),
+        "result-accounting-pending",
+      );
+    });
+  });
+
   it("accounts for each retry at the OpenAI-compatible transport boundary", async () => {
     const context = await createRun("adapter-retry", 3);
     const provider = new OpenAiCompatibleProvider({

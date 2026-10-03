@@ -1,0 +1,36 @@
+project SPEECH_CONTINUITY_FADE:
+  version 4
+  title "Recover conversational continuity and remove speech fade"
+  description "Owner reports repeated latest-match speech and requests fade correction. ADR0027 and ADR0047 retain character-owned speech, legal intentional repetition and silence, mechanical observer-safe preparation and historical bindings. No text-pattern rejection or fabricated speech. Owner explicitly requests full removal of speech fade; all arrived rows display immediately. Existing commit/deploy direction applies."
+  duration_unit hour
+  finish LIVE
+resource DEV:
+  title "Developer"
+  capacity 1
+milestone AUTHORIZED:
+  title "Owner requests both fixes"
+  state reached
+milestone FIXED:
+  title "Continuity prompt prepared and speech fade removed"
+task repair AUTHORIZED -> FIXED:
+  title "Prepare exact exchange anchors and delete speech animation and reveal timers"
+  duration 1h
+  status done
+  requires:
+    DEV 1
+milestone VERIFIED:
+  title "Regressions and live-model probes verified"
+task verify FIXED -> VERIFIED:
+  title "Unit browser repository and bounded frozen model checks"
+  duration 0.5h
+  status done
+  requires:
+    DEV 1
+milestone LIVE:
+  title "Verified source deployed"
+task release VERIFIED -> LIVE:
+  title "Commit push and deploy after CI preview checks"
+  duration 0.3h
+  status done
+  requires:
+    DEV 1

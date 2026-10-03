@@ -1,0 +1,16 @@
+domain VT104_RESCOPE:
+  description "Align unreleased shared-environment first V3 trial plan with latest explicit owner policy."
+evidence OWNER_ACCEPTANCE:
+  "Owner explicitly clarifies compatibility and existing-data retention are deferred as a basic policy; migration was an example; production is unreleased; owner requests plan correction. Earlier email deferral and Google use are explicit."
+evidence BASELINE:
+  "Current child plan vt104 is suspended and retains eight-smoke, backup/recovery and history obligations from requirements v2/ADR0039/0040. Local source/tests exist, real Stage play remains unverified."
+evidence VELOCITY:
+  "perttool observes vt103 declared elapsed throughput2p/1.36h =25p/17h, one sample. Person effort unavailable; operational work has different scope."
+premise SCOPE:
+  "Current authority covers requirement-policy recording, design/plan correction and docs only. No application/workflow change, remote write, snapshot, deployment or data deletion. Preserve historical Accepted rationale and work events. Latest owner policy governs initial-trial planning; do not infer blanket database reset or deletion of identities."
+pending IMPLEMENTATION:
+  "Existing workflow and control still enforce previous gates. Concrete implementation route and exact external execution are subsequent vt104/vt105 preparation; plan change alone supplies no conformance evidence or deployment permission."
+decision ACCEPTANCE based_on OWNER_ACCEPTANCE, SCOPE:
+  "Record owner-confirmed basic policy as current requirements v3; legacy compatibility/history retention, backup/key/restore proof and email are deferred first-trial work. Keep new V3 correctness, Google ownership, required runtime schema, credential protection and actual deployed-path verification."
+decision PLAN based_on ACCEPTANCE, BASELINE, VELOCITY, IMPLEMENTATION:
+  "Revise canonical child and parent descriptions, estimates and first-trial criteria. Keep vt104->vt105->vt106/vt108->vt107 dependency because deploy, authoring and old unfinished cleanup remain actual trial inputs. Retain historical done evidence without claiming full new outcome. Prefer reuse of verified code; no general production SLA or promotion prerequisite for unreleased trial. Proposed ADR0042 documents concrete integration still awaiting exact design."

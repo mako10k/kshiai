@@ -1,0 +1,164 @@
+{
+  "schema": "kshiai/hosted-trial-preparation-evidence/v1",
+  "observed_at": "2026-10-01T18:31:26+09:00",
+  "claim": "source-tag-prepared-image-identity-only",
+  "source": {
+    "commit_sha": "4f3aaa7f0556644b10c51d27f94d57401572cea2",
+    "source_path_count": 569,
+    "aggregate_sha256": "6edaf6c726a6154f5534100ce0c4d955a1d9e3ad299847d0ec50a9514d6c2dfa",
+    "implementation_seal": "ba7134b678cb624b4b97129d58f2a9428563ff3d3045421a85aad16d4f2203f5"
+  },
+  "pull_request": {
+    "number": 152,
+    "url": "https://github.com/mako10k/kshiai/pull/152",
+    "draft": true,
+    "merge_authorized": false,
+    "head_at_ci": "4f3aaa7f0556644b10c51d27f94d57401572cea2"
+  },
+  "ci": {
+    "run_id": "36841509755",
+    "url": "https://github.com/mako10k/kshiai/actions/runs/36841509755",
+    "checks": [
+      {
+        "name": "validate",
+        "check_id": 110301462700,
+        "head_sha": "4f3aaa7f0556644b10c51d27f94d57401572cea2",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "backend-image",
+        "check_id": 110301462514,
+        "head_sha": "4f3aaa7f0556644b10c51d27f94d57401572cea2",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "security",
+        "check_id": 110301462493,
+        "head_sha": "4f3aaa7f0556644b10c51d27f94d57401572cea2",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "worker",
+        "check_id": 110301462291,
+        "head_sha": "4f3aaa7f0556644b10c51d27f94d57401572cea2",
+        "status": "completed",
+        "conclusion": "success"
+      }
+    ]
+  },
+  "tag": {
+    "name": "v0.23.0-rc.1",
+    "object_sha": "50023ca1e88ef0f690a1e7dad98c60670fc1b935",
+    "peeled_sha": "4f3aaa7f0556644b10c51d27f94d57401572cea2",
+    "annotated": true,
+    "remote_readback": true
+  },
+  "prepare": {
+    "run_id": "36841952094",
+    "url": "https://github.com/mako10k/kshiai/actions/runs/36841952094",
+    "phase": "prepare",
+    "workflow_id": 371756818,
+    "workflow_path": ".github/workflows/v3-trial.yml",
+    "head_sha": "4f3aaa7f0556644b10c51d27f94d57401572cea2",
+    "head_branch": "v0.23.0-rc.1",
+    "event": "workflow_dispatch",
+    "conclusion": "success",
+    "artifact_id": 11152410082,
+    "artifact_name": "v3-trial-image-36841952094",
+    "receipt": {
+      "schemaVersion": 1,
+      "commitSha": "4f3aaa7f0556644b10c51d27f94d57401572cea2",
+      "releaseTag": "v0.23.0-rc.1",
+      "imageRef": "asia-northeast1-docker.pkg.dev/kshiai/kshiai/backend@sha256:43d084a20629758a6157170350fb287678c38790d8e6008c1f1e8b417757f1aa",
+      "runId": "36841952094"
+    }
+  },
+  "cloud_build": {
+    "createTime": "2026-10-01T09:19:46.613729660Z",
+    "finishTime": "2026-10-01T09:22:37.359910Z",
+    "id": "9c3b3f04-3b41-4e35-a07f-fc29e58591b2",
+    "results": {
+      "images": [
+        {
+          "artifactRegistryPackage": "projects/kshiai/locations/asia-northeast1/repositories/kshiai/packages/backend/versions/sha256:43d084a20629758a6157170350fb287678c38790d8e6008c1f1e8b417757f1aa",
+          "digest": "sha256:43d084a20629758a6157170350fb287678c38790d8e6008c1f1e8b417757f1aa",
+          "name": "asia-northeast1-docker.pkg.dev/kshiai/kshiai/backend:4f3aaa7f0556644b10c51d27f94d57401572cea2",
+          "pushTiming": {
+            "endTime": "2026-10-01T09:22:36.353767815Z",
+            "startTime": "2026-10-01T09:22:20.820200542Z"
+          }
+        }
+      ]
+    },
+    "status": "SUCCESS",
+    "substitutions": {
+      "_IMAGE": "asia-northeast1-docker.pkg.dev/kshiai/kshiai/backend:4f3aaa7f0556644b10c51d27f94d57401572cea2"
+    }
+  },
+  "artifact_registry_readback": {
+    "image_summary": {
+      "digest": "sha256:43d084a20629758a6157170350fb287678c38790d8e6008c1f1e8b417757f1aa",
+      "fully_qualified_digest": "asia-northeast1-docker.pkg.dev/kshiai/kshiai/backend@sha256:43d084a20629758a6157170350fb287678c38790d8e6008c1f1e8b417757f1aa"
+    }
+  },
+  "deployment_step_observations": [
+    {
+      "name": "Read live stopped writer and queue state",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "name": "Verify DB quiescence and required schema in the exact image",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "name": "Deploy ordinary-runtime tagged revision without traffic",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "name": "Build and upload immutable Worker version",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "name": "Read back the uploaded Worker binding",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "name": "Resume empty narration queue for the new candidate",
+      "status": "completed",
+      "conclusion": "skipped"
+    }
+  ],
+  "maximum_logical_writes": {
+    "pr_create": 1,
+    "annotated_tag_push": 1,
+    "prepare_dispatch": 1,
+    "cloud_build": 1,
+    "source_upload": 1,
+    "prepared_artifact": 1
+  },
+  "excluded_actions": [
+    "PR merge",
+    "GitHub Release",
+    "runtime deployment",
+    "DB changes",
+    "Worker upload",
+    "queue changes",
+    "Google login",
+    "paid LLM calls"
+  ],
+  "audit_summary": {
+    "fatal_count": 0,
+    "error_count": 0,
+    "warning_count": 0,
+    "info_count": 1,
+    "hint_count": 11
+  }
+}

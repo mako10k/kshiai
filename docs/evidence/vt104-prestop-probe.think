@@ -1,0 +1,14 @@
+domain NEXT:
+  description "Prove exact-image database reachability before any shared shutdown or irreversible disposal."
+evidence PREPARED:
+  "CI36856943670 andprepare36857282507 succeededon4ab1971/RC2; artifactCloudBuildRegistry independentlymatchdigest2e7051ec. Ownerapprovedprepareonly."
+evidence DATABASE:
+  "Readonly compiledCLI preview succeeded viaexistingkshiai-database-url:1 pooler onexactproject cvrbhpkfqkpqdegxfrlq/public/postgres,18unfinished168finished14finishedoutbox. Local kshiai-direct-url:1 failedENETUNREACH. GCP runtime reachability notobserved."
+evidence JOB:
+  "Freshdescribe confirms jobkshiai-v3-trial-preflight absent; executions0. Read-only CloudRun jobcreation/execution areexternalwrites beyondprepareauthority. Owner reports no personaldevserver or otherchatwrites."
+premise OPTIONS:
+  "Do not shut down anddiscardbefore discovering connectivity failure. Prefer oneexactimagepreviewjob beforestop; alternativeproceedunprobed risksleaving shared environmentstopped. Failure blocks dependentstop andrequires new exactroute decision."
+pending LIMIT:
+  "Probe outcome unknown; no fullGoogleV3 proof. No snapshot recovery implied; authsettings,DBwrites,queuestop,deployment,providercalls excluded."
+decision PROPOSE based_on PREPARED, DATABASE, JOB, OPTIONS, LIMIT:
+  "Prepare exact Japanese reviewpacket for one newpreflightjob deploy andoneexecute, immutableimage2e7051ec,DIRECT_URLsecret1,project/publicreadonly preview, retries0 timeout120s. Seekownerapproval onlyafterconcretefile ready. Record returnedexecution/logidentity andvalidateplan."

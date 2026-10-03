@@ -1,5 +1,6 @@
+// R: Admit and execute durable asset-authoring jobs under their execution fences.
+import { randomUUID } from "node:crypto";
 import { toAssetAuthoringProgress } from "@kshiai/shared";
-import { findCharacterNameConflict } from "../character-name-uniqueness.js";
 import * as charAssetRepo from "../repositories/character-assets-v2.js";
 import {
   claimFamilyAuthoringJob,
@@ -16,211 +17,16 @@ import {
   runBattlefieldAuthoringJob,
   runNarrationStyleAuthoringJob,
 } from "./family-authoring-runners.js";
-import * as charRepo from "../repositories/characters.js";
 import type { LlmProvider } from "../llm/types.js";
 import { runCharacterFocusedAuthoringJobV3 } from "./character-focused-authoring.js";
 import {
-  adjustedGenerationResult,
-  buildCharacterGenerationCandidate,
-  existingCharacterGenerationResult,
-  lastAuthoringAdjustment,
-  sheetFromAuthoringCandidate,
-} from "./character-authoring-service.js";
+  cutoverAllowsGeneralWork,
+  runCutoverBackgroundOperation,
+} from "./cutover-admission.js";
 
 export type CharacterAuthoringJobResult = "idle" | "completed" | "failed";
 
-function reportStatus(
-  attemptId: string,
-  ownerUserId: string,
-  executionFence: AuthoringExecutionFence,
-) {
-  return (status: Parameters<
-    typeof charAssetRepo.updateCharacterAuthoringStatus
-  >[0]["status"]) =>
-    charAssetRepo.updateCharacterAuthoringStatus({
-      attemptId,
-      ownerUserId,
-      status,
-      executionFence,
-    });
-}
-
-async function generateCreateSheet(
-  llm: LlmProvider,
-  ownerUserId: string,
-  prompt: string,
-) {
-  const referenceTools = {
-    search: async (query: string, limit?: number) =>
-      charRepo.searchOwnedCharacterReferences(ownerUserId, query, limit),
-    get: async (characterId: string) =>
-      charRepo.getOwnedCharacterReference(ownerUserId, characterId),
-  };
-  const rejectedNames: string[] = [];
-  for (let attempt = 0; attempt < 3; attempt += 1) {
-    const promptReservedNames =
-      await charRepo.listOwnedCharacterReservedNames(ownerUserId);
-    const candidate = await llm.generateCharacter({
-      prompt,
-      ...(promptReservedNames.length > 0 ? { referenceTools } : {}),
-      reservedNames: promptReservedNames,
-      rejectedNames,
-    });
-    const currentReservedNames =
-      await charRepo.listOwnedCharacterReservedNames(ownerUserId);
-    const conflict = findCharacterNameConflict(
-      [candidate.sheet.displayName, candidate.sheet.identity?.realName],
-      currentReservedNames,
-    );
-    if (!conflict) return candidate;
-    rejectedNames.push(
-      candidate.sheet.displayName,
-      ...(candidate.sheet.identity?.realName
-        ? [candidate.sheet.identity.realName]
-        : []),
-    );
-  }
-  return null;
-}
-
-async function rerunCandidateAdjustment(input: {
-  llm: LlmProvider;
-  attempt: charAssetRepo.CharacterAuthoringAttempt;
-  sourceText: string;
-  existing: Awaited<ReturnType<typeof charRepo.getSheetIncludingDeleted>>;
-  executionFence: AuthoringExecutionFence;
-}): Promise<boolean> {
-  const adjustMessage = lastAuthoringAdjustment(input.sourceText);
-  if (!input.attempt.candidate || !adjustMessage) return false;
-  const current = sheetFromAuthoringCandidate({
-    characterId: input.attempt.characterId,
-    ownerUserId: input.attempt.ownerUserId,
-    createdAt: input.attempt.createdAt,
-    updatedAt: input.attempt.updatedAt,
-    candidate: input.attempt.candidate,
-    existing: input.existing,
-  });
-  const generated = adjustedGenerationResult(
-    current,
-    await input.llm.adjustCharacter(current, adjustMessage),
-  );
-  const candidate = await buildCharacterGenerationCandidate({
-    llm: input.llm,
-    attemptId: input.attempt.attemptId,
-    characterId: input.attempt.characterId,
-    ownerUserId: input.attempt.ownerUserId,
-    sourceText: input.sourceText,
-    sourceKind: input.attempt.kind === "upgrade"
-      ? "upgrade_description"
-      : input.attempt.kind === "revision"
-        ? "revision_instruction"
-        : "create_instruction",
-    generated,
-    existing: input.existing,
-    reportStatus: reportStatus(
-      input.attempt.attemptId,
-      input.attempt.ownerUserId,
-      input.executionFence,
-    ),
-  });
-  await charAssetRepo.saveCharacterAuthoringCandidate({
-    attemptId: input.attempt.attemptId,
-    ownerUserId: input.attempt.ownerUserId,
-    envelope: candidate.envelope,
-    assistantMessage: candidate.assistantMessage,
-    executionFence: input.executionFence,
-  });
-  return true;
-}
-
-async function runClaimedAttempt(
-  llm: LlmProvider,
-  attempt: charAssetRepo.CharacterAuthoringAttempt,
-  executionFence: AuthoringExecutionFence,
-): Promise<void> {
-  const sourceText = attempt.sourceText ?? "";
-  await charAssetRepo.updateCharacterAuthoringStatus({
-    attemptId: attempt.attemptId,
-    ownerUserId: attempt.ownerUserId,
-    status: "generating_structure",
-    executionFence,
-  });
-  const existing = await charRepo.getSheetIncludingDeleted(attempt.characterId);
-  if (await rerunCandidateAdjustment({
-    llm,
-    attempt,
-    sourceText,
-    existing,
-    executionFence,
-  })) return;
-  if (attempt.kind === "create") {
-    const gen = await generateCreateSheet(llm, attempt.ownerUserId, sourceText);
-    if (!gen) {
-      await charAssetRepo.failCharacterAuthoringAttempt({
-        attemptId: attempt.attemptId,
-        ownerUserId: attempt.ownerUserId,
-        errorCode: "duplicate_character_name",
-        executionFence,
-      });
-      return;
-    }
-    const candidate = await buildCharacterGenerationCandidate({
-      llm,
-      attemptId: attempt.attemptId,
-      characterId: attempt.characterId,
-      ownerUserId: attempt.ownerUserId,
-      sourceText,
-      sourceKind: "create_instruction",
-      generated: gen,
-      reportStatus: reportStatus(
-        attempt.attemptId,
-        attempt.ownerUserId,
-        executionFence,
-      ),
-    });
-    await charAssetRepo.saveCharacterAuthoringCandidate({
-      attemptId: attempt.attemptId,
-      ownerUserId: attempt.ownerUserId,
-      envelope: candidate.envelope,
-      assistantMessage: candidate.assistantMessage,
-      executionFence,
-    });
-    return;
-  }
-  if (!existing) throw new Error("CHARACTER_NOT_FOUND");
-  const generated = attempt.kind === "upgrade"
-    ? existingCharacterGenerationResult(existing)
-    : adjustedGenerationResult(
-      existing,
-      await llm.adjustCharacter(existing, sourceText),
-    );
-  const candidate = await buildCharacterGenerationCandidate({
-    llm,
-    attemptId: attempt.attemptId,
-    characterId: attempt.characterId,
-    ownerUserId: attempt.ownerUserId,
-    sourceText,
-    sourceKind: attempt.kind === "upgrade"
-      ? "upgrade_description"
-      : "revision_instruction",
-    generated,
-    existing,
-    reportStatus: reportStatus(
-      attempt.attemptId,
-      attempt.ownerUserId,
-      executionFence,
-    ),
-  });
-  await charAssetRepo.saveCharacterAuthoringCandidate({
-    attemptId: attempt.attemptId,
-    ownerUserId: attempt.ownerUserId,
-    envelope: candidate.envelope,
-    assistantMessage: candidate.assistantMessage,
-    executionFence,
-  });
-}
-
-export async function processNextCharacterAuthoringJob(input: {
+async function processNextCharacterAuthoringJobCore(input: {
   llm: LlmProvider;
   workerId?: string;
   cap?: number;
@@ -271,20 +77,7 @@ export async function processNextCharacterAuthoringJob(input: {
       executionFence: claimed.executionFence,
     });
     if (focused) return focused;
-    await runClaimedAttempt(input.llm, attempt, claimed.executionFence);
-    const latest = await charAssetRepo.getCharacterAuthoringAttempt(
-      claimed.attemptId,
-      claimed.ownerUserId,
-    );
-    if (latest?.status === "failed") {
-      return "failed";
-    }
-    await charAssetRepo.finishCharacterAuthoringJob(
-      claimed.attemptId,
-      "completed",
-      claimed.executionFence,
-    );
-    return "completed";
+    throw new Error("CHARACTER_V3_AUTHORING_REQUIRED");
   } catch (error) {
     if (error instanceof Error && error.message === "AUTHORING_STALE_FENCE") {
       return "failed";
@@ -298,6 +91,17 @@ export async function processNextCharacterAuthoringJob(input: {
     });
     return "failed";
   }
+}
+
+export async function processNextCharacterAuthoringJob(input: {
+  llm: LlmProvider;
+  workerId?: string;
+  cap?: number;
+}): Promise<CharacterAuthoringJobResult> {
+  return runCutoverBackgroundOperation({
+    operationId: `authoring-worker:${randomUUID()}`,
+    kind: "authoring-worker",
+  }, () => processNextCharacterAuthoringJobCore(input));
 }
 
 export type AuthoringTaskDelivery = {
@@ -352,18 +156,7 @@ async function runClaimedAuthoringTask(
       executionFence: claimed.executionFence,
     });
     if (focused) return focused;
-    await runClaimedAttempt(llm, attempt, claimed.executionFence);
-    const latest = await charAssetRepo.getCharacterAuthoringAttempt(
-      claimed.attemptId,
-      claimed.ownerUserId,
-    );
-    if (latest?.status === "failed") return "failed";
-    await charAssetRepo.finishCharacterAuthoringJob(
-      claimed.attemptId,
-      "completed",
-      claimed.executionFence,
-    );
-    return "completed";
+    throw new Error("CHARACTER_V3_AUTHORING_REQUIRED");
   } catch (error) {
     if (error instanceof Error && error.message === "AUTHORING_STALE_FENCE") {
       return "retry_queued";
@@ -379,7 +172,7 @@ async function runClaimedAuthoringTask(
   }
 }
 
-export async function processAuthoringTask(input: {
+async function processAuthoringTaskCore(input: {
   llm: LlmProvider;
   delivery: AuthoringTaskDelivery;
   workerId: string;
@@ -438,12 +231,26 @@ export async function processAuthoringTask(input: {
   }
 }
 
+export async function processAuthoringTask(input: {
+  llm: LlmProvider;
+  delivery: AuthoringTaskDelivery;
+  workerId: string;
+  cap?: number;
+}): Promise<"acknowledged" | "completed" | "failed" | "retry_queued"> {
+  return runCutoverBackgroundOperation({
+    operationId:
+      `authoring-worker:${input.delivery.outboxId}:${input.delivery.deliveryGeneration}`,
+    kind: "authoring-worker",
+  }, () => processAuthoringTaskCore(input));
+}
+
 export async function drainCharacterAuthoringJobs(input: {
   llm: LlmProvider;
   workerId?: string;
   cap?: number;
   limit?: number;
 }): Promise<void> {
+  if (!await cutoverAllowsGeneralWork()) return;
   const deadline = Date.now() + 10_000;
   for (let i = 0; i < (input.limit ?? 32) && Date.now() < deadline; i += 1) {
     const result = await processNextCharacterAuthoringJob(input);
@@ -456,7 +263,10 @@ export async function drainCharacterAuthoringJobs(input: {
 
 export function wakeCharacterAuthoringJobs(llm: LlmProvider): void {
   setImmediate(() => {
-    void processNextCharacterAuthoringJob({ llm }).catch((error) => {
+    void cutoverAllowsGeneralWork().then((allowed) => {
+      if (!allowed) return;
+      return processNextCharacterAuthoringJob({ llm });
+    }).catch((error) => {
       console.error("[authoring] job wake failed", error);
     });
   });

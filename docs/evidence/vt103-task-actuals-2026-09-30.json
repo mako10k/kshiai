@@ -1,0 +1,8 @@
+{
+  "start": "2026-09-30T12:04:42+09:00",
+  "finish": "2026-09-30T13:26:18+09:00",
+  "seconds": 4896,
+  "active_time": "34/25h",
+  "effort": null,
+  "basis": "observed task interval without recorded suspension; elapsed includes tool waits and delegation; person effort independently unmeasured"
+}

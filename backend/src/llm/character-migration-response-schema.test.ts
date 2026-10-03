@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 import { describe, it } from "node:test";
 import { z } from "zod";
 import { zodResponseFormat } from "openai/helpers/zod";
-import { CharacterMigrationJsonSchema, CharacterSemanticMigrationChangeSetV1Schema,
+import { CharacterMigrationJsonSchema, CharacterSemanticMigrationChangeSetV1Schema, CharacterSemanticMigrationProviderGrammarV1Schema,
   type CharacterMigrationJson } from "@kshiai/shared";
 import { characterMigrationChangeSetResponseSchema } from "./character-migration-response-schema.js";
 import { assertXaiResponseSchema } from "./provider-response-schema.js";
@@ -18,8 +18,12 @@ describe("migration provider projection without recursive grammar", () => {
         "../../../docs/evidence/semantic-migration-grok-2026-09-10-v1/call-1-before.json",
         import.meta.url), "utf8")),
     );
-    const old = zodResponseFormat(CharacterSemanticMigrationChangeSetV1Schema, NAME).json_schema.schema;
-    assert.deepEqual(old, evidence.call.responseSchema);
+    const old = zodResponseFormat(CharacterSemanticMigrationProviderGrammarV1Schema, NAME).json_schema.schema;
+    // ADR0046 narrows only the deferred compiler-pair grammar. Retained probe
+    // evidence is immutable; every other field still matches its old grammar.
+    const withoutCapabilityPairs = (schema: unknown) => JSON.stringify(schema,
+      (key, value: unknown) => key === "requiringCapability" ? "registered-capability-pairs" : value);
+    assert.equal(withoutCapabilityPairs(old), withoutCapabilityPairs(evidence.call.responseSchema));
     assert.throws(() => assertXaiResponseSchema(old), /circular reference/);
     const projected = characterMigrationChangeSetResponseSchema();
     assert.doesNotThrow(() => assertXaiResponseSchema(projected));

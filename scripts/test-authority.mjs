@@ -1,8 +1,10 @@
+// R: Select and run tests according to their current SealGraph authority.
 import { execFile, spawnSync } from "node:child_process";
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { promisify } from "node:util";
+import { prepareTestAuthorityRuntime } from "./prepare-test-authority-runtime.mjs";
 
 const scriptsDir = dirname(fileURLToPath(import.meta.url));
 export const repositoryRoot = resolve(scriptsDir, "..");
@@ -78,6 +80,7 @@ function loadInventory() {
 }
 
 async function loadSealGraphStatus(configuredTests) {
+  prepareTestAuthorityRuntime(configuredTests);
   const { stdout: staleOutput } = await execFileAsync(
     "sealgraph",
     ["stale", "--refs-only", "--scan"],
@@ -140,6 +143,12 @@ export function summarizeInventory(suite, inventory) {
   };
 }
 
+export function requireActiveTests(suite, active) {
+  if (active.length === 0) {
+    throw new Error(`No active ${suite} tests; inspect npm run test:inventory before treating this run as passed`);
+  }
+}
+
 function run(command, args) {
   const result = spawnSync(command, args, { cwd: repositoryRoot, stdio: "inherit" });
   return result.status ?? 1;
@@ -159,6 +168,10 @@ async function main() {
     process.stdout.write(`${JSON.stringify(summary, null, 2)}\n`);
     return;
   }
+  requireActiveTests(suite, active);
+  process.stderr.write(
+    `TEST_SELECTION suite=${suite} active=${active.length} provisional=${provisional.length} disabled=${disabled.length}\n`,
+  );
   for (const entry of disabled) {
     process.stderr.write(`DISABLED ${entry.path} ref=${entry.ref} reason=${entry.reason}\n`);
   }

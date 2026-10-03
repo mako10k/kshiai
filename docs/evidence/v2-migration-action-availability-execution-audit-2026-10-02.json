@@ -1,0 +1,111 @@
+{
+  "thought_id": "docs-evidence-v2-migration-action-availability-execution-2026-10-02",
+  "id_source": "file",
+  "report": {
+    "engine_version": "0.1.0",
+    "document_id": "docs-evidence-v2-migration-action-availability-execution-2026-10-02",
+    "generated_at": "2026-10-02T10:26:06.977Z",
+    "summary": {
+      "fatal_count": 0,
+      "error_count": 0,
+      "warning_count": 0,
+      "info_count": 0,
+      "hint_count": 4
+    },
+    "results": [
+      {
+        "issue_id": "ISSUE-001",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "OWNER",
+            "role": "evidence",
+            "step_id": "S-OWNER"
+          }
+        ],
+        "message": "evidence OWNER は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 4,
+          "column": 3,
+          "text": "Owner permits necessary image creation, deployments and normal origin push/CI. Preserve V2 display, retire ordinary V2 writes, and retain explicit V3 migration exceptions.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-002",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "GATES",
+            "role": "evidence",
+            "step_id": "S-GATES"
+          }
+        ],
+        "message": "evidence GATES は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 6,
+          "column": 3,
+          "text": "Fixed source09e9efab04c2e72a05f2472757bda643b03dbdfa matches origin; CI36995065736 four jobs success.258 Node tests, typecheck/static and one browser regression pass. Clean archive frontend builds, auth configuration verification and strict Worker dry-run pass. Fresh read-only shared DB has no active authoring/outbox/provider work, no live battle leases; Cloud Tasks empty.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-003",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "BOUNDS",
+            "role": "premise",
+            "step_id": "S-BOUNDS"
+          }
+        ],
+        "message": "premise BOUNDS は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 8,
+          "column": 3,
+          "text": "One executor. One e2-medium Cloud Build maximum1200seconds using clean fixed archive and existing projectkshiai registry; build costs. One no-traffic Cloud Run revisionkshiai-api-v2-actions-09e9efa inasia-northeast1 using resulting verified digest and existing env/service account/CPU1/memory512Mi, updating tagv2-retire-458af76. One matching kshiai-web Worker upload inaccountaa22d9ebf49d126306d9aac2d842584d to existing preview alias, preserve required bindings. One oldtrialtag retarget after healthy readback. Startup metadata effects retain existing behavior. Zero auth PATCH, no character migrations, paid LLM, deletion, DB schema changes, release or merge. Public deployment and100percent old production routing remain for this preview correction; broader goal completion still requires environment-scope audit.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-004",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "EXECUTE",
+            "role": "decision",
+            "step_id": "S-EXECUTE"
+          }
+        ],
+        "message": "decision EXECUTE は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 10,
+          "column": 3,
+          "text": "Build once from fixed source, verify Cloud Build source and registry digest, deploy one revision and Worker version, verify nine served assets and revision health, then retarget old preview tag once. Read back all writes; ambiguous output must be observed before retry. Existing service baseline readyv2-history-960a995 and Worker latested0742ba remain required preconditions. Return to audit if state changes. Internal remaining15-30minutes low-confidence; external build waits separate.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      }
+    ],
+    "query_results": []
+  }
+}

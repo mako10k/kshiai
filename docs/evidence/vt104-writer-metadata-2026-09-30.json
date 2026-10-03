@@ -1,0 +1,647 @@
+{
+  "schema": "kshiai/vt104-writer-metadata/v1",
+  "observed_at": "2026-09-30T14:43:36+09:00",
+  "revisions": [
+    {
+      "revision": "kshiai-api-00144-hir",
+      "min": "0",
+      "max": "20",
+      "timeoutSeconds": 300,
+      "containerConcurrency": 8
+    },
+    {
+      "revision": "kshiai-api-00143-suz",
+      "min": "0",
+      "max": "20",
+      "timeoutSeconds": 300,
+      "containerConcurrency": 8
+    },
+    {
+      "revision": "kshiai-api-00141-vis",
+      "min": "0",
+      "max": "20",
+      "timeoutSeconds": 300,
+      "containerConcurrency": 8
+    },
+    {
+      "revision": "kshiai-api-00137-sok",
+      "min": "0",
+      "max": "20",
+      "timeoutSeconds": 300,
+      "containerConcurrency": 8
+    },
+    {
+      "revision": "kshiai-api-00136-xov",
+      "min": "0",
+      "max": "20",
+      "timeoutSeconds": 300,
+      "containerConcurrency": 8
+    },
+    {
+      "revision": "kshiai-api-00135-fet",
+      "min": "0",
+      "max": "20",
+      "timeoutSeconds": 300,
+      "containerConcurrency": 8
+    },
+    {
+      "revision": "kshiai-api-00134-lat",
+      "min": "0",
+      "max": "20",
+      "timeoutSeconds": 300,
+      "containerConcurrency": 8
+    },
+    {
+      "revision": "kshiai-api-00130-gon",
+      "min": "0",
+      "max": "20",
+      "timeoutSeconds": 300,
+      "containerConcurrency": 8
+    },
+    {
+      "revision": "kshiai-api-00129-lum",
+      "min": "0",
+      "max": "20",
+      "timeoutSeconds": 300,
+      "containerConcurrency": 8
+    },
+    {
+      "revision": "kshiai-api-00127-son",
+      "min": "0",
+      "max": "20",
+      "timeoutSeconds": 300,
+      "containerConcurrency": 8
+    },
+    {
+      "revision": "kshiai-api-00125-pac",
+      "min": "0",
+      "max": "20",
+      "timeoutSeconds": 300,
+      "containerConcurrency": 8
+    },
+    {
+      "revision": "kshiai-api-00123-wis",
+      "min": "0",
+      "max": "20",
+      "timeoutSeconds": 300,
+      "containerConcurrency": 8
+    },
+    {
+      "revision": "kshiai-api-00121-cik",
+      "min": "0",
+      "max": "20",
+      "timeoutSeconds": 300,
+      "containerConcurrency": 8
+    },
+    {
+      "revision": "kshiai-api-00120-dog",
+      "min": "0",
+      "max": "20",
+      "timeoutSeconds": 300,
+      "containerConcurrency": 8
+    },
+    {
+      "revision": "kshiai-api-00119-tov",
+      "min": "0",
+      "max": "20",
+      "timeoutSeconds": 300,
+      "containerConcurrency": 8
+    },
+    {
+      "revision": "kshiai-api-00118-ziv",
+      "min": "0",
+      "max": "20",
+      "timeoutSeconds": 300,
+      "containerConcurrency": 8
+    },
+    {
+      "revision": "kshiai-api-00116-doz",
+      "min": "0",
+      "max": "20",
+      "timeoutSeconds": 300,
+      "containerConcurrency": 8
+    },
+    {
+      "revision": "kshiai-api-00114-lel",
+      "min": "0",
+      "max": "20",
+      "timeoutSeconds": 300,
+      "containerConcurrency": 8
+    },
+    {
+      "revision": "kshiai-api-00112-zuk",
+      "min": "0",
+      "max": "20",
+      "timeoutSeconds": 300,
+      "containerConcurrency": 8
+    },
+    {
+      "revision": "kshiai-api-00110-jev",
+      "min": "0",
+      "max": "20",
+      "timeoutSeconds": 300,
+      "containerConcurrency": 8
+    },
+    {
+      "revision": "kshiai-api-00108-cad",
+      "min": "0",
+      "max": "20",
+      "timeoutSeconds": 300,
+      "containerConcurrency": 8
+    },
+    {
+      "revision": "kshiai-api-00106-suw",
+      "min": "0",
+      "max": "20",
+      "timeoutSeconds": 300,
+      "containerConcurrency": 8
+    },
+    {
+      "revision": "kshiai-api-00104-jif",
+      "min": "0",
+      "max": "20",
+      "timeoutSeconds": 300,
+      "containerConcurrency": 8
+    },
+    {
+      "revision": "kshiai-api-00102-yot",
+      "min": "0",
+      "max": "20",
+      "timeoutSeconds": 300,
+      "containerConcurrency": 8
+    },
+    {
+      "revision": "kshiai-api-00100-yeh",
+      "min": "0",
+      "max": "20",
+      "timeoutSeconds": 300,
+      "containerConcurrency": 8
+    },
+    {
+      "revision": "kshiai-api-00098-zer",
+      "min": "0",
+      "max": "20",
+      "timeoutSeconds": 300,
+      "containerConcurrency": 8
+    },
+    {
+      "revision": "kshiai-api-00096-bup",
+      "min": "0",
+      "max": "20",
+      "timeoutSeconds": 300,
+      "containerConcurrency": 8
+    },
+    {
+      "revision": "kshiai-api-00095-yup",
+      "min": "0",
+      "max": "20",
+      "timeoutSeconds": 300,
+      "containerConcurrency": 8
+    },
+    {
+      "revision": "kshiai-api-00093-pof",
+      "min": "0",
+      "max": "20",
+      "timeoutSeconds": 300,
+      "containerConcurrency": 8
+    },
+    {
+      "revision": "kshiai-api-00092-nez",
+      "min": "0",
+      "max": "20",
+      "timeoutSeconds": 300,
+      "containerConcurrency": 8
+    },
+    {
+      "revision": "kshiai-api-00090-luh",
+      "min": "0",
+      "max": "20",
+      "timeoutSeconds": 300,
+      "containerConcurrency": 8
+    },
+    {
+      "revision": "kshiai-api-00088-guy",
+      "min": "0",
+      "max": "20",
+      "timeoutSeconds": 300,
+      "containerConcurrency": 8
+    },
+    {
+      "revision": "kshiai-api-00087-vek",
+      "min": "0",
+      "max": "20",
+      "timeoutSeconds": 300,
+      "containerConcurrency": 8
+    },
+    {
+      "revision": "kshiai-api-00085-juz",
+      "min": "0",
+      "max": "20",
+      "timeoutSeconds": 300,
+      "containerConcurrency": 8
+    },
+    {
+      "revision": "kshiai-api-00084-wix",
+      "min": "0",
+      "max": "20",
+      "timeoutSeconds": 300,
+      "containerConcurrency": 8
+    },
+    {
+      "revision": "kshiai-api-00082-ceg",
+      "min": "0",
+      "max": "20",
+      "timeoutSeconds": 300,
+      "containerConcurrency": 8
+    },
+    {
+      "revision": "kshiai-api-00080-tah",
+      "min": "0",
+      "max": "20",
+      "timeoutSeconds": 300,
+      "containerConcurrency": 8
+    },
+    {
+      "revision": "kshiai-api-00078-jip",
+      "min": "0",
+      "max": "20",
+      "timeoutSeconds": 300,
+      "containerConcurrency": 8
+    },
+    {
+      "revision": "kshiai-api-00076-fal",
+      "min": "0",
+      "max": "20",
+      "timeoutSeconds": 300,
+      "containerConcurrency": 8
+    },
+    {
+      "revision": "kshiai-api-00075-vij",
+      "min": "0",
+      "max": "20",
+      "timeoutSeconds": 300,
+      "containerConcurrency": 8
+    },
+    {
+      "revision": "kshiai-api-00074-hik",
+      "min": "0",
+      "max": "20",
+      "timeoutSeconds": 300,
+      "containerConcurrency": 8
+    },
+    {
+      "revision": "kshiai-api-00073-web",
+      "min": "0",
+      "max": "20",
+      "timeoutSeconds": 300,
+      "containerConcurrency": 8
+    },
+    {
+      "revision": "kshiai-api-00072-kaf",
+      "min": "0",
+      "max": "20",
+      "timeoutSeconds": 300,
+      "containerConcurrency": 8
+    },
+    {
+      "revision": "kshiai-api-00071-bep",
+      "min": "0",
+      "max": "20",
+      "timeoutSeconds": 300,
+      "containerConcurrency": 8
+    },
+    {
+      "revision": "kshiai-api-00070-puh",
+      "min": "0",
+      "max": "20",
+      "timeoutSeconds": 300,
+      "containerConcurrency": 8
+    },
+    {
+      "revision": "kshiai-api-00068-dej",
+      "min": "0",
+      "max": "20",
+      "timeoutSeconds": 300,
+      "containerConcurrency": 8
+    },
+    {
+      "revision": "kshiai-api-00066-ded",
+      "min": "0",
+      "max": "20",
+      "timeoutSeconds": 300,
+      "containerConcurrency": 8
+    },
+    {
+      "revision": "kshiai-api-00064-pin",
+      "min": "0",
+      "max": "20",
+      "timeoutSeconds": 300,
+      "containerConcurrency": 8
+    },
+    {
+      "revision": "kshiai-api-00062-zub",
+      "min": "0",
+      "max": "20",
+      "timeoutSeconds": 300,
+      "containerConcurrency": 8
+    },
+    {
+      "revision": "kshiai-api-00060-tid",
+      "min": "0",
+      "max": "20",
+      "timeoutSeconds": 300,
+      "containerConcurrency": 8
+    },
+    {
+      "revision": "kshiai-api-00058-der",
+      "min": "0",
+      "max": "20",
+      "timeoutSeconds": 300,
+      "containerConcurrency": 8
+    },
+    {
+      "revision": "kshiai-api-00056-vuk",
+      "min": "0",
+      "max": "20",
+      "timeoutSeconds": 300,
+      "containerConcurrency": 8
+    },
+    {
+      "revision": "kshiai-api-00054-wil",
+      "min": "0",
+      "max": "20",
+      "timeoutSeconds": 300,
+      "containerConcurrency": 8
+    },
+    {
+      "revision": "kshiai-api-00052-mof",
+      "min": "0",
+      "max": "20",
+      "timeoutSeconds": 300,
+      "containerConcurrency": 8
+    },
+    {
+      "revision": "kshiai-api-00050-hef",
+      "min": "0",
+      "max": "20",
+      "timeoutSeconds": 300,
+      "containerConcurrency": 8
+    },
+    {
+      "revision": "kshiai-api-00048-fiw",
+      "min": "0",
+      "max": "20",
+      "timeoutSeconds": 300,
+      "containerConcurrency": 8
+    },
+    {
+      "revision": "kshiai-api-00047-mag",
+      "min": "0",
+      "max": "20",
+      "timeoutSeconds": 300,
+      "containerConcurrency": 8
+    },
+    {
+      "revision": "kshiai-api-00045-dez",
+      "min": "0",
+      "max": "20",
+      "timeoutSeconds": 300,
+      "containerConcurrency": 8
+    },
+    {
+      "revision": "kshiai-api-00043-xen",
+      "min": "0",
+      "max": "20",
+      "timeoutSeconds": 300,
+      "containerConcurrency": 8
+    },
+    {
+      "revision": "kshiai-api-00041-huf",
+      "min": "0",
+      "max": "20",
+      "timeoutSeconds": 300,
+      "containerConcurrency": 8
+    },
+    {
+      "revision": "kshiai-api-00040-yev",
+      "min": "0",
+      "max": "20",
+      "timeoutSeconds": 300,
+      "containerConcurrency": 8
+    },
+    {
+      "revision": "kshiai-api-00038-xed",
+      "min": "0",
+      "max": "20",
+      "timeoutSeconds": 300,
+      "containerConcurrency": 8
+    },
+    {
+      "revision": "kshiai-api-00036-yew",
+      "min": "0",
+      "max": "20",
+      "timeoutSeconds": 300,
+      "containerConcurrency": 8
+    },
+    {
+      "revision": "kshiai-api-00034-wuf",
+      "min": "0",
+      "max": "20",
+      "timeoutSeconds": 300,
+      "containerConcurrency": 8
+    },
+    {
+      "revision": "kshiai-api-00032-giy",
+      "min": "0",
+      "max": "20",
+      "timeoutSeconds": 300,
+      "containerConcurrency": 8
+    },
+    {
+      "revision": "kshiai-api-00030-fun",
+      "min": "0",
+      "max": "20",
+      "timeoutSeconds": 300,
+      "containerConcurrency": 8
+    },
+    {
+      "revision": "kshiai-api-00029-gub",
+      "min": "0",
+      "max": "20",
+      "timeoutSeconds": 300,
+      "containerConcurrency": 8
+    },
+    {
+      "revision": "kshiai-api-00027-bix",
+      "min": "0",
+      "max": "20",
+      "timeoutSeconds": 300,
+      "containerConcurrency": 8
+    },
+    {
+      "revision": "kshiai-api-00025-lov",
+      "min": "0",
+      "max": "20",
+      "timeoutSeconds": 300,
+      "containerConcurrency": 8
+    },
+    {
+      "revision": "kshiai-api-00023-qun",
+      "min": "0",
+      "max": "20",
+      "timeoutSeconds": 300,
+      "containerConcurrency": 8
+    },
+    {
+      "revision": "kshiai-api-00021-sul",
+      "min": "0",
+      "max": "20",
+      "timeoutSeconds": 300,
+      "containerConcurrency": 8
+    },
+    {
+      "revision": "kshiai-api-00019-qiv",
+      "min": "0",
+      "max": "20",
+      "timeoutSeconds": 300,
+      "containerConcurrency": 8
+    },
+    {
+      "revision": "kshiai-api-00017-pas",
+      "min": "0",
+      "max": "20",
+      "timeoutSeconds": 300,
+      "containerConcurrency": 8
+    },
+    {
+      "revision": "kshiai-api-00015-bem",
+      "min": "0",
+      "max": "20",
+      "timeoutSeconds": 300,
+      "containerConcurrency": 8
+    },
+    {
+      "revision": "kshiai-api-00013-jaj",
+      "min": "0",
+      "max": "20",
+      "timeoutSeconds": 300,
+      "containerConcurrency": 8
+    },
+    {
+      "revision": "kshiai-api-00011-lek",
+      "min": "0",
+      "max": "20",
+      "timeoutSeconds": 300,
+      "containerConcurrency": 8
+    },
+    {
+      "revision": "kshiai-api-00009-cek",
+      "min": "0",
+      "max": "20",
+      "timeoutSeconds": 300,
+      "containerConcurrency": 8
+    },
+    {
+      "revision": "kshiai-api-00007-cam",
+      "min": "0",
+      "max": "20",
+      "timeoutSeconds": 300,
+      "containerConcurrency": 8
+    },
+    {
+      "revision": "kshiai-api-00006-quk",
+      "min": "0",
+      "max": "20",
+      "timeoutSeconds": 300,
+      "containerConcurrency": 8
+    },
+    {
+      "revision": "kshiai-api-00005-poz",
+      "min": "0",
+      "max": "20",
+      "timeoutSeconds": 300,
+      "containerConcurrency": 8
+    },
+    {
+      "revision": "kshiai-api-00004-qiw",
+      "min": "0",
+      "max": "20",
+      "timeoutSeconds": 300,
+      "containerConcurrency": 8
+    },
+    {
+      "revision": "kshiai-api-00001-b6d",
+      "min": "0",
+      "max": null,
+      "timeoutSeconds": 300,
+      "containerConcurrency": 8
+    }
+  ],
+  "queues": [
+    {
+      "name": "projects/kshiai/locations/asia-northeast1/queues/kshiai-narration",
+      "state": "RUNNING"
+    }
+  ],
+  "jobs": [
+    {
+      "metadata": {
+        "name": "kshiai-auth-smoke"
+      },
+      "status": {
+        "latestCreatedExecution": {
+          "completionStatus": "EXECUTION_FAILED",
+          "completionTimestamp": "2026-09-14T10:22:46.710237Z",
+          "creationTimestamp": "2026-09-14T10:20:37.647809Z",
+          "name": "kshiai-auth-smoke-cd2l6"
+        }
+      }
+    },
+    {
+      "metadata": {
+        "name": "kshiai-migrate"
+      },
+      "status": {
+        "latestCreatedExecution": {
+          "completionStatus": "EXECUTION_SUCCEEDED",
+          "completionTimestamp": "2026-09-14T10:19:00.715338Z",
+          "creationTimestamp": "2026-09-14T10:18:44.993880Z",
+          "name": "kshiai-migrate-qphwp"
+        }
+      }
+    },
+    {
+      "metadata": {
+        "name": "kshiai-persistent-e2e"
+      },
+      "status": {
+        "latestCreatedExecution": {
+          "completionStatus": "EXECUTION_SUCCEEDED",
+          "completionTimestamp": "2026-09-08T09:04:03.033833Z",
+          "creationTimestamp": "2026-09-08T09:01:11.585294Z",
+          "name": "kshiai-persistent-e2e-kckwr"
+        }
+      }
+    },
+    {
+      "metadata": {
+        "name": "kshiai-r2-smoke"
+      },
+      "status": {
+        "latestCreatedExecution": {
+          "completionStatus": "EXECUTION_SUCCEEDED",
+          "completionTimestamp": "2026-09-08T07:57:57.237109Z",
+          "creationTimestamp": "2026-09-08T07:57:36.286675Z",
+          "name": "kshiai-r2-smoke-6n94b"
+        }
+      }
+    }
+  ],
+  "scheduler_read": {
+    "status": "failed",
+    "reason": "SERVICE_DISABLED",
+    "empty_list_is_not_evidence": true,
+    "api_enabled": false
+  },
+  "limits": "Latest completed job execution is not proof that no other execution or caller exists. No stop or cloud write performed."
+}

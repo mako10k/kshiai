@@ -12,6 +12,7 @@ import {
   legacyCharacterSheetToDefinitionV2,
   type CharacterDefinitionV3,
   CharacterDefinitionV2Schema,
+  type CharacterCompilerCapabilitySetV1,
 } from "@kshiai/shared";
 import {
   buildCharacterMigrationReviewCandidateV1,
@@ -25,7 +26,17 @@ function envelope(
   candidate: CharacterDefinitionV3,
   payload: CharacterProposalV1["payload"],
   affectedObligationIds: string[],
-): CharacterProposalV1 {
+): CharacterProposalV1;
+function envelope(
+  candidate: CharacterDefinitionV3,
+  payload: unknown,
+  affectedObligationIds: string[],
+): Omit<CharacterProposalV1, "payload"> & { payload: unknown };
+function envelope(
+  candidate: CharacterDefinitionV3,
+  payload: unknown,
+  affectedObligationIds: string[],
+): Omit<CharacterProposalV1, "payload"> & { payload: unknown } {
   return {
     proposalId: "proposal-1",
     runId: "run-1",
@@ -183,7 +194,7 @@ describe("character V3 semantic authoring adapter", () => {
     }] });
     const sourceClaimId = "actionNorms:protect:legacyMeaning";
     const preservedValue = { statement: "守り続ける", selfAwareness: "aware", fallbackActionRef: null };
-    const optionalCapabilities = { contractVersion: 1 as const,
+    const optionalCapabilities: CharacterCompilerCapabilitySetV1 = { contractVersion: 1 as const,
       required: [{ consumer: "battle-mechanics" as const, version: 3 }] };
     const capsule = {
       capsuleVersion: 1 as const,
@@ -232,7 +243,7 @@ describe("character V3 semantic authoring adapter", () => {
     }] });
     const sourceClaimId = "actionNorms:protect:legacyMeaning";
     const preservedValue = { statement: "守り続ける", selfAwareness: "aware", fallbackActionRef: null };
-    const optionalCapabilities = { contractVersion: 1 as const,
+    const optionalCapabilities: CharacterCompilerCapabilitySetV1 = { contractVersion: 1 as const,
       required: [{ consumer: "battle-mechanics" as const, version: 3 }] };
     const capsule = {
       capsuleVersion: 1 as const,
@@ -328,9 +339,9 @@ describe("character V3 semantic authoring adapter", () => {
         fallbackActionRef: null }, operationId: "retire-1", provenanceCategory: "retired" as const }],
       createdAt: "2026-09-15T00:00:00.000Z",
     };
-    const optionalCapabilities = { contractVersion: 1 as const,
+    const optionalCapabilities: CharacterCompilerCapabilitySetV1 = { contractVersion: 1 as const,
       required: [{ consumer: "battle-mechanics" as const, version: 3 }] };
-    const requiredCapabilities = { contractVersion: 1 as const,
+    const requiredCapabilities: CharacterCompilerCapabilitySetV1 = { contractVersion: 1 as const,
       required: [{ consumer: "character-conscious-self" as const, version: 3 }] };
     const makeProposal = (baseline: ReturnType<typeof adapter.buildBaseline>): CharacterProposalV1 => ({
       ...envelope(baseline.candidate, { kind: "propose_deferral", obligationIds: [`source:${sourceClaimId}`],
@@ -504,7 +515,7 @@ describe("character V3 semantic authoring adapter", () => {
     const decoded = adapter.decodeProposal(work.workItem, envelope(baseline.candidate, {
       kind: "set_portrait",
       value: { mediaId: "media", revisionId: "rev" },
-    } as never, ["identity"]));
+    }, ["identity"]));
     assert.equal(decoded.accepted, false);
   });
 

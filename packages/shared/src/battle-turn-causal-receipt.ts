@@ -3,6 +3,7 @@ import {
   ActionKindSchema,
   ActionResolutionReasonSchema,
   CharacterActionIntentSchema,
+  projectCharacterActionIntent,
   ResolvedBattleActionSchema,
   TurnEventSchema,
   type BattleState,
@@ -165,28 +166,7 @@ function jsonEqual(left: unknown, right: unknown): boolean {
 }
 
 function effectiveIntent(action: ResolvedBattleAction): CharacterActionIntent {
-  return CharacterActionIntentSchema.parse({
-    kind: action.kind,
-    ...(action.skillId !== undefined ? { skillId: action.skillId } : {}),
-    ...(action.useFinisher !== undefined
-      ? { useFinisher: action.useFinisher }
-      : {}),
-    ...(action.description !== undefined
-      ? { description: action.description }
-      : {}),
-    ...(action.desiredOutcome !== undefined
-      ? { desiredOutcome: action.desiredOutcome }
-      : {}),
-    ...(action.subjectRefs !== undefined
-      ? { subjectRefs: [...action.subjectRefs] }
-      : {}),
-    ...(action.instrumentRef !== undefined
-      ? { instrumentRef: action.instrumentRef }
-      : {}),
-    ...(action.opportunityId !== undefined
-      ? { opportunityId: action.opportunityId }
-      : {}),
-  });
+  return projectCharacterActionIntent(action);
 }
 
 function duplicateValues(values: readonly string[]): string[] {

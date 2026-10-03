@@ -1,0 +1,20 @@
+domain PRELOGIN:
+  description "Prepare the accepted trial through the point immediately before owner Google login."
+evidence OWNER:
+  "User asks to complete steps before step4 of the disclosed procedure: existing-branch source synchronization, immutable preparation, and preview environment preparation. No owner Google login or game execution in this action."
+evidence SOURCE:
+  "Fresh fetch: local and origin cc304 branch equal03ef49c; main e31c487. Dirty set consists of accepted ADR0042, dedicated workflow, validators, tests, plans and evidence/provenance. No matching PR."
+evidence GATES:
+  "Hosted workflow list lacks v3-trial. Official GitHub manual-run documentation requires default-branch registration. Gcloud readback fails with reauthentication required; service and queue state unknown."
+premise BOUNDS:
+  "Synchronize only the inspected trial files to existing origin/codex/cc304-focused-revise with one nonforce push and independent remote SHA readback. No merge, release tag, auth identity change, destructive DB action or paid call before the exact target and effect are settled."
+pending HOSTED:
+  "Exact main workflow bootstrap, tag, four CI checks, cloud state, secret versions, unfinished IDs, writer closure, migration list and budget remain unverified."
+premise REGISTER:
+  "Register only the new workflow on default branch via a separately approved bounded integration, then execute the reviewed tag workflow. Keep broad WIP off main."
+premise LOCAL:
+  "Changing to local cloud execution would alter the accepted hosted source/artifact verification route; do not choose it silently."
+decision SYNC based_on OWNER, SOURCE, BOUNDS:
+  "Audit current source and provenance, record task resume, commit inspected scope and push once to the existing branch; read back remote HEAD and local clean status."
+decision NEXT based_on GATES, HOSTED, REGISTER, LOCAL, BOUNDS:
+  "Prepare an exact default-branch registration candidate for owner decision; report cloud auth recovery prerequisite and retain deployment as pending."

@@ -1,0 +1,95 @@
+{
+  "recordedAt": "2026-10-02T06:28:24.168833+00:00",
+  "scope": "Local V2 character write retirement; historical V2 reads and explicit V3 migration retained",
+  "authority": "Owner instruction and Accepted ADR0043",
+  "supersedesForCurrentSource": "v2-character-update-removal-verification-2026-10-02.json",
+  "checks": {
+    "unit": {
+      "exitCode": 0,
+      "passed": 253,
+      "failed": 0,
+      "activeFiles": 46,
+      "provisionalFiles": 2,
+      "disabledFiles": 139,
+      "limitation": "Provisional and disabled historical corpus does not establish current conformance"
+    },
+    "typecheck": {
+      "exitCode": 0
+    },
+    "static": {
+      "exitCode": 0
+    },
+    "build": {
+      "exitCode": 0,
+      "warning": "Frontend bundle size warning; no build failure"
+    },
+    "llmthinkAudit": {
+      "fatal": 0,
+      "error": 0,
+      "warning": 0
+    },
+    "finalWhitespaceCleanup": "Two trailing blank lines removed after checks; no executable change."
+  },
+  "runtime": {
+    "worker": "https://26ff9223-kshiai-web.mako10k.workers.dev/",
+    "observedRevision": "kshiai-api-00147-pos",
+    "newSourceDeployed": false,
+    "goalComplete": false
+  },
+  "limitations": [
+    "Real browser V2 rejection, V3 update and historical battle link verification remain after an independently authorized deployment.",
+    "Old portrait/copy/restore and decision toggle routes are unavailable; V3 replacements are outside this retirement scope.",
+    "postgres-runtime-smoke legacy fixture creation now fails; this operator smoke must be revised before relying on it for a release.",
+    "Existing ADR0039 acceptance marker and historical migration basis issues are not repaired or asserted current."
+  ],
+  "remainingInternalEffort": {
+    "agentHours": [
+      1,
+      2
+    ],
+    "confidence": "low",
+    "basis": "provisional release preparation and runtime readback; owner/external waits excluded"
+  },
+  "sourceSha256": {
+    "backend/src/e2e-observer.test.ts": "c15a08012099c1bf999f246600ee1e8d5f18814d756271b0b28b5dc8eeb595f3",
+    "backend/src/e2e-observer.ts": "942466696c4ad9066c7fbe1581abcff36dc519ad356f5115837776bcce9a6b0d",
+    "backend/src/repositories/asset-generations.test.ts": "9c329b69823b5ce01509da1b7efd00e53dfab9f966b3c1d6b576930591266905",
+    "backend/src/repositories/asset-generations.ts": "09e98c31f676bc8f30ae5bc53d70a0126b728d3990862bd6d28f2b48a74c4a34",
+    "backend/src/repositories/character-assets-v2.test.ts": "e451cc3443429597bd262afaf300dc9fac28ac35bf2f3a26c74d1f4a562aedb1",
+    "backend/src/repositories/character-assets-v2.ts": "8c9709c7e132c8db50445ace5296665c37de3e16d7ce26aa27a7be097054ac7d",
+    "backend/src/repositories/character-battle-accounting.ts": "054d677eb2b8b1874bd4abd734e19b359c516da68d638d4167feedbc35d36546",
+    "backend/src/repositories/character-generation-reader.test.ts": "169c0a864dda350f7d8f4216a63a7bb410c1d8af34e2d82c2b21f3b382f697f3",
+    "backend/src/repositories/character-semantic-migration.test.ts": "8dee3d8415fe1e64eea92c92bd3d84e1fbbcbb5eb8a94b4b5497ff8260500a81",
+    "backend/src/repositories/characters.test.ts": "1e285095f7252ab08fd9791acbfe55a9919b450d973ceb91ce2c57655148d8ae",
+    "backend/src/repositories/characters.ts": "9f14cc62c9f7d096abe7815bc1b639733eb3249c2ebe02c91ae8826a274270d3",
+    "backend/src/routes-structured-asset-integration.test.ts": "82cd341e0f0e0f6690c6d43392ba30095a682413cf03389aa1072d529939e5a1",
+    "backend/src/routes-structured-battlefield-acceptance.test.ts": "cdd74dbefdc98e4d66153e5bcedce0e3d28c6f8b5254fa5ee0ce047d9d15c713",
+    "backend/src/routes-structured-character-acceptance.test.ts": "ec2615554c05a7e703dd01b1c8dcebb4e750a5f51e494c32b766a2fe5fd5918d",
+    "backend/src/routes-structured-narration-acceptance.test.ts": "43fd0563afc97df14764b1883a438d97f14dbc466699d27886682d64344649ec",
+    "backend/src/routes.ts": "7cfa23dce0e8b085050fdf5e99c1d9f0b7ff5dfbf71be7a3f9b4451fdc5b3397",
+    "backend/src/scripts/backfill-character-identities.ts": "fb5e56902536e7e6fb97dd6f83abe1f9b4787452a9dcd234e8a9f0cc8b39907e",
+    "backend/src/scripts/supabase-auth-smoke.test.ts": "fd6ee6d6987d13df9fa9c7fac26505fb7ad4d3e904447a5981a08478dd0fa1ee",
+    "backend/src/services/battle-create-idempotency.test.ts": "7191b90ccbe2566da4ddd775e46109f109ec6493907f0b58a77c527e935719b4",
+    "backend/src/services/character-authoring-jobs.test.ts": "6139b9368b2bfd690123674e67bb4bfbf819c0ae832deb71efc37fc2dc78fdb3",
+    "backend/src/services/character-authoring-jobs.ts": "28a2ea81f173a2bc53827f0bdfeb38918dfdc32b561f67ae28d9132c66d41d66",
+    "backend/src/services/character-focused-authoring.test.ts": "85be34ede34a94dba2fb04b2a07b1fc4668710b335f24664c89ac7c807b8c125",
+    "backend/src/services/character-historical-view.test.ts": "cba8fed93e752c06a57a7b7fe64d62be6665b1ca698bd64b63abad0994b0a42c",
+    "backend/src/services/character-historical-view.ts": "d1c9ae2e41c2f9e932ee0367e8ed60764d48c82ef8131ee68bd4b660822342c2",
+    "backend/src/services/character-improvement.ts": "6a9454234f601fcedebfb50c851bfa09b6ff762f79301ba6684eb66df5394d0e",
+    "backend/src/services/character-semantic-migration.test.ts": "d992e19097715d14c3ffa5222dd8a36660d0db0b2cb5a708b2ccd8d8fbf21643",
+    "backend/src/services/character-update-policy.test.ts": "002956f9b898e55a209ead3789f170c5f20c7ddf3288e541596871be4d3a7b67",
+    "backend/src/services/character-update-policy.ts": "990ef4b323fef52fb8697bce4c9bb36b0bddbf7fe317b63dfa201d6d8d6d36eb",
+    "backend/src/services/character-v2-update-boundary.test.ts": "29b5155e77503d52e0c8c3b84f6dd64306abfc68e024561e27c7cab7370748d1",
+    "backend/src/services/conscious-agency-persistence.test.ts": "fb71437784fc65d9d907d1088d2ba0429d1661bb7ec5a6ba57b15d5eebfe9628",
+    "backend/src/services/cutover-trial-dispatch.test.ts": "e27b6067f17958f75d15697f52d58a3be5d6a4501862097031bd586fcebec469",
+    "backend/src/services/rating-service.ts": "2125eb7092a90d708a6477e4b0faf32b3a8cf4b8390717f0094c0138ab723b53",
+    "backend/src/services/scene-beat-wiring.test.ts": "c2f1180c6d69b7548169c6670c71b59d14d76aab2b9245a8fa5bef28123ddedb",
+    "backend/src/services/v3-battle-creation.test.ts": "40183f5bb8b1baf90217f6c365deb93b4fa578952e27c620d9d3ce69745bec65",
+    "backend/src/testing/historical-asset-generations.ts": "1f853f953dbd5c2a9aa3c5628652b72d251b4e7d1b1f2e91afbc8334c2cced5a",
+    "backend/src/testing/historical-character-fixtures.ts": "c29d82b0b3d86b882e4670829d6fb365f80c6dbe5a363b73e008263495fed165",
+    "frontend/src/api.ts": "e9d7d59b4a3edbe3823cc0af3b29a00a6f25a377ac236e2d71f85195d07b8dc3",
+    "frontend/src/pages/BattlePageView.tsx": "5b617a9f2d7272b7b5926d3e3bf7344a2ebe55a7643d2966329d04704a55dad6",
+    "frontend/src/pages/CharacterDetailPage.tsx": "5708268944da518c0c1f2bccd9f879df695807c655597a8637df0052a4605b70",
+    "scripts/test-authority-inventory.json": "ecf20e44c8b9f3655e9dddff5bd646b780477eae94d26ac3533823ad201803ab"
+  }
+}

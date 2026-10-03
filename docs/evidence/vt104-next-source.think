@@ -1,0 +1,14 @@
+domain DELIVERY:
+  description "Freeze approved local disposal correction before seeking exact hosted preparation authority."
+evidence LOCAL:
+  "Owner accepted snapshot-free trial disposal and receipt bootstrap; current changed source passes234 selected tests,type/static/build and13 isolatedPG17 checks. No shared writes."
+evidence REMOTE:
+  "Fresh fetch preserves main933e6ae and branch72f67ea; PR152 open with4 checks success only for72f67ea. Existing RC1 source4f3 immutable and does not include repair."
+premise AUTHORITY:
+  "Local implementation and tests are accepted; reviewable local documentation and commit preserve this approved work. Push,RC tag and cloud prepare need exact disclosed scope; runtime deletion and deployment remain separate."
+pending UNKNOWN:
+  "New source hostedCI notrun; RC2 availability requires read-onlyremotecheck; actual GoogleV3 path incomplete. No current previewcallback identity."
+premise OPTIONS:
+  "Reusing RC1 cannot deliver changed kernel. Prefer a new frozen sourceCI then annotatedRC2 then prepare-only maxonebuild; do not moveRC1. Local commit alone does not prove synchronization."
+decision FREEZE based_on LOCAL, REMOTE, AUTHORITY, UNKNOWN, OPTIONS:
+  "Correct stale proposed packet status, preserve local evidence in focused commit, provide exact new sourceSHA and proposed hosted writes for owner decision. Auth and runtime settings remain preserved."

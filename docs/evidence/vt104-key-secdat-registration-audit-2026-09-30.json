@@ -1,0 +1,420 @@
+{
+  "thought_id": "docs-evidence-vt104-key-secdat-registration-2026-09-30",
+  "id_source": "file",
+  "report": {
+    "engine_version": "0.1.0",
+    "document_id": "docs-evidence-vt104-key-secdat-registration-2026-09-30",
+    "generated_at": "2026-09-30T11:39:24.469Z",
+    "summary": {
+      "fatal_count": 0,
+      "error_count": 0,
+      "warning_count": 0,
+      "info_count": 1,
+      "hint_count": 16
+    },
+    "results": [
+      {
+        "issue_id": "ISSUE-001",
+        "category": "contradiction_candidate",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "REGISTER",
+            "role": "decision",
+            "step_id": "S-REGISTER"
+          },
+          {
+            "ref_id": "CONTINUE_REGISTRATION",
+            "role": "decision",
+            "step_id": "S-CONTINUE_REGISTRATION"
+          }
+        ],
+        "message": "REGISTER と CONTINUE_REGISTRATION は同一根拠 OWNER を共有しており、緊張関係にある可能性がある。",
+        "rationale": "複数の decision が同じ based_on 参照を共有しているため、観点と結論の整合性を再確認するべきである。",
+        "metadata": {
+          "shared_refs": [
+            "OWNER"
+          ],
+          "line": 15,
+          "column": 10,
+          "end_column": 18
+        }
+      },
+      {
+        "issue_id": "ISSUE-002",
+        "category": "contradiction_candidate",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "REGISTER",
+            "role": "decision",
+            "step_id": "S-REGISTER"
+          },
+          {
+            "ref_id": "REGISTERED_READBACK",
+            "role": "decision",
+            "step_id": "S-REGISTERED_READBACK"
+          }
+        ],
+        "message": "REGISTER と REGISTERED_READBACK は同一根拠 OWNER, CONTROL を共有しており、緊張関係にある可能性がある。",
+        "rationale": "複数の decision が同じ based_on 参照を共有しているため、観点と結論の整合性を再確認するべきである。",
+        "metadata": {
+          "shared_refs": [
+            "OWNER",
+            "CONTROL"
+          ],
+          "line": 15,
+          "column": 10,
+          "end_column": 18
+        }
+      },
+      {
+        "issue_id": "ISSUE-003",
+        "category": "contradiction_candidate",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "CONTINUE_REGISTRATION",
+            "role": "decision",
+            "step_id": "S-CONTINUE_REGISTRATION"
+          },
+          {
+            "ref_id": "REGISTERED_READBACK",
+            "role": "decision",
+            "step_id": "S-REGISTERED_READBACK"
+          }
+        ],
+        "message": "CONTINUE_REGISTRATION と REGISTERED_READBACK は同一根拠 OWNER を共有しており、緊張関係にある可能性がある。",
+        "rationale": "複数の decision が同じ based_on 参照を共有しているため、観点と結論の整合性を再確認するべきである。",
+        "metadata": {
+          "shared_refs": [
+            "OWNER"
+          ],
+          "line": 22,
+          "column": 10,
+          "end_column": 31
+        }
+      },
+      {
+        "issue_id": "ISSUE-004",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "OWNER",
+            "role": "evidence",
+            "step_id": "S-OWNER"
+          }
+        ],
+        "message": "evidence OWNER は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 4,
+          "column": 3,
+          "text": "After selecting owner public-key snapshot encryption and requesting new-key creation preparation, owner explicitly replied secdat に登録してください to the primary/recovery storage question.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-005",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "DOMAIN",
+            "role": "evidence",
+            "step_id": "S-DOMAIN"
+          }
+        ],
+        "message": "evidence DOMAIN は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 6,
+          "column": 3,
+          "text": "Exact registered domain /home/katsumata-m/kshiai is unlocked with wrapped master key present. Store list contains only default. Planned VT104_SNAPSHOT_AGE_IDENTITY and RECIPIENT are absent. Existing sync-env script uses an explicit key whitelist and normal runtime/GitHub exec uses default namespace.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-006",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "TOOL",
+            "role": "evidence",
+            "step_id": "S-TOOL"
+          }
+        ],
+        "message": "evidence TOOL は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 8,
+          "column": 3,
+          "text": "Signed Ubuntu age1.1.1 package verified; synthetic encrypt/decrypt hash equality and wrong-key/tamper rejection pass. age-keygen stdout can be captured privately; -y derives recipient from stdin. secdat set supports stdin, secret/public storage, bulk exclusion, dry-run plans.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-007",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "AUTHORITY",
+            "role": "premise",
+            "step_id": "S-AUTHORITY"
+          }
+        ],
+        "message": "premise AUTHORITY は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 10,
+          "column": 3,
+          "text": "Owner request authorizes local new-key registration. Use existing exact domain, a new snapshot-recovery namespace, and two named keys; do not change domain passphrase, existing key identities, app env or cloud resources. Local namespace selection is the narrow internal storage choice for the requested registration.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-008",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "CONTROL",
+            "role": "premise",
+            "step_id": "S-CONTROL"
+          }
+        ],
+        "message": "premise CONTROL は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 12,
+          "column": 3,
+          "text": "Maximum persistent writes3: one namespace create, one private identity secret set, one public recipient set. Both bulk-excluded and explicitly selected by recovery scripts. Capture private key and decrypted readback only in process memory; never print or put into argv/repo/plaintext key file. Refuse existing namespace/key conflicts rather than overwrite. After an ambiguous mutation inspect exact metadata/readback once, no new ID retry.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-009",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "BACKUP",
+            "role": "pending",
+            "step_id": "S-BACKUP"
+          }
+        ],
+        "message": "pending BACKUP は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 14,
+          "column": 3,
+          "text": "Independent backup of secdat encrypted store/master-key recovery is not proven by registration; keep backup as a separate exact owner-managed input. Actual production snapshot/capture/restore remains unperformed.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-010",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "REGISTER",
+            "role": "decision",
+            "step_id": "S-REGISTER"
+          }
+        ],
+        "message": "decision REGISTER は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 16,
+          "column": 3,
+          "text": "Create snapshot-recovery namespace, privately generate age identity, dry-run and set named identity/recipient once, derive public recipient from independent decrypted readback, encrypt/decrypt synthetic data using stored identity, and read attributes/object metadata. Report only recipient, secret UUID and digests. Update packet primary to secdat and keep independent recovery proof pending.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-011",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "EMPTY_STORE_FORMAT",
+            "role": "evidence",
+            "step_id": "S-EMPTY_STORE_FORMAT"
+          }
+        ],
+        "message": "evidence EMPTY_STORE_FORMAT は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 19,
+          "column": 3,
+          "text": "New snapshot-recovery namespace creation succeeded. First secret-set dry-run failed before write: mutation planning requires v2. Migration dry-run confirms v1 namespace has0 entries/secret objects/public/encrypted values and0 issues; both planned keys remain absent.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-012",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "FORMAT_REPAIR",
+            "role": "premise",
+            "step_id": "S-FORMAT_REPAIR"
+          }
+        ],
+        "message": "premise FORMAT_REPAIR は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 21,
+          "column": 3,
+          "text": "Convert only this new empty namespace to v2, then dry-run/set the two keys. Maximum persistent mutations4 total including earlier namespace creation, empty-format migration and two key sets. Existing namespace/domain credential configuration stays outside target.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-013",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "CONTINUE_REGISTRATION",
+            "role": "decision",
+            "step_id": "S-CONTINUE_REGISTRATION"
+          }
+        ],
+        "message": "decision CONTINUE_REGISTRATION は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 23,
+          "column": 3,
+          "text": "Migrate the new empty namespace after successful preview, then generate/register key once. Previous dry-run failure persisted no identity. Read exact metadata on any ambiguous write and keep public-only receipt.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-014",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "REGISTERED",
+            "role": "evidence",
+            "step_id": "S-REGISTERED"
+          }
+        ],
+        "message": "evidence REGISTERED は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 26,
+          "column": 3,
+          "text": "At20:36 JST, v2 snapshot-recovery store contains owner identity and recipient. Fresh get-derived public recipient matches; decrypt via private pipe returns exact synthetic plaintext; normal default store lacks both key names. Four local mutations completed, no production/GitHub write and no plaintext identity file/log.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-015",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "REGISTERED_READBACK",
+            "role": "decision",
+            "step_id": "S-REGISTERED_READBACK"
+          }
+        ],
+        "message": "decision REGISTERED_READBACK は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 28,
+          "column": 3,
+          "text": "Freeze actual public recipient/domain/store/secret-object metadata in packet and treat secdat as primary. Preserve independent backup and real recovery R as separate unverified prerequisites, not registration results.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-016",
+        "category": "semantic_hint",
+        "severity": "info",
+        "target_refs": [
+          {
+            "ref_id": "BACKUP",
+            "role": "pending",
+            "step_id": "S-BACKUP"
+          }
+        ],
+        "message": "pending が存在するため、判断の確定度は下げて表示するべきである。",
+        "metadata": {
+          "line": 13,
+          "column": 9,
+          "end_column": 15
+        }
+      },
+      {
+        "issue_id": "ISSUE-017",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "REGISTER",
+            "role": "decision",
+            "step_id": "S-REGISTER"
+          },
+          {
+            "ref_id": "CONTINUE_REGISTRATION",
+            "role": "decision",
+            "step_id": "S-CONTINUE_REGISTRATION"
+          }
+        ],
+        "message": "REGISTER と CONTINUE_REGISTRATION は意味的に近接している可能性がある。",
+        "metadata": {
+          "line": 15,
+          "column": 10,
+          "end_column": 18,
+          "similarity": 0.75,
+          "semantic_distance": 0.25
+        }
+      }
+    ],
+    "query_results": []
+  }
+}

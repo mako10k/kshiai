@@ -18,10 +18,10 @@ process.env.DATABASE_URL = "";
 process.env.AUTH_PROVIDER = "legacy";
 process.env.DATABASE_PATH = join(temporaryDirectory, "scene-beat.db");
 
+const { saveHistoricalCharacterFixture } = await import("../testing/historical-character-fixtures.js");
 const { closeDatabase, query } = await import("../db.js");
 const { advanceTurn, completeAdvancePhases, startBattle } = await import("./battle-service.js");
 const { saveBattleWithNarrationOutbox } = await import("../repositories/battles.js");
-const characterRepo = await import("../repositories/characters.js");
 const { MockLlmProvider } = await import("../llm/mock.js");
 const { ensureSystemNarrationStyles } = await import(
   "../repositories/narration-styles.js"
@@ -113,7 +113,7 @@ describe("scene beat narration deferral", () => {
     const sideA = sheet("beat-a", "beat-owner", "甲");
     const sideB = sheet("beat-b", "beat-owner", "乙");
     for (const character of [sideA, sideB]) {
-      await characterRepo.saveSheet(character);
+      await saveHistoricalCharacterFixture(character);
     }
     await ensureSystemNarrationStyles();
     const created = await startBattle({
@@ -144,7 +144,7 @@ describe("scene beat narration deferral", () => {
     const sideA = sheet("beat-adv-a", "beat-adv-owner", "甲");
     const sideB = sheet("beat-adv-b", "beat-adv-owner", "乙");
     for (const character of [sideA, sideB]) {
-      await characterRepo.saveSheet(character);
+      await saveHistoricalCharacterFixture(character);
     }
     await ensureSystemNarrationStyles();
     const llm = new MockLlmProvider();
@@ -181,7 +181,7 @@ describe("scene beat narration deferral", () => {
     const sideA = sheet("beat-clock-a", "beat-clock-owner", "甲", 10_000);
     const sideB = sheet("beat-clock-b", "beat-clock-owner", "乙", 10_000);
     for (const character of [sideA, sideB]) {
-      await characterRepo.saveSheet(character);
+      await saveHistoricalCharacterFixture(character);
     }
     await ensureSystemNarrationStyles();
     const llm = new MockLlmProvider();
@@ -248,7 +248,7 @@ describe("scene beat narration deferral", () => {
     sideA.parameters.spd = 20;
     sideB.parameters.spd = 5;
     for (const character of [sideA, sideB]) {
-      await characterRepo.saveSheet(character);
+      await saveHistoricalCharacterFixture(character);
     }
     await ensureSystemNarrationStyles();
     const llm = new MockLlmProvider();
@@ -301,7 +301,7 @@ describe("scene beat narration deferral", () => {
     const sideA = sheet("beat-patch-a", "beat-patch-owner", "甲", 10_000);
     const sideB = sheet("beat-patch-b", "beat-patch-owner", "乙", 10_000);
     for (const character of [sideA, sideB]) {
-      await characterRepo.saveSheet(character);
+      await saveHistoricalCharacterFixture(character);
     }
     await ensureSystemNarrationStyles();
     const llm = new MockLlmProvider();
@@ -375,7 +375,7 @@ describe("scene beat narration deferral", () => {
     const sideA = sheet("beat-orphan-a", "beat-orphan-owner", "甲");
     const sideB = sheet("beat-orphan-b", "beat-orphan-owner", "乙");
     for (const character of [sideA, sideB]) {
-      await characterRepo.saveSheet(character);
+      await saveHistoricalCharacterFixture(character);
     }
     await ensureSystemNarrationStyles();
     const llm = new MockLlmProvider();

@@ -1,0 +1,54 @@
+{
+  "observedAt": "2026-10-02T10:03:30.247127+00:00",
+  "authority": "Owner permits necessary environment deployments, normal origin push and CI",
+  "frontendSourceSha": "85e9522d307f511b02b156ae5867716734d85453",
+  "backendSourceSha": "960a9958a25f7770755fea9119627e18a461f851",
+  "ciRun": 36992713260,
+  "ciFourJobs": "success",
+  "renderedBrowserNavigationTest": "passed: names visible with missing portraits and degraded battle; exact battleId request",
+  "nodeTests": 257,
+  "typecheck": "pass",
+  "static": "pass",
+  "writes": {
+    "workerVersionUpload": 1,
+    "cloudBuild": 0,
+    "cloudRunDeploy": 0,
+    "authPatch": 0,
+    "databaseRepair": 0
+  },
+  "worker": {
+    "version": "ed0742ba-f0f8-447a-9d4e-8380636abdd8",
+    "assetsMatched": 9,
+    "health": {
+      "ok": true,
+      "llm": "fallback:xai>openai>venice",
+      "auth": "supabase",
+      "models": {
+        "engine": "grok-4.5",
+        "fast": "grok-4.3"
+      },
+      "service": "kshiai",
+      "database": "postgres",
+      "revision": "kshiai-api-v2-history-960a995"
+    },
+    "backendAndSecretBindingsPreserved": true
+  },
+  "frontendAssets": {
+    "sourceSha": "85e9522d307f511b02b156ae5867716734d85453",
+    "files": {
+      "frontend/dist/index.html": "eaeb9cc67ff6816ac796020cae3264b48f865c1731a8b53698d1ba664fa6b5ad",
+      "frontend/dist/favicon.svg": "7cffb8c29e627bd727fa78637add441cea2c8147e526ca23432e123d5519c589",
+      "frontend/dist/assets/index-Dor-Pfq6.css": "37af3065253b64bd75f7f5bd75176d457196b94ec32ce7cb68fea52a21b80d6b",
+      "frontend/dist/assets/index-CwEsaeMb.js": "1e36d5d6bb662638f2911a72af038784a173539f9ce8f8f803cb40179ea14bc0",
+      "frontend/dist/battlefields/arena.jpg": "126d34d6cbf2ae11357d57595de51145908f54e4b01b9e5c5316c9f110f66458",
+      "frontend/dist/battlefields/urban.jpg": "fbafa650423e4b714c4075052ec2809e42a3fda5f683c5959fce6d58d66ada9c",
+      "frontend/dist/battlefields/sea.jpg": "b10e5401c46dd8093bd5960aa047eb4c4b612922bc3821bc22982d2f8e0b8974",
+      "frontend/dist/battlefields/forest.jpg": "ccedf989d9189384f60d62a2a99d1eadd70c413b41bbba8dff18c604cd854e85",
+      "frontend/dist/battlefields/school.jpg": "a89789cdfd1bb301480b16a7bfc115cc648f200081af1ac2780c7ea93b0b1071"
+    }
+  },
+  "publicDeploymentManifestUnchanged": true,
+  "historyUrl": "https://v2-retire-458af76-kshiai-web.mako10k.workers.dev/history",
+  "ownerNavigationConfirmation": "awaiting answer",
+  "goalComplete": false
+}

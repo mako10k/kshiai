@@ -1,0 +1,111 @@
+{
+  "thought_id": "docs-evidence-v2-retirement-closeout-2026-10-02",
+  "id_source": "file",
+  "report": {
+    "engine_version": "0.1.0",
+    "document_id": "docs-evidence-v2-retirement-closeout-2026-10-02",
+    "generated_at": "2026-10-02T11:23:49.689Z",
+    "summary": {
+      "fatal_count": 0,
+      "error_count": 0,
+      "warning_count": 0,
+      "info_count": 0,
+      "hint_count": 4
+    },
+    "results": [
+      {
+        "issue_id": "ISSUE-001",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "OWNER",
+            "role": "evidence",
+            "step_id": "S-OWNER"
+          }
+        ],
+        "message": "evidence OWNER は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 4,
+          "column": 3,
+          "text": "Owner now requests stop today's task after CI finishes, create handoff, WIPcommit and push. Goal2 permits originpush; goal3 deployment done. No merge/release/destructive cleanup or shared workday state change requested.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-002",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "VERIFIED",
+            "role": "evidence",
+            "step_id": "S-VERIFIED"
+          }
+        ],
+        "message": "evidence VERIFIED は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 6,
+          "column": 3,
+          "text": "CI37000442643 on a0e5f47 terminalsuccess all4jobs. Product source fce86 originverified, sourceCI4success, exactdigest/public andpreview health200,9assetsmatched, recoveredautomaticmode. Completion audit fatal/error0; independentreviews no productblocker. Existing dirty trialPERT and60 unrelated earlier trial/Makoto records remain local and must be preserved.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-003",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "BOUNDS",
+            "role": "premise",
+            "step_id": "S-BOUNDS"
+          }
+        ],
+        "message": "premise BOUNDS は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 8,
+          "column": 3,
+          "text": "Commit only new V2 closeout handoff, its audit and sanitized CIreadback. Do not stage all dirtyfiles, reset, remove worktree, merge, tag, release or change shared worktimectl state. Product code/image unchanged. SingleWIPcommit/push with independentremoteSHA readback; preserve and inventory earlier uncommitted files. Broader canonicalPERTparent csm001/cm114 staysopen, followonproposal remainsownercontrolled.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      },
+      {
+        "issue_id": "ISSUE-004",
+        "category": "semantic_hint",
+        "severity": "hint",
+        "target_refs": [
+          {
+            "ref_id": "CLOSE",
+            "role": "decision",
+            "step_id": "S-CLOSE"
+          }
+        ],
+        "message": "decision CLOSE は 1 行の quoted text が長いため、block text に変えると読みやすい。",
+        "rationale": "長い本文は block text に寄せると、折り返し位置を意図的に表現でき、複数行本文との読み分けも安定する。",
+        "suggestion": "長い 1 行本文を block text へ分割し、意味の切れ目で改行する。",
+        "metadata": {
+          "line": 10,
+          "column": 3,
+          "text": "Create concrete continuation handoff with exactbranch/worktree/source/image/currentruntime, CIproof, completioncriteria, limitations, localunsynchronizedinventory and bounded nextcheck. Finish scopedWIPcommit/push/readback; finalstateclaims distinguish greena0e5CI from newhand offdocs-onlyCI. CurrentV2retirementfunctionalremaining0; userrequestedcloseoutremaining5-10internalminutes lowconfidence, broaderV3parentnotcomplete.",
+          "threshold": 85,
+          "syntax_help": "llmthink dsl help syntax detail",
+          "syntax_guidance": "長い本文は block text を使い、意味の切れ目で改行する。\n例:\nproblem P1:\n  |\n    1 行目の説明\n    2 行目の説明"
+        }
+      }
+    ],
+    "query_results": []
+  }
+}

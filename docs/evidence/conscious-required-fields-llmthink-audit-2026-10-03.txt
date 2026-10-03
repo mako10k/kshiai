@@ -1,0 +1,9 @@
+thought_id: docs-conscious-required-fields-rca-2026-10-03
+id_source: file
+status: draft
+draft: thoughts/docs-conscious-required-fields-rca-2026-10-03/draft.think
+latest_audit: thoughts/docs-conscious-required-fields-rca-2026-10-03/audits/2026-10-03T04-47-03.901Z.json
+next: reuse this thought_id with thought show/history/reflect/delete or dsl audit --id
+document: docs-conscious-required-fields-rca-2026-10-03
+engine: 0.1.0
+summary: fatal=0 error=0 warning=0 info=0 hint=0

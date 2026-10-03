@@ -1,0 +1,160 @@
+{
+  "scope": "Offline counterfactual replay; no provider calls, persistence, or inferred speech. Explicit null applied only to a copied initialGoal field to isolate the acceptance gate, not a proposed runtime fix.",
+  "battleId": "btl_e24ccddf1d8ec96b0073323f2bf256db",
+  "results": [
+    {
+      "turn": 2,
+      "side": "b",
+      "inputPhase": "turn",
+      "missingFields": [
+        "initialGoal",
+        "nextUtterance",
+        "realizedManifestation"
+      ],
+      "originalFailure": "goal_invalid",
+      "counterfactualGoalOnlyFailure": "action_invalid",
+      "counterfactualGoalOnlyAccepted": false,
+      "actionReason": "unavailable_instrument"
+    },
+    {
+      "turn": 4,
+      "side": "b",
+      "inputPhase": "turn",
+      "missingFields": [
+        "initialGoal",
+        "nextUtterance",
+        "realizedManifestation"
+      ],
+      "originalFailure": "goal_invalid",
+      "counterfactualGoalOnlyFailure": null,
+      "counterfactualGoalOnlyAccepted": true,
+      "actionReason": null
+    },
+    {
+      "turn": 6,
+      "side": "b",
+      "inputPhase": "turn",
+      "missingFields": [
+        "initialGoal",
+        "nextUtterance",
+        "realizedManifestation"
+      ],
+      "originalFailure": "goal_invalid",
+      "counterfactualGoalOnlyFailure": null,
+      "counterfactualGoalOnlyAccepted": true,
+      "actionReason": null
+    },
+    {
+      "turn": 7,
+      "side": "b",
+      "inputPhase": "turn",
+      "missingFields": [
+        "initialGoal",
+        "nextUtterance",
+        "realizedManifestation"
+      ],
+      "originalFailure": "goal_invalid",
+      "counterfactualGoalOnlyFailure": null,
+      "counterfactualGoalOnlyAccepted": true,
+      "actionReason": null
+    },
+    {
+      "turn": 8,
+      "side": "b",
+      "inputPhase": "turn",
+      "missingFields": [
+        "initialGoal",
+        "nextUtterance",
+        "realizedManifestation"
+      ],
+      "originalFailure": "goal_invalid",
+      "counterfactualGoalOnlyFailure": null,
+      "counterfactualGoalOnlyAccepted": true,
+      "actionReason": null
+    },
+    {
+      "turn": 9,
+      "side": "b",
+      "inputPhase": "turn",
+      "missingFields": [
+        "initialGoal",
+        "nextUtterance",
+        "realizedManifestation"
+      ],
+      "originalFailure": "goal_invalid",
+      "counterfactualGoalOnlyFailure": null,
+      "counterfactualGoalOnlyAccepted": true,
+      "actionReason": null
+    },
+    {
+      "turn": 11,
+      "side": "b",
+      "inputPhase": "turn",
+      "missingFields": [
+        "initialGoal",
+        "nextUtterance",
+        "realizedManifestation"
+      ],
+      "originalFailure": "goal_invalid",
+      "counterfactualGoalOnlyFailure": null,
+      "counterfactualGoalOnlyAccepted": true,
+      "actionReason": null
+    },
+    {
+      "turn": 13,
+      "side": "b",
+      "inputPhase": "turn",
+      "missingFields": [
+        "initialGoal",
+        "nextUtterance",
+        "realizedManifestation"
+      ],
+      "originalFailure": "goal_invalid",
+      "counterfactualGoalOnlyFailure": null,
+      "counterfactualGoalOnlyAccepted": true,
+      "actionReason": null
+    },
+    {
+      "turn": 14,
+      "side": "b",
+      "inputPhase": "turn",
+      "missingFields": [
+        "initialGoal",
+        "nextUtterance",
+        "realizedManifestation"
+      ],
+      "originalFailure": "goal_invalid",
+      "counterfactualGoalOnlyFailure": null,
+      "counterfactualGoalOnlyAccepted": true,
+      "actionReason": null
+    },
+    {
+      "turn": 15,
+      "side": "b",
+      "inputPhase": "turn",
+      "missingFields": [
+        "initialGoal",
+        "nextUtterance",
+        "realizedManifestation"
+      ],
+      "originalFailure": "goal_invalid",
+      "counterfactualGoalOnlyFailure": null,
+      "counterfactualGoalOnlyAccepted": true,
+      "actionReason": null
+    },
+    {
+      "turn": 16,
+      "side": "b",
+      "inputPhase": "turn",
+      "missingFields": [
+        "initialGoal",
+        "nextUtterance",
+        "realizedManifestation"
+      ],
+      "originalFailure": "goal_invalid",
+      "counterfactualGoalOnlyFailure": null,
+      "counterfactualGoalOnlyAccepted": true,
+      "actionReason": null
+    }
+  ]
+}

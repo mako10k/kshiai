@@ -20,6 +20,7 @@ process.env.DATABASE_URL = "";
 process.env.AUTH_PROVIDER = "legacy";
 process.env.DATABASE_PATH = join(directory, "test.db");
 
+const { saveHistoricalCharacterFixture } = await import("../testing/historical-character-fixtures.js");
 const { closeDatabase, query } = await import("../db.js");
 const repo = await import("./character-assets-v2.js");
 const characters = await import("./characters.js");
@@ -27,7 +28,7 @@ const {
   assetContentDigest,
   createAssetGeneration,
   getAssetGeneration,
-} = await import("./asset-generations.js");
+} = await import("../testing/historical-asset-generations.js");
 
 after(async () => {
   await closeDatabase();
@@ -393,7 +394,7 @@ describe("character authoring V2", () => {
 
   it("rolls back a stale revision candidate after concurrent pointer drift", async () => {
     const currentSheet = sheet("concurrent-pointer-v2");
-    await characters.saveSheet(currentSheet);
+    await saveHistoricalCharacterFixture(currentSheet);
     const original = await repo.getReadyCharacterGeneration(currentSheet.id);
     assert.ok(original);
     const sourceText = "表示名を構造子改へ更新する";
@@ -467,7 +468,7 @@ describe("character authoring V2", () => {
 
   it("excludes a pre-validator V2 generation until explicit update", async () => {
     const currentSheet = sheet("pre-validator-v2");
-    await characters.saveSheet(currentSheet);
+    await saveHistoricalCharacterFixture(currentSheet);
     const current = await repo.getReadyCharacterGeneration(currentSheet.id);
     assert.ok(current);
     const valid = CharacterGenerationEnvelopeV2Schema.parse(current.content);
@@ -519,7 +520,7 @@ describe("character authoring V2", () => {
       ["owner-v2", "owner-v2", "2026-08-13T00:00:00.000Z"],
     );
     const currentSheet = sheet("selectorless-v2");
-    await characters.saveSheet(currentSheet);
+    await saveHistoricalCharacterFixture(currentSheet);
     const current = await repo.getReadyCharacterGeneration(currentSheet.id);
     assert.ok(current);
     const historical = CharacterGenerationEnvelopeV2Schema.parse(current.content);

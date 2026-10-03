@@ -1,0 +1,74 @@
+{
+  "observedAt": "2026-10-02T10:58:23.125117+00:00",
+  "authority": "Owner goal item3 authorizes necessary production/staging/development deployments; item1 requires complete ordinary V2 write retirement; preserve explicit V3 migration exception and historical display",
+  "sourceSha": "fce86a53434f5561baa70fb567cd2196cb92ba17",
+  "imageDigest": "sha256:53a0388834ea44c8755ee3c089cc19da53e58c1732a6d94f89a2dd067a454f6c",
+  "cloudRun": {
+    "project": "kshiai",
+    "region": "asia-northeast1",
+    "service": "kshiai-api",
+    "currentPublicRevision": "kshiai-api-00141-vis",
+    "targetPublicRevision": "kshiai-api-v2-retired-fce86a5",
+    "trafficPercent": 100,
+    "maxWrites": 1,
+    "operation": "update-traffic --to-revisions=kshiai-api-v2-retired-fce86a5=100; preserve two preview tags and entire revision configuration"
+  },
+  "worker": {
+    "account": "aa22d9ebf49d126306d9aac2d842584d",
+    "name": "kshiai-web",
+    "currentPublicVersion": "5942f1cb-fd54-43c7-95df-51ae380df862",
+    "targetPublicVersion": "84fcfed4-05a9-404e-b836-e2eebeb584d3",
+    "trafficPercent": 100,
+    "maxWrites": 1,
+    "operation": "versions deploy 84fcfed4-05a9-404e-b836-e2eebeb584d3@100 with --yes; no new upload, route/secret/trigger/auth change",
+    "origin": "https://v2-retire-458af76---kshiai-api-crpgn6evfa-an.a.run.app",
+    "sourceProof": "All9existingWorker assets equal newlybuilt frontend fromfce86a5"
+  },
+  "observedImpact": "Canonical root200 oldassets; canonical APIhealth404 from missing oldtagstage-34201323064-1; CloudRun defaultpublic points old00141-vis. Candidatepreview healthy and9assets matched. Newpublic UI/API closes oldordinaryV2 path while retaining readings.",
+  "verification": [
+    "Fresh unchanged service/Worker baseline",
+    "READ ONLY DB no active authoring/provider/battle lease, CloudTasks empty",
+    "CI4 fce86a5 success,260currentauthority tests, independentwriterdelta audit no productbypass",
+    "Newdefaultbackend revision100 and previewtags unchanged",
+    "Canonical9asset hashes, X-Kshiai-Runtime Worker and APIhealth newrevision",
+    "Worker bindings preserved, Supabase allow-list and config unchanged",
+    "No reachable oldrevision traffic or tags; historical data retained"
+  ],
+  "recovery": "Do not silently restore V2-capable old code. Preserve previous artifacts; failed/ambiguous cutover triggers read-only diagnosis. Correct using already verified V3-only candidate/config; any rollback to V2-capable source requires separate owner instruction. Each external mutation executed at most once; read back before retry.",
+  "excluded": [
+    "Character migration or delete",
+    "DB schema/data repair",
+    "Paid LLM calls",
+    "Provider activation",
+    "Merge/release/tag",
+    "GCPjob execution/update",
+    "Cloudflareauth/route changes"
+  ],
+  "internalEstimateMinutes": [
+    15,
+    30
+  ],
+  "confidence": "low",
+  "goalComplete": false,
+  "replacesUnexecutedCandidate": {
+    "sourceSha": "09e9efab04c2e72a05f2472757bda643b03dbdfa",
+    "revision": "kshiai-api-v2-actions-09e9efa",
+    "publicWrites": 0
+  },
+  "ciRun": 36997454018,
+  "pendingGates": [],
+  "actuals": {
+    "publicCutoverPreparationStartedAt": "2026-10-02T10:58:23.125117+00:00",
+    "canonicalTaskId": null,
+    "canonicalActualsRecorded": false,
+    "reason": "Newfollow-on taskproposal not accepted in owner-controlled canonical PERT; no inferred/backfilled effort"
+  },
+  "gatesVerifiedAt": "2026-10-02T11:01:25.910763+00:00",
+  "verifiedGates": [
+    "Bothpreviewtags fce86 Ready/healthy",
+    "Independentwriter/transition delta review with no blockers",
+    "Freshread-onlyDB/queue emptywork",
+    "PublicWorker5942@100 unchanged; Run00141-vis@100 unchanged",
+    "Authconfig full equality and new9frontendfiles equalWorker84fc"
+  ]
+}

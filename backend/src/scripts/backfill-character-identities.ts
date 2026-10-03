@@ -1,3 +1,5 @@
+// R: Backfill identity metadata only for current V3 characters.
+import { assertCharacterV3UpdateTarget } from "../services/character-update-policy.js";
 import { createLlmProvider } from "../llm/index.js";
 import {
   listSheetsMissingIdentity,
@@ -16,6 +18,8 @@ if (!apply) {
 const llm = createLlmProvider();
 let updated = 0;
 for (const sheet of sheets) {
+  try { await assertCharacterV3UpdateTarget(sheet.id); }
+  catch { console.info(`[identity-backfill] skipped read-only legacy character ${sheet.id}`); continue; }
   const identity = await llm.inferCharacterIdentity(sheet);
   await saveSheet({
     ...sheet,

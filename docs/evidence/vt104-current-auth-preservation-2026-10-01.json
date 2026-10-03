@@ -1,0 +1,19 @@
+{
+  "observedAt": "2026-10-01T11:08:43.224001+00:00",
+  "sourceHead": "72f67eaebe05d5acc0df3af9c531f17559b10c4c",
+  "objective": "V3 user experience; preserve current authentication unless necessary",
+  "tests": {
+    "command": "node --import tsx --test backend/src/services/supabase-identity.test.ts frontend/src/authenticated-fetch.test.ts infra/cloudflare-worker/src/index.test.ts",
+    "passed": 8,
+    "failed": 0,
+    "limits": "local boundary tests; no actual Google login or deployed V3 proof"
+  },
+  "observations": [
+    "auth.tsx derives OAuth callback from current browser origin",
+    "AuthCallbackPage exchanges PKCE code through same Supabase project",
+    "Worker API proxy preserves authorization and forwards through existing origin secret",
+    "same-origin Worker path alone does not establish need for CORS config change"
+  ],
+  "necessaryCandidate": "Exact preview callback allowlist addition after actual preview URL is known; current Google/Supabase provider unchanged",
+  "externalWrites": 0
+}

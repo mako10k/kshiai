@@ -10,7 +10,7 @@ process.env.DATABASE_URL = "";
 process.env.AUTH_PROVIDER = "legacy";
 process.env.DATABASE_PATH = join(temporaryDirectory, "inventory.db");
 const { runInventory, PRIVATE_GOAL, INVENTORY_UTTERANCE } = await import("./character-agency-inventory.fixtures.js");
-const { saveBattle, getBattle } = await import("../repositories/battles.js");
+const { insertNewBattle, saveBattle, getBattle } = await import("../repositories/battles.js");
 const { closeDatabase } = await import("../db.js");
 const { toBattlePublic } = await import("./battle-service.js");
 
@@ -94,7 +94,7 @@ describe("CA-00 existing agency boundary inventory (not model quality)", () => {
     assert.equal(run.provider.expressionOutputs[0]?.state.currentGoal, "");
     assert.equal(run.result.state.agentStateA?.currentGoal, PRIVATE_GOAL);
     const metadata = { sideAUserId: "inventory-owner", sideACharacterId: "a", sideBCharacterId: "b", expectedRevision: 0 };
-    await saveBattle(run.result.state, metadata);
+    await insertNewBattle(run.result.state, metadata);
     const loaded = await getBattle(run.result.state.id);
     assert.ok(loaded);
     assert.equal(loaded.agentStateA?.currentGoal, PRIVATE_GOAL);

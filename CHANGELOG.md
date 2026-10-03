@@ -5,6 +5,45 @@ based on Keep a Changelog, and releases follow Semantic Versioning.
 
 ## [Unreleased]
 
+## [0.23.0] - 2026-09-30
+
+### Added
+
+- Fixed Neva/Rio V3 candidates use the normal candidate review, exact digest
+  confirmation and immutable activation path. Their Stage registration and
+  owner content acceptance remain separate.
+- V3 battles bind both immutable character generations, compiler inputs and
+  dialogue/assets to the battle snapshot across advance, replay and narration.
+
+### Changed
+
+- New battles require two ready V3 characters compatible with battle-mechanics
+  version 3. V2 characters remain manageable but cannot create new battles.
+  This is an intentionally incompatible pre-1.0 participation change.
+- Battle inserts and revision-fenced updates are separate. A stopped cutover
+  physically deletes pre-cutover unfinished battles and dependent payloads,
+  retains finished history and generations, and fences old creation retries
+  with minimal discard receipts.
+
+### Fixed
+
+- Plain-text V3 revision instructions can be reviewed against their exact
+  baseline generation without failing JSON parsing.
+- Provider accounting retains usage from late/discarded narration outcomes.
+
+### Operations
+
+- Adds forward-only migration `0029_battle_discard_receipts.sql`. Physical
+  deletion requires exact target approval, stopped writers, a recoverable
+  snapshot and independent readback. Application rollback does not restore
+  deleted battles or downgrade the database.
+- The existing Stage workflow lacks the accepted stopped-cutover controls and
+  still runs V2 battle fixtures. It is not eligible for this candidate until
+  those controls and the real resource/database boundaries are reviewed.
+- This section is candidate metadata: no release tag, artifact promotion,
+  Stage deployment or production acceptance has occurred. Narration Fragment
+  ADR-0038 remains Proposed and is not accepted by publishing this candidate.
+
 ## [0.22.0] - 2026-09-06
 
 ### Added

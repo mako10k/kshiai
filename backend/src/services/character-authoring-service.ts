@@ -1,20 +1,14 @@
+/** R: Enforce the retained compatibility boundary for legacy character authoring. */
+import { candidateToSheet, type CharacterAuthoringCandidate } from "./character-authoring-candidate.js";
 import {
-  AssetPublicPresentationV2Schema,
   CharacterGenerationEnvelopeV2Schema,
   CHARACTER_PROFILE_CLAIM_VALIDATOR_CONTRACT,
   REQUIRED_CHARACTER_COMPILERS_V2,
   balanceCharacterCombatFields,
   coalesceNonEmptyList,
-  characterDefinitionV2ToLegacySheet,
   defaultCharacterDisclosurePolicyV2,
-  defaultRecord,
   legacyCharacterSheetToDefinitionV2,
-  listCharacterDefinitionGapsV2,
-  normalizeCharacterDefinitionV2,
-  prepareLegacyCharacterDefinitionGenerationV2,
   projectCharacterProfileSourceV2,
-  validateCharacterProfileClaimAssessmentV2,
-  validateCharacterPublicPresentationV2,
   type AssetAuthoringAttemptStatus,
   type CharacterGenerationEnvelopeV2,
   type CharacterSheet,
@@ -33,14 +27,12 @@ export function sheetFromAuthoringCandidate(input: {
   ownerUserId: string;
   createdAt: string;
   updatedAt: string;
-  candidate: CharacterGenerationEnvelopeV2;
+  candidate: CharacterAuthoringCandidate;
   existing?: CharacterSheet | null;
 }): CharacterSheet {
-  return characterDefinitionV2ToLegacySheet({
+  return candidateToSheet(input.candidate, {
     characterId: input.characterId,
     ownerUserId: input.ownerUserId,
-    definition: input.candidate.definition,
-    publicPresentation: input.candidate.publicPresentation,
     createdAt: input.existing?.createdAt ?? input.createdAt,
     updatedAt: input.updatedAt,
     previousImageUrl: input.existing?.appearance.previousImageUrl,
@@ -187,159 +179,5 @@ export async function buildCharacterGenerationCandidate(input: {
   previewSheet: CharacterSheet;
   assistantMessage: string;
 }> {
-  const now = new Date().toISOString();
-  const keepLegacyBlurb = input.sourceKind === "upgrade_description";
-  const balanced = balanceCharacterCombatFields({
-    ...input.generated.sheet,
-    // Create/revision discard the first-stage public blurb so profile prose is
-    // derived only after structure. Upgrade keeps the existing blurb as the
-    // deterministic expressionNotes source.
-    narrativeBlurb: keepLegacyBlurb
-      ? (input.existing?.narrativeBlurb || input.generated.sheet.narrativeBlurb || "")
-      : "",
-  });
-  const temporary: CharacterSheet = {
-    ...balanced,
-    id: input.characterId,
-    ownerUserId: input.ownerUserId,
-    createdAt: input.existing?.createdAt ?? now,
-    updatedAt: now,
-    deletedAt: input.existing?.deletedAt ?? null,
-    record: input.existing?.record ?? defaultRecord(),
-    recordOverall: input.existing?.recordOverall,
-    improvementMemo: input.existing?.improvementMemo,
-    opponentMemories: input.existing?.opponentMemories,
-    visibility: input.existing?.visibility ?? "public",
-  };
-  const prepared = prepareLegacyCharacterDefinitionGenerationV2(temporary);
-  const baseDefinition = prepared.baseDefinition;
-  // Only persisted principles are prior owner-approved source material. The
-  // first-stage generator may emit prose principles, but create/revision
-  // structure is derived from sourceText instead of elevating intermediate
-  // output into authority.
-  const unstructuredActionNormSources = input.existing?.decisionProfile?.principles ?? [];
-  await input.reportStatus?.("generating_structure");
-  const generatedDefinition = await input.llm.generateCharacterDefinitionV2({
-    sourceText: input.sourceText,
-    baseDefinition,
-    unstructuredActionNormSources,
-    sourceKind: input.sourceKind,
-  });
-  await input.reportStatus?.("validating_structure");
-  const firstPass = normalizeCharacterDefinitionV2({
-    base: baseDefinition,
-    candidate: generatedDefinition,
-    sourceKind: input.sourceKind,
-  });
-  const review = await input.llm.reviewCharacterDefinitionV2({
-    sourceText: input.sourceText,
-    sourceKind: input.sourceKind,
-    baseDefinition,
-    unstructuredActionNormSources,
-    candidate: firstPass.definition,
-    gaps: listCharacterDefinitionGapsV2(baseDefinition),
-    findings: firstPass.findings,
-  });
-  let definition = firstPass.definition;
-  let findings = firstPass.findings;
-  if (review.verdict === "revise" && review.fill) {
-    const corrected = normalizeCharacterDefinitionV2({
-      base: baseDefinition,
-      candidate: definition,
-      sourceKind: input.sourceKind,
-      fill: review.fill,
-    });
-    definition = corrected.definition;
-    findings = corrected.findings;
-  }
-  if (findings.length > 0) {
-    throw new Error(
-      `${CHARACTER_DEFINITION_CHECK_FAILED}:${findings.map((finding) => finding.code).join(",")}`,
-    );
-  }
-  const disclosurePolicy = defaultCharacterDisclosurePolicyV2(definition);
-  const projection = projectCharacterProfileSourceV2(
-    definition,
-    disclosurePolicy,
-  );
-  await input.reportStatus?.("generating_description");
-  const generatedProfile = await input.llm.generateCharacterProfile({
-    sourceText: input.sourceText,
-    projection,
-  });
-  const projectionDigest = assetContentDigest(projection);
-  const descriptionInputDigest = assetContentDigest({
-    sourceDigest: assetContentDigest(input.sourceText),
-    projectionDigest,
-  });
-  const profileDraft = validateCharacterPublicPresentationV2(
-    projection,
-    AssetPublicPresentationV2Schema.parse({
-      description: generatedProfile.segments
-        .map((segment) => segment.text)
-        .join("\n\n"),
-      projectionContractVersion: 2,
-      projectionDigest,
-      descriptionInputDigest,
-      segments: generatedProfile.segments,
-    }),
-  );
-  await input.reportStatus?.("validating_description");
-  const claimAssessment = await input.llm.validateCharacterProfileClaims({
-    projection,
-    profile: {
-      description: profileDraft.description,
-      segments: profileDraft.segments,
-    },
-  });
-  const publicPresentation = validateCharacterProfileClaimAssessmentV2(
-    projection,
-    profileDraft,
-    {
-      contractVersion: 1,
-      validatorContract: CHARACTER_PROFILE_CLAIM_VALIDATOR_CONTRACT,
-      projectionDigest,
-      segments: claimAssessment.segments,
-    },
-  );
-  const envelope = CharacterGenerationEnvelopeV2Schema.parse({
-    envelopeVersion: 2,
-    definitionSchema: { family: "character", version: 2 },
-    definition,
-    disclosurePolicy,
-    publicPresentation,
-    provenance: {
-      sourceKind: input.sourceKind,
-      sourceDigest: assetContentDigest(input.sourceText),
-      attemptId: input.attemptId,
-      structureGeneratorContract: CHARACTER_STRUCTURE_GENERATOR_CONTRACT,
-      descriptionGeneratorContract: CHARACTER_DESCRIPTION_GENERATOR_CONTRACT,
-    },
-    compilerCompatibility: [...REQUIRED_CHARACTER_COMPILERS_V2],
-  });
-  const previewSheet = characterDefinitionV2ToLegacySheet({
-    characterId: input.characterId,
-    ownerUserId: input.ownerUserId,
-    definition,
-    publicPresentation,
-    createdAt: input.existing?.createdAt ?? now,
-    updatedAt: now,
-    previousImageUrl: input.existing?.appearance.previousImageUrl,
-    operational: input.existing
-      ? {
-          visibility: input.existing.visibility,
-          record: input.existing.record,
-          recordOverall: input.existing.recordOverall,
-          improvementMemo: input.existing.improvementMemo,
-          opponentMemories: input.existing.opponentMemories,
-          deletedAt: input.existing.deletedAt,
-          revisionSnapshot: input.existing.revisionSnapshot,
-        }
-      : undefined,
-  });
-  return {
-    envelope,
-    previewSheet,
-    assistantMessage: `${input.generated.assistantMessage}\n${generatedProfile.assistantMessage}`,
-  };
+  throw new Error("LEGACY_CHARACTER_AUTHORING_RETIRED");
 }

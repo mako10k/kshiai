@@ -1,6 +1,7 @@
 # ADR-0010: Use a common immutable envelope for selectable assets
 
 - Status: Accepted
+- Limited supersession (2026-09-29): [ADR-0039 D4](0039-v3-battle-lifecycle-and-cutover.md#d4-過去adrとの関係) replaces only the existing-battle preservation/read clauses for the R3 pre-cutover unfinished set. Authoring and finished-history obligations remain Accepted. [Owner record](../evidence/cc319-owner-acceptance-2026-09-29.md).
 - Date: 2026-08-13
 - Decision owner: Product owner
 - Supersedes: ADR-0003

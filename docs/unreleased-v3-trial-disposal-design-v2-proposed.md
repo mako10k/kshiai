@@ -1,0 +1,69 @@
+# 初回V3試行の処分準備 — 詳細設計v2候補
+
+状態: Accepted（ローカル修正・試験のみ）、2026-10-01。所有者のゴール「V3でのユーザ体験を早期に実現する。現行の認証から必要性がない限り変更はしない」に対応する差分。所有者はsnapshot識別子必須・receipt table未作成/作用順の不整合を引用して「承認します。」と明示した。Accepted詳細設計v1を上書きしない。本資料はそのBの処分経路とreceipt schema前提を具体化する。認証方式、公開API、V3参加資格、不変bindingは変更対象外。
+
+## 根拠・現在の判断対象
+
+要件revision3 R3は旧unfinished物理削除を継承しsnapshotを開始条件にしない。R4は全DB/finished/Googleユーザ削除を許可しない。R5は新V3の実ユーザ経路証拠を要求し、既存認証/所有権/秘密保護/会計を維持する。ADR0042の決定は通常の認証済previewと旧処理停止を採用する。詳細設計v1 Bは正規cutover repository経路、Cは必要forward migrationを定める。
+
+INSIDE: snapshot必須を初回試行だけに適用しない入口、処分前に必要なreceipt tableだけを用意する順序、exact対象freeze/再照合/結果readback、completed entryのfinished outbox完了会計、local変更file set。
+OUTSIDE: 実18対戦の削除承認、shared writer/tag/queue停止、実配備、callback設定追加、provider予算、ownerログイン/ゲーム証拠。これらは後続のexact実行packetへ渡す。
+BOUNDARY_DISPUTE: v1の受入file setにはbackend修正がないため、本差分のlocal実装は今回の所有者承認に基づく。snapshot延期自体を再承認する依頼ではない。
+
+## 現実装の直接観測
+
+battle-cutover.tsのdiscardBattleCutoverは非空recoverySnapshotIdentityとstopped/operatorIdを要求する。planDigest/current inventory照合、dependent7table/matching idempotency削除、receipt挿入、関連generating/activeの終端化、finished state照合がある。receipt tableは0029で作る。実DBで0029はpendingでtableなし。workflow deployはunfinished/outbox0をmigration前に要求する。よって現schemaのままv1順序では処分できない。
+
+既存cutover-control CLIはinitialize/read/transition/barrier/reconcile専用であり、trial準備CLIを追加することを八receipt制御の新例外へ読み替えない。battle-cutover moduleの非test importerは現時点で見つからなかったが、moduleの変更はsource manifest上の差分となる。未配備でも既存RCと同一sourceとは扱わない。
+
+## 推奨する責務と入口
+
+1. battle-cutover.ts: frozen旧unfinished集合の処分とreceipt/replay照合を保持する。既存discardBattleCutoverのsignatureとsnapshot必須条件は保存する。新入口discardUnreleasedTrialCutoverを追加し、用途を初回未リリース試行に限定する。private共通処分coreへdelegateし、削除アルゴリズムをコピーしない。
+2. 新repositories/unreleased-trial-preparation.ts: exact finished outbox完了会計とtrial処分を一つのtransactionにまとめる。finished outboxの変更理由は配信完了会計なので通常narration workerへ初回処分分岐を混入しない。existing battle-cutover coreをtransaction内で利用できる狭いinternal contractへ整理する。
+3. 新scripts/prepare-unreleased-v3-trial.ts: 明示target/plan/policy/停止receiptを入力してpreview/apply/readbackを行うoperator入口。HTTP routeやdaemonへ登録せず、DB defaultへ黙って接続しない。DB connection secretは既存credential経路で渡し、標準出力はcredential-free receiptのみ。
+
+全変更moduleにR責務コメント。shared battle/world/publicDTOを変えず、型escapeを追加しない。CLI用strict Zod schemaをplan typeと対応させ、unknownから検証済型へparseする。type castで検証を飛ばさない。
+
+## 入力contract候補
+
+- policy: kind=unreleased-initial-v3-trial、ownerDecisionIdentity（本差分受入とexact処分許可の実identity）、stoppedAt/expiresAt/oldWritersClosedReceiptId。非空だけで現writer閉鎖を証明したとは扱わず、operatorが独立readbackした停止条件へ対応付ける。
+- frozen plan: cutoverId/cutoverAt/targets(id,stateDigest)/finished(id,stateDigest)/relatedCounts/inventoryDigest/planDigest。既存algorithmと同じJSON投影・SHA256・ID順を維持。
+- finished outbox: outboxId/battleId/receiptId/deliveryGeneration/expectedStatus/entryDigest。既存BattleCutoverPlanはこれを含まないので、trial専用planの同一digest投影にこの集合を含め、readback/replayも照合する。別JSONを無関連に渡さない。対象はfinished battleかつentry completedに限定。terminal row、finished battleのstateは変更しない。
+- maximumEffect: receipt table作成最大1、targets18件を上限とするexact集合、finished outbox14件を上限とするexact集合、dependent/idempotency個別count。現在の18/14は観測候補であり、停止後freezeで一致することと別のexact許可が必要。
+- explicit database target: existing connection secret identity/versionとexpected project/schemaを照合。SQLite rehearsalはexplicit disposable pathだけ。Supabaseユーザ/secret/API authにwriteしない。
+
+入力のplan/policy/raw bytes digest、承認範囲と対象数、停止期限、DB identityはwrite前に照合する。previewは読み取り専用でschemaを作らない。
+
+## transactionの順序
+
+A. apply入口で実停止receipt/期限/target identityを検証。BEGIN後にfrozen集合と現関連row/finished outboxを再照合し、writersの実停止を外側で検証した条件に結び付ける。table lockまたは対応するfencingを詳細実装時に選び、同transaction中に他writerで対象が変わる条件を封じる。未知writerが残る場合は適用しない。
+
+B. 同transactionで既存0029 migration assetのbyte/hashを検証してreceipt table DDLだけを用意する。SQLをコピーして別管理しない。既存tableがある場合はcolumn/primary key contractを照合し、未知schemaをALTERして合わせない。DDLは初回trialのapply経路だけ、一般runtime cold startへ移さない。migration台帳は書かず、後の正式0029 IF NOT EXISTS＋checksum登録は既存migration経路で行う。0026–0030全forward migrationはその後の既存deploy preflightに残す。
+
+C. legacy snapshot入口は従来前提を検証してから同coreを使う。trial入口は明示policyの成立を検証し、fake snapshot値を作らず同coreを使う。18対象のreceipt/dependent/idempotency削除とactive/generating終端化、battle削除を既存責務で行う。finished168 stateは既存hash照合を保持するが、旧画面の可読性保証は追加しない。
+
+D. finished14 outboxはexactID/receipt/deliveryGeneration/旧status/entry completed/finished stateを照合しcompletedへ変更。finished entry/presentation/attempt/provider会計は書き換えない。active由来8 outboxは対戦処分とともに消す。新provider呼出し・task送信を行わない。
+
+E. 対象battle/dependent/idempotency残0、receipt exact18、finished state同一、finished outboxexact14completed、unfinished/provider/authoring残0を読む。COMMITして独立connectionで再readbackする。any mismatchはtransaction rollbackして作用対象を広げない。
+
+同一cutover/同一planの再読取りで既適用を認識する。異なるtarget/receipt/digestを再送したら拒否する。応答欠落時は独立readbackし、再applyを自動実行しない。receipt table作成を含めた失敗時のDDL rollbackはPostgreSQL実試験で証明する。
+
+## 検証計画と変更file set
+
+候補file set: 本資料、backend/src/repositories/battle-cutover.ts、backend/src/repositories/battle-lifecycle-storage.test.ts、新backend/src/repositories/unreleased-trial-preparation.tsと同.test.ts、新backend/src/scripts/prepare-unreleased-v3-trial.tsと同.test.ts、証跡/正本PERT。testsはruntime契約の差分とoperator作用を検証し、既存test inventoryの必要登録を変更集合へ含める。db.ts/config/auth/HTTP/Worker/既存migration本文は変更しない。
+
+検証はexplicit disposable PostgreSQLで未適用0029状態からpreview無write→apply receipt bootstrap→exact処分/会計→再readback/replayまでを行う。失敗caseは期限切れ/停止receipt欠落/plan改竄/target増加/state変更/outbox generation不一致/未完了entry/table契約不一致を含む。いずれも変更0を証明。旧snapshot入口の欠落拒否と成功は既存testsを維持する。新provider/task実行なし、finished/ユーザ不変を差分で確認。npm test/typecheck/static/buildを現sourceで確認する。
+
+局所SQLite成功だけでSupabase処分成功を主張しない。実DBへのschema/処分writeは上記testsと別承認。本修正がruntime source集合へ入る場合、現v0.23.0-rc.1を移動せず、新SHAのCI/新RC/prepareを行う。operator-only新bundleと現runtimeimageを分離する場合にもexact双方identityを新実行packetへ明示し、4f3 imageに新operatorが含まれると主張しない。
+
+## 認証・利用者経路と判断
+
+現行Google→Supabase OAuth→PKCE code exchange→既存subject mapping→所有権を維持する。frontend auth.tsxはwindow.location.origin/auth/callbackをredirectToへ設定する。preview callback実URLは現在のallowlistにないため、実preview取得後そのexactcallbackだけを追加する候補を別提示する。Google provider/client/key/issuer/audience/mappingを変える必要性は観測されていない。
+
+Workerは同origin /apiをproxyする。browser same-originの成功をcross-origin CORS設定が必要という根拠にしない。CORS変更は現時点で候補から外し、実ブラウザで拒否を観測した場合にexactoriginと必要性を提示する。公開callback/既存設定は維持。
+
+利点は不要なsnapshotを戻さず既存処分algorithmを使えること。費用は明示operator経路・schema bootstrapの検証と、source変更時の再CI/prepare。リスクはexact18旧unfinished削除が不可逆であること、実停止/未知writer条件とPostgreSQLtransaction検証が揃うまで適用できないこと。代替snapshot作成は既決延期方針に反するため非推奨。全DB resetやauth方式変更は今回の候補に含めない。
+
+所有者判断: この差分のローカル修正・試験を許可済み。外部停止/DB処分/配備/認証設定/有料操作は含めず、exact実行packetを次に提示する。追加内部工数0.5〜1.5 agent h、確信度低。現V3体験価値は未実現0で、実試用の工程を成立させる将来寄与である。
+
+独立read-only review: snapshotなし入口、finished outbox集合のplan digestへの追加、0029と同一DDLのtransaction bootstrap、operator/sourceとpreparedimageのidentity分離を必要事項として確認。所有者の受入・実処分許可を代行するreviewではない。

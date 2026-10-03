@@ -12,13 +12,13 @@ const temporaryDirectory = mkdtempSync(join(tmpdir(), "kshiai-agency-state-"));
 process.env.DATABASE_URL = "";
 process.env.AUTH_PROVIDER = "legacy";
 process.env.DATABASE_PATH = join(temporaryDirectory, "state.db");
+const { saveHistoricalCharacterFixture } = await import("../testing/historical-character-fixtures.js");
 const { createInventoryFixture } = await import("./character-agency-inventory.fixtures.js");
 const { createConsciousFixture } = await import("./conscious-agency.fixtures.js");
 const { MockLlmProvider } = await import("../llm/mock.js");
-const { saveBattle, getBattle } = await import("../repositories/battles.js");
+const { insertNewBattle, saveBattle, getBattle } = await import("../repositories/battles.js");
 const { closeDatabase, query } = await import("../db.js");
 const { toBattlePublic, advanceCharacterAgents, startBattle, advanceTurn } = await import("./battle-service.js");
-const characterRepo = await import("../repositories/characters.js");
 const settingsRepo = await import("../repositories/dialogue-pipeline-settings.js");
 const { ensureSystemNarrationStyles } = await import("../repositories/narration-styles.js");
 
@@ -28,12 +28,12 @@ after(async () => {
 });
 
 describe("ADR-0028 private agency state persistence", () => {
-  it("creates and advances a real bound V3 battle with no psyche LLM calls", async () => {
+  it("keeps retired legacy characters blocked from new battle creation", async () => {
     const fixture = createConsciousFixture();
     await query(`INSERT INTO users (id, username, password_hash, created_at) VALUES ($1, $2, $3, $4)`,
       ["inventory-owner", "agency-owner", "test", new Date().toISOString()]);
-    await characterRepo.saveSheet(fixture.mine);
-    await characterRepo.saveSheet(fixture.opp);
+    await saveHistoricalCharacterFixture(fixture.mine);
+    await saveHistoricalCharacterFixture(fixture.opp);
     await ensureSystemNarrationStyles();
     await settingsRepo.updateDialoguePipelineSettings({ userId: "inventory-owner", patch: {
       ...fixture.settings, schemaVersion: 3, expectedRevision: 0,
@@ -47,21 +47,12 @@ describe("ADR-0028 private agency state persistence", () => {
       consciousCalls += 1;
       return original(input);
     };
-    const created = await startBattle({ userId: "inventory-owner", battleId: "agency-created-v3",
-      myCharacterId: fixture.mine.id, opponentCharacterId: fixture.opp.id, battlefieldMode: "random", llm });
-    const initial = await getBattle(created.id);
-    assert.equal(initial?.assetManifest?.schemaVersion, 3);
-    assert.equal(initial?.agentStateA?.consciousAgencyV1?.upperGoal, null);
-    assert.equal(initial?.agentStateA?.currentGoal, "");
-    for (let step = 1; step <= 4; step += 1) {
-      await advanceTurn({ userId: "inventory-owner", battleId: created.id, operationId: `agency-step-${step}`, llm });
-    }
-    const final = await getBattle(created.id);
-    assert.ok(final?.agentStateA?.consciousAgencyV1?.upperGoal);
-    assert.ok(consciousCalls >= 4);
-    assert.equal(final.dialoguePipelineSnapshot?.schemaVersion, 3);
-    assert.equal(final.assetManifest?.characters.a.compilerInputsV2, undefined);
-    assert.ok(final.assetManifest?.characters.a.compilerInputsV3);
+    // ADR-0039 retires legacy characters from new creation; the next tests
+    // exercise historical V3 persistence directly without changing that gate.
+    await assert.rejects(startBattle({ userId: "inventory-owner", battleId: "agency-created-v3",
+      myCharacterId: fixture.mine.id, opponentCharacterId: fixture.opp.id, battlefieldMode: "random", llm }), /MY_CHARACTER_V3_CAPABILITY_BLOCKED/);
+    assert.equal(await getBattle("agency-created-v3"), null);
+    assert.equal(consciousCalls, 0);
   });
   it("runs V3 service acceptance, SQLite reload, second judgment and stale-save rejection together", async () => {
     const fixture = createConsciousFixture();
@@ -70,7 +61,7 @@ describe("ADR-0028 private agency state persistence", () => {
     const first = await advanceCharacterAgents({ llm, before: fixture.state, after: structuredClone(fixture.state),
       mine: fixture.mine, opp: fixture.opp, events: [], actions: [], activeSides: ["a"], dialoguePipeline: fixture.settings, phase: "prologue" });
     const metadata = { sideAUserId: "inventory-owner", sideACharacterId: "a", sideBCharacterId: "b", expectedRevision: 0 };
-    await saveBattle(first.state, metadata);
+    await insertNewBattle(first.state, metadata);
     const loaded = await getBattle(first.state.id);
     assert.ok(loaded?.agentStateA?.consciousAgencyV1?.upperGoal);
     assert.equal(loaded.assetManifest?.schemaVersion, 3);
@@ -106,7 +97,7 @@ describe("ADR-0028 private agency state persistence", () => {
     const metadata = {
       sideAUserId: "inventory-owner", sideACharacterId: "a", sideBCharacterId: "b", expectedRevision: 0,
     };
-    await saveBattle(state, metadata);
+    await insertNewBattle(state, metadata);
     const loaded = await getBattle(state.id);
     assert.ok(loaded?.agentStateA?.consciousAgencyV1);
     assert.deepEqual(loaded.agentStateA.consciousAgencyV1, first.state);

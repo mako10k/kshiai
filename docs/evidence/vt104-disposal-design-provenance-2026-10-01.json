@@ -1,0 +1,54 @@
+[
+  {
+    "args": [
+      "add",
+      "decision/vt104-disposal-owner-20261001",
+      "--content-file",
+      "docs/evidence/vt104-disposal-design-owner-acceptance-2026-10-01.json",
+      "--bind-source",
+      "--root",
+      "--clear-cause-links"
+    ],
+    "output": "CANDIDATE decision/vt104-disposal-owner-20261001 content=f6ced333d478fac152a24b3e18445d3226640beea42e08a7b4500bc4e71923ff cause_links=0 root=true draft=false source_mode=explicit-file source_path=\"docs/evidence/vt104-disposal-design-owner-acceptance-2026-10-01.json\" source_binding=BOUND next_source=ready"
+  },
+  {
+    "args": [
+      "seal",
+      "decision/vt104-disposal-owner-20261001"
+    ],
+    "output": "SEALED decision/vt104-disposal-owner-20261001 d338700e803a428ad4ff0ba1754798ace7f69ca04d25df8bcb971570d000a591 operation=c258f8091f533f13c3837331d2cf1055"
+  },
+  {
+    "args": [
+      "add",
+      "design/vt104-trial-disposal-v2-20261001",
+      "--content-file",
+      "docs/unreleased-v3-trial-disposal-design-v2-proposed.md",
+      "--bind-source",
+      "--non-root",
+      "--target",
+      "decision/vt104-disposal-owner-20261001",
+      "--no-previous"
+    ],
+    "output": "CANDIDATE design/vt104-trial-disposal-v2-20261001 content=792ea237c640c64abef9096c63b068333cc87a14dcc44a38715979969bd544ba cause_links=1 root=false draft=false source_mode=explicit-file source_path=\"docs/unreleased-v3-trial-disposal-design-v2-proposed.md\" source_binding=BOUND next_source=ready"
+  },
+  {
+    "args": [
+      "link",
+      "design/vt104-trial-disposal-v2-20261001",
+      "--target",
+      "adr/0042-unreleased-v3-trial-scope",
+      "--no-previous",
+      "-m",
+      "Accepted initial-trial snapshot deferral; exact local correction authorized separately."
+    ],
+    "output": "CANDIDATE design/vt104-trial-disposal-v2-20261001 cause_links=2"
+  },
+  {
+    "args": [
+      "seal",
+      "design/vt104-trial-disposal-v2-20261001"
+    ],
+    "output": "SEALED design/vt104-trial-disposal-v2-20261001 a67fc8b533e7e5ac730ed8dfea09059e6c36a40ffd1bfb9b99e83cd2e0a5ddf6 operation=1c772b0a7036f4e4b68d8b9b5d7aefb2"
+  }
+]

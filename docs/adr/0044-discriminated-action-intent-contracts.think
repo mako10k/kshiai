@@ -1,0 +1,35 @@
+domain ADR0044:
+  description "ADR-0044 revision 1: discriminate complete action intents by kind. Status Superseded by ADR-0045; original rationale retained."
+
+problem P1:
+  "The deployed fallback constructs kind-only free actions. Runtime validation rejects missing description and subjectRefs, but the inferred optional-field type permits construction. Reflect and action reprojection have the same structural risk."
+
+evidence INCIDENT:
+  "The 2026-10-02 bounded production log and read-only battle inspection are recorded in docs/evidence/battle-advance-error-analysis-2026-10-02.md. Extracting the deployed fallback reproduces the two free-action validation errors locally."
+
+evidence CONTRACT:
+  "Existing CharacterActionIntent validation requires free-action description and nonempty subjectRefs, and reflect analysis and guideline. ADR-0021 closes repaired contract paths; ADR-0028 requires typed boundary acceptance."
+
+evidence OWNER_ACCEPTANCE:
+  "In this session the owner approved implementing the explained kind-discriminated action-intent contract with the instruction: では、それを対応しましょう。類似対応箇所を挙げて. This authorizes that representation repair and related construction paths, not deployment or new game rules."
+
+premise OPTIONS:
+  "Keep optional fields plus refinements; maintain a separate TypeScript union; or derive the static union from discriminated Zod branches. The last option avoids independent authoritative definitions."
+
+premise BOUNDS:
+  "Preserve valid wire objects, fixed battle assets, skill feasibility checks, and external JSON validation. Ground fallback free actions in existing observable affordance preparation descriptions and references. Preserve existing null/wait handling when no complete candidate exists. Separate capability listing from intent synthesis."
+
+decision D1 based_on P1, INCIDENT, CONTRACT, OPTIONS:
+  "Derive CharacterActionIntent, BattleAction and ResolvedBattleAction from the same kind-discriminated branches. Make free-action description and nonempty references and reflect analysis/guideline structural requirements. Give internal generators typed returns and preserve discriminants during reprojection."
+
+decision D2 based_on D1, BOUNDS:
+  "Repair fallback synthesis and capability listing without fabricated references or schema-parse bypasses. Cover compile-time omission rejection, runtime branches, free/reflect fallback, receipt reprojection, and engine regressions. Report governed and diagnostic evidence separately."
+
+decision ACCEPTANCE based_on D1, D2, OWNER_ACCEPTANCE:
+  "Record the owner's implementation direction as acceptance of this bounded representation and producer repair. No deployment, paid observation, persistence migration or unrelated schema conversion is authorized here."
+
+evidence OWNER_SUPERSESSION:
+  "During implementation the owner explicitly rejected type-only stopgaps and expressed concern about passed values becoming literals. ADR-0045 records the resulting prohibition on synthesized fallback judgment and supersedes this sketch before deployment."
+
+decision SUPERSESSION based_on D1, D2, OWNER_SUPERSESSION:
+  "Retain this causal history and mark the record Superseded. Follow docs/adr/0045-preserve-action-intent-producer-values.think for the final implementation."

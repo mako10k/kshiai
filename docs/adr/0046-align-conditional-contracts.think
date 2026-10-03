@@ -1,0 +1,14 @@
+domain ADR0046:
+  description "Accepted existing conditional contract alignment and bounded deployment."
+problem P1:
+  "Runtime-only finite invariants let incomplete internal values compile."
+evidence OWNER_ACCEPTANCE:
+  "Owner explicitly directs sequential analogous repairs, commits and deployment; earlier instruction rejects literal substitution and stopgaps."
+premise BOUNDS:
+  "Keep existing valid payloads and rules, immutable revisions and migration history. Audit skill compatibility before strengthening its input."
+decision D1 based_on P1, OWNER_ACCEPTANCE, BOUNDS:
+  "Infer finite branch invariants from runtime schema unions; preserve producer-owned values with narrowing; retain dynamic checks."
+decision D2 based_on D1, OWNER_ACCEPTANCE:
+  "After regression validation commit and deploy the exact artifacts to the existing unreleased environment, read back health and identity without claiming formal release acceptance."
+decision ACCEPTANCE based_on D1, D2, OWNER_ACCEPTANCE:
+  "Implement the explicitly authorized analogous repairs and deployment within value-preservation and existing-runtime compatibility limits."

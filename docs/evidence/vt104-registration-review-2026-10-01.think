@@ -1,0 +1,22 @@
+domain REGISTRATION:
+  description "Register the exact approved single-file trial workflow on main."
+evidence OWNER:
+  "Owner explicitly approved the disclosed workflow registration candidate: one new branch, one PR and one merge containing only v3-trial.yml. Owner reports GCP reauthentication complete."
+evidence BASE:
+  "Main checkout clean at verified origin main e31c487. Existing cc304 source synchronized at0cab522. New branch preflight identifies unrelated unique branches; exact isolation reason declared."
+premise BOUNDS:
+  "Copy workflow with SHA256911ccaa02daf6457ea735c712da3f2c40a9e0c7a3a8a3e18808946124fd0df98. One branch push, PR and merge. No full WIP merge or cloud mutation in registration. Preserve unrelated branches."
+pending CLOUD:
+  "Reauthentication success and live cloud readiness require independent reads. Four required CI checks and release-tag identity for trial remain to be settled."
+premise ALTERNATIVES:
+  "Workflow-only registration preserves accepted hosted execution path; merging whole WIP or replacing path with local deployment expands scope and is not chosen."
+decision REGISTER based_on OWNER, BASE, BOUNDS, ALTERNATIVES:
+  "Create approved registration branch from fresh main, copy one approved file, verify identical hash and one-file diff, commit and push once, create PR, verify required CI and merge exact head, independently read main SHA/file and workflow registration."
+decision OBSERVE based_on OWNER, CLOUD, BOUNDS:
+  "Read service/queue/job state and credential-free secret references after reauthentication; prepare exact next packet without fabricated observations."
+evidence CI:
+  "PR151 security fails on three undici advisories; other three checks succeed. Existing root override7.29.0 is affected; primary maintainer advisories name7.29.1 as patched."
+premise REVIEW:
+  "Current registered candidate is exactly one workflow file. CI failure is INSIDE merge verification. Updating package manifests is outside the disclosed one-file scope and needs an exact extension decision before external push."
+decision CANDIDATE based_on CI, REVIEW, BOUNDS:
+  "Prepare isolated package.json/package-lock.json update from7.29.0 to7.29.1, run security and worker build checks, export exact diff for owner review. Do not push added dependency files or bypass branch protections without that decision."

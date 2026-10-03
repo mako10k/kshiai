@@ -1,6 +1,8 @@
+// R: Start the API runtime and fence startup writes through shared cutover control.
 import { serve } from "@hono/node-server";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
+import { cutoverAllowsGeneralWork, runCutoverOperation, cutoverRequestDigest } from "./services/cutover-admission.js";
 import { config } from "./config.js";
 import { databaseKind, initializeDatabase } from "./db.js";
 import { ensureSystemPresets } from "./repositories/battlefields.js";
@@ -17,7 +19,12 @@ import {
 
 // Ensure DB is ready + system battlefield presets
 await initializeDatabase();
-await Promise.all([ensureSystemPresets(), ensureSystemNarrationStyles()]);
+if (await cutoverAllowsGeneralWork()) {
+  await runCutoverOperation({
+    bindingOperationId: "runtime-system-presets", actorId: "runtime", kind: "background",
+    backgroundKind: "startup-presets", requestDigest: cutoverRequestDigest({ operation: "startup-presets" }),
+  }, async () => { await Promise.all([ensureSystemPresets(), ensureSystemNarrationStyles()]); });
+}
 const runtimeLlm = createLlmProvider();
 try {
   const narrationDispatch = await dispatchPendingNarrationTasks();
@@ -79,12 +86,12 @@ app.onError((err, c) => {
   return c.json({ error: "internal_error", message: err.message }, 500);
 });
 
-console.log(
-  `kshiai API listening on http://${config.host}:${config.port} (llm=${config.llmProvider}, db=${databaseKind()})`,
-);
-
 serve({
   fetch: app.fetch,
   hostname: config.host,
   port: config.port,
+}, () => {
+  console.log(
+    `kshiai API listening on http://${config.host}:${config.port} (llm=${config.llmProvider}, db=${databaseKind()})`,
+  );
 });

@@ -1,0 +1,226 @@
+{
+  "observedAt": "2026-10-02T08:52:16.690350+00:00",
+  "ownerApproval": "Latest direct user reply: 承認します。 Answer to disclosed four-write deployment and worktime19:30 questions.",
+  "runtimeSourceSha": "458af76a306b222133a383d5bbdc6eecb197b7a9",
+  "verificationSha": "038f250b5e965f4d1262075bb1a67e312be12e28",
+  "image": "asia-northeast1-docker.pkg.dev/kshiai/kshiai/backend@sha256:e439d1ef3e2845ea203d171ede921e5a6da5be8c61f47f3ef3a13b285dbbc397",
+  "writes": {
+    "cloudRunDeploy": 1,
+    "workerVersionUpload": 1,
+    "supabaseAuthPatch": 1,
+    "oldPreviewTagRetarget": 1
+  },
+  "preflight": {
+    "observedAt": "2026-10-02T08:47:11.462Z",
+    "projectRef": "cvrbhpkfqkpqdegxfrlq",
+    "schema": "public",
+    "transactionReadOnly": "on",
+    "counts": {
+      "battle_narration_outbox": {
+        "total": 345,
+        "byStatus": [
+          {
+            "status": "completed",
+            "count": 345
+          }
+        ]
+      },
+      "battle_narration_entries": {
+        "total": 345,
+        "byStatus": [
+          {
+            "status": "completed",
+            "count": 332
+          },
+          {
+            "status": "failed",
+            "count": 13
+          }
+        ]
+      },
+      "asset_authoring_outbox": {
+        "total": 7,
+        "byStatus": [
+          {
+            "status": "completed",
+            "count": 7
+          }
+        ]
+      },
+      "character_authoring_jobs": {
+        "total": 15,
+        "byStatus": [
+          {
+            "status": "completed",
+            "count": 12
+          },
+          {
+            "status": "cancelled",
+            "count": 3
+          }
+        ]
+      },
+      "battlefield_authoring_jobs": {
+        "total": 3,
+        "byStatus": [
+          {
+            "status": "completed",
+            "count": 2
+          },
+          {
+            "status": "cancelled",
+            "count": 1
+          }
+        ]
+      },
+      "narration_style_authoring_jobs": {
+        "total": 3,
+        "byStatus": [
+          {
+            "status": "completed",
+            "count": 2
+          },
+          {
+            "status": "cancelled",
+            "count": 1
+          }
+        ]
+      },
+      "battle_narration_attempts": {
+        "total": 387,
+        "byStatus": [
+          {
+            "status": "failed",
+            "count": 13
+          },
+          {
+            "status": "completed",
+            "count": 360
+          },
+          {
+            "status": "abandoned",
+            "count": 14
+          }
+        ]
+      },
+      "battle_leases": {
+        "total": 0,
+        "byStatus": null
+      },
+      "battle_narration_leases": {
+        "total": 1,
+        "byStatus": null
+      },
+      "provider_operation_runs": {
+        "total": 13,
+        "byStatus": [
+          {
+            "status": "failed",
+            "count": 4
+          },
+          {
+            "status": "completed",
+            "count": 9
+          }
+        ]
+      },
+      "provider_operation_attempts": {
+        "total": 638,
+        "byStatus": [
+          {
+            "status": "succeeded",
+            "count": 636
+          },
+          {
+            "status": "failed",
+            "count": 2
+          }
+        ]
+      },
+      "cutover_control_active": {
+        "total": 0,
+        "byStatus": null
+      }
+    },
+    "narrationLiveLeases": {
+      "live_count": 0,
+      "latest_expiry": null,
+      "server_now": "2026-10-02T08:47:11.665Z"
+    },
+    "currentCharacterVersions": [
+      {
+        "schema_version": 2,
+        "count": 11
+      },
+      {
+        "schema_version": 3,
+        "count": 5
+      }
+    ]
+  },
+  "worker": {
+    "version": "877c3a87-35ec-4d92-ba4c-f8b2d12e91ac",
+    "health": {
+      "ok": true,
+      "llm": "fallback:xai>openai>venice",
+      "auth": "supabase",
+      "models": {
+        "engine": "grok-4.5",
+        "fast": "grok-4.3"
+      },
+      "service": "kshiai",
+      "database": "postgres",
+      "revision": "kshiai-api-v2-retire-458af76"
+    },
+    "assetsMatch": 9,
+    "backendOriginMatched": true,
+    "originSecretPresent": true
+  },
+  "auth": {
+    "observedAt": "2026-10-02T08:50:01.579Z",
+    "project": "cvrbhpkfqkpqdegxfrlq",
+    "patches": 1,
+    "uri_allow_list": "https://kshiai.mk10.org/auth/callback,http://localhost:5188/auth/callback,http://127.0.0.1:5188/auth/callback,https://26ff9223-kshiai-web.mako10k.workers.dev/auth/callback,https://v2-retire-458af76-kshiai-web.mako10k.workers.dev/auth/callback",
+    "allOtherFieldsUnchanged": true
+  },
+  "routing": {
+    "publicTrafficPreserved": true,
+    "traffic": [
+      {
+        "percent": 100,
+        "revisionName": "kshiai-api-00141-vis"
+      },
+      {
+        "revisionName": "kshiai-api-v2-retire-458af76",
+        "tag": "v2-retire-458af76",
+        "url": "https://v2-retire-458af76---kshiai-api-crpgn6evfa-an.a.run.app"
+      },
+      {
+        "revisionName": "kshiai-api-v2-retire-458af76",
+        "tag": "v3-trial-36954429062-1",
+        "url": "https://v3-trial-36954429062-1---kshiai-api-crpgn6evfa-an.a.run.app"
+      }
+    ],
+    "oldPreviewHealth": {
+      "ok": true,
+      "llm": "fallback:xai>openai>venice",
+      "auth": "supabase",
+      "models": {
+        "engine": "grok-4.5",
+        "fast": "grok-4.3"
+      },
+      "service": "kshiai",
+      "database": "postgres",
+      "revision": "kshiai-api-v2-retire-458af76"
+    }
+  },
+  "previewUrl": "https://v2-retire-458af76-kshiai-web.mako10k.workers.dev/",
+  "actualLoginAndV2DisplayVerified": false,
+  "ordinaryV2UpdateRejectionOnActualUserVerified": false,
+  "remainingInternalEffortHours": [
+    1,
+    1.5
+  ],
+  "estimateConfidence": "low",
+  "plannedWorkEndJst": "2026-10-02T19:30:00+09:00"
+}

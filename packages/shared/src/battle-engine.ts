@@ -1,3 +1,5 @@
+import { gateBattleActionByNorms, type BattleActionNormConstraint } from "./battle-action-norm-gate.js";
+// R: Resolve deterministic battle mechanics and durable temporal continuations.
 import type {
   BattleAction,
   BattleBucketMechanicalCommit,
@@ -19,6 +21,7 @@ import type {
 } from "./battle.js";
 import {
   CharacterActionIntentSchema,
+  projectCharacterActionIntent,
   BattleTurnEngineContinuationSchema,
   clampCoefficient,
   isCombatantDown,
@@ -416,6 +419,21 @@ export function buildBattleTurnRecord(input: {
       (target[evidence.target.side][evidence.parameterKey] ?? 0) + evidence.delta;
   }
   for (const [side, changes] of [["a", changeA], ["b", changeB]] as const) {
+    // Sparse endpoint diffs omit a zero net result even when distinct sources
+    // changed the parameter. Keep that aggregate key so all causes reconcile.
+    const before = side === "a" ? input.before.sideA : input.before.sideB;
+    const after = side === "a" ? input.after.sideA : input.after.sideB;
+    for (const source of [
+      ...actionParameterChanges.values(),
+      ...effectParameterChanges.values(),
+      systemParameterChanges,
+    ]) {
+      for (const key of Object.keys(source[side]) as ParamKey[]) {
+        if (!(key in changes)) {
+          changes[key] = (after.parameters[key] ?? 0) - (before.parameters[key] ?? 0);
+        }
+      }
+    }
     for (const [key, delta] of Object.entries(changes) as Array<[ParamKey, number]>) {
       const attributed = [
         ...actionParameterChanges.values(),
@@ -1212,22 +1230,7 @@ function observerSafeFoeInput(
 }
 
 function intentFromBattleAction(action: BattleAction): CharacterActionIntent {
-  return {
-    kind: action.kind,
-    ...(action.skillId ? { skillId: action.skillId } : {}),
-    ...(action.useFinisher ? { useFinisher: true } : {}),
-    ...(action.description ? { description: action.description } : {}),
-    ...(action.desiredOutcome ? { desiredOutcome: action.desiredOutcome } : {}),
-    ...(action.subjectRefs ? { subjectRefs: action.subjectRefs } : {}),
-    ...(action.instrumentRef ? { instrumentRef: action.instrumentRef } : {}),
-    ...(action.opportunityId ? { opportunityId: action.opportunityId } : {}),
-    ...(action.reflectionAnalysis
-      ? { reflectionAnalysis: action.reflectionAnalysis }
-      : {}),
-    ...(action.reflectionGuideline
-      ? { reflectionGuideline: action.reflectionGuideline }
-      : {}),
-  };
+  return projectCharacterActionIntent(action);
 }
 
 const INSTRUMENT_MULTIPLIER: Record<WorldCausalBand, number> = {
@@ -1908,6 +1911,11 @@ export type ResolveTurnInput = {
   state: BattleState;
   /** Optional override; when omitted, stanceA drives side A. */
   playerAction?: BattleAction;
+  /** Frozen compiler norm results re-evaluated for the current decision boundary. */
+  sideANormConstraint?: BattleActionNormConstraint;
+  sideBNormConstraint?: BattleActionNormConstraint;
+  /** Pure compiler consumer evaluated against the actual prepared/resumed state. */
+  resolveNormConstraint?: (state: BattleState, side: "a" | "b") => BattleActionNormConstraint | undefined;
   sideASkills: Skill[];
   sideBSkills: Skill[];
   sideABasicAttack: BasicAttackProfile;
@@ -2358,12 +2366,6 @@ export function resolveTurn(input: ResolveTurnInput): {
     normalizeFinisher(input.state.finisherB, input.sideBSkills);
 
   const forceOffense = (input.state.supervisor?.passiveTurns ?? 0) >= 2;
-  if (!resumed && forceOffense) {
-    events.push({
-      type: "status",
-      summary: "膠着打破 — 両者は間合いを捨て、強制的に打ち合いへ踏み込む。",
-    });
-  }
 
   const drama = normalizeDramaState(input.state.dramaState);
   const avoidA = parseActionSignature(drama.lastActionSignatureA);
@@ -2521,6 +2523,24 @@ export function resolveTurn(input: ResolveTurnInput): {
       foeInputB.receipt,
     );
   }
+  const normState = { ...input.state, turn, sideA, sideB };
+  const normA = gateBattleActionByNorms(requestedActionA,
+    input.resolveNormConstraint?.(normState, "a") ?? input.sideANormConstraint);
+  const normB = gateBattleActionByNorms(requestedActionB,
+    input.resolveNormConstraint?.(normState, "b") ?? input.sideBNormConstraint);
+  requestedActionA = normA.action;
+  requestedActionB = normB.action;
+  if (normA.replaced) selectionA = { ...selectionA, sourceLayer: "character_norm_fallback", reason: "character_norm_rejected" };
+  if (normB.replaced) selectionB = { ...selectionB, sourceLayer: "character_norm_fallback", reason: "character_norm_rejected" };
+  if (!resumed) {
+    const forcedActors = [
+      ...(selectionA.sourceLayer === "forced_offense" ? [sideA.displayName] : []),
+      ...(selectionB.sourceLayer === "forced_offense" ? [sideB.displayName] : []),
+    ];
+    if (forcedActors.length) events.push({
+      type: "status", summary: `膠着打破 — ${forcedActors.join("、")} は攻勢へ踏み込む。`,
+    });
+  }
   const actionAId = `turn-${turn}-action-a`;
   const actionBId = `turn-${turn}-action-b`;
   const requestedActions = {
@@ -2528,8 +2548,8 @@ export function resolveTurn(input: ResolveTurnInput): {
     b: requestedActionB,
   } as const;
   const actionSelections = {
-    a: resumed?.actions[0]?.selection ?? selectionA,
-    b: resumed?.actions[1]?.selection ?? selectionB,
+    a: normA.replaced ? selectionA : resumed?.actions[0]?.selection ?? selectionA,
+    b: normB.replaced ? selectionB : resumed?.actions[1]?.selection ?? selectionB,
   } as const;
   const actionIds = { a: actionAId, b: actionBId } as const;
   let worldState = resumed?.worldState

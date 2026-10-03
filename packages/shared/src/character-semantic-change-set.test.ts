@@ -60,3 +60,22 @@ describe("semantic migration response contracts", () => {
     }).success, false);
   });
 });
+
+
+type MigrationOperation = import("./character-semantic-change-set.js").CharacterSemanticMigrationOperationV1;
+type OperationCommon = Omit<MigrationOperation, "operation" | "provenance" | "sourcePaths" | "value" | "deferred">;
+type FitsOperation<T> = T extends MigrationOperation ? true : false;
+const invalidCopyValue: FitsOperation<OperationCommon & { operation: "copy"; provenance: "unchanged"; sourcePaths: [string]; value: string; deferred: null }> = false;
+const missingDerivation: FitsOperation<OperationCommon & { operation: "transform"; provenance: "source_derived"; sourcePaths: []; value: null; deferred: null }> = false;
+const wrongProvenance: FitsOperation<OperationCommon & { operation: "move"; provenance: "model_created"; sourcePaths: [string]; value: null; deferred: null }> = false;
+
+it("preserves operation values and statically excludes invalid payload/provenance combinations", () => {
+  assert.deepEqual([invalidCopyValue, missingDerivation, wrongProvenance], [false, false, false]);
+  const operation: MigrationOperation = {
+    operation: "transform", targetPath: "definition.expressionNotes",
+    sourcePaths: ["definition.profileBackground"], value: { original: ["生成元の値", 37] },
+    deferred: null, explanation: "生成元の理由", provenance: "source_derived",
+    semanticDependants: ["definition.speechPolicy"],
+  };
+  assert.deepEqual(CharacterSemanticMigrationOperationV1Schema.parse(operation), operation);
+});

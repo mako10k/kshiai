@@ -1,0 +1,14 @@
+domain NORMALIZATION:
+  description "Preserve trial behavior while restoring the unchanged static complexity gate."
+evidence OWNER:
+  "Owner requested complexity normalization after reviewing the failed gate; no baseline change was accepted."
+evidence BEFORE:
+  "Pinned Lizard1.23.0 measured CC134/max96/excess1623;length72/max639/excess7571;params5/max11/excess10. Existing limits CC121/92/1369,length67/733/7390,params5/11/10."
+premise CONTRACT:
+  "Preserve accepted auth, immutable bindings, public redaction, transaction/lease boundaries, provider accounting, error and SQL order. Internal typed responsibility extraction is within owner scope."
+evidence IMPLEMENTATION:
+  "Projection, HTTP admission/auth/finalization, narration claim/generation/publication, control policy matching, authoring validation/replay and fixture hashing separated. Independent bounded comparison found no behavior regression. Integrated typecheck caught participant type widening; main restored ready-participant sheet type without casts."
+premise LIMITATION:
+  "Static success and local tests do not prove hosted source CI, deployment, Google login or real battle. Existing disabled battle-create/agency tests require baseline comparison; unchanged failures are outside this refactor completion, not silently accepted game proof."
+decision VERIFY based_on OWNER, BEFORE, CONTRACT, IMPLEMENTATION, LIMITATION:
+  "Run unchanged lint/typecheck, selected full tests, build and direct affected tests; compare fixtures bytewise and failing disabled tests against b9af55e. Refresh current source manifest/test provenance and record measured task interval, then synchronize only authorized worktree scope. No baseline or cloud/DB/Google operation."

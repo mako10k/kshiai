@@ -1,3 +1,4 @@
+/** R: Present owner-safe character authoring review and confirmation actions. */
 import { useNavigate } from "react-router-dom";
 import { useRef } from "react";
 import type { CharacterAuthoringReview, CharacterPublic } from "@kshiai/shared";
@@ -124,7 +125,9 @@ function CandidateCompatibility(props: {
   compatibility: NonNullable<NonNullable<CharacterAuthoringReview["semanticCandidateReview"]>["compatibility"]>;
 }) {
   return <section><h3>候補段階の互換性</h3>
-    <p>必要なコンシューマーの検証が未完了のため、利用可能とは判定していません。</p>
+    <p>{props.compatibility.status === "ready"
+      ? "必要なコンシューマー要件を満たしています。"
+      : "必要なコンシューマー要件をまだ満たしていません。"}</p>
     <p>状態: {props.compatibility.status}</p>
     {props.compatibility.deferred.map((entry) =>
       <p key={entry.capability}>延期: {entry.capability} — {entry.targetPaths.join(", ")}</p>)}
@@ -160,7 +163,8 @@ export function CharacterReviewPage() {
       status={review.status}
       error={error ?? review.acceptanceError}
     >
-      {review.sourceRetryAvailable && !review.stale ? (
+      {review.reviewConfirmOnly ? <p className="muted">切替準備中は、この内容の確認と確定だけができます。</p> : null}
+      {review.sourceRetryAvailable && !review.stale && !review.reviewConfirmOnly ? (
         <section className="card">
           <p>失敗時の候補を流用せず、保存済みの元情報から新しい試行を開始します。</p>
           <button disabled={busy} onClick={() => runReviewAction(setBusy, setError, async () => {
@@ -179,7 +183,7 @@ export function CharacterReviewPage() {
           assistantMessage={review.assistantMessage}
           confirmLabel={confirmLabels[review.kind]}
           busy={busy}
-          chat={review.kind === "create" ? {
+          chat={review.kind === "create" && review.canEditCandidate !== false && !review.reviewConfirmOnly ? {
             value: draftMessage,
             placeholder: "例: もっと防御寄りに。髪色を暗い赤に。",
             busy,
@@ -195,10 +199,14 @@ export function CharacterReviewPage() {
             },
           } : undefined}
           onConfirm={() => runReviewAction(setBusy, setError, async () => {
-            const res = await api.confirmCharacterDraft(review.attemptId);
-            nav(`/characters/${res.character.id}`);
+            const res = await api.confirmCharacterDraft(review.attemptId, review.candidateDigest);
+            if (review.reviewConfirmOnly) {
+              setReview(await getCharacterReview(review.attemptId));
+            } else {
+              nav(`/characters/${res.character.id}`);
+            }
           }, "確定に失敗しました")}
-          onDiscard={() => runReviewAction(setBusy, setError, async () => {
+          onDiscard={review.reviewConfirmOnly ? undefined : () => runReviewAction(setBusy, setError, async () => {
             await api.discardCharacterDraft(review.attemptId);
             nav(backPath(review));
           }, "破棄に失敗しました")}

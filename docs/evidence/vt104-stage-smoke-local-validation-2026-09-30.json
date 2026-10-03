@@ -1,0 +1,74 @@
+{
+  "schema": "kshiai/vt104-stage-smoke-local-validation/v1",
+  "scope": "local selected tests, loopback doubles, SQLite/Hono Mock provider, disposable PG17; real Stage acceptance pending",
+  "sourceAggregate": "6a7e05dbaf89c3f637305ddd5245ed474bab53cdb6d743140fbe1308c49a954d",
+  "implementationSeal": "24b2f5a035a699c2e2236ef6d901f0dc6c554b9075d99627195be79a3fc328ce",
+  "sourceFiles": 555,
+  "manifestMismatches": 0,
+  "tests": {
+    "npm": {
+      "unit": 173,
+      "release": 24,
+      "authority": 9,
+      "total": 206,
+      "failed": 0,
+      "selection": {
+        "active": 37,
+        "provisional": 2,
+        "disabled": 141
+      }
+    },
+    "releaseScript": 23,
+    "deployment": 3,
+    "pgControl": 3,
+    "realAuthCli": 1,
+    "realV3ConfirmCreateAdvanceSse": 1
+  },
+  "typecheck": "passed",
+  "build": "passed; existing frontend chunk-size advisory",
+  "fsck": "ok",
+  "productionWrites": 0,
+  "githubWrites": 0,
+  "logs": [
+    {
+      "path": "/tmp/vt104-smoke-current-npm-test.log",
+      "sha256": "57d475796fac2546aafaaa4b9ed132b23e7ed9134fb42332be0ccdfd1cc34a0e"
+    },
+    {
+      "path": "/tmp/vt104-smoke-final-typecheck.log",
+      "sha256": "9bedf2a72b0d4375015a723a4bf27c1cc239197c55d866bf852d8052766e4523"
+    },
+    {
+      "path": "/tmp/vt104-smoke-current-build.log",
+      "sha256": "5d8e4a9b4f3c8412bd0d3d757cd5b317679774c438fc71ee5259bc9cec537db7"
+    },
+    {
+      "path": "/tmp/vt104-smoke-final-release-test.log",
+      "sha256": "2114188a8c45806f70b259ae994b975cbc2b7bab9b610b026f2fdfee56ca20d1"
+    },
+    {
+      "path": "/tmp/vt104-smoke-current-deployment-test.log",
+      "sha256": "f736aba4567c4816e26053947b485ad4bd804418d585d748283e624904ad39b4"
+    },
+    {
+      "path": "/tmp/vt104-smoke-current-pg-control.log",
+      "sha256": "e3b9f8c9d9d9efa9b359d17b068ef59d150a5b058fa245e6f79747b3352ea392"
+    },
+    {
+      "path": "/tmp/vt104-stage-pg-current.log",
+      "sha256": "d320391c10a290317c1ca68394768b17f33d664a1df05bee344a3edd9a30a795"
+    }
+  ],
+  "adrVerification": {
+    "newADR41Dsl": "fatal/error/warning0; Accepted markers verified",
+    "repositoryAdrCheck": "failed at pre-existing ADR0039 missing ACCEPTANCE decision marker; OWNER_ACCEPTANCE evidence exists",
+    "preExistingFailureLog": "/tmp/vt104-smoke-adr-check.log",
+    "currentFailureLog": "/tmp/vt104-smoke-current-adr-check.log",
+    "sourceCorrectionCandidate": "Append acceptance projection marker under ADR governance while preserving owner reviewed source/receipt history; check exact Seal closure before publishing refreshed authority."
+  },
+  "pgServerCleanup": {
+    "stopped": true,
+    "pgCtlStatusExit": 3,
+    "loopbackPort55441Listening": false
+  }
+}

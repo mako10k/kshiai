@@ -4,7 +4,6 @@ import {
   type BattleAdvancePhase,
   type BattleNarrationEntryPublic,
   type BattlePublic,
-  type SpeechLine,
 } from "@kshiai/shared";
 import { api } from "../api";
 import {
@@ -16,22 +15,11 @@ import {
   reduceNarrationEvent,
   type BattleNarrationClientState,
 } from "../battle-narration";
-import { battleStoryBlocks } from "../battle-screen";
 import { BattlePageView } from "./BattlePageView";
 
-/** Gap before requesting the next turn (does not wait for speech animation). */
+/** Gap before requesting the next turn. */
 const AUTO_TURN_DELAY_MS = 900;
 const OPENING_DELAY_MS = 1000;
-/** Stagger each public speech line after ground text is committed. */
-const SPEECH_REVEAL_MS = 780;
-
-/** Progressive reveal of the latest log block's speeches (does not block advance). */
-type SpeechReveal = {
-  key: string;
-  visible: number;
-  total: number;
-};
-
 /** Snapshot: GET + advance done. Story: narration follow. Progress: one advance loop. */
 export function BattlePage() {
   const { id } = useParams();
@@ -44,7 +32,6 @@ export function BattlePage() {
   const [busy, setBusy] = useState(false);
   const [advancePhase, setAdvancePhase] = useState<BattleAdvancePhase | null>(null);
   const [narrationEntries, setNarrationEntries] = useState<BattleNarrationEntryPublic[]>([]);
-  const [speechReveal, setSpeechReveal] = useState<SpeechReveal | null>(null);
   const [autoScrollHeld, setAutoScrollHeld] = useState(false);
   /** Resume opens paused so the player can catch up on the log. */
   const [paused, setPaused] = useState(isResume || isViewOnly);
@@ -63,17 +50,7 @@ export function BattlePage() {
   const advanceKeyRef = useRef<string | null>(null);
   const narrationStateRef = useRef<BattleNarrationClientState | null>(null);
   const cancelledRef = useRef(false);
-  /** First battle payload shows all speeches; later log growth animates. */
-  const skipSpeechAnimRef = useRef(true);
-  const speechTimersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
-  autoScrollEligibleRef.current = Boolean(
-    battle?.status === "active" && !isViewOnly,
-  );
-
-  function clearSpeechTimers() {
-    for (const t of speechTimersRef.current) clearTimeout(t);
-    speechTimersRef.current = [];
-  }
+  autoScrollEligibleRef.current = Boolean(battle?.status === "active" && !isViewOnly);
 
   function setAutoScrollHold(held: boolean) {
     if (autoScrollHeldRef.current === held) return;
@@ -172,31 +149,13 @@ export function BattlePage() {
     scheduleAutoScrollResume();
   }
 
-  function startSpeechReveal(key: string, total: number) {
-    clearSpeechTimers();
-    if (total <= 0) {
-      setSpeechReveal(null);
-      return;
-    }
-    setSpeechReveal({ key, visible: 0, total });
-    for (let n = 1; n <= total; n += 1) {
-      const timer = setTimeout(() => {
-        if (cancelledRef.current) return;
-        setSpeechReveal({ key, visible: n, total });
-      }, n * SPEECH_REVEAL_MS);
-      speechTimersRef.current.push(timer);
-    }
-  }
-
   useEffect(() => {
     cancelledRef.current = false;
-    skipSpeechAnimRef.current = true;
     advanceKeyRef.current = null;
     releaseAutoScrollHold();
     programmaticScrollRef.current = false;
     return () => {
       cancelledRef.current = true;
-      clearSpeechTimers();
       clearAutoScrollHoldTimer();
       clearProgrammaticScrollTimer();
       if (manualScrollFrameRef.current != null) {
@@ -329,23 +288,6 @@ export function BattlePage() {
   }, [id]);
 
   useEffect(() => {
-    const last = [...battleStoryBlocks({
-      entries: narrationEntries,
-      legacyLog: battle?.log ?? [],
-    })]
-      .reverse()
-      .find((block) => block.narrative);
-    if (!last?.narrative) return;
-    if (skipSpeechAnimRef.current) {
-      skipSpeechAnimRef.current = false;
-      setSpeechReveal(null);
-      return;
-    }
-    startSpeechReveal(last.key, last.narrative.speeches.length);
-    return () => clearSpeechTimers();
-  }, [narrationEntries, battle?.log]);
-
-  useEffect(() => {
     if (battle?.status !== "active" || isViewOnly) releaseAutoScrollHold();
   }, [battle?.status, isViewOnly]);
 
@@ -354,7 +296,6 @@ export function BattlePage() {
   }, [
     battle?.log,
     narrationEntries,
-    speechReveal?.visible,
   ]);
 
   const canAdvance = Boolean(
@@ -443,14 +384,6 @@ export function BattlePage() {
     throw lastErr instanceof Error ? lastErr : new Error("advance_failed");
   }
 
-  function speechesVisibleForBlock(
-    blockKey: string,
-    speeches: SpeechLine[],
-  ): SpeechLine[] {
-    if (!speechReveal || speechReveal.key !== blockKey) return speeches;
-    return speeches.slice(0, speechReveal.visible);
-  }
-
   if (!battle && !error) return <p className="muted">読み込み中…</p>;
   if (!battle) return <p className="error">{error ?? "見つかりません"}</p>;
 
@@ -465,7 +398,6 @@ export function BattlePage() {
       paused={paused}
       isResume={isResume}
       logEnd={logEnd}
-      speechesVisibleForBlock={speechesVisibleForBlock}
       onTogglePaused={() => setPaused((value) => !value)}
       onRetryAdvance={() => setError(null)}
       onScrollToLatest={scrollToLatest}

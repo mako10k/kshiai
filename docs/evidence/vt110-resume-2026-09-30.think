@@ -1,0 +1,49 @@
+domain VT110:
+  description "Implement the accepted V3 eligibility and stopped cutover lifecycle locally."
+evidence USER:
+  "The owner instructed proceeding with the disclosed vt110 next task on 2026-09-30."
+evidence AUTHORITY:
+  "Accepted cutover requirements revision 2 R1-R5, ADR0039, and lifecycle design revision 2 define shared eligibility, INSERT/UPDATE separation, minimal discard receipts and atomic stopped cutover."
+evidence LOCAL:
+  "Existing cc304 worktree contains completed uncommitted vt102. Battle persistence currently upserts, which can recreate deleted IDs; existing delete lacks explicit non-FK cleanup."
+premise SCOPE:
+  "Implement and verify locally in the existing branch, preserving vt102. Use temporary test databases only for deletion. No Stage, production, deployment, push or owner acceptance."
+pending COVERAGE:
+  "Exact ingress, worker completion and PostgreSQL executable test availability must be discovered and verified; do not call incomplete storage proof complete."
+premise ALTERNATIVE:
+  "Keep upsert plus tombstone checks alone; rejected because accepted UPDATE-only and fence contracts also apply to deleted in-memory state."
+decision IMPLEMENT based_on USER, AUTHORITY, LOCAL, SCOPE:
+  "Separate new INSERT and existing CAS UPDATE, add narrow cutover repository/use case and minimal receipts, remove dependent payloads transactionally, gate worker saves/publication and replay through existence, centralize V3 selection, and verify real routes and both storage contracts. Update canonical PERT at measured milestones."
+evidence REVIEW:
+  |
+    Independent implementation review found received narration usage lost on
+    validation/ceiling failure, and empty-target replay wrongly bound to later
+    unrelated inventory. Replay finished preservation also needs readback.
+premise CORRECTION:
+  |
+    Preserve received accounting independently of public narrative validity.
+    An empty frozen target has no mutations; read back the empty target predicate
+    and frozen retained rows without inventing a persisted execution receipt.
+    Verify frozen finished rows and absence of active runs on nonempty replay.
+decision FIX based_on AUTHORITY, REVIEW, CORRECTION, SCOPE:
+  "Implement these bounded contract corrections and regression tests within vt110."
+evidence MEASUREMENT:
+  |
+    vt110 start 2026-09-30T11:08:20+09:00, completion 11:30:53, no task pause.
+    perttool verifies exact active interval 451/1200 hour; starting baseline 13/12p.
+    observe-velocity offers declared elapsed throughput 1300p/451h.
+    Person/agent effort was not independently measured; its candidate is unavailable.
+premise VELOCITY_SCOPE:
+  |
+    Use this one-task elapsed sample provisionally for the remaining local battle
+    integration/cutover pipeline. It includes coordinated delegates and tool waits;
+    it is not person-hour productivity or owner/release/access waiting velocity.
+    General parent migration/review work has different workload, so keep its existing
+    velocity as a separate older low-confidence reference, and update only its
+    delegated child remaining point duration. Preserve both observations in evidence.
+decision REFORECAST based_on MEASUREMENT, VELOCITY_SCOPE, USER, SCOPE:
+  |
+    Adopt the supplied velocity token into the child through guarded standard CLI;
+    reanalyze both schedules and update cc314 from the child's resource makespan.
+    Report numeric provisional agent-effort separately with explicit task assumptions.
+    Measure vt103 at the next authorized session checkpoint and refine the sample.

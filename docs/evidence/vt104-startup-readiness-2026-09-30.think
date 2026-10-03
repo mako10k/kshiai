@@ -1,0 +1,14 @@
+domain VT104_READINESS:
+  description "Correct local startup readiness signaling."
+evidence FAILURE:
+  "Full unit run observes ECONNREFUSED at first health fetch after child stdout API listening."
+evidence SOURCE:
+  "backend/src/index.ts console.log API listening executes before serve() invocation. Startup test uses that message as readiness then immediately fetches."
+premise ALTERNATIVE_EXIT:
+  "Child might have exited or unrelated process resource pressure might contribute. Existing isolated success does not eliminate timing race. Child diagnostics on failure are incomplete."
+decision PRODUCING_CONDITION based_on FAILURE, SOURCE:
+  "The readiness signal can precede socket binding, allowing a correct observer of the signal to connect too early. This source condition explains the observed race; exact scheduling of this occurrence is inferred."
+pending OTHER_FAILURES:
+  "No production failure or auth regression is established. Unit selection overlapped Seal refresh, so rerun only after refresh completion."
+decision CORRECT based_on SOURCE, PRODUCING_CONDITION, ALTERNATIVE_EXIT:
+  "Move readiness logging into serve listening callback, retaining startup behavior and existing regression. Repeat isolated startup then complete selected suite after authority refresh. Local correction is within implementation/test authority."

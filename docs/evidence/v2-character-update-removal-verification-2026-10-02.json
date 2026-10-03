@@ -1,0 +1,39 @@
+{
+  "observedAt": "2026-10-02T05:42:01.812609+00:00",
+  "scope": "local character V2 update removal; retained historical display and explicit migration",
+  "externalWrites": 0,
+  "runtimeApplied": false,
+  "nodeVersion": "22.22.3",
+  "checks": {
+    "npmTest": {
+      "passed": 213,
+      "failed": 0
+    },
+    "explicitNewRegressionTests": {
+      "passed": 11,
+      "failed": 0
+    },
+    "npmBuild": "passed",
+    "adr0043Audit": "fatal=0 error=0; projection checks passed",
+    "gitDiffCheck": "passed",
+    "npmTypecheck": "passed; run independently after build completion"
+  },
+  "limitations": [
+    "Actual browser path and deployed runtime are unverified.",
+    "Legacy portrait/restore/copy update routes are unavailable for V3 until a V3 implementation exists.",
+    "Full ADR check exposes preexisting ADR0039 acceptance-marker contradiction; that record was not changed.",
+    "Canonical parent PERT history is incomplete; observe-velocity has no adoptable person-effort sample. No release or plan completion is asserted."
+  ],
+  "sourceSha256": {
+    "backend/src/routes.ts": "7cfa23dce0e8b085050fdf5e99c1d9f0b7ff5dfbf71be7a3f9b4451fdc5b3397",
+    "backend/src/repositories/characters.ts": "abd869b7fc79f815af3fec080b7bb6ae67d7c31c87ae2d5ec4f8cd9e9a25b229",
+    "backend/src/repositories/character-assets-v2.ts": "1959ca3e073659bd8ef9226dacfc0eb368f433a50de09d63616638cec1aa85c7",
+    "backend/src/services/character-authoring-jobs.ts": "28a2ea81f173a2bc53827f0bdfeb38918dfdc32b561f67ae28d9132c66d41d66",
+    "backend/src/services/character-improvement.ts": "6a9454234f601fcedebfb50c851bfa09b6ff762f79301ba6684eb66df5394d0e",
+    "backend/src/services/character-update-policy.ts": "990ef4b323fef52fb8697bce4c9bb36b0bddbf7fe317b63dfa201d6d8d6d36eb",
+    "backend/src/services/character-historical-view.ts": "d1c9ae2e41c2f9e932ee0367e8ed60764d48c82ef8131ee68bd4b660822342c2",
+    "frontend/src/pages/CharacterDetailPage.tsx": "5708268944da518c0c1f2bccd9f879df695807c655597a8637df0052a4605b70",
+    "frontend/src/pages/BattlePageView.tsx": "5b617a9f2d7272b7b5926d3e3bf7344a2ebe55a7643d2966329d04704a55dad6",
+    "frontend/src/api.ts": "e9d7d59b4a3edbe3823cc0af3b29a00a6f25a377ac236e2d71f85195d07b8dc3"
+  }
+}

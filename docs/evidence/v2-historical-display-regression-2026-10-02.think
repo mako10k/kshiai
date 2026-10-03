@@ -1,0 +1,12 @@
+domain HISTORICAL_PROJECTION:
+  description "Verify historical V2 profile projection against a current V3 generation."
+evidence CONTRACT:
+  "Accepted ADR0043 requires exact historical V2 snapshots after current migration, without current fallback or edit controls."
+evidence STATIC_CONCERN:
+  "Historical GET calls toPublicCharacterForViewer(snapshot,owner), which contains current-history enrichment. This raised a possible previous-image and revision-metadata mixing concern."
+evidence EXECUTION:
+  "The new regression passed on unchanged product source: old previousImageUrl, name and revision metadata are preserved with a current V3 generation. getReadyCharacterGenerationHistory calls the V2-only getReadyCharacterGeneration; it returns null for current V3, so enrichment is not applied. The earlier asserted defect is contradicted by this execution and source check."
+premise AUTHORITY:
+  "Local tests, ordinary origin pushes and CI are authorized. One image creation is approved and completed. No product source change, additional build or deployment is performed here."
+decision VERIFY based_on CONTRACT, STATIC_CONCERN, EXECUTION, AUTHORITY:
+  "Retain the added regression as an explicit historical-display guard, reseal it under the unchanged accepted boundary, run current tests and CI, and record that runtime source remains identical to the already built SHA458af76. Correct the earlier concern in the review evidence instead of changing correct product code."

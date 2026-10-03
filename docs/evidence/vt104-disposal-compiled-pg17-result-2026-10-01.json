@@ -1,0 +1,76 @@
+{
+  "observedAt": "2026-10-01T11:43:08.541Z",
+  "PostgreSQL": "17.11",
+  "node": "v22.22.3",
+  "target": {
+    "host": "127.0.0.1",
+    "port": 55443,
+    "database": "vt104_trial_disposal_1790854982903_1019844"
+  },
+  "synthetic": true,
+  "sharedCloudDatabaseWrites": 0,
+  "checks": [
+    {
+      "name": "read-only preview with receipt table absent,18targets/168finished/14outbox",
+      "passed": true
+    },
+    {
+      "name": "expired stop policy",
+      "passed": true
+    },
+    {
+      "name": "frozen finished-outbox generation drift",
+      "passed": true
+    },
+    {
+      "name": "active provider fails quiescence",
+      "passed": true
+    },
+    {
+      "name": "nonexpired battle lease blocks before receipt bootstrap",
+      "passed": true
+    },
+    {
+      "name": "receipt table without required primary key",
+      "passed": true
+    },
+    {
+      "name": "rollback includes receipt bootstrap and finished-outbox updates",
+      "passed": true
+    },
+    {
+      "name": "exact18 discard+14accounting,finished168/users preserved",
+      "passed": true
+    },
+    {
+      "name": "independent CLI readback and no-write replay",
+      "passed": true
+    },
+    {
+      "name": "unexpected post-apply pending outbox rejects replay",
+      "passed": true
+    },
+    {
+      "name": "unexpected post-apply pending outbox rejects readback",
+      "passed": true
+    },
+    {
+      "name": "finished-state drift rejected on independent readback",
+      "passed": true
+    },
+    {
+      "name": "formal forward migrations0026-0030 succeed after bootstrap without earlyledger",
+      "passed": true
+    }
+  ],
+  "finishedPreserved": 168,
+  "discardedSynthetic": 18,
+  "accountedSynthetic": 14,
+  "migration0029": "932895ea9df2cc8a495af10e78cc5a6545abb183b79b550eab9d930653188aa7",
+  "limitation": "Local synthetic PostgreSQL proof; no deployed startup/Google/real V3 battle or shared database disposal proof.",
+  "executionForm": "compiled backend/dist/scripts/prepare-unreleased-v3-trial.js; node directly without tsx",
+  "sourceCommit": "4ab19719ef7fa61cdfb8571c4579c3c64cc96dfb",
+  "compiledCliSha256": "9c255d9c4d57b2f069e39dfff55716191300c58f89b9bcbfe58ed93c413ac6eb",
+  "derivedHarnessSha256": "f3ba2ea2c2ce1147ceba6973ac682d8607f14cc4706b5773628caf18c194717d",
+  "harnessDerivation": "Source PG17 harness with absolute workspace root, CLI path changed src TS to compiled dist JS, tsx import removed; identical13 checks."
+}
