@@ -1,5 +1,5 @@
 project PORTRAIT_SPEECH_RECOVERY:
-  version 2
+  version 3
   title "Restore V3 portraits and conscious speech instruction"
   description "Owner reported missing portrait UI and silent latest battle; ADR0049 bounded V3 portrait revision and ADR0047 existing semantic agency. No manufactured speech or changes to historical battles."
   duration_unit hour
@@ -33,5 +33,6 @@ task release VERIFIED -> LIVE:
   title "Commit push deploy exact source and verify public runtime"
   description "Existing owner direction to commit and deploy successive corrections. Backend image and frontend assets from the same source commit; keep runtime bindings and promote after preview checks. No production character or historical match edits and no paid image smoke."
   duration 0.3h
+  status done
   requires:
     DEV 1

@@ -24,4 +24,8 @@ Initial CI run 37109626154 rejected the final deletion guard on the existing com
 
 ## Deployment
 
-Pending exact-source image build, preview checks and promotion. Private diagnostic artifacts are under `/tmp/kshiai-regression-inspect`; character inputs and raw provider details are not committed.
+Completed from source commit `5726fc47dda1205215ae23b24f8e601f8d83aa03`. [CI 37109912296](https://github.com/mako10k/kshiai/actions/runs/37109912296) passed all four jobs. Cloud Build `6907768b-9b3f-418a-a445-4d64cd6acf87` succeeded; digest `sha256:56ed78d770ecd508a73e1d005f3183ddcef769d0afd9958fa09609ff3015c585` is deployed as `kshiai-api-recovery-5726fc4` at 100% traffic. Container runtime configuration excluding image was compared equal before promotion. Tagged origin and Worker-version preview health both passed.
+
+Worker version `8bfd14fe-4bc1-4c81-a139-9387d123ea12`, deployment `fb269345-7091-4d2d-8787-e85a6879ed13`, is at 100%. Its backend origin is the new tagged revision and the required secret binding is present. Public deployment smoke passed after convergence, including the expected backend revision and untrusted direct-origin rejection. All nine public frontend files match local SHA-256 artifacts. A bounded 15-minute ERROR log read returned zero entries. The previously inspected battle's saved state digest is unchanged. These deployment checks do not imply a completed new match or paid portrait-provider acceptance.
+
+See the [sanitized deployment and probe receipt](portrait-and-speech-recovery-2026-10-03.json). Private diagnostic artifacts are under `/tmp/kshiai-regression-inspect`; character inputs and raw provider details are not committed. The temporary frontend verification server was stopped. Previous compatible runtime/Worker remain `kshiai-api-profile-c341bfd` / `40f39b55-0661-4114-88bc-97faa4baeb13`; no rollback was performed.

@@ -1,0 +1,101 @@
+{
+  "sourceCommit": "5726fc47dda1205215ae23b24f8e601f8d83aa03",
+  "ci": {
+    "id": 37109912296,
+    "conclusion": "success"
+  },
+  "cloudBuild": {
+    "id": "6907768b-9b3f-418a-a445-4d64cd6acf87",
+    "status": "SUCCESS",
+    "digest": "sha256:56ed78d770ecd508a73e1d005f3183ddcef769d0afd9958fa09609ff3015c585"
+  },
+  "cloudRun": {
+    "revision": "kshiai-api-recovery-5726fc4",
+    "percent": 100,
+    "runtimeConfigPreserved": true
+  },
+  "worker": {
+    "versionId": "8bfd14fe-4bc1-4c81-a139-9387d123ea12",
+    "deploymentId": "fb269345-7091-4d2d-8787-e85a6879ed13",
+    "percent": 100,
+    "secretBindingPresent": true
+  },
+  "publicSmoke": "passed",
+  "publicAssetsVerified": 9,
+  "recentRuntimeErrors": 0,
+  "realModelPrologueProbe": {
+    "battleId": "btl_205c3393f8a8b97d2259349e4e0d0d20",
+    "kind": "two frozen prologue calls, no battle mutation",
+    "providerOrder": [
+      "xai",
+      "openai",
+      "venice"
+    ],
+    "results": [
+      {
+        "side": "a",
+        "contractVersion": 4,
+        "utteranceOrigin": "provided",
+        "hasSpeech": true,
+        "errors": [],
+        "calls": 1
+      },
+      {
+        "side": "b",
+        "contractVersion": 4,
+        "utteranceOrigin": "explicit_null",
+        "hasSpeech": false,
+        "errors": [
+          {
+            "path": "/intent",
+            "code": "intent_invalid"
+          },
+          {
+            "path": "/intent/basisRefs",
+            "code": "unknown_intent_ref",
+            "allowed": [
+              "ordinary-goal",
+              "tendency-0",
+              "background-0",
+              "suggested-goal",
+              "self-abilities",
+              "current-reserves",
+              "candidate-0",
+              "candidate-1",
+              "candidate-2",
+              "candidate-3",
+              "candidate-4",
+              "candidate-5",
+              "candidate-6"
+            ]
+          }
+        ],
+        "calls": 1
+      }
+    ]
+  },
+  "realModelTurnProbe": {
+    "kind": "two frozen turn-one decisions, bounded one structural repair each, no battle mutation or full action feasibility claim",
+    "results": [
+      {
+        "side": "a",
+        "phase": "turn",
+        "hasSpeech": true,
+        "utteranceOrigin": "provided",
+        "calls": 1,
+        "errors": []
+      },
+      {
+        "side": "b",
+        "phase": "turn",
+        "hasSpeech": false,
+        "utteranceOrigin": "explicit_null",
+        "calls": 1,
+        "errors": []
+      }
+    ]
+  },
+  "historicalBattleUnchanged": true,
+  "portraitProviderSmoke": "stub only",
+  "verifiedAt": "2026-10-03T08:43:06.628Z"
+}
