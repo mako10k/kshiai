@@ -1,5 +1,5 @@
 project MANUAL_GROK_V3_MIGRATION:
-  version 1
+  version 2
   title "Owner-directed migration of every remaining character"
   description "Canonical scope for owner instruction 2026-10-03 all remaining characters via manual Grok CLI; ADR0043 manual migration and ADR0048 public guidance projection. Includes original export, actual conversion and independent review, validator deployment, transactional V3 revisions and readback. No old M2 or trial-only execution limits apply to this new explicit authority."
   duration_unit hour
@@ -14,7 +14,7 @@ milestone AUTHORIZED:
   state reached
 
 milestone EXPORTED:
-  title "46 exact source rows privately retained"
+  title "48 exact source rows privately retained"
 
 task export AUTHORIZED -> EXPORTED:
   title "Inventory and export all non-V3 characters"
@@ -30,6 +30,7 @@ task validator EXPORTED -> VALIDATOR:
   title "Repair real V3 profile source gap without inventing selectors"
   description "ADR0048 strict explicitly public statement projection; compatibility and privacy tests; build typecheck governed tests static checks and runtime deployment smoke. Estimate excludes provider and cloud queue waits."
   duration 0.75h
+  status done
   requires:
     DEV 1
 
@@ -38,8 +39,9 @@ milestone CANDIDATES:
 
 task conversion VALIDATOR -> CANDIDATES:
   title "Finish Grok CLI conversions and independent whole-candidate reviews"
-  description "46 files, source accounting and exact stable values; at most two repair rounds; recorded real CLI accounting. Unresolved findings block corresponding registration. Calls may prepare concurrently before validator deployment; activation waits for this gate. Estimate excludes provider queue waits."
-  duration 1h
+  description "48 files including two schema3-labelled incomplete fixtures found by value validation; source accounting and exact stable values; at most two repair rounds; recorded real CLI accounting. Owner approved one dragon legacy constraint as an unchanged-text conscious commitment. Unresolved findings block corresponding registration. Calls may prepare concurrently before validator deployment; activation waits for this gate. Estimate excludes provider queue waits."
+  duration 1.1h
+  status done
   requires:
     DEV 1
 
