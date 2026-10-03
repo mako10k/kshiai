@@ -3,7 +3,7 @@ import { describe, it } from "node:test";
 import { buildCharacterSelfProfileAnchor, buildTurnObservationPacket, initialConsciousAgencyV2 } from "@kshiai/shared";
 import { createConsciousFixture } from "../services/conscious-agency.fixtures.js";
 import { consciousReaction } from "./conscious-agency.js";
-import { generationPlan, generationPrompt, generationSchema, runConsciousGeneration, bindConsciousGenerationControl, type DynamicInput } from "./conscious-dynamic.js";
+import { prepareSpeechHistory, generationPlan, generationPrompt, generationSchema, runConsciousGeneration, bindConsciousGenerationControl, type DynamicInput } from "./conscious-dynamic.js";
 import { OpenAiCompatibleProvider } from "./openai-compatible.js";
 import type { CharacterExpressionCompactInputV4 } from "./types.js";
 import { ProviderJsonSyntaxError } from "./provider-json.js";
@@ -51,7 +51,7 @@ describe("dynamic provider boundary (no network or live quality claims)", () => 
       const output = await runConsciousGeneration(i, i, async (_system, user) => {
         const request = JSON.parse(user);
         assert.deepEqual(request.context.structuredSelf.speech, i.structuredSelf.speech);
-        assert.deepEqual(request.context.utteranceHistory, i.utteranceHistory);
+        assert.deepEqual(request.context.utteranceHistory, { ...i.utteranceHistory, latestSelfIndex: null, latestCounterpartIndex: null });
         return { intent, nextAction: { choiceKey: "choice-0" }, nextUtterance: utterance };
       });
       assert.deepEqual(output.nextUtterance, { valid: true, value: utterance });
@@ -59,6 +59,20 @@ describe("dynamic provider boundary (no network or live quality claims)", () => 
     }
     const laterPrompt = generationPrompt(generationPlan({ ...i, phase: "later" }));
     assert.doesNotMatch(laterPrompt, /structuredSelf\.speech|Choose one Japanese public utterance/);
+  });
+  it("anchors the latest speaker roles without classifying or discarding repeated words", () => {
+    const recent: DynamicInput["utteranceHistory"]["recent"] = [
+      { sequence: 0, turn: 1, speaker: "self", delivery: "spoken", text: "同じ言葉" },
+      { sequence: 1, turn: 2, speaker: "counterpart", delivery: "spoken", text: "同じ言葉" },
+      { sequence: 2, turn: 3, speaker: "self", delivery: "spoken", text: "同じ言葉" },
+    ];
+    assert.deepEqual(prepareSpeechHistory({ recent }), { recent, latestSelfIndex: 2, latestCounterpartIndex: 1 });
+    assert.deepEqual(prepareSpeechHistory({ recent: [] }), { recent: [], latestSelfIndex: null, latestCounterpartIndex: null });
+    const turn = generationPrompt(generationPlan(input()));
+    assert.match(turn, /latestCounterpartIndex/);
+    assert.match(turn, /Intentional repetition or ritual remains legal/);
+    assert.doesNotMatch(turn, /The battle has ended/);
+    assert.match(generationPrompt(generationPlan({ ...input(), phase: "aftermath" })), /The battle has ended/);
   });
   it("repairs speech only, preserves action and blocks out-of-target overwrites", async () => {
     const i = input(); let calls = 0, reservations = 0;

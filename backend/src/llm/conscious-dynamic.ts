@@ -99,8 +99,12 @@ export function generationSchema(plan: GenerationPlan) {
   }
   return z.object(shape).strict();
 }
+function closingSpeechPrompt(plan: GenerationPlan): string {
+  if (plan.phase !== "aftermath" || !plan.fields.includes("nextUtterance")) return "";
+  return "The battle has ended. Respond to its actual outcome and the last known exchange as this character; this is a closing reaction, not a new opening or another combat decision.\n";
+}
 export function generationPrompt(plan: GenerationPlan) {
-  return `You are this character's conscious agency. Use only the supplied frozen self, known observations and legal choices. Intended influence is not an accomplished effect.\nReturn only these JSON fields: ${plan.fields.join(", ")}.\n${plan.fields.includes("initialGoal") ? "Derive the initial goal from personality, values, known relationship and situation. Select its grounding refs exactly from facts.ref, using only value, relationship, suggested_objective or default_objective facts.\n" : ""}${plan.fields.includes("intent") ? "Express the current aim briefly and select its grounding refs exactly from the supplied facts.ref values; never use a source path, kind or invented ref. No reasoning transcript or separate rationale.\n" : ""}${plan.fields.includes("nextAction") ? plan.actionRepair ? "The selected action and valid fields are fixed by the server. Return only the missing/invalid payload fields in nextAction.\n" : "Select a choiceKey exactly. Only free_action and reflect require new content; do not copy fixed skill IDs.\n" : ""}${plan.fields.includes("nextUtterance") ? "Choose one Japanese public utterance as this character, using structuredSelf.speech (register, cadence, vocabulary and examples), known relationship and the present observation. Speech is an action toward the aim: you may probe, provoke, reassure, encourage yourself or develop the ongoing exchange. Decide speech together with the action; selecting a combat action does not imply silence. When prior words received no answer, you may address that lack of response or change your approach using fresh evidence. Choose null when silence fits this character and the present moment; do not use null as a default to avoid expression. Repeated text remains legal. Do not expose private intent, refs or claim that the counterpart reacted.\n" : ""}${plan.phase === "later" ? "Choose a concrete action; no new speech or goal.\n" : ""}${plan.fields.includes("realizedManifestation") ? "Select an exact manifestation key or null.\n" : ""}Do not infer unknown counterpart attributes or claim execution success.`;
+  return `You are this character's conscious agency. Use only the supplied frozen self, known observations and legal choices. Intended influence is not an accomplished effect.\nReturn only these JSON fields: ${plan.fields.join(", ")}.\n${plan.fields.includes("initialGoal") ? "Derive the initial goal from personality, values, known relationship and situation. Select its grounding refs exactly from facts.ref, using only value, relationship, suggested_objective or default_objective facts.\n" : ""}${plan.fields.includes("intent") ? "Express the current aim briefly and select its grounding refs exactly from the supplied facts.ref values; never use a source path, kind or invented ref. No reasoning transcript or separate rationale.\n" : ""}${plan.fields.includes("nextAction") ? plan.actionRepair ? "The selected action and valid fields are fixed by the server. Return only the missing/invalid payload fields in nextAction.\n" : "Select a choiceKey exactly. Only free_action and reflect require new content; do not copy fixed skill IDs.\n" : ""}${plan.fields.includes("nextUtterance") ? "Choose one Japanese public utterance as this character, using structuredSelf.speech (register, cadence, vocabulary and examples), known relationship and the present observation. Speech is an action toward the aim: you may probe, provoke, reassure, encourage yourself or develop the ongoing exchange. Decide speech together with the action; selecting a combat action does not imply silence. When prior words received no answer, you may address that lack of response or change your approach using fresh evidence. Choose null when silence fits this character and the present moment; do not use null as a default to avoid expression. History records words already spoken, not examples to copy. Use utteranceHistory.latestCounterpartIndex to respond to the actual latest counterpart words and latestSelfIndex to carry your own preceding move forward. Let a new reply, request, changed stance or a present consequence develop that exchange. Do not restart the encounter or just paraphrase the same ambient observation on successive turns. If nothing calls for a further line, silence is available. Intentional repetition or ritual remains legal when this character has a present reason to hold that line; decide that meaning yourself. Do not expose private intent, refs or claim that the counterpart reacted.\n" : ""}${closingSpeechPrompt(plan)}${plan.phase === "later" ? "Choose a concrete action; no new speech or goal.\n" : ""}${plan.fields.includes("realizedManifestation") ? "Select an exact manifestation key or null.\n" : ""}Do not infer unknown counterpart attributes or claim execution success.`;
 }
 function restore(raw: unknown, plan: GenerationPlan): ConsciousOutputV4 {
   const parsed = z.record(z.unknown()).safeParse(raw);
@@ -201,11 +205,21 @@ function factContent(input: DynamicInput, sourcePath: string): unknown {
   return value;
 }
 
+export function prepareSpeechHistory(input: DynamicInput["utteranceHistory"]) {
+  let latestSelfIndex: number | null = null;
+  let latestCounterpartIndex: number | null = null;
+  input.recent.forEach((entry, index) => {
+    if (entry.speaker === "self") latestSelfIndex = index;
+    if (entry.speaker === "counterpart") latestCounterpartIndex = index;
+  });
+  return { recent: input.recent, latestSelfIndex, latestCounterpartIndex };
+}
+
 export async function runConsciousGeneration(input: DynamicInput, ownerInput: object, chat: (system: string, user: string, opts: ChatOpts) => Promise<unknown>): Promise<ConsciousOutputV4> {
   const control = controls.get(ownerInput);
   const plan = generationPlan(input, control?.targets);
   const request = {
-    ...input, facts: input.facts.map((fact) => ({ ref: fact.ref, kind: fact.kind, content: factContent(input, fact.sourcePath) })), goalPolicy: plan.fields.includes("initialGoal") ? input.goalPolicy : undefined,
+    ...input, utteranceHistory: prepareSpeechHistory(input.utteranceHistory), facts: input.facts.map((fact) => ({ ref: fact.ref, kind: fact.kind, content: factContent(input, fact.sourcePath) })), goalPolicy: plan.fields.includes("initialGoal") ? input.goalPolicy : undefined,
     decision: input.decision ? { ...input.decision, availableActions: undefined } : undefined,
     choices: plan.choices, manifestations: plan.manifestations.map((m, i) => ({ key: `manifestation-${i}`, ...m })),
     observableManifestations: undefined,

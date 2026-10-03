@@ -38,6 +38,59 @@ async function mockParticipantApis(page: Page): Promise<void> {
 }
 
 test.describe("battle screen", () => {
+  test("renders all arrived speech immediately without fade or delayed reveal", async ({ page }) => {
+    await mockParticipantApis(page);
+    await page.unroute(`**/api/battles/${e2eGuiBattleId}`);
+    await page.route(`**/api/battles/${e2eGuiBattleId}`, async (route) => {
+      await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({
+        ...e2eGuiBattle,
+        battle: { ...e2eGuiBattle.battle, log: [{ turn: 0, narrator: ["開幕。"], speeches: [
+          { speaker: "ナギ", text: "最初の言葉。" },
+          { speaker: "ガク", text: "すぐに返す言葉。" },
+        ] }] },
+      }) });
+    });
+    let releaseFollow = () => {};
+    const followReady = new Promise<void>((resolve) => { releaseFollow = resolve; });
+    await page.route(`**/api/battles/${e2eGuiBattleId}/narration/follow**`, async (route) => {
+      await followReady;
+      await route.fulfill({ status: 200, contentType: "text/event-stream", body: `data: ${JSON.stringify({
+        type: "reset", eventId: "event-1", cursor: "cursor-1",
+        snapshot: { ...e2eGuiNarration, cursor: "cursor-1", entries: [{
+          turnReceiptId: "receipt-1", sequence: 1, phase: "combat", combatTurn: 1, status: "completed",
+          narrative: { turn: 1, narrator: ["次の場面。"], speeches: [
+            { speaker: "ナギ", text: "新しく届いた言葉。" },
+            { speaker: "ガク", text: "こちらも同時に表示。" },
+          ] },
+        }] },
+      })}\n\n` });
+    });
+    await page.goto(`/battles/${e2eGuiBattleId}?resume=1`);
+    const speech = page.locator(".log .speaker");
+    await expect(speech).toHaveCount(2);
+    await expect(speech.nth(0)).toContainText("最初の言葉。");
+    await expect(speech.nth(1)).toContainText("すぐに返す言葉。");
+    expect(await speech.evaluateAll((nodes) => nodes.map((node) => ({
+      opacity: getComputedStyle(node).opacity,
+      animation: getComputedStyle(node).animationName,
+      activeAnimations: node.getAnimations().length,
+    })))).toEqual([
+      { opacity: "1", animation: "none", activeAnimations: 0 },
+      { opacity: "1", animation: "none", activeAnimations: 0 },
+    ]);
+    releaseFollow();
+    await expect(speech.nth(0)).toContainText("新しく届いた言葉。");
+    await expect(speech.nth(1)).toContainText("こちらも同時に表示。");
+    expect(await speech.evaluateAll((nodes) => nodes.map((node) => ({
+      opacity: getComputedStyle(node).opacity,
+      animation: getComputedStyle(node).animationName,
+      activeAnimations: node.getAnimations().length,
+    })))).toEqual([
+      { opacity: "1", animation: "none", activeAnimations: 0 },
+      { opacity: "1", animation: "none", activeAnimations: 0 },
+    ]);
+  });
+
   test("keeps the latest log above the bottom nav and hides save plus extra object facts", async ({
     page,
   }) => {
