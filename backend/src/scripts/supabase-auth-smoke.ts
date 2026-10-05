@@ -1,3 +1,4 @@
+// R: Verify authenticated staged API access with temporary smoke fixtures and cleanup.
 import { randomUUID } from "node:crypto";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -18,7 +19,8 @@ import { userFromSupabaseAccessToken } from "../auth.js";
 import {
   appendAssetGeneration,
   assetContentDigest,
-  createAssetGeneration,
+  canonicalAssetJson,
+  type AssetGeneration,
   getCurrentAssetGeneration,
 } from "../repositories/asset-generations.js";
 import { loadCharacterGeneration } from "../repositories/character-generation-reader.js";
@@ -217,7 +219,7 @@ async function beginAndResumeMigrationSmoke(input: {
   migrationAttemptId: string;
   ownerUserId: string;
   sheet: CharacterSheet;
-  sourceGeneration: Awaited<ReturnType<typeof createAssetGeneration>>;
+  sourceGeneration: AssetGeneration;
 }): Promise<void> {
   const attemptBase = {
     migrationAttemptId: input.migrationAttemptId,
@@ -258,12 +260,34 @@ export async function smokeVersionedCharacterReads(input: {
   fixture: ReturnType<typeof retainedCompatibilityFixture>;
   migrationAttemptId?: string;
 }): Promise<{ migrationAttemptId: string; v3GenerationId: string }> {
-  const v2 = await createAssetGeneration({
+  // This isolated temporary character represents retained data, not a new product write.
+  const content = input.fixture.readyCandidate;
+  const contentDigest = assetContentDigest(content);
+  const createdAt = new Date().toISOString();
+  const v2: AssetGeneration = {
     assetType: "character",
     assetId: input.fixture.sheet.id,
     schemaVersion: 2,
-    content: input.fixture.readyCandidate,
-  });
+    content,
+    contentDigest,
+    generation: 1,
+    generationId: `character:${input.fixture.sheet.id}:g1:${contentDigest.slice(0, 16)}`,
+    createdAt,
+  };
+  await query(
+    `INSERT INTO asset_generations
+      (asset_type, asset_id, generation, generation_id, schema_version,
+       content_json, content_digest, created_at)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+    [v2.assetType, v2.assetId, v2.generation, v2.generationId, v2.schemaVersion,
+      canonicalAssetJson(content), contentDigest, createdAt],
+  );
+  await query(
+    `INSERT INTO asset_current_generations
+      (asset_type, asset_id, generation, generation_id, updated_at)
+     VALUES ($1, $2, $3, $4, $5)`,
+    [v2.assetType, v2.assetId, v2.generation, v2.generationId, createdAt],
+  );
   await query(
     `INSERT INTO character_asset_states
       (character_id, compatibility_status, current_generation_id,

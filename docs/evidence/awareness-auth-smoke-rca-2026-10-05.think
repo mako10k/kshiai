@@ -1,0 +1,12 @@
+evidence STAGE:
+  "Stage rc4 run37313815167 boots revision kshiai-api-00169-juz and passes receipt lifecycle, provider accounting, OIDC, Worker upload and edge/origin smoke. Auth job kshiai-auth-smoke-clb96 logs CHARACTER_V3_WRITE_REQUIRED. Production still points100percent to speech-9ce565d. Paid battle step did not execute."
+evidence REPRODUCTION:
+  "Current supabase-auth-smoke.test.ts fails CHARACTER_V3_WRITE_REQUIRED at smokeVersionedCharacterReads line261 through repository writeAssetGeneration line80. Script explicitly passes schemaVersion2 to ordinary createAssetGeneration. That writer intentionally rejects nonV3 characters. The auth smoke already inserts isolated retained character fixtures directly and cleans their asset pointers and generations. A boundary regression prohibits importing testing helpers into operational scripts."
+premise INFERENCE:
+  "The auth smoke prepares retained V2 read/migration fixtures via a product writer whose accepted contract is V3-only. This fixture routing mismatch produces the rejection. Container packaging cause is separately corrected and proved by cloud startup. Existing regression not included in ordinary201 or awareness260 CI caused the detection gap."
+premise ALTERNATIVES:
+  "Reenable V2 product writes violates accepted retirement. Drop historical read or auth checks hides protected behavior. Insert only the isolated temporary V2 fixture directly in this smoke script, consistent with its existing retained fixture preparation; keep V3 append via ordinary writer."
+premise UNKNOWN:
+  "After this repair, real-model Stage and public completion remain unverified. Other upcoming fixture setup should be read-only checked before rerun."
+decision CORRECT based_on STAGE, REPRODUCTION, INFERENCE, ALTERNATIVES, UNKNOWN:
+  "Change only auth smoke V2 fixture creation to isolated fixture SQL within the smoke script, with typed canonical generation content and existing cleanup. Do not import the test-only helper into operational scripts. Add module responsibility comment. Run existing auth/migration regression and normal V3 writer rejection regression; add both to awareness CI command. Record source-cause and detection improvement. Preserve cleanup, real authentication, SSE, normal writer restrictions, public release gates and held V3 cutover. Integrate scoped new PR and immutable rc5 through required checks before repeat Stage. Do not claim completion before public normal battle evidence."

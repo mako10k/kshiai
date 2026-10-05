@@ -1,0 +1,35 @@
+{
+  "sourceCommit": "b81a2e79f7bace47c4e967abae854f978504c409",
+  "releaseTag": "v0.23.0-rc.4",
+  "tagObject": "cb5ed688448d1cf8588e7c4cec00b0e7b7c99ad7",
+  "mainCiRun": 37312988065,
+  "mainRequiredChecks": "all_success",
+  "repairPullRequest": "https://github.com/mako10k/kshiai/pull/156",
+  "stageRun": 37313815167,
+  "stageCreatedAt": "2026-10-05T13:02:47Z",
+  "stageStatus": "failure",
+  "stageInputs": {
+    "battle_causal_narration_mode": "narration_guarded",
+    "dialogue_context_projection_override": "none",
+    "expected_dialogue_projection": "compact",
+    "e2e_max_advances": 24,
+    "e2e_provider_operation_ceiling": 200,
+    "character_create_smoke": false,
+    "battle_pacing_policy": "current"
+  },
+  "promotion": "not_started",
+  "publicCompletion": "unverified",
+  "failedPriorStage": 37311012189,
+  "productionTrafficLastVerified": {
+    "revision": "kshiai-api-speech-9ce565d",
+    "percent": 100
+  },
+  "plannedSharedEndLastRead": "2026-10-05T22:30:00+09:00",
+  "scope": "root sole executor, normal public flow, held V3 cutover unchanged",
+  "failedStep": "Verify email auth mapping and SSE through staging",
+  "failedAuthExecution": "kshiai-auth-smoke-clb96",
+  "failureCode": "CHARACTER_V3_WRITE_REQUIRED",
+  "cloudRevision": "kshiai-api-00169-juz",
+  "imageDigest": "sha256:7dd8ad78998ebbb0e7800751539d7783066ae2fd43a025e365cafa5a32f8eb73",
+  "paidBattleStep": "skipped"
+}
